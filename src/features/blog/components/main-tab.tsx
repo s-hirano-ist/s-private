@@ -20,8 +20,8 @@ import {
 	DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/components/ui/use-toast";
 import { QueueTable } from "@/features/blog/components/queue-table";
+import { useToast } from "@/hooks/use-toast";
 import { GitHubLogoIcon, PlusIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { useEffect } from "react";
