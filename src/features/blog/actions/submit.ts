@@ -18,7 +18,8 @@ export async function submitBlog(_: SubmitBlogState, formData: FormData) {
 		if (!validatedFields.success) {
 			return {
 				success: false,
-				message: "入力に無効な文字列が含まれている、あるいは、文字数を超過しています。",
+				message:
+					"入力に無効な文字列が含まれている、あるいは、文字数を超過しています。",
 			};
 		}
 		//TODO: submit form
