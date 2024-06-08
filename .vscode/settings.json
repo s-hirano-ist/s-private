@@ -1,28 +1,26 @@
 {
-  "files.exclude": {
-    "node_modules/**": true
-  },
-  "files.watcherExclude": {
-    "node_modules/**": true
-  },
-  "search.exclude": {
-    "node_modules/**": true
-  },
-  "[json]": {
-    "editor.quickSuggestions": {
-      "strings": true
-    },
-    "editor.suggest.insertMode": "replace",
-    "gitlens.codeLens.scopes": ["document"]
-  },
-  "editor.formatOnSave": true,
-  "cSpell.enabled": true,
-  "cSpell.allowCompoundWords": true,
-  "tailwindCSS.experimental.classRegex": [
-    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
-    ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
-  ],
-  "cSpell.words": [
-    "vaul"
-  ]
+	"files.exclude": {
+		"node_modules/**": true
+	},
+	"files.watcherExclude": {
+		"node_modules/**": true
+	},
+	"search.exclude": {
+		"node_modules/**": true
+	},
+	"[json]": {
+		"editor.quickSuggestions": {
+			"strings": true
+		},
+		"editor.suggest.insertMode": "replace",
+		"gitlens.codeLens.scopes": ["document"]
+	},
+	"editor.formatOnSave": true,
+	"cSpell.enabled": true,
+	"cSpell.allowCompoundWords": true,
+	"tailwindCSS.experimental.classRegex": [
+		["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+		["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+	],
+	"cSpell.words": ["vaul"]
 }
