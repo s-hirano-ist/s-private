@@ -13,7 +13,7 @@
 		"build": "next build",
 		"start": "next start",
 		"lint": "next lint",
-		"check:ci": "biome ci",
+		"check:ci": "biome ci *",
 		"check": "biome check --write --changed",
 		"check:all": "biome check --write *"
 	},
