@@ -1,4 +1,6 @@
 name: build
+permissions:
+  pull-requests: write
 on:
   push:
 jobs:
