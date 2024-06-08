@@ -20,20 +20,31 @@ import {
 	DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/components/ui/use-toast";
 import { QueueTable } from "@/features/blog/components/queue-table";
 import { GitHubLogoIcon, PlusIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
+import { useEffect } from "react";
 import { useFormState } from "react-dom";
-import { submitBlog } from "../actions/submit";
+import { type SubmitBlogState, submitBlog } from "../actions/submit";
 import { DoneTable } from "./done-table";
 import { NewInput } from "./new-input";
 
-// TODO: https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations
-
-const initialState = "";
+const initialState: SubmitBlogState = {
+	success: undefined,
+	message: "",
+};
 
 export function MainTab() {
+	const { toast } = useToast();
 	const [state, formAction] = useFormState(submitBlog, initialState);
+
+	useEffect(() => {
+		toast({
+			variant: state.success ? "default" : "destructive",
+			description: state.message,
+		});
+	}, [state, toast]);
 
 	return (
 		<div>
@@ -97,13 +108,11 @@ export function MainTab() {
 									ブログに登録するデータを入力してください。
 								</DrawerDescription>
 							</DrawerHeader>
-
 							<div className="p-4 pb-0">
-								<div className="flex items-center justify-center space-x-2">
-									<NewInput />
-									{/* FIXME: エラーハンドリング+エラー表示 server side sanitize */}
-									{state}
-								</div>
+								<NewInput />
+								<p aria-live="polite" className="sr-only">
+									{state?.message}
+								</p>
 							</div>
 							<DrawerFooter>
 								<SubmitButton label="保存" />
