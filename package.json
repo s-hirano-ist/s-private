@@ -2,7 +2,7 @@
 	"name": "dump-to-github",
 	"version": "0.0.2",
 	"author": "s-hirano-ist",
-	"packageManager": "pnpm@9.1.0",
+	"packageManager": "pnpm@9.4.0",
 	"scripts": {
 		"corepack": "corepack enable pnpm",
 		"dev": "next dev",
