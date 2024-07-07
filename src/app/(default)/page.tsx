@@ -1,6 +1,6 @@
 import { Header } from "@/components/nav/header";
 import { LoadingStack } from "@/components/stack/loading-stack";
-import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BlogAddProvider } from "@/features/blog/components/blog-add-provider";
 import { BlogContents } from "@/features/blog/components/blog-contents";
 import { LoadingForm } from "@/features/blog/components/loading-add-form";
@@ -18,13 +18,22 @@ export default async function Page() {
 	return (
 		<>
 			<Header title="ブログへ送信" url="https://github.com/s-hirano-ist/blog" />
-			<Suspense fallback={<LoadingForm />}>
-				<BlogAddProvider />
-			</Suspense>
-			<Separator className="h-px bg-gradient-to-r from-primary to-primary-grad" />
-			<Suspense fallback={<LoadingStack />}>
-				<BlogContents />
-			</Suspense>
+			<Tabs defaultValue="new" className="w-full pt-2">
+				<TabsList className="grid grid-cols-2">
+					<TabsTrigger value="new">新規</TabsTrigger>
+					<TabsTrigger value="queue">送信待ち</TabsTrigger>
+				</TabsList>
+				<TabsContent value="new">
+					<Suspense fallback={<LoadingForm />}>
+						<BlogAddProvider />
+					</Suspense>
+				</TabsContent>
+				<TabsContent value="queue">
+					<Suspense fallback={<LoadingStack />}>
+						<BlogContents />
+					</Suspense>
+				</TabsContent>
+			</Tabs>
 		</>
 	);
 }
