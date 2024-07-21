@@ -4,11 +4,11 @@ import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { SubmitDrawer } from "@/features/submit/components/submit-drawer";
 import { cn } from "@/lib/utils";
 import {
-	NewspaperIcon,
+	BookOpenIcon,
+	LockKeyholeIcon,
+	LockKeyholeOpenIcon,
+	NotebookIcon,
 	SendIcon,
-	SettingsIcon,
-	TableIcon,
-	VariableIcon,
 } from "lucide-react";
 import { Link } from "next-view-transitions";
 import { usePathname } from "next/navigation";
@@ -32,34 +32,34 @@ export function Footer() {
 		<footer className="sticky bottom-4 z-50 mx-auto w-full max-w-lg rounded-full border border-gray-200 bg-white dark:border-gray-600 dark:bg-gray-700">
 			<Drawer open={open} onOpenChange={setOpen} snapPoints={[0.5]}>
 				<div className="mx-auto grid h-16 max-w-lg grid-cols-5 rounded-full bg-gradient-to-r from-primary to-primary-grad text-white">
-					<Link href="/">
+					<Link href="/dump/blog">
 						<Button
 							variant="navSide"
 							size="navSide"
 							className={cn(
 								"rounded-s-full",
-								pathname === "/" ? "bg-black/40" : "",
+								pathname === "/dump/blog" ? "bg-black/40" : "",
 							)}
 						>
-							{Icon("ブログ", <NewspaperIcon className="size-6" />)}
+							{Icon("PUBLIC", <LockKeyholeOpenIcon className="size-6" />)}
 						</Button>
 					</Link>
 
-					<Link href="/mypage" className=" ">
+					<Link href="/dump/mypage" className=" ">
 						<Button
 							variant="navSide"
 							size="navSide"
 							type="button"
-							className={pathname === "/mypage" ? "bg-black/40" : ""}
+							className={pathname === "/dump/mypage" ? "bg-black/40" : ""}
 						>
-							{Icon("マイページ", <VariableIcon className="size-6" />)}
+							{Icon("PRIVATE", <LockKeyholeIcon className="size-6" />)}
 						</Button>
 					</Link>
 
 					<DrawerTrigger asChild>
 						<div className="flex items-center justify-center">
 							<Button variant="navCenter" size="navCenter" type="button">
-								{Icon("送信", <SendIcon className="size-6 text-white" />)}
+								{Icon("SEND", <SendIcon className="size-6 text-white" />)}
 
 								{/* <SendIcon className="size-6 text-white" /> */}
 								<span className="sr-only">Submit</span>
@@ -67,27 +67,27 @@ export function Footer() {
 						</div>
 					</DrawerTrigger>
 
-					<Link href="/all">
+					<Link href="/contents/notes">
 						<Button
 							variant="navSide"
 							size="navSide"
 							type="button"
-							className={pathname === "/all" ? "bg-black/40" : ""}
+							className={pathname === "/contents/notes" ? "bg-black/40" : ""}
 						>
-							{Icon("全データ", <TableIcon className="size-6" />)}
+							{Icon("NOTES", <NotebookIcon className="size-6" />)}
 						</Button>
 					</Link>
 
-					<Link href="/settings">
+					<Link href="/contents/book-review">
 						<Button
 							variant="navSide"
 							size="navSide"
 							className={cn(
 								"rounded-e-full",
-								pathname === "/settings" ? "bg-black/40" : "",
+								pathname === "/contents/book-review" ? "bg-black/40" : "",
 							)}
 						>
-							{Icon("設定", <SettingsIcon className="size-6" />)}
+							{Icon("BOOKS", <BookOpenIcon className="size-6" />)}
 						</Button>
 					</Link>
 				</div>

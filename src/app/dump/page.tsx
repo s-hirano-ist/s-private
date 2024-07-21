@@ -9,7 +9,7 @@ import { Suspense } from "react";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-	title: "All | Dump",
+	title: "Dump",
 	description: "Dump blog/mypage data to GitHub",
 };
 

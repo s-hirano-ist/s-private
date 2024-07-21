@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/drawer";
 import { changeBlogStatus } from "@/features/blog/actions/change-blog-status";
 import { useToast } from "@/hooks/use-toast";
+import { Link } from "next-view-transitions";
 import { type Dispatch, type SetStateAction, useState } from "react";
 import { changeMypageStatus } from "../../mypage/actions/change-mypage-status";
 
@@ -84,6 +85,9 @@ export function SubmitDrawer({ setOpen }: Props) {
 					MYPAGE REVERT
 				</Button>
 			</div>
+			<Link href="/dump" className="p-4">
+				<Button className="w-full">全dumpデータ</Button>
+			</Link>
 		</>
 	);
 }
