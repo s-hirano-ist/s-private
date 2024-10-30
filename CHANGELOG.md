@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.6.4](https://github.com/s-hirano-ist/s-private/compare/v1.6.3...v1.6.4) (2024-10-30)
+
+
+### Bug Fixes
+
+* 🐛 bug on docker push ([cd25d32](https://github.com/s-hirano-ist/s-private/commit/cd25d320826cf18532c1ffc186df8660dc6749e8))
+* 🐛 build and update license gh actionlint ([912629e](https://github.com/s-hirano-ist/s-private/commit/912629e8e6ba91b9b2a52b8a1854a346d0fb432a))
+* 🐛 health check of docker container ([057fa09](https://github.com/s-hirano-ist/s-private/commit/057fa0997858ef1ff62f834ac41d4c4a479a5eee))
+* 🐛 healthcheck of dockerfile ([ac4f1d6](https://github.com/s-hirano-ist/s-private/commit/ac4f1d6a98ae42a8c8c646198d5e7b3e3c920921))
+* 🐛 jotai reset on tab move ([5e8974b](https://github.com/s-hirano-ist/s-private/commit/5e8974b5b0d50f24418f69db662e535425f57e8f))
+* 🐛 revert docker compose file for no profile ([4fc5d24](https://github.com/s-hirano-ist/s-private/commit/4fc5d24f65f7022f90b3f44ca1a7501d296f2478))
+* 🐛 signout not deleting cache ([873c0d8](https://github.com/s-hirano-ist/s-private/commit/873c0d80c9cf4f2e535306c08b352acde11548fa))
+* 🐛 update submodule bug on submodule update ([f8463c2](https://github.com/s-hirano-ist/s-private/commit/f8463c26d62c76b05e60500b24ef2f30be5eb246))
+
 ## [1.7.0](https://github.com/s-hirano-ist/s-private/compare/v1.6.3...v1.7.0) (2024-10-28)
 
 
