@@ -63,3 +63,31 @@ See [library-license.txt](https://github.com/s-hirano-ist/s-private/blob/main/li
 ## 🔒 Security
 
 [s-hirano.com/summary/coding-security](https://s-hirano.com/summary/coding-security)を参照。
+
+## その他
+
+### codemod
+
+[react codemod](https://github.com/reactjs/react-codemod)による変更を[shadcn ui](https://ui.shadcn.com/)に実施。
+
+```bash
+npx codemod react/19/remove-context-provider --target src/
+npx codemod react/19/remove-forward-ref --target src/
+npx codemod react/19/use-context-hook --target src/
+npx codemod react/19/replace-act-import --target src/
+npx codemod react/19/replace-string-ref --target src/
+npx codemod react/19/replace-use-form-state --target src/
+npx codemod react/19/replace-reactdom-render --target src/
+# npx codemod react/create-element-to-jsx --target src/
+npx codemod react/error-boundaries --target src/
+npx codemod react/findDOMNode --target src/
+npx codemod react/manual-bind-to-arrow --target src/
+npx codemod react/pure-component --target src/
+npx codemod react/pure-render-mixin --target src/
+npx codemod react/React-PropTypes-to-prop-types --target src/
+npx codemod react/rename-unsafe-lifecycles --target src/
+npx codemod react/react-to-react-dom --target src/
+npx codemod react/React-DOM-to-react-dom-factories --target src/
+npx codemod react/ReactNative-View-propTypes --target src/
+npx codemod react/update-react-imports --target src/
+```
