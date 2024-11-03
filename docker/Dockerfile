@@ -1,6 +1,6 @@
 # Build Stage
 # MEMO: alpine iamges may snot recommended? https://zenn.dev/jrsyo/articles/e42de409e62f5d
-FROM node:20.18.0-alpine AS base
+FROM node:20.18.0-alpine@sha256:c13b26e7e602ef2f1074aef304ce6e9b7dd284c419b35d89fcf3cc8e44a8def9 AS base
 
 # MEMO: when using node-slim
 # FROM node:20.18.0-slim@sha256:ec35a66c9a0a275b027debde05247c081f8b2f0c43d7399d3a6ad5660cee2f6a AS base
