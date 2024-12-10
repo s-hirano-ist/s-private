@@ -1,2 +1,2 @@
-FROM postgres:15-alpine@sha256:5d4b2f57adc7739452b0be6cee25f263bfc64b609446bcdd8170354cf8ba8e80
+FROM postgres:17-alpine@sha256:7691da1fee373a0d2c7f661521e17d51947e2a1b6e2d7e25ea3be18108348397
 ENV LANG ja_JP.utf8
