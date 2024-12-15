@@ -1,0 +1,105 @@
+name: ci
+permissions:
+  pull-requests: write
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    permissions: {}
+    timeout-minutes: 20
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+    steps:
+      - name: Checkout files
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
+          submodules: true
+      - name: Install Node.js
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4
+        with:
+          node-version: "20"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2 # v4
+        with:
+          # version: X.X.X
+          # Optional when there is a packageManager field in the package.json.
+          run_install: false
+
+      - name: Get pnpm directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
+
+      - name: Cache dependencies
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - run: pnpm i --frozen-lockfile
+      - run: pnpm build
+        env:
+          SKIP_ENV_VALIDATION: true
+          POSTGRES_PRISMA_URL: ${{ secrets.POSTGRES_PRISMA_URL }}
+          MINIO_HOST: ${{ secrets.MINIO_HOST }}
+
+  test:
+      runs-on: ubuntu-24.04
+      permissions: {}
+      timeout-minutes: 20
+      concurrency:
+        group: ${{ github.workflow }}-${{ github.ref }}
+      steps:
+        - name: Checkout files
+          uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+          with:
+            token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
+            submodules: true
+        - name: Install Node.js
+          uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4
+          with:
+            node-version: "20"
+
+        - name: Install pnpm
+          uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2 # v4
+          with:
+            # version: X.X.X
+            # Optional when there is a packageManager field in the package.json.
+            run_install: false
+
+        - name: Get pnpm directory
+          shell: bash
+          run: |
+            echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
+
+        - name: Cache dependencies
+          uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
+          with:
+            path: ${{ env.STORE_PATH }}
+            key: ${{ runner.os }}-node-${{ hashFiles('**/pnpm-lock.yaml') }}
+            restore-keys: |
+              ${{ runner.os }}-node-
+        - run: pnpm i --frozen-lockfile
+        - run: pnpm check:ci
+        - run: pnpm lint
+          env:
+            SKIP_ENV_VALIDATION: true
+            MINIO_HOST: ${{ secrets.MINIO_HOST }}
+        - run: pnpm test
+        - name: Show coverage
+          if: always()
+          uses: davelosert/vitest-coverage-report-action@5a78cb16e761204097ad8a39369ea5d0ff7c8a5d # v2
+          with:
+            json-summary-path: ./.vitest-coverage/coverage-summary.json
+            json-final-path: ./.vitest-coverage/coverage-final.json
+
+        # - run: pnpm test:e2e # FIXME: later if I have time
+        - run: pnpm storybook:build
+          env:
+            SKIP_ENV_VALIDATION: true
+            MINIO_HOST: ${{ secrets.MINIO_HOST }}
