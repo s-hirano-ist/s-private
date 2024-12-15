@@ -1,11 +1,11 @@
-name: build
+name: test
 permissions:
   pull-requests: write
 on:
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
-  build:
+  test:
     runs-on: ubuntu-24.04
     permissions: {}
     timeout-minutes: 20
@@ -42,8 +42,21 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
       - run: pnpm i --frozen-lockfile
-      - run: pnpm build
+      - run: pnpm check:ci
+      - run: pnpm lint
         env:
           SKIP_ENV_VALIDATION: true
-          POSTGRES_PRISMA_URL: ${{ secrets.POSTGRES_PRISMA_URL }}
+          MINIO_HOST: ${{ secrets.MINIO_HOST }}
+      - run: pnpm test
+      - name: Show coverage
+        if: always()
+        uses: davelosert/vitest-coverage-report-action@5a78cb16e761204097ad8a39369ea5d0ff7c8a5d # v2
+        with:
+          json-summary-path: ./.vitest-coverage/coverage-summary.json
+          json-final-path: ./.vitest-coverage/coverage-final.json
+
+      # - run: pnpm test:e2e # FIXME: later if I have time
+      - run: pnpm storybook:build
+        env:
+          SKIP_ENV_VALIDATION: true
           MINIO_HOST: ${{ secrets.MINIO_HOST }}
