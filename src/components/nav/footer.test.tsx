@@ -5,10 +5,6 @@ import { type Mock, describe, expect, it, vi } from "vitest";
 
 // テストスイート
 describe("Footer Component", () => {
-	vi.mock("next-view-transitions", () => ({
-		Link: vi.fn(({ children, ...rest }) => <a {...rest}>{children}</a>),
-	}));
-
 	it("renders the footer component correctly", () => {
 		// パス名をホームに設定
 		(usePathname as Mock).mockReturnValue("/");

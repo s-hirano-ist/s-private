@@ -3,14 +3,6 @@ import type { Contents } from "@/features/contents/types";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock("@/components/stack/stack-skeleton", () => ({
-	StackSkeleton: () => <div data-testid="stack-skeleton" />,
-}));
-
-vi.mock("next-view-transitions", () => ({
-	Link: vi.fn(({ children, ...rest }) => <a {...rest}>{children}</a>),
-}));
-
 describe("ContentsStack", () => {
 	it("renders StatusCodeView if contents is an empty array", () => {
 		render(<ContentsStack contents={[]} />);

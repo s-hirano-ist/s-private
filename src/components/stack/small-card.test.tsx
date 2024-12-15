@@ -3,10 +3,6 @@ import { describe, expect, it, vi } from "vitest";
 import { SmallCard } from "./small-card";
 
 describe("SmallCard", () => {
-	vi.mock("next-view-transitions", () => ({
-		Link: vi.fn(({ children, ...rest }) => <a {...rest}>{children}</a>),
-	}));
-
 	it("renders the SmallCard with all props", () => {
 		const props = {
 			id: 1,

@@ -2,7 +2,6 @@ import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
 import { afterEach, beforeEach, vi } from "vitest";
 
-// runs a cleanup after each test case (e.g. clearing jsdom)
 afterEach(() => {
 	cleanup();
 });
@@ -52,6 +51,7 @@ beforeEach(() => {
 
 	vi.mock("next-view-transitions", () => ({
 		useTransitionRouter: vi.fn(() => ({ push: vi.fn() })),
+		Link: vi.fn(({ children, ...rest }) => <a {...rest}>{children}</a>),
 	}));
 
 	vi.mock("next/navigation", () => ({

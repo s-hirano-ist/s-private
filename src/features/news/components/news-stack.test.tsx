@@ -3,14 +3,6 @@ import type { News } from "@/features/news/types";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock("@/components/stack/stack-skeleton", () => ({
-	StackSkeleton: () => <div data-testid="stack-skeleton" />,
-}));
-
-vi.mock("next-view-transitions", () => ({
-	Link: vi.fn(({ children, ...rest }) => <a {...rest}>{children}</a>),
-}));
-
 describe("NewsStack", () => {
 	it("renders StatusCodeView if news is an empty array", () => {
 		render(<NewsStack news={[]} />);
