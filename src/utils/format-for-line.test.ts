@@ -10,7 +10,6 @@ import {
 	formatDeleteMessage,
 	formatUpdateRoleMessage,
 	formatUpdateScopeMessage,
-	formatUpsertProfileMessage,
 } from "./format-for-line";
 
 describe("formatDeleteMessage", () => {
@@ -104,16 +103,6 @@ describe("formatUpdateScopeMessage", () => {
 		const result = formatUpdateScopeMessage(scope);
 
 		expect(result).toBe("【SCOPE】\n\nscope: PRIVATE\nに変更しました");
-	});
-});
-
-describe("formatUpsertProfileMessage", () => {
-	it("should format the upsert profile message correctly", () => {
-		const data = { name: "John Doe" };
-
-		const result = formatUpsertProfileMessage(data);
-
-		expect(result).toBe("【PROFILE】\n\nname: John Doe\nに変更しました");
 	});
 });
 

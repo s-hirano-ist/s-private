@@ -4,11 +4,11 @@ import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { UtilsDrawer } from "@/features/dump/components/utils-drawer";
 import { cn } from "@/utils/tailwindcss";
 import {
+	BotIcon,
 	FileUpIcon,
-	LockIcon,
 	NotebookIcon,
+	SearchIcon,
 	SendIcon,
-	UserRoundPenIcon,
 } from "lucide-react";
 import type { Route } from "next";
 import { Link } from "next-view-transitions";
@@ -71,29 +71,29 @@ export function Footer() {
 
 					{/* FIXME: bug with parallel routes
 					 * https://nextjs.org/docs/app/building-your-application/routing/parallel-routes */}
-					<Link href={"/profile" as Route}>
+					<Link href={"/search" as Route}>
 						<Button
 							variant="navSide"
 							size="navSide"
 							type="button"
-							className={pathname === "/profile" ? "bg-black/40" : ""}
+							className={pathname === "/search" ? "bg-black/40" : ""}
 						>
-							{Icon("PROFILE", <UserRoundPenIcon className="size-6" />)}
+							{Icon("SEARCH", <SearchIcon className="size-6" />)}
 						</Button>
 					</Link>
 
 					{/* FIXME: bug with parallel routes
 					 * https://nextjs.org/docs/app/building-your-application/routing/parallel-routes */}
-					<Link href={"/admin" as Route}>
+					<Link href={"/ai" as Route}>
 						<Button
 							variant="navSide"
 							size="navSide"
 							className={cn(
 								"sm:rounded-e-3xl",
-								pathname === "/admin" ? "bg-black/40" : "",
+								pathname === "/ai" ? "bg-black/40" : "",
 							)}
 						>
-							{Icon("ADMIN", <LockIcon className="size-6" />)}
+							{Icon("AI", <BotIcon className="size-6" />)}
 						</Button>
 					</Link>
 				</div>

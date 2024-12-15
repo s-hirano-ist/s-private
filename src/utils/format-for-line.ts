@@ -1,5 +1,4 @@
 import type { ContentName, Status } from "@/features/dump/types";
-import type { ProfileSchema } from "@/features/profile/schemas/profile-schema";
 import type { Role, Scope } from "@prisma/client";
 
 export function formatDeleteMessage(id: number, contentName: ContentName) {
@@ -48,10 +47,6 @@ export function formatCreateImageMessage({ fileName }: { fileName: string }) {
 
 export function formatUpdateScopeMessage(scope: Scope) {
 	return `【SCOPE】\n\nscope: ${scope}\nに変更しました`;
-}
-
-export function formatUpsertProfileMessage(data: ProfileSchema) {
-	return `【PROFILE】\n\nname: ${data.name}\nに変更しました`;
 }
 
 export function formatUpdateRoleMessage(role: Role) {
