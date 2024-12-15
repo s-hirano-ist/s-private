@@ -15,10 +15,6 @@ vi.mock("@/hooks/use-toast", () => ({
 }));
 
 describe("Header", () => {
-	vi.mock("next-view-transitions", () => ({
-		useTransitionRouter: vi.fn(() => ({ push: vi.fn() })),
-	}));
-
 	it("renders the title", () => {
 		render(<Header title="Test Title" />);
 		expect(screen.getByText("Test Title")).toBeInTheDocument();

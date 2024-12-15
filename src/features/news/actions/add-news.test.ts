@@ -41,10 +41,6 @@ vi.mock("@/error-wrapper", () => ({
 	wrapServerSideErrorForClient: vi.fn(),
 }));
 
-vi.mock("next/cache", () => ({
-	revalidatePath: vi.fn(),
-}));
-
 describe("addNews", () => {
 	it("should create a category and news item if a new category is provided", async () => {
 		const formData = new FormData();

@@ -41,6 +41,23 @@ beforeEach(() => {
 			$transaction: vi.fn(),
 		},
 	}));
+
+	vi.mock("next/cache", () => ({
+		revalidatePath: vi.fn(),
+	}));
+
+	vi.mock("react-dom", () => ({
+		useFormStatus: vi.fn(),
+	}));
+
+	vi.mock("next-view-transitions", () => ({
+		useTransitionRouter: vi.fn(() => ({ push: vi.fn() })),
+	}));
+
+	vi.mock("next/navigation", () => ({
+		usePathname: vi.fn(),
+		redirect: vi.fn(),
+	}));
 });
 
 Object.defineProperty(window, "matchMedia", {

@@ -4,10 +4,6 @@ import { useFormStatus } from "react-dom";
 import { type Mock, describe, expect, it, vi } from "vitest";
 import { SubmitButton } from "./submit-button";
 
-vi.mock("react-dom", () => ({
-	useFormStatus: vi.fn(),
-}));
-
 describe("SubmitButton", () => {
 	it("renders the button with the correct label", () => {
 		(useFormStatus as Mock).mockReturnValue({ pending: false });

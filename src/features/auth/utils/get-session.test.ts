@@ -27,10 +27,6 @@ vi.mock("@/features/auth/utils/role", () => ({
 	checkUpdateStatusPermission: vi.fn(),
 }));
 
-vi.mock("next/navigation", () => ({
-	redirect: vi.fn(),
-}));
-
 describe("get-session utilities", () => {
 	describe("checkSelfAuthOrThrow", () => {
 		it("should return the session if authenticated", async () => {

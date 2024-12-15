@@ -19,10 +19,6 @@ vi.mock("@/utils/fetch-message", () => ({
 	sendLineNotifyMessage: vi.fn(),
 }));
 
-vi.mock("next/cache", () => ({
-	revalidatePath: vi.fn(),
-}));
-
 vi.mock("@/utils/format-for-line", () => ({
 	formatChangeStatusMessage: vi.fn(),
 }));

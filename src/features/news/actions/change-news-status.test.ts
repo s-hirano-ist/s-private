@@ -28,10 +28,6 @@ vi.mock("@/error-wrapper", () => ({
 	wrapServerSideErrorForClient: vi.fn(),
 }));
 
-vi.mock("next/cache", () => ({
-	revalidatePath: vi.fn(),
-}));
-
 describe("changeNewsStatus", () => {
 	it("should update news statuses and send notifications (UPDATE)", async () => {
 		const mockUserId = "12345";
