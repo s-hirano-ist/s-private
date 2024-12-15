@@ -24,8 +24,8 @@ describe("Footer Component", () => {
 		// 各ボタンが存在するか確認
 		expect(screen.getByText(/DUMPER/i)).toBeInTheDocument();
 		expect(screen.getByText(/CONTENTS/i)).toBeInTheDocument();
-		expect(screen.getByText(/PROFILE/i)).toBeInTheDocument();
-		expect(screen.getByText(/ADMIN/i)).toBeInTheDocument();
+		expect(screen.getByText(/SEARCH/i)).toBeInTheDocument();
+		expect(screen.getByText(/AI/i)).toBeInTheDocument();
 
 		expect(screen.getByRole("button", { name: /Action/i })).toBeInTheDocument();
 	});
@@ -65,14 +65,14 @@ describe("Footer Component", () => {
 	});
 	it("renders the PROFILE link", () => {
 		render(<Footer />);
-		const profileLink = screen.getByRole("link", { name: "PROFILE" });
-		expect(profileLink).toBeInTheDocument();
-		expect(profileLink).toHaveAttribute("href", "/profile");
+		const searchLink = screen.getByRole("link", { name: "SEARCH" });
+		expect(searchLink).toBeInTheDocument();
+		expect(searchLink).toHaveAttribute("href", "/search");
 	});
 	it("renders the ADMIN link", () => {
 		render(<Footer />);
-		const adminLink = screen.getByRole("link", { name: "ADMIN" });
-		expect(adminLink).toBeInTheDocument();
-		expect(adminLink).toHaveAttribute("href", "/admin");
+		const AILink = screen.getByRole("link", { name: "AI" });
+		expect(AILink).toBeInTheDocument();
+		expect(AILink).toHaveAttribute("href", "/ai");
 	});
 });
