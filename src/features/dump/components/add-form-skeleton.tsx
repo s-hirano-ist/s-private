@@ -8,20 +8,20 @@ export function AddFormSkeleton({ showCategory }: Props) {
 		<div className="space-y-4 p-4">
 			{showCategory && (
 				<div className="space-y-1">
-					<Label htmlFor="category">カテゴリー</Label>
+					<Label>カテゴリー</Label>
 					<Skeleton className="h-9 " />
 				</div>
 			)}
 			<div className="space-y-1">
-				<Label htmlFor="title">タイトル</Label>
+				<Label>タイトル</Label>
 				<Skeleton className="h-9 " />
 			</div>
 			<div className="space-y-1">
-				<Label htmlFor="quote">ひとこと</Label>
+				<Label>ひとこと</Label>
 				<Skeleton className="h-[60px] " />
 			</div>
 			<div className="space-y-1">
-				<Label htmlFor="url">URL</Label>
+				<Label>URL</Label>
 				<Skeleton className="h-9 " />
 			</div>
 			<Skeleton className="h-9 " />
