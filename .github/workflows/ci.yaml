@@ -11,7 +11,7 @@ jobs:
     permissions: {}
     timeout-minutes: 20
     concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
+      group: ${{ github.workflow }}-build-${{ github.ref }}
     steps:
       - name: Checkout files
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
@@ -55,7 +55,7 @@ jobs:
         pull-requests: write
       timeout-minutes: 20
       concurrency:
-        group: ${{ github.workflow }}-${{ github.ref }}
+        group: ${{ github.workflow }}-test-${{ github.ref }}
       steps:
         - name: Checkout files
           uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
@@ -107,7 +107,7 @@ jobs:
     permissions: {}
     timeout-minutes: 20
     concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
+      group: ${{ github.workflow }}-storybook-${{ github.ref }}
     steps:
       - name: Checkout files
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
