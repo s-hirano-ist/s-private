@@ -1,4 +1,4 @@
-export type ContentsAtom = {
+export type Contents = {
 	id: number;
 	title: string;
 	quote: string | null;

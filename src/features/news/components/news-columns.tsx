@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
-import type { NewsAtom } from "@/features/news/stores/news-atom";
+import type { News } from "@/features/news/types";
 import { sanitizeHref } from "@/utils/sanitize-href";
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, Link as LinkIcon } from "lucide-react";
 import type { Route } from "next";
 import { Link } from "next-view-transitions";
 
-export const newsColumns = (): ColumnDef<NewsAtom>[] => [
+export const newsColumns = (): ColumnDef<News>[] => [
 	{
 		accessorKey: "id",
 		header: ({ column }) => {

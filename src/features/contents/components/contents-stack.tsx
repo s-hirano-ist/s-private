@@ -2,10 +2,10 @@
 import { SmallCard } from "@/components/stack/small-card";
 import { StackSkeleton } from "@/components/stack/stack-skeleton";
 import { StatusCodeView } from "@/components/status-code-view";
-import type { ContentsAtom } from "@/features/contents/stores/contents-atom";
+import type { Contents } from "@/features/contents/types";
 
 type Props = {
-	contents: ContentsAtom[];
+	contents: Contents[];
 };
 
 export function ContentsStack({ contents }: Props) {

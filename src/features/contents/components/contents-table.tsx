@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/table";
 import { contentsColumns } from "@/features/contents/components/contents-columns";
 import { DeleteContentsButton } from "@/features/contents/components/delete-contents-button";
-import type { ContentsAtom } from "@/features/contents/stores/contents-atom";
+import type { Contents } from "@/features/contents/types";
 import {
 	type ColumnFiltersState,
 	type SortingState,
@@ -33,7 +33,7 @@ import {
 import { useState } from "react";
 
 type Props = {
-	data: ContentsAtom[];
+	data: Contents[];
 };
 
 export function ContentsTable({ data }: Props) {
@@ -42,7 +42,7 @@ export function ContentsTable({ data }: Props) {
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
 	const [open, setOpen] = useState(false);
-	const [dialogData, setDialogData] = useState<ContentsAtom>();
+	const [dialogData, setDialogData] = useState<Contents>();
 
 	const table = useReactTable({
 		data,
@@ -57,7 +57,7 @@ export function ContentsTable({ data }: Props) {
 		state: { sorting, columnFilters, columnVisibility },
 	});
 
-	const handleClick = (rowData: ContentsAtom) => {
+	const handleClick = (rowData: Contents) => {
 		setDialogData(rowData);
 		setOpen(true);
 	};
