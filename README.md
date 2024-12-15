@@ -26,7 +26,7 @@ cd minio
 cd ..
 ```
 
-## DockerImageのビルドとプッシュ
+## Docker Imageのビルドとプッシュ
 
 詳細は[DockerHub](https://hub.docker.com/repository/docker/s0hirano/s-private/general)を参照願う。
 
