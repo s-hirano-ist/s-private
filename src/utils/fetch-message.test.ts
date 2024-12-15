@@ -1,25 +1,13 @@
 import { LineNotifyError } from "@/error-classes";
 import { loggerError } from "@/pino";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { sendLineNotifyMessage } from "./fetch-message";
-
-vi.mock("@/pino", () => ({
-	loggerError: vi.fn(),
-}));
-
-vi.mock("server-only", () => {
-	return {};
-});
 
 describe("sendLineNotifyMessage", () => {
 	const mockFetch = vi.fn();
 
 	beforeEach(() => {
 		global.fetch = mockFetch;
-	});
-
-	afterEach(() => {
-		vi.resetAllMocks();
 	});
 
 	it("should send a message successfully when API responds with 200", async () => {

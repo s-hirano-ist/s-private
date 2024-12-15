@@ -4,14 +4,6 @@ import { loggerError } from "@/pino";
 import { render, screen } from "@testing-library/react";
 import { type Mock, describe, expect, it, vi } from "vitest";
 
-vi.mock("server-only", () => {
-	return {};
-});
-
-vi.mock("@/pino", () => ({
-	loggerError: vi.fn(),
-}));
-
 vi.mock("@/features/contents/components/add-contents-form", () => ({
 	AddContentsForm: () => (
 		<div data-testid="add-contents-form">Form Component</div>

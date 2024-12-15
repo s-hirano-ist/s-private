@@ -2,10 +2,6 @@ import { InvalidFormatError } from "@/error-classes";
 import { validateNews } from "@/features/news/utils/validate-news";
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock("server-only", () => {
-	return {};
-});
-
 describe("validateNews", () => {
 	it("should validate correct news data", () => {
 		const formData = new FormData();

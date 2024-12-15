@@ -5,20 +5,12 @@ import type { Contents } from "@prisma/client";
 import { render, screen } from "@testing-library/react";
 import { type Mock, describe, expect, it, vi } from "vitest";
 
-vi.mock("server-only", () => {
-	return {};
-});
-
 vi.mock("@/features/auth/utils/get-session", () => ({
 	getUserId: vi.fn(),
 }));
 
 vi.mock("@/prisma", () => ({
 	default: { contents: { findMany: vi.fn() } },
-}));
-
-vi.mock("@/pino", () => ({
-	loggerError: vi.fn(),
 }));
 
 vi.mock("@/features/contents/components/contents-stack", () => ({

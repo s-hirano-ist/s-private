@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useFormStatus } from "react-dom";
-import { type Mock, beforeEach, describe, expect, it, vi } from "vitest";
+import { type Mock, describe, expect, it, vi } from "vitest";
 import { SubmitButton } from "./submit-button";
 
 vi.mock("react-dom", () => ({
@@ -9,10 +9,6 @@ vi.mock("react-dom", () => ({
 }));
 
 describe("SubmitButton", () => {
-	beforeEach(() => {
-		vi.resetAllMocks();
-	});
-
 	it("renders the button with the correct label", () => {
 		(useFormStatus as Mock).mockReturnValue({ pending: false });
 

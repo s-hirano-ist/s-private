@@ -2,10 +2,6 @@ import { InvalidFormatError } from "@/error-classes";
 import { validateCategory } from "@/features/news/utils/validate-category";
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock("server-only", () => {
-	return {};
-});
-
 describe("validateCategory", () => {
 	it("should validate correct category name", () => {
 		const formData = new FormData();

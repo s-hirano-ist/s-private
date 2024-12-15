@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import PhotoSwipeLightbox from "photoswipe/lightbox";
-import { type Mock, beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { ImageStack } from "./image-stack";
 
 const mockDestroy = vi.fn();
@@ -18,10 +18,6 @@ vi.mock("photoswipe/lightbox", () => {
 });
 
 describe("ImageStack", () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
-
 	it("renders StatusCodeView if images is an empty array", () => {
 		render(<ImageStack images={[]} />);
 		expect(screen.getByText("204")).toBeInTheDocument();

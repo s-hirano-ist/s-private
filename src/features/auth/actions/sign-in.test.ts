@@ -4,16 +4,8 @@ import { signIn as NextAuthSignIn } from "@/features/auth/utils/auth";
 import { getLoginUserInfo } from "@/features/auth/utils/header-info";
 import prisma from "@/prisma";
 import { sendLineNotifyMessage } from "@/utils/fetch-message";
-import { type Mock, beforeEach, describe, expect, it, vi } from "vitest";
+import { type Mock, describe, expect, it, vi } from "vitest";
 import { signIn } from "./sign-in";
-
-vi.mock("server-only", () => {
-	return {};
-});
-
-vi.mock("@/pino", () => ({
-	loggerInfo: vi.fn(),
-}));
 
 vi.mock("@/features/auth/utils/auth", () => ({
 	signIn: vi.fn(),
@@ -39,10 +31,6 @@ vi.mock("@/error-wrapper", () => ({
 }));
 
 describe("signIn", () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
-
 	it("should sign in the user, log login history, and send notifications", async () => {
 		const mockSignInValues = {
 			username: "testuser",

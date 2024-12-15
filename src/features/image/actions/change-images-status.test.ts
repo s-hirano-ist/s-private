@@ -7,12 +7,8 @@ import prisma from "@/prisma";
 import { sendLineNotifyMessage } from "@/utils/fetch-message";
 import { formatChangeStatusMessage } from "@/utils/format-for-line";
 import { revalidatePath } from "next/cache";
-import { type Mock, beforeEach, describe, expect, it, vi } from "vitest";
+import { type Mock, describe, expect, it, vi } from "vitest";
 import { changeImagesStatus } from "./change-images-status";
-
-vi.mock("server-only", () => {
-	return {};
-});
 
 vi.mock("@/prisma", () => ({
 	default: {
@@ -39,10 +35,6 @@ vi.mock("@/utils/format-for-line", () => ({
 }));
 
 describe("changeImagesStatus", () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
-
 	it("should update the status of images and return success for UPDATE", async () => {
 		// Mocking getUserId
 		vi.mocked(getUserId).mockResolvedValue("test-user-id");

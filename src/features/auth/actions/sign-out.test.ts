@@ -2,16 +2,8 @@ import { SUCCESS_MESSAGES } from "@/constants";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
 import { signOut as NextAuthSignOut } from "@/features/auth/utils/auth";
 import { sendLineNotifyMessage } from "@/utils/fetch-message";
-import { type Mock, beforeEach, describe, expect, it, vi } from "vitest";
+import { type Mock, describe, expect, it, vi } from "vitest";
 import { signOut } from "./sign-out";
-
-vi.mock("server-only", () => {
-	return {};
-});
-
-vi.mock("@/pino", () => ({
-	loggerInfo: vi.fn(),
-}));
 
 vi.mock("@/features/auth/utils/auth", () => ({
 	signOut: vi.fn(),
@@ -26,10 +18,6 @@ vi.mock("@/error-wrapper", () => ({
 }));
 
 describe("signOut", () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
-
 	it("should sign out the user and send notifications", async () => {
 		(NextAuthSignOut as Mock).mockResolvedValue(undefined);
 

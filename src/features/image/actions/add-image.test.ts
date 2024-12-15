@@ -15,10 +15,6 @@ import { v7 as uuidv7 } from "uuid";
 import { type Mock, beforeEach, describe, expect, it, vi } from "vitest";
 import { addImage } from "./add-image";
 
-vi.mock("server-only", () => {
-	return {};
-});
-
 vi.mock("@/features/auth/utils/get-session", () => ({
 	hasSelfPostPermissionOrThrow: vi.fn(),
 	getUserId: vi.fn(),
@@ -47,10 +43,6 @@ vi.mock("@/prisma", () => ({
 	},
 }));
 
-vi.mock("@/pino", () => ({
-	loggerInfo: vi.fn(),
-}));
-
 vi.mock("@/utils/format-for-line", () => ({
 	formatCreateImageMessage: vi.fn(),
 }));
@@ -70,7 +62,6 @@ describe("addImage", () => {
 	let formData: FormData;
 
 	beforeEach(() => {
-		vi.clearAllMocks();
 		(hasSelfPostPermissionOrThrow as Mock).mockResolvedValue(true);
 		(getUserId as Mock).mockResolvedValue("userId");
 		(uuidv7 as Mock).mockReturnValue("generated-uuid");

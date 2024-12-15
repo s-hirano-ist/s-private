@@ -7,11 +7,7 @@ import {
 	checkViewStatus,
 } from "@/features/auth/utils/role";
 import prisma from "@/prisma";
-import { type Mock, beforeEach, describe, expect, it, vi } from "vitest";
-
-vi.mock("server-only", () => {
-	return {};
-});
+import { type Mock, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/features/auth/utils/get-session", () => ({
 	checkSelfAuthOrThrow: vi.fn(),
@@ -22,10 +18,6 @@ vi.mock("@/prisma", () => ({
 }));
 
 describe("role utilities", () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
-
 	describe("checkAdminPermission", () => {
 		it("should return true if the user role is ADMIN", async () => {
 			(checkSelfAuthOrThrow as Mock).mockResolvedValue({

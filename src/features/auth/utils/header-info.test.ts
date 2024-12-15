@@ -2,10 +2,6 @@ import { getLoginUserInfo } from "@/features/auth/utils/header-info";
 import { headers } from "next/headers";
 import { type Mock, describe, expect, it, vi } from "vitest";
 
-vi.mock("server-only", () => {
-	return {};
-});
-
 vi.mock("next/headers", () => ({
 	headers: vi.fn(),
 }));

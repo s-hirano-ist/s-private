@@ -15,10 +15,6 @@ vi.mock("@/hooks/use-toast", () => ({
 }));
 
 describe("Header", () => {
-	vi.mock("server-only", () => {
-		return {};
-	});
-
 	vi.mock("next-view-transitions", () => ({
 		useTransitionRouter: vi.fn(() => ({ push: vi.fn() })),
 	}));

@@ -8,6 +8,8 @@ afterEach(() => {
 });
 
 beforeEach(() => {
+	vi.clearAllMocks();
+
 	HTMLFormElement.prototype.requestSubmit = function (submitter?: HTMLElement) {
 		if (submitter) {
 			this.submit();
@@ -17,12 +19,16 @@ beforeEach(() => {
 			);
 		}
 	};
-	// FIXME: uncomment on refactoring
-	// vi.mock("@/pino", () => ({
-	// 	loggerInfo: vi.fn(),
-	// 	loggerWarn: vi.fn(),
-	// 	loggerError: vi.fn(),
-	// }));
+
+	vi.mock("@/pino", () => ({
+		loggerInfo: vi.fn(),
+		loggerWarn: vi.fn(),
+		loggerError: vi.fn(),
+	}));
+
+	vi.mock("server-only", () => {
+		return {};
+	});
 });
 
 Object.defineProperty(window, "matchMedia", {

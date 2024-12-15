@@ -12,16 +12,8 @@ import {
 	formatCreateNewsMessage,
 } from "@/utils/format-for-line";
 import { revalidatePath } from "next/cache";
-import { type Mock, beforeEach, describe, expect, it, vi } from "vitest";
+import { type Mock, describe, expect, it, vi } from "vitest";
 import { addNews } from "./add-news";
-
-vi.mock("server-only", () => {
-	return {};
-});
-
-vi.mock("@/pino", () => ({
-	loggerInfo: vi.fn(),
-}));
 
 vi.mock("@/features/auth/utils/get-session", () => ({
 	getUserId: vi.fn(),
@@ -58,10 +50,6 @@ vi.mock("next/cache", () => ({
 }));
 
 describe("addNews", () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
-
 	it("should create a category and news item if a new category is provided", async () => {
 		const formData = new FormData();
 		formData.append("new_category", "Tech");

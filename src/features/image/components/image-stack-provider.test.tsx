@@ -19,10 +19,6 @@ vi.mock("@/prisma", () => ({
 	default: { images: { findMany: vi.fn() } },
 }));
 
-vi.mock("@/pino", () => ({
-	loggerError: vi.fn(),
-}));
-
 describe("ImageStackProvider", () => {
 	it("renders the ImageStack with images", async () => {
 		// モックの準備
