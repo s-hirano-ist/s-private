@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.0.0](https://github.com/s-hirano-ist/s-private/compare/v3.0.2...v4.0.0) (2024-12-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* 🧨 delete pages
+
+### Features
+
+* 🎸 delete admin and profile pages ([1301825](https://github.com/s-hirano-ist/s-private/commit/13018256b11f6b28d2dc9b803bb321c280111db1))
+* 🎸 delete admin and profile pages ([2c80a14](https://github.com/s-hirano-ist/s-private/commit/2c80a14c105c4740537a8aa9ea5555f292c7e593))
+
 ## [3.0.2](https://github.com/s-hirano-ist/s-private/compare/v3.0.1...v3.0.2) (2024-12-15)
 
 
