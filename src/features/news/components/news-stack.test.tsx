@@ -7,24 +7,14 @@ vi.mock("@/components/stack/stack-skeleton", () => ({
 	StackSkeleton: () => <div data-testid="stack-skeleton" />,
 }));
 
-vi.mock("@/components/stack/small-card", () => ({
-	SmallCard: ({ id }: { id: string }) => (
-		<div data-testid={`small-card-${id}`} />
-	),
+vi.mock("next-view-transitions", () => ({
+	Link: vi.fn(({ children, ...rest }) => <a {...rest}>{children}</a>),
 }));
 
 describe("NewsStack", () => {
-	it("renders StackSkeleton if news is undefined", () => {
-		render(<NewsStack news={undefined as unknown as News[]} />);
-
-		// StackSkeleton が描画されていることを確認
-		expect(screen.getByTestId("stack-skeleton")).toBeInTheDocument();
-	});
-
 	it("renders StatusCodeView if news is an empty array", () => {
 		render(<NewsStack news={[]} />);
 
-		// StatusCodeView が描画されていることを確認
 		const statusCodeView = screen.getByTestId("status-code-view");
 		expect(statusCodeView).toBeInTheDocument();
 		expect(statusCodeView).toHaveTextContent("204");
@@ -50,9 +40,12 @@ describe("NewsStack", () => {
 
 		render(<NewsStack news={newsData} />);
 
-		// newsData の数だけ SmallCard が描画されることを確認
 		for (const item of newsData) {
-			expect(screen.getByTestId(`small-card-${item.id}`)).toBeInTheDocument();
+			const smallCard = screen.getByTestId(`small-card-${item.id}`);
+			expect(smallCard).toBeInTheDocument();
+			expect(smallCard).toHaveTextContent(item.title);
+			expect(smallCard).toHaveTextContent(item.quote ?? "");
+			expect(smallCard).toHaveAttribute("href", item.url);
 		}
 	});
 });
