@@ -2,30 +2,19 @@
 import { SmallCard } from "@/components/stack/small-card";
 import { StackSkeleton } from "@/components/stack/stack-skeleton";
 import { StatusCodeView } from "@/components/status-code-view";
-import {
-	type ContentsAtom,
-	contentsAtom,
-} from "@/features/contents/stores/contents-atom";
-import { useAtom } from "jotai";
-import { useEffect } from "react";
+import type { ContentsAtom } from "@/features/contents/stores/contents-atom";
 
 type Props = {
 	contents: ContentsAtom[];
 };
 
 export function ContentsStack({ contents }: Props) {
-	const [data, setData] = useAtom(contentsAtom);
-
-	useEffect(() => {
-		setData(contents);
-	}, [contents, setData]);
-
-	if (data === undefined) return <StackSkeleton />;
-	if (data.length === 0) return <StatusCodeView statusCode="204" />;
+	if (contents === undefined) return <StackSkeleton />;
+	if (contents.length === 0) return <StatusCodeView statusCode="204" />;
 
 	return (
 		<div className="grid grid-cols-1 gap-2 p-2 sm:grid-cols-2 sm:gap-4 sm:p-4">
-			{data.map((d) => {
+			{contents.map((d) => {
 				return (
 					<SmallCard
 						key={d.id}

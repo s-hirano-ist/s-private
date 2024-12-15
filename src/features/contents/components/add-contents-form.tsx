@@ -5,9 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { addContents } from "@/features/contents/actions/add-contents";
-import { contentsAtom } from "@/features/contents/stores/contents-atom";
 import { useToast } from "@/hooks/use-toast";
-import { useSetAtom } from "jotai";
 import { ClipboardPasteIcon } from "lucide-react";
 import { useRef } from "react";
 
@@ -18,8 +16,6 @@ export function AddContentsForm() {
 
 	const { toast } = useToast();
 
-	const setQueuedContents = useSetAtom(contentsAtom);
-
 	const formAction = async (formData: FormData) => {
 		const response = await addContents(formData);
 		if (!response.success) {
@@ -29,10 +25,6 @@ export function AddContentsForm() {
 			});
 			return;
 		}
-		setQueuedContents((previousData) => [
-			response.data,
-			...(previousData ?? []),
-		]);
 		toast({
 			variant: "default",
 			description: response.message,

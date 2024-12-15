@@ -1,7 +1,6 @@
 import { signOut } from "@/features/auth/actions/sign-out";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { Provider } from "jotai";
 import { describe, expect, it, vi } from "vitest";
 import { Header } from "./header";
 
@@ -25,11 +24,7 @@ describe("Header", () => {
 	}));
 
 	it("renders the title", () => {
-		render(
-			<Provider>
-				<Header title="Test Title" />
-			</Provider>,
-		);
+		render(<Header title="Test Title" />);
 		expect(screen.getByText("Test Title")).toBeInTheDocument();
 	});
 
@@ -41,11 +36,7 @@ describe("Header", () => {
 		});
 
 		const user = userEvent.setup();
-		render(
-			<Provider>
-				<Header title="Dashboard" />
-			</Provider>,
-		);
+		render(<Header title="Dashboard" />);
 
 		const button = screen.getByTestId("log-out-button");
 		await user.click(button);
@@ -63,11 +54,7 @@ describe("Header", () => {
 		});
 
 		const user = userEvent.setup();
-		render(
-			<Provider>
-				<Header title="Dashboard" />
-			</Provider>,
-		);
+		render(<Header title="Dashboard" />);
 
 		const button = screen.getByTestId("log-out-button");
 		await user.click(button);

@@ -12,10 +12,8 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { addNews } from "@/features/news/actions/add-news";
-import { newsAtom } from "@/features/news/stores/news-atom";
 import { useToast } from "@/hooks/use-toast";
 import type { Categories } from "@prisma/client";
-import { useSetAtom } from "jotai";
 import { ClipboardPasteIcon } from "lucide-react";
 import { useRef, useState } from "react";
 
@@ -32,8 +30,6 @@ export function AddNewsForm({ categories }: Props) {
 
 	const { toast } = useToast();
 
-	const setQueuedContents = useSetAtom(newsAtom);
-
 	const [newCategoryInputOpen, setNewCategoryInputOpen] = useState(false);
 
 	const formAction = async (formData: FormData) => {
@@ -45,10 +41,6 @@ export function AddNewsForm({ categories }: Props) {
 			});
 			return;
 		}
-		setQueuedContents((previousData) => [
-			response.data,
-			...(previousData ?? []),
-		]);
 		toast({
 			variant: "default",
 			description: response.message,
