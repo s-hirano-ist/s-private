@@ -38,7 +38,7 @@ export async function addContents(
 			status: 200,
 		});
 		await sendLineNotifyMessage(message);
-		revalidatePath("/dumper");
+		revalidatePath("/(dumper)/");
 
 		return {
 			success: true,

@@ -58,7 +58,6 @@
 		"gray-matter": "4.0.3",
 		"html-react-parser": "5.1.18",
 		"isomorphic-dompurify": "2.17.0",
-		"jotai": "2.10.3",
 		"jsdom": "25.0.1",
 		"lucide-react": "0.460.0",
 		"minio": "8.0.2",

@@ -1,5 +1,3 @@
-import { atomWithReset } from "jotai/utils";
-
 export type NewsAtom = {
 	id: number;
 	title: string;
@@ -7,5 +5,3 @@ export type NewsAtom = {
 	url: string;
 	category: string;
 };
-
-export const newsAtom = atomWithReset<NewsAtom[] | undefined>(undefined);
