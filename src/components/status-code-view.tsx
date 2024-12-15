@@ -21,7 +21,10 @@ export function StatusCodeView({ statusCode }: { statusCode: StatusCode }) {
 	};
 
 	return (
-		<div className="w-full p-2 text-center font-extrabold text-primary-grad">
+		<div
+			className="w-full p-2 text-center font-extrabold text-primary-grad"
+			data-testid="status-code-view"
+		>
 			<div className="text-9xl">
 				<span className="hidden font-light sm:inline">---</span>
 				{String(statusCode)}

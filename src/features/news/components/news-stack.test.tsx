@@ -7,12 +7,6 @@ vi.mock("@/components/stack/stack-skeleton", () => ({
 	StackSkeleton: () => <div data-testid="stack-skeleton" />,
 }));
 
-vi.mock("@/components/status-code-view", () => ({
-	StatusCodeView: ({ statusCode }: { statusCode: string }) => (
-		<div data-testid="status-code-view">{statusCode}</div>
-	),
-}));
-
 vi.mock("@/components/stack/small-card", () => ({
 	SmallCard: ({ id }: { id: string }) => (
 		<div data-testid={`small-card-${id}`} />

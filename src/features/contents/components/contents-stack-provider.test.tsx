@@ -21,12 +21,6 @@ vi.mock("@/features/contents/components/contents-stack", () => ({
 	),
 }));
 
-vi.mock("@/components/status-code-view", () => ({
-	StatusCodeView: ({ statusCode }: { statusCode: string }) => (
-		<div data-testid="status-code-view">{statusCode}</div>
-	),
-}));
-
 describe("ContentsStackProvider", () => {
 	it("renders ContentsStack with contents data", async () => {
 		// モックデータ
