@@ -1,4 +1,4 @@
-export type NewsAtom = {
+export type News = {
 	id: number;
 	title: string;
 	quote: string | null;

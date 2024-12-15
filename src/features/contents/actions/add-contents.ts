@@ -6,7 +6,7 @@ import {
 	getUserId,
 	hasSelfPostPermissionOrThrow,
 } from "@/features/auth/utils/get-session";
-import type { ContentsAtom } from "@/features/contents/stores/contents-atom";
+import type { Contents } from "@/features/contents/types";
 import { validateContents } from "@/features/contents/utils/validate-contents";
 import { loggerInfo } from "@/pino";
 import prisma from "@/prisma";
@@ -17,7 +17,7 @@ import { revalidatePath } from "next/cache";
 
 export async function addContents(
 	formData: FormData,
-): Promise<ServerAction<ContentsAtom>> {
+): Promise<ServerAction<Contents>> {
 	try {
 		await hasSelfPostPermissionOrThrow();
 

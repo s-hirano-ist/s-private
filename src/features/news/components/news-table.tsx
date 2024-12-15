@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/table";
 import { DeleteNewsButton } from "@/features/news/components/delete-news-button";
 import { newsColumns } from "@/features/news/components/news-columns";
-import type { NewsAtom } from "@/features/news/stores/news-atom";
+import type { News } from "@/features/news/types";
 import {
 	type ColumnFiltersState,
 	type SortingState,
@@ -33,7 +33,7 @@ import {
 import { useState } from "react";
 
 type Props = {
-	data: NewsAtom[];
+	data: News[];
 };
 
 export function NewsTable({ data }: Props) {
@@ -42,7 +42,7 @@ export function NewsTable({ data }: Props) {
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
 	const [open, setOpen] = useState(false);
-	const [dialogData, setDialogData] = useState<NewsAtom>();
+	const [dialogData, setDialogData] = useState<News>();
 
 	const table = useReactTable({
 		data,
@@ -57,7 +57,7 @@ export function NewsTable({ data }: Props) {
 		state: { sorting, columnFilters, columnVisibility },
 	});
 
-	const handleClick = (rowData: NewsAtom) => {
+	const handleClick = (rowData: News) => {
 		setDialogData(rowData);
 		setOpen(true);
 	};

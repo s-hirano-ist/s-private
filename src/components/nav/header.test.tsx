@@ -28,7 +28,7 @@ describe("Header", () => {
 		expect(screen.getByText("Test Title")).toBeInTheDocument();
 	});
 
-	it("calls signOut and resets atoms on sign-out", async () => {
+	it("calls signOut on sign-out", async () => {
 		vi.mocked(signOut).mockResolvedValueOnce({
 			success: true,
 			message: "サインアウトに成功しました。",

@@ -6,7 +6,7 @@ import {
 	getUserId,
 	hasSelfPostPermissionOrThrow,
 } from "@/features/auth/utils/get-session";
-import type { NewsAtom } from "@/features/news/stores/news-atom";
+import type { News } from "@/features/news/types";
 import { validateCategory } from "@/features/news/utils/validate-category";
 import { validateNews } from "@/features/news/utils/validate-news";
 import { loggerInfo } from "@/pino";
@@ -19,9 +19,7 @@ import {
 } from "@/utils/format-for-line";
 import { revalidatePath } from "next/cache";
 
-export async function addNews(
-	formData: FormData,
-): Promise<ServerAction<NewsAtom>> {
+export async function addNews(formData: FormData): Promise<ServerAction<News>> {
 	try {
 		await hasSelfPostPermissionOrThrow();
 

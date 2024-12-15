@@ -2,11 +2,10 @@
 import { SmallCard } from "@/components/stack/small-card";
 import { StackSkeleton } from "@/components/stack/stack-skeleton";
 import { StatusCodeView } from "@/components/status-code-view";
-import type { NewsAtom } from "@/features/news/stores/news-atom";
-import { useEffect } from "react";
+import type { News } from "@/features/news/types";
 
 type Props = {
-	news: NewsAtom[];
+	news: News[];
 };
 
 export function NewsStack({ news }: Props) {
