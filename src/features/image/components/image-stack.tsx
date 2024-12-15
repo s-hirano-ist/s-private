@@ -1,5 +1,4 @@
 "use client";
-import { StackSkeleton } from "@/components/stack/stack-skeleton";
 import { StatusCodeView } from "@/components/status-code-view";
 import Image from "next/image";
 import PhotoSwipeLightbox from "photoswipe/lightbox";
@@ -29,7 +28,6 @@ export function ImageStack({ images }: Props) {
 		};
 	}, []);
 
-	if (images === undefined) return <StackSkeleton />;
 	if (images.length === 0) return <StatusCodeView statusCode="204" />;
 
 	return (
@@ -44,6 +42,7 @@ export function ImageStack({ images }: Props) {
 						key={image.src}
 						data-pswp-width={image.width}
 						data-pswp-height={image.height}
+						aria-label={`Image ${image.src}`}
 					>
 						<Image src={image.src} width={300} height={96} alt="" />
 					</a>

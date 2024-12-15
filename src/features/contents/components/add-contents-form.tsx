@@ -73,7 +73,12 @@ export function AddContentsForm() {
 						ref={urlInputRef}
 						required
 					/>
-					<Button variant="ghost" type="button" onClick={handlePasteClick}>
+					<Button
+						variant="ghost"
+						type="button"
+						onClick={handlePasteClick}
+						data-testid="paste-button"
+					>
 						<ClipboardPasteIcon />
 					</Button>
 				</div>
