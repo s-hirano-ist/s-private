@@ -16,10 +16,6 @@ vi.mock("@/features/auth/utils/get-session", () => ({
 	hasUpdateStatusPermissionOrThrow: vi.fn(),
 }));
 
-vi.mock("@/prisma", () => ({
-	default: { $transaction: vi.fn() },
-}));
-
 vi.mock("@/utils/fetch-message", () => ({
 	sendLineNotifyMessage: vi.fn(),
 }));

@@ -17,10 +17,6 @@ vi.mock("@/features/auth/utils/get-session", () => ({
 	hasSelfPostPermissionOrThrow: vi.fn(),
 }));
 
-vi.mock("@/prisma", () => ({
-	default: { contents: { create: vi.fn() } },
-}));
-
 vi.mock("@/features/contents/utils/validate-contents", () => ({
 	validateContents: vi.fn(),
 }));

@@ -28,7 +28,7 @@ describe("sendLineNotifyMessage", () => {
 		});
 		expect(mockFetch.mock.calls[0][1]?.body.toString()).toContain(
 			"message=Hello+LINE+Notify%21",
-		); // encoded message
+		);
 	});
 
 	it("should not throw LineNotifyError when API responds with non-200 status", async () => {

@@ -15,10 +15,6 @@ vi.mock("@/features/image/actions/generate-url-with-metadata", () => ({
 	generateUrlWithMetadata: vi.fn(),
 }));
 
-vi.mock("@/prisma", () => ({
-	default: { images: { findMany: vi.fn() } },
-}));
-
 describe("ImageStackProvider", () => {
 	it("renders the ImageStack with images", async () => {
 		// モックの準備

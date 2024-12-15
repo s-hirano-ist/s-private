@@ -34,15 +34,6 @@ vi.mock("next/cache", () => ({
 	revalidatePath: vi.fn(),
 }));
 
-vi.mock("@/prisma", () => ({
-	__esModule: true,
-	default: {
-		images: {
-			create: vi.fn(),
-		},
-	},
-}));
-
 vi.mock("@/utils/format-for-line", () => ({
 	formatCreateImageMessage: vi.fn(),
 }));

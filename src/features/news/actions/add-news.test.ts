@@ -20,10 +20,6 @@ vi.mock("@/features/auth/utils/get-session", () => ({
 	hasSelfPostPermissionOrThrow: vi.fn(),
 }));
 
-vi.mock("@/prisma", () => ({
-	default: { news: { create: vi.fn() }, categories: { create: vi.fn() } },
-}));
-
 vi.mock("@/features/news/utils/validate-category", () => ({
 	validateCategory: vi.fn(),
 }));

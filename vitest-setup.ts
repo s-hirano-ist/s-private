@@ -29,6 +29,18 @@ beforeEach(() => {
 	vi.mock("server-only", () => {
 		return {};
 	});
+
+	vi.mock("@/prisma", () => ({
+		default: {
+			categories: { create: vi.fn() },
+			news: { create: vi.fn(), findMany: vi.fn() },
+			contents: { create: vi.fn(), findMany: vi.fn() },
+			images: { create: vi.fn(), findMany: vi.fn(), updateMany: vi.fn() },
+			users: { findUniqueOrThrow: vi.fn(), findUnique: vi.fn() },
+			loginHistories: { create: vi.fn() },
+			$transaction: vi.fn(),
+		},
+	}));
 });
 
 Object.defineProperty(window, "matchMedia", {

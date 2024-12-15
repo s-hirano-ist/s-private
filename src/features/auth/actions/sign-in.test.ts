@@ -15,13 +15,6 @@ vi.mock("@/features/auth/utils/header-info", () => ({
 	getLoginUserInfo: vi.fn(),
 }));
 
-vi.mock("@/prisma", () => ({
-	default: {
-		users: { findUniqueOrThrow: vi.fn() },
-		loginHistories: { create: vi.fn() },
-	},
-}));
-
 vi.mock("@/utils/fetch-message", () => ({
 	sendLineNotifyMessage: vi.fn(),
 }));

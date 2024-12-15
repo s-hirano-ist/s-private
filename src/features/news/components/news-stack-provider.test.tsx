@@ -9,10 +9,6 @@ vi.mock("@/features/auth/utils/get-session", () => ({
 	getUserId: vi.fn(),
 }));
 
-vi.mock("@/prisma", () => ({
-	default: { news: { findMany: vi.fn() } },
-}));
-
 vi.mock("@/features/news/components/news-stack", () => ({
 	NewsStack: ({ news }: { news: News[] }) => (
 		<div data-testid="news-stack">

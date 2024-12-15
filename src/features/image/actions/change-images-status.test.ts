@@ -10,13 +10,6 @@ import { revalidatePath } from "next/cache";
 import { type Mock, describe, expect, it, vi } from "vitest";
 import { changeImagesStatus } from "./change-images-status";
 
-vi.mock("@/prisma", () => ({
-	default: {
-		$transaction: vi.fn(),
-		images: { updateMany: vi.fn() },
-	},
-}));
-
 vi.mock("@/features/auth/utils/get-session", () => ({
 	getUserId: vi.fn(),
 	hasUpdateStatusPermissionOrThrow: vi.fn(),
