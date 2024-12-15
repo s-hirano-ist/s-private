@@ -51,7 +51,8 @@ jobs:
 
   test:
       runs-on: ubuntu-24.04
-      permissions: {}
+      permissions:
+        pull-requests: write
       timeout-minutes: 20
       concurrency:
         group: ${{ github.workflow }}-${{ github.ref }}
