@@ -1,4 +1,6 @@
 "use client";
+import type { JSX } from "react";
+
 type Props = {
 	content: JSX.Element | JSX.Element[] | string;
 };

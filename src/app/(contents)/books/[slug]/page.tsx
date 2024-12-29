@@ -15,21 +15,29 @@ const path = "books";
 
 export const dynamicParams = true; // FIXME: #278
 
-type Props = { params: ContentsType };
+type Params = Promise<ContentsType>;
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata({
+	params,
+}: {
+	params: Params;
+}): Promise<Metadata> {
+	const { slug } = await params;
+
 	return {
-		title: `${decodeURIComponent(params.slug)} | ${PAGE_NAME}`,
-		description: `Private book review of ${decodeURIComponent(params.slug)}`,
+		title: `${decodeURIComponent(slug)} | ${PAGE_NAME}`,
+		description: `Private book review of ${decodeURIComponent(slug)}`,
 	};
 }
 
-export default async function Page({ params }: Props) {
+export default async function Page({ params }: { params: Params }) {
+	const { slug } = await params;
+
 	await checkSelfAuthOrRedirectToAuth();
 
 	const hasAdminPermission = await checkAdminPermission();
 
-	const decordedSlug = decodeURIComponent(params.slug);
+	const decordedSlug = decodeURIComponent(slug);
 	const content = getContentsBySlug(decordedSlug, `${MARKDOWN_PATHS}/${path}`);
 	const reactContent = await markdownToReact(content);
 
