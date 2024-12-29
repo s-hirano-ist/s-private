@@ -1,6 +1,6 @@
 This favicon was generated using the following font:
 
-- Font Title: Babylonica
-- Font Author: Copyright 2010 The Babylonica Project Authors (https://github.com/googlefonts/babylonica)
-- Font Source: https://fonts.gstatic.com/s/babylonica/v5/5aUw9_i2qxWVCAE2aHjTqDJ0-VVMoEw.ttf
-- Font License: SIL Open Font License, 1.1 (http://scripts.sil.org/OFL))
+- Font Title: Geostar Fill
+- Font Author: undefined
+- Font Source: https://fonts.gstatic.com/s/geostarfill/v26/AMOWz4SWuWiXFfjEohxQ9os0U1K2w9lb4g.ttf
+- Font License: undefined)
