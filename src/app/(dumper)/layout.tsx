@@ -1,4 +1,3 @@
-import { Header } from "@/components/nav/header";
 import { PAGE_NAME } from "@/constants";
 import { RootTab } from "@/features/dump/components/root-tab";
 import type { Metadata } from "next";
@@ -19,10 +18,5 @@ type Props = {
 };
 
 export default async function Layout({ news, contents, dump, image }: Props) {
-	return (
-		<>
-			<Header title={displayName} />
-			<RootTab news={news} contents={contents} dump={dump} image={image} />
-		</>
-	);
+	return <RootTab news={news} contents={contents} dump={dump} image={image} />;
 }

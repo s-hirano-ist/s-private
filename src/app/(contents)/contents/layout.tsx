@@ -1,4 +1,3 @@
-import { Header } from "@/components/nav/header";
 import { PAGE_NAME } from "@/constants";
 import { RootTab } from "@/features/markdown/components/root-tab";
 import type { Metadata } from "next";
@@ -18,10 +17,5 @@ type Props = {
 };
 
 export default async function Layout({ books, notes, images }: Props) {
-	return (
-		<>
-			<Header title={displayName} />
-			<RootTab books={books} notes={notes} images={images} />
-		</>
-	);
+	return <RootTab books={books} notes={notes} images={images} />;
 }
