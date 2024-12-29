@@ -13,9 +13,7 @@ export async function hasContentsPermission() {
 			return false;
 		case "VIEWER":
 			return false;
-		case "UNAUTHORIZED":
-			return false;
-		default:
+		default: // UNAUTHORIZEDも含む
 			throw new UnexpectedError();
 	}
 }
@@ -31,9 +29,7 @@ export async function hasDumperPermission() {
 			return true;
 		case "VIEWER":
 			return false;
-		case "UNAUTHORIZED":
-			return false;
-		default:
+		default: // UNAUTHORIZEDも含む
 			throw new UnexpectedError();
 	}
 }

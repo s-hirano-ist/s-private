@@ -10,8 +10,6 @@ const SEED_USERS: { username: string; role: Role; scope: Scope }[] = [
 	{ username: "editor-private", role: "EDITOR", scope: "PRIVATE" },
 	{ username: "viewer-public", role: "VIEWER", scope: "PUBLIC" },
 	{ username: "viewer-private", role: "VIEWER", scope: "PRIVATE" },
-	{ username: "unauthorized-public", role: "UNAUTHORIZED", scope: "PUBLIC" },
-	{ username: "unauthorized-private", role: "UNAUTHORIZED", scope: "PRIVATE" },
 ];
 
 async function addSampleData(

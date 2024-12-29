@@ -53,7 +53,7 @@ describe("role utilities", () => {
 			expect(result).toBe(true);
 		});
 
-		it("should return false for VIEWER or UNAUTHORIZED roles", async () => {
+		it("should return false for VIEWER roles", async () => {
 			(checkSelfAuthOrThrow as Mock).mockResolvedValue({
 				user: { role: "VIEWER" },
 			});
