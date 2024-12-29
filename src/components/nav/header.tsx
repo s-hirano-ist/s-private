@@ -34,7 +34,6 @@ export function Header({ title }: Props) {
 		<header className="sticky top-0 z-50 w-full bg-primary py-2 text-white">
 			<div className="flex items-center justify-between sm:px-2">
 				<div className="flex items-center justify-start">
-					{/* FIXME: scroll behavior causes warning: https://zenn.dev/tk_c/articles/5205f44777903b */}
 					<AnimatedGradientText className="px-4 py-1 text-xl font-semibold">
 						{title}
 					</AnimatedGradientText>
