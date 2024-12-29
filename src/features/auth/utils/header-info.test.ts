@@ -7,7 +7,7 @@ vi.mock("next/headers", () => ({
 }));
 
 describe("getLoginUserInfo", () => {
-	it("should return the correct IP address and user agent", () => {
+	it("should return the correct IP address and user agent", async () => {
 		(headers as Mock).mockReturnValue({
 			get: (key: string) => {
 				if (key === "x-forwarded-for") return "192.168.1.1, 10.0.0.1";
@@ -16,7 +16,7 @@ describe("getLoginUserInfo", () => {
 			},
 		});
 
-		const result = getLoginUserInfo();
+		const result = await getLoginUserInfo();
 
 		expect(result).toEqual({
 			ipAddress: "192.168.1.1",
@@ -24,7 +24,7 @@ describe("getLoginUserInfo", () => {
 		});
 	});
 
-	it("should return undefined for user agent if not present", () => {
+	it("should return undefined for user agent if not present", async () => {
 		(headers as Mock).mockReturnValue({
 			get: (key: string) => {
 				if (key === "x-forwarded-for") return "192.168.1.1, 10.0.0.1";
@@ -33,7 +33,7 @@ describe("getLoginUserInfo", () => {
 			},
 		});
 
-		const result = getLoginUserInfo();
+		const result = await getLoginUserInfo();
 
 		expect(result).toEqual({
 			ipAddress: "192.168.1.1",
@@ -41,7 +41,7 @@ describe("getLoginUserInfo", () => {
 		});
 	});
 
-	it("should return undefined for IP address if x-forwarded-for is not present", () => {
+	it("should return undefined for IP address if x-forwarded-for is not present", async () => {
 		(headers as Mock).mockReturnValue({
 			get: (key: string) => {
 				if (key === "x-forwarded-for") return null;
@@ -50,7 +50,7 @@ describe("getLoginUserInfo", () => {
 			},
 		});
 
-		const result = getLoginUserInfo();
+		const result = await getLoginUserInfo();
 
 		expect(result).toEqual({
 			ipAddress: undefined,
@@ -58,12 +58,12 @@ describe("getLoginUserInfo", () => {
 		});
 	});
 
-	it("should return undefined for both IP address and user agent if headers are missing", () => {
+	it("should return undefined for both IP address and user agent if headers are missing", async () => {
 		(headers as Mock).mockReturnValue({
 			get: () => null,
 		});
 
-		const result = getLoginUserInfo();
+		const result = await getLoginUserInfo();
 
 		expect(result).toEqual({
 			ipAddress: undefined,

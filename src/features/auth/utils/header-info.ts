@@ -1,8 +1,8 @@
 import "server-only";
 import { headers } from "next/headers";
 
-export function getLoginUserInfo() {
-	const headersList = headers();
+export async function getLoginUserInfo() {
+	const headersList = await headers();
 	const xForwardedFor = headersList.get("x-forwarded-for");
 	const userAgent = headersList.get("user-agent") ?? undefined;
 	return {

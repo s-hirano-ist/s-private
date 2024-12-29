@@ -6,6 +6,7 @@ type Props = {
 };
 
 export function SubmitButton({ label }: Props) {
+	// TODO: refactoring: add data, method, and action
 	const { pending } = useFormStatus();
 
 	return (

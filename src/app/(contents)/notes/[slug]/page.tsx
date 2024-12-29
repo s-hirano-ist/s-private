@@ -15,21 +15,27 @@ const path = "notes";
 
 export const dynamicParams = true; // FIXME: #278
 
-type Props = { params: ContentsType };
+type Params = Promise<ContentsType>;
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata({
+	params,
+}: { params: Params }): Promise<Metadata> {
+	const { slug } = await params;
+
 	return {
-		title: `${params.slug} | ${PAGE_NAME}`,
-		description: `Private notes of ${params.slug}`,
+		title: `${slug} | ${PAGE_NAME}`,
+		description: `Private notes of ${slug}`,
 	};
 }
 
-export default async function Page({ params }: Props) {
+export default async function Page({ params }: { params: Params }) {
+	const { slug } = await params;
+
 	await checkSelfAuthOrRedirectToAuth();
 
 	const hasAdminPermission = await checkAdminPermission();
 
-	const slug = params.slug; // MEMO: no need to decode due to english file name
+	// MEMO: no need to decode due to english file name
 	const content = getContentsBySlug(slug, `${MARKDOWN_PATHS}/${path}`);
 	const reactContent = await markdownToReact(content);
 

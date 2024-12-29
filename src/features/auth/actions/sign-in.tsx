@@ -38,7 +38,7 @@ export async function signIn(values: SignInSchema): Promise<SignInState> {
 			...values,
 			redirect: false, // MEMO: await try catch文でredirectは動かない
 		});
-		const { ipAddress, userAgent } = getLoginUserInfo();
+		const { ipAddress, userAgent } = await getLoginUserInfo();
 		await createSelfLoginHistory(values.username, ipAddress, userAgent);
 		loggerInfo(SUCCESS_MESSAGES.SIGN_IN, {
 			caller: "signIn",
