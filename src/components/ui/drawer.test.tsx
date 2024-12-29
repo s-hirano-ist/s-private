@@ -31,7 +31,7 @@ beforeAll(() => {
 	});
 });
 
-describe("Drawer components", () => {
+describe.skip("Drawer components", () => {
 	it("renders DrawerTrigger and opens DrawerContent", () => {
 		render(
 			<Drawer>

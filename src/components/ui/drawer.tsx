@@ -9,7 +9,7 @@ const Drawer = ({
 	shouldScaleBackground = true,
 	disablePreventScroll = false,
 	handleOnly = true,
-	dismissible = false,
+	dismissible = true,
 	...props
 }: React.ComponentProps<typeof DrawerPrimitive.Root>) => (
 	<DrawerPrimitive.Root
