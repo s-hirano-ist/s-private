@@ -9,6 +9,7 @@ const displayName = "サインイン";
 export const metadata: Metadata = {
 	title: `${displayName} | ${PAGE_NAME} `,
 	description: `Sign in page of ${PAGE_NAME}`,
+	robots: { googleBot: { index: false }, index: false },
 };
 
 export default async function Page() {
