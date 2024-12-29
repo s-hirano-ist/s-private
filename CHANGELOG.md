@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.1.0](https://github.com/s-hirano-ist/s-private/compare/v4.0.1...v4.1.0) (2024-12-29)
+
+
+### Features
+
+* 🎸 change favicon ([bb7a82c](https://github.com/s-hirano-ist/s-private/commit/bb7a82c08a22698cb4e25039014420e28beb97f4))
+
+
+### Bug Fixes
+
+* 🐛 warning of sentry ([b37d91f](https://github.com/s-hirano-ist/s-private/commit/b37d91fe4066f95694e656660de19603313779ed))
+* small fixes of ci and refactors ([a3699bd](https://github.com/s-hirano-ist/s-private/commit/a3699bd162e29da413541e1f717b80aadcaebadd))
+
 ## [4.0.1](https://github.com/s-hirano-ist/s-private/compare/v4.0.0...v4.0.1) (2024-12-29)
 
 
