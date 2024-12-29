@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.2.0](https://github.com/s-hirano-ist/s-private/compare/v4.1.0...v4.2.0) (2024-12-29)
+
+
+### Features
+
+* 🎸 delete header ([e182a77](https://github.com/s-hirano-ist/s-private/commit/e182a771e90512c4814da0b06d88da414558c9ae))
+* 🎸 delete header ([288a0a4](https://github.com/s-hirano-ist/s-private/commit/288a0a4c5585a6c76826c55a2d26b13554478afa))
+
+
+### Bug Fixes
+
+* 🐛 drawer do not close ([1b5020c](https://github.com/s-hirano-ist/s-private/commit/1b5020ce33a5a5a49d786ef40dc687dc8c96b7f8))
+* 🐛 skip vaul tests ([d79d781](https://github.com/s-hirano-ist/s-private/commit/d79d7811a0528a66ce2fd636fc40554534337e7a))
+
 ## [4.1.0](https://github.com/s-hirano-ist/s-private/compare/v4.0.1...v4.1.0) (2024-12-29)
 
 
