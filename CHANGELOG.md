@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.0.1](https://github.com/s-hirano-ist/s-private/compare/v4.0.0...v4.0.1) (2024-12-29)
+
+
+### Bug Fixes
+
+* 🐛 change node alpine image to node slim ([88af70a](https://github.com/s-hirano-ist/s-private/commit/88af70a78c23f64dfdefd418e178fb65096542ec))
+
 ## [4.0.0](https://github.com/s-hirano-ist/s-private/compare/v3.0.2...v4.0.0) (2024-12-15)
 
 
