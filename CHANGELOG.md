@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.2.1](https://github.com/s-hirano-ist/s-private/compare/v4.2.0...v4.2.1) (2024-12-29)
+
+
+### Bug Fixes
+
+* 🐛 add no index for auth page ([f51b1c4](https://github.com/s-hirano-ist/s-private/commit/f51b1c4b99e45ecb766be4f530b5af6cd06fbaaa))
+* 🐛 add no index for auth page ([531f542](https://github.com/s-hirano-ist/s-private/commit/531f542fc55ad52e57726511d3ee619d6c925be9))
+
 ## [4.2.0](https://github.com/s-hirano-ist/s-private/compare/v4.1.0...v4.2.0) (2024-12-29)
 
 
