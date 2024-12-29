@@ -1,11 +1,11 @@
 # s-private
 
 ![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)
-![Build status](https://img.shields.io/github/actions/workflow/status/s-hirano-ist/s-private/build.yaml?branch=main)
+![Build status](https://img.shields.io/github/actions/workflow/status/s-hirano-ist/s-private/ci.yaml?branch=main)
 ![GitHub stars](https://img.shields.io/github/stars/s-hirano-ist/s-private.svg)
 
 > [!IMPORTANT]
-> This is a sample app made by s-hirano. Some codes are not best practices due to trying experimental features and new techs.
+> This is a contents dump and search app made by s-hirano. Some codes are not best practices due to trying experimental features and new techs.
 
 **Main Framework** - [Next.js](https://nextjs.org/)  
 **Type Checking** - [TypeScript](https://www.typescriptlang.org/)  
