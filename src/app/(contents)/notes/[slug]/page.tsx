@@ -1,7 +1,7 @@
 import { Unauthorized } from "@/components/unauthorized";
 import { MARKDOWN_PATHS, PAGE_NAME } from "@/constants";
 import { checkSelfAuthOrRedirectToAuth } from "@/features/auth/utils/get-session";
-import { checkAdminPermission } from "@/features/auth/utils/role";
+import { hasContentsPermission } from "@/features/auth/utils/role";
 import {
 	/*getAllSlugs,*/ getContentsBySlug,
 } from "@/features/markdown/actions/fetch-contents";
@@ -32,7 +32,7 @@ export default async function Page({ params }: { params: Params }) {
 
 	await checkSelfAuthOrRedirectToAuth();
 
-	const hasAdminPermission = await checkAdminPermission();
+	const hasAdminPermission = await hasContentsPermission();
 
 	// MEMO: no need to decode due to english file name
 	const content = getContentsBySlug(slug, `${MARKDOWN_PATHS}/${path}`);

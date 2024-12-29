@@ -4,11 +4,7 @@ import { NotAllowedError, UnauthorizedError } from "@/error-classes";
 import { loggerWarn } from "@/pino";
 import { redirect } from "next/navigation";
 import { auth } from "./auth";
-import {
-	checkAdminPermission,
-	checkPostPermission,
-	checkUpdateStatusPermission,
-} from "./role";
+import { hasContentsPermission, hasDumperPermission } from "./role";
 
 export async function checkSelfAuthOrThrow() {
 	const session = await auth();
@@ -36,17 +32,17 @@ export async function checkSelfAuthOrRedirectToAuth() {
 }
 
 export async function hasAdminPermissionOrThrow() {
-	const hasAdminPermission = await checkAdminPermission();
+	const hasAdminPermission = await hasContentsPermission();
 	if (!hasAdminPermission) throw new NotAllowedError();
 }
 
 export async function hasSelfPostPermissionOrThrow() {
-	const hasPostPermission = await checkPostPermission();
+	const hasPostPermission = await hasDumperPermission();
 	if (!hasPostPermission) throw new NotAllowedError();
 }
 
 export async function hasUpdateStatusPermissionOrThrow() {
-	const hasUpdateStatusPermission = await checkUpdateStatusPermission();
+	const hasUpdateStatusPermission = await hasDumperPermission();
 	if (!hasUpdateStatusPermission) throw new NotAllowedError();
 }
 

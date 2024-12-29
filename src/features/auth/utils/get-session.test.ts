@@ -10,9 +10,8 @@ import {
 	hasUpdateStatusPermissionOrThrow,
 } from "@/features/auth/utils/get-session";
 import {
-	checkAdminPermission,
-	checkPostPermission,
-	checkUpdateStatusPermission,
+	hasContentsPermission,
+	hasDumperPermission,
 } from "@/features/auth/utils/role";
 import { redirect } from "next/navigation";
 import { type Mock, describe, expect, it, vi } from "vitest";
@@ -22,9 +21,8 @@ vi.mock("@/features/auth/utils/auth", () => ({
 }));
 
 vi.mock("@/features/auth/utils/role", () => ({
-	checkAdminPermission: vi.fn(),
-	checkPostPermission: vi.fn(),
-	checkUpdateStatusPermission: vi.fn(),
+	hasContentsPermission: vi.fn(),
+	hasDumperPermission: vi.fn(),
 }));
 
 describe("get-session utilities", () => {
@@ -70,55 +68,55 @@ describe("get-session utilities", () => {
 
 	describe("hasAdminPermissionOrThrow", () => {
 		it("should not throw if admin permission is granted", async () => {
-			(checkAdminPermission as Mock).mockResolvedValue(true);
+			(hasContentsPermission as Mock).mockResolvedValue(true);
 
 			await expect(hasAdminPermissionOrThrow()).resolves.not.toThrow();
-			expect(checkAdminPermission).toHaveBeenCalledTimes(1);
+			expect(hasContentsPermission).toHaveBeenCalledTimes(1);
 		});
 
 		it("should throw NotAllowedError if admin permission is denied", async () => {
-			(checkAdminPermission as Mock).mockResolvedValue(false);
+			(hasContentsPermission as Mock).mockResolvedValue(false);
 
 			await expect(hasAdminPermissionOrThrow()).rejects.toThrow(
 				NotAllowedError,
 			);
-			expect(checkAdminPermission).toHaveBeenCalledTimes(1);
+			expect(hasContentsPermission).toHaveBeenCalledTimes(1);
 		});
 	});
 
 	describe("hasSelfPostPermissionOrThrow", () => {
 		it("should not throw if post permission is granted", async () => {
-			(checkPostPermission as Mock).mockResolvedValue(true);
+			(hasDumperPermission as Mock).mockResolvedValue(true);
 
 			await expect(hasSelfPostPermissionOrThrow()).resolves.not.toThrow();
-			expect(checkPostPermission).toHaveBeenCalledTimes(1);
+			expect(hasDumperPermission).toHaveBeenCalledTimes(1);
 		});
 
 		it("should throw NotAllowedError if post permission is denied", async () => {
-			(checkPostPermission as Mock).mockResolvedValue(false);
+			(hasDumperPermission as Mock).mockResolvedValue(false);
 
 			await expect(hasSelfPostPermissionOrThrow()).rejects.toThrow(
 				NotAllowedError,
 			);
-			expect(checkPostPermission).toHaveBeenCalledTimes(1);
+			expect(hasDumperPermission).toHaveBeenCalledTimes(1);
 		});
 	});
 
 	describe("hasUpdateStatusPermissionOrThrow", () => {
 		it("should not throw if update status permission is granted", async () => {
-			(checkUpdateStatusPermission as Mock).mockResolvedValue(true);
+			(hasDumperPermission as Mock).mockResolvedValue(true);
 
 			await expect(hasUpdateStatusPermissionOrThrow()).resolves.not.toThrow();
-			expect(checkUpdateStatusPermission).toHaveBeenCalledTimes(1);
+			expect(hasDumperPermission).toHaveBeenCalledTimes(1);
 		});
 
 		it("should throw NotAllowedError if update status permission is denied", async () => {
-			(checkUpdateStatusPermission as Mock).mockResolvedValue(false);
+			(hasDumperPermission as Mock).mockResolvedValue(false);
 
 			await expect(hasUpdateStatusPermissionOrThrow()).rejects.toThrow(
 				NotAllowedError,
 			);
-			expect(checkUpdateStatusPermission).toHaveBeenCalledTimes(1);
+			expect(hasDumperPermission).toHaveBeenCalledTimes(1);
 		});
 	});
 

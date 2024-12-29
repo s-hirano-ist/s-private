@@ -1,9 +1,8 @@
 import { UnexpectedError } from "@/error-classes";
 import { checkSelfAuthOrThrow } from "@/features/auth/utils/get-session";
 import {
-	checkAdminPermission,
-	checkPostPermission,
-	checkUpdateStatusPermission,
+	hasContentsPermission,
+	hasDumperPermission,
 } from "@/features/auth/utils/role";
 import prisma from "@/prisma";
 import { type Mock, describe, expect, it, vi } from "vitest";
@@ -13,13 +12,13 @@ vi.mock("@/features/auth/utils/get-session", () => ({
 }));
 
 describe("role utilities", () => {
-	describe("checkAdminPermission", () => {
+	describe("hasContentsPermission", () => {
 		it("should return true if the user role is ADMIN", async () => {
 			(checkSelfAuthOrThrow as Mock).mockResolvedValue({
 				user: { role: "ADMIN" },
 			});
 
-			const result = await checkAdminPermission();
+			const result = await hasContentsPermission();
 
 			expect(result).toBe(true);
 		});
@@ -29,7 +28,7 @@ describe("role utilities", () => {
 				user: { role: "VIEWER" },
 			});
 
-			const result = await checkAdminPermission();
+			const result = await hasContentsPermission();
 
 			expect(result).toBe(false);
 		});
@@ -39,17 +38,17 @@ describe("role utilities", () => {
 				user: { role: "INVALID_ROLE" },
 			});
 
-			await expect(checkAdminPermission()).rejects.toThrow(UnexpectedError);
+			await expect(hasContentsPermission()).rejects.toThrow(UnexpectedError);
 		});
 	});
 
-	describe("checkPostPermission", () => {
+	describe("hasDumperPermission", () => {
 		it("should return true for ADMIN or EDITOR roles", async () => {
 			(checkSelfAuthOrThrow as Mock).mockResolvedValue({
 				user: { role: "ADMIN" },
 			});
 
-			const result = await checkPostPermission();
+			const result = await hasDumperPermission();
 
 			expect(result).toBe(true);
 		});
@@ -59,7 +58,7 @@ describe("role utilities", () => {
 				user: { role: "VIEWER" },
 			});
 
-			const result = await checkPostPermission();
+			const result = await hasDumperPermission();
 
 			expect(result).toBe(false);
 		});
@@ -69,39 +68,7 @@ describe("role utilities", () => {
 				user: { role: "INVALID_ROLE" },
 			});
 
-			await expect(checkPostPermission()).rejects.toThrow(UnexpectedError);
-		});
-	});
-
-	describe("checkUpdateStatusPermission", () => {
-		it("should return true for ADMIN or EDITOR roles", async () => {
-			(checkSelfAuthOrThrow as Mock).mockResolvedValue({
-				user: { role: "EDITOR" },
-			});
-
-			const result = await checkUpdateStatusPermission();
-
-			expect(result).toBe(true);
-		});
-
-		it("should return false for VIEWER or UNAUTHORIZED roles", async () => {
-			(checkSelfAuthOrThrow as Mock).mockResolvedValue({
-				user: { role: "UNAUTHORIZED" },
-			});
-
-			const result = await checkUpdateStatusPermission();
-
-			expect(result).toBe(false);
-		});
-
-		it("should throw UnexpectedError for invalid roles", async () => {
-			(checkSelfAuthOrThrow as Mock).mockResolvedValue({
-				user: { role: "INVALID_ROLE" },
-			});
-
-			await expect(checkUpdateStatusPermission()).rejects.toThrow(
-				UnexpectedError,
-			);
+			await expect(hasDumperPermission()).rejects.toThrow(UnexpectedError);
 		});
 	});
 });
