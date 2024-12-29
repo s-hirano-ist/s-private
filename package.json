@@ -3,7 +3,7 @@
 	"version": "4.0.1",
 	"author": "s-hirano-ist",
 	"description": "Private pages and admin tools for s-hirano-ist.",
-	"packageManager": "pnpm@9.15.1",
+	"packageManager": "pnpm@9.15.2",
 	"scripts": {
 		"dev": "next dev",
 		"build": "next build",
