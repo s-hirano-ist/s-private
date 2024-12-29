@@ -5,20 +5,8 @@ import type { News } from "@prisma/client";
 import { render, screen } from "@testing-library/react";
 import { type Mock, describe, expect, it, vi } from "vitest";
 
-vi.mock("server-only", () => {
-	return {};
-});
-
 vi.mock("@/features/auth/utils/get-session", () => ({
 	getUserId: vi.fn(),
-}));
-
-vi.mock("@/prisma", () => ({
-	default: { news: { findMany: vi.fn() } },
-}));
-
-vi.mock("@/pino", () => ({
-	loggerError: vi.fn(),
 }));
 
 vi.mock("@/features/news/components/news-stack", () => ({
@@ -30,12 +18,6 @@ vi.mock("@/features/news/components/news-stack", () => ({
 				</div>
 			))}
 		</div>
-	),
-}));
-
-vi.mock("@/components/status-code-view", () => ({
-	StatusCodeView: ({ statusCode }: { statusCode: string }) => (
-		<div data-testid="status-code-view">{statusCode}</div>
 	),
 }));
 

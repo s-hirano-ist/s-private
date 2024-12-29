@@ -6,15 +6,6 @@ import sharp from "sharp";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { generateUrlWithMetadata } from "./generate-url-with-metadata";
 
-vi.mock("server-only", () => {
-	return {};
-});
-
-vi.mock("@/pino", () => ({
-	loggerWarn: vi.fn(),
-	loggerError: vi.fn(),
-}));
-
 vi.mock("@/minio", () => ({
 	minioClient: { presignedGetObject: vi.fn() },
 }));
@@ -38,7 +29,6 @@ describe("generateUrlWithMetadata", () => {
 	const mockMetadata = { width: 800, height: 600, format: "jpeg" };
 
 	beforeEach(() => {
-		vi.clearAllMocks();
 		global.fetch = mockFetch;
 	});
 

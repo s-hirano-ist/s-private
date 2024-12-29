@@ -2,12 +2,13 @@ import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
 import { afterEach, beforeEach, vi } from "vitest";
 
-// runs a cleanup after each test case (e.g. clearing jsdom)
 afterEach(() => {
 	cleanup();
 });
 
 beforeEach(() => {
+	vi.clearAllMocks();
+
 	HTMLFormElement.prototype.requestSubmit = function (submitter?: HTMLElement) {
 		if (submitter) {
 			this.submit();
@@ -17,12 +18,46 @@ beforeEach(() => {
 			);
 		}
 	};
-	// FIXME: uncomment on refactoring
-	// vi.mock("@/pino", () => ({
-	// 	loggerInfo: vi.fn(),
-	// 	loggerWarn: vi.fn(),
-	// 	loggerError: vi.fn(),
-	// }));
+
+	vi.mock("@/pino", () => ({
+		loggerInfo: vi.fn(),
+		loggerWarn: vi.fn(),
+		loggerError: vi.fn(),
+	}));
+
+	vi.mock("server-only", () => {
+		return {};
+	});
+
+	vi.mock("@/prisma", () => ({
+		default: {
+			categories: { create: vi.fn() },
+			news: { create: vi.fn(), findMany: vi.fn() },
+			contents: { create: vi.fn(), findMany: vi.fn() },
+			images: { create: vi.fn(), findMany: vi.fn(), updateMany: vi.fn() },
+			users: { findUniqueOrThrow: vi.fn(), findUnique: vi.fn() },
+			loginHistories: { create: vi.fn() },
+			$transaction: vi.fn(),
+		},
+	}));
+
+	vi.mock("next/cache", () => ({
+		revalidatePath: vi.fn(),
+	}));
+
+	vi.mock("react-dom", () => ({
+		useFormStatus: vi.fn(),
+	}));
+
+	vi.mock("next-view-transitions", () => ({
+		useTransitionRouter: vi.fn(() => ({ push: vi.fn() })),
+		Link: vi.fn(({ children, ...rest }) => <a {...rest}>{children}</a>),
+	}));
+
+	vi.mock("next/navigation", () => ({
+		usePathname: vi.fn(),
+		redirect: vi.fn(),
+	}));
 });
 
 Object.defineProperty(window, "matchMedia", {

@@ -19,7 +19,11 @@ type Props = {
 
 export function SmallCard({ id, title, quote, url, category }: Props) {
 	return (
-		<Link href={new URL(sanitizeHref(url))} target="_blank">
+		<Link
+			href={new URL(sanitizeHref(url))}
+			target="_blank"
+			data-testid={`small-card-${id}`}
+		>
 			<Card className="hover:bg-secondary">
 				<CardHeader>
 					<div className="flex gap-4">

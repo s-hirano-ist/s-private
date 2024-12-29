@@ -8,7 +8,7 @@ export default defineConfig({
 	plugins: [react()],
 	test: {
 		environment: "jsdom",
-		setupFiles: ["./vitest-setup.ts"],
+		setupFiles: ["./vitest-setup.tsx"],
 		coverage: {
 			enabled: true,
 			reportOnFailure: true,

@@ -1,10 +1,6 @@
 import fs from "node:fs";
-import { type Mock, beforeEach, describe, expect, it, vi } from "vitest";
+import { type Mock, describe, expect, it, vi } from "vitest";
 import { getAllImages, getAllSlugs, getContentsBySlug } from "./fetch-contents";
-
-vi.mock("server-only", () => {
-	return {};
-});
 
 vi.mock("node:fs");
 
@@ -16,19 +12,11 @@ vi.mock("node:path", async () => {
 	};
 });
 
-vi.mock("@/pino", () => ({
-	loggerError: vi.fn(),
-}));
-
 describe("getContentsBySlug", () => {
 	const mockSlug = "test.md";
 	const mockPath = "test-path";
 	const mockFullPath = "test-path/test.md";
 	const mockFileContents = "---\ntitle: Test\n---\nThis is content.";
-
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
 
 	it("should return the content of a markdown file", () => {
 		vi.mocked(fs.readFileSync).mockReturnValue(mockFileContents);
@@ -55,10 +43,6 @@ describe("getAllSlugs", () => {
 	const mockPath = "test-path";
 	const mockSlugs = ["file1.md", "file2.md", ".DS_Store"];
 
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
-
 	it("should return all valid slugs in the directory", () => {
 		(fs.readdirSync as Mock).mockReturnValue(mockSlugs);
 
@@ -84,10 +68,6 @@ describe("getAllImages", () => {
 	const mockPath = "test-path";
 	const mockDirectory = "s-contents/image/test-path";
 	const mockImages = ["image1.png", "image2.jpg", ".DS_Store"];
-
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
 
 	it("should return all valid images in the directory", () => {
 		(fs.readdirSync as Mock).mockReturnValue(mockImages);

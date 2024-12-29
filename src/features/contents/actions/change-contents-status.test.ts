@@ -8,24 +8,12 @@ import prisma from "@/prisma";
 import { sendLineNotifyMessage } from "@/utils/fetch-message";
 import { formatChangeStatusMessage } from "@/utils/format-for-line";
 import { revalidatePath } from "next/cache";
-import { type Mock, beforeEach, describe, expect, it, vi } from "vitest";
+import { type Mock, describe, expect, it, vi } from "vitest";
 import { changeContentsStatus } from "./change-contents-status";
-
-vi.mock("server-only", () => {
-	return {};
-});
-
-vi.mock("@/pino", () => ({
-	loggerInfo: vi.fn(),
-}));
 
 vi.mock("@/features/auth/utils/get-session", () => ({
 	getUserId: vi.fn(),
 	hasUpdateStatusPermissionOrThrow: vi.fn(),
-}));
-
-vi.mock("@/prisma", () => ({
-	default: { $transaction: vi.fn() },
 }));
 
 vi.mock("@/utils/fetch-message", () => ({
@@ -40,15 +28,7 @@ vi.mock("@/error-wrapper", () => ({
 	wrapServerSideErrorForClient: vi.fn(),
 }));
 
-vi.mock("next/cache", () => ({
-	revalidatePath: vi.fn(),
-}));
-
 describe("changeContentsStatus", () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
-
 	it("should update contents statuses and send notifications (UPDATE)", async () => {
 		const mockUserId = "12345";
 		const mockStatus = {

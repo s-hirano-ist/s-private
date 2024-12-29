@@ -4,27 +4,14 @@ import { loggerError, loggerWarn } from "@/pino";
 import { sendLineNotifyMessage } from "@/utils/fetch-message";
 import { Prisma } from "@prisma/client";
 import { AuthError } from "next-auth";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { wrapServerSideErrorForClient } from "./error-wrapper";
-
-vi.mock("server-only", () => {
-	return {};
-});
-
-vi.mock("@/pino", () => ({
-	loggerError: vi.fn(),
-	loggerWarn: vi.fn(),
-}));
 
 vi.mock("@/utils/fetch-message", () => ({
 	sendLineNotifyMessage: vi.fn(),
 }));
 
 describe("wrapServerSideErrorForClient", () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
-
 	it("should handle LineNotifyError", async () => {
 		const error = new LineNotifyError();
 

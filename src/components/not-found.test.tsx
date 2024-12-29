@@ -3,10 +3,6 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 describe("NotFound component", () => {
-	vi.mock("next-view-transitions", () => ({
-		Link: vi.fn(({ children, ...rest }) => <a {...rest}>{children}</a>),
-	}));
-
 	it("renders the status code 404", () => {
 		render(<NotFound />);
 

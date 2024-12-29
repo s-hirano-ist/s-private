@@ -1,7 +1,7 @@
 import parse from "html-react-parser";
 import DOMPurify from "isomorphic-dompurify";
 import { unified } from "unified";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { markdownToReact } from "./markdownToReact";
 
 vi.mock("unified", () => ({
@@ -44,10 +44,6 @@ console.log('Hello, World!');
 <p>This is a <strong>bold</strong> text and <a href="https://example.com" rel="nofollow" target="_blank">a link</a>.</p>
 <pre><code class="language-javascript">console.log('Hello, World!');</code></pre>
 `;
-
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
 
 	it("should convert Markdown to React components", async () => {
 		const mockVFile = {

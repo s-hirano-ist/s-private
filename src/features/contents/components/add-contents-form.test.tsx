@@ -1,6 +1,4 @@
-import { addContents } from "@/features/contents/actions/add-contents";
 import { AddContentsForm } from "@/features/contents/components/add-contents-form";
-import { useToast } from "@/hooks/use-toast";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useFormStatus } from "react-dom";
 import { type Mock, describe, expect, it, vi } from "vitest";
@@ -13,10 +11,6 @@ vi.mock("@/hooks/use-toast", () => ({
 	useToast: () => ({
 		toast: vi.fn(),
 	}),
-}));
-
-vi.mock("react-dom", () => ({
-	useFormStatus: vi.fn(),
 }));
 
 describe.skip("AddContentsForm", () => {

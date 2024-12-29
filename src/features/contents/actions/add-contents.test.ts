@@ -9,24 +9,12 @@ import prisma from "@/prisma";
 import { sendLineNotifyMessage } from "@/utils/fetch-message";
 import { formatCreateContentsMessage } from "@/utils/format-for-line";
 import { revalidatePath } from "next/cache";
-import { type Mock, beforeEach, describe, expect, it, vi } from "vitest";
+import { type Mock, describe, expect, it, vi } from "vitest";
 import { addContents } from "./add-contents";
-
-vi.mock("server-only", () => {
-	return {};
-});
-
-vi.mock("@/pino", () => ({
-	loggerInfo: vi.fn(),
-}));
 
 vi.mock("@/features/auth/utils/get-session", () => ({
 	getUserId: vi.fn(),
 	hasSelfPostPermissionOrThrow: vi.fn(),
-}));
-
-vi.mock("@/prisma", () => ({
-	default: { contents: { create: vi.fn() } },
 }));
 
 vi.mock("@/features/contents/utils/validate-contents", () => ({
@@ -45,15 +33,7 @@ vi.mock("@/error-wrapper", () => ({
 	wrapServerSideErrorForClient: vi.fn(),
 }));
 
-vi.mock("next/cache", () => ({
-	revalidatePath: vi.fn(),
-}));
-
 describe("addContents", () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
-
 	it("should create contents and send notifications", async () => {
 		const formData = new FormData();
 		formData.append("title", "Example Content");

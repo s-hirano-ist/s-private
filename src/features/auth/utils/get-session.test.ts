@@ -15,15 +15,7 @@ import {
 	checkUpdateStatusPermission,
 } from "@/features/auth/utils/role";
 import { redirect } from "next/navigation";
-import { type Mock, beforeEach, describe, expect, it, vi } from "vitest";
-
-vi.mock("server-only", () => {
-	return {};
-});
-
-vi.mock("@/pino", () => ({
-	loggerWarn: vi.fn(),
-}));
+import { type Mock, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/features/auth/utils/auth", () => ({
 	auth: vi.fn(),
@@ -35,15 +27,7 @@ vi.mock("@/features/auth/utils/role", () => ({
 	checkUpdateStatusPermission: vi.fn(),
 }));
 
-vi.mock("next/navigation", () => ({
-	redirect: vi.fn(),
-}));
-
 describe("get-session utilities", () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
-
 	describe("checkSelfAuthOrThrow", () => {
 		it("should return the session if authenticated", async () => {
 			const mockSession = { user: { id: "123", role: "admin" } };
