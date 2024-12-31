@@ -7,5 +7,5 @@ fi
 
 TAG=$1
 
-docker build --platform linux/amd64 -t s0hirano/s-db:$TAG -f docker/db.Dockerfile .
-docker push s0hirano/s-db:$TAG
+docker build --platform linux/amd64 -t s0hirano/s-database:$TAG -f docker/db.Dockerfile .
+docker push s0hirano/s-database:$TAG
