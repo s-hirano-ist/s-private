@@ -2,26 +2,6 @@ import "server-only";
 import fs from "node:fs";
 import { join } from "node:path";
 import { loggerError } from "@/pino";
-import matter from "gray-matter";
-
-export function getContentsBySlug(slug: string, path: string) {
-	const realSlug = slug.replace(/\.md$/, "");
-	const fullPath = join(path, `${realSlug}.md`);
-	try {
-		const fileContents = fs.readFileSync(fullPath, "utf8");
-		return matter(fileContents).content;
-	} catch (error) {
-		loggerError(
-			`Error reading file ${fullPath}:`,
-			{
-				caller: "getContentsBySlug",
-				status: 500,
-			},
-			error,
-		);
-		return "";
-	}
-}
 
 export function getAllSlugs(path: string) {
 	const contentsDirectory = join(process.cwd(), "s-contents/markdown", path);
