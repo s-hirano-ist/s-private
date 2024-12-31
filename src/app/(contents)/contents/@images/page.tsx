@@ -8,14 +8,16 @@ import { Suspense } from "react";
 
 export const dynamic = "force-dynamic";
 
-export default async function Page({
-	searchParams,
-}: { searchParams?: { page?: string } }) {
+type Params = Promise<{ page?: string }>;
+
+export default async function Page({ params }: { params: Params }) {
 	await checkSelfAuthOrRedirectToAuth();
 
 	const hasAdminPermission = await hasContentsPermission();
 
-	const currentPage = Number(searchParams?.page) || 1;
+	const { page } = await params;
+
+	const currentPage = Number(page) || 1;
 
 	return (
 		<>

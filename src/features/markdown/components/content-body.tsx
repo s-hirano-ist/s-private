@@ -1,12 +1,11 @@
-"use client";
-import type { JSX } from "react";
+import type { ReactNode } from "react";
 
 type Props = {
-	content: JSX.Element | JSX.Element[] | string;
+	children: ReactNode;
 };
 
-export function ContentBody({ content }: Props) {
+export function ContentBody({ children }: Props) {
 	return (
-		<div className="prose prose-sm mx-auto p-2 sm:prose-base">{content}</div>
+		<div className="prose prose-sm mx-auto p-2 sm:prose-base">{children}</div>
 	);
 }

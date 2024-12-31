@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import { type Mock, describe, expect, it, vi } from "vitest";
-import { getAllImages, getAllSlugs, getContentsBySlug } from "./fetch-contents";
+import { getAllImages, getAllSlugs } from "./fetch-contents";
 
 vi.mock("node:fs");
 
@@ -10,33 +10,6 @@ vi.mock("node:path", async () => {
 		...actual,
 		join: vi.fn((...paths: string[]) => paths.join("/")),
 	};
-});
-
-describe("getContentsBySlug", () => {
-	const mockSlug = "test.md";
-	const mockPath = "test-path";
-	const mockFullPath = "test-path/test.md";
-	const mockFileContents = "---\ntitle: Test\n---\nThis is content.";
-
-	it("should return the content of a markdown file", () => {
-		vi.mocked(fs.readFileSync).mockReturnValue(mockFileContents);
-
-		const result = getContentsBySlug(mockSlug, mockPath);
-
-		expect(fs.readFileSync).toHaveBeenCalledWith(mockFullPath, "utf8");
-		expect(result).toBe("This is content.");
-	});
-
-	it("should log an error and return an empty string if the file cannot be read", () => {
-		const error = new Error("File not found");
-		vi.mocked(fs.readFileSync).mockImplementation(() => {
-			throw error;
-		});
-
-		const result = getContentsBySlug(mockSlug, mockPath);
-
-		expect(result).toBe("");
-	});
 });
 
 describe("getAllSlugs", () => {
