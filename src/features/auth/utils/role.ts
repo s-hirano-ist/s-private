@@ -2,8 +2,8 @@ import "server-only";
 import { UnexpectedError } from "@/error-classes";
 import { checkSelfAuthOrThrow } from "./get-session";
 
-// FOR /contents/* and /all
-export async function checkAdminPermission() {
+// FOR contents
+export async function hasContentsPermission() {
 	const { user } = await checkSelfAuthOrThrow();
 
 	switch (user.role) {
@@ -13,15 +13,13 @@ export async function checkAdminPermission() {
 			return false;
 		case "VIEWER":
 			return false;
-		case "UNAUTHORIZED":
-			return false;
-		default:
+		default: // UNAUTHORIZEDも含む
 			throw new UnexpectedError();
 	}
 }
 
-// FOR /dump/* posts action
-export async function checkPostPermission() {
+// FOR dumper
+export async function hasDumperPermission() {
 	const { user } = await checkSelfAuthOrThrow();
 
 	switch (user.role) {
@@ -31,27 +29,7 @@ export async function checkPostPermission() {
 			return true;
 		case "VIEWER":
 			return false;
-		case "UNAUTHORIZED":
-			return false;
-		default:
-			throw new UnexpectedError();
-	}
-}
-
-// FOR drawer
-export async function checkUpdateStatusPermission() {
-	const { user } = await checkSelfAuthOrThrow();
-
-	switch (user.role) {
-		case "ADMIN":
-			return true;
-		case "EDITOR":
-			return true;
-		case "VIEWER":
-			return false;
-		case "UNAUTHORIZED":
-			return false;
-		default:
+		default: // UNAUTHORIZEDも含む
 			throw new UnexpectedError();
 	}
 }

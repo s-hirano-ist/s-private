@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Unauthorized } from "@/components/unauthorized";
 import { checkSelfAuthOrRedirectToAuth } from "@/features/auth/utils/get-session";
-import { checkAdminPermission } from "@/features/auth/utils/role";
+import { hasContentsPermission } from "@/features/auth/utils/role";
 import {
 	getAllImages,
 	getAllSlugs,
@@ -14,7 +14,7 @@ const path = "books";
 export default async function Page() {
 	await checkSelfAuthOrRedirectToAuth();
 
-	const hasAdminPermission = await checkAdminPermission();
+	const hasAdminPermission = await hasContentsPermission();
 
 	const slugs = getAllSlugs(path);
 	const images = getAllImages(path);

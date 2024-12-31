@@ -1,6 +1,6 @@
 import { Unauthorized } from "@/components/unauthorized";
 import { checkSelfAuthOrRedirectToAuth } from "@/features/auth/utils/get-session";
-import { checkAdminPermission } from "@/features/auth/utils/role";
+import { hasContentsPermission } from "@/features/auth/utils/role";
 import { AllImageStackProvider } from "@/features/image/components/all-image-stack-provider";
 import { ImagePagination } from "@/features/image/components/image-pagination";
 import { ImageStackSkeleton } from "@/features/image/components/image-stack-skeleton";
@@ -13,7 +13,7 @@ export default async function Page({
 }: { searchParams?: { page?: string } }) {
 	await checkSelfAuthOrRedirectToAuth();
 
-	const hasAdminPermission = await checkAdminPermission();
+	const hasAdminPermission = await hasContentsPermission();
 
 	const currentPage = Number(searchParams?.page) || 1;
 

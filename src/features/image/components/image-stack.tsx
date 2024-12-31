@@ -39,6 +39,7 @@ export function ImageStack({ images }: Props) {
 						href={image.src}
 						target="_blank"
 						rel="noreferrer"
+						// FIXME: not foundの画像が複数枚あるときにエラー
 						key={image.src}
 						data-pswp-width={image.width}
 						data-pswp-height={image.height}

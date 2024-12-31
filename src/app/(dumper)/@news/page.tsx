@@ -1,7 +1,7 @@
 import { StackSkeleton } from "@/components/stack/stack-skeleton";
 import { Separator } from "@/components/ui/separator";
 import { checkSelfAuthOrRedirectToAuth } from "@/features/auth/utils/get-session";
-import { checkPostPermission } from "@/features/auth/utils/role";
+import { hasDumperPermission } from "@/features/auth/utils/role";
 import { AddFormSkeleton } from "@/features/dump/components/add-form-skeleton";
 import { AddNewsProvider } from "@/features/news/components/add-news-provider";
 import { NewsStackProvider } from "@/features/news/components/news-stack-provider";
@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 export default async function Page() {
 	await checkSelfAuthOrRedirectToAuth();
 
-	const hasPostPermission = await checkPostPermission();
+	const hasPostPermission = await hasDumperPermission();
 
 	return (
 		<>
