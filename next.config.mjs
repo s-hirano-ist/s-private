@@ -15,11 +15,11 @@ const cspHeader = `
 	connect-src 'self' https://www.google-analytics.com;
 	script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com;
     style-src 'self' 'unsafe-inline';
-	img-src 'self' blob: data: https://localhost:9000 https://private.s-hirano.com:9000 https://www.googletagmanager.com;
+	img-src 'self' blob: data: https://localhost:9000 https://private.s-hirano.com:9000 https://www.googletagmanager.com https://authjs.dev/img/providers/github.svg;
     font-src 'self';
     object-src 'none';
     base-uri 'self';
-    form-action 'self';
+    form-action 'self' http://localhost:3000/api/auth/signin/github;
     frame-ancestors 'none';
 	worker-src 'self' blob:;
     upgrade-insecure-requests;
@@ -49,10 +49,11 @@ const nextConfig = {
 						key: "Referrer-Policy",
 						value: "strict-origin-when-cross-origin",
 					},
-					{
-						key: "Content-Security-Policy",
-						value: cspHeader.replace(/\n/g, ""),
-					},
+					// FIXME: enable contents security policy
+					// {
+					// 	key: "Content-Security-Policy",
+					// 	value: cspHeader.replace(/\n/g, ""),
+					// },
 					{
 						key: "Report-To",
 						value: `{"group":"csp-endpoint","max_age":10886400,"endpoints":[{"url":"${env.SENTRY_REPORT_URL}"}],"include_subdomains":true}`,

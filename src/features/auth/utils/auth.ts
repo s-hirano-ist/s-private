@@ -5,6 +5,7 @@ import type { Role } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import NextAuth, { type DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import GitHubProvider from "next-auth/providers/github";
 import authConfig from "./auth.config";
 
 declare module "next-auth" {
@@ -35,64 +36,64 @@ export const {
 	secret: env.AUTH_SECRET,
 	providers: [
 		// MEMO: for manual auth
-		Credentials({
-			async authorize(credentials) {
-				const parsedCredentials = signInSchema.safeParse(credentials);
-				if (parsedCredentials.success) {
-					const { username, password } = parsedCredentials.data;
+		// Credentials({
+		// 	async authorize(credentials) {
+		// 		const parsedCredentials = signInSchema.safeParse(credentials);
+		// 		if (parsedCredentials.success) {
+		// 			const { username, password } = parsedCredentials.data;
 
-					const user = await prisma.users.findUnique({
-						where: { username },
-						// MEMO: only allowed to select password here (for auth). See `src/prisma.ts` for more.
-						select: {
-							id: true,
-							username: true,
-							role: true,
-							password: true,
-							isLocked: true,
-							failedLoginAttempts: true,
-						},
-					});
+		// 			const user = await prisma.users.findUnique({
+		// 				where: { username },
+		// 				// MEMO: only allowed to select password here (for auth). See `src/prisma.ts` for more.
+		// 				select: {
+		// 					id: true,
+		// 					username: true,
+		// 					role: true,
+		// 					password: true,
+		// 					isLocked: true,
+		// 					failedLoginAttempts: true,
+		// 				},
+		// 			});
 
-					if (!user) return null;
+		// 			if (!user) return null;
 
-					// log attempts of auth
-					await prisma.loginHistories.create({
-						data: { userId: user.id },
-					});
+		// 			// log attempts of auth
+		// 			await prisma.loginHistories.create({
+		// 				data: { userId: user.id },
+		// 			});
 
-					if (user.isLocked) return null;
+		// 			if (user.isLocked) return null;
 
-					const passwordMatch = await bcrypt.compare(password, user.password);
+		// 			const passwordMatch = await bcrypt.compare(password, user.password);
 
-					if (!passwordMatch) {
-						await prisma.users.update({
-							where: { username },
-							data: { failedLoginAttempts: user.failedLoginAttempts + 1 },
-						});
+		// 			if (!passwordMatch) {
+		// 				await prisma.users.update({
+		// 					where: { username },
+		// 					data: { failedLoginAttempts: user.failedLoginAttempts + 1 },
+		// 				});
 
-						if (user.failedLoginAttempts + 1 >= 3) {
-							await prisma.users.update({
-								where: { username },
-								data: { isLocked: true },
-							});
-						}
-						return null;
-					}
-					await prisma.users.update({
-						where: { username },
-						data: { failedLoginAttempts: 0 },
-					});
-					return { id: user.id, role: user.role, username: user.username };
-				}
-				return null;
-			},
-		}),
-		// MEMO: for GitHub Provider
-		// GitHubProvider({
-		// 	clientId: env.GITHUB_CLIENT_ID,
-		// 	clientSecret: env.GITHUB_CLIENT_SECRET,
+		// 				if (user.failedLoginAttempts + 1 >= 3) {
+		// 					await prisma.users.update({
+		// 						where: { username },
+		// 						data: { isLocked: true },
+		// 					});
+		// 				}
+		// 				return null;
+		// 			}
+		// 			await prisma.users.update({
+		// 				where: { username },
+		// 				data: { failedLoginAttempts: 0 },
+		// 			});
+		// 			return { id: user.id, role: user.role, username: user.username };
+		// 		}
+		// 		return null;
+		// 	},
 		// }),
+		// MEMO: for GitHub Provider
+		GitHubProvider({
+			clientId: env.GITHUB_CLIENT_ID,
+			clientSecret: env.GITHUB_CLIENT_SECRET,
+		}),
 	],
 	session: { strategy: "jwt", maxAge: 24 * 60 * 60 },
 	jwt: { maxAge: 30 * 24 * 60 * 60 },

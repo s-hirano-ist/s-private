@@ -34,7 +34,7 @@ async function createSelfLoginHistory(
 
 export async function signIn(values: SignInSchema): Promise<SignInState> {
 	try {
-		await NextAuthSignIn("credentials", {
+		await NextAuthSignIn("github", {
 			...values,
 			redirect: false, // MEMO: await try catch文でredirectは動かない
 		});
