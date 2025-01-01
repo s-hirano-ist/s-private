@@ -8,6 +8,7 @@ import { NewsStackProvider } from "@/features/news/components/news-stack-provide
 import { Suspense } from "react";
 
 export const dynamic = "force-dynamic";
+export const runtime = "edge";
 
 export default async function Page() {
 	await checkSelfAuthOrRedirectToAuth();

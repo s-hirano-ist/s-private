@@ -8,6 +8,7 @@ import { AddFormSkeleton } from "@/features/dump/components/add-form-skeleton";
 import { Suspense } from "react";
 
 export const dynamic = "force-dynamic";
+export const runtime = "edge";
 
 export default async function Page() {
 	await checkSelfAuthOrRedirectToAuth();
