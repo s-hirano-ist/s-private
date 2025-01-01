@@ -7,6 +7,7 @@ import rehypeStringify from "rehype-stringify";
 import remarkGfm from "remark-gfm";
 import { env } from "./src/env.mjs";
 await import("./src/env.mjs");
+import { setupDevPlatform } from "@cloudflare/next-on-pages/next-dev";
 
 // MEMO: scriptタグを利用する必要が出たときはnonceの利用推奨
 // https://nextjs.org/docs/app/building-your-application/configuring/content-security-policy#reading-the-nonce
@@ -84,6 +85,10 @@ const withMDX = createMDX({
 		// providerImportSource: "@mdx-js/react",s
 	},
 });
+
+if (env.NODE_ENV === "development") {
+	await setupDevPlatform();
+}
 
 export default withMDX(
 	withSentryConfig(nextConfig, {

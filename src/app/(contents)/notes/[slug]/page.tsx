@@ -9,7 +9,8 @@ import type { Metadata } from "next";
 const path = "notes";
 
 type Params = Promise<{ slug: string }>;
-
+export const dynamic = "force-dynamic";
+export const runtime = "edge";
 export const dynamicParams = false;
 
 export async function generateMetadata({
@@ -47,8 +48,8 @@ export default async function Page({ params }: { params: Params }) {
 	);
 }
 
-export function generateStaticParams() {
-	return getAllSlugs(path).map((slug) => {
-		return { slug };
-	});
-}
+// export function generateStaticParams() {
+// 	return getAllSlugs(path).map((slug) => {
+// 		return { slug };
+// 	});
+// }
