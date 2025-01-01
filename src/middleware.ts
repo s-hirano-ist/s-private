@@ -1,4 +1,5 @@
 // import { auth } from "@/features/auth/utils/auth";
+// import { NextResponse } from "next/server";
 // import { DEFAULT_SIGN_IN_REDIRECT } from "./constants";
 
 // FIXME: issue with edge compatibility
@@ -26,12 +27,12 @@ export const { auth: middleware } = NextAuth(authConfig);
 
 // 	if (isAuthRoute) {
 // 		if (isLoggedIn)
-// 			return Response.redirect(new URL(DEFAULT_SIGN_IN_REDIRECT, nextUrl));
+// 			return NextResponse.redirect(new URL(DEFAULT_SIGN_IN_REDIRECT, nextUrl));
 // 		return;
 // 	}
 
 // 	if (!isLoggedIn && !isPublicRoute)
-// 		return Response.redirect(new URL("/auth", nextUrl));
+// 		return NextResponse.redirect(new URL("/auth", nextUrl));
 
 // 	return;
 // });
