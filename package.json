@@ -32,7 +32,7 @@
 		"ghalint": "ghalint run"
 	},
 	"prisma": {
-		"seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+		"seed": "tsx prisma/seed.ts"
 	},
 	"dependencies": {
 		"@biomejs/biome": "1.9.4",
@@ -135,7 +135,7 @@
 		"storybook": "8.4.7",
 		"storybook-dark-mode": "4.0.2",
 		"tailwindcss": "3.4.17",
-		"ts-node": "10.9.2",
+		"tsx": "4.19.2",
 		"typescript": "5.7.2",
 		"vitest": "2.1.8"
 	}
