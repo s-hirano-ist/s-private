@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.4.0](https://github.com/s-hirano-ist/s-private/compare/v4.3.0...v4.4.0) (2025-01-01)
+
+
+### Features
+
+* 🎸 add edge runtime options ([43232a1](https://github.com/s-hirano-ist/s-private/commit/43232a1bafbc6c5dc46803abf73918090a91e454))
+* add prisma accelerate ([adcfbba](https://github.com/s-hirano-ist/s-private/commit/adcfbba59e2e68b042980a2b7b32eb4c667c0bb7))
+
 ## [4.3.0](https://github.com/s-hirano-ist/s-private/compare/v4.2.1...v4.3.0) (2024-12-31)
 
 
