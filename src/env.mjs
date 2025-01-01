@@ -28,6 +28,8 @@ export const env = createEnv({
 		MINIO_BUCKET_NAME: z.string(),
 		MINIO_ACCESS_KEY: z.string(),
 		MINIO_SECRET_KEY: z.string(),
+		GITHUB_CLIENT_ID: z.string(),
+		GITHUB_CLIENT_SECRET: z.string(),
 	},
 
 	/**
@@ -56,6 +58,8 @@ export const env = createEnv({
 		MINIO_SECRET_KEY: process.env.MINIO_SECRET_KEY,
 		NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN, // MEMO: ok to leak
 		NEXT_PUBLIC_G_TAG: process.env.NEXT_PUBLIC_G_TAG,
+		GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
+		GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
 	},
 	/**
 	 * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful for Docker builds.

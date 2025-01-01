@@ -1,7 +1,6 @@
 import type { NextAuthConfig } from "next-auth";
-import Credentials from "next-auth/providers/credentials";
-// import GitHubProvider from "next-auth/providers/github";
+import GitHubProvider from "next-auth/providers/github";
 
 export default {
-	providers: [Credentials /*GitHubProvider*/],
+	providers: [GitHubProvider],
 } satisfies NextAuthConfig;
