@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import { type Mock, describe, expect, it, vi } from "vitest";
-import { getAllImages, getAllSlugs } from "./fetch-contents";
+import { getAllImages, getAllSlugs } from "./fetch-for-viewer";
 
 vi.mock("node:fs");
 

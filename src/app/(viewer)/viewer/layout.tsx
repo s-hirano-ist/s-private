@@ -12,10 +12,10 @@ export const metadata: Metadata = {
 
 type Props = {
 	books: ReactNode;
-	notes: ReactNode;
+	contents: ReactNode;
 	images: ReactNode;
 };
 
-export default async function Layout({ books, notes, images }: Props) {
-	return <RootTab books={books} notes={notes} images={images} />;
+export default async function Layout({ books, contents, images }: Props) {
+	return <RootTab books={books} contents={contents} images={images} />;
 }

@@ -5,11 +5,11 @@ import { hasContentsPermission } from "@/features/auth/utils/role";
 import {
 	getAllImages,
 	getAllSlugs,
-} from "@/features/viewer/actions/fetch-contents";
-import { ContentStack } from "@/features/viewer/components/content-stack";
+} from "@/features/viewer/actions/fetch-for-viewer";
+import { ViewerStack } from "@/features/viewer/components/viewer-stack";
 import { formatSlugsAndImages } from "@/features/viewer/utils/format";
 
-const path = "notes";
+const path = "contents";
 
 export default async function Page() {
 	await checkSelfAuthOrRedirectToAuth();
@@ -24,12 +24,9 @@ export default async function Page() {
 			{hasAdminPermission ? (
 				<>
 					<Badge className="m-2 flex justify-center">
-						ノート数: {slugs.length}
+						コンテンツ数: {slugs.length}
 					</Badge>
-					<ContentStack
-						path={path}
-						data={formatSlugsAndImages(slugs, images)}
-					/>
+					<ViewerStack path={path} data={formatSlugsAndImages(slugs, images)} />
 				</>
 			) : (
 				<Unauthorized />

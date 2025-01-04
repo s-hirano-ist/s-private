@@ -10,7 +10,7 @@ type Props = {
 	imagePath: string;
 };
 
-export function ContentPreview({ path, slug, imagePath }: Props) {
+export function ViewerPreview({ path, slug, imagePath }: Props) {
 	// TODO: imageをblobから取ってくる
 	// TODO: Image on errorの実装
 	// FIXME: 相対パスの記述

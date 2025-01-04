@@ -2,11 +2,11 @@ import { Unauthorized } from "@/components/unauthorized";
 import { PAGE_NAME } from "@/constants";
 import { checkSelfAuthOrRedirectToAuth } from "@/features/auth/utils/get-session";
 import { hasContentsPermission } from "@/features/auth/utils/role";
-import { getAllSlugs } from "@/features/viewer/actions/fetch-contents";
-import { ContentBody } from "@/features/viewer/components/content-body";
+import { getAllSlugs } from "@/features/viewer/actions/fetch-for-viewer";
+import { ViewerBody } from "@/features/viewer/components/viewer-body";
 import type { Metadata } from "next";
 
-const path = "notes";
+const path = "contents";
 
 type Params = Promise<{ slug: string }>;
 
@@ -19,7 +19,7 @@ export async function generateMetadata({
 
 	return {
 		title: `${slug} | ${PAGE_NAME}`,
-		description: `Private notes of ${slug}`,
+		description: `Private contents of ${slug}`,
 	};
 }
 
@@ -31,15 +31,15 @@ export default async function Page({ params }: { params: Params }) {
 	const hasAdminPermission = await hasContentsPermission();
 
 	const { default: Contents } = await import(
-		`../../../../../s-contents/markdown/notes/${slug}`
+		`../../../../../s-contents/markdown/contents/${slug}`
 	);
 
 	return (
 		<>
 			{hasAdminPermission ? (
-				<ContentBody>
+				<ViewerBody>
 					<Contents />
-				</ContentBody>
+				</ViewerBody>
 			) : (
 				<Unauthorized />
 			)}

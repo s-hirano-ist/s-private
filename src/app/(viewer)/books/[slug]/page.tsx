@@ -2,8 +2,8 @@ import { Unauthorized } from "@/components/unauthorized";
 import { PAGE_NAME } from "@/constants";
 import { checkSelfAuthOrRedirectToAuth } from "@/features/auth/utils/get-session";
 import { hasContentsPermission } from "@/features/auth/utils/role";
-import { getAllSlugs } from "@/features/viewer/actions/fetch-contents";
-import { ContentBody } from "@/features/viewer/components/content-body";
+import { getAllSlugs } from "@/features/viewer/actions/fetch-for-viewer";
+import { ViewerBody } from "@/features/viewer/components/viewer-body";
 import type { Metadata } from "next";
 
 const path = "books";
@@ -39,9 +39,9 @@ export default async function Page({ params }: { params: Params }) {
 	return (
 		<>
 			{hasAdminPermission ? (
-				<ContentBody>
+				<ViewerBody>
 					<Contents />
-				</ContentBody>
+				</ViewerBody>
 			) : (
 				<Unauthorized />
 			)}

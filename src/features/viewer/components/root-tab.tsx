@@ -6,19 +6,19 @@ import { type ReactNode, useEffect, useState } from "react";
 
 const TABS = {
 	books: "BOOKS",
-	notes: "NOTES",
+	contents: "CONTENTS",
 	images: "IMAGES",
 };
 
 type Props = {
 	books: ReactNode;
-	notes: ReactNode;
+	contents: ReactNode;
 	images: ReactNode;
 };
 
 const DEFAULT_TAB = "books";
 
-export function RootTab({ books, notes, images }: Props) {
+export function RootTab({ books, contents, images }: Props) {
 	const router = useTransitionRouter();
 	const searchParams = useSearchParams();
 
@@ -60,7 +60,7 @@ export function RootTab({ books, notes, images }: Props) {
 				})}
 			</TabsList>
 			<TabsContent value="books"> {books}</TabsContent>
-			<TabsContent value="notes"> {notes}</TabsContent>
+			<TabsContent value="contents"> {contents}</TabsContent>
 			<TabsContent value="images"> {images}</TabsContent>
 		</Tabs>
 	);
