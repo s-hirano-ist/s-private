@@ -3,7 +3,7 @@ import { RootTab } from "@/features/markdown/components/root-tab";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
-const displayName = "CONTENTS";
+const displayName = "NOTES";
 
 export const metadata: Metadata = {
 	title: `${displayName} | ${PAGE_NAME}`,

@@ -59,7 +59,7 @@ describe("changeContentsStatus", () => {
 		expect(prisma.$transaction).toHaveBeenCalled();
 		expect(formatChangeStatusMessage).toHaveBeenCalledWith(
 			mockStatus,
-			"CONTENTS",
+			"VIEWER",
 		);
 		expect(sendLineNotifyMessage).toHaveBeenCalledWith(mockMessage);
 		expect(revalidatePath).toHaveBeenCalledWith("/dumper");
@@ -100,7 +100,7 @@ describe("changeContentsStatus", () => {
 		expect(prisma.$transaction).toHaveBeenCalled();
 		expect(formatChangeStatusMessage).toHaveBeenCalledWith(
 			mockStatus,
-			"CONTENTS",
+			"VIEWER",
 		);
 		expect(sendLineNotifyMessage).toHaveBeenCalledWith(mockMessage);
 		expect(revalidatePath).toHaveBeenCalledWith("/dumper");

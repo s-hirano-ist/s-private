@@ -48,9 +48,9 @@ describe("Footer Component", () => {
 		expect(dumperLink).toBeInTheDocument();
 		expect(dumperLink).toHaveAttribute("href", "/");
 	});
-	it("renders the CONTENTS link", () => {
+	it("renders the VIEWER link", () => {
 		render(<Footer />);
-		const contentsLink = screen.getByRole("link", { name: "CONTENTS" });
+		const contentsLink = screen.getByRole("link", { name: "VIEWER" });
 		expect(contentsLink).toBeInTheDocument();
 		expect(contentsLink).toHaveAttribute("href", "/contents");
 	});
