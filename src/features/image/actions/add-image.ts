@@ -53,7 +53,7 @@ export async function addImage(
 			status: 200,
 		});
 		await sendLineNotifyMessage(message);
-		revalidatePath("/dumper");
+		revalidatePath("/(dumper)");
 
 		return {
 			success: true,

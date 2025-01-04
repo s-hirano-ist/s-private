@@ -4,16 +4,24 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 const ADMIN_SEED_PASSWORD = process.env.ADMIN_SEED_PASSWORD;
-const EDITOR_SEED_PASSWORD = process.env.EDITOR_SEED_PASSWORD;
 const VIEWER_SEED_PASSWORD = process.env.VIEWER_SEED_PASSWORD;
+const UNAUTHORIZED_SEED_PASSWORD = process.env.UNAUTHORIZED_SEED_PASSWORD;
 
-if (!ADMIN_SEED_PASSWORD || !EDITOR_SEED_PASSWORD || !VIEWER_SEED_PASSWORD)
+if (
+	!ADMIN_SEED_PASSWORD ||
+	!UNAUTHORIZED_SEED_PASSWORD ||
+	!VIEWER_SEED_PASSWORD
+)
 	throw new Error("ENV undefined");
 
 const SEED_USERS = [
 	{ username: "s-hirano-ist", role: "ADMIN", password: ADMIN_SEED_PASSWORD },
-	{ username: "editor", role: "EDITOR", password: EDITOR_SEED_PASSWORD },
 	{ username: "viewer", role: "VIEWER", password: VIEWER_SEED_PASSWORD },
+	{
+		username: "unauthorized",
+		role: "UNAUTHORIZED",
+		password: UNAUTHORIZED_SEED_PASSWORD,
+	},
 ] satisfies { username: string; password: string; role: Role }[];
 
 async function addSampleUsers(username: string, password: string, role: Role) {

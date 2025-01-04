@@ -52,7 +52,7 @@ describe("changeImagesStatus", () => {
 			"IMAGES",
 		);
 		expect(sendLineNotifyMessage).toHaveBeenCalledWith("Formatted message");
-		expect(revalidatePath).toHaveBeenCalledWith("/dumper");
+		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 
 		expect(result).toEqual({
 			success: true,
@@ -89,7 +89,7 @@ describe("changeImagesStatus", () => {
 			"IMAGES",
 		);
 		expect(sendLineNotifyMessage).toHaveBeenCalledWith("Formatted message");
-		expect(revalidatePath).toHaveBeenCalledWith("/dumper");
+		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 
 		expect(result).toEqual({
 			success: true,

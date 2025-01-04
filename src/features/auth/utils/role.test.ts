@@ -43,7 +43,7 @@ describe("role utilities", () => {
 	});
 
 	describe("hasDumperPermission", () => {
-		it("should return true for ADMIN or EDITOR roles", async () => {
+		it("should return true for ADMIN or VIEWER roles", async () => {
 			(checkSelfAuthOrThrow as Mock).mockResolvedValue({
 				user: { role: "ADMIN" },
 			});

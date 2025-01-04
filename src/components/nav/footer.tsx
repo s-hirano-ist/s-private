@@ -49,14 +49,14 @@ export function Footer() {
 
 					{/* FIXME: bug with parallel routes
 					 * https://nextjs.org/docs/app/building-your-application/routing/parallel-routes */}
-					<Link href={"/contents" as Route}>
+					<Link href={"/viewer" as Route}>
 						<Button
 							variant="navSide"
 							size="navSide"
 							type="button"
-							className={pathname === "/contents" ? "bg-black/40" : ""}
+							className={pathname === "/viewer" ? "bg-black/40" : ""}
 						>
-							{Icon("CONTENTS", <NotebookIcon className="size-6" />)}
+							{Icon("VIEWER", <NotebookIcon className="size-6" />)}
 						</Button>
 					</Link>
 

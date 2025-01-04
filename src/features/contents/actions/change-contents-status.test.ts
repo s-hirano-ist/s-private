@@ -62,7 +62,7 @@ describe("changeContentsStatus", () => {
 			"CONTENTS",
 		);
 		expect(sendLineNotifyMessage).toHaveBeenCalledWith(mockMessage);
-		expect(revalidatePath).toHaveBeenCalledWith("/dumper");
+		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 		expect(result).toEqual({
 			success: true,
 			message: SUCCESS_MESSAGES.UPDATE,
@@ -103,7 +103,7 @@ describe("changeContentsStatus", () => {
 			"CONTENTS",
 		);
 		expect(sendLineNotifyMessage).toHaveBeenCalledWith(mockMessage);
-		expect(revalidatePath).toHaveBeenCalledWith("/dumper");
+		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 		expect(result).toEqual({
 			success: true,
 			message: SUCCESS_MESSAGES.UPDATE,

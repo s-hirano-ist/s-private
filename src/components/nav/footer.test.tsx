@@ -14,7 +14,7 @@ describe("Footer Component", () => {
 
 		// 各ボタンが存在するか確認
 		expect(screen.getByText(/DUMPER/i)).toBeInTheDocument();
-		expect(screen.getByText(/CONTENTS/i)).toBeInTheDocument();
+		expect(screen.getByText(/VIEWER/i)).toBeInTheDocument();
 		expect(screen.getByText(/SEARCH/i)).toBeInTheDocument();
 		expect(screen.getByText(/AI/i)).toBeInTheDocument();
 
@@ -22,11 +22,11 @@ describe("Footer Component", () => {
 	});
 
 	it("highlights the correct button based on pathname", () => {
-		(usePathname as Mock).mockReturnValue("/contents");
+		(usePathname as Mock).mockReturnValue("/viewer");
 
 		render(<Footer />);
 
-		const contentsButton = screen.getByText(/CONTENTS/i).closest("button");
+		const contentsButton = screen.getByText(/VIEWER/i).closest("button");
 		expect(contentsButton).toHaveClass("bg-black/40");
 
 		const dumperButton = screen.getByText(/DUMPER/i).closest("button");
@@ -48,11 +48,11 @@ describe("Footer Component", () => {
 		expect(dumperLink).toBeInTheDocument();
 		expect(dumperLink).toHaveAttribute("href", "/");
 	});
-	it("renders the CONTENTS link", () => {
+	it("renders the VIEWER link", () => {
 		render(<Footer />);
-		const contentsLink = screen.getByRole("link", { name: "CONTENTS" });
+		const contentsLink = screen.getByRole("link", { name: "VIEWER" });
 		expect(contentsLink).toBeInTheDocument();
-		expect(contentsLink).toHaveAttribute("href", "/contents");
+		expect(contentsLink).toHaveAttribute("href", "/viewer");
 	});
 	it("renders the PROFILE link", () => {
 		render(<Footer />);

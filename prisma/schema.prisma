@@ -11,16 +11,16 @@ datasource db {
 
 // Auth
 enum Role {
-  ADMIN // DUMPER権限有・CONTENTS権限有
-  EDITOR // DUMPER権限有・CONTENTS権限無
-  VIEWER // auth以外の全ページ閲覧不可
+  ADMIN // DUMPER権限有・VIEWER権限有
+  VIEWER // DUMPER権限有・VIEWER権限無
+  UNAUTHORIZED // auth以外の全ページ閲覧不可
 }
 
 model Users {
   id       String @id @default(uuid(7))
   username String @unique
   password String
-  role     Role   @default(VIEWER)
+  role     Role   @default(UNAUTHORIZED)
 
   failedLoginAttempts Int     @default(0) @map("failed_login_attempts")
   isLocked            Boolean @default(false) @map("is_locked")

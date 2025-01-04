@@ -5,9 +5,9 @@ import { hasContentsPermission } from "@/features/auth/utils/role";
 import {
 	getAllImages,
 	getAllSlugs,
-} from "@/features/markdown/actions/fetch-contents";
-import { ContentStack } from "@/features/markdown/components/content-stack";
-import { formatSlugsAndImages } from "@/features/markdown/utils/format";
+} from "@/features/viewer/actions/fetch-for-viewer";
+import { ViewerStack } from "@/features/viewer/components/viewer-stack";
+import { formatSlugsAndImages } from "@/features/viewer/utils/format";
 
 const path = "books";
 
@@ -26,10 +26,7 @@ export default async function Page() {
 					<Badge className="m-2 flex justify-center">
 						冊数: {slugs.length}
 					</Badge>
-					<ContentStack
-						path={path}
-						data={formatSlugsAndImages(slugs, images)}
-					/>
+					<ViewerStack path={path} data={formatSlugsAndImages(slugs, images)} />
 				</>
 			) : (
 				<Unauthorized />

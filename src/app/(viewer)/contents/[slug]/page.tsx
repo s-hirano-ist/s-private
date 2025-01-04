@@ -2,11 +2,11 @@ import { Unauthorized } from "@/components/unauthorized";
 import { PAGE_NAME } from "@/constants";
 import { checkSelfAuthOrRedirectToAuth } from "@/features/auth/utils/get-session";
 import { hasContentsPermission } from "@/features/auth/utils/role";
-import { getAllSlugs } from "@/features/markdown/actions/fetch-contents";
-import { ContentBody } from "@/features/markdown/components/content-body";
+import { getAllSlugs } from "@/features/viewer/actions/fetch-for-viewer";
+import { ViewerBody } from "@/features/viewer/components/viewer-body";
 import type { Metadata } from "next";
 
-const path = "books";
+const path = "contents";
 
 type Params = Promise<{ slug: string }>;
 
@@ -18,8 +18,8 @@ export async function generateMetadata({
 	const { slug } = await params;
 
 	return {
-		title: `${decodeURIComponent(slug)} | ${PAGE_NAME}`,
-		description: `Private book review of ${decodeURIComponent(slug)}`,
+		title: `${slug} | ${PAGE_NAME}`,
+		description: `Private contents of ${slug}`,
 	};
 }
 
@@ -30,18 +30,16 @@ export default async function Page({ params }: { params: Params }) {
 
 	const hasAdminPermission = await hasContentsPermission();
 
-	const decordedSlug = decodeURIComponent(slug);
-
 	const { default: Contents } = await import(
-		`../../../../../s-contents/markdown/books/${decordedSlug}`
+		`../../../../../s-contents/markdown/contents/${slug}`
 	);
 
 	return (
 		<>
 			{hasAdminPermission ? (
-				<ContentBody>
+				<ViewerBody>
 					<Contents />
-				</ContentBody>
+				</ViewerBody>
 			) : (
 				<Unauthorized />
 			)}
@@ -51,6 +49,6 @@ export default async function Page({ params }: { params: Params }) {
 
 export function generateStaticParams() {
 	return getAllSlugs(path).map((slug) => {
-		return { slug: decodeURIComponent(slug) };
+		return { slug };
 	});
 }

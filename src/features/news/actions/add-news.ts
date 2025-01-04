@@ -49,7 +49,7 @@ export async function addNews(formData: FormData): Promise<ServerAction<News>> {
 			status: 200,
 		});
 		await sendLineNotifyMessage(message);
-		revalidatePath("/dumper");
+		revalidatePath("/(dumper)");
 
 		return {
 			success: true,

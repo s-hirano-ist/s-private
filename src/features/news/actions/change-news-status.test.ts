@@ -59,7 +59,7 @@ describe("changeNewsStatus", () => {
 		expect(prisma.$transaction).toHaveBeenCalled();
 		expect(formatChangeStatusMessage).toHaveBeenCalledWith(mockStatus, "NEWS");
 		expect(sendLineNotifyMessage).toHaveBeenCalledWith(mockMessage);
-		expect(revalidatePath).toHaveBeenCalledWith("/dumper");
+		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 		expect(result).toEqual({
 			success: true,
 			message: SUCCESS_MESSAGES.UPDATE,
@@ -97,7 +97,7 @@ describe("changeNewsStatus", () => {
 		expect(prisma.$transaction).toHaveBeenCalled();
 		expect(formatChangeStatusMessage).toHaveBeenCalledWith(mockStatus, "NEWS");
 		expect(sendLineNotifyMessage).toHaveBeenCalledWith(mockMessage);
-		expect(revalidatePath).toHaveBeenCalledWith("/dumper");
+		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 		expect(result).toEqual({
 			success: true,
 			message: SUCCESS_MESSAGES.UPDATE,

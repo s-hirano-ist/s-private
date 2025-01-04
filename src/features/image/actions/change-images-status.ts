@@ -82,7 +82,8 @@ export async function changeImagesStatus(
 			status: 200,
 		});
 		await sendLineNotifyMessage(message);
-		revalidatePath("/dumper");
+		revalidatePath("/(dumper)");
+
 		return { success: true, message: SUCCESS_MESSAGES.UPDATE, data: message };
 	} catch (error) {
 		return await wrapServerSideErrorForClient(error);

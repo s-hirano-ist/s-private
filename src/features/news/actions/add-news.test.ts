@@ -91,7 +91,7 @@ describe("addNews", () => {
 			},
 		});
 		expect(sendLineNotifyMessage).toHaveBeenCalledTimes(1); // News notifications
-		expect(revalidatePath).toHaveBeenCalledWith("/dumper");
+		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 		expect(result).toEqual({
 			success: true,
 			message: SUCCESS_MESSAGES.INSERTED,
@@ -144,7 +144,7 @@ describe("addNews", () => {
 			},
 		});
 		expect(sendLineNotifyMessage).toHaveBeenCalledTimes(1); // Only news notification
-		expect(revalidatePath).toHaveBeenCalledWith("/dumper");
+		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 		expect(result).toEqual({
 			success: true,
 			message: SUCCESS_MESSAGES.INSERTED,
