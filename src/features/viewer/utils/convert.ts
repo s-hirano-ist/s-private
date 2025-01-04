@@ -9,12 +9,12 @@ const bufferToBase64 = (buffer: Uint8Array) => {
 	return btoa(binary);
 };
 
-export function convertUnit8ArrayToImgSrc(
-	unit8Array: Uint8Array,
+export function convertUint8ArrayToImgSrc(
+	uint8Array: Uint8Array,
 	imageType: ImageType,
 ) {
-	const svgString = new TextDecoder().decode(unit8Array);
-	const base64String = bufferToBase64(unit8Array);
+	const svgString = new TextDecoder().decode(uint8Array);
+	const base64String = bufferToBase64(uint8Array);
 	switch (imageType) {
 		case "svg":
 			return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgString)}`;

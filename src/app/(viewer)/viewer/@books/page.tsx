@@ -15,7 +15,7 @@ export default async function Page() {
 	const hasAdminPermission = await hasContentsPermission();
 
 	const images = await prisma.staticBooks.findMany({
-		select: { title: true, unit8ArrayImage: true },
+		select: { title: true, uint8ArrayImage: true },
 	});
 
 	return (

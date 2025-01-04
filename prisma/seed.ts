@@ -69,9 +69,9 @@ async function addContentsData() {
 		slugs.map(async (slug) => {
 			const title = slug.replace(/\.mdx$/, "");
 			const markdown = getMarkdownBySlug(slug, contentsDirectory);
-			const unit8ArrayImage = getImageBySlug(slug, imagesDirectory, "svg");
+			const uint8ArrayImage = getImageBySlug(slug, imagesDirectory, "svg");
 			await prisma.staticContents.create({
-				data: { title, markdown, unit8ArrayImage },
+				data: { title, markdown, uint8ArrayImage },
 			});
 		}),
 	);
@@ -88,9 +88,9 @@ async function addBookData() {
 		slugs.map(async (slug) => {
 			const title = slug.replace(/\.mdx$/, "");
 			const markdown = getMarkdownBySlug(slug, contentsDirectory);
-			const unit8ArrayImage = getImageBySlug(slug, imagesDirectory, "webp");
+			const uint8ArrayImage = getImageBySlug(slug, imagesDirectory, "webp");
 			await prisma.staticBooks.create({
-				data: { title, markdown, unit8ArrayImage },
+				data: { title, markdown, uint8ArrayImage },
 			});
 		}),
 	);

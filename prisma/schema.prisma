@@ -129,7 +129,7 @@ model Images {
 model StaticContents {
   title           String @id @unique
   markdown        String
-  unit8ArrayImage Bytes // only a few KBs so not much performance loss
+  uint8ArrayImage Bytes // only a few KBs so not much performance loss
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -140,7 +140,7 @@ model StaticContents {
 model StaticBooks {
   title           String @id @unique
   markdown        String
-  unit8ArrayImage Bytes // only a few KBs so not much performance loss
+  uint8ArrayImage Bytes // only a few KBs so not much performance loss
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
