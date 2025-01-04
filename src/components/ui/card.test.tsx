@@ -31,7 +31,7 @@ describe("Card components", () => {
 		const cardTitle = screen.getByText("Card Title");
 		expect(cardTitle).toBeInTheDocument();
 		expect(cardTitle).toHaveClass(
-			"font-bold text-primary leading-none tracking-tight",
+			"font-bold leading-none tracking-tight bg-gradient-to-r from-primary text-transparent bg-clip-text to-primary-grad-from",
 		);
 	});
 

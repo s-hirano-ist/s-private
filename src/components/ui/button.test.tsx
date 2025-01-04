@@ -8,7 +8,7 @@ describe("Button component", () => {
 		const button = screen.getByRole("button", { name: /default button/i });
 		expect(button).toBeInTheDocument();
 		expect(button).toHaveClass(
-			"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-gradient-to-r from-primary to-primary-grad text-primary-foreground shadow hover:bg-black/40 h-9 px-4 py-2",
+			"  inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-gradient-to-r from-primary-grad-from to-primary-grad-to text-primary-grad shadow hover:bg-black/40 h-9 px-4 py-2",
 		);
 	});
 

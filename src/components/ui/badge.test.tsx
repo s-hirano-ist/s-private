@@ -8,7 +8,7 @@ describe("Badge component", () => {
 		const badge = screen.getByText("Default Badge");
 		expect(badge).toBeInTheDocument();
 		expect(badge).toHaveClass(
-			"border-transparent bg-primary text-primary-foreground shadow hover:bg-primary/80",
+			"inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-gradient-to-r from-primary-grad-from to-primary-grad-to text-white shadow hover:bg-secondary/80",
 		);
 	});
 
