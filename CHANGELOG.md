@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.2.0](https://github.com/s-hirano-ist/s-private/compare/v5.1.0...v5.2.0) (2025-01-04)
+
+
+### Features
+
+* 🎸 add books and contents table ([ba27426](https://github.com/s-hirano-ist/s-private/commit/ba274264057397b0e9a2e88c866a3bdf53f28a6a))
+
+
+### Bug Fixes
+
+* 🐛 spelling of uint ([41afca5](https://github.com/s-hirano-ist/s-private/commit/41afca5e74034e2e6709b2b529115124d41b8076))
+
 ## [5.1.0](https://github.com/s-hirano-ist/s-private/compare/v5.0.1...v5.1.0) (2025-01-04)
 
 
