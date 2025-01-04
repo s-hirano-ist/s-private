@@ -19,6 +19,9 @@
 		/* --primary-grad: 207 51.28% 30.59%; */ /* more darker color*/
 		--primary-grad: 207 33% 42%;
 
+		--primary-grad-from: 191 51.7% 77.3%; /* #A7D8E3 */
+		--primary-grad-to: 0.97 76% 87%; /* #F7C4CD */
+
 		--secondary: 240 4.8% 95.9%;
 		--secondary-foreground: 240 5.9% 10%;
 

@@ -27,10 +27,10 @@ describe("Footer Component", () => {
 		render(<Footer />);
 
 		const contentsButton = screen.getByText(/VIEWER/i).closest("button");
-		expect(contentsButton).toHaveClass("bg-black/40");
+		expect(contentsButton).toHaveClass("bg-black/10");
 
 		const dumperButton = screen.getByText(/DUMPER/i).closest("button");
-		expect(dumperButton).not.toHaveClass("bg-black/40");
+		expect(dumperButton).not.toHaveClass("bg-black/10");
 	});
 
 	it("opens the drawer when the Action button is clicked", () => {
