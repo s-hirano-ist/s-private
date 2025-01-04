@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import { join } from "node:path";
+import { THUMBNAIL_HEIGHT, THUMBNAIL_WIDTH } from "@/constants";
 import { PrismaClient, type Role } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import matter from "gray-matter";
@@ -10,9 +11,6 @@ const prisma = new PrismaClient();
 const ADMIN_SEED_PASSWORD = process.env.ADMIN_SEED_PASSWORD;
 const VIEWER_SEED_PASSWORD = process.env.VIEWER_SEED_PASSWORD;
 const UNAUTHORIZED_SEED_PASSWORD = process.env.UNAUTHORIZED_SEED_PASSWORD;
-
-const THUMBNAIL_WIDTH = 200;
-const THUMBNAIL_HEIGHT = 200;
 
 if (
 	!ADMIN_SEED_PASSWORD ||
