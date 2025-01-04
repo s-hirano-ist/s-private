@@ -1,5 +1,5 @@
 import { PAGE_NAME } from "@/constants";
-import { RootTab } from "@/features/markdown/components/root-tab";
+import { RootTab } from "@/features/viewer/components/root-tab";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 

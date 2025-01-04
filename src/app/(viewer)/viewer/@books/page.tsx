@@ -5,9 +5,9 @@ import { hasContentsPermission } from "@/features/auth/utils/role";
 import {
 	getAllImages,
 	getAllSlugs,
-} from "@/features/markdown/actions/fetch-contents";
-import { ContentStack } from "@/features/markdown/components/content-stack";
-import { formatSlugsAndImages } from "@/features/markdown/utils/format";
+} from "@/features/viewer/actions/fetch-contents";
+import { ContentStack } from "@/features/viewer/components/content-stack";
+import { formatSlugsAndImages } from "@/features/viewer/utils/format";
 
 const path = "books";
 
