@@ -30,9 +30,9 @@
 		"security": "pnpm audit",
 		"actionlint": "actionlint",
 		"ghalint": "ghalint run",
-		"pages:build": "npx @cloudflare/next-on-pages",
-		"preview": "pnpm pages:build && wrangler pages dev",
-		"deploy": "pnpm pages:build && wrangler pages deploy"
+		"cf:build": "npx @cloudflare/next-on-pages",
+		"cf:preview": "pnpm cf:build && wrangler pages dev",
+		"cf:deploy": "pnpm cf:build && wrangler pages deploy"
 	},
 	"prisma": {
 		"seed": "tsx prisma/seed.ts"

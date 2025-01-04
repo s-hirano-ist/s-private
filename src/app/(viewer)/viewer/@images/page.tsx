@@ -7,6 +7,7 @@ import { ImageStackSkeleton } from "@/features/image/components/image-stack-skel
 import { Suspense } from "react";
 
 export const dynamic = "force-dynamic";
+export const runtime = "edge";
 
 type Params = Promise<{ page?: string }>;
 

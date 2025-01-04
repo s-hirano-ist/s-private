@@ -8,6 +8,7 @@ import prisma from "@/prisma";
 const path = "books";
 
 export const dynamic = "force-dynamic";
+export const runtime = "edge";
 
 export default async function Page() {
 	await checkSelfAuthOrRedirectToAuth();

@@ -4,9 +4,10 @@ import { PAGE_NAME } from "@/constants";
 import { checkSelfAuthOrRedirectToAuth } from "@/features/auth/utils/get-session";
 import { hasContentsPermission } from "@/features/auth/utils/role";
 import { ViewerBody } from "@/features/viewer/components/viewer-body";
-import { markdownToReact } from "@/features/viewer/utils/markdown-to-react";
+// import { markdownToReact } from "@/features/viewer/utils/markdown-to-react";
 import prisma from "@/prisma";
 import type { Metadata } from "next";
+import { MDXRemote, type MDXRemoteSerializeResult } from "next-mdx-remote";
 
 type Params = Promise<{ slug: string }>;
 
@@ -39,12 +40,12 @@ export default async function Page({ params }: { params: Params }) {
 	});
 	if (!data) return <NotFound />;
 
-	const reactData = await markdownToReact(data.markdown);
+	// const reactData = await markdownToReact(data.markdown);
 
 	return (
 		<>
 			{hasAdminPermission ? (
-				<ViewerBody>{reactData}</ViewerBody>
+				<ViewerBody>{data.markdown}</ViewerBody>
 			) : (
 				<Unauthorized />
 			)}
