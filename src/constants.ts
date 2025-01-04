@@ -4,6 +4,9 @@ export const PAGE_NAME = "s-private";
 
 export const PAGE_SIZE = 12;
 
+export const THUMBNAIL_WIDTH = 192;
+export const THUMBNAIL_HEIGHT = 192;
+
 export const FORM_ERROR_MESSAGES = {
 	REQUIRED: "必須項目です。",
 	TOO_LONG: "文字数が多すぎます。",

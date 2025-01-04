@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { THUMBNAIL_HEIGHT, THUMBNAIL_WIDTH } from "@/constants";
 import type { Image, ImageType } from "@/features/viewer/types";
 import { convertUint8ArrayToImgSrc } from "@/features/viewer/utils/convert";
 import type { Route } from "next";
@@ -27,8 +28,8 @@ export function ViewerPreview({ image, path, imageType }: Props) {
 					<div className="flex justify-center">
 						<NextImage
 							src={src}
-							height={96}
-							width={96}
+							height={THUMBNAIL_HEIGHT}
+							width={THUMBNAIL_WIDTH}
 							alt={title}
 							className="h-auto w-full"
 						/>

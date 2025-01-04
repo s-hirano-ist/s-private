@@ -1,8 +1,10 @@
 import fs from "node:fs";
 import { join } from "node:path";
+import { THUMBNAIL_HEIGHT, THUMBNAIL_WIDTH } from "@/constants";
 import { PrismaClient, type Role } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import matter from "gray-matter";
+import sharp from "sharp";
 
 const prisma = new PrismaClient();
 
@@ -41,8 +43,7 @@ async function addSampleUsers(username: string, password: string, role: Role) {
 function getImageBySlug(slug: string, imagesDirectory: string, ext: string) {
 	const realSlug = slug.replace(/\.mdx$/, "");
 	const fullPath = join(imagesDirectory, `${realSlug}.${ext}`);
-	const fileContents = fs.readFileSync(fullPath);
-	return fileContents;
+	return fs.readFileSync(fullPath);
 }
 
 function getAllSlugs(contentsDirectory: string) {
@@ -77,6 +78,12 @@ async function addContentsData() {
 	);
 }
 
+async function optimizeImage(fullPath: Buffer) {
+	return await sharp(fullPath)
+		.resize(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT)
+		.toBuffer();
+}
+
 async function addBookData() {
 	const path = "books";
 	const contentsDirectory = join(process.cwd(), "s-contents/markdown", path);
@@ -89,8 +96,10 @@ async function addBookData() {
 			const title = slug.replace(/\.mdx$/, "");
 			const markdown = getMarkdownBySlug(slug, contentsDirectory);
 			const uint8ArrayImage = getImageBySlug(slug, imagesDirectory, "webp");
+			const optimizedUint8ArrayImage = await optimizeImage(uint8ArrayImage);
+
 			await prisma.staticBooks.create({
-				data: { title, markdown, uint8ArrayImage },
+				data: { title, markdown, uint8ArrayImage: optimizedUint8ArrayImage },
 			});
 		}),
 	);
