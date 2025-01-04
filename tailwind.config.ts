@@ -31,6 +31,12 @@ const config = {
 				"primary-grad": {
 					DEFAULT: "hsl(var(--primary-grad))",
 				},
+				"primary-grad-from": {
+					DEFAULT: "hsl(var(--primary-grad-from))",
+				},
+				"primary-grad-to": {
+					DEFAULT: "hsl(var(--primary-grad-to))",
+				},
 				secondary: {
 					DEFAULT: "hsl(var(--secondary))",
 					foreground: "hsl(var(--secondary-foreground))",
