@@ -22,7 +22,7 @@ export function StatusCodeView({ statusCode }: { statusCode: StatusCode }) {
 
 	return (
 		<div
-			className="w-full p-2 text-center font-extrabold bg-gradient-to-r from-primary-grad-from to-primary-grad-to text-transparent bg-clip-text"
+			className="w-full bg-gradient-to-r from-primary-grad-from to-primary-grad-to bg-clip-text p-2 text-center font-extrabold text-transparent"
 			data-testid="status-code-view"
 		>
 			<div className="text-9xl">
