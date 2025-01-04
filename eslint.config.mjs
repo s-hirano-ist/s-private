@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url";
 import { fixupConfigRules, fixupPluginRules } from "@eslint/compat";
 import { FlatCompat } from "@eslint/eslintrc";
 import js from "@eslint/js";
+import markdown from "@eslint/markdown";
 import tsParser from "@typescript-eslint/parser";
 import _import from "eslint-plugin-import";
 // import jsxA11Y from "eslint-plugin-jsx-a11y";
@@ -21,6 +22,7 @@ const compat = new FlatCompat({
 
 export default [
 	{ ignores: ["**/*.test.*"] },
+	...markdown.configs.recommended, // FIXME: not working
 	...fixupConfigRules(
 		compat.extends(
 			"next/core-web-vitals",
@@ -71,11 +73,7 @@ export default [
 		rules: {
 			"@typescript-eslint/no-misused-promises": [
 				2,
-				{
-					checksVoidReturn: {
-						attributes: false,
-					},
-				},
+				{ checksVoidReturn: { attributes: false } },
 			],
 
 			"react-hooks/exhaustive-deps": "warn",

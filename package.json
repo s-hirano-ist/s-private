@@ -86,6 +86,7 @@
 		"@eslint/compat": "1.2.4",
 		"@eslint/eslintrc": "3.2.0",
 		"@eslint/js": "9.17.0",
+		"@eslint/markdown": "6.2.1",
 		"@playwright/test": "1.49.1",
 		"@storybook/addon-a11y": "8.4.7",
 		"@storybook/addon-coverage": "1.0.5",

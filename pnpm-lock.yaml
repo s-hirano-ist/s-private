@@ -156,6 +156,9 @@ importers:
       '@eslint/js':
         specifier: 9.17.0
         version: 9.17.0
+      '@eslint/markdown':
+        specifier: 6.2.1
+        version: 6.2.1
       '@playwright/test':
         specifier: 1.49.1
         version: 1.49.1
@@ -1503,6 +1506,10 @@ packages:
 
   '@eslint/js@9.17.0':
     resolution: {integrity: sha512-Sxc4hqcs1kTu0iID3kcZDW3JHq2a77HO9P8CP6YEA/FpH3Ll8UXE2r/86Rz9YJLKme39S9vU5OWNjC6Xl0Cr3w==}
+    engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+
+  '@eslint/markdown@6.2.1':
+    resolution: {integrity: sha512-cKVd110hG4ICHmWhIwZJfKmmJBvbiDWyrHODJknAtudKgZtlROGoLX9UEOA0o746zC0hCY4UV4vR+aOGW9S6JQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
   '@eslint/object-schema@2.1.5':
@@ -9291,6 +9298,15 @@ snapshots:
       - supports-color
 
   '@eslint/js@9.17.0': {}
+
+  '@eslint/markdown@6.2.1':
+    dependencies:
+      '@eslint/plugin-kit': 0.2.4
+      mdast-util-from-markdown: 2.0.2
+      mdast-util-gfm: 3.0.0
+      micromark-extension-gfm: 3.0.0
+    transitivePeerDependencies:
+      - supports-color
 
   '@eslint/object-schema@2.1.5': {}
 
