@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.3.0](https://github.com/s-hirano-ist/s-private/compare/v5.2.0...v5.3.0) (2025-01-04)
+
+
+### Features
+
+* 🎸 add modern colors for manifest ([0e3e40a](https://github.com/s-hirano-ist/s-private/commit/0e3e40a48b88cde3c019f07040ce1db74e55aabb))
+* 🎸 add modern grad colors ([3085d08](https://github.com/s-hirano-ist/s-private/commit/3085d08db87ce849dce15e097f207c4e50558f3f))
+* 🎸 optimize image for books ([a7351a5](https://github.com/s-hirano-ist/s-private/commit/a7351a5952c86e69c44f41b244881c61d3e78970))
+* 🎸 optimize image for books ([a500d9d](https://github.com/s-hirano-ist/s-private/commit/a500d9d71018a4be88620e7121c6e794b4689be3))
+* design modern fixes ([5743c3d](https://github.com/s-hirano-ist/s-private/commit/5743c3d7e3f6963ad222e1fede4ae719fa366a0d))
+
+
+### Bug Fixes
+
+* 🐛 lint order ([79c2cbe](https://github.com/s-hirano-ist/s-private/commit/79c2cbe051b45e5c153f4b63136ac9d86fd97b4f))
+* 🐛 test ([0b81cec](https://github.com/s-hirano-ist/s-private/commit/0b81cecdfc95f05d1abc6c3087a0851ba9d997e4))
+
 ## [5.2.0](https://github.com/s-hirano-ist/s-private/compare/v5.1.0...v5.2.0) (2025-01-04)
 
 
