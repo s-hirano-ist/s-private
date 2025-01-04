@@ -92,7 +92,7 @@ describe("addImage", () => {
 			status: 200,
 		});
 		expect(sendLineNotifyMessage).toHaveBeenCalledWith("message");
-		expect(revalidatePath).toHaveBeenCalledWith("/dumper");
+		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 		expect(result).toEqual({
 			success: true,
 			message: SUCCESS_MESSAGES.INSERTED,

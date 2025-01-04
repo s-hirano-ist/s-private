@@ -22,7 +22,7 @@ describe("Footer Component", () => {
 	});
 
 	it("highlights the correct button based on pathname", () => {
-		(usePathname as Mock).mockReturnValue("/contents");
+		(usePathname as Mock).mockReturnValue("/viewer");
 
 		render(<Footer />);
 
@@ -52,7 +52,7 @@ describe("Footer Component", () => {
 		render(<Footer />);
 		const contentsLink = screen.getByRole("link", { name: "VIEWER" });
 		expect(contentsLink).toBeInTheDocument();
-		expect(contentsLink).toHaveAttribute("href", "/contents");
+		expect(contentsLink).toHaveAttribute("href", "/viewer");
 	});
 	it("renders the PROFILE link", () => {
 		render(<Footer />);
