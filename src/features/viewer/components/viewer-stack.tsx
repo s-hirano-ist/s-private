@@ -1,4 +1,4 @@
-import type { Image, ImageType } from "../types";
+import type { Image, ImageType } from "@/features/viewer/types";
 import { ViewerPreview } from "./viewer-preview";
 
 type Props = {

@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { Image, ImageType } from "@/features/viewer/types";
+import { convertUnit8ArrayToImgSrc } from "@/features/viewer/utils/convert";
 import type { Route } from "next";
 import { Link } from "next-view-transitions";
 import NextImage from "next/image";
-import type { Image, ImageType } from "../types";
-import { convertUnit8ArrayToImgSrc } from "../utils/convert";
 
 type Props = {
 	image: Image;
