@@ -11,13 +11,6 @@ export function formatChangeStatusMessage(
 	return `【${contentName}】\n\n更新\n未処理: ${status.unexported}\n直近更新: ${status.recentlyUpdated}\n確定: ${status.exported}`;
 }
 
-export function formatCreateCategoryMessage(
-	category: string,
-	contentName: ContentName,
-) {
-	return `【${contentName}】\n\nカテゴリー\n${category}\nの登録ができました`;
-}
-
 export function formatCreateNewsMessage({
 	title,
 	quote,

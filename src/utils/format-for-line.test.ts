@@ -1,9 +1,7 @@
 import type { Status } from "@/features/dump/types";
-import type { Role } from "@prisma/client";
 import { describe, expect, it } from "vitest";
 import {
 	formatChangeStatusMessage,
-	formatCreateCategoryMessage,
 	formatCreateContentsMessage,
 	formatCreateImageMessage,
 	formatCreateNewsMessage,
@@ -33,19 +31,6 @@ describe("formatChangeStatusMessage", () => {
 		const result = formatChangeStatusMessage(changeStatus, contentName);
 
 		expect(result).toBe("【NEWS】\n\n更新\n未処理: 5\n直近更新: 3\n確定: 7");
-	});
-});
-
-describe("formatCreateCategoryMessage", () => {
-	it("should format the create category message correctly", () => {
-		const category = "新しいカテゴリー";
-		const contentName = "NEWS";
-
-		const result = formatCreateCategoryMessage(category, contentName);
-
-		expect(result).toBe(
-			"【NEWS】\n\nカテゴリー\n新しいカテゴリー\nの登録ができました",
-		);
 	});
 });
 
