@@ -30,32 +30,19 @@ const SEED_USERS = [
 async function addSampleUsers(username: string, password: string, role: Role) {
 	const hashedPassword = await bcrypt.hash(password, 8);
 
-	const user = await prisma.users.upsert({
+	await prisma.users.upsert({
 		where: { username },
 		update: {},
-		create: {
-			username,
-			password: hashedPassword,
-			role,
-			Categories: { create: [{ name: `category-name-${role}` }] },
-		},
+		create: { username, password: hashedPassword, role },
 		select: { id: true, Categories: true },
 	});
-	await prisma.news.create({
-		data: {
-			title: `news-title-${role}`,
-			url: "https://example.com",
-			userId: user.id,
-			categoryId: user.Categories[0].id,
-		},
-	});
-	await prisma.contents.create({
-		data: {
-			title: `contents-title-${role}`,
-			url: "https://example.com",
-			userId: user.id,
-		},
-	});
+}
+
+function getImageBySlug(slug: string, imagesDirectory: string, ext: string) {
+	const realSlug = slug.replace(/\.mdx$/, "");
+	const fullPath = join(imagesDirectory, `${realSlug}.${ext}`);
+	const fileContents = fs.readFileSync(fullPath);
+	return fileContents;
 }
 
 function getAllSlugs(contentsDirectory: string) {
@@ -64,7 +51,7 @@ function getAllSlugs(contentsDirectory: string) {
 		.filter((slug) => slug !== ".DS_Store");
 }
 
-function getContentsBySlug(slug: string, contentsDirectory: string) {
+function getMarkdownBySlug(slug: string, contentsDirectory: string) {
 	const realSlug = slug.replace(/\.mdx$/, "");
 	const fullPath = join(contentsDirectory, `${realSlug}.mdx`);
 	const fileContents = fs.readFileSync(fullPath, "utf8");
@@ -72,31 +59,39 @@ function getContentsBySlug(slug: string, contentsDirectory: string) {
 }
 
 async function addContentsData() {
-	const contentsDirectory = join(
-		process.cwd(),
-		"s-contents/markdown",
-		"contents",
-	);
+	const path = "contents";
+	const contentsDirectory = join(process.cwd(), "s-contents/markdown", path);
+	const imagesDirectory = join(process.cwd(), "s-contents/image", path);
+
 	const slugs = getAllSlugs(contentsDirectory);
 	await prisma.staticContents.deleteMany();
-	Promise.all(
+	await Promise.all(
 		slugs.map(async (slug) => {
-			const title = slug;
-			const data = getContentsBySlug(slug, contentsDirectory);
-			await prisma.staticContents.create({ data: { title, data } });
+			const title = slug.replace(/\.mdx$/, "");
+			const markdown = getMarkdownBySlug(slug, contentsDirectory);
+			const unit8ArrayImage = getImageBySlug(slug, imagesDirectory, "svg");
+			await prisma.staticContents.create({
+				data: { title, markdown, unit8ArrayImage },
+			});
 		}),
 	);
 }
 
 async function addBookData() {
-	const contentsDirectory = join(process.cwd(), "s-contents/markdown", "books");
+	const path = "books";
+	const contentsDirectory = join(process.cwd(), "s-contents/markdown", path);
+	const imagesDirectory = join(process.cwd(), "s-contents/image", path);
+
 	const slugs = getAllSlugs(contentsDirectory);
 	await prisma.staticBooks.deleteMany();
-	Promise.all(
+	await Promise.all(
 		slugs.map(async (slug) => {
-			const title = slug;
-			const data = getContentsBySlug(slug, contentsDirectory);
-			await prisma.staticBooks.create({ data: { title, data } });
+			const title = slug.replace(/\.mdx$/, "");
+			const markdown = getMarkdownBySlug(slug, contentsDirectory);
+			const unit8ArrayImage = getImageBySlug(slug, imagesDirectory, "webp");
+			await prisma.staticBooks.create({
+				data: { title, markdown, unit8ArrayImage },
+			});
 		}),
 	);
 }

@@ -1,7 +1,8 @@
 -- CreateTable
 CREATE TABLE "st_contents" (
     "title" TEXT NOT NULL,
-    "data" TEXT NOT NULL,
+    "markdown" TEXT NOT NULL,
+    "unit8ArrayImage" BYTEA NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -11,7 +12,8 @@ CREATE TABLE "st_contents" (
 -- CreateTable
 CREATE TABLE "st_books" (
     "title" TEXT NOT NULL,
-    "data" TEXT NOT NULL,
+    "markdown" TEXT NOT NULL,
+    "unit8ArrayImage" BYTEA NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 

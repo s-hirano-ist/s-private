@@ -15,7 +15,6 @@ module.exports = {
 		"plugin:@next/next/recommended",
 		"plugin:import/recommended",
 		"plugin:import/typescript",
-		"plugin:mdx/recommended",
 	],
 	parser: "@typescript-eslint/parser",
 	parserOptions: {

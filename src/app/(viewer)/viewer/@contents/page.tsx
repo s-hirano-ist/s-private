@@ -2,31 +2,30 @@ import { Badge } from "@/components/ui/badge";
 import { Unauthorized } from "@/components/unauthorized";
 import { checkSelfAuthOrRedirectToAuth } from "@/features/auth/utils/get-session";
 import { hasContentsPermission } from "@/features/auth/utils/role";
-import {
-	getAllImages,
-	getAllSlugs,
-} from "@/features/viewer/actions/fetch-for-viewer";
 import { ViewerStack } from "@/features/viewer/components/viewer-stack";
-import { formatSlugsAndImages } from "@/features/viewer/utils/format";
+import prisma from "@/prisma";
 
 const path = "contents";
+
+export const dynamic = "force-dynamic";
 
 export default async function Page() {
 	await checkSelfAuthOrRedirectToAuth();
 
 	const hasAdminPermission = await hasContentsPermission();
 
-	const slugs = getAllSlugs(path);
-	const images = getAllImages(path);
+	const images = await prisma.staticContents.findMany({
+		select: { title: true, unit8ArrayImage: true },
+	});
 
 	return (
 		<>
 			{hasAdminPermission ? (
 				<>
 					<Badge className="m-2 flex justify-center">
-						コンテンツ数: {slugs.length}
+						コンテンツ数: {images.length}
 					</Badge>
-					<ViewerStack path={path} data={formatSlugsAndImages(slugs, images)} />
+					<ViewerStack path={path} images={images} imageType="svg" />
 				</>
 			) : (
 				<Unauthorized />
