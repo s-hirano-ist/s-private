@@ -8,9 +8,10 @@ import { markdownToReact } from "@/features/viewer/utils/markdown-to-react";
 import prisma from "@/prisma";
 import type { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
-
 type Params = Promise<{ slug: string }>;
+
+export const dynamic = "force-dynamic";
+export const runtime = "edge";
 
 export async function generateMetadata({
 	params,

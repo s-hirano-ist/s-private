@@ -1,6 +1,7 @@
 import { withSentryConfig } from "@sentry/nextjs";
 import { env } from "./src/env.mjs";
 await import("./src/env.mjs");
+import { setupDevPlatform } from "@cloudflare/next-on-pages/next-dev";
 
 // MEMO: scriptタグを利用する必要が出たときはnonceの利用推奨
 // https://nextjs.org/docs/app/building-your-application/configuring/content-security-policy#reading-the-nonce
@@ -63,6 +64,10 @@ const nextConfig = {
 		];
 	},
 };
+
+if (env.NODE_ENV === "development") {
+	await setupDevPlatform();
+}
 
 export default withSentryConfig(nextConfig, {
 	// For all available options, see:

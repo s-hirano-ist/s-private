@@ -4,6 +4,7 @@ import { hasContentsPermission } from "@/features/auth/utils/role";
 import { ChangeStatusButtons } from "@/features/dump/components/change-status-buttons";
 
 export const dynamic = "force-dynamic";
+export const runtime = "edge";
 
 export default async function Page() {
 	await checkSelfAuthOrRedirectToAuth();

@@ -4,6 +4,9 @@ import { auth } from "@/features/auth/utils/auth";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+export const runtime = "edge";
+
 const displayName = "サインイン";
 
 export const metadata: Metadata = {
