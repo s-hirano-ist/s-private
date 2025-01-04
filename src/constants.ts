@@ -50,4 +50,4 @@ export const UTIL_URLS = [
 	{ name: "GRAFANA", url: "https://private.s-hirano.com:3001" },
 ] as const;
 
-export const ROLES: Role[] = ["ADMIN", "EDITOR", "VIEWER", "UNAUTHORIZED"];
+export const ROLES: Role[] = ["ADMIN", "EDITOR", "VIEWER"];

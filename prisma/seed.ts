@@ -3,16 +3,22 @@ import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
-const SEED_USERS: { username: string; role: Role }[] = [
-	{ username: "admin", role: "ADMIN" },
-	{ username: "editor", role: "EDITOR" },
-	{ username: "viewer", role: "VIEWER" },
-];
+const ADMIN_SEED_PASSWORD = process.env.ADMIN_SEED_PASSWORD;
+const EDITOR_SEED_PASSWORD = process.env.EDITOR_SEED_PASSWORD;
+const VIEWER_SEED_PASSWORD = process.env.VIEWER_SEED_PASSWORD;
 
-async function addSampleData(username: string, password: string, role: Role) {
+if (!ADMIN_SEED_PASSWORD || !EDITOR_SEED_PASSWORD || !VIEWER_SEED_PASSWORD)
+	throw new Error("ENV undefined");
+
+const SEED_USERS = [
+	{ username: "s-hirano-ist", role: "ADMIN", password: ADMIN_SEED_PASSWORD },
+	{ username: "editor", role: "EDITOR", password: EDITOR_SEED_PASSWORD },
+	{ username: "viewer", role: "VIEWER", password: VIEWER_SEED_PASSWORD },
+] satisfies { username: string; password: string; role: Role }[];
+
+async function addSampleUsers(username: string, password: string, role: Role) {
 	const hashedPassword = await bcrypt.hash(password, 8);
 
-	// UPSERT: if already exists then update, otherwise create
 	const user = await prisma.users.create({
 		data: {
 			username,
@@ -40,16 +46,13 @@ async function addSampleData(username: string, password: string, role: Role) {
 }
 
 async function main() {
-	const password = process.env.SEED_PASSWORD;
-	if (!password) throw new Error("PASSWORD undefined.");
-
 	try {
 		await Promise.all(
 			SEED_USERS.map(async (user) => {
-				await addSampleData(user.username, password, user.role);
+				await addSampleUsers(user.username, user.password, user.role);
 			}),
 		);
-		console.log("Added user to the database");
+		console.log("Added users to the database");
 	} catch (error) {
 		console.error(error);
 		process.exit(1);
