@@ -9,9 +9,9 @@ export async function hasContentsPermission() {
 	switch (user.role) {
 		case "ADMIN":
 			return true;
-		case "EDITOR":
-			return false;
 		case "VIEWER":
+			return false;
+		case "UNAUTHORIZED":
 			return false;
 		default:
 			throw new UnexpectedError();
@@ -25,9 +25,9 @@ export async function hasDumperPermission() {
 	switch (user.role) {
 		case "ADMIN":
 			return true;
-		case "EDITOR":
-			return true;
 		case "VIEWER":
+			return false;
+		case "UNAUTHORIZED":
 			return false;
 		default:
 			throw new UnexpectedError();
