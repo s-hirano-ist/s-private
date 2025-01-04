@@ -50,7 +50,7 @@ describe("newsSchema", () => {
 	it("should fail when title exceeds max length", () => {
 		const invalidData = {
 			categoryId: 1,
-			title: "a".repeat(33),
+			title: "a".repeat(65),
 			quote: "This is a short quote.",
 			url: "https://example.com/news",
 		};
