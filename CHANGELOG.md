@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.1.0](https://github.com/s-hirano-ist/s-private/compare/v5.0.1...v5.1.0) (2025-01-04)
+
+
+### Features
+
+* add contents table ([cfd19f1](https://github.com/s-hirano-ist/s-private/commit/cfd19f1e9517014a222f67c9ef4c63b551d6a0e0))
+
+
+### Bug Fixes
+
+* 🐛 build ([6cba4d2](https://github.com/s-hirano-ist/s-private/commit/6cba4d2c9db45e19ead751d6e2995c3f8a574ea8))
+* 🐛 tests ([ca1e84a](https://github.com/s-hirano-ist/s-private/commit/ca1e84ab4527e21ba03248d200c98725c5c2c8a9))
+* contents page to viewer page ([ebc0622](https://github.com/s-hirano-ist/s-private/commit/ebc0622590f6d4536e4e0c7403e3638d18552f08))
+
 ## [5.0.1](https://github.com/s-hirano-ist/s-private/compare/v5.0.0...v5.0.1) (2025-01-04)
 
 
