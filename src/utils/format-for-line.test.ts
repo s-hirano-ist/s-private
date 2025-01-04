@@ -1,5 +1,5 @@
 import type { Status } from "@/features/dump/types";
-import type { Role, Scope } from "@prisma/client";
+import type { Role } from "@prisma/client";
 import { describe, expect, it } from "vitest";
 import {
 	formatChangeStatusMessage,
@@ -8,8 +8,6 @@ import {
 	formatCreateImageMessage,
 	formatCreateNewsMessage,
 	formatDeleteMessage,
-	formatUpdateRoleMessage,
-	formatUpdateScopeMessage,
 } from "./format-for-line";
 
 describe("formatDeleteMessage", () => {
@@ -93,25 +91,5 @@ describe("formatCreateImageMesasge", () => {
 		expect(result).toBe(
 			"【IMAGE】\n\nコンテンツ\nfileName: xx.jpg\nの登録ができました",
 		);
-	});
-});
-
-describe("formatUpdateScopeMessage", () => {
-	it("should format the update scope message correctly", () => {
-		const scope: Scope = "PRIVATE";
-
-		const result = formatUpdateScopeMessage(scope);
-
-		expect(result).toBe("【SCOPE】\n\nscope: PRIVATE\nに変更しました");
-	});
-});
-
-describe("formatUpdateRoleMessage", () => {
-	it("should format the update role message correctly", () => {
-		const role: Role = "ADMIN";
-
-		const result = formatUpdateRoleMessage(role);
-
-		expect(result).toBe("【ROLE】\n\nrole: ADMIN\nに変更しました");
 	});
 });

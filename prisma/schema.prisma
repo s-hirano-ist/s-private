@@ -17,17 +17,11 @@ enum Role {
   UNAUTHORIZED // 未利用
 }
 
-enum Scope {
-  PUBLIC
-  PRIVATE
-}
-
 model Users {
   id       String @id @default(uuid(7))
   username String @unique
   password String
   role     Role   @default(VIEWER)
-  scope    Scope  @default(PUBLIC)
 
   failedLoginAttempts Int     @default(0) @map("failed_login_attempts")
   isLocked            Boolean @default(false) @map("is_locked")

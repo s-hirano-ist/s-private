@@ -26,7 +26,6 @@ export const ERROR_MESSAGES = {
 
 export const SUCCESS_MESSAGES = {
 	INSERTED: "正常に登録できました。",
-	SCOPE_UPDATED: "スコープを正常に変更しました。",
 	ROLE_UPDATED: "ロールを正常に更新しました。",
 	PROFILE_UPSERTED: "プロフィールを更新しました。",
 	SIGN_IN: "サインインに成功しました。",

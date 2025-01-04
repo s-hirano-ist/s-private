@@ -1,23 +1,15 @@
-import { PrismaClient, type Role, type Scope } from "@prisma/client";
+import { PrismaClient, type Role } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
-const SEED_USERS: { username: string; role: Role; scope: Scope }[] = [
-	{ username: "admin-public", role: "ADMIN", scope: "PUBLIC" },
-	{ username: "admin-private", role: "ADMIN", scope: "PRIVATE" },
-	{ username: "editor-public", role: "EDITOR", scope: "PUBLIC" },
-	{ username: "editor-private", role: "EDITOR", scope: "PRIVATE" },
-	{ username: "viewer-public", role: "VIEWER", scope: "PUBLIC" },
-	{ username: "viewer-private", role: "VIEWER", scope: "PRIVATE" },
+const SEED_USERS: { username: string; role: Role }[] = [
+	{ username: "admin", role: "ADMIN" },
+	{ username: "editor", role: "EDITOR" },
+	{ username: "viewer", role: "VIEWER" },
 ];
 
-async function addSampleData(
-	username: string,
-	password: string,
-	role: Role,
-	scope: Scope,
-) {
+async function addSampleData(username: string, password: string, role: Role) {
 	const hashedPassword = await bcrypt.hash(password, 8);
 
 	// UPSERT: if already exists then update, otherwise create
@@ -26,14 +18,13 @@ async function addSampleData(
 			username,
 			password: hashedPassword,
 			role,
-			scope,
-			Categories: { create: [{ name: `category-name-${role}-${scope}` }] },
+			Categories: { create: [{ name: `category-name-${role}` }] },
 		},
 		select: { id: true, Categories: true },
 	});
 	await prisma.news.create({
 		data: {
-			title: `news-title-${role}-${scope}`,
+			title: `news-title-${role}`,
 			url: "https://example.com",
 			userId: user.id,
 			categoryId: user.Categories[0].id,
@@ -41,7 +32,7 @@ async function addSampleData(
 	});
 	await prisma.contents.create({
 		data: {
-			title: `contents-title-${role}-${scope}`,
+			title: `contents-title-${role}`,
 			url: "https://example.com",
 			userId: user.id,
 		},
@@ -55,7 +46,7 @@ async function main() {
 	try {
 		await Promise.all(
 			SEED_USERS.map(async (user) => {
-				await addSampleData(user.username, password, user.role, user.scope);
+				await addSampleData(user.username, password, user.role);
 			}),
 		);
 		console.log("Added user to the database");
