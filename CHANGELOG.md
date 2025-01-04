@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.0.1](https://github.com/s-hirano-ist/s-private/compare/v5.0.0...v5.0.1) (2025-01-04)
+
+
+### Bug Fixes
+
+* 🐛 select bug on double submit ([859c0a1](https://github.com/s-hirano-ist/s-private/commit/859c0a1032d1ac74950cb23bee750345c4596c94))
+* 🐛 title max length from 32 to 64 ([2596584](https://github.com/s-hirano-ist/s-private/commit/25965849c172f6792e3ec7d418ec4d09c3415402))
+* bugs and refactors ([755c898](https://github.com/s-hirano-ist/s-private/commit/755c898ba33c02622b6fbdd1dcfa5020b697fc1c))
+
 ## [5.0.0](https://github.com/s-hirano-ist/s-private/compare/v4.4.0...v5.0.0) (2025-01-01)
 
 
