@@ -1,5 +1,8 @@
+import fs from "node:fs";
+import { join } from "node:path";
 import { PrismaClient, type Role } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import matter from "gray-matter";
 
 const prisma = new PrismaClient();
 
@@ -27,8 +30,10 @@ const SEED_USERS = [
 async function addSampleUsers(username: string, password: string, role: Role) {
 	const hashedPassword = await bcrypt.hash(password, 8);
 
-	const user = await prisma.users.create({
-		data: {
+	const user = await prisma.users.upsert({
+		where: { username },
+		update: {},
+		create: {
 			username,
 			password: hashedPassword,
 			role,
@@ -53,6 +58,49 @@ async function addSampleUsers(username: string, password: string, role: Role) {
 	});
 }
 
+function getAllSlugs(contentsDirectory: string) {
+	return fs
+		.readdirSync(contentsDirectory)
+		.filter((slug) => slug !== ".DS_Store");
+}
+
+function getContentsBySlug(slug: string, contentsDirectory: string) {
+	const realSlug = slug.replace(/\.mdx$/, "");
+	const fullPath = join(contentsDirectory, `${realSlug}.mdx`);
+	const fileContents = fs.readFileSync(fullPath, "utf8");
+	return matter(fileContents).content;
+}
+
+async function addContentsData() {
+	const contentsDirectory = join(
+		process.cwd(),
+		"s-contents/markdown",
+		"contents",
+	);
+	const slugs = getAllSlugs(contentsDirectory);
+	await prisma.staticContents.deleteMany();
+	Promise.all(
+		slugs.map(async (slug) => {
+			const title = slug;
+			const data = getContentsBySlug(slug, contentsDirectory);
+			await prisma.staticContents.create({ data: { title, data } });
+		}),
+	);
+}
+
+async function addBookData() {
+	const contentsDirectory = join(process.cwd(), "s-contents/markdown", "books");
+	const slugs = getAllSlugs(contentsDirectory);
+	await prisma.staticBooks.deleteMany();
+	Promise.all(
+		slugs.map(async (slug) => {
+			const title = slug;
+			const data = getContentsBySlug(slug, contentsDirectory);
+			await prisma.staticBooks.create({ data: { title, data } });
+		}),
+	);
+}
+
 async function main() {
 	try {
 		await Promise.all(
@@ -61,6 +109,12 @@ async function main() {
 			}),
 		);
 		console.log("Added users to the database");
+
+		await addContentsData();
+		console.log("Added contents to the database");
+
+		await addBookData();
+		console.log("Added books to the database");
 	} catch (error) {
 		console.error(error);
 		process.exit(1);

@@ -10,6 +10,7 @@ datasource db {
 }
 
 // Auth
+
 enum Role {
   ADMIN // DUMPER権限有・VIEWER権限有
   VIEWER // DUMPER権限有・VIEWER権限無
@@ -61,7 +62,7 @@ model LoginHistories {
   @@map("login_histories")
 }
 
-// Dump
+// Dumper
 
 enum Status {
   UNEXPORTED
@@ -121,4 +122,24 @@ model Images {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("images")
+}
+
+// Viewer
+
+model StaticContents {
+  title     String   @id @unique
+  data      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("st_contents")
+}
+
+model StaticBooks {
+  title     String   @id @unique
+  data      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("st_books")
 }
