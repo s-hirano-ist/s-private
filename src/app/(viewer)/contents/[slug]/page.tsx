@@ -1,16 +1,16 @@
+import { NotFound } from "@/components/not-found";
 import { Unauthorized } from "@/components/unauthorized";
 import { PAGE_NAME } from "@/constants";
 import { checkSelfAuthOrRedirectToAuth } from "@/features/auth/utils/get-session";
 import { hasContentsPermission } from "@/features/auth/utils/role";
-import { getAllSlugs } from "@/features/viewer/actions/fetch-for-viewer";
 import { ViewerBody } from "@/features/viewer/components/viewer-body";
+import { markdownToReact } from "@/features/viewer/utils/markdown-to-react";
+import prisma from "@/prisma";
 import type { Metadata } from "next";
 
-const path = "contents";
+export const dynamic = "force-dynamic";
 
 type Params = Promise<{ slug: string }>;
-
-export const dynamicParams = false;
 
 export async function generateMetadata({
 	params,
@@ -30,25 +30,22 @@ export default async function Page({ params }: { params: Params }) {
 
 	const hasAdminPermission = await hasContentsPermission();
 
-	const { default: Contents } = await import(
-		`../../../../../s-contents/markdown/contents/${slug}`
-	);
+	const data = await prisma.staticContents.findUnique({
+		where: { title: slug },
+		select: { markdown: true },
+	});
+	if (!data) return <NotFound />;
 
+	const reactData = await markdownToReact(data.markdown);
 	return (
 		<>
 			{hasAdminPermission ? (
 				<ViewerBody>
-					<Contents />
+					<ViewerBody>{reactData}</ViewerBody>
 				</ViewerBody>
 			) : (
 				<Unauthorized />
 			)}
 		</>
 	);
-}
-
-export function generateStaticParams() {
-	return getAllSlugs(path).map((slug) => {
-		return { slug };
-	});
 }

@@ -1,16 +1,23 @@
-"use client";
+import type { Image, ImageType } from "@/features/viewer/types";
 import { ViewerPreview } from "./viewer-preview";
 
-type Props = { path: string; data: Record<string, string> };
+type Props = {
+	images: Image[];
+	path: string;
+	imageType: ImageType;
+};
 
-export function ViewerStack({ path, data }: Props) {
+export function ViewerStack({ images, path, imageType }: Props) {
 	return (
 		<div className="my-2 grid grid-cols-2 items-stretch gap-4 px-2 sm:grid-cols-4">
-			{Object.entries(data).map(([key, value]) => {
+			{images.map((image) => {
 				return (
-					<div key={key}>
-						<ViewerPreview path={path} slug={key} imagePath={value} />
-					</div>
+					<ViewerPreview
+						image={image}
+						path={path}
+						imageType={imageType}
+						key={image.title}
+					/>
 				);
 			})}
 		</div>
