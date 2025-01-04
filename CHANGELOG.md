@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.1.0](https://github.com/s-hirano-ist/s-private/compare/v5.0.1...v5.1.0) (2025-01-04)
+
+
+### Features
+
+* add contents table ([cfd19f1](https://github.com/s-hirano-ist/s-private/commit/cfd19f1e9517014a222f67c9ef4c63b551d6a0e0))
+
 ## [5.0.1](https://github.com/s-hirano-ist/s-private/compare/v5.0.0...v5.0.1) (2025-01-04)
 
 
