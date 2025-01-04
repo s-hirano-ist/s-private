@@ -4,17 +4,12 @@ export default function manifest(): MetadataRoute.Manifest {
 	return {
 		name: "s-private",
 		short_name: "s-private",
-		description: "Private pages and admin tools for s-hirano-ist.",
+		description: "Dumper and Viewer of s-hirano-ist's memories.",
 		lang: "ja",
 		start_url: "/",
-		theme_color: "#77a2c0",
+		theme_color: "#fff",
 		background_color: "#000",
-		icons: [
-			{
-				src: "/favicon.ico",
-				sizes: "any",
-			},
-		],
+		icons: [{ src: "/favicon.ico", sizes: "any" }],
 		display: "fullscreen",
 	};
 }
