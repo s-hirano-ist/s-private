@@ -1,6 +1,6 @@
 import type { Role } from "@prisma/client";
 
-export const PAGE_NAME = "private.s-hirano.com";
+export const PAGE_NAME = "s-private";
 
 export const PAGE_SIZE = 12;
 

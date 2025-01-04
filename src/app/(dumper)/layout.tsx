@@ -7,7 +7,7 @@ const displayName = "DUMPER";
 
 export const metadata: Metadata = {
 	title: `${displayName} | ${PAGE_NAME}`,
-	description: "Dump news and contents data.",
+	description: "Contents dumper.",
 };
 
 type Props = {

@@ -14,7 +14,7 @@ describe("Footer Component", () => {
 
 		// 各ボタンが存在するか確認
 		expect(screen.getByText(/DUMPER/i)).toBeInTheDocument();
-		expect(screen.getByText(/CONTENTS/i)).toBeInTheDocument();
+		expect(screen.getByText(/VIEWER/i)).toBeInTheDocument();
 		expect(screen.getByText(/SEARCH/i)).toBeInTheDocument();
 		expect(screen.getByText(/AI/i)).toBeInTheDocument();
 
@@ -26,7 +26,7 @@ describe("Footer Component", () => {
 
 		render(<Footer />);
 
-		const contentsButton = screen.getByText(/CONTENTS/i).closest("button");
+		const contentsButton = screen.getByText(/VIEWER/i).closest("button");
 		expect(contentsButton).toHaveClass("bg-black/40");
 
 		const dumperButton = screen.getByText(/DUMPER/i).closest("button");
