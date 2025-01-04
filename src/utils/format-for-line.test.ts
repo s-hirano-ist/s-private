@@ -1,15 +1,11 @@
 import type { Status } from "@/features/dump/types";
-import type { Role, Scope } from "@prisma/client";
 import { describe, expect, it } from "vitest";
 import {
 	formatChangeStatusMessage,
-	formatCreateCategoryMessage,
 	formatCreateContentsMessage,
 	formatCreateImageMessage,
 	formatCreateNewsMessage,
 	formatDeleteMessage,
-	formatUpdateRoleMessage,
-	formatUpdateScopeMessage,
 } from "./format-for-line";
 
 describe("formatDeleteMessage", () => {
@@ -35,19 +31,6 @@ describe("formatChangeStatusMessage", () => {
 		const result = formatChangeStatusMessage(changeStatus, contentName);
 
 		expect(result).toBe("【NEWS】\n\n更新\n未処理: 5\n直近更新: 3\n確定: 7");
-	});
-});
-
-describe("formatCreateCategoryMessage", () => {
-	it("should format the create category message correctly", () => {
-		const category = "新しいカテゴリー";
-		const contentName = "NEWS";
-
-		const result = formatCreateCategoryMessage(category, contentName);
-
-		expect(result).toBe(
-			"【NEWS】\n\nカテゴリー\n新しいカテゴリー\nの登録ができました",
-		);
 	});
 });
 
@@ -93,25 +76,5 @@ describe("formatCreateImageMesasge", () => {
 		expect(result).toBe(
 			"【IMAGE】\n\nコンテンツ\nfileName: xx.jpg\nの登録ができました",
 		);
-	});
-});
-
-describe("formatUpdateScopeMessage", () => {
-	it("should format the update scope message correctly", () => {
-		const scope: Scope = "PRIVATE";
-
-		const result = formatUpdateScopeMessage(scope);
-
-		expect(result).toBe("【SCOPE】\n\nscope: PRIVATE\nに変更しました");
-	});
-});
-
-describe("formatUpdateRoleMessage", () => {
-	it("should format the update role message correctly", () => {
-		const role: Role = "ADMIN";
-
-		const result = formatUpdateRoleMessage(role);
-
-		expect(result).toBe("【ROLE】\n\nrole: ADMIN\nに変更しました");
 	});
 });

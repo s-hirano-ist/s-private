@@ -13,10 +13,7 @@ import { loggerInfo } from "@/pino";
 import prisma from "@/prisma";
 import type { ServerAction } from "@/types";
 import { sendLineNotifyMessage } from "@/utils/fetch-message";
-import {
-	formatCreateCategoryMessage,
-	formatCreateNewsMessage,
-} from "@/utils/format-for-line";
+import { formatCreateNewsMessage } from "@/utils/format-for-line";
 import { revalidatePath } from "next/cache";
 
 export async function addNews(formData: FormData): Promise<ServerAction<News>> {
@@ -25,21 +22,15 @@ export async function addNews(formData: FormData): Promise<ServerAction<News>> {
 
 		const userId = await getUserId();
 
-		const hasCategory = formData.get("new_category") !== null;
+		const validatedCategory = validateCategory(formData);
 
-		if (hasCategory) {
-			const category = await prisma.categories.create({
-				data: { userId, ...validateCategory(formData) },
-			});
+		const category = await prisma.categories.upsert({
+			where: { name_userId: { userId, name: validatedCategory.name } },
+			update: {},
+			create: { userId, ...validatedCategory },
+		});
 
-			const message = formatCreateCategoryMessage(category.name, "NEWS");
-			loggerInfo(message, {
-				caller: "addNews",
-				status: 200,
-			});
-			await sendLineNotifyMessage(message);
-			formData.set("category", String(category.id));
-		}
+		formData.set("category", String(category.id));
 
 		const createdNews = await prisma.news.create({
 			data: { userId, ...validateNews(formData) },
@@ -51,6 +42,7 @@ export async function addNews(formData: FormData): Promise<ServerAction<News>> {
 				Category: true,
 			},
 		});
+
 		const message = formatCreateNewsMessage(createdNews);
 		loggerInfo(message, {
 			caller: "addNews",

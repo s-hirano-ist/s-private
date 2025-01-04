@@ -10,8 +10,6 @@ import { ClipboardPasteIcon } from "lucide-react";
 import { useRef } from "react";
 
 export function AddContentsForm() {
-	const titleInputRef = useRef<HTMLInputElement>(null);
-	const quoteInputRef = useRef<HTMLTextAreaElement>(null);
 	const urlInputRef = useRef<HTMLInputElement>(null);
 
 	const { toast } = useToast();
@@ -29,9 +27,6 @@ export function AddContentsForm() {
 			variant: "default",
 			description: response.message,
 		});
-		if (titleInputRef.current) titleInputRef.current.value = "";
-		if (quoteInputRef.current) quoteInputRef.current.value = "";
-		if (urlInputRef.current) urlInputRef.current.value = "";
 	};
 
 	const handlePasteClick = async () => {
@@ -44,22 +39,11 @@ export function AddContentsForm() {
 		<form action={formAction} className="space-y-4 px-2 py-4">
 			<div className="space-y-1">
 				<Label htmlFor="title">タイトル</Label>
-				<Input
-					id="title"
-					name="title"
-					ref={titleInputRef}
-					autoComplete="off"
-					required
-				/>
+				<Input id="title" name="title" autoComplete="off" required />
 			</div>
 			<div className="space-y-1">
 				<Label htmlFor="quote">ひとこと</Label>
-				<Textarea
-					id="quote"
-					name="quote"
-					ref={quoteInputRef}
-					autoComplete="off"
-				/>
+				<Textarea id="quote" name="quote" autoComplete="off" />
 			</div>
 			<div className="space-y-1">
 				<Label htmlFor="url">URL</Label>

@@ -37,23 +37,26 @@ describe("categorySchema", () => {
 	});
 
 	it("should pass when name is an empty string after trimming", () => {
-		const validData = {
+		const invalidData = {
 			name: "   ",
 		};
 
-		const result = categorySchema.safeParse(validData);
-		expect(result.success).toBe(true);
-		if (result.success) {
-			expect(result.data.name).toBe("");
+		const result = categorySchema.safeParse(invalidData);
+		expect(result.success).toBe(false);
+		if (!result.success) {
+			expect(result.error.errors[0].message).toBe(FORM_ERROR_MESSAGES.REQUIRED);
 		}
 	});
 
 	it("should pass when name is an empty string", () => {
-		const validData = {
+		const invalidData = {
 			name: "",
 		};
 
-		const result = categorySchema.safeParse(validData);
-		expect(result.success).toBe(true);
+		const result = categorySchema.safeParse(invalidData);
+		expect(result.success).toBe(false);
+		if (!result.success) {
+			expect(result.error.errors[0].message).toBe(FORM_ERROR_MESSAGES.REQUIRED);
+		}
 	});
 });

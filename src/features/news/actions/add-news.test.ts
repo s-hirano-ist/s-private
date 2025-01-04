@@ -7,10 +7,7 @@ import { validateCategory } from "@/features/news/utils/validate-category";
 import { validateNews } from "@/features/news/utils/validate-news";
 import prisma from "@/prisma";
 import { sendLineNotifyMessage } from "@/utils/fetch-message";
-import {
-	formatCreateCategoryMessage,
-	formatCreateNewsMessage,
-} from "@/utils/format-for-line";
+import { formatCreateNewsMessage } from "@/utils/format-for-line";
 import { revalidatePath } from "next/cache";
 import { type Mock, describe, expect, it, vi } from "vitest";
 import { addNews } from "./add-news";
@@ -33,7 +30,6 @@ vi.mock("@/utils/fetch-message", () => ({
 }));
 
 vi.mock("@/utils/format-for-line", () => ({
-	formatCreateCategoryMessage: vi.fn(),
 	formatCreateNewsMessage: vi.fn(),
 }));
 
@@ -44,7 +40,7 @@ vi.mock("@/error-wrapper", () => ({
 describe("addNews", () => {
 	it("should create a category and news item if a new category is provided", async () => {
 		const formData = new FormData();
-		formData.append("new_category", "Tech");
+		formData.append("category", "Tech");
 		formData.append("title", "New Technology");
 		formData.append("quote", "Technology is evolving fast.");
 		formData.append("url", "https://example.com/tech");
@@ -68,12 +64,9 @@ describe("addNews", () => {
 		(hasSelfPostPermissionOrThrow as Mock).mockResolvedValue(undefined);
 		(getUserId as Mock).mockResolvedValue(mockUserId);
 		(validateCategory as Mock).mockReturnValue(mockValidatedCategory);
-		(prisma.categories.create as Mock).mockResolvedValue(mockCategory);
+		(prisma.categories.upsert as Mock).mockResolvedValue(mockCategory);
 		(validateNews as Mock).mockReturnValue(mockValidatedNews);
 		(prisma.news.create as Mock).mockResolvedValue(mockNews);
-		(formatCreateCategoryMessage as Mock).mockReturnValue(
-			"Category created message",
-		);
 		(formatCreateNewsMessage as Mock).mockReturnValue("News created message");
 
 		const result = await addNews(formData);
@@ -81,8 +74,10 @@ describe("addNews", () => {
 		expect(hasSelfPostPermissionOrThrow).toHaveBeenCalledTimes(1);
 		expect(getUserId).toHaveBeenCalledTimes(1);
 		expect(validateCategory).toHaveBeenCalledWith(formData);
-		expect(prisma.categories.create).toHaveBeenCalledWith({
-			data: { userId: mockUserId, ...mockValidatedCategory },
+		expect(prisma.categories.upsert).toHaveBeenCalledWith({
+			update: {},
+			where: { name_userId: { name: "Tech", userId: "12345" } },
+			create: { userId: mockUserId, ...mockValidatedCategory },
 		});
 		expect(validateNews).toHaveBeenCalledWith(formData);
 		expect(prisma.news.create).toHaveBeenCalledWith({
@@ -95,7 +90,7 @@ describe("addNews", () => {
 				Category: true,
 			},
 		});
-		expect(sendLineNotifyMessage).toHaveBeenCalledTimes(2); // Category and news notifications
+		expect(sendLineNotifyMessage).toHaveBeenCalledTimes(1); // News notifications
 		expect(revalidatePath).toHaveBeenCalledWith("/dumper");
 		expect(result).toEqual({
 			success: true,
@@ -137,7 +132,6 @@ describe("addNews", () => {
 
 		expect(hasSelfPostPermissionOrThrow).toHaveBeenCalledTimes(1);
 		expect(getUserId).toHaveBeenCalledTimes(1);
-		expect(prisma.categories.create).not.toHaveBeenCalled();
 		expect(validateNews).toHaveBeenCalledWith(formData);
 		expect(prisma.news.create).toHaveBeenCalledWith({
 			data: { userId: mockUserId, ...mockValidatedNews },

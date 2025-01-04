@@ -5,7 +5,7 @@ export const contentsSchema = z.object({
 	title: z
 		.string()
 		.min(1, { message: FORM_ERROR_MESSAGES.REQUIRED })
-		.max(32, { message: FORM_ERROR_MESSAGES.TOO_LONG }),
+		.max(64, { message: FORM_ERROR_MESSAGES.TOO_LONG }),
 	quote: z
 		.string()
 		.max(256, { message: FORM_ERROR_MESSAGES.TOO_LONG })

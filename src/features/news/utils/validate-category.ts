@@ -4,7 +4,7 @@ import { categorySchema } from "@/features/news/schemas/category-schema";
 
 export function validateCategory(formData: FormData) {
 	const categoryValidatedFields = categorySchema.safeParse({
-		name: formData.get("new_category"),
+		name: formData.get("category"),
 	});
 	if (!categoryValidatedFields.success) throw new InvalidFormatError();
 
