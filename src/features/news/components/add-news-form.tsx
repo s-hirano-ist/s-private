@@ -1,5 +1,4 @@
 "use client";
-import { SubmitButton } from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -12,13 +11,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { addNews } from "@/features/news/actions/add-news";
 import { useToast } from "@/hooks/use-toast";
-import type { Categories } from "@prisma/client";
 import { ClipboardPasteIcon, TableOfContentsIcon } from "lucide-react";
-import { useRef } from "react";
+import { useActionState, useRef } from "react";
 
-type Props = {
-	categories: Omit<Categories, "createdAt" | "updatedAt" | "userId">[];
-};
+type Props = { categories: { name: string; id: number }[] };
 
 export function AddNewsForm({ categories }: Props) {
 	const urlInputRef = useRef<HTMLInputElement>(null);
@@ -26,13 +22,16 @@ export function AddNewsForm({ categories }: Props) {
 
 	const { toast } = useToast();
 
-	const formAction = async (formData: FormData) => {
+	const submitForm = async (_: null, formData: FormData) => {
 		const response = await addNews(formData);
 		toast({
 			variant: response.success ? "default" : "destructive",
 			description: response.message,
 		});
+		return null;
 	};
+
+	const [_, addNewsAction, isPending] = useActionState(submitForm, null);
 
 	const handleSelectedValueChange = (value: string) => {
 		if (categoryInputRef.current !== null)
@@ -45,8 +44,7 @@ export function AddNewsForm({ categories }: Props) {
 	};
 
 	return (
-		// MEMO: experimental feature of using form actions
-		<form action={formAction} className="space-y-4 px-2 py-4">
+		<form action={addNewsAction} className="space-y-4 px-2 py-4">
 			<div className="space-y-1">
 				<Label htmlFor="category">カテゴリー</Label>
 				<div className="flex">
@@ -102,7 +100,9 @@ export function AddNewsForm({ categories }: Props) {
 					</Button>
 				</div>
 			</div>
-			<SubmitButton label="保存" />
+			<Button type="submit" disabled={isPending} className="w-full">
+				保存
+			</Button>
 		</form>
 	);
 }
