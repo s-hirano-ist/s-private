@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.4.0](https://github.com/s-hirano-ist/s-private/compare/v5.3.0...v5.4.0) (2025-01-05)
+
+
+### Features
+
+* 🎸 add use action state ([d2fd5bc](https://github.com/s-hirano-ist/s-private/commit/d2fd5bc3eeb914baa580c728c764ea4b126b29b6))
+* 🎸 add use action state ([4badb32](https://github.com/s-hirano-ist/s-private/commit/4badb32e705a6650fc8dd6e18413c81b73f899be))
+
+
+### Bug Fixes
+
+* 🐛 server actions body size limit ([8e01341](https://github.com/s-hirano-ist/s-private/commit/8e01341b1c65f9427ecf3ccf9099071ffa1c9e84))
+* 🐛 server actions body size limit ([759ea47](https://github.com/s-hirano-ist/s-private/commit/759ea470a6e347e4d603ccc5571309024f229bf2))
+
 ## [5.3.0](https://github.com/s-hirano-ist/s-private/compare/v5.2.0...v5.3.0) (2025-01-04)
 
 
