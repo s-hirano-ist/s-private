@@ -30,6 +30,7 @@ async function markdownToHtml(markdown: string) {
 		.use(remarkParse) // Markdown to mdast
 		.use(remarkGfm)
 		.use(remarkRehype) // mdast to hast
+		// @mapbox/rehype-prism
 		.use(rehypeExternalLinks, { target: "_blank", rel: ["nofollow"] })
 		.use(rehypeHighlight)
 		.use(rehypeStringify)
