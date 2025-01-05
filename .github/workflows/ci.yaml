@@ -45,9 +45,21 @@ jobs:
       - run: pnpm i --frozen-lockfile
       - run: pnpm build
         env:
-          SKIP_ENV_VALIDATION: true
-          POSTGRES_PRISMA_URL: ${{ secrets.POSTGRES_PRISMA_URL }}
-          MINIO_HOST: ${{ secrets.MINIO_HOST }}
+          AUTH_SECRET: ${{secrets.AUTH_SECRET}}
+          AUTH_URL: ${{secrets.AUTH_URL}}
+          LINE_NOTIFY_SECRET_TOKEN: ${{secrets.LINE_NOTIFY_SECRET_TOKEN}}
+          LINE_NOTIFY_URL: ${{secrets.LINE_NOTIFY_URL}}
+          MINIO_ACCESS_KEY: ${{secrets.MINIO_ACCESS_KEY}}
+          MINIO_BUCKET_NAME: ${{secrets.MINIO_BUCKET_NAME}}
+          MINIO_HOST: ${{secrets.MINIO_HOST}}
+          MINIO_PORT: ${{secrets.MINIO_PORT}}
+          MINIO_SECRET_KEY: ${{secrets.MINIO_SECRET_KEY}}
+          NEXT_PUBLIC_G_TAG: ${{secrets.NEXT_PUBLIC_G_TAG}}
+          NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
+          POSTGRES_DIRECT_URL: ${{ secrets.POSTGRES_DIRECT_URL }}
+          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_REPORT_URL: ${{ secrets.SENTRY_REPORT_URL }}
 
   lint:
     runs-on: ubuntu-24.04
