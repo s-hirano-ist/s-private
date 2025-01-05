@@ -62,6 +62,7 @@ const handleStatusChange = async (changeType: UpdateOrRevert) => {
 		case "REVERT":
 			return await revertSelfContentsStatus();
 		default:
+			changeType satisfies never;
 			throw new UnexpectedError();
 	}
 };

@@ -26,10 +26,10 @@ describe("Footer Component", () => {
 
 		render(<Footer />);
 
-		const contentsButton = screen.getByText(/VIEWER/i).closest("button");
+		const contentsButton = screen.getByText(/VIEWER/i).closest("a");
 		expect(contentsButton).toHaveClass("bg-black/10");
 
-		const dumperButton = screen.getByText(/DUMPER/i).closest("button");
+		const dumperButton = screen.getByText(/DUMPER/i).closest("a");
 		expect(dumperButton).not.toHaveClass("bg-black/10");
 	});
 

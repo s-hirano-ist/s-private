@@ -34,31 +34,33 @@ export function Footer() {
 				<div className="mx-auto grid h-16 max-w-lg grid-cols-5 bg-gradient-to-r from-primary-grad-from to-primary-grad-to text-white sm:rounded-3xl">
 					{/* FIXME: bug with parallel routes
 					 * https://nextjs.org/docs/app/building-your-application/routing/parallel-routes */}
-					<Link href={"/" as Route}>
-						<Button
-							variant="navSide"
-							size="navSide"
-							className={cn(
-								"sm:rounded-s-3xl",
-								pathname === "/" ? "bg-black/10" : "",
-							)}
-						>
+					<Button
+						variant="navSide"
+						size="navSide"
+						className={cn(
+							"sm:rounded-s-3xl",
+							pathname === "/" ? "bg-black/10" : "",
+						)}
+						asChild
+					>
+						<Link href={"/" as Route}>
 							{Icon("DUMPER", <FileUpIcon className="size-6" />)}
-						</Button>
-					</Link>
+						</Link>
+					</Button>
 
 					{/* FIXME: bug with parallel routes
 					 * https://nextjs.org/docs/app/building-your-application/routing/parallel-routes */}
-					<Link href={"/viewer" as Route}>
-						<Button
-							variant="navSide"
-							size="navSide"
-							type="button"
-							className={pathname === "/viewer" ? "bg-black/10" : ""}
-						>
+					<Button
+						variant="navSide"
+						size="navSide"
+						type="button"
+						className={pathname === "/viewer" ? "bg-black/10" : ""}
+						asChild
+					>
+						<Link href={"/viewer" as Route}>
 							{Icon("VIEWER", <NotebookIcon className="size-6" />)}
-						</Button>
-					</Link>
+						</Link>
+					</Button>
 
 					<DrawerTrigger asChild>
 						<div className="flex items-center justify-center">
@@ -76,31 +78,33 @@ export function Footer() {
 
 					{/* FIXME: bug with parallel routes
 					 * https://nextjs.org/docs/app/building-your-application/routing/parallel-routes */}
-					<Link href={"/search" as Route}>
-						<Button
-							variant="navSide"
-							size="navSide"
-							type="button"
-							className={pathname === "/search" ? "bg-black/10" : ""}
-						>
+					<Button
+						variant="navSide"
+						size="navSide"
+						type="button"
+						className={pathname === "/search" ? "bg-black/10" : ""}
+						asChild
+					>
+						<Link href={"/search" as Route}>
 							{Icon("SEARCH", <SearchIcon className="size-6" />)}
-						</Button>
-					</Link>
+						</Link>
+					</Button>
 
 					{/* FIXME: bug with parallel routes
 					 * https://nextjs.org/docs/app/building-your-application/routing/parallel-routes */}
-					<Link href={"/ai" as Route}>
-						<Button
-							variant="navSide"
-							size="navSide"
-							className={cn(
-								"sm:rounded-e-3xl",
-								pathname === "/ai" ? "bg-black/10" : "",
-							)}
-						>
+					<Button
+						variant="navSide"
+						size="navSide"
+						className={cn(
+							"sm:rounded-e-3xl",
+							pathname === "/ai" ? "bg-black/10" : "",
+						)}
+						asChild
+					>
+						<Link href={"/ai" as Route}>
 							{Icon("AI", <BotIcon className="size-6" />)}
-						</Button>
-					</Link>
+						</Link>
+					</Button>
 				</div>
 				<DrawerContent>
 					<UtilsDrawer />

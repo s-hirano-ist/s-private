@@ -18,11 +18,10 @@ export function convertUint8ArrayToImgSrc(
 	switch (imageType) {
 		case "svg":
 			return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgString)}`;
-
 		case "webp":
 			return `data:image/webp;base64,${base64String}`;
-
 		default:
+			imageType satisfies never;
 			throw new UnexpectedError();
 	}
 }

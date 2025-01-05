@@ -9,7 +9,7 @@ export function NotFound() {
 			<p className="px-4 text-center text-primary-grad">
 				お探しのコンテンツが見つかりませんでした。
 			</p>
-			<Button className="mx-auto flex flex-col">
+			<Button className="mx-auto flex w-1/2 flex-col" asChild>
 				<Link href="/auth">HOMEへ戻る</Link>
 			</Button>
 		</div>
