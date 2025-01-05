@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { addImage } from "@/features/image/actions/add-image";
 import { useToast } from "@/hooks/use-toast";
 import { useActionState } from "react";
@@ -23,18 +23,14 @@ export function AddImageForm() {
 	const [_, addNewsAction, isPending] = useActionState(submitForm, null);
 
 	return (
-		<Card className="m-2 mx-auto w-full">
-			<CardHeader>
-				<CardTitle>Image Uploader</CardTitle>
-			</CardHeader>
-			<CardContent>
-				<form action={addNewsAction} className="space-y-4">
-					<Input type="file" name="file" accept="image/*" required />
-					<Button type="submit" disabled={isPending} className="w-full">
-						アップロード
-					</Button>
-				</form>
-			</CardContent>
-		</Card>
+		<form action={addNewsAction} className="space-y-4 px-2 py-4">
+			<div className="space-y-1">
+				<Label htmlFor="file">画像</Label>
+				<Input type="file" name="file" accept="image/*" required />
+			</div>
+			<Button type="submit" disabled={isPending} className="w-full">
+				アップロード
+			</Button>
+		</form>
 	);
 }
