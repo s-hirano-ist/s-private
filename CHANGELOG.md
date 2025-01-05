@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.5.0](https://github.com/s-hirano-ist/s-private/compare/v5.4.0...v5.5.0) (2025-01-05)
+
+
+### Features
+
+* 🎸 delete card component from image form ([93d2596](https://github.com/s-hirano-ist/s-private/commit/93d2596ca37f31f6045a871298f095677cba05d4))
+
+
+### Bug Fixes
+
+* 🐛 add satisfies never to switch component ([f497a83](https://github.com/s-hirano-ist/s-private/commit/f497a83eeba6dede073ed83ca6823a1558d52b8a))
+* 🐛 button link to asChild ([c04e4cf](https://github.com/s-hirano-ist/s-private/commit/c04e4cf2e20cb3c832372e6edf87968ae24f07a9))
+* 🐛 skeleton size to 10 ([10d8c4f](https://github.com/s-hirano-ist/s-private/commit/10d8c4f45cc2c5d10f600ab11334fad14c60a916))
+* performance and design ([8ef0dce](https://github.com/s-hirano-ist/s-private/commit/8ef0dce1171ccb534014350fd9626d2aa6ceb133))
+
 ## [5.4.0](https://github.com/s-hirano-ist/s-private/compare/v5.3.0...v5.4.0) (2025-01-05)
 
 
