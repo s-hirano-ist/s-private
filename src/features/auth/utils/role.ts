@@ -14,6 +14,7 @@ export async function hasContentsPermission() {
 		case "UNAUTHORIZED":
 			return false;
 		default:
+			user.role satisfies never;
 			throw new UnexpectedError();
 	}
 }
@@ -30,6 +31,7 @@ export async function hasDumperPermission() {
 		case "UNAUTHORIZED":
 			return false;
 		default:
+			user.role satisfies never;
 			throw new UnexpectedError();
 	}
 }

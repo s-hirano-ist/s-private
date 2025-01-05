@@ -16,6 +16,7 @@ export function StatusCodeView({ statusCode }: { statusCode: StatusCode }) {
 			case "500":
 				return "Internal server error";
 			default:
+				statusCode satisfies never;
 				return "Unknown Status";
 		}
 	};
