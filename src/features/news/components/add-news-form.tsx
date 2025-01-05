@@ -9,6 +9,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { AddFormSkeleton } from "@/features/dump/components/add-form-skeleton";
 import { addNews } from "@/features/news/actions/add-news";
 import { useToast } from "@/hooks/use-toast";
 import { ClipboardPasteIcon, TableOfContentsIcon } from "lucide-react";
@@ -42,6 +43,8 @@ export function AddNewsForm({ categories }: Props) {
 		const clipboardText = await navigator.clipboard.readText();
 		if (urlInputRef.current !== null) urlInputRef.current.value = clipboardText;
 	};
+
+	if (isPending) return <AddFormSkeleton showCategory />;
 
 	return (
 		<form action={addNewsAction} className="space-y-4 px-2 py-4">
