@@ -1,30 +1,26 @@
 "use client";
-import { SubmitButton } from "@/components/submit-button";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { addImage } from "@/features/image/actions/add-image";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useActionState } from "react";
 
 export function AddImageForm() {
-	const [_, setFile] = useState<File | null>(null);
-	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (e.target.files) setFile(e.target.files[0]);
-	};
-
 	const { toast } = useToast();
 
-	async function handleSubmit(formData: FormData) {
+	async function submitForm(_: null, formData: FormData) {
 		const response = await addImage(formData);
 		if (!response.success) {
 			toast({
 				variant: "destructive",
 				description: response.message,
 			});
-			return;
 		}
-		setFile(null);
+		return null;
 	}
+
+	const [_, addNewsAction, isPending] = useActionState(submitForm, null);
 
 	return (
 		<Card className="m-2 mx-auto w-full">
@@ -32,15 +28,11 @@ export function AddImageForm() {
 				<CardTitle>Image Uploader</CardTitle>
 			</CardHeader>
 			<CardContent>
-				<form action={handleSubmit} className="space-y-4">
-					<Input
-						type="file"
-						name="file"
-						onChange={handleFileChange}
-						accept="image/*"
-						required
-					/>
-					<SubmitButton label="アップロード" />
+				<form action={addNewsAction} className="space-y-4">
+					<Input type="file" name="file" accept="image/*" required />
+					<Button type="submit" disabled={isPending} className="w-full">
+						アップロード
+					</Button>
 				</form>
 			</CardContent>
 		</Card>
