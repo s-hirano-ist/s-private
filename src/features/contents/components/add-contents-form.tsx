@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { addContents } from "@/features/contents/actions/add-contents";
+import { AddFormSkeleton } from "@/features/dump/components/add-form-skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { ClipboardPasteIcon } from "lucide-react";
 import { useActionState, useRef } from "react";
@@ -28,6 +29,8 @@ export function AddContentsForm() {
 		const clipboardText = await navigator.clipboard.readText();
 		if (urlInputRef.current !== null) urlInputRef.current.value = clipboardText;
 	};
+
+	if (isPending) return <AddFormSkeleton showCategory={false} />;
 
 	return (
 		<form action={addContentsAction} className="space-y-4 px-2 py-4">
