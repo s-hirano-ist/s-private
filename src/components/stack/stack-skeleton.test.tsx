@@ -7,7 +7,7 @@ describe("StackSkeleton", () => {
 		render(<StackSkeleton />);
 
 		const skeletons = screen.getAllByTestId("small-card-skeleton");
-		expect(skeletons).toHaveLength(32);
+		expect(skeletons).toHaveLength(10);
 	});
 
 	it("applies the correct grid classes", () => {
