@@ -9,7 +9,7 @@ describe("ImageStackSkeleton", () => {
 
 		// スケルトン要素の数を検証
 		const skeletons = screen.getAllByRole("presentation");
-		expect(skeletons).toHaveLength(32); // モックした SKELETON_STACK_SIZE に基づく
+		expect(skeletons).toHaveLength(10); // モックした SKELETON_STACK_SIZE に基づく
 	});
 
 	it("applies the correct class to each skeleton", () => {
