@@ -29,7 +29,10 @@ const cspHeader = `
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-	experimental: { typedRoutes: true },
+	experimental: {
+		typedRoutes: true,
+		serverActions: { bodySizeLimit: "100mb" }, // FIXME: due to DDoS attacks
+	},
 	pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
 	output: "standalone",
 	images: { remotePatterns: [{ hostname: env.MINIO_HOST }] },
