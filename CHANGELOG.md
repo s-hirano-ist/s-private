@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.6.0](https://github.com/s-hirano-ist/s-private/compare/v5.5.0...v5.6.0) (2025-01-06)
+
+
+### Features
+
+* 🎸 add loading component for dump ([d24ed56](https://github.com/s-hirano-ist/s-private/commit/d24ed568af0694d0d806c58350332d1898d2d18e))
+
 ## [5.5.0](https://github.com/s-hirano-ist/s-private/compare/v5.4.0...v5.5.0) (2025-01-05)
 
 
