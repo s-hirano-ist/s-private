@@ -1,7 +1,17 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
-import { UtilsDrawer } from "@/features/dump/components/utils-drawer";
+import {
+	Drawer,
+	DrawerContent,
+	DrawerDescription,
+	DrawerHeader,
+	DrawerTitle,
+	DrawerTrigger,
+} from "@/components/ui/drawer";
+import { DEFAULT_SIGN_OUT_REDIRECT } from "@/constants";
+import { signOut } from "@/features/auth/actions/sign-out";
+import { UtilButtons } from "@/features/dump/components/util-buttons";
+import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/utils/tailwindcss";
 import {
 	BotIcon,
@@ -11,13 +21,15 @@ import {
 	SendIcon,
 } from "lucide-react";
 import type { Route } from "next";
-import { Link } from "next-view-transitions";
+import { Link, useTransitionRouter } from "next-view-transitions";
 import { usePathname } from "next/navigation";
 import { type ReactNode, useState } from "react";
 
 export function Footer() {
 	const [open, setOpen] = useState(false);
 	const pathname = usePathname();
+	const { toast } = useToast();
+	const router = useTransitionRouter();
 
 	const Icon = (name: string, icon: ReactNode) => {
 		return (
@@ -27,6 +39,21 @@ export function Footer() {
 			</div>
 		);
 	};
+	const handleReload = () => {
+		window.location.reload();
+	};
+
+	async function onSignOutSubmit() {
+		const response = await signOut();
+		if (response.success) {
+			router.push(DEFAULT_SIGN_OUT_REDIRECT);
+		} else {
+			toast({
+				variant: "destructive",
+				description: response.message,
+			});
+		}
+	}
 
 	return (
 		<footer className="sticky bottom-0 z-50 mx-auto w-full max-w-lg border border-gray-200 bg-white dark:border-gray-600 dark:bg-gray-700 sm:rounded-3xl ">
@@ -107,7 +134,16 @@ export function Footer() {
 					</Button>
 				</div>
 				<DrawerContent>
-					<UtilsDrawer />
+					<DrawerHeader>
+						<DrawerTitle>便利ツール集</DrawerTitle>
+						<DrawerDescription>
+							リンクをクリックしてください。
+						</DrawerDescription>
+					</DrawerHeader>
+					<UtilButtons
+						handleReload={handleReload}
+						onSignOutSubmit={onSignOutSubmit}
+					/>
 				</DrawerContent>
 			</Drawer>
 		</footer>

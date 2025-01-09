@@ -1,4 +1,4 @@
-type StatusCode = "000" | "204" /*| "401" */ | "403" | "404" | "500";
+type StatusCode = "000" | "204" | "403" | "404" | "500";
 
 export function StatusCodeView({ statusCode }: { statusCode: StatusCode }) {
 	const statusMessage = () => {
@@ -7,14 +7,12 @@ export function StatusCodeView({ statusCode }: { statusCode: StatusCode }) {
 				return "Comming Soon";
 			case "204":
 				return "No Content";
-			// case "401":
-			// return "Unauthorized";
 			case "403":
 				return "Forbidden";
 			case "404":
 				return "Not Found";
 			case "500":
-				return "Internal server error";
+				return "Internal Server Error";
 			default:
 				statusCode satisfies never;
 				return "Unknown Status";

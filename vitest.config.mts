@@ -1,11 +1,10 @@
-import react from "@vitejs/plugin-react";
+import { storybookNextJsPlugin } from "@storybook/experimental-nextjs-vite/vite-plugin";
 import dotenv from "dotenv";
 import { defineConfig } from "vitest/config";
-
 dotenv.config({ path: ".env.test" });
 
 export default defineConfig({
-	plugins: [react()],
+	plugins: [storybookNextJsPlugin()],
 	test: {
 		environment: "jsdom",
 		setupFiles: ["./vitest-setup.tsx"],
