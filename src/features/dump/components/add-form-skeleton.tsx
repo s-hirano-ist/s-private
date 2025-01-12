@@ -1,9 +1,12 @@
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 
-type Props = { showCategory: boolean };
+type Props = { showCategory?: boolean; showSubmitButton?: boolean };
 
-export function AddFormSkeleton({ showCategory }: Props) {
+export function AddFormSkeleton({
+	showCategory = false,
+	showSubmitButton = false,
+}: Props) {
 	return (
 		<div className="space-y-4 p-4">
 			{showCategory && (
@@ -24,7 +27,7 @@ export function AddFormSkeleton({ showCategory }: Props) {
 				<Label>URL</Label>
 				<Skeleton className="h-9 " />
 			</div>
-			<Skeleton className="h-9 " />
+			{showSubmitButton && <Skeleton className="h-9 " />}
 		</div>
 	);
 }

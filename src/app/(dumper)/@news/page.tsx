@@ -17,7 +17,7 @@ export default async function Page() {
 	return (
 		<>
 			{hasPostPermission && (
-				<Suspense fallback={<AddFormSkeleton showCategory />}>
+				<Suspense fallback={<AddFormSkeleton showCategory showSubmitButton />}>
 					<AddNewsProvider />
 				</Suspense>
 			)}
