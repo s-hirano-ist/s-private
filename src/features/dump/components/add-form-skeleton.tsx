@@ -8,7 +8,7 @@ export function AddFormSkeleton({
 	showSubmitButton = false,
 }: Props) {
 	return (
-		<div className="space-y-4 p-4">
+		<div className="space-y-4">
 			{showCategory && (
 				<div className="space-y-1">
 					<Label>カテゴリー</Label>

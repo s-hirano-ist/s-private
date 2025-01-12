@@ -44,65 +44,69 @@ export function AddNewsForm({ categories }: Props) {
 		if (urlInputRef.current !== null) urlInputRef.current.value = clipboardText;
 	};
 
-	if (isPending) return <AddFormSkeleton showCategory />;
-
 	return (
 		<form action={addNewsAction} className="space-y-4 px-2 py-4">
-			<div className="space-y-1">
-				<Label htmlFor="category">カテゴリー</Label>
-				<div className="flex">
-					<Input
-						id="category"
-						name="category"
-						required
-						autoComplete="off"
-						ref={categoryInputRef}
-					/>
-					<DropdownMenu>
-						<DropdownMenuTrigger asChild>
-							<Button variant="ghost">
-								<TableOfContentsIcon />
+			{isPending ? (
+				<AddFormSkeleton showCategory />
+			) : (
+				<>
+					<div className="space-y-1">
+						<Label htmlFor="category">カテゴリー</Label>
+						<div className="flex">
+							<Input
+								id="category"
+								name="category"
+								required
+								autoComplete="off"
+								ref={categoryInputRef}
+							/>
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<Button variant="ghost">
+										<TableOfContentsIcon />
+									</Button>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent>
+									{categories.map((category) => (
+										<DropdownMenuItem
+											onClick={() => handleSelectedValueChange(category.name)}
+											textValue={String(category.name)}
+											key={category.id}
+										>
+											{category.name}
+										</DropdownMenuItem>
+									))}
+								</DropdownMenuContent>
+							</DropdownMenu>
+						</div>
+					</div>
+					<div className="space-y-1">
+						<Label htmlFor="title">タイトル</Label>
+						<Input id="title" name="title" autoComplete="off" required />
+					</div>
+					<div className="space-y-1">
+						<Label htmlFor="quote">ひとこと</Label>
+						<Textarea id="quote" name="quote" autoComplete="off" />
+					</div>
+					<div className="space-y-1">
+						<Label htmlFor="url">URL</Label>
+						<div className="flex">
+							<Input
+								id="url"
+								name="url"
+								type="url"
+								inputMode="url"
+								autoComplete="off"
+								required
+								ref={urlInputRef}
+							/>
+							<Button variant="ghost" type="button" onClick={handlePasteClick}>
+								<ClipboardPasteIcon />
 							</Button>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent>
-							{categories.map((category) => (
-								<DropdownMenuItem
-									onClick={() => handleSelectedValueChange(category.name)}
-									textValue={String(category.name)}
-									key={category.id}
-								>
-									{category.name}
-								</DropdownMenuItem>
-							))}
-						</DropdownMenuContent>
-					</DropdownMenu>
-				</div>
-			</div>
-			<div className="space-y-1">
-				<Label htmlFor="title">タイトル</Label>
-				<Input id="title" name="title" autoComplete="off" required />
-			</div>
-			<div className="space-y-1">
-				<Label htmlFor="quote">ひとこと</Label>
-				<Textarea id="quote" name="quote" autoComplete="off" />
-			</div>
-			<div className="space-y-1">
-				<Label htmlFor="url">URL</Label>
-				<div className="flex">
-					<Input
-						id="url"
-						name="url"
-						type="url"
-						inputMode="url"
-						autoComplete="off"
-						required
-						ref={urlInputRef}
-					/>
-					<Button variant="ghost" type="button" onClick={handlePasteClick}>
-						<ClipboardPasteIcon />
-					</Button>
-				</div>
-			</div>
+						</div>
+					</div>
+				</>
+			)}
 			<Button type="submit" disabled={isPending} className="w-full">
 				保存
 			</Button>
