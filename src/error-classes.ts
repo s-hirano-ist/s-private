@@ -34,6 +34,7 @@ export class InvalidFormatError extends Error {
 		this.name = "InvalidFormatError";
 	}
 }
+
 export class FileNotAllowedError extends Error {
 	constructor() {
 		super(ERROR_MESSAGES.INVALID_FILE_FORMAT);
