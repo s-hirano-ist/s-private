@@ -30,40 +30,44 @@ export function AddContentsForm() {
 		if (urlInputRef.current !== null) urlInputRef.current.value = clipboardText;
 	};
 
-	if (isPending) return <AddFormSkeleton showCategory={false} />;
-
 	return (
 		<form action={addContentsAction} className="space-y-4 px-2 py-4">
-			<div className="space-y-1">
-				<Label htmlFor="title">タイトル</Label>
-				<Input id="title" name="title" autoComplete="off" required />
-			</div>
-			<div className="space-y-1">
-				<Label htmlFor="quote">ひとこと</Label>
-				<Textarea id="quote" name="quote" autoComplete="off" />
-			</div>
-			<div className="space-y-1">
-				<Label htmlFor="url">URL</Label>
-				<div className="flex space-x-2 px-2">
-					<Input
-						id="url"
-						name="url"
-						type="url"
-						inputMode="url"
-						autoComplete="off"
-						ref={urlInputRef}
-						required
-					/>
-					<Button
-						variant="ghost"
-						type="button"
-						onClick={handlePasteClick}
-						data-testid="paste-button"
-					>
-						<ClipboardPasteIcon />
-					</Button>
-				</div>
-			</div>
+			{isPending ? (
+				<AddFormSkeleton />
+			) : (
+				<>
+					<div className="space-y-1">
+						<Label htmlFor="title">タイトル</Label>
+						<Input id="title" name="title" autoComplete="off" required />
+					</div>
+					<div className="space-y-1">
+						<Label htmlFor="quote">ひとこと</Label>
+						<Textarea id="quote" name="quote" autoComplete="off" />
+					</div>
+					<div className="space-y-1">
+						<Label htmlFor="url">URL</Label>
+						<div className="flex space-x-2 px-2">
+							<Input
+								id="url"
+								name="url"
+								type="url"
+								inputMode="url"
+								autoComplete="off"
+								ref={urlInputRef}
+								required
+							/>
+							<Button
+								variant="ghost"
+								type="button"
+								onClick={handlePasteClick}
+								data-testid="paste-button"
+							>
+								<ClipboardPasteIcon />
+							</Button>
+						</div>
+					</div>
+				</>
+			)}
 			<Button type="submit" disabled={isPending} className="w-full">
 				保存
 			</Button>

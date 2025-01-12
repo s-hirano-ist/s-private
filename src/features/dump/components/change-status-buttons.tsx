@@ -1,96 +1,104 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import { UnexpectedError } from "@/error-classes";
 import { changeContentsStatus } from "@/features/contents/actions/change-contents-status";
 import { changeImagesStatus } from "@/features/image/actions/change-images-status";
 import { changeNewsStatus } from "@/features/news/actions/change-news-status";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
-
+import { useActionState, useState } from "react";
 export function ChangeStatusButtons() {
 	const { toast } = useToast();
 
-	const [buttonDisabled, setButtonDisabled] = useState(false);
+	const [target, setTarget] = useState<string>();
+	const [status, setStatus] = useState<string>();
 
-	const handleNewsUpdateStatus = async () => {
-		setButtonDisabled(true);
-		const response = await changeNewsStatus("UPDATE");
+	const changeStatus = async (_: null, formData: FormData) => {
+		const target = formData.get("target");
+		const status = formData.get("status");
+
+		if (!target || !status) throw new UnexpectedError();
+
+		const response = await (async () => {
+			if (target === "news") {
+				if (status === "update") return await changeNewsStatus("UPDATE");
+				if (status === "revert") return await changeNewsStatus("REVERT");
+				throw new UnexpectedError();
+			}
+			if (target === "contents") {
+				if (status === "update") return await changeContentsStatus("UPDATE");
+				if (status === "revert") return await changeContentsStatus("REVERT");
+				throw new UnexpectedError();
+			}
+			if (target === "images") {
+				if (status === "update") return await changeImagesStatus("UPDATE");
+				if (status === "revert") return await changeImagesStatus("REVERT");
+				throw new UnexpectedError();
+			}
+			throw new UnexpectedError();
+		})();
+
 		toast({
 			variant: response.success ? "default" : "destructive",
 			description: response.message,
 		});
-		setButtonDisabled(false);
+
+		setTarget("");
+		setStatus("");
+
+		return null;
 	};
 
-	const handleNewsRevertStatus = async () => {
-		setButtonDisabled(true);
-		const response = await changeNewsStatus("REVERT");
-		toast({
-			variant: response.success ? "default" : "destructive",
-			description: response.message,
-		});
-		setButtonDisabled(false);
-	};
-
-	const handleContentsUpdateStatus = async () => {
-		setButtonDisabled(true);
-		const response = await changeContentsStatus("UPDATE");
-		toast({
-			variant: response.success ? "default" : "destructive",
-			description: response.message,
-		});
-		setButtonDisabled(false);
-	};
-
-	const handleContentsRevertStatus = async () => {
-		setButtonDisabled(true);
-		const response = await changeContentsStatus("REVERT");
-		toast({
-			variant: response.success ? "default" : "destructive",
-			description: response.message,
-		});
-		setButtonDisabled(false);
-	};
-
-	const handleImagesUpdateStatus = async () => {
-		setButtonDisabled(true);
-		const response = await changeImagesStatus("UPDATE");
-		toast({
-			variant: response.success ? "default" : "destructive",
-			description: response.message,
-		});
-		setButtonDisabled(false);
-	};
-
-	const handleImagesRevertStatus = async () => {
-		setButtonDisabled(true);
-		const response = await changeImagesStatus("REVERT");
-		toast({
-			variant: response.success ? "default" : "destructive",
-			description: response.message,
-		});
-		setButtonDisabled(false);
-	};
+	const [_, submitAction, isPending] = useActionState(changeStatus, null);
 
 	return (
-		<div className="grid grid-cols-2 gap-2 p-2">
-			<Button onClick={handleNewsUpdateStatus} disabled={buttonDisabled}>
-				NEWS UPDATE
+		<form action={submitAction} className="space-y-4 px-2 py-4">
+			<div className="space-y-1">
+				<Label htmlFor="target">DUMP対象のターゲット</Label>
+				<Select
+					required
+					name="target"
+					value={target}
+					onValueChange={(value: string) => setTarget(value)}
+				>
+					<SelectTrigger id="target">
+						<SelectValue placeholder="ターゲット" />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value="news">NEWS</SelectItem>
+						<SelectItem value="contents">CONTENTS</SelectItem>
+						<SelectItem value="images">IMAGES</SelectItem>
+					</SelectContent>
+				</Select>
+			</div>
+
+			<div className="space-y-1">
+				<Label htmlFor="status">DUMPの状態</Label>
+				<Select
+					required
+					name="status"
+					value={status}
+					onValueChange={(value: string) => setStatus(value)}
+				>
+					<SelectTrigger id="status">
+						<SelectValue placeholder="状態" />
+					</SelectTrigger>
+					<SelectContent id="status">
+						<SelectItem value="update">UPDATE</SelectItem>
+						<SelectItem value="revert">REVERT</SelectItem>
+					</SelectContent>
+				</Select>
+			</div>
+			<Button type="submit" disabled={isPending} className="w-full">
+				送信
 			</Button>
-			<Button onClick={handleNewsRevertStatus} disabled={buttonDisabled}>
-				NEWS REVERT
-			</Button>
-			<Button onClick={handleContentsUpdateStatus} disabled={buttonDisabled}>
-				CONTENTS UPDATE
-			</Button>
-			<Button onClick={handleContentsRevertStatus} disabled={buttonDisabled}>
-				CONTENTS REVERT
-			</Button>
-			<Button onClick={handleImagesUpdateStatus} disabled={buttonDisabled}>
-				IMAGES UPDATE
-			</Button>
-			<Button onClick={handleImagesRevertStatus} disabled={buttonDisabled}>
-				IMAGES REVERT
-			</Button>
-		</div>
+		</form>
 	);
 }

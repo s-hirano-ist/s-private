@@ -6,7 +6,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { sanitizeHref } from "@/utils/sanitize-href";
+import { validateUrl } from "@/utils/validate-url";
 import { Link } from "next-view-transitions";
 
 type Props = {
@@ -20,7 +20,7 @@ type Props = {
 export function SmallCard({ id, title, quote, url, category }: Props) {
 	return (
 		<Link
-			href={new URL(sanitizeHref(url))}
+			href={new URL(validateUrl(url))}
 			target="_blank"
 			data-testid={`small-card-${id}`}
 		>
