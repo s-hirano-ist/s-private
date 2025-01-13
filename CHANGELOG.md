@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.8.0](https://github.com/s-hirano-ist/s-private/compare/v5.7.0...v5.8.0) (2025-01-13)
+
+
+### Features
+
+* 🎸 add auth0 ([34c0a08](https://github.com/s-hirano-ist/s-private/commit/34c0a084ac7dd104d9530df30a67c4c99f1fc391))
+* 🎸 delete unused components ([6fc2567](https://github.com/s-hirano-ist/s-private/commit/6fc25674c5d31a01e6a8e2226fae16982812e9b2))
+* use auth0 as auth ([db17b89](https://github.com/s-hirano-ist/s-private/commit/db17b891b96ca4d1e258673d9514f1bbf63da36d))
+
+
+### Bug Fixes
+
+* 🐛 build ([160b0ec](https://github.com/s-hirano-ist/s-private/commit/160b0ec2975a12f3afe15ec6d674eca067f368db))
+
 ## [5.7.0](https://github.com/s-hirano-ist/s-private/compare/v5.6.0...v5.7.0) (2025-01-13)
 
 
