@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import type { Route } from "next";
 import { Link, useTransitionRouter } from "next-view-transitions";
-import { usePathname } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
 import { type ReactNode, useState } from "react";
 
 export function Footer() {
@@ -44,15 +44,17 @@ export function Footer() {
 	};
 
 	async function onSignOutSubmit() {
-		const response = await signOut();
-		if (response.success) {
-			router.push(DEFAULT_SIGN_OUT_REDIRECT);
-		} else {
-			toast({
-				variant: "destructive",
-				description: response.message,
-			});
-		}
+		// TODO: Auth.jsのsignoutをここで呼び出すとテストがしづらい
+		redirect("api/auth/signout");
+		// const response = await signOut();
+		// if (response.success) {
+		// 	router.push(DEFAULT_SIGN_OUT_REDIRECT);
+		// } else {
+		// 	toast({
+		// 		variant: "destructive",
+		// 		description: response.message,
+		// 	});
+		// }
 	}
 
 	return (

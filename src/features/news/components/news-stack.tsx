@@ -1,7 +1,7 @@
 "use client";
+import { CardStackSkeleton } from "@/components/card/card-stack-skeleton";
+import { SmallCard } from "@/components/card/small-card";
 import { StatusCodeView } from "@/components/card/status-code-view";
-import { SmallCard } from "@/components/stack/small-card";
-import { StackSkeleton } from "@/components/stack/stack-skeleton";
 import type { News } from "@/features/news/types";
 
 type Props = {
@@ -9,7 +9,7 @@ type Props = {
 };
 
 export function NewsStack({ news }: Props) {
-	if (news === undefined) return <StackSkeleton />;
+	if (news === undefined) return <CardStackSkeleton />;
 	if (news.length === 0) return <StatusCodeView statusCode="204" />;
 
 	return (

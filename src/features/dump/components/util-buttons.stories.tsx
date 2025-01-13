@@ -3,7 +3,7 @@ import { fn } from "@storybook/test";
 import { UtilButtons } from "./util-buttons";
 
 const meta = {
-	title: "Components/UtilButtons",
+	title: "Features/Dump/UtilButtons",
 	component: UtilButtons,
 	parameters: { layout: "centered" },
 	tags: ["autodocs"],

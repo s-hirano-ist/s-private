@@ -9,6 +9,8 @@ import { sendLineNotifyMessage } from "@/utils/fetch-message";
 
 type SignOutState = ServerAction<undefined>;
 
+// FIXME: not used now
+
 export async function signOut(): Promise<SignOutState> {
 	try {
 		await NextAuthSignOut({
