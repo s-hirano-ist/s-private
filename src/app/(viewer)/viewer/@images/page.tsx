@@ -24,6 +24,7 @@ export default async function Page({ params }: { params: Params }) {
 	const userId = await getSelfId();
 	const totalImages = await prisma.images.count({
 		where: { userId },
+		cacheStrategy: { ttl: 400, swr: 40, tags: ["images"] },
 	});
 
 	return (

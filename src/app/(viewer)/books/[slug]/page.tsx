@@ -32,6 +32,7 @@ export default async function Page({ params }: { params: Params }) {
 	const data = await prisma.staticBooks.findUnique({
 		where: { title: decordedSlug },
 		select: { markdown: true },
+		cacheStrategy: { ttl: 400, tags: ["staticBooks"] },
 	});
 	if (!data) return <NotFound />;
 

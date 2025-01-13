@@ -1,8 +1,6 @@
 import type { ReactNode } from "react";
 
-type Props = {
-	children: ReactNode;
-};
+type Props = { children: ReactNode };
 
 export function ViewerBody({ children }: Props) {
 	return (

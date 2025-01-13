@@ -30,6 +30,7 @@ export default async function Page({ params }: { params: Params }) {
 	const data = await prisma.staticContents.findUnique({
 		where: { title: slug },
 		select: { markdown: true },
+		cacheStrategy: { ttl: 400, tags: ["staticContents"] },
 	});
 	if (!data) return <NotFound />;
 

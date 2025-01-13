@@ -56,6 +56,7 @@ export async function addImage(
 		});
 		await sendLineNotifyMessage(message);
 		revalidatePath("/(dumper)");
+		await prisma.$accelerate.invalidate({ tags: ["images"] });
 
 		return {
 			success: true,
