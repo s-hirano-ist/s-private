@@ -53,10 +53,10 @@ const nextConfig = {
 						key: "Referrer-Policy",
 						value: "strict-origin-when-cross-origin",
 					},
-					{
-						key: "Content-Security-Policy",
-						value: cspHeader.replace(/\n/g, ""),
-					},
+					// {
+					// 	key: "Content-Security-Policy",
+					// 	value: cspHeader.replace(/\n/g, ""),
+					// },
 					{
 						key: "Report-To",
 						value: `{"group":"csp-endpoint","max_age":10886400,"endpoints":[{"url":"${env.SENTRY_REPORT_URL}"}],"include_subdomains":true}`,

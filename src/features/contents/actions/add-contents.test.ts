@@ -1,119 +1,76 @@
-import { SUCCESS_MESSAGES } from "@/constants";
-import { wrapServerSideErrorForClient } from "@/error-wrapper";
-import {
-	getUserId,
-	hasSelfPostPermissionOrThrow,
-} from "@/features/auth/utils/get-session";
-import { validateContents } from "@/features/contents/utils/validate-contents";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { auth } from "@/features/auth/utils/auth";
 import prisma from "@/prisma";
-import { sendLineNotifyMessage } from "@/utils/fetch-message";
-import { formatCreateContentsMessage } from "@/utils/format-for-line";
+import { Session } from "next-auth";
 import { revalidatePath } from "next/cache";
 import { type Mock, describe, expect, it, vi } from "vitest";
 import { addContents } from "./add-contents";
 
-vi.mock("@/features/auth/utils/get-session", () => ({
-	getUserId: vi.fn(),
-	hasSelfPostPermissionOrThrow: vi.fn(),
-}));
-
-vi.mock("@/features/contents/utils/validate-contents", () => ({
-	validateContents: vi.fn(),
-}));
+vi.mock("@/features/auth/utils/auth", () => ({ auth: vi.fn() }));
 
 vi.mock("@/utils/fetch-message", () => ({
 	sendLineNotifyMessage: vi.fn(),
 }));
 
-vi.mock("@/utils/format-for-line", () => ({
-	formatCreateContentsMessage: vi.fn(),
-}));
+const mockAllowedRoleSession: Session = {
+	user: { id: "1", roles: ["dumper"] },
+	expires: "2025-01-01",
+};
+const mockNotAllowedRoleSession: Session = {
+	user: { id: "1", roles: [] },
+	expires: "2025-01-01",
+};
+const mockUnauthorizedSession = null;
 
-vi.mock("@/error-wrapper", () => ({
-	wrapServerSideErrorForClient: vi.fn(),
-}));
+const mockFormData = new FormData();
+mockFormData.append("title", "Example Content");
+mockFormData.append("quote", "This is an example content quote.");
+mockFormData.append("url", "https://example.com");
+const mockCreatedContents = {
+	id: 1,
+	title: "Example Content",
+	quote: "This is an example content quote.",
+	url: "https://example.com",
+};
 
 describe("addContents", () => {
-	it("should create contents and send notifications", async () => {
-		const formData = new FormData();
-		formData.append("title", "Example Content");
-		formData.append("quote", "This is an example content quote.");
-		formData.append("url", "https://example.com/content");
+	it("should return success false on Unauthorized", async () => {
+		(auth as Mock).mockResolvedValue(mockUnauthorizedSession);
 
-		const mockUserId = "12345";
-		const mockValidatedContents = {
-			title: "Example Content",
-			quote: "This is an example content quote.",
-			url: "https://example.com/content",
-		};
-		const mockCreatedContents = {
-			id: 1,
-			title: "Example Content",
-			quote: "This is an example content quote.",
-			url: "https://example.com/content",
-		};
-		const mockMessage = "Content created successfully.";
+		const result = await addContents(mockFormData);
 
-		(hasSelfPostPermissionOrThrow as Mock).mockResolvedValue(undefined);
-		(getUserId as Mock).mockResolvedValue(mockUserId);
-		(validateContents as Mock).mockReturnValue(mockValidatedContents);
-		(prisma.contents.create as Mock).mockResolvedValue(mockCreatedContents);
-		(formatCreateContentsMessage as Mock).mockReturnValue(mockMessage);
-
-		const result = await addContents(formData);
-
-		expect(hasSelfPostPermissionOrThrow).toHaveBeenCalledTimes(1);
-		expect(getUserId).toHaveBeenCalledTimes(1);
-		expect(validateContents).toHaveBeenCalledWith(formData);
-		expect(prisma.contents.create).toHaveBeenCalledWith({
-			data: { userId: mockUserId, ...mockValidatedContents },
-			select: {
-				id: true,
-				title: true,
-				quote: true,
-				url: true,
-			},
+		expect(result).toEqual({
+			success: false,
+			message: ERROR_MESSAGES.UNAUTHORIZED,
 		});
-		expect(formatCreateContentsMessage).toHaveBeenCalledWith(
-			mockCreatedContents,
-		);
-		expect(sendLineNotifyMessage).toHaveBeenCalledWith(mockMessage);
+		expect(auth).toHaveBeenCalledTimes(1);
+	});
+
+	it("should return success false on not permitted", async () => {
+		(auth as Mock).mockResolvedValue(mockNotAllowedRoleSession);
+
+		const result = await addContents(mockFormData);
+
+		expect(result).toEqual({
+			success: false,
+			message: ERROR_MESSAGES.NOT_ALLOWED,
+		});
+		expect(auth).toHaveBeenCalledTimes(1);
+	});
+
+	it("should create contents", async () => {
+		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
+		(prisma.contents.create as Mock).mockResolvedValue(mockCreatedContents);
+
+		const result = await addContents(mockFormData);
+
+		expect(auth).toHaveBeenCalledTimes(2); // check permission & getSelfId
+		expect(prisma.contents.create).toHaveBeenCalled();
 		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 		expect(result).toEqual({
 			success: true,
 			message: SUCCESS_MESSAGES.INSERTED,
 			data: mockCreatedContents,
-		});
-	});
-
-	it("should handle errors and wrap them for the client", async () => {
-		const formData = new FormData();
-		formData.append("title", "Example Content");
-		formData.append("quote", "This is an example content quote.");
-		formData.append("url", "https://example.com/content");
-
-		const mockError = new Error("Database error");
-
-		(hasSelfPostPermissionOrThrow as Mock).mockResolvedValue(undefined);
-		(getUserId as Mock).mockResolvedValue("12345");
-		(prisma.contents.create as Mock).mockRejectedValue(mockError);
-		(wrapServerSideErrorForClient as Mock).mockResolvedValue({
-			success: false,
-			message: "An error occurred",
-			data: undefined,
-		});
-
-		const result = await addContents(formData);
-
-		expect(hasSelfPostPermissionOrThrow).toHaveBeenCalledTimes(1);
-		expect(getUserId).toHaveBeenCalledTimes(1);
-		expect(validateContents).toHaveBeenCalledWith(formData);
-		expect(prisma.contents.create).toHaveBeenCalled();
-		expect(wrapServerSideErrorForClient).toHaveBeenCalledWith(mockError);
-		expect(result).toEqual({
-			success: false,
-			message: "An error occurred",
-			data: undefined,
 		});
 	});
 });

@@ -1,5 +1,3 @@
-import type { Role } from "@prisma/client";
-
 export const PAGE_NAME = "s-private";
 
 export const PAGE_SIZE = 12;
@@ -29,8 +27,6 @@ export const ERROR_MESSAGES = {
 
 export const SUCCESS_MESSAGES = {
 	INSERTED: "正常に登録できました。",
-	ROLE_UPDATED: "ロールを正常に更新しました。",
-	PROFILE_UPSERTED: "プロフィールを更新しました。",
 	SIGN_IN: "サインインに成功しました。",
 	SIGN_OUT: "サインアウトに成功しました。",
 	UPDATE: "更新が完了しました。",
@@ -52,5 +48,3 @@ export const UTIL_URLS = [
 	{ name: "PORTAINER", url: "https://private.s-hirano.com:9443" },
 	{ name: "GRAFANA", url: "https://private.s-hirano.com:3001" },
 ] as const;
-
-export const ROLES: Role[] = ["ADMIN", "VIEWER", "UNAUTHORIZED"];

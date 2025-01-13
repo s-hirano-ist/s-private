@@ -2,8 +2,7 @@ import { ViewerBody } from "@/components/body/viewer-body";
 import { NotFound } from "@/components/card/not-found";
 import { Unauthorized } from "@/components/card/unauthorized";
 import { PAGE_NAME } from "@/constants";
-import { checkSelfAuthOrRedirectToAuth } from "@/features/auth/utils/get-session";
-import { hasContentsPermission } from "@/features/auth/utils/role";
+import { hasViewerAdminPermission } from "@/features/auth/utils/role";
 import { markdownToReact } from "@/features/viewer/utils/markdown-to-react";
 import prisma from "@/prisma";
 import type { Metadata } from "next";
@@ -26,9 +25,7 @@ export async function generateMetadata({
 export default async function Page({ params }: { params: Params }) {
 	const { slug } = await params;
 
-	await checkSelfAuthOrRedirectToAuth();
-
-	const hasAdminPermission = await hasContentsPermission();
+	const hasAdminPermission = await hasViewerAdminPermission();
 
 	const data = await prisma.staticContents.findUnique({
 		where: { title: slug },

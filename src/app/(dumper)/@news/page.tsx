@@ -1,11 +1,7 @@
 import { CardStackSkeleton } from "@/components/stack/card-stack-skeleton";
 import { Separator } from "@/components/ui/separator";
 import { ERROR_MESSAGES } from "@/constants";
-import {
-	checkSelfAuthOrRedirectToAuth,
-	getUserId,
-} from "@/features/auth/utils/get-session";
-import { hasDumperPermission } from "@/features/auth/utils/role";
+import { getSelfId, hasDumperPostPermission } from "@/features/auth/utils/role";
 import { AddNewsForm } from "@/features/news/components/add-news-form";
 import { NewsStack } from "@/features/news/components/news-stack";
 import { loggerError } from "@/pino";
@@ -15,13 +11,11 @@ import { Suspense } from "react";
 export const dynamic = "force-dynamic";
 
 export default async function Page() {
-	await checkSelfAuthOrRedirectToAuth();
-
-	const hasPostPermission = await hasDumperPermission();
+	const hasPostPermission = await hasDumperPostPermission();
 
 	const categories = await (async () => {
 		try {
-			const userId = await getUserId();
+			const userId = await getSelfId();
 			return await prisma.categories.findMany({
 				where: { userId },
 				select: { id: true, name: true },

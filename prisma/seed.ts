@@ -1,44 +1,11 @@
 import fs from "node:fs";
 import { join } from "node:path";
 import { THUMBNAIL_HEIGHT, THUMBNAIL_WIDTH } from "@/constants";
-import { PrismaClient, type Role } from "@prisma/client";
-import bcrypt from "bcryptjs";
+import { PrismaClient } from "@prisma/client";
 import matter from "gray-matter";
 import sharp from "sharp";
 
 const prisma = new PrismaClient();
-
-const ADMIN_SEED_PASSWORD = process.env.ADMIN_SEED_PASSWORD;
-const VIEWER_SEED_PASSWORD = process.env.VIEWER_SEED_PASSWORD;
-const UNAUTHORIZED_SEED_PASSWORD = process.env.UNAUTHORIZED_SEED_PASSWORD;
-
-if (
-	!ADMIN_SEED_PASSWORD ||
-	!UNAUTHORIZED_SEED_PASSWORD ||
-	!VIEWER_SEED_PASSWORD
-)
-	throw new Error("ENV undefined");
-
-const SEED_USERS = [
-	{ username: "s-hirano-ist", role: "ADMIN", password: ADMIN_SEED_PASSWORD },
-	{ username: "viewer", role: "VIEWER", password: VIEWER_SEED_PASSWORD },
-	{
-		username: "unauthorized",
-		role: "UNAUTHORIZED",
-		password: UNAUTHORIZED_SEED_PASSWORD,
-	},
-] satisfies { username: string; password: string; role: Role }[];
-
-async function addSampleUsers(username: string, password: string, role: Role) {
-	const hashedPassword = await bcrypt.hash(password, 8);
-
-	await prisma.users.upsert({
-		where: { username },
-		update: {},
-		create: { username, password: hashedPassword, role },
-		select: { id: true, Categories: true },
-	});
-}
 
 function getImageBySlug(slug: string, imagesDirectory: string, ext: string) {
 	const realSlug = slug.replace(/\.mdx$/, "");
@@ -107,13 +74,6 @@ async function addBookData() {
 
 async function main() {
 	try {
-		await Promise.all(
-			SEED_USERS.map(async (user) => {
-				await addSampleUsers(user.username, user.password, user.role);
-			}),
-		);
-		console.log("Added users to the database");
-
 		await addContentsData();
 		console.log("Added contents to the database");
 

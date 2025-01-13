@@ -1,37 +1,39 @@
 import "server-only";
-import { UnexpectedError } from "@/error-classes";
-import { checkSelfAuthOrThrow } from "./get-session";
+import { ERROR_MESSAGES } from "@/constants";
+import { UnauthorizedError } from "@/error-classes";
+import { loggerWarn } from "@/pino";
+import { auth } from "./auth";
 
-// FOR contents
-export async function hasContentsPermission() {
-	const { user } = await checkSelfAuthOrThrow();
-
-	switch (user.role) {
-		case "ADMIN":
-			return true;
-		case "VIEWER":
-			return false;
-		case "UNAUTHORIZED":
-			return false;
-		default:
-			user.role satisfies never;
-			throw new UnexpectedError();
+async function checkSelfAuthOrThrow() {
+	const session = await auth();
+	if (!session) {
+		loggerWarn(ERROR_MESSAGES.UNAUTHORIZED, {
+			caller: "Unauthorized on checkSelfAuth or throw",
+			status: 401,
+		});
+		throw new UnauthorizedError();
 	}
+	return session;
+}
+
+export async function getSelfId() {
+	const { user } = await checkSelfAuthOrThrow();
+	return user.id;
+}
+
+async function getSelfRoles() {
+	const { user } = await checkSelfAuthOrThrow();
+	return user.roles;
+}
+
+// FOR viewer
+export async function hasViewerAdminPermission() {
+	const roles = await getSelfRoles();
+	return roles.includes("viewer");
 }
 
 // FOR dumper
-export async function hasDumperPermission() {
-	const { user } = await checkSelfAuthOrThrow();
-
-	switch (user.role) {
-		case "ADMIN":
-			return true;
-		case "VIEWER":
-			return false;
-		case "UNAUTHORIZED":
-			return false;
-		default:
-			user.role satisfies never;
-			throw new UnexpectedError();
-	}
+export async function hasDumperPostPermission() {
+	const roles = await getSelfRoles();
+	return roles.includes("dumper");
 }

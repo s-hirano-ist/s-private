@@ -1,4 +1,4 @@
-import { getUserId } from "@/features/auth/utils/get-session";
+import { getSelfId } from "@/features/auth/utils/role";
 import { generateUrlWithMetadata } from "@/features/image/actions/generate-url-with-metadata";
 import { ImageStack } from "@/features/image/components/image-stack";
 import prisma from "@/prisma";
@@ -6,8 +6,8 @@ import { render, screen } from "@testing-library/react";
 import { type Mock, describe, expect, it, vi } from "vitest";
 
 // 各依存関数をモック化
-vi.mock("@/features/auth/utils/get-session", () => ({
-	getUserId: vi.fn(),
+vi.mock("@/features/auth/utils/role", () => ({
+	getSelfId: vi.fn(),
 }));
 
 vi.mock("@/features/image/actions/generate-url-with-metadata", () => ({
@@ -17,7 +17,7 @@ vi.mock("@/features/image/actions/generate-url-with-metadata", () => ({
 describe("ImageStack", () => {
 	it("renders the ImageStack with images", async () => {
 		// モックの準備
-		(getUserId as Mock).mockResolvedValue("user123");
+		(getSelfId as Mock).mockResolvedValue("user123");
 		(prisma.images.findMany as Mock).mockResolvedValue([{ id: 1 }, { id: 2 }]);
 		(generateUrlWithMetadata as Mock)
 			.mockResolvedValueOnce({
@@ -40,7 +40,7 @@ describe("ImageStack", () => {
 	});
 
 	it("renders 'not-found.png' for failed URL generation", async () => {
-		(getUserId as Mock).mockResolvedValue("user123");
+		(getSelfId as Mock).mockResolvedValue("user123");
 		(prisma.images.findMany as Mock).mockResolvedValue([{ id: 1 }]);
 		(generateUrlWithMetadata as Mock).mockResolvedValueOnce({
 			success: false,
@@ -56,7 +56,7 @@ describe("ImageStack", () => {
 
 	it("renders StatusCodeView with 500 on error", async () => {
 		// 例外をスローするモック
-		(getUserId as Mock).mockRejectedValue(new Error("Test Error"));
+		(getSelfId as Mock).mockRejectedValue(new Error("Test Error"));
 
 		render(await ImageStack());
 

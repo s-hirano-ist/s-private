@@ -1,14 +1,14 @@
 import { StatusCodeView } from "@/components/card/status-code-view";
 import { ImageStack as _ImageStack } from "@/components/stack/image-stack";
 import { ERROR_MESSAGES } from "@/constants";
-import { getUserId } from "@/features/auth/utils/get-session";
+import { getSelfId } from "@/features/auth/utils/role";
 import { generateUrlWithMetadata } from "@/features/image/actions/generate-url-with-metadata";
 import { loggerError } from "@/pino";
 import prisma from "@/prisma";
 
 export async function ImageStack() {
 	try {
-		const userId = await getUserId();
+		const userId = await getSelfId();
 
 		const _images = await prisma.images.findMany({
 			where: { userId, status: "UNEXPORTED" },

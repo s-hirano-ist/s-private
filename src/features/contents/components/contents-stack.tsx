@@ -3,13 +3,13 @@ import "server-only";
 import { StatusCodeView } from "@/components/card/status-code-view";
 import { CardStack } from "@/components/stack/card-stack";
 import { ERROR_MESSAGES } from "@/constants";
-import { getUserId } from "@/features/auth/utils/get-session";
+import { getSelfId } from "@/features/auth/utils/role";
 import { loggerError } from "@/pino";
 import prisma from "@/prisma";
 
 export async function ContentsStack() {
 	try {
-		const userId = await getUserId();
+		const userId = await getSelfId();
 		const unexportedContents = (
 			await prisma.contents.findMany({
 				where: { status: "UNEXPORTED", userId },

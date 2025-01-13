@@ -1,12 +1,9 @@
 "use server";
 import "server-only";
 import { SUCCESS_MESSAGES } from "@/constants";
-import { UnexpectedError } from "@/error-classes";
+import { NotAllowedError, UnexpectedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
-import {
-	getUserId,
-	hasUpdateStatusPermissionOrThrow,
-} from "@/features/auth/utils/get-session";
+import { getSelfId, hasDumperPostPermission } from "@/features/auth/utils/role";
 import type { Status, UpdateOrRevert } from "@/features/dump/types";
 import { loggerInfo } from "@/pino";
 import prisma from "@/prisma";
@@ -16,7 +13,7 @@ import { formatChangeStatusMessage } from "@/utils/format-for-line";
 import { revalidatePath } from "next/cache";
 
 async function updateSelfNewsStatus(): Promise<Status> {
-	const userId = await getUserId();
+	const userId = await getSelfId();
 
 	return await prisma.$transaction(async (prisma) => {
 		const exportedData = await prisma.news.updateMany({
@@ -36,7 +33,7 @@ async function updateSelfNewsStatus(): Promise<Status> {
 }
 
 async function revertSelfNewsStatus(): Promise<Status> {
-	const userId = await getUserId();
+	const userId = await getSelfId();
 
 	return await prisma.$transaction(async (prisma) => {
 		const unexportedData = await prisma.news.updateMany({
@@ -73,7 +70,8 @@ export async function changeNewsStatus(
 	updateOrRevert: UpdateOrRevert,
 ): Promise<ServerAction<ToastMessage>> {
 	try {
-		await hasUpdateStatusPermissionOrThrow();
+		const hasUpdateStatusPermission = await hasDumperPostPermission();
+		if (!hasUpdateStatusPermission) throw new NotAllowedError();
 
 		const status = await handleStatusChange(updateOrRevert);
 		const message = formatChangeStatusMessage(status, "NEWS");
