@@ -8,10 +8,10 @@ import {
 	DrawerTitle,
 	DrawerTrigger,
 } from "@/components/ui/drawer";
-import { DEFAULT_SIGN_OUT_REDIRECT } from "@/constants";
-import { signOut } from "@/features/auth/actions/sign-out";
+// import { DEFAULT_SIGN_OUT_REDIRECT } from "@/constants";
+// import { signOut } from "@/features/auth/actions/sign-out";
 import { UtilButtons } from "@/features/dump/components/util-buttons";
-import { useToast } from "@/hooks/use-toast";
+// import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/utils/tailwindcss";
 import {
 	BotIcon,
@@ -21,15 +21,15 @@ import {
 	SendIcon,
 } from "lucide-react";
 import type { Route } from "next";
-import { Link, useTransitionRouter } from "next-view-transitions";
+import { Link /*, useTransitionRouter*/ } from "next-view-transitions";
 import { redirect, usePathname } from "next/navigation";
 import { type ReactNode, useState } from "react";
 
 export function Footer() {
 	const [open, setOpen] = useState(false);
 	const pathname = usePathname();
-	const { toast } = useToast();
-	const router = useTransitionRouter();
+	// const { toast } = useToast();
+	// const router = useTransitionRouter();
 
 	const Icon = (name: string, icon: ReactNode) => {
 		return (
