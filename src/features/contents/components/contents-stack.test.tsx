@@ -1,7 +1,6 @@
 import { getUserId } from "@/features/auth/utils/get-session";
-import { ContentsStackProvider } from "@/features/contents/components/contents-stack-provider";
+import { ContentsStack } from "@/features/contents/components/contents-stack";
 import prisma from "@/prisma";
-import type { Contents } from "@prisma/client";
 import { render, screen } from "@testing-library/react";
 import { type Mock, describe, expect, it, vi } from "vitest";
 
@@ -9,19 +8,7 @@ vi.mock("@/features/auth/utils/get-session", () => ({
 	getUserId: vi.fn(),
 }));
 
-vi.mock("@/features/contents/components/contents-stack", () => ({
-	ContentsStack: ({ contents }: { contents: Contents[] }) => (
-		<div data-testid="contents-stack">
-			{contents.map((item) => (
-				<div key={item.id} data-testid={`content-item-${item.id}`}>
-					{item.title}
-				</div>
-			))}
-		</div>
-	),
-}));
-
-describe("ContentsStackProvider", () => {
+describe("ContentsStack", () => {
 	it("renders ContentsStack with contents data", async () => {
 		// モックデータ
 		const mockUserId = "user123";
@@ -45,14 +32,11 @@ describe("ContentsStackProvider", () => {
 		(prisma.contents.findMany as Mock).mockResolvedValue(mockContentsData);
 
 		// コンポーネントをレンダリング
-		render(await ContentsStackProvider());
-
-		// ContentsStack が描画されていることを確認
-		expect(screen.getByTestId("contents-stack")).toBeInTheDocument();
+		render(await ContentsStack());
 
 		// 各コンテンツアイテムが表示されていることを確認
 		for (const item of mockContentsData) {
-			const contentItem = screen.getByTestId(`content-item-${item.id}`);
+			const contentItem = screen.getByTestId(`small-card-${item.id}`);
 			expect(contentItem).toBeInTheDocument();
 			expect(contentItem).toHaveTextContent(item.title);
 		}
@@ -63,7 +47,7 @@ describe("ContentsStackProvider", () => {
 		(getUserId as Mock).mockRejectedValue(new Error("Test Error"));
 
 		// コンポーネントをレンダリング
-		render(await ContentsStackProvider());
+		render(await ContentsStack());
 
 		// StatusCodeView が描画され、500 エラーコードが表示されていることを確認
 		const statusCodeView = screen.getByTestId("status-code-view");

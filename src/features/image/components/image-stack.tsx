@@ -1,54 +1,50 @@
-"use client";
 import { StatusCodeView } from "@/components/card/status-code-view";
-import Image from "next/image";
-import PhotoSwipeLightbox from "photoswipe/lightbox";
-import { useEffect } from "react";
-import "photoswipe/style.css";
+import { ImageStack as _ImageStack } from "@/components/stack/image-stack";
+import { ERROR_MESSAGES } from "@/constants";
+import { getUserId } from "@/features/auth/utils/get-session";
+import { generateUrlWithMetadata } from "@/features/image/actions/generate-url-with-metadata";
+import { loggerError } from "@/pino";
+import prisma from "@/prisma";
 
-type Props = {
-	images: {
-		src: string;
-		width?: number | undefined;
-		height?: number | undefined;
-	}[];
-};
+export async function ImageStack() {
+	try {
+		const userId = await getUserId();
 
-export function ImageStack({ images }: Props) {
-	useEffect(() => {
-		const lightbox = new PhotoSwipeLightbox({
-			gallery: "#image-preview",
-			children: "a",
-			pswpModule: () => import("photoswipe"),
-			bgOpacity: 1.0,
+		const _images = await prisma.images.findMany({
+			where: { userId, status: "UNEXPORTED" },
+			select: {
+				id: true,
+			},
+			orderBy: { id: "desc" },
 		});
-		lightbox.init();
 
-		return () => {
-			lightbox.destroy();
-		};
-	}, []);
+		const images = await Promise.all(
+			_images.map(async (image) => {
+				const response = await generateUrlWithMetadata(image.id);
+				if (!response.success) return { src: "/not-found.png" };
 
-	if (images.length === 0) return <StatusCodeView statusCode="204" />;
+				return {
+					src: response.data.url,
+					width: response.data.metadata.width,
+					height: response.data.metadata.height,
+				};
+			}),
+		);
 
-	return (
-		// eslint-disable-next-line
-		<div className="pswp-gallery" id="image-preview">
-			<div className="grid grid-cols-4 gap-2 p-2 sm:p-4">
-				{images.map((image) => (
-					<a
-						href={image.src}
-						target="_blank"
-						rel="noreferrer"
-						// FIXME: not foundの画像が複数枚あるときにエラー
-						key={image.src}
-						data-pswp-width={image.width}
-						data-pswp-height={image.height}
-						aria-label={`Image ${image.src}`}
-					>
-						<Image src={image.src} width={300} height={96} alt="" />
-					</a>
-				))}
+		return <_ImageStack data={images} />;
+	} catch (error) {
+		loggerError(
+			ERROR_MESSAGES.UNEXPECTED,
+			{
+				caller: "ImagePage",
+				status: 500,
+			},
+			error,
+		);
+		return (
+			<div className="flex flex-col items-center">
+				<StatusCodeView statusCode="500" />
 			</div>
-		</div>
-	);
+		);
+	}
 }

@@ -1,7 +1,6 @@
 import { getUserId } from "@/features/auth/utils/get-session";
-import { NewsStackProvider } from "@/features/news/components/news-stack-provider";
+import { NewsStack } from "@/features/news/components/news-stack";
 import prisma from "@/prisma";
-import type { News } from "@prisma/client";
 import { render, screen } from "@testing-library/react";
 import { type Mock, describe, expect, it, vi } from "vitest";
 
@@ -9,19 +8,7 @@ vi.mock("@/features/auth/utils/get-session", () => ({
 	getUserId: vi.fn(),
 }));
 
-vi.mock("@/features/news/components/news-stack", () => ({
-	NewsStack: ({ news }: { news: News[] }) => (
-		<div data-testid="news-stack">
-			{news.map((item) => (
-				<div key={item.id} data-testid={`news-item-${item.id}`}>
-					{item.title}
-				</div>
-			))}
-		</div>
-	),
-}));
-
-describe("NewsStackProvider", () => {
+describe("NewsStack", () => {
 	it("renders NewsStack with news data", async () => {
 		// モックデータ
 		const mockUserId = "user123";
@@ -47,14 +34,11 @@ describe("NewsStackProvider", () => {
 		(prisma.news.findMany as Mock).mockResolvedValue(mockNewsData);
 
 		// コンポーネントをレンダリング
-		render(await NewsStackProvider());
-
-		// NewsStack が描画されていることを確認
-		expect(screen.getByTestId("news-stack")).toBeInTheDocument();
+		render(await NewsStack());
 
 		// 各ニュースアイテムが表示されていることを確認
 		for (const item of mockNewsData) {
-			expect(screen.getByTestId(`news-item-${item.id}`)).toHaveTextContent(
+			expect(screen.getByTestId(`small-card-${item.id}`)).toHaveTextContent(
 				item.title,
 			);
 		}
@@ -65,7 +49,7 @@ describe("NewsStackProvider", () => {
 		(getUserId as Mock).mockRejectedValue(new Error("Test Error"));
 
 		// コンポーネントをレンダリング
-		render(await NewsStackProvider());
+		render(await NewsStack());
 
 		// StatusCodeView が描画され、500 エラーコードが表示されていることを確認
 		const statusCodeView = screen.getByTestId("status-code-view");

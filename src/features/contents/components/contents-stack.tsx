@@ -7,19 +7,17 @@ import { getUserId } from "@/features/auth/utils/get-session";
 import { loggerError } from "@/pino";
 import prisma from "@/prisma";
 
-export async function NewsStackProvider() {
+export async function ContentsStack() {
 	try {
 		const userId = await getUserId();
-
-		const unexportedNews = (
-			await prisma.news.findMany({
+		const unexportedContents = (
+			await prisma.contents.findMany({
 				where: { status: "UNEXPORTED", userId },
 				select: {
 					id: true,
 					title: true,
 					quote: true,
 					url: true,
-					Category: { select: { name: true } },
 				},
 				orderBy: { id: "desc" },
 			})
@@ -29,15 +27,15 @@ export async function NewsStackProvider() {
 				title: d.title,
 				quote: d.quote,
 				url: d.url,
-				category: d.Category.name,
 			};
 		});
-		return <CardStack data={unexportedNews} />;
+
+		return <CardStack data={unexportedContents} />;
 	} catch (error) {
 		loggerError(
 			ERROR_MESSAGES.UNEXPECTED,
 			{
-				caller: "NewsStackProvider",
+				caller: "ContentsStack",
 				status: 500,
 			},
 			error,

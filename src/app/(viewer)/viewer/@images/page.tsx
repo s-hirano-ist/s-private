@@ -1,9 +1,9 @@
 import { Unauthorized } from "@/components/card/unauthorized";
+import { ImageStackSkeleton } from "@/components/stack/image-stack-skeleton";
 import { checkSelfAuthOrRedirectToAuth } from "@/features/auth/utils/get-session";
 import { hasContentsPermission } from "@/features/auth/utils/role";
-import { AllImageStackProvider } from "@/features/image/components/all-image-stack-provider";
+import { AllImageStack } from "@/features/image/components/all-image-stack";
 import { ImagePagination } from "@/features/image/components/image-pagination";
-import { ImageStackSkeleton } from "@/features/image/components/image-stack-skeleton";
 import { Suspense } from "react";
 
 export const dynamic = "force-dynamic";
@@ -25,7 +25,7 @@ export default async function Page({ params }: { params: Params }) {
 				<>
 					<ImagePagination currentPage={currentPage} />
 					<Suspense key={currentPage} fallback={<ImageStackSkeleton />}>
-						<AllImageStackProvider page={currentPage} />
+						<AllImageStack page={currentPage} />
 					</Suspense>
 				</>
 			) : (

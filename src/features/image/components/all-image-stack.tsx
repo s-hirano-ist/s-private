@@ -1,14 +1,14 @@
+import { ImageStack } from "@/components/stack/image-stack";
 import { PAGE_SIZE } from "@/constants";
 import { getUserId } from "@/features/auth/utils/get-session";
 import { generateUrlWithMetadata } from "@/features/image/actions/generate-url-with-metadata";
-import { ImageStack } from "@/features/image/components/image-stack";
 import prisma from "@/prisma";
 
 type Props = {
 	page: number;
 };
 
-export async function AllImageStackProvider({ page }: Props) {
+export async function AllImageStack({ page }: Props) {
 	const userId = await getUserId();
 
 	const _images = await prisma.images.findMany({
@@ -34,5 +34,5 @@ export async function AllImageStackProvider({ page }: Props) {
 		}),
 	);
 
-	return <ImageStack images={images} />;
+	return <ImageStack data={images} />;
 }
