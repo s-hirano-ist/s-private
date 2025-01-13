@@ -59,7 +59,7 @@
 		"gray-matter": "4.0.3",
 		"html-react-parser": "5.2.2",
 		"isomorphic-dompurify": "2.20.0",
-		"jsdom": "25.0.1",
+		"jsdom": "26.0.0",
 		"lucide-react": "0.471.0",
 		"minio": "8.0.3",
 		"next": "15.1.3",
