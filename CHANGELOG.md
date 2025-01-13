@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.7.0](https://github.com/s-hirano-ist/s-private/compare/v5.6.0...v5.7.0) (2025-01-13)
+
+
+### Features
+
+* 🎸 add change status buttons ([5435fb9](https://github.com/s-hirano-ist/s-private/commit/5435fb9eacb0e9724630b327e3f6d026aae2b42b))
+
+
+### Bug Fixes
+
+* 🐛 bug of 500 error on invalid urls ([4770033](https://github.com/s-hirano-ist/s-private/commit/4770033d21cd897bec0ed240635ad3a08afec914))
+* 🐛 design of add-form-skeleton ([d7f5344](https://github.com/s-hirano-ist/s-private/commit/d7f5344218b47e6fd3682ad7f8088d37fb92bc30))
+* 🐛 loading of add form ([8143951](https://github.com/s-hirano-ist/s-private/commit/8143951ae3fcc86a8ff2c89a72d9e3a551ff325b))
+* form actions for tests ([20fc168](https://github.com/s-hirano-ist/s-private/commit/20fc1681900814e05777de4922d1b16b7fc6bb40))
+
 ## [5.6.0](https://github.com/s-hirano-ist/s-private/compare/v5.5.0...v5.6.0) (2025-01-06)
 
 
