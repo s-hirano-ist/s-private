@@ -15,7 +15,7 @@ import { changeNewsStatus } from "@/features/news/actions/change-news-status";
 import { useToast } from "@/hooks/use-toast";
 import { useActionState, useState } from "react";
 
-export function ChangeStatusButtons() {
+export function ChangeStatusForm() {
 	const { toast } = useToast();
 
 	const [target, setTarget] = useState<string>();

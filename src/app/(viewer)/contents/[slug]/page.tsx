@@ -1,9 +1,9 @@
+import { ViewerBody } from "@/components/body/viewer-body";
 import { NotFound } from "@/components/card/not-found";
 import { Unauthorized } from "@/components/card/unauthorized";
 import { PAGE_NAME } from "@/constants";
 import { checkSelfAuthOrRedirectToAuth } from "@/features/auth/utils/get-session";
 import { hasContentsPermission } from "@/features/auth/utils/role";
-import { ViewerBody } from "@/features/viewer/components/viewer-body";
 import { markdownToReact } from "@/features/viewer/utils/markdown-to-react";
 import prisma from "@/prisma";
 import type { Metadata } from "next";

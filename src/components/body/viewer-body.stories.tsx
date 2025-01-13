@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { ViewerBody } from "./viewer-body";
 
 const meta = {
-	title: "Features/Viewer/ViewerBody",
+	title: "Components/Body/ViewerBody",
 	component: ViewerBody,
 	parameters: { layout: "centered" },
 	tags: ["autodocs"],

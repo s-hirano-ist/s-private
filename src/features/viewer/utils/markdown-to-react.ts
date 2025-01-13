@@ -25,7 +25,7 @@ import { unified } from "unified";
  * REF: https://qiita.com/sankentou/items/f8eadb5722f3b39bbbf8
  */
 
-async function markdownToHtml(markdown: string) {
+export async function markdownToHtml(markdown: string) {
 	const result = await unified()
 		.use(remarkParse) // Markdown to mdast
 		.use(remarkGfm)
