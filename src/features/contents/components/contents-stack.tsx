@@ -1,7 +1,7 @@
 "use client";
+import { StatusCodeView } from "@/components/card/status-code-view";
 import { SmallCard } from "@/components/stack/small-card";
 import { StackSkeleton } from "@/components/stack/stack-skeleton";
-import { StatusCodeView } from "@/components/status-code-view";
 import type { Contents } from "@/features/contents/types";
 
 type Props = {

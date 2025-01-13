@@ -1,5 +1,5 @@
 "use client";
-import { StatusCodeView } from "@/components/status-code-view";
+import { StatusCodeView } from "@/components/card/status-code-view";
 import Image from "next/image";
 import PhotoSwipeLightbox from "photoswipe/lightbox";
 import { useEffect } from "react";

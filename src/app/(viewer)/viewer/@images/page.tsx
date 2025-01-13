@@ -1,4 +1,4 @@
-import { Unauthorized } from "@/components/unauthorized";
+import { Unauthorized } from "@/components/card/unauthorized";
 import { checkSelfAuthOrRedirectToAuth } from "@/features/auth/utils/get-session";
 import { hasContentsPermission } from "@/features/auth/utils/role";
 import { AllImageStackProvider } from "@/features/image/components/all-image-stack-provider";

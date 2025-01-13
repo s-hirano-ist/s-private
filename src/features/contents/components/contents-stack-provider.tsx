@@ -1,6 +1,6 @@
 "use server";
 import "server-only";
-import { StatusCodeView } from "@/components/status-code-view";
+import { StatusCodeView } from "@/components/card/status-code-view";
 import { ERROR_MESSAGES } from "@/constants";
 import { getUserId } from "@/features/auth/utils/get-session";
 import { loggerError } from "@/pino";
