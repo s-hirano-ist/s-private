@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { CardStackSkeleton } from "./card-stack-skeleton";
 
 const meta = {
-	title: "Components/Card/CardStackSkeleton",
+	title: "Components/Stack/CardStackSkeleton",
 	component: CardStackSkeleton,
 } satisfies Meta<typeof CardStackSkeleton>;
 

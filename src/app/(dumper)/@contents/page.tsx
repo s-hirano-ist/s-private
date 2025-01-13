@@ -1,4 +1,4 @@
-import { CardStackSkeleton } from "@/components/card/card-stack-skeleton";
+import { CardStackSkeleton } from "@/components/stack/card-stack-skeleton";
 import { Separator } from "@/components/ui/separator";
 import { checkSelfAuthOrRedirectToAuth } from "@/features/auth/utils/get-session";
 import { hasDumperPermission } from "@/features/auth/utils/role";

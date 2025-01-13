@@ -1,20 +1,11 @@
+import { Pagination } from "@/components/stack/pagination";
 import { Badge } from "@/components/ui/badge";
-import {
-	Pagination,
-	PaginationContent,
-	PaginationItem,
-	PaginationLink,
-	PaginationNext,
-	PaginationPrevious,
-} from "@/components/ui/pagination";
-import { ERROR_MESSAGES, PAGE_SIZE } from "@/constants";
+import { ERROR_MESSAGES } from "@/constants";
 import { getUserId } from "@/features/auth/utils/get-session";
 import { loggerError } from "@/pino";
 import prisma from "@/prisma";
 
-type Props = {
-	currentPage: number;
-};
+type Props = { currentPage: number };
 
 export async function ImagePagination({ currentPage }: Props) {
 	try {
@@ -23,31 +14,10 @@ export async function ImagePagination({ currentPage }: Props) {
 			where: { userId },
 		});
 
-		const showPreviousPageLink = 1 < currentPage;
-		const showNextPageLink = currentPage < totalImages / PAGE_SIZE;
-
 		return (
 			<>
 				<Badge className="m-2 flex justify-center">画像数: {totalImages}</Badge>
-				<Pagination>
-					<PaginationContent>
-						{showPreviousPageLink && (
-							<PaginationItem>
-								<PaginationPrevious
-									href={`?page=${currentPage > 1 ? currentPage - 1 : 1}`}
-								/>
-							</PaginationItem>
-						)}
-						<PaginationItem>
-							<PaginationLink href="#">{currentPage}</PaginationLink>
-						</PaginationItem>
-						{showNextPageLink && (
-							<PaginationItem>
-								<PaginationNext href={`?page=${currentPage + 1}`} />
-							</PaginationItem>
-						)}
-					</PaginationContent>
-				</Pagination>
+				<Pagination currentPage={currentPage} totalPages={totalImages} />
 			</>
 		);
 	} catch (error) {
