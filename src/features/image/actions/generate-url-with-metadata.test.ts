@@ -10,6 +10,10 @@ import { generateUrlWithMetadata } from "./generate-url-with-metadata";
 
 vi.mock("@/features/auth/utils/auth", () => ({ auth: vi.fn() }));
 
+vi.mock("@/utils/fetch-message", () => ({
+	sendLineNotifyMessage: vi.fn(),
+}));
+
 vi.mock("@/minio", () => ({
 	minioClient: { presignedGetObject: vi.fn() },
 }));
