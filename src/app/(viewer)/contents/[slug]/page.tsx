@@ -1,5 +1,5 @@
-import { NotFound } from "@/components/not-found";
-import { Unauthorized } from "@/components/unauthorized";
+import { NotFound } from "@/components/card/not-found";
+import { Unauthorized } from "@/components/card/unauthorized";
 import { PAGE_NAME } from "@/constants";
 import { checkSelfAuthOrRedirectToAuth } from "@/features/auth/utils/get-session";
 import { hasContentsPermission } from "@/features/auth/utils/role";

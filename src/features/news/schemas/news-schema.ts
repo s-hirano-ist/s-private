@@ -1,5 +1,5 @@
 import { FORM_ERROR_MESSAGES } from "@/constants";
-import { validateUrl } from "@/utils/validate-url";
+import { isValidUrl } from "@/utils/validate-url";
 import { z } from "zod";
 
 export const newsSchema = z.object({
@@ -16,7 +16,7 @@ export const newsSchema = z.object({
 		.string({ message: FORM_ERROR_MESSAGES.REQUIRED })
 		.min(1, { message: FORM_ERROR_MESSAGES.REQUIRED })
 		.url({ message: FORM_ERROR_MESSAGES.INVALID_FORMAT })
-		.refine((url) => validateUrl(url), {
+		.refine((url) => isValidUrl(url), {
 			message: FORM_ERROR_MESSAGES.INVALID_FORMAT,
 		}),
 });

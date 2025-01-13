@@ -18,12 +18,10 @@ type Props = {
 };
 
 export function SmallCard({ id, title, quote, url, category }: Props) {
+	const validatedUrl = new URL(validateUrl(url));
+
 	return (
-		<Link
-			href={new URL(validateUrl(url))}
-			target="_blank"
-			data-testid={`small-card-${id}`}
-		>
+		<Link href={validatedUrl} target="_blank" data-testid={`small-card-${id}`}>
 			<Card className="hover:bg-secondary">
 				<CardHeader>
 					<div className="flex gap-4">

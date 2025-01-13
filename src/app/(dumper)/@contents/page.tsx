@@ -1,4 +1,4 @@
-import { StackSkeleton } from "@/components/stack/stack-skeleton";
+import { CardStackSkeleton } from "@/components/card/card-stack-skeleton";
 import { Separator } from "@/components/ui/separator";
 import { checkSelfAuthOrRedirectToAuth } from "@/features/auth/utils/get-session";
 import { hasDumperPermission } from "@/features/auth/utils/role";
@@ -21,7 +21,7 @@ export default async function Page() {
 				</Suspense>
 			)}
 			<Separator className="h-px bg-gradient-to-r from-primary to-primary-grad" />
-			<Suspense fallback={<StackSkeleton />}>
+			<Suspense fallback={<CardStackSkeleton />}>
 				<ContentsStackProvider />
 			</Suspense>
 		</>

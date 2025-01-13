@@ -1,4 +1,4 @@
-import { Unauthorized } from "@/components/unauthorized";
+import { Unauthorized } from "@/components/card/unauthorized";
 import { checkSelfAuthOrRedirectToAuth } from "@/features/auth/utils/get-session";
 import { hasContentsPermission } from "@/features/auth/utils/role";
 import { ChangeStatusButtons } from "@/features/dump/components/change-status-buttons";

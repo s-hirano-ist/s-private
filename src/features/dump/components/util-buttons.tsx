@@ -1,43 +1,15 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import {
-	DrawerDescription,
-	DrawerHeader,
-	DrawerTitle,
-} from "@/components/ui/drawer";
-import { DEFAULT_SIGN_OUT_REDIRECT, UTIL_URLS } from "@/constants";
-import { signOut } from "@/features/auth/actions/sign-out";
-import { useToast } from "@/hooks/use-toast";
-import { Link, useTransitionRouter } from "next-view-transitions";
+import { UTIL_URLS } from "@/constants";
+import { Link } from "next-view-transitions";
 import { usePathname } from "next/navigation";
 
-export function UtilsDrawer() {
+type Props = { handleReload: () => void; onSignOutSubmit: () => Promise<void> };
+
+export function UtilButtons({ handleReload, onSignOutSubmit }: Props) {
 	const pathname = usePathname();
-	const { toast } = useToast();
-	const router = useTransitionRouter();
-
-	const handleReload = () => {
-		window.location.reload();
-	};
-
-	async function onSignOutSubmit() {
-		const response = await signOut();
-		if (response.success) {
-			router.push(DEFAULT_SIGN_OUT_REDIRECT);
-		} else {
-			toast({
-				variant: "destructive",
-				description: response.message,
-			});
-		}
-	}
-
 	return (
 		<>
-			<DrawerHeader>
-				<DrawerTitle>便利ツール集</DrawerTitle>
-				<DrawerDescription>リンクをクリックしてください。</DrawerDescription>
-			</DrawerHeader>
 			<div className="grid grid-cols-2 gap-2 px-2">
 				{UTIL_URLS.map((url) => {
 					return (

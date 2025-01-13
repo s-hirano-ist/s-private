@@ -1,11 +1,11 @@
+import { Separator } from "@/components/ui/separator";
 import type { Meta, StoryObj } from "@storybook/react";
-import { SmallCardSkeleton } from "./small-card-skeleton";
 
 const meta = {
-	title: "Components/Stack/SmallCardSkeleton",
-	component: SmallCardSkeleton,
+	title: "Components/UI/Separator",
+	component: Separator,
 	tags: ["autodocs"],
-} satisfies Meta<typeof SmallCardSkeleton>;
+} satisfies Meta<typeof Separator>;
 
 export default meta;
 

@@ -1,7 +1,7 @@
 "use client";
-import { SmallCard } from "@/components/stack/small-card";
-import { StackSkeleton } from "@/components/stack/stack-skeleton";
-import { StatusCodeView } from "@/components/status-code-view";
+import { CardStackSkeleton } from "@/components/card/card-stack-skeleton";
+import { SmallCard } from "@/components/card/small-card";
+import { StatusCodeView } from "@/components/card/status-code-view";
 import type { Contents } from "@/features/contents/types";
 
 type Props = {
@@ -9,7 +9,7 @@ type Props = {
 };
 
 export function ContentsStack({ contents }: Props) {
-	if (contents === undefined) return <StackSkeleton />;
+	if (contents === undefined) return <CardStackSkeleton />;
 	if (contents.length === 0) return <StatusCodeView statusCode="204" />;
 
 	return (
