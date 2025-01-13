@@ -24,7 +24,7 @@ const mockUnauthorizedSession = null;
 
 const mockFormData = new FormData();
 mockFormData.append("title", "Example Content");
-mockFormData.append("quote", "This is an example content quote.");
+mockFormData.append("quote", "This is an example news quote.");
 mockFormData.append("url", "https://example.com");
 mockFormData.append("category", "tech");
 

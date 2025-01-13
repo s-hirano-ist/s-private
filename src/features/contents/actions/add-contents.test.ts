@@ -8,6 +8,10 @@ import { addContents } from "./add-contents";
 
 vi.mock("@/features/auth/utils/auth", () => ({ auth: vi.fn() }));
 
+vi.mock("@/utils/fetch-message", () => ({
+	sendLineNotifyMessage: vi.fn(),
+}));
+
 const mockAllowedRoleSession: Session = {
 	user: { id: "1", roles: ["dumper"] },
 	expires: "2025-01-01",
