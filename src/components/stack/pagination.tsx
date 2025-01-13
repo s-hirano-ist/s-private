@@ -13,7 +13,7 @@ type Props = {
 	totalPages: number;
 };
 
-export async function Pagination({ currentPage, totalPages }: Props) {
+export function Pagination({ currentPage, totalPages }: Props) {
 	const showPreviousPageLink = 1 < currentPage;
 	const showNextPageLink = currentPage < totalPages / PAGE_SIZE;
 

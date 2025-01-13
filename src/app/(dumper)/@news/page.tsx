@@ -1,10 +1,15 @@
 import { CardStackSkeleton } from "@/components/stack/card-stack-skeleton";
 import { Separator } from "@/components/ui/separator";
-import { checkSelfAuthOrRedirectToAuth } from "@/features/auth/utils/get-session";
+import { ERROR_MESSAGES } from "@/constants";
+import {
+	checkSelfAuthOrRedirectToAuth,
+	getUserId,
+} from "@/features/auth/utils/get-session";
 import { hasDumperPermission } from "@/features/auth/utils/role";
-import { AddFormSkeleton } from "@/features/dump/components/add-form-skeleton";
-import { AddNewsProvider } from "@/features/news/components/add-news-provider";
+import { AddNewsForm } from "@/features/news/components/add-news-form";
 import { NewsStack } from "@/features/news/components/news-stack";
+import { loggerError } from "@/pino";
+import prisma from "@/prisma";
 import { Suspense } from "react";
 
 export const dynamic = "force-dynamic";
@@ -14,13 +19,29 @@ export default async function Page() {
 
 	const hasPostPermission = await hasDumperPermission();
 
+	const categories = await (async () => {
+		try {
+			const userId = await getUserId();
+			return await prisma.categories.findMany({
+				where: { userId },
+				select: { id: true, name: true },
+			});
+		} catch (error) {
+			loggerError(
+				ERROR_MESSAGES.UNEXPECTED,
+				{
+					caller: "CategoryFetch",
+					status: 500,
+				},
+				error,
+			);
+			return [];
+		}
+	})();
+
 	return (
 		<>
-			{hasPostPermission && (
-				<Suspense fallback={<AddFormSkeleton showCategory showSubmitButton />}>
-					<AddNewsProvider />
-				</Suspense>
-			)}
+			{hasPostPermission && <AddNewsForm categories={categories} />}
 			<Separator className="h-px bg-gradient-to-r from-primary to-primary-grad" />
 			<Suspense fallback={<CardStackSkeleton />}>
 				<NewsStack />

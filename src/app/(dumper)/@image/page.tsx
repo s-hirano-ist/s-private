@@ -2,8 +2,7 @@ import { ImageStackSkeleton } from "@/components/stack/image-stack-skeleton";
 import { Separator } from "@/components/ui/separator";
 import { checkSelfAuthOrRedirectToAuth } from "@/features/auth/utils/get-session";
 import { hasDumperPermission } from "@/features/auth/utils/role";
-import { AddFormSkeleton } from "@/features/dump/components/add-form-skeleton";
-import { AddImageProvider } from "@/features/image/components/add-image-provider";
+import { AddImageForm } from "@/features/image/components/add-image-form";
 import { ImageStack } from "@/features/image/components/image-stack";
 import { Suspense } from "react";
 
@@ -16,11 +15,7 @@ export default async function Page() {
 
 	return (
 		<>
-			{hasPostPermission && (
-				<Suspense fallback={<AddFormSkeleton showSubmitButton />}>
-					<AddImageProvider />
-				</Suspense>
-			)}
+			{hasPostPermission && <AddImageForm />}
 			<Separator className="h-px bg-gradient-to-r from-primary to-primary-grad" />
 			<Suspense fallback={<ImageStackSkeleton />}>
 				<ImageStack />
