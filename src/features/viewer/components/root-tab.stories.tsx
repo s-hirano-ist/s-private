@@ -4,10 +4,6 @@ import { RootTab } from "./root-tab";
 const meta = {
 	title: "Features/Viewer/RootTab",
 	component: RootTab,
-	parameters: {
-		layout: "centered",
-		nextjs: { appDirectory: true },
-	},
 	tags: ["autodocs"],
 } satisfies Meta<typeof RootTab>;
 

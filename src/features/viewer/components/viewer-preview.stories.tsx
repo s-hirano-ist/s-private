@@ -4,7 +4,7 @@ import { ViewerPreview } from "./viewer-preview";
 const meta = {
 	title: "Features/Viewer/ViewerPreview",
 	component: ViewerPreview,
-	parameters: { layout: "centered", nextjs: { appDirectory: true } },
+	parameters: { layout: "centered" },
 	tags: ["autodocs"],
 } satisfies Meta<typeof ViewerPreview>;
 

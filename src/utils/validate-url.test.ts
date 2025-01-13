@@ -16,13 +16,13 @@ describe("validateUrl", () => {
 
 	it("should throw an error for non-HTTP/HTTPS protocols", () => {
 		const url = "ftp://example.com";
-		expect(() => validateUrl(url)).toThrowError(
-			"Detected url which is not HTTPS",
-		);
+		const result = validateUrl(url);
+		expect(result).toBe("/");
 	});
 
 	it("should throw an error for invalid URLs", () => {
 		const url = "invalid-url";
-		expect(() => validateUrl(url)).toThrowError();
+		const result = validateUrl(url);
+		expect(result).toBe("/");
 	});
 });

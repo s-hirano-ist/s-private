@@ -5,9 +5,6 @@ const meta = {
 	title: "Components/Stack/SmallCard",
 	component: SmallCard,
 	tags: ["autodocs"],
-	parameters: {
-		nextjs: { appDirectory: true },
-	},
 } satisfies Meta<typeof SmallCard>;
 
 export default meta;

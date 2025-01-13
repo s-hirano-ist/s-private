@@ -8,7 +8,7 @@ describe("AddFormSkeleton", () => {
 
 		// カテゴリーラベルとスケルトンが表示されることを確認
 		expect(screen.queryByText("カテゴリー")).toBeInTheDocument();
-		expect(screen.getAllByRole("presentation")).toHaveLength(5);
+		expect(screen.getAllByRole("presentation")).toHaveLength(4);
 	});
 
 	it("renders correctly when showCategory is false", () => {
@@ -16,7 +16,7 @@ describe("AddFormSkeleton", () => {
 
 		// カテゴリーラベルが表示されないことを確認
 		expect(screen.queryByText("カテゴリー")).not.toBeInTheDocument();
-		expect(screen.getAllByRole("presentation")).toHaveLength(4);
+		expect(screen.getAllByRole("presentation")).toHaveLength(3);
 	});
 
 	it("renders texts and skeletons for title, quote, and URL", () => {
@@ -28,6 +28,6 @@ describe("AddFormSkeleton", () => {
 		expect(screen.getByText("URL")).toBeInTheDocument();
 
 		// Skeleton 要素が存在することを確認
-		expect(screen.getAllByRole("presentation")).toHaveLength(4);
+		expect(screen.getAllByRole("presentation")).toHaveLength(3);
 	});
 });

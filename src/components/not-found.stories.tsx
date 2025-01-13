@@ -2,13 +2,9 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { NotFound } from "./not-found";
 
 const meta = {
-	title: "Components/NotFound",
+	title: "Components/Card/NotFound",
 	component: NotFound,
-	parameters: {
-		layout: "centered",
-		nextjs: { appDirectory: true },
-	},
-	tags: ["autodocs"],
+	parameters: { layout: "centered" },
 } satisfies Meta<typeof NotFound>;
 
 export default meta;

@@ -5,10 +5,7 @@ import { UtilButtons } from "./util-buttons";
 const meta = {
 	title: "Components/UtilButtons",
 	component: UtilButtons,
-	parameters: {
-		layout: "centered",
-		nextjs: { appDirectory: true },
-	},
+	parameters: { layout: "centered" },
 	tags: ["autodocs"],
 } satisfies Meta<typeof UtilButtons>;
 

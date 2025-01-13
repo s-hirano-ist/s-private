@@ -4,7 +4,7 @@ import { ViewerStack } from "./viewer-stack";
 const meta = {
 	title: "Features/Viewer/ViewerStack",
 	component: ViewerStack,
-	parameters: { layout: "centered", nextjs: { appDirectory: true } },
+	parameters: { layout: "centered" },
 	tags: ["autodocs"],
 } satisfies Meta<typeof ViewerStack>;
 

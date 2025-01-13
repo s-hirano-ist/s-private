@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { StatusCodeView } from "./status-code-view";
 
 const meta = {
-	title: "Components/StatusCodeView",
+	title: "Components/Card/StatusCodeView",
 	component: StatusCodeView,
 	parameters: { layout: "centered" },
 	tags: ["autodocs"],
