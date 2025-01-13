@@ -6,7 +6,7 @@ export function StatusCodeView({ statusCode }: { statusCode: StatusCode }) {
 			case "000":
 				return "Comming Soon";
 			case "204":
-				return "No Content";
+				return "No Contents";
 			case "403":
 				return "Forbidden";
 			case "404":

@@ -1,16 +1,7 @@
 import { Button } from "@/components/ui/button";
-import {
-	Toast,
-	ToastAction,
-	ToastClose,
-	ToastDescription,
-	ToastProvider,
-	ToastTitle,
-	ToastViewport,
-} from "@/components/ui/toast";
 import { useToast } from "@/hooks/use-toast";
 import type { Meta, StoryObj } from "@storybook/react";
-import React, { useState } from "react";
+import React from "react";
 import { Toaster } from "./toaster";
 
 const meta = {

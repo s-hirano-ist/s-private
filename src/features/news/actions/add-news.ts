@@ -6,7 +6,6 @@ import {
 	getUserId,
 	hasSelfPostPermissionOrThrow,
 } from "@/features/auth/utils/get-session";
-import type { News } from "@/features/news/types";
 import { validateCategory } from "@/features/news/utils/validate-category";
 import { validateNews } from "@/features/news/utils/validate-news";
 import { loggerInfo } from "@/pino";
@@ -15,6 +14,14 @@ import type { ServerAction } from "@/types";
 import { sendLineNotifyMessage } from "@/utils/fetch-message";
 import { formatCreateNewsMessage } from "@/utils/format-for-line";
 import { revalidatePath } from "next/cache";
+
+type News = {
+	id: number;
+	title: string;
+	quote: string | null;
+	url: string;
+	category: string;
+};
 
 export async function addNews(formData: FormData): Promise<ServerAction<News>> {
 	try {

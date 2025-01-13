@@ -40,7 +40,7 @@ jobs:
       - run: pnpm i --frozen-lockfile # && npm install -g @lhci/cli@0.12.x
       - run: pnpm license:summary
       - run: bash check-license.sh
-      - run: pnpm check:fix
+      - run: pnpm fmt:fix
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@67ccf781d68cd99b580ae25a5c18a1cc84ffff1f # v7

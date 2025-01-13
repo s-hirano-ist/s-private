@@ -1,31 +1,51 @@
-"use client";
-import { CardStackSkeleton } from "@/components/card/card-stack-skeleton";
-import { SmallCard } from "@/components/card/small-card";
+"use server";
+import "server-only";
 import { StatusCodeView } from "@/components/card/status-code-view";
-import type { News } from "@/features/news/types";
+import { CardStack } from "@/components/stack/card-stack";
+import { ERROR_MESSAGES } from "@/constants";
+import { getUserId } from "@/features/auth/utils/get-session";
+import { loggerError } from "@/pino";
+import prisma from "@/prisma";
 
-type Props = {
-	news: News[];
-};
+export async function NewsStack() {
+	try {
+		const userId = await getUserId();
 
-export function NewsStack({ news }: Props) {
-	if (news === undefined) return <CardStackSkeleton />;
-	if (news.length === 0) return <StatusCodeView statusCode="204" />;
-
-	return (
-		<div className="grid grid-cols-1 gap-2 p-2 sm:grid-cols-2 sm:gap-4 sm:p-4">
-			{news.map((d) => {
-				return (
-					<SmallCard
-						key={d.id}
-						id={d.id}
-						title={d.title}
-						quote={d.quote}
-						url={d.url}
-						category={d.category}
-					/>
-				);
-			})}
-		</div>
-	);
+		const unexportedNews = (
+			await prisma.news.findMany({
+				where: { status: "UNEXPORTED", userId },
+				select: {
+					id: true,
+					title: true,
+					quote: true,
+					url: true,
+					Category: { select: { name: true } },
+				},
+				orderBy: { id: "desc" },
+			})
+		).map((d) => {
+			return {
+				id: d.id,
+				title: d.title,
+				quote: d.quote,
+				url: d.url,
+				category: d.Category.name,
+			};
+		});
+		return <CardStack data={unexportedNews} />;
+	} catch (error) {
+		loggerError(
+			ERROR_MESSAGES.UNEXPECTED,
+			{
+				caller: "NewsStack",
+				status: 500,
+			},
+			error,
+		);
+		return (
+			<div className="flex flex-col items-center">
+				<StatusCodeView statusCode="500" />
+			</div>
+		);
+	}
 }

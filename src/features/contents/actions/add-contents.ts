@@ -6,7 +6,6 @@ import {
 	getUserId,
 	hasSelfPostPermissionOrThrow,
 } from "@/features/auth/utils/get-session";
-import type { Contents } from "@/features/contents/types";
 import { validateContents } from "@/features/contents/utils/validate-contents";
 import { loggerInfo } from "@/pino";
 import prisma from "@/prisma";
@@ -14,6 +13,13 @@ import type { ServerAction } from "@/types";
 import { sendLineNotifyMessage } from "@/utils/fetch-message";
 import { formatCreateContentsMessage } from "@/utils/format-for-line";
 import { revalidatePath } from "next/cache";
+
+type Contents = {
+	id: number;
+	title: string;
+	quote: string | null;
+	url: string;
+};
 
 export async function addContents(
 	formData: FormData,

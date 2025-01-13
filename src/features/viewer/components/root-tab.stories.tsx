@@ -5,6 +5,7 @@ const meta = {
 	title: "Features/Viewer/RootTab",
 	component: RootTab,
 	tags: ["autodocs"],
+	parameters: { layout: "fullscreen" },
 } satisfies Meta<typeof RootTab>;
 
 export default meta;

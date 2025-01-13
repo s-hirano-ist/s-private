@@ -1,5 +1,8 @@
-import type { Image, ImageType } from "@/features/viewer/types";
-import { ViewerPreview } from "./viewer-preview";
+import {
+	Image,
+	ImageType,
+	ViewerPreview,
+} from "@/components/card/viewer-preview";
 
 type Props = {
 	images: Image[];

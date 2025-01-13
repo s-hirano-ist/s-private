@@ -1,5 +1,5 @@
+import { ImageType } from "@/components/card/viewer-preview";
 import { UnexpectedError } from "@/error-classes";
-import type { ImageType } from "@/features/viewer/types";
 
 const bufferToBase64 = (buffer: Uint8Array) => {
 	let binary = "";

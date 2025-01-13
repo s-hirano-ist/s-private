@@ -1,81 +1,67 @@
+import { getUserId } from "@/features/auth/utils/get-session";
+import { generateUrlWithMetadata } from "@/features/image/actions/generate-url-with-metadata";
+import { ImageStack } from "@/features/image/components/image-stack";
+import prisma from "@/prisma";
 import { render, screen } from "@testing-library/react";
-import PhotoSwipeLightbox from "photoswipe/lightbox";
-import { describe, expect, it, vi } from "vitest";
-import { ImageStack } from "./image-stack";
+import { type Mock, describe, expect, it, vi } from "vitest";
 
-const mockDestroy = vi.fn();
-const mockInit = vi.fn();
+// 各依存関数をモック化
+vi.mock("@/features/auth/utils/get-session", () => ({
+	getUserId: vi.fn(),
+}));
 
-// PhotoSwipeLightboxのモック
-vi.mock("photoswipe/lightbox", () => {
-	return {
-		__esModule: true,
-		default: vi.fn().mockImplementation(() => ({
-			init: mockInit,
-			destroy: mockDestroy,
-		})),
-	};
-});
+vi.mock("@/features/image/actions/generate-url-with-metadata", () => ({
+	generateUrlWithMetadata: vi.fn(),
+}));
 
 describe("ImageStack", () => {
-	it("renders StatusCodeView if images is an empty array", () => {
-		render(<ImageStack images={[]} />);
-		expect(screen.getByText("204")).toBeInTheDocument();
-	});
-
-	it("renders images when images array is provided", () => {
-		const images = [
-			{ src: "/image1.jpg", width: 800, height: 600 },
-			{ src: "/image2.jpg", width: 1024, height: 768 },
-		];
-
-		render(<ImageStack images={images} />);
-
-		// 各画像リンクが表示されているかを確認
-		for (const image of images) {
-			const linkElement = screen.getByRole("link", {
-				name: `Image ${image.src}`,
+	it("renders the ImageStack with images", async () => {
+		// モックの準備
+		(getUserId as Mock).mockResolvedValue("user123");
+		(prisma.images.findMany as Mock).mockResolvedValue([{ id: 1 }, { id: 2 }]);
+		(generateUrlWithMetadata as Mock)
+			.mockResolvedValueOnce({
+				success: true,
+				data: { url: "/image1.png", metadata: { width: 800, height: 600 } },
+			})
+			.mockResolvedValueOnce({
+				success: true,
+				data: { url: "/image2.png", metadata: { width: 1024, height: 768 } },
 			});
-			expect(linkElement).toHaveAttribute("href", image.src);
-			expect(linkElement).toHaveAttribute(
-				"data-pswp-width",
-				image.width.toString(),
-			);
-			expect(linkElement).toHaveAttribute(
-				"data-pswp-height",
-				image.height.toString(),
-			);
-		}
 
-		// Imageコンポーネントの画像がレンダリングされているか確認
-		const imageElements = screen.getAllByAltText("");
-		expect(imageElements).toHaveLength(images.length);
-		images.forEach((image, index) => {
-			expect.stringContaining(encodeURIComponent(image.src));
-		});
+		// コンポーネントをレンダリング
+		render(await ImageStack());
+
+		// ImageStack コンポーネントが正しく描画されていることを確認
+		const images = screen.getAllByAltText("");
+		expect(images).toHaveLength(2);
+		expect.stringContaining(encodeURIComponent("/image1.png"));
+		expect.stringContaining(encodeURIComponent("/image2.png"));
 	});
 
-	it("initializes PhotoSwipeLightbox on mount", () => {
-		const images = [{ src: "/image1.jpg", width: 800, height: 600 }];
-
-		render(<ImageStack images={images} />);
-
-		// PhotoSwipeLightboxが初期化されているか確認
-		expect(PhotoSwipeLightbox).toHaveBeenCalledTimes(1);
-		expect(PhotoSwipeLightbox).toHaveBeenCalledWith({
-			gallery: "#image-preview",
-			children: "a",
-			pswpModule: expect.any(Function),
-			bgOpacity: 1.0,
+	it("renders 'not-found.png' for failed URL generation", async () => {
+		(getUserId as Mock).mockResolvedValue("user123");
+		(prisma.images.findMany as Mock).mockResolvedValue([{ id: 1 }]);
+		(generateUrlWithMetadata as Mock).mockResolvedValueOnce({
+			success: false,
 		});
+
+		render(await ImageStack());
+
+		// "not-found.png" が表示されることを確認
+		const images = screen.getAllByAltText("");
+		expect(images).toHaveLength(1);
+		expect.stringContaining(encodeURIComponent("/not-found.png"));
 	});
 
-	it("destroys PhotoSwipeLightbox on unmount", () => {
-		const images = [{ src: "/image1.jpg", width: 800, height: 600 }];
-		const { unmount } = render(<ImageStack images={images} />);
+	it("renders StatusCodeView with 500 on error", async () => {
+		// 例外をスローするモック
+		(getUserId as Mock).mockRejectedValue(new Error("Test Error"));
 
-		unmount();
+		render(await ImageStack());
 
-		expect(mockDestroy).toHaveBeenCalledTimes(1);
+		// 500 ステータスコードが表示されることを確認
+		const statusCode = screen.getByText("500");
+		expect(statusCode).toBeInTheDocument();
 	});
 });

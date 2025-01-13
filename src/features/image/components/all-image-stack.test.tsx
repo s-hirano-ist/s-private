@@ -1,7 +1,6 @@
-import { ERROR_MESSAGES } from "@/constants";
 import { getUserId } from "@/features/auth/utils/get-session";
 import { generateUrlWithMetadata } from "@/features/image/actions/generate-url-with-metadata";
-import { ImageStackProvider } from "@/features/image/components/image-stack-provider";
+import { AllImageStack } from "@/features/image/components/all-image-stack";
 import prisma from "@/prisma";
 import { render, screen } from "@testing-library/react";
 import { type Mock, describe, expect, it, vi } from "vitest";
@@ -15,7 +14,7 @@ vi.mock("@/features/image/actions/generate-url-with-metadata", () => ({
 	generateUrlWithMetadata: vi.fn(),
 }));
 
-describe("ImageStackProvider", () => {
+describe("AllImageStack", () => {
 	it("renders the ImageStack with images", async () => {
 		// モックの準備
 		(getUserId as Mock).mockResolvedValue("user123");
@@ -31,7 +30,7 @@ describe("ImageStackProvider", () => {
 			});
 
 		// コンポーネントをレンダリング
-		render(await ImageStackProvider());
+		render(await AllImageStack({ page: 1 }));
 
 		// ImageStack コンポーネントが正しく描画されていることを確認
 		const images = screen.getAllByAltText("");
@@ -47,7 +46,7 @@ describe("ImageStackProvider", () => {
 			success: false,
 		});
 
-		render(await ImageStackProvider());
+		render(await AllImageStack({ page: 1 }));
 
 		// "not-found.png" が表示されることを確認
 		const images = screen.getAllByAltText("");
@@ -59,7 +58,7 @@ describe("ImageStackProvider", () => {
 		// 例外をスローするモック
 		(getUserId as Mock).mockRejectedValue(new Error("Test Error"));
 
-		render(await ImageStackProvider());
+		render(await AllImageStack({ page: 1 }));
 
 		// 500 ステータスコードが表示されることを確認
 		const statusCode = screen.getByText("500");

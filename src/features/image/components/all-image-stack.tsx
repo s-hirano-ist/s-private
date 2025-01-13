@@ -1,21 +1,27 @@
 import { StatusCodeView } from "@/components/card/status-code-view";
-import { ERROR_MESSAGES } from "@/constants";
+import { ImageStack } from "@/components/stack/image-stack";
+import { ERROR_MESSAGES, PAGE_SIZE } from "@/constants";
 import { getUserId } from "@/features/auth/utils/get-session";
 import { generateUrlWithMetadata } from "@/features/image/actions/generate-url-with-metadata";
-import { ImageStack } from "@/features/image/components/image-stack";
 import { loggerError } from "@/pino";
 import prisma from "@/prisma";
 
-export async function ImageStackProvider() {
+type Props = {
+	page: number;
+};
+
+export async function AllImageStack({ page }: Props) {
 	try {
 		const userId = await getUserId();
 
 		const _images = await prisma.images.findMany({
-			where: { userId, status: "UNEXPORTED" },
+			where: { userId },
 			select: {
 				id: true,
 			},
 			orderBy: { id: "desc" },
+			skip: (page - 1) * PAGE_SIZE,
+			take: PAGE_SIZE,
 		});
 
 		const images = await Promise.all(
@@ -31,12 +37,12 @@ export async function ImageStackProvider() {
 			}),
 		);
 
-		return <ImageStack images={images} />;
+		return <ImageStack data={images} />;
 	} catch (error) {
 		loggerError(
 			ERROR_MESSAGES.UNEXPECTED,
 			{
-				caller: "ImagePage",
+				caller: "AllImagePage",
 				status: 500,
 			},
 			error,

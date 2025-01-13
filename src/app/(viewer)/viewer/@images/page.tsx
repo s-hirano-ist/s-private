@@ -1,9 +1,14 @@
 import { Unauthorized } from "@/components/card/unauthorized";
-import { checkSelfAuthOrRedirectToAuth } from "@/features/auth/utils/get-session";
+import { ImageStackSkeleton } from "@/components/stack/image-stack-skeleton";
+import { Pagination } from "@/components/stack/pagination";
+import { Badge } from "@/components/ui/badge";
+import {
+	checkSelfAuthOrRedirectToAuth,
+	getUserId,
+} from "@/features/auth/utils/get-session";
 import { hasContentsPermission } from "@/features/auth/utils/role";
-import { AllImageStackProvider } from "@/features/image/components/all-image-stack-provider";
-import { ImagePagination } from "@/features/image/components/image-pagination";
-import { ImageStackSkeleton } from "@/features/image/components/image-stack-skeleton";
+import { AllImageStack } from "@/features/image/components/all-image-stack";
+import prisma from "@/prisma";
 import { Suspense } from "react";
 
 export const dynamic = "force-dynamic";
@@ -19,13 +24,21 @@ export default async function Page({ params }: { params: Params }) {
 
 	const currentPage = Number(page) || 1;
 
+	const userId = await getUserId();
+	const totalImages = await prisma.images.count({
+		where: { userId },
+	});
+
 	return (
 		<>
 			{hasAdminPermission ? (
 				<>
-					<ImagePagination currentPage={currentPage} />
+					<Badge className="m-2 flex justify-center">
+						画像数: {totalImages}
+					</Badge>
+					<Pagination currentPage={currentPage} totalPages={totalImages} />
 					<Suspense key={currentPage} fallback={<ImageStackSkeleton />}>
-						<AllImageStackProvider page={currentPage} />
+						<AllImageStack page={currentPage} />
 					</Suspense>
 				</>
 			) : (

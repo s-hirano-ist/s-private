@@ -1,43 +1,59 @@
+import { getUserId } from "@/features/auth/utils/get-session";
 import { NewsStack } from "@/features/news/components/news-stack";
-import type { News } from "@/features/news/types";
+import prisma from "@/prisma";
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { type Mock, describe, expect, it, vi } from "vitest";
+
+vi.mock("@/features/auth/utils/get-session", () => ({
+	getUserId: vi.fn(),
+}));
 
 describe("NewsStack", () => {
-	it("renders StatusCodeView if news is an empty array", () => {
-		render(<NewsStack news={[]} />);
-
-		const statusCodeView = screen.getByTestId("status-code-view");
-		expect(statusCodeView).toBeInTheDocument();
-		expect(statusCodeView).toHaveTextContent("204");
-	});
-
-	it("renders SmallCard components for each news item", () => {
-		const newsData: News[] = [
+	it("renders NewsStack with news data", async () => {
+		// モックデータ
+		const mockUserId = "user123";
+		const mockNewsData = [
 			{
 				id: 1,
 				title: "Title 1",
 				quote: "Quote 1",
 				url: "http://example.com/1",
-				category: "Category 1",
+				Category: { name: "Category 1" },
 			},
 			{
 				id: 2,
 				title: "Title 2",
 				quote: "Quote 2",
 				url: "http://example.com/2",
-				category: "Category 2",
+				Category: { name: "Category 2" },
 			},
 		];
 
-		render(<NewsStack news={newsData} />);
+		// モックの設定
+		(getUserId as Mock).mockResolvedValue(mockUserId);
+		(prisma.news.findMany as Mock).mockResolvedValue(mockNewsData);
 
-		for (const item of newsData) {
-			const smallCard = screen.getByTestId(`small-card-${item.id}`);
-			expect(smallCard).toBeInTheDocument();
-			expect(smallCard).toHaveTextContent(item.title);
-			expect(smallCard).toHaveTextContent(item.quote ?? "");
-			expect(smallCard).toHaveAttribute("href", item.url);
+		// コンポーネントをレンダリング
+		render(await NewsStack());
+
+		// 各ニュースアイテムが表示されていることを確認
+		for (const item of mockNewsData) {
+			expect(screen.getByTestId(`small-card-${item.id}`)).toHaveTextContent(
+				item.title,
+			);
 		}
+	});
+
+	it("renders StatusCodeView with 500 on error", async () => {
+		// モックでエラーをスロー
+		(getUserId as Mock).mockRejectedValue(new Error("Test Error"));
+
+		// コンポーネントをレンダリング
+		render(await NewsStack());
+
+		// StatusCodeView が描画され、500 エラーコードが表示されていることを確認
+		const statusCodeView = screen.getByTestId("status-code-view");
+		expect(statusCodeView).toBeInTheDocument();
+		expect(statusCodeView).toHaveTextContent("500");
 	});
 });

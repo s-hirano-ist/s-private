@@ -1,10 +1,16 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { THUMBNAIL_HEIGHT, THUMBNAIL_WIDTH } from "@/constants";
-import type { Image, ImageType } from "@/features/viewer/types";
 import { convertUint8ArrayToImgSrc } from "@/features/viewer/utils/convert";
 import type { Route } from "next";
 import { Link } from "next-view-transitions";
 import NextImage from "next/image";
+
+export type ImageType = "webp" | "svg";
+
+export type Image = {
+	title: string;
+	uint8ArrayImage: Uint8Array;
+};
 
 type Props = {
 	image: Image;
