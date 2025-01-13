@@ -1,11 +1,11 @@
-import { getUserId } from "@/features/auth/utils/get-session";
+import { getSelfId } from "@/features/auth/utils/role";
 import { NewsStack } from "@/features/news/components/news-stack";
 import prisma from "@/prisma";
 import { render, screen } from "@testing-library/react";
 import { type Mock, describe, expect, it, vi } from "vitest";
 
-vi.mock("@/features/auth/utils/get-session", () => ({
-	getUserId: vi.fn(),
+vi.mock("@/features/auth/utils/role", () => ({
+	getSelfId: vi.fn(),
 }));
 
 describe("NewsStack", () => {
@@ -30,7 +30,7 @@ describe("NewsStack", () => {
 		];
 
 		// モックの設定
-		(getUserId as Mock).mockResolvedValue(mockUserId);
+		(getSelfId as Mock).mockResolvedValue(mockUserId);
 		(prisma.news.findMany as Mock).mockResolvedValue(mockNewsData);
 
 		// コンポーネントをレンダリング
@@ -46,7 +46,7 @@ describe("NewsStack", () => {
 
 	it("renders StatusCodeView with 500 on error", async () => {
 		// モックでエラーをスロー
-		(getUserId as Mock).mockRejectedValue(new Error("Test Error"));
+		(getSelfId as Mock).mockRejectedValue(new Error("Test Error"));
 
 		// コンポーネントをレンダリング
 		render(await NewsStack());

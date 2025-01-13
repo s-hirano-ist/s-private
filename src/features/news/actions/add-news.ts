@@ -1,11 +1,9 @@
 "use server";
 import "server-only";
 import { SUCCESS_MESSAGES } from "@/constants";
+import { NotAllowedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
-import {
-	getUserId,
-	hasDumperPostPermissionOrThrow,
-} from "@/features/auth/utils/get-session";
+import { getSelfId, hasDumperPostPermission } from "@/features/auth/utils/role";
 import { validateCategory } from "@/features/news/utils/validate-category";
 import { validateNews } from "@/features/news/utils/validate-news";
 import { loggerInfo } from "@/pino";
@@ -25,9 +23,10 @@ type News = {
 
 export async function addNews(formData: FormData): Promise<ServerAction<News>> {
 	try {
-		await hasDumperPostPermissionOrThrow();
+		const hasPostPermission = await hasDumperPostPermission();
+		if (!hasPostPermission) throw new NotAllowedError();
 
-		const userId = await getUserId();
+		const userId = await getSelfId();
 
 		const validatedCategory = validateCategory(formData);
 

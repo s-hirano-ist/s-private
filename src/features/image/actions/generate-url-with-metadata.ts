@@ -2,9 +2,9 @@
 import "server-only";
 import { SUCCESS_MESSAGES } from "@/constants";
 import { env } from "@/env.mjs";
-import { UnexpectedError } from "@/error-classes";
+import { NotAllowedError, UnexpectedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
-import { hasDumperPostPermissionOrThrow } from "@/features/auth/utils/get-session";
+import { hasDumperPostPermission } from "@/features/auth/utils/role";
 import { minioClient } from "@/minio";
 import type { ServerAction } from "@/types";
 import sharp, { type Metadata } from "sharp";
@@ -18,7 +18,8 @@ export async function generateUrlWithMetadata(
 	fileName: string,
 ): Promise<ServerAction<GenerateUrl>> {
 	try {
-		await hasDumperPostPermissionOrThrow();
+		const hasPostPermission = await hasDumperPostPermission();
+		if (!hasPostPermission) throw new NotAllowedError();
 
 		const url = await minioClient.presignedGetObject(
 			env.MINIO_BUCKET_NAME,

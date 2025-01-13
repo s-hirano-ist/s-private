@@ -1,11 +1,9 @@
 "use server";
 import "server-only";
 import { SUCCESS_MESSAGES } from "@/constants";
+import { NotAllowedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
-import {
-	getUserId,
-	hasDumperPostPermissionOrThrow,
-} from "@/features/auth/utils/get-session";
+import { getSelfId, hasDumperPostPermission } from "@/features/auth/utils/role";
 import { validateContents } from "@/features/contents/utils/validate-contents";
 import { loggerInfo } from "@/pino";
 import prisma from "@/prisma";
@@ -25,9 +23,10 @@ export async function addContents(
 	formData: FormData,
 ): Promise<ServerAction<Contents>> {
 	try {
-		await hasDumperPostPermissionOrThrow();
+		const hasPostPermission = await hasDumperPostPermission();
+		if (!hasPostPermission) throw new NotAllowedError();
 
-		const userId = await getUserId();
+		const userId = await getSelfId();
 
 		const createdContents = await prisma.contents.create({
 			data: { userId, ...validateContents(formData) },

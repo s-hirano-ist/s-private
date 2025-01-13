@@ -1,5 +1,6 @@
 import { StatusCodeView } from "@/components/card/status-code-view";
 import { Button } from "@/components/ui/button";
+import type { Route } from "next";
 import { Link } from "next-view-transitions";
 
 export function NotFound() {
@@ -10,7 +11,7 @@ export function NotFound() {
 				お探しのコンテンツが見つかりませんでした。
 			</p>
 			<Button className="mx-auto flex w-1/2 flex-col" asChild>
-				<Link href="/auth">HOMEへ戻る</Link>
+				<Link href={"/" as Route}>HOMEへ戻る</Link>
 			</Button>
 		</div>
 	);

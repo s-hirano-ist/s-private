@@ -2,12 +2,13 @@
 import "server-only";
 import { SUCCESS_MESSAGES } from "@/constants";
 import { env } from "@/env.mjs";
-import { FileNotAllowedError, UnexpectedError } from "@/error-classes";
-import { wrapServerSideErrorForClient } from "@/error-wrapper";
 import {
-	getUserId,
-	hasDumperPostPermissionOrThrow,
-} from "@/features/auth/utils/get-session";
+	FileNotAllowedError,
+	NotAllowedError,
+	UnexpectedError,
+} from "@/error-classes";
+import { wrapServerSideErrorForClient } from "@/error-wrapper";
+import { getSelfId, hasDumperPostPermission } from "@/features/auth/utils/role";
 import { minioClient } from "@/minio";
 import { loggerInfo } from "@/pino";
 import prisma from "@/prisma";
@@ -22,9 +23,10 @@ export async function addImage(
 	formData: FormData,
 ): Promise<ServerAction<undefined>> {
 	try {
-		await hasDumperPostPermissionOrThrow();
+		const hasPostPermission = await hasDumperPostPermission();
+		if (!hasPostPermission) throw new NotAllowedError();
 
-		const userId = await getUserId();
+		const userId = await getSelfId();
 
 		const file = formData.get("file") as File;
 		if (!file) throw new UnexpectedError();

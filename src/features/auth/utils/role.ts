@@ -1,5 +1,25 @@
 import "server-only";
-import { checkSelfAuthOrThrow } from "./get-session";
+import { ERROR_MESSAGES } from "@/constants";
+import { UnauthorizedError } from "@/error-classes";
+import { loggerWarn } from "@/pino";
+import { auth } from "./auth";
+
+export async function checkSelfAuthOrThrow() {
+	const session = await auth();
+	if (!session) {
+		loggerWarn(ERROR_MESSAGES.UNAUTHORIZED, {
+			caller: "Unauthorized on checkSelfAuth or throw",
+			status: 401,
+		});
+		throw new UnauthorizedError();
+	}
+	return session;
+}
+
+export async function getSelfId() {
+	const { user } = await checkSelfAuthOrThrow();
+	return user.id;
+}
 
 async function getSelfRoles() {
 	const { user } = await checkSelfAuthOrThrow();

@@ -1,5 +1,3 @@
-import type { Role } from "@prisma/client";
-
 export const PAGE_NAME = "s-private";
 
 export const PAGE_SIZE = 12;
@@ -52,5 +50,3 @@ export const UTIL_URLS = [
 	{ name: "PORTAINER", url: "https://private.s-hirano.com:9443" },
 	{ name: "GRAFANA", url: "https://private.s-hirano.com:3001" },
 ] as const;
-
-export const ROLES: Role[] = ["ADMIN", "VIEWER", "UNAUTHORIZED"];

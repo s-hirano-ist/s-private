@@ -1,7 +1,7 @@
 import { CardStackSkeleton } from "@/components/stack/card-stack-skeleton";
 import { Separator } from "@/components/ui/separator";
 import { ERROR_MESSAGES } from "@/constants";
-import { getUserId } from "@/features/auth/utils/get-session";
+import { getSelfId } from "@/features/auth/utils/role";
 import { hasDumperPostPermission } from "@/features/auth/utils/role";
 import { AddNewsForm } from "@/features/news/components/add-news-form";
 import { NewsStack } from "@/features/news/components/news-stack";
@@ -16,7 +16,7 @@ export default async function Page() {
 
 	const categories = await (async () => {
 		try {
-			const userId = await getUserId();
+			const userId = await getSelfId();
 			return await prisma.categories.findMany({
 				where: { userId },
 				select: { id: true, name: true },
