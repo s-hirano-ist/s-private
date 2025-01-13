@@ -3,7 +3,7 @@ import { env } from "@/env.mjs";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
 import {
 	getUserId,
-	hasSelfPostPermissionOrThrow,
+	hasDumperPostPermissionOrThrow,
 } from "@/features/auth/utils/get-session";
 import { minioClient } from "@/minio";
 import { loggerInfo } from "@/pino";
@@ -49,7 +49,7 @@ describe("addImage", () => {
 	let formData: FormData;
 
 	beforeEach(() => {
-		(hasSelfPostPermissionOrThrow as Mock).mockResolvedValue(true);
+		(hasDumperPostPermissionOrThrow as Mock).mockResolvedValue(true);
 		(getUserId as Mock).mockResolvedValue("userId");
 		(uuidv7 as Mock).mockReturnValue("generated-uuid");
 		(prisma.images.create as Mock).mockResolvedValue({
@@ -76,7 +76,7 @@ describe("addImage", () => {
 		formData.append("file", file);
 
 		const result = await addImage(formData);
-		expect(hasSelfPostPermissionOrThrow).toHaveBeenCalled();
+		expect(hasDumperPostPermissionOrThrow).toHaveBeenCalled();
 		expect(getUserId).toHaveBeenCalled();
 		expect(minioClient.putObject).toHaveBeenCalledWith(
 			bucketName,
@@ -153,7 +153,7 @@ describe("addImage", () => {
 	});
 
 	it("should handle errors from hasSelfPostPermissionOrThrow", async () => {
-		(hasSelfPostPermissionOrThrow as Mock).mockRejectedValue(
+		(hasDumperPostPermissionOrThrow as Mock).mockRejectedValue(
 			new Error("permission error"),
 		);
 		(wrapServerSideErrorForClient as Mock).mockImplementation(

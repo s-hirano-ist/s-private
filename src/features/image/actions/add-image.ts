@@ -6,7 +6,7 @@ import { FileNotAllowedError, UnexpectedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
 import {
 	getUserId,
-	hasSelfPostPermissionOrThrow,
+	hasDumperPostPermissionOrThrow,
 } from "@/features/auth/utils/get-session";
 import { minioClient } from "@/minio";
 import { loggerInfo } from "@/pino";
@@ -22,7 +22,7 @@ export async function addImage(
 	formData: FormData,
 ): Promise<ServerAction<undefined>> {
 	try {
-		await hasSelfPostPermissionOrThrow();
+		await hasDumperPostPermissionOrThrow();
 
 		const userId = await getUserId();
 

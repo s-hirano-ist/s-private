@@ -1,8 +1,7 @@
 import { Unauthorized } from "@/components/card/unauthorized";
 import { ViewerStack } from "@/components/stack/viewer-stack";
 import { Badge } from "@/components/ui/badge";
-import { checkSelfAuthOrRedirectToAuth } from "@/features/auth/utils/get-session";
-import { hasContentsPermission } from "@/features/auth/utils/role";
+import { hasViewerAdminPermission } from "@/features/auth/utils/role";
 import prisma from "@/prisma";
 
 const path = "contents";
@@ -10,9 +9,7 @@ const path = "contents";
 export const dynamic = "force-dynamic";
 
 export default async function Page() {
-	await checkSelfAuthOrRedirectToAuth();
-
-	const hasAdminPermission = await hasContentsPermission();
+	const hasAdminPermission = await hasViewerAdminPermission();
 
 	// FIXME: use suspense for load
 	const totalImages = await prisma.staticContents.count({});

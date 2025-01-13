@@ -4,7 +4,7 @@ import { SUCCESS_MESSAGES } from "@/constants";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
 import {
 	getUserId,
-	hasSelfPostPermissionOrThrow,
+	hasDumperPostPermissionOrThrow,
 } from "@/features/auth/utils/get-session";
 import { validateCategory } from "@/features/news/utils/validate-category";
 import { validateNews } from "@/features/news/utils/validate-news";
@@ -25,7 +25,7 @@ type News = {
 
 export async function addNews(formData: FormData): Promise<ServerAction<News>> {
 	try {
-		await hasSelfPostPermissionOrThrow();
+		await hasDumperPostPermissionOrThrow();
 
 		const userId = await getUserId();
 

@@ -4,7 +4,7 @@ import { SUCCESS_MESSAGES } from "@/constants";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
 import {
 	getUserId,
-	hasSelfPostPermissionOrThrow,
+	hasDumperPostPermissionOrThrow,
 } from "@/features/auth/utils/get-session";
 import { validateContents } from "@/features/contents/utils/validate-contents";
 import { loggerInfo } from "@/pino";
@@ -25,7 +25,7 @@ export async function addContents(
 	formData: FormData,
 ): Promise<ServerAction<Contents>> {
 	try {
-		await hasSelfPostPermissionOrThrow();
+		await hasDumperPostPermissionOrThrow();
 
 		const userId = await getUserId();
 

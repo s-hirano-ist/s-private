@@ -1,10 +1,8 @@
-import { UnexpectedError } from "@/error-classes";
 import { checkSelfAuthOrThrow } from "@/features/auth/utils/get-session";
 import {
-	hasContentsPermission,
-	hasDumperPermission,
+	hasDumperPostPermission,
+	hasViewerAdminPermission,
 } from "@/features/auth/utils/role";
-import prisma from "@/prisma";
 import { type Mock, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/features/auth/utils/get-session", () => ({
@@ -12,63 +10,87 @@ vi.mock("@/features/auth/utils/get-session", () => ({
 }));
 
 describe("role utilities", () => {
-	describe("hasContentsPermission", () => {
-		it("should return true if the user role is ADMIN", async () => {
+	describe("hasViewerAdminPermission", () => {
+		it("should return true if the user role is viewer", async () => {
 			(checkSelfAuthOrThrow as Mock).mockResolvedValue({
-				user: { role: "ADMIN" },
+				user: { roles: ["viewer"] },
 			});
 
-			const result = await hasContentsPermission();
+			const result = await hasViewerAdminPermission();
 
 			expect(result).toBe(true);
 		});
 
-		it("should return false if the user role is not ADMIN", async () => {
+		it("should return true if the user role is viewer and dumper", async () => {
 			(checkSelfAuthOrThrow as Mock).mockResolvedValue({
-				user: { role: "VIEWER" },
+				user: { roles: ["viewer", "dumper"] },
 			});
 
-			const result = await hasContentsPermission();
+			const result = await hasViewerAdminPermission();
+
+			expect(result).toBe(true);
+		});
+
+		it("should return false if the user role is unexpected", async () => {
+			(checkSelfAuthOrThrow as Mock).mockResolvedValue({
+				user: { roles: ["unknown"] },
+			});
+
+			const result = await hasViewerAdminPermission();
 
 			expect(result).toBe(false);
 		});
 
-		it("should throw UnexpectedError for invalid roles", async () => {
+		it("should return false if the user role is empty", async () => {
 			(checkSelfAuthOrThrow as Mock).mockResolvedValue({
-				user: { role: "INVALID_ROLE" },
+				user: { roles: [] },
 			});
 
-			await expect(hasContentsPermission()).rejects.toThrow(UnexpectedError);
+			const result = await hasViewerAdminPermission();
+
+			expect(result).toBe(false);
 		});
 	});
 
-	describe("hasDumperPermission", () => {
-		it("should return true for ADMIN or VIEWER roles", async () => {
+	describe("hasDumperPostPermission", () => {
+		it("should return true if the user role is dumper", async () => {
 			(checkSelfAuthOrThrow as Mock).mockResolvedValue({
-				user: { role: "ADMIN" },
+				user: { roles: ["dumper"] },
 			});
 
-			const result = await hasDumperPermission();
+			const result = await hasDumperPostPermission();
 
 			expect(result).toBe(true);
 		});
 
-		it("should return false for VIEWER roles", async () => {
+		it("should return true if the user role is dumper and viewer", async () => {
 			(checkSelfAuthOrThrow as Mock).mockResolvedValue({
-				user: { role: "VIEWER" },
+				user: { roles: ["dumper", "viewer"] },
 			});
 
-			const result = await hasDumperPermission();
+			const result = await hasDumperPostPermission();
+
+			expect(result).toBe(true);
+		});
+
+		it("should return true if the user role is unexpected", async () => {
+			(checkSelfAuthOrThrow as Mock).mockResolvedValue({
+				user: { roles: ["unknown"] },
+			});
+
+			const result = await hasDumperPostPermission();
 
 			expect(result).toBe(false);
 		});
 
-		it("should throw UnexpectedError for invalid roles", async () => {
+		it("should return true if the user role is empty", async () => {
 			(checkSelfAuthOrThrow as Mock).mockResolvedValue({
-				user: { role: "INVALID_ROLE" },
+				user: { roles: [] },
 			});
 
-			await expect(hasDumperPermission()).rejects.toThrow(UnexpectedError);
+			const result = await hasDumperPostPermission();
+
+			expect(result).toBe(false);
 		});
 	});
 });

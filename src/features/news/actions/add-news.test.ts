@@ -1,7 +1,7 @@
 import { SUCCESS_MESSAGES } from "@/constants";
 import {
 	getUserId,
-	hasSelfPostPermissionOrThrow,
+	hasDumperPostPermissionOrThrow,
 } from "@/features/auth/utils/get-session";
 import { validateCategory } from "@/features/news/utils/validate-category";
 import { validateNews } from "@/features/news/utils/validate-news";
@@ -61,7 +61,7 @@ describe("addNews", () => {
 			url: "https://example.com/tech",
 		};
 
-		(hasSelfPostPermissionOrThrow as Mock).mockResolvedValue(undefined);
+		(hasDumperPostPermissionOrThrow as Mock).mockResolvedValue(undefined);
 		(getUserId as Mock).mockResolvedValue(mockUserId);
 		(validateCategory as Mock).mockReturnValue(mockValidatedCategory);
 		(prisma.categories.upsert as Mock).mockResolvedValue(mockCategory);
@@ -71,7 +71,7 @@ describe("addNews", () => {
 
 		const result = await addNews(formData);
 
-		expect(hasSelfPostPermissionOrThrow).toHaveBeenCalledTimes(1);
+		expect(hasDumperPostPermissionOrThrow).toHaveBeenCalledTimes(1);
 		expect(getUserId).toHaveBeenCalledTimes(1);
 		expect(validateCategory).toHaveBeenCalledWith(formData);
 		expect(prisma.categories.upsert).toHaveBeenCalledWith({
@@ -122,7 +122,7 @@ describe("addNews", () => {
 			url: "https://example.com/tech",
 		};
 
-		(hasSelfPostPermissionOrThrow as Mock).mockResolvedValue(undefined);
+		(hasDumperPostPermissionOrThrow as Mock).mockResolvedValue(undefined);
 		(getUserId as Mock).mockResolvedValue(mockUserId);
 		(validateNews as Mock).mockReturnValue(mockValidatedNews);
 		(prisma.news.create as Mock).mockResolvedValue(mockNews);
@@ -130,7 +130,7 @@ describe("addNews", () => {
 
 		const result = await addNews(formData);
 
-		expect(hasSelfPostPermissionOrThrow).toHaveBeenCalledTimes(1);
+		expect(hasDumperPostPermissionOrThrow).toHaveBeenCalledTimes(1);
 		expect(getUserId).toHaveBeenCalledTimes(1);
 		expect(validateNews).toHaveBeenCalledWith(formData);
 		expect(prisma.news.create).toHaveBeenCalledWith({

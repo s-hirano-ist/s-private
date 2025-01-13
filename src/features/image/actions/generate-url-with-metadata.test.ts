@@ -1,6 +1,6 @@
 import { SUCCESS_MESSAGES } from "@/constants";
 import { env } from "@/env.mjs";
-import { hasSelfPostPermissionOrThrow } from "@/features/auth/utils/get-session";
+import { hasDumperPostPermissionOrThrow } from "@/features/auth/utils/get-session";
 import { minioClient } from "@/minio";
 import sharp from "sharp";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -34,7 +34,7 @@ describe("generateUrlWithMetadata", () => {
 
 	it("should return a presigned URL and metadata when inputs are valid", async () => {
 		// モックの設定
-		vi.mocked(hasSelfPostPermissionOrThrow).mockResolvedValue();
+		vi.mocked(hasDumperPostPermissionOrThrow).mockResolvedValue();
 		vi.mocked(minioClient.presignedGetObject).mockResolvedValue(mockUrl);
 		vi.mocked(fetch).mockResolvedValue({
 			ok: true,
@@ -50,7 +50,7 @@ describe("generateUrlWithMetadata", () => {
 		const result = await generateUrlWithMetadata(fileName);
 
 		// 検証
-		expect(hasSelfPostPermissionOrThrow).toHaveBeenCalled();
+		expect(hasDumperPostPermissionOrThrow).toHaveBeenCalled();
 		expect(minioClient.presignedGetObject).toHaveBeenCalledWith(
 			env.MINIO_BUCKET_NAME,
 			fileName,
@@ -70,7 +70,7 @@ describe("generateUrlWithMetadata", () => {
 
 	it("should throw an error if the presigned URL fetch fails", async () => {
 		// モックの設定
-		vi.mocked(hasSelfPostPermissionOrThrow).mockResolvedValue();
+		vi.mocked(hasDumperPostPermissionOrThrow).mockResolvedValue();
 		vi.mocked(minioClient.presignedGetObject).mockResolvedValue(mockUrl);
 		// biome-ignore lint: for test
 		vi.mocked(fetch).mockResolvedValue({ ok: false } as any);
@@ -85,7 +85,7 @@ describe("generateUrlWithMetadata", () => {
 
 	it("should throw an error if metadata extraction fails", async () => {
 		// モックの設定
-		vi.mocked(hasSelfPostPermissionOrThrow).mockResolvedValue();
+		vi.mocked(hasDumperPostPermissionOrThrow).mockResolvedValue();
 		vi.mocked(minioClient.presignedGetObject).mockResolvedValue(mockUrl);
 		vi.mocked(fetch).mockResolvedValue({
 			ok: true,
@@ -106,7 +106,7 @@ describe("generateUrlWithMetadata", () => {
 
 	it("should throw an error if permission check fails", async () => {
 		// モックの設定
-		vi.mocked(hasSelfPostPermissionOrThrow).mockRejectedValue(
+		vi.mocked(hasDumperPostPermissionOrThrow).mockRejectedValue(
 			new Error("Permission denied"),
 		);
 

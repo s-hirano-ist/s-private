@@ -1,41 +1,40 @@
-// import { auth } from "@/features/auth/utils/auth";
-// import { NextResponse } from "next/server";
-// import { DEFAULT_SIGN_IN_REDIRECT } from "./constants";
-
-// FIXME: issue with edge compatibility
-// https://authjs.dev/guides/edge-compatibility
-import authConfig from "@/features/auth/utils/auth.config";
-import NextAuth from "next-auth";
-export const { auth: middleware } = NextAuth(authConfig);
+import { auth } from "@/features/auth/utils/auth";
+import { NextResponse } from "next/server";
+import { DEFAULT_SIGN_IN_REDIRECT } from "./constants";
 
 // MEMO: アクセスが禁止されているパスではなく、アクセスが許可されているパスを記述するべき。なぜなら、アクセスが禁止されているパスのすべてを把握するのは難しいからである。
-// const publicRoutes: string[] = [];
+const publicRoutes: string[] = [];
 
-// const authRoutes: string[] = ["/auth"];
-// const apiAuthPrefix = "/api/auth";
+const authRoutes: string[] = ["/auth"];
+const apiAuthPrefix = "/api/auth";
 
-// export default auth((request) => {
-// 	const { nextUrl } = request;
-// 	const auth = request.auth;
-// 	const isLoggedIn = !!auth;
+export default auth((request) => {
+	const { nextUrl } = request;
+	const auth = request.auth;
 
-// 	const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
-// 	const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
-// 	const isAuthRoute = authRoutes.includes(nextUrl.pathname);
+	if (!auth) {
+		return NextResponse.redirect(new URL("/api/sign-in", request.url));
+	}
 
-// 	if (isApiAuthRoute) return;
+	const isLoggedIn = !!auth;
 
-// 	if (isAuthRoute) {
-// 		if (isLoggedIn)
-// 			return NextResponse.redirect(new URL(DEFAULT_SIGN_IN_REDIRECT, nextUrl));
-// 		return;
-// 	}
+	const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
+	const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
+	const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
-// 	if (!isLoggedIn && !isPublicRoute)
-// 		return NextResponse.redirect(new URL("/auth", nextUrl));
+	if (isApiAuthRoute) return;
 
-// 	return;
-// });
+	if (isAuthRoute) {
+		if (isLoggedIn)
+			return NextResponse.redirect(new URL(DEFAULT_SIGN_IN_REDIRECT, nextUrl));
+		return;
+	}
+
+	if (!isLoggedIn && !isPublicRoute)
+		return NextResponse.redirect(new URL("/auth", nextUrl));
+
+	return;
+});
 
 export const config = {
 	matcher: [

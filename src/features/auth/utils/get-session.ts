@@ -2,9 +2,8 @@ import "server-only";
 import { ERROR_MESSAGES } from "@/constants";
 import { NotAllowedError, UnauthorizedError } from "@/error-classes";
 import { loggerWarn } from "@/pino";
-import { redirect } from "next/navigation";
 import { auth } from "./auth";
-import { hasContentsPermission, hasDumperPermission } from "./role";
+import { hasDumperPostPermission, hasViewerAdminPermission } from "./role";
 
 export async function checkSelfAuthOrThrow() {
 	const session = await auth();
@@ -18,40 +17,22 @@ export async function checkSelfAuthOrThrow() {
 	return session;
 }
 
-export async function checkSelfAuthOrRedirectToAuth() {
-	const session = await auth();
-	if (!session) {
-		loggerWarn(ERROR_MESSAGES.UNAUTHORIZED, {
-			caller: "Unauthorized on checkSelfAuth or redirect",
-			status: 401,
-		});
-		// FIXME: https://github.com/s-hirano-ist/s-private/issues/440
-		redirect("/auth"); // WHEN MIDDLEWARE DO NOT WORK
-	}
-	return session;
-}
-
-export async function hasAdminPermissionOrThrow() {
-	const hasAdminPermission = await hasContentsPermission();
+export async function hasViewerAdminPermissionOrThrow() {
+	const hasAdminPermission = await hasViewerAdminPermission();
 	if (!hasAdminPermission) throw new NotAllowedError();
 }
 
-export async function hasSelfPostPermissionOrThrow() {
-	const hasPostPermission = await hasDumperPermission();
+export async function hasDumperPostPermissionOrThrow() {
+	const hasPostPermission = await hasDumperPostPermission();
 	if (!hasPostPermission) throw new NotAllowedError();
 }
 
 export async function hasUpdateStatusPermissionOrThrow() {
-	const hasUpdateStatusPermission = await hasDumperPermission();
+	const hasUpdateStatusPermission = await hasDumperPostPermission();
 	if (!hasUpdateStatusPermission) throw new NotAllowedError();
 }
 
 export async function getUserId() {
 	const { user } = await checkSelfAuthOrThrow();
 	return user.id;
-}
-
-export async function getSelfRole() {
-	const { user } = await checkSelfAuthOrThrow();
-	return user.role;
 }

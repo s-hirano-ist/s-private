@@ -11,16 +11,14 @@ export const env = createEnv({
 			.default("development"),
 		LINE_NOTIFY_URL: z.string(),
 		LINE_NOTIFY_SECRET_TOKEN: z.string(),
-		AUTH_URL: z.preprocess(
-			// This makes Vercel deployments not fail if you don't set AUTH_URL since Auth.js automatically uses the VERCEL_URL if present.
-			(str) => process.env.VERCEL_URL ?? str,
-			// VERCEL_URL doesn't include `https` so it cant be validated as a URL
-			process.env.VERCEL ? z.string() : z.string().url(),
-		),
+		AUTH_URL: z.string(),
 		AUTH_SECRET:
 			process.env.NODE_ENV === "production"
 				? z.string()
 				: z.string().optional(),
+		AUTH0_ID: z.string(),
+		AUTH0_SECRET: z.string(),
+		AUTH0_ISSUER: z.string(),
 		SENTRY_AUTH_TOKEN: z.string(),
 		SENTRY_REPORT_URL: z.string(),
 		MINIO_HOST: z.string(),
@@ -47,6 +45,9 @@ export const env = createEnv({
 		LINE_NOTIFY_SECRET_TOKEN: process.env.LINE_NOTIFY_SECRET_TOKEN,
 		AUTH_URL: process.env.AUTH_URL,
 		AUTH_SECRET: process.env.AUTH_SECRET,
+		AUTH0_ID: process.env.AUTH0_ID,
+		AUTH0_SECRET: process.env.AUTH0_SECRET,
+		AUTH0_ISSUER: process.env.AUTH0_ISSUER,
 		SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
 		SENTRY_REPORT_URL: process.env.SENTRY_REPORT_URL,
 		MINIO_HOST: process.env.MINIO_HOST,

@@ -2,7 +2,7 @@ import { SUCCESS_MESSAGES } from "@/constants";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
 import {
 	getUserId,
-	hasSelfPostPermissionOrThrow,
+	hasDumperPostPermissionOrThrow,
 } from "@/features/auth/utils/get-session";
 import { validateContents } from "@/features/contents/utils/validate-contents";
 import prisma from "@/prisma";
@@ -54,7 +54,7 @@ describe("addContents", () => {
 		};
 		const mockMessage = "Content created successfully.";
 
-		(hasSelfPostPermissionOrThrow as Mock).mockResolvedValue(undefined);
+		(hasDumperPostPermissionOrThrow as Mock).mockResolvedValue(undefined);
 		(getUserId as Mock).mockResolvedValue(mockUserId);
 		(validateContents as Mock).mockReturnValue(mockValidatedContents);
 		(prisma.contents.create as Mock).mockResolvedValue(mockCreatedContents);
@@ -62,7 +62,7 @@ describe("addContents", () => {
 
 		const result = await addContents(formData);
 
-		expect(hasSelfPostPermissionOrThrow).toHaveBeenCalledTimes(1);
+		expect(hasDumperPostPermissionOrThrow).toHaveBeenCalledTimes(1);
 		expect(getUserId).toHaveBeenCalledTimes(1);
 		expect(validateContents).toHaveBeenCalledWith(formData);
 		expect(prisma.contents.create).toHaveBeenCalledWith({
@@ -94,7 +94,7 @@ describe("addContents", () => {
 
 		const mockError = new Error("Database error");
 
-		(hasSelfPostPermissionOrThrow as Mock).mockResolvedValue(undefined);
+		(hasDumperPostPermissionOrThrow as Mock).mockResolvedValue(undefined);
 		(getUserId as Mock).mockResolvedValue("12345");
 		(prisma.contents.create as Mock).mockRejectedValue(mockError);
 		(wrapServerSideErrorForClient as Mock).mockResolvedValue({
@@ -105,7 +105,7 @@ describe("addContents", () => {
 
 		const result = await addContents(formData);
 
-		expect(hasSelfPostPermissionOrThrow).toHaveBeenCalledTimes(1);
+		expect(hasDumperPostPermissionOrThrow).toHaveBeenCalledTimes(1);
 		expect(getUserId).toHaveBeenCalledTimes(1);
 		expect(validateContents).toHaveBeenCalledWith(formData);
 		expect(prisma.contents.create).toHaveBeenCalled();
