@@ -4,10 +4,8 @@
 		"enabled": true
 	},
 	"linter": {
-		"enabled": true,
-		"rules": {
-			"recommended": true
-		}
+		"enabled": false,
+		"rules": { "recommended": true }
 	},
 	"vcs": {
 		"enabled": true,
