@@ -6,9 +6,7 @@ import { PrismaClient } from "@prisma/client";
 import { withAccelerate } from "@prisma/extension-accelerate";
 
 const prismaClientSingleton = () => {
-	return new PrismaClient({ omit: { users: { password: true } } }).$extends(
-		withAccelerate(),
-	);
+	return new PrismaClient().$extends(withAccelerate());
 };
 // biome-ignore lint:
 declare const globalThis: {
