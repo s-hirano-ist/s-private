@@ -4,7 +4,7 @@ import { UnauthorizedError } from "@/error-classes";
 import { loggerWarn } from "@/pino";
 import { auth } from "./auth";
 
-export async function checkSelfAuthOrThrow() {
+async function checkSelfAuthOrThrow() {
 	const session = await auth();
 	if (!session) {
 		loggerWarn(ERROR_MESSAGES.UNAUTHORIZED, {

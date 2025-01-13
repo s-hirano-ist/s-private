@@ -26,7 +26,7 @@ export function AddImageForm() {
 		<form action={addNewsAction} className="space-y-4 px-2 py-4">
 			<div className="space-y-1">
 				<Label htmlFor="file">画像</Label>
-				<Input type="file" name="file" accept="image/*" required />
+				<Input id="file" type="file" name="file" accept="image/*" required />
 			</div>
 			<Button type="submit" disabled={isPending} className="w-full">
 				アップロード

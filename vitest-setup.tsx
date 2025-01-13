@@ -43,10 +43,6 @@ beforeEach(() => {
 		revalidatePath: vi.fn(),
 	}));
 
-	vi.mock("react-dom", () => ({
-		useFormStatus: vi.fn(),
-	}));
-
 	vi.mock("next-view-transitions", () => ({
 		useTransitionRouter: vi.fn(() => ({ push: vi.fn() })),
 		Link: vi.fn(({ children, ...rest }) => <a {...rest}>{children}</a>),

@@ -1,132 +1,120 @@
-import { SUCCESS_MESSAGES } from "@/constants";
-import { wrapServerSideErrorForClient } from "@/error-wrapper";
-import { getSelfId, hasDumperPostPermission } from "@/features/auth/utils/role";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { auth } from "@/features/auth/utils/auth";
 import prisma from "@/prisma";
 import { sendLineNotifyMessage } from "@/utils/fetch-message";
-import { formatChangeStatusMessage } from "@/utils/format-for-line";
+import { Session } from "next-auth";
 import { revalidatePath } from "next/cache";
 import { type Mock, describe, expect, it, vi } from "vitest";
 import { changeNewsStatus } from "./change-news-status";
 
-vi.mock("@/features/auth/utils/role", () => ({
-	getSelfId: vi.fn(),
-}));
-
-vi.mock("@/features/auth/utils/role", () => ({
-	getSelfId: vi.fn(),
-}));
+vi.mock("@/features/auth/utils/auth", () => ({ auth: vi.fn() }));
 
 vi.mock("@/utils/fetch-message", () => ({
 	sendLineNotifyMessage: vi.fn(),
 }));
 
-vi.mock("@/utils/format-for-line", () => ({
-	formatChangeStatusMessage: vi.fn(),
-}));
+const mockAllowedRoleSession: Session = {
+	user: { id: "1", roles: ["dumper"] },
+	expires: "2025-01-01",
+};
+const mockNotAllowedRoleSession: Session = {
+	user: { id: "1", roles: [] },
+	expires: "2025-01-01",
+};
+const mockUnauthorizedSession = null;
 
-vi.mock("@/error-wrapper", () => ({
-	wrapServerSideErrorForClient: vi.fn(),
-}));
+describe("changeNewsStatus", () => {
+	it("should return success false on Unauthorized", async () => {
+		(auth as Mock).mockResolvedValue(mockUnauthorizedSession);
 
-describe.skip("changeNewsStatus", () => {
+		const result = await changeNewsStatus("UPDATE");
+
+		expect(result).toEqual({
+			success: false,
+			message: ERROR_MESSAGES.UNAUTHORIZED,
+		});
+		expect(auth).toHaveBeenCalledTimes(1);
+	});
+
+	it("should return success false on not permitted", async () => {
+		(auth as Mock).mockResolvedValue(mockNotAllowedRoleSession);
+
+		const result = await changeNewsStatus("REVERT");
+
+		expect(result).toEqual({
+			success: false,
+			message: ERROR_MESSAGES.NOT_ALLOWED,
+		});
+		expect(auth).toHaveBeenCalledTimes(1);
+	});
+
 	it("should update news statuses and send notifications (UPDATE)", async () => {
-		const mockUserId = "12345";
-		const mockStatus = {
-			unexported: 0,
-			recentlyUpdated: 5,
-			exported: 3,
-		};
-		const mockMessage = "Status updated successfully.";
-
-		(hasDumperPostPermission as Mock).mockResolvedValue(undefined);
-		(getSelfId as Mock).mockResolvedValue(mockUserId);
+		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
 		(prisma.$transaction as Mock).mockImplementation(async (callback) =>
 			callback({
 				news: {
 					updateMany: vi
 						.fn()
-						.mockResolvedValueOnce({ count: 3 })
-						.mockResolvedValueOnce({ count: 5 }),
+						.mockResolvedValueOnce({ count: 3 }) // Exported
+						.mockResolvedValueOnce({ count: 5 }), // Recently updated
 				},
 			}),
 		);
-		(formatChangeStatusMessage as Mock).mockReturnValue(mockMessage);
 
 		const result = await changeNewsStatus("UPDATE");
 
-		expect(hasDumperPostPermission).toHaveBeenCalledTimes(1);
-		expect(getSelfId).toHaveBeenCalledTimes(1);
+		expect(auth).toHaveBeenCalledTimes(2); // check permission & getSelfId
 		expect(prisma.$transaction).toHaveBeenCalled();
-		expect(formatChangeStatusMessage).toHaveBeenCalledWith(mockStatus, "NEWS");
-		expect(sendLineNotifyMessage).toHaveBeenCalledWith(mockMessage);
+		expect(sendLineNotifyMessage).toHaveBeenCalledWith(
+			"【NEWS】\n\n更新\n未処理: 0\n直近更新: 5\n確定: 3",
+		);
 		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 		expect(result).toEqual({
 			success: true,
 			message: SUCCESS_MESSAGES.UPDATE,
-			data: mockMessage,
+			data: "【NEWS】\n\n更新\n未処理: 0\n直近更新: 5\n確定: 3",
 		});
 	});
 
 	it("should revert news statuses and send notifications (REVERT)", async () => {
-		const mockUserId = "12345";
-		const mockStatus = {
-			unexported: 5,
-			recentlyUpdated: 3,
-			exported: 0,
-		};
-		const mockMessage = "Status reverted successfully.";
-
-		(hasDumperPostPermission as Mock).mockResolvedValue(undefined);
-		(getSelfId as Mock).mockResolvedValue(mockUserId);
+		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
 		(prisma.$transaction as Mock).mockImplementation(async (callback) =>
 			callback({
 				news: {
 					updateMany: vi
 						.fn()
-						.mockResolvedValueOnce({ count: 5 })
-						.mockResolvedValueOnce({ count: 3 }),
+						.mockResolvedValueOnce({ count: 5 }) // Unexported
+						.mockResolvedValueOnce({ count: 3 }), // Recently updated
 				},
 			}),
 		);
-		(formatChangeStatusMessage as Mock).mockReturnValue(mockMessage);
 
 		const result = await changeNewsStatus("REVERT");
 
-		expect(hasDumperPostPermission).toHaveBeenCalledTimes(1);
-		expect(getSelfId).toHaveBeenCalledTimes(1);
+		expect(auth).toHaveBeenCalledTimes(2); // check permission & getSelfId
 		expect(prisma.$transaction).toHaveBeenCalled();
-		expect(formatChangeStatusMessage).toHaveBeenCalledWith(mockStatus, "NEWS");
-		expect(sendLineNotifyMessage).toHaveBeenCalledWith(mockMessage);
+		expect(sendLineNotifyMessage).toHaveBeenCalledWith(
+			"【NEWS】\n\n更新\n未処理: 5\n直近更新: 3\n確定: 0",
+		);
 		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 		expect(result).toEqual({
 			success: true,
 			message: SUCCESS_MESSAGES.UPDATE,
-			data: mockMessage,
+			data: "【NEWS】\n\n更新\n未処理: 5\n直近更新: 3\n確定: 0",
 		});
 	});
 
-	it("should handle errors and wrap them for the client", async () => {
+	it("should handle unexpected errors gracefully", async () => {
+		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
 		const mockError = new Error("Unexpected error");
-
-		(hasDumperPostPermission as Mock).mockResolvedValue(undefined);
-		(getSelfId as Mock).mockResolvedValue("12345");
 		(prisma.$transaction as Mock).mockRejectedValue(mockError);
-		(wrapServerSideErrorForClient as Mock).mockResolvedValue({
-			success: false,
-			message: "An error occurred",
-			data: undefined,
-		});
 
 		const result = await changeNewsStatus("UPDATE");
 
-		expect(hasDumperPostPermission).toHaveBeenCalledTimes(1);
-		expect(getSelfId).toHaveBeenCalledTimes(1);
 		expect(prisma.$transaction).toHaveBeenCalled();
-		expect(wrapServerSideErrorForClient).toHaveBeenCalledWith(mockError);
 		expect(result).toEqual({
 			success: false,
-			message: "An error occurred",
-			data: undefined,
+			message: ERROR_MESSAGES.UNEXPECTED,
 		});
 	});
 });

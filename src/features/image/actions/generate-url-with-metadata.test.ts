@@ -1,10 +1,14 @@
-import { SUCCESS_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { env } from "@/env.mjs";
+import { auth } from "@/features/auth/utils/auth";
 import { hasDumperPostPermission } from "@/features/auth/utils/role";
 import { minioClient } from "@/minio";
+import { Session } from "next-auth";
 import sharp from "sharp";
 import { type Mock, beforeEach, describe, expect, it, vi } from "vitest";
 import { generateUrlWithMetadata } from "./generate-url-with-metadata";
+
+vi.mock("@/features/auth/utils/auth", () => ({ auth: vi.fn() }));
 
 vi.mock("@/minio", () => ({
 	minioClient: { presignedGetObject: vi.fn() },
@@ -17,20 +21,56 @@ vi.mock("sharp", () => ({
 	})),
 }));
 
-describe.skip("generateUrlWithMetadata", () => {
+describe("generateUrlWithMetadata", () => {
 	const mockFetch = vi.fn();
 
 	const fileName = "test-image.jpg";
 	const mockUrl = "http://example.com/test-image.jpg";
 	const mockMetadata = { width: 800, height: 600, format: "jpeg" };
 
+	const mockAllowedRoleSession: Session = {
+		user: { id: "1", roles: ["dumper"] },
+		expires: "2025-01-01",
+	};
+	const mockNotAllowedRoleSession: Session = {
+		user: { id: "1", roles: [] },
+		expires: "2025-01-01",
+	};
+	const mockUnauthorizedSession = null;
+
+	const mockFileName = "sampleFileName";
+
 	beforeEach(() => {
 		global.fetch = mockFetch;
 	});
 
+	it("should return success false on Unauthorized", async () => {
+		(auth as Mock).mockResolvedValue(mockUnauthorizedSession);
+
+		const result = await generateUrlWithMetadata(mockFileName);
+
+		expect(result).toEqual({
+			success: false,
+			message: ERROR_MESSAGES.UNAUTHORIZED,
+		});
+		expect(auth).toHaveBeenCalledTimes(1);
+	});
+
+	it("should return success false on not permitted", async () => {
+		(auth as Mock).mockResolvedValue(mockNotAllowedRoleSession);
+
+		const result = await generateUrlWithMetadata(mockFileName);
+
+		expect(result).toEqual({
+			success: false,
+			message: ERROR_MESSAGES.NOT_ALLOWED,
+		});
+		expect(auth).toHaveBeenCalledTimes(1);
+	});
+
 	it("should return a presigned URL and metadata when inputs are valid", async () => {
-		// モックの設定
-		vi.mocked(hasDumperPostPermission as Mock).mockResolvedValue(false);
+		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
+
 		vi.mocked(minioClient.presignedGetObject).mockResolvedValue(mockUrl);
 		vi.mocked(fetch).mockResolvedValue({
 			ok: true,
@@ -42,11 +82,8 @@ describe.skip("generateUrlWithMetadata", () => {
 			// biome-ignore lint: for test
 		} as any);
 
-		// 実行
 		const result = await generateUrlWithMetadata(fileName);
 
-		// 検証
-		expect(hasDumperPostPermission).toHaveBeenCalled();
 		expect(minioClient.presignedGetObject).toHaveBeenCalledWith(
 			env.MINIO_BUCKET_NAME,
 			fileName,
@@ -65,52 +102,18 @@ describe.skip("generateUrlWithMetadata", () => {
 	});
 
 	it("should throw an error if the presigned URL fetch fails", async () => {
-		// モックの設定
-		vi.mocked(hasDumperPostPermission as Mock).mockResolvedValue();
-		vi.mocked(minioClient.presignedGetObject).mockResolvedValue(mockUrl);
-		// biome-ignore lint: for test
-		vi.mocked(fetch).mockResolvedValue({ ok: false } as any);
+		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
 
-		// 実行
-		const result = await generateUrlWithMetadata(fileName);
-
-		// 検証
-		expect(result.success).toBe(false);
-		expect(result.message).toBeDefined(); // wrapServerSideErrorForClient のエラー
-	});
-
-	it("should throw an error if metadata extraction fails", async () => {
-		// モックの設定
-		vi.mocked(hasDumperPostPermission).mockResolvedValue(false);
 		vi.mocked(minioClient.presignedGetObject).mockResolvedValue(mockUrl);
 		vi.mocked(fetch).mockResolvedValue({
-			ok: true,
-			arrayBuffer: vi.fn().mockResolvedValue(new ArrayBuffer(8)),
-			// biome-ignore lint: for test
+			ok: false, // biome-ignore lint: for test
 		} as any);
-		vi.mocked(sharp).mockImplementation(() => {
-			throw new Error("Sharp error");
+
+		const result = await generateUrlWithMetadata(fileName);
+
+		expect(result).toEqual({
+			success: false,
+			message: ERROR_MESSAGES.UNEXPECTED,
 		});
-
-		// 実行
-		const result = await generateUrlWithMetadata(fileName);
-
-		// 検証
-		expect(result.success).toBe(false);
-		expect(result.message).toBeDefined(); // wrapServerSideErrorForClient のエラー
-	});
-
-	it("should throw an error if permission check fails", async () => {
-		// モックの設定
-		vi.mocked(hasDumperPostPermission).mockRejectedValue(
-			new Error("Permission denied"),
-		);
-
-		// 実行
-		const result = await generateUrlWithMetadata(fileName);
-
-		// 検証
-		expect(result.success).toBe(false);
-		expect(result.message).toBeDefined(); // wrapServerSideErrorForClient のエラー
 	});
 });
