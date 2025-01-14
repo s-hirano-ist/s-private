@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.8.1](https://github.com/s-hirano-ist/s-private/compare/v5.8.0...v5.8.1) (2025-01-14)
+
+
+### Bug Fixes
+
+* 🐛 add cache strategy for prisma accelerate ([674af45](https://github.com/s-hirano-ist/s-private/commit/674af456cc42886d186e10edec87989018eb2959))
+* 🐛 add cache strategy for prisma accelerate ([b8dd708](https://github.com/s-hirano-ist/s-private/commit/b8dd708a69209461b37d078e17595f81cc4ae728))
+
 ## [5.8.0](https://github.com/s-hirano-ist/s-private/compare/v5.7.0...v5.8.0) (2025-01-13)
 
 
