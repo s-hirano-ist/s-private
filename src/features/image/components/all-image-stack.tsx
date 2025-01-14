@@ -6,9 +6,7 @@ import { generateUrlWithMetadata } from "@/features/image/actions/generate-url-w
 import { loggerError } from "@/pino";
 import prisma from "@/prisma";
 
-type Props = {
-	page: number;
-};
+type Props = { page: number };
 
 export async function AllImageStack({ page }: Props) {
 	try {
@@ -22,6 +20,7 @@ export async function AllImageStack({ page }: Props) {
 			orderBy: { id: "desc" },
 			skip: (page - 1) * PAGE_SIZE,
 			take: PAGE_SIZE,
+			cacheStrategy: { ttl: 400, swr: 40, tags: ["images"] },
 		});
 
 		const images = await Promise.all(

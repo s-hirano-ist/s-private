@@ -16,6 +16,7 @@ export default async function Page() {
 
 	const images = await prisma.staticBooks.findMany({
 		select: { title: true, uint8ArrayImage: true },
+		cacheStrategy: { ttl: 400, tags: ["staticBooks"] },
 	});
 
 	return (

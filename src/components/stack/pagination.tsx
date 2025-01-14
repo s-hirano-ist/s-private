@@ -8,10 +8,7 @@ import {
 } from "@/components/ui/pagination";
 import { PAGE_SIZE } from "@/constants";
 
-type Props = {
-	currentPage: number;
-	totalPages: number;
-};
+type Props = { currentPage: number; totalPages: number };
 
 export function Pagination({ currentPage, totalPages }: Props) {
 	const showPreviousPageLink = 1 < currentPage;
