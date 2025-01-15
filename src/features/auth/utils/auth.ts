@@ -1,14 +1,16 @@
 import { env } from "@/env.mjs";
+import { UnexpectedError } from "@/error-classes";
 import NextAuth, { type DefaultSession } from "next-auth";
 import authConfig from "./auth.config";
 
 type Role = "viewer" | "dumper";
+type Id = string;
 
 declare module "next-auth" {
 	// eslint-disable-next-line
 	interface Session extends DefaultSession {
 		user: {
-			id: string;
+			id: Id;
 			roles: Role[];
 		} & DefaultSession["user"];
 	}
@@ -29,17 +31,18 @@ export const {
 	session: { strategy: "jwt", maxAge: 24 * 60 * 60 },
 	jwt: { maxAge: 30 * 24 * 60 * 60 },
 	callbacks: {
-		jwt({ account, token, user, profile }) {
+		jwt({ account, token, profile }) {
 			if (account && profile) {
 				const namespace = "https://private.s-hirano.com/";
 				token.roles = profile[`${namespace}roles`] || [];
+				token.id = profile.sub;
 			}
-			if (user) token.id = user.id;
 			return token;
 		},
 		session({ session, token }) {
 			if (token) {
-				session.user.id = token.id as string;
+				if (!token.id) throw new UnexpectedError();
+				session.user.id = token.id as Id;
 				session.user.roles = token.roles as Role[];
 			}
 			return session;
