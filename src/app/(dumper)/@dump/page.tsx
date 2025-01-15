@@ -1,11 +1,13 @@
-import { Unauthorized } from "@/components/card/unauthorized";
-import { hasDumperPostPermission } from "@/features/auth/utils/role";
-import { ChangeStatusForm } from "@/features/dump/components/change-status-form";
+import Loading from "@/components/loading";
+import { Suspense } from "react";
+import { SuspensePage } from "./_page";
 
 export const dynamic = "force-dynamic";
 
 export default async function Page() {
-	const hasAdminPermission = await hasDumperPostPermission();
-
-	return <>{hasAdminPermission ? <ChangeStatusForm /> : <Unauthorized />}</>;
+	return (
+		<Suspense fallback={<Loading />}>
+			<SuspensePage />
+		</Suspense>
+	);
 }
