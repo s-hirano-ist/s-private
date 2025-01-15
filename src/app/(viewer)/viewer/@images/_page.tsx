@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import {
 	getSelfId,
 	hasViewerAdminPermission,
-} from "@/features/auth/utils/role";
+} from "@/features/auth/utils/session";
 import { AllImageStack } from "@/features/image/components/all-image-stack";
 import prisma from "@/prisma";
 import { Suspense } from "react";

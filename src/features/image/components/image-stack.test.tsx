@@ -1,4 +1,4 @@
-import { getSelfId } from "@/features/auth/utils/role";
+import { getSelfId } from "@/features/auth/utils/session";
 import { generateUrlWithMetadata } from "@/features/image/actions/generate-url-with-metadata";
 import { ImageStack } from "@/features/image/components/image-stack";
 import prisma from "@/prisma";
@@ -6,7 +6,7 @@ import { render, screen } from "@testing-library/react";
 import { type Mock, describe, expect, it, vi } from "vitest";
 
 // 各依存関数をモック化
-vi.mock("@/features/auth/utils/role", () => ({
+vi.mock("@/features/auth/utils/session", () => ({
 	getSelfId: vi.fn(),
 }));
 

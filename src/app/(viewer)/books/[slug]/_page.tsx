@@ -1,7 +1,7 @@
 import { ViewerBody } from "@/components/body/viewer-body";
 import { NotFound } from "@/components/card/not-found";
 import { Unauthorized } from "@/components/card/unauthorized";
-import { hasViewerAdminPermission } from "@/features/auth/utils/role";
+import { hasViewerAdminPermission } from "@/features/auth/utils/session";
 import { markdownToReact } from "@/features/viewer/utils/markdown-to-react";
 import prisma from "@/prisma";
 

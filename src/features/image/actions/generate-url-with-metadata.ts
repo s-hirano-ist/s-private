@@ -4,7 +4,7 @@ import { SUCCESS_MESSAGES } from "@/constants";
 import { env } from "@/env.mjs";
 import { NotAllowedError, UnexpectedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
-import { hasDumperPostPermission } from "@/features/auth/utils/role";
+import { hasDumperPostPermission } from "@/features/auth/utils/session";
 import { minioClient } from "@/minio";
 import type { ServerAction } from "@/types";
 import sharp, { type Metadata } from "sharp";

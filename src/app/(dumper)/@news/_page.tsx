@@ -1,7 +1,10 @@
 import { CardStackSkeleton } from "@/components/stack/card-stack-skeleton";
 import { Separator } from "@/components/ui/separator";
 import { ERROR_MESSAGES } from "@/constants";
-import { getSelfId, hasDumperPostPermission } from "@/features/auth/utils/role";
+import {
+	getSelfId,
+	hasDumperPostPermission,
+} from "@/features/auth/utils/session";
 import { AddNewsForm } from "@/features/news/components/add-news-form";
 import { NewsStack } from "@/features/news/components/news-stack";
 import { loggerError } from "@/pino";

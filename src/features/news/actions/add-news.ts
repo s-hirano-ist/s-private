@@ -3,7 +3,10 @@ import "server-only";
 import { SUCCESS_MESSAGES } from "@/constants";
 import { NotAllowedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
-import { getSelfId, hasDumperPostPermission } from "@/features/auth/utils/role";
+import {
+	getSelfId,
+	hasDumperPostPermission,
+} from "@/features/auth/utils/session";
 import { validateCategory } from "@/features/news/utils/validate-category";
 import { validateNews } from "@/features/news/utils/validate-news";
 import { loggerInfo } from "@/pino";

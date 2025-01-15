@@ -1,7 +1,7 @@
 import { StatusCodeView } from "@/components/card/status-code-view";
 import { ImageStack as _ImageStack } from "@/components/stack/image-stack";
 import { ERROR_MESSAGES } from "@/constants";
-import { getSelfId } from "@/features/auth/utils/role";
+import { getSelfId } from "@/features/auth/utils/session";
 import { generateUrlWithMetadata } from "@/features/image/actions/generate-url-with-metadata";
 import { loggerError } from "@/pino";
 import prisma from "@/prisma";
