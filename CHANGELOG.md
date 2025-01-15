@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.9.0](https://github.com/s-hirano-ist/s-private/compare/v5.8.1...v5.9.0) (2025-01-15)
+
+
+### Features
+
+* 🎸 add loading for all pages ([af3c07e](https://github.com/s-hirano-ist/s-private/commit/af3c07eab1cbd1070cfecec31741660a4b80582c))
+* add loading for all pages ([95a200f](https://github.com/s-hirano-ist/s-private/commit/95a200fbfd89042aa0094b6cdf6639784e704ab1))
+
 ## [5.8.1](https://github.com/s-hirano-ist/s-private/compare/v5.8.0...v5.8.1) (2025-01-14)
 
 
