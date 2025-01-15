@@ -1,7 +1,7 @@
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { env } from "@/env.mjs";
 import { auth } from "@/features/auth/utils/auth";
-import { hasDumperPostPermission } from "@/features/auth/utils/role";
+import { hasDumperPostPermission } from "@/features/auth/utils/session";
 import { minioClient } from "@/minio";
 import { Session } from "next-auth";
 import sharp from "sharp";

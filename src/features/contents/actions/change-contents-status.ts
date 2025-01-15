@@ -3,7 +3,10 @@ import "server-only";
 import { SUCCESS_MESSAGES } from "@/constants";
 import { NotAllowedError, UnexpectedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
-import { getSelfId, hasDumperPostPermission } from "@/features/auth/utils/role";
+import {
+	getSelfId,
+	hasDumperPostPermission,
+} from "@/features/auth/utils/session";
 import type { Status, UpdateOrRevert } from "@/features/dump/types";
 import { loggerInfo } from "@/pino";
 import prisma from "@/prisma";

@@ -4,7 +4,7 @@ import {
 	getSelfId,
 	hasDumperPostPermission,
 	hasViewerAdminPermission,
-} from "@/features/auth/utils/role";
+} from "@/features/auth/utils/session";
 import { Session } from "next-auth";
 import { type Mock, describe, expect, it, vi } from "vitest";
 
@@ -33,7 +33,7 @@ const mockEmptyRoleSession: Session = {
 };
 const mockUnauthenticatedUserSession = null;
 
-describe("role utilities", () => {
+describe("session utilities", () => {
 	describe("getSelfId", () => {
 		it("should return the user ID from the session", async () => {
 			(auth as Mock).mockResolvedValue(mockViewerRoleSession);

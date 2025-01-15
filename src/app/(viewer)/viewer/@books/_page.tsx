@@ -1,7 +1,7 @@
 import { Unauthorized } from "@/components/card/unauthorized";
 import { ViewerStack } from "@/components/stack/viewer-stack";
 import { Badge } from "@/components/ui/badge";
-import { hasViewerAdminPermission } from "@/features/auth/utils/role";
+import { hasViewerAdminPermission } from "@/features/auth/utils/session";
 import prisma from "@/prisma";
 
 const path = "books";

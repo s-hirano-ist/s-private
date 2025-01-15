@@ -1,5 +1,5 @@
 import { Unauthorized } from "@/components/card/unauthorized";
-import { hasDumperPostPermission } from "@/features/auth/utils/role";
+import { hasDumperPostPermission } from "@/features/auth/utils/session";
 import { ChangeStatusForm } from "@/features/dump/components/change-status-form";
 
 export async function SuspensePage() {

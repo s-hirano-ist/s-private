@@ -8,7 +8,10 @@ import {
 	UnexpectedError,
 } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
-import { getSelfId, hasDumperPostPermission } from "@/features/auth/utils/role";
+import {
+	getSelfId,
+	hasDumperPostPermission,
+} from "@/features/auth/utils/session";
 import { minioClient } from "@/minio";
 import { loggerInfo } from "@/pino";
 import prisma from "@/prisma";

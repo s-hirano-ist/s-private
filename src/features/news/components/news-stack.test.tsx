@@ -1,10 +1,10 @@
-import { getSelfId } from "@/features/auth/utils/role";
+import { getSelfId } from "@/features/auth/utils/session";
 import { NewsStack } from "@/features/news/components/news-stack";
 import prisma from "@/prisma";
 import { render, screen } from "@testing-library/react";
 import { type Mock, describe, expect, it, vi } from "vitest";
 
-vi.mock("@/features/auth/utils/role", () => ({
+vi.mock("@/features/auth/utils/session", () => ({
 	getSelfId: vi.fn(),
 }));
 

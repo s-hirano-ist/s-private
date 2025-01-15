@@ -3,7 +3,7 @@ import "server-only";
 import { StatusCodeView } from "@/components/card/status-code-view";
 import { CardStack } from "@/components/stack/card-stack";
 import { ERROR_MESSAGES } from "@/constants";
-import { getSelfId } from "@/features/auth/utils/role";
+import { getSelfId } from "@/features/auth/utils/session";
 import { loggerError } from "@/pino";
 import prisma from "@/prisma";
 

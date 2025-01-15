@@ -1,6 +1,6 @@
 import { ImageStackSkeleton } from "@/components/stack/image-stack-skeleton";
 import { Separator } from "@/components/ui/separator";
-import { hasDumperPostPermission } from "@/features/auth/utils/role";
+import { hasDumperPostPermission } from "@/features/auth/utils/session";
 import { AddImageForm } from "@/features/image/components/add-image-form";
 import { ImageStack } from "@/features/image/components/image-stack";
 import { Suspense } from "react";
