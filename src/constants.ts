@@ -10,6 +10,7 @@ export const FORM_ERROR_MESSAGES = {
 	TOO_LONG: "文字数が多すぎます。",
 	ALPHABET_ONLY: "アルファベットとハイフンのみが入力可能です。",
 	INVALID_FORMAT: "無効なフォーマットで入力されています。",
+	INVALID_FILE_FORMAT: "ファイルのフォーマットが無効です。",
 } as const;
 
 export const ERROR_MESSAGES = {
@@ -21,8 +22,6 @@ export const ERROR_MESSAGES = {
 	NOT_ALLOWED: "操作が許可されていません。",
 	SIGN_IN: "メールアドレスまたはパスワードが間違っています。",
 	SIGN_IN_UNKNOWN: "サインインに失敗しました。",
-	SIGN_OUT_UNKNOWN: "サインアウトに失敗しました。",
-	INVALID_FILE_FORMAT: "ファイルのフォーマットが無効です。",
 } as const;
 
 export const SUCCESS_MESSAGES = {
@@ -33,9 +32,6 @@ export const SUCCESS_MESSAGES = {
 } as const;
 
 export const SKELETON_STACK_SIZE = 10;
-export const SKELETON_TABLE_ROWS = 5;
-
-export const MARKDOWN_PATHS = "s-contents/markdown";
 
 export const DEFAULT_SIGN_IN_REDIRECT = "/";
 export const DEFAULT_SIGN_OUT_REDIRECT = "/auth";

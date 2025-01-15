@@ -1,4 +1,8 @@
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import {
+	ERROR_MESSAGES,
+	FORM_ERROR_MESSAGES,
+	SUCCESS_MESSAGES,
+} from "@/constants";
 import { env } from "@/env.mjs";
 import { auth } from "@/features/auth/utils/auth";
 import { minioClient } from "@/minio";
@@ -113,7 +117,7 @@ describe("addImage", () => {
 
 		expect(result).toEqual({
 			success: false,
-			message: ERROR_MESSAGES.INVALID_FILE_FORMAT,
+			message: FORM_ERROR_MESSAGES.INVALID_FILE_FORMAT,
 		});
 	});
 
@@ -133,7 +137,7 @@ describe("addImage", () => {
 
 		expect(result).toEqual({
 			success: false,
-			message: ERROR_MESSAGES.INVALID_FILE_FORMAT,
+			message: FORM_ERROR_MESSAGES.INVALID_FILE_FORMAT,
 		});
 	});
 
