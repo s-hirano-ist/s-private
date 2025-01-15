@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.9.1](https://github.com/s-hirano-ist/s-private/compare/v5.9.0...v5.9.1) (2025-01-15)
+
+
+### Bug Fixes
+
+* 🐛 userid changes on every login ([986561d](https://github.com/s-hirano-ist/s-private/commit/986561da7a1e9a31bf01ace5cb6e70bdc9d88f66))
+
 ## [5.9.0](https://github.com/s-hirano-ist/s-private/compare/v5.8.1...v5.9.0) (2025-01-15)
 
 
