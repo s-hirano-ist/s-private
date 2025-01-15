@@ -37,7 +37,7 @@ export class InvalidFormatError extends Error {
 
 export class FileNotAllowedError extends Error {
 	constructor() {
-		super(ERROR_MESSAGES.INVALID_FILE_FORMAT);
+		super(FORM_ERROR_MESSAGES.INVALID_FILE_FORMAT);
 		this.name = "FileNotAllowedError";
 	}
 }

@@ -24,7 +24,7 @@ export function RootTab({ books, contents, images }: Props) {
 
 	const [tab, setTab] = useState(searchParams.get("tab") ?? DEFAULT_TAB);
 
-	const handleTabChange = async (value: string) => {
+	const handleTabChange = (value: string) => {
 		const params = new URLSearchParams(searchParams);
 		params.set("tab", value);
 		router.replace(`?${params.toString()}`);

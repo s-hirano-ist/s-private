@@ -1,11 +1,8 @@
-import { ViewerBody } from "@/components/body/viewer-body";
-import { NotFound } from "@/components/card/not-found";
-import { Unauthorized } from "@/components/card/unauthorized";
+import Loading from "@/components/loading";
 import { PAGE_NAME } from "@/constants";
-import { hasViewerAdminPermission } from "@/features/auth/utils/role";
-import { markdownToReact } from "@/features/viewer/utils/markdown-to-react";
-import prisma from "@/prisma";
 import type { Metadata } from "next";
+import { Suspense } from "react";
+import { SuspensePage } from "./_page";
 
 export const dynamic = "force-dynamic";
 
@@ -25,26 +22,9 @@ export async function generateMetadata({
 export default async function Page({ params }: { params: Params }) {
 	const { slug } = await params;
 
-	const hasAdminPermission = await hasViewerAdminPermission();
-
-	const decordedSlug = decodeURIComponent(slug);
-
-	const data = await prisma.staticBooks.findUnique({
-		where: { title: decordedSlug },
-		select: { markdown: true },
-		cacheStrategy: { ttl: 400, tags: ["staticBooks"] },
-	});
-	if (!data) return <NotFound />;
-
-	const reactData = await markdownToReact(data.markdown);
-
 	return (
-		<>
-			{hasAdminPermission ? (
-				<ViewerBody>{reactData}</ViewerBody>
-			) : (
-				<Unauthorized />
-			)}
-		</>
+		<Suspense fallback={<Loading />}>
+			<SuspensePage slug={slug} />
+		</Suspense>
 	);
 }
