@@ -1,6 +1,7 @@
 import { auth } from "@/features/auth/utils/auth";
-import { NextResponse } from "next/server";
+import { MiddlewareConfig, NextResponse } from "next/server";
 import { DEFAULT_SIGN_IN_REDIRECT } from "./constants";
+import { cspHeader } from "./csp-header";
 
 // MEMO: アクセスが禁止されているパスではなく、アクセスが許可されているパスを記述するべき。なぜなら、アクセスが禁止されているパスのすべてを把握するのは難しいからである。
 const publicRoutes: string[] = [];
@@ -33,11 +34,27 @@ export default auth((request) => {
 	if (!isLoggedIn && !isPublicRoute)
 		return NextResponse.redirect(new URL("/auth", nextUrl));
 
-	return;
+	return cspHeader(request);
 });
 
 export const config = {
 	matcher: [
-		"/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+		/*
+		 * Match all request paths except for the ones starting with:
+		 * - api (API routes)
+		 * - _next/static (static files)
+		 * - _next/image (image optimization files)
+		 * - favicon.ico (favicon file)
+		 * - sitemap.xml
+		 * - robots.txt
+		 */
+		{
+			source:
+				"/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+			missing: [
+				{ type: "header", key: "next-router-prefetch" },
+				{ type: "header", key: "purpose", value: "prefetch" },
+			],
+		},
 	],
-};
+} satisfies MiddlewareConfig;
