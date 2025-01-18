@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Drawer as DrawerPrimitive } from "vaul";
 
+import { useNonce } from "@/nonce-provider";
 import { cn } from "@/utils/tailwindcss";
 
 const Drawer = ({
@@ -44,21 +45,25 @@ DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName;
 const DrawerContent = React.forwardRef<
 	React.ElementRef<typeof DrawerPrimitive.Content>,
 	React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content>
->(({ className, children, ...props }, ref) => (
-	<DrawerPortal>
-		<DrawerOverlay />
-		<DrawerPrimitive.Content
-			ref={ref}
-			className={cn(
-				"fixed inset-x-0 bottom-0 z-50 flex h-full flex-col rounded-t-[10px] border bg-background",
-				className,
-			)}
-			{...props}
-		>
-			{children}
-		</DrawerPrimitive.Content>
-	</DrawerPortal>
-));
+>(({ className, children, ...props }, ref) => {
+	const nonce = useNonce();
+	return (
+		<DrawerPortal>
+			<DrawerOverlay />
+			<DrawerPrimitive.Content
+				ref={ref}
+				className={cn(
+					"fixed inset-x-0 bottom-0 z-50 flex h-full flex-col rounded-t-[10px] border bg-background",
+					className,
+				)}
+				nonce={nonce}
+				{...props}
+			>
+				{children}
+			</DrawerPrimitive.Content>
+		</DrawerPortal>
+	);
+});
 DrawerContent.displayName = "DrawerContent";
 
 const DrawerHeader = ({
