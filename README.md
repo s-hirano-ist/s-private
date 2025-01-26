@@ -22,9 +22,6 @@
 ```bash
 git clone --recursive https://github.com/s-hirano-ist/s-private.git
 cd s-private
-cd minio
-./minio-keygen.sh
-cd ..
 ```
 
 ## Docker Imageのビルドとプッシュ
@@ -36,7 +33,7 @@ MainブランチにPRがpushされたら自動的に[DockerHub](https://hub.dock
 ### 開発環境
 
 ```bash
-docker compose --profile dev up --build -d
+docker compose up --build -d
 pnpm dev
 ```
 
