@@ -1,10 +1,10 @@
 import { Footer } from "@/components/nav/footer";
-import { Toaster } from "@/components/ui/toaster";
 import type { Metadata } from "next";
 import { ViewTransitions } from "next-view-transitions";
 import { Noto_Sans_JP } from "next/font/google";
 import type { ReactNode } from "react";
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
 import { PAGE_NAME } from "@/constants";
 import { env } from "@/env.mjs";
 import { GoogleAnalytics } from "@next/third-parties/google";

@@ -1,37 +1,32 @@
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
-import { Toaster } from "./toaster";
+import { toast } from "sonner";
+import { Toaster as Sonner } from "./sonner";
 
 const meta = {
-	title: "Components/UI/Toaster",
-	component: Toaster,
+	title: "Components/UI/Sonner",
+	component: Sonner,
 	tags: ["autodocs"],
-} satisfies Meta<typeof Toaster>;
+} satisfies Meta<typeof Sonner>;
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-const ToastExample = () => {
-	const { toast } = useToast();
-
+const SonnerExample = () => {
 	const handleToast = () => {
-		toast({
-			variant: "default",
-			description: "sample description",
-		});
+		toast("sample description");
 	};
 
 	return (
 		<>
-			<Toaster />
+			<Sonner />
 			<Button onClick={handleToast}>Show Toast</Button>
 		</>
 	);
 };
 
 export const Default: Story = {
-	render: () => <ToastExample />,
+	render: () => <SonnerExample />,
 };

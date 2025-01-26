@@ -3,19 +3,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { addImage } from "@/features/image/actions/add-image";
-import { useToast } from "@/hooks/use-toast";
 import { useActionState } from "react";
+import { toast } from "sonner";
 
 export function AddImageForm() {
-	const { toast } = useToast();
-
 	async function submitForm(_: null, formData: FormData) {
-		const response = await addImage(formData);
-		if (!response.success) {
-			toast({
-				variant: "destructive",
-				description: response.message,
-			});
+		const files = formData.getAll("files");
+
+		for (const [index, file] of files.entries()) {
+			const individualFormData = new FormData();
+			individualFormData.append("file", file);
+
+			const response = await addImage(individualFormData, index + 1);
+			toast(response.message);
 		}
 		return null;
 	}
@@ -25,11 +25,18 @@ export function AddImageForm() {
 	return (
 		<form action={addNewsAction} className="space-y-4 px-2 py-4">
 			<div className="space-y-1">
-				<Label htmlFor="file">画像</Label>
-				<Input id="file" type="file" name="file" accept="image/*" required />
+				<Label htmlFor="files">画像</Label>
+				<Input
+					id="files"
+					type="file"
+					name="files"
+					accept="image/*"
+					multiple
+					required
+				/>
 			</div>
 			<Button type="submit" disabled={isPending} className="w-full">
-				アップロード
+				{isPending ? "アップロード中..." : "アップロード"}
 			</Button>
 		</form>
 	);

@@ -12,12 +12,10 @@ import { UnexpectedError } from "@/error-classes";
 import { changeContentsStatus } from "@/features/contents/actions/change-contents-status";
 import { changeImagesStatus } from "@/features/image/actions/change-images-status";
 import { changeNewsStatus } from "@/features/news/actions/change-news-status";
-import { useToast } from "@/hooks/use-toast";
 import { useActionState, useState } from "react";
+import { toast } from "sonner";
 
 export function ChangeStatusForm() {
-	const { toast } = useToast();
-
 	const [target, setTarget] = useState<string>();
 	const [status, setStatus] = useState<string>();
 
@@ -46,10 +44,7 @@ export function ChangeStatusForm() {
 			throw new UnexpectedError();
 		})();
 
-		toast({
-			variant: response.success ? "default" : "destructive",
-			description: response.message,
-		});
+		toast(response.message);
 
 		setTarget("");
 		setStatus("");
