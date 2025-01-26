@@ -17,7 +17,7 @@ services:
     container_name: dev-db
     build:
       context: .
-      dockerfile: docker/db.Dockerfile
+      dockerfile: docker/database.Dockerfile
     volumes:
       - dev-db-data:/var/lib/postgresql/data
     ports:
