@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.0.1](https://github.com/s-hirano-ist/s-private/compare/v6.0.0...v6.0.1) (2025-01-26)
+
+
+### Bug Fixes
+
+* 🐛 ci for tags ([6c747ff](https://github.com/s-hirano-ist/s-private/commit/6c747ff9f6995a6c5fbb965a0244f1334346e7eb))
+* 🐛 ci for tags ([3d0432c](https://github.com/s-hirano-ist/s-private/commit/3d0432c7270ac029003a5d26c4b1de455f3478c9))
+
 ## [6.0.0](https://github.com/s-hirano-ist/s-private/compare/v5.12.1...v6.0.0) (2025-01-26)
 
 
