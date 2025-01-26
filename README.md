@@ -14,7 +14,8 @@
 **Database** - [PostgreSQL](https://www.postgresql.org/)  
 **Object Storage** [MinIO](https://min.io/)  
 **ORM** - [Prisma](https://www.prisma.io/)  
-**Vulnerabilities Check** - [npm-audit](https://docs.npmjs.com/cli/v10/commands/npm-audit) & [Dependabot alert](https://docs.github.com/ja/code-security/dependabot/dependabot-alerts/about-dependabot-alerts)  
+**Vulnerabilities Checks** - [npm-audit](https://docs.npmjs.com/cli/v10/commands/npm-audit) & [Dependabot alert](https://docs.github.com/ja/code-security/dependabot/dependabot-alerts/about-dependabot-alerts)  
+**Rendering Checks** -[React Scan](https://github.com/aidenybai/react-scan)  
 
 ## 初期設定
 
