@@ -70,7 +70,7 @@ describe("addImage", () => {
 	it("should return success false on Unauthorized", async () => {
 		(auth as Mock).mockResolvedValue(mockUnauthorizedSession);
 
-		const result = await addImage(mockFormData);
+		const result = await addImage(mockFormData, 1);
 
 		expect(result).toEqual({
 			success: false,
@@ -82,7 +82,7 @@ describe("addImage", () => {
 	it("should return success false on not permitted", async () => {
 		(auth as Mock).mockResolvedValue(mockNotAllowedRoleSession);
 
-		const result = await addImage(mockFormData);
+		const result = await addImage(mockFormData, 1);
 
 		expect(result).toEqual({
 			success: false,
@@ -110,14 +110,14 @@ describe("addImage", () => {
 		});
 		(uuidv7 as Mock).mockReturnValue("generated-uuid");
 
-		const result = await addImage(mockFormData);
+		const result = await addImage(mockFormData, 1);
 
 		expect(minioClient.putObject).toHaveBeenCalledTimes(2);
 		expect(prisma.images.create).toHaveBeenCalled();
 		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 		expect(result).toEqual({
 			success: true,
-			message: SUCCESS_MESSAGES.INSERTED,
+			message: `1番目の画像が${SUCCESS_MESSAGES.INSERTED}`,
 		});
 	});
 
