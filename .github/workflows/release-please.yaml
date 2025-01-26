@@ -8,11 +8,67 @@ on:
             - main
 jobs:
     release-please:
+        permissions:
+          contents: read
+          packages: write
+          id-token: write
         runs-on: ubuntu-24.04
         timeout-minutes: 20
+        outputs:
+          tag_name: ${{ steps.release.outputs.tag_name }}
         steps:
         - uses: googleapis/release-please-action@d1a8f221d7723166f48a584aebba00ef3f6febec
+          id: release
           with:
             token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
             # this is a built-in strategy in release-please, see "Action Inputs" for more options
             release-type: node
+    build-and-push:
+        permissions:
+          contents: write
+        needs: release-please
+        runs-on: ubuntu-24.04
+        timeout-minutes: 20
+        steps:
+        - name: Checkout code
+          uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+        - name: Extract version from GitHub release tag
+          run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> "$GITHUB_ENV"
+        - name: Log in to Docker Hub
+          uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3
+          with:
+            username: ${{ secrets.DOCKER_HUB_USERNAME }}
+            password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+        - name: Build and push Docker image with version tag
+          uses: docker/build-push-action@ca877d9245402d1537745e0e356eab47c3520991 # v6
+          with:
+            context: .
+            file: ./docker/Dockerfile
+            push: true
+            tags: |
+                ${{ secrets.DOCKER_HUB_USERNAME }}/s-private:latest
+                ${{ secrets.DOCKER_HUB_USERNAME }}/s-private:${{ env.VERSION }}
+            secrets: |
+              AUTH_SECRET: ${{secrets.AUTH_SECRET}}
+              AUTH_URL: ${{secrets.AUTH_URL}}
+              AUTH0_ID: ${{secrets.AUTH0_ID}}
+              AUTH0_SECRET: ${{secrets.AUTH0_SECRET}}
+              AUTH0_ISSUER: ${{secrets.AUTH0_ISSUER}}
+              LINE_NOTIFY_SECRET_TOKEN: ${{secrets.LINE_NOTIFY_SECRET_TOKEN}}
+              LINE_NOTIFY_URL: ${{secrets.LINE_NOTIFY_URL}}
+              MINIO_ACCESS_KEY: ${{secrets.MINIO_ACCESS_KEY}}
+              MINIO_BUCKET_NAME: ${{secrets.MINIO_BUCKET_NAME}}
+              MINIO_HOST: ${{secrets.MINIO_HOST}}
+              MINIO_PORT: ${{secrets.MINIO_PORT}}
+              MINIO_SECRET_KEY: ${{secrets.MINIO_SECRET_KEY}}
+              NEXT_PUBLIC_G_TAG: ${{secrets.NEXT_PUBLIC_G_TAG}}
+              NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
+              POSTGRES_DIRECT_URL: ${{ secrets.POSTGRES_DIRECT_URL }}
+              POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
+              SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+              SENTRY_REPORT_URL: ${{ secrets.SENTRY_REPORT_URL }}
+
+        - name: Show pushed image tags
+          run: echo "Pushed docker image with tag ${{ env.VERSION }}"

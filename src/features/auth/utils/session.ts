@@ -1,6 +1,6 @@
 import "server-only";
 import { ERROR_MESSAGES } from "@/constants";
-import { UnauthorizedError, UnexpectedError } from "@/error-classes";
+import { UnauthorizedError } from "@/error-classes";
 import { loggerWarn } from "@/pino";
 import { auth } from "./auth";
 
