@@ -1,8 +1,8 @@
 import { StatusCodeView } from "@/components/card/status-code-view";
 import { ImageStack } from "@/components/stack/image-stack";
-import { ERROR_MESSAGES, PAGE_SIZE } from "@/constants";
+import { ERROR_MESSAGES, NOT_FOUND_IMAGE_PATH, PAGE_SIZE } from "@/constants";
 import { getSelfId } from "@/features/auth/utils/session";
-import { generateUrlWithMetadata } from "@/features/image/actions/generate-url-with-metadata";
+import { generateUrl } from "@/features/image/actions/generate-url";
 import { loggerError } from "@/pino";
 import prisma from "@/prisma";
 
@@ -14,9 +14,7 @@ export async function AllImageStack({ page }: Props) {
 
 		const _images = await prisma.images.findMany({
 			where: { userId },
-			select: {
-				id: true,
-			},
+			select: { id: true, width: true, height: true },
 			orderBy: { id: "desc" },
 			skip: (page - 1) * PAGE_SIZE,
 			take: PAGE_SIZE,
@@ -25,13 +23,18 @@ export async function AllImageStack({ page }: Props) {
 
 		const images = await Promise.all(
 			_images.map(async (image) => {
-				const response = await generateUrlWithMetadata(image.id);
-				if (!response.success) return { src: "/not-found.png" };
+				const response = await generateUrl(image.id);
+				if (!response.success)
+					return {
+						thumbnailSrc: NOT_FOUND_IMAGE_PATH,
+						originalSrc: NOT_FOUND_IMAGE_PATH,
+					};
 
 				return {
-					src: response.data.url,
-					width: response.data.metadata.width,
-					height: response.data.metadata.height,
+					thumbnailSrc: response.data.thumbnailSrc,
+					originalSrc: response.data.originalSrc,
+					width: image.width ?? undefined,
+					height: image.height ?? undefined,
 				};
 			}),
 		);

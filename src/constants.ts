@@ -2,8 +2,12 @@ export const PAGE_NAME = "s-private";
 
 export const PAGE_SIZE = 12;
 
+export const ORIGINAL_IMAGE_PATH = "images/original";
+export const THUMBNAIL_IMAGE_PATH = "images/thumbnail";
 export const THUMBNAIL_WIDTH = 192;
 export const THUMBNAIL_HEIGHT = 192;
+
+export const NOT_FOUND_IMAGE_PATH = "/not-found.png";
 
 export const FORM_ERROR_MESSAGES = {
 	REQUIRED: "必須項目です。",

@@ -1,6 +1,11 @@
 "use server";
 import "server-only";
-import { SUCCESS_MESSAGES } from "@/constants";
+import {
+	ORIGINAL_IMAGE_PATH,
+	SUCCESS_MESSAGES,
+	THUMBNAIL_IMAGE_PATH,
+	THUMBNAIL_WIDTH,
+} from "@/constants";
 import { env } from "@/env.mjs";
 import {
 	FileNotAllowedError,
@@ -20,6 +25,7 @@ import { sendLineNotifyMessage } from "@/utils/fetch-message";
 import { formatCreateImageMessage } from "@/utils/format-for-line";
 import { sanitizeFileName } from "@/utils/sanitize-file-name";
 import { revalidatePath } from "next/cache";
+import sharp from "sharp";
 import { v7 as uuidv7 } from "uuid";
 
 export async function addImage(
@@ -36,27 +42,49 @@ export async function addImage(
 
 		const allowedMimeTypes = ["image/jpeg", "image/png", "image/gif"];
 		const maxFileSize = 100 * 1024 * 1024; // 100MB
-		if (!allowedMimeTypes.includes(file.type)) throw new FileNotAllowedError();
-		if (file.size > maxFileSize) throw new FileNotAllowedError();
+		if (!allowedMimeTypes.includes(file.type) || file.size > maxFileSize)
+			throw new FileNotAllowedError();
 
-		const buffer = Buffer.from(await file.arrayBuffer());
 		const sanitizedFileName = sanitizeFileName(file.name);
 
 		const id = `${uuidv7()}-${sanitizedFileName}`;
 
-		await minioClient.putObject(env.MINIO_BUCKET_NAME, id, buffer);
+		const buffer = Buffer.from(await file.arrayBuffer());
+		const metadata = await sharp(buffer).metadata();
+
+		if (!metadata.width || !metadata.height) throw new UnexpectedError();
+
+		const originalPath = `${ORIGINAL_IMAGE_PATH}/${id}`;
+		await minioClient.putObject(env.MINIO_BUCKET_NAME, originalPath, buffer);
+
+		const thumbnailBuffer = await sharp(buffer)
+			.resize(
+				THUMBNAIL_WIDTH,
+				Math.floor((metadata.height * THUMBNAIL_WIDTH) / metadata.width),
+			)
+			.toBuffer();
+		const thumbnailPath = `${THUMBNAIL_IMAGE_PATH}/${id}`;
+		await minioClient.putObject(
+			env.MINIO_BUCKET_NAME,
+			thumbnailPath,
+			thumbnailBuffer,
+		);
 
 		const createdImage = await prisma.images.create({
-			data: { id, userId },
+			data: {
+				id,
+				userId,
+				contentType: file.type,
+				fileSize: metadata.size,
+				width: metadata.width,
+				height: metadata.height,
+			},
 			select: { id: true },
 		});
-		const message = formatCreateImageMessage({
-			fileName: createdImage.id,
-		});
-		loggerInfo(message, {
-			caller: "addImage",
-			status: 200,
-		});
+
+		const message = formatCreateImageMessage({ fileName: createdImage.id });
+		loggerInfo(message, { caller: "addImage", status: 200 });
+
 		await sendLineNotifyMessage(message);
 		revalidatePath("/(dumper)");
 		await prisma.$accelerate.invalidate({ tags: ["images"] });

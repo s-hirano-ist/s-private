@@ -1,42 +1,46 @@
 "use server";
 import "server-only";
-import { SUCCESS_MESSAGES } from "@/constants";
+import {
+	ORIGINAL_IMAGE_PATH,
+	SUCCESS_MESSAGES,
+	THUMBNAIL_IMAGE_PATH,
+} from "@/constants";
 import { env } from "@/env.mjs";
-import { NotAllowedError, UnexpectedError } from "@/error-classes";
+import { NotAllowedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
 import { hasDumperPostPermission } from "@/features/auth/utils/session";
 import { minioClient } from "@/minio";
 import type { ServerAction } from "@/types";
-import sharp, { type Metadata } from "sharp";
 
 type GenerateUrl = {
-	url: string;
-	metadata: Metadata;
+	thumbnailSrc: string;
+	originalSrc: string;
 };
 
-export async function generateUrlWithMetadata(
+export async function generateUrl(
 	fileName: string,
 ): Promise<ServerAction<GenerateUrl>> {
 	try {
 		const hasPostPermission = await hasDumperPostPermission();
 		if (!hasPostPermission) throw new NotAllowedError();
 
-		const url = await minioClient.presignedGetObject(
-			env.MINIO_BUCKET_NAME,
-			fileName,
-			24 * 60 * 60,
-		);
-
-		const response = await fetch(url);
-		if (!response.ok) throw new UnexpectedError();
-
-		const imageBuffer = await response.arrayBuffer();
-		const metadata = await sharp(imageBuffer).metadata();
+		const [thumbnailSrc, originalSrc] = await Promise.all([
+			minioClient.presignedGetObject(
+				env.MINIO_BUCKET_NAME,
+				`${THUMBNAIL_IMAGE_PATH}/${fileName}`,
+				24 * 60 * 60,
+			),
+			minioClient.presignedGetObject(
+				env.MINIO_BUCKET_NAME,
+				`${ORIGINAL_IMAGE_PATH}/${fileName}`,
+				24 * 60 * 60,
+			),
+		]);
 
 		return {
 			success: true,
 			message: SUCCESS_MESSAGES.INSERTED,
-			data: { url, metadata },
+			data: { thumbnailSrc, originalSrc },
 		};
 	} catch (error) {
 		return await wrapServerSideErrorForClient(error);
