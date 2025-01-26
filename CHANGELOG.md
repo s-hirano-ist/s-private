@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.11.0](https://github.com/s-hirano-ist/s-private/compare/v5.10.0...v5.11.0) (2025-01-26)
+
+
+### Features
+
+* 🎸 add multiple image add ([42c0272](https://github.com/s-hirano-ist/s-private/commit/42c0272075cb4a73c7f0a3a9512ed94e4dbfc561))
+
+
+### Bug Fixes
+
+* 🐛 tests ([743c4b9](https://github.com/s-hirano-ist/s-private/commit/743c4b93c0bb695e0b3369ef060337fbe50e4590))
+
 ## [5.10.0](https://github.com/s-hirano-ist/s-private/compare/v5.9.1...v5.10.0) (2025-01-26)
 
 
