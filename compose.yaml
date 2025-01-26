@@ -2,9 +2,7 @@ services:
   # 本番環境のcontainerは https://github.com/s-hirano-ist/s-tools/blob/main/s-private/compose.yaml を参照
   dev_db:
     container_name: dev-db
-    build:
-      context: .
-      dockerfile: docker/database.Dockerfile
+    image: s0hirano/s-database:1.0.1
     volumes:
       - dev-db-data:/var/lib/postgresql/data
     ports:
