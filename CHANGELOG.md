@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [7.0.0](https://github.com/s-hirano-ist/s-private/compare/v6.0.1...v7.0.0) (2025-01-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* 🧨 update to v7
+
+### Features
+
+* 🎸 update to v7 ([3e54eab](https://github.com/s-hirano-ist/s-private/commit/3e54eaba18ca2dc0755c679891e4a16ce2a1ef49))
+* 🎸 update to v7 ([6d04181](https://github.com/s-hirano-ist/s-private/commit/6d04181e893b8c6a2fb594d10db45fb73495003e))
+
 ## [6.0.1](https://github.com/s-hirano-ist/s-private/compare/v6.0.0...v6.0.1) (2025-01-26)
 
 
