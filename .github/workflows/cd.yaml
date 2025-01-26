@@ -36,14 +36,20 @@ jobs:
           with:
             persist-credentials: false
 
-        - name: Extract version from GitHub release tag
-          run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> "$GITHUB_ENV"
-
         - name: Log in to Docker Hub
           uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3
           with:
             username: ${{ secrets.DOCKER_HUB_USERNAME }}
             password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+        - name: Extract Docker metadata
+          id: meta
+          uses: docker/metadata-action@369eb591f429131d6889c46b94e711f089e6ca96 # v5
+          with:
+            images: ${{ secrets.DOCKER_HUB_USERNAME }}/s-private
+            tags: |
+              type=raw,value=latest
+              type=raw,value=${{ env.PACKAGE_VERSION }}
 
         - name: Build and push Docker image with version tag
           uses: docker/build-push-action@ca877d9245402d1537745e0e356eab47c3520991 # v6
@@ -51,9 +57,7 @@ jobs:
             context: .
             file: ./docker/Dockerfile
             push: true
-            tags: |
-                ${{ secrets.DOCKER_HUB_USERNAME }}/s-private:latest
-                ${{ secrets.DOCKER_HUB_USERNAME }}/s-private:${{ env.PACKAGE_VERSION }}
+            tags: ${{ steps.meta.outputs.tags }}
             secrets: |
               AUTH_SECRET=${{secrets.AUTH_SECRET}}
               AUTH_URL=${{secrets.AUTH_URL}}
