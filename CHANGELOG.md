@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.10.0](https://github.com/s-hirano-ist/s-private/compare/v5.9.1...v5.10.0) (2025-01-26)
+
+
+### Features
+
+* 🎸 add thumbnail image ([fc1cfda](https://github.com/s-hirano-ist/s-private/commit/fc1cfdaca6ad66240c0cc6a4dd0d397d65f5ac96))
+* add thumbnail image ([dbee699](https://github.com/s-hirano-ist/s-private/commit/dbee6997c9a1ea7795d48d18cd6b317ee5a2f027))
+
+
+### Bug Fixes
+
+* 🐛 docker file path ([acd0da0](https://github.com/s-hirano-ist/s-private/commit/acd0da087107ce7c771817032b12c814b272ca13))
+
 ## [5.9.1](https://github.com/s-hirano-ist/s-private/compare/v5.9.0...v5.9.1) (2025-01-15)
 
 
