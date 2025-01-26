@@ -18,6 +18,7 @@ jobs:
         with:
           token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
           submodules: true
+          persist-credentials: false
 
       - name: Update submodules
         run: git submodule update --remote --recursive
