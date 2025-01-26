@@ -24,10 +24,12 @@ export default function RootLayout({
 			<html lang="ja">
 				<head>
 					{/* https://github.com/aidenybai/react-scan */}
-					<script
-						src="https://unpkg.com/react-scan/dist/auto.global.js"
-						async
-					/>
+					{env.NODE_ENV === "development" && (
+						<script
+							src="https://unpkg.com/react-scan/dist/auto.global.js"
+							async
+						/>
+					)}
 				</head>
 				<body className={notoSansJp.className}>
 					<main className="flex h-screen flex-col justify-between">
