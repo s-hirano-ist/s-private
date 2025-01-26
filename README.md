@@ -29,12 +29,7 @@ cd ..
 
 ## Docker Imageのビルドとプッシュ
 
-詳細は[DockerHub](https://hub.docker.com/repository/docker/s0hirano/s-private/general)を参照願う。
-
-```bash
-docker login
-bash ./docker/docker-push.sh
-```
+MainブランチにPRがpushされたら自動的に[DockerHub](https://hub.docker.com/repository/docker/s0hirano/s-private/general)にイメージがpushされる仕組み。
 
 ## 起動方法
 
