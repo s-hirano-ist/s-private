@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.12.1](https://github.com/s-hirano-ist/s-private/compare/v5.12.0...v5.12.1) (2025-01-26)
+
+
+### Bug Fixes
+
+* 🐛 docker build for github action ([6426971](https://github.com/s-hirano-ist/s-private/commit/64269715ec2fd8e0710dae4b2eef704fea3678cb))
+* 🐛 docker build for github action ([deb7288](https://github.com/s-hirano-ist/s-private/commit/deb7288ceadba45579c5fb3ab17e85cddf8a10cd))
+
 ## [5.12.0](https://github.com/s-hirano-ist/s-private/compare/v5.11.0...v5.12.0) (2025-01-26)
 
 
