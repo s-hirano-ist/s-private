@@ -16,8 +16,6 @@ jobs:
       - name: Checkout files
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
-          token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
-          submodules: true
           persist-credentials: false
       - name: Install Node.js
         uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4
@@ -76,8 +74,6 @@ jobs:
       - name: Checkout files
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
-          token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
-          submodules: true
           persist-credentials: false
       - name: Install Node.js
         uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4
@@ -119,8 +115,6 @@ jobs:
         - name: Checkout files
           uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
           with:
-            token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
-            submodules: true
             persist-credentials: false
         - name: Install Node.js
           uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4
@@ -167,8 +161,6 @@ jobs:
       - name: Checkout files
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
-          token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
-          submodules: true
           persist-credentials: false
       - name: Install Node.js
         uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4
