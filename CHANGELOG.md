@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.12.0](https://github.com/s-hirano-ist/s-private/compare/v5.11.0...v5.12.0) (2025-01-26)
+
+
+### Features
+
+* 🎸 add auth0 settings ([6ac43e3](https://github.com/s-hirano-ist/s-private/commit/6ac43e38e5848284844e64158429e466fcc3c3dc))
+* 🎸 add error page for auth0 ([020cc68](https://github.com/s-hirano-ist/s-private/commit/020cc68a02fc2e1a8e612d3d7d3407ba973773f8))
+
+
+### Bug Fixes
+
+* 🐛 allow icon.png ([47816da](https://github.com/s-hirano-ist/s-private/commit/47816da478a8b4a783179d1bb6adcacc7db6f13b))
+* 🐛 icon.png to logo.png ([0713a5f](https://github.com/s-hirano-ist/s-private/commit/0713a5f1e43cdd99837c616ffeb7bc74efe8f02b))
+
 ## [5.11.0](https://github.com/s-hirano-ist/s-private/compare/v5.10.0...v5.11.0) (2025-01-26)
 
 
