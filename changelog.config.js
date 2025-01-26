@@ -1,16 +1,6 @@
 module.exports = {
 	disableEmoji: false,
-	list: [
-		"test",
-		"feat",
-		"fix",
-		"chore",
-		"docs",
-		"refactor",
-		"ci",
-		"perf",
-		"contents",
-	],
+	list: ["test", "feat", "fix", "chore", "docs", "refactor", "ci", "perf"],
 
 	maxMessageLength: 64,
 	minMessageLength: 3,
@@ -59,11 +49,6 @@ module.exports = {
 			description: "リファクタリング",
 			emoji: "💡",
 			value: "refactor",
-		},
-		contents: {
-			description: "コンテンツ追加",
-			emoji: "💄",
-			value: "contents",
 		},
 		test: {
 			description: "テストの追加・修正",
