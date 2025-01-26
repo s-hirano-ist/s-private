@@ -4,6 +4,7 @@ export const PAGE_SIZE = 12;
 
 export const ORIGINAL_IMAGE_PATH = "images/original";
 export const THUMBNAIL_IMAGE_PATH = "images/thumbnail";
+// NOTE: sync with s-contents/update-db.ts
 export const THUMBNAIL_WIDTH = 192;
 export const THUMBNAIL_HEIGHT = 192;
 
