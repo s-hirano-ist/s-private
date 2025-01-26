@@ -5,21 +5,16 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { addContents } from "@/features/contents/actions/add-contents";
 import { AddFormSkeleton } from "@/features/dump/components/add-form-skeleton";
-import { useToast } from "@/hooks/use-toast";
 import { ClipboardPasteIcon } from "lucide-react";
 import { useActionState, useRef } from "react";
+import { toast } from "sonner";
 
 export function AddContentsForm() {
 	const urlInputRef = useRef<HTMLInputElement>(null);
 
-	const { toast } = useToast();
-
 	const submitForm = async (_: null, formData: FormData) => {
 		const response = await addContents(formData);
-		toast({
-			variant: response.success ? "default" : "destructive",
-			description: response.message,
-		});
+		toast(response.message);
 		return null;
 	};
 

@@ -11,9 +11,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { AddFormSkeleton } from "@/features/dump/components/add-form-skeleton";
 import { addNews } from "@/features/news/actions/add-news";
-import { useToast } from "@/hooks/use-toast";
 import { ClipboardPasteIcon, TableOfContentsIcon } from "lucide-react";
 import { useActionState, useRef } from "react";
+import { toast } from "sonner";
 
 type Props = { categories: { name: string; id: number }[] };
 
@@ -21,14 +21,9 @@ export function AddNewsForm({ categories }: Props) {
 	const urlInputRef = useRef<HTMLInputElement>(null);
 	const categoryInputRef = useRef<HTMLInputElement>(null);
 
-	const { toast } = useToast();
-
 	const submitForm = async (_: null, formData: FormData) => {
 		const response = await addNews(formData);
-		toast({
-			variant: response.success ? "default" : "destructive",
-			description: response.message,
-		});
+		toast(response.message);
 		return null;
 	};
 

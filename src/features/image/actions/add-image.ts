@@ -30,6 +30,7 @@ import { v7 as uuidv7 } from "uuid";
 
 export async function addImage(
 	formData: FormData,
+	index: number,
 ): Promise<ServerAction<undefined>> {
 	try {
 		const hasPostPermission = await hasDumperPostPermission();
@@ -91,7 +92,7 @@ export async function addImage(
 
 		return {
 			success: true,
-			message: SUCCESS_MESSAGES.INSERTED,
+			message: `${String(index)}番目の画像が${SUCCESS_MESSAGES.INSERTED}`,
 			data: undefined,
 		};
 	} catch (error) {
