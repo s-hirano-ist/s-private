@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [7.0.1](https://github.com/s-hirano-ist/s-private/compare/v7.0.0...v7.0.1) (2025-01-26)
+
+
+### Bug Fixes
+
+* 🐛 disable rewferrer policy for temp ([76740e7](https://github.com/s-hirano-ist/s-private/commit/76740e70cdd16a27c6b1477686729f2092b6de38))
+* disable referrer policy for temp ([9d14c4d](https://github.com/s-hirano-ist/s-private/commit/9d14c4d9643178c6d706d3917c512bbe46508e2c))
+
 ## [7.0.0](https://github.com/s-hirano-ist/s-private/compare/v6.0.1...v7.0.0) (2025-01-26)
 
 
