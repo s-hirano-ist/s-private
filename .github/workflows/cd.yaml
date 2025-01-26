@@ -14,8 +14,6 @@ jobs:
           id-token: write
         runs-on: ubuntu-24.04
         timeout-minutes: 20
-        outputs:
-          tag_name: ${{ steps.release.outputs.tag_name }}
         steps:
         - uses: googleapis/release-please-action@d1a8f221d7723166f48a584aebba00ef3f6febec
           id: release
@@ -30,12 +28,17 @@ jobs:
         runs-on: ubuntu-24.04
         timeout-minutes: 20
         steps:
+        - name: Extract version from package.json
+          run: echo "PACKAGE_VERSION=$(jq -r '.version' package.json)" >> "$GITHUB_ENV"
+
         - name: Checkout code
           uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
           with:
             persist-credentials: false
+
         - name: Extract version from GitHub release tag
           run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> "$GITHUB_ENV"
+
         - name: Log in to Docker Hub
           uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3
           with:
@@ -50,7 +53,7 @@ jobs:
             push: true
             tags: |
                 ${{ secrets.DOCKER_HUB_USERNAME }}/s-private:latest
-            # ${{ secrets.DOCKER_HUB_USERNAME }}/s-private:${{ env.VERSION }}
+                ${{ secrets.DOCKER_HUB_USERNAME }}/s-private:${{ env.PACKAGE_VERSION }}
             secrets: |
               AUTH_SECRET=${{secrets.AUTH_SECRET}}
               AUTH_URL=${{secrets.AUTH_URL}}
@@ -72,4 +75,4 @@ jobs:
               SENTRY_REPORT_URL=${{ secrets.SENTRY_REPORT_URL }}
 
         - name: Show pushed image tags
-          run: echo "Pushed docker image with tag ${{ env.VERSION }}"
+          run: echo "Pushed docker image with tag ${{ env.PACKAGE_VERSION }}"
