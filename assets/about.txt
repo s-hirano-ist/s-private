@@ -1,6 +1,0 @@
-This favicon was generated using the following font:
-
-- Font Title: Geostar Fill
-- Font Author: undefined
-- Font Source: https://fonts.gstatic.com/s/geostarfill/v26/AMOWz4SWuWiXFfjEohxQ9os0U1K2w9lb4g.ttf
-- Font License: undefined)
