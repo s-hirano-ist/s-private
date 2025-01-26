@@ -22,6 +22,13 @@ export default function RootLayout({
 	return (
 		<ViewTransitions>
 			<html lang="ja">
+				<head>
+					{/* https://github.com/aidenybai/react-scan */}
+					<script
+						src="https://unpkg.com/react-scan/dist/auto.global.js"
+						async
+					/>
+				</head>
 				<body className={notoSansJp.className}>
 					<main className="flex h-screen flex-col justify-between">
 						<div className="grow pb-4">{children}</div>
