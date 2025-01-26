@@ -7,7 +7,8 @@ import "photoswipe/style.css";
 
 type Props = {
 	data: {
-		src: string;
+		thumbnailSrc: string;
+		originalSrc: string;
 		width?: number | undefined;
 		height?: number | undefined;
 	}[];
@@ -36,16 +37,16 @@ export function ImageStack({ data }: Props) {
 			<div className="grid grid-cols-4 gap-2 p-2 sm:p-4">
 				{data.map((image) => (
 					<a
-						href={image.src}
+						href={image.originalSrc}
 						target="_blank"
 						rel="noreferrer"
 						// FIXME: not foundの画像が複数枚あるときにエラー
-						key={image.src}
+						key={image.thumbnailSrc}
 						data-pswp-width={image.width}
 						data-pswp-height={image.height}
-						aria-label={`Image ${image.src}`}
+						aria-label={`Image ${image.thumbnailSrc}`}
 					>
-						<Image src={image.src} width={300} height={96} alt="" />
+						<Image src={image.thumbnailSrc} width={300} height={96} alt="" />
 					</a>
 				))}
 			</div>

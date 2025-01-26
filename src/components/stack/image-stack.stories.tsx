@@ -13,17 +13,20 @@ type Story = StoryObj<typeof meta>;
 
 const data = [
 	{
-		src: "https://picsum.photos/id/1/192/192",
+		thumbnailSrc: "https://picsum.photos/id/1/192/192",
+		originalSrc: "https://picsum.photos/id/1/192/192",
 		width: 192,
 		height: 192,
 	},
 	{
-		src: "https://picsum.photos/id/2/192/192",
+		thumbnailSrc: "https://picsum.photos/id/2/192/192",
+		originalSrc: "https://picsum.photos/id/2/192/192",
 		width: 192,
 		height: 192,
 	},
 	{
-		src: "https://picsum.photos/id/3/192/192",
+		thumbnailSrc: "https://picsum.photos/id/3/192/192",
+		originalSrc: "https://picsum.photos/id/3/192/192",
 		width: 192,
 		height: 192,
 	},

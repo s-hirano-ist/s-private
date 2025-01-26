@@ -45,8 +45,8 @@ async function addContentsData() {
 	);
 }
 
-async function optimizeImage(fullPath: Buffer) {
-	return await sharp(fullPath)
+async function optimizeImage(buffer: Buffer) {
+	return await sharp(buffer)
 		.resize(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT)
 		.toBuffer();
 }

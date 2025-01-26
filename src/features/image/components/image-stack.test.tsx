@@ -1,5 +1,5 @@
 import { getSelfId } from "@/features/auth/utils/session";
-import { generateUrlWithMetadata } from "@/features/image/actions/generate-url-with-metadata";
+import { generateUrl } from "@/features/image/actions/generate-url";
 import { ImageStack } from "@/features/image/components/image-stack";
 import prisma from "@/prisma";
 import { render, screen } from "@testing-library/react";
@@ -10,8 +10,8 @@ vi.mock("@/features/auth/utils/session", () => ({
 	getSelfId: vi.fn(),
 }));
 
-vi.mock("@/features/image/actions/generate-url-with-metadata", () => ({
-	generateUrlWithMetadata: vi.fn(),
+vi.mock("@/features/image/actions/generate-url", () => ({
+	generateUrl: vi.fn(),
 }));
 
 describe("ImageStack", () => {
@@ -19,14 +19,20 @@ describe("ImageStack", () => {
 		// モックの準備
 		(getSelfId as Mock).mockResolvedValue("user123");
 		(prisma.images.findMany as Mock).mockResolvedValue([{ id: 1 }, { id: 2 }]);
-		(generateUrlWithMetadata as Mock)
+		(generateUrl as Mock)
 			.mockResolvedValueOnce({
 				success: true,
-				data: { url: "/image1.png", metadata: { width: 800, height: 600 } },
+				data: {
+					thumbnailSrc: "/image1.png",
+					originalSrc: "/image1.png",
+				},
 			})
 			.mockResolvedValueOnce({
 				success: true,
-				data: { url: "/image2.png", metadata: { width: 1024, height: 768 } },
+				data: {
+					thumbnailSrc: "/image2.png",
+					originalSrc: "/image2.png",
+				},
 			});
 
 		// コンポーネントをレンダリング
@@ -42,7 +48,7 @@ describe("ImageStack", () => {
 	it("renders 'not-found.png' for failed URL generation", async () => {
 		(getSelfId as Mock).mockResolvedValue("user123");
 		(prisma.images.findMany as Mock).mockResolvedValue([{ id: 1 }]);
-		(generateUrlWithMetadata as Mock).mockResolvedValueOnce({
+		(generateUrl as Mock).mockResolvedValueOnce({
 			success: false,
 		});
 

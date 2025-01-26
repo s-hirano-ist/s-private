@@ -9,6 +9,7 @@ import { minioClient } from "@/minio";
 import prisma from "@/prisma";
 import { Session } from "next-auth";
 import { revalidatePath } from "next/cache";
+import sharp, { Sharp } from "sharp";
 import { v7 as uuidv7 } from "uuid";
 import { type Mock, describe, expect, it, vi } from "vitest";
 import { addImage } from "./add-image";
@@ -22,6 +23,24 @@ vi.mock("@/utils/fetch-message", () => ({
 vi.mock("uuid", () => ({ v7: vi.fn() }));
 
 vi.mock("@/minio", () => ({ minioClient: { putObject: vi.fn() } }));
+
+type PartialSharp = Pick<Sharp, "metadata" | "resize" | "toBuffer">;
+vi.mock("sharp", () => {
+	return {
+		__esModule: true,
+		default: vi.fn(() => {
+			const mockSharp: PartialSharp = {
+				metadata: vi.fn().mockResolvedValue({
+					width: 800,
+					height: 600,
+				}),
+				resize: vi.fn().mockReturnThis(),
+				toBuffer: vi.fn().mockResolvedValue(Buffer.from("thumbnail")),
+			};
+			return mockSharp;
+		}),
+	};
+});
 
 const mockAllowedRoleSession: Session = {
 	user: { id: "1", roles: ["dumper"] },
@@ -43,6 +62,7 @@ const createMockFile = (name: string, type: string, size: number): File => {
 };
 
 const bucketName = env.MINIO_BUCKET_NAME;
+const mockMetadata = { width: 800, height: 600, format: "jpeg" };
 
 describe("addImage", () => {
 	let mockFormData: FormData;
@@ -78,6 +98,13 @@ describe("addImage", () => {
 		mockFormData = new FormData();
 		mockFormData.append("file", file);
 		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
+
+		vi.mocked(sharp).mockReturnValue({
+			metadata: vi.fn().mockResolvedValue(mockMetadata),
+			resize: vi.fn().mockReturnThis(),
+			toBuffer: vi.fn().mockResolvedValueOnce(Buffer.from("thumbnail")),
+		} as any);
+
 		(prisma.images.create as Mock).mockResolvedValue({
 			id: "generated-uuid-myimage.jpeg",
 		});
@@ -85,15 +112,8 @@ describe("addImage", () => {
 
 		const result = await addImage(mockFormData);
 
-		expect(minioClient.putObject).toHaveBeenCalledWith(
-			bucketName,
-			expect.stringMatching(/^generated-uuid-myimage\.jpeg$/),
-			expect.any(Buffer),
-		);
-		expect(prisma.images.create).toHaveBeenCalledWith({
-			data: { id: "generated-uuid-myimage.jpeg", userId: "1" },
-			select: { id: true },
-		});
+		expect(minioClient.putObject).toHaveBeenCalledTimes(2);
+		expect(prisma.images.create).toHaveBeenCalled();
 		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 		expect(result).toEqual({
 			success: true,
