@@ -24,11 +24,5 @@
 		".next/types/**/*.ts",
 		"vitest.config.mts"
 	],
-	"exclude": [
-		"node_modules",
-		"script/**/*",
-		"README.md",
-		"s-contents/fetch-contents.ts",
-		"s-contents/fetch-images.ts"
-	]
+	"exclude": ["node_modules", "script/**/*", "README.md"]
 }

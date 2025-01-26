@@ -1,4 +1,0 @@
-[submodule "s-contents"]
-	path = s-contents
-	url = https://github.com/s-hirano-ist/s-contents.git
-	branch = main
