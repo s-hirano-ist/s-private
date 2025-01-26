@@ -1,18 +1,5 @@
 services:
   # 本番環境のcontainerは https://github.com/s-hirano-ist/s-tools/blob/main/s-private/compose.yaml を参照
-
-  dev_frontend:
-    container_name: dev-frontend
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
-    profiles:
-      - dev
-    ports:
-      - "3000:3000"
-    networks:
-      - s-dev-network
-
   dev_db:
     container_name: dev-db
     build:
@@ -27,25 +14,8 @@ services:
     env_file:
       - .env
 
-  dev_storage:
-    container_name: dev-storage
-    build:
-      context: .
-      dockerfile: docker/storage.Dockerfile
-    ports:
-      - "9000:9000"  # for access
-      - "9001:9001"  # for console access
-    volumes:
-      - dev-storage-data:/data
-      - ./minio/certs:/root/.minio/certs
-    networks:
-      - s-dev-network
-    env_file:
-      - .env
-
 volumes:
   dev-db-data:
-  dev-storage-data:
 
 networks:
   s-dev-network:
