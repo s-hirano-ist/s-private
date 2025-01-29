@@ -100,12 +100,10 @@ model StaticBooks {
 }
 
 model StaticImages {
-  id        String    @id @default(uuid(7))
-  status    Status    @default(UNEXPORTED)
-  userId    String    @map("user_id")
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
+  id String @id @default(uuid(7))
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   contentType String @map("content_type") // e.g.: image/jpeg, image/png
   fileSize    Int?   @map("file_size") // byte
