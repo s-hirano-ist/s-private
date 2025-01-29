@@ -5,6 +5,7 @@ RUN npm install -g pnpm
 WORKDIR /app
 
 ENV SKIP_ENV_VALIDATION=true
+ENV MINIO_HOST=private.s-hirano.com
 
 COPY package.json pnpm-lock.yaml prisma ./
 RUN pnpm install
