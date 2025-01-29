@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [7.0.4](https://github.com/s-hirano-ist/s-private/compare/v7.0.3...v7.0.4) (2025-01-29)
+
+
+### Bug Fixes
+
+* 🐛 release please code ([f566e7c](https://github.com/s-hirano-ist/s-private/commit/f566e7cd30eda249116cdda2a8c73e371b1a9eff))
+* 🐛 release please code ([c9e0cec](https://github.com/s-hirano-ist/s-private/commit/c9e0cecd99bcd6c193c85982ea3f2fe051b8f6ce))
+
 ## [7.0.3](https://github.com/s-hirano-ist/s-private/compare/v7.0.2...v7.0.3) (2025-01-26)
 
 
