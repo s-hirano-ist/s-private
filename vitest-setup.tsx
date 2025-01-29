@@ -35,6 +35,7 @@ beforeEach(() => {
 			news: { create: vi.fn(), findMany: vi.fn() },
 			contents: { create: vi.fn(), findMany: vi.fn() },
 			images: { create: vi.fn(), findMany: vi.fn(), updateMany: vi.fn() },
+			staticImages: { findMany: vi.fn() },
 			$transaction: vi.fn(),
 			$accelerate: { invalidate: vi.fn() },
 		},

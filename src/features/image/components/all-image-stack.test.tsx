@@ -18,7 +18,10 @@ describe("AllImageStack", () => {
 	it("renders the ImageStack with images", async () => {
 		// モックの準備
 		(getSelfId as Mock).mockResolvedValue("user123");
-		(prisma.images.findMany as Mock).mockResolvedValue([{ id: 1 }, { id: 2 }]);
+		(prisma.staticImages.findMany as Mock).mockResolvedValue([
+			{ id: 1 },
+			{ id: 2 },
+		]);
 		(generateUrl as Mock)
 			.mockResolvedValueOnce({
 				success: true,
@@ -47,7 +50,7 @@ describe("AllImageStack", () => {
 
 	it("renders 'not-found.png' for failed URL generation", async () => {
 		(getSelfId as Mock).mockResolvedValue("user123");
-		(prisma.images.findMany as Mock).mockResolvedValue([{ id: 1 }]);
+		(prisma.staticImages.findMany as Mock).mockResolvedValue([{ id: 1 }]);
 		(generateUrl as Mock).mockResolvedValueOnce({
 			success: false,
 		});
