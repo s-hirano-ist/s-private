@@ -12,13 +12,13 @@ export async function AllImageStack({ page }: Props) {
 	try {
 		const userId = await getSelfId();
 
-		const _images = await prisma.images.findMany({
+		const _images = await prisma.staticImages.findMany({
 			where: { userId },
 			select: { id: true, width: true, height: true },
 			orderBy: { id: "desc" },
 			skip: (page - 1) * PAGE_SIZE,
 			take: PAGE_SIZE,
-			cacheStrategy: { ttl: 400, swr: 40, tags: ["images"] },
+			cacheStrategy: { ttl: 400, swr: 40, tags: ["staticImages"] },
 		});
 
 		const images = await Promise.all(
