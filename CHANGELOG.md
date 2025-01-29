@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [7.1.0](https://github.com/s-hirano-ist/s-private/compare/v7.0.4...v7.1.0) (2025-01-29)
+
+
+### Features
+
+* 🎸 add images ([451df5e](https://github.com/s-hirano-ist/s-private/commit/451df5eaab664fa3515a52c2f4dc2607e8eecafd))
+* 🎸 add images ([b0dbd3a](https://github.com/s-hirano-ist/s-private/commit/b0dbd3a8f5b449e27af4521da8e1a1b0abe38819))
+
+
+### Bug Fixes
+
+* 🐛 schema type of static images ([690adc2](https://github.com/s-hirano-ist/s-private/commit/690adc29ebc7b0996c4dca0565cf88cfec1e5441))
+* 🐛 schema type of static images ([632a52a](https://github.com/s-hirano-ist/s-private/commit/632a52a57eb5bed0374d12246aa9ec00494fce45))
+
 ## [7.0.4](https://github.com/s-hirano-ist/s-private/compare/v7.0.3...v7.0.4) (2025-01-29)
 
 
