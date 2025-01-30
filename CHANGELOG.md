@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [7.3.1](https://github.com/s-hirano-ist/s-private/compare/v7.3.0...v7.3.1) (2025-01-30)
+
+
+### Bug Fixes
+
+* 🐛 next config for csp ([50f5d4d](https://github.com/s-hirano-ist/s-private/commit/50f5d4da6a9129047bdcee7408293378b73717e1))
+
 ## [7.3.0](https://github.com/s-hirano-ist/s-private/compare/v7.2.0...v7.3.0) (2025-01-30)
 
 
