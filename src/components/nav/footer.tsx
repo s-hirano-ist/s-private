@@ -8,8 +8,6 @@ import {
 	DrawerTitle,
 	DrawerTrigger,
 } from "@/components/ui/drawer";
-// import { DEFAULT_SIGN_OUT_REDIRECT } from "@/constants";
-// import { signOut } from "@/features/auth/actions/sign-out";
 import { UtilButtons } from "@/features/dump/components/util-buttons";
 import { cn } from "@/utils/tailwindcss";
 import {
@@ -20,15 +18,14 @@ import {
 	SendIcon,
 } from "lucide-react";
 import type { Route } from "next";
-import { Link /*, useTransitionRouter*/ } from "next-view-transitions";
-import { redirect, usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
+import { Link } from "next-view-transitions";
+import { usePathname } from "next/navigation";
 import { type ReactNode, useState } from "react";
 
 export function Footer() {
 	const [open, setOpen] = useState(false);
 	const pathname = usePathname();
-	// const { toast } = useToast();
-	// const router = useTransitionRouter();
 
 	const Icon = (name: string, icon: ReactNode) => {
 		return (
@@ -43,17 +40,7 @@ export function Footer() {
 	};
 
 	async function onSignOutSubmit() {
-		// TODO: Auth.jsのsignoutをここで呼び出すとテストがしづらい
-		redirect("api/auth/signout");
-		// const response = await signOut();
-		// if (response.success) {
-		// 	router.push(DEFAULT_SIGN_OUT_REDIRECT);
-		// } else {
-		// 	toast({
-		// 		variant: "destructive",
-		// 		description: response.message,
-		// 	});
-		// }
+		await signOut();
 	}
 
 	return (

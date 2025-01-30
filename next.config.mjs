@@ -13,7 +13,7 @@ await import("./src/env.mjs");
 const cspHeader = `
     default-src 'self';
 	connect-src 'self' https://www.google-analytics.com;
-	script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com;
+	script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://unpkg.com;
     style-src 'self' 'unsafe-inline';
 	img-src 'self' blob: data: https://localhost:9000 https://private.s-hirano.com:9000 https://www.googletagmanager.com;
     font-src 'self';
@@ -45,18 +45,18 @@ const nextConfig = {
 						key: "Strict-Transport-Security",
 						value: "max-age=31536000; includeSubDomains; preload",
 					},
-					// {
-					// 	key: "X-Frame-Options",
-					// 	value: "SAMEORIGIN",
-					// },
-					// {
-					// 	key: "Referrer-Policy",
-					// 	value: "strict-origin-when-cross-origin",
-					// },
-					// {
-					// 	key: "Content-Security-Policy",
-					// 	value: cspHeader.replace(/\n/g, ""),
-					// },
+					{
+						key: "X-Frame-Options",
+						value: "SAMEORIGIN",
+					},
+					{
+						key: "Referrer-Policy",
+						value: "strict-origin-when-cross-origin",
+					},
+					{
+						key: "Content-Security-Policy",
+						value: cspHeader.replace(/\n/g, ""),
+					},
 					{
 						key: "Report-To",
 						value: `{"group":"csp-endpoint","max_age":10886400,"endpoints":[{"url":"${env.SENTRY_REPORT_URL}"}],"include_subdomains":true}`,
