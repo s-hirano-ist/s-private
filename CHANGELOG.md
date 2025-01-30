@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [7.3.0](https://github.com/s-hirano-ist/s-private/compare/v7.2.0...v7.3.0) (2025-01-30)
+
+
+### Features
+
+* 🎸 add sentry rsc error handle ([2b45c2f](https://github.com/s-hirano-ist/s-private/commit/2b45c2f2c2f7733717aabfe6a8c9282a4c8fc424))
+
 ## [7.2.0](https://github.com/s-hirano-ist/s-private/compare/v7.1.2...v7.2.0) (2025-01-30)
 
 
