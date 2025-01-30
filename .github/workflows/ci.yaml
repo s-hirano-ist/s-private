@@ -5,6 +5,7 @@ permissions:
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+  push:
 jobs:
   build:
     runs-on: ubuntu-24.04
