@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [7.2.0](https://github.com/s-hirano-ist/s-private/compare/v7.1.2...v7.2.0) (2025-01-30)
+
+
+### Features
+
+* 🎸 add sentry console log capture ([a0bfd83](https://github.com/s-hirano-ist/s-private/commit/a0bfd834ec3e844899149caf7543f3ffce1b6603))
+* 🎸 add sentry console log capture ([043bbe6](https://github.com/s-hirano-ist/s-private/commit/043bbe6ebb9fd0f526725e0fcc4617e22606b5b0))
+
 ## [7.1.2](https://github.com/s-hirano-ist/s-private/compare/v7.1.1...v7.1.2) (2025-01-30)
 
 
