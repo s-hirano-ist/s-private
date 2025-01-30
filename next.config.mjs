@@ -22,6 +22,7 @@ const cspHeader = `
     form-action 'self';
     frame-ancestors 'none';
 	worker-src 'self' blob:;
+	manifest-src 'self' https://s-hirano.jp.auth0.com https://s-hirano-dev.jp.auth0.com;
     upgrade-insecure-requests;
 	report-uri ${env.SENTRY_REPORT_URL};
     report-to csp-endpoint;
