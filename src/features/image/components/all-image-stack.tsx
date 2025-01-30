@@ -1,7 +1,6 @@
 import { StatusCodeView } from "@/components/card/status-code-view";
 import { ImageStack } from "@/components/stack/image-stack";
 import { ERROR_MESSAGES, NOT_FOUND_IMAGE_PATH, PAGE_SIZE } from "@/constants";
-import { getSelfId } from "@/features/auth/utils/session";
 import { generateUrl } from "@/features/image/actions/generate-url";
 import { loggerError } from "@/pino";
 import prisma from "@/prisma";
@@ -10,10 +9,7 @@ type Props = { page: number };
 
 export async function AllImageStack({ page }: Props) {
 	try {
-		const userId = await getSelfId();
-
 		const _images = await prisma.staticImages.findMany({
-			where: { userId },
 			select: { id: true, width: true, height: true },
 			orderBy: { id: "desc" },
 			skip: (page - 1) * PAGE_SIZE,
