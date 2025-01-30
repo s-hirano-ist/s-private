@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [7.1.1](https://github.com/s-hirano-ist/s-private/compare/v7.1.0...v7.1.1) (2025-01-30)
+
+
+### Bug Fixes
+
+* 🐛 bugs on static images ([93531a0](https://github.com/s-hirano-ist/s-private/commit/93531a0469ebd4669b20d2620b279433beabc252))
+
 ## [7.1.0](https://github.com/s-hirano-ist/s-private/compare/v7.0.4...v7.1.0) (2025-01-29)
 
 
