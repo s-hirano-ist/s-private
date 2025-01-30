@@ -3,14 +3,18 @@
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 import { env } from "@/env.mjs";
-import { init, replayIntegration } from "@sentry/nextjs";
+import {
+	captureConsoleIntegration,
+	init,
+	replayIntegration,
+} from "@sentry/nextjs";
 
 init({
 	dsn: env.NEXT_PUBLIC_SENTRY_DSN,
 	enabled: process.env.NODE_ENV === "production",
 
 	// Add optional integrations for additional features
-	integrations: [replayIntegration()],
+	integrations: [replayIntegration(), captureConsoleIntegration()],
 
 	// Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
 	tracesSampleRate: 1,
