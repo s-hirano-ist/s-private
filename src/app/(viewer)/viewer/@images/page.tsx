@@ -6,10 +6,13 @@ export const dynamic = "force-dynamic";
 
 type Params = Promise<{ page?: string }>;
 
-export default async function Page({ params }: { params: Params }) {
+export default async function Page({ searchParams }: { searchParams: Params }) {
+	const { page } = await searchParams;
+	const currentPage = Number(page) || 1;
+
 	return (
 		<Suspense fallback={<Loading />}>
-			<SuspensePage params={params} />
+			<SuspensePage currentPage={currentPage} />
 		</Suspense>
 	);
 }

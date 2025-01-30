@@ -9,7 +9,6 @@ const path = "contents";
 export async function SuspensePage() {
 	const hasAdminPermission = await hasViewerAdminPermission();
 
-	// FIXME: use suspense for load
 	const totalImages = await prisma.staticContents.count({});
 
 	const images = await prisma.staticContents.findMany({
