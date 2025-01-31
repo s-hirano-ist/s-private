@@ -33,6 +33,7 @@ MainブランチにPRがpushされたら自動的に[DockerHub](https://hub.dock
 ### 開発環境
 
 ```bash
+pnpm install
 docker compose up --build -d
 pnpm dev
 ```
