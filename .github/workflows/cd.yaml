@@ -1,31 +1,17 @@
-name: release-please
+name: cd
 permissions:
     contents: write
     pull-requests: write
 on:
-    push:
-        branches:
-            - main
+  pull_request:
+    types: [opened, synchronize, edited]
+
 jobs:
-    release-please:
-        permissions:
-          contents: read
-          packages: write
-          id-token: write
-        runs-on: ubuntu-24.04
-        timeout-minutes: 20
-        steps:
-        - uses: googleapis/release-please-action@d1a8f221d7723166f48a584aebba00ef3f6febec
-          id: release
-          with:
-            token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
-            # this is a built-in strategy in release-please, see "Action Inputs" for more options
-            release-type: node
     build-push-s-private:
         permissions:
           contents: write
-        needs: release-please
         runs-on: ubuntu-24.04
+        if: contains(github.event.pull_request.labels.*.name, 'autorelease:tagged')
         timeout-minutes: 20
         steps:
 
@@ -85,8 +71,8 @@ jobs:
     build-push-storybook:
       permissions:
         contents: write
-      needs: release-please
       runs-on: ubuntu-24.04
+      if: contains(github.event.pull_request.labels.*.name, 'autorelease:tagged')
       timeout-minutes: 20
       steps:
 
