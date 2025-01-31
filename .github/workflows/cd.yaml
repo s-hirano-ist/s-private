@@ -11,7 +11,7 @@ jobs:
         permissions:
           contents: write
         runs-on: ubuntu-24.04
-        if: contains(github.event.pull_request.labels.*.name, 'autorelease')
+        if: contains(join(github.event.pull_request.labels.*.name, ','), 'autorelease')
         timeout-minutes: 20
         steps:
 
@@ -72,7 +72,7 @@ jobs:
       permissions:
         contents: write
       runs-on: ubuntu-24.04
-      if: contains(github.event.pull_request.labels.*.name, 'autorelease')
+      if: contains(join(github.event.pull_request.labels.*.name, ','), 'autorelease')
       timeout-minutes: 20
       steps:
 
