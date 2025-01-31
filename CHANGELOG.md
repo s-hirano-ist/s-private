@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [7.3.2](https://github.com/s-hirano-ist/s-private/compare/v7.3.1...v7.3.2) (2025-01-31)
+
+
+### Bug Fixes
+
+* 🐛 cors warning on manifest ([f6775d1](https://github.com/s-hirano-ist/s-private/commit/f6775d1107754a826337ee16df4a663c1ad82025))
+* 🐛 cors warning on manifest ([76d8e98](https://github.com/s-hirano-ist/s-private/commit/76d8e98508a023515a29a14b6521ef0ed67aa567))
+
 ## [7.3.1](https://github.com/s-hirano-ist/s-private/compare/v7.3.0...v7.3.1) (2025-01-30)
 
 
