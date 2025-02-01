@@ -5,7 +5,7 @@ describe("Markdown Utility Functions", () => {
 	it("should convert markdown to HTML", async () => {
 		const markdown = `# Heading\n\nThis is a **bold** text with a [link](https://example.com).`;
 		const html = await markdownToHtml(markdown);
-		expect(html).toContain("<h1>Heading</h1>");
+		expect(html).toContain('<h1 id="heading">Heading</h1>');
 		expect(html).toContain("<strong>bold</strong>");
 		expect(html).toContain(
 			'<a href="https://example.com" rel="nofollow" target="_blank">link</a>',
