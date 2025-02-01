@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.4.0](https://github.com/s-hirano-ist/s-private/compare/v8.3.2...v8.4.0) (2025-02-01)
+
+
+### Features
+
+* 🎸 add layout options for react ([fc9621e](https://github.com/s-hirano-ist/s-private/commit/fc9621ed9818dbb7a92effb37b60a139e2097a25))
+
 ## [8.3.2](https://github.com/s-hirano-ist/s-private/compare/v8.3.1...v8.3.2) (2025-02-01)
 
 
