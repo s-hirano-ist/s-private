@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.4.1](https://github.com/s-hirano-ist/s-private/compare/v8.4.0...v8.4.1) (2025-02-01)
+
+
+### Bug Fixes
+
+* 🐛 update Dockerfile ([7f0422e](https://github.com/s-hirano-ist/s-private/commit/7f0422edc9d05b7a55f8627d63b37d78ae629fac))
+
 ## [8.4.0](https://github.com/s-hirano-ist/s-private/compare/v8.3.2...v8.4.0) (2025-02-01)
 
 
