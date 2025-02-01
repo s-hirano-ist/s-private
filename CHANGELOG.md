@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.3.2](https://github.com/s-hirano-ist/s-private/compare/v8.3.1...v8.3.2) (2025-02-01)
+
+
+### Bug Fixes
+
+* 🐛 tunnel route not found ([f781650](https://github.com/s-hirano-ist/s-private/commit/f7816509fb15121268daa001df944ee0d8288869))
+* 🐛 tunnel route not found ([7d7e93f](https://github.com/s-hirano-ist/s-private/commit/7d7e93f0fbb5e67ecea95ccace82536f8788b7ac))
+
 ## [8.3.1](https://github.com/s-hirano-ist/s-private/compare/v8.3.0...v8.3.1) (2025-02-01)
 
 
