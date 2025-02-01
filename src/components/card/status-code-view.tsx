@@ -1,23 +1,9 @@
+import { useTranslations } from "next-intl";
+
 type StatusCode = "000" | "204" | "403" | "404" | "500";
 
 export function StatusCodeView({ statusCode }: { statusCode: StatusCode }) {
-	const statusMessage = () => {
-		switch (statusCode) {
-			case "000":
-				return "Comming Soon";
-			case "204":
-				return "No Contents";
-			case "403":
-				return "Forbidden";
-			case "404":
-				return "Not Found";
-			case "500":
-				return "Internal Server Error";
-			default:
-				statusCode satisfies never;
-				return "Unknown Status";
-		}
-	};
+	const t = useTranslations("statusCode");
 
 	return (
 		<div
@@ -29,7 +15,7 @@ export function StatusCodeView({ statusCode }: { statusCode: StatusCode }) {
 				{String(statusCode)}
 				<span className="hidden font-light sm:inline">---</span>
 			</div>
-			<div className="text-sm">------{statusMessage()}------</div>
+			<div className="text-sm">------{t(statusCode)}------</div>
 		</div>
 	);
 }

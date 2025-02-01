@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
+import { NextIntlClientProvider } from "next-intl";
 import { UtilButtons } from "./util-buttons";
 
 const meta = {
@@ -18,4 +19,9 @@ export const Default: Story = {
 		handleReload: fn(),
 		onSignOutSubmit: fn(),
 	},
+	render: () => (
+		<NextIntlClientProvider locale="ja">
+			<UtilButtons handleReload={fn()} onSignOutSubmit={fn()} />
+		</NextIntlClientProvider>
+	),
 };

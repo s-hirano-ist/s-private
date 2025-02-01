@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { AddFormSkeleton } from "@/features/dump/components/add-form-skeleton";
 import { addNews } from "@/features/news/actions/add-news";
 import { ClipboardPasteIcon, TableOfContentsIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useActionState, useRef } from "react";
 import { toast } from "sonner";
 
@@ -39,6 +40,8 @@ export function AddNewsForm({ categories }: Props) {
 		if (urlInputRef.current !== null) urlInputRef.current.value = clipboardText;
 	};
 
+	const t = useTranslations("label");
+
 	return (
 		<form action={addNewsAction} className="space-y-4 px-2 py-4">
 			{isPending ? (
@@ -46,7 +49,7 @@ export function AddNewsForm({ categories }: Props) {
 			) : (
 				<>
 					<div className="space-y-1">
-						<Label htmlFor="category">カテゴリー</Label>
+						<Label htmlFor="category">{t("category")}</Label>
 						<div className="flex">
 							<Input
 								id="category"
@@ -76,15 +79,15 @@ export function AddNewsForm({ categories }: Props) {
 						</div>
 					</div>
 					<div className="space-y-1">
-						<Label htmlFor="title">タイトル</Label>
+						<Label htmlFor="title">{t("title")}</Label>
 						<Input id="title" name="title" autoComplete="off" required />
 					</div>
 					<div className="space-y-1">
-						<Label htmlFor="quote">ひとこと</Label>
+						<Label htmlFor="quote">{t("description")}</Label>
 						<Textarea id="quote" name="quote" autoComplete="off" />
 					</div>
 					<div className="space-y-1">
-						<Label htmlFor="url">URL</Label>
+						<Label htmlFor="url">{t("url")}</Label>
 						<div className="flex">
 							<Input
 								id="url"
@@ -103,7 +106,7 @@ export function AddNewsForm({ categories }: Props) {
 				</>
 			)}
 			<Button type="submit" disabled={isPending} className="w-full">
-				保存
+				{t("save")}
 			</Button>
 		</form>
 	);

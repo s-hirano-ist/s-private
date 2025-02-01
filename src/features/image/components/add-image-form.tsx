@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { addImage } from "@/features/image/actions/add-image";
+import { useTranslations } from "next-intl";
 import { useActionState } from "react";
 import { toast } from "sonner";
 
@@ -22,10 +23,12 @@ export function AddImageForm() {
 
 	const [_, addNewsAction, isPending] = useActionState(submitForm, null);
 
+	const t = useTranslations("label");
+
 	return (
 		<form action={addNewsAction} className="space-y-4 px-2 py-4">
 			<div className="space-y-1">
-				<Label htmlFor="files">画像</Label>
+				<Label htmlFor="files">{t("image")}</Label>
 				<Input
 					id="files"
 					type="file"
@@ -36,7 +39,7 @@ export function AddImageForm() {
 				/>
 			</div>
 			<Button type="submit" disabled={isPending} className="w-full">
-				{isPending ? "アップロード中..." : "アップロード"}
+				{isPending ? t("uploading") : t("upload")}
 			</Button>
 		</form>
 	);

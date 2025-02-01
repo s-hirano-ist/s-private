@@ -12,12 +12,14 @@ import { UnexpectedError } from "@/error-classes";
 import { changeContentsStatus } from "@/features/contents/actions/change-contents-status";
 import { changeImagesStatus } from "@/features/image/actions/change-images-status";
 import { changeNewsStatus } from "@/features/news/actions/change-news-status";
+import { useTranslations } from "next-intl";
 import { useActionState, useState } from "react";
 import { toast } from "sonner";
 
 export function ChangeStatusForm() {
 	const [target, setTarget] = useState<string>();
 	const [status, setStatus] = useState<string>();
+	const t = useTranslations("label");
 
 	const changeStatus = async (_: null, formData: FormData) => {
 		const target = formData.get("target");
@@ -57,7 +59,7 @@ export function ChangeStatusForm() {
 	return (
 		<form action={submitAction} className="space-y-4 px-2 py-4">
 			<div className="space-y-1">
-				<Label htmlFor="target">DUMP対象のターゲット</Label>
+				<Label htmlFor="target">{t("dumpTarget")}</Label>
 				<Select
 					required
 					name="target"
@@ -65,7 +67,7 @@ export function ChangeStatusForm() {
 					onValueChange={(value: string) => setTarget(value)}
 				>
 					<SelectTrigger id="target">
-						<SelectValue placeholder="ターゲット" />
+						<SelectValue placeholder={t("target")} />
 					</SelectTrigger>
 					<SelectContent>
 						<SelectItem value="news">NEWS</SelectItem>
@@ -76,7 +78,7 @@ export function ChangeStatusForm() {
 			</div>
 
 			<div className="space-y-1">
-				<Label htmlFor="status">DUMPの状態</Label>
+				<Label htmlFor="status">{t("dumpStatus")}</Label>
 				<Select
 					required
 					name="status"
@@ -84,7 +86,7 @@ export function ChangeStatusForm() {
 					onValueChange={(value: string) => setStatus(value)}
 				>
 					<SelectTrigger id="status">
-						<SelectValue placeholder="状態" />
+						<SelectValue placeholder={t("status")} />
 					</SelectTrigger>
 					<SelectContent id="status">
 						<SelectItem value="update">UPDATE</SelectItem>
@@ -93,7 +95,7 @@ export function ChangeStatusForm() {
 				</Select>
 			</div>
 			<Button type="submit" disabled={isPending} className="w-full">
-				送信
+				{t("send")}
 			</Button>
 		</form>
 	);

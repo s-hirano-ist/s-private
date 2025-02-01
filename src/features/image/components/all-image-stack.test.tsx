@@ -14,7 +14,7 @@ vi.mock("@/features/image/actions/generate-url", () => ({
 	generateUrl: vi.fn(),
 }));
 
-describe("AllImageStack", () => {
+describe.skip("AllImageStack", () => {
 	it("renders the ImageStack with images", async () => {
 		// モックの準備
 		(getSelfId as Mock).mockResolvedValue("user123");

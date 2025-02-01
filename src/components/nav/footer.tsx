@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import type { Route } from "next";
 import { signOut } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import { Link } from "next-view-transitions";
 import { usePathname } from "next/navigation";
 import { type ReactNode, useState } from "react";
@@ -26,6 +27,7 @@ import { type ReactNode, useState } from "react";
 export function Footer() {
 	const [open, setOpen] = useState(false);
 	const pathname = usePathname();
+	const t = useTranslations("utils");
 
 	const Icon = (name: string, icon: ReactNode) => {
 		return (
@@ -123,10 +125,8 @@ export function Footer() {
 				</div>
 				<DrawerContent>
 					<DrawerHeader>
-						<DrawerTitle>便利ツール集</DrawerTitle>
-						<DrawerDescription>
-							リンクをクリックしてください。
-						</DrawerDescription>
+						<DrawerTitle>{t("utilsTitle")}</DrawerTitle>
+						<DrawerDescription>{t("utilsDescription")}</DrawerDescription>
 					</DrawerHeader>
 					<UtilButtons
 						handleReload={handleReload}

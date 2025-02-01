@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { NextIntlClientProvider } from "next-intl";
 import { Footer } from "./footer";
 
 const meta = {
@@ -11,4 +12,10 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+	render: () => (
+		<NextIntlClientProvider locale="ja">
+			<Footer />
+		</NextIntlClientProvider>
+	),
+};

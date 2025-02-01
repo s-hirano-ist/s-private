@@ -1,0 +1,35 @@
+{
+	"utils": {
+		"signOut": "SIGN OUT",
+		"language": "TOGGLE LANGUAGE",
+		"appearance": "TOGGLE APPEARANCE",
+		"reload": "RELOAD PAGE",
+		"utilsTitle": "Util tools",
+		"utilsDescription": "Click on the links"
+	},
+	"label": {
+		"category": "Category",
+		"title": "Title",
+		"description": " Description",
+		"url": "URL",
+		"save": "Save",
+		"upload": "Upload",
+		"uploading": "Uploading...",
+		"image": "Image",
+		"send": "Send",
+		"status": "Status",
+		"target": "Target",
+		"dumpStatus": "Dump status",
+		"dumpTarget": "Dump target",
+		"totalBooks": "Total number of books",
+		"totalContents": "Total number of contents",
+		"totalImages": "Total number of images"
+	},
+	"statusCode": {
+		"000": "Comming Soon",
+		"204": "No Contents",
+		"403": "Forbidden",
+		"404": "Not Found",
+		"500": "Internal Server Error"
+	}
+}

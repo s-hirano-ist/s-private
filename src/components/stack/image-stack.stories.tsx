@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { NextIntlClientProvider } from "next-intl";
 import { ImageStack } from "./image-stack";
 
 const meta = {
@@ -34,8 +35,18 @@ const data = [
 
 export const Default: Story = {
 	args: { data },
+	render: () => (
+		<NextIntlClientProvider locale="ja">
+			<ImageStack data={data} />
+		</NextIntlClientProvider>
+	),
 };
 
 export const NoData: Story = {
 	args: { data: [] },
+	render: () => (
+		<NextIntlClientProvider locale="ja">
+			<ImageStack data={[]} />
+		</NextIntlClientProvider>
+	),
 };
