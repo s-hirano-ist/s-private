@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.2.0](https://github.com/s-hirano-ist/s-private/compare/v8.1.0...v8.2.0) (2025-02-01)
+
+
+### Features
+
+* 🎸 settings for i11n ([e224621](https://github.com/s-hirano-ist/s-private/commit/e224621a6c1f8f83d22d1671e6fb8441c8521b36))
+
+
+### Bug Fixes
+
+* 🐛 add lang settings to all pages ([fdc1553](https://github.com/s-hirano-ist/s-private/commit/fdc1553752a7e4f61f7e94124909146edd4b7266))
+* 🐛 more fixes on tests ([4c82c62](https://github.com/s-hirano-ist/s-private/commit/4c82c62d4f9a75cc10130af34749288312c8ec0a))
+* 🐛 render miss on storybook ([4757846](https://github.com/s-hirano-ist/s-private/commit/4757846c1abd9a5925ffb929dc97fe275b31aa80))
+
 ## [8.1.0](https://github.com/s-hirano-ist/s-private/compare/v8.0.1...v8.1.0) (2025-02-01)
 
 
