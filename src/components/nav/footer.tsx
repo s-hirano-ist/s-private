@@ -9,6 +9,7 @@ import {
 	DrawerTrigger,
 } from "@/components/ui/drawer";
 import { UtilButtons } from "@/features/dump/components/util-buttons";
+import { Link } from "@/i18n/routing";
 import { cn } from "@/utils/tailwindcss";
 import {
 	BotIcon,
@@ -20,7 +21,6 @@ import {
 import type { Route } from "next";
 import { signOut } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import { Link } from "next-view-transitions";
 import { usePathname } from "next/navigation";
 import { type ReactNode, useState } from "react";
 
