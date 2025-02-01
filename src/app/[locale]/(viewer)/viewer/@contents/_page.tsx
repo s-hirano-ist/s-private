@@ -1,6 +1,6 @@
 import { Unauthorized } from "@/components/card/unauthorized";
+import { CountBadge } from "@/components/count-badge";
 import { ViewerStack } from "@/components/stack/viewer-stack";
-import { Badge } from "@/components/ui/badge";
 import { hasViewerAdminPermission } from "@/features/auth/utils/session";
 import prisma from "@/prisma";
 
@@ -20,9 +20,7 @@ export async function SuspensePage() {
 		<>
 			{hasAdminPermission ? (
 				<>
-					<Badge className="m-2 flex justify-center">
-						コンテンツ数: {totalImages}
-					</Badge>
+					<CountBadge label="totalContents" total={totalImages} />
 					<ViewerStack path={path} images={images} imageType="svg" />
 				</>
 			) : (

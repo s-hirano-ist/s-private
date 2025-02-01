@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { addContents } from "@/features/contents/actions/add-contents";
 import { AddFormSkeleton } from "@/features/dump/components/add-form-skeleton";
 import { ClipboardPasteIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useActionState, useRef } from "react";
 import { toast } from "sonner";
 
@@ -25,6 +26,8 @@ export function AddContentsForm() {
 		if (urlInputRef.current !== null) urlInputRef.current.value = clipboardText;
 	};
 
+	const t = useTranslations("label");
+
 	return (
 		<form action={addContentsAction} className="space-y-4 px-2 py-4">
 			{isPending ? (
@@ -32,15 +35,15 @@ export function AddContentsForm() {
 			) : (
 				<>
 					<div className="space-y-1">
-						<Label htmlFor="title">タイトル</Label>
+						<Label htmlFor="title">{t("title")}</Label>
 						<Input id="title" name="title" autoComplete="off" required />
 					</div>
 					<div className="space-y-1">
-						<Label htmlFor="quote">ひとこと</Label>
+						<Label htmlFor="quote">{t("description")}</Label>
 						<Textarea id="quote" name="quote" autoComplete="off" />
 					</div>
 					<div className="space-y-1">
-						<Label htmlFor="url">URL</Label>
+						<Label htmlFor="url">{t("url")}</Label>
 						<div className="flex space-x-2 px-2">
 							<Input
 								id="url"
@@ -64,7 +67,7 @@ export function AddContentsForm() {
 				</>
 			)}
 			<Button type="submit" disabled={isPending} className="w-full">
-				保存
+				{t("save")}
 			</Button>
 		</form>
 	);

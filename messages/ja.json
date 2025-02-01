@@ -3,9 +3,33 @@
 		"signOut": "サインアウト",
 		"language": "言語切替",
 		"appearance": "外観切替",
-		"reload": "再読み込み"
+		"reload": "再読み込み",
+		"utilsTitle": "便利ツール集",
+		"utilsDescription": "リンクをクリックしてください"
 	},
-	"button": {
-		"save": "保存"
+	"label": {
+		"category": "カテゴリー",
+		"title": "タイトル",
+		"description": " ひとこと",
+		"url": "URL",
+		"save": "保存",
+		"upload": "アップロード",
+		"uploading": "アップロード中...",
+		"image": "画像",
+		"send": "送信",
+		"status": "状態",
+		"target": "ターゲット",
+		"dumpStatus": "DUMPの状態",
+		"dumpTarget": "DUMPのターゲット",
+		"totalBooks": "冊数",
+		"totalContents": "コンテンツ数",
+		"totalImages": "画像数"
+	},
+	"statusCode": {
+		"000": "近日公開",
+		"204": "コンテンツがありません",
+		"403": "許可されていません",
+		"404": "コンテンツが見つかりません",
+		"500": "予期せぬエラーが発生しました"
 	}
 }

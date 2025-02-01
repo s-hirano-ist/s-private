@@ -1,12 +1,17 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { UTIL_URLS } from "@/constants";
-import { useTranslations } from "next-intl";
+import { redirect } from "@/i18n/routing";
+import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { Link } from "next-view-transitions";
 import { usePathname } from "next/navigation";
 
 type Props = { handleReload: () => void; onSignOutSubmit: () => Promise<void> };
+
+const removeLangPrefix = (pathname: string): string => {
+	return pathname.replace(/^\/(en|ja)(\/|$)/, "/");
+};
 
 export function UtilButtons({ handleReload, onSignOutSubmit }: Props) {
 	const pathname = usePathname();
@@ -17,9 +22,16 @@ export function UtilButtons({ handleReload, onSignOutSubmit }: Props) {
 		else setTheme("light");
 	};
 
-	const t = useTranslations();
+	const locale = useLocale();
 
-	console.log("t", t);
+	const handleLanguage = () => {
+		redirect({
+			href: removeLangPrefix(pathname),
+			locale: locale === "en" ? "ja" : "en",
+		});
+	};
+
+	const t = useTranslations("utils");
 
 	return (
 		<>
@@ -31,12 +43,12 @@ export function UtilButtons({ handleReload, onSignOutSubmit }: Props) {
 						</Button>
 					);
 				})}
-				<Button onClick={handleReload}>RELOAD PAGE</Button>
-				<Button onClick={handleTheme}>TOGGLE DARK MODE</Button>
-				<Button onClick={handleReload}>TOGGLE LANGUAGE</Button>
+				<Button onClick={handleReload}>{t("reload")}</Button>
+				<Button onClick={handleTheme}>{t("appearance")}</Button>
+				<Button onClick={handleLanguage}>{t("language")}</Button>
 				{pathname !== "/auth" && (
 					<Button onClick={onSignOutSubmit} data-testid="log-out-button">
-						SIGN OUT
+						{t("signOut")}
 					</Button>
 				)}
 			</div>

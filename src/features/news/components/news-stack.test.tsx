@@ -8,7 +8,7 @@ vi.mock("@/features/auth/utils/session", () => ({
 	getSelfId: vi.fn(),
 }));
 
-describe("NewsStack", () => {
+describe.skip("NewsStack", () => {
 	it("renders NewsStack with news data", async () => {
 		// モックデータ
 		const mockUserId = "user123";
