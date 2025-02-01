@@ -2,14 +2,6 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [7.3.5](https://github.com/s-hirano-ist/s-private/compare/v7.3.4...v7.3.5) (2025-01-31)
-
-
-### Bug Fixes
-
-* 🐛 cd of github actions ([ff5946d](https://github.com/s-hirano-ist/s-private/commit/ff5946dc399aa306fc47a4fd0f3a97a4b014cc6e))
-* 🐛 cd of github actions ([e0b6bdc](https://github.com/s-hirano-ist/s-private/commit/e0b6bdc45cfc5e37b7b1bd160ad448ab21b72cdc))
-
 ## [7.3.4](https://github.com/s-hirano-ist/s-private/compare/v7.3.3...v7.3.4) (2025-01-31)
 
 
