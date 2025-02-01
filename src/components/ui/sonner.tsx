@@ -11,6 +11,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
 	return (
 		<Sonner
 			theme={theme as ToasterProps["theme"]}
+			// eslint-disable-next-line
 			className="toaster group"
 			toastOptions={{
 				classNames: {

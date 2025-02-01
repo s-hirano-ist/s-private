@@ -37,7 +37,7 @@ export function ViewerPreview({ image, path, imageType }: Props) {
 							height={THUMBNAIL_HEIGHT}
 							width={THUMBNAIL_WIDTH}
 							alt={title}
-							className="h-auto w-full"
+							className="h-auto w-full rounded bg-white p-1"
 						/>
 					</div>
 				</CardContent>

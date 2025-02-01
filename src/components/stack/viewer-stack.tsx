@@ -12,7 +12,7 @@ type Props = {
 
 export function ViewerStack({ images, path, imageType }: Props) {
 	return (
-		<div className="my-2 grid grid-cols-2 items-stretch gap-4 px-2 sm:grid-cols-4">
+		<div className="my-2 grid grid-cols-2 items-stretch gap-4 px-2 sm:grid-cols-3 lg:grid-cols-4">
 			{images.map((image) => {
 				return (
 					<ViewerPreview
