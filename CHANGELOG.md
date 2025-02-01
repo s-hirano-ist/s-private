@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.3.1](https://github.com/s-hirano-ist/s-private/compare/v8.3.0...v8.3.1) (2025-02-01)
+
+
+### Bug Fixes
+
+* 🐛 revert routing ([02c720a](https://github.com/s-hirano-ist/s-private/commit/02c720a615fb11634a17c850763fb72d298b36e6))
+* 🐛 revert routing ([c137636](https://github.com/s-hirano-ist/s-private/commit/c1376361e99393a11995bfef4cb95483cb56ba7f))
+
 ## [8.3.0](https://github.com/s-hirano-ist/s-private/compare/v8.2.7...v8.3.0) (2025-02-01)
 
 
