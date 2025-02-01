@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.2.5](https://github.com/s-hirano-ist/s-private/compare/v8.2.4...v8.2.5) (2025-02-01)
+
+
+### Bug Fixes
+
+* 🐛 middleware auth error ([8c07f1f](https://github.com/s-hirano-ist/s-private/commit/8c07f1f029816c203cfbcbde4a64108e60f05007))
+* 🐛 middleware auth error ([96c5074](https://github.com/s-hirano-ist/s-private/commit/96c507487096fb0d2cf761eeab4103d95ae9e857))
+
 ## [8.2.4](https://github.com/s-hirano-ist/s-private/compare/v8.2.3...v8.2.4) (2025-02-01)
 
 
