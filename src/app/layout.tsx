@@ -3,7 +3,7 @@ import { ViewTransitions } from "next-view-transitions";
 import type { ReactNode } from "react";
 import "./globals.css";
 import { PAGE_NAME } from "@/constants";
-import { env } from "@/env.mjs";
+import { env } from "@/env";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { Noto_Sans_JP } from "next/font/google";
 

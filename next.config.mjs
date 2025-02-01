@@ -1,6 +1,6 @@
 import { withSentryConfig } from "@sentry/nextjs";
-import { env } from "./src/env.mjs";
-await import("./src/env.mjs");
+import { env } from "./src/env.ts";
+await import("./src/env.ts");
 import createNextIntlPlugin from "next-intl/plugin";
 
 // MEMO: scriptタグを利用する必要が出たときはnonceの利用推奨

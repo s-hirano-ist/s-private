@@ -5,7 +5,7 @@ import {
 	SUCCESS_MESSAGES,
 	THUMBNAIL_IMAGE_PATH,
 } from "@/constants";
-import { env } from "@/env.mjs";
+import { env } from "@/env";
 import { NotAllowedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
 import { hasDumperPostPermission } from "@/features/auth/utils/session";

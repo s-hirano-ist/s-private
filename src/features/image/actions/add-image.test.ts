@@ -3,7 +3,7 @@ import {
 	FORM_ERROR_MESSAGES,
 	SUCCESS_MESSAGES,
 } from "@/constants";
-import { env } from "@/env.mjs";
+import { env } from "@/env";
 import { auth } from "@/features/auth/utils/auth";
 import { minioClient } from "@/minio";
 import prisma from "@/prisma";
