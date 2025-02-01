@@ -43,7 +43,7 @@ export const Default: Story = {
 export const NoData: Story = {
 	args: { data: [] },
 	render: () => (
-		<NextIntlClientProvider>
+		<NextIntlClientProvider locale="ja">
 			<CardStack data={data} />
 		</NextIntlClientProvider>
 	),
