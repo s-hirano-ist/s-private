@@ -3,6 +3,7 @@ import { withSentryConfig } from "@sentry/nextjs";
 // FIXME: env.tsの読み込み（Node v23じゃないと動かない... process.envの排除
 // import { env } from "./src/env.ts";
 // await import("./src/env.ts");
+import { setupDevPlatform } from "@cloudflare/next-on-pages/next-dev";
 import createNextIntlPlugin from "next-intl/plugin";
 
 // MEMO: scriptタグを利用する必要が出たときはnonceの利用推奨
@@ -72,6 +73,10 @@ const nextConfig = {
 };
 
 const withNextIntl = createNextIntlPlugin();
+
+if (env.NODE_ENV === "development") {
+	await setupDevPlatform();
+}
 
 export default withNextIntl(
 	withSentryConfig(nextConfig, {

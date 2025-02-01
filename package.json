@@ -28,7 +28,10 @@
 		"security": "pnpm audit",
 		"actionlint": "actionlint",
 		"ghalint": "ghalint run",
-		"depcheck": "depcheck"
+		"depcheck": "depcheck",
+		"cf:build": "npx @cloudflare/next-on-pages",
+		"cf:preview": "pnpm cf:build && wrangler pages dev",
+		"cf:deploy": "pnpm cf:build && wrangler pages deploy"
 	},
 	"dependencies": {
 		"@biomejs/biome": "1.9.4",
@@ -84,8 +87,10 @@
 	},
 	"devDependencies": {
 		"@chromatic-com/storybook": "3.2.4",
-		"@eslint/compat": "1.2.6",
+		"@cloudflare/next-on-pages": "1.13.7",
+		"@cloudflare/workers-types": "4.20250129.0",
 		"@eslint/eslintrc": "3.2.0",
+		"@eslint/compat": "1.2.6",
 		"@eslint/js": "9.20.0",
 		"@eslint/markdown": "6.2.2",
 		"@playwright/test": "1.50.1",
@@ -141,6 +146,7 @@
 		"storybook-dark-mode": "4.0.2",
 		"tailwindcss": "3.4.17",
 		"typescript": "5.7.3",
-		"vitest": "3.0.5"
+		"vitest": "3.0.5",
+		"wrangler": "3.107.2"
 	}
 }

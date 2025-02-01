@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { SuspensePage } from "./_page";
 
 export const dynamic = "force-dynamic";
+export const runtime = "edge";
 
 export default async function Page() {
 	return (
