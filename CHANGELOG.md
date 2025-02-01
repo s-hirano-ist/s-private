@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.2.1](https://github.com/s-hirano-ist/s-private/compare/v8.2.0...v8.2.1) (2025-02-01)
+
+
+### Bug Fixes
+
+* 🐛 middleware to routes ([b5835a7](https://github.com/s-hirano-ist/s-private/commit/b5835a7181cfc212705433f77c68e535a686055b))
+* 🐛 middleware to routes ([5472a97](https://github.com/s-hirano-ist/s-private/commit/5472a97f1fcf28408246aada97686fa69f28abc0))
+
 ## [8.2.0](https://github.com/s-hirano-ist/s-private/compare/v8.1.0...v8.2.0) (2025-02-01)
 
 
