@@ -8,7 +8,7 @@ const publicRoutes: string[] = [];
 
 const handleI18nRouting = createMiddleware(routing);
 
-export default auth((request) => {
+export default auth(async function middleware(request) {
 	const { nextUrl } = request;
 	const auth = request.auth;
 
@@ -22,8 +22,6 @@ export default auth((request) => {
 
 export const config = {
 	matcher: [
-		"/",
-		"/(ja|en)/:path*",
 		"/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|logo.png|manifest.webmanifest).*)",
 	],
 };
