@@ -38,8 +38,6 @@ export const SUCCESS_MESSAGES = {
 
 export const SKELETON_STACK_SIZE = 10;
 
-export const DEFAULT_SIGN_IN_REDIRECT = "/";
-
 export const UTIL_URLS = [
 	{ name: "NEWS", url: "https://s-hirano.com/news" },
 	{ name: "SUMMARY", url: "https://s-hirano.com/summary" },
