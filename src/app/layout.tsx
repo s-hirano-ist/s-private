@@ -4,6 +4,7 @@ import { ViewTransitions } from "next-view-transitions";
 import { Noto_Sans_JP } from "next/font/google";
 import type { ReactNode } from "react";
 import "./globals.css";
+import { ThemeProvider } from "@/components/provider/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { PAGE_NAME } from "@/constants";
 import { env } from "@/env.mjs";
@@ -21,7 +22,8 @@ export default function RootLayout({
 }: Readonly<{ children: ReactNode }>) {
 	return (
 		<ViewTransitions>
-			<html lang="ja">
+			{/*https://github.com/pacocoursey/next-themes*/}
+			<html lang="ja" suppressHydrationWarning>
 				<head>
 					{/* https://github.com/aidenybai/react-scan */}
 					{env.NODE_ENV === "development" && (
@@ -32,11 +34,18 @@ export default function RootLayout({
 					)}
 				</head>
 				<body className={notoSansJp.className}>
-					<main className="flex h-screen flex-col justify-between">
-						<div className="grow pb-4">{children}</div>
-						<Footer />
-					</main>
-					<Toaster />
+					<ThemeProvider
+						attribute="class"
+						defaultTheme="system"
+						enableSystem
+						disableTransitionOnChange
+					>
+						<main className="flex h-screen flex-col justify-between">
+							<div className="grow pb-4">{children}</div>
+							<Footer />
+						</main>
+						<Toaster />
+					</ThemeProvider>
 				</body>
 				<GoogleAnalytics gaId={env.NEXT_PUBLIC_G_TAG} />
 			</html>
