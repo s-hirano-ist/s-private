@@ -5,11 +5,14 @@ import "./globals.css";
 import { PAGE_NAME } from "@/constants";
 import { env } from "@/env.mjs";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { Noto_Sans_JP } from "next/font/google";
 
 export const metadata: Metadata = {
 	title: `${PAGE_NAME}`,
 	description: "Private pages and admin tools for s-hirano-ist.",
 };
+
+const notoSansJp = Noto_Sans_JP({ subsets: ["latin"] });
 
 export default function RootLayout({
 	children,
@@ -27,7 +30,7 @@ export default function RootLayout({
 						/>
 					)}
 				</head>
-				{children}
+				<body className={notoSansJp.className}>{children}</body>
 				<GoogleAnalytics gaId={env.NEXT_PUBLIC_G_TAG} />
 			</html>
 		</ViewTransitions>
