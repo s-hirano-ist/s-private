@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.3.0](https://github.com/s-hirano-ist/s-private/compare/v8.2.7...v8.3.0) (2025-02-01)
+
+
+### Features
+
+* 🎸 add locale prefix ([4d03ce9](https://github.com/s-hirano-ist/s-private/commit/4d03ce99d92be44b75a5742204c922b3825aa28a))
+
 ## [8.2.7](https://github.com/s-hirano-ist/s-private/compare/v8.2.6...v8.2.7) (2025-02-01)
 
 
