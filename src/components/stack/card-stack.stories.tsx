@@ -42,9 +42,9 @@ export const Default: Story = {
 
 export const NoData: Story = {
 	args: { data: [] },
-	render: () => {
+	render: () => (
 		<NextIntlClientProvider>
 			<CardStack data={data} />
-		</NextIntlClientProvider>;
-	},
+		</NextIntlClientProvider>
+	),
 };

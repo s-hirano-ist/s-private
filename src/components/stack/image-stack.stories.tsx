@@ -35,18 +35,18 @@ const data = [
 
 export const Default: Story = {
 	args: { data },
-	render: () => {
-		<NextIntlClientProvider>
+	render: () => (
+		<NextIntlClientProvider locale="ja">
 			<ImageStack data={data} />
-		</NextIntlClientProvider>;
-	},
+		</NextIntlClientProvider>
+	),
 };
 
 export const NoData: Story = {
 	args: { data: [] },
-	render: () => {
-		<NextIntlClientProvider>
+	render: () => (
+		<NextIntlClientProvider locale="ja">
 			<ImageStack data={[]} />
-		</NextIntlClientProvider>;
-	},
+		</NextIntlClientProvider>
+	),
 };

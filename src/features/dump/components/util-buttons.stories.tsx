@@ -19,9 +19,9 @@ export const Default: Story = {
 		handleReload: fn(),
 		onSignOutSubmit: fn(),
 	},
-	render: () => {
-		<NextIntlClientProvider>
+	render: () => (
+		<NextIntlClientProvider locale="ja">
 			<UtilButtons handleReload={fn()} onSignOutSubmit={fn()} />
-		</NextIntlClientProvider>;
-	},
+		</NextIntlClientProvider>
+	),
 };
