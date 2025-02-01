@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.0.1](https://github.com/s-hirano-ist/s-private/compare/v8.0.0...v8.0.1) (2025-02-01)
+
+
+### Bug Fixes
+
+* 🐛 manifest file cors ([b065799](https://github.com/s-hirano-ist/s-private/commit/b065799ea4d10823143b5a1589b37dbdfbc03787))
+* 🐛 manifest file cors ([d63f90b](https://github.com/s-hirano-ist/s-private/commit/d63f90b075e1c455cea62c58439d3b944c142db3))
+
 ## [8.0.0](https://github.com/s-hirano-ist/s-private/compare/v7.3.5...v8.0.0) (2025-02-01)
 
 
