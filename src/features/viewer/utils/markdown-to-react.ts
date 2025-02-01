@@ -1,15 +1,18 @@
+import rehypeShiki from "@shikijs/rehype";
 import parse from "html-react-parser";
 import DOMPurify from "isomorphic-dompurify"; // MEMO: Original Dompurify server side rendering causes issue on Next.js. https://www.npmjs.com/package/dompurify
 import rehypeExternalLinks from "rehype-external-links";
 import rehypeHighlight from "rehype-highlight";
+import rehypeSlug from "rehype-slug";
 import rehypeStringify from "rehype-stringify";
+import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
+import remarkToc from "remark-toc";
 import { unified } from "unified";
 
 /* Other rehype packages
- * rehype-slug
  * rehype-autolink-headings
  * remark-link-card
  * rehype-sanitize
@@ -29,10 +32,18 @@ export async function markdownToHtml(markdown: string) {
 	const result = await unified()
 		.use(remarkParse) // Markdown to mdast
 		.use(remarkGfm)
+		.use(remarkBreaks)
+		.use(remarkToc)
 		.use(remarkRehype) // mdast to hast
-		// @mapbox/rehype-prism
 		.use(rehypeExternalLinks, { target: "_blank", rel: ["nofollow"] })
 		.use(rehypeHighlight)
+		.use(rehypeSlug)
+		.use(rehypeShiki, {
+			themes: {
+				light: "vitesse-light",
+				dark: "vitesse-dark",
+			},
+		})
 		.use(rehypeStringify)
 		.process(markdown);
 
@@ -48,19 +59,3 @@ export async function markdownToReact(markdown: string) {
 	const html = await markdownToHtml(markdown);
 	return htmlToReact(html);
 }
-
-// TODO: use MDX?
-// const withMDX = createMDX({
-// 	extensions: /\.mdx?$/,
-// 	options: {
-// 		remarkPlugins: [remarkGfm],
-// 		rehypePlugins: [
-// 			// rehypeHighlight,
-// 			rehypeStringify,
-// 			rehypePrisma,
-// 			// rehypeExternalLinks({ target: "_blank", rel: ["nofollow"] }),
-// 		],
-// 		// If you use `MDXProvider`, uncomment the following line.
-// 		// providerImportSource: "@mdx-js/react",s
-// 	},
-// });

@@ -21,9 +21,7 @@ export async function SuspensePage({ slug }: Props) {
 	return (
 		<>
 			{hasAdminPermission ? (
-				<ViewerBody>
-					<ViewerBody>{reactData}</ViewerBody>
-				</ViewerBody>
+				<ViewerBody>{reactData}</ViewerBody>
 			) : (
 				<Unauthorized />
 			)}

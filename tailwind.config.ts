@@ -18,6 +18,16 @@ const config = {
 			},
 		},
 		extend: {
+			typography: () => ({
+				DEFAULT: {
+					css: {
+						a: {
+							wordBreak: "break-all",
+							overflowWrap: "break-word",
+						},
+					},
+				},
+			}),
 			colors: {
 				border: "hsl(var(--border))",
 				input: "hsl(var(--input))",
