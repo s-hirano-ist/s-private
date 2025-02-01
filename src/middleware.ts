@@ -1,6 +1,6 @@
 import { auth } from "@/features/auth/utils/auth";
 import createMiddleware from "next-intl/middleware";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { routing } from "./i18n/routing";
 
 // MEMO: アクセスが禁止されているパスではなく、アクセスが許可されているパスを記述するべき。なぜなら、アクセスが禁止されているパスのすべてを把握するのは難しいからである。
@@ -8,7 +8,9 @@ import { routing } from "./i18n/routing";
 
 const handleI18nRouting = createMiddleware(routing);
 
-export default auth(async function middleware(request) {
+// FIXME: https://github.com/amannn/next-intl/issues/596 auth((req))の形式に変更
+
+export default async function middleware(request: NextRequest) {
 	// const { nextUrl } = request;
 	// const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
 	// if (isPublicRoute) return handleI18nRouting(request);
@@ -19,7 +21,7 @@ export default auth(async function middleware(request) {
 		return NextResponse.redirect(new URL("/api/sign-in", request.url));
 
 	return handleI18nRouting(request);
-});
+}
 
 export const config = {
 	matcher: [
