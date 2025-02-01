@@ -1,5 +1,5 @@
 import "server-only";
-import { env } from "@/env.mjs";
+import { env } from "@/env";
 import { LineNotifyError } from "@/error-classes";
 import { loggerError } from "@/pino";
 

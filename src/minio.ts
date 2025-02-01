@@ -1,5 +1,5 @@
 import "server-only";
-import { env } from "@/env.mjs";
+import { env } from "@/env";
 import * as Minio from "minio";
 
 export const minioClient = new Minio.Client({

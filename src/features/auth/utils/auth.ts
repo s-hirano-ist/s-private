@@ -1,4 +1,4 @@
-import { env } from "@/env.mjs";
+import { env } from "@/env";
 import { UnexpectedError } from "@/error-classes";
 import NextAuth, { type DefaultSession } from "next-auth";
 import authConfig from "./auth.config";

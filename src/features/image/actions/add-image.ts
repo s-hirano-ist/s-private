@@ -6,7 +6,7 @@ import {
 	THUMBNAIL_IMAGE_PATH,
 	THUMBNAIL_WIDTH,
 } from "@/constants";
-import { env } from "@/env.mjs";
+import { env } from "@/env";
 import {
 	FileNotAllowedError,
 	NotAllowedError,
