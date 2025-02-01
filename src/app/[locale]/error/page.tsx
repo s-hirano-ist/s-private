@@ -3,8 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Route } from "next";
 import { Link } from "next-view-transitions";
 
-// Auth0 Error page
+export const runtime = "edge";
 
+// Auth0 Error page
 export default function Page() {
 	return (
 		<main>

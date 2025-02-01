@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { SuspensePage } from "./_page";
 
 export const dynamic = "force-dynamic";
+export const runtime = "edge";
 
 type Params = Promise<{ slug: string }>;
 

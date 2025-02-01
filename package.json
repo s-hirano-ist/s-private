@@ -15,7 +15,7 @@
 		"test": "vitest",
 		"test:e2e": "playwright test",
 		"test:storybook": "test-storybook --coverage --coverageDirectory .storybook-coverage",
-		"prisma:generate": "prisma generate --no-hints",
+		"prisma:generate": "prisma generate --no-hints --no-engine",
 		"prisma:migrate": "prisma migrate dev",
 		"prisma:deploy": "prisma migrate deploy",
 		"prisma:studio": "prisma studio",
@@ -27,7 +27,10 @@
 		"security": "pnpm audit",
 		"actionlint": "actionlint",
 		"ghalint": "ghalint run",
-		"depcheck": "depcheck"
+		"depcheck": "depcheck",
+		"cf:build": "npx @cloudflare/next-on-pages",
+		"cf:preview": "pnpm cf:build && wrangler pages dev",
+		"cf:deploy": "pnpm cf:build && wrangler pages deploy"
 	},
 	"dependencies": {
 		"@biomejs/biome": "1.9.4",
@@ -76,6 +79,8 @@
 	},
 	"devDependencies": {
 		"@chromatic-com/storybook": "3.2.4",
+		"@cloudflare/next-on-pages": "1.13.7",
+		"@cloudflare/workers-types": "4.20250129.0",
 		"@eslint/compat": "1.2.5",
 		"@eslint/eslintrc": "3.2.0",
 		"@eslint/js": "9.18.0",
@@ -133,6 +138,7 @@
 		"storybook-dark-mode": "4.0.2",
 		"tailwindcss": "3.4.17",
 		"typescript": "5.7.3",
-		"vitest": "3.0.4"
+		"vitest": "3.0.4",
+		"wrangler": "3.107.2"
 	}
 }
