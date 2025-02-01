@@ -1,6 +1,7 @@
 import { withSentryConfig } from "@sentry/nextjs";
 import { env } from "./src/env.mjs";
 await import("./src/env.mjs");
+import { setupDevPlatform } from "@cloudflare/next-on-pages/next-dev";
 import createNextIntlPlugin from "next-intl/plugin";
 
 // MEMO: scriptタグを利用する必要が出たときはnonceの利用推奨
@@ -70,6 +71,10 @@ const nextConfig = {
 };
 
 const withNextIntl = createNextIntlPlugin();
+
+if (env.NODE_ENV === "development") {
+	await setupDevPlatform();
+}
 
 export default withNextIntl(
 	withSentryConfig(nextConfig, {
