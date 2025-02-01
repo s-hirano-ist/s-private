@@ -15,7 +15,7 @@ jobs:
         runs-on: ubuntu-24.04
         timeout-minutes: 20
         steps:
-        - uses: googleapis/release-please-action@d1a8f221d7723166f48a584aebba00ef3f6febec
+        - uses: googleapis/release-please-action@ee9822ec2c397e8a364d634464339ac43a06e042
           id: release
           with:
             token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
