@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.1.0](https://github.com/s-hirano-ist/s-private/compare/v8.0.1...v8.1.0) (2025-02-01)
+
+
+### Features
+
+* 🎸 add dark mode ([761e31b](https://github.com/s-hirano-ist/s-private/commit/761e31ba4058f15ee194fedb2feddc84daf236ad))
+
 ## [8.0.1](https://github.com/s-hirano-ist/s-private/compare/v8.0.0...v8.0.1) (2025-02-01)
 
 
