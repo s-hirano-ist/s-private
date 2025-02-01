@@ -1,6 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { UTIL_URLS } from "@/constants";
+import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { Link } from "next-view-transitions";
 import { usePathname } from "next/navigation";
@@ -15,6 +16,11 @@ export function UtilButtons({ handleReload, onSignOutSubmit }: Props) {
 		if (theme === "light") setTheme("dark");
 		else setTheme("light");
 	};
+
+	const t = useTranslations();
+
+	console.log("t", t);
+
 	return (
 		<>
 			<div className="grid grid-cols-2 gap-2 px-2 sm:grid-cols-4">
