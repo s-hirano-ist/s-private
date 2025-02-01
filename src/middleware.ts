@@ -8,7 +8,7 @@ import { routing } from "./i18n/routing";
 
 const handleI18nRouting = createMiddleware(routing);
 
-// FIXME: https://github.com/amannn/next-intl/issues/596 auth((req))の形式に変更
+// FIXME: https://github.com/amannn/next-intl/issues/596 auth((req))の方法である必要性確認
 
 export default async function middleware(request: NextRequest) {
 	// const { nextUrl } = request;
