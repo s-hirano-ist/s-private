@@ -1,5 +1,5 @@
 # build
-FROM node:23.7.0-alpine AS builder
+FROM node:23.7.0-alpine@sha256:70eca392e3d52cb7d133b52d52e8600d8c410a5eaee6105c11324b28868f9ac9 AS builder
 
 RUN npm install -g pnpm
 WORKDIR /app
