@@ -1,4 +1,3 @@
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { env } from "@/env";
 import { auth } from "@/features/auth/utils/auth";
 import { minioClient } from "@/minio";
@@ -45,7 +44,7 @@ describe("generateUrl", () => {
 
 		expect(result).toEqual({
 			success: false,
-			message: ERROR_MESSAGES.UNAUTHORIZED,
+			message: "unauthorized",
 		});
 		expect(auth).toHaveBeenCalledTimes(1);
 	});
@@ -57,7 +56,7 @@ describe("generateUrl", () => {
 
 		expect(result).toEqual({
 			success: false,
-			message: ERROR_MESSAGES.NOT_ALLOWED,
+			message: "notAllowed",
 		});
 		expect(auth).toHaveBeenCalledTimes(1);
 	});
@@ -82,7 +81,7 @@ describe("generateUrl", () => {
 		expect(minioClient.presignedGetObject).toHaveBeenCalledTimes(2);
 		expect(result).toEqual({
 			success: true,
-			message: SUCCESS_MESSAGES.INSERTED,
+			message: "success",
 			data: {
 				thumbnailSrc: mockUrl,
 				originalSrc: mockUrl,

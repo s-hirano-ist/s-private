@@ -1,4 +1,3 @@
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { auth } from "@/features/auth/utils/auth";
 import prisma from "@/prisma";
 import { sendLineNotifyMessage } from "@/utils/fetch-message";
@@ -31,7 +30,7 @@ describe("changeNewsStatus", () => {
 
 		expect(result).toEqual({
 			success: false,
-			message: ERROR_MESSAGES.UNAUTHORIZED,
+			message: "unauthorized",
 		});
 		expect(auth).toHaveBeenCalledTimes(1);
 	});
@@ -43,7 +42,7 @@ describe("changeNewsStatus", () => {
 
 		expect(result).toEqual({
 			success: false,
-			message: ERROR_MESSAGES.NOT_ALLOWED,
+			message: "notAllowed",
 		});
 		expect(auth).toHaveBeenCalledTimes(1);
 	});
@@ -71,7 +70,7 @@ describe("changeNewsStatus", () => {
 		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 		expect(result).toEqual({
 			success: true,
-			message: SUCCESS_MESSAGES.UPDATE,
+			message: "updated",
 			data: "【NEWS】\n\n更新\n未処理: 0\n直近更新: 5\n確定: 3",
 		});
 	});
@@ -99,7 +98,7 @@ describe("changeNewsStatus", () => {
 		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 		expect(result).toEqual({
 			success: true,
-			message: SUCCESS_MESSAGES.UPDATE,
+			message: "updated",
 			data: "【NEWS】\n\n更新\n未処理: 5\n直近更新: 3\n確定: 0",
 		});
 	});
@@ -114,7 +113,7 @@ describe("changeNewsStatus", () => {
 		expect(prisma.$transaction).toHaveBeenCalled();
 		expect(result).toEqual({
 			success: false,
-			message: ERROR_MESSAGES.UNEXPECTED,
+			message: "unexpected",
 		});
 	});
 });

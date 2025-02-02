@@ -1,18 +1,20 @@
 "use client"; // Error components must be Client Components
 import { StatusCodeView } from "@/components/card/status-code-view";
 import { Button } from "@/components/ui/button";
-import { ERROR_MESSAGES } from "@/constants";
 import { loggerError } from "@/pino";
 import { captureException } from "@sentry/nextjs";
+import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 
 export default function Page({
 	error,
 	reset,
 }: { error: Error & { digest?: string }; reset: () => void }) {
+	const t = useTranslations("message");
+
 	useEffect(() => {
 		loggerError(
-			ERROR_MESSAGES.UNEXPECTED,
+			t("unexpected"),
 			{
 				caller: "ErrorPage",
 				status: 500,
@@ -20,7 +22,7 @@ export default function Page({
 			error,
 		);
 		captureException(error);
-	}, [error]);
+	}, [error, t]);
 
 	return (
 		<main>

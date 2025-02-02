@@ -1,10 +1,6 @@
 "use server";
 import "server-only";
-import {
-	ORIGINAL_IMAGE_PATH,
-	SUCCESS_MESSAGES,
-	THUMBNAIL_IMAGE_PATH,
-} from "@/constants";
+import { ORIGINAL_IMAGE_PATH, THUMBNAIL_IMAGE_PATH } from "@/constants";
 import { env } from "@/env";
 import { NotAllowedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
@@ -39,7 +35,7 @@ export async function generateUrl(
 
 		return {
 			success: true,
-			message: SUCCESS_MESSAGES.INSERTED,
+			message: "success",
 			data: { thumbnailSrc, originalSrc },
 		};
 	} catch (error) {

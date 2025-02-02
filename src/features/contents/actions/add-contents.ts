@@ -1,6 +1,5 @@
 "use server";
 import "server-only";
-import { SUCCESS_MESSAGES } from "@/constants";
 import { NotAllowedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
 import {
@@ -50,7 +49,7 @@ export async function addContents(
 
 		return {
 			success: true,
-			message: SUCCESS_MESSAGES.INSERTED,
+			message: "updated",
 			data: createdContents,
 		};
 	} catch (error) {

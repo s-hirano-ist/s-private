@@ -2,7 +2,6 @@
 import "server-only";
 import { Prisma } from "@prisma/client";
 import { AuthError } from "next-auth";
-import { ERROR_MESSAGES } from "./constants";
 import {
 	FileNotAllowedError,
 	InvalidFormatError,
@@ -47,18 +46,10 @@ export async function wrapServerSideErrorForClient<T>(
 			status: 500,
 		});
 		await sendLineNotifyMessage(error.message);
-		switch (error.type) {
-			case "CredentialsSignin":
-				return {
-					success: false,
-					message: ERROR_MESSAGES.SIGN_IN,
-				};
-			default:
-				return {
-					success: false,
-					message: ERROR_MESSAGES.SIGN_IN_UNKNOWN,
-				};
-		}
+		return {
+			success: false,
+			message: "signInUnknown",
+		};
 	}
 
 	if (
@@ -72,7 +63,7 @@ export async function wrapServerSideErrorForClient<T>(
 			status: 500,
 		});
 		await sendLineNotifyMessage(error.message);
-		return { success: false, message: ERROR_MESSAGES.PRISMA_UNEXPECTED };
+		return { success: false, message: "prismaUnexpected" };
 	}
 	if (error instanceof Prisma.PrismaClientKnownRequestError) {
 		loggerWarn(error.message, {
@@ -80,7 +71,7 @@ export async function wrapServerSideErrorForClient<T>(
 			status: 500,
 		});
 		await sendLineNotifyMessage(error.message);
-		return { success: false, message: ERROR_MESSAGES.PRISMA_DUPLICATE };
+		return { success: false, message: "prismaDuplicated" };
 	}
 
 	if (error instanceof Error) {
@@ -91,14 +82,14 @@ export async function wrapServerSideErrorForClient<T>(
 		await sendLineNotifyMessage(error.message);
 	} else {
 		loggerError(
-			ERROR_MESSAGES.UNEXPECTED,
+			"unexpected",
 			{
 				caller: "wrapServerSideErrorForClient not error errors",
 				status: 500,
 			},
 			error,
 		);
-		await sendLineNotifyMessage(ERROR_MESSAGES.UNEXPECTED);
+		await sendLineNotifyMessage("unexpected");
 	}
-	return { success: false, message: ERROR_MESSAGES.UNEXPECTED };
+	return { success: false, message: "unexpected" };
 }

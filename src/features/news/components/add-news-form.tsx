@@ -22,9 +22,12 @@ export function AddNewsForm({ categories }: Props) {
 	const urlInputRef = useRef<HTMLInputElement>(null);
 	const categoryInputRef = useRef<HTMLInputElement>(null);
 
+	const label = useTranslations("label");
+	const message = useTranslations("message");
+
 	const submitForm = async (_: null, formData: FormData) => {
 		const response = await addNews(formData);
-		toast(response.message);
+		toast(message(response.message));
 		return null;
 	};
 
@@ -40,8 +43,6 @@ export function AddNewsForm({ categories }: Props) {
 		if (urlInputRef.current !== null) urlInputRef.current.value = clipboardText;
 	};
 
-	const t = useTranslations("label");
-
 	return (
 		<form action={addNewsAction} className="space-y-4 px-2 py-4">
 			{isPending ? (
@@ -49,7 +50,7 @@ export function AddNewsForm({ categories }: Props) {
 			) : (
 				<>
 					<div className="space-y-1">
-						<Label htmlFor="category">{t("category")}</Label>
+						<Label htmlFor="category">{label("category")}</Label>
 						<div className="flex">
 							<Input
 								id="category"
@@ -79,15 +80,15 @@ export function AddNewsForm({ categories }: Props) {
 						</div>
 					</div>
 					<div className="space-y-1">
-						<Label htmlFor="title">{t("title")}</Label>
+						<Label htmlFor="title">{label("title")}</Label>
 						<Input id="title" name="title" autoComplete="off" required />
 					</div>
 					<div className="space-y-1">
-						<Label htmlFor="quote">{t("description")}</Label>
+						<Label htmlFor="quote">{label("description")}</Label>
 						<Textarea id="quote" name="quote" autoComplete="off" />
 					</div>
 					<div className="space-y-1">
-						<Label htmlFor="url">{t("url")}</Label>
+						<Label htmlFor="url">{label("url")}</Label>
 						<div className="flex">
 							<Input
 								id="url"
@@ -106,7 +107,7 @@ export function AddNewsForm({ categories }: Props) {
 				</>
 			)}
 			<Button type="submit" disabled={isPending} className="w-full">
-				{t("save")}
+				{label("save")}
 			</Button>
 		</form>
 	);

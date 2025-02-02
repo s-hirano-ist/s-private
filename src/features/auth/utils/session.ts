@@ -1,5 +1,4 @@
 import "server-only";
-import { ERROR_MESSAGES } from "@/constants";
 import { UnauthorizedError } from "@/error-classes";
 import { loggerWarn } from "@/pino";
 import { auth } from "./auth";
@@ -7,7 +6,7 @@ import { auth } from "./auth";
 async function checkSelfAuthOrThrow() {
 	const session = await auth();
 	if (!session) {
-		loggerWarn(ERROR_MESSAGES.UNAUTHORIZED, {
+		loggerWarn("Unauthorized", {
 			caller: "Unauthorized on checkSelfAuth or throw",
 			status: 401,
 		});

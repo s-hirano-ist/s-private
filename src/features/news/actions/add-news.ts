@@ -1,6 +1,5 @@
 "use server";
 import "server-only";
-import { SUCCESS_MESSAGES } from "@/constants";
 import { NotAllowedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
 import {
@@ -62,7 +61,7 @@ export async function addNews(formData: FormData): Promise<ServerAction<News>> {
 
 		return {
 			success: true,
-			message: SUCCESS_MESSAGES.INSERTED,
+			message: "inserted",
 			data: {
 				...createdNews,
 				category: createdNews.Category.name,

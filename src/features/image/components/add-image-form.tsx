@@ -8,6 +8,9 @@ import { useActionState } from "react";
 import { toast } from "sonner";
 
 export function AddImageForm() {
+	const label = useTranslations("label");
+	const message = useTranslations("message");
+
 	async function submitForm(_: null, formData: FormData) {
 		const files = formData.getAll("files");
 
@@ -16,19 +19,17 @@ export function AddImageForm() {
 			individualFormData.append("file", file);
 
 			const response = await addImage(individualFormData, index + 1);
-			toast(response.message);
+			toast(message(response.message));
 		}
 		return null;
 	}
 
 	const [_, addNewsAction, isPending] = useActionState(submitForm, null);
 
-	const t = useTranslations("label");
-
 	return (
 		<form action={addNewsAction} className="space-y-4 px-2 py-4">
 			<div className="space-y-1">
-				<Label htmlFor="files">{t("image")}</Label>
+				<Label htmlFor="files">{label("image")}</Label>
 				<Input
 					id="files"
 					type="file"
@@ -39,7 +40,7 @@ export function AddImageForm() {
 				/>
 			</div>
 			<Button type="submit" disabled={isPending} className="w-full">
-				{isPending ? t("uploading") : t("upload")}
+				{isPending ? label("uploading") : label("upload")}
 			</Button>
 		</form>
 	);

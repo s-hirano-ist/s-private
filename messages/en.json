@@ -32,5 +32,21 @@
 		"403": "Forbidden",
 		"404": "Not Found",
 		"500": "Internal Server Error"
+	},
+	"message": {
+		"inserted": "Inserted successfully.",
+		"success": "Success",
+		"updated": "Updated successfully.",
+		"unexpected": "Unexpected error occurred.",
+		"lineSend": "Failed to send logs.",
+		"prismaDuplicated": "Duplicated record.",
+		"prismaUnexpected": "Failed to write to database.",
+		"unauthorized": "Unauthorized error.",
+		"notAllowed": "Not allowed error.",
+		"signInUnknown": "Sign in error.",
+		"required": "Required.",
+		"tooLong": "Too long.",
+		"invalidFormat": "Invalid format.",
+		"invalidFileFormat": "Invalid file format."
 	}
 }

@@ -1,43 +1,41 @@
-import { ERROR_MESSAGES, FORM_ERROR_MESSAGES } from "./constants";
-
 export class LineNotifyError extends Error {
 	constructor() {
-		super(ERROR_MESSAGES.LINE_SEND);
+		super("lineSend");
 		this.name = "LineNotifyError";
 	}
 }
 
 export class NotAllowedError extends Error {
 	constructor() {
-		super(ERROR_MESSAGES.NOT_ALLOWED);
+		super("notAllowed");
 		this.name = "NotAllowedError";
 	}
 }
 
 export class UnauthorizedError extends Error {
 	constructor() {
-		super(ERROR_MESSAGES.UNAUTHORIZED);
+		super("unauthorized");
 		this.name = "UnauthorizedError";
 	}
 }
 
 export class UnexpectedError extends Error {
 	constructor() {
-		super(ERROR_MESSAGES.UNEXPECTED);
+		super("unexpected");
 		this.name = "UnexpectedError";
 	}
 }
 
 export class InvalidFormatError extends Error {
 	constructor() {
-		super(FORM_ERROR_MESSAGES.INVALID_FORMAT);
+		super("invalidFormat");
 		this.name = "InvalidFormatError";
 	}
 }
 
 export class FileNotAllowedError extends Error {
 	constructor() {
-		super(FORM_ERROR_MESSAGES.INVALID_FILE_FORMAT);
+		super("invalidFileFormat");
 		this.name = "FileNotAllowedError";
 	}
 }
