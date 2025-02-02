@@ -23,7 +23,8 @@
 		"dumpTarget": "DUMPのターゲット",
 		"totalBooks": "冊数",
 		"totalContents": "コンテンツ数",
-		"totalImages": "画像数"
+		"totalImages": "画像数",
+		"search": "検索"
 	},
 	"statusCode": {
 		"000": "近日公開",
