@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.5.0](https://github.com/s-hirano-ist/s-private/compare/v8.4.1...v8.5.0) (2025-02-02)
+
+
+### Features
+
+* 🎸 add lang for server components ([d4444c0](https://github.com/s-hirano-ist/s-private/commit/d4444c09e36b3959c2c24b201b46ceb0da5d4878))
+* 🎸 add search for books and contents ([085a92f](https://github.com/s-hirano-ist/s-private/commit/085a92fa30ac8ef925c467e447b1ab5b36f73e0a))
+* add search for books and contents ([178f7f2](https://github.com/s-hirano-ist/s-private/commit/178f7f25e7c7aff9f37692e90abe512e9976ee88))
+
 ## [8.4.1](https://github.com/s-hirano-ist/s-private/compare/v8.4.0...v8.4.1) (2025-02-01)
 
 
