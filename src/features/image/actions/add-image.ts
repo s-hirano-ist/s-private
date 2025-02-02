@@ -2,7 +2,6 @@
 import "server-only";
 import {
 	ORIGINAL_IMAGE_PATH,
-	SUCCESS_MESSAGES,
 	THUMBNAIL_IMAGE_PATH,
 	THUMBNAIL_WIDTH,
 } from "@/constants";
@@ -92,7 +91,7 @@ export async function addImage(
 
 		return {
 			success: true,
-			message: `${String(index)}番目の画像が${SUCCESS_MESSAGES.INSERTED}`,
+			message: "inserted",
 			data: undefined,
 		};
 	} catch (error) {

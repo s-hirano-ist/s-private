@@ -1,4 +1,3 @@
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { auth } from "@/features/auth/utils/auth";
 import prisma from "@/prisma";
 import { Session } from "next-auth";
@@ -44,7 +43,7 @@ describe("addNews", () => {
 
 		expect(result).toEqual({
 			success: false,
-			message: ERROR_MESSAGES.UNAUTHORIZED,
+			message: "unauthorized",
 		});
 		expect(auth).toHaveBeenCalledTimes(1);
 	});
@@ -56,7 +55,7 @@ describe("addNews", () => {
 
 		expect(result).toEqual({
 			success: false,
-			message: ERROR_MESSAGES.NOT_ALLOWED,
+			message: "notAllowed",
 		});
 		expect(auth).toHaveBeenCalledTimes(1);
 	});
@@ -76,7 +75,7 @@ describe("addNews", () => {
 		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 		expect(result).toEqual({
 			success: true,
-			message: SUCCESS_MESSAGES.INSERTED,
+			message: "inserted",
 			data: {
 				...mockCreatedNews,
 				category: mockCreatedNews.Category.name,

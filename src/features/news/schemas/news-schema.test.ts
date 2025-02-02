@@ -1,4 +1,3 @@
-import { FORM_ERROR_MESSAGES } from "@/constants";
 import { describe, expect, it } from "vitest";
 import { newsSchema } from "./news-schema";
 
@@ -43,7 +42,7 @@ describe("newsSchema", () => {
 		const result = newsSchema.safeParse(invalidData);
 		expect(result.success).toBe(false);
 		if (!result.success) {
-			expect(result.error.errors[0].message).toBe(FORM_ERROR_MESSAGES.REQUIRED);
+			expect(result.error.errors[0].message).toBe("required");
 		}
 	});
 
@@ -58,7 +57,7 @@ describe("newsSchema", () => {
 		const result = newsSchema.safeParse(invalidData);
 		expect(result.success).toBe(false);
 		if (!result.success) {
-			expect(result.error.errors[0].message).toBe(FORM_ERROR_MESSAGES.TOO_LONG);
+			expect(result.error.errors[0].message).toBe("tooLong");
 		}
 	});
 
@@ -73,7 +72,7 @@ describe("newsSchema", () => {
 		const result = newsSchema.safeParse(invalidData);
 		expect(result.success).toBe(false);
 		if (!result.success) {
-			expect(result.error.errors[0].message).toBe(FORM_ERROR_MESSAGES.TOO_LONG);
+			expect(result.error.errors[0].message).toBe("tooLong");
 		}
 	});
 
@@ -100,7 +99,7 @@ describe("newsSchema", () => {
 		const result = newsSchema.safeParse(invalidData);
 		expect(result.success).toBe(false);
 		if (!result.success) {
-			expect(result.error.errors[0].message).toBe(FORM_ERROR_MESSAGES.REQUIRED);
+			expect(result.error.errors[0].message).toBe("required");
 		}
 	});
 
@@ -115,9 +114,7 @@ describe("newsSchema", () => {
 		const result = newsSchema.safeParse(invalidData);
 		expect(result.success).toBe(false);
 		if (!result.success) {
-			expect(result.error.errors[0].message).toBe(
-				FORM_ERROR_MESSAGES.INVALID_FORMAT,
-			);
+			expect(result.error.errors[0].message).toBe("invalidFormat");
 		}
 	});
 });

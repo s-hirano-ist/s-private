@@ -1,6 +1,6 @@
 import { StatusCodeView } from "@/components/card/status-code-view";
 import { ImageStack as _ImageStack } from "@/components/stack/image-stack";
-import { ERROR_MESSAGES, NOT_FOUND_IMAGE_PATH } from "@/constants";
+import { NOT_FOUND_IMAGE_PATH } from "@/constants";
 import { getSelfId } from "@/features/auth/utils/session";
 import { generateUrl } from "@/features/image/actions/generate-url";
 import { loggerError } from "@/pino";
@@ -36,11 +36,7 @@ export async function ImageStack() {
 
 		return <_ImageStack data={images} />;
 	} catch (error) {
-		loggerError(
-			ERROR_MESSAGES.UNEXPECTED,
-			{ caller: "ImagePage", status: 500 },
-			error,
-		);
+		loggerError("unexpected", { caller: "ImagePage", status: 500 }, error);
 		return (
 			<div className="flex flex-col items-center">
 				<StatusCodeView statusCode="500" />

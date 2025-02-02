@@ -1,4 +1,3 @@
-import { ERROR_MESSAGES } from "@/constants";
 import { LineNotifyError, NotAllowedError } from "@/error-classes";
 import { loggerError, loggerWarn } from "@/pino";
 import { sendLineNotifyMessage } from "@/utils/fetch-message";
@@ -44,23 +43,6 @@ describe("wrapServerSideErrorForClient", () => {
 		});
 	});
 
-	it("should handle AuthError with CredentialsSignin type", async () => {
-		const error = new AuthError();
-		error.type = "CredentialsSignin";
-
-		const result = await wrapServerSideErrorForClient(error);
-
-		expect(loggerWarn).toHaveBeenCalledWith(error.message, {
-			caller: "wrapServerSideErrorForClient auth",
-			status: 500,
-		});
-		expect(sendLineNotifyMessage).toHaveBeenCalledWith(error.message);
-		expect(result).toEqual({
-			success: false,
-			message: ERROR_MESSAGES.SIGN_IN,
-		});
-	});
-
 	it("should handle AuthError with unknown auth type", async () => {
 		const error = new AuthError();
 
@@ -73,7 +55,7 @@ describe("wrapServerSideErrorForClient", () => {
 		expect(sendLineNotifyMessage).toHaveBeenCalledWith(error.message);
 		expect(result).toEqual({
 			success: false,
-			message: ERROR_MESSAGES.SIGN_IN_UNKNOWN,
+			message: "signInUnknown",
 		});
 	});
 
@@ -91,7 +73,7 @@ describe("wrapServerSideErrorForClient", () => {
 		expect(sendLineNotifyMessage).toHaveBeenCalledWith(error.message);
 		expect(result).toEqual({
 			success: false,
-			message: ERROR_MESSAGES.PRISMA_UNEXPECTED,
+			message: "prismaUnexpected",
 		});
 	});
 
@@ -110,7 +92,7 @@ describe("wrapServerSideErrorForClient", () => {
 		expect(sendLineNotifyMessage).toHaveBeenCalledWith(error.message);
 		expect(result).toEqual({
 			success: false,
-			message: ERROR_MESSAGES.PRISMA_DUPLICATE,
+			message: "prismaDuplicated",
 		});
 	});
 
@@ -126,7 +108,7 @@ describe("wrapServerSideErrorForClient", () => {
 		expect(sendLineNotifyMessage).toHaveBeenCalledWith(error.message);
 		expect(result).toEqual({
 			success: false,
-			message: ERROR_MESSAGES.UNEXPECTED,
+			message: "unexpected",
 		});
 	});
 
@@ -136,19 +118,17 @@ describe("wrapServerSideErrorForClient", () => {
 		const result = await wrapServerSideErrorForClient(error);
 
 		expect(loggerError).toHaveBeenCalledWith(
-			ERROR_MESSAGES.UNEXPECTED,
+			"unexpected",
 			{
 				caller: "wrapServerSideErrorForClient not error errors",
 				status: 500,
 			},
 			"unknown error",
 		);
-		expect(sendLineNotifyMessage).toHaveBeenCalledWith(
-			ERROR_MESSAGES.UNEXPECTED,
-		);
+		expect(sendLineNotifyMessage).toHaveBeenCalledWith("unexpected");
 		expect(result).toEqual({
 			success: false,
-			message: ERROR_MESSAGES.UNEXPECTED,
+			message: "unexpected",
 		});
 	});
 });

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { NextIntlClientProvider } from "next-intl";
 import { ViewerStack } from "./viewer-stack";
 
 const meta = {
@@ -19,35 +20,44 @@ const svg = `
 const encoder = new TextEncoder();
 const uint8ArrayImage = encoder.encode(svg);
 
+const images = [
+	{
+		title: "sample title 1",
+		uint8ArrayImage,
+	},
+	{
+		title: "sample title 2",
+		uint8ArrayImage,
+	},
+	{
+		title: "sample title 3",
+		uint8ArrayImage,
+	},
+	{
+		title: "sample title 4",
+		uint8ArrayImage,
+	},
+	{
+		title: "sample title 5",
+		uint8ArrayImage,
+	},
+	{
+		title: "sample title 6",
+		uint8ArrayImage,
+	},
+];
+const path = "/example";
+const imageType = "svg";
+
 export const Default: Story = {
 	args: {
-		images: [
-			{
-				title: "sample title 1",
-				uint8ArrayImage,
-			},
-			{
-				title: "sample title 2",
-				uint8ArrayImage,
-			},
-			{
-				title: "sample title 3",
-				uint8ArrayImage,
-			},
-			{
-				title: "sample title 4",
-				uint8ArrayImage,
-			},
-			{
-				title: "sample title 5",
-				uint8ArrayImage,
-			},
-			{
-				title: "sample title 6",
-				uint8ArrayImage,
-			},
-		],
-		path: "/example",
-		imageType: "svg",
+		images,
+		path,
+		imageType,
 	},
+	render: () => (
+		<NextIntlClientProvider locale="ja">
+			<ViewerStack images={images} path={path} imageType={imageType} />
+		</NextIntlClientProvider>
+	),
 };

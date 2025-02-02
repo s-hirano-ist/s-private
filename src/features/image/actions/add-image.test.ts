@@ -1,8 +1,3 @@
-import {
-	ERROR_MESSAGES,
-	FORM_ERROR_MESSAGES,
-	SUCCESS_MESSAGES,
-} from "@/constants";
 import { env } from "@/env";
 import { auth } from "@/features/auth/utils/auth";
 import { minioClient } from "@/minio";
@@ -61,7 +56,6 @@ const createMockFile = (name: string, type: string, size: number): File => {
 	return file;
 };
 
-const bucketName = env.MINIO_BUCKET_NAME;
 const mockMetadata = { width: 800, height: 600, format: "jpeg" };
 
 describe("addImage", () => {
@@ -74,7 +68,7 @@ describe("addImage", () => {
 
 		expect(result).toEqual({
 			success: false,
-			message: ERROR_MESSAGES.UNAUTHORIZED,
+			message: "unauthorized",
 		});
 		expect(auth).toHaveBeenCalledTimes(1);
 	});
@@ -86,7 +80,7 @@ describe("addImage", () => {
 
 		expect(result).toEqual({
 			success: false,
-			message: ERROR_MESSAGES.NOT_ALLOWED,
+			message: "notAllowed",
 		});
 		expect(auth).toHaveBeenCalledTimes(1);
 	});
@@ -117,7 +111,7 @@ describe("addImage", () => {
 		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 		expect(result).toEqual({
 			success: true,
-			message: `1番目の画像が${SUCCESS_MESSAGES.INSERTED}`,
+			message: `inserted`,
 		});
 	});
 
@@ -133,11 +127,11 @@ describe("addImage", () => {
 		});
 		(uuidv7 as Mock).mockReturnValue("generated-uuid");
 
-		const result = await addImage(mockFormData);
+		const result = await addImage(mockFormData, 1);
 
 		expect(result).toEqual({
 			success: false,
-			message: FORM_ERROR_MESSAGES.INVALID_FILE_FORMAT,
+			message: "invalidFileFormat",
 		});
 	});
 
@@ -153,11 +147,11 @@ describe("addImage", () => {
 		});
 		(uuidv7 as Mock).mockReturnValue("generated-uuid");
 
-		const result = await addImage(mockFormData);
+		const result = await addImage(mockFormData, 1);
 
 		expect(result).toEqual({
 			success: false,
-			message: FORM_ERROR_MESSAGES.INVALID_FILE_FORMAT,
+			message: "invalidFileFormat",
 		});
 	});
 
@@ -169,11 +163,11 @@ describe("addImage", () => {
 		});
 		(uuidv7 as Mock).mockReturnValue("generated-uuid");
 
-		const result = await addImage(mockFormData);
+		const result = await addImage(mockFormData, 1);
 
 		expect(result).toEqual({
 			success: false,
-			message: ERROR_MESSAGES.UNEXPECTED,
+			message: "unexpected",
 		});
 	});
 });

@@ -2,7 +2,6 @@
 import "server-only";
 import { StatusCodeView } from "@/components/card/status-code-view";
 import { CardStack } from "@/components/stack/card-stack";
-import { ERROR_MESSAGES } from "@/constants";
 import { getSelfId } from "@/features/auth/utils/session";
 import { loggerError } from "@/pino";
 import prisma from "@/prisma";
@@ -35,7 +34,7 @@ export async function NewsStack() {
 		return <CardStack data={unexportedNews} />;
 	} catch (error) {
 		loggerError(
-			ERROR_MESSAGES.UNEXPECTED,
+			"unexpected",
 			{
 				caller: "NewsStack",
 				status: 500,

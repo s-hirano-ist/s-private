@@ -1,21 +1,15 @@
-import { FORM_ERROR_MESSAGES } from "@/constants";
 import { isValidUrl } from "@/utils/validate-url";
 import { z } from "zod";
 
 export const contentsSchema = z.object({
 	title: z
 		.string()
-		.min(1, { message: FORM_ERROR_MESSAGES.REQUIRED })
-		.max(64, { message: FORM_ERROR_MESSAGES.TOO_LONG }),
-	quote: z
-		.string()
-		.max(256, { message: FORM_ERROR_MESSAGES.TOO_LONG })
-		.nullable(),
+		.min(1, { message: "required" })
+		.max(64, { message: "tooLong" }),
+	quote: z.string().max(256, { message: "tooLong" }).nullable(),
 	url: z
-		.string({ message: FORM_ERROR_MESSAGES.REQUIRED })
-		.min(1, { message: FORM_ERROR_MESSAGES.REQUIRED })
-		.url({ message: FORM_ERROR_MESSAGES.INVALID_FORMAT })
-		.refine((url) => isValidUrl(url), {
-			message: FORM_ERROR_MESSAGES.INVALID_FORMAT,
-		}),
+		.string({ message: "required" })
+		.min(1, { message: "required" })
+		.url({ message: "invalidFormat" })
+		.refine((url) => isValidUrl(url), { message: "invalidFormat" }),
 });

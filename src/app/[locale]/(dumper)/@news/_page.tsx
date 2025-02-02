@@ -1,6 +1,5 @@
 import { CardStackSkeleton } from "@/components/stack/card-stack-skeleton";
 import { Separator } from "@/components/ui/separator";
-import { ERROR_MESSAGES } from "@/constants";
 import {
 	getSelfId,
 	hasDumperPostPermission,
@@ -23,7 +22,7 @@ export async function SuspensePage() {
 			});
 		} catch (error) {
 			loggerError(
-				ERROR_MESSAGES.UNEXPECTED,
+				"unexpected",
 				{
 					caller: "CategoryFetch",
 					status: 500,

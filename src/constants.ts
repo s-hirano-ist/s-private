@@ -10,32 +10,6 @@ export const THUMBNAIL_HEIGHT = 192;
 
 export const NOT_FOUND_IMAGE_PATH = "/not-found.png";
 
-export const FORM_ERROR_MESSAGES = {
-	REQUIRED: "必須項目です。",
-	TOO_LONG: "文字数が多すぎます。",
-	ALPHABET_ONLY: "アルファベットとハイフンのみが入力可能です。",
-	INVALID_FORMAT: "無効なフォーマットで入力されています。",
-	INVALID_FILE_FORMAT: "ファイルのフォーマットが無効です。",
-} as const;
-
-export const ERROR_MESSAGES = {
-	UNEXPECTED: "予期せぬエラーが発生しました。",
-	LINE_SEND: "ログの送信でエラーが発生しました。",
-	PRISMA_DUPLICATE: "すでに登録されているため登録できません。",
-	PRISMA_UNEXPECTED: "データベースへの書き込み時にエラーが発生しました。",
-	UNAUTHORIZED: "認証されていません。",
-	NOT_ALLOWED: "操作が許可されていません。",
-	SIGN_IN: "メールアドレスまたはパスワードが間違っています。",
-	SIGN_IN_UNKNOWN: "サインインに失敗しました。",
-} as const;
-
-export const SUCCESS_MESSAGES = {
-	INSERTED: "正常に登録されました。",
-	SIGN_IN: "サインインに成功しました。",
-	SIGN_OUT: "サインアウトに成功しました。",
-	UPDATE: "更新が完了しました。",
-} as const;
-
 export const SKELETON_STACK_SIZE = 10;
 
 export const UTIL_URLS = [

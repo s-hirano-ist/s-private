@@ -1,6 +1,5 @@
 "use server";
 import "server-only";
-import { SUCCESS_MESSAGES } from "@/constants";
 import { NotAllowedError, UnexpectedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
 import {
@@ -86,7 +85,7 @@ export async function changeContentsStatus(
 		await sendLineNotifyMessage(message);
 		revalidatePath("/(dumper)");
 
-		return { success: true, message: SUCCESS_MESSAGES.UPDATE, data: message };
+		return { success: true, message: "updated", data: message };
 	} catch (error) {
 		return await wrapServerSideErrorForClient(error);
 	}

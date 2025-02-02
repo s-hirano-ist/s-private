@@ -23,7 +23,8 @@
 		"dumpTarget": "DUMPのターゲット",
 		"totalBooks": "冊数",
 		"totalContents": "コンテンツ数",
-		"totalImages": "画像数"
+		"totalImages": "画像数",
+		"search": "検索"
 	},
 	"statusCode": {
 		"000": "近日公開",
@@ -31,5 +32,21 @@
 		"403": "許可されていません",
 		"404": "コンテンツが見つかりません",
 		"500": "予期せぬエラーが発生しました"
+	},
+	"message": {
+		"inserted": "正常に登録されました。",
+		"success": "完了",
+		"updated": "更新が完了しました。",
+		"unexpected": "予期せぬエラーが発生しました。",
+		"lineSend": "ログの送信でエラーが発生しました。",
+		"prismaDuplicated": "すでに登録されているため登録できません。",
+		"prismaUnexpected": "データベースへの書き込み時にエラーが発生しました。",
+		"unauthorized": "認証されていません。",
+		"notAllowed": "操作が許可されていません。",
+		"signInUnknown": "サインインに失敗しました。",
+		"required": "必須項目です。",
+		"tooLong": "文字数が多すぎます。",
+		"invalidFormat": "無効なフォーマットで入力されています。",
+		"invalidFileFormat": "ファイルのフォーマットが無効です。"
 	}
 }

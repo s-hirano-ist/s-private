@@ -1,6 +1,6 @@
 import { StatusCodeView } from "@/components/card/status-code-view";
 import { ImageStack } from "@/components/stack/image-stack";
-import { ERROR_MESSAGES, NOT_FOUND_IMAGE_PATH, PAGE_SIZE } from "@/constants";
+import { NOT_FOUND_IMAGE_PATH, PAGE_SIZE } from "@/constants";
 import { generateUrl } from "@/features/image/actions/generate-url";
 import { loggerError } from "@/pino";
 import prisma from "@/prisma";
@@ -38,7 +38,7 @@ export async function AllImageStack({ page }: Props) {
 		return <ImageStack data={images} />;
 	} catch (error) {
 		loggerError(
-			ERROR_MESSAGES.UNEXPECTED,
+			"unexpected",
 			{
 				caller: "AllImagePage",
 				status: 500,
