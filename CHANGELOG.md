@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.5.1](https://github.com/s-hirano-ist/s-private/compare/v8.5.0...v8.5.1) (2025-02-03)
+
+
+### Bug Fixes
+
+* 🐛 design of image skeleteleton ([572f56f](https://github.com/s-hirano-ist/s-private/commit/572f56f0116bd2a0c01712a311acf8ff17559979))
+* 🐛 image page size ([7c155d3](https://github.com/s-hirano-ist/s-private/commit/7c155d3e195dac11060e5cc13d5a14dde9e83e70))
+* small design fixes ([258e9e5](https://github.com/s-hirano-ist/s-private/commit/258e9e5ca9fc5ba5b6b7beaddb34d2fda9a086e3))
+
 ## [8.5.0](https://github.com/s-hirano-ist/s-private/compare/v8.4.1...v8.5.0) (2025-02-02)
 
 
