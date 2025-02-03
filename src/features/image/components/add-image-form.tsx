@@ -14,11 +14,11 @@ export function AddImageForm() {
 	async function submitForm(_: null, formData: FormData) {
 		const files = formData.getAll("files");
 
-		for (const [index, file] of files.entries()) {
+		for (const file of files) {
 			const individualFormData = new FormData();
 			individualFormData.append("file", file);
 
-			const response = await addImage(individualFormData, index + 1);
+			const response = await addImage(individualFormData);
 			toast(message(response.message));
 		}
 		return null;
