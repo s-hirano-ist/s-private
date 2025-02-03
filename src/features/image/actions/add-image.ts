@@ -29,7 +29,6 @@ import { v7 as uuidv7 } from "uuid";
 
 export async function addImage(
 	formData: FormData,
-	index: number,
 ): Promise<ServerAction<undefined>> {
 	try {
 		const hasPostPermission = await hasDumperPostPermission();

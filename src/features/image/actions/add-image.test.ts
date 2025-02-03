@@ -64,7 +64,7 @@ describe("addImage", () => {
 	it("should return success false on Unauthorized", async () => {
 		(auth as Mock).mockResolvedValue(mockUnauthorizedSession);
 
-		const result = await addImage(mockFormData, 1);
+		const result = await addImage(mockFormData);
 
 		expect(result).toEqual({
 			success: false,
@@ -76,7 +76,7 @@ describe("addImage", () => {
 	it("should return success false on not permitted", async () => {
 		(auth as Mock).mockResolvedValue(mockNotAllowedRoleSession);
 
-		const result = await addImage(mockFormData, 1);
+		const result = await addImage(mockFormData);
 
 		expect(result).toEqual({
 			success: false,
@@ -104,7 +104,7 @@ describe("addImage", () => {
 		});
 		(uuidv7 as Mock).mockReturnValue("generated-uuid");
 
-		const result = await addImage(mockFormData, 1);
+		const result = await addImage(mockFormData);
 
 		expect(minioClient.putObject).toHaveBeenCalledTimes(2);
 		expect(prisma.images.create).toHaveBeenCalled();
@@ -127,7 +127,7 @@ describe("addImage", () => {
 		});
 		(uuidv7 as Mock).mockReturnValue("generated-uuid");
 
-		const result = await addImage(mockFormData, 1);
+		const result = await addImage(mockFormData);
 
 		expect(result).toEqual({
 			success: false,
@@ -147,7 +147,7 @@ describe("addImage", () => {
 		});
 		(uuidv7 as Mock).mockReturnValue("generated-uuid");
 
-		const result = await addImage(mockFormData, 1);
+		const result = await addImage(mockFormData);
 
 		expect(result).toEqual({
 			success: false,
@@ -163,7 +163,7 @@ describe("addImage", () => {
 		});
 		(uuidv7 as Mock).mockReturnValue("generated-uuid");
 
-		const result = await addImage(mockFormData, 1);
+		const result = await addImage(mockFormData);
 
 		expect(result).toEqual({
 			success: false,
