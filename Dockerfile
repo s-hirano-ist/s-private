@@ -1,7 +1,7 @@
 # Build Stage
 # MEMO: alpine based iamges is not recommended for prod useage https://github.com/nodejs/docker-node#nodealpine
 
-FROM node:23.7.0-slim@sha256:278dc9616f605d5de4304fb19bf245ec1fd5569fddf2c7ea611f6e7262de98b5 AS base
+FROM node:23.7.0-slim@sha256:a5163af143b43b0da7572444bd49a22edb4cc1a74d3a46e1ef840f62bce07cac AS base
 RUN apt-get update && apt-get install -y ca-certificates && update-ca-certificates
 
 # Install pnpm
