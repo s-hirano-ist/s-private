@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.5.2](https://github.com/s-hirano-ist/s-private/compare/v8.5.1...v8.5.2) (2025-02-11)
+
+
+### Bug Fixes
+
+* 🐛 session and jwt token exp ([aceb62f](https://github.com/s-hirano-ist/s-private/commit/aceb62f3d80464dd7dd5fc2e9ed9a85f94a846c4))
+* 🐛 session and jwt token exp ([88505d5](https://github.com/s-hirano-ist/s-private/commit/88505d5c13c2512d15d07d542f72727eaf81267e))
+
 ## [8.5.1](https://github.com/s-hirano-ist/s-private/compare/v8.5.0...v8.5.1) (2025-02-03)
 
 
