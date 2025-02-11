@@ -28,8 +28,8 @@ export const {
 } = NextAuth({
 	...authConfig,
 	secret: env.AUTH_SECRET,
-	session: { strategy: "jwt", maxAge: 24 * 60 * 60 },
-	jwt: { maxAge: 30 * 24 * 60 * 60 },
+	session: { strategy: "jwt", maxAge: 30 * 24 * 60 * 60 },
+	jwt: { maxAge: 7 * 24 * 60 * 60 },
 	callbacks: {
 		jwt({ account, token, profile }) {
 			if (account && profile) {
