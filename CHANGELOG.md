@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.5.3](https://github.com/s-hirano-ist/s-private/compare/v8.5.2...v8.5.3) (2025-02-11)
+
+
+### Bug Fixes
+
+* 🐛 auth.js config ([2697b4e](https://github.com/s-hirano-ist/s-private/commit/2697b4e5227ae83da869e226a694feb22ec49ec8))
+
 ## [8.5.2](https://github.com/s-hirano-ist/s-private/compare/v8.5.1...v8.5.2) (2025-02-11)
 
 
