@@ -1,6 +1,8 @@
 import { withSentryConfig } from "@sentry/nextjs";
-import { env } from "./src/env.ts";
-await import("./src/env.ts");
+
+// FIXME: env.tsの読み込み（Node v23じゃないと動かない... process.envの排除
+// import { env } from "./src/env.ts";
+// await import("./src/env.ts");
 import createNextIntlPlugin from "next-intl/plugin";
 
 // MEMO: scriptタグを利用する必要が出たときはnonceの利用推奨
@@ -25,7 +27,7 @@ const cspHeader = `
 	worker-src 'self' blob:;
 	manifest-src 'self' https://s-hirano.jp.auth0.com https://s-hirano-dev.jp.auth0.com;
     upgrade-insecure-requests;
-	report-uri ${env.SENTRY_REPORT_URL};
+	report-uri ${process.env.SENTRY_REPORT_URL};
     report-to csp-endpoint;
 	`;
 
@@ -37,7 +39,7 @@ const nextConfig = {
 	},
 	pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
 	output: "standalone",
-	images: { remotePatterns: [{ hostname: env.MINIO_HOST }] },
+	images: { remotePatterns: [{ hostname: process.env.MINIO_HOST }] },
 	async headers() {
 		return [
 			{
@@ -61,7 +63,7 @@ const nextConfig = {
 					},
 					{
 						key: "Report-To",
-						value: `{"group":"csp-endpoint","max_age":10886400,"endpoints":[{"url":"${env.SENTRY_REPORT_URL}"}],"include_subdomains":true}`,
+						value: `{"group":"csp-endpoint","max_age":10886400,"endpoints":[{"url":"${process.env.SENTRY_REPORT_URL}"}],"include_subdomains":true}`,
 					},
 				],
 			},
