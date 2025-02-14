@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.5.4](https://github.com/s-hirano-ist/s-private/compare/v8.5.3...v8.5.4) (2025-02-13)
+
+
+### Bug Fixes
+
+* 🐛 env.ts not working on node v22 ([8a6e039](https://github.com/s-hirano-ist/s-private/commit/8a6e03970ef58f33ac96c200f35403748079a97d))
+
 ## [8.5.3](https://github.com/s-hirano-ist/s-private/compare/v8.5.2...v8.5.3) (2025-02-11)
 
 
