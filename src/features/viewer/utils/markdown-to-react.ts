@@ -12,6 +12,8 @@ import remarkRehype from "remark-rehype";
 import remarkToc from "remark-toc";
 import { unified } from "unified";
 
+export const maxDuration = 30;
+
 /* Other rehype packages
  * rehype-autolink-headings
  * remark-link-card
