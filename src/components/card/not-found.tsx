@@ -17,10 +17,10 @@ export function NotFound() {
 				<div className="text-sm">------Not Found------</div>
 			</div>
 			<p className="px-4 text-center text-primary-grad">
-				お探しのコンテンツが見つかりませんでした。
+				The content you are looking for could not be found.
 			</p>
 			<Button className="mx-auto flex w-1/2 flex-col" asChild>
-				<Link href={"/" as Route}>HOMEへ戻る</Link>
+				<Link href={"/" as Route}>Return to Home</Link>
 			</Button>
 		</div>
 	);
