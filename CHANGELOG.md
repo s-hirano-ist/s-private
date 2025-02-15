@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.7.0](https://github.com/s-hirano-ist/s-private/compare/v8.6.5...v8.7.0) (2025-02-15)
+
+
+### Features
+
+* 🎸 add logging of prisma ([56be69d](https://github.com/s-hirano-ist/s-private/commit/56be69d23538713db19e8daa965c8782ca14f0ff))
+* 🎸 add logging of prisma ([a9c9361](https://github.com/s-hirano-ist/s-private/commit/a9c93611a54830564d60172289eb11789417ace8))
+
+
+### Bug Fixes
+
+* 🐛 optimized route test ([16426ae](https://github.com/s-hirano-ist/s-private/commit/16426aef743d052dcfd71ac22c85e0a6bb715d7a))
+* 🐛 perfromance of markdown render ([ef52a19](https://github.com/s-hirano-ist/s-private/commit/ef52a190668bd173fdb07dc7115036db8ce0461d))
+* 🐛 perfromance of markdown render ([a197980](https://github.com/s-hirano-ist/s-private/commit/a197980d396bd4f48a5a33bfc547f5df16ee4766))
+* 🐛 use component ([ea6664b](https://github.com/s-hirano-ist/s-private/commit/ea6664b2fc9798aee6620fe4ca909d5fd3d77bfe))
+
 ## [8.6.5](https://github.com/s-hirano-ist/s-private/compare/v8.6.4...v8.6.5) (2025-02-15)
 
 
