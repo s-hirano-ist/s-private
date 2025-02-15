@@ -18,14 +18,14 @@ const cspHeader = `
 	connect-src 'self' https://www.google-analytics.com;
 	script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://unpkg.com;
     style-src 'self' 'unsafe-inline';
-	img-src 'self' blob: data: https://localhost:9000 https://private.s-hirano.com:9000 https://www.googletagmanager.com;
+	img-src 'self' blob: data: https://${process.env.MINIO_HOST}:${process.env.MINIO_PORT} https://www.googletagmanager.com;
     font-src 'self';
     object-src 'none';
     base-uri 'self';
     form-action 'self';
     frame-ancestors 'none';
 	worker-src 'self' blob:;
-	manifest-src 'self' https://s-hirano.jp.auth0.com https://s-hirano-dev.jp.auth0.com;
+	manifest-src 'self' ${process.env.AUTH0_ISSUER};
     upgrade-insecure-requests;
 	report-uri ${process.env.SENTRY_REPORT_URL};
     report-to csp-endpoint;
