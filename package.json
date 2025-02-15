@@ -16,7 +16,7 @@
 		"test": "vitest",
 		"test:e2e": "playwright test",
 		"test:storybook": "test-storybook --coverage --coverageDirectory .storybook-coverage",
-		"prisma:generate": "prisma generate --no-hints",
+		"prisma:generate": "prisma generate --no-engine",
 		"prisma:migrate": "prisma migrate dev",
 		"prisma:deploy": "prisma migrate deploy",
 		"prisma:studio": "prisma studio",
