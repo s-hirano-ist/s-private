@@ -68,7 +68,7 @@ describe("addContents", () => {
 		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 		expect(result).toEqual({
 			success: true,
-			message: "updated",
+			message: "inserted",
 			data: mockCreatedContents,
 		});
 	});

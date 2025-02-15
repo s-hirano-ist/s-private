@@ -56,7 +56,7 @@ export function Footer() {
 						size="navSide"
 						className={cn(
 							"sm:rounded-s-3xl",
-							pathname === "/" ? "bg-black/10" : "",
+							/^\/(?:ja|en)(?:\/)?$/.test(pathname) ? "bg-black/10" : "",
 						)}
 						asChild
 					>
@@ -71,7 +71,11 @@ export function Footer() {
 						variant="navSide"
 						size="navSide"
 						type="button"
-						className={pathname === "/viewer" ? "bg-black/10" : ""}
+						className={
+							/^\/(?:ja|en)\/(viewer|books|contents)/.test(pathname)
+								? "bg-black/10"
+								: ""
+						}
 						asChild
 					>
 						<Link href={"/viewer" as Route}>
@@ -99,7 +103,9 @@ export function Footer() {
 						variant="navSide"
 						size="navSide"
 						type="button"
-						className={pathname === "/search" ? "bg-black/10" : ""}
+						className={
+							/^\/(?:ja|en)\/(search)/.test(pathname) ? "bg-black/10" : ""
+						}
 						asChild
 					>
 						<Link href={"/search" as Route}>
@@ -114,7 +120,7 @@ export function Footer() {
 						size="navSide"
 						className={cn(
 							"sm:rounded-e-3xl",
-							pathname === "/ai" ? "bg-black/10" : "",
+							/^\/(?:ja|en)\/(ai)/.test(pathname) ? "bg-black/10" : "",
 						)}
 						asChild
 					>

@@ -56,7 +56,10 @@ export const Default: Story = {
 		imageType,
 	},
 	render: () => (
-		<NextIntlClientProvider locale="ja">
+		<NextIntlClientProvider
+			locale="ja"
+			messages={{ label: { search: "検索" } }}
+		>
 			<ViewerStack images={images} path={path} imageType={imageType} />
 		</NextIntlClientProvider>
 	),

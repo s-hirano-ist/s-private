@@ -9,6 +9,10 @@ describe("AddImageForm", () => {
 			label: {
 				image: "画像",
 				upload: "アップロード",
+				uploading: "アップロード中...",
+			},
+			message: {
+				inserted: "正常に登録されました",
 			},
 		};
 

@@ -14,13 +14,22 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
+const messages = {
+	utils: {
+		signOut: "サインアウト",
+		language: "言語切替",
+		appearance: "外観切替",
+		reload: "再読み込み",
+	},
+};
+
 export const Default: Story = {
 	args: {
 		handleReload: fn(),
 		onSignOutSubmit: fn(),
 	},
 	render: () => (
-		<NextIntlClientProvider locale="ja">
+		<NextIntlClientProvider locale="ja" messages={messages}>
 			<UtilButtons handleReload={fn()} onSignOutSubmit={fn()} />
 		</NextIntlClientProvider>
 	),

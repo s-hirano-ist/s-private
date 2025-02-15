@@ -1,3 +1,4 @@
+import QueryClientProvider from "@/components/provider/query-provider";
 import type { Meta, StoryObj } from "@storybook/react";
 import { ViewerBody } from "./viewer-body";
 
@@ -14,4 +15,9 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
 	args: { markdown: "sample string" },
+	render: (args) => (
+		<QueryClientProvider>
+			<ViewerBody markdown={args.markdown} />
+		</QueryClientProvider>
+	),
 };

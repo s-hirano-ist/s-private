@@ -45,7 +45,10 @@ export const Default: Story = {
 export const NoData: Story = {
 	args: { data: [] },
 	render: () => (
-		<NextIntlClientProvider locale="ja">
+		<NextIntlClientProvider
+			locale="ja"
+			messages={{ statusCode: { "204": "コンテンツがありません" } }}
+		>
 			<ImageStack data={[]} />
 		</NextIntlClientProvider>
 	),
