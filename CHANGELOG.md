@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.7.1](https://github.com/s-hirano-ist/s-private/compare/v8.7.0...v8.7.1) (2025-02-15)
+
+
+### Bug Fixes
+
+* 🐛 footer highlight but ([e636eb5](https://github.com/s-hirano-ist/s-private/commit/e636eb5024ca4002898c212367e033dcb3952ff1))
+* 🐛 footer util tool links ([c373107](https://github.com/s-hirano-ist/s-private/commit/c3731074a5deac179a6c42106bbd51cc2cdfed1c))
+* 🐛 message of contents ([c4f1154](https://github.com/s-hirano-ist/s-private/commit/c4f11543d5376d11e3f6c4cde69ad130bdeebd7b))
+* 🐛 revert middleware redirect to normal redirect ([1e3d018](https://github.com/s-hirano-ist/s-private/commit/1e3d018e077ac78de6c6f48760c2a8c63fa5217c))
+* small bugs ([aedccae](https://github.com/s-hirano-ist/s-private/commit/aedccaec9f7ea5f8eeeed6331d7763e55cfb74ef))
+
 ## [8.7.0](https://github.com/s-hirano-ist/s-private/compare/v8.6.5...v8.7.0) (2025-02-15)
 
 
