@@ -1,24 +1,29 @@
 import { auth } from "@/features/auth/utils/auth";
 import createMiddleware from "next-intl/middleware";
 import { NextRequest, NextResponse } from "next/server";
+import { hasViewerAdminPermission } from "./features/auth/utils/session";
 import { routing } from "./i18n/routing";
-
-// MEMO: アクセスが禁止されているパスではなく、アクセスが許可されているパスを記述するべき。なぜなら、アクセスが禁止されているパスのすべてを把握するのは難しいからである。
-// const publicRoutes: string[] = [];
 
 const handleI18nRouting = createMiddleware(routing);
 
 // FIXME: https://github.com/amannn/next-intl/issues/596 auth((req))の方法である必要性確認
 
-export default async function middleware(request: NextRequest) {
-	// const { nextUrl } = request;
-	// const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
-	// if (isPublicRoute) return handleI18nRouting(request);
+const ALLOWED_ADMIN_PATH_REGEX = /^\/(ja|en)\/viewer(\/.*)?$/;
 
-	// const auth = request.auth;
+export default async function middleware(request: NextRequest) {
+	const { pathname } = request.nextUrl;
+
 	const session = await auth();
-	if (!session)
+	if (!session) {
 		return NextResponse.redirect(new URL("/api/sign-in", request.url));
+	}
+	if (ALLOWED_ADMIN_PATH_REGEX.test(pathname)) {
+		if (!(await hasViewerAdminPermission())) {
+			const redirectUrl = request.nextUrl.clone();
+			redirectUrl.pathname = "/not-allowed";
+			return NextResponse.rewrite(redirectUrl);
+		}
+	}
 
 	return handleI18nRouting(request);
 }
