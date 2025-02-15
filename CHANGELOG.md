@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.6.4](https://github.com/s-hirano-ist/s-private/compare/v8.6.3...v8.6.4) (2025-02-15)
+
+
+### Bug Fixes
+
+* 🐛 viewer max duration ([ff63151](https://github.com/s-hirano-ist/s-private/commit/ff63151a7beed227ef3ebfad29356ed7dc6aff1c))
+* 🐛 viewer max duration ([7412ecb](https://github.com/s-hirano-ist/s-private/commit/7412ecb67bae4335818a1603f570261cbb299b66))
+
 ## [8.6.3](https://github.com/s-hirano-ist/s-private/compare/v8.6.2...v8.6.3) (2025-02-15)
 
 
