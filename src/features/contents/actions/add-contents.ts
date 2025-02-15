@@ -49,7 +49,7 @@ export async function addContents(
 
 		return {
 			success: true,
-			message: "updated",
+			message: "inserted",
 			data: createdContents,
 		};
 	} catch (error) {
