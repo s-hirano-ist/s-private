@@ -5,6 +5,8 @@ import "./globals.css";
 import { PAGE_NAME } from "@/constants";
 import { env } from "@/env";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Noto_Sans_JP } from "next/font/google";
 
 export const metadata: Metadata = {
@@ -30,7 +32,11 @@ export default function RootLayout({
 						/>
 					)}
 				</head>
-				<body className={notoSansJp.className}>{children}</body>
+				<body className={notoSansJp.className}>
+					{children}
+					<Analytics />
+					<SpeedInsights />
+				</body>
 				<GoogleAnalytics gaId={env.NEXT_PUBLIC_G_TAG} />
 			</html>
 		</ViewTransitions>
