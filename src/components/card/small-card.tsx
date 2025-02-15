@@ -32,7 +32,7 @@ export function SmallCard({ id, title, quote, url, category }: Props) {
 				<CardContent>
 					<CardTitle>{title}</CardTitle>
 					<CardDescription className="truncate">
-						{quote ? quote : "　"}
+						{quote ?? "　"}
 					</CardDescription>
 				</CardContent>
 			</Card>
