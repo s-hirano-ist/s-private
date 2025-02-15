@@ -1,3 +1,4 @@
+"use client";
 import { useTranslations } from "next-intl";
 
 type StatusCode = "000" | "204" | "403" | "404" | "500";
