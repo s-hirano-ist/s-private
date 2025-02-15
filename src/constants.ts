@@ -17,9 +17,8 @@ export const UTIL_URLS = [
 	{ name: "SUMMARY", url: "https://s-hirano.com/summary" },
 	{ name: "BOOK", url: "https://s-hirano.com/book" },
 	{ name: "BLOG", url: "https://s-hirano.com/blog" },
-	{ name: "PORTAINER", url: "https://private.s-hirano.com:9443" },
-	{ name: "GRAFANA", url: "https://private.s-hirano.com:3001" },
-	{ name: "STORYBOOK", url: "https://private.s-hirano.com:6006" },
-	{ name: "MINIO", url: "https://private.s-hirano.com:9001" },
-	//TODO: { name: "ADMINJS", url: "https://private.s-hirano.com:XXXX" },
+	{ name: "PORTAINER", url: "https://s-tools.s-hirano.com:9443" },
+	{ name: "GRAFANA", url: "https://s-tools.s-hirano.com:3001" },
+	{ name: "STORYBOOK", url: "https://storybook.private.s-hirano.com" },
+	{ name: "ON-PREMISE", url: "https://s-tools.s-hirano.com" },
 ] as const;
