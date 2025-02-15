@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.5.5](https://github.com/s-hirano-ist/s-private/compare/v8.5.4...v8.5.5) (2025-02-15)
+
+
+### Bug Fixes
+
+* 🐛 csp for r2 storage use ([2c6741b](https://github.com/s-hirano-ist/s-private/commit/2c6741b2de2e8a77e7af71524544fa182ff2f952))
+* 🐛 csp for r2 storage use ([b7a1338](https://github.com/s-hirano-ist/s-private/commit/b7a1338d30a6a21882847dbe64a74d9f968c289b))
+
 ## [8.5.4](https://github.com/s-hirano-ist/s-private/compare/v8.5.3...v8.5.4) (2025-02-13)
 
 
