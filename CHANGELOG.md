@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.6.5](https://github.com/s-hirano-ist/s-private/compare/v8.6.4...v8.6.5) (2025-02-15)
+
+
+### Bug Fixes
+
+* 🐛 change prisma to serverless ([e1c2f07](https://github.com/s-hirano-ist/s-private/commit/e1c2f07e69df955eb432ac144140e6217c2caa39))
+* 🐛 change prisma to serverless ([fede6d5](https://github.com/s-hirano-ist/s-private/commit/fede6d56eae73d29a26a17c5916b4e5d1a4e2f6c))
+
 ## [8.6.4](https://github.com/s-hirano-ist/s-private/compare/v8.6.3...v8.6.4) (2025-02-15)
 
 
