@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.6.1](https://github.com/s-hirano-ist/s-private/compare/v8.6.0...v8.6.1) (2025-02-15)
+
+
+### Bug Fixes
+
+* 🐛 global errors do not catch correctly ([1502f6b](https://github.com/s-hirano-ist/s-private/commit/1502f6b3bc9b224f36507269a83089a4e43b32cd))
+
 ## [8.6.0](https://github.com/s-hirano-ist/s-private/compare/v8.5.5...v8.6.0) (2025-02-15)
 
 
