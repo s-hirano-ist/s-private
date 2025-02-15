@@ -14,7 +14,10 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
 	render: () => (
-		<NextIntlClientProvider locale="ja">
+		<NextIntlClientProvider
+			locale="ja"
+			messages={{ statusCode: { "000": "近日公開" } }}
+		>
 			<Page />
 		</NextIntlClientProvider>
 	),

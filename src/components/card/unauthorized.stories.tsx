@@ -14,7 +14,12 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
 	render: () => (
-		<NextIntlClientProvider locale="ja">
+		<NextIntlClientProvider
+			locale="ja"
+			messages={{
+				statusCode: { "403": "許可されていません" },
+			}}
+		>
 			<Unauthorized />
 		</NextIntlClientProvider>
 	),

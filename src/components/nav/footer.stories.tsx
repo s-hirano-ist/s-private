@@ -14,7 +14,15 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
 	render: () => (
-		<NextIntlClientProvider locale="ja">
+		<NextIntlClientProvider
+			locale="ja"
+			messages={{
+				utils: {
+					utilsTitle: "便利ツール集",
+					utilsDescription: "リンクをクリックしてください",
+				},
+			}}
+		>
 			<Footer />
 		</NextIntlClientProvider>
 	),

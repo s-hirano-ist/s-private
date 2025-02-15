@@ -13,10 +13,21 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
+const messages = {
+	statusCode: {
+		"000": "近日公開",
+		"204": "コンテンツがありません",
+		"403": "許可されていません",
+		"404": "コンテンツが見つかりません",
+		"500": "予期せぬエラーが発生しました",
+		XXX: "XXX",
+	},
+};
+
 export const CommingSoon: Story = {
 	args: { statusCode: "000" },
 	render: () => (
-		<NextIntlClientProvider locale="ja">
+		<NextIntlClientProvider locale="ja" messages={messages}>
 			<StatusCodeView statusCode="000" />
 		</NextIntlClientProvider>
 	),
@@ -25,7 +36,7 @@ export const CommingSoon: Story = {
 export const NoContent: Story = {
 	args: { statusCode: "204" },
 	render: () => (
-		<NextIntlClientProvider locale="ja">
+		<NextIntlClientProvider locale="ja" messages={messages}>
 			<StatusCodeView statusCode="204" />
 		</NextIntlClientProvider>
 	),
@@ -34,7 +45,7 @@ export const NoContent: Story = {
 export const Forbidden: Story = {
 	args: { statusCode: "403" },
 	render: () => (
-		<NextIntlClientProvider locale="ja">
+		<NextIntlClientProvider locale="ja" messages={messages}>
 			<StatusCodeView statusCode="403" />
 		</NextIntlClientProvider>
 	),
@@ -43,7 +54,7 @@ export const Forbidden: Story = {
 export const NotFound: Story = {
 	args: { statusCode: "404" },
 	render: () => (
-		<NextIntlClientProvider locale="ja">
+		<NextIntlClientProvider locale="ja" messages={messages}>
 			<StatusCodeView statusCode="404" />
 		</NextIntlClientProvider>
 	),
@@ -52,7 +63,7 @@ export const NotFound: Story = {
 export const InternalServerError: Story = {
 	args: { statusCode: "500" },
 	render: () => (
-		<NextIntlClientProvider locale="ja">
+		<NextIntlClientProvider locale="ja" messages={messages}>
 			<StatusCodeView statusCode="500" />
 		</NextIntlClientProvider>
 	),
@@ -62,7 +73,7 @@ export const UnknownStatus: Story = {
 	// @ts-expect-error: check status code error message
 	args: { statusCode: "XXX" },
 	render: () => (
-		<NextIntlClientProvider locale="ja">
+		<NextIntlClientProvider locale="ja" messages={messages}>
 			{/* @ts-expect-error: check status code error message */}
 			<StatusCodeView statusCode="XXX" />
 		</NextIntlClientProvider>

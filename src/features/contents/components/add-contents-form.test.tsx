@@ -2,18 +2,20 @@ import { AddContentsForm } from "@/features/contents/components/add-contents-for
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import { describe, expect, it, vi } from "vitest";
+const messages = {
+	label: {
+		save: "保存",
+		title: "タイトル",
+		url: "URL",
+		description: "ひとこと",
+	},
+	message: {
+		inserted: "正常に登録されました。",
+	},
+};
 
 describe("AddContentsForm", () => {
 	it("renders input fields and buttons correctly", () => {
-		const messages = {
-			label: {
-				save: "保存",
-				title: "タイトル",
-				url: "URL",
-				description: "ひとこと",
-			},
-		};
-
 		render(
 			<NextIntlClientProvider locale="ja" messages={messages}>
 				<AddContentsForm />
@@ -31,17 +33,8 @@ describe("AddContentsForm", () => {
 			clipboard: { readText: vi.fn().mockResolvedValue(clipboardText) },
 		});
 
-		const messages = {
-			label: {
-				save: "保存",
-				title: "タイトル",
-				url: "URL",
-				description: "ひとこと",
-			},
-		};
-
 		render(
-			<NextIntlClientProvider messages={messages} locale="en">
+			<NextIntlClientProvider messages={messages} locale="ja">
 				<AddContentsForm />
 			</NextIntlClientProvider>,
 		);
