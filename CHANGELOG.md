@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.6.2](https://github.com/s-hirano-ist/s-private/compare/v8.6.1...v8.6.2) (2025-02-15)
+
+
+### Bug Fixes
+
+* 🐛 add vercel to csp ([68f412a](https://github.com/s-hirano-ist/s-private/commit/68f412a798a6d6598e284372345d85836b767170))
+* 🐛 lint ([d4f642f](https://github.com/s-hirano-ist/s-private/commit/d4f642f86de6625274933b289b0e02109f2c5ecd))
+
 ## [8.6.1](https://github.com/s-hirano-ist/s-private/compare/v8.6.0...v8.6.1) (2025-02-15)
 
 
