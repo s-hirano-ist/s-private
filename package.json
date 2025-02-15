@@ -1,6 +1,6 @@
 {
 	"name": "s-private",
-	"version": "8.6.1",
+	"version": "8.6.2",
 	"author": "s-hirano-ist",
 	"description": "Private pages and admin tools for s-hirano-ist.",
 	"packageManager": "pnpm@10.4.0",
@@ -32,7 +32,7 @@
 	},
 	"dependencies": {
 		"@biomejs/biome": "1.9.4",
-		"@hookform/resolvers": "4.0.0",
+		"@hookform/resolvers": "3.10.0",
 		"@next/third-parties": "15.1.6",
 		"@prisma/client": "6.3.1",
 		"@prisma/extension-accelerate": "1.2.1",
