@@ -5,8 +5,6 @@ import { hasViewerAdminPermission } from "@/features/auth/utils/session";
 import { markdownToReact } from "@/features/viewer/utils/markdown-to-react";
 import prisma from "@/prisma";
 
-export const maxDuration = 30;
-
 type Props = { slug: string };
 
 export async function SuspensePage({ slug }: Props) {
