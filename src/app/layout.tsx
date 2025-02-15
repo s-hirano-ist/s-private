@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ViewTransitions } from "next-view-transitions";
 import type { ReactNode } from "react";
 import "./globals.css";
+import QueryClientProvider from "@/components/provider/query-provider";
 import { PAGE_NAME } from "@/constants";
 import { env } from "@/env";
 import { GoogleAnalytics } from "@next/third-parties/google";
@@ -32,11 +33,13 @@ export default function RootLayout({
 						/>
 					)}
 				</head>
-				<body className={notoSansJp.className}>
-					{children}
-					<Analytics />
-					<SpeedInsights />
-				</body>
+				<QueryClientProvider>
+					<body className={notoSansJp.className}>
+						{children}
+						<Analytics />
+						<SpeedInsights />
+					</body>
+				</QueryClientProvider>
 				<GoogleAnalytics gaId={env.NEXT_PUBLIC_G_TAG} />
 			</html>
 		</ViewTransitions>
