@@ -5,9 +5,23 @@ import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 
 const prismaClientSingleton = () => {
-	return new PrismaClient().$extends(withAccelerate());
+	const prisma = new PrismaClient().$extends({
+		query: {
+			async $allOperations({ args, query, operation, model }) {
+				const start = Date.now();
+				const result = await query(args);
+				const duration = Date.now() - start;
+				// eslint-disable-next-line
+				console.log(`[${model}.${operation}] took ${duration}ms`);
+				// eslint-disable-next-line
+				return result;
+			},
+		},
+	});
+
+	return prisma.$extends(withAccelerate());
 };
-// biome-ignore lint:
+
 declare const globalThis: {
 	prismaGlobal: ReturnType<typeof prismaClientSingleton>;
 } & typeof global;
