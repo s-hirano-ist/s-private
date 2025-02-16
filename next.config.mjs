@@ -74,7 +74,7 @@ const nextConfig = {
 
 const withNextIntl = createNextIntlPlugin();
 
-if (env.NODE_ENV === "development") {
+if (process.env.NODE_ENV === "development") {
 	await setupDevPlatform();
 }
 
