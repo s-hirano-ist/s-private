@@ -12,7 +12,7 @@
 **Package Manager** - [pnpm](https://pnpm.io/)  
 **Styling** - [Shadcn/ui](https://ui.shadcn.com/)  
 **Database** - [PostgreSQL](https://www.postgresql.org/)  
-**Object Storage** [MinIO](https://min.io/)  
+**Object Storage** [MinIO](https://min.io/) or [Cloudfare R2](https://www.cloudflare.com/ja-jp/developer-platform/products/r2/)  
 **ORM** - [Prisma](https://www.prisma.io/)  
 **Vulnerabilities Checks** - [npm-audit](https://docs.npmjs.com/cli/v10/commands/npm-audit) & [Dependabot alert](https://docs.github.com/ja/code-security/dependabot/dependabot-alerts/about-dependabot-alerts)  
 **Rendering Checks** -[React Scan](https://github.com/aidenybai/react-scan)  
@@ -20,9 +20,15 @@
 ## 初期設定
 
 ```bash
-git clone --recursive https://github.com/s-hirano-ist/s-private.git
+git clone https://github.com/s-hirano-ist/s-private.git
 cd s-private
 ```
+
+## Continuous Deployment
+
+GitHubにブランチが作成されるとVercel cloudに自動的にPreview環境が構築される。
+
+GitHubのmainブランチにPRがpullされるとProduction環境が更新される。
 
 ## Docker Imageのビルドとプッシュ
 
