@@ -1,20 +1,20 @@
+import {
+	getAllStaticContents,
+	getStaticContentsCount,
+} from "@/api/static-contents";
 import { Unauthorized } from "@/components/card/unauthorized";
 import { CountBadge } from "@/components/count-badge";
 import { ViewerStack } from "@/components/stack/viewer-stack";
 import { hasViewerAdminPermission } from "@/features/auth/utils/session";
-import prisma from "@/prisma";
 
 const path = "contents";
 
 export async function SuspensePage() {
 	const hasAdminPermission = await hasViewerAdminPermission();
 
-	const totalImages = await prisma.staticContents.count({});
+	const totalImages = await getStaticContentsCount();
 
-	const images = await prisma.staticContents.findMany({
-		select: { title: true, uint8ArrayImage: true },
-		cacheStrategy: { ttl: 400, tags: ["staticContents"] },
-	});
+	const images = await getAllStaticContents();
 
 	return (
 		<>
