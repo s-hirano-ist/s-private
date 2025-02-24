@@ -11,7 +11,6 @@ export const env = createEnv({
 			.default("development"),
 		LINE_NOTIFY_URL: z.string(),
 		LINE_NOTIFY_SECRET_TOKEN: z.string(),
-		AUTH_URL: z.string(),
 		AUTH_SECRET:
 			process.env.NODE_ENV === "production"
 				? z.string()
@@ -43,7 +42,6 @@ export const env = createEnv({
 		NODE_ENV: process.env.NODE_ENV,
 		LINE_NOTIFY_URL: process.env.LINE_NOTIFY_URL,
 		LINE_NOTIFY_SECRET_TOKEN: process.env.LINE_NOTIFY_SECRET_TOKEN,
-		AUTH_URL: process.env.AUTH_URL,
 		AUTH_SECRET: process.env.AUTH_SECRET,
 		AUTH0_ID: process.env.AUTH0_ID,
 		AUTH0_SECRET: process.env.AUTH0_SECRET,

@@ -4,8 +4,6 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { SuspensePage } from "./_page";
 
-export const dynamic = "force-dynamic";
-
 type Params = Promise<{ slug: string }>;
 
 export async function generateMetadata({
