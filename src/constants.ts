@@ -20,5 +20,5 @@ export const UTIL_URLS = [
 	{ name: "PORTAINER", url: "https://s-tools.s-hirano.com:9443" },
 	{ name: "GRAFANA", url: "https://s-tools.s-hirano.com:3001" },
 	{ name: "STORYBOOK", url: "https://storybook.private.s-hirano.com" },
-	{ name: "ON-PREMISE", url: "https://s-tools.s-hirano.com" },
+	{ name: "ZENN", url: "https://zenn.dev/s_hirano_ist" },
 ] as const;
