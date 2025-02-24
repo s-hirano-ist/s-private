@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.8.0](https://github.com/s-hirano-ist/s-private/compare/v8.7.1...v8.8.0) (2025-02-24)
+
+
+### Features
+
+* 🎸 add tanstack query gc time and stale time ([2efece6](https://github.com/s-hirano-ist/s-private/commit/2efece6cf94d9ab60e5b62bfd5ac3f0c74083b3a))
+* 🎸 move contents to api dirs ([f83ad37](https://github.com/s-hirano-ist/s-private/commit/f83ad37f678560bb77af753348db9193f7f7b67f))
+* add better performance ([c366395](https://github.com/s-hirano-ist/s-private/commit/c3663950eb1d3b42d1261c6b4af72f3656526ff0))
+
+
+### Bug Fixes
+
+* 🐛 apis to action dirs ([27b7343](https://github.com/s-hirano-ist/s-private/commit/27b7343ab17f1c4d4ec2642e134dc53e173c44e4))
+* 🐛 bug on dump ([b8f6b22](https://github.com/s-hirano-ist/s-private/commit/b8f6b22482987e375eb511f4315ce6f12fddc721))
+* 🐛 delete auth url ([4f3296b](https://github.com/s-hirano-ist/s-private/commit/4f3296b52ff90f5a7e4b053dd7b6194d65336eeb))
+* 🐛 delete force dynamic ([b0938aa](https://github.com/s-hirano-ist/s-private/commit/b0938aa74f3f40de6d4fc57ec18d6e9ab8ed0d81))
+
 ## [8.7.1](https://github.com/s-hirano-ist/s-private/compare/v8.7.0...v8.7.1) (2025-02-15)
 
 
