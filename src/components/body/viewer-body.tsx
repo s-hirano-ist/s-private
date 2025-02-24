@@ -7,8 +7,10 @@ type Props = { markdown: string };
 
 export function ViewerBody({ markdown }: Props) {
 	const { data, isLoading } = useQuery({
-		queryKey: ["viewerBody", markdown.slice(10)],
+		queryKey: ["viewerBody", markdown.slice(0, 10)],
 		queryFn: async () => await markdownToReact(markdown),
+		staleTime: Infinity,
+		gcTime: 86400000 * 30, // 1 month
 	});
 
 	if (isLoading) return <Loading />;

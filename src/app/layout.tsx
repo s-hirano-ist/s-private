@@ -6,6 +6,7 @@ import QueryClientProvider from "@/components/provider/query-provider";
 import { PAGE_NAME } from "@/constants";
 import { env } from "@/env";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Noto_Sans_JP } from "next/font/google";
@@ -38,6 +39,7 @@ export default function RootLayout({
 						{children}
 						<Analytics />
 						<SpeedInsights />
+						<ReactQueryDevtools initialIsOpen={false} />
 					</body>
 				</QueryClientProvider>
 				<GoogleAnalytics gaId={env.NEXT_PUBLIC_G_TAG} />
