@@ -20,6 +20,8 @@ type Props = {
 };
 
 export function ViewerStack({ images, path, imageType }: Props) {
+	// TODO: use queryを利用してデータのキャッシュを行う
+
 	const router = useTransitionRouter();
 	const searchParams = useSearchParams();
 	const [searchTerm, setSearchTerm] = useState(
