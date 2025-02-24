@@ -1,11 +1,11 @@
-import {
-	getAllStaticContents,
-	getStaticContentsCount,
-} from "@/api/static-contents";
 import { Unauthorized } from "@/components/card/unauthorized";
 import { CountBadge } from "@/components/count-badge";
 import { ViewerStack } from "@/components/stack/viewer-stack";
 import { hasViewerAdminPermission } from "@/features/auth/utils/session";
+import {
+	getAllStaticContents,
+	getStaticContentsCount,
+} from "@/features/viewer/actions/static-contents";
 
 const path = "contents";
 
