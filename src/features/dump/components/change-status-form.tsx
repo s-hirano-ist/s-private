@@ -19,7 +19,8 @@ import { toast } from "sonner";
 export function ChangeStatusForm() {
 	const [target, setTarget] = useState<string>();
 	const [status, setStatus] = useState<string>();
-	const t = useTranslations("label");
+	const label = useTranslations("label");
+	const message = useTranslations("message");
 
 	const changeStatus = async (_: null, formData: FormData) => {
 		const target = formData.get("target");
@@ -46,10 +47,10 @@ export function ChangeStatusForm() {
 			throw new UnexpectedError();
 		})();
 
-		toast(response.message);
+		toast(message(response.message));
 
-		setTarget("");
-		setStatus("");
+		setTarget("news");
+		setStatus("update");
 
 		return null;
 	};
@@ -59,7 +60,7 @@ export function ChangeStatusForm() {
 	return (
 		<form action={submitAction} className="space-y-4 px-2 py-4">
 			<div className="space-y-1">
-				<Label htmlFor="target">{t("dumpTarget")}</Label>
+				<Label htmlFor="target">{label("dumpTarget")}</Label>
 				<Select
 					required
 					name="target"
@@ -67,7 +68,7 @@ export function ChangeStatusForm() {
 					onValueChange={(value: string) => setTarget(value)}
 				>
 					<SelectTrigger id="target">
-						<SelectValue placeholder={t("target")} />
+						<SelectValue placeholder={label("target")} />
 					</SelectTrigger>
 					<SelectContent>
 						<SelectItem value="news">NEWS</SelectItem>
@@ -78,7 +79,7 @@ export function ChangeStatusForm() {
 			</div>
 
 			<div className="space-y-1">
-				<Label htmlFor="status">{t("dumpStatus")}</Label>
+				<Label htmlFor="status">{label("dumpStatus")}</Label>
 				<Select
 					required
 					name="status"
@@ -86,7 +87,7 @@ export function ChangeStatusForm() {
 					onValueChange={(value: string) => setStatus(value)}
 				>
 					<SelectTrigger id="status">
-						<SelectValue placeholder={t("status")} />
+						<SelectValue placeholder={label("status")} />
 					</SelectTrigger>
 					<SelectContent id="status">
 						<SelectItem value="update">UPDATE</SelectItem>
@@ -95,7 +96,7 @@ export function ChangeStatusForm() {
 				</Select>
 			</div>
 			<Button type="submit" disabled={isPending} className="w-full">
-				{t("send")}
+				{label("send")}
 			</Button>
 		</form>
 	);
