@@ -15,7 +15,7 @@ describe.skip("sendPushoverMessage", () => {
 		mockFetch.mockResolvedValueOnce({
 			status: 200,
 		});
-		const message = "Hello LINE Notify!";
+		const message = "Hello Pushover!";
 
 		await sendPushoverMessage(message);
 
