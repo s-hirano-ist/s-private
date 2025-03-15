@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.10.0](https://github.com/s-hirano-ist/s-private/compare/v8.9.0...v8.10.0) (2025-03-15)
+
+
+### Features
+
+* 🎸 add pushover as notification ([859caec](https://github.com/s-hirano-ist/s-private/commit/859caecb47073cf6ca57d11ed8e523ceec299339))
+* 🎸 add pushover as notification ([415d80b](https://github.com/s-hirano-ist/s-private/commit/415d80b5d6ddf84a855a08f841cd1b6c0e51cfef))
+
+
+### Bug Fixes
+
+* 🐛 test envs ([b24f085](https://github.com/s-hirano-ist/s-private/commit/b24f085ddf32624be2fd71e9d11e32191566216e))
+
 ## [8.9.0](https://github.com/s-hirano-ist/s-private/compare/v8.8.0...v8.9.0) (2025-03-10)
 
 
