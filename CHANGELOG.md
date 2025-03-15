@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.9.0](https://github.com/s-hirano-ist/s-private/compare/v8.8.0...v8.9.0) (2025-03-10)
+
+
+### Features
+
+* 🎸 add robots.txt ([2573d05](https://github.com/s-hirano-ist/s-private/commit/2573d0574e81cc49f1179e32f960897d1658cfd2))
+
 ## [8.8.0](https://github.com/s-hirano-ist/s-private/compare/v8.7.1...v8.8.0) (2025-02-24)
 
 
