@@ -1,37 +1,39 @@
 import "server-only";
 import { env } from "@/env";
-import { LineNotifyError } from "@/error-classes";
+import { PushoverError } from "@/error-classes";
 import { loggerError } from "@/pino";
 
 // MEMO: do not throw error here due to error handling wrapper error loop
-export async function sendLineNotifyMessage(message: string) {
+export async function sendPushoverMessage(message: string) {
 	try {
-		const LINE_NOTIFY_URL = env.LINE_NOTIFY_URL;
-		const LINE_NOTIFY_SECRET_TOKEN = env.LINE_NOTIFY_SECRET_TOKEN;
+		const PUSHOVER_API_URL = env.PUSHOVER_URL;
+		const PUSHOVER_USER_KEY = env.PUSHOVER_USER_KEY;
+		const PUSHOVER_APP_TOKEN = env.PUSHOVER_APP_TOKEN;
 
-		const body = new URLSearchParams();
-		body.append("message", message);
+		const body = new URLSearchParams({
+			token: PUSHOVER_APP_TOKEN,
+			user: PUSHOVER_USER_KEY,
+			message,
+		});
 
-		const result = await fetch(LINE_NOTIFY_URL, {
+		const result = await fetch(PUSHOVER_API_URL, {
 			method: "POST",
-			headers: {
-				"Content-Type": "application/x-www-form-urlencoded",
-				Authorization: `Bearer ${LINE_NOTIFY_SECRET_TOKEN}`,
-			},
+			headers: { "Content-Type": "application/x-www-form-urlencoded" },
 			body,
 		});
-		if (result.status !== 200) throw new LineNotifyError();
+
+		if (!result.ok) throw new PushoverError();
 	} catch (error) {
-		if (error instanceof LineNotifyError) {
+		if (error instanceof PushoverError) {
 			loggerError(error.message, {
-				caller: "sendLineMessageError",
+				caller: "sendPushoverMessageError",
 				status: 500,
 			});
 		} else {
 			loggerError(
-				"Send line message failed with unknown error",
+				"Send Pushover message failed with unknown error",
 				{
-					caller: "sendLineMessageUnknownError",
+					caller: "sendPushoverMessageUnknownError",
 					status: 500,
 				},
 				error,

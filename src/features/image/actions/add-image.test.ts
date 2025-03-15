@@ -12,7 +12,7 @@ import { addImage } from "./add-image";
 vi.mock("@/features/auth/utils/auth", () => ({ auth: vi.fn() }));
 
 vi.mock("@/utils/fetch-message", () => ({
-	sendLineNotifyMessage: vi.fn(),
+	sendPushoverMessage: vi.fn(),
 }));
 
 vi.mock("uuid", () => ({ v7: vi.fn() }));

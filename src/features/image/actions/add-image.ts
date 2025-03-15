@@ -20,8 +20,8 @@ import { minioClient } from "@/minio";
 import { loggerInfo } from "@/pino";
 import prisma from "@/prisma";
 import type { ServerAction } from "@/types";
-import { sendLineNotifyMessage } from "@/utils/fetch-message";
-import { formatCreateImageMessage } from "@/utils/format-for-line";
+import { sendPushoverMessage } from "@/utils/fetch-message";
+import { formatCreateImageMessage } from "@/utils/format-for-notification";
 import { sanitizeFileName } from "@/utils/sanitize-file-name";
 import { revalidatePath } from "next/cache";
 import sharp from "sharp";
@@ -84,7 +84,7 @@ export async function addImage(
 		const message = formatCreateImageMessage({ fileName: createdImage.id });
 		loggerInfo(message, { caller: "addImage", status: 200 });
 
-		await sendLineNotifyMessage(message);
+		await sendPushoverMessage(message);
 		revalidatePath("/(dumper)");
 		await prisma.$accelerate.invalidate({ tags: ["images"] });
 

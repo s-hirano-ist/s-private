@@ -6,7 +6,7 @@ import {
 	formatCreateImageMessage,
 	formatCreateNewsMessage,
 	formatDeleteMessage,
-} from "./format-for-line";
+} from "./format-for-notification";
 
 describe("formatDeleteMessage", () => {
 	it("should format the delete message correctly", () => {

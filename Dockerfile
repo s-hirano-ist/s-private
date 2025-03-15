@@ -37,8 +37,9 @@ RUN --mount=type=secret,id=AUTH_SECRET \
     --mount=type=secret,id=AUTH0_ID \
     --mount=type=secret,id=AUTH0_SECRET \
     --mount=type=secret,id=AUTH0_ISSUER \
-    --mount=type=secret,id=LINE_NOTIFY_SECRET_TOKEN \
-    --mount=type=secret,id=LINE_NOTIFY_URL \
+    --mount=type=secret,id=PUSHOVER_URL \
+    --mount=type=secret,id=PUSHOVER_APP_TOKEN \
+    --mount=type=secret,id=PUSHOVER_USER_KEY \
     --mount=type=secret,id=MINIO_ACCESS_KEY \
     --mount=type=secret,id=MINIO_BUCKET_NAME \
     --mount=type=secret,id=MINIO_HOST \
@@ -54,8 +55,9 @@ RUN --mount=type=secret,id=AUTH_SECRET \
 AUTH0_ID=$(cat /run/secrets/AUTH0_ID)\n\
 AUTH0_SECRET=$(cat /run/secrets/AUTH0_SECRET)\n\
 AUTH0_ISSUER=$(cat /run/secrets/AUTH0_ISSUER)\n\
-LINE_NOTIFY_SECRET_TOKEN=$(cat /run/secrets/LINE_NOTIFY_SECRET_TOKEN)\n\
-LINE_NOTIFY_URL=$(cat /run/secrets/LINE_NOTIFY_URL)\n\
+PUSHOVER_URL=$(cat /run/secrets/PUSHOVER_URL)\n\
+PUSHOVER_APP_TOKEN=$(cat /run/secrets/PUSHOVER_APP_TOKEN)\n\
+PUSHOVER_USER_KEY=$(cat /run/secrets/PUSHOVER_USER_KEY)\n\
 MINIO_ACCESS_KEY=$(cat /run/secrets/MINIO_ACCESS_KEY)\n\
 MINIO_BUCKET_NAME=$(cat /run/secrets/MINIO_BUCKET_NAME)\n\
 MINIO_HOST=$(cat /run/secrets/MINIO_HOST)\n\

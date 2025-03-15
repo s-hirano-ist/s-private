@@ -10,8 +10,8 @@ import type { Status, UpdateOrRevert } from "@/features/dump/types";
 import { loggerInfo } from "@/pino";
 import prisma from "@/prisma";
 import type { ServerAction } from "@/types";
-import { sendLineNotifyMessage } from "@/utils/fetch-message";
-import { formatChangeStatusMessage } from "@/utils/format-for-line";
+import { sendPushoverMessage } from "@/utils/fetch-message";
+import { formatChangeStatusMessage } from "@/utils/format-for-notification";
 import { revalidatePath } from "next/cache";
 
 async function updateSelfNewsStatus(): Promise<Status> {
@@ -81,7 +81,7 @@ export async function changeNewsStatus(
 			caller: "changeNewsStatus",
 			status: 200,
 		});
-		await sendLineNotifyMessage(message);
+		await sendPushoverMessage(message);
 		revalidatePath("/(dumper)");
 
 		return { success: true, message: "updated", data: message };

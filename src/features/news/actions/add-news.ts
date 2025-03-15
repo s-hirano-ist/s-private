@@ -11,8 +11,8 @@ import { validateNews } from "@/features/news/utils/validate-news";
 import { loggerInfo } from "@/pino";
 import prisma from "@/prisma";
 import type { ServerAction } from "@/types";
-import { sendLineNotifyMessage } from "@/utils/fetch-message";
-import { formatCreateNewsMessage } from "@/utils/format-for-line";
+import { sendPushoverMessage } from "@/utils/fetch-message";
+import { formatCreateNewsMessage } from "@/utils/format-for-notification";
 import { revalidatePath } from "next/cache";
 
 type News = {
@@ -56,7 +56,7 @@ export async function addNews(formData: FormData): Promise<ServerAction<News>> {
 			caller: "addNews",
 			status: 200,
 		});
-		await sendLineNotifyMessage(message);
+		await sendPushoverMessage(message);
 		revalidatePath("/(dumper)");
 
 		return {
