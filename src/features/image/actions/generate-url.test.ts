@@ -8,7 +8,7 @@ import { generateUrl } from "./generate-url";
 vi.mock("@/features/auth/utils/auth", () => ({ auth: vi.fn() }));
 
 vi.mock("@/utils/fetch-message", () => ({
-	sendLineNotifyMessage: vi.fn(),
+	sendPushoverMessage: vi.fn(),
 }));
 
 vi.mock("@/minio", () => ({

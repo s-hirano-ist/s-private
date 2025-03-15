@@ -8,7 +8,7 @@ import { addNews } from "./add-news";
 vi.mock("@/features/auth/utils/auth", () => ({ auth: vi.fn() }));
 
 vi.mock("@/utils/fetch-message", () => ({
-	sendLineNotifyMessage: vi.fn(),
+	sendPushoverMessage: vi.fn(),
 }));
 
 const mockAllowedRoleSession: Session = {

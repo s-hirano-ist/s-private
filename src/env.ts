@@ -9,8 +9,9 @@ export const env = createEnv({
 		NODE_ENV: z
 			.enum(["development", "test", "production"])
 			.default("development"),
-		LINE_NOTIFY_URL: z.string(),
-		LINE_NOTIFY_SECRET_TOKEN: z.string(),
+		PUSHOVER_URL: z.string(),
+		PUSHOVER_USER_KEY: z.string(),
+		PUSHOVER_APP_TOKEN: z.string(),
 		AUTH_SECRET:
 			process.env.NODE_ENV === "production"
 				? z.string()
@@ -40,8 +41,9 @@ export const env = createEnv({
 	 */
 	runtimeEnv: {
 		NODE_ENV: process.env.NODE_ENV,
-		LINE_NOTIFY_URL: process.env.LINE_NOTIFY_URL,
-		LINE_NOTIFY_SECRET_TOKEN: process.env.LINE_NOTIFY_SECRET_TOKEN,
+		PUSHOVER_URL: process.env.PUSHOVER_URL,
+		PUSHOVER_USER_KEY: process.env.PUSHOVER_USER_KEY,
+		PUSHOVER_APP_TOKEN: process.env.PUSHOVER_APP_TOKEN,
 		AUTH_SECRET: process.env.AUTH_SECRET,
 		AUTH0_ID: process.env.AUTH0_ID,
 		AUTH0_SECRET: process.env.AUTH0_SECRET,

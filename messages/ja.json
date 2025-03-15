@@ -38,7 +38,7 @@
 		"success": "完了",
 		"updated": "更新が完了しました。",
 		"unexpected": "予期せぬエラーが発生しました。",
-		"lineSend": "ログの送信でエラーが発生しました。",
+		"pushoverSend": "ログの送信でエラーが発生しました。",
 		"prismaDuplicated": "すでに登録されているため登録できません。",
 		"prismaUnexpected": "データベースへの書き込み時にエラーが発生しました。",
 		"unauthorized": "認証されていません。",

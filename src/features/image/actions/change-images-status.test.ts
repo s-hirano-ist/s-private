@@ -1,6 +1,6 @@
 import { auth } from "@/features/auth/utils/auth";
 import prisma from "@/prisma";
-import { sendLineNotifyMessage } from "@/utils/fetch-message";
+import { sendPushoverMessage } from "@/utils/fetch-message";
 import { Session } from "next-auth";
 import { revalidatePath } from "next/cache";
 import { type Mock, describe, expect, it, vi } from "vitest";
@@ -9,7 +9,7 @@ import { changeImagesStatus } from "./change-images-status";
 vi.mock("@/features/auth/utils/auth", () => ({ auth: vi.fn() }));
 
 vi.mock("@/utils/fetch-message", () => ({
-	sendLineNotifyMessage: vi.fn(),
+	sendPushoverMessage: vi.fn(),
 }));
 
 const mockAllowedRoleSession: Session = {
@@ -64,7 +64,7 @@ describe("changeImagesStatus", () => {
 
 		expect(auth).toHaveBeenCalledTimes(2); // check permission & getSelfId
 		expect(prisma.$transaction).toHaveBeenCalled();
-		expect(sendLineNotifyMessage).toHaveBeenCalledWith(
+		expect(sendPushoverMessage).toHaveBeenCalledWith(
 			"【IMAGES】\n\n更新\n未処理: 0\n直近更新: 5\n確定: 3",
 		);
 		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
@@ -92,7 +92,7 @@ describe("changeImagesStatus", () => {
 
 		expect(auth).toHaveBeenCalledTimes(2); // check permission & getSelfId
 		expect(prisma.$transaction).toHaveBeenCalled();
-		expect(sendLineNotifyMessage).toHaveBeenCalledWith(
+		expect(sendPushoverMessage).toHaveBeenCalledWith(
 			"【IMAGES】\n\n更新\n未処理: 5\n直近更新: 3\n確定: 0",
 		);
 		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");

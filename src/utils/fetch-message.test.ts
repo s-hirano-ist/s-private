@@ -1,10 +1,10 @@
-import { LineNotifyError } from "@/error-classes";
+import { PushoverError } from "@/error-classes";
 import { loggerError } from "@/pino";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { sendLineNotifyMessage } from "./fetch-message";
+import { sendPushoverMessage } from "./fetch-message";
 
 // FIXME: GitHub actionsでURLがマスキングされて見えなくなる問題
-describe.skip("sendLineNotifyMessage", () => {
+describe.skip("sendPushoverMessage", () => {
 	const mockFetch = vi.fn();
 
 	beforeEach(() => {
@@ -17,7 +17,7 @@ describe.skip("sendLineNotifyMessage", () => {
 		});
 		const message = "Hello LINE Notify!";
 
-		await sendLineNotifyMessage(message);
+		await sendPushoverMessage(message);
 
 		expect(mockFetch).toHaveBeenCalledWith("https://example.com", {
 			method: "POST",
@@ -36,10 +36,10 @@ describe.skip("sendLineNotifyMessage", () => {
 		mockFetch.mockResolvedValueOnce({
 			status: 400,
 		});
-		const message = "Hello LINE Notify!";
+		const message = "Hello Pushover!";
 
-		await expect(sendLineNotifyMessage(message)).resolves.not.toThrow(
-			LineNotifyError,
+		await expect(sendPushoverMessage(message)).resolves.not.toThrow(
+			PushoverError,
 		);
 
 		expect(loggerError).toHaveBeenCalledWith(
@@ -55,7 +55,7 @@ describe.skip("sendLineNotifyMessage", () => {
 	it("should log an error when fetch fails", async () => {
 		mockFetch.mockRejectedValue(new Error("fetch failed"));
 
-		await sendLineNotifyMessage("test error");
+		await sendPushoverMessage("test error");
 
 		expect(loggerError).toHaveBeenCalledWith(
 			"Send line message failed with unknown error",

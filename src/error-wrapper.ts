@@ -5,24 +5,24 @@ import { AuthError } from "next-auth";
 import {
 	FileNotAllowedError,
 	InvalidFormatError,
-	LineNotifyError,
 	NotAllowedError,
+	PushoverError,
 	UnauthorizedError,
 	UnexpectedError,
 } from "./error-classes";
 import { loggerError, loggerWarn } from "./pino";
 import type { ServerAction } from "./types";
-import { sendLineNotifyMessage } from "./utils/fetch-message";
+import { sendPushoverMessage } from "./utils/fetch-message";
 
 export async function wrapServerSideErrorForClient<T>(
 	error: unknown,
 ): Promise<ServerAction<T>> {
-	if (error instanceof LineNotifyError) {
+	if (error instanceof PushoverError) {
 		loggerError(error.message, {
-			caller: "wrapServerSideErrorForClient lineNotify",
+			caller: "wrapServerSideErrorForClient PushoverError",
 			status: 500,
 		});
-		//MEMO: 右記は意味なし await sendLineNotifyMessage(error.message);
+		//MEMO: 右記は意味なし await sendPushoverMessage(error.message);
 		return { success: false, message: error.message };
 	}
 	// FIXME: add error handling for MinIO errors
@@ -37,7 +37,7 @@ export async function wrapServerSideErrorForClient<T>(
 			caller: "wrapServerSideErrorForClient custom",
 			status: 500,
 		});
-		await sendLineNotifyMessage(error.message);
+		await sendPushoverMessage(error.message);
 		return { success: false, message: error.message };
 	}
 	if (error instanceof AuthError) {
@@ -45,7 +45,7 @@ export async function wrapServerSideErrorForClient<T>(
 			caller: "wrapServerSideErrorForClient auth",
 			status: 500,
 		});
-		await sendLineNotifyMessage(error.message);
+		await sendPushoverMessage(error.message);
 		return {
 			success: false,
 			message: "signInUnknown",
@@ -62,7 +62,7 @@ export async function wrapServerSideErrorForClient<T>(
 			caller: "wrapServerSideErrorForClient prisma 1",
 			status: 500,
 		});
-		await sendLineNotifyMessage(error.message);
+		await sendPushoverMessage(error.message);
 		return { success: false, message: "prismaUnexpected" };
 	}
 	if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -70,7 +70,7 @@ export async function wrapServerSideErrorForClient<T>(
 			caller: "wrapServerSideErrorForClient prisma 2",
 			status: 500,
 		});
-		await sendLineNotifyMessage(error.message);
+		await sendPushoverMessage(error.message);
 		return { success: false, message: "prismaDuplicated" };
 	}
 
@@ -79,7 +79,7 @@ export async function wrapServerSideErrorForClient<T>(
 			caller: "wrapServerSideErrorForClient unknown error",
 			status: 500,
 		});
-		await sendLineNotifyMessage(error.message);
+		await sendPushoverMessage(error.message);
 	} else {
 		loggerError(
 			"unexpected",
@@ -89,7 +89,7 @@ export async function wrapServerSideErrorForClient<T>(
 			},
 			error,
 		);
-		await sendLineNotifyMessage("unexpected");
+		await sendPushoverMessage("unexpected");
 	}
 	return { success: false, message: "unexpected" };
 }

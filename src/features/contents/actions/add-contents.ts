@@ -10,8 +10,8 @@ import { validateContents } from "@/features/contents/utils/validate-contents";
 import { loggerInfo } from "@/pino";
 import prisma from "@/prisma";
 import type { ServerAction } from "@/types";
-import { sendLineNotifyMessage } from "@/utils/fetch-message";
-import { formatCreateContentsMessage } from "@/utils/format-for-line";
+import { sendPushoverMessage } from "@/utils/fetch-message";
+import { formatCreateContentsMessage } from "@/utils/format-for-notification";
 import { revalidatePath } from "next/cache";
 
 type Contents = {
@@ -44,7 +44,7 @@ export async function addContents(
 			caller: "addContents",
 			status: 200,
 		});
-		await sendLineNotifyMessage(message);
+		await sendPushoverMessage(message);
 		revalidatePath("/(dumper)");
 
 		return {

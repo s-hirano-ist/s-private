@@ -1,7 +1,7 @@
-export class LineNotifyError extends Error {
+export class PushoverError extends Error {
 	constructor() {
-		super("lineSend");
-		this.name = "LineNotifyError";
+		super("pushoverSend");
+		this.name = "PushoverError";
 	}
 }
 
