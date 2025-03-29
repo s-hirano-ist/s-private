@@ -6,7 +6,7 @@ import {
 	hasViewerAdminPermission,
 } from "@/features/auth/utils/session";
 import { Session } from "next-auth";
-import { type Mock, describe, expect, it, vi } from "vitest";
+import { Mock, describe, expect, test, vi } from "vitest";
 
 vi.mock("@/features/auth/utils/auth", () => ({ auth: vi.fn() }));
 
@@ -35,7 +35,7 @@ const mockUnauthenticatedUserSession = null;
 
 describe("session utilities", () => {
 	describe("getSelfId", () => {
-		it("should return the user ID from the session", async () => {
+		test("should return the user ID from the session", async () => {
 			(auth as Mock).mockResolvedValue(mockViewerRoleSession);
 
 			const result = await getSelfId();
@@ -46,7 +46,7 @@ describe("session utilities", () => {
 	});
 
 	describe("hasViewerAdminPermission", () => {
-		it("should return true if the user role is viewer", async () => {
+		test("should return true if the user role is viewer", async () => {
 			(auth as Mock).mockResolvedValue(mockViewerRoleSession);
 
 			const result = await hasViewerAdminPermission();
@@ -54,7 +54,7 @@ describe("session utilities", () => {
 			expect(result).toBe(true);
 		});
 
-		it("should return true if the user role is viewer and dumper", async () => {
+		test("should return true if the user role is viewer and dumper", async () => {
 			(auth as Mock).mockResolvedValue(mockDumperViewerRoleSession);
 
 			const result = await hasViewerAdminPermission();
@@ -62,7 +62,7 @@ describe("session utilities", () => {
 			expect(result).toBe(true);
 		});
 
-		it("should return false if the user role is unexpected", async () => {
+		test("should return false if the user role is unexpected", async () => {
 			(auth as Mock).mockResolvedValue(mockUnexpectedRoleSession);
 
 			const result = await hasViewerAdminPermission();
@@ -70,7 +70,7 @@ describe("session utilities", () => {
 			expect(result).toBe(false);
 		});
 
-		it("should return false if the user role is empty", async () => {
+		test("should return false if the user role is empty", async () => {
 			(auth as Mock).mockResolvedValue(mockEmptyRoleSession);
 
 			const result = await hasViewerAdminPermission();
@@ -78,7 +78,7 @@ describe("session utilities", () => {
 			expect(result).toBe(false);
 		});
 
-		it("should throw UnauthorizedError if not authenticated", async () => {
+		test("should throw UnauthorizedError if not authenticated", async () => {
 			(auth as Mock).mockResolvedValue(mockUnauthenticatedUserSession);
 
 			await expect(hasViewerAdminPermission).rejects.toThrow(UnauthorizedError);
@@ -87,7 +87,7 @@ describe("session utilities", () => {
 	});
 
 	describe("hasDumperPostPermission", () => {
-		it("should return true if the user role is dumper", async () => {
+		test("should return true if the user role is dumper", async () => {
 			(auth as Mock).mockResolvedValue(mockDumperRoleSession);
 
 			const result = await hasDumperPostPermission();
@@ -95,7 +95,7 @@ describe("session utilities", () => {
 			expect(result).toBe(true);
 		});
 
-		it("should return true if the user role is dumper and viewer", async () => {
+		test("should return true if the user role is dumper and viewer", async () => {
 			(auth as Mock).mockResolvedValue(mockDumperViewerRoleSession);
 
 			const result = await hasDumperPostPermission();
@@ -103,7 +103,7 @@ describe("session utilities", () => {
 			expect(result).toBe(true);
 		});
 
-		it("should return true if the user role is unexpected", async () => {
+		test("should return true if the user role is unexpected", async () => {
 			(auth as Mock).mockResolvedValue(mockUnexpectedRoleSession);
 
 			const result = await hasDumperPostPermission();
@@ -111,7 +111,7 @@ describe("session utilities", () => {
 			expect(result).toBe(false);
 		});
 
-		it("should return true if the user role is empty", async () => {
+		test("should return true if the user role is empty", async () => {
 			(auth as Mock).mockResolvedValue(mockEmptyRoleSession);
 
 			const result = await hasDumperPostPermission();
@@ -119,15 +119,7 @@ describe("session utilities", () => {
 			expect(result).toBe(false);
 		});
 
-		it("should return true if the user role is empty", async () => {
-			(auth as Mock).mockResolvedValue(mockEmptyRoleSession);
-
-			const result = await hasDumperPostPermission();
-
-			expect(result).toBe(false);
-		});
-
-		it("should throw UnauthorizedError if not authenticated", async () => {
+		test("should throw UnauthorizedError if not authenticated", async () => {
 			(auth as Mock).mockResolvedValue(mockUnauthenticatedUserSession);
 
 			await expect(hasDumperPostPermission).rejects.toThrow(UnauthorizedError);

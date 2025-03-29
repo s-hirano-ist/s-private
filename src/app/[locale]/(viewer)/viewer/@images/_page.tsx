@@ -7,9 +7,9 @@ import { AllImageStack } from "@/features/image/components/all-image-stack";
 import prisma from "@/prisma";
 import { Suspense } from "react";
 
-type Props = { currentPage: number };
+type Properties = { currentPage: number };
 
-export async function SuspensePage({ currentPage }: Props) {
+export async function SuspensePage({ currentPage }: Properties) {
 	const hasAdminPermission = await hasViewerAdminPermission();
 
 	const totalImages = await prisma.staticImages.count({});
@@ -20,7 +20,7 @@ export async function SuspensePage({ currentPage }: Props) {
 				<>
 					<CountBadge label="totalImages" total={totalImages} />
 					<Pagination currentPage={currentPage} totalPages={totalImages} />
-					<Suspense key={currentPage} fallback={<ImageStackSkeleton />}>
+					<Suspense fallback={<ImageStackSkeleton />} key={currentPage}>
 						<AllImageStack page={currentPage} />
 					</Suspense>
 				</>

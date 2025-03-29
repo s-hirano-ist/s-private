@@ -13,19 +13,19 @@ import { useDebouncedCallback } from "use-debounce";
 
 const PARAM_NAME = "q";
 
-type Props = {
+type Properties = {
 	images: Image[];
-	path: string;
 	imageType: ImageType;
+	path: string;
 };
 
-export function ViewerStack({ images, path, imageType }: Props) {
+export function ViewerStack({ images, path, imageType }: Properties) {
 	// TODO: use queryを利用してデータのキャッシュを行う
 
 	const router = useTransitionRouter();
-	const searchParams = useSearchParams();
+	const searchParameters = useSearchParams();
 	const [searchTerm, setSearchTerm] = useState(
-		searchParams.get(PARAM_NAME) ?? "",
+		searchParameters.get(PARAM_NAME) ?? "",
 	);
 	const [searchResults, setSearchResults] = useState(images);
 
@@ -41,11 +41,11 @@ export function ViewerStack({ images, path, imageType }: Props) {
 	);
 
 	const debouncedSearch = useDebouncedCallback(async (searchString: string) => {
-		const params = new URLSearchParams(searchParams);
-		if (searchString) params.set(PARAM_NAME, searchString);
-		else params.delete(PARAM_NAME);
+		const parameters = new URLSearchParams(searchParameters);
+		if (searchString) parameters.set(PARAM_NAME, searchString);
+		else parameters.delete(PARAM_NAME);
 
-		router.push(`?${params.toString()}`);
+		router.push(`?${parameters.toString()}`);
 		await fetchSearchResults(searchString);
 	}, 300);
 
@@ -60,20 +60,20 @@ export function ViewerStack({ images, path, imageType }: Props) {
 	return (
 		<div className="px-2">
 			<Input
-				type="q"
-				placeholder={t("search")}
-				value={searchTerm}
-				onChange={handleSearchChange}
 				className="my-4"
+				onChange={handleSearchChange}
+				placeholder={t("search")}
+				type="q"
+				value={searchTerm}
 			/>
 			<div className="my-2 grid grid-cols-2 items-stretch gap-4 sm:grid-cols-3 lg:grid-cols-4">
 				{searchResults.map((image) => {
 					return (
 						<ViewerPreview
 							image={image}
-							path={path}
 							imageType={imageType}
 							key={image.title}
+							path={path}
 						/>
 					);
 				})}

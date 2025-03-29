@@ -42,8 +42,8 @@ export const WithLabel: Story = {
 	render: () => (
 		<div>
 			<label
-				htmlFor="textarea-with-label"
 				className="mb-2 block text-sm font-medium text-gray-700"
+				htmlFor="textarea-with-label"
 			>
 				Label for Textarea
 			</label>

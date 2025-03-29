@@ -10,7 +10,7 @@ const TABS = {
 	images: "IMAGES",
 };
 
-type Props = {
+type Properties = {
 	books: ReactNode;
 	contents: ReactNode;
 	images: ReactNode;
@@ -18,42 +18,42 @@ type Props = {
 
 const DEFAULT_TAB = "books";
 
-export function RootTab({ books, contents, images }: Props) {
+export function RootTab({ books, contents, images }: Properties) {
 	const router = useTransitionRouter();
-	const searchParams = useSearchParams();
+	const searchParameters = useSearchParams();
 
-	const [tab, setTab] = useState(searchParams.get("tab") ?? DEFAULT_TAB);
+	const [tab, setTab] = useState(searchParameters.get("tab") ?? DEFAULT_TAB);
 
 	const handleTabChange = (value: string) => {
-		const params = new URLSearchParams(searchParams);
-		params.set("tab", value);
-		router.replace(`?${params.toString()}`);
+		const parameters = new URLSearchParams(searchParameters);
+		parameters.set("tab", value);
+		router.replace(`?${parameters.toString()}`);
 		setTab(value);
 	};
 
 	useEffect(() => {
-		const tab = searchParams.get("tab");
+		const tab = searchParameters.get("tab");
 		if (!tab) return;
 
-		const params = new URLSearchParams(searchParams);
+		const parameters = new URLSearchParams(searchParameters);
 		if (!Object.keys(TABS).includes(tab)) {
-			params.delete("tab");
-			router.replace(`?${params.toString()}`);
+			parameters.delete("tab");
+			router.replace(`?${parameters.toString()}`);
 			setTab(DEFAULT_TAB);
 		}
-	}, [searchParams, router]);
+	}, [searchParameters, router]);
 
 	return (
 		<Tabs
-			defaultValue={DEFAULT_TAB}
 			className="mx-auto max-w-5xl sm:px-2"
-			value={tab}
+			defaultValue={DEFAULT_TAB}
 			onValueChange={handleTabChange}
+			value={tab}
 		>
 			<TabsList className="w-full">
 				{Object.entries(TABS).map(([key, value]) => {
 					return (
-						<TabsTrigger className="w-full" value={key} key={key}>
+						<TabsTrigger className="w-full" key={key} value={key}>
 							{value}
 						</TabsTrigger>
 					);

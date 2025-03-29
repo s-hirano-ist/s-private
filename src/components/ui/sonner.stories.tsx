@@ -13,7 +13,7 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-const SonnerExample = () => {
+function SonnerExample() {
 	const handleToast = () => {
 		toast("sample description");
 	};
@@ -24,7 +24,7 @@ const SonnerExample = () => {
 			<Button onClick={handleToast}>Show Toast</Button>
 		</>
 	);
-};
+}
 
 export const Default: Story = {
 	render: () => <SonnerExample />,

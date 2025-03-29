@@ -5,7 +5,7 @@ import { Session } from "next-auth";
 import { revalidatePath } from "next/cache";
 import sharp, { Sharp } from "sharp";
 import { v7 as uuidv7 } from "uuid";
-import { type Mock, describe, expect, it, vi } from "vitest";
+import { Mock, describe, expect, test, vi } from "vitest";
 import { addImage } from "./add-image";
 
 vi.mock("@/features/auth/utils/auth", () => ({ auth: vi.fn() }));
@@ -60,7 +60,7 @@ const mockMetadata = { width: 800, height: 600, format: "jpeg" };
 describe("addImage", () => {
 	let mockFormData: FormData;
 
-	it("should return success false on Unauthorized", async () => {
+	test("should return success false on Unauthorized", async () => {
 		(auth as Mock).mockResolvedValue(mockUnauthorizedSession);
 
 		const result = await addImage(mockFormData);
@@ -72,7 +72,7 @@ describe("addImage", () => {
 		expect(auth).toHaveBeenCalledTimes(1);
 	});
 
-	it("should return success false on not permitted", async () => {
+	test("should return success false on not permitted", async () => {
 		(auth as Mock).mockResolvedValue(mockNotAllowedRoleSession);
 
 		const result = await addImage(mockFormData);
@@ -84,10 +84,10 @@ describe("addImage", () => {
 		expect(auth).toHaveBeenCalledTimes(1);
 	});
 
-	it("should return success when everything is correct", async () => {
+	test("should return success when everything is correct", async () => {
 		const validFileType = "image/jpeg";
 		const validFileSize = 1024 * 1024; // 1MB
-		const file = createMockFile("myimage.jpeg", validFileType, validFileSize);
+		const file = createMockFile("myImage.jpeg", validFileType, validFileSize);
 		mockFormData = new FormData();
 		mockFormData.append("file", file);
 		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
@@ -100,7 +100,7 @@ describe("addImage", () => {
 		} as any);
 
 		(prisma.images.create as Mock).mockResolvedValue({
-			id: "generated-uuid-myimage.jpeg",
+			id: "generated-uuid-myImage.jpeg",
 		});
 		(uuidv7 as Mock).mockReturnValue("generated-uuid");
 
@@ -115,15 +115,15 @@ describe("addImage", () => {
 		});
 	});
 
-	it("should return success false on invalid file type", async () => {
+	test("should return success false on invalid file type", async () => {
 		const validFileType = "invalid";
 		const validFileSize = 1024 * 1024; // 1MB
-		const file = createMockFile("myimage.jpeg", validFileType, validFileSize);
+		const file = createMockFile("myImage.jpeg", validFileType, validFileSize);
 		mockFormData = new FormData();
 		mockFormData.append("file", file);
 		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
 		(prisma.images.create as Mock).mockResolvedValue({
-			id: "generated-uuid-myimage.jpeg",
+			id: "generated-uuid-myImage.jpeg",
 		});
 		(uuidv7 as Mock).mockReturnValue("generated-uuid");
 
@@ -135,15 +135,15 @@ describe("addImage", () => {
 		});
 	});
 
-	it("should return success false on max file size", async () => {
+	test("should return success false on max file size", async () => {
 		const validFileType = "image/jpeg";
-		const validFileSize = 10240 * 10240 + 1; // 100MB over
-		const file = createMockFile("myimage.jpeg", validFileType, validFileSize);
+		const validFileSize = 10_240 * 10_240 + 1; // 100MB over
+		const file = createMockFile("myImage.jpeg", validFileType, validFileSize);
 		mockFormData = new FormData();
 		mockFormData.append("file", file);
 		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
 		(prisma.images.create as Mock).mockResolvedValue({
-			id: "generated-uuid-myimage.jpeg",
+			id: "generated-uuid-myImage.jpeg",
 		});
 		(uuidv7 as Mock).mockReturnValue("generated-uuid");
 
@@ -155,11 +155,11 @@ describe("addImage", () => {
 		});
 	});
 
-	it("should return success false on no file", async () => {
+	test("should return success false on no file", async () => {
 		mockFormData = new FormData();
 		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
 		(prisma.images.create as Mock).mockResolvedValue({
-			id: "generated-uuid-myimage.jpeg",
+			id: "generated-uuid-myImage.jpeg",
 		});
 		(uuidv7 as Mock).mockReturnValue("generated-uuid");
 

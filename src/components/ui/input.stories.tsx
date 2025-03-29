@@ -29,7 +29,7 @@ export const Disabled: Story = {
 };
 
 export const WithTypePassword: Story = {
-	render: () => <Input type="password" placeholder="Password input" />,
+	render: () => <Input placeholder="Password input" type="password" />,
 };
 
 export const WithError: Story = {

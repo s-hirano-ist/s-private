@@ -56,13 +56,16 @@ async function revertSelfImagesStatus(): Promise<Status> {
 
 const handleStatusChange = async (changeType: UpdateOrRevert) => {
 	switch (changeType) {
-		case "UPDATE":
+		case "UPDATE": {
 			return await updateSelfImagesStatus();
-		case "REVERT":
+		}
+		case "REVERT": {
 			return await revertSelfImagesStatus();
-		default:
+		}
+		default: {
 			changeType satisfies never;
 			throw new UnexpectedError();
+		}
 	}
 };
 

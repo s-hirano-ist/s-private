@@ -1,9 +1,9 @@
 import { InvalidFormatError } from "@/error-classes";
 import { validateCategory } from "@/features/news/utils/validate-category";
-import { describe, expect, it } from "vitest";
+import { describe, expect, test } from "vitest";
 
 describe("validateCategory", () => {
-	it("should validate correct category name", () => {
+	test("should validate correct category name", () => {
 		const formData = new FormData();
 		formData.append("category", "News");
 
@@ -14,14 +14,14 @@ describe("validateCategory", () => {
 		});
 	});
 
-	it("should throw InvalidFormatError when category name exceeds max length", () => {
+	test("should throw InvalidFormatError when category name exceeds max length", () => {
 		const formData = new FormData();
 		formData.append("category", "a".repeat(17)); // Exceeds 16 characters
 
 		expect(() => validateCategory(formData)).toThrow(InvalidFormatError);
 	});
 
-	it("should trim whitespace and validate", () => {
+	test("should trim whitespace and validate", () => {
 		const formData = new FormData();
 		formData.append("category", "   News   ");
 
@@ -32,13 +32,13 @@ describe("validateCategory", () => {
 		});
 	});
 
-	it("should handle empty category name gracefully", () => {
+	test("should handle empty category name gracefully", () => {
 		const formData = new FormData();
 		formData.append("category", "");
 		expect(() => validateCategory(formData)).toThrow(InvalidFormatError);
 	});
 
-	it("should throw InvalidFormatError when formData is missing the field", () => {
+	test("should throw InvalidFormatError when formData is missing the field", () => {
 		const formData = new FormData();
 
 		expect(() => validateCategory(formData)).toThrow(InvalidFormatError);

@@ -21,7 +21,7 @@ export async function SuspensePage() {
 			{hasAdminPermission ? (
 				<>
 					<CountBadge label="totalContents" total={totalImages} />
-					<ViewerStack path={path} images={images} imageType="svg" />
+					<ViewerStack imageType="svg" images={images} path={path} />
 				</>
 			) : (
 				<Unauthorized />

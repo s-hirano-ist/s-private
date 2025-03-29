@@ -19,7 +19,7 @@ export function NotFound() {
 			<p className="px-4 text-center text-primary-grad">
 				The content you are looking for could not be found.
 			</p>
-			<Button className="mx-auto flex w-1/2 flex-col" asChild>
+			<Button asChild className="mx-auto flex w-1/2 flex-col">
 				<Link href={"/" as Route}>Return to Home</Link>
 			</Button>
 		</div>

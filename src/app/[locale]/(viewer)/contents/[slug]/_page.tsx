@@ -4,9 +4,9 @@ import { Unauthorized } from "@/components/card/unauthorized";
 import { hasViewerAdminPermission } from "@/features/auth/utils/session";
 import prisma from "@/prisma";
 
-type Props = { slug: string };
+type Properties = { slug: string };
 
-export async function SuspensePage({ slug }: Props) {
+export async function SuspensePage({ slug }: Properties) {
 	const hasAdminPermission = await hasViewerAdminPermission();
 
 	const data = await prisma.staticContents.findUnique({

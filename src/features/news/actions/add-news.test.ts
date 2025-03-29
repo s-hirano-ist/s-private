@@ -2,7 +2,7 @@ import { auth } from "@/features/auth/utils/auth";
 import prisma from "@/prisma";
 import { Session } from "next-auth";
 import { revalidatePath } from "next/cache";
-import { type Mock, describe, expect, it, vi } from "vitest";
+import { Mock, describe, expect, test, vi } from "vitest";
 import { addNews } from "./add-news";
 
 vi.mock("@/features/auth/utils/auth", () => ({ auth: vi.fn() }));
@@ -36,7 +36,7 @@ const mockCreatedNews = {
 };
 
 describe("addNews", () => {
-	it("should return success false on Unauthorized", async () => {
+	test("should return success false on Unauthorized", async () => {
 		(auth as Mock).mockResolvedValue(mockUnauthorizedSession);
 
 		const result = await addNews(mockFormData);
@@ -48,7 +48,7 @@ describe("addNews", () => {
 		expect(auth).toHaveBeenCalledTimes(1);
 	});
 
-	it("should return success false on not permitted", async () => {
+	test("should return success false on not permitted", async () => {
 		(auth as Mock).mockResolvedValue(mockNotAllowedRoleSession);
 
 		const result = await addNews(mockFormData);
@@ -60,7 +60,7 @@ describe("addNews", () => {
 		expect(auth).toHaveBeenCalledTimes(1);
 	});
 
-	it("should create only news if no new category is provided", async () => {
+	test("should create only news if no new category is provided", async () => {
 		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
 		(prisma.categories.upsert as Mock).mockResolvedValue({
 			id: 1,

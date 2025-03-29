@@ -16,12 +16,15 @@ export function convertUint8ArrayToImgSrc(
 	const svgString = new TextDecoder().decode(uint8Array);
 	const base64String = bufferToBase64(uint8Array);
 	switch (imageType) {
-		case "svg":
+		case "svg": {
 			return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgString)}`;
-		case "webp":
+		}
+		case "webp": {
 			return `data:image/webp;base64,${base64String}`;
-		default:
+		}
+		default: {
 			imageType satisfies never;
 			throw new UnexpectedError();
+		}
 	}
 }

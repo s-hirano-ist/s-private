@@ -3,7 +3,7 @@ import prisma from "@/prisma";
 import { sendPushoverMessage } from "@/utils/fetch-message";
 import { Session } from "next-auth";
 import { revalidatePath } from "next/cache";
-import { type Mock, describe, expect, it, vi } from "vitest";
+import { Mock, describe, expect, test, vi } from "vitest";
 import { changeNewsStatus } from "./change-news-status";
 
 vi.mock("@/features/auth/utils/auth", () => ({ auth: vi.fn() }));
@@ -23,7 +23,7 @@ const mockNotAllowedRoleSession: Session = {
 const mockUnauthorizedSession = null;
 
 describe("changeNewsStatus", () => {
-	it("should return success false on Unauthorized", async () => {
+	test("should return success false on Unauthorized", async () => {
 		(auth as Mock).mockResolvedValue(mockUnauthorizedSession);
 
 		const result = await changeNewsStatus("UPDATE");
@@ -35,7 +35,7 @@ describe("changeNewsStatus", () => {
 		expect(auth).toHaveBeenCalledTimes(1);
 	});
 
-	it("should return success false on not permitted", async () => {
+	test("should return success false on not permitted", async () => {
 		(auth as Mock).mockResolvedValue(mockNotAllowedRoleSession);
 
 		const result = await changeNewsStatus("REVERT");
@@ -47,7 +47,7 @@ describe("changeNewsStatus", () => {
 		expect(auth).toHaveBeenCalledTimes(1);
 	});
 
-	it("should update news statuses and send notifications (UPDATE)", async () => {
+	test("should update news statuses and send notifications (UPDATE)", async () => {
 		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
 		(prisma.$transaction as Mock).mockImplementation(async (callback) =>
 			callback({
@@ -75,7 +75,7 @@ describe("changeNewsStatus", () => {
 		});
 	});
 
-	it("should revert news statuses and send notifications (REVERT)", async () => {
+	test("should revert news statuses and send notifications (REVERT)", async () => {
 		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
 		(prisma.$transaction as Mock).mockImplementation(async (callback) =>
 			callback({
@@ -103,7 +103,7 @@ describe("changeNewsStatus", () => {
 		});
 	});
 
-	it("should handle unexpected errors gracefully", async () => {
+	test("should handle unexpected errors gracefully", async () => {
 		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
 		const mockError = new Error("Unexpected error");
 		(prisma.$transaction as Mock).mockRejectedValue(mockError);

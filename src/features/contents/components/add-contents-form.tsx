@@ -11,7 +11,7 @@ import { useActionState, useRef } from "react";
 import { toast } from "sonner";
 
 export function AddContentsForm() {
-	const urlInputRef = useRef<HTMLInputElement>(null);
+	const urlInputReference = useRef<HTMLInputElement>(null);
 
 	const label = useTranslations("label");
 	const message = useTranslations("message");
@@ -26,7 +26,7 @@ export function AddContentsForm() {
 
 	const handlePasteClick = async () => {
 		const clipboardText = await navigator.clipboard.readText();
-		if (urlInputRef.current !== null) urlInputRef.current.value = clipboardText;
+		if (urlInputReference.current !== null) urlInputReference.current.value = clipboardText;
 	};
 
 	return (
@@ -37,29 +37,29 @@ export function AddContentsForm() {
 				<>
 					<div className="space-y-1">
 						<Label htmlFor="title">{label("title")}</Label>
-						<Input id="title" name="title" autoComplete="off" required />
+						<Input autoComplete="off" id="title" name="title" required />
 					</div>
 					<div className="space-y-1">
 						<Label htmlFor="quote">{label("description")}</Label>
-						<Textarea id="quote" name="quote" autoComplete="off" />
+						<Textarea autoComplete="off" id="quote" name="quote" />
 					</div>
 					<div className="space-y-1">
 						<Label htmlFor="url">{label("url")}</Label>
 						<div className="flex space-x-2 px-2">
 							<Input
-								id="url"
-								name="url"
-								type="url"
-								inputMode="url"
 								autoComplete="off"
-								ref={urlInputRef}
+								id="url"
+								inputMode="url"
+								name="url"
+								ref={urlInputReference}
 								required
+								type="url"
 							/>
 							<Button
-								variant="ghost"
-								type="button"
-								onClick={handlePasteClick}
 								data-testid="paste-button"
+								onClick={handlePasteClick}
+								type="button"
+								variant="ghost"
 							>
 								<ClipboardPasteIcon />
 							</Button>
@@ -67,7 +67,7 @@ export function AddContentsForm() {
 					</div>
 				</>
 			)}
-			<Button type="submit" disabled={isPending} className="w-full">
+			<Button className="w-full" disabled={isPending} type="submit">
 				{label("save")}
 			</Button>
 		</form>

@@ -16,8 +16,8 @@ import { revalidatePath } from "next/cache";
 
 type Contents = {
 	id: number;
-	title: string;
 	quote: string | null;
+	title: string;
 	url: string;
 };
 

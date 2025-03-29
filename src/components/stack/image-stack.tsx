@@ -5,22 +5,22 @@ import PhotoSwipeLightbox from "photoswipe/lightbox";
 import { useEffect } from "react";
 import "photoswipe/style.css";
 
-type Props = {
+type Properties = {
 	data: {
-		thumbnailSrc: string;
-		originalSrc: string;
-		width?: number | undefined;
 		height?: number | undefined;
+		originalSrc: string;
+		thumbnailSrc: string;
+		width?: number | undefined;
 	}[];
 };
 
-export function ImageStack({ data }: Props) {
+export function ImageStack({ data }: Properties) {
 	useEffect(() => {
 		const lightbox = new PhotoSwipeLightbox({
 			gallery: "#image-preview",
 			children: "a",
 			pswpModule: () => import("photoswipe"),
-			bgOpacity: 1.0,
+			bgOpacity: 1,
 		});
 		lightbox.init();
 
@@ -37,16 +37,16 @@ export function ImageStack({ data }: Props) {
 			<div className="grid grid-cols-4 gap-2 p-2 sm:p-4">
 				{data.map((image) => (
 					<a
-						href={image.originalSrc}
-						target="_blank"
-						rel="noreferrer"
-						// FIXME: not foundの画像が複数枚あるときにエラー
-						key={image.thumbnailSrc}
-						data-pswp-width={image.width}
-						data-pswp-height={image.height}
 						aria-label={`Image ${image.thumbnailSrc}`}
+						data-pswp-height={image.height}
+						data-pswp-width={image.width}
+						href={image.originalSrc}
+						key={image.thumbnailSrc}
+						rel="noreferrer"
+						target="_blank"
+						// FIXME: not foundの画像が複数枚あるときにエラー
 					>
-						<Image src={image.thumbnailSrc} width={300} height={96} alt="" />
+						<Image alt="" height={96} src={image.thumbnailSrc} width={300} />
 					</a>
 				))}
 			</div>

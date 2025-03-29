@@ -19,7 +19,7 @@ export const Default: Story = {
 
 export const WithCustomClass: Story = {
 	render: () => (
-		<Label htmlFor="input-id" className="text-red-500">
+		<Label className="text-red-500" htmlFor="input-id">
 			Label with Custom Class
 		</Label>
 	),

@@ -7,13 +7,13 @@ import { useTheme } from "next-themes";
 import { Link } from "next-view-transitions";
 import { usePathname } from "next/navigation";
 
-type Props = { handleReload: () => void; onSignOutSubmit: () => Promise<void> };
+type Properties = { handleReload: () => void; onSignOutSubmit: () => Promise<void> };
 
 const removeLangPrefix = (pathname: string): string => {
 	return pathname.replace(/^\/(en|ja)(\/|$)/, "/");
 };
 
-export function UtilButtons({ handleReload, onSignOutSubmit }: Props) {
+export function UtilButtons({ handleReload, onSignOutSubmit }: Properties) {
 	const pathname = usePathname();
 	const { setTheme, theme } = useTheme();
 
@@ -34,11 +34,10 @@ export function UtilButtons({ handleReload, onSignOutSubmit }: Props) {
 	const t = useTranslations("utils");
 
 	return (
-		<>
-			<div className="grid grid-cols-2 gap-2 px-2 sm:grid-cols-4">
+		<div className="grid grid-cols-2 gap-2 px-2 sm:grid-cols-4">
 				{UTIL_URLS.map((url) => {
 					return (
-						<Button className="w-full" asChild key={url.name}>
+						<Button asChild className="w-full" key={url.name}>
 							<Link href={url.url}>{url.name}</Link>
 						</Button>
 					);
@@ -47,11 +46,10 @@ export function UtilButtons({ handleReload, onSignOutSubmit }: Props) {
 				<Button onClick={handleTheme}>{t("appearance")}</Button>
 				<Button onClick={handleLanguage}>{t("language")}</Button>
 				{pathname !== "/auth" && (
-					<Button onClick={onSignOutSubmit} data-testid="log-out-button">
+					<Button data-testid="log-out-button" onClick={onSignOutSubmit}>
 						{t("signOut")}
 					</Button>
 				)}
 			</div>
-		</>
 	);
 }

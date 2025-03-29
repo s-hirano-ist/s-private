@@ -1,10 +1,10 @@
 type Action = {
-	success: boolean;
 	message: string;
+	success: boolean;
 };
 
 export type ServerAction<T> =
-	| (Action & { success: true; data: T })
+	| (Action & { data: T; success: true; })
 	| (Action & { success: false });
 
 export type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;

@@ -8,15 +8,14 @@ import {
 } from "@/components/ui/pagination";
 import { PAGE_SIZE } from "@/constants";
 
-type Props = { currentPage: number; totalPages: number };
+type Properties = { currentPage: number; totalPages: number };
 
-export function Pagination({ currentPage, totalPages }: Props) {
+export function Pagination({ currentPage, totalPages }: Properties) {
 	const showPreviousPageLink = 1 < currentPage;
 	const showNextPageLink = currentPage < totalPages / PAGE_SIZE;
 
 	return (
-		<>
-			<ShadcnPagination>
+		<ShadcnPagination>
 				<PaginationContent>
 					{showPreviousPageLink && (
 						<PaginationItem>
@@ -35,6 +34,5 @@ export function Pagination({ currentPage, totalPages }: Props) {
 					)}
 				</PaginationContent>
 			</ShadcnPagination>
-		</>
 	);
 }

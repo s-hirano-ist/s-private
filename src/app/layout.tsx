@@ -29,8 +29,8 @@ export default function RootLayout({
 					{/* https://github.com/aidenybai/react-scan */}
 					{env.NODE_ENV === "development" && (
 						<script
-							src="https://unpkg.com/react-scan/dist/auto.global.js"
 							async
+							src="https://unpkg.com/react-scan/dist/auto.global.js"
 						/>
 					)}
 				</head>

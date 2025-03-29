@@ -10,7 +10,7 @@ export default function Page() {
 		<main>
 			<div className="flex h-screen w-screen flex-col items-center justify-center space-y-4 text-center">
 				<StatusCodeView statusCode="500" />
-				<Button variant="outline" asChild>
+				<Button asChild variant="outline">
 					<Link href={"/" as Route}>Go back to Home</Link>
 				</Button>
 			</div>

@@ -80,8 +80,8 @@ export const LongContents: Story = {
 					</DrawerDescription>
 				</DrawerHeader>
 				<div style={{ maxHeight: "200px", overflowY: "auto" }}>
-					{[...Array(20)].map((_, i) => (
-						<p key={String(i)}>This is some long content. Line {i + 1}</p>
+					{Array.from({length: 20}).map((_, index) => (
+						<p key={String(index)}>This is some long content. Line {index + 1}</p>
 					))}
 				</div>
 				<DrawerFooter>

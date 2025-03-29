@@ -1,9 +1,9 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, test } from "vitest";
 import { markdownToHtml, markdownToReact } from "./markdown-to-react";
 
 describe.skip("Markdown Utility Functions", () => {
 	// FIXME: timeout error
-	it("should convert markdown to HTML", async () => {
+	test("should convert markdown to HTML", async () => {
 		const markdown = `# Heading\n\nThis is a **bold** text with a [link](https://example.com).`;
 		const html = await markdownToHtml(markdown);
 		expect(html).toContain('<h1 id="heading">Heading</h1>');
@@ -13,7 +13,7 @@ describe.skip("Markdown Utility Functions", () => {
 		);
 	});
 
-	it("should sanitize HTML and parse to React", async () => {
+	test("should sanitize HTML and parse to React", async () => {
 		const markdown = `<script>alert("XSS")</script><h1>Safe Heading</h1>`;
 		const reactComponent = await markdownToReact(markdown);
 		expect(reactComponent).toBeDefined();

@@ -29,16 +29,16 @@ export function Footer() {
 	const pathname = usePathname();
 	const t = useTranslations("utils");
 
-	const Icon = (name: string, icon: ReactNode) => {
+	function Icon(name: string, icon: ReactNode) {
 		return (
 			<div className="flex flex-col items-center">
 				{icon}
 				<div className="text-xs font-thin">{name}</div>
 			</div>
 		);
-	};
+	}
 	const handleReload = () => {
-		window.location.reload();
+		globalThis.location.reload();
 	};
 
 	async function onSignOutSubmit() {
@@ -47,18 +47,18 @@ export function Footer() {
 
 	return (
 		<footer className="sticky bottom-0 z-50 mx-auto w-full max-w-lg border border-gray-200 bg-white dark:border-gray-600 dark:bg-gray-700 sm:rounded-3xl ">
-			<Drawer open={open} onOpenChange={setOpen} snapPoints={[0.5]}>
+			<Drawer onOpenChange={setOpen} open={open} snapPoints={[0.5]}>
 				<div className="mx-auto grid h-16 max-w-lg grid-cols-5 bg-gradient-to-r from-primary-grad-from to-primary-grad-to text-white sm:rounded-3xl">
 					{/* FIXME: bug with parallel routes
 					 * https://nextjs.org/docs/app/building-your-application/routing/parallel-routes */}
 					<Button
-						variant="navSide"
-						size="navSide"
+						asChild
 						className={cn(
 							"sm:rounded-s-3xl",
 							/^\/(?:ja|en)(?:\/)?$/.test(pathname) ? "bg-black/10" : "",
 						)}
-						asChild
+						size="navSide"
+						variant="navSide"
 					>
 						<Link href={"/" as Route}>
 							{Icon("DUMPER", <FileUpIcon className="size-6" />)}
@@ -68,15 +68,15 @@ export function Footer() {
 					{/* FIXME: bug with parallel routes
 					 * https://nextjs.org/docs/app/building-your-application/routing/parallel-routes */}
 					<Button
-						variant="navSide"
-						size="navSide"
-						type="button"
+						asChild
 						className={
 							/^\/(?:ja|en)\/(viewer|books|contents)/.test(pathname)
 								? "bg-black/10"
 								: ""
 						}
-						asChild
+						size="navSide"
+						type="button"
+						variant="navSide"
 					>
 						<Link href={"/viewer" as Route}>
 							{Icon("VIEWER", <NotebookIcon className="size-6" />)}
@@ -86,10 +86,10 @@ export function Footer() {
 					<DrawerTrigger asChild>
 						<div className="flex items-center justify-center">
 							<Button
-								variant="navCenter"
+								className="bg-gradient-to-t from-primary-grad-from to-primary-grad-to shadow"
 								size="navCenter"
 								type="button"
-								className="bg-gradient-to-t from-primary-grad-from to-primary-grad-to shadow"
+								variant="navCenter"
 							>
 								{Icon("", <SendIcon className="size-6 text-white" />)}
 								<span className="sr-only">Action</span>
@@ -100,13 +100,13 @@ export function Footer() {
 					{/* FIXME: bug with parallel routes
 					 * https://nextjs.org/docs/app/building-your-application/routing/parallel-routes */}
 					<Button
-						variant="navSide"
-						size="navSide"
-						type="button"
+						asChild
 						className={
 							/^\/(?:ja|en)\/(search)/.test(pathname) ? "bg-black/10" : ""
 						}
-						asChild
+						size="navSide"
+						type="button"
+						variant="navSide"
 					>
 						<Link href={"/search" as Route}>
 							{Icon("SEARCH", <SearchIcon className="size-6" />)}
@@ -116,13 +116,13 @@ export function Footer() {
 					{/* FIXME: bug with parallel routes
 					 * https://nextjs.org/docs/app/building-your-application/routing/parallel-routes */}
 					<Button
-						variant="navSide"
-						size="navSide"
+						asChild
 						className={cn(
 							"sm:rounded-e-3xl",
 							/^\/(?:ja|en)\/(ai)/.test(pathname) ? "bg-black/10" : "",
 						)}
-						asChild
+						size="navSide"
+						variant="navSide"
 					>
 						<Link href={"/ai" as Route}>
 							{Icon("AI", <BotIcon className="size-6" />)}

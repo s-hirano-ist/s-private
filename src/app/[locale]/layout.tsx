@@ -7,12 +7,12 @@ import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { ReactNode } from "react";
 
-type Params = {
+type Parameters_ = {
 	children: ReactNode;
 	params: Promise<{ locale: string }>;
 };
 
-export default async function LocaleLayout({ children, params }: Params) {
+export default async function LocaleLayout({ children, params }: Parameters_) {
 	const { locale } = await params;
 	// Ensure that the incoming `locale` is valid
 	if (!routing.locales.includes(locale as "en" | "ja")) {
@@ -27,8 +27,8 @@ export default async function LocaleLayout({ children, params }: Params) {
 			<ThemeProvider
 				attribute="class"
 				defaultTheme="system"
-				enableSystem
 				disableTransitionOnChange
+				enableSystem
 			>
 				<main className="flex h-screen flex-col justify-between">
 					<div className="grow pb-4">{children}</div>

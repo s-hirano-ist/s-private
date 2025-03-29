@@ -12,17 +12,17 @@ export type Image = {
 	uint8ArrayImage: Uint8Array;
 };
 
-type Props = {
+type Properties = {
 	image: Image;
-	path: string;
 	imageType: ImageType;
+	path: string;
 };
 
-export function ViewerPreview({ image, path, imageType }: Props) {
+export function ViewerPreview({ image, path, imageType }: Properties) {
 	const { title, uint8ArrayImage } = image;
 	const href = `${path}/${title}` as Route;
 
-	const src = convertUint8ArrayToImgSrc(uint8ArrayImage, imageType);
+	const source = convertUint8ArrayToImgSrc(uint8ArrayImage, imageType);
 
 	return (
 		<Link href={href}>
@@ -33,11 +33,11 @@ export function ViewerPreview({ image, path, imageType }: Props) {
 				<CardContent>
 					<div className="flex justify-center">
 						<NextImage
-							src={src}
-							height={THUMBNAIL_HEIGHT}
-							width={THUMBNAIL_WIDTH}
 							alt={title}
 							className="h-auto w-full rounded bg-white p-1"
+							height={THUMBNAIL_HEIGHT}
+							src={source}
+							width={THUMBNAIL_WIDTH}
 						/>
 					</div>
 				</CardContent>

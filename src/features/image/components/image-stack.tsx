@@ -1,5 +1,5 @@
 import { StatusCodeView } from "@/components/card/status-code-view";
-import { ImageStack as _ImageStack } from "@/components/stack/image-stack";
+import { ImageStack as ImageStackComponent } from "@/components/stack/image-stack";
 import { NOT_FOUND_IMAGE_PATH } from "@/constants";
 import { getSelfId } from "@/features/auth/utils/session";
 import { generateUrl } from "@/features/image/actions/generate-url";
@@ -34,7 +34,7 @@ export async function ImageStack() {
 			}),
 		);
 
-		return <_ImageStack data={images} />;
+		return <ImageStackComponent data={images} />;
 	} catch (error) {
 		loggerError("unexpected", { caller: "ImagePage", status: 500 }, error);
 		return (

@@ -2,14 +2,14 @@ import { cn } from "@/utils/tailwindcss";
 
 function Skeleton({
 	className,
-	...props
+	...properties
 }: React.HTMLAttributes<HTMLDivElement>) {
 	return (
 		<div
 			className={cn("animate-pulse rounded-md bg-primary/10", className)}
-			role="presentation"
 			data-testid="skeleton"
-			{...props}
+			role="presentation"
+			{...properties}
 		/>
 	);
 }
