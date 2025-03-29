@@ -10,7 +10,7 @@ import reactHookPlugin from "eslint-plugin-react-hooks";
 import spellcheckPlugin from "eslint-plugin-spellcheck";
 import storybookPlugin from "eslint-plugin-storybook";
 import tailwindcssPlugin from "eslint-plugin-tailwindcss";
-// import unicornPlugin from "eslint-plugin-unicorn";
+import unicornPlugin from "eslint-plugin-unicorn";
 import unusedImportsPlugin from "eslint-plugin-unused-imports";
 import globals from "globals";
 import tsEslint from "typescript-eslint";
@@ -185,7 +185,20 @@ export default tsEslint.config(
 		},
 	},
 	...storybookPlugin.configs["flat/recommended"],
-	// unicornPlugin.configs["recommended"],
+	unicornPlugin.configs["recommended"],
+	{
+		rules: {
+			"unicorn/prevent-abbreviations": "off",
+			"unicorn/no-await-expression-member": "off",
+			"unicorn/no-null": "off",
+			"unicorn/prefer-code-point": "off",
+			"unicorn/no-abusive-eslint-disable": "off",
+			"unicorn/prefer-global-this": "off",
+			"unicorn/consistent-function-scoping": "off",
+			"unicorn/no-new-array": "off",
+			"unicorn/no-useless-spread": "off",
+		},
+	},
 	...tailwindcssPlugin.configs["flat/recommended"],
 
 	// NO USE BECAUSE BIOME DOES THE SAME THING
