@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.11.0](https://github.com/s-hirano-ist/s-private/compare/v8.10.0...v8.11.0) (2025-03-29)
+
+
+### Features
+
+* 🎸 add s-schema as submodule ([7750948](https://github.com/s-hirano-ist/s-private/commit/7750948371b75ddb624f1692b2bf984f79e95019))
+* 🎸 add s-schema as submodule ([8be4d39](https://github.com/s-hirano-ist/s-private/commit/8be4d390975d35c174181f6363a5723363aab429))
+
+
+### Bug Fixes
+
+* 🐛 add more settings to eslint ([48821dc](https://github.com/s-hirano-ist/s-private/commit/48821dc2a4e5bd8159e65df86c75d869d32f8cd3))
+* 🐛 add sub modules ([3ddc691](https://github.com/s-hirano-ist/s-private/commit/3ddc691aebe65d4621246b21205be06322eabe6b))
+
 ## [8.10.0](https://github.com/s-hirano-ist/s-private/compare/v8.9.0...v8.10.0) (2025-03-15)
 
 
