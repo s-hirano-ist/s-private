@@ -1,7 +1,6 @@
 import { Input } from "@/components/ui/input";
 import type { Meta, StoryObj } from "@storybook/react";
 import { AxeIcon } from "lucide-react";
-import React from "react";
 import { Label } from "./label";
 
 const meta = {

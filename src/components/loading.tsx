@@ -1,7 +1,6 @@
 import { Loader } from "lucide-react";
-import React from "react";
 
-const Loading: React.FC = () => {
+const Loading = () => {
 	return (
 		<div className="flex h-full items-center justify-center p-16">
 			<Loader className="animate-spin text-primary" size={48} />

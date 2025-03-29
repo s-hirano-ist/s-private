@@ -1,4 +1,3 @@
-import { env } from "@/env";
 import { auth } from "@/features/auth/utils/auth";
 import { minioClient } from "@/minio";
 import prisma from "@/prisma";
@@ -97,6 +96,7 @@ describe("addImage", () => {
 			metadata: vi.fn().mockResolvedValue(mockMetadata),
 			resize: vi.fn().mockReturnThis(),
 			toBuffer: vi.fn().mockResolvedValueOnce(Buffer.from("thumbnail")),
+			// eslint-disable-next-line
 		} as any);
 
 		(prisma.images.create as Mock).mockResolvedValue({

@@ -1,50 +1,33 @@
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { fixupConfigRules, fixupPluginRules } from "@eslint/compat";
 import { FlatCompat } from "@eslint/eslintrc";
 import js from "@eslint/js";
 import markdown from "@eslint/markdown";
 import tsParser from "@typescript-eslint/parser";
 import _import from "eslint-plugin-import";
-// import jsxA11Y from "eslint-plugin-jsx-a11y";
+// import jsxA11y from "eslint-plugin-jsx-a11y";
 import react from "eslint-plugin-react";
+import reactHookEslint from "eslint-plugin-react-hooks";
+import storybookEslint from "eslint-plugin-storybook";
 import tailwindcss from "eslint-plugin-tailwindcss";
 import unusedImports from "eslint-plugin-unused-imports";
 import globals from "globals";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import tsEslint from "typescript-eslint";
 const compat = new FlatCompat({
-	baseDirectory: __dirname,
+	baseDirectory: import.meta.dirname,
 	recommendedConfig: js.configs.recommended,
 	allConfig: js.configs.all,
 });
 
-export default [
-	{ ignores: ["**/*.test.*"] },
-	...markdown.configs.recommended, // FIXME: not working
-	...fixupConfigRules(
-		compat.extends(
-			"next/core-web-vitals",
-			"eslint:recommended",
-			"next",
-			"plugin:tailwindcss/recommended",
-			"plugin:@typescript-eslint/recommended-type-checked",
-			"plugin:@typescript-eslint/stylistic-type-checked",
-			"plugin:react/recommended",
-			"plugin:react-hooks/recommended",
-			"plugin:@next/next/recommended",
-			"plugin:import/recommended",
-			"plugin:import/typescript",
-		),
-	),
+export default tsEslint.config(
+	js.configs.recommended,
+	// jsxA11y.flatConfigs.recommended,
+	tsEslint.configs.recommended,
+	react.configs.flat.recommended,
+	...markdown.configs.recommended,
+	...compat.config({ extends: ["next"] }),
+
 	{
 		plugins: {
-			import: fixupPluginRules(_import),
-			react: fixupPluginRules(react),
-			// "jsx-a11y": jsxA11Y,
 			"unused-imports": unusedImports,
-			tailwindcss: fixupPluginRules(tailwindcss),
 		},
 
 		languageOptions: {
@@ -69,21 +52,32 @@ export default [
 				},
 			},
 		},
-
+	},
+	{
+		rules: { "react/prop-types": "off" },
+	},
+	react.configs.flat["jsx-runtime"], // https://github.com/jsx-eslint/eslint-plugin-react?tab=readme-ov-file#flat-configs
+	{
+		plugins: { "react-hooks": reactHookEslint },
 		rules: {
-			"@typescript-eslint/no-misused-promises": [
-				2,
-				{ checksVoidReturn: { attributes: false } },
-			],
-
+			"react-hooks/rules-of-hooks": "error",
 			"react-hooks/exhaustive-deps": "warn",
-			"react/react-in-jsx-scope": "off",
-			"react/prop-types": "off",
-
+		},
+	},
+	{
+		rules: {
 			"no-console": ["warn", { allow: ["error"] }],
+		},
+	},
 
+	{
+		rules: {
 			"no-restricted-imports": ["error", { patterns: ["../"] }],
+		},
+	},
 
+	{
+		rules: {
 			"@typescript-eslint/no-unused-vars": [
 				"warn",
 				{
@@ -92,10 +86,14 @@ export default [
 					caughtErrorsIgnorePattern: "^_",
 				},
 			],
-
-			"@typescript-eslint/consistent-type-definitions": ["error", "type"],
-			"@typescript-eslint/require-await": "off",
-			"@typescript-eslint/no-unsafe-assignment": "off",
 		},
 	},
-];
+
+	{
+		rules: {
+			"@typescript-eslint/consistent-type-definitions": ["error", "type"],
+		},
+	},
+	...storybookEslint.configs["flat/recommended"],
+	...tailwindcss.configs["flat/recommended"],
+);

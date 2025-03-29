@@ -1,6 +1,6 @@
 import { InvalidFormatError } from "@/error-classes";
 import { validateCategory } from "@/features/news/utils/validate-category";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
 describe("validateCategory", () => {
 	it("should validate correct category name", () => {

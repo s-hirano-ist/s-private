@@ -68,7 +68,7 @@ describe("generateUrl", () => {
 		vi.mocked(fetch).mockResolvedValue({
 			ok: true,
 			arrayBuffer: vi.fn().mockResolvedValue(new ArrayBuffer(8)),
-			// biome-ignore lint: for test
+			// eslint-disable-next-line
 		} as any);
 
 		const result = await generateUrl(fileName);

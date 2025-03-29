@@ -1,6 +1,6 @@
 import { InvalidFormatError } from "@/error-classes";
 import { validateContents } from "@/features/contents/utils/validate-contents";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
 describe("validateContents", () => {
 	it("should validate correct contents data", () => {

@@ -9,7 +9,6 @@ import {
 	DrawerTrigger,
 } from "@/components/ui/drawer";
 import type { Meta, StoryObj } from "@storybook/react";
-import React from "react";
 
 const meta = {
 	title: "Components/UI/Drawer",

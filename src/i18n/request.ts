@@ -12,7 +12,6 @@ export default getRequestConfig(async ({ requestLocale }) => {
 
 	return {
 		locale,
-		// eslint-disable-next-line
 		messages: (await import(`../../messages/${locale}.json`)).default,
 	};
 });

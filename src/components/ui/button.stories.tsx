@@ -24,7 +24,7 @@ export const Default: Story = {
 		children: "ボタン",
 	},
 };
-export const destructive: Story = {
+export const Destructive: Story = {
 	args: {
 		children: "ボタン",
 		variant: "destructive",
@@ -36,7 +36,7 @@ export const Outline: Story = {
 		variant: "outline",
 	},
 };
-export const secondary: Story = {
+export const Secondary: Story = {
 	args: {
 		children: "ボタン",
 		variant: "secondary",

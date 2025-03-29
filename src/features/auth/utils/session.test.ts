@@ -23,7 +23,7 @@ const mockDumperViewerRoleSession: Session = {
 	expires: "2025-01-01",
 };
 const mockUnexpectedRoleSession: Session = {
-	// @ts-ignore: for test
+	// @ts-expect-error: for test
 	user: { id: "3", roles: ["unknown"] },
 	expires: "2025-01-01",
 };

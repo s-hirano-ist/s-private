@@ -9,7 +9,6 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import type { Meta, StoryObj } from "@storybook/react";
-import React from "react";
 
 const meta = {
 	title: "Components/UI/Dialog",
