@@ -23,9 +23,9 @@ export function ViewerStack({ images, path, imageType }: Props) {
 	// TODO: use queryを利用してデータのキャッシュを行う
 
 	const router = useTransitionRouter();
-	const searchParameters = useSearchParams();
+	const searchParams = useSearchParams();
 	const [searchTerm, setSearchTerm] = useState(
-		searchParameters.get(PARAM_NAME) ?? "",
+		searchParams.get(PARAM_NAME) ?? "",
 	);
 	const [searchResults, setSearchResults] = useState(images);
 
@@ -41,11 +41,11 @@ export function ViewerStack({ images, path, imageType }: Props) {
 	);
 
 	const debouncedSearch = useDebouncedCallback(async (searchString: string) => {
-		const parameters = new URLSearchParams(searchParameters);
-		if (searchString) parameters.set(PARAM_NAME, searchString);
-		else parameters.delete(PARAM_NAME);
+		const params = new URLSearchParams(searchParams);
+		if (searchString) params.set(PARAM_NAME, searchString);
+		else params.delete(PARAM_NAME);
 
-		router.push(`?${parameters.toString()}`);
+		router.push(`?${params.toString()}`);
 		await fetchSearchResults(searchString);
 	}, 300);
 

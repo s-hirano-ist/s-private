@@ -38,7 +38,7 @@ export function Footer() {
 		);
 	}
 	const handleReload = () => {
-		globalThis.location.reload();
+		window.location.reload();
 	};
 
 	async function onSignOutSubmit() {

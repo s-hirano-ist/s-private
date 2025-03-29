@@ -4,9 +4,9 @@ import { Unauthorized } from "@/components/card/unauthorized";
 import { hasViewerAdminPermission } from "@/features/auth/utils/session";
 import prisma from "@/prisma";
 
-type Params = { slug: string };
+type Props = { slug: string };
 
-export async function SuspensePage({ slug }: Params) {
+export async function SuspensePage({ slug }: Props) {
 	const hasAdminPermission = await hasViewerAdminPermission();
 
 	const decodedSlug = decodeURIComponent(slug);

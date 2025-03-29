@@ -8,12 +8,12 @@ import {
 import { Link } from "next-view-transitions";
 import * as React from "react";
 
-function Pagination({ className, ...properties }: React.ComponentProps<"nav">) {
+function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
 	return (
 		<nav
 			aria-label="pagination"
 			className={cn("mx-auto flex w-full justify-center", className)}
-			{...properties}
+			{...props}
 		/>
 	);
 }
@@ -22,11 +22,11 @@ Pagination.displayName = "Pagination";
 const PaginationContent = React.forwardRef<
 	HTMLUListElement,
 	React.ComponentProps<"ul">
->(({ className, ...properties }, reference) => (
+>(({ className, ...props }, ref) => (
 	<ul
 		className={cn("flex flex-row items-center gap-1", className)}
-		ref={reference}
-		{...properties}
+		ref={ref}
+		{...props}
 	/>
 ));
 PaginationContent.displayName = "PaginationContent";
@@ -34,12 +34,12 @@ PaginationContent.displayName = "PaginationContent";
 const PaginationItem = React.forwardRef<
 	HTMLLIElement,
 	React.ComponentProps<"li">
->(({ className, ...properties }, reference) => (
-	<li className={cn("", className)} ref={reference} {...properties} />
+>(({ className, ...props }, ref) => (
+	<li className={cn("", className)} ref={ref} {...props} />
 ));
 PaginationItem.displayName = "PaginationItem";
 
-type PaginationLinkProperties = {
+type PaginationLinkProps = {
 	isActive?: boolean;
 } & Pick<ButtonProps, "size"> &
 	React.ComponentProps<typeof Link>;
@@ -48,8 +48,8 @@ function PaginationLink({
 	className,
 	isActive,
 	size = "icon",
-	...properties
-}: PaginationLinkProperties) {
+	...props
+}: PaginationLinkProps) {
 	return (
 		<Link
 			aria-current={isActive ? "page" : undefined}
@@ -60,7 +60,7 @@ function PaginationLink({
 				}),
 				className,
 			)}
-			{...properties}
+			{...props}
 		/>
 	);
 }
@@ -68,14 +68,14 @@ PaginationLink.displayName = "PaginationLink";
 
 function PaginationPrevious({
 	className,
-	...properties
+	...props
 }: React.ComponentProps<typeof PaginationLink>) {
 	return (
 		<PaginationLink
 			aria-label="Go to previous page"
 			className={cn("gap-1 pl-2.5", className)}
 			size="default"
-			{...properties}
+			{...props}
 		>
 			<ChevronLeftIcon className="size-4" />
 		</PaginationLink>
@@ -85,14 +85,14 @@ PaginationPrevious.displayName = "PaginationPrevious";
 
 function PaginationNext({
 	className,
-	...properties
+	...props
 }: React.ComponentProps<typeof PaginationLink>) {
 	return (
 		<PaginationLink
 			aria-label="Go to next page"
 			className={cn("gap-1 pr-2.5", className)}
 			size="default"
-			{...properties}
+			{...props}
 		>
 			<ChevronRightIcon className="size-4" />
 		</PaginationLink>
@@ -102,13 +102,13 @@ PaginationNext.displayName = "PaginationNext";
 
 function PaginationEllipsis({
 	className,
-	...properties
+	...props
 }: React.ComponentProps<"span">) {
 	return (
 		<span
 			aria-hidden
 			className={cn("flex h-9 w-9 items-center justify-center", className)}
-			{...properties}
+			{...props}
 		>
 			<DotsHorizontalIcon className="size-4" />
 			<span className="sr-only">More pages</span>

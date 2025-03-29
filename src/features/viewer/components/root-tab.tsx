@@ -20,28 +20,28 @@ const DEFAULT_TAB = "books";
 
 export function RootTab({ books, contents, images }: Props) {
 	const router = useTransitionRouter();
-	const searchParameters = useSearchParams();
+	const searchParams = useSearchParams();
 
-	const [tab, setTab] = useState(searchParameters.get("tab") ?? DEFAULT_TAB);
+	const [tab, setTab] = useState(searchParams.get("tab") ?? DEFAULT_TAB);
 
 	const handleTabChange = (value: string) => {
-		const parameters = new URLSearchParams(searchParameters);
-		parameters.set("tab", value);
-		router.replace(`?${parameters.toString()}`);
+		const params = new URLSearchParams(searchParams);
+		params.set("tab", value);
+		router.replace(`?${params.toString()}`);
 		setTab(value);
 	};
 
 	useEffect(() => {
-		const tab = searchParameters.get("tab");
+		const tab = searchParams.get("tab");
 		if (!tab) return;
 
-		const parameters = new URLSearchParams(searchParameters);
+		const params = new URLSearchParams(searchParams);
 		if (!Object.keys(TABS).includes(tab)) {
-			parameters.delete("tab");
-			router.replace(`?${parameters.toString()}`);
+			params.delete("tab");
+			router.replace(`?${params.toString()}`);
 			setTab(DEFAULT_TAB);
 		}
-	}, [searchParameters, router]);
+	}, [searchParams, router]);
 
 	return (
 		<Tabs

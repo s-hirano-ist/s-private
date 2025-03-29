@@ -3,14 +3,14 @@
 import { useTheme } from "next-themes";
 import { Toaster as Sonner } from "sonner";
 
-type ToasterProperties = React.ComponentProps<typeof Sonner>;
+type ToasterProps = React.ComponentProps<typeof Sonner>;
 
-function Toaster({ ...properties }: ToasterProperties) {
+function Toaster({ ...props }: ToasterProps) {
 	const { theme = "system" } = useTheme();
 
 	return (
 		<Sonner
-			theme={theme as ToasterProperties["theme"]}
+			theme={theme as ToasterProps["theme"]}
 			// eslint-disable-next-line
 			className="toaster group"
 			toastOptions={{
@@ -24,7 +24,7 @@ function Toaster({ ...properties }: ToasterProperties) {
 						"group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
 				},
 			}}
-			{...properties}
+			{...props}
 		/>
 	);
 }
