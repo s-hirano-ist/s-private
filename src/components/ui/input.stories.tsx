@@ -1,7 +1,6 @@
 import { Input } from "@/components/ui/input";
 import type { Meta, StoryObj } from "@storybook/react";
 import { AxeIcon } from "lucide-react";
-import React from "react";
 import { Label } from "./label";
 
 const meta = {
@@ -30,7 +29,7 @@ export const Disabled: Story = {
 };
 
 export const WithTypePassword: Story = {
-	render: () => <Input type="password" placeholder="Password input" />,
+	render: () => <Input placeholder="Password input" type="password" />,
 };
 
 export const WithError: Story = {

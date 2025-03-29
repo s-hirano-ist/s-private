@@ -62,10 +62,10 @@ export function ChangeStatusForm() {
 			<div className="space-y-1">
 				<Label htmlFor="target">{label("dumpTarget")}</Label>
 				<Select
-					required
 					name="target"
-					value={target}
 					onValueChange={(value: string) => setTarget(value)}
+					required
+					value={target}
 				>
 					<SelectTrigger id="target">
 						<SelectValue placeholder={label("target")} />
@@ -81,10 +81,10 @@ export function ChangeStatusForm() {
 			<div className="space-y-1">
 				<Label htmlFor="status">{label("dumpStatus")}</Label>
 				<Select
-					required
 					name="status"
-					value={status}
 					onValueChange={(value: string) => setStatus(value)}
+					required
+					value={status}
 				>
 					<SelectTrigger id="status">
 						<SelectValue placeholder={label("status")} />
@@ -95,7 +95,7 @@ export function ChangeStatusForm() {
 					</SelectContent>
 				</Select>
 			</div>
-			<Button type="submit" disabled={isPending} className="w-full">
+			<Button className="w-full" disabled={isPending} type="submit">
 				{label("send")}
 			</Button>
 		</form>

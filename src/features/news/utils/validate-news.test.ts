@@ -1,9 +1,9 @@
 import { InvalidFormatError } from "@/error-classes";
 import { validateNews } from "@/features/news/utils/validate-news";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, test } from "vitest";
 
 describe("validateNews", () => {
-	it("should validate correct news data", () => {
+	test("should validate correct news data", () => {
 		const formData = new FormData();
 		formData.append("category", "1");
 		formData.append("title", "Breaking News");
@@ -20,7 +20,7 @@ describe("validateNews", () => {
 		});
 	});
 
-	it("should throw InvalidFormatError when categoryId is invalid", () => {
+	test("should throw InvalidFormatError when categoryId is invalid", () => {
 		const formData = new FormData();
 		formData.append("category", "invalid");
 		formData.append("title", "Breaking News");
@@ -30,7 +30,7 @@ describe("validateNews", () => {
 		expect(() => validateNews(formData)).toThrow(InvalidFormatError);
 	});
 
-	it("should throw InvalidFormatError when title is missing", () => {
+	test("should throw InvalidFormatError when title is missing", () => {
 		const formData = new FormData();
 		formData.append("category", "1");
 		formData.append("quote", "This is a short quote.");
@@ -39,7 +39,7 @@ describe("validateNews", () => {
 		expect(() => validateNews(formData)).toThrow(InvalidFormatError);
 	});
 
-	it("should throw InvalidFormatError when url is not a valid URL", () => {
+	test("should throw InvalidFormatError when url is not a valid URL", () => {
 		const formData = new FormData();
 		formData.append("category", "1");
 		formData.append("title", "Breaking News");
@@ -49,7 +49,7 @@ describe("validateNews", () => {
 		expect(() => validateNews(formData)).toThrow(InvalidFormatError);
 	});
 
-	it("should handle optional quote field", () => {
+	test("should handle optional quote field", () => {
 		const formData = new FormData();
 		formData.append("category", "1");
 		formData.append("title", "Breaking News");
@@ -65,7 +65,7 @@ describe("validateNews", () => {
 		});
 	});
 
-	it("should handle empty optional fields gracefully", () => {
+	test("should handle empty optional fields gracefully", () => {
 		const formData = new FormData();
 		formData.append("category", "1");
 		formData.append("title", "Breaking News");

@@ -1,9 +1,9 @@
 import type { ClassValue } from "clsx";
-import { describe, expect, it } from "vitest";
+import { describe, expect, test } from "vitest";
 import { cn } from "./tailwindcss";
 
 describe("cn", () => {
-	it("should merge class names correctly", () => {
+	test("should merge class names correctly", () => {
 		const class1: ClassValue = "bg-red-500";
 		const class2: ClassValue = "text-white";
 		const class3: ClassValue = "bg-red-500"; // 重複したクラス
@@ -13,7 +13,7 @@ describe("cn", () => {
 		expect(result).toBe("text-white bg-red-500");
 	});
 
-	it("should handle conditional class names", () => {
+	test("should handle conditional class names", () => {
 		const class1: ClassValue = "bg-red-500";
 		const class2: ClassValue = false;
 		const class3: ClassValue = "text-white";
@@ -23,7 +23,7 @@ describe("cn", () => {
 		expect(result).toBe("bg-red-500 text-white");
 	});
 
-	it("should handle array of class names", () => {
+	test("should handle array of class names", () => {
 		const class1: ClassValue = ["bg-red-500", "text-white"];
 		const class2: ClassValue = "font-bold";
 

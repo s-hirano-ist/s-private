@@ -5,11 +5,11 @@ import { CardStackSkeleton } from "@/components/stack/card-stack-skeleton";
 
 type Props = {
 	data: {
-		id: number;
-		title: string;
-		quote: string | null;
-		url: string;
 		category?: string;
+		id: number;
+		quote: string | null;
+		title: string;
+		url: string;
 	}[];
 };
 
@@ -22,12 +22,12 @@ export function CardStack({ data }: Props) {
 			{data.map((d) => {
 				return (
 					<SmallCard
-						key={d.id}
-						id={d.id}
-						title={d.title}
-						quote={d.quote}
-						url={d.url}
 						category={d.category}
+						id={d.id}
+						key={d.id}
+						quote={d.quote}
+						title={d.title}
+						url={d.url}
 					/>
 				);
 			})}

@@ -27,8 +27,8 @@ export default async function LocaleLayout({ children, params }: Params) {
 			<ThemeProvider
 				attribute="class"
 				defaultTheme="system"
-				enableSystem
 				disableTransitionOnChange
+				enableSystem
 			>
 				<main className="flex h-screen flex-col justify-between">
 					<div className="grow pb-4">{children}</div>

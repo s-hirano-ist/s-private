@@ -1,6 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Meta, StoryObj } from "@storybook/react";
-import React from "react";
 
 const meta = {
 	title: "Components/UI/Tabs",
@@ -14,7 +13,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
 	render: () => (
-		<Tabs defaultValue="account" className="w-[400px]">
+		<Tabs className="w-[400px]" defaultValue="account">
 			<TabsList>
 				<TabsTrigger value="account">Account</TabsTrigger>
 				<TabsTrigger value="password">Password</TabsTrigger>

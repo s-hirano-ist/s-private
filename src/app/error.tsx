@@ -34,7 +34,7 @@ export default function Page({
 					</div>
 					<div className="text-sm">------Unexpected Error------</div>
 				</div>
-				<Button variant="outline" onClick={() => reset()}>
+				<Button onClick={() => reset()} variant="outline">
 					Try again
 				</Button>
 			</div>

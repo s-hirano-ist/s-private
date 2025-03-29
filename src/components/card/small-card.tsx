@@ -10,18 +10,18 @@ import { validateUrl } from "@/utils/validate-url";
 import { Link } from "next-view-transitions";
 
 type Props = {
-	id: number;
-	title: string;
-	quote: string | null;
-	url: string;
 	category?: string;
+	id: number;
+	quote: string | null;
+	title: string;
+	url: string;
 };
 
 export function SmallCard({ id, title, quote, url, category }: Props) {
 	const validatedUrl = new URL(validateUrl(url));
 
 	return (
-		<Link href={validatedUrl} target="_blank" data-testid={`small-card-${id}`}>
+		<Link data-testid={`small-card-${id}`} href={validatedUrl} target="_blank">
 			<Card className="hover:bg-secondary">
 				<CardHeader>
 					<div className="flex gap-4">

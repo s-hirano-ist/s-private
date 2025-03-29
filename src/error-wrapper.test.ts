@@ -3,7 +3,7 @@ import { loggerError, loggerWarn } from "@/pino";
 import { sendPushoverMessage } from "@/utils/fetch-message";
 import { Prisma } from "@prisma/client";
 import { AuthError } from "next-auth";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import { wrapServerSideErrorForClient } from "./error-wrapper";
 
 vi.mock("@/utils/fetch-message", () => ({
@@ -11,7 +11,7 @@ vi.mock("@/utils/fetch-message", () => ({
 }));
 
 describe("wrapServerSideErrorForClient", () => {
-	it("should handle PushoverError", async () => {
+	test("should handle PushoverError", async () => {
 		const error = new PushoverError();
 
 		const result = await wrapServerSideErrorForClient(error);
@@ -27,7 +27,7 @@ describe("wrapServerSideErrorForClient", () => {
 		});
 	});
 
-	it("should handle custom errors (e.g., NotAllowedError)", async () => {
+	test("should handle custom errors (e.g., NotAllowedError)", async () => {
 		const error = new NotAllowedError();
 
 		const result = await wrapServerSideErrorForClient(error);
@@ -43,7 +43,7 @@ describe("wrapServerSideErrorForClient", () => {
 		});
 	});
 
-	it("should handle AuthError with unknown auth type", async () => {
+	test("should handle AuthError with unknown auth type", async () => {
 		const error = new AuthError();
 
 		const result = await wrapServerSideErrorForClient(error);
@@ -59,7 +59,7 @@ describe("wrapServerSideErrorForClient", () => {
 		});
 	});
 
-	it("should handle PrismaUnexpectedError", async () => {
+	test("should handle PrismaUnexpectedError", async () => {
 		const error = new Prisma.PrismaClientValidationError("unknown error", {
 			clientVersion: "111",
 		});
@@ -77,7 +77,7 @@ describe("wrapServerSideErrorForClient", () => {
 		});
 	});
 
-	it("should handle PrismaClientKnownRequestError", async () => {
+	test("should handle PrismaClientKnownRequestError", async () => {
 		const error = new Prisma.PrismaClientKnownRequestError("Duplicate entry", {
 			code: "111",
 			clientVersion: "111",
@@ -96,7 +96,7 @@ describe("wrapServerSideErrorForClient", () => {
 		});
 	});
 
-	it("should handle unknown error types", async () => {
+	test("should handle unknown error types", async () => {
 		const error = new Error("An unknown error occurred");
 
 		const result = await wrapServerSideErrorForClient(error);
@@ -112,7 +112,7 @@ describe("wrapServerSideErrorForClient", () => {
 		});
 	});
 
-	it("should handle non errors", async () => {
+	test("should handle non errors", async () => {
 		const error = "unknown error";
 
 		const result = await wrapServerSideErrorForClient(error);

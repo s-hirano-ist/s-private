@@ -14,8 +14,8 @@ export type Image = {
 
 type Props = {
 	image: Image;
-	path: string;
 	imageType: ImageType;
+	path: string;
 };
 
 export function ViewerPreview({ image, path, imageType }: Props) {
@@ -33,11 +33,11 @@ export function ViewerPreview({ image, path, imageType }: Props) {
 				<CardContent>
 					<div className="flex justify-center">
 						<NextImage
-							src={src}
-							height={THUMBNAIL_HEIGHT}
-							width={THUMBNAIL_WIDTH}
 							alt={title}
 							className="h-auto w-full rounded bg-white p-1"
+							height={THUMBNAIL_HEIGHT}
+							src={src}
+							width={THUMBNAIL_WIDTH}
 						/>
 					</div>
 				</CardContent>

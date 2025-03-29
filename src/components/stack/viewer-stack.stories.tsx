@@ -60,7 +60,7 @@ export const Default: Story = {
 			locale="ja"
 			messages={{ label: { search: "検索" } }}
 		>
-			<ViewerStack images={images} path={path} imageType={imageType} />
+			<ViewerStack imageType={imageType} images={images} path={path} />
 		</NextIntlClientProvider>
 	),
 };

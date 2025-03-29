@@ -2,7 +2,7 @@ import { env } from "@/env";
 import { auth } from "@/features/auth/utils/auth";
 import { minioClient } from "@/minio";
 import { Session } from "next-auth";
-import { type Mock, beforeEach, describe, expect, it, vi } from "vitest";
+import { Mock, beforeEach, describe, expect, test, vi } from "vitest";
 import { generateUrl } from "./generate-url";
 
 vi.mock("@/features/auth/utils/auth", () => ({ auth: vi.fn() }));
@@ -34,10 +34,10 @@ describe("generateUrl", () => {
 	const mockFileName = "sampleFileName";
 
 	beforeEach(() => {
-		global.fetch = mockFetch;
+		globalThis.fetch = mockFetch;
 	});
 
-	it("should return success false on Unauthorized", async () => {
+	test("should return success false on Unauthorized", async () => {
 		(auth as Mock).mockResolvedValue(mockUnauthorizedSession);
 
 		const result = await generateUrl(mockFileName);
@@ -49,7 +49,7 @@ describe("generateUrl", () => {
 		expect(auth).toHaveBeenCalledTimes(1);
 	});
 
-	it("should return success false on not permitted", async () => {
+	test("should return success false on not permitted", async () => {
 		(auth as Mock).mockResolvedValue(mockNotAllowedRoleSession);
 
 		const result = await generateUrl(mockFileName);
@@ -61,14 +61,14 @@ describe("generateUrl", () => {
 		expect(auth).toHaveBeenCalledTimes(1);
 	});
 
-	it("should return a presigned URL and metadata when inputs are valid", async () => {
+	test("should return a presigned URL and metadata when inputs are valid", async () => {
 		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
 
 		vi.mocked(minioClient.presignedGetObject).mockResolvedValue(mockUrl);
 		vi.mocked(fetch).mockResolvedValue({
 			ok: true,
 			arrayBuffer: vi.fn().mockResolvedValue(new ArrayBuffer(8)),
-			// biome-ignore lint: for test
+			// eslint-disable-next-line
 		} as any);
 
 		const result = await generateUrl(fileName);

@@ -15,8 +15,8 @@ const PARAM_NAME = "q";
 
 type Props = {
 	images: Image[];
-	path: string;
 	imageType: ImageType;
+	path: string;
 };
 
 export function ViewerStack({ images, path, imageType }: Props) {
@@ -60,20 +60,20 @@ export function ViewerStack({ images, path, imageType }: Props) {
 	return (
 		<div className="px-2">
 			<Input
-				type="q"
-				placeholder={t("search")}
-				value={searchTerm}
-				onChange={handleSearchChange}
 				className="my-4"
+				onChange={handleSearchChange}
+				placeholder={t("search")}
+				type="q"
+				value={searchTerm}
 			/>
 			<div className="my-2 grid grid-cols-2 items-stretch gap-4 sm:grid-cols-3 lg:grid-cols-4">
 				{searchResults.map((image) => {
 					return (
 						<ViewerPreview
 							image={image}
-							path={path}
 							imageType={imageType}
 							key={image.title}
+							path={path}
 						/>
 					);
 				})}

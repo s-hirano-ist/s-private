@@ -16,11 +16,11 @@ import { formatCreateNewsMessage } from "@/utils/format-for-notification";
 import { revalidatePath } from "next/cache";
 
 type News = {
-	id: number;
-	title: string;
-	quote: string | null;
-	url: string;
 	category: string;
+	id: number;
+	quote: string | null;
+	title: string;
+	url: string;
 };
 
 export async function addNews(formData: FormData): Promise<ServerAction<News>> {

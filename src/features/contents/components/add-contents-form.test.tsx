@@ -1,7 +1,7 @@
 import { AddContentsForm } from "@/features/contents/components/add-contents-form";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 const messages = {
 	label: {
 		save: "保存",
@@ -15,7 +15,7 @@ const messages = {
 };
 
 describe("AddContentsForm", () => {
-	it("renders input fields and buttons correctly", () => {
+	test("renders input fields and buttons correctly", () => {
 		render(
 			<NextIntlClientProvider locale="ja" messages={messages}>
 				<AddContentsForm />
@@ -27,14 +27,14 @@ describe("AddContentsForm", () => {
 		expect(screen.getByText("保存")).toBeInTheDocument();
 	});
 
-	it("pastes clipboard content into the URL field", async () => {
+	test("pastes clipboard content into the URL field", async () => {
 		const clipboardText = "https://example.com";
 		Object.assign(navigator, {
 			clipboard: { readText: vi.fn().mockResolvedValue(clipboardText) },
 		});
 
 		render(
-			<NextIntlClientProvider messages={messages} locale="ja">
+			<NextIntlClientProvider locale="ja" messages={messages}>
 				<AddContentsForm />
 			</NextIntlClientProvider>,
 		);

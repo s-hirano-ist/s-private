@@ -12,10 +12,10 @@ const TABS = {
 };
 
 type Props = {
-	news: ReactNode;
 	contents: ReactNode;
 	dump: ReactNode;
 	image: ReactNode;
+	news: ReactNode;
 };
 
 const DEFAULT_TAB = "news";
@@ -47,15 +47,15 @@ export function RootTab({ news, contents, dump, image }: Props) {
 
 	return (
 		<Tabs
-			defaultValue={DEFAULT_TAB}
 			className="mx-auto max-w-5xl sm:px-2"
-			value={tab}
+			defaultValue={DEFAULT_TAB}
 			onValueChange={handleTabChange}
+			value={tab}
 		>
 			<TabsList className="w-full">
 				{Object.entries(TABS).map(([key, value]) => {
 					return (
-						<TabsTrigger className="w-full" value={key} key={key}>
+						<TabsTrigger className="w-full" key={key} value={key}>
 							{value}
 						</TabsTrigger>
 					);

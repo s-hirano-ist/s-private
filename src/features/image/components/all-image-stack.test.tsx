@@ -3,7 +3,7 @@ import { generateUrl } from "@/features/image/actions/generate-url";
 import { AllImageStack } from "@/features/image/components/all-image-stack";
 import prisma from "@/prisma";
 import { render, screen } from "@testing-library/react";
-import { type Mock, describe, expect, it, vi } from "vitest";
+import { Mock, describe, expect, test, vi } from "vitest";
 
 // 各依存関数をモック化
 vi.mock("@/features/auth/utils/session", () => ({
@@ -15,7 +15,7 @@ vi.mock("@/features/image/actions/generate-url", () => ({
 }));
 
 describe.skip("AllImageStack", () => {
-	it("renders the ImageStack with images", async () => {
+	test("renders the ImageStack with images", async () => {
 		// モックの準備
 		(getSelfId as Mock).mockResolvedValue("user123");
 		(prisma.staticImages.findMany as Mock).mockResolvedValue([
@@ -48,7 +48,7 @@ describe.skip("AllImageStack", () => {
 		expect.stringContaining(encodeURIComponent("/image2.png"));
 	});
 
-	it("renders 'not-found.png' for failed URL generation", async () => {
+	test("renders 'not-found.png' for failed URL generation", async () => {
 		(getSelfId as Mock).mockResolvedValue("user123");
 		(prisma.staticImages.findMany as Mock).mockResolvedValue([{ id: 1 }]);
 		(generateUrl as Mock).mockResolvedValueOnce({
@@ -63,7 +63,7 @@ describe.skip("AllImageStack", () => {
 		expect.stringContaining(encodeURIComponent("/not-found.png"));
 	});
 
-	it("renders StatusCodeView with 500 on error", async () => {
+	test("renders StatusCodeView with 500 on error", async () => {
 		// 例外をスローするモック
 		(getSelfId as Mock).mockRejectedValue(new Error("Test Error"));
 

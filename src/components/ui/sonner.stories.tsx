@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import type { Meta, StoryObj } from "@storybook/react";
-import React from "react";
 import { toast } from "sonner";
 import { Toaster as Sonner } from "./sonner";
 
@@ -14,7 +13,7 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-const SonnerExample = () => {
+function SonnerExample() {
 	const handleToast = () => {
 		toast("sample description");
 	};
@@ -25,7 +24,7 @@ const SonnerExample = () => {
 			<Button onClick={handleToast}>Show Toast</Button>
 		</>
 	);
-};
+}
 
 export const Default: Story = {
 	render: () => <SonnerExample />,

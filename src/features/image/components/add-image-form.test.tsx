@@ -1,10 +1,10 @@
 import { AddImageForm } from "@/features/image/components/add-image-form";
 import { render, screen } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, test } from "vitest";
 
 describe("AddImageForm", () => {
-	it("renders input fields and buttons correctly", () => {
+	test("renders input fields and buttons correctly", () => {
 		const messages = {
 			label: {
 				image: "画像",

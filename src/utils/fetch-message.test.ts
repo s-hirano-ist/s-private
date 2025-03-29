@@ -1,6 +1,6 @@
 import { PushoverError } from "@/error-classes";
 import { loggerError } from "@/pino";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 import { sendPushoverMessage } from "./fetch-message";
 
 // FIXME: GitHub actionsでURLがマスキングされて見えなくなる問題
@@ -8,10 +8,10 @@ describe.skip("sendPushoverMessage", () => {
 	const mockFetch = vi.fn();
 
 	beforeEach(() => {
-		global.fetch = mockFetch;
+		globalThis.fetch = mockFetch;
 	});
 
-	it("should send a message successfully when API responds with 200", async () => {
+	test("should send a message successfully when API responds with 200", async () => {
 		mockFetch.mockResolvedValueOnce({
 			status: 200,
 		});
@@ -32,7 +32,7 @@ describe.skip("sendPushoverMessage", () => {
 		);
 	});
 
-	it("should not throw LineNotifyError when API responds with non-200 status", async () => {
+	test("should not throw LineNotifyError when API responds with non-200 status", async () => {
 		mockFetch.mockResolvedValueOnce({
 			status: 400,
 		});
@@ -52,7 +52,7 @@ describe.skip("sendPushoverMessage", () => {
 		expect(mockFetch).toHaveBeenCalledTimes(1);
 	});
 
-	it("should log an error when fetch fails", async () => {
+	test("should log an error when fetch fails", async () => {
 		mockFetch.mockRejectedValue(new Error("fetch failed"));
 
 		await sendPushoverMessage("test error");

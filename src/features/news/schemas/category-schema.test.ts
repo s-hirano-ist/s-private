@@ -1,8 +1,8 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, test } from "vitest";
 import { categorySchema } from "./category-schema";
 
 describe("categorySchema", () => {
-	it("should validate correct category name", () => {
+	test("should validate correct category name", () => {
 		const validData = {
 			name: "CategoryName",
 		};
@@ -11,7 +11,7 @@ describe("categorySchema", () => {
 		expect(result.success).toBe(true);
 	});
 
-	it("should fail when name exceeds max length", () => {
+	test("should fail when name exceeds max length", () => {
 		const invalidData = {
 			name: "a".repeat(17),
 		};
@@ -23,7 +23,7 @@ describe("categorySchema", () => {
 		}
 	});
 
-	it("should trim whitespace and validate", () => {
+	test("should trim whitespace and validate", () => {
 		const validData = {
 			name: "   CategoryName   ",
 		};
@@ -35,7 +35,7 @@ describe("categorySchema", () => {
 		}
 	});
 
-	it("should pass when name is an empty string after trimming", () => {
+	test("should pass when name is an empty string after trimming", () => {
 		const invalidData = {
 			name: "   ",
 		};
@@ -47,7 +47,7 @@ describe("categorySchema", () => {
 		}
 	});
 
-	it("should pass when name is an empty string", () => {
+	test("should pass when name is an empty string", () => {
 		const invalidData = {
 			name: "",
 		};

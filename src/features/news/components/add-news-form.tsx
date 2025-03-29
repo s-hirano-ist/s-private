@@ -16,11 +16,11 @@ import { useTranslations } from "next-intl";
 import { useActionState, useRef } from "react";
 import { toast } from "sonner";
 
-type Props = { categories: { name: string; id: number }[] };
+type Props = { categories: { id: number; name: string }[] };
 
 export function AddNewsForm({ categories }: Props) {
-	const urlInputRef = useRef<HTMLInputElement>(null);
-	const categoryInputRef = useRef<HTMLInputElement>(null);
+	const urlInputReference = useRef<HTMLInputElement>(null);
+	const categoryInputReference = useRef<HTMLInputElement>(null);
 
 	const label = useTranslations("label");
 	const message = useTranslations("message");
@@ -34,13 +34,14 @@ export function AddNewsForm({ categories }: Props) {
 	const [_, addNewsAction, isPending] = useActionState(submitForm, null);
 
 	const handleSelectedValueChange = (value: string) => {
-		if (categoryInputRef.current !== null)
-			categoryInputRef.current.value = value;
+		if (categoryInputReference.current !== null)
+			categoryInputReference.current.value = value;
 	};
 
 	const handlePasteClick = async () => {
 		const clipboardText = await navigator.clipboard.readText();
-		if (urlInputRef.current !== null) urlInputRef.current.value = clipboardText;
+		if (urlInputReference.current !== null)
+			urlInputReference.current.value = clipboardText;
 	};
 
 	return (
@@ -53,11 +54,11 @@ export function AddNewsForm({ categories }: Props) {
 						<Label htmlFor="category">{label("category")}</Label>
 						<div className="flex">
 							<Input
+								autoComplete="off"
 								id="category"
 								name="category"
+								ref={categoryInputReference}
 								required
-								autoComplete="off"
-								ref={categoryInputRef}
 							/>
 							<DropdownMenu>
 								<DropdownMenuTrigger asChild>
@@ -68,9 +69,9 @@ export function AddNewsForm({ categories }: Props) {
 								<DropdownMenuContent>
 									{categories.map((category) => (
 										<DropdownMenuItem
+											key={category.id}
 											onClick={() => handleSelectedValueChange(category.name)}
 											textValue={String(category.name)}
-											key={category.id}
 										>
 											{category.name}
 										</DropdownMenuItem>
@@ -81,32 +82,32 @@ export function AddNewsForm({ categories }: Props) {
 					</div>
 					<div className="space-y-1">
 						<Label htmlFor="title">{label("title")}</Label>
-						<Input id="title" name="title" autoComplete="off" required />
+						<Input autoComplete="off" id="title" name="title" required />
 					</div>
 					<div className="space-y-1">
 						<Label htmlFor="quote">{label("description")}</Label>
-						<Textarea id="quote" name="quote" autoComplete="off" />
+						<Textarea autoComplete="off" id="quote" name="quote" />
 					</div>
 					<div className="space-y-1">
 						<Label htmlFor="url">{label("url")}</Label>
 						<div className="flex">
 							<Input
-								id="url"
-								name="url"
-								type="url"
-								inputMode="url"
 								autoComplete="off"
+								id="url"
+								inputMode="url"
+								name="url"
+								ref={urlInputReference}
 								required
-								ref={urlInputRef}
+								type="url"
 							/>
-							<Button variant="ghost" type="button" onClick={handlePasteClick}>
+							<Button onClick={handlePasteClick} type="button" variant="ghost">
 								<ClipboardPasteIcon />
 							</Button>
 						</div>
 					</div>
 				</>
 			)}
-			<Button type="submit" disabled={isPending} className="w-full">
+			<Button className="w-full" disabled={isPending} type="submit">
 				{label("save")}
 			</Button>
 		</form>

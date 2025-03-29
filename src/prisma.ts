@@ -13,7 +13,6 @@ const prismaClientSingleton = () => {
 				const duration = Date.now() - start;
 				// eslint-disable-next-line
 				console.log(`[${model}.${operation}] took ${duration}ms`);
-				// eslint-disable-next-line
 				return result;
 			},
 		},

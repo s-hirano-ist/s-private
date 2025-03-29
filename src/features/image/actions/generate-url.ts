@@ -9,8 +9,8 @@ import { minioClient } from "@/minio";
 import type { ServerAction } from "@/types";
 
 type GenerateUrl = {
-	thumbnailSrc: string;
 	originalSrc: string;
+	thumbnailSrc: string;
 };
 
 export async function generateUrl(
@@ -20,7 +20,7 @@ export async function generateUrl(
 		const hasPostPermission = await hasDumperPostPermission();
 		if (!hasPostPermission) throw new NotAllowedError();
 
-		const [thumbnailSrc, originalSrc] = await Promise.all([
+		const [thumbnailSource, originalSource] = await Promise.all([
 			minioClient.presignedGetObject(
 				env.MINIO_BUCKET_NAME,
 				`${THUMBNAIL_IMAGE_PATH}/${fileName}`,
@@ -36,7 +36,7 @@ export async function generateUrl(
 		return {
 			success: true,
 			message: "success",
-			data: { thumbnailSrc, originalSrc },
+			data: { thumbnailSrc: thumbnailSource, originalSrc: originalSource },
 		};
 	} catch (error) {
 		return await wrapServerSideErrorForClient(error);

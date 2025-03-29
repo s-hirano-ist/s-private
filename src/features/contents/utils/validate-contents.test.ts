@@ -1,9 +1,9 @@
 import { InvalidFormatError } from "@/error-classes";
 import { validateContents } from "@/features/contents/utils/validate-contents";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, test } from "vitest";
 
 describe("validateContents", () => {
-	it("should validate correct contents data", () => {
+	test("should validate correct contents data", () => {
 		const formData = new FormData();
 		formData.append("title", "Content Title");
 		formData.append("quote", "This is a short quote.");
@@ -18,7 +18,7 @@ describe("validateContents", () => {
 		});
 	});
 
-	it("should throw InvalidFormatError when title is missing", () => {
+	test("should throw InvalidFormatError when title is missing", () => {
 		const formData = new FormData();
 		formData.append("quote", "This is a short quote.");
 		formData.append("url", "https://example.com/contents");
@@ -26,7 +26,7 @@ describe("validateContents", () => {
 		expect(() => validateContents(formData)).toThrow(InvalidFormatError);
 	});
 
-	it("should throw InvalidFormatError when url is missing", () => {
+	test("should throw InvalidFormatError when url is missing", () => {
 		const formData = new FormData();
 		formData.append("title", "Content Title");
 		formData.append("quote", "This is a short quote.");
@@ -34,7 +34,7 @@ describe("validateContents", () => {
 		expect(() => validateContents(formData)).toThrow(InvalidFormatError);
 	});
 
-	it("should throw InvalidFormatError when url is not a valid URL", () => {
+	test("should throw InvalidFormatError when url is not a valid URL", () => {
 		const formData = new FormData();
 		formData.append("title", "Content Title");
 		formData.append("quote", "This is a short quote.");
@@ -43,7 +43,7 @@ describe("validateContents", () => {
 		expect(() => validateContents(formData)).toThrow(InvalidFormatError);
 	});
 
-	it("should handle optional quote field", () => {
+	test("should handle optional quote field", () => {
 		const formData = new FormData();
 		formData.append("title", "Content Title");
 		formData.append("url", "https://example.com/contents");
@@ -57,7 +57,7 @@ describe("validateContents", () => {
 		});
 	});
 
-	it("should handle empty optional quote field", () => {
+	test("should handle empty optional quote field", () => {
 		const formData = new FormData();
 		formData.append("title", "Content Title");
 		formData.append("quote", "");

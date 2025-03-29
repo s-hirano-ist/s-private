@@ -17,10 +17,10 @@ export function formatCreateNewsMessage({
 	url,
 	Category,
 }: {
-	title: string;
-	quote: string | null;
-	url: string;
 	Category: { name: string };
+	quote: string | null;
+	title: string;
+	url: string;
 }) {
 	return `【NEWS】\n\nコンテンツ\ntitle: ${title} \nquote: ${quote} \nurl: ${url}\ncategory: ${Category.name}\nの登録ができました`;
 }
@@ -29,7 +29,7 @@ export function formatCreateContentsMessage({
 	title,
 	quote,
 	url,
-}: { title: string; quote: string | null; url: string }) {
+}: { quote: string | null; title: string; url: string }) {
 	return `【CONTENTS】\n\nコンテンツ\ntitle: ${title} \nquote: ${quote} \nurl: ${url}\nの登録ができました`;
 }
 

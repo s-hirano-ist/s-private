@@ -1,5 +1,5 @@
 import type { Status } from "@/features/dump/types";
-import { describe, expect, it } from "vitest";
+import { describe, expect, test } from "vitest";
 import {
 	formatChangeStatusMessage,
 	formatCreateContentsMessage,
@@ -9,7 +9,7 @@ import {
 } from "./format-for-notification";
 
 describe("formatDeleteMessage", () => {
-	it("should format the delete message correctly", () => {
+	test("should format the delete message correctly", () => {
 		const id = 1;
 		const contentName = "NEWS";
 
@@ -20,7 +20,7 @@ describe("formatDeleteMessage", () => {
 });
 
 describe("formatChangeStatusMessage", () => {
-	it("should format the change status message correctly", () => {
+	test("should format the change status message correctly", () => {
 		const changeStatus: Status = {
 			unexported: 5,
 			recentlyUpdated: 3,
@@ -35,7 +35,7 @@ describe("formatChangeStatusMessage", () => {
 });
 
 describe("formatCreateNewsMessage", () => {
-	it("should format the create news message correctly", () => {
+	test("should format the create news message correctly", () => {
 		const title = "新しいニュース";
 		const quote = "これは引用です";
 		const url = "https://example.com";
@@ -54,7 +54,7 @@ describe("formatCreateNewsMessage", () => {
 		);
 	});
 
-	it("should format the create contents message correctly", () => {
+	test("should format the create contents message correctly", () => {
 		const title = "新しいニュース";
 		const quote = "これは引用です";
 		const url = "https://example.com";
@@ -67,8 +67,8 @@ describe("formatCreateNewsMessage", () => {
 	});
 });
 
-describe("formatCreateImageMesasge", () => {
-	it("should format the create image message correctly", () => {
+describe("formatCreateImageMessage", () => {
+	test("should format the create image message correctly", () => {
 		const fileName = "xx.jpg";
 
 		const result = formatCreateImageMessage({ fileName });

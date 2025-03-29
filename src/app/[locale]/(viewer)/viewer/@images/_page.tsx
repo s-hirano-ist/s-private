@@ -20,7 +20,7 @@ export async function SuspensePage({ currentPage }: Props) {
 				<>
 					<CountBadge label="totalImages" total={totalImages} />
 					<Pagination currentPage={currentPage} totalPages={totalImages} />
-					<Suspense key={currentPage} fallback={<ImageStackSkeleton />}>
+					<Suspense fallback={<ImageStackSkeleton />} key={currentPage}>
 						<AllImageStack page={currentPage} />
 					</Suspense>
 				</>

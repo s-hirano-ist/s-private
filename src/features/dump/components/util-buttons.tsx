@@ -34,24 +34,22 @@ export function UtilButtons({ handleReload, onSignOutSubmit }: Props) {
 	const t = useTranslations("utils");
 
 	return (
-		<>
-			<div className="grid grid-cols-2 gap-2 px-2 sm:grid-cols-4">
-				{UTIL_URLS.map((url) => {
-					return (
-						<Button className="w-full" asChild key={url.name}>
-							<Link href={url.url}>{url.name}</Link>
-						</Button>
-					);
-				})}
-				<Button onClick={handleReload}>{t("reload")}</Button>
-				<Button onClick={handleTheme}>{t("appearance")}</Button>
-				<Button onClick={handleLanguage}>{t("language")}</Button>
-				{pathname !== "/auth" && (
-					<Button onClick={onSignOutSubmit} data-testid="log-out-button">
-						{t("signOut")}
+		<div className="grid grid-cols-2 gap-2 px-2 sm:grid-cols-4">
+			{UTIL_URLS.map((url) => {
+				return (
+					<Button asChild className="w-full" key={url.name}>
+						<Link href={url.url}>{url.name}</Link>
 					</Button>
-				)}
-			</div>
-		</>
+				);
+			})}
+			<Button onClick={handleReload}>{t("reload")}</Button>
+			<Button onClick={handleTheme}>{t("appearance")}</Button>
+			<Button onClick={handleLanguage}>{t("language")}</Button>
+			{pathname !== "/auth" && (
+				<Button data-testid="log-out-button" onClick={onSignOutSubmit}>
+					{t("signOut")}
+				</Button>
+			)}
+		</div>
 	);
 }

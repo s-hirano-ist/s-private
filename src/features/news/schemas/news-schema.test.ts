@@ -1,8 +1,8 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, test } from "vitest";
 import { newsSchema } from "./news-schema";
 
 describe("newsSchema", () => {
-	it("should validate correct news data", () => {
+	test("should validate correct news data", () => {
 		const validData = {
 			categoryId: 1,
 			title: "Breaking News",
@@ -14,7 +14,7 @@ describe("newsSchema", () => {
 		expect(result.success).toBe(true);
 	});
 
-	it("should fail when categoryId is not a number", () => {
+	test("should fail when categoryId is not a number", () => {
 		const invalidData = {
 			categoryId: "not-a-number",
 			title: "Breaking News",
@@ -31,7 +31,7 @@ describe("newsSchema", () => {
 		}
 	});
 
-	it("should fail when title is empty", () => {
+	test("should fail when title is empty", () => {
 		const invalidData = {
 			categoryId: 1,
 			title: "",
@@ -46,7 +46,7 @@ describe("newsSchema", () => {
 		}
 	});
 
-	it("should fail when title exceeds max length", () => {
+	test("should fail when title exceeds max length", () => {
 		const invalidData = {
 			categoryId: 1,
 			title: "a".repeat(65),
@@ -61,7 +61,7 @@ describe("newsSchema", () => {
 		}
 	});
 
-	it("should fail when quote exceeds max length", () => {
+	test("should fail when quote exceeds max length", () => {
 		const invalidData = {
 			categoryId: 1,
 			title: "Breaking News",
@@ -76,7 +76,7 @@ describe("newsSchema", () => {
 		}
 	});
 
-	it("should validate when quote is null", () => {
+	test("should validate when quote is null", () => {
 		const validData = {
 			categoryId: 1,
 			title: "Breaking News",
@@ -88,7 +88,7 @@ describe("newsSchema", () => {
 		expect(result.success).toBe(true);
 	});
 
-	it("should fail when url is empty", () => {
+	test("should fail when url is empty", () => {
 		const invalidData = {
 			categoryId: 1,
 			title: "Breaking News",
@@ -103,7 +103,7 @@ describe("newsSchema", () => {
 		}
 	});
 
-	it("should fail when url is not a valid URL", () => {
+	test("should fail when url is not a valid URL", () => {
 		const invalidData = {
 			categoryId: 1,
 			title: "Breaking News",

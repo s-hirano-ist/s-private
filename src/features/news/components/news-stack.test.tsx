@@ -2,14 +2,14 @@ import { getSelfId } from "@/features/auth/utils/session";
 import { NewsStack } from "@/features/news/components/news-stack";
 import prisma from "@/prisma";
 import { render, screen } from "@testing-library/react";
-import { type Mock, describe, expect, it, vi } from "vitest";
+import { Mock, describe, expect, test, vi } from "vitest";
 
 vi.mock("@/features/auth/utils/session", () => ({
 	getSelfId: vi.fn(),
 }));
 
 describe.skip("NewsStack", () => {
-	it("renders NewsStack with news data", async () => {
+	test("renders NewsStack with news data", async () => {
 		// モックデータ
 		const mockUserId = "user123";
 		const mockNewsData = [
@@ -44,7 +44,7 @@ describe.skip("NewsStack", () => {
 		}
 	});
 
-	it("renders StatusCodeView with 500 on error", async () => {
+	test("renders StatusCodeView with 500 on error", async () => {
 		// モックでエラーをスロー
 		(getSelfId as Mock).mockRejectedValue(new Error("Test Error"));
 

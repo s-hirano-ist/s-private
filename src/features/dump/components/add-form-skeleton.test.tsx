@@ -1,10 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
-import { describe, expect, it } from "vitest";
+import { describe, expect, test } from "vitest";
 import { AddFormSkeleton } from "./add-form-skeleton";
 
 describe("AddFormSkeleton", () => {
-	it("renders correctly when showCategory is true", () => {
+	test("renders correctly when showCategory is true", () => {
 		const messages = {
 			label: {
 				category: "カテゴリー",
@@ -15,7 +15,7 @@ describe("AddFormSkeleton", () => {
 		};
 		render(
 			<NextIntlClientProvider locale="ja" messages={messages}>
-				<AddFormSkeleton showCategory={true} />
+				<AddFormSkeleton showCategory />
 			</NextIntlClientProvider>,
 		);
 
@@ -24,7 +24,7 @@ describe("AddFormSkeleton", () => {
 		expect(screen.getAllByRole("presentation")).toHaveLength(4);
 	});
 
-	it("renders correctly when showCategory is false", () => {
+	test("renders correctly when showCategory is false", () => {
 		const messages = {
 			label: {
 				category: "カテゴリー",
@@ -44,7 +44,7 @@ describe("AddFormSkeleton", () => {
 		expect(screen.getAllByRole("presentation")).toHaveLength(3);
 	});
 
-	it("renders texts and skeletons for title, quote, and URL", () => {
+	test("renders texts and skeletons for title, quote, and URL", () => {
 		const messages = {
 			label: {
 				category: "カテゴリー",

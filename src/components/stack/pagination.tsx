@@ -15,26 +15,24 @@ export function Pagination({ currentPage, totalPages }: Props) {
 	const showNextPageLink = currentPage < totalPages / PAGE_SIZE;
 
 	return (
-		<>
-			<ShadcnPagination>
-				<PaginationContent>
-					{showPreviousPageLink && (
-						<PaginationItem>
-							<PaginationPrevious
-								href={`?page=${currentPage > 1 ? currentPage - 1 : 1}`}
-							/>
-						</PaginationItem>
-					)}
+		<ShadcnPagination>
+			<PaginationContent>
+				{showPreviousPageLink && (
 					<PaginationItem>
-						<PaginationLink href="#">{currentPage}</PaginationLink>
+						<PaginationPrevious
+							href={`?page=${currentPage > 1 ? currentPage - 1 : 1}`}
+						/>
 					</PaginationItem>
-					{showNextPageLink && (
-						<PaginationItem>
-							<PaginationNext href={`?page=${currentPage + 1}`} />
-						</PaginationItem>
-					)}
-				</PaginationContent>
-			</ShadcnPagination>
-		</>
+				)}
+				<PaginationItem>
+					<PaginationLink href="#">{currentPage}</PaginationLink>
+				</PaginationItem>
+				{showNextPageLink && (
+					<PaginationItem>
+						<PaginationNext href={`?page=${currentPage + 1}`} />
+					</PaginationItem>
+				)}
+			</PaginationContent>
+		</ShadcnPagination>
 	);
 }

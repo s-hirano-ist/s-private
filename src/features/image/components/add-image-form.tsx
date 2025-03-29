@@ -31,15 +31,15 @@ export function AddImageForm() {
 			<div className="space-y-1">
 				<Label htmlFor="files">{label("image")}</Label>
 				<Input
-					id="files"
-					type="file"
-					name="files"
 					accept="image/*"
+					id="files"
 					multiple
+					name="files"
 					required
+					type="file"
 				/>
 			</div>
-			<Button type="submit" disabled={isPending} className="w-full">
+			<Button className="w-full" disabled={isPending} type="submit">
 				{isPending ? label("uploading") : label("upload")}
 			</Button>
 		</form>

@@ -2,14 +2,14 @@ import { getSelfId } from "@/features/auth/utils/session";
 import { ContentsStack } from "@/features/contents/components/contents-stack";
 import prisma from "@/prisma";
 import { render, screen } from "@testing-library/react";
-import { type Mock, describe, expect, it, vi } from "vitest";
+import { Mock, describe, expect, test, vi } from "vitest";
 
 vi.mock("@/features/auth/utils/session", () => ({
 	getSelfId: vi.fn(),
 }));
 
 describe.skip("ContentsStack", () => {
-	it("renders ContentsStack with contents data", async () => {
+	test("renders ContentsStack with contents data", async () => {
 		// モックデータ
 		const mockUserId = "user123";
 		const mockContentsData = [
@@ -42,7 +42,7 @@ describe.skip("ContentsStack", () => {
 		}
 	});
 
-	it("renders StatusCodeView with 500 on error", async () => {
+	test("renders StatusCodeView with 500 on error", async () => {
 		// モックでエラーをスロー
 		(getSelfId as Mock).mockRejectedValue(new Error("Test Error"));
 

@@ -10,7 +10,7 @@ export function ViewerBody({ markdown }: Props) {
 		queryKey: ["viewerBody", markdown.slice(0, 10)],
 		queryFn: async () => await markdownToReact(markdown),
 		staleTime: Infinity,
-		gcTime: 86400000 * 30, // 1 month
+		gcTime: 86_400_000 * 30, // 1 month
 	});
 
 	if (isLoading) return <Loading />;
