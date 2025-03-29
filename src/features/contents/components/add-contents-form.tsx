@@ -26,7 +26,8 @@ export function AddContentsForm() {
 
 	const handlePasteClick = async () => {
 		const clipboardText = await navigator.clipboard.readText();
-		if (urlInputReference.current !== null) urlInputReference.current.value = clipboardText;
+		if (urlInputReference.current !== null)
+			urlInputReference.current.value = clipboardText;
 	};
 
 	return (

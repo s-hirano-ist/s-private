@@ -27,7 +27,10 @@ export type BadgeProps = {} & React.HTMLAttributes<HTMLDivElement> &
 
 function Badge({ className, variant, ...properties }: BadgeProps) {
 	return (
-		<div className={cn(badgeVariants({ variant }), className)} {...properties} />
+		<div
+			className={cn(badgeVariants({ variant }), className)}
+			{...properties}
+		/>
 	);
 }
 

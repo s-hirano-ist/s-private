@@ -17,6 +17,11 @@ type Properties = {
 	news: ReactNode;
 };
 
-export default async function Layout({ news, contents, dump, image }: Properties) {
+export default async function Layout({
+	news,
+	contents,
+	dump,
+	image,
+}: Properties) {
 	return <RootTab contents={contents} dump={dump} image={image} news={news} />;
 }
