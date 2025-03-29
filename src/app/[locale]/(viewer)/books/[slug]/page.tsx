@@ -4,11 +4,11 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { SuspensePage } from "./_page";
 
-type Props = Promise<{ slug: string }>;
+type Params = Promise<{ slug: string }>;
 
 export async function generateMetadata({
 	params,
-}: { params: Props }): Promise<Metadata> {
+}: { params: Params }): Promise<Metadata> {
 	const { slug } = await params;
 
 	return {
@@ -17,7 +17,7 @@ export async function generateMetadata({
 	};
 }
 
-export default async function Page({ params }: { params: Props }) {
+export default async function Page({ params }: { params: Params }) {
 	const { slug } = await params;
 
 	return (

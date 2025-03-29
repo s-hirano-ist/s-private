@@ -22,7 +22,7 @@ export function ViewerPreview({ image, path, imageType }: Props) {
 	const { title, uint8ArrayImage } = image;
 	const href = `${path}/${title}` as Route;
 
-	const source = convertUint8ArrayToImgSrc(uint8ArrayImage, imageType);
+	const src = convertUint8ArrayToImgSrc(uint8ArrayImage, imageType);
 
 	return (
 		<Link href={href}>
@@ -36,7 +36,7 @@ export function ViewerPreview({ image, path, imageType }: Props) {
 							alt={title}
 							className="h-auto w-full rounded bg-white p-1"
 							height={THUMBNAIL_HEIGHT}
-							src={source}
+							src={src}
 							width={THUMBNAIL_WIDTH}
 						/>
 					</div>

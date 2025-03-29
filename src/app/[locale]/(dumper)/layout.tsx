@@ -10,18 +10,13 @@ export const metadata: Metadata = {
 	description: "Contents dumper.",
 };
 
-type Properties = {
+type Props = {
 	contents: ReactNode;
 	dump: ReactNode;
 	image: ReactNode;
 	news: ReactNode;
 };
 
-export default async function Layout({
-	news,
-	contents,
-	dump,
-	image,
-}: Properties) {
+export default async function Layout({ news, contents, dump, image }: Props) {
 	return <RootTab contents={contents} dump={dump} image={image} news={news} />;
 }

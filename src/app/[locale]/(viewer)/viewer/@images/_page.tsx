@@ -7,9 +7,9 @@ import { AllImageStack } from "@/features/image/components/all-image-stack";
 import prisma from "@/prisma";
 import { Suspense } from "react";
 
-type Props = { currentPage: number };
+type Params = { currentPage: number };
 
-export async function SuspensePage({ currentPage }: Props) {
+export async function SuspensePage({ currentPage }: Params) {
 	const hasAdminPermission = await hasViewerAdminPermission();
 
 	const totalImages = await prisma.staticImages.count({});

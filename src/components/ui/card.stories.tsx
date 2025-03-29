@@ -19,8 +19,8 @@ export default meta;
 type Story = StoryObj<typeof Card>;
 
 export const Default: Story = {
-	render: (arguments_) => (
-		<Card {...arguments_}>
+	render: (args) => (
+		<Card {...args}>
 			<CardHeader>
 				<CardTitle>Card Title</CardTitle>
 				<CardDescription>Card Description</CardDescription>
@@ -39,8 +39,8 @@ export const Default: Story = {
 };
 
 export const WithoutFooter: Story = {
-	render: (arguments_) => (
-		<Card {...arguments_}>
+	render: (args) => (
+		<Card {...args}>
 			<CardHeader>
 				<CardTitle>Card Title</CardTitle>
 				<CardDescription>Card Description</CardDescription>

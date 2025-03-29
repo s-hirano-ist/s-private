@@ -15,9 +15,9 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
 	args: { markdown: "sample string" },
-	render: (arguments_) => (
+	render: (args) => (
 		<QueryClientProvider>
-			<ViewerBody markdown={arguments_.markdown} />
+			<ViewerBody markdown={args.markdown} />
 		</QueryClientProvider>
 	),
 };

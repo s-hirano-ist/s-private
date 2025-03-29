@@ -2,9 +2,9 @@ import Loading from "@/components/loading";
 import { Suspense } from "react";
 import { SuspensePage } from "./_page";
 
-type Props = Promise<{ page?: string }>;
+type Params = Promise<{ page?: string }>;
 
-export default async function Page({ searchParams }: { searchParams: Props }) {
+export default async function Page({ searchParams }: { searchParams: Params }) {
 	const { page } = await searchParams;
 	const currentPage = Number(page) || 1;
 
