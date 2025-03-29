@@ -1,0 +1,3 @@
+[submodule "s-schema"]
+	path = s-schema
+	url = https://github.com/s-hirano-ist/s-schema.git
