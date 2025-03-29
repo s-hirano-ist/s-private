@@ -16,9 +16,9 @@ import { useTranslations } from "next-intl";
 import { useActionState, useRef } from "react";
 import { toast } from "sonner";
 
-type Properties = { categories: { id: number; name: string }[] };
+type Props = { categories: { id: number; name: string }[] };
 
-export function AddNewsForm({ categories }: Properties) {
+export function AddNewsForm({ categories }: Props) {
 	const urlInputReference = useRef<HTMLInputElement>(null);
 	const categoryInputReference = useRef<HTMLInputElement>(null);
 
@@ -40,7 +40,8 @@ export function AddNewsForm({ categories }: Properties) {
 
 	const handlePasteClick = async () => {
 		const clipboardText = await navigator.clipboard.readText();
-		if (urlInputReference.current !== null) urlInputReference.current.value = clipboardText;
+		if (urlInputReference.current !== null)
+			urlInputReference.current.value = clipboardText;
 	};
 
 	return (

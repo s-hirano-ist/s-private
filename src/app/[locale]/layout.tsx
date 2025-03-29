@@ -7,12 +7,12 @@ import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { ReactNode } from "react";
 
-type Parameters_ = {
+type Props = {
 	children: ReactNode;
 	params: Promise<{ locale: string }>;
 };
 
-export default async function LocaleLayout({ children, params }: Parameters_) {
+export default async function LocaleLayout({ children, params }: Props) {
 	const { locale } = await params;
 	// Ensure that the incoming `locale` is valid
 	if (!routing.locales.includes(locale as "en" | "ja")) {

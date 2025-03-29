@@ -13,13 +13,13 @@ import { useDebouncedCallback } from "use-debounce";
 
 const PARAM_NAME = "q";
 
-type Properties = {
+type Props = {
 	images: Image[];
 	imageType: ImageType;
 	path: string;
 };
 
-export function ViewerStack({ images, path, imageType }: Properties) {
+export function ViewerStack({ images, path, imageType }: Props) {
 	// TODO: use queryを利用してデータのキャッシュを行う
 
 	const router = useTransitionRouter();

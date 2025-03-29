@@ -10,12 +10,12 @@ export const metadata: Metadata = {
 	description: "Private contents viewer.",
 };
 
-type Properties = {
+type Props = {
 	books: ReactNode;
 	contents: ReactNode;
 	images: ReactNode;
 };
 
-export default async function Layout({ books, contents, images }: Properties) {
+export default async function Layout({ books, contents, images }: Props) {
 	return <RootTab books={books} contents={contents} images={images} />;
 }

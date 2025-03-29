@@ -2,12 +2,12 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslations } from "next-intl";
 
-type Properties = { showCategory?: boolean; showSubmitButton?: boolean };
+type Props = { showCategory?: boolean; showSubmitButton?: boolean };
 
 export function AddFormSkeleton({
 	showCategory = false,
 	showSubmitButton = false,
-}: Properties) {
+}: Props) {
 	const t = useTranslations("label");
 
 	return (

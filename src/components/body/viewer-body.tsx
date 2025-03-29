@@ -3,9 +3,9 @@ import Loading from "@/components/loading";
 import { markdownToReact } from "@/features/viewer/utils/markdown-to-react";
 import { useQuery } from "@tanstack/react-query";
 
-type Properties = { markdown: string };
+type Props = { markdown: string };
 
-export function ViewerBody({ markdown }: Properties) {
+export function ViewerBody({ markdown }: Props) {
 	const { data, isLoading } = useQuery({
 		queryKey: ["viewerBody", markdown.slice(0, 10)],
 		queryFn: async () => await markdownToReact(markdown),

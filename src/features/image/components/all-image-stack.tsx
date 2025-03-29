@@ -5,9 +5,9 @@ import { generateUrl } from "@/features/image/actions/generate-url";
 import { loggerError } from "@/pino";
 import prisma from "@/prisma";
 
-type Properties = { page: number };
+type Props = { page: number };
 
-export async function AllImageStack({ page }: Properties) {
+export async function AllImageStack({ page }: Props) {
 	try {
 		const _images = await prisma.staticImages.findMany({
 			select: { id: true, width: true, height: true },

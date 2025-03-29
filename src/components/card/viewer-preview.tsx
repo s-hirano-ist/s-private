@@ -12,13 +12,13 @@ export type Image = {
 	uint8ArrayImage: Uint8Array;
 };
 
-type Properties = {
+type Props = {
 	image: Image;
 	imageType: ImageType;
 	path: string;
 };
 
-export function ViewerPreview({ image, path, imageType }: Properties) {
+export function ViewerPreview({ image, path, imageType }: Props) {
 	const { title, uint8ArrayImage } = image;
 	const href = `${path}/${title}` as Route;
 

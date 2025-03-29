@@ -11,7 +11,7 @@ const TABS = {
 	dump: "DUMP",
 };
 
-type Properties = {
+type Props = {
 	contents: ReactNode;
 	dump: ReactNode;
 	image: ReactNode;
@@ -20,7 +20,7 @@ type Properties = {
 
 const DEFAULT_TAB = "news";
 
-export function RootTab({ news, contents, dump, image }: Properties) {
+export function RootTab({ news, contents, dump, image }: Props) {
 	const router = useTransitionRouter();
 	const searchParameters = useSearchParams();
 

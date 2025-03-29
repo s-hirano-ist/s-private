@@ -3,7 +3,7 @@ import { SmallCard } from "@/components/card/small-card";
 import { StatusCodeView } from "@/components/card/status-code-view";
 import { CardStackSkeleton } from "@/components/stack/card-stack-skeleton";
 
-type Properties = {
+type Props = {
 	data: {
 		category?: string;
 		id: number;
@@ -13,7 +13,7 @@ type Properties = {
 	}[];
 };
 
-export function CardStack({ data }: Properties) {
+export function CardStack({ data }: Props) {
 	if (data === undefined) return <CardStackSkeleton />;
 	if (data.length === 0) return <StatusCodeView statusCode="204" />;
 

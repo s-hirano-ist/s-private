@@ -9,7 +9,7 @@ import {
 import { validateUrl } from "@/utils/validate-url";
 import { Link } from "next-view-transitions";
 
-type Properties = {
+type Props = {
 	category?: string;
 	id: number;
 	quote: string | null;
@@ -17,7 +17,7 @@ type Properties = {
 	url: string;
 };
 
-export function SmallCard({ id, title, quote, url, category }: Properties) {
+export function SmallCard({ id, title, quote, url, category }: Props) {
 	const validatedUrl = new URL(validateUrl(url));
 
 	return (

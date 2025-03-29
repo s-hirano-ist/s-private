@@ -10,7 +10,7 @@ const TABS = {
 	images: "IMAGES",
 };
 
-type Properties = {
+type Props = {
 	books: ReactNode;
 	contents: ReactNode;
 	images: ReactNode;
@@ -18,7 +18,7 @@ type Properties = {
 
 const DEFAULT_TAB = "books";
 
-export function RootTab({ books, contents, images }: Properties) {
+export function RootTab({ books, contents, images }: Props) {
 	const router = useTransitionRouter();
 	const searchParameters = useSearchParams();
 

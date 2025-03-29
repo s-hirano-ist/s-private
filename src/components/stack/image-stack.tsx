@@ -5,7 +5,7 @@ import PhotoSwipeLightbox from "photoswipe/lightbox";
 import { useEffect } from "react";
 import "photoswipe/style.css";
 
-type Properties = {
+type Props = {
 	data: {
 		height?: number | undefined;
 		originalSrc: string;
@@ -14,7 +14,7 @@ type Properties = {
 	}[];
 };
 
-export function ImageStack({ data }: Properties) {
+export function ImageStack({ data }: Props) {
 	useEffect(() => {
 		const lightbox = new PhotoSwipeLightbox({
 			gallery: "#image-preview",
