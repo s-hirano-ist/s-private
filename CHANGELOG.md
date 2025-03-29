@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.11.1](https://github.com/s-hirano-ist/s-private/compare/v8.11.0...v8.11.1) (2025-03-29)
+
+
+### Bug Fixes
+
+* 🐛 change paths for prisma ([0d49415](https://github.com/s-hirano-ist/s-private/commit/0d4941559b5bb05943e434bddac46071c67349a7))
+* prisma paths for dockerfile ([17b79df](https://github.com/s-hirano-ist/s-private/commit/17b79df51137625591a88e1d25c43725ca96d6c7))
+
 ## [8.11.0](https://github.com/s-hirano-ist/s-private/compare/v8.10.0...v8.11.0) (2025-03-29)
 
 
