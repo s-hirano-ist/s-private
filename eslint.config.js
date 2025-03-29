@@ -10,7 +10,7 @@ import reactHookPlugin from "eslint-plugin-react-hooks";
 import spellcheckPlugin from "eslint-plugin-spellcheck";
 import storybookPlugin from "eslint-plugin-storybook";
 import tailwindcssPlugin from "eslint-plugin-tailwindcss";
-import unicornPlugin from "eslint-plugin-unicorn";
+// import unicornPlugin from "eslint-plugin-unicorn";
 import unusedImportsPlugin from "eslint-plugin-unused-imports";
 import globals from "globals";
 import tsEslint from "typescript-eslint";
