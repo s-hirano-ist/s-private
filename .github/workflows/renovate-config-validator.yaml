@@ -1,4 +1,4 @@
-name: Renovate Config Validator
+name: renovate-config-validator
 
 on:
   workflow_dispatch:
