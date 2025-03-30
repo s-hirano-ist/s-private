@@ -24,7 +24,12 @@
 		"totalBooks": "冊数",
 		"totalContents": "コンテンツ数",
 		"totalImages": "画像数",
-		"search": "検索"
+		"search": "検索",
+		"aiSearch": "AI知識検索",
+		"aiSearchDescription": "AI検索を使用してナレッジベースを検索",
+		"searching": "検索中...",
+		"noResults": "結果が見つかりません",
+		"score": "スコア"
 	},
 	"statusCode": {
 		"000": "近日公開",
