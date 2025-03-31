@@ -25,7 +25,7 @@ jobs:
           node-version: "23"
 
       - name: Install pnpm
-        uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2 # v4
+        uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4
         with:
           # version: X.X.X
           # Optional when there is a packageManager field in the package.json.
@@ -85,7 +85,7 @@ jobs:
           node-version: "23"
 
       - name: Install pnpm
-        uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2 # v4
+        uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4
         with:
           run_install: false
 
@@ -128,7 +128,7 @@ jobs:
             node-version: "23"
 
         - name: Install pnpm
-          uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2 # v4
+          uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4
           with:
             run_install: false
 
@@ -176,7 +176,7 @@ jobs:
           node-version: "23"
 
       - name: Install pnpm
-        uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2 # v4
+        uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4
         with:
           # version: X.X.X
           # Optional when there is a packageManager field in the package.json.
