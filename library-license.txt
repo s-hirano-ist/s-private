@@ -1,4 +1,4 @@
-├─ MIT: 92
+├─ MIT: 96
 ├─ Apache-2.0: 10
 ├─ ISC: 2
 ├─ MIT OR Apache-2.0: 1
