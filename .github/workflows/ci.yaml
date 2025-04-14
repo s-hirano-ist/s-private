@@ -20,7 +20,7 @@ jobs:
           submodules: true
 
       - name: Install Node.js
-        uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "23"
 
@@ -80,7 +80,7 @@ jobs:
           submodules: true
 
       - name: Install Node.js
-        uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "23"
 
@@ -123,7 +123,7 @@ jobs:
             submodules: true
 
         - name: Install Node.js
-          uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4
+          uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
           with:
             node-version: "23"
 
@@ -151,7 +151,7 @@ jobs:
             MINIO_HOST: ${{secrets.MINIO_HOST}}
         - name: Show coverage
           if: always()
-          uses: davelosert/vitest-coverage-report-action@5a78cb16e761204097ad8a39369ea5d0ff7c8a5d # v2
+          uses: davelosert/vitest-coverage-report-action@7bf7d3c1b17a0e27c7e0d14190fb39168584bed2 # v2
           with:
             json-summary-path: ./.vitest-coverage/coverage-summary.json
             json-final-path: ./.vitest-coverage/coverage-final.json
@@ -171,7 +171,7 @@ jobs:
           submodules: true
 
       - name: Install Node.js
-        uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "23"
 
