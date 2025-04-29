@@ -71,6 +71,9 @@ POSTGRES_URL=$(cat /run/secrets/POSTGRES_URL)\n\
 SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN)\n\
 SENTRY_REPORT_URL=$(cat /run/secrets/SENTRY_REPORT_URL)\n" > .env
 
+# Generate Prisma client
+RUN pnpm run prisma:generate
+
 # Build the application
 RUN pnpm run build
 
