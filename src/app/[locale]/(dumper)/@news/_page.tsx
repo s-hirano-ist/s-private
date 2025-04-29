@@ -19,6 +19,7 @@ export async function SuspensePage() {
 			return await prisma.categories.findMany({
 				where: { userId },
 				select: { id: true, name: true },
+				orderBy: { name: "asc" },
 			});
 		} catch (error) {
 			loggerError(
