@@ -48,7 +48,7 @@ export function DeleteNewsButton({ id, title }: Props) {
 	return (
 		<>
 			<Button
-				className="absolute top-2 right-2 text-destructive hover:bg-destructive/10"
+				className="absolute right-2 top-2 text-destructive hover:bg-destructive/10"
 				onClickCapture={(e) => {
 					e.preventDefault();
 					e.stopPropagation();
@@ -58,10 +58,10 @@ export function DeleteNewsButton({ id, title }: Props) {
 				type="button"
 				variant="ghost"
 			>
-				<TrashIcon className="h-4 w-4" />
+				<TrashIcon className="size-4" />
 			</Button>
 
-			<Dialog open={isOpen} onOpenChange={handleOpenChange}>
+			<Dialog onOpenChange={handleOpenChange} open={isOpen}>
 				<DialogContent>
 					<DialogHeader>
 						<DialogTitle>{label("confirmDelete")}</DialogTitle>
