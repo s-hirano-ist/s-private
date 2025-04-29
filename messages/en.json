@@ -29,7 +29,10 @@
 		"aiSearchDescription": "Search through our knowledge base using AI-powered search",
 		"searching": "Searching...",
 		"noResults": "No results found",
-		"score": "Score"
+		"score": "Score",
+		"delete": "Delete",
+		"cancel": "Cancel",
+		"confirmDelete": "Confirm Delete"
 	},
 	"statusCode": {
 		"000": "Comming Soon",
@@ -52,6 +55,8 @@
 		"required": "Required.",
 		"tooLong": "Too long.",
 		"invalidFormat": "Invalid format.",
-		"invalidFileFormat": "Invalid file format."
+		"invalidFileFormat": "Invalid file format.",
+		"deleted": "Deleted successfully.",
+		"error": "An error occurred."
 	}
 }

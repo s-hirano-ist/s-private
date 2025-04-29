@@ -6,6 +6,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { DeleteNewsButton } from "@/features/news/components/delete-news-button";
 import { validateUrl } from "@/utils/validate-url";
 import { Link } from "next-view-transitions";
 
@@ -22,7 +23,8 @@ export function SmallCard({ id, title, quote, url, category }: Props) {
 
 	return (
 		<Link data-testid={`small-card-${id}`} href={validatedUrl} target="_blank">
-			<Card className="hover:bg-secondary">
+			<Card className="hover:bg-secondary relative">
+				<DeleteNewsButton id={id} title={title} />
 				<CardHeader>
 					<div className="flex gap-4">
 						<Badge>{id}</Badge>

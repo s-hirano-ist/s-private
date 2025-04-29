@@ -29,7 +29,10 @@
 		"aiSearchDescription": "AI検索を使用してナレッジベースを検索",
 		"searching": "検索中...",
 		"noResults": "結果が見つかりません",
-		"score": "スコア"
+		"score": "スコア",
+		"delete": "削除",
+		"cancel": "キャンセル",
+		"confirmDelete": "削除の確認"
 	},
 	"statusCode": {
 		"000": "近日公開",
@@ -52,6 +55,8 @@
 		"required": "必須項目です。",
 		"tooLong": "文字数が多すぎます。",
 		"invalidFormat": "無効なフォーマットで入力されています。",
-		"invalidFileFormat": "ファイルのフォーマットが無効です。"
+		"invalidFileFormat": "ファイルのフォーマットが無効です。",
+		"deleted": "正常に削除されました。",
+		"error": "エラーが発生しました。"
 	}
 }
