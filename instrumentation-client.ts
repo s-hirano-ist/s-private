@@ -2,17 +2,19 @@
 // The config you add here will be used whenever a users loads a page in their browser.
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 import { env } from "@/env";
-import Sentry, {
+import {
 	captureConsoleIntegration,
+	captureRouterTransitionStart,
 	init,
 	replayIntegration,
 } from "@sentry/nextjs";
 
-export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
+// eslint-disable-next-line
+export const onRouterTransitionStart = captureRouterTransitionStart;
 
 init({
 	dsn: env.NEXT_PUBLIC_SENTRY_DSN,
-	enabled: process.env.NODE_ENV === "production",
+	// enabled: process.env.NODE_ENV === "production",
 
 	// Add optional integrations for additional features
 	integrations: [replayIntegration(), captureConsoleIntegration()],
