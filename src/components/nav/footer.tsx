@@ -48,7 +48,7 @@ export function Footer() {
 	return (
 		<footer className="sticky bottom-0 z-50 mx-auto w-full max-w-lg border border-gray-200 bg-white dark:border-gray-600 dark:bg-gray-700 sm:rounded-3xl ">
 			<Drawer onOpenChange={setOpen} open={open} snapPoints={[0.5]}>
-				<div className="mx-auto grid h-16 max-w-lg grid-cols-5 bg-gradient-to-r from-primary-grad-from to-primary-grad-to text-white sm:rounded-3xl">
+				<div className="mx-auto grid h-16 max-w-lg grid-cols-5 bg-linear-to-r from-primary-grad-from to-primary-grad-to text-white sm:rounded-3xl">
 					{/* FIXME: bug with parallel routes
 					 * https://nextjs.org/docs/app/building-your-application/routing/parallel-routes */}
 					<Button
@@ -86,7 +86,7 @@ export function Footer() {
 					<DrawerTrigger asChild>
 						<div className="flex items-center justify-center">
 							<Button
-								className="bg-gradient-to-t from-primary-grad-from to-primary-grad-to shadow"
+								className="bg-linear-to-t from-primary-grad-from to-primary-grad-to shadow-sm"
 								size="navCenter"
 								type="button"
 								variant="navCenter"

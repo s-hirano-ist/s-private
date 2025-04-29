@@ -10,7 +10,7 @@ export async function SuspensePage() {
 	return (
 		<>
 			{hasPostPermission && <AddContentsForm />}
-			<Separator className="h-px bg-gradient-to-r from-primary to-primary-grad" />
+			<Separator className="h-px bg-linear-to-r from-primary to-primary-grad" />
 			<Suspense fallback={<CardStackSkeleton />}>
 				<ContentsStack />
 			</Suspense>
