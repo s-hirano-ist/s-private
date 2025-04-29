@@ -8,7 +8,18 @@ All notable changes to this project will be documented in this file. See [standa
 ### Features
 
 * 🎸 add ai serach page ([71f736c](https://github.com/s-hirano-ist/s-private/commit/71f736cdf6b6c06362e7b6d7c930c5efe3d628a5))
+* 🎸 add delete button ([eb8d282](https://github.com/s-hirano-ist/s-private/commit/eb8d282cc28b6da4bd8301effe12e1290d8f8cc9))
 * 🎸 add more cis ([574f983](https://github.com/s-hirano-ist/s-private/commit/574f983e56ea5760478f5c7b3f4446788264801c))
+* 🎸 add sort categories ([84e6315](https://github.com/s-hirano-ist/s-private/commit/84e6315f8b8f34ab5d9a1d175ac95ddebc7583c9))
+* add delete and sort features ([4ded754](https://github.com/s-hirano-ist/s-private/commit/4ded75491a9f0d9bfc37ae82b2dce1c8e32f1c5d))
+
+
+### Bug Fixes
+
+* 🐛 dockerfile ([41caf59](https://github.com/s-hirano-ist/s-private/commit/41caf599998f68a9a9adeb6ae350ff45218d71be))
+* 🐛 dockerfile ([b9e6a51](https://github.com/s-hirano-ist/s-private/commit/b9e6a51e5cdd764681a542ea3f3f67b97803e5a2))
+* 🐛 sonnor not closing ([7384254](https://github.com/s-hirano-ist/s-private/commit/7384254c3f029ba901321a095c1f6eb9ce05c82e))
+* 🐛 title bottom not showing ([5237813](https://github.com/s-hirano-ist/s-private/commit/52378138762881e376594941b39ee82e006995e3))
 
 ## [8.11.1](https://github.com/s-hirano-ist/s-private/compare/v8.11.0...v8.11.1) (2025-03-29)
 
