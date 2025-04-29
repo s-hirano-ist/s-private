@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.12.2](https://github.com/s-hirano-ist/s-private/compare/v8.12.1...v8.12.2) (2025-04-29)
+
+
+### Bug Fixes
+
+* 🐛 dockerfile ([bf2296e](https://github.com/s-hirano-ist/s-private/commit/bf2296eba35a08479e82f9af1d16d4340e7c26ab))
+* 🐛 dockerfile ([cf78384](https://github.com/s-hirano-ist/s-private/commit/cf783842eaf187d01133c3b284be9bb0e4d7df71))
+
 ## [8.12.1](https://github.com/s-hirano-ist/s-private/compare/v8.12.0...v8.12.1) (2025-04-29)
 
 
