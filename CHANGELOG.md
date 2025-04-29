@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.12.1](https://github.com/s-hirano-ist/s-private/compare/v8.12.0...v8.12.1) (2025-04-29)
+
+
+### Bug Fixes
+
+* 🐛 biome lint ([b34ec2f](https://github.com/s-hirano-ist/s-private/commit/b34ec2fab89211bfa4afd592d2148599f84f3336))
+* 🐛 prisma client type place ([998a1b3](https://github.com/s-hirano-ist/s-private/commit/998a1b3158558eea1ca8d16cada53adc715d996a))
+* 🐛 prisma settings ([e47a299](https://github.com/s-hirano-ist/s-private/commit/e47a2990a4c0db8935020bc428edac915f7b2246))
+* 🐛 schema generate output ([645890e](https://github.com/s-hirano-ist/s-private/commit/645890edde52d8b29b5173e94079726596c7faf5))
+* 🐛 schema generate output ([77e1860](https://github.com/s-hirano-ist/s-private/commit/77e186005ea823eb3765debead71e3090869f32a))
+* 🐛 sentry config ([a2a85d2](https://github.com/s-hirano-ist/s-private/commit/a2a85d2f0066b6d9a5022ba8349cc8a6d3fdb6d5))
+* 🐛 storybook vitest settings ([890dfd9](https://github.com/s-hirano-ist/s-private/commit/890dfd9dd26ba178c370129ed2ea7f5bbfa8fa40))
+* darkmode ([de73692](https://github.com/s-hirano-ist/s-private/commit/de736929662bfb6d26271744bc1407cf9728685c))
+
 ## [8.12.0](https://github.com/s-hirano-ist/s-private/compare/v8.11.1...v8.12.0) (2025-04-29)
 
 
