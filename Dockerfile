@@ -1,5 +1,5 @@
 # Build Stage
-# MEMO: alpine based iamges is not recommended for prod useage https://github.com/nodejs/docker-node#nodealpine
+# MEMO: alpine based images is not recommended for prod useage https://github.com/nodejs/docker-node#nodealpine
 
 FROM node:23.7.0-slim@sha256:a5163af143b43b0da7572444bd49a22edb4cc1a74d3a46e1ef840f62bce07cac AS base
 RUN apt-get update && apt-get install -y ca-certificates && update-ca-certificates
@@ -14,7 +14,8 @@ FROM base AS deps
 WORKDIR /app
 
 # Copy only package.json, pnpm-lock.yaml, and prisma schema for installing dependencies
-COPY package.json pnpm-lock.yaml s-schema/ ./
+COPY package.json pnpm-lock.yaml ./
+COPY s-schema/ ./s-schema/
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
