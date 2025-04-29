@@ -32,3 +32,6 @@ next-env.d.ts
 
 # MinIO SSL
 minio/certs
+
+# Prisma
+src/generated/

@@ -171,6 +171,8 @@ export default tsEslint.config(
 						"compat",
 						"tailwindcss",
 						"globals",
+						"integrations",
+						"Vercel",
 					],
 				},
 			],
