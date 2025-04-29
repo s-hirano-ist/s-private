@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.12.3](https://github.com/s-hirano-ist/s-private/compare/v8.12.2...v8.12.3) (2025-04-29)
+
+
+### Bug Fixes
+
+* 🐛 prisma generate ([fdce095](https://github.com/s-hirano-ist/s-private/commit/fdce09517fe73f393c46cfd0f3ab6bc6a3faa0ed))
+
 ## [8.12.2](https://github.com/s-hirano-ist/s-private/compare/v8.12.1...v8.12.2) (2025-04-29)
 
 
