@@ -1,28 +1,13 @@
+import { auth } from "@/features/auth/utils/auth";
 import { deleteNews } from "@/features/news/actions/delete-news";
 import { loggerInfo } from "@/pino";
 import prisma from "@/prisma";
 import { sendPushoverMessage } from "@/utils/fetch-message";
+import { Session } from "next-auth";
 import { revalidatePath } from "next/cache";
-import { describe, expect, test, vi } from "vitest";
+import { Mock, describe, expect, test, vi } from "vitest";
 
-vi.mock("@/features/auth/utils/session", () => ({
-	getSelfId: vi.fn().mockResolvedValue(1),
-	hasDumperPostPermission: vi.fn().mockResolvedValue(true),
-}));
-
-vi.mock("@/prisma", () => ({
-	default: {
-		news: {
-			findUnique: vi.fn(),
-			delete: vi.fn(),
-		},
-	},
-}));
-
-vi.mock("@/pino", () => ({
-	loggerInfo: vi.fn(),
-	loggerError: vi.fn(),
-}));
+vi.mock("@/features/auth/utils/auth", () => ({ auth: vi.fn() }));
 
 vi.mock("@/utils/fetch-message", () => ({
 	sendPushoverMessage: vi.fn(),
@@ -32,8 +17,15 @@ vi.mock("next/cache", () => ({
 	revalidatePath: vi.fn(),
 }));
 
+const mockAllowedRoleSession: Session = {
+	user: { id: "1", roles: ["dumper"] },
+	expires: "2025-01-01",
+};
+
 describe("deleteNews", () => {
 	test("should delete news successfully", async () => {
+		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
+
 		const mockNewsItem = {
 			id: 1,
 			title: "Test News",
@@ -66,11 +58,11 @@ describe("deleteNews", () => {
 		});
 
 		expect(prisma.news.findUnique).toHaveBeenCalledWith({
-			where: { id: 1, userId: 1 },
+			where: { id: 1, userId: "1" },
 		});
 
 		expect(prisma.news.delete).toHaveBeenCalledWith({
-			where: { id: 1, userId: 1 },
+			where: { id: 1, userId: "1" },
 		});
 
 		expect(loggerInfo).toHaveBeenCalled();
