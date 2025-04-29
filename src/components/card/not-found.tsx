@@ -6,7 +6,7 @@ export function NotFound() {
 	return (
 		<div className="space-y-2">
 			<div
-				className="w-full bg-gradient-to-r from-primary-grad-from to-primary-grad-to bg-clip-text p-2 text-center font-extrabold text-transparent"
+				className="w-full bg-linear-to-r from-primary-grad-from to-primary-grad-to bg-clip-text p-2 text-center font-extrabold text-transparent"
 				data-testid="status-code-view"
 			>
 				<div className="text-9xl">

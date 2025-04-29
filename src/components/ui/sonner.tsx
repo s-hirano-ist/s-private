@@ -10,7 +10,6 @@ function Toaster({ ...props }: ToasterProps) {
 
 	return (
 		<Sonner
-			// eslint-disable-next-line
 			className="toaster group"
 			duration={2000}
 			theme={theme as ToasterProps["theme"]}

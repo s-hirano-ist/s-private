@@ -1,6 +1,6 @@
 "use server";
 import "server-only";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/generated";
 import { AuthError } from "next-auth";
 import {
 	FileNotAllowedError,

@@ -1,7 +1,7 @@
 import { NotAllowedError, PushoverError } from "@/error-classes";
+import { Prisma } from "@/generated";
 import { loggerError, loggerWarn } from "@/pino";
 import { sendPushoverMessage } from "@/utils/fetch-message";
-import { Prisma } from "@prisma/client";
 import { AuthError } from "next-auth";
 import { describe, expect, test, vi } from "vitest";
 import { wrapServerSideErrorForClient } from "./error-wrapper";

@@ -37,7 +37,7 @@ export async function SuspensePage() {
 	return (
 		<>
 			{hasPostPermission && <AddNewsForm categories={categories} />}
-			<Separator className="h-px bg-gradient-to-r from-primary to-primary-grad" />
+			<Separator className="h-px bg-linear-to-r from-primary to-primary-grad" />
 			<Suspense fallback={<CardStackSkeleton />}>
 				<NewsStack />
 			</Suspense>

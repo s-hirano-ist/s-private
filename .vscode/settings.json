@@ -12,8 +12,7 @@
 		"editor.quickSuggestions": {
 			"strings": true
 		},
-		"editor.suggest.insertMode": "replace",
-		"gitlens.codeLens.scopes": ["document"]
+		"editor.suggest.insertMode": "replace"
 	},
 	"editor.formatOnSave": true,
 	"cSpell.enabled": true,

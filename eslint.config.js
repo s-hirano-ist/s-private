@@ -9,7 +9,7 @@ import reactPlugin from "eslint-plugin-react";
 import reactHookPlugin from "eslint-plugin-react-hooks";
 import spellcheckPlugin from "eslint-plugin-spellcheck";
 import storybookPlugin from "eslint-plugin-storybook";
-import tailwindcssPlugin from "eslint-plugin-tailwindcss";
+// import tailwindcssPlugin from "eslint-plugin-tailwindcss";
 import unicornPlugin from "eslint-plugin-unicorn";
 import unusedImportsPlugin from "eslint-plugin-unused-imports";
 import globals from "globals";
@@ -22,6 +22,7 @@ const compat = new FlatCompat({
 });
 
 export default tsEslint.config(
+	{ ignores: ["src/generated/**/*"] },
 	{
 		languageOptions: {
 			globals: globals.browser,
@@ -171,6 +172,14 @@ export default tsEslint.config(
 						"compat",
 						"tailwindcss",
 						"globals",
+						"integrations",
+						"Vercel",
+						"jsdom",
+						"dotenv",
+						"matchers",
+						"nextjs",
+						"workspace",
+						"postcss",
 					],
 				},
 			],
@@ -199,7 +208,8 @@ export default tsEslint.config(
 			"unicorn/no-useless-spread": "off",
 		},
 	},
-	...tailwindcssPlugin.configs["flat/recommended"],
+	// FIXME: not working
+	// ...tailwindcssPlugin.configs["flat/recommended"],
 
 	// NO USE BECAUSE BIOME DOES THE SAME THING
 	// {
