@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.12.0](https://github.com/s-hirano-ist/s-private/compare/v8.11.1...v8.12.0) (2025-04-29)
+
+
+### Features
+
+* 🎸 add ai serach page ([71f736c](https://github.com/s-hirano-ist/s-private/commit/71f736cdf6b6c06362e7b6d7c930c5efe3d628a5))
+* 🎸 add more cis ([574f983](https://github.com/s-hirano-ist/s-private/commit/574f983e56ea5760478f5c7b3f4446788264801c))
+
 ## [8.11.1](https://github.com/s-hirano-ist/s-private/compare/v8.11.0...v8.11.1) (2025-03-29)
 
 
