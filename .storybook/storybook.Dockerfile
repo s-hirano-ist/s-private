@@ -7,7 +7,9 @@ WORKDIR /app
 ENV SKIP_ENV_VALIDATION=true
 ENV MINIO_HOST=private.s-hirano.com
 
-COPY package.json pnpm-lock.yaml s-schema/ ./
+COPY package.json pnpm-lock.yaml ./
+COPY s-schema/ ./s-schema/
+
 RUN pnpm install
 COPY . .
 RUN pnpm run storybook:build
