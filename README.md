@@ -12,7 +12,7 @@
 **Package Manager** - [pnpm](https://pnpm.io/)  
 **Styling** - [Shadcn/ui](https://ui.shadcn.com/)  
 **Database** - [PostgreSQL](https://www.postgresql.org/)  
-**Object Storage** [MinIO](https://min.io/) or [Cloudfare R2](https://www.cloudflare.com/ja-jp/developer-platform/products/r2/)  
+**Object Storage** [Cloudfare R2](https://www.cloudflare.com/ja-jp/developer-platform/products/r2/)  
 **ORM** - [Prisma](https://www.prisma.io/)  
 **Vulnerabilities Checks** - [npm-audit](https://docs.npmjs.com/cli/v10/commands/npm-audit) & [Dependabot alert](https://docs.github.com/ja/code-security/dependabot/dependabot-alerts/about-dependabot-alerts)  
 **Rendering Checks** -[React Scan](https://github.com/aidenybai/react-scan)  
