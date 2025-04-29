@@ -1,7 +1,7 @@
 // In case of error of prisma on development environment
 // https://www.prisma.io/docs/orm/more/help-and-troubleshooting/help-articles/nextjs-prisma-client-dev-practices
 import { env } from "@/env";
-import { PrismaClient } from "@prisma/client/edge";
+import { PrismaClient } from "@/generated";
 import { withAccelerate } from "@prisma/extension-accelerate";
 
 const prismaClientSingleton = () => {
