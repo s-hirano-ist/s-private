@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@biomejs/biome':
-        specifier: 1.9.4
-        version: 1.9.4
       '@hookform/resolvers':
         specifier: 5.0.1
         version: 5.0.1(react-hook-form@7.54.2(react@19.1.0))
@@ -159,6 +156,9 @@ importers:
         specifier: 3.24.2
         version: 3.24.2
     devDependencies:
+      '@biomejs/biome':
+        specifier: 1.9.4
+        version: 1.9.4
       '@chromatic-com/storybook':
         specifier: 3.2.6
         version: 3.2.6(react@19.1.0)(storybook@8.6.11(prettier@3.4.2))

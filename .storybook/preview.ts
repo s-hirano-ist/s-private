@@ -1,7 +1,8 @@
 import type { Preview } from "@storybook/react";
+// eslint-disable-next-line no-restricted-imports
 import "../src/app/globals.css";
 
-const preview: Preview = {
+const preview = {
 	parameters: {
 		controls: {
 			matchers: {
@@ -11,6 +12,6 @@ const preview: Preview = {
 		},
 		nextjs: { appDirectory: true },
 	},
-};
+} satisfies Preview;
 
 export default preview;
