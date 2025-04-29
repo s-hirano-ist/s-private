@@ -7,6 +7,7 @@
 		"enabled": false,
 		"rules": { "recommended": true }
 	},
+	"files": { "ignore": ["s-schema/generated/**"] },
 	"vcs": {
 		"enabled": true,
 		"clientKind": "git",
