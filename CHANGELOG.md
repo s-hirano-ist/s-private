@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.14.0](https://github.com/s-hirano-ist/s-private/compare/v8.13.0...v8.14.0) (2025-04-29)
+
+
+### Features
+
+* 🎸 add eslint inspector ([e7916d9](https://github.com/s-hirano-ist/s-private/commit/e7916d98c97c04d106ba2bbfe160325868011324))
+
 ## [8.13.0](https://github.com/s-hirano-ist/s-private/compare/v8.12.2...v8.13.0) (2025-04-29)
 
 
