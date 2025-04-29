@@ -32,7 +32,12 @@ beforeEach(() => {
 	vi.mock("@/prisma", () => ({
 		default: {
 			categories: { upsert: vi.fn() },
-			news: { create: vi.fn(), findMany: vi.fn() },
+			news: {
+				create: vi.fn(),
+				findMany: vi.fn(),
+				findUnique: vi.fn(),
+				delete: vi.fn(),
+			},
 			contents: { create: vi.fn(), findMany: vi.fn() },
 			images: { create: vi.fn(), findMany: vi.fn(), updateMany: vi.fn() },
 			staticImages: { findMany: vi.fn() },
