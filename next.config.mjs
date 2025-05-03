@@ -16,7 +16,7 @@ import createNextIntlPlugin from "next-intl/plugin";
 const cspHeader = `
     default-src 'self';
 	connect-src 'self';
-	script-src 'self' 'unsafe-eval' 'unsafe-inline' https://unpkg.com https://va.vercel-scripts.com;
+	script-src 'self' 'unsafe-eval' 'unsafe-inline' https://unpkg.com https://va.vercel-scripts.com https://vercel.live;
     style-src 'self' 'unsafe-inline';
 	img-src 'self' blob: data: https://${process.env.MINIO_HOST}:${process.env.MINIO_PORT};
     font-src 'self';
