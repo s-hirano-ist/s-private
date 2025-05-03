@@ -180,6 +180,8 @@ export default tsEslint.config(
 						"nextjs",
 						"workspace",
 						"postcss",
+						"mb",
+						"subdomains",
 					],
 				},
 			],
