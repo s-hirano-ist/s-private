@@ -25,7 +25,7 @@ const cspHeader = `
     form-action 'self';
     frame-ancestors 'none';
 	worker-src 'self' blob:;
-	manifest-src 'self' ${process.env.AUTH0_ISSUER};
+	manifest-src 'self' ${process.env.AUTH0_ISSUER_BASE_URL};
     upgrade-insecure-requests;
 	report-uri ${process.env.SENTRY_REPORT_URL};
     report-to csp-endpoint;

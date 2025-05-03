@@ -6,8 +6,8 @@ export default {
 	providers: [
 		Auth0({
 			clientId: env.AUTH0_CLIENT_ID,
-			clientSecret: env.AUTH0_SECRET,
-			issuer: env.AUTH0_ISSUER,
+			clientSecret: env.AUTH0_CLIENT_SECRET,
+			issuer: env.AUTH0_ISSUER_BASE_URL,
 		}),
 	],
 } satisfies NextAuthConfig;
