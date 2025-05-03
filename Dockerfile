@@ -35,7 +35,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 # Extract secrets
 RUN --mount=type=secret,id=AUTH_SECRET \
-    --mount=type=secret,id=AUTH0_ID \
+    --mount=type=secret,id=AUTH0_CLIENT_ID \
     --mount=type=secret,id=AUTH0_SECRET \
     --mount=type=secret,id=AUTH0_ISSUER \
     --mount=type=secret,id=PUSHOVER_URL \
@@ -52,7 +52,7 @@ RUN --mount=type=secret,id=AUTH_SECRET \
     --mount=type=secret,id=SENTRY_AUTH_TOKEN \
     --mount=type=secret,id=SENTRY_REPORT_URL \
     echo "AUTH_SECRET=$(cat /run/secrets/AUTH_SECRET)\n\
-AUTH0_ID=$(cat /run/secrets/AUTH0_ID)\n\
+AUTH0_CLIENT_ID=$(cat /run/secrets/AUTH0_CLIENT_ID)\n\
 AUTH0_SECRET=$(cat /run/secrets/AUTH0_SECRET)\n\
 AUTH0_ISSUER=$(cat /run/secrets/AUTH0_ISSUER)\n\
 PUSHOVER_URL=$(cat /run/secrets/PUSHOVER_URL)\n\

@@ -16,7 +16,7 @@ export const env = createEnv({
 			process.env.NODE_ENV === "production"
 				? z.string()
 				: z.string().optional(),
-		AUTH0_ID: z.string(),
+		AUTH0_CLIENT_ID: z.string(),
 		AUTH0_SECRET: z.string(),
 		AUTH0_ISSUER: z.string(),
 		SENTRY_AUTH_TOKEN: z.string(),
@@ -44,7 +44,7 @@ export const env = createEnv({
 		PUSHOVER_USER_KEY: process.env.PUSHOVER_USER_KEY,
 		PUSHOVER_APP_TOKEN: process.env.PUSHOVER_APP_TOKEN,
 		AUTH_SECRET: process.env.AUTH_SECRET,
-		AUTH0_ID: process.env.AUTH0_ID,
+		AUTH0_CLIENT_ID: process.env.AUTH0_CLIENT_ID,
 		AUTH0_SECRET: process.env.AUTH0_SECRET,
 		AUTH0_ISSUER: process.env.AUTH0_ISSUER,
 		SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
