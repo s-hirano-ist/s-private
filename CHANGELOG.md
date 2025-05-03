@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.16.0](https://github.com/s-hirano-ist/s-private/compare/v8.15.0...v8.16.0) (2025-05-03)
+
+
+### Features
+
+* change names of envs ([0907962](https://github.com/s-hirano-ist/s-private/commit/09079629245776c464ca6941e30246efe3e49434))
+
+
+### Bug Fixes
+
+* 🐛 spelling of auth url ([82baee7](https://github.com/s-hirano-ist/s-private/commit/82baee7c1520053406f94f15fd495269b8870f1b))
+
 ## [8.15.0](https://github.com/s-hirano-ist/s-private/compare/v8.14.0...v8.15.0) (2025-05-03)
 
 
