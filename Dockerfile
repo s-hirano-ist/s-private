@@ -35,9 +35,9 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 # Extract secrets
 RUN --mount=type=secret,id=AUTH_SECRET \
-    --mount=type=secret,id=AUTH0_ID \
-    --mount=type=secret,id=AUTH0_SECRET \
-    --mount=type=secret,id=AUTH0_ISSUER \
+    --mount=type=secret,id=AUTH0_CLIENT_ID \
+    --mount=type=secret,id=AUTH0_CLIENT_SECRET \
+    --mount=type=secret,id=AUTH0_ISSUER_BASE_URL \
     --mount=type=secret,id=PUSHOVER_URL \
     --mount=type=secret,id=PUSHOVER_APP_TOKEN \
     --mount=type=secret,id=PUSHOVER_USER_KEY \
@@ -48,13 +48,13 @@ RUN --mount=type=secret,id=AUTH_SECRET \
     --mount=type=secret,id=MINIO_SECRET_KEY \
     --mount=type=secret,id=NEXT_PUBLIC_SENTRY_DSN \
     --mount=type=secret,id=POSTGRES_DIRECT_URL \
-    --mount=type=secret,id=POSTGRES_URL \
+    --mount=type=secret,id=DATABASE_URL \
     --mount=type=secret,id=SENTRY_AUTH_TOKEN \
     --mount=type=secret,id=SENTRY_REPORT_URL \
     echo "AUTH_SECRET=$(cat /run/secrets/AUTH_SECRET)\n\
-AUTH0_ID=$(cat /run/secrets/AUTH0_ID)\n\
-AUTH0_SECRET=$(cat /run/secrets/AUTH0_SECRET)\n\
-AUTH0_ISSUER=$(cat /run/secrets/AUTH0_ISSUER)\n\
+AUTH0_CLIENT_ID=$(cat /run/secrets/AUTH0_CLIENT_ID)\n\
+AUTH0_CLIENT_SECRET=$(cat /run/secrets/AUTH0_CLIENT_SECRET)\n\
+AUTH0_ISSUER_BASE_URL=$(cat /run/secrets/AUTH0_ISSUER_BASE_URL)\n\
 PUSHOVER_URL=$(cat /run/secrets/PUSHOVER_URL)\n\
 PUSHOVER_APP_TOKEN=$(cat /run/secrets/PUSHOVER_APP_TOKEN)\n\
 PUSHOVER_USER_KEY=$(cat /run/secrets/PUSHOVER_USER_KEY)\n\
@@ -65,7 +65,7 @@ MINIO_PORT=$(cat /run/secrets/MINIO_PORT)\n\
 MINIO_SECRET_KEY=$(cat /run/secrets/MINIO_SECRET_KEY)\n\
 NEXT_PUBLIC_SENTRY_DSN=$(cat /run/secrets/NEXT_PUBLIC_SENTRY_DSN)\n\
 POSTGRES_DIRECT_URL=$(cat /run/secrets/POSTGRES_DIRECT_URL)\n\
-POSTGRES_URL=$(cat /run/secrets/POSTGRES_URL)\n\
+DATABASE_URL=$(cat /run/secrets/DATABASE_URL)\n\
 SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN)\n\
 SENTRY_REPORT_URL=$(cat /run/secrets/SENTRY_REPORT_URL)\n" > .env
 
