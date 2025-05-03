@@ -33,7 +33,6 @@ export const env = createEnv({
 	 */
 	client: {
 		NEXT_PUBLIC_SENTRY_DSN: z.string(),
-		NEXT_PUBLIC_G_TAG: z.string(),
 	},
 
 	/**
@@ -56,7 +55,6 @@ export const env = createEnv({
 		MINIO_ACCESS_KEY: process.env.MINIO_ACCESS_KEY,
 		MINIO_SECRET_KEY: process.env.MINIO_SECRET_KEY,
 		NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN, // MEMO: ok to leak
-		NEXT_PUBLIC_G_TAG: process.env.NEXT_PUBLIC_G_TAG,
 	},
 	/**
 	 * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful for Docker builds.

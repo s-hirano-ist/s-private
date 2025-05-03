@@ -59,7 +59,6 @@ jobs:
               MINIO_HOST=${{secrets.MINIO_HOST}}
               MINIO_PORT=${{secrets.MINIO_PORT}}
               MINIO_SECRET_KEY=${{secrets.MINIO_SECRET_KEY}}
-              NEXT_PUBLIC_G_TAG=${{secrets.NEXT_PUBLIC_G_TAG}}
               NEXT_PUBLIC_SENTRY_DSN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
               POSTGRES_DIRECT_URL=${{ secrets.POSTGRES_DIRECT_URL }}
               POSTGRES_URL=${{ secrets.POSTGRES_URL }}
