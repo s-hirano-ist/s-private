@@ -15,10 +15,10 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const cspHeader = `
     default-src 'self';
-	connect-src 'self' https://www.google-analytics.com;
-	script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://unpkg.com https://va.vercel-scripts.com;
+	connect-src 'self';
+	script-src 'self' 'unsafe-eval' 'unsafe-inline' https://unpkg.com https://va.vercel-scripts.com;
     style-src 'self' 'unsafe-inline';
-	img-src 'self' blob: data: https://${process.env.MINIO_HOST}:${process.env.MINIO_PORT} https://www.googletagmanager.com;
+	img-src 'self' blob: data: https://${process.env.MINIO_HOST}:${process.env.MINIO_PORT};
     font-src 'self';
     object-src 'none';
     base-uri 'self';
