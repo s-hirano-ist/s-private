@@ -60,7 +60,7 @@ jobs:
           MINIO_SECRET_KEY: ${{secrets.MINIO_SECRET_KEY}}
           NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
           POSTGRES_DIRECT_URL: ${{ secrets.POSTGRES_DIRECT_URL }}
-          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_REPORT_URL: ${{ secrets.SENTRY_REPORT_URL }}
 
