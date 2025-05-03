@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.15.0](https://github.com/s-hirano-ist/s-private/compare/v8.14.0...v8.15.0) (2025-05-03)
+
+
+### Features
+
+* 🎸 delete google analytics ([e9487f4](https://github.com/s-hirano-ist/s-private/commit/e9487f4ea9b7b601ff74c067c1192b3394f9b168))
+* 🎸 delete google analytics ([22f43af](https://github.com/s-hirano-ist/s-private/commit/22f43af42d445033e457ac804f13e9e60abb81d8))
+
 ## [8.14.0](https://github.com/s-hirano-ist/s-private/compare/v8.13.0...v8.14.0) (2025-04-29)
 
 
