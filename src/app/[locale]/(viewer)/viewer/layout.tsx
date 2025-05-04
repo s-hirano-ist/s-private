@@ -14,8 +14,11 @@ type Props = {
 	books: ReactNode;
 	contents: ReactNode;
 	images: ReactNode;
+	news: ReactNode;
 };
 
-export default async function Layout({ books, contents, images }: Props) {
-	return <RootTab books={books} contents={contents} images={images} />;
+export default async function Layout({ books, contents, images, news }: Props) {
+	return (
+		<RootTab books={books} contents={contents} images={images} news={news} />
+	);
 }

@@ -29,7 +29,7 @@ export async function ContentsStack() {
 			};
 		});
 
-		return <CardStack data={unexportedContents} />;
+		return <CardStack data={unexportedContents} showDeleteButton={false} />;
 	} catch (error) {
 		loggerError(
 			"unexpected",
