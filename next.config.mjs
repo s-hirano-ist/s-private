@@ -14,7 +14,7 @@ import createNextIntlPlugin from "next-intl/plugin";
 // MEMO: worker-src 'self' blob:; for Sentry
 
 const cspHeader = `
-    default-src 'self';
+    default-src 'self' https://vercel.live;
 	connect-src 'self';
 	script-src 'self' 'unsafe-eval' 'unsafe-inline' https://unpkg.com https://va.vercel-scripts.com https://vercel.live;
     style-src 'self' 'unsafe-inline';
