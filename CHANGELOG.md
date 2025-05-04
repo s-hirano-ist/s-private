@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.18.1](https://github.com/s-hirano-ist/s-private/compare/v8.18.0...v8.18.1) (2025-05-04)
+
+
+### Bug Fixes
+
+* 🐛 tailwind config settings for layout error ([c3aa049](https://github.com/s-hirano-ist/s-private/commit/c3aa0492fb3c3625771b72257b7c7a9e2eddc798))
+
 ## [8.18.0](https://github.com/s-hirano-ist/s-private/compare/v8.17.0...v8.18.0) (2025-05-04)
 
 
