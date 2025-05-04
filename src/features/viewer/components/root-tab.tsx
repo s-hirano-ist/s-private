@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { type ReactNode, useEffect, useState } from "react";
 
 const TABS = {
+	news: "NEWS",
 	books: "BOOKS",
 	contents: "CONTENTS",
 	images: "IMAGES",
@@ -14,11 +15,12 @@ type Props = {
 	books: ReactNode;
 	contents: ReactNode;
 	images: ReactNode;
+	news: ReactNode;
 };
 
-const DEFAULT_TAB = "books";
+const DEFAULT_TAB = "news";
 
-export function RootTab({ books, contents, images }: Props) {
+export function RootTab({ news, books, contents, images }: Props) {
 	const router = useTransitionRouter();
 	const searchParams = useSearchParams();
 
@@ -59,6 +61,7 @@ export function RootTab({ books, contents, images }: Props) {
 					);
 				})}
 			</TabsList>
+			<TabsContent value="news"> {news}</TabsContent>
 			<TabsContent value="books"> {books}</TabsContent>
 			<TabsContent value="contents"> {contents}</TabsContent>
 			<TabsContent value="images"> {images}</TabsContent>
