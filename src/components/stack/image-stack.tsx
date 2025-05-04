@@ -59,6 +59,9 @@ export function ImageStack({ data }: Props) {
 							alt={`Image ${image.id}`}
 							height={96}
 							src={`/api/contents/thumbnail/${image.id}`}
+							// FIXME: optimize image for better performance
+							// Note that it may not be needed due to thumbnail size is already small
+							unoptimized
 							width={300}
 						/>
 					</div>
