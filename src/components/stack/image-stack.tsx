@@ -1,9 +1,9 @@
 "use client";
 import { StatusCodeView } from "@/components/card/status-code-view";
 import Image from "next/image";
-import PhotoSwipeLightbox from "photoswipe/lightbox";
-import { useEffect } from "react";
-import "photoswipe/style.css";
+import { useState } from "react";
+import Lightbox from "yet-another-react-lightbox";
+import "yet-another-react-lightbox/styles.css";
 
 type Props = {
 	data: {
@@ -13,45 +13,63 @@ type Props = {
 	}[];
 };
 
-export function ImageStack({ data }: Props) {
-	useEffect(() => {
-		const lightbox = new PhotoSwipeLightbox({
-			gallery: "#image-preview",
-			children: "a",
-			pswpModule: () => import("photoswipe"),
-			bgOpacity: 1,
-		});
-		lightbox.init();
+type SlideImage = {
+	alt?: string;
+	height?: number;
+	src: string;
+	width?: number;
+};
 
-		return () => {
-			lightbox.destroy();
-		};
-	}, []);
+export function ImageStack({ data }: Props) {
+	const [open, setOpen] = useState(false);
+	const [index, setIndex] = useState(0);
 
 	if (data.length === 0) return <StatusCodeView statusCode="204" />;
 
+	const slides: SlideImage[] = data.map((image) => ({
+		src: `/api/contents/original/${image.id}`,
+		width: image.width || undefined,
+		height: image.height || undefined,
+		alt: `Image ${image.id}`,
+	}));
+
+	const handleImageClick = (imageIndex: number) => {
+		setIndex(imageIndex);
+		setOpen(true);
+	};
+
 	return (
-		<div className="pswp-gallery" id="image-preview">
+		<>
 			<div className="grid grid-cols-4 gap-2 p-2 sm:p-4">
-				{data.map((image) => (
-					<a
-						aria-label={`Image ${image.id}`}
-						data-pswp-height={image.height}
-						data-pswp-width={image.width}
-						href={`/api/contents/original/${image.id}`}
+				{data.map((image, i) => (
+					<div
+						aria-label={`Open image ${image.id} in lightbox`}
+						className="cursor-pointer"
 						key={image.id}
-						rel="noreferrer"
-						target="_blank"
+						onClick={() => handleImageClick(i)}
+						onKeyDown={(e) => {
+							if (e.key === "Enter" || e.key === " ") {
+								handleImageClick(i);
+							}
+						}}
+						role="button"
+						tabIndex={0}
 					>
 						<Image
-							alt=""
+							alt={`Image ${image.id}`}
 							height={96}
 							src={`/api/contents/thumbnail/${image.id}`}
 							width={300}
 						/>
-					</a>
+					</div>
 				))}
 			</div>
-		</div>
+			<Lightbox
+				close={() => setOpen(false)}
+				index={index}
+				open={open}
+				slides={slides}
+			/>
+		</>
 	);
 }
