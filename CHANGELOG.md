@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.18.0](https://github.com/s-hirano-ist/s-private/compare/v8.17.0...v8.18.0) (2025-05-04)
+
+
+### Features
+
+* 🎸 add news tab ([927fc3e](https://github.com/s-hirano-ist/s-private/commit/927fc3e97b2b658d35ff0226967cc50359e72331))
+
 ## [8.17.0](https://github.com/s-hirano-ist/s-private/compare/v8.16.0...v8.17.0) (2025-05-04)
 
 
