@@ -11,9 +11,10 @@ type Props = {
 		title: string;
 		url: string;
 	}[];
+	showDeleteButton: boolean;
 };
 
-export function CardStack({ data }: Props) {
+export function CardStack({ data, showDeleteButton }: Props) {
 	if (data === undefined) return <CardStackSkeleton />;
 	if (data.length === 0) return <StatusCodeView statusCode="204" />;
 
@@ -26,6 +27,7 @@ export function CardStack({ data }: Props) {
 						id={d.id}
 						key={d.id}
 						quote={d.quote}
+						showDeleteButton={showDeleteButton}
 						title={d.title}
 						url={d.url}
 					/>

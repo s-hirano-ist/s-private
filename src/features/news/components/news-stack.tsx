@@ -31,7 +31,7 @@ export async function NewsStack() {
 				category: d.Category.name,
 			};
 		});
-		return <CardStack data={unexportedNews} />;
+		return <CardStack data={unexportedNews} showDeleteButton />;
 	} catch (error) {
 		loggerError(
 			"unexpected",

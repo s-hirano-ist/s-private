@@ -9,7 +9,7 @@ export async function AllNewsStack({ page }: Props) {
 	try {
 		const news = await getStaticNews(page);
 
-		return <CardStack data={news} />;
+		return <CardStack data={news} showDeleteButton={false} />;
 	} catch (error) {
 		loggerError(
 			"unexpected",
