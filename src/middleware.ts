@@ -8,8 +8,6 @@ const handleI18nRouting = createMiddleware(routing);
 // FIXME: https://github.com/amannn/next-intl/issues/596 auth((req))の方法である必要性確認
 
 export default async function middleware(request: NextRequest) {
-	// const { pathname } = request.nextUrl;
-
 	const session = await auth();
 	if (!session) {
 		return NextResponse.redirect(new URL("/api/sign-in", request.url));
@@ -20,6 +18,6 @@ export default async function middleware(request: NextRequest) {
 
 export const config = {
 	matcher: [
-		"/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|logo.png|manifest.webmanifest|monitoring).*)",
+		"/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|logo.png|manifest.webmanifest|not-found.png|monitoring).*)",
 	],
 };

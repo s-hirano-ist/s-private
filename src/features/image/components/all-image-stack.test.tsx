@@ -1,5 +1,4 @@
 import { getSelfId } from "@/features/auth/utils/session";
-import { generateUrl } from "@/features/image/actions/generate-url";
 import { AllImageStack } from "@/features/image/components/all-image-stack";
 import prisma from "@/prisma";
 import { render, screen } from "@testing-library/react";
@@ -22,21 +21,6 @@ describe.skip("AllImageStack", () => {
 			{ id: 1 },
 			{ id: 2 },
 		]);
-		(generateUrl as Mock)
-			.mockResolvedValueOnce({
-				success: true,
-				data: {
-					thumbnailSrc: "/image1.png",
-					originalSrc: "/image1.png",
-				},
-			})
-			.mockResolvedValueOnce({
-				success: true,
-				data: {
-					thumbnailSrc: "/image2.png",
-					originalSrc: "/image2.png",
-				},
-			});
 
 		// コンポーネントをレンダリング
 		render(await AllImageStack({ page: 1 }));
@@ -51,9 +35,6 @@ describe.skip("AllImageStack", () => {
 	test("renders 'not-found.png' for failed URL generation", async () => {
 		(getSelfId as Mock).mockResolvedValue("user123");
 		(prisma.staticImages.findMany as Mock).mockResolvedValue([{ id: 1 }]);
-		(generateUrl as Mock).mockResolvedValueOnce({
-			success: false,
-		});
 
 		render(await AllImageStack({ page: 1 }));
 

@@ -101,9 +101,6 @@ importers:
       next-view-transitions:
         specifier: 0.3.4
         version: 0.3.4(next@15.3.1(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      photoswipe:
-        specifier: 5.4.4
-        version: 5.4.4
       pino:
         specifier: 9.6.0
         version: 9.6.0
@@ -152,6 +149,9 @@ importers:
       vaul:
         specifier: 1.1.2
         version: 1.1.2(@types/react-dom@19.1.2(@types/react@19.1.2))(@types/react@19.1.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      yet-another-react-lightbox:
+        specifier: 3.23.0
+        version: 3.23.0(@types/react-dom@19.1.2(@types/react@19.1.2))(@types/react@19.1.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       zod:
         specifier: 3.24.3
         version: 3.24.3
@@ -7397,10 +7397,6 @@ packages:
     resolution: {integrity: sha512-qTAAlrEsl8s4OiEQY69wDvcMIdQN6wdz5ojQiOy6YRMuynxenON0O5oCpJI6lshc6scgAY8qvJ2On/p+CXY0GA==}
     engines: {node: '>=4'}
 
-  photoswipe@5.4.4:
-    resolution: {integrity: sha512-WNFHoKrkZNnvFFhbHL93WDkW3ifwVOXSW3w1UuZZelSmgXpIGiZSNlZJq37rR8YejqME2rHs9EhH9ZvlvFH2NA==}
-    engines: {node: '>= 0.12.0'}
-
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
 
@@ -9126,6 +9122,20 @@ packages:
   yargs@17.7.2:
     resolution: {integrity: sha512-7dSzzRQ++CKnNI/krKnYRV7JKKPUXMEh61soaHKg9mrWEhzFWhFnxPxGl+69cD1Ou63C13NUPCnmIcrvqCuM6w==}
     engines: {node: '>=12'}
+
+  yet-another-react-lightbox@3.23.0:
+    resolution: {integrity: sha512-spSBcHYiNEqvmoZvq53ZyaOUyQeyHXYxgw/X0M8fxTYtC8Cn1Y54UlpR46w16kThROsbc+iox07iiaXUA6ao8Q==}
+    engines: {node: '>=14'}
+    peerDependencies:
+      '@types/react': ^16 || ^17 || ^18 || ^19
+      '@types/react-dom': ^16 || ^17 || ^18 || ^19
+      react: ^16.8.0 || ^17 || ^18 || ^19
+      react-dom: ^16.8.0 || ^17 || ^18 || ^19
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
 
   yn@3.1.1:
     resolution: {integrity: sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==}
@@ -17500,8 +17510,6 @@ snapshots:
       postgres-date: 1.0.7
       postgres-interval: 1.2.0
 
-  photoswipe@5.4.4: {}
-
   picocolors@1.1.1: {}
 
   picomatch@2.3.1: {}
@@ -19488,6 +19496,14 @@ snapshots:
       string-width: 4.2.3
       y18n: 5.0.8
       yargs-parser: 21.1.1
+
+  yet-another-react-lightbox@3.23.0(@types/react-dom@19.1.2(@types/react@19.1.2))(@types/react@19.1.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+    dependencies:
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+    optionalDependencies:
+      '@types/react': 19.1.2
+      '@types/react-dom': 19.1.2(@types/react@19.1.2)
 
   yn@3.1.1:
     optional: true
