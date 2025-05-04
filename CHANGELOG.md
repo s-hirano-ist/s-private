@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.17.0](https://github.com/s-hirano-ist/s-private/compare/v8.16.0...v8.17.0) (2025-05-04)
+
+
+### Features
+
+* 🎸 add optimization to image components ([41621af](https://github.com/s-hirano-ist/s-private/commit/41621afa3c245946307f9e56c520e1f31cb226ee))
+* 🎸 replace photoswipe with yet another react lightbox ([d20a4de](https://github.com/s-hirano-ist/s-private/commit/d20a4de1f4a1c00f6fb88aae429527f9b49016a5))
+* add optimization to image components ([fc42981](https://github.com/s-hirano-ist/s-private/commit/fc429818c964b7bca91217ac8cbd25c35e27690b))
+
+
+### Bug Fixes
+
+* 🐛 add csp option for vercel live ([ad0b061](https://github.com/s-hirano-ist/s-private/commit/ad0b0611bd3a64ef1d179ede8ea85a8eff82725a))
+* 🐛 add trusted hosts to true for prod on localhost ([70b2906](https://github.com/s-hirano-ist/s-private/commit/70b290641035e4462be49cbb8c4ca4503d5f9d6e))
+* 🐛 add vercel.live to csp ([6fe13af](https://github.com/s-hirano-ist/s-private/commit/6fe13af23b5529cb264f7382e2ec011b4cd9666a))
+* 🐛 image unoptimized ([0e7f0ce](https://github.com/s-hirano-ist/s-private/commit/0e7f0cef5a8eb19379b832fa1aa5bbcf78d2b6c2))
+* 🐛 route handler auth not working ([25a57be](https://github.com/s-hirano-ist/s-private/commit/25a57be1265bf3755202c052928706e7360b8b71))
+
 ## [8.16.0](https://github.com/s-hirano-ist/s-private/compare/v8.15.0...v8.16.0) (2025-05-03)
 
 
