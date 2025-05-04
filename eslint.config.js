@@ -182,6 +182,7 @@ export default tsEslint.config(
 						"postcss",
 						"mb",
 						"subdomains",
+						"keyframes",
 					],
 				},
 			],
