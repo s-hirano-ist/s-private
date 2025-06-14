@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.19.0](https://github.com/s-hirano-ist/s-private/compare/v8.18.2...v8.19.0) (2025-06-14)
+
+
+### Features
+
+* 🎸 add google api descriptions on book page ([c2e6231](https://github.com/s-hirano-ist/s-private/commit/c2e6231235e8b1e7fb6f36de548f61a317cedd09))
+* 🎸 change link of static books to isbn ([4d2ec90](https://github.com/s-hirano-ist/s-private/commit/4d2ec90bdd8937b8501fe7305c10ca56c3c5bb9d))
+* change link of static books to isbn ([3efbc1b](https://github.com/s-hirano-ist/s-private/commit/3efbc1b37e85d36da7dd8f969bb56fb6fc286da1))
+
+
+### Bug Fixes
+
+* 🐛 fix imageType prop position in PreviewStack component ([d5733f9](https://github.com/s-hirano-ist/s-private/commit/d5733f91fa26a5ce670756715d6b482fd79988ff))
+
 ## [8.18.2](https://github.com/s-hirano-ist/s-private/compare/v8.18.1...v8.18.2) (2025-05-12)
 
 
