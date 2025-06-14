@@ -54,12 +54,3 @@ export async function fetchContentByTitle(title: string) {
 		cacheStrategy: { ttl: 400, tags: ["staticContents"] },
 	});
 }
-
-// Fetch a specific book by title
-export async function fetchBookByTitle(title: string) {
-	return await prisma.staticBooks.findUnique({
-		where: { title },
-		select: { title: true, markdown: true },
-		cacheStrategy: { ttl: 400, tags: ["staticBooks"] },
-	});
-}

@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { ViewerPreview } from "./viewer-preview";
+import { PreviewCard } from "./preview-card";
 
 const meta = {
-	title: "Components/Card/ViewerPreview",
-	component: ViewerPreview,
+	title: "Components/Card/previewCard",
+	component: PreviewCard,
 	parameters: { layout: "centered" },
 	tags: ["autodocs"],
-} satisfies Meta<typeof ViewerPreview>;
+} satisfies Meta<typeof PreviewCard>;
 
 export default meta;
 
@@ -21,11 +21,12 @@ const uint8ArrayImage = encoder.encode(svg);
 
 export const Default: Story = {
 	args: {
-		image: {
+		previewCardData: {
+			href: "0011223344",
 			title: "sample title",
 			uint8ArrayImage,
 		},
-		path: "/example",
+		basePath: "/example",
 		imageType: "svg",
 	},
 };

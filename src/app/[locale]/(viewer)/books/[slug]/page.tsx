@@ -12,8 +12,8 @@ export async function generateMetadata({
 	const { slug } = await params;
 
 	return {
-		title: `${decodeURIComponent(slug)} | ${PAGE_NAME}`,
-		description: `Private book review of ${decodeURIComponent(slug)}`,
+		title: `${slug} | ${PAGE_NAME}`,
+		description: `Private book review of ${slug}`,
 	};
 }
 

@@ -1,4 +1,4 @@
-import { ImageType } from "@/components/card/viewer-preview";
+import { ImageType } from "@/components/card/preview-card";
 import { UnexpectedError } from "@/error-classes";
 
 const bufferToBase64 = (buffer: Uint8Array) => {

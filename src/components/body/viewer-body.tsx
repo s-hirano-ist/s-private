@@ -2,10 +2,11 @@
 import Loading from "@/components/loading";
 import { markdownToReact } from "@/features/viewer/utils/markdown-to-react";
 import { useQuery } from "@tanstack/react-query";
+import { ReactNode } from "react";
 
-type Props = { markdown: string };
+type Props = { children?: ReactNode; markdown: string };
 
-export function ViewerBody({ markdown }: Props) {
+export function ViewerBody({ children, markdown }: Props) {
 	const { data, isLoading } = useQuery({
 		queryKey: ["viewerBody", markdown.slice(0, 10)],
 		queryFn: async () => await markdownToReact(markdown),
@@ -16,7 +17,8 @@ export function ViewerBody({ markdown }: Props) {
 	if (isLoading) return <Loading />;
 
 	return (
-		<div className="prose prose-sm mx-auto max-w-5xl px-4 py-2 dark:prose-invert">
+		<div className="prose prose-sm mx-auto max-w-5xl px-4 py-2 dark:prose-invert space-y-8">
+			{children}
 			{data}
 		</div>
 	);

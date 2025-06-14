@@ -1,9 +1,9 @@
 "use client";
 import {
-	Image,
 	ImageType,
-	ViewerPreview,
-} from "@/components/card/viewer-preview";
+	PreviewCard,
+	PreviewCardData,
+} from "@/components/card/preview-card";
 import { Input } from "@/components/ui/input";
 import { useTranslations } from "next-intl";
 import { useTransitionRouter } from "next-view-transitions";
@@ -14,12 +14,12 @@ import { useDebouncedCallback } from "use-debounce";
 const PARAM_NAME = "q";
 
 type Props = {
-	images: Image[];
+	basePath: string;
 	imageType: ImageType;
-	path: string;
+	previewCardData: PreviewCardData[];
 };
 
-export function ViewerStack({ images, path, imageType }: Props) {
+export function PreviewStack({ previewCardData, basePath, imageType }: Props) {
 	// TODO: use queryを利用してデータのキャッシュを行う
 
 	const router = useTransitionRouter();
@@ -27,17 +27,17 @@ export function ViewerStack({ images, path, imageType }: Props) {
 	const [searchTerm, setSearchTerm] = useState(
 		searchParams.get(PARAM_NAME) ?? "",
 	);
-	const [searchResults, setSearchResults] = useState(images);
+	const [searchResults, setSearchResults] = useState(previewCardData);
 
 	const fetchSearchResults = useCallback(
 		async (searchString: string) => {
-			if (searchString === "") setSearchResults(images);
+			if (searchString === "") setSearchResults(previewCardData);
 			else
 				setSearchResults(
-					images.filter((image) => image.title.includes(searchString)),
+					previewCardData.filter((image) => image.title.includes(searchString)),
 				);
 		},
-		[images],
+		[previewCardData],
 	);
 
 	const debouncedSearch = useDebouncedCallback(async (searchString: string) => {
@@ -67,13 +67,13 @@ export function ViewerStack({ images, path, imageType }: Props) {
 				value={searchTerm}
 			/>
 			<div className="my-2 grid grid-cols-2 items-stretch gap-4 sm:grid-cols-3 lg:grid-cols-4">
-				{searchResults.map((image) => {
+				{searchResults.map((searchResult) => {
 					return (
-						<ViewerPreview
-							image={image}
+						<PreviewCard
+							basePath={basePath}
 							imageType={imageType}
-							key={image.title}
-							path={path}
+							key={searchResult.title}
+							previewCardData={searchResult}
 						/>
 					);
 				})}
