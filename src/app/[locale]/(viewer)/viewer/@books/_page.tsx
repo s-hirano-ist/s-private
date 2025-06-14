@@ -1,26 +1,30 @@
 import { Unauthorized } from "@/components/card/unauthorized";
 import { CountBadge } from "@/components/count-badge";
-import { ViewerStack } from "@/components/stack/viewer-stack";
+import { PreviewStack } from "@/components/stack/preview-stack";
 import { hasViewerAdminPermission } from "@/features/auth/utils/session";
 import {
 	getAllStaticBooks,
 	getStaticBooksCount,
 } from "@/features/viewer/actions/static-books";
 
-const path = "books";
+const basePath = "books";
 
 export async function SuspensePage() {
 	const hasAdminPermission = await hasViewerAdminPermission();
 
 	const totalImages = await getStaticBooksCount();
-	const images = await getAllStaticBooks();
+	const previewCardData = await getAllStaticBooks();
 
 	return (
 		<>
 			{hasAdminPermission ? (
 				<>
 					<CountBadge label="totalBooks" total={totalImages} />
-					<ViewerStack imageType="webp" images={images} path={path} />
+					<PreviewStack
+						basePath={basePath}
+						imageType="webp"
+						previewCardData={previewCardData}
+					/>
 				</>
 			) : (
 				<Unauthorized />

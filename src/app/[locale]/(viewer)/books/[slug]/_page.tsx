@@ -9,10 +9,8 @@ type Props = { slug: string };
 export async function SuspensePage({ slug }: Props) {
 	const hasAdminPermission = await hasViewerAdminPermission();
 
-	const decodedSlug = decodeURIComponent(slug);
-
 	const data = await prisma.staticBooks.findUnique({
-		where: { title: decodedSlug },
+		where: { ISBN: slug },
 		select: { markdown: true },
 		cacheStrategy: { ttl: 400, tags: ["staticBooks"] },
 	});

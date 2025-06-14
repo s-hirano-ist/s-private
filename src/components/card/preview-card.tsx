@@ -7,25 +7,25 @@ import NextImage from "next/image";
 
 export type ImageType = "webp" | "svg";
 
-export type Image = {
+export type PreviewCardData = {
+	href: string;
 	title: string;
 	uint8ArrayImage: Uint8Array;
 };
 
 type Props = {
-	image: Image;
+	basePath: string;
 	imageType: ImageType;
-	path: string;
+	previewCardData: PreviewCardData;
 };
 
-export function ViewerPreview({ image, path, imageType }: Props) {
-	const { title, uint8ArrayImage } = image;
-	const href = `${path}/${title}` as Route;
+export function PreviewCard({ basePath, previewCardData, imageType }: Props) {
+	const { title, href, uint8ArrayImage } = previewCardData;
 
 	const src = convertUint8ArrayToImgSrc(uint8ArrayImage, imageType);
 
 	return (
-		<Link href={href}>
+		<Link href={`${basePath}/${href}` as Route}>
 			<Card className="flex h-full flex-col justify-evenly">
 				<CardHeader>
 					<CardTitle className="text-center">{title}</CardTitle>
