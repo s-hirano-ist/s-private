@@ -1,6 +1,6 @@
 {
 	"name": "s-private",
-	"version": "8.18.2",
+	"version": "8.19.0",
 	"author": "s-hirano-ist",
 	"description": "Private pages and admin tools for s-hirano-ist.",
 	"packageManager": "pnpm@10.12.1",
