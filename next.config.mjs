@@ -39,7 +39,17 @@ const nextConfig = {
 	},
 	pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
 	output: "standalone",
-	images: { remotePatterns: [{ hostname: process.env.MINIO_HOST }] },
+	images: {
+		domains: ["books.google.com"],
+		remotePatterns: [
+			{ hostname: process.env.MINIO_HOST },
+			{
+				protocol: "https",
+				hostname: "books.google.com",
+				pathname: "/books/content*",
+			},
+		],
+	},
 	async headers() {
 		return [
 			{
