@@ -73,8 +73,8 @@ export const Default: Story = {
 			messages={{ label: { search: "検索" } }}
 		>
 			<PreviewStack
-				imageType={imageType}
 				basePath={args.basePath}
+				imageType={imageType}
 				previewCardData={args.previewCardData}
 			/>
 		</NextIntlClientProvider>
