@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.19.1](https://github.com/s-hirano-ist/s-private/compare/v8.19.0...v8.19.1) (2025-06-24)
+
+
+### Bug Fixes
+
+* 🐛 biome autofix ([fb41cd9](https://github.com/s-hirano-ist/s-private/commit/fb41cd946e39b48ef61a80ebdd4103bbd9514185))
+
 ## [8.19.0](https://github.com/s-hirano-ist/s-private/compare/v8.18.2...v8.19.0) (2025-06-14)
 
 
