@@ -1,12 +1,12 @@
 "use client";
 
-import { searchKnowledge } from "@/features/ai/actions/ai-search";
+import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import type { SearchResult } from "@/features/ai/actions/ai-search";
+import { searchKnowledge } from "@/features/ai/actions/ai-search";
 import { SearchForm } from "@/features/ai/components/search-form";
 import { SearchResults } from "@/features/ai/components/search-results";
-import { useTranslations } from "next-intl";
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
 
 export function AiSearchPage() {
 	const searchParams = useSearchParams();

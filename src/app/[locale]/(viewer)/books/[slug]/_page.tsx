@@ -1,3 +1,6 @@
+import { Route } from "next";
+import NextImage from "next/image";
+import { Link } from "next-view-transitions";
 import { ViewerBody } from "@/components/body/viewer-body";
 import { NotFound } from "@/components/card/not-found";
 import { Unauthorized } from "@/components/card/unauthorized";
@@ -11,9 +14,6 @@ import {
 import { THUMBNAIL_HEIGHT, THUMBNAIL_WIDTH } from "@/constants";
 import { hasViewerAdminPermission } from "@/features/auth/utils/session";
 import prisma from "@/prisma";
-import { Route } from "next";
-import { Link } from "next-view-transitions";
-import NextImage from "next/image";
 
 type Props = { slug: string };
 

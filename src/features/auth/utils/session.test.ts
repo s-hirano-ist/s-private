@@ -1,3 +1,5 @@
+import { Session } from "next-auth";
+import { describe, expect, Mock, test, vi } from "vitest";
 import { UnauthorizedError } from "@/error-classes";
 import { auth } from "@/features/auth/utils/auth";
 import {
@@ -5,8 +7,6 @@ import {
 	hasDumperPostPermission,
 	hasViewerAdminPermission,
 } from "@/features/auth/utils/session";
-import { Session } from "next-auth";
-import { Mock, describe, expect, test, vi } from "vitest";
 
 vi.mock("@/features/auth/utils/auth", () => ({ auth: vi.fn() }));
 

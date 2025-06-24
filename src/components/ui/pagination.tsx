@@ -1,5 +1,3 @@
-import { type ButtonProps, buttonVariants } from "@/components/ui/button";
-import { cn } from "@/utils/tailwindcss";
 import {
 	ChevronLeftIcon,
 	ChevronRightIcon,
@@ -7,6 +5,8 @@ import {
 } from "@radix-ui/react-icons";
 import { Link } from "next-view-transitions";
 import * as React from "react";
+import { type ButtonProps, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/utils/tailwindcss";
 
 function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
 	return (

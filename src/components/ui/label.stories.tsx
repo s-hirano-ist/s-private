@@ -1,5 +1,5 @@
-import { Label } from "@/components/ui/label";
 import type { Meta, StoryObj } from "@storybook/react";
+import { Label } from "@/components/ui/label";
 import { Input } from "./input";
 
 const meta = {

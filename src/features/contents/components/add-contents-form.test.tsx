@@ -1,7 +1,8 @@
-import { AddContentsForm } from "@/features/contents/components/add-contents-form";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import { describe, expect, test, vi } from "vitest";
+import { AddContentsForm } from "@/features/contents/components/add-contents-form";
+
 const messages = {
 	label: {
 		save: "保存",

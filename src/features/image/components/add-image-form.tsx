@@ -1,11 +1,11 @@
 "use client";
+import { useTranslations } from "next-intl";
+import { useActionState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { addImage } from "@/features/image/actions/add-image";
-import { useTranslations } from "next-intl";
-import { useActionState } from "react";
-import { toast } from "sonner";
 
 export function AddImageForm() {
 	const label = useTranslations("label");

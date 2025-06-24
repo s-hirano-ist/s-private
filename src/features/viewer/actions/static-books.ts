@@ -1,5 +1,5 @@
-import prisma from "@/prisma";
 import { cache } from "react";
+import prisma from "@/prisma";
 
 const _getAllStaticBooks = async () => {
 	const books = await prisma.staticBooks.findMany({

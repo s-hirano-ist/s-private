@@ -1,6 +1,6 @@
+import { beforeEach, describe, expect, test, vi } from "vitest";
 import { PushoverError } from "@/error-classes";
 import { loggerError } from "@/pino";
-import { beforeEach, describe, expect, test, vi } from "vitest";
 import { sendPushoverMessage } from "./fetch-message";
 
 // FIXME: GitHub actionsでURLがマスキングされて見えなくなる問題

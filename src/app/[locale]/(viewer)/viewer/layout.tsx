@@ -1,7 +1,7 @@
-import { PAGE_NAME } from "@/constants";
-import { RootTab } from "@/features/viewer/components/root-tab";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { PAGE_NAME } from "@/constants";
+import { RootTab } from "@/features/viewer/components/root-tab";
 
 const displayName = "VIEWER";
 

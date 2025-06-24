@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Unauthorized } from "@/components/card/unauthorized";
 import { CountBadge } from "@/components/count-badge";
 import { CardStackSkeleton } from "@/components/stack/card-stack-skeleton";
@@ -5,7 +6,6 @@ import { Pagination } from "@/components/stack/pagination";
 import { hasViewerAdminPermission } from "@/features/auth/utils/session";
 import { AllNewsStack } from "@/features/news/components/all-news-stack";
 import { getStaticNewsCount } from "@/features/viewer/actions/static-news";
-import { Suspense } from "react";
 
 type Props = { currentPage: number };
 

@@ -1,8 +1,8 @@
+import { render, screen } from "@testing-library/react";
+import { describe, expect, Mock, test, vi } from "vitest";
 import { getSelfId } from "@/features/auth/utils/session";
 import { NewsStack } from "@/features/news/components/news-stack";
 import prisma from "@/prisma";
-import { render, screen } from "@testing-library/react";
-import { Mock, describe, expect, test, vi } from "vitest";
 
 vi.mock("@/features/auth/utils/session", () => ({
 	getSelfId: vi.fn(),

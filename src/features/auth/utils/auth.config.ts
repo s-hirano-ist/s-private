@@ -1,6 +1,6 @@
-import { env } from "@/env";
 import type { NextAuthConfig } from "next-auth";
 import Auth0 from "next-auth/providers/auth0";
+import { env } from "@/env";
 
 export default {
 	providers: [

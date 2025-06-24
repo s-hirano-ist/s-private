@@ -1,6 +1,6 @@
+import { useTranslations } from "next-intl";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useTranslations } from "next-intl";
 
 type Props = { showCategory?: boolean; showSubmitButton?: boolean };
 

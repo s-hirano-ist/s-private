@@ -1,4 +1,16 @@
 "use client";
+import {
+	BotIcon,
+	FileUpIcon,
+	NotebookIcon,
+	SearchIcon,
+	SendIcon,
+} from "lucide-react";
+import type { Route } from "next";
+import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
+import { useTranslations } from "next-intl";
+import { type ReactNode, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Drawer,
@@ -11,18 +23,6 @@ import {
 import { UtilButtons } from "@/features/dump/components/util-buttons";
 import { Link } from "@/i18n/routing";
 import { cn } from "@/utils/tailwindcss";
-import {
-	BotIcon,
-	FileUpIcon,
-	NotebookIcon,
-	SearchIcon,
-	SendIcon,
-} from "lucide-react";
-import type { Route } from "next";
-import { signOut } from "next-auth/react";
-import { useTranslations } from "next-intl";
-import { usePathname } from "next/navigation";
-import { type ReactNode, useState } from "react";
 
 export function Footer() {
 	const [open, setOpen] = useState(false);

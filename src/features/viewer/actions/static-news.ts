@@ -1,6 +1,6 @@
+import { cache } from "react";
 import { PAGE_SIZE } from "@/constants";
 import prisma from "@/prisma";
-import { cache } from "react";
 
 const _getStaticNews = async (page: number) => {
 	return await prisma.staticNews.findMany({

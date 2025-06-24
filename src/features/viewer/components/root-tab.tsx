@@ -1,8 +1,8 @@
 "use client";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useTransitionRouter } from "next-view-transitions";
 import { useSearchParams } from "next/navigation";
+import { useTransitionRouter } from "next-view-transitions";
 import { type ReactNode, useEffect, useState } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const TABS = {
 	news: "NEWS",

@@ -1,5 +1,5 @@
-import { isValidUrl } from "@/utils/validate-url";
 import { z } from "zod";
+import { isValidUrl } from "@/utils/validate-url";
 
 export const contentsSchema = z.object({
 	title: z

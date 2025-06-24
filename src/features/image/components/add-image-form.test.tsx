@@ -1,7 +1,7 @@
-import { AddImageForm } from "@/features/image/components/add-image-form";
 import { render, screen } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import { describe, expect, test } from "vitest";
+import { AddImageForm } from "@/features/image/components/add-image-form";
 
 describe("AddImageForm", () => {
 	test("renders input fields and buttons correctly", () => {

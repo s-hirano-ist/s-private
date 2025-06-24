@@ -1,5 +1,6 @@
 "use server";
 import "server-only";
+import { revalidatePath } from "next/cache";
 import { NotAllowedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
 import {
@@ -13,7 +14,6 @@ import prisma from "@/prisma";
 import type { ServerAction } from "@/types";
 import { sendPushoverMessage } from "@/utils/fetch-message";
 import { formatCreateNewsMessage } from "@/utils/format-for-notification";
-import { revalidatePath } from "next/cache";
 
 type News = {
 	category: string;

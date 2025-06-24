@@ -1,5 +1,6 @@
 "use server";
 import "server-only";
+import { revalidatePath } from "next/cache";
 import { NotAllowedError, UnexpectedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
 import {
@@ -12,7 +13,6 @@ import prisma from "@/prisma";
 import type { ServerAction } from "@/types";
 import { sendPushoverMessage } from "@/utils/fetch-message";
 import { formatChangeStatusMessage } from "@/utils/format-for-notification";
-import { revalidatePath } from "next/cache";
 
 async function updateSelfNewsStatus(): Promise<Status> {
 	const userId = await getSelfId();
