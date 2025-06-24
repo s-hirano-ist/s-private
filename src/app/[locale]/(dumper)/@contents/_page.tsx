@@ -1,9 +1,9 @@
+import { Suspense } from "react";
 import { CardStackSkeleton } from "@/components/stack/card-stack-skeleton";
 import { Separator } from "@/components/ui/separator";
 import { hasDumperPostPermission } from "@/features/auth/utils/session";
 import { AddContentsForm } from "@/features/contents/components/add-contents-form";
 import { ContentsStack } from "@/features/contents/components/contents-stack";
-import { Suspense } from "react";
 
 export async function SuspensePage() {
 	const hasPostPermission = await hasDumperPostPermission();

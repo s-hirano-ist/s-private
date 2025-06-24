@@ -1,6 +1,6 @@
+import { describe, expect, test } from "vitest";
 import { InvalidFormatError } from "@/error-classes";
 import { validateNews } from "@/features/news/utils/validate-news";
-import { describe, expect, test } from "vitest";
 
 describe("validateNews", () => {
 	test("should validate correct news data", () => {

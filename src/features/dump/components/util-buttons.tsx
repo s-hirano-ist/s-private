@@ -1,11 +1,11 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { UTIL_URLS } from "@/constants";
-import { redirect } from "@/i18n/routing";
+import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { Link } from "next-view-transitions";
-import { usePathname } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { UTIL_URLS } from "@/constants";
+import { redirect } from "@/i18n/routing";
 
 type Props = { handleReload: () => void; onSignOutSubmit: () => Promise<void> };
 

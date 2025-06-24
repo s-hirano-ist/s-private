@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button";
 import type { Route } from "next";
 import { Link } from "next-view-transitions";
+import { Button } from "@/components/ui/button";
 
 export function NotFound() {
 	return (

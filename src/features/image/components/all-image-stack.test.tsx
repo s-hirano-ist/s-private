@@ -1,8 +1,8 @@
+import { render, screen } from "@testing-library/react";
+import { describe, expect, Mock, test, vi } from "vitest";
 import { getSelfId } from "@/features/auth/utils/session";
 import { AllImageStack } from "@/features/image/components/all-image-stack";
 import prisma from "@/prisma";
-import { render, screen } from "@testing-library/react";
-import { Mock, describe, expect, test, vi } from "vitest";
 
 // 各依存関数をモック化
 vi.mock("@/features/auth/utils/session", () => ({

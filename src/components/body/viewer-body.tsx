@@ -1,8 +1,8 @@
 "use client";
-import Loading from "@/components/loading";
-import { markdownToReact } from "@/features/viewer/utils/markdown-to-react";
 import { useQuery } from "@tanstack/react-query";
 import { ReactNode } from "react";
+import Loading from "@/components/loading";
+import { markdownToReact } from "@/features/viewer/utils/markdown-to-react";
 
 type Props = { children?: ReactNode; markdown: string };
 

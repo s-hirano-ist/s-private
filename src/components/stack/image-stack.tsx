@@ -1,8 +1,8 @@
 "use client";
-import { StatusCodeView } from "@/components/card/status-code-view";
 import Image from "next/image";
 import { useState } from "react";
 import Lightbox from "yet-another-react-lightbox";
+import { StatusCodeView } from "@/components/card/status-code-view";
 import "yet-another-react-lightbox/styles.css";
 
 type Props = {

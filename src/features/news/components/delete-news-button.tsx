@@ -1,4 +1,8 @@
 "use client";
+import { TrashIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -9,10 +13,6 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { deleteNews } from "@/features/news/actions/delete-news";
-import { TrashIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { toast } from "sonner";
 
 type Props = {
 	id: number;

@@ -1,6 +1,6 @@
 import "server-only";
-import { env } from "@/env";
 import * as Minio from "minio";
+import { env } from "@/env";
 
 export const minioClient = new Minio.Client({
 	endPoint: env.MINIO_HOST,

@@ -1,6 +1,6 @@
+import NextAuth, { type DefaultSession } from "next-auth";
 import { env } from "@/env";
 import { UnexpectedError } from "@/error-classes";
-import NextAuth, { type DefaultSession } from "next-auth";
 import authConfig from "./auth.config";
 
 type Role = "viewer" | "dumper";

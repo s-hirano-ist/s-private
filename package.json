@@ -83,7 +83,7 @@
 		"zod": "3.25.67"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "1.9.4",
+		"@biomejs/biome": "2.0.5",
 		"@chromatic-com/storybook": "3.2.7",
 		"@eslint/compat": "1.2.8",
 		"@eslint/config-inspector": "1.0.2",

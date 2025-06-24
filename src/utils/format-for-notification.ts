@@ -29,7 +29,11 @@ export function formatCreateContentsMessage({
 	title,
 	quote,
 	url,
-}: { quote: string | null; title: string; url: string }) {
+}: {
+	quote: string | null;
+	title: string;
+	url: string;
+}) {
 	return `【CONTENTS】\n\nコンテンツ\ntitle: ${title} \nquote: ${quote} \nurl: ${url}\nの登録ができました`;
 }
 

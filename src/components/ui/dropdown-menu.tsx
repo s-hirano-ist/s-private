@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@/utils/tailwindcss";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import {
 	CheckIcon,
@@ -8,6 +7,7 @@ import {
 	DotFilledIcon,
 } from "@radix-ui/react-icons";
 import * as React from "react";
+import { cn } from "@/utils/tailwindcss";
 
 const DropdownMenu = DropdownMenuPrimitive.Root;
 

@@ -1,6 +1,6 @@
-import { AddNewsForm } from "@/features/news/components/add-news-form";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, test, vi } from "vitest";
+import { AddNewsForm } from "@/features/news/components/add-news-form";
 
 const mockCategories = [
 	{ id: 1, name: "A" },

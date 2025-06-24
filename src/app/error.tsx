@@ -1,13 +1,16 @@
 "use client"; // Error components must be Client Components
-import { Button } from "@/components/ui/button";
-import { loggerError } from "@/pino";
 import { captureException } from "@sentry/nextjs";
 import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { loggerError } from "@/pino";
 
 export default function Page({
 	error,
 	reset,
-}: { error: Error & { digest?: string }; reset: () => void }) {
+}: {
+	error: Error & { digest?: string };
+	reset: () => void;
+}) {
 	useEffect(() => {
 		loggerError(
 			"Unexpected error occurred.",

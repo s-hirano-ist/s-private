@@ -1,5 +1,5 @@
-import prisma from "@/prisma";
 import { cache } from "react";
+import prisma from "@/prisma";
 
 // Fetch all static contents for RAG knowledge base
 const _getAllStaticContentsForKnowledge = async () => {

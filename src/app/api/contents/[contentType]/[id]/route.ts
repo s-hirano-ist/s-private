@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+import { NextResponse } from "next/server";
 import {
 	NOT_FOUND_IMAGE_PATH,
 	ORIGINAL_IMAGE_PATH,
@@ -8,8 +10,6 @@ import { NotAllowedError } from "@/error-classes";
 import { auth } from "@/features/auth/utils/auth";
 import { minioClient } from "@/minio";
 import { loggerError } from "@/pino";
-import { redirect } from "next/navigation";
-import { NextResponse } from "next/server";
 
 export const GET = auth(
 	async (

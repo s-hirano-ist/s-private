@@ -1,14 +1,16 @@
-import Loading from "@/components/loading";
-import { PAGE_NAME } from "@/constants";
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import Loading from "@/components/loading";
+import { PAGE_NAME } from "@/constants";
 import { SuspensePage } from "./_page";
 
 type Params = Promise<{ slug: string }>;
 
 export async function generateMetadata({
 	params,
-}: { params: Params }): Promise<Metadata> {
+}: {
+	params: Params;
+}): Promise<Metadata> {
 	const { slug } = await params;
 
 	return {

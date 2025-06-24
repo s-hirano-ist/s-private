@@ -1,7 +1,7 @@
 "use server";
 import "server-only";
-import { Prisma } from "@/generated";
 import { AuthError } from "next-auth";
+import { Prisma } from "@/generated";
 import {
 	FileNotAllowedError,
 	InvalidFormatError,

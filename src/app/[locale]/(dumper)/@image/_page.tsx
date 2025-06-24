@@ -1,9 +1,9 @@
+import { Suspense } from "react";
 import { ImageStackSkeleton } from "@/components/stack/image-stack-skeleton";
 import { Separator } from "@/components/ui/separator";
 import { hasDumperPostPermission } from "@/features/auth/utils/session";
 import { AddImageForm } from "@/features/image/components/add-image-form";
 import { ImageStack } from "@/features/image/components/image-stack";
-import { Suspense } from "react";
 
 export async function SuspensePage() {
 	const hasPostPermission = await hasDumperPostPermission();

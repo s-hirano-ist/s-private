@@ -1,5 +1,5 @@
-import QueryClientProvider from "@/components/provider/query-provider";
 import type { Meta, StoryObj } from "@storybook/react";
+import QueryClientProvider from "@/components/provider/query-provider";
 import { ViewerBody } from "./viewer-body";
 
 const meta = {

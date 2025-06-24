@@ -1,3 +1,4 @@
+import { Link } from "next-view-transitions";
 import { Badge } from "@/components/ui/badge";
 import {
 	Card,
@@ -8,7 +9,6 @@ import {
 } from "@/components/ui/card";
 import { DeleteNewsButton } from "@/features/news/components/delete-news-button";
 import { validateUrl } from "@/utils/validate-url";
-import { Link } from "next-view-transitions";
 
 type Props = {
 	category?: string;
