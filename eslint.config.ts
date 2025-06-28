@@ -5,8 +5,9 @@ import markdown from "@eslint/markdown";
 import vitestPlugin from "@vitest/eslint-plugin";
 // import importPlugin from "eslint-plugin-import";
 import boundariesPlugin from "eslint-plugin-boundaries";
-import perfectionistPlugin from "eslint-plugin-perfectionist";
+import jsoncPlugin from "eslint-plugin-jsonc";
 // import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
+import perfectionistPlugin from "eslint-plugin-perfectionist";
 import reactPlugin from "eslint-plugin-react";
 import reactHookPlugin from "eslint-plugin-react-hooks";
 import spellcheckPlugin from "eslint-plugin-spellcheck";
@@ -14,6 +15,7 @@ import storybookPlugin from "eslint-plugin-storybook";
 // import tailwindcssPlugin from "eslint-plugin-tailwindcss";
 import unicornPlugin from "eslint-plugin-unicorn";
 import unusedImportsPlugin from "eslint-plugin-unused-imports";
+import ymlPlugin from "eslint-plugin-yml";
 import globals from "globals";
 import tsEslint from "typescript-eslint";
 
@@ -24,7 +26,21 @@ const compat = new FlatCompat({
 });
 
 export default tsEslint.config(
-	{ ignores: ["src/generated/**/*"] },
+	{
+		ignores: [
+			"src/generated/**/*",
+			// Ignore build outputs and dependencies
+			"node_modules/**/*",
+			".next/**/*",
+			"dist/**/*",
+			"build/**/*",
+			// Ignore coverage reports
+			"coverage/**/*",
+			".storybook-coverage/**/*",
+			// Ignore files that Biome handles
+			// Note: ESLint focuses on logic/architecture, Biome handles formatting
+		],
+	},
 	{
 		languageOptions: {
 			globals: globals.browser,
@@ -34,7 +50,7 @@ export default tsEslint.config(
 	tsEslint.configs.strict,
 	reactPlugin.configs.flat.recommended,
 	reactPlugin.configs.flat["jsx-runtime"], // https://github.com/jsx-eslint/eslint-plugin-react?tab=readme-ov-file#flat-configs
-	// jsxA11yPlugin.flatConfigs.recommended,
+	// jsx-a11y is included in Next.js config, so we avoid duplicate registration
 	vitestPlugin.configs.recommended,
 	...markdown.configs.recommended,
 	...compat.extends("plugin:react-hooks/recommended"),
@@ -75,7 +91,19 @@ export default tsEslint.config(
 
 	{
 		rules: {
-			"no-restricted-imports": ["error", { patterns: ["../"] }],
+			// Prevent relative imports that go up directories to enforce proper architecture
+			"no-restricted-imports": [
+				"error",
+				{
+					patterns: [
+						{
+							group: ["../*", "../../*", "../../../*"],
+							message:
+								"Use absolute imports instead of relative imports that go up directories. This enforces proper architecture boundaries.",
+						},
+					],
+				},
+			],
 		},
 	},
 	{
@@ -125,6 +153,7 @@ export default tsEslint.config(
 					minLength: 5, // 5 文字以上の単語をチェック
 					// チェックをスキップする単語の配列
 					skipWords: [
+						"jsonc",
 						"prisma",
 						"minio",
 						"favicon",
@@ -388,7 +417,39 @@ export default tsEslint.config(
 		},
 	},
 
-	// NO USE BECAUSE BIOME DOES THE SAME THING
+	// JSON設定
+	...jsoncPlugin.configs["flat/recommended-with-jsonc"],
+	{
+		files: ["**/*.json", "**/*.jsonc"],
+		rules: {
+			"jsonc/sort-keys": "error", // JSONのキーをソート
+			"jsonc/no-comments": "off", // .jsonc ファイルではコメントを許可
+		},
+	},
+
+	// YAML設定
+	...ymlPlugin.configs["flat/recommended"],
+	{
+		files: ["**/*.yml", "**/*.yaml"],
+		rules: {
+			"yml/sort-keys": "error", // YAMLのキーをソート
+			"yml/no-empty-mapping-value": "error", // 空のマッピング値を禁止
+		},
+	},
+
+	/**
+	 * Note: Import ordering and formatting rules are handled by Biome
+	 * ESLint focuses on logic, architecture, and code quality rules
+	 * Biome handles:
+	 * - Import organization (organizeImports.enabled: true)
+	 * - Code formatting
+	 * - Basic syntax checks
+	 *
+	 * This separation provides:
+	 * - Better performance (Biome is faster for formatting)
+	 * - Clear responsibilities
+	 * - No conflicting rules
+	 */
 	// {
 	// 	// eslint-plugin-import の設定
 	// 	plugins: { import: importPlugin },
