@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.20.0](https://github.com/s-hirano-ist/s-private/compare/v8.19.1...v8.20.0) (2025-06-28)
+
+
+### Features
+
+* add claude code related ([ff6e348](https://github.com/s-hirano-ist/s-private/commit/ff6e34817d517629c5126984fb220be86d7a17f2))
+
+
+### Performance Improvements
+
+* update performance of tabs ([1fc00b7](https://github.com/s-hirano-ist/s-private/commit/1fc00b75f955ad0ed12d56e6dc024ed8b33976fc))
+
 ## [8.19.1](https://github.com/s-hirano-ist/s-private/compare/v8.19.0...v8.19.1) (2025-06-24)
 
 
