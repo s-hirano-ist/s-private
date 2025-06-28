@@ -1,0 +1,15 @@
+{
+	"functions": {
+		"src/app/api/**/*.ts": {
+			"maxDuration": 10
+		},
+		"src/app/[locale]/**/*.tsx": {
+			"maxDuration": 15
+		},
+		"src/features/*/actions/*.ts": {
+			"maxDuration": 10
+		}
+	},
+	"regions": ["nrt1"],
+	"framework": "nextjs"
+}
