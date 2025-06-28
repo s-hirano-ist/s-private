@@ -3,6 +3,7 @@ import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { Link } from "next-view-transitions";
+import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { UTIL_URLS } from "@/constants";
 import { redirect } from "@/i18n/routing";
@@ -16,22 +17,28 @@ const removeLangPrefix = (pathname: string): string => {
 export function UtilButtons({ handleReload, onSignOutSubmit }: Props) {
 	const pathname = usePathname();
 	const { setTheme, theme } = useTheme();
-
-	const handleTheme = () => {
-		if (theme === "light") setTheme("dark");
-		else setTheme("light");
-	};
-
 	const locale = useLocale();
-
-	const handleLanguage = () => {
-		redirect({
-			href: removeLangPrefix(pathname),
-			locale: locale === "en" ? "ja" : "en",
-		});
-	};
-
 	const t = useTranslations("utils");
+
+	const handleTheme = useMemo(
+		() => () => {
+			if (theme === "light") setTheme("dark");
+			else setTheme("light");
+		},
+		[theme, setTheme],
+	);
+
+	const handleLanguage = useMemo(
+		() => () => {
+			redirect({
+				href: removeLangPrefix(pathname),
+				locale: locale === "en" ? "ja" : "en",
+			});
+		},
+		[pathname, locale],
+	);
+
+	const shouldShowSignOut = useMemo(() => pathname !== "/auth", [pathname]);
 
 	return (
 		<div className="grid grid-cols-2 gap-2 px-2 sm:grid-cols-4">
@@ -45,7 +52,7 @@ export function UtilButtons({ handleReload, onSignOutSubmit }: Props) {
 			<Button onClick={handleReload}>{t("reload")}</Button>
 			<Button onClick={handleTheme}>{t("appearance")}</Button>
 			<Button onClick={handleLanguage}>{t("language")}</Button>
-			{pathname !== "/auth" && (
+			{shouldShowSignOut && (
 				<Button data-testid="log-out-button" onClick={onSignOutSubmit}>
 					{t("signOut")}
 				</Button>
