@@ -10,7 +10,7 @@ import type { Route } from "next";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, Suspense, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Drawer,
@@ -134,10 +134,14 @@ export function Footer() {
 						<DrawerTitle>{t("utilsTitle")}</DrawerTitle>
 						<DrawerDescription>{t("utilsDescription")}</DrawerDescription>
 					</DrawerHeader>
-					<UtilButtons
-						handleReload={handleReload}
-						onSignOutSubmit={onSignOutSubmit}
-					/>
+					<Suspense
+						fallback={<div className="h-32 animate-pulse bg-gray-100" />}
+					>
+						<UtilButtons
+							handleReload={handleReload}
+							onSignOutSubmit={onSignOutSubmit}
+						/>
+					</Suspense>
 				</DrawerContent>
 			</Drawer>
 		</footer>
