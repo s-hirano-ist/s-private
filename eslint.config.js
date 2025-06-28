@@ -38,6 +38,7 @@ export default tsEslint.config(
 	vitestPlugin.configs.recommended,
 	...markdown.configs.recommended,
 	...compat.extends("plugin:react-hooks/recommended"),
+	// FIXME: not working with eslint inspector
 	...compat.extends("next"),
 	{
 		settings: {
