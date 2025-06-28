@@ -1,3 +1,4 @@
+import css from "@eslint/css";
 import { FlatCompat } from "@eslint/eslintrc";
 import js from "@eslint/js";
 import markdown from "@eslint/markdown";
@@ -213,6 +214,19 @@ export default tsEslint.config(
 	},
 	// FIXME: not working
 	// ...tailwindcssPlugin.configs["flat/recommended"],
+
+	// CSS設定
+	{
+		files: ["**/*.css"],
+		ignores: ["**/globals.css"], // Tailwind CSS 4の新しい構文のため除外
+		plugins: {
+			css,
+		},
+		language: "css/css",
+		rules: {
+			"css/use-baseline": ["error", { available: "widely" }],
+		},
+	},
 
 	// NO USE BECAUSE BIOME DOES THE SAME THING
 	// {
