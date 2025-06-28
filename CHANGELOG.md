@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.20.1](https://github.com/s-hirano-ist/s-private/compare/v8.20.0...v8.20.1) (2025-06-28)
+
+
+### Bug Fixes
+
+* await in search params ([acdc8ad](https://github.com/s-hirano-ist/s-private/commit/acdc8ada786578459e10f555cd043334b7150d22))
+* eslint inspector bug ([61eef20](https://github.com/s-hirano-ist/s-private/commit/61eef20ce637382129cbf4e838aefa87c61d7a44))
+* eslint settings ([a283728](https://github.com/s-hirano-ist/s-private/commit/a283728ea45dc32c1ca1cbd55a4c1887d7021980))
+
+
+### Performance Improvements
+
+* add analyzer ([033f45a](https://github.com/s-hirano-ist/s-private/commit/033f45ace9a88c47baedbb12840d414942b977e8))
+* add edge to healthcheck ([ec84ab2](https://github.com/s-hirano-ist/s-private/commit/ec84ab2261bd06986b03bc12179475ac6f29b48e))
+* add more performance ([4b8131c](https://github.com/s-hirano-ist/s-private/commit/4b8131c648a25884801d1d9783c645ef4a4572ad))
+* footer performance updates ([eb93945](https://github.com/s-hirano-ist/s-private/commit/eb93945fd0427351a0bd2403861b7d5da3cc2287))
+* instantly change tabs ([54e8083](https://github.com/s-hirano-ist/s-private/commit/54e8083a3c03f5214b70f653a05725d177c8c412))
+* use vercel.json ([e2a4c4e](https://github.com/s-hirano-ist/s-private/commit/e2a4c4e178df90b2dd6ff595f37781b8f6b64b92))
+
 ## [8.20.0](https://github.com/s-hirano-ist/s-private/compare/v8.19.1...v8.20.0) (2025-06-28)
 
 
