@@ -27,10 +27,10 @@ export function RootTab({ news, books, contents, images }: Props) {
 	const [tab, setTab] = useState(searchParams.get("tab") ?? DEFAULT_TAB);
 
 	const handleTabChange = (value: string) => {
+		setTab(value);
 		const params = new URLSearchParams(searchParams);
 		params.set("tab", value);
 		router.replace(`?${params.toString()}`);
-		setTab(value);
 	};
 
 	useEffect(() => {
