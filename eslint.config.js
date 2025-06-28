@@ -4,6 +4,7 @@ import js from "@eslint/js";
 import markdown from "@eslint/markdown";
 import vitestPlugin from "@vitest/eslint-plugin";
 // import importPlugin from "eslint-plugin-import";
+import boundariesPlugin from "eslint-plugin-boundaries";
 import perfectionistPlugin from "eslint-plugin-perfectionist";
 // import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
 import reactPlugin from "eslint-plugin-react";
@@ -212,6 +213,164 @@ export default tsEslint.config(
 			"unicorn/no-useless-spread": "off",
 		},
 	},
+
+	// Boundaries plugin configuration for strict dependencies
+	{
+		plugins: { boundaries: boundariesPlugin },
+		settings: {
+			"boundaries/elements": [
+				{
+					type: "app",
+					pattern: [
+						"src/app/**/*",
+						"src/pages/**/*",
+						"src/*.ts",
+						"src/*.tsx",
+						"src/i18n/**/*",
+					],
+				},
+				{
+					type: "feature-ai",
+					pattern: "src/features/ai/**/*",
+				},
+				{
+					type: "feature-auth",
+					pattern: "src/features/auth/**/*",
+				},
+				{
+					type: "feature-contents",
+					pattern: "src/features/contents/**/*",
+				},
+				{
+					type: "feature-dump",
+					pattern: "src/features/dump/**/*",
+				},
+				{
+					type: "feature-image",
+					pattern: "src/features/image/**/*",
+				},
+				{
+					type: "feature-news",
+					pattern: "src/features/news/**/*",
+				},
+				{
+					type: "feature-viewer",
+					pattern: "src/features/viewer/**/*",
+				},
+				{
+					type: "shared-components",
+					pattern: "src/components/**/*",
+				},
+				{
+					type: "utils",
+					pattern: ["src/utils/**/*", "src/lib/**/*"],
+				},
+			],
+		},
+		rules: {
+			// Each feature domain is isolated - no cross-feature dependencies allowed
+			"boundaries/element-types": [
+				"error",
+				{
+					default: "disallow",
+					rules: [
+						{
+							from: "app",
+							allow: [
+								"feature-ai",
+								"feature-auth",
+								"feature-contents",
+								"feature-dump",
+								"feature-image",
+								"feature-news",
+								"feature-viewer",
+								"shared-components",
+								"utils",
+							],
+						},
+						{
+							from: "shared-components",
+							allow: [
+								"feature-ai",
+								"feature-auth",
+								"feature-contents",
+								"feature-dump",
+								"feature-image",
+								"feature-news",
+								"feature-viewer",
+								"shared-components",
+								"utils",
+							],
+						},
+						{
+							from: "utils",
+							allow: ["utils"],
+						},
+						// Each feature can only access itself, shared components, utils, and specific architectural dependencies
+						{
+							from: "feature-ai",
+							allow: [
+								"feature-ai",
+								"feature-auth",
+								"shared-components",
+								"utils",
+							],
+						},
+						{
+							from: "feature-auth",
+							allow: ["feature-auth", "shared-components", "utils"],
+						},
+						{
+							from: "feature-contents",
+							allow: [
+								"feature-contents",
+								"feature-auth",
+								"feature-dump",
+								"shared-components",
+								"utils",
+							],
+						},
+						{
+							from: "feature-dump",
+							allow: [
+								"feature-dump",
+								"feature-contents",
+								"feature-image",
+								"feature-news",
+								"shared-components",
+								"utils",
+							],
+						},
+						{
+							from: "feature-image",
+							allow: [
+								"feature-image",
+								"feature-auth",
+								"shared-components",
+								"utils",
+							],
+						},
+						{
+							from: "feature-news",
+							allow: [
+								"feature-news",
+								"feature-auth",
+								"feature-dump",
+								"feature-viewer",
+								"shared-components",
+								"utils",
+							],
+						},
+						{
+							from: "feature-viewer",
+							allow: ["feature-viewer", "shared-components", "utils"],
+						},
+					],
+				},
+			],
+		},
+	},
+
 	// FIXME: not working
 	// ...tailwindcssPlugin.configs["flat/recommended"],
 
