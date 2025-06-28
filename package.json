@@ -85,7 +85,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.0.6",
-		"@chromatic-com/storybook": "3.2.7",
+		"@chromatic-com/storybook": "4.0.1",
 		"@eslint/compat": "1.2.8",
 		"@eslint/config-inspector": "1.0.2",
 		"@eslint/eslintrc": "3.3.1",
