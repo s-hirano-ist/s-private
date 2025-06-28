@@ -29,7 +29,8 @@
 		"security": "pnpm audit",
 		"actionlint": "actionlint",
 		"ghalint": "ghalint run",
-		"depcheck": "depcheck"
+		"depcheck": "depcheck",
+		"analyze": "ANALYZE=true pnpm build"
 	},
 	"dependencies": {
 		"@hookform/resolvers": "5.0.1",
@@ -90,6 +91,7 @@
 		"@eslint/eslintrc": "3.3.1",
 		"@eslint/js": "9.27.0",
 		"@eslint/markdown": "6.4.0",
+		"@next/bundle-analyzer": "15.3.4",
 		"@playwright/test": "1.52.0",
 		"@storybook/addon-a11y": "8.6.14",
 		"@storybook/addon-coverage": "2.0.0",
