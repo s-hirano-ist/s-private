@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { AxeIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "./label";

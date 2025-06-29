@@ -1,4 +1,4 @@
-import type { Preview } from "@storybook/react";
+import type { Preview } from "@storybook/nextjs-vite";
 // eslint-disable-next-line no-restricted-imports
 import "../src/app/globals.css";
 
@@ -10,7 +10,12 @@ const preview = {
 				date: /Date$/i,
 			},
 		},
+
 		nextjs: { appDirectory: true },
+
+		docs: {
+			codePanel: true,
+		},
 	},
 } satisfies Preview;
 

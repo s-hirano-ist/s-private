@@ -124,9 +124,11 @@ export default tsEslint.config(
 					skipWords: [
 						"prisma",
 						"minio",
+						"onboarding",
 						"favicon",
 						"pathname",
 						"sitemap",
+						"cssresources",
 						"matcher",
 						"webmanifest",
 						"nodejs",
