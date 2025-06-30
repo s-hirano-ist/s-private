@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.20.2](https://github.com/s-hirano-ist/s-private/compare/v8.20.1...v8.20.2) (2025-06-30)
+
+
+### Bug Fixes
+
+* delete vercel.json ([0884377](https://github.com/s-hirano-ist/s-private/commit/088437734cf73306a2a541f50242128b6bb9fb89))
+* disable storybook lint ([189b64c](https://github.com/s-hirano-ist/s-private/commit/189b64c6852f43fbc5e4938950a88891b0c987ec))
+* migrate storybook to v9 ([55011a0](https://github.com/s-hirano-ist/s-private/commit/55011a0d0e7d5aa78b5fd2b0711d7ba972ef63a4))
+
 ## [8.20.1](https://github.com/s-hirano-ist/s-private/compare/v8.20.0...v8.20.1) (2025-06-28)
 
 
