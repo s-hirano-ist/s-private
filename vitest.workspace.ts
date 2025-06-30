@@ -1,5 +1,4 @@
-import { storybookTest } from "@storybook/experimental-addon-test/vitest-plugin";
-import { storybookNextJsPlugin } from "@storybook/experimental-nextjs-vite/vite-plugin";
+import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
 import { defineWorkspace } from "vitest/config";
 
 // More info at: https://storybook.js.org/docs/writing-tests/vitest-plugin
@@ -7,10 +6,8 @@ export default defineWorkspace([
 	"vitest.config.ts",
 	{
 		plugins: [
-			// See options at: https://storybook.js.org/docs/writing-tests/vitest-plugin#storybooktest
+			// // See options at: https://storybook.js.org/docs/writing-tests/vitest-plugin#storybooktest
 			storybookTest({ configDir: ".storybook" }),
-			// More info at: https://github.com/storybookjs/vite-plugin-storybook-nextjs
-			storybookNextJsPlugin(),
 		],
 		test: {
 			name: "storybook",

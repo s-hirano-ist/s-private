@@ -156,9 +156,11 @@ export default tsEslint.config(
 						"jsonc",
 						"prisma",
 						"minio",
+						"onboarding",
 						"favicon",
 						"pathname",
 						"sitemap",
+						"cssresources",
 						"matcher",
 						"webmanifest",
 						"nodejs",
@@ -228,7 +230,7 @@ export default tsEslint.config(
 			"perfectionist/sort-object-types": "warn", // Object 型のプロパティの並び順をアルファベット順に統一
 		},
 	},
-	...storybookPlugin.configs["flat/recommended"],
+	// ...storybookPlugin.configs["flat/recommended"],
 	unicornPlugin.configs["recommended"],
 	{
 		rules: {

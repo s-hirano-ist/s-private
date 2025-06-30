@@ -1,11 +1,12 @@
-import { storybookNextJsPlugin } from "@storybook/experimental-nextjs-vite/vite-plugin";
 import dotenv from "dotenv";
 import { defineConfig } from "vitest/config";
 
 dotenv.config({ path: ".env.test" });
 
 export default defineConfig({
-	plugins: [storybookNextJsPlugin()],
+	esbuild: {
+		jsxInject: 'import React from "react"',
+	},
 	test: {
 		environment: "jsdom",
 		setupFiles: ["./vitest-setup.tsx"],
@@ -26,4 +27,7 @@ export default defineConfig({
 		server: { deps: { inline: ["next-auth"] } }, // FIXME: https://github.com/vitest-dev/vitest/issues/4554
 	},
 	resolve: { alias: { "@": "/src" } },
+	define: {
+		"sb-original/image-context": "{}",
+	},
 });
