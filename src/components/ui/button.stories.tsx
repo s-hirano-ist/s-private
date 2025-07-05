@@ -5,7 +5,7 @@ import { Button } from "./button";
 const meta = {
 	title: "Components/UI/Button",
 	component: Button,
-	parameters: { 
+	parameters: {
 		layout: "centered",
 	},
 	argTypes: {
@@ -16,7 +16,16 @@ const meta = {
 		},
 		variant: {
 			control: { type: "select" },
-			options: ["default", "destructive", "outline", "secondary", "ghost", "link", "navSide", "navCenter"],
+			options: [
+				"default",
+				"destructive",
+				"outline",
+				"secondary",
+				"ghost",
+				"link",
+				"navSide",
+				"navCenter",
+			],
 		},
 		onClick: { action: "clicked" },
 	},
