@@ -16,6 +16,29 @@ const preview = {
 		docs: {
 			codePanel: true,
 		},
+
+		// Backgrounds addon configuration
+		backgrounds: {
+			default: "white",
+			values: [
+				{
+					name: "white",
+					value: "#ffffff",
+				},
+				{
+					name: "light",
+					value: "#f8f9fa",
+				},
+				{
+					name: "dark",
+					value: "#343a40",
+				},
+				{
+					name: "black",
+					value: "#000000",
+				},
+			],
+		},
 	},
 } satisfies Preview;
 
