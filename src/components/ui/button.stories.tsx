@@ -1,16 +1,27 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { fn } from "@storybook/test";
 import { Button } from "./button";
 
 const meta = {
 	title: "Components/UI/Button",
 	component: Button,
-	parameters: { layout: "centered" },
+	parameters: { 
+		layout: "centered",
+	},
 	argTypes: {
 		disabled: { control: { type: "boolean" } },
 		size: {
 			control: { type: "select" },
 			options: ["default", "sm", "md", "lg", "icon"],
 		},
+		variant: {
+			control: { type: "select" },
+			options: ["default", "destructive", "outline", "secondary", "ghost", "link", "navSide", "navCenter"],
+		},
+		onClick: { action: "clicked" },
+	},
+	args: {
+		onClick: fn(),
 	},
 	tags: ["autodocs"],
 } satisfies Meta<typeof Button>;
@@ -66,5 +77,27 @@ export const NavCenter: Story = {
 		children: "+",
 		variant: "navCenter",
 		size: "navCenter",
+	},
+};
+
+// Example with different backgrounds
+export const OnDarkBackground: Story = {
+	args: {
+		children: "ボタン",
+		variant: "outline",
+	},
+	parameters: {
+		backgrounds: { default: "dark" },
+	},
+};
+
+// Example with mobile viewport
+export const MobileView: Story = {
+	args: {
+		children: "ボタン",
+		size: "sm",
+	},
+	parameters: {
+		viewport: { defaultViewport: "mobile" },
 	},
 };
