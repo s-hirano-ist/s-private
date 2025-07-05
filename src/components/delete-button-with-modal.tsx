@@ -12,14 +12,15 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import { deleteNews } from "@/features/news/actions/delete-news";
+import { ServerAction } from "@/types";
 
 type Props = {
+	deleteAction: (id: number) => Promise<ServerAction<number>>;
 	id: number;
 	title: string;
 };
 
-export function DeleteNewsButton({ id, title }: Props) {
+export function DeleteButtonWithModal({ id, title, deleteAction }: Props) {
 	const [isOpen, setIsOpen] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
 
@@ -29,7 +30,7 @@ export function DeleteNewsButton({ id, title }: Props) {
 	const handleDelete = async () => {
 		try {
 			setIsDeleting(true);
-			const response = await deleteNews(id);
+			const response = await deleteAction(id);
 			toast(message(response.message));
 			setIsOpen(false);
 		} catch {

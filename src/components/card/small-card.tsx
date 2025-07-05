@@ -1,4 +1,5 @@
 import { Link } from "next-view-transitions";
+import { DeleteButtonWithModal } from "@/components/delete-button-with-modal";
 import { Badge } from "@/components/ui/badge";
 import {
 	Card,
@@ -7,11 +8,12 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { DeleteNewsButton } from "@/features/news/components/delete-news-button";
+import { ServerAction } from "@/types";
 import { validateUrl } from "@/utils/validate-url";
 
 type Props = {
 	category?: string;
+	deleteAction?: (id: number) => Promise<ServerAction<number>>;
 	id: number;
 	quote: string | null;
 	showDeleteButton: boolean;
@@ -21,6 +23,7 @@ type Props = {
 
 export function SmallCard({
 	id,
+	deleteAction,
 	title,
 	quote,
 	url,
@@ -32,7 +35,13 @@ export function SmallCard({
 	return (
 		<Link data-testid={`small-card-${id}`} href={validatedUrl} target="_blank">
 			<Card className="relative hover:bg-secondary">
-				{showDeleteButton && <DeleteNewsButton id={id} title={title} />}
+				{showDeleteButton && deleteAction !== undefined && (
+					<DeleteButtonWithModal
+						deleteAction={deleteAction}
+						id={id}
+						title={title}
+					/>
+				)}
 				<CardHeader>
 					<div className="flex gap-4">
 						<Badge>{id}</Badge>
