@@ -1,69 +1,123 @@
-import { beforeEach, describe, expect, test, vi } from "vitest";
-import { PushoverError } from "@/error-classes";
-import { loggerError } from "@/pino";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { sendPushoverMessage } from "./fetch-message";
 
-// FIXME: GitHub actionsでURLがマスキングされて見えなくなる問題
-describe.skip("sendPushoverMessage", () => {
-	const mockFetch = vi.fn();
+vi.mock("@/env", () => ({
+	env: {
+		PUSHOVER_URL: "https://api.pushover.net/1/messages.json",
+		PUSHOVER_USER_KEY: "test-user-key",
+		PUSHOVER_APP_TOKEN: "test-app-token",
+	},
+}));
 
+// Mock global fetch
+const mockFetch = vi.fn();
+vi.stubGlobal("fetch", mockFetch);
+
+describe("fetch-message", () => {
 	beforeEach(() => {
-		globalThis.fetch = mockFetch;
+		vi.clearAllMocks();
 	});
 
-	test("should send a message successfully when API responds with 200", async () => {
-		mockFetch.mockResolvedValueOnce({
-			status: 200,
+	describe("sendPushoverMessage", () => {
+		it("should send message successfully", async () => {
+			mockFetch.mockResolvedValue({
+				ok: true,
+			});
+
+			await sendPushoverMessage("Test message");
+
+			expect(mockFetch).toHaveBeenCalledWith(
+				"https://api.pushover.net/1/messages.json",
+				{
+					method: "POST",
+					headers: { "Content-Type": "application/x-www-form-urlencoded" },
+					body: new URLSearchParams({
+						token: "test-app-token",
+						user: "test-user-key",
+						message: "Test message",
+					}),
+				},
+			);
 		});
-		const message = "Hello Pushover!";
 
-		await sendPushoverMessage(message);
+		it("should handle API failure response and log error", async () => {
+			const { loggerError } = await import("@/pino");
 
-		expect(mockFetch).toHaveBeenCalledWith("https://example.com", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/x-www-form-urlencoded",
-				Authorization: "Bearer secretToken",
-			},
-			body: expect.any(URLSearchParams),
+			mockFetch.mockResolvedValue({
+				ok: false,
+				status: 400,
+			});
+
+			await sendPushoverMessage("Test message");
+
+			// Should log error when API fails
+			expect(loggerError).toHaveBeenCalled();
 		});
-		expect(mockFetch.mock.calls[0][1]?.body.toString()).toContain(
-			"message=Hello+LINE+Notify%21",
-		);
-	});
 
-	test("should not throw LineNotifyError when API responds with non-200 status", async () => {
-		mockFetch.mockResolvedValueOnce({
-			status: 400,
+		it("should handle network error", async () => {
+			const { loggerError } = await import("@/pino");
+			const networkError = new Error("Network error");
+			mockFetch.mockRejectedValue(networkError);
+
+			await sendPushoverMessage("Test message");
+
+			expect(loggerError).toHaveBeenCalled();
 		});
-		const message = "Hello Pushover!";
 
-		await expect(sendPushoverMessage(message)).resolves.not.toThrow(
-			PushoverError,
-		);
+		it("should handle various error scenarios", async () => {
+			const { loggerError } = await import("@/pino");
 
-		expect(loggerError).toHaveBeenCalledWith(
-			"ログの送信でエラーが発生しました。",
-			{
-				caller: "sendLineMessageError",
-				status: 500,
-			},
-		);
-		expect(mockFetch).toHaveBeenCalledTimes(1);
-	});
+			// Test timeout error
+			const timeoutError = new Error("Request timeout");
+			mockFetch.mockRejectedValue(timeoutError);
 
-	test("should log an error when fetch fails", async () => {
-		mockFetch.mockRejectedValue(new Error("fetch failed"));
+			await sendPushoverMessage("Test message");
 
-		await sendPushoverMessage("test error");
+			expect(loggerError).toHaveBeenCalled();
+		});
 
-		expect(loggerError).toHaveBeenCalledWith(
-			"Send line message failed with unknown error",
-			{
-				caller: "sendLineMessageUnknownError",
-				status: 500,
-			},
-			expect.any(Error),
-		);
+		it("should format request body correctly", async () => {
+			mockFetch.mockResolvedValue({
+				ok: true,
+			});
+
+			await sendPushoverMessage("Message with special chars: @#$%");
+
+			const call = mockFetch.mock.calls[0];
+			const body = call[1].body;
+
+			expect(body).toBeInstanceOf(URLSearchParams);
+			expect(body.get("token")).toBe("test-app-token");
+			expect(body.get("user")).toBe("test-user-key");
+			expect(body.get("message")).toBe("Message with special chars: @#$%");
+		});
+
+		it("should handle empty message", async () => {
+			mockFetch.mockResolvedValue({
+				ok: true,
+			});
+
+			await sendPushoverMessage("");
+
+			expect(mockFetch).toHaveBeenCalledWith(
+				"https://api.pushover.net/1/messages.json",
+				{
+					method: "POST",
+					headers: { "Content-Type": "application/x-www-form-urlencoded" },
+					body: new URLSearchParams({
+						token: "test-app-token",
+						user: "test-user-key",
+						message: "",
+					}),
+				},
+			);
+		});
+
+		it("should not throw errors (as per comment)", async () => {
+			mockFetch.mockRejectedValue(new Error("Some error"));
+
+			// Should not throw
+			await expect(sendPushoverMessage("Test message")).resolves.not.toThrow();
+		});
 	});
 });

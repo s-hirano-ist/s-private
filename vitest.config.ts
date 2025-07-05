@@ -18,6 +18,7 @@ export default defineConfig({
 			exclude: [
 				"**/*.stories.tsx",
 				"src/**/*.test.ts?(x)",
+				"src/app/**/?(layout|page|_page).tsx",
 				"src/generated/**/*",
 			],
 			reporter: ["text", "json-summary", "json"],
