@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 import prisma from "@/prisma";
 import {
 	fetchAllKnowledge,
