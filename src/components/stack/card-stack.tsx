@@ -2,6 +2,7 @@
 import { SmallCard } from "@/components/card/small-card";
 import { StatusCodeView } from "@/components/card/status-code-view";
 import { CardStackSkeleton } from "@/components/stack/card-stack-skeleton";
+import { ServerAction } from "@/types";
 
 type Props = {
 	data: {
@@ -11,10 +12,11 @@ type Props = {
 		title: string;
 		url: string;
 	}[];
+	deleteAction?: (id: number) => Promise<ServerAction<number>>;
 	showDeleteButton: boolean;
 };
 
-export function CardStack({ data, showDeleteButton }: Props) {
+export function CardStack({ data, showDeleteButton, deleteAction }: Props) {
 	if (data === undefined) return <CardStackSkeleton />;
 	if (data.length === 0) return <StatusCodeView statusCode="204" />;
 
@@ -24,6 +26,7 @@ export function CardStack({ data, showDeleteButton }: Props) {
 				return (
 					<SmallCard
 						category={d.category}
+						deleteAction={deleteAction}
 						id={d.id}
 						key={d.id}
 						quote={d.quote}

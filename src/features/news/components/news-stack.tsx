@@ -3,6 +3,7 @@ import "server-only";
 import { StatusCodeView } from "@/components/card/status-code-view";
 import { CardStack } from "@/components/stack/card-stack";
 import { getSelfId } from "@/features/auth/utils/session";
+import { deleteNews } from "@/features/news/actions/delete-news";
 import { loggerError } from "@/pino";
 import prisma from "@/prisma";
 
@@ -31,7 +32,13 @@ export async function NewsStack() {
 				category: d.Category.name,
 			};
 		});
-		return <CardStack data={unexportedNews} showDeleteButton />;
+		return (
+			<CardStack
+				data={unexportedNews}
+				deleteAction={deleteNews}
+				showDeleteButton
+			/>
+		);
 	} catch (error) {
 		loggerError(
 			"unexpected",
