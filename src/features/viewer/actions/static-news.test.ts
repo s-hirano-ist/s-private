@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 import { PAGE_SIZE } from "@/constants";
 import prisma from "@/prisma";
 import { getStaticNews, getStaticNewsCount } from "./static-news";
@@ -22,7 +22,7 @@ describe("static-news", () => {
 	});
 
 	describe("getStaticNews", () => {
-		it("should fetch static news with correct pagination for first page", async () => {
+		test("should fetch static news with correct pagination for first page", async () => {
 			const mockNews = [
 				{
 					id: 1,
@@ -52,7 +52,7 @@ describe("static-news", () => {
 			expect(result).toEqual(mockNews);
 		});
 
-		it("should fetch static news with correct pagination for second page", async () => {
+		test("should fetch static news with correct pagination for second page", async () => {
 			const mockNews = [
 				{
 					id: 11,
@@ -76,7 +76,8 @@ describe("static-news", () => {
 			expect(result).toEqual(mockNews);
 		});
 
-		it("should fetch static news with correct pagination for third page", async () => {
+		test("should fetch static news with correct pagination for third page", async () => {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const mockNews: any[] = [];
 
 			vi.mocked(prisma.staticNews.findMany).mockResolvedValue(mockNews);
@@ -93,7 +94,7 @@ describe("static-news", () => {
 			expect(result).toEqual([]);
 		});
 
-		it("should handle empty results", async () => {
+		test("should handle empty results", async () => {
 			vi.mocked(prisma.staticNews.findMany).mockResolvedValue([]);
 
 			const result = await getStaticNews(1);
@@ -101,7 +102,7 @@ describe("static-news", () => {
 			expect(result).toEqual([]);
 		});
 
-		it("should handle database errors", async () => {
+		test("should handle database errors", async () => {
 			vi.mocked(prisma.staticNews.findMany).mockRejectedValue(
 				new Error("Database error"),
 			);
@@ -109,7 +110,7 @@ describe("static-news", () => {
 			await expect(getStaticNews(1)).rejects.toThrow("Database error");
 		});
 
-		it("should handle page 0 correctly", async () => {
+		test("should handle page 0 correctly", async () => {
 			const mockNews = [
 				{
 					id: 1,
@@ -133,7 +134,8 @@ describe("static-news", () => {
 			expect(result).toEqual(mockNews);
 		});
 
-		it("should handle large page numbers", async () => {
+		test("should handle large page numbers", async () => {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const mockNews: any[] = [];
 
 			vi.mocked(prisma.staticNews.findMany).mockResolvedValue(mockNews);
@@ -152,7 +154,7 @@ describe("static-news", () => {
 	});
 
 	describe("getStaticNewsCount", () => {
-		it("should return count of static news", async () => {
+		test("should return count of static news", async () => {
 			vi.mocked(prisma.staticNews.count).mockResolvedValue(100);
 
 			const result = await getStaticNewsCount();
@@ -161,7 +163,7 @@ describe("static-news", () => {
 			expect(result).toBe(100);
 		});
 
-		it("should return 0 for empty collection", async () => {
+		test("should return 0 for empty collection", async () => {
 			vi.mocked(prisma.staticNews.count).mockResolvedValue(0);
 
 			const result = await getStaticNewsCount();
@@ -169,7 +171,7 @@ describe("static-news", () => {
 			expect(result).toBe(0);
 		});
 
-		it("should handle database errors", async () => {
+		test("should handle database errors", async () => {
 			vi.mocked(prisma.staticNews.count).mockRejectedValue(
 				new Error("Database error"),
 			);

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 import { UnexpectedError } from "@/error-classes";
 import { convertUint8ArrayToImgSrc } from "./convert";
 
@@ -8,7 +8,7 @@ describe("convert utilities", () => {
 	});
 
 	describe("convertUint8ArrayToImgSrc", () => {
-		it("should convert svg data correctly", () => {
+		test("should convert svg data correctly", () => {
 			const svgData = "<svg>test</svg>";
 			const uint8Array = new TextEncoder().encode(svgData);
 
@@ -19,7 +19,7 @@ describe("convert utilities", () => {
 			);
 		});
 
-		it("should convert webp data correctly", () => {
+		test("should convert webp data correctly", () => {
 			const uint8Array = new Uint8Array([255, 216, 255, 224]); // Sample binary data
 
 			const result = convertUint8ArrayToImgSrc(uint8Array, "webp");
@@ -34,7 +34,7 @@ describe("convert utilities", () => {
 			expect(result).toBe(`data:image/webp;base64,${expectedBase64}`);
 		});
 
-		it("should handle empty svg data", () => {
+		test("should handle empty svg data", () => {
 			const uint8Array = new Uint8Array([]);
 
 			const result = convertUint8ArrayToImgSrc(uint8Array, "svg");
@@ -42,7 +42,7 @@ describe("convert utilities", () => {
 			expect(result).toBe("data:image/svg+xml;charset=utf-8,");
 		});
 
-		it("should handle empty webp data", () => {
+		test("should handle empty webp data", () => {
 			const uint8Array = new Uint8Array([]);
 
 			const result = convertUint8ArrayToImgSrc(uint8Array, "webp");
@@ -50,7 +50,7 @@ describe("convert utilities", () => {
 			expect(result).toBe("data:image/webp;base64,");
 		});
 
-		it("should handle complex svg with special characters", () => {
+		test("should handle complex svg with special characters", () => {
 			const svgData =
 				"<svg xmlns='http://www.w3.org/2000/svg'><text>Hello & World</text></svg>";
 			const uint8Array = new TextEncoder().encode(svgData);
@@ -62,7 +62,7 @@ describe("convert utilities", () => {
 			);
 		});
 
-		it("should throw UnexpectedError for invalid image type", () => {
+		test("should throw UnexpectedError for invalid image type", () => {
 			const uint8Array = new Uint8Array([1, 2, 3]);
 
 			expect(() => {
@@ -71,7 +71,7 @@ describe("convert utilities", () => {
 			}).toThrow(UnexpectedError);
 		});
 
-		it("should handle large binary data for webp", () => {
+		test("should handle large binary data for webp", () => {
 			const uint8Array = new Uint8Array(1000).fill(255);
 
 			const result = convertUint8ArrayToImgSrc(uint8Array, "webp");
@@ -80,7 +80,7 @@ describe("convert utilities", () => {
 			expect(result.length).toBeGreaterThan(30); // Should have some content
 		});
 
-		it("should properly encode unicode characters in svg", () => {
+		test("should properly encode unicode characters in svg", () => {
 			const svgData = "<svg><text>こんにちは</text></svg>";
 			const uint8Array = new TextEncoder().encode(svgData);
 
@@ -92,7 +92,7 @@ describe("convert utilities", () => {
 			expect(result).toContain("%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF"); // Encoded unicode
 		});
 
-		it("should handle binary data with all byte values for webp", () => {
+		test("should handle binary data with all byte values for webp", () => {
 			const uint8Array = new Uint8Array(256);
 			for (let i = 0; i < 256; i++) {
 				uint8Array[i] = i;

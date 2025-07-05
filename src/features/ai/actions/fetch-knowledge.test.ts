@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, vi } from "vitest";
 import prisma from "@/prisma";
 import {
 	fetchAllKnowledge,
@@ -25,7 +25,7 @@ describe("fetch-knowledge", () => {
 	});
 
 	describe("getAllStaticContentsForKnowledge", () => {
-		it("should fetch static contents with correct parameters", async () => {
+		test("should fetch static contents with correct parameters", async () => {
 			const mockContents = [
 				{ title: "Test Content 1", markdown: "Content 1 markdown" },
 				{ title: "Test Content 2", markdown: "Content 2 markdown" },
@@ -42,7 +42,7 @@ describe("fetch-knowledge", () => {
 			expect(result).toEqual(mockContents);
 		});
 
-		it("should handle empty results", async () => {
+		test("should handle empty results", async () => {
 			vi.mocked(prisma.staticContents.findMany).mockResolvedValue([]);
 
 			const result = await getAllStaticContentsForKnowledge();
@@ -52,7 +52,7 @@ describe("fetch-knowledge", () => {
 	});
 
 	describe("getAllStaticBooksForKnowledge", () => {
-		it("should fetch static books with correct parameters", async () => {
+		test("should fetch static books with correct parameters", async () => {
 			const mockBooks = [
 				{ title: "Test Book 1", markdown: "Book 1 markdown" },
 				{ title: "Test Book 2", markdown: "Book 2 markdown" },
@@ -69,7 +69,7 @@ describe("fetch-knowledge", () => {
 			expect(result).toEqual(mockBooks);
 		});
 
-		it("should handle empty results", async () => {
+		test("should handle empty results", async () => {
 			vi.mocked(prisma.staticBooks.findMany).mockResolvedValue([]);
 
 			const result = await getAllStaticBooksForKnowledge();
@@ -79,7 +79,7 @@ describe("fetch-knowledge", () => {
 	});
 
 	describe("fetchAllKnowledge", () => {
-		it("should combine contents and books with correct format", async () => {
+		test("should combine contents and books with correct format", async () => {
 			const mockContents = [
 				{ title: "Content 1", markdown: "Content 1 markdown" },
 				{ title: "Content 2", markdown: "Content 2 markdown" },
@@ -123,7 +123,7 @@ describe("fetch-knowledge", () => {
 			]);
 		});
 
-		it("should handle empty contents and books", async () => {
+		test("should handle empty contents and books", async () => {
 			vi.mocked(prisma.staticContents.findMany).mockResolvedValue([]);
 			vi.mocked(prisma.staticBooks.findMany).mockResolvedValue([]);
 
@@ -132,7 +132,7 @@ describe("fetch-knowledge", () => {
 			expect(result).toEqual([]);
 		});
 
-		it("should handle only contents", async () => {
+		test("should handle only contents", async () => {
 			const mockContents = [
 				{ title: "Content 1", markdown: "Content 1 markdown" },
 			];
@@ -152,7 +152,7 @@ describe("fetch-knowledge", () => {
 			]);
 		});
 
-		it("should handle only books", async () => {
+		test("should handle only books", async () => {
 			const mockBooks = [{ title: "Book 1", markdown: "Book 1 markdown" }];
 
 			vi.mocked(prisma.staticContents.findMany).mockResolvedValue([]);
@@ -172,7 +172,7 @@ describe("fetch-knowledge", () => {
 	});
 
 	describe("fetchContentByTitle", () => {
-		it("should fetch content by title with correct parameters", async () => {
+		test("should fetch content by title with correct parameters", async () => {
 			const mockContent = {
 				title: "Test Content",
 				markdown: "Test markdown content",
@@ -192,7 +192,7 @@ describe("fetch-knowledge", () => {
 			expect(result).toEqual(mockContent);
 		});
 
-		it("should return null for non-existent content", async () => {
+		test("should return null for non-existent content", async () => {
 			vi.mocked(prisma.staticContents.findUnique).mockResolvedValue(null);
 
 			const result = await fetchContentByTitle("Non-existent Content");
@@ -200,7 +200,7 @@ describe("fetch-knowledge", () => {
 			expect(result).toBeNull();
 		});
 
-		it("should handle database errors", async () => {
+		test("should handle database errors", async () => {
 			vi.mocked(prisma.staticContents.findUnique).mockRejectedValue(
 				new Error("Database error"),
 			);

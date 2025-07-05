@@ -1,31 +1,32 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import Page from "./page";
 
 // Mock StatusCodeView
 vi.mock("@/components/card/status-code-view", () => ({
+	// eslint-disable-next-line
 	StatusCodeView: ({ statusCode }: any) => (
-		<div data-testid="status-code-view" data-status-code={statusCode}>
+		<div data-status-code={statusCode} data-testid="status-code-view">
 			Status: {statusCode}
 		</div>
 	),
 }));
 
 describe("Search Page", () => {
-	it("should render StatusCodeView component", () => {
+	test("should render StatusCodeView component", () => {
 		render(<Page />);
 
 		expect(screen.getByTestId("status-code-view")).toBeInTheDocument();
 	});
 
-	it("should pass correct status code", () => {
+	test("should pass correct status code", () => {
 		render(<Page />);
 
 		const statusView = screen.getByTestId("status-code-view");
 		expect(statusView).toHaveAttribute("data-status-code", "000");
 	});
 
-	it("should display status code in content", () => {
+	test("should display status code in content", () => {
 		render(<Page />);
 
 		expect(screen.getByText("Status: 000")).toBeInTheDocument();

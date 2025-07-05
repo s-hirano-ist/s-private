@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, vi } from "vitest";
 
 // Mock next-intl/server
 const mockGetRequestConfig = vi.fn();
@@ -29,7 +29,7 @@ describe("i18n/request", () => {
 		mockGetRequestConfig.mockImplementation((callback) => callback);
 	});
 
-	it("should return valid locale and messages", async () => {
+	test("should return valid locale and messages", async () => {
 		const { default: requestConfig } = await import("./request");
 
 		const result = await requestConfig({
@@ -42,7 +42,7 @@ describe("i18n/request", () => {
 		});
 	});
 
-	it("should use default locale for invalid locale", async () => {
+	test("should use default locale for invalid locale", async () => {
 		const { default: requestConfig } = await import("./request");
 
 		const result = await requestConfig({
@@ -55,7 +55,7 @@ describe("i18n/request", () => {
 		});
 	});
 
-	it("should use default locale when locale is null", async () => {
+	test("should use default locale when locale is null", async () => {
 		const { default: requestConfig } = await import("./request");
 
 		const result = await requestConfig({
@@ -68,7 +68,7 @@ describe("i18n/request", () => {
 		});
 	});
 
-	it("should handle English locale", async () => {
+	test("should handle English locale", async () => {
 		const { default: requestConfig } = await import("./request");
 
 		const result = await requestConfig({
@@ -81,11 +81,11 @@ describe("i18n/request", () => {
 		});
 	});
 
-	it("should use default locale for undefined locale", async () => {
+	test("should use default locale for undefined locale", async () => {
 		const { default: requestConfig } = await import("./request");
 
 		const result = await requestConfig({
-			requestLocale: Promise.resolve(undefined),
+			requestLocale: Promise.resolve(),
 		});
 
 		expect(result).toEqual({

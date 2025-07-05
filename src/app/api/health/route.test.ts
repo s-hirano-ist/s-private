@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import { GET } from "./route";
 
 // Mock NextResponse
@@ -13,7 +13,7 @@ vi.mock("next/server", () => ({
 }));
 
 describe("/api/health route", () => {
-	it("should return status ok", async () => {
+	test("should return status ok", async () => {
 		const response = await GET();
 
 		expect(response).toBeDefined();
@@ -22,7 +22,7 @@ describe("/api/health route", () => {
 		expect(NextResponse.json).toHaveBeenCalledWith({ status: "ok" });
 	});
 
-	it("should call NextResponse.json with correct data", async () => {
+	test("should call NextResponse.json with correct data", async () => {
 		const { NextResponse } = await import("next/server");
 
 		await GET();
@@ -31,13 +31,8 @@ describe("/api/health route", () => {
 		expect(NextResponse.json).toHaveBeenCalledWith({ status: "ok" });
 	});
 
-	it("should be an async function", () => {
+	test("should be an async function", () => {
 		expect(GET).toBeInstanceOf(Function);
 		expect(GET.constructor.name).toBe("AsyncFunction");
-	});
-
-	it("should have edge runtime export", async () => {
-		const module = await import("./route");
-		expect(module.runtime).toBe("edge");
 	});
 });

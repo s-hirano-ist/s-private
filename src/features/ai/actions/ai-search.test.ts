@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, vi } from "vitest";
 import { getKnowledgeItemById, searchKnowledge } from "./ai-search";
 import { fetchAllKnowledge } from "./fetch-knowledge";
 
@@ -36,17 +36,17 @@ describe("ai-search", () => {
 	});
 
 	describe("searchKnowledge", () => {
-		it("should return empty array for empty query", async () => {
+		test("should return empty array for empty query", async () => {
 			const result = await searchKnowledge("");
 			expect(result).toEqual([]);
 		});
 
-		it("should return empty array for whitespace-only query", async () => {
+		test("should return empty array for whitespace-only query", async () => {
 			const result = await searchKnowledge("   ");
 			expect(result).toEqual([]);
 		});
 
-		it("should search by title and return relevant results", async () => {
+		test("should search by title and return relevant results", async () => {
 			vi.mocked(fetchAllKnowledge).mockResolvedValue(mockKnowledgeBase);
 
 			const result = await searchKnowledge("React");
@@ -57,7 +57,7 @@ describe("ai-search", () => {
 			expect(result[0].aiSummary).toContain("React testing is important");
 		});
 
-		it("should search by content and return relevant results", async () => {
+		test("should search by content and return relevant results", async () => {
 			vi.mocked(fetchAllKnowledge).mockResolvedValue(mockKnowledgeBase);
 
 			const result = await searchKnowledge("design patterns");
@@ -67,7 +67,7 @@ describe("ai-search", () => {
 			expect(result[0].relevanceScore).toBeGreaterThan(0);
 		});
 
-		it("should calculate relevance score correctly", async () => {
+		test("should calculate relevance score correctly", async () => {
 			vi.mocked(fetchAllKnowledge).mockResolvedValue(mockKnowledgeBase);
 
 			const result = await searchKnowledge("TypeScript");
@@ -76,7 +76,7 @@ describe("ai-search", () => {
 			expect(result[0].relevanceScore).toBe(4); // 1 title match * 3 + 1 content match = 4
 		});
 
-		it("should sort results by relevance score", async () => {
+		test("should sort results by relevance score", async () => {
 			const multiMatchKnowledge = [
 				{
 					id: "content-1",
@@ -102,7 +102,7 @@ describe("ai-search", () => {
 			);
 		});
 
-		it("should create AI summary with context around query", async () => {
+		test("should create AI summary with context around query", async () => {
 			const longContentKnowledge = [
 				{
 					id: "content-1",
@@ -121,7 +121,7 @@ describe("ai-search", () => {
 			expect(result[0].aiSummary).toContain("...");
 		});
 
-		it("should handle case insensitive search", async () => {
+		test("should handle case insensitive search", async () => {
 			vi.mocked(fetchAllKnowledge).mockResolvedValue(mockKnowledgeBase);
 
 			const result = await searchKnowledge("REACT");
@@ -130,7 +130,7 @@ describe("ai-search", () => {
 			expect(result[0].title).toBe("React Testing Best Practices");
 		});
 
-		it("should return empty array when no matches found", async () => {
+		test("should return empty array when no matches found", async () => {
 			vi.mocked(fetchAllKnowledge).mockResolvedValue(mockKnowledgeBase);
 
 			const result = await searchKnowledge("nonexistent");
@@ -138,7 +138,7 @@ describe("ai-search", () => {
 			expect(result).toEqual([]);
 		});
 
-		it("should handle errors gracefully", async () => {
+		test("should handle errors gracefully", async () => {
 			vi.mocked(fetchAllKnowledge).mockRejectedValue(
 				new Error("Database error"),
 			);
@@ -158,7 +158,7 @@ describe("ai-search", () => {
 			consoleSpy.mockRestore();
 		});
 
-		it("should create fallback summary when no direct match in content", async () => {
+		test("should create fallback summary when no direct match in content", async () => {
 			const knowledgeWithTitleMatch = [
 				{
 					id: "content-1",
@@ -182,7 +182,7 @@ describe("ai-search", () => {
 	});
 
 	describe("getKnowledgeItemById", () => {
-		it("should return item by ID", async () => {
+		test("should return item by ID", async () => {
 			vi.mocked(fetchAllKnowledge).mockResolvedValue(mockKnowledgeBase);
 
 			const result = await getKnowledgeItemById("content-test-1");
@@ -190,7 +190,7 @@ describe("ai-search", () => {
 			expect(result).toEqual(mockKnowledgeBase[0]);
 		});
 
-		it("should return undefined for non-existent ID", async () => {
+		test("should return undefined for non-existent ID", async () => {
 			vi.mocked(fetchAllKnowledge).mockResolvedValue(mockKnowledgeBase);
 
 			const result = await getKnowledgeItemById("nonexistent-id");
@@ -198,7 +198,7 @@ describe("ai-search", () => {
 			expect(result).toBeUndefined();
 		});
 
-		it("should handle errors from fetchAllKnowledge", async () => {
+		test("should handle errors from fetchAllKnowledge", async () => {
 			vi.mocked(fetchAllKnowledge).mockRejectedValue(
 				new Error("Database error"),
 			);

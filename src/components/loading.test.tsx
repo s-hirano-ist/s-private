@@ -1,24 +1,25 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import Loading from "./loading";
 
 // Mock lucide-react
 vi.mock("lucide-react", () => ({
+	// eslint-disable-next-line
 	Loader: ({ className, size }: any) => (
-		<div data-testid="loader" className={className} data-size={size}>
+		<div className={className} data-size={size} data-testid="loader">
 			Loading...
 		</div>
 	),
 }));
 
 describe("Loading", () => {
-	it("should render loading component", () => {
+	test("should render loading component", () => {
 		render(<Loading />);
 
 		expect(screen.getByTestId("loader")).toBeInTheDocument();
 	});
 
-	it("should have correct CSS classes", () => {
+	test("should have correct CSS classes", () => {
 		render(<Loading />);
 
 		const container = screen.getByTestId("loader").parentElement;
@@ -31,7 +32,7 @@ describe("Loading", () => {
 		);
 	});
 
-	it("should render Loader with correct props", () => {
+	test("should render Loader with correct props", () => {
 		render(<Loading />);
 
 		const loader = screen.getByTestId("loader");
@@ -39,7 +40,7 @@ describe("Loading", () => {
 		expect(loader).toHaveAttribute("data-size", "48");
 	});
 
-	it("should display loading text", () => {
+	test("should display loading text", () => {
 		render(<Loading />);
 
 		expect(screen.getByText("Loading...")).toBeInTheDocument();

@@ -1,15 +1,15 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect } from "vitest";
 import robots from "./robots";
 
 describe("robots", () => {
-	it("should return robots.txt configuration", () => {
+	test("should return robots.txt configuration", () => {
 		const result = robots();
 
 		expect(result).toBeDefined();
 		expect(typeof result).toBe("object");
 	});
 
-	it("should disallow all user agents from root", () => {
+	test("should disallow all user agents from root", () => {
 		const result = robots();
 
 		expect(result.rules).toBeDefined();
@@ -17,7 +17,7 @@ describe("robots", () => {
 		expect(result.rules.disallow).toBe("/");
 	});
 
-	it("should have correct structure for MetadataRoute.Robots", () => {
+	test("should have correct structure for MetadataRoute.Robots", () => {
 		const result = robots();
 
 		expect(result).toHaveProperty("rules");
@@ -25,7 +25,7 @@ describe("robots", () => {
 		expect(result.rules).toHaveProperty("disallow");
 	});
 
-	it("should block all robots from accessing the site", () => {
+	test("should block all robots from accessing the site", () => {
 		const result = robots();
 
 		// This configuration prevents all web crawlers from accessing any page
@@ -33,7 +33,7 @@ describe("robots", () => {
 		expect(result.rules.disallow).toBe("/");
 	});
 
-	it("should be a function that returns an object", () => {
+	test("should be a function that returns an object", () => {
 		expect(typeof robots).toBe("function");
 		expect(typeof robots()).toBe("object");
 	});

@@ -1,22 +1,22 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect } from "vitest";
 import manifest from "./manifest";
 
 describe("manifest", () => {
-	it("should return a valid web app manifest", () => {
+	test("should return a valid web app manifest", () => {
 		const result = manifest();
 
 		expect(result).toBeDefined();
 		expect(typeof result).toBe("object");
 	});
 
-	it("should have correct app name and short name", () => {
+	test("should have correct app name and short name", () => {
 		const result = manifest();
 
 		expect(result.name).toBe("s-private");
 		expect(result.short_name).toBe("s-private");
 	});
 
-	it("should have correct description", () => {
+	test("should have correct description", () => {
 		const result = manifest();
 
 		expect(result.description).toBe(
@@ -24,27 +24,27 @@ describe("manifest", () => {
 		);
 	});
 
-	it("should have correct language and start URL", () => {
+	test("should have correct language and start URL", () => {
 		const result = manifest();
 
 		expect(result.lang).toBe("ja");
 		expect(result.start_url).toBe("/");
 	});
 
-	it("should have correct theme and background colors", () => {
+	test("should have correct theme and background colors", () => {
 		const result = manifest();
 
 		expect(result.theme_color).toBe("#fff");
 		expect(result.background_color).toBe("#000");
 	});
 
-	it("should have correct display mode", () => {
+	test("should have correct display mode", () => {
 		const result = manifest();
 
 		expect(result.display).toBe("fullscreen");
 	});
 
-	it("should have favicon icon configuration", () => {
+	test("should have favicon icon configuration", () => {
 		const result = manifest();
 
 		expect(Array.isArray(result.icons)).toBe(true);
@@ -55,7 +55,7 @@ describe("manifest", () => {
 		});
 	});
 
-	it("should have all required manifest properties", () => {
+	test("should have all required manifest properties", () => {
 		const result = manifest();
 
 		expect(result).toHaveProperty("name");
@@ -69,14 +69,14 @@ describe("manifest", () => {
 		expect(result).toHaveProperty("display");
 	});
 
-	it("should return consistent results on multiple calls", () => {
+	test("should return consistent results on multiple calls", () => {
 		const result1 = manifest();
 		const result2 = manifest();
 
 		expect(result1).toEqual(result2);
 	});
 
-	it("should be a function", () => {
+	test("should be a function", () => {
 		expect(typeof manifest).toBe("function");
 	});
 });

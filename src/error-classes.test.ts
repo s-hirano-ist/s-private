@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { describe, expect, test } from "vitest";
 import {
 	NotAllowedError,
 	PushoverError,
@@ -7,7 +7,7 @@ import {
 
 describe("error-classes", () => {
 	describe("PushoverError", () => {
-		it("should create PushoverError with correct message and name", () => {
+		test("should create PushoverError with correct message and name", () => {
 			const error = new PushoverError();
 
 			expect(error).toBeInstanceOf(Error);
@@ -15,7 +15,7 @@ describe("error-classes", () => {
 			expect(error.name).toBe("PushoverError");
 		});
 
-		it("should be instance of Error", () => {
+		test("should be instance of Error", () => {
 			const error = new PushoverError();
 
 			expect(error instanceof Error).toBe(true);
@@ -23,7 +23,7 @@ describe("error-classes", () => {
 	});
 
 	describe("NotAllowedError", () => {
-		it("should create NotAllowedError with correct message and name", () => {
+		test("should create NotAllowedError with correct message and name", () => {
 			const error = new NotAllowedError();
 
 			expect(error).toBeInstanceOf(Error);
@@ -31,7 +31,7 @@ describe("error-classes", () => {
 			expect(error.name).toBe("NotAllowedError");
 		});
 
-		it("should be instance of Error", () => {
+		test("should be instance of Error", () => {
 			const error = new NotAllowedError();
 
 			expect(error instanceof Error).toBe(true);
@@ -39,7 +39,7 @@ describe("error-classes", () => {
 	});
 
 	describe("UnauthorizedError", () => {
-		it("should create UnauthorizedError with correct message and name", () => {
+		test("should create UnauthorizedError with correct message and name", () => {
 			const error = new UnauthorizedError();
 
 			expect(error).toBeInstanceOf(Error);
@@ -47,7 +47,7 @@ describe("error-classes", () => {
 			expect(error.name).toBe("UnauthorizedError");
 		});
 
-		it("should be instance of Error", () => {
+		test("should be instance of Error", () => {
 			const error = new UnauthorizedError();
 
 			expect(error instanceof Error).toBe(true);
@@ -55,7 +55,7 @@ describe("error-classes", () => {
 	});
 
 	describe("error handling", () => {
-		it("should allow PushoverError to be caught as Error", () => {
+		test("should allow PushoverError to be caught as Error", () => {
 			try {
 				throw new PushoverError();
 			} catch (error) {
@@ -64,7 +64,7 @@ describe("error-classes", () => {
 			}
 		});
 
-		it("should allow NotAllowedError to be caught as Error", () => {
+		test("should allow NotAllowedError to be caught as Error", () => {
 			try {
 				throw new NotAllowedError();
 			} catch (error) {
@@ -73,7 +73,7 @@ describe("error-classes", () => {
 			}
 		});
 
-		it("should allow UnauthorizedError to be caught as Error", () => {
+		test("should allow UnauthorizedError to be caught as Error", () => {
 			try {
 				throw new UnauthorizedError();
 			} catch (error) {
@@ -84,7 +84,7 @@ describe("error-classes", () => {
 	});
 
 	describe("error differentiation", () => {
-		it("should differentiate between error types", () => {
+		test("should differentiate between error types", () => {
 			const pushoverError = new PushoverError();
 			const notAllowedError = new NotAllowedError();
 			const unauthorizedError = new UnauthorizedError();

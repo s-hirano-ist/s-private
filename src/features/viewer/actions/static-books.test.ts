@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, vi } from "vitest";
 import prisma from "@/prisma";
 import { getAllStaticBooks, getStaticBooksCount } from "./static-books";
 
@@ -17,7 +17,7 @@ describe("static-books", () => {
 	});
 
 	describe("getAllStaticBooks", () => {
-		it("should fetch and transform static books correctly", async () => {
+		test("should fetch and transform static books correctly", async () => {
 			const mockBooks = [
 				{
 					ISBN: "978-0123456789",
@@ -54,7 +54,7 @@ describe("static-books", () => {
 			]);
 		});
 
-		it("should handle empty results", async () => {
+		test("should handle empty results", async () => {
 			vi.mocked(prisma.staticBooks.findMany).mockResolvedValue([]);
 
 			const result = await getAllStaticBooks();
@@ -62,7 +62,7 @@ describe("static-books", () => {
 			expect(result).toEqual([]);
 		});
 
-		it("should handle database errors", async () => {
+		test("should handle database errors", async () => {
 			vi.mocked(prisma.staticBooks.findMany).mockRejectedValue(
 				new Error("Database error"),
 			);
@@ -70,7 +70,7 @@ describe("static-books", () => {
 			await expect(getAllStaticBooks()).rejects.toThrow("Database error");
 		});
 
-		it("should handle books with null images", async () => {
+		test("should handle books with null images", async () => {
 			const mockBooks = [
 				{
 					ISBN: "978-0123456789",
@@ -94,7 +94,7 @@ describe("static-books", () => {
 	});
 
 	describe("getStaticBooksCount", () => {
-		it("should return count of static books", async () => {
+		test("should return count of static books", async () => {
 			vi.mocked(prisma.staticBooks.count).mockResolvedValue(42);
 
 			const result = await getStaticBooksCount();
@@ -103,7 +103,7 @@ describe("static-books", () => {
 			expect(result).toBe(42);
 		});
 
-		it("should return 0 for empty collection", async () => {
+		test("should return 0 for empty collection", async () => {
 			vi.mocked(prisma.staticBooks.count).mockResolvedValue(0);
 
 			const result = await getStaticBooksCount();
@@ -111,7 +111,7 @@ describe("static-books", () => {
 			expect(result).toBe(0);
 		});
 
-		it("should handle database errors", async () => {
+		test("should handle database errors", async () => {
 			vi.mocked(prisma.staticBooks.count).mockRejectedValue(
 				new Error("Database error"),
 			);

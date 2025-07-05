@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 import { sendPushoverMessage } from "./fetch-message";
 
 vi.mock("@/env", () => ({
@@ -19,7 +19,7 @@ describe("fetch-message", () => {
 	});
 
 	describe("sendPushoverMessage", () => {
-		it("should send message successfully", async () => {
+		test("should send message successfully", async () => {
 			mockFetch.mockResolvedValue({
 				ok: true,
 			});
@@ -40,7 +40,7 @@ describe("fetch-message", () => {
 			);
 		});
 
-		it("should handle API failure response and log error", async () => {
+		test("should handle API failure response and log error", async () => {
 			const { loggerError } = await import("@/pino");
 
 			mockFetch.mockResolvedValue({
@@ -54,7 +54,7 @@ describe("fetch-message", () => {
 			expect(loggerError).toHaveBeenCalled();
 		});
 
-		it("should handle network error", async () => {
+		test("should handle network error", async () => {
 			const { loggerError } = await import("@/pino");
 			const networkError = new Error("Network error");
 			mockFetch.mockRejectedValue(networkError);
@@ -64,7 +64,7 @@ describe("fetch-message", () => {
 			expect(loggerError).toHaveBeenCalled();
 		});
 
-		it("should handle various error scenarios", async () => {
+		test("should handle various error scenarios", async () => {
 			const { loggerError } = await import("@/pino");
 
 			// Test timeout error
@@ -76,7 +76,7 @@ describe("fetch-message", () => {
 			expect(loggerError).toHaveBeenCalled();
 		});
 
-		it("should format request body correctly", async () => {
+		test("should format request body correctly", async () => {
 			mockFetch.mockResolvedValue({
 				ok: true,
 			});
@@ -92,7 +92,7 @@ describe("fetch-message", () => {
 			expect(body.get("message")).toBe("Message with special chars: @#$%");
 		});
 
-		it("should handle empty message", async () => {
+		test("should handle empty message", async () => {
 			mockFetch.mockResolvedValue({
 				ok: true,
 			});
@@ -113,7 +113,7 @@ describe("fetch-message", () => {
 			);
 		});
 
-		it("should not throw errors (as per comment)", async () => {
+		test("should not throw errors (as per comment)", async () => {
 			mockFetch.mockRejectedValue(new Error("Some error"));
 
 			// Should not throw

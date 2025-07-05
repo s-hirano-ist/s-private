@@ -153,6 +153,9 @@ export default tsEslint.config(
 					minLength: 5, // 5 文字以上の単語をチェック
 					// チェックをスキップする単語の配列
 					skipWords: [
+						"unicode",
+						"localhost",
+						"lucide",
 						"jsonc",
 						"prisma",
 						"minio",
