@@ -424,8 +424,8 @@ export default tsEslint.config(
 	{
 		files: ["**/*.json", "**/*.jsonc"],
 		rules: {
-			"jsonc/sort-keys": "error", // JSONのキーをソート
-			"jsonc/no-comments": "off", // .jsonc ファイルではコメントを許可
+			"jsonc/sort-keys": "off", // JSONのキーをソート
+			"jsonc/no-comments": "off", // .jsonc ファイルではコメントを許可,
 		},
 	},
 
