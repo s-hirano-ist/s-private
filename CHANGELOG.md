@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.20.3](https://github.com/s-hirano-ist/s-private/compare/v8.20.2...v8.20.3) (2025-07-05)
+
+
+### Bug Fixes
+
+* button fmt autofix ([a2c1eb6](https://github.com/s-hirano-ist/s-private/commit/a2c1eb65cd769fdfa8ce88b5c52a7a277771a4c0))
+* update storybook settings ([51f4c01](https://github.com/s-hirano-ist/s-private/commit/51f4c016095714c8a0d6d12089255fc9d7f6d0aa))
+* update storybook settings ([692b0a7](https://github.com/s-hirano-ist/s-private/commit/692b0a768738b3fc1ccee5a4b3823b9444c4765a)), closes [#1339](https://github.com/s-hirano-ist/s-private/issues/1339)
+
 ## [8.20.2](https://github.com/s-hirano-ist/s-private/compare/v8.20.1...v8.20.2) (2025-06-30)
 
 
