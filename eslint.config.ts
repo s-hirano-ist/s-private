@@ -35,8 +35,8 @@ export default tsEslint.config(
 			"dist/**/*",
 			"build/**/*",
 			// Ignore coverage reports
-			"coverage/**/*",
-			".storybook-coverage/**/*",
+			".vitest-coverage/**/*",
+			".storybook-static/**/*",
 			// Ignore files that Biome handles
 			// Note: ESLint focuses on logic/architecture, Biome handles formatting
 		],
@@ -53,6 +53,16 @@ export default tsEslint.config(
 	// jsx-a11y is included in Next.js config, so we avoid duplicate registration
 	vitestPlugin.configs.recommended,
 	...markdown.configs.recommended,
+	{
+		files: ["**/*.md"],
+		plugins: {
+			markdown,
+		},
+		language: "markdown/gfm",
+		rules: {
+			"markdown/no-bare-urls": "error", // Markdown内のベアURLを禁止
+		},
+	},
 	...compat.extends("plugin:react-hooks/recommended"),
 	// FIXME: not working with eslint inspector
 	...compat.extends("next"),

@@ -11,6 +11,7 @@
 		"start": "next start",
 		"lint": "next lint",
 		"lint:fix": "next lint --fix",
+		"eslint:fix": "eslint .",
 		"lint:inspector": "config-inspector --config eslint.config.ts",
 		"fmt:ci": "biome ci *",
 		"fmt:fix": "biome check --write *",
