@@ -4,7 +4,15 @@ import prisma from "@/prisma";
 
 const _getStaticNews = async (page: number) => {
 	return await prisma.staticNews.findMany({
-		select: { id: true, title: true, url: true, quote: true },
+		select: {
+			id: true,
+			title: true,
+			url: true,
+			quote: true,
+			ogImageUrl: true,
+			ogTitle: true,
+			ogDescription: true,
+		},
 		skip: (page - 1) * PAGE_SIZE,
 		take: PAGE_SIZE,
 		cacheStrategy: { ttl: 400, swr: 40, tags: ["staticNews"] },
