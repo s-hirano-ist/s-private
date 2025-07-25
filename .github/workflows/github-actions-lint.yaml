@@ -1,8 +1,3 @@
----
-# actionlint と ghalint を使って GitHub Actions の静的解析する
-#
-# - actionlint: https://github.com/rhysd/actionlint
-# - ghalint: https://github.com/suzuki-shunsuke/ghalint
 name: github-actions-lint
 
 on:
@@ -11,24 +6,7 @@ on:
       - .github/workflows/*.yaml
       - .github/workflows/*.yml
 
-env:
-  # NOTE: actionlint をアップデートする場合は、 ACTIONLINT_VERSION, ACTIONLINT_CHECKSUM を更新してください
-  ACTIONLINT_OS: linux
-  ACTIONLINT_ARCH: amd64
-  ACTIONLINT_VERSION: 1.7.3
-  ACTIONLINT_CHECKSUM: 37252b4d440b56374b0fc1726e05fd7452d30d6d774f6e9b52e65bb64475f9db
-
-  # NOTE: ghalint をアップデートする場合は、 GHALINT_VERSION, GHALINT_CHECKSUM を更新してください
-  GHALINT_OS: linux
-  GHALINT_ARCH: amd64
-  GHALINT_VERSION: 1.0.0
-  GHALINT_CHECKSUM: e9006ff212a3b27a99af43db687ded78173baa2f9816b2e2a9bed03a2ed2f954
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
-  cancel-in-progress: true
-
 jobs:
-  push-to-public:
+  github-actions-lint:
     uses: s-hirano-ist/s-templates/.github/workflows/github-actions-lint.yaml@main
     secrets: inherit

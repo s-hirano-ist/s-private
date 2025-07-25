@@ -8,6 +8,6 @@ on:
       - '.github/workflows/renovate-validator.yaml'
 
 jobs:
-  push-to-public:
+  renovate-config-validator:
     uses: s-hirano-ist/s-templates/.github/workflows/renovate-config-validator.yaml@main
     secrets: inherit
