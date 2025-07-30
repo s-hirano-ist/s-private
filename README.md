@@ -52,10 +52,6 @@ pnpm dev
 
 [s-tools/s-storybook](https://github.com/s-hirano-ist/s-tools/tree/main/s-private)を参照。
 
-## 🪝 Tags & Realease
-
-Add commits to main branch using `git-cz` command will automatically create a tag and release.
-
 ## 📜 License
 
 Licensed under the AGPL-3.0 License, Copyright © 2024
