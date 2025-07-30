@@ -43,7 +43,15 @@ describe("static-news", () => {
 			const result = await getStaticNews(1);
 
 			expect(prisma.staticNews.findMany).toHaveBeenCalledWith({
-				select: { id: true, title: true, url: true, quote: true },
+				select: {
+					id: true,
+					title: true,
+					url: true,
+					quote: true,
+					ogDescription: true,
+					ogImageUrl: true,
+					ogTitle: true,
+				},
 				skip: 0,
 				take: PAGE_SIZE,
 				cacheStrategy: { ttl: 400, swr: 40, tags: ["staticNews"] },
@@ -67,7 +75,15 @@ describe("static-news", () => {
 			const result = await getStaticNews(2);
 
 			expect(prisma.staticNews.findMany).toHaveBeenCalledWith({
-				select: { id: true, title: true, url: true, quote: true },
+				select: {
+					id: true,
+					title: true,
+					url: true,
+					quote: true,
+					ogDescription: true,
+					ogImageUrl: true,
+					ogTitle: true,
+				},
 				skip: 10,
 				take: PAGE_SIZE,
 				cacheStrategy: { ttl: 400, swr: 40, tags: ["staticNews"] },
@@ -85,7 +101,15 @@ describe("static-news", () => {
 			const result = await getStaticNews(3);
 
 			expect(prisma.staticNews.findMany).toHaveBeenCalledWith({
-				select: { id: true, title: true, url: true, quote: true },
+				select: {
+					id: true,
+					title: true,
+					url: true,
+					quote: true,
+					ogDescription: true,
+					ogImageUrl: true,
+					ogTitle: true,
+				},
 				skip: 20,
 				take: PAGE_SIZE,
 				cacheStrategy: { ttl: 400, swr: 40, tags: ["staticNews"] },
@@ -125,7 +149,15 @@ describe("static-news", () => {
 			const result = await getStaticNews(0);
 
 			expect(prisma.staticNews.findMany).toHaveBeenCalledWith({
-				select: { id: true, title: true, url: true, quote: true },
+				select: {
+					id: true,
+					title: true,
+					url: true,
+					quote: true,
+					ogDescription: true,
+					ogImageUrl: true,
+					ogTitle: true,
+				},
 				skip: -10,
 				take: PAGE_SIZE,
 				cacheStrategy: { ttl: 400, swr: 40, tags: ["staticNews"] },
@@ -143,7 +175,15 @@ describe("static-news", () => {
 			const result = await getStaticNews(100);
 
 			expect(prisma.staticNews.findMany).toHaveBeenCalledWith({
-				select: { id: true, title: true, url: true, quote: true },
+				select: {
+					id: true,
+					title: true,
+					url: true,
+					quote: true,
+					ogDescription: true,
+					ogImageUrl: true,
+					ogTitle: true,
+				},
 				skip: 990,
 				take: PAGE_SIZE,
 				cacheStrategy: { ttl: 400, swr: 40, tags: ["staticNews"] },

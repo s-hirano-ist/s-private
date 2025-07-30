@@ -12,7 +12,7 @@ type Props = {
 		url: string;
 	}[];
 };
-export const TempStack = ({ data }: Props) => {
+export const StaticNewsStack = ({ data }: Props) => {
 	return (
 		<article
 			className="prose prose-sm mx-auto max-w-5xl sm:prose-base"
