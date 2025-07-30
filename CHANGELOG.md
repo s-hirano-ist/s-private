@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.21.1](https://github.com/s-hirano-ist/s-private/compare/v8.21.0...v8.21.1) (2025-07-30)
+
+
+### Bug Fixes
+
+* correct path in pull request trigger for renovate-config-validator ([0af58ed](https://github.com/s-hirano-ist/s-private/commit/0af58edd48adb661780a16b3d06dc581d67835a3))
+* remove unnecessary whitespace in StaticNewsStack component ([32819a0](https://github.com/s-hirano-ist/s-private/commit/32819a07673754b96c206465ed22d1d27ec56c81))
+
 ## [8.21.0](https://github.com/s-hirano-ist/s-private/compare/v8.20.3...v8.21.0) (2025-07-30)
 
 
