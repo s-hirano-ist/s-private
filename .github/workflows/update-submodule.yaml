@@ -6,6 +6,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  push-to-public:
+  update-submodules:
+    permissions: {}
     uses: s-hirano-ist/s-templates/.github/workflows/update-submodule.yaml@main
-    secrets: inherit
