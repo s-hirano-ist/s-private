@@ -69,7 +69,7 @@ const nextConfig = {
 					},
 					{
 						key: "Content-Security-Policy",
-						value: cspHeader.replaceAll('\n', ""),
+						value: cspHeader.replaceAll("\n", ""),
 					},
 					{
 						key: "Report-To",
