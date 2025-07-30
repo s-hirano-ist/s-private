@@ -5,6 +5,7 @@ on:
     paths:
       - .github/workflows/*.yaml
       - .github/workflows/*.yml
+  workflow_dispatch:
 
 jobs:
   github-actions-lint:
