@@ -9,4 +9,5 @@ on:
 
 jobs:
   renovate-config-validator:
+    permissions: {}
     uses: s-hirano-ist/s-templates/.github/workflows/renovate-config-validator.yaml@main
