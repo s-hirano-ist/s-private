@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.21.2](https://github.com/s-hirano-ist/s-private/compare/v8.21.1...v8.21.2) (2025-07-30)
+
+
+### Bug Fixes
+
+* update image property in preview card and static content mappings ([03eaa8a](https://github.com/s-hirano-ist/s-private/commit/03eaa8ac09ce9b183851ed4d4e0b022ff1f32402))
+
 ## [8.21.1](https://github.com/s-hirano-ist/s-private/compare/v8.21.0...v8.21.1) (2025-07-30)
 
 
