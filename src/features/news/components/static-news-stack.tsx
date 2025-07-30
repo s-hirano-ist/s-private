@@ -32,9 +32,7 @@ export const StaticNewsStack = ({ data }: Props) => {
 							{/* TODO: change to use fragment */}
 							{/* <Fragment set:html={sanitizeHtml(d.quote ?? "")} /> */}
 						</div>
-						+{" "}
 						<a href={d.url} rel="noopener noreferrer" target="_blank">
-							{" "}
 							<div className="flex w-full justify-start">
 								{/* TODO: show images */}
 								{/* {d.ogImageUrl === null ? (
