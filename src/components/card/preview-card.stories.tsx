@@ -17,14 +17,14 @@ const svg = `
   <circle cx="50" cy="50" r="40" fill="blue" />
 </svg>`;
 const encoder = new TextEncoder();
-const uint8ArrayImage = encoder.encode(svg);
+const image = encoder.encode(svg);
 
 export const Default: Story = {
 	args: {
 		previewCardData: {
 			href: "0011223344",
 			title: "sample title",
-			image: uint8ArrayImage,
+			image,
 		},
 		basePath: "/example",
 		imageType: "svg",
