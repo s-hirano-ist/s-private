@@ -40,13 +40,15 @@ const nextConfig = {
 	pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
 	output: "standalone",
 	images: {
-		domains: ["books.google.com"],
 		remotePatterns: [
 			{ hostname: process.env.MINIO_HOST },
 			{
 				protocol: "https",
 				hostname: "books.google.com",
-				pathname: "/books/content*",
+			},
+			{
+				protocol: "https",
+				hostname: "s-hirano.com",
 			},
 		],
 	},

@@ -10,7 +10,7 @@ const _getAllStaticContents = async () => {
 	return contents.map((content) => ({
 		title: content.title,
 		href: content.title,
-		uint8ArrayImage: content.uint8ArrayImage,
+		image: content.uint8ArrayImage,
 	}));
 };
 

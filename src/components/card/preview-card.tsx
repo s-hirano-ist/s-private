@@ -10,7 +10,7 @@ export type ImageType = "webp" | "svg";
 export type PreviewCardData = {
 	href: string;
 	title: string;
-	uint8ArrayImage: Uint8Array;
+	image: Uint8Array | string; // FIXME: 厳密な型返還に変更
 };
 
 type Props = {
@@ -20,9 +20,12 @@ type Props = {
 };
 
 export function PreviewCard({ basePath, previewCardData, imageType }: Props) {
-	const { title, href, uint8ArrayImage } = previewCardData;
+	const { title, href, image } = previewCardData;
 
-	const src = convertUint8ArrayToImgSrc(uint8ArrayImage, imageType);
+	const src =
+		typeof image === "string"
+			? image
+			: convertUint8ArrayToImgSrc(image, imageType);
 
 	return (
 		<Link href={`${basePath}/${href}` as Route}>

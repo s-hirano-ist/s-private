@@ -24,7 +24,7 @@ export const Default: Story = {
 		previewCardData: {
 			href: "0011223344",
 			title: "sample title",
-			uint8ArrayImage,
+			image: uint8ArrayImage,
 		},
 		basePath: "/example",
 		imageType: "svg",
