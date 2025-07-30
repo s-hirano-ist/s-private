@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.21.0](https://github.com/s-hirano-ist/s-private/compare/v8.20.3...v8.21.0) (2025-07-30)
+
+
+### Features
+
+* add news and summary ([39cd5e2](https://github.com/s-hirano-ist/s-private/commit/39cd5e2b811796cf7cea16b2432363df9df85786))
+* add news and summary ([47b0fb8](https://github.com/s-hirano-ist/s-private/commit/47b0fb8468338ff8895dc0ae25e1409a5bbedcad))
+
+
+### Bug Fixes
+
+* ci ([deb5f37](https://github.com/s-hirano-ist/s-private/commit/deb5f373f2a2ff0a845a7681e29f476bda868aae))
+* code reviews ([eb524a0](https://github.com/s-hirano-ist/s-private/commit/eb524a0211d39ac529bc26ec6a958b4838152237))
+* fix ci ([f0f52b7](https://github.com/s-hirano-ist/s-private/commit/f0f52b7cec122228ce4ba1cb72233fe162df6d56))
+* tests ([ab1c476](https://github.com/s-hirano-ist/s-private/commit/ab1c47679f652f8617283a2309df1120a39cebb5))
+
 ## [8.20.3](https://github.com/s-hirano-ist/s-private/compare/v8.20.2...v8.20.3) (2025-07-05)
 
 
