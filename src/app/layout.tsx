@@ -2,11 +2,9 @@ import type { Metadata } from "next";
 import { ViewTransitions } from "next-view-transitions";
 import type { ReactNode } from "react";
 import "./globals.css";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Noto_Sans_JP } from "next/font/google";
-import QueryClientProvider from "@/components/provider/query-provider";
 import { PAGE_NAME } from "@/constants";
 import { env } from "@/env";
 
@@ -33,14 +31,11 @@ export default function RootLayout({
 						/>
 					)}
 				</head>
-				<QueryClientProvider>
-					<body className={notoSansJp.className}>
-						{children}
-						<Analytics />
-						<SpeedInsights />
-						<ReactQueryDevtools initialIsOpen={false} />
-					</body>
-				</QueryClientProvider>
+				<body className={notoSansJp.className}>
+					{children}
+					<Analytics />
+					<SpeedInsights />
+				</body>
 			</html>
 		</ViewTransitions>
 	);

@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import type { Components } from "react-markdown";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -59,3 +60,12 @@ export async function markdownToReact(markdown: string) {
 		</ReactMarkdown>
 	);
 }
+
+export const getCachedMarkdownReact = unstable_cache(
+	async (markdown: string) => markdownToReact(markdown),
+	["markdown-react"],
+	{
+		revalidate: 86_400 * 30, // 30 days
+		tags: ["markdown"],
+	},
+);
