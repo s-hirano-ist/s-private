@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
-      - '.github/renovate.json5'
-      - '.github/workflows/renovate-validator.yaml'
+      - ".github/renovate.json5"
+      - ".github/workflows/renovate-validator.yaml"
 
 jobs:
   renovate-config-validator:
     permissions: {}
-    uses: s-hirano-ist/s-templates/.github/workflows/renovate-config-validator.yaml@main
+    uses: s-hirano-ist/s-templates/.github/workflows/renovate-config-validator.yaml@314427fb55522ed47fff41d630d0691999a49cff
