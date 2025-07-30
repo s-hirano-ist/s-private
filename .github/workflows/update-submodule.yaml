@@ -8,4 +8,3 @@ on:
 jobs:
   update-submodules:
     uses: s-hirano-ist/s-templates/.github/workflows/update-submodule.yaml@main
-    secrets: inherit

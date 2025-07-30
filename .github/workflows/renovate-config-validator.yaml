@@ -10,4 +10,3 @@ on:
 jobs:
   renovate-config-validator:
     uses: s-hirano-ist/s-templates/.github/workflows/renovate-config-validator.yaml@main
-    secrets: inherit
