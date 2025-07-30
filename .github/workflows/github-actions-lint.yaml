@@ -9,5 +9,8 @@ on:
 
 jobs:
   github-actions-lint:
+    permissions:
+      contents: read
+      pull-requests: write
     uses: s-hirano-ist/s-templates/.github/workflows/github-actions-lint.yaml@main
     secrets: inherit
