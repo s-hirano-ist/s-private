@@ -4,80 +4,81 @@
   baseBranchPatterns: [
     'main',
   ],
-  extends: [
-    'config:recommended',
-    'config:best-practices',
-    ':semanticCommitTypeAll(chore)',
-    'customManagers:biomeVersions',
+  "timezone": "Asia/Tokyo",
+  "extends": [
+    "config:recommended",
+    "config:best-practices",
+    ":semanticCommitTypeAll(chore)",
+    "customManagers:biomeVersions",
   ],
-  reviewers: [
-    's-hirano-ist',
+  "reviewers": [
+    "s-hirano-ist",
   ],
-  enabledManagers: [
-    'npm',
-    'github-actions',
-    'docker-compose',
-    'dockerfile',
+  "enabledManagers": [
+    "npm",
+    "github-actions",
+    "docker-compose",
+    "dockerfile",
   ],
-  dependencyDashboard: true,
-  schedule: [
-    'before 11am on monday',
+  "dependencyDashboard": true,
+  "schedule": [
+    "before 11am on monday",
   ],
-  labels: [
-    'dependencies',
+  "labels": [
+    "dependencies",
   ],
-  rangeStrategy: 'bump',
-  lockFileMaintenance: {
-    enabled: true,
+  "rangeStrategy": "bump",
+  "lockFileMaintenance": {
+    "enabled": true,
   },
-  vulnerabilityAlerts: {
-    labels: [
-      'security',
+  "vulnerabilityAlerts": {
+    "labels": [
+      "security",
     ],
   },
-  packageRules: [
+  "packageRules": [
     {
-      matchPackageNames: [
-        'node',
+      "matchPackageNames": [
+        "node",
       ],
-      matchManagers: [
-        'dockerfile',
+      "matchManagers": [
+        "dockerfile",
       ],
-      allowedVersions: '/^[0-9]*[02468]([.-].*)?$/',
+      "allowedVersions": "/^[0-9]*[02468]([.-].*)?$/",
     },
     {
-      matchManagers: [
-        'npm',
+      "matchManagers": [
+        "npm",
       ],
-      matchUpdateTypes: [
-        'patch',
+      "matchUpdateTypes": [
+        "patch",
       ],
-      matchPackageNames: [
-        '*',
+      "matchPackageNames": [
+        "*",
       ],
-      matchDepTypes: [
-        'dependencies',
-        'devDependencies',
-        'peerDependencies',
+      "matchDepTypes": [
+        "dependencies",
+        "devDependencies",
+        "peerDependencies",
       ],
-      groupName: 'patch',
+      "groupName": "patch",
     },
     {
-      matchManagers: [
-        'npm',
+      "matchManagers": [
+        "npm",
       ],
-      matchUpdateTypes: [
-        'minor',
+      "matchUpdateTypes": [
+        "minor",
       ],
-      matchPackageNames: [
-        '*',
+      "matchPackageNames": [
+        "*",
       ],
-      matchDepTypes: [
-        'dependencies',
-        'devDependencies',
-        'peerDependencies',
+      "matchDepTypes": [
+        "dependencies",
+        "devDependencies",
+        "peerDependencies",
       ],
-      groupName: 'minor',
+      "groupName": "minor",
     },
     {
       matchManagers: [

@@ -1,17 +1,10 @@
 # FIXME: refactor for multiple declation and cache
-name: ci
-permissions:
-  pull-requests: write
-on:
-  pull_request:
-    types: [opened, synchronize, reopened]
 jobs:
   build:
-    runs-on: ubuntu-24.04
-    permissions: {}
-    timeout-minutes: 20
     concurrency:
       group: ${{ github.workflow }}-build-${{ github.ref }}
+    permissions: {}
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout files
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
@@ -32,45 +25,45 @@ jobs:
           run_install: false
 
       - name: Get pnpm directory
-        shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
 
+        shell: bash
       - name: Cache dependencies
         uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
         with:
-          path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-node-${{ hashFiles('**/pnpm-lock.yaml') }}
+          path: ${{ env.STORE_PATH }}
           restore-keys: |
             ${{ runner.os }}-node-
       - run: pnpm i --frozen-lockfile
-      - run: pnpm build
-        env:
-          AUTH_SECRET: ${{secrets.AUTH_SECRET}}
+      - env:
           AUTH0_CLIENT_ID: ${{secrets.AUTH0_CLIENT_ID}}
           AUTH0_CLIENT_SECRET: ${{secrets.AUTH0_CLIENT_SECRET}}
           AUTH0_ISSUER_BASE_URL: ${{secrets.AUTH0_ISSUER_BASE_URL}}
-          PUSHOVER_URL: ${{secrets.PUSHOVER_URL}}
-          PUSHOVER_APP_TOKEN: ${{secrets.PUSHOVER_APP_TOKEN}}
-          PUSHOVER_USER_KEY: ${{secrets.PUSHOVER_USER_KEY}}
+          AUTH_SECRET: ${{secrets.AUTH_SECRET}}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
           MINIO_ACCESS_KEY: ${{secrets.MINIO_ACCESS_KEY}}
           MINIO_BUCKET_NAME: ${{secrets.MINIO_BUCKET_NAME}}
           MINIO_HOST: ${{secrets.MINIO_HOST}}
           MINIO_PORT: ${{secrets.MINIO_PORT}}
           MINIO_SECRET_KEY: ${{secrets.MINIO_SECRET_KEY}}
+          PUSHOVER_APP_TOKEN: ${{secrets.PUSHOVER_APP_TOKEN}}
+          PUSHOVER_URL: ${{secrets.PUSHOVER_URL}}
+          PUSHOVER_USER_KEY: ${{secrets.PUSHOVER_USER_KEY}}
           NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
           POSTGRES_DIRECT_URL: ${{ secrets.POSTGRES_DIRECT_URL }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_REPORT_URL: ${{ secrets.SENTRY_REPORT_URL }}
 
-  lint:
-    runs-on: ubuntu-24.04
-    permissions:
-      pull-requests: write
+        run: pnpm build
     timeout-minutes: 20
+  lint:
     concurrency:
       group: ${{ github.workflow }}-lint-${{ github.ref }}
+    permissions:
+      pull-requests: write
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout files
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
@@ -89,31 +82,75 @@ jobs:
           run_install: false
 
       - name: Get pnpm directory
-        shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
 
+        shell: bash
       - name: Cache dependencies
         uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
         with:
-          path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-node-${{ hashFiles('**/pnpm-lock.yaml') }}
+          path: ${{ env.STORE_PATH }}
           restore-keys: |
             ${{ runner.os }}-node-
       - run: pnpm i --frozen-lockfile
       - run: pnpm fmt:ci
-      - run: pnpm lint
-        env:
-          SKIP_ENV_VALIDATION: true
+      - env:
           MINIO_HOST: ${{ secrets.MINIO_HOST }}
 
+          SKIP_ENV_VALIDATION: true
+        run: pnpm lint
+    timeout-minutes: 20
+        # - run: pnpm test:e2e # FIXME: later if I have time
+
+  storybook:
+    concurrency:
+      group: ${{ github.workflow }}-storybook-${{ github.ref }}
+    permissions: {}
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout files
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          persist-credentials: false
+          submodules: true
+
+      - name: Install Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "23"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4
+        with:
+          # version: X.X.X
+          # Optional when there is a packageManager field in the package.json.
+          run_install: false
+
+      - name: Get pnpm directory
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
+
+        shell: bash
+      - name: Cache dependencies
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+        with:
+          key: ${{ runner.os }}-node-${{ hashFiles('**/pnpm-lock.yaml') }}
+          path: ${{ env.STORE_PATH }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - run: pnpm i --frozen-lockfile
+      - env:
+          MINIO_HOST: ${{ secrets.MINIO_HOST }}
+          SKIP_ENV_VALIDATION: true
+        run: pnpm storybook:build
+    timeout-minutes: 20
   test:
-      runs-on: ubuntu-24.04
-      permissions:
-        pull-requests: write
-      timeout-minutes: 20
       concurrency:
         group: ${{ github.workflow }}-test-${{ github.ref }}
+      permissions:
+        pull-requests: write
+      runs-on: ubuntu-24.04
       steps:
         - name: Checkout files
           uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
@@ -132,69 +169,32 @@ jobs:
             run_install: false
 
         - name: Get pnpm directory
-          shell: bash
           run: |
             echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
 
+          shell: bash
         - name: Cache dependencies
           uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
           with:
-            path: ${{ env.STORE_PATH }}
             key: ${{ runner.os }}-node-${{ hashFiles('**/pnpm-lock.yaml') }}
+            path: ${{ env.STORE_PATH }}
             restore-keys: |
               ${{ runner.os }}-node-
         - run: pnpm i --frozen-lockfile
         - run: pnpm exec playwright install
-        - run: pnpm test
-          env:
+        - env:
             MINIO_HOST: ${{secrets.MINIO_HOST}}
-        - name: Show coverage
-          if: always()
+          run: pnpm test
+        - if: always()
+          name: Show coverage
           uses: davelosert/vitest-coverage-report-action@8ab049ff5a2c6e78f78af446329379b318544a1a # v2
           with:
-            json-summary-path: ./.vitest-coverage/coverage-summary.json
             json-final-path: ./.vitest-coverage/coverage-final.json
-        # - run: pnpm test:e2e # FIXME: later if I have time
-
-  storybook:
-    runs-on: ubuntu-24.04
-    permissions: {}
-    timeout-minutes: 20
-    concurrency:
-      group: ${{ github.workflow }}-storybook-${{ github.ref }}
-    steps:
-      - name: Checkout files
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-        with:
-          persist-credentials: false
-          submodules: true
-
-      - name: Install Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with:
-          node-version: "23"
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4
-        with:
-          # version: X.X.X
-          # Optional when there is a packageManager field in the package.json.
-          run_install: false
-
-      - name: Get pnpm directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
-
-      - name: Cache dependencies
-        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-node-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-      - run: pnpm i --frozen-lockfile
-      - run: pnpm storybook:build
-        env:
-          SKIP_ENV_VALIDATION: true
-          MINIO_HOST: ${{ secrets.MINIO_HOST }}
+            json-summary-path: ./.vitest-coverage/coverage-summary.json
+      timeout-minutes: 20
+name: ci
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+permissions:
+  pull-requests: write

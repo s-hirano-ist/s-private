@@ -1,20 +1,21 @@
-name: release-please
-permissions:
-    contents: write
-    pull-requests: write
-on:
-    push:
-        branches:
-            - main
+
 jobs:
     release-please:
         runs-on: ubuntu-24.04
-        timeout-minutes: 20
         steps:
         - uses: googleapis/release-please-action@1155c2c8dcbd6b15e85bae6bc6d1fed9552663cb
           with:
-            token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
             # this is a built-in strategy in release-please, see "Action Inputs" for more options
             config-file: .release-please-config.json
             manifest-file: .release-please-manifest.json
             release-type: node
+            token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
+        timeout-minutes: 20
+name: release-please
+on:
+    push:
+        branches:
+            - main
+permissions:
+    contents: write
+    pull-requests: write

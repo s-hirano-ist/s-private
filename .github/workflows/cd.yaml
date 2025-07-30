@@ -1,18 +1,10 @@
-name: cd
-permissions:
-    contents: write
-    pull-requests: write
-on:
-  pull_request:
-    types: [opened, synchronize, edited]
 
 jobs:
     build-push-s-private:
+        if: contains(join(github.event.pull_request.labels.*.name, ','), 'autorelease')
         permissions:
           contents: write
         runs-on: ubuntu-24.04
-        if: contains(join(github.event.pull_request.labels.*.name, ','), 'autorelease')
-        timeout-minutes: 20
         steps:
 
         - name: Checkout code
@@ -27,11 +19,11 @@ jobs:
         - name: Log in to Docker Hub
           uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3
           with:
-            username: ${{ secrets.DOCKER_HUB_USERNAME }}
             password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-        - name: Extract Docker metadata
-          id: meta
+            username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        - id: meta
+          name: Extract Docker metadata
           uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804 # v5
           with:
             images: ${{ secrets.DOCKER_HUB_USERNAME }}/s-private
@@ -45,7 +37,6 @@ jobs:
             context: .
             file: ./Dockerfile
             push: true
-            tags: ${{ steps.meta.outputs.tags }}
             secrets: |
               AUTH_SECRET=${{secrets.AUTH_SECRET}}
               AUTH0_CLIENT_ID=${{secrets.AUTH0_CLIENT_ID}}
@@ -65,15 +56,16 @@ jobs:
               SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
               SENTRY_REPORT_URL=${{ secrets.SENTRY_REPORT_URL }}
 
+            tags: ${{ steps.meta.outputs.tags }}
         - name: Show pushed image tags
           run: echo "Pushed docker image with tag ${{ env.PACKAGE_VERSION }}"
 
+        timeout-minutes: 20
     build-push-storybook:
+      if: contains(join(github.event.pull_request.labels.*.name, ','), 'autorelease')
       permissions:
         contents: write
       runs-on: ubuntu-24.04
-      if: contains(join(github.event.pull_request.labels.*.name, ','), 'autorelease')
-      timeout-minutes: 20
       steps:
 
       - name: Checkout code
@@ -88,11 +80,11 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3
         with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      - name: Extract Docker metadata
-        id: meta
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+      - id: meta
+        name: Extract Docker metadata
         uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804 # v5
         with:
           images: ${{ secrets.DOCKER_HUB_USERNAME }}/s-storybook
@@ -110,3 +102,12 @@ jobs:
 
       - name: Show pushed image tags
         run: echo "Pushed docker image with tag ${{ env.PACKAGE_VERSION }}"
+      timeout-minutes: 20
+name: cd
+on:
+  pull_request:
+    types: [opened, synchronize, edited]
+permissions:
+    contents: write
+    pull-requests: write
+

@@ -1,17 +1,10 @@
-name: update-license
-
-on:
-  schedule:
-    - cron: "0 23 1 * *"
-  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-24.04
-    permissions: {}
-    timeout-minutes: 20
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
+    permissions: {}
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
@@ -29,15 +22,15 @@ jobs:
           run_install: false
 
       - name: Get pnpm directory
-        shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
 
+        shell: bash
       - name: Cache dependencies
         uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
         with:
-          path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-node-${{ hashFiles('**/pnpm-lock.yaml') }}
+          path: ${{ env.STORE_PATH }}
           restore-keys: |
             ${{ runner.os }}-node-
       - run: pnpm i --frozen-lockfile # && npm install -g @lhci/cli@0.12.x
@@ -48,8 +41,16 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7
         with:
-          token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
-          commit-message: "contents: update licenses"
-          title: "contents: update licenses"
           body: |
             This is an update PR of auto generated licenses.
+          commit-message: "contents: update licenses"
+          title: "contents: update licenses"
+          token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
+    timeout-minutes: 20
+name: update-license
+
+on:
+  schedule:
+    - cron: "0 23 1 * *"
+  workflow_dispatch:
+

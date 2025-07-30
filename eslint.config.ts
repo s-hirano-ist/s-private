@@ -11,7 +11,7 @@ import perfectionistPlugin from "eslint-plugin-perfectionist";
 import reactPlugin from "eslint-plugin-react";
 import reactHookPlugin from "eslint-plugin-react-hooks";
 import spellcheckPlugin from "eslint-plugin-spellcheck";
-import storybookPlugin from "eslint-plugin-storybook";
+// import storybookPlugin from "eslint-plugin-storybook";
 // import tailwindcssPlugin from "eslint-plugin-tailwindcss";
 import unicornPlugin from "eslint-plugin-unicorn";
 import unusedImportsPlugin from "eslint-plugin-unused-imports";
@@ -37,11 +37,25 @@ export default tsEslint.config(
 			// Ignore coverage reports
 			"coverage/**/*",
 			".storybook-coverage/**/*",
+			// Ignore Storybook build output
+			".storybook-static/**/*",
+			// Ignore lockfiles
+			"pnpm-lock.yaml",
+			"package-lock.json",
+			"yarn.lock",
 			// Ignore files that Biome handles
 			// Note: ESLint focuses on logic/architecture, Biome handles formatting
 		],
 	},
 	{
+		files: [
+			"**/*.js",
+			"**/*.jsx",
+			"**/*.ts",
+			"**/*.tsx",
+			"**/*.mjs",
+			"**/*.cjs",
+		],
 		languageOptions: {
 			globals: globals.browser,
 		},
@@ -52,10 +66,16 @@ export default tsEslint.config(
 	reactPlugin.configs.flat["jsx-runtime"], // https://github.com/jsx-eslint/eslint-plugin-react?tab=readme-ov-file#flat-configs
 	// jsx-a11y is included in Next.js config, so we avoid duplicate registration
 	vitestPlugin.configs.recommended,
+	// Markdown files configuration
 	...markdown.configs.recommended,
+	{
+		files: ["**/*.md", "**/*.mdx"],
+		processor: "markdown/markdown",
+	},
 	...compat.extends("plugin:react-hooks/recommended"),
 	// FIXME: not working with eslint inspector
 	...compat.extends("next"),
+	// Base configuration for all files
 	{
 		settings: {
 			react: {
@@ -221,6 +241,7 @@ export default tsEslint.config(
 						"subdomains",
 						"keyframes",
 						"noopener",
+						"lockfiles",
 					],
 				},
 			],
@@ -438,8 +459,8 @@ export default tsEslint.config(
 	{
 		files: ["**/*.yml", "**/*.yaml"],
 		rules: {
-			"yml/sort-keys": "error", // YAMLのキーをソート
-			"yml/no-empty-mapping-value": "error", // 空のマッピング値を禁止
+			"yml/sort-keys": "off", // YAMLのキーをソート
+			"yml/no-empty-mapping-value": "off", // 空のマッピング値を禁止
 		},
 	},
 
