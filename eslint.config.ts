@@ -1,28 +1,16 @@
-import css from "@eslint/css";
 import { FlatCompat } from "@eslint/eslintrc";
-import js from "@eslint/js";
-import markdown from "@eslint/markdown";
 import vitestPlugin from "@vitest/eslint-plugin";
-// import importPlugin from "eslint-plugin-import";
 import boundariesPlugin from "eslint-plugin-boundaries";
-import jsoncPlugin from "eslint-plugin-jsonc";
 // import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
-import perfectionistPlugin from "eslint-plugin-perfectionist";
 import reactPlugin from "eslint-plugin-react";
 import reactHookPlugin from "eslint-plugin-react-hooks";
-import spellcheckPlugin from "eslint-plugin-spellcheck";
-import storybookPlugin from "eslint-plugin-storybook";
+// import storybookPlugin from "eslint-plugin-storybook";
 // import tailwindcssPlugin from "eslint-plugin-tailwindcss";
-import unicornPlugin from "eslint-plugin-unicorn";
-import unusedImportsPlugin from "eslint-plugin-unused-imports";
-import ymlPlugin from "eslint-plugin-yml";
 import globals from "globals";
 import tsEslint from "typescript-eslint";
 
 const compat = new FlatCompat({
 	baseDirectory: import.meta.dirname,
-	recommendedConfig: js.configs.recommended,
-	allConfig: js.configs.all,
 });
 
 export default tsEslint.config(
@@ -37,25 +25,42 @@ export default tsEslint.config(
 			// Ignore coverage reports
 			"coverage/**/*",
 			".storybook-coverage/**/*",
+			// Ignore Storybook build output
+			".storybook-static/**/*",
+			// Ignore lockfiles
+			"pnpm-lock.yaml",
+			"package-lock.json",
+			"yarn.lock",
 			// Ignore files that Biome handles
-			// Note: ESLint focuses on logic/architecture, Biome handles formatting
+			// Note: ESLint focuses on logic/architecture, Biome handles formatting,
+			".github/renovate.json5",
 		],
 	},
 	{
+		files: [
+			"**/*.js",
+			"**/*.jsx",
+			"**/*.ts",
+			"**/*.tsx",
+			"**/*.mjs",
+			"**/*.cjs",
+		],
 		languageOptions: {
 			globals: globals.browser,
 		},
 	},
-	js.configs.recommended,
 	tsEslint.configs.strict,
 	reactPlugin.configs.flat.recommended,
 	reactPlugin.configs.flat["jsx-runtime"], // https://github.com/jsx-eslint/eslint-plugin-react?tab=readme-ov-file#flat-configs
 	// jsx-a11y is included in Next.js config, so we avoid duplicate registration
 	vitestPlugin.configs.recommended,
-	...markdown.configs.recommended,
 	...compat.extends("plugin:react-hooks/recommended"),
 	// FIXME: not working with eslint inspector
 	...compat.extends("next"),
+	// Base configuration for all files
+
+	// FIXME: not working
+	// ...tailwindcssPlugin.configs["flat/recommended"],
 	{
 		settings: {
 			react: {
@@ -81,6 +86,7 @@ export default tsEslint.config(
 			"react/jsx-pascal-case": "error", // コンポーネント名をパスカルケースに統一
 			"react/no-danger": "error", // dangerouslySetInnerHTML を許可しない
 			"react/prop-types": "off", // Props の型チェックは TS で行う & 誤検知があるため無効化
+			"@typescript-eslint/no-unused-vars": "off",
 		},
 	},
 	{
@@ -106,23 +112,6 @@ export default tsEslint.config(
 			],
 		},
 	},
-	{
-		// eslint-plugin-unused-imports の設定
-		plugins: { "unused-imports": unusedImportsPlugin },
-		rules: {
-			"@typescript-eslint/no-unused-vars": "off", // 重複エラーを防ぐため typescript-eslint の方を無効化
-			"unused-imports/no-unused-imports": "error",
-			"unused-imports/no-unused-vars": [
-				"error",
-				{
-					vars: "all",
-					varsIgnorePattern: "^_",
-					args: "after-used",
-					argsIgnorePattern: "^_",
-				},
-			],
-		},
-	},
 
 	{
 		rules: {
@@ -143,112 +132,7 @@ export default tsEslint.config(
 			"vitest/consistent-test-it": ["error", { fn: "test" }], // it ではなく test に統一
 		},
 	},
-	{
-		// eslint-plugin-spellcheck の設定
-		plugins: { spellcheck: spellcheckPlugin },
-		rules: {
-			"spellcheck/spell-checker": [
-				"error",
-				{
-					minLength: 5, // 5 文字以上の単語をチェック
-					// チェックをスキップする単語の配列
-					skipWords: [
-						"unicode",
-						"localhost",
-						"lucide",
-						"jsonc",
-						"prisma",
-						"minio",
-						"onboarding",
-						"favicon",
-						"pathname",
-						"sitemap",
-						"cssresources",
-						"matcher",
-						"webmanifest",
-						"nodejs",
-						"rehype",
-						"shiki",
-						"vitesse",
-						"mdast",
-						"nofollow",
-						"uint",
-						"charset",
-						"unexported",
-						"autodocs",
-						"whitespace",
-						"nullable",
-						"dropdown",
-						"textarea",
-						"revalidate",
-						"upsert",
-						"uuidv7",
-						"resize",
-						"namespace",
-						"nowrap",
-						"sonner",
-						"radix",
-						"checkbox",
-						"semibold",
-						"debounced",
-						"shadcn",
-						"photoswipe",
-						"lightbox",
-						"noreferrer",
-						"signout",
-						"extrabold",
-						"comming",
-						"hirano",
-						"latin",
-						"readonly",
-						"ist",
-						"dismissible",
-						"devtools",
-						"biome",
-						"vitest",
-						"compat",
-						"tailwindcss",
-						"globals",
-						"integrations",
-						"Vercel",
-						"jsdom",
-						"dotenv",
-						"matchers",
-						"nextjs",
-						"workspace",
-						"postcss",
-						"mb",
-						"subdomains",
-						"keyframes",
-						"noopener",
-					],
-				},
-			],
-		},
-	},
-	{
-		// eslint-plugin-perfectionist の設定
-		plugins: { perfectionist: perfectionistPlugin },
-		rules: {
-			"perfectionist/sort-interfaces": "warn", // interface のプロパティの並び順をアルファベット順に統一
-			"perfectionist/sort-object-types": "warn", // Object 型のプロパティの並び順をアルファベット順に統一
-		},
-	},
 	// ...storybookPlugin.configs["flat/recommended"],
-	unicornPlugin.configs["recommended"],
-	{
-		rules: {
-			"unicorn/prevent-abbreviations": "off",
-			"unicorn/no-await-expression-member": "off",
-			"unicorn/no-null": "off",
-			"unicorn/prefer-code-point": "off",
-			"unicorn/no-abusive-eslint-disable": "off",
-			"unicorn/prefer-global-this": "off",
-			"unicorn/consistent-function-scoping": "off",
-			"unicorn/no-new-array": "off",
-			"unicorn/no-useless-spread": "off",
-		},
-	},
 
 	// Boundaries plugin configuration for strict dependencies
 	{
@@ -406,85 +290,4 @@ export default tsEslint.config(
 			],
 		},
 	},
-
-	// FIXME: not working
-	// ...tailwindcssPlugin.configs["flat/recommended"],
-
-	// CSS設定
-	{
-		files: ["**/*.css"],
-		ignores: ["**/globals.css"], // Tailwind CSS 4の新しい構文のため除外
-		plugins: {
-			css,
-		},
-		language: "css/css",
-		rules: {
-			"css/use-baseline": ["error", { available: "widely" }],
-		},
-	},
-
-	// JSON設定
-	...jsoncPlugin.configs["flat/recommended-with-jsonc"],
-	{
-		files: ["**/*.json", "**/*.jsonc"],
-		rules: {
-			"jsonc/sort-keys": "off", // JSONのキーをソート
-			"jsonc/no-comments": "off", // .jsonc ファイルではコメントを許可
-		},
-	},
-
-	// YAML設定
-	...ymlPlugin.configs["flat/recommended"],
-	{
-		files: ["**/*.yml", "**/*.yaml"],
-		rules: {
-			"yml/sort-keys": "error", // YAMLのキーをソート
-			"yml/no-empty-mapping-value": "error", // 空のマッピング値を禁止
-		},
-	},
-
-	/**
-	 * Note: Import ordering and formatting rules are handled by Biome
-	 * ESLint focuses on logic, architecture, and code quality rules
-	 * Biome handles:
-	 * - Import organization (organizeImports.enabled: true)
-	 * - Code formatting
-	 * - Basic syntax checks
-	 *
-	 * This separation provides:
-	 * - Better performance (Biome is faster for formatting)
-	 * - Clear responsibilities
-	 * - No conflicting rules
-	 */
-	// {
-	// 	// eslint-plugin-import の設定
-	// 	plugins: { import: importPlugin },
-	// 	rules: {
-	// 		"import/order": [
-	// 			// import の並び順を設定
-	// 			"warn",
-	// 			{
-	// 				groups: [
-	// 					"builtin",
-	// 					"external",
-	// 					"internal",
-	// 					["parent", "sibling"],
-	// 					"object",
-	// 					"type",
-	// 					"index",
-	// 				],
-	// 				"newlines-between": "always",
-	// 				pathGroupsExcludedImportTypes: ["builtin"],
-	// 				alphabetize: { order: "asc", caseInsensitive: true },
-	// 				pathGroups: [
-	// 					{
-	// 						pattern: "react",
-	// 						group: "external",
-	// 						position: "before",
-	// 					},
-	// 				],
-	// 			},
-	// 		],
-	// 	},
-	// },
 );

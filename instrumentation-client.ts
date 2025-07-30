@@ -10,7 +10,6 @@ import {
 } from "@sentry/nextjs";
 import { env } from "@/env";
 
-// eslint-disable-next-line
 export const onRouterTransitionStart = captureRouterTransitionStart;
 
 init({
