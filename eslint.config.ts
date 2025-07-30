@@ -220,6 +220,7 @@ export default tsEslint.config(
 						"mb",
 						"subdomains",
 						"keyframes",
+						"noopener",
 					],
 				},
 			],
