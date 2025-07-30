@@ -1,12 +1,16 @@
 import { cache } from "react";
-import prisma from "@/prisma";
+import db from "@/db";
+import { staticContents, staticBooks } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 // Fetch all static contents for RAG knowledge base
 const _getAllStaticContentsForKnowledge = async () => {
-	return await prisma.staticContents.findMany({
-		select: { title: true, markdown: true },
-		cacheStrategy: { ttl: 400, tags: ["staticContents"] },
-	});
+	return await db
+		.select({
+			title: staticContents.title,
+			markdown: staticContents.markdown,
+		})
+		.from(staticContents);
 };
 
 export const getAllStaticContentsForKnowledge = cache(
@@ -15,10 +19,12 @@ export const getAllStaticContentsForKnowledge = cache(
 
 // Fetch all static books for RAG knowledge base
 const _getAllStaticBooksForKnowledge = async () => {
-	return await prisma.staticBooks.findMany({
-		select: { title: true, markdown: true },
-		cacheStrategy: { ttl: 400, tags: ["staticBooks"] },
-	});
+	return await db
+		.select({
+			title: staticBooks.title,
+			markdown: staticBooks.markdown,
+		})
+		.from(staticBooks);
 };
 
 export const getAllStaticBooksForKnowledge = cache(
@@ -48,9 +54,13 @@ export async function fetchAllKnowledge() {
 
 // Fetch a specific content by title
 export async function fetchContentByTitle(title: string) {
-	return await prisma.staticContents.findUnique({
-		where: { title },
-		select: { title: true, markdown: true },
-		cacheStrategy: { ttl: 400, tags: ["staticContents"] },
-	});
+	const [result] = await db
+		.select({
+			title: staticContents.title,
+			markdown: staticContents.markdown,
+		})
+		.from(staticContents)
+		.where(eq(staticContents.title, title))
+		.limit(1);
+	return result || null;
 }

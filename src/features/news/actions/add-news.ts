@@ -10,7 +10,9 @@ import {
 import { validateCategory } from "@/features/news/utils/validate-category";
 import { validateNews } from "@/features/news/utils/validate-news";
 import { loggerInfo } from "@/pino";
-import prisma from "@/prisma";
+import db from "@/db";
+import { categories, news } from "@/db/schema";
+import { eq, and } from "drizzle-orm";
 import type { ServerAction } from "@/types";
 import { sendPushoverMessage } from "@/utils/fetch-message";
 import { formatCreateNewsMessage } from "@/utils/format-for-notification";
@@ -32,24 +34,36 @@ export async function addNews(formData: FormData): Promise<ServerAction<News>> {
 
 		const validatedCategory = validateCategory(formData);
 
-		const category = await prisma.categories.upsert({
-			where: { name_userId: { userId, name: validatedCategory.name } },
-			update: {},
-			create: { userId, ...validatedCategory },
-		});
+		const existingCategory = await db
+			.select()
+			.from(categories)
+			.where(
+				and(eq(categories.name, validatedCategory.name), eq(categories.userId, userId)),
+			)
+			.limit(1);
+
+		let category;
+		if (existingCategory.length > 0) {
+			category = existingCategory[0];
+		} else {
+			const [newCategory] = await db
+				.insert(categories)
+				.values({ userId, ...validatedCategory })
+				.returning();
+			category = newCategory;
+		}
 
 		formData.set("category", String(category.id));
 
-		const createdNews = await prisma.news.create({
-			data: { userId, ...validateNews(formData) },
-			select: {
-				id: true,
-				title: true,
-				quote: true,
-				url: true,
-				Category: true,
-			},
-		});
+		const [createdNewsItem] = await db
+			.insert(news)
+			.values({ userId, ...validateNews(formData) })
+			.returning();
+
+		const createdNews = {
+			...createdNewsItem,
+			Category: category,
+		};
 
 		const message = formatCreateNewsMessage(createdNews);
 		loggerInfo(message, {

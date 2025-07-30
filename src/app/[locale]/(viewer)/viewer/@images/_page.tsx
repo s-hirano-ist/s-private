@@ -5,14 +5,19 @@ import { ImageStackSkeleton } from "@/components/stack/image-stack-skeleton";
 import { Pagination } from "@/components/stack/pagination";
 import { hasViewerAdminPermission } from "@/features/auth/utils/session";
 import { AllImageStack } from "@/features/image/components/all-image-stack";
-import prisma from "@/prisma";
+import db from "@/db";
+import { staticImages } from "@/db/schema";
+import { count } from "drizzle-orm";
 
 type Props = { currentPage: number };
 
 export async function SuspensePage({ currentPage }: Props) {
 	const hasAdminPermission = await hasViewerAdminPermission();
 
-	const totalImages = await prisma.staticImages.count({});
+	const [result] = await db
+		.select({ count: count() })
+		.from(staticImages);
+	const totalImages = result.count;
 
 	return (
 		<>

@@ -1,14 +1,15 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { PAGE_SIZE } from "@/constants";
-import prisma from "@/prisma";
+import db from "@/db";
+import { staticNews } from "@/db/schema";
 import { getStaticNews, getStaticNewsCount } from "./static-news";
 
-vi.mock("@/prisma", () => ({
+vi.mock("@/db", () => ({
 	default: {
-		staticNews: {
-			findMany: vi.fn(),
-			count: vi.fn(),
-		},
+		select: vi.fn().mockReturnThis(),
+		from: vi.fn().mockReturnThis(),
+		limit: vi.fn().mockReturnThis(),
+		offset: vi.fn(),
 	},
 }));
 
@@ -38,24 +39,28 @@ describe("static-news", () => {
 				},
 			];
 
-			vi.mocked(prisma.staticNews.findMany).mockResolvedValue(mockNews);
+			vi.mocked(db.select).mockReturnValue({
+				from: vi.fn().mockReturnValue({
+					limit: vi.fn().mockReturnValue({
+						offset: vi.fn().mockResolvedValue(mockNews),
+					}),
+				}),
+			});
 
 			const result = await getStaticNews(1);
 
-			expect(prisma.staticNews.findMany).toHaveBeenCalledWith({
-				select: {
-					id: true,
-					title: true,
-					url: true,
-					quote: true,
-					ogDescription: true,
-					ogImageUrl: true,
-					ogTitle: true,
-				},
-				skip: 0,
-				take: PAGE_SIZE,
-				cacheStrategy: { ttl: 400, swr: 40, tags: ["staticNews"] },
+			expect(db.select).toHaveBeenCalledWith({
+				id: staticNews.id,
+				title: staticNews.title,
+				url: staticNews.url,
+				quote: staticNews.quote,
+				ogImageUrl: staticNews.ogImageUrl,
+				ogTitle: staticNews.ogTitle,
+				ogDescription: staticNews.ogDescription,
 			});
+			expect(db.select().from).toHaveBeenCalledWith(staticNews);
+			expect(db.select().from().limit).toHaveBeenCalledWith(PAGE_SIZE);
+			expect(db.select().from().limit().offset).toHaveBeenCalledWith(0);
 
 			expect(result).toEqual(mockNews);
 		});
@@ -70,24 +75,28 @@ describe("static-news", () => {
 				},
 			];
 
-			vi.mocked(prisma.staticNews.findMany).mockResolvedValue(mockNews);
+			vi.mocked(db.select).mockReturnValue({
+				from: vi.fn().mockReturnValue({
+					limit: vi.fn().mockReturnValue({
+						offset: vi.fn().mockResolvedValue(mockNews),
+					}),
+				}),
+			});
 
 			const result = await getStaticNews(2);
 
-			expect(prisma.staticNews.findMany).toHaveBeenCalledWith({
-				select: {
-					id: true,
-					title: true,
-					url: true,
-					quote: true,
-					ogDescription: true,
-					ogImageUrl: true,
-					ogTitle: true,
-				},
-				skip: 10,
-				take: PAGE_SIZE,
-				cacheStrategy: { ttl: 400, swr: 40, tags: ["staticNews"] },
+			expect(db.select).toHaveBeenCalledWith({
+				id: staticNews.id,
+				title: staticNews.title,
+				url: staticNews.url,
+				quote: staticNews.quote,
+				ogImageUrl: staticNews.ogImageUrl,
+				ogTitle: staticNews.ogTitle,
+				ogDescription: staticNews.ogDescription,
 			});
+			expect(db.select().from).toHaveBeenCalledWith(staticNews);
+			expect(db.select().from().limit).toHaveBeenCalledWith(PAGE_SIZE);
+			expect(db.select().from().limit().offset).toHaveBeenCalledWith(10);
 
 			expect(result).toEqual(mockNews);
 		});
@@ -96,30 +105,40 @@ describe("static-news", () => {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const mockNews: any[] = [];
 
-			vi.mocked(prisma.staticNews.findMany).mockResolvedValue(mockNews);
+			vi.mocked(db.select).mockReturnValue({
+				from: vi.fn().mockReturnValue({
+					limit: vi.fn().mockReturnValue({
+						offset: vi.fn().mockResolvedValue(mockNews),
+					}),
+				}),
+			});
 
 			const result = await getStaticNews(3);
 
-			expect(prisma.staticNews.findMany).toHaveBeenCalledWith({
-				select: {
-					id: true,
-					title: true,
-					url: true,
-					quote: true,
-					ogDescription: true,
-					ogImageUrl: true,
-					ogTitle: true,
-				},
-				skip: 20,
-				take: PAGE_SIZE,
-				cacheStrategy: { ttl: 400, swr: 40, tags: ["staticNews"] },
+			expect(db.select).toHaveBeenCalledWith({
+				id: staticNews.id,
+				title: staticNews.title,
+				url: staticNews.url,
+				quote: staticNews.quote,
+				ogImageUrl: staticNews.ogImageUrl,
+				ogTitle: staticNews.ogTitle,
+				ogDescription: staticNews.ogDescription,
 			});
+			expect(db.select().from).toHaveBeenCalledWith(staticNews);
+			expect(db.select().from().limit).toHaveBeenCalledWith(PAGE_SIZE);
+			expect(db.select().from().limit().offset).toHaveBeenCalledWith(20);
 
 			expect(result).toEqual([]);
 		});
 
 		test("should handle empty results", async () => {
-			vi.mocked(prisma.staticNews.findMany).mockResolvedValue([]);
+			vi.mocked(db.select).mockReturnValue({
+				from: vi.fn().mockReturnValue({
+					limit: vi.fn().mockReturnValue({
+						offset: vi.fn().mockResolvedValue([]),
+					}),
+				}),
+			});
 
 			const result = await getStaticNews(1);
 
@@ -127,9 +146,13 @@ describe("static-news", () => {
 		});
 
 		test("should handle database errors", async () => {
-			vi.mocked(prisma.staticNews.findMany).mockRejectedValue(
-				new Error("Database error"),
-			);
+			vi.mocked(db.select).mockReturnValue({
+				from: vi.fn().mockReturnValue({
+					limit: vi.fn().mockReturnValue({
+						offset: vi.fn().mockRejectedValue(new Error("Database error")),
+					}),
+				}),
+			});
 
 			await expect(getStaticNews(1)).rejects.toThrow("Database error");
 		});
@@ -144,24 +167,28 @@ describe("static-news", () => {
 				},
 			];
 
-			vi.mocked(prisma.staticNews.findMany).mockResolvedValue(mockNews);
+			vi.mocked(db.select).mockReturnValue({
+				from: vi.fn().mockReturnValue({
+					limit: vi.fn().mockReturnValue({
+						offset: vi.fn().mockResolvedValue(mockNews),
+					}),
+				}),
+			});
 
 			const result = await getStaticNews(0);
 
-			expect(prisma.staticNews.findMany).toHaveBeenCalledWith({
-				select: {
-					id: true,
-					title: true,
-					url: true,
-					quote: true,
-					ogDescription: true,
-					ogImageUrl: true,
-					ogTitle: true,
-				},
-				skip: -10,
-				take: PAGE_SIZE,
-				cacheStrategy: { ttl: 400, swr: 40, tags: ["staticNews"] },
+			expect(db.select).toHaveBeenCalledWith({
+				id: staticNews.id,
+				title: staticNews.title,
+				url: staticNews.url,
+				quote: staticNews.quote,
+				ogImageUrl: staticNews.ogImageUrl,
+				ogTitle: staticNews.ogTitle,
+				ogDescription: staticNews.ogDescription,
 			});
+			expect(db.select().from).toHaveBeenCalledWith(staticNews);
+			expect(db.select().from().limit).toHaveBeenCalledWith(PAGE_SIZE);
+			expect(db.select().from().limit().offset).toHaveBeenCalledWith(-10);
 
 			expect(result).toEqual(mockNews);
 		});
@@ -170,24 +197,28 @@ describe("static-news", () => {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const mockNews: any[] = [];
 
-			vi.mocked(prisma.staticNews.findMany).mockResolvedValue(mockNews);
+			vi.mocked(db.select).mockReturnValue({
+				from: vi.fn().mockReturnValue({
+					limit: vi.fn().mockReturnValue({
+						offset: vi.fn().mockResolvedValue(mockNews),
+					}),
+				}),
+			});
 
 			const result = await getStaticNews(100);
 
-			expect(prisma.staticNews.findMany).toHaveBeenCalledWith({
-				select: {
-					id: true,
-					title: true,
-					url: true,
-					quote: true,
-					ogDescription: true,
-					ogImageUrl: true,
-					ogTitle: true,
-				},
-				skip: 990,
-				take: PAGE_SIZE,
-				cacheStrategy: { ttl: 400, swr: 40, tags: ["staticNews"] },
+			expect(db.select).toHaveBeenCalledWith({
+				id: staticNews.id,
+				title: staticNews.title,
+				url: staticNews.url,
+				quote: staticNews.quote,
+				ogImageUrl: staticNews.ogImageUrl,
+				ogTitle: staticNews.ogTitle,
+				ogDescription: staticNews.ogDescription,
 			});
+			expect(db.select().from).toHaveBeenCalledWith(staticNews);
+			expect(db.select().from().limit).toHaveBeenCalledWith(PAGE_SIZE);
+			expect(db.select().from().limit().offset).toHaveBeenCalledWith(990);
 
 			expect(result).toEqual([]);
 		});
@@ -195,16 +226,21 @@ describe("static-news", () => {
 
 	describe("getStaticNewsCount", () => {
 		test("should return count of static news", async () => {
-			vi.mocked(prisma.staticNews.count).mockResolvedValue(100);
+			vi.mocked(db.select).mockReturnValue({
+				from: vi.fn().mockResolvedValue([{ count: 100 }]),
+			});
 
 			const result = await getStaticNewsCount();
 
-			expect(prisma.staticNews.count).toHaveBeenCalledWith({});
+			expect(db.select).toHaveBeenCalled();
+			expect(db.select().from).toHaveBeenCalledWith(staticNews);
 			expect(result).toBe(100);
 		});
 
 		test("should return 0 for empty collection", async () => {
-			vi.mocked(prisma.staticNews.count).mockResolvedValue(0);
+			vi.mocked(db.select).mockReturnValue({
+				from: vi.fn().mockResolvedValue([{ count: 0 }]),
+			});
 
 			const result = await getStaticNewsCount();
 
@@ -212,9 +248,9 @@ describe("static-news", () => {
 		});
 
 		test("should handle database errors", async () => {
-			vi.mocked(prisma.staticNews.count).mockRejectedValue(
-				new Error("Database error"),
-			);
+			vi.mocked(db.select).mockReturnValue({
+				from: vi.fn().mockRejectedValue(new Error("Database error")),
+			});
 
 			await expect(getStaticNewsCount()).rejects.toThrow("Database error");
 		});

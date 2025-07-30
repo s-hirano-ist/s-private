@@ -1,7 +1,7 @@
 "use server";
 import "server-only";
 import { AuthError } from "next-auth";
-import { Prisma } from "@/generated";
+import postgres from "postgres";
 import {
 	FileNotAllowedError,
 	InvalidFormatError,
@@ -52,26 +52,27 @@ export async function wrapServerSideErrorForClient<T>(
 		};
 	}
 
-	if (
-		error instanceof Prisma.PrismaClientValidationError ||
-		error instanceof Prisma.PrismaClientUnknownRequestError ||
-		error instanceof Prisma.PrismaClientRustPanicError ||
-		error instanceof Prisma.PrismaClientInitializationError
-	) {
-		loggerError(error.message, {
-			caller: "wrapServerSideErrorForClient prisma 1",
+	// Handle Postgres/Drizzle errors  
+	if (error instanceof postgres.PostgresError) {
+		loggerWarn(`Postgres error: ${error.message}`, {
+			caller: "wrapServerSideErrorForClient postgres",
 			status: 500,
 		});
 		await sendPushoverMessage(error.message);
-		return { success: false, message: "prismaUnexpected" };
-	}
-	if (error instanceof Prisma.PrismaClientKnownRequestError) {
-		loggerWarn(error.message, {
-			caller: "wrapServerSideErrorForClient prisma 2",
-			status: 500,
-		});
-		await sendPushoverMessage(error.message);
-		return { success: false, message: "prismaDuplicated" };
+		
+		// Handle duplicate key constraint violations
+		if (error.code === "23505") {
+			return { success: false, message: "duplicatedEntry" };
+		}
+		// Handle foreign key constraint violations
+		if (error.code === "23503") {
+			return { success: false, message: "foreignKeyViolation" };
+		}
+		// Handle check constraint violations
+		if (error.code === "23514") {
+			return { success: false, message: "checkConstraintViolation" };
+		}
+		return { success: false, message: "databaseError" };
 	}
 
 	if (error instanceof Error) {

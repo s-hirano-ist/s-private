@@ -9,7 +9,9 @@ import {
 } from "@/features/auth/utils/session";
 import type { Status, UpdateOrRevert } from "@/features/dump/types";
 import { loggerInfo } from "@/pino";
-import prisma from "@/prisma";
+import db from "@/db";
+import { news } from "@/db/schema";
+import { eq, and } from "drizzle-orm";
 import type { ServerAction } from "@/types";
 import { sendPushoverMessage } from "@/utils/fetch-message";
 import { formatChangeStatusMessage } from "@/utils/format-for-notification";
@@ -17,19 +19,23 @@ import { formatChangeStatusMessage } from "@/utils/format-for-notification";
 async function updateSelfNewsStatus(): Promise<Status> {
 	const userId = await getSelfId();
 
-	return await prisma.$transaction(async (prisma) => {
-		const exportedData = await prisma.news.updateMany({
-			where: { status: "UPDATED_RECENTLY", userId },
-			data: { status: "EXPORTED" },
-		});
-		const recentlyUpdatedData = await prisma.news.updateMany({
-			where: { status: "UNEXPORTED", userId },
-			data: { status: "UPDATED_RECENTLY" },
-		});
+	return await db.transaction(async (tx) => {
+		const exportedData = await tx
+			.update(news)
+			.set({ status: "EXPORTED" })
+			.where(and(eq(news.status, "UPDATED_RECENTLY"), eq(news.userId, userId)))
+			.returning({ id: news.id });
+
+		const recentlyUpdatedData = await tx
+			.update(news)
+			.set({ status: "UPDATED_RECENTLY" })
+			.where(and(eq(news.status, "UNEXPORTED"), eq(news.userId, userId)))
+			.returning({ id: news.id });
+
 		return {
 			unexported: 0,
-			recentlyUpdated: recentlyUpdatedData.count,
-			exported: exportedData.count,
+			recentlyUpdated: recentlyUpdatedData.length,
+			exported: exportedData.length,
 		};
 	});
 }
@@ -37,18 +43,22 @@ async function updateSelfNewsStatus(): Promise<Status> {
 async function revertSelfNewsStatus(): Promise<Status> {
 	const userId = await getSelfId();
 
-	return await prisma.$transaction(async (prisma) => {
-		const unexportedData = await prisma.news.updateMany({
-			where: { status: "UPDATED_RECENTLY", userId },
-			data: { status: "UNEXPORTED" },
-		});
-		const recentlyUpdatedData = await prisma.news.updateMany({
-			where: { status: "EXPORTED", userId },
-			data: { status: "UPDATED_RECENTLY" },
-		});
+	return await db.transaction(async (tx) => {
+		const unexportedData = await tx
+			.update(news)
+			.set({ status: "UNEXPORTED" })
+			.where(and(eq(news.status, "UPDATED_RECENTLY"), eq(news.userId, userId)))
+			.returning({ id: news.id });
+
+		const recentlyUpdatedData = await tx
+			.update(news)
+			.set({ status: "UPDATED_RECENTLY" })
+			.where(and(eq(news.status, "EXPORTED"), eq(news.userId, userId)))
+			.returning({ id: news.id });
+
 		return {
-			unexported: unexportedData.count,
-			recentlyUpdated: recentlyUpdatedData.count,
+			unexported: unexportedData.length,
+			recentlyUpdated: recentlyUpdatedData.length,
 			exported: 0,
 		};
 	});

@@ -1,11 +1,15 @@
 import { cache } from "react";
-import prisma from "@/prisma";
+import db from "@/db";
+import { staticContents } from "@/db/schema";
+import { count } from "drizzle-orm";
 
 const _getAllStaticContents = async () => {
-	const contents = await prisma.staticContents.findMany({
-		select: { title: true, uint8ArrayImage: true },
-		cacheStrategy: { ttl: 400, tags: ["staticContents"] },
-	});
+	const contents = await db
+		.select({
+			title: staticContents.title,
+			uint8ArrayImage: staticContents.uint8ArrayImage,
+		})
+		.from(staticContents);
 
 	return contents.map((content) => ({
 		title: content.title,
@@ -17,7 +21,10 @@ const _getAllStaticContents = async () => {
 export const getAllStaticContents = cache(_getAllStaticContents);
 
 const _getStaticContentsCount = async () => {
-	return await prisma.staticContents.count({});
+	const [result] = await db
+		.select({ count: count() })
+		.from(staticContents);
+	return result.count;
 };
 
 export const getStaticContentsCount = cache(_getStaticContentsCount);

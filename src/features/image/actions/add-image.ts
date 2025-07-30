@@ -21,7 +21,8 @@ import {
 } from "@/features/auth/utils/session";
 import { minioClient } from "@/minio";
 import { loggerInfo } from "@/pino";
-import prisma from "@/prisma";
+import db from "@/db";
+import { images } from "@/db/schema";
 import type { ServerAction } from "@/types";
 import { sendPushoverMessage } from "@/utils/fetch-message";
 import { formatCreateImageMessage } from "@/utils/format-for-notification";
@@ -69,24 +70,23 @@ export async function addImage(
 			thumbnailBuffer,
 		);
 
-		const createdImage = await prisma.images.create({
-			data: {
+		const [createdImage] = await db
+			.insert(images)
+			.values({
 				id,
 				userId,
 				contentType: file.type,
 				fileSize: metadata.size,
 				width: metadata.width,
 				height: metadata.height,
-			},
-			select: { id: true },
-		});
+			})
+			.returning({ id: images.id });
 
 		const message = formatCreateImageMessage({ fileName: createdImage.id });
 		loggerInfo(message, { caller: "addImage", status: 200 });
 
 		await sendPushoverMessage(message);
 		revalidatePath("/(dumper)");
-		await prisma.$accelerate.invalidate({ tags: ["images"] });
 
 		return {
 			success: true,

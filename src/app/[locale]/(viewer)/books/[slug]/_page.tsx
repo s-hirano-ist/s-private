@@ -13,26 +13,28 @@ import {
 } from "@/components/ui/card";
 import { THUMBNAIL_HEIGHT, THUMBNAIL_WIDTH } from "@/constants";
 import { hasViewerAdminPermission } from "@/features/auth/utils/session";
-import prisma from "@/prisma";
+import db from "@/db";
+import { staticBooks } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 type Props = { slug: string };
 
 export async function SuspensePage({ slug }: Props) {
 	const hasAdminPermission = await hasViewerAdminPermission();
 
-	const data = await prisma.staticBooks.findUnique({
-		where: { ISBN: slug },
-		select: {
-			markdown: true,
-			googleTitle: true,
-			googleSubTitle: true,
-			googleDescription: true,
-			googleAuthors: true,
-			googleHref: true,
-			googleImgSrc: true,
-		},
-		cacheStrategy: { ttl: 400, tags: ["staticBooks"] },
-	});
+	const [data] = await db
+		.select({
+			markdown: staticBooks.markdown,
+			googleTitle: staticBooks.googleTitle,
+			googleSubTitle: staticBooks.googleSubTitle,
+			googleDescription: staticBooks.googleDescription,
+			googleAuthors: staticBooks.googleAuthors,
+			googleHref: staticBooks.googleHref,
+			googleImgSrc: staticBooks.googleImgSrc,
+		})
+		.from(staticBooks)
+		.where(eq(staticBooks.ISBN, slug))
+		.limit(1);
 	if (!data) return <NotFound />;
 
 	return (

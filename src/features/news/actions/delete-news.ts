@@ -8,7 +8,9 @@ import {
 	hasDumperPostPermission,
 } from "@/features/auth/utils/session";
 import { loggerInfo } from "@/pino";
-import prisma from "@/prisma";
+import db from "@/db";
+import { news } from "@/db/schema";
+import { eq, and } from "drizzle-orm";
 import type { ServerAction } from "@/types";
 import { sendPushoverMessage } from "@/utils/fetch-message";
 
@@ -20,16 +22,18 @@ export async function deleteNews(id: number): Promise<ServerAction<number>> {
 		const userId = await getSelfId();
 
 		// Check if the news item exists and belongs to the user
-		const newsItem = await prisma.news.findUnique({
-			where: { id, userId },
-		});
+		const newsItems = await db
+			.select()
+			.from(news)
+			.where(and(eq(news.id, id), eq(news.userId, userId)))
+			.limit(1);
 
-		if (!newsItem) throw new UnexpectedError();
+		if (newsItems.length === 0) throw new UnexpectedError();
+
+		const newsItem = newsItems[0];
 
 		// Delete the news item
-		await prisma.news.delete({
-			where: { id, userId },
-		});
+		await db.delete(news).where(and(eq(news.id, id), eq(news.userId, userId)));
 
 		const message = `Deleted news: ${newsItem.title}`;
 		loggerInfo(message, {

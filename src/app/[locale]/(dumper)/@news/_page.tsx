@@ -8,19 +8,24 @@ import {
 import { AddNewsForm } from "@/features/news/components/add-news-form";
 import { NewsStack } from "@/features/news/components/news-stack";
 import { loggerError } from "@/pino";
-import prisma from "@/prisma";
+import db from "@/db";
+import { categories } from "@/db/schema";
+import { eq, asc } from "drizzle-orm";
 
 export async function SuspensePage() {
 	const hasPostPermission = await hasDumperPostPermission();
 
-	const categories = await (async () => {
+	const categoryList = await (async () => {
 		try {
 			const userId = await getSelfId();
-			return await prisma.categories.findMany({
-				where: { userId },
-				select: { id: true, name: true },
-				orderBy: { name: "asc" },
-			});
+			return await db
+				.select({
+					id: categories.id,
+					name: categories.name,
+				})
+				.from(categories)
+				.where(eq(categories.userId, userId))
+				.orderBy(asc(categories.name));
 		} catch (error) {
 			loggerError(
 				"unexpected",
@@ -36,7 +41,7 @@ export async function SuspensePage() {
 
 	return (
 		<>
-			{hasPostPermission && <AddNewsForm categories={categories} />}
+			{hasPostPermission && <AddNewsForm categories={categoryList} />}
 			<Separator className="h-px bg-linear-to-r from-primary to-primary-grad" />
 			<Suspense fallback={<CardStackSkeleton />}>
 				<NewsStack />

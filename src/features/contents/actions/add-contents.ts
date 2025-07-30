@@ -9,7 +9,8 @@ import {
 } from "@/features/auth/utils/session";
 import { validateContents } from "@/features/contents/utils/validate-contents";
 import { loggerInfo } from "@/pino";
-import prisma from "@/prisma";
+import db from "@/db";
+import { contents } from "@/db/schema";
 import type { ServerAction } from "@/types";
 import { sendPushoverMessage } from "@/utils/fetch-message";
 import { formatCreateContentsMessage } from "@/utils/format-for-notification";
@@ -30,15 +31,15 @@ export async function addContents(
 
 		const userId = await getSelfId();
 
-		const createdContents = await prisma.contents.create({
-			data: { userId, ...validateContents(formData) },
-			select: {
-				id: true,
-				title: true,
-				quote: true,
-				url: true,
-			},
-		});
+		const [createdContents] = await db
+			.insert(contents)
+			.values({ userId, ...validateContents(formData) })
+			.returning({
+				id: contents.id,
+				title: contents.title,
+				quote: contents.quote,
+				url: contents.url,
+			});
 		const message = formatCreateContentsMessage(createdContents);
 		loggerInfo(message, {
 			caller: "addContents",
