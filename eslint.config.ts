@@ -1,9 +1,5 @@
-import css from "@eslint/css";
 import { FlatCompat } from "@eslint/eslintrc";
-import js from "@eslint/js";
-import markdown from "@eslint/markdown";
 import vitestPlugin from "@vitest/eslint-plugin";
-// import importPlugin from "eslint-plugin-import";
 import boundariesPlugin from "eslint-plugin-boundaries";
 import jsoncPlugin from "eslint-plugin-jsonc";
 // import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
@@ -14,14 +10,11 @@ import reactHookPlugin from "eslint-plugin-react-hooks";
 // import tailwindcssPlugin from "eslint-plugin-tailwindcss";
 import unicornPlugin from "eslint-plugin-unicorn";
 import unusedImportsPlugin from "eslint-plugin-unused-imports";
-import ymlPlugin from "eslint-plugin-yml";
 import globals from "globals";
 import tsEslint from "typescript-eslint";
 
 const compat = new FlatCompat({
 	baseDirectory: import.meta.dirname,
-	recommendedConfig: js.configs.recommended,
-	allConfig: js.configs.all,
 });
 
 export default tsEslint.config(
@@ -60,18 +53,11 @@ export default tsEslint.config(
 			globals: globals.browser,
 		},
 	},
-	js.configs.recommended,
 	tsEslint.configs.strict,
 	reactPlugin.configs.flat.recommended,
 	reactPlugin.configs.flat["jsx-runtime"], // https://github.com/jsx-eslint/eslint-plugin-react?tab=readme-ov-file#flat-configs
 	// jsx-a11y is included in Next.js config, so we avoid duplicate registration
 	vitestPlugin.configs.recommended,
-	// Markdown files configuration
-	...markdown.configs.recommended,
-	{
-		files: ["**/*.md", "**/*.mdx"],
-		processor: "markdown/markdown",
-	},
 	...compat.extends("plugin:react-hooks/recommended"),
 	// FIXME: not working with eslint inspector
 	...compat.extends("next"),
@@ -347,19 +333,6 @@ export default tsEslint.config(
 	// FIXME: not working
 	// ...tailwindcssPlugin.configs["flat/recommended"],
 
-	// CSS設定
-	{
-		files: ["**/*.css"],
-		ignores: ["**/globals.css"], // Tailwind CSS 4の新しい構文のため除外
-		plugins: {
-			css,
-		},
-		language: "css/css",
-		rules: {
-			"css/use-baseline": ["error", { available: "widely" }],
-		},
-	},
-
 	// JSON設定
 	...jsoncPlugin.configs["flat/recommended-with-jsonc"],
 	{
@@ -369,59 +342,4 @@ export default tsEslint.config(
 			"jsonc/no-comments": "off", // .jsonc ファイルではコメントを許可
 		},
 	},
-
-	// YAML設定
-	...ymlPlugin.configs["flat/recommended"],
-	{
-		files: ["**/*.yml", "**/*.yaml"],
-		rules: {
-			"yml/sort-keys": "off", // YAMLのキーをソート
-			"yml/no-empty-mapping-value": "off", // 空のマッピング値を禁止
-		},
-	},
-
-	/**
-	 * Note: Import ordering and formatting rules are handled by Biome
-	 * ESLint focuses on logic, architecture, and code quality rules
-	 * Biome handles:
-	 * - Import organization (organizeImports.enabled: true)
-	 * - Code formatting
-	 * - Basic syntax checks
-	 *
-	 * This separation provides:
-	 * - Better performance (Biome is faster for formatting)
-	 * - Clear responsibilities
-	 * - No conflicting rules
-	 */
-	// {
-	// 	// eslint-plugin-import の設定
-	// 	plugins: { import: importPlugin },
-	// 	rules: {
-	// 		"import/order": [
-	// 			// import の並び順を設定
-	// 			"warn",
-	// 			{
-	// 				groups: [
-	// 					"builtin",
-	// 					"external",
-	// 					"internal",
-	// 					["parent", "sibling"],
-	// 					"object",
-	// 					"type",
-	// 					"index",
-	// 				],
-	// 				"newlines-between": "always",
-	// 				pathGroupsExcludedImportTypes: ["builtin"],
-	// 				alphabetize: { order: "asc", caseInsensitive: true },
-	// 				pathGroups: [
-	// 					{
-	// 						pattern: "react",
-	// 						group: "external",
-	// 						position: "before",
-	// 					},
-	// 				],
-	// 			},
-	// 		],
-	// 	},
-	// },
 );
