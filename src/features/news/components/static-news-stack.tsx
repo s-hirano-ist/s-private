@@ -23,7 +23,7 @@ export const StaticNewsStack = ({ data }: Props) => {
 				return (
 					<div
 						className="overflow-hidden rounded px-2 py-1 shadow-lg sm:px-4"
-						id={d.title}
+						id={d.url}
 						key={d.url}
 					>
 						<h2 className="text-xl">{d.title}</h2>
@@ -32,7 +32,9 @@ export const StaticNewsStack = ({ data }: Props) => {
 							{/* TODO: change to use fragment */}
 							{/* <Fragment set:html={sanitizeHtml(d.quote ?? "")} /> */}
 						</div>
-						<a href={d.url} target="_blank">
+						+{" "}
+						<a href={d.url} target="_blank" rel="noopener noreferrer">
+							{" "}
 							<div className="flex w-full justify-start">
 								{/* TODO: show images */}
 								{/* {d.ogImageUrl === null ? (
