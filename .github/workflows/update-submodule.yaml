@@ -8,4 +8,5 @@ on:
 jobs:
   update-submodules:
     permissions: {}
-    uses: s-hirano-ist/s-templates/.github/workflows/update-submodule.yaml@main
+    uses: s-hirano-ist/s-templates/.github/workflows/update-submodule.yaml@314427fb55522ed47fff41d630d0691999a49cff
+
