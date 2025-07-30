@@ -1,15 +1,11 @@
 import { FlatCompat } from "@eslint/eslintrc";
 import vitestPlugin from "@vitest/eslint-plugin";
 import boundariesPlugin from "eslint-plugin-boundaries";
-import jsoncPlugin from "eslint-plugin-jsonc";
 // import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
-import perfectionistPlugin from "eslint-plugin-perfectionist";
 import reactPlugin from "eslint-plugin-react";
 import reactHookPlugin from "eslint-plugin-react-hooks";
 // import storybookPlugin from "eslint-plugin-storybook";
 // import tailwindcssPlugin from "eslint-plugin-tailwindcss";
-import unicornPlugin from "eslint-plugin-unicorn";
-import unusedImportsPlugin from "eslint-plugin-unused-imports";
 import globals from "globals";
 import tsEslint from "typescript-eslint";
 
@@ -62,6 +58,9 @@ export default tsEslint.config(
 	// FIXME: not working with eslint inspector
 	...compat.extends("next"),
 	// Base configuration for all files
+
+	// FIXME: not working
+	// ...tailwindcssPlugin.configs["flat/recommended"],
 	{
 		settings: {
 			react: {
@@ -87,6 +86,7 @@ export default tsEslint.config(
 			"react/jsx-pascal-case": "error", // コンポーネント名をパスカルケースに統一
 			"react/no-danger": "error", // dangerouslySetInnerHTML を許可しない
 			"react/prop-types": "off", // Props の型チェックは TS で行う & 誤検知があるため無効化
+			"@typescript-eslint/no-unused-vars": "off",
 		},
 	},
 	{
@@ -112,23 +112,6 @@ export default tsEslint.config(
 			],
 		},
 	},
-	{
-		// eslint-plugin-unused-imports の設定
-		plugins: { "unused-imports": unusedImportsPlugin },
-		rules: {
-			"@typescript-eslint/no-unused-vars": "off", // 重複エラーを防ぐため typescript-eslint の方を無効化
-			"unused-imports/no-unused-imports": "error",
-			"unused-imports/no-unused-vars": [
-				"error",
-				{
-					vars: "all",
-					varsIgnorePattern: "^_",
-					args: "after-used",
-					argsIgnorePattern: "^_",
-				},
-			],
-		},
-	},
 
 	{
 		rules: {
@@ -149,29 +132,7 @@ export default tsEslint.config(
 			"vitest/consistent-test-it": ["error", { fn: "test" }], // it ではなく test に統一
 		},
 	},
-	{
-		// eslint-plugin-perfectionist の設定
-		plugins: { perfectionist: perfectionistPlugin },
-		rules: {
-			"perfectionist/sort-interfaces": "warn", // interface のプロパティの並び順をアルファベット順に統一
-			"perfectionist/sort-object-types": "warn", // Object 型のプロパティの並び順をアルファベット順に統一
-		},
-	},
 	// ...storybookPlugin.configs["flat/recommended"],
-	unicornPlugin.configs["recommended"],
-	{
-		rules: {
-			"unicorn/prevent-abbreviations": "off",
-			"unicorn/no-await-expression-member": "off",
-			"unicorn/no-null": "off",
-			"unicorn/prefer-code-point": "off",
-			"unicorn/no-abusive-eslint-disable": "off",
-			"unicorn/prefer-global-this": "off",
-			"unicorn/consistent-function-scoping": "off",
-			"unicorn/no-new-array": "off",
-			"unicorn/no-useless-spread": "off",
-		},
-	},
 
 	// Boundaries plugin configuration for strict dependencies
 	{
@@ -327,19 +288,6 @@ export default tsEslint.config(
 					],
 				},
 			],
-		},
-	},
-
-	// FIXME: not working
-	// ...tailwindcssPlugin.configs["flat/recommended"],
-
-	// JSON設定
-	...jsoncPlugin.configs["flat/recommended-with-jsonc"],
-	{
-		files: ["**/*.json", "**/*.jsonc"],
-		rules: {
-			"jsonc/sort-keys": "off", // JSONのキーをソート
-			"jsonc/no-comments": "off", // .jsonc ファイルではコメントを許可
 		},
 	},
 );
