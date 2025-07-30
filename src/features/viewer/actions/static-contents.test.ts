@@ -45,12 +45,12 @@ describe("static-contents", () => {
 				{
 					title: "Test Content 1",
 					href: "Test Content 1",
-					uint8ArrayImage: new Uint8Array([1, 2, 3]),
+					image: new Uint8Array([1, 2, 3]),
 				},
 				{
 					title: "Test Content 2",
 					href: "Test Content 2",
-					uint8ArrayImage: new Uint8Array([4, 5, 6]),
+					image: new Uint8Array([4, 5, 6]),
 				},
 			]);
 		});
@@ -87,7 +87,7 @@ describe("static-contents", () => {
 				{
 					title: "Test Content",
 					href: "Test Content",
-					uint8ArrayImage: null,
+					image: null,
 				},
 			]);
 		});

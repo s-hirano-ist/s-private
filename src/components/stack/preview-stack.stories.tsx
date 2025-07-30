@@ -18,44 +18,44 @@ const svg = `
   <circle cx="50" cy="50" r="40" fill="blue" />
 </svg>`;
 const encoder = new TextEncoder();
-const uint8ArrayImage = encoder.encode(svg);
+const image = encoder.encode(svg);
 
 const previewCardData = [
 	{
 		isbn: "1111111111",
 		href: "/example/1111111111",
 		title: "sample title 1",
-		uint8ArrayImage,
+		image,
 	},
 	{
 		isbn: "2222222222",
 		href: "/example/2222222222",
 		title: "sample title 2",
-		uint8ArrayImage,
+		image,
 	},
 	{
 		isbn: "3333333333",
 		href: "/example/3333333333",
 		title: "sample title 3",
-		uint8ArrayImage,
+		image,
 	},
 	{
 		isbn: "4444444444",
 		href: "/example/4444444444",
 		title: "sample title 4",
-		uint8ArrayImage,
+		image,
 	},
 	{
 		isbn: "5555555555",
 		href: "/example/5555555555",
 		title: "sample title 5",
-		uint8ArrayImage,
+		image,
 	},
 	{
 		isbn: "6666666666",
 		href: "/example/6666666666",
 		title: "sample title 6",
-		uint8ArrayImage,
+		image,
 	},
 ];
 const path = "/example";

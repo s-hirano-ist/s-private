@@ -22,12 +22,12 @@ describe("static-books", () => {
 				{
 					ISBN: "978-0123456789",
 					title: "Test Book 1",
-					uint8ArrayImage: new Uint8Array([1, 2, 3]),
+					googleImgSrc: "https://example.com/image-1.jpg",
 				},
 				{
 					ISBN: "978-0987654321",
 					title: "Test Book 2",
-					uint8ArrayImage: new Uint8Array([4, 5, 6]),
+					googleImgSrc: "https://example.com/image-2.jpg",
 				},
 			];
 
@@ -36,7 +36,7 @@ describe("static-books", () => {
 			const result = await getAllStaticBooks();
 
 			expect(prisma.staticBooks.findMany).toHaveBeenCalledWith({
-				select: { ISBN: true, title: true, uint8ArrayImage: true },
+				select: { ISBN: true, title: true, googleImgSrc: true },
 				cacheStrategy: { ttl: 400, tags: ["staticBooks"] },
 			});
 
@@ -44,12 +44,12 @@ describe("static-books", () => {
 				{
 					title: "Test Book 1",
 					href: "978-0123456789",
-					uint8ArrayImage: new Uint8Array([1, 2, 3]),
+					image: "https://example.com/image-1.jpg",
 				},
 				{
 					title: "Test Book 2",
 					href: "978-0987654321",
-					uint8ArrayImage: new Uint8Array([4, 5, 6]),
+					image: "https://example.com/image-2.jpg",
 				},
 			]);
 		});
@@ -68,28 +68,6 @@ describe("static-books", () => {
 			);
 
 			await expect(getAllStaticBooks()).rejects.toThrow("Database error");
-		});
-
-		test("should handle books with null images", async () => {
-			const mockBooks = [
-				{
-					ISBN: "978-0123456789",
-					title: "Test Book",
-					uint8ArrayImage: null,
-				},
-			];
-
-			vi.mocked(prisma.staticBooks.findMany).mockResolvedValue(mockBooks);
-
-			const result = await getAllStaticBooks();
-
-			expect(result).toEqual([
-				{
-					title: "Test Book",
-					href: "978-0123456789",
-					uint8ArrayImage: null,
-				},
-			]);
 		});
 	});
 
