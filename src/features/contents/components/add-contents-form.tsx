@@ -3,10 +3,13 @@ import { ClipboardPasteIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useActionState, useRef } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import {
+	ActionButton,
+	FormField,
+	InputField,
+	InputWithButton,
+	TextareaField,
+} from "@/components/composition/form-field";
 import { addContents } from "@/features/contents/actions/add-contents";
 import { AddFormSkeleton } from "@/features/dump/components/add-form-skeleton";
 
@@ -36,41 +39,30 @@ export function AddContentsForm() {
 				<AddFormSkeleton />
 			) : (
 				<>
-					<div className="space-y-1">
-						<Label htmlFor="title">{label("title")}</Label>
-						<Input autoComplete="off" id="title" name="title" required />
-					</div>
-					<div className="space-y-1">
-						<Label htmlFor="quote">{label("description")}</Label>
-						<Textarea autoComplete="off" id="quote" name="quote" />
-					</div>
-					<div className="space-y-1">
-						<Label htmlFor="url">{label("url")}</Label>
-						<div className="flex space-x-2 px-2">
-							<Input
-								autoComplete="off"
-								id="url"
-								inputMode="url"
-								name="url"
-								ref={urlInputReference}
-								required
-								type="url"
-							/>
-							<Button
-								data-testid="paste-button"
-								onClick={handlePasteClick}
-								type="button"
-								variant="ghost"
-							>
-								<ClipboardPasteIcon />
-							</Button>
-						</div>
-					</div>
+					<FormField htmlFor="title" label={label("title")} required>
+						<InputField name="title" required />
+					</FormField>
+
+					<FormField htmlFor="quote" label={label("description")}>
+						<TextareaField name="quote" />
+					</FormField>
+
+					<FormField htmlFor="url" label={label("url")} required>
+						<InputWithButton
+							buttonText={<ClipboardPasteIcon />}
+							inputProps={{
+								name: "url",
+								type: "url",
+								inputMode: "url",
+								required: true,
+							}}
+							inputRef={urlInputReference}
+							onButtonClick={handlePasteClick}
+						/>
+					</FormField>
 				</>
 			)}
-			<Button className="w-full" disabled={isPending} type="submit">
-				{label("save")}
-			</Button>
+			<ActionButton disabled={isPending}>{label("save")}</ActionButton>
 		</form>
 	);
 }
