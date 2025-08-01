@@ -1,9 +1,9 @@
 import { Suspense } from "react";
-import { NewsStack } from "@/app/[locale]/(dumper)/@news/_news-stack/server";
+import { AddFormSkeleton } from "@/components/add-form-skeleton";
 import { CardStackSkeleton } from "@/components/stack/card-stack-skeleton";
 import { Separator } from "@/components/ui/separator";
-import { AddFormSkeleton } from "@/features/dump/components/add-form-skeleton";
 import { AddNewsForm } from "./_add-news-form/server";
+import { NewsStack } from "./_news-stack/server";
 
 type Props = {
 	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;

@@ -1,7 +1,7 @@
 import { Suspense } from "react";
+import { AddFormSkeleton } from "@/components/add-form-skeleton";
 import { CardStackSkeleton } from "@/components/stack/card-stack-skeleton";
 import { Separator } from "@/components/ui/separator";
-import { AddFormSkeleton } from "@/features/dump/components/add-form-skeleton";
 import { AddContentsForm } from "./_add-contents-form/server";
 import { ContentsStack } from "./_contents-stack/server";
 

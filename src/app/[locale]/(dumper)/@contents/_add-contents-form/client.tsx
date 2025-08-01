@@ -3,12 +3,12 @@ import { ClipboardPasteIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useActionState, useRef } from "react";
 import { toast } from "sonner";
+import { AddFormSkeleton } from "@/components/add-form-skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { addContents } from "@/features/contents/actions/add-contents";
-import { AddFormSkeleton } from "@/features/dump/components/add-form-skeleton";
 
 export function AddContentsFormClient() {
 	const urlInputReference = useRef<HTMLInputElement>(null);

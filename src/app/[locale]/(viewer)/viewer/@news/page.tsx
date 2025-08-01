@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Loading from "@/components/loading";
-import { SuspensePage } from "./_page";
+import { NewsCounter } from "./_news-counter/server";
+import { StaticNewsStack } from "./_static-news-stack/server";
 
 type Params = Promise<{ page?: string; tab?: string }>;
 
@@ -15,8 +16,13 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 	}
 
 	return (
-		<Suspense fallback={<Loading />}>
-			<SuspensePage currentPage={currentPage} />
-		</Suspense>
+		<>
+			<Suspense>
+				<NewsCounter page={currentPage} />
+			</Suspense>
+			<Suspense fallback={<Loading />}>
+				<StaticNewsStack page={currentPage} />
+			</Suspense>
+		</>
 	);
 }

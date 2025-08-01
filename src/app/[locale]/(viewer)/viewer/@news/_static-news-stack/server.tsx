@@ -1,19 +1,19 @@
 import { StatusCodeView } from "@/components/card/status-code-view";
 import { getStaticNews } from "@/features/viewer/actions/static-news";
 import { loggerError } from "@/pino";
-import { StaticNewsStack } from "./static-news-stack";
+import { StaticNewsStackClient } from "./client";
 
 type Props = { page: number };
 
-export async function AllNewsStack({ page }: Props) {
+export async function StaticNewsStack({ page }: Props) {
 	try {
 		const news = await getStaticNews(page);
-		return <StaticNewsStack data={news} />;
+		return <StaticNewsStackClient data={news} />;
 	} catch (error) {
 		loggerError(
 			"unexpected",
 			{
-				caller: "AllNewsPage",
+				caller: "StaticNewsStack",
 				status: 500,
 			},
 			error,

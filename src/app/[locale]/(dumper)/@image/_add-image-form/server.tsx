@@ -1,5 +1,5 @@
-import { AddImageFormClient } from "@/app/[locale]/(dumper)/@image/_add-image-form/client";
 import { hasDumperPostPermission } from "@/features/auth/utils/session";
+import { AddImageFormClient } from "./client";
 
 export async function AddImageForm() {
 	const hasPostPermission = await hasDumperPostPermission();

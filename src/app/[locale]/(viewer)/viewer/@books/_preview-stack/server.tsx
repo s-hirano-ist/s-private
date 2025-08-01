@@ -9,26 +9,21 @@ import {
 
 const basePath = "books";
 
-export async function SuspensePage() {
+export async function PreviewStack() {
 	const hasAdminPermission = await hasViewerAdminPermission();
+	if (!hasAdminPermission) return <Unauthorized />;
 
 	const totalImages = await getStaticBooksCount();
 	const previewCardData = await getAllStaticBooks();
 
 	return (
 		<>
-			{hasAdminPermission ? (
-				<>
-					<CountBadge label="totalBooks" total={totalImages} />
-					<PreviewStackClient
-						basePath={basePath}
-						imageType="webp"
-						previewCardData={previewCardData}
-					/>
-				</>
-			) : (
-				<Unauthorized />
-			)}
+			<CountBadge label="totalBooks" total={totalImages} />
+			<PreviewStackClient
+				basePath={basePath}
+				imageType="webp"
+				previewCardData={previewCardData}
+			/>
 		</>
 	);
 }

@@ -20,7 +20,7 @@ import {
 	DrawerTitle,
 	DrawerTrigger,
 } from "@/components/ui/drawer";
-import { UtilButtons } from "@/features/dump/components/util-buttons";
+import { UtilButtons } from "@/components/util-buttons";
 import { Link } from "@/i18n/routing";
 import { cn } from "@/utils/tailwindcss";
 

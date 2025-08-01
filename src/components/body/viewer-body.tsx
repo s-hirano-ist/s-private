@@ -4,7 +4,7 @@ import { markdownToReact } from "@/features/viewer/utils/markdown-to-react";
 
 type Props = { children?: ReactNode; markdown: string };
 
-export async function ViewerBody({ children, markdown }: Props) {
+export async function ViewerBodyClient({ children, markdown }: Props) {
 	const content = unstable_cache(
 		async (markdown: string) => markdownToReact(markdown),
 		[`markdown-react-${Buffer.from(markdown).toString("base64").slice(0, 32)}`],
