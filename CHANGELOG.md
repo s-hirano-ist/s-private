@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.21.3](https://github.com/s-hirano-ist/s-private/compare/v8.21.2...v8.21.3) (2025-08-01)
+
+
+### Bug Fixes
+
+* 依存関係から @tanstack/react-query と @tanstack/react-query-devtools を削除し、ViewerBody コンポーネントを非同期関数に変更してキャッシュされたマークダウンを取得するように修正。QueryClientProvider を削除し、関連するストーリーを削除。 ([d6fc484](https://github.com/s-hirano-ist/s-private/commit/d6fc4848866bee8b55ceb45dd705d5e9afe23e32))
+
 ## [8.21.2](https://github.com/s-hirano-ist/s-private/compare/v8.21.1...v8.21.2) (2025-07-30)
 
 
