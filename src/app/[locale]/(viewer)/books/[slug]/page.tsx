@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import Loading from "@/components/loading";
 import { PAGE_NAME } from "@/constants";
-import { SuspensePage } from "./_page";
+import { ViewerBody } from "./_viewer-body/server";
 
 type Params = Promise<{ slug: string }>;
 
@@ -23,8 +23,8 @@ export default async function Page({ params }: { params: Params }) {
 	const { slug } = await params;
 
 	return (
-		<Suspense fallback={<Loading />}>
-			<SuspensePage slug={slug} />
+		<Suspense fallback={<Loading />} key={slug}>
+			<ViewerBody slug={slug} />
 		</Suspense>
 	);
 }

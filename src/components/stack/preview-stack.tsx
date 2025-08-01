@@ -19,7 +19,11 @@ type Props = {
 	previewCardData: PreviewCardData[];
 };
 
-export function PreviewStack({ previewCardData, basePath, imageType }: Props) {
+export function PreviewStackClient({
+	previewCardData,
+	basePath,
+	imageType,
+}: Props) {
 	// TODO: use queryを利用してデータのキャッシュを行う
 
 	const router = useTransitionRouter();

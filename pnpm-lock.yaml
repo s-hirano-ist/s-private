@@ -44,9 +44,6 @@ importers:
       clsx:
         specifier: 2.1.1
         version: 2.1.1
-      jsdom:
-        specifier: 26.1.0
-        version: 26.1.0
       lucide-react:
         specifier: 0.534.0
         version: 0.534.0(react@19.1.1)
@@ -261,6 +258,9 @@ importers:
       globals:
         specifier: 16.3.0
         version: 16.3.0
+      jsdom:
+        specifier: 26.1.0
+        version: 26.1.0
       license-checker:
         specifier: 25.0.1
         version: 25.0.1
