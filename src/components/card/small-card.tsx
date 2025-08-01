@@ -1,4 +1,5 @@
 import { Link } from "next-view-transitions";
+import { memo } from "react";
 import { DeleteButtonWithModal } from "@/components/delete-button-with-modal";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -21,7 +22,7 @@ type Props = {
 	url: string;
 };
 
-export function SmallCard({
+const SmallCardComponent = function SmallCard({
 	id,
 	deleteAction,
 	title,
@@ -57,4 +58,6 @@ export function SmallCard({
 			</Card>
 		</Link>
 	);
-}
+};
+
+export const SmallCard = memo(SmallCardComponent);
