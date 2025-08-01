@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { addContents } from "@/features/contents/actions/add-contents";
 import { AddFormSkeleton } from "@/features/dump/components/add-form-skeleton";
 
-export function AddContentsForm() {
+export function AddContentsFormClient() {
 	const urlInputReference = useRef<HTMLInputElement>(null);
 
 	const label = useTranslations("label");

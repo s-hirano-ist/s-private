@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import { describe, expect, test, vi } from "vitest";
-import { AddContentsForm } from "@/features/contents/components/add-contents-form";
+import { AddContentsFormClient } from "./client";
 
 const messages = {
 	label: {
@@ -19,7 +19,7 @@ describe("AddContentsForm", () => {
 	test("renders input fields and buttons correctly", () => {
 		render(
 			<NextIntlClientProvider locale="ja" messages={messages}>
-				<AddContentsForm />
+				<AddContentsFormClient />
 			</NextIntlClientProvider>,
 		);
 		expect(screen.getByLabelText("タイトル")).toBeInTheDocument();
@@ -36,7 +36,7 @@ describe("AddContentsForm", () => {
 
 		render(
 			<NextIntlClientProvider locale="ja" messages={messages}>
-				<AddContentsForm />
+				<AddContentsFormClient />
 			</NextIntlClientProvider>,
 		);
 		const pasteButton = screen.getByTestId("paste-button");

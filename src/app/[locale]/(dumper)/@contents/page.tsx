@@ -1,6 +1,9 @@
 import { Suspense } from "react";
-import Loading from "@/components/loading";
-import { SuspensePage } from "./_page";
+import { CardStackSkeleton } from "@/components/stack/card-stack-skeleton";
+import { Separator } from "@/components/ui/separator";
+import { AddFormSkeleton } from "@/features/dump/components/add-form-skeleton";
+import { AddContentsForm } from "./_add-contents-form/server";
+import { ContentsStack } from "./_contents-stack/server";
 
 type Props = {
 	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -15,8 +18,16 @@ export default async function Page({ searchParams }: Props) {
 	}
 
 	return (
-		<Suspense fallback={<Loading />}>
-			<SuspensePage />
-		</Suspense>
+		<>
+			<Suspense fallback={<AddFormSkeleton />}>
+				<AddContentsForm />
+			</Suspense>
+
+			<Separator className="h-px bg-linear-to-r from-primary to-primary-grad" />
+
+			<Suspense fallback={<CardStackSkeleton />}>
+				<ContentsStack />
+			</Suspense>
+		</>
 	);
 }

@@ -18,7 +18,7 @@ import { addNews } from "@/features/news/actions/add-news";
 
 type Props = { categories: { id: number; name: string }[] };
 
-export function AddNewsForm({ categories }: Props) {
+export function AddNewsFormClient({ categories }: Props) {
 	const urlInputReference = useRef<HTMLInputElement>(null);
 	const categoryInputReference = useRef<HTMLInputElement>(null);
 

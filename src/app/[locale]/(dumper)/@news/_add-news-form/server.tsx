@@ -1,17 +1,15 @@
-import { Suspense } from "react";
-import { CardStackSkeleton } from "@/components/stack/card-stack-skeleton";
-import { Separator } from "@/components/ui/separator";
 import {
 	getSelfId,
 	hasDumperPostPermission,
 } from "@/features/auth/utils/session";
-import { AddNewsForm } from "@/features/news/components/add-news-form";
-import { NewsStack } from "@/features/news/components/news-stack";
 import { loggerError } from "@/pino";
 import prisma from "@/prisma";
+import { AddNewsFormClient } from "./client";
 
-export async function SuspensePage() {
+export async function AddNewsForm() {
 	const hasPostPermission = await hasDumperPostPermission();
+
+	if (!hasPostPermission) return <></>;
 
 	const categories = await (async () => {
 		try {
@@ -34,13 +32,5 @@ export async function SuspensePage() {
 		}
 	})();
 
-	return (
-		<>
-			{hasPostPermission && <AddNewsForm categories={categories} />}
-			<Separator className="h-px bg-linear-to-r from-primary to-primary-grad" />
-			<Suspense fallback={<CardStackSkeleton />}>
-				<NewsStack />
-			</Suspense>
-		</>
-	);
+	return <AddNewsFormClient categories={categories} />;
 }

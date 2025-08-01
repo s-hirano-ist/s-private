@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { addImage } from "@/features/image/actions/add-image";
 
-export function AddImageForm() {
+export function AddImageFormClient() {
 	const label = useTranslations("label");
 	const message = useTranslations("message");
 

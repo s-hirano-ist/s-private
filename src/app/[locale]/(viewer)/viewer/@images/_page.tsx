@@ -1,10 +1,10 @@
 import { Suspense } from "react";
+import { AllImageStack } from "@/app/[locale]/(dumper)/@image/components/all-image-stack";
 import { Unauthorized } from "@/components/card/unauthorized";
 import { CountBadge } from "@/components/count-badge";
 import { ImageStackSkeleton } from "@/components/stack/image-stack-skeleton";
 import { Pagination } from "@/components/stack/pagination";
 import { hasViewerAdminPermission } from "@/features/auth/utils/session";
-import { AllImageStack } from "@/features/image/components/all-image-stack";
 import prisma from "@/prisma";
 
 type Props = { currentPage: number };
