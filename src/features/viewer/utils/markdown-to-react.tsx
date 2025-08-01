@@ -60,12 +60,3 @@ export async function markdownToReact(markdown: string) {
 		</ReactMarkdown>
 	);
 }
-
-export const getCachedMarkdownReact = unstable_cache(
-	async (markdown: string) => markdownToReact(markdown),
-	["markdown-react"],
-	{
-		revalidate: 86_400 * 30, // 30 days
-		tags: ["markdown"],
-	},
-);
