@@ -1,8 +1,8 @@
 import { Suspense } from "react";
-import { ImageStack } from "@/app/[locale]/(dumper)/@image/components/image-stack";
+import { ImageStack } from "@/app/[locale]/(dumper)/@image/_image-stack/server";
+import Loading from "@/components/loading";
 import { ImageStackSkeleton } from "@/components/stack/image-stack-skeleton";
 import { Separator } from "@/components/ui/separator";
-import { AddFormSkeleton } from "@/features/dump/components/add-form-skeleton";
 import { AddImageForm } from "./_add-image-form/server";
 
 type Props = {
@@ -19,7 +19,7 @@ export default async function Page({ searchParams }: Props) {
 
 	return (
 		<>
-			<Suspense fallback={<AddFormSkeleton />}>
+			<Suspense fallback={<Loading />}>
 				<AddImageForm />
 			</Suspense>
 			<Separator className="h-px bg-linear-to-r from-primary to-primary-grad" />

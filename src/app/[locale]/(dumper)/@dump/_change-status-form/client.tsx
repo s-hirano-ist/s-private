@@ -16,7 +16,7 @@ import { changeContentsStatus } from "@/features/contents/actions/change-content
 import { changeImagesStatus } from "@/features/image/actions/change-images-status";
 import { changeNewsStatus } from "@/features/news/actions/change-news-status";
 
-export function ChangeStatusForm() {
+export function ChangeStatusFormClient() {
 	const [target, setTarget] = useState<string>();
 	const [status, setStatus] = useState<string>();
 	const label = useTranslations("label");

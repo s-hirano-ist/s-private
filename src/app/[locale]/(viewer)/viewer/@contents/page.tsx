@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Loading from "@/components/loading";
-import { SuspensePage } from "./_page";
+import { ContentsCounter } from "./_contents-counter/server";
+import { PreviewStack } from "./_preview-stack/server";
 
 type Props = {
 	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -15,8 +16,13 @@ export default async function Page({ searchParams }: Props) {
 	}
 
 	return (
-		<Suspense fallback={<Loading />}>
-			<SuspensePage />
-		</Suspense>
+		<>
+			<Suspense fallback={<Loading />}>
+				<ContentsCounter />
+			</Suspense>
+			<Suspense fallback={<Loading />}>
+				<PreviewStack />
+			</Suspense>
+		</>
 	);
 }

@@ -1,6 +1,8 @@
 import { StatusCodeView } from "@/components/card/status-code-view";
+import { Unauthorized } from "@/components/card/unauthorized";
 import { ImageStack } from "@/components/stack/image-stack";
 import { PAGE_SIZE } from "@/constants";
+import { hasViewerAdminPermission } from "@/features/auth/utils/session";
 import { loggerError } from "@/pino";
 import prisma from "@/prisma";
 
@@ -8,6 +10,9 @@ type Props = { page: number };
 
 export async function AllImageStack({ page }: Props) {
 	try {
+		const hasAdminPermission = await hasViewerAdminPermission();
+		if (!hasAdminPermission) return <Unauthorized />;
+
 		const images = await prisma.staticImages.findMany({
 			select: { id: true, width: true, height: true },
 			orderBy: { id: "desc" },
@@ -21,7 +26,7 @@ export async function AllImageStack({ page }: Props) {
 		loggerError(
 			"unexpected",
 			{
-				caller: "AllImagePage",
+				caller: "AllImageStack",
 				status: 500,
 			},
 			error,

@@ -1,8 +1,10 @@
 import { Unauthorized } from "@/components/card/unauthorized";
 import { hasDumperPostPermission } from "@/features/auth/utils/session";
-import { ChangeStatusForm } from "@/features/dump/components/change-status-form";
+import { ChangeStatusFormClient } from "./client";
 
-export async function SuspensePage() {
+export async function ChangeStatusForm() {
 	const hasAdminPermission = await hasDumperPostPermission();
-	return <>{hasAdminPermission ? <ChangeStatusForm /> : <Unauthorized />}</>;
+	return (
+		<>{hasAdminPermission ? <ChangeStatusFormClient /> : <Unauthorized />}</>
+	);
 }

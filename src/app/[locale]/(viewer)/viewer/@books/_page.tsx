@@ -1,6 +1,6 @@
 import { Unauthorized } from "@/components/card/unauthorized";
 import { CountBadge } from "@/components/count-badge";
-import { PreviewStack } from "@/components/stack/preview-stack";
+import { PreviewStackClient } from "@/components/stack/preview-stack";
 import { hasViewerAdminPermission } from "@/features/auth/utils/session";
 import {
 	getAllStaticBooks,
@@ -20,7 +20,7 @@ export async function SuspensePage() {
 			{hasAdminPermission ? (
 				<>
 					<CountBadge label="totalBooks" total={totalImages} />
-					<PreviewStack
+					<PreviewStackClient
 						basePath={basePath}
 						imageType="webp"
 						previewCardData={previewCardData}

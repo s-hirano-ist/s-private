@@ -23,7 +23,7 @@ export async function AddNewsForm() {
 			loggerError(
 				"unexpected",
 				{
-					caller: "CategoryFetch",
+					caller: "AddNewsForm",
 					status: 500,
 				},
 				error,
