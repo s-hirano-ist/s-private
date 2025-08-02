@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import Loading from "@/components/loading";
+import { CardStackSkeleton } from "@/components/stack/card-stack-skeleton";
 import { NewsCounter } from "./_news-counter/server";
 import { StaticNewsStack } from "./_static-news-stack/server";
 
@@ -17,10 +17,8 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 
 	return (
 		<>
-			<Suspense>
-				<NewsCounter page={currentPage} />
-			</Suspense>
-			<Suspense fallback={<Loading />}>
+			<NewsCounter page={currentPage} />
+			<Suspense fallback={<CardStackSkeleton />}>
 				<StaticNewsStack page={currentPage} />
 			</Suspense>
 		</>

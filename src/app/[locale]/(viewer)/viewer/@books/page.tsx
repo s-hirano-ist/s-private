@@ -1,5 +1,4 @@
-import { Suspense } from "react";
-import Loading from "@/components/loading";
+import { BooksCounter } from "./_books-counter/server";
 import { BooksStack } from "./_books-stack/server";
 
 type Props = {
@@ -15,8 +14,9 @@ export default async function Page({ searchParams }: Props) {
 	}
 
 	return (
-		<Suspense fallback={<Loading />}>
-			<BooksStack />
-		</Suspense>
+		<>
+			<BooksCounter />
+			<BooksStack />;
+		</>
 	);
 }

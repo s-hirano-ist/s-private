@@ -26,8 +26,5 @@ const mockData = [
 ];
 
 export const Default: Story = {
-	args: {
-		totalBooks: 10,
-		previewCardData: mockData,
-	},
+	args: { previewCardData: mockData },
 };

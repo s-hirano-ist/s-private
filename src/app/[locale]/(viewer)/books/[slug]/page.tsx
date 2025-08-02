@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
-import Loading from "@/components/loading";
 import { PAGE_NAME } from "@/constants";
 import { ViewerBody } from "./_viewer-body/server";
 
@@ -22,9 +20,5 @@ export async function generateMetadata({
 export default async function Page({ params }: { params: Params }) {
 	const { slug } = await params;
 
-	return (
-		<Suspense fallback={<Loading />} key={slug}>
-			<ViewerBody slug={slug} />
-		</Suspense>
-	);
+	return <ViewerBody slug={slug} />;
 }

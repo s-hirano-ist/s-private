@@ -14,9 +14,5 @@ export default async function Page({ searchParams }: Props) {
 		return <div />;
 	}
 
-	return (
-		<Suspense fallback={<Loading />}>
-			<ChangeStatusForm />
-		</Suspense>
-	);
+	return <ChangeStatusForm />;
 }

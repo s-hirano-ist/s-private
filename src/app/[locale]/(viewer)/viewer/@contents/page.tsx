@@ -1,5 +1,3 @@
-import { Suspense } from "react";
-import Loading from "@/components/loading";
 import { ContentsCounter } from "./_contents-counter/server";
 import { ContentsStack } from "./_contents-stack/server";
 
@@ -17,12 +15,8 @@ export default async function Page({ searchParams }: Props) {
 
 	return (
 		<>
-			<Suspense fallback={<Loading />}>
-				<ContentsCounter />
-			</Suspense>
-			<Suspense fallback={<Loading />}>
-				<ContentsStack />
-			</Suspense>
+			<ContentsCounter />
+			<ContentsStack />
 		</>
 	);
 }
