@@ -23,7 +23,7 @@ type Props = {
 export const StaticNewsStackClient = ({ data }: Props) => {
 	return (
 		<article className=" mx-auto max-w-5xl" id="article" role="article">
-			<div className="my-2 space-y-4">
+			<div className="m-2 space-y-4">
 				{data.map((d) => {
 					return (
 						<Card id={d.url} key={d.url}>
