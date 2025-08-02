@@ -36,6 +36,7 @@ const nextConfig = {
 	experimental: {
 		typedRoutes: true,
 		serverActions: { bodySizeLimit: "100mb" }, // FIXME: due to DDoS attacks
+		authInterrupts: true,
 	},
 	pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
 	output: "standalone",
