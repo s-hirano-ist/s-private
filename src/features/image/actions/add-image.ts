@@ -48,8 +48,6 @@ export async function addImage(
 		const buffer = Buffer.from(await file.arrayBuffer());
 		const metadata = await sharp(buffer).metadata();
 
-		if (!metadata.width || !metadata.height) throw new UnexpectedError();
-
 		const originalPath = `${ORIGINAL_IMAGE_PATH}/${id}`;
 		await minioClient.putObject(env.MINIO_BUCKET_NAME, originalPath, buffer);
 

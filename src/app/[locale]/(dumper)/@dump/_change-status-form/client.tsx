@@ -36,23 +36,18 @@ export function ChangeStatusFormClient({
 		const target = formData.get("target");
 		const status = formData.get("status");
 
-		if (!target || !status) throw new UnexpectedError();
-
 		const response = await (async () => {
 			if (target === "news") {
 				if (status === "update") return await changeNewsStatus("UPDATE");
 				if (status === "revert") return await changeNewsStatus("REVERT");
-				throw new UnexpectedError();
 			}
 			if (target === "contents") {
 				if (status === "update") return await changeContentsStatus("UPDATE");
 				if (status === "revert") return await changeContentsStatus("REVERT");
-				throw new UnexpectedError();
 			}
 			if (target === "images") {
 				if (status === "update") return await changeImagesStatus("UPDATE");
 				if (status === "revert") return await changeImagesStatus("REVERT");
-				throw new UnexpectedError();
 			}
 			throw new UnexpectedError();
 		})();
