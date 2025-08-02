@@ -41,7 +41,7 @@ export function UtilButtons({ handleReload, onSignOutSubmit }: Props) {
 	const shouldShowSignOut = useMemo(() => pathname !== "/auth", [pathname]);
 
 	return (
-		<div className="grid grid-cols-2 gap-2 px-2 sm:grid-cols-4">
+		<div className="grid gap-2 px-2 grid-cols-1 sm:grid-cols-3">
 			{UTIL_URLS.map((url) => {
 				return (
 					<Button asChild className="w-full" key={url.name}>

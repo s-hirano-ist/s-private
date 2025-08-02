@@ -14,11 +14,7 @@ type Props = {
 };
 export const StaticNewsStackClient = ({ data }: Props) => {
 	return (
-		<article
-			className="prose prose-sm mx-auto max-w-5xl sm:prose-base"
-			id="article"
-			role="article"
-		>
+		<article className=" mx-auto max-w-5xl" id="article" role="article">
 			{data.map((d) => {
 				return (
 					<div
@@ -27,7 +23,7 @@ export const StaticNewsStackClient = ({ data }: Props) => {
 						key={d.url}
 					>
 						<h2 className="text-xl">{d.title}</h2>
-						<div className="text-primary">
+						<div>
 							{d.quote}
 							{/* TODO: change to use fragment */}
 							{/* <Fragment set:html={sanitizeHtml(d.quote ?? "")} /> */}

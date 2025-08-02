@@ -13,12 +13,6 @@ export const NOT_FOUND_IMAGE_PATH = "/not-found.png";
 export const SKELETON_STACK_SIZE = 10;
 
 export const UTIL_URLS = [
-	{ name: "NEWS", url: "https://s-hirano.com/news" },
-	{ name: "SUMMARY", url: "https://s-hirano.com/summary" },
 	{ name: "BOOK", url: "https://s-hirano.com/book" },
 	{ name: "BLOG", url: "https://s-hirano.com/blog" },
-	{ name: "PORTAINER", url: "https://s-tools.s-hirano.com:9443" },
-	{ name: "GRAFANA", url: "https://s-tools.s-hirano.com:3001" },
-	{ name: "STORYBOOK", url: "https://storybook.private.s-hirano.com" },
-	{ name: "ZENN", url: "https://zenn.dev/s_hirano_ist" },
 ] as const;
