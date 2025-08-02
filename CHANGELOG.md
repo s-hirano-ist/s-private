@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.23.0](https://github.com/s-hirano-ist/s-private/compare/v8.22.0...v8.23.0) (2025-08-02)
+
+
+### Features
+
+* add forbidden page ([79887f7](https://github.com/s-hirano-ist/s-private/commit/79887f789241a51b24dfe70887988f46eb6b97fe))
+* add forbidden page ([dd65b9a](https://github.com/s-hirano-ist/s-private/commit/dd65b9a66281fd65e86f2b2c38215fe0485bad9b))
+* add router cache ([a50856b](https://github.com/s-hirano-ist/s-private/commit/a50856bd2f0e6848cdd06f5a5f7b1faad16912ce))
+* add router cache ([69bac23](https://github.com/s-hirano-ist/s-private/commit/69bac234b420f459f31809d86934e7753874bb0b))
+
 ## [8.22.0](https://github.com/s-hirano-ist/s-private/compare/v8.21.3...v8.22.0) (2025-08-01)
 
 
