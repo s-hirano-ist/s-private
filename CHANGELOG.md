@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.22.0](https://github.com/s-hirano-ist/s-private/compare/v8.21.3...v8.22.0) (2025-08-01)
+
+
+### Features
+
+* update performance ([e5c94c1](https://github.com/s-hirano-ist/s-private/commit/e5c94c11df5bfa325ae801ee7a21842a570abd3d))
+
+
+### Bug Fixes
+
+* container presentational pattern to dumper ([0b48cb9](https://github.com/s-hirano-ist/s-private/commit/0b48cb9a2b2fff9d26a92d484004a00b4a79b8c3))
+* refactor composition pattern ([3dfc6c6](https://github.com/s-hirano-ist/s-private/commit/3dfc6c60c5e04f1cf35c21c5bbbdb3033ced3f5b))
+
 ## [8.21.3](https://github.com/s-hirano-ist/s-private/compare/v8.21.2...v8.21.3) (2025-08-01)
 
 
