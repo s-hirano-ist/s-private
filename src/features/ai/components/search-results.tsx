@@ -41,7 +41,7 @@ export function SearchResults({ results, isLoading }: Props) {
 					<CardHeader className="pb-2">
 						<CardTitle className="text-lg">
 							<a
-								className="text-primary hover:underline"
+								className="text-primary-grad hover:underline"
 								href={getResultUrl(result)}
 							>
 								{result.title}

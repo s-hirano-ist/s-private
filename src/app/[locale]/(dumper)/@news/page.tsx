@@ -21,7 +21,7 @@ export default async function Page({ searchParams }: Props) {
 		<>
 			<AddNewsForm />
 
-			<Separator className="h-px bg-linear-to-r from-primary to-primary-grad" />
+			<Separator className="h-px bg-linear-to-r from-primary-grad-from to-primary-grad-to" />
 
 			<Suspense fallback={<CardStackSkeleton />}>
 				<NewsStack />

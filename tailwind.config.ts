@@ -33,18 +33,18 @@ const config = {
 				ring: "hsl(var(--ring))",
 				background: "hsl(var(--background))",
 				foreground: "hsl(var(--foreground))",
-				primary: {
-					DEFAULT: "hsl(var(--primary))",
-					foreground: "hsl(var(--primary-foreground))",
-				},
+				// primary: {
+				// 	DEFAULT: "hsl(var(--primary))",
+				// 	foreground: "hsl(var(--primary-foreground))",
+				// },
 				"primary-grad": {
-					DEFAULT: "hsl(var(--primary-grad))",
+					DEFAULT: "var(--primary-grad)",
 				},
 				"primary-grad-from": {
-					DEFAULT: "hsl(var(--primary-grad-from))",
+					DEFAULT: "var(--primary-grad-from)",
 				},
 				"primary-grad-to": {
-					DEFAULT: "hsl(var(--primary-grad-to))",
+					DEFAULT: "var(--primary-grad-to)",
 				},
 				secondary: {
 					DEFAULT: "hsl(var(--secondary))",
