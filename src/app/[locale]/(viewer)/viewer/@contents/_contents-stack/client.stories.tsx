@@ -1,14 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { PreviewStackClient } from "./preview-stack";
+import { ContentsStackClient } from "./client";
 
 const meta = {
-	component: PreviewStackClient,
-	parameters: { layout: "centered" },
+	component: ContentsStackClient,
+	parameters: {
+		layout: "centered",
+	},
 	tags: ["autodocs"],
-} satisfies Meta<typeof PreviewStackClient>;
+} satisfies Meta<typeof ContentsStackClient>;
 
 export default meta;
-
 type Story = StoryObj<typeof meta>;
 
 const svg = `
@@ -56,13 +57,5 @@ const previewCardData = [
 		image,
 	},
 ];
-const path = "/example";
-const imageType = "svg";
 
-export const Default: Story = {
-	args: {
-		previewCardData,
-		basePath: path,
-		imageType,
-	},
-};
+export const Default: Story = { args: { previewCardData } };

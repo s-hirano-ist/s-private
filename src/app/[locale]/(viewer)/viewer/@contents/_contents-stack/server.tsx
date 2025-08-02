@@ -1,28 +1,20 @@
 import { StatusCodeView } from "@/components/card/status-code-view";
 import { Unauthorized } from "@/components/card/unauthorized";
 import { hasViewerAdminPermission } from "@/features/auth/utils/session";
-import { getStaticNews } from "@/features/viewer/actions/static-news";
+import { getAllStaticContents } from "@/features/viewer/actions/static-contents";
 import { loggerError } from "@/pino";
-import { StaticNewsStackClient } from "./client";
+import { ContentsStackClient } from "./client";
 
-type Props = { page: number };
-
-export async function StaticNewsStack({ page }: Props) {
+export async function ContentsStack() {
 	try {
 		const hasAdminPermission = await hasViewerAdminPermission();
 		if (!hasAdminPermission) return <Unauthorized />;
 
-		const news = await getStaticNews(page);
-		return <StaticNewsStackClient data={news} />;
+		const previewCardData = await getAllStaticContents();
+
+		return <ContentsStackClient previewCardData={previewCardData} />;
 	} catch (error) {
-		loggerError(
-			"unexpected",
-			{
-				caller: "StaticNewsStack",
-				status: 500,
-			},
-			error,
-		);
+		loggerError("unexpected", { caller: "ContentsStack", status: 500 }, error);
 		return (
 			<div className="flex flex-col items-center">
 				<StatusCodeView statusCode="500" />

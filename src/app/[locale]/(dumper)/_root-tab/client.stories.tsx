@@ -3,7 +3,7 @@ import { RootTab } from "./client";
 
 const meta = {
 	component: RootTab,
-	parameters: { layout: "centered" },
+	parameters: { layout: "fullscreen" },
 	tags: ["autodocs"],
 } satisfies Meta<typeof RootTab>;
 

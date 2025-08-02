@@ -1,10 +1,10 @@
 import { StatusCodeView } from "@/components/card/status-code-view";
 import { Unauthorized } from "@/components/card/unauthorized";
-import { ImageStack } from "@/components/stack/image-stack";
 import { PAGE_SIZE } from "@/constants";
 import { hasViewerAdminPermission } from "@/features/auth/utils/session";
 import { loggerError } from "@/pino";
 import prisma from "@/prisma";
+import { AllImageStackClient } from "./client";
 
 type Props = { page: number };
 
@@ -21,7 +21,7 @@ export async function AllImageStack({ page }: Props) {
 			cacheStrategy: { ttl: 400, swr: 40, tags: ["staticImages"] },
 		});
 
-		return <ImageStack data={images} />;
+		return <AllImageStackClient images={images} />;
 	} catch (error) {
 		loggerError(
 			"unexpected",

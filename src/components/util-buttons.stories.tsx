@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { NextIntlClientProvider } from "next-intl";
 import { fn } from "storybook/test";
 import { UtilButtons } from "./util-buttons";
 
@@ -27,9 +26,4 @@ export const Default: Story = {
 		handleReload: fn(),
 		onSignOutSubmit: fn(),
 	},
-	render: () => (
-		<NextIntlClientProvider locale="ja" messages={messages}>
-			<UtilButtons handleReload={fn()} onSignOutSubmit={fn()} />
-		</NextIntlClientProvider>
-	),
 };
