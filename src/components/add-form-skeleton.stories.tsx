@@ -16,20 +16,5 @@ export const Default: Story = {
 };
 
 export const WithCategory: Story = {
-	args: {
-		showCategory: true,
-	},
-};
-
-export const WithSubmitButton: Story = {
-	args: {
-		showSubmitButton: true,
-	},
-};
-
-export const WithCategoryAndSubmitButton: Story = {
-	args: {
-		showCategory: true,
-		showSubmitButton: true,
-	},
+	args: { showCategory: true },
 };

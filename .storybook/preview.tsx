@@ -7,7 +7,7 @@ const preview = {
 	decorators: [
 		(Story) => (
 			<NextIntlClientProvider
-				locale="en"
+				locale="ja"
 				messages={{
 					utils: {
 						signOut: "サインアウト",

@@ -2,16 +2,13 @@ import { useTranslations } from "next-intl";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 
-type Props = { showCategory?: boolean; showSubmitButton?: boolean };
+type Props = { showCategory?: boolean };
 
-export function AddFormSkeleton({
-	showCategory = false,
-	showSubmitButton = false,
-}: Props) {
+export function AddFormSkeleton({ showCategory = false }: Props) {
 	const t = useTranslations("label");
 
 	return (
-		<div className="space-y-4">
+		<div className="space-y-4 px-2 py-4">
 			{showCategory && (
 				<div className="space-y-1">
 					<Label>{t("category")}</Label>
@@ -30,7 +27,6 @@ export function AddFormSkeleton({
 				<Label>{t("url")}</Label>
 				<Skeleton className="h-9 " />
 			</div>
-			{showSubmitButton && <Skeleton className="h-9 " />}
 		</div>
 	);
 }
