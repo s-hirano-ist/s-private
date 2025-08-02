@@ -1,7 +1,8 @@
 "use server";
 import "server-only";
 import { revalidatePath } from "next/cache";
-import { NotAllowedError, UnexpectedError } from "@/error-classes";
+import { forbidden } from "next/navigation";
+import { UnexpectedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
 import {
 	getSelfId,
@@ -13,10 +14,10 @@ import type { ServerAction } from "@/types";
 import { sendPushoverMessage } from "@/utils/fetch-message";
 
 export async function deleteNews(id: number): Promise<ServerAction<number>> {
-	try {
-		const hasPostPermission = await hasDumperPostPermission();
-		if (!hasPostPermission) throw new NotAllowedError();
+	const hasPostPermission = await hasDumperPostPermission();
+	if (!hasPostPermission) forbidden();
 
+	try {
 		const userId = await getSelfId();
 
 		// Check if the news item exists and belongs to the user

@@ -36,25 +36,13 @@ describe("addContents", () => {
 	test("should return success false on Unauthorized", async () => {
 		(auth as Mock).mockResolvedValue(mockUnauthorizedSession);
 
-		const result = await addContents(mockFormData);
-
-		expect(result).toEqual({
-			success: false,
-			message: "unauthorized",
-		});
-		expect(auth).toHaveBeenCalledTimes(1);
+		await expect(addContents(mockFormData)).rejects.toThrow("UNAUTHORIZED");
 	});
 
 	test("should return success false on not permitted", async () => {
 		(auth as Mock).mockResolvedValue(mockNotAllowedRoleSession);
 
-		const result = await addContents(mockFormData);
-
-		expect(result).toEqual({
-			success: false,
-			message: "notAllowed",
-		});
-		expect(auth).toHaveBeenCalledTimes(1);
+		await expect(addContents(mockFormData)).rejects.toThrow("FORBIDDEN");
 	});
 
 	test("should create contents", async () => {

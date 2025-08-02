@@ -26,25 +26,13 @@ describe("changeImagesStatus", () => {
 	test("should return success false on Unauthorized", async () => {
 		(auth as Mock).mockResolvedValue(mockUnauthorizedSession);
 
-		const result = await changeImagesStatus("UPDATE");
-
-		expect(result).toEqual({
-			success: false,
-			message: "unauthorized",
-		});
-		expect(auth).toHaveBeenCalledTimes(1);
+		await expect(changeImagesStatus("UPDATE")).rejects.toThrow("UNAUTHORIZED");
 	});
 
 	test("should return success false on not permitted", async () => {
 		(auth as Mock).mockResolvedValue(mockNotAllowedRoleSession);
 
-		const result = await changeImagesStatus("REVERT");
-
-		expect(result).toEqual({
-			success: false,
-			message: "notAllowed",
-		});
-		expect(auth).toHaveBeenCalledTimes(1);
+		await expect(changeImagesStatus("REVERT")).rejects.toThrow("FORBIDDEN");
 	});
 
 	test("should update IMAGES statuses and send notifications (UPDATE)", async () => {

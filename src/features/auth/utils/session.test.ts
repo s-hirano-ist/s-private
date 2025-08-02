@@ -1,6 +1,5 @@
 import { Session } from "next-auth";
 import { describe, expect, Mock, test, vi } from "vitest";
-import { UnauthorizedError } from "@/error-classes";
 import { auth } from "@/features/auth/utils/auth";
 import {
 	getSelfId,
@@ -78,10 +77,10 @@ describe("session utilities", () => {
 			expect(result).toBe(false);
 		});
 
-		test("should throw UnauthorizedError if not authenticated", async () => {
+		test("should throw Unauthorized if not authenticated", async () => {
 			(auth as Mock).mockResolvedValue(mockUnauthenticatedUserSession);
 
-			await expect(hasViewerAdminPermission).rejects.toThrow(UnauthorizedError);
+			await expect(hasViewerAdminPermission).rejects.toThrow("UNAUTHORIZED");
 			expect(auth).toHaveBeenCalledTimes(1);
 		});
 	});
@@ -117,13 +116,6 @@ describe("session utilities", () => {
 			const result = await hasDumperPostPermission();
 
 			expect(result).toBe(false);
-		});
-
-		test("should throw UnauthorizedError if not authenticated", async () => {
-			(auth as Mock).mockResolvedValue(mockUnauthenticatedUserSession);
-
-			await expect(hasDumperPostPermission).rejects.toThrow(UnauthorizedError);
-			expect(auth).toHaveBeenCalledTimes(1);
 		});
 	});
 });

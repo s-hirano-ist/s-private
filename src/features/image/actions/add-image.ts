@@ -1,6 +1,7 @@
 "use server";
 import "server-only";
 import { revalidatePath } from "next/cache";
+import { forbidden } from "next/navigation";
 import sharp from "sharp";
 import { v7 as uuidv7 } from "uuid";
 import {
@@ -9,11 +10,7 @@ import {
 	THUMBNAIL_WIDTH,
 } from "@/constants";
 import { env } from "@/env";
-import {
-	FileNotAllowedError,
-	NotAllowedError,
-	UnexpectedError,
-} from "@/error-classes";
+import { FileNotAllowedError, UnexpectedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
 import {
 	getSelfId,
@@ -30,10 +27,10 @@ import { sanitizeFileName } from "@/utils/sanitize-file-name";
 export async function addImage(
 	formData: FormData,
 ): Promise<ServerAction<undefined>> {
-	try {
-		const hasPostPermission = await hasDumperPostPermission();
-		if (!hasPostPermission) throw new NotAllowedError();
+	const hasPostPermission = await hasDumperPostPermission();
+	if (!hasPostPermission) forbidden();
 
+	try {
 		const userId = await getSelfId();
 
 		const file = formData.get("file") as File;
@@ -50,8 +47,6 @@ export async function addImage(
 
 		const buffer = Buffer.from(await file.arrayBuffer());
 		const metadata = await sharp(buffer).metadata();
-
-		if (!metadata.width || !metadata.height) throw new UnexpectedError();
 
 		const originalPath = `${ORIGINAL_IMAGE_PATH}/${id}`;
 		await minioClient.putObject(env.MINIO_BUCKET_NAME, originalPath, buffer);

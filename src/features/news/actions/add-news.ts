@@ -1,7 +1,7 @@
 "use server";
 import "server-only";
 import { revalidatePath } from "next/cache";
-import { NotAllowedError } from "@/error-classes";
+import { forbidden } from "next/navigation";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
 import {
 	getSelfId,
@@ -24,10 +24,10 @@ type News = {
 };
 
 export async function addNews(formData: FormData): Promise<ServerAction<News>> {
-	try {
-		const hasPostPermission = await hasDumperPostPermission();
-		if (!hasPostPermission) throw new NotAllowedError();
+	const hasPostPermission = await hasDumperPostPermission();
+	if (!hasPostPermission) forbidden();
 
+	try {
 		const userId = await getSelfId();
 
 		const validatedCategory = validateCategory(formData);

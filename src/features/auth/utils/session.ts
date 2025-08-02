@@ -1,27 +1,27 @@
 import "server-only";
-import { UnauthorizedError } from "@/error-classes";
+import { unauthorized } from "next/navigation";
 import { loggerWarn } from "@/pino";
 import { auth } from "./auth";
 
-async function checkSelfAuthOrThrow() {
+async function checkSelfAuth() {
 	const session = await auth();
 	if (!session) {
 		loggerWarn("Unauthorized", {
 			caller: "Unauthorized on checkSelfAuth or throw",
 			status: 401,
 		});
-		throw new UnauthorizedError();
+		unauthorized();
 	}
 	return session;
 }
 
 export async function getSelfId() {
-	const { user } = await checkSelfAuthOrThrow();
+	const { user } = await checkSelfAuth();
 	return user.id;
 }
 
 async function getSelfRoles() {
-	const { user } = await checkSelfAuthOrThrow();
+	const { user } = await checkSelfAuth();
 	return user.roles;
 }
 
