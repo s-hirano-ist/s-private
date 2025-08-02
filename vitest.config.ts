@@ -29,7 +29,4 @@ export default defineConfig({
 		server: { deps: { inline: ["next-auth"] } }, // FIXME: https://github.com/vitest-dev/vitest/issues/4554
 	},
 	resolve: { alias: { "@": "/src" } },
-	define: {
-		"sb-original/image-context": "{}",
-	},
 });

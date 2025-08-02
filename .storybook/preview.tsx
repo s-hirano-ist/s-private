@@ -44,6 +44,9 @@ const preview = {
 						delete: "削除",
 						cancel: "キャンセル",
 						confirmDelete: "削除の確認",
+						news: "news",
+						contents: "contents",
+						images: "images",
 					},
 					statusCode: {
 						"000": "近日公開",
@@ -114,6 +117,12 @@ const preview = {
 					value: "#000000",
 				},
 			],
+		},
+		a11y: {
+			// 'todo' - show a11y violations in the test UI only
+			// 'error' - fail CI on a11y violations
+			// 'off' - skip a11y checks entirely
+			test: "todo",
 		},
 	},
 } satisfies Preview;

@@ -1,7 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import { describe, expect, test, vi } from "vitest";
-import { addNews } from "@/features/news/actions/add-news";
 import { AddNewsFormClient } from "./client";
 
 const messages = {
@@ -26,8 +25,7 @@ describe("AddNewsFormClient", () => {
 
 		render(
 			<NextIntlClientProvider locale="ja" messages={messages}>
-				{/* FIXME: use mock as add contents */}
-				<AddNewsFormClient addNews={addNews} categories={[]} />
+				<AddNewsFormClient addNews={vi.fn()} categories={[]} />
 			</NextIntlClientProvider>,
 		);
 		const pasteButton = screen.getByTestId("paste-button");

@@ -21,7 +21,10 @@ const config: StorybookConfig = {
 		"@storybook/addon-vitest",
 		"@storybook/addon-docs",
 	],
-	framework: "@storybook/nextjs-vite",
+	framework: {
+		name: "@storybook/nextjs-vite",
+		options: {},
+	},
 	features: { experimentalRSC: true },
 	staticDirs: ["../public"],
 };
