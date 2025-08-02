@@ -1,10 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { NextIntlClientProvider } from "next-intl";
 import { fn } from "storybook/test";
 import { UtilButtons } from "./util-buttons";
 
 const meta = {
-	title: "Features/Dump/UtilButtons",
 	component: UtilButtons,
 	parameters: { layout: "centered" },
 	tags: ["autodocs"],
@@ -28,9 +26,4 @@ export const Default: Story = {
 		handleReload: fn(),
 		onSignOutSubmit: fn(),
 	},
-	render: () => (
-		<NextIntlClientProvider locale="ja" messages={messages}>
-			<UtilButtons handleReload={fn()} onSignOutSubmit={fn()} />
-		</NextIntlClientProvider>
-	),
 };

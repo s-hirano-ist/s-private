@@ -20,6 +20,7 @@ export default defineConfig({
 				"src/**/*.test.ts?(x)",
 				"src/app/**/?(layout|page|_page).tsx",
 				"src/generated/**/*",
+				"/**/server.tsx", // FIXME: remote when server side component test enabled
 			],
 			reporter: ["text", "json-summary", "json"],
 		},
@@ -28,7 +29,4 @@ export default defineConfig({
 		server: { deps: { inline: ["next-auth"] } }, // FIXME: https://github.com/vitest-dev/vitest/issues/4554
 	},
 	resolve: { alias: { "@": "/src" } },
-	define: {
-		"sb-original/image-context": "{}",
-	},
 });

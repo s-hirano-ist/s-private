@@ -14,11 +14,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { addNews } from "@/features/news/actions/add-news";
 
-type Props = { categories: { id: number; name: string }[] };
+type Props = {
+	categories: { id: number; name: string }[];
+	addNews: (formData: FormData) => Promise<{ message: string }>;
+};
 
-export function AddNewsFormClient({ categories }: Props) {
+export function AddNewsFormClient({ categories, addNews }: Props) {
 	const urlInputReference = useRef<HTMLInputElement>(null);
 	const categoryInputReference = useRef<HTMLInputElement>(null);
 
@@ -100,7 +102,12 @@ export function AddNewsFormClient({ categories }: Props) {
 								required
 								type="url"
 							/>
-							<Button onClick={handlePasteClick} type="button" variant="ghost">
+							<Button
+								data-testid="paste-button"
+								onClick={handlePasteClick}
+								type="button"
+								variant="ghost"
+							>
 								<ClipboardPasteIcon />
 							</Button>
 						</div>

@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/dialog";
 
 const meta = {
-	title: "Components/UI/Dialog",
 	component: Dialog,
 	parameters: { layout: "centered" },
 	tags: ["autodocs"],

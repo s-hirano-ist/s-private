@@ -1,9 +1,8 @@
 import { StatusCodeView } from "@/components/card/status-code-view";
-import { CountBadge } from "@/components/count-badge";
-import { Pagination } from "@/components/stack/pagination";
 import { hasViewerAdminPermission } from "@/features/auth/utils/session";
 import { loggerError } from "@/pino";
 import prisma from "@/prisma";
+import { ImageCounterClient } from "./client";
 
 type Props = { page: number };
 
@@ -13,12 +12,7 @@ export async function ImageCounter({ page }: Props) {
 		if (!hasAdminPermission) return <></>;
 
 		const totalImages = await prisma.staticImages.count({});
-		return (
-			<>
-				<CountBadge label="totalImages" total={totalImages} />
-				<Pagination currentPage={page} totalPages={totalImages} />
-			</>
-		);
+		return <ImageCounterClient page={page} totalImages={totalImages} />;
 	} catch (error) {
 		loggerError(
 			"unexpected",

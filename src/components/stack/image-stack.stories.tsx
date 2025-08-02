@@ -1,9 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { NextIntlClientProvider } from "next-intl";
 import { ImageStack } from "./image-stack";
 
 const meta = {
-	title: "Components/Stack/ImageStack",
 	component: ImageStack,
 	tags: ["autodocs"],
 } satisfies Meta<typeof ImageStack>;
@@ -32,21 +30,8 @@ const data = [
 
 export const Default: Story = {
 	args: { data },
-	render: () => (
-		<NextIntlClientProvider locale="ja">
-			<ImageStack data={data} />
-		</NextIntlClientProvider>
-	),
 };
 
 export const NoData: Story = {
 	args: { data: [] },
-	render: () => (
-		<NextIntlClientProvider
-			locale="ja"
-			messages={{ statusCode: { "204": "コンテンツがありません" } }}
-		>
-			<ImageStack data={[]} />
-		</NextIntlClientProvider>
-	),
 };

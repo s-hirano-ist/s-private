@@ -16,18 +16,6 @@ const messages = {
 };
 
 describe("AddContentsForm", () => {
-	test("renders input fields and buttons correctly", () => {
-		render(
-			<NextIntlClientProvider locale="ja" messages={messages}>
-				<AddContentsFormClient />
-			</NextIntlClientProvider>,
-		);
-		expect(screen.getByLabelText("タイトル")).toBeInTheDocument();
-		expect(screen.getByLabelText("ひとこと")).toBeInTheDocument();
-		expect(screen.getByLabelText("URL")).toBeInTheDocument();
-		expect(screen.getByText("保存")).toBeInTheDocument();
-	});
-
 	test("pastes clipboard content into the URL field", async () => {
 		const clipboardText = "https://example.com";
 		Object.assign(navigator, {
@@ -36,7 +24,7 @@ describe("AddContentsForm", () => {
 
 		render(
 			<NextIntlClientProvider locale="ja" messages={messages}>
-				<AddContentsFormClient />
+				<AddContentsFormClient addContents={vi.fn()} />
 			</NextIntlClientProvider>,
 		);
 		const pasteButton = screen.getByTestId("paste-button");

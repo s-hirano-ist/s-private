@@ -1,8 +1,8 @@
 import { StatusCodeView } from "@/components/card/status-code-view";
-import { ImageStack as ImageStackComponent } from "@/components/stack/image-stack";
 import { getSelfId } from "@/features/auth/utils/session";
 import { loggerError } from "@/pino";
 import prisma from "@/prisma";
+import { ImageStackClient } from "./client";
 
 export async function ImageStack() {
 	try {
@@ -14,9 +14,9 @@ export async function ImageStack() {
 			orderBy: { id: "desc" },
 		});
 
-		return <ImageStackComponent data={images} />;
+		return <ImageStackClient images={images} />;
 	} catch (error) {
-		loggerError("unexpected", { caller: "ImagePage", status: 500 }, error);
+		loggerError("unexpected", { caller: "ImageStack", status: 500 }, error);
 		return (
 			<div className="flex flex-col items-center">
 				<StatusCodeView statusCode="500" />

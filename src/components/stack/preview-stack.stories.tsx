@@ -1,9 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { NextIntlClientProvider } from "next-intl";
 import { PreviewStackClient } from "./preview-stack";
 
 const meta = {
-	title: "Components/Stack/PreviewStack",
 	component: PreviewStackClient,
 	parameters: { layout: "centered" },
 	tags: ["autodocs"],
@@ -67,16 +65,4 @@ export const Default: Story = {
 		basePath: path,
 		imageType,
 	},
-	render: (args) => (
-		<NextIntlClientProvider
-			locale="ja"
-			messages={{ label: { search: "検索" } }}
-		>
-			<PreviewStackClient
-				basePath={args.basePath}
-				imageType={imageType}
-				previewCardData={args.previewCardData}
-			/>
-		</NextIntlClientProvider>
-	),
 };

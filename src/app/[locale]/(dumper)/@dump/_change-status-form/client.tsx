@@ -12,11 +12,21 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { UnexpectedError } from "@/error-classes";
-import { changeContentsStatus } from "@/features/contents/actions/change-contents-status";
-import { changeImagesStatus } from "@/features/image/actions/change-images-status";
-import { changeNewsStatus } from "@/features/news/actions/change-news-status";
+import { UpdateOrRevert } from "@/features/dump/types";
 
-export function ChangeStatusFormClient() {
+type Props = {
+	changeNewsStatus: (status: UpdateOrRevert) => Promise<{ message: string }>;
+	changeContentsStatus: (
+		status: UpdateOrRevert,
+	) => Promise<{ message: string }>;
+	changeImagesStatus: (status: UpdateOrRevert) => Promise<{ message: string }>;
+};
+
+export function ChangeStatusFormClient({
+	changeNewsStatus,
+	changeContentsStatus,
+	changeImagesStatus,
+}: Props) {
 	const [target, setTarget] = useState<string>();
 	const [status, setStatus] = useState<string>();
 	const label = useTranslations("label");

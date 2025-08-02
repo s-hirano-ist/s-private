@@ -1,0 +1,130 @@
+import type { Preview } from "@storybook/nextjs-vite";
+// eslint-disable-next-line no-restricted-imports
+import "../src/app/globals.css";
+import { NextIntlClientProvider } from "next-intl";
+
+const preview = {
+	decorators: [
+		(Story) => (
+			<NextIntlClientProvider
+				locale="ja"
+				messages={{
+					utils: {
+						signOut: "サインアウト",
+						language: "言語切替",
+						appearance: "外観切替",
+						reload: "再読み込み",
+						utilsTitle: "便利ツール集",
+						utilsDescription: "リンクをクリックしてください",
+					},
+					label: {
+						category: "カテゴリー",
+						title: "タイトル",
+						description: " ひとこと",
+						url: "URL",
+						save: "保存",
+						upload: "アップロード",
+						uploading: "アップロード中...",
+						image: "画像",
+						send: "送信",
+						status: "状態",
+						target: "ターゲット",
+						dumpStatus: "DUMPの状態",
+						dumpTarget: "DUMPのターゲット",
+						totalBooks: "冊数",
+						totalContents: "コンテンツ数",
+						totalImages: "画像数",
+						totalNews: "ニュース総数",
+						search: "検索",
+						aiSearch: "AI知識検索",
+						aiSearchDescription: "AI検索を使用してナレッジベースを検索",
+						searching: "検索中...",
+						noResults: "結果が見つかりません",
+						score: "スコア",
+						delete: "削除",
+						cancel: "キャンセル",
+						confirmDelete: "削除の確認",
+						news: "news",
+						contents: "contents",
+						images: "images",
+					},
+					statusCode: {
+						"000": "近日公開",
+						"204": "コンテンツがありません",
+						"403": "許可されていません",
+						"404": "コンテンツが見つかりません",
+						"500": "予期せぬエラーが発生しました",
+					},
+					message: {
+						inserted: "正常に登録されました。",
+						success: "完了",
+						updated: "更新が完了しました。",
+						unexpected: "予期せぬエラーが発生しました。",
+						pushoverSend: "ログの送信でエラーが発生しました。",
+						prismaDuplicated: "すでに登録されているため登録できません。",
+						prismaUnexpected:
+							"データベースへの書き込み時にエラーが発生しました。",
+						unauthorized: "認証されていません。",
+						notAllowed: "操作が許可されていません。",
+						signInUnknown: "サインインに失敗しました。",
+						required: "必須項目です。",
+						tooLong: "文字数が多すぎます。",
+						invalidFormat: "無効なフォーマットで入力されています。",
+						invalidFileFormat: "ファイルのフォーマットが無効です。",
+						deleted: "正常に削除されました。",
+						error: "エラーが発生しました。",
+					},
+				}}
+			>
+				<div className="w-96">
+					<Story />
+				</div>
+			</NextIntlClientProvider>
+		),
+	],
+	parameters: {
+		controls: {
+			matchers: {
+				color: /(background|color)$/i,
+				date: /Date$/i,
+			},
+		},
+
+		nextjs: { appDirectory: true },
+
+		docs: {
+			codePanel: true,
+		},
+
+		// Backgrounds addon configuration
+		backgrounds: {
+			default: "white",
+			values: [
+				{
+					name: "white",
+					value: "#ffffff",
+				},
+				{
+					name: "light",
+					value: "#f8f9fa",
+				},
+				{
+					name: "dark",
+					value: "#343a40",
+				},
+				{
+					name: "black",
+					value: "#000000",
+				},
+			],
+		},
+		a11y: {
+			// 'todo' - show a11y violations in the test UI only
+			// 'error' - fail CI on a11y violations
+			// 'off' - skip a11y checks entirely
+			test: "todo",
+		},
+	},
+} satisfies Preview;
+
+export default preview;

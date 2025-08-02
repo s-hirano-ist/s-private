@@ -5,12 +5,14 @@ import Lightbox from "yet-another-react-lightbox";
 import { StatusCodeView } from "@/components/card/status-code-view";
 import "yet-another-react-lightbox/styles.css";
 
+export type ImageStackData = {
+	height?: number | null;
+	id: string;
+	width?: number | null;
+}[];
+
 type Props = {
-	data: {
-		height?: number | null;
-		id: string;
-		width?: number | null;
-	}[];
+	data: ImageStackData;
 };
 
 type SlideImage = {

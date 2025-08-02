@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { SmallCard } from "./small-card";
 
 const meta = {
-	title: "Components/Card/SmallCard",
 	component: SmallCard,
 	parameters: { layout: "centered" },
 	tags: ["autodocs"],

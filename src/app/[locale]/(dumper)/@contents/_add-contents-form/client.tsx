@@ -8,9 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { addContents } from "@/features/contents/actions/add-contents";
 
-export function AddContentsFormClient() {
+type Props = {
+	addContents: (formData: FormData) => Promise<{ message: string }>;
+};
+
+export function AddContentsFormClient({ addContents }: Props) {
 	const urlInputReference = useRef<HTMLInputElement>(null);
 
 	const label = useTranslations("label");

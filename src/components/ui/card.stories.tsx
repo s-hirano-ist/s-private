@@ -9,7 +9,6 @@ import {
 } from "./card";
 
 const meta: Meta = {
-	title: "Components/UI/Card",
 	component: Card,
 	tags: ["autodocs"],
 } satisfies Meta<typeof Card>;

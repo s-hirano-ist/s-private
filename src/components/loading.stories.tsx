@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import Loading from "./loading";
 
 const meta = {
-	title: "Components/Loading",
 	component: Loading,
 	parameters: { layout: "centered" },
 	tags: ["autodocs"],

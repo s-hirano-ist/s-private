@@ -1,8 +1,8 @@
 import { StatusCodeView } from "@/components/card/status-code-view";
-import { CardStack } from "@/components/stack/card-stack";
 import { getSelfId } from "@/features/auth/utils/session";
 import { loggerError } from "@/pino";
 import prisma from "@/prisma";
+import { ContentsStackClient } from "./client";
 
 export async function ContentsStack() {
 	try {
@@ -27,7 +27,7 @@ export async function ContentsStack() {
 			};
 		});
 
-		return <CardStack data={unexportedContents} showDeleteButton={false} />;
+		return <ContentsStackClient cardStackData={unexportedContents} />;
 	} catch (error) {
 		loggerError(
 			"unexpected",

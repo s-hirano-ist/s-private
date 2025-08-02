@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const meta = {
-	title: "Components/UI/DropdownMenu",
 	component: DropdownMenu,
 	parameters: { layout: "centered" },
 	tags: ["autodocs"],

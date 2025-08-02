@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const meta = {
-	title: "Components/UI/Tabs",
 	component: Tabs,
 	tags: ["autodocs"],
 } satisfies Meta<typeof Tabs>;

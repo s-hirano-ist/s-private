@@ -1,9 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { NextIntlClientProvider } from "next-intl";
 import { CardStack } from "./card-stack";
 
 const meta = {
-	title: "Components/Stack/CardStack",
 	component: CardStack,
 	parameters: { layout: "fullscreen" },
 	tags: ["autodocs"],
@@ -55,22 +53,6 @@ export const EmptyData: Story = {
 	args: {
 		data: [],
 		showDeleteButton: false,
-	},
-	render: (args) => {
-		return (
-			<NextIntlClientProvider
-				locale="ja"
-				messages={{
-					label: {
-						delete: "削除",
-						confirmDelete: "本当に削除しますか？",
-						cancel: "キャンセル",
-					},
-				}}
-			>
-				<CardStack data={args.data} showDeleteButton={args.showDeleteButton} />
-			</NextIntlClientProvider>
-		);
 	},
 };
 

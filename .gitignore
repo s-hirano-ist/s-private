@@ -2,6 +2,7 @@
 
 # Storybook
 .storybook-static
+*storybook.log
 
 # Dependencies
 node_modules

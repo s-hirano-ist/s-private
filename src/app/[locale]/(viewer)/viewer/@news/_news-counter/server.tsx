@@ -1,10 +1,9 @@
 import { StatusCodeView } from "@/components/card/status-code-view";
 import { Unauthorized } from "@/components/card/unauthorized";
-import { CountBadge } from "@/components/count-badge";
-import { Pagination } from "@/components/stack/pagination";
 import { hasViewerAdminPermission } from "@/features/auth/utils/session";
 import { getStaticNewsCount } from "@/features/viewer/actions/static-news";
 import { loggerError } from "@/pino";
+import { NewsCounterClient } from "./client";
 
 type Props = { page: number };
 
@@ -15,12 +14,7 @@ export async function NewsCounter({ page }: Props) {
 
 		const totalNews = await getStaticNewsCount();
 
-		return (
-			<>
-				<CountBadge label="totalNews" total={totalNews} />
-				<Pagination currentPage={page} totalPages={totalNews} />
-			</>
-		);
+		return <NewsCounterClient page={page} totalNews={totalNews} />;
 	} catch (error) {
 		loggerError(
 			"unexpected",

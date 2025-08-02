@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/drawer";
 
 const meta = {
-	title: "Components/UI/Drawer",
 	component: Drawer,
 	parameters: { layout: "centered" },
 	tags: ["autodocs"],

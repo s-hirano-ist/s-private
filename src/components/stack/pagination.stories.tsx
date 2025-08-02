@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Pagination } from "./pagination";
 
 const meta = {
-	title: "Components/Stack/Pagination",
 	component: Pagination,
 	tags: ["autodocs"],
 } satisfies Meta<typeof Pagination>;

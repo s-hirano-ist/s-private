@@ -1,9 +1,9 @@
 import { StatusCodeView } from "@/components/card/status-code-view";
-import { CardStack } from "@/components/stack/card-stack";
 import { getSelfId } from "@/features/auth/utils/session";
 import { deleteNews } from "@/features/news/actions/delete-news";
 import { loggerError } from "@/pino";
 import prisma from "@/prisma";
+import { NewsStackClient } from "./client";
 
 export async function NewsStack() {
 	try {
@@ -31,11 +31,7 @@ export async function NewsStack() {
 			};
 		});
 		return (
-			<CardStack
-				data={unexportedNews}
-				deleteAction={deleteNews}
-				showDeleteButton
-			/>
+			<NewsStackClient cardStackData={unexportedNews} deleteNews={deleteNews} />
 		);
 	} catch (error) {
 		loggerError(

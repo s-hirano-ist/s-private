@@ -1,9 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { NextIntlClientProvider } from "next-intl";
 import { CountBadge } from "./count-badge";
 
 const meta = {
-	title: "Components/CountBadge",
 	component: CountBadge,
 	parameters: { layout: "centered" },
 	tags: ["autodocs"],
@@ -18,14 +16,6 @@ export const Default: Story = {
 		label: "news",
 		total: 42,
 	},
-	render: (args) => (
-		<NextIntlClientProvider
-			locale="ja"
-			messages={{ label: { news: "ニュース" } }}
-		>
-			<CountBadge label={args.label} total={args.total} />
-		</NextIntlClientProvider>
-	),
 };
 
 export const LargeCount: Story = {
@@ -33,14 +23,6 @@ export const LargeCount: Story = {
 		label: "contents",
 		total: 1234,
 	},
-	render: (args) => (
-		<NextIntlClientProvider
-			locale="ja"
-			messages={{ label: { contents: "コンテンツ" } }}
-		>
-			<CountBadge label={args.label} total={args.total} />
-		</NextIntlClientProvider>
-	),
 };
 
 export const ZeroCount: Story = {
@@ -48,12 +30,4 @@ export const ZeroCount: Story = {
 		label: "images",
 		total: 0,
 	},
-	render: (args) => (
-		<NextIntlClientProvider
-			locale="ja"
-			messages={{ label: { images: "画像" } }}
-		>
-			<CountBadge label={args.label} total={args.total} />
-		</NextIntlClientProvider>
-	),
 };

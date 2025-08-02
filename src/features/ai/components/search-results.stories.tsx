@@ -1,10 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { NextIntlClientProvider } from "next-intl";
 import type { SearchResult } from "@/features/ai/actions/ai-search";
 import { SearchResults } from "./search-results";
 
 const meta = {
-	title: "Features/AI/SearchResults",
 	component: SearchResults,
 	parameters: { layout: "centered" },
 	tags: ["autodocs"],
@@ -49,26 +47,12 @@ export const Default: Story = {
 		results: mockResults,
 		isLoading: false,
 	},
-	render: (args) => {
-		return (
-			<NextIntlClientProvider locale="ja">
-				<SearchResults isLoading={args.isLoading} results={args.results} />
-			</NextIntlClientProvider>
-		);
-	},
 };
 
 export const Loading: Story = {
 	args: {
 		results: [],
 		isLoading: true,
-	},
-	render: (args) => {
-		return (
-			<NextIntlClientProvider locale="ja">
-				<SearchResults isLoading={args.isLoading} results={args.results} />
-			</NextIntlClientProvider>
-		);
 	},
 };
 
@@ -77,26 +61,12 @@ export const NoResults: Story = {
 		results: [],
 		isLoading: false,
 	},
-	render: (args) => {
-		return (
-			<NextIntlClientProvider locale="ja">
-				<SearchResults isLoading={args.isLoading} results={args.results} />
-			</NextIntlClientProvider>
-		);
-	},
 };
 
 export const SingleResult: Story = {
 	args: {
 		results: [mockResults[0]],
 		isLoading: false,
-	},
-	render: (args) => {
-		return (
-			<NextIntlClientProvider locale="ja">
-				<SearchResults isLoading={args.isLoading} results={args.results} />
-			</NextIntlClientProvider>
-		);
 	},
 };
 
@@ -105,25 +75,11 @@ export const ContentOnly: Story = {
 		results: [mockResults[0]],
 		isLoading: false,
 	},
-	render: (args) => {
-		return (
-			<NextIntlClientProvider locale="ja">
-				<SearchResults isLoading={args.isLoading} results={args.results} />
-			</NextIntlClientProvider>
-		);
-	},
 };
 
 export const BookOnly: Story = {
 	args: {
 		results: [mockResults[1]],
 		isLoading: false,
-	},
-	render: (args) => {
-		return (
-			<NextIntlClientProvider locale="ja">
-				<SearchResults isLoading={args.isLoading} results={args.results} />
-			</NextIntlClientProvider>
-		);
 	},
 };

@@ -5,9 +5,12 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { addImage } from "@/features/image/actions/add-image";
 
-export function AddImageFormClient() {
+type Props = {
+	addImage: (formData: FormData) => Promise<{ message: string }>;
+};
+
+export function AddImageFormClient({ addImage }: Props) {
 	const label = useTranslations("label");
 	const message = useTranslations("message");
 

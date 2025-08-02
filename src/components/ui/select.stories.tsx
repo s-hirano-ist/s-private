@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/select";
 
 const meta = {
-	title: "Components/UI/Select",
 	component: Select,
 	tags: ["autodocs"],
 } satisfies Meta<typeof Select>;
