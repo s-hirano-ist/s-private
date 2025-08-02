@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.24.0](https://github.com/s-hirano-ist/s-private/compare/v8.23.0...v8.24.0) (2025-08-02)
+
+
+### Features
+
+* add error handling ([6ab5c03](https://github.com/s-hirano-ist/s-private/commit/6ab5c03ae079a2deb1aac14f0e94c7654798285b))
+* add error handling ([36e8697](https://github.com/s-hirano-ist/s-private/commit/36e86973cef31b20e91117a39e85c0ee23c5e6ce))
+* change colors ([6642a35](https://github.com/s-hirano-ist/s-private/commit/6642a350f87a2fac67cd3a8a0054f66dcd9b86d4))
+
+
+### Bug Fixes
+
+* layout of news ([beaf323](https://github.com/s-hirano-ist/s-private/commit/beaf3236615f9c7bbdc03d62a45848a556f8adcd))
+* test on tailwind ([8882edd](https://github.com/s-hirano-ist/s-private/commit/8882eddaf481107ee9b03af97b162fd9944f27f5))
+
 ## [8.23.0](https://github.com/s-hirano-ist/s-private/compare/v8.22.0...v8.23.0) (2025-08-02)
 
 
