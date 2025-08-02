@@ -1,6 +1,6 @@
 import { AuthError } from "next-auth";
 import { describe, expect, test, vi } from "vitest";
-import { NotAllowedError, PushoverError } from "@/error-classes";
+import { PushoverError, UnexpectedError } from "@/error-classes";
 import { Prisma } from "@/generated";
 import { loggerError, loggerWarn } from "@/pino";
 import { sendPushoverMessage } from "@/utils/fetch-message";
@@ -27,8 +27,8 @@ describe("wrapServerSideErrorForClient", () => {
 		});
 	});
 
-	test("should handle custom errors (e.g., NotAllowedError)", async () => {
-		const error = new NotAllowedError();
+	test("should handle custom errors (e.g., UnexpectedError)", async () => {
+		const error = new UnexpectedError();
 
 		const result = await wrapServerSideErrorForClient(error);
 

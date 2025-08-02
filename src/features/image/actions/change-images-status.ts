@@ -1,7 +1,8 @@
 "use server";
 import "server-only";
 import { revalidatePath } from "next/cache";
-import { NotAllowedError, UnexpectedError } from "@/error-classes";
+import { forbidden } from "next/navigation";
+import { UnexpectedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
 import {
 	getSelfId,
@@ -74,10 +75,10 @@ type ToastMessage = string;
 export async function changeImagesStatus(
 	changeType: UpdateOrRevert,
 ): Promise<ServerAction<ToastMessage>> {
-	try {
-		const hasUpdateStatusPermission = await hasDumperPostPermission();
-		if (!hasUpdateStatusPermission) throw new NotAllowedError();
+	const hasUpdateStatusPermission = await hasDumperPostPermission();
+	if (!hasUpdateStatusPermission) forbidden();
 
+	try {
 		const status = await handleStatusChange(changeType);
 
 		const message = formatChangeStatusMessage(status, "IMAGES");

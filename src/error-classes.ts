@@ -5,20 +5,6 @@ export class PushoverError extends Error {
 	}
 }
 
-export class NotAllowedError extends Error {
-	constructor() {
-		super("notAllowed");
-		this.name = "NotAllowedError";
-	}
-}
-
-export class UnauthorizedError extends Error {
-	constructor() {
-		super("unauthorized");
-		this.name = "UnauthorizedError";
-	}
-}
-
 export class UnexpectedError extends Error {
 	constructor() {
 		super("unexpected");

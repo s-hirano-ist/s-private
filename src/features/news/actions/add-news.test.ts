@@ -1,4 +1,5 @@
 import { revalidatePath } from "next/cache";
+import { unauthorized } from "next/navigation";
 import { Session } from "next-auth";
 import { describe, expect, Mock, test, vi } from "vitest";
 import { auth } from "@/features/auth/utils/auth";
@@ -39,25 +40,13 @@ describe("addNews", () => {
 	test("should return success false on Unauthorized", async () => {
 		(auth as Mock).mockResolvedValue(mockUnauthorizedSession);
 
-		const result = await addNews(mockFormData);
-
-		expect(result).toEqual({
-			success: false,
-			message: "unauthorized",
-		});
-		expect(auth).toHaveBeenCalledTimes(1);
+		await expect(addNews(mockFormData)).rejects.toThrow("UNAUTHORIZED");
 	});
 
 	test("should return success false on not permitted", async () => {
 		(auth as Mock).mockResolvedValue(mockNotAllowedRoleSession);
 
-		const result = await addNews(mockFormData);
-
-		expect(result).toEqual({
-			success: false,
-			message: "notAllowed",
-		});
-		expect(auth).toHaveBeenCalledTimes(1);
+		await expect(addNews(mockFormData)).rejects.toThrow("FORBIDDEN");
 	});
 
 	test("should create only news if no new category is provided", async () => {

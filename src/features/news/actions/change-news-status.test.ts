@@ -26,25 +26,13 @@ describe("changeNewsStatus", () => {
 	test("should return success false on Unauthorized", async () => {
 		(auth as Mock).mockResolvedValue(mockUnauthorizedSession);
 
-		const result = await changeNewsStatus("UPDATE");
-
-		expect(result).toEqual({
-			success: false,
-			message: "unauthorized",
-		});
-		expect(auth).toHaveBeenCalledTimes(1);
+		await expect(changeNewsStatus("UPDATE")).rejects.toThrow("UNAUTHORIZED");
 	});
 
 	test("should return success false on not permitted", async () => {
 		(auth as Mock).mockResolvedValue(mockNotAllowedRoleSession);
 
-		const result = await changeNewsStatus("REVERT");
-
-		expect(result).toEqual({
-			success: false,
-			message: "notAllowed",
-		});
-		expect(auth).toHaveBeenCalledTimes(1);
+		await expect(changeNewsStatus("REVERT")).rejects.toThrow("FORBIDDEN");
 	});
 
 	test("should update news statuses and send notifications (UPDATE)", async () => {

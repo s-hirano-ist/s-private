@@ -5,9 +5,7 @@ import { Prisma } from "@/generated";
 import {
 	FileNotAllowedError,
 	InvalidFormatError,
-	NotAllowedError,
 	PushoverError,
-	UnauthorizedError,
 	UnexpectedError,
 } from "./error-classes";
 import { loggerError, loggerWarn } from "./pino";
@@ -27,8 +25,6 @@ export async function wrapServerSideErrorForClient<T>(
 	}
 	// FIXME: add error handling for MinIO errors
 	if (
-		error instanceof NotAllowedError ||
-		error instanceof UnauthorizedError ||
 		error instanceof UnexpectedError ||
 		error instanceof InvalidFormatError ||
 		error instanceof FileNotAllowedError

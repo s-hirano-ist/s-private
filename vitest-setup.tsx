@@ -58,6 +58,12 @@ beforeEach(() => {
 	vi.mock("next/navigation", () => ({
 		usePathname: vi.fn(),
 		redirect: vi.fn(),
+		forbidden: vi.fn(() => {
+			throw new Error("FORBIDDEN");
+		}),
+		unauthorized: vi.fn(() => {
+			throw new Error("UNAUTHORIZED");
+		}),
 	}));
 });
 
