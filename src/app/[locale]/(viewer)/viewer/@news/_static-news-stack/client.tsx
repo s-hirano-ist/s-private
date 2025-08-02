@@ -56,8 +56,8 @@ export const StaticNewsStackClient = ({ data }: Props) => {
 									/>
 								)} */}
 										<div className="w-full p-4">
-											<CardTitle>{d.ogTitle}</CardTitle>
-											<CardDescription>{d.ogDescription}</CardDescription>
+											<CardTitle className="break-words">{d.ogTitle}</CardTitle>
+											<CardDescription className="break-words">{d.ogDescription}</CardDescription>
 										</div>
 									</div>
 								</a>
