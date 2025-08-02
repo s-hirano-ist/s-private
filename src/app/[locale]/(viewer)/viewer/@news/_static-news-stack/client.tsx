@@ -1,6 +1,14 @@
 // import Image from "next/image";
 // import defaultOgImage from "@/assets/defaultOgImage.jpg";
 
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+
 type Props = {
 	data: {
 		id: number;
@@ -15,23 +23,23 @@ type Props = {
 export const StaticNewsStackClient = ({ data }: Props) => {
 	return (
 		<article className=" mx-auto max-w-5xl" id="article" role="article">
-			{data.map((d) => {
-				return (
-					<div
-						className="overflow-hidden rounded px-2 py-1 shadow-lg sm:px-4"
-						id={d.url}
-						key={d.url}
-					>
-						<h2 className="text-xl">{d.title}</h2>
-						<div>
-							{d.quote}
-							{/* TODO: change to use fragment */}
-							{/* <Fragment set:html={sanitizeHtml(d.quote ?? "")} /> */}
-						</div>
-						<a href={d.url} rel="noopener noreferrer" target="_blank">
-							<div className="flex w-full justify-start">
-								{/* TODO: show images */}
-								{/* {d.ogImageUrl === null ? (
+			<div className="my-2 space-y-4">
+				{data.map((d) => {
+					return (
+						<Card id={d.url} key={d.url}>
+							<CardHeader>
+								<CardTitle className="text-primary-grad">{d.title}</CardTitle>
+								<CardDescription>{d.quote}</CardDescription>
+							</CardHeader>
+							<CardContent>
+								<div>
+									{/* TODO: change to use fragment */}
+									{/* <Fragment set:html={sanitizeHtml(d.quote ?? "")} /> */}
+								</div>
+								<a href={d.url} rel="noopener noreferrer" target="_blank">
+									<div className="flex w-full justify-start">
+										{/* TODO: show images */}
+										{/* {d.ogImageUrl === null ? (
 									<Image
 										alt=""
 										className="hidden size-32 object-cover sm:block"
@@ -47,15 +55,17 @@ export const StaticNewsStackClient = ({ data }: Props) => {
 										width="128"
 									/>
 								)} */}
-								<div className="w-full py-4 sm:px-6">
-									<div className="mb-2 text-xl font-bold">{d.ogTitle}</div>
-									<p>{d.ogDescription}</p>
-								</div>
-							</div>
-						</a>
-					</div>
-				);
-			})}
+										<div className="w-full p-4">
+											<CardTitle>{d.ogTitle}</CardTitle>
+											<CardDescription>{d.ogDescription}</CardDescription>
+										</div>
+									</div>
+								</a>
+							</CardContent>
+						</Card>
+					);
+				})}
+			</div>
 		</article>
 	);
 };
