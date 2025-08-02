@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { Unauthorized } from "./unauthorized";
+import ForbiddenPage from "./forbidden";
 
 const meta = {
-	component: Unauthorized,
+	component: ForbiddenPage,
 	parameters: { layout: "centered" },
-} satisfies Meta<typeof Unauthorized>;
+} satisfies Meta<typeof ForbiddenPage>;
 
 export default meta;
 

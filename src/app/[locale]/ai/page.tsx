@@ -1,4 +1,4 @@
-import { Unauthorized } from "@/components/card/unauthorized";
+import { forbidden } from "next/navigation";
 import { AiSearchPage } from "@/features/ai/components/ai-search-page";
 import { hasViewerAdminPermission } from "@/features/auth/utils/session";
 
@@ -7,9 +7,7 @@ export default async function Page() {
 	const hasAdminPermission = await hasViewerAdminPermission();
 
 	// If not authenticated, show unauthorized component
-	if (!hasAdminPermission) {
-		return <Unauthorized />;
-	}
+	if (!hasAdminPermission) forbidden();
 
 	// If authenticated, show AI search page
 	return <AiSearchPage />;

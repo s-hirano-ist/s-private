@@ -1,9 +1,9 @@
 import { Route } from "next";
 import NextImage from "next/image";
+import { forbidden } from "next/navigation";
 import { Link } from "next-view-transitions";
 import { ViewerBodyClient } from "@/components/body/viewer-body";
 import { NotFound } from "@/components/card/not-found";
-import { Unauthorized } from "@/components/card/unauthorized";
 import {
 	Card,
 	CardContent,
@@ -19,7 +19,7 @@ type Props = { slug: string };
 
 export async function ViewerBody({ slug }: Props) {
 	const hasAdminPermission = await hasViewerAdminPermission();
-	if (!hasAdminPermission) return <Unauthorized />;
+	if (!hasAdminPermission) forbidden();
 
 	const data = await prisma.staticBooks.findUnique({
 		where: { ISBN: slug },

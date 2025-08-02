@@ -1,7 +1,7 @@
 import { StatusCodeView } from "@/components/card/status-code-view";
 import { Button } from "@/components/ui/button";
 
-export function Unauthorized() {
+export default async function ForbiddenPage() {
 	return (
 		<div className="space-y-2">
 			<StatusCodeView statusCode="403" />
