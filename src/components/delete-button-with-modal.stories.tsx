@@ -4,7 +4,6 @@ import { NextIntlClientProvider } from "next-intl";
 import { DeleteButtonWithModal } from "./delete-button-with-modal";
 
 const meta = {
-	title: "Components/DeleteNewsButtonWithModal",
 	component: DeleteButtonWithModal,
 	parameters: { layout: "centered" },
 	tags: ["autodocs"],

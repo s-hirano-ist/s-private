@@ -3,7 +3,6 @@ import { NextIntlClientProvider } from "next-intl";
 import { Unauthorized } from "./unauthorized";
 
 const meta = {
-	title: "Components/Card/Unauthorized",
 	component: Unauthorized,
 	parameters: { layout: "centered" },
 } satisfies Meta<typeof Unauthorized>;

@@ -3,7 +3,6 @@ import { NextIntlClientProvider } from "next-intl";
 import { StatusCodeView } from "./status-code-view";
 
 const meta = {
-	title: "Components/Card/StatusCodeView",
 	component: StatusCodeView,
 	parameters: { layout: "centered" },
 	tags: ["autodocs"],

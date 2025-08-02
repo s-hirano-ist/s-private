@@ -3,7 +3,6 @@ import { NextIntlClientProvider } from "next-intl";
 import Page from "./page";
 
 const meta = {
-	title: "Page/Search",
 	component: Page,
 	parameters: { layout: "fullscreen" },
 } satisfies Meta<typeof Page>;

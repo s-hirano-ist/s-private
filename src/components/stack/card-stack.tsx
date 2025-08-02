@@ -4,14 +4,16 @@ import { StatusCodeView } from "@/components/card/status-code-view";
 import { CardStackSkeleton } from "@/components/stack/card-stack-skeleton";
 import { ServerAction } from "@/types";
 
+export type CardStackData = {
+	category?: string;
+	id: number;
+	quote: string | null;
+	title: string;
+	url: string;
+}[];
+
 type Props = {
-	data: {
-		category?: string;
-		id: number;
-		quote: string | null;
-		title: string;
-		url: string;
-	}[];
+	data: CardStackData;
 	deleteAction?: (id: number) => Promise<ServerAction<number>>;
 	showDeleteButton: boolean;
 };

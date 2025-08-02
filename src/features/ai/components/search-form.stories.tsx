@@ -4,7 +4,6 @@ import { NextIntlClientProvider } from "next-intl";
 import { SearchForm } from "./search-form";
 
 const meta = {
-	title: "Features/AI/SearchForm",
 	component: SearchForm,
 	parameters: { layout: "centered" },
 	tags: ["autodocs"],

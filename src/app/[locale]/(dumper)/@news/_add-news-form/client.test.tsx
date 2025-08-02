@@ -1,8 +1,8 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import { describe, expect, test, vi } from "vitest";
-import { addContents } from "@/features/contents/actions/add-contents";
-import { AddContentsFormClient } from "./client";
+import { addNews } from "@/features/news/actions/add-news";
+import { AddNewsFormClient } from "./client";
 
 const messages = {
 	label: {
@@ -10,13 +10,14 @@ const messages = {
 		title: "タイトル",
 		url: "URL",
 		description: "ひとこと",
+		category: "カテゴリー",
 	},
 	message: {
 		inserted: "正常に登録されました。",
 	},
 };
 
-describe("AddContentsForm", () => {
+describe("AddNewsFormClient", () => {
 	test("pastes clipboard content into the URL field", async () => {
 		const clipboardText = "https://example.com";
 		Object.assign(navigator, {
@@ -26,7 +27,7 @@ describe("AddContentsForm", () => {
 		render(
 			<NextIntlClientProvider locale="ja" messages={messages}>
 				{/* FIXME: use mock as add contents */}
-				<AddContentsFormClient addContents={addContents} />
+				<AddNewsFormClient addNews={addNews} categories={[]} />
 			</NextIntlClientProvider>,
 		);
 		const pasteButton = screen.getByTestId("paste-button");

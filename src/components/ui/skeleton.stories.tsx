@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const meta = {
-	title: "Components/UI/Skeleton",
 	component: Skeleton,
 	parameters: { layout: "centered" },
 	tags: ["autodocs"],

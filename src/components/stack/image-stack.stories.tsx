@@ -3,7 +3,6 @@ import { NextIntlClientProvider } from "next-intl";
 import { ImageStack } from "./image-stack";
 
 const meta = {
-	title: "Components/Stack/ImageStack",
 	component: ImageStack,
 	tags: ["autodocs"],
 } satisfies Meta<typeof ImageStack>;

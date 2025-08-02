@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { PreviewCard } from "./preview-card";
 
 const meta = {
-	title: "Components/Card/previewCard",
 	component: PreviewCard,
 	parameters: { layout: "centered" },
 	tags: ["autodocs"],

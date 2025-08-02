@@ -3,7 +3,6 @@ import { NextIntlClientProvider } from "next-intl";
 import { Footer } from "./footer";
 
 const meta = {
-	title: "Components/Nav/Footer",
 	component: Footer,
 	parameters: { layout: "fullscreen" },
 } satisfies Meta<typeof Footer>;

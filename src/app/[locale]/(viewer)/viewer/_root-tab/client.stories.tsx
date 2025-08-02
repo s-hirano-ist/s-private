@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { RootTab } from "./client";
 
 const meta = {
-	title: "Features/Viewer/RootTab",
 	component: RootTab,
 	tags: ["autodocs"],
 	parameters: { layout: "fullscreen" },

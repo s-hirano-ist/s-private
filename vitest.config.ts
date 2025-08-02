@@ -20,6 +20,7 @@ export default defineConfig({
 				"src/**/*.test.ts?(x)",
 				"src/app/**/?(layout|page|_page).tsx",
 				"src/generated/**/*",
+				"/**/server.tsx", // FIXME: remote when server side component test enabled
 			],
 			reporter: ["text", "json-summary", "json"],
 		},

@@ -3,7 +3,6 @@ import { NextIntlClientProvider } from "next-intl";
 import { AddFormSkeleton } from "./add-form-skeleton";
 
 const meta = {
-	title: "Features/Dump/AddFormSkeleton",
 	component: AddFormSkeleton,
 	parameters: { layout: "centered" },
 	tags: ["autodocs"],

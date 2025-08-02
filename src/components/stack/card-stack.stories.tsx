@@ -3,7 +3,6 @@ import { NextIntlClientProvider } from "next-intl";
 import { CardStack } from "./card-stack";
 
 const meta = {
-	title: "Components/Stack/CardStack",
 	component: CardStack,
 	parameters: { layout: "fullscreen" },
 	tags: ["autodocs"],

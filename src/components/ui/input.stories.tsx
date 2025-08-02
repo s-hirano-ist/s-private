@@ -4,7 +4,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "./label";
 
 const meta = {
-	title: "Components/UI/Input",
 	component: Input,
 	parameters: { layout: "centered" },
 	tags: ["autodocs"],

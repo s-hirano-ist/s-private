@@ -3,7 +3,6 @@ import { NextIntlClientProvider } from "next-intl";
 import { NotFound } from "./not-found";
 
 const meta = {
-	title: "Components/Card/NotFound",
 	component: NotFound,
 	parameters: { layout: "centered" },
 } satisfies Meta<typeof NotFound>;

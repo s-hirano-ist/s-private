@@ -3,7 +3,6 @@ import { NextIntlClientProvider } from "next-intl";
 import { PreviewStackClient } from "./preview-stack";
 
 const meta = {
-	title: "Components/Stack/PreviewStack",
 	component: PreviewStackClient,
 	parameters: { layout: "centered" },
 	tags: ["autodocs"],

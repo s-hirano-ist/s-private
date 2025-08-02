@@ -4,7 +4,6 @@ import type { SearchResult } from "@/features/ai/actions/ai-search";
 import { SearchResults } from "./search-results";
 
 const meta = {
-	title: "Features/AI/SearchResults",
 	component: SearchResults,
 	parameters: { layout: "centered" },
 	tags: ["autodocs"],

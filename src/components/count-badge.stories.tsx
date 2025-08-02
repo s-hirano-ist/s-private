@@ -3,7 +3,6 @@ import { NextIntlClientProvider } from "next-intl";
 import { CountBadge } from "./count-badge";
 
 const meta = {
-	title: "Components/CountBadge",
 	component: CountBadge,
 	parameters: { layout: "centered" },
 	tags: ["autodocs"],
