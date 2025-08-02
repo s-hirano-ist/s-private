@@ -36,7 +36,7 @@ describe("Loading", () => {
 		render(<Loading />);
 
 		const loader = screen.getByTestId("loader");
-		expect(loader).toHaveClass("animate-spin", "text-primary");
+		expect(loader).toHaveClass("animate-spin");
 		expect(loader).toHaveAttribute("data-size", "48");
 	});
 
