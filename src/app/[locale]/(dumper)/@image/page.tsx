@@ -19,9 +19,7 @@ export default async function Page({ searchParams }: Props) {
 
 	return (
 		<>
-			<Suspense fallback={<Loading />}>
-				<AddImageForm />
-			</Suspense>
+			<AddImageForm />
 			<Separator className="h-px bg-linear-to-r from-primary to-primary-grad" />
 			<Suspense fallback={<ImageStackSkeleton />}>
 				<ImageStack />
