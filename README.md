@@ -44,11 +44,11 @@ docker compose up --build -d
 pnpm dev
 ```
 
-### 本番環境
+### 旧本番環境（現在はVercelに移行）
 
 [s-tools/s-private](https://github.com/s-hirano-ist/s-tools/tree/main/s-private)を参照。
 
-### Storybook
+### Storybook（現在はCloudflare Pagesに移行）
 
 [s-tools/s-storybook](https://github.com/s-hirano-ist/s-tools/tree/main/s-private)を参照。
 
@@ -59,7 +59,3 @@ Licensed under the AGPL-3.0 License, Copyright © 2024
 ### Licenses of used libraries
 
 See [library-license.txt](https://github.com/s-hirano-ist/s-private/blob/main/library-license.txt) for summary of used licenses.
-
-## 🔒 Security
-
-[s-hirano.com/summary/coding-security](https://s-hirano.com/summary/coding-security)を参照。
