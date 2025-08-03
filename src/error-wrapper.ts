@@ -10,7 +10,7 @@ import {
 } from "./error-classes";
 import { loggerError, loggerWarn } from "./pino";
 import type { ServerAction } from "./types";
-import { sendPushoverMessage } from "./utils/fetch-message";
+import { sendPushoverMessage } from "./utils/notification/fetch-message";
 
 export async function wrapServerSideErrorForClient<T>(
 	error: unknown,

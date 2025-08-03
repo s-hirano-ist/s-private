@@ -1,7 +1,7 @@
 import { StatusCodeView } from "@/components/card/status-code-view";
-import { hasViewerAdminPermission } from "@/features/auth/utils/session";
 import { loggerError } from "@/pino";
 import prisma from "@/prisma";
+import { hasViewerAdminPermission } from "@/utils/auth/session";
 import { ImageCounterClient } from "./client";
 
 type Props = { page: number };

@@ -3,16 +3,13 @@ import "server-only";
 import { revalidatePath } from "next/cache";
 import { forbidden } from "next/navigation";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
-import {
-	getSelfId,
-	hasDumperPostPermission,
-} from "@/features/auth/utils/session";
 import { validateContents } from "@/features/contents/utils/validate-contents";
 import { loggerInfo } from "@/pino";
 import prisma from "@/prisma";
 import type { ServerAction } from "@/types";
-import { sendPushoverMessage } from "@/utils/fetch-message";
-import { formatCreateContentsMessage } from "@/utils/format-for-notification";
+import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
+import { sendPushoverMessage } from "@/utils/notification/fetch-message";
+import { formatCreateContentsMessage } from "@/utils/notification/format-for-notification";
 
 type Contents = {
 	id: number;

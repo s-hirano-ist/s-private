@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Drawer as DrawerPrimitive } from "vaul";
 
-import { cn } from "@/utils/tailwindcss";
+import { cn } from "@/utils/tailwind/tailwindcss";
 
 function Drawer({
 	shouldScaleBackground = true,

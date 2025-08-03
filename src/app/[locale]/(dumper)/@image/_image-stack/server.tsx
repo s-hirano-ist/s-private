@@ -1,7 +1,7 @@
 import { StatusCodeView } from "@/components/card/status-code-view";
-import { getSelfId } from "@/features/auth/utils/session";
 import { loggerError } from "@/pino";
 import prisma from "@/prisma";
+import { getSelfId } from "@/utils/auth/session";
 import { ImageStackClient } from "./client";
 
 export async function ImageStack() {

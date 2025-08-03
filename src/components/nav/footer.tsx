@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/drawer";
 import { UtilButtons } from "@/components/util-buttons";
 import { Link } from "@/i18n/routing";
-import { cn } from "@/utils/tailwindcss";
+import { cn } from "@/utils/tailwind/tailwindcss";
 
 export function Footer() {
 	const [open, setOpen] = useState(false);

@@ -1,7 +1,7 @@
 import { forbidden } from "next/navigation";
 import { StatusCodeView } from "@/components/card/status-code-view";
-import { hasViewerAdminPermission } from "@/features/auth/utils/session";
 import { getStaticNews } from "@/features/viewer/actions/static-news";
+import { hasViewerAdminPermission } from "@/utils/auth/session";
 import { StaticNewsStackClient } from "./client";
 
 type Props = { page: number };

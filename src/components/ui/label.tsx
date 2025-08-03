@@ -4,7 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { Label as LabelPrimitive } from "radix-ui";
 import * as React from "react";
 
-import { cn } from "@/utils/tailwindcss";
+import { cn } from "@/utils/tailwind/tailwindcss";
 
 const labelVariants = cva(
 	"text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",

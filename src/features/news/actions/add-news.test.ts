@@ -1,14 +1,13 @@
 import { revalidatePath } from "next/cache";
-import { unauthorized } from "next/navigation";
 import { Session } from "next-auth";
 import { describe, expect, Mock, test, vi } from "vitest";
-import { auth } from "@/features/auth/utils/auth";
 import prisma from "@/prisma";
+import { auth } from "@/utils/auth/auth";
 import { addNews } from "./add-news";
 
-vi.mock("@/features/auth/utils/auth", () => ({ auth: vi.fn() }));
+vi.mock("@/utils/auth/auth", () => ({ auth: vi.fn() }));
 
-vi.mock("@/utils/fetch-message", () => ({
+vi.mock("@/utils/notification/fetch-message", () => ({
 	sendPushoverMessage: vi.fn(),
 }));
 

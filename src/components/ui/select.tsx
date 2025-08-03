@@ -7,7 +7,7 @@ import {
 } from "@radix-ui/react-icons";
 import { Select as SelectPrimitive } from "radix-ui";
 import * as React from "react";
-import { cn } from "@/utils/tailwindcss";
+import { cn } from "@/utils/tailwind/tailwindcss";
 
 const Select = SelectPrimitive.Root;
 

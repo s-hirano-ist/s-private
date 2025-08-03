@@ -1,7 +1,7 @@
 import { forbidden } from "next/navigation";
 import { StatusCodeView } from "@/components/card/status-code-view";
-import { hasDumperPostPermission } from "@/features/auth/utils/session";
 import { addContents } from "@/features/contents/actions/add-contents";
+import { hasDumperPostPermission } from "@/utils/auth/session";
 import { AddContentsFormClient } from "./client";
 
 export async function AddContentsForm() {

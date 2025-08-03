@@ -4,16 +4,12 @@ import { revalidatePath } from "next/cache";
 import { forbidden } from "next/navigation";
 import { UnexpectedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
-import {
-	getSelfId,
-	hasDumperPostPermission,
-} from "@/features/auth/utils/session";
-import type { Status, UpdateOrRevert } from "@/features/dump/types";
 import { loggerInfo } from "@/pino";
 import prisma from "@/prisma";
-import type { ServerAction } from "@/types";
-import { sendPushoverMessage } from "@/utils/fetch-message";
-import { formatChangeStatusMessage } from "@/utils/format-for-notification";
+import type { ServerAction, Status, UpdateOrRevert } from "@/types";
+import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
+import { sendPushoverMessage } from "@/utils/notification/fetch-message";
+import { formatChangeStatusMessage } from "@/utils/notification/format-for-notification";
 
 async function updateSelfNewsStatus(): Promise<Status> {
 	const userId = await getSelfId();

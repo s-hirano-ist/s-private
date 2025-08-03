@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { cn } from "@/utils/tailwindcss";
+import { cn } from "@/utils/tailwind/tailwindcss";
 
 export type TextareaProps =
 	{} & React.TextareaHTMLAttributes<HTMLTextAreaElement>;

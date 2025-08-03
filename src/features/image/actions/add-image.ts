@@ -12,17 +12,14 @@ import {
 import { env } from "@/env";
 import { FileNotAllowedError, UnexpectedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
-import {
-	getSelfId,
-	hasDumperPostPermission,
-} from "@/features/auth/utils/session";
 import { minioClient } from "@/minio";
 import { loggerInfo } from "@/pino";
 import prisma from "@/prisma";
 import type { ServerAction } from "@/types";
-import { sendPushoverMessage } from "@/utils/fetch-message";
-import { formatCreateImageMessage } from "@/utils/format-for-notification";
-import { sanitizeFileName } from "@/utils/sanitize-file-name";
+import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
+import { sendPushoverMessage } from "@/utils/notification/fetch-message";
+import { formatCreateImageMessage } from "@/utils/notification/format-for-notification";
+import { sanitizeFileName } from "@/utils/sanitize/sanitize-file-name";
 
 export async function addImage(
 	formData: FormData,

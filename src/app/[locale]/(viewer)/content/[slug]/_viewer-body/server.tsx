@@ -2,8 +2,8 @@ import { forbidden } from "next/navigation";
 import { ViewerBodyClient } from "@/components/body/viewer-body";
 import { NotFound } from "@/components/card/not-found";
 import { StatusCodeView } from "@/components/card/status-code-view";
-import { hasViewerAdminPermission } from "@/features/auth/utils/session";
 import prisma from "@/prisma";
+import { hasViewerAdminPermission } from "@/utils/auth/session";
 
 type Props = { slug: string };
 

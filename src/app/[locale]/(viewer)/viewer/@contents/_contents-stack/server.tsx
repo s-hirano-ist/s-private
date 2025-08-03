@@ -1,7 +1,7 @@
 import { forbidden } from "next/navigation";
 import { StatusCodeView } from "@/components/card/status-code-view";
-import { hasViewerAdminPermission } from "@/features/auth/utils/session";
 import { getAllStaticContents } from "@/features/viewer/actions/static-contents";
+import { hasViewerAdminPermission } from "@/utils/auth/session";
 import { ContentsStackClient } from "./client";
 
 export async function ContentsStack() {

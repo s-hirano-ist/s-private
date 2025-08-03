@@ -3,10 +3,10 @@ import { describe, expect, test, vi } from "vitest";
 import { PushoverError, UnexpectedError } from "@/error-classes";
 import { Prisma } from "@/generated";
 import { loggerError, loggerWarn } from "@/pino";
-import { sendPushoverMessage } from "@/utils/fetch-message";
+import { sendPushoverMessage } from "@/utils/notification/fetch-message";
 import { wrapServerSideErrorForClient } from "./error-wrapper";
 
-vi.mock("@/utils/fetch-message", () => ({
+vi.mock("@/utils/notification/fetch-message", () => ({
 	sendPushoverMessage: vi.fn(),
 }));
 

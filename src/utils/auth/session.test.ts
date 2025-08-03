@@ -1,13 +1,13 @@
 import { Session } from "next-auth";
 import { describe, expect, Mock, test, vi } from "vitest";
-import { auth } from "@/features/auth/utils/auth";
+import { auth } from "@/utils/auth/auth";
 import {
 	getSelfId,
 	hasDumperPostPermission,
 	hasViewerAdminPermission,
-} from "@/features/auth/utils/session";
+} from "@/utils/auth/session";
 
-vi.mock("@/features/auth/utils/auth", () => ({ auth: vi.fn() }));
+vi.mock("@/utils/auth/auth", () => ({ auth: vi.fn() }));
 
 const mockDumperRoleSession: Session = {
 	user: { id: "1", roles: ["dumper"] },

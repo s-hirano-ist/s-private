@@ -17,23 +17,10 @@ export default tsEslint.config(
 	{
 		ignores: [
 			"src/generated/**/*",
-			// Ignore build outputs and dependencies
-			"node_modules/**/*",
+			"node_modules/**/*", // Ignore build outputs and dependencies
 			".next/**/*",
-			"dist/**/*",
-			"build/**/*",
-			// Ignore coverage reports
-			"coverage/**/*",
-			".storybook-coverage/**/*",
-			// Ignore Storybook build output
-			".storybook-static/**/*",
-			// Ignore lockfiles
-			"pnpm-lock.yaml",
-			"package-lock.json",
-			"yarn.lock",
-			// Ignore files that Biome handles
-			// Note: ESLint focuses on logic/architecture, Biome handles formatting,
-			".github/renovate.json5",
+			".storybook-static/**/*", // Ignore Storybook build output
+			".vitest-coverage/**/*", // Ignore coverage reports
 		],
 	},
 	{
@@ -103,7 +90,7 @@ export default tsEslint.config(
 				{
 					patterns: [
 						{
-							group: ["../*", "../../*", "../../../*"],
+							group: ["../../*", "../../../*"],
 							message:
 								"Use absolute imports instead of relative imports that go up directories. This enforces proper architecture boundaries.",
 						},
@@ -137,155 +124,44 @@ export default tsEslint.config(
 	// Boundaries plugin configuration for strict dependencies
 	{
 		plugins: { boundaries: boundariesPlugin },
+
+		// チェック対象は features 配下のみ（テストは除外）
+		files: ["src/features/**/*"],
+		ignores: ["src/features/**/*.test.ts?(x)"],
+
 		settings: {
 			"boundaries/elements": [
 				{
-					type: "app",
-					pattern: [
-						"src/app/**/*",
-						"src/pages/**/*",
-						"src/*.ts",
-						"src/*.tsx",
-						"src/i18n/**/*",
-					],
+					type: "feature",
+					pattern: "src/features/*/**", // features/<feature>/以下（深さは任意）
+					mode: "full",
+					capture: ["feature"], // <feature> 部分を保存
 				},
+				// もし features/<feature> 直下のファイルもあり得るなら追加
 				{
-					type: "feature-ai",
-					pattern: "src/features/ai/**/*",
-				},
-				{
-					type: "feature-auth",
-					pattern: "src/features/auth/**/*",
-				},
-				{
-					type: "feature-contents",
-					pattern: "src/features/contents/**/*",
-				},
-				{
-					type: "feature-dump",
-					pattern: "src/features/dump/**/*",
-				},
-				{
-					type: "feature-image",
-					pattern: "src/features/image/**/*",
-				},
-				{
-					type: "feature-news",
-					pattern: "src/features/news/**/*",
-				},
-				{
-					type: "feature-viewer",
-					pattern: "src/features/viewer/**/*",
-				},
-				{
-					type: "shared-components",
-					pattern: "src/components/**/*",
-				},
-				{
-					type: "utils",
-					pattern: ["src/utils/**/*", "src/lib/**/*"],
+					type: "feature",
+					pattern: "src/features/*/*",
+					mode: "full",
+					capture: ["feature"],
 				},
 			],
 		},
+
 		rules: {
-			// Each feature domain is isolated - no cross-feature dependencies allowed
+			// デフォルトは「別 feature への import は禁止」
 			"boundaries/element-types": [
 				"error",
 				{
 					default: "disallow",
 					rules: [
 						{
-							from: "app",
-							allow: [
-								"feature-ai",
-								"feature-auth",
-								"feature-contents",
-								"feature-dump",
-								"feature-image",
-								"feature-news",
-								"feature-viewer",
-								"shared-components",
-								"utils",
-							],
-						},
-						{
-							from: "shared-components",
-							allow: [
-								"feature-ai",
-								"feature-auth",
-								"feature-contents",
-								"feature-dump",
-								"feature-image",
-								"feature-news",
-								"feature-viewer",
-								"shared-components",
-								"utils",
-							],
-						},
-						{
-							from: "utils",
-							allow: ["utils"],
-						},
-						// Each feature can only access itself, shared components, utils, and specific architectural dependencies
-						{
-							from: "feature-ai",
-							allow: [
-								"feature-ai",
-								"feature-auth",
-								"shared-components",
-								"utils",
-							],
-						},
-						{
-							from: "feature-auth",
-							allow: ["feature-auth", "shared-components", "utils"],
-						},
-						{
-							from: "feature-contents",
-							allow: [
-								"feature-contents",
-								"feature-auth",
-								"feature-dump",
-								"shared-components",
-								"utils",
-							],
-						},
-						{
-							from: "feature-dump",
-							allow: [
-								"feature-dump",
-								"feature-contents",
-								"feature-image",
-								"feature-news",
-								"shared-components",
-								"utils",
-							],
-						},
-						{
-							from: "feature-image",
-							allow: [
-								"feature-image",
-								"feature-auth",
-								"shared-components",
-								"utils",
-							],
-						},
-						{
-							from: "feature-news",
-							allow: [
-								"feature-news",
-								"feature-auth",
-								"feature-dump",
-								"feature-viewer",
-								"shared-components",
-								"utils",
-							],
-						},
-						{
-							from: "feature-viewer",
-							allow: ["feature-viewer", "shared-components", "utils"],
+							// 自分と同じ feature への import だけ許可
+							from: "feature",
+							allow: [["feature", { feature: "${from.feature}" }]],
 						},
 					],
+					message:
+						"features間のimportは禁止。同一feature内のみimport可能です。",
 				},
 			],
 		},

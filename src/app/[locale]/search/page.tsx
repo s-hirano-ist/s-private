@@ -1,5 +1,5 @@
 import { forbidden } from "next/navigation";
-import { hasViewerAdminPermission } from "@/features/auth/utils/session";
+import { hasViewerAdminPermission } from "@/utils/auth/session";
 import { SimpleSearch } from "./simple-search/server";
 
 export default async function Page() {

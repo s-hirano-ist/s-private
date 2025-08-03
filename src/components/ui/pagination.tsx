@@ -6,7 +6,7 @@ import {
 import * as React from "react";
 import { type ButtonProps, buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/routing";
-import { cn } from "@/utils/tailwindcss";
+import { cn } from "@/utils/tailwind/tailwindcss";
 
 function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
 	return (
