@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.24.2](https://github.com/s-hirano-ist/s-private/compare/v8.24.1...v8.24.2) (2025-08-03)
+
+
+### Bug Fixes
+
+* simple search ([8655e6f](https://github.com/s-hirano-ist/s-private/commit/8655e6f821b6b18657b2e3d9796f054545a87041))
+* simple search ([c8320c7](https://github.com/s-hirano-ist/s-private/commit/c8320c71657aca922a029ba96652f6e099114a15))
+
 ## [8.24.1](https://github.com/s-hirano-ist/s-private/compare/v8.24.0...v8.24.1) (2025-08-03)
 
 
