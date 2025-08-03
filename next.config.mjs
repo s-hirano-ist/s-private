@@ -98,10 +98,10 @@ export default withNextIntl(
 	bundleAnalyzer(
 		withSentryConfig(nextConfig, {
 			// For all available options, see:
-			// https://github.com/getsentry/sentry-webpack-plugin#options
+			// https://www.npmjs.com/package/@sentry/webpack-plugin#options
 
-			org: "s-hirano-ist",
-			project: "s-private",
+			org: "s-hirano-ist-z2",
+			project: "s-private-sentry",
 
 			// Only print logs for uploading source maps in CI
 			silent: !process.env.CI,
