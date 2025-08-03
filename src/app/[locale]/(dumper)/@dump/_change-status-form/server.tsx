@@ -1,9 +1,9 @@
 import { forbidden } from "next/navigation";
 import { StatusCodeView } from "@/components/card/status-code-view";
-import { hasDumperPostPermission } from "@/features/auth/utils/session";
 import { changeContentsStatus } from "@/features/contents/actions/change-contents-status";
 import { changeImagesStatus } from "@/features/image/actions/change-images-status";
 import { changeNewsStatus } from "@/features/news/actions/change-news-status";
+import { hasDumperPostPermission } from "@/utils/auth/session";
 import { ChangeStatusFormClient } from "./client";
 
 export async function ChangeStatusForm() {

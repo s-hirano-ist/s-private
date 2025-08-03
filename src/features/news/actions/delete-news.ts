@@ -4,14 +4,11 @@ import { revalidatePath } from "next/cache";
 import { forbidden } from "next/navigation";
 import { UnexpectedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
-import {
-	getSelfId,
-	hasDumperPostPermission,
-} from "@/features/auth/utils/session";
 import { loggerInfo } from "@/pino";
 import prisma from "@/prisma";
 import type { ServerAction } from "@/types";
-import { sendPushoverMessage } from "@/utils/fetch-message";
+import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
+import { sendPushoverMessage } from "@/utils/notification/fetch-message";
 
 export async function deleteNews(id: number): Promise<ServerAction<number>> {
 	const hasPostPermission = await hasDumperPostPermission();

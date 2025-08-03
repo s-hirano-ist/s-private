@@ -1,11 +1,8 @@
 import { StatusCodeView } from "@/components/card/status-code-view";
-import {
-	getSelfId,
-	hasDumperPostPermission,
-} from "@/features/auth/utils/session";
 import { addNews } from "@/features/news/actions/add-news";
 import { loggerError } from "@/pino";
 import prisma from "@/prisma";
+import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
 import { AddNewsFormClient } from "./client";
 
 export async function AddNewsForm() {

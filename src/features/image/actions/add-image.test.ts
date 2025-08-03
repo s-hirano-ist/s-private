@@ -3,14 +3,14 @@ import { Session } from "next-auth";
 import sharp, { Sharp } from "sharp";
 import { v7 as uuidv7 } from "uuid";
 import { describe, expect, Mock, test, vi } from "vitest";
-import { auth } from "@/features/auth/utils/auth";
 import { minioClient } from "@/minio";
 import prisma from "@/prisma";
+import { auth } from "@/utils/auth/auth";
 import { addImage } from "./add-image";
 
-vi.mock("@/features/auth/utils/auth", () => ({ auth: vi.fn() }));
+vi.mock("@/utils/auth/auth", () => ({ auth: vi.fn() }));
 
-vi.mock("@/utils/fetch-message", () => ({
+vi.mock("@/utils/notification/fetch-message", () => ({
 	sendPushoverMessage: vi.fn(),
 }));
 

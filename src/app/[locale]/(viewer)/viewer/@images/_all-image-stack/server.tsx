@@ -1,8 +1,8 @@
 import { forbidden } from "next/navigation";
 import { StatusCodeView } from "@/components/card/status-code-view";
 import { PAGE_SIZE } from "@/constants";
-import { hasViewerAdminPermission } from "@/features/auth/utils/session";
 import prisma from "@/prisma";
+import { hasViewerAdminPermission } from "@/utils/auth/session";
 import { AllImageStackClient } from "./client";
 
 type Props = { page: number };

@@ -12,9 +12,9 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { THUMBNAIL_HEIGHT, THUMBNAIL_WIDTH } from "@/constants";
-import { hasViewerAdminPermission } from "@/features/auth/utils/session";
 import { Link } from "@/i18n/routing";
 import prisma from "@/prisma";
+import { hasViewerAdminPermission } from "@/utils/auth/session";
 
 type Props = { slug: string };
 

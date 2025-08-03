@@ -20,7 +20,7 @@ export default defineConfig({
 				"src/**/*.test.ts?(x)",
 				"src/generated/**/*",
 				"src/app/**/?(layout|page|_page).tsx",
-				"src/features/auth/utils/?(auth|auth.config).ts",
+				"src/utils/auth/?(auth|auth.config).ts",
 				"**/types.ts",
 				"src/components/provider/theme-provider.tsx",
 				"src/?(instrumentation-client|instrumentation|minio|middleware|pino|prisma).ts",

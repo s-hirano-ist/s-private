@@ -1,4 +1,4 @@
-import type { ContentName, Status } from "@/features/dump/types";
+import type { ContentName, Status } from "@/types";
 
 export function formatDeleteMessage(id: number, contentName: ContentName) {
 	return `【${contentName}】\n\n更新\nID: ${id}`;

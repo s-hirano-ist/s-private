@@ -2,8 +2,8 @@ import { forbidden, redirect } from "next/navigation";
 import { NextResponse } from "next/server";
 import { ORIGINAL_IMAGE_PATH, THUMBNAIL_IMAGE_PATH } from "@/constants";
 import { env } from "@/env";
-import { auth } from "@/features/auth/utils/auth";
 import { minioClient } from "@/minio";
+import { auth } from "@/utils/auth/auth";
 
 export const GET = auth(
 	async (

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import type { Status } from "@/features/dump/types";
+import type { Status } from "@/types";
 import {
 	formatChangeStatusMessage,
 	formatCreateContentsMessage,

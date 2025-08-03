@@ -1,8 +1,8 @@
 import { StatusCodeView } from "@/components/card/status-code-view";
-import { getSelfId } from "@/features/auth/utils/session";
 import { deleteNews } from "@/features/news/actions/delete-news";
 import { loggerError } from "@/pino";
 import prisma from "@/prisma";
+import { getSelfId } from "@/utils/auth/session";
 import { NewsStackClient } from "./client";
 
 export async function NewsStack() {

@@ -1,5 +1,4 @@
 import type { Preview } from "@storybook/nextjs-vite";
-// eslint-disable-next-line no-restricted-imports
 import "../src/app/globals.css";
 import { NextIntlClientProvider } from "next-intl";
 

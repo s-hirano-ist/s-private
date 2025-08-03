@@ -12,7 +12,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { UnexpectedError } from "@/error-classes";
-import { UpdateOrRevert } from "@/features/dump/types";
+import { UpdateOrRevert } from "@/types";
 
 type Props = {
 	changeNewsStatus: (status: UpdateOrRevert) => Promise<{ message: string }>;
