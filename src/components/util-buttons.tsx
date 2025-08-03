@@ -1,8 +1,8 @@
 "use client";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
-import { Link } from "next-view-transitions";
 import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { UTIL_URLS } from "@/constants";

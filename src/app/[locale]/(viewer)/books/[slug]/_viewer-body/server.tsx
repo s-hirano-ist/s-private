@@ -1,7 +1,7 @@
 import { Route } from "next";
 import NextImage from "next/image";
+import Link from "next/link";
 import { forbidden } from "next/navigation";
-import { Link } from "next-view-transitions";
 import { ViewerBodyClient } from "@/components/body/viewer-body";
 import { NotFound } from "@/components/card/not-found";
 import { StatusCodeView } from "@/components/card/status-code-view";

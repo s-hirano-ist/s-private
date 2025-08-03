@@ -3,7 +3,7 @@ import {
 	ChevronRightIcon,
 	DotsHorizontalIcon,
 } from "@radix-ui/react-icons";
-import { Link } from "next-view-transitions";
+import Link from "next/link";
 import * as React from "react";
 import { type ButtonProps, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/utils/tailwindcss";

@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { ViewTransitions } from "next-view-transitions";
 import type { ReactNode } from "react";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Noto_Sans_JP } from "next/font/google";
+import { unstable_ViewTransition as ViewTransitions } from "react";
 import { PAGE_NAME } from "@/constants";
 import { env } from "@/env";
 

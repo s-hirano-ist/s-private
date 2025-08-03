@@ -1,4 +1,4 @@
-import { Link } from "next-view-transitions";
+import Link from "next/link";
 import { DeleteButtonWithModal } from "@/components/delete-button-with-modal";
 import { Badge } from "@/components/ui/badge";
 import {

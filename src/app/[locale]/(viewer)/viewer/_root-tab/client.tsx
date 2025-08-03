@@ -1,6 +1,5 @@
 "use client";
-import { useSearchParams } from "next/navigation";
-import { useTransitionRouter } from "next-view-transitions";
+import { useRouter, useSearchParams } from "next/navigation";
 import { type ReactNode, useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -21,7 +20,7 @@ type Props = {
 const DEFAULT_TAB = "news";
 
 export function RootTab({ news, books, contents, images }: Props) {
-	const router = useTransitionRouter();
+	const router = useRouter();
 	const searchParams = useSearchParams();
 
 	const [tab, setTab] = useState(searchParams.get("tab") ?? DEFAULT_TAB);
