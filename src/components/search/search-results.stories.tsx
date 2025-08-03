@@ -21,6 +21,7 @@ const mockResults: SearchResult[] = [
 			"This content covers the basics of React including components, state, and props.",
 		type: "content",
 		relevanceScore: 0.95,
+		href: "/content/1",
 	},
 	{
 		id: "2",
@@ -30,6 +31,7 @@ const mockResults: SearchResult[] = [
 			"Learn about advanced TypeScript patterns including conditional types, mapped types, and utility types.",
 		type: "book",
 		relevanceScore: 0.87,
+		href: "/content/2",
 	},
 	{
 		id: "3",
@@ -39,6 +41,7 @@ const mockResults: SearchResult[] = [
 			"This book covers modern web development practices including responsive design, performance optimization, and accessibility.",
 		type: "book",
 		relevanceScore: 0.72,
+		href: "/content/3",
 	},
 ];
 
