@@ -83,8 +83,8 @@
       matchManagers: [
         'github-actions',
       ],
-      groupName: 'GitHub Actions Updates',
-      groupSlug: 'github-actions-updates',
+      groupName: 'GitHub Actions',
+      groupSlug: 'github-actions',
     },
   ],
 }
