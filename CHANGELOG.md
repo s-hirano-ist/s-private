@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.24.1](https://github.com/s-hirano-ist/s-private/compare/v8.24.0...v8.24.1) (2025-08-03)
+
+
+### Bug Fixes
+
+* add margin x on static news ([8abc66a](https://github.com/s-hirano-ist/s-private/commit/8abc66ac679380373e4bb88bf8c79355e2ea1302))
+* break words on static news ([46f742b](https://github.com/s-hirano-ist/s-private/commit/46f742bfae5ce3208829390bda339108ee375bd0))
+* formatter ([e86c32f](https://github.com/s-hirano-ist/s-private/commit/e86c32fe0ae722a7e1a7ccab44dd43c7edabfc92))
+
 ## [8.24.0](https://github.com/s-hirano-ist/s-private/compare/v8.23.0...v8.24.0) (2025-08-02)
 
 
