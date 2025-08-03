@@ -36,3 +36,6 @@ minio/certs
 
 # Prisma
 src/generated/
+
+# Sentry Config File
+.env.sentry-build-plugin
