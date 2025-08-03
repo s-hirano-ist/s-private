@@ -1,6 +1,6 @@
 import type { Route } from "next";
 import NextImage from "next/image";
-import { Link } from "next-view-transitions";
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { THUMBNAIL_HEIGHT, THUMBNAIL_WIDTH } from "@/constants";
 import { convertUint8ArrayToImgSrc } from "@/features/viewer/utils/convert";

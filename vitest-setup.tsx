@@ -50,11 +50,6 @@ beforeEach(() => {
 		revalidatePath: vi.fn(),
 	}));
 
-	vi.mock("next-view-transitions", () => ({
-		useTransitionRouter: vi.fn(() => ({ push: vi.fn() })),
-		Link: vi.fn(({ children, ...rest }) => <a {...rest}>{children}</a>),
-	}));
-
 	vi.mock("next/navigation", () => ({
 		usePathname: vi.fn(),
 		redirect: vi.fn(),

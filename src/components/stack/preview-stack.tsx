@@ -1,7 +1,6 @@
 "use client";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useTransitionRouter } from "next-view-transitions";
 import { useCallback, useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import {
@@ -26,7 +25,7 @@ export function PreviewStackClient({
 }: Props) {
 	// TODO: use queryを利用してデータのキャッシュを行う
 
-	const router = useTransitionRouter();
+	const router = useRouter();
 	const searchParams = useSearchParams();
 	const [searchTerm, setSearchTerm] = useState(
 		searchParams.get(PARAM_NAME) ?? "",
