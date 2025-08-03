@@ -23,7 +23,6 @@ declare module "next-auth" {
 export const {
 	auth,
 	signIn,
-	signOut,
 	handlers: { GET, POST },
 } = NextAuth({
 	...authConfig,

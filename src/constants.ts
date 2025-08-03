@@ -8,8 +8,6 @@ export const THUMBNAIL_IMAGE_PATH = "images/thumbnail";
 export const THUMBNAIL_WIDTH = 192;
 export const THUMBNAIL_HEIGHT = 192;
 
-export const NOT_FOUND_IMAGE_PATH = "/not-found.png";
-
 export const SKELETON_STACK_SIZE = 10;
 
 export const UTIL_URLS = [

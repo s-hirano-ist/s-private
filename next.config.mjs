@@ -41,6 +41,7 @@ const nextConfig = {
 			dynamic: 30,
 			static: 180,
 		},
+		viewTransition: true,
 	},
 	pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
 	output: "standalone",
