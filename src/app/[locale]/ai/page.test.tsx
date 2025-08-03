@@ -12,7 +12,7 @@ vi.mock("@/components/card/status-code-view", () => ({
 	),
 }));
 
-describe("Search Page", () => {
+describe("AI Page", () => {
 	test("should render StatusCodeView component", () => {
 		render(<Page />);
 

@@ -1,6 +1,5 @@
 import { Route } from "next";
 import NextImage from "next/image";
-import Link from "next/link";
 import { forbidden } from "next/navigation";
 import { ViewerBodyClient } from "@/components/body/viewer-body";
 import { NotFound } from "@/components/card/not-found";
@@ -14,6 +13,7 @@ import {
 } from "@/components/ui/card";
 import { THUMBNAIL_HEIGHT, THUMBNAIL_WIDTH } from "@/constants";
 import { hasViewerAdminPermission } from "@/features/auth/utils/session";
+import { Link } from "@/i18n/routing";
 import prisma from "@/prisma";
 
 type Props = { slug: string };

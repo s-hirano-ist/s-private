@@ -18,9 +18,15 @@ export default defineConfig({
 			exclude: [
 				"**/*.stories.tsx",
 				"src/**/*.test.ts?(x)",
-				"src/app/**/?(layout|page|_page).tsx",
 				"src/generated/**/*",
-				"/**/server.tsx", // FIXME: remote when server side component test enabled
+				"src/app/**/?(layout|page|_page).tsx",
+				"src/features/auth/utils/?(auth|auth.config).ts",
+				"**/types.ts",
+				"src/components/provider/theme-provider.tsx",
+				"src/?(instrumentation-client|instrumentation|minio|middleware|pino|prisma).ts",
+				"src/app/?(manifest.ts|loading.tsx|robots.ts|not-found.tsx|instrumentation.ts)",
+				"/**/server.tsx", // FIXME: delete when server side component test enabled
+				"src/app/api/**/route.ts", // FIXME: delete when server side action test enabled
 			],
 			reporter: ["text", "json-summary", "json"],
 		},

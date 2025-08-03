@@ -1,19 +1,16 @@
 "use client";
 
+import { Route } from "next";
 import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import type { SearchResult } from "@/features/ai/actions/ai-search";
+import { Link } from "@/i18n/routing";
 
 type Props = {
 	isLoading: boolean;
 	results: SearchResult[];
 };
-
-// Helper function to generate the URL for a result
-function getResultUrl(result: SearchResult): string {
-	return `/${result.type === "book" ? "books" : "contents"}/${result.title}`;
-}
 
 export function SearchResults({ results, isLoading }: Props) {
 	const t = useTranslations("label");
@@ -40,12 +37,12 @@ export function SearchResults({ results, isLoading }: Props) {
 				<Card className="overflow-hidden" key={result.id}>
 					<CardHeader className="pb-2">
 						<CardTitle className="text-lg">
-							<a
+							<Link
 								className="text-primary-grad hover:underline"
-								href={getResultUrl(result)}
+								href={result.href as Route}
 							>
 								{result.title}
-							</a>
+							</Link>
 						</CardTitle>
 						<div className="flex items-center gap-2 text-sm text-muted-foreground">
 							<span className="capitalize">{result.type}</span>

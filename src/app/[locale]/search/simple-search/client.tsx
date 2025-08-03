@@ -3,12 +3,15 @@
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import { SearchForm } from "@/components/search/search-form";
+import { SearchResults } from "@/components/search/search-results";
 import type { SearchResult } from "@/features/ai/actions/ai-search";
-import { searchKnowledge } from "@/features/ai/actions/ai-search";
-import { SearchForm } from "@/features/ai/components/search-form";
-import { SearchResults } from "@/features/ai/components/search-results";
 
-export function AiSearchPage() {
+type Props = {
+	searchKnowledge: (query: string) => Promise<SearchResult[]>;
+};
+
+export function SimpleSearchClient({ searchKnowledge }: Props) {
 	const searchParams = useSearchParams();
 	const initialQuery = searchParams.get("q") || "";
 	const [results, setResults] = useState<SearchResult[]>([]);
@@ -20,6 +23,7 @@ export function AiSearchPage() {
 		if (initialQuery) {
 			handleSearch(initialQuery);
 		}
+		// eslint-disable-next-line
 	}, [initialQuery]);
 
 	const handleSearch = async (query: string) => {

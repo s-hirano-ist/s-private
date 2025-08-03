@@ -16,7 +16,7 @@ export const getAllStaticContentsForKnowledge = cache(
 // Fetch all static books for RAG knowledge base
 const _getAllStaticBooksForKnowledge = async () => {
 	return await prisma.staticBooks.findMany({
-		select: { title: true, markdown: true },
+		select: { title: true, markdown: true, ISBN: true },
 		cacheStrategy: { ttl: 400, tags: ["staticBooks"] },
 	});
 };
@@ -36,12 +36,14 @@ export async function fetchAllKnowledge() {
 			title: content.title,
 			content: content.markdown,
 			type: "content" as const,
+			href: `/content/${content.title}`,
 		})),
 		...books.map((book) => ({
 			id: `book-${book.title}`,
 			title: book.title,
 			content: book.markdown,
 			type: "book" as const,
+			href: `/book/${book.ISBN}`,
 		})),
 	];
 }

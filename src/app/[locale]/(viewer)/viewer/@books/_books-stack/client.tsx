@@ -3,7 +3,7 @@ import { PreviewStackClient } from "@/components/stack/preview-stack";
 
 type Props = { previewCardData: PreviewCardData[] };
 
-const basePath = "books";
+const basePath = "book";
 
 export function BooksStackClient({ previewCardData }: Props) {
 	return (
