@@ -5,6 +5,7 @@ import { fetchAllKnowledge } from "./fetch-knowledge";
 // Define the type for search results
 export type SearchResult = {
 	aiSummary: string;
+	href: string;
 	content: string;
 	id: string;
 	relevanceScore: number;

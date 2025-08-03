@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { DeleteButtonWithModal } from "@/components/delete-button-with-modal";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -8,6 +7,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { Link } from "@/i18n/routing";
 import { ServerAction } from "@/types";
 import { validateUrl } from "@/utils/validate-url";
 

@@ -1,7 +1,7 @@
 import { PreviewCardData } from "@/components/card/preview-card";
 import { PreviewStackClient } from "@/components/stack/preview-stack";
 
-const basePath = "contents";
+const basePath = "content";
 
 type Props = {
 	previewCardData: PreviewCardData[];

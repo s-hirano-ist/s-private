@@ -1,11 +1,5 @@
-import { forbidden } from "next/navigation";
-import { AiSearchPage } from "@/features/ai/components/ai-search-page";
-import { hasViewerAdminPermission } from "@/features/auth/utils/session";
+import { StatusCodeView } from "@/components/card/status-code-view";
 
-export default async function Page() {
-	const hasAdminPermission = await hasViewerAdminPermission();
-
-	if (!hasAdminPermission) forbidden();
-
-	return <AiSearchPage />;
+export default function Page() {
+	return <StatusCodeView statusCode="000" />;
 }

@@ -63,7 +63,7 @@ describe("fetch-knowledge", () => {
 			const result = await getAllStaticBooksForKnowledge();
 
 			expect(prisma.staticBooks.findMany).toHaveBeenCalledWith({
-				select: { title: true, markdown: true },
+				select: { title: true, markdown: true, ISBN: true },
 				cacheStrategy: { ttl: 400, tags: ["staticBooks"] },
 			});
 			expect(result).toEqual(mockBooks);
@@ -81,13 +81,19 @@ describe("fetch-knowledge", () => {
 	describe("fetchAllKnowledge", () => {
 		test("should combine contents and books with correct format", async () => {
 			const mockContents = [
-				{ title: "Content 1", markdown: "Content 1 markdown" },
-				{ title: "Content 2", markdown: "Content 2 markdown" },
+				{
+					title: "Content 1",
+					markdown: "Content 1 markdown",
+				},
+				{
+					title: "Content 2",
+					markdown: "Content 2 markdown",
+				},
 			];
 
 			const mockBooks = [
-				{ title: "Book 1", markdown: "Book 1 markdown" },
-				{ title: "Book 2", markdown: "Book 2 markdown" },
+				{ title: "Book 1", markdown: "Book 1 markdown", ISBN: "0000000000" },
+				{ title: "Book 2", markdown: "Book 2 markdown", ISBN: "0000000001" },
 			];
 
 			vi.mocked(prisma.staticContents.findMany).mockResolvedValue(mockContents);
@@ -101,24 +107,28 @@ describe("fetch-knowledge", () => {
 					title: "Content 1",
 					content: "Content 1 markdown",
 					type: "content",
+					href: "/content/Content 1",
 				},
 				{
 					id: "content-Content 2",
 					title: "Content 2",
 					content: "Content 2 markdown",
 					type: "content",
+					href: "/content/Content 2",
 				},
 				{
 					id: "book-Book 1",
 					title: "Book 1",
 					content: "Book 1 markdown",
 					type: "book",
+					href: "/book/0000000000",
 				},
 				{
 					id: "book-Book 2",
 					title: "Book 2",
 					content: "Book 2 markdown",
 					type: "book",
+					href: "/book/0000000001",
 				},
 			]);
 		});
@@ -148,12 +158,15 @@ describe("fetch-knowledge", () => {
 					title: "Content 1",
 					content: "Content 1 markdown",
 					type: "content",
+					href: "/content/Content 1",
 				},
 			]);
 		});
 
 		test("should handle only books", async () => {
-			const mockBooks = [{ title: "Book 1", markdown: "Book 1 markdown" }];
+			const mockBooks = [
+				{ title: "Book 1", markdown: "Book 1 markdown", ISBN: "0123456789" },
+			];
 
 			vi.mocked(prisma.staticContents.findMany).mockResolvedValue([]);
 			vi.mocked(prisma.staticBooks.findMany).mockResolvedValue(mockBooks);
@@ -166,6 +179,7 @@ describe("fetch-knowledge", () => {
 					title: "Book 1",
 					content: "Book 1 markdown",
 					type: "book",
+					href: "/book/0123456789",
 				},
 			]);
 		});
@@ -176,6 +190,7 @@ describe("fetch-knowledge", () => {
 			const mockContent = {
 				title: "Test Content",
 				markdown: "Test markdown content",
+				ISBN: "0001111",
 			};
 
 			vi.mocked(prisma.staticContents.findUnique).mockResolvedValue(
