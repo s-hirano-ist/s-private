@@ -34,7 +34,7 @@
 		"@prisma/client": "6.13.0",
 		"@prisma/extension-accelerate": "1.3.0",
 		"@radix-ui/react-icons": "1.3.2",
-		"@sentry/nextjs": "9.44.0",
+		"@sentry/nextjs": "10.0.0",
 		"@t3-oss/env-nextjs": "0.13.8",
 		"@tailwindcss/typography": "0.5.16",
 		"@vercel/analytics": "1.5.0",
