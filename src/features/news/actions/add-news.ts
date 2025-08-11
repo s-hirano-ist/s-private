@@ -3,10 +3,11 @@ import "server-only";
 import { revalidatePath } from "next/cache";
 import { forbidden } from "next/navigation";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
+import { categoryRepository } from "@/features/news/repositories/category-repository";
+import { newsRepository } from "@/features/news/repositories/news-repository";
 import { validateCategory } from "@/features/news/utils/validate-category";
 import { validateNews } from "@/features/news/utils/validate-news";
 import { loggerInfo } from "@/pino";
-import prisma from "@/prisma";
 import type { ServerAction } from "@/types";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
 import { sendPushoverMessage } from "@/utils/notification/fetch-message";
@@ -29,23 +30,20 @@ export async function addNews(formData: FormData): Promise<ServerAction<News>> {
 
 		const validatedCategory = validateCategory(formData);
 
-		const category = await prisma.categories.upsert({
-			where: { name_userId: { userId, name: validatedCategory.name } },
-			update: {},
-			create: { userId, ...validatedCategory },
+		const category = await categoryRepository.upsert({
+			userId,
+			name: validatedCategory.name,
 		});
 
 		formData.set("category", String(category.id));
+		const validatedNews = validateNews(formData);
 
-		const createdNews = await prisma.news.create({
-			data: { userId, ...validateNews(formData) },
-			select: {
-				id: true,
-				title: true,
-				quote: true,
-				url: true,
-				Category: true,
-			},
+		const createdNews = await newsRepository.create({
+			userId,
+			title: validatedNews.title,
+			url: validatedNews.url,
+			quote: validatedNews.quote,
+			categoryId: validatedNews.categoryId,
 		});
 
 		const message = formatCreateNewsMessage(createdNews);

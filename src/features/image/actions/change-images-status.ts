@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { forbidden } from "next/navigation";
 import { UnexpectedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
+import { imageRepository } from "@/features/image/repositories/image-repository";
 import { loggerInfo } from "@/pino";
 import prisma from "@/prisma";
 import type { ServerAction, Status, UpdateOrRevert } from "@/types";
@@ -14,19 +15,21 @@ import { formatChangeStatusMessage } from "@/utils/notification/format-for-notif
 async function updateSelfImagesStatus(): Promise<Status> {
 	const userId = await getSelfId();
 
-	return await prisma.$transaction(async (prisma) => {
-		const exportedData = await prisma.images.updateMany({
-			where: { status: "UPDATED_RECENTLY", userId },
-			data: { status: "EXPORTED" },
-		});
-		const recentlyUpdatedData = await prisma.images.updateMany({
-			where: { status: "UNEXPORTED", userId },
-			data: { status: "UPDATED_RECENTLY" },
-		});
+	return await prisma.$transaction(async () => {
+		const exportedCount = await imageRepository.updateManyStatus(
+			userId,
+			"UPDATED_RECENTLY",
+			"EXPORTED",
+		);
+		const recentlyUpdatedCount = await imageRepository.updateManyStatus(
+			userId,
+			"UNEXPORTED",
+			"UPDATED_RECENTLY",
+		);
 		return {
 			unexported: 0,
-			recentlyUpdated: recentlyUpdatedData.count,
-			exported: exportedData.count,
+			recentlyUpdated: recentlyUpdatedCount,
+			exported: exportedCount,
 		};
 	});
 }
@@ -34,18 +37,20 @@ async function updateSelfImagesStatus(): Promise<Status> {
 async function revertSelfImagesStatus(): Promise<Status> {
 	const userId = await getSelfId();
 
-	return await prisma.$transaction(async (prisma) => {
-		const unexportedData = await prisma.images.updateMany({
-			where: { status: "UPDATED_RECENTLY", userId },
-			data: { status: "UNEXPORTED" },
-		});
-		const recentlyUpdatedData = await prisma.images.updateMany({
-			where: { status: "EXPORTED", userId },
-			data: { status: "UPDATED_RECENTLY" },
-		});
+	return await prisma.$transaction(async () => {
+		const unexportedCount = await imageRepository.updateManyStatus(
+			userId,
+			"UPDATED_RECENTLY",
+			"UNEXPORTED",
+		);
+		const recentlyUpdatedCount = await imageRepository.updateManyStatus(
+			userId,
+			"EXPORTED",
+			"UPDATED_RECENTLY",
+		);
 		return {
-			unexported: unexportedData.count,
-			recentlyUpdated: recentlyUpdatedData.count,
+			unexported: unexportedCount,
+			recentlyUpdated: recentlyUpdatedCount,
 			exported: 0,
 		};
 	});

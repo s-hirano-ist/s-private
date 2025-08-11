@@ -12,9 +12,9 @@ import {
 import { env } from "@/env";
 import { FileNotAllowedError, UnexpectedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
+import { imageRepository } from "@/features/image/repositories/image-repository";
 import { minioClient } from "@/minio";
 import { loggerInfo } from "@/pino";
-import prisma from "@/prisma";
 import type { ServerAction } from "@/types";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
 import { sendPushoverMessage } from "@/utils/notification/fetch-message";
@@ -61,16 +61,13 @@ export async function addImage(
 			thumbnailBuffer,
 		);
 
-		const createdImage = await prisma.images.create({
-			data: {
-				id,
-				userId,
-				contentType: file.type,
-				fileSize: metadata.size,
-				width: metadata.width,
-				height: metadata.height,
-			},
-			select: { id: true },
+		const createdImage = await imageRepository.create({
+			id,
+			userId,
+			contentType: file.type,
+			fileSize: metadata.size,
+			width: metadata.width,
+			height: metadata.height,
 		});
 
 		const message = formatCreateImageMessage({ fileName: createdImage.id });
@@ -78,7 +75,7 @@ export async function addImage(
 
 		await sendPushoverMessage(message);
 		revalidatePath("/(dumper)");
-		await prisma.$accelerate.invalidate({ tags: ["images"] });
+		await imageRepository.invalidateCache();
 
 		return {
 			success: true,
