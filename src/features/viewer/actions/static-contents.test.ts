@@ -87,7 +87,7 @@ describe("static-contents", () => {
 				{
 					title: "Test Content",
 					href: "Test Content",
-					image: null,
+					image: new Uint8Array(), // Repository returns empty Uint8Array for null
 				},
 			]);
 		});

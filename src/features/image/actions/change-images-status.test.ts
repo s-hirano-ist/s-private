@@ -1,6 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { Session } from "next-auth";
 import { describe, expect, Mock, test, vi } from "vitest";
+import { imageRepository } from "@/features/image/repositories/image-repository";
 import prisma from "@/prisma";
 import { auth } from "@/utils/auth/auth";
 import { sendPushoverMessage } from "@/utils/notification/fetch-message";
@@ -10,6 +11,12 @@ vi.mock("@/utils/auth/auth", () => ({ auth: vi.fn() }));
 
 vi.mock("@/utils/notification/fetch-message", () => ({
 	sendPushoverMessage: vi.fn(),
+}));
+
+vi.mock("@/features/image/repositories/image-repository", () => ({
+	imageRepository: {
+		updateManyStatus: vi.fn(),
+	},
 }));
 
 const mockAllowedRoleSession: Session = {
@@ -37,16 +44,13 @@ describe("changeImagesStatus", () => {
 
 	test("should update IMAGES statuses and send notifications (UPDATE)", async () => {
 		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
-		(prisma.$transaction as Mock).mockImplementation(async (callback) =>
-			callback({
-				images: {
-					updateMany: vi
-						.fn()
-						.mockResolvedValueOnce({ count: 3 }) // Exported
-						.mockResolvedValueOnce({ count: 5 }), // Recently updated
-				},
-			}),
-		);
+		(prisma.$transaction as Mock).mockImplementation(async (callback) => {
+			const result = await callback();
+			return result;
+		});
+		vi.mocked(imageRepository.updateManyStatus)
+			.mockResolvedValueOnce(3) // Exported
+			.mockResolvedValueOnce(5); // Recently updated
 
 		const result = await changeImagesStatus("UPDATE");
 
@@ -65,16 +69,13 @@ describe("changeImagesStatus", () => {
 
 	test("should revert IMAGES statuses and send notifications (REVERT)", async () => {
 		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
-		(prisma.$transaction as Mock).mockImplementation(async (callback) =>
-			callback({
-				images: {
-					updateMany: vi
-						.fn()
-						.mockResolvedValueOnce({ count: 5 }) // Unexported
-						.mockResolvedValueOnce({ count: 3 }), // Recently updated
-				},
-			}),
-		);
+		(prisma.$transaction as Mock).mockImplementation(async (callback) => {
+			const result = await callback();
+			return result;
+		});
+		vi.mocked(imageRepository.updateManyStatus)
+			.mockResolvedValueOnce(5) // Unexported
+			.mockResolvedValueOnce(3); // Recently updated
 
 		const result = await changeImagesStatus("REVERT");
 
