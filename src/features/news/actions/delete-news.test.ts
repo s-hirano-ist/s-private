@@ -7,8 +7,6 @@ import { loggerInfo } from "@/pino";
 import { auth } from "@/utils/auth/auth";
 import { sendPushoverMessage } from "@/utils/notification/fetch-message";
 
-vi.mock("@/utils/auth/auth", () => ({ auth: vi.fn() }));
-
 vi.mock("@/utils/notification/fetch-message", () => ({
 	sendPushoverMessage: vi.fn(),
 }));

@@ -6,7 +6,6 @@ import { UnexpectedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
 import { imageRepository } from "@/features/image/repositories/image-repository";
 import { loggerInfo } from "@/pino";
-import prisma from "@/prisma";
 import type { ServerAction, Status, UpdateOrRevert } from "@/types";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
 import { sendPushoverMessage } from "@/utils/notification/fetch-message";
@@ -15,7 +14,7 @@ import { formatChangeStatusMessage } from "@/utils/notification/format-for-notif
 async function updateSelfImagesStatus(): Promise<Status> {
 	const userId = await getSelfId();
 
-	return await prisma.$transaction(async () => {
+	return await imageRepository.transaction(async () => {
 		const exportedCount = await imageRepository.updateManyStatus(
 			userId,
 			"UPDATED_RECENTLY",
@@ -37,7 +36,7 @@ async function updateSelfImagesStatus(): Promise<Status> {
 async function revertSelfImagesStatus(): Promise<Status> {
 	const userId = await getSelfId();
 
-	return await prisma.$transaction(async () => {
+	return await imageRepository.transaction(async () => {
 		const unexportedCount = await imageRepository.updateManyStatus(
 			userId,
 			"UPDATED_RECENTLY",

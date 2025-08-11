@@ -13,6 +13,7 @@ export type IContentsRepository = {
 	): Promise<number>;
 	delete(id: number): Promise<void>;
 	findByStatus(status: Status, userId: string): Promise<Contents[]>;
+	transaction<T>(fn: () => Promise<T>): Promise<T>;
 };
 
 type ContentsCreateInput = {
@@ -76,6 +77,10 @@ export class ContentsRepository implements IContentsRepository {
 			where: { status, userId },
 			orderBy: { createdAt: "desc" },
 		});
+	}
+
+	async transaction<T>(fn: () => Promise<T>): Promise<T> {
+		return await prisma.$transaction(fn);
 	}
 }
 

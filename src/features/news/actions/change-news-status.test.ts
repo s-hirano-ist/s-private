@@ -2,12 +2,9 @@ import { revalidatePath } from "next/cache";
 import { Session } from "next-auth";
 import { describe, expect, Mock, test, vi } from "vitest";
 import { newsRepository } from "@/features/news/repositories/news-repository";
-import prisma from "@/prisma";
 import { auth } from "@/utils/auth/auth";
 import { sendPushoverMessage } from "@/utils/notification/fetch-message";
 import { changeNewsStatus } from "./change-news-status";
-
-vi.mock("@/utils/auth/auth", () => ({ auth: vi.fn() }));
 
 vi.mock("@/utils/notification/fetch-message", () => ({
 	sendPushoverMessage: vi.fn(),
@@ -16,6 +13,7 @@ vi.mock("@/utils/notification/fetch-message", () => ({
 vi.mock("@/features/news/repositories/news-repository", () => ({
 	newsRepository: {
 		updateManyStatus: vi.fn(),
+		transaction: vi.fn(),
 	},
 }));
 
@@ -44,10 +42,12 @@ describe("changeNewsStatus", () => {
 
 	test("should update news statuses and send notifications (UPDATE)", async () => {
 		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
-		(prisma.$transaction as Mock).mockImplementation(async (callback) => {
-			const result = await callback();
-			return result;
-		});
+		vi.mocked(newsRepository.transaction).mockImplementation(
+			async (callback) => {
+				const result = await callback();
+				return result;
+			},
+		);
 		vi.mocked(newsRepository.updateManyStatus)
 			.mockResolvedValueOnce(3) // Exported
 			.mockResolvedValueOnce(5); // Recently updated
@@ -55,7 +55,7 @@ describe("changeNewsStatus", () => {
 		const result = await changeNewsStatus("UPDATE");
 
 		expect(auth).toHaveBeenCalledTimes(2); // check permission & getSelfId
-		expect(prisma.$transaction).toHaveBeenCalled();
+		expect(newsRepository.transaction).toHaveBeenCalled();
 		expect(sendPushoverMessage).toHaveBeenCalledWith(
 			"【NEWS】\n\n更新\n未処理: 0\n直近更新: 5\n確定: 3",
 		);
@@ -69,10 +69,12 @@ describe("changeNewsStatus", () => {
 
 	test("should revert news statuses and send notifications (REVERT)", async () => {
 		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
-		(prisma.$transaction as Mock).mockImplementation(async (callback) => {
-			const result = await callback();
-			return result;
-		});
+		vi.mocked(newsRepository.transaction).mockImplementation(
+			async (callback) => {
+				const result = await callback();
+				return result;
+			},
+		);
 		vi.mocked(newsRepository.updateManyStatus)
 			.mockResolvedValueOnce(5) // Unexported
 			.mockResolvedValueOnce(3); // Recently updated
@@ -80,7 +82,7 @@ describe("changeNewsStatus", () => {
 		const result = await changeNewsStatus("REVERT");
 
 		expect(auth).toHaveBeenCalledTimes(2); // check permission & getSelfId
-		expect(prisma.$transaction).toHaveBeenCalled();
+		expect(newsRepository.transaction).toHaveBeenCalled();
 		expect(sendPushoverMessage).toHaveBeenCalledWith(
 			"【NEWS】\n\n更新\n未処理: 5\n直近更新: 3\n確定: 0",
 		);
@@ -95,11 +97,11 @@ describe("changeNewsStatus", () => {
 	test("should handle unexpected errors gracefully", async () => {
 		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
 		const mockError = new Error("Unexpected error");
-		(prisma.$transaction as Mock).mockRejectedValue(mockError);
+		vi.mocked(newsRepository.transaction).mockRejectedValue(mockError);
 
 		const result = await changeNewsStatus("UPDATE");
 
-		expect(prisma.$transaction).toHaveBeenCalled();
+		expect(newsRepository.transaction).toHaveBeenCalled();
 		expect(result).toEqual({
 			success: false,
 			message: "unexpected",

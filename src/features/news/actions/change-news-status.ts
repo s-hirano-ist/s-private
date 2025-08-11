@@ -6,7 +6,6 @@ import { UnexpectedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
 import { newsRepository } from "@/features/news/repositories/news-repository";
 import { loggerInfo } from "@/pino";
-import prisma from "@/prisma";
 import type { ServerAction, Status, UpdateOrRevert } from "@/types";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
 import { sendPushoverMessage } from "@/utils/notification/fetch-message";
@@ -15,7 +14,7 @@ import { formatChangeStatusMessage } from "@/utils/notification/format-for-notif
 async function updateSelfNewsStatus(): Promise<Status> {
 	const userId = await getSelfId();
 
-	return await prisma.$transaction(async () => {
+	return await newsRepository.transaction(async () => {
 		const exportedCount = await newsRepository.updateManyStatus(
 			userId,
 			"UPDATED_RECENTLY",
@@ -37,7 +36,7 @@ async function updateSelfNewsStatus(): Promise<Status> {
 async function revertSelfNewsStatus(): Promise<Status> {
 	const userId = await getSelfId();
 
-	return await prisma.$transaction(async () => {
+	return await newsRepository.transaction(async () => {
 		const unexportedCount = await newsRepository.updateManyStatus(
 			userId,
 			"UPDATED_RECENTLY",

@@ -3,12 +3,9 @@ import { Session } from "next-auth";
 import sharp, { Sharp } from "sharp";
 import { v7 as uuidv7 } from "uuid";
 import { describe, expect, Mock, test, vi } from "vitest";
-import { minioClient } from "@/minio";
-import prisma from "@/prisma";
+import { imageRepository } from "@/features/image/repositories/image-repository";
 import { auth } from "@/utils/auth/auth";
 import { addImage } from "./add-image";
-
-vi.mock("@/utils/auth/auth", () => ({ auth: vi.fn() }));
 
 vi.mock("@/utils/notification/fetch-message", () => ({
 	sendPushoverMessage: vi.fn(),
@@ -16,7 +13,13 @@ vi.mock("@/utils/notification/fetch-message", () => ({
 
 vi.mock("uuid", () => ({ v7: vi.fn() }));
 
-vi.mock("@/minio", () => ({ minioClient: { putObject: vi.fn() } }));
+vi.mock("@/features/image/repositories/image-repository", () => ({
+	imageRepository: {
+		create: vi.fn(),
+		uploadToStorage: vi.fn(),
+		invalidateCache: vi.fn(),
+	},
+}));
 
 type PartialSharp = Pick<Sharp, "metadata" | "resize" | "toBuffer">;
 vi.mock("sharp", () => {
@@ -87,15 +90,27 @@ describe("addImage", () => {
 			// eslint-disable-next-line
 		} as any);
 
-		(prisma.images.create as Mock).mockResolvedValue({
+		vi.mocked(imageRepository.create).mockResolvedValue({
 			id: "generated-uuid-myImage.jpeg",
+			userId: "1",
+			contentType: "image/jpeg",
+			fileSize: null,
+			width: null,
+			height: null,
+			tags: [],
+			description: null,
+			status: "UNEXPORTED",
+			createdAt: new Date(),
+			updatedAt: new Date(),
+			deletedAt: null,
 		});
 		(uuidv7 as Mock).mockReturnValue("generated-uuid");
 
 		const result = await addImage(mockFormData);
 
-		expect(minioClient.putObject).toHaveBeenCalledTimes(2);
-		expect(prisma.images.create).toHaveBeenCalled();
+		expect(imageRepository.uploadToStorage).toHaveBeenCalledTimes(2);
+		expect(imageRepository.create).toHaveBeenCalled();
+		expect(imageRepository.invalidateCache).toHaveBeenCalled();
 		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 		expect(result).toEqual({
 			success: true,
@@ -110,9 +125,6 @@ describe("addImage", () => {
 		mockFormData = new FormData();
 		mockFormData.append("file", file);
 		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
-		(prisma.images.create as Mock).mockResolvedValue({
-			id: "generated-uuid-myImage.jpeg",
-		});
 		(uuidv7 as Mock).mockReturnValue("generated-uuid");
 
 		const result = await addImage(mockFormData);
@@ -130,9 +142,6 @@ describe("addImage", () => {
 		mockFormData = new FormData();
 		mockFormData.append("file", file);
 		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
-		(prisma.images.create as Mock).mockResolvedValue({
-			id: "generated-uuid-myImage.jpeg",
-		});
 		(uuidv7 as Mock).mockReturnValue("generated-uuid");
 
 		const result = await addImage(mockFormData);
@@ -146,9 +155,6 @@ describe("addImage", () => {
 	test("should return success false on no file", async () => {
 		mockFormData = new FormData();
 		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
-		(prisma.images.create as Mock).mockResolvedValue({
-			id: "generated-uuid-myImage.jpeg",
-		});
 		(uuidv7 as Mock).mockReturnValue("generated-uuid");
 
 		const result = await addImage(mockFormData);

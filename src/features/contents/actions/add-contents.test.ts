@@ -1,14 +1,18 @@
 import { revalidatePath } from "next/cache";
 import { Session } from "next-auth";
 import { describe, expect, Mock, test, vi } from "vitest";
-import prisma from "@/prisma";
+import { contentsRepository } from "@/features/contents/repositories/contents-repository";
 import { auth } from "@/utils/auth/auth";
 import { addContents } from "./add-contents";
 
-vi.mock("@/utils/auth/auth", () => ({ auth: vi.fn() }));
-
 vi.mock("@/utils/notification/fetch-message", () => ({
 	sendPushoverMessage: vi.fn(),
+}));
+
+vi.mock("@/features/contents/repositories/contents-repository", () => ({
+	contentsRepository: {
+		create: vi.fn(),
+	},
 }));
 
 const mockAllowedRoleSession: Session = {
@@ -47,12 +51,21 @@ describe("addContents", () => {
 
 	test("should create contents", async () => {
 		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
-		(prisma.contents.create as Mock).mockResolvedValue(mockCreatedContents);
+		vi.mocked(contentsRepository.create).mockResolvedValue({
+			id: 1,
+			title: "Example Content",
+			quote: "This is an example content quote.",
+			url: "https://example.com",
+			userId: "1",
+			status: "UNEXPORTED",
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		});
 
 		const result = await addContents(mockFormData);
 
 		expect(auth).toHaveBeenCalledTimes(2); // check permission & getSelfId
-		expect(prisma.contents.create).toHaveBeenCalled();
+		expect(contentsRepository.create).toHaveBeenCalled();
 		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 		expect(result).toEqual({
 			success: true,

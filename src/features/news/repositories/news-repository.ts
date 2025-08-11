@@ -18,6 +18,7 @@ export type INewsRepository = {
 	delete(id: number): Promise<void>;
 	deleteByIdAndUserId(id: number, userId: string): Promise<void>;
 	findByStatus(status: Status, userId: string): Promise<NewsWithCategory[]>;
+	transaction<T>(fn: () => Promise<T>): Promise<T>;
 };
 
 type NewsCreateInput = {
@@ -136,6 +137,10 @@ export class NewsRepository implements INewsRepository {
 			},
 			orderBy: { createdAt: "desc" },
 		});
+	}
+
+	async transaction<T>(fn: () => Promise<T>): Promise<T> {
+		return await prisma.$transaction(fn);
 	}
 }
 

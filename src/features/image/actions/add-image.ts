@@ -9,11 +9,9 @@ import {
 	THUMBNAIL_IMAGE_PATH,
 	THUMBNAIL_WIDTH,
 } from "@/constants";
-import { env } from "@/env";
 import { FileNotAllowedError, UnexpectedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
 import { imageRepository } from "@/features/image/repositories/image-repository";
-import { minioClient } from "@/minio";
 import { loggerInfo } from "@/pino";
 import type { ServerAction } from "@/types";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
@@ -46,7 +44,7 @@ export async function addImage(
 		const metadata = await sharp(buffer).metadata();
 
 		const originalPath = `${ORIGINAL_IMAGE_PATH}/${id}`;
-		await minioClient.putObject(env.MINIO_BUCKET_NAME, originalPath, buffer);
+		await imageRepository.uploadToStorage(originalPath, buffer);
 
 		const thumbnailBuffer = await sharp(buffer)
 			.resize(
@@ -55,11 +53,7 @@ export async function addImage(
 			)
 			.toBuffer();
 		const thumbnailPath = `${THUMBNAIL_IMAGE_PATH}/${id}`;
-		await minioClient.putObject(
-			env.MINIO_BUCKET_NAME,
-			thumbnailPath,
-			thumbnailBuffer,
-		);
+		await imageRepository.uploadToStorage(thumbnailPath, thumbnailBuffer);
 
 		const createdImage = await imageRepository.create({
 			id,

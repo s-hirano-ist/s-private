@@ -1,4 +1,6 @@
+import { env } from "@/env";
 import type { Images, Prisma, Status } from "@/generated";
+import { minioClient } from "@/minio";
 import prisma from "@/prisma";
 
 export type IImageRepository = {
@@ -16,6 +18,8 @@ export type IImageRepository = {
 	softDelete(id: string): Promise<Images>;
 	findByStatus(status: Status, userId: string): Promise<Images[]>;
 	invalidateCache(): Promise<void>;
+	uploadToStorage(path: string, buffer: Buffer): Promise<void>;
+	transaction<T>(fn: () => Promise<T>): Promise<T>;
 };
 
 type ImageCreateInput = {
@@ -100,6 +104,14 @@ export class ImageRepository implements IImageRepository {
 
 	async invalidateCache(): Promise<void> {
 		await prisma.$accelerate.invalidate({ tags: ["images"] });
+	}
+
+	async uploadToStorage(path: string, buffer: Buffer): Promise<void> {
+		await minioClient.putObject(env.MINIO_BUCKET_NAME, path, buffer);
+	}
+
+	async transaction<T>(fn: () => Promise<T>): Promise<T> {
+		return await prisma.$transaction(fn);
 	}
 }
 
