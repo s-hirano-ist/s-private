@@ -3,7 +3,7 @@ import { Session } from "next-auth";
 import sharp, { Sharp } from "sharp";
 import { v7 as uuidv7 } from "uuid";
 import { describe, expect, Mock, test, vi } from "vitest";
-import { imageRepository } from "@/features/image/repositories/image-repository";
+import { imageRepository } from "@/features/images/repositories/image-repository";
 import { auth } from "@/utils/auth/auth";
 import { addImage } from "./add-image";
 
@@ -13,7 +13,7 @@ vi.mock("@/utils/notification/fetch-message", () => ({
 
 vi.mock("uuid", () => ({ v7: vi.fn() }));
 
-vi.mock("@/features/image/repositories/image-repository", () => ({
+vi.mock("@/features/images/repositories/image-repository", () => ({
 	imageRepository: {
 		create: vi.fn(),
 		uploadToStorage: vi.fn(),

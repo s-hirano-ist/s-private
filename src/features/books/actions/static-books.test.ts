@@ -1,16 +1,13 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import * as staticBooksModule from "./static-books";
+import { staticBooksRepository } from "@/features/books/repositories/static-books-repository";
+import { getAllStaticBooks, getStaticBooksCount } from "./static-books";
 
-vi.mock("@/features/viewer/repositories/static-books-repository", () => ({
+vi.mock("@/features/books/repositories/static-books-repository", () => ({
 	staticBooksRepository: {
 		findAll: vi.fn(),
 		count: vi.fn(),
 	},
 }));
-
-import { staticBooksRepository } from "@/features/viewer/repositories/static-books-repository";
-
-const { getAllStaticBooks, getStaticBooksCount } = staticBooksModule;
 
 describe("static-books", () => {
 	beforeEach(() => {

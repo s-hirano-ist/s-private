@@ -1,4 +1,4 @@
-import { staticNewsRepository } from "@/features/viewer/repositories/static-news-repository";
+import { staticNewsRepository } from "@/features/news/repositories/static-news-repository";
 
 export const getStaticNews = staticNewsRepository.findMany;
 

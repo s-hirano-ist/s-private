@@ -25,8 +25,6 @@ export default defineConfig({
 				"src/components/provider/theme-provider.tsx",
 				"src/?(instrumentation-client|instrumentation|minio|middleware|pino|prisma).ts",
 				"src/app/?(manifest.ts|loading.tsx|robots.ts|not-found.tsx|instrumentation.ts)",
-				"/**/server.tsx", // FIXME: delete when server side component test enabled
-				"src/app/api/**/route.ts", // FIXME: delete when server side action test enabled
 			],
 			reporter: ["text", "json-summary", "json"],
 		},

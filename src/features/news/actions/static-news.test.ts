@@ -1,16 +1,13 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import * as staticNewsModule from "./static-news";
+import { staticNewsRepository } from "@/features/news/repositories/static-news-repository";
+import { getStaticNews, getStaticNewsCount } from "./static-news";
 
-vi.mock("@/features/viewer/repositories/static-news-repository", () => ({
+vi.mock("@/features/news/repositories/static-news-repository", () => ({
 	staticNewsRepository: {
 		findMany: vi.fn(),
 		count: vi.fn(),
 	},
 }));
-
-import { staticNewsRepository } from "@/features/viewer/repositories/static-news-repository";
-
-const { getStaticNews, getStaticNewsCount } = staticNewsModule;
 
 vi.mock("@/constants", () => ({
 	PAGE_SIZE: 10,
@@ -29,12 +26,18 @@ describe("static-news", () => {
 					title: "Test News 1",
 					url: "https://example.com/news1",
 					quote: "This is a test quote 1",
+					ogTitle: "sample title 1",
+					ogDescription: "sample description 1",
+					ogImageUrl: "https://example.com/1",
 				},
 				{
 					id: 2,
 					title: "Test News 2",
 					url: "https://example.com/news2",
 					quote: "This is a test quote 2",
+					ogTitle: "sample title 2",
+					ogDescription: "sample description 2",
+					ogImageUrl: "https://example.com/2",
 				},
 			];
 
@@ -54,6 +57,9 @@ describe("static-news", () => {
 					title: "Test News 11",
 					url: "https://example.com/news11",
 					quote: "This is a test quote 11",
+					ogTitle: "sample title 1",
+					ogDescription: "sample description 1",
+					ogImageUrl: "https://example.com/1",
 				},
 			];
 
@@ -102,6 +108,9 @@ describe("static-news", () => {
 					title: "Test News 1",
 					url: "https://example.com/news1",
 					quote: "This is a test quote 1",
+					ogTitle: "sample title 1",
+					ogDescription: "sample description 1",
+					ogImageUrl: "https://example.com/1",
 				},
 			];
 

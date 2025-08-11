@@ -1,16 +1,16 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import * as staticContentsModule from "./static-contents";
+import { staticContentsRepository } from "@/features/contents/repositories/static-contents-repository";
+import {
+	getAllStaticContents,
+	getStaticContentsCount,
+} from "./static-contents";
 
-vi.mock("@/features/viewer/repositories/static-contents-repository", () => ({
+vi.mock("@/features/contents/repositories/static-contents-repository", () => ({
 	staticContentsRepository: {
 		findAll: vi.fn(),
 		count: vi.fn(),
 	},
 }));
-
-import { staticContentsRepository } from "@/features/viewer/repositories/static-contents-repository";
-
-const { getAllStaticContents, getStaticContentsCount } = staticContentsModule;
 
 describe("static-contents", () => {
 	beforeEach(() => {

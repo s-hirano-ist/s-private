@@ -1,6 +1,6 @@
 import { forbidden } from "next/navigation";
 import { StatusCodeView } from "@/components/card/status-code-view";
-import { getAllStaticBooks } from "@/features/viewer/actions/static-books";
+import { getAllStaticBooks } from "@/features/books/actions/static-books";
 import { hasViewerAdminPermission } from "@/utils/auth/session";
 import { BooksStackClient } from "./client";
 

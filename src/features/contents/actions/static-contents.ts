@@ -1,4 +1,4 @@
-import { staticContentsRepository } from "@/features/viewer/repositories/static-contents-repository";
+import { staticContentsRepository } from "@/features/contents/repositories/static-contents-repository";
 
 export const getAllStaticContents = staticContentsRepository.findAll;
 

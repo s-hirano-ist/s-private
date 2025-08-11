@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { forbidden } from "next/navigation";
 import { UnexpectedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
-import { imageRepository } from "@/features/image/repositories/image-repository";
+import { imageRepository } from "@/features/images/repositories/image-repository";
 import { loggerInfo } from "@/pino";
 import type { ServerAction, Status, UpdateOrRevert } from "@/types";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";

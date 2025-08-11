@@ -1,4 +1,4 @@
-import { staticBooksRepository } from "@/features/viewer/repositories/static-books-repository";
+import { staticBooksRepository } from "@/features/books/repositories/static-books-repository";
 
 export const getAllStaticBooks = staticBooksRepository.findAll;
 

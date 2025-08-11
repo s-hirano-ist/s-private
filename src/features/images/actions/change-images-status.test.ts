@@ -1,7 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { Session } from "next-auth";
 import { describe, expect, Mock, test, vi } from "vitest";
-import { imageRepository } from "@/features/image/repositories/image-repository";
+import { imageRepository } from "@/features/images/repositories/image-repository";
 import { auth } from "@/utils/auth/auth";
 import { sendPushoverMessage } from "@/utils/notification/fetch-message";
 import { changeImagesStatus } from "./change-images-status";
@@ -10,7 +10,7 @@ vi.mock("@/utils/notification/fetch-message", () => ({
 	sendPushoverMessage: vi.fn(),
 }));
 
-vi.mock("@/features/image/repositories/image-repository", () => ({
+vi.mock("@/features/images/repositories/image-repository", () => ({
 	imageRepository: {
 		updateManyStatus: vi.fn(),
 		transaction: vi.fn(),

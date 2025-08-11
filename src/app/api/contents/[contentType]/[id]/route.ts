@@ -1,7 +1,7 @@
 import { forbidden } from "next/navigation";
 import { NextResponse } from "next/server";
 import { ORIGINAL_IMAGE_PATH, THUMBNAIL_IMAGE_PATH } from "@/constants";
-import { imageRepository } from "@/features/image/repositories/image-repository";
+import { imageRepository } from "@/features/images/repositories/image-repository";
 import { auth } from "@/utils/auth/auth";
 
 export const GET = auth(
