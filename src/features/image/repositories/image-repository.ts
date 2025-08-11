@@ -19,6 +19,7 @@ export type IImageRepository = {
 	findByStatus(status: Status, userId: string): Promise<Images[]>;
 	invalidateCache(): Promise<void>;
 	uploadToStorage(path: string, buffer: Buffer): Promise<void>;
+	getFromStorage(path: string): Promise<NodeJS.ReadableStream>;
 	transaction<T>(fn: () => Promise<T>): Promise<T>;
 };
 
@@ -108,6 +109,10 @@ export class ImageRepository implements IImageRepository {
 
 	async uploadToStorage(path: string, buffer: Buffer): Promise<void> {
 		await minioClient.putObject(env.MINIO_BUCKET_NAME, path, buffer);
+	}
+
+	async getFromStorage(path: string): Promise<NodeJS.ReadableStream> {
+		return await minioClient.getObject(env.MINIO_BUCKET_NAME, path);
 	}
 
 	async transaction<T>(fn: () => Promise<T>): Promise<T> {
