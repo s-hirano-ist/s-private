@@ -1,6 +1,6 @@
 import { forbidden } from "next/navigation";
 import { StatusCodeView } from "@/components/card/status-code-view";
-import { getStaticNewsCount } from "@/features/viewer/actions/static-news";
+import { getStaticNewsCount } from "@/features/news/actions/static-news";
 import { hasViewerAdminPermission } from "@/utils/auth/session";
 import { NewsCounterClient } from "./client";
 

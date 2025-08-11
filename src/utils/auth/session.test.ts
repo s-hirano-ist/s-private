@@ -7,8 +7,6 @@ import {
 	hasViewerAdminPermission,
 } from "@/utils/auth/session";
 
-vi.mock("@/utils/auth/auth", () => ({ auth: vi.fn() }));
-
 const mockDumperRoleSession: Session = {
 	user: { id: "1", roles: ["dumper"] },
 	expires: "2025-01-01",

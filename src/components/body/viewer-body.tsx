@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { markdownToReact } from "@/features/viewer/utils/markdown-to-react";
+import { markdownToReact } from "@/utils/markdown-to-react";
 
 type Props = { children?: ReactNode; markdown: string };
 

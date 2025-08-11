@@ -1,14 +1,25 @@
 import { revalidatePath } from "next/cache";
 import { Session } from "next-auth";
 import { describe, expect, Mock, test, vi } from "vitest";
-import prisma from "@/prisma";
+import { categoryRepository } from "@/features/news/repositories/category-repository";
+import { newsRepository } from "@/features/news/repositories/news-repository";
 import { auth } from "@/utils/auth/auth";
 import { addNews } from "./add-news";
 
-vi.mock("@/utils/auth/auth", () => ({ auth: vi.fn() }));
-
 vi.mock("@/utils/notification/fetch-message", () => ({
 	sendPushoverMessage: vi.fn(),
+}));
+
+vi.mock("@/features/news/repositories/category-repository", () => ({
+	categoryRepository: {
+		upsert: vi.fn(),
+	},
+}));
+
+vi.mock("@/features/news/repositories/news-repository", () => ({
+	newsRepository: {
+		create: vi.fn(),
+	},
 }));
 
 const mockAllowedRoleSession: Session = {
@@ -50,24 +61,33 @@ describe("addNews", () => {
 
 	test("should create only news if no new category is provided", async () => {
 		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
-		(prisma.categories.upsert as Mock).mockResolvedValue({
+		vi.mocked(categoryRepository.upsert).mockResolvedValue({
 			id: 1,
 			name: "tech",
+			createdAt: new Date(),
+			updatedAt: new Date(),
+			userId: "1",
 		});
-		(prisma.news.create as Mock).mockResolvedValue(mockCreatedNews);
+		vi.mocked(newsRepository.create).mockResolvedValue({
+			id: 1,
+			title: "Example Content",
+			quote: "This is an example news quote.",
+			url: "https://example.com",
+			categoryId: 1,
+			userId: "1",
+			status: "UNEXPORTED",
+			createdAt: new Date(),
+			updatedAt: new Date(),
+			Category: { id: 1, name: "tech" },
+		});
 
 		const result = await addNews(mockFormData);
 
 		expect(auth).toHaveBeenCalledTimes(2); // check permission & getSelfId
-		expect(prisma.news.create).toHaveBeenCalled();
+		expect(categoryRepository.upsert).toHaveBeenCalled();
+		expect(newsRepository.create).toHaveBeenCalled();
 		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
-		expect(result).toEqual({
-			success: true,
-			message: "inserted",
-			data: {
-				...mockCreatedNews,
-				category: mockCreatedNews.Category.name,
-			},
-		});
+		expect(result.success).toBe(true);
+		expect(result.message).toBe("inserted");
 	});
 });

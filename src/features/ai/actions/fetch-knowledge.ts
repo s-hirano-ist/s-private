@@ -1,29 +1,12 @@
-import { cache } from "react";
-import prisma from "@/prisma";
+import { knowledgeRepository } from "@/features/ai/repositories/knowledge-repository";
 
 // Fetch all static contents for RAG knowledge base
-const _getAllStaticContentsForKnowledge = async () => {
-	return await prisma.staticContents.findMany({
-		select: { title: true, markdown: true },
-		cacheStrategy: { ttl: 400, tags: ["staticContents"] },
-	});
-};
-
-export const getAllStaticContentsForKnowledge = cache(
-	_getAllStaticContentsForKnowledge,
-);
+export const getAllStaticContentsForKnowledge =
+	knowledgeRepository.findAllStaticContents;
 
 // Fetch all static books for RAG knowledge base
-const _getAllStaticBooksForKnowledge = async () => {
-	return await prisma.staticBooks.findMany({
-		select: { title: true, markdown: true, ISBN: true },
-		cacheStrategy: { ttl: 400, tags: ["staticBooks"] },
-	});
-};
-
-export const getAllStaticBooksForKnowledge = cache(
-	_getAllStaticBooksForKnowledge,
-);
+export const getAllStaticBooksForKnowledge =
+	knowledgeRepository.findAllStaticBooks;
 
 // Fetch all knowledge (both contents and books)
 export async function fetchAllKnowledge() {
@@ -50,9 +33,5 @@ export async function fetchAllKnowledge() {
 
 // Fetch a specific content by title
 export async function fetchContentByTitle(title: string) {
-	return await prisma.staticContents.findUnique({
-		where: { title },
-		select: { title: true, markdown: true },
-		cacheStrategy: { ttl: 400, tags: ["staticContents"] },
-	});
+	return await knowledgeRepository.findStaticContentByTitle(title);
 }

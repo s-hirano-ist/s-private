@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import prisma from "@/prisma";
+import { knowledgeRepository } from "@/features/ai/repositories/knowledge-repository";
 import {
 	fetchAllKnowledge,
 	fetchContentByTitle,
@@ -7,15 +7,11 @@ import {
 	getAllStaticContentsForKnowledge,
 } from "./fetch-knowledge";
 
-vi.mock("@/prisma", () => ({
-	default: {
-		staticContents: {
-			findMany: vi.fn(),
-			findUnique: vi.fn(),
-		},
-		staticBooks: {
-			findMany: vi.fn(),
-		},
+vi.mock("@/features/ai/repositories/knowledge-repository", () => ({
+	knowledgeRepository: {
+		findAllStaticContents: vi.fn(),
+		findAllStaticBooks: vi.fn(),
+		findStaticContentByTitle: vi.fn(),
 	},
 }));
 
@@ -31,19 +27,20 @@ describe("fetch-knowledge", () => {
 				{ title: "Test Content 2", markdown: "Content 2 markdown" },
 			];
 
-			vi.mocked(prisma.staticContents.findMany).mockResolvedValue(mockContents);
+			vi.mocked(knowledgeRepository.findAllStaticContents).mockResolvedValue(
+				mockContents,
+			);
 
 			const result = await getAllStaticContentsForKnowledge();
 
-			expect(prisma.staticContents.findMany).toHaveBeenCalledWith({
-				select: { title: true, markdown: true },
-				cacheStrategy: { ttl: 400, tags: ["staticContents"] },
-			});
+			expect(knowledgeRepository.findAllStaticContents).toHaveBeenCalled();
 			expect(result).toEqual(mockContents);
 		});
 
 		test("should handle empty results", async () => {
-			vi.mocked(prisma.staticContents.findMany).mockResolvedValue([]);
+			vi.mocked(knowledgeRepository.findAllStaticContents).mockResolvedValue(
+				[],
+			);
 
 			const result = await getAllStaticContentsForKnowledge();
 
@@ -58,19 +55,18 @@ describe("fetch-knowledge", () => {
 				{ title: "Test Book 2", markdown: "Book 2 markdown" },
 			];
 
-			vi.mocked(prisma.staticBooks.findMany).mockResolvedValue(mockBooks);
+			vi.mocked(knowledgeRepository.findAllStaticBooks).mockResolvedValue(
+				mockBooks,
+			);
 
 			const result = await getAllStaticBooksForKnowledge();
 
-			expect(prisma.staticBooks.findMany).toHaveBeenCalledWith({
-				select: { title: true, markdown: true, ISBN: true },
-				cacheStrategy: { ttl: 400, tags: ["staticBooks"] },
-			});
+			expect(knowledgeRepository.findAllStaticBooks).toHaveBeenCalled();
 			expect(result).toEqual(mockBooks);
 		});
 
 		test("should handle empty results", async () => {
-			vi.mocked(prisma.staticBooks.findMany).mockResolvedValue([]);
+			vi.mocked(knowledgeRepository.findAllStaticBooks).mockResolvedValue([]);
 
 			const result = await getAllStaticBooksForKnowledge();
 
@@ -96,8 +92,12 @@ describe("fetch-knowledge", () => {
 				{ title: "Book 2", markdown: "Book 2 markdown", ISBN: "0000000001" },
 			];
 
-			vi.mocked(prisma.staticContents.findMany).mockResolvedValue(mockContents);
-			vi.mocked(prisma.staticBooks.findMany).mockResolvedValue(mockBooks);
+			vi.mocked(knowledgeRepository.findAllStaticContents).mockResolvedValue(
+				mockContents,
+			);
+			vi.mocked(knowledgeRepository.findAllStaticBooks).mockResolvedValue(
+				mockBooks,
+			);
 
 			const result = await fetchAllKnowledge();
 
@@ -134,8 +134,10 @@ describe("fetch-knowledge", () => {
 		});
 
 		test("should handle empty contents and books", async () => {
-			vi.mocked(prisma.staticContents.findMany).mockResolvedValue([]);
-			vi.mocked(prisma.staticBooks.findMany).mockResolvedValue([]);
+			vi.mocked(knowledgeRepository.findAllStaticContents).mockResolvedValue(
+				[],
+			);
+			vi.mocked(knowledgeRepository.findAllStaticBooks).mockResolvedValue([]);
 
 			const result = await fetchAllKnowledge();
 
@@ -147,8 +149,10 @@ describe("fetch-knowledge", () => {
 				{ title: "Content 1", markdown: "Content 1 markdown" },
 			];
 
-			vi.mocked(prisma.staticContents.findMany).mockResolvedValue(mockContents);
-			vi.mocked(prisma.staticBooks.findMany).mockResolvedValue([]);
+			vi.mocked(knowledgeRepository.findAllStaticContents).mockResolvedValue(
+				mockContents,
+			);
+			vi.mocked(knowledgeRepository.findAllStaticBooks).mockResolvedValue([]);
 
 			const result = await fetchAllKnowledge();
 
@@ -168,8 +172,12 @@ describe("fetch-knowledge", () => {
 				{ title: "Book 1", markdown: "Book 1 markdown", ISBN: "0123456789" },
 			];
 
-			vi.mocked(prisma.staticContents.findMany).mockResolvedValue([]);
-			vi.mocked(prisma.staticBooks.findMany).mockResolvedValue(mockBooks);
+			vi.mocked(knowledgeRepository.findAllStaticContents).mockResolvedValue(
+				[],
+			);
+			vi.mocked(knowledgeRepository.findAllStaticBooks).mockResolvedValue(
+				mockBooks,
+			);
 
 			const result = await fetchAllKnowledge();
 
@@ -193,22 +201,22 @@ describe("fetch-knowledge", () => {
 				ISBN: "0001111",
 			};
 
-			vi.mocked(prisma.staticContents.findUnique).mockResolvedValue(
+			vi.mocked(knowledgeRepository.findStaticContentByTitle).mockResolvedValue(
 				mockContent,
 			);
 
 			const result = await fetchContentByTitle("Test Content");
 
-			expect(prisma.staticContents.findUnique).toHaveBeenCalledWith({
-				where: { title: "Test Content" },
-				select: { title: true, markdown: true },
-				cacheStrategy: { ttl: 400, tags: ["staticContents"] },
-			});
+			expect(knowledgeRepository.findStaticContentByTitle).toHaveBeenCalledWith(
+				"Test Content",
+			);
 			expect(result).toEqual(mockContent);
 		});
 
 		test("should return null for non-existent content", async () => {
-			vi.mocked(prisma.staticContents.findUnique).mockResolvedValue(null);
+			vi.mocked(knowledgeRepository.findStaticContentByTitle).mockResolvedValue(
+				null,
+			);
 
 			const result = await fetchContentByTitle("Non-existent Content");
 
@@ -216,7 +224,7 @@ describe("fetch-knowledge", () => {
 		});
 
 		test("should handle database errors", async () => {
-			vi.mocked(prisma.staticContents.findUnique).mockRejectedValue(
+			vi.mocked(knowledgeRepository.findStaticContentByTitle).mockRejectedValue(
 				new Error("Database error"),
 			);
 

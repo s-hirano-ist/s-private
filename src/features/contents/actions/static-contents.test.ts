@@ -1,16 +1,14 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import prisma from "@/prisma";
+import { staticContentsRepository } from "@/features/contents/repositories/static-contents-repository";
 import {
 	getAllStaticContents,
 	getStaticContentsCount,
 } from "./static-contents";
 
-vi.mock("@/prisma", () => ({
-	default: {
-		staticContents: {
-			findMany: vi.fn(),
-			count: vi.fn(),
-		},
+vi.mock("@/features/contents/repositories/static-contents-repository", () => ({
+	staticContentsRepository: {
+		findAll: vi.fn(),
+		count: vi.fn(),
 	},
 }));
 
@@ -24,22 +22,23 @@ describe("static-contents", () => {
 			const mockContents = [
 				{
 					title: "Test Content 1",
-					uint8ArrayImage: new Uint8Array([1, 2, 3]),
+					href: "Test Content 1",
+					image: new Uint8Array([1, 2, 3]),
 				},
 				{
 					title: "Test Content 2",
-					uint8ArrayImage: new Uint8Array([4, 5, 6]),
+					href: "Test Content 2",
+					image: new Uint8Array([4, 5, 6]),
 				},
 			];
 
-			vi.mocked(prisma.staticContents.findMany).mockResolvedValue(mockContents);
+			vi.mocked(staticContentsRepository.findAll).mockResolvedValue(
+				mockContents,
+			);
 
 			const result = await getAllStaticContents();
 
-			expect(prisma.staticContents.findMany).toHaveBeenCalledWith({
-				select: { title: true, uint8ArrayImage: true },
-				cacheStrategy: { ttl: 400, tags: ["staticContents"] },
-			});
+			expect(staticContentsRepository.findAll).toHaveBeenCalled();
 
 			expect(result).toEqual([
 				{
@@ -56,7 +55,7 @@ describe("static-contents", () => {
 		});
 
 		test("should handle empty results", async () => {
-			vi.mocked(prisma.staticContents.findMany).mockResolvedValue([]);
+			vi.mocked(staticContentsRepository.findAll).mockResolvedValue([]);
 
 			const result = await getAllStaticContents();
 
@@ -64,7 +63,7 @@ describe("static-contents", () => {
 		});
 
 		test("should handle database errors", async () => {
-			vi.mocked(prisma.staticContents.findMany).mockRejectedValue(
+			vi.mocked(staticContentsRepository.findAll).mockRejectedValue(
 				new Error("Database error"),
 			);
 
@@ -75,11 +74,14 @@ describe("static-contents", () => {
 			const mockContents = [
 				{
 					title: "Test Content",
-					uint8ArrayImage: null,
+					href: "Test Content",
+					image: new Uint8Array(),
 				},
 			];
 
-			vi.mocked(prisma.staticContents.findMany).mockResolvedValue(mockContents);
+			vi.mocked(staticContentsRepository.findAll).mockResolvedValue(
+				mockContents,
+			);
 
 			const result = await getAllStaticContents();
 
@@ -87,7 +89,7 @@ describe("static-contents", () => {
 				{
 					title: "Test Content",
 					href: "Test Content",
-					image: null,
+					image: new Uint8Array(), // Repository returns empty Uint8Array for null
 				},
 			]);
 		});
@@ -96,11 +98,14 @@ describe("static-contents", () => {
 			const mockContents = [
 				{
 					title: "My Special Content Title",
-					uint8ArrayImage: new Uint8Array([1, 2, 3]),
+					href: "My Special Content Title",
+					image: new Uint8Array([1, 2, 3]),
 				},
 			];
 
-			vi.mocked(prisma.staticContents.findMany).mockResolvedValue(mockContents);
+			vi.mocked(staticContentsRepository.findAll).mockResolvedValue(
+				mockContents,
+			);
 
 			const result = await getAllStaticContents();
 
@@ -111,16 +116,16 @@ describe("static-contents", () => {
 
 	describe("getStaticContentsCount", () => {
 		test("should return count of static contents", async () => {
-			vi.mocked(prisma.staticContents.count).mockResolvedValue(25);
+			vi.mocked(staticContentsRepository.count).mockResolvedValue(25);
 
 			const result = await getStaticContentsCount();
 
-			expect(prisma.staticContents.count).toHaveBeenCalledWith({});
+			expect(staticContentsRepository.count).toHaveBeenCalled();
 			expect(result).toBe(25);
 		});
 
 		test("should return 0 for empty collection", async () => {
-			vi.mocked(prisma.staticContents.count).mockResolvedValue(0);
+			vi.mocked(staticContentsRepository.count).mockResolvedValue(0);
 
 			const result = await getStaticContentsCount();
 
@@ -128,7 +133,7 @@ describe("static-contents", () => {
 		});
 
 		test("should handle database errors", async () => {
-			vi.mocked(prisma.staticContents.count).mockRejectedValue(
+			vi.mocked(staticContentsRepository.count).mockRejectedValue(
 				new Error("Database error"),
 			);
 

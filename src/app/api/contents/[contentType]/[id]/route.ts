@@ -1,8 +1,7 @@
-import { forbidden, redirect } from "next/navigation";
+import { forbidden } from "next/navigation";
 import { NextResponse } from "next/server";
 import { ORIGINAL_IMAGE_PATH, THUMBNAIL_IMAGE_PATH } from "@/constants";
-import { env } from "@/env";
-import { minioClient } from "@/minio";
+import { imageRepository } from "@/features/images/repositories/image-repository";
 import { auth } from "@/utils/auth/auth";
 
 export const GET = auth(
@@ -19,7 +18,7 @@ export const GET = auth(
 
 		const objKey = `${contentType === "thumbnail" ? THUMBNAIL_IMAGE_PATH : ORIGINAL_IMAGE_PATH}/${id}`;
 
-		const stream = await minioClient.getObject(env.MINIO_BUCKET_NAME, objKey);
+		const stream = await imageRepository.getFromStorage(objKey);
 
 		// eslint-disable-next-line
 		return new Response(stream as any, {

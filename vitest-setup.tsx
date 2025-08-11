@@ -19,6 +19,8 @@ beforeEach(() => {
 		}
 	};
 
+	vi.mock("@/utils/auth/auth", () => ({ auth: vi.fn() }));
+
 	vi.mock("@/pino", () => ({
 		loggerInfo: vi.fn(),
 		loggerWarn: vi.fn(),
@@ -28,23 +30,6 @@ beforeEach(() => {
 	vi.mock("server-only", () => {
 		return {};
 	});
-
-	vi.mock("@/prisma", () => ({
-		default: {
-			categories: { upsert: vi.fn() },
-			news: {
-				create: vi.fn(),
-				findMany: vi.fn(),
-				findUnique: vi.fn(),
-				delete: vi.fn(),
-			},
-			contents: { create: vi.fn(), findMany: vi.fn() },
-			images: { create: vi.fn(), findMany: vi.fn(), updateMany: vi.fn() },
-			staticImages: { findMany: vi.fn() },
-			$transaction: vi.fn(),
-			$accelerate: { invalidate: vi.fn() },
-		},
-	}));
 
 	vi.mock("next/cache", () => ({
 		revalidatePath: vi.fn(),

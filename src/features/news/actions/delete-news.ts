@@ -4,8 +4,8 @@ import { revalidatePath } from "next/cache";
 import { forbidden } from "next/navigation";
 import { UnexpectedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
+import { newsRepository } from "@/features/news/repositories/news-repository";
 import { loggerInfo } from "@/pino";
-import prisma from "@/prisma";
 import type { ServerAction } from "@/types";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
 import { sendPushoverMessage } from "@/utils/notification/fetch-message";
@@ -18,16 +18,12 @@ export async function deleteNews(id: number): Promise<ServerAction<number>> {
 		const userId = await getSelfId();
 
 		// Check if the news item exists and belongs to the user
-		const newsItem = await prisma.news.findUnique({
-			where: { id, userId },
-		});
+		const newsItem = await newsRepository.findByIdAndUserId(id, userId);
 
 		if (!newsItem) throw new UnexpectedError();
 
 		// Delete the news item
-		await prisma.news.delete({
-			where: { id, userId },
-		});
+		await newsRepository.deleteByIdAndUserId(id, userId);
 
 		const message = `Deleted news: ${newsItem.title}`;
 		loggerInfo(message, {

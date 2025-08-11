@@ -1,13 +1,11 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import prisma from "@/prisma";
+import { staticBooksRepository } from "@/features/books/repositories/static-books-repository";
 import { getAllStaticBooks, getStaticBooksCount } from "./static-books";
 
-vi.mock("@/prisma", () => ({
-	default: {
-		staticBooks: {
-			findMany: vi.fn(),
-			count: vi.fn(),
-		},
+vi.mock("@/features/books/repositories/static-books-repository", () => ({
+	staticBooksRepository: {
+		findAll: vi.fn(),
+		count: vi.fn(),
 	},
 }));
 
@@ -20,25 +18,22 @@ describe("static-books", () => {
 		test("should fetch and transform static books correctly", async () => {
 			const mockBooks = [
 				{
-					ISBN: "978-0123456789",
 					title: "Test Book 1",
-					googleImgSrc: "https://example.com/image-1.jpg",
+					href: "978-0123456789",
+					image: "https://example.com/image-1.jpg",
 				},
 				{
-					ISBN: "978-0987654321",
 					title: "Test Book 2",
-					googleImgSrc: "https://example.com/image-2.jpg",
+					href: "978-0987654321",
+					image: "https://example.com/image-2.jpg",
 				},
 			];
 
-			vi.mocked(prisma.staticBooks.findMany).mockResolvedValue(mockBooks);
+			vi.mocked(staticBooksRepository.findAll).mockResolvedValue(mockBooks);
 
 			const result = await getAllStaticBooks();
 
-			expect(prisma.staticBooks.findMany).toHaveBeenCalledWith({
-				select: { ISBN: true, title: true, googleImgSrc: true },
-				cacheStrategy: { ttl: 400, tags: ["staticBooks"] },
-			});
+			expect(staticBooksRepository.findAll).toHaveBeenCalled();
 
 			expect(result).toEqual([
 				{
@@ -55,7 +50,7 @@ describe("static-books", () => {
 		});
 
 		test("should handle empty results", async () => {
-			vi.mocked(prisma.staticBooks.findMany).mockResolvedValue([]);
+			vi.mocked(staticBooksRepository.findAll).mockResolvedValue([]);
 
 			const result = await getAllStaticBooks();
 
@@ -63,7 +58,7 @@ describe("static-books", () => {
 		});
 
 		test("should handle database errors", async () => {
-			vi.mocked(prisma.staticBooks.findMany).mockRejectedValue(
+			vi.mocked(staticBooksRepository.findAll).mockRejectedValue(
 				new Error("Database error"),
 			);
 
@@ -73,16 +68,16 @@ describe("static-books", () => {
 
 	describe("getStaticBooksCount", () => {
 		test("should return count of static books", async () => {
-			vi.mocked(prisma.staticBooks.count).mockResolvedValue(42);
+			vi.mocked(staticBooksRepository.count).mockResolvedValue(42);
 
 			const result = await getStaticBooksCount();
 
-			expect(prisma.staticBooks.count).toHaveBeenCalledWith({});
+			expect(staticBooksRepository.count).toHaveBeenCalled();
 			expect(result).toBe(42);
 		});
 
 		test("should return 0 for empty collection", async () => {
-			vi.mocked(prisma.staticBooks.count).mockResolvedValue(0);
+			vi.mocked(staticBooksRepository.count).mockResolvedValue(0);
 
 			const result = await getStaticBooksCount();
 
@@ -90,7 +85,7 @@ describe("static-books", () => {
 		});
 
 		test("should handle database errors", async () => {
-			vi.mocked(prisma.staticBooks.count).mockRejectedValue(
+			vi.mocked(staticBooksRepository.count).mockRejectedValue(
 				new Error("Database error"),
 			);
 

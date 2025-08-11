@@ -1,5 +1,5 @@
 import { StatusCodeView } from "@/components/card/status-code-view";
-import { addImage } from "@/features/image/actions/add-image";
+import { addImage } from "@/features/images/actions/add-image";
 import { loggerError } from "@/pino";
 import { hasDumperPostPermission } from "@/utils/auth/session";
 import { AddImageFormClient } from "./client";

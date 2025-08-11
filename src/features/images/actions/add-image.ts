@@ -9,12 +9,10 @@ import {
 	THUMBNAIL_IMAGE_PATH,
 	THUMBNAIL_WIDTH,
 } from "@/constants";
-import { env } from "@/env";
 import { FileNotAllowedError, UnexpectedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
-import { minioClient } from "@/minio";
+import { imageRepository } from "@/features/images/repositories/image-repository";
 import { loggerInfo } from "@/pino";
-import prisma from "@/prisma";
 import type { ServerAction } from "@/types";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
 import { sendPushoverMessage } from "@/utils/notification/fetch-message";
@@ -46,7 +44,7 @@ export async function addImage(
 		const metadata = await sharp(buffer).metadata();
 
 		const originalPath = `${ORIGINAL_IMAGE_PATH}/${id}`;
-		await minioClient.putObject(env.MINIO_BUCKET_NAME, originalPath, buffer);
+		await imageRepository.uploadToStorage(originalPath, buffer);
 
 		const thumbnailBuffer = await sharp(buffer)
 			.resize(
@@ -55,22 +53,15 @@ export async function addImage(
 			)
 			.toBuffer();
 		const thumbnailPath = `${THUMBNAIL_IMAGE_PATH}/${id}`;
-		await minioClient.putObject(
-			env.MINIO_BUCKET_NAME,
-			thumbnailPath,
-			thumbnailBuffer,
-		);
+		await imageRepository.uploadToStorage(thumbnailPath, thumbnailBuffer);
 
-		const createdImage = await prisma.images.create({
-			data: {
-				id,
-				userId,
-				contentType: file.type,
-				fileSize: metadata.size,
-				width: metadata.width,
-				height: metadata.height,
-			},
-			select: { id: true },
+		const createdImage = await imageRepository.create({
+			id,
+			userId,
+			contentType: file.type,
+			fileSize: metadata.size,
+			width: metadata.width,
+			height: metadata.height,
 		});
 
 		const message = formatCreateImageMessage({ fileName: createdImage.id });
@@ -78,7 +69,7 @@ export async function addImage(
 
 		await sendPushoverMessage(message);
 		revalidatePath("/(dumper)");
-		await prisma.$accelerate.invalidate({ tags: ["images"] });
+		await imageRepository.invalidateCache();
 
 		return {
 			success: true,
