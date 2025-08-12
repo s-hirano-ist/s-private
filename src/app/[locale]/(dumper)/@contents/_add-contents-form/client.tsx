@@ -35,7 +35,7 @@ export function AddContentsFormClient({ addContents }: Props) {
 						<Input autoComplete="off" id="title" name="title" required />
 					</div>
 					<div className="space-y-1">
-						<Label htmlFor="markdown">{label("markdown")}</Label>
+						<Label htmlFor="markdown">{label("description")}</Label>
 						<Textarea autoComplete="off" id="markdown" name="markdown" />
 					</div>
 				</>
