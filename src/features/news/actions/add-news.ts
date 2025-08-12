@@ -40,10 +40,7 @@ export async function addNews(formData: FormData): Promise<ServerAction<News>> {
 
 		const createdNews = await newsCommandRepository.create({
 			userId,
-			title: validatedNews.title,
-			url: validatedNews.url,
-			quote: validatedNews.quote,
-			categoryId: validatedNews.categoryId,
+			...validatedNews,
 		});
 
 		const message = formatCreateNewsMessage(createdNews);
