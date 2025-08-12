@@ -1,5 +1,5 @@
+import { ContentsPagination } from "@/components/contents-pagination";
 import { CountBadge } from "@/components/count-badge";
-import { Pagination } from "@/components/stack/pagination";
 
 type Props = {
 	page: number;
@@ -10,7 +10,7 @@ export function NewsCounterClient({ page, totalNews }: Props) {
 	return (
 		<>
 			<CountBadge label="totalNews" total={totalNews} />
-			<Pagination currentPage={page} totalPages={totalNews} />
+			<ContentsPagination currentPage={page} totalPages={totalNews} />
 		</>
 	);
 }

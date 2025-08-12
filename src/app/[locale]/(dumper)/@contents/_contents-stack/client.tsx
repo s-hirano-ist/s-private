@@ -1,7 +1,9 @@
-import { CardStack, CardStackData } from "@/components/stack/card-stack";
+"use client";
+import { LinkCardData } from "@/components/card/link-card";
+import { LinkCardStack } from "@/components/card/link-card-stack";
 
-type Props = { cardStackData: CardStackData };
+type Props = { data: LinkCardData[] };
 
-export function ContentsStackClient({ cardStackData }: Props) {
-	return <CardStack data={cardStackData} showDeleteButton={false} />;
+export function ContentsStackClient({ data }: Props) {
+	return <LinkCardStack data={data} showDeleteButton={false} />;
 }

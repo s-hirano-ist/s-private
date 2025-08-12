@@ -1,47 +1,41 @@
 import { cache } from "react";
-import type { StaticBooks, StaticContents } from "@/generated";
+import type { Books, Contents } from "@/generated";
 import prisma from "@/prisma";
 
 export type IKnowledgeRepository = {
-	findAllStaticContents(): Promise<StaticContentsForKnowledge[]>;
-	findAllStaticBooks(): Promise<StaticBooksForKnowledge[]>;
-	findStaticContentByTitle(
-		title: string,
-	): Promise<StaticContentsForKnowledge | null>;
+	findAllContents(): Promise<ContentsForKnowledge[]>;
+	findAllBooks(): Promise<BooksForKnowledge[]>;
+	findContentByTitle(title: string): Promise<ContentsForKnowledge | null>;
 };
 
-type StaticContentsForKnowledge = Pick<StaticContents, "title" | "markdown">;
-type StaticBooksForKnowledge = Pick<StaticBooks, "title" | "markdown" | "ISBN">;
+type ContentsForKnowledge = Pick<Contents, "title" | "markdown">;
+type BooksForKnowledge = Pick<Books, "title" | "markdown" | "ISBN">;
 
 export class KnowledgeRepository implements IKnowledgeRepository {
-	private _findAllStaticContents = async (): Promise<
-		StaticContentsForKnowledge[]
-	> => {
-		return await prisma.staticContents.findMany({
+	private _findAllContents = async (): Promise<ContentsForKnowledge[]> => {
+		return await prisma.contents.findMany({
 			select: { title: true, markdown: true },
-			cacheStrategy: { ttl: 400, tags: ["staticContents"] },
+			cacheStrategy: { ttl: 400, tags: ["contents"] },
 		});
 	};
 
-	private _findAllStaticBooks = async (): Promise<
-		StaticBooksForKnowledge[]
-	> => {
-		return await prisma.staticBooks.findMany({
+	private _findAllBooks = async (): Promise<BooksForKnowledge[]> => {
+		return await prisma.books.findMany({
 			select: { title: true, markdown: true, ISBN: true },
-			cacheStrategy: { ttl: 400, tags: ["staticBooks"] },
+			cacheStrategy: { ttl: 400, tags: ["books"] },
 		});
 	};
 
-	findAllStaticContents = cache(this._findAllStaticContents);
-	findAllStaticBooks = cache(this._findAllStaticBooks);
+	findAllContents = cache(this._findAllContents);
+	findAllBooks = cache(this._findAllBooks);
 
-	async findStaticContentByTitle(
+	async findContentByTitle(
 		title: string,
-	): Promise<StaticContentsForKnowledge | null> {
-		return await prisma.staticContents.findUnique({
+	): Promise<ContentsForKnowledge | null> {
+		return await prisma.contents.findUnique({
 			where: { title },
 			select: { title: true, markdown: true },
-			cacheStrategy: { ttl: 400, tags: ["staticContents"] },
+			cacheStrategy: { ttl: 400, tags: ["contents"] },
 		});
 	}
 }

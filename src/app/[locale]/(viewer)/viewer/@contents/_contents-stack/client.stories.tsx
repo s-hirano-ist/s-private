@@ -19,43 +19,49 @@ const svg = `
 const encoder = new TextEncoder();
 const image = encoder.encode(svg);
 
-const previewCardData = [
+const mockData = [
 	{
+		id: 1,
 		isbn: "1111111111",
 		href: "/example/1111111111",
 		title: "sample title 1",
-		image,
+		image: "https://picsum.photos/id/1/192/192",
 	},
 	{
+		id: 2,
 		isbn: "2222222222",
 		href: "/example/2222222222",
 		title: "sample title 2",
-		image,
+		image: "https://picsum.photos/id/1/192/192",
 	},
 	{
+		id: 3,
 		isbn: "3333333333",
 		href: "/example/3333333333",
 		title: "sample title 3",
-		image,
+		image: "https://picsum.photos/id/1/192/192",
 	},
 	{
+		id: 4,
 		isbn: "4444444444",
 		href: "/example/4444444444",
 		title: "sample title 4",
-		image,
+		image: "https://picsum.photos/id/1/192/192",
 	},
 	{
+		id: 5,
 		isbn: "5555555555",
 		href: "/example/5555555555",
 		title: "sample title 5",
-		image,
+		image: "https://picsum.photos/id/1/192/192",
 	},
 	{
+		id: 6,
 		isbn: "6666666666",
 		href: "/example/6666666666",
 		title: "sample title 6",
-		image,
+		image: "https://picsum.photos/id/1/192/192",
 	},
 ];
 
-export const Default: Story = { args: { previewCardData } };
+export const Default: Story = { args: { data: mockData } };

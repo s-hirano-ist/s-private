@@ -59,10 +59,10 @@ describe("formatCreateNewsMessage", () => {
 		const quote = "これは引用です";
 		const url = "https://example.com";
 
-		const result = formatCreateContentsMessage({ title, quote, url });
+		const result = formatCreateContentsMessage({ title, markdown: quote });
 
 		expect(result).toBe(
-			"【CONTENTS】\n\nコンテンツ\ntitle: 新しいニュース \nquote: これは引用です \nurl: https://example.com\nの登録ができました",
+			"【CONTENTS】\n\nコンテンツ\ntitle: 新しいニュース \nquote: これは引用です\nの登録ができました",
 		);
 	});
 });

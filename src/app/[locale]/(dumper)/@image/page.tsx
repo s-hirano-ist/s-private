@@ -1,6 +1,5 @@
 import { Suspense } from "react";
-import Loading from "@/components/loading";
-import { ImageStackSkeleton } from "@/components/stack/image-stack-skeleton";
+import { ImageStackSkeleton } from "@/components/image/image-stack-skeleton";
 import { Separator } from "@/components/ui/separator";
 import { AddImageForm } from "./_add-image-form/server";
 import { ImageStack } from "./_image-stack/server";

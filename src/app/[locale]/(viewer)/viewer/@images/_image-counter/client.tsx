@@ -1,5 +1,5 @@
+import { ContentsPagination } from "@/components/contents-pagination";
 import { CountBadge } from "@/components/count-badge";
-import { Pagination } from "@/components/stack/pagination";
 
 type Props = {
 	page: number;
@@ -10,7 +10,7 @@ export function ImageCounterClient({ page, totalImages }: Props) {
 	return (
 		<>
 			<CountBadge label="totalImages" total={totalImages} />
-			<Pagination currentPage={page} totalPages={totalImages} />
+			<ContentsPagination currentPage={page} totalPages={totalImages} />
 		</>
 	);
 }

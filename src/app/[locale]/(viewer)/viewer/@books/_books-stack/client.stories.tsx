@@ -21,10 +21,10 @@ const mockData = [
 	{
 		href: "0011223344",
 		title: "sample title",
-		image,
+		image: "https://picsum.photos/id/1/192/192",
 	},
 ];
 
 export const Default: Story = {
-	args: { previewCardData: mockData },
+	args: { data: mockData },
 };

@@ -1,5 +1,4 @@
 "use client";
-import { ClipboardPasteIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useActionState, useRef } from "react";
 import { toast } from "sonner";
@@ -14,8 +13,6 @@ type Props = {
 };
 
 export function AddContentsFormClient({ addContents }: Props) {
-	const urlInputReference = useRef<HTMLInputElement>(null);
-
 	const label = useTranslations("label");
 	const message = useTranslations("message");
 
@@ -26,12 +23,6 @@ export function AddContentsFormClient({ addContents }: Props) {
 	};
 
 	const [_, addContentsAction, isPending] = useActionState(submitForm, null);
-
-	const handlePasteClick = async () => {
-		const clipboardText = await navigator.clipboard.readText();
-		if (urlInputReference.current !== null)
-			urlInputReference.current.value = clipboardText;
-	};
 
 	return (
 		<form action={addContentsAction} className="space-y-4 px-2 py-4">
@@ -44,30 +35,8 @@ export function AddContentsFormClient({ addContents }: Props) {
 						<Input autoComplete="off" id="title" name="title" required />
 					</div>
 					<div className="space-y-1">
-						<Label htmlFor="quote">{label("description")}</Label>
-						<Textarea autoComplete="off" id="quote" name="quote" />
-					</div>
-					<div className="space-y-1">
-						<Label htmlFor="url">{label("url")}</Label>
-						<div className="flex space-x-2 px-2">
-							<Input
-								autoComplete="off"
-								id="url"
-								inputMode="url"
-								name="url"
-								ref={urlInputReference}
-								required
-								type="url"
-							/>
-							<Button
-								data-testid="paste-button"
-								onClick={handlePasteClick}
-								type="button"
-								variant="ghost"
-							>
-								<ClipboardPasteIcon />
-							</Button>
-						</div>
+						<Label htmlFor="markdown">{label("markdown")}</Label>
+						<Textarea autoComplete="off" id="markdown" name="markdown" />
 					</div>
 				</>
 			)}

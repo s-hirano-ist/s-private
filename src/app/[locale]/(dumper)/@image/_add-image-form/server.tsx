@@ -1,4 +1,4 @@
-import { StatusCodeView } from "@/components/card/status-code-view";
+import { StatusCodeView } from "@/components/status/status-code-view";
 import { addImage } from "@/features/images/actions/add-image";
 import { loggerError } from "@/pino";
 import { hasDumperPostPermission } from "@/utils/auth/session";

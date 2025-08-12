@@ -28,12 +28,10 @@ const mockUnauthorizedSession = null;
 const mockFormData = new FormData();
 mockFormData.append("title", "Example Content");
 mockFormData.append("quote", "This is an example content quote.");
-mockFormData.append("url", "https://example.com");
 const mockCreatedContents = {
 	id: 1,
 	title: "Example Content",
-	quote: "This is an example content quote.",
-	url: "https://example.com",
+	markdown: "This is an example content quote.",
 };
 
 describe("addContents", () => {
@@ -54,12 +52,12 @@ describe("addContents", () => {
 		vi.mocked(contentsRepository.create).mockResolvedValue({
 			id: 1,
 			title: "Example Content",
-			quote: "This is an example content quote.",
-			url: "https://example.com",
+			markdown: "This is an example content quote.",
 			userId: "1",
 			status: "UNEXPORTED",
 			createdAt: new Date(),
 			updatedAt: new Date(),
+			exportedAt: new Date(),
 		});
 
 		const result = await addContents(mockFormData);

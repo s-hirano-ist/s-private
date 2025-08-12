@@ -1,6 +1,7 @@
 import { forbidden } from "next/navigation";
-import { StatusCodeView } from "@/components/card/status-code-view";
+import { StatusCodeView } from "@/components/status/status-code-view";
 import { PAGE_SIZE } from "@/constants";
+import { loggerError } from "@/pino";
 import prisma from "@/prisma";
 import { hasViewerAdminPermission } from "@/utils/auth/session";
 import { AllImageStackClient } from "./client";
@@ -12,16 +13,17 @@ export async function AllImageStack({ page }: Props) {
 	if (!hasAdminPermission) forbidden();
 
 	try {
-		const images = await prisma.staticImages.findMany({
+		const images = await prisma.images.findMany({
 			select: { id: true, width: true, height: true },
 			orderBy: { id: "desc" },
 			skip: (page - 1) * PAGE_SIZE,
 			take: PAGE_SIZE,
-			cacheStrategy: { ttl: 400, swr: 40, tags: ["staticImages"] },
+			cacheStrategy: { ttl: 400, swr: 40, tags: ["images"] },
 		});
 
-		return <AllImageStackClient images={images} />;
+		return <AllImageStackClient data={images} />;
 	} catch (error) {
+		loggerError("unexpected", { caller: "NewsStack", status: 500 }, error);
 		return <StatusCodeView statusCode="500" />;
 	}
 }

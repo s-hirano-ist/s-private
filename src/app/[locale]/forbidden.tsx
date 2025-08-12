@@ -1,4 +1,4 @@
-import { Forbidden } from "@/components/card/forbidden";
+import { Forbidden } from "@/components/status/forbidden";
 
 export default async function ForbiddenPage() {
 	return <Forbidden />;

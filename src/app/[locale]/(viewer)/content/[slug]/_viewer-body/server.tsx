@@ -1,7 +1,7 @@
 import { forbidden } from "next/navigation";
 import { ViewerBodyClient } from "@/components/body/viewer-body";
-import { NotFound } from "@/components/card/not-found";
-import { StatusCodeView } from "@/components/card/status-code-view";
+import { NotFound } from "@/components/status/not-found";
+import { StatusCodeView } from "@/components/status/status-code-view";
 import prisma from "@/prisma";
 import { hasViewerAdminPermission } from "@/utils/auth/session";
 
@@ -12,10 +12,10 @@ export async function ViewerBody({ slug }: Props) {
 	if (!hasAdminPermission) forbidden();
 
 	try {
-		const data = await prisma.staticContents.findUnique({
+		const data = await prisma.contents.findUnique({
 			where: { title: slug },
 			select: { markdown: true },
-			cacheStrategy: { ttl: 400, tags: ["staticContents"] },
+			cacheStrategy: { ttl: 400, tags: ["contents"] },
 		});
 		if (!data) return <NotFound />;
 		return <ViewerBodyClient markdown={data.markdown} />;

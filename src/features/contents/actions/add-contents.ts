@@ -13,9 +13,8 @@ import { formatCreateContentsMessage } from "@/utils/notification/format-for-not
 
 type Contents = {
 	id: number;
-	quote: string | null;
+	markdown: string;
 	title: string;
-	url: string;
 };
 
 export async function addContents(
@@ -31,14 +30,13 @@ export async function addContents(
 		const createdContents = await contentsRepository.create({
 			userId,
 			title: validatedContents.title,
-			url: validatedContents.url,
-			quote: validatedContents.quote,
+			markdown: validatedContents.markdown,
 		});
-		const message = formatCreateContentsMessage(createdContents);
-		loggerInfo(message, {
-			caller: "addContents",
-			status: 200,
+		const message = formatCreateContentsMessage({
+			title: createdContents.title,
+			markdown: createdContents.markdown,
 		});
+		loggerInfo(message, { caller: "addContents", status: 200 });
 		await sendPushoverMessage(message);
 		revalidatePath("/(dumper)");
 
@@ -48,8 +46,7 @@ export async function addContents(
 			data: {
 				id: createdContents.id,
 				title: createdContents.title,
-				quote: createdContents.quote,
-				url: createdContents.url,
+				markdown: createdContents.markdown,
 			},
 		};
 	} catch (error) {

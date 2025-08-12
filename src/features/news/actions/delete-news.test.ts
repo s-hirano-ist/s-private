@@ -45,6 +45,9 @@ describe("deleteNews", () => {
 				id: 1,
 				name: "Test Category",
 			},
+			ogTitle: "sample og title 1",
+			ogDescription: "sample og description 1",
+			ogImageUrl: "https://example.com/1",
 		};
 
 		vi.mocked(newsRepository.findByIdAndUserId).mockResolvedValueOnce(

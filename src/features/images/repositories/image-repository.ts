@@ -15,7 +15,6 @@ export type IImageRepository = {
 		toStatus: Status,
 	): Promise<number>;
 	delete(id: string): Promise<void>;
-	softDelete(id: string): Promise<Images>;
 	findByStatus(status: Status, userId: string): Promise<Images[]>;
 	invalidateCache(): Promise<void>;
 	uploadToStorage(path: string, buffer: Buffer): Promise<void>;
@@ -89,16 +88,9 @@ export class ImageRepository implements IImageRepository {
 		});
 	}
 
-	async softDelete(id: string): Promise<Images> {
-		return await prisma.images.update({
-			where: { id },
-			data: { deletedAt: new Date() },
-		});
-	}
-
 	async findByStatus(status: Status, userId: string): Promise<Images[]> {
 		return await prisma.images.findMany({
-			where: { status, userId, deletedAt: null },
+			where: { status, userId },
 			orderBy: { createdAt: "desc" },
 		});
 	}

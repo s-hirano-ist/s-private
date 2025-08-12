@@ -11,6 +11,7 @@ import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { type ReactNode, Suspense, useState } from "react";
+import { UtilButtons } from "@/components/nav/util-buttons";
 import { Button } from "@/components/ui/button";
 import {
 	Drawer,
@@ -20,7 +21,6 @@ import {
 	DrawerTitle,
 	DrawerTrigger,
 } from "@/components/ui/drawer";
-import { UtilButtons } from "@/components/util-buttons";
 import { Link } from "@/i18n/routing";
 import { cn } from "@/utils/tailwind/tailwindcss";
 
