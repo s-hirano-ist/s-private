@@ -1,6 +1,6 @@
 import { StatusCodeView } from "@/components/status/status-code-view";
+import { contentsQueryRepository } from "@/features/contents/repositories/contents-query-repository";
 import { loggerError } from "@/pino";
-import prisma from "@/prisma";
 import { getSelfId } from "@/utils/auth/session";
 import { ContentsStackClient } from "./client";
 
@@ -9,15 +9,7 @@ export async function ContentsStack() {
 		const userId = await getSelfId();
 
 		const unexportedContents = (
-			await prisma.contents.findMany({
-				where: { status: "UNEXPORTED", userId },
-				select: {
-					id: true,
-					title: true,
-					markdown: true,
-				},
-				orderBy: { title: "desc" },
-			})
+			await contentsQueryRepository.findByStatusAndUserId("UNEXPORTED", userId)
 		).map((d) => {
 			return {
 				id: d.id,

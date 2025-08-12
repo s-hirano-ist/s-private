@@ -1,6 +1,6 @@
 import { cache } from "react";
-import { booksRepository } from "@/features/books/repositories/books-repository";
+import { booksQueryRepository } from "@/features/books/repositories/books-query-repository";
 
-export const getAllBooks = cache(booksRepository.findAll);
+export const getAllBooks = cache(booksQueryRepository.findAll);
 
-export const getBooksCount = cache(booksRepository.count);
+export const getBooksCount = cache(booksQueryRepository.count);

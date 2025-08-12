@@ -1,6 +1,6 @@
 import { cache } from "react";
-import { contentsRepository } from "@/features/contents/repositories/contents-repository";
+import { contentsQueryRepository } from "@/features/contents/repositories/contents-query-repository";
 
-export const getAllContents = cache(contentsRepository.findAll);
+export const getAllContents = cache(contentsQueryRepository.findAll);
 
-export const getContentsCount = cache(contentsRepository.count);
+export const getContentsCount = cache(contentsQueryRepository.count);

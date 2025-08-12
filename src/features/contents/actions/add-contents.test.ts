@@ -1,7 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { Session } from "next-auth";
 import { describe, expect, Mock, test, vi } from "vitest";
-import { contentsRepository } from "@/features/contents/repositories/contents-repository";
+import { contentsCommandRepository } from "@/features/contents/repositories/contents-command-repository";
 import { auth } from "@/utils/auth/auth";
 import { addContents } from "./add-contents";
 
@@ -9,8 +9,8 @@ vi.mock("@/utils/notification/fetch-message", () => ({
 	sendPushoverMessage: vi.fn(),
 }));
 
-vi.mock("@/features/contents/repositories/contents-repository", () => ({
-	contentsRepository: {
+vi.mock("@/features/contents/repositories/contents-command-repository", () => ({
+	contentsCommandRepository: {
 		create: vi.fn(),
 	},
 }));
@@ -49,7 +49,7 @@ describe("addContents", () => {
 
 	test("should create contents", async () => {
 		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
-		vi.mocked(contentsRepository.create).mockResolvedValue({
+		vi.mocked(contentsCommandRepository.create).mockResolvedValue({
 			id: 1,
 			title: "Example Content",
 			markdown: "This is an example content quote.",
@@ -63,7 +63,7 @@ describe("addContents", () => {
 		const result = await addContents(mockFormData);
 
 		expect(auth).toHaveBeenCalledTimes(2); // check permission & getSelfId
-		expect(contentsRepository.create).toHaveBeenCalled();
+		expect(contentsCommandRepository.create).toHaveBeenCalled();
 		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 		expect(result).toEqual({
 			success: true,

@@ -3,7 +3,7 @@ import "server-only";
 import { revalidatePath } from "next/cache";
 import { forbidden } from "next/navigation";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
-import { contentsRepository } from "@/features/contents/repositories/contents-repository";
+import { contentsCommandRepository } from "@/features/contents/repositories/contents-command-repository";
 import { validateContents } from "@/features/contents/utils/validate-contents";
 import { loggerInfo } from "@/pino";
 import type { ServerAction } from "@/types";
@@ -27,7 +27,7 @@ export async function addContents(
 		const userId = await getSelfId();
 		const validatedContents = validateContents(formData);
 
-		const createdContents = await contentsRepository.create({
+		const createdContents = await contentsCommandRepository.create({
 			userId,
 			title: validatedContents.title,
 			markdown: validatedContents.markdown,

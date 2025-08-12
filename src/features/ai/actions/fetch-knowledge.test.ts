@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { knowledgeRepository } from "@/features/ai/repositories/knowledge-repository";
+import { knowledgeQueryRepository } from "@/features/ai/repositories/knowledge-query-repository";
 import {
 	fetchAllKnowledge,
 	fetchContentByTitle,
@@ -7,8 +7,8 @@ import {
 	getAllContentsForKnowledge,
 } from "./fetch-knowledge";
 
-vi.mock("@/features/ai/repositories/knowledge-repository", () => ({
-	knowledgeRepository: {
+vi.mock("@/features/ai/repositories/knowledge-query-repository", () => ({
+	knowledgeQueryRepository: {
 		findAllContents: vi.fn(),
 		findAllBooks: vi.fn(),
 		findContentByTitle: vi.fn(),
@@ -27,18 +27,18 @@ describe("fetch-knowledge", () => {
 				{ title: "Test Content 2", markdown: "Content 2 markdown" },
 			];
 
-			vi.mocked(knowledgeRepository.findAllContents).mockResolvedValue(
+			vi.mocked(knowledgeQueryRepository.findAllContents).mockResolvedValue(
 				mockContents,
 			);
 
 			const result = await getAllContentsForKnowledge();
 
-			expect(knowledgeRepository.findAllContents).toHaveBeenCalled();
+			expect(knowledgeQueryRepository.findAllContents).toHaveBeenCalled();
 			expect(result).toEqual(mockContents);
 		});
 
 		test("should handle empty results", async () => {
-			vi.mocked(knowledgeRepository.findAllContents).mockResolvedValue([]);
+			vi.mocked(knowledgeQueryRepository.findAllContents).mockResolvedValue([]);
 
 			const result = await getAllContentsForKnowledge();
 
@@ -53,16 +53,18 @@ describe("fetch-knowledge", () => {
 				{ title: "Test Book 2", markdown: "Book 2 markdown" },
 			];
 
-			vi.mocked(knowledgeRepository.findAllBooks).mockResolvedValue(mockBooks);
+			vi.mocked(knowledgeQueryRepository.findAllBooks).mockResolvedValue(
+				mockBooks,
+			);
 
 			const result = await getAllBooksForKnowledge();
 
-			expect(knowledgeRepository.findAllBooks).toHaveBeenCalled();
+			expect(knowledgeQueryRepository.findAllBooks).toHaveBeenCalled();
 			expect(result).toEqual(mockBooks);
 		});
 
 		test("should handle empty results", async () => {
-			vi.mocked(knowledgeRepository.findAllBooks).mockResolvedValue([]);
+			vi.mocked(knowledgeQueryRepository.findAllBooks).mockResolvedValue([]);
 
 			const result = await getAllBooksForKnowledge();
 
@@ -88,10 +90,12 @@ describe("fetch-knowledge", () => {
 				{ title: "Book 2", markdown: "Book 2 markdown", ISBN: "0000000001" },
 			];
 
-			vi.mocked(knowledgeRepository.findAllContents).mockResolvedValue(
+			vi.mocked(knowledgeQueryRepository.findAllContents).mockResolvedValue(
 				mockContents,
 			);
-			vi.mocked(knowledgeRepository.findAllBooks).mockResolvedValue(mockBooks);
+			vi.mocked(knowledgeQueryRepository.findAllBooks).mockResolvedValue(
+				mockBooks,
+			);
 
 			const result = await fetchAllKnowledge();
 
@@ -128,8 +132,8 @@ describe("fetch-knowledge", () => {
 		});
 
 		test("should handle empty contents and books", async () => {
-			vi.mocked(knowledgeRepository.findAllContents).mockResolvedValue([]);
-			vi.mocked(knowledgeRepository.findAllBooks).mockResolvedValue([]);
+			vi.mocked(knowledgeQueryRepository.findAllContents).mockResolvedValue([]);
+			vi.mocked(knowledgeQueryRepository.findAllBooks).mockResolvedValue([]);
 
 			const result = await fetchAllKnowledge();
 
@@ -141,10 +145,10 @@ describe("fetch-knowledge", () => {
 				{ title: "Content 1", markdown: "Content 1 markdown" },
 			];
 
-			vi.mocked(knowledgeRepository.findAllContents).mockResolvedValue(
+			vi.mocked(knowledgeQueryRepository.findAllContents).mockResolvedValue(
 				mockContents,
 			);
-			vi.mocked(knowledgeRepository.findAllBooks).mockResolvedValue([]);
+			vi.mocked(knowledgeQueryRepository.findAllBooks).mockResolvedValue([]);
 
 			const result = await fetchAllKnowledge();
 
@@ -164,8 +168,10 @@ describe("fetch-knowledge", () => {
 				{ title: "Book 1", markdown: "Book 1 markdown", ISBN: "0123456789" },
 			];
 
-			vi.mocked(knowledgeRepository.findAllContents).mockResolvedValue([]);
-			vi.mocked(knowledgeRepository.findAllBooks).mockResolvedValue(mockBooks);
+			vi.mocked(knowledgeQueryRepository.findAllContents).mockResolvedValue([]);
+			vi.mocked(knowledgeQueryRepository.findAllBooks).mockResolvedValue(
+				mockBooks,
+			);
 
 			const result = await fetchAllKnowledge();
 
@@ -189,20 +195,22 @@ describe("fetch-knowledge", () => {
 				ISBN: "0001111",
 			};
 
-			vi.mocked(knowledgeRepository.findContentByTitle).mockResolvedValue(
+			vi.mocked(knowledgeQueryRepository.findContentByTitle).mockResolvedValue(
 				mockContent,
 			);
 
 			const result = await fetchContentByTitle("Test Content");
 
-			expect(knowledgeRepository.findContentByTitle).toHaveBeenCalledWith(
+			expect(knowledgeQueryRepository.findContentByTitle).toHaveBeenCalledWith(
 				"Test Content",
 			);
 			expect(result).toEqual(mockContent);
 		});
 
 		test("should return null for non-existent content", async () => {
-			vi.mocked(knowledgeRepository.findContentByTitle).mockResolvedValue(null);
+			vi.mocked(knowledgeQueryRepository.findContentByTitle).mockResolvedValue(
+				null,
+			);
 
 			const result = await fetchContentByTitle("Non-existent Content");
 
@@ -210,7 +218,7 @@ describe("fetch-knowledge", () => {
 		});
 
 		test("should handle database errors", async () => {
-			vi.mocked(knowledgeRepository.findContentByTitle).mockRejectedValue(
+			vi.mocked(knowledgeQueryRepository.findContentByTitle).mockRejectedValue(
 				new Error("Database error"),
 			);
 

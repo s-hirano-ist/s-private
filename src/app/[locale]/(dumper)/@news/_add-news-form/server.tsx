@@ -1,7 +1,7 @@
 import { StatusCodeView } from "@/components/status/status-code-view";
 import { addNews } from "@/features/news/actions/add-news";
+import { categoryQueryRepository } from "@/features/news/repositories/category-query-repository";
 import { loggerError } from "@/pino";
-import prisma from "@/prisma";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
 import { AddNewsFormClient } from "./client";
 
@@ -14,11 +14,7 @@ export async function AddNewsForm() {
 		const categories = await (async () => {
 			try {
 				const userId = await getSelfId();
-				return await prisma.categories.findMany({
-					where: { userId },
-					select: { id: true, name: true },
-					orderBy: { name: "asc" },
-				});
+				return await categoryQueryRepository.findByUserId(userId);
 			} catch (error) {
 				loggerError(
 					"unexpected",

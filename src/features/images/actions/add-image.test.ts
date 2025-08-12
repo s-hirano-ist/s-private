@@ -1,9 +1,9 @@
 import { revalidatePath } from "next/cache";
 import { Session } from "next-auth";
-import sharp, { Sharp } from "sharp";
+import sharp from "sharp";
 import { v7 as uuidv7 } from "uuid";
 import { describe, expect, Mock, test, vi } from "vitest";
-import { imageRepository } from "@/features/images/repositories/image-repository";
+import { imageCommandRepository } from "@/features/images/repositories/image-command-repository";
 import { auth } from "@/utils/auth/auth";
 import { addImage } from "./add-image";
 
@@ -11,33 +11,13 @@ vi.mock("@/utils/notification/fetch-message", () => ({
 	sendPushoverMessage: vi.fn(),
 }));
 
-vi.mock("uuid", () => ({ v7: vi.fn() }));
-
-vi.mock("@/features/images/repositories/image-repository", () => ({
-	imageRepository: {
+vi.mock("@/features/images/repositories/image-command-repository", () => ({
+	imageCommandRepository: {
 		create: vi.fn(),
 		uploadToStorage: vi.fn(),
 		invalidateCache: vi.fn(),
 	},
 }));
-
-type PartialSharp = Pick<Sharp, "metadata" | "resize" | "toBuffer">;
-vi.mock("sharp", () => {
-	return {
-		__esModule: true,
-		default: vi.fn(() => {
-			const mockSharp: PartialSharp = {
-				metadata: vi.fn().mockResolvedValue({
-					width: 800,
-					height: 600,
-				}),
-				resize: vi.fn().mockReturnThis(),
-				toBuffer: vi.fn().mockResolvedValue(Buffer.from("thumbnail")),
-			};
-			return mockSharp;
-		}),
-	};
-});
 
 const mockAllowedRoleSession: Session = {
 	user: { id: "1", roles: ["dumper"] },
@@ -90,7 +70,7 @@ describe("addImage", () => {
 			// eslint-disable-next-line
 		} as any);
 
-		vi.mocked(imageRepository.create).mockResolvedValue({
+		vi.mocked(imageCommandRepository.create).mockResolvedValue({
 			id: "generated-uuid-myImage.jpeg",
 			userId: "1",
 			contentType: "image/jpeg",
@@ -108,9 +88,9 @@ describe("addImage", () => {
 
 		const result = await addImage(mockFormData);
 
-		expect(imageRepository.uploadToStorage).toHaveBeenCalledTimes(2);
-		expect(imageRepository.create).toHaveBeenCalled();
-		expect(imageRepository.invalidateCache).toHaveBeenCalled();
+		expect(imageCommandRepository.uploadToStorage).toHaveBeenCalledTimes(2);
+		expect(imageCommandRepository.create).toHaveBeenCalled();
+		expect(imageCommandRepository.invalidateCache).toHaveBeenCalled();
 		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 		expect(result).toEqual({
 			success: true,

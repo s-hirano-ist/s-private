@@ -1,10 +1,11 @@
-import { knowledgeRepository } from "@/features/ai/repositories/knowledge-repository";
+import { knowledgeQueryRepository } from "@/features/ai/repositories/knowledge-query-repository";
 
 // Fetch all contents for RAG knowledge base
-export const getAllContentsForKnowledge = knowledgeRepository.findAllContents;
+export const getAllContentsForKnowledge =
+	knowledgeQueryRepository.findAllContents;
 
 // Fetch all books for RAG knowledge base
-export const getAllBooksForKnowledge = knowledgeRepository.findAllBooks;
+export const getAllBooksForKnowledge = knowledgeQueryRepository.findAllBooks;
 
 // Fetch all knowledge (both contents and books)
 export async function fetchAllKnowledge() {
@@ -31,5 +32,5 @@ export async function fetchAllKnowledge() {
 
 // Fetch a specific content by title
 export async function fetchContentByTitle(title: string) {
-	return await knowledgeRepository.findContentByTitle(title);
+	return await knowledgeQueryRepository.findContentByTitle(title);
 }

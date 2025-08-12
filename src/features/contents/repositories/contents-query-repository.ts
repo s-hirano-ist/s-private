@@ -1,27 +1,14 @@
 import type { Contents, Prisma, Status } from "@/generated";
 import prisma from "@/prisma";
 
-export type IContentsRepository = {
-	create(data: ContentsCreateInput): Promise<Contents>;
+export type IContentsQueryRepository = {
 	findById(id: number): Promise<Contents | null>;
 	findMany(params?: ContentsFindManyParams): Promise<Contents[]>;
-	updateStatus(id: number, status: Status): Promise<Contents>;
-	updateManyStatus(
-		userId: string,
-		fromStatus: Status,
-		toStatus: Status,
-	): Promise<number>;
-	delete(id: number): Promise<void>;
 	findByStatus(status: Status, userId: string): Promise<Contents[]>;
-	transaction<T>(fn: () => Promise<T>): Promise<T>;
+	findByStatusAndUserId(status: Status, userId: string): Promise<Contents[]>;
+	findByTitle(title: string): Promise<Contents | null>;
 	findAll(): Promise<ContentsWithImage[]>;
 	count(): Promise<number>;
-};
-
-type ContentsCreateInput = {
-	title: string;
-	markdown: string;
-	userId: string;
 };
 
 type ContentsFindManyParams = {
@@ -38,11 +25,7 @@ type ContentsWithImage = {
 	href: string;
 };
 
-export class ContentsRepository implements IContentsRepository {
-	async create(data: ContentsCreateInput): Promise<Contents> {
-		return await prisma.contents.create({ data });
-	}
-
+export class ContentsQueryRepository implements IContentsQueryRepository {
 	async findById(id: number): Promise<Contents | null> {
 		return await prisma.contents.findUnique({
 			where: { id },
@@ -53,31 +36,6 @@ export class ContentsRepository implements IContentsRepository {
 		return await prisma.contents.findMany(params);
 	}
 
-	async updateStatus(id: number, status: Status): Promise<Contents> {
-		return await prisma.contents.update({
-			where: { id },
-			data: { status },
-		});
-	}
-
-	async updateManyStatus(
-		userId: string,
-		fromStatus: Status,
-		toStatus: Status,
-	): Promise<number> {
-		const result = await prisma.contents.updateMany({
-			where: { status: fromStatus, userId },
-			data: { status: toStatus },
-		});
-		return result.count;
-	}
-
-	async delete(id: number): Promise<void> {
-		await prisma.contents.delete({
-			where: { id },
-		});
-	}
-
 	async findByStatus(status: Status, userId: string): Promise<Contents[]> {
 		return await prisma.contents.findMany({
 			where: { status, userId },
@@ -85,8 +43,21 @@ export class ContentsRepository implements IContentsRepository {
 		});
 	}
 
-	async transaction<T>(fn: () => Promise<T>): Promise<T> {
-		return await prisma.$transaction(fn);
+	async findByStatusAndUserId(
+		status: Status,
+		userId: string,
+	): Promise<Contents[]> {
+		return await prisma.contents.findMany({
+			where: { status, userId },
+			orderBy: { title: "desc" },
+		});
+	}
+
+	async findByTitle(title: string): Promise<Contents | null> {
+		return await prisma.contents.findUnique({
+			where: { title },
+			cacheStrategy: { ttl: 400, tags: ["contents"] },
+		});
 	}
 
 	findAll = async (): Promise<ContentsWithImage[]> => {
@@ -108,4 +79,4 @@ export class ContentsRepository implements IContentsRepository {
 	};
 }
 
-export const contentsRepository = new ContentsRepository();
+export const contentsQueryRepository = new ContentsQueryRepository();

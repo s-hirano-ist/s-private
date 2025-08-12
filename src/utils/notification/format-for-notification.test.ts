@@ -1,7 +1,6 @@
 import { describe, expect, test } from "vitest";
 import type { Status } from "@/types";
 import {
-	formatChangeStatusMessage,
 	formatCreateContentsMessage,
 	formatCreateImageMessage,
 	formatCreateNewsMessage,
@@ -16,21 +15,6 @@ describe("formatDeleteMessage", () => {
 		const result = formatDeleteMessage(id, contentName);
 
 		expect(result).toBe("【NEWS】\n\n更新\nID: 1");
-	});
-});
-
-describe("formatChangeStatusMessage", () => {
-	test("should format the change status message correctly", () => {
-		const changeStatus: Status = {
-			unexported: 5,
-			recentlyUpdated: 3,
-			exported: 7,
-		};
-		const contentName = "NEWS";
-
-		const result = formatChangeStatusMessage(changeStatus, contentName);
-
-		expect(result).toBe("【NEWS】\n\n更新\n未処理: 5\n直近更新: 3\n確定: 7");
 	});
 });
 

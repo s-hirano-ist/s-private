@@ -1,7 +1,9 @@
+import type { Books } from "@/generated";
 import prisma from "@/prisma";
 
-export type IBooksRepository = {
+export type IBooksQueryRepository = {
 	findAll(): Promise<BooksForDisplay[]>;
+	findByISBN(isbn: string): Promise<Books | null>;
 	count(): Promise<number>;
 };
 
@@ -11,7 +13,7 @@ type BooksForDisplay = {
 	image: string;
 };
 
-export class BooksRepository implements IBooksRepository {
+export class BooksQueryRepository implements IBooksQueryRepository {
 	findAll = async (): Promise<BooksForDisplay[]> => {
 		const books = await prisma.books.findMany({
 			select: { ISBN: true, title: true, googleImgSrc: true },
@@ -25,9 +27,16 @@ export class BooksRepository implements IBooksRepository {
 		}));
 	};
 
+	findByISBN = async (isbn: string): Promise<Books | null> => {
+		return await prisma.books.findUnique({
+			where: { ISBN: isbn },
+			cacheStrategy: { ttl: 400, tags: ["books"] },
+		});
+	};
+
 	count = async (): Promise<number> => {
 		return await prisma.books.count({});
 	};
 }
 
-export const booksRepository = new BooksRepository();
+export const booksQueryRepository = new BooksQueryRepository();
