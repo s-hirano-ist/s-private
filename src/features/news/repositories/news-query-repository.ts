@@ -10,7 +10,10 @@ export type INewsQueryRepository = {
 	): Promise<NewsWithCategory | null>;
 	findMany(params?: NewsFindManyParams): Promise<NewsWithCategory[]>;
 	findByStatus(status: Status, userId: string): Promise<NewsWithCategory[]>;
-	findByStatusAndUserIdWithCategory(status: Status, userId: string): Promise<NewsWithCategory[]>;
+	findByStatusAndUserIdWithCategory(
+		status: Status,
+		userId: string,
+	): Promise<NewsWithCategory[]>;
 	findExportedMany(page: number): Promise<NewsWithCategory[]>;
 	count(): Promise<number>;
 };
@@ -72,9 +75,7 @@ export class NewsQueryRepository implements INewsQueryRepository {
 	): Promise<NewsWithCategory[]> {
 		return await prisma.news.findMany({
 			where: { status, userId },
-			include: {
-				Category: true,
-			},
+			include: { Category: true },
 			orderBy: { createdAt: "desc" },
 		});
 	}

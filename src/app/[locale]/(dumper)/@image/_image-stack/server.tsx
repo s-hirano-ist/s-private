@@ -8,7 +8,10 @@ export async function ImageStack() {
 	try {
 		const userId = await getSelfId();
 
-		const images = await imageQueryRepository.findByStatusAndUserId("UNEXPORTED", userId);
+		const images = await imageQueryRepository.findByStatusAndUserId(
+			"UNEXPORTED",
+			userId,
+		);
 
 		return <ImageStackClient images={images} />;
 	} catch (error) {

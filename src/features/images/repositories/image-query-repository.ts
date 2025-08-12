@@ -45,7 +45,10 @@ export class ImageQueryRepository implements IImageQueryRepository {
 		});
 	}
 
-	async findByStatusAndUserId(status: Status, userId: string): Promise<Images[]> {
+	async findByStatusAndUserId(
+		status: Status,
+		userId: string,
+	): Promise<Images[]> {
 		return await prisma.images.findMany({
 			where: { userId, status },
 			orderBy: { id: "desc" },

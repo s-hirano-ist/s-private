@@ -1,14 +1,7 @@
-import type { ContentName, Status } from "@/types";
+import type { ContentName } from "@/types";
 
 export function formatDeleteMessage(id: number, contentName: ContentName) {
 	return `【${contentName}】\n\n更新\nID: ${id}`;
-}
-
-export function formatChangeStatusMessage(
-	status: Status,
-	contentName: ContentName,
-) {
-	return `【${contentName}】\n\n更新\n未処理: ${status.unexported}\n直近更新: ${status.recentlyUpdated}\n確定: ${status.exported}`;
 }
 
 export function formatCreateNewsMessage({

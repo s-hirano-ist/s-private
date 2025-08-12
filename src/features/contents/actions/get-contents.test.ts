@@ -29,7 +29,9 @@ describe("get-contents", () => {
 				},
 			];
 
-			vi.mocked(contentsQueryRepository.findAll).mockResolvedValue(mockContents);
+			vi.mocked(contentsQueryRepository.findAll).mockResolvedValue(
+				mockContents,
+			);
 
 			const result = await getAllContents();
 
@@ -74,7 +76,9 @@ describe("get-contents", () => {
 				},
 			];
 
-			vi.mocked(contentsQueryRepository.findAll).mockResolvedValue(mockContents);
+			vi.mocked(contentsQueryRepository.findAll).mockResolvedValue(
+				mockContents,
+			);
 
 			const result = await getAllContents();
 
@@ -96,7 +100,9 @@ describe("get-contents", () => {
 				},
 			];
 
-			vi.mocked(contentsQueryRepository.findAll).mockResolvedValue(mockContents);
+			vi.mocked(contentsQueryRepository.findAll).mockResolvedValue(
+				mockContents,
+			);
 
 			const result = await getAllContents();
 

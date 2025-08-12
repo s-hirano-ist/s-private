@@ -43,7 +43,10 @@ export class ContentsQueryRepository implements IContentsQueryRepository {
 		});
 	}
 
-	async findByStatusAndUserId(status: Status, userId: string): Promise<Contents[]> {
+	async findByStatusAndUserId(
+		status: Status,
+		userId: string,
+	): Promise<Contents[]> {
 		return await prisma.contents.findMany({
 			where: { status, userId },
 			orderBy: { title: "desc" },

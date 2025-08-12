@@ -1,7 +1,8 @@
 import { knowledgeQueryRepository } from "@/features/ai/repositories/knowledge-query-repository";
 
 // Fetch all contents for RAG knowledge base
-export const getAllContentsForKnowledge = knowledgeQueryRepository.findAllContents;
+export const getAllContentsForKnowledge =
+	knowledgeQueryRepository.findAllContents;
 
 // Fetch all books for RAG knowledge base
 export const getAllBooksForKnowledge = knowledgeQueryRepository.findAllBooks;

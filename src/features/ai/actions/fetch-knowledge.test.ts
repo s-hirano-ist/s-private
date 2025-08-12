@@ -53,7 +53,9 @@ describe("fetch-knowledge", () => {
 				{ title: "Test Book 2", markdown: "Book 2 markdown" },
 			];
 
-			vi.mocked(knowledgeQueryRepository.findAllBooks).mockResolvedValue(mockBooks);
+			vi.mocked(knowledgeQueryRepository.findAllBooks).mockResolvedValue(
+				mockBooks,
+			);
 
 			const result = await getAllBooksForKnowledge();
 
@@ -91,7 +93,9 @@ describe("fetch-knowledge", () => {
 			vi.mocked(knowledgeQueryRepository.findAllContents).mockResolvedValue(
 				mockContents,
 			);
-			vi.mocked(knowledgeQueryRepository.findAllBooks).mockResolvedValue(mockBooks);
+			vi.mocked(knowledgeQueryRepository.findAllBooks).mockResolvedValue(
+				mockBooks,
+			);
 
 			const result = await fetchAllKnowledge();
 
@@ -165,7 +169,9 @@ describe("fetch-knowledge", () => {
 			];
 
 			vi.mocked(knowledgeQueryRepository.findAllContents).mockResolvedValue([]);
-			vi.mocked(knowledgeQueryRepository.findAllBooks).mockResolvedValue(mockBooks);
+			vi.mocked(knowledgeQueryRepository.findAllBooks).mockResolvedValue(
+				mockBooks,
+			);
 
 			const result = await fetchAllKnowledge();
 
@@ -202,7 +208,9 @@ describe("fetch-knowledge", () => {
 		});
 
 		test("should return null for non-existent content", async () => {
-			vi.mocked(knowledgeQueryRepository.findContentByTitle).mockResolvedValue(null);
+			vi.mocked(knowledgeQueryRepository.findContentByTitle).mockResolvedValue(
+				null,
+			);
 
 			const result = await fetchContentByTitle("Non-existent Content");
 

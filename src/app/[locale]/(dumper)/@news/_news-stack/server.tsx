@@ -10,7 +10,10 @@ export async function NewsStack() {
 		const userId = await getSelfId();
 
 		const unexportedNews = (
-			await newsQueryRepository.findByStatusAndUserIdWithCategory("UNEXPORTED", userId)
+			await newsQueryRepository.findByStatusAndUserIdWithCategory(
+				"UNEXPORTED",
+				userId,
+			)
 		).map((d) => {
 			return {
 				id: d.id,

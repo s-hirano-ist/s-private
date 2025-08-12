@@ -53,7 +53,10 @@ export async function addImage(
 			)
 			.toBuffer();
 		const thumbnailPath = `${THUMBNAIL_IMAGE_PATH}/${id}`;
-		await imageCommandRepository.uploadToStorage(thumbnailPath, thumbnailBuffer);
+		await imageCommandRepository.uploadToStorage(
+			thumbnailPath,
+			thumbnailBuffer,
+		);
 
 		const createdImage = await imageCommandRepository.create({
 			id,
