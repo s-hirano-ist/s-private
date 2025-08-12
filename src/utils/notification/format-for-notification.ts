@@ -27,14 +27,12 @@ export function formatCreateNewsMessage({
 
 export function formatCreateContentsMessage({
 	title,
-	quote,
-	url,
+	markdown,
 }: {
-	quote: string | null;
+	markdown: string;
 	title: string;
-	url: string;
 }) {
-	return `【CONTENTS】\n\nコンテンツ\ntitle: ${title} \nquote: ${quote} \nurl: ${url}\nの登録ができました`;
+	return `【CONTENTS】\n\nコンテンツ\ntitle: ${title} \nquote: ${markdown}\nの登録ができました`;
 }
 
 export function formatCreateImageMessage({ fileName }: { fileName: string }) {

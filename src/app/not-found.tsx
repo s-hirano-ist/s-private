@@ -1,4 +1,4 @@
-import { NotFound } from "@/components/card/not-found";
+import { NotFound } from "@/components/status/not-found";
 
 export default function Page() {
 	return <NotFound />;

@@ -12,7 +12,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
 	args: {
-		images: [
+		data: [
 			{
 				id: "1",
 				width: 1920,
@@ -39,13 +39,13 @@ export const Default: Story = {
 
 export const EmptyImages: Story = {
 	args: {
-		images: [],
+		data: [],
 	},
 };
 
 export const SingleImage: Story = {
 	args: {
-		images: [
+		data: [
 			{
 				id: "1",
 				width: 1920,
@@ -57,7 +57,7 @@ export const SingleImage: Story = {
 
 export const VariousSizes: Story = {
 	args: {
-		images: [
+		data: [
 			{
 				id: "1",
 				width: 1920,
@@ -89,7 +89,7 @@ export const VariousSizes: Story = {
 
 export const WithNullDimensions: Story = {
 	args: {
-		images: [
+		data: [
 			{
 				id: "1",
 				width: null,

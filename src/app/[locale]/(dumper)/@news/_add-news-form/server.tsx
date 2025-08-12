@@ -1,4 +1,4 @@
-import { StatusCodeView } from "@/components/card/status-code-view";
+import { StatusCodeView } from "@/components/status/status-code-view";
 import { addNews } from "@/features/news/actions/add-news";
 import { loggerError } from "@/pino";
 import prisma from "@/prisma";
@@ -22,10 +22,7 @@ export async function AddNewsForm() {
 			} catch (error) {
 				loggerError(
 					"unexpected",
-					{
-						caller: "AddNewsFormCategory",
-						status: 500,
-					},
+					{ caller: "AddNewsFormCategory", status: 500 },
 					error,
 				);
 				return [];

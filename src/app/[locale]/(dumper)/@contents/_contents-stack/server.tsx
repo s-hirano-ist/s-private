@@ -1,4 +1,4 @@
-import { StatusCodeView } from "@/components/card/status-code-view";
+import { StatusCodeView } from "@/components/status/status-code-view";
 import { loggerError } from "@/pino";
 import prisma from "@/prisma";
 import { getSelfId } from "@/utils/auth/session";
@@ -7,36 +7,29 @@ import { ContentsStackClient } from "./client";
 export async function ContentsStack() {
 	try {
 		const userId = await getSelfId();
+
 		const unexportedContents = (
 			await prisma.contents.findMany({
 				where: { status: "UNEXPORTED", userId },
 				select: {
 					id: true,
 					title: true,
-					quote: true,
-					url: true,
+					markdown: true,
 				},
-				orderBy: { id: "desc" },
+				orderBy: { title: "desc" },
 			})
 		).map((d) => {
 			return {
 				id: d.id,
 				title: d.title,
-				quote: d.quote,
-				url: d.url,
+				description: d.markdown,
+				href: "https://example.com", // FIXME: TODO:
 			};
 		});
 
-		return <ContentsStackClient cardStackData={unexportedContents} />;
+		return <ContentsStackClient data={unexportedContents} />;
 	} catch (error) {
-		loggerError(
-			"unexpected",
-			{
-				caller: "ContentsStack",
-				status: 500,
-			},
-			error,
-		);
+		loggerError("unexpected", { caller: "ContentsStack", status: 500 }, error);
 		return (
 			<div className="flex flex-col items-center">
 				<StatusCodeView statusCode="500" />

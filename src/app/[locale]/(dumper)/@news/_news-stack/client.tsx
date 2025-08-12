@@ -1,17 +1,14 @@
-import { CardStack, CardStackData } from "@/components/stack/card-stack";
+import { LinkCardData } from "@/components/card/link-card";
+import { LinkCardStack } from "@/components/card/link-card-stack";
 import { ServerAction } from "@/types";
 
 type Props = {
-	cardStackData: CardStackData;
+	data: LinkCardData[];
 	deleteNews: (id: number) => Promise<ServerAction<number>>;
 };
 
-export function NewsStackClient({ cardStackData, deleteNews }: Props) {
+export function NewsStackClient({ data, deleteNews }: Props) {
 	return (
-		<CardStack
-			data={cardStackData}
-			deleteAction={deleteNews}
-			showDeleteButton
-		/>
+		<LinkCardStack data={data} deleteAction={deleteNews} showDeleteButton />
 	);
 }

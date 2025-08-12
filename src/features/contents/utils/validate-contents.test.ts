@@ -7,68 +7,55 @@ describe("validateContents", () => {
 		const formData = new FormData();
 		formData.append("title", "Content Title");
 		formData.append("quote", "This is a short quote.");
-		formData.append("url", "https://example.com/contents");
 
 		const result = validateContents(formData);
 
 		expect(result).toEqual({
 			title: "Content Title",
-			quote: "This is a short quote.",
-			url: "https://example.com/contents",
+			markdown: "This is a short quote.",
 		});
 	});
 
 	test("should throw InvalidFormatError when title is missing", () => {
 		const formData = new FormData();
 		formData.append("quote", "This is a short quote.");
-		formData.append("url", "https://example.com/contents");
 
 		expect(() => validateContents(formData)).toThrow(InvalidFormatError);
 	});
 
-	test("should throw InvalidFormatError when url is missing", () => {
+	test("should throw InvalidFormatError when markdown is missing", () => {
 		const formData = new FormData();
 		formData.append("title", "Content Title");
-		formData.append("quote", "This is a short quote.");
 
 		expect(() => validateContents(formData)).toThrow(InvalidFormatError);
 	});
 
-	test("should throw InvalidFormatError when url is not a valid URL", () => {
-		const formData = new FormData();
-		formData.append("title", "Content Title");
-		formData.append("quote", "This is a short quote.");
-		formData.append("url", "invalid-url");
-
-		expect(() => validateContents(formData)).toThrow(InvalidFormatError);
-	});
-
-	test("should handle optional quote field", () => {
-		const formData = new FormData();
-		formData.append("title", "Content Title");
-		formData.append("url", "https://example.com/contents");
-
-		const result = validateContents(formData);
-
-		expect(result).toEqual({
-			title: "Content Title",
-			quote: null,
-			url: "https://example.com/contents",
-		});
-	});
-
-	test("should handle empty optional quote field", () => {
+	test("should throw InvalidFormatError when markdown is empty", () => {
 		const formData = new FormData();
 		formData.append("title", "Content Title");
 		formData.append("quote", "");
-		formData.append("url", "https://example.com/contents");
+
+		expect(() => validateContents(formData)).toThrow(InvalidFormatError);
+	});
+
+	test("should validate with valid markdown", () => {
+		const formData = new FormData();
+		formData.append("title", "Content Title");
+		formData.append("quote", "Valid markdown content");
 
 		const result = validateContents(formData);
 
 		expect(result).toEqual({
 			title: "Content Title",
-			quote: "",
-			url: "https://example.com/contents",
+			markdown: "Valid markdown content",
 		});
+	});
+
+	test("should throw InvalidFormatError when title is empty", () => {
+		const formData = new FormData();
+		formData.append("title", "");
+		formData.append("quote", "Valid markdown");
+
+		expect(() => validateContents(formData)).toThrow(InvalidFormatError);
 	});
 });

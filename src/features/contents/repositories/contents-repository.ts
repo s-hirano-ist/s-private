@@ -14,12 +14,13 @@ export type IContentsRepository = {
 	delete(id: number): Promise<void>;
 	findByStatus(status: Status, userId: string): Promise<Contents[]>;
 	transaction<T>(fn: () => Promise<T>): Promise<T>;
+	findAll(): Promise<ContentsWithImage[]>;
+	count(): Promise<number>;
 };
 
 type ContentsCreateInput = {
 	title: string;
-	url: string;
-	quote: string | null;
+	markdown: string;
 	userId: string;
 };
 
@@ -30,11 +31,16 @@ type ContentsFindManyParams = {
 	skip?: number;
 };
 
+type ContentsWithImage = {
+	id: number;
+	title: string;
+	description?: string;
+	href: string;
+};
+
 export class ContentsRepository implements IContentsRepository {
 	async create(data: ContentsCreateInput): Promise<Contents> {
-		return await prisma.contents.create({
-			data,
-		});
+		return await prisma.contents.create({ data });
 	}
 
 	async findById(id: number): Promise<Contents | null> {
@@ -82,6 +88,24 @@ export class ContentsRepository implements IContentsRepository {
 	async transaction<T>(fn: () => Promise<T>): Promise<T> {
 		return await prisma.$transaction(fn);
 	}
+
+	findAll = async (): Promise<ContentsWithImage[]> => {
+		const contents = await prisma.contents.findMany({
+			select: { title: true, id: true, markdown: true },
+			cacheStrategy: { ttl: 400, tags: ["contents"] },
+		});
+
+		return contents.map((content) => ({
+			id: content.id,
+			title: content.title,
+			description: content.markdown,
+			href: `/content/${content.title}`,
+		})) satisfies ContentsWithImage[];
+	};
+
+	count = async (): Promise<number> => {
+		return await prisma.contents.count({});
+	};
 }
 
 export const contentsRepository = new ContentsRepository();

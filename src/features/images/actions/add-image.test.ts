@@ -102,7 +102,7 @@ describe("addImage", () => {
 			status: "UNEXPORTED",
 			createdAt: new Date(),
 			updatedAt: new Date(),
-			deletedAt: null,
+			exportedAt: null,
 		});
 		(uuidv7 as Mock).mockReturnValue("generated-uuid");
 

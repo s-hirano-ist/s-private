@@ -5,8 +5,7 @@ import { contentsSchema } from "@/features/contents/schemas/contents-schema";
 export function validateContents(formData: FormData) {
 	const contentsValidatedFields = contentsSchema.safeParse({
 		title: formData.get("title"),
-		quote: formData.get("quote"),
-		url: formData.get("url"),
+		markdown: formData.get("quote"),
 	});
 	if (!contentsValidatedFields.success) throw new InvalidFormatError();
 

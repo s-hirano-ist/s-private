@@ -38,14 +38,6 @@ mockFormData.append("quote", "This is an example news quote.");
 mockFormData.append("url", "https://example.com");
 mockFormData.append("category", "tech");
 
-const mockCreatedNews = {
-	id: 1,
-	title: "Example Content",
-	quote: "This is an example news quote.",
-	url: "https://example.com",
-	Category: { name: "tech" },
-};
-
 describe("addNews", () => {
 	test("should return success false on Unauthorized", async () => {
 		(auth as Mock).mockResolvedValue(mockUnauthorizedSession);
@@ -79,6 +71,9 @@ describe("addNews", () => {
 			createdAt: new Date(),
 			updatedAt: new Date(),
 			Category: { id: 1, name: "tech" },
+			ogTitle: "sample og title 1",
+			ogDescription: "sample og description 1",
+			ogImageUrl: "https://example.com/1",
 		});
 
 		const result = await addNews(mockFormData);

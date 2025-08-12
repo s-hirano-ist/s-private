@@ -1,16 +1,10 @@
-import { PreviewCardData } from "@/components/card/preview-card";
-import { PreviewStackClient } from "@/components/stack/preview-stack";
+import { ImageCardData } from "@/components/card/image-card";
+import { ImageCardStack } from "@/components/card/image-card-stack";
 
-type Props = { previewCardData: PreviewCardData[] };
+type Props = { data: ImageCardData[] };
 
 const basePath = "book";
 
-export function BooksStackClient({ previewCardData }: Props) {
-	return (
-		<PreviewStackClient
-			basePath={basePath}
-			imageType="webp"
-			previewCardData={previewCardData}
-		/>
-	);
+export function BooksStackClient({ data }: Props) {
+	return <ImageCardStack basePath={basePath} data={data} />;
 }

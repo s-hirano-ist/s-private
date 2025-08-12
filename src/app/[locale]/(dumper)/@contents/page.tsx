@@ -1,6 +1,5 @@
 import { Suspense } from "react";
-import { AddFormSkeleton } from "@/components/add-form-skeleton";
-import { CardStackSkeleton } from "@/components/stack/card-stack-skeleton";
+import { LinkCardSkeletonStack } from "@/components/card/link-card-skeleton-stack";
 import { Separator } from "@/components/ui/separator";
 import { AddContentsForm } from "./_add-contents-form/server";
 import { ContentsStack } from "./_contents-stack/server";
@@ -23,7 +22,7 @@ export default async function Page({ searchParams }: Props) {
 
 			<Separator className="h-px bg-linear-to-r from-primary-grad-from to-primary-grad-to" />
 
-			<Suspense fallback={<CardStackSkeleton />}>
+			<Suspense fallback={<LinkCardSkeletonStack />}>
 				<ContentsStack />
 			</Suspense>
 		</>

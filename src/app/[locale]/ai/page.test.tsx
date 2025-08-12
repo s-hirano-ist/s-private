@@ -3,7 +3,7 @@ import { describe, expect, test, vi } from "vitest";
 import Page from "./page";
 
 // Mock StatusCodeView
-vi.mock("@/components/card/status-code-view", () => ({
+vi.mock("@/components/status/status-code-view", () => ({
 	// eslint-disable-next-line
 	StatusCodeView: ({ statusCode }: any) => (
 		<div data-status-code={statusCode} data-testid="status-code-view">

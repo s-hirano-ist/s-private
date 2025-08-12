@@ -14,5 +14,3 @@ export type Status = {
 	recentlyUpdated: number;
 	unexported: number;
 };
-
-export type UpdateOrRevert = "UPDATE" | "REVERT";

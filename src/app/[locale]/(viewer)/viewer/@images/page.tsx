@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { ImageStackSkeleton } from "@/components/stack/image-stack-skeleton";
+import { ImageStackSkeleton } from "@/components/image/image-stack-skeleton";
 import { AllImageStack } from "./_all-image-stack/server";
 import { ImageCounter } from "./_image-counter/server";
 

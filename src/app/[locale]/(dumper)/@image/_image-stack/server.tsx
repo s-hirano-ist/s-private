@@ -1,4 +1,4 @@
-import { StatusCodeView } from "@/components/card/status-code-view";
+import { StatusCodeView } from "@/components/status/status-code-view";
 import { loggerError } from "@/pino";
 import prisma from "@/prisma";
 import { getSelfId } from "@/utils/auth/session";

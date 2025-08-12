@@ -1,18 +1,9 @@
-import { PreviewCardData } from "@/components/card/preview-card";
-import { PreviewStackClient } from "@/components/stack/preview-stack";
+"use client";
+import { LinkCardData } from "@/components/card/link-card";
+import { LinkCardStack } from "@/components/card/link-card-stack";
 
-const basePath = "content";
+type Props = { data: LinkCardData[] };
 
-type Props = {
-	previewCardData: PreviewCardData[];
-};
-
-export function ContentsStackClient({ previewCardData }: Props) {
-	return (
-		<PreviewStackClient
-			basePath={basePath}
-			imageType="svg"
-			previewCardData={previewCardData}
-		/>
-	);
+export function ContentsStackClient({ data }: Props) {
+	return <LinkCardStack data={data} showDeleteButton={false} />;
 }

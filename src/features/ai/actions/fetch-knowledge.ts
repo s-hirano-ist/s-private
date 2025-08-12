@@ -1,17 +1,15 @@
 import { knowledgeRepository } from "@/features/ai/repositories/knowledge-repository";
 
-// Fetch all static contents for RAG knowledge base
-export const getAllStaticContentsForKnowledge =
-	knowledgeRepository.findAllStaticContents;
+// Fetch all contents for RAG knowledge base
+export const getAllContentsForKnowledge = knowledgeRepository.findAllContents;
 
-// Fetch all static books for RAG knowledge base
-export const getAllStaticBooksForKnowledge =
-	knowledgeRepository.findAllStaticBooks;
+// Fetch all books for RAG knowledge base
+export const getAllBooksForKnowledge = knowledgeRepository.findAllBooks;
 
 // Fetch all knowledge (both contents and books)
 export async function fetchAllKnowledge() {
-	const contents = await getAllStaticContentsForKnowledge();
-	const books = await getAllStaticBooksForKnowledge();
+	const contents = await getAllContentsForKnowledge();
+	const books = await getAllBooksForKnowledge();
 
 	return [
 		...contents.map((content) => ({
@@ -33,5 +31,5 @@ export async function fetchAllKnowledge() {
 
 // Fetch a specific content by title
 export async function fetchContentByTitle(title: string) {
-	return await knowledgeRepository.findStaticContentByTitle(title);
+	return await knowledgeRepository.findContentByTitle(title);
 }

@@ -1,7 +1,7 @@
-import { ImageStack, ImageStackData } from "@/components/stack/image-stack";
+import { ImageData, ImageStack } from "@/components/image/image-stack";
 
-type Props = { images: ImageStackData };
+type Props = { data: ImageData[] };
 
-export function AllImageStackClient({ images }: Props) {
-	return <ImageStack data={images} />;
+export function AllImageStackClient({ data }: Props) {
+	return <ImageStack data={data} />;
 }
