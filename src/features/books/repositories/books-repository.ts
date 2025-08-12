@@ -1,7 +1,9 @@
+import type { Books } from "@/generated";
 import prisma from "@/prisma";
 
 export type IBooksRepository = {
 	findAll(): Promise<BooksForDisplay[]>;
+	findByISBN(isbn: string): Promise<Books | null>;
 	count(): Promise<number>;
 };
 
@@ -23,6 +25,13 @@ export class BooksRepository implements IBooksRepository {
 			href: book.ISBN,
 			image: book.googleImgSrc || "",
 		}));
+	};
+
+	findByISBN = async (isbn: string): Promise<Books | null> => {
+		return await prisma.books.findUnique({
+			where: { ISBN: isbn },
+			cacheStrategy: { ttl: 400, tags: ["books"] },
+		});
 	};
 
 	count = async (): Promise<number> => {

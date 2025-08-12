@@ -6,6 +6,7 @@ export type ICategoryRepository = {
 	findById(id: number): Promise<Categories | null>;
 	findByNameAndUserId(name: string, userId: string): Promise<Categories | null>;
 	findMany(params?: CategoryFindManyParams): Promise<Categories[]>;
+	findByUserId(userId: string): Promise<Categories[]>;
 	delete(id: number): Promise<void>;
 };
 
@@ -57,6 +58,13 @@ export class CategoryRepository implements ICategoryRepository {
 
 	async findMany(params?: CategoryFindManyParams): Promise<Categories[]> {
 		return await prisma.categories.findMany(params);
+	}
+
+	async findByUserId(userId: string): Promise<Categories[]> {
+		return await prisma.categories.findMany({
+			where: { userId },
+			orderBy: { name: "asc" },
+		});
 	}
 
 	async delete(id: number): Promise<void> {

@@ -16,6 +16,9 @@ export type IImageRepository = {
 	): Promise<number>;
 	delete(id: string): Promise<void>;
 	findByStatus(status: Status, userId: string): Promise<Images[]>;
+	findByStatusAndUserId(status: Status, userId: string): Promise<Images[]>;
+	countAll(): Promise<number>;
+	findAllPaginated(page: number, pageSize: number): Promise<Images[]>;
 	invalidateCache(): Promise<void>;
 	uploadToStorage(path: string, buffer: Buffer): Promise<void>;
 	getFromStorage(path: string): Promise<NodeJS.ReadableStream>;
@@ -92,6 +95,26 @@ export class ImageRepository implements IImageRepository {
 		return await prisma.images.findMany({
 			where: { status, userId },
 			orderBy: { createdAt: "desc" },
+		});
+	}
+
+	async findByStatusAndUserId(status: Status, userId: string): Promise<Images[]> {
+		return await prisma.images.findMany({
+			where: { userId, status },
+			orderBy: { id: "desc" },
+		});
+	}
+
+	async countAll(): Promise<number> {
+		return await prisma.images.count({});
+	}
+
+	async findAllPaginated(page: number, pageSize: number): Promise<Images[]> {
+		return await prisma.images.findMany({
+			orderBy: { id: "desc" },
+			skip: (page - 1) * pageSize,
+			take: pageSize,
+			cacheStrategy: { ttl: 400, swr: 40, tags: ["images"] },
 		});
 	}
 

@@ -19,6 +19,7 @@ export type INewsRepository = {
 	delete(id: number): Promise<void>;
 	deleteByIdAndUserId(id: number, userId: string): Promise<void>;
 	findByStatus(status: Status, userId: string): Promise<NewsWithCategory[]>;
+	findByStatusAndUserIdWithCategory(status: Status, userId: string): Promise<NewsWithCategory[]>;
 	transaction<T>(fn: () => Promise<T>): Promise<T>;
 	findExportedMany(page: number): Promise<NewsWithCategory[]>;
 	count(): Promise<number>;
@@ -132,6 +133,31 @@ export class NewsRepository implements INewsRepository {
 				Category: true,
 			},
 			orderBy: { createdAt: "desc" },
+		});
+	}
+
+	async findByStatusAndUserIdWithCategory(
+		status: Status,
+		userId: string,
+	): Promise<NewsWithCategory[]> {
+		return await prisma.news.findMany({
+			where: { status, userId },
+			select: {
+				id: true,
+				title: true,
+				quote: true,
+				url: true,
+				status: true,
+				categoryId: true,
+				userId: true,
+				createdAt: true,
+				updatedAt: true,
+				ogImageUrl: true,
+				ogTitle: true,
+				ogDescription: true,
+				Category: { select: { id: true, name: true } },
+			},
+			orderBy: { id: "desc" },
 		});
 	}
 

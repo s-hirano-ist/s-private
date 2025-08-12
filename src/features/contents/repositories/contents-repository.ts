@@ -13,6 +13,8 @@ export type IContentsRepository = {
 	): Promise<number>;
 	delete(id: number): Promise<void>;
 	findByStatus(status: Status, userId: string): Promise<Contents[]>;
+	findByStatusAndUserId(status: Status, userId: string): Promise<Contents[]>;
+	findByTitle(title: string): Promise<Contents | null>;
 	transaction<T>(fn: () => Promise<T>): Promise<T>;
 	findAll(): Promise<ContentsWithImage[]>;
 	count(): Promise<number>;
@@ -82,6 +84,20 @@ export class ContentsRepository implements IContentsRepository {
 		return await prisma.contents.findMany({
 			where: { status, userId },
 			orderBy: { createdAt: "desc" },
+		});
+	}
+
+	async findByStatusAndUserId(status: Status, userId: string): Promise<Contents[]> {
+		return await prisma.contents.findMany({
+			where: { status, userId },
+			orderBy: { title: "desc" },
+		});
+	}
+
+	async findByTitle(title: string): Promise<Contents | null> {
+		return await prisma.contents.findUnique({
+			where: { title },
+			cacheStrategy: { ttl: 400, tags: ["contents"] },
 		});
 	}
 

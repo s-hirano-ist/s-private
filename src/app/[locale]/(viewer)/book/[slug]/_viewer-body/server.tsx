@@ -12,8 +12,8 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { THUMBNAIL_HEIGHT, THUMBNAIL_WIDTH } from "@/constants";
+import { booksRepository } from "@/features/books/repositories/books-repository";
 import { Link } from "@/i18n/routing";
-import prisma from "@/prisma";
 import { hasViewerAdminPermission } from "@/utils/auth/session";
 
 type Props = { slug: string };
@@ -23,19 +23,7 @@ export async function ViewerBody({ slug }: Props) {
 	if (!hasAdminPermission) forbidden();
 
 	try {
-		const data = await prisma.books.findUnique({
-			where: { ISBN: slug },
-			select: {
-				markdown: true,
-				googleTitle: true,
-				googleSubTitle: true,
-				googleDescription: true,
-				googleAuthors: true,
-				googleHref: true,
-				googleImgSrc: true,
-			},
-			cacheStrategy: { ttl: 400, tags: ["books"] },
-		});
+		const data = await booksRepository.findByISBN(slug);
 		if (!data) return <NotFound />;
 
 		return (

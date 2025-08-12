@@ -1,7 +1,7 @@
 import { StatusCodeView } from "@/components/status/status-code-view";
 import { deleteNews } from "@/features/news/actions/delete-news";
+import { newsRepository } from "@/features/news/repositories/news-repository";
 import { loggerError } from "@/pino";
-import prisma from "@/prisma";
 import { getSelfId } from "@/utils/auth/session";
 import { NewsStackClient } from "./client";
 
@@ -10,17 +10,7 @@ export async function NewsStack() {
 		const userId = await getSelfId();
 
 		const unexportedNews = (
-			await prisma.news.findMany({
-				where: { status: "UNEXPORTED", userId },
-				select: {
-					id: true,
-					title: true,
-					quote: true,
-					url: true,
-					Category: { select: { name: true } },
-				},
-				orderBy: { id: "desc" },
-			})
+			await newsRepository.findByStatusAndUserIdWithCategory("UNEXPORTED", userId)
 		).map((d) => {
 			return {
 				id: d.id,
