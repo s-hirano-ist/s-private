@@ -1,6 +1,6 @@
 import { StatusCodeView } from "@/components/status/status-code-view";
 import { deleteNews } from "@/features/news/actions/delete-news";
-import { newsRepository } from "@/features/news/repositories/news-repository";
+import { newsQueryRepository } from "@/features/news/repositories/news-query-repository";
 import { loggerError } from "@/pino";
 import { getSelfId } from "@/utils/auth/session";
 import { NewsStackClient } from "./client";
@@ -10,7 +10,7 @@ export async function NewsStack() {
 		const userId = await getSelfId();
 
 		const unexportedNews = (
-			await newsRepository.findByStatusAndUserIdWithCategory("UNEXPORTED", userId)
+			await newsQueryRepository.findByStatusAndUserIdWithCategory("UNEXPORTED", userId)
 		).map((d) => {
 			return {
 				id: d.id,

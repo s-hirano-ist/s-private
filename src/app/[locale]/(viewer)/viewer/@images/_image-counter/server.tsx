@@ -1,5 +1,5 @@
 import { StatusCodeView } from "@/components/status/status-code-view";
-import { imageRepository } from "@/features/images/repositories/image-repository";
+import { imageQueryRepository } from "@/features/images/repositories/image-query-repository";
 import { loggerError } from "@/pino";
 import { hasViewerAdminPermission } from "@/utils/auth/session";
 import { ImageCounterClient } from "./client";
@@ -11,7 +11,7 @@ export async function ImageCounter({ page }: Props) {
 		const hasAdminPermission = await hasViewerAdminPermission();
 		if (!hasAdminPermission) return <></>;
 
-		const totalImages = await imageRepository.countAll();
+		const totalImages = await imageQueryRepository.countAll();
 		return <ImageCounterClient page={page} totalImages={totalImages} />;
 	} catch (error) {
 		loggerError("unexpected", { caller: "ImageCounter", status: 500 }, error);

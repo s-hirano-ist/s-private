@@ -2,7 +2,7 @@ import { cache } from "react";
 import type { Books, Contents } from "@/generated";
 import prisma from "@/prisma";
 
-export type IKnowledgeRepository = {
+export type IKnowledgeQueryRepository = {
 	findAllContents(): Promise<ContentsForKnowledge[]>;
 	findAllBooks(): Promise<BooksForKnowledge[]>;
 	findContentByTitle(title: string): Promise<ContentsForKnowledge | null>;
@@ -11,7 +11,7 @@ export type IKnowledgeRepository = {
 type ContentsForKnowledge = Pick<Contents, "title" | "markdown">;
 type BooksForKnowledge = Pick<Books, "title" | "markdown" | "ISBN">;
 
-export class KnowledgeRepository implements IKnowledgeRepository {
+export class KnowledgeQueryRepository implements IKnowledgeQueryRepository {
 	private _findAllContents = async (): Promise<ContentsForKnowledge[]> => {
 		return await prisma.contents.findMany({
 			select: { title: true, markdown: true },
@@ -40,4 +40,4 @@ export class KnowledgeRepository implements IKnowledgeRepository {
 	}
 }
 
-export const knowledgeRepository = new KnowledgeRepository();
+export const knowledgeQueryRepository = new KnowledgeQueryRepository();

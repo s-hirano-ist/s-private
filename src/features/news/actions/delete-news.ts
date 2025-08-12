@@ -4,7 +4,8 @@ import { revalidatePath } from "next/cache";
 import { forbidden } from "next/navigation";
 import { UnexpectedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
-import { newsRepository } from "@/features/news/repositories/news-repository";
+import { newsCommandRepository } from "@/features/news/repositories/news-command-repository";
+import { newsQueryRepository } from "@/features/news/repositories/news-query-repository";
 import { loggerInfo } from "@/pino";
 import type { ServerAction } from "@/types";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
@@ -18,12 +19,12 @@ export async function deleteNews(id: number): Promise<ServerAction<number>> {
 		const userId = await getSelfId();
 
 		// Check if the news item exists and belongs to the user
-		const newsItem = await newsRepository.findByIdAndUserId(id, userId);
+		const newsItem = await newsQueryRepository.findByIdAndUserId(id, userId);
 
 		if (!newsItem) throw new UnexpectedError();
 
 		// Delete the news item
-		await newsRepository.deleteByIdAndUserId(id, userId);
+		await newsCommandRepository.deleteByIdAndUserId(id, userId);
 
 		const message = `Deleted news: ${newsItem.title}`;
 		loggerInfo(message, {

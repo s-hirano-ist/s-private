@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { contentsRepository } from "@/features/contents/repositories/contents-repository";
+import { contentsQueryRepository } from "@/features/contents/repositories/contents-query-repository";
 import { getAllContents, getContentsCount } from "./get-contents";
 
-vi.mock("@/features/contents/repositories/contents-repository", () => ({
-	contentsRepository: {
+vi.mock("@/features/contents/repositories/contents-query-repository", () => ({
+	contentsQueryRepository: {
 		findAll: vi.fn(),
 		count: vi.fn(),
 	},
@@ -29,11 +29,11 @@ describe("get-contents", () => {
 				},
 			];
 
-			vi.mocked(contentsRepository.findAll).mockResolvedValue(mockContents);
+			vi.mocked(contentsQueryRepository.findAll).mockResolvedValue(mockContents);
 
 			const result = await getAllContents();
 
-			expect(contentsRepository.findAll).toHaveBeenCalled();
+			expect(contentsQueryRepository.findAll).toHaveBeenCalled();
 
 			expect(result).toEqual([
 				{
@@ -50,7 +50,7 @@ describe("get-contents", () => {
 		});
 
 		test("should handle empty results", async () => {
-			vi.mocked(contentsRepository.findAll).mockResolvedValue([]);
+			vi.mocked(contentsQueryRepository.findAll).mockResolvedValue([]);
 
 			const result = await getAllContents();
 
@@ -58,7 +58,7 @@ describe("get-contents", () => {
 		});
 
 		test("should handle database errors", async () => {
-			vi.mocked(contentsRepository.findAll).mockRejectedValue(
+			vi.mocked(contentsQueryRepository.findAll).mockRejectedValue(
 				new Error("Database error"),
 			);
 
@@ -74,7 +74,7 @@ describe("get-contents", () => {
 				},
 			];
 
-			vi.mocked(contentsRepository.findAll).mockResolvedValue(mockContents);
+			vi.mocked(contentsQueryRepository.findAll).mockResolvedValue(mockContents);
 
 			const result = await getAllContents();
 
@@ -96,7 +96,7 @@ describe("get-contents", () => {
 				},
 			];
 
-			vi.mocked(contentsRepository.findAll).mockResolvedValue(mockContents);
+			vi.mocked(contentsQueryRepository.findAll).mockResolvedValue(mockContents);
 
 			const result = await getAllContents();
 
@@ -107,16 +107,16 @@ describe("get-contents", () => {
 
 	describe("getContentsCount", () => {
 		test("should return count of contents", async () => {
-			vi.mocked(contentsRepository.count).mockResolvedValue(25);
+			vi.mocked(contentsQueryRepository.count).mockResolvedValue(25);
 
 			const result = await getContentsCount();
 
-			expect(contentsRepository.count).toHaveBeenCalled();
+			expect(contentsQueryRepository.count).toHaveBeenCalled();
 			expect(result).toBe(25);
 		});
 
 		test("should return 0 for empty collection", async () => {
-			vi.mocked(contentsRepository.count).mockResolvedValue(0);
+			vi.mocked(contentsQueryRepository.count).mockResolvedValue(0);
 
 			const result = await getContentsCount();
 
@@ -124,7 +124,7 @@ describe("get-contents", () => {
 		});
 
 		test("should handle database errors", async () => {
-			vi.mocked(contentsRepository.count).mockRejectedValue(
+			vi.mocked(contentsQueryRepository.count).mockRejectedValue(
 				new Error("Database error"),
 			);
 

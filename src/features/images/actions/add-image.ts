@@ -11,7 +11,7 @@ import {
 } from "@/constants";
 import { FileNotAllowedError, UnexpectedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
-import { imageRepository } from "@/features/images/repositories/image-repository";
+import { imageCommandRepository } from "@/features/images/repositories/image-command-repository";
 import { loggerInfo } from "@/pino";
 import type { ServerAction } from "@/types";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
@@ -44,7 +44,7 @@ export async function addImage(
 		const metadata = await sharp(buffer).metadata();
 
 		const originalPath = `${ORIGINAL_IMAGE_PATH}/${id}`;
-		await imageRepository.uploadToStorage(originalPath, buffer);
+		await imageCommandRepository.uploadToStorage(originalPath, buffer);
 
 		const thumbnailBuffer = await sharp(buffer)
 			.resize(
@@ -53,9 +53,9 @@ export async function addImage(
 			)
 			.toBuffer();
 		const thumbnailPath = `${THUMBNAIL_IMAGE_PATH}/${id}`;
-		await imageRepository.uploadToStorage(thumbnailPath, thumbnailBuffer);
+		await imageCommandRepository.uploadToStorage(thumbnailPath, thumbnailBuffer);
 
-		const createdImage = await imageRepository.create({
+		const createdImage = await imageCommandRepository.create({
 			id,
 			userId,
 			contentType: file.type,
@@ -69,7 +69,7 @@ export async function addImage(
 
 		await sendPushoverMessage(message);
 		revalidatePath("/(dumper)");
-		await imageRepository.invalidateCache();
+		await imageCommandRepository.invalidateCache();
 
 		return {
 			success: true,

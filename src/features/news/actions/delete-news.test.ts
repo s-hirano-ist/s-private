@@ -2,7 +2,8 @@ import { revalidatePath } from "next/cache";
 import { Session } from "next-auth";
 import { describe, expect, Mock, test, vi } from "vitest";
 import { deleteNews } from "@/features/news/actions/delete-news";
-import { newsRepository } from "@/features/news/repositories/news-repository";
+import { newsCommandRepository } from "@/features/news/repositories/news-command-repository";
+import { newsQueryRepository } from "@/features/news/repositories/news-query-repository";
 import { loggerInfo } from "@/pino";
 import { auth } from "@/utils/auth/auth";
 import { sendPushoverMessage } from "@/utils/notification/fetch-message";
@@ -11,15 +12,16 @@ vi.mock("@/utils/notification/fetch-message", () => ({
 	sendPushoverMessage: vi.fn(),
 }));
 
-vi.mock("@/features/news/repositories/news-repository", () => ({
-	newsRepository: {
+vi.mock("@/features/news/repositories/news-query-repository", () => ({
+	newsQueryRepository: {
 		findByIdAndUserId: vi.fn(),
-		deleteByIdAndUserId: vi.fn(),
 	},
 }));
 
-vi.mock("next/cache", () => ({
-	revalidatePath: vi.fn(),
+vi.mock("@/features/news/repositories/news-command-repository", () => ({
+	newsCommandRepository: {
+		deleteByIdAndUserId: vi.fn(),
+	},
 }));
 
 const mockAllowedRoleSession: Session = {
@@ -50,10 +52,12 @@ describe("deleteNews", () => {
 			ogImageUrl: "https://example.com/1",
 		};
 
-		vi.mocked(newsRepository.findByIdAndUserId).mockResolvedValueOnce(
+		vi.mocked(newsQueryRepository.findByIdAndUserId).mockResolvedValueOnce(
 			mockNewsItem,
 		);
-		vi.mocked(newsRepository.deleteByIdAndUserId).mockResolvedValueOnce();
+		vi.mocked(
+			newsCommandRepository.deleteByIdAndUserId,
+		).mockResolvedValueOnce();
 
 		const result = await deleteNews(1);
 
@@ -63,8 +67,11 @@ describe("deleteNews", () => {
 			data: 1,
 		});
 
-		expect(newsRepository.findByIdAndUserId).toHaveBeenCalledWith(1, "1");
-		expect(newsRepository.deleteByIdAndUserId).toHaveBeenCalledWith(1, "1");
+		expect(newsQueryRepository.findByIdAndUserId).toHaveBeenCalledWith(1, "1");
+		expect(newsCommandRepository.deleteByIdAndUserId).toHaveBeenCalledWith(
+			1,
+			"1",
+		);
 
 		expect(loggerInfo).toHaveBeenCalled();
 		expect(sendPushoverMessage).toHaveBeenCalled();
@@ -73,12 +80,14 @@ describe("deleteNews", () => {
 
 	test("should return error when news not found", async () => {
 		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
-		vi.mocked(newsRepository.findByIdAndUserId).mockResolvedValueOnce(null);
+		vi.mocked(newsQueryRepository.findByIdAndUserId).mockResolvedValueOnce(
+			null,
+		);
 
 		const result = await deleteNews(999);
 
 		expect(result.success).toBe(false);
 		expect(result.message).toBe("unexpected");
-		expect(newsRepository.deleteByIdAndUserId).not.toHaveBeenCalled();
+		expect(newsCommandRepository.deleteByIdAndUserId).not.toHaveBeenCalled();
 	});
 });

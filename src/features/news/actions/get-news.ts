@@ -1,6 +1,6 @@
 import { cache } from "react";
-import { newsRepository } from "@/features/news/repositories/news-repository";
+import { newsQueryRepository } from "@/features/news/repositories/news-query-repository";
 
-export const getNews = cache(newsRepository.findExportedMany);
+export const getNews = cache(newsQueryRepository.findExportedMany);
 
-export const getNewsCount = cache(newsRepository.count);
+export const getNewsCount = cache(newsQueryRepository.count);

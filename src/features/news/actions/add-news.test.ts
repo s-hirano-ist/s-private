@@ -1,8 +1,8 @@
 import { revalidatePath } from "next/cache";
 import { Session } from "next-auth";
 import { describe, expect, Mock, test, vi } from "vitest";
-import { categoryRepository } from "@/features/news/repositories/category-repository";
-import { newsRepository } from "@/features/news/repositories/news-repository";
+import { categoryCommandRepository } from "@/features/news/repositories/category-command-repository";
+import { newsCommandRepository } from "@/features/news/repositories/news-command-repository";
 import { auth } from "@/utils/auth/auth";
 import { addNews } from "./add-news";
 
@@ -10,14 +10,14 @@ vi.mock("@/utils/notification/fetch-message", () => ({
 	sendPushoverMessage: vi.fn(),
 }));
 
-vi.mock("@/features/news/repositories/category-repository", () => ({
-	categoryRepository: {
+vi.mock("@/features/news/repositories/category-command-repository", () => ({
+	categoryCommandRepository: {
 		upsert: vi.fn(),
 	},
 }));
 
-vi.mock("@/features/news/repositories/news-repository", () => ({
-	newsRepository: {
+vi.mock("@/features/news/repositories/news-command-repository", () => ({
+	newsCommandRepository: {
 		create: vi.fn(),
 	},
 }));
@@ -53,14 +53,14 @@ describe("addNews", () => {
 
 	test("should create only news if no new category is provided", async () => {
 		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
-		vi.mocked(categoryRepository.upsert).mockResolvedValue({
+		vi.mocked(categoryCommandRepository.upsert).mockResolvedValue({
 			id: 1,
 			name: "tech",
 			createdAt: new Date(),
 			updatedAt: new Date(),
 			userId: "1",
 		});
-		vi.mocked(newsRepository.create).mockResolvedValue({
+		vi.mocked(newsCommandRepository.create).mockResolvedValue({
 			id: 1,
 			title: "Example Content",
 			quote: "This is an example news quote.",
@@ -79,8 +79,8 @@ describe("addNews", () => {
 		const result = await addNews(mockFormData);
 
 		expect(auth).toHaveBeenCalledTimes(2); // check permission & getSelfId
-		expect(categoryRepository.upsert).toHaveBeenCalled();
-		expect(newsRepository.create).toHaveBeenCalled();
+		expect(categoryCommandRepository.upsert).toHaveBeenCalled();
+		expect(newsCommandRepository.create).toHaveBeenCalled();
 		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 		expect(result.success).toBe(true);
 		expect(result.message).toBe("inserted");

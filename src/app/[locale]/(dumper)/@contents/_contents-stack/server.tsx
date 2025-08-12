@@ -1,5 +1,5 @@
 import { StatusCodeView } from "@/components/status/status-code-view";
-import { contentsRepository } from "@/features/contents/repositories/contents-repository";
+import { contentsQueryRepository } from "@/features/contents/repositories/contents-query-repository";
 import { loggerError } from "@/pino";
 import { getSelfId } from "@/utils/auth/session";
 import { ContentsStackClient } from "./client";
@@ -9,7 +9,7 @@ export async function ContentsStack() {
 		const userId = await getSelfId();
 
 		const unexportedContents = (
-			await contentsRepository.findByStatusAndUserId("UNEXPORTED", userId)
+			await contentsQueryRepository.findByStatusAndUserId("UNEXPORTED", userId)
 		).map((d) => {
 			return {
 				id: d.id,

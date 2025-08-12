@@ -12,7 +12,7 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { THUMBNAIL_HEIGHT, THUMBNAIL_WIDTH } from "@/constants";
-import { booksRepository } from "@/features/books/repositories/books-repository";
+import { booksQueryRepository } from "@/features/books/repositories/books-query-repository";
 import { Link } from "@/i18n/routing";
 import { hasViewerAdminPermission } from "@/utils/auth/session";
 
@@ -23,7 +23,7 @@ export async function ViewerBody({ slug }: Props) {
 	if (!hasAdminPermission) forbidden();
 
 	try {
-		const data = await booksRepository.findByISBN(slug);
+		const data = await booksQueryRepository.findByISBN(slug);
 		if (!data) return <NotFound />;
 
 		return (

@@ -3,8 +3,8 @@ import "server-only";
 import { revalidatePath } from "next/cache";
 import { forbidden } from "next/navigation";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
-import { categoryRepository } from "@/features/news/repositories/category-repository";
-import { newsRepository } from "@/features/news/repositories/news-repository";
+import { categoryCommandRepository } from "@/features/news/repositories/category-command-repository";
+import { newsCommandRepository } from "@/features/news/repositories/news-command-repository";
 import { validateCategory } from "@/features/news/utils/validate-category";
 import { validateNews } from "@/features/news/utils/validate-news";
 import { loggerInfo } from "@/pino";
@@ -30,7 +30,7 @@ export async function addNews(formData: FormData): Promise<ServerAction<News>> {
 
 		const validatedCategory = validateCategory(formData);
 
-		const category = await categoryRepository.upsert({
+		const category = await categoryCommandRepository.upsert({
 			userId,
 			name: validatedCategory.name,
 		});
@@ -38,7 +38,7 @@ export async function addNews(formData: FormData): Promise<ServerAction<News>> {
 		formData.set("category", String(category.id));
 		const validatedNews = validateNews(formData);
 
-		const createdNews = await newsRepository.create({
+		const createdNews = await newsCommandRepository.create({
 			userId,
 			title: validatedNews.title,
 			url: validatedNews.url,

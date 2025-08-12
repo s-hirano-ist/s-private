@@ -1,5 +1,5 @@
 import { StatusCodeView } from "@/components/status/status-code-view";
-import { imageRepository } from "@/features/images/repositories/image-repository";
+import { imageQueryRepository } from "@/features/images/repositories/image-query-repository";
 import { loggerError } from "@/pino";
 import { getSelfId } from "@/utils/auth/session";
 import { ImageStackClient } from "./client";
@@ -8,7 +8,7 @@ export async function ImageStack() {
 	try {
 		const userId = await getSelfId();
 
-		const images = await imageRepository.findByStatusAndUserId("UNEXPORTED", userId);
+		const images = await imageQueryRepository.findByStatusAndUserId("UNEXPORTED", userId);
 
 		return <ImageStackClient images={images} />;
 	} catch (error) {

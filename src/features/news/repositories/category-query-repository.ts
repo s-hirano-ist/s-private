@@ -1,18 +1,11 @@
 import type { Categories, Prisma } from "@/generated";
 import prisma from "@/prisma";
 
-export type ICategoryRepository = {
-	upsert(data: CategoryUpsertInput): Promise<Categories>;
+export type ICategoryQueryRepository = {
 	findById(id: number): Promise<Categories | null>;
 	findByNameAndUserId(name: string, userId: string): Promise<Categories | null>;
 	findMany(params?: CategoryFindManyParams): Promise<Categories[]>;
 	findByUserId(userId: string): Promise<Categories[]>;
-	delete(id: number): Promise<void>;
-};
-
-type CategoryUpsertInput = {
-	name: string;
-	userId: string;
 };
 
 type CategoryFindManyParams = {
@@ -22,20 +15,7 @@ type CategoryFindManyParams = {
 	skip?: number;
 };
 
-export class CategoryRepository implements ICategoryRepository {
-	async upsert(data: CategoryUpsertInput): Promise<Categories> {
-		return await prisma.categories.upsert({
-			where: {
-				name_userId: {
-					userId: data.userId,
-					name: data.name,
-				},
-			},
-			update: {},
-			create: data,
-		});
-	}
-
+export class CategoryQueryRepository implements ICategoryQueryRepository {
 	async findById(id: number): Promise<Categories | null> {
 		return await prisma.categories.findUnique({
 			where: { id },
@@ -66,12 +46,6 @@ export class CategoryRepository implements ICategoryRepository {
 			orderBy: { name: "asc" },
 		});
 	}
-
-	async delete(id: number): Promise<void> {
-		await prisma.categories.delete({
-			where: { id },
-		});
-	}
 }
 
-export const categoryRepository = new CategoryRepository();
+export const categoryQueryRepository = new CategoryQueryRepository();

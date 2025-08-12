@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
+import { Sharp } from "sharp";
 import { afterEach, beforeEach, vi } from "vitest";
 
 afterEach(() => {
@@ -8,16 +9,6 @@ afterEach(() => {
 
 beforeEach(() => {
 	vi.clearAllMocks();
-
-	HTMLFormElement.prototype.requestSubmit = function (submitter?: HTMLElement) {
-		if (submitter) {
-			this.submit();
-		} else {
-			this.dispatchEvent(
-				new Event("submit", { bubbles: true, cancelable: true }),
-			);
-		}
-	};
 
 	vi.mock("@/utils/auth/auth", () => ({ auth: vi.fn() }));
 
@@ -45,35 +36,34 @@ beforeEach(() => {
 			throw new Error("UNAUTHORIZED");
 		}),
 	}));
-});
 
-Object.defineProperty(window, "matchMedia", {
-	writable: true,
-	value: vi.fn().mockImplementation((query) => ({
-		matches: false,
-		media: query,
-		onchange: null,
-		addListener: vi.fn(), // Deprecated
-		removeListener: vi.fn(), // Deprecated
-		addEventListener: vi.fn(),
-		removeEventListener: vi.fn(),
-		dispatchEvent: vi.fn(),
-	})),
-});
+	vi.mock("next/server", () => ({
+		NextResponse: {
+			json: vi.fn((data) => ({
+				json: async () => data,
+				status: 200,
+				headers: new Headers(),
+			})),
+		},
+	}));
 
-Object.defineProperty(window, "scrollTo", {
-	writable: true,
-	value: vi.fn(),
-});
+	vi.mock("uuid", () => ({ v7: vi.fn() }));
 
-if (!HTMLFormElement.prototype.requestSubmit) {
-	HTMLFormElement.prototype.requestSubmit = function (submitter?: HTMLElement) {
-		if (submitter) {
-			this.submit();
-		} else {
-			this.dispatchEvent(
-				new Event("submit", { bubbles: true, cancelable: true }),
-			);
-		}
-	};
-}
+	type PartialSharp = Pick<Sharp, "metadata" | "resize" | "toBuffer">;
+	vi.mock("sharp", () => {
+		return {
+			__esModule: true,
+			default: vi.fn(() => {
+				const mockSharp: PartialSharp = {
+					metadata: vi.fn().mockResolvedValue({
+						width: 800,
+						height: 600,
+					}),
+					resize: vi.fn().mockReturnThis(),
+					toBuffer: vi.fn().mockResolvedValue(Buffer.from("thumbnail")),
+				};
+				return mockSharp;
+			}),
+		};
+	});
+});

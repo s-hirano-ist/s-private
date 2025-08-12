@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { booksRepository } from "@/features/books/repositories/books-repository";
+import { booksQueryRepository } from "@/features/books/repositories/books-query-repository";
 import { getAllBooks, getBooksCount } from "./get-books";
 
-vi.mock("@/features/books/repositories/books-repository", () => ({
-	booksRepository: {
+vi.mock("@/features/books/repositories/books-query-repository", () => ({
+	booksQueryRepository: {
 		findAll: vi.fn(),
 		count: vi.fn(),
 	},
@@ -29,11 +29,11 @@ describe("get-books", () => {
 				},
 			];
 
-			vi.mocked(booksRepository.findAll).mockResolvedValue(mockBooks);
+			vi.mocked(booksQueryRepository.findAll).mockResolvedValue(mockBooks);
 
 			const result = await getAllBooks();
 
-			expect(booksRepository.findAll).toHaveBeenCalled();
+			expect(booksQueryRepository.findAll).toHaveBeenCalled();
 
 			expect(result).toEqual([
 				{
@@ -50,7 +50,7 @@ describe("get-books", () => {
 		});
 
 		test("should handle empty results", async () => {
-			vi.mocked(booksRepository.findAll).mockResolvedValue([]);
+			vi.mocked(booksQueryRepository.findAll).mockResolvedValue([]);
 
 			const result = await getAllBooks();
 
@@ -58,7 +58,7 @@ describe("get-books", () => {
 		});
 
 		test("should handle database errors", async () => {
-			vi.mocked(booksRepository.findAll).mockRejectedValue(
+			vi.mocked(booksQueryRepository.findAll).mockRejectedValue(
 				new Error("Database error"),
 			);
 
@@ -68,16 +68,16 @@ describe("get-books", () => {
 
 	describe("getBooksCount", () => {
 		test("should return count of books", async () => {
-			vi.mocked(booksRepository.count).mockResolvedValue(42);
+			vi.mocked(booksQueryRepository.count).mockResolvedValue(42);
 
 			const result = await getBooksCount();
 
-			expect(booksRepository.count).toHaveBeenCalled();
+			expect(booksQueryRepository.count).toHaveBeenCalled();
 			expect(result).toBe(42);
 		});
 
 		test("should return 0 for empty collection", async () => {
-			vi.mocked(booksRepository.count).mockResolvedValue(0);
+			vi.mocked(booksQueryRepository.count).mockResolvedValue(0);
 
 			const result = await getBooksCount();
 
@@ -85,7 +85,7 @@ describe("get-books", () => {
 		});
 
 		test("should handle database errors", async () => {
-			vi.mocked(booksRepository.count).mockRejectedValue(
+			vi.mocked(booksQueryRepository.count).mockRejectedValue(
 				new Error("Database error"),
 			);
 

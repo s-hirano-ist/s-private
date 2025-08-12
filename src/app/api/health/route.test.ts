@@ -1,17 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 import { GET } from "./route";
 
-// Mock NextResponse
-vi.mock("next/server", () => ({
-	NextResponse: {
-		json: vi.fn((data) => ({
-			json: async () => data,
-			status: 200,
-			headers: new Headers(),
-		})),
-	},
-}));
-
 describe("/api/health route", () => {
 	test("should return status ok", async () => {
 		const response = await GET();
