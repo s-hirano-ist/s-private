@@ -7,10 +7,7 @@ import { categoryCommandRepository } from "@/features/news/repositories/category
 import { newsCommandRepository } from "@/features/news/repositories/news-command-repository";
 import { validateCategory } from "@/features/news/utils/validate-category";
 import { validateNews } from "@/features/news/utils/validate-news";
-import {
-	pushoverMonitoringService,
-	serverLogger,
-} from "@/infrastructure/server";
+import { serverLogger } from "@/infrastructure/server";
 import type { ServerAction } from "@/types";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
 import { formatCreateNewsMessage } from "@/utils/notification/format-for-notification";
@@ -51,8 +48,7 @@ export async function addNews(formData: FormData): Promise<ServerAction<News>> {
 			status: 201 as const,
 			userId,
 		};
-		serverLogger.info(message, context);
-		await pushoverMonitoringService.notifyInfo(message, context);
+		serverLogger.info(message, context, { notify: true });
 		revalidatePath("/(dumper)");
 
 		return {

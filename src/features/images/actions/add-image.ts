@@ -12,10 +12,7 @@ import {
 import { FileNotAllowedError, UnexpectedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
 import { imageCommandRepository } from "@/features/images/repositories/image-command-repository";
-import {
-	pushoverMonitoringService,
-	serverLogger,
-} from "@/infrastructure/server";
+import { serverLogger } from "@/infrastructure/server";
 import type { ServerAction } from "@/types";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
 import { formatCreateImageMessage } from "@/utils/notification/format-for-notification";
@@ -75,8 +72,7 @@ export async function addImage(
 			status: 201 as const,
 			userId,
 		};
-		serverLogger.info(message, context);
-		await pushoverMonitoringService.notifyInfo(message, context);
+		serverLogger.info(message, context, { notify: true });
 		revalidatePath("/(dumper)");
 		await imageCommandRepository.invalidateCache();
 

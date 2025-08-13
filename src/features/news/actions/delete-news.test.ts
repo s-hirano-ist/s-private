@@ -3,10 +3,7 @@ import { describe, expect, test, vi } from "vitest";
 import { deleteNews } from "@/features/news/actions/delete-news";
 import { newsCommandRepository } from "@/features/news/repositories/news-command-repository";
 import { newsQueryRepository } from "@/features/news/repositories/news-query-repository";
-import {
-	pushoverMonitoringService,
-	serverLogger,
-} from "@/infrastructure/server";
+import { serverLogger } from "@/infrastructure/server";
 
 vi.mock("@/features/news/repositories/news-query-repository", () => ({
 	newsQueryRepository: {
@@ -66,8 +63,15 @@ describe("deleteNews", () => {
 			"UNEXPORTED",
 		);
 
-		expect(serverLogger.info).toHaveBeenCalled();
-		expect(pushoverMonitoringService.notifyInfo).toHaveBeenCalled();
+		expect(serverLogger.info).toHaveBeenCalledWith(
+			"Deleted news: Test News",
+			{
+				caller: "deleteNews",
+				status: 200,
+				userId: "1",
+			},
+			{ notify: true },
+		);
 		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 	});
 

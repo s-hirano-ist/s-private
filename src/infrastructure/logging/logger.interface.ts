@@ -21,10 +21,19 @@ export type LogContext = {
 	additionalContext?: Record<string, unknown>;
 };
 
+export type LogOptions = {
+	notify?: boolean; // Whether to send Pushover notification
+};
+
 export type Logger = {
-	info(message: string, context: LogContext): void;
-	warn(message: string, context: LogContext): void;
-	error(message: string, context: LogContext, error?: unknown): void;
+	info(message: string, context: LogContext, options?: LogOptions): void;
+	warn(message: string, context: LogContext, options?: LogOptions): void;
+	error(
+		message: string,
+		context: LogContext,
+		error?: unknown,
+		options?: LogOptions,
+	): void;
 };
 
 export type MonitoringService = {
