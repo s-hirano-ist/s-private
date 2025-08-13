@@ -18,6 +18,19 @@ export const getExportedBooks = cache(async (): Promise<ImageCardData[]> => {
 	}));
 });
 
+export const getUnexportedBooks = cache(async (): Promise<ImageCardData[]> => {
+	const userId = await getSelfId();
+	const books = await booksQueryRepository.findMany(userId, "UNEXPORTED", {
+		orderBy: { createdAt: "desc" },
+	});
+
+	return books.map((d) => ({
+		title: d.title,
+		href: d.ISBN,
+		image: d.googleImgSrc,
+	}));
+});
+
 export const getBooksCount = cache(async (status: Status) => {
 	const userId = await getSelfId();
 	return await booksQueryRepository.count(userId, status);

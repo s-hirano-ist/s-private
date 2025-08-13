@@ -1,7 +1,7 @@
 import { forbidden } from "next/navigation";
 import { ImageCardStack } from "@/components/card/image-card-stack";
 import { Unexpected } from "@/components/status/unexpected";
-import { getExportedBooks } from "@/features/books/actions/get-books";
+import { getUnexportedBooks } from "@/features/books/actions/get-books";
 import { hasViewerAdminPermission } from "@/utils/auth/session";
 
 export async function BooksStack() {
@@ -9,7 +9,7 @@ export async function BooksStack() {
 	if (!hasAdminPermission) forbidden();
 
 	try {
-		const data = await getExportedBooks();
+		const data = await getUnexportedBooks();
 
 		return <ImageCardStack basePath="book" data={data} />;
 	} catch (error) {
