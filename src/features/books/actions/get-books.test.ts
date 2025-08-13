@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { booksQueryRepository } from "@/features/books/repositories/books-query-repository";
-import { getAllBooks, getBooksCount } from "./get-books";
+import { getBooksCount, getExportedBooks } from "./get-books";
 
 vi.mock("@/features/books/repositories/books-query-repository", () => ({
 	booksQueryRepository: {
@@ -29,11 +29,11 @@ describe("get-books", () => {
 				},
 			];
 
-			vi.mocked(booksQueryRepository.findAll).mockResolvedValue(mockBooks);
+			vi.mocked(booksQueryRepository.findMany).mockResolvedValue(mockBooks);
 
-			const result = await getAllBooks();
+			const result = await getExportedBooks();
 
-			expect(booksQueryRepository.findAll).toHaveBeenCalled();
+			expect(booksQueryRepository.findMany).toHaveBeenCalled();
 
 			expect(result).toEqual([
 				{
@@ -50,19 +50,19 @@ describe("get-books", () => {
 		});
 
 		test("should handle empty results", async () => {
-			vi.mocked(booksQueryRepository.findAll).mockResolvedValue([]);
+			vi.mocked(booksQueryRepository.findMany).mockResolvedValue([]);
 
-			const result = await getAllBooks();
+			const result = await getExportedBooks();
 
 			expect(result).toEqual([]);
 		});
 
 		test("should handle database errors", async () => {
-			vi.mocked(booksQueryRepository.findAll).mockRejectedValue(
+			vi.mocked(booksQueryRepository.findMany).mockRejectedValue(
 				new Error("Database error"),
 			);
 
-			await expect(getAllBooks()).rejects.toThrow("Database error");
+			await expect(getExportedBooks()).rejects.toThrow("Database error");
 		});
 	});
 

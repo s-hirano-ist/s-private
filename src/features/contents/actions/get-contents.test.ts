@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { contentsQueryRepository } from "@/features/contents/repositories/contents-query-repository";
-import { getAllContents, getContentsCount } from "./get-contents";
+import { getContentsCount, getExportedContents } from "./get-contents";
 
 vi.mock("@/features/contents/repositories/contents-query-repository", () => ({
 	contentsQueryRepository: {
@@ -29,13 +29,13 @@ describe("get-contents", () => {
 				},
 			];
 
-			vi.mocked(contentsQueryRepository.findAll).mockResolvedValue(
+			vi.mocked(contentsQueryRepository.findMany).mockResolvedValue(
 				mockContents,
 			);
 
-			const result = await getAllContents();
+			const result = await getExportedContents();
 
-			expect(contentsQueryRepository.findAll).toHaveBeenCalled();
+			expect(contentsQueryRepository.findMany).toHaveBeenCalled();
 
 			expect(result).toEqual([
 				{
@@ -54,7 +54,7 @@ describe("get-contents", () => {
 		test("should handle empty results", async () => {
 			vi.mocked(contentsQueryRepository.findAll).mockResolvedValue([]);
 
-			const result = await getAllContents();
+			const result = await getExportedContents();
 
 			expect(result).toEqual([]);
 		});
@@ -64,7 +64,7 @@ describe("get-contents", () => {
 				new Error("Database error"),
 			);
 
-			await expect(getAllContents()).rejects.toThrow("Database error");
+			await expect(getExportedContents()).rejects.toThrow("Database error");
 		});
 
 		test("should handle contents with null images", async () => {
@@ -80,7 +80,7 @@ describe("get-contents", () => {
 				mockContents,
 			);
 
-			const result = await getAllContents();
+			const result = await getExportedContents();
 
 			expect(result).toEqual([
 				{
@@ -100,11 +100,11 @@ describe("get-contents", () => {
 				},
 			];
 
-			vi.mocked(contentsQueryRepository.findAll).mockResolvedValue(
+			vi.mocked(contentsQueryRepository.findMany).mockResolvedValue(
 				mockContents,
 			);
 
-			const result = await getAllContents();
+			const result = await getExportedContents();
 
 			expect(result[0].href).toBe("My Special Content Title");
 			expect(result[0].title).toBe("My Special Content Title");
@@ -115,7 +115,7 @@ describe("get-contents", () => {
 		test("should return count of contents", async () => {
 			vi.mocked(contentsQueryRepository.count).mockResolvedValue(25);
 
-			const result = await getContentsCount();
+			const result = await getContentsCount("EXPORTED");
 
 			expect(contentsQueryRepository.count).toHaveBeenCalled();
 			expect(result).toBe(25);
@@ -124,7 +124,7 @@ describe("get-contents", () => {
 		test("should return 0 for empty collection", async () => {
 			vi.mocked(contentsQueryRepository.count).mockResolvedValue(0);
 
-			const result = await getContentsCount();
+			const result = await getContentsCount("EXPORTED");
 
 			expect(result).toBe(0);
 		});

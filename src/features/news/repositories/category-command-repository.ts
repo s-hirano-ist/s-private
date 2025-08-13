@@ -1,9 +1,9 @@
 import type { Categories } from "@/generated";
 import prisma from "@/prisma";
 
-export type ICategoryCommandRepository = {
+type ICategoryCommandRepository = {
 	upsert(data: CategoryUpsertInput): Promise<Categories>;
-	delete(id: number): Promise<void>;
+	deleteById(id: number, userId: string): Promise<void>;
 };
 
 type CategoryUpsertInput = {
@@ -11,23 +11,18 @@ type CategoryUpsertInput = {
 	userId: string;
 };
 
-export class CategoryCommandRepository implements ICategoryCommandRepository {
+class CategoryCommandRepository implements ICategoryCommandRepository {
 	async upsert(data: CategoryUpsertInput): Promise<Categories> {
 		return await prisma.categories.upsert({
-			where: {
-				name_userId: {
-					userId: data.userId,
-					name: data.name,
-				},
-			},
+			where: { name_userId: { userId: data.userId, name: data.name } },
 			update: {},
 			create: data,
 		});
 	}
 
-	async delete(id: number): Promise<void> {
+	async deleteById(id: number, userId: string): Promise<void> {
 		await prisma.categories.delete({
-			where: { id },
+			where: { id, userId },
 		});
 	}
 }

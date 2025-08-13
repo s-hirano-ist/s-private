@@ -1,4 +1,5 @@
 import { StatusCodeView } from "@/components/status/status-code-view";
+import { Unexpected } from "@/components/status/unexpected";
 import { addNews } from "@/features/news/actions/add-news";
 import { getCategoriesByUserId } from "@/features/news/actions/get-news";
 import { loggerError } from "@/pino";
@@ -26,11 +27,6 @@ export async function AddNewsForm() {
 
 		return <AddNewsFormClient addNews={addNews} categories={categories} />;
 	} catch (error) {
-		loggerError("unexpected", { caller: "AddNewsForm", status: 500 }, error);
-		return (
-			<div className="flex flex-col items-center">
-				<StatusCodeView statusCode="500" />
-			</div>
-		);
+		return <Unexpected caller="AddNewsForm" error={error} />;
 	}
 }

@@ -1,19 +1,13 @@
-import { StatusCodeView } from "@/components/status/status-code-view";
-import { getUnexportedContentsByUserId } from "@/features/contents/actions/get-contents";
-import { loggerError } from "@/pino";
-import { ContentsStackClient } from "./client";
+import { LinkCardStack } from "@/components/card/link-card-stack";
+import { Unexpected } from "@/components/status/unexpected";
+import { getUnexportedContents } from "@/features/contents/actions/get-contents";
 
 export async function ContentsStack() {
 	try {
-		const unexportedContents = await getUnexportedContentsByUserId();
+		const unexportedContents = await getUnexportedContents();
 
-		return <ContentsStackClient data={unexportedContents} />;
+		return <LinkCardStack data={unexportedContents} showDeleteButton={false} />;
 	} catch (error) {
-		loggerError("unexpected", { caller: "ContentsStack", status: 500 }, error);
-		return (
-			<div className="flex flex-col items-center">
-				<StatusCodeView statusCode="500" />
-			</div>
-		);
+		return <Unexpected caller="ContentsStack" error={error} />;
 	}
 }

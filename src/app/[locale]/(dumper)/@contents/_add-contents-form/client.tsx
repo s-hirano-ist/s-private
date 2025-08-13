@@ -41,6 +41,7 @@ export function AddContentsFormClient({ addContents }: Props) {
 							className="min-h-[200px]"
 							id="markdown"
 							name="markdown"
+							required
 						/>
 					</div>
 				</>

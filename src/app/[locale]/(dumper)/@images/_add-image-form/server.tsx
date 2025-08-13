@@ -1,6 +1,5 @@
-import { StatusCodeView } from "@/components/status/status-code-view";
+import { Unexpected } from "@/components/status/unexpected";
 import { addImage } from "@/features/images/actions/add-image";
-import { loggerError } from "@/pino";
 import { hasDumperPostPermission } from "@/utils/auth/session";
 import { AddImageFormClient } from "./client";
 
@@ -12,11 +11,6 @@ export async function AddImageForm() {
 
 		return <AddImageFormClient addImage={addImage} />;
 	} catch (error) {
-		loggerError("unexpected", { caller: "AddImageForm", status: 500 }, error);
-		return (
-			<div className="flex flex-col items-center">
-				<StatusCodeView statusCode="500" />
-			</div>
-		);
+		return <Unexpected caller="AddImageForm" error={error} />;
 	}
 }

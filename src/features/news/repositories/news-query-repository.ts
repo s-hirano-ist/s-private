@@ -1,34 +1,32 @@
+import { PrismaCacheStrategy } from "@prisma/extension-accelerate";
 import type { Prisma, Status } from "@/generated";
 import prisma from "@/prisma";
 
 type INewsQueryRepository = {
-	findById(
-		id: number,
-		userId: string,
-		status: Status,
-	): Promise<NewsWithCategory | null>;
+	findById(id: number, userId: string, status: Status): Promise<News | null>;
 	findMany(
 		userId: string,
 		status: Status,
 		params: NewsFindManyParams,
-	): Promise<NewsWithCategory[]>;
+	): Promise<News[]>;
 	count(userId: string, status: Status): Promise<number>;
 };
 
-type NewsWithCategory = {
+type News = {
 	id: number;
 	title: string;
 	url: string;
 	quote: string | null;
 	ogTitle: string | null;
 	ogDescription: string | null;
-	Category: { name: string };
+	Category: { id: number; name: string };
 };
 
 type NewsFindManyParams = {
 	orderBy?: Prisma.NewsOrderByWithRelationInput;
 	take?: number;
 	skip?: number;
+	cacheStrategy?: PrismaCacheStrategy["cacheStrategy"];
 };
 
 class NewsQueryRepository implements INewsQueryRepository {
@@ -36,7 +34,7 @@ class NewsQueryRepository implements INewsQueryRepository {
 		id: number,
 		userId: string,
 		status: Status,
-	): Promise<NewsWithCategory | null> {
+	): Promise<News | null> {
 		return await prisma.news.findUnique({
 			where: { id, userId, status },
 			include: { Category: true },
@@ -47,7 +45,7 @@ class NewsQueryRepository implements INewsQueryRepository {
 		userId: string,
 		status: Status,
 		params: NewsFindManyParams,
-	): Promise<NewsWithCategory[]> => {
+	): Promise<News[]> => {
 		return await prisma.news.findMany({
 			where: { userId, status },
 			select: {
@@ -57,16 +55,15 @@ class NewsQueryRepository implements INewsQueryRepository {
 				quote: true,
 				ogTitle: true,
 				ogDescription: true,
-				Category: { select: { name: true } },
+				Category: { select: { id: true, name: true } },
 			},
 			...params,
-			cacheStrategy: { ttl: 400, swr: 40, tags: ["news"] },
 		});
 	};
 
-	count = async (userId: string, status: Status): Promise<number> => {
+	async count(userId: string, status: Status): Promise<number> {
 		return await prisma.news.count({ where: { userId, status } });
-	};
+	}
 }
 
 export const newsQueryRepository = new NewsQueryRepository();

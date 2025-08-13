@@ -12,7 +12,7 @@ export default async function Page({ searchParams }: Props) {
 	const activeTab = (await searchParams).tab as string;
 
 	// Only render if this tab is active
-	if (activeTab && activeTab !== "image") {
+	if (activeTab && activeTab !== "images") {
 		return <div />;
 	}
 

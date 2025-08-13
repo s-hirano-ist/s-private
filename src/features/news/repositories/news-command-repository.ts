@@ -2,7 +2,7 @@ import type { Status } from "@/generated";
 import prisma from "@/prisma";
 
 type INewsCommandRepository = {
-	create(data: NewsCreateInput): Promise<NewsWithCategory>;
+	create(data: NewsCreateInput): Promise<News>;
 	deleteById(id: number, userId: string, status: Status): Promise<void>;
 	transaction<T>(fn: () => Promise<T>): Promise<T>;
 };
@@ -15,7 +15,7 @@ type NewsCreateInput = {
 	userId: string;
 };
 
-type NewsWithCategory = {
+type News = {
 	id: number;
 	title: string;
 	url: string;
@@ -26,7 +26,7 @@ type NewsWithCategory = {
 };
 
 class NewsCommandRepository implements INewsCommandRepository {
-	async create(data: NewsCreateInput): Promise<NewsWithCategory> {
+	async create(data: NewsCreateInput): Promise<News> {
 		return await prisma.news.create({
 			data,
 			include: { Category: true },

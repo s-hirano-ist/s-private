@@ -1,91 +1,66 @@
-import type { Contents, Prisma, Status } from "@/generated";
+import { PrismaCacheStrategy } from "@prisma/extension-accelerate";
+import type { Prisma, Status } from "@/generated";
 import prisma from "@/prisma";
 
-export type IContentsQueryRepository = {
-	findById(id: number): Promise<Contents | null>;
-	findMany(params?: ContentsFindManyParams): Promise<Contents[]>;
-	findByStatus(status: Status, userId: string): Promise<Contents[]>;
-	findByStatusAndUserId(
-		status: Status,
+type IContentsQueryRepository = {
+	findByTitle(
+		title: string,
 		userId: string,
-	): Promise<ContentsWithImage[]>;
-	findByTitle(title: string): Promise<Contents | null>;
-	findAll(): Promise<ContentsWithImage[]>;
-	count(): Promise<number>;
+		status: Status,
+	): Promise<Contents | null>;
+	findMany(
+		userId: string,
+		status: Status,
+		params?: ContentsFindManyParams,
+	): Promise<ContentsList>;
+	count(userId: string, status: Status): Promise<number>;
 };
 
+type Contents = {
+	id: number;
+	title: string;
+	markdown: string;
+};
+
+type ContentsList = {
+	id: number;
+	title: string;
+}[];
+
 type ContentsFindManyParams = {
-	where?: Prisma.ContentsWhereInput;
 	orderBy?: Prisma.ContentsOrderByWithRelationInput;
 	take?: number;
 	skip?: number;
+	cacheStrategy?: PrismaCacheStrategy["cacheStrategy"];
 };
 
-type ContentsWithImage = {
-	id: number;
-	title: string;
-	description?: string;
-	href: string;
-};
-
-export class ContentsQueryRepository implements IContentsQueryRepository {
-	async findById(id: number): Promise<Contents | null> {
-		return await prisma.contents.findUnique({
-			where: { id },
-		});
-	}
-
-	async findMany(params?: ContentsFindManyParams): Promise<Contents[]> {
-		return await prisma.contents.findMany(params);
-	}
-
-	async findByStatus(status: Status, userId: string): Promise<Contents[]> {
-		return await prisma.contents.findMany({
-			where: { status, userId },
-			orderBy: { createdAt: "desc" },
-		});
-	}
-
-	async findByStatusAndUserId(
-		status: Status,
+class ContentsQueryRepository implements IContentsQueryRepository {
+	async findByTitle(
+		title: string,
 		userId: string,
-	): Promise<ContentsWithImage[]> {
-		const contents = await prisma.contents.findMany({
-			where: { status, userId },
-			orderBy: { title: "desc" },
-		});
-		return contents.map((content) => ({
-			id: content.id,
-			title: content.title,
-			description: content.markdown,
-			href: `/content/${content.title}`,
-		})) satisfies ContentsWithImage[];
-	}
-
-	async findByTitle(title: string): Promise<Contents | null> {
+		status: Status,
+	): Promise<Contents | null> {
 		return await prisma.contents.findUnique({
-			where: { title },
-			cacheStrategy: { ttl: 400, tags: ["contents"] },
+			where: { title, userId, status },
+			select: { id: true, title: true, markdown: true },
 		});
 	}
 
-	findAll = async (): Promise<ContentsWithImage[]> => {
-		const contents = await prisma.contents.findMany({
-			select: { title: true, id: true, markdown: true },
-			cacheStrategy: { ttl: 400, tags: ["contents"] },
+	async findMany(
+		userId: string,
+		status: Status,
+		params?: ContentsFindManyParams,
+	): Promise<ContentsList> {
+		return await prisma.contents.findMany({
+			where: { userId, status },
+			select: { id: true, title: true },
+			...params,
 		});
+	}
 
-		return contents.map((content) => ({
-			id: content.id,
-			title: content.title,
-			description: content.markdown,
-			href: `/content/${content.title}`,
-		})) satisfies ContentsWithImage[];
-	};
-
-	count = async (): Promise<number> => {
-		return await prisma.contents.count({});
-	};
+	async count(userId: string, status: Status): Promise<number> {
+		return await prisma.contents.count({ where: { userId, status } });
+	}
 }
 
 export const contentsQueryRepository = new ContentsQueryRepository();

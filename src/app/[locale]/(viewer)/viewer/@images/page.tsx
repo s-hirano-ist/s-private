@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { ImageStackSkeleton } from "@/components/image/image-stack-skeleton";
-import { AllImageStack } from "./_all-image-stack/server";
 import { ImageCounter } from "./_image-counter/server";
+import { ImageStack } from "./_image-stack/server";
 
 type Params = Promise<{ page?: string; tab?: string }>;
 
@@ -22,7 +22,7 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 			</Suspense>
 
 			<Suspense fallback={<ImageStackSkeleton />} key={currentPage}>
-				<AllImageStack page={currentPage} />
+				<ImageStack page={currentPage} />
 			</Suspense>
 		</>
 	);

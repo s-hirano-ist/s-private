@@ -1,11 +1,18 @@
+import { cache } from "react";
 import { knowledgeQueryRepository } from "@/features/ai/repositories/knowledge-query-repository";
+import { getSelfId } from "@/utils/auth/session";
 
-// Fetch all contents for RAG knowledge base
-export const getAllContentsForKnowledge =
-	knowledgeQueryRepository.findAllContents;
+// FIXME: TODO: do not export status
 
-// Fetch all books for RAG knowledge base
-export const getAllBooksForKnowledge = knowledgeQueryRepository.findAllBooks;
+export const getAllContentsForKnowledge = cache(async () => {
+	const userId = await getSelfId();
+	return await knowledgeQueryRepository.findAllContents(userId, "EXPORTED");
+});
+
+export const getAllBooksForKnowledge = cache(async () => {
+	const userId = await getSelfId();
+	return await knowledgeQueryRepository.findAllBooks(userId, "EXPORTED");
+});
 
 // Fetch all knowledge (both contents and books)
 export async function fetchAllKnowledge() {
@@ -28,9 +35,4 @@ export async function fetchAllKnowledge() {
 			href: `/book/${book.ISBN}`,
 		})),
 	];
-}
-
-// Fetch a specific content by title
-export async function fetchContentByTitle(title: string) {
-	return await knowledgeQueryRepository.findContentByTitle(title);
 }

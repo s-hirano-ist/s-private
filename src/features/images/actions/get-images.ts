@@ -1,24 +1,27 @@
 import { cache } from "react";
+import { PAGE_SIZE } from "@/constants";
 import { imageQueryRepository } from "@/features/images/repositories/image-query-repository";
+import { Status } from "@/generated";
 import { getSelfId } from "@/utils/auth/session";
 
-export const getUnexportedImagesByUserId = cache(async () => {
+export const getExportedImages = cache(async (page: number) => {
 	const userId = await getSelfId();
-	return await imageQueryRepository.findByStatusAndUserId("UNEXPORTED", userId);
+	return await imageQueryRepository.findMany(userId, "EXPORTED", {
+		skip: (page - 1) * PAGE_SIZE,
+		take: PAGE_SIZE,
+		orderBy: { createdAt: "desc" },
+		cacheStrategy: { ttl: 400, swr: 40, tags: ["images"] },
+	});
 });
 
-export const getAllImagesPaginated = cache(
-	async (page: number, pageSize: number) => {
-		return await imageQueryRepository.findAllPaginated(page, pageSize);
-	},
-);
-
-export const getImagesCount = cache(async () => {
-	return await imageQueryRepository.count();
+export const getUnexportedImages = cache(async () => {
+	const userId = await getSelfId();
+	return await imageQueryRepository.findMany(userId, "UNEXPORTED");
 });
 
-export const getAllImagesCount = cache(async () => {
-	return await imageQueryRepository.countAll();
+export const getImagesCount = cache(async (status: Status) => {
+	const userId = await getSelfId();
+	return await imageQueryRepository.count(userId, status);
 });
 
 export const getImageFromStorage = async (objKey: string) => {

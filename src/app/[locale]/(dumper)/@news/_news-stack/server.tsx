@@ -1,20 +1,20 @@
-import { StatusCodeView } from "@/components/status/status-code-view";
+import { LinkCardStack } from "@/components/card/link-card-stack";
+import { Unexpected } from "@/components/status/unexpected";
 import { deleteNews } from "@/features/news/actions/delete-news";
 import { getUnexportedNews } from "@/features/news/actions/get-news";
-import { loggerError } from "@/pino";
-import { NewsStackClient } from "./client";
 
 export async function NewsStack() {
 	try {
 		const unexportedNews = await getUnexportedNews();
 
-		return <NewsStackClient data={unexportedNews} deleteNews={deleteNews} />;
-	} catch (error) {
-		loggerError("unexpected", { caller: "NewsStack", status: 500 }, error);
 		return (
-			<div className="flex flex-col items-center">
-				<StatusCodeView statusCode="500" />
-			</div>
+			<LinkCardStack
+				data={unexportedNews}
+				deleteAction={deleteNews}
+				showDeleteButton
+			/>
 		);
+	} catch (error) {
+		return <Unexpected caller="NewsStack" error={error} />;
 	}
 }

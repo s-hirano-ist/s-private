@@ -3,18 +3,12 @@ import type { Images, Status } from "@/generated";
 import { minioClient } from "@/minio";
 import prisma from "@/prisma";
 
-export type IImageCommandRepository = {
+type IImageCommandRepository = {
 	create(data: ImageCreateInput): Promise<Images>;
-	updateStatus(id: string, status: Status): Promise<Images>;
-	updateManyStatus(
-		userId: string,
-		fromStatus: Status,
-		toStatus: Status,
-	): Promise<number>;
-	delete(id: string): Promise<void>;
+	deleteById(id: string, userId: string, status: Status): Promise<void>;
+	transaction<T>(fn: () => Promise<T>): Promise<T>;
 	invalidateCache(): Promise<void>;
 	uploadToStorage(path: string, buffer: Buffer): Promise<void>;
-	transaction<T>(fn: () => Promise<T>): Promise<T>;
 };
 
 type ImageCreateInput = {
@@ -28,36 +22,17 @@ type ImageCreateInput = {
 	description?: string | null;
 };
 
-export class ImageCommandRepository implements IImageCommandRepository {
+class ImageCommandRepository implements IImageCommandRepository {
 	async create(data: ImageCreateInput): Promise<Images> {
-		return await prisma.images.create({
-			data,
-		});
+		return await prisma.images.create({ data });
 	}
 
-	async updateStatus(id: string, status: Status): Promise<Images> {
-		return await prisma.images.update({
-			where: { id },
-			data: { status },
-		});
+	async deleteById(id: string, userId: string, status: Status): Promise<void> {
+		await prisma.images.delete({ where: { id, userId, status } });
 	}
 
-	async updateManyStatus(
-		userId: string,
-		fromStatus: Status,
-		toStatus: Status,
-	): Promise<number> {
-		const result = await prisma.images.updateMany({
-			where: { status: fromStatus, userId },
-			data: { status: toStatus },
-		});
-		return result.count;
-	}
-
-	async delete(id: string): Promise<void> {
-		await prisma.images.delete({
-			where: { id },
-		});
+	async transaction<T>(fn: () => Promise<T>): Promise<T> {
+		return await prisma.$transaction(fn);
 	}
 
 	async invalidateCache(): Promise<void> {
@@ -66,10 +41,6 @@ export class ImageCommandRepository implements IImageCommandRepository {
 
 	async uploadToStorage(path: string, buffer: Buffer): Promise<void> {
 		await minioClient.putObject(env.MINIO_BUCKET_NAME, path, buffer);
-	}
-
-	async transaction<T>(fn: () => Promise<T>): Promise<T> {
-		return await prisma.$transaction(fn);
 	}
 }
 

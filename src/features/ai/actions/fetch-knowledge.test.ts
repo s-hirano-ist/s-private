@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import { knowledgeQueryRepository } from "@/features/ai/repositories/knowledge-query-repository";
 import {
 	fetchAllKnowledge,
-	fetchContentByTitle,
 	getAllBooksForKnowledge,
 	getAllContentsForKnowledge,
 } from "./fetch-knowledge";
@@ -11,7 +10,6 @@ vi.mock("@/features/ai/repositories/knowledge-query-repository", () => ({
 	knowledgeQueryRepository: {
 		findAllContents: vi.fn(),
 		findAllBooks: vi.fn(),
-		findContentByTitle: vi.fn(),
 	},
 }));
 
@@ -184,47 +182,6 @@ describe("fetch-knowledge", () => {
 					href: "/book/0123456789",
 				},
 			]);
-		});
-	});
-
-	describe("fetchContentByTitle", () => {
-		test("should fetch content by title with correct parameters", async () => {
-			const mockContent = {
-				title: "Test Content",
-				markdown: "Test markdown content",
-				ISBN: "0001111",
-			};
-
-			vi.mocked(knowledgeQueryRepository.findContentByTitle).mockResolvedValue(
-				mockContent,
-			);
-
-			const result = await fetchContentByTitle("Test Content");
-
-			expect(knowledgeQueryRepository.findContentByTitle).toHaveBeenCalledWith(
-				"Test Content",
-			);
-			expect(result).toEqual(mockContent);
-		});
-
-		test("should return null for non-existent content", async () => {
-			vi.mocked(knowledgeQueryRepository.findContentByTitle).mockResolvedValue(
-				null,
-			);
-
-			const result = await fetchContentByTitle("Non-existent Content");
-
-			expect(result).toBeNull();
-		});
-
-		test("should handle database errors", async () => {
-			vi.mocked(knowledgeQueryRepository.findContentByTitle).mockRejectedValue(
-				new Error("Database error"),
-			);
-
-			await expect(fetchContentByTitle("Test Content")).rejects.toThrow(
-				"Database error",
-			);
 		});
 	});
 });
