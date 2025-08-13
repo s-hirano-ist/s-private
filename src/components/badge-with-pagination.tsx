@@ -1,0 +1,71 @@
+import { useTranslations } from "next-intl";
+import { Badge } from "@/components/ui/badge";
+import {
+	PaginationContent,
+	PaginationItem,
+	PaginationNext,
+	PaginationPrevious,
+	Pagination as ShadcnPagination,
+} from "@/components/ui/pagination";
+
+type Props = {
+	currentPage: number;
+	totalItems: number;
+	itemsPerPage?: number;
+	label: string;
+	badgeOnly?: boolean;
+};
+
+export function BadgeWithPagination({
+	currentPage,
+	totalItems,
+	itemsPerPage = 100,
+	label,
+	badgeOnly = false,
+}: Props) {
+	const t = useTranslations("label");
+
+	if (badgeOnly) {
+		return (
+			<Badge className="m-2 flex justify-center">
+				{t(label)}: {totalItems}
+			</Badge>
+		);
+	}
+
+	const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+	const isPreviousDisabled = currentPage <= 1;
+	const isNextDisabled = currentPage >= totalPages;
+
+	const startItem = (currentPage - 1) * itemsPerPage + 1;
+	const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+
+	return (
+		<ShadcnPagination className="w-full px-4">
+			<PaginationContent className="w-full justify-between">
+				<PaginationItem>
+					<PaginationPrevious
+						className={
+							isPreviousDisabled ? "pointer-events-none opacity-50" : undefined
+						}
+						href={isPreviousDisabled ? "#" : `?page=${currentPage - 1}`}
+					/>
+				</PaginationItem>
+				<PaginationItem className="flex-1">
+					<Badge className="flex justify-center w-full">
+						{t(label)} : {startItem} ~ {endItem} / {totalItems}
+					</Badge>
+				</PaginationItem>
+				<PaginationItem>
+					<PaginationNext
+						className={
+							isNextDisabled ? "pointer-events-none opacity-50" : undefined
+						}
+						href={isNextDisabled ? "#" : `?page=${currentPage + 1}`}
+					/>
+				</PaginationItem>
+			</PaginationContent>
+		</ShadcnPagination>
+	);
+}

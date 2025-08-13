@@ -1,5 +1,5 @@
 import { forbidden } from "next/navigation";
-import { CountBadge } from "@/components/count-badge";
+import { BadgeWithPagination } from "@/components/badge-with-pagination";
 import { Unexpected } from "@/components/status/unexpected";
 import { getBooksCount } from "@/features/books/actions/get-books";
 import { hasViewerAdminPermission } from "@/utils/auth/session";
@@ -9,9 +9,14 @@ export async function BooksCounter() {
 	if (!hasAdminPermission) forbidden();
 
 	try {
-		const totalContents = await getBooksCount("EXPORTED");
-
-		return <CountBadge label="totalBooks" total={totalContents} />;
+		const totalBooks = await getBooksCount("EXPORTED");
+		return (
+			<BadgeWithPagination
+				currentPage={1}
+				label="totalBooks"
+				totalItems={totalBooks}
+			/>
+		);
 	} catch (error) {
 		return <Unexpected caller="BooksCounter" error={error} />;
 	}

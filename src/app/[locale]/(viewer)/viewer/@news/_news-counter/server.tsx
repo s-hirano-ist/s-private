@@ -1,6 +1,5 @@
 import { forbidden } from "next/navigation";
-import { ContentsPagination } from "@/components/contents-pagination";
-import { CountBadge } from "@/components/count-badge";
+import { BadgeWithPagination } from "@/components/badge-with-pagination";
 import { Unexpected } from "@/components/status/unexpected";
 import { PAGE_SIZE } from "@/constants";
 import { getNewsCount } from "@/features/news/actions/get-news";
@@ -12,15 +11,16 @@ export async function NewsCounter({ page }: Props) {
 	const hasAdminPermission = await hasViewerAdminPermission();
 	if (!hasAdminPermission) forbidden();
 
-	const totalNews = await getNewsCount("EXPORTED");
-	const totalPages = Math.ceil(totalNews / PAGE_SIZE);
-
 	try {
+		const totalNews = await getNewsCount("EXPORTED");
+
 		return (
-			<>
-				<CountBadge label="totalNews" total={totalNews} />
-				<ContentsPagination currentPage={page} totalPages={totalPages} />
-			</>
+			<BadgeWithPagination
+				currentPage={page}
+				itemsPerPage={PAGE_SIZE}
+				label="totalNews"
+				totalItems={totalNews}
+			/>
 		);
 	} catch (error) {
 		return <Unexpected caller="NewsCounter" error={error} />;
