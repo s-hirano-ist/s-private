@@ -3,8 +3,10 @@ import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useMemo } from "react";
+import { SimpleSearchClient } from "@/app/[locale]/search/simple-search/client";
 import { Button } from "@/components/ui/button";
 import { UTIL_URLS } from "@/constants";
+import { searchKnowledge } from "@/features/ai/actions/ai-search";
 import { Link, redirect } from "@/i18n/routing";
 
 type Props = { handleReload: () => void; onSignOutSubmit: () => Promise<void> };
@@ -56,6 +58,7 @@ export function UtilButtons({ handleReload, onSignOutSubmit }: Props) {
 					{t("signOut")}
 				</Button>
 			)}
+			<SimpleSearchClient searchKnowledge={searchKnowledge} />
 		</div>
 	);
 }

@@ -117,6 +117,11 @@ describe("get-images", () => {
 			expect(imageQueryRepository.findMany).toHaveBeenCalledWith(
 				"test-user-id",
 				"UNEXPORTED",
+				{
+					orderBy: {
+						createdAt: "desc",
+					},
+				},
 			);
 
 			expect(result).toEqual(mockImages);
