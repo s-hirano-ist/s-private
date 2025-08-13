@@ -5,8 +5,8 @@ import { hasDumperPostPermission } from "@/utils/auth/session";
 import { AddContentsFormClient } from "./client";
 
 export async function AddContentsForm() {
-	const hasPostPermission = await hasDumperPostPermission();
-	if (!hasPostPermission) forbidden();
+	const hasPermission = await hasDumperPostPermission();
+	if (!hasPermission) forbidden();
 
 	try {
 		return <AddContentsFormClient addContents={addContents} />;

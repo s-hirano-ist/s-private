@@ -5,8 +5,8 @@ import { getBooksCount } from "@/features/books/actions/get-books";
 import { hasViewerAdminPermission } from "@/utils/auth/session";
 
 export async function BooksCounter() {
-	const hasAdminPermission = await hasViewerAdminPermission();
-	if (!hasAdminPermission) forbidden();
+	const hasPermission = await hasViewerAdminPermission();
+	if (!hasPermission) forbidden();
 
 	try {
 		const totalBooks = await getBooksCount("EXPORTED");

@@ -8,8 +8,8 @@ import { hasViewerAdminPermission } from "@/utils/auth/session";
 type Props = { page: number };
 
 export async function NewsCounter({ page }: Props) {
-	const hasAdminPermission = await hasViewerAdminPermission();
-	if (!hasAdminPermission) forbidden();
+	const hasPermission = await hasViewerAdminPermission();
+	if (!hasPermission) forbidden();
 
 	try {
 		const totalNews = await getNewsCount("EXPORTED");

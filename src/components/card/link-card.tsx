@@ -13,7 +13,7 @@ import { ServerAction } from "@/types";
 import { validateAndNormalizeUrl } from "@/utils/validate-url";
 
 export type LinkCardData = {
-	id: number | string;
+	id: string;
 	title: string;
 	description?: string;
 	badgeText?: string;
@@ -23,7 +23,7 @@ export type LinkCardData = {
 type Props = {
 	data: LinkCardData;
 	showDeleteButton: boolean;
-	deleteAction?: (id: number) => Promise<ServerAction<number>>;
+	deleteAction?: (id: string) => Promise<ServerAction<string>>;
 };
 
 export function LinkCard({
@@ -38,7 +38,7 @@ export function LinkCard({
 			{showDeleteButton && deleteAction !== undefined && (
 				<DeleteButtonWithModal
 					deleteAction={deleteAction}
-					id={Number(id)} // FIXME: not safe when id is string
+					id={id}
 					title={title}
 				/>
 			)}

@@ -38,6 +38,7 @@ describe("ImageCommandRepository", () => {
 		test("should create image successfully", async () => {
 			const mockImage = {
 				id: "image-123",
+				paths: "image-123",
 				userId: "user123",
 				contentType: "image/png",
 				fileSize: 1024,
@@ -48,10 +49,12 @@ describe("ImageCommandRepository", () => {
 				status: "UNEXPORTED",
 				createdAt: new Date(),
 				updatedAt: new Date(),
+				exportedAt: new Date(),
 			};
 
 			const inputData = {
 				id: "image-123",
+				paths: "image-123",
 				userId: "user123",
 				contentType: "image/png",
 				fileSize: 1024,
@@ -119,48 +122,6 @@ describe("ImageCommandRepository", () => {
 
 			expect(prisma.images.create).toHaveBeenCalledWith({
 				data: inputData,
-			});
-		});
-	});
-
-	describe("deleteById", () => {
-		test("should delete image successfully", async () => {
-			vi.mocked(prisma.images.delete).mockResolvedValue({
-				id: "image-123",
-				userId: "user123",
-				contentType: "image/png",
-				fileSize: 1024,
-				width: 800,
-				height: 600,
-				tags: [],
-				description: null,
-				status: "EXPORTED",
-				createdAt: new Date(),
-				updatedAt: new Date(),
-			});
-
-			await imageCommandRepository.deleteById(
-				"image-123",
-				"user123",
-				"EXPORTED",
-			);
-
-			expect(prisma.images.delete).toHaveBeenCalledWith({
-				where: { id: "image-123", userId: "user123", status: "EXPORTED" },
-			});
-		});
-
-		test("should handle not found errors during delete", async () => {
-			vi.mocked(prisma.images.delete).mockRejectedValue(
-				new Error("Record not found"),
-			);
-
-			await expect(
-				imageCommandRepository.deleteById("image-999", "user123", "EXPORTED"),
-			).rejects.toThrow("Record not found");
-
-			expect(prisma.images.delete).toHaveBeenCalledWith({
-				where: { id: "image-999", userId: "user123", status: "EXPORTED" },
 			});
 		});
 	});

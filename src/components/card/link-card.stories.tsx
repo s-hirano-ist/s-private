@@ -15,7 +15,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
 	args: {
 		data: {
-			id: 1,
+			id: "1",
 			title: "Sample Title",
 			description: "This is a sample description for the news item.",
 			href: "https://example.com",
@@ -28,7 +28,7 @@ export const Default: Story = {
 export const WithDeleteButton: Story = {
 	args: {
 		data: {
-			id: 2,
+			id: "2",
 			title: "News with Delete Button",
 			description: "This news item has a delete button visible.",
 			href: "https://example.com",
@@ -42,7 +42,7 @@ export const WithDeleteButton: Story = {
 export const WithoutBadgeText: Story = {
 	args: {
 		data: {
-			id: 3,
+			id: "3",
 			title: "News without Badge Text",
 			description: "This news item doesn't have a category.",
 			href: "https://example.com",
@@ -54,7 +54,7 @@ export const WithoutBadgeText: Story = {
 export const WithoutDescription: Story = {
 	args: {
 		data: {
-			id: 4,
+			id: "4",
 			title: "News without Description",
 			href: "https://example.com",
 			badgeText: "General",
@@ -66,7 +66,7 @@ export const WithoutDescription: Story = {
 export const LongTitle: Story = {
 	args: {
 		data: {
-			id: 5,
+			id: "5",
 			title:
 				"This is a very long news title that might wrap to multiple lines to test how the component handles longer text content",
 			description:
@@ -81,7 +81,7 @@ export const LongTitle: Story = {
 export const InternalLink: Story = {
 	args: {
 		data: {
-			id: 6,
+			id: "6",
 			title: "Internal Link Example",
 			description: "This links to an internal page using Next.js routing.",
 			href: "/viewer",
@@ -94,7 +94,7 @@ export const InternalLink: Story = {
 export const ExternalLink: Story = {
 	args: {
 		data: {
-			id: 7,
+			id: "7",
 			title: "External Link Example",
 			description: "This opens in a new tab with target=_blank.",
 			href: "https://nextjs.org",
@@ -107,7 +107,7 @@ export const ExternalLink: Story = {
 export const InvalidUrl: Story = {
 	args: {
 		data: {
-			id: 8,
+			id: "8",
 			title: "Invalid URL Example",
 			description: "This has an invalid URL and should fallback to home.",
 			href: "javascript:alert('xss')",

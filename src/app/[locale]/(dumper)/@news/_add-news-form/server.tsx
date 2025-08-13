@@ -7,9 +7,9 @@ import { AddNewsFormClient } from "./client";
 
 export async function AddNewsForm() {
 	try {
-		const hasPostPermission = await hasDumperPostPermission();
+		const hasPermission = await hasDumperPostPermission();
 
-		if (!hasPostPermission) return <></>;
+		if (!hasPermission) return <></>;
 
 		const categories = await (async () => {
 			try {

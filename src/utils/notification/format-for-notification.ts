@@ -1,6 +1,6 @@
 import type { ContentName } from "@/types";
 
-export function formatDeleteMessage(id: number, contentName: ContentName) {
+export function formatDeleteMessage(id: string, contentName: ContentName) {
 	return `【${contentName}】\n\n更新\nID: ${id}`;
 }
 
@@ -30,4 +30,14 @@ export function formatCreateContentsMessage({
 
 export function formatCreateImageMessage({ fileName }: { fileName: string }) {
 	return `【IMAGE】\n\nコンテンツ\nfileName: ${fileName}\nの登録ができました`;
+}
+
+export function formatCreateBooksMessage({
+	ISBN,
+	title,
+}: {
+	ISBN: string;
+	title: string;
+}) {
+	return `【BOOKS】\n\nコンテンツ\nISBN: ${ISBN} \ntitle: ${title}\nの登録ができました`;
 }

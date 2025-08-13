@@ -14,15 +14,15 @@ import { formatCreateNewsMessage } from "@/utils/notification/format-for-notific
 
 type News = {
 	category: string;
-	id: number;
+	id: string;
 	quote: string | null;
 	title: string;
 	url: string;
 };
 
 export async function addNews(formData: FormData): Promise<ServerAction<News>> {
-	const hasPostPermission = await hasDumperPostPermission();
-	if (!hasPostPermission) forbidden();
+	const hasPermission = await hasDumperPostPermission();
+	if (!hasPermission) forbidden();
 
 	try {
 		const userId = await getSelfId();

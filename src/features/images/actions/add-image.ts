@@ -21,8 +21,8 @@ import { sanitizeFileName } from "@/utils/sanitize/sanitize-file-name";
 export async function addImage(
 	formData: FormData,
 ): Promise<ServerAction<undefined>> {
-	const hasPostPermission = await hasDumperPostPermission();
-	if (!hasPostPermission) forbidden();
+	const hasPermission = await hasDumperPostPermission();
+	if (!hasPermission) forbidden();
 
 	try {
 		const userId = await getSelfId();
@@ -37,12 +37,12 @@ export async function addImage(
 
 		const sanitizedFileName = sanitizeFileName(file.name);
 
-		const id = `${uuidv7()}-${sanitizedFileName}`;
+		const paths = `${uuidv7()}-${sanitizedFileName}`;
 
 		const buffer = Buffer.from(await file.arrayBuffer());
 		const metadata = await sharp(buffer).metadata();
 
-		const originalPath = `${ORIGINAL_IMAGE_PATH}/${id}`;
+		const originalPath = `${ORIGINAL_IMAGE_PATH}/${paths}`;
 		await imageCommandRepository.uploadToStorage(originalPath, buffer);
 
 		const thumbnailBuffer = await sharp(buffer)
@@ -51,14 +51,14 @@ export async function addImage(
 				Math.floor((metadata.height * THUMBNAIL_WIDTH) / metadata.width),
 			)
 			.toBuffer();
-		const thumbnailPath = `${THUMBNAIL_IMAGE_PATH}/${id}`;
+		const thumbnailPath = `${THUMBNAIL_IMAGE_PATH}/${paths}`;
 		await imageCommandRepository.uploadToStorage(
 			thumbnailPath,
 			thumbnailBuffer,
 		);
 
 		const createdImage = await imageCommandRepository.create({
-			id,
+			paths,
 			userId,
 			contentType: file.type,
 			fileSize: metadata.size,

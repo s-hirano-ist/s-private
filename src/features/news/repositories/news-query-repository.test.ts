@@ -49,13 +49,13 @@ describe("NewsQueryRepository", () => {
 			vi.mocked(prisma.news.findUnique).mockResolvedValue(null);
 
 			const result = await newsQueryRepository.findById(
-				999,
+				"999",
 				"user123",
 				"EXPORTED",
 			);
 
 			expect(prisma.news.findUnique).toHaveBeenCalledWith({
-				where: { id: 999, userId: "user123", status: "EXPORTED" },
+				where: { id: "999", userId: "user123", status: "EXPORTED" },
 				include: { Category: true },
 			});
 			expect(result).toBeNull();
@@ -67,11 +67,11 @@ describe("NewsQueryRepository", () => {
 			);
 
 			await expect(
-				newsQueryRepository.findById(1, "user123", "EXPORTED"),
+				newsQueryRepository.findById("1", "user123", "EXPORTED"),
 			).rejects.toThrow("Database error");
 
 			expect(prisma.news.findUnique).toHaveBeenCalledWith({
-				where: { id: 1, userId: "user123", status: "EXPORTED" },
+				where: { id: "1", userId: "user123", status: "EXPORTED" },
 				include: { Category: true },
 			});
 		});

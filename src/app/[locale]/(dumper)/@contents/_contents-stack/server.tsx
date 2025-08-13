@@ -5,8 +5,8 @@ import { getUnexportedContents } from "@/features/contents/actions/get-contents"
 import { hasDumperPostPermission } from "@/utils/auth/session";
 
 export async function ContentsStack() {
-	const hasAdminPermission = await hasDumperPostPermission();
-	if (!hasAdminPermission) forbidden();
+	const hasPermission = await hasDumperPostPermission();
+	if (!hasPermission) forbidden();
 
 	try {
 		const unexportedContents = await getUnexportedContents();

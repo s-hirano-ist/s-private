@@ -8,8 +8,8 @@ import { hasViewerAdminPermission } from "@/utils/auth/session";
 type Props = { page: number };
 
 export async function ImageCounter({ page }: Props) {
-	const hasAdminPermission = await hasViewerAdminPermission();
-	if (!hasAdminPermission) return forbidden();
+	const hasPermission = await hasViewerAdminPermission();
+	if (!hasPermission) return forbidden();
 
 	try {
 		const totalImages = await getImagesCount("EXPORTED");

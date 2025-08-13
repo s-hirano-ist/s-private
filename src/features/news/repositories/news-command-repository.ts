@@ -3,7 +3,7 @@ import prisma from "@/prisma";
 
 type INewsCommandRepository = {
 	create(data: NewsCreateInput): Promise<News>;
-	deleteById(id: number, userId: string, status: Status): Promise<void>;
+	deleteById(id: string, userId: string, status: Status): Promise<void>;
 	transaction<T>(fn: () => Promise<T>): Promise<T>;
 };
 
@@ -16,7 +16,7 @@ type NewsCreateInput = {
 };
 
 type News = {
-	id: number;
+	id: string;
 	title: string;
 	url: string;
 	quote: string | null;
@@ -33,7 +33,7 @@ class NewsCommandRepository implements INewsCommandRepository {
 		});
 	}
 
-	async deleteById(id: number, userId: string, status: Status): Promise<void> {
+	async deleteById(id: string, userId: string, status: Status): Promise<void> {
 		await prisma.news.delete({
 			where: { id, userId, status },
 		});

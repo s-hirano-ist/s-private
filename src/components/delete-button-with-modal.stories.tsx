@@ -14,7 +14,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
 	args: {
-		id: 1,
+		id: "1",
 		title: "Sample News Title",
 		deleteAction: fn(),
 	},
@@ -22,7 +22,7 @@ export const Default: Story = {
 
 export const LongTitle: Story = {
 	args: {
-		id: 2,
+		id: "2",
 		title:
 			"This is a very long news title that might wrap to multiple lines to test how the component handles longer text content in the dialog",
 		deleteAction: fn(),
@@ -31,7 +31,7 @@ export const LongTitle: Story = {
 
 export const ShortTitle: Story = {
 	args: {
-		id: 3,
+		id: "3",
 		title: "Short",
 		deleteAction: fn(),
 	},

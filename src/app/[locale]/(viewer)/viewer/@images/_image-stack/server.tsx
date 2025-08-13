@@ -7,8 +7,8 @@ import { hasViewerAdminPermission } from "@/utils/auth/session";
 type Props = { page: number };
 
 export async function ImageStack({ page }: Props) {
-	const hasAdminPermission = await hasViewerAdminPermission();
-	if (!hasAdminPermission) forbidden();
+	const hasPermission = await hasViewerAdminPermission();
+	if (!hasPermission) forbidden();
 
 	try {
 		const images = await getExportedImages(page);
