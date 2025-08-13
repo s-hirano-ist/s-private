@@ -9,8 +9,3 @@ export const THUMBNAIL_WIDTH = 192;
 export const THUMBNAIL_HEIGHT = 192;
 
 export const SKELETON_STACK_SIZE = 10;
-
-export const UTIL_URLS = [
-	{ name: "BOOK", url: "https://s-hirano.com/book" },
-	{ name: "BLOG", url: "https://s-hirano.com/blog" },
-] as const;

@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Link } from "@/i18n/routing";
 import { ServerAction } from "@/types";
-import { validateUrl } from "@/utils/validate-url";
+import { validateAndNormalizeUrl } from "@/utils/validate-url";
 
 export type LinkCardData = {
 	id: number | string;
@@ -31,35 +31,42 @@ export function LinkCard({
 	showDeleteButton,
 	deleteAction,
 }: Props) {
-	// FIXME: TODO:
-	// const validatedHref = new URL(validateUrl(href));
-	const validatedHref = href;
-	return (
-		<Link href={validatedHref} rel="noopener noreferrer" target="_blank">
-			<Card className="relative hover:bg-secondary">
-				{showDeleteButton && deleteAction !== undefined && (
-					<DeleteButtonWithModal
-						deleteAction={deleteAction}
-						id={Number(id)} // FIXME: not safe when id is string
-						title={title}
-					/>
-				)}
-				<CardHeader>
-					<div className="flex gap-4">
-						<Badge>{id}</Badge>
-						{badgeText && <Badge variant="outline">{badgeText}</Badge>}
-					</div>
-				</CardHeader>
-				<CardContent>
-					<CardTitle>{title}</CardTitle>
-					<CardDescription className="truncate">
-						{/* FIXME: break-words 必要? */}
-						{description ?? "　"}
-						{/* TODO: change to use fragment */}
-						{/* <Fragment set:html={sanitizeHtml(d.quote ?? "")} /> */}
-					</CardDescription>
-				</CardContent>
-			</Card>
-		</Link>
+	const { url: validatedHref, isExternal } = validateAndNormalizeUrl(href);
+
+	const cardContent = (
+		<Card className="relative hover:bg-secondary">
+			{showDeleteButton && deleteAction !== undefined && (
+				<DeleteButtonWithModal
+					deleteAction={deleteAction}
+					id={Number(id)} // FIXME: not safe when id is string
+					title={title}
+				/>
+			)}
+			<CardHeader>
+				<div className="flex gap-4">
+					<Badge>{id}</Badge>
+					{badgeText && <Badge variant="outline">{badgeText}</Badge>}
+				</div>
+			</CardHeader>
+			<CardContent>
+				<CardTitle>{title}</CardTitle>
+				<CardDescription className="truncate">
+					{/* FIXME: break-words 必要? */}
+					{description ?? "　"}
+					{/* TODO: change to use fragment */}
+					{/* <Fragment set:html={sanitizeHtml(d.quote ?? "")} /> */}
+				</CardDescription>
+			</CardContent>
+		</Card>
 	);
+
+	if (isExternal) {
+		return (
+			<a href={validatedHref} rel="noopener noreferrer" target="_blank">
+				{cardContent}
+			</a>
+		);
+	}
+
+	return <Link href={validatedHref}>{cardContent}</Link>;
 }

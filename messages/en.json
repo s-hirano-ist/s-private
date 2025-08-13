@@ -1,11 +1,7 @@
 {
 	"utils": {
 		"signOut": "SIGN OUT",
-		"language": "TOGGLE LANGUAGE",
-		"appearance": "TOGGLE APPEARANCE",
-		"reload": "RELOAD PAGE",
-		"utilsTitle": "Util tools",
-		"utilsDescription": "Click on the links"
+		"reload": "RELOAD"
 	},
 	"label": {
 		"category": "Category",

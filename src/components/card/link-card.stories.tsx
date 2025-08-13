@@ -77,3 +77,42 @@ export const LongTitle: Story = {
 		showDeleteButton: false,
 	},
 };
+
+export const InternalLink: Story = {
+	args: {
+		data: {
+			id: 6,
+			title: "Internal Link Example",
+			description: "This links to an internal page using Next.js routing.",
+			href: "/viewer",
+			badgeText: "Internal",
+		},
+		showDeleteButton: false,
+	},
+};
+
+export const ExternalLink: Story = {
+	args: {
+		data: {
+			id: 7,
+			title: "External Link Example",
+			description: "This opens in a new tab with target=_blank.",
+			href: "https://nextjs.org",
+			badgeText: "External",
+		},
+		showDeleteButton: false,
+	},
+};
+
+export const InvalidUrl: Story = {
+	args: {
+		data: {
+			id: 8,
+			title: "Invalid URL Example",
+			description: "This has an invalid URL and should fallback to home.",
+			href: "javascript:alert('xss')",
+			badgeText: "Invalid",
+		},
+		showDeleteButton: false,
+	},
+};

@@ -27,7 +27,7 @@ export function SearchableCardLayout<T>({
 	if (isLoading) return <Loading />;
 
 	return (
-		<div className="p-2 sm:p-4">
+		<div className="px-2 sm:px-4">
 			<Input
 				className="my-4"
 				onChange={handleSearchChange}

@@ -1,5 +1,5 @@
-import { ContentsPagination } from "@/components/contents-pagination";
-import { CountBadge } from "@/components/count-badge";
+import { forbidden } from "next/navigation";
+import { BadgeWithPagination } from "@/components/badge-with-pagination";
 import { Unexpected } from "@/components/status/unexpected";
 import { PAGE_SIZE } from "@/constants";
 import { getImagesCount } from "@/features/images/actions/get-images";
@@ -8,17 +8,19 @@ import { hasViewerAdminPermission } from "@/utils/auth/session";
 type Props = { page: number };
 
 export async function ImageCounter({ page }: Props) {
-	try {
-		const hasAdminPermission = await hasViewerAdminPermission();
-		if (!hasAdminPermission) return <></>;
+	const hasAdminPermission = await hasViewerAdminPermission();
+	if (!hasAdminPermission) return forbidden();
 
+	try {
 		const totalImages = await getImagesCount("EXPORTED");
-		const totalPages = Math.ceil(totalImages / PAGE_SIZE);
+
 		return (
-			<>
-				<CountBadge label="totalImages" total={totalImages} />
-				<ContentsPagination currentPage={page} totalPages={totalPages} />
-			</>
+			<BadgeWithPagination
+				currentPage={page}
+				itemsPerPage={PAGE_SIZE}
+				label="totalImages"
+				totalItems={totalImages}
+			/>
 		);
 	} catch (error) {
 		return <Unexpected caller="ImageCounter" error={error} />;
