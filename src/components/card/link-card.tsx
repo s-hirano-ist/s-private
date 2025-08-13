@@ -35,7 +35,7 @@ export function LinkCard({
 	// const validatedHref = new URL(validateUrl(href));
 	const validatedHref = href;
 	return (
-		<Link href={validatedHref} target="_blank">
+		<Link href={validatedHref} rel="noopener noreferrer" target="_blank">
 			<Card className="relative hover:bg-secondary">
 				{showDeleteButton && deleteAction !== undefined && (
 					<DeleteButtonWithModal
@@ -53,7 +53,10 @@ export function LinkCard({
 				<CardContent>
 					<CardTitle>{title}</CardTitle>
 					<CardDescription className="truncate">
+						{/* FIXME: break-words 必要? */}
 						{description ?? "　"}
+						{/* TODO: change to use fragment */}
+						{/* <Fragment set:html={sanitizeHtml(d.quote ?? "")} /> */}
 					</CardDescription>
 				</CardContent>
 			</Card>

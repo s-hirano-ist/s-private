@@ -3,7 +3,7 @@ import NextImage from "next/image";
 import { forbidden } from "next/navigation";
 import { ViewerBodyClient } from "@/components/body/viewer-body";
 import { NotFound } from "@/components/status/not-found";
-import { StatusCodeView } from "@/components/status/status-code-view";
+import { Unexpected } from "@/components/status/unexpected";
 import {
 	Card,
 	CardContent,
@@ -12,7 +12,7 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { THUMBNAIL_HEIGHT, THUMBNAIL_WIDTH } from "@/constants";
-import { booksQueryRepository } from "@/features/books/repositories/books-query-repository";
+import { getBookByISBN } from "@/features/books/actions/get-books";
 import { Link } from "@/i18n/routing";
 import { hasViewerAdminPermission } from "@/utils/auth/session";
 
@@ -23,7 +23,7 @@ export async function ViewerBody({ slug }: Props) {
 	if (!hasAdminPermission) forbidden();
 
 	try {
-		const data = await booksQueryRepository.findByISBN(slug);
+		const data = await getBookByISBN(slug);
 		if (!data) return <NotFound />;
 
 		return (
@@ -53,6 +53,6 @@ export async function ViewerBody({ slug }: Props) {
 			</ViewerBodyClient>
 		);
 	} catch (error) {
-		return <StatusCodeView statusCode="500" />;
+		return <Unexpected caller="viewer-body" error={error} />;
 	}
 }

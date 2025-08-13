@@ -4,6 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 type Props = { showCategory?: boolean };
 
+// FIXME: do not use this and use better skeleton
 export function AddFormSkeleton({ showCategory = false }: Props) {
 	const t = useTranslations("label");
 

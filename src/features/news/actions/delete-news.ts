@@ -19,12 +19,16 @@ export async function deleteNews(id: number): Promise<ServerAction<number>> {
 		const userId = await getSelfId();
 
 		// Check if the news item exists and belongs to the user
-		const newsItem = await newsQueryRepository.findByIdAndUserId(id, userId);
+		const newsItem = await newsQueryRepository.findById(
+			id,
+			userId,
+			"UNEXPORTED",
+		);
 
 		if (!newsItem) throw new UnexpectedError();
 
 		// Delete the news item
-		await newsCommandRepository.deleteByIdAndUserId(id, userId);
+		await newsCommandRepository.deleteById(id, userId, "UNEXPORTED");
 
 		const message = `Deleted news: ${newsItem.title}`;
 		loggerInfo(message, {

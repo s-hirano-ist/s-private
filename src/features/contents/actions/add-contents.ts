@@ -29,8 +29,7 @@ export async function addContents(
 
 		const createdContents = await contentsCommandRepository.create({
 			userId,
-			title: validatedContents.title,
-			markdown: validatedContents.markdown,
+			...validatedContents,
 		});
 		const message = formatCreateContentsMessage({
 			title: createdContents.title,

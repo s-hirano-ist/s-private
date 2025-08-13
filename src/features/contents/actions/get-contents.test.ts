@@ -1,12 +1,16 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { contentsQueryRepository } from "@/features/contents/repositories/contents-query-repository";
-import { getAllContents, getContentsCount } from "./get-contents";
+import { getContentsCount, getExportedContents } from "./get-contents";
 
 vi.mock("@/features/contents/repositories/contents-query-repository", () => ({
 	contentsQueryRepository: {
-		findAll: vi.fn(),
+		findMany: vi.fn(),
 		count: vi.fn(),
 	},
+}));
+
+vi.mock("@/utils/auth/session", () => ({
+	getSelfId: vi.fn().mockResolvedValue("test-user-id"),
 }));
 
 describe("get-contents", () => {
@@ -18,75 +22,82 @@ describe("get-contents", () => {
 		test("should fetch and transform contents correctly", async () => {
 			const mockContents = [
 				{
+					id: 1,
 					title: "Test Content 1",
-					href: "Test Content 1",
-					image: new Uint8Array([1, 2, 3]),
 				},
 				{
+					id: 2,
 					title: "Test Content 2",
-					href: "Test Content 2",
-					image: new Uint8Array([4, 5, 6]),
 				},
 			];
 
-			vi.mocked(contentsQueryRepository.findAll).mockResolvedValue(
+			vi.mocked(contentsQueryRepository.findMany).mockResolvedValue(
 				mockContents,
 			);
 
-			const result = await getAllContents();
+			const result = await getExportedContents();
 
-			expect(contentsQueryRepository.findAll).toHaveBeenCalled();
+			expect(contentsQueryRepository.findMany).toHaveBeenCalledWith(
+				"test-user-id",
+				"EXPORTED",
+				expect.objectContaining({
+					orderBy: { createdAt: "desc" },
+					cacheStrategy: { ttl: 400, swr: 40, tags: ["contents"] },
+				}),
+			);
 
 			expect(result).toEqual([
 				{
+					id: 1,
 					title: "Test Content 1",
-					href: "Test Content 1",
-					image: new Uint8Array([1, 2, 3]),
+					description: "",
+					href: "/content/Test Content 1",
 				},
 				{
+					id: 2,
 					title: "Test Content 2",
-					href: "Test Content 2",
-					image: new Uint8Array([4, 5, 6]),
+					description: "",
+					href: "/content/Test Content 2",
 				},
 			]);
 		});
 
 		test("should handle empty results", async () => {
-			vi.mocked(contentsQueryRepository.findAll).mockResolvedValue([]);
+			vi.mocked(contentsQueryRepository.findMany).mockResolvedValue([]);
 
-			const result = await getAllContents();
+			const result = await getExportedContents();
 
 			expect(result).toEqual([]);
 		});
 
 		test("should handle database errors", async () => {
-			vi.mocked(contentsQueryRepository.findAll).mockRejectedValue(
+			vi.mocked(contentsQueryRepository.findMany).mockRejectedValue(
 				new Error("Database error"),
 			);
 
-			await expect(getAllContents()).rejects.toThrow("Database error");
+			await expect(getExportedContents()).rejects.toThrow("Database error");
 		});
 
 		test("should handle contents with null images", async () => {
 			const mockContents = [
 				{
+					id: 1,
 					title: "Test Content",
-					href: "Test Content",
-					image: new Uint8Array(),
 				},
 			];
 
-			vi.mocked(contentsQueryRepository.findAll).mockResolvedValue(
+			vi.mocked(contentsQueryRepository.findMany).mockResolvedValue(
 				mockContents,
 			);
 
-			const result = await getAllContents();
+			const result = await getExportedContents();
 
 			expect(result).toEqual([
 				{
+					id: 1,
 					title: "Test Content",
-					href: "Test Content",
-					image: new Uint8Array(), // Repository returns empty Uint8Array for null
+					description: "",
+					href: "/content/Test Content",
 				},
 			]);
 		});
@@ -94,19 +105,18 @@ describe("get-contents", () => {
 		test("should use title as href for contents", async () => {
 			const mockContents = [
 				{
+					id: 1,
 					title: "My Special Content Title",
-					href: "My Special Content Title",
-					image: new Uint8Array([1, 2, 3]),
 				},
 			];
 
-			vi.mocked(contentsQueryRepository.findAll).mockResolvedValue(
+			vi.mocked(contentsQueryRepository.findMany).mockResolvedValue(
 				mockContents,
 			);
 
-			const result = await getAllContents();
+			const result = await getExportedContents();
 
-			expect(result[0].href).toBe("My Special Content Title");
+			expect(result[0].href).toBe("/content/My Special Content Title");
 			expect(result[0].title).toBe("My Special Content Title");
 		});
 	});
@@ -115,16 +125,19 @@ describe("get-contents", () => {
 		test("should return count of contents", async () => {
 			vi.mocked(contentsQueryRepository.count).mockResolvedValue(25);
 
-			const result = await getContentsCount();
+			const result = await getContentsCount("EXPORTED");
 
-			expect(contentsQueryRepository.count).toHaveBeenCalled();
+			expect(contentsQueryRepository.count).toHaveBeenCalledWith(
+				"test-user-id",
+				"EXPORTED",
+			);
 			expect(result).toBe(25);
 		});
 
 		test("should return 0 for empty collection", async () => {
 			vi.mocked(contentsQueryRepository.count).mockResolvedValue(0);
 
-			const result = await getContentsCount();
+			const result = await getContentsCount("EXPORTED");
 
 			expect(result).toBe(0);
 		});
@@ -134,7 +147,9 @@ describe("get-contents", () => {
 				new Error("Database error"),
 			);
 
-			await expect(getContentsCount()).rejects.toThrow("Database error");
+			await expect(getContentsCount("EXPORTED")).rejects.toThrow(
+				"Database error",
+			);
 		});
 	});
 });
