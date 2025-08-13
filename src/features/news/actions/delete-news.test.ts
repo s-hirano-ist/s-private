@@ -1,11 +1,9 @@
 import { revalidatePath } from "next/cache";
-import { Session } from "next-auth";
-import { describe, expect, Mock, test, vi } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import { deleteNews } from "@/features/news/actions/delete-news";
 import { newsCommandRepository } from "@/features/news/repositories/news-command-repository";
 import { newsQueryRepository } from "@/features/news/repositories/news-query-repository";
 import { loggerInfo } from "@/pino";
-import { auth } from "@/utils/auth/auth";
 import { sendPushoverMessage } from "@/utils/notification/fetch-message";
 
 vi.mock("@/utils/notification/fetch-message", () => ({
@@ -24,14 +22,18 @@ vi.mock("@/features/news/repositories/news-command-repository", () => ({
 	},
 }));
 
-const mockAllowedRoleSession: Session = {
-	user: { id: "1", roles: ["dumper"] },
-	expires: "2025-01-01",
-};
+const mockGetSelfId = vi.fn();
+const mockHasDumperPostPermission = vi.fn();
+
+vi.mock("@/utils/auth/session", () => ({
+	getSelfId: () => mockGetSelfId(),
+	hasDumperPostPermission: () => mockHasDumperPostPermission(),
+}));
 
 describe("deleteNews", () => {
 	test("should delete news successfully", async () => {
-		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
+		mockHasDumperPostPermission.mockResolvedValue(true);
+		mockGetSelfId.mockResolvedValue("1");
 
 		const mockNewsItem = {
 			id: 1,
@@ -39,7 +41,7 @@ describe("deleteNews", () => {
 			quote: "Test Quote",
 			url: "https://example.com",
 			status: "UNEXPORTED" as const,
-			Category: { name: "Test Category" },
+			Category: { id: 1, name: "Test Category" },
 			ogTitle: "sample og title 1",
 			ogDescription: "sample og description 1",
 		};
@@ -72,7 +74,8 @@ describe("deleteNews", () => {
 	});
 
 	test("should return error when news not found", async () => {
-		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
+		mockHasDumperPostPermission.mockResolvedValue(true);
+		mockGetSelfId.mockResolvedValue("1");
 		vi.mocked(newsQueryRepository.findById).mockResolvedValueOnce(null);
 
 		const result = await deleteNews(999);

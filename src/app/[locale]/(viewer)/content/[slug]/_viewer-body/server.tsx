@@ -1,7 +1,7 @@
 import { forbidden } from "next/navigation";
 import { ViewerBodyClient } from "@/components/body/viewer-body";
 import { NotFound } from "@/components/status/not-found";
-import { StatusCodeView } from "@/components/status/status-code-view";
+import { Unexpected } from "@/components/status/unexpected";
 import { getContentByTitle } from "@/features/contents/actions/get-contents";
 import { hasViewerAdminPermission } from "@/utils/auth/session";
 
@@ -17,6 +17,6 @@ export async function ViewerBody({ slug }: Props) {
 		if (!data) return <NotFound />;
 		return <ViewerBodyClient markdown={data.markdown} />;
 	} catch (error) {
-		return <StatusCodeView statusCode="500" />;
+		return <Unexpected caller="ViewerBody" error={error} />;
 	}
 }

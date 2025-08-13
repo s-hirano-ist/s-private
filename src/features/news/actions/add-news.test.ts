@@ -1,9 +1,7 @@
 import { revalidatePath } from "next/cache";
-import { Session } from "next-auth";
-import { describe, expect, Mock, test, vi } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import { categoryCommandRepository } from "@/features/news/repositories/category-command-repository";
 import { newsCommandRepository } from "@/features/news/repositories/news-command-repository";
-import { auth } from "@/utils/auth/auth";
 import { addNews } from "./add-news";
 
 vi.mock("@/utils/notification/fetch-message", () => ({
@@ -22,15 +20,13 @@ vi.mock("@/features/news/repositories/news-command-repository", () => ({
 	},
 }));
 
-const mockAllowedRoleSession: Session = {
-	user: { id: "1", roles: ["dumper"] },
-	expires: "2025-01-01",
-};
-const mockNotAllowedRoleSession: Session = {
-	user: { id: "1", roles: [] },
-	expires: "2025-01-01",
-};
-const mockUnauthorizedSession = null;
+const mockGetSelfId = vi.fn();
+const mockHasDumperPostPermission = vi.fn();
+
+vi.mock("@/utils/auth/session", () => ({
+	getSelfId: () => mockGetSelfId(),
+	hasDumperPostPermission: () => mockHasDumperPostPermission(),
+}));
 
 const mockFormData = new FormData();
 mockFormData.append("title", "Example Content");
@@ -40,19 +36,22 @@ mockFormData.append("category", "tech");
 
 describe("addNews", () => {
 	test("should return success false on Unauthorized", async () => {
-		(auth as Mock).mockResolvedValue(mockUnauthorizedSession);
+		mockGetSelfId.mockRejectedValue(new Error("UNAUTHORIZED"));
+		mockHasDumperPostPermission.mockResolvedValue(true);
 
-		await expect(addNews(mockFormData)).rejects.toThrow("UNAUTHORIZED");
+		const result = await addNews(mockFormData);
+		expect(result.success).toBe(false);
 	});
 
 	test("should return success false on not permitted", async () => {
-		(auth as Mock).mockResolvedValue(mockNotAllowedRoleSession);
+		mockHasDumperPostPermission.mockResolvedValue(false);
 
 		await expect(addNews(mockFormData)).rejects.toThrow("FORBIDDEN");
 	});
 
 	test("should create only news if no new category is provided", async () => {
-		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
+		mockHasDumperPostPermission.mockResolvedValue(true);
+		mockGetSelfId.mockResolvedValue("1");
 		vi.mocked(categoryCommandRepository.upsert).mockResolvedValue({
 			id: 1,
 			name: "tech",
@@ -72,7 +71,8 @@ describe("addNews", () => {
 
 		const result = await addNews(mockFormData);
 
-		expect(auth).toHaveBeenCalledTimes(2); // check permission & getSelfId
+		expect(mockHasDumperPostPermission).toHaveBeenCalled();
+		expect(mockGetSelfId).toHaveBeenCalled();
 		expect(categoryCommandRepository.upsert).toHaveBeenCalled();
 		expect(newsCommandRepository.create).toHaveBeenCalled();
 		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");

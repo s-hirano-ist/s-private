@@ -13,6 +13,6 @@ export async function ContentsCounter() {
 
 		return <CountBadge label="totalContents" total={totalContents} />;
 	} catch (error) {
-		return <Unexpected caller="ContentsStack" error={error} />;
+		return <Unexpected caller="ContentsCounter" error={error} />;
 	}
 }

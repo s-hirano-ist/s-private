@@ -3,7 +3,7 @@ import NextImage from "next/image";
 import { forbidden } from "next/navigation";
 import { ViewerBodyClient } from "@/components/body/viewer-body";
 import { NotFound } from "@/components/status/not-found";
-import { StatusCodeView } from "@/components/status/status-code-view";
+import { Unexpected } from "@/components/status/unexpected";
 import {
 	Card,
 	CardContent,
@@ -53,6 +53,6 @@ export async function ViewerBody({ slug }: Props) {
 			</ViewerBodyClient>
 		);
 	} catch (error) {
-		return <StatusCodeView statusCode="500" />;
+		return <Unexpected caller="viewer-body" error={error} />;
 	}
 }

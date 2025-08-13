@@ -13,6 +13,10 @@ vi.mock("@/features/ai/repositories/knowledge-query-repository", () => ({
 	},
 }));
 
+vi.mock("@/utils/auth/session", () => ({
+	getSelfId: vi.fn().mockResolvedValue("test-user-id"),
+}));
+
 describe("fetch-knowledge", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
@@ -31,7 +35,10 @@ describe("fetch-knowledge", () => {
 
 			const result = await getAllContentsForKnowledge();
 
-			expect(knowledgeQueryRepository.findAllContents).toHaveBeenCalled();
+			expect(knowledgeQueryRepository.findAllContents).toHaveBeenCalledWith(
+				"test-user-id",
+				"EXPORTED",
+			);
 			expect(result).toEqual(mockContents);
 		});
 
@@ -57,7 +64,10 @@ describe("fetch-knowledge", () => {
 
 			const result = await getAllBooksForKnowledge();
 
-			expect(knowledgeQueryRepository.findAllBooks).toHaveBeenCalled();
+			expect(knowledgeQueryRepository.findAllBooks).toHaveBeenCalledWith(
+				"test-user-id",
+				"EXPORTED",
+			);
 			expect(result).toEqual(mockBooks);
 		});
 

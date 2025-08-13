@@ -4,9 +4,13 @@ import { getBooksCount, getExportedBooks } from "./get-books";
 
 vi.mock("@/features/books/repositories/books-query-repository", () => ({
 	booksQueryRepository: {
-		findAll: vi.fn(),
+		findMany: vi.fn(),
 		count: vi.fn(),
 	},
+}));
+
+vi.mock("@/utils/auth/session", () => ({
+	getSelfId: vi.fn().mockResolvedValue("test-user-id"),
 }));
 
 describe("get-books", () => {
@@ -19,13 +23,13 @@ describe("get-books", () => {
 			const mockBooks = [
 				{
 					title: "Test Book 1",
-					href: "978-0123456789",
-					image: "https://example.com/image-1.jpg",
+					ISBN: "978-0123456789",
+					googleImgSrc: "https://example.com/image-1.jpg",
 				},
 				{
 					title: "Test Book 2",
-					href: "978-0987654321",
-					image: "https://example.com/image-2.jpg",
+					ISBN: "978-0987654321",
+					googleImgSrc: "https://example.com/image-2.jpg",
 				},
 			];
 
@@ -33,7 +37,14 @@ describe("get-books", () => {
 
 			const result = await getExportedBooks();
 
-			expect(booksQueryRepository.findMany).toHaveBeenCalled();
+			expect(booksQueryRepository.findMany).toHaveBeenCalledWith(
+				"test-user-id",
+				"EXPORTED",
+				expect.objectContaining({
+					orderBy: { createdAt: "desc" },
+					cacheStrategy: { ttl: 400, swr: 40, tags: ["books"] },
+				}),
+			);
 
 			expect(result).toEqual([
 				{
@@ -70,16 +81,19 @@ describe("get-books", () => {
 		test("should return count of books", async () => {
 			vi.mocked(booksQueryRepository.count).mockResolvedValue(42);
 
-			const result = await getBooksCount();
+			const result = await getBooksCount("EXPORTED");
 
-			expect(booksQueryRepository.count).toHaveBeenCalled();
+			expect(booksQueryRepository.count).toHaveBeenCalledWith(
+				"test-user-id",
+				"EXPORTED",
+			);
 			expect(result).toBe(42);
 		});
 
 		test("should return 0 for empty collection", async () => {
 			vi.mocked(booksQueryRepository.count).mockResolvedValue(0);
 
-			const result = await getBooksCount();
+			const result = await getBooksCount("EXPORTED");
 
 			expect(result).toBe(0);
 		});
@@ -89,7 +103,7 @@ describe("get-books", () => {
 				new Error("Database error"),
 			);
 
-			await expect(getBooksCount()).rejects.toThrow("Database error");
+			await expect(getBooksCount("EXPORTED")).rejects.toThrow("Database error");
 		});
 	});
 });

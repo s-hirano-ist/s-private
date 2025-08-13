@@ -4,9 +4,13 @@ import { getContentsCount, getExportedContents } from "./get-contents";
 
 vi.mock("@/features/contents/repositories/contents-query-repository", () => ({
 	contentsQueryRepository: {
-		findAll: vi.fn(),
+		findMany: vi.fn(),
 		count: vi.fn(),
 	},
+}));
+
+vi.mock("@/utils/auth/session", () => ({
+	getSelfId: vi.fn().mockResolvedValue("test-user-id"),
 }));
 
 describe("get-contents", () => {
@@ -18,14 +22,12 @@ describe("get-contents", () => {
 		test("should fetch and transform contents correctly", async () => {
 			const mockContents = [
 				{
+					id: 1,
 					title: "Test Content 1",
-					href: "Test Content 1",
-					image: new Uint8Array([1, 2, 3]),
 				},
 				{
+					id: 2,
 					title: "Test Content 2",
-					href: "Test Content 2",
-					image: new Uint8Array([4, 5, 6]),
 				},
 			];
 
@@ -35,24 +37,33 @@ describe("get-contents", () => {
 
 			const result = await getExportedContents();
 
-			expect(contentsQueryRepository.findMany).toHaveBeenCalled();
+			expect(contentsQueryRepository.findMany).toHaveBeenCalledWith(
+				"test-user-id",
+				"EXPORTED",
+				expect.objectContaining({
+					orderBy: { createdAt: "desc" },
+					cacheStrategy: { ttl: 400, swr: 40, tags: ["contents"] },
+				}),
+			);
 
 			expect(result).toEqual([
 				{
+					id: 1,
 					title: "Test Content 1",
-					href: "Test Content 1",
-					image: new Uint8Array([1, 2, 3]),
+					description: "",
+					href: "/content/Test Content 1",
 				},
 				{
+					id: 2,
 					title: "Test Content 2",
-					href: "Test Content 2",
-					image: new Uint8Array([4, 5, 6]),
+					description: "",
+					href: "/content/Test Content 2",
 				},
 			]);
 		});
 
 		test("should handle empty results", async () => {
-			vi.mocked(contentsQueryRepository.findAll).mockResolvedValue([]);
+			vi.mocked(contentsQueryRepository.findMany).mockResolvedValue([]);
 
 			const result = await getExportedContents();
 
@@ -60,7 +71,7 @@ describe("get-contents", () => {
 		});
 
 		test("should handle database errors", async () => {
-			vi.mocked(contentsQueryRepository.findAll).mockRejectedValue(
+			vi.mocked(contentsQueryRepository.findMany).mockRejectedValue(
 				new Error("Database error"),
 			);
 
@@ -70,33 +81,8 @@ describe("get-contents", () => {
 		test("should handle contents with null images", async () => {
 			const mockContents = [
 				{
+					id: 1,
 					title: "Test Content",
-					href: "Test Content",
-					image: new Uint8Array(),
-				},
-			];
-
-			vi.mocked(contentsQueryRepository.findAll).mockResolvedValue(
-				mockContents,
-			);
-
-			const result = await getExportedContents();
-
-			expect(result).toEqual([
-				{
-					title: "Test Content",
-					href: "Test Content",
-					image: new Uint8Array(), // Repository returns empty Uint8Array for null
-				},
-			]);
-		});
-
-		test("should use title as href for contents", async () => {
-			const mockContents = [
-				{
-					title: "My Special Content Title",
-					href: "My Special Content Title",
-					image: new Uint8Array([1, 2, 3]),
 				},
 			];
 
@@ -106,7 +92,31 @@ describe("get-contents", () => {
 
 			const result = await getExportedContents();
 
-			expect(result[0].href).toBe("My Special Content Title");
+			expect(result).toEqual([
+				{
+					id: 1,
+					title: "Test Content",
+					description: "",
+					href: "/content/Test Content",
+				},
+			]);
+		});
+
+		test("should use title as href for contents", async () => {
+			const mockContents = [
+				{
+					id: 1,
+					title: "My Special Content Title",
+				},
+			];
+
+			vi.mocked(contentsQueryRepository.findMany).mockResolvedValue(
+				mockContents,
+			);
+
+			const result = await getExportedContents();
+
+			expect(result[0].href).toBe("/content/My Special Content Title");
 			expect(result[0].title).toBe("My Special Content Title");
 		});
 	});
@@ -117,7 +127,10 @@ describe("get-contents", () => {
 
 			const result = await getContentsCount("EXPORTED");
 
-			expect(contentsQueryRepository.count).toHaveBeenCalled();
+			expect(contentsQueryRepository.count).toHaveBeenCalledWith(
+				"test-user-id",
+				"EXPORTED",
+			);
 			expect(result).toBe(25);
 		});
 
@@ -134,7 +147,9 @@ describe("get-contents", () => {
 				new Error("Database error"),
 			);
 
-			await expect(getContentsCount()).rejects.toThrow("Database error");
+			await expect(getContentsCount("EXPORTED")).rejects.toThrow(
+				"Database error",
+			);
 		});
 	});
 });

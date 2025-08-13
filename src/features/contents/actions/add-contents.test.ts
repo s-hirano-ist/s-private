@@ -1,8 +1,6 @@
 import { revalidatePath } from "next/cache";
-import { Session } from "next-auth";
-import { describe, expect, Mock, test, vi } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import { contentsCommandRepository } from "@/features/contents/repositories/contents-command-repository";
-import { auth } from "@/utils/auth/auth";
 import { addContents } from "./add-contents";
 
 vi.mock("@/utils/notification/fetch-message", () => ({
@@ -15,15 +13,13 @@ vi.mock("@/features/contents/repositories/contents-command-repository", () => ({
 	},
 }));
 
-const mockAllowedRoleSession: Session = {
-	user: { id: "1", roles: ["dumper"] },
-	expires: "2025-01-01",
-};
-const mockNotAllowedRoleSession: Session = {
-	user: { id: "1", roles: [] },
-	expires: "2025-01-01",
-};
-const mockUnauthorizedSession = null;
+const mockGetSelfId = vi.fn();
+const mockHasDumperPostPermission = vi.fn();
+
+vi.mock("@/utils/auth/session", () => ({
+	getSelfId: () => mockGetSelfId(),
+	hasDumperPostPermission: () => mockHasDumperPostPermission(),
+}));
 
 const mockFormData = new FormData();
 mockFormData.append("title", "Example Content");
@@ -36,19 +32,22 @@ const mockCreatedContents = {
 
 describe("addContents", () => {
 	test("should return success false on Unauthorized", async () => {
-		(auth as Mock).mockResolvedValue(mockUnauthorizedSession);
+		mockGetSelfId.mockRejectedValue(new Error("UNAUTHORIZED"));
+		mockHasDumperPostPermission.mockResolvedValue(true);
 
-		await expect(addContents(mockFormData)).rejects.toThrow("UNAUTHORIZED");
+		const result = await addContents(mockFormData);
+		expect(result.success).toBe(false);
 	});
 
 	test("should return success false on not permitted", async () => {
-		(auth as Mock).mockResolvedValue(mockNotAllowedRoleSession);
+		mockHasDumperPostPermission.mockResolvedValue(false);
 
 		await expect(addContents(mockFormData)).rejects.toThrow("FORBIDDEN");
 	});
 
 	test("should create contents", async () => {
-		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
+		mockHasDumperPostPermission.mockResolvedValue(true);
+		mockGetSelfId.mockResolvedValue("1");
 		vi.mocked(contentsCommandRepository.create).mockResolvedValue({
 			id: 1,
 			title: "Example Content",
@@ -62,7 +61,8 @@ describe("addContents", () => {
 
 		const result = await addContents(mockFormData);
 
-		expect(auth).toHaveBeenCalledTimes(2); // check permission & getSelfId
+		expect(mockHasDumperPostPermission).toHaveBeenCalled();
+		expect(mockGetSelfId).toHaveBeenCalled();
 		expect(contentsCommandRepository.create).toHaveBeenCalled();
 		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 		expect(result).toEqual({

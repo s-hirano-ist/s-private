@@ -15,6 +15,6 @@ export async function ImageStack({ page }: Props) {
 
 		return <ImageStackClient data={images} />;
 	} catch (error) {
-		return <Unexpected caller="AllImageStack" error={error} />;
+		return <Unexpected caller="ImageStack" error={error} />;
 	}
 }
