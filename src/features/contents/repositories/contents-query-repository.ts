@@ -5,7 +5,10 @@ export type IContentsQueryRepository = {
 	findById(id: number): Promise<Contents | null>;
 	findMany(params?: ContentsFindManyParams): Promise<Contents[]>;
 	findByStatus(status: Status, userId: string): Promise<Contents[]>;
-	findByStatusAndUserId(status: Status, userId: string): Promise<Contents[]>;
+	findByStatusAndUserId(
+		status: Status,
+		userId: string,
+	): Promise<ContentsWithImage[]>;
 	findByTitle(title: string): Promise<Contents | null>;
 	findAll(): Promise<ContentsWithImage[]>;
 	count(): Promise<number>;
@@ -46,11 +49,17 @@ export class ContentsQueryRepository implements IContentsQueryRepository {
 	async findByStatusAndUserId(
 		status: Status,
 		userId: string,
-	): Promise<Contents[]> {
-		return await prisma.contents.findMany({
+	): Promise<ContentsWithImage[]> {
+		const contents = await prisma.contents.findMany({
 			where: { status, userId },
 			orderBy: { title: "desc" },
 		});
+		return contents.map((content) => ({
+			id: content.id,
+			title: content.title,
+			description: content.markdown,
+			href: `/content/${content.title}`,
+		})) satisfies ContentsWithImage[];
 	}
 
 	async findByTitle(title: string): Promise<Contents | null> {

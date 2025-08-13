@@ -38,9 +38,9 @@ export function AddContentsFormClient({ addContents }: Props) {
 						<Label htmlFor="markdown">{label("description")}</Label>
 						<Textarea
 							autoComplete="off"
+							className="min-h-[200px]"
 							id="markdown"
 							name="markdown"
-							className="min-h-[200px]"
 						/>
 					</div>
 				</>

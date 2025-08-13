@@ -12,7 +12,8 @@ export async function ViewerBody({ slug }: Props) {
 	if (!hasAdminPermission) forbidden();
 
 	try {
-		const data = await contentsQueryRepository.findByTitle(slug);
+		const decodedSlug = decodeURIComponent(slug);
+		const data = await contentsQueryRepository.findByTitle(decodedSlug);
 		if (!data) return <NotFound />;
 		return <ViewerBodyClient markdown={data.markdown} />;
 	} catch (error) {

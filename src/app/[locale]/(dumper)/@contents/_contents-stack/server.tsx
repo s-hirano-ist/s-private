@@ -8,16 +8,8 @@ export async function ContentsStack() {
 	try {
 		const userId = await getSelfId();
 
-		const unexportedContents = (
-			await contentsQueryRepository.findByStatusAndUserId("UNEXPORTED", userId)
-		).map((d) => {
-			return {
-				id: d.id,
-				title: d.title,
-				description: d.markdown,
-				href: "https://example.com", // FIXME: TODO:
-			};
-		});
+		const unexportedContents =
+			await contentsQueryRepository.findByStatusAndUserId("UNEXPORTED", userId);
 
 		return <ContentsStackClient data={unexportedContents} />;
 	} catch (error) {
