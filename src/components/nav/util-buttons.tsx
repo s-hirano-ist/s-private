@@ -6,6 +6,7 @@ import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { UTIL_URLS } from "@/constants";
 import { Link, redirect } from "@/i18n/routing";
+import { StatusCodeView } from "../status/status-code-view";
 
 type Props = { handleReload: () => void; onSignOutSubmit: () => Promise<void> };
 
@@ -40,22 +41,25 @@ export function UtilButtons({ handleReload, onSignOutSubmit }: Props) {
 	const shouldShowSignOut = useMemo(() => pathname !== "/auth", [pathname]);
 
 	return (
-		<div className="grid gap-2 px-2 grid-cols-1 sm:grid-cols-3">
-			{UTIL_URLS.map((url) => {
-				return (
-					<Button asChild className="w-full" key={url.name}>
-						<Link href={url.url}>{url.name}</Link>
+		<>
+			<div className="grid gap-2 px-2 grid-cols-1 sm:grid-cols-3">
+				{UTIL_URLS.map((url) => {
+					return (
+						<Button asChild className="w-full" key={url.name}>
+							<Link href={url.url}>{url.name}</Link>
+						</Button>
+					);
+				})}
+				<Button onClick={handleReload}>{t("reload")}</Button>
+				<Button onClick={handleTheme}>{t("appearance")}</Button>
+				<Button onClick={handleLanguage}>{t("language")}</Button>
+				{shouldShowSignOut && (
+					<Button data-testid="log-out-button" onClick={onSignOutSubmit}>
+						{t("signOut")}
 					</Button>
-				);
-			})}
-			<Button onClick={handleReload}>{t("reload")}</Button>
-			<Button onClick={handleTheme}>{t("appearance")}</Button>
-			<Button onClick={handleLanguage}>{t("language")}</Button>
-			{shouldShowSignOut && (
-				<Button data-testid="log-out-button" onClick={onSignOutSubmit}>
-					{t("signOut")}
-				</Button>
-			)}
-		</div>
+				)}
+			</div>
+			<StatusCodeView statusCode="000" />
+		</>
 	);
 }

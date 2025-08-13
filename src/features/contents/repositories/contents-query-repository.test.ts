@@ -35,7 +35,10 @@ describe("ContentsQueryRepository", () => {
 			);
 
 			expect(prisma.contents.findUnique).toHaveBeenCalledWith({
-				where: { title: "Test Content", userId: "user123", status: "EXPORTED" },
+				where: {
+					status: "EXPORTED",
+					title_userId: { title: "Test Content", userId: "user123" },
+				},
 				select: { id: true, title: true, markdown: true },
 			});
 			expect(result).toEqual(mockContents);
@@ -52,9 +55,8 @@ describe("ContentsQueryRepository", () => {
 
 			expect(prisma.contents.findUnique).toHaveBeenCalledWith({
 				where: {
-					title: "Nonexistent Content",
-					userId: "user123",
 					status: "EXPORTED",
+					title_userId: { title: "Nonexistent Content", userId: "user123" },
 				},
 				select: { id: true, title: true, markdown: true },
 			});
@@ -75,7 +77,10 @@ describe("ContentsQueryRepository", () => {
 			).rejects.toThrow("Database error");
 
 			expect(prisma.contents.findUnique).toHaveBeenCalledWith({
-				where: { title: "Test Content", userId: "user123", status: "EXPORTED" },
+				where: {
+					status: "EXPORTED",
+					title_userId: { title: "Test Content", userId: "user123" },
+				},
 				select: { id: true, title: true, markdown: true },
 			});
 		});

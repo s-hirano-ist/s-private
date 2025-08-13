@@ -1,5 +1,4 @@
 import { cache } from "react";
-import { PAGE_SIZE } from "@/constants";
 import { contentsQueryRepository } from "@/features/contents/repositories/contents-query-repository";
 import { Status } from "@/generated";
 import { getSelfId } from "@/utils/auth/session";

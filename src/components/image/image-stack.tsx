@@ -5,7 +5,7 @@ import Lightbox from "yet-another-react-lightbox";
 import { StatusCodeView } from "@/components/status/status-code-view";
 import "yet-another-react-lightbox/styles.css";
 
-export type ImageData = {
+type ImageData = {
 	id: string;
 	height?: number | null;
 	width?: number | null;
