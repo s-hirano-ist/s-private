@@ -12,10 +12,9 @@ import {
 import { FileNotAllowedError, UnexpectedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
 import { imageCommandRepository } from "@/features/images/repositories/image-command-repository";
-import { loggerInfo } from "@/pino";
+import { serverLogger } from "@/infrastructure/server";
 import type { ServerAction } from "@/types";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
-import { sendPushoverMessage } from "@/utils/notification/fetch-message";
 import { formatCreateImageMessage } from "@/utils/notification/format-for-notification";
 import { sanitizeFileName } from "@/utils/sanitize/sanitize-file-name";
 
@@ -68,9 +67,12 @@ export async function addImage(
 		});
 
 		const message = formatCreateImageMessage({ fileName: createdImage.id });
-		loggerInfo(message, { caller: "addImage", status: 200 });
-
-		await sendPushoverMessage(message);
+		const context = {
+			caller: "addImage" as const,
+			status: 201 as const,
+			userId,
+		};
+		serverLogger.info(message, context, { notify: true });
 		revalidatePath("/(dumper)");
 		await imageCommandRepository.invalidateCache();
 

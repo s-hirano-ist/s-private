@@ -2,13 +2,8 @@ import { AuthError } from "next-auth";
 import { describe, expect, test, vi } from "vitest";
 import { PushoverError, UnexpectedError } from "@/error-classes";
 import { Prisma } from "@/generated";
-import { loggerError, loggerWarn } from "@/pino";
-import { sendPushoverMessage } from "@/utils/notification/fetch-message";
+import { serverLogger } from "@/infrastructure/server";
 import { wrapServerSideErrorForClient } from "./error-wrapper";
-
-vi.mock("@/utils/notification/fetch-message", () => ({
-	sendPushoverMessage: vi.fn(),
-}));
 
 describe("wrapServerSideErrorForClient", () => {
 	test("should handle PushoverError", async () => {
@@ -16,11 +11,15 @@ describe("wrapServerSideErrorForClient", () => {
 
 		const result = await wrapServerSideErrorForClient(error);
 
-		expect(loggerError).toHaveBeenCalledWith(error.message, {
-			caller: "wrapServerSideErrorForClient PushoverError",
-			status: 500,
-		});
-		expect(sendPushoverMessage).not.toHaveBeenCalled();
+		expect(serverLogger.error).toHaveBeenCalledWith(
+			error.message,
+			{
+				caller: "wrapServerSideError",
+				status: 500,
+			},
+			undefined,
+			{ notify: true },
+		);
 		expect(result).toEqual({
 			success: false,
 			message: error.message,
@@ -32,11 +31,14 @@ describe("wrapServerSideErrorForClient", () => {
 
 		const result = await wrapServerSideErrorForClient(error);
 
-		expect(loggerWarn).toHaveBeenCalledWith(error.message, {
-			caller: "wrapServerSideErrorForClient custom",
-			status: 500,
-		});
-		expect(sendPushoverMessage).toHaveBeenCalledWith(error.message);
+		expect(serverLogger.warn).toHaveBeenCalledWith(
+			error.message,
+			{
+				caller: "wrapServerSideError",
+				status: 500,
+			},
+			{ notify: true },
+		);
 		expect(result).toEqual({
 			success: false,
 			message: error.message,
@@ -48,11 +50,14 @@ describe("wrapServerSideErrorForClient", () => {
 
 		const result = await wrapServerSideErrorForClient(error);
 
-		expect(loggerWarn).toHaveBeenCalledWith(error.message, {
-			caller: "wrapServerSideErrorForClient auth",
-			status: 500,
-		});
-		expect(sendPushoverMessage).toHaveBeenCalledWith(error.message);
+		expect(serverLogger.warn).toHaveBeenCalledWith(
+			error.message,
+			{
+				caller: "wrapServerSideError",
+				status: 401, // Updated to more appropriate auth error status
+			},
+			{ notify: true },
+		);
 		expect(result).toEqual({
 			success: false,
 			message: "signInUnknown",
@@ -66,11 +71,15 @@ describe("wrapServerSideErrorForClient", () => {
 
 		const result = await wrapServerSideErrorForClient(error);
 
-		expect(loggerError).toHaveBeenCalledWith(error.message, {
-			caller: "wrapServerSideErrorForClient prisma 1",
-			status: 500,
-		});
-		expect(sendPushoverMessage).toHaveBeenCalledWith(error.message);
+		expect(serverLogger.error).toHaveBeenCalledWith(
+			error.message,
+			{
+				caller: "wrapServerSideError",
+				status: 500,
+			},
+			undefined,
+			{ notify: true },
+		);
 		expect(result).toEqual({
 			success: false,
 			message: "prismaUnexpected",
@@ -85,11 +94,14 @@ describe("wrapServerSideErrorForClient", () => {
 
 		const result = await wrapServerSideErrorForClient(error);
 
-		expect(loggerWarn).toHaveBeenCalledWith(error.message, {
-			caller: "wrapServerSideErrorForClient prisma 2",
-			status: 500,
-		});
-		expect(sendPushoverMessage).toHaveBeenCalledWith(error.message);
+		expect(serverLogger.warn).toHaveBeenCalledWith(
+			error.message,
+			{
+				caller: "wrapServerSideError",
+				status: 400, // Updated to appropriate status for known client errors
+			},
+			{ notify: true },
+		);
 		expect(result).toEqual({
 			success: false,
 			message: "prismaDuplicated",
@@ -101,11 +113,15 @@ describe("wrapServerSideErrorForClient", () => {
 
 		const result = await wrapServerSideErrorForClient(error);
 
-		expect(loggerError).toHaveBeenCalledWith(error.message, {
-			caller: "wrapServerSideErrorForClient unknown error",
-			status: 500,
-		});
-		expect(sendPushoverMessage).toHaveBeenCalledWith(error.message);
+		expect(serverLogger.error).toHaveBeenCalledWith(
+			error.message,
+			{
+				caller: "wrapServerSideError",
+				status: 500,
+			},
+			undefined,
+			{ notify: true },
+		);
 		expect(result).toEqual({
 			success: false,
 			message: "unexpected",
@@ -117,15 +133,15 @@ describe("wrapServerSideErrorForClient", () => {
 
 		const result = await wrapServerSideErrorForClient(error);
 
-		expect(loggerError).toHaveBeenCalledWith(
+		expect(serverLogger.error).toHaveBeenCalledWith(
 			"unexpected",
 			{
-				caller: "wrapServerSideErrorForClient not error errors",
+				caller: "wrapServerSideError",
 				status: 500,
 			},
 			"unknown error",
+			{ notify: true },
 		);
-		expect(sendPushoverMessage).toHaveBeenCalledWith("unexpected");
 		expect(result).toEqual({
 			success: false,
 			message: "unexpected",

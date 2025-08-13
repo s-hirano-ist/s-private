@@ -12,10 +12,25 @@ beforeEach(() => {
 
 	vi.mock("@/utils/auth/auth", () => ({ auth: vi.fn() }));
 
-	vi.mock("@/pino", () => ({
-		loggerInfo: vi.fn(),
-		loggerWarn: vi.fn(),
-		loggerError: vi.fn(),
+	vi.mock("@/infrastructure/server", () => ({
+		serverLogger: {
+			info: vi.fn(),
+			warn: vi.fn(),
+			error: vi.fn(),
+		},
+		pushoverMonitoringService: {
+			notifyInfo: vi.fn(),
+			notifyWarning: vi.fn(),
+			notifyError: vi.fn(),
+		},
+	}));
+
+	vi.mock("@/infrastructure/client", () => ({
+		clientLogger: {
+			info: vi.fn(),
+			warn: vi.fn(),
+			error: vi.fn(),
+		},
 	}));
 
 	vi.mock("server-only", () => {

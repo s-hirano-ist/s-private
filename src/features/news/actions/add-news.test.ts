@@ -4,10 +4,6 @@ import { categoryCommandRepository } from "@/features/news/repositories/category
 import { newsCommandRepository } from "@/features/news/repositories/news-command-repository";
 import { addNews } from "./add-news";
 
-vi.mock("@/utils/notification/fetch-message", () => ({
-	sendPushoverMessage: vi.fn(),
-}));
-
 vi.mock("@/features/news/repositories/category-command-repository", () => ({
 	categoryCommandRepository: {
 		upsert: vi.fn(),

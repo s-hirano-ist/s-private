@@ -1,8 +1,7 @@
-import { StatusCodeView } from "@/components/status/status-code-view";
 import { Unexpected } from "@/components/status/unexpected";
 import { addNews } from "@/features/news/actions/add-news";
 import { getCategoriesByUserId } from "@/features/news/actions/get-news";
-import { loggerError } from "@/pino";
+import { serverLogger } from "@/infrastructure/server";
 import { hasDumperPostPermission } from "@/utils/auth/session";
 import { AddNewsFormClient } from "./client";
 
@@ -16,7 +15,7 @@ export async function AddNewsForm() {
 			try {
 				return await getCategoriesByUserId();
 			} catch (error) {
-				loggerError(
+				serverLogger.error(
 					"unexpected",
 					{ caller: "AddNewsFormCategory", status: 500 },
 					error,

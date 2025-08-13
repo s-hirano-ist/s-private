@@ -1,13 +1,13 @@
 import "server-only";
 import { unauthorized } from "next/navigation";
-import { loggerWarn } from "@/pino";
+import { serverLogger } from "@/infrastructure/server";
 import { auth } from "./auth";
 
 async function checkSelfAuth() {
 	const session = await auth();
 	if (!session) {
-		loggerWarn("Unauthorized", {
-			caller: "Unauthorized on checkSelfAuth or throw",
+		serverLogger.warn("Unauthorized", {
+			caller: "checkSelfAuth",
 			status: 401,
 		});
 		unauthorized();

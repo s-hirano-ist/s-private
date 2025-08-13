@@ -6,10 +6,9 @@ import { UnexpectedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
 import { newsCommandRepository } from "@/features/news/repositories/news-command-repository";
 import { newsQueryRepository } from "@/features/news/repositories/news-query-repository";
-import { loggerInfo } from "@/pino";
+import { serverLogger } from "@/infrastructure/server";
 import type { ServerAction } from "@/types";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
-import { sendPushoverMessage } from "@/utils/notification/fetch-message";
 
 export async function deleteNews(id: number): Promise<ServerAction<number>> {
 	const hasPostPermission = await hasDumperPostPermission();
@@ -31,11 +30,12 @@ export async function deleteNews(id: number): Promise<ServerAction<number>> {
 		await newsCommandRepository.deleteById(id, userId, "UNEXPORTED");
 
 		const message = `Deleted news: ${newsItem.title}`;
-		loggerInfo(message, {
-			caller: "deleteNews",
-			status: 200,
-		});
-		await sendPushoverMessage(message);
+		const context = {
+			caller: "deleteNews" as const,
+			status: 200 as const,
+			userId,
+		};
+		serverLogger.info(message, context, { notify: true });
 		revalidatePath("/(dumper)");
 
 		return {

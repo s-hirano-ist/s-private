@@ -7,10 +7,9 @@ import { categoryCommandRepository } from "@/features/news/repositories/category
 import { newsCommandRepository } from "@/features/news/repositories/news-command-repository";
 import { validateCategory } from "@/features/news/utils/validate-category";
 import { validateNews } from "@/features/news/utils/validate-news";
-import { loggerInfo } from "@/pino";
+import { serverLogger } from "@/infrastructure/server";
 import type { ServerAction } from "@/types";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
-import { sendPushoverMessage } from "@/utils/notification/fetch-message";
 import { formatCreateNewsMessage } from "@/utils/notification/format-for-notification";
 
 type News = {
@@ -44,11 +43,12 @@ export async function addNews(formData: FormData): Promise<ServerAction<News>> {
 		});
 
 		const message = formatCreateNewsMessage(createdNews);
-		loggerInfo(message, {
-			caller: "addNews",
-			status: 200,
-		});
-		await sendPushoverMessage(message);
+		const context = {
+			caller: "addNews" as const,
+			status: 201 as const,
+			userId,
+		};
+		serverLogger.info(message, context, { notify: true });
 		revalidatePath("/(dumper)");
 
 		return {

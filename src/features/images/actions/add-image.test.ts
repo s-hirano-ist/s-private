@@ -7,10 +7,6 @@ import { imageCommandRepository } from "@/features/images/repositories/image-com
 import { auth } from "@/utils/auth/auth";
 import { addImage } from "./add-image";
 
-vi.mock("@/utils/notification/fetch-message", () => ({
-	sendPushoverMessage: vi.fn(),
-}));
-
 vi.mock("@/features/images/repositories/image-command-repository", () => ({
 	imageCommandRepository: {
 		create: vi.fn(),

@@ -2,7 +2,7 @@
 import { captureException } from "@sentry/nextjs";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { loggerError } from "@/pino";
+import { clientLogger } from "@/infrastructure/client";
 
 export default function Page({
 	error,
@@ -12,7 +12,7 @@ export default function Page({
 	reset: () => void;
 }) {
 	useEffect(() => {
-		loggerError(
+		clientLogger.error(
 			"Unexpected error occurred.",
 			{
 				caller: "ErrorPage",

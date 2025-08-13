@@ -3,10 +3,6 @@ import { describe, expect, test, vi } from "vitest";
 import { contentsCommandRepository } from "@/features/contents/repositories/contents-command-repository";
 import { addContents } from "./add-contents";
 
-vi.mock("@/utils/notification/fetch-message", () => ({
-	sendPushoverMessage: vi.fn(),
-}));
-
 vi.mock("@/features/contents/repositories/contents-command-repository", () => ({
 	contentsCommandRepository: {
 		create: vi.fn(),

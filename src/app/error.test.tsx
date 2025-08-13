@@ -1,15 +1,11 @@
 import { captureException } from "@sentry/nextjs";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, test, vi } from "vitest";
-import { loggerError } from "@/pino";
+import { clientLogger } from "@/infrastructure/client";
 import Page from "./error";
 
 vi.mock("@sentry/nextjs", () => ({
 	captureException: vi.fn(),
-}));
-
-vi.mock("@/pino", () => ({
-	loggerError: vi.fn(),
 }));
 
 describe("Error Page", () => {
@@ -32,7 +28,7 @@ describe("Error Page", () => {
 	test("should log error and capture exception on mount", () => {
 		render(<Page error={mockError} reset={mockReset} />);
 
-		expect(loggerError).toHaveBeenCalledWith(
+		expect(clientLogger.error).toHaveBeenCalledWith(
 			"Unexpected error occurred.",
 			{
 				caller: "ErrorPage",
@@ -88,7 +84,7 @@ describe("Error Page", () => {
 		const newError = new Error("New test error");
 		rerender(<Page error={newError} reset={mockReset} />);
 
-		expect(loggerError).toHaveBeenCalledWith(
+		expect(clientLogger.error).toHaveBeenCalledWith(
 			"Unexpected error occurred.",
 			{
 				caller: "ErrorPage",
