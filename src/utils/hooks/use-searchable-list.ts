@@ -12,7 +12,8 @@ type SearchableItem = {
 
 type UseSearchableListOptions<T extends SearchableItem> = {
 	data: T[];
-	filterFunction?: (item: T, searchQuery: string) => boolean;
+	filterFunction: (item: T, searchQuery: string) => boolean;
+	useUrlQuery?: boolean;
 	debounceMs?: number;
 };
 
@@ -25,15 +26,18 @@ type UseSearchableListReturn<T> = {
 export function useSearchableList<T extends SearchableItem>({
 	data,
 	filterFunction = (item, searchQuery) => item.title.includes(searchQuery),
+	useUrlQuery = false,
 	debounceMs = 300,
 }: UseSearchableListOptions<T>): UseSearchableListReturn<T> {
 	const router = useRouter();
 	const searchParams = useSearchParams();
-	const [searchQuery, setSearchQuery] = useState(
-		searchParams.get(PARAM_NAME) ?? "",
-	);
-	const [searchResults, setSearchResults] = useState(data);
 
+	// Initialize search query from URL if useUrlQuery is enabled
+	const initialQuery = useUrlQuery ? (searchParams.get(PARAM_NAME) ?? "") : "";
+	const [searchQuery, setSearchQuery] = useState(initialQuery);
+	const [searchResults, setSearchResults] = useState<T[]>(data);
+
+	// Sync search (filter existing data)
 	const fetchSearchResults = useCallback(
 		async (searchString: string) => {
 			if (searchString === "") setSearchResults(data);
@@ -46,11 +50,13 @@ export function useSearchableList<T extends SearchableItem>({
 	);
 
 	const debouncedSearch = useDebouncedCallback(async (searchString: string) => {
-		const params = new URLSearchParams(searchParams);
-		if (searchString) params.set(PARAM_NAME, searchString);
-		else params.delete(PARAM_NAME);
+		if (useUrlQuery) {
+			const params = new URLSearchParams(searchParams);
+			if (searchString) params.set(PARAM_NAME, searchString);
+			else params.delete(PARAM_NAME);
+			router.push(`?${params.toString()}`);
+		}
 
-		router.push(`?${params.toString()}`);
 		await fetchSearchResults(searchString);
 	}, debounceMs);
 

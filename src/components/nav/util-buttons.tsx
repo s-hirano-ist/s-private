@@ -3,11 +3,10 @@ import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useMemo } from "react";
-import { SimpleSearch } from "@/components/search/simple-search";
 import { Button } from "@/components/ui/button";
 import { UTIL_URLS } from "@/constants";
-import { searchKnowledge } from "@/features/ai/actions/ai-search";
 import { Link, redirect } from "@/i18n/routing";
+import { StatusCodeView } from "../status/status-code-view";
 
 type Props = { handleReload: () => void; onSignOutSubmit: () => Promise<void> };
 
@@ -60,7 +59,7 @@ export function UtilButtons({ handleReload, onSignOutSubmit }: Props) {
 					</Button>
 				)}
 			</div>
-			<SimpleSearch searchKnowledge={searchKnowledge} />
+			<StatusCodeView statusCode="000" />
 		</>
 	);
 }
