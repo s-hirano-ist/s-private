@@ -10,11 +10,7 @@ const preview = {
 				messages={{
 					utils: {
 						signOut: "サインアウト",
-						language: "言語切替",
-						appearance: "外観切替",
 						reload: "再読み込み",
-						utilsTitle: "便利ツール集",
-						utilsDescription: "リンクをクリックしてください",
 					},
 					label: {
 						category: "カテゴリー",

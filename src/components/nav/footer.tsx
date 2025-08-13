@@ -91,8 +91,7 @@ export function Footer() {
 				</div>
 				<DrawerContent>
 					<DrawerHeader>
-						<DrawerTitle>{t("utilsTitle")}</DrawerTitle>
-						<DrawerDescription>{t("utilsDescription")}</DrawerDescription>
+						<DrawerTitle />
 					</DrawerHeader>
 					<Suspense
 						fallback={<div className="h-32 animate-pulse bg-gray-100" />}
