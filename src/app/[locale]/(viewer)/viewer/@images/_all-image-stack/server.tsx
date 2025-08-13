@@ -1,7 +1,7 @@
 import { forbidden } from "next/navigation";
 import { StatusCodeView } from "@/components/status/status-code-view";
 import { PAGE_SIZE } from "@/constants";
-import { imageQueryRepository } from "@/features/images/repositories/image-query-repository";
+import { getAllImagesPaginated } from "@/features/images/actions/get-images";
 import { loggerError } from "@/pino";
 import { hasViewerAdminPermission } from "@/utils/auth/session";
 import { AllImageStackClient } from "./client";
@@ -13,7 +13,7 @@ export async function AllImageStack({ page }: Props) {
 	if (!hasAdminPermission) forbidden();
 
 	try {
-		const images = await imageQueryRepository.findAllPaginated(page, PAGE_SIZE);
+		const images = await getAllImagesPaginated(page, PAGE_SIZE);
 
 		return <AllImageStackClient data={images} />;
 	} catch (error) {

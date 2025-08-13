@@ -1,17 +1,11 @@
 import { StatusCodeView } from "@/components/status/status-code-view";
-import { imageQueryRepository } from "@/features/images/repositories/image-query-repository";
+import { getUnexportedImagesByUserId } from "@/features/images/actions/get-images";
 import { loggerError } from "@/pino";
-import { getSelfId } from "@/utils/auth/session";
 import { ImageStackClient } from "./client";
 
 export async function ImageStack() {
 	try {
-		const userId = await getSelfId();
-
-		const images = await imageQueryRepository.findByStatusAndUserId(
-			"UNEXPORTED",
-			userId,
-		);
+		const images = await getUnexportedImagesByUserId();
 
 		return <ImageStackClient images={images} />;
 	} catch (error) {
