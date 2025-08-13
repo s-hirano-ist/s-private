@@ -15,8 +15,8 @@ import {
 import { ServerAction } from "@/types";
 
 type Props = {
-	deleteAction: (id: number) => Promise<ServerAction<number>>;
-	id: number;
+	deleteAction: (id: string) => Promise<ServerAction<string>>;
+	id: string;
 	title: string;
 };
 

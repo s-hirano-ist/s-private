@@ -19,8 +19,8 @@ import { hasViewerAdminPermission } from "@/utils/auth/session";
 type Props = { slug: string };
 
 export async function ViewerBody({ slug }: Props) {
-	const hasAdminPermission = await hasViewerAdminPermission();
-	if (!hasAdminPermission) forbidden();
+	const hasPermission = await hasViewerAdminPermission();
+	if (!hasPermission) forbidden();
 
 	try {
 		const data = await getBookByISBN(slug);

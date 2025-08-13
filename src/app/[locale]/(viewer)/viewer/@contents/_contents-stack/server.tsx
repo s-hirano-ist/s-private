@@ -5,8 +5,8 @@ import { getExportedContents } from "@/features/contents/actions/get-contents";
 import { hasViewerAdminPermission } from "@/utils/auth/session";
 
 export async function ContentsStack() {
-	const hasAdminPermission = await hasViewerAdminPermission();
-	if (!hasAdminPermission) forbidden();
+	const hasPermission = await hasViewerAdminPermission();
+	if (!hasPermission) forbidden();
 
 	try {
 		const data = await getExportedContents();

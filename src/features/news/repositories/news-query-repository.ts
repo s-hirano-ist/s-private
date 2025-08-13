@@ -3,7 +3,7 @@ import type { Prisma, Status } from "@/generated";
 import prisma from "@/prisma";
 
 type INewsQueryRepository = {
-	findById(id: number, userId: string, status: Status): Promise<News | null>;
+	findById(id: string, userId: string, status: Status): Promise<News | null>;
 	findMany(
 		userId: string,
 		status: Status,
@@ -13,7 +13,7 @@ type INewsQueryRepository = {
 };
 
 type News = {
-	id: number;
+	id: string;
 	title: string;
 	url: string;
 	quote: string | null;
@@ -31,7 +31,7 @@ type NewsFindManyParams = {
 
 class NewsQueryRepository implements INewsQueryRepository {
 	async findById(
-		id: number,
+		id: string,
 		userId: string,
 		status: Status,
 	): Promise<News | null> {

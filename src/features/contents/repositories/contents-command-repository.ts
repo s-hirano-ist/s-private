@@ -3,7 +3,7 @@ import prisma from "@/prisma";
 
 type IContentsCommandRepository = {
 	create(data: ContentsCreateInput): Promise<Contents>;
-	deleteById(id: number, userId: string, status: Status): Promise<void>;
+	deleteById(id: string, userId: string, status: Status): Promise<void>;
 	transaction<T>(fn: () => Promise<T>): Promise<T>;
 };
 
@@ -18,7 +18,7 @@ class ContentsCommandRepository implements IContentsCommandRepository {
 		return await prisma.contents.create({ data });
 	}
 
-	async deleteById(id: number, userId: string, status: Status): Promise<void> {
+	async deleteById(id: string, userId: string, status: Status): Promise<void> {
 		await prisma.contents.delete({ where: { id, userId, status } });
 	}
 

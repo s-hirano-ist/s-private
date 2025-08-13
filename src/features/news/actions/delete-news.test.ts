@@ -31,7 +31,7 @@ describe("deleteNews", () => {
 		mockGetSelfId.mockResolvedValue("1");
 
 		const mockNewsItem = {
-			id: 1,
+			id: "1",
 			title: "Test News",
 			quote: "Test Quote",
 			url: "https://example.com",
@@ -44,21 +44,21 @@ describe("deleteNews", () => {
 		vi.mocked(newsQueryRepository.findById).mockResolvedValueOnce(mockNewsItem);
 		vi.mocked(newsCommandRepository.deleteById).mockResolvedValueOnce();
 
-		const result = await deleteNews(1);
+		const result = await deleteNews("1");
 
 		expect(result).toEqual({
 			success: true,
 			message: "deleted",
-			data: 1,
+			data: "1",
 		});
 
 		expect(newsQueryRepository.findById).toHaveBeenCalledWith(
-			1,
+			"1",
 			"1",
 			"UNEXPORTED",
 		);
 		expect(newsCommandRepository.deleteById).toHaveBeenCalledWith(
-			1,
+			"1",
 			"1",
 			"UNEXPORTED",
 		);
@@ -80,7 +80,7 @@ describe("deleteNews", () => {
 		mockGetSelfId.mockResolvedValue("1");
 		vi.mocked(newsQueryRepository.findById).mockResolvedValueOnce(null);
 
-		const result = await deleteNews(999);
+		const result = await deleteNews("999");
 
 		expect(result.success).toBe(false);
 		expect(result.message).toBe("unexpected");

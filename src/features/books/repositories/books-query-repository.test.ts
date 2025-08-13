@@ -42,8 +42,7 @@ describe("BooksQueryRepository", () => {
 
 			expect(prisma.books.findUnique).toHaveBeenCalledWith({
 				where: {
-					ISBN: "978-0123456789",
-					userId: "user123",
+					ISBN_userId: { ISBN: "978-0123456789", userId: "user123" },
 					status: "EXPORTED",
 				},
 				select: {
@@ -72,8 +71,7 @@ describe("BooksQueryRepository", () => {
 
 			expect(prisma.books.findUnique).toHaveBeenCalledWith({
 				where: {
-					ISBN: "978-9999999999",
-					userId: "user123",
+					ISBN_userId: { ISBN: "978-9999999999", userId: "user123" },
 					status: "EXPORTED",
 				},
 				select: {
@@ -106,8 +104,7 @@ describe("BooksQueryRepository", () => {
 
 			expect(prisma.books.findUnique).toHaveBeenCalledWith({
 				where: {
-					ISBN: "978-0123456789",
-					userId: "user123",
+					ISBN_userId: { ISBN: "978-0123456789", userId: "user123" },
 					status: "EXPORTED",
 				},
 				select: {

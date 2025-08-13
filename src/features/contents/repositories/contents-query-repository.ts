@@ -17,13 +17,13 @@ type IContentsQueryRepository = {
 };
 
 type Contents = {
-	id: number;
+	id: string;
 	title: string;
 	markdown: string;
 };
 
 type ContentsList = {
-	id: number;
+	id: string;
 	title: string;
 }[];
 

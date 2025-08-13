@@ -10,9 +10,9 @@ import { serverLogger } from "@/infrastructure/server";
 import type { ServerAction } from "@/types";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
 
-export async function deleteNews(id: number): Promise<ServerAction<number>> {
-	const hasPostPermission = await hasDumperPostPermission();
-	if (!hasPostPermission) forbidden();
+export async function deleteNews(id: string): Promise<ServerAction<string>> {
+	const hasPermission = await hasDumperPostPermission();
+	if (!hasPermission) forbidden();
 
 	try {
 		const userId = await getSelfId();

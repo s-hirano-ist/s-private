@@ -3,39 +3,37 @@ import "server-only";
 import { revalidatePath } from "next/cache";
 import { forbidden } from "next/navigation";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
-import { contentsCommandRepository } from "@/features/contents/repositories/contents-command-repository";
-import { validateContents } from "@/features/contents/utils/validate-contents";
+import { booksCommandRepository } from "@/features/books/repositories/books-command-repository";
+import { validateBooks } from "@/features/books/utils/validate-books";
 import { serverLogger } from "@/infrastructure/server";
 import type { ServerAction } from "@/types";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
-import { formatCreateContentsMessage } from "@/utils/notification/format-for-notification";
+import { formatCreateBooksMessage } from "@/utils/notification/format-for-notification";
 
-type Contents = {
-	id: string;
-	markdown: string;
+type Books = {
+	ISBN: string;
 	title: string;
 };
 
-export async function addContents(
+export async function addBooks(
 	formData: FormData,
-): Promise<ServerAction<Contents>> {
+): Promise<ServerAction<Books>> {
 	const hasPermission = await hasDumperPostPermission();
 	if (!hasPermission) forbidden();
 
 	try {
 		const userId = await getSelfId();
-		const validatedContents = validateContents(formData);
 
-		const createdContents = await contentsCommandRepository.create({
+		const validatedBooks = validateBooks(formData);
+
+		const createdBooks = await booksCommandRepository.create({
 			userId,
-			...validatedContents,
+			...validatedBooks,
 		});
-		const message = formatCreateContentsMessage({
-			title: createdContents.title,
-			markdown: createdContents.markdown,
-		});
+
+		const message = formatCreateBooksMessage(createdBooks);
 		const context = {
-			caller: "addContents" as const,
+			caller: "addBooks" as const,
 			status: 201 as const,
 			userId,
 		};
@@ -46,9 +44,8 @@ export async function addContents(
 			success: true,
 			message: "inserted",
 			data: {
-				id: createdContents.id,
-				title: createdContents.title,
-				markdown: createdContents.markdown,
+				ISBN: createdBooks.ISBN,
+				title: createdBooks.title,
 			},
 		};
 	} catch (error) {

@@ -8,7 +8,7 @@ import { useSearchableList } from "@/utils/hooks/use-searchable-list";
 type Props = {
 	data: LinkCardData[];
 	showDeleteButton: boolean;
-	deleteAction?: (id: number) => Promise<ServerAction<number>>;
+	deleteAction?: (id: string) => Promise<ServerAction<string>>;
 };
 
 export function LinkCardStack({ data, showDeleteButton, deleteAction }: Props) {

@@ -5,9 +5,9 @@ import { AddImageFormClient } from "./client";
 
 export async function AddImageForm() {
 	try {
-		const hasPostPermission = await hasDumperPostPermission();
+		const hasPermission = await hasDumperPostPermission();
 
-		if (!hasPostPermission) return <></>;
+		if (!hasPermission) return <></>;
 
 		return <AddImageFormClient addImage={addImage} />;
 	} catch (error) {

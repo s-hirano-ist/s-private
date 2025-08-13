@@ -48,7 +48,7 @@ class BooksQueryRepository implements IBooksQueryRepository {
 		status: Status,
 	): Promise<Books | null> => {
 		return await prisma.books.findUnique({
-			where: { ISBN, userId, status },
+			where: { ISBN_userId: { ISBN, userId }, status },
 			select: {
 				title: true,
 				ISBN: true,
