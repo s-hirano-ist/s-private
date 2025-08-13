@@ -5,10 +5,12 @@ import { forbidden } from "next/navigation";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
 import { contentsCommandRepository } from "@/features/contents/repositories/contents-command-repository";
 import { validateContents } from "@/features/contents/utils/validate-contents";
-import { loggerInfo } from "@/pino";
+import {
+	pushoverMonitoringService,
+	serverLogger,
+} from "@/infrastructure/server";
 import type { ServerAction } from "@/types";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
-import { sendPushoverMessage } from "@/utils/notification/fetch-message";
 import { formatCreateContentsMessage } from "@/utils/notification/format-for-notification";
 
 type Contents = {
@@ -35,8 +37,13 @@ export async function addContents(
 			title: createdContents.title,
 			markdown: createdContents.markdown,
 		});
-		loggerInfo(message, { caller: "addContents", status: 200 });
-		await sendPushoverMessage(message);
+		const context = {
+			caller: "addContents" as const,
+			status: 201 as const,
+			userId,
+		};
+		serverLogger.info(message, context);
+		await pushoverMonitoringService.notifyInfo(message, context);
 		revalidatePath("/(dumper)");
 
 		return {

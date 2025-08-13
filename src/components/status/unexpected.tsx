@@ -1,6 +1,6 @@
 "use client";
 import { useEffect } from "react";
-import { loggerError } from "@/pino";
+import { clientLogger } from "@/infrastructure/client";
 import { StatusCodeView } from "./status-code-view";
 
 type Props = {
@@ -10,7 +10,7 @@ type Props = {
 
 export function Unexpected({ caller, error }: Props) {
 	useEffect(() => {
-		loggerError("unexpected", { caller: caller, status: 500 }, error);
+		clientLogger.error("unexpected", { caller: caller, status: 500 }, error);
 		// eslint-disable-next-line
 	}, []);
 

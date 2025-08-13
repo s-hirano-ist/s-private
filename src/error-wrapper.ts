@@ -3,24 +3,26 @@ import "server-only";
 import { AuthError } from "next-auth";
 import { Prisma } from "@/generated";
 import {
+	pushoverMonitoringService,
+	serverLogger,
+} from "@/infrastructure/server";
+import {
 	FileNotAllowedError,
 	InvalidFormatError,
 	PushoverError,
 	UnexpectedError,
 } from "./error-classes";
-import { loggerError, loggerWarn } from "./pino";
 import type { ServerAction } from "./types";
-import { sendPushoverMessage } from "./utils/notification/fetch-message";
 
 export async function wrapServerSideErrorForClient<T>(
 	error: unknown,
 ): Promise<ServerAction<T>> {
 	if (error instanceof PushoverError) {
-		loggerError(error.message, {
-			caller: "wrapServerSideErrorForClient PushoverError",
+		serverLogger.error(error.message, {
+			caller: "wrapServerSideError",
 			status: 500,
 		});
-		//MEMO: 右記は意味なし await sendPushoverMessage(error.message);
+		//MEMO: 右記は意味なし await pushoverMonitoringService.notifyError(error.message, { caller: "wrapServerSideError", status: 500 });
 		return { success: false, message: error.message };
 	}
 	// FIXME: add error handling for MinIO errors
@@ -29,19 +31,21 @@ export async function wrapServerSideErrorForClient<T>(
 		error instanceof InvalidFormatError ||
 		error instanceof FileNotAllowedError
 	) {
-		loggerWarn(error.message, {
-			caller: "wrapServerSideErrorForClient custom",
-			status: 500,
-		});
-		await sendPushoverMessage(error.message);
+		const context = {
+			caller: "wrapServerSideError",
+			status: 500 as const,
+		};
+		serverLogger.warn(error.message, context);
+		await pushoverMonitoringService.notifyWarning(error.message, context);
 		return { success: false, message: error.message };
 	}
 	if (error instanceof AuthError) {
-		loggerWarn(error.message, {
-			caller: "wrapServerSideErrorForClient auth",
-			status: 500,
-		});
-		await sendPushoverMessage(error.message);
+		const context = {
+			caller: "wrapServerSideError",
+			status: 401 as const, // More appropriate status for auth errors
+		};
+		serverLogger.warn(error.message, context);
+		await pushoverMonitoringService.notifyWarning(error.message, context);
 		return {
 			success: false,
 			message: "signInUnknown",
@@ -54,38 +58,38 @@ export async function wrapServerSideErrorForClient<T>(
 		error instanceof Prisma.PrismaClientRustPanicError ||
 		error instanceof Prisma.PrismaClientInitializationError
 	) {
-		loggerError(error.message, {
-			caller: "wrapServerSideErrorForClient prisma 1",
-			status: 500,
-		});
-		await sendPushoverMessage(error.message);
+		const context = {
+			caller: "wrapServerSideError",
+			status: 500 as const,
+		};
+		serverLogger.error(error.message, context);
+		await pushoverMonitoringService.notifyError(error.message, context);
 		return { success: false, message: "prismaUnexpected" };
 	}
 	if (error instanceof Prisma.PrismaClientKnownRequestError) {
-		loggerWarn(error.message, {
-			caller: "wrapServerSideErrorForClient prisma 2",
-			status: 500,
-		});
-		await sendPushoverMessage(error.message);
+		const context = {
+			caller: "wrapServerSideError",
+			status: 400 as const, // Known client errors are typically 4xx
+		};
+		serverLogger.warn(error.message, context);
+		await pushoverMonitoringService.notifyWarning(error.message, context);
 		return { success: false, message: "prismaDuplicated" };
 	}
 
 	if (error instanceof Error) {
-		loggerError(error.message, {
-			caller: "wrapServerSideErrorForClient unknown error",
-			status: 500,
-		});
-		await sendPushoverMessage(error.message);
+		const context = {
+			caller: "wrapServerSideError",
+			status: 500 as const,
+		};
+		serverLogger.error(error.message, context);
+		await pushoverMonitoringService.notifyError(error.message, context);
 	} else {
-		loggerError(
-			"unexpected",
-			{
-				caller: "wrapServerSideErrorForClient not error errors",
-				status: 500,
-			},
-			error,
-		);
-		await sendPushoverMessage("unexpected");
+		const context = {
+			caller: "wrapServerSideError",
+			status: 500 as const,
+		};
+		serverLogger.error("unexpected", context, error);
+		await pushoverMonitoringService.notifyError("unexpected", context);
 	}
 	return { success: false, message: "unexpected" };
 }
