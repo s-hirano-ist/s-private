@@ -1,6 +1,5 @@
 import { forbidden } from "next/navigation";
 import { BadgeWithPagination } from "@/components/badge-with-pagination";
-import { CountBadge } from "@/components/count-badge";
 import { Unexpected } from "@/components/status/unexpected";
 import { getContentsCount } from "@/features/contents/actions/get-contents";
 import { hasViewerAdminPermission } from "@/utils/auth/session";

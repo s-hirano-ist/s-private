@@ -28,6 +28,7 @@ export function RootTab({ news, books, contents, images }: Props) {
 	const handleTabChange = (value: string) => {
 		setTab(value);
 		const params = new URLSearchParams(searchParams);
+		params.delete("page");
 		params.set("tab", value);
 		router.replace(`?${params.toString()}`);
 	};

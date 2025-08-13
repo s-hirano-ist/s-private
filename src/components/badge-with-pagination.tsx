@@ -27,9 +27,11 @@ export function BadgeWithPagination({
 
 	if (badgeOnly) {
 		return (
-			<Badge className="m-2 flex justify-center">
-				{t(label)}: {totalItems}
-			</Badge>
+			<div className="px-2">
+				<Badge className="m-2 flex justify-center">
+					{t(label)}: {totalItems}
+				</Badge>
+			</div>
 		);
 	}
 
