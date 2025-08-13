@@ -14,13 +14,13 @@ vi.mock("@/utils/notification/fetch-message", () => ({
 
 vi.mock("@/features/news/repositories/news-query-repository", () => ({
 	newsQueryRepository: {
-		findByIdAndUserId: vi.fn(),
+		findById: vi.fn(),
 	},
 }));
 
 vi.mock("@/features/news/repositories/news-command-repository", () => ({
 	newsCommandRepository: {
-		deleteByIdAndUserId: vi.fn(),
+		deleteById: vi.fn(),
 	},
 }));
 
@@ -38,26 +38,14 @@ describe("deleteNews", () => {
 			title: "Test News",
 			quote: "Test Quote",
 			url: "https://example.com",
-			categoryId: 1,
-			userId: "1",
 			status: "UNEXPORTED" as const,
-			createdAt: new Date(),
-			updatedAt: new Date(),
-			Category: {
-				id: 1,
-				name: "Test Category",
-			},
+			Category: { name: "Test Category" },
 			ogTitle: "sample og title 1",
 			ogDescription: "sample og description 1",
-			ogImageUrl: "https://example.com/1",
 		};
 
-		vi.mocked(newsQueryRepository.findByIdAndUserId).mockResolvedValueOnce(
-			mockNewsItem,
-		);
-		vi.mocked(
-			newsCommandRepository.deleteByIdAndUserId,
-		).mockResolvedValueOnce();
+		vi.mocked(newsQueryRepository.findById).mockResolvedValueOnce(mockNewsItem);
+		vi.mocked(newsCommandRepository.deleteById).mockResolvedValueOnce();
 
 		const result = await deleteNews(1);
 
@@ -67,10 +55,15 @@ describe("deleteNews", () => {
 			data: 1,
 		});
 
-		expect(newsQueryRepository.findByIdAndUserId).toHaveBeenCalledWith(1, "1");
-		expect(newsCommandRepository.deleteByIdAndUserId).toHaveBeenCalledWith(
+		expect(newsQueryRepository.findById).toHaveBeenCalledWith(
 			1,
 			"1",
+			"UNEXPORTED",
+		);
+		expect(newsCommandRepository.deleteById).toHaveBeenCalledWith(
+			1,
+			"1",
+			"UNEXPORTED",
 		);
 
 		expect(loggerInfo).toHaveBeenCalled();
@@ -80,14 +73,12 @@ describe("deleteNews", () => {
 
 	test("should return error when news not found", async () => {
 		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
-		vi.mocked(newsQueryRepository.findByIdAndUserId).mockResolvedValueOnce(
-			null,
-		);
+		vi.mocked(newsQueryRepository.findById).mockResolvedValueOnce(null);
 
 		const result = await deleteNews(999);
 
 		expect(result.success).toBe(false);
 		expect(result.message).toBe("unexpected");
-		expect(newsCommandRepository.deleteByIdAndUserId).not.toHaveBeenCalled();
+		expect(newsCommandRepository.deleteById).not.toHaveBeenCalled();
 	});
 });

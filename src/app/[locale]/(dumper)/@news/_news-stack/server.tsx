@@ -1,12 +1,12 @@
 import { StatusCodeView } from "@/components/status/status-code-view";
 import { deleteNews } from "@/features/news/actions/delete-news";
-import { getUnexportedNewsByUserId } from "@/features/news/actions/get-news";
+import { getUnexportedNews } from "@/features/news/actions/get-news";
 import { loggerError } from "@/pino";
 import { NewsStackClient } from "./client";
 
 export async function NewsStack() {
 	try {
-		const unexportedNews = await getUnexportedNewsByUserId();
+		const unexportedNews = await getUnexportedNews();
 
 		return <NewsStackClient data={unexportedNews} deleteNews={deleteNews} />;
 	} catch (error) {

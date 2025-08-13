@@ -65,15 +65,9 @@ describe("addNews", () => {
 			title: "Example Content",
 			quote: "This is an example news quote.",
 			url: "https://example.com",
-			categoryId: 1,
-			userId: "1",
-			status: "UNEXPORTED",
-			createdAt: new Date(),
-			updatedAt: new Date(),
-			Category: { id: 1, name: "tech" },
+			Category: { name: "tech" },
 			ogTitle: "sample og title 1",
 			ogDescription: "sample og description 1",
-			ogImageUrl: "https://example.com/1",
 		});
 
 		const result = await addNews(mockFormData);

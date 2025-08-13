@@ -27,7 +27,7 @@ const mockUnauthorizedSession = null;
 
 const mockFormData = new FormData();
 mockFormData.append("title", "Example Content");
-mockFormData.append("quote", "This is an example content quote.");
+mockFormData.append("markdown", "This is an example content quote.");
 const mockCreatedContents = {
 	id: 1,
 	title: "Example Content",

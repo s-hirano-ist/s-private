@@ -6,7 +6,7 @@ describe("validateContents", () => {
 	test("should validate correct contents data", () => {
 		const formData = new FormData();
 		formData.append("title", "Content Title");
-		formData.append("quote", "This is a short quote.");
+		formData.append("markdown", "This is a short quote.");
 
 		const result = validateContents(formData);
 
@@ -18,7 +18,7 @@ describe("validateContents", () => {
 
 	test("should throw InvalidFormatError when title is missing", () => {
 		const formData = new FormData();
-		formData.append("quote", "This is a short quote.");
+		formData.append("markdown", "This is a short quote.");
 
 		expect(() => validateContents(formData)).toThrow(InvalidFormatError);
 	});
@@ -33,7 +33,7 @@ describe("validateContents", () => {
 	test("should throw InvalidFormatError when markdown is empty", () => {
 		const formData = new FormData();
 		formData.append("title", "Content Title");
-		formData.append("quote", "");
+		formData.append("markdown", "");
 
 		expect(() => validateContents(formData)).toThrow(InvalidFormatError);
 	});
@@ -41,7 +41,7 @@ describe("validateContents", () => {
 	test("should validate with valid markdown", () => {
 		const formData = new FormData();
 		formData.append("title", "Content Title");
-		formData.append("quote", "Valid markdown content");
+		formData.append("markdown", "Valid markdown content");
 
 		const result = validateContents(formData);
 
@@ -54,7 +54,7 @@ describe("validateContents", () => {
 	test("should throw InvalidFormatError when title is empty", () => {
 		const formData = new FormData();
 		formData.append("title", "");
-		formData.append("quote", "Valid markdown");
+		formData.append("markdown", "Valid markdown");
 
 		expect(() => validateContents(formData)).toThrow(InvalidFormatError);
 	});

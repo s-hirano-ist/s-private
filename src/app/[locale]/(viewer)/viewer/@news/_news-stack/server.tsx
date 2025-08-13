@@ -1,6 +1,6 @@
 import { forbidden } from "next/navigation";
 import { StatusCodeView } from "@/components/status/status-code-view";
-import { getNews } from "@/features/news/actions/get-news";
+import { getExportedNews } from "@/features/news/actions/get-news";
 import { loggerError } from "@/pino";
 import { hasViewerAdminPermission } from "@/utils/auth/session";
 import { NewsStackClient } from "./client";
@@ -12,7 +12,7 @@ export async function NewsStack({ page }: Props) {
 	if (!hasAdminPermission) forbidden();
 
 	try {
-		const news = await getNews(page);
+		const news = await getExportedNews(page);
 		return <NewsStackClient data={news} />;
 	} catch (error) {
 		loggerError("unexpected", { caller: "NewsStack", status: 500 }, error);
