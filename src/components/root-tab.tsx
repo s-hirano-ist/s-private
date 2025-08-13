@@ -5,9 +5,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const TABS = {
 	news: "NEWS",
-	books: "BOOKS",
 	contents: "CONTENTS",
 	images: "IMAGES",
+	books: "BOOKS",
 };
 
 type Props = {
@@ -60,9 +60,9 @@ export function RootTab({ news, books, contents, images }: Props) {
 					);
 				})}
 			</TabsList>
-			<TabsContent value="news"> {news}</TabsContent>
+			<TabsContent value="news">{news}</TabsContent>
+			<TabsContent value="contents">{contents}</TabsContent>
 			<TabsContent value="books"> {books}</TabsContent>
-			<TabsContent value="contents"> {contents}</TabsContent>
 			<TabsContent value="images"> {images}</TabsContent>
 		</Tabs>
 	);

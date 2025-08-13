@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { RootTab } from "@/components/root-tab";
 import { PAGE_NAME } from "@/constants";
-import { RootTab } from "./_root-tab/client";
 
 const displayName = "DUMPER";
 
@@ -11,12 +11,14 @@ export const metadata: Metadata = {
 };
 
 type Props = {
-	contents: ReactNode;
-	dump: ReactNode;
-	image: ReactNode;
 	news: ReactNode;
+	contents: ReactNode;
+	images: ReactNode;
+	books: ReactNode;
 };
 
-export default async function Layout({ news, contents, dump, image }: Props) {
-	return <RootTab contents={contents} dump={dump} image={image} news={news} />;
+export default async function Layout({ news, contents, images, books }: Props) {
+	return (
+		<RootTab books={books} contents={contents} images={images} news={news} />
+	);
 }

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { RootTab } from "@/components/root-tab";
 import { PAGE_NAME } from "@/constants";
-import { RootTab } from "./_root-tab/client";
 
 const displayName = "VIEWER";
 
@@ -11,10 +11,10 @@ export const metadata: Metadata = {
 };
 
 type Props = {
-	books: ReactNode;
+	news: ReactNode;
 	contents: ReactNode;
 	images: ReactNode;
-	news: ReactNode;
+	books: ReactNode;
 };
 
 export default async function Layout({ books, contents, images, news }: Props) {
