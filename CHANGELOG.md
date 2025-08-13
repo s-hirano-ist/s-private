@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.26.0](https://github.com/s-hirano-ist/s-private/compare/v8.25.0...v8.26.0) (2025-08-13)
+
+
+### Features
+
+* refactor simple search ([f660350](https://github.com/s-hirano-ist/s-private/commit/f660350fc2735891c70c4662696ada4a65bfa80e))
+
 ## [8.25.0](https://github.com/s-hirano-ist/s-private/compare/v8.24.2...v8.25.0) (2025-08-13)
 
 
