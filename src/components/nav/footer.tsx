@@ -1,5 +1,5 @@
 "use client";
-import { BotIcon, FileUpIcon, SendIcon } from "lucide-react";
+import { BotIcon, FileUpIcon, SearchIcon } from "lucide-react";
 import type { Route } from "next";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
@@ -66,7 +66,7 @@ export function Footer() {
 								type="button"
 								variant="navCenter"
 							>
-								{Icon("", <SendIcon className="size-6 text-white" />)}
+								{Icon("", <SearchIcon className="size-6 text-white" />)}
 								<span className="sr-only">Action</span>
 							</Button>
 						</div>

@@ -1,5 +1,4 @@
-import { BooksCounter } from "./_books-counter/server";
-import { BooksStack } from "./_books-stack/server";
+import { StatusCodeView } from "@/components/status/status-code-view";
 
 type Props = {
 	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -13,10 +12,5 @@ export default async function Page({ searchParams }: Props) {
 		return <div />;
 	}
 
-	return (
-		<>
-			<BooksCounter />
-			<BooksStack />
-		</>
-	);
+	return <StatusCodeView statusCode="000" />;
 }

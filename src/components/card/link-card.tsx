@@ -13,7 +13,7 @@ import { ServerAction } from "@/types";
 import { validateUrl } from "@/utils/validate-url";
 
 export type LinkCardData = {
-	id: number;
+	id: number | string;
 	title: string;
 	description?: string;
 	badgeText?: string;
@@ -40,7 +40,7 @@ export function LinkCard({
 				{showDeleteButton && deleteAction !== undefined && (
 					<DeleteButtonWithModal
 						deleteAction={deleteAction}
-						id={id}
+						id={Number(id)} // FIXME: not safe when id is string
 						title={title}
 					/>
 				)}

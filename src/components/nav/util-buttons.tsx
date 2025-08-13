@@ -3,7 +3,7 @@ import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useMemo } from "react";
-import { SimpleSearchClient } from "@/app/[locale]/search/simple-search/client";
+import { SimpleSearch } from "@/components/search/simple-search";
 import { Button } from "@/components/ui/button";
 import { UTIL_URLS } from "@/constants";
 import { searchKnowledge } from "@/features/ai/actions/ai-search";
@@ -42,23 +42,25 @@ export function UtilButtons({ handleReload, onSignOutSubmit }: Props) {
 	const shouldShowSignOut = useMemo(() => pathname !== "/auth", [pathname]);
 
 	return (
-		<div className="grid gap-2 px-2 grid-cols-1 sm:grid-cols-3">
-			{UTIL_URLS.map((url) => {
-				return (
-					<Button asChild className="w-full" key={url.name}>
-						<Link href={url.url}>{url.name}</Link>
+		<>
+			<div className="grid gap-2 px-2 grid-cols-1 sm:grid-cols-3">
+				{UTIL_URLS.map((url) => {
+					return (
+						<Button asChild className="w-full" key={url.name}>
+							<Link href={url.url}>{url.name}</Link>
+						</Button>
+					);
+				})}
+				<Button onClick={handleReload}>{t("reload")}</Button>
+				<Button onClick={handleTheme}>{t("appearance")}</Button>
+				<Button onClick={handleLanguage}>{t("language")}</Button>
+				{shouldShowSignOut && (
+					<Button data-testid="log-out-button" onClick={onSignOutSubmit}>
+						{t("signOut")}
 					</Button>
-				);
-			})}
-			<Button onClick={handleReload}>{t("reload")}</Button>
-			<Button onClick={handleTheme}>{t("appearance")}</Button>
-			<Button onClick={handleLanguage}>{t("language")}</Button>
-			{shouldShowSignOut && (
-				<Button data-testid="log-out-button" onClick={onSignOutSubmit}>
-					{t("signOut")}
-				</Button>
-			)}
-			<SimpleSearchClient searchKnowledge={searchKnowledge} />
-		</div>
+				)}
+			</div>
+			<SimpleSearch searchKnowledge={searchKnowledge} />
+		</>
 	);
 }

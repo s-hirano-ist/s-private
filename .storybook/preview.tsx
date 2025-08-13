@@ -19,7 +19,7 @@ const preview = {
 					label: {
 						category: "カテゴリー",
 						title: "タイトル",
-						description: " ひとこと",
+						description: "ひとこと",
 						url: "URL",
 						save: "保存",
 						upload: "アップロード",
@@ -38,7 +38,6 @@ const preview = {
 						aiSearch: "AI知識検索",
 						aiSearchDescription: "AI検索を使用してナレッジベースを検索",
 						searching: "検索中...",
-						noResults: "結果が見つかりません",
 						score: "スコア",
 						delete: "削除",
 						cancel: "キャンセル",

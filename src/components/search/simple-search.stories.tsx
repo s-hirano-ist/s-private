@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { fn } from "@storybook/test";
-import { SimpleSearchClient } from "./client";
+import { SimpleSearch } from "./simple-search";
 
 const meta = {
-	component: SimpleSearchClient,
-} satisfies Meta<typeof SimpleSearchClient>;
+	component: SimpleSearch,
+} satisfies Meta<typeof SimpleSearch>;
 
 export default meta;
 

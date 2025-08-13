@@ -4,11 +4,10 @@ import { fetchAllKnowledge } from "./fetch-knowledge";
 
 // Define the type for search results
 export type SearchResult = {
-	aiSummary: string;
-	href: string;
+	description: string;
 	content: string;
+	href: string;
 	id: string;
-	relevanceScore: number;
 	title: string;
 	type: "content" | "book";
 };
@@ -39,7 +38,7 @@ function simpleSearch(
 			const relevanceScore = titleMatches * 3 + contentMatches;
 
 			// Extract a snippet of content around the query
-			let aiSummary = "";
+			let description = "";
 			const contentLower = item.content.toLowerCase();
 			const queryIndex = contentLower.indexOf(normalizedQuery);
 
@@ -50,20 +49,21 @@ function simpleSearch(
 					item.content.length,
 					queryIndex + normalizedQuery.length + 100,
 				);
-				aiSummary = item.content.slice(startIndex, endIndex);
+				description = item.content.slice(startIndex, endIndex);
 
 				// Add ellipsis if we're not at the beginning or end
-				if (startIndex > 0) aiSummary = "..." + aiSummary;
-				if (endIndex < item.content.length) aiSummary = aiSummary + "...";
+				if (startIndex > 0) description = "..." + description;
+				if (endIndex < item.content.length) description = description + "...";
 			} else {
 				// If no direct match, just take the first part of the content
-				aiSummary = item.content.slice(0, 200) + "...";
+				description = item.content.slice(0, 200) + "...";
 			}
 
 			return {
 				...item,
 				relevanceScore,
-				aiSummary,
+				id: item.title,
+				description,
 			};
 		})
 		.sort((a, b) => b.relevanceScore - a.relevanceScore);

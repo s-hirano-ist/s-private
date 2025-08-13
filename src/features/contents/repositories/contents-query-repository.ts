@@ -41,7 +41,7 @@ class ContentsQueryRepository implements IContentsQueryRepository {
 		status: Status,
 	): Promise<Contents | null> {
 		return await prisma.contents.findUnique({
-			where: { title, userId, status },
+			where: { status, title_userId: { title, userId } },
 			select: { id: true, title: true, markdown: true },
 		});
 	}
