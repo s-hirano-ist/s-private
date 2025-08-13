@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { ImageCardSkeletonStack } from "@/components/card/image-card-skeleton-stack";
 import { BooksCounter } from "./_books-counter/server";
 import { BooksStack } from "./_books-stack/server";
 
@@ -16,7 +18,9 @@ export default async function Page({ searchParams }: Props) {
 	return (
 		<>
 			<BooksCounter />
-			<BooksStack />
+			<Suspense fallback={<ImageCardSkeletonStack />}>
+				<BooksStack />
+			</Suspense>
 		</>
 	);
 }

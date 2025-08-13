@@ -3,7 +3,7 @@ import { ClipboardPasteIcon, TableOfContentsIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useActionState, useRef } from "react";
 import { toast } from "sonner";
-import { AddFormSkeleton } from "@/components/add-form-skeleton";
+import Loading from "@/components/loading";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -49,7 +49,7 @@ export function AddNewsFormClient({ categories, addNews }: Props) {
 	return (
 		<form action={addNewsAction} className="space-y-4 px-2 py-4">
 			{isPending ? (
-				<AddFormSkeleton showCategory />
+				<Loading />
 			) : (
 				<>
 					<div className="space-y-1">

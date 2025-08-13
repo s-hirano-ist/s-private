@@ -2,7 +2,7 @@
 import { useTranslations } from "next-intl";
 import { useActionState, useRef } from "react";
 import { toast } from "sonner";
-import { AddFormSkeleton } from "@/components/add-form-skeleton";
+import Loading from "@/components/loading";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,7 +27,7 @@ export function AddContentsFormClient({ addContents }: Props) {
 	return (
 		<form action={addContentsAction} className="space-y-4 px-2 py-4">
 			{isPending ? (
-				<AddFormSkeleton />
+				<Loading />
 			) : (
 				<>
 					<div className="space-y-1">

@@ -19,7 +19,7 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 		<>
 			<NewsCounter page={currentPage} />
 			<Suspense fallback={<LinkCardSkeletonStack />}>
-				<NewsStack page={currentPage} />
+				<NewsStack key={currentPage} page={currentPage} />
 			</Suspense>
 		</>
 	);

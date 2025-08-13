@@ -1,6 +1,7 @@
 import { ContentsPagination } from "@/components/contents-pagination";
 import { CountBadge } from "@/components/count-badge";
 import { Unexpected } from "@/components/status/unexpected";
+import { PAGE_SIZE } from "@/constants";
 import { getImagesCount } from "@/features/images/actions/get-images";
 import { hasViewerAdminPermission } from "@/utils/auth/session";
 
@@ -12,10 +13,11 @@ export async function ImageCounter({ page }: Props) {
 		if (!hasAdminPermission) return <></>;
 
 		const totalImages = await getImagesCount("EXPORTED");
+		const totalPages = Math.ceil(totalImages / PAGE_SIZE);
 		return (
 			<>
 				<CountBadge label="totalImages" total={totalImages} />
-				<ContentsPagination currentPage={page} totalPages={totalImages} />
+				<ContentsPagination currentPage={page} totalPages={totalPages} />
 			</>
 		);
 	} catch (error) {
