@@ -7,7 +7,6 @@
 	],
 	"ignoreDependencies": [
 		"@tailwindcss/typography", // imported in global.css
-		"tailwindcss-animate", // imported in global.css
 		"@eslint/config-inspector", // eslint inspector
 		"@storybook/addon-measure", // storybook integration not working
 		"@storybook/addon-outline", // storybook integration not working
