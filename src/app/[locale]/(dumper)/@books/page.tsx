@@ -16,7 +16,7 @@ export default async function Page({ searchParams }: Props) {
 	return (
 		<>
 			<BooksCounter />
-			<BooksStack />;
+			<BooksStack />
 		</>
 	);
 }
