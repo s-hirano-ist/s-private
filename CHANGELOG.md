@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.25.0](https://github.com/s-hirano-ist/s-private/compare/v8.24.2...v8.25.0) (2025-08-13)
+
+
+### Features
+
+* ddd pattern to match cqrs ([61dbff6](https://github.com/s-hirano-ist/s-private/commit/61dbff62a6c933607950e7de4893795f37b58d01))
+* merge dumper and viewer ([dbe1ae7](https://github.com/s-hirano-ist/s-private/commit/dbe1ae717a13daa8d081f2f5fd4786ae22557932))
+* merge dumper and viewer ([eb3ef43](https://github.com/s-hirano-ist/s-private/commit/eb3ef435f32936d4f9b5890e53e3b38405bca83a))
+
+
+### Bug Fixes
+
+* add more min h to contents descriptions ([293f8d8](https://github.com/s-hirano-ist/s-private/commit/293f8d8f7512e56c145b9f0045b7f4d8aebe9fd4))
+* autofix biome ([fd3a47c](https://github.com/s-hirano-ist/s-private/commit/fd3a47c349ce7eeae4003feae5a94b00b8686482))
+* contents repository ([100d77b](https://github.com/s-hirano-ist/s-private/commit/100d77b927f057afec8db115da5f9580df0ad6a1))
+* fix lang options ([edcf702](https://github.com/s-hirano-ist/s-private/commit/edcf702b50f535f57a7d6021512bc9e1df8f1ef2))
+
 ## [8.24.2](https://github.com/s-hirano-ist/s-private/compare/v8.24.1...v8.24.2) (2025-08-03)
 
 
