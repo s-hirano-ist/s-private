@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.26.1](https://github.com/s-hirano-ist/s-private/compare/v8.26.0...v8.26.1) (2025-08-13)
+
+
+### Bug Fixes
+
+* refactor pino and pushover ([e5f75d9](https://github.com/s-hirano-ist/s-private/commit/e5f75d9b88129d74fb610ca037e90285545c6ded))
+
 ## [8.26.0](https://github.com/s-hirano-ist/s-private/compare/v8.25.0...v8.26.0) (2025-08-13)
 
 
