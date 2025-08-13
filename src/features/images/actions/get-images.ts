@@ -16,7 +16,9 @@ export const getExportedImages = cache(async (page: number) => {
 
 export const getUnexportedImages = cache(async () => {
 	const userId = await getSelfId();
-	return await imageQueryRepository.findMany(userId, "UNEXPORTED");
+	return await imageQueryRepository.findMany(userId, "UNEXPORTED", {
+		orderBy: { createdAt: "desc" },
+	});
 });
 
 export const getImagesCount = cache(async (status: Status) => {
