@@ -56,7 +56,7 @@ describe("addNews", () => {
 			userId: "1",
 		});
 		vi.mocked(newsCommandRepository.create).mockResolvedValue({
-			id: 1,
+			id: "1",
 			title: "Example Content",
 			quote: "This is an example news quote.",
 			url: "https://example.com",

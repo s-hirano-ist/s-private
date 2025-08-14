@@ -22,11 +22,13 @@ describe("get-contents", () => {
 		test("should fetch and transform contents correctly", async () => {
 			const mockContents = [
 				{
-					id: 1,
+					id: "1",
+					key: "1",
 					title: "Test Content 1",
 				},
 				{
-					id: 2,
+					id: "2",
+					key: "2",
 					title: "Test Content 2",
 				},
 			];
@@ -48,16 +50,18 @@ describe("get-contents", () => {
 
 			expect(result).toEqual([
 				{
-					id: 1,
+					id: "",
+					key: "1",
 					title: "Test Content 1",
 					description: "",
-					href: "/content/Test Content 1",
+					href: "/content/Test%20Content%201",
 				},
 				{
-					id: 2,
+					id: "",
+					key: "2",
 					title: "Test Content 2",
 					description: "",
-					href: "/content/Test Content 2",
+					href: "/content/Test%20Content%202",
 				},
 			]);
 		});
@@ -81,7 +85,8 @@ describe("get-contents", () => {
 		test("should handle contents with null images", async () => {
 			const mockContents = [
 				{
-					id: 1,
+					id: "",
+					key: "1",
 					title: "Test Content",
 				},
 			];
@@ -94,10 +99,11 @@ describe("get-contents", () => {
 
 			expect(result).toEqual([
 				{
-					id: 1,
+					id: "",
+					key: "",
 					title: "Test Content",
 					description: "",
-					href: "/content/Test Content",
+					href: "/content/Test%20Content",
 				},
 			]);
 		});
@@ -105,7 +111,8 @@ describe("get-contents", () => {
 		test("should use title as href for contents", async () => {
 			const mockContents = [
 				{
-					id: 1,
+					id: "",
+					key: "1",
 					title: "My Special Content Title",
 				},
 			];
@@ -116,7 +123,7 @@ describe("get-contents", () => {
 
 			const result = await getExportedContents();
 
-			expect(result[0].href).toBe("/content/My Special Content Title");
+			expect(result[0].href).toBe("/content/My%20Special%20Content%20Title");
 			expect(result[0].title).toBe("My Special Content Title");
 		});
 	});

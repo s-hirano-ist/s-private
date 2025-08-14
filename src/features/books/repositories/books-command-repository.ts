@@ -4,7 +4,6 @@ import prisma from "@/prisma";
 type IBooksCommandRepository = {
 	create(data: BooksCreateInput): Promise<Books>;
 	deleteById(ISBN: string, userId: string, status: Status): Promise<void>;
-	transaction<T>(fn: () => Promise<T>): Promise<T>;
 };
 
 type BooksCreateInput = {
@@ -49,10 +48,6 @@ class BooksCommandRepository implements IBooksCommandRepository {
 		await prisma.books.delete({
 			where: { ISBN_userId: { ISBN, userId }, status },
 		});
-	}
-
-	async transaction<T>(fn: () => Promise<T>): Promise<T> {
-		return await prisma.$transaction(fn);
 	}
 }
 

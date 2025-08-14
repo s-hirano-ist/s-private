@@ -21,7 +21,7 @@ describe("NewsQueryRepository", () => {
 	describe("findById", () => {
 		test("should find news by id, userId, and status", async () => {
 			const mockNews = {
-				id: 1,
+				id: "1",
 				title: "Test News",
 				url: "https://example.com/news/1",
 				quote: "This is a test quote",
@@ -33,13 +33,13 @@ describe("NewsQueryRepository", () => {
 			vi.mocked(prisma.news.findUnique).mockResolvedValue(mockNews);
 
 			const result = await newsQueryRepository.findById(
-				1,
+				"1",
 				"user123",
 				"EXPORTED",
 			);
 
 			expect(prisma.news.findUnique).toHaveBeenCalledWith({
-				where: { id: 1, userId: "user123", status: "EXPORTED" },
+				where: { id: "1", userId: "user123", status: "EXPORTED" },
 				include: { Category: true },
 			});
 			expect(result).toEqual(mockNews);
@@ -81,7 +81,7 @@ describe("NewsQueryRepository", () => {
 		test("should find multiple news items successfully", async () => {
 			const mockNews = [
 				{
-					id: 1,
+					id: "1",
 					title: "First News",
 					url: "https://example.com/news/1",
 					quote: "First quote",
@@ -90,7 +90,7 @@ describe("NewsQueryRepository", () => {
 					Category: { id: 1, name: "Tech" },
 				},
 				{
-					id: 2,
+					id: "2",
 					title: "Second News",
 					url: "https://example.com/news/2",
 					quote: null,
@@ -157,7 +157,7 @@ describe("NewsQueryRepository", () => {
 		test("should work with cache strategy", async () => {
 			const mockNews = [
 				{
-					id: 1,
+					id: "1",
 					title: "Cached News",
 					url: "https://example.com/news/1",
 					quote: "Cached quote",

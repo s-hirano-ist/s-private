@@ -34,22 +34,22 @@ describe("get-news", () => {
 		test("should fetch and transform exported news correctly", async () => {
 			const mockNews = [
 				{
-					id: 1,
+					id: "1",
 					title: "Test News 1",
 					quote: "Test quote 1",
 					url: "https://example1.com",
 					ogTitle: "OG Title 1",
 					ogDescription: "OG Description 1",
-					Category: { name: "Tech" },
+					Category: { id: 1, name: "Tech" },
 				},
 				{
-					id: 2,
+					id: "2",
 					title: "Test News 2",
 					quote: "Test quote 2",
 					url: "https://example2.com",
 					ogTitle: "OG Title 2",
 					ogDescription: "OG Description 2",
-					Category: { name: "Science" },
+					Category: { id: 2, name: "Science" },
 				},
 			];
 
@@ -70,18 +70,20 @@ describe("get-news", () => {
 
 			expect(result).toEqual([
 				{
-					id: 1,
+					id: "Tech",
+					key: "1",
 					title: "Test News 1",
 					description: "Test quote 1 \n OG Title 1 \n OG Description 1",
 					href: "https://example1.com",
-					badgeText: "Tech",
+					badgeText: "example1.com",
 				},
 				{
-					id: 2,
+					id: "Science",
+					key: "2",
 					title: "Test News 2",
 					description: "Test quote 2 \n OG Title 2 \n OG Description 2",
 					href: "https://example2.com",
-					badgeText: "Science",
+					badgeText: "example2.com",
 				},
 			]);
 		});
@@ -124,18 +126,22 @@ describe("get-news", () => {
 		test("should fetch and transform unexported news correctly", async () => {
 			const mockNews = [
 				{
-					id: 1,
+					id: "1",
 					title: "Unexported News 1",
 					quote: "Test quote 1",
 					url: "https://example1.com",
-					Category: { name: "Tech" },
+					Category: { id: 1, name: "Tech" },
+					ogTitle: "OG Title 1",
+					ogDescription: "OG Description 1",
 				},
 				{
-					id: 2,
+					id: "2",
 					title: "Unexported News 2",
 					quote: null,
 					url: "https://example2.com",
-					Category: { name: "Science" },
+					Category: { id: 2, name: "Science" },
+					ogTitle: "OG Title 2",
+					ogDescription: "OG Description 2",
 				},
 			];
 
@@ -153,18 +159,20 @@ describe("get-news", () => {
 
 			expect(result).toEqual([
 				{
-					id: 1,
+					id: "Tech",
+					key: "1",
 					title: "Unexported News 1",
 					description: "Test quote 1",
 					href: "https://example1.com",
-					badgeText: "Tech",
+					badgeText: "example1.com",
 				},
 				{
-					id: 2,
+					id: "Science",
+					key: "2",
 					title: "Unexported News 2",
 					description: undefined,
 					href: "https://example2.com",
-					badgeText: "Science",
+					badgeText: "example2.com",
 				},
 			]);
 		});

@@ -3,11 +3,7 @@ import type { Prisma, Status } from "@/generated";
 import prisma from "@/prisma";
 
 type IContentsQueryRepository = {
-	findByTitle(
-		title: string,
-		userId: string,
-		status: Status,
-	): Promise<Contents | null>;
+	findByTitle(title: string, userId: string): Promise<Contents | null>;
 	findMany(
 		userId: string,
 		status: Status,
@@ -35,13 +31,9 @@ type ContentsFindManyParams = {
 };
 
 class ContentsQueryRepository implements IContentsQueryRepository {
-	async findByTitle(
-		title: string,
-		userId: string,
-		status: Status,
-	): Promise<Contents | null> {
+	async findByTitle(title: string, userId: string): Promise<Contents | null> {
 		return await prisma.contents.findUnique({
-			where: { status, title_userId: { title, userId } },
+			where: { title_userId: { title, userId } },
 			select: { id: true, title: true, markdown: true },
 		});
 	}

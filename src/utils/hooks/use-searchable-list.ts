@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 
 const PARAM_NAME = "q";
@@ -65,6 +65,17 @@ export function useSearchableList<T extends SearchableItem>({
 		setSearchQuery(query);
 		await debouncedSearch(query);
 	};
+
+	// Sync searchResults when data changes
+	useEffect(() => {
+		if (searchQuery === "") {
+			setSearchResults(data);
+		} else {
+			setSearchResults(
+				data.filter((item) => filterFunction(item, searchQuery)),
+			);
+		}
+	}, [data, searchQuery, filterFunction]);
 
 	return {
 		searchQuery,

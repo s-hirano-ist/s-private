@@ -4,7 +4,6 @@ import prisma from "@/prisma";
 type INewsCommandRepository = {
 	create(data: NewsCreateInput): Promise<News>;
 	deleteById(id: string, userId: string, status: Status): Promise<void>;
-	transaction<T>(fn: () => Promise<T>): Promise<T>;
 };
 
 type NewsCreateInput = {
@@ -37,10 +36,6 @@ class NewsCommandRepository implements INewsCommandRepository {
 		await prisma.news.delete({
 			where: { id, userId, status },
 		});
-	}
-
-	async transaction<T>(fn: () => Promise<T>): Promise<T> {
-		return await prisma.$transaction(fn);
 	}
 }
 

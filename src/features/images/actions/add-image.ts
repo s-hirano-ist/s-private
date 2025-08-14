@@ -74,7 +74,6 @@ export async function addImage(
 			{ notify: true },
 		);
 		revalidatePath("/(dumper)");
-		await imageCommandRepository.invalidateCache();
 
 		return {
 			success: true,
