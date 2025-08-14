@@ -1,0 +1,20 @@
+name: 'depcruise'
+on:
+  pull_request:
+
+jobs:
+  report:
+    permissions:
+      pull-requests: write
+    timeout-minutes: 10
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout files
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          persist-credentials: false
+          submodules: true
+
+      - uses: MH4GF/dependency-cruiser-report-action@v2
+        with:
+            package-manager: pnpm

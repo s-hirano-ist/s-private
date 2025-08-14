@@ -32,72 +32,12 @@ describe("ImageQueryRepository", () => {
 		vi.clearAllMocks();
 	});
 
-	describe("findById", () => {
-		test("should find image by id, userId, and status", async () => {
-			const mockImage = {
-				id: "image-123",
-				userId: "user123",
-				contentType: "image/png",
-				fileSize: 1024,
-				width: 800,
-				height: 600,
-				tags: ["nature", "landscape"],
-				description: "A beautiful landscape",
-				status: "EXPORTED",
-				createdAt: new Date(),
-				updatedAt: new Date(),
-			};
-
-			vi.mocked(prisma.images.findUnique).mockResolvedValue(mockImage);
-
-			const result = await imageQueryRepository.findById(
-				"image-123",
-				"user123",
-				"EXPORTED",
-			);
-
-			expect(prisma.images.findUnique).toHaveBeenCalledWith({
-				where: { id: "image-123", userId: "user123", status: "EXPORTED" },
-			});
-			expect(result).toEqual(mockImage);
-		});
-
-		test("should return null when image not found", async () => {
-			vi.mocked(prisma.images.findUnique).mockResolvedValue(null);
-
-			const result = await imageQueryRepository.findById(
-				"image-999",
-				"user123",
-				"EXPORTED",
-			);
-
-			expect(prisma.images.findUnique).toHaveBeenCalledWith({
-				where: { id: "image-999", userId: "user123", status: "EXPORTED" },
-			});
-			expect(result).toBeNull();
-		});
-
-		test("should handle database errors", async () => {
-			vi.mocked(prisma.images.findUnique).mockRejectedValue(
-				new Error("Database error"),
-			);
-
-			await expect(
-				imageQueryRepository.findById("image-123", "user123", "EXPORTED"),
-			).rejects.toThrow("Database error");
-
-			expect(prisma.images.findUnique).toHaveBeenCalledWith({
-				where: { id: "image-123", userId: "user123", status: "EXPORTED" },
-			});
-		});
-	});
-
 	describe("findMany", () => {
 		test("should find multiple images successfully", async () => {
 			const mockImages = [
-				{ id: "image-123" },
-				{ id: "image-456" },
-				{ id: "image-789" },
+				{ paths: "image-123" },
+				{ paths: "image-456" },
+				{ paths: "image-789" },
 			];
 
 			vi.mocked(prisma.images.findMany).mockResolvedValue(mockImages);
@@ -116,7 +56,7 @@ describe("ImageQueryRepository", () => {
 
 			expect(prisma.images.findMany).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "EXPORTED" },
-				select: { id: true },
+				select: { paths: true },
 				...params,
 			});
 			expect(result).toEqual(mockImages);
@@ -129,13 +69,13 @@ describe("ImageQueryRepository", () => {
 
 			expect(prisma.images.findMany).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "EXPORTED" },
-				select: { id: true },
+				select: { paths: true },
 			});
 			expect(result).toEqual([]);
 		});
 
 		test("should work with cache strategy", async () => {
-			const mockImages = [{ id: "image-123" }];
+			const mockImages = [{ paths: "image-123" }];
 
 			vi.mocked(prisma.images.findMany).mockResolvedValue(mockImages);
 
@@ -151,7 +91,7 @@ describe("ImageQueryRepository", () => {
 
 			expect(prisma.images.findMany).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "EXPORTED" },
-				select: { id: true },
+				select: { paths: true },
 				cacheStrategy: { ttl: 300, swr: 30, tags: ["images"] },
 			});
 			expect(result).toEqual(mockImages);
@@ -168,7 +108,7 @@ describe("ImageQueryRepository", () => {
 
 			expect(prisma.images.findMany).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "EXPORTED" },
-				select: { id: true },
+				select: { paths: true },
 			});
 		});
 	});

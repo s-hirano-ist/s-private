@@ -1,12 +1,8 @@
 "use client";
 import { useTranslations } from "next-intl";
-import { useActionState, useRef } from "react";
-import { toast } from "sonner";
-import Loading from "@/components/loading";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { FormInput } from "@/components/forms/fields/form-input";
+import { FormTextarea } from "@/components/forms/fields/form-textarea";
+import { GenericFormWrapper } from "@/components/forms/generic-form-wrapper";
 
 type Props = {
 	addContents: (formData: FormData) => Promise<{ message: string }>;
@@ -14,41 +10,24 @@ type Props = {
 
 export function AddContentsFormClient({ addContents }: Props) {
 	const label = useTranslations("label");
-	const message = useTranslations("message");
-
-	const submitForm = async (_: null, formData: FormData) => {
-		const response = await addContents(formData);
-		toast(message(response.message));
-		return null;
-	};
-
-	const [_, addContentsAction, isPending] = useActionState(submitForm, null);
 
 	return (
-		<form action={addContentsAction} className="space-y-4 px-2 py-4">
-			{isPending ? (
-				<Loading />
-			) : (
-				<>
-					<div className="space-y-1">
-						<Label htmlFor="title">{label("title")}</Label>
-						<Input autoComplete="off" id="title" name="title" required />
-					</div>
-					<div className="space-y-1">
-						<Label htmlFor="markdown">{label("description")}</Label>
-						<Textarea
-							autoComplete="off"
-							className="min-h-[200px]"
-							id="markdown"
-							name="markdown"
-							required
-						/>
-					</div>
-				</>
-			)}
-			<Button className="w-full" disabled={isPending} type="submit">
-				{label("save")}
-			</Button>
-		</form>
+		<GenericFormWrapper action={addContents}>
+			<FormInput
+				autoComplete="off"
+				htmlFor="title"
+				label={label("title")}
+				name="title"
+				required
+			/>
+			<FormTextarea
+				autoComplete="off"
+				className="min-h-[200px]"
+				htmlFor="markdown"
+				label={label("description")}
+				name="markdown"
+				required
+			/>
+		</GenericFormWrapper>
 	);
 }

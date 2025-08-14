@@ -1,7 +1,7 @@
 import { Unexpected } from "@/components/status/unexpected";
 import { addNews } from "@/features/news/actions/add-news";
 import { getCategoriesByUserId } from "@/features/news/actions/get-news";
-import { serverLogger } from "@/infrastructure/server";
+import { serverLogger } from "@/o11y/server";
 import { hasDumperPostPermission } from "@/utils/auth/session";
 import { AddNewsFormClient } from "./client";
 

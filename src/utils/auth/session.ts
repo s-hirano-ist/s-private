@@ -1,6 +1,6 @@
 import "server-only";
 import { unauthorized } from "next/navigation";
-import { serverLogger } from "@/infrastructure/server";
+import { serverLogger } from "@/o11y/server";
 import { auth } from "./auth";
 
 async function checkSelfAuth() {

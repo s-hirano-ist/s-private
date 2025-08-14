@@ -9,13 +9,15 @@ import {
 	THUMBNAIL_IMAGE_PATH,
 	THUMBNAIL_WIDTH,
 } from "@/constants";
-import { FileNotAllowedError, UnexpectedError } from "@/error-classes";
-import { wrapServerSideErrorForClient } from "@/error-wrapper";
 import { imageCommandRepository } from "@/features/images/repositories/image-command-repository";
-import { serverLogger } from "@/infrastructure/server";
+import { serverLogger } from "@/o11y/server";
 import type { ServerAction } from "@/types";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
-import { formatCreateImageMessage } from "@/utils/notification/format-for-notification";
+import {
+	FileNotAllowedError,
+	UnexpectedError,
+} from "@/utils/error/error-classes";
+import { wrapServerSideErrorForClient } from "@/utils/error/error-wrapper";
 import { sanitizeFileName } from "@/utils/sanitize/sanitize-file-name";
 
 export async function addImage(
@@ -66,13 +68,11 @@ export async function addImage(
 			height: metadata.height,
 		});
 
-		const message = formatCreateImageMessage({ fileName: createdImage.id });
-		const context = {
-			caller: "addImage" as const,
-			status: 201 as const,
-			userId,
-		};
-		serverLogger.info(message, context, { notify: true });
+		serverLogger.info(
+			`【IMAGE】\n\nコンテンツ\nfileName: ${createdImage.id}\nの登録ができました`,
+			{ caller: "addImage", status: 201, userId },
+			{ notify: true },
+		);
 		revalidatePath("/(dumper)");
 		await imageCommandRepository.invalidateCache();
 

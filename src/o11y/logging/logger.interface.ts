@@ -2,20 +2,8 @@ type LogLevel = "info" | "warn" | "error";
 
 type HttpStatusCode = 200 | 201 | 400 | 401 | 403 | 404 | 500;
 
-type CallerName =
-	| "addNews"
-	| "deleteNews"
-	| "addContents"
-	| "addImage"
-	| "deleteContents"
-	| "deleteImage"
-	| "checkSelfAuth"
-	| "ErrorPage"
-	| "UnexpectedComponent"
-	| "wrapServerSideError";
-
 export type LogContext = {
-	caller: CallerName | string;
+	caller: string;
 	status: HttpStatusCode;
 	userId?: string;
 	additionalContext?: Record<string, unknown>;

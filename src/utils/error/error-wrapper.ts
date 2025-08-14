@@ -2,14 +2,14 @@
 import "server-only";
 import { AuthError } from "next-auth";
 import { Prisma } from "@/generated";
-import { serverLogger } from "@/infrastructure/server";
+import { serverLogger } from "@/o11y/server";
+import { ServerAction } from "@/types";
 import {
 	FileNotAllowedError,
 	InvalidFormatError,
 	PushoverError,
 	UnexpectedError,
 } from "./error-classes";
-import type { ServerAction } from "./types";
 
 export async function wrapServerSideErrorForClient<T>(
 	error: unknown,

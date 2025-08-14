@@ -5,7 +5,6 @@ import { minioClient } from "@/minio";
 import prisma from "@/prisma";
 
 type IImageQueryRepository = {
-	findById(id: string, userId: string, status: Status): Promise<Images | null>;
 	findMany(
 		userId: string,
 		status: Status,
@@ -16,7 +15,7 @@ type IImageQueryRepository = {
 };
 
 type Images = {
-	id: string;
+	paths: string;
 };
 
 type ImageFindManyParams = {
@@ -27,16 +26,6 @@ type ImageFindManyParams = {
 };
 
 class ImageQueryRepository implements IImageQueryRepository {
-	async findById(
-		id: string,
-		userId: string,
-		status: Status,
-	): Promise<Images | null> {
-		return await prisma.images.findUnique({
-			where: { id, userId, status },
-		});
-	}
-
 	async findMany(
 		userId: string,
 		status: Status,
@@ -44,7 +33,7 @@ class ImageQueryRepository implements IImageQueryRepository {
 	): Promise<Images[]> {
 		return await prisma.images.findMany({
 			where: { userId, status },
-			select: { id: true },
+			select: { paths: true },
 			...params,
 		});
 	}

@@ -27,7 +27,7 @@ export const getUnexportedBooks = cache(async (): Promise<ImageCardData[]> => {
 	return books.map((d) => ({
 		title: d.title,
 		href: d.ISBN,
-		image: d.googleImgSrc,
+		image: d.googleImgSrc !== "" ? d.googleImgSrc : "/not-found.png",
 	}));
 });
 

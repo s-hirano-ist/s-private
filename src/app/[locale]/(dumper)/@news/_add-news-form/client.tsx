@@ -1,19 +1,12 @@
 "use client";
 import { ClipboardPasteIcon, TableOfContentsIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useActionState, useRef } from "react";
-import { toast } from "sonner";
-import Loading from "@/components/loading";
-import { Button } from "@/components/ui/button";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { useRef } from "react";
+import { FormDropdownInput } from "@/components/forms/fields/form-dropdown-input";
+import { FormInput } from "@/components/forms/fields/form-input";
+import { FormInputWithButton } from "@/components/forms/fields/form-input-with-button";
+import { FormTextarea } from "@/components/forms/fields/form-textarea";
+import { GenericFormWrapper } from "@/components/forms/generic-form-wrapper";
 
 type Props = {
 	categories: { id: number; name: string }[];
@@ -25,20 +18,6 @@ export function AddNewsFormClient({ categories, addNews }: Props) {
 	const categoryInputReference = useRef<HTMLInputElement>(null);
 
 	const label = useTranslations("label");
-	const message = useTranslations("message");
-
-	const submitForm = async (_: null, formData: FormData) => {
-		const response = await addNews(formData);
-		toast(message(response.message));
-		return null;
-	};
-
-	const [_, addNewsAction, isPending] = useActionState(submitForm, null);
-
-	const handleSelectedValueChange = (value: string) => {
-		if (categoryInputReference.current !== null)
-			categoryInputReference.current.value = value;
-	};
 
 	const handlePasteClick = async () => {
 		const clipboardText = await navigator.clipboard.readText();
@@ -47,76 +26,43 @@ export function AddNewsFormClient({ categories, addNews }: Props) {
 	};
 
 	return (
-		<form action={addNewsAction} className="space-y-4 px-2 py-4">
-			{isPending ? (
-				<Loading />
-			) : (
-				<>
-					<div className="space-y-1">
-						<Label htmlFor="category">{label("category")}</Label>
-						<div className="flex">
-							<Input
-								autoComplete="off"
-								id="category"
-								name="category"
-								ref={categoryInputReference}
-								required
-							/>
-							<DropdownMenu>
-								<DropdownMenuTrigger asChild>
-									<Button variant="ghost">
-										<TableOfContentsIcon />
-									</Button>
-								</DropdownMenuTrigger>
-								<DropdownMenuContent>
-									{categories.map((category) => (
-										<DropdownMenuItem
-											key={category.id}
-											onClick={() => handleSelectedValueChange(category.name)}
-											textValue={String(category.name)}
-										>
-											{category.name}
-										</DropdownMenuItem>
-									))}
-								</DropdownMenuContent>
-							</DropdownMenu>
-						</div>
-					</div>
-					<div className="space-y-1">
-						<Label htmlFor="title">{label("title")}</Label>
-						<Input autoComplete="off" id="title" name="title" required />
-					</div>
-					<div className="space-y-1">
-						<Label htmlFor="quote">{label("description")}</Label>
-						<Textarea autoComplete="off" id="quote" name="quote" />
-					</div>
-					<div className="space-y-1">
-						<Label htmlFor="url">{label("url")}</Label>
-						<div className="flex">
-							<Input
-								autoComplete="off"
-								id="url"
-								inputMode="url"
-								name="url"
-								ref={urlInputReference}
-								required
-								type="url"
-							/>
-							<Button
-								data-testid="paste-button"
-								onClick={handlePasteClick}
-								type="button"
-								variant="ghost"
-							>
-								<ClipboardPasteIcon />
-							</Button>
-						</div>
-					</div>
-				</>
-			)}
-			<Button className="w-full" disabled={isPending} type="submit">
-				{label("save")}
-			</Button>
-		</form>
+		<GenericFormWrapper action={addNews}>
+			<FormDropdownInput
+				autoComplete="off"
+				htmlFor="category"
+				inputRef={categoryInputReference}
+				label={label("category")}
+				name="category"
+				options={categories}
+				required
+				triggerIcon={<TableOfContentsIcon />}
+			/>
+			<FormInput
+				autoComplete="off"
+				htmlFor="title"
+				label={label("title")}
+				name="title"
+				required
+			/>
+			<FormTextarea
+				autoComplete="off"
+				htmlFor="quote"
+				label={label("description")}
+				name="quote"
+			/>
+			<FormInputWithButton
+				autoComplete="off"
+				buttonIcon={<ClipboardPasteIcon />}
+				buttonTestId="paste-button"
+				htmlFor="url"
+				inputMode="url"
+				inputRef={urlInputReference}
+				label={label("url")}
+				name="url"
+				onButtonClick={handlePasteClick}
+				required
+				type="url"
+			/>
+		</GenericFormWrapper>
 	);
 }
