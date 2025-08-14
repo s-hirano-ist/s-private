@@ -10,33 +10,38 @@ describe("validateNews", () => {
 		formData.append("quote", "This is a short quote.");
 		formData.append("url", "https://example.com/news");
 
-		const result = validateNews(formData);
+		const result = validateNews(formData, "user-s123");
 
 		expect(result).toEqual({
-			categoryId: 1,
+			categoryName: "1",
 			title: "Breaking News",
 			quote: "This is a short quote.",
 			url: "https://example.com/news",
+			userId: "user-s123",
 		});
 	});
 
 	test("should throw InvalidFormatError when categoryId is invalid", () => {
 		const formData = new FormData();
-		formData.append("category", "invalid");
+		formData.append("category", "");
 		formData.append("title", "Breaking News");
 		formData.append("quote", "This is a short quote.");
 		formData.append("url", "https://example.com/news");
 
-		expect(() => validateNews(formData)).toThrow(InvalidFormatError);
+		expect(() => validateNews(formData, "user-s123")).toThrow(
+			InvalidFormatError,
+		);
 	});
 
 	test("should throw InvalidFormatError when title is missing", () => {
 		const formData = new FormData();
-		formData.append("category", "1");
+		formData.append("category", "sample-category");
 		formData.append("quote", "This is a short quote.");
 		formData.append("url", "https://example.com/news");
 
-		expect(() => validateNews(formData)).toThrow(InvalidFormatError);
+		expect(() => validateNews(formData, "user-s123")).toThrow(
+			InvalidFormatError,
+		);
 	});
 
 	test("should throw InvalidFormatError when url is not a valid URL", () => {
@@ -46,7 +51,9 @@ describe("validateNews", () => {
 		formData.append("quote", "This is a short quote.");
 		formData.append("url", "invalid-url");
 
-		expect(() => validateNews(formData)).toThrow(InvalidFormatError);
+		expect(() => validateNews(formData, "user-s123")).toThrow(
+			InvalidFormatError,
+		);
 	});
 
 	test("should handle optional quote field", () => {
@@ -55,13 +62,14 @@ describe("validateNews", () => {
 		formData.append("title", "Breaking News");
 		formData.append("url", "https://example.com/news");
 
-		const result = validateNews(formData);
+		const result = validateNews(formData, "user-s123");
 
 		expect(result).toEqual({
-			categoryId: 1,
+			categoryName: "1",
 			title: "Breaking News",
 			quote: null,
 			url: "https://example.com/news",
+			userId: "user-s123",
 		});
 	});
 
@@ -72,13 +80,14 @@ describe("validateNews", () => {
 		formData.append("quote", "");
 		formData.append("url", "https://example.com/news");
 
-		const result = validateNews(formData);
+		const result = validateNews(formData, "user-s123");
 
 		expect(result).toEqual({
-			categoryId: 1,
+			categoryName: "1",
 			title: "Breaking News",
 			quote: "",
 			url: "https://example.com/news",
+			userId: "user-s123",
 		});
 	});
 });

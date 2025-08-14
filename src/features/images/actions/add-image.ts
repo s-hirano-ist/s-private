@@ -11,7 +11,6 @@ import {
 } from "@/constants";
 import { imageCommandRepository } from "@/features/images/repositories/image-command-repository";
 import { serverLogger } from "@/o11y/server";
-import type { ServerAction } from "@/types";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
 import {
 	FileNotAllowedError,
@@ -19,10 +18,9 @@ import {
 } from "@/utils/error/error-classes";
 import { wrapServerSideErrorForClient } from "@/utils/error/error-wrapper";
 import { sanitizeFileName } from "@/utils/sanitize/sanitize-file-name";
+import type { ServerAction } from "@/utils/types";
 
-export async function addImage(
-	formData: FormData,
-): Promise<ServerAction<undefined>> {
+export async function addImage(formData: FormData): Promise<ServerAction> {
 	const hasPermission = await hasDumperPostPermission();
 	if (!hasPermission) forbidden();
 
@@ -75,11 +73,7 @@ export async function addImage(
 		);
 		revalidatePath("/(dumper)");
 
-		return {
-			success: true,
-			message: "inserted",
-			data: undefined,
-		};
+		return { success: true, message: "inserted" };
 	} catch (error) {
 		return await wrapServerSideErrorForClient(error);
 	}

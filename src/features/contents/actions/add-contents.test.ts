@@ -20,11 +20,6 @@ vi.mock("@/utils/auth/session", () => ({
 const mockFormData = new FormData();
 mockFormData.append("title", "Example Content");
 mockFormData.append("markdown", "This is an example content quote.");
-const mockCreatedContents = {
-	id: 1,
-	title: "Example Content",
-	markdown: "This is an example content quote.",
-};
 
 describe("addContents", () => {
 	test("should return success false on Unauthorized", async () => {
@@ -45,7 +40,7 @@ describe("addContents", () => {
 		mockHasDumperPostPermission.mockResolvedValue(true);
 		mockGetSelfId.mockResolvedValue("1");
 		vi.mocked(contentsCommandRepository.create).mockResolvedValue({
-			id: 1,
+			id: "1",
 			title: "Example Content",
 			markdown: "This is an example content quote.",
 			userId: "1",
@@ -64,7 +59,6 @@ describe("addContents", () => {
 		expect(result).toEqual({
 			success: true,
 			message: "inserted",
-			data: mockCreatedContents,
 		});
 	});
 });

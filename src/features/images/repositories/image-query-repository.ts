@@ -14,7 +14,7 @@ type IImageQueryRepository = {
 	getFromStorage(path: string): Promise<NodeJS.ReadableStream>;
 };
 
-type Images = {
+export type Images = {
 	paths: string;
 };
 

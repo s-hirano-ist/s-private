@@ -3,7 +3,7 @@ import "server-only";
 import { AuthError } from "next-auth";
 import { Prisma } from "@/generated";
 import { serverLogger } from "@/o11y/server";
-import { ServerAction } from "@/types";
+import { ServerAction } from "@/utils/types";
 import {
 	FileNotAllowedError,
 	InvalidFormatError,
@@ -13,7 +13,7 @@ import {
 
 export async function wrapServerSideErrorForClient<T>(
 	error: unknown,
-): Promise<ServerAction<T>> {
+): Promise<ServerAction> {
 	if (error instanceof PushoverError) {
 		serverLogger.error(
 			error.message,

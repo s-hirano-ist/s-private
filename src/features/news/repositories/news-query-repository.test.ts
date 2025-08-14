@@ -7,74 +7,21 @@ vi.mock("@/prisma", () => ({
 			findMany: vi.fn(),
 			count: vi.fn(),
 		},
+		categories: {
+			findMany: vi.fn(),
+		},
 	},
 }));
 
 import prisma from "@/prisma";
-import { newsQueryRepository } from "./news-query-repository";
+import {
+	categoryQueryRepository,
+	newsQueryRepository,
+} from "./news-query-repository";
 
 describe("NewsQueryRepository", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
-	});
-
-	describe("findById", () => {
-		test("should find news by id, userId, and status", async () => {
-			const mockNews = {
-				id: "1",
-				title: "Test News",
-				url: "https://example.com/news/1",
-				quote: "This is a test quote",
-				ogTitle: "Test OG Title",
-				ogDescription: "Test OG Description",
-				Category: { id: 1, name: "Tech" },
-			};
-
-			vi.mocked(prisma.news.findUnique).mockResolvedValue(mockNews);
-
-			const result = await newsQueryRepository.findById(
-				"1",
-				"user123",
-				"EXPORTED",
-			);
-
-			expect(prisma.news.findUnique).toHaveBeenCalledWith({
-				where: { id: "1", userId: "user123", status: "EXPORTED" },
-				include: { Category: true },
-			});
-			expect(result).toEqual(mockNews);
-		});
-
-		test("should return null when news not found", async () => {
-			vi.mocked(prisma.news.findUnique).mockResolvedValue(null);
-
-			const result = await newsQueryRepository.findById(
-				"999",
-				"user123",
-				"EXPORTED",
-			);
-
-			expect(prisma.news.findUnique).toHaveBeenCalledWith({
-				where: { id: "999", userId: "user123", status: "EXPORTED" },
-				include: { Category: true },
-			});
-			expect(result).toBeNull();
-		});
-
-		test("should handle database errors", async () => {
-			vi.mocked(prisma.news.findUnique).mockRejectedValue(
-				new Error("Database error"),
-			);
-
-			await expect(
-				newsQueryRepository.findById("1", "user123", "EXPORTED"),
-			).rejects.toThrow("Database error");
-
-			expect(prisma.news.findUnique).toHaveBeenCalledWith({
-				where: { id: "1", userId: "user123", status: "EXPORTED" },
-				include: { Category: true },
-			});
-		});
 	});
 
 	describe("findMany", () => {
@@ -127,7 +74,28 @@ describe("NewsQueryRepository", () => {
 				},
 				...params,
 			});
-			expect(result).toEqual(mockNews);
+			expect(result).toEqual([
+				{
+					id: "1",
+					title: "First News",
+					url: "https://example.com/news/1",
+					quote: "First quote",
+					ogTitle: "First OG Title",
+					ogDescription: "First OG Description",
+					categoryName: "Tech",
+					categoryId: 1,
+				},
+				{
+					id: "2",
+					title: "Second News",
+					url: "https://example.com/news/2",
+					quote: null,
+					ogTitle: "Second OG Title",
+					ogDescription: "Second OG Description",
+					categoryName: "Science",
+					categoryId: 2,
+				},
+			]);
 		});
 
 		test("should handle empty results", async () => {
@@ -192,7 +160,18 @@ describe("NewsQueryRepository", () => {
 				},
 				cacheStrategy: { ttl: 300, swr: 30, tags: ["news"] },
 			});
-			expect(result).toEqual(mockNews);
+			expect(result).toEqual([
+				{
+					id: "1",
+					title: "Cached News",
+					url: "https://example.com/news/1",
+					quote: "Cached quote",
+					ogTitle: "Cached OG Title",
+					ogDescription: "Cached OG Description",
+					categoryName: "Tech",
+					categoryId: 1,
+				},
+			]);
 		});
 
 		test("should handle database errors", async () => {
@@ -253,6 +232,90 @@ describe("NewsQueryRepository", () => {
 
 			expect(prisma.news.count).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "EXPORTED" },
+			});
+		});
+	});
+});
+
+describe("CategoryQueryRepository", () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
+
+	describe("findMany", () => {
+		test("should find multiple categories successfully", async () => {
+			const mockCategories = [
+				{ id: 1, name: "tech" },
+				{ id: 2, name: "science" },
+				{ id: 3, name: "politics" },
+			];
+
+			vi.mocked(prisma.categories.findMany).mockResolvedValue(mockCategories);
+
+			const params = {
+				orderBy: { name: "asc" as const },
+				take: 10,
+				skip: 0,
+			};
+
+			const result = await categoryQueryRepository.findMany("user123", params);
+
+			expect(prisma.categories.findMany).toHaveBeenCalledWith({
+				where: { userId: "user123" },
+				select: { id: true, name: true },
+				...params,
+			});
+			expect(result).toEqual([
+				{ categoryId: 1, categoryName: "tech" },
+				{ categoryId: 2, categoryName: "science" },
+				{ categoryId: 3, categoryName: "politics" },
+			]);
+		});
+
+		test("should handle empty results", async () => {
+			vi.mocked(prisma.categories.findMany).mockResolvedValue([]);
+
+			const result = await categoryQueryRepository.findMany("user123");
+
+			expect(prisma.categories.findMany).toHaveBeenCalledWith({
+				where: { userId: "user123" },
+				select: { id: true, name: true },
+			});
+			expect(result).toEqual([]);
+		});
+
+		test("should work without parameters", async () => {
+			const mockCategories = [
+				{ id: 1, name: "tech" },
+				{ id: 2, name: "science" },
+			];
+
+			vi.mocked(prisma.categories.findMany).mockResolvedValue(mockCategories);
+
+			const result = await categoryQueryRepository.findMany("user123");
+
+			expect(prisma.categories.findMany).toHaveBeenCalledWith({
+				where: { userId: "user123" },
+				select: { id: true, name: true },
+			});
+			expect(result).toEqual([
+				{ categoryId: 1, categoryName: "tech" },
+				{ categoryId: 2, categoryName: "science" },
+			]);
+		});
+
+		test("should handle database errors", async () => {
+			vi.mocked(prisma.categories.findMany).mockRejectedValue(
+				new Error("Database connection error"),
+			);
+
+			await expect(categoryQueryRepository.findMany("user123")).rejects.toThrow(
+				"Database connection error",
+			);
+
+			expect(prisma.categories.findMany).toHaveBeenCalledWith({
+				where: { userId: "user123" },
+				select: { id: true, name: true },
 			});
 		});
 	});

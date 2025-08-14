@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { PAGE_SIZE } from "@/constants";
 import { imageQueryRepository } from "@/features/images/repositories/image-query-repository";
-import { Status } from "@/generated";
+import type { Status } from "@/features/types";
 import { getSelfId } from "@/utils/auth/session";
 
 export const getExportedImages = cache(async (page: number) => {

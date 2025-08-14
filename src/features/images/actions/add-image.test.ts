@@ -67,6 +67,7 @@ describe("addImage", () => {
 
 		vi.mocked(imageCommandRepository.create).mockResolvedValue({
 			id: "generated-uuid-myImage.jpeg",
+			paths: "images/generated-uuid-myImage.jpeg",
 			userId: "1",
 			contentType: "image/jpeg",
 			fileSize: null,

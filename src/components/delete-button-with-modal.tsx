@@ -12,10 +12,10 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import { ServerAction } from "@/types";
+import { ServerAction } from "@/utils/types";
 
 type Props = {
-	deleteAction: (id: string) => Promise<ServerAction<string>>;
+	deleteAction: (id: string) => Promise<ServerAction>;
 	id: string;
 	title: string;
 };

@@ -2,13 +2,13 @@
 import { LinkCard, LinkCardData } from "@/components/card/link-card";
 import { SearchableCardLayout } from "@/components/search/searchable-card-layout";
 import { filterLinkCards } from "@/features/search/services/search-filter";
-import { ServerAction } from "@/types";
 import { useSearchableList } from "@/utils/hooks/use-searchable-list";
+import type { ServerAction } from "@/utils/types";
 
 type Props = {
 	data: LinkCardData[];
 	showDeleteButton: boolean;
-	deleteAction?: (id: string) => Promise<ServerAction<string>>;
+	deleteAction?: (id: string) => Promise<ServerAction>;
 };
 
 export function LinkCardStack({ data, showDeleteButton, deleteAction }: Props) {

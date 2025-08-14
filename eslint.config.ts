@@ -90,7 +90,7 @@ export default tsEslint.config(
 				{
 					patterns: [
 						{
-							group: ["../../*", "../../../*"],
+							group: ["../../../*", "../../../../*", "../../../../../**/*"],
 							message:
 								"Use absolute imports instead of relative imports that go up directories. This enforces proper architecture boundaries.",
 						},

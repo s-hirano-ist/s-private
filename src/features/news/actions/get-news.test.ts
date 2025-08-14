@@ -1,8 +1,10 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { categoryQueryRepository } from "@/features/news/repositories/category-query-repository";
-import { newsQueryRepository } from "@/features/news/repositories/news-query-repository";
 import {
-	getCategoriesByUserId,
+	categoryQueryRepository,
+	newsQueryRepository,
+} from "@/features/news/repositories/news-query-repository";
+import {
+	getCategories,
 	getExportedNews,
 	getNewsCount,
 	getUnexportedNews,
@@ -13,9 +15,6 @@ vi.mock("@/features/news/repositories/news-query-repository", () => ({
 		findMany: vi.fn(),
 		count: vi.fn(),
 	},
-}));
-
-vi.mock("@/features/news/repositories/category-query-repository", () => ({
 	categoryQueryRepository: {
 		findMany: vi.fn(),
 	},
@@ -40,7 +39,8 @@ describe("get-news", () => {
 					url: "https://example1.com",
 					ogTitle: "OG Title 1",
 					ogDescription: "OG Description 1",
-					Category: { id: 1, name: "Tech" },
+					categoryName: "Tech",
+					categoryId: 1,
 				},
 				{
 					id: "2",
@@ -49,7 +49,8 @@ describe("get-news", () => {
 					url: "https://example2.com",
 					ogTitle: "OG Title 2",
 					ogDescription: "OG Description 2",
-					Category: { id: 2, name: "Science" },
+					categoryName: "Science",
+					categoryId: 2,
 				},
 			];
 
@@ -130,7 +131,8 @@ describe("get-news", () => {
 					title: "Unexported News 1",
 					quote: "Test quote 1",
 					url: "https://example1.com",
-					Category: { id: 1, name: "Tech" },
+					categoryName: "Tech",
+					categoryId: 1,
 					ogTitle: "OG Title 1",
 					ogDescription: "OG Description 1",
 				},
@@ -139,7 +141,8 @@ describe("get-news", () => {
 					title: "Unexported News 2",
 					quote: null,
 					url: "https://example2.com",
-					Category: { id: 2, name: "Science" },
+					categoryName: "Science",
+					categoryId: 2,
 					ogTitle: "OG Title 2",
 					ogDescription: "OG Description 2",
 				},
@@ -147,12 +150,14 @@ describe("get-news", () => {
 
 			vi.mocked(newsQueryRepository.findMany).mockResolvedValue(mockNews);
 
-			const result = await getUnexportedNews();
+			const result = await getUnexportedNews(1);
 
 			expect(newsQueryRepository.findMany).toHaveBeenCalledWith(
 				"test-user-id",
 				"UNEXPORTED",
 				{
+					skip: 0,
+					take: 24,
 					orderBy: { createdAt: "desc" },
 				},
 			);
@@ -180,7 +185,7 @@ describe("get-news", () => {
 		test("should handle empty results", async () => {
 			vi.mocked(newsQueryRepository.findMany).mockResolvedValue([]);
 
-			const result = await getUnexportedNews();
+			const result = await getUnexportedNews(1);
 
 			expect(result).toEqual([]);
 		});
@@ -190,7 +195,7 @@ describe("get-news", () => {
 				new Error("Database error"),
 			);
 
-			await expect(getUnexportedNews()).rejects.toThrow("Database error");
+			await expect(getUnexportedNews(1)).rejects.toThrow("Database error");
 		});
 	});
 
@@ -224,18 +229,18 @@ describe("get-news", () => {
 		});
 	});
 
-	describe("getCategoriesByUserId", () => {
+	describe("getCategories", () => {
 		test("should fetch categories correctly", async () => {
 			const mockCategories = [
-				{ id: 1, name: "Science", userId: "test-user-id" },
-				{ id: 2, name: "Tech", userId: "test-user-id" },
+				{ categoryId: 1, categoryName: "Science" },
+				{ categoryId: 2, categoryName: "Tech" },
 			];
 
 			vi.mocked(categoryQueryRepository.findMany).mockResolvedValue(
 				mockCategories,
 			);
 
-			const result = await getCategoriesByUserId();
+			const result = await getCategories();
 
 			expect(categoryQueryRepository.findMany).toHaveBeenCalledWith(
 				"test-user-id",
@@ -244,13 +249,16 @@ describe("get-news", () => {
 				},
 			);
 
-			expect(result).toEqual(mockCategories);
+			expect(result).toEqual([
+				{ id: 1, name: "Science" },
+				{ id: 2, name: "Tech" },
+			]);
 		});
 
 		test("should handle empty results", async () => {
 			vi.mocked(categoryQueryRepository.findMany).mockResolvedValue([]);
 
-			const result = await getCategoriesByUserId();
+			const result = await getCategories();
 
 			expect(result).toEqual([]);
 		});
@@ -260,7 +268,7 @@ describe("get-news", () => {
 				new Error("Database error"),
 			);
 
-			await expect(getCategoriesByUserId()).rejects.toThrow("Database error");
+			await expect(getCategories()).rejects.toThrow("Database error");
 		});
 	});
 });

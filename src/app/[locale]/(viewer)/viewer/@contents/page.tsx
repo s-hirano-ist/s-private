@@ -1,22 +1,26 @@
-import { ContentsCounter } from "./_contents-counter/server";
-import { ContentsStack } from "./_contents-stack/server";
+import { Suspense } from "react";
+import { LinkCardSkeletonStack } from "@/components/card/link-card-skeleton-stack";
+import { getExportedContents } from "@/features/contents/actions/get-contents";
+import { ContentsCounter } from "@/features/contents/components/server/contents-counter";
+import { ContentsStack } from "@/features/contents/components/server/contents-stack";
 
-type Props = {
-	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-};
+type Params = Promise<{ page?: string; tab?: string }>;
 
-export default async function Page({ searchParams }: Props) {
-	const activeTab = (await searchParams).tab as string;
+export default async function Page({ searchParams }: { searchParams: Params }) {
+	const { page, tab } = await searchParams;
 
-	// Only render if this tab is active
-	if (activeTab && activeTab !== "contents") {
-		return <div />;
-	}
+	const currentPage = Number(page) || 1;
+
+	// Only render if this tab is active or no tab is specified (defaults to "news")
+	if (tab && tab !== "contents") return <div />;
 
 	return (
 		<>
 			<ContentsCounter />
-			<ContentsStack />
+
+			<Suspense fallback={<LinkCardSkeletonStack />}>
+				<ContentsStack getContents={getExportedContents} page={currentPage} />
+			</Suspense>
 		</>
 	);
 }

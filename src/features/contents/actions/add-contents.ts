@@ -5,19 +5,17 @@ import { forbidden } from "next/navigation";
 import { contentsCommandRepository } from "@/features/contents/repositories/contents-command-repository";
 import { validateContents } from "@/features/contents/utils/validate-contents";
 import { serverLogger } from "@/o11y/server";
-import type { ServerAction } from "@/types";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
 import { wrapServerSideErrorForClient } from "@/utils/error/error-wrapper";
+import type { ServerAction } from "@/utils/types";
 
-type Contents = {
+export type Contents = {
 	id: string;
 	markdown: string;
 	title: string;
 };
 
-export async function addContents(
-	formData: FormData,
-): Promise<ServerAction<Contents>> {
+export async function addContents(formData: FormData): Promise<ServerAction> {
 	const hasPermission = await hasDumperPostPermission();
 	if (!hasPermission) forbidden();
 
@@ -37,15 +35,7 @@ export async function addContents(
 		);
 		revalidatePath("/(dumper)");
 
-		return {
-			success: true,
-			message: "inserted",
-			data: {
-				id: createdContents.id,
-				title: createdContents.title,
-				markdown: createdContents.markdown,
-			},
-		};
+		return { success: true, message: "inserted" };
 	} catch (error) {
 		return await wrapServerSideErrorForClient(error);
 	}

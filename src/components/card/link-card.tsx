@@ -9,7 +9,7 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Link } from "@/i18n/routing";
-import { ServerAction } from "@/types";
+import { ServerAction } from "@/utils/types";
 import { validateAndNormalizeUrl } from "@/utils/validate-url";
 
 export type LinkCardData = {
@@ -24,7 +24,7 @@ export type LinkCardData = {
 type Props = {
 	data: LinkCardData;
 	showDeleteButton: boolean;
-	deleteAction?: (id: string) => Promise<ServerAction<string>>;
+	deleteAction?: (id: string) => Promise<ServerAction>;
 };
 
 export function LinkCard({
