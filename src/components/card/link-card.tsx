@@ -14,6 +14,7 @@ import { validateAndNormalizeUrl } from "@/utils/validate-url";
 
 export type LinkCardData = {
 	id: string;
+	key: string;
 	title: string;
 	description?: string;
 	badgeText?: string;

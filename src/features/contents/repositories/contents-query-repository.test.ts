@@ -19,7 +19,7 @@ describe("ContentsQueryRepository", () => {
 	});
 
 	describe("findByTitle", () => {
-		test("should find contents by title, userId, and status", async () => {
+		test("should find contents by title, userId", async () => {
 			const mockContents = {
 				id: 1,
 				title: "Test Content",
@@ -31,14 +31,10 @@ describe("ContentsQueryRepository", () => {
 			const result = await contentsQueryRepository.findByTitle(
 				"Test Content",
 				"user123",
-				"EXPORTED",
 			);
 
 			expect(prisma.contents.findUnique).toHaveBeenCalledWith({
-				where: {
-					status: "EXPORTED",
-					title_userId: { title: "Test Content", userId: "user123" },
-				},
+				where: { title_userId: { title: "Test Content", userId: "user123" } },
 				select: { id: true, title: true, markdown: true },
 			});
 			expect(result).toEqual(mockContents);
@@ -50,12 +46,10 @@ describe("ContentsQueryRepository", () => {
 			const result = await contentsQueryRepository.findByTitle(
 				"Nonexistent Content",
 				"user123",
-				"EXPORTED",
 			);
 
 			expect(prisma.contents.findUnique).toHaveBeenCalledWith({
 				where: {
-					status: "EXPORTED",
 					title_userId: { title: "Nonexistent Content", userId: "user123" },
 				},
 				select: { id: true, title: true, markdown: true },
@@ -69,18 +63,11 @@ describe("ContentsQueryRepository", () => {
 			);
 
 			await expect(
-				contentsQueryRepository.findByTitle(
-					"Test Content",
-					"user123",
-					"EXPORTED",
-				),
+				contentsQueryRepository.findByTitle("Test Content", "user123"),
 			).rejects.toThrow("Database error");
 
 			expect(prisma.contents.findUnique).toHaveBeenCalledWith({
-				where: {
-					status: "EXPORTED",
-					title_userId: { title: "Test Content", userId: "user123" },
-				},
+				where: { title_userId: { title: "Test Content", userId: "user123" } },
 				select: { id: true, title: true, markdown: true },
 			});
 		});

@@ -1,9 +1,10 @@
 import { cache } from "react";
+import { LinkCardData } from "@/components/card/link-card";
 import { contentsQueryRepository } from "@/features/contents/repositories/contents-query-repository";
 import { Status } from "@/generated";
 import { getSelfId } from "@/utils/auth/session";
 
-export const getExportedContents = cache(async () => {
+export const getExportedContents = cache(async (): Promise<LinkCardData[]> => {
 	const userId = await getSelfId();
 	const contents = await contentsQueryRepository.findMany(userId, "EXPORTED", {
 		orderBy: { createdAt: "desc" },
@@ -11,29 +12,31 @@ export const getExportedContents = cache(async () => {
 	});
 
 	return contents.map((d) => ({
-		id: d.id,
+		id: "",
+		key: d.id,
 		title: d.title,
 		description: "",
-		href: `/content/${d.title}`,
-		// FIXME: TODO: href: `/content/${encodeURIComponent(content.title)}`,
+		href: `/content/${encodeURIComponent(d.title)}`,
 	}));
 });
 
-export const getUnexportedContents = cache(async () => {
-	const userId = await getSelfId();
-	const contents = await contentsQueryRepository.findMany(
-		userId,
-		"UNEXPORTED",
-		{ orderBy: { createdAt: "desc" } },
-	);
-	return contents.map((d) => ({
-		id: d.id,
-		title: d.title,
-		description: "",
-		href: `/content/${d.title}`,
-		// FIXME: TODO: href: `/content/${encodeURIComponent(content.title)}`,
-	}));
-});
+export const getUnexportedContents = cache(
+	async (): Promise<LinkCardData[]> => {
+		const userId = await getSelfId();
+		const contents = await contentsQueryRepository.findMany(
+			userId,
+			"UNEXPORTED",
+			{ orderBy: { createdAt: "desc" } },
+		);
+		return contents.map((d) => ({
+			id: "",
+			key: d.id,
+			title: d.title,
+			description: "",
+			href: `/content/${encodeURIComponent(d.title)}`,
+		}));
+	},
+);
 
 export const getContentsCount = cache(async (status: Status) => {
 	const userId = await getSelfId();
@@ -42,5 +45,5 @@ export const getContentsCount = cache(async (status: Status) => {
 
 export const getContentByTitle = cache(async (title: string) => {
 	const userId = await getSelfId();
-	return await contentsQueryRepository.findByTitle(title, userId, "EXPORTED");
+	return await contentsQueryRepository.findByTitle(title, userId);
 });

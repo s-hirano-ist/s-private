@@ -5,6 +5,7 @@ import { categoryQueryRepository } from "@/features/news/repositories/category-q
 import { newsQueryRepository } from "@/features/news/repositories/news-query-repository";
 import { Status } from "@/generated";
 import { getSelfId } from "@/utils/auth/session";
+import { getDomainFromUrl } from "@/utils/validate-url";
 
 export const getExportedNews = cache(
 	async (page: number): Promise<LinkCardData[]> => {
@@ -17,11 +18,12 @@ export const getExportedNews = cache(
 		});
 
 		return news.map((d) => ({
-			id: d.id,
+			id: d.Category.name,
+			badgeText: getDomainFromUrl(d.url),
+			key: d.id,
 			title: d.title,
 			description: `${d.quote} \n ${d.ogTitle} \n ${d.ogDescription}`,
 			href: d.url,
-			badgeText: d.Category.name,
 		}));
 	},
 );
@@ -33,11 +35,12 @@ export const getUnexportedNews = cache(async (): Promise<LinkCardData[]> => {
 	});
 
 	return news.map((d) => ({
-		id: d.id,
+		id: d.Category.name,
+		badgeText: getDomainFromUrl(d.url),
+		key: d.id,
 		title: d.title,
 		description: d.quote ?? undefined,
 		href: d.url,
-		badgeText: d.Category.name,
 	}));
 });
 

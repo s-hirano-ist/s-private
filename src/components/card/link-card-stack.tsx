@@ -25,7 +25,7 @@ export function LinkCardStack({ data, showDeleteButton, deleteAction }: Props) {
 				<LinkCard
 					data={item}
 					deleteAction={deleteAction}
-					key={item.id}
+					key={item.key}
 					showDeleteButton={showDeleteButton}
 				/>
 			)}
