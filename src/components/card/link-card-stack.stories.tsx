@@ -18,7 +18,8 @@ const mockData = [
 		title: "First News Item",
 		description: "This is the first news item.",
 		href: "https://example.com/1",
-		badgeText: "Tech",
+		primaryBadgeText: "Tech",
+		secondaryBadgeText: "example.com",
 	},
 	{
 		id: "2",
@@ -26,14 +27,16 @@ const mockData = [
 		title: "Second News Item",
 		description: "This is the second news item.",
 		href: "https://example.com/2",
-		badgeText: "News",
+		primaryBadgeText: "Tech",
+		secondaryBadgeText: "example.com",
 	},
 	{
 		id: "3",
 		key: "3",
 		title: "Third News Item",
 		href: "https://example.com/3",
-		badgeText: "General",
+		primaryBadgeText: "Tech",
+		secondaryBadgeText: "example.com",
 	},
 ];
 
@@ -75,7 +78,8 @@ export const ManyItems: Story = {
 				title: "Fourth News Item",
 				description: "This is the fourth news item to test grid layout.",
 				href: "https://example.com/4",
-				badgeText: "Sports",
+				primaryBadgeText: "Tech",
+				secondaryBadgeText: "example.com",
 			},
 			{
 				id: "5",

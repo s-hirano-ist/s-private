@@ -3,16 +3,19 @@ import { Session } from "next-auth";
 import sharp from "sharp";
 import { v7 as uuidv7 } from "uuid";
 import { describe, expect, Mock, test, vi } from "vitest";
-import { imageCommandRepository } from "@/features/images/repositories/image-command-repository";
+import { imageCommandRepository } from "@/infrastructures/images/repositories/image-command-repository";
 import { auth } from "@/utils/auth/auth";
 import { addImage } from "./add-image";
 
-vi.mock("@/features/images/repositories/image-command-repository", () => ({
-	imageCommandRepository: {
-		create: vi.fn(),
-		uploadToStorage: vi.fn(),
-	},
-}));
+vi.mock(
+	"@/infrastructures/images/repositories/image-command-repository",
+	() => ({
+		imageCommandRepository: {
+			create: vi.fn(),
+			uploadToStorage: vi.fn(),
+		},
+	}),
+);
 
 const mockAllowedRoleSession: Session = {
 	user: { id: "1", roles: ["dumper"] },

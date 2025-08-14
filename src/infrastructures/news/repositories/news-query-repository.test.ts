@@ -262,11 +262,7 @@ describe("CategoryQueryRepository", () => {
 				select: { id: true, name: true },
 				...params,
 			});
-			expect(result).toEqual([
-				"tech",
-				"science",
-				"politics",
-			]);
+			expect(result).toEqual(["tech", "science", "politics"]);
 		});
 
 		test("should handle empty results", async () => {
@@ -295,10 +291,7 @@ describe("CategoryQueryRepository", () => {
 				where: { userId: "user123" },
 				select: { id: true, name: true },
 			});
-			expect(result).toEqual([
-				"tech",
-				"science",
-			]);
+			expect(result).toEqual(["tech", "science"]);
 		});
 
 		test("should handle database errors", async () => {

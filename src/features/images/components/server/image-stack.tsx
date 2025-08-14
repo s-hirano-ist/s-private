@@ -1,7 +1,7 @@
 import { forbidden } from "next/navigation";
 import { ImageStack as ImageStackClient } from "@/components/image/image-stack";
 import { Unexpected } from "@/components/status/unexpected";
-import { Images } from "@/features/images/repositories/image-query-repository";
+import { Images } from "@/infrastructures/images/repositories/image-query-repository";
 import { hasViewerAdminPermission } from "@/utils/auth/session";
 
 type Props = {

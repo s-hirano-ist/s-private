@@ -5,7 +5,7 @@ import type { Status } from "@/domains/common/types";
 import {
 	categoryQueryRepository,
 	newsQueryRepository,
-} from "@/infrastructure/news/repositories/news-query-repository";
+} from "@/infrastructures/news/repositories/news-query-repository";
 import { getSelfId } from "@/utils/auth/session";
 import { getDomainFromUrl } from "@/utils/validate-url";
 import type { NewsFormClientData } from "../components/client/news-form-client";

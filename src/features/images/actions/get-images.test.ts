@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { imageQueryRepository } from "@/features/images/repositories/image-query-repository";
+import { imageQueryRepository } from "@/infrastructures/images/repositories/image-query-repository";
 import {
 	getExportedImages,
 	getImageFromStorage,
@@ -7,7 +7,7 @@ import {
 	getUnexportedImages,
 } from "./get-images";
 
-vi.mock("@/features/images/repositories/image-query-repository", () => ({
+vi.mock("@/infrastructures/images/repositories/image-query-repository", () => ({
 	imageQueryRepository: {
 		findMany: vi.fn(),
 		count: vi.fn(),

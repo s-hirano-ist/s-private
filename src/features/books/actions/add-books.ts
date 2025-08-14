@@ -2,8 +2,8 @@
 import "server-only";
 import { revalidatePath } from "next/cache";
 import { forbidden } from "next/navigation";
-import { booksCommandRepository } from "@/features/books/repositories/books-command-repository";
 import { validateBooks } from "@/features/books/utils/validate-books";
+import { booksCommandRepository } from "@/infrastructures/books/repositories/books-command-repository";
 import { serverLogger } from "@/o11y/server";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
 import { wrapServerSideErrorForClient } from "@/utils/error/error-wrapper";

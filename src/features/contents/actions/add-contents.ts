@@ -2,8 +2,8 @@
 import "server-only";
 import { revalidatePath } from "next/cache";
 import { forbidden } from "next/navigation";
-import { contentsCommandRepository } from "@/features/contents/repositories/contents-command-repository";
 import { validateContents } from "@/features/contents/utils/validate-contents";
+import { contentsCommandRepository } from "@/infrastructures/contents/repositories/contents-command-repository";
 import { serverLogger } from "@/o11y/server";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
 import { wrapServerSideErrorForClient } from "@/utils/error/error-wrapper";

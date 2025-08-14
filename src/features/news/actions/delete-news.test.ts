@@ -1,7 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { describe, expect, test, vi } from "vitest";
 import { deleteNews } from "@/features/news/actions/delete-news";
-import { newsCommandRepository } from "@/infrastructure/news/repositories/news-command-repository";
+import { newsCommandRepository } from "@/infrastructures/news/repositories/news-command-repository";
 
 vi.mock("@/o11y/server", () => ({
 	serverLogger: {
@@ -10,7 +10,7 @@ vi.mock("@/o11y/server", () => ({
 	},
 }));
 
-vi.mock("@/infrastructure/news/repositories/news-command-repository", () => ({
+vi.mock("@/infrastructures/news/repositories/news-command-repository", () => ({
 	newsCommandRepository: {
 		deleteById: vi.fn(),
 	},

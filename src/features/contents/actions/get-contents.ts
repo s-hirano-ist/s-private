@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { LinkCardData } from "@/components/card/link-card";
 import type { Status } from "@/domains/common/types";
-import { contentsQueryRepository } from "@/features/contents/repositories/contents-query-repository";
+import { contentsQueryRepository } from "@/infrastructures/contents/repositories/contents-query-repository";
 import { getSelfId } from "@/utils/auth/session";
 
 export const getExportedContents = cache(async (): Promise<LinkCardData[]> => {

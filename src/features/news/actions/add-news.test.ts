@@ -1,14 +1,14 @@
 import { revalidatePath } from "next/cache";
 import { describe, expect, test, vi } from "vitest";
-import { newsCommandRepository } from "@/infrastructure/news/repositories/news-command-repository";
 import { validateNews } from "@/domains/news/services/news-domain-service";
+import { newsCommandRepository } from "@/infrastructures/news/repositories/news-command-repository";
 import { addNews } from "./add-news";
 
 vi.mock("next/cache", () => ({
 	revalidatePath: vi.fn(),
 }));
 
-vi.mock("@/infrastructure/news/repositories/news-command-repository", () => ({
+vi.mock("@/infrastructures/news/repositories/news-command-repository", () => ({
 	newsCommandRepository: {
 		create: vi.fn(),
 	},
@@ -26,7 +26,7 @@ vi.mock("@/domains/news/services/news-domain-service", () => ({
 	validateNews: vi.fn(),
 }));
 
-vi.mock("@/infrastructure/news/repositories/news-query-repository", () => ({
+vi.mock("@/infrastructures/news/repositories/news-query-repository", () => ({
 	newsQueryRepository: {},
 }));
 

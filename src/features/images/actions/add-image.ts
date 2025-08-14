@@ -9,7 +9,7 @@ import {
 	THUMBNAIL_IMAGE_PATH,
 	THUMBNAIL_WIDTH,
 } from "@/constants";
-import { imageCommandRepository } from "@/features/images/repositories/image-command-repository";
+import { imageCommandRepository } from "@/infrastructures/images/repositories/image-command-repository";
 import { serverLogger } from "@/o11y/server";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
 import {

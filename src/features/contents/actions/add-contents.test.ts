@@ -1,13 +1,16 @@
 import { revalidatePath } from "next/cache";
 import { describe, expect, test, vi } from "vitest";
-import { contentsCommandRepository } from "@/features/contents/repositories/contents-command-repository";
+import { contentsCommandRepository } from "@/infrastructures/contents/repositories/contents-command-repository";
 import { addContents } from "./add-contents";
 
-vi.mock("@/features/contents/repositories/contents-command-repository", () => ({
-	contentsCommandRepository: {
-		create: vi.fn(),
-	},
-}));
+vi.mock(
+	"@/infrastructures/contents/repositories/contents-command-repository",
+	() => ({
+		contentsCommandRepository: {
+			create: vi.fn(),
+		},
+	}),
+);
 
 const mockGetSelfId = vi.fn();
 const mockHasDumperPostPermission = vi.fn();
