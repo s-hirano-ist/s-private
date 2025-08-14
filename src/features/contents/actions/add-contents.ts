@@ -2,13 +2,12 @@
 import "server-only";
 import { revalidatePath } from "next/cache";
 import { forbidden } from "next/navigation";
-import { wrapServerSideErrorForClient } from "@/error-wrapper";
 import { contentsCommandRepository } from "@/features/contents/repositories/contents-command-repository";
 import { validateContents } from "@/features/contents/utils/validate-contents";
 import { serverLogger } from "@/o11y/server";
 import type { ServerAction } from "@/types";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
-import { formatCreateContentsMessage } from "@/utils/notification/format-for-notification";
+import { wrapServerSideErrorForClient } from "@/utils/error/error-wrapper";
 
 type Contents = {
 	id: string;
@@ -30,16 +29,12 @@ export async function addContents(
 			userId,
 			...validatedContents,
 		});
-		const message = formatCreateContentsMessage({
-			title: createdContents.title,
-			markdown: createdContents.markdown,
-		});
-		const context = {
-			caller: "addContents" as const,
-			status: 201 as const,
-			userId,
-		};
-		serverLogger.info(message, context, { notify: true });
+
+		serverLogger.info(
+			`【CONTENTS】\n\nコンテンツ\ntitle: ${createdContents.title} \nquote: ${createdContents.markdown}\nの登録ができました`,
+			{ caller: "addContents", status: 201, userId },
+			{ notify: true },
+		);
 		revalidatePath("/(dumper)");
 
 		return {

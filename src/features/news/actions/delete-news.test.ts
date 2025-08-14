@@ -64,7 +64,7 @@ describe("deleteNews", () => {
 		);
 
 		expect(serverLogger.info).toHaveBeenCalledWith(
-			"Deleted news: Test News",
+			"【NEWS】\n\n削除\ntitle: Test News",
 			{
 				caller: "deleteNews",
 				status: 200,

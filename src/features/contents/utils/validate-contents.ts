@@ -1,6 +1,6 @@
 import "server-only";
-import { InvalidFormatError } from "@/error-classes";
 import { contentsSchema } from "@/features/contents/schemas/contents-schema";
+import { InvalidFormatError } from "@/utils/error/error-classes";
 
 export function validateContents(formData: FormData) {
 	const contentsValidatedFields = contentsSchema.safeParse({

@@ -2,7 +2,6 @@
 import "server-only";
 import { revalidatePath } from "next/cache";
 import { forbidden } from "next/navigation";
-import { wrapServerSideErrorForClient } from "@/error-wrapper";
 import { categoryCommandRepository } from "@/features/news/repositories/category-command-repository";
 import { newsCommandRepository } from "@/features/news/repositories/news-command-repository";
 import { validateCategory } from "@/features/news/utils/validate-category";
@@ -10,7 +9,7 @@ import { validateNews } from "@/features/news/utils/validate-news";
 import { serverLogger } from "@/o11y/server";
 import type { ServerAction } from "@/types";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
-import { formatCreateNewsMessage } from "@/utils/notification/format-for-notification";
+import { wrapServerSideErrorForClient } from "@/utils/error/error-wrapper";
 
 type News = {
 	category: string;
@@ -42,13 +41,11 @@ export async function addNews(formData: FormData): Promise<ServerAction<News>> {
 			...validatedNews,
 		});
 
-		const message = formatCreateNewsMessage(createdNews);
-		const context = {
-			caller: "addNews" as const,
-			status: 201 as const,
-			userId,
-		};
-		serverLogger.info(message, context, { notify: true });
+		serverLogger.info(
+			`【NEWS】\n\nコンテンツ\ntitle: ${createdNews.title} \nquote: ${createdNews.quote} \nurl: ${createdNews.url}\ncategory: ${createdNews.Category.name}\nの登録ができました`,
+			{ caller: "addNews", status: 201, userId },
+			{ notify: true },
+		);
 		revalidatePath("/(dumper)");
 
 		return {

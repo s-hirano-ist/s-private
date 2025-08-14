@@ -1,6 +1,6 @@
 import "server-only";
-import { InvalidFormatError } from "@/error-classes";
 import { categorySchema } from "@/features/news/schemas/category-schema";
+import { InvalidFormatError } from "@/utils/error/error-classes";
 
 export function validateCategory(formData: FormData) {
 	const categoryValidatedFields = categorySchema.safeParse({

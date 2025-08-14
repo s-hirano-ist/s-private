@@ -1,6 +1,6 @@
 import "server-only";
-import { InvalidFormatError } from "@/error-classes";
 import { newsSchema } from "@/features/news/schemas/news-schema";
+import { InvalidFormatError } from "@/utils/error/error-classes";
 
 export function validateNews(formData: FormData) {
 	const newsValidatedFields = newsSchema.safeParse({

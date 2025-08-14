@@ -1,6 +1,6 @@
 import "server-only";
-import { InvalidFormatError } from "@/error-classes";
 import { booksSchema } from "@/features/books/schemas/books-schema";
+import { InvalidFormatError } from "@/utils/error/error-classes";
 
 export function validateBooks(formData: FormData) {
 	const booksValidatedFields = booksSchema.safeParse({
