@@ -2,8 +2,9 @@
 import "server-only";
 import { revalidatePath } from "next/cache";
 import { forbidden } from "next/navigation";
-import { validateContents } from "@/features/contents/utils/validate-contents";
+import { validateContents } from "@/domains/contents/services/contents-domain-service";
 import { contentsCommandRepository } from "@/infrastructures/contents/repositories/contents-command-repository";
+import { contentsQueryRepository } from "@/infrastructures/contents/repositories/contents-query-repository";
 import { serverLogger } from "@/o11y/server";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
 import { wrapServerSideErrorForClient } from "@/utils/error/error-wrapper";
@@ -21,18 +22,14 @@ export async function addContents(formData: FormData): Promise<ServerAction> {
 
 	try {
 		const userId = await getSelfId();
-		const validatedContents = validateContents(formData);
-
-		const createdContents = await contentsCommandRepository.create({
+		const validatedContents = await validateContents(
+			formData,
 			userId,
-			...validatedContents,
-		});
-
-		serverLogger.info(
-			`【CONTENTS】\n\nコンテンツ\ntitle: ${createdContents.title} \nquote: ${createdContents.markdown}\nの登録ができました`,
-			{ caller: "addContents", status: 201, userId },
-			{ notify: true },
+			contentsQueryRepository,
 		);
+
+		await contentsCommandRepository.create(validatedContents);
+
 		revalidatePath("/(dumper)");
 
 		return { success: true, message: "inserted" };

@@ -3,7 +3,6 @@ import prisma from "@/prisma";
 
 type IBooksCommandRepository = {
 	create(data: BooksCreateInput): Promise<Books>;
-	deleteById(ISBN: string, userId: string, status: Status): Promise<void>;
 };
 
 type BooksCreateInput = {
@@ -37,16 +36,6 @@ class BooksCommandRepository implements IBooksCommandRepository {
 				googleHref: "",
 				markdown: "",
 			},
-		});
-	}
-
-	async deleteById(
-		ISBN: string,
-		userId: string,
-		status: Status,
-	): Promise<void> {
-		await prisma.books.delete({
-			where: { ISBN_userId: { ISBN, userId }, status },
 		});
 	}
 }

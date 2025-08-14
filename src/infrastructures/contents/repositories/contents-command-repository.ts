@@ -1,24 +1,18 @@
-import type { Contents, Status } from "@/generated";
+import type {
+	ContentsCreateInput,
+	IContentsCommandRepository,
+} from "@/domains/contents/types";
+import { serverLogger } from "@/o11y/server";
 import prisma from "@/prisma";
 
-type IContentsCommandRepository = {
-	create(data: ContentsCreateInput): Promise<Contents>;
-	deleteById(id: string, userId: string, status: Status): Promise<void>;
-};
-
-type ContentsCreateInput = {
-	title: string;
-	markdown: string;
-	userId: string;
-};
-
 class ContentsCommandRepository implements IContentsCommandRepository {
-	async create(data: ContentsCreateInput): Promise<Contents> {
-		return await prisma.contents.create({ data });
-	}
-
-	async deleteById(id: string, userId: string, status: Status): Promise<void> {
-		await prisma.contents.delete({ where: { id, userId, status } });
+	async create(data: ContentsCreateInput): Promise<void> {
+		const response = await prisma.contents.create({ data });
+		serverLogger.info(
+			`【CONTENTS】\n\nコンテンツ\ntitle: ${response.title} \nquote: ${response.markdown}\nの登録ができました`,
+			{ caller: "addContents", status: 201, userId: data.userId },
+			{ notify: true },
+		);
 	}
 }
 
