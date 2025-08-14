@@ -13,11 +13,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **E2E Test**: `pnpm test:e2e` - Run Playwright tests
 - **Storybook**: `pnpm storybook` - Component development
 
-### Dependency Analysis
+### Code Quality & Analysis
 - **Check Dependencies**: `pnpm deps:check` - Analyze dependencies and detect issues
 - **Generate Dependency Graph**: `pnpm deps:graph` - Create visual dependency graph (SVG)
-- **Generate Full Dependency Graph**: `pnpm deps:graph:all` - Create complete dependency graph with all files (SVG)
 - **Find Circular Dependencies**: `pnpm deps:circular` - Detect circular dependencies
+- **Bundle Analysis**: `pnpm analyze` - Analyze Next.js bundle size
+- **Dead Code Detection**: `pnpm knip` - Find unused files and dependencies
+- **Copy-Paste Detection**: `pnpm jscpd` - Detect code duplication
+- **Security Audit**: `pnpm security` - Check for vulnerabilities
 
 ### Database Operations
 - **Generate Prisma**: `pnpm prisma:generate` - Generate Prisma client
@@ -50,11 +53,13 @@ Features follow domain-driven design in `src/features/`:
 Main domains: `ai`, `auth`, `contents`, `dump`, `image`, `news`, `viewer`
 
 ### Database Architecture
-Two-tier system:
-- **Dumper tables** (`News`, `Contents`, `Images`) - Data entry with status tracking
-- **Static tables** (`StaticNews`, `StaticContents`, `StaticBooks`) - Optimized for viewing
+Content management system with single-tier architecture:
+- **Core tables**: `News`, `Contents`, `Images`, `Books` - Content management with status tracking
+- **Supporting tables**: `Categories` - Hierarchical organization for News items
 
-Status lifecycle: `UNEXPORTED` → `UPDATED_RECENTLY` → `EXPORTED`
+Status lifecycle: `UNEXPORTED` → `EXPORTED`
+
+Schema is maintained in `s-schema/schema.prisma` with UUID-based primary keys for improved performance and scalability.
 
 ### Key Patterns
 - **Server Actions**: All mutations use Next.js server actions with `wrapServerSideErrorForClient`
@@ -65,9 +70,10 @@ Status lifecycle: `UNEXPORTED` → `UPDATED_RECENTLY` → `EXPORTED`
 
 ### External Services
 - **Database**: PostgreSQL with Prisma ORM (schema in `s-schema/`)
-- **Storage**: MinIO for object storage
-- **Monitoring**: Sentry for errors, Pushover for notifications
+- **Object Storage**: MinIO (configurable, can be local or cloud)
+- **Monitoring**: Sentry for error tracking, Pushover for notifications
 - **Auth**: Auth0 integration via NextAuth.js
+- **Internationalization**: next-intl for Japanese/English support
 
 ### Type Safety
 - End-to-end TypeScript with `@t3-oss/env-nextjs` for environment variables
@@ -79,7 +85,10 @@ Status lifecycle: `UNEXPORTED` → `UPDATED_RECENTLY` → `EXPORTED`
 - **E2E Tests**: Playwright configuration in `playwright.config.ts`
 - **Storybook**: Component testing with coverage support
 
-## Code Style
-- **Formatter**: Biome (not Prettier)
-- **Linter**: ESLint with multiple plugins (unicorn, perfectionist, etc.)
+## Code Style & Architecture Rules
+- **Formatter**: Biome (not Prettier) - Use `pnpm fmt:fix` for formatting
+- **Linter**: ESLint with strict configuration including boundaries plugin
 - **Package Manager**: pnpm (required)
+- **Import Rules**: No relative imports going up directories (`../../*`) - use absolute imports
+- **Feature Boundaries**: Cross-feature imports forbidden - each feature domain is isolated
+- **Component Conventions**: TypeScript interfaces as `type` (not `interface`), React hooks rules enforced
