@@ -15,7 +15,7 @@ vi.mock("@/o11y/server", () => ({
 	},
 }));
 
-import { Status } from "@/generated";
+import type { Status } from "@/generated";
 import prisma from "@/prisma";
 import { newsCommandRepository } from "./news-command-repository";
 
@@ -40,6 +40,7 @@ describe("NewsCommandRepository", () => {
 				quote: "This is a test quote",
 				Category: { name: "tech" },
 				userId: "user123",
+				// eslint-disable-next-line
 			} as any);
 
 			await newsCommandRepository.create(inputData);

@@ -1,8 +1,8 @@
+import type { NewsFormSchema } from "@/domains/news/news-schema";
+import type { INewsCommandRepository } from "@/domains/news/types";
 import type { Status } from "@/features/types";
 import { serverLogger } from "@/o11y/server";
 import prisma from "@/prisma";
-import type { NewsFormSchema } from "../schemas/news-schema";
-import type { INewsCommandRepository } from "../types";
 
 class NewsCommandRepository implements INewsCommandRepository {
 	async create(data: NewsFormSchema): Promise<void> {

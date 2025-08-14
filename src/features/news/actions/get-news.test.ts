@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import {
 	categoryQueryRepository,
 	newsQueryRepository,
-} from "@/features/news/repositories/news-query-repository";
+} from "@/infrastructure/news/repositories/news-query-repository";
 import {
 	getCategories,
 	getExportedNews,
@@ -10,7 +10,7 @@ import {
 	getUnexportedNews,
 } from "./get-news";
 
-vi.mock("@/features/news/repositories/news-query-repository", () => ({
+vi.mock("@/infrastructure/news/repositories/news-query-repository", () => ({
 	newsQueryRepository: {
 		findMany: vi.fn(),
 		count: vi.fn(),

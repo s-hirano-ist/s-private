@@ -1,15 +1,15 @@
-import type { Status } from "@/generated";
-import prisma from "@/prisma";
 import type {
 	CategoryQuerySchema,
 	NewsQuerySchema,
-} from "../schemas/news-schema";
+} from "@/domains/news/news-schema";
 import type {
 	CategoryFindManyParams,
 	ICategoryQueryRepository,
 	INewsQueryRepository,
 	NewsFindManyParams,
-} from "../types";
+} from "@/domains/news/types";
+import type { Status } from "@/generated";
+import prisma from "@/prisma";
 
 class NewsQueryRepository implements INewsQueryRepository {
 	findMany = async (

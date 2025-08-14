@@ -2,10 +2,10 @@
 import "server-only";
 import { revalidatePath } from "next/cache";
 import { forbidden } from "next/navigation";
+import { newsCommandRepository } from "@/infrastructure/news/repositories/news-command-repository";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
 import { wrapServerSideErrorForClient } from "@/utils/error/error-wrapper";
 import type { ServerAction } from "@/utils/types";
-import { newsCommandRepository } from "../repositories/news-command-repository";
 import { validateNews } from "../utils/validate-news";
 
 export async function addNews(formData: FormData): Promise<ServerAction> {

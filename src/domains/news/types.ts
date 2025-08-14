@@ -1,11 +1,11 @@
 import type { PrismaCacheStrategy } from "@prisma/extension-accelerate";
 import type { Prisma } from "@/generated";
-import type { Status } from "../types";
+import type { Status } from "../../features/types";
 import type {
 	CategoryQuerySchema,
 	NewsFormSchema,
 	NewsQuerySchema,
-} from "./schemas/news-schema";
+} from "./news-schema";
 
 // news
 

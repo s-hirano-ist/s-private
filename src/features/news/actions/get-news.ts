@@ -2,13 +2,13 @@ import { cache } from "react";
 import { LinkCardData } from "@/components/card/link-card";
 import { PAGE_SIZE } from "@/constants";
 import type { Status } from "@/features/types";
-import { getSelfId } from "@/utils/auth/session";
-import { getDomainFromUrl } from "@/utils/validate-url";
-import type { NewsFormClientData } from "../components/client/news-form-client";
 import {
 	categoryQueryRepository,
 	newsQueryRepository,
-} from "../repositories/news-query-repository";
+} from "@/infrastructure/news/repositories/news-query-repository";
+import { getSelfId } from "@/utils/auth/session";
+import { getDomainFromUrl } from "@/utils/validate-url";
+import type { NewsFormClientData } from "../components/client/news-form-client";
 
 export const getExportedNews = cache(
 	async (page: number): Promise<LinkCardData[]> => {

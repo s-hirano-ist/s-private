@@ -1,9 +1,9 @@
 import { revalidatePath } from "next/cache";
 import { describe, expect, test, vi } from "vitest";
-import { newsCommandRepository } from "@/features/news/repositories/news-command-repository";
+import { newsCommandRepository } from "@/infrastructure/news/repositories/news-command-repository";
 import { addNews } from "./add-news";
 
-vi.mock("@/features/news/repositories/news-command-repository", () => ({
+vi.mock("@/infrastructure/news/repositories/news-command-repository", () => ({
 	newsCommandRepository: {
 		create: vi.fn(),
 	},
