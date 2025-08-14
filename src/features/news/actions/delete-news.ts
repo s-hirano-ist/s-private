@@ -6,7 +6,7 @@ import { UnexpectedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
 import { newsCommandRepository } from "@/features/news/repositories/news-command-repository";
 import { newsQueryRepository } from "@/features/news/repositories/news-query-repository";
-import { serverLogger } from "@/infrastructure/server";
+import { serverLogger } from "@/o11y/server";
 import type { ServerAction } from "@/types";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
 

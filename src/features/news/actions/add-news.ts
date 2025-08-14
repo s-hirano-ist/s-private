@@ -7,7 +7,7 @@ import { categoryCommandRepository } from "@/features/news/repositories/category
 import { newsCommandRepository } from "@/features/news/repositories/news-command-repository";
 import { validateCategory } from "@/features/news/utils/validate-category";
 import { validateNews } from "@/features/news/utils/validate-news";
-import { serverLogger } from "@/infrastructure/server";
+import { serverLogger } from "@/o11y/server";
 import type { ServerAction } from "@/types";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
 import { formatCreateNewsMessage } from "@/utils/notification/format-for-notification";

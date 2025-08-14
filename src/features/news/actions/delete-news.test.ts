@@ -3,7 +3,7 @@ import { describe, expect, test, vi } from "vitest";
 import { deleteNews } from "@/features/news/actions/delete-news";
 import { newsCommandRepository } from "@/features/news/repositories/news-command-repository";
 import { newsQueryRepository } from "@/features/news/repositories/news-query-repository";
-import { serverLogger } from "@/infrastructure/server";
+import { serverLogger } from "@/o11y/server";
 
 vi.mock("@/features/news/repositories/news-query-repository", () => ({
 	newsQueryRepository: {

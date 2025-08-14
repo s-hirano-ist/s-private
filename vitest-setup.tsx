@@ -12,7 +12,7 @@ beforeEach(() => {
 
 	vi.mock("@/utils/auth/auth", () => ({ auth: vi.fn() }));
 
-	vi.mock("@/infrastructure/server", () => ({
+	vi.mock("@/o11y/server", () => ({
 		serverLogger: {
 			info: vi.fn(),
 			warn: vi.fn(),
@@ -25,7 +25,7 @@ beforeEach(() => {
 		},
 	}));
 
-	vi.mock("@/infrastructure/client", () => ({
+	vi.mock("@/o11y/client", () => ({
 		clientLogger: {
 			info: vi.fn(),
 			warn: vi.fn(),

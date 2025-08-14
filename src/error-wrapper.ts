@@ -2,7 +2,7 @@
 import "server-only";
 import { AuthError } from "next-auth";
 import { Prisma } from "@/generated";
-import { serverLogger } from "@/infrastructure/server";
+import { serverLogger } from "@/o11y/server";
 import {
 	FileNotAllowedError,
 	InvalidFormatError,

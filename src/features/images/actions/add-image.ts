@@ -12,7 +12,7 @@ import {
 import { FileNotAllowedError, UnexpectedError } from "@/error-classes";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
 import { imageCommandRepository } from "@/features/images/repositories/image-command-repository";
-import { serverLogger } from "@/infrastructure/server";
+import { serverLogger } from "@/o11y/server";
 import type { ServerAction } from "@/types";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
 import { formatCreateImageMessage } from "@/utils/notification/format-for-notification";

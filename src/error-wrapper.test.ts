@@ -2,7 +2,7 @@ import { AuthError } from "next-auth";
 import { describe, expect, test, vi } from "vitest";
 import { PushoverError, UnexpectedError } from "@/error-classes";
 import { Prisma } from "@/generated";
-import { serverLogger } from "@/infrastructure/server";
+import { serverLogger } from "@/o11y/server";
 import { wrapServerSideErrorForClient } from "./error-wrapper";
 
 describe("wrapServerSideErrorForClient", () => {

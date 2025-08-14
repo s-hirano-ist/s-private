@@ -5,7 +5,7 @@ import { forbidden } from "next/navigation";
 import { wrapServerSideErrorForClient } from "@/error-wrapper";
 import { booksCommandRepository } from "@/features/books/repositories/books-command-repository";
 import { validateBooks } from "@/features/books/utils/validate-books";
-import { serverLogger } from "@/infrastructure/server";
+import { serverLogger } from "@/o11y/server";
 import type { ServerAction } from "@/types";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
 import { formatCreateBooksMessage } from "@/utils/notification/format-for-notification";
