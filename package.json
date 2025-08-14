@@ -28,6 +28,7 @@
 		"security": "pnpm audit",
 		"analyze": "ANALYZE=true pnpm build",
 		"knip": "knip",
+		"jscpd": "jscpd -p src/**/*.{ts,tsx}",
 		"deps:check": "depcruise src --config .dependency-cruiser.cjs  --include-only '^src'",
 		"deps:graph": "depcruise src --config .dependency-cruiser.cjs --include-only '^src' --output-type dot | dot -T svg > dependency-graph.svg",
 		"deps:circular": "depcruise src --config .dependency-cruiser.cjs  --include-only '^src' --output-type text --focus-depth 0"
@@ -113,6 +114,7 @@
 		"eslint-plugin-storybook": "9.1.2",
 		"eslint-plugin-tailwindcss": "3.18.2",
 		"globals": "16.3.0",
+		"jscpd": "4.0.5",
 		"jsdom": "26.1.0",
 		"knip": "5.62.0",
 		"license-checker-rseidelsohn": "4.4.2",
