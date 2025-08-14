@@ -18,13 +18,13 @@ vi.mock("@/prisma", () => ({
 			create: vi.fn(),
 			delete: vi.fn(),
 		},
-		$transaction: vi.fn(),
 		$accelerate: {
 			invalidate: vi.fn(),
 		},
 	},
 }));
 
+import { Status } from "@/generated";
 import { minioClient } from "@/minio";
 import prisma from "@/prisma";
 import { imageCommandRepository } from "./image-command-repository";
@@ -46,7 +46,7 @@ describe("ImageCommandRepository", () => {
 				height: 600,
 				tags: ["nature", "landscape"],
 				description: "A beautiful landscape",
-				status: "UNEXPORTED",
+				status: "UNEXPORTED" as Status,
 				createdAt: new Date(),
 				updatedAt: new Date(),
 				exportedAt: new Date(),
@@ -77,6 +77,7 @@ describe("ImageCommandRepository", () => {
 		test("should create image with minimal data", async () => {
 			const mockImage = {
 				id: "image-456",
+				paths: "image-456",
 				userId: "user123",
 				contentType: "image/jpeg",
 				fileSize: null,
@@ -84,13 +85,16 @@ describe("ImageCommandRepository", () => {
 				height: null,
 				tags: [],
 				description: null,
-				status: "UNEXPORTED",
+				status: "UNEXPORTED" as Status,
 				createdAt: new Date(),
 				updatedAt: new Date(),
+				ogImageUrl: "https://example.com/og-image.jpg",
+				exportedAt: new Date(),
+				categoryId: 2,
 			};
 
 			const inputData = {
-				id: "image-456",
+				paths: "image-456",
 				userId: "user123",
 				contentType: "image/jpeg",
 			};
@@ -107,7 +111,7 @@ describe("ImageCommandRepository", () => {
 
 		test("should handle database errors during create", async () => {
 			const inputData = {
-				id: "image-123",
+				paths: "image-123",
 				userId: "user123",
 				contentType: "image/png",
 			};
@@ -122,60 +126,6 @@ describe("ImageCommandRepository", () => {
 
 			expect(prisma.images.create).toHaveBeenCalledWith({
 				data: inputData,
-			});
-		});
-	});
-
-	describe("transaction", () => {
-		test("should execute transaction successfully", async () => {
-			const mockResult = { success: true, data: "test" };
-			const mockFn = vi.fn().mockResolvedValue(mockResult);
-
-			vi.mocked(prisma.$transaction).mockResolvedValue(mockResult);
-
-			const result = await imageCommandRepository.transaction(mockFn);
-
-			expect(prisma.$transaction).toHaveBeenCalledWith(mockFn);
-			expect(result).toEqual(mockResult);
-		});
-
-		test("should handle transaction errors", async () => {
-			const mockFn = vi.fn().mockRejectedValue(new Error("Transaction failed"));
-
-			vi.mocked(prisma.$transaction).mockRejectedValue(
-				new Error("Transaction failed"),
-			);
-
-			await expect(imageCommandRepository.transaction(mockFn)).rejects.toThrow(
-				"Transaction failed",
-			);
-
-			expect(prisma.$transaction).toHaveBeenCalledWith(mockFn);
-		});
-	});
-
-	describe("invalidateCache", () => {
-		test("should invalidate cache successfully", async () => {
-			vi.mocked(prisma.$accelerate.invalidate).mockResolvedValue(undefined);
-
-			await imageCommandRepository.invalidateCache();
-
-			expect(prisma.$accelerate.invalidate).toHaveBeenCalledWith({
-				tags: ["images"],
-			});
-		});
-
-		test("should handle cache invalidation errors", async () => {
-			vi.mocked(prisma.$accelerate.invalidate).mockRejectedValue(
-				new Error("Cache invalidation failed"),
-			);
-
-			await expect(imageCommandRepository.invalidateCache()).rejects.toThrow(
-				"Cache invalidation failed",
-			);
-
-			expect(prisma.$accelerate.invalidate).toHaveBeenCalledWith({
-				tags: ["images"],
 			});
 		});
 	});

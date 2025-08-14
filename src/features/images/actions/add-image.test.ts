@@ -11,7 +11,6 @@ vi.mock("@/features/images/repositories/image-command-repository", () => ({
 	imageCommandRepository: {
 		create: vi.fn(),
 		uploadToStorage: vi.fn(),
-		invalidateCache: vi.fn(),
 	},
 }));
 
@@ -86,7 +85,6 @@ describe("addImage", () => {
 
 		expect(imageCommandRepository.uploadToStorage).toHaveBeenCalledTimes(2);
 		expect(imageCommandRepository.create).toHaveBeenCalled();
-		expect(imageCommandRepository.invalidateCache).toHaveBeenCalled();
 		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 		expect(result).toEqual({
 			success: true,

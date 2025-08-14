@@ -1,12 +1,10 @@
 import { env } from "@/env";
-import type { Images, Status } from "@/generated";
+import type { Images } from "@/generated";
 import { minioClient } from "@/minio";
 import prisma from "@/prisma";
 
 type IImageCommandRepository = {
 	create(data: ImageCreateInput): Promise<Images>;
-	transaction<T>(fn: () => Promise<T>): Promise<T>;
-	invalidateCache(): Promise<void>;
 	uploadToStorage(path: string, buffer: Buffer): Promise<void>;
 };
 
@@ -24,14 +22,6 @@ type ImageCreateInput = {
 class ImageCommandRepository implements IImageCommandRepository {
 	async create(data: ImageCreateInput): Promise<Images> {
 		return await prisma.images.create({ data });
-	}
-
-	async transaction<T>(fn: () => Promise<T>): Promise<T> {
-		return await prisma.$transaction(fn);
-	}
-
-	async invalidateCache(): Promise<void> {
-		await prisma.$accelerate.invalidate({ tags: ["images"] });
 	}
 
 	async uploadToStorage(path: string, buffer: Buffer): Promise<void> {
