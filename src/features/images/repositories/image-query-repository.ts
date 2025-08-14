@@ -16,7 +16,7 @@ type IImageQueryRepository = {
 };
 
 type Images = {
-	id: string;
+	paths: string;
 };
 
 type ImageFindManyParams = {
@@ -44,7 +44,7 @@ class ImageQueryRepository implements IImageQueryRepository {
 	): Promise<Images[]> {
 		return await prisma.images.findMany({
 			where: { userId, status },
-			select: { id: true },
+			select: { paths: true },
 			...params,
 		});
 	}

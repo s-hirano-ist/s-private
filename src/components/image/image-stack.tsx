@@ -6,7 +6,7 @@ import { StatusCodeView } from "@/components/status/status-code-view";
 import "yet-another-react-lightbox/styles.css";
 
 type ImageData = {
-	id: string;
+	paths: string;
 	height?: number | null;
 	width?: number | null;
 };
@@ -20,6 +20,9 @@ type SlideImage = {
 	width?: number;
 };
 
+const API_ORIGINAL_PATH = "/api/contents/original";
+const API_THUMBNAIL_PATH = "/api/contents/thumbnail";
+
 export function ImageStack({ data }: Props) {
 	const [open, setOpen] = useState(false);
 	const [index, setIndex] = useState(0);
@@ -27,10 +30,10 @@ export function ImageStack({ data }: Props) {
 	if (data.length === 0) return <StatusCodeView statusCode="204" />;
 
 	const slides: SlideImage[] = data.map((image) => ({
-		src: `/api/contents/original/${image.id}`, // FIXME: TODO:
+		src: `${API_ORIGINAL_PATH}/${image.paths}`,
 		width: image.width || undefined,
 		height: image.height || undefined,
-		alt: `Image ${image.id}`,
+		alt: `Image ${image.paths}`,
 	}));
 
 	const handleImageClick = (imageIndex: number) => {
@@ -43,9 +46,9 @@ export function ImageStack({ data }: Props) {
 			<div className="grid grid-cols-4 gap-2 p-2 sm:p-4">
 				{data.map((image, i) => (
 					<div
-						aria-label={`Open image ${image.id} in lightbox`}
+						aria-label={`Open image ${image.paths} in lightbox`}
 						className="cursor-pointer"
-						key={image.id}
+						key={image.paths}
 						onClick={() => handleImageClick(i)}
 						onKeyDown={(e) => {
 							if (e.key === "Enter" || e.key === " ") {
@@ -56,9 +59,9 @@ export function ImageStack({ data }: Props) {
 						tabIndex={0}
 					>
 						<Image
-							alt={`Image ${image.id}`}
+							alt={`Image ${image.paths}`}
 							height={96}
-							src={`/api/contents/thumbnail/${image.id}`}
+							src={`${API_THUMBNAIL_PATH}/${image.paths}`}
 							// FIXME: optimize image for better performance
 							// Note that it may not be needed due to thumbnail size is already small
 							unoptimized
