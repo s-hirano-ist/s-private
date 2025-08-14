@@ -13,6 +13,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **E2E Test**: `pnpm test:e2e` - Run Playwright tests
 - **Storybook**: `pnpm storybook` - Component development
 
+### Dependency Analysis
+- **Check Dependencies**: `pnpm deps:check` - Analyze dependencies and detect issues
+- **Generate Dependency Graph**: `pnpm deps:graph` - Create visual dependency graph (SVG)
+- **Generate Full Dependency Graph**: `pnpm deps:graph:all` - Create complete dependency graph with all files (SVG)
+- **Find Circular Dependencies**: `pnpm deps:circular` - Detect circular dependencies
+
 ### Database Operations
 - **Generate Prisma**: `pnpm prisma:generate` - Generate Prisma client
 - **Database Migration**: `pnpm prisma:migrate` - Apply schema changes

@@ -24,5 +24,8 @@
 		"eslint-plugin-tailwindcss", // storybook integration not working
 		"postcss-load-config" // postcss
 	],
-	"ignoreBinaries": ["config-inspector"]
+	"ignoreBinaries": [
+		"config-inspector",
+		"dot" // for depencency-cruiser
+	]
 }
