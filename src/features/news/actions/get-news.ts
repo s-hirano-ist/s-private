@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { LinkCardData } from "@/components/card/link-card";
 import { PAGE_SIZE } from "@/constants";
-import type { Status } from "@/features/types";
+import type { Status } from "@/domains/common/types";
 import {
 	categoryQueryRepository,
 	newsQueryRepository,
@@ -21,8 +21,9 @@ export const getExportedNews = cache(
 		});
 
 		return news.map((d) => ({
-			id: d.categoryName,
-			badgeText: getDomainFromUrl(d.url),
+			id: d.id,
+			primaryBadgeText: d.categoryName,
+			secondaryBadgeText: getDomainFromUrl(d.url),
 			key: d.id,
 			title: d.title,
 			description: `${d.quote} \n ${d.ogTitle} \n ${d.ogDescription}`,
@@ -41,8 +42,9 @@ export const getUnexportedNews = cache(
 		});
 
 		return news.map((d) => ({
-			id: d.categoryName,
-			badgeText: getDomainFromUrl(d.url),
+			id: d.id,
+			primaryBadgeText: d.categoryName,
+			secondaryBadgeText: getDomainFromUrl(d.url),
 			key: d.id,
 			title: d.title,
 			description: d.quote ?? undefined,
@@ -61,5 +63,8 @@ export const getCategories = cache(async (): Promise<NewsFormClientData> => {
 	const response = await categoryQueryRepository.findMany(userId, {
 		orderBy: { name: "asc" },
 	});
-	return response.map((d) => ({ id: d.categoryId, name: d.categoryName }));
+	return response.map((categoryName) => ({
+		id: categoryName,
+		name: categoryName,
+	}));
 });

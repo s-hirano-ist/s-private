@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 type Props = {
 	label: string;
 	htmlFor: string;
-	options: { id: number; name: string }[];
+	options: { id: string; name: string }[];
 	triggerIcon: React.ReactNode;
 	inputRef?: RefObject<HTMLInputElement | null>;
 } & Omit<ComponentProps<typeof Input>, "ref">;

@@ -17,7 +17,8 @@ export type LinkCardData = {
 	key: string;
 	title: string;
 	description?: string;
-	badgeText?: string;
+	primaryBadgeText?: string;
+	secondaryBadgeText?: string;
 	href: string;
 };
 
@@ -28,7 +29,7 @@ type Props = {
 };
 
 export function LinkCard({
-	data: { id, title, description, badgeText, href },
+	data: { id, title, description, primaryBadgeText, secondaryBadgeText, href },
 	showDeleteButton,
 	deleteAction,
 }: Props) {
@@ -45,8 +46,10 @@ export function LinkCard({
 			)}
 			<CardHeader>
 				<div className="flex gap-4">
-					<Badge>{id}</Badge>
-					{badgeText && <Badge variant="outline">{badgeText}</Badge>}
+					{primaryBadgeText && <Badge>{primaryBadgeText}</Badge>}
+					{secondaryBadgeText && (
+						<Badge variant="outline">{secondaryBadgeText}</Badge>
+					)}
 				</div>
 			</CardHeader>
 			<CardContent>

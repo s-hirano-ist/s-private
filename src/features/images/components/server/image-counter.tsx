@@ -2,7 +2,7 @@ import { forbidden } from "next/navigation";
 import { BadgeWithPagination } from "@/components/badge-with-pagination";
 import { Unexpected } from "@/components/status/unexpected";
 import { PAGE_SIZE } from "@/constants";
-import type { Status } from "@/features/types";
+import type { Status } from "@/domains/common/types";
 import { hasViewerAdminPermission } from "@/utils/auth/session";
 
 type Props = {

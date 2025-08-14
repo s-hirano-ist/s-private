@@ -19,6 +19,13 @@ export class InvalidFormatError extends Error {
 	}
 }
 
+export class DuplicateError extends Error {
+	constructor() {
+		super("duplicate");
+		this.name = "DuplicateError";
+	}
+}
+
 export class FileNotAllowedError extends Error {
 	constructor() {
 		super("invalidFileFormat");

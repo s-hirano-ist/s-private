@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { ImageCardData } from "@/components/card/image-card";
+import type { Status } from "@/domains/common/types";
 import { booksQueryRepository } from "@/features/books/repositories/books-query-repository";
-import type { Status } from "@/features/types";
 import { getSelfId } from "@/utils/auth/session";
 
 export const getExportedBooks = cache(async (): Promise<ImageCardData[]> => {

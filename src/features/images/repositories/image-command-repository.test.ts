@@ -90,7 +90,6 @@ describe("ImageCommandRepository", () => {
 				updatedAt: new Date(),
 				ogImageUrl: "https://example.com/og-image.jpg",
 				exportedAt: new Date(),
-				categoryId: 2,
 			};
 
 			const inputData = {

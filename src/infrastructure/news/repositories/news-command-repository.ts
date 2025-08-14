@@ -1,6 +1,6 @@
-import type { NewsFormSchema } from "@/domains/news/news-schema";
+import type { Status } from "@/domains/common/types";
+import { NewsFormSchema } from "@/domains/news/entities/news-entity";
 import type { INewsCommandRepository } from "@/domains/news/types";
-import type { Status } from "@/features/types";
 import { serverLogger } from "@/o11y/server";
 import prisma from "@/prisma";
 
@@ -8,6 +8,7 @@ class NewsCommandRepository implements INewsCommandRepository {
 	async create(data: NewsFormSchema): Promise<void> {
 		const response = await prisma.news.create({
 			data: {
+				id: data.id,
 				title: data.title,
 				url: data.url,
 				quote: data.quote,

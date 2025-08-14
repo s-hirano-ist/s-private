@@ -8,7 +8,7 @@ import { FormInputWithButton } from "@/components/forms/fields/form-input-with-b
 import { FormTextarea } from "@/components/forms/fields/form-textarea";
 import { GenericFormWrapper } from "@/components/forms/generic-form-wrapper";
 
-export type NewsFormClientData = { id: number; name: string }[];
+export type NewsFormClientData = { id: string; name: string }[];
 
 type Props = {
 	categories: NewsFormClientData;

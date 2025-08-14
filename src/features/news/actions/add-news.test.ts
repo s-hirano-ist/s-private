@@ -1,7 +1,12 @@
 import { revalidatePath } from "next/cache";
 import { describe, expect, test, vi } from "vitest";
 import { newsCommandRepository } from "@/infrastructure/news/repositories/news-command-repository";
+import { validateNews } from "@/domains/news/services/news-domain-service";
 import { addNews } from "./add-news";
+
+vi.mock("next/cache", () => ({
+	revalidatePath: vi.fn(),
+}));
 
 vi.mock("@/infrastructure/news/repositories/news-command-repository", () => ({
 	newsCommandRepository: {
@@ -17,11 +22,20 @@ vi.mock("@/utils/auth/session", () => ({
 	hasDumperPostPermission: () => mockHasDumperPostPermission(),
 }));
 
+vi.mock("@/domains/news/services/news-domain-service", () => ({
+	validateNews: vi.fn(),
+}));
+
+vi.mock("@/infrastructure/news/repositories/news-query-repository", () => ({
+	newsQueryRepository: {},
+}));
+
 const mockFormData = new FormData();
 mockFormData.append("title", "Example Content");
 mockFormData.append("quote", "This is an example news quote.");
 mockFormData.append("url", "https://example.com");
 mockFormData.append("category", "tech");
+mockFormData.append("id", "test-id");
 
 describe("addNews", () => {
 	test("should return success false on Unauthorized", async () => {
@@ -41,12 +55,21 @@ describe("addNews", () => {
 	test("should create news with category", async () => {
 		mockHasDumperPostPermission.mockResolvedValue(true);
 		mockGetSelfId.mockResolvedValue("1");
+		vi.mocked(validateNews).mockResolvedValue({
+			categoryName: "tech",
+			title: "Example Content",
+			quote: "This is an example news quote.",
+			url: "https://example.com",
+			userId: "1",
+			id: "test-id",
+		});
 		vi.mocked(newsCommandRepository.create).mockResolvedValue();
 
 		const result = await addNews(mockFormData);
 
 		expect(mockHasDumperPostPermission).toHaveBeenCalled();
 		expect(mockGetSelfId).toHaveBeenCalled();
+		expect(validateNews).toHaveBeenCalled();
 		expect(newsCommandRepository.create).toHaveBeenCalled();
 		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 		expect(result.success).toBe(true);

@@ -21,26 +21,26 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const mockCategories = [
-	{ id: 1, name: "テクノロジー" },
-	{ id: 2, name: "ビジネス" },
-	{ id: 3, name: "デザイン" },
-	{ id: 4, name: "プログラミング" },
-	{ id: 5, name: "ライフスタイル" },
+	{ id: "1", name: "テクノロジー" },
+	{ id: "2", name: "ビジネス" },
+	{ id: "3", name: "デザイン" },
+	{ id: "4", name: "プログラミング" },
+	{ id: "5", name: "ライフスタイル" },
 ];
 
 const mockTags = [
-	{ id: 1, name: "React" },
-	{ id: 2, name: "TypeScript" },
-	{ id: 3, name: "Next.js" },
-	{ id: 4, name: "Storybook" },
-	{ id: 5, name: "TailwindCSS" },
+	{ id: "1", name: "React" },
+	{ id: "2", name: "TypeScript" },
+	{ id: "3", name: "Next.js" },
+	{ id: "4", name: "Storybook" },
+	{ id: "5", name: "TailwindCSS" },
 ];
 
 const mockFolders = [
-	{ id: 1, name: "プロジェクト" },
-	{ id: 2, name: "ドキュメント" },
-	{ id: 3, name: "リソース" },
-	{ id: 4, name: "アーカイブ" },
+	{ id: "1", name: "プロジェクト" },
+	{ id: "2", name: "ドキュメント" },
+	{ id: "3", name: "リソース" },
+	{ id: "4", name: "アーカイブ" },
 ];
 
 export const Default: Story = {
@@ -109,11 +109,11 @@ export const LongOptionNames: Story = {
 		placeholder: "カテゴリーを選択",
 		options: [
 			{
-				id: 1,
+				id: "1",
 				name: "非常に長いカテゴリー名の例：フロントエンド開発とUI/UXデザイン",
 			},
-			{ id: 2, name: "バックエンド開発とデータベース設計・最適化" },
-			{ id: 3, name: "モバイルアプリケーション開発（iOS・Android対応）" },
+			{ id: "2", name: "バックエンド開発とデータベース設計・最適化" },
+			{ id: "3", name: "モバイルアプリケーション開発（iOS・Android対応）" },
 		],
 		triggerIcon: <TableOfContentsIcon />,
 	},

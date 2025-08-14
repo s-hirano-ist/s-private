@@ -36,9 +36,9 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const mockCategories = [
-	{ id: 1, name: "テクノロジー" },
-	{ id: 2, name: "ビジネス" },
-	{ id: 3, name: "デザイン" },
+	{ id: "1", name: "テクノロジー" },
+	{ id: "2", name: "ビジネス" },
+	{ id: "3", name: "デザイン" },
 ];
 
 export const SimpleForm: Story = {

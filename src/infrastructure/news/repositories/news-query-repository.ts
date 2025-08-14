@@ -1,22 +1,28 @@
+import type { Status } from "@/domains/common/types";
 import type {
-	CategoryQuerySchema,
-	NewsQuerySchema,
-} from "@/domains/news/news-schema";
+	CategoryQueryData,
+	NewsQueryData,
+} from "@/domains/news/entities/news-entity";
 import type {
 	CategoryFindManyParams,
 	ICategoryQueryRepository,
 	INewsQueryRepository,
 	NewsFindManyParams,
 } from "@/domains/news/types";
-import type { Status } from "@/generated";
 import prisma from "@/prisma";
 
 class NewsQueryRepository implements INewsQueryRepository {
+	findByUrl = async (userId: string, url: string): Promise<{} | null> => {
+		return await prisma.news.findUnique({
+			where: { url_userId: { url, userId } },
+		});
+	};
+
 	findMany = async (
 		userId: string,
 		status: Status,
 		params: NewsFindManyParams,
-	): Promise<NewsQuerySchema[]> => {
+	): Promise<NewsQueryData[]> => {
 		const response = await prisma.news.findMany({
 			where: { userId, status },
 			select: {
@@ -32,7 +38,6 @@ class NewsQueryRepository implements INewsQueryRepository {
 		});
 		return response.map((d) => ({
 			categoryName: d.Category.name,
-			categoryId: d.Category.id,
 			id: d.id,
 			quote: d.quote,
 			title: d.title,
@@ -53,16 +58,13 @@ class CategoryQueryRepository implements ICategoryQueryRepository {
 	async findMany(
 		userId: string,
 		params?: CategoryFindManyParams,
-	): Promise<CategoryQuerySchema[]> {
+	): Promise<CategoryQueryData[]> {
 		const response = await prisma.categories.findMany({
 			where: { userId },
 			select: { id: true, name: true },
 			...params,
 		});
-		return response.map((d) => ({
-			categoryId: d.id,
-			categoryName: d.name,
-		}));
+		return response.map((d) => d.name);
 	}
 }
 

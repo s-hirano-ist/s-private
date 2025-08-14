@@ -1,4 +1,4 @@
-import type { Status } from "@/features/types";
+import { Status } from "@/domains/common/types";
 import prisma from "@/prisma";
 
 type IBooksCommandRepository = {

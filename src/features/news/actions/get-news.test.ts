@@ -40,7 +40,6 @@ describe("get-news", () => {
 					ogTitle: "OG Title 1",
 					ogDescription: "OG Description 1",
 					categoryName: "Tech",
-					categoryId: 1,
 				},
 				{
 					id: "2",
@@ -50,7 +49,6 @@ describe("get-news", () => {
 					ogTitle: "OG Title 2",
 					ogDescription: "OG Description 2",
 					categoryName: "Science",
-					categoryId: 2,
 				},
 			];
 
@@ -71,20 +69,22 @@ describe("get-news", () => {
 
 			expect(result).toEqual([
 				{
-					id: "Tech",
+					id: "1",
 					key: "1",
 					title: "Test News 1",
 					description: "Test quote 1 \n OG Title 1 \n OG Description 1",
 					href: "https://example1.com",
-					badgeText: "example1.com",
+					primaryBadgeText: "Tech",
+					secondaryBadgeText: "example1.com",
 				},
 				{
-					id: "Science",
+					id: "2",
 					key: "2",
 					title: "Test News 2",
 					description: "Test quote 2 \n OG Title 2 \n OG Description 2",
 					href: "https://example2.com",
-					badgeText: "example2.com",
+					primaryBadgeText: "Science",
+					secondaryBadgeText: "example2.com",
 				},
 			]);
 		});
@@ -132,7 +132,6 @@ describe("get-news", () => {
 					quote: "Test quote 1",
 					url: "https://example1.com",
 					categoryName: "Tech",
-					categoryId: 1,
 					ogTitle: "OG Title 1",
 					ogDescription: "OG Description 1",
 				},
@@ -142,7 +141,6 @@ describe("get-news", () => {
 					quote: null,
 					url: "https://example2.com",
 					categoryName: "Science",
-					categoryId: 2,
 					ogTitle: "OG Title 2",
 					ogDescription: "OG Description 2",
 				},
@@ -164,20 +162,22 @@ describe("get-news", () => {
 
 			expect(result).toEqual([
 				{
-					id: "Tech",
+					id: "1",
 					key: "1",
 					title: "Unexported News 1",
 					description: "Test quote 1",
 					href: "https://example1.com",
-					badgeText: "example1.com",
+					primaryBadgeText: "Tech",
+					secondaryBadgeText: "example1.com",
 				},
 				{
-					id: "Science",
+					id: "2",
 					key: "2",
 					title: "Unexported News 2",
 					description: undefined,
 					href: "https://example2.com",
-					badgeText: "example2.com",
+					primaryBadgeText: "Science",
+					secondaryBadgeText: "example2.com",
 				},
 			]);
 		});
@@ -231,10 +231,7 @@ describe("get-news", () => {
 
 	describe("getCategories", () => {
 		test("should fetch categories correctly", async () => {
-			const mockCategories = [
-				{ categoryId: 1, categoryName: "Science" },
-				{ categoryId: 2, categoryName: "Tech" },
-			];
+			const mockCategories = ["Science", "Tech"];
 
 			vi.mocked(categoryQueryRepository.findMany).mockResolvedValue(
 				mockCategories,
@@ -250,8 +247,8 @@ describe("get-news", () => {
 			);
 
 			expect(result).toEqual([
-				{ id: 1, name: "Science" },
-				{ id: 2, name: "Tech" },
+				{ id: "Science", name: "Science" },
+				{ id: "Tech", name: "Tech" },
 			]);
 		});
 

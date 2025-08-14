@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
-import { categoryQuerySchema, newsFormSchema } from "./news-schema";
+import { categoryNameSchema, newsFormSchema } from "./news-entity";
 
-describe("newsSchema", () => {
+describe("newsEntity", () => {
 	test("should validate correct news data", () => {
 		const validData = {
 			categoryName: "1",
@@ -9,6 +9,7 @@ describe("newsSchema", () => {
 			quote: "This is a short quote.",
 			url: "https://example.com/news",
 			userId: "user-s123",
+			id: "test-id-1",
 		};
 
 		const result = newsFormSchema.safeParse(validData);
@@ -22,6 +23,7 @@ describe("newsSchema", () => {
 			quote: "This is a short quote.",
 			url: "https://example.com/news",
 			userId: "user-s123",
+			id: "test-id-2",
 		};
 
 		const result = newsFormSchema.safeParse(invalidData);
@@ -70,6 +72,7 @@ describe("newsSchema", () => {
 			quote: null,
 			url: "https://example.com/news",
 			userId: "user-s123",
+			id: "test-id-3",
 		};
 
 		const result = newsFormSchema.safeParse(validData);
@@ -111,22 +114,16 @@ describe("newsSchema", () => {
 
 describe("categorySchema", () => {
 	test("should validate correct category name", () => {
-		const validData = {
-			categoryName: "CategoryName",
-			categoryId: 1,
-		};
+		const validData = "CategoryName";
 
-		const result = categoryQuerySchema.safeParse(validData);
+		const result = categoryNameSchema.safeParse(validData);
 		expect(result.success).toBe(true);
 	});
 
 	test("should fail when name exceeds max length", () => {
-		const invalidData = {
-			categoryName: "a".repeat(17),
-			categoryId: 1,
-		};
+		const invalidData = "a".repeat(17);
 
-		const result = categoryQuerySchema.safeParse(invalidData);
+		const result = categoryNameSchema.safeParse(invalidData);
 		expect(result.success).toBe(false);
 		if (!result.success) {
 			expect(result.error.errors[0].message).toBe("tooLong");
@@ -134,25 +131,19 @@ describe("categorySchema", () => {
 	});
 
 	test("should trim whitespace and validate", () => {
-		const validData = {
-			categoryName: "   Name   ",
-			categoryId: 1,
-		};
+		const validData = "   Name   ";
 
-		const result = categoryQuerySchema.safeParse(validData);
+		const result = categoryNameSchema.safeParse(validData);
 		expect(result.success).toBe(true);
 		if (result.success) {
-			expect(result.data.categoryName).toBe("Name");
+			expect(result.data).toBe("Name");
 		}
 	});
 
 	test("should pass when name is an empty string after trimming", () => {
-		const invalidData = {
-			categoryName: "   ",
-			categoryId: 1,
-		};
+		const invalidData = "   ";
 
-		const result = categoryQuerySchema.safeParse(invalidData);
+		const result = categoryNameSchema.safeParse(invalidData);
 		expect(result.success).toBe(false);
 		if (!result.success) {
 			expect(result.error.errors[0].message).toBe("required");
@@ -160,12 +151,9 @@ describe("categorySchema", () => {
 	});
 
 	test("should pass when name is an empty string", () => {
-		const invalidData = {
-			categoryName: "",
-			categoryId: 1,
-		};
+		const invalidData = "";
 
-		const result = categoryQuerySchema.safeParse(invalidData);
+		const result = categoryNameSchema.safeParse(invalidData);
 		expect(result.success).toBe(false);
 		if (!result.success) {
 			expect(result.error.errors[0].message).toBe("required");

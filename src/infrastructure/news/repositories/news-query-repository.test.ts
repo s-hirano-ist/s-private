@@ -83,7 +83,6 @@ describe("NewsQueryRepository", () => {
 					ogTitle: "First OG Title",
 					ogDescription: "First OG Description",
 					categoryName: "Tech",
-					categoryId: 1,
 				},
 				{
 					id: "2",
@@ -93,7 +92,6 @@ describe("NewsQueryRepository", () => {
 					ogTitle: "Second OG Title",
 					ogDescription: "Second OG Description",
 					categoryName: "Science",
-					categoryId: 2,
 				},
 			]);
 		});
@@ -169,7 +167,6 @@ describe("NewsQueryRepository", () => {
 					ogTitle: "Cached OG Title",
 					ogDescription: "Cached OG Description",
 					categoryName: "Tech",
-					categoryId: 1,
 				},
 			]);
 		});
@@ -266,9 +263,9 @@ describe("CategoryQueryRepository", () => {
 				...params,
 			});
 			expect(result).toEqual([
-				{ categoryId: 1, categoryName: "tech" },
-				{ categoryId: 2, categoryName: "science" },
-				{ categoryId: 3, categoryName: "politics" },
+				"tech",
+				"science",
+				"politics",
 			]);
 		});
 
@@ -299,8 +296,8 @@ describe("CategoryQueryRepository", () => {
 				select: { id: true, name: true },
 			});
 			expect(result).toEqual([
-				{ categoryId: 1, categoryName: "tech" },
-				{ categoryId: 2, categoryName: "science" },
+				"tech",
+				"science",
 			]);
 		});
 

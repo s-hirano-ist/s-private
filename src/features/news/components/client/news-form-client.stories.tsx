@@ -12,11 +12,11 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const mockCategories = [
-	{ id: 1, name: "Technology" },
-	{ id: 2, name: "Business" },
-	{ id: 3, name: "Science" },
-	{ id: 4, name: "Health" },
-	{ id: 5, name: "Sports" },
+	{ id: "1", name: "Technology" },
+	{ id: "2", name: "Business" },
+	{ id: "3", name: "Science" },
+	{ id: "4", name: "Health" },
+	{ id: "5", name: "Sports" },
 ];
 
 export const Default: Story = {
@@ -30,11 +30,11 @@ export const WithManyCategories: Story = {
 	args: {
 		categories: [
 			...mockCategories,
-			{ id: 6, name: "Entertainment" },
-			{ id: 7, name: "Politics" },
-			{ id: 8, name: "World" },
-			{ id: 9, name: "Local" },
-			{ id: 10, name: "Opinion" },
+			{ id: "6", name: "Entertainment" },
+			{ id: "7", name: "Politics" },
+			{ id: "8", name: "World" },
+			{ id: "9", name: "Local" },
+			{ id: "10", name: "Opinion" },
 		],
 		addNews: fn(),
 	},
