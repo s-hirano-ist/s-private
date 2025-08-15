@@ -6,12 +6,6 @@ import {
 	booksQueryData,
 } from "./books-entity";
 
-vi.mock("@/domains/common/services/id-generator", () => ({
-	idGenerator: {
-		uuidv7: () => "01234567-89ab-cdef-0123-456789abcdef",
-	},
-}));
-
 describe("booksEntity", () => {
 	describe("booksInputSchema", () => {
 		test("should validate correct books data", () => {

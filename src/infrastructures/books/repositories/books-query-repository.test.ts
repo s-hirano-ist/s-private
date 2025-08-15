@@ -27,7 +27,6 @@ describe("BooksQueryRepository", () => {
 			const result = await booksQueryRepository.findByISBN(
 				"978-0123456789",
 				"user123",
-				"EXPORTED",
 			);
 
 			expect(prisma.books.findUnique).toHaveBeenCalled();
@@ -40,7 +39,6 @@ describe("BooksQueryRepository", () => {
 			const result = await booksQueryRepository.findByISBN(
 				"978-9999999999",
 				"user123",
-				"EXPORTED",
 			);
 
 			expect(prisma.books.findUnique).toHaveBeenCalled();
@@ -53,11 +51,7 @@ describe("BooksQueryRepository", () => {
 			);
 
 			await expect(
-				booksQueryRepository.findByISBN(
-					"978-0123456789",
-					"user123",
-					"EXPORTED",
-				),
+				booksQueryRepository.findByISBN("978-0123456789", "user123"),
 			).rejects.toThrow("Database error");
 
 			expect(prisma.books.findUnique).toHaveBeenCalled();

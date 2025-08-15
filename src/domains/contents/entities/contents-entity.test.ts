@@ -1,12 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 import { contentsFormSchema } from "./contents-entity";
 
-vi.mock("@/domains/common/services/id-generator", () => ({
-	idGenerator: {
-		uuidv7: () => "01234567-89ab-cdef-0123-456789abcdef",
-	},
-}));
-
 describe("contentsEntity", () => {
 	test("should validate correct contents data", () => {
 		const validData = {

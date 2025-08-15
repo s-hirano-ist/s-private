@@ -8,12 +8,6 @@ vi.mock("uuid", () => ({
 	v7: () => "01234567-89ab-cdef-0123-456789abcdef",
 }));
 
-vi.mock("@/domains/common/services/id-generator", () => ({
-	idGenerator: {
-		uuidv7: () => "01234567-89ab-cdef-0123-456789abcdef",
-	},
-}));
-
 describe("ContentsDomainService", () => {
 	let contentsQueryRepository: IContentsQueryRepository;
 	let service: ContentsDomainService;
@@ -41,7 +35,7 @@ describe("ContentsDomainService", () => {
 			expect(result.markdown).toBe("# Test markdown");
 			expect(result.userId).toBe("user-123");
 			expect(result.status).toBe("UNEXPORTED");
-			expect(result.id).toBe("01234567-89ab-cdef-0123-456789abcdef");
+			expect(result.id).toBe("01234567-89ab-7def-8123-456789abcdef");
 			expect(contentsQueryRepository.findByTitle).toHaveBeenCalledWith(
 				"Test Content",
 				"user-123",

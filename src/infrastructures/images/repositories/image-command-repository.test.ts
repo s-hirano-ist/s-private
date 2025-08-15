@@ -1,11 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
-vi.mock("@/env", () => ({
-	env: {
-		MINIO_BUCKET_NAME: "test-bucket",
-	},
-}));
-
 import { Status } from "@/generated";
 import { minioClient } from "@/minio";
 import prisma from "@/prisma";

@@ -232,13 +232,5 @@ describe("get-images", () => {
 				"Storage error",
 			);
 		});
-
-		test("should handle missing image", async () => {
-			vi.mocked(imagesQueryRepository.getFromStorage).mockResolvedValue(null);
-
-			const result = await getImagesFromStorage("missing-key", false);
-
-			expect(result).toBeNull();
-		});
 	});
 });

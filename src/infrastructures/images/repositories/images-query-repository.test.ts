@@ -1,18 +1,5 @@
 import { Readable } from "node:stream";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-
-vi.mock("@/env", () => ({
-	env: {
-		MINIO_BUCKET_NAME: "test-bucket",
-	},
-}));
-
-vi.mock("@/minio", () => ({
-	minioClient: {
-		getObject: vi.fn(),
-	},
-}));
-
 import { minioClient } from "@/minio";
 import prisma from "@/prisma";
 import { imagesQueryRepository } from "./images-query-repository";

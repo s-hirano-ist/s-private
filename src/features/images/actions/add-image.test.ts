@@ -4,21 +4,8 @@ import sharp from "sharp";
 import { v7 as uuidv7 } from "uuid";
 import { describe, expect, Mock, test, vi } from "vitest";
 import { auth } from "@/common/auth/auth";
-import {
-	FileNotAllowedError,
-	UnexpectedError,
-} from "@/common/error/error-classes";
-import { ImagesDomainService } from "@/domains/images/services/images-domain-service";
 import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
 import { addImage } from "./add-image";
-
-vi.mock("next/cache", () => ({
-	revalidatePath: vi.fn(),
-}));
-
-vi.mock("sharp");
-vi.mock("uuid");
-vi.mock("@/common/auth/auth");
 
 vi.mock(
 	"@/infrastructures/images/repositories/images-command-repository",
@@ -29,12 +16,6 @@ vi.mock(
 		},
 	}),
 );
-
-vi.mock("@/domains/images/services/images-domain-service", () => ({
-	ImagesDomainService: vi.fn().mockImplementation(() => ({
-		prepareNewImages: vi.fn(),
-	})),
-}));
 
 const mockAllowedRoleSession: Session = {
 	user: { id: "1", roles: ["dumper"] },
@@ -84,25 +65,6 @@ describe("addImage", () => {
 
 		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
 
-		// Mock ImagesDomainService
-		const mockPrepareNewImages = vi.fn().mockResolvedValue({
-			validatedImages: {
-				path: "test-path",
-				id: "generated-uuid",
-				// other properties...
-			},
-			thumbnailBuffer: Buffer.from("thumbnail"),
-			originalBuffer: Buffer.from("original"),
-		});
-
-		vi.mocked(ImagesDomainService).mockImplementation(
-			() =>
-				({
-					prepareNewImages: mockPrepareNewImages,
-					// eslint-disable-next-line
-				}) as any,
-		);
-
 		vi.mocked(sharp).mockReturnValue({
 			metadata: vi.fn().mockResolvedValue(mockMetadata),
 			resize: vi.fn().mockReturnThis(),
@@ -139,18 +101,6 @@ describe("addImage", () => {
 		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
 		(uuidv7 as Mock).mockReturnValue("generated-uuid");
 
-		// Mock ImagesDomainService to throw validation error
-		const mockPrepareNewImages = vi
-			.fn()
-			.mockRejectedValue(new FileNotAllowedError());
-		vi.mocked(ImagesDomainService).mockImplementation(
-			() =>
-				({
-					prepareNewImages: mockPrepareNewImages,
-					// eslint-disable-next-line
-				}) as any,
-		);
-
 		const result = await addImage(mockFormData);
 
 		expect(result).toEqual({
@@ -170,18 +120,6 @@ describe("addImage", () => {
 		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
 		(uuidv7 as Mock).mockReturnValue("generated-uuid");
 
-		// Mock ImagesDomainService to throw validation error
-		const mockPrepareNewImages = vi
-			.fn()
-			.mockRejectedValue(new FileNotAllowedError());
-		vi.mocked(ImagesDomainService).mockImplementation(
-			() =>
-				({
-					prepareNewImages: mockPrepareNewImages,
-					// eslint-disable-next-line
-				}) as any,
-		);
-
 		const result = await addImage(mockFormData);
 
 		expect(result).toEqual({
@@ -196,18 +134,6 @@ describe("addImage", () => {
 		vi.clearAllMocks();
 		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
 		(uuidv7 as Mock).mockReturnValue("generated-uuid");
-
-		// Mock ImagesDomainService to throw validation error
-		const mockPrepareNewImages = vi
-			.fn()
-			.mockRejectedValue(new UnexpectedError());
-		vi.mocked(ImagesDomainService).mockImplementation(
-			() =>
-				({
-					prepareNewImages: mockPrepareNewImages,
-					// eslint-disable-next-line
-				}) as any,
-		);
 
 		const result = await addImage(mockFormData);
 
