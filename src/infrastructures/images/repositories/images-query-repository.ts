@@ -10,6 +10,16 @@ import prisma from "@/prisma";
 import { ORIGINAL_IMAGE_PATH, THUMBNAIL_IMAGE_PATH } from "./common";
 
 class ImagesQueryRepository implements IImagesQueryRepository {
+	async findByPath(
+		path: string,
+		userId: string,
+	): Promise<ImagesQueryData | null> {
+		const result = await prisma.images.findUnique({
+			where: { path_userId: { path, userId } },
+		});
+		return result;
+	}
+
 	async findMany(
 		userId: string,
 		status: Status,
