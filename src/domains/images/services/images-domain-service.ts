@@ -6,7 +6,7 @@ import {
 	FileNotAllowedError,
 	InvalidFormatError,
 	UnexpectedError,
-} from "@/utils/error/error-classes";
+} from "@/common/error/error-classes";
 import {
 	type ImagesFormSchema,
 	imagesFormSchema,

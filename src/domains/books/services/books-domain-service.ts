@@ -1,9 +1,9 @@
 import "server-only";
-import type { IBooksQueryRepository } from "@/domains/books/types";
 import {
 	DuplicateError,
 	InvalidFormatError,
-} from "@/utils/error/error-classes";
+} from "@/common/error/error-classes";
+import type { IBooksQueryRepository } from "@/domains/books/types";
 import {
 	type BooksFormSchema,
 	booksFormSchema,

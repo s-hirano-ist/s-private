@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { InvalidFormatError } from "@/utils/error/error-classes";
+import { InvalidFormatError } from "@/common/error/error-classes";
 import type { IContentsQueryRepository } from "../types";
 import { ContentsDomainService } from "./contents-domain-service";
 
@@ -85,7 +85,7 @@ describe("ContentsDomainService", () => {
 		});
 
 		test("should throw DuplicateError when title already exists", async () => {
-			const { DuplicateError } = await import("@/utils/error/error-classes");
+			const { DuplicateError } = await import("@/common/error/error-classes");
 
 			const formData = new FormData();
 			formData.append("title", "Test Content");

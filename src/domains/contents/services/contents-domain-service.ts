@@ -1,9 +1,9 @@
 import "server-only";
-import type { IContentsQueryRepository } from "@/domains/contents/types";
 import {
 	DuplicateError,
 	InvalidFormatError,
-} from "@/utils/error/error-classes";
+} from "@/common/error/error-classes";
+import type { IContentsQueryRepository } from "@/domains/contents/types";
 import {
 	type ContentsFormSchema,
 	contentsFormSchema,

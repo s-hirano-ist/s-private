@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
+import { InvalidFormatError } from "@/common/error/error-classes";
 import { validateBooks } from "@/domains/books/services/books-domain-service";
 import type { IBooksQueryRepository } from "@/domains/books/types";
-import { InvalidFormatError } from "@/utils/error/error-classes";
 
 const mockBooksQueryRepository: IBooksQueryRepository = {
 	findByISBN: async () => null,

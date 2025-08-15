@@ -2,11 +2,11 @@
 import "server-only";
 import { revalidatePath } from "next/cache";
 import { forbidden } from "next/navigation";
+import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import { ContentsDomainService } from "@/domains/contents/services/contents-domain-service";
 import { contentsCommandRepository } from "@/infrastructures/contents/repositories/contents-command-repository";
 import { contentsQueryRepository } from "@/infrastructures/contents/repositories/contents-query-repository";
 import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
-import { wrapServerSideErrorForClient } from "@/utils/error/error-wrapper";
 import type { ServerAction } from "@/utils/types";
 
 export type Contents = {

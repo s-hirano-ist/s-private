@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { InvalidFormatError } from "@/utils/error/error-classes";
+import { InvalidFormatError } from "@/common/error/error-classes";
 import type { INewsQueryRepository } from "../types";
 import { NewsDomainService } from "./news-domain-service";
 
@@ -155,7 +155,7 @@ describe("NewsDomainService", () => {
 		});
 
 		test("should throw DuplicateError when URL already exists", async () => {
-			const { DuplicateError } = await import("@/utils/error/error-classes");
+			const { DuplicateError } = await import("@/common/error/error-classes");
 
 			const formData = new FormData();
 			formData.append("title", "Test News");

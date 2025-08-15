@@ -1,9 +1,9 @@
 import "server-only";
-import type { INewsQueryRepository } from "@/domains/news/types";
 import {
 	DuplicateError,
 	InvalidFormatError,
-} from "@/utils/error/error-classes";
+} from "@/common/error/error-classes";
+import type { INewsQueryRepository } from "@/domains/news/types";
 import { type NewsFormSchema, newsFormSchema } from "../entities/news-entity";
 
 export class NewsDomainService {

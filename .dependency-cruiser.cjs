@@ -191,7 +191,7 @@ module.exports = {
 		exclude: {
 			/* path: an array of regular expressions in strings to match against */
 			path: [
-				"src/utils/error",
+				"src/common/error",
 				"src/components/",
 				"src/generated/",
 				"src/o11y",
@@ -368,7 +368,7 @@ module.exports = {
 						{
 							criteria: {
 								resolved: [
-									"src/utils/error",
+									"src/common/error",
 									"src/components/",
 									"src/generated",
 									"src/o11y",

@@ -3,13 +3,13 @@ import { Session } from "next-auth";
 import sharp from "sharp";
 import { v7 as uuidv7 } from "uuid";
 import { describe, expect, Mock, test, vi } from "vitest";
-import { ImagesDomainService } from "@/domains/images/services/images-domain-service";
-import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
-import { auth } from "@/utils/auth/auth";
 import {
 	FileNotAllowedError,
 	UnexpectedError,
-} from "@/utils/error/error-classes";
+} from "@/common/error/error-classes";
+import { ImagesDomainService } from "@/domains/images/services/images-domain-service";
+import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
+import { auth } from "@/utils/auth/auth";
 import { addImage } from "./add-image";
 
 vi.mock("next/cache", () => ({

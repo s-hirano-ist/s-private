@@ -3,7 +3,7 @@ import {
 	DuplicateError,
 	FileNotAllowedError,
 	UnexpectedError,
-} from "@/utils/error/error-classes";
+} from "@/common/error/error-classes";
 import type { IImagesQueryRepository } from "../types";
 import { ImagesDomainService, sanitizeFileName } from "./images-domain-service";
 
