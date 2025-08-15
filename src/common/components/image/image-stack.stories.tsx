@@ -12,18 +12,21 @@ type Story = StoryObj<typeof meta>;
 
 const mockData = [
 	{
+		id: "1",
 		originalPath: "https://picsum.photos/id/1/192/192",
 		thumbnailPath: "https://picsum.photos/id/1/192/192",
 		width: 192,
 		height: 192,
 	},
 	{
+		id: "2",
 		originalPath: "https://picsum.photos/id/2/192/192",
 		thumbnailPath: "https://picsum.photos/id/2/192/192",
 		width: 192,
 		height: 192,
 	},
 	{
+		id: "3",
 		originalPath: "https://picsum.photos/id/3/192/192",
 		thumbnailPath: "https://picsum.photos/id/3/192/192",
 		width: 192,
@@ -32,9 +35,23 @@ const mockData = [
 ];
 
 export const Default: Story = {
-	args: { data: mockData },
+	args: {
+		data: mockData,
+		showDeleteButton: false,
+	},
+};
+
+export const WithDeleteButton: Story = {
+	args: {
+		data: mockData,
+		showDeleteButton: true,
+		deleteAction: async () => ({ success: true, message: "deleted" }),
+	},
 };
 
 export const NoData: Story = {
-	args: { data: [] },
+	args: {
+		data: [],
+		showDeleteButton: false,
+	},
 };

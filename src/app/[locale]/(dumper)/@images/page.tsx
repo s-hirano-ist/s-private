@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Loading from "@/common/components/loading";
 import { addImage } from "@/features/images/actions/add-image";
+import { deleteImages } from "@/features/images/actions/delete-images";
 import { getUnexportedImages } from "@/features/images/actions/get-images";
 import { ImageForm } from "@/features/images/components/server/image-form";
 import { ImageStack } from "@/features/images/components/server/image-stack";
@@ -20,7 +21,11 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 			<ImageForm addImage={addImage} />
 
 			<Suspense fallback={<Loading />}>
-				<ImageStack getImages={getUnexportedImages} page={currentPage} />
+				<ImageStack
+					deleteImages={deleteImages}
+					getImages={getUnexportedImages}
+					page={currentPage}
+				/>
 			</Suspense>
 		</>
 	);

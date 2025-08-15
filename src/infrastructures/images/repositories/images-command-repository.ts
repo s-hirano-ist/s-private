@@ -1,3 +1,4 @@
+import { Status } from "@/domains/common/entities/common-entity";
 import { ImagesFormSchema } from "@/domains/images/entities/images-entity";
 import type { IImagesCommandRepository } from "@/domains/images/types";
 import { env } from "@/env";
@@ -23,6 +24,18 @@ class ImagesCommandRepository implements IImagesCommandRepository {
 	): Promise<void> {
 		const objKey = `${isThumbnail ? THUMBNAIL_IMAGE_PATH : ORIGINAL_IMAGE_PATH}/${path}`;
 		await minioClient.putObject(env.MINIO_BUCKET_NAME, objKey, buffer);
+	}
+
+	async deleteById(id: string, userId: string, status: Status): Promise<void> {
+		const data = await prisma.images.delete({
+			where: { id, userId, status },
+			select: { path: true },
+		});
+		serverLogger.info(
+			`【IMAGE】\n\n削除\npath: ${data.path}`,
+			{ caller: "deleteImages", status: 200, userId },
+			{ notify: true },
+		);
 	}
 }
 

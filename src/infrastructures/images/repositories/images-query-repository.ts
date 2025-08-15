@@ -27,7 +27,15 @@ class ImagesQueryRepository implements IImagesQueryRepository {
 	): Promise<ImagesQueryData[]> {
 		const response = await prisma.images.findMany({
 			where: { userId, status },
-			select: { path: true, id: true },
+			select: {
+				id: true,
+				path: true,
+				width: true,
+				height: true,
+				fileSize: true,
+				tags: true,
+				description: true,
+			},
 			...params,
 		});
 		return response;
