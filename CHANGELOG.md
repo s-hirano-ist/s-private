@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.26.3](https://github.com/s-hirano-ist/s-private/compare/v8.26.2...v8.26.3) (2025-08-15)
+
+
+### Bug Fixes
+
+* tests ([534aefe](https://github.com/s-hirano-ist/s-private/commit/534aefeabdf29cf5c76d337e511997fb131316e5))
+
 ## [8.26.2](https://github.com/s-hirano-ist/s-private/compare/v8.26.1...v8.26.2) (2025-08-14)
 
 
