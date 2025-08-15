@@ -20,20 +20,20 @@ describe("get-books", () => {
 
 	describe("getAllBooks", () => {
 		test("should fetch and transform books correctly", async () => {
-			const mockBooks = [
+			vi.mocked(booksQueryRepository.findMany).mockResolvedValue([
 				{
 					title: "Test Book 1",
 					ISBN: "978-0123456789",
 					googleImgSrc: "https://example.com/image-1.jpg",
+					id: "1",
 				},
 				{
 					title: "Test Book 2",
 					ISBN: "978-0987654321",
 					googleImgSrc: "https://example.com/image-2.jpg",
+					id: "2",
 				},
-			];
-
-			vi.mocked(booksQueryRepository.findMany).mockResolvedValue(mockBooks);
+			]);
 
 			const result = await getExportedBooks();
 

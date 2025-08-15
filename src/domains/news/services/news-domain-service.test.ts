@@ -3,12 +3,6 @@ import { InvalidFormatError } from "@/common/error/error-classes";
 import type { INewsQueryRepository } from "../types";
 import { NewsDomainService } from "./news-domain-service";
 
-vi.mock("@/domains/common/services/id-generator", () => ({
-	idGenerator: {
-		uuidv7: () => "01234567-89ab-cdef-0123-456789abcdef",
-	},
-}));
-
 describe("NewsDomainService", () => {
 	let newsQueryRepository: INewsQueryRepository;
 	let service: NewsDomainService;
@@ -40,8 +34,8 @@ describe("NewsDomainService", () => {
 			expect(result.category.name).toBe("tech");
 			expect(result.userId).toBe("user-123");
 			expect(result.status).toBe("UNEXPORTED");
-			expect(result.id).toBe("01234567-89ab-cdef-0123-456789abcdef");
-			expect(result.category.id).toBe("01234567-89ab-cdef-0123-456789abcdef");
+			expect(result.id).toBe("01234567-89ab-7def-8123-456789abcdef");
+			expect(result.category.id).toBe("01234567-89ab-7def-8123-456789abcdef");
 			expect(newsQueryRepository.findByUrl).toHaveBeenCalledWith(
 				"https://example.com",
 				"user-123",

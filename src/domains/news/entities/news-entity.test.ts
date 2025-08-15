@@ -7,12 +7,6 @@ import {
 	newsQueryData,
 } from "./news-entity";
 
-vi.mock("@/domains/common/services/id-generator", () => ({
-	idGenerator: {
-		uuidv7: () => "01234567-89ab-cdef-0123-456789abcdef",
-	},
-}));
-
 describe("newsEntity", () => {
 	describe("categoryInputSchema", () => {
 		test("should validate correct category data", () => {

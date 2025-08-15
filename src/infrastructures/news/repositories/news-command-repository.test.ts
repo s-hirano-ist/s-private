@@ -1,11 +1,4 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-
-vi.mock("@/o11y/server", () => ({
-	serverLogger: {
-		info: vi.fn(),
-	},
-}));
-
 import type { Status } from "@/generated";
 import prisma from "@/prisma";
 import { newsCommandRepository } from "./news-command-repository";
@@ -17,7 +10,25 @@ describe("NewsCommandRepository", () => {
 
 	describe("create", () => {
 		test("should create news successfully", async () => {
-			const inputData = {
+			vi.mocked(prisma.news.create).mockResolvedValue({
+				title: "Test News",
+				url: "https://example.com/news/1",
+				quote: "This is a test quote",
+				categoryId: "1",
+				userId: "user123",
+				id: "1",
+				ogDescription: "1",
+				ogImageUrl: "1",
+				ogTitle: "1",
+				status: "UNEXPORTED",
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				exportedAt: null,
+				Category: { name: "1" },
+				// eslint-disable-next-line
+			} as any);
+
+			await newsCommandRepository.create({
 				title: "Test News",
 				url: "https://example.com/news/1",
 				quote: "This is a test quote",
@@ -29,63 +40,53 @@ describe("NewsCommandRepository", () => {
 					userId: "user123",
 					id: "01234567-89ab-cdef-0123-456789abcde0",
 				},
-			};
-
-			vi.mocked(prisma.news.create).mockResolvedValue({
-				title: "Test News",
-				url: "https://example.com/news/1",
-				quote: "This is a test quote",
-				Category: { name: "tech" },
-				userId: "user123",
-				// eslint-disable-next-line
-			} as any);
-
-			await newsCommandRepository.create(inputData);
+			});
 
 			expect(prisma.news.create).toHaveBeenCalled();
 		});
 
-		test.skip("should create news with null quote", async () => {
-			const mockNews = {
+		test("should create news with null quote", async () => {
+			vi.mocked(prisma.news.create).mockResolvedValue({
 				id: "2",
 				title: "Another News",
 				url: "https://example.com/news/2",
 				quote: null,
 				ogTitle: "Another OG Title",
 				ogDescription: "Another OG Description",
-				Category: { name: "science" },
+				categoryId: "1",
 				ogImageUrl: "https://example.com/og-image.jpg",
 				exportedAt: new Date(),
 				status: "EXPORTED" as Status,
 				createdAt: new Date(),
 				updatedAt: new Date(),
 				userId: "user123",
-			};
+				Category: { name: "tech" },
+			});
 
-			const inputData = {
+			const result = await newsCommandRepository.create({
 				title: "Another News",
 				url: "https://example.com/news/2",
 				quote: null,
-				categoryName: "tech",
+				category: { id: "1", name: "tech", userId: "user123" },
 				userId: "user123",
-			};
-
-			vi.mocked(prisma.news.create).mockResolvedValue(mockNews);
-
-			const result = await newsCommandRepository.create(inputData);
+				id: "1",
+				status: "UNEXPORTED",
+			});
 
 			expect(prisma.news.create).toHaveBeenCalledWith({
 				data: {
+					id: "1",
 					title: "Another News",
 					url: "https://example.com/news/2",
 					quote: null,
+					status: "UNEXPORTED",
 					userId: "user123",
 					Category: {
 						connectOrCreate: {
 							where: {
 								name_userId: { name: "tech", userId: "user123" },
 							},
-							create: { name: "tech", userId: "user123" },
+							create: { id: "1", name: "tech", userId: "user123" },
 						},
 					},
 				},
@@ -97,31 +98,29 @@ describe("NewsCommandRepository", () => {
 					userId: true,
 				},
 			});
-			expect(result).toEqual(mockNews);
+			expect(result).toBeUndefined();
 		});
 
 		test("should handle database errors during create", async () => {
-			const inputData = {
-				title: "Test News",
-				url: "https://example.com/news/1",
-				quote: "This is a test quote",
-				userId: "user123",
-				id: "01234567-89ab-cdef-0123-456789abcdef",
-				status: "UNEXPORTED",
-				category: {
-					name: "tech",
-					userId: "user123",
-					id: "01234567-89ab-cdef-0123-456789abcde0",
-				},
-			};
-
 			vi.mocked(prisma.news.create).mockRejectedValue(
 				new Error("Database constraint error"),
 			);
 
-			await expect(newsCommandRepository.create(inputData)).rejects.toThrow(
-				"Database constraint error",
-			);
+			await expect(
+				newsCommandRepository.create({
+					title: "Test News",
+					url: "https://example.com/news/1",
+					quote: "This is a test quote",
+					userId: "user123",
+					id: "01234567-89ab-cdef-0123-456789abcdef",
+					status: "UNEXPORTED",
+					category: {
+						name: "tech",
+						userId: "user123",
+						id: "01234567-89ab-cdef-0123-456789abcde0",
+					},
+				}),
+			).rejects.toThrow("Database constraint error");
 
 			expect(prisma.news.create).toHaveBeenCalled();
 		});
@@ -142,6 +141,7 @@ describe("NewsCommandRepository", () => {
 				updatedAt: new Date(),
 				ogImageUrl: "https://example.com/og-image.jpg",
 				exportedAt: new Date(),
+				categoryId: "1",
 			});
 
 			await newsCommandRepository.deleteById("1", "user123", "EXPORTED");
@@ -181,6 +181,7 @@ describe("NewsCommandRepository", () => {
 				updatedAt: new Date(),
 				ogImageUrl: "https://example.com/og-image.jpg",
 				exportedAt: new Date(),
+				categoryId: "1",
 			});
 
 			await newsCommandRepository.deleteById("2", "user123", "UNEXPORTED");

@@ -31,7 +31,7 @@ describe("get-news", () => {
 
 	describe("getExportedNews", () => {
 		test("should fetch and transform exported news correctly", async () => {
-			const mockNews = [
+			vi.mocked(newsQueryRepository.findMany).mockResolvedValue([
 				{
 					id: "1",
 					title: "Test News 1",
@@ -39,7 +39,7 @@ describe("get-news", () => {
 					url: "https://example1.com",
 					ogTitle: "OG Title 1",
 					ogDescription: "OG Description 1",
-					category: { name: "Tech" },
+					category: { name: "Tech", id: "1" },
 				},
 				{
 					id: "2",
@@ -48,11 +48,9 @@ describe("get-news", () => {
 					url: "https://example2.com",
 					ogTitle: "OG Title 2",
 					ogDescription: "OG Description 2",
-					category: { name: "Science" },
+					category: { name: "Science", id: "2" },
 				},
-			];
-
-			vi.mocked(newsQueryRepository.findMany).mockResolvedValue(mockNews);
+			]);
 
 			const result = await getExportedNews(1);
 
@@ -125,13 +123,13 @@ describe("get-news", () => {
 
 	describe("getUnexportedNews", () => {
 		test("should fetch and transform unexported news correctly", async () => {
-			const mockNews = [
+			vi.mocked(newsQueryRepository.findMany).mockResolvedValue([
 				{
 					id: "1",
 					title: "Unexported News 1",
 					quote: "Test quote 1",
 					url: "https://example1.com",
-					category: { name: "Tech" },
+					category: { name: "Tech", id: "1" },
 					ogTitle: "OG Title 1",
 					ogDescription: "OG Description 1",
 				},
@@ -140,13 +138,11 @@ describe("get-news", () => {
 					title: "Unexported News 2",
 					quote: null,
 					url: "https://example2.com",
-					category: { name: "Science" },
+					category: { name: "Science", id: "2" },
 					ogTitle: "OG Title 2",
 					ogDescription: "OG Description 2",
 				},
-			];
-
-			vi.mocked(newsQueryRepository.findMany).mockResolvedValue(mockNews);
+			]);
 
 			const result = await getUnexportedNews(1);
 

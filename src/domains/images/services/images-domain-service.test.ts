@@ -7,27 +7,8 @@ import {
 import type { IImagesQueryRepository } from "../types";
 import { ImagesDomainService, sanitizeFileName } from "./images-domain-service";
 
-vi.mock("sharp", () => {
-	const mockSharp = vi.fn(() => ({
-		metadata: vi.fn().mockResolvedValue({
-			width: 800,
-			height: 600,
-			format: "jpeg",
-		}),
-		resize: vi.fn().mockReturnThis(),
-		toBuffer: vi.fn().mockResolvedValue(Buffer.from("thumbnail-data")),
-	}));
-	return { default: mockSharp };
-});
-
 vi.mock("uuid", () => ({
 	v7: () => "01234567-89ab-cdef-0123-456789abcdef",
-}));
-
-vi.mock("@/domains/common/services/id-generator", () => ({
-	idGenerator: {
-		uuidv7: () => "01234567-89ab-cdef-0123-456789abcdef",
-	},
 }));
 
 describe("sanitizeFileName", () => {
