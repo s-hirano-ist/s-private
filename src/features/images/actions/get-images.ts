@@ -1,31 +1,56 @@
 import { cache } from "react";
-import { PAGE_SIZE } from "@/constants";
-import { imageQueryRepository } from "@/features/images/repositories/image-query-repository";
-import { Status } from "@/generated";
-import { getSelfId } from "@/utils/auth/session";
+import { getSelfId } from "@/common/auth/session";
+import { ImageData } from "@/common/components/image/image-stack";
+import { PAGE_SIZE } from "@/common/constants";
+import type { Status } from "@/domains/common/entities/common-entity";
+import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
 
-export const getExportedImages = cache(async (page: number) => {
+const API_ORIGINAL_PATH = "/api/images/original";
+const API_THUMBNAIL_PATH = "/api/images/thumbnail";
+
+export const getExportedImages = cache(
+	async (page: number): Promise<ImageData[]> => {
+		const userId = await getSelfId();
+		const data = await imagesQueryRepository.findMany(userId, "EXPORTED", {
+			skip: (page - 1) * PAGE_SIZE,
+			take: PAGE_SIZE,
+			orderBy: { createdAt: "desc" },
+			cacheStrategy: { ttl: 400, swr: 40, tags: ["images"] },
+		});
+		return data.map((d) => {
+			return {
+				originalPath: API_ORIGINAL_PATH + "/" + d.path,
+				thumbnailPath: API_THUMBNAIL_PATH + "/" + d.path,
+				height: d.height,
+				width: d.width,
+			};
+		});
+	},
+);
+
+export const getUnexportedImages = cache(async (): Promise<ImageData[]> => {
 	const userId = await getSelfId();
-	return await imageQueryRepository.findMany(userId, "EXPORTED", {
-		skip: (page - 1) * PAGE_SIZE,
-		take: PAGE_SIZE,
+	const data = await imagesQueryRepository.findMany(userId, "UNEXPORTED", {
 		orderBy: { createdAt: "desc" },
-		cacheStrategy: { ttl: 400, swr: 40, tags: ["images"] },
 	});
-});
-
-export const getUnexportedImages = cache(async () => {
-	const userId = await getSelfId();
-	return await imageQueryRepository.findMany(userId, "UNEXPORTED", {
-		orderBy: { createdAt: "desc" },
+	return data.map((d) => {
+		return {
+			originalPath: API_ORIGINAL_PATH + "/" + d.path,
+			thumbnailPath: API_THUMBNAIL_PATH + "/" + d.path,
+			height: d.height,
+			width: d.width,
+		};
 	});
 });
 
 export const getImagesCount = cache(async (status: Status) => {
 	const userId = await getSelfId();
-	return await imageQueryRepository.count(userId, status);
+	return await imagesQueryRepository.count(userId, status);
 });
 
-export const getImageFromStorage = async (objKey: string) => {
-	return await imageQueryRepository.getFromStorage(objKey);
+export const getImagesFromStorage = async (
+	path: string,
+	isThumbnail: boolean,
+) => {
+	return await imagesQueryRepository.getFromStorage(path, isThumbnail);
 };

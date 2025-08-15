@@ -1,29 +1,24 @@
 import { Suspense } from "react";
-import { ImageCardSkeletonStack } from "@/components/card/image-card-skeleton-stack";
-import { Separator } from "@/components/ui/separator";
-import { AddBooksForm } from "./_add-books-form/server";
-import { BooksStack } from "./_books-stack/server";
+import { ImageCardSkeletonStack } from "@/common/components/card/image-card-skeleton-stack";
+import { addBooks } from "@/features/books/actions/add-books";
+import { getUnexportedBooks } from "@/features/books/actions/get-books";
+import { BooksStack } from "@/features/books/components/server/book-stack";
+import { BooksForm } from "@/features/books/components/server/books-form";
 
-type Props = {
-	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-};
+type Params = Promise<{ page?: string; tab?: string }>;
 
-export default async function Page({ searchParams }: Props) {
-	const activeTab = (await searchParams).tab as string;
+export default async function Page({ searchParams }: { searchParams: Params }) {
+	const { page, tab } = await searchParams;
 
 	// Only render if this tab is active
-	if (activeTab && activeTab !== "books") {
-		return <div />;
-	}
+	if (tab && tab !== "books") return <div />;
 
 	return (
 		<>
-			<AddBooksForm />
-
-			<Separator className="h-px bg-linear-to-r from-primary-grad-from to-primary-grad-to" />
+			<BooksForm addBooks={addBooks} />
 
 			<Suspense fallback={<ImageCardSkeletonStack />}>
-				<BooksStack />
+				<BooksStack getBooks={getUnexportedBooks} />
 			</Suspense>
 		</>
 	);

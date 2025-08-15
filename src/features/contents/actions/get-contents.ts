@@ -1,8 +1,8 @@
 import { cache } from "react";
-import { LinkCardData } from "@/components/card/link-card";
-import { contentsQueryRepository } from "@/features/contents/repositories/contents-query-repository";
-import { Status } from "@/generated";
-import { getSelfId } from "@/utils/auth/session";
+import { getSelfId } from "@/common/auth/session";
+import { LinkCardData } from "@/common/components/card/link-card";
+import type { Status } from "@/domains/common/entities/common-entity";
+import { contentsQueryRepository } from "@/infrastructures/contents/repositories/contents-query-repository";
 
 export const getExportedContents = cache(async (): Promise<LinkCardData[]> => {
 	const userId = await getSelfId();

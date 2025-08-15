@@ -2,60 +2,29 @@
 import "server-only";
 import { revalidatePath } from "next/cache";
 import { forbidden } from "next/navigation";
-import { categoryCommandRepository } from "@/features/news/repositories/category-command-repository";
-import { newsCommandRepository } from "@/features/news/repositories/news-command-repository";
-import { validateCategory } from "@/features/news/utils/validate-category";
-import { validateNews } from "@/features/news/utils/validate-news";
-import { serverLogger } from "@/o11y/server";
-import type { ServerAction } from "@/types";
-import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
-import { wrapServerSideErrorForClient } from "@/utils/error/error-wrapper";
+import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
+import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
+import type { ServerAction } from "@/common/types";
+import { NewsDomainService } from "@/domains/news/services/news-domain-service";
+import { newsCommandRepository } from "@/infrastructures/news/repositories/news-command-repository";
+import { newsQueryRepository } from "@/infrastructures/news/repositories/news-query-repository";
 
-type News = {
-	category: string;
-	id: string;
-	quote: string | null;
-	title: string;
-	url: string;
-};
-
-export async function addNews(formData: FormData): Promise<ServerAction<News>> {
+export async function addNews(formData: FormData): Promise<ServerAction> {
 	const hasPermission = await hasDumperPostPermission();
 	if (!hasPermission) forbidden();
 
 	try {
 		const userId = await getSelfId();
 
-		const validatedCategory = validateCategory(formData);
+		const validatedNews = await new NewsDomainService(
+			newsQueryRepository,
+		).prepareNewNews(formData, userId);
 
-		const category = await categoryCommandRepository.upsert({
-			userId,
-			name: validatedCategory.name,
-		});
+		await newsCommandRepository.create(validatedNews);
 
-		formData.set("category", String(category.id));
-		const validatedNews = validateNews(formData);
-
-		const createdNews = await newsCommandRepository.create({
-			userId,
-			...validatedNews,
-		});
-
-		serverLogger.info(
-			`【NEWS】\n\nコンテンツ\ntitle: ${createdNews.title} \nquote: ${createdNews.quote} \nurl: ${createdNews.url}\ncategory: ${createdNews.Category.name}\nの登録ができました`,
-			{ caller: "addNews", status: 201, userId },
-			{ notify: true },
-		);
 		revalidatePath("/(dumper)");
 
-		return {
-			success: true,
-			message: "inserted",
-			data: {
-				...createdNews,
-				category: createdNews.Category.name,
-			},
-		};
+		return { success: true, message: "inserted" };
 	} catch (error) {
 		return await wrapServerSideErrorForClient(error);
 	}

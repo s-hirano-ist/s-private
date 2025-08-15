@@ -1,27 +1,26 @@
 import { Suspense } from "react";
-import { ImageStackSkeleton } from "@/components/image/image-stack-skeleton";
-import { Separator } from "@/components/ui/separator";
-import { AddImageForm } from "./_add-image-form/server";
-import { ImageStack } from "./_image-stack/server";
+import { ImageStackSkeleton } from "@/common/components/image/image-stack-skeleton";
+import { addImage } from "@/features/images/actions/add-image";
+import { getUnexportedImages } from "@/features/images/actions/get-images";
+import { ImageForm } from "@/features/images/components/server/image-form";
+import { ImageStack } from "@/features/images/components/server/image-stack";
 
-type Props = {
-	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-};
+type Params = Promise<{ page?: string; tab?: string }>;
 
-export default async function Page({ searchParams }: Props) {
-	const activeTab = (await searchParams).tab as string;
+export default async function Page({ searchParams }: { searchParams: Params }) {
+	const { page, tab } = await searchParams;
 
-	// Only render if this tab is active
-	if (activeTab && activeTab !== "images") {
-		return <div />;
-	}
+	const currentPage = Number(page) || 1;
+
+	// Only render if this tab is active or no tab is specified (defaults to "news")
+	if (tab && tab !== "images") return <div />;
 
 	return (
 		<>
-			<AddImageForm />
-			<Separator className="h-px bg-linear-to-r from-primary-grad-from to-primary-grad-to" />
+			<ImageForm addImage={addImage} />
+
 			<Suspense fallback={<ImageStackSkeleton />}>
-				<ImageStack />
+				<ImageStack getImages={getUnexportedImages} page={currentPage} />
 			</Suspense>
 		</>
 	);

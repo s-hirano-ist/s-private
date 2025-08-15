@@ -1,15 +1,18 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { contentsQueryRepository } from "@/features/contents/repositories/contents-query-repository";
+import { contentsQueryRepository } from "@/infrastructures/contents/repositories/contents-query-repository";
 import { getContentsCount, getExportedContents } from "./get-contents";
 
-vi.mock("@/features/contents/repositories/contents-query-repository", () => ({
-	contentsQueryRepository: {
-		findMany: vi.fn(),
-		count: vi.fn(),
-	},
-}));
+vi.mock(
+	"@/infrastructures/contents/repositories/contents-query-repository",
+	() => ({
+		contentsQueryRepository: {
+			findMany: vi.fn(),
+			count: vi.fn(),
+		},
+	}),
+);
 
-vi.mock("@/utils/auth/session", () => ({
+vi.mock("@/common/auth/session", () => ({
 	getSelfId: vi.fn().mockResolvedValue("test-user-id"),
 }));
 

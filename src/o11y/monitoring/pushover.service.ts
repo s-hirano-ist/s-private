@@ -1,6 +1,6 @@
 import "server-only";
+import { PushoverError } from "@/common/error/error-classes";
 import { env } from "@/env";
-import { PushoverError } from "@/utils/error/error-classes";
 import type {
 	LogContext,
 	MonitoringService,

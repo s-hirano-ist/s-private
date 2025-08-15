@@ -1,16 +1,14 @@
 import { revalidatePath } from "next/cache";
 import { describe, expect, test, vi } from "vitest";
-import { categoryCommandRepository } from "@/features/news/repositories/category-command-repository";
-import { newsCommandRepository } from "@/features/news/repositories/news-command-repository";
+import { NewsDomainService } from "@/domains/news/services/news-domain-service";
+import { newsCommandRepository } from "@/infrastructures/news/repositories/news-command-repository";
 import { addNews } from "./add-news";
 
-vi.mock("@/features/news/repositories/category-command-repository", () => ({
-	categoryCommandRepository: {
-		upsert: vi.fn(),
-	},
+vi.mock("next/cache", () => ({
+	revalidatePath: vi.fn(),
 }));
 
-vi.mock("@/features/news/repositories/news-command-repository", () => ({
+vi.mock("@/infrastructures/news/repositories/news-command-repository", () => ({
 	newsCommandRepository: {
 		create: vi.fn(),
 	},
@@ -19,9 +17,20 @@ vi.mock("@/features/news/repositories/news-command-repository", () => ({
 const mockGetSelfId = vi.fn();
 const mockHasDumperPostPermission = vi.fn();
 
-vi.mock("@/utils/auth/session", () => ({
+vi.mock("@/common/auth/session", () => ({
 	getSelfId: () => mockGetSelfId(),
 	hasDumperPostPermission: () => mockHasDumperPostPermission(),
+}));
+
+const mockPrepareNewNews = vi.fn();
+vi.mock("@/domains/news/services/news-domain-service", () => ({
+	NewsDomainService: vi.fn().mockImplementation(() => ({
+		prepareNewNews: mockPrepareNewNews,
+	})),
+}));
+
+vi.mock("@/infrastructures/news/repositories/news-query-repository", () => ({
+	newsQueryRepository: {},
 }));
 
 const mockFormData = new FormData();
@@ -29,6 +38,7 @@ mockFormData.append("title", "Example Content");
 mockFormData.append("quote", "This is an example news quote.");
 mockFormData.append("url", "https://example.com");
 mockFormData.append("category", "tech");
+mockFormData.append("id", "test-id");
 
 describe("addNews", () => {
 	test("should return success false on Unauthorized", async () => {
@@ -45,31 +55,29 @@ describe("addNews", () => {
 		await expect(addNews(mockFormData)).rejects.toThrow("FORBIDDEN");
 	});
 
-	test("should create only news if no new category is provided", async () => {
+	test("should create news with category", async () => {
 		mockHasDumperPostPermission.mockResolvedValue(true);
-		mockGetSelfId.mockResolvedValue("1");
-		vi.mocked(categoryCommandRepository.upsert).mockResolvedValue({
-			id: 1,
-			name: "tech",
-			createdAt: new Date(),
-			updatedAt: new Date(),
-			userId: "1",
-		});
-		vi.mocked(newsCommandRepository.create).mockResolvedValue({
-			id: "1",
+		mockGetSelfId.mockResolvedValue("user-123");
+		mockPrepareNewNews.mockResolvedValue({
+			category: {
+				name: "tech",
+				userId: "user-123",
+				id: "01234567-89ab-cdef-0123-456789abcdef",
+			},
 			title: "Example Content",
 			quote: "This is an example news quote.",
 			url: "https://example.com",
-			Category: { name: "tech" },
-			ogTitle: "sample og title 1",
-			ogDescription: "sample og description 1",
+			userId: "user-123",
+			status: "UNEXPORTED",
+			id: "01234567-89ab-cdef-0123-456789abcdef",
 		});
+		vi.mocked(newsCommandRepository.create).mockResolvedValue();
 
 		const result = await addNews(mockFormData);
 
 		expect(mockHasDumperPostPermission).toHaveBeenCalled();
 		expect(mockGetSelfId).toHaveBeenCalled();
-		expect(categoryCommandRepository.upsert).toHaveBeenCalled();
+		expect(mockPrepareNewNews).toHaveBeenCalledWith(mockFormData, "user-123");
 		expect(newsCommandRepository.create).toHaveBeenCalled();
 		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 		expect(result.success).toBe(true);

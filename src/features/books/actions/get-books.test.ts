@@ -1,15 +1,15 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { booksQueryRepository } from "@/features/books/repositories/books-query-repository";
+import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
 import { getBooksCount, getExportedBooks } from "./get-books";
 
-vi.mock("@/features/books/repositories/books-query-repository", () => ({
+vi.mock("@/infrastructures/books/repositories/books-query-repository", () => ({
 	booksQueryRepository: {
 		findMany: vi.fn(),
 		count: vi.fn(),
 	},
 }));
 
-vi.mock("@/utils/auth/session", () => ({
+vi.mock("@/common/auth/session", () => ({
 	getSelfId: vi.fn().mockResolvedValue("test-user-id"),
 }));
 

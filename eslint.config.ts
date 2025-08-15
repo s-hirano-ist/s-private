@@ -74,6 +74,7 @@ export default tsEslint.config(
 			"react/no-danger": "error", // dangerouslySetInnerHTML を許可しない
 			"react/prop-types": "off", // Props の型チェックは TS で行う & 誤検知があるため無効化
 			"@typescript-eslint/no-unused-vars": "off",
+			"@typescript-eslint/no-empty-object-type": "off",
 		},
 	},
 	{
@@ -90,7 +91,7 @@ export default tsEslint.config(
 				{
 					patterns: [
 						{
-							group: ["../../*", "../../../*"],
+							group: ["../../../*", "../../../../*", "../../../../../**/*"],
 							message:
 								"Use absolute imports instead of relative imports that go up directories. This enforces proper architecture boundaries.",
 						},

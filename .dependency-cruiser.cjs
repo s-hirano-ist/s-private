@@ -1,4 +1,14 @@
 /** @type {import('dependency-cruiser').IConfiguration} */
+const paths = [
+	// "src/common/",
+	"src/o11y",
+	"src/i18n",
+	"src/env\\.ts",
+	"src/prisma\\.ts",
+	"src/minio\\.ts",
+	"src/common/error",
+];
+
 module.exports = {
 	forbidden: [
 		{
@@ -188,10 +198,10 @@ module.exports = {
 		},
 
 		/* Which modules to exclude */
-		// exclude : {
-		//   /* path: an array of regular expressions in strings to match against */
-		//   path: '',
-		// },
+		exclude: {
+			/* path: an array of regular expressions in strings to match against */
+			path: paths,
+		},
 
 		/* Which modules to exclusively include (array of regular expressions in strings)
        dependency-cruiser will skip everything not matching this pattern
@@ -231,7 +241,7 @@ module.exports = {
        true: also detect dependencies that only exist before typescript-to-javascript compilation
        "specify": for each dependency identify whether it only exists before compilation or also after
      */
-		tsPreCompilationDeps: true,
+		tsPreCompilationDeps: false,
 
 		/* list of extensions to scan that aren't javascript or compile-to-javascript.
        Empty by default. Only put extensions in here that you want to take into
@@ -346,14 +356,25 @@ module.exports = {
            for details and some examples. If you don't specify a theme
            dependency-cruiser falls back to a built-in one.
         */
-				// theme: {
-				//   graph: {
-				//     /* splines: "ortho" gives straight lines, but is slow on big graphs
-				//        splines: "true" gives bezier curves (fast, not as nice as ortho)
-				//    */
-				//     splines: "true"
-				//   },
-				// }
+				// FIXME: DO NOT SHOW ARROWS TO SOME DEPENDENCIES
+				theme: {
+					graph: {
+						/* splines: "ortho" gives straight lines, but is slow on big graphs
+           splines: "true" gives bezier curves (fast, not as nice as ortho)
+        */
+						splines: "true",
+					},
+					dependencies: [
+						{
+							criteria: {
+								resolved: paths,
+							},
+							attributes: {
+								style: "invis",
+							},
+						},
+					],
+				},
 			},
 			archi: {
 				/* pattern of modules that can be consolidated in the high level

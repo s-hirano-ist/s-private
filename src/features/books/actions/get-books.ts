@@ -1,8 +1,8 @@
 import { cache } from "react";
-import { ImageCardData } from "@/components/card/image-card";
-import { booksQueryRepository } from "@/features/books/repositories/books-query-repository";
-import { Status } from "@/generated";
-import { getSelfId } from "@/utils/auth/session";
+import { getSelfId } from "@/common/auth/session";
+import { ImageCardData } from "@/common/components/card/image-card";
+import type { Status } from "@/domains/common/entities/common-entity";
+import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
 
 export const getExportedBooks = cache(async (): Promise<ImageCardData[]> => {
 	const userId = await getSelfId();
@@ -14,7 +14,7 @@ export const getExportedBooks = cache(async (): Promise<ImageCardData[]> => {
 	return books.map((d) => ({
 		title: d.title,
 		href: d.ISBN,
-		image: d.googleImgSrc,
+		image: d.googleImgSrc ?? "/not-found.png",
 	}));
 });
 
@@ -27,7 +27,7 @@ export const getUnexportedBooks = cache(async (): Promise<ImageCardData[]> => {
 	return books.map((d) => ({
 		title: d.title,
 		href: d.ISBN,
-		image: d.googleImgSrc !== "" ? d.googleImgSrc : "/not-found.png",
+		image: d.googleImgSrc ?? "/not-found.png",
 	}));
 });
 
@@ -38,5 +38,5 @@ export const getBooksCount = cache(async (status: Status) => {
 
 export const getBookByISBN = cache(async (isbn: string) => {
 	const userId = await getSelfId();
-	return await booksQueryRepository.findByISBN(isbn, userId, "EXPORTED");
+	return await booksQueryRepository.findByISBN(isbn, userId);
 });

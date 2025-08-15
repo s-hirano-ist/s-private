@@ -2,50 +2,35 @@
 import "server-only";
 import { revalidatePath } from "next/cache";
 import { forbidden } from "next/navigation";
-import { contentsCommandRepository } from "@/features/contents/repositories/contents-command-repository";
-import { validateContents } from "@/features/contents/utils/validate-contents";
-import { serverLogger } from "@/o11y/server";
-import type { ServerAction } from "@/types";
-import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
-import { wrapServerSideErrorForClient } from "@/utils/error/error-wrapper";
+import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
+import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
+import type { ServerAction } from "@/common/types";
+import { ContentsDomainService } from "@/domains/contents/services/contents-domain-service";
+import { contentsCommandRepository } from "@/infrastructures/contents/repositories/contents-command-repository";
+import { contentsQueryRepository } from "@/infrastructures/contents/repositories/contents-query-repository";
 
-type Contents = {
+export type Contents = {
 	id: string;
 	markdown: string;
 	title: string;
 };
 
-export async function addContents(
-	formData: FormData,
-): Promise<ServerAction<Contents>> {
+export async function addContents(formData: FormData): Promise<ServerAction> {
 	const hasPermission = await hasDumperPostPermission();
 	if (!hasPermission) forbidden();
 
 	try {
 		const userId = await getSelfId();
-		const validatedContents = validateContents(formData);
 
-		const createdContents = await contentsCommandRepository.create({
-			userId,
-			...validatedContents,
-		});
+		const validatedContents = await new ContentsDomainService(
+			contentsQueryRepository,
+		).prepareNewContents(formData, userId);
 
-		serverLogger.info(
-			`【CONTENTS】\n\nコンテンツ\ntitle: ${createdContents.title} \nquote: ${createdContents.markdown}\nの登録ができました`,
-			{ caller: "addContents", status: 201, userId },
-			{ notify: true },
-		);
+		await contentsCommandRepository.create(validatedContents);
+
 		revalidatePath("/(dumper)");
 
-		return {
-			success: true,
-			message: "inserted",
-			data: {
-				id: createdContents.id,
-				title: createdContents.title,
-				markdown: createdContents.markdown,
-			},
-		};
+		return { success: true, message: "inserted" };
 	} catch (error) {
 		return await wrapServerSideErrorForClient(error);
 	}
