@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { LinkCardSkeletonStack } from "@/common/components/card/link-card-skeleton-stack";
+import Loading from "@/common/components/loading";
 import { addNews } from "@/features/news/actions/add-news";
 import { deleteNews } from "@/features/news/actions/delete-news";
 import { getUnexportedNews } from "@/features/news/actions/get-news";
@@ -20,7 +20,7 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 		<>
 			<NewsForm addNews={addNews} />
 
-			<Suspense fallback={<LinkCardSkeletonStack />}>
+			<Suspense fallback={<Loading />}>
 				<NewsStack
 					deleteNews={deleteNews}
 					getNews={getUnexportedNews}

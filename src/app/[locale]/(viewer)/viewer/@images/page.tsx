@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { ImageStackSkeleton } from "@/common/components/image/image-stack-skeleton";
+import Loading from "@/common/components/loading";
 import {
 	getExportedImages,
 	getImagesCount,
@@ -21,7 +21,7 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 		<>
 			<ImageCounter getImagesCount={getImagesCount} page={currentPage} />
 
-			<Suspense fallback={<ImageStackSkeleton />} key={currentPage}>
+			<Suspense fallback={<Loading />} key={currentPage}>
 				<ImageStack getImages={getExportedImages} page={currentPage} />
 			</Suspense>
 		</>

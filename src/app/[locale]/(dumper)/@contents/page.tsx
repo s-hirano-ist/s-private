@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { LinkCardSkeletonStack } from "@/common/components/card/link-card-skeleton-stack";
+import Loading from "@/common/components/loading";
 import { addContents } from "@/features/contents/actions/add-contents";
 import { getUnexportedContents } from "@/features/contents/actions/get-contents";
 import { ContentsForm } from "@/features/contents/components/server/contents-form";
@@ -19,7 +19,7 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 		<>
 			<ContentsForm addContents={addContents} />
 
-			<Suspense fallback={<LinkCardSkeletonStack />}>
+			<Suspense fallback={<Loading />}>
 				<ContentsStack getContents={getUnexportedContents} page={currentPage} />
 			</Suspense>
 		</>

@@ -1,4 +1,5 @@
 "use client";
+import ReactMarkdown from "react-markdown";
 import { DeleteButtonWithModal } from "@/common/components/delete-button-with-modal";
 import { Badge } from "@/common/components/ui/badge";
 import {
@@ -54,11 +55,8 @@ export function LinkCard({
 			</CardHeader>
 			<CardContent>
 				<CardTitle>{title}</CardTitle>
-				<CardDescription className="truncate">
-					{/* FIXME: break-words 必要? */}
-					{description ?? "　"}
-					{/* TODO: change to use fragment */}
-					{/* <Fragment set:html={sanitizeHtml(d.quote ?? "")} /> */}
+				<CardDescription className="break-words">
+					{description ? <ReactMarkdown>{description}</ReactMarkdown> : "　"}
 				</CardDescription>
 			</CardContent>
 		</Card>
