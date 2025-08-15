@@ -1,7 +1,4 @@
-import dotenv from "dotenv";
 import { defineConfig } from "vitest/config";
-
-dotenv.config({ path: ".env.test" });
 
 export default defineConfig({
 	esbuild: {
@@ -10,6 +7,10 @@ export default defineConfig({
 	test: {
 		environment: "jsdom",
 		setupFiles: ["./vitest-setup.tsx"],
+		env: {
+			NODE_ENV: "test",
+			SKIP_ENV_VALIDATION: "1",
+		},
 		coverage: {
 			enabled: true,
 			reportOnFailure: true,
