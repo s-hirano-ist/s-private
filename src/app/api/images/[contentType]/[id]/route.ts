@@ -1,7 +1,6 @@
 import { forbidden } from "next/navigation";
 import { NextResponse } from "next/server";
-import { ORIGINAL_IMAGE_PATH, THUMBNAIL_IMAGE_PATH } from "@/constants";
-import { getImageFromStorage } from "@/features/images/actions/get-images";
+import { getImagesFromStorage } from "@/features/images/actions/get-images";
 import { auth } from "@/utils/auth/auth";
 
 export const GET = auth(
@@ -16,9 +15,8 @@ export const GET = auth(
 
 		if (!request.auth.user.roles.includes("viewer")) forbidden();
 
-		const objKey = `${contentType === "thumbnail" ? THUMBNAIL_IMAGE_PATH : ORIGINAL_IMAGE_PATH}/${id}`;
-
-		const stream = await getImageFromStorage(objKey);
+		const isThumbnail = contentType === "thumbnail";
+		const stream = await getImagesFromStorage(id, isThumbnail);
 
 		// eslint-disable-next-line
 		return new Response(stream as any, {

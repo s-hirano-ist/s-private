@@ -1,4 +1,4 @@
-import type { Status } from "@/domains/common/types";
+import { Status } from "@/domains/common/entities/common-entity";
 import { NewsFormSchema } from "@/domains/news/entities/news-entity";
 import type { INewsCommandRepository } from "@/domains/news/types";
 import { serverLogger } from "@/o11y/server";
@@ -13,12 +13,20 @@ class NewsCommandRepository implements INewsCommandRepository {
 				url: data.url,
 				quote: data.quote,
 				userId: data.userId,
+				status: data.status,
 				Category: {
 					connectOrCreate: {
 						where: {
-							name_userId: { name: data.categoryName, userId: data.userId },
+							name_userId: {
+								name: data.category.name,
+								userId: data.userId,
+							},
 						},
-						create: { name: data.categoryName, userId: data.userId },
+						create: {
+							name: data.category.name,
+							userId: data.category.userId,
+							id: data.category.id,
+						},
 					},
 				},
 			},

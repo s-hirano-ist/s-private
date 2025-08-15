@@ -2,7 +2,7 @@
 import "server-only";
 import { revalidatePath } from "next/cache";
 import { forbidden } from "next/navigation";
-import { validateContents } from "@/domains/contents/services/contents-domain-service";
+import { ContentsDomainService } from "@/domains/contents/services/contents-domain-service";
 import { contentsCommandRepository } from "@/infrastructures/contents/repositories/contents-command-repository";
 import { contentsQueryRepository } from "@/infrastructures/contents/repositories/contents-query-repository";
 import { serverLogger } from "@/o11y/server";
@@ -22,11 +22,10 @@ export async function addContents(formData: FormData): Promise<ServerAction> {
 
 	try {
 		const userId = await getSelfId();
-		const validatedContents = await validateContents(
-			formData,
-			userId,
+
+		const validatedContents = await new ContentsDomainService(
 			contentsQueryRepository,
-		);
+		).prepareNewContents(formData, userId);
 
 		await contentsCommandRepository.create(validatedContents);
 

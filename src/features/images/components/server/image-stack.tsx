@@ -1,12 +1,14 @@
 import { forbidden } from "next/navigation";
-import { ImageStack as ImageStackClient } from "@/components/image/image-stack";
+import {
+	type ImageData,
+	ImageStack as ImageStackClient,
+} from "@/components/image/image-stack";
 import { Unexpected } from "@/components/status/unexpected";
-import { Images } from "@/infrastructures/images/repositories/image-query-repository";
 import { hasViewerAdminPermission } from "@/utils/auth/session";
 
 type Props = {
 	page: number;
-	getImages: (page: number) => Promise<Images[]>;
+	getImages: (page: number) => Promise<ImageData[]>;
 };
 
 export async function ImageStack({ page, getImages }: Props) {

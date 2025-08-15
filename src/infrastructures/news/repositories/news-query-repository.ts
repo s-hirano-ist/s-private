@@ -1,4 +1,4 @@
-import type { Status } from "@/domains/common/types";
+import type { Status } from "@/domains/common/entities/common-entity";
 import type {
 	CategoryQueryData,
 	NewsQueryData,
@@ -37,7 +37,10 @@ class NewsQueryRepository implements INewsQueryRepository {
 			...params,
 		});
 		return response.map((d) => ({
-			categoryName: d.Category.name,
+			category: {
+				name: d.Category.name,
+				id: d.Category.id,
+			},
 			id: d.id,
 			quote: d.quote,
 			title: d.title,
@@ -64,7 +67,7 @@ class CategoryQueryRepository implements ICategoryQueryRepository {
 			select: { id: true, name: true },
 			...params,
 		});
-		return response.map((d) => d.name);
+		return response;
 	}
 }
 

@@ -25,9 +25,9 @@ vi.mock("@/prisma", () => ({
 
 import { minioClient } from "@/minio";
 import prisma from "@/prisma";
-import { imageQueryRepository } from "./image-query-repository";
+import { imagesQueryRepository } from "./images-query-repository";
 
-describe("ImageQueryRepository", () => {
+describe("ImagesQueryRepository", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 	});
@@ -48,7 +48,7 @@ describe("ImageQueryRepository", () => {
 				skip: 0,
 			};
 
-			const result = await imageQueryRepository.findMany(
+			const result = await imagesQueryRepository.findMany(
 				"user123",
 				"EXPORTED",
 				params,
@@ -56,7 +56,7 @@ describe("ImageQueryRepository", () => {
 
 			expect(prisma.images.findMany).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "EXPORTED" },
-				select: { paths: true },
+				select: { path: true },
 				...params,
 			});
 			expect(result).toEqual(mockImages);
@@ -65,7 +65,10 @@ describe("ImageQueryRepository", () => {
 		test("should handle empty results", async () => {
 			vi.mocked(prisma.images.findMany).mockResolvedValue([]);
 
-			const result = await imageQueryRepository.findMany("user123", "EXPORTED");
+			const result = await imagesQueryRepository.findMany(
+				"user123",
+				"EXPORTED",
+			);
 
 			expect(prisma.images.findMany).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "EXPORTED" },
@@ -83,7 +86,7 @@ describe("ImageQueryRepository", () => {
 				cacheStrategy: { ttl: 300, swr: 30, tags: ["images"] },
 			};
 
-			const result = await imageQueryRepository.findMany(
+			const result = await imagesQueryRepository.findMany(
 				"user123",
 				"EXPORTED",
 				params,
@@ -103,7 +106,7 @@ describe("ImageQueryRepository", () => {
 			);
 
 			await expect(
-				imageQueryRepository.findMany("user123", "EXPORTED"),
+				imagesQueryRepository.findMany("user123", "EXPORTED"),
 			).rejects.toThrow("Database connection error");
 
 			expect(prisma.images.findMany).toHaveBeenCalledWith({
@@ -117,7 +120,7 @@ describe("ImageQueryRepository", () => {
 		test("should return count of images", async () => {
 			vi.mocked(prisma.images.count).mockResolvedValue(8);
 
-			const result = await imageQueryRepository.count("user123", "EXPORTED");
+			const result = await imagesQueryRepository.count("user123", "EXPORTED");
 
 			expect(prisma.images.count).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "EXPORTED" },
@@ -128,7 +131,7 @@ describe("ImageQueryRepository", () => {
 		test("should return 0 for empty collection", async () => {
 			vi.mocked(prisma.images.count).mockResolvedValue(0);
 
-			const result = await imageQueryRepository.count("user123", "UNEXPORTED");
+			const result = await imagesQueryRepository.count("user123", "UNEXPORTED");
 
 			expect(prisma.images.count).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "UNEXPORTED" },
@@ -142,7 +145,7 @@ describe("ImageQueryRepository", () => {
 			);
 
 			await expect(
-				imageQueryRepository.count("user123", "EXPORTED"),
+				imagesQueryRepository.count("user123", "EXPORTED"),
 			).rejects.toThrow("Database count error");
 
 			expect(prisma.images.count).toHaveBeenCalledWith({
@@ -158,7 +161,7 @@ describe("ImageQueryRepository", () => {
 
 			vi.mocked(minioClient.getObject).mockResolvedValue(mockStream);
 
-			const result = await imageQueryRepository.getFromStorage(path);
+			const result = await imagesQueryRepository.getFromStorage(path);
 
 			expect(minioClient.getObject).toHaveBeenCalledWith("test-bucket", path);
 			expect(result).toBe(mockStream);
@@ -171,7 +174,7 @@ describe("ImageQueryRepository", () => {
 				new Error("Object not found"),
 			);
 
-			await expect(imageQueryRepository.getFromStorage(path)).rejects.toThrow(
+			await expect(imagesQueryRepository.getFromStorage(path)).rejects.toThrow(
 				"Object not found",
 			);
 

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { sanitizeFileName } from "./sanitize-file-name";
+import { sanitizeFileName } from "./images-domain-service";
 
 describe("sanitizeFileName", () => {
 	test("should remove invalid characters from the file name", () => {

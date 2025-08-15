@@ -13,9 +13,9 @@ export async function ViewerBody({ slug }: Props) {
 
 	try {
 		const decodedSlug = decodeURIComponent(slug);
-		const data = await getContentByTitle(decodedSlug);
-		if (!data) return <NotFound />;
-		return <ViewerBodyClient markdown={data.markdown} />;
+		const markdown = await getContentByTitle(decodedSlug);
+		if (!markdown) return <NotFound />;
+		return <ViewerBodyClient markdown={markdown} />;
 	} catch (error) {
 		return <Unexpected caller="ViewerBody" error={error} />;
 	}

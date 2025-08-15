@@ -1,42 +1,19 @@
-import { Status } from "@/domains/common/types";
+import type { BooksFormSchema } from "@/domains/books/entities/books-entity";
+import type { IBooksCommandRepository } from "@/domains/books/types";
+import { serverLogger } from "@/o11y/server";
 import prisma from "@/prisma";
 
-type IBooksCommandRepository = {
-	create(data: BooksCreateInput): Promise<Books>;
-};
-
-type BooksCreateInput = {
-	ISBN: string;
-	title: string;
-	userId: string;
-};
-
-type Books = {
-	ISBN: string;
-	title: string;
-	googleTitle: string;
-	googleSubTitle: string;
-	googleAuthors: string[];
-	googleDescription: string;
-	googleImgSrc: string;
-	googleHref: string;
-	markdown: string;
-};
-
 class BooksCommandRepository implements IBooksCommandRepository {
-	async create(data: BooksCreateInput): Promise<Books> {
-		return await prisma.books.create({
-			data: {
-				...data,
-				googleTitle: "",
-				googleSubTitle: "",
-				googleAuthors: [],
-				googleDescription: "",
-				googleImgSrc: "",
-				googleHref: "",
-				markdown: "",
-			},
+	// Domain interface implementation
+	async create(data: BooksFormSchema): Promise<void> {
+		const response = await prisma.books.create({
+			data,
 		});
+		serverLogger.info(
+			`【BOOKS】\n\nコンテンツ\nISBN: ${response.ISBN} \ntitle: ${response.title}\nの登録ができました`,
+			{ caller: "addBooks", status: 201, userId: response.userId },
+			{ notify: true },
+		);
 	}
 }
 

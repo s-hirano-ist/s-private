@@ -1,7 +1,6 @@
 import type { Route } from "next";
 import NextImage from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { THUMBNAIL_HEIGHT, THUMBNAIL_WIDTH } from "@/constants";
 import { Link } from "@/i18n/routing";
 
 export type ImageCardData = {
@@ -16,8 +15,6 @@ type Props = {
 };
 
 export function ImageCard({ basePath, data: { title, href, image } }: Props) {
-	const src = image;
-
 	return (
 		<Link href={`${basePath}/${href}` as Route}>
 			<Card className="flex h-full flex-col justify-evenly">
@@ -29,9 +26,9 @@ export function ImageCard({ basePath, data: { title, href, image } }: Props) {
 						<NextImage
 							alt={title}
 							className="h-auto w-full rounded bg-white p-1"
-							height={THUMBNAIL_HEIGHT}
-							src={src}
-							width={THUMBNAIL_WIDTH}
+							height={192}
+							src={image}
+							width={192}
 						/>
 					</div>
 				</CardContent>

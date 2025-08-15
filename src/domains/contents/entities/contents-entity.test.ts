@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { contentsEntity } from "./contents-entity";
+import { contentsFormSchema } from "./contents-entity";
 
 describe("contentsEntity", () => {
 	test("should validate correct contents data", () => {
@@ -10,7 +10,7 @@ describe("contentsEntity", () => {
 			id: "test-id-1",
 		};
 
-		const result = contentsEntity.safeParse(validData);
+		const result = contentsFormSchema.safeParse(validData);
 		expect(result.success).toBe(true);
 	});
 
@@ -22,7 +22,7 @@ describe("contentsEntity", () => {
 			id: "test-id-2",
 		};
 
-		const result = contentsEntity.safeParse(invalidData);
+		const result = contentsFormSchema.safeParse(invalidData);
 		expect(result.success).toBe(false);
 		if (!result.success) {
 			expect(result.error.errors[0].message).toBe("required");
@@ -37,7 +37,7 @@ describe("contentsEntity", () => {
 			id: "test-id-3",
 		};
 
-		const result = contentsEntity.safeParse(invalidData);
+		const result = contentsFormSchema.safeParse(invalidData);
 		expect(result.success).toBe(false);
 		if (!result.success) {
 			expect(result.error.errors[0].message).toBe("tooLong");
@@ -52,7 +52,7 @@ describe("contentsEntity", () => {
 			id: "test-id-4",
 		};
 
-		const result = contentsEntity.safeParse(invalidData);
+		const result = contentsFormSchema.safeParse(invalidData);
 		expect(result.success).toBe(false);
 		if (!result.success) {
 			expect(result.error.errors[0].message).toBe("required");
@@ -67,7 +67,7 @@ describe("contentsEntity", () => {
 			id: "test-id-5",
 		};
 
-		const result = contentsEntity.safeParse(invalidData);
+		const result = contentsFormSchema.safeParse(invalidData);
 		expect(result.success).toBe(false);
 		if (!result.success) {
 			expect(result.error.errors[0].message).toBe("required");

@@ -1,79 +1,33 @@
-import { PrismaCacheStrategy } from "@prisma/extension-accelerate";
-import type { Prisma, Status } from "@/generated";
+import { BooksQueryData } from "@/domains/books/entities/books-entity";
+import type {
+	BooksFindManyParams,
+	IBooksQueryRepository,
+} from "@/domains/books/types";
+import type { Status } from "@/generated";
 import prisma from "@/prisma";
 
-type IBooksQueryRepository = {
-	findByISBN(
-		isbn: string,
-		userId: string,
-		status: Status,
-	): Promise<Books | null>;
-	findMany(
-		userId: string,
-		status: Status,
-		params?: BooksFindManyParams,
-	): Promise<BooksList>;
-	count(userId: string, status: Status): Promise<number>;
-};
-
-type Books = {
-	title: string;
-	ISBN: string;
-	googleImgSrc: string;
-	markdown: string;
-	googleTitle: string;
-	googleHref: string;
-	googleAuthors: string[];
-	googleDescription: string;
-	googleSubTitle: string;
-};
-
-type BooksList = {
-	title: string;
-	ISBN: string;
-	googleImgSrc: string;
-}[];
-
-type BooksFindManyParams = {
-	orderBy?: Prisma.BooksOrderByWithRelationInput;
-	take?: number;
-	skip?: number;
-	cacheStrategy?: PrismaCacheStrategy["cacheStrategy"];
-};
-
 class BooksQueryRepository implements IBooksQueryRepository {
-	findByISBN = async (
+	async findByISBN(
 		ISBN: string,
 		userId: string,
-		status: Status,
-	): Promise<Books | null> => {
-		return await prisma.books.findUnique({
-			where: { ISBN_userId: { ISBN, userId }, status },
-			select: {
-				title: true,
-				ISBN: true,
-				googleImgSrc: true,
-				markdown: true,
-				googleTitle: true,
-				googleHref: true,
-				googleAuthors: true,
-				googleDescription: true,
-				googleSubTitle: true,
-			},
+	): Promise<BooksQueryData | null> {
+		const result = await prisma.books.findUnique({
+			where: { ISBN_userId: { ISBN, userId } },
 		});
-	};
+		return result;
+	}
 
-	findMany = async (
+	async findMany(
 		userId: string,
 		status: Status,
 		params?: BooksFindManyParams,
-	): Promise<BooksList> => {
+	): Promise<BooksQueryData[]> {
 		return await prisma.books.findMany({
 			where: { userId, status },
-			select: { ISBN: true, title: true, googleImgSrc: true },
+			select: { id: true, ISBN: true, title: true, googleImgSrc: true },
 			...params,
 		});
-	};
+	}
 
 	async count(userId: string, status: Status): Promise<number> {
 		return await prisma.books.count({ where: { userId, status } });

@@ -27,7 +27,7 @@ vi.mock("@/prisma", () => ({
 import { Status } from "@/generated";
 import { minioClient } from "@/minio";
 import prisma from "@/prisma";
-import { imageCommandRepository } from "./image-command-repository";
+import { imagesCommandRepository } from "./images-command-repository";
 
 describe("ImageCommandRepository", () => {
 	beforeEach(() => {
@@ -38,7 +38,7 @@ describe("ImageCommandRepository", () => {
 		test("should create image successfully", async () => {
 			const mockImage = {
 				id: "image-123",
-				paths: "image-123",
+				path: "image-123",
 				userId: "user123",
 				contentType: "image/png",
 				fileSize: 1024,
@@ -66,7 +66,7 @@ describe("ImageCommandRepository", () => {
 
 			vi.mocked(prisma.images.create).mockResolvedValue(mockImage);
 
-			const result = await imageCommandRepository.create(inputData);
+			const result = await imagesCommandRepository.create(inputData);
 
 			expect(prisma.images.create).toHaveBeenCalledWith({
 				data: inputData,
@@ -100,7 +100,7 @@ describe("ImageCommandRepository", () => {
 
 			vi.mocked(prisma.images.create).mockResolvedValue(mockImage);
 
-			const result = await imageCommandRepository.create(inputData);
+			const result = await imagesCommandRepository.create(inputData);
 
 			expect(prisma.images.create).toHaveBeenCalledWith({
 				data: inputData,
@@ -119,7 +119,7 @@ describe("ImageCommandRepository", () => {
 				new Error("Database constraint error"),
 			);
 
-			await expect(imageCommandRepository.create(inputData)).rejects.toThrow(
+			await expect(imagesCommandRepository.create(inputData)).rejects.toThrow(
 				"Database constraint error",
 			);
 
@@ -139,7 +139,7 @@ describe("ImageCommandRepository", () => {
 				versionId: "test-version",
 			});
 
-			await imageCommandRepository.uploadToStorage(path, buffer);
+			await imagesCommandRepository.uploadToStorage(path, buffer);
 
 			expect(minioClient.putObject).toHaveBeenCalledWith(
 				"test-bucket",
@@ -157,7 +157,7 @@ describe("ImageCommandRepository", () => {
 			);
 
 			await expect(
-				imageCommandRepository.uploadToStorage(path, buffer),
+				imagesCommandRepository.uploadToStorage(path, buffer),
 			).rejects.toThrow("Storage upload failed");
 
 			expect(minioClient.putObject).toHaveBeenCalledWith(

@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { imageQueryRepository } from "@/infrastructures/images/repositories/image-query-repository";
+import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
 import {
 	getExportedImages,
-	getImageFromStorage,
 	getImagesCount,
+	getImagesFromStorage,
 	getUnexportedImages,
 } from "./get-images";
 
@@ -41,11 +41,11 @@ describe("get-images", () => {
 				},
 			];
 
-			vi.mocked(imageQueryRepository.findMany).mockResolvedValue(mockImages);
+			vi.mocked(imagesQueryRepository.findMany).mockResolvedValue(mockImages);
 
 			const result = await getExportedImages(1);
 
-			expect(imageQueryRepository.findMany).toHaveBeenCalledWith(
+			expect(imagesQueryRepository.findMany).toHaveBeenCalledWith(
 				"test-user-id",
 				"EXPORTED",
 				{
@@ -60,11 +60,11 @@ describe("get-images", () => {
 		});
 
 		test("should handle pagination correctly", async () => {
-			vi.mocked(imageQueryRepository.findMany).mockResolvedValue([]);
+			vi.mocked(imagesQueryRepository.findMany).mockResolvedValue([]);
 
 			await getExportedImages(3);
 
-			expect(imageQueryRepository.findMany).toHaveBeenCalledWith(
+			expect(imagesQueryRepository.findMany).toHaveBeenCalledWith(
 				"test-user-id",
 				"EXPORTED",
 				{
@@ -77,7 +77,7 @@ describe("get-images", () => {
 		});
 
 		test("should handle empty results", async () => {
-			vi.mocked(imageQueryRepository.findMany).mockResolvedValue([]);
+			vi.mocked(imagesQueryRepository.findMany).mockResolvedValue([]);
 
 			const result = await getExportedImages(1);
 
@@ -85,7 +85,7 @@ describe("get-images", () => {
 		});
 
 		test("should handle database errors", async () => {
-			vi.mocked(imageQueryRepository.findMany).mockRejectedValue(
+			vi.mocked(imagesQueryRepository.findMany).mockRejectedValue(
 				new Error("Database error"),
 			);
 
@@ -110,11 +110,11 @@ describe("get-images", () => {
 				},
 			];
 
-			vi.mocked(imageQueryRepository.findMany).mockResolvedValue(mockImages);
+			vi.mocked(imagesQueryRepository.findMany).mockResolvedValue(mockImages);
 
 			const result = await getUnexportedImages();
 
-			expect(imageQueryRepository.findMany).toHaveBeenCalledWith(
+			expect(imagesQueryRepository.findMany).toHaveBeenCalledWith(
 				"test-user-id",
 				"UNEXPORTED",
 				{
@@ -128,7 +128,7 @@ describe("get-images", () => {
 		});
 
 		test("should handle empty results", async () => {
-			vi.mocked(imageQueryRepository.findMany).mockResolvedValue([]);
+			vi.mocked(imagesQueryRepository.findMany).mockResolvedValue([]);
 
 			const result = await getUnexportedImages();
 
@@ -136,7 +136,7 @@ describe("get-images", () => {
 		});
 
 		test("should handle database errors", async () => {
-			vi.mocked(imageQueryRepository.findMany).mockRejectedValue(
+			vi.mocked(imagesQueryRepository.findMany).mockRejectedValue(
 				new Error("Database error"),
 			);
 
@@ -146,11 +146,11 @@ describe("get-images", () => {
 
 	describe("getImagesCount", () => {
 		test("should return count of images by status", async () => {
-			vi.mocked(imageQueryRepository.count).mockResolvedValue(25);
+			vi.mocked(imagesQueryRepository.count).mockResolvedValue(25);
 
 			const result = await getImagesCount("EXPORTED");
 
-			expect(imageQueryRepository.count).toHaveBeenCalledWith(
+			expect(imagesQueryRepository.count).toHaveBeenCalledWith(
 				"test-user-id",
 				"EXPORTED",
 			);
@@ -158,7 +158,7 @@ describe("get-images", () => {
 		});
 
 		test("should return 0 for empty collection", async () => {
-			vi.mocked(imageQueryRepository.count).mockResolvedValue(0);
+			vi.mocked(imagesQueryRepository.count).mockResolvedValue(0);
 
 			const result = await getImagesCount("UNEXPORTED");
 
@@ -166,7 +166,7 @@ describe("get-images", () => {
 		});
 
 		test("should handle database errors", async () => {
-			vi.mocked(imageQueryRepository.count).mockRejectedValue(
+			vi.mocked(imagesQueryRepository.count).mockRejectedValue(
 				new Error("Database error"),
 			);
 
@@ -183,13 +183,13 @@ describe("get-images", () => {
 				contentType: "image/jpeg",
 			};
 
-			vi.mocked(imageQueryRepository.getFromStorage).mockResolvedValue(
+			vi.mocked(imagesQueryRepository.getFromStorage).mockResolvedValue(
 				mockImageData,
 			);
 
-			const result = await getImageFromStorage("test-image-key.jpg");
+			const result = await getImagesFromStorage("test-image-key.jpg");
 
-			expect(imageQueryRepository.getFromStorage).toHaveBeenCalledWith(
+			expect(imagesQueryRepository.getFromStorage).toHaveBeenCalledWith(
 				"test-image-key.jpg",
 			);
 
@@ -197,19 +197,19 @@ describe("get-images", () => {
 		});
 
 		test("should handle storage errors", async () => {
-			vi.mocked(imageQueryRepository.getFromStorage).mockRejectedValue(
+			vi.mocked(imagesQueryRepository.getFromStorage).mockRejectedValue(
 				new Error("Storage error"),
 			);
 
-			await expect(getImageFromStorage("test-key")).rejects.toThrow(
+			await expect(getImagesFromStorage("test-key")).rejects.toThrow(
 				"Storage error",
 			);
 		});
 
 		test("should handle missing image", async () => {
-			vi.mocked(imageQueryRepository.getFromStorage).mockResolvedValue(null);
+			vi.mocked(imagesQueryRepository.getFromStorage).mockResolvedValue(null);
 
-			const result = await getImageFromStorage("missing-key");
+			const result = await getImagesFromStorage("missing-key");
 
 			expect(result).toBeNull();
 		});

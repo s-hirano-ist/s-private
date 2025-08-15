@@ -11,7 +11,6 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { THUMBNAIL_HEIGHT, THUMBNAIL_WIDTH } from "@/constants";
 import { getBookByISBN } from "@/features/books/actions/get-books";
 import { Link } from "@/i18n/routing";
 import { hasViewerAdminPermission } from "@/utils/auth/session";
@@ -27,15 +26,15 @@ export async function ViewerBody({ slug }: Props) {
 		if (!data) return <NotFound />;
 
 		return (
-			<ViewerBodyClient markdown={data.markdown}>
+			<ViewerBodyClient markdown={data?.markdown ?? ""}>
 				<Card className="grid grid-cols-4 gap-4 p-4">
 					<div className="flex items-center justify-center">
 						<NextImage
-							alt={data.googleTitle}
+							alt={data.googleTitle ?? ""}
 							className="rounded bg-white p-1"
-							height={THUMBNAIL_HEIGHT}
-							src={data.googleImgSrc}
-							width={THUMBNAIL_WIDTH}
+							height={192}
+							src={data.googleImgSrc ?? "/not-found.png"}
+							width={192}
 						/>
 					</div>
 					<Link className="col-span-3" href={data.googleHref as Route}>
@@ -46,7 +45,7 @@ export async function ViewerBody({ slug }: Props) {
 							<CardDescription>{data.googleDescription}</CardDescription>
 						</CardHeader>
 						<CardContent>
-							<p>Authors: {data.googleAuthors.join(", ")}</p>
+							<p>Authors: {data.googleAuthors?.join(", ")}</p>
 						</CardContent>
 					</Link>
 				</Card>

@@ -1,3 +1,3 @@
 import { describe, expect, test } from "vitest";
 
-describe("newsEntity", () => {});
+describe("booksEntity", () => {});

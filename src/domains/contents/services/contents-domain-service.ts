@@ -1,37 +1,40 @@
 import "server-only";
-import { v7 as uuidv7 } from "uuid";
 import type { IContentsQueryRepository } from "@/domains/contents/types";
 import {
 	DuplicateError,
 	InvalidFormatError,
 } from "@/utils/error/error-classes";
 import {
-	type ContentsEntity,
-	contentsEntity,
+	type ContentsFormSchema,
+	contentsFormSchema,
 } from "../entities/contents-entity";
 
-export async function validateContents(
-	formData: FormData,
-	userId: string,
-	contentsQueryRepository: IContentsQueryRepository,
-): Promise<ContentsEntity> {
-	const generatedId = uuidv7();
+export class ContentsDomainService {
+	constructor(
+		private readonly contentsQueryRepository: IContentsQueryRepository,
+	) {}
 
-	const formValues = {
-		title: formData.get("title"),
-		markdown: formData.get("markdown"),
-		userId,
-		id: generatedId,
-	};
+	public async prepareNewContents(
+		formData: FormData,
+		userId: string,
+	): Promise<ContentsFormSchema> {
+		const formValues = {
+			title: formData.get("title") as string,
+			markdown: formData.get("markdown") as string,
+			userId,
+			status: "UNEXPORTED",
+		} satisfies Omit<ContentsFormSchema, "id">;
 
-	const contentsValidatedFields = contentsEntity.safeParse(formValues);
-	if (!contentsValidatedFields.success) throw new InvalidFormatError();
+		const contentsValidatedFields = contentsFormSchema.safeParse(formValues);
+		if (!contentsValidatedFields.success) throw new InvalidFormatError();
 
-	const response = await contentsQueryRepository.findByTitle(
-		contentsValidatedFields.data.title,
-		userId,
-	);
-	if (response !== null) throw new DuplicateError();
+		// check duplicate
+		const exists = await this.contentsQueryRepository.findByTitle(
+			contentsValidatedFields.data.title,
+			userId,
+		);
+		if (exists !== null) throw new DuplicateError();
 
-	return contentsValidatedFields.data;
+		return contentsValidatedFields.data;
+	}
 }

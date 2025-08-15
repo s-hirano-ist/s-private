@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { LinkCardData } from "@/components/card/link-card";
-import type { Status } from "@/domains/common/types";
+import type { Status } from "@/domains/common/entities/common-entity";
 import { contentsQueryRepository } from "@/infrastructures/contents/repositories/contents-query-repository";
 import { getSelfId } from "@/utils/auth/session";
 

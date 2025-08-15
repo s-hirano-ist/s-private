@@ -3,7 +3,7 @@ import { Session } from "next-auth";
 import sharp from "sharp";
 import { v7 as uuidv7 } from "uuid";
 import { describe, expect, Mock, test, vi } from "vitest";
-import { imageCommandRepository } from "@/infrastructures/images/repositories/image-command-repository";
+import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
 import { auth } from "@/utils/auth/auth";
 import { addImage } from "./add-image";
 
@@ -68,9 +68,9 @@ describe("addImage", () => {
 			// eslint-disable-next-line
 		} as any);
 
-		vi.mocked(imageCommandRepository.create).mockResolvedValue({
+		vi.mocked(imagesCommandRepository.create).mockResolvedValue({
 			id: "generated-uuid-myImage.jpeg",
-			paths: "images/generated-uuid-myImage.jpeg",
+			path: "images/generated-uuid-myImage.jpeg",
 			userId: "1",
 			contentType: "image/jpeg",
 			fileSize: null,
@@ -87,8 +87,8 @@ describe("addImage", () => {
 
 		const result = await addImage(mockFormData);
 
-		expect(imageCommandRepository.uploadToStorage).toHaveBeenCalledTimes(2);
-		expect(imageCommandRepository.create).toHaveBeenCalled();
+		expect(imagesCommandRepository.uploadToStorage).toHaveBeenCalledTimes(2);
+		expect(imagesCommandRepository.create).toHaveBeenCalled();
 		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 		expect(result).toEqual({
 			success: true,

@@ -1,5 +1,4 @@
 import "server-only";
-import { v7 as uuidv7 } from "uuid";
 import type { INewsQueryRepository } from "@/domains/news/types";
 import {
 	DuplicateError,
@@ -7,30 +6,37 @@ import {
 } from "@/utils/error/error-classes";
 import { type NewsFormSchema, newsFormSchema } from "../entities/news-entity";
 
-export async function validateNews(
-	formData: FormData,
-	userId: string,
-	newsQueryRepository: INewsQueryRepository,
-): Promise<NewsFormSchema> {
-	const generatedId = uuidv7();
+export class NewsDomainService {
+	constructor(private readonly newsQueryRepository: INewsQueryRepository) {}
 
-	const formValues = {
-		title: formData.get("title"),
-		quote: formData.get("quote"),
-		url: formData.get("url"),
-		categoryName: formData.get("category"),
-		userId,
-		id: generatedId,
-	};
+	public async prepareNewNews(
+		formData: FormData,
+		userId: string,
+	): Promise<NewsFormSchema> {
+		const formValues = {
+			title: formData.get("title") as string,
+			quote: formData.get("quote") as string,
+			url: formData.get("url") as string,
+			category: {
+				name: formData.get("category") as string,
+				userId,
+			},
+			userId,
+			status: "UNEXPORTED",
+		} satisfies Omit<NewsFormSchema, "category" | "id"> & {
+			category: Omit<NewsFormSchema["category"], "id">;
+		};
 
-	const newsValidatedFields = newsFormSchema.safeParse(formValues);
-	if (!newsValidatedFields.success) throw new InvalidFormatError();
+		const newsValidatedFields = newsFormSchema.safeParse(formValues);
+		if (!newsValidatedFields.success) throw new InvalidFormatError();
 
-	const response = await newsQueryRepository.findByUrl(
-		newsValidatedFields.data.url,
-		userId,
-	);
-	if (response !== null) throw new DuplicateError();
+		// check duplicate
+		const exists = await this.newsQueryRepository.findByUrl(
+			newsValidatedFields.data.url,
+			userId,
+		);
+		if (exists !== null) throw new DuplicateError();
 
-	return newsValidatedFields.data;
+		return newsValidatedFields.data;
+	}
 }

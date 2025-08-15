@@ -1,12 +1,8 @@
 import type { PrismaCacheStrategy } from "@prisma/extension-accelerate";
-import type { Status } from "@/domains/common/types";
+import type { Status } from "@/domains/common/entities/common-entity";
 import type { Prisma } from "@/generated";
 import type { CategoryQueryData, NewsQueryData } from "./entities/news-entity";
 import { NewsFormSchema } from "./entities/news-entity";
-
-// FIXME: TODO: prisma依存の削除
-
-// news
 
 export type INewsCommandRepository = {
 	create(data: NewsFormSchema): Promise<void>;
@@ -29,8 +25,6 @@ export type NewsFindManyParams = {
 	skip?: number;
 	cacheStrategy?: PrismaCacheStrategy["cacheStrategy"];
 };
-
-// categories
 
 export type ICategoryQueryRepository = {
 	findMany(
