@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { ImageCardSkeletonStack } from "@/components/card/image-card-skeleton-stack";
+import { ImageCardSkeletonStack } from "@/common/components/card/image-card-skeleton-stack";
 import { getExportedBooks } from "@/features/books/actions/get-books";
 import { BooksStack } from "@/features/books/components/server/book-stack";
 import { BooksCounter } from "@/features/books/components/server/books-counter";

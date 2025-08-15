@@ -1,9 +1,9 @@
 import { forbidden } from "next/navigation";
-import { Unexpected } from "@/components/status/unexpected";
+import { hasDumperPostPermission } from "@/common/auth/session";
+import { Unexpected } from "@/common/components/status/unexpected";
+import { ServerAction } from "@/common/types";
 import { getCategories } from "@/features/news/actions/get-news";
 import { serverLogger } from "@/o11y/server";
-import { hasDumperPostPermission } from "@/utils/auth/session";
-import { ServerAction } from "@/utils/types";
 import { NewsFormClient } from "../client/news-form-client";
 
 type Props = {

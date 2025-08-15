@@ -10,7 +10,7 @@ afterEach(() => {
 beforeEach(() => {
 	vi.clearAllMocks();
 
-	vi.mock("@/utils/auth/auth", () => ({ auth: vi.fn() }));
+	vi.mock("@/common/auth/auth", () => ({ auth: vi.fn() }));
 
 	vi.mock("@/o11y/server", () => ({
 		serverLogger: {

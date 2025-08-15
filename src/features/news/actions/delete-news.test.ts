@@ -3,13 +3,6 @@ import { describe, expect, test, vi } from "vitest";
 import { deleteNews } from "@/features/news/actions/delete-news";
 import { newsCommandRepository } from "@/infrastructures/news/repositories/news-command-repository";
 
-vi.mock("@/o11y/server", () => ({
-	serverLogger: {
-		info: vi.fn(),
-		error: vi.fn(),
-	},
-}));
-
 vi.mock("@/infrastructures/news/repositories/news-command-repository", () => ({
 	newsCommandRepository: {
 		deleteById: vi.fn(),
@@ -19,7 +12,7 @@ vi.mock("@/infrastructures/news/repositories/news-command-repository", () => ({
 const mockGetSelfId = vi.fn();
 const mockHasDumperPostPermission = vi.fn();
 
-vi.mock("@/utils/auth/session", () => ({
+vi.mock("@/common/auth/session", () => ({
 	getSelfId: () => mockGetSelfId(),
 	hasDumperPostPermission: () => mockHasDumperPostPermission(),
 }));

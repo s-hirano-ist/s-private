@@ -1,9 +1,9 @@
 "use server";
 import "server-only";
 import { AuthError } from "next-auth";
+import { ServerAction } from "@/common/types";
 import { Prisma } from "@/generated";
 import { serverLogger } from "@/o11y/server";
-import { ServerAction } from "@/utils/types";
 import {
 	FileNotAllowedError,
 	InvalidFormatError,

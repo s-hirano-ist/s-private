@@ -1,19 +1,19 @@
 import { Route } from "next";
 import NextImage from "next/image";
 import { forbidden } from "next/navigation";
-import { ViewerBodyClient } from "@/components/body/viewer-body";
-import { NotFound } from "@/components/status/not-found";
-import { Unexpected } from "@/components/status/unexpected";
+import { hasViewerAdminPermission } from "@/common/auth/session";
+import { ViewerBodyClient } from "@/common/components/body/viewer-body";
+import { NotFound } from "@/common/components/status/not-found";
+import { Unexpected } from "@/common/components/status/unexpected";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui/card";
+} from "@/common/components/ui/card";
 import { getBookByISBN } from "@/features/books/actions/get-books";
 import { Link } from "@/i18n/routing";
-import { hasViewerAdminPermission } from "@/utils/auth/session";
 
 type Props = { slug: string };
 

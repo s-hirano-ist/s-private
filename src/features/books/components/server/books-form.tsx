@@ -1,7 +1,7 @@
 import { forbidden } from "next/navigation";
-import { Unexpected } from "@/components/status/unexpected";
-import { hasDumperPostPermission } from "@/utils/auth/session";
-import { ServerAction } from "@/utils/types";
+import { hasDumperPostPermission } from "@/common/auth/session";
+import { Unexpected } from "@/common/components/status/unexpected";
+import { ServerAction } from "@/common/types";
 import { BooksFormClient } from "../client/books-form-client";
 
 type Props = {

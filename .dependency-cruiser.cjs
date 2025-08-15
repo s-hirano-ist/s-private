@@ -1,4 +1,14 @@
 /** @type {import('dependency-cruiser').IConfiguration} */
+const paths = [
+	// "src/common/",
+	"src/o11y",
+	"src/i18n",
+	"src/env\\.ts",
+	"src/prisma\\.ts",
+	"src/minio\\.ts",
+	"src/common/error",
+];
+
 module.exports = {
 	forbidden: [
 		{
@@ -190,17 +200,7 @@ module.exports = {
 		/* Which modules to exclude */
 		exclude: {
 			/* path: an array of regular expressions in strings to match against */
-			path: [
-				"src/common/error",
-				"src/components/",
-				"src/generated/",
-				"src/o11y",
-				"src/i18n",
-				"src/env\\.ts",
-				"src/prisma\\.ts",
-				"src/minio\\.ts",
-				"src/utils/auth/",
-			],
+			path: paths,
 		},
 
 		/* Which modules to exclusively include (array of regular expressions in strings)
@@ -367,16 +367,7 @@ module.exports = {
 					dependencies: [
 						{
 							criteria: {
-								resolved: [
-									"src/common/error",
-									"src/components/",
-									"src/generated",
-									"src/o11y",
-									"src/i18n",
-									"src/env\\.ts",
-									"src/prisma\\.ts",
-									"src/utils/auth/",
-								],
+								resolved: paths,
 							},
 							attributes: {
 								style: "invis",

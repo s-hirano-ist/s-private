@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { ImageStackSkeleton } from "@/components/image/image-stack-skeleton";
+import { ImageStackSkeleton } from "@/common/components/image/image-stack-skeleton";
 import { addImage } from "@/features/images/actions/add-image";
 import { getUnexportedImages } from "@/features/images/actions/get-images";
 import { ImageForm } from "@/features/images/components/server/image-form";

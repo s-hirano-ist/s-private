@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { LinkCardSkeletonStack } from "@/components/card/link-card-skeleton-stack";
+import { LinkCardSkeletonStack } from "@/common/components/card/link-card-skeleton-stack";
 import { addContents } from "@/features/contents/actions/add-contents";
 import { getUnexportedContents } from "@/features/contents/actions/get-contents";
 import { ContentsForm } from "@/features/contents/components/server/contents-form";

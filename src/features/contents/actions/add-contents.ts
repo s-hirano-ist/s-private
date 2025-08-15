@@ -2,12 +2,12 @@
 import "server-only";
 import { revalidatePath } from "next/cache";
 import { forbidden } from "next/navigation";
+import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
+import type { ServerAction } from "@/common/types";
 import { ContentsDomainService } from "@/domains/contents/services/contents-domain-service";
 import { contentsCommandRepository } from "@/infrastructures/contents/repositories/contents-command-repository";
 import { contentsQueryRepository } from "@/infrastructures/contents/repositories/contents-query-repository";
-import { getSelfId, hasDumperPostPermission } from "@/utils/auth/session";
-import type { ServerAction } from "@/utils/types";
 
 export type Contents = {
 	id: string;

@@ -1,8 +1,8 @@
 "use client";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { FormFileInput } from "@/components/forms/fields/form-file-input";
-import { GenericFormWrapper } from "@/components/forms/generic-form-wrapper";
+import { FormFileInput } from "@/common/components/forms/fields/form-file-input";
+import { GenericFormWrapper } from "@/common/components/forms/generic-form-wrapper";
 
 type Props = {
 	addImage: (formData: FormData) => Promise<{ message: string }>;

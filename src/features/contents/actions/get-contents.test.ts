@@ -12,7 +12,7 @@ vi.mock(
 	}),
 );
 
-vi.mock("@/utils/auth/session", () => ({
+vi.mock("@/common/auth/session", () => ({
 	getSelfId: vi.fn().mockResolvedValue("test-user-id"),
 }));
 

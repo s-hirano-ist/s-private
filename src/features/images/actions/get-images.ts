@@ -1,9 +1,9 @@
 import { cache } from "react";
+import { getSelfId } from "@/common/auth/session";
+import { ImageData } from "@/common/components/image/image-stack";
 import { PAGE_SIZE } from "@/common/constants";
-import { ImageData } from "@/components/image/image-stack";
 import type { Status } from "@/domains/common/entities/common-entity";
 import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
-import { getSelfId } from "@/utils/auth/session";
 
 const API_ORIGINAL_PATH = "/api/images/original";
 const API_THUMBNAIL_PATH = "/api/images/thumbnail";

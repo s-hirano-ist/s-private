@@ -2,9 +2,9 @@ import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { ReactNode } from "react";
-import { Footer } from "@/components/nav/footer";
-import { ThemeProvider } from "@/components/provider/theme-provider";
-import { Toaster } from "@/components/ui/sonner";
+import { Footer } from "@/common/components/nav/footer";
+import { ThemeProvider } from "@/common/components/provider/theme-provider";
+import { Toaster } from "@/common/components/ui/sonner";
 import { routing } from "@/i18n/routing";
 
 type Params = {

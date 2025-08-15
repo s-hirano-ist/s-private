@@ -1,12 +1,12 @@
 import { cache } from "react";
+import { getSelfId } from "@/common/auth/session";
+import { LinkCardData } from "@/common/components/card/link-card";
 import { PAGE_SIZE } from "@/common/constants";
-import { LinkCardData } from "@/components/card/link-card";
 import type { Status } from "@/domains/common/entities/common-entity";
 import {
 	categoryQueryRepository,
 	newsQueryRepository,
 } from "@/infrastructures/news/repositories/news-query-repository";
-import { getSelfId } from "@/utils/auth/session";
 import type { NewsFormClientData } from "../components/client/news-form-client";
 
 export const getExportedNews = cache(

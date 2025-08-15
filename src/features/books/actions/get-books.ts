@@ -1,8 +1,8 @@
 import { cache } from "react";
-import { ImageCardData } from "@/components/card/image-card";
+import { getSelfId } from "@/common/auth/session";
+import { ImageCardData } from "@/common/components/card/image-card";
 import type { Status } from "@/domains/common/entities/common-entity";
 import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
-import { getSelfId } from "@/utils/auth/session";
 
 export const getExportedBooks = cache(async (): Promise<ImageCardData[]> => {
 	const userId = await getSelfId();

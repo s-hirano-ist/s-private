@@ -1,9 +1,9 @@
 import { forbidden } from "next/navigation";
-import { LinkCardData } from "@/components/card/link-card";
-import { LinkCardStack } from "@/components/card/link-card-stack";
-import { Unexpected } from "@/components/status/unexpected";
-import { hasViewerAdminPermission } from "@/utils/auth/session";
-import { ServerAction } from "@/utils/types";
+import { hasViewerAdminPermission } from "@/common/auth/session";
+import { LinkCardData } from "@/common/components/card/link-card";
+import { LinkCardStack } from "@/common/components/card/link-card-stack";
+import { Unexpected } from "@/common/components/status/unexpected";
+import { ServerAction } from "@/common/types";
 
 type Props = {
 	page: number;

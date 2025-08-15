@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { LinkCardSkeletonStack } from "@/components/card/link-card-skeleton-stack";
+import { LinkCardSkeletonStack } from "@/common/components/card/link-card-skeleton-stack";
 import { addNews } from "@/features/news/actions/add-news";
 import { deleteNews } from "@/features/news/actions/delete-news";
 import { getUnexportedNews } from "@/features/news/actions/get-news";

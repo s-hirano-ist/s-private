@@ -1,8 +1,8 @@
 import { forbidden } from "next/navigation";
-import { BadgeWithPagination } from "@/components/badge-with-pagination";
-import { Unexpected } from "@/components/status/unexpected";
+import { hasViewerAdminPermission } from "@/common/auth/session";
+import { BadgeWithPagination } from "@/common/components/badge-with-pagination";
+import { Unexpected } from "@/common/components/status/unexpected";
 import { getBooksCount } from "@/features/books/actions/get-books";
-import { hasViewerAdminPermission } from "@/utils/auth/session";
 
 export async function BooksCounter() {
 	const hasPermission = await hasViewerAdminPermission();

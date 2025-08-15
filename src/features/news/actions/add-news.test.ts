@@ -17,7 +17,7 @@ vi.mock("@/infrastructures/news/repositories/news-command-repository", () => ({
 const mockGetSelfId = vi.fn();
 const mockHasDumperPostPermission = vi.fn();
 
-vi.mock("@/utils/auth/session", () => ({
+vi.mock("@/common/auth/session", () => ({
 	getSelfId: () => mockGetSelfId(),
 	hasDumperPostPermission: () => mockHasDumperPostPermission(),
 }));

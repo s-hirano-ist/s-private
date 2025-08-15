@@ -1,7 +1,7 @@
 "use client";
 import { useTranslations } from "next-intl";
-import { FormInput } from "@/components/forms/fields/form-input";
-import { GenericFormWrapper } from "@/components/forms/generic-form-wrapper";
+import { FormInput } from "@/common/components/forms/fields/form-input";
+import { GenericFormWrapper } from "@/common/components/forms/generic-form-wrapper";
 
 type Props = {
 	addBooks: (formData: FormData) => Promise<{ message: string }>;
