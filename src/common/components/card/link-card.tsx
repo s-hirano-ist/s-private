@@ -36,8 +36,35 @@ export function LinkCard({
 }: Props) {
 	const { url: validatedHref, isExternal } = validateAndNormalizeUrl(href);
 
-	const cardContent = (
-		<Card className="relative hover:bg-secondary">
+	const CardComponent = isExternal ? "a" : Link;
+	const linkProps = isExternal
+		? { href: validatedHref, rel: "noopener noreferrer", target: "_blank" }
+		: { href: validatedHref };
+
+	return (
+		<div className="relative">
+			<CardComponent {...linkProps} className="block">
+				<Card className="hover:bg-secondary">
+					<CardHeader>
+						<div className="flex gap-4">
+							{primaryBadgeText && <Badge>{primaryBadgeText}</Badge>}
+							{secondaryBadgeText && (
+								<Badge variant="outline">{secondaryBadgeText}</Badge>
+							)}
+						</div>
+					</CardHeader>
+					<CardContent>
+						<CardTitle>{title}</CardTitle>
+						<CardDescription className="break-words">
+							{description ? (
+								<ReactMarkdown>{description}</ReactMarkdown>
+							) : (
+								"　"
+							)}
+						</CardDescription>
+					</CardContent>
+				</Card>
+			</CardComponent>
 			{showDeleteButton && deleteAction !== undefined && (
 				<DeleteButtonWithModal
 					deleteAction={deleteAction}
@@ -45,30 +72,6 @@ export function LinkCard({
 					title={title}
 				/>
 			)}
-			<CardHeader>
-				<div className="flex gap-4">
-					{primaryBadgeText && <Badge>{primaryBadgeText}</Badge>}
-					{secondaryBadgeText && (
-						<Badge variant="outline">{secondaryBadgeText}</Badge>
-					)}
-				</div>
-			</CardHeader>
-			<CardContent>
-				<CardTitle>{title}</CardTitle>
-				<CardDescription className="break-words">
-					{description ? <ReactMarkdown>{description}</ReactMarkdown> : "　"}
-				</CardDescription>
-			</CardContent>
-		</Card>
+		</div>
 	);
-
-	if (isExternal) {
-		return (
-			<a href={validatedHref} rel="noopener noreferrer" target="_blank">
-				{cardContent}
-			</a>
-		);
-	}
-
-	return <Link href={validatedHref}>{cardContent}</Link>;
 }

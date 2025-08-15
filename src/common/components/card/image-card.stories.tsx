@@ -21,6 +21,7 @@ const image = encoder.encode(svg);
 export const Default: Story = {
 	args: {
 		data: {
+			id: "1",
 			href: "0011223344",
 			title: "sample title",
 			image: "https://picsum.photos/id/1/192/192",

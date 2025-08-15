@@ -2,14 +2,22 @@
 import { ImageCard, ImageCardData } from "@/common/components/card/image-card";
 import { SearchableCardLayout } from "@/common/components/search/searchable-card-layout";
 import { useSearchableList } from "@/common/hooks/use-searchable-list";
+import type { ServerAction } from "@/common/types";
 import { filterImageCards } from "@/features/search/services/search-filter";
 
 type Props = {
 	basePath: string;
 	data: ImageCardData[];
+	showDeleteButton?: boolean;
+	deleteAction?: (id: string) => Promise<ServerAction>;
 };
 
-export function ImageCardStack({ data, basePath }: Props) {
+export function ImageCardStack({
+	data,
+	basePath,
+	showDeleteButton = false,
+	deleteAction,
+}: Props) {
 	const { searchQuery, searchResults, handleSearchChange } = useSearchableList({
 		data,
 		filterFunction: filterImageCards,
@@ -23,7 +31,9 @@ export function ImageCardStack({ data, basePath }: Props) {
 				<ImageCard
 					basePath={basePath}
 					data={searchResult}
-					key={searchResult.title}
+					deleteAction={deleteAction}
+					key={searchResult.id}
+					showDeleteButton={showDeleteButton}
 				/>
 			)}
 			searchQuery={searchQuery}
