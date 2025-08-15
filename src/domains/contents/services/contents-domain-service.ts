@@ -25,6 +25,7 @@ export class ContentsDomainService {
 			status: "UNEXPORTED",
 		} satisfies Omit<ContentsFormSchema, "id">;
 
+		// Use the complete schema which includes auto-generated ID
 		const contentsValidatedFields = contentsFormSchema.safeParse(formValues);
 		if (!contentsValidatedFields.success) throw new InvalidFormatError();
 

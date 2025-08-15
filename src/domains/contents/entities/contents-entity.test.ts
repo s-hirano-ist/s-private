@@ -1,5 +1,11 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import { contentsFormSchema } from "./contents-entity";
+
+vi.mock("@/domains/common/services/id-generator", () => ({
+	idGenerator: {
+		uuidv7: () => "01234567-89ab-cdef-0123-456789abcdef",
+	},
+}));
 
 describe("contentsEntity", () => {
 	test("should validate correct contents data", () => {
@@ -7,7 +13,7 @@ describe("contentsEntity", () => {
 			title: "Sample Content",
 			markdown: "# This is markdown content",
 			userId: "user-123",
-			id: "test-id-1",
+			status: "UNEXPORTED",
 		};
 
 		const result = contentsFormSchema.safeParse(validData);
@@ -19,7 +25,7 @@ describe("contentsEntity", () => {
 			title: "",
 			markdown: "# This is markdown content",
 			userId: "user-123",
-			id: "test-id-2",
+			status: "UNEXPORTED",
 		};
 
 		const result = contentsFormSchema.safeParse(invalidData);
@@ -34,7 +40,7 @@ describe("contentsEntity", () => {
 			title: "a".repeat(65),
 			markdown: "# This is markdown content",
 			userId: "user-123",
-			id: "test-id-3",
+			status: "UNEXPORTED",
 		};
 
 		const result = contentsFormSchema.safeParse(invalidData);
@@ -49,7 +55,7 @@ describe("contentsEntity", () => {
 			title: "Sample Content",
 			markdown: "",
 			userId: "user-123",
-			id: "test-id-4",
+			status: "UNEXPORTED",
 		};
 
 		const result = contentsFormSchema.safeParse(invalidData);
@@ -64,7 +70,7 @@ describe("contentsEntity", () => {
 			title: "Sample Content",
 			markdown: "# This is markdown content",
 			userId: undefined,
-			id: "test-id-5",
+			status: "UNEXPORTED",
 		};
 
 		const result = contentsFormSchema.safeParse(invalidData);

@@ -1,5 +1,6 @@
-import { SKELETON_STACK_SIZE } from "@/constants";
 import { ImageCardSkeleton } from "./image-card-skeleton";
+
+const SKELETON_STACK_SIZE = 10;
 
 export function ImageCardSkeletonStack() {
 	return (

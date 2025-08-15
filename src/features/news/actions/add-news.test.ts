@@ -1,6 +1,6 @@
 import { revalidatePath } from "next/cache";
 import { describe, expect, test, vi } from "vitest";
-import { validateNews } from "@/domains/news/services/news-domain-service";
+import { NewsDomainService } from "@/domains/news/services/news-domain-service";
 import { newsCommandRepository } from "@/infrastructures/news/repositories/news-command-repository";
 import { addNews } from "./add-news";
 
@@ -22,8 +22,11 @@ vi.mock("@/utils/auth/session", () => ({
 	hasDumperPostPermission: () => mockHasDumperPostPermission(),
 }));
 
+const mockPrepareNewNews = vi.fn();
 vi.mock("@/domains/news/services/news-domain-service", () => ({
-	validateNews: vi.fn(),
+	NewsDomainService: vi.fn().mockImplementation(() => ({
+		prepareNewNews: mockPrepareNewNews,
+	})),
 }));
 
 vi.mock("@/infrastructures/news/repositories/news-query-repository", () => ({
@@ -54,14 +57,19 @@ describe("addNews", () => {
 
 	test("should create news with category", async () => {
 		mockHasDumperPostPermission.mockResolvedValue(true);
-		mockGetSelfId.mockResolvedValue("1");
-		vi.mocked(validateNews).mockResolvedValue({
-			categoryName: "tech",
+		mockGetSelfId.mockResolvedValue("user-123");
+		mockPrepareNewNews.mockResolvedValue({
+			category: {
+				name: "tech",
+				userId: "user-123",
+				id: "01234567-89ab-cdef-0123-456789abcdef",
+			},
 			title: "Example Content",
 			quote: "This is an example news quote.",
 			url: "https://example.com",
-			userId: "1",
-			id: "test-id",
+			userId: "user-123",
+			status: "UNEXPORTED",
+			id: "01234567-89ab-cdef-0123-456789abcdef",
 		});
 		vi.mocked(newsCommandRepository.create).mockResolvedValue();
 
@@ -69,7 +77,7 @@ describe("addNews", () => {
 
 		expect(mockHasDumperPostPermission).toHaveBeenCalled();
 		expect(mockGetSelfId).toHaveBeenCalled();
-		expect(validateNews).toHaveBeenCalled();
+		expect(mockPrepareNewNews).toHaveBeenCalledWith(mockFormData, "user-123");
 		expect(newsCommandRepository.create).toHaveBeenCalled();
 		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 		expect(result.success).toBe(true);

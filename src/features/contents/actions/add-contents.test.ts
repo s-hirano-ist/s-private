@@ -3,6 +3,10 @@ import { describe, expect, test, vi } from "vitest";
 import { contentsCommandRepository } from "@/infrastructures/contents/repositories/contents-command-repository";
 import { addContents } from "./add-contents";
 
+vi.mock("next/cache", () => ({
+	revalidatePath: vi.fn(),
+}));
+
 vi.mock(
 	"@/infrastructures/contents/repositories/contents-command-repository",
 	() => ({
@@ -19,6 +23,24 @@ vi.mock("@/utils/auth/session", () => ({
 	getSelfId: () => mockGetSelfId(),
 	hasDumperPostPermission: () => mockHasDumperPostPermission(),
 }));
+
+vi.mock("@/domains/contents/services/contents-domain-service", () => ({
+	ContentsDomainService: vi.fn().mockImplementation(() => ({
+		prepareNewContents: vi.fn().mockResolvedValue({
+			title: "Example Content",
+			markdown: "This is an example content quote.",
+			userId: "1",
+			status: "UNEXPORTED",
+		}),
+	})),
+}));
+
+vi.mock(
+	"@/infrastructures/contents/repositories/contents-query-repository",
+	() => ({
+		contentsQueryRepository: {},
+	}),
+);
 
 const mockFormData = new FormData();
 mockFormData.append("title", "Example Content");
@@ -42,16 +64,7 @@ describe("addContents", () => {
 	test("should create contents", async () => {
 		mockHasDumperPostPermission.mockResolvedValue(true);
 		mockGetSelfId.mockResolvedValue("1");
-		vi.mocked(contentsCommandRepository.create).mockResolvedValue({
-			id: "1",
-			title: "Example Content",
-			markdown: "This is an example content quote.",
-			userId: "1",
-			status: "UNEXPORTED",
-			createdAt: new Date(),
-			updatedAt: new Date(),
-			exportedAt: new Date(),
-		});
+		vi.mocked(contentsCommandRepository.create).mockResolvedValue();
 
 		const result = await addContents(mockFormData);
 

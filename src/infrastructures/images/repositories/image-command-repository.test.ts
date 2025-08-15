@@ -71,7 +71,7 @@ describe("ImageCommandRepository", () => {
 			expect(prisma.images.create).toHaveBeenCalledWith({
 				data: inputData,
 			});
-			expect(result).toEqual(mockImage);
+			expect(result).toBeUndefined();
 		});
 
 		test("should create image with minimal data", async () => {
@@ -105,7 +105,7 @@ describe("ImageCommandRepository", () => {
 			expect(prisma.images.create).toHaveBeenCalledWith({
 				data: inputData,
 			});
-			expect(result).toEqual(mockImage);
+			expect(result).toBeUndefined();
 		});
 
 		test("should handle database errors during create", async () => {
@@ -139,11 +139,11 @@ describe("ImageCommandRepository", () => {
 				versionId: "test-version",
 			});
 
-			await imagesCommandRepository.uploadToStorage(path, buffer);
+			await imagesCommandRepository.uploadToStorage(path, buffer, false);
 
 			expect(minioClient.putObject).toHaveBeenCalledWith(
 				"test-bucket",
-				path,
+				`images/original/${path}`,
 				buffer,
 			);
 		});
@@ -162,7 +162,7 @@ describe("ImageCommandRepository", () => {
 
 			expect(minioClient.putObject).toHaveBeenCalledWith(
 				"test-bucket",
-				path,
+				`images/original/${path}`,
 				buffer,
 			);
 		});

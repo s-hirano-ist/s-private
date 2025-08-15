@@ -16,7 +16,7 @@ const isValidUrl = (url: string) => {
 
 // value objects
 
-const categoryInputSchema = z
+export const categoryInputSchema = z
 	.object({
 		name: z
 			.string({ message: "required" })
@@ -28,7 +28,7 @@ const categoryInputSchema = z
 	})
 	.strict();
 
-const newsInputSchema = z
+export const newsInputSchema = z
 	.object({
 		category: categoryInputSchema,
 		title: z
@@ -47,7 +47,7 @@ const newsInputSchema = z
 	})
 	.strict();
 
-const newsAdditionalSchema = z
+export const newsAdditionalSchema = z
 	.object({
 		ogTitle: z.string().nullable().optional(),
 		ogDescription: z.string().nullable().optional(),
@@ -59,7 +59,7 @@ const newsAdditionalSchema = z
 export const newsFormSchema = newsInputSchema;
 export type NewsFormSchema = z.infer<typeof newsFormSchema>;
 
-const categoryQueryData = categoryInputSchema.omit({ userId: true });
+export const categoryQueryData = categoryInputSchema.omit({ userId: true });
 export type CategoryQueryData = z.infer<typeof categoryQueryData>;
 
 export const newsQueryData = newsInputSchema

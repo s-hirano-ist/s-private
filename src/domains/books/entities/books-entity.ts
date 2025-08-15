@@ -7,7 +7,7 @@ import {
 
 // value objects
 
-const booksInputSchema = z
+export const booksInputSchema = z
 	.object({
 		ISBN: z
 			.string({ message: "required" })
@@ -24,7 +24,7 @@ const booksInputSchema = z
 	})
 	.strict();
 
-const booksAdditionalSchema = z
+export const booksAdditionalSchema = z
 	.object({
 		googleTitle: z.string().nullable().optional(),
 		googleSubTitle: z.string().nullable().optional(),

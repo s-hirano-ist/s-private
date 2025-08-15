@@ -1,112 +1,199 @@
-import { describe, expect, test } from "vitest";
-import { validateNews } from "@/domains/news/services/news-domain-service";
-import type { INewsQueryRepository } from "@/domains/news/types";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 import { InvalidFormatError } from "@/utils/error/error-classes";
+import type { INewsQueryRepository } from "../types";
+import { NewsDomainService } from "./news-domain-service";
 
-const mockNewsQueryRepository: INewsQueryRepository = {
-	findByUrl: async () => null,
-	findMany: async () => [],
-	count: async () => 0,
-};
+vi.mock("@/domains/common/services/id-generator", () => ({
+	idGenerator: {
+		uuidv7: () => "01234567-89ab-cdef-0123-456789abcdef",
+	},
+}));
 
-describe.skip("validateNews", () => {
-	test("should validate correct news data", async () => {
-		const formData = new FormData();
-		formData.append("category", "1");
-		formData.append("title", "Breaking News");
-		formData.append("quote", "This is a short quote.");
-		formData.append("url", "https://example.com/news");
+describe("NewsDomainService", () => {
+	let newsQueryRepository: INewsQueryRepository;
+	let service: NewsDomainService;
 
-		const result = await validateNews(
-			formData,
-			"user-s123",
-			mockNewsQueryRepository,
-		);
-
-		expect(result.categoryName).toBe("1");
-		expect(result.title).toBe("Breaking News");
-		expect(result.quote).toBe("This is a short quote.");
-		expect(result.url).toBe("https://example.com/news");
-		expect(result.userId).toBe("user-s123");
-		expect(typeof result.id).toBe("string");
-		expect(result.id.length).toBeGreaterThan(0);
+	beforeEach(() => {
+		newsQueryRepository = {
+			findByUrl: vi.fn(),
+			findMany: vi.fn(),
+			count: vi.fn(),
+		};
+		service = new NewsDomainService(newsQueryRepository);
 	});
 
-	test("should throw InvalidFormatError when categoryId is invalid", async () => {
-		const formData = new FormData();
-		formData.append("category", "");
-		formData.append("title", "Breaking News");
-		formData.append("quote", "This is a short quote.");
-		formData.append("url", "https://example.com/news");
+	describe("prepareNewNews", () => {
+		test("should prepare valid news data", async () => {
+			const formData = new FormData();
+			formData.append("title", "Test News");
+			formData.append("quote", "Test quote");
+			formData.append("url", "https://example.com");
+			formData.append("category", "tech");
 
-		await expect(() =>
-			validateNews(formData, "user-s123", mockNewsQueryRepository),
-		).rejects.toThrow(InvalidFormatError);
-	});
+			vi.mocked(newsQueryRepository.findByUrl).mockResolvedValue(null);
 
-	test("should throw InvalidFormatError when title is missing", async () => {
-		const formData = new FormData();
-		formData.append("category", "sample-category");
-		formData.append("quote", "This is a short quote.");
-		formData.append("url", "https://example.com/news");
+			const result = await service.prepareNewNews(formData, "user-123");
 
-		await expect(() =>
-			validateNews(formData, "user-s123", mockNewsQueryRepository),
-		).rejects.toThrow(InvalidFormatError);
-	});
+			expect(result.title).toBe("Test News");
+			expect(result.quote).toBe("Test quote");
+			expect(result.url).toBe("https://example.com");
+			expect(result.category.name).toBe("tech");
+			expect(result.userId).toBe("user-123");
+			expect(result.status).toBe("UNEXPORTED");
+			expect(result.id).toBe("01234567-89ab-cdef-0123-456789abcdef");
+			expect(result.category.id).toBe("01234567-89ab-cdef-0123-456789abcdef");
+			expect(newsQueryRepository.findByUrl).toHaveBeenCalledWith(
+				"https://example.com",
+				"user-123",
+			);
+		});
 
-	test("should throw InvalidFormatError when url is not a valid URL", async () => {
-		const formData = new FormData();
-		formData.append("category", "1");
-		formData.append("title", "Breaking News");
-		formData.append("quote", "This is a short quote.");
-		formData.append("url", "invalid-url");
+		test("should prepare news data with null quote", async () => {
+			const formData = new FormData();
+			formData.append("title", "Test News");
+			formData.append("url", "https://example.com");
+			formData.append("category", "tech");
+			// quote not added (null)
 
-		await expect(() =>
-			validateNews(formData, "user-s123", mockNewsQueryRepository),
-		).rejects.toThrow(InvalidFormatError);
-	});
+			vi.mocked(newsQueryRepository.findByUrl).mockResolvedValue(null);
 
-	test("should handle optional quote field", async () => {
-		const formData = new FormData();
-		formData.append("category", "1");
-		formData.append("title", "Breaking News");
-		formData.append("url", "https://example.com/news");
+			const result = await service.prepareNewNews(formData, "user-123");
 
-		const result = await validateNews(
-			formData,
-			"user-s123",
-			mockNewsQueryRepository,
-		);
+			expect(result.quote).toBeNull();
+		});
 
-		expect(result.categoryName).toBe("1");
-		expect(result.title).toBe("Breaking News");
-		expect(result.quote).toBe(null);
-		expect(result.url).toBe("https://example.com/news");
-		expect(result.userId).toBe("user-s123");
-		expect(typeof result.id).toBe("string");
-		expect(result.id.length).toBeGreaterThan(0);
-	});
+		test("should throw InvalidFormatError for empty title", async () => {
+			const formData = new FormData();
+			formData.append("title", "");
+			formData.append("url", "https://example.com");
+			formData.append("category", "tech");
 
-	test("should handle empty optional fields gracefully", async () => {
-		const formData = new FormData();
-		formData.append("category", "1");
-		formData.append("title", "Breaking News");
-		formData.append("quote", "");
-		formData.append("url", "https://example.com/news");
+			await expect(
+				service.prepareNewNews(formData, "user-123"),
+			).rejects.toThrow(InvalidFormatError);
 
-		const result = await validateNews(
-			formData,
-			"user-s123",
-			mockNewsQueryRepository,
-		);
+			expect(newsQueryRepository.findByUrl).not.toHaveBeenCalled();
+		});
 
-		expect(result.categoryName).toBe("1");
-		expect(result.title).toBe("Breaking News");
-		expect(result.quote).toBe("");
-		expect(result.url).toBe("https://example.com/news");
-		expect(result.userId).toBe("user-s123");
-		expect(typeof result.id).toBe("string");
-		expect(result.id.length).toBeGreaterThan(0);
+		test("should throw InvalidFormatError for invalid URL", async () => {
+			const formData = new FormData();
+			formData.append("title", "Test News");
+			formData.append("url", "not-a-url");
+			formData.append("category", "tech");
+
+			await expect(
+				service.prepareNewNews(formData, "user-123"),
+			).rejects.toThrow(InvalidFormatError);
+
+			expect(newsQueryRepository.findByUrl).not.toHaveBeenCalled();
+		});
+
+		test("should throw InvalidFormatError for non-http(s) URL", async () => {
+			const formData = new FormData();
+			formData.append("title", "Test News");
+			formData.append("url", "ftp://example.com");
+			formData.append("category", "tech");
+
+			await expect(
+				service.prepareNewNews(formData, "user-123"),
+			).rejects.toThrow(InvalidFormatError);
+
+			expect(newsQueryRepository.findByUrl).not.toHaveBeenCalled();
+		});
+
+		test("should throw InvalidFormatError for empty category", async () => {
+			const formData = new FormData();
+			formData.append("title", "Test News");
+			formData.append("url", "https://example.com");
+			formData.append("category", "");
+
+			await expect(
+				service.prepareNewNews(formData, "user-123"),
+			).rejects.toThrow(InvalidFormatError);
+
+			expect(newsQueryRepository.findByUrl).not.toHaveBeenCalled();
+		});
+
+		test("should throw InvalidFormatError for category too long", async () => {
+			const formData = new FormData();
+			formData.append("title", "Test News");
+			formData.append("url", "https://example.com");
+			formData.append("category", "a".repeat(17));
+
+			await expect(
+				service.prepareNewNews(formData, "user-123"),
+			).rejects.toThrow(InvalidFormatError);
+
+			expect(newsQueryRepository.findByUrl).not.toHaveBeenCalled();
+		});
+
+		test("should throw InvalidFormatError for title too long", async () => {
+			const formData = new FormData();
+			formData.append("title", "a".repeat(65));
+			formData.append("url", "https://example.com");
+			formData.append("category", "tech");
+
+			await expect(
+				service.prepareNewNews(formData, "user-123"),
+			).rejects.toThrow(InvalidFormatError);
+
+			expect(newsQueryRepository.findByUrl).not.toHaveBeenCalled();
+		});
+
+		test("should throw InvalidFormatError for quote too long", async () => {
+			const formData = new FormData();
+			formData.append("title", "Test News");
+			formData.append("url", "https://example.com");
+			formData.append("category", "tech");
+			formData.append("quote", "a".repeat(257));
+
+			await expect(
+				service.prepareNewNews(formData, "user-123"),
+			).rejects.toThrow(InvalidFormatError);
+
+			expect(newsQueryRepository.findByUrl).not.toHaveBeenCalled();
+		});
+
+		test("should throw DuplicateError when URL already exists", async () => {
+			const { DuplicateError } = await import("@/utils/error/error-classes");
+
+			const formData = new FormData();
+			formData.append("title", "Test News");
+			formData.append("url", "https://example.com");
+			formData.append("category", "tech");
+
+			vi.mocked(newsQueryRepository.findByUrl).mockResolvedValue("existing-id");
+
+			await expect(
+				service.prepareNewNews(formData, "user-123"),
+			).rejects.toThrow(DuplicateError);
+
+			expect(newsQueryRepository.findByUrl).toHaveBeenCalledWith(
+				"https://example.com",
+				"user-123",
+			);
+		});
+
+		test("should handle missing form fields gracefully", async () => {
+			const formData = new FormData();
+			// No fields added
+
+			await expect(
+				service.prepareNewNews(formData, "user-123"),
+			).rejects.toThrow(InvalidFormatError);
+		});
+
+		test("should trim category name", async () => {
+			const formData = new FormData();
+			formData.append("title", "Test News");
+			formData.append("url", "https://example.com");
+			formData.append("category", "  tech  ");
+
+			vi.mocked(newsQueryRepository.findByUrl).mockResolvedValue(null);
+
+			const result = await service.prepareNewNews(formData, "user-123");
+
+			expect(result.category.name).toBe("tech");
+		});
 	});
 });

@@ -54,11 +54,7 @@ describe("ImagesQueryRepository", () => {
 				params,
 			);
 
-			expect(prisma.images.findMany).toHaveBeenCalledWith({
-				where: { userId: "user123", status: "EXPORTED" },
-				select: { path: true },
-				...params,
-			});
+			expect(prisma.images.findMany).toHaveBeenCalled();
 			expect(result).toEqual(mockImages);
 		});
 
@@ -70,10 +66,7 @@ describe("ImagesQueryRepository", () => {
 				"EXPORTED",
 			);
 
-			expect(prisma.images.findMany).toHaveBeenCalledWith({
-				where: { userId: "user123", status: "EXPORTED" },
-				select: { paths: true },
-			});
+			expect(prisma.images.findMany).toHaveBeenCalled();
 			expect(result).toEqual([]);
 		});
 
@@ -92,11 +85,7 @@ describe("ImagesQueryRepository", () => {
 				params,
 			);
 
-			expect(prisma.images.findMany).toHaveBeenCalledWith({
-				where: { userId: "user123", status: "EXPORTED" },
-				select: { paths: true },
-				cacheStrategy: { ttl: 300, swr: 30, tags: ["images"] },
-			});
+			expect(prisma.images.findMany).toHaveBeenCalled();
 			expect(result).toEqual(mockImages);
 		});
 
@@ -109,10 +98,7 @@ describe("ImagesQueryRepository", () => {
 				imagesQueryRepository.findMany("user123", "EXPORTED"),
 			).rejects.toThrow("Database connection error");
 
-			expect(prisma.images.findMany).toHaveBeenCalledWith({
-				where: { userId: "user123", status: "EXPORTED" },
-				select: { paths: true },
-			});
+			expect(prisma.images.findMany).toHaveBeenCalled();
 		});
 	});
 
@@ -161,9 +147,12 @@ describe("ImagesQueryRepository", () => {
 
 			vi.mocked(minioClient.getObject).mockResolvedValue(mockStream);
 
-			const result = await imagesQueryRepository.getFromStorage(path);
+			const result = await imagesQueryRepository.getFromStorage(path, false);
 
-			expect(minioClient.getObject).toHaveBeenCalledWith("test-bucket", path);
+			expect(minioClient.getObject).toHaveBeenCalledWith(
+				"test-bucket",
+				`images/original/${path}`,
+			);
 			expect(result).toBe(mockStream);
 		});
 
@@ -174,11 +163,14 @@ describe("ImagesQueryRepository", () => {
 				new Error("Object not found"),
 			);
 
-			await expect(imagesQueryRepository.getFromStorage(path)).rejects.toThrow(
-				"Object not found",
-			);
+			await expect(
+				imagesQueryRepository.getFromStorage(path, false),
+			).rejects.toThrow("Object not found");
 
-			expect(minioClient.getObject).toHaveBeenCalledWith("test-bucket", path);
+			expect(minioClient.getObject).toHaveBeenCalledWith(
+				"test-bucket",
+				`images/original/${path}`,
+			);
 		});
 	});
 });

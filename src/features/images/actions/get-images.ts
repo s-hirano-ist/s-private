@@ -1,6 +1,6 @@
 import { cache } from "react";
+import { PAGE_SIZE } from "@/common/constants";
 import { ImageData } from "@/components/image/image-stack";
-import { PAGE_SIZE } from "@/constants";
 import type { Status } from "@/domains/common/entities/common-entity";
 import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
 import { getSelfId } from "@/utils/auth/session";

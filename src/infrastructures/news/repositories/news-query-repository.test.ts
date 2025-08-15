@@ -82,7 +82,7 @@ describe("NewsQueryRepository", () => {
 					quote: "First quote",
 					ogTitle: "First OG Title",
 					ogDescription: "First OG Description",
-					categoryName: "Tech",
+					category: { id: 1, name: "Tech" },
 				},
 				{
 					id: "2",
@@ -91,7 +91,7 @@ describe("NewsQueryRepository", () => {
 					quote: null,
 					ogTitle: "Second OG Title",
 					ogDescription: "Second OG Description",
-					categoryName: "Science",
+					category: { id: 2, name: "Science" },
 				},
 			]);
 		});
@@ -166,7 +166,7 @@ describe("NewsQueryRepository", () => {
 					quote: "Cached quote",
 					ogTitle: "Cached OG Title",
 					ogDescription: "Cached OG Description",
-					categoryName: "Tech",
+					category: { id: 1, name: "Tech" },
 				},
 			]);
 		});
@@ -262,7 +262,11 @@ describe("CategoryQueryRepository", () => {
 				select: { id: true, name: true },
 				...params,
 			});
-			expect(result).toEqual(["tech", "science", "politics"]);
+			expect(result).toEqual([
+				{ id: 1, name: "tech" },
+				{ id: 2, name: "science" },
+				{ id: 3, name: "politics" },
+			]);
 		});
 
 		test("should handle empty results", async () => {
@@ -291,7 +295,10 @@ describe("CategoryQueryRepository", () => {
 				where: { userId: "user123" },
 				select: { id: true, name: true },
 			});
-			expect(result).toEqual(["tech", "science"]);
+			expect(result).toEqual([
+				{ id: 1, name: "tech" },
+				{ id: 2, name: "science" },
+			]);
 		});
 
 		test("should handle database errors", async () => {

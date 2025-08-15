@@ -1,5 +1,34 @@
-import { describe, expect, test } from "vitest";
-import { sanitizeFileName } from "./images-domain-service";
+import { beforeEach, describe, expect, test, vi } from "vitest";
+import {
+	DuplicateError,
+	FileNotAllowedError,
+	UnexpectedError,
+} from "@/utils/error/error-classes";
+import type { IImagesQueryRepository } from "../types";
+import { ImagesDomainService, sanitizeFileName } from "./images-domain-service";
+
+vi.mock("sharp", () => {
+	const mockSharp = vi.fn(() => ({
+		metadata: vi.fn().mockResolvedValue({
+			width: 800,
+			height: 600,
+			format: "jpeg",
+		}),
+		resize: vi.fn().mockReturnThis(),
+		toBuffer: vi.fn().mockResolvedValue(Buffer.from("thumbnail-data")),
+	}));
+	return { default: mockSharp };
+});
+
+vi.mock("uuid", () => ({
+	v7: () => "01234567-89ab-cdef-0123-456789abcdef",
+}));
+
+vi.mock("@/domains/common/services/id-generator", () => ({
+	idGenerator: {
+		uuidv7: () => "01234567-89ab-cdef-0123-456789abcdef",
+	},
+}));
 
 describe("sanitizeFileName", () => {
 	test("should remove invalid characters from the file name", () => {
@@ -30,5 +59,144 @@ describe("sanitizeFileName", () => {
 		const fileName = "simpleFile.txt";
 		const sanitized = sanitizeFileName(fileName);
 		expect(sanitized).toBe(fileName);
+	});
+});
+
+describe("ImagesDomainService", () => {
+	let imagesQueryRepository: IImagesQueryRepository;
+	let service: ImagesDomainService;
+
+	beforeEach(() => {
+		imagesQueryRepository = {
+			findMany: vi.fn(),
+			count: vi.fn(),
+			getFromStorage: vi.fn(),
+		};
+		service = new ImagesDomainService(imagesQueryRepository);
+	});
+
+	describe("prepareNewImages", () => {
+		const createMockFile = (
+			name: string,
+			type: string,
+			size: number,
+			content = "file-content",
+		): File => {
+			const file = new File([new Uint8Array(Buffer.from(content))], name, {
+				type,
+			});
+			Object.defineProperty(file, "size", { value: size });
+			Object.defineProperty(file, "arrayBuffer", {
+				value: async () => Buffer.from(content).buffer,
+			});
+			return file;
+		};
+
+		test("should throw UnexpectedError when no file is provided", async () => {
+			const formData = new FormData();
+			// No file added
+
+			await expect(
+				service.prepareNewImages(formData, "user-123"),
+			).rejects.toThrow(UnexpectedError);
+		});
+
+		test("should throw FileNotAllowedError for invalid file type", async () => {
+			const formData = new FormData();
+			const file = createMockFile("test.txt", "text/plain", 1024);
+			formData.append("file", file);
+
+			await expect(
+				service.prepareNewImages(formData, "user-123"),
+			).rejects.toThrow(FileNotAllowedError);
+		});
+
+		test("should throw FileNotAllowedError for file too large", async () => {
+			const formData = new FormData();
+			const file = createMockFile(
+				"large.jpg",
+				"image/jpeg",
+				101 * 1024 * 1024, // > 100MB
+			);
+			formData.append("file", file);
+
+			await expect(
+				service.prepareNewImages(formData, "user-123"),
+			).rejects.toThrow(FileNotAllowedError);
+		});
+
+		test("should succeed when valid image (duplicate checking disabled)", async () => {
+			const formData = new FormData();
+			const file = createMockFile("test.jpg", "image/jpeg", 1024);
+			formData.append("file", file);
+
+			const result = await service.prepareNewImages(formData, "user-123");
+
+			expect(result).toHaveProperty("validatedImages");
+			expect(result).toHaveProperty("thumbnailBuffer");
+			expect(result).toHaveProperty("originalBuffer");
+		});
+
+		test("should accept valid JPEG file", async () => {
+			const formData = new FormData();
+			const file = createMockFile("test.jpg", "image/jpeg", 1024);
+			formData.append("file", file);
+
+			const result = await service.prepareNewImages(formData, "user-123");
+
+			expect(result.validatedImages.contentType).toBe("image/jpeg");
+			expect(result.validatedImages.userId).toBe("user-123");
+			expect(result.validatedImages.status).toBe("UNEXPORTED");
+		});
+
+		test("should accept valid PNG file", async () => {
+			const formData = new FormData();
+			const file = createMockFile("test.png", "image/png", 1024);
+			formData.append("file", file);
+
+			const result = await service.prepareNewImages(formData, "user-123");
+
+			expect(result.validatedImages.contentType).toBe("image/png");
+			expect(result.validatedImages.userId).toBe("user-123");
+			expect(result.validatedImages.status).toBe("UNEXPORTED");
+		});
+
+		test("should accept valid GIF file", async () => {
+			const formData = new FormData();
+			const file = createMockFile("test.gif", "image/gif", 1024);
+			formData.append("file", file);
+
+			const result = await service.prepareNewImages(formData, "user-123");
+
+			expect(result.validatedImages.contentType).toBe("image/gif");
+			expect(result.validatedImages.userId).toBe("user-123");
+			expect(result.validatedImages.status).toBe("UNEXPORTED");
+		});
+
+		test("should sanitize file name in path", async () => {
+			const formData = new FormData();
+			const file = createMockFile("test*file?.jpg", "image/jpeg", 1024);
+			formData.append("file", file);
+
+			const result = await service.prepareNewImages(formData, "user-123");
+
+			// Check that the filename has been sanitized
+			expect(result.validatedImages.path).toMatch(/testfile.jpg$/);
+		});
+
+		test("should handle files at the maximum size limit", async () => {
+			const formData = new FormData();
+			const file = createMockFile(
+				"max-size.jpg",
+				"image/jpeg",
+				100 * 1024 * 1024, // Exactly 100MB
+			);
+			formData.append("file", file);
+
+			const result = await service.prepareNewImages(formData, "user-123");
+
+			expect(result.validatedImages.contentType).toBe("image/jpeg");
+			expect(result.validatedImages.userId).toBe("user-123");
+		});
 	});
 });

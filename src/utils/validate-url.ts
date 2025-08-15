@@ -56,11 +56,3 @@ export const validateAndNormalizeUrl = (
 
 	return { url: "/", isExternal: false, isValid: false };
 };
-
-export const getDomainFromUrl = (url: string): string => {
-	try {
-		return new URL(url).hostname;
-	} catch {
-		return url;
-	}
-};

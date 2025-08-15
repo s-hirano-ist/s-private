@@ -137,5 +137,32 @@ describe("validate-url utils", () => {
 				isValid: false,
 			});
 		});
+
+		test("should handle URLs with non-HTTP(S) protocols", () => {
+			const result = validateAndNormalizeUrl("ftp://example.com");
+			expect(result).toEqual({
+				url: "/",
+				isExternal: false,
+				isValid: false,
+			});
+		});
+
+		test("should handle protocol-relative URLs", () => {
+			const result = validateAndNormalizeUrl("//example.com");
+			expect(result).toEqual({
+				url: "/",
+				isExternal: false,
+				isValid: false,
+			});
+		});
+
+		test("should handle relative paths without leading slash", () => {
+			const result = validateAndNormalizeUrl("path/to/resource");
+			expect(result).toEqual({
+				url: "/",
+				isExternal: false,
+				isValid: false,
+			});
+		});
 	});
 });

@@ -57,13 +57,12 @@ export class ImagesDomainService {
 		if (!imagesValidatedFields.success) throw new InvalidFormatError();
 
 		// check duplicate
-		const exists = true;
-		// FIXME: TODO:
+		// FIXME: TODO: Implement proper duplicate checking
 		// const exists = await this.imagesQueryRepository.findByPath(
 		// 	imagesValidatedFields.data.path,
 		// 	userId,
 		// );
-		if (exists !== null) throw new DuplicateError();
+		// if (exists !== null) throw new DuplicateError();
 
 		return {
 			validatedImages: imagesValidatedFields.data,

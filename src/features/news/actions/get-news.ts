@@ -1,13 +1,12 @@
 import { cache } from "react";
+import { PAGE_SIZE } from "@/common/constants";
 import { LinkCardData } from "@/components/card/link-card";
-import { PAGE_SIZE } from "@/constants";
 import type { Status } from "@/domains/common/entities/common-entity";
 import {
 	categoryQueryRepository,
 	newsQueryRepository,
 } from "@/infrastructures/news/repositories/news-query-repository";
 import { getSelfId } from "@/utils/auth/session";
-import { getDomainFromUrl } from "@/utils/validate-url";
 import type { NewsFormClientData } from "../components/client/news-form-client";
 
 export const getExportedNews = cache(
@@ -23,7 +22,7 @@ export const getExportedNews = cache(
 		return news.map((d) => ({
 			id: d.id,
 			primaryBadgeText: d.category.name,
-			secondaryBadgeText: getDomainFromUrl(d.url),
+			secondaryBadgeText: new URL(d.url).hostname,
 			key: d.id,
 			title: d.title,
 			description: `${d.quote} \n ${d.ogTitle} \n ${d.ogDescription}`,
@@ -44,7 +43,7 @@ export const getUnexportedNews = cache(
 		return news.map((d) => ({
 			id: d.id,
 			primaryBadgeText: d.category.name,
-			secondaryBadgeText: getDomainFromUrl(d.url),
+			secondaryBadgeText: new URL(d.url).hostname,
 			key: d.id,
 			title: d.title,
 			description: d.quote ?? undefined,

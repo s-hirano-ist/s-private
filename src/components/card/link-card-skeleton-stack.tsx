@@ -1,5 +1,6 @@
 import { LinkCardSkeleton } from "@/components/card/link-card-skeleton";
-import { SKELETON_STACK_SIZE } from "@/constants";
+
+const SKELETON_STACK_SIZE = 10;
 
 export function LinkCardSkeletonStack() {
 	return (

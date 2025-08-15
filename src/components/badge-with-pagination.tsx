@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import { PAGE_SIZE } from "@/common/constants";
 import { Badge } from "@/components/ui/badge";
 import {
 	PaginationContent,
@@ -19,7 +20,7 @@ type Props = {
 export function BadgeWithPagination({
 	currentPage,
 	totalItems,
-	itemsPerPage = 100,
+	itemsPerPage = PAGE_SIZE,
 	label,
 	badgeOnly = false,
 }: Props) {

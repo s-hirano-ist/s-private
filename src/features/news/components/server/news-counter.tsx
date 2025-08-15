@@ -1,7 +1,6 @@
 import { forbidden } from "next/navigation";
 import { BadgeWithPagination } from "@/components/badge-with-pagination";
 import { Unexpected } from "@/components/status/unexpected";
-import { PAGE_SIZE } from "@/constants";
 import { getNewsCount } from "@/features/news/actions/get-news";
 import { hasViewerAdminPermission } from "@/utils/auth/session";
 
@@ -17,7 +16,6 @@ export async function NewsCounter({ page }: Props) {
 		return (
 			<BadgeWithPagination
 				currentPage={page}
-				itemsPerPage={PAGE_SIZE}
 				label="totalNews"
 				totalItems={totalNews}
 			/>

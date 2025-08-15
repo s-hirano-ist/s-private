@@ -44,7 +44,7 @@ describe("ContentsCommandRepository", () => {
 			expect(prisma.contents.create).toHaveBeenCalledWith({
 				data: inputData,
 			});
-			expect(result).toEqual(mockContents);
+			expect(result).toBeUndefined();
 		});
 
 		test("should handle database errors during create", async () => {

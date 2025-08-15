@@ -39,7 +39,7 @@ describe("get-news", () => {
 					url: "https://example1.com",
 					ogTitle: "OG Title 1",
 					ogDescription: "OG Description 1",
-					categoryName: "Tech",
+					category: { name: "Tech" },
 				},
 				{
 					id: "2",
@@ -48,7 +48,7 @@ describe("get-news", () => {
 					url: "https://example2.com",
 					ogTitle: "OG Title 2",
 					ogDescription: "OG Description 2",
-					categoryName: "Science",
+					category: { name: "Science" },
 				},
 			];
 
@@ -131,7 +131,7 @@ describe("get-news", () => {
 					title: "Unexported News 1",
 					quote: "Test quote 1",
 					url: "https://example1.com",
-					categoryName: "Tech",
+					category: { name: "Tech" },
 					ogTitle: "OG Title 1",
 					ogDescription: "OG Description 1",
 				},
@@ -140,7 +140,7 @@ describe("get-news", () => {
 					title: "Unexported News 2",
 					quote: null,
 					url: "https://example2.com",
-					categoryName: "Science",
+					category: { name: "Science" },
 					ogTitle: "OG Title 2",
 					ogDescription: "OG Description 2",
 				},
@@ -231,7 +231,16 @@ describe("get-news", () => {
 
 	describe("getCategories", () => {
 		test("should fetch categories correctly", async () => {
-			const mockCategories = ["Science", "Tech"];
+			const mockCategories = [
+				{
+					id: "01234567-89ab-cdef-0123-456789abcdef",
+					name: "Science",
+				},
+				{
+					id: "01234567-89ab-cdef-0123-456789abcde0",
+					name: "Tech",
+				},
+			];
 
 			vi.mocked(categoryQueryRepository.findMany).mockResolvedValue(
 				mockCategories,
@@ -247,8 +256,14 @@ describe("get-news", () => {
 			);
 
 			expect(result).toEqual([
-				{ id: "Science", name: "Science" },
-				{ id: "Tech", name: "Tech" },
+				{
+					id: "01234567-89ab-cdef-0123-456789abcdef",
+					name: "Science",
+				},
+				{
+					id: "01234567-89ab-cdef-0123-456789abcde0",
+					name: "Tech",
+				},
 			]);
 		});
 

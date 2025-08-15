@@ -1,75 +1,130 @@
-import { describe, expect, test } from "vitest";
-import { validateContents } from "@/domains/contents/services/contents-domain-service";
-import type { IContentsQueryRepository } from "@/domains/contents/types";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 import { InvalidFormatError } from "@/utils/error/error-classes";
+import type { IContentsQueryRepository } from "../types";
+import { ContentsDomainService } from "./contents-domain-service";
 
-const mockContentsQueryRepository: IContentsQueryRepository = {
-	findByTitle: async () => null,
-	findMany: async () => [],
-	count: async () => 0,
-};
+// Mock at the module level before any imports
+vi.mock("uuid", () => ({
+	v7: () => "01234567-89ab-cdef-0123-456789abcdef",
+}));
 
-describe.skip("validateContents", () => {
-	test("should validate correct contents data", async () => {
-		const formData = new FormData();
-		formData.append("title", "Sample Content");
-		formData.append("markdown", "# This is markdown content");
+vi.mock("@/domains/common/services/id-generator", () => ({
+	idGenerator: {
+		uuidv7: () => "01234567-89ab-cdef-0123-456789abcdef",
+	},
+}));
 
-		const result = await validateContents(
-			formData,
-			"user-123",
-			mockContentsQueryRepository,
-		);
+describe("ContentsDomainService", () => {
+	let contentsQueryRepository: IContentsQueryRepository;
+	let service: ContentsDomainService;
 
-		expect(result.title).toBe("Sample Content");
-		expect(result.markdown).toBe("# This is markdown content");
+	beforeEach(() => {
+		contentsQueryRepository = {
+			findByTitle: vi.fn(),
+			findMany: vi.fn(),
+			count: vi.fn(),
+		};
+		service = new ContentsDomainService(contentsQueryRepository);
 	});
 
-	test("should throw InvalidFormatError when title is missing", async () => {
-		const formData = new FormData();
-		formData.append("markdown", "# This is markdown content");
+	describe("prepareNewContents", () => {
+		test("should prepare valid contents data", async () => {
+			const formData = new FormData();
+			formData.append("title", "Test Content");
+			formData.append("markdown", "# Test markdown");
 
-		await expect(() =>
-			validateContents(formData, "user-123", mockContentsQueryRepository),
-		).rejects.toThrow(InvalidFormatError);
-	});
+			vi.mocked(contentsQueryRepository.findByTitle).mockResolvedValue(null);
 
-	test("should throw InvalidFormatError when title is empty", async () => {
-		const formData = new FormData();
-		formData.append("title", "");
-		formData.append("markdown", "# This is markdown content");
+			const result = await service.prepareNewContents(formData, "user-123");
 
-		await expect(() =>
-			validateContents(formData, "user-123", mockContentsQueryRepository),
-		).rejects.toThrow(InvalidFormatError);
-	});
+			expect(result.title).toBe("Test Content");
+			expect(result.markdown).toBe("# Test markdown");
+			expect(result.userId).toBe("user-123");
+			expect(result.status).toBe("UNEXPORTED");
+			expect(result.id).toBe("01234567-89ab-cdef-0123-456789abcdef");
+			expect(contentsQueryRepository.findByTitle).toHaveBeenCalledWith(
+				"Test Content",
+				"user-123",
+			);
+		});
 
-	test("should throw InvalidFormatError when markdown is missing", async () => {
-		const formData = new FormData();
-		formData.append("title", "Sample Content");
+		test("should throw InvalidFormatError for empty title", async () => {
+			const formData = new FormData();
+			formData.append("title", "");
+			formData.append("markdown", "# Test markdown");
 
-		await expect(() =>
-			validateContents(formData, "user-123", mockContentsQueryRepository),
-		).rejects.toThrow(InvalidFormatError);
-	});
+			await expect(
+				service.prepareNewContents(formData, "user-123"),
+			).rejects.toThrow(InvalidFormatError);
 
-	test("should throw InvalidFormatError when markdown is empty", async () => {
-		const formData = new FormData();
-		formData.append("title", "Sample Content");
-		formData.append("markdown", "");
+			expect(contentsQueryRepository.findByTitle).not.toHaveBeenCalled();
+		});
 
-		await expect(() =>
-			validateContents(formData, "user-123", mockContentsQueryRepository),
-		).rejects.toThrow(InvalidFormatError);
-	});
+		test("should throw InvalidFormatError for empty markdown", async () => {
+			const formData = new FormData();
+			formData.append("title", "Test Content");
+			formData.append("markdown", "");
 
-	test("should throw InvalidFormatError when title exceeds max length", async () => {
-		const formData = new FormData();
-		formData.append("title", "a".repeat(65));
-		formData.append("markdown", "# This is markdown content");
+			await expect(
+				service.prepareNewContents(formData, "user-123"),
+			).rejects.toThrow(InvalidFormatError);
 
-		await expect(() =>
-			validateContents(formData, "user-123", mockContentsQueryRepository),
-		).rejects.toThrow(InvalidFormatError);
+			expect(contentsQueryRepository.findByTitle).not.toHaveBeenCalled();
+		});
+
+		test("should throw InvalidFormatError for title too long", async () => {
+			const formData = new FormData();
+			formData.append("title", "a".repeat(65));
+			formData.append("markdown", "# Test markdown");
+
+			await expect(
+				service.prepareNewContents(formData, "user-123"),
+			).rejects.toThrow(InvalidFormatError);
+
+			expect(contentsQueryRepository.findByTitle).not.toHaveBeenCalled();
+		});
+
+		test("should throw DuplicateError when title already exists", async () => {
+			const { DuplicateError } = await import("@/utils/error/error-classes");
+
+			const formData = new FormData();
+			formData.append("title", "Test Content");
+			formData.append("markdown", "# Test markdown");
+
+			vi.mocked(contentsQueryRepository.findByTitle).mockResolvedValue(
+				"existing-id",
+			);
+
+			await expect(
+				service.prepareNewContents(formData, "user-123"),
+			).rejects.toThrow(DuplicateError);
+
+			expect(contentsQueryRepository.findByTitle).toHaveBeenCalledWith(
+				"Test Content",
+				"user-123",
+			);
+		});
+
+		test("should handle missing form fields gracefully", async () => {
+			const formData = new FormData();
+			// No fields added
+
+			await expect(
+				service.prepareNewContents(formData, "user-123"),
+			).rejects.toThrow(InvalidFormatError);
+		});
+
+		test("should handle null form values", async () => {
+			const formData = new FormData();
+			formData.append("title", "null");
+			formData.append("markdown", "null");
+
+			vi.mocked(contentsQueryRepository.findByTitle).mockResolvedValue(null);
+
+			const result = await service.prepareNewContents(formData, "user-123");
+
+			expect(result.title).toBe("null");
+			expect(result.markdown).toBe("null");
+		});
 	});
 });

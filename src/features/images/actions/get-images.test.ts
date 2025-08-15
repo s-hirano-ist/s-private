@@ -7,13 +7,16 @@ import {
 	getUnexportedImages,
 } from "./get-images";
 
-vi.mock("@/infrastructures/images/repositories/image-query-repository", () => ({
-	imageQueryRepository: {
-		findMany: vi.fn(),
-		count: vi.fn(),
-		getFromStorage: vi.fn(),
-	},
-}));
+vi.mock(
+	"@/infrastructures/images/repositories/images-query-repository",
+	() => ({
+		imagesQueryRepository: {
+			findMany: vi.fn(),
+			count: vi.fn(),
+			getFromStorage: vi.fn(),
+		},
+	}),
+);
 
 vi.mock("@/utils/auth/session", () => ({
 	getSelfId: vi.fn().mockResolvedValue("test-user-id"),
@@ -28,16 +31,16 @@ describe("get-images", () => {
 		test("should fetch exported images with correct parameters", async () => {
 			const mockImages = [
 				{
+					path: "image1.jpg",
 					id: "1",
-					title: "Test Image 1",
-					url: "https://example1.com/image1.jpg",
-					objKey: "image1.jpg",
+					height: 100,
+					width: 200,
 				},
 				{
+					path: "image2.jpg",
 					id: "2",
-					title: "Test Image 2",
-					url: "https://example2.com/image2.jpg",
-					objKey: "image2.jpg",
+					height: 150,
+					width: 250,
 				},
 			];
 
@@ -56,7 +59,20 @@ describe("get-images", () => {
 				},
 			);
 
-			expect(result).toEqual(mockImages);
+			expect(result).toEqual([
+				{
+					originalPath: "/api/images/original/image1.jpg",
+					thumbnailPath: "/api/images/thumbnail/image1.jpg",
+					height: 100,
+					width: 200,
+				},
+				{
+					originalPath: "/api/images/original/image2.jpg",
+					thumbnailPath: "/api/images/thumbnail/image2.jpg",
+					height: 150,
+					width: 250,
+				},
+			]);
 		});
 
 		test("should handle pagination correctly", async () => {
@@ -97,16 +113,16 @@ describe("get-images", () => {
 		test("should fetch unexported images correctly", async () => {
 			const mockImages = [
 				{
+					path: "unexported1.jpg",
 					id: "1",
-					title: "Unexported Image 1",
-					url: "https://example1.com/image1.jpg",
-					objKey: "image1.jpg",
+					height: 300,
+					width: 400,
 				},
 				{
+					path: "unexported2.jpg",
 					id: "2",
-					title: "Unexported Image 2",
-					url: "https://example2.com/image2.jpg",
-					objKey: "image2.jpg",
+					height: 350,
+					width: 450,
 				},
 			];
 
@@ -124,7 +140,20 @@ describe("get-images", () => {
 				},
 			);
 
-			expect(result).toEqual(mockImages);
+			expect(result).toEqual([
+				{
+					originalPath: "/api/images/original/unexported1.jpg",
+					thumbnailPath: "/api/images/thumbnail/unexported1.jpg",
+					height: 300,
+					width: 400,
+				},
+				{
+					originalPath: "/api/images/original/unexported2.jpg",
+					thumbnailPath: "/api/images/thumbnail/unexported2.jpg",
+					height: 350,
+					width: 450,
+				},
+			]);
 		});
 
 		test("should handle empty results", async () => {
@@ -177,23 +206,21 @@ describe("get-images", () => {
 	});
 
 	describe("getImageFromStorage", () => {
-		test("should fetch image from storage with correct objKey", async () => {
-			const mockImageData = {
-				data: Buffer.from("fake-image-data"),
-				contentType: "image/jpeg",
-			};
+		test("should fetch image from storage with correct path and thumbnail flag", async () => {
+			const mockStream = {} as NodeJS.ReadableStream;
 
 			vi.mocked(imagesQueryRepository.getFromStorage).mockResolvedValue(
-				mockImageData,
+				mockStream,
 			);
 
-			const result = await getImagesFromStorage("test-image-key.jpg");
+			const result = await getImagesFromStorage("test-image-key.jpg", false);
 
 			expect(imagesQueryRepository.getFromStorage).toHaveBeenCalledWith(
 				"test-image-key.jpg",
+				false,
 			);
 
-			expect(result).toEqual(mockImageData);
+			expect(result).toBe(mockStream);
 		});
 
 		test("should handle storage errors", async () => {
@@ -201,7 +228,7 @@ describe("get-images", () => {
 				new Error("Storage error"),
 			);
 
-			await expect(getImagesFromStorage("test-key")).rejects.toThrow(
+			await expect(getImagesFromStorage("test-key", false)).rejects.toThrow(
 				"Storage error",
 			);
 		});
@@ -209,7 +236,7 @@ describe("get-images", () => {
 		test("should handle missing image", async () => {
 			vi.mocked(imagesQueryRepository.getFromStorage).mockResolvedValue(null);
 
-			const result = await getImagesFromStorage("missing-key");
+			const result = await getImagesFromStorage("missing-key", false);
 
 			expect(result).toBeNull();
 		});

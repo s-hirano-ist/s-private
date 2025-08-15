@@ -7,7 +7,7 @@ import {
 
 // value objects
 
-const contentsInputSchema = z
+export const contentsInputSchema = z
 	.object({
 		title: z
 			.string({ message: "required" })

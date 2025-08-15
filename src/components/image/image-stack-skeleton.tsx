@@ -1,5 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { SKELETON_STACK_SIZE } from "@/constants";
+
+const SKELETON_STACK_SIZE = 10;
 
 export function ImageStackSkeleton() {
 	return (
