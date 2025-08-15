@@ -6,24 +6,6 @@ vi.mock("@/env", () => ({
 	},
 }));
 
-vi.mock("@/minio", () => ({
-	minioClient: {
-		putObject: vi.fn(),
-	},
-}));
-
-vi.mock("@/prisma", () => ({
-	default: {
-		images: {
-			create: vi.fn(),
-			delete: vi.fn(),
-		},
-		$accelerate: {
-			invalidate: vi.fn(),
-		},
-	},
-}));
-
 import { Status } from "@/generated";
 import { minioClient } from "@/minio";
 import prisma from "@/prisma";
@@ -52,9 +34,11 @@ describe("ImageCommandRepository", () => {
 				exportedAt: new Date(),
 			};
 
-			const inputData = {
+			vi.mocked(prisma.images.create).mockResolvedValue(mockImage);
+
+			const result = await imagesCommandRepository.create({
 				id: "image-123",
-				paths: "image-123",
+				path: "image-123",
 				userId: "user123",
 				contentType: "image/png",
 				fileSize: 1024,
@@ -62,22 +46,30 @@ describe("ImageCommandRepository", () => {
 				height: 600,
 				tags: ["nature", "landscape"],
 				description: "A beautiful landscape",
-			};
-
-			vi.mocked(prisma.images.create).mockResolvedValue(mockImage);
-
-			const result = await imagesCommandRepository.create(inputData);
+				status: "UNEXPORTED",
+			});
 
 			expect(prisma.images.create).toHaveBeenCalledWith({
-				data: inputData,
+				data: {
+					id: "image-123",
+					path: "image-123",
+					userId: "user123",
+					contentType: "image/png",
+					fileSize: 1024,
+					width: 800,
+					height: 600,
+					tags: ["nature", "landscape"],
+					description: "A beautiful landscape",
+					status: "UNEXPORTED",
+				},
 			});
 			expect(result).toBeUndefined();
 		});
 
 		test("should create image with minimal data", async () => {
-			const mockImage = {
+			vi.mocked(prisma.images.create).mockResolvedValue({
 				id: "image-456",
-				paths: "image-456",
+				path: "image-456",
 				userId: "user123",
 				contentType: "image/jpeg",
 				fileSize: null,
@@ -88,43 +80,52 @@ describe("ImageCommandRepository", () => {
 				status: "UNEXPORTED" as Status,
 				createdAt: new Date(),
 				updatedAt: new Date(),
-				ogImageUrl: "https://example.com/og-image.jpg",
 				exportedAt: new Date(),
-			};
+			});
 
-			const inputData = {
-				paths: "image-456",
+			const result = await imagesCommandRepository.create({
+				path: "image-456",
 				userId: "user123",
 				contentType: "image/jpeg",
-			};
-
-			vi.mocked(prisma.images.create).mockResolvedValue(mockImage);
-
-			const result = await imagesCommandRepository.create(inputData);
+				status: "UNEXPORTED",
+				id: "1",
+			});
 
 			expect(prisma.images.create).toHaveBeenCalledWith({
-				data: inputData,
+				data: {
+					path: "image-456",
+					userId: "user123",
+					contentType: "image/jpeg",
+					status: "UNEXPORTED",
+					id: "1",
+				},
 			});
 			expect(result).toBeUndefined();
 		});
 
 		test("should handle database errors during create", async () => {
-			const inputData = {
-				paths: "image-123",
-				userId: "user123",
-				contentType: "image/png",
-			};
-
 			vi.mocked(prisma.images.create).mockRejectedValue(
 				new Error("Database constraint error"),
 			);
 
-			await expect(imagesCommandRepository.create(inputData)).rejects.toThrow(
-				"Database constraint error",
-			);
+			await expect(
+				imagesCommandRepository.create({
+					path: "image-123",
+					userId: "user123",
+					contentType: "image/png",
+					status: "UNEXPORTED",
+					id: "1",
+				}),
+			).rejects.toThrow("Database constraint error");
 
 			expect(prisma.images.create).toHaveBeenCalledWith({
-				data: inputData,
+				data: {
+					path: "image-123",
+					userId: "user123",
+					contentType: "image/png",
+					status: "UNEXPORTED",
+					id: "1",
+				},
 			});
 		});
 	});
@@ -157,7 +158,7 @@ describe("ImageCommandRepository", () => {
 			);
 
 			await expect(
-				imagesCommandRepository.uploadToStorage(path, buffer),
+				imagesCommandRepository.uploadToStorage(path, buffer, false),
 			).rejects.toThrow("Storage upload failed");
 
 			expect(minioClient.putObject).toHaveBeenCalledWith(

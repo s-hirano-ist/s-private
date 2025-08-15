@@ -1,15 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
-vi.mock("@/prisma", () => ({
-	default: {
-		contents: {
-			findUnique: vi.fn(),
-			findMany: vi.fn(),
-			count: vi.fn(),
-		},
-	},
-}));
-
 import prisma from "@/prisma";
 import { contentsQueryRepository } from "./contents-query-repository";
 

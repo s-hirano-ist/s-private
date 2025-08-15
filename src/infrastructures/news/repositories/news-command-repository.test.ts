@@ -1,14 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
-vi.mock("@/prisma", () => ({
-	default: {
-		news: {
-			create: vi.fn(),
-			delete: vi.fn(),
-		},
-	},
-}));
-
 vi.mock("@/o11y/server", () => ({
 	serverLogger: {
 		info: vi.fn(),

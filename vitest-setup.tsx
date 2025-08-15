@@ -86,6 +86,12 @@ beforeEach(() => {
 
 	vi.mock("uuid", () => ({ v7: vi.fn() }));
 
+	vi.mock("@/minio", () => ({
+		minioClient: {
+			putObject: vi.fn(),
+		},
+	}));
+
 	vi.mock("@/prisma", () => ({
 		default: {
 			$extends: vi.fn().mockReturnThis(),
@@ -95,6 +101,7 @@ beforeEach(() => {
 				create: vi.fn(),
 				update: vi.fn(),
 				delete: vi.fn(),
+				count: vi.fn(),
 			},
 			contents: {
 				findMany: vi.fn(),
@@ -102,6 +109,7 @@ beforeEach(() => {
 				create: vi.fn(),
 				update: vi.fn(),
 				delete: vi.fn(),
+				count: vi.fn(),
 			},
 			images: {
 				findMany: vi.fn(),
@@ -109,6 +117,10 @@ beforeEach(() => {
 				create: vi.fn(),
 				update: vi.fn(),
 				delete: vi.fn(),
+				count: vi.fn(),
+				$accelerate: {
+					invalidate: vi.fn(),
+				},
 			},
 			books: {
 				findMany: vi.fn(),
@@ -116,6 +128,7 @@ beforeEach(() => {
 				create: vi.fn(),
 				update: vi.fn(),
 				delete: vi.fn(),
+				count: vi.fn(),
 			},
 			categories: {
 				findMany: vi.fn(),

@@ -13,16 +13,6 @@ vi.mock("@/minio", () => ({
 	},
 }));
 
-vi.mock("@/prisma", () => ({
-	default: {
-		images: {
-			findUnique: vi.fn(),
-			findMany: vi.fn(),
-			count: vi.fn(),
-		},
-	},
-}));
-
 import { minioClient } from "@/minio";
 import prisma from "@/prisma";
 import { imagesQueryRepository } from "./images-query-repository";

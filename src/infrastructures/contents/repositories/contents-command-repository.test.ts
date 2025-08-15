@@ -1,14 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
-vi.mock("@/prisma", () => ({
-	default: {
-		contents: {
-			create: vi.fn(),
-			delete: vi.fn(),
-		},
-	},
-}));
-
 import { Status } from "@/generated";
 import prisma from "@/prisma";
 import { contentsCommandRepository } from "./contents-command-repository";
@@ -31,39 +22,51 @@ describe("ContentsCommandRepository", () => {
 				exportedAt: null,
 			};
 
-			const inputData = {
+			vi.mocked(prisma.contents.create).mockResolvedValue(mockContents);
+
+			const result = await contentsCommandRepository.create({
 				title: "Test Content",
 				markdown: "# Test Content\n\nThis is test markdown content.",
 				userId: "user123",
-			};
-
-			vi.mocked(prisma.contents.create).mockResolvedValue(mockContents);
-
-			const result = await contentsCommandRepository.create(inputData);
+				id: "1",
+				status: "UNEXPORTED",
+			});
 
 			expect(prisma.contents.create).toHaveBeenCalledWith({
-				data: inputData,
+				data: {
+					title: "Test Content",
+					markdown: "# Test Content\n\nThis is test markdown content.",
+					userId: "user123",
+					id: "1",
+					status: "UNEXPORTED",
+				},
 			});
 			expect(result).toBeUndefined();
 		});
 
 		test("should handle database errors during create", async () => {
-			const inputData = {
-				title: "Test Content",
-				markdown: "# Test Content\n\nThis is test markdown content.",
-				userId: "user123",
-			};
-
 			vi.mocked(prisma.contents.create).mockRejectedValue(
 				new Error("Database constraint error"),
 			);
 
-			await expect(contentsCommandRepository.create(inputData)).rejects.toThrow(
-				"Database constraint error",
-			);
+			await expect(
+				contentsCommandRepository.create({
+					title: "Test Content",
+					markdown: "# Test Content\n\nThis is test markdown content.",
+					userId: "user123",
+					id: "1",
+					status: "EXPORTED",
+				}),
+			).rejects.toThrow("Database constraint error");
 
 			expect(prisma.contents.create).toHaveBeenCalledWith({
-				data: inputData,
+				data: {
+					title: "Test Content",
+					markdown: "# Test Content\n\nThis is test markdown content.",
+					userId: "user123",
+					id: "1",
+					status: "EXPORTED",
+				},
 			});
 		});
 	});
