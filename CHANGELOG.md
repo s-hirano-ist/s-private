@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.26.4](https://github.com/s-hirano-ist/s-private/compare/v8.26.3...v8.26.4) (2025-08-15)
+
+
+### Bug Fixes
+
+* add check for duplicate ([f9483e7](https://github.com/s-hirano-ist/s-private/commit/f9483e74607eb3e0e78061e05c22d3650cf5ebc1))
+* small fixes ([1127595](https://github.com/s-hirano-ist/s-private/commit/1127595f6d7fa2adc4aa11c90dbe52dfba55b7c0))
+* small fixes ([6b7d98f](https://github.com/s-hirano-ist/s-private/commit/6b7d98f57429a5710e04fe022412da62a44e7e9b))
+* tests ([52e314e](https://github.com/s-hirano-ist/s-private/commit/52e314e135e751906d20cc77339dcb4e28983e85))
+
 ## [8.26.3](https://github.com/s-hirano-ist/s-private/compare/v8.26.2...v8.26.3) (2025-08-15)
 
 
