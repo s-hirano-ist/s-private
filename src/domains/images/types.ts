@@ -19,6 +19,7 @@ export type ImagesFindManyParams = {
 };
 
 export type IImagesQueryRepository = {
+	findByPath(path: string, userId: string): Promise<ImagesQueryData | null>;
 	findMany(
 		userId: string,
 		status: Status,

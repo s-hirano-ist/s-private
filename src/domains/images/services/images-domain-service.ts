@@ -36,12 +36,7 @@ export class ImagesDomainService {
 		const path = `${uuidv7()}-${sanitizedFileName}`;
 
 		const originalBuffer = Buffer.from(await file.arrayBuffer());
-		const originalMetaData = await sharp(originalBuffer).metadata();
 
-		// FIXME: if layout is not good
-		// const thumbnailHeight = Math.floor(
-		// 	(originalMetaData.height * THUMBNAIL_WIDTH) / originalMetaData.width,
-		// );
 		const thumbnailBuffer = await sharp(originalBuffer)
 			.resize(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT)
 			.toBuffer();
@@ -57,12 +52,11 @@ export class ImagesDomainService {
 		if (!imagesValidatedFields.success) throw new InvalidFormatError();
 
 		// check duplicate
-		// FIXME: TODO: Implement proper duplicate checking
-		// const exists = await this.imagesQueryRepository.findByPath(
-		// 	imagesValidatedFields.data.path,
-		// 	userId,
-		// );
-		// if (exists !== null) throw new DuplicateError();
+		const exists = await this.imagesQueryRepository.findByPath(
+			imagesValidatedFields.data.path,
+			userId,
+		);
+		if (exists !== null) throw new DuplicateError();
 
 		return {
 			validatedImages: imagesValidatedFields.data,

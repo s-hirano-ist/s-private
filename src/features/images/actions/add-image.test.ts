@@ -1,11 +1,16 @@
 import { revalidatePath } from "next/cache";
-import { Session } from "next-auth";
 import sharp from "sharp";
 import { v7 as uuidv7 } from "uuid";
-import { describe, expect, Mock, test, vi } from "vitest";
-import { auth } from "@/common/auth/auth";
+import { describe, expect, test, vi } from "vitest";
+import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
+import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
 import { addImage } from "./add-image";
+
+vi.mock("@/common/auth/session", () => ({
+	hasDumperPostPermission: vi.fn(),
+	getSelfId: vi.fn(),
+}));
 
 vi.mock(
 	"@/infrastructures/images/repositories/images-command-repository",
@@ -17,15 +22,14 @@ vi.mock(
 	}),
 );
 
-const mockAllowedRoleSession: Session = {
-	user: { id: "1", roles: ["dumper"] },
-	expires: "2025-01-01",
-};
-const mockNotAllowedRoleSession: Session = {
-	user: { id: "1", roles: [] },
-	expires: "2025-01-01",
-};
-const mockUnauthorizedSession = null;
+vi.mock(
+	"@/infrastructures/images/repositories/images-query-repository",
+	() => ({
+		imagesQueryRepository: {
+			findByPath: vi.fn(),
+		},
+	}),
+);
 
 const createMockFile = (name: string, type: string, size: number): File => {
 	const file = new File([new Uint8Array([0x00])], name, { type });
@@ -36,19 +40,17 @@ const createMockFile = (name: string, type: string, size: number): File => {
 	return file;
 };
 
-const mockMetadata = { width: 800, height: 600, format: "jpeg" };
-
 describe("addImage", () => {
 	let mockFormData: FormData;
 
 	test("should return success false on Unauthorized", async () => {
-		(auth as Mock).mockResolvedValue(mockUnauthorizedSession);
+		vi.mocked(hasDumperPostPermission).mockResolvedValue(false);
 
-		await expect(addImage(mockFormData)).rejects.toThrow("UNAUTHORIZED");
+		await expect(addImage(mockFormData)).rejects.toThrow("FORBIDDEN");
 	});
 
 	test("should return success false on not permitted", async () => {
-		(auth as Mock).mockResolvedValue(mockNotAllowedRoleSession);
+		vi.mocked(hasDumperPostPermission).mockResolvedValue(false);
 
 		await expect(addImage(mockFormData)).rejects.toThrow("FORBIDDEN");
 	});
@@ -63,21 +65,12 @@ describe("addImage", () => {
 		// Clear any previous mocks
 		vi.clearAllMocks();
 
-		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
-
-		vi.mocked(sharp).mockReturnValue({
-			metadata: vi.fn().mockResolvedValue(mockMetadata),
-			resize: vi.fn().mockReturnThis(),
-			toBuffer: vi
-				.fn()
-				.mockResolvedValueOnce(Buffer.from("original"))
-				.mockResolvedValueOnce(Buffer.from("thumbnail")),
-			// eslint-disable-next-line
-		} as any);
-
+		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+		vi.mocked(getSelfId).mockResolvedValue("user-id");
+		vi.mocked(imagesQueryRepository.findByPath).mockResolvedValue(null);
 		vi.mocked(imagesCommandRepository.create).mockResolvedValue();
 		vi.mocked(imagesCommandRepository.uploadToStorage).mockResolvedValue();
-		(uuidv7 as Mock).mockReturnValue("generated-uuid");
+		vi.mocked(uuidv7).mockReturnValue("generated-uuid");
 
 		const result = await addImage(mockFormData);
 
@@ -86,7 +79,7 @@ describe("addImage", () => {
 		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 		expect(result).toEqual({
 			success: true,
-			message: `inserted`,
+			message: "inserted",
 		});
 	});
 
@@ -98,8 +91,9 @@ describe("addImage", () => {
 		mockFormData.append("file", file);
 
 		vi.clearAllMocks();
-		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
-		(uuidv7 as Mock).mockReturnValue("generated-uuid");
+		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+		vi.mocked(getSelfId).mockResolvedValue("user-id");
+		vi.mocked(uuidv7).mockReturnValue("generated-uuid");
 
 		const result = await addImage(mockFormData);
 
@@ -117,8 +111,9 @@ describe("addImage", () => {
 		mockFormData.append("file", file);
 
 		vi.clearAllMocks();
-		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
-		(uuidv7 as Mock).mockReturnValue("generated-uuid");
+		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+		vi.mocked(getSelfId).mockResolvedValue("user-id");
+		vi.mocked(uuidv7).mockReturnValue("generated-uuid");
 
 		const result = await addImage(mockFormData);
 
@@ -132,8 +127,9 @@ describe("addImage", () => {
 		mockFormData = new FormData();
 
 		vi.clearAllMocks();
-		(auth as Mock).mockResolvedValue(mockAllowedRoleSession);
-		(uuidv7 as Mock).mockReturnValue("generated-uuid");
+		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+		vi.mocked(getSelfId).mockResolvedValue("user-id");
+		vi.mocked(uuidv7).mockReturnValue("generated-uuid");
 
 		const result = await addImage(mockFormData);
 

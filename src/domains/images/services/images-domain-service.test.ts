@@ -49,6 +49,7 @@ describe("ImagesDomainService", () => {
 
 	beforeEach(() => {
 		imagesQueryRepository = {
+			findByPath: vi.fn().mockResolvedValue(null),
 			findMany: vi.fn(),
 			count: vi.fn(),
 			getFromStorage: vi.fn(),
@@ -178,6 +179,27 @@ describe("ImagesDomainService", () => {
 
 			expect(result.validatedImages.contentType).toBe("image/jpeg");
 			expect(result.validatedImages.userId).toBe("user-123");
+		});
+
+		test("should throw DuplicateError when path already exists for user", async () => {
+			// Mock findByPath to return an existing image
+			vi.mocked(imagesQueryRepository.findByPath).mockResolvedValue({
+				id: "existing-id",
+				path: "01234567-89ab-cdef-0123-456789abcdef-test.jpg",
+			});
+
+			const formData = new FormData();
+			const file = createMockFile("test.jpg", "image/jpeg", 1024);
+			formData.append("file", file);
+
+			await expect(
+				service.prepareNewImages(formData, "user-123"),
+			).rejects.toThrow(DuplicateError);
+
+			expect(imagesQueryRepository.findByPath).toHaveBeenCalledWith(
+				"01234567-89ab-cdef-0123-456789abcdef-test.jpg",
+				"user-123",
+			);
 		});
 	});
 });
