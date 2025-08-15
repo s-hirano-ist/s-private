@@ -7,10 +7,6 @@ export default defineConfig({
 	test: {
 		environment: "jsdom",
 		setupFiles: ["./vitest-setup.tsx"],
-		env: {
-			NODE_ENV: "test",
-			SKIP_ENV_VALIDATION: "1",
-		},
 		coverage: {
 			enabled: true,
 			reportOnFailure: true,

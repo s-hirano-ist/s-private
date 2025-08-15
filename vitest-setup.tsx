@@ -13,6 +13,7 @@ beforeEach(() => {
 	vi.mock("@/env", () => ({
 		env: {
 			NODE_ENV: "test",
+			DATABASE_URL: "postgresql://test:test@localhost:5432/test",
 			PUSHOVER_URL: "https://example.com",
 			PUSHOVER_USER_KEY: "test-key",
 			PUSHOVER_APP_TOKEN: "test-token",
@@ -84,6 +85,47 @@ beforeEach(() => {
 	}));
 
 	vi.mock("uuid", () => ({ v7: vi.fn() }));
+
+	vi.mock("@/prisma", () => ({
+		default: {
+			$extends: vi.fn().mockReturnThis(),
+			news: {
+				findMany: vi.fn(),
+				findUnique: vi.fn(),
+				create: vi.fn(),
+				update: vi.fn(),
+				delete: vi.fn(),
+			},
+			contents: {
+				findMany: vi.fn(),
+				findUnique: vi.fn(),
+				create: vi.fn(),
+				update: vi.fn(),
+				delete: vi.fn(),
+			},
+			images: {
+				findMany: vi.fn(),
+				findUnique: vi.fn(),
+				create: vi.fn(),
+				update: vi.fn(),
+				delete: vi.fn(),
+			},
+			books: {
+				findMany: vi.fn(),
+				findUnique: vi.fn(),
+				create: vi.fn(),
+				update: vi.fn(),
+				delete: vi.fn(),
+			},
+			categories: {
+				findMany: vi.fn(),
+				findUnique: vi.fn(),
+				create: vi.fn(),
+				update: vi.fn(),
+				delete: vi.fn(),
+			},
+		},
+	}));
 
 	type PartialSharp = Pick<Sharp, "metadata" | "resize" | "toBuffer">;
 	vi.mock("sharp", () => {

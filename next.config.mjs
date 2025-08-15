@@ -47,7 +47,7 @@ const nextConfig = {
 	output: "standalone",
 	images: {
 		remotePatterns: [
-			{ hostname: process.env.MINIO_HOST },
+			{ hostname: process.env.MINIO_HOST ?? "" },
 			{
 				protocol: "https",
 				hostname: "books.google.com",
