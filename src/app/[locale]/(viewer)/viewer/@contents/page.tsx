@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { LinkCardSkeletonStack } from "@/common/components/card/link-card-skeleton-stack";
+import Loading from "@/common/components/loading";
 import { getExportedContents } from "@/features/contents/actions/get-contents";
 import { ContentsCounter } from "@/features/contents/components/server/contents-counter";
 import { ContentsStack } from "@/features/contents/components/server/contents-stack";
@@ -18,7 +18,7 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 		<>
 			<ContentsCounter />
 
-			<Suspense fallback={<LinkCardSkeletonStack />}>
+			<Suspense fallback={<Loading />}>
 				<ContentsStack getContents={getExportedContents} page={currentPage} />
 			</Suspense>
 		</>

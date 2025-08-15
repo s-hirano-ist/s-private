@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { ImageCardSkeletonStack } from "@/common/components/card/image-card-skeleton-stack";
+import Loading from "@/common/components/loading";
 import { addBooks } from "@/features/books/actions/add-books";
 import { getUnexportedBooks } from "@/features/books/actions/get-books";
 import { BooksStack } from "@/features/books/components/server/book-stack";
@@ -17,7 +17,7 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 		<>
 			<BooksForm addBooks={addBooks} />
 
-			<Suspense fallback={<ImageCardSkeletonStack />}>
+			<Suspense fallback={<Loading />}>
 				<BooksStack getBooks={getUnexportedBooks} />
 			</Suspense>
 		</>
