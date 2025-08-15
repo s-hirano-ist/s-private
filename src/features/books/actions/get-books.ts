@@ -12,6 +12,7 @@ export const getExportedBooks = cache(async (): Promise<ImageCardData[]> => {
 	});
 
 	return books.map((d) => ({
+		id: d.id,
 		title: d.title,
 		href: d.ISBN,
 		image: d.googleImgSrc ?? "/not-found.png",
@@ -25,6 +26,7 @@ export const getUnexportedBooks = cache(async (): Promise<ImageCardData[]> => {
 	});
 
 	return books.map((d) => ({
+		id: d.id,
 		title: d.title,
 		href: d.ISBN,
 		image: d.googleImgSrc ?? "/not-found.png",

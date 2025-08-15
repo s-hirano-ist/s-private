@@ -53,14 +53,14 @@ describe("get-contents", () => {
 
 			expect(result).toEqual([
 				{
-					id: "",
+					id: "1",
 					key: "1",
 					title: "Test Content 1",
 					description: "",
 					href: "/content/Test%20Content%201",
 				},
 				{
-					id: "",
+					id: "2",
 					key: "2",
 					title: "Test Content 2",
 					description: "",

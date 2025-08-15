@@ -2,17 +2,24 @@
 import Image from "next/image";
 import { useState } from "react";
 import Lightbox from "yet-another-react-lightbox";
+import { DeleteButtonWithModal } from "@/common/components/delete-button-with-modal";
 import { StatusCodeView } from "@/common/components/status/status-code-view";
+import type { ServerAction } from "@/common/types";
 import "yet-another-react-lightbox/styles.css";
 
 export type ImageData = {
+	id?: string;
 	originalPath: string;
 	thumbnailPath: string;
 	height?: number | null;
 	width?: number | null;
 };
 
-type Props = { data: ImageData[] };
+type Props = {
+	data: ImageData[];
+	showDeleteButton: boolean;
+	deleteAction?: (id: string) => Promise<ServerAction>;
+};
 
 type SlideImage = {
 	src: string;
@@ -21,7 +28,7 @@ type SlideImage = {
 	width?: number;
 };
 
-export function ImageStack({ data }: Props) {
+export function ImageStack({ data, showDeleteButton, deleteAction }: Props) {
 	const [open, setOpen] = useState(false);
 	const [index, setIndex] = useState(0);
 
@@ -43,26 +50,34 @@ export function ImageStack({ data }: Props) {
 		<>
 			<div className="grid grid-cols-4 gap-2 p-2 sm:p-4">
 				{data.map((image, i) => (
-					<div
-						aria-label={`Open image ${image.originalPath} in lightbox`}
-						className="cursor-pointer"
-						key={image.originalPath}
-						onClick={() => handleImageClick(i)}
-						onKeyDown={(e) => {
-							if (e.key === "Enter" || e.key === " ") {
-								handleImageClick(i);
-							}
-						}}
-						role="button"
-						tabIndex={0}
-					>
-						<Image
-							alt={`Image ${image.originalPath}`}
-							height={96}
-							src={image.thumbnailPath}
-							unoptimized
-							width={300}
-						/>
+					<div className="relative" key={image.id || image.originalPath}>
+						<div
+							aria-label={`Open image ${image.originalPath} in lightbox`}
+							className="cursor-pointer"
+							onClick={() => handleImageClick(i)}
+							onKeyDown={(e) => {
+								if (e.key === "Enter" || e.key === " ") {
+									handleImageClick(i);
+								}
+							}}
+							role="button"
+							tabIndex={0}
+						>
+							<Image
+								alt={`Image ${image.originalPath}`}
+								height={96}
+								src={image.thumbnailPath}
+								unoptimized
+								width={300}
+							/>
+						</div>
+						{showDeleteButton && deleteAction !== undefined && image.id && (
+							<DeleteButtonWithModal
+								deleteAction={deleteAction}
+								id={image.id}
+								title={image.originalPath}
+							/>
+						)}
 					</div>
 				))}
 			</div>

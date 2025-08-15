@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Loading from "@/common/components/loading";
 import { addBooks } from "@/features/books/actions/add-books";
+import { deleteBooks } from "@/features/books/actions/delete-books";
 import { getUnexportedBooks } from "@/features/books/actions/get-books";
 import { BooksStack } from "@/features/books/components/server/book-stack";
 import { BooksForm } from "@/features/books/components/server/books-form";
@@ -18,7 +19,7 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 			<BooksForm addBooks={addBooks} />
 
 			<Suspense fallback={<Loading />}>
-				<BooksStack getBooks={getUnexportedBooks} />
+				<BooksStack deleteBooks={deleteBooks} getBooks={getUnexportedBooks} />
 			</Suspense>
 		</>
 	);

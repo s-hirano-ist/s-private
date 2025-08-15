@@ -37,7 +37,7 @@ export async function ViewerBody({ slug }: Props) {
 							width={192}
 						/>
 					</div>
-					<Link className="col-span-3" href={data.googleHref as Route}>
+					<Link className="col-span-3" href={data.googleHref ?? ("/" as Route)}>
 						<CardHeader>
 							<CardTitle>
 								{data.googleTitle} {data.googleSubTitle}

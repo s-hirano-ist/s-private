@@ -4,6 +4,7 @@ import { BooksFormSchema, BooksQueryData } from "./entities/books-entity";
 
 export type IBooksCommandRepository = {
 	create(data: BooksFormSchema): Promise<void>;
+	deleteById(id: string, userId: string, status: Status): Promise<void>;
 };
 
 export type IBooksQueryRepository = {

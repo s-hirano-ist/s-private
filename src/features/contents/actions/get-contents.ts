@@ -12,7 +12,7 @@ export const getExportedContents = cache(async (): Promise<LinkCardData[]> => {
 	});
 
 	return contents.map((d) => ({
-		id: "",
+		id: d.id,
 		key: d.id,
 		title: d.title,
 		description: "",
@@ -29,7 +29,7 @@ export const getUnexportedContents = cache(
 			{ orderBy: { createdAt: "desc" } },
 		);
 		return contents.map((d) => ({
-			id: "",
+			id: d.id,
 			key: d.id,
 			title: d.title,
 			description: "",

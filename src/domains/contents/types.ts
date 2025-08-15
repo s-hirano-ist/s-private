@@ -7,6 +7,7 @@ import type {
 
 export type IContentsCommandRepository = {
 	create(data: ContentsFormSchema): Promise<void>;
+	deleteById(id: string, userId: string, status: Status): Promise<void>;
 };
 
 export type IContentsQueryRepository = {

@@ -48,11 +48,13 @@ describe("get-books", () => {
 
 			expect(result).toEqual([
 				{
+					id: "1",
 					title: "Test Book 1",
 					href: "978-0123456789",
 					image: "https://example.com/image-1.jpg",
 				},
 				{
+					id: "2",
 					title: "Test Book 2",
 					href: "978-0987654321",
 					image: "https://example.com/image-2.jpg",

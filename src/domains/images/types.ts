@@ -9,6 +9,7 @@ export type IImagesCommandRepository = {
 		buffer: Buffer,
 		isThumbnail: boolean,
 	): Promise<void>;
+	deleteById(id: string, userId: string, status: Status): Promise<void>;
 };
 
 export type ImagesFindManyParams = {

@@ -5,6 +5,7 @@ import { ServerAction } from "@/common/types";
 import { Prisma } from "@/generated";
 import { serverLogger } from "@/o11y/server";
 import {
+	DuplicateError,
 	FileNotAllowedError,
 	InvalidFormatError,
 	PushoverError,
@@ -38,6 +39,14 @@ export async function wrapServerSideErrorForClient<T>(
 		};
 		serverLogger.warn(error.message, context, { notify: true });
 		return { success: false, message: error.message };
+	}
+	if (error instanceof DuplicateError) {
+		const context = {
+			caller: "wrapServerSideError",
+			status: 400 as const, // Bad request for duplicate resources
+		};
+		serverLogger.warn(error.message, context, { notify: true });
+		return { success: false, message: "prismaDuplicated" };
 	}
 	if (error instanceof AuthError) {
 		const context = {

@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Loading from "@/common/components/loading";
 import { addContents } from "@/features/contents/actions/add-contents";
+import { deleteContents } from "@/features/contents/actions/delete-contents";
 import { getUnexportedContents } from "@/features/contents/actions/get-contents";
 import { ContentsForm } from "@/features/contents/components/server/contents-form";
 import { ContentsStack } from "@/features/contents/components/server/contents-stack";
@@ -20,7 +21,11 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 			<ContentsForm addContents={addContents} />
 
 			<Suspense fallback={<Loading />}>
-				<ContentsStack getContents={getUnexportedContents} page={currentPage} />
+				<ContentsStack
+					deleteContents={deleteContents}
+					getContents={getUnexportedContents}
+					page={currentPage}
+				/>
 			</Suspense>
 		</>
 	);

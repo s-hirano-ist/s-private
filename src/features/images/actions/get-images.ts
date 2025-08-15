@@ -19,6 +19,7 @@ export const getExportedImages = cache(
 		});
 		return data.map((d) => {
 			return {
+				id: d.id,
 				originalPath: API_ORIGINAL_PATH + "/" + d.path,
 				thumbnailPath: API_THUMBNAIL_PATH + "/" + d.path,
 				height: d.height,
@@ -35,6 +36,7 @@ export const getUnexportedImages = cache(async (): Promise<ImageData[]> => {
 	});
 	return data.map((d) => {
 		return {
+			id: d.id,
 			originalPath: API_ORIGINAL_PATH + "/" + d.path,
 			thumbnailPath: API_THUMBNAIL_PATH + "/" + d.path,
 			height: d.height,

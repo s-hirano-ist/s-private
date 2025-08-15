@@ -61,12 +61,14 @@ describe("get-images", () => {
 
 			expect(result).toEqual([
 				{
+					id: "1",
 					originalPath: "/api/images/original/image1.jpg",
 					thumbnailPath: "/api/images/thumbnail/image1.jpg",
 					height: 100,
 					width: 200,
 				},
 				{
+					id: "2",
 					originalPath: "/api/images/original/image2.jpg",
 					thumbnailPath: "/api/images/thumbnail/image2.jpg",
 					height: 150,
@@ -142,12 +144,14 @@ describe("get-images", () => {
 
 			expect(result).toEqual([
 				{
+					id: "1",
 					originalPath: "/api/images/original/unexported1.jpg",
 					thumbnailPath: "/api/images/thumbnail/unexported1.jpg",
 					height: 300,
 					width: 400,
 				},
 				{
+					id: "2",
 					originalPath: "/api/images/original/unexported2.jpg",
 					thumbnailPath: "/api/images/thumbnail/unexported2.jpg",
 					height: 350,
