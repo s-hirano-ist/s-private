@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-
-import { Status } from "@/generated";
+import type { Status } from "@/domains/common/entities/common-entity";
 import { minioClient } from "@/minio";
 import prisma from "@/prisma";
 import { imagesCommandRepository } from "./images-command-repository";

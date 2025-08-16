@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import type { Status } from "@/generated";
+import type { Status } from "@/domains/common/entities/common-entity";
 import prisma from "@/prisma";
 import { newsCommandRepository } from "./news-command-repository";
 

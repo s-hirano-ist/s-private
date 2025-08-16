@@ -1,6 +1,32 @@
-import { PrismaCacheStrategy } from "@prisma/extension-accelerate";
-import type { Prisma, Status } from "@/generated";
+import type { Status } from "../common/entities/common-entity";
 import { ImagesFormSchema, ImagesQueryData } from "./entities/images-entity";
+
+// Custom types to avoid Prisma dependency in domain layer
+export type SortOrder = "asc" | "desc";
+
+export type CacheStrategy = {
+	ttl?: number;
+	swr?: number;
+	tags?: string[];
+};
+
+export type ImagesOrderByField =
+	| "id"
+	| "path"
+	| "contentType"
+	| "fileSize"
+	| "width"
+	| "height"
+	| "tags"
+	| "description"
+	| "status"
+	| "createdAt"
+	| "updatedAt"
+	| "exportedAt";
+
+export type ImagesOrderBy = {
+	[K in ImagesOrderByField]?: SortOrder;
+};
 
 export type IImagesCommandRepository = {
 	create(data: ImagesFormSchema): Promise<void>;
@@ -13,10 +39,10 @@ export type IImagesCommandRepository = {
 };
 
 export type ImagesFindManyParams = {
-	orderBy?: Prisma.ImagesOrderByWithRelationInput;
+	orderBy?: ImagesOrderBy;
 	take?: number;
 	skip?: number;
-	cacheStrategy?: PrismaCacheStrategy["cacheStrategy"];
+	cacheStrategy?: CacheStrategy;
 };
 
 export type IImagesQueryRepository = {

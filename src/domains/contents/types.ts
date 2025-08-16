@@ -1,9 +1,30 @@
-import { PrismaCacheStrategy } from "@prisma/extension-accelerate";
-import type { Prisma, Status } from "@/generated";
+import type { Status } from "../common/entities/common-entity";
 import type {
 	ContentsFormSchema,
 	ContentsQueryData,
 } from "./entities/contents-entity";
+
+// Custom types to avoid Prisma dependency in domain layer
+export type SortOrder = "asc" | "desc";
+
+export type CacheStrategy = {
+	ttl?: number;
+	swr?: number;
+	tags?: string[];
+};
+
+export type ContentsOrderByField =
+	| "id"
+	| "title"
+	| "markdown"
+	| "status"
+	| "createdAt"
+	| "updatedAt"
+	| "exportedAt";
+
+export type ContentsOrderBy = {
+	[K in ContentsOrderByField]?: SortOrder;
+};
 
 export type IContentsCommandRepository = {
 	create(data: ContentsFormSchema): Promise<void>;
@@ -21,8 +42,8 @@ export type IContentsQueryRepository = {
 };
 
 export type ContentsFindManyParams = {
-	orderBy?: Prisma.ContentsOrderByWithRelationInput;
+	orderBy?: ContentsOrderBy;
 	take?: number;
 	skip?: number;
-	cacheStrategy?: PrismaCacheStrategy["cacheStrategy"];
+	cacheStrategy?: CacheStrategy;
 };

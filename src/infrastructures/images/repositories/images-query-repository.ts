@@ -1,10 +1,10 @@
+import type { Status } from "@/domains/common/entities/common-entity";
 import { ImagesQueryData } from "@/domains/images/entities/images-entity";
 import {
 	IImagesQueryRepository,
 	ImagesFindManyParams,
 } from "@/domains/images/types";
 import { env } from "@/env";
-import type { Status } from "@/generated";
 import { minioClient } from "@/minio";
 import prisma from "@/prisma";
 import { ORIGINAL_IMAGE_PATH, THUMBNAIL_IMAGE_PATH } from "./common";
