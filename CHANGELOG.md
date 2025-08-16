@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [9.0.0](https://github.com/s-hirano-ist/s-private/compare/v8.29.0...v9.0.0) (2025-08-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* v9
+
+### Features
+
+* version up ([7c33bdc](https://github.com/s-hirano-ist/s-private/commit/7c33bdc255ef23d49b551661ff407cea8bf368a1))
+
 ## [8.29.0](https://github.com/s-hirano-ist/s-private/compare/v8.28.0...v8.29.0) (2025-08-16)
 
 
