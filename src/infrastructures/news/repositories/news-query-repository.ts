@@ -1,8 +1,6 @@
 import type { Status } from "@/domains/common/entities/common-entity";
-import type {
-	CategoryQueryData,
-	NewsQueryData,
-} from "@/domains/news/entities/news-entity";
+import { NewsEntity } from "@/domains/news/entities/news.entity";
+import { CategoryEntity } from "@/domains/news/entities/category.entity";
 import type {
 	CategoryFindManyParams,
 	ICategoryQueryRepository,
@@ -12,10 +10,28 @@ import type {
 import prisma from "@/prisma";
 
 class NewsQueryRepository implements INewsQueryRepository {
-	findByUrl = async (url: string, userId: string): Promise<{} | null> => {
-		return await prisma.news.findUnique({
+	findByUrl = async (url: string, userId: string): Promise<NewsEntity | null> => {
+		const result = await prisma.news.findUnique({
 			where: { url_userId: { url, userId } },
-			select: { url: true },
+			include: { Category: true },
+		});
+		
+		if (!result) return null;
+		
+		return NewsEntity.reconstitute({
+			id: result.id,
+			title: result.title,
+			url: result.url,
+			quote: result.quote,
+			userId: result.userId,
+			status: result.status,
+			ogTitle: result.ogTitle,
+			ogDescription: result.ogDescription,
+			category: {
+				id: result.Category.id,
+				name: result.Category.name,
+				userId: result.Category.userId,
+			},
 		});
 	};
 
@@ -23,31 +39,27 @@ class NewsQueryRepository implements INewsQueryRepository {
 		userId: string,
 		status: Status,
 		params: NewsFindManyParams,
-	): Promise<NewsQueryData[]> => {
+	): Promise<NewsEntity[]> => {
 		const response = await prisma.news.findMany({
 			where: { userId, status },
-			select: {
-				id: true,
-				title: true,
-				url: true,
-				quote: true,
-				ogTitle: true,
-				ogDescription: true,
-				Category: { select: { id: true, name: true } },
-			},
+			include: { Category: true },
 			...params,
 		});
-		return response.map((d) => ({
+		
+		return response.map((result) => NewsEntity.reconstitute({
+			id: result.id,
+			title: result.title,
+			url: result.url,
+			quote: result.quote,
+			userId: result.userId,
+			status: result.status,
+			ogTitle: result.ogTitle,
+			ogDescription: result.ogDescription,
 			category: {
-				name: d.Category.name,
-				id: d.Category.id,
+				id: result.Category.id,
+				name: result.Category.name,
+				userId: result.Category.userId,
 			},
-			id: d.id,
-			quote: d.quote,
-			title: d.title,
-			url: d.url,
-			ogTitle: d.ogTitle,
-			ogDescription: d.ogDescription,
 		}));
 	};
 
@@ -62,13 +74,17 @@ class CategoryQueryRepository implements ICategoryQueryRepository {
 	async findMany(
 		userId: string,
 		params?: CategoryFindManyParams,
-	): Promise<CategoryQueryData[]> {
+	): Promise<CategoryEntity[]> {
 		const response = await prisma.categories.findMany({
 			where: { userId },
-			select: { id: true, name: true },
 			...params,
 		});
-		return response;
+		
+		return response.map(result => CategoryEntity.reconstitute({
+			id: result.id,
+			name: result.name,
+			userId: result.userId,
+		}));
 	}
 }
 

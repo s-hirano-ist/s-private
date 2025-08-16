@@ -16,11 +16,20 @@ export async function addBooks(formData: FormData): Promise<ServerAction> {
 	try {
 		const userId = await getSelfId();
 
-		const validatedBooks = await new BooksDomainService(
-			booksQueryRepository,
-		).prepareNewBook(formData, userId);
+		// Extract form data directly
+		const isbn = formData.get("isbn") as string;
+		const title = formData.get("title") as string;
 
-		await booksCommandRepository.create(validatedBooks);
+		// Use new domain service method
+		const bookEntity = await new BooksDomainService(
+			booksQueryRepository,
+		).validateAndCreateBook({
+			isbn,
+			title,
+			userId,
+		});
+
+		await booksCommandRepository.create(bookEntity);
 
 		revalidatePath("/(dumper)");
 
