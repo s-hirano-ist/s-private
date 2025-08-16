@@ -85,7 +85,7 @@ export function Footer() {
 						asChild
 						className={cn(
 							"sm:rounded-s-3xl",
-							/^\/(?:ja|en)(?:\/)?$/.test(pathname) ? "bg-black/10" : "",
+							layout === "dumper" ? "bg-black/10" : "",
 							isPending && layout !== "dumper" ? "opacity-50" : "",
 						)}
 						disabled={isPending}
@@ -112,9 +112,7 @@ export function Footer() {
 					<Button
 						asChild
 						className={cn(
-							/^\/(?:ja|en)\/(viewer|books|contents)/.test(pathname)
-								? "bg-black/10"
-								: "",
+							layout === "viewer" ? "bg-black/10" : "",
 							isPending && layout !== "viewer" ? "opacity-50" : "",
 						)}
 						disabled={isPending}
