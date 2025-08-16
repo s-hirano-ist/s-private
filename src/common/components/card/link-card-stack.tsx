@@ -1,9 +1,9 @@
 "use client";
+import { filterLinkCards } from "@/applications/search/search-filter";
 import { LinkCard, LinkCardData } from "@/common/components/card/link-card";
 import { SearchableCardLayout } from "@/common/components/search/searchable-card-layout";
 import { useSearchableList } from "@/common/hooks/use-searchable-list";
 import type { ServerAction } from "@/common/types";
-import { filterLinkCards } from "@/features/search/services/search-filter";
 
 type Props = {
 	data: LinkCardData[];

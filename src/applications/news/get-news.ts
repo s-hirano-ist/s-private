@@ -3,11 +3,11 @@ import { getSelfId } from "@/common/auth/session";
 import { LinkCardData } from "@/common/components/card/link-card";
 import { PAGE_SIZE } from "@/common/constants";
 import type { Status } from "@/domains/common/entities/common-entity";
+import type { NewsFormClientData } from "@/features/news/components/client/news-form-client";
 import {
 	categoryQueryRepository,
 	newsQueryRepository,
 } from "@/infrastructures/news/repositories/news-query-repository";
-import type { NewsFormClientData } from "../components/client/news-form-client";
 
 export const getExportedNews = cache(
 	async (page: number): Promise<LinkCardData[]> => {

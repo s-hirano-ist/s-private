@@ -1,8 +1,8 @@
 import { Suspense } from "react";
+import { addImage } from "@/applications/images/add-image";
+import { deleteImages } from "@/applications/images/delete-images";
+import { getUnexportedImages } from "@/applications/images/get-images";
 import Loading from "@/common/components/loading";
-import { addImage } from "@/features/images/actions/add-image";
-import { deleteImages } from "@/features/images/actions/delete-images";
-import { getUnexportedImages } from "@/features/images/actions/get-images";
 import { ImageForm } from "@/features/images/components/server/image-form";
 import { ImageStack } from "@/features/images/components/server/image-stack";
 

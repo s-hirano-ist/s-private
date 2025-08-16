@@ -1,9 +1,9 @@
 import { Suspense } from "react";
-import Loading from "@/common/components/loading";
 import {
 	getExportedImages,
 	getImagesCount,
-} from "@/features/images/actions/get-images";
+} from "@/applications/images/get-images";
+import Loading from "@/common/components/loading";
 import { ImageCounter } from "@/features/images/components/server/image-counter";
 import { ImageStack } from "@/features/images/components/server/image-stack";
 

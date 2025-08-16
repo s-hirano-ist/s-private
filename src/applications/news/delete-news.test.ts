@@ -1,6 +1,6 @@
 import { revalidatePath } from "next/cache";
 import { describe, expect, test, vi } from "vitest";
-import { deleteNews } from "@/features/news/actions/delete-news";
+import { deleteNews } from "@/applications/news/delete-news";
 import { newsCommandRepository } from "@/infrastructures/news/repositories/news-command-repository";
 
 vi.mock("@/infrastructures/news/repositories/news-command-repository", () => ({

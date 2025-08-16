@@ -1,9 +1,9 @@
 "use client";
+import { filterImageCards } from "@/applications/search/search-filter";
 import { ImageCard, ImageCardData } from "@/common/components/card/image-card";
 import { SearchableCardLayout } from "@/common/components/search/searchable-card-layout";
 import { useSearchableList } from "@/common/hooks/use-searchable-list";
 import type { ServerAction } from "@/common/types";
-import { filterImageCards } from "@/features/search/services/search-filter";
 
 type Props = {
 	basePath: string;

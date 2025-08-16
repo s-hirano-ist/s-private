@@ -1,8 +1,8 @@
 import { Suspense } from "react";
+import { addBooks } from "@/applications/books/add-books";
+import { deleteBooks } from "@/applications/books/delete-books";
+import { getUnexportedBooks } from "@/applications/books/get-books";
 import Loading from "@/common/components/loading";
-import { addBooks } from "@/features/books/actions/add-books";
-import { deleteBooks } from "@/features/books/actions/delete-books";
-import { getUnexportedBooks } from "@/features/books/actions/get-books";
 import { BooksStack } from "@/features/books/components/server/book-stack";
 import { BooksForm } from "@/features/books/components/server/books-form";
 

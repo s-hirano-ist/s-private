@@ -6,7 +6,7 @@ vi.mock("@/common/auth/session", () => ({
 	hasViewerAdminPermission: vi.fn(),
 }));
 
-vi.mock("@/features/books/actions/get-books", () => ({
+vi.mock("@/applications/books/get-books", () => ({
 	getBooksCount: vi.fn(),
 }));
 
@@ -32,7 +32,7 @@ vi.mock("@/common/components/status/unexpected", () => ({
 }));
 
 const { hasViewerAdminPermission } = await import("@/common/auth/session");
-const { getBooksCount } = await import("@/features/books/actions/get-books");
+const { getBooksCount } = await import("@/applications/books/get-books");
 const { forbidden } = await import("next/navigation");
 
 describe("BooksCounter", () => {

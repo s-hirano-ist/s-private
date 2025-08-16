@@ -1,6 +1,6 @@
 import { Suspense } from "react";
+import { getExportedNews } from "@/applications/news/get-news";
 import Loading from "@/common/components/loading";
-import { getExportedNews } from "@/features/news/actions/get-news";
 import { NewsCounter } from "@/features/news/components/server/news-counter";
 import { NewsStack } from "@/features/news/components/server/news-stack";
 
