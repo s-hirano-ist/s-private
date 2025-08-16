@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.29.0](https://github.com/s-hirano-ist/s-private/compare/v8.28.0...v8.29.0) (2025-08-16)
+
+
+### Features
+
+* better performance on tabs ([f9bf124](https://github.com/s-hirano-ist/s-private/commit/f9bf1245075abd7233a1ce38c0e3aec473271fcc))
+* better performance on tabs ([1bf0f82](https://github.com/s-hirano-ist/s-private/commit/1bf0f8219cc2009d32a321032174a6011afe7d7d))
+
 ## [8.28.0](https://github.com/s-hirano-ist/s-private/compare/v8.27.0...v8.28.0) (2025-08-16)
 
 
