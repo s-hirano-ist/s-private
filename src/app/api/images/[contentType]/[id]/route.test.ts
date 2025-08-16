@@ -1,15 +1,20 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { GET } from "./route";
 
-// Mock dependencies
+// Mock dependencies first
+vi.mock("@/infrastructures/auth/auth-provider", () => ({
+	auth: vi.fn((handler) => handler),
+}));
 
 vi.mock("@/application-services/images/get-images", () => ({
 	getImagesFromStorage: vi.fn(),
 }));
 
+// Import after mocking
+const { GET } = await import("./route");
 const { getImagesFromStorage } = await import(
 	"@/application-services/images/get-images"
 );
+const { auth } = await import("@/infrastructures/auth/auth-provider");
 
 describe("Images API Route", () => {
 	beforeEach(() => {

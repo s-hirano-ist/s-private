@@ -1,6 +1,11 @@
 import { Session } from "next-auth";
 import { describe, expect, Mock, test, vi } from "vitest";
-import { auth } from "@/common/auth/auth";
+import { auth } from "@/infrastructures/auth/auth-provider";
+
+vi.mock("@/infrastructures/auth/auth-provider", () => ({
+	auth: vi.fn(),
+}));
+
 import {
 	getSelfId,
 	hasDumperPostPermission,

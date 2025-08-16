@@ -1,7 +1,7 @@
 import { forbidden } from "next/navigation";
 import { NextResponse } from "next/server";
 import { getImagesFromStorage } from "@/application-services/images/get-images";
-import { auth } from "@/common/auth/auth";
+import { auth } from "@/infrastructures/auth/auth-provider";
 
 export const GET = auth(
 	async (
