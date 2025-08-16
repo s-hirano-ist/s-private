@@ -9,7 +9,7 @@ import {
 	buttonVariants,
 } from "@/components/common/ui/button";
 import { cn } from "@/components/common/utils/cn";
-import { Link } from "@/i18n/routing";
+import { Link } from "@/infrastructures/i18n/routing";
 
 function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
 	return (

@@ -5,7 +5,7 @@ import { ReactNode } from "react";
 import { Footer } from "@/components/common/layouts/nav/footer";
 import { ThemeProvider } from "@/components/common/providers/theme-provider";
 import { Toaster } from "@/components/common/ui/sonner";
-import { routing } from "@/i18n/routing";
+import { routing } from "@/infrastructures/i18n/routing";
 
 type Params = {
 	children: ReactNode;

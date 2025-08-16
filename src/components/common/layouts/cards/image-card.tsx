@@ -9,7 +9,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/common/ui/card";
-import { Link } from "@/i18n/routing";
+import { Link } from "@/infrastructures/i18n/routing";
 
 export type ImageCardData = {
 	id: string;

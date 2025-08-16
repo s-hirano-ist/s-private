@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useMemo } from "react";
 import { Button } from "@/components/common/ui/button";
-import { redirect } from "@/i18n/routing";
+import { redirect } from "@/infrastructures/i18n/routing";
 
 type Props = { handleReload: () => void; onSignOutSubmit: () => Promise<void> };
 

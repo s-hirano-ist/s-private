@@ -15,12 +15,12 @@ vi.mock("./routing", () => ({
 }));
 
 // Mock message imports
-vi.mock("../../messages/ja.json", () => ({
-	default: { hello: "こんにちは" },
+vi.mock("../../../messages/ja.json", () => ({
+	default: { utils: { signOut: "サインアウト" } },
 }));
 
-vi.mock("../../messages/en.json", () => ({
-	default: { hello: "Hello" },
+vi.mock("../../../messages/en.json", () => ({
+	default: { utils: { signOut: "SIGN OUT" } },
 }));
 
 describe("i18n/request", () => {
@@ -38,7 +38,7 @@ describe("i18n/request", () => {
 
 		expect(result).toEqual({
 			locale: "ja",
-			messages: { hello: "こんにちは" },
+			messages: { utils: { signOut: "サインアウト" } },
 		});
 	});
 
@@ -51,7 +51,7 @@ describe("i18n/request", () => {
 
 		expect(result).toEqual({
 			locale: "ja",
-			messages: { hello: "こんにちは" },
+			messages: { utils: { signOut: "サインアウト" } },
 		});
 	});
 
@@ -64,7 +64,7 @@ describe("i18n/request", () => {
 
 		expect(result).toEqual({
 			locale: "ja",
-			messages: { hello: "こんにちは" },
+			messages: { utils: { signOut: "サインアウト" } },
 		});
 	});
 
@@ -77,7 +77,7 @@ describe("i18n/request", () => {
 
 		expect(result).toEqual({
 			locale: "en",
-			messages: { hello: "Hello" },
+			messages: { utils: { signOut: "SIGN OUT" } },
 		});
 	});
 
@@ -90,7 +90,7 @@ describe("i18n/request", () => {
 
 		expect(result).toEqual({
 			locale: "ja",
-			messages: { hello: "こんにちは" },
+			messages: { utils: { signOut: "サインアウト" } },
 		});
 	});
 });

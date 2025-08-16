@@ -11,7 +11,7 @@ import {
 	CardTitle,
 } from "@/components/common/ui/card";
 import { validateAndNormalizeUrl } from "@/components/common/utils/validate-url";
-import { Link } from "@/i18n/routing";
+import { Link } from "@/infrastructures/i18n/routing";
 
 export type LinkCardData = {
 	id: string;

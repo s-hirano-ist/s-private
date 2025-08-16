@@ -13,7 +13,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/common/ui/card";
-import { Link } from "@/i18n/routing";
+import { Link } from "@/infrastructures/i18n/routing";
 
 type Props = { slug: string; getBookByISBN: typeof getBookByISBN };
 
