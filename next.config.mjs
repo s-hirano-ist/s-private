@@ -89,7 +89,9 @@ const nextConfig = {
 	},
 };
 
-const withNextIntl = createNextIntlPlugin();
+const withNextIntl = createNextIntlPlugin(
+	"src/infrastructures/i18n/request.ts",
+);
 const bundleAnalyzer = withBundleAnalyzer({
 	enabled: process.env.ANALYZE === "true",
 });
