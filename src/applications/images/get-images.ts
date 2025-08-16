@@ -45,10 +45,15 @@ export const getUnexportedImages = cache(async (): Promise<ImageData[]> => {
 	});
 });
 
-export const getImagesCount = cache(async (status: Status) => {
-	const userId = await getSelfId();
-	return await imagesQueryRepository.count(userId, status);
-});
+export const getImagesCount = cache(
+	async (status: Status): Promise<{ count: number; pageSize: number }> => {
+		const userId = await getSelfId();
+		return {
+			count: await imagesQueryRepository.count(userId, status),
+			pageSize: PAGE_SIZE,
+		};
+	},
+);
 
 export const getImagesFromStorage = async (
 	path: string,

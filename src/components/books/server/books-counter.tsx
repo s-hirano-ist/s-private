@@ -1,20 +1,27 @@
 import { forbidden } from "next/navigation";
-import { getBooksCount } from "@/applications/books/get-books";
+import type { getBooksCount } from "@/applications/books/get-books";
 import { hasViewerAdminPermission } from "@/common/auth/session";
 import { BadgeWithPagination } from "@/components/common/badge-with-pagination";
 import { Unexpected } from "@/components/common/status/unexpected";
 
-export async function BooksCounter() {
+type Props = {
+	currentPage: number;
+	getBooksCount: typeof getBooksCount;
+};
+
+export async function BooksCounter({ currentPage, getBooksCount }: Props) {
 	const hasPermission = await hasViewerAdminPermission();
 	if (!hasPermission) forbidden();
 
 	try {
 		const totalBooks = await getBooksCount("EXPORTED");
+
 		return (
 			<BadgeWithPagination
-				currentPage={1}
+				currentPage={currentPage}
+				itemsPerPage={totalBooks.pageSize}
 				label="totalBooks"
-				totalItems={totalBooks}
+				totalItems={totalBooks.count}
 			/>
 		);
 	} catch (error) {

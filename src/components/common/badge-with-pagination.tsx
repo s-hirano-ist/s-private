@@ -12,29 +12,17 @@ import {
 type Props = {
 	currentPage: number;
 	totalItems: number;
-	itemsPerPage?: number;
+	itemsPerPage: number;
 	label: string;
-	badgeOnly?: boolean;
 };
 
 export function BadgeWithPagination({
 	currentPage,
 	totalItems,
-	itemsPerPage = PAGE_SIZE,
+	itemsPerPage,
 	label,
-	badgeOnly = false,
 }: Props) {
 	const t = useTranslations("label");
-
-	if (badgeOnly) {
-		return (
-			<div className="px-2">
-				<Badge className="m-2 flex justify-center">
-					{t(label)}: {totalItems}
-				</Badge>
-			</div>
-		);
-	}
 
 	const totalPages = Math.ceil(totalItems / itemsPerPage);
 

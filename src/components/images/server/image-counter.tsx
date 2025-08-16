@@ -1,15 +1,15 @@
 import { forbidden } from "next/navigation";
+import type { getImagesCount } from "@/applications/images/get-images";
 import { hasViewerAdminPermission } from "@/common/auth/session";
 import { BadgeWithPagination } from "@/components/common/badge-with-pagination";
 import { Unexpected } from "@/components/common/status/unexpected";
-import type { Status } from "@/domains/common/entities/common-entity";
 
 type Props = {
-	page: number;
-	getImagesCount: (status: Status) => Promise<number>;
+	currentPage: number;
+	getImagesCount: typeof getImagesCount;
 };
 
-export async function ImageCounter({ page, getImagesCount }: Props) {
+export async function ImageCounter({ currentPage, getImagesCount }: Props) {
 	const hasPermission = await hasViewerAdminPermission();
 	if (!hasPermission) return forbidden();
 
@@ -18,9 +18,10 @@ export async function ImageCounter({ page, getImagesCount }: Props) {
 
 		return (
 			<BadgeWithPagination
-				currentPage={page}
+				currentPage={currentPage}
+				itemsPerPage={totalImages.pageSize}
 				label="totalImages"
-				totalItems={totalImages}
+				totalItems={totalImages.count}
 			/>
 		);
 	} catch (error) {

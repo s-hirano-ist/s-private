@@ -1,7 +1,7 @@
 import { forbidden } from "next/navigation";
 import { hasViewerAdminPermission } from "@/common/auth/session";
-import { ServerAction } from "@/common/types";
-import { LinkCardData } from "@/components/common/card/link-card";
+import type { ServerAction } from "@/common/types";
+import type { LinkCardData } from "@/components/common/card/link-card";
 import { LinkCardStack } from "@/components/common/card/link-card-stack";
 import { Unexpected } from "@/components/common/status/unexpected";
 

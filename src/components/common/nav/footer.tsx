@@ -1,22 +1,26 @@
 "use client";
 import { BotIcon, FileUpIcon, SearchIcon } from "lucide-react";
-import type { Route } from "next";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import { type ReactNode, Suspense, useState } from "react";
+import { type ReactNode, Suspense, useEffect, useState } from "react";
 import { cn } from "@/common/tailwind/utils";
 import { UtilButtons } from "@/components/common/nav/util-buttons";
 import { Button } from "@/components/common/ui/button";
 import {
 	Drawer,
 	DrawerContent,
-	DrawerDescription,
 	DrawerHeader,
 	DrawerTitle,
 	DrawerTrigger,
 } from "@/components/common/ui/drawer";
-import { Link } from "@/i18n/routing";
+
+const LAYOUTS = {
+	dumper: "DUMPER",
+	viewer: "VIEWER",
+};
+
+const DEFAULT_LAYOUT = "dump";
 
 export function Footer() {
 	const [open, setOpen] = useState(false);
@@ -39,24 +43,48 @@ export function Footer() {
 		await signOut();
 	}
 
+	const router = useRouter();
+	const searchParams = useSearchParams();
+
+	const [layout, setLayout] = useState(
+		searchParams.get("layout") ?? DEFAULT_LAYOUT,
+	);
+
+	const handleLayoutChange = (value: string) => {
+		setLayout(value);
+		const params = new URLSearchParams(searchParams);
+		params.delete("page");
+		params.set("layout", value);
+		router.replace(`?${params.toString()}`);
+	};
+
+	useEffect(() => {
+		const layout = searchParams.get("layout");
+		if (!layout) return;
+
+		const params = new URLSearchParams(searchParams);
+		if (!Object.keys(LAYOUTS).includes(layout)) {
+			params.delete("layout");
+			router.replace(`?${params.toString()}`);
+			setLayout(DEFAULT_LAYOUT);
+		}
+	}, [searchParams, router]);
+
 	return (
 		<footer className="sticky bottom-0 z-50 mx-auto w-full max-w-lg border border-gray-200 bg-white dark:border-gray-600 dark:bg-gray-700 sm:rounded-3xl ">
 			<Drawer onOpenChange={setOpen} open={open} snapPoints={[0.5]}>
 				<div className="mx-auto grid h-16 max-w-lg grid-cols-3 bg-linear-to-r from-primary-grad-from to-primary-grad-to text-white sm:rounded-3xl">
-					{/* FIXME: bug with parallel routes
-					 * https://nextjs.org/docs/app/building-your-application/routing/parallel-routes */}
 					<Button
 						asChild
 						className={cn(
 							"sm:rounded-s-3xl",
 							/^\/(?:ja|en)(?:\/)?$/.test(pathname) ? "bg-black/10" : "",
 						)}
+						onClick={() => handleLayoutChange("dumper")}
 						size="navSide"
 						variant="navSide"
 					>
-						<Link href={"/" as Route}>
-							{Icon("DUMPER", <FileUpIcon className="size-6" />)}
-						</Link>
+						{Icon("DUMPER", <FileUpIcon className="size-6" />)}
 					</Button>
 					<DrawerTrigger asChild>
 						<div className="flex items-center justify-center">
@@ -72,8 +100,6 @@ export function Footer() {
 						</div>
 					</DrawerTrigger>
 
-					{/* FIXME: bug with parallel routes
-					 * https://nextjs.org/docs/app/building-your-application/routing/parallel-routes */}
 					<Button
 						asChild
 						className={
@@ -81,12 +107,11 @@ export function Footer() {
 								? "bg-black/10"
 								: ""
 						}
+						onClick={() => handleLayoutChange("viewer")}
 						size="navSide"
 						variant="navSide"
 					>
-						<Link href={"/viewer" as Route}>
-							{Icon("VIEWER", <BotIcon className="size-6" />)}
-						</Link>
+						{Icon("VIEWER", <BotIcon className="size-6" />)}
 					</Button>
 				</div>
 				<DrawerContent>

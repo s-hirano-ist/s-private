@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
+import { PAGE_SIZE } from "@/common/constants";
 import { LinkCardData } from "@/components/common/card/link-card";
 import type { Status } from "@/domains/common/entities/common-entity";
 import { contentsQueryRepository } from "@/infrastructures/contents/repositories/contents-query-repository";
@@ -38,10 +39,15 @@ export const getUnexportedContents = cache(
 	},
 );
 
-export const getContentsCount = cache(async (status: Status) => {
-	const userId = await getSelfId();
-	return await contentsQueryRepository.count(userId, status);
-});
+export const getContentsCount = cache(
+	async (status: Status): Promise<{ count: number; pageSize: number }> => {
+		const userId = await getSelfId();
+		return {
+			count: await contentsQueryRepository.count(userId, status),
+			pageSize: PAGE_SIZE,
+		};
+	},
+);
 
 export const getContentByTitle = cache(async (title: string) => {
 	const userId = await getSelfId();

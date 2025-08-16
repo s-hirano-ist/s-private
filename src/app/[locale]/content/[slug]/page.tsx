@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import { getContentByTitle } from "@/applications/contents/get-contents";
 import { PAGE_NAME } from "@/common/constants";
-import { ViewerBody } from "@/components/books/server/viewer-body";
+import { ViewerBody } from "@/components/contents/server/viewer-body";
 
 type Params = Promise<{ slug: string }>;
 
@@ -13,12 +14,12 @@ export async function generateMetadata({
 
 	return {
 		title: `${slug} | ${PAGE_NAME}`,
-		description: `Private book review of ${slug}`,
+		description: `Private contents of ${slug}`,
 	};
 }
 
 export default async function Page({ params }: { params: Params }) {
 	const { slug } = await params;
 
-	return <ViewerBody slug={slug} />;
+	return <ViewerBody getContentByTitle={getContentByTitle} slug={slug} />;
 }

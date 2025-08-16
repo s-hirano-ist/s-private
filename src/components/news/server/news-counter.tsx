@@ -1,12 +1,12 @@
 import { forbidden } from "next/navigation";
-import { getNewsCount } from "@/applications/news/get-news";
+import type { getNewsCount } from "@/applications/news/get-news";
 import { hasViewerAdminPermission } from "@/common/auth/session";
 import { BadgeWithPagination } from "@/components/common/badge-with-pagination";
 import { Unexpected } from "@/components/common/status/unexpected";
 
-type Props = { page: number };
+type Props = { currentPage: number; getNewsCount: typeof getNewsCount };
 
-export async function NewsCounter({ page }: Props) {
+export async function NewsCounter({ currentPage, getNewsCount }: Props) {
 	const hasPermission = await hasViewerAdminPermission();
 	if (!hasPermission) forbidden();
 
@@ -15,9 +15,10 @@ export async function NewsCounter({ page }: Props) {
 
 		return (
 			<BadgeWithPagination
-				currentPage={page}
+				currentPage={currentPage}
+				itemsPerPage={totalNews.pageSize}
 				label="totalNews"
-				totalItems={totalNews}
+				totalItems={totalNews.count}
 			/>
 		);
 	} catch (error) {

@@ -205,7 +205,7 @@ describe("get-news", () => {
 				"test-user-id",
 				"EXPORTED",
 			);
-			expect(result).toBe(15);
+			expect(result).toEqual({ count: 15, pageSize: 24 });
 		});
 
 		test("should return 0 for empty collection", async () => {
@@ -213,7 +213,7 @@ describe("get-news", () => {
 
 			const result = await getNewsCount("UNEXPORTED");
 
-			expect(result).toBe(0);
+			expect(result).toEqual({ count: 0, pageSize: 24 });
 		});
 
 		test("should handle database errors", async () => {

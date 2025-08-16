@@ -1,5 +1,5 @@
 import { forbidden } from "next/navigation";
-import { getCategories } from "@/applications/news/get-news";
+import type { getCategories } from "@/applications/news/get-news";
 import { hasDumperPostPermission } from "@/common/auth/session";
 import { ServerAction } from "@/common/types";
 import { Unexpected } from "@/components/common/status/unexpected";
@@ -8,9 +8,10 @@ import { NewsFormClient } from "../client/news-form-client";
 
 type Props = {
 	addNews: (formData: FormData) => Promise<ServerAction>;
+	getCategories: typeof getCategories;
 };
 
-export async function NewsForm({ addNews }: Props) {
+export async function NewsForm({ addNews, getCategories }: Props) {
 	const hasPermission = await hasDumperPostPermission();
 	if (!hasPermission) return forbidden();
 

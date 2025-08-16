@@ -52,10 +52,15 @@ export const getUnexportedNews = cache(
 	},
 );
 
-export const getNewsCount = cache(async (status: Status) => {
-	const userId = await getSelfId();
-	return await newsQueryRepository.count(userId, status);
-});
+export const getNewsCount = cache(
+	async (status: Status): Promise<{ count: number; pageSize: number }> => {
+		const userId = await getSelfId();
+		return {
+			count: await newsQueryRepository.count(userId, status),
+			pageSize: PAGE_SIZE,
+		};
+	},
+);
 
 export const getCategories = cache(async (): Promise<NewsFormClientData> => {
 	const userId = await getSelfId();

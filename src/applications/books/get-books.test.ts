@@ -89,7 +89,7 @@ describe("get-books", () => {
 				"test-user-id",
 				"EXPORTED",
 			);
-			expect(result).toBe(42);
+			expect(result).toEqual({ count: 42, pageSize: 24 });
 		});
 
 		test("should return 0 for empty collection", async () => {
@@ -97,7 +97,7 @@ describe("get-books", () => {
 
 			const result = await getBooksCount("EXPORTED");
 
-			expect(result).toBe(0);
+			expect(result).toEqual({ count: 0, pageSize: 24 });
 		});
 
 		test("should handle database errors", async () => {

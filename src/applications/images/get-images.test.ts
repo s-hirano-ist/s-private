@@ -187,7 +187,7 @@ describe("get-images", () => {
 				"test-user-id",
 				"EXPORTED",
 			);
-			expect(result).toBe(25);
+			expect(result).toEqual({ count: 25, pageSize: 24 });
 		});
 
 		test("should return 0 for empty collection", async () => {
@@ -195,7 +195,7 @@ describe("get-images", () => {
 
 			const result = await getImagesCount("UNEXPORTED");
 
-			expect(result).toBe(0);
+			expect(result).toEqual({ count: 0, pageSize: 24 });
 		});
 
 		test("should handle database errors", async () => {
