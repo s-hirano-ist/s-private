@@ -1,5 +1,4 @@
 import { revalidatePath } from "next/cache";
-import sharp from "sharp";
 import { v7 as uuidv7 } from "uuid";
 import { describe, expect, test, vi } from "vitest";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";

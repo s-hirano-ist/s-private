@@ -1,10 +1,10 @@
 import { Suspense } from "react";
+import { addNews } from "@/applications/news/add-news";
+import { deleteNews } from "@/applications/news/delete-news";
+import { getUnexportedNews } from "@/applications/news/get-news";
 import Loading from "@/common/components/loading";
-import { addNews } from "@/features/news/actions/add-news";
-import { deleteNews } from "@/features/news/actions/delete-news";
-import { getUnexportedNews } from "@/features/news/actions/get-news";
-import { NewsForm } from "@/features/news/components/server/news-form";
-import { NewsStack } from "@/features/news/components/server/news-stack";
+import { NewsForm } from "@/features/news/server/news-form";
+import { NewsStack } from "@/features/news/server/news-stack";
 
 type Params = Promise<{ page?: string; tab?: string }>;
 

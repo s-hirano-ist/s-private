@@ -7,7 +7,7 @@ import {
 	categoryQueryRepository,
 	newsQueryRepository,
 } from "@/infrastructures/news/repositories/news-query-repository";
-import type { NewsFormClientData } from "../components/client/news-form-client";
+import type { NewsFormClientData } from "../../features/news/client/news-form-client";
 
 export const getExportedNews = cache(
 	async (page: number): Promise<LinkCardData[]> => {

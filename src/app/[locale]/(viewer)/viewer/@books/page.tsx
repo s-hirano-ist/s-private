@@ -1,8 +1,8 @@
 import { Suspense } from "react";
+import { getExportedBooks } from "@/applications/books/get-books";
 import Loading from "@/common/components/loading";
-import { getExportedBooks } from "@/features/books/actions/get-books";
-import { BooksStack } from "@/features/books/components/server/book-stack";
-import { BooksCounter } from "@/features/books/components/server/books-counter";
+import { BooksStack } from "@/features/books/server/book-stack";
+import { BooksCounter } from "@/features/books/server/books-counter";
 
 type Params = Promise<{ page?: string; tab?: string }>;
 

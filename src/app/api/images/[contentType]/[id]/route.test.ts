@@ -14,7 +14,7 @@ vi.mock("@/features/images/actions/get-images", () => ({
 }));
 
 const { getImagesFromStorage } = await import(
-	"@/features/images/actions/get-images"
+	"@/applications/images/get-images"
 );
 
 describe("Images API Route", () => {

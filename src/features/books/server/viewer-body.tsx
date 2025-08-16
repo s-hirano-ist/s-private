@@ -1,6 +1,7 @@
 import { Route } from "next";
 import NextImage from "next/image";
 import { forbidden } from "next/navigation";
+import { getBookByISBN } from "@/applications/books/get-books";
 import { hasViewerAdminPermission } from "@/common/auth/session";
 import { ViewerBodyClient } from "@/common/components/body/viewer-body";
 import { NotFound } from "@/common/components/status/not-found";
@@ -12,7 +13,6 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/common/components/ui/card";
-import { getBookByISBN } from "@/features/books/actions/get-books";
 import { Link } from "@/i18n/routing";
 
 type Props = { slug: string };

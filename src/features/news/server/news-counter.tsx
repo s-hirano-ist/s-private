@@ -1,23 +1,26 @@
 import { forbidden } from "next/navigation";
+import { getNewsCount } from "@/applications/news/get-news";
 import { hasViewerAdminPermission } from "@/common/auth/session";
 import { BadgeWithPagination } from "@/common/components/badge-with-pagination";
 import { Unexpected } from "@/common/components/status/unexpected";
-import { getBooksCount } from "@/features/books/actions/get-books";
 
-export async function BooksCounter() {
+type Props = { page: number };
+
+export async function NewsCounter({ page }: Props) {
 	const hasPermission = await hasViewerAdminPermission();
 	if (!hasPermission) forbidden();
 
 	try {
-		const totalBooks = await getBooksCount("EXPORTED");
+		const totalNews = await getNewsCount("EXPORTED");
+
 		return (
 			<BadgeWithPagination
-				currentPage={1}
-				label="totalBooks"
-				totalItems={totalBooks}
+				currentPage={page}
+				label="totalNews"
+				totalItems={totalNews}
 			/>
 		);
 	} catch (error) {
-		return <Unexpected caller="BooksCounter" error={error} />;
+		return <Unexpected caller="NewsCounter" error={error} />;
 	}
 }
