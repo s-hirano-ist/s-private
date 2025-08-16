@@ -1,16 +1,8 @@
 import { revalidatePath } from "next/cache";
-import { forbidden } from "next/navigation";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { addBooks } from "./add-books";
 
 // Mock dependencies
-vi.mock("next/navigation", () => ({
-	forbidden: vi.fn(),
-}));
-
-vi.mock("next/cache", () => ({
-	revalidatePath: vi.fn(),
-}));
 
 vi.mock("@/common/auth/session", () => ({
 	getSelfId: vi.fn(),
@@ -68,9 +60,7 @@ describe("addBooks", () => {
 		formData.append("isbn", "978-4-06-519981-0");
 		formData.append("title", "Test Book");
 
-		await addBooks(formData);
-
-		expect(forbidden).toHaveBeenCalled();
+		await expect(addBooks(formData)).rejects.toThrow("FORBIDDEN");
 	});
 
 	test("should successfully add books when user has permission", async () => {

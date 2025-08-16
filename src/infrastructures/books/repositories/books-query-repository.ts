@@ -3,7 +3,7 @@ import type {
 	BooksFindManyParams,
 	IBooksQueryRepository,
 } from "@/domains/books/types";
-import type { Status } from "@/generated";
+import type { Status } from "@/domains/common/entities/common-entity";
 import prisma from "@/prisma";
 
 class BooksQueryRepository implements IBooksQueryRepository {

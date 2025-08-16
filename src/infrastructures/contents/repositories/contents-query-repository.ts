@@ -1,9 +1,9 @@
+import type { Status } from "@/domains/common/entities/common-entity";
 import type { ContentsQueryData } from "@/domains/contents/entities/contents-entity";
 import type {
 	ContentsFindManyParams,
 	IContentsQueryRepository,
 } from "@/domains/contents/types";
-import type { Status } from "@/generated";
 import prisma from "@/prisma";
 
 class ContentsQueryRepository implements IContentsQueryRepository {

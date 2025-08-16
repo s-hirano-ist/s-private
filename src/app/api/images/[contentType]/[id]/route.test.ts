@@ -1,13 +1,7 @@
-import { NextRequest } from "next/server";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { GET } from "./route";
 
 // Mock dependencies
-vi.mock("next/navigation", () => ({
-	forbidden: vi.fn().mockImplementation(() => {
-		throw new Error("Forbidden");
-	}),
-}));
 
 vi.mock("@/features/images/actions/get-images", () => ({
 	getImagesFromStorage: vi.fn(),
@@ -59,7 +53,7 @@ describe("Images API Route", () => {
 			id: "image-123",
 		});
 
-		await expect(GET(request, { params })).rejects.toThrow("Forbidden");
+		await expect(GET(request, { params })).rejects.toThrow("FORBIDDEN");
 	});
 
 	test("should return image stream for thumbnail when user has viewer role", async () => {

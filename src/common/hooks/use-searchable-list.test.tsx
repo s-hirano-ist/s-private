@@ -7,13 +7,10 @@ const mockPush = vi.fn();
 const mockSearchParams = new URLSearchParams();
 
 vi.mock("next/navigation", () => ({
-	useRouter: () => ({
-		push: mockPush,
-	}),
+	useRouter: () => ({ push: mockPush }),
 	useSearchParams: () => mockSearchParams,
 }));
 
-// Mock use-debounce with a simple synchronous implementation
 vi.mock("use-debounce", () => ({
 	useDebouncedCallback: vi.fn().mockImplementation((callback, delay) => {
 		// Return a mocked function that tracks calls

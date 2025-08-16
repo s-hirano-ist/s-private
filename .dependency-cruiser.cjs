@@ -1,6 +1,5 @@
 /** @type {import('dependency-cruiser').IConfiguration} */
 const paths = [
-	// "src/common/",
 	"src/o11y",
 	"src/i18n",
 	"src/env\\.ts",
@@ -9,6 +8,7 @@ const paths = [
 	"src/common/error",
 	"src/common/components/status/unexpected\\.tsx",
 ];
+const includeTypeDefs = false;
 
 module.exports = {
 	forbidden: [
@@ -242,7 +242,7 @@ module.exports = {
        true: also detect dependencies that only exist before typescript-to-javascript compilation
        "specify": for each dependency identify whether it only exists before compilation or also after
      */
-		tsPreCompilationDeps: false,
+		tsPreCompilationDeps: includeTypeDefs,
 
 		/* list of extensions to scan that aren't javascript or compile-to-javascript.
        Empty by default. Only put extensions in here that you want to take into
