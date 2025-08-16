@@ -34,24 +34,18 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 						<ErrorPermissionBoundary
 							errorCaller="ContentsCounter"
 							permissionCheck={hasViewerAdminPermission}
-						>
-							<ContentsCounter
-								currentPage={currentPage}
-								getContentsCount={getContentsCount}
-							/>
-						</ErrorPermissionBoundary>
+							render={() => ContentsCounter({ currentPage, getContentsCount })}
+						/>
 					</Suspense>
 
 					<Suspense fallback={<Loading />}>
 						<ErrorPermissionBoundary
 							errorCaller="ContentsStack"
 							permissionCheck={hasViewerAdminPermission}
-						>
-							<ContentsStack
-								getContents={getExportedContents}
-								page={currentPage}
-							/>
-						</ErrorPermissionBoundary>
+							render={() =>
+								ContentsStack({ getContents: getExportedContents, currentPage })
+							}
+						/>
 					</Suspense>
 				</>
 			);
@@ -63,22 +57,22 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 						<ErrorPermissionBoundary
 							errorCaller="ContentsForm"
 							permissionCheck={hasDumperPostPermission}
-						>
-							<ContentsForm addContents={addContents} />
-						</ErrorPermissionBoundary>
+							render={() => ContentsForm({ addContents })}
+						/>
 					</Suspense>
 
 					<Suspense fallback={<Loading />}>
 						<ErrorPermissionBoundary
 							errorCaller="ContentsStack"
 							permissionCheck={hasViewerAdminPermission}
-						>
-							<ContentsStack
-								deleteContents={deleteContents}
-								getContents={getUnexportedContents}
-								page={currentPage}
-							/>
-						</ErrorPermissionBoundary>
+							render={() =>
+								ContentsStack({
+									deleteContents,
+									getContents: getUnexportedContents,
+									currentPage,
+								})
+							}
+						/>
 					</Suspense>
 				</>
 			);

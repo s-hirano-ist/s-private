@@ -27,8 +27,7 @@ export default async function Page({ params }: { params: Params }) {
 		<ErrorPermissionBoundary
 			errorCaller="BooksViewerBody"
 			permissionCheck={hasViewerAdminPermission}
-		>
-			<ViewerBody getBookByISBN={getBookByISBN} slug={slug} />
-		</ErrorPermissionBoundary>
+			render={() => ViewerBody({ getBookByISBN, slug })}
+		/>
 	);
 }

@@ -3,17 +3,17 @@ import { LinkCardData } from "@/components/common/layouts/cards/link-card";
 import { LinkCardStack } from "@/components/common/layouts/cards/link-card-stack";
 
 type Props = {
-	page: number;
+	currentPage: number;
 	getContents: (page: number) => Promise<LinkCardData[]>;
 	deleteContents?: (id: string) => Promise<ServerAction>;
 };
 
 export async function ContentsStack({
-	page,
+	currentPage,
 	getContents,
 	deleteContents,
 }: Props) {
-	const data = await getContents(page);
+	const data = await getContents(currentPage);
 
 	return (
 		<LinkCardStack

@@ -35,25 +35,18 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 						<ErrorPermissionBoundary
 							errorCaller="NewsCounter"
 							permissionCheck={hasViewerAdminPermission}
-						>
-							<NewsCounter
-								currentPage={currentPage}
-								getNewsCount={getNewsCount}
-							/>
-						</ErrorPermissionBoundary>
+							render={() => NewsCounter({ currentPage, getNewsCount })}
+						/>
 					</Suspense>
 
 					<Suspense fallback={<Loading />}>
 						<ErrorPermissionBoundary
 							errorCaller="NewsStack"
 							permissionCheck={hasViewerAdminPermission}
-						>
-							<NewsStack
-								getNews={getExportedNews}
-								key={currentPage}
-								page={currentPage}
-							/>
-						</ErrorPermissionBoundary>
+							render={() =>
+								NewsStack({ currentPage, getNews: getExportedNews })
+							}
+						/>
 					</Suspense>
 				</>
 			);
@@ -65,22 +58,22 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 						<ErrorPermissionBoundary
 							errorCaller="NewsForm"
 							permissionCheck={hasDumperPostPermission}
-						>
-							<NewsForm addNews={addNews} getCategories={getCategories} />
-						</ErrorPermissionBoundary>
+							render={() => NewsForm({ addNews, getCategories })}
+						/>
 					</Suspense>
 
 					<Suspense fallback={<Loading />}>
 						<ErrorPermissionBoundary
 							errorCaller="NewsStack"
 							permissionCheck={hasViewerAdminPermission}
-						>
-							<NewsStack
-								deleteNews={deleteNews}
-								getNews={getUnexportedNews}
-								page={currentPage}
-							/>
-						</ErrorPermissionBoundary>
+							render={() =>
+								NewsStack({
+									currentPage,
+									getNews: getUnexportedNews,
+									deleteNews,
+								})
+							}
+						/>
 					</Suspense>
 				</>
 			);

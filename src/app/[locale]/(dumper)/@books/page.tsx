@@ -34,21 +34,16 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 						<ErrorPermissionBoundary
 							errorCaller="BooksCounter"
 							permissionCheck={hasViewerAdminPermission}
-						>
-							<BooksCounter
-								currentPage={currentPage}
-								getBooksCount={getBooksCount}
-							/>
-						</ErrorPermissionBoundary>
+							render={() => BooksCounter({ currentPage, getBooksCount })}
+						/>
 					</Suspense>
 
 					<Suspense fallback={<Loading />}>
 						<ErrorPermissionBoundary
 							errorCaller="BooksStack"
 							permissionCheck={hasViewerAdminPermission}
-						>
-							<BooksStack getBooks={getExportedBooks} />
-						</ErrorPermissionBoundary>
+							render={() => BooksStack({ getBooks: getExportedBooks })}
+						/>
 					</Suspense>
 				</>
 			);
@@ -60,21 +55,18 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 						<ErrorPermissionBoundary
 							errorCaller="BooksForm"
 							permissionCheck={hasDumperPostPermission}
-						>
-							<BooksForm addBooks={addBooks} />
-						</ErrorPermissionBoundary>
+							render={() => BooksForm({ addBooks })}
+						/>
 					</Suspense>
 
 					<Suspense fallback={<Loading />}>
 						<ErrorPermissionBoundary
 							errorCaller="BooksStack"
 							permissionCheck={hasViewerAdminPermission}
-						>
-							<BooksStack
-								deleteBooks={deleteBooks}
-								getBooks={getUnexportedBooks}
-							/>
-						</ErrorPermissionBoundary>
+							render={() =>
+								BooksStack({ deleteBooks, getBooks: getUnexportedBooks })
+							}
+						/>
 					</Suspense>
 				</>
 			);

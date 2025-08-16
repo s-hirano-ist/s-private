@@ -34,21 +34,18 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 						<ErrorPermissionBoundary
 							errorCaller="ImagesCounter"
 							permissionCheck={hasViewerAdminPermission}
-						>
-							<ImagesCounter
-								currentPage={currentPage}
-								getImagesCount={getImagesCount}
-							/>
-						</ErrorPermissionBoundary>
+							render={() => ImagesCounter({ currentPage, getImagesCount })}
+						/>
 					</Suspense>
 
 					<Suspense fallback={<Loading />} key={currentPage}>
 						<ErrorPermissionBoundary
 							errorCaller="ImagesStack"
 							permissionCheck={hasViewerAdminPermission}
-						>
-							<ImagesStack getImages={getExportedImages} page={currentPage} />
-						</ErrorPermissionBoundary>
+							render={() =>
+								ImagesStack({ currentPage, getImages: getExportedImages })
+							}
+						/>
 					</Suspense>
 				</>
 			);
@@ -60,22 +57,22 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 						<ErrorPermissionBoundary
 							errorCaller="ImagesForm"
 							permissionCheck={hasDumperPostPermission}
-						>
-							<ImagesForm addImage={addImage} />
-						</ErrorPermissionBoundary>
+							render={() => ImagesForm({ addImage })}
+						/>
 					</Suspense>
 
 					<Suspense fallback={<Loading />}>
 						<ErrorPermissionBoundary
 							errorCaller="ImagesStack"
 							permissionCheck={hasViewerAdminPermission}
-						>
-							<ImagesStack
-								deleteImages={deleteImages}
-								getImages={getUnexportedImages}
-								page={currentPage}
-							/>
-						</ErrorPermissionBoundary>
+							render={() =>
+								ImagesStack({
+									deleteImages,
+									currentPage,
+									getImages: getUnexportedImages,
+								})
+							}
+						/>
 					</Suspense>
 				</>
 			);

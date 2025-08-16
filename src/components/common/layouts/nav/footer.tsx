@@ -20,7 +20,7 @@ const LAYOUTS = {
 	viewer: "VIEWER",
 };
 
-const DEFAULT_LAYOUT = "dump";
+const DEFAULT_LAYOUT = "dumper";
 
 export function Footer() {
 	const [open, setOpen] = useState(false);

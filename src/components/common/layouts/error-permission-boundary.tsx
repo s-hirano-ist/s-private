@@ -4,13 +4,14 @@ import { serverLogger } from "@/infrastructures/observability/server";
 import { StatusCodeView } from "../display/status/status-code-view";
 
 type Props = {
-	children: ReactNode;
+	render: () => Promise<ReactNode>;
 	permissionCheck: () => Promise<boolean>;
 	errorCaller: string;
+	fallback?: ReactNode;
 };
 
 export async function ErrorPermissionBoundary({
-	children,
+	render,
 	permissionCheck,
 	errorCaller,
 }: Props) {
@@ -18,7 +19,7 @@ export async function ErrorPermissionBoundary({
 	if (!hasPermission) forbidden();
 
 	try {
-		return <>{children}</>;
+		return await render();
 	} catch (error) {
 		serverLogger.error(
 			"unexpected",
