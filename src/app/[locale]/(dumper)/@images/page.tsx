@@ -1,32 +1,54 @@
 import { Suspense } from "react";
-import Loading from "@/common/components/loading";
-import { addImage } from "@/features/images/actions/add-image";
-import { deleteImages } from "@/features/images/actions/delete-images";
-import { getUnexportedImages } from "@/features/images/actions/get-images";
-import { ImageForm } from "@/features/images/components/server/image-form";
-import { ImageStack } from "@/features/images/components/server/image-stack";
+import { addImage } from "@/applications/images/add-image";
+import { deleteImages } from "@/applications/images/delete-images";
+import {
+	getExportedImages,
+	getImagesCount,
+	getUnexportedImages,
+} from "@/applications/images/get-images";
+import Loading from "@/components/common/loading";
+import { ImageCounter } from "@/components/images/server/image-counter";
+import { ImageForm } from "@/components/images/server/image-form";
+import { ImageStack } from "@/components/images/server/image-stack";
 
-type Params = Promise<{ page?: string; tab?: string }>;
+type Params = Promise<{ page?: string; tab?: string; layout?: string }>;
 
 export default async function Page({ searchParams }: { searchParams: Params }) {
-	const { page, tab } = await searchParams;
+	const { page, tab, layout } = await searchParams;
 
 	const currentPage = Number(page) || 1;
 
 	// Only render if this tab is active or no tab is specified (defaults to "news")
 	if (tab && tab !== "images") return <div />;
 
-	return (
-		<>
-			<ImageForm addImage={addImage} />
+	switch (layout) {
+		case "viewer":
+			return (
+				<>
+					<ImageCounter
+						currentPage={currentPage}
+						getImagesCount={getImagesCount}
+					/>
 
-			<Suspense fallback={<Loading />}>
-				<ImageStack
-					deleteImages={deleteImages}
-					getImages={getUnexportedImages}
-					page={currentPage}
-				/>
-			</Suspense>
-		</>
-	);
+					<Suspense fallback={<Loading />} key={currentPage}>
+						<ImageStack getImages={getExportedImages} page={currentPage} />
+					</Suspense>
+				</>
+			);
+		case "dumper":
+		default:
+			return (
+				<>
+					<ImageForm addImage={addImage} />
+
+					<Suspense fallback={<Loading />}>
+						<ImageStack
+							deleteImages={deleteImages}
+							getImages={getUnexportedImages}
+							page={currentPage}
+						/>
+					</Suspense>
+				</>
+			);
+	}
 }

@@ -6,7 +6,7 @@ const paths = [
 	"src/prisma\\.ts",
 	"src/minio\\.ts",
 	"src/common/error",
-	"src/common/components/status/unexpected\\.tsx",
+	"src/components/common/status/unexpected\\.tsx",
 ];
 const includeTypeDefs = false;
 

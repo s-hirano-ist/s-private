@@ -3,12 +3,12 @@ import { GET } from "./route";
 
 // Mock dependencies
 
-vi.mock("@/features/images/actions/get-images", () => ({
+vi.mock("@/applications/images/get-images", () => ({
 	getImagesFromStorage: vi.fn(),
 }));
 
 const { getImagesFromStorage } = await import(
-	"@/features/images/actions/get-images"
+	"@/applications/images/get-images"
 );
 
 describe("Images API Route", () => {
