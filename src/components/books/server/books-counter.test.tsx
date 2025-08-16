@@ -6,7 +6,7 @@ vi.mock("@/common/auth/session", () => ({
 	hasViewerAdminPermission: vi.fn(),
 }));
 
-vi.mock("@/applications/books/get-books", () => ({
+vi.mock("@/application-services/books/get-books", () => ({
 	getBooksCount: vi.fn(),
 }));
 
@@ -32,7 +32,9 @@ vi.mock("@/components/common/status/unexpected", () => ({
 }));
 
 const { hasViewerAdminPermission } = await import("@/common/auth/session");
-const { getBooksCount } = await import("@/applications/books/get-books");
+const { getBooksCount } = await import(
+	"@/application-services/books/get-books"
+);
 const { forbidden } = await import("next/navigation");
 
 describe("BooksCounter", () => {
@@ -44,15 +46,22 @@ describe("BooksCounter", () => {
 		vi.mocked(hasViewerAdminPermission).mockResolvedValue(false);
 		const mockGetBooksCount = vi.fn();
 
-		await expect(BooksCounter({ currentPage: 1, getBooksCount: mockGetBooksCount })).rejects.toThrow("FORBIDDEN");
+		await expect(
+			BooksCounter({ currentPage: 1, getBooksCount: mockGetBooksCount }),
+		).rejects.toThrow("FORBIDDEN");
 		expect(forbidden).toHaveBeenCalled();
 	});
 
 	test("should render BadgeWithPagination when user has permission and count is successful", async () => {
 		vi.mocked(hasViewerAdminPermission).mockResolvedValue(true);
-		const mockGetBooksCount = vi.fn().mockResolvedValue({ count: 42, pageSize: 24 });
+		const mockGetBooksCount = vi
+			.fn()
+			.mockResolvedValue({ count: 42, pageSize: 24 });
 
-		const result = await BooksCounter({ currentPage: 1, getBooksCount: mockGetBooksCount });
+		const result = await BooksCounter({
+			currentPage: 1,
+			getBooksCount: mockGetBooksCount,
+		});
 		// eslint-disable-next-line
 		render(result as any);
 
@@ -68,7 +77,10 @@ describe("BooksCounter", () => {
 		const error = new Error("Database error");
 		const mockGetBooksCount = vi.fn().mockRejectedValue(error);
 
-		const result = await BooksCounter({ currentPage: 1, getBooksCount: mockGetBooksCount });
+		const result = await BooksCounter({
+			currentPage: 1,
+			getBooksCount: mockGetBooksCount,
+		});
 		// eslint-disable-next-line
 		render(result as any);
 
@@ -79,9 +91,14 @@ describe("BooksCounter", () => {
 
 	test("should render BadgeWithPagination when getBooksCount returns 0", async () => {
 		vi.mocked(hasViewerAdminPermission).mockResolvedValue(true);
-		const mockGetBooksCount = vi.fn().mockResolvedValue({ count: 0, pageSize: 24 });
+		const mockGetBooksCount = vi
+			.fn()
+			.mockResolvedValue({ count: 0, pageSize: 24 });
 
-		const result = await BooksCounter({ currentPage: 1, getBooksCount: mockGetBooksCount });
+		const result = await BooksCounter({
+			currentPage: 1,
+			getBooksCount: mockGetBooksCount,
+		});
 		// eslint-disable-next-line
 		render(result as any);
 

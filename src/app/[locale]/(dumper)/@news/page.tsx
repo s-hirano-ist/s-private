@@ -1,12 +1,12 @@
 import { Suspense } from "react";
-import { addNews } from "@/applications/news/add-news";
-import { deleteNews } from "@/applications/news/delete-news";
+import { addNews } from "@/application-services/news/add-news";
+import { deleteNews } from "@/application-services/news/delete-news";
 import {
 	getCategories,
 	getExportedNews,
 	getNewsCount,
 	getUnexportedNews,
-} from "@/applications/news/get-news";
+} from "@/application-services/news/get-news";
 import Loading from "@/components/common/loading";
 import { NewsCounter } from "@/components/news/server/news-counter";
 import { NewsForm } from "@/components/news/server/news-form";

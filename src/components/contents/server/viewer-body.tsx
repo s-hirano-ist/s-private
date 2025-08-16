@@ -1,5 +1,5 @@
 import { forbidden } from "next/navigation";
-import type { getContentByTitle } from "@/applications/contents/get-contents";
+import type { getContentByTitle } from "@/application-services/contents/get-contents";
 import { hasViewerAdminPermission } from "@/common/auth/session";
 import { ViewerBodyClient } from "@/components/common/body/viewer-body";
 import { NotFound } from "@/components/common/status/not-found";

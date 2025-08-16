@@ -1,6 +1,6 @@
 "use client";
-import { filterImageCards } from "@/applications/search/search-filter";
 import { useSearchableList } from "@/common/hooks/use-searchable-list";
+import { filterImageCards } from "@/common/search/search-filter";
 import type { ServerAction } from "@/common/types";
 import { ImageCard, ImageCardData } from "@/components/common/card/image-card";
 import { SearchableCardLayout } from "@/components/common/search/searchable-card-layout";

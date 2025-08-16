@@ -1,6 +1,6 @@
 import { revalidatePath } from "next/cache";
 import { describe, expect, test, vi } from "vitest";
-import { deleteContents } from "@/applications/contents/delete-contents";
+import { deleteContents } from "@/application-services/contents/delete-contents";
 import { contentsCommandRepository } from "@/infrastructures/contents/repositories/contents-command-repository";
 
 vi.mock(

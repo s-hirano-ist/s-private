@@ -1,11 +1,11 @@
 import { Suspense } from "react";
-import { addBooks } from "@/applications/books/add-books";
-import { deleteBooks } from "@/applications/books/delete-books";
+import { addBooks } from "@/application-services/books/add-books";
+import { deleteBooks } from "@/application-services/books/delete-books";
 import {
 	getBooksCount,
 	getExportedBooks,
 	getUnexportedBooks,
-} from "@/applications/books/get-books";
+} from "@/application-services/books/get-books";
 import { BooksStack } from "@/components/books/server/book-stack";
 import { BooksCounter } from "@/components/books/server/books-counter";
 import { BooksForm } from "@/components/books/server/books-form";

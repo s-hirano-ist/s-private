@@ -1,11 +1,11 @@
 import { Suspense } from "react";
-import { addContents } from "@/applications/contents/add-contents";
-import { deleteContents } from "@/applications/contents/delete-contents";
+import { addContents } from "@/application-services/contents/add-contents";
+import { deleteContents } from "@/application-services/contents/delete-contents";
 import {
 	getContentsCount,
 	getExportedContents,
 	getUnexportedContents,
-} from "@/applications/contents/get-contents";
+} from "@/application-services/contents/get-contents";
 import Loading from "@/components/common/loading";
 import { ContentsCounter } from "@/components/contents/server/contents-counter";
 import { ContentsForm } from "@/components/contents/server/contents-form";

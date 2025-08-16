@@ -1,16 +1,13 @@
 import { revalidatePath } from "next/cache";
 import { describe, expect, test, vi } from "vitest";
-import { deleteImages } from "@/applications/images/delete-images";
-import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
+import { deleteNews } from "@/application-services/news/delete-news";
+import { newsCommandRepository } from "@/infrastructures/news/repositories/news-command-repository";
 
-vi.mock(
-	"@/infrastructures/images/repositories/images-command-repository",
-	() => ({
-		imagesCommandRepository: {
-			deleteById: vi.fn(),
-		},
-	}),
-);
+vi.mock("@/infrastructures/news/repositories/news-command-repository", () => ({
+	newsCommandRepository: {
+		deleteById: vi.fn(),
+	},
+}));
 
 const mockGetSelfId = vi.fn();
 const mockHasDumperPostPermission = vi.fn();
@@ -20,21 +17,21 @@ vi.mock("@/common/auth/session", () => ({
 	hasDumperPostPermission: () => mockHasDumperPostPermission(),
 }));
 
-describe("deleteImages", () => {
-	test("should delete images successfully", async () => {
+describe("deleteNews", () => {
+	test("should delete news successfully", async () => {
 		mockHasDumperPostPermission.mockResolvedValue(true);
 		mockGetSelfId.mockResolvedValue("1");
 
-		vi.mocked(imagesCommandRepository.deleteById).mockResolvedValueOnce();
+		vi.mocked(newsCommandRepository.deleteById).mockResolvedValueOnce();
 
-		const result = await deleteImages("1");
+		const result = await deleteNews("1");
 
 		expect(result).toEqual({
 			success: true,
 			message: "deleted",
 		});
 
-		expect(imagesCommandRepository.deleteById).toHaveBeenCalledWith(
+		expect(newsCommandRepository.deleteById).toHaveBeenCalledWith(
 			"1",
 			"1",
 			"UNEXPORTED",
@@ -42,19 +39,19 @@ describe("deleteImages", () => {
 		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 	});
 
-	test("should return error when images not found", async () => {
+	test("should return error when news not found", async () => {
 		mockHasDumperPostPermission.mockResolvedValue(true);
 		mockGetSelfId.mockResolvedValue("1");
 
-		vi.mocked(imagesCommandRepository.deleteById).mockRejectedValue(
+		vi.mocked(newsCommandRepository.deleteById).mockRejectedValue(
 			new Error("Record not found"),
 		);
 
-		const result = await deleteImages("999");
+		const result = await deleteNews("999");
 
 		expect(result.success).toBe(false);
 		expect(result.message).toBe("unexpected");
-		expect(imagesCommandRepository.deleteById).toHaveBeenCalledWith(
+		expect(newsCommandRepository.deleteById).toHaveBeenCalledWith(
 			"999",
 			"1",
 			"UNEXPORTED",

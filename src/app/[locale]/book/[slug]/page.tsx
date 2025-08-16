@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getBookByISBN } from "@/applications/books/get-books";
+import { getBookByISBN } from "@/application-services/books/get-books";
 import { PAGE_NAME } from "@/common/constants";
 import { ViewerBody } from "@/components/books/server/viewer-body";
 

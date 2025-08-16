@@ -1,6 +1,6 @@
 "use client";
-import { filterLinkCards } from "@/applications/search/search-filter";
 import { useSearchableList } from "@/common/hooks/use-searchable-list";
+import { filterLinkCards } from "@/common/search/search-filter";
 import type { ServerAction } from "@/common/types";
 import { LinkCard, LinkCardData } from "@/components/common/card/link-card";
 import { SearchableCardLayout } from "@/components/common/search/searchable-card-layout";
