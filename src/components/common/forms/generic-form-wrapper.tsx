@@ -10,7 +10,7 @@ import {
 } from "react";
 import { toast } from "sonner";
 import type { ServerAction } from "@/common/types";
-import Loading from "@/components/common/loading";
+import Loading from "@/components/common/display/loading";
 import { Button } from "@/components/common/ui/button";
 
 const FormValuesContext = createContext<Record<string, string>>({});

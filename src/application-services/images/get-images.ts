@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
-import { ImageData } from "@/components/common/image/image-stack";
+import { ImageData } from "@/components/common/display/image/image-stack";
 import type { Status } from "@/domains/common/entities/common-entity";
 import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
 

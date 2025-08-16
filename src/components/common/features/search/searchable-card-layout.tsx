@@ -2,7 +2,7 @@
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { Input } from "@/components/common/ui/input";
-import { StatusCodeView } from "../status/status-code-view";
+import { StatusCodeView } from "../../display/status/status-code-view";
 
 type SearchableCardLayoutProps<T> = {
 	searchQuery: string;

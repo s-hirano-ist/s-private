@@ -3,8 +3,8 @@ import Image from "next/image";
 import { useState } from "react";
 import Lightbox from "yet-another-react-lightbox";
 import type { ServerAction } from "@/common/types";
-import { DeleteButtonWithModal } from "@/components/common/delete-button-with-modal";
-import { StatusCodeView } from "@/components/common/status/status-code-view";
+import { StatusCodeView } from "@/components/common/display/status/status-code-view";
+import { DeleteButtonWithModal } from "@/components/common/forms/actions/delete-button-with-modal";
 import "yet-another-react-lightbox/styles.css";
 
 export type ImageData = {

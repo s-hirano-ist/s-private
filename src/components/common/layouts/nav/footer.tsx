@@ -4,7 +4,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { type ReactNode, Suspense, useEffect, useState } from "react";
-import { UtilButtons } from "@/components/common/nav/util-buttons";
+import { UtilButtons } from "@/components/common/layouts/nav/util-buttons";
 import { Button } from "@/components/common/ui/button";
 import {
 	Drawer,

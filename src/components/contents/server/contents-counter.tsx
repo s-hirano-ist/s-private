@@ -1,8 +1,8 @@
 import { forbidden } from "next/navigation";
 import { getContentsCount } from "@/application-services/contents/get-contents";
 import { hasViewerAdminPermission } from "@/common/auth/session";
-import { BadgeWithPagination } from "@/components/common/badge-with-pagination";
-import { Unexpected } from "@/components/common/status/unexpected";
+import { BadgeWithPagination } from "@/components/common/display/badge-with-pagination";
+import { Unexpected } from "@/components/common/display/status/unexpected";
 
 type Props = {
 	currentPage: number;

@@ -4,8 +4,8 @@ import { ServerAction } from "@/common/types";
 import {
 	type ImageData,
 	ImageStack as ImageStackClient,
-} from "@/components/common/image/image-stack";
-import { Unexpected } from "@/components/common/status/unexpected";
+} from "@/components/common/display/image/image-stack";
+import { Unexpected } from "@/components/common/display/status/unexpected";
 
 type Props = {
 	page: number;

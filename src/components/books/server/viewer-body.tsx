@@ -3,9 +3,9 @@ import NextImage from "next/image";
 import { forbidden } from "next/navigation";
 import type { getBookByISBN } from "@/application-services/books/get-books";
 import { hasViewerAdminPermission } from "@/common/auth/session";
-import { ViewerBodyClient } from "@/components/common/body/viewer-body";
-import { NotFound } from "@/components/common/status/not-found";
-import { Unexpected } from "@/components/common/status/unexpected";
+import { NotFound } from "@/components/common/display/status/not-found";
+import { Unexpected } from "@/components/common/display/status/unexpected";
+import { ViewerBodyClient } from "@/components/common/layouts/body/viewer-body";
 import {
 	Card,
 	CardContent,

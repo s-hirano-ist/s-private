@@ -1,5 +1,5 @@
 import { Route } from "next";
-import { StatusCodeView } from "@/components/common/status/status-code-view";
+import { StatusCodeView } from "@/components/common/display/status/status-code-view";
 import { Button } from "@/components/common/ui/button";
 import { Link } from "@/i18n/routing";
 

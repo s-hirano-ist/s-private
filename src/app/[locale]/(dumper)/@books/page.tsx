@@ -9,7 +9,7 @@ import {
 import { BooksStack } from "@/components/books/server/book-stack";
 import { BooksCounter } from "@/components/books/server/books-counter";
 import { BooksForm } from "@/components/books/server/books-form";
-import Loading from "@/components/common/loading";
+import Loading from "@/components/common/display/loading";
 
 type Params = Promise<{ page?: string; tab?: string; layout?: string }>;
 

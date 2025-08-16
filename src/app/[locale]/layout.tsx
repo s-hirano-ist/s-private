@@ -2,8 +2,8 @@ import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { ReactNode } from "react";
-import { Footer } from "@/components/common/nav/footer";
-import { ThemeProvider } from "@/components/common/provider/theme-provider";
+import { Footer } from "@/components/common/layouts/nav/footer";
+import { ThemeProvider } from "@/components/common/providers/theme-provider";
 import { Toaster } from "@/components/common/ui/sonner";
 import { routing } from "@/i18n/routing";
 

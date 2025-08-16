@@ -10,7 +10,7 @@ vi.mock("@/application-services/books/get-books", () => ({
 	getBooksCount: vi.fn(),
 }));
 
-vi.mock("@/components/common/badge-with-pagination", () => ({
+vi.mock("@/components/common/display/badge-with-pagination", () => ({
 	// eslint-disable-next-line
 	BadgeWithPagination: ({ currentPage, label, totalItems }: any) => (
 		<div data-testid="badge-with-pagination">
@@ -21,7 +21,7 @@ vi.mock("@/components/common/badge-with-pagination", () => ({
 	),
 }));
 
-vi.mock("@/components/common/status/unexpected", () => ({
+vi.mock("@/components/common/display/status/unexpected", () => ({
 	// eslint-disable-next-line
 	Unexpected: ({ caller, error }: any) => (
 		<div data-testid="unexpected-error">

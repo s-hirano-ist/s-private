@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { PAGE_NAME } from "@/common/constants";
-import { RootTab } from "@/components/common/nav/root-tab";
+import { RootTab } from "@/components/common/layouts/nav/root-tab";
 
 const displayName = "DUMPER";
 

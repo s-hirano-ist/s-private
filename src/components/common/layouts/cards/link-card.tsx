@@ -1,7 +1,7 @@
 "use client";
 import ReactMarkdown from "react-markdown";
 import { ServerAction } from "@/common/types";
-import { DeleteButtonWithModal } from "@/components/common/delete-button-with-modal";
+import { DeleteButtonWithModal } from "@/components/common/forms/actions/delete-button-with-modal";
 import { Badge } from "@/components/common/ui/badge";
 import {
 	Card,
