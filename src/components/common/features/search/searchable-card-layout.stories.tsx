@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { SearchableCardLayout } from "./searchable-card-layout";
 
 const meta = {
-	title: "Common/Components/Search/SearchableCardLayout",
 	component: SearchableCardLayout,
 	parameters: {
 		layout: "padded",

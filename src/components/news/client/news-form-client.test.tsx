@@ -11,9 +11,7 @@ const messages = {
 		description: "ひとこと",
 		category: "カテゴリー",
 	},
-	message: {
-		inserted: "正常に登録されました。",
-	},
+	message: { inserted: "正常に登録されました。" },
 };
 
 describe("NewsFormClient", () => {
