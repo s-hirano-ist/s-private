@@ -7,9 +7,6 @@ import { deleteBooks } from "./delete-books";
 vi.mock("@/common/auth/session");
 vi.mock("@/common/error/error-wrapper");
 vi.mock("@/infrastructures/books/repositories/books-command-repository");
-vi.mock("next/cache", () => ({
-	revalidatePath: vi.fn(),
-}));
 
 describe("deleteBooks", () => {
 	const mockHasDumperPostPermission =

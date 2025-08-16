@@ -2,12 +2,6 @@ import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { BooksCounter } from "./books-counter";
 
-vi.mock("next/navigation", () => ({
-	forbidden: vi.fn().mockImplementation(() => {
-		throw new Error("Forbidden");
-	}),
-}));
-
 vi.mock("@/common/auth/session", () => ({
 	hasViewerAdminPermission: vi.fn(),
 }));
@@ -49,7 +43,7 @@ describe("BooksCounter", () => {
 	test("should call forbidden when user doesn't have permission", async () => {
 		vi.mocked(hasViewerAdminPermission).mockResolvedValue(false);
 
-		await expect(BooksCounter()).rejects.toThrow("Forbidden");
+		await expect(BooksCounter()).rejects.toThrow("FORBIDDEN");
 		expect(forbidden).toHaveBeenCalled();
 	});
 

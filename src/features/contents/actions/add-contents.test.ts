@@ -3,10 +3,6 @@ import { describe, expect, test, vi } from "vitest";
 import { contentsCommandRepository } from "@/infrastructures/contents/repositories/contents-command-repository";
 import { addContents } from "./add-contents";
 
-vi.mock("next/cache", () => ({
-	revalidatePath: vi.fn(),
-}));
-
 vi.mock(
 	"@/infrastructures/contents/repositories/contents-command-repository",
 	() => ({

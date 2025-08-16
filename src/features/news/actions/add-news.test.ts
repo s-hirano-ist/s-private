@@ -4,10 +4,6 @@ import { DuplicateError } from "@/common/error/error-classes";
 import { newsCommandRepository } from "@/infrastructures/news/repositories/news-command-repository";
 import { addNews } from "./add-news";
 
-vi.mock("next/cache", () => ({
-	revalidatePath: vi.fn(),
-}));
-
 vi.mock("@/infrastructures/news/repositories/news-command-repository", () => ({
 	newsCommandRepository: {
 		create: vi.fn(),
