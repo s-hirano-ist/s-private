@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
-import { LinkCardData } from "@/components/common/card/link-card";
+import { LinkCardData } from "@/components/common/layouts/cards/link-card";
 import type { NewsFormClientData } from "@/components/news/client/news-form-client";
 import type { Status } from "@/domains/common/entities/common-entity";
 import {

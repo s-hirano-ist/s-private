@@ -1,7 +1,7 @@
 import "server-only";
 import { unauthorized } from "next/navigation";
-import { serverLogger } from "@/o11y/server";
-import { auth } from "./auth";
+import { auth } from "@/infrastructures/auth/auth-provider";
+import { serverLogger } from "@/infrastructures/observability/server";
 
 async function checkSelfAuth() {
 	const session = await auth();

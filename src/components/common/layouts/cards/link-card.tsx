@@ -1,8 +1,7 @@
 "use client";
 import ReactMarkdown from "react-markdown";
 import { ServerAction } from "@/common/types";
-import { validateAndNormalizeUrl } from "@/common/validate/validate-url";
-import { DeleteButtonWithModal } from "@/components/common/delete-button-with-modal";
+import { DeleteButtonWithModal } from "@/components/common/forms/actions/delete-button-with-modal";
 import { Badge } from "@/components/common/ui/badge";
 import {
 	Card,
@@ -11,7 +10,8 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/common/ui/card";
-import { Link } from "@/i18n/routing";
+import { validateAndNormalizeUrl } from "@/components/common/utils/validate-url";
+import { Link } from "@/infrastructures/i18n/routing";
 
 export type LinkCardData = {
 	id: string;

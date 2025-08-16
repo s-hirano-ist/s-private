@@ -4,8 +4,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { type ReactNode, Suspense, useEffect, useState } from "react";
-import { cn } from "@/common/tailwind/utils";
-import { UtilButtons } from "@/components/common/nav/util-buttons";
+import { UtilButtons } from "@/components/common/layouts/nav/util-buttons";
 import { Button } from "@/components/common/ui/button";
 import {
 	Drawer,
@@ -14,6 +13,7 @@ import {
 	DrawerTitle,
 	DrawerTrigger,
 } from "@/components/common/ui/drawer";
+import { cn } from "@/components/common/utils/cn";
 
 const LAYOUTS = {
 	dumper: "DUMPER",

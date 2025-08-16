@@ -6,7 +6,7 @@ import {
 	getImagesCount,
 	getUnexportedImages,
 } from "@/application-services/images/get-images";
-import Loading from "@/components/common/loading";
+import Loading from "@/components/common/display/loading";
 import { ImageCounter } from "@/components/images/server/image-counter";
 import { ImageForm } from "@/components/images/server/image-form";
 import { ImageStack } from "@/components/images/server/image-stack";

@@ -34,7 +34,6 @@ export const Default: Story = {
 		handleSearchChange: async () => {},
 		renderCard,
 		gridClassName: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4",
-		isLoading: false,
 	},
 };
 
@@ -45,7 +44,6 @@ export const WithSearchQuery: Story = {
 		handleSearchChange: async () => {},
 		renderCard,
 		gridClassName: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4",
-		isLoading: false,
 	},
 };
 
@@ -56,17 +54,5 @@ export const EmptyResults: Story = {
 		handleSearchChange: async () => {},
 		renderCard,
 		gridClassName: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4",
-		isLoading: false,
-	},
-};
-
-export const Loading: Story = {
-	args: {
-		searchQuery: "",
-		searchResults: [],
-		handleSearchChange: async () => {},
-		renderCard,
-		gridClassName: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4",
-		isLoading: true,
 	},
 };

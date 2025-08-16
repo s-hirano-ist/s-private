@@ -3,7 +3,7 @@ import "server-only";
 import { AuthError } from "next-auth";
 import { ServerAction } from "@/common/types";
 import { Prisma } from "@/generated";
-import { serverLogger } from "@/o11y/server";
+import { serverLogger } from "@/infrastructures/observability/server";
 import {
 	DuplicateError,
 	FileNotAllowedError,

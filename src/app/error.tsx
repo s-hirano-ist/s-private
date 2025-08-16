@@ -2,7 +2,7 @@
 import { captureException } from "@sentry/nextjs";
 import { useEffect } from "react";
 import { Button } from "@/components/common/ui/button";
-import { clientLogger } from "@/o11y/client";
+import { clientLogger } from "@/infrastructures/observability/client";
 
 export default function Page({
 	error,

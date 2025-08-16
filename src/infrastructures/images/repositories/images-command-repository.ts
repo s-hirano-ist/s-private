@@ -2,8 +2,8 @@ import { Status } from "@/domains/common/entities/common-entity";
 import { ImagesFormSchema } from "@/domains/images/entities/images-entity";
 import type { IImagesCommandRepository } from "@/domains/images/types";
 import { env } from "@/env";
+import { serverLogger } from "@/infrastructures/observability/server";
 import { minioClient } from "@/minio";
-import { serverLogger } from "@/o11y/server";
 import prisma from "@/prisma";
 import { ORIGINAL_IMAGE_PATH, THUMBNAIL_IMAGE_PATH } from "./common";
 

@@ -1,5 +1,4 @@
 import { useTranslations } from "next-intl";
-import { PAGE_SIZE } from "@/common/constants";
 import { Badge } from "@/components/common/ui/badge";
 import {
 	PaginationContent,

@@ -1,9 +1,9 @@
 import { forbidden } from "next/navigation";
 import type { getContentByTitle } from "@/application-services/contents/get-contents";
 import { hasViewerAdminPermission } from "@/common/auth/session";
-import { ViewerBodyClient } from "@/components/common/body/viewer-body";
-import { NotFound } from "@/components/common/status/not-found";
-import { Unexpected } from "@/components/common/status/unexpected";
+import { NotFound } from "@/components/common/display/status/not-found";
+import { Unexpected } from "@/components/common/display/status/unexpected";
+import { ViewerBodyClient } from "@/components/common/layouts/body/viewer-body";
 
 type Props = { slug: string; getContentByTitle: typeof getContentByTitle };
 

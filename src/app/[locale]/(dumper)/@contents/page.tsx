@@ -6,7 +6,7 @@ import {
 	getExportedContents,
 	getUnexportedContents,
 } from "@/application-services/contents/get-contents";
-import Loading from "@/components/common/loading";
+import Loading from "@/components/common/display/loading";
 import { ContentsCounter } from "@/components/contents/server/contents-counter";
 import { ContentsForm } from "@/components/contents/server/contents-form";
 import { ContentsStack } from "@/components/contents/server/contents-stack";

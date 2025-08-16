@@ -1,7 +1,7 @@
 import { Status } from "@/domains/common/entities/common-entity";
 import { NewsFormSchema } from "@/domains/news/entities/news-entity";
 import type { INewsCommandRepository } from "@/domains/news/types";
-import { serverLogger } from "@/o11y/server";
+import { serverLogger } from "@/infrastructures/observability/server";
 import prisma from "@/prisma";
 
 class NewsCommandRepository implements INewsCommandRepository {

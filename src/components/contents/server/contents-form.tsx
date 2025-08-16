@@ -1,7 +1,7 @@
 import { forbidden } from "next/navigation";
 import { hasDumperPostPermission } from "@/common/auth/session";
 import { ServerAction } from "@/common/types";
-import { Unexpected } from "@/components/common/status/unexpected";
+import { Unexpected } from "@/components/common/display/status/unexpected";
 import { ContentsFormClient } from "../client/contents-form-client";
 
 type Props = {

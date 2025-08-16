@@ -1,7 +1,7 @@
 import { captureException } from "@sentry/nextjs";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, test, vi } from "vitest";
-import { clientLogger } from "@/o11y/client";
+import { clientLogger } from "@/infrastructures/observability/client";
 import Page from "./error";
 
 vi.mock("@sentry/nextjs", () => ({

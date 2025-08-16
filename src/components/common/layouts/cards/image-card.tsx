@@ -2,14 +2,14 @@
 import type { Route } from "next";
 import NextImage from "next/image";
 import type { ServerAction } from "@/common/types";
-import { DeleteButtonWithModal } from "@/components/common/delete-button-with-modal";
+import { DeleteButtonWithModal } from "@/components/common/forms/actions/delete-button-with-modal";
 import {
 	Card,
 	CardContent,
 	CardHeader,
 	CardTitle,
 } from "@/components/common/ui/card";
-import { Link } from "@/i18n/routing";
+import { Link } from "@/infrastructures/i18n/routing";
 
 export type ImageCardData = {
 	id: string;

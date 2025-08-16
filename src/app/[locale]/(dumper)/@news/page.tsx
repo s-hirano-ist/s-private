@@ -7,7 +7,7 @@ import {
 	getNewsCount,
 	getUnexportedNews,
 } from "@/application-services/news/get-news";
-import Loading from "@/components/common/loading";
+import Loading from "@/components/common/display/loading";
 import { NewsCounter } from "@/components/news/server/news-counter";
 import { NewsForm } from "@/components/news/server/news-form";
 import { NewsStack } from "@/components/news/server/news-stack";

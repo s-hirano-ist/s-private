@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { PAGE_NAME } from "@/common/constants";
-import { RootTab } from "@/components/common/nav/root-tab";
-
-const displayName = "DUMPER";
+import { RootTab } from "@/components/common/layouts/nav/root-tab";
 
 export const metadata: Metadata = {
-	title: `${displayName} | ${PAGE_NAME}`,
-	description: "Contents dumper.",
+	title: `${PAGE_NAME}`,
+	description: "Knowledge dumper and viewer.",
 };
 
 type Props = {

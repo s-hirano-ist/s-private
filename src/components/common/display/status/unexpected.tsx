@@ -1,6 +1,6 @@
 "use client";
 import { useEffect } from "react";
-import { clientLogger } from "@/o11y/client";
+import { clientLogger } from "@/infrastructures/observability/client";
 import { StatusCodeView } from "./status-code-view";
 
 type Props = {

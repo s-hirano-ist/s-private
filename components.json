@@ -11,7 +11,7 @@
 		"prefix": ""
 	},
 	"aliases": {
-		"components": "@/components",
-		"utils": "@/common/tailwind/utils"
+		"components": "@/components/common",
+		"utils": "@/components/common/utils/cn"
 	}
 }
