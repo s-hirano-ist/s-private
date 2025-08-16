@@ -4,11 +4,11 @@ import {
 	DotsHorizontalIcon,
 } from "@radix-ui/react-icons";
 import * as React from "react";
-import { cn } from "@/common/tailwind/utils";
 import {
 	type ButtonProps,
 	buttonVariants,
 } from "@/components/common/ui/button";
+import { cn } from "@/components/common/utils/cn";
 import { Link } from "@/i18n/routing";
 
 function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
