@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.28.0](https://github.com/s-hirano-ist/s-private/compare/v8.27.0...v8.28.0) (2025-08-16)
+
+
+### Features
+
+* add error boundary ([a2885c8](https://github.com/s-hirano-ist/s-private/commit/a2885c80bcc4df3adebd3f72ceb837bb03940117))
+* add error boundary ([60e833a](https://github.com/s-hirano-ist/s-private/commit/60e833adf072b85aed9397b0470e58447b0e0a2a))
+
+
+### Bug Fixes
+
+* no error catches ([b0e85a1](https://github.com/s-hirano-ist/s-private/commit/b0e85a1f8568fdedf7dc28d29ecd055edba96693))
+* tests ([a11cda3](https://github.com/s-hirano-ist/s-private/commit/a11cda3595d263d81a0d6dfdb0b423dd08c9781e))
+
 ## [8.27.0](https://github.com/s-hirano-ist/s-private/compare/v8.26.4...v8.27.0) (2025-08-16)
 
 
