@@ -8,13 +8,14 @@ vi.mock("@/common/auth/session");
 vi.mock("@/common/error/error-wrapper");
 vi.mock("@/infrastructures/books/repositories/books-command-repository");
 
+const mockDeleteById = vi.fn();
+
 describe("deleteBooks", () => {
 	const mockHasDumperPostPermission =
 		sessionModule.hasDumperPostPermission as Mock;
 	const mockGetSelfId = sessionModule.getSelfId as Mock;
 	const mockWrapServerSideErrorForClient =
 		errorModule.wrapServerSideErrorForClient as Mock;
-	const mockDeleteById = vi.fn();
 
 	beforeEach(() => {
 		vi.clearAllMocks();

@@ -54,7 +54,7 @@ describe("DeleteButtonWithModal", () => {
 		render(
 			<DeleteButtonWithModal
 				deleteAction={mockDeleteAction}
-				id={1}
+				id="1"
 				title="Test Item"
 			/>,
 		);
@@ -78,7 +78,7 @@ describe("DeleteButtonWithModal", () => {
 		render(
 			<DeleteButtonWithModal
 				deleteAction={mockDeleteAction}
-				id={1}
+				id="1"
 				title="Test Item"
 			/>,
 		);
@@ -96,7 +96,7 @@ describe("DeleteButtonWithModal", () => {
 		render(
 			<DeleteButtonWithModal
 				deleteAction={mockDeleteAction}
-				id={1}
+				id="1"
 				title="Test Item"
 			/>,
 		);
@@ -120,7 +120,7 @@ describe("DeleteButtonWithModal", () => {
 		render(
 			<DeleteButtonWithModal
 				deleteAction={mockDeleteAction}
-				id={1}
+				id="1"
 				title="Test Item"
 			/>,
 		);
@@ -132,7 +132,7 @@ describe("DeleteButtonWithModal", () => {
 		fireEvent.click(confirmDeleteButton);
 
 		await waitFor(() => {
-			expect(mockDeleteAction).toHaveBeenCalledWith(1);
+			expect(mockDeleteAction).toHaveBeenCalledWith("1");
 			expect(toast).toHaveBeenCalledWith("deleteSuccess");
 			expect(screen.queryByText("Confirm Delete")).not.toBeInTheDocument();
 		});
@@ -144,7 +144,7 @@ describe("DeleteButtonWithModal", () => {
 		render(
 			<DeleteButtonWithModal
 				deleteAction={mockDeleteAction}
-				id={1}
+				id="1"
 				title="Test Item"
 			/>,
 		);
@@ -156,7 +156,7 @@ describe("DeleteButtonWithModal", () => {
 		fireEvent.click(confirmDeleteButton);
 
 		await waitFor(() => {
-			expect(mockDeleteAction).toHaveBeenCalledWith(1);
+			expect(mockDeleteAction).toHaveBeenCalledWith("1");
 			expect(toast.error).toHaveBeenCalledWith("An error occurred");
 			expect(screen.getByText("Confirm Delete")).toBeInTheDocument(); // Dialog remains open
 		});
@@ -176,7 +176,7 @@ describe("DeleteButtonWithModal", () => {
 		render(
 			<DeleteButtonWithModal
 				deleteAction={mockDeleteAction}
-				id={1}
+				id="1"
 				title="Test Item"
 			/>,
 		);
@@ -211,7 +211,7 @@ describe("DeleteButtonWithModal", () => {
 		render(
 			<DeleteButtonWithModal
 				deleteAction={mockDeleteAction}
-				id={1}
+				id="1"
 				title="Test Item"
 			/>,
 		);
@@ -241,7 +241,7 @@ describe("DeleteButtonWithModal", () => {
 			<div onClick={mockParentClick}>
 				<DeleteButtonWithModal
 					deleteAction={mockDeleteAction}
-					id={1}
+					id="1"
 					title="Test Item"
 				/>
 			</div>,

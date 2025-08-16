@@ -61,7 +61,8 @@ describe("NewsCommandRepository", () => {
 				updatedAt: new Date(),
 				userId: "user123",
 				Category: { name: "tech" },
-			});
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			} as any);
 
 			const result = await newsCommandRepository.create({
 				title: "Another News",
