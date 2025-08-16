@@ -12,9 +12,10 @@ import type {
 import prisma from "@/prisma";
 
 class NewsQueryRepository implements INewsQueryRepository {
-	findByUrl = async (userId: string, url: string): Promise<{} | null> => {
+	findByUrl = async (url: string, userId: string): Promise<{} | null> => {
 		return await prisma.news.findUnique({
 			where: { url_userId: { url, userId } },
+			select: { url: true },
 		});
 	};
 

@@ -114,7 +114,7 @@ describe("addBooks", () => {
 
 		const result = await addBooks(formData);
 
-		expect(wrapServerSideErrorForClient).toHaveBeenCalledWith(error);
+		expect(wrapServerSideErrorForClient).toHaveBeenCalledWith(error, formData);
 		expect(result).toEqual({ success: false, message: "Error occurred" });
 	});
 });

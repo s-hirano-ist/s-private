@@ -1,6 +1,6 @@
 import { revalidatePath } from "next/cache";
 import { describe, expect, test, vi } from "vitest";
-import { NewsDomainService } from "@/domains/news/services/news-domain-service";
+import { DuplicateError } from "@/common/error/error-classes";
 import { newsCommandRepository } from "@/infrastructures/news/repositories/news-command-repository";
 import { addNews } from "./add-news";
 
@@ -82,5 +82,23 @@ describe("addNews", () => {
 		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
 		expect(result.success).toBe(true);
 		expect(result.message).toBe("inserted");
+	});
+
+	test("should preserve form data on DuplicateError", async () => {
+		mockHasDumperPostPermission.mockResolvedValue(true);
+		mockGetSelfId.mockResolvedValue("user-123");
+		mockPrepareNewNews.mockRejectedValue(new DuplicateError());
+
+		const result = await addNews(mockFormData);
+
+		expect(result.success).toBe(false);
+		expect(result.message).toBe("duplicated");
+		expect(result.formData).toEqual({
+			title: "Example Content",
+			quote: "This is an example news quote.",
+			url: "https://example.com",
+			category: "tech",
+			id: "test-id",
+		});
 	});
 });

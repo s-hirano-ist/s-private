@@ -100,6 +100,7 @@ describe("addImage", () => {
 		expect(result).toEqual({
 			success: false,
 			message: "invalidFileFormat",
+			formData: {},
 		});
 	});
 
@@ -120,6 +121,7 @@ describe("addImage", () => {
 		expect(result).toEqual({
 			success: false,
 			message: "invalidFileFormat",
+			formData: {},
 		});
 	});
 
@@ -136,6 +138,7 @@ describe("addImage", () => {
 		expect(result).toEqual({
 			success: false,
 			message: "unexpected",
+			formData: {},
 		});
 	});
 });

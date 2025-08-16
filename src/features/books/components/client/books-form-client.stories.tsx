@@ -18,7 +18,10 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
 	args: {
-		addBooks: async () => ({ message: "Book added successfully!" }),
+		addBooks: async () => ({
+			success: true,
+			message: "Book added successfully!",
+		}),
 	},
 };
 

@@ -10,7 +10,7 @@ export type INewsCommandRepository = {
 };
 
 export type INewsQueryRepository = {
-	findByUrl(userId: string, url: string): Promise<{} | null>;
+	findByUrl(url: string, userId: string): Promise<{} | null>;
 	findMany(
 		userId: string,
 		status: Status,

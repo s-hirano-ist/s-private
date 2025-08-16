@@ -1,4 +1,4 @@
-import { type ComponentProps, type RefObject } from "react";
+import { type ComponentProps, type RefObject, useEffect } from "react";
 import { Button } from "@/common/components/ui/button";
 import {
 	DropdownMenu,
@@ -8,6 +8,7 @@ import {
 } from "@/common/components/ui/dropdown-menu";
 import { Input } from "@/common/components/ui/input";
 import { Label } from "@/common/components/ui/label";
+import { useFormValues } from "../generic-form-wrapper";
 
 type Props = {
 	label: string;
@@ -23,19 +24,34 @@ export function FormDropdownInput({
 	options,
 	triggerIcon,
 	inputRef,
+	defaultValue,
 	...inputProps
 }: Props) {
+	const formValues = useFormValues();
+	const preservedValue = formValues[inputProps.name || htmlFor];
+
 	const handleSelectedValueChange = (value: string) => {
 		if (inputRef?.current) {
 			inputRef.current.value = value;
 		}
 	};
 
+	useEffect(() => {
+		if (preservedValue && inputRef?.current) {
+			inputRef.current.value = preservedValue;
+		}
+	}, [preservedValue, inputRef]);
+
 	return (
 		<div className="space-y-1">
 			<Label htmlFor={htmlFor}>{label}</Label>
 			<div className="flex">
-				<Input id={htmlFor} ref={inputRef} {...inputProps} />
+				<Input
+					defaultValue={preservedValue || defaultValue}
+					id={htmlFor}
+					ref={inputRef}
+					{...inputProps}
+				/>
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<Button variant="ghost">{triggerIcon}</Button>
