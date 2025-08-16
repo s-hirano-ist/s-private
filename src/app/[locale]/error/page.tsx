@@ -1,6 +1,6 @@
 import { Route } from "next";
-import { StatusCodeView } from "@/common/components/status/status-code-view";
-import { Button } from "@/common/components/ui/button";
+import { StatusCodeView } from "@/components/common/status/status-code-view";
+import { Button } from "@/components/common/ui/button";
 import { Link } from "@/i18n/routing";
 
 // Auth0 Error page

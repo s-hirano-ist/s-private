@@ -3,16 +3,16 @@ import NextImage from "next/image";
 import { forbidden } from "next/navigation";
 import { getBookByISBN } from "@/applications/books/get-books";
 import { hasViewerAdminPermission } from "@/common/auth/session";
-import { ViewerBodyClient } from "@/common/components/body/viewer-body";
-import { NotFound } from "@/common/components/status/not-found";
-import { Unexpected } from "@/common/components/status/unexpected";
+import { ViewerBodyClient } from "@/components/common/body/viewer-body";
+import { NotFound } from "@/components/common/status/not-found";
+import { Unexpected } from "@/components/common/status/unexpected";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@/common/components/ui/card";
+} from "@/components/common/ui/card";
 import { Link } from "@/i18n/routing";
 
 type Props = { slug: string };

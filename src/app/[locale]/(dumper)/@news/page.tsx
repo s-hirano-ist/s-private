@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { addNews } from "@/applications/news/add-news";
 import { deleteNews } from "@/applications/news/delete-news";
 import { getUnexportedNews } from "@/applications/news/get-news";
-import Loading from "@/common/components/loading";
+import Loading from "@/components/common/loading";
 import { NewsForm } from "@/components/news/server/news-form";
 import { NewsStack } from "@/components/news/server/news-stack";
 

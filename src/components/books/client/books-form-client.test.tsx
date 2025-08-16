@@ -11,7 +11,7 @@ vi.mock("next-intl", () => ({
 	},
 }));
 
-vi.mock("@/common/components/forms/fields/form-input", () => ({
+vi.mock("@/components/common/forms/fields/form-input", () => ({
 	// eslint-disable-next-line
 	FormInput: ({ label, name, placeholder, required }: any) => (
 		<input
@@ -24,7 +24,7 @@ vi.mock("@/common/components/forms/fields/form-input", () => ({
 	),
 }));
 
-vi.mock("@/common/components/forms/generic-form-wrapper", () => ({
+vi.mock("@/components/common/forms/generic-form-wrapper", () => ({
 	// eslint-disable-next-line
 	GenericFormWrapper: ({ children, action }: any) => (
 		<form data-action={action.name} data-testid="form-wrapper">

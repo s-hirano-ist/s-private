@@ -1,11 +1,11 @@
 import { forbidden } from "next/navigation";
 import { hasViewerAdminPermission } from "@/common/auth/session";
+import { ServerAction } from "@/common/types";
 import {
 	type ImageData,
 	ImageStack as ImageStackClient,
-} from "@/common/components/image/image-stack";
-import { Unexpected } from "@/common/components/status/unexpected";
-import { ServerAction } from "@/common/types";
+} from "@/components/common/image/image-stack";
+import { Unexpected } from "@/components/common/status/unexpected";
 
 type Props = {
 	page: number;

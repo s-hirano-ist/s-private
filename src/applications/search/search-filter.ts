@@ -1,5 +1,5 @@
-import type { ImageCardData } from "@/common/components/card/image-card";
-import type { LinkCardData } from "@/common/components/card/link-card";
+import type { ImageCardData } from "@/components/common/card/image-card";
+import type { LinkCardData } from "@/components/common/card/link-card";
 
 export function filterImageCards(
 	image: ImageCardData,

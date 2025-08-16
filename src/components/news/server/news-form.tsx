@@ -1,8 +1,8 @@
 import { forbidden } from "next/navigation";
 import { getCategories } from "@/applications/news/get-news";
 import { hasDumperPostPermission } from "@/common/auth/session";
-import { Unexpected } from "@/common/components/status/unexpected";
 import { ServerAction } from "@/common/types";
+import { Unexpected } from "@/components/common/status/unexpected";
 import { serverLogger } from "@/o11y/server";
 import { NewsFormClient } from "../client/news-form-client";
 

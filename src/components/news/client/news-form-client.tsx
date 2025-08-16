@@ -2,12 +2,12 @@
 import { ClipboardPasteIcon, TableOfContentsIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRef } from "react";
-import { FormDropdownInput } from "@/common/components/forms/fields/form-dropdown-input";
-import { FormInput } from "@/common/components/forms/fields/form-input";
-import { FormInputWithButton } from "@/common/components/forms/fields/form-input-with-button";
-import { FormTextarea } from "@/common/components/forms/fields/form-textarea";
-import { GenericFormWrapper } from "@/common/components/forms/generic-form-wrapper";
 import type { ServerAction } from "@/common/types";
+import { FormDropdownInput } from "@/components/common/forms/fields/form-dropdown-input";
+import { FormInput } from "@/components/common/forms/fields/form-input";
+import { FormInputWithButton } from "@/components/common/forms/fields/form-input-with-button";
+import { FormTextarea } from "@/components/common/forms/fields/form-textarea";
+import { GenericFormWrapper } from "@/components/common/forms/generic-form-wrapper";
 
 export type NewsFormClientData = { id: string; name: string }[];
 

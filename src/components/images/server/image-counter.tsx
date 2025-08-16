@@ -1,7 +1,7 @@
 import { forbidden } from "next/navigation";
 import { hasViewerAdminPermission } from "@/common/auth/session";
-import { BadgeWithPagination } from "@/common/components/badge-with-pagination";
-import { Unexpected } from "@/common/components/status/unexpected";
+import { BadgeWithPagination } from "@/components/common/badge-with-pagination";
+import { Unexpected } from "@/components/common/status/unexpected";
 import type { Status } from "@/domains/common/entities/common-entity";
 
 type Props = {

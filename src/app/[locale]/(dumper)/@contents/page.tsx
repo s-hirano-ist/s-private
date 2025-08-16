@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { addContents } from "@/applications/contents/add-contents";
 import { deleteContents } from "@/applications/contents/delete-contents";
 import { getUnexportedContents } from "@/applications/contents/get-contents";
-import Loading from "@/common/components/loading";
+import Loading from "@/components/common/loading";
 import { ContentsForm } from "@/components/contents/server/contents-form";
 import { ContentsStack } from "@/components/contents/server/contents-stack";
 

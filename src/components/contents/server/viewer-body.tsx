@@ -1,9 +1,9 @@
 import { forbidden } from "next/navigation";
 import { getContentByTitle } from "@/applications/contents/get-contents";
 import { hasViewerAdminPermission } from "@/common/auth/session";
-import { ViewerBodyClient } from "@/common/components/body/viewer-body";
-import { NotFound } from "@/common/components/status/not-found";
-import { Unexpected } from "@/common/components/status/unexpected";
+import { ViewerBodyClient } from "@/components/common/body/viewer-body";
+import { NotFound } from "@/components/common/status/not-found";
+import { Unexpected } from "@/components/common/status/unexpected";
 
 type Props = { slug: string };
 

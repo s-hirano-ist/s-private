@@ -1,8 +1,8 @@
 import { forbidden } from "next/navigation";
 import { getNewsCount } from "@/applications/news/get-news";
 import { hasViewerAdminPermission } from "@/common/auth/session";
-import { BadgeWithPagination } from "@/common/components/badge-with-pagination";
-import { Unexpected } from "@/common/components/status/unexpected";
+import { BadgeWithPagination } from "@/components/common/badge-with-pagination";
+import { Unexpected } from "@/components/common/status/unexpected";
 
 type Props = { page: number };
 

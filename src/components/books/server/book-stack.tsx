@@ -1,9 +1,9 @@
 import { forbidden } from "next/navigation";
 import { hasViewerAdminPermission } from "@/common/auth/session";
-import { ImageCardData } from "@/common/components/card/image-card";
-import { ImageCardStack } from "@/common/components/card/image-card-stack";
-import { Unexpected } from "@/common/components/status/unexpected";
 import type { ServerAction } from "@/common/types";
+import { ImageCardData } from "@/components/common/card/image-card";
+import { ImageCardStack } from "@/components/common/card/image-card-stack";
+import { Unexpected } from "@/components/common/status/unexpected";
 
 type Props = {
 	getBooks(): Promise<ImageCardData[]>;

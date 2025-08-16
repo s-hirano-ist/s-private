@@ -3,7 +3,7 @@ import {
 	getExportedImages,
 	getImagesCount,
 } from "@/applications/images/get-images";
-import Loading from "@/common/components/loading";
+import Loading from "@/components/common/loading";
 import { ImageCounter } from "@/components/images/server/image-counter";
 import { ImageStack } from "@/components/images/server/image-stack";
 

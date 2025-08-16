@@ -1,8 +1,8 @@
 import { forbidden } from "next/navigation";
 import { getContentsCount } from "@/applications/contents/get-contents";
 import { hasViewerAdminPermission } from "@/common/auth/session";
-import { BadgeWithPagination } from "@/common/components/badge-with-pagination";
-import { Unexpected } from "@/common/components/status/unexpected";
+import { BadgeWithPagination } from "@/components/common/badge-with-pagination";
+import { Unexpected } from "@/components/common/status/unexpected";
 
 export async function ContentsCounter() {
 	const hasPermission = await hasViewerAdminPermission();

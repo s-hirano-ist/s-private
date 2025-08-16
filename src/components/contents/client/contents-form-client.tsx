@@ -1,9 +1,9 @@
 "use client";
 import { useTranslations } from "next-intl";
-import { FormInput } from "@/common/components/forms/fields/form-input";
-import { FormTextarea } from "@/common/components/forms/fields/form-textarea";
-import { GenericFormWrapper } from "@/common/components/forms/generic-form-wrapper";
 import type { ServerAction } from "@/common/types";
+import { FormInput } from "@/components/common/forms/fields/form-input";
+import { FormTextarea } from "@/components/common/forms/fields/form-textarea";
+import { GenericFormWrapper } from "@/components/common/forms/generic-form-wrapper";
 
 type Props = {
 	addContents: (formData: FormData) => Promise<ServerAction>;

@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { getExportedContents } from "@/applications/contents/get-contents";
-import Loading from "@/common/components/loading";
+import Loading from "@/components/common/loading";
 import { ContentsCounter } from "@/components/contents/server/contents-counter";
 import { ContentsStack } from "@/components/contents/server/contents-stack";
 
