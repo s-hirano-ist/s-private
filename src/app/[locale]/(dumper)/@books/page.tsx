@@ -30,13 +30,11 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 		case "viewer":
 			return (
 				<>
-					<Suspense fallback={<Loading />}>
-						<ErrorPermissionBoundary
-							errorCaller="BooksCounter"
-							permissionCheck={hasViewerAdminPermission}
-							render={() => BooksCounter({ currentPage, getBooksCount })}
-						/>
-					</Suspense>
+					<ErrorPermissionBoundary
+						errorCaller="BooksCounter"
+						permissionCheck={hasViewerAdminPermission}
+						render={() => BooksCounter({ currentPage, getBooksCount })}
+					/>
 
 					<Suspense fallback={<Loading />}>
 						<ErrorPermissionBoundary
@@ -51,13 +49,11 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 		default:
 			return (
 				<>
-					<Suspense fallback={<Loading />}>
-						<ErrorPermissionBoundary
-							errorCaller="BooksForm"
-							permissionCheck={hasDumperPostPermission}
-							render={() => BooksForm({ addBooks })}
-						/>
-					</Suspense>
+					<ErrorPermissionBoundary
+						errorCaller="BooksForm"
+						permissionCheck={hasDumperPostPermission}
+						render={() => BooksForm({ addBooks })}
+					/>
 
 					<Suspense fallback={<Loading />}>
 						<ErrorPermissionBoundary

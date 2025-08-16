@@ -31,13 +31,11 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 		case "viewer":
 			return (
 				<>
-					<Suspense fallback={<Loading />}>
-						<ErrorPermissionBoundary
-							errorCaller="NewsCounter"
-							permissionCheck={hasViewerAdminPermission}
-							render={() => NewsCounter({ currentPage, getNewsCount })}
-						/>
-					</Suspense>
+					<ErrorPermissionBoundary
+						errorCaller="NewsCounter"
+						permissionCheck={hasViewerAdminPermission}
+						render={() => NewsCounter({ currentPage, getNewsCount })}
+					/>
 
 					<Suspense fallback={<Loading />}>
 						<ErrorPermissionBoundary
@@ -54,13 +52,11 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 		default:
 			return (
 				<>
-					<Suspense fallback={<Loading />}>
-						<ErrorPermissionBoundary
-							errorCaller="NewsForm"
-							permissionCheck={hasDumperPostPermission}
-							render={() => NewsForm({ addNews, getCategories })}
-						/>
-					</Suspense>
+					<ErrorPermissionBoundary
+						errorCaller="NewsForm"
+						permissionCheck={hasDumperPostPermission}
+						render={() => NewsForm({ addNews, getCategories })}
+					/>
 
 					<Suspense fallback={<Loading />}>
 						<ErrorPermissionBoundary
