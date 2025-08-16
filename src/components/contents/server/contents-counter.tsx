@@ -1,5 +1,5 @@
 import { forbidden } from "next/navigation";
-import { getContentsCount } from "@/applications/contents/get-contents";
+import { getContentsCount } from "@/application-services/contents/get-contents";
 import { hasViewerAdminPermission } from "@/common/auth/session";
 import { BadgeWithPagination } from "@/components/common/badge-with-pagination";
 import { Unexpected } from "@/components/common/status/unexpected";

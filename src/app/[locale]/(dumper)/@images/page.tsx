@@ -1,11 +1,11 @@
 import { Suspense } from "react";
-import { addImage } from "@/applications/images/add-image";
-import { deleteImages } from "@/applications/images/delete-images";
+import { addImage } from "@/application-services/images/add-image";
+import { deleteImages } from "@/application-services/images/delete-images";
 import {
 	getExportedImages,
 	getImagesCount,
 	getUnexportedImages,
-} from "@/applications/images/get-images";
+} from "@/application-services/images/get-images";
 import Loading from "@/components/common/loading";
 import { ImageCounter } from "@/components/images/server/image-counter";
 import { ImageForm } from "@/components/images/server/image-form";

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getContentByTitle } from "@/applications/contents/get-contents";
+import { getContentByTitle } from "@/application-services/contents/get-contents";
 import { PAGE_NAME } from "@/common/constants";
 import { ViewerBody } from "@/components/contents/server/viewer-body";
 

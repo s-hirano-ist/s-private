@@ -1,5 +1,5 @@
 import { forbidden } from "next/navigation";
-import type { getNewsCount } from "@/applications/news/get-news";
+import type { getNewsCount } from "@/application-services/news/get-news";
 import { hasViewerAdminPermission } from "@/common/auth/session";
 import { BadgeWithPagination } from "@/components/common/badge-with-pagination";
 import { Unexpected } from "@/components/common/status/unexpected";

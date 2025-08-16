@@ -1,7 +1,7 @@
 import { Route } from "next";
 import NextImage from "next/image";
 import { forbidden } from "next/navigation";
-import type { getBookByISBN } from "@/applications/books/get-books";
+import type { getBookByISBN } from "@/application-services/books/get-books";
 import { hasViewerAdminPermission } from "@/common/auth/session";
 import { ViewerBodyClient } from "@/components/common/body/viewer-body";
 import { NotFound } from "@/components/common/status/not-found";

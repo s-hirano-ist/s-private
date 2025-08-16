@@ -1,5 +1,5 @@
 import { forbidden } from "next/navigation";
-import type { getCategories } from "@/applications/news/get-news";
+import type { getCategories } from "@/application-services/news/get-news";
 import { hasDumperPostPermission } from "@/common/auth/session";
 import { ServerAction } from "@/common/types";
 import { Unexpected } from "@/components/common/status/unexpected";

@@ -1,5 +1,5 @@
 import { forbidden } from "next/navigation";
-import type { getBooksCount } from "@/applications/books/get-books";
+import type { getBooksCount } from "@/application-services/books/get-books";
 import { hasViewerAdminPermission } from "@/common/auth/session";
 import { BadgeWithPagination } from "@/components/common/badge-with-pagination";
 import { Unexpected } from "@/components/common/status/unexpected";
