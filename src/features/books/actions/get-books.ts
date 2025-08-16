@@ -12,10 +12,10 @@ export const getExportedBooks = cache(async (): Promise<ImageCardData[]> => {
 	});
 
 	return books.map((d) => ({
-		id: d.id,
-		title: d.title,
-		href: d.ISBN,
-		image: d.googleImgSrc ?? "/not-found.png",
+		id: d.getId(),
+		title: d.getTitle().toString(),
+		href: d.getISBN().toString(),
+		image: d.getGoogleImgSrc() ?? "/not-found.png",
 	}));
 });
 
@@ -26,10 +26,10 @@ export const getUnexportedBooks = cache(async (): Promise<ImageCardData[]> => {
 	});
 
 	return books.map((d) => ({
-		id: d.id,
-		title: d.title,
-		href: d.ISBN,
-		image: d.googleImgSrc ?? "/not-found.png",
+		id: d.getId(),
+		title: d.getTitle().toString(),
+		href: d.getISBN().toString(),
+		image: d.getGoogleImgSrc() ?? "/not-found.png",
 	}));
 });
 

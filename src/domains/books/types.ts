@@ -1,5 +1,5 @@
 import type { Status } from "../common/entities/common-entity";
-import { BooksFormSchema, BooksQueryData } from "./entities/books-entity";
+import { BookEntity, BookFormSchema, BookQueryData } from "./entities/book.entity";
 
 // Custom types to avoid Prisma dependency in domain layer
 export type SortOrder = "asc" | "desc";
@@ -33,17 +33,17 @@ export type BooksOrderBy = {
 };
 
 export type IBooksCommandRepository = {
-	create(data: BooksFormSchema): Promise<void>;
+	create(entity: BookEntity): Promise<void>;
 	deleteById(id: string, userId: string, status: Status): Promise<void>;
 };
 
 export type IBooksQueryRepository = {
-	findByISBN(ISBN: string, userId: string): Promise<BooksQueryData | null>;
+	findByISBN(ISBN: string, userId: string): Promise<BookEntity | null>;
 	findMany(
 		userId: string,
 		status: Status,
 		params?: BooksFindManyParams,
-	): Promise<BooksQueryData[]>;
+	): Promise<BookEntity[]>;
 	count(userId: string, status: Status): Promise<number>;
 };
 

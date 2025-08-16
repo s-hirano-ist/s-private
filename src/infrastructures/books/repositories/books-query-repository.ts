@@ -1,4 +1,4 @@
-import { BooksQueryData } from "@/domains/books/entities/books-entity";
+import { BookEntity } from "@/domains/books/entities/book.entity";
 import type {
 	BooksFindManyParams,
 	IBooksQueryRepository,
@@ -10,23 +10,27 @@ class BooksQueryRepository implements IBooksQueryRepository {
 	async findByISBN(
 		ISBN: string,
 		userId: string,
-	): Promise<BooksQueryData | null> {
+	): Promise<BookEntity | null> {
 		const result = await prisma.books.findUnique({
 			where: { ISBN_userId: { ISBN, userId } },
 		});
-		return result;
+		
+		if (!result) return null;
+		
+		return BookEntity.reconstitute(result);
 	}
 
 	async findMany(
 		userId: string,
 		status: Status,
 		params?: BooksFindManyParams,
-	): Promise<BooksQueryData[]> {
-		return await prisma.books.findMany({
+	): Promise<BookEntity[]> {
+		const results = await prisma.books.findMany({
 			where: { userId, status },
-			select: { id: true, ISBN: true, title: true, googleImgSrc: true },
 			...params,
 		});
+		
+		return results.map(result => BookEntity.reconstitute(result));
 	}
 
 	async count(userId: string, status: Status): Promise<number> {

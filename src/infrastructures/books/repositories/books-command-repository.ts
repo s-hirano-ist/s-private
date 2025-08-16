@@ -1,4 +1,4 @@
-import type { BooksFormSchema } from "@/domains/books/entities/books-entity";
+import { BookEntity } from "@/domains/books/entities/book.entity";
 import type { IBooksCommandRepository } from "@/domains/books/types";
 import type { Status } from "@/domains/common/entities/common-entity";
 import { serverLogger } from "@/o11y/server";
@@ -6,7 +6,8 @@ import prisma from "@/prisma";
 
 class BooksCommandRepository implements IBooksCommandRepository {
 	// Domain interface implementation
-	async create(data: BooksFormSchema): Promise<void> {
+	async create(entity: BookEntity): Promise<void> {
+		const data = entity.toRepository();
 		const response = await prisma.books.create({
 			data,
 		});

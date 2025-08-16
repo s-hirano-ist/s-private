@@ -16,11 +16,24 @@ export async function addNews(formData: FormData): Promise<ServerAction> {
 	try {
 		const userId = await getSelfId();
 
-		const validatedNews = await new NewsDomainService(
-			newsQueryRepository,
-		).prepareNewNews(formData, userId);
+		// Extract form data directly
+		const title = formData.get("title") as string;
+		const quote = formData.get("quote") as string;
+		const url = formData.get("url") as string;
+		const categoryName = formData.get("category") as string;
 
-		await newsCommandRepository.create(validatedNews);
+		// Use new domain service method
+		const newsEntity = await new NewsDomainService(
+			newsQueryRepository,
+		).validateAndCreateNews({
+			title,
+			url,
+			quote: quote || null,
+			categoryName,
+			userId,
+		});
+
+		await newsCommandRepository.create(newsEntity);
 
 		revalidatePath("/(dumper)");
 

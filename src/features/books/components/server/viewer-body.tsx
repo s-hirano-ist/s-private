@@ -26,26 +26,26 @@ export async function ViewerBody({ slug }: Props) {
 		if (!data) return <NotFound />;
 
 		return (
-			<ViewerBodyClient markdown={data?.markdown ?? ""}>
+			<ViewerBodyClient markdown={data.getMarkdown() ?? ""}>
 				<Card className="grid grid-cols-4 gap-4 p-4">
 					<div className="flex items-center justify-center">
 						<NextImage
-							alt={data.googleTitle ?? ""}
+							alt={data.getGoogleTitle() ?? ""}
 							className="rounded bg-white p-1"
 							height={192}
-							src={data.googleImgSrc ?? "/not-found.png"}
+							src={data.getGoogleImgSrc() ?? "/not-found.png"}
 							width={192}
 						/>
 					</div>
-					<Link className="col-span-3" href={data.googleHref ?? ("/" as Route)}>
+					<Link className="col-span-3" href={data.getGoogleHref() ?? ("/" as Route)}>
 						<CardHeader>
 							<CardTitle>
-								{data.googleTitle} {data.googleSubTitle}
+								{data.getGoogleTitle()} {data.getGoogleSubTitle()}
 							</CardTitle>
-							<CardDescription>{data.googleDescription}</CardDescription>
+							<CardDescription>{data.getGoogleDescription()}</CardDescription>
 						</CardHeader>
 						<CardContent>
-							<p>Authors: {data.googleAuthors?.join(", ")}</p>
+							<p>Authors: {data.getGoogleAuthors()?.join(", ")}</p>
 						</CardContent>
 					</Link>
 				</Card>
