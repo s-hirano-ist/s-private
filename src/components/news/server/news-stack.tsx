@@ -1,7 +1,4 @@
-import { forbidden } from "next/navigation";
-import { hasViewerAdminPermission } from "@/common/auth/session";
 import type { ServerAction } from "@/common/types";
-import { Unexpected } from "@/components/common/display/status/unexpected";
 import type { LinkCardData } from "@/components/common/layouts/cards/link-card";
 import { LinkCardStack } from "@/components/common/layouts/cards/link-card-stack";
 
@@ -12,20 +9,13 @@ type Props = {
 };
 
 export async function NewsStack({ page, getNews, deleteNews }: Props) {
-	const hasPermission = await hasViewerAdminPermission();
-	if (!hasPermission) forbidden();
+	const data = await getNews(page);
 
-	try {
-		const data = await getNews(page);
-
-		return (
-			<LinkCardStack
-				data={data}
-				deleteAction={deleteNews}
-				showDeleteButton={deleteNews !== undefined}
-			/>
-		);
-	} catch (error) {
-		return <Unexpected caller="NewsStack" error={error} />;
-	}
+	return (
+		<LinkCardStack
+			data={data}
+			deleteAction={deleteNews}
+			showDeleteButton={deleteNews !== undefined}
+		/>
+	);
 }

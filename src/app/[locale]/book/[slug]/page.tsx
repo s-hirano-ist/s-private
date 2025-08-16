@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { getBookByISBN } from "@/application-services/books/get-books";
+import { hasViewerAdminPermission } from "@/common/auth/session";
 import { PAGE_NAME } from "@/common/constants";
 import { ViewerBody } from "@/components/books/server/viewer-body";
+import { ErrorPermissionBoundary } from "@/components/common/layouts/error-permission-boundary";
 
 type Params = Promise<{ slug: string }>;
 
@@ -21,5 +23,12 @@ export async function generateMetadata({
 export default async function Page({ params }: { params: Params }) {
 	const { slug } = await params;
 
-	return <ViewerBody getBookByISBN={getBookByISBN} slug={slug} />;
+	return (
+		<ErrorPermissionBoundary
+			errorCaller="BooksViewerBody"
+			permissionCheck={hasViewerAdminPermission}
+		>
+			<ViewerBody getBookByISBN={getBookByISBN} slug={slug} />
+		</ErrorPermissionBoundary>
+	);
 }

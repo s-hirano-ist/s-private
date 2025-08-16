@@ -31,6 +31,7 @@ vi.mock("@/components/common/display/status/unexpected", () => ({
 	),
 }));
 
+// FIXME: ここのテスト へんな呼び出しがあるかも
 const { hasViewerAdminPermission } = await import("@/common/auth/session");
 const { getBooksCount } = await import(
 	"@/application-services/books/get-books"

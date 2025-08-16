@@ -1,7 +1,4 @@
-import { forbidden } from "next/navigation";
-import { hasDumperPostPermission } from "@/common/auth/session";
 import { ServerAction } from "@/common/types";
-import { Unexpected } from "@/components/common/display/status/unexpected";
 import { LinkCardData } from "@/components/common/layouts/cards/link-card";
 import { LinkCardStack } from "@/components/common/layouts/cards/link-card-stack";
 
@@ -16,20 +13,13 @@ export async function ContentsStack({
 	getContents,
 	deleteContents,
 }: Props) {
-	const hasPermission = await hasDumperPostPermission();
-	if (!hasPermission) forbidden();
+	const data = await getContents(page);
 
-	try {
-		const data = await getContents(page);
-
-		return (
-			<LinkCardStack
-				data={data}
-				deleteAction={deleteContents}
-				showDeleteButton={deleteContents !== undefined}
-			/>
-		);
-	} catch (error) {
-		return <Unexpected caller="ContentsStack" error={error} />;
-	}
+	return (
+		<LinkCardStack
+			data={data}
+			deleteAction={deleteContents}
+			showDeleteButton={deleteContents !== undefined}
+		/>
+	);
 }

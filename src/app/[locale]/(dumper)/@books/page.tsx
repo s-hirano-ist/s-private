@@ -6,10 +6,15 @@ import {
 	getExportedBooks,
 	getUnexportedBooks,
 } from "@/application-services/books/get-books";
-import { BooksStack } from "@/components/books/server/book-stack";
+import {
+	hasDumperPostPermission,
+	hasViewerAdminPermission,
+} from "@/common/auth/session";
 import { BooksCounter } from "@/components/books/server/books-counter";
 import { BooksForm } from "@/components/books/server/books-form";
+import { BooksStack } from "@/components/books/server/books-stack";
 import Loading from "@/components/common/display/loading";
+import { ErrorPermissionBoundary } from "@/components/common/layouts/error-permission-boundary";
 
 type Params = Promise<{ page?: string; tab?: string; layout?: string }>;
 
@@ -25,13 +30,25 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 		case "viewer":
 			return (
 				<>
-					<BooksCounter
-						currentPage={currentPage}
-						getBooksCount={getBooksCount}
-					/>
+					<Suspense fallback={<Loading />}>
+						<ErrorPermissionBoundary
+							errorCaller="BooksCounter"
+							permissionCheck={hasViewerAdminPermission}
+						>
+							<BooksCounter
+								currentPage={currentPage}
+								getBooksCount={getBooksCount}
+							/>
+						</ErrorPermissionBoundary>
+					</Suspense>
 
 					<Suspense fallback={<Loading />}>
-						<BooksStack getBooks={getExportedBooks} />
+						<ErrorPermissionBoundary
+							errorCaller="BooksStack"
+							permissionCheck={hasViewerAdminPermission}
+						>
+							<BooksStack getBooks={getExportedBooks} />
+						</ErrorPermissionBoundary>
 					</Suspense>
 				</>
 			);
@@ -39,13 +56,25 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 		default:
 			return (
 				<>
-					<BooksForm addBooks={addBooks} />
+					<Suspense fallback={<Loading />}>
+						<ErrorPermissionBoundary
+							errorCaller="BooksForm"
+							permissionCheck={hasDumperPostPermission}
+						>
+							<BooksForm addBooks={addBooks} />
+						</ErrorPermissionBoundary>
+					</Suspense>
 
 					<Suspense fallback={<Loading />}>
-						<BooksStack
-							deleteBooks={deleteBooks}
-							getBooks={getUnexportedBooks}
-						/>
+						<ErrorPermissionBoundary
+							errorCaller="BooksStack"
+							permissionCheck={hasViewerAdminPermission}
+						>
+							<BooksStack
+								deleteBooks={deleteBooks}
+								getBooks={getUnexportedBooks}
+							/>
+						</ErrorPermissionBoundary>
 					</Suspense>
 				</>
 			);
