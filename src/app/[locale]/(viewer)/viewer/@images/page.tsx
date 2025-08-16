@@ -4,8 +4,8 @@ import {
 	getImagesCount,
 } from "@/applications/images/get-images";
 import Loading from "@/common/components/loading";
-import { ImageCounter } from "@/features/images/components/server/image-counter";
-import { ImageStack } from "@/features/images/components/server/image-stack";
+import { ImageCounter } from "@/components/images/server/image-counter";
+import { ImageStack } from "@/components/images/server/image-stack";
 
 type Params = Promise<{ page?: string; tab?: string }>;
 

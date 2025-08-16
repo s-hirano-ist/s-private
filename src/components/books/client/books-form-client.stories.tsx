@@ -2,11 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { BooksFormClient } from "./books-form-client";
 
 const meta = {
-	title: "Features/Books/Components/Client/BooksFormClient",
 	component: BooksFormClient,
-	parameters: {
-		layout: "centered",
-	},
+	parameters: { layout: "centered" },
 	tags: ["autodocs"],
 	argTypes: {
 		addBooks: { action: "addBooks" },

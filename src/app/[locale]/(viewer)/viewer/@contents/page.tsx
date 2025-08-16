@@ -1,8 +1,8 @@
 import { Suspense } from "react";
 import { getExportedContents } from "@/applications/contents/get-contents";
 import Loading from "@/common/components/loading";
-import { ContentsCounter } from "@/features/contents/components/server/contents-counter";
-import { ContentsStack } from "@/features/contents/components/server/contents-stack";
+import { ContentsCounter } from "@/components/contents/server/contents-counter";
+import { ContentsStack } from "@/components/contents/server/contents-stack";
 
 type Params = Promise<{ page?: string; tab?: string }>;
 

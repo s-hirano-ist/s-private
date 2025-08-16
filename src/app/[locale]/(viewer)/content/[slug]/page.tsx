@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { PAGE_NAME } from "@/common/constants";
-import { ViewerBody } from "@/features/contents/components/server/viewer-body";
+import { ViewerBody } from "@/components/contents/server/viewer-body";
 
 type Params = Promise<{ slug: string }>;
 

@@ -3,8 +3,8 @@ import { addImage } from "@/applications/images/add-image";
 import { deleteImages } from "@/applications/images/delete-images";
 import { getUnexportedImages } from "@/applications/images/get-images";
 import Loading from "@/common/components/loading";
-import { ImageForm } from "@/features/images/components/server/image-form";
-import { ImageStack } from "@/features/images/components/server/image-stack";
+import { ImageForm } from "@/components/images/server/image-form";
+import { ImageStack } from "@/components/images/server/image-stack";
 
 type Params = Promise<{ page?: string; tab?: string }>;
 

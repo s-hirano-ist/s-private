@@ -3,8 +3,8 @@ import { addNews } from "@/applications/news/add-news";
 import { deleteNews } from "@/applications/news/delete-news";
 import { getUnexportedNews } from "@/applications/news/get-news";
 import Loading from "@/common/components/loading";
-import { NewsForm } from "@/features/news/components/server/news-form";
-import { NewsStack } from "@/features/news/components/server/news-stack";
+import { NewsForm } from "@/components/news/server/news-form";
+import { NewsStack } from "@/components/news/server/news-stack";
 
 type Params = Promise<{ page?: string; tab?: string }>;
 

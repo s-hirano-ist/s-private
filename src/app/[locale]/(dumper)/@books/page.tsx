@@ -3,8 +3,8 @@ import { addBooks } from "@/applications/books/add-books";
 import { deleteBooks } from "@/applications/books/delete-books";
 import { getUnexportedBooks } from "@/applications/books/get-books";
 import Loading from "@/common/components/loading";
-import { BooksStack } from "@/features/books/components/server/book-stack";
-import { BooksForm } from "@/features/books/components/server/books-form";
+import { BooksStack } from "@/components/books/server/book-stack";
+import { BooksForm } from "@/components/books/server/books-form";
 
 type Params = Promise<{ page?: string; tab?: string }>;
 

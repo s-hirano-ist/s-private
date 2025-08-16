@@ -3,8 +3,8 @@ import { addContents } from "@/applications/contents/add-contents";
 import { deleteContents } from "@/applications/contents/delete-contents";
 import { getUnexportedContents } from "@/applications/contents/get-contents";
 import Loading from "@/common/components/loading";
-import { ContentsForm } from "@/features/contents/components/server/contents-form";
-import { ContentsStack } from "@/features/contents/components/server/contents-stack";
+import { ContentsForm } from "@/components/contents/server/contents-form";
+import { ContentsStack } from "@/components/contents/server/contents-stack";
 
 type Params = Promise<{ page?: string; tab?: string }>;
 
