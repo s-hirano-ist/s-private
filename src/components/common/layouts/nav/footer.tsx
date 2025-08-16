@@ -2,7 +2,6 @@
 import { BotIcon, FileUpIcon, SearchIcon } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { useTranslations } from "next-intl";
 import {
 	type ReactNode,
 	Suspense,
@@ -31,7 +30,6 @@ const DEFAULT_LAYOUT = "dumper";
 export function Footer() {
 	const [open, setOpen] = useState(false);
 	const pathname = usePathname();
-	const t = useTranslations("utils");
 
 	function Icon(name: string, icon: ReactNode) {
 		return (
