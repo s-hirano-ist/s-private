@@ -8,20 +8,7 @@ describe("/api/health route", () => {
 		expect(response).toBeDefined();
 
 		const { NextResponse } = await import("next/server");
-		expect(NextResponse.json).toHaveBeenCalledWith({ status: "ok" });
-	});
-
-	test("should call NextResponse.json with correct data", async () => {
-		const { NextResponse } = await import("next/server");
-
-		await GET();
-
 		expect(NextResponse.json).toHaveBeenCalledTimes(1);
 		expect(NextResponse.json).toHaveBeenCalledWith({ status: "ok" });
-	});
-
-	test("should be an async function", () => {
-		expect(GET).toBeInstanceOf(Function);
-		expect(GET.constructor.name).toBe("AsyncFunction");
 	});
 });

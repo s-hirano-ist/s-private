@@ -1,32 +1,29 @@
 import { revalidatePath } from "next/cache";
-import { describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
+import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { DuplicateError } from "@/common/error/error-classes";
 import { newsCommandRepository } from "@/infrastructures/news/repositories/news-command-repository";
 import { addNews } from "./add-news";
 
-vi.mock("@/infrastructures/news/repositories/news-command-repository", () => ({
-	newsCommandRepository: {
-		create: vi.fn(),
-	},
-}));
-
-const mockGetSelfId = vi.fn();
-const mockHasDumperPostPermission = vi.fn();
-
 vi.mock("@/common/auth/session", () => ({
-	getSelfId: () => mockGetSelfId(),
-	hasDumperPostPermission: () => mockHasDumperPostPermission(),
+	getSelfId: vi.fn(),
+	hasDumperPostPermission: vi.fn(),
 }));
 
-const mockPrepareNewNews = vi.fn();
-vi.mock("@/domains/news/services/news-domain-service", () => ({
-	NewsDomainService: vi.fn().mockImplementation(() => ({
-		prepareNewNews: mockPrepareNewNews,
-	})),
+vi.mock("@/infrastructures/news/repositories/news-command-repository", () => ({
+	newsCommandRepository: { create: vi.fn() },
 }));
 
 vi.mock("@/infrastructures/news/repositories/news-query-repository", () => ({
 	newsQueryRepository: {},
+}));
+
+const mockPrepareNewNews = vi.fn();
+
+vi.mock("@/domains/news/services/news-domain-service", () => ({
+	NewsDomainService: vi.fn().mockImplementation(() => ({
+		prepareNewNews: mockPrepareNewNews,
+	})),
 }));
 
 const mockFormData = new FormData();
@@ -34,26 +31,29 @@ mockFormData.append("title", "Example Content");
 mockFormData.append("quote", "This is an example news quote.");
 mockFormData.append("url", "https://example.com");
 mockFormData.append("category", "tech");
-mockFormData.append("id", "test-id");
 
 describe("addNews", () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
+
 	test("should return success false on Unauthorized", async () => {
-		mockGetSelfId.mockRejectedValue(new Error("UNAUTHORIZED"));
-		mockHasDumperPostPermission.mockResolvedValue(true);
+		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
+		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
 
 		const result = await addNews(mockFormData);
 		expect(result.success).toBe(false);
 	});
 
-	test("should return success false on not permitted", async () => {
-		mockHasDumperPostPermission.mockResolvedValue(false);
+	test("should return forbidden when user doesn't have permission", async () => {
+		vi.mocked(hasDumperPostPermission).mockResolvedValue(false);
 
 		await expect(addNews(mockFormData)).rejects.toThrow("FORBIDDEN");
 	});
 
 	test("should create news with category", async () => {
-		mockHasDumperPostPermission.mockResolvedValue(true);
-		mockGetSelfId.mockResolvedValue("user-123");
+		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+		vi.mocked(getSelfId).mockResolvedValue("user-123");
 		mockPrepareNewNews.mockResolvedValue({
 			category: {
 				name: "tech",
@@ -71,8 +71,7 @@ describe("addNews", () => {
 
 		const result = await addNews(mockFormData);
 
-		expect(mockHasDumperPostPermission).toHaveBeenCalled();
-		expect(mockGetSelfId).toHaveBeenCalled();
+		expect(vi.mocked(hasDumperPostPermission)).toHaveBeenCalled();
 		expect(mockPrepareNewNews).toHaveBeenCalledWith(mockFormData, "user-123");
 		expect(newsCommandRepository.create).toHaveBeenCalled();
 		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
@@ -81,8 +80,8 @@ describe("addNews", () => {
 	});
 
 	test("should preserve form data on DuplicateError", async () => {
-		mockHasDumperPostPermission.mockResolvedValue(true);
-		mockGetSelfId.mockResolvedValue("user-123");
+		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+		vi.mocked(getSelfId).mockResolvedValue("user-123");
 		mockPrepareNewNews.mockRejectedValue(new DuplicateError());
 
 		const result = await addNews(mockFormData);
@@ -94,7 +93,18 @@ describe("addNews", () => {
 			quote: "This is an example news quote.",
 			url: "https://example.com",
 			category: "tech",
-			id: "test-id",
 		});
+	});
+
+	test("should handle errors and return wrapped error", async () => {
+		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+		vi.mocked(getSelfId).mockResolvedValue("user-123");
+
+		const error = new Error("Domain service error");
+		mockPrepareNewNews.mockRejectedValue(error);
+
+		const result = await addNews(mockFormData);
+
+		expect(result).toEqual({ success: false, message: "unexpected" });
 	});
 });

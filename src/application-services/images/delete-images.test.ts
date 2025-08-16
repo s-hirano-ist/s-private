@@ -5,11 +5,7 @@ import { imagesCommandRepository } from "@/infrastructures/images/repositories/i
 
 vi.mock(
 	"@/infrastructures/images/repositories/images-command-repository",
-	() => ({
-		imagesCommandRepository: {
-			deleteById: vi.fn(),
-		},
-	}),
+	() => ({ imagesCommandRepository: { deleteById: vi.fn() } }),
 );
 
 const mockGetSelfId = vi.fn();

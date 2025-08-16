@@ -1,93 +1,90 @@
 import { revalidatePath } from "next/cache";
 import { beforeEach, describe, expect, test, vi } from "vitest";
+import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
+import { DuplicateError } from "@/common/error/error-classes";
+import { booksCommandRepository } from "@/infrastructures/books/repositories/books-command-repository";
 import { addBooks } from "./add-books";
-
-// Mock dependencies
 
 vi.mock("@/common/auth/session", () => ({
 	getSelfId: vi.fn(),
 	hasDumperPostPermission: vi.fn(),
 }));
 
-vi.mock("@/common/error/error-wrapper", () => ({
-	wrapServerSideErrorForClient: vi.fn().mockResolvedValue({
-		success: false,
-		message: "Error occurred",
-	}),
-}));
-
-vi.mock("@/domains/books/services/books-domain-service", () => ({
-	BooksDomainService: vi.fn().mockImplementation(() => ({
-		prepareNewBook: vi.fn(),
-	})),
-}));
-
 vi.mock(
 	"@/infrastructures/books/repositories/books-command-repository",
-	() => ({
-		booksCommandRepository: {
-			create: vi.fn(),
-		},
-	}),
+	() => ({ booksCommandRepository: { create: vi.fn() } }),
 );
 
 vi.mock("@/infrastructures/books/repositories/books-query-repository", () => ({
 	booksQueryRepository: {},
 }));
 
-const { getSelfId, hasDumperPostPermission } = await import(
-	"@/common/auth/session"
-);
-const { wrapServerSideErrorForClient } = await import(
-	"@/common/error/error-wrapper"
-);
-const { BooksDomainService } = await import(
-	"@/domains/books/services/books-domain-service"
-);
-const { booksCommandRepository } = await import(
-	"@/infrastructures/books/repositories/books-command-repository"
-);
+const mockPrepareNewBook = vi.fn();
+
+vi.mock("@/domains/books/services/books-domain-service", () => ({
+	BooksDomainService: vi.fn().mockImplementation(() => ({
+		prepareNewBook: mockPrepareNewBook,
+	})),
+}));
+
+const mockFormData = new FormData();
+mockFormData.append("isbn", "111-2222-3333");
+mockFormData.append("title", "Test Book");
 
 describe("addBooks", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 	});
 
+	test("should return success false on Unauthorized", async () => {
+		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
+		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+
+		const result = await addBooks(mockFormData);
+		expect(result.success).toBe(false);
+	});
+
 	test("should return forbidden when user doesn't have permission", async () => {
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(false);
 
-		const formData = new FormData();
-		formData.append("isbn", "978-4-06-519981-0");
-		formData.append("title", "Test Book");
-
-		await expect(addBooks(formData)).rejects.toThrow("FORBIDDEN");
+		await expect(addBooks(mockFormData)).rejects.toThrow("FORBIDDEN");
 	});
 
-	test("should successfully add books when user has permission", async () => {
+	test("should create books", async () => {
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
 		vi.mocked(getSelfId).mockResolvedValue("user-123");
 
-		const mockPrepareNewBook = vi.fn().mockResolvedValue({
-			id: "book-id",
-			ISBN: "978-4-06-519981-0",
+		mockPrepareNewBook.mockResolvedValue({
+			id: "01234567-89ab-cdef-0123-456789abcdef",
+			isbn: "978-4-06-519981-0",
 			title: "Test Book",
-			createdBy: "user-123",
+			userId: "user-123",
 		});
-		vi.mocked(BooksDomainService).mockImplementation(() => ({
-			prepareNewBook: mockPrepareNewBook,
-		}));
 		vi.mocked(booksCommandRepository.create).mockResolvedValue();
 
-		const formData = new FormData();
-		formData.append("isbn", "978-4-06-519981-0");
-		formData.append("title", "Test Book");
+		const result = await addBooks(mockFormData);
 
-		const result = await addBooks(formData);
-
-		expect(mockPrepareNewBook).toHaveBeenCalledWith(formData, "user-123");
+		expect(vi.mocked(hasDumperPostPermission)).toHaveBeenCalled();
+		expect(mockPrepareNewBook).toHaveBeenCalledWith(mockFormData, "user-123");
 		expect(booksCommandRepository.create).toHaveBeenCalled();
 		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
-		expect(result).toEqual({ success: true, message: "inserted" });
+		expect(result.success).toBe(true);
+		expect(result.message).toBe("inserted");
+	});
+
+	test("should preserve form data on DuplicateError", async () => {
+		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+		vi.mocked(getSelfId).mockResolvedValue("user-123");
+		mockPrepareNewBook.mockRejectedValue(new DuplicateError());
+
+		const result = await addBooks(mockFormData);
+
+		expect(result.success).toBe(false);
+		expect(result.message).toBe("duplicated");
+		expect(result.formData).toEqual({
+			isbn: "111-2222-3333",
+			title: "Test Book",
+		});
 	});
 
 	test("should handle errors and return wrapped error", async () => {
@@ -95,16 +92,10 @@ describe("addBooks", () => {
 		vi.mocked(getSelfId).mockResolvedValue("user-123");
 
 		const error = new Error("Domain service error");
-		const mockPrepareNewBook = vi.fn().mockRejectedValue(error);
-		vi.mocked(BooksDomainService).mockImplementation(() => ({
-			prepareNewBook: mockPrepareNewBook,
-		}));
+		mockPrepareNewBook.mockRejectedValue(error);
 
-		const formData = new FormData();
+		const result = await addBooks(mockFormData);
 
-		const result = await addBooks(formData);
-
-		expect(wrapServerSideErrorForClient).toHaveBeenCalledWith(error, formData);
-		expect(result).toEqual({ success: false, message: "Error occurred" });
+		expect(result).toEqual({ success: false, message: "unexpected" });
 	});
 });

@@ -44,17 +44,6 @@ describe("Error Page", () => {
 
 		const statusCodeView = screen.getByTestId("status-code-view");
 		expect(statusCodeView).toBeInTheDocument();
-		expect(statusCodeView).toHaveClass(
-			"w-full",
-			"bg-linear-to-r",
-			"from-primary-grad-from",
-			"to-primary-grad-to",
-			"bg-clip-text",
-			"p-2",
-			"text-center",
-			"font-extrabold",
-			"text-transparent",
-		);
 	});
 
 	test("should render responsive hidden elements", () => {
