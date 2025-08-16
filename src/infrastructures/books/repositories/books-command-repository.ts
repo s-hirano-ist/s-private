@@ -1,7 +1,7 @@
 import type { BooksFormSchema } from "@/domains/books/entities/books-entity";
 import type { IBooksCommandRepository } from "@/domains/books/types";
 import type { Status } from "@/domains/common/entities/common-entity";
-import { serverLogger } from "@/o11y/server";
+import { serverLogger } from "@/infrastructures/observability/server";
 import prisma from "@/prisma";
 
 class BooksCommandRepository implements IBooksCommandRepository {

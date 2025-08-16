@@ -1,17 +1,10 @@
-import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Noto_Sans_JP } from "next/font/google";
 import { unstable_ViewTransition as ViewTransitions } from "react";
-import { PAGE_NAME } from "@/common/constants";
 import { env } from "@/env";
-
-export const metadata: Metadata = {
-	title: `${PAGE_NAME}`,
-	description: "Private pages and admin tools for s-hirano-ist.",
-};
 
 const notoSansJp = Noto_Sans_JP({ subsets: ["latin"] });
 

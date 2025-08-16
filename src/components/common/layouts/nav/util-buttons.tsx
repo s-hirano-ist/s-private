@@ -1,20 +1,11 @@
 "use client";
-import {
-	BookOpen,
-	FileText,
-	Globe,
-	LogOut,
-	Moon,
-	RefreshCw,
-	Sun,
-} from "lucide-react";
+import { Globe, LogOut, Moon, RefreshCw, Sun } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useMemo } from "react";
 import { Button } from "@/components/common/ui/button";
 import { redirect } from "@/i18n/routing";
-import { StatusCodeView } from "../../display/status/status-code-view";
 
 type Props = { handleReload: () => void; onSignOutSubmit: () => Promise<void> };
 

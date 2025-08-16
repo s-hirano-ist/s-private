@@ -3,7 +3,7 @@ import type { getCategories } from "@/application-services/news/get-news";
 import { hasDumperPostPermission } from "@/common/auth/session";
 import { ServerAction } from "@/common/types";
 import { Unexpected } from "@/components/common/display/status/unexpected";
-import { serverLogger } from "@/o11y/server";
+import { serverLogger } from "@/infrastructures/observability/server";
 import { NewsFormClient } from "../client/news-form-client";
 
 type Props = {

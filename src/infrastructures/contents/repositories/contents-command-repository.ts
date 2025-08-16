@@ -1,7 +1,7 @@
 import type { Status } from "@/domains/common/entities/common-entity";
 import type { ContentsFormSchema } from "@/domains/contents/entities/contents-entity";
 import type { IContentsCommandRepository } from "@/domains/contents/types";
-import { serverLogger } from "@/o11y/server";
+import { serverLogger } from "@/infrastructures/observability/server";
 import prisma from "@/prisma";
 
 class ContentsCommandRepository implements IContentsCommandRepository {

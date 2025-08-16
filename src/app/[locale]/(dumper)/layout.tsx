@@ -3,11 +3,9 @@ import type { ReactNode } from "react";
 import { PAGE_NAME } from "@/common/constants";
 import { RootTab } from "@/components/common/layouts/nav/root-tab";
 
-const displayName = "DUMPER";
-
 export const metadata: Metadata = {
-	title: `${displayName} | ${PAGE_NAME}`,
-	description: "Contents dumper.",
+	title: `${PAGE_NAME}`,
+	description: "Knowledge dumper and viewer.",
 };
 
 type Props = {

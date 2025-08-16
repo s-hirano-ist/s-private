@@ -1,12 +1,12 @@
 /** @type {import('dependency-cruiser').IConfiguration} */
 const paths = [
-	"src/o11y",
-	"src/i18n",
+	// "src/o11y",
+	// "src/i18n",
 	"src/env\\.ts",
 	"src/prisma\\.ts",
 	"src/minio\\.ts",
 	"src/common/error",
-	"src/components/common/status/unexpected\\.tsx",
+	// "src/components/common/status/unexpected\\.tsx",
 ];
 const includeTypeDefs = false;
 
@@ -350,7 +350,8 @@ module.exports = {
            collapses everything in node_modules to one folder deep so you see
            the external modules, but their innards.
          */
-				collapsePattern: "node_modules/(?:@[^/]+/[^/]+|[^/]+)",
+				collapsePattern:
+					"src/components/common|node_modules/(?:@[^/]+/[^/]+|[^/]+)",
 
 				/* Options to tweak the appearance of your graph.See
            https://github.com/sverweij/dependency-cruiser/blob/main/doc/options-reference.md#reporteroptions
@@ -384,7 +385,7 @@ module.exports = {
            this collapsePattern to your situation.
         */
 				collapsePattern:
-					"^(?:packages|src|lib(s?)|app(s?)|bin|test(s?)|spec(s?))/[^/]+|node_modules/(?:@[^/]+/[^/]+|[^/]+)",
+					"src/components/common|node_modules/(?:@[^/]+/[^/]+|[^/]+)",
 
 				/* Options to tweak the appearance of your graph. If you don't specify a
            theme for 'archi' dependency-cruiser will use the one specified in the
