@@ -12,6 +12,7 @@ import {
 } from "@/common/auth/session";
 import Loading from "@/components/common/display/loading";
 import { ErrorPermissionBoundary } from "@/components/common/layouts/error-permission-boundary";
+import { LazyTabContent } from "@/components/common/layouts/lazy-tab-content";
 import { ContentsCounter } from "@/components/contents/server/contents-counter";
 import { ContentsForm } from "@/components/contents/server/contents-form";
 import { ContentsStack } from "@/components/contents/server/contents-stack";
@@ -26,51 +27,79 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 	// Only render if this tab is active or no tab is specified (defaults to "news")
 	if (tab && tab !== "contents") return null;
 
-	switch (layout) {
-		case "viewer":
-			return (
-				<>
-					<ErrorPermissionBoundary
-						errorCaller="ContentsCounter"
-						permissionCheck={hasViewerAdminPermission}
-						render={() => ContentsCounter({ currentPage, getContentsCount })}
-					/>
-
-					<Suspense fallback={<Loading />}>
-						<ErrorPermissionBoundary
-							errorCaller="ContentsStack"
-							permissionCheck={hasViewerAdminPermission}
-							render={() =>
-								ContentsStack({ getContents: getExportedContents, currentPage })
+	const content = (() => {
+		switch (layout) {
+			case "viewer":
+				return (
+					<>
+						<Suspense
+							fallback={
+								<div className="h-8 animate-pulse bg-gray-100 rounded" />
 							}
-						/>
-					</Suspense>
-				</>
-			);
-		case "dumper":
-		default:
-			return (
-				<>
-					<ErrorPermissionBoundary
-						errorCaller="ContentsForm"
-						permissionCheck={hasDumperPostPermission}
-						render={() => ContentsForm({ addContents })}
-					/>
+						>
+							<ErrorPermissionBoundary
+								errorCaller="ContentsCounter"
+								permissionCheck={hasViewerAdminPermission}
+								render={() =>
+									ContentsCounter({ currentPage, getContentsCount })
+								}
+							/>
+						</Suspense>
 
-					<Suspense fallback={<Loading />}>
-						<ErrorPermissionBoundary
-							errorCaller="ContentsStack"
-							permissionCheck={hasViewerAdminPermission}
-							render={() =>
-								ContentsStack({
-									deleteContents,
-									getContents: getUnexportedContents,
-									currentPage,
-								})
+						<Suspense fallback={<Loading />}>
+							<ErrorPermissionBoundary
+								errorCaller="ContentsStack"
+								permissionCheck={hasViewerAdminPermission}
+								render={() =>
+									ContentsStack({
+										getContents: getExportedContents,
+										currentPage,
+									})
+								}
+							/>
+						</Suspense>
+					</>
+				);
+			case "dumper":
+			default:
+				return (
+					<>
+						<Suspense
+							fallback={
+								<div className="h-32 animate-pulse bg-gray-100 rounded" />
 							}
-						/>
-					</Suspense>
-				</>
-			);
-	}
+						>
+							<ErrorPermissionBoundary
+								errorCaller="ContentsForm"
+								permissionCheck={hasDumperPostPermission}
+								render={() => ContentsForm({ addContents })}
+							/>
+						</Suspense>
+
+						<Suspense fallback={<Loading />}>
+							<ErrorPermissionBoundary
+								errorCaller="ContentsStack"
+								permissionCheck={hasViewerAdminPermission}
+								render={() =>
+									ContentsStack({
+										deleteContents,
+										getContents: getUnexportedContents,
+										currentPage,
+									})
+								}
+							/>
+						</Suspense>
+					</>
+				);
+		}
+	})();
+
+	return (
+		<LazyTabContent
+			fallback={<div className="h-32 animate-pulse bg-gray-100" />}
+			tabName="contents"
+		>
+			{content}
+		</LazyTabContent>
+	);
 }

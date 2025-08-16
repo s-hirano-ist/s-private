@@ -13,6 +13,7 @@ import {
 } from "@/common/auth/session";
 import Loading from "@/components/common/display/loading";
 import { ErrorPermissionBoundary } from "@/components/common/layouts/error-permission-boundary";
+import { LazyTabContent } from "@/components/common/layouts/lazy-tab-content";
 import { NewsCounter } from "@/components/news/server/news-counter";
 import { NewsForm } from "@/components/news/server/news-form";
 import { NewsStack } from "@/components/news/server/news-stack";
@@ -27,51 +28,74 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 	// Only render if this tab is active or no tab is specified (defaults to "news")
 	if (tab && tab !== "news") return null;
 
-	switch (layout) {
-		case "viewer":
-			return (
-				<>
-					<ErrorPermissionBoundary
-						errorCaller="NewsCounter"
-						permissionCheck={hasViewerAdminPermission}
-						render={() => NewsCounter({ currentPage, getNewsCount })}
-					/>
-
-					<Suspense fallback={<Loading />}>
-						<ErrorPermissionBoundary
-							errorCaller="NewsStack"
-							permissionCheck={hasViewerAdminPermission}
-							render={() =>
-								NewsStack({ currentPage, getNews: getExportedNews })
+	const content = (() => {
+		switch (layout) {
+			case "viewer":
+				return (
+					<>
+						<Suspense
+							fallback={
+								<div className="h-8 animate-pulse bg-gray-100 rounded" />
 							}
-						/>
-					</Suspense>
-				</>
-			);
-		case "dumper":
-		default:
-			return (
-				<>
-					<ErrorPermissionBoundary
-						errorCaller="NewsForm"
-						permissionCheck={hasDumperPostPermission}
-						render={() => NewsForm({ addNews, getCategories })}
-					/>
+						>
+							<ErrorPermissionBoundary
+								errorCaller="NewsCounter"
+								permissionCheck={hasViewerAdminPermission}
+								render={() => NewsCounter({ currentPage, getNewsCount })}
+							/>
+						</Suspense>
 
-					<Suspense fallback={<Loading />}>
-						<ErrorPermissionBoundary
-							errorCaller="NewsStack"
-							permissionCheck={hasViewerAdminPermission}
-							render={() =>
-								NewsStack({
-									currentPage,
-									getNews: getUnexportedNews,
-									deleteNews,
-								})
+						<Suspense fallback={<Loading />}>
+							<ErrorPermissionBoundary
+								errorCaller="NewsStack"
+								permissionCheck={hasViewerAdminPermission}
+								render={() =>
+									NewsStack({ currentPage, getNews: getExportedNews })
+								}
+							/>
+						</Suspense>
+					</>
+				);
+			case "dumper":
+			default:
+				return (
+					<>
+						<Suspense
+							fallback={
+								<div className="h-32 animate-pulse bg-gray-100 rounded" />
 							}
-						/>
-					</Suspense>
-				</>
-			);
-	}
+						>
+							<ErrorPermissionBoundary
+								errorCaller="NewsForm"
+								permissionCheck={hasDumperPostPermission}
+								render={() => NewsForm({ addNews, getCategories })}
+							/>
+						</Suspense>
+
+						<Suspense fallback={<Loading />}>
+							<ErrorPermissionBoundary
+								errorCaller="NewsStack"
+								permissionCheck={hasViewerAdminPermission}
+								render={() =>
+									NewsStack({
+										currentPage,
+										getNews: getUnexportedNews,
+										deleteNews,
+									})
+								}
+							/>
+						</Suspense>
+					</>
+				);
+		}
+	})();
+
+	return (
+		<LazyTabContent
+			fallback={<div className="h-32 animate-pulse bg-gray-100" />}
+			tabName="news"
+		>
+			{content}
+		</LazyTabContent>
+	);
 }

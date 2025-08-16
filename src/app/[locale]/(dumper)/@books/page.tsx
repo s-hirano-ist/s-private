@@ -15,6 +15,7 @@ import { BooksForm } from "@/components/books/server/books-form";
 import { BooksStack } from "@/components/books/server/books-stack";
 import Loading from "@/components/common/display/loading";
 import { ErrorPermissionBoundary } from "@/components/common/layouts/error-permission-boundary";
+import { LazyTabContent } from "@/components/common/layouts/lazy-tab-content";
 
 type Params = Promise<{ page?: string; tab?: string; layout?: string }>;
 
@@ -26,45 +27,68 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 	// Only render if this tab is active
 	if (tab && tab !== "books") return null;
 
-	switch (layout) {
-		case "viewer":
-			return (
-				<>
-					<ErrorPermissionBoundary
-						errorCaller="BooksCounter"
-						permissionCheck={hasViewerAdminPermission}
-						render={() => BooksCounter({ currentPage, getBooksCount })}
-					/>
-
-					<Suspense fallback={<Loading />}>
-						<ErrorPermissionBoundary
-							errorCaller="BooksStack"
-							permissionCheck={hasViewerAdminPermission}
-							render={() => BooksStack({ getBooks: getExportedBooks })}
-						/>
-					</Suspense>
-				</>
-			);
-		case "dumper":
-		default:
-			return (
-				<>
-					<ErrorPermissionBoundary
-						errorCaller="BooksForm"
-						permissionCheck={hasDumperPostPermission}
-						render={() => BooksForm({ addBooks })}
-					/>
-
-					<Suspense fallback={<Loading />}>
-						<ErrorPermissionBoundary
-							errorCaller="BooksStack"
-							permissionCheck={hasViewerAdminPermission}
-							render={() =>
-								BooksStack({ deleteBooks, getBooks: getUnexportedBooks })
+	const content = (() => {
+		switch (layout) {
+			case "viewer":
+				return (
+					<>
+						<Suspense
+							fallback={
+								<div className="h-8 animate-pulse bg-gray-100 rounded" />
 							}
-						/>
-					</Suspense>
-				</>
-			);
-	}
+						>
+							<ErrorPermissionBoundary
+								errorCaller="BooksCounter"
+								permissionCheck={hasViewerAdminPermission}
+								render={() => BooksCounter({ currentPage, getBooksCount })}
+							/>
+						</Suspense>
+
+						<Suspense fallback={<Loading />}>
+							<ErrorPermissionBoundary
+								errorCaller="BooksStack"
+								permissionCheck={hasViewerAdminPermission}
+								render={() => BooksStack({ getBooks: getExportedBooks })}
+							/>
+						</Suspense>
+					</>
+				);
+			case "dumper":
+			default:
+				return (
+					<>
+						<Suspense
+							fallback={
+								<div className="h-32 animate-pulse bg-gray-100 rounded" />
+							}
+						>
+							<ErrorPermissionBoundary
+								errorCaller="BooksForm"
+								permissionCheck={hasDumperPostPermission}
+								render={() => BooksForm({ addBooks })}
+							/>
+						</Suspense>
+
+						<Suspense fallback={<Loading />}>
+							<ErrorPermissionBoundary
+								errorCaller="BooksStack"
+								permissionCheck={hasViewerAdminPermission}
+								render={() =>
+									BooksStack({ deleteBooks, getBooks: getUnexportedBooks })
+								}
+							/>
+						</Suspense>
+					</>
+				);
+		}
+	})();
+
+	return (
+		<LazyTabContent
+			fallback={<div className="h-32 animate-pulse bg-gray-100" />}
+			tabName="books"
+		>
+			{content}
+		</LazyTabContent>
+	);
 }

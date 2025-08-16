@@ -12,6 +12,7 @@ import {
 } from "@/common/auth/session";
 import Loading from "@/components/common/display/loading";
 import { ErrorPermissionBoundary } from "@/components/common/layouts/error-permission-boundary";
+import { LazyTabContent } from "@/components/common/layouts/lazy-tab-content";
 import { ImagesCounter } from "@/components/images/server/images-counter";
 import { ImagesForm } from "@/components/images/server/images-form";
 import { ImagesStack } from "@/components/images/server/images-stack";
@@ -26,51 +27,74 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 	// Only render if this tab is active or no tab is specified (defaults to "news")
 	if (tab && tab !== "images") return null;
 
-	switch (layout) {
-		case "viewer":
-			return (
-				<>
-					<ErrorPermissionBoundary
-						errorCaller="ImagesCounter"
-						permissionCheck={hasViewerAdminPermission}
-						render={() => ImagesCounter({ currentPage, getImagesCount })}
-					/>
-
-					<Suspense fallback={<Loading />} key={currentPage}>
-						<ErrorPermissionBoundary
-							errorCaller="ImagesStack"
-							permissionCheck={hasViewerAdminPermission}
-							render={() =>
-								ImagesStack({ currentPage, getImages: getExportedImages })
+	const content = (() => {
+		switch (layout) {
+			case "viewer":
+				return (
+					<>
+						<Suspense
+							fallback={
+								<div className="h-8 animate-pulse bg-gray-100 rounded" />
 							}
-						/>
-					</Suspense>
-				</>
-			);
-		case "dumper":
-		default:
-			return (
-				<>
-					<ErrorPermissionBoundary
-						errorCaller="ImagesForm"
-						permissionCheck={hasDumperPostPermission}
-						render={() => ImagesForm({ addImage })}
-					/>
+						>
+							<ErrorPermissionBoundary
+								errorCaller="ImagesCounter"
+								permissionCheck={hasViewerAdminPermission}
+								render={() => ImagesCounter({ currentPage, getImagesCount })}
+							/>
+						</Suspense>
 
-					<Suspense fallback={<Loading />}>
-						<ErrorPermissionBoundary
-							errorCaller="ImagesStack"
-							permissionCheck={hasViewerAdminPermission}
-							render={() =>
-								ImagesStack({
-									deleteImages,
-									currentPage,
-									getImages: getUnexportedImages,
-								})
+						<Suspense fallback={<Loading />} key={currentPage}>
+							<ErrorPermissionBoundary
+								errorCaller="ImagesStack"
+								permissionCheck={hasViewerAdminPermission}
+								render={() =>
+									ImagesStack({ currentPage, getImages: getExportedImages })
+								}
+							/>
+						</Suspense>
+					</>
+				);
+			case "dumper":
+			default:
+				return (
+					<>
+						<Suspense
+							fallback={
+								<div className="h-32 animate-pulse bg-gray-100 rounded" />
 							}
-						/>
-					</Suspense>
-				</>
-			);
-	}
+						>
+							<ErrorPermissionBoundary
+								errorCaller="ImagesForm"
+								permissionCheck={hasDumperPostPermission}
+								render={() => ImagesForm({ addImage })}
+							/>
+						</Suspense>
+
+						<Suspense fallback={<Loading />}>
+							<ErrorPermissionBoundary
+								errorCaller="ImagesStack"
+								permissionCheck={hasViewerAdminPermission}
+								render={() =>
+									ImagesStack({
+										deleteImages,
+										currentPage,
+										getImages: getUnexportedImages,
+									})
+								}
+							/>
+						</Suspense>
+					</>
+				);
+		}
+	})();
+
+	return (
+		<LazyTabContent
+			fallback={<div className="h-32 animate-pulse bg-gray-100" />}
+			tabName="images"
+		>
+			{content}
+		</LazyTabContent>
+	);
 }
