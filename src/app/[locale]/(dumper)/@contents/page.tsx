@@ -24,7 +24,7 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 	const currentPage = Number(page) || 1;
 
 	// Only render if this tab is active or no tab is specified (defaults to "news")
-	if (tab && tab !== "contents") return <div />;
+	if (tab && tab !== "contents") return null;
 
 	switch (layout) {
 		case "viewer":

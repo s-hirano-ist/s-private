@@ -1,12 +1,13 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
-import { type ReactNode, useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState, useTransition } from "react";
 import {
 	Tabs,
 	TabsContent,
 	TabsList,
 	TabsTrigger,
 } from "@/components/common/ui/tabs";
+import { cn } from "@/components/common/utils/cn";
 
 const TABS = {
 	news: "NEWS",
@@ -29,13 +30,16 @@ export function RootTab({ news, books, contents, images }: Props) {
 	const searchParams = useSearchParams();
 
 	const [tab, setTab] = useState(searchParams.get("tab") ?? DEFAULT_TAB);
+	const [isPending, startTransition] = useTransition();
 
 	const handleTabChange = (value: string) => {
-		setTab(value);
-		const params = new URLSearchParams(searchParams);
-		params.delete("page");
-		params.set("tab", value);
-		router.replace(`?${params.toString()}`);
+		startTransition(() => {
+			setTab(value);
+			const params = new URLSearchParams(searchParams);
+			params.delete("page");
+			params.set("tab", value);
+			router.replace(`?${params.toString()}`);
+		});
 	};
 
 	useEffect(() => {
@@ -57,10 +61,15 @@ export function RootTab({ news, books, contents, images }: Props) {
 			onValueChange={handleTabChange}
 			value={tab}
 		>
-			<TabsList className="w-full">
+			<TabsList className={cn("w-full", isPending && "opacity-50")}>
 				{Object.entries(TABS).map(([key, value]) => {
 					return (
-						<TabsTrigger className="w-full" key={key} value={key}>
+						<TabsTrigger
+							className="w-full"
+							disabled={isPending}
+							key={key}
+							value={key}
+						>
 							{value}
 						</TabsTrigger>
 					);

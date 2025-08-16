@@ -3,7 +3,13 @@ import { BotIcon, FileUpIcon, SearchIcon } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import { type ReactNode, Suspense, useEffect, useState } from "react";
+import {
+	type ReactNode,
+	Suspense,
+	useEffect,
+	useState,
+	useTransition,
+} from "react";
 import { UtilButtons } from "@/components/common/layouts/nav/util-buttons";
 import { Button } from "@/components/common/ui/button";
 import {
@@ -49,13 +55,16 @@ export function Footer() {
 	const [layout, setLayout] = useState(
 		searchParams.get("layout") ?? DEFAULT_LAYOUT,
 	);
+	const [isPending, startTransition] = useTransition();
 
 	const handleLayoutChange = (value: string) => {
-		setLayout(value);
-		const params = new URLSearchParams(searchParams);
-		params.delete("page");
-		params.set("layout", value);
-		router.replace(`?${params.toString()}`);
+		startTransition(() => {
+			setLayout(value);
+			const params = new URLSearchParams(searchParams);
+			params.delete("page");
+			params.set("layout", value);
+			router.replace(`?${params.toString()}`);
+		});
 	};
 
 	useEffect(() => {
@@ -79,7 +88,9 @@ export function Footer() {
 						className={cn(
 							"sm:rounded-s-3xl",
 							/^\/(?:ja|en)(?:\/)?$/.test(pathname) ? "bg-black/10" : "",
+							isPending && layout !== "dumper" ? "opacity-50" : "",
 						)}
+						disabled={isPending}
 						onClick={() => handleLayoutChange("dumper")}
 						size="navSide"
 						variant="navSide"
@@ -102,11 +113,13 @@ export function Footer() {
 
 					<Button
 						asChild
-						className={
+						className={cn(
 							/^\/(?:ja|en)\/(viewer|books|contents)/.test(pathname)
 								? "bg-black/10"
-								: ""
-						}
+								: "",
+							isPending && layout !== "viewer" ? "opacity-50" : "",
+						)}
+						disabled={isPending}
 						onClick={() => handleLayoutChange("viewer")}
 						size="navSide"
 						variant="navSide"
