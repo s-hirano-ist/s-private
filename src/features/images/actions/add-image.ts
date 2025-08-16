@@ -38,6 +38,6 @@ export async function addImage(formData: FormData): Promise<ServerAction> {
 
 		return { success: true, message: "inserted" };
 	} catch (error) {
-		return await wrapServerSideErrorForClient(error);
+		return await wrapServerSideErrorForClient(error, formData);
 	}
 }

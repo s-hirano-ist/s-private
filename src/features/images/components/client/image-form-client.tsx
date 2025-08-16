@@ -3,9 +3,10 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { FormFileInput } from "@/common/components/forms/fields/form-file-input";
 import { GenericFormWrapper } from "@/common/components/forms/generic-form-wrapper";
+import type { ServerAction } from "@/common/types";
 
 type Props = {
-	addImage: (formData: FormData) => Promise<{ message: string }>;
+	addImage: (formData: FormData) => Promise<ServerAction>;
 };
 
 export function ImageFormClient({ addImage }: Props) {

@@ -43,7 +43,7 @@
 		"updated": "Updated successfully.",
 		"unexpected": "Unexpected error occurred.",
 		"pushoverSend": "Failed to send logs.",
-		"prismaDuplicated": "Duplicated record.",
+		"duplicated": "Duplicated record.",
 		"prismaUnexpected": "Failed to write to database.",
 		"unauthorized": "Unauthorized error.",
 		"notAllowed": "Not allowed error.",

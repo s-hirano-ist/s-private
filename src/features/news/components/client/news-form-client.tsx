@@ -7,12 +7,13 @@ import { FormInput } from "@/common/components/forms/fields/form-input";
 import { FormInputWithButton } from "@/common/components/forms/fields/form-input-with-button";
 import { FormTextarea } from "@/common/components/forms/fields/form-textarea";
 import { GenericFormWrapper } from "@/common/components/forms/generic-form-wrapper";
+import type { ServerAction } from "@/common/types";
 
 export type NewsFormClientData = { id: string; name: string }[];
 
 type Props = {
 	categories: NewsFormClientData;
-	addNews: (formData: FormData) => Promise<{ message: string }>;
+	addNews: (formData: FormData) => Promise<ServerAction>;
 };
 
 export function NewsFormClient({ categories, addNews }: Props) {

@@ -26,6 +26,6 @@ export async function addNews(formData: FormData): Promise<ServerAction> {
 
 		return { success: true, message: "inserted" };
 	} catch (error) {
-		return await wrapServerSideErrorForClient(error);
+		return await wrapServerSideErrorForClient(error, formData);
 	}
 }

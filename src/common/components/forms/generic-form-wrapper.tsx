@@ -1,16 +1,29 @@
 "use client";
 import { useTranslations } from "next-intl";
-import { type ReactNode, useActionState } from "react";
+import {
+	createContext,
+	type ReactNode,
+	useActionState,
+	useContext,
+	useEffect,
+	useState,
+} from "react";
 import { toast } from "sonner";
 import Loading from "@/common/components/loading";
 import { Button } from "@/common/components/ui/button";
+import type { ServerAction } from "@/common/types";
+
+const FormValuesContext = createContext<Record<string, string>>({});
+
+export const useFormValues = () => useContext(FormValuesContext);
 
 type Props = {
-	action: (formData: FormData) => Promise<{ message: string }>;
+	action: (formData: FormData) => Promise<ServerAction>;
 	children: ReactNode;
 	submitLabel?: string;
 	loadingLabel?: string;
 	onSubmit?: (formData: FormData) => Promise<void>;
+	preservedValues?: Record<string, string>;
 };
 
 export function GenericFormWrapper({
@@ -19,32 +32,59 @@ export function GenericFormWrapper({
 	submitLabel,
 	loadingLabel,
 	onSubmit,
+	preservedValues,
 }: Props) {
 	const label = useTranslations("label");
 	const message = useTranslations("message");
+	const [formValues, setFormValues] = useState<Record<string, string>>(
+		preservedValues || {},
+	);
 
-	const submitForm = async (_: null, formData: FormData) => {
+	useEffect(() => {
+		if (preservedValues) {
+			setFormValues(preservedValues);
+		}
+	}, [preservedValues]);
+
+	const submitForm = async (
+		_previousState: ServerAction | null,
+		formData: FormData,
+	) => {
 		if (onSubmit) {
 			await onSubmit(formData);
+			return null;
 		} else {
 			const response = await action(formData);
 			toast(message(response.message));
+
+			if (response.success) {
+				// Clear form on success
+				setFormValues({});
+				return { success: true, message: response.message };
+			} else {
+				// Preserve form data on error
+				if (response.formData) {
+					setFormValues(response.formData);
+				}
+				return response;
+			}
 		}
-		return null;
 	};
 
 	const [_, submitAction, isPending] = useActionState(submitForm, null);
 
 	return (
-		<form action={submitAction} className="space-y-4 px-2 py-4">
-			{isPending ? <Loading /> : children}
-			<Button className="w-full" disabled={isPending} type="submit">
-				{isPending && loadingLabel
-					? label(loadingLabel)
-					: submitLabel
-						? label(submitLabel)
-						: label("save")}
-			</Button>
-		</form>
+		<FormValuesContext.Provider value={formValues}>
+			<form action={submitAction} className="space-y-4 px-2 py-4">
+				{isPending ? <Loading /> : children}
+				<Button className="w-full" disabled={isPending} type="submit">
+					{isPending && loadingLabel
+						? label(loadingLabel)
+						: submitLabel
+							? label(submitLabel)
+							: label("save")}
+				</Button>
+			</form>
+		</FormValuesContext.Provider>
 	);
 }

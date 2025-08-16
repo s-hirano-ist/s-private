@@ -94,17 +94,18 @@ describe("wrapServerSideErrorForClient", () => {
 
 		const result = await wrapServerSideErrorForClient(error);
 
-		expect(serverLogger.warn).toHaveBeenCalledWith(
+		expect(serverLogger.error).toHaveBeenCalledWith(
 			error.message,
 			{
 				caller: "wrapServerSideError",
-				status: 400, // Updated to appropriate status for known client errors
+				status: 500,
 			},
+			undefined,
 			{ notify: true },
 		);
 		expect(result).toEqual({
 			success: false,
-			message: "prismaDuplicated",
+			message: "prismaUnexpected",
 		});
 	});
 
