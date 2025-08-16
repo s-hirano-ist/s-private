@@ -7,7 +7,10 @@ type BooksCounterWrapperProps = {
 	getBooksCount: () => Promise<{ count: number; pageSize: number }>;
 };
 
-function BooksCounterWrapper({ currentPage, getBooksCount }: BooksCounterWrapperProps) {
+function BooksCounterWrapper({
+	currentPage,
+	getBooksCount,
+}: BooksCounterWrapperProps) {
 	return (
 		<Suspense fallback={<div>Loading...</div>}>
 			<BooksCounter currentPage={currentPage} getBooksCount={getBooksCount} />
