@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.27.0](https://github.com/s-hirano-ist/s-private/compare/v8.26.4...v8.27.0) (2025-08-16)
+
+
+### Features
+
+* add delete functioon ([daa7648](https://github.com/s-hirano-ist/s-private/commit/daa7648364edd68acbcfb89a11a3e4f68d2c1649))
+* add delete images ([136404d](https://github.com/s-hirano-ist/s-private/commit/136404d3da86d8899ea3c617689f461bfb74029d))
+* add duplicate entry ([b4016c4](https://github.com/s-hirano-ist/s-private/commit/b4016c46180775911271473cbf2aa10268c7dd57))
+* add duplicate revert function ([3bab684](https://github.com/s-hirano-ist/s-private/commit/3bab684ffad08ece4491dd44b7a6c3bcc695ffa2))
+* add duplicate revert function ([423d8b5](https://github.com/s-hirano-ist/s-private/commit/423d8b52fe44cb34af91461bda22dfe0500032ad))
+* delete viewer page ([65d1e5b](https://github.com/s-hirano-ist/s-private/commit/65d1e5bd8e468a1c9c60e220979f40cfe4a7c869))
+
 ## [8.26.4](https://github.com/s-hirano-ist/s-private/compare/v8.26.3...v8.26.4) (2025-08-15)
 
 
