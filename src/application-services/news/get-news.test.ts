@@ -276,7 +276,8 @@ describe("get-news", () => {
 				new Error("Database error"),
 			);
 
-			await expect(getCategories()).rejects.toThrow("Database error");
+			const result = await getCategories();
+			expect(result).toEqual([]);
 		});
 	});
 });

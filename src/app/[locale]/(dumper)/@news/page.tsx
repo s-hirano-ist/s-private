@@ -7,7 +7,12 @@ import {
 	getNewsCount,
 	getUnexportedNews,
 } from "@/application-services/news/get-news";
+import {
+	hasDumperPostPermission,
+	hasViewerAdminPermission,
+} from "@/common/auth/session";
 import Loading from "@/components/common/display/loading";
+import { ErrorPermissionBoundary } from "@/components/common/layouts/error-permission-boundary";
 import { NewsCounter } from "@/components/news/server/news-counter";
 import { NewsForm } from "@/components/news/server/news-form";
 import { NewsStack } from "@/components/news/server/news-stack";
@@ -26,13 +31,19 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 		case "viewer":
 			return (
 				<>
-					<NewsCounter currentPage={currentPage} getNewsCount={getNewsCount} />
+					<ErrorPermissionBoundary
+						errorCaller="NewsCounter"
+						permissionCheck={hasViewerAdminPermission}
+						render={() => NewsCounter({ currentPage, getNewsCount })}
+					/>
 
 					<Suspense fallback={<Loading />}>
-						<NewsStack
-							getNews={getExportedNews}
-							key={currentPage}
-							page={currentPage}
+						<ErrorPermissionBoundary
+							errorCaller="NewsStack"
+							permissionCheck={hasViewerAdminPermission}
+							render={() =>
+								NewsStack({ currentPage, getNews: getExportedNews })
+							}
 						/>
 					</Suspense>
 				</>
@@ -41,13 +52,23 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 		default:
 			return (
 				<>
-					<NewsForm addNews={addNews} getCategories={getCategories} />
+					<ErrorPermissionBoundary
+						errorCaller="NewsForm"
+						permissionCheck={hasDumperPostPermission}
+						render={() => NewsForm({ addNews, getCategories })}
+					/>
 
 					<Suspense fallback={<Loading />}>
-						<NewsStack
-							deleteNews={deleteNews}
-							getNews={getUnexportedNews}
-							page={currentPage}
+						<ErrorPermissionBoundary
+							errorCaller="NewsStack"
+							permissionCheck={hasViewerAdminPermission}
+							render={() =>
+								NewsStack({
+									currentPage,
+									getNews: getUnexportedNews,
+									deleteNews,
+								})
+							}
 						/>
 					</Suspense>
 				</>

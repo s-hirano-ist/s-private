@@ -1,8 +1,5 @@
-import { forbidden } from "next/navigation";
 import { getContentsCount } from "@/application-services/contents/get-contents";
-import { hasViewerAdminPermission } from "@/common/auth/session";
 import { BadgeWithPagination } from "@/components/common/display/badge-with-pagination";
-import { Unexpected } from "@/components/common/display/status/unexpected";
 
 type Props = {
 	currentPage: number;
@@ -13,21 +10,14 @@ export async function ContentsCounter({
 	currentPage,
 	getContentsCount,
 }: Props) {
-	const hasPermission = await hasViewerAdminPermission();
-	if (!hasPermission) forbidden();
+	const totalContents = await getContentsCount("EXPORTED");
 
-	try {
-		const totalContents = await getContentsCount("EXPORTED");
-
-		return (
-			<BadgeWithPagination
-				currentPage={currentPage}
-				itemsPerPage={totalContents.pageSize}
-				label="totalContents"
-				totalItems={totalContents.count}
-			/>
-		);
-	} catch (error) {
-		return <Unexpected caller="ContentsCounter" error={error} />;
-	}
+	return (
+		<BadgeWithPagination
+			currentPage={currentPage}
+			itemsPerPage={totalContents.pageSize}
+			label="totalContents"
+			totalItems={totalContents.count}
+		/>
+	);
 }

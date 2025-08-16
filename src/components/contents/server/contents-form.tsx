@@ -1,7 +1,4 @@
-import { forbidden } from "next/navigation";
-import { hasDumperPostPermission } from "@/common/auth/session";
 import { ServerAction } from "@/common/types";
-import { Unexpected } from "@/components/common/display/status/unexpected";
 import { ContentsFormClient } from "../client/contents-form-client";
 
 type Props = {
@@ -9,12 +6,5 @@ type Props = {
 };
 
 export async function ContentsForm({ addContents }: Props) {
-	const hasPermission = await hasDumperPostPermission();
-	if (!hasPermission) forbidden();
-
-	try {
-		return <ContentsFormClient addContents={addContents} />;
-	} catch (error) {
-		return <Unexpected caller="ContentsForm" error={error} />;
-	}
+	return <ContentsFormClient addContents={addContents} />;
 }

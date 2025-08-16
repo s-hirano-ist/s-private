@@ -6,10 +6,15 @@ import {
 	getExportedBooks,
 	getUnexportedBooks,
 } from "@/application-services/books/get-books";
-import { BooksStack } from "@/components/books/server/book-stack";
+import {
+	hasDumperPostPermission,
+	hasViewerAdminPermission,
+} from "@/common/auth/session";
 import { BooksCounter } from "@/components/books/server/books-counter";
 import { BooksForm } from "@/components/books/server/books-form";
+import { BooksStack } from "@/components/books/server/books-stack";
 import Loading from "@/components/common/display/loading";
+import { ErrorPermissionBoundary } from "@/components/common/layouts/error-permission-boundary";
 
 type Params = Promise<{ page?: string; tab?: string; layout?: string }>;
 
@@ -25,13 +30,18 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 		case "viewer":
 			return (
 				<>
-					<BooksCounter
-						currentPage={currentPage}
-						getBooksCount={getBooksCount}
+					<ErrorPermissionBoundary
+						errorCaller="BooksCounter"
+						permissionCheck={hasViewerAdminPermission}
+						render={() => BooksCounter({ currentPage, getBooksCount })}
 					/>
 
 					<Suspense fallback={<Loading />}>
-						<BooksStack getBooks={getExportedBooks} />
+						<ErrorPermissionBoundary
+							errorCaller="BooksStack"
+							permissionCheck={hasViewerAdminPermission}
+							render={() => BooksStack({ getBooks: getExportedBooks })}
+						/>
 					</Suspense>
 				</>
 			);
@@ -39,12 +49,19 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 		default:
 			return (
 				<>
-					<BooksForm addBooks={addBooks} />
+					<ErrorPermissionBoundary
+						errorCaller="BooksForm"
+						permissionCheck={hasDumperPostPermission}
+						render={() => BooksForm({ addBooks })}
+					/>
 
 					<Suspense fallback={<Loading />}>
-						<BooksStack
-							deleteBooks={deleteBooks}
-							getBooks={getUnexportedBooks}
+						<ErrorPermissionBoundary
+							errorCaller="BooksStack"
+							permissionCheck={hasViewerAdminPermission}
+							render={() =>
+								BooksStack({ deleteBooks, getBooks: getUnexportedBooks })
+							}
 						/>
 					</Suspense>
 				</>

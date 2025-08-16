@@ -67,14 +67,6 @@ beforeEach(() => {
 		},
 	}));
 
-	vi.mock("@/infrastructures/observability/client", () => ({
-		clientLogger: {
-			info: vi.fn(),
-			warn: vi.fn(),
-			error: vi.fn(),
-		},
-	}));
-
 	vi.mock("server-only", () => {
 		return {};
 	});

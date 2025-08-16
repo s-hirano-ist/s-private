@@ -6,7 +6,12 @@ import {
 	getExportedContents,
 	getUnexportedContents,
 } from "@/application-services/contents/get-contents";
+import {
+	hasDumperPostPermission,
+	hasViewerAdminPermission,
+} from "@/common/auth/session";
 import Loading from "@/components/common/display/loading";
+import { ErrorPermissionBoundary } from "@/components/common/layouts/error-permission-boundary";
 import { ContentsCounter } from "@/components/contents/server/contents-counter";
 import { ContentsForm } from "@/components/contents/server/contents-form";
 import { ContentsStack } from "@/components/contents/server/contents-stack";
@@ -25,15 +30,19 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 		case "viewer":
 			return (
 				<>
-					<ContentsCounter
-						currentPage={currentPage}
-						getContentsCount={getContentsCount}
+					<ErrorPermissionBoundary
+						errorCaller="ContentsCounter"
+						permissionCheck={hasViewerAdminPermission}
+						render={() => ContentsCounter({ currentPage, getContentsCount })}
 					/>
 
 					<Suspense fallback={<Loading />}>
-						<ContentsStack
-							getContents={getExportedContents}
-							page={currentPage}
+						<ErrorPermissionBoundary
+							errorCaller="ContentsStack"
+							permissionCheck={hasViewerAdminPermission}
+							render={() =>
+								ContentsStack({ getContents: getExportedContents, currentPage })
+							}
 						/>
 					</Suspense>
 				</>
@@ -42,13 +51,23 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 		default:
 			return (
 				<>
-					<ContentsForm addContents={addContents} />
+					<ErrorPermissionBoundary
+						errorCaller="ContentsForm"
+						permissionCheck={hasDumperPostPermission}
+						render={() => ContentsForm({ addContents })}
+					/>
 
 					<Suspense fallback={<Loading />}>
-						<ContentsStack
-							deleteContents={deleteContents}
-							getContents={getUnexportedContents}
-							page={currentPage}
+						<ErrorPermissionBoundary
+							errorCaller="ContentsStack"
+							permissionCheck={hasViewerAdminPermission}
+							render={() =>
+								ContentsStack({
+									deleteContents,
+									getContents: getUnexportedContents,
+									currentPage,
+								})
+							}
 						/>
 					</Suspense>
 				</>

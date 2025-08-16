@@ -10,12 +10,34 @@ const API_THUMBNAIL_PATH = "/api/images/thumbnail";
 
 export const getExportedImages = cache(
 	async (page: number): Promise<ImageData[]> => {
+		try {
+			const userId = await getSelfId();
+			const data = await imagesQueryRepository.findMany(userId, "EXPORTED", {
+				skip: (page - 1) * PAGE_SIZE,
+				take: PAGE_SIZE,
+				orderBy: { createdAt: "desc" },
+				cacheStrategy: { ttl: 400, swr: 40, tags: ["images"] },
+			});
+			return data.map((d) => {
+				return {
+					id: d.id,
+					originalPath: API_ORIGINAL_PATH + "/" + d.path,
+					thumbnailPath: API_THUMBNAIL_PATH + "/" + d.path,
+					height: d.height,
+					width: d.width,
+				};
+			});
+		} catch (error) {
+			throw error;
+		}
+	},
+);
+
+export const getUnexportedImages = cache(async (): Promise<ImageData[]> => {
+	try {
 		const userId = await getSelfId();
-		const data = await imagesQueryRepository.findMany(userId, "EXPORTED", {
-			skip: (page - 1) * PAGE_SIZE,
-			take: PAGE_SIZE,
+		const data = await imagesQueryRepository.findMany(userId, "UNEXPORTED", {
 			orderBy: { createdAt: "desc" },
-			cacheStrategy: { ttl: 400, swr: 40, tags: ["images"] },
 		});
 		return data.map((d) => {
 			return {
@@ -26,23 +48,9 @@ export const getExportedImages = cache(
 				width: d.width,
 			};
 		});
-	},
-);
-
-export const getUnexportedImages = cache(async (): Promise<ImageData[]> => {
-	const userId = await getSelfId();
-	const data = await imagesQueryRepository.findMany(userId, "UNEXPORTED", {
-		orderBy: { createdAt: "desc" },
-	});
-	return data.map((d) => {
-		return {
-			id: d.id,
-			originalPath: API_ORIGINAL_PATH + "/" + d.path,
-			thumbnailPath: API_THUMBNAIL_PATH + "/" + d.path,
-			height: d.height,
-			width: d.width,
-		};
-	});
+	} catch (error) {
+		throw error;
+	}
 });
 
 export const getImagesCount = cache(
@@ -59,5 +67,9 @@ export const getImagesFromStorage = async (
 	path: string,
 	isThumbnail: boolean,
 ) => {
-	return await imagesQueryRepository.getFromStorage(path, isThumbnail);
+	try {
+		return await imagesQueryRepository.getFromStorage(path, isThumbnail);
+	} catch (error) {
+		throw error;
+	}
 };
