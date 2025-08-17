@@ -1,6 +1,14 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
-import { type ReactNode, useEffect, useState, useTransition } from "react";
+import {
+	memo,
+	type ReactNode,
+	useCallback,
+	useEffect,
+	useMemo,
+	useState,
+	useTransition,
+} from "react";
 import {
 	Tabs,
 	TabsContent,
@@ -25,42 +33,57 @@ type Props = {
 
 const DEFAULT_TAB = "news";
 
-export function RootTab({ news, books, contents, images }: Props) {
+function RootTabComponent({ news, books, contents, images }: Props) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 
 	const [tab, setTab] = useState(searchParams.get("tab") ?? DEFAULT_TAB);
 	const [isPending, startTransition] = useTransition();
 
-	const handleTabChange = (value: string) => {
-		startTransition(() => {
-			setTab(value);
-			const params = new URLSearchParams(searchParams);
-			params.delete("page");
-			params.set("tab", value);
-			router.replace(`?${params.toString()}`);
+	// Prefetch all tab routes on component mount
+	useEffect(() => {
+		const currentParams = new URLSearchParams(searchParams);
+		Object.keys(TABS).forEach((tabKey) => {
+			if (tabKey !== tab) {
+				const prefetchParams = new URLSearchParams(currentParams);
+				prefetchParams.set("tab", tabKey);
+				prefetchParams.delete("page");
+				router.prefetch(`?${prefetchParams.toString()}`);
+			}
 		});
-	};
+	}, [router, searchParams, tab]);
+
+	const handleTabChange = useCallback(
+		(value: string) => {
+			// Optimistic UI update
+			setTab(value);
+
+			startTransition(() => {
+				const params = new URLSearchParams(searchParams);
+				params.delete("page");
+				params.set("tab", value);
+				router.replace(`?${params.toString()}`);
+			});
+		},
+		[router, searchParams],
+	);
 
 	useEffect(() => {
-		const tab = searchParams.get("tab");
-		if (!tab) return;
+		const currentTab = searchParams.get("tab");
+		if (!currentTab) return;
 
-		const params = new URLSearchParams(searchParams);
-		if (!Object.keys(TABS).includes(tab)) {
+		if (!Object.keys(TABS).includes(currentTab)) {
+			const params = new URLSearchParams(searchParams);
 			params.delete("tab");
 			router.replace(`?${params.toString()}`);
 			setTab(DEFAULT_TAB);
+		} else if (currentTab !== tab) {
+			setTab(currentTab);
 		}
-	}, [searchParams, router]);
+	}, [searchParams, router, tab]);
 
-	return (
-		<Tabs
-			className="mx-auto max-w-5xl sm:px-2"
-			defaultValue={DEFAULT_TAB}
-			onValueChange={handleTabChange}
-			value={tab}
-		>
+	const tabsList = useMemo(
+		() => (
 			<TabsList className={cn("w-full", isPending && "opacity-50")}>
 				{Object.entries(TABS).map(([key, value]) => {
 					return (
@@ -75,10 +98,24 @@ export function RootTab({ news, books, contents, images }: Props) {
 					);
 				})}
 			</TabsList>
+		),
+		[isPending],
+	);
+
+	return (
+		<Tabs
+			className="mx-auto max-w-5xl sm:px-2"
+			defaultValue={DEFAULT_TAB}
+			onValueChange={handleTabChange}
+			value={tab}
+		>
+			{tabsList}
 			<TabsContent value="news">{news}</TabsContent>
 			<TabsContent value="contents">{contents}</TabsContent>
-			<TabsContent value="books"> {books}</TabsContent>
-			<TabsContent value="images"> {images}</TabsContent>
+			<TabsContent value="books">{books}</TabsContent>
+			<TabsContent value="images">{images}</TabsContent>
 		</Tabs>
 	);
 }
+
+export const RootTab = memo(RootTabComponent);
