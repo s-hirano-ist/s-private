@@ -3,70 +3,86 @@ import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import { LinkCardData } from "@/components/common/layouts/cards/link-card";
+import { LinkCardStackInitialData } from "@/components/common/layouts/cards/link-card-stack";
 import type { Status } from "@/domains/common/entities/common-entity";
+import { CacheStrategy } from "@/domains/contents/types";
 import { contentsQueryRepository } from "@/infrastructures/contents/repositories/contents-query-repository";
 
-export const getExportedContents = cache(async (): Promise<LinkCardData[]> => {
+export const _getContents = async (
+	currentCount: number,
+	userId: string,
+	status: Status,
+	cacheStrategy?: CacheStrategy,
+): Promise<LinkCardStackInitialData> => {
 	try {
-		const userId = await getSelfId();
-		const contents = await contentsQueryRepository.findMany(
-			userId,
-			"EXPORTED",
-			{
-				orderBy: { createdAt: "desc" },
-				cacheStrategy: {
-					ttl: 400,
-					swr: 40,
-					tags: [`${sanitizeCacheTag(userId)}-contents`],
-				},
-			},
-		);
+		const contents = await contentsQueryRepository.findMany(userId, status, {
+			skip: currentCount,
+			take: PAGE_SIZE,
+			orderBy: { createdAt: "desc" },
+			cacheStrategy,
+		});
 
-		return contents.map((d) => ({
-			id: d.id,
-			key: d.id,
-			title: d.title,
-			description: "",
-			href: `/content/${encodeURIComponent(d.title)}`,
-		}));
-	} catch (error) {
-		throw error;
-	}
-});
+		const totalCount = await _getContentsCount(userId, status);
 
-export const getUnexportedContents = cache(
-	async (): Promise<LinkCardData[]> => {
-		try {
-			const userId = await getSelfId();
-			const contents = await contentsQueryRepository.findMany(
-				userId,
-				"UNEXPORTED",
-				{ orderBy: { createdAt: "desc" } },
-			);
-			return contents.map((d) => ({
+		return {
+			data: contents.map((d) => ({
 				id: d.id,
 				key: d.id,
 				title: d.title,
 				description: "",
 				href: `/content/${encodeURIComponent(d.title)}`,
-			}));
-		} catch (error) {
-			throw error;
-		}
+			})),
+			totalCount,
+		};
+	} catch (error) {
+		throw error;
+	}
+};
+
+const _getContentsCount = async (
+	userId: string,
+	status: Status,
+): Promise<number> => {
+	try {
+		return await contentsQueryRepository.count(userId, status);
+	} catch (error) {
+		throw error;
+	}
+};
+
+export type GetContentsCount = () => Promise<number>;
+
+export const getUnexportedContentsCount: GetContentsCount = cache(
+	async (): Promise<number> => {
+		const userId = await getSelfId();
+		return await _getContentsCount(userId, "UNEXPORTED");
 	},
 );
 
-export const getContentsCount = cache(
-	async (status: Status): Promise<{ count: number; pageSize: number }> => {
-		try {
-			const userId = await getSelfId();
-			return {
-				count: await contentsQueryRepository.count(userId, status),
-				pageSize: PAGE_SIZE,
-			};
-		} catch (error) {
-			throw error;
-		}
+export const getExportedContentsCount: GetContentsCount = cache(
+	async (): Promise<number> => {
+		const userId = await getSelfId();
+		return await _getContentsCount(userId, "EXPORTED");
+	},
+);
+
+export type GetContents = (_: number) => Promise<LinkCardStackInitialData>;
+
+export const getUnexportedContents: GetContents = cache(
+	async (currentCount: number) => {
+		const userId = await getSelfId();
+		return _getContents(currentCount, userId, "UNEXPORTED");
+	},
+);
+
+export const getExportedContents: GetContents = cache(
+	async (currentCount: number) => {
+		const userId = await getSelfId();
+		return _getContents(currentCount, userId, "EXPORTED", {
+			ttl: 400,
+			swr: 40,
+			tags: [`${sanitizeCacheTag(userId)}_contents_${currentCount}`],
+		});
 	},
 );
 

@@ -14,7 +14,7 @@ export const getExportedBooks = cache(async (): Promise<ImageCardData[]> => {
 			cacheStrategy: {
 				ttl: 400,
 				swr: 40,
-				tags: [`${sanitizeCacheTag(userId)}-books`],
+				tags: [`${sanitizeCacheTag(userId)}_books`],
 			},
 		});
 

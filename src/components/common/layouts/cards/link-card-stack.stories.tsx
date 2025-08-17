@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { fn } from "@storybook/test";
 import { LinkCardStack } from "./link-card-stack";
 
 const meta = {
@@ -40,56 +41,69 @@ const mockData = [
 	},
 ];
 
+const mockLoadMoreAction = async () => ({
+	success: true,
+	message: "success",
+	data: {
+		data: [],
+		totalCount: 1,
+	},
+});
+
 export const Default: Story = {
 	args: {
-		data: mockData,
-		showDeleteButton: false,
+		initial: { data: mockData, totalCount: 100 },
+		loadMoreAction: mockLoadMoreAction,
 	},
 };
 
 export const WithDeleteButton: Story = {
 	args: {
-		data: mockData,
-		showDeleteButton: true,
+		initial: { data: mockData, totalCount: 100 },
+		loadMoreAction: mockLoadMoreAction,
+		deleteAction: fn(),
 	},
 };
 
 export const EmptyData: Story = {
 	args: {
-		data: [],
-		showDeleteButton: false,
+		initial: { data: mockData, totalCount: 100 },
+		loadMoreAction: mockLoadMoreAction,
 	},
 };
 
 export const SingleItem: Story = {
 	args: {
-		data: [mockData[0]],
-		showDeleteButton: false,
+		initial: { data: mockData, totalCount: 100 },
+		loadMoreAction: mockLoadMoreAction,
 	},
 };
 
 export const ManyItems: Story = {
 	args: {
-		data: [
-			...mockData,
-			{
-				id: "4",
-				key: "4",
-				title: "Fourth News Item",
-				description: "This is the fourth news item to test grid layout.",
-				href: "https://example.com/4",
-				primaryBadgeText: "Tech",
-				secondaryBadgeText: "example.com",
-			},
-			{
-				id: "5",
-				key: "5",
-				title: "Fifth News Item",
-				description:
-					"This is the fifth news item with a longer description to test text truncation and wrapping behavior.",
-				href: "https://example.com/5",
-			},
-		],
-		showDeleteButton: false,
+		initial: {
+			data: [
+				...mockData,
+				{
+					id: "4",
+					key: "4",
+					title: "Fourth News Item",
+					description: "This is the fourth news item to test grid layout.",
+					href: "https://example.com/4",
+					primaryBadgeText: "Tech",
+					secondaryBadgeText: "example.com",
+				},
+				{
+					id: "5",
+					key: "5",
+					title: "Fifth News Item",
+					description:
+						"This is the fifth news item with a longer description to test text truncation and wrapping behavior.",
+					href: "https://example.com/5",
+				},
+			],
+			totalCount: 100,
+		},
+		loadMoreAction: mockLoadMoreAction,
 	},
 };

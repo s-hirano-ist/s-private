@@ -3,3 +3,7 @@ export type ServerAction = {
 	success: boolean;
 	formData?: Record<string, string>;
 };
+
+export type ServerActionWithData<T> = ServerAction & {
+	data?: T;
+};

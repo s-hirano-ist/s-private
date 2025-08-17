@@ -4,9 +4,13 @@ import { deleteNews } from "@/application-services/news/delete-news";
 import {
 	getCategories,
 	getExportedNews,
-	getNewsCount,
+	getExportedNewsCount,
 	getUnexportedNews,
 } from "@/application-services/news/get-news";
+import {
+	loadMoreExportedNews,
+	loadMoreUnexportedNews,
+} from "@/application-services/news/get-news-from-client";
 import {
 	hasDumperPostPermission,
 	hasViewerAdminPermission,
@@ -18,12 +22,10 @@ import { NewsCounter } from "@/components/news/server/news-counter";
 import { NewsForm } from "@/components/news/server/news-form";
 import { NewsStack } from "@/components/news/server/news-stack";
 
-type Params = Promise<{ page?: string; tab?: string; layout?: string }>;
+type Params = Promise<{ tab?: string; layout?: string }>;
 
 export default async function Page({ searchParams }: { searchParams: Params }) {
-	const { page, tab, layout } = await searchParams;
-
-	const currentPage = Number(page) || 1;
+	const { tab, layout } = await searchParams;
 
 	// Only render if this tab is active or no tab is specified (defaults to "news")
 	if (tab && tab !== "news") return null;
@@ -33,24 +35,21 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 			case "viewer":
 				return (
 					<>
-						<Suspense
-							fallback={
-								<div className="h-8 animate-pulse bg-gray-100 rounded" />
-							}
-						>
-							<ErrorPermissionBoundary
-								errorCaller="NewsCounter"
-								permissionCheck={hasViewerAdminPermission}
-								render={() => NewsCounter({ currentPage, getNewsCount })}
-							/>
-						</Suspense>
+						<ErrorPermissionBoundary
+							errorCaller="NewsCounter"
+							permissionCheck={hasViewerAdminPermission}
+							render={() => NewsCounter({ getNewsCount: getExportedNewsCount })}
+						/>
 
 						<Suspense fallback={<Loading />}>
 							<ErrorPermissionBoundary
 								errorCaller="NewsStack"
 								permissionCheck={hasViewerAdminPermission}
 								render={() =>
-									NewsStack({ currentPage, getNews: getExportedNews })
+									NewsStack({
+										getNews: getExportedNews,
+										loadMoreAction: loadMoreExportedNews,
+									})
 								}
 							/>
 						</Suspense>
@@ -60,17 +59,11 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 			default:
 				return (
 					<>
-						<Suspense
-							fallback={
-								<div className="h-32 animate-pulse bg-gray-100 rounded" />
-							}
-						>
-							<ErrorPermissionBoundary
-								errorCaller="NewsForm"
-								permissionCheck={hasDumperPostPermission}
-								render={() => NewsForm({ addNews, getCategories })}
-							/>
-						</Suspense>
+						<ErrorPermissionBoundary
+							errorCaller="NewsForm"
+							permissionCheck={hasDumperPostPermission}
+							render={() => NewsForm({ addNews, getCategories })}
+						/>
 
 						<Suspense fallback={<Loading />}>
 							<ErrorPermissionBoundary
@@ -78,8 +71,8 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 								permissionCheck={hasViewerAdminPermission}
 								render={() =>
 									NewsStack({
-										currentPage,
 										getNews: getUnexportedNews,
+										loadMoreAction: loadMoreUnexportedNews,
 										deleteNews,
 									})
 								}
@@ -91,10 +84,7 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 	})();
 
 	return (
-		<LazyTabContent
-			fallback={<div className="h-32 animate-pulse bg-gray-100" />}
-			tabName="news"
-		>
+		<LazyTabContent fallback={<Loading />} tabName="news">
 			{content}
 		</LazyTabContent>
 	);

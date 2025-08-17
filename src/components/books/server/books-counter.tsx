@@ -1,5 +1,5 @@
 import type { getBooksCount } from "@/application-services/books/get-books";
-import { BadgeWithPagination } from "@/components/common/display/badge-with-pagination";
+import { CounterBadge } from "@/components/common/display/counter-badge";
 
 type Props = {
 	currentPage: number;
@@ -9,12 +9,5 @@ type Props = {
 export async function BooksCounter({ currentPage, getBooksCount }: Props) {
 	const totalBooks = await getBooksCount("EXPORTED");
 
-	return (
-		<BadgeWithPagination
-			currentPage={currentPage}
-			itemsPerPage={totalBooks.pageSize}
-			label="totalBooks"
-			totalItems={totalBooks.count}
-		/>
-	);
+	return <CounterBadge label="totalBooks" totalItems={totalBooks.count} />;
 }

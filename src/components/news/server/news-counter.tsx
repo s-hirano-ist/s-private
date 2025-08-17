@@ -1,17 +1,12 @@
-import type { getNewsCount } from "@/application-services/news/get-news";
-import { BadgeWithPagination } from "@/components/common/display/badge-with-pagination";
+import type { GetNewsCount } from "@/application-services/news/get-news";
+import { CounterBadge } from "@/components/common/display/counter-badge";
 
-type Props = { currentPage: number; getNewsCount: typeof getNewsCount };
+export type Props = {
+	getNewsCount: GetNewsCount;
+};
 
-export async function NewsCounter({ currentPage, getNewsCount }: Props) {
-	const totalNews = await getNewsCount("EXPORTED");
+export async function NewsCounter({ getNewsCount }: Props) {
+	const newsCount = await getNewsCount();
 
-	return (
-		<BadgeWithPagination
-			currentPage={currentPage}
-			itemsPerPage={totalNews.pageSize}
-			label="totalNews"
-			totalItems={totalNews.count}
-		/>
-	);
+	return <CounterBadge label="totalNews" totalItems={newsCount} />;
 }
