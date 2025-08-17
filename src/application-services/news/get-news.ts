@@ -27,7 +27,9 @@ export const getExportedNews = cache(
 				secondaryBadgeText: new URL(d.url).hostname,
 				key: d.id,
 				title: d.title,
-				description: `${d.quote} \n ${d.ogTitle} \n ${d.ogDescription}`,
+				description:
+					`${d.quote} \n ${d.ogTitle} \n ${d.ogDescription}`.slice(0, 200) +
+					"...",
 				href: d.url,
 			}));
 		} catch (error) {
