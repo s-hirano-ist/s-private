@@ -37,20 +37,19 @@ const mockGetBooks = async () => ({
 			id: "1",
 			href: "/book/isbn-123",
 			title: "TypeScript Handbook",
-			image:
-				"https://via.placeholder.com/150x200/0066cc/ffffff?text=TypeScript",
+			image: "https://picsum.photos/id/1/192/192",
 		},
 		{
 			id: "2",
 			href: "/book/isbn-456",
 			title: "React Design Patterns",
-			image: "https://via.placeholder.com/150x200/61dafb/000000?text=React",
+			image: "https://picsum.photos/id/2/192/192",
 		},
 		{
 			id: "3",
 			href: "/book/isbn-789",
 			title: "Next.js in Action",
-			image: "https://via.placeholder.com/150x200/000000/ffffff?text=Next.js",
+			image: "https://picsum.photos/id/3/192/192",
 		},
 	],
 	totalCount: 100,
