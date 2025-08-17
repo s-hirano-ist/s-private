@@ -229,7 +229,7 @@ describe("get-news", () => {
 		test("should fetch categories correctly", async () => {
 			const mockCategories = [
 				{
-					id: "01234567-89ab-cdef-0123-456789abcdef",
+					id: "01234567-89ab-4def-9123-456789abcdef",
 					name: "Science",
 				},
 				{
@@ -253,7 +253,7 @@ describe("get-news", () => {
 
 			expect(result).toEqual([
 				{
-					id: "01234567-89ab-cdef-0123-456789abcdef",
+					id: "01234567-89ab-4def-9123-456789abcdef",
 					name: "Science",
 				},
 				{

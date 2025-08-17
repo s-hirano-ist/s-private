@@ -137,7 +137,7 @@ describe("booksEntity", () => {
 			const data = {
 				ISBN: "978-0123456789",
 				title: "Sample Book",
-				id: "01234567-89ab-cdef-0123-456789abcdef",
+				id: "01234567-89ab-4def-9123-456789abcdef",
 				googleTitle: "Google Title",
 				googleAuthors: ["Author"],
 				markdown: "# Notes",

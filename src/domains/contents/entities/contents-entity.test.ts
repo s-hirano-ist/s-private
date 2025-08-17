@@ -25,7 +25,7 @@ describe("contentsEntity", () => {
 		const result = contentsFormSchema.safeParse(invalidData);
 		expect(result.success).toBe(false);
 		if (!result.success) {
-			expect(result.error.errors[0].message).toBe("required");
+			expect(result.error.issues[0].message).toBe("required");
 		}
 	});
 
@@ -40,7 +40,7 @@ describe("contentsEntity", () => {
 		const result = contentsFormSchema.safeParse(invalidData);
 		expect(result.success).toBe(false);
 		if (!result.success) {
-			expect(result.error.errors[0].message).toBe("tooLong");
+			expect(result.error.issues[0].message).toBe("tooLong");
 		}
 	});
 
@@ -55,7 +55,7 @@ describe("contentsEntity", () => {
 		const result = contentsFormSchema.safeParse(invalidData);
 		expect(result.success).toBe(false);
 		if (!result.success) {
-			expect(result.error.errors[0].message).toBe("required");
+			expect(result.error.issues[0].message).toBe("required");
 		}
 	});
 
@@ -70,7 +70,7 @@ describe("contentsEntity", () => {
 		const result = contentsFormSchema.safeParse(invalidData);
 		expect(result.success).toBe(false);
 		if (!result.success) {
-			expect(result.error.errors[0].message).toBe("required");
+			expect(result.error.issues[0].message).toBe("required");
 		}
 	});
 });

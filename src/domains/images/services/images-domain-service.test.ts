@@ -8,7 +8,7 @@ import type { IImagesQueryRepository } from "../types";
 import { ImagesDomainService, sanitizeFileName } from "./images-domain-service";
 
 vi.mock("uuid", () => ({
-	v7: () => "01234567-89ab-cdef-0123-456789abcdef",
+	v7: () => "01234567-89ab-4def-9123-456789abcdef",
 }));
 
 describe("sanitizeFileName", () => {
@@ -185,7 +185,7 @@ describe("ImagesDomainService", () => {
 			// Mock findByPath to return an existing image
 			vi.mocked(imagesQueryRepository.findByPath).mockResolvedValue({
 				id: "existing-id",
-				path: "01234567-89ab-cdef-0123-456789abcdef-test.jpg",
+				path: "01234567-89ab-4def-9123-456789abcdef-test.jpg",
 			});
 
 			const formData = new FormData();
@@ -197,7 +197,7 @@ describe("ImagesDomainService", () => {
 			).rejects.toThrow(DuplicateError);
 
 			expect(imagesQueryRepository.findByPath).toHaveBeenCalledWith(
-				"01234567-89ab-cdef-0123-456789abcdef-test.jpg",
+				"01234567-89ab-4def-9123-456789abcdef-test.jpg",
 				"user-123",
 			);
 		});

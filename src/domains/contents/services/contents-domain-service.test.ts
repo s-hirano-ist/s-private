@@ -5,7 +5,7 @@ import { ContentsDomainService } from "./contents-domain-service";
 
 // Mock at the module level before any imports
 vi.mock("uuid", () => ({
-	v7: () => "01234567-89ab-cdef-0123-456789abcdef",
+	v7: () => "01234567-89ab-4def-9123-456789abcdef",
 }));
 
 describe("ContentsDomainService", () => {
