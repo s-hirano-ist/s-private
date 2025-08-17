@@ -34,8 +34,9 @@ export function LinkCardStack({
 		isSearching: boolean,
 		lastElementRef: (node: HTMLElement | null) => void,
 		deleteAction?: (id: string) => Promise<ServerAction>,
+		key?: string,
 	) => (
-		<div key={item.key} ref={isLast && !isSearching ? lastElementRef : null}>
+		<div key={key} ref={isLast && !isSearching ? lastElementRef : null}>
 			<LinkCard
 				data={item}
 				deleteAction={deleteAction}

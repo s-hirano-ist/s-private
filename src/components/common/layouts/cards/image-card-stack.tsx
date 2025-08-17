@@ -36,8 +36,9 @@ export function ImageCardStack({
 		isSearching: boolean,
 		lastElementRef: (node: HTMLElement | null) => void,
 		deleteAction?: (id: string) => Promise<ServerAction>,
+		key?: string,
 	) => (
-		<div key={item.id} ref={isLast && !isSearching ? lastElementRef : null}>
+		<div key={key} ref={isLast && !isSearching ? lastElementRef : null}>
 			<ImageCard
 				basePath={basePath}
 				data={item}

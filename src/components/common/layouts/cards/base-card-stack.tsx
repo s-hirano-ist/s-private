@@ -15,7 +15,7 @@ export type CardStackInitialData<T> = {
 
 type SearchableItem = {
 	title: string;
-};
+} & ({ key: string } | { id: string });
 
 type BaseCardStackProps<T extends SearchableItem> = {
 	initial: CardStackInitialData<T>;
@@ -31,6 +31,7 @@ type BaseCardStackProps<T extends SearchableItem> = {
 		isSearching: boolean,
 		lastElementRef: (node: HTMLElement | null) => void,
 		deleteAction?: (id: string) => Promise<ServerAction>,
+		key?: string,
 	) => React.ReactNode;
 	gridClassName: string;
 };
@@ -57,7 +58,16 @@ export function BaseCardStackWrapper<T extends SearchableItem>({
 			if (result.success && result.data) {
 				const { data: newData, totalCount } = result.data;
 				setTotalCount(totalCount);
-				setAllData((prev) => [...prev, ...newData]);
+				setAllData((prev) => {
+					const existingKeys = new Set(
+						prev.map((item) => ("key" in item ? item.key : item.id)),
+					);
+					const uniqueNewData = newData.filter((item) => {
+						const itemKey = "key" in item ? item.key : item.id;
+						return !existingKeys.has(itemKey);
+					});
+					return [...prev, ...uniqueNewData];
+				});
 			}
 		});
 	};
@@ -91,6 +101,7 @@ export function BaseCardStackWrapper<T extends SearchableItem>({
 				<div className={gridClassName}>
 					{dataToShow.map((item, index) => {
 						const isLast = index === dataToShow.length - 1;
+						const itemKey = "key" in item ? item.key : item.id;
 						return renderCard(
 							item,
 							index,
@@ -98,6 +109,7 @@ export function BaseCardStackWrapper<T extends SearchableItem>({
 							isSearching,
 							lastElementRef,
 							deleteAction,
+							itemKey,
 						);
 					})}
 				</div>
