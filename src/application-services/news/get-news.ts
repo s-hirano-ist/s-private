@@ -18,7 +18,7 @@ export const getExportedNews = cache(
 				skip: (page - 1) * PAGE_SIZE,
 				take: PAGE_SIZE,
 				orderBy: { createdAt: "desc" },
-				cacheStrategy: { ttl: 400, swr: 40, tags: ["news"] },
+				cacheStrategy: { ttl: 400, swr: 40, tags: [`${userId}-news`] },
 			});
 
 			return news.map((d) => ({

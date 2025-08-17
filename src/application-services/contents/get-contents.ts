@@ -13,7 +13,7 @@ export const getExportedContents = cache(async (): Promise<LinkCardData[]> => {
 			"EXPORTED",
 			{
 				orderBy: { createdAt: "desc" },
-				cacheStrategy: { ttl: 400, swr: 40, tags: ["contents"] },
+				cacheStrategy: { ttl: 400, swr: 40, tags: [`${userId}-contents`] },
 			},
 		);
 

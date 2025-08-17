@@ -48,7 +48,7 @@ describe("get-books", () => {
 				"EXPORTED",
 				expect.objectContaining({
 					orderBy: { createdAt: "desc" },
-					cacheStrategy: { ttl: 400, swr: 40, tags: ["books"] },
+					cacheStrategy: { ttl: 400, swr: 40, tags: ["test-user-id-books"] },
 				}),
 			);
 
