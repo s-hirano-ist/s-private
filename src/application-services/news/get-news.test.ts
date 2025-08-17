@@ -38,7 +38,7 @@ describe("get-news", () => {
 					quote: "Test quote 1",
 					url: "https://example1.com",
 					ogTitle: "OG Title 1",
-					ogDescription: "OG Description 1",
+					ogDescription: "OG Description 1...",
 					category: { name: "Tech", id: "1" },
 				},
 				{
@@ -47,7 +47,7 @@ describe("get-news", () => {
 					quote: "Test quote 2",
 					url: "https://example2.com",
 					ogTitle: "OG Title 2",
-					ogDescription: "OG Description 2",
+					ogDescription: "OG Description 2...",
 					category: { name: "Science", id: "2" },
 				},
 			]);
