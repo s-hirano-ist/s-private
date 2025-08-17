@@ -1,4 +1,4 @@
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { describe, expect, test, vi } from "vitest";
 import { deleteContents } from "@/application-services/contents/delete-contents";
 import { contentsCommandRepository } from "@/infrastructures/contents/repositories/contents-command-repository";
@@ -39,7 +39,7 @@ describe("deleteContents", () => {
 			"1",
 			"UNEXPORTED",
 		);
-		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
+		expect(revalidateTag).toHaveBeenCalledWith("contents_UNEXPORTED");
 	});
 
 	test("should return error when contents not found", async () => {

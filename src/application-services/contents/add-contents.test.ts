@@ -1,4 +1,4 @@
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { describe, expect, test, vi } from "vitest";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { DuplicateError } from "@/common/error/error-classes";
@@ -68,7 +68,7 @@ describe("addContents", () => {
 			"user-123",
 		);
 		expect(contentsCommandRepository.create).toHaveBeenCalled();
-		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
+		expect(revalidateTag).toHaveBeenCalledWith("contents_UNEXPORTED");
 		expect(result.success).toBe(true);
 		expect(result.message).toBe("inserted");
 	});

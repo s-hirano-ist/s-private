@@ -1,4 +1,4 @@
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { describe, expect, test, vi } from "vitest";
 import { deleteNews } from "@/application-services/news/delete-news";
 import { newsCommandRepository } from "@/infrastructures/news/repositories/news-command-repository";
@@ -36,7 +36,7 @@ describe("deleteNews", () => {
 			"1",
 			"UNEXPORTED",
 		);
-		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
+		expect(revalidateTag).toHaveBeenCalledWith("news_UNEXPORTED");
 	});
 
 	test("should return error when news not found", async () => {

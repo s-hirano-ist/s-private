@@ -1,8 +1,8 @@
+import { unstable_cacheTag as cacheTag } from "next/cache";
 import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
-import { LinkCardData } from "@/components/common/layouts/cards/link-card";
 import { LinkCardStackInitialData } from "@/components/common/layouts/cards/link-card-stack";
 import type { Status } from "@/domains/common/entities/common-entity";
 import { CacheStrategy } from "@/domains/contents/types";
@@ -14,6 +14,8 @@ export const _getContents = async (
 	status: Status,
 	cacheStrategy?: CacheStrategy,
 ): Promise<LinkCardStackInitialData> => {
+	"use cache";
+	cacheTag(`contents_${status}`, `${userId}_contents_${currentCount}`);
 	try {
 		const contents = await contentsQueryRepository.findMany(userId, status, {
 			skip: currentCount,
