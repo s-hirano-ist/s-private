@@ -1,7 +1,8 @@
-import { Suspense } from "react";
+import { cache, Suspense } from "react";
 import { addNews } from "@/application-services/news/add-news";
 import { deleteNews } from "@/application-services/news/delete-news";
 import {
+	_getNews,
 	getCategories,
 	getExportedNews,
 	getExportedNewsCount,
@@ -12,6 +13,7 @@ import {
 	loadMoreUnexportedNews,
 } from "@/application-services/news/get-news-from-client";
 import {
+	getSelfId,
 	hasDumperPostPermission,
 	hasViewerAdminPermission,
 } from "@/common/auth/session";
@@ -71,7 +73,10 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 								permissionCheck={hasViewerAdminPermission}
 								render={() =>
 									NewsStack({
-										getNews: getUnexportedNews,
+										getNews: cache(async (currentCount: number) => {
+											const userId = await getSelfId();
+											return _getNews(currentCount, userId, "UNEXPORTED");
+										}),
 										loadMoreAction: loadMoreUnexportedNews,
 										deleteNews,
 									})

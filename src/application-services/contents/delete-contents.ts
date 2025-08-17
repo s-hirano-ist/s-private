@@ -1,26 +1,23 @@
 "use server";
 import "server-only";
 import { revalidateTag } from "next/cache";
-import { forbidden } from "next/navigation";
+import { withPermissionCheck } from "@/common/auth/permission-wrapper";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
-import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
 import { contentsCommandRepository } from "@/infrastructures/contents/repositories/contents-command-repository";
 
-export async function deleteContents(id: string): Promise<ServerAction> {
-	const hasPermission = await hasDumperPostPermission();
-	if (!hasPermission) forbidden();
+async function deleteContentsImpl(id: string): Promise<ServerAction> {
+	const userId = await getSelfId();
 
-	try {
-		const userId = await getSelfId();
+	await contentsCommandRepository.deleteById(id, userId, "UNEXPORTED");
 
-		await contentsCommandRepository.deleteById(id, userId, "UNEXPORTED");
+	revalidateTag(`contents_UNEXPORTED_${userId}`);
+	revalidateTag(`contents_count_UNEXPORTED_${userId}`);
 
-		revalidateTag(`contents_UNEXPORTED_${userId}`);
-		revalidateTag(`contents_count_UNEXPORTED_${userId}`);
-
-		return { success: true, message: "deleted" };
-	} catch (error) {
-		return await wrapServerSideErrorForClient(error);
-	}
+	return { success: true, message: "deleted" };
 }
+
+export const deleteContents = withPermissionCheck(
+	hasDumperPostPermission,
+	deleteContentsImpl,
+);
