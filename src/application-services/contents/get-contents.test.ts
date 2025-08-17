@@ -148,7 +148,9 @@ describe("get-contents", () => {
 
 			const result = await getExportedContents(0);
 
-			expect(result.data[0].href).toBe("/content/My%20Special%20Content%20Title");
+			expect(result.data[0].href).toBe(
+				"/content/My%20Special%20Content%20Title",
+			);
 			expect(result.data[0].title).toBe("My Special Content Title");
 		});
 	});
