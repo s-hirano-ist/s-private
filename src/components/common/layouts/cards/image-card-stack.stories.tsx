@@ -62,7 +62,15 @@ export const Default: Story = {
 	args: {
 		initial: { data: mockData, totalCount: 10 },
 		basePath,
-		deleteAction: fn(),
-		loadMoreAction: fn(),
+		deleteAction: fn(() =>
+			Promise.resolve({ success: true, message: "Deleted successfully" }),
+		),
+		loadMoreAction: fn(() =>
+			Promise.resolve({
+				success: true,
+				message: "Loaded more data",
+				data: { data: [], totalCount: 10 },
+			}),
+		),
 	},
 };
