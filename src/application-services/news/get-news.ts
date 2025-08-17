@@ -10,6 +10,8 @@ import {
 } from "@/infrastructures/news/repositories/news-query-repository";
 import { serverLogger } from "@/infrastructures/observability/server";
 
+export const runtime = "edge";
+
 export const getExportedNews = cache(
 	async (page: number): Promise<LinkCardData[]> => {
 		try {

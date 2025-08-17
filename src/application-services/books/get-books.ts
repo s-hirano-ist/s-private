@@ -5,6 +5,8 @@ import { ImageCardData } from "@/components/common/layouts/cards/image-card";
 import type { Status } from "@/domains/common/entities/common-entity";
 import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
 
+export const runtime = "edge";
+
 export const getExportedBooks = cache(async (): Promise<ImageCardData[]> => {
 	try {
 		const userId = await getSelfId();

@@ -3,7 +3,7 @@
 
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { env } from "@/env";
-import { PrismaClient } from "@/generated";
+import { PrismaClient } from "@/generated/edge";
 
 const prismaClientSingleton = () => {
 	const prisma = new PrismaClient().$extends({

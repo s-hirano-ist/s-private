@@ -5,6 +5,8 @@ import { LinkCardData } from "@/components/common/layouts/cards/link-card";
 import type { Status } from "@/domains/common/entities/common-entity";
 import { contentsQueryRepository } from "@/infrastructures/contents/repositories/contents-query-repository";
 
+export const runtime = "edge";
+
 export const getExportedContents = cache(async (): Promise<LinkCardData[]> => {
 	try {
 		const userId = await getSelfId();
