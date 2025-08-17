@@ -1,4 +1,4 @@
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { DuplicateError } from "@/common/error/error-classes";
@@ -74,7 +74,8 @@ describe("addNews", () => {
 		expect(vi.mocked(hasDumperPostPermission)).toHaveBeenCalled();
 		expect(mockPrepareNewNews).toHaveBeenCalledWith(mockFormData, "user-123");
 		expect(newsCommandRepository.create).toHaveBeenCalled();
-		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
+		expect(revalidateTag).toHaveBeenCalledWith("news_UNEXPORTED");
+		expect(revalidateTag).toHaveBeenCalledWith("categories");
 		expect(result.success).toBe(true);
 		expect(result.message).toBe("inserted");
 	});

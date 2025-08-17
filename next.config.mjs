@@ -42,6 +42,7 @@ const nextConfig = {
 			static: 180,
 		},
 		viewTransition: true,
+		useCache: true,
 	},
 	pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
 	output: "standalone",

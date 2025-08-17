@@ -1,8 +1,8 @@
+import { unstable_cacheTag as cacheTag } from "next/cache";
 import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
-import type { LinkCardData } from "@/components/common/layouts/cards/link-card";
 import { LinkCardStackInitialData } from "@/components/common/layouts/cards/link-card-stack";
 import type { NewsFormClientData } from "@/components/news/client/news-form-client";
 import type { Status } from "@/domains/common/entities/common-entity";
@@ -19,6 +19,8 @@ export const _getNews = async (
 	status: Status,
 	cacheStrategy?: CacheStrategy,
 ): Promise<LinkCardStackInitialData> => {
+	"use cache";
+	cacheTag(`news_${status}`, `${userId}_news_${currentCount}`);
 	try {
 		const news = await newsQueryRepository.findMany(userId, status, {
 			skip: currentCount,

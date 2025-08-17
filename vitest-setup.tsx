@@ -73,6 +73,8 @@ beforeEach(() => {
 
 	vi.mock("next/cache", () => ({
 		revalidatePath: vi.fn(),
+		unstable_cacheTag: vi.fn(),
+		revalidateTag: vi.fn(),
 	}));
 
 	vi.mock("next/navigation", () => ({
