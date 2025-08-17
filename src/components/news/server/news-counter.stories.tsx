@@ -5,7 +5,7 @@ import { NewsCounter } from "./news-counter";
 
 function NewsCounterWrapper({ getNewsCount }: NewsCounterProps) {
 	return (
-		<Suspense fallback={<div>Loading...</div>}>
+		<Suspense>
 			<NewsCounter getNewsCount={getNewsCount} />
 		</Suspense>
 	);

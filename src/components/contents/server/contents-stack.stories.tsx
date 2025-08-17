@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { Suspense } from "react";
 import { ContentsStack, Props as ContentsStackProps } from "./contents-stack";
 
 function ContentsStackWrapper({
@@ -7,11 +8,13 @@ function ContentsStackWrapper({
 	loadMoreAction,
 }: ContentsStackProps) {
 	return (
-		<ContentsStack
-			deleteContents={deleteContents}
-			getContents={getContents}
-			loadMoreAction={loadMoreAction}
-		/>
+		<Suspense>
+			<ContentsStack
+				deleteContents={deleteContents}
+				getContents={getContents}
+				loadMoreAction={loadMoreAction}
+			/>
+		</Suspense>
 	);
 }
 

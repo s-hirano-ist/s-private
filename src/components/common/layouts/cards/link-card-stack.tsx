@@ -1,7 +1,6 @@
 "use client";
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
-import { deleteNews } from "@/application-services/news/delete-news";
 import type { ServerAction, ServerActionWithData } from "@/common/types";
 import { StatusCodeView } from "@/components/common/display/status/status-code-view";
 import { filterLinkCards } from "@/components/common/features/search/search-filter";
@@ -33,7 +32,7 @@ export function LinkCardStack({
 	loadMoreAction,
 }: Props) {
 	const t = useTranslations("label");
-	const showDeleteButton = deleteNews !== undefined;
+	const showDeleteButton = deleteAction !== undefined;
 
 	const [isPending, startTransition] = useTransition();
 	const [allData, setAllData] = useState(initial.data);

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { Suspense } from "react";
 import { NewsStack, Props as NewsStackProps } from "./news-stack";
 
 function NewsStackWrapper({
@@ -7,11 +8,13 @@ function NewsStackWrapper({
 	loadMoreAction,
 }: NewsStackProps) {
 	return (
-		<NewsStack
-			deleteNews={deleteNews}
-			getNews={getNews}
-			loadMoreAction={loadMoreAction}
-		/>
+		<Suspense>
+			<NewsStack
+				deleteNews={deleteNews}
+				getNews={getNews}
+				loadMoreAction={loadMoreAction}
+			/>
+		</Suspense>
 	);
 }
 
