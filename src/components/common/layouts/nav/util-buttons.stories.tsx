@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "@storybook/test";
 import { UtilButtons } from "./util-buttons";
 
 type UtilButtonsWrapperProps = {
@@ -49,8 +50,8 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
 	args: {
-		handleReload: () => console.log("Reload clicked"),
-		onSignOutSubmit: async () => console.log("Sign out clicked"),
+		handleReload: fn(),
+		onSignOutSubmit: fn(),
 	},
 	parameters: {
 		nextjs: {
@@ -63,8 +64,8 @@ export const Default: Story = {
 
 export const DarkTheme: Story = {
 	args: {
-		handleReload: () => console.log("Reload clicked"),
-		onSignOutSubmit: async () => console.log("Sign out clicked"),
+		handleReload: fn(),
+		onSignOutSubmit: fn(),
 		theme: "dark",
 	},
 	parameters: {
@@ -81,8 +82,8 @@ export const DarkTheme: Story = {
 
 export const JapaneseLocale: Story = {
 	args: {
-		handleReload: () => console.log("Reload clicked"),
-		onSignOutSubmit: async () => console.log("Sign out clicked"),
+		handleReload: fn(),
+		onSignOutSubmit: fn(),
 		locale: "ja",
 	},
 	parameters: {
@@ -96,8 +97,8 @@ export const JapaneseLocale: Story = {
 
 export const OnAuthPage: Story = {
 	args: {
-		handleReload: () => console.log("Reload clicked"),
-		onSignOutSubmit: async () => console.log("Sign out clicked"),
+		handleReload: fn(),
+		onSignOutSubmit: fn(),
 		pathname: "/auth",
 	},
 	parameters: {
@@ -111,8 +112,8 @@ export const OnAuthPage: Story = {
 
 export const DarkThemeJapanese: Story = {
 	args: {
-		handleReload: () => console.log("Reload clicked"),
-		onSignOutSubmit: async () => console.log("Sign out clicked"),
+		handleReload: fn(),
+		onSignOutSubmit: fn(),
 		theme: "dark",
 		locale: "ja",
 	},

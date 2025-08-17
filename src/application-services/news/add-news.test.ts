@@ -58,14 +58,14 @@ describe("addNews", () => {
 			category: {
 				name: "tech",
 				userId: "user-123",
-				id: "01234567-89ab-cdef-0123-456789abcdef",
+				id: "01234567-89ab-4def-9123-456789abcdef",
 			},
 			title: "Example Content",
 			quote: "This is an example news quote.",
 			url: "https://example.com",
 			userId: "user-123",
 			status: "UNEXPORTED",
-			id: "01234567-89ab-cdef-0123-456789abcdef",
+			id: "01234567-89ab-4def-9123-456789abcdef",
 		});
 		vi.mocked(newsCommandRepository.create).mockResolvedValue();
 

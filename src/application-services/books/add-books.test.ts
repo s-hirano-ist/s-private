@@ -55,7 +55,7 @@ describe("addBooks", () => {
 		vi.mocked(getSelfId).mockResolvedValue("user-123");
 
 		mockPrepareNewBook.mockResolvedValue({
-			id: "01234567-89ab-cdef-0123-456789abcdef",
+			id: "01234567-89ab-4def-9123-456789abcdef",
 			isbn: "978-4-06-519981-0",
 			title: "Test Book",
 			userId: "user-123",

@@ -42,7 +42,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const mockBookData: BookData = {
-	id: "01234567-89ab-cdef-0123-456789abcdef",
+	id: "01234567-89ab-4def-9123-456789abcdef",
 	ISBN: "978-0123456789",
 	title: "TypeScript Handbook",
 	markdown:
@@ -125,7 +125,7 @@ export const MinimalData: Story = {
 	args: {
 		slug: "978-0123456789",
 		getBookByISBN: async () => ({
-			id: "01234567-89ab-cdef-0123-456789abcdef",
+			id: "01234567-89ab-4def-9123-456789abcdef",
 			ISBN: "978-0123456789",
 			title: "Minimal Book",
 			markdown: "# Minimal Book\n\nJust some basic content.",
