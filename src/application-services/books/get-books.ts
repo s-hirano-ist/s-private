@@ -1,6 +1,7 @@
 import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
+import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import { ImageCardData } from "@/components/common/layouts/cards/image-card";
 import type { Status } from "@/domains/common/entities/common-entity";
 import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
@@ -10,7 +11,11 @@ export const getExportedBooks = cache(async (): Promise<ImageCardData[]> => {
 		const userId = await getSelfId();
 		const books = await booksQueryRepository.findMany(userId, "EXPORTED", {
 			orderBy: { createdAt: "desc" },
-			cacheStrategy: { ttl: 400, swr: 40, tags: [`${userId}-books`] },
+			cacheStrategy: {
+				ttl: 400,
+				swr: 40,
+				tags: [`${sanitizeCacheTag(userId)}-books`],
+			},
 		});
 
 		return books.map((d) => ({

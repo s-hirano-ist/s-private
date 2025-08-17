@@ -1,6 +1,7 @@
 import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
+import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import type { LinkCardData } from "@/components/common/layouts/cards/link-card";
 import type { NewsFormClientData } from "@/components/news/client/news-form-client";
 import type { Status } from "@/domains/common/entities/common-entity";
@@ -18,7 +19,11 @@ export const getExportedNews = cache(
 				skip: (page - 1) * PAGE_SIZE,
 				take: PAGE_SIZE,
 				orderBy: { createdAt: "desc" },
-				cacheStrategy: { ttl: 400, swr: 40, tags: [`${userId}-news`] },
+				cacheStrategy: {
+					ttl: 400,
+					swr: 40,
+					tags: [`${sanitizeCacheTag(userId)}-news`],
+				},
 			});
 
 			return news.map((d) => ({

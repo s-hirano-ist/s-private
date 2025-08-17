@@ -55,7 +55,7 @@ describe("get-images", () => {
 					skip: 0,
 					take: 24,
 					orderBy: { createdAt: "desc" },
-					cacheStrategy: { ttl: 400, swr: 40, tags: ["test-user-id-images"] },
+					cacheStrategy: { ttl: 400, swr: 40, tags: ["testuserid-images"] },
 				},
 			);
 
@@ -89,7 +89,7 @@ describe("get-images", () => {
 					skip: 48,
 					take: 24,
 					orderBy: { createdAt: "desc" },
-					cacheStrategy: { ttl: 400, swr: 40, tags: ["test-user-id-images"] },
+					cacheStrategy: { ttl: 400, swr: 40, tags: ["testuserid-images"] },
 				},
 			);
 		});
