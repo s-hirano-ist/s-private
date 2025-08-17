@@ -16,7 +16,7 @@ export const getExportedImages = cache(
 				skip: (page - 1) * PAGE_SIZE,
 				take: PAGE_SIZE,
 				orderBy: { createdAt: "desc" },
-				cacheStrategy: { ttl: 400, swr: 40, tags: ["images"] },
+				cacheStrategy: { ttl: 400, swr: 40, tags: [`${userId}-images`] },
 			});
 			return data.map((d) => {
 				return {

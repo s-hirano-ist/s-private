@@ -10,7 +10,7 @@ export const getExportedBooks = cache(async (): Promise<ImageCardData[]> => {
 		const userId = await getSelfId();
 		const books = await booksQueryRepository.findMany(userId, "EXPORTED", {
 			orderBy: { createdAt: "desc" },
-			cacheStrategy: { ttl: 400, swr: 40, tags: ["books"] },
+			cacheStrategy: { ttl: 400, swr: 40, tags: [`${userId}-books`] },
 		});
 
 		return books.map((d) => ({
