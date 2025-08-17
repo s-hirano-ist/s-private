@@ -20,7 +20,7 @@ export const getExportedImages = cache(
 				cacheStrategy: {
 					ttl: 400,
 					swr: 40,
-					tags: [`${sanitizeCacheTag(userId)}-images`],
+					tags: [`${sanitizeCacheTag(userId)}_images`],
 				},
 			});
 			return data.map((d) => {

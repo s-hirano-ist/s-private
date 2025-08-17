@@ -1,23 +1,12 @@
-import { getContentsCount } from "@/application-services/contents/get-contents";
-import { BadgeWithPagination } from "@/components/common/display/badge-with-pagination";
+import { GetContentsCount } from "@/application-services/contents/get-contents";
+import { CounterBadge } from "@/components/common/display/counter-badge";
 
-type Props = {
-	currentPage: number;
-	getContentsCount: typeof getContentsCount;
+export type Props = {
+	getContentsCount: GetContentsCount;
 };
 
-export async function ContentsCounter({
-	currentPage,
-	getContentsCount,
-}: Props) {
-	const totalContents = await getContentsCount("EXPORTED");
+export async function ContentsCounter({ getContentsCount }: Props) {
+	const totalContents = await getContentsCount();
 
-	return (
-		<BadgeWithPagination
-			currentPage={currentPage}
-			itemsPerPage={totalContents.pageSize}
-			label="totalContents"
-			totalItems={totalContents.count}
-		/>
-	);
+	return <CounterBadge label="totalContents" totalItems={totalContents} />;
 }

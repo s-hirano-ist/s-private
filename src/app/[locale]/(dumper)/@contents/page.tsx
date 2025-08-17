@@ -2,10 +2,14 @@ import { Suspense } from "react";
 import { addContents } from "@/application-services/contents/add-contents";
 import { deleteContents } from "@/application-services/contents/delete-contents";
 import {
-	getContentsCount,
 	getExportedContents,
+	getExportedContentsCount,
 	getUnexportedContents,
 } from "@/application-services/contents/get-contents";
+import {
+	loadMoreExportedContents,
+	loadMoreUnexportedContents,
+} from "@/application-services/contents/get-contents-from-client";
 import {
 	hasDumperPostPermission,
 	hasViewerAdminPermission,
@@ -17,12 +21,10 @@ import { ContentsCounter } from "@/components/contents/server/contents-counter";
 import { ContentsForm } from "@/components/contents/server/contents-form";
 import { ContentsStack } from "@/components/contents/server/contents-stack";
 
-type Params = Promise<{ page?: string; tab?: string; layout?: string }>;
+type Params = Promise<{ tab?: string; layout?: string }>;
 
 export default async function Page({ searchParams }: { searchParams: Params }) {
-	const { page, tab, layout } = await searchParams;
-
-	const currentPage = Number(page) || 1;
+	const { tab, layout } = await searchParams;
 
 	// Only render if this tab is active or no tab is specified (defaults to "news")
 	if (tab && tab !== "contents") return null;
@@ -32,19 +34,13 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 			case "viewer":
 				return (
 					<>
-						<Suspense
-							fallback={
-								<div className="h-8 animate-pulse bg-gray-100 rounded" />
+						<ErrorPermissionBoundary
+							errorCaller="NewsCounter"
+							permissionCheck={hasViewerAdminPermission}
+							render={() =>
+								ContentsCounter({ getContentsCount: getExportedContentsCount })
 							}
-						>
-							<ErrorPermissionBoundary
-								errorCaller="ContentsCounter"
-								permissionCheck={hasViewerAdminPermission}
-								render={() =>
-									ContentsCounter({ currentPage, getContentsCount })
-								}
-							/>
-						</Suspense>
+						/>
 
 						<Suspense fallback={<Loading />}>
 							<ErrorPermissionBoundary
@@ -53,7 +49,7 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 								render={() =>
 									ContentsStack({
 										getContents: getExportedContents,
-										currentPage,
+										loadMoreAction: loadMoreExportedContents,
 									})
 								}
 							/>
@@ -64,17 +60,11 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 			default:
 				return (
 					<>
-						<Suspense
-							fallback={
-								<div className="h-32 animate-pulse bg-gray-100 rounded" />
-							}
-						>
-							<ErrorPermissionBoundary
-								errorCaller="ContentsForm"
-								permissionCheck={hasDumperPostPermission}
-								render={() => ContentsForm({ addContents })}
-							/>
-						</Suspense>
+						<ErrorPermissionBoundary
+							errorCaller="ContentsForm"
+							permissionCheck={hasDumperPostPermission}
+							render={() => ContentsForm({ addContents })}
+						/>
 
 						<Suspense fallback={<Loading />}>
 							<ErrorPermissionBoundary
@@ -82,9 +72,9 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 								permissionCheck={hasViewerAdminPermission}
 								render={() =>
 									ContentsStack({
-										deleteContents,
 										getContents: getUnexportedContents,
-										currentPage,
+										loadMoreAction: loadMoreUnexportedContents,
+										deleteContents,
 									})
 								}
 							/>
@@ -95,10 +85,7 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 	})();
 
 	return (
-		<LazyTabContent
-			fallback={<div className="h-32 animate-pulse bg-gray-100" />}
-			tabName="contents"
-		>
+		<LazyTabContent fallback={<Loading />} tabName="contents">
 			{content}
 		</LazyTabContent>
 	);

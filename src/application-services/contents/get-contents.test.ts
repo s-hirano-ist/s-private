@@ -2,9 +2,9 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import { contentsQueryRepository } from "@/infrastructures/contents/repositories/contents-query-repository";
 import {
 	getContentByTitle,
-	getContentsCount,
 	getExportedContents,
 	getUnexportedContents,
+	getUnexportedContentsCount,
 } from "./get-contents";
 
 vi.mock(
@@ -53,7 +53,7 @@ describe("get-contents", () => {
 				"EXPORTED",
 				expect.objectContaining({
 					orderBy: { createdAt: "desc" },
-					cacheStrategy: { ttl: 400, swr: 40, tags: ["testuserid-contents"] },
+					cacheStrategy: { ttl: 400, swr: 40, tags: ["testuserid_contents"] },
 				}),
 			);
 

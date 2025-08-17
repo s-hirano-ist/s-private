@@ -1,5 +1,5 @@
 import type { getImagesCount } from "@/application-services/images/get-images";
-import { BadgeWithPagination } from "@/components/common/display/badge-with-pagination";
+import { CounterBadge } from "@/components/common/display/counter-badge";
 
 type Props = {
 	currentPage: number;
@@ -9,12 +9,5 @@ type Props = {
 export async function ImagesCounter({ currentPage, getImagesCount }: Props) {
 	const totalImages = await getImagesCount("EXPORTED");
 
-	return (
-		<BadgeWithPagination
-			currentPage={currentPage}
-			itemsPerPage={totalImages.pageSize}
-			label="totalImages"
-			totalItems={totalImages.count}
-		/>
-	);
+	return <CounterBadge label="totalImages" totalItems={totalImages.count} />;
 }
