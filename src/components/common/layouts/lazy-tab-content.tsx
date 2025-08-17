@@ -1,6 +1,6 @@
 "use client";
 import { memo, type ReactNode, Suspense } from "react";
-import { useTabVisibility } from "@/common/hooks/use-tab-visibility";
+import { useTabVisibility } from "@/components/common/hooks/use-tab-visibility";
 
 type Props = {
 	tabName: string;
