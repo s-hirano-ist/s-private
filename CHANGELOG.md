@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [9.1.0](https://github.com/s-hirano-ist/s-private/compare/v9.0.1...v9.1.0) (2025-08-17)
+
+
+### Features
+
+* add infinity scroll ([c292552](https://github.com/s-hirano-ist/s-private/commit/c2925523866f6a87c212abe8267c203fe1864832))
+* add infinity scroll ([06b0aa5](https://github.com/s-hirano-ist/s-private/commit/06b0aa5366472ff555b1d0362c254e0e42be907d))
+* add more cache ([8199b68](https://github.com/s-hirano-ist/s-private/commit/8199b68ce086fb86a30ae361e169ea79f792af8c))
+* add more cache ([b97b147](https://github.com/s-hirano-ist/s-private/commit/b97b1470e2382a8b21e96cf1b4807be589f59822))
+* add more performance ([700041e](https://github.com/s-hirano-ist/s-private/commit/700041e031cf8c413aa8fcb9d18034a3fbad6ed7))
+* add use cache ([55bc835](https://github.com/s-hirano-ist/s-private/commit/55bc8351ccf656a6fdd608d3401632fc73f75d6b))
+* add user cache ([65b2351](https://github.com/s-hirano-ist/s-private/commit/65b2351f6b8980d5ac91ef2e1441b482f21f7a32))
+
+
+### Bug Fixes
+
+* design layouts ([45b77c5](https://github.com/s-hirano-ist/s-private/commit/45b77c5f2dcd4ebe8d246abba4e4f3397edd4d43))
+* duplicate error on keys ([f5f2962](https://github.com/s-hirano-ist/s-private/commit/f5f296221f1f880c31c77f0f04f15e23bf7453ed))
+* error on prisma cache ([d93c2dc](https://github.com/s-hirano-ist/s-private/commit/d93c2dc2243906dcf6e667c90776312bacfebaf8))
+* error on prisma cache ([d1efe9f](https://github.com/s-hirano-ist/s-private/commit/d1efe9fb32c092f730ff62dcdb0d1a7847f07d87))
+* fmt ([ffd20cd](https://github.com/s-hirano-ist/s-private/commit/ffd20cdfb2f2a54620e27340b6a8e37c6ba0fe61))
+
 ## [9.0.1](https://github.com/s-hirano-ist/s-private/compare/v9.0.0...v9.0.1) (2025-08-17)
 
 
