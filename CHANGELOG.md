@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [9.0.1](https://github.com/s-hirano-ist/s-private/compare/v9.0.0...v9.0.1) (2025-08-17)
+
+
+### Bug Fixes
+
+* cache tag on prisma ([382d66d](https://github.com/s-hirano-ist/s-private/commit/382d66dc673fc429b0568769928e552c9e39f4ca))
+* design of modal ([11feb2b](https://github.com/s-hirano-ist/s-private/commit/11feb2bc8642a0dc7679adcdbe8109e5f8fceac5))
+* footer design ([e8d2997](https://github.com/s-hirano-ist/s-private/commit/e8d29971a4e9e8a0ff7053e0719100cc3f3aa8e7))
+* footer design ([7672363](https://github.com/s-hirano-ist/s-private/commit/76723635a66b9b0c2e2e5fa3367e0f8256a59791))
+* footer design of highlight ([86cd8d8](https://github.com/s-hirano-ist/s-private/commit/86cd8d848cf7e8e20dfe6784807008d73993d860))
+* footer design of highlight ([64fd795](https://github.com/s-hirano-ist/s-private/commit/64fd795d6ed45d2a2b6cbc05bf29c93016f2cf04))
+* link-card design ([c7fd6d3](https://github.com/s-hirano-ist/s-private/commit/c7fd6d3bf9a79db74c9b352068604e8352f33d73))
+* link-card design ([a0de8fa](https://github.com/s-hirano-ist/s-private/commit/a0de8fab97cf54fa7c546616e4a7c48ce1e2d94a))
+* performance of footer ([de24cdc](https://github.com/s-hirano-ist/s-private/commit/de24cdc16acf283abe455c0696bb3312f1b07d6b))
+* performance of footer ([3ce6c62](https://github.com/s-hirano-ist/s-private/commit/3ce6c62ab75119525ecb8130dec165e2bb1a282d))
+* zod compat ([8f4e9a1](https://github.com/s-hirano-ist/s-private/commit/8f4e9a1fba401734c38ca6aef86b7614a3334785))
+
 ## [9.0.0](https://github.com/s-hirano-ist/s-private/compare/v8.29.0...v9.0.0) (2025-08-16)
 
 
