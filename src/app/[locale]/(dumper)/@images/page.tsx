@@ -32,17 +32,11 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 			case "viewer":
 				return (
 					<>
-						<Suspense
-							fallback={
-								<div className="h-8 animate-pulse bg-gray-100 rounded" />
-							}
-						>
-							<ErrorPermissionBoundary
-								errorCaller="ImagesCounter"
-								permissionCheck={hasViewerAdminPermission}
-								render={() => ImagesCounter({ currentPage, getImagesCount })}
-							/>
-						</Suspense>
+						<ErrorPermissionBoundary
+							errorCaller="ImagesCounter"
+							permissionCheck={hasViewerAdminPermission}
+							render={() => ImagesCounter({ currentPage, getImagesCount })}
+						/>
 
 						<Suspense fallback={<Loading />} key={currentPage}>
 							<ErrorPermissionBoundary
@@ -59,17 +53,11 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 			default:
 				return (
 					<>
-						<Suspense
-							fallback={
-								<div className="h-32 animate-pulse bg-gray-100 rounded" />
-							}
-						>
-							<ErrorPermissionBoundary
-								errorCaller="ImagesForm"
-								permissionCheck={hasDumperPostPermission}
-								render={() => ImagesForm({ addImage: addImages })}
-							/>
-						</Suspense>
+						<ErrorPermissionBoundary
+							errorCaller="ImagesForm"
+							permissionCheck={hasDumperPostPermission}
+							render={() => ImagesForm({ addImage: addImages })}
+						/>
 
 						<Suspense fallback={<Loading />}>
 							<ErrorPermissionBoundary
@@ -90,10 +78,7 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 	})();
 
 	return (
-		<LazyTabContent
-			fallback={<div className="h-32 animate-pulse bg-gray-100" />}
-			tabName="images"
-		>
+		<LazyTabContent fallback={<Loading />} tabName="images">
 			{content}
 		</LazyTabContent>
 	);
