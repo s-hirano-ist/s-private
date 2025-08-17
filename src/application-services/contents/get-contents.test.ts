@@ -53,7 +53,7 @@ describe("get-contents", () => {
 				"EXPORTED",
 				expect.objectContaining({
 					orderBy: { createdAt: "desc" },
-					cacheStrategy: { ttl: 400, swr: 40, tags: ["test-user-id-contents"] },
+					cacheStrategy: { ttl: 400, swr: 40, tags: ["testuserid-contents"] },
 				}),
 			);
 

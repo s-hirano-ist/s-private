@@ -1,6 +1,7 @@
 import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
+import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import { ImageData } from "@/components/common/display/image/image-stack";
 import type { Status } from "@/domains/common/entities/common-entity";
 import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
@@ -16,7 +17,11 @@ export const getExportedImages = cache(
 				skip: (page - 1) * PAGE_SIZE,
 				take: PAGE_SIZE,
 				orderBy: { createdAt: "desc" },
-				cacheStrategy: { ttl: 400, swr: 40, tags: [`${userId}-images`] },
+				cacheStrategy: {
+					ttl: 400,
+					swr: 40,
+					tags: [`${sanitizeCacheTag(userId)}-images`],
+				},
 			});
 			return data.map((d) => {
 				return {

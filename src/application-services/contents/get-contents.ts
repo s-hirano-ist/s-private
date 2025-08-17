@@ -1,6 +1,7 @@
 import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
+import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import { LinkCardData } from "@/components/common/layouts/cards/link-card";
 import type { Status } from "@/domains/common/entities/common-entity";
 import { contentsQueryRepository } from "@/infrastructures/contents/repositories/contents-query-repository";
@@ -13,7 +14,11 @@ export const getExportedContents = cache(async (): Promise<LinkCardData[]> => {
 			"EXPORTED",
 			{
 				orderBy: { createdAt: "desc" },
-				cacheStrategy: { ttl: 400, swr: 40, tags: [`${userId}-contents`] },
+				cacheStrategy: {
+					ttl: 400,
+					swr: 40,
+					tags: [`${sanitizeCacheTag(userId)}-contents`],
+				},
 			},
 		);
 
