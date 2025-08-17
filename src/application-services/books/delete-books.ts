@@ -1,6 +1,6 @@
 "use server";
 import "server-only";
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { forbidden } from "next/navigation";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
@@ -16,7 +16,8 @@ export async function deleteBooks(id: string): Promise<ServerAction> {
 
 		await booksCommandRepository.deleteById(id, userId, "UNEXPORTED");
 
-		revalidatePath("/(dumper)");
+		revalidateTag("books-unexported");
+		revalidateTag("books-count-UNEXPORTED");
 
 		return { success: true, message: "deleted" };
 	} catch (error) {

@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
@@ -8,32 +9,36 @@ import { imagesQueryRepository } from "@/infrastructures/images/repositories/ima
 const API_ORIGINAL_PATH = "/api/images/original";
 const API_THUMBNAIL_PATH = "/api/images/thumbnail";
 
-export const getExportedImages = cache(
-	async (page: number): Promise<ImageData[]> => {
-		try {
-			const userId = await getSelfId();
-			const data = await imagesQueryRepository.findMany(userId, "EXPORTED", {
-				skip: (page - 1) * PAGE_SIZE,
-				take: PAGE_SIZE,
-				orderBy: { createdAt: "desc" },
-				cacheStrategy: { ttl: 400, swr: 40, tags: ["images"] },
-			});
-			return data.map((d) => {
-				return {
-					id: d.id,
-					originalPath: API_ORIGINAL_PATH + "/" + d.path,
-					thumbnailPath: API_THUMBNAIL_PATH + "/" + d.path,
-					height: d.height,
-					width: d.width,
-				};
-			});
-		} catch (error) {
-			throw error;
-		}
-	},
+const _getExportedImages = async (page: number): Promise<ImageData[]> => {
+	try {
+		const userId = await getSelfId();
+		const data = await imagesQueryRepository.findMany(userId, "EXPORTED", {
+			skip: (page - 1) * PAGE_SIZE,
+			take: PAGE_SIZE,
+			orderBy: { createdAt: "desc" },
+			cacheStrategy: { ttl: 400, swr: 40, tags: ["images"] },
+		});
+		return data.map((d) => {
+			return {
+				id: d.id,
+				originalPath: API_ORIGINAL_PATH + "/" + d.path,
+				thumbnailPath: API_THUMBNAIL_PATH + "/" + d.path,
+				height: d.height,
+				width: d.width,
+			};
+		});
+	} catch (error) {
+		throw error;
+	}
+};
+
+export const getExportedImages = unstable_cache(
+	_getExportedImages,
+	["images-exported"],
+	{ tags: ["images-exported"], revalidate: 400 },
 );
 
-export const getUnexportedImages = cache(async (): Promise<ImageData[]> => {
+const _getUnexportedImages = async (): Promise<ImageData[]> => {
 	try {
 		const userId = await getSelfId();
 		const data = await imagesQueryRepository.findMany(userId, "UNEXPORTED", {
@@ -51,17 +56,33 @@ export const getUnexportedImages = cache(async (): Promise<ImageData[]> => {
 	} catch (error) {
 		throw error;
 	}
-});
+};
 
-export const getImagesCount = cache(
-	async (status: Status): Promise<{ count: number; pageSize: number }> => {
+export const getUnexportedImages = unstable_cache(
+	_getUnexportedImages,
+	["images-unexported"],
+	{ tags: ["images-unexported"], revalidate: 300 },
+);
+
+const _getImagesCount = async (
+	status: Status,
+): Promise<{ count: number; pageSize: number }> => {
+	try {
 		const userId = await getSelfId();
 		return {
 			count: await imagesQueryRepository.count(userId, status),
 			pageSize: PAGE_SIZE,
 		};
-	},
-);
+	} catch (error) {
+		throw error;
+	}
+};
+
+export const getImagesCount = (status: Status) =>
+	unstable_cache(() => _getImagesCount(status), [`images-count-${status}`], {
+		tags: [`images-count-${status}`],
+		revalidate: 60,
+	})();
 
 export const getImagesFromStorage = async (
 	path: string,
