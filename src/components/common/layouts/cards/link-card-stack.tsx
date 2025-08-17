@@ -36,7 +36,11 @@ export function LinkCardStack({
 		deleteAction?: (id: string) => Promise<ServerAction>,
 		key?: string,
 	) => (
-		<div key={key} ref={isLast && !isSearching ? lastElementRef : null}>
+		<div
+			className="h-full"
+			key={key}
+			ref={isLast && !isSearching ? lastElementRef : null}
+		>
 			<LinkCard
 				data={item}
 				deleteAction={deleteAction}
@@ -49,7 +53,7 @@ export function LinkCardStack({
 		<BaseCardStackWrapper
 			deleteAction={deleteAction}
 			filterFunction={filterLinkCards}
-			gridClassName="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4"
+			gridClassName="grid grid-cols-1 items-stretch gap-2 sm:grid-cols-2 sm:gap-4"
 			initial={initial}
 			loadMoreAction={loadMoreAction}
 			renderCard={renderCard}

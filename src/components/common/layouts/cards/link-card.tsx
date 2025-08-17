@@ -42,7 +42,7 @@ export function LinkCard({
 		: { href: validatedHref };
 
 	return (
-		<div className="relative">
+		<div className="relative h-full">
 			<CardComponent {...linkProps} className="block h-full">
 				<Card className="hover:bg-secondary h-full flex flex-col">
 					<CardHeader>
