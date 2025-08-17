@@ -1,23 +1,52 @@
 "use client";
-import { type ReactNode } from "react";
+import { memo, type ReactNode, Suspense } from "react";
 import { useTabVisibility } from "@/common/hooks/use-tab-visibility";
 
 type Props = {
 	tabName: string;
 	children: ReactNode;
 	fallback?: ReactNode;
+	enablePreloading?: boolean;
 };
 
 /**
  * タブの遅延読み込み用コンポーネント
  * タブが初回表示されるまでchildrenをレンダリングしない
+ * プリローディング機能付き
  */
-export function LazyTabContent({ tabName, children, fallback = null }: Props) {
-	const { shouldLoad } = useTabVisibility(tabName);
+function LazyTabContentComponent({
+	tabName,
+	children,
+	fallback = null,
+	enablePreloading = true,
+}: Props) {
+	const { shouldLoad, shouldPreload, isVisible } = useTabVisibility(
+		tabName,
+		enablePreloading,
+	);
 
-	if (!shouldLoad) {
-		return <>{fallback}</>;
+	// Show content immediately if it should be loaded
+	if (shouldLoad) {
+		return (
+			<Suspense fallback={fallback}>
+				<div style={{ display: isVisible ? "block" : "none" }}>{children}</div>
+			</Suspense>
+		);
 	}
 
-	return <>{children}</>;
+	// Preload content in background but keep it hidden
+	if (shouldPreload) {
+		return (
+			<>
+				{fallback}
+				<div style={{ display: "none" }}>
+					<Suspense fallback={null}>{children}</Suspense>
+				</div>
+			</>
+		);
+	}
+
+	return <>{fallback}</>;
 }
+
+export const LazyTabContent = memo(LazyTabContentComponent);
