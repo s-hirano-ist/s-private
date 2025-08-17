@@ -18,7 +18,7 @@ class ContentsQueryRepository implements IContentsQueryRepository {
 	async findMany(
 		userId: string,
 		status: Status,
-		params?: ContentsFindManyParams,
+		params: ContentsFindManyParams,
 	): Promise<ContentsQueryData[]> {
 		return await prisma.contents.findMany({
 			where: { userId, status },

@@ -1,49 +1,45 @@
+import { unstable_cacheTag as cacheTag } from "next/cache";
 import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import { ImageData } from "@/components/common/display/image/image-stack";
 import type { Status } from "@/domains/common/entities/common-entity";
+import { CacheStrategy } from "@/domains/images/types";
 import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
 
 const API_ORIGINAL_PATH = "/api/images/original";
 const API_THUMBNAIL_PATH = "/api/images/thumbnail";
 
-export const getExportedImages = cache(
-	async (page: number): Promise<ImageData[]> => {
-		try {
-			const userId = await getSelfId();
-			const data = await imagesQueryRepository.findMany(userId, "EXPORTED", {
-				skip: (page - 1) * PAGE_SIZE,
-				take: PAGE_SIZE,
-				orderBy: { createdAt: "desc" },
-				cacheStrategy: {
-					ttl: 400,
-					swr: 40,
-					tags: [`${sanitizeCacheTag(userId)}_images`],
-				},
-			});
-			return data.map((d) => {
-				return {
-					id: d.id,
-					originalPath: API_ORIGINAL_PATH + "/" + d.path,
-					thumbnailPath: API_THUMBNAIL_PATH + "/" + d.path,
-					height: d.height,
-					width: d.width,
-				};
-			});
-		} catch (error) {
-			throw error;
-		}
-	},
-);
-
-export const getUnexportedImages = cache(async (): Promise<ImageData[]> => {
+const _getImagesCount = async (
+	userId: string,
+	status: Status,
+): Promise<number> => {
+	"use cache";
+	cacheTag(`images_count_${status}_${userId}`);
 	try {
-		const userId = await getSelfId();
-		const data = await imagesQueryRepository.findMany(userId, "UNEXPORTED", {
+		return await imagesQueryRepository.count(userId, status);
+	} catch (error) {
+		throw error;
+	}
+};
+
+export const _getImages = async (
+	page: number,
+	userId: string,
+	status: Status,
+	cacheStrategy?: CacheStrategy,
+): Promise<ImageData[]> => {
+	"use cache";
+	cacheTag(`images_${status}_${userId}`, `images_${status}_${userId}_${page}`);
+	try {
+		const data = await imagesQueryRepository.findMany(userId, status, {
+			skip: (page - 1) * PAGE_SIZE,
+			take: PAGE_SIZE,
 			orderBy: { createdAt: "desc" },
+			cacheStrategy,
 		});
+
 		return data.map((d) => {
 			return {
 				id: d.id,
@@ -56,15 +52,28 @@ export const getUnexportedImages = cache(async (): Promise<ImageData[]> => {
 	} catch (error) {
 		throw error;
 	}
-});
+};
 
-export const getImagesCount = cache(
-	async (status: Status): Promise<{ count: number; pageSize: number }> => {
+export const getImagesCount = async (status: Status): Promise<number> => {
+	const userId = await getSelfId();
+	return await _getImagesCount(userId, status);
+};
+
+export const getExportedImages = cache(
+	async (page: number): Promise<ImageData[]> => {
 		const userId = await getSelfId();
-		return {
-			count: await imagesQueryRepository.count(userId, status),
-			pageSize: PAGE_SIZE,
-		};
+		return _getImages(page, userId, "EXPORTED", {
+			ttl: 400,
+			swr: 40,
+			tags: [`${sanitizeCacheTag(userId)}_images`],
+		});
+	},
+);
+
+export const getUnexportedImages = cache(
+	async (page: number): Promise<ImageData[]> => {
+		const userId = await getSelfId();
+		return _getImages(page, userId, "UNEXPORTED");
 	},
 );
 
@@ -72,6 +81,8 @@ export const getImagesFromStorage = async (
 	path: string,
 	isThumbnail: boolean,
 ) => {
+	"use cache";
+	cacheTag(`images_storage_${path}_${isThumbnail}`);
 	try {
 		return await imagesQueryRepository.getFromStorage(path, isThumbnail);
 	} catch (error) {

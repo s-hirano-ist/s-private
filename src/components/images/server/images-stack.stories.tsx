@@ -49,37 +49,29 @@ type Story = StoryObj<typeof meta>;
 const mockImageData: ImageData[] = [
 	{
 		id: "1",
-		originalPath:
-			"https://via.placeholder.com/800x600/FF6B6B/FFFFFF?text=Image+1",
-		thumbnailPath:
-			"https://via.placeholder.com/200x150/FF6B6B/FFFFFF?text=Thumb+1",
+		originalPath: "https://picsum.photos/id/1/192/192",
+		thumbnailPath: "https://picsum.photos/id/1/192/192",
 		height: 600,
 		width: 800,
 	},
 	{
 		id: "2",
-		originalPath:
-			"https://via.placeholder.com/1200x900/4ECDC4/FFFFFF?text=Image+2",
-		thumbnailPath:
-			"https://via.placeholder.com/200x150/4ECDC4/FFFFFF?text=Thumb+2",
+		originalPath: "https://picsum.photos/id/2/192/192",
+		thumbnailPath: "https://picsum.photos/id/2/192/192",
 		height: 900,
 		width: 1200,
 	},
 	{
 		id: "3",
-		originalPath:
-			"https://via.placeholder.com/600x800/45B7D1/FFFFFF?text=Image+3",
-		thumbnailPath:
-			"https://via.placeholder.com/200x150/45B7D1/FFFFFF?text=Thumb+3",
+		originalPath: "https://picsum.photos/id/3/192/192",
+		thumbnailPath: "https://picsum.photos/id/3/192/192",
 		height: 800,
 		width: 600,
 	},
 	{
 		id: "4",
-		originalPath:
-			"https://via.placeholder.com/1000x750/F7DC6F/000000?text=Image+4",
-		thumbnailPath:
-			"https://via.placeholder.com/200x150/F7DC6F/000000?text=Thumb+4",
+		originalPath: "https://picsum.photos/id/4/192/192",
+		thumbnailPath: "https://picsum.photos/id/4/192/192",
 		height: 750,
 		width: 1000,
 	},
@@ -131,10 +123,8 @@ export const WithoutDimensions: Story = {
 		getImages: async () => [
 			{
 				id: "1",
-				originalPath:
-					"https://via.placeholder.com/800x600/FF6B6B/FFFFFF?text=No+Dimensions",
-				thumbnailPath:
-					"https://via.placeholder.com/200x150/FF6B6B/FFFFFF?text=No+Dims",
+				originalPath: "https://picsum.photos/id/1/192/192",
+				thumbnailPath: "https://picsum.photos/id/1/192/192",
 			},
 		],
 		deleteImages: async () => ({
@@ -151,19 +141,15 @@ export const MixedFormats: Story = {
 			...mockImageData,
 			{
 				id: "5",
-				originalPath:
-					"https://via.placeholder.com/400x300/E74C3C/FFFFFF?text=Small+Image",
-				thumbnailPath:
-					"https://via.placeholder.com/200x150/E74C3C/FFFFFF?text=Small",
+				originalPath: "https://picsum.photos/id/5/192/192",
+				thumbnailPath: "https://picsum.photos/id/5/192/192",
 				height: 300,
 				width: 400,
 			},
 			{
 				id: "6",
-				originalPath:
-					"https://via.placeholder.com/1920x1080/9B59B6/FFFFFF?text=Large+Image",
-				thumbnailPath:
-					"https://via.placeholder.com/200x150/9B59B6/FFFFFF?text=Large",
+				originalPath: "https://picsum.photos/id/6/192/192",
+				thumbnailPath: "https://picsum.photos/id/6/192/192",
 				height: 1080,
 				width: 1920,
 			},
@@ -183,10 +169,8 @@ export const DifferentPage: Story = {
 				return [
 					{
 						id: "7",
-						originalPath:
-							"https://via.placeholder.com/600x400/8E44AD/FFFFFF?text=Page+2+Image",
-						thumbnailPath:
-							"https://via.placeholder.com/200x150/8E44AD/FFFFFF?text=P2",
+						originalPath: "https://picsum.photos/id/7/192/192",
+						thumbnailPath: "https://picsum.photos/id/7/192/192",
 						height: 400,
 						width: 600,
 					},

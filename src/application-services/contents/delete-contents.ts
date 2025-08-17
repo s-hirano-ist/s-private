@@ -17,6 +17,7 @@ export async function deleteContents(id: string): Promise<ServerAction> {
 		await contentsCommandRepository.deleteById(id, userId, "UNEXPORTED");
 
 		revalidateTag(`contents_UNEXPORTED_${userId}`);
+		revalidateTag(`contents_count_UNEXPORTED_${userId}`);
 
 		return { success: true, message: "deleted" };
 	} catch (error) {

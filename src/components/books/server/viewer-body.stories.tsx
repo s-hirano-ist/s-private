@@ -53,8 +53,7 @@ const mockBookData: BookData = {
 		"A comprehensive guide to TypeScript programming language with practical examples and best practices.",
 	googleAuthors: ["Microsoft TypeScript Team", "Anders Hejlsberg"],
 	googleHref: "https://www.typescriptlang.org/docs/",
-	googleImgSrc:
-		"https://via.placeholder.com/192x192/0066cc/ffffff?text=TypeScript",
+	googleImgSrc: "https://picsum.photos/id/1/192/192",
 };
 
 export const Default: Story = {

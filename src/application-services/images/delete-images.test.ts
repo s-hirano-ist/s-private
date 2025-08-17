@@ -1,4 +1,4 @@
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { describe, expect, test, vi } from "vitest";
 import { deleteImages } from "@/application-services/images/delete-images";
 import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
@@ -35,7 +35,7 @@ describe("deleteImages", () => {
 			"1",
 			"UNEXPORTED",
 		);
-		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
+		expect(revalidateTag).toHaveBeenCalledWith("images_UNEXPORTED_1");
 	});
 
 	test("should return error when images not found", async () => {

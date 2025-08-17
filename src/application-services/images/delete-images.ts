@@ -1,6 +1,6 @@
 "use server";
 import "server-only";
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { forbidden } from "next/navigation";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
@@ -16,7 +16,8 @@ export async function deleteImages(id: string): Promise<ServerAction> {
 
 		await imagesCommandRepository.deleteById(id, userId, "UNEXPORTED");
 
-		revalidatePath("/(dumper)");
+		revalidateTag(`images_UNEXPORTED_${userId}`);
+		revalidateTag(`images_count_UNEXPORTED_${userId}`);
 
 		return { success: true, message: "deleted" };
 	} catch (error) {

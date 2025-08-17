@@ -17,7 +17,7 @@ export const _getBooks = async (
 	"use cache";
 	cacheTag(
 		`books_${status}_${userId}`,
-		`boos_${status}_${userId}_${currentCount}`,
+		`books_${status}_${userId}_${currentCount}`,
 	);
 
 	try {
@@ -48,6 +48,8 @@ const _getBooksCount = async (
 	userId: string,
 	status: Status,
 ): Promise<number> => {
+	"use cache";
+	cacheTag(`books_count_${status}_${userId}`);
 	try {
 		return await booksQueryRepository.count(userId, status);
 	} catch (error) {

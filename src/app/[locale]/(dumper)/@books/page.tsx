@@ -21,12 +21,10 @@ import Loading from "@/components/common/display/loading";
 import { ErrorPermissionBoundary } from "@/components/common/layouts/error-permission-boundary";
 import { LazyTabContent } from "@/components/common/layouts/lazy-tab-content";
 
-type Params = Promise<{ page?: string; tab?: string; layout?: string }>;
+type Params = Promise<{ tab?: string; layout?: string }>;
 
 export default async function Page({ searchParams }: { searchParams: Params }) {
-	const { page, tab, layout } = await searchParams;
-
-	const currentPage = Number(page) || 1;
+	const { tab, layout } = await searchParams;
 
 	// Only render if this tab is active
 	if (tab && tab !== "books") return null;

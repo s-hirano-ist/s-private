@@ -1,4 +1,4 @@
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
@@ -75,7 +75,7 @@ describe("addImage", () => {
 
 		expect(imagesCommandRepository.uploadToStorage).toHaveBeenCalledTimes(2);
 		expect(imagesCommandRepository.create).toHaveBeenCalled();
-		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
+		expect(revalidateTag).toHaveBeenCalledWith("images_UNEXPORTED_user-id");
 		expect(result).toEqual({
 			success: true,
 			message: "inserted",
