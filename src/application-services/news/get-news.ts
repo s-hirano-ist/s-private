@@ -57,6 +57,8 @@ const _getNewsCount = async (
 	userId: string,
 	status: Status,
 ): Promise<number> => {
+	"use cache";
+	cacheTag(`news_count_${status}_${userId}`);
 	try {
 		return await newsQueryRepository.count(userId, status);
 	} catch (error) {
@@ -65,6 +67,8 @@ const _getNewsCount = async (
 };
 
 const _getCategories = async (userId: string): Promise<NewsFormClientData> => {
+	"use cache";
+	cacheTag(`categories`, `categories_${userId}`);
 	try {
 		const response = await categoryQueryRepository.findMany(userId, {
 			orderBy: { name: "asc" },

@@ -48,6 +48,8 @@ const _getContentsCount = async (
 	userId: string,
 	status: Status,
 ): Promise<number> => {
+	"use cache";
+	cacheTag(`contents_count_${status}_${userId}`);
 	try {
 		return await contentsQueryRepository.count(userId, status);
 	} catch (error) {

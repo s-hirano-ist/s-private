@@ -23,6 +23,7 @@ export async function addBooks(formData: FormData): Promise<ServerAction> {
 		await booksCommandRepository.create(validatedBooks);
 
 		revalidateTag(`books_UNEXPORTED_${userId}`);
+		revalidateTag(`books_count_UNEXPORTED_${userId}`);
 
 		return { success: true, message: "inserted" };
 	} catch (error) {

@@ -17,6 +17,7 @@ export async function deleteBooks(id: string): Promise<ServerAction> {
 		await booksCommandRepository.deleteById(id, userId, "UNEXPORTED");
 
 		revalidateTag(`books_UNEXPORTED_${userId}`);
+		revalidateTag(`books_count_UNEXPORTED_${userId}`);
 
 		return { success: true, message: "deleted" };
 	} catch (error) {

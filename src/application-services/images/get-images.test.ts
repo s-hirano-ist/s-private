@@ -130,15 +130,18 @@ describe("get-images", () => {
 
 			vi.mocked(imagesQueryRepository.findMany).mockResolvedValue(mockImages);
 
-			const result = await getUnexportedImages();
+			const result = await getUnexportedImages(1);
 
 			expect(imagesQueryRepository.findMany).toHaveBeenCalledWith(
 				"test-user-id",
 				"UNEXPORTED",
 				{
+					skip: 0,
+					take: 24,
 					orderBy: {
 						createdAt: "desc",
 					},
+					cacheStrategy: undefined,
 				},
 			);
 
@@ -187,7 +190,7 @@ describe("get-images", () => {
 				"test-user-id",
 				"EXPORTED",
 			);
-			expect(result).toEqual({ count: 25, pageSize: 24 });
+			expect(result).toEqual(25);
 		});
 
 		test("should return 0 for empty collection", async () => {
@@ -195,7 +198,7 @@ describe("get-images", () => {
 
 			const result = await getImagesCount("UNEXPORTED");
 
-			expect(result).toEqual({ count: 0, pageSize: 24 });
+			expect(result).toEqual(0);
 		});
 
 		test("should handle database errors", async () => {

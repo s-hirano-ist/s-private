@@ -35,7 +35,7 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 						<ErrorPermissionBoundary
 							errorCaller="ImagesCounter"
 							permissionCheck={hasViewerAdminPermission}
-							render={() => ImagesCounter({ currentPage, getImagesCount })}
+							render={() => ImagesCounter({ getImagesCount })}
 						/>
 
 						<Suspense fallback={<Loading />} key={currentPage}>
