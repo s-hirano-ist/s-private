@@ -1,5 +1,5 @@
 "use client";
-import { BotIcon, FileUpIcon, SearchIcon } from "lucide-react";
+import { DownloadIcon, SearchIcon, UploadIcon } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { signOut } from "next-auth/react";
 import {
@@ -115,7 +115,7 @@ function FooterComponent() {
 					size="navSide"
 					variant="navSide"
 				>
-					{Icon("DUMPER", <FileUpIcon className="size-6" />)}
+					{Icon("DUMPER", <UploadIcon className="size-6" />)}
 				</Button>
 				<DrawerTrigger asChild>
 					<div className="flex items-center justify-center">
@@ -141,7 +141,7 @@ function FooterComponent() {
 					size="navSide"
 					variant="navSide"
 				>
-					{Icon("VIEWER", <BotIcon className="size-6" />)}
+					{Icon("VIEWER", <DownloadIcon className="size-6" />)}
 				</Button>
 			</div>
 		),
