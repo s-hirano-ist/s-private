@@ -2,9 +2,10 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
 import {
 	getBookByISBN,
-	getBooksCount,
 	getExportedBooks,
+	getExportedBooksCount,
 	getUnexportedBooks,
+	getUnexportedBooksCount,
 } from "./get-books";
 
 vi.mock("@/infrastructures/books/repositories/books-query-repository", () => ({
@@ -24,7 +25,7 @@ describe("get-books", () => {
 		vi.clearAllMocks();
 	});
 
-	describe("getAllBooks", () => {
+	describe("getExportedBooks", () => {
 		test("should fetch and transform books correctly", async () => {
 			vi.mocked(booksQueryRepository.findMany).mockResolvedValue([
 				{
@@ -40,40 +41,56 @@ describe("get-books", () => {
 					id: "2",
 				},
 			]);
+			vi.mocked(booksQueryRepository.count).mockResolvedValue(5);
 
-			const result = await getExportedBooks();
+			const result = await getExportedBooks(0);
 
 			expect(booksQueryRepository.findMany).toHaveBeenCalledWith(
 				"test-user-id",
 				"EXPORTED",
 				expect.objectContaining({
+					skip: 0,
+					take: 24,
 					orderBy: { createdAt: "desc" },
-					cacheStrategy: { ttl: 400, swr: 40, tags: ["testuserid_books"] },
+					cacheStrategy: expect.objectContaining({
+						ttl: 400,
+						swr: 40,
+						tags: expect.arrayContaining([
+							expect.stringContaining("testuserid_books"),
+						]),
+					}),
 				}),
 			);
 
-			expect(result).toEqual([
-				{
-					id: "1",
-					title: "Test Book 1",
-					href: "978-0123456789",
-					image: "https://example.com/image-1.jpg",
-				},
-				{
-					id: "2",
-					title: "Test Book 2",
-					href: "978-0987654321",
-					image: "https://example.com/image-2.jpg",
-				},
-			]);
+			expect(result).toEqual({
+				data: [
+					{
+						id: "1",
+						title: "Test Book 1",
+						href: "978-0123456789",
+						image: "https://example.com/image-1.jpg",
+					},
+					{
+						id: "2",
+						title: "Test Book 2",
+						href: "978-0987654321",
+						image: "https://example.com/image-2.jpg",
+					},
+				],
+				totalCount: 5,
+			});
 		});
 
 		test("should handle empty results", async () => {
 			vi.mocked(booksQueryRepository.findMany).mockResolvedValue([]);
+			vi.mocked(booksQueryRepository.count).mockResolvedValue(0);
 
-			const result = await getExportedBooks();
+			const result = await getExportedBooks(0);
 
-			expect(result).toEqual([]);
+			expect(result).toEqual({
+				data: [],
+				totalCount: 0,
+			});
 		});
 
 		test("should handle database errors", async () => {
@@ -81,29 +98,29 @@ describe("get-books", () => {
 				new Error("Database error"),
 			);
 
-			await expect(getExportedBooks()).rejects.toThrow("Database error");
+			await expect(getExportedBooks(0)).rejects.toThrow("Database error");
 		});
 	});
 
-	describe("getBooksCount", () => {
-		test("should return count of books", async () => {
+	describe("getExportedBooksCount", () => {
+		test("should return count of exported books", async () => {
 			vi.mocked(booksQueryRepository.count).mockResolvedValue(42);
 
-			const result = await getBooksCount("EXPORTED");
+			const result = await getExportedBooksCount();
 
 			expect(booksQueryRepository.count).toHaveBeenCalledWith(
 				"test-user-id",
 				"EXPORTED",
 			);
-			expect(result).toEqual({ count: 42, pageSize: 24 });
+			expect(result).toEqual(42);
 		});
 
 		test("should return 0 for empty collection", async () => {
 			vi.mocked(booksQueryRepository.count).mockResolvedValue(0);
 
-			const result = await getBooksCount("EXPORTED");
+			const result = await getExportedBooksCount();
 
-			expect(result).toEqual({ count: 0, pageSize: 24 });
+			expect(result).toEqual(0);
 		});
 
 		test("should handle database errors", async () => {
@@ -111,7 +128,7 @@ describe("get-books", () => {
 				new Error("Database error"),
 			);
 
-			await expect(getBooksCount("EXPORTED")).rejects.toThrow("Database error");
+			await expect(getExportedBooksCount()).rejects.toThrow("Database error");
 		});
 	});
 
@@ -131,39 +148,49 @@ describe("get-books", () => {
 					id: "4",
 				},
 			]);
+			vi.mocked(booksQueryRepository.count).mockResolvedValue(2);
 
-			const result = await getUnexportedBooks();
+			const result = await getUnexportedBooks(0);
 
 			expect(booksQueryRepository.findMany).toHaveBeenCalledWith(
 				"test-user-id",
 				"UNEXPORTED",
 				expect.objectContaining({
+					skip: 0,
+					take: 24,
 					orderBy: { createdAt: "desc" },
 				}),
 			);
 
-			expect(result).toEqual([
-				{
-					id: "3",
-					title: "Unexported Book 1",
-					href: "978-1111111111",
-					image: "https://example.com/unexported-1.jpg",
-				},
-				{
-					id: "4",
-					title: "Unexported Book 2",
-					href: "978-2222222222",
-					image: "/not-found.png",
-				},
-			]);
+			expect(result).toEqual({
+				data: [
+					{
+						id: "3",
+						title: "Unexported Book 1",
+						href: "978-1111111111",
+						image: "https://example.com/unexported-1.jpg",
+					},
+					{
+						id: "4",
+						title: "Unexported Book 2",
+						href: "978-2222222222",
+						image: "/not-found.png",
+					},
+				],
+				totalCount: 2,
+			});
 		});
 
 		test("should handle empty unexported results", async () => {
 			vi.mocked(booksQueryRepository.findMany).mockResolvedValue([]);
+			vi.mocked(booksQueryRepository.count).mockResolvedValue(0);
 
-			const result = await getUnexportedBooks();
+			const result = await getUnexportedBooks(0);
 
-			expect(result).toEqual([]);
+			expect(result).toEqual({
+				data: [],
+				totalCount: 0,
+			});
 		});
 
 		test("should handle database errors for unexported books", async () => {
@@ -171,7 +198,7 @@ describe("get-books", () => {
 				new Error("Database error"),
 			);
 
-			await expect(getUnexportedBooks()).rejects.toThrow("Database error");
+			await expect(getUnexportedBooks(0)).rejects.toThrow("Database error");
 		});
 	});
 

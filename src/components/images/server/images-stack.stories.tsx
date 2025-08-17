@@ -22,7 +22,7 @@ function ImagesStackWrapper({
 	deleteImages,
 }: ImagesStackWrapperProps) {
 	return (
-		<Suspense fallback={<div>Loading...</div>}>
+		<Suspense>
 			<ImagesStack
 				currentPage={currentPage}
 				deleteImages={deleteImages}

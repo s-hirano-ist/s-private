@@ -139,7 +139,7 @@ export const WithInfiniteScroll: Story = {
 				data: [
 					{
 						id: "5",
-						key: "loaded-content",
+						key: `loaded-content-5-${Date.now()}`,
 						title: "Loaded Content Item",
 						description: "This was loaded via infinite scroll",
 						primaryBadgeText: "Loaded",

@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { addImage } from "@/application-services/images/add-image";
+import { addImages } from "@/application-services/images/add-images";
 import { deleteImages } from "@/application-services/images/delete-images";
 import {
 	getExportedImages,
@@ -67,7 +67,7 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 							<ErrorPermissionBoundary
 								errorCaller="ImagesForm"
 								permissionCheck={hasDumperPostPermission}
-								render={() => ImagesForm({ addImage })}
+								render={() => ImagesForm({ addImage: addImages })}
 							/>
 						</Suspense>
 

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { fn } from "@storybook/test";
 import { ImageCardStack } from "./image-card-stack";
 
 const meta = {
@@ -58,5 +59,18 @@ const mockData = [
 const basePath = "/example";
 
 export const Default: Story = {
-	args: { data: mockData, basePath },
+	args: {
+		initial: { data: mockData, totalCount: 10 },
+		basePath,
+		deleteAction: fn(() =>
+			Promise.resolve({ success: true, message: "Deleted successfully" }),
+		),
+		loadMoreAction: fn(() =>
+			Promise.resolve({
+				success: true,
+				message: "Loaded more data",
+				data: { data: [], totalCount: 10 },
+			}),
+		),
+	},
 };

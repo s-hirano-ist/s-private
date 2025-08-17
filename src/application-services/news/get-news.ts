@@ -20,7 +20,10 @@ export const _getNews = async (
 	cacheStrategy?: CacheStrategy,
 ): Promise<LinkCardStackInitialData> => {
 	"use cache";
-	cacheTag(`news_${status}`, `${userId}_news_${currentCount}`);
+	cacheTag(
+		`news_${status}_${userId}`,
+		`news_${status}_${userId}_${currentCount}`,
+	);
 	try {
 		const news = await newsQueryRepository.findMany(userId, status, {
 			skip: currentCount,

@@ -1,3 +1,4 @@
+//　FIXME: TODO: 共通化処理
 "use client";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";

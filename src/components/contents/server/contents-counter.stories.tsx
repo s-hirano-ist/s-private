@@ -5,7 +5,7 @@ import { ContentsCounter } from "./contents-counter";
 
 function ContentsCounterWrapper({ getContentsCount }: ContentsConterProps) {
 	return (
-		<Suspense fallback={<div>Loading...</div>}>
+		<Suspense>
 			<ContentsCounter getContentsCount={getContentsCount} />
 		</Suspense>
 	);

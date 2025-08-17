@@ -1,63 +1,93 @@
+import { unstable_cacheTag as cacheTag } from "next/cache";
 import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
-import { ImageCardData } from "@/components/common/layouts/cards/image-card";
+import { ImageCardStackInitialData } from "@/components/common/layouts/cards/image-card-stack";
+import { CacheStrategy } from "@/domains/books/types";
 import type { Status } from "@/domains/common/entities/common-entity";
 import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
 
-export const getExportedBooks = cache(async (): Promise<ImageCardData[]> => {
+export const _getBooks = async (
+	currentCount: number,
+	userId: string,
+	status: Status,
+	cacheStrategy?: CacheStrategy,
+): Promise<ImageCardStackInitialData> => {
+	"use cache";
+	cacheTag(
+		`books_${status}_${userId}`,
+		`boos_${status}_${userId}_${currentCount}`,
+	);
+
 	try {
-		const userId = await getSelfId();
-		const books = await booksQueryRepository.findMany(userId, "EXPORTED", {
+		const books = await booksQueryRepository.findMany(userId, status, {
+			skip: currentCount,
+			take: PAGE_SIZE,
 			orderBy: { createdAt: "desc" },
-			cacheStrategy: {
-				ttl: 400,
-				swr: 40,
-				tags: [`${sanitizeCacheTag(userId)}_books`],
-			},
+			cacheStrategy,
 		});
 
-		return books.map((d) => ({
-			id: d.id,
-			title: d.title,
-			href: d.ISBN,
-			image: d.googleImgSrc ?? "/not-found.png",
-		}));
+		const totalCount = await _getBooksCount(userId, status);
+
+		return {
+			data: books.map((d) => ({
+				id: d.id,
+				title: d.title,
+				href: d.ISBN,
+				image: d.googleImgSrc ?? "/not-found.png",
+			})),
+			totalCount,
+		};
 	} catch (error) {
 		throw error;
 	}
-});
+};
 
-export const getUnexportedBooks = cache(async (): Promise<ImageCardData[]> => {
+const _getBooksCount = async (
+	userId: string,
+	status: Status,
+): Promise<number> => {
 	try {
-		const userId = await getSelfId();
-		const books = await booksQueryRepository.findMany(userId, "UNEXPORTED", {
-			orderBy: { createdAt: "desc" },
-		});
-
-		return books.map((d) => ({
-			id: d.id,
-			title: d.title,
-			href: d.ISBN,
-			image: d.googleImgSrc ?? "/not-found.png",
-		}));
+		return await booksQueryRepository.count(userId, status);
 	} catch (error) {
 		throw error;
 	}
-});
+};
 
-export const getBooksCount = cache(
-	async (status: Status): Promise<{ count: number; pageSize: number }> => {
-		try {
-			const userId = await getSelfId();
-			return {
-				count: await booksQueryRepository.count(userId, status),
-				pageSize: PAGE_SIZE,
-			};
-		} catch (error) {
-			throw error;
-		}
+export type GetBooks = (_: number) => Promise<ImageCardStackInitialData>;
+
+export const getUnexportedBooks: GetBooks = cache(
+	async (currentCount: number) => {
+		const userId = await getSelfId();
+		return _getBooks(currentCount, userId, "UNEXPORTED");
+	},
+);
+
+export const getExportedBooks: GetBooks = cache(
+	async (currentCount: number) => {
+		const userId = await getSelfId();
+		return _getBooks(currentCount, userId, "EXPORTED", {
+			ttl: 400,
+			swr: 40,
+			tags: [`${sanitizeCacheTag(userId)}_books_${currentCount}`],
+		});
+	},
+);
+
+export type GetBooksCount = () => Promise<number>;
+
+export const getUnexportedBooksCount: GetBooksCount = cache(
+	async (): Promise<number> => {
+		const userId = await getSelfId();
+		return await _getBooksCount(userId, "UNEXPORTED");
+	},
+);
+
+export const getExportedBooksCount: GetBooksCount = cache(
+	async (): Promise<number> => {
+		const userId = await getSelfId();
+		return await _getBooksCount(userId, "EXPORTED");
 	},
 );
 

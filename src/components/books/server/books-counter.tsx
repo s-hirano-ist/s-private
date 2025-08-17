@@ -1,13 +1,12 @@
-import type { getBooksCount } from "@/application-services/books/get-books";
+import type { GetBooksCount } from "@/application-services/books/get-books";
 import { CounterBadge } from "@/components/common/display/counter-badge";
 
-type Props = {
-	currentPage: number;
-	getBooksCount: typeof getBooksCount;
+export type Props = {
+	getBooksCount: GetBooksCount;
 };
 
-export async function BooksCounter({ currentPage, getBooksCount }: Props) {
-	const totalBooks = await getBooksCount("EXPORTED");
+export async function BooksCounter({ getBooksCount }: Props) {
+	const booksCount = await getBooksCount();
 
-	return <CounterBadge label="totalBooks" totalItems={totalBooks.count} />;
+	return <CounterBadge label="totalBooks" totalItems={booksCount} />;
 }

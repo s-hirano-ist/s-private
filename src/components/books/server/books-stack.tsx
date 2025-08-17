@@ -1,21 +1,30 @@
-import type { ServerAction } from "@/common/types";
-import { ImageCardData } from "@/components/common/layouts/cards/image-card";
-import { ImageCardStack } from "@/components/common/layouts/cards/image-card-stack";
+import type { ServerAction, ServerActionWithData } from "@/common/types";
+import {
+	ImageCardStack,
+	ImageCardStackInitialData,
+} from "@/components/common/layouts/cards/image-card-stack";
 
-type Props = {
-	getBooks(): Promise<ImageCardData[]>;
+export type Props = {
+	getBooks(page: number): Promise<ImageCardStackInitialData>;
 	deleteBooks?: (id: string) => Promise<ServerAction>;
+	loadMoreAction: (
+		currentCount: number,
+	) => Promise<ServerActionWithData<ImageCardStackInitialData>>;
 };
 
-export async function BooksStack({ getBooks, deleteBooks }: Props) {
-	const data = await getBooks();
+export async function BooksStack({
+	getBooks,
+	deleteBooks,
+	loadMoreAction,
+}: Props) {
+	const data = await getBooks(0);
 
 	return (
 		<ImageCardStack
 			basePath="book"
-			data={data}
 			deleteAction={deleteBooks}
-			showDeleteButton={deleteBooks !== undefined}
+			initial={data}
+			loadMoreAction={loadMoreAction}
 		/>
 	);
 }

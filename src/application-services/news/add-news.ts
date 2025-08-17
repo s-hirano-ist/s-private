@@ -22,7 +22,7 @@ export async function addNews(formData: FormData): Promise<ServerAction> {
 
 		await newsCommandRepository.create(validatedNews);
 
-		revalidateTag("news_UNEXPORTED");
+		revalidateTag(`news_UNEXPORTED_${userId}`);
 		revalidateTag("categories");
 
 		return { success: true, message: "inserted" };

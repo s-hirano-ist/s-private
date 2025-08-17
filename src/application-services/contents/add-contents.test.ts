@@ -68,7 +68,7 @@ describe("addContents", () => {
 			"user-123",
 		);
 		expect(contentsCommandRepository.create).toHaveBeenCalled();
-		expect(revalidateTag).toHaveBeenCalledWith("contents_UNEXPORTED");
+		expect(revalidateTag).toHaveBeenCalledWith("contents_UNEXPORTED_user-123");
 		expect(result.success).toBe(true);
 		expect(result.message).toBe("inserted");
 	});

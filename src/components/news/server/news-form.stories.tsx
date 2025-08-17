@@ -11,7 +11,7 @@ type NewsFormWrapperProps = {
 
 function NewsFormWrapper({ addNews, getCategories }: NewsFormWrapperProps) {
 	return (
-		<Suspense fallback={<div>Loading...</div>}>
+		<Suspense>
 			<NewsForm addNews={addNews} getCategories={getCategories} />
 		</Suspense>
 	);

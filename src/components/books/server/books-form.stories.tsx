@@ -10,7 +10,7 @@ type BooksFormWrapperProps = {
 
 function BooksFormWrapper({ addBooks }: BooksFormWrapperProps) {
 	return (
-		<Suspense fallback={<div>Loading...</div>}>
+		<Suspense>
 			<BooksForm addBooks={addBooks} />
 		</Suspense>
 	);

@@ -1,4 +1,4 @@
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { DuplicateError } from "@/common/error/error-classes";
@@ -67,7 +67,8 @@ describe("addBooks", () => {
 		expect(vi.mocked(hasDumperPostPermission)).toHaveBeenCalled();
 		expect(mockPrepareNewBook).toHaveBeenCalledWith(mockFormData, "user-123");
 		expect(booksCommandRepository.create).toHaveBeenCalled();
-		expect(revalidatePath).toHaveBeenCalledWith("/(dumper)");
+		expect(revalidateTag).toHaveBeenCalledWith("books_UNEXPORTED_user-123");
+
 		expect(result.success).toBe(true);
 		expect(result.message).toBe("inserted");
 	});

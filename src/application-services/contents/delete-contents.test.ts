@@ -39,7 +39,7 @@ describe("deleteContents", () => {
 			"1",
 			"UNEXPORTED",
 		);
-		expect(revalidateTag).toHaveBeenCalledWith("contents_UNEXPORTED");
+		expect(revalidateTag).toHaveBeenCalledWith("contents_UNEXPORTED_1");
 	});
 
 	test("should return error when contents not found", async () => {
