@@ -10,7 +10,7 @@ type ImagesFormWrapperProps = {
 
 function ImagesFormWrapper({ addImage }: ImagesFormWrapperProps) {
 	return (
-		<Suspense fallback={<div>Loading...</div>}>
+		<Suspense>
 			<ImagesForm addImage={addImage} />
 		</Suspense>
 	);

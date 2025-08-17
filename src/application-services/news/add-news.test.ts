@@ -74,7 +74,7 @@ describe("addNews", () => {
 		expect(vi.mocked(hasDumperPostPermission)).toHaveBeenCalled();
 		expect(mockPrepareNewNews).toHaveBeenCalledWith(mockFormData, "user-123");
 		expect(newsCommandRepository.create).toHaveBeenCalled();
-		expect(revalidateTag).toHaveBeenCalledWith("news_UNEXPORTED");
+		expect(revalidateTag).toHaveBeenCalledWith("news_UNEXPORTED_user-123");
 		expect(revalidateTag).toHaveBeenCalledWith("categories");
 		expect(result.success).toBe(true);
 		expect(result.message).toBe("inserted");

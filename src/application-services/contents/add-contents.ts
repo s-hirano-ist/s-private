@@ -28,7 +28,7 @@ export async function addContents(formData: FormData): Promise<ServerAction> {
 
 		await contentsCommandRepository.create(validatedContents);
 
-		revalidateTag("contents_UNEXPORTED");
+		revalidateTag(`contents_UNEXPORTED_${userId}`);
 
 		return { success: true, message: "inserted" };
 	} catch (error) {

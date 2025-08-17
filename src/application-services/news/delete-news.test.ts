@@ -36,7 +36,7 @@ describe("deleteNews", () => {
 			"1",
 			"UNEXPORTED",
 		);
-		expect(revalidateTag).toHaveBeenCalledWith("news_UNEXPORTED");
+		expect(revalidateTag).toHaveBeenCalledWith("news_UNEXPORTED_1");
 	});
 
 	test("should return error when news not found", async () => {

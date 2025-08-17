@@ -22,7 +22,7 @@ type ViewerBodyWrapperProps = {
 
 function ViewerBodyWrapper({ slug, getBookByISBN }: ViewerBodyWrapperProps) {
 	return (
-		<Suspense fallback={<div>Loading...</div>}>
+		<Suspense>
 			<ViewerBody getBookByISBN={getBookByISBN} slug={slug} />
 		</Suspense>
 	);

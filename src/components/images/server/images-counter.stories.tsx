@@ -12,7 +12,7 @@ function ImagesCounterWrapper({
 	getImagesCount,
 }: ImagesCounterWrapperProps) {
 	return (
-		<Suspense fallback={<div>Loading...</div>}>
+		<Suspense>
 			<ImagesCounter
 				currentPage={currentPage}
 				getImagesCount={getImagesCount}

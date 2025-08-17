@@ -1,19 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Suspense } from "react";
+import type { Props as BooksCounterProps } from "./books-counter";
 import { BooksCounter } from "./books-counter";
 
-type BooksCounterWrapperProps = {
-	currentPage: number;
-	getBooksCount: () => Promise<{ count: number; pageSize: number }>;
-};
-
-function BooksCounterWrapper({
-	currentPage,
-	getBooksCount,
-}: BooksCounterWrapperProps) {
+function BooksCounterWrapper({ getBooksCount }: BooksCounterProps) {
 	return (
-		<Suspense fallback={<div>Loading...</div>}>
-			<BooksCounter currentPage={currentPage} getBooksCount={getBooksCount} />
+		<Suspense>
+			<BooksCounter getBooksCount={getBooksCount} />
 		</Suspense>
 	);
 }
@@ -23,7 +16,6 @@ const meta = {
 	parameters: { layout: "centered" },
 	tags: ["autodocs"],
 	argTypes: {
-		currentPage: { control: { type: "number", min: 1 } },
 		getBooksCount: { action: "getBooksCount" },
 	},
 } satisfies Meta<typeof BooksCounterWrapper>;
@@ -33,40 +25,18 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
 	args: {
-		currentPage: 1,
-		getBooksCount: async () => ({
-			count: 42,
-			pageSize: 24,
-		}),
+		getBooksCount: async () => 42,
 	},
 };
 
 export const Empty: Story = {
 	args: {
-		currentPage: 1,
-		getBooksCount: async () => ({
-			count: 0,
-			pageSize: 24,
-		}),
+		getBooksCount: async () => 0,
 	},
 };
 
 export const LargeCounts: Story = {
 	args: {
-		currentPage: 1,
-		getBooksCount: async () => ({
-			count: 1000,
-			pageSize: 24,
-		}),
-	},
-};
-
-export const DifferentPage: Story = {
-	args: {
-		currentPage: 5,
-		getBooksCount: async () => ({
-			count: 120,
-			pageSize: 24,
-		}),
+		getBooksCount: async () => 1000,
 	},
 };

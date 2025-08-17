@@ -10,7 +10,7 @@ type ContentsFormWrapperProps = {
 
 function ContentsFormWrapper({ addContents }: ContentsFormWrapperProps) {
 	return (
-		<Suspense fallback={<div>Loading...</div>}>
+		<Suspense>
 			<ContentsForm addContents={addContents} />
 		</Suspense>
 	);

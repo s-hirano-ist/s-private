@@ -1,3 +1,4 @@
+import { GetContents } from "@/application-services/contents/get-contents";
 import { ServerAction, ServerActionWithData } from "@/common/types";
 import {
 	LinkCardStack,
@@ -5,7 +6,7 @@ import {
 } from "@/components/common/layouts/cards/link-card-stack";
 
 export type Props = {
-	getContents: (page: number) => Promise<LinkCardStackInitialData>;
+	getContents: GetContents;
 	deleteContents?: (id: string) => Promise<ServerAction>;
 	loadMoreAction: (
 		currentCount: number,

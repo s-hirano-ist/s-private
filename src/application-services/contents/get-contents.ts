@@ -15,7 +15,10 @@ export const _getContents = async (
 	cacheStrategy?: CacheStrategy,
 ): Promise<LinkCardStackInitialData> => {
 	"use cache";
-	cacheTag(`contents_${status}`, `${userId}_contents_${currentCount}`);
+	cacheTag(
+		`contents_${status}_${userId}`,
+		`contents_${status}_${userId}_${currentCount}`,
+	);
 	try {
 		const contents = await contentsQueryRepository.findMany(userId, status, {
 			skip: currentCount,

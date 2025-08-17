@@ -12,7 +12,7 @@ function ViewerBodyWrapper({
 	getContentByTitle,
 }: ViewerBodyWrapperProps) {
 	return (
-		<Suspense fallback={<div>Loading...</div>}>
+		<Suspense>
 			<ViewerBody getContentByTitle={getContentByTitle} slug={slug} />
 		</Suspense>
 	);

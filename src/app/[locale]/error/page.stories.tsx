@@ -4,7 +4,7 @@ import Page from "./page";
 
 function ErrorPageWrapper() {
 	return (
-		<Suspense fallback={<div>Loading...</div>}>
+		<Suspense>
 			<Page />
 		</Suspense>
 	);

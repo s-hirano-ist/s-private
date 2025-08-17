@@ -16,7 +16,7 @@ export async function deleteNews(id: string): Promise<ServerAction> {
 
 		await newsCommandRepository.deleteById(id, userId, "UNEXPORTED");
 
-		revalidateTag("news_UNEXPORTED");
+		revalidateTag(`news_UNEXPORTED_${userId}`);
 
 		return { success: true, message: "deleted" };
 	} catch (error) {

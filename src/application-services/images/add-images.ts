@@ -9,7 +9,7 @@ import { ImagesDomainService } from "@/domains/images/services/images-domain-ser
 import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
 import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
 
-export async function addImage(formData: FormData): Promise<ServerAction> {
+export async function addImages(formData: FormData): Promise<ServerAction> {
 	const hasPermission = await hasDumperPostPermission();
 	if (!hasPermission) forbidden();
 

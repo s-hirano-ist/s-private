@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
 import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
-import { addImage } from "./add-image";
+import { addImages } from "./add-images";
 
 vi.mock("@/common/auth/session", () => ({
 	getSelfId: vi.fn(),
@@ -42,20 +42,20 @@ describe("addImage", () => {
 		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
 
-		const result = await addImage(mockFormData);
+		const result = await addImages(mockFormData);
 		expect(result.success).toBe(false);
 	});
 
 	test("should return forbidden when user doesn't have permission", async () => {
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(false);
 
-		await expect(addImage(mockFormData)).rejects.toThrow("FORBIDDEN");
+		await expect(addImages(mockFormData)).rejects.toThrow("FORBIDDEN");
 	});
 
 	test("should return success false on not permitted", async () => {
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(false);
 
-		await expect(addImage(mockFormData)).rejects.toThrow("FORBIDDEN");
+		await expect(addImages(mockFormData)).rejects.toThrow("FORBIDDEN");
 	});
 
 	test("should return success when everything is correct", async () => {
@@ -71,7 +71,7 @@ describe("addImage", () => {
 		vi.mocked(imagesCommandRepository.create).mockResolvedValue();
 		vi.mocked(imagesCommandRepository.uploadToStorage).mockResolvedValue();
 
-		const result = await addImage(mockFormData);
+		const result = await addImages(mockFormData);
 
 		expect(imagesCommandRepository.uploadToStorage).toHaveBeenCalledTimes(2);
 		expect(imagesCommandRepository.create).toHaveBeenCalled();
@@ -93,7 +93,7 @@ describe("addImage", () => {
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
 		vi.mocked(getSelfId).mockResolvedValue("user-id");
 
-		const result = await addImage(mockFormData);
+		const result = await addImages(mockFormData);
 
 		expect(result).toEqual({
 			success: false,
@@ -113,7 +113,7 @@ describe("addImage", () => {
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
 		vi.mocked(getSelfId).mockResolvedValue("user-id");
 
-		const result = await addImage(mockFormData);
+		const result = await addImages(mockFormData);
 
 		expect(result).toEqual({
 			success: false,
@@ -129,7 +129,7 @@ describe("addImage", () => {
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
 		vi.mocked(getSelfId).mockResolvedValue("user-id");
 
-		const result = await addImage(mockFormData);
+		const result = await addImages(mockFormData);
 
 		expect(result).toEqual({
 			success: false,
