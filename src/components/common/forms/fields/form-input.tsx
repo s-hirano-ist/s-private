@@ -1,4 +1,4 @@
-import { type ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import { Input } from "@/components/common/ui/input";
 import { Label } from "@/components/common/ui/label";
 import { useFormValues } from "../generic-form-wrapper";

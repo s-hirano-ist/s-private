@@ -13,8 +13,8 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
 	args: {
-		news: <div>sample news</div>,
-		contents: <div>sample contents</div>,
+		articles: <div>sample articles</div>,
+		notes: <div>sample notes</div>,
 		images: <div>sample images</div>,
 		books: <div>sample books</div>,
 	},

@@ -51,7 +51,7 @@ describe("validate-url utils", () => {
 		test("should return true for internal paths", () => {
 			expect(isInternalUrl("/")).toBe(true);
 			expect(isInternalUrl("/viewer")).toBe(true);
-			expect(isInternalUrl("/viewer/news")).toBe(true);
+			expect(isInternalUrl("/viewer/articles")).toBe(true);
 		});
 
 		test("should return false for external URLs", () => {

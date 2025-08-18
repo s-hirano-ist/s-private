@@ -90,7 +90,7 @@ export const BookForm: Story = {
 	},
 };
 
-export const NewsForm: Story = {
+export const ArticleForm: Story = {
 	args: {
 		children: (
 			<>

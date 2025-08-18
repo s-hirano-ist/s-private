@@ -1,7 +1,7 @@
 "use client";
 import type { Route } from "next";
 import NextImage from "next/image";
-import type { ServerAction } from "@/common/types";
+import type { DeleteAction } from "@/common/types";
 import { DeleteButtonWithModal } from "@/components/common/forms/actions/delete-button-with-modal";
 import {
 	Card,
@@ -10,19 +10,13 @@ import {
 	CardTitle,
 } from "@/components/common/ui/card";
 import { Link } from "@/infrastructures/i18n/routing";
-
-export type ImageCardData = {
-	id: string;
-	href: string;
-	title: string;
-	image: string;
-};
+import type { ImageCardData } from "./types";
 
 type Props = {
 	data: ImageCardData;
 	basePath: string;
 	showDeleteButton?: boolean;
-	deleteAction?: (id: string) => Promise<ServerAction>;
+	deleteAction?: DeleteAction;
 };
 
 export function ImageCard({

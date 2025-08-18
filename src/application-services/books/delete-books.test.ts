@@ -1,12 +1,14 @@
-import { beforeEach, describe, expect, Mock, test, vi } from "vitest";
+import { beforeEach, describe, expect, type Mock, test, vi } from "vitest";
 import * as sessionModule from "@/common/auth/session";
 import * as errorModule from "@/common/error/error-wrapper";
+import * as commonEntityModule from "@/domains/common/entities/common-entity";
 import * as booksRepositoryModule from "@/infrastructures/books/repositories/books-command-repository";
 import { deleteBooks } from "./delete-books";
 
 vi.mock("@/common/auth/session");
 vi.mock("@/common/error/error-wrapper");
 vi.mock("@/infrastructures/books/repositories/books-command-repository");
+vi.mock("@/domains/common/entities/common-entity");
 
 const mockDeleteById = vi.fn();
 
@@ -16,15 +18,22 @@ describe("deleteBooks", () => {
 	const mockGetSelfId = sessionModule.getSelfId as Mock;
 	const mockWrapServerSideErrorForClient =
 		errorModule.wrapServerSideErrorForClient as Mock;
+	const mockMakeId = commonEntityModule.makeId as Mock;
+	const mockMakeUserId = commonEntityModule.makeUserId as Mock;
+	const mockMakeStatus = commonEntityModule.makeStatus as Mock;
 
 	beforeEach(() => {
 		vi.clearAllMocks();
 		booksRepositoryModule.booksCommandRepository.deleteById = mockDeleteById;
+
+		mockMakeId.mockImplementation((id) => id);
+		mockMakeUserId.mockImplementation((userId) => userId);
+		mockMakeStatus.mockImplementation((status) => status);
 	});
 
 	test("should successfully delete a book when user has permission", async () => {
-		const bookId = "test-book-id";
-		const userId = "test-user-id";
+		const bookId = "01933f5c-9df0-7001-9123-456789abcdef";
+		const userId = "01933f5c-9df0-7002-9876-543210fedcba";
 
 		mockHasDumperPostPermission.mockResolvedValue(true);
 		mockGetSelfId.mockResolvedValue(userId);
@@ -39,12 +48,14 @@ describe("deleteBooks", () => {
 	test("should throw forbidden error when user lacks permission", async () => {
 		mockHasDumperPostPermission.mockResolvedValue(false);
 
-		await expect(deleteBooks("test-id")).rejects.toThrow();
+		await expect(
+			deleteBooks("01933f5c-9df0-7001-9123-456789abcdef"),
+		).rejects.toThrow();
 	});
 
 	test("should handle errors and wrap them properly", async () => {
-		const bookId = "test-book-id";
-		const userId = "test-user-id";
+		const bookId = "01933f5c-9df0-7001-9123-456789abcdef";
+		const userId = "01933f5c-9df0-7002-9876-543210fedcba";
 		const error = new Error("Test error");
 		const wrappedError = { success: false, message: "Error occurred" };
 

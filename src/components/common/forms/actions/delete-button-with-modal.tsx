@@ -3,7 +3,7 @@ import { TrashIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
-import { ServerAction } from "@/common/types";
+import type { DeleteAction } from "@/common/types";
 import { Button } from "@/components/common/ui/button";
 import {
 	Dialog,
@@ -15,7 +15,7 @@ import {
 } from "@/components/common/ui/dialog";
 
 type Props = {
-	deleteAction: (id: string) => Promise<ServerAction>;
+	deleteAction: DeleteAction;
 	id: string;
 	title: string;
 };

@@ -9,14 +9,19 @@ export const metadata: Metadata = {
 };
 
 type Props = {
-	news: ReactNode;
-	contents: ReactNode;
+	articles: ReactNode;
+	notes: ReactNode;
 	images: ReactNode;
 	books: ReactNode;
 };
 
-export default async function Layout({ news, contents, images, books }: Props) {
+export default async function Layout({
+	articles,
+	notes,
+	images,
+	books,
+}: Props) {
 	return (
-		<RootTab books={books} contents={contents} images={images} news={news} />
+		<RootTab articles={articles} books={books} images={images} notes={notes} />
 	);
 }

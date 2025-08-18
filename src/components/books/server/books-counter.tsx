@@ -1,8 +1,8 @@
-import type { GetBooksCount } from "@/application-services/books/get-books";
+import type { GetCount } from "@/common/types";
 import { CounterBadge } from "@/components/common/display/counter-badge";
 
 export type Props = {
-	getBooksCount: GetBooksCount;
+	getBooksCount: GetCount;
 };
 
 export async function BooksCounter({ getBooksCount }: Props) {

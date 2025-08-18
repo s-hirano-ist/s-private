@@ -1,17 +1,13 @@
 "use client";
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
-import type { ServerAction, ServerActionWithData } from "@/common/types";
+import type { DeleteAction, LoadMoreAction } from "@/common/types";
 import { StatusCodeView } from "@/components/common/display/status/status-code-view";
 import { useInfiniteScroll } from "@/components/common/hooks/use-infinite-scroll";
 import { useSearchableList } from "@/components/common/hooks/use-searchable-list";
 import { Input } from "@/components/common/ui/input";
 import Loading from "../../display/loading";
-
-export type CardStackInitialData<T> = {
-	data: T[];
-	totalCount: number;
-};
+import type { CardStackInitialData } from "./types";
 
 type SearchableItem = {
 	title: string;
@@ -19,10 +15,8 @@ type SearchableItem = {
 
 type BaseCardStackProps<T extends SearchableItem> = {
 	initial: CardStackInitialData<T>;
-	deleteAction?: (id: string) => Promise<ServerAction>;
-	loadMoreAction: (
-		currentCount: number,
-	) => Promise<ServerActionWithData<CardStackInitialData<T>>>;
+	deleteAction?: DeleteAction;
+	loadMoreAction: LoadMoreAction<CardStackInitialData<T>>;
 	filterFunction: (item: T, searchQuery: string) => boolean;
 	renderCard: (
 		item: T,
@@ -30,7 +24,7 @@ type BaseCardStackProps<T extends SearchableItem> = {
 		isLast: boolean,
 		isSearching: boolean,
 		lastElementRef: (node: HTMLElement | null) => void,
-		deleteAction?: (id: string) => Promise<ServerAction>,
+		deleteAction?: DeleteAction,
 		key?: string,
 	) => React.ReactNode;
 	gridClassName: string;

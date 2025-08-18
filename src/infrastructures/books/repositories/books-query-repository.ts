@@ -1,36 +1,30 @@
-import { BooksQueryData } from "@/domains/books/entities/books-entity";
-import type {
-	BooksFindManyParams,
-	IBooksQueryRepository,
-} from "@/domains/books/types";
-import type { Status } from "@/domains/common/entities/common-entity";
+import type { ISBN } from "@/domains/books/entities/books-entity";
+import type { IBooksQueryRepository } from "@/domains/books/repositories/books-query-repository.interface";
+import type { BooksFindManyParams } from "@/domains/books/types/query-params";
+import type { Status, UserId } from "@/domains/common/entities/common-entity";
 import prisma from "@/prisma";
 
 class BooksQueryRepository implements IBooksQueryRepository {
-	async findByISBN(
-		ISBN: string,
-		userId: string,
-	): Promise<BooksQueryData | null> {
-		const result = await prisma.books.findUnique({
+	async findByISBN(ISBN: ISBN, userId: UserId) {
+		const data = await prisma.book.findUnique({
 			where: { ISBN_userId: { ISBN, userId } },
+			omit: { userId: true },
 		});
-		return result;
+		return data;
 	}
 
-	async findMany(
-		userId: string,
-		status: Status,
-		params?: BooksFindManyParams,
-	): Promise<BooksQueryData[]> {
-		return await prisma.books.findMany({
+	async findMany(userId: UserId, status: Status, params?: BooksFindManyParams) {
+		const data = await prisma.book.findMany({
 			where: { userId, status },
-			select: { id: true, ISBN: true, title: true, googleImgSrc: true },
+			omit: { userId: true },
 			...params,
 		});
+		return data;
 	}
 
-	async count(userId: string, status: Status): Promise<number> {
-		return await prisma.books.count({ where: { userId, status } });
+	async count(userId: UserId, status: Status) {
+		const data = await prisma.book.count({ where: { userId, status } });
+		return data;
 	}
 }
 

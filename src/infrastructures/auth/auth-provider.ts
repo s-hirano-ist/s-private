@@ -7,14 +7,12 @@ type Role = "viewer" | "dumper";
 type Id = string;
 
 declare module "next-auth" {
-	// eslint-disable-next-line
 	interface Session extends DefaultSession {
 		user: {
 			id: Id;
 			roles: Role[];
 		} & DefaultSession["user"];
 	}
-	// eslint-disable-next-line
 	interface User {
 		roles: Role[];
 	}

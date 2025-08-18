@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { ThemeProvider } from "./theme-provider";
 
 type ThemeProviderWrapperProps = {
@@ -106,7 +106,10 @@ export const WithCustomContent: Story = {
 						<p className="text-sm">Secondary content area.</p>
 					</div>
 				</div>
-				<button className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90">
+				<button
+					className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90"
+					type="button"
+				>
 					Theme-aware Button
 				</button>
 			</div>

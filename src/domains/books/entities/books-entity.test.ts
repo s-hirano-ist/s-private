@@ -1,167 +1,86 @@
-import { describe, expect, test, vi } from "vitest";
+import { describe, expect, test } from "vitest";
+import { ZodError } from "zod";
 import {
-	booksAdditionalSchema,
-	booksFormSchema,
-	booksInputSchema,
-	booksQueryData,
-} from "./books-entity";
+	bookEntity,
+	makeBookTitle,
+	makeISBN,
+} from "@/domains/books/entities/books-entity";
+import { makeUserId } from "@/domains/common/entities/common-entity";
 
 describe("booksEntity", () => {
-	describe("booksInputSchema", () => {
-		test("should validate correct books data", () => {
-			const validData = {
-				ISBN: "978-0123456789",
-				title: "Sample Book",
-				userId: "user-123",
-				status: "UNEXPORTED",
-			};
-
-			const result = booksInputSchema.safeParse(validData);
-			expect(result.success).toBe(true);
+	describe("makeISBN", () => {
+		test("should create valid ISBN", () => {
+			const isbn = makeISBN("978-4-123-45678-9");
+			expect(isbn).toBe("978-4-123-45678-9");
 		});
 
-		test("should fail when ISBN is empty", () => {
-			const invalidData = {
-				ISBN: "",
-				title: "Sample Book",
-				userId: "user-123",
-				status: "UNEXPORTED",
-			};
-
-			const result = booksInputSchema.safeParse(invalidData);
-			expect(result.success).toBe(false);
+		test("should accept ISBN without hyphens", () => {
+			const isbn = makeISBN("9784123456789");
+			expect(isbn).toBe("9784123456789");
 		});
 
-		test("should fail when ISBN exceeds max length", () => {
-			const invalidData = {
-				ISBN: "1".repeat(18),
-				title: "Sample Book",
-				userId: "user-123",
-				status: "UNEXPORTED",
-			};
-
-			const result = booksInputSchema.safeParse(invalidData);
-			expect(result.success).toBe(false);
+		test("should throw error for empty string", () => {
+			expect(() => makeISBN("")).toThrow(ZodError);
 		});
 
-		test("should fail when ISBN has invalid format", () => {
-			const invalidData = {
-				ISBN: "abc-123",
-				title: "Sample Book",
-				userId: "user-123",
-				status: "UNEXPORTED",
-			};
-
-			const result = booksInputSchema.safeParse(invalidData);
-			expect(result.success).toBe(false);
+		test("should throw error for too long string", () => {
+			expect(() => makeISBN("978-4-123-45678-90-extra")).toThrow(ZodError);
 		});
 
-		test("should accept valid ISBN with hyphens", () => {
-			const validData = {
-				ISBN: "978-0-123-45678-9",
-				title: "Sample Book",
-				userId: "user-123",
-				status: "UNEXPORTED",
-			};
-
-			const result = booksInputSchema.safeParse(validData);
-			expect(result.success).toBe(true);
-		});
-
-		test("should fail when title exceeds max length", () => {
-			const invalidData = {
-				ISBN: "978-0123456789",
-				title: "a".repeat(257),
-				userId: "user-123",
-				status: "UNEXPORTED",
-			};
-
-			const result = booksInputSchema.safeParse(invalidData);
-			expect(result.success).toBe(false);
-		});
-
-		test("should fail when title is empty", () => {
-			const invalidData = {
-				ISBN: "978-0123456789",
-				title: "",
-				userId: "user-123",
-				status: "UNEXPORTED",
-			};
-
-			const result = booksInputSchema.safeParse(invalidData);
-			expect(result.success).toBe(false);
+		test("should throw error for invalid characters", () => {
+			expect(() => makeISBN("978-4-ABC-45678-9")).toThrow(ZodError);
 		});
 	});
 
-	describe("booksAdditionalSchema", () => {
-		test("should validate additional book data", () => {
-			const validData = {
-				googleTitle: "Google Title",
-				googleSubTitle: "Subtitle",
-				googleAuthors: ["Author 1", "Author 2"],
-				googleDescription: "Description",
-				googleImgSrc: "https://example.com/image.jpg",
-				googleHref: "https://example.com",
-				markdown: "# Book Notes",
-			};
-
-			const result = booksAdditionalSchema.safeParse(validData);
-			expect(result.success).toBe(true);
+	describe("makeBookTitle", () => {
+		test("should create valid book title", () => {
+			const title = makeBookTitle("Clean Code");
+			expect(title).toBe("Clean Code");
 		});
 
-		test("should accept null values", () => {
-			const validData = {
-				googleTitle: null,
-				googleSubTitle: null,
-				googleAuthors: null,
-				googleDescription: null,
-				googleImgSrc: null,
-				googleHref: null,
-				markdown: null,
-			};
-
-			const result = booksAdditionalSchema.safeParse(validData);
-			expect(result.success).toBe(true);
+		test("should throw error for empty string", () => {
+			expect(() => makeBookTitle("")).toThrow(ZodError);
 		});
 
-		test("should accept empty object", () => {
-			const validData = {};
-
-			const result = booksAdditionalSchema.safeParse(validData);
-			expect(result.success).toBe(true);
+		test("should throw error for too long title", () => {
+			const longTitle = "a".repeat(257);
+			expect(() => makeBookTitle(longTitle)).toThrow(ZodError);
 		});
 	});
 
-	describe("booksQueryData", () => {
-		test("should handle merged schema and omit userId and status", () => {
-			const data = {
-				ISBN: "978-0123456789",
-				title: "Sample Book",
-				id: "01234567-89ab-4def-9123-456789abcdef",
-				googleTitle: "Google Title",
-				googleAuthors: ["Author"],
-				markdown: "# Notes",
-			};
+	describe("bookEntity.create", () => {
+		test("should create book with valid arguments", () => {
+			const book = bookEntity.create({
+				userId: makeUserId("test-user-id"),
+				ISBN: makeISBN("9784123456789"),
+				title: makeBookTitle("Clean Code"),
+			});
 
-			const result = booksQueryData.safeParse(data);
-			expect(result.success).toBe(true);
+			expect(book.userId).toBe("test-user-id");
+			expect(book.ISBN).toBe("9784123456789");
+			expect(book.title).toBe("Clean Code");
+			expect(book.status).toBe("UNEXPORTED");
+			expect(book.id).toBeDefined();
 		});
-	});
 
-	describe("booksFormSchema", () => {
-		test("should be identical to booksInputSchema", () => {
-			const validData = {
-				ISBN: "978-0123456789",
-				title: "Sample Book",
-				userId: "user-123",
-				status: "UNEXPORTED",
-			};
+		test("should create book with UNEXPORTED status by default", () => {
+			const book = bookEntity.create({
+				userId: makeUserId("test-user-id"),
+				ISBN: makeISBN("9784123456789"),
+				title: makeBookTitle("Test Book"),
+			});
 
-			const inputResult = booksInputSchema.safeParse(validData);
-			const formResult = booksFormSchema.safeParse(validData);
+			expect(book.status).toBe("UNEXPORTED");
+		});
 
-			expect(inputResult.success).toBe(formResult.success);
-			expect(inputResult.success).toBe(true);
+		test("should be frozen object", () => {
+			const book = bookEntity.create({
+				userId: makeUserId("test-user-id"),
+				ISBN: makeISBN("9784123456789"),
+				title: makeBookTitle("Test Book"),
+			});
+
+			expect(Object.isFrozen(book)).toBe(true);
 		});
 	});
 });

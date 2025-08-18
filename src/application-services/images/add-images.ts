@@ -5,34 +5,42 @@ import { forbidden } from "next/navigation";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
-import { ImagesDomainService } from "@/domains/images/services/images-domain-service";
+import { imageEntity } from "@/domains/images/entities/images-entity";
 import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
-import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
+import { parseAddImagesFormData } from "./helpers/form-data-parser";
 
 export async function addImages(formData: FormData): Promise<ServerAction> {
 	const hasPermission = await hasDumperPostPermission();
 	if (!hasPermission) forbidden();
 
 	try {
-		const userId = await getSelfId();
+		const {
+			userId,
+			path,
+			contentType,
+			fileSize,
+			thumbnailBuffer,
+			originalBuffer,
+		} = await parseAddImagesFormData(formData, await getSelfId());
 
-		const { validatedImages, thumbnailBuffer, originalBuffer } =
-			await new ImagesDomainService(imagesQueryRepository).prepareNewImages(
-				formData,
-				userId,
-			);
+		const image = imageEntity.create({
+			userId,
+			path,
+			contentType,
+			fileSize,
+		});
 
 		await imagesCommandRepository.uploadToStorage(
-			validatedImages.path,
+			image.path,
 			originalBuffer,
 			false,
 		);
 		await imagesCommandRepository.uploadToStorage(
-			validatedImages.path,
+			image.path,
 			thumbnailBuffer,
 			true,
 		);
-		await imagesCommandRepository.create(validatedImages);
+		await imagesCommandRepository.create(image);
 
 		revalidateTag(`images_UNEXPORTED_${userId}`);
 		revalidateTag(`images_count_UNEXPORTED_${userId}`);

@@ -16,8 +16,8 @@ const mockData = [
 	{
 		id: "1",
 		key: "1",
-		title: "First News Item",
-		description: "This is the first news item.",
+		title: "First article",
+		description: "This is the first Article.",
 		href: "https://example.com/1",
 		primaryBadgeText: "Tech",
 		secondaryBadgeText: "example.com",
@@ -25,8 +25,8 @@ const mockData = [
 	{
 		id: "2",
 		key: "2",
-		title: "Second News Item",
-		description: "This is the second news item.",
+		title: "Second article",
+		description: "This is the second Article.",
 		href: "https://example.com/2",
 		primaryBadgeText: "Tech",
 		secondaryBadgeText: "example.com",
@@ -34,7 +34,7 @@ const mockData = [
 	{
 		id: "3",
 		key: "3",
-		title: "Third News Item",
+		title: "Third article",
 		href: "https://example.com/3",
 		primaryBadgeText: "Tech",
 		secondaryBadgeText: "example.com",
@@ -87,8 +87,8 @@ export const ManyItems: Story = {
 				{
 					id: "4",
 					key: "4",
-					title: "Fourth News Item",
-					description: "This is the fourth news item to test grid layout.",
+					title: "Fourth article",
+					description: "This is the fourth article to test grid layout.",
 					href: "https://example.com/4",
 					primaryBadgeText: "Tech",
 					secondaryBadgeText: "example.com",
@@ -96,9 +96,9 @@ export const ManyItems: Story = {
 				{
 					id: "5",
 					key: "5",
-					title: "Fifth News Item",
+					title: "Fifth article",
 					description:
-						"This is the fifth news item with a longer description to test text truncation and wrapping behavior.",
+						"This is the fifth article with a longer description to test text truncation and wrapping behavior.",
 					href: "https://example.com/5",
 				},
 			],

@@ -17,7 +17,7 @@ describe("ImagesQueryRepository", () => {
 				{ paths: "image-789" },
 			];
 
-			vi.mocked(prisma.images.findMany).mockResolvedValue(mockImages);
+			vi.mocked(prisma.image.findMany).mockResolvedValue(mockImages);
 
 			const params = {
 				orderBy: { createdAt: "desc" as const },
@@ -31,26 +31,26 @@ describe("ImagesQueryRepository", () => {
 				params,
 			);
 
-			expect(prisma.images.findMany).toHaveBeenCalled();
+			expect(prisma.image.findMany).toHaveBeenCalled();
 			expect(result).toEqual(mockImages);
 		});
 
 		test("should handle empty results", async () => {
-			vi.mocked(prisma.images.findMany).mockResolvedValue([]);
+			vi.mocked(prisma.image.findMany).mockResolvedValue([]);
 
 			const result = await imagesQueryRepository.findMany(
 				"user123",
 				"EXPORTED",
 			);
 
-			expect(prisma.images.findMany).toHaveBeenCalled();
+			expect(prisma.image.findMany).toHaveBeenCalled();
 			expect(result).toEqual([]);
 		});
 
 		test("should work with cache strategy", async () => {
 			const mockImages = [{ paths: "image-123" }];
 
-			vi.mocked(prisma.images.findMany).mockResolvedValue(mockImages);
+			vi.mocked(prisma.image.findMany).mockResolvedValue(mockImages);
 
 			const params = {
 				cacheStrategy: { ttl: 300, swr: 30, tags: ["images"] },
@@ -62,12 +62,12 @@ describe("ImagesQueryRepository", () => {
 				params,
 			);
 
-			expect(prisma.images.findMany).toHaveBeenCalled();
+			expect(prisma.image.findMany).toHaveBeenCalled();
 			expect(result).toEqual(mockImages);
 		});
 
 		test("should handle database errors", async () => {
-			vi.mocked(prisma.images.findMany).mockRejectedValue(
+			vi.mocked(prisma.image.findMany).mockRejectedValue(
 				new Error("Database connection error"),
 			);
 
@@ -75,35 +75,35 @@ describe("ImagesQueryRepository", () => {
 				imagesQueryRepository.findMany("user123", "EXPORTED"),
 			).rejects.toThrow("Database connection error");
 
-			expect(prisma.images.findMany).toHaveBeenCalled();
+			expect(prisma.image.findMany).toHaveBeenCalled();
 		});
 	});
 
 	describe("count", () => {
 		test("should return count of images", async () => {
-			vi.mocked(prisma.images.count).mockResolvedValue(8);
+			vi.mocked(prisma.image.count).mockResolvedValue(8);
 
 			const result = await imagesQueryRepository.count("user123", "EXPORTED");
 
-			expect(prisma.images.count).toHaveBeenCalledWith({
+			expect(prisma.image.count).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "EXPORTED" },
 			});
 			expect(result).toBe(8);
 		});
 
 		test("should return 0 for empty collection", async () => {
-			vi.mocked(prisma.images.count).mockResolvedValue(0);
+			vi.mocked(prisma.image.count).mockResolvedValue(0);
 
 			const result = await imagesQueryRepository.count("user123", "UNEXPORTED");
 
-			expect(prisma.images.count).toHaveBeenCalledWith({
+			expect(prisma.image.count).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "UNEXPORTED" },
 			});
 			expect(result).toBe(0);
 		});
 
 		test("should handle database errors", async () => {
-			vi.mocked(prisma.images.count).mockRejectedValue(
+			vi.mocked(prisma.image.count).mockRejectedValue(
 				new Error("Database count error"),
 			);
 
@@ -111,7 +111,7 @@ describe("ImagesQueryRepository", () => {
 				imagesQueryRepository.count("user123", "EXPORTED"),
 			).rejects.toThrow("Database count error");
 
-			expect(prisma.images.count).toHaveBeenCalledWith({
+			expect(prisma.image.count).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "EXPORTED" },
 			});
 		});

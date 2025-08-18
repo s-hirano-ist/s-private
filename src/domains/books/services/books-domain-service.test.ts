@@ -1,101 +1,61 @@
-import { describe, expect, test } from "vitest";
-import { InvalidFormatError } from "@/common/error/error-classes";
+import { beforeEach, describe, expect, test, vi } from "vitest";
+import { DuplicateError } from "@/common/error/error-classes";
+import { makeISBN } from "@/domains/books/entities/books-entity";
 import { BooksDomainService } from "@/domains/books/services/books-domain-service";
 import type { IBooksQueryRepository } from "@/domains/books/types";
-
-const mockBooksQueryRepository: IBooksQueryRepository = {
-	findByISBN: async () => null,
-	findMany: async () => [],
-	count: async () => 0,
-};
+import { makeUserId } from "@/domains/common/entities/common-entity";
 
 describe("BooksDomainService", () => {
-	test("should validate correct books data", async () => {
-		const service = new BooksDomainService(mockBooksQueryRepository);
-		const formData = new FormData();
-		formData.append("isbn", "978-4-06-519981-0");
-		formData.append("title", "Sample Book Title");
+	let booksQueryRepository: IBooksQueryRepository;
+	let booksDomainService: BooksDomainService;
 
-		const result = await service.prepareNewBook(formData, "user-123");
+	beforeEach(() => {
+		booksQueryRepository = {
+			findByISBN: vi.fn(),
+		} as IBooksQueryRepository;
 
-		expect(result.ISBN).toBe("978-4-06-519981-0");
-		expect(result.title).toBe("Sample Book Title");
-		expect(result.userId).toBe("user-123");
-		expect(result.status).toBe("UNEXPORTED");
+		booksDomainService = new BooksDomainService(booksQueryRepository);
 	});
 
-	test("should throw InvalidFormatError when ISBN is missing", async () => {
-		const service = new BooksDomainService(mockBooksQueryRepository);
-		const formData = new FormData();
-		formData.append("title", "Sample Book Title");
+	describe("ensureNoDuplicate", () => {
+		test("should not throw error when no duplicate exists", async () => {
+			const isbn = makeISBN("9784123456789");
+			const userId = makeUserId("test-user-id");
 
-		await expect(() =>
-			service.prepareNewBook(formData, "user-123"),
-		).rejects.toThrow(InvalidFormatError);
-	});
+			vi.mocked(booksQueryRepository.findByISBN).mockResolvedValue(null);
 
-	test("should throw InvalidFormatError when ISBN is empty", async () => {
-		const service = new BooksDomainService(mockBooksQueryRepository);
-		const formData = new FormData();
-		formData.append("isbn", "");
-		formData.append("title", "Sample Book Title");
+			await expect(
+				booksDomainService.ensureNoDuplicate(isbn, userId),
+			).resolves.not.toThrow();
 
-		await expect(() =>
-			service.prepareNewBook(formData, "user-123"),
-		).rejects.toThrow(InvalidFormatError);
-	});
+			expect(booksQueryRepository.findByISBN).toHaveBeenCalledWith(
+				isbn,
+				userId,
+			);
+		});
 
-	test("should throw InvalidFormatError when title is missing", async () => {
-		const service = new BooksDomainService(mockBooksQueryRepository);
-		const formData = new FormData();
-		formData.append("isbn", "978-4-06-519981-0");
+		test("should throw DuplicateError when duplicate exists", async () => {
+			const isbn = makeISBN("9784123456789");
+			const userId = makeUserId("test-user-id");
 
-		await expect(() =>
-			service.prepareNewBook(formData, "user-123"),
-		).rejects.toThrow(InvalidFormatError);
-	});
+			const mockBook = {
+				id: "existing-book-id",
+				ISBN: isbn,
+				userId,
+				title: "Existing Book",
+				status: "UNEXPORTED" as const,
+			};
 
-	test("should throw InvalidFormatError when title is empty", async () => {
-		const service = new BooksDomainService(mockBooksQueryRepository);
-		const formData = new FormData();
-		formData.append("isbn", "978-4-06-519981-0");
-		formData.append("title", "");
+			vi.mocked(booksQueryRepository.findByISBN).mockResolvedValue(mockBook);
 
-		await expect(() =>
-			service.prepareNewBook(formData, "user-123"),
-		).rejects.toThrow(InvalidFormatError);
-	});
+			await expect(
+				booksDomainService.ensureNoDuplicate(isbn, userId),
+			).rejects.toThrow(DuplicateError);
 
-	test("should throw InvalidFormatError when ISBN has invalid format", async () => {
-		const service = new BooksDomainService(mockBooksQueryRepository);
-		const formData = new FormData();
-		formData.append("isbn", "ABC-123-DEF");
-		formData.append("title", "Sample Book Title");
-
-		await expect(() =>
-			service.prepareNewBook(formData, "user-123"),
-		).rejects.toThrow(InvalidFormatError);
-	});
-
-	test("should throw InvalidFormatError when ISBN exceeds max length", async () => {
-		const service = new BooksDomainService(mockBooksQueryRepository);
-		const formData = new FormData();
-		formData.append("isbn", "1".repeat(18));
-		formData.append("title", "Sample Book Title");
-
-		await expect(() =>
-			service.prepareNewBook(formData, "user-123"),
-		).rejects.toThrow(InvalidFormatError);
-	});
-
-	test("should throw InvalidFormatError when title exceeds max length", async () => {
-		const service = new BooksDomainService(mockBooksQueryRepository);
-		const formData = new FormData();
-		formData.append("isbn", "978-4-06-519981-0");
-		formData.append("title", "a".repeat(257));
-
-		await expect(() =>
-			service.prepareNewBook(formData, "user-123"),
-		).rejects.toThrow(InvalidFormatError);
+			expect(booksQueryRepository.findByISBN).toHaveBeenCalledWith(
+				isbn,
+				userId,
+			);
+		});
 	});
 });

@@ -7,10 +7,7 @@ import type {
 } from "../logging/logger.interface";
 
 class PushoverMonitoringService implements MonitoringService {
-	private async sendMessage(
-		message: string,
-		priority: number = 0,
-	): Promise<void> {
+	private async sendMessage(message: string, priority = 0): Promise<void> {
 		try {
 			const PUSHOVER_API_URL = env.PUSHOVER_URL;
 			const PUSHOVER_USER_KEY = env.PUSHOVER_USER_KEY;
@@ -39,7 +36,7 @@ class PushoverMonitoringService implements MonitoringService {
 				);
 			} else {
 				console.error(
-					`[PushoverService] Unknown error occurred while sending notification:`,
+					"[PushoverService] Unknown error occurred while sending notification:",
 					error,
 				);
 			}

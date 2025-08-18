@@ -22,31 +22,31 @@ describe("BooksQueryRepository", () => {
 				googleSubTitle: "Test subtitle",
 			};
 
-			vi.mocked(prisma.books.findUnique).mockResolvedValue(mockBook);
+			vi.mocked(prisma.book.findUnique).mockResolvedValue(mockBook);
 
 			const result = await booksQueryRepository.findByISBN(
 				"978-0123456789",
 				"user123",
 			);
 
-			expect(prisma.books.findUnique).toHaveBeenCalled();
+			expect(prisma.book.findUnique).toHaveBeenCalled();
 			expect(result).toEqual(mockBook);
 		});
 
 		test("should return null when book not found", async () => {
-			vi.mocked(prisma.books.findUnique).mockResolvedValue(null);
+			vi.mocked(prisma.book.findUnique).mockResolvedValue(null);
 
 			const result = await booksQueryRepository.findByISBN(
 				"978-9999999999",
 				"user123",
 			);
 
-			expect(prisma.books.findUnique).toHaveBeenCalled();
+			expect(prisma.book.findUnique).toHaveBeenCalled();
 			expect(result).toBeNull();
 		});
 
 		test("should handle database errors", async () => {
-			vi.mocked(prisma.books.findUnique).mockRejectedValue(
+			vi.mocked(prisma.book.findUnique).mockRejectedValue(
 				new Error("Database error"),
 			);
 
@@ -54,7 +54,7 @@ describe("BooksQueryRepository", () => {
 				booksQueryRepository.findByISBN("978-0123456789", "user123"),
 			).rejects.toThrow("Database error");
 
-			expect(prisma.books.findUnique).toHaveBeenCalled();
+			expect(prisma.book.findUnique).toHaveBeenCalled();
 		});
 	});
 
@@ -73,7 +73,7 @@ describe("BooksQueryRepository", () => {
 				},
 			];
 
-			vi.mocked(prisma.books.findMany).mockResolvedValue(mockBooks);
+			vi.mocked(prisma.book.findMany).mockResolvedValue(mockBooks);
 
 			const params = {
 				orderBy: { createdAt: "desc" as const },
@@ -87,16 +87,16 @@ describe("BooksQueryRepository", () => {
 				params,
 			);
 
-			expect(prisma.books.findMany).toHaveBeenCalled();
+			expect(prisma.book.findMany).toHaveBeenCalled();
 			expect(result).toEqual(mockBooks);
 		});
 
 		test("should handle empty results", async () => {
-			vi.mocked(prisma.books.findMany).mockResolvedValue([]);
+			vi.mocked(prisma.book.findMany).mockResolvedValue([]);
 
 			const result = await booksQueryRepository.findMany("user123", "EXPORTED");
 
-			expect(prisma.books.findMany).toHaveBeenCalled();
+			expect(prisma.book.findMany).toHaveBeenCalled();
 			expect(result).toEqual([]);
 		});
 
@@ -109,7 +109,7 @@ describe("BooksQueryRepository", () => {
 				},
 			];
 
-			vi.mocked(prisma.books.findMany).mockResolvedValue(mockBooks);
+			vi.mocked(prisma.book.findMany).mockResolvedValue(mockBooks);
 
 			const params = {
 				cacheStrategy: { ttl: 400, swr: 40, tags: ["books"] },
@@ -121,12 +121,12 @@ describe("BooksQueryRepository", () => {
 				params,
 			);
 
-			expect(prisma.books.findMany).toHaveBeenCalled();
+			expect(prisma.book.findMany).toHaveBeenCalled();
 			expect(result).toEqual(mockBooks);
 		});
 
 		test("should handle database errors", async () => {
-			vi.mocked(prisma.books.findMany).mockRejectedValue(
+			vi.mocked(prisma.book.findMany).mockRejectedValue(
 				new Error("Database connection error"),
 			);
 
@@ -134,35 +134,35 @@ describe("BooksQueryRepository", () => {
 				booksQueryRepository.findMany("user123", "EXPORTED"),
 			).rejects.toThrow("Database connection error");
 
-			expect(prisma.books.findMany).toHaveBeenCalled();
+			expect(prisma.book.findMany).toHaveBeenCalled();
 		});
 	});
 
 	describe("count", () => {
 		test("should return count of books", async () => {
-			vi.mocked(prisma.books.count).mockResolvedValue(25);
+			vi.mocked(prisma.book.count).mockResolvedValue(25);
 
 			const result = await booksQueryRepository.count("user123", "EXPORTED");
 
-			expect(prisma.books.count).toHaveBeenCalledWith({
+			expect(prisma.book.count).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "EXPORTED" },
 			});
 			expect(result).toBe(25);
 		});
 
 		test("should return 0 for empty collection", async () => {
-			vi.mocked(prisma.books.count).mockResolvedValue(0);
+			vi.mocked(prisma.book.count).mockResolvedValue(0);
 
 			const result = await booksQueryRepository.count("user123", "UNEXPORTED");
 
-			expect(prisma.books.count).toHaveBeenCalledWith({
+			expect(prisma.book.count).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "UNEXPORTED" },
 			});
 			expect(result).toBe(0);
 		});
 
 		test("should handle database errors", async () => {
-			vi.mocked(prisma.books.count).mockRejectedValue(
+			vi.mocked(prisma.book.count).mockRejectedValue(
 				new Error("Database count error"),
 			);
 
@@ -170,7 +170,7 @@ describe("BooksQueryRepository", () => {
 				booksQueryRepository.count("user123", "EXPORTED"),
 			).rejects.toThrow("Database count error");
 
-			expect(prisma.books.count).toHaveBeenCalledWith({
+			expect(prisma.book.count).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "EXPORTED" },
 			});
 		});

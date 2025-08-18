@@ -24,7 +24,7 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 
 	const currentPage = Number(page) || 1;
 
-	// Only render if this tab is active or no tab is specified (defaults to "news")
+	// Only render if this tab is active or no tab is specified
 	if (tab && tab !== "images") return null;
 
 	const content = (() => {
@@ -49,7 +49,6 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 						</Suspense>
 					</>
 				);
-			case "dumper":
 			default:
 				return (
 					<>

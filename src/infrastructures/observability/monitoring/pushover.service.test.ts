@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { PushoverError } from "@/common/error/error-classes";
 
 // Mock the env module
 vi.mock("@/env", () => ({

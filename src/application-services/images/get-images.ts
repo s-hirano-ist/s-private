@@ -3,9 +3,12 @@ import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
-import { ImageData } from "@/components/common/display/image/image-stack";
-import type { Status } from "@/domains/common/entities/common-entity";
-import { CacheStrategy } from "@/domains/images/types";
+import type { ImageData } from "@/components/common/display/image/image-stack";
+import {
+	makeStatus,
+	type Status,
+} from "@/domains/common/entities/common-entity";
+import type { CacheStrategy } from "@/domains/images/types";
 import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
 
 const API_ORIGINAL_PATH = "/api/images/original";
@@ -43,8 +46,8 @@ export const _getImages = async (
 		return data.map((d) => {
 			return {
 				id: d.id,
-				originalPath: API_ORIGINAL_PATH + "/" + d.path,
-				thumbnailPath: API_THUMBNAIL_PATH + "/" + d.path,
+				originalPath: `${API_ORIGINAL_PATH}/${d.path}`,
+				thumbnailPath: `${API_THUMBNAIL_PATH}/${d.path}`,
 				height: d.height,
 				width: d.width,
 			};
@@ -62,7 +65,7 @@ export const getImagesCount = async (status: Status): Promise<number> => {
 export const getExportedImages = cache(
 	async (page: number): Promise<ImageData[]> => {
 		const userId = await getSelfId();
-		return _getImages(page, userId, "EXPORTED", {
+		return _getImages(page, userId, makeStatus("EXPORTED"), {
 			ttl: 400,
 			swr: 40,
 			tags: [`${sanitizeCacheTag(userId)}_images`],
@@ -73,7 +76,7 @@ export const getExportedImages = cache(
 export const getUnexportedImages = cache(
 	async (page: number): Promise<ImageData[]> => {
 		const userId = await getSelfId();
-		return _getImages(page, userId, "UNEXPORTED");
+		return _getImages(page, userId, makeStatus("UNEXPORTED"));
 	},
 );
 

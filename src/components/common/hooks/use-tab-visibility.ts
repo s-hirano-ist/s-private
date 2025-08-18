@@ -12,7 +12,7 @@ export function useTabVisibility(tabName: string, enablePreloading = true) {
 	const [hasBeenVisible, setHasBeenVisible] = useState(false);
 	const [shouldPreload, setShouldPreload] = useState(false);
 
-	const currentTab = searchParams.get("tab") ?? "news";
+	const currentTab = searchParams.get("tab") ?? "articles";
 	const isCurrentlyVisible = currentTab === tabName;
 
 	useEffect(() => {

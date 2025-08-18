@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { fn } from "@storybook/test";
 import { UtilButtons } from "./util-buttons";
 
@@ -13,9 +13,6 @@ type UtilButtonsWrapperProps = {
 function UtilButtonsWrapper({
 	handleReload,
 	onSignOutSubmit,
-	pathname = "/en",
-	locale = "en",
-	theme = "light",
 }: UtilButtonsWrapperProps) {
 	return (
 		<div className="max-w-sm mx-auto">

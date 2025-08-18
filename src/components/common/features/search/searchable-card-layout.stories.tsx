@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { SearchableCardLayout } from "./searchable-card-layout";
 
 const meta = {
@@ -19,7 +19,7 @@ const mockData = [
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const renderCard = (item: any, index: number) => (
+const renderCard = (item: any, _index: number) => (
 	<div className="p-4 border rounded-lg" key={item.id}>
 		<h3 className="font-bold">{item.title}</h3>
 		<p className="text-sm text-gray-600">{item.description}</p>

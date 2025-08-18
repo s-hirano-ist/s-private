@@ -16,7 +16,7 @@ const svg = `
   <circle cx="50" cy="50" r="40" fill="blue" />
 </svg>`;
 const encoder = new TextEncoder();
-const image = encoder.encode(svg);
+const _image = encoder.encode(svg);
 
 export const Default: Story = {
 	args: {

@@ -1,6 +1,6 @@
-import { Status } from "@/domains/common/entities/common-entity";
-import { ImagesFormSchema } from "@/domains/images/entities/images-entity";
-import type { IImagesCommandRepository } from "@/domains/images/types";
+import type { Status } from "@/domains/common/entities/common-entity";
+import type { Image, Path } from "@/domains/images/entities/images-entity";
+import type { IImagesCommandRepository } from "@/domains/images/repositories/images-command-repository.interface";
 import { env } from "@/env";
 import { serverLogger } from "@/infrastructures/observability/server";
 import { minioClient } from "@/minio";
@@ -8,8 +8,8 @@ import prisma from "@/prisma";
 import { ORIGINAL_IMAGE_PATH, THUMBNAIL_IMAGE_PATH } from "./common";
 
 class ImagesCommandRepository implements IImagesCommandRepository {
-	async create(data: ImagesFormSchema): Promise<void> {
-		const response = await prisma.images.create({ data });
+	async create(data: Image): Promise<void> {
+		const response = await prisma.image.create({ data });
 		serverLogger.info(
 			`【IMAGE】\n\nコンテンツ\nfileName: ${response.id}\nの登録ができました`,
 			{ caller: "addImage", status: 201, userId: response.userId },
@@ -18,7 +18,7 @@ class ImagesCommandRepository implements IImagesCommandRepository {
 	}
 
 	async uploadToStorage(
-		path: string,
+		path: Path,
 		buffer: Buffer,
 		isThumbnail: boolean,
 	): Promise<void> {
@@ -27,7 +27,7 @@ class ImagesCommandRepository implements IImagesCommandRepository {
 	}
 
 	async deleteById(id: string, userId: string, status: Status): Promise<void> {
-		const data = await prisma.images.delete({
+		const data = await prisma.image.delete({
 			where: { id, userId, status },
 			select: { path: true },
 		});

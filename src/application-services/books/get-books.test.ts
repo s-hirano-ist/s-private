@@ -5,7 +5,6 @@ import {
 	getExportedBooks,
 	getExportedBooksCount,
 	getUnexportedBooks,
-	getUnexportedBooksCount,
 } from "./get-books";
 
 vi.mock("@/infrastructures/books/repositories/books-query-repository", () => ({

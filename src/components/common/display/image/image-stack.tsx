@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import Lightbox from "yet-another-react-lightbox";
-import type { ServerAction } from "@/common/types";
+import type { DeleteAction } from "@/common/types";
 import { StatusCodeView } from "@/components/common/display/status/status-code-view";
 import { DeleteButtonWithModal } from "@/components/common/forms/actions/delete-button-with-modal";
 import "yet-another-react-lightbox/styles.css";
@@ -18,7 +18,7 @@ export type ImageData = {
 type Props = {
 	data: ImageData[];
 	showDeleteButton: boolean;
-	deleteAction?: (id: string) => Promise<ServerAction>;
+	deleteAction?: DeleteAction;
 };
 
 type SlideImage = {

@@ -5,6 +5,11 @@ import { forbidden } from "next/navigation";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
+import {
+	makeId,
+	makeStatus,
+	makeUserId,
+} from "@/domains/common/entities/common-entity";
 import { booksCommandRepository } from "@/infrastructures/books/repositories/books-command-repository";
 
 export async function deleteBooks(id: string): Promise<ServerAction> {
@@ -14,7 +19,11 @@ export async function deleteBooks(id: string): Promise<ServerAction> {
 	try {
 		const userId = await getSelfId();
 
-		await booksCommandRepository.deleteById(id, userId, "UNEXPORTED");
+		await booksCommandRepository.deleteById(
+			makeId(id),
+			makeUserId(userId),
+			makeStatus("UNEXPORTED"),
+		);
 
 		revalidateTag(`books_UNEXPORTED_${userId}`);
 		revalidateTag(`books_count_UNEXPORTED_${userId}`);

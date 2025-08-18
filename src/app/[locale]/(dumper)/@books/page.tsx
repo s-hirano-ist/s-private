@@ -56,7 +56,6 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 						</Suspense>
 					</>
 				);
-			case "dumper":
 			default:
 				return (
 					<>

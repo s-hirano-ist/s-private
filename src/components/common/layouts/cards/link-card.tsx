@@ -1,6 +1,6 @@
 "use client";
 import ReactMarkdown from "react-markdown";
-import { ServerAction } from "@/common/types";
+import type { DeleteAction } from "@/common/types";
 import { DeleteButtonWithModal } from "@/components/common/forms/actions/delete-button-with-modal";
 import { Badge } from "@/components/common/ui/badge";
 import {
@@ -12,21 +12,12 @@ import {
 } from "@/components/common/ui/card";
 import { validateAndNormalizeUrl } from "@/components/common/utils/validate-url";
 import { Link } from "@/infrastructures/i18n/routing";
-
-export type LinkCardData = {
-	id: string;
-	key: string;
-	title: string;
-	description?: string;
-	primaryBadgeText?: string;
-	secondaryBadgeText?: string;
-	href: string;
-};
+import type { LinkCardData } from "./types";
 
 type Props = {
 	data: LinkCardData;
 	showDeleteButton: boolean;
-	deleteAction?: (id: string) => Promise<ServerAction>;
+	deleteAction?: DeleteAction;
 };
 
 export function LinkCard({

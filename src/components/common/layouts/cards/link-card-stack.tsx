@@ -1,23 +1,14 @@
 "use client";
-import type { ServerAction, ServerActionWithData } from "@/common/types";
+import type { DeleteAction, LoadMoreAction } from "@/common/types";
 import { filterLinkCards } from "@/components/common/features/search/search-filter";
-import {
-	BaseCardStackWrapper,
-	type CardStackInitialData,
-} from "@/components/common/layouts/cards/base-card-stack";
-import {
-	LinkCard,
-	LinkCardData,
-} from "@/components/common/layouts/cards/link-card";
-
-export type LinkCardStackInitialData = CardStackInitialData<LinkCardData>;
+import { BaseCardStackWrapper } from "@/components/common/layouts/cards/base-card-stack";
+import { LinkCard } from "@/components/common/layouts/cards/link-card";
+import type { LinkCardData, LinkCardStackInitialData } from "./types";
 
 type Props = {
 	initial: LinkCardStackInitialData;
-	deleteAction?: (id: string) => Promise<ServerAction>;
-	loadMoreAction: (
-		currentCount: number,
-	) => Promise<ServerActionWithData<LinkCardStackInitialData>>;
+	deleteAction?: DeleteAction;
+	loadMoreAction: LoadMoreAction<LinkCardStackInitialData>;
 };
 
 export function LinkCardStack({
@@ -33,7 +24,7 @@ export function LinkCardStack({
 		isLast: boolean,
 		isSearching: boolean,
 		lastElementRef: (node: HTMLElement | null) => void,
-		deleteAction?: (id: string) => Promise<ServerAction>,
+		deleteAction?: DeleteAction,
 		key?: string,
 	) => (
 		<div

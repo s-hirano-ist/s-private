@@ -3,22 +3,21 @@ import "server-only";
 import { forbidden } from "next/navigation";
 import { getSelfId, hasViewerAdminPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
-import { ServerActionWithData } from "@/common/types";
+import type { ServerActionWithData } from "@/common/types";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
-import { ImageCardData } from "@/components/common/layouts/cards/image-card";
+import type { ImageCardStackInitialData } from "@/components/common/layouts/cards/types";
+import { makeStatus } from "@/domains/common/entities/common-entity";
 import { _getBooks } from "./get-books";
 
 export async function loadMoreExportedBooks(
 	currentCount: number,
-): Promise<
-	ServerActionWithData<{ data: ImageCardData[]; totalCount: number }>
-> {
+): Promise<ServerActionWithData<ImageCardStackInitialData>> {
 	const hasPermission = await hasViewerAdminPermission();
 	if (!hasPermission) forbidden();
 
 	const userId = await getSelfId();
 
-	const data = await _getBooks(currentCount, userId, "EXPORTED", {
+	const data = await _getBooks(currentCount, userId, makeStatus("EXPORTED"), {
 		ttl: 400,
 		swr: 40,
 		tags: [`${sanitizeCacheTag(userId)}_books_${currentCount}`],
@@ -36,15 +35,13 @@ export async function loadMoreExportedBooks(
 
 export async function loadMoreUnexportedBooks(
 	currentCount: number,
-): Promise<
-	ServerActionWithData<{ data: ImageCardData[]; totalCount: number }>
-> {
+): Promise<ServerActionWithData<ImageCardStackInitialData>> {
 	const hasPermission = await hasViewerAdminPermission();
 	if (!hasPermission) forbidden();
 
 	const userId = await getSelfId();
 
-	const data = await _getBooks(currentCount, userId, "UNEXPORTED");
+	const data = await _getBooks(currentCount, userId, makeStatus("UNEXPORTED"));
 	try {
 		return {
 			success: true,
