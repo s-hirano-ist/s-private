@@ -12,7 +12,6 @@ const prismaClientSingleton = () => {
 				const start = Date.now();
 				const result = await query(args);
 				const duration = Date.now() - start;
-				// eslint-disable-next-line
 				console.log(`[${model}.${operation}] took ${duration}ms`);
 				return result;
 			},

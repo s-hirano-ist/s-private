@@ -1,6 +1,5 @@
 import { FlatCompat } from "@eslint/eslintrc";
 import vitestPlugin from "@vitest/eslint-plugin";
-import boundariesPlugin from "eslint-plugin-boundaries";
 // import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
 import reactPlugin from "eslint-plugin-react";
 import reactHookPlugin from "eslint-plugin-react-hooks";
@@ -20,6 +19,7 @@ export default tsEslint.config(
 			"node_modules/**/*", // Ignore build outputs and dependencies
 			".next/**/*",
 			".storybook-static/**/*", // Ignore Storybook build output
+			".storybook-coverage/**/*", // Ignore Storybook coverage output
 			".vitest-coverage/**/*", // Ignore coverage reports
 		],
 	},
@@ -56,13 +56,13 @@ export default tsEslint.config(
 		},
 		rules: {
 			"react/destructuring-assignment": "error", // Props などの分割代入を強制
-			// "react/function-component-definition": [
-			// 	"error",
-			// 	{
-			// 		// namedComponents: "function-expression",
-			// 		// unnamedComponents: "function-expression",
-			// 	},
-			// ],
+			"react/function-component-definition": [
+				"error",
+				{
+					// namedComponents: "function-expression",
+					// unnamedComponents: "function-expression",
+				},
+			],
 			"react/hook-use-state": "error", // useState の返り値の命名を [value, setValue] に統一
 			"react/jsx-boolean-value": "error", // boolean 型の Props の渡し方を統一
 			"react/jsx-fragments": "error", // React Fragment の書き方を統一
@@ -75,35 +75,6 @@ export default tsEslint.config(
 			"react/prop-types": "off", // Props の型チェックは TS で行う & 誤検知があるため無効化
 			"@typescript-eslint/no-unused-vars": "off",
 			"@typescript-eslint/no-empty-object-type": "off",
-		},
-	},
-	{
-		rules: {
-			"no-console": ["warn", { allow: ["error"] }],
-		},
-	},
-
-	{
-		rules: {
-			// Prevent relative imports that go up directories to enforce proper architecture
-			"no-restricted-imports": [
-				"error",
-				{
-					patterns: [
-						{
-							group: ["../../../*", "../../../../*", "../../../../../**/*"],
-							message:
-								"Use absolute imports instead of relative imports that go up directories. This enforces proper architecture boundaries.",
-						},
-					],
-				},
-			],
-		},
-	},
-
-	{
-		rules: {
-			"@typescript-eslint/consistent-type-definitions": ["error", "type"],
 		},
 	},
 	{
@@ -121,50 +92,4 @@ export default tsEslint.config(
 		},
 	},
 	// ...storybookPlugin.configs["flat/recommended"],
-
-	// Boundaries plugin configuration for strict dependencies
-	{
-		plugins: { boundaries: boundariesPlugin },
-
-		// チェック対象は features 配下のみ（テストは除外）
-		files: ["src/features/**/*"],
-		ignores: ["src/features/**/*.test.ts?(x)"],
-
-		settings: {
-			"boundaries/elements": [
-				{
-					type: "feature",
-					pattern: "src/features/*/**", // features/<feature>/以下（深さは任意）
-					mode: "full",
-					capture: ["feature"], // <feature> 部分を保存
-				},
-				// もし features/<feature> 直下のファイルもあり得るなら追加
-				{
-					type: "feature",
-					pattern: "src/features/*/*",
-					mode: "full",
-					capture: ["feature"],
-				},
-			],
-		},
-
-		rules: {
-			// デフォルトは「別 feature への import は禁止」
-			"boundaries/element-types": [
-				"error",
-				{
-					default: "disallow",
-					rules: [
-						{
-							// 自分と同じ feature への import だけ許可
-							from: "feature",
-							allow: [["feature", { feature: "${from.feature}" }]],
-						},
-					],
-					message:
-						"features間のimportは禁止。同一feature内のみimport可能です。",
-				},
-			],
-		},
-	},
 );

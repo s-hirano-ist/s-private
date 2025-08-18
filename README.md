@@ -59,3 +59,11 @@ Licensed under the AGPL-3.0 License, Copyright © 2024
 ### Licenses of used libraries
 
 See [library-license.txt](https://github.com/s-hirano-ist/s-private/blob/main/library-license.txt) for summary of used licenses.
+
+## TODO
+
+READMEに下記を記述。CIにより強制はしないけど、AIコードレビュー時に役立てる設計
+
+1. knipによる不要ファイル確認
+2. jscpdによるコード重複率確認
+3. depcruiseによる依存ファイル確認
