@@ -8,9 +8,9 @@ export type {
 	SortOrder,
 } from "./types/index";
 export type {
+	ArticleOrderBy,
+	ArticleOrderByField,
 	ArticlesFindManyParams,
-	ArticlesOrderBy,
-	ArticlesOrderByField,
 	CategoryFindManyParams,
 	CategoryOrderBy,
 	CategoryOrderByField,
