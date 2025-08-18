@@ -8,10 +8,11 @@ import { ORIGINAL_IMAGE_PATH, THUMBNAIL_IMAGE_PATH } from "./common";
 
 class ImagesQueryRepository implements IImagesQueryRepository {
 	async findByPath(path: string, userId: string): Promise<{} | null> {
-		return await prisma.images.findUnique({
+		const data = await prisma.images.findUnique({
 			where: { path_userId: { path, userId } },
 			select: {},
 		});
+		return data;
 	}
 
 	async findMany(
@@ -21,7 +22,7 @@ class ImagesQueryRepository implements IImagesQueryRepository {
 	): Promise<
 		{ id: string; path: string; height: number | null; width: number | null }[]
 	> {
-		return await prisma.images.findMany({
+		const data = await prisma.images.findMany({
 			where: { userId, status },
 			select: {
 				id: true,
@@ -31,10 +32,12 @@ class ImagesQueryRepository implements IImagesQueryRepository {
 			},
 			...params,
 		});
+		return data;
 	}
 
 	async count(userId: string, status: Status): Promise<number> {
-		return await prisma.images.count({ where: { userId, status } });
+		const data = await prisma.images.count({ where: { userId, status } });
+		return data;
 	}
 
 	async getFromStorage(
@@ -43,7 +46,8 @@ class ImagesQueryRepository implements IImagesQueryRepository {
 	): Promise<NodeJS.ReadableStream> {
 		const objKey = `${isThumbnail ? THUMBNAIL_IMAGE_PATH : ORIGINAL_IMAGE_PATH}/${path}`;
 
-		return await minioClient.getObject(env.MINIO_BUCKET_NAME, objKey);
+		const data = await minioClient.getObject(env.MINIO_BUCKET_NAME, objKey);
+		return data;
 	}
 }
 

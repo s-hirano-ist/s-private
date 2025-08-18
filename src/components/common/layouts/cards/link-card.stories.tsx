@@ -18,7 +18,7 @@ export const Default: Story = {
 			id: "1",
 			key: "1",
 			title: "Sample Title",
-			description: "This is a sample description for the news item.",
+			description: "This is a sample description for the article.",
 			href: "https://example.com",
 			primaryBadgeText: "Tech",
 			secondaryBadgeText: "example.com",
@@ -32,8 +32,8 @@ export const WithDeleteButton: Story = {
 		data: {
 			id: "2",
 			key: "2",
-			title: "News with Delete Button",
-			description: "This news item has a delete button visible.",
+			title: "article with Delete Button",
+			description: "This article has a delete button visible.",
 			href: "https://example.com",
 			primaryBadgeText: "Tech",
 			secondaryBadgeText: "example.com",
@@ -48,8 +48,8 @@ export const WithoutBadgeText: Story = {
 		data: {
 			id: "3",
 			key: "3",
-			title: "News without Badge Text",
-			description: "This news item doesn't have a category.",
+			title: "article without Badge Text",
+			description: "This article doesn't have a category.",
 			href: "https://example.com",
 		},
 		showDeleteButton: false,
@@ -61,7 +61,7 @@ export const WithoutDescription: Story = {
 		data: {
 			id: "4",
 			key: "4",
-			title: "News without Description",
+			title: "article without Description",
 			href: "https://example.com",
 			primaryBadgeText: "Tech",
 			secondaryBadgeText: "example.com",
@@ -76,7 +76,7 @@ export const LongTitle: Story = {
 			id: "5",
 			key: "5",
 			title:
-				"This is a very long news title that might wrap to multiple lines to test how the component handles longer text content",
+				"This is a very long article title that might wrap to multiple lines to test how the component handles longer text content",
 			description:
 				"This is also a longer description to test how the component handles longer description text that might be truncated.",
 			href: "https://example.com",

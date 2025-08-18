@@ -1,25 +1,26 @@
 import { Suspense } from "react";
-import { addContent } from "@/application-services/contents/add-contents";
-import { deleteContents } from "@/application-services/contents/delete-contents";
+import { addArticle } from "@/application-services/articles/add-article";
+import { deleteArticle } from "@/application-services/articles/delete-article";
 import {
-	getExportedContents,
-	getExportedContentsCount,
-	getUnexportedContents,
-} from "@/application-services/contents/get-contents";
+	getCategories,
+	getExportedArticles,
+	getExportedArticlesCount,
+	getUnexportedArticles,
+} from "@/application-services/articles/get-articles";
 import {
-	loadMoreExportedContents,
-	loadMoreUnexportedContents,
-} from "@/application-services/contents/get-contents-from-client";
+	loadMoreExportedArticles,
+	loadMoreUnexportedArticles,
+} from "@/application-services/articles/get-articles-from-client";
 import {
 	hasDumperPostPermission,
 	hasViewerAdminPermission,
 } from "@/common/auth/session";
+import { ArticleForm } from "@/components/articles/server/article-form";
+import { ArticlesCounter } from "@/components/articles/server/articles-counter";
+import { ArticlesStack } from "@/components/articles/server/articles-stack";
 import Loading from "@/components/common/display/loading";
 import { ErrorPermissionBoundary } from "@/components/common/layouts/error-permission-boundary";
 import { LazyTabContent } from "@/components/common/layouts/lazy-tab-content";
-import { ContentsCounter } from "@/components/contents/server/contents-counter";
-import { ContentsForm } from "@/components/contents/server/contents-form";
-import { ContentsStack } from "@/components/contents/server/contents-stack";
 
 type Params = Promise<{ tab?: string; layout?: string }>;
 
@@ -27,7 +28,7 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 	const { tab, layout } = await searchParams;
 
 	// Only render if this tab is active or no tab is specified
-	if (tab && tab !== "contents") return null;
+	if (tab && tab !== "articles") return null;
 
 	const content = (() => {
 		switch (layout) {
@@ -35,21 +36,21 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 				return (
 					<>
 						<ErrorPermissionBoundary
-							errorCaller="ContentsCounter"
+							errorCaller="ArticlesCounter"
 							permissionCheck={hasViewerAdminPermission}
 							render={() =>
-								ContentsCounter({ getContentsCount: getExportedContentsCount })
+								ArticlesCounter({ getArticlesCount: getExportedArticlesCount })
 							}
 						/>
 
 						<Suspense fallback={<Loading />}>
 							<ErrorPermissionBoundary
-								errorCaller="ContentsStack"
+								errorCaller="ArticlesStack"
 								permissionCheck={hasViewerAdminPermission}
 								render={() =>
-									ContentsStack({
-										getContents: getExportedContents,
-										loadMoreAction: loadMoreExportedContents,
+									ArticlesStack({
+										getArticles: getExportedArticles,
+										loadMoreAction: loadMoreExportedArticles,
 									})
 								}
 							/>
@@ -60,20 +61,20 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 				return (
 					<>
 						<ErrorPermissionBoundary
-							errorCaller="ContentsForm"
+							errorCaller="ArticleForm"
 							permissionCheck={hasDumperPostPermission}
-							render={() => ContentsForm({ addContents: addContent })}
+							render={() => ArticleForm({ addArticle, getCategories })}
 						/>
 
 						<Suspense fallback={<Loading />}>
 							<ErrorPermissionBoundary
-								errorCaller="ContentsStack"
+								errorCaller="ArticlesStack"
 								permissionCheck={hasViewerAdminPermission}
 								render={() =>
-									ContentsStack({
-										getContents: getUnexportedContents,
-										loadMoreAction: loadMoreUnexportedContents,
-										deleteContents,
+									ArticlesStack({
+										getArticles: getUnexportedArticles,
+										loadMoreAction: loadMoreUnexportedArticles,
+										deleteArticle,
 									})
 								}
 							/>
@@ -84,7 +85,7 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 	})();
 
 	return (
-		<LazyTabContent fallback={<Loading />} tabName="contents">
+		<LazyTabContent fallback={<Loading />} tabName="articles">
 			{content}
 		</LazyTabContent>
 	);

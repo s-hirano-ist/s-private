@@ -9,10 +9,11 @@ class ContentsQueryRepository implements IContentsQueryRepository {
 		title: ContentTitle,
 		userId: UserId,
 	): Promise<{ id: string; title: string; markdown: string } | null> {
-		return await prisma.contents.findUnique({
+		const data = await prisma.contents.findUnique({
 			where: { title_userId: { title, userId } },
 			select: { id: true, title: true, markdown: true },
 		});
+		return data;
 	}
 
 	async findMany(
@@ -20,15 +21,17 @@ class ContentsQueryRepository implements IContentsQueryRepository {
 		status: Status,
 		params: ContentsFindManyParams,
 	): Promise<Array<{ id: string; title: string }>> {
-		return await prisma.contents.findMany({
+		const data = await prisma.contents.findMany({
 			where: { userId, status },
 			select: { id: true, title: true },
 			...params,
 		});
+		return data;
 	}
 
 	async count(userId: string, status: Status): Promise<number> {
-		return await prisma.contents.count({ where: { userId, status } });
+		const data = await prisma.contents.count({ where: { userId, status } });
+		return data;
 	}
 }
 
