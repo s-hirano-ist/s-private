@@ -3,6 +3,7 @@ import { describe, expect, test, vi } from "vitest";
 import { parseAddContentFormData } from "@/application-services/contents/helpers/form-data-parser";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { DuplicateError } from "@/common/error/error-classes";
+import { makeUserId } from "@/domains/common/entities/common-entity";
 import {
 	type Content,
 	contentEntity,
@@ -35,11 +36,18 @@ vi.mock("@/domains/contents/services/contents-domain-service", () => ({
 	})),
 }));
 
-vi.mock("@/domains/contents/entities/contents-entity", () => ({
-	contentEntity: {
-		create: vi.fn(),
+vi.mock(
+	"@/domains/contents/entities/contents-entity",
+	async (importOriginal) => {
+		const actual = await importOriginal();
+		return {
+			...actual,
+			contentEntity: {
+				create: vi.fn(),
+			},
+		};
 	},
-}));
+);
 
 vi.mock("@/application-services/contents/helpers/form-data-parser", () => ({
 	parseAddContentFormData: vi.fn(),
@@ -79,6 +87,7 @@ describe("addContents", () => {
 		vi.mocked(parseAddContentFormData).mockReturnValue({
 			title: makeContentTitle("Example Content"),
 			markdown: makeMarkdown("sample markdown"),
+			userId: makeUserId("user-123"),
 		});
 		vi.mocked(contentEntity.create).mockReturnValue(mockContent as Content);
 		mockEnsureNoDuplicate.mockResolvedValue(undefined);
@@ -89,6 +98,7 @@ describe("addContents", () => {
 		expect(vi.mocked(hasDumperPostPermission)).toHaveBeenCalled();
 		expect(vi.mocked(parseAddContentFormData)).toHaveBeenCalledWith(
 			mockFormData,
+			"user-123",
 		);
 		expect(mockEnsureNoDuplicate).toHaveBeenCalled();
 		expect(vi.mocked(contentEntity.create)).toHaveBeenCalled();
@@ -105,6 +115,7 @@ describe("addContents", () => {
 		vi.mocked(parseAddContentFormData).mockReturnValue({
 			title: makeContentTitle("Example Content"),
 			markdown: makeMarkdown("This is an example content quote."),
+			userId: makeUserId("user-123"),
 		});
 		mockEnsureNoDuplicate.mockRejectedValue(new DuplicateError());
 
@@ -125,6 +136,7 @@ describe("addContents", () => {
 		vi.mocked(parseAddContentFormData).mockReturnValue({
 			title: makeContentTitle("Example Content"),
 			markdown: makeMarkdown("This is an example content quote."),
+			userId: makeUserId("user-123"),
 		});
 
 		const error = new Error("Domain service error");

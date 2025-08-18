@@ -3,7 +3,7 @@ import type {
 	Status,
 	UserId,
 } from "@/domains/common/entities/common-entity";
-import type { News } from "./entities/news-entity";
+import type { News, Url } from "./entities/news-entity";
 
 // Custom types to avoid Prisma dependency in domain layer
 export type SortOrder = "asc" | "desc";
@@ -43,9 +43,9 @@ export type INewsCommandRepository = {
 };
 
 export type INewsQueryRepository = {
-	findByUrl(url: string, userId: string): Promise<{} | null>;
+	findByUrl(url: Url, userId: UserId): Promise<{} | null>;
 	findMany(
-		userId: string,
+		userId: UserId,
 		status: Status,
 		params: NewsFindManyParams,
 	): Promise<
@@ -62,7 +62,7 @@ export type INewsQueryRepository = {
 			};
 		}[]
 	>;
-	count(userId: string, status: Status): Promise<number>;
+	count(userId: UserId, status: Status): Promise<number>;
 };
 
 export type NewsFindManyParams = {
@@ -74,7 +74,7 @@ export type NewsFindManyParams = {
 
 export type ICategoryQueryRepository = {
 	findMany(
-		userId: string,
+		userId: UserId,
 		params?: CategoryFindManyParams,
 	): Promise<
 		{

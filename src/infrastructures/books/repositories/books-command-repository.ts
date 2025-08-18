@@ -1,12 +1,15 @@
-import type { BooksFormSchema } from "@/domains/books/entities/books-entity";
+import type { Book } from "@/domains/books/entities/books-entity";
 import type { IBooksCommandRepository } from "@/domains/books/types";
-import type { Status } from "@/domains/common/entities/common-entity";
+import type {
+	Id,
+	Status,
+	UserId,
+} from "@/domains/common/entities/common-entity";
 import { serverLogger } from "@/infrastructures/observability/server";
 import prisma from "@/prisma";
 
 class BooksCommandRepository implements IBooksCommandRepository {
-	// Domain interface implementation
-	async create(data: BooksFormSchema): Promise<void> {
+	async create(data: Book) {
 		const response = await prisma.books.create({
 			data,
 		});
@@ -17,7 +20,7 @@ class BooksCommandRepository implements IBooksCommandRepository {
 		);
 	}
 
-	async deleteById(id: string, userId: string, status: Status): Promise<void> {
+	async deleteById(id: Id, userId: UserId, status: Status) {
 		const data = await prisma.books.delete({
 			where: { id, userId, status },
 			select: { title: true },

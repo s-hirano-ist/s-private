@@ -1,22 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Suspense } from "react";
+import type { Props as ViewerBodyProps } from "./viewer-body";
 import { ViewerBody } from "./viewer-body";
 
-type ContentData = {
-	id: string;
-	title: string;
-	markdown: string;
-};
-
-type ViewerBodyWrapperProps = {
-	slug: string;
-	getContentByTitle: (title: string) => Promise<ContentData | null>;
-};
-
-function ViewerBodyWrapper({
-	slug,
-	getContentByTitle,
-}: ViewerBodyWrapperProps) {
+function ViewerBodyWrapper({ slug, getContentByTitle }: ViewerBodyProps) {
 	return (
 		<Suspense>
 			<ViewerBody getContentByTitle={getContentByTitle} slug={slug} />

@@ -1,15 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Suspense } from "react";
-import type { BooksQueryData } from "@/domains/books/entities/books-entity";
-import { makeId } from "@/domains/common/entities/common-entity";
+import { makeId, makeStatus } from "@/domains/common/entities/common-entity";
+import type { Props as ViewerBodyProps } from "./viewer-body";
 import { ViewerBody } from "./viewer-body";
 
-type ViewerBodyWrapperProps = {
-	slug: string;
-	getBookByISBN: (isbn: string) => Promise<BooksQueryData | null>;
-};
-
-function ViewerBodyWrapper({ slug, getBookByISBN }: ViewerBodyWrapperProps) {
+function ViewerBodyWrapper({ slug, getBookByISBN }: ViewerBodyProps) {
 	return (
 		<Suspense>
 			<ViewerBody getBookByISBN={getBookByISBN} slug={slug} />
@@ -30,7 +25,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const mockBookData: BooksQueryData = {
+const mockBookData = {
 	id: makeId(),
 	ISBN: "978-0123456789",
 	title: "TypeScript Handbook",
@@ -43,6 +38,12 @@ const mockBookData: BooksQueryData = {
 	googleAuthors: ["Microsoft TypeScript Team", "Anders Hejlsberg"],
 	googleHref: "https://www.typescriptlang.org/docs/",
 	googleImgSrc: "https://picsum.photos/id/1/192/192",
+	rating: null,
+	tags: ["typescript", "programming", "javascript"],
+	status: makeStatus("EXPORTED"),
+	createdAt: new Date("2024-01-01"),
+	updatedAt: new Date("2024-01-01"),
+	exportedAt: null,
 };
 
 export const Default: Story = {
@@ -117,6 +118,18 @@ export const MinimalData: Story = {
 			ISBN: "978-0123456789",
 			title: "Minimal Book",
 			markdown: "# Minimal Book\n\nJust some basic content.",
+			googleTitle: null,
+			googleSubTitle: null,
+			googleDescription: null,
+			googleAuthors: [],
+			googleHref: null,
+			googleImgSrc: null,
+			rating: null,
+			tags: [],
+			status: makeStatus("EXPORTED"),
+			createdAt: new Date("2024-01-01"),
+			updatedAt: new Date("2024-01-01"),
+			exportedAt: null,
 		}),
 	},
 };
@@ -126,7 +139,7 @@ export const WithoutImage: Story = {
 		slug: "978-0123456789",
 		getBookByISBN: async () => ({
 			...mockBookData,
-			googleImgSrc: undefined,
+			googleImgSrc: null,
 		}),
 	},
 };

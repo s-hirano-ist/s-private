@@ -38,7 +38,7 @@ export type IContentsQueryRepository = {
 		status: Status,
 		params: ContentsFindManyParams,
 	): Promise<Array<{ id: string; title: string }>>;
-	count(userId: string, status: Status): Promise<number>;
+	count(userId: UserId, status: Status): Promise<number>;
 };
 
 export type ContentsFindManyParams = {

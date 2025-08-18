@@ -1,5 +1,5 @@
 import type { Status } from "@/domains/common/entities/common-entity";
-import type { Image } from "@/domains/images/entities/images-entity";
+import type { Image, Path } from "@/domains/images/entities/images-entity";
 import type { IImagesCommandRepository } from "@/domains/images/types";
 import { env } from "@/env";
 import { serverLogger } from "@/infrastructures/observability/server";
@@ -18,7 +18,7 @@ class ImagesCommandRepository implements IImagesCommandRepository {
 	}
 
 	async uploadToStorage(
-		path: string,
+		path: Path,
 		buffer: Buffer,
 		isThumbnail: boolean,
 	): Promise<void> {

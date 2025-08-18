@@ -68,7 +68,7 @@ describe("NewsQueryRepository", () => {
 					quote: "First quote",
 					ogTitle: "First OG Title",
 					ogDescription: "First OG Description",
-					category: { id: 1, name: "Tech" },
+					Category: { id: 1, name: "Tech" },
 				},
 				{
 					id: "2",
@@ -77,7 +77,7 @@ describe("NewsQueryRepository", () => {
 					quote: null,
 					ogTitle: "Second OG Title",
 					ogDescription: "Second OG Description",
-					category: { id: 2, name: "Science" },
+					Category: { id: 2, name: "Science" },
 				},
 			]);
 		});
@@ -152,7 +152,7 @@ describe("NewsQueryRepository", () => {
 					quote: "Cached quote",
 					ogTitle: "Cached OG Title",
 					ogDescription: "Cached OG Description",
-					category: { id: 1, name: "Tech" },
+					Category: { id: 1, name: "Tech" },
 				},
 			]);
 		});

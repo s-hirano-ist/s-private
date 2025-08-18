@@ -1,4 +1,8 @@
-import type { Status } from "@/domains/common/entities/common-entity";
+import type {
+	Id,
+	Status,
+	UserId,
+} from "@/domains/common/entities/common-entity";
 import type { News } from "@/domains/news/entities/news-entity";
 import type { INewsCommandRepository } from "@/domains/news/types";
 import { serverLogger } from "@/infrastructures/observability/server";
@@ -45,7 +49,7 @@ class NewsCommandRepository implements INewsCommandRepository {
 		);
 	}
 
-	async deleteById(id: string, userId: string, status: Status) {
+	async deleteById(id: Id, userId: UserId, status: Status) {
 		const data = await prisma.news.delete({
 			where: { id, userId, status },
 			select: { title: true },

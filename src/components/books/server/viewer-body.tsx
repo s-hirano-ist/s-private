@@ -12,7 +12,7 @@ import {
 } from "@/components/common/ui/card";
 import { Link } from "@/infrastructures/i18n/routing";
 
-type Props = { slug: string; getBookByISBN: typeof getBookByISBN };
+export type Props = { slug: string; getBookByISBN: typeof getBookByISBN };
 
 export async function ViewerBody({ slug, getBookByISBN }: Props) {
 	const data = await getBookByISBN(slug);

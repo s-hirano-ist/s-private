@@ -40,7 +40,7 @@ describe("get-news", () => {
 					url: "https://example1.com",
 					ogTitle: "OG Title 1",
 					ogDescription: "OG Description 1",
-					category: { name: "Tech", id: "1" },
+					Category: { name: "Tech", id: "1" },
 				},
 				{
 					id: "2",
@@ -49,7 +49,7 @@ describe("get-news", () => {
 					url: "https://example2.com",
 					ogTitle: "OG Title 2",
 					ogDescription: "OG Description 2",
-					category: { name: "Science", id: "2" },
+					Category: { name: "Science", id: "2" },
 				},
 			]);
 			vi.mocked(newsQueryRepository.count).mockResolvedValue(50);
@@ -139,7 +139,7 @@ describe("get-news", () => {
 					title: "Unexported News 1",
 					quote: "Test quote 1",
 					url: "https://example1.com",
-					category: { name: "Tech", id: "1" },
+					Category: { name: "Tech", id: "1" },
 					ogTitle: "OG Title 1",
 					ogDescription: "OG Description 1",
 				},
@@ -148,7 +148,7 @@ describe("get-news", () => {
 					title: "Unexported News 2",
 					quote: null,
 					url: "https://example2.com",
-					category: { name: "Science", id: "2" },
+					Category: { name: "Science", id: "2" },
 					ogTitle: "OG Title 2",
 					ogDescription: "OG Description 2",
 				},

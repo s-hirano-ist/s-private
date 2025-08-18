@@ -1,5 +1,5 @@
-import type { Status } from "../common/entities/common-entity";
-import type { BooksFormSchema, BooksQueryData } from "./entities/books-entity";
+import type { Id, Status, UserId } from "../common/entities/common-entity";
+import type { Book, ISBN } from "./entities/books-entity";
 
 // Custom types to avoid Prisma dependency in domain layer
 export type SortOrder = "asc" | "desc";
@@ -33,18 +33,55 @@ export type BooksOrderBy = {
 };
 
 export type IBooksCommandRepository = {
-	create(data: BooksFormSchema): Promise<void>;
-	deleteById(id: string, userId: string, status: Status): Promise<void>;
+	create(data: Book): Promise<void>;
+	deleteById(id: Id, userId: UserId, status: Status): Promise<void>;
 };
 
 export type IBooksQueryRepository = {
-	findByISBN(ISBN: string, userId: string): Promise<BooksQueryData | null>;
+	findByISBN(
+		ISBN: ISBN,
+		userId: UserId,
+	): Promise<{
+		ISBN: string;
+		id: string;
+		title: string;
+		googleTitle: string | null;
+		googleSubTitle: string | null;
+		googleAuthors: string[];
+		googleDescription: string | null;
+		googleImgSrc: string | null;
+		googleHref: string | null;
+		markdown: string | null;
+		rating: number | null;
+		tags: string[];
+		createdAt: Date;
+		updatedAt: Date;
+		exportedAt: Date | null;
+	} | null>;
 	findMany(
 		userId: string,
 		status: Status,
 		params?: BooksFindManyParams,
-	): Promise<BooksQueryData[]>;
-	count(userId: string, status: Status): Promise<number>;
+	): Promise<
+		{
+			ISBN: string;
+			id: string;
+			title: string;
+			googleTitle: string | null;
+			googleSubTitle: string | null;
+			googleAuthors: string[];
+			googleDescription: string | null;
+			googleImgSrc: string | null;
+			googleHref: string | null;
+			markdown: string | null;
+			rating: number | null;
+			tags: string[];
+			createdAt: Date;
+			updatedAt: Date;
+			exportedAt: Date | null;
+		}[]
+	>;
+	count(userId: UserId, status: Status): Promise<number>;
 };
 
 export type BooksFindManyParams = {

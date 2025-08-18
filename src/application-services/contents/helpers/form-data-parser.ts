@@ -1,3 +1,4 @@
+import { getFormDataString } from "@/common/utils/form-data-utils";
 import { makeUserId } from "@/domains/common/entities/common-entity";
 import {
 	makeContentTitle,
@@ -5,8 +6,8 @@ import {
 } from "@/domains/contents/entities/contents-entity";
 
 export const parseAddContentFormData = (formData: FormData, userId: string) => {
-	const title = formData.get("title") as string;
-	const markdown = formData.get("markdown") as string;
+	const title = getFormDataString(formData, "title");
+	const markdown = getFormDataString(formData, "markdown");
 
 	return {
 		title: makeContentTitle(title),

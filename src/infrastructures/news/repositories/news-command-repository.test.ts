@@ -35,11 +35,8 @@ describe("NewsCommandRepository", () => {
 				userId: "user123",
 				id: "01234567-89ab-4def-9123-456789abcdef",
 				status: "UNEXPORTED",
-				category: {
-					name: "tech",
-					userId: "user123",
-					id: "01234567-89ab-cdef-0123-456789abcde0",
-				},
+				categoryName: "tech",
+				categoryId: "01234567-89ab-cdef-0123-456789abcde0",
 			});
 
 			expect(prisma.news.create).toHaveBeenCalled();
@@ -68,7 +65,8 @@ describe("NewsCommandRepository", () => {
 				title: "Another News",
 				url: "https://example.com/news/2",
 				quote: null,
-				category: { id: "1", name: "tech", userId: "user123" },
+				categoryName: "tech",
+				categoryId: "1",
 				userId: "user123",
 				id: "1",
 				status: "UNEXPORTED",

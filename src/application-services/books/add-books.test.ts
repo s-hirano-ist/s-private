@@ -2,8 +2,19 @@ import { revalidateTag } from "next/cache";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { DuplicateError } from "@/common/error/error-classes";
+import {
+	bookEntity,
+	makeBookTitle,
+	makeISBN,
+} from "@/domains/books/entities/books-entity";
+import {
+	makeId,
+	makeStatus,
+	makeUserId,
+} from "@/domains/common/entities/common-entity";
 import { booksCommandRepository } from "@/infrastructures/books/repositories/books-command-repository";
 import { addBooks } from "./add-books";
+import { parseAddBooksFormData } from "./helpers/form-data-parser";
 
 vi.mock("@/common/auth/session", () => ({
 	getSelfId: vi.fn(),
@@ -19,12 +30,26 @@ vi.mock("@/infrastructures/books/repositories/books-query-repository", () => ({
 	booksQueryRepository: {},
 }));
 
-const mockPrepareNewBook = vi.fn();
+const mockEnsureNoDuplicate = vi.fn();
 
 vi.mock("@/domains/books/services/books-domain-service", () => ({
 	BooksDomainService: vi.fn().mockImplementation(() => ({
-		prepareNewBook: mockPrepareNewBook,
+		ensureNoDuplicate: mockEnsureNoDuplicate,
 	})),
+}));
+
+vi.mock("@/domains/books/entities/books-entity", async (importOriginal) => {
+	const actual = await importOriginal();
+	return {
+		...actual,
+		bookEntity: {
+			create: vi.fn(),
+		},
+	};
+});
+
+vi.mock("./helpers/form-data-parser", () => ({
+	parseAddBooksFormData: vi.fn(),
 }));
 
 const mockFormData = new FormData();
@@ -34,6 +59,11 @@ mockFormData.append("title", "Test Book");
 describe("addBooks", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
+		vi.mocked(parseAddBooksFormData).mockReturnValue({
+			ISBN: makeISBN("978-4-06-519981-0"),
+			title: makeBookTitle("Test Book"),
+			userId: makeUserId("user-123"),
+		});
 	});
 
 	test("should return success false on Unauthorized", async () => {
@@ -54,19 +84,31 @@ describe("addBooks", () => {
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
 		vi.mocked(getSelfId).mockResolvedValue("user-123");
 
-		mockPrepareNewBook.mockResolvedValue({
-			id: "01234567-89ab-4def-9123-456789abcdef",
-			isbn: "978-4-06-519981-0",
-			title: "Test Book",
-			userId: "user-123",
-		});
+		const mockBook = {
+			id: makeId("01933f5c-9df0-7001-9123-456789abcdef"),
+			ISBN: makeISBN("978-4-06-519981-0"),
+			title: makeBookTitle("Test Book"),
+			userId: makeUserId("user-123"),
+			status: makeStatus("UNEXPORTED"),
+		} as const;
+
+		mockEnsureNoDuplicate.mockResolvedValue(undefined);
+		vi.mocked(bookEntity.create).mockReturnValue(mockBook);
 		vi.mocked(booksCommandRepository.create).mockResolvedValue();
 
 		const result = await addBooks(mockFormData);
 
 		expect(vi.mocked(hasDumperPostPermission)).toHaveBeenCalled();
-		expect(mockPrepareNewBook).toHaveBeenCalledWith(mockFormData, "user-123");
-		expect(booksCommandRepository.create).toHaveBeenCalled();
+		expect(mockEnsureNoDuplicate).toHaveBeenCalledWith(
+			makeISBN("978-4-06-519981-0"),
+			makeUserId("user-123"),
+		);
+		expect(bookEntity.create).toHaveBeenCalledWith({
+			ISBN: makeISBN("978-4-06-519981-0"),
+			title: makeBookTitle("Test Book"),
+			userId: makeUserId("user-123"),
+		});
+		expect(booksCommandRepository.create).toHaveBeenCalledWith(mockBook);
 		expect(revalidateTag).toHaveBeenCalledWith("books_UNEXPORTED_user-123");
 
 		expect(result.success).toBe(true);
@@ -76,7 +118,7 @@ describe("addBooks", () => {
 	test("should preserve form data on DuplicateError", async () => {
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
 		vi.mocked(getSelfId).mockResolvedValue("user-123");
-		mockPrepareNewBook.mockRejectedValue(new DuplicateError());
+		mockEnsureNoDuplicate.mockRejectedValue(new DuplicateError());
 
 		const result = await addBooks(mockFormData);
 
@@ -93,7 +135,7 @@ describe("addBooks", () => {
 		vi.mocked(getSelfId).mockResolvedValue("user-123");
 
 		const error = new Error("Domain service error");
-		mockPrepareNewBook.mockRejectedValue(error);
+		mockEnsureNoDuplicate.mockRejectedValue(error);
 
 		const result = await addBooks(mockFormData);
 

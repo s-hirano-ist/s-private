@@ -5,9 +5,11 @@ import { PAGE_SIZE } from "@/common/constants";
 import type { GetCount, GetPaginatedData } from "@/common/types";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import type { ImageCardStackInitialData } from "@/components/common/layouts/cards/types";
+import { makeISBN } from "@/domains/books/entities/books-entity";
 import type { CacheStrategy } from "@/domains/books/types";
 import {
 	makeStatus,
+	makeUserId,
 	type Status,
 } from "@/domains/common/entities/common-entity";
 import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
@@ -25,12 +27,16 @@ export const _getBooks = async (
 	);
 
 	try {
-		const books = await booksQueryRepository.findMany(userId, status, {
-			skip: currentCount,
-			take: PAGE_SIZE,
-			orderBy: { createdAt: "desc" },
-			cacheStrategy,
-		});
+		const books = await booksQueryRepository.findMany(
+			makeUserId(userId),
+			status,
+			{
+				skip: currentCount,
+				take: PAGE_SIZE,
+				orderBy: { createdAt: "desc" },
+				cacheStrategy,
+			},
+		);
 
 		const totalCount = await _getBooksCount(userId, status);
 
@@ -55,7 +61,7 @@ const _getBooksCount = async (
 	"use cache";
 	cacheTag(`books_count_${status}_${userId}`);
 	try {
-		return await booksQueryRepository.count(userId, status);
+		return await booksQueryRepository.count(makeUserId(userId), status);
 	} catch (error) {
 		throw error;
 	}
@@ -94,7 +100,10 @@ export const getExportedBooksCount: GetCount = cache(
 export const getBookByISBN = cache(async (isbn: string) => {
 	try {
 		const userId = await getSelfId();
-		return await booksQueryRepository.findByISBN(isbn, userId);
+		return await booksQueryRepository.findByISBN(
+			makeISBN(isbn),
+			makeUserId(userId),
+		);
 	} catch (error) {
 		throw error;
 	}

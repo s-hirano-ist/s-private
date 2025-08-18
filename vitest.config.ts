@@ -24,6 +24,7 @@ export default defineConfig({
 				"src/infrastructures/auth/?(auth|auth.config).ts",
 				"src/components/common/providers/**/*.tsx",
 				"src/infrastructures/observability/**/*.ts",
+				"src/infrastructures/i18n/**/*.ts",
 				"**/types.ts",
 				"src/?(instrumentation-client|instrumentation|minio|middleware|pino|prisma).ts",
 				"src/app/?(manifest.ts|loading.tsx|robots.ts|not-found.tsx|instrumentation.ts)",

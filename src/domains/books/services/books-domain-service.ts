@@ -1,42 +1,14 @@
 import "server-only";
-import {
-	DuplicateError,
-	InvalidFormatError,
-} from "@/common/error/error-classes";
+import { DuplicateError } from "@/common/error/error-classes";
 import type { IBooksQueryRepository } from "@/domains/books/types";
-import {
-	makeStatus,
-	makeUserId,
-} from "@/domains/common/entities/common-entity";
-import {
-	type BooksFormSchema,
-	booksFormSchema,
-} from "../entities/books-entity";
+import type { UserId } from "@/domains/common/entities/common-entity";
+import type { ISBN } from "../entities/books-entity";
 
 export class BooksDomainService {
 	constructor(private readonly booksQueryRepository: IBooksQueryRepository) {}
 
-	public async prepareNewBook(
-		formData: FormData,
-		userId: string,
-	): Promise<BooksFormSchema> {
-		const formValues = {
-			ISBN: formData.get("isbn") as string,
-			title: formData.get("title") as string,
-			userId: makeUserId(userId),
-			status: makeStatus("UNEXPORTED"),
-		} satisfies Omit<BooksFormSchema, "id">;
-
-		const booksValidatedFields = booksFormSchema.safeParse(formValues);
-		if (!booksValidatedFields.success) throw new InvalidFormatError();
-
-		// check duplicate
-		const exists = await this.booksQueryRepository.findByISBN(
-			booksValidatedFields.data.ISBN,
-			userId,
-		);
+	public async ensureNoDuplicate(ISBN: ISBN, userId: UserId): Promise<void> {
+		const exists = await this.booksQueryRepository.findByISBN(ISBN, userId);
 		if (exists !== null) throw new DuplicateError();
-
-		return booksValidatedFields.data;
 	}
 }

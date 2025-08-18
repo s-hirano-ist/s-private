@@ -5,22 +5,36 @@ import { forbidden } from "next/navigation";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
+import { bookEntity } from "@/domains/books/entities/books-entity";
 import { BooksDomainService } from "@/domains/books/services/books-domain-service";
 import { booksCommandRepository } from "@/infrastructures/books/repositories/books-command-repository";
 import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
+import { parseAddBooksFormData } from "./helpers/form-data-parser";
 
 export async function addBooks(formData: FormData): Promise<ServerAction> {
 	const hasPermission = await hasDumperPostPermission();
 	if (!hasPermission) forbidden();
 
+	const booksDomainService = new BooksDomainService(booksQueryRepository);
+
 	try {
-		const userId = await getSelfId();
+		const { ISBN, title, userId } = parseAddBooksFormData(
+			formData,
+			await getSelfId(),
+		);
 
-		const validatedBooks = await new BooksDomainService(
-			booksQueryRepository,
-		).prepareNewBook(formData, userId);
+		// Domain business rule validation
+		await booksDomainService.ensureNoDuplicate(ISBN, userId);
 
-		await booksCommandRepository.create(validatedBooks);
+		// Create entity with value objects
+		const book = bookEntity.create({
+			ISBN,
+			title,
+			userId,
+		});
+
+		// Persist
+		await booksCommandRepository.create(book);
 
 		revalidateTag(`books_UNEXPORTED_${userId}`);
 		revalidateTag(`books_count_UNEXPORTED_${userId}`);

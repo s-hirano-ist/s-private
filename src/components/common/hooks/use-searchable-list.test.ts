@@ -11,17 +11,6 @@ vi.mock("next/navigation", () => ({
 	useSearchParams: () => mockSearchParams,
 }));
 
-vi.mock("use-debounce", () => ({
-	useDebouncedCallback: vi.fn().mockImplementation((callback, _delay) => {
-		// Return a mocked function that tracks calls
-		const mockFn = vi.fn().mockImplementation((...args) => {
-			// Call the original callback without debouncing for tests
-			return callback(...args);
-		});
-		return mockFn;
-	}),
-}));
-
 describe("useSearchableList", () => {
 	const testData = [
 		{ title: "Apple", id: "1" },

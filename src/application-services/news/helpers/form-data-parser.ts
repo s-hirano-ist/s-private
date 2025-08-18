@@ -1,3 +1,4 @@
+import { getFormDataString } from "@/common/utils/form-data-utils";
 import { makeUserId } from "@/domains/common/entities/common-entity";
 import {
 	makeCategoryName,
@@ -7,10 +8,10 @@ import {
 } from "@/domains/news/entities/news-entity";
 
 export const parseAddNewsFormData = (formData: FormData, userId: string) => {
-	const title = formData.get("title") as string;
-	const quote = formData.get("quote") as string;
-	const url = formData.get("url") as string;
-	const categoryName = formData.get("category") as string;
+	const title = getFormDataString(formData, "title");
+	const quote = getFormDataString(formData, "quote");
+	const url = getFormDataString(formData, "url");
+	const categoryName = getFormDataString(formData, "category");
 
 	return {
 		title: makeNewsTitle(title),
