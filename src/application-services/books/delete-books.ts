@@ -5,22 +5,38 @@ import { forbidden } from "next/navigation";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
+import type { BookId } from "@/domains/books/entities/books-entity";
+import { DomainEventFactory, EventPublisher } from "@/domains/common/events";
 import { booksCommandRepository } from "@/infrastructures/books/repositories/books-command-repository";
 
-export async function deleteBooks(id: string): Promise<ServerAction> {
+export async function deleteBooks(id: BookId): Promise<ServerAction> {
 	const hasPermission = await hasDumperPostPermission();
 	if (!hasPermission) forbidden();
 
-	try {
-		const userId = await getSelfId();
+	const userId = await getSelfId();
 
-		await booksCommandRepository.deleteById(id, userId, "UNEXPORTED");
+	// Use functional repository
+	const deleteResult = await booksCommandRepository.delete(
+		id,
+		userId,
+		"UNEXPORTED",
+	);
 
-		revalidateTag(`books_UNEXPORTED_${userId}`);
-		revalidateTag(`books_count_UNEXPORTED_${userId}`);
-
-		return { success: true, message: "deleted" };
-	} catch (error) {
-		return await wrapServerSideErrorForClient(error);
+	if (deleteResult.isFailure) {
+		return await wrapServerSideErrorForClient(deleteResult);
 	}
+
+	// Publish domain event
+	const bookDeletedEvent = DomainEventFactory.bookStatusChanged(id, userId, {
+		oldStatus: "UNEXPORTED",
+		newStatus: "EXPORTED", // Conceptually moving to deleted state
+	});
+
+	await EventPublisher.publish(bookDeletedEvent);
+
+	// Revalidate cache
+	revalidateTag(`books_UNEXPORTED_${userId}`);
+	revalidateTag(`books_count_UNEXPORTED_${userId}`);
+
+	return { success: true, message: "deleted" };
 }
