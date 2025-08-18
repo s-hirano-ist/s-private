@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Development**: `pnpm dev` - Start Next.js development server
 - **Build**: `pnpm build` - Build the application
 - **Lint**: `pnpm lint` or `pnpm lint:fix` - ESLint checking/fixing
-- **Format**: `pnpm fmt:fix` - Biome formatting
+- **Biome**: `pnpm biome:fix` - Biome formatting
 - **Test**: `pnpm test` - Run Vitest unit tests
 - **E2E Test**: `pnpm test:e2e` - Run Playwright tests
 - **Storybook**: `pnpm storybook` - Component development
@@ -86,7 +86,7 @@ Schema is maintained in `s-schema/schema.prisma` with UUID-based primary keys fo
 - **Storybook**: Component testing with coverage support
 
 ## Code Style & Architecture Rules
-- **Formatter**: Biome (not Prettier) - Use `pnpm fmt:fix` for formatting
+- **Formatter**: Biome (not Prettier) - Use `pnpm biome:fix` for formatting
 - **Linter**: ESLint with strict configuration including boundaries plugin
 - **Package Manager**: pnpm (required)
 - **Import Rules**: No relative imports going up directories (`../../*`) - use absolute imports

@@ -1,5 +1,5 @@
-import { Status } from "@/domains/common/entities/common-entity";
-import { ImagesFormSchema } from "@/domains/images/entities/images-entity";
+import type { Status } from "@/domains/common/entities/common-entity";
+import type { ImagesFormSchema } from "@/domains/images/entities/images-entity";
 import type { IImagesCommandRepository } from "@/domains/images/types";
 import { env } from "@/env";
 import { serverLogger } from "@/infrastructures/observability/server";

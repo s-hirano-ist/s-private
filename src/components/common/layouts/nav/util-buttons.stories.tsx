@@ -13,9 +13,6 @@ type UtilButtonsWrapperProps = {
 function UtilButtonsWrapper({
 	handleReload,
 	onSignOutSubmit,
-	pathname = "/en",
-	locale = "en",
-	theme = "light",
 }: UtilButtonsWrapperProps) {
 	return (
 		<div className="max-w-sm mx-auto">

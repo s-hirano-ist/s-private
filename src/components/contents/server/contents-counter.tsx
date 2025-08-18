@@ -1,4 +1,4 @@
-import { GetContentsCount } from "@/application-services/contents/get-contents";
+import type { GetContentsCount } from "@/application-services/contents/get-contents";
 import { CounterBadge } from "@/components/common/display/counter-badge";
 
 export type Props = {

@@ -3,7 +3,6 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { describe, expect, test, vi } from "vitest";
 import { Button } from "@/components/common/ui/button";
-import GlobalErrorPage from "./global-error";
 
 vi.mock("@sentry/nextjs", () => ({
 	captureException: vi.fn(),

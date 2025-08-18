@@ -1,6 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Suspense } from "react";
-import { Props as ImageCounterProps, ImagesCounter } from "./images-counter";
+import {
+	type Props as ImageCounterProps,
+	ImagesCounter,
+} from "./images-counter";
 
 function ImagesCounterWrapper({ getImagesCount }: ImageCounterProps) {
 	return (

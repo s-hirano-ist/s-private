@@ -1,6 +1,6 @@
 import type { Status } from "@/domains/common/entities/common-entity";
-import { ImagesQueryData } from "@/domains/images/entities/images-entity";
-import {
+import type { ImagesQueryData } from "@/domains/images/entities/images-entity";
+import type {
 	IImagesQueryRepository,
 	ImagesFindManyParams,
 } from "@/domains/images/types";

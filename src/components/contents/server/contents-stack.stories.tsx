@@ -1,6 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Suspense } from "react";
-import { ContentsStack, Props as ContentsStackProps } from "./contents-stack";
+import {
+	ContentsStack,
+	type Props as ContentsStackProps,
+} from "./contents-stack";
 
 function ContentsStackWrapper({
 	getContents,

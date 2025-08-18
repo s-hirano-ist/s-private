@@ -1,5 +1,5 @@
 import type { getCategories } from "@/application-services/news/get-news";
-import { ServerAction } from "@/common/types";
+import type { ServerAction } from "@/common/types";
 import { NewsFormClient } from "../client/news-form-client";
 
 type Props = {

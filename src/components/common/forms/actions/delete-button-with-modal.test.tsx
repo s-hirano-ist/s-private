@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { beforeEach, describe, expect, Mock, test, vi } from "vitest";
+import { beforeEach, describe, expect, type Mock, test, vi } from "vitest";
 import { DeleteButtonWithModal } from "./delete-button-with-modal";
 
 vi.mock("next-intl", () => ({
@@ -238,6 +238,7 @@ describe("DeleteButtonWithModal", () => {
 		const mockParentClick = vi.fn();
 
 		render(
+			// biome-ignore lint: vitest
 			<div onClick={mockParentClick}>
 				<DeleteButtonWithModal
 					deleteAction={mockDeleteAction}

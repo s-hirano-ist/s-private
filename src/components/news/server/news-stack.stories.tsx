@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Suspense } from "react";
-import { NewsStack, Props as NewsStackProps } from "./news-stack";
+import { NewsStack, type Props as NewsStackProps } from "./news-stack";
 
 function NewsStackWrapper({
 	getNews,

@@ -1,4 +1,4 @@
-import { ServerAction } from "@/common/types";
+import type { ServerAction } from "@/common/types";
 import { ImagesFormClient } from "../client/images-form-client";
 
 type Props = {

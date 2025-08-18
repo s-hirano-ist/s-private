@@ -3,9 +3,9 @@ import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
-import { ImageData } from "@/components/common/display/image/image-stack";
+import type { ImageData } from "@/components/common/display/image/image-stack";
 import type { Status } from "@/domains/common/entities/common-entity";
-import { CacheStrategy } from "@/domains/images/types";
+import type { CacheStrategy } from "@/domains/images/types";
 import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
 
 const API_ORIGINAL_PATH = "/api/images/original";
@@ -43,8 +43,8 @@ export const _getImages = async (
 		return data.map((d) => {
 			return {
 				id: d.id,
-				originalPath: API_ORIGINAL_PATH + "/" + d.path,
-				thumbnailPath: API_THUMBNAIL_PATH + "/" + d.path,
+				originalPath: `${API_ORIGINAL_PATH}/${d.path}`,
+				thumbnailPath: `${API_THUMBNAIL_PATH}/${d.path}`,
 				height: d.height,
 				width: d.width,
 			};

@@ -21,6 +21,7 @@ const prismaClientSingleton = () => {
 	return prisma.$extends(withAccelerate());
 };
 
+// biome-ignore lint: prisma template
 declare const globalThis: {
 	prismaGlobal: ReturnType<typeof prismaClientSingleton>;
 } & typeof global;

@@ -1,5 +1,8 @@
 import type { Status } from "../common/entities/common-entity";
-import { ImagesFormSchema, ImagesQueryData } from "./entities/images-entity";
+import type {
+	ImagesFormSchema,
+	ImagesQueryData,
+} from "./entities/images-entity";
 
 // Custom types to avoid Prisma dependency in domain layer
 export type SortOrder = "asc" | "desc";

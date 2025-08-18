@@ -1,4 +1,4 @@
-import { Route } from "next";
+import type { Route } from "next";
 import NextImage from "next/image";
 import { notFound } from "next/navigation";
 import type { getBookByISBN } from "@/application-services/books/get-books";

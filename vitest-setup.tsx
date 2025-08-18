@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
-import { Sharp } from "sharp";
+import type { Sharp } from "sharp";
 import { afterEach, beforeEach, vi } from "vitest";
 
 afterEach(() => {

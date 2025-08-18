@@ -32,7 +32,7 @@ const DEFAULT_LAYOUT = "dumper";
 
 function FooterComponent() {
 	const [open, setOpen] = useState(false);
-	const pathname = usePathname();
+	const _pathname = usePathname();
 	const router = useRouter();
 	const searchParams = useSearchParams();
 

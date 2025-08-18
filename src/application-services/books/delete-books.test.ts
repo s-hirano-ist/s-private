@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, Mock, test, vi } from "vitest";
+import { beforeEach, describe, expect, type Mock, test, vi } from "vitest";
 import * as sessionModule from "@/common/auth/session";
 import * as errorModule from "@/common/error/error-wrapper";
 import * as booksRepositoryModule from "@/infrastructures/books/repositories/books-command-repository";

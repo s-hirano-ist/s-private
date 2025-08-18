@@ -1,4 +1,4 @@
-import { act, renderHook, waitFor } from "@testing-library/react";
+import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { useSearchableList } from "./use-searchable-list";
 
@@ -12,7 +12,7 @@ vi.mock("next/navigation", () => ({
 }));
 
 vi.mock("use-debounce", () => ({
-	useDebouncedCallback: vi.fn().mockImplementation((callback, delay) => {
+	useDebouncedCallback: vi.fn().mockImplementation((callback, _delay) => {
 		// Return a mocked function that tracks calls
 		const mockFn = vi.fn().mockImplementation((...args) => {
 			// Call the original callback without debouncing for tests

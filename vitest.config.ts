@@ -17,7 +17,7 @@ export default defineConfig({
 				"src/**/*.test.ts?(x)",
 				"src/generated/**/*",
 				"src/app/**/?(layout|page).tsx",
-				"src/app/\[locale\]/forbidden.tsx",
+				"src/app/[locale]/forbidden.tsx",
 				"src/app/api/auth/\\[...nextauth\\]/route.ts",
 				"src/app/api/sign-in/route.ts",
 				"src/env.ts",

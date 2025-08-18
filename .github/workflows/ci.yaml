@@ -101,7 +101,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
       - run: pnpm i --frozen-lockfile
-      - run: pnpm fmt:ci
+      - run: pnpm biome:ci
       - run: pnpm lint
         env:
           SKIP_ENV_VALIDATION: true

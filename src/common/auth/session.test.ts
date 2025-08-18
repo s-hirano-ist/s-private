@@ -1,5 +1,5 @@
-import { Session } from "next-auth";
-import { describe, expect, Mock, test, vi } from "vitest";
+import type { Session } from "next-auth";
+import { describe, expect, type Mock, test, vi } from "vitest";
 import { auth } from "@/infrastructures/auth/auth-provider";
 
 vi.mock("@/infrastructures/auth/auth-provider", () => ({

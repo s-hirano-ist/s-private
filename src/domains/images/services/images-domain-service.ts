@@ -13,7 +13,7 @@ import {
 	THUMBNAIL_HEIGHT,
 	THUMBNAIL_WIDTH,
 } from "../entities/images-entity";
-import { IImagesQueryRepository } from "../types";
+import type { IImagesQueryRepository } from "../types";
 
 export function sanitizeFileName(fileName: string) {
 	return fileName.replaceAll(/[^a-zA-Z0-9._-]/g, "");

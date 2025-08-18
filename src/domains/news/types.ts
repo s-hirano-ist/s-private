@@ -1,6 +1,9 @@
 import type { Status } from "@/domains/common/entities/common-entity";
-import type { CategoryQueryData, NewsQueryData } from "./entities/news-entity";
-import { NewsFormSchema } from "./entities/news-entity";
+import type {
+	CategoryQueryData,
+	NewsFormSchema,
+	NewsQueryData,
+} from "./entities/news-entity";
 
 // Custom types to avoid Prisma dependency in domain layer
 export type SortOrder = "asc" | "desc";

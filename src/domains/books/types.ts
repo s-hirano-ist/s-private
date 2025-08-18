@@ -1,5 +1,5 @@
 import type { Status } from "../common/entities/common-entity";
-import { BooksFormSchema, BooksQueryData } from "./entities/books-entity";
+import type { BooksFormSchema, BooksQueryData } from "./entities/books-entity";
 
 // Custom types to avoid Prisma dependency in domain layer
 export type SortOrder = "asc" | "desc";

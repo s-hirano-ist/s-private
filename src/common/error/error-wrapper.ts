@@ -1,7 +1,7 @@
 "use server";
 import "server-only";
 import { AuthError } from "next-auth";
-import { ServerAction } from "@/common/types";
+import type { ServerAction } from "@/common/types";
 import { Prisma } from "@/generated";
 import { serverLogger } from "@/infrastructures/observability/server";
 import {
@@ -25,7 +25,7 @@ function formDataToRecord(
 	return record;
 }
 
-export async function wrapServerSideErrorForClient<T>(
+export async function wrapServerSideErrorForClient(
 	error: unknown,
 	formData?: FormData,
 ): Promise<ServerAction> {

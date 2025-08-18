@@ -1,4 +1,4 @@
-import { BooksQueryData } from "@/domains/books/entities/books-entity";
+import type { BooksQueryData } from "@/domains/books/entities/books-entity";
 import type {
 	BooksFindManyParams,
 	IBooksQueryRepository,

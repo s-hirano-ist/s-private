@@ -3,10 +3,10 @@ import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
-import { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
+import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
 import type { NewsFormClientData } from "@/components/news/client/news-form-client";
 import type { Status } from "@/domains/common/entities/common-entity";
-import { CacheStrategy } from "@/domains/news/types";
+import type { CacheStrategy } from "@/domains/news/types";
 import {
 	categoryQueryRepository,
 	newsQueryRepository,
@@ -68,7 +68,7 @@ const _getNewsCount = async (
 
 const _getCategories = async (userId: string): Promise<NewsFormClientData> => {
 	"use cache";
-	cacheTag(`categories`, `categories_${userId}`);
+	cacheTag("categories", `categories_${userId}`);
 	try {
 		const response = await categoryQueryRepository.findMany(userId, {
 			orderBy: { name: "asc" },

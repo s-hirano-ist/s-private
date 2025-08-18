@@ -53,22 +53,20 @@ export function GenericFormWrapper({
 		if (onSubmit) {
 			await onSubmit(formData);
 			return null;
-		} else {
-			const response = await action(formData);
-			toast(message(response.message));
-
-			if (response.success) {
-				// Clear form on success
-				setFormValues({});
-				return { success: true, message: response.message };
-			} else {
-				// Preserve form data on error
-				if (response.formData) {
-					setFormValues(response.formData);
-				}
-				return response;
-			}
 		}
+		const response = await action(formData);
+		toast(message(response.message));
+
+		if (response.success) {
+			// Clear form on success
+			setFormValues({});
+			return { success: true, message: response.message };
+		}
+		// Preserve form data on error
+		if (response.formData) {
+			setFormValues(response.formData);
+		}
+		return response;
 	};
 
 	const [_, submitAction, isPending] = useActionState(submitForm, null);
