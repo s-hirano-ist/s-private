@@ -1,10 +1,9 @@
-import type { GetContents } from "@/application-services/contents/get-contents";
-import type { DeleteAction, LoadMoreAction } from "@/common/types";
+import type { DeleteAction, GetPaginatedData, LoadMoreAction } from "@/common/types";
 import { LinkCardStack } from "@/components/common/layouts/cards/link-card-stack";
 import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
 
 export type Props = {
-	getContents: GetContents;
+	getContents: GetPaginatedData<LinkCardStackInitialData>;
 	deleteContents?: DeleteAction;
 	loadMoreAction: LoadMoreAction<LinkCardStackInitialData>;
 };

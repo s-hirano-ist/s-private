@@ -1,8 +1,8 @@
-import type { GetContentsCount } from "@/application-services/contents/get-contents";
+import type { GetCount } from "@/common/types";
 import { CounterBadge } from "@/components/common/display/counter-badge";
 
 export type Props = {
-	getContentsCount: GetContentsCount;
+	getContentsCount: GetCount;
 };
 
 export async function ContentsCounter({ getContentsCount }: Props) {

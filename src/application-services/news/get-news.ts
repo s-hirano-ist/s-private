@@ -2,6 +2,7 @@ import { unstable_cacheTag as cacheTag } from "next/cache";
 import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
+import type { GetCount, GetPaginatedData } from "@/common/types";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
 import type { NewsFormClientData } from "@/components/news/client/news-form-client";
@@ -85,28 +86,25 @@ const _getCategories = async (userId: string): Promise<NewsFormClientData> => {
 	}
 };
 
-export type GetNewsCount = () => Promise<number>;
 
-export const getUnexportedNewsCount = cache(async () => {
+export const getUnexportedNewsCount: GetCount = cache(async () => {
 	const userId = await getSelfId();
 	return _getNewsCount(userId, "UNEXPORTED");
 });
 
-export const getExportedNewsCount = cache(async () => {
+export const getExportedNewsCount: GetCount = cache(async () => {
 	const userId = await getSelfId();
 	return _getNewsCount(userId, "EXPORTED");
 });
 
-export type GetNews = (_: number) => Promise<LinkCardStackInitialData>;
-
-export const getUnexportedNews: GetNews = cache(
+export const getUnexportedNews: GetPaginatedData<LinkCardStackInitialData> = cache(
 	async (currentCount: number) => {
 		const userId = await getSelfId();
 		return _getNews(currentCount, userId, "UNEXPORTED");
 	},
 );
 
-export const getExportedNews: GetNews = cache(async (currentCount: number) => {
+export const getExportedNews: GetPaginatedData<LinkCardStackInitialData> = cache(async (currentCount: number) => {
 	const userId = await getSelfId();
 	return _getNews(currentCount, userId, "EXPORTED", {
 		ttl: 400,

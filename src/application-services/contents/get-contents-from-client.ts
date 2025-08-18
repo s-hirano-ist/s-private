@@ -5,12 +5,15 @@ import { getSelfId, hasViewerAdminPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerActionWithData } from "@/common/types";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
-import type { LinkCardData } from "@/components/common/layouts/cards/types";
+import type {
+	LinkCardData,
+	LinkCardStackInitialData,
+} from "@/components/common/layouts/cards/types";
 import { _getContents } from "./get-contents";
 
 export async function loadMoreExportedContents(
 	currentCount: number,
-): Promise<ServerActionWithData<{ data: LinkCardData[]; totalCount: number }>> {
+): Promise<ServerActionWithData<LinkCardStackInitialData>> {
 	const hasPermission = await hasViewerAdminPermission();
 	if (!hasPermission) forbidden();
 
@@ -34,7 +37,7 @@ export async function loadMoreExportedContents(
 
 export async function loadMoreUnexportedContents(
 	currentCount: number,
-): Promise<ServerActionWithData<{ data: LinkCardData[]; totalCount: number }>> {
+): Promise<ServerActionWithData<LinkCardStackInitialData>> {
 	const hasPermission = await hasViewerAdminPermission();
 	if (!hasPermission) forbidden();
 

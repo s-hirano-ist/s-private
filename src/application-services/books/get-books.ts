@@ -2,6 +2,7 @@ import { unstable_cacheTag as cacheTag } from "next/cache";
 import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
+import type { GetCount, GetPaginatedData } from "@/common/types";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import type { ImageCardStackInitialData } from "@/components/common/layouts/cards/types";
 import type { CacheStrategy } from "@/domains/books/types";
@@ -57,16 +58,14 @@ const _getBooksCount = async (
 	}
 };
 
-export type GetBooks = (_: number) => Promise<ImageCardStackInitialData>;
-
-export const getUnexportedBooks: GetBooks = cache(
+export const getUnexportedBooks: GetPaginatedData<ImageCardStackInitialData> = cache(
 	async (currentCount: number) => {
 		const userId = await getSelfId();
 		return _getBooks(currentCount, userId, "UNEXPORTED");
 	},
 );
 
-export const getExportedBooks: GetBooks = cache(
+export const getExportedBooks: GetPaginatedData<ImageCardStackInitialData> = cache(
 	async (currentCount: number) => {
 		const userId = await getSelfId();
 		return _getBooks(currentCount, userId, "EXPORTED", {
@@ -77,16 +76,14 @@ export const getExportedBooks: GetBooks = cache(
 	},
 );
 
-export type GetBooksCount = () => Promise<number>;
-
-export const getUnexportedBooksCount: GetBooksCount = cache(
+export const getUnexportedBooksCount: GetCount = cache(
 	async (): Promise<number> => {
 		const userId = await getSelfId();
 		return await _getBooksCount(userId, "UNEXPORTED");
 	},
 );
 
-export const getExportedBooksCount: GetBooksCount = cache(
+export const getExportedBooksCount: GetCount = cache(
 	async (): Promise<number> => {
 		const userId = await getSelfId();
 		return await _getBooksCount(userId, "EXPORTED");

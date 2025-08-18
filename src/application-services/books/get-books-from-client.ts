@@ -5,14 +5,12 @@ import { getSelfId, hasViewerAdminPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerActionWithData } from "@/common/types";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
-import type { ImageCardData } from "@/components/common/layouts/cards/types";
+import type { ImageCardStackInitialData } from "@/components/common/layouts/cards/types";
 import { _getBooks } from "./get-books";
 
 export async function loadMoreExportedBooks(
 	currentCount: number,
-): Promise<
-	ServerActionWithData<{ data: ImageCardData[]; totalCount: number }>
-> {
+): Promise<ServerActionWithData<ImageCardStackInitialData>> {
 	const hasPermission = await hasViewerAdminPermission();
 	if (!hasPermission) forbidden();
 
@@ -36,9 +34,7 @@ export async function loadMoreExportedBooks(
 
 export async function loadMoreUnexportedBooks(
 	currentCount: number,
-): Promise<
-	ServerActionWithData<{ data: ImageCardData[]; totalCount: number }>
-> {
+): Promise<ServerActionWithData<ImageCardStackInitialData>> {
 	const hasPermission = await hasViewerAdminPermission();
 	if (!hasPermission) forbidden();
 

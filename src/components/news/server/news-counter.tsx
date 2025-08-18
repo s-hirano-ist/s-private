@@ -1,8 +1,8 @@
-import type { GetNewsCount } from "@/application-services/news/get-news";
+import type { GetCount } from "@/common/types";
 import { CounterBadge } from "@/components/common/display/counter-badge";
 
 export type Props = {
-	getNewsCount: GetNewsCount;
+	getNewsCount: GetCount;
 };
 
 export async function NewsCounter({ getNewsCount }: Props) {

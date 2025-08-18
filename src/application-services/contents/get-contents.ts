@@ -2,6 +2,7 @@ import { unstable_cacheTag as cacheTag } from "next/cache";
 import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
+import type { GetCount, GetPaginatedData } from "@/common/types";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
 import type { Status } from "@/domains/common/entities/common-entity";
@@ -57,32 +58,28 @@ const _getContentsCount = async (
 	}
 };
 
-export type GetContentsCount = () => Promise<number>;
-
-export const getUnexportedContentsCount: GetContentsCount = cache(
+export const getUnexportedContentsCount: GetCount = cache(
 	async (): Promise<number> => {
 		const userId = await getSelfId();
 		return await _getContentsCount(userId, "UNEXPORTED");
 	},
 );
 
-export const getExportedContentsCount: GetContentsCount = cache(
+export const getExportedContentsCount: GetCount = cache(
 	async (): Promise<number> => {
 		const userId = await getSelfId();
 		return await _getContentsCount(userId, "EXPORTED");
 	},
 );
 
-export type GetContents = (_: number) => Promise<LinkCardStackInitialData>;
-
-export const getUnexportedContents: GetContents = cache(
+export const getUnexportedContents: GetPaginatedData<LinkCardStackInitialData> = cache(
 	async (currentCount: number) => {
 		const userId = await getSelfId();
 		return _getContents(currentCount, userId, "UNEXPORTED");
 	},
 );
 
-export const getExportedContents: GetContents = cache(
+export const getExportedContents: GetPaginatedData<LinkCardStackInitialData> = cache(
 	async (currentCount: number) => {
 		const userId = await getSelfId();
 		return _getContents(currentCount, userId, "EXPORTED", {
