@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Suspense } from "react";
 import type { Props as ContentsConterProps } from "./contents-counter";
 import { ContentsCounter } from "./contents-counter";

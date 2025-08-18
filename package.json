@@ -112,7 +112,6 @@
 		"eslint-plugin-react-hooks": "5.2.0",
 		"eslint-plugin-storybook": "9.1.2",
 		"eslint-plugin-tailwindcss": "3.18.2",
-		"globals": "16.3.0",
 		"jscpd": "4.0.5",
 		"jsdom": "26.1.0",
 		"knip": "5.62.0",

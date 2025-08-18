@@ -1,12 +1,14 @@
+// MEMO: only use for plugins not in biome
+
 import { FlatCompat } from "@eslint/eslintrc";
 import vitestPlugin from "@vitest/eslint-plugin";
-// import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
 import reactPlugin from "eslint-plugin-react";
 import reactHookPlugin from "eslint-plugin-react-hooks";
-// import storybookPlugin from "eslint-plugin-storybook";
-// import tailwindcssPlugin from "eslint-plugin-tailwindcss";
-import globals from "globals";
+// import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
+import storybookPlugin from "eslint-plugin-storybook";
 import tsEslint from "typescript-eslint";
+
+// import tailwindcssPlugin from "eslint-plugin-tailwindcss";
 
 const compat = new FlatCompat({
 	baseDirectory: import.meta.dirname,
@@ -32,28 +34,19 @@ export default tsEslint.config(
 			"**/*.mjs",
 			"**/*.cjs",
 		],
-		languageOptions: {
-			globals: globals.browser,
-		},
 	},
 	tsEslint.configs.strict,
 	reactPlugin.configs.flat.recommended,
 	reactPlugin.configs.flat["jsx-runtime"], // https://github.com/jsx-eslint/eslint-plugin-react?tab=readme-ov-file#flat-configs
 	// jsx-a11y is included in Next.js config, so we avoid duplicate registration
-	vitestPlugin.configs.recommended,
 	...compat.extends("plugin:react-hooks/recommended"),
 	// FIXME: not working with eslint inspector
 	...compat.extends("next"),
-	// Base configuration for all files
 
 	// FIXME: not working
 	// ...tailwindcssPlugin.configs["flat/recommended"],
 	{
-		settings: {
-			react: {
-				version: "detect",
-			},
-		},
+		settings: { react: { version: "detect" } },
 		rules: {
 			"react/destructuring-assignment": "error", // Props などの分割代入を強制
 			"react/function-component-definition": [
@@ -77,19 +70,30 @@ export default tsEslint.config(
 			"@typescript-eslint/no-empty-object-type": "off",
 		},
 	},
+
+	// react-hooks
 	{
-		// eslint-plugin-react-hooks の設定
 		plugins: { "react-hooks": reactHookPlugin },
 		rules: {
-			"react-hooks/exhaustive-deps": "error", // recommended では warn のため error に上書き
+			"react-hooks/exhaustive-deps": "error",
 			"react-hooks/rules-of-hooks": "error",
 		},
 	},
+
+	// vitest
+	vitestPlugin.configs.recommended,
 	{
-		// @vitest/eslint-plugin の設定
 		rules: {
-			"vitest/consistent-test-it": ["error", { fn: "test" }], // it ではなく test に統一
+			"vitest/consistent-test-it": ["error", { fn: "test" }],
 		},
 	},
-	// ...storybookPlugin.configs["flat/recommended"],
+
+	// storybook
+	...storybookPlugin.configs["flat/recommended"],
+
+	// TODO: enable when biome conflicts occur
+	// {
+	// 	files: ["**/*"],
+	// 	ignores: ["**/*"],
+	// },
 );
