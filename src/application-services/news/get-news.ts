@@ -41,7 +41,7 @@ export const _getNews = async (
 		return {
 			data: news.map((d) => ({
 				id: d.id,
-				primaryBadgeText: d.category.name,
+				primaryBadgeText: d.Category.name,
 				secondaryBadgeText: new URL(d.url).hostname,
 				key: d.id,
 				title: d.title,

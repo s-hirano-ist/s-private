@@ -1,11 +1,11 @@
 import type { Status } from "@/domains/common/entities/common-entity";
-import type { NewsFormSchema } from "@/domains/news/entities/news-entity";
+import type { News } from "@/domains/news/entities/news-entity";
 import type { INewsCommandRepository } from "@/domains/news/types";
 import { serverLogger } from "@/infrastructures/observability/server";
 import prisma from "@/prisma";
 
 class NewsCommandRepository implements INewsCommandRepository {
-	async create(data: NewsFormSchema): Promise<void> {
+	async create(data: News) {
 		const response = await prisma.news.create({
 			data: {
 				id: data.id,
@@ -18,14 +18,14 @@ class NewsCommandRepository implements INewsCommandRepository {
 					connectOrCreate: {
 						where: {
 							name_userId: {
-								name: data.category.name,
+								name: data.categoryName,
 								userId: data.userId,
 							},
 						},
 						create: {
-							name: data.category.name,
-							userId: data.category.userId,
-							id: data.category.id,
+							name: data.categoryName,
+							userId: data.userId,
+							id: data.categoryId,
 						},
 					},
 				},
@@ -45,7 +45,7 @@ class NewsCommandRepository implements INewsCommandRepository {
 		);
 	}
 
-	async deleteById(id: string, userId: string, status: Status): Promise<void> {
+	async deleteById(id: string, userId: string, status: Status) {
 		const data = await prisma.news.delete({
 			where: { id, userId, status },
 			select: { title: true },

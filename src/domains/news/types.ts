@@ -1,9 +1,9 @@
-import type { Status } from "@/domains/common/entities/common-entity";
 import type {
-	CategoryQueryData,
-	NewsFormSchema,
-	NewsQueryData,
-} from "./entities/news-entity";
+	Id,
+	Status,
+	UserId,
+} from "@/domains/common/entities/common-entity";
+import type { News } from "./entities/news-entity";
 
 // Custom types to avoid Prisma dependency in domain layer
 export type SortOrder = "asc" | "desc";
@@ -38,8 +38,8 @@ export type CategoryOrderBy = {
 };
 
 export type INewsCommandRepository = {
-	create(data: NewsFormSchema): Promise<void>;
-	deleteById(id: string, userId: string, status: Status): Promise<void>;
+	create(data: News): Promise<void>;
+	deleteById(id: Id, userId: UserId, status: Status): Promise<void>;
 };
 
 export type INewsQueryRepository = {
@@ -48,7 +48,20 @@ export type INewsQueryRepository = {
 		userId: string,
 		status: Status,
 		params: NewsFindManyParams,
-	): Promise<NewsQueryData[]>;
+	): Promise<
+		{
+			id: string;
+			title: string;
+			url: string;
+			quote: string | null;
+			ogTitle: string | null;
+			ogDescription: string | null;
+			Category: {
+				id: string;
+				name: string;
+			};
+		}[]
+	>;
 	count(userId: string, status: Status): Promise<number>;
 };
 
@@ -63,7 +76,12 @@ export type ICategoryQueryRepository = {
 	findMany(
 		userId: string,
 		params?: CategoryFindManyParams,
-	): Promise<CategoryQueryData[]>;
+	): Promise<
+		{
+			id: string;
+			name: string;
+		}[]
+	>;
 };
 
 export type CategoryFindManyParams = {

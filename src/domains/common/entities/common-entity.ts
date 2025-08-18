@@ -13,7 +13,10 @@ export const Id = z
 	.default(() => idGenerator.uuidv7())
 	.brand<"Id">();
 export type Id = z.infer<typeof Id>;
-export const makeId = (): Id => Id.parse(idGenerator.uuidv7());
+export const makeId = (id?: string): Id => {
+	if (!id) return Id.parse(idGenerator.uuidv7());
+	return Id.parse(id);
+};
 
 export const UserId = z.string().min(1, "required").brand<"UserId">();
 export type UserId = z.infer<typeof UserId>;

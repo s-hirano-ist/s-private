@@ -1,70 +1,113 @@
-import { z } from "zod";
-import { Id, Status, UserId } from "@/domains/common/entities/common-entity";
+import { ZodError, z } from "zod";
+import {
+	InvalidFormatError,
+	UnexpectedError,
+} from "@/common/error/error-classes";
+import {
+	Id,
+	makeId,
+	makeStatus,
+	Status,
+	UserId,
+} from "@/domains/common/entities/common-entity";
 
-// value objects
+// Value objects
 
-export const categoryInputSchema = z
-	.object({
-		name: z
-			.string({ message: "required" })
-			.trim()
-			.min(1, { message: "required" })
-			.max(16, { message: "tooLong" }),
-		userId: UserId,
-		id: Id,
-	})
-	.strict();
+const CategoryName = z
+	.string({ message: "required" })
+	.trim()
+	.min(1, { message: "required" })
+	.max(16, { message: "tooLong" })
+	.brand<"CategoryName">();
+type CategoryName = z.infer<typeof CategoryName>;
+export const makeCategoryName = (v: string): CategoryName =>
+	CategoryName.parse(v);
 
-export const newsInputSchema = z
-	.object({
-		category: categoryInputSchema,
-		title: z
-			.string({ message: "required" })
-			.min(1, { message: "required" })
-			.max(64, { message: "tooLong" }),
-		quote: z.string().max(256, { message: "tooLong" }).nullable().optional(),
-		url: z
-			.string({ message: "required" })
-			.min(1, { message: "required" })
-			.url({ message: "invalidFormat" })
-			.refine(
-				(url: string) => {
-					try {
-						const urlObject = new URL(url);
-						return (
-							urlObject.protocol === "http:" || urlObject.protocol === "https:"
-						);
-					} catch {
-						return false;
-					}
-				},
-				{ message: "invalidFormat" },
-			),
-		userId: UserId,
-		id: Id,
-		status: Status,
-	})
-	.strict();
+const NewsTitle = z
+	.string({ message: "required" })
+	.min(1, { message: "required" })
+	.max(64, { message: "tooLong" })
+	.brand<"NewsTitle">();
+type NewsTitle = z.infer<typeof NewsTitle>;
+export const makeNewsTitle = (v: string): NewsTitle => NewsTitle.parse(v);
 
-export const newsAdditionalSchema = z
-	.object({
-		ogTitle: z.string().nullable().optional(),
-		ogDescription: z.string().nullable().optional(),
-	})
-	.strict();
+const Quote = z
+	.string()
+	.max(256, { message: "tooLong" })
+	.nullable()
+	.optional()
+	.brand<"Quote">();
+type Quote = z.infer<typeof Quote>;
+export const makeQuote = (v: string | null | undefined): Quote =>
+	Quote.parse(v);
 
-// entities
+const Url = z
+	.url({ message: "invalidFormat" })
+	.min(1, { message: "required" })
+	.refine(
+		(url: string) => {
+			try {
+				const urlObject = new URL(url);
+				return (
+					urlObject.protocol === "http:" || urlObject.protocol === "https:"
+				);
+			} catch {
+				return false;
+			}
+		},
+		{ message: "invalidFormat" },
+	)
+	.brand<"Url">();
+export type Url = z.infer<typeof Url>;
+export const makeUrl = (v: string): Url => Url.parse(v);
 
-export const newsFormSchema = newsInputSchema;
-export type NewsFormSchema = z.infer<typeof newsFormSchema>;
+const OgTitle = z.string().nullable().optional().brand<"OgTitle">();
+type OgTitle = z.infer<typeof OgTitle>;
+export const makeOgTitle = (v: string | null | undefined): OgTitle =>
+	OgTitle.parse(v);
 
-export const categoryQueryData = categoryInputSchema.omit({ userId: true });
-export type CategoryQueryData = z.infer<typeof categoryQueryData>;
+const OgDescription = z.string().nullable().optional().brand<"OgDescription">();
+type OgDescription = z.infer<typeof OgDescription>;
+export const makeOgDescription = (
+	v: string | null | undefined,
+): OgDescription => OgDescription.parse(v);
 
-export const newsQueryData = newsInputSchema
-	.merge(newsAdditionalSchema)
-	.omit({ userId: true, status: true })
-	.extend({
-		category: categoryInputSchema.omit({ userId: true }),
-	});
-export type NewsQueryData = z.infer<typeof newsQueryData>;
+// Entities
+
+export const news = z.object({
+	id: Id,
+	userId: UserId,
+	categoryName: CategoryName,
+	categoryId: Id,
+	title: NewsTitle,
+	quote: Quote,
+	url: Url,
+	status: Status,
+	ogTitle: OgTitle,
+	ogDescription: OgDescription,
+});
+export type News = Readonly<z.infer<typeof news>>;
+
+type CreateNewsArgs = Readonly<{
+	userId: UserId;
+	categoryName: CategoryName;
+	title: NewsTitle;
+	quote?: Quote;
+	url: Url;
+}>;
+
+export const newsEntity = {
+	create: (args: CreateNewsArgs): News => {
+		try {
+			return Object.freeze({
+				id: makeId(),
+				status: makeStatus("UNEXPORTED"),
+				categoryId: makeId(),
+				...args,
+			});
+		} catch (error) {
+			if (error instanceof ZodError) throw new InvalidFormatError();
+			throw new UnexpectedError();
+		}
+	},
+};

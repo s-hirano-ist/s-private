@@ -1,10 +1,4 @@
 import type { Status } from "@/domains/common/entities/common-entity";
-import {
-	type CategoryQueryData,
-	categoryQueryData,
-	type NewsQueryData,
-	newsQueryData,
-} from "@/domains/news/entities/news-entity";
 import type {
 	CategoryFindManyParams,
 	ICategoryQueryRepository,
@@ -14,7 +8,7 @@ import type {
 import prisma from "@/prisma";
 
 class NewsQueryRepository implements INewsQueryRepository {
-	findByUrl = async (url: string, userId: string): Promise<{} | null> => {
+	findByUrl = async (url: string, userId: string) => {
 		return await prisma.news.findUnique({
 			where: { url_userId: { url, userId } },
 			select: { url: true },
@@ -25,8 +19,8 @@ class NewsQueryRepository implements INewsQueryRepository {
 		userId: string,
 		status: Status,
 		params: NewsFindManyParams,
-	): Promise<NewsQueryData[]> => {
-		const response = await prisma.news.findMany({
+	) => {
+		return await prisma.news.findMany({
 			where: { userId, status },
 			select: {
 				id: true,
@@ -39,20 +33,6 @@ class NewsQueryRepository implements INewsQueryRepository {
 			},
 			...params,
 		});
-		return response.map((d) =>
-			newsQueryData.parse({
-				category: categoryQueryData.parse({
-					name: d.Category.name,
-					id: d.Category.id,
-				}),
-				id: d.id,
-				quote: d.quote,
-				title: d.title,
-				url: d.url,
-				ogTitle: d.ogTitle,
-				ogDescription: d.ogDescription,
-			}),
-		);
 	};
 
 	async count(userId: string, status: Status): Promise<number> {
@@ -63,16 +43,12 @@ class NewsQueryRepository implements INewsQueryRepository {
 export const newsQueryRepository = new NewsQueryRepository();
 
 class CategoryQueryRepository implements ICategoryQueryRepository {
-	async findMany(
-		userId: string,
-		params?: CategoryFindManyParams,
-	): Promise<CategoryQueryData[]> {
-		const response = await prisma.categories.findMany({
+	async findMany(userId: string, params?: CategoryFindManyParams) {
+		return await prisma.categories.findMany({
 			where: { userId },
 			select: { id: true, name: true },
 			...params,
 		});
-		return response.map((category) => categoryQueryData.parse(category));
 	}
 }
 

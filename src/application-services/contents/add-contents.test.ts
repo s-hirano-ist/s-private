@@ -6,8 +6,8 @@ import { DuplicateError } from "@/common/error/error-classes";
 import {
 	type Content,
 	contentEntity,
+	makeContentTitle,
 	makeMarkdown,
-	makeTitle,
 } from "@/domains/contents/entities/contents-entity";
 import { contentsCommandRepository } from "@/infrastructures/contents/repositories/contents-command-repository";
 import { addContent } from "./add-contents";
@@ -77,7 +77,7 @@ describe("addContents", () => {
 		};
 
 		vi.mocked(parseAddContentFormData).mockReturnValue({
-			title: makeTitle("Example Content"),
+			title: makeContentTitle("Example Content"),
 			markdown: makeMarkdown("sample markdown"),
 		});
 		vi.mocked(contentEntity.create).mockReturnValue(mockContent as Content);
@@ -103,7 +103,7 @@ describe("addContents", () => {
 		vi.mocked(getSelfId).mockResolvedValue("user-123");
 
 		vi.mocked(parseAddContentFormData).mockReturnValue({
-			title: makeTitle("Example Content"),
+			title: makeContentTitle("Example Content"),
 			markdown: makeMarkdown("This is an example content quote."),
 		});
 		mockEnsureNoDuplicate.mockRejectedValue(new DuplicateError());
@@ -123,7 +123,7 @@ describe("addContents", () => {
 		vi.mocked(getSelfId).mockResolvedValue("user-123");
 
 		vi.mocked(parseAddContentFormData).mockReturnValue({
-			title: makeTitle("Example Content"),
+			title: makeContentTitle("Example Content"),
 			markdown: makeMarkdown("This is an example content quote."),
 		});
 

@@ -10,7 +10,7 @@ import {
 export const THUMBNAIL_WIDTH = 192;
 export const THUMBNAIL_HEIGHT = 192;
 
-// image value objects
+// Value objects
 
 export const Path = z.string().min(1).brand<"Path">();
 export type Path = z.infer<typeof Path>;
@@ -39,7 +39,7 @@ export const Description = z.string().min(1).brand<"Description">();
 export type Description = z.infer<typeof Description>;
 export const makeDescription = (v: string): Description => Description.parse(v);
 
-// entities
+// Entities
 
 export type Image = Readonly<{
 	id: Id;

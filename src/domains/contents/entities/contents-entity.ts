@@ -11,15 +11,16 @@ import {
 	UserId,
 } from "@/domains/common/entities/common-entity";
 
-// content value objects
+// Value objects
 
-const Title = z
+const ContentTitle = z
 	.string({ message: "required" })
 	.min(1, { message: "required" })
 	.max(64, { message: "tooLong" })
-	.brand<"Title">();
-export type Title = z.infer<typeof Title>;
-export const makeTitle = (v: string): Title => Title.parse(v);
+	.brand<"ContentTitle">();
+export type ContentTitle = z.infer<typeof ContentTitle>;
+export const makeContentTitle = (v: string): ContentTitle =>
+	ContentTitle.parse(v);
 
 const Markdown = z
 	.string({ message: "required" })
@@ -28,16 +29,22 @@ const Markdown = z
 type Markdown = z.infer<typeof Markdown>;
 export const makeMarkdown = (v: string): Markdown => Markdown.parse(v);
 
-// content entities
+// Entities
 
 export const content = z.object({
 	id: Id,
 	userId: UserId,
-	title: Title,
+	title: ContentTitle,
 	markdown: Markdown,
 	status: Status,
 });
 export type Content = Readonly<z.infer<typeof content>>;
+
+type CreateContentArgs = Readonly<{
+	userId: UserId;
+	title: ContentTitle;
+	markdown: Markdown;
+}>;
 
 export const contentEntity = {
 	create: (args: CreateContentArgs): Content => {
@@ -53,21 +60,3 @@ export const contentEntity = {
 		}
 	},
 };
-
-export type CreateContentArgs = Readonly<{
-	userId: UserId;
-	title: Title;
-	markdown: Markdown;
-}>;
-
-// form schema for validation
-export const contentsFormSchema = z.object({
-	title: z
-		.string({ message: "required" })
-		.min(1, { message: "required" })
-		.max(64, { message: "tooLong" }),
-	markdown: z.string({ message: "required" }).min(1, { message: "required" }),
-	userId: z.string({ message: "required" }).min(1, { message: "required" }),
-	status: Status,
-});
-export type ContentsFormSchema = z.infer<typeof contentsFormSchema>;

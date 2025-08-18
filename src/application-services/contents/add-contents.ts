@@ -5,7 +5,6 @@ import { forbidden } from "next/navigation";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
-import { makeUserId } from "@/domains/common/entities/common-entity";
 import { contentEntity } from "@/domains/contents/entities/contents-entity";
 import { ContentsDomainService } from "@/domains/contents/services/contents-domain-service";
 import { contentsCommandRepository } from "@/infrastructures/contents/repositories/contents-command-repository";
@@ -21,9 +20,10 @@ export async function addContent(formData: FormData): Promise<ServerAction> {
 	);
 
 	try {
-		const userId = makeUserId(await getSelfId());
-
-		const { title, markdown } = parseAddContentFormData(formData);
+		const { title, markdown, userId } = parseAddContentFormData(
+			formData,
+			await getSelfId(),
+		);
 
 		// Domain business rule validation
 		await contentsDomainService.ensureNoDuplicate(title, userId);

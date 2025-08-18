@@ -8,11 +8,15 @@ import {
 	InvalidFormatError,
 	UnexpectedError,
 } from "@/common/error/error-classes";
-import { makeUserId } from "@/domains/common/entities/common-entity";
+import {
+	makeUserId,
+	type UserId,
+} from "@/domains/common/entities/common-entity";
 import {
 	imageDomainService,
 	makeContentType,
 	makePath,
+	type Path,
 	THUMBNAIL_HEIGHT,
 	THUMBNAIL_WIDTH,
 } from "../entities/images-entity";
@@ -24,6 +28,13 @@ export function sanitizeFileName(fileName: string) {
 
 export class ImagesDomainService {
 	constructor(private readonly imagesQueryRepository: IImagesQueryRepository) {}
+
+	public async ensureNoDuplicate(path: Path, userId: UserId): Promise<void> {
+		const exists = await this.imagesQueryRepository.findByPath(path, userId);
+		if (exists) {
+			throw new DuplicateError();
+		}
+	}
 
 	public async prepareNewImages(formData: FormData, userId: string) {
 		const file = (() => {

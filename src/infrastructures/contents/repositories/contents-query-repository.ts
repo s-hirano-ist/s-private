@@ -1,4 +1,5 @@
-import type { Status } from "@/domains/common/entities/common-entity";
+import type { Status, UserId } from "@/domains/common/entities/common-entity";
+import type { ContentTitle } from "@/domains/contents/entities/contents-entity";
 import type {
 	ContentsFindManyParams,
 	IContentsQueryRepository,
@@ -7,8 +8,8 @@ import prisma from "@/prisma";
 
 class ContentsQueryRepository implements IContentsQueryRepository {
 	async findByTitle(
-		title: string,
-		userId: string,
+		title: ContentTitle,
+		userId: UserId,
 	): Promise<{ id: string; title: string; markdown: string } | null> {
 		return await prisma.contents.findUnique({
 			where: { title_userId: { title, userId } },
@@ -17,7 +18,7 @@ class ContentsQueryRepository implements IContentsQueryRepository {
 	}
 
 	async findMany(
-		userId: string,
+		userId: UserId,
 		status: Status,
 		params: ContentsFindManyParams,
 	): Promise<Array<{ id: string; title: string }>> {

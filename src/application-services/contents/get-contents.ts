@@ -7,8 +7,10 @@ import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
 import {
 	makeStatus,
+	makeUserId,
 	type Status,
 } from "@/domains/common/entities/common-entity";
+import { makeContentTitle } from "@/domains/contents/entities/contents-entity";
 import type { CacheStrategy } from "@/domains/contents/types";
 import { contentsQueryRepository } from "@/infrastructures/contents/repositories/contents-query-repository";
 
@@ -24,12 +26,16 @@ export const _getContents = async (
 		`contents_${status}_${userId}_${currentCount}`,
 	);
 	try {
-		const contents = await contentsQueryRepository.findMany(userId, status, {
-			skip: currentCount,
-			take: PAGE_SIZE,
-			orderBy: { createdAt: "desc" },
-			cacheStrategy,
-		});
+		const contents = await contentsQueryRepository.findMany(
+			makeUserId(userId),
+			status,
+			{
+				skip: currentCount,
+				take: PAGE_SIZE,
+				orderBy: { createdAt: "desc" },
+				cacheStrategy,
+			},
+		);
 
 		const totalCount = await _getContentsCount(userId, status);
 
@@ -94,7 +100,10 @@ export const getExportedContents: GetPaginatedData<LinkCardStackInitialData> =
 export const getContentByTitle = cache(async (title: string) => {
 	try {
 		const userId = await getSelfId();
-		return await contentsQueryRepository.findByTitle(title, userId);
+		return await contentsQueryRepository.findByTitle(
+			makeContentTitle(title),
+			makeUserId(userId),
+		);
 	} catch (error) {
 		throw error;
 	}
