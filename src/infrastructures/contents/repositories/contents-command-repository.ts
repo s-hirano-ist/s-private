@@ -4,7 +4,7 @@ import type {
 	UserId,
 } from "@/domains/common/entities/common-entity";
 import type { Content } from "@/domains/contents/entities/contents-entity";
-import type { IContentsCommandRepository } from "@/domains/contents/types";
+import type { IContentsCommandRepository } from "@/domains/contents/repositories/contents-command-repository.interface";
 import { serverLogger } from "@/infrastructures/observability/server";
 import prisma from "@/prisma";
 

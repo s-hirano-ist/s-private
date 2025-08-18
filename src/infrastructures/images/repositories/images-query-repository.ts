@@ -1,8 +1,6 @@
 import type { Status } from "@/domains/common/entities/common-entity";
-import type {
-	IImagesQueryRepository,
-	ImagesFindManyParams,
-} from "@/domains/images/types";
+import type { IImagesQueryRepository } from "@/domains/images/repositories/images-query-repository.interface";
+import type { ImagesFindManyParams } from "@/domains/images/types/query-params";
 import { env } from "@/env";
 import { minioClient } from "@/minio";
 import prisma from "@/prisma";

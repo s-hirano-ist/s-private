@@ -4,7 +4,7 @@ import type {
 	UserId,
 } from "@/domains/common/entities/common-entity";
 import type { News } from "@/domains/news/entities/news-entity";
-import type { INewsCommandRepository } from "@/domains/news/types";
+import type { INewsCommandRepository } from "@/domains/news/repositories/news-command-repository.interface";
 import { serverLogger } from "@/infrastructures/observability/server";
 import prisma from "@/prisma";
 

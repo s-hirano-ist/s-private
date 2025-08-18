@@ -2,7 +2,7 @@ import "server-only";
 import { DuplicateError } from "@/common/error/error-classes";
 import type { UserId } from "@/domains/common/entities/common-entity";
 import type { ContentTitle } from "@/domains/contents/entities/contents-entity";
-import type { IContentsQueryRepository } from "@/domains/contents/types";
+import type { IContentsQueryRepository } from "@/domains/contents/repositories/contents-query-repository.interface";
 
 export class ContentsDomainService {
 	constructor(

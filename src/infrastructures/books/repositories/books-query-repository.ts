@@ -1,8 +1,6 @@
 import type { ISBN } from "@/domains/books/entities/books-entity";
-import type {
-	BooksFindManyParams,
-	IBooksQueryRepository,
-} from "@/domains/books/types";
+import type { IBooksQueryRepository } from "@/domains/books/repositories/books-query-repository.interface";
+import type { BooksFindManyParams } from "@/domains/books/types/query-params";
 import type { Status, UserId } from "@/domains/common/entities/common-entity";
 import prisma from "@/prisma";
 

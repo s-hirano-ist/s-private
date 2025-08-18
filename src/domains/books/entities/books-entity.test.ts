@@ -1,18 +1,11 @@
 import { describe, expect, test } from "vitest";
 import { ZodError } from "zod";
 import {
-	InvalidFormatError,
-	UnexpectedError,
-} from "@/common/error/error-classes";
-import {
 	bookEntity,
 	makeBookTitle,
 	makeISBN,
 } from "@/domains/books/entities/books-entity";
-import {
-	makeStatus,
-	makeUserId,
-} from "@/domains/common/entities/common-entity";
+import { makeUserId } from "@/domains/common/entities/common-entity";
 
 describe("booksEntity", () => {
 	describe("makeISBN", () => {

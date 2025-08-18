@@ -1,5 +1,5 @@
 import type { Book } from "@/domains/books/entities/books-entity";
-import type { IBooksCommandRepository } from "@/domains/books/types";
+import type { IBooksCommandRepository } from "@/domains/books/repositories/books-command-repository.interface";
 import type {
 	Id,
 	Status,

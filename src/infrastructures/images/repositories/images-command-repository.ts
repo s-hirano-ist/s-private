@@ -1,6 +1,6 @@
 import type { Status } from "@/domains/common/entities/common-entity";
 import type { Image, Path } from "@/domains/images/entities/images-entity";
-import type { IImagesCommandRepository } from "@/domains/images/types";
+import type { IImagesCommandRepository } from "@/domains/images/repositories/images-command-repository.interface";
 import { env } from "@/env";
 import { serverLogger } from "@/infrastructures/observability/server";
 import { minioClient } from "@/minio";

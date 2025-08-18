@@ -1,9 +1,7 @@
 import type { Status, UserId } from "@/domains/common/entities/common-entity";
 import type { ContentTitle } from "@/domains/contents/entities/contents-entity";
-import type {
-	ContentsFindManyParams,
-	IContentsQueryRepository,
-} from "@/domains/contents/types";
+import type { IContentsQueryRepository } from "@/domains/contents/repositories/contents-query-repository.interface";
+import type { ContentsFindManyParams } from "@/domains/contents/types/query-params";
 import prisma from "@/prisma";
 
 class ContentsQueryRepository implements IContentsQueryRepository {

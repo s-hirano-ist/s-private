@@ -1,6 +1,6 @@
 import "server-only";
 import { DuplicateError } from "@/common/error/error-classes";
-import type { IBooksQueryRepository } from "@/domains/books/types";
+import type { IBooksQueryRepository } from "@/domains/books/repositories/books-query-repository.interface";
 import type { UserId } from "@/domains/common/entities/common-entity";
 import type { ISBN } from "../entities/books-entity";
 

@@ -1,8 +1,5 @@
-import { revalidateTag } from "next/cache";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
-import { DuplicateError } from "@/common/error/error-classes";
-import { newsCommandRepository } from "@/infrastructures/news/repositories/news-command-repository";
 import { addNews } from "./add-news";
 
 vi.mock("@/common/auth/session", () => ({

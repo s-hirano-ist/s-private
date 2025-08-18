@@ -1,10 +1,10 @@
 import type { Status } from "@/domains/common/entities/common-entity";
+import type { ICategoryQueryRepository } from "@/domains/news/repositories/category-query-repository.interface";
+import type { INewsQueryRepository } from "@/domains/news/repositories/news-query-repository.interface";
 import type {
 	CategoryFindManyParams,
-	ICategoryQueryRepository,
-	INewsQueryRepository,
 	NewsFindManyParams,
-} from "@/domains/news/types";
+} from "@/domains/news/types/query-params";
 import prisma from "@/prisma";
 
 class NewsQueryRepository implements INewsQueryRepository {

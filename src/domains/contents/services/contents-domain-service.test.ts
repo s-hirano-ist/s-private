@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import { DuplicateError } from "@/common/error/error-classes";
 import { makeUserId } from "@/domains/common/entities/common-entity";
 import { makeContentTitle } from "@/domains/contents/entities/contents-entity";
+import type { IContentsQueryRepository } from "@/domains/contents/repositories/contents-query-repository.interface";
 import { ContentsDomainService } from "@/domains/contents/services/contents-domain-service";
-import type { IContentsQueryRepository } from "@/domains/contents/types";
 
 describe("ContentsDomainService", () => {
 	let contentsQueryRepository: IContentsQueryRepository;

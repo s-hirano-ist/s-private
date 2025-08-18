@@ -1,9 +1,5 @@
 import { describe, expect, test } from "vitest";
 import { ZodError } from "zod";
-import {
-	InvalidFormatError,
-	UnexpectedError,
-} from "@/common/error/error-classes";
 import { makeUserId } from "@/domains/common/entities/common-entity";
 import {
 	contentEntity,

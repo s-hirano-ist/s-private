@@ -1,7 +1,7 @@
 import "server-only";
 import { DuplicateError } from "@/common/error/error-classes";
 import type { UserId } from "@/domains/common/entities/common-entity";
-import type { INewsQueryRepository } from "@/domains/news/types";
+import type { INewsQueryRepository } from "@/domains/news/repositories/news-query-repository.interface";
 import type { Url } from "../entities/news-entity";
 
 export class NewsDomainService {

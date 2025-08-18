@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import { DuplicateError } from "@/common/error/error-classes";
 import { makeUserId } from "@/domains/common/entities/common-entity";
 import { makeUrl } from "@/domains/news/entities/news-entity";
+import type { INewsQueryRepository } from "@/domains/news/repositories/news-query-repository.interface";
 import { NewsDomainService } from "@/domains/news/services/news-domain-service";
-import type { INewsQueryRepository } from "@/domains/news/types";
 
 describe("NewsDomainService", () => {
 	let newsQueryRepository: INewsQueryRepository;

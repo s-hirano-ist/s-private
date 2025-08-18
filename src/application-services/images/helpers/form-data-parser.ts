@@ -1,5 +1,3 @@
-import sharp from "sharp";
-import { FileNotAllowedError } from "@/common/error/error-classes";
 import { getFormDataFile } from "@/common/utils/form-data-utils";
 import { makeUserId } from "@/domains/common/entities/common-entity";
 import {
