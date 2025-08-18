@@ -1,6 +1,6 @@
 "use client";
 import ReactMarkdown from "react-markdown";
-import { ServerAction } from "@/common/types";
+import { DeleteAction } from "@/common/types";
 import { DeleteButtonWithModal } from "@/components/common/forms/actions/delete-button-with-modal";
 import { Badge } from "@/components/common/ui/badge";
 import {
@@ -17,7 +17,7 @@ import type { LinkCardData } from "./types";
 type Props = {
 	data: LinkCardData;
 	showDeleteButton: boolean;
-	deleteAction?: (id: string) => Promise<ServerAction>;
+	deleteAction?: DeleteAction;
 };
 
 export function LinkCard({

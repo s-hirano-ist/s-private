@@ -1,13 +1,11 @@
-import type { ServerAction, ServerActionWithData } from "@/common/types";
+import type { DeleteAction, LoadMoreAction } from "@/common/types";
 import { LinkCardStack } from "@/components/common/layouts/cards/link-card-stack";
 import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
 
 export type Props = {
 	getNews: (page: number) => Promise<LinkCardStackInitialData>;
-	deleteNews?: (id: string) => Promise<ServerAction>;
-	loadMoreAction: (
-		currentCount: number,
-	) => Promise<ServerActionWithData<LinkCardStackInitialData>>;
+	deleteNews?: DeleteAction;
+	loadMoreAction: LoadMoreAction<LinkCardStackInitialData>;
 };
 
 export async function NewsStack({

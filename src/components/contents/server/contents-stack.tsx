@@ -1,14 +1,12 @@
 import { GetContents } from "@/application-services/contents/get-contents";
-import { ServerAction, ServerActionWithData } from "@/common/types";
+import { DeleteAction, LoadMoreAction } from "@/common/types";
 import { LinkCardStack } from "@/components/common/layouts/cards/link-card-stack";
 import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
 
 export type Props = {
 	getContents: GetContents;
-	deleteContents?: (id: string) => Promise<ServerAction>;
-	loadMoreAction: (
-		currentCount: number,
-	) => Promise<ServerActionWithData<LinkCardStackInitialData>>;
+	deleteContents?: DeleteAction;
+	loadMoreAction: LoadMoreAction<LinkCardStackInitialData>;
 };
 
 export async function ContentsStack({

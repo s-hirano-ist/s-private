@@ -1,5 +1,5 @@
 "use client";
-import type { ServerAction, ServerActionWithData } from "@/common/types";
+import type { DeleteAction, LoadMoreAction } from "@/common/types";
 import { filterImageCards } from "@/components/common/features/search/search-filter";
 import { BaseCardStackWrapper } from "@/components/common/layouts/cards/base-card-stack";
 import { ImageCard } from "@/components/common/layouts/cards/image-card";
@@ -8,10 +8,8 @@ import type { ImageCardData, ImageCardStackInitialData } from "./types";
 type Props = {
 	initial: ImageCardStackInitialData;
 	basePath: string;
-	deleteAction?: (id: string) => Promise<ServerAction>;
-	loadMoreAction: (
-		currentCount: number,
-	) => Promise<ServerActionWithData<ImageCardStackInitialData>>;
+	deleteAction?: DeleteAction;
+	loadMoreAction: LoadMoreAction<ImageCardStackInitialData>;
 };
 
 export function ImageCardStack({
@@ -28,7 +26,7 @@ export function ImageCardStack({
 		isLast: boolean,
 		isSearching: boolean,
 		lastElementRef: (node: HTMLElement | null) => void,
-		deleteAction?: (id: string) => Promise<ServerAction>,
+		deleteAction?: DeleteAction,
 		key?: string,
 	) => (
 		<div key={key} ref={isLast && !isSearching ? lastElementRef : null}>
