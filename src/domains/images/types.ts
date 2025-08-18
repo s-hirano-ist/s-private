@@ -1,8 +1,5 @@
 import type { Status } from "../common/entities/common-entity";
-import type {
-	ImagesFormSchema,
-	ImagesQueryData,
-} from "./entities/images-entity";
+import type { Image } from "./entities/images-entity";
 
 // Custom types to avoid Prisma dependency in domain layer
 export type SortOrder = "asc" | "desc";
@@ -32,7 +29,7 @@ export type ImagesOrderBy = {
 };
 
 export type IImagesCommandRepository = {
-	create(data: ImagesFormSchema): Promise<void>;
+	create(data: Image): Promise<void>;
 	uploadToStorage(
 		path: string,
 		buffer: Buffer,
@@ -49,12 +46,14 @@ export type ImagesFindManyParams = {
 };
 
 export type IImagesQueryRepository = {
-	findByPath(path: string, userId: string): Promise<ImagesQueryData | null>;
+	findByPath(path: string, userId: string): Promise<{} | null>;
 	findMany(
 		userId: string,
 		status: Status,
 		params?: ImagesFindManyParams,
-	): Promise<ImagesQueryData[]>;
+	): Promise<
+		{ id: string; path: string; height: number | null; width: number | null }[]
+	>;
 	count(userId: string, status: Status): Promise<number>;
 	getFromStorage(
 		path: string,

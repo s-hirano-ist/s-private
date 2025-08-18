@@ -1,5 +1,5 @@
 import type { Status } from "@/domains/common/entities/common-entity";
-import type { ImagesFormSchema } from "@/domains/images/entities/images-entity";
+import type { Image } from "@/domains/images/entities/images-entity";
 import type { IImagesCommandRepository } from "@/domains/images/types";
 import { env } from "@/env";
 import { serverLogger } from "@/infrastructures/observability/server";
@@ -8,7 +8,7 @@ import prisma from "@/prisma";
 import { ORIGINAL_IMAGE_PATH, THUMBNAIL_IMAGE_PATH } from "./common";
 
 class ImagesCommandRepository implements IImagesCommandRepository {
-	async create(data: ImagesFormSchema): Promise<void> {
+	async create(data: Image): Promise<void> {
 		const response = await prisma.images.create({ data });
 		serverLogger.info(
 			`【IMAGE】\n\nコンテンツ\nfileName: ${response.id}\nの登録ができました`,

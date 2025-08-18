@@ -2,9 +2,15 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Suspense } from "react";
 import { ViewerBody } from "./viewer-body";
 
+type ContentData = {
+	id: string;
+	title: string;
+	markdown: string;
+};
+
 type ViewerBodyWrapperProps = {
 	slug: string;
-	getContentByTitle: (title: string) => Promise<string | null>;
+	getContentByTitle: (title: string) => Promise<ContentData | null>;
 };
 
 function ViewerBodyWrapper({
@@ -129,7 +135,11 @@ Detailed explanation of topic 2.
 export const Default: Story = {
 	args: {
 		slug: "sample-content",
-		getContentByTitle: async () => sampleMarkdown,
+		getContentByTitle: async () => ({
+			id: "01234567-89ab-7def-9123-456789abcdef",
+			title: "Sample Content",
+			markdown: sampleMarkdown,
+		}),
 	},
 };
 
@@ -138,7 +148,11 @@ export const WithEncodedSlug: Story = {
 		slug: encodeURIComponent("Sample Content with Spaces"),
 		getContentByTitle: async (title) => {
 			if (title === "Sample Content with Spaces") {
-				return sampleMarkdown;
+				return {
+					id: "01234567-89ab-7def-9123-456789abcdef",
+					title: title,
+					markdown: sampleMarkdown,
+				};
 			}
 			return null;
 		},
@@ -148,14 +162,22 @@ export const WithEncodedSlug: Story = {
 export const LongContent: Story = {
 	args: {
 		slug: "comprehensive-guide",
-		getContentByTitle: async () => longMarkdown,
+		getContentByTitle: async () => ({
+			id: "01234567-89ab-7def-9123-456789abcdef",
+			title: "Comprehensive Guide",
+			markdown: longMarkdown,
+		}),
 	},
 };
 
 export const MinimalContent: Story = {
 	args: {
 		slug: "minimal",
-		getContentByTitle: async () => "# Minimal Content\n\nJust a simple line.",
+		getContentByTitle: async () => ({
+			id: "01234567-89ab-7def-9123-456789abcdef",
+			title: "Minimal Content",
+			markdown: "# Minimal Content\n\nJust a simple line.",
+		}),
 	},
 };
 

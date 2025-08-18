@@ -1,4 +1,8 @@
-import type { DeleteAction, GetPaginatedData, LoadMoreAction } from "@/common/types";
+import type {
+	DeleteAction,
+	GetPaginatedData,
+	LoadMoreAction,
+} from "@/common/types";
 import { ImageCardStack } from "@/components/common/layouts/cards/image-card-stack";
 import type { ImageCardStackInitialData } from "@/components/common/layouts/cards/types";
 

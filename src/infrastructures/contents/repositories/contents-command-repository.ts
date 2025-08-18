@@ -1,11 +1,11 @@
 import type { Status } from "@/domains/common/entities/common-entity";
-import type { ContentsFormSchema } from "@/domains/contents/entities/contents-entity";
+import type { Content } from "@/domains/contents/entities/contents-entity";
 import type { IContentsCommandRepository } from "@/domains/contents/types";
 import { serverLogger } from "@/infrastructures/observability/server";
 import prisma from "@/prisma";
 
 class ContentsCommandRepository implements IContentsCommandRepository {
-	async create(data: ContentsFormSchema): Promise<void> {
+	async create(data: Content): Promise<void> {
 		const response = await prisma.contents.create({ data });
 		serverLogger.info(
 			`【CONTENTS】\n\nコンテンツ\ntitle: ${response.title} \nquote: ${response.markdown}\nの登録ができました`,

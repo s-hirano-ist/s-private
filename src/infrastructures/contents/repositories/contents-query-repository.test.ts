@@ -27,7 +27,7 @@ describe("ContentsQueryRepository", () => {
 				where: { title_userId: { title: "Test Content", userId: "user123" } },
 				select: { id: true, title: true, markdown: true },
 			});
-			expect(result).toEqual(mockContents.markdown);
+			expect(result).toEqual(mockContents);
 		});
 
 		test("should return null when contents not found", async () => {

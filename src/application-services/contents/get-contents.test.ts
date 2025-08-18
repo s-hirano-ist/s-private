@@ -316,7 +316,11 @@ describe("get-contents", () => {
 
 	describe("getContentByTitle", () => {
 		test("should fetch content by title successfully", async () => {
-			const mockContent = "# Test Content\n\nThis is some test content.";
+			const mockContent = {
+				id: "1",
+				title: "Test Content",
+				markdown: "# Test Content\n\nThis is some test content.",
+			};
 
 			vi.mocked(contentsQueryRepository.findByTitle).mockResolvedValue(
 				mockContent,
@@ -354,8 +358,12 @@ describe("get-contents", () => {
 		});
 
 		test("should handle special characters in title", async () => {
-			const mockContent = "# Special Content";
 			const specialTitle = "Content with & Special Characters!";
+			const mockContent = {
+				id: "2",
+				title: specialTitle,
+				markdown: "# Special Content",
+			};
 
 			vi.mocked(contentsQueryRepository.findByTitle).mockResolvedValue(
 				mockContent,

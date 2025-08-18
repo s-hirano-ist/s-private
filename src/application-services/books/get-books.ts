@@ -6,7 +6,10 @@ import type { GetCount, GetPaginatedData } from "@/common/types";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import type { ImageCardStackInitialData } from "@/components/common/layouts/cards/types";
 import type { CacheStrategy } from "@/domains/books/types";
-import type { Status } from "@/domains/common/entities/common-entity";
+import {
+	makeStatus,
+	type Status,
+} from "@/domains/common/entities/common-entity";
 import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
 
 export const _getBooks = async (
@@ -58,35 +61,33 @@ const _getBooksCount = async (
 	}
 };
 
-export const getUnexportedBooks: GetPaginatedData<ImageCardStackInitialData> = cache(
-	async (currentCount: number) => {
+export const getUnexportedBooks: GetPaginatedData<ImageCardStackInitialData> =
+	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
-		return _getBooks(currentCount, userId, "UNEXPORTED");
-	},
-);
+		return _getBooks(currentCount, userId, makeStatus("UNEXPORTED"));
+	});
 
-export const getExportedBooks: GetPaginatedData<ImageCardStackInitialData> = cache(
-	async (currentCount: number) => {
+export const getExportedBooks: GetPaginatedData<ImageCardStackInitialData> =
+	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
-		return _getBooks(currentCount, userId, "EXPORTED", {
+		return _getBooks(currentCount, userId, makeStatus("EXPORTED"), {
 			ttl: 400,
 			swr: 40,
 			tags: [`${sanitizeCacheTag(userId)}_books_${currentCount}`],
 		});
-	},
-);
+	});
 
 export const getUnexportedBooksCount: GetCount = cache(
 	async (): Promise<number> => {
 		const userId = await getSelfId();
-		return await _getBooksCount(userId, "UNEXPORTED");
+		return await _getBooksCount(userId, makeStatus("UNEXPORTED"));
 	},
 );
 
 export const getExportedBooksCount: GetCount = cache(
 	async (): Promise<number> => {
 		const userId = await getSelfId();
-		return await _getBooksCount(userId, "EXPORTED");
+		return await _getBooksCount(userId, makeStatus("EXPORTED"));
 	},
 );
 

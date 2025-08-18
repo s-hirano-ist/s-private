@@ -5,10 +5,8 @@ import { getSelfId, hasViewerAdminPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerActionWithData } from "@/common/types";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
-import type {
-	LinkCardData,
-	LinkCardStackInitialData,
-} from "@/components/common/layouts/cards/types";
+import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
+import { makeStatus } from "@/domains/common/entities/common-entity";
 import { _getNews } from "./get-news";
 
 export async function loadMoreExportedNews(
@@ -19,7 +17,7 @@ export async function loadMoreExportedNews(
 
 	const userId = await getSelfId();
 
-	const data = await _getNews(currentCount, userId, "EXPORTED", {
+	const data = await _getNews(currentCount, userId, makeStatus("EXPORTED"), {
 		ttl: 400,
 		swr: 40,
 		tags: [`${sanitizeCacheTag(userId)}_news_${currentCount}`],
@@ -43,7 +41,7 @@ export async function loadMoreUnexportedNews(
 
 	const userId = await getSelfId();
 
-	const data = await _getNews(currentCount, userId, "UNEXPORTED");
+	const data = await _getNews(currentCount, userId, makeStatus("UNEXPORTED"));
 	try {
 		return {
 			success: true,

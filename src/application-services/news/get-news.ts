@@ -6,7 +6,10 @@ import type { GetCount, GetPaginatedData } from "@/common/types";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
 import type { NewsFormClientData } from "@/components/news/client/news-form-client";
-import type { Status } from "@/domains/common/entities/common-entity";
+import {
+	makeStatus,
+	type Status,
+} from "@/domains/common/entities/common-entity";
 import type { CacheStrategy } from "@/domains/news/types";
 import {
 	categoryQueryRepository,
@@ -86,32 +89,31 @@ const _getCategories = async (userId: string): Promise<NewsFormClientData> => {
 	}
 };
 
-
 export const getUnexportedNewsCount: GetCount = cache(async () => {
 	const userId = await getSelfId();
-	return _getNewsCount(userId, "UNEXPORTED");
+	return _getNewsCount(userId, makeStatus("UNEXPORTED"));
 });
 
 export const getExportedNewsCount: GetCount = cache(async () => {
 	const userId = await getSelfId();
-	return _getNewsCount(userId, "EXPORTED");
+	return _getNewsCount(userId, makeStatus("EXPORTED"));
 });
 
-export const getUnexportedNews: GetPaginatedData<LinkCardStackInitialData> = cache(
-	async (currentCount: number) => {
+export const getUnexportedNews: GetPaginatedData<LinkCardStackInitialData> =
+	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
-		return _getNews(currentCount, userId, "UNEXPORTED");
-	},
-);
-
-export const getExportedNews: GetPaginatedData<LinkCardStackInitialData> = cache(async (currentCount: number) => {
-	const userId = await getSelfId();
-	return _getNews(currentCount, userId, "EXPORTED", {
-		ttl: 400,
-		swr: 40,
-		tags: [`${sanitizeCacheTag(userId)}_news_${currentCount}`],
+		return _getNews(currentCount, userId, makeStatus("UNEXPORTED"));
 	});
-});
+
+export const getExportedNews: GetPaginatedData<LinkCardStackInitialData> =
+	cache(async (currentCount: number) => {
+		const userId = await getSelfId();
+		return _getNews(currentCount, userId, makeStatus("EXPORTED"), {
+			ttl: 400,
+			swr: 40,
+			tags: [`${sanitizeCacheTag(userId)}_news_${currentCount}`],
+		});
+	});
 
 export const getCategories = cache(async (): Promise<NewsFormClientData> => {
 	const userId = await getSelfId();

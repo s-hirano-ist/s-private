@@ -6,6 +6,7 @@ import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerActionWithData } from "@/common/types";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import type { ImageCardStackInitialData } from "@/components/common/layouts/cards/types";
+import { makeStatus } from "@/domains/common/entities/common-entity";
 import { _getBooks } from "./get-books";
 
 export async function loadMoreExportedBooks(
@@ -16,7 +17,7 @@ export async function loadMoreExportedBooks(
 
 	const userId = await getSelfId();
 
-	const data = await _getBooks(currentCount, userId, "EXPORTED", {
+	const data = await _getBooks(currentCount, userId, makeStatus("EXPORTED"), {
 		ttl: 400,
 		swr: 40,
 		tags: [`${sanitizeCacheTag(userId)}_books_${currentCount}`],
@@ -40,7 +41,7 @@ export async function loadMoreUnexportedBooks(
 
 	const userId = await getSelfId();
 
-	const data = await _getBooks(currentCount, userId, "UNEXPORTED");
+	const data = await _getBooks(currentCount, userId, makeStatus("UNEXPORTED"));
 	try {
 		return {
 			success: true,

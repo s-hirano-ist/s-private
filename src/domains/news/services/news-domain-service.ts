@@ -3,6 +3,10 @@ import {
 	DuplicateError,
 	InvalidFormatError,
 } from "@/common/error/error-classes";
+import {
+	makeStatus,
+	makeUserId,
+} from "@/domains/common/entities/common-entity";
 import type { INewsQueryRepository } from "@/domains/news/types";
 import { type NewsFormSchema, newsFormSchema } from "../entities/news-entity";
 
@@ -19,10 +23,10 @@ export class NewsDomainService {
 			url: formData.get("url") as string,
 			category: {
 				name: formData.get("category") as string,
-				userId,
+				userId: makeUserId(userId),
 			},
-			userId,
-			status: "UNEXPORTED",
+			userId: makeUserId(userId),
+			status: makeStatus("UNEXPORTED"),
 		} satisfies Omit<NewsFormSchema, "category" | "id"> & {
 			category: Omit<NewsFormSchema["category"], "id">;
 		};

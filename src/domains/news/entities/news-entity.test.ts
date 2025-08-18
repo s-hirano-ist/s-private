@@ -180,7 +180,7 @@ describe("newsEntity", () => {
 		test("categoryQueryData should omit userId", () => {
 			const data = {
 				name: "tech",
-				id: "01234567-89ab-4def-9123-456789abcdef",
+				id: "01234567-89ab-7def-9123-456789abcdef",
 			};
 
 			const result = categoryQueryData.safeParse(data);
@@ -191,12 +191,12 @@ describe("newsEntity", () => {
 			const data = {
 				category: {
 					name: "tech",
-					id: "01234567-89ab-4def-9123-456789abcdef",
+					id: "01234567-89ab-7def-9123-456789abcdef",
 				},
 				title: "Sample News",
 				quote: "Quote",
 				url: "https://example.com",
-				id: "01234567-89ab-4def-9123-456789abcdef",
+				id: "01234567-89ab-7def-9123-456789abcdef",
 				ogTitle: "OG Title",
 				ogDescription: "OG Description",
 			};

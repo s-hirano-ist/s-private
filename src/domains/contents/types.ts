@@ -1,8 +1,5 @@
 import type { Status } from "../common/entities/common-entity";
-import type {
-	ContentsFormSchema,
-	ContentsQueryData,
-} from "./entities/contents-entity";
+import type { Content } from "./entities/contents-entity";
 
 // Custom types to avoid Prisma dependency in domain layer
 export type SortOrder = "asc" | "desc";
@@ -27,17 +24,20 @@ export type ContentsOrderBy = {
 };
 
 export type IContentsCommandRepository = {
-	create(data: ContentsFormSchema): Promise<void>;
+	create(data: Content): Promise<void>;
 	deleteById(id: string, userId: string, status: Status): Promise<void>;
 };
 
 export type IContentsQueryRepository = {
-	findByTitle(title: string, userId: string): Promise<string | null>;
+	findByTitle(
+		title: string,
+		userId: string,
+	): Promise<{ id: string; title: string; markdown: string } | null>;
 	findMany(
 		userId: string,
 		status: Status,
 		params: ContentsFindManyParams,
-	): Promise<ContentsQueryData[]>;
+	): Promise<Array<{ id: string; title: string }>>;
 	count(userId: string, status: Status): Promise<number>;
 };
 

@@ -1,9 +1,5 @@
 import { z } from "zod";
-import {
-	idSchema,
-	statusSchema,
-	userIdSchema,
-} from "@/domains/common/entities/common-entity";
+import { Id, Status, UserId } from "@/domains/common/entities/common-entity";
 
 // value objects
 
@@ -18,9 +14,9 @@ export const booksInputSchema = z
 			.string({ message: "required" })
 			.min(1, { message: "required" })
 			.max(256, { message: "tooLong" }),
-		userId: userIdSchema,
-		id: idSchema,
-		status: statusSchema,
+		userId: UserId,
+		id: Id,
+		status: Status,
 	})
 	.strict();
 

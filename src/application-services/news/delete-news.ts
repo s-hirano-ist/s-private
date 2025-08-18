@@ -5,6 +5,7 @@ import { forbidden } from "next/navigation";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
+import { makeStatus } from "@/domains/common/entities/common-entity";
 import { newsCommandRepository } from "@/infrastructures/news/repositories/news-command-repository";
 
 export async function deleteNews(id: string): Promise<ServerAction> {
@@ -14,7 +15,11 @@ export async function deleteNews(id: string): Promise<ServerAction> {
 	try {
 		const userId = await getSelfId();
 
-		await newsCommandRepository.deleteById(id, userId, "UNEXPORTED");
+		await newsCommandRepository.deleteById(
+			id,
+			userId,
+			makeStatus("UNEXPORTED"),
+		);
 
 		revalidateTag(`news_UNEXPORTED_${userId}`);
 		revalidateTag(`news_count_UNEXPORTED_${userId}`);

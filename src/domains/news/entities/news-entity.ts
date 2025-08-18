@@ -1,9 +1,5 @@
 import { z } from "zod";
-import {
-	idSchema,
-	statusSchema,
-	userIdSchema,
-} from "@/domains/common/entities/common-entity";
+import { Id, Status, UserId } from "@/domains/common/entities/common-entity";
 
 // value objects
 
@@ -14,8 +10,8 @@ export const categoryInputSchema = z
 			.trim()
 			.min(1, { message: "required" })
 			.max(16, { message: "tooLong" }),
-		userId: userIdSchema,
-		id: idSchema,
+		userId: UserId,
+		id: Id,
 	})
 	.strict();
 
@@ -44,9 +40,9 @@ export const newsInputSchema = z
 				},
 				{ message: "invalidFormat" },
 			),
-		userId: userIdSchema,
-		id: idSchema,
-		status: statusSchema,
+		userId: UserId,
+		id: Id,
+		status: Status,
 	})
 	.strict();
 

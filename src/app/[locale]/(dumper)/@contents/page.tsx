@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { addContents } from "@/application-services/contents/add-contents";
+import { addContent } from "@/application-services/contents/add-contents";
 import { deleteContents } from "@/application-services/contents/delete-contents";
 import {
 	getExportedContents,
@@ -62,7 +62,7 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 						<ErrorPermissionBoundary
 							errorCaller="ContentsForm"
 							permissionCheck={hasDumperPostPermission}
-							render={() => ContentsForm({ addContents })}
+							render={() => ContentsForm({ addContents: addContent })}
 						/>
 
 						<Suspense fallback={<Loading />}>

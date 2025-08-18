@@ -1,41 +1,21 @@
 import "server-only";
-import {
-	DuplicateError,
-	InvalidFormatError,
-} from "@/common/error/error-classes";
+import { DuplicateError } from "@/common/error/error-classes";
+import type { UserId } from "@/domains/common/entities/common-entity";
+import type { Title } from "@/domains/contents/entities/contents-entity";
 import type { IContentsQueryRepository } from "@/domains/contents/types";
-import {
-	type ContentsFormSchema,
-	contentsFormSchema,
-} from "../entities/contents-entity";
 
 export class ContentsDomainService {
 	constructor(
 		private readonly contentsQueryRepository: IContentsQueryRepository,
 	) {}
 
-	public async prepareNewContents(
-		formData: FormData,
-		userId: string,
-	): Promise<ContentsFormSchema> {
-		const formValues = {
-			title: formData.get("title") as string,
-			markdown: formData.get("markdown") as string,
-			userId,
-			status: "UNEXPORTED",
-		} satisfies Omit<ContentsFormSchema, "id">;
-
-		// Use the complete schema which includes auto-generated ID
-		const contentsValidatedFields = contentsFormSchema.safeParse(formValues);
-		if (!contentsValidatedFields.success) throw new InvalidFormatError();
-
-		// check duplicate
+	public async ensureNoDuplicate(title: Title, userId: UserId): Promise<void> {
 		const exists = await this.contentsQueryRepository.findByTitle(
-			contentsValidatedFields.data.title,
+			title,
 			userId,
 		);
-		if (exists !== null) throw new DuplicateError();
-
-		return contentsValidatedFields.data;
+		if (exists) {
+			throw new DuplicateError();
+		}
 	}
 }

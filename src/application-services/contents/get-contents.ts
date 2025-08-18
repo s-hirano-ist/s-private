@@ -5,7 +5,10 @@ import { PAGE_SIZE } from "@/common/constants";
 import type { GetCount, GetPaginatedData } from "@/common/types";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
-import type { Status } from "@/domains/common/entities/common-entity";
+import {
+	makeStatus,
+	type Status,
+} from "@/domains/common/entities/common-entity";
 import type { CacheStrategy } from "@/domains/contents/types";
 import { contentsQueryRepository } from "@/infrastructures/contents/repositories/contents-query-repository";
 
@@ -61,34 +64,32 @@ const _getContentsCount = async (
 export const getUnexportedContentsCount: GetCount = cache(
 	async (): Promise<number> => {
 		const userId = await getSelfId();
-		return await _getContentsCount(userId, "UNEXPORTED");
+		return await _getContentsCount(userId, makeStatus("UNEXPORTED"));
 	},
 );
 
 export const getExportedContentsCount: GetCount = cache(
 	async (): Promise<number> => {
 		const userId = await getSelfId();
-		return await _getContentsCount(userId, "EXPORTED");
+		return await _getContentsCount(userId, makeStatus("EXPORTED"));
 	},
 );
 
-export const getUnexportedContents: GetPaginatedData<LinkCardStackInitialData> = cache(
-	async (currentCount: number) => {
+export const getUnexportedContents: GetPaginatedData<LinkCardStackInitialData> =
+	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
-		return _getContents(currentCount, userId, "UNEXPORTED");
-	},
-);
+		return _getContents(currentCount, userId, makeStatus("UNEXPORTED"));
+	});
 
-export const getExportedContents: GetPaginatedData<LinkCardStackInitialData> = cache(
-	async (currentCount: number) => {
+export const getExportedContents: GetPaginatedData<LinkCardStackInitialData> =
+	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
-		return _getContents(currentCount, userId, "EXPORTED", {
+		return _getContents(currentCount, userId, makeStatus("EXPORTED"), {
 			ttl: 400,
 			swr: 40,
 			tags: [`${sanitizeCacheTag(userId)}_contents_${currentCount}`],
 		});
-	},
-);
+	});
 
 export const getContentByTitle = cache(async (title: string) => {
 	try {

@@ -1,12 +1,20 @@
 import { z } from "zod";
 import { idGenerator } from "../services/id-generator";
 
-export const statusSchema = z.enum(["UNEXPORTED", "EXPORTED"]);
-export type Status = z.infer<typeof statusSchema>;
+// common value objects
 
-export const idSchema = z
-	.string()
-	.uuid()
-	.default(() => idGenerator.uuidv7());
+export const Status = z.enum(["UNEXPORTED", "EXPORTED"]).brand<"Status">();
+export type Status = z.infer<typeof Status>;
+export const makeStatus = (v: "UNEXPORTED" | "EXPORTED"): Status =>
+	Status.parse(v);
 
-export const userIdSchema = z.string({ message: "required" });
+export const Id = z
+	.uuid({ version: "v7" })
+	.default(() => idGenerator.uuidv7())
+	.brand<"Id">();
+export type Id = z.infer<typeof Id>;
+export const makeId = (): Id => Id.parse(idGenerator.uuidv7());
+
+export const UserId = z.string().min(1, "required").brand<"UserId">();
+export type UserId = z.infer<typeof UserId>;
+export const makeUserId = (v: string): UserId => UserId.parse(v);

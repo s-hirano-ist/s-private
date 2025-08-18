@@ -1,39 +1,76 @@
 import z from "zod";
 import {
-	idSchema,
-	statusSchema,
-	userIdSchema,
+	type Id,
+	makeId,
+	Status,
+	type UserId,
 } from "@/domains/common/entities/common-entity";
-
-// value objects
 
 // NOTE: sync with s-contents/update-db.ts
 export const THUMBNAIL_WIDTH = 192;
 export const THUMBNAIL_HEIGHT = 192;
 
-export const imagesInputSchema = z
-	.object({
-		path: z.string(),
-		contentType: z.string(),
-		fileSize: z.number().nullable().optional(),
-		width: z.number().nullable().optional(),
-		height: z.number().nullable().optional(),
-		tags: z.array(z.string()).optional(),
-		description: z.string().nullable().optional(),
-		userId: userIdSchema,
-		id: idSchema,
-		status: statusSchema,
-	})
-	.strict();
+// image value objects
+
+export const Path = z.string().min(1).brand<"Path">();
+export type Path = z.infer<typeof Path>;
+export const makePath = (v: string): Path => Path.parse(v);
+
+export const ContentType = z
+	.string()
+	.regex(/^image\/[a-z0-9.+-]+$/i)
+	.brand<"ContentType">();
+export type ContentType = z.infer<typeof ContentType>;
+export const makeContentType = (v: string): ContentType => ContentType.parse(v);
+
+export const FileSize = z.number().int().nonnegative().brand<"FileSize">();
+export type FileSize = z.infer<typeof FileSize>;
+export const makeFileSize = (v: number): FileSize => FileSize.parse(v);
+
+export const Pixel = z.number().int().positive().brand<"Pixel">();
+export type Pixel = z.infer<typeof Pixel>;
+export const makePixel = (v: number): Pixel => Pixel.parse(v);
+
+export const Tag = z.string().min(1).brand<"Tag">();
+export type Tag = z.infer<typeof Tag>;
+export const makeTag = (v: string): Tag => Tag.parse(v);
+
+export const Description = z.string().min(1).brand<"Description">();
+export type Description = z.infer<typeof Description>;
+export const makeDescription = (v: string): Description => Description.parse(v);
 
 // entities
 
-export const imagesFormSchema = imagesInputSchema;
-export type ImagesFormSchema = z.infer<typeof imagesFormSchema>;
+export type Image = Readonly<{
+	id: Id;
+	userId: UserId;
+	path: Path;
+	contentType: ContentType;
+	fileSize?: FileSize | null;
+	width?: Pixel | null;
+	height?: Pixel | null;
+	tags?: Array<Tag>;
+	description?: Description | null;
+	status: Status;
+}>;
 
-export const imagesQueryData = imagesInputSchema.omit({
-	userId: true,
-	contentType: true,
-	status: true,
-});
-export type ImagesQueryData = z.infer<typeof imagesQueryData>;
+export type CreateImageArgs = Readonly<{
+	userId: UserId;
+	path: Path;
+	contentType: ContentType;
+	fileSize?: FileSize | null;
+	width?: Pixel | null;
+	height?: Pixel | null;
+	tags?: Array<Tag>;
+	description?: Description | null;
+}>;
+
+export const imageDomainService = {
+	create: (args: CreateImageArgs): Image => {
+		return Object.freeze({
+			id: makeId(),
+			status: Status.parse("UNEXPORTED"),
+			...args,
+		});
+	},
+};

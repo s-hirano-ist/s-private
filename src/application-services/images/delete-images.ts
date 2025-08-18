@@ -5,6 +5,7 @@ import { forbidden } from "next/navigation";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
+import { makeStatus } from "@/domains/common/entities/common-entity";
 import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
 
 export async function deleteImages(id: string): Promise<ServerAction> {
@@ -14,7 +15,11 @@ export async function deleteImages(id: string): Promise<ServerAction> {
 	try {
 		const userId = await getSelfId();
 
-		await imagesCommandRepository.deleteById(id, userId, "UNEXPORTED");
+		await imagesCommandRepository.deleteById(
+			id,
+			userId,
+			makeStatus("UNEXPORTED"),
+		);
 
 		revalidateTag(`images_UNEXPORTED_${userId}`);
 		revalidateTag(`images_count_UNEXPORTED_${userId}`);

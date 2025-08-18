@@ -1,7 +1,9 @@
 import type { Status } from "@/domains/common/entities/common-entity";
-import type {
-	CategoryQueryData,
-	NewsQueryData,
+import {
+	type CategoryQueryData,
+	categoryQueryData,
+	type NewsQueryData,
+	newsQueryData,
 } from "@/domains/news/entities/news-entity";
 import type {
 	CategoryFindManyParams,
@@ -37,18 +39,20 @@ class NewsQueryRepository implements INewsQueryRepository {
 			},
 			...params,
 		});
-		return response.map((d) => ({
-			category: {
-				name: d.Category.name,
-				id: d.Category.id,
-			},
-			id: d.id,
-			quote: d.quote,
-			title: d.title,
-			url: d.url,
-			ogTitle: d.ogTitle,
-			ogDescription: d.ogDescription,
-		}));
+		return response.map((d) =>
+			newsQueryData.parse({
+				category: categoryQueryData.parse({
+					name: d.Category.name,
+					id: d.Category.id,
+				}),
+				id: d.id,
+				quote: d.quote,
+				title: d.title,
+				url: d.url,
+				ogTitle: d.ogTitle,
+				ogDescription: d.ogDescription,
+			}),
+		);
 	};
 
 	async count(userId: string, status: Status): Promise<number> {
@@ -68,7 +72,7 @@ class CategoryQueryRepository implements ICategoryQueryRepository {
 			select: { id: true, name: true },
 			...params,
 		});
-		return response;
+		return response.map((category) => categoryQueryData.parse(category));
 	}
 }
 

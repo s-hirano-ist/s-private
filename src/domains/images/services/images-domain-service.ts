@@ -1,15 +1,18 @@
 import "server-only";
 import sharp from "sharp";
 import { v7 as uuidv7 } from "uuid";
+import { ZodError } from "zod";
 import {
 	DuplicateError,
 	FileNotAllowedError,
 	InvalidFormatError,
 	UnexpectedError,
 } from "@/common/error/error-classes";
+import { makeUserId } from "@/domains/common/entities/common-entity";
 import {
-	type ImagesFormSchema,
-	imagesFormSchema,
+	imageDomainService,
+	makeContentType,
+	makePath,
 	THUMBNAIL_HEIGHT,
 	THUMBNAIL_WIDTH,
 } from "../entities/images-entity";
@@ -23,8 +26,11 @@ export class ImagesDomainService {
 	constructor(private readonly imagesQueryRepository: IImagesQueryRepository) {}
 
 	public async prepareNewImages(formData: FormData, userId: string) {
-		const file = formData.get("file") as File;
-		if (!file) throw new UnexpectedError();
+		const file = (() => {
+			const file = formData.get("file");
+			if (file instanceof File) return file;
+			throw new UnexpectedError();
+		})();
 
 		const allowedMimeTypes = ["image/jpeg", "image/png", "image/gif"];
 		const maxFileSize = 100 * 1024 * 1024; // 100MB
@@ -41,27 +47,24 @@ export class ImagesDomainService {
 			.resize(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT)
 			.toBuffer();
 
-		const formValues = {
-			userId,
-			status: "UNEXPORTED",
-			path,
-			contentType: file.type,
-		} satisfies Omit<ImagesFormSchema, "id">;
+		try {
+			const image = imageDomainService.create({
+				userId: makeUserId(userId),
+				path: makePath(path),
+				contentType: makeContentType(file.type),
+			});
 
-		const imagesValidatedFields = imagesFormSchema.safeParse(formValues);
-		if (!imagesValidatedFields.success) throw new InvalidFormatError();
+			// check duplicate
+			const exists = await this.imagesQueryRepository.findByPath(
+				image.path,
+				userId,
+			);
+			if (exists !== null) throw new DuplicateError();
 
-		// check duplicate
-		const exists = await this.imagesQueryRepository.findByPath(
-			imagesValidatedFields.data.path,
-			userId,
-		);
-		if (exists !== null) throw new DuplicateError();
-
-		return {
-			validatedImages: imagesValidatedFields.data,
-			thumbnailBuffer,
-			originalBuffer,
-		};
+			return { image, thumbnailBuffer, originalBuffer };
+		} catch (error) {
+			if (error instanceof ZodError) throw new InvalidFormatError();
+			throw new UnexpectedError();
+		}
 	}
 }

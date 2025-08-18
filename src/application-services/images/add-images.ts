@@ -16,23 +16,23 @@ export async function addImages(formData: FormData): Promise<ServerAction> {
 	try {
 		const userId = await getSelfId();
 
-		const { validatedImages, thumbnailBuffer, originalBuffer } =
+		const { image, thumbnailBuffer, originalBuffer } =
 			await new ImagesDomainService(imagesQueryRepository).prepareNewImages(
 				formData,
 				userId,
 			);
 
 		await imagesCommandRepository.uploadToStorage(
-			validatedImages.path,
+			image.path,
 			originalBuffer,
 			false,
 		);
 		await imagesCommandRepository.uploadToStorage(
-			validatedImages.path,
+			image.path,
 			thumbnailBuffer,
 			true,
 		);
-		await imagesCommandRepository.create(validatedImages);
+		await imagesCommandRepository.create(image);
 
 		revalidateTag(`images_UNEXPORTED_${userId}`);
 		revalidateTag(`images_count_UNEXPORTED_${userId}`);

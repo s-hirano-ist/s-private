@@ -4,7 +4,10 @@ import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import type { ImageData } from "@/components/common/display/image/image-stack";
-import type { Status } from "@/domains/common/entities/common-entity";
+import {
+	makeStatus,
+	type Status,
+} from "@/domains/common/entities/common-entity";
 import type { CacheStrategy } from "@/domains/images/types";
 import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
 
@@ -62,7 +65,7 @@ export const getImagesCount = async (status: Status): Promise<number> => {
 export const getExportedImages = cache(
 	async (page: number): Promise<ImageData[]> => {
 		const userId = await getSelfId();
-		return _getImages(page, userId, "EXPORTED", {
+		return _getImages(page, userId, makeStatus("EXPORTED"), {
 			ttl: 400,
 			swr: 40,
 			tags: [`${sanitizeCacheTag(userId)}_images`],
@@ -73,7 +76,7 @@ export const getExportedImages = cache(
 export const getUnexportedImages = cache(
 	async (page: number): Promise<ImageData[]> => {
 		const userId = await getSelfId();
-		return _getImages(page, userId, "UNEXPORTED");
+		return _getImages(page, userId, makeStatus("UNEXPORTED"));
 	},
 );
 

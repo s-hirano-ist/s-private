@@ -1,5 +1,4 @@
 import type { Status } from "@/domains/common/entities/common-entity";
-import type { ContentsQueryData } from "@/domains/contents/entities/contents-entity";
 import type {
 	ContentsFindManyParams,
 	IContentsQueryRepository,
@@ -7,19 +6,21 @@ import type {
 import prisma from "@/prisma";
 
 class ContentsQueryRepository implements IContentsQueryRepository {
-	async findByTitle(title: string, userId: string): Promise<string | null> {
-		const response = await prisma.contents.findUnique({
+	async findByTitle(
+		title: string,
+		userId: string,
+	): Promise<{ id: string; title: string; markdown: string } | null> {
+		return await prisma.contents.findUnique({
 			where: { title_userId: { title, userId } },
 			select: { id: true, title: true, markdown: true },
 		});
-		return response?.markdown ?? null;
 	}
 
 	async findMany(
 		userId: string,
 		status: Status,
 		params: ContentsFindManyParams,
-	): Promise<ContentsQueryData[]> {
+	): Promise<Array<{ id: string; title: string }>> {
 		return await prisma.contents.findMany({
 			where: { userId, status },
 			select: { id: true, title: true },

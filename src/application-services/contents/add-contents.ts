@@ -5,29 +5,36 @@ import { forbidden } from "next/navigation";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
+import { makeUserId } from "@/domains/common/entities/common-entity";
+import { contentEntity } from "@/domains/contents/entities/contents-entity";
 import { ContentsDomainService } from "@/domains/contents/services/contents-domain-service";
 import { contentsCommandRepository } from "@/infrastructures/contents/repositories/contents-command-repository";
 import { contentsQueryRepository } from "@/infrastructures/contents/repositories/contents-query-repository";
+import { parseAddContentFormData } from "./helpers/form-data-parser";
 
-export type Contents = {
-	id: string;
-	markdown: string;
-	title: string;
-};
-
-export async function addContents(formData: FormData): Promise<ServerAction> {
+export async function addContent(formData: FormData): Promise<ServerAction> {
 	const hasPermission = await hasDumperPostPermission();
 	if (!hasPermission) forbidden();
 
+	const contentsDomainService = new ContentsDomainService(
+		contentsQueryRepository,
+	);
+
 	try {
-		const userId = await getSelfId();
+		const userId = makeUserId(await getSelfId());
 
-		const validatedContents = await new ContentsDomainService(
-			contentsQueryRepository,
-		).prepareNewContents(formData, userId);
+		const { title, markdown } = parseAddContentFormData(formData);
 
-		await contentsCommandRepository.create(validatedContents);
+		// Domain business rule validation
+		await contentsDomainService.ensureNoDuplicate(title, userId);
 
+		// Create entity with value objects
+		const contents = contentEntity.create({ title, markdown, userId });
+
+		// Persist
+		await contentsCommandRepository.create(contents);
+
+		// Cache invalidation
 		revalidateTag(`contents_UNEXPORTED_${userId}`);
 		revalidateTag(`contents_count_UNEXPORTED_${userId}`);
 

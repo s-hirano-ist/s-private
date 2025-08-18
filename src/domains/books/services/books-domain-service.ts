@@ -5,6 +5,10 @@ import {
 } from "@/common/error/error-classes";
 import type { IBooksQueryRepository } from "@/domains/books/types";
 import {
+	makeStatus,
+	makeUserId,
+} from "@/domains/common/entities/common-entity";
+import {
 	type BooksFormSchema,
 	booksFormSchema,
 } from "../entities/books-entity";
@@ -19,8 +23,8 @@ export class BooksDomainService {
 		const formValues = {
 			ISBN: formData.get("isbn") as string,
 			title: formData.get("title") as string,
-			userId,
-			status: "UNEXPORTED",
+			userId: makeUserId(userId),
+			status: makeStatus("UNEXPORTED"),
 		} satisfies Omit<BooksFormSchema, "id">;
 
 		const booksValidatedFields = booksFormSchema.safeParse(formValues);

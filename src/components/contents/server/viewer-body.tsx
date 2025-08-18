@@ -6,9 +6,9 @@ type Props = { slug: string; getContentByTitle: typeof getContentByTitle };
 
 export async function ViewerBody({ slug, getContentByTitle }: Props) {
 	const decodedSlug = decodeURIComponent(slug);
-	const markdown = await getContentByTitle(decodedSlug);
+	const data = await getContentByTitle(decodedSlug);
 
-	if (!markdown) notFound();
+	if (!data) notFound();
 
-	return <ViewerBodyClient markdown={markdown} />;
+	return <ViewerBodyClient markdown={data.markdown} />;
 }

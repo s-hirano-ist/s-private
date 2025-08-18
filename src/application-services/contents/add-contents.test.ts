@@ -1,9 +1,16 @@
 import { revalidateTag } from "next/cache";
 import { describe, expect, test, vi } from "vitest";
+import { parseAddContentFormData } from "@/application-services/contents/helpers/form-data-parser";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { DuplicateError } from "@/common/error/error-classes";
+import {
+	type Content,
+	contentEntity,
+	makeMarkdown,
+	makeTitle,
+} from "@/domains/contents/entities/contents-entity";
 import { contentsCommandRepository } from "@/infrastructures/contents/repositories/contents-command-repository";
-import { addContents } from "./add-contents";
+import { addContent } from "./add-contents";
 
 vi.mock("@/common/auth/session", () => ({
 	getSelfId: vi.fn(),
@@ -20,12 +27,22 @@ vi.mock(
 	() => ({ contentsQueryRepository: {} }),
 );
 
-const mockPrepareNewContents = vi.fn();
+const mockEnsureNoDuplicate = vi.fn();
 
 vi.mock("@/domains/contents/services/contents-domain-service", () => ({
 	ContentsDomainService: vi.fn().mockImplementation(() => ({
-		prepareNewContents: mockPrepareNewContents,
+		ensureNoDuplicate: mockEnsureNoDuplicate,
 	})),
+}));
+
+vi.mock("@/domains/contents/entities/contents-entity", () => ({
+	contentEntity: {
+		create: vi.fn(),
+	},
+}));
+
+vi.mock("@/application-services/contents/helpers/form-data-parser", () => ({
+	parseAddContentFormData: vi.fn(),
 }));
 
 const mockFormData = new FormData();
@@ -37,37 +54,45 @@ describe("addContents", () => {
 		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
 
-		const result = await addContents(mockFormData);
+		const result = await addContent(mockFormData);
 		expect(result.success).toBe(false);
 	});
 
 	test("should return forbidden when user doesn't have permission", async () => {
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(false);
 
-		await expect(addContents(mockFormData)).rejects.toThrow("FORBIDDEN");
+		await expect(addContent(mockFormData)).rejects.toThrow("FORBIDDEN");
 	});
 
 	test("should create contents", async () => {
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
 		vi.mocked(getSelfId).mockResolvedValue("user-123");
 
-		mockPrepareNewContents.mockResolvedValue({
+		const mockContent = {
 			title: "Example Content",
 			markdown: "sample markdown",
 			userId: "user-123",
 			status: "UNEXPORTED",
-			id: "01234567-89ab-4def-9123-456789abcdef",
+			id: "01234567-89ab-7def-9123-456789abcdef",
+		};
+
+		vi.mocked(parseAddContentFormData).mockReturnValue({
+			title: makeTitle("Example Content"),
+			markdown: makeMarkdown("sample markdown"),
 		});
+		vi.mocked(contentEntity.create).mockReturnValue(mockContent as Content);
+		mockEnsureNoDuplicate.mockResolvedValue(undefined);
 		vi.mocked(contentsCommandRepository.create).mockResolvedValue();
 
-		const result = await addContents(mockFormData);
+		const result = await addContent(mockFormData);
 
 		expect(vi.mocked(hasDumperPostPermission)).toHaveBeenCalled();
-		expect(mockPrepareNewContents).toHaveBeenCalledWith(
+		expect(vi.mocked(parseAddContentFormData)).toHaveBeenCalledWith(
 			mockFormData,
-			"user-123",
 		);
-		expect(contentsCommandRepository.create).toHaveBeenCalled();
+		expect(mockEnsureNoDuplicate).toHaveBeenCalled();
+		expect(vi.mocked(contentEntity.create)).toHaveBeenCalled();
+		expect(contentsCommandRepository.create).toHaveBeenCalledWith(mockContent);
 		expect(revalidateTag).toHaveBeenCalledWith("contents_UNEXPORTED_user-123");
 		expect(result.success).toBe(true);
 		expect(result.message).toBe("inserted");
@@ -76,9 +101,14 @@ describe("addContents", () => {
 	test("should preserve form data on DuplicateError", async () => {
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
 		vi.mocked(getSelfId).mockResolvedValue("user-123");
-		mockPrepareNewContents.mockRejectedValue(new DuplicateError());
 
-		const result = await addContents(mockFormData);
+		vi.mocked(parseAddContentFormData).mockReturnValue({
+			title: makeTitle("Example Content"),
+			markdown: makeMarkdown("This is an example content quote."),
+		});
+		mockEnsureNoDuplicate.mockRejectedValue(new DuplicateError());
+
+		const result = await addContent(mockFormData);
 
 		expect(result.success).toBe(false);
 		expect(result.message).toBe("duplicated");
@@ -92,10 +122,15 @@ describe("addContents", () => {
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
 		vi.mocked(getSelfId).mockResolvedValue("user-123");
 
-		const error = new Error("Domain service error");
-		mockPrepareNewContents.mockRejectedValue(error);
+		vi.mocked(parseAddContentFormData).mockReturnValue({
+			title: makeTitle("Example Content"),
+			markdown: makeMarkdown("This is an example content quote."),
+		});
 
-		const result = await addContents(mockFormData);
+		const error = new Error("Domain service error");
+		mockEnsureNoDuplicate.mockRejectedValue(error);
+
+		const result = await addContent(mockFormData);
 
 		expect(result).toEqual({ success: false, message: "unexpected" });
 	});

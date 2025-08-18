@@ -1,23 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Suspense } from "react";
+import type { BooksQueryData } from "@/domains/books/entities/books-entity";
+import { makeId } from "@/domains/common/entities/common-entity";
 import { ViewerBody } from "./viewer-body";
-
-type BookData = {
-	id: string;
-	ISBN: string;
-	title: string;
-	markdown?: string;
-	googleTitle?: string;
-	googleSubTitle?: string;
-	googleDescription?: string;
-	googleAuthors?: string[];
-	googleHref?: string;
-	googleImgSrc?: string;
-};
 
 type ViewerBodyWrapperProps = {
 	slug: string;
-	getBookByISBN: (isbn: string) => Promise<BookData | null>;
+	getBookByISBN: (isbn: string) => Promise<BooksQueryData | null>;
 };
 
 function ViewerBodyWrapper({ slug, getBookByISBN }: ViewerBodyWrapperProps) {
@@ -41,8 +30,8 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const mockBookData: BookData = {
-	id: "01234567-89ab-4def-9123-456789abcdef",
+const mockBookData: BooksQueryData = {
+	id: makeId(),
 	ISBN: "978-0123456789",
 	title: "TypeScript Handbook",
 	markdown:
@@ -124,7 +113,7 @@ export const MinimalData: Story = {
 	args: {
 		slug: "978-0123456789",
 		getBookByISBN: async () => ({
-			id: "01234567-89ab-4def-9123-456789abcdef",
+			id: makeId(),
 			ISBN: "978-0123456789",
 			title: "Minimal Book",
 			markdown: "# Minimal Book\n\nJust some basic content.",

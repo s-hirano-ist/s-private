@@ -5,6 +5,7 @@ import { forbidden } from "next/navigation";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
+import { makeStatus } from "@/domains/common/entities/common-entity";
 import { contentsCommandRepository } from "@/infrastructures/contents/repositories/contents-command-repository";
 
 export async function deleteContents(id: string): Promise<ServerAction> {
@@ -14,7 +15,11 @@ export async function deleteContents(id: string): Promise<ServerAction> {
 	try {
 		const userId = await getSelfId();
 
-		await contentsCommandRepository.deleteById(id, userId, "UNEXPORTED");
+		await contentsCommandRepository.deleteById(
+			id,
+			userId,
+			makeStatus("UNEXPORTED"),
+		);
 
 		revalidateTag(`contents_UNEXPORTED_${userId}`);
 		revalidateTag(`contents_count_UNEXPORTED_${userId}`);
