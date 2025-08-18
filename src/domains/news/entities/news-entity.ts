@@ -5,15 +5,6 @@ import {
 	userIdSchema,
 } from "@/domains/common/entities/common-entity";
 
-const isValidUrl = (url: string) => {
-	try {
-		const urlObject = new URL(url);
-		return urlObject.protocol === "http:" || urlObject.protocol === "https:";
-	} catch {
-		return false;
-	}
-};
-
 // value objects
 
 export const categoryInputSchema = z
@@ -40,7 +31,19 @@ export const newsInputSchema = z
 			.string({ message: "required" })
 			.min(1, { message: "required" })
 			.url({ message: "invalidFormat" })
-			.refine((url) => isValidUrl(url), { message: "invalidFormat" }),
+			.refine(
+				(url: string) => {
+					try {
+						const urlObject = new URL(url);
+						return (
+							urlObject.protocol === "http:" || urlObject.protocol === "https:"
+						);
+					} catch {
+						return false;
+					}
+				},
+				{ message: "invalidFormat" },
+			),
 		userId: userIdSchema,
 		id: idSchema,
 		status: statusSchema,

@@ -5,7 +5,7 @@ import { getSelfId, hasViewerAdminPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import { ServerActionWithData } from "@/common/types";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
-import { ImageCardData } from "@/components/common/layouts/cards/image-card";
+import type { ImageCardData } from "@/components/common/layouts/cards/types";
 import { _getBooks } from "./get-books";
 
 export async function loadMoreExportedBooks(

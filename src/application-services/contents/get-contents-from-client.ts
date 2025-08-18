@@ -5,7 +5,7 @@ import { getSelfId, hasViewerAdminPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import { ServerActionWithData } from "@/common/types";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
-import type { LinkCardData } from "@/components/common/layouts/cards/link-card";
+import type { LinkCardData } from "@/components/common/layouts/cards/types";
 import { _getContents } from "./get-contents";
 
 export async function loadMoreExportedContents(

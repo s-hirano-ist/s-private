@@ -1,8 +1,6 @@
 import type { ServerAction, ServerActionWithData } from "@/common/types";
-import {
-	ImageCardStack,
-	ImageCardStackInitialData,
-} from "@/components/common/layouts/cards/image-card-stack";
+import { ImageCardStack } from "@/components/common/layouts/cards/image-card-stack";
+import type { ImageCardStackInitialData } from "@/components/common/layouts/cards/types";
 
 export type Props = {
 	getBooks(page: number): Promise<ImageCardStackInitialData>;

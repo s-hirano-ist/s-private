@@ -1,16 +1,9 @@
 "use client";
 import type { ServerAction, ServerActionWithData } from "@/common/types";
 import { filterImageCards } from "@/components/common/features/search/search-filter";
-import {
-	BaseCardStackWrapper,
-	type CardStackInitialData,
-} from "@/components/common/layouts/cards/base-card-stack";
-import {
-	ImageCard,
-	ImageCardData,
-} from "@/components/common/layouts/cards/image-card";
-
-export type ImageCardStackInitialData = CardStackInitialData<ImageCardData>;
+import { BaseCardStackWrapper } from "@/components/common/layouts/cards/base-card-stack";
+import { ImageCard } from "@/components/common/layouts/cards/image-card";
+import type { ImageCardData, ImageCardStackInitialData } from "./types";
 
 type Props = {
 	initial: ImageCardStackInitialData;

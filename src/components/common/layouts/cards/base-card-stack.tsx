@@ -7,11 +7,7 @@ import { useInfiniteScroll } from "@/components/common/hooks/use-infinite-scroll
 import { useSearchableList } from "@/components/common/hooks/use-searchable-list";
 import { Input } from "@/components/common/ui/input";
 import Loading from "../../display/loading";
-
-export type CardStackInitialData<T> = {
-	data: T[];
-	totalCount: number;
-};
+import type { CardStackInitialData } from "./types";
 
 type SearchableItem = {
 	title: string;

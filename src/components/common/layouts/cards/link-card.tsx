@@ -12,16 +12,7 @@ import {
 } from "@/components/common/ui/card";
 import { validateAndNormalizeUrl } from "@/components/common/utils/validate-url";
 import { Link } from "@/infrastructures/i18n/routing";
-
-export type LinkCardData = {
-	id: string;
-	key: string;
-	title: string;
-	description?: string;
-	primaryBadgeText?: string;
-	secondaryBadgeText?: string;
-	href: string;
-};
+import type { LinkCardData } from "./types";
 
 type Props = {
 	data: LinkCardData;

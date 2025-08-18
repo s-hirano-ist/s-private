@@ -1,9 +1,7 @@
 import { GetContents } from "@/application-services/contents/get-contents";
 import { ServerAction, ServerActionWithData } from "@/common/types";
-import {
-	LinkCardStack,
-	LinkCardStackInitialData,
-} from "@/components/common/layouts/cards/link-card-stack";
+import { LinkCardStack } from "@/components/common/layouts/cards/link-card-stack";
+import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
 
 export type Props = {
 	getContents: GetContents;

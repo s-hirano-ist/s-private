@@ -3,7 +3,7 @@ import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
-import { LinkCardStackInitialData } from "@/components/common/layouts/cards/link-card-stack";
+import { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
 import type { Status } from "@/domains/common/entities/common-entity";
 import { CacheStrategy } from "@/domains/contents/types";
 import { contentsQueryRepository } from "@/infrastructures/contents/repositories/contents-query-repository";

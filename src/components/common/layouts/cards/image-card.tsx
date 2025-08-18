@@ -10,13 +10,7 @@ import {
 	CardTitle,
 } from "@/components/common/ui/card";
 import { Link } from "@/infrastructures/i18n/routing";
-
-export type ImageCardData = {
-	id: string;
-	href: string;
-	title: string;
-	image: string;
-};
+import type { ImageCardData } from "./types";
 
 type Props = {
 	data: ImageCardData;
