@@ -10,7 +10,7 @@ describe("ArticlesCommandRepository", () => {
 
 	describe("create", () => {
 		test("should create article successfully", async () => {
-			vi.mocked(prisma.news.create).mockResolvedValue({
+			vi.mocked(prisma.article.create).mockResolvedValue({
 				title: "Test article",
 				url: "https://example.com/article/1",
 				quote: "This is a test quote",
@@ -39,11 +39,11 @@ describe("ArticlesCommandRepository", () => {
 				categoryId: "01234567-89ab-cdef-0123-456789abcde0",
 			});
 
-			expect(prisma.news.create).toHaveBeenCalled();
+			expect(prisma.article.create).toHaveBeenCalled();
 		});
 
 		test("should create article with null quote", async () => {
-			vi.mocked(prisma.news.create).mockResolvedValue({
+			vi.mocked(prisma.article.create).mockResolvedValue({
 				id: "2",
 				title: "Another article",
 				url: "https://example.com/article/2",
@@ -72,7 +72,7 @@ describe("ArticlesCommandRepository", () => {
 				status: "UNEXPORTED",
 			});
 
-			expect(prisma.news.create).toHaveBeenCalledWith({
+			expect(prisma.article.create).toHaveBeenCalledWith({
 				data: {
 					id: "1",
 					title: "Another article",
@@ -101,7 +101,7 @@ describe("ArticlesCommandRepository", () => {
 		});
 
 		test("should handle database errors during create", async () => {
-			vi.mocked(prisma.news.create).mockRejectedValue(
+			vi.mocked(prisma.article.create).mockRejectedValue(
 				new Error("Database constraint error"),
 			);
 
@@ -121,13 +121,13 @@ describe("ArticlesCommandRepository", () => {
 				}),
 			).rejects.toThrow("Database constraint error");
 
-			expect(prisma.news.create).toHaveBeenCalled();
+			expect(prisma.article.create).toHaveBeenCalled();
 		});
 	});
 
 	describe("deleteById", () => {
 		test("should delete article successfully", async () => {
-			vi.mocked(prisma.news.delete).mockResolvedValue({
+			vi.mocked(prisma.article.delete).mockResolvedValue({
 				id: "1",
 				title: "Test article",
 				url: "https://example.com/article/1",
@@ -145,14 +145,14 @@ describe("ArticlesCommandRepository", () => {
 
 			await articlesCommandRepository.deleteById("1", "user123", "EXPORTED");
 
-			expect(prisma.news.delete).toHaveBeenCalledWith({
+			expect(prisma.article.delete).toHaveBeenCalledWith({
 				where: { id: "1", userId: "user123", status: "EXPORTED" },
 				select: { title: true },
 			});
 		});
 
 		test("should handle not found errors during delete", async () => {
-			vi.mocked(prisma.news.delete).mockRejectedValue(
+			vi.mocked(prisma.article.delete).mockRejectedValue(
 				new Error("Record not found"),
 			);
 
@@ -160,14 +160,14 @@ describe("ArticlesCommandRepository", () => {
 				articlesCommandRepository.deleteById("999", "user123", "EXPORTED"),
 			).rejects.toThrow("Record not found");
 
-			expect(prisma.news.delete).toHaveBeenCalledWith({
+			expect(prisma.article.delete).toHaveBeenCalledWith({
 				where: { id: "999", userId: "user123", status: "EXPORTED" },
 				select: { title: true },
 			});
 		});
 
 		test("should delete article with different status", async () => {
-			vi.mocked(prisma.news.delete).mockResolvedValue({
+			vi.mocked(prisma.article.delete).mockResolvedValue({
 				id: "2",
 				title: "Another article",
 				url: "https://example.com/article/2",
@@ -185,7 +185,7 @@ describe("ArticlesCommandRepository", () => {
 
 			await articlesCommandRepository.deleteById("2", "user123", "UNEXPORTED");
 
-			expect(prisma.news.delete).toHaveBeenCalledWith({
+			expect(prisma.article.delete).toHaveBeenCalledWith({
 				where: { id: "2", userId: "user123", status: "UNEXPORTED" },
 				select: { title: true },
 			});

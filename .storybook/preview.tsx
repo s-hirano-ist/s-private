@@ -27,7 +27,7 @@ const preview = {
 						dumpStatus: "DUMPの状態",
 						dumpTarget: "DUMPのターゲット",
 						totalBooks: "冊数",
-						totalContents: "コンテンツ数",
+						totalNotes: "ノート数",
 						totalImages: "画像数",
 						totalArticles: "ニュース総数",
 						search: "検索",
@@ -39,7 +39,7 @@ const preview = {
 						cancel: "キャンセル",
 						confirmDelete: "削除の確認",
 						articles: "articles",
-						contents: "contents",
+						notes: "notes",
 						images: "images",
 					},
 					statusCode: {

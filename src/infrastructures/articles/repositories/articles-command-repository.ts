@@ -10,7 +10,7 @@ import prisma from "@/prisma";
 
 class ArticlesCommandRepository implements IArticlesCommandRepository {
 	async create(data: Article) {
-		const response = await prisma.news.create({
+		const response = await prisma.article.create({
 			data: {
 				id: data.id,
 				title: data.title,
@@ -50,7 +50,7 @@ class ArticlesCommandRepository implements IArticlesCommandRepository {
 	}
 
 	async deleteById(id: Id, userId: UserId, status: Status) {
-		const data = await prisma.news.delete({
+		const data = await prisma.article.delete({
 			where: { id, userId, status },
 			select: { title: true },
 		});

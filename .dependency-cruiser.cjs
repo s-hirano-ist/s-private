@@ -351,7 +351,7 @@ module.exports = {
            the external modules, but their innards.
          */
 				collapsePattern:
-					"src/generated|src/components/common|src/infrastructures/observability|src/infrastructures/i18n|src/infrastructures/auth|src/infrastructures/books|src/infrastructures/articles|src/infrastructures/contents|src/infrastructures/images|node_modules/(?:@[^/]+/[^/]+|[^/]+)",
+					"src/generated|src/components/common|src/infrastructures/observability|src/infrastructures/i18n|src/infrastructures/auth|src/infrastructures/books|src/infrastructures/articles|src/infrastructures/notes|src/infrastructures/images|node_modules/(?:@[^/]+/[^/]+|[^/]+)",
 
 				/* Options to tweak the appearance of your graph.See
            https://github.com/sverweij/dependency-cruiser/blob/main/doc/options-reference.md#reporteroptions

@@ -33,7 +33,7 @@ describe("ArticlesQueryRepository", () => {
 				},
 			];
 
-			vi.mocked(prisma.news.findMany).mockResolvedValue(mockArticles);
+			vi.mocked(prisma.article.findMany).mockResolvedValue(mockArticles);
 
 			const params = {
 				orderBy: { createdAt: "desc" as const },
@@ -47,7 +47,7 @@ describe("ArticlesQueryRepository", () => {
 				params,
 			);
 
-			expect(prisma.news.findMany).toHaveBeenCalledWith({
+			expect(prisma.article.findMany).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "EXPORTED" },
 				select: {
 					id: true,
@@ -83,7 +83,7 @@ describe("ArticlesQueryRepository", () => {
 		});
 
 		test("should handle empty results", async () => {
-			vi.mocked(prisma.news.findMany).mockResolvedValue([]);
+			vi.mocked(prisma.article.findMany).mockResolvedValue([]);
 
 			const result = await articlesQueryRepository.findMany(
 				"user123",
@@ -91,7 +91,7 @@ describe("ArticlesQueryRepository", () => {
 				{},
 			);
 
-			expect(prisma.news.findMany).toHaveBeenCalledWith({
+			expect(prisma.article.findMany).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "EXPORTED" },
 				select: {
 					id: true,
@@ -119,7 +119,7 @@ describe("ArticlesQueryRepository", () => {
 				},
 			];
 
-			vi.mocked(prisma.news.findMany).mockResolvedValue(mockArticles);
+			vi.mocked(prisma.article.findMany).mockResolvedValue(mockArticles);
 
 			const params = {
 				cacheStrategy: { ttl: 300, swr: 30, tags: ["articles"] },
@@ -131,7 +131,7 @@ describe("ArticlesQueryRepository", () => {
 				params,
 			);
 
-			expect(prisma.news.findMany).toHaveBeenCalledWith({
+			expect(prisma.article.findMany).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "EXPORTED" },
 				select: {
 					id: true,
@@ -158,7 +158,7 @@ describe("ArticlesQueryRepository", () => {
 		});
 
 		test("should handle database errors", async () => {
-			vi.mocked(prisma.news.findMany).mockRejectedValue(
+			vi.mocked(prisma.article.findMany).mockRejectedValue(
 				new Error("Database connection error"),
 			);
 
@@ -166,7 +166,7 @@ describe("ArticlesQueryRepository", () => {
 				articlesQueryRepository.findMany("user123", "EXPORTED", {}),
 			).rejects.toThrow("Database connection error");
 
-			expect(prisma.news.findMany).toHaveBeenCalledWith({
+			expect(prisma.article.findMany).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "EXPORTED" },
 				select: {
 					id: true,
@@ -183,32 +183,32 @@ describe("ArticlesQueryRepository", () => {
 
 	describe("count", () => {
 		test("should return count of articles", async () => {
-			vi.mocked(prisma.news.count).mockResolvedValue(42);
+			vi.mocked(prisma.article.count).mockResolvedValue(42);
 
 			const result = await articlesQueryRepository.count("user123", "EXPORTED");
 
-			expect(prisma.news.count).toHaveBeenCalledWith({
+			expect(prisma.article.count).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "EXPORTED" },
 			});
 			expect(result).toBe(42);
 		});
 
 		test("should return 0 for empty collection", async () => {
-			vi.mocked(prisma.news.count).mockResolvedValue(0);
+			vi.mocked(prisma.article.count).mockResolvedValue(0);
 
 			const result = await articlesQueryRepository.count(
 				"user123",
 				"UNEXPORTED",
 			);
 
-			expect(prisma.news.count).toHaveBeenCalledWith({
+			expect(prisma.article.count).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "UNEXPORTED" },
 			});
 			expect(result).toBe(0);
 		});
 
 		test("should handle database errors", async () => {
-			vi.mocked(prisma.news.count).mockRejectedValue(
+			vi.mocked(prisma.article.count).mockRejectedValue(
 				new Error("Database count error"),
 			);
 
@@ -216,7 +216,7 @@ describe("ArticlesQueryRepository", () => {
 				articlesQueryRepository.count("user123", "EXPORTED"),
 			).rejects.toThrow("Database count error");
 
-			expect(prisma.news.count).toHaveBeenCalledWith({
+			expect(prisma.article.count).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "EXPORTED" },
 			});
 		});
@@ -236,7 +236,7 @@ describe("CategoryQueryRepository", () => {
 				{ id: 3, name: "politics" },
 			];
 
-			vi.mocked(prisma.categories.findMany).mockResolvedValue(mockCategories);
+			vi.mocked(prisma.category.findMany).mockResolvedValue(mockCategories);
 
 			const params = {
 				orderBy: { name: "asc" as const },
@@ -246,7 +246,7 @@ describe("CategoryQueryRepository", () => {
 
 			const result = await categoryQueryRepository.findMany("user123", params);
 
-			expect(prisma.categories.findMany).toHaveBeenCalledWith({
+			expect(prisma.category.findMany).toHaveBeenCalledWith({
 				where: { userId: "user123" },
 				select: { id: true, name: true },
 				...params,
@@ -259,11 +259,11 @@ describe("CategoryQueryRepository", () => {
 		});
 
 		test("should handle empty results", async () => {
-			vi.mocked(prisma.categories.findMany).mockResolvedValue([]);
+			vi.mocked(prisma.category.findMany).mockResolvedValue([]);
 
 			const result = await categoryQueryRepository.findMany("user123");
 
-			expect(prisma.categories.findMany).toHaveBeenCalledWith({
+			expect(prisma.category.findMany).toHaveBeenCalledWith({
 				where: { userId: "user123" },
 				select: { id: true, name: true },
 			});
@@ -276,11 +276,11 @@ describe("CategoryQueryRepository", () => {
 				{ id: 2, name: "science" },
 			];
 
-			vi.mocked(prisma.categories.findMany).mockResolvedValue(mockCategories);
+			vi.mocked(prisma.category.findMany).mockResolvedValue(mockCategories);
 
 			const result = await categoryQueryRepository.findMany("user123");
 
-			expect(prisma.categories.findMany).toHaveBeenCalledWith({
+			expect(prisma.category.findMany).toHaveBeenCalledWith({
 				where: { userId: "user123" },
 				select: { id: true, name: true },
 			});
@@ -291,7 +291,7 @@ describe("CategoryQueryRepository", () => {
 		});
 
 		test("should handle database errors", async () => {
-			vi.mocked(prisma.categories.findMany).mockRejectedValue(
+			vi.mocked(prisma.category.findMany).mockRejectedValue(
 				new Error("Database connection error"),
 			);
 
@@ -299,7 +299,7 @@ describe("CategoryQueryRepository", () => {
 				"Database connection error",
 			);
 
-			expect(prisma.categories.findMany).toHaveBeenCalledWith({
+			expect(prisma.category.findMany).toHaveBeenCalledWith({
 				where: { userId: "user123" },
 				select: { id: true, name: true },
 			});

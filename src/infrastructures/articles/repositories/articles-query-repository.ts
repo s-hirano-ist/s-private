@@ -9,7 +9,7 @@ import prisma from "@/prisma";
 
 class ArticlesQueryRepository implements IArticlesQueryRepository {
 	findByUrl = async (url: string, userId: string) => {
-		const data = await prisma.news.findUnique({
+		const data = await prisma.article.findUnique({
 			where: { url_userId: { url, userId } },
 			select: { url: true },
 		});
@@ -21,7 +21,7 @@ class ArticlesQueryRepository implements IArticlesQueryRepository {
 		status: Status,
 		params: ArticlesFindManyParams,
 	) => {
-		const data = await prisma.news.findMany({
+		const data = await prisma.article.findMany({
 			where: { userId, status },
 			select: {
 				id: true,
@@ -38,7 +38,7 @@ class ArticlesQueryRepository implements IArticlesQueryRepository {
 	};
 
 	async count(userId: string, status: Status): Promise<number> {
-		const data = await prisma.news.count({ where: { userId, status } });
+		const data = await prisma.article.count({ where: { userId, status } });
 		return data;
 	}
 }
@@ -47,7 +47,7 @@ export const articlesQueryRepository = new ArticlesQueryRepository();
 
 class CategoryQueryRepository implements ICategoryQueryRepository {
 	async findMany(userId: string, params?: CategoryFindManyParams) {
-		const data = await prisma.categories.findMany({
+		const data = await prisma.category.findMany({
 			where: { userId },
 			select: { id: true, name: true },
 			...params,

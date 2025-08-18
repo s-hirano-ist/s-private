@@ -14,7 +14,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
 	args: {
 		articles: <div>sample articles</div>,
-		contents: <div>sample contents</div>,
+		notes: <div>sample notes</div>,
 		images: <div>sample images</div>,
 		books: <div>sample books</div>,
 	},

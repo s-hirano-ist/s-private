@@ -19,21 +19,21 @@ import { cn } from "@/components/common/utils/cn";
 
 const TABS = {
 	articles: "ARTICLES",
-	contents: "CONTENTS",
+	notes: "NOTES",
 	images: "IMAGES",
 	books: "BOOKS",
 };
 
 type Props = {
 	books: ReactNode;
-	contents: ReactNode;
+	notes: ReactNode;
 	images: ReactNode;
 	articles: ReactNode;
 };
 
 const DEFAULT_TAB = "articles";
 
-function RootTabComponent({ articles, books, contents, images }: Props) {
+function RootTabComponent({ articles, books, notes, images }: Props) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 
@@ -111,7 +111,7 @@ function RootTabComponent({ articles, books, contents, images }: Props) {
 		>
 			{tabsList}
 			<TabsContent value="articles">{articles}</TabsContent>
-			<TabsContent value="contents">{contents}</TabsContent>
+			<TabsContent value="notes">{notes}</TabsContent>
 			<TabsContent value="books">{books}</TabsContent>
 			<TabsContent value="images">{images}</TabsContent>
 		</Tabs>

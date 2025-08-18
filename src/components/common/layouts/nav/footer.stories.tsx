@@ -29,7 +29,7 @@ export const Default: Story = {
 	},
 };
 
-export const OnDumperPage: Story = {
+export const OnArticlesPage: Story = {
 	parameters: {
 		nextjs: {
 			navigation: {
@@ -40,11 +40,11 @@ export const OnDumperPage: Story = {
 	},
 };
 
-export const OnViewerPage: Story = {
+export const OnNotesPage: Story = {
 	parameters: {
 		nextjs: {
 			navigation: {
-				pathname: "/en/viewer",
+				pathname: "/en/notes",
 				query: {},
 			},
 		},
@@ -62,11 +62,11 @@ export const OnBooksPage: Story = {
 	},
 };
 
-export const OnContentsPage: Story = {
+export const OnImagesPage: Story = {
 	parameters: {
 		nextjs: {
 			navigation: {
-				pathname: "/en/contents",
+				pathname: "/en/images",
 				query: {},
 			},
 		},

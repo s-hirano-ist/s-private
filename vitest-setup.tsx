@@ -118,7 +118,7 @@ beforeEach(() => {
 	vi.mock("@/prisma", () => ({
 		default: {
 			$extends: vi.fn().mockReturnThis(),
-			news: {
+			article: {
 				findMany: vi.fn(),
 				findUnique: vi.fn(),
 				create: vi.fn(),
@@ -126,7 +126,7 @@ beforeEach(() => {
 				delete: vi.fn(),
 				count: vi.fn(),
 			},
-			contents: {
+			note: {
 				findMany: vi.fn(),
 				findUnique: vi.fn(),
 				create: vi.fn(),
@@ -134,7 +134,7 @@ beforeEach(() => {
 				delete: vi.fn(),
 				count: vi.fn(),
 			},
-			images: {
+			image: {
 				findMany: vi.fn(),
 				findUnique: vi.fn(),
 				create: vi.fn(),
@@ -145,7 +145,7 @@ beforeEach(() => {
 					invalidate: vi.fn(),
 				},
 			},
-			books: {
+			book: {
 				findMany: vi.fn(),
 				findUnique: vi.fn(),
 				create: vi.fn(),
@@ -153,7 +153,7 @@ beforeEach(() => {
 				delete: vi.fn(),
 				count: vi.fn(),
 			},
-			categories: {
+			category: {
 				findMany: vi.fn(),
 				findUnique: vi.fn(),
 				create: vi.fn(),

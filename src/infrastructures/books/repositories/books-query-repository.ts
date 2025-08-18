@@ -6,7 +6,7 @@ import prisma from "@/prisma";
 
 class BooksQueryRepository implements IBooksQueryRepository {
 	async findByISBN(ISBN: ISBN, userId: UserId) {
-		const data = await prisma.books.findUnique({
+		const data = await prisma.book.findUnique({
 			where: { ISBN_userId: { ISBN, userId } },
 			omit: { userId: true },
 		});
@@ -14,7 +14,7 @@ class BooksQueryRepository implements IBooksQueryRepository {
 	}
 
 	async findMany(userId: UserId, status: Status, params?: BooksFindManyParams) {
-		const data = await prisma.books.findMany({
+		const data = await prisma.book.findMany({
 			where: { userId, status },
 			omit: { userId: true },
 			...params,
@@ -23,7 +23,7 @@ class BooksQueryRepository implements IBooksQueryRepository {
 	}
 
 	async count(userId: UserId, status: Status) {
-		const data = await prisma.books.count({ where: { userId, status } });
+		const data = await prisma.book.count({ where: { userId, status } });
 		return data;
 	}
 }

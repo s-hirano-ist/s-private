@@ -9,7 +9,7 @@ import { ORIGINAL_IMAGE_PATH, THUMBNAIL_IMAGE_PATH } from "./common";
 
 class ImagesCommandRepository implements IImagesCommandRepository {
 	async create(data: Image): Promise<void> {
-		const response = await prisma.images.create({ data });
+		const response = await prisma.image.create({ data });
 		serverLogger.info(
 			`【IMAGE】\n\nコンテンツ\nfileName: ${response.id}\nの登録ができました`,
 			{ caller: "addImage", status: 201, userId: response.userId },
@@ -27,7 +27,7 @@ class ImagesCommandRepository implements IImagesCommandRepository {
 	}
 
 	async deleteById(id: string, userId: string, status: Status): Promise<void> {
-		const data = await prisma.images.delete({
+		const data = await prisma.image.delete({
 			where: { id, userId, status },
 			select: { path: true },
 		});

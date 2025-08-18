@@ -8,7 +8,7 @@ import { ORIGINAL_IMAGE_PATH, THUMBNAIL_IMAGE_PATH } from "./common";
 
 class ImagesQueryRepository implements IImagesQueryRepository {
 	async findByPath(path: string, userId: string): Promise<{} | null> {
-		const data = await prisma.images.findUnique({
+		const data = await prisma.image.findUnique({
 			where: { path_userId: { path, userId } },
 			select: {},
 		});
@@ -22,7 +22,7 @@ class ImagesQueryRepository implements IImagesQueryRepository {
 	): Promise<
 		{ id: string; path: string; height: number | null; width: number | null }[]
 	> {
-		const data = await prisma.images.findMany({
+		const data = await prisma.image.findMany({
 			where: { userId, status },
 			select: {
 				id: true,
@@ -36,7 +36,7 @@ class ImagesQueryRepository implements IImagesQueryRepository {
 	}
 
 	async count(userId: string, status: Status): Promise<number> {
-		const data = await prisma.images.count({ where: { userId, status } });
+		const data = await prisma.image.count({ where: { userId, status } });
 		return data;
 	}
 

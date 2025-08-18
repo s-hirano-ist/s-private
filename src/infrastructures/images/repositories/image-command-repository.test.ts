@@ -27,7 +27,7 @@ describe("ImageCommandRepository", () => {
 				exportedAt: new Date(),
 			};
 
-			vi.mocked(prisma.images.create).mockResolvedValue(mockImage);
+			vi.mocked(prisma.image.create).mockResolvedValue(mockImage);
 
 			const result = await imagesCommandRepository.create({
 				id: "image-123",
@@ -42,7 +42,7 @@ describe("ImageCommandRepository", () => {
 				status: "UNEXPORTED",
 			});
 
-			expect(prisma.images.create).toHaveBeenCalledWith({
+			expect(prisma.image.create).toHaveBeenCalledWith({
 				data: {
 					id: "image-123",
 					path: "image-123",
@@ -60,7 +60,7 @@ describe("ImageCommandRepository", () => {
 		});
 
 		test("should create image with minimal data", async () => {
-			vi.mocked(prisma.images.create).mockResolvedValue({
+			vi.mocked(prisma.image.create).mockResolvedValue({
 				id: "image-456",
 				path: "image-456",
 				userId: "user123",
@@ -84,7 +84,7 @@ describe("ImageCommandRepository", () => {
 				id: "1",
 			});
 
-			expect(prisma.images.create).toHaveBeenCalledWith({
+			expect(prisma.image.create).toHaveBeenCalledWith({
 				data: {
 					path: "image-456",
 					userId: "user123",
@@ -97,7 +97,7 @@ describe("ImageCommandRepository", () => {
 		});
 
 		test("should handle database errors during create", async () => {
-			vi.mocked(prisma.images.create).mockRejectedValue(
+			vi.mocked(prisma.image.create).mockRejectedValue(
 				new Error("Database constraint error"),
 			);
 
@@ -111,7 +111,7 @@ describe("ImageCommandRepository", () => {
 				}),
 			).rejects.toThrow("Database constraint error");
 
-			expect(prisma.images.create).toHaveBeenCalledWith({
+			expect(prisma.image.create).toHaveBeenCalledWith({
 				data: {
 					path: "image-123",
 					userId: "user123",

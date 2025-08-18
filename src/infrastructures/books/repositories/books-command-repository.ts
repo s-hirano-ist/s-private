@@ -10,7 +10,7 @@ import prisma from "@/prisma";
 
 class BooksCommandRepository implements IBooksCommandRepository {
 	async create(data: Book) {
-		const response = await prisma.books.create({
+		const response = await prisma.book.create({
 			data,
 		});
 		serverLogger.info(
@@ -21,7 +21,7 @@ class BooksCommandRepository implements IBooksCommandRepository {
 	}
 
 	async deleteById(id: Id, userId: UserId, status: Status) {
-		const data = await prisma.books.delete({
+		const data = await prisma.book.delete({
 			where: { id, userId, status },
 			select: { title: true },
 		});
