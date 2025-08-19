@@ -5,25 +5,18 @@ import { signOut } from "next-auth/react";
 import {
 	memo,
 	type ReactNode,
-	Suspense,
 	useCallback,
 	useEffect,
 	useMemo,
 	useState,
 	useTransition,
 } from "react";
-import { UtilButtons } from "@/components/common/layouts/nav/util-buttons";
+import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 import { Button } from "@/components/common/ui/button";
-import {
-	Drawer,
-	DrawerContent,
-	DrawerHeader,
-	DrawerTitle,
-	DrawerTrigger,
-} from "@/components/common/ui/drawer";
+import { CommandDialog } from "@/components/common/ui/command";
 import { cn } from "@/components/common/utils/cn";
-import type { search } from "../../features/search/search";
 import { SearchCard } from "../../features/search/search-card";
+import { UtilButtons } from "./util-buttons";
 
 const LAYOUTS = {
 	dumper: "DUMPER",
@@ -33,7 +26,7 @@ const LAYOUTS = {
 const DEFAULT_LAYOUT = "dumper";
 
 type Props = {
-	search: typeof search;
+	search: typeof searchContentFromClient;
 };
 function FooterComponent({ search }: Props) {
 	const [open, setOpen] = useState(false);
@@ -122,19 +115,18 @@ function FooterComponent({ search }: Props) {
 				>
 					{Icon("DUMPER", <UploadIcon className="size-6" />)}
 				</Button>
-				<DrawerTrigger asChild>
-					<div className="flex items-center justify-center">
-						<Button
-							className="bg-linear-to-t from-primary-grad-from to-primary-grad-to shadow-sm"
-							size="navCenter"
-							type="button"
-							variant="navCenter"
-						>
-							{Icon("", <SearchIcon className="size-6 text-white" />)}
-							<span className="sr-only">Action</span>
-						</Button>
-					</div>
-				</DrawerTrigger>
+				<div className="flex items-center justify-center">
+					<Button
+						className="bg-linear-to-t from-primary-grad-from to-primary-grad-to shadow-sm"
+						onClick={() => setOpen(true)}
+						size="navCenter"
+						type="button"
+						variant="navCenter"
+					>
+						{Icon("", <SearchIcon className="size-6 text-white" />)}
+						<span className="sr-only">Action</span>
+					</Button>
+				</div>
 				<Button
 					asChild
 					className={cn(
@@ -154,25 +146,18 @@ function FooterComponent({ search }: Props) {
 	);
 
 	return (
-		<footer className="sticky bottom-0 z-50 mx-auto w-full max-w-lg border border-gray-200 bg-white dark:border-gray-600 dark:bg-gray-700 sm:rounded-3xl ">
-			<Drawer onOpenChange={setOpen} open={open} snapPoints={[0.5]}>
+		<>
+			<footer className="sticky bottom-0 z-50 mx-auto w-full max-w-lg border border-gray-200 bg-white dark:border-gray-600 dark:bg-gray-700 sm:rounded-3xl ">
 				{navigationButtons}
-				<DrawerContent>
-					<DrawerHeader>
-						<DrawerTitle />
-					</DrawerHeader>
-					<Suspense
-						fallback={<div className="h-32 animate-pulse bg-gray-100" />}
-					>
-						<UtilButtons
-							handleReload={handleReload}
-							onSignOutSubmit={onSignOutSubmit}
-						/>
-						<SearchCard search={search} />
-					</Suspense>
-				</DrawerContent>
-			</Drawer>
-		</footer>
+			</footer>
+			<CommandDialog fullWidth onOpenChange={setOpen} open={open}>
+				<UtilButtons
+					handleReload={handleReload}
+					onSignOutSubmit={onSignOutSubmit}
+				/>
+				<SearchCard search={search} />
+			</CommandDialog>
+		</>
 	);
 }
 

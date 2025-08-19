@@ -3,7 +3,8 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState, useTransition } from "react";
 import { useDebouncedCallback } from "use-debounce";
-import type { search } from "../features/search/search";
+import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
+import type { SearchQuery } from "@/domains/common/types/search-types";
 
 const PARAM_NAME = "q";
 
@@ -12,7 +13,7 @@ type SearchableItem = {
 };
 
 type UseSearchableListOptions = {
-	search: typeof search;
+	search: typeof searchContentFromClient;
 	useUrlQuery?: boolean;
 	debounceMs?: number;
 };
@@ -44,7 +45,11 @@ export function useSearch({
 			if (searchQuery === "") setSearchResults(undefined);
 			else {
 				startTransition(async () => {
-					const result = await search(searchQuery);
+					const query: SearchQuery = {
+						query: searchQuery.trim(),
+						limit: 50,
+					};
+					const result = await search(query);
 					if (result.success && result.data) {
 						const newData = result.data.results.map((d) => {
 							return { title: d.title };

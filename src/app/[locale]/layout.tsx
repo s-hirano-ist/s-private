@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import type { ReactNode } from "react";
-import { search } from "@/components/common/features/search/search";
+import { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 import { Footer } from "@/components/common/layouts/nav/footer";
 import { ThemeProvider } from "@/components/common/providers/theme-provider";
 import { Toaster } from "@/components/common/ui/sonner";
@@ -32,7 +32,7 @@ export default async function LocaleLayout({ children, params }: Params) {
 			>
 				<main className="flex h-screen flex-col justify-between">
 					<div className="grow pb-4">{children}</div>
-					<Footer search={search} />
+					<Footer search={searchContentFromClient} />
 				</main>
 				<Toaster />
 			</ThemeProvider>
