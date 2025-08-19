@@ -33,6 +33,37 @@ class NotesQueryRepository implements INotesQueryRepository {
 		const data = await prisma.note.count({ where: { userId, status } });
 		return data;
 	}
+
+	search = async (
+		query: string,
+		userId: UserId,
+		limit = 20,
+	): Promise<
+		{
+			id: string;
+			title: string;
+			markdown: string;
+		}[]
+	> => {
+		const data = await prisma.note.findMany({
+			where: {
+				userId,
+				status: "EXPORTED",
+				OR: [
+					{ title: { contains: query, mode: "insensitive" } },
+					{ markdown: { contains: query, mode: "insensitive" } },
+				],
+			},
+			select: {
+				id: true,
+				title: true,
+				markdown: true,
+			},
+			take: limit,
+			orderBy: { createdAt: "desc" },
+		});
+		return data;
+	};
 }
 
 export const notesQueryRepository = new NotesQueryRepository();

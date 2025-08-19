@@ -22,8 +22,8 @@ import {
 	DrawerTrigger,
 } from "@/components/common/ui/drawer";
 import { cn } from "@/components/common/utils/cn";
+import type { search } from "../../features/search/search";
 import { SearchCard } from "../../features/search/search-card";
-import type { search } from "../../features/search/search-filter";
 
 const LAYOUTS = {
 	dumper: "DUMPER",

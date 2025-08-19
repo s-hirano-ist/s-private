@@ -4,7 +4,8 @@ import type {
 	ArticlesFindManyParams,
 	CategoryFindManyParams,
 } from "@/domains/articles/types/query-params";
-import type { Status } from "@/domains/common/entities/common-entity";
+import type { Status, UserId } from "@/domains/common/entities/common-entity";
+import type { Prisma } from "@/generated";
 import prisma from "@/prisma";
 
 class ArticlesQueryRepository implements IArticlesQueryRepository {
@@ -41,6 +42,56 @@ class ArticlesQueryRepository implements IArticlesQueryRepository {
 		const data = await prisma.article.count({ where: { userId, status } });
 		return data;
 	}
+
+	search = async (
+		query: string,
+		userId: UserId,
+		limit = 20,
+	): Promise<
+		{
+			id: string;
+			title: string;
+			url: string;
+			quote: string | null;
+			ogTitle: string | null;
+			ogDescription: string | null;
+			Category: {
+				id: string;
+				name: string;
+			};
+		}[]
+	> => {
+		const where: Prisma.ArticleWhereInput = {
+			userId,
+			status: "EXPORTED",
+			...(query
+				? {
+						OR: [
+							{ title: { contains: query, mode: "insensitive" } },
+							{ quote: { contains: query, mode: "insensitive" } },
+							{ ogTitle: { contains: query, mode: "insensitive" } },
+							{ ogDescription: { contains: query, mode: "insensitive" } },
+						],
+					}
+				: {}),
+		};
+		const data = await prisma.article.findMany({
+			where,
+			select: {
+				id: true,
+				title: true,
+				url: true,
+				quote: true,
+				ogTitle: true,
+				ogDescription: true,
+				categoryId: true,
+				Category: { select: { name: true, id: true } },
+			},
+			take: limit,
+			orderBy: { createdAt: "desc" },
+		});
+		return data;
+	};
 }
 
 export const articlesQueryRepository = new ArticlesQueryRepository();

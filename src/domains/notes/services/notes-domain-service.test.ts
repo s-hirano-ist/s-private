@@ -14,6 +14,7 @@ describe("NotesDomainService", () => {
 			findByTitle: vi.fn(),
 			findMany: vi.fn(),
 			count: vi.fn(),
+			search: vi.fn(),
 		} as INotesQueryRepository;
 
 		notesDomainService = new NotesDomainService(notesQueryRepository);
