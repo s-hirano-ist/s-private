@@ -34,6 +34,7 @@ class BooksQueryRepository implements IBooksQueryRepository {
 	): Promise<
 		{
 			id: string;
+			ISBN: string;
 			title: string;
 			googleTitle: string | null;
 			googleSubTitle: string | null;
@@ -60,6 +61,7 @@ class BooksQueryRepository implements IBooksQueryRepository {
 			},
 			select: {
 				id: true,
+				ISBN: true,
 				title: true,
 				googleTitle: true,
 				googleSubTitle: true,

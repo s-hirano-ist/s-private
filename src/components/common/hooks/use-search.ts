@@ -9,7 +9,10 @@ import type { SearchQuery } from "@/domains/common/types/search-types";
 const PARAM_NAME = "q";
 
 type SearchableItem = {
+	href: string;
+	contentType: "articles" | "books" | "notes";
 	title: string;
+	url?: string;
 };
 
 type UseSearchableListOptions = {
@@ -52,7 +55,12 @@ export function useSearch({
 					const result = await search(query);
 					if (result.success && result.data) {
 						const newData = result.data.results.map((d) => {
-							return { title: d.title };
+							return {
+								href: d.href,
+								contentType: d.contentType,
+								title: d.title,
+								url: d.url,
+							};
 						});
 						setSearchResults(newData);
 					}

@@ -1,7 +1,7 @@
 export type ContentType = "articles" | "books" | "notes";
 
 export type SearchResult = {
-	id: string;
+	href: string;
 	contentType: ContentType;
 	title: string;
 	snippet: string;

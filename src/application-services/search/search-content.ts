@@ -60,7 +60,7 @@ export async function searchContent(
 
 		const articleSearchResults: SearchResult[] = articleResults.map(
 			(article) => ({
-				id: article.id,
+				href: article.url,
 				contentType: "articles" as ContentType,
 				title: article.title,
 				snippet: extractSnippet(
@@ -89,7 +89,7 @@ export async function searchContent(
 		);
 
 		const bookSearchResults: SearchResult[] = bookResults.map((book) => ({
-			id: book.id,
+			href: book.ISBN,
 			contentType: "books" as ContentType,
 			title: book.title,
 			snippet: extractSnippet(
@@ -120,7 +120,7 @@ export async function searchContent(
 		);
 
 		const noteSearchResults: SearchResult[] = noteResults.map((note) => ({
-			id: note.id,
+			href: note.title,
 			contentType: "notes" as ContentType,
 			title: note.title,
 			snippet: extractSnippet(note.markdown, query),

@@ -55,6 +55,7 @@ export type IBooksQueryRepository = {
 		{
 			id: string;
 			title: string;
+			ISBN: string;
 			googleTitle: string | null;
 			googleSubTitle: string | null;
 			googleAuthors: string[];
