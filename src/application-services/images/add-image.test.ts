@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
 import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
-import { addImages } from "./add-images";
+import { addImage } from "./add-image";
 
 vi.mock("@/common/auth/session", () => ({
 	getSelfId: vi.fn(),
@@ -42,20 +42,20 @@ describe("addImage", () => {
 		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
 
-		const result = await addImages(mockFormData);
+		const result = await addImage(mockFormData);
 		expect(result.success).toBe(false);
 	});
 
 	test("should return forbidden when user doesn't have permission", async () => {
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(false);
 
-		await expect(addImages(mockFormData)).rejects.toThrow("FORBIDDEN");
+		await expect(addImage(mockFormData)).rejects.toThrow("FORBIDDEN");
 	});
 
 	test("should return success false on not permitted", async () => {
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(false);
 
-		await expect(addImages(mockFormData)).rejects.toThrow("FORBIDDEN");
+		await expect(addImage(mockFormData)).rejects.toThrow("FORBIDDEN");
 	});
 
 	test("should return success when everything is correct", async () => {
@@ -71,7 +71,7 @@ describe("addImage", () => {
 		vi.mocked(imagesCommandRepository.create).mockResolvedValue();
 		vi.mocked(imagesCommandRepository.uploadToStorage).mockResolvedValue();
 
-		const result = await addImages(mockFormData);
+		const result = await addImage(mockFormData);
 
 		expect(imagesCommandRepository.uploadToStorage).toHaveBeenCalledTimes(2);
 		expect(imagesCommandRepository.create).toHaveBeenCalled();
@@ -93,7 +93,7 @@ describe("addImage", () => {
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
 		vi.mocked(getSelfId).mockResolvedValue("user-id");
 
-		const result = await addImages(mockFormData);
+		const result = await addImage(mockFormData);
 
 		// FIXME: Test is expecting "invalidFormat" but the service returns "unexpected"
 		// This suggests there may be a bug in the error handling or the validation logic.
@@ -115,7 +115,7 @@ describe("addImage", () => {
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
 		vi.mocked(getSelfId).mockResolvedValue("user-id");
 
-		const result = await addImages(mockFormData);
+		const result = await addImage(mockFormData);
 
 		// FIXME: Test is expecting "invalidFormat" but the service returns "unexpected"
 		// This suggests there may be a bug in the error handling or the validation logic.
@@ -133,7 +133,7 @@ describe("addImage", () => {
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
 		vi.mocked(getSelfId).mockResolvedValue("user-id");
 
-		const result = await addImages(mockFormData);
+		const result = await addImage(mockFormData);
 
 		expect(result).toEqual({
 			success: false,

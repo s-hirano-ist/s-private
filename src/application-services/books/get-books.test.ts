@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
+import type { Status } from "@/domains/common/entities/common-entity";
 import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
 import {
 	getBookByISBN,
@@ -28,16 +29,40 @@ describe("get-books", () => {
 		test("should fetch and transform books correctly", async () => {
 			vi.mocked(booksQueryRepository.findMany).mockResolvedValue([
 				{
+					id: "1",
 					title: "Test Book 1",
 					ISBN: "978-0123456789",
+					status: "EXPORTED",
+					tags: [],
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					exportedAt: new Date(),
+					googleTitle: null,
+					googleSubTitle: null,
+					googleAuthors: [],
+					googleDescription: null,
 					googleImgSrc: "https://example.com/image-1.jpg",
-					id: "1",
+					googleHref: null,
+					markdown: null,
+					rating: null,
 				},
 				{
+					id: "2",
 					title: "Test Book 2",
 					ISBN: "978-0987654321",
+					status: "EXPORTED",
+					tags: [],
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					exportedAt: new Date(),
+					googleTitle: null,
+					googleSubTitle: null,
+					googleAuthors: [],
+					googleDescription: null,
 					googleImgSrc: "https://example.com/image-2.jpg",
-					id: "2",
+					googleHref: null,
+					markdown: null,
+					rating: null,
 				},
 			]);
 			vi.mocked(booksQueryRepository.count).mockResolvedValue(5);
@@ -135,16 +160,40 @@ describe("get-books", () => {
 		test("should fetch and transform unexported books correctly", async () => {
 			vi.mocked(booksQueryRepository.findMany).mockResolvedValue([
 				{
+					id: "3",
 					title: "Unexported Book 1",
 					ISBN: "978-1111111111",
+					status: "UNEXPORTED",
+					tags: [],
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					exportedAt: null,
+					googleTitle: null,
+					googleSubTitle: null,
+					googleAuthors: [],
+					googleDescription: null,
 					googleImgSrc: "https://example.com/unexported-1.jpg",
-					id: "3",
+					googleHref: null,
+					markdown: null,
+					rating: null,
 				},
 				{
+					id: "4",
 					title: "Unexported Book 2",
 					ISBN: "978-2222222222",
+					status: "UNEXPORTED",
+					tags: [],
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					exportedAt: null,
+					googleTitle: null,
+					googleSubTitle: null,
+					googleAuthors: [],
+					googleDescription: null,
 					googleImgSrc: null,
-					id: "4",
+					googleHref: null,
+					markdown: null,
+					rating: null,
 				},
 			]);
 			vi.mocked(booksQueryRepository.count).mockResolvedValue(2);
@@ -207,9 +256,19 @@ describe("get-books", () => {
 				id: "book-1",
 				ISBN: "978-0123456789",
 				title: "Test Book",
+				status: "EXPORTED" as Status,
+				tags: [],
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				exportedAt: new Date(),
 				googleTitle: "Test Book - Google",
+				googleSubTitle: null,
+				googleAuthors: [],
+				googleDescription: null,
 				googleImgSrc: "https://example.com/book.jpg",
+				googleHref: null,
 				markdown: "# Book Content",
+				rating: null,
 			};
 
 			vi.mocked(booksQueryRepository.findByISBN).mockResolvedValue(mockBook);

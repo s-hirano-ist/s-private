@@ -28,6 +28,7 @@ describe("PushoverMonitoringService", () => {
 	const mockContext = {
 		caller: "TestService",
 		timestamp: new Date().toISOString(),
+		status: 200 as const,
 	};
 
 	test("should send error notification with high priority", async () => {
@@ -157,6 +158,7 @@ describe("PushoverMonitoringService", () => {
 		const customContext = {
 			caller: "CustomService",
 			timestamp: new Date().toISOString(),
+			status: 500 as const,
 		};
 
 		await pushoverMonitoringService.notifyError("Test message", customContext);

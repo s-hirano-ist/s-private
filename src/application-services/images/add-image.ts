@@ -5,11 +5,11 @@ import { forbidden } from "next/navigation";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
-import { imageEntity } from "@/domains/images/entities/images-entity";
+import { imageEntity } from "@/domains/images/entities/image-entity";
 import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
-import { parseAddImagesFormData } from "./helpers/form-data-parser";
+import { parseAddImageFormData } from "./helpers/form-data-parser";
 
-export async function addImages(formData: FormData): Promise<ServerAction> {
+export async function addImage(formData: FormData): Promise<ServerAction> {
 	const hasPermission = await hasDumperPostPermission();
 	if (!hasPermission) forbidden();
 
@@ -21,7 +21,7 @@ export async function addImages(formData: FormData): Promise<ServerAction> {
 			fileSize,
 			thumbnailBuffer,
 			originalBuffer,
-		} = await parseAddImagesFormData(formData, await getSelfId());
+		} = await parseAddImageFormData(formData, await getSelfId());
 
 		const image = imageEntity.create({
 			userId,

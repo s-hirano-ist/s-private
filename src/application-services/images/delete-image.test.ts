@@ -1,6 +1,6 @@
 import { revalidateTag } from "next/cache";
 import { describe, expect, test, vi } from "vitest";
-import { deleteImages } from "@/application-services/images/delete-images";
+import { deleteImage } from "@/application-services/images/delete-image";
 import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
 
 vi.mock(
@@ -16,14 +16,14 @@ vi.mock("@/common/auth/session", () => ({
 	hasDumperPostPermission: () => mockHasDumperPostPermission(),
 }));
 
-describe("deleteImages", () => {
+describe("deleteImage", () => {
 	test("should delete images successfully", async () => {
 		mockHasDumperPostPermission.mockResolvedValue(true);
 		mockGetSelfId.mockResolvedValue("1");
 
 		vi.mocked(imagesCommandRepository.deleteById).mockResolvedValueOnce();
 
-		const result = await deleteImages("1");
+		const result = await deleteImage("1");
 
 		expect(result).toEqual({
 			success: true,
@@ -46,7 +46,7 @@ describe("deleteImages", () => {
 			new Error("Record not found"),
 		);
 
-		const result = await deleteImages("999");
+		const result = await deleteImage("999");
 
 		expect(result.success).toBe(false);
 		expect(result.message).toBe("unexpected");

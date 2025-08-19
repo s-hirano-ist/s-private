@@ -1,5 +1,5 @@
 import type { Status } from "@/domains/common/entities/common-entity";
-import type { Image, Path } from "@/domains/images/entities/images-entity";
+import type { Image, Path } from "@/domains/images/entities/image-entity";
 import type { IImagesCommandRepository } from "@/domains/images/repositories/images-command-repository.interface";
 import { env } from "@/env";
 import { serverLogger } from "@/infrastructures/observability/server";
@@ -33,7 +33,7 @@ class ImagesCommandRepository implements IImagesCommandRepository {
 		});
 		serverLogger.info(
 			`【IMAGE】\n\n削除\npath: ${data.path}`,
-			{ caller: "deleteImages", status: 200, userId },
+			{ caller: "deleteImage", status: 200, userId },
 			{ notify: true },
 		);
 	}

@@ -1,8 +1,24 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import type { Status } from "@/domains/common/entities/common-entity";
+import {
+	makeId,
+	makeStatus,
+	makeUserId,
+} from "@/domains/common/entities/common-entity";
+import {
+	makeContentType,
+	makeDescription,
+	makeFileSize,
+	makePixel,
+	makeTag,
+	Path,
+} from "@/domains/images/entities/image-entity";
 import { minioClient } from "@/minio";
 import prisma from "@/prisma";
 import { imagesCommandRepository } from "./images-command-repository";
+
+// Simple path parser for testing (the original makePath generates UUIDs)
+const makeTestPath = (v: string): Path => Path.parse(v);
 
 describe("ImageCommandRepository", () => {
 	beforeEach(() => {
@@ -30,21 +46,21 @@ describe("ImageCommandRepository", () => {
 			vi.mocked(prisma.image.create).mockResolvedValue(mockImage);
 
 			const result = await imagesCommandRepository.create({
-				id: "image-123",
-				path: "image-123",
-				userId: "user123",
-				contentType: "image/png",
-				fileSize: 1024,
-				width: 800,
-				height: 600,
-				tags: ["nature", "landscape"],
-				description: "A beautiful landscape",
-				status: "UNEXPORTED",
+				id: makeId("01234567-89ab-7def-8123-456789abcdef"),
+				path: makeTestPath("image-123"),
+				userId: makeUserId("user123"),
+				contentType: makeContentType("image/png"),
+				fileSize: makeFileSize(1024),
+				width: makePixel(800),
+				height: makePixel(600),
+				tags: [makeTag("nature"), makeTag("landscape")],
+				description: makeDescription("A beautiful landscape"),
+				status: makeStatus("UNEXPORTED"),
 			});
 
 			expect(prisma.image.create).toHaveBeenCalledWith({
 				data: {
-					id: "image-123",
+					id: "01234567-89ab-7def-8123-456789abcdef",
 					path: "image-123",
 					userId: "user123",
 					contentType: "image/png",
@@ -77,11 +93,14 @@ describe("ImageCommandRepository", () => {
 			});
 
 			const result = await imagesCommandRepository.create({
-				path: "image-456",
-				userId: "user123",
-				contentType: "image/jpeg",
-				status: "UNEXPORTED",
-				id: "1",
+				path: makeTestPath("image-456"),
+				userId: makeUserId("user123"),
+				contentType: makeContentType("image/jpeg"),
+				status: makeStatus("UNEXPORTED"),
+				id: makeId("01234567-89ab-7def-8123-456789abcde1"),
+				fileSize: makeFileSize(2048),
+				width: makePixel(640),
+				height: makePixel(480),
 			});
 
 			expect(prisma.image.create).toHaveBeenCalledWith({
@@ -90,7 +109,10 @@ describe("ImageCommandRepository", () => {
 					userId: "user123",
 					contentType: "image/jpeg",
 					status: "UNEXPORTED",
-					id: "1",
+					id: "01234567-89ab-7def-8123-456789abcde1",
+					fileSize: 2048,
+					width: 640,
+					height: 480,
 				},
 			});
 			expect(result).toBeUndefined();
@@ -103,11 +125,14 @@ describe("ImageCommandRepository", () => {
 
 			await expect(
 				imagesCommandRepository.create({
-					path: "image-123",
-					userId: "user123",
-					contentType: "image/png",
-					status: "UNEXPORTED",
-					id: "1",
+					path: makeTestPath("image-123"),
+					userId: makeUserId("user123"),
+					contentType: makeContentType("image/png"),
+					status: makeStatus("UNEXPORTED"),
+					id: makeId("01234567-89ab-7def-8123-456789abcde1"),
+					fileSize: makeFileSize(1024),
+					width: makePixel(800),
+					height: makePixel(600),
 				}),
 			).rejects.toThrow("Database constraint error");
 
@@ -117,7 +142,10 @@ describe("ImageCommandRepository", () => {
 					userId: "user123",
 					contentType: "image/png",
 					status: "UNEXPORTED",
-					id: "1",
+					id: "01234567-89ab-7def-8123-456789abcde1",
+					fileSize: 1024,
+					width: 800,
+					height: 600,
 				},
 			});
 		});
@@ -133,7 +161,11 @@ describe("ImageCommandRepository", () => {
 				versionId: "test-version",
 			});
 
-			await imagesCommandRepository.uploadToStorage(path, buffer, false);
+			await imagesCommandRepository.uploadToStorage(
+				makeTestPath(path),
+				buffer,
+				false,
+			);
 
 			expect(minioClient.putObject).toHaveBeenCalledWith(
 				"test-bucket",
@@ -151,7 +183,11 @@ describe("ImageCommandRepository", () => {
 			);
 
 			await expect(
-				imagesCommandRepository.uploadToStorage(path, buffer, false),
+				imagesCommandRepository.uploadToStorage(
+					makeTestPath(path),
+					buffer,
+					false,
+				),
 			).rejects.toThrow("Storage upload failed");
 
 			expect(minioClient.putObject).toHaveBeenCalledWith(

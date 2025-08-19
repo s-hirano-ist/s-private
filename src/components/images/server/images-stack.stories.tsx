@@ -13,19 +13,19 @@ type ImageData = {
 type ImagesStackWrapperProps = {
 	currentPage: number;
 	getImages: (page: number) => Promise<ImageData[]>;
-	deleteImages?: (id: string) => Promise<{ success: boolean; message: string }>;
+	deleteImage?: (id: string) => Promise<{ success: boolean; message: string }>;
 };
 
 function ImagesStackWrapper({
 	currentPage,
 	getImages,
-	deleteImages,
+	deleteImage,
 }: ImagesStackWrapperProps) {
 	return (
 		<Suspense>
 			<ImagesStack
 				currentPage={currentPage}
-				deleteImages={deleteImages}
+				deleteImage={deleteImage}
 				getImages={getImages}
 			/>
 		</Suspense>
@@ -39,7 +39,7 @@ const meta = {
 	argTypes: {
 		currentPage: { control: { type: "number", min: 1 } },
 		getImages: { action: "getImages" },
-		deleteImages: { action: "deleteImages" },
+		deleteImage: { action: "deleteImage" },
 	},
 } satisfies Meta<typeof ImagesStackWrapper>;
 
@@ -81,7 +81,7 @@ export const Default: Story = {
 	args: {
 		currentPage: 1,
 		getImages: async () => mockImageData,
-		deleteImages: async () => ({
+		deleteImage: async () => ({
 			success: true,
 			message: "Image deleted successfully",
 		}),
@@ -99,7 +99,7 @@ export const Empty: Story = {
 	args: {
 		currentPage: 1,
 		getImages: async () => [],
-		deleteImages: async () => ({
+		deleteImage: async () => ({
 			success: true,
 			message: "Image deleted successfully",
 		}),
@@ -110,7 +110,7 @@ export const SingleImage: Story = {
 	args: {
 		currentPage: 1,
 		getImages: async () => [mockImageData[0]],
-		deleteImages: async () => ({
+		deleteImage: async () => ({
 			success: true,
 			message: "Image deleted successfully",
 		}),
@@ -127,7 +127,7 @@ export const WithoutDimensions: Story = {
 				thumbnailPath: "https://picsum.photos/id/1/192/192",
 			},
 		],
-		deleteImages: async () => ({
+		deleteImage: async () => ({
 			success: true,
 			message: "Image deleted successfully",
 		}),
@@ -154,7 +154,7 @@ export const MixedFormats: Story = {
 				width: 1920,
 			},
 		],
-		deleteImages: async () => ({
+		deleteImage: async () => ({
 			success: true,
 			message: "Image deleted successfully",
 		}),
@@ -178,7 +178,7 @@ export const DifferentPage: Story = {
 			}
 			return mockImageData;
 		},
-		deleteImages: async () => ({
+		deleteImage: async () => ({
 			success: true,
 			message: "Image deleted successfully",
 		}),
@@ -189,7 +189,7 @@ export const DeleteError: Story = {
 	args: {
 		currentPage: 1,
 		getImages: async () => mockImageData,
-		deleteImages: async () => ({
+		deleteImage: async () => ({
 			success: false,
 			message: "Failed to delete image",
 		}),

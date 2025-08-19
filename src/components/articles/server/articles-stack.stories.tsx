@@ -35,40 +35,6 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const mockGetArticles = async () => ({
-	data: [
-		{
-			id: "1",
-			key: "tech-articles-1",
-			title: "New TypeScript Features Released",
-			description:
-				"TypeScript 5.3 brings exciting new features including better type inference and performance improvements.",
-			primaryBadgeText: "Technology",
-			secondaryBadgeText: "Featured",
-			href: "https://example.com/typescript-article",
-		},
-		{
-			id: "2",
-			key: "tech-articles-2",
-			title: "React 18 Best Practices",
-			description:
-				"Learn about the latest best practices for React 18 including concurrent features and Suspense.",
-			primaryBadgeText: "React",
-			href: "https://example.com/react-article",
-		},
-		{
-			id: "3",
-			key: "tech-articles-3",
-			title: "Web Performance Optimization Tips",
-			description: "Essential tips for optimizing web performance in 2024.",
-			primaryBadgeText: "Performance",
-			secondaryBadgeText: "Guide",
-			href: "https://example.com/performance-tips",
-		},
-	],
-	totalCount: 100,
-});
-
 const mockLoadMoreAction = async () => ({
 	success: true,
 	message: "success",
@@ -80,7 +46,39 @@ const mockLoadMoreAction = async () => ({
 
 export const Default: Story = {
 	args: {
-		getArticles: mockGetArticles,
+		getArticles: async () => ({
+			data: [
+				{
+					id: "1",
+					key: "tech-articles-1",
+					title: "New TypeScript Features Released",
+					description:
+						"TypeScript 5.3 brings exciting new features including better type inference and performance improvements.",
+					primaryBadgeText: "Technology",
+					secondaryBadgeText: "Featured",
+					href: "https://example.com/typescript-article",
+				},
+				{
+					id: "2",
+					key: "tech-articles-2",
+					title: "React 18 Best Practices",
+					description:
+						"Learn about the latest best practices for React 18 including concurrent features and Suspense.",
+					primaryBadgeText: "React",
+					href: "https://example.com/react-article",
+				},
+				{
+					id: "3",
+					key: "tech-articles-3",
+					title: "Web Performance Optimization Tips",
+					description: "Essential tips for optimizing web performance in 2024.",
+					primaryBadgeText: "Performance",
+					secondaryBadgeText: "Guide",
+					href: "https://example.com/performance-tips",
+				},
+			],
+			totalCount: 100,
+		}),
 		deleteArticle: async () => ({
 			success: true,
 			message: "articles deleted successfully",
@@ -91,14 +89,50 @@ export const Default: Story = {
 
 export const WithoutDeleteAction: Story = {
 	args: {
-		getArticles: mockGetArticles,
+		getArticles: async () => ({
+			data: [
+				{
+					id: "1",
+					key: "tech-articles-1",
+					title: "New TypeScript Features Released",
+					description:
+						"TypeScript 5.3 brings exciting new features including better type inference and performance improvements.",
+					primaryBadgeText: "Technology",
+					secondaryBadgeText: "Featured",
+					href: "https://example.com/typescript-article",
+				},
+				{
+					id: "2",
+					key: "tech-articles-2",
+					title: "React 18 Best Practices",
+					description:
+						"Learn about the latest best practices for React 18 including concurrent features and Suspense.",
+					primaryBadgeText: "React",
+					href: "https://example.com/react-article",
+				},
+				{
+					id: "3",
+					key: "tech-articles-3",
+					title: "Web Performance Optimization Tips",
+					description: "Essential tips for optimizing web performance in 2024.",
+					primaryBadgeText: "Performance",
+					secondaryBadgeText: "Guide",
+					href: "https://example.com/performance-tips",
+				},
+			],
+			totalCount: 100,
+		}),
+		deleteArticle: undefined,
 		loadMoreAction: mockLoadMoreAction,
 	},
 };
 
 export const Empty: Story = {
 	args: {
-		getArticles: mockGetArticles,
+		getArticles: async () => ({
+			data: [],
+			totalCount: 100,
+		}),
 		deleteArticle: async () => ({
 			success: true,
 			message: "article deleted successfully",
@@ -109,7 +143,21 @@ export const Empty: Story = {
 
 export const SingleItem: Story = {
 	args: {
-		getArticles: mockGetArticles,
+		getArticles: async () => ({
+			data: [
+				{
+					id: "1",
+					key: "tech-articles-1",
+					title: "New TypeScript Features Released",
+					description:
+						"TypeScript 5.3 brings exciting new features including better type inference and performance improvements.",
+					primaryBadgeText: "Technology",
+					secondaryBadgeText: "Featured",
+					href: "https://example.com/typescript-article",
+				},
+			],
+			totalCount: 100,
+		}),
 		deleteArticle: async () => ({
 			success: true,
 			message: "article deleted successfully",
@@ -120,7 +168,18 @@ export const SingleItem: Story = {
 
 export const WithInfiniteScroll: Story = {
 	args: {
-		getArticles: mockGetArticles,
+		getArticles: async () => ({
+			data: Array.from({ length: 100 }, (_, i) => ({
+				id: String(i + 1), // 1〜100
+				key: `tech-articles-${i + 1}`,
+				title: `Sample Article ${i + 1}`,
+				description: `This is the description for article number ${i + 1}.`,
+				primaryBadgeText: "Technology",
+				secondaryBadgeText: "Featured",
+				href: `https://example.com/article-${i + 1}`,
+			})),
+			totalCount: 100,
+		}),
 		deleteArticle: async () => ({
 			success: true,
 			message: "article deleted successfully",

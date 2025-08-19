@@ -12,6 +12,8 @@ describe("NotesDomainService", () => {
 	beforeEach(() => {
 		notesQueryRepository = {
 			findByTitle: vi.fn(),
+			findMany: vi.fn(),
+			count: vi.fn(),
 		} as INotesQueryRepository;
 
 		notesDomainService = new NotesDomainService(notesQueryRepository);

@@ -1,5 +1,10 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
+import {
+	makeStatus,
+	makeUserId,
+} from "@/domains/common/entities/common-entity";
+import { makeNoteTitle } from "@/domains/notes/entities/note-entity";
 import prisma from "@/prisma";
 import { notesQueryRepository } from "./notes-query-repository";
 
@@ -19,8 +24,8 @@ describe("NotesQueryRepository", () => {
 			vi.mocked(prisma.note.findUnique).mockResolvedValue(mockNote);
 
 			const result = await notesQueryRepository.findByTitle(
-				"Test Note",
-				"user123",
+				makeNoteTitle("Test Note"),
+				makeUserId("user123"),
 			);
 
 			expect(prisma.note.findUnique).toHaveBeenCalledWith({
@@ -34,8 +39,8 @@ describe("NotesQueryRepository", () => {
 			vi.mocked(prisma.note.findUnique).mockResolvedValue(null);
 
 			const result = await notesQueryRepository.findByTitle(
-				"Nonexistent Note",
-				"user123",
+				makeNoteTitle("Nonexistent Note"),
+				makeUserId("user123"),
 			);
 
 			expect(prisma.note.findUnique).toHaveBeenCalledWith({
@@ -53,7 +58,10 @@ describe("NotesQueryRepository", () => {
 			);
 
 			await expect(
-				notesQueryRepository.findByTitle("Test Note", "user123"),
+				notesQueryRepository.findByTitle(
+					makeNoteTitle("Test Note"),
+					makeUserId("user123"),
+				),
 			).rejects.toThrow("Database error");
 
 			expect(prisma.note.findUnique).toHaveBeenCalledWith({
@@ -80,8 +88,8 @@ describe("NotesQueryRepository", () => {
 			};
 
 			const result = await notesQueryRepository.findMany(
-				"user123",
-				"EXPORTED",
+				makeUserId("user123"),
+				makeStatus("EXPORTED"),
 				params,
 			);
 
@@ -96,7 +104,11 @@ describe("NotesQueryRepository", () => {
 		test("should handle empty results", async () => {
 			vi.mocked(prisma.note.findMany).mockResolvedValue([]);
 
-			const result = await notesQueryRepository.findMany("user123", "EXPORTED");
+			const result = await notesQueryRepository.findMany(
+				makeUserId("user123"),
+				makeStatus("EXPORTED"),
+				{},
+			);
 
 			expect(prisma.note.findMany).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "EXPORTED" },
@@ -115,8 +127,8 @@ describe("NotesQueryRepository", () => {
 			};
 
 			const result = await notesQueryRepository.findMany(
-				"user123",
-				"EXPORTED",
+				makeUserId("user123"),
+				makeStatus("EXPORTED"),
 				params,
 			);
 
@@ -134,7 +146,11 @@ describe("NotesQueryRepository", () => {
 			);
 
 			await expect(
-				notesQueryRepository.findMany("user123", "EXPORTED"),
+				notesQueryRepository.findMany(
+					makeUserId("user123"),
+					makeStatus("EXPORTED"),
+					{},
+				),
 			).rejects.toThrow("Database connection error");
 
 			expect(prisma.note.findMany).toHaveBeenCalledWith({
@@ -148,7 +164,10 @@ describe("NotesQueryRepository", () => {
 		test("should return count of notes", async () => {
 			vi.mocked(prisma.note.count).mockResolvedValue(15);
 
-			const result = await notesQueryRepository.count("user123", "EXPORTED");
+			const result = await notesQueryRepository.count(
+				makeUserId("user123"),
+				makeStatus("EXPORTED"),
+			);
 
 			expect(prisma.note.count).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "EXPORTED" },
@@ -159,7 +178,10 @@ describe("NotesQueryRepository", () => {
 		test("should return 0 for empty collection", async () => {
 			vi.mocked(prisma.note.count).mockResolvedValue(0);
 
-			const result = await notesQueryRepository.count("user123", "UNEXPORTED");
+			const result = await notesQueryRepository.count(
+				makeUserId("user123"),
+				makeStatus("UNEXPORTED"),
+			);
 
 			expect(prisma.note.count).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "UNEXPORTED" },
@@ -173,7 +195,10 @@ describe("NotesQueryRepository", () => {
 			);
 
 			await expect(
-				notesQueryRepository.count("user123", "EXPORTED"),
+				notesQueryRepository.count(
+					makeUserId("user123"),
+					makeStatus("EXPORTED"),
+				),
 			).rejects.toThrow("Database count error");
 
 			expect(prisma.note.count).toHaveBeenCalledWith({

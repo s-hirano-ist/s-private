@@ -6,9 +6,9 @@ import {
 	makeOriginalBuffer,
 	makePath,
 	makeThumbnailBuffer,
-} from "@/domains/images/entities/images-entity";
+} from "@/domains/images/entities/image-entity";
 
-export const parseAddImagesFormData = async (
+export const parseAddImageFormData = async (
 	formData: FormData,
 	userId: string,
 ) => {

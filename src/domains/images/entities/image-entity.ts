@@ -68,7 +68,7 @@ export const makeThumbnailBuffer = async (file: File) => {
 
 // Entities
 
-export const Image = z.object({
+export const image = z.object({
 	id: Id,
 	userId: UserId,
 	path: Path,
@@ -80,7 +80,7 @@ export const Image = z.object({
 	description: Description,
 	status: Status,
 });
-export type Image = z.infer<typeof Image>;
+export type Image = z.infer<typeof image>;
 
 export type CreateImageArgs = Readonly<{
 	userId: UserId;

@@ -1,5 +1,5 @@
 import type { Status } from "@/domains/common/entities/common-entity";
-import type { Image, Path } from "../entities/images-entity";
+import type { Image, Path } from "../entities/image-entity";
 
 export type IImagesCommandRepository = {
 	create(data: Image): Promise<void>;

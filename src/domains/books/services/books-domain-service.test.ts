@@ -12,6 +12,8 @@ describe("BooksDomainService", () => {
 	beforeEach(() => {
 		booksQueryRepository = {
 			findByISBN: vi.fn(),
+			findMany: vi.fn(),
+			count: vi.fn(),
 		} as IBooksQueryRepository;
 
 		booksDomainService = new BooksDomainService(booksQueryRepository);
@@ -44,6 +46,18 @@ describe("BooksDomainService", () => {
 				userId,
 				title: "Existing Book",
 				status: "UNEXPORTED" as const,
+				googleTitle: null,
+				googleSubTitle: null,
+				googleAuthors: [],
+				googleDescription: null,
+				googleImgSrc: null,
+				googleHref: null,
+				markdown: null,
+				rating: null,
+				tags: [],
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				exportedAt: null,
 			};
 
 			vi.mocked(booksQueryRepository.findByISBN).mockResolvedValue(mockBook);
