@@ -1,6 +1,22 @@
+import { revalidateTag } from "next/cache";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
+import { DuplicateError } from "@/common/error/error-classes";
+import {
+	articleEntity,
+	makeArticleTitle,
+	makeCategoryName,
+	makeQuote,
+	makeUrl,
+} from "@/domains/articles/entities/article-entity";
+import {
+	makeId,
+	makeStatus,
+	makeUserId,
+} from "@/domains/common/entities/common-entity";
+import { articlesCommandRepository } from "@/infrastructures/articles/repositories/articles-command-repository";
 import { addArticle } from "./add-article";
+import { parseAddArticleFormData } from "./helpers/form-data-parser";
 
 vi.mock("@/common/auth/session", () => ({
 	getSelfId: vi.fn(),
@@ -9,9 +25,7 @@ vi.mock("@/common/auth/session", () => ({
 
 vi.mock(
 	"@/infrastructures/articles/repositories/articles-command-repository",
-	() => ({
-		articlesCommandRepository: { create: vi.fn() },
-	}),
+	() => ({ articlesCommandRepository: { create: vi.fn() } }),
 );
 
 vi.mock(
@@ -21,23 +35,47 @@ vi.mock(
 	}),
 );
 
-const mockPrepareNewArticle = vi.fn();
+const mockEnsureNoDuplicate = vi.fn();
 
 vi.mock("@/domains/articles/services/articles-domain-service", () => ({
 	ArticlesDomainService: vi.fn().mockImplementation(() => ({
-		prepareNewArticle: mockPrepareNewArticle,
+		ensureNoDuplicate: mockEnsureNoDuplicate,
 	})),
 }));
 
+vi.mock(
+	"@/domains/articles/entities/article-entity",
+	async (importOriginal) => {
+		const actual = (await importOriginal()) as any;
+		return {
+			...actual,
+			articleEntity: {
+				create: vi.fn(),
+			},
+		};
+	},
+);
+
+vi.mock("./helpers/form-data-parser", () => ({
+	parseAddArticleFormData: vi.fn(),
+}));
+
 const mockFormData = new FormData();
-mockFormData.append("title", "Example Content");
-mockFormData.append("quote", "This is an example article quote.");
-mockFormData.append("url", "https://example.com");
+mockFormData.append("title", "Test Article");
+mockFormData.append("url", "https://example.com/article");
+mockFormData.append("quote", "Test quote");
 mockFormData.append("category", "tech");
 
 describe("addArticle", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
+		vi.mocked(parseAddArticleFormData).mockReturnValue({
+			title: makeArticleTitle("Test Article"),
+			url: makeUrl("https://example.com/article"),
+			quote: makeQuote("Test quote"),
+			categoryName: makeCategoryName("tech"),
+			userId: makeUserId("user-123"),
+		});
 	});
 
 	test("should return success false on Unauthorized", async () => {
@@ -52,5 +90,74 @@ describe("addArticle", () => {
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(false);
 
 		await expect(addArticle(mockFormData)).rejects.toThrow("FORBIDDEN");
+	});
+
+	test("should create article", async () => {
+		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+		vi.mocked(getSelfId).mockResolvedValue("user-123");
+
+		const mockArticle = {
+			id: makeId("01933f5c-9df0-7001-9123-456789abcdef"),
+			title: makeArticleTitle("Test Article"),
+			url: makeUrl("https://example.com/article"),
+			quote: makeQuote("Test quote"),
+			categoryName: makeCategoryName("tech"),
+			categoryId: makeId("01933f5c-9df0-7001-8123-456789abcde0"),
+			userId: makeUserId("user-123"),
+			status: makeStatus("UNEXPORTED"),
+		} as const;
+
+		mockEnsureNoDuplicate.mockResolvedValue(undefined);
+		vi.mocked(articleEntity.create).mockReturnValue(mockArticle);
+		vi.mocked(articlesCommandRepository.create).mockResolvedValue();
+
+		const result = await addArticle(mockFormData);
+
+		expect(vi.mocked(hasDumperPostPermission)).toHaveBeenCalled();
+		expect(mockEnsureNoDuplicate).toHaveBeenCalledWith(
+			makeUrl("https://example.com/article"),
+			makeUserId("user-123"),
+		);
+		expect(articleEntity.create).toHaveBeenCalledWith({
+			title: makeArticleTitle("Test Article"),
+			url: makeUrl("https://example.com/article"),
+			quote: makeQuote("Test quote"),
+			categoryName: makeCategoryName("tech"),
+			userId: makeUserId("user-123"),
+		});
+		expect(articlesCommandRepository.create).toHaveBeenCalledWith(mockArticle);
+		expect(revalidateTag).toHaveBeenCalledWith("articles_UNEXPORTED_user-123");
+
+		expect(result.success).toBe(true);
+		expect(result.message).toBe("inserted");
+	});
+
+	test("should preserve form data on DuplicateError", async () => {
+		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+		vi.mocked(getSelfId).mockResolvedValue("user-123");
+		mockEnsureNoDuplicate.mockRejectedValue(new DuplicateError());
+
+		const result = await addArticle(mockFormData);
+
+		expect(result.success).toBe(false);
+		expect(result.message).toBe("duplicated");
+		expect(result.formData).toEqual({
+			title: "Test Article",
+			url: "https://example.com/article",
+			quote: "Test quote",
+			category: "tech",
+		});
+	});
+
+	test("should handle errors and return wrapped error", async () => {
+		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+		vi.mocked(getSelfId).mockResolvedValue("user-123");
+
+		const error = new Error("Domain service error");
+		mockEnsureNoDuplicate.mockRejectedValue(error);
+
+		const result = await addArticle(mockFormData);
+
+		expect(result).toEqual({ success: false, message: "unexpected" });
 	});
 });

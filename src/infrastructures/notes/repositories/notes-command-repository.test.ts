@@ -78,4 +78,63 @@ describe("NotesCommandRepository", () => {
 			});
 		});
 	});
+
+	describe("deleteById", () => {
+		test("should delete note and log success", async () => {
+			const id = makeId("0198bfc4-444e-73e8-9ef6-eb9b250ed1ae");
+			const userId = makeUserId("test-user-id");
+			const status = makeStatus("UNEXPORTED");
+
+			const mockDeletedNote = {
+				title: "Deleted Note",
+			} as any;
+
+			vi.mocked(prisma.note.delete).mockResolvedValue(mockDeletedNote);
+
+			await notesCommandRepository.deleteById(id, userId, status);
+
+			expect(prisma.note.delete).toHaveBeenCalledWith({
+				where: { id, userId, status },
+				select: { title: true },
+			});
+		});
+
+		test("should delete note with different status", async () => {
+			const id = makeId("0198bfc5-555f-74f9-af07-fc9c251fe2bf");
+			const userId = makeUserId("test-user-id-2");
+			const status = makeStatus("EXPORTED");
+
+			const mockDeletedNote = {
+				title: "Another Note",
+			} as any;
+
+			vi.mocked(prisma.note.delete).mockResolvedValue(mockDeletedNote);
+
+			await notesCommandRepository.deleteById(id, userId, status);
+
+			expect(prisma.note.delete).toHaveBeenCalledWith({
+				where: { id, userId, status },
+				select: { title: true },
+			});
+		});
+
+		test("should handle deletion errors", async () => {
+			const id = makeId("0198bfc4-444e-73e8-9ef6-eb9b250ed1ae");
+			const userId = makeUserId("test-user-id");
+			const status = makeStatus("UNEXPORTED");
+
+			vi.mocked(prisma.note.delete).mockRejectedValue(
+				new Error("Note not found"),
+			);
+
+			await expect(
+				notesCommandRepository.deleteById(id, userId, status),
+			).rejects.toThrow("Note not found");
+
+			expect(prisma.note.delete).toHaveBeenCalledWith({
+				where: { id, userId, status },
+				select: { title: true },
+			});
+		});
+	});
 });

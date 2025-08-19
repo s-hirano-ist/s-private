@@ -39,7 +39,6 @@ vi.mock("@/domains/books/services/books-domain-service", () => ({
 }));
 
 vi.mock("@/domains/books/entities/books-entity", async (importOriginal) => {
-	// eslint-disable-next-line
 	const actual = (await importOriginal()) as any;
 	return {
 		...actual,

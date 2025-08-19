@@ -36,7 +36,6 @@ describe("ArticlesCommandRepository", () => {
 				updatedAt: new Date(),
 				exportedAt: null,
 				Category: { name: "1" },
-				// eslint-disable-next-line
 			} as any);
 
 			await articlesCommandRepository.create({
@@ -69,7 +68,6 @@ describe("ArticlesCommandRepository", () => {
 				updatedAt: new Date(),
 				userId: "user123",
 				Category: { name: "tech" },
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			} as any);
 
 			const result = await articlesCommandRepository.create({

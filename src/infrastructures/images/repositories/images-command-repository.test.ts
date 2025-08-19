@@ -197,4 +197,61 @@ describe("ImageCommandRepository", () => {
 			);
 		});
 	});
+
+	describe("deleteById", () => {
+		test("should delete image and log success", async () => {
+			const id = makeId("0198bfc4-444e-73e8-9ef6-eb9b250ed1ae");
+			const userId = makeUserId("test-user-id");
+			const status = makeStatus("UNEXPORTED");
+
+			const mockDeletedImage = {
+				path: "images/user123/image-123.png",
+			};
+			vi.mocked(prisma.image.delete).mockResolvedValue(mockDeletedImage as any);
+
+			await imagesCommandRepository.deleteById(id, userId, status);
+
+			expect(prisma.image.delete).toHaveBeenCalledWith({
+				where: { id, userId, status },
+				select: { path: true },
+			});
+		});
+
+		test("should delete image with different status and log", async () => {
+			const id = makeId("0198bfc5-555f-74f9-af07-fc9c251fe2bf");
+			const userId = makeUserId("test-user-id-2");
+			const status = makeStatus("EXPORTED");
+
+			const mockDeletedImage = {
+				path: "images/user456/image-456.jpg",
+			};
+			vi.mocked(prisma.image.delete).mockResolvedValue(mockDeletedImage as any);
+
+			await imagesCommandRepository.deleteById(id, userId, status);
+
+			expect(prisma.image.delete).toHaveBeenCalledWith({
+				where: { id, userId, status },
+				select: { path: true },
+			});
+		});
+
+		test("should handle deletion errors", async () => {
+			const id = makeId("0198bfc4-444e-73e8-9ef6-eb9b250ed1ae");
+			const userId = makeUserId("test-user-id");
+			const status = makeStatus("UNEXPORTED");
+
+			vi.mocked(prisma.image.delete).mockRejectedValue(
+				new Error("Image not found"),
+			);
+
+			await expect(
+				imagesCommandRepository.deleteById(id, userId, status),
+			).rejects.toThrow("Image not found");
+
+			expect(prisma.image.delete).toHaveBeenCalledWith({
+				where: { id, userId, status },
+				select: { path: true },
+			});
+		});
+	});
 });

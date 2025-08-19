@@ -15,14 +15,15 @@ export async function loadMoreExportedNotes(
 	const hasPermission = await hasViewerAdminPermission();
 	if (!hasPermission) forbidden();
 
-	const userId = await getSelfId();
-
-	const data = await _getNotes(currentCount, userId, makeStatus("EXPORTED"), {
-		ttl: 400,
-		swr: 40,
-		tags: [`${sanitizeCacheTag(userId)}_notes_${currentCount}`],
-	});
 	try {
+		const userId = await getSelfId();
+
+		const data = await _getNotes(currentCount, userId, makeStatus("EXPORTED"), {
+			ttl: 400,
+			swr: 40,
+			tags: [`${sanitizeCacheTag(userId)}_notes_${currentCount}`],
+		});
+
 		return {
 			success: true,
 			message: "success",
@@ -39,10 +40,15 @@ export async function loadMoreUnexportedNotes(
 	const hasPermission = await hasViewerAdminPermission();
 	if (!hasPermission) forbidden();
 
-	const userId = await getSelfId();
-
-	const data = await _getNotes(currentCount, userId, makeStatus("UNEXPORTED"));
 	try {
+		const userId = await getSelfId();
+
+		const data = await _getNotes(
+			currentCount,
+			userId,
+			makeStatus("UNEXPORTED"),
+		);
+
 		return {
 			success: true,
 			message: "success",
