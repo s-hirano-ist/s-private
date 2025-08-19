@@ -13,7 +13,13 @@ import {
 } from "react";
 import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 import { Button } from "@/components/common/ui/button";
-import { CommandDialog } from "@/components/common/ui/command";
+import { Command } from "@/components/common/ui/command";
+import {
+	Drawer,
+	DrawerContent,
+	DrawerHeader,
+	DrawerTitle,
+} from "@/components/common/ui/drawer";
 import { cn } from "@/components/common/utils/cn";
 import { SearchCard } from "../../features/search/search-card";
 import { UtilButtons } from "./util-buttons";
@@ -150,13 +156,20 @@ function FooterComponent({ search }: Props) {
 			<footer className="sticky bottom-0 z-50 mx-auto w-full max-w-lg border border-gray-200 bg-white dark:border-gray-600 dark:bg-gray-700 sm:rounded-3xl ">
 				{navigationButtons}
 			</footer>
-			<CommandDialog fullWidth onOpenChange={setOpen} open={open}>
-				<UtilButtons
-					handleReload={handleReload}
-					onSignOutSubmit={onSignOutSubmit}
-				/>
-				<SearchCard search={search} />
-			</CommandDialog>
+			<Drawer onOpenChange={setOpen} open={open}>
+				<DrawerContent className="max-h-[80vh]">
+					<DrawerHeader className="sr-only">
+						<DrawerTitle>Command Palette</DrawerTitle>
+					</DrawerHeader>
+					<Command className="[&_[cmdk-group-heading]]:text-muted-foreground **:data-[slot=command-input-wrapper]:h-12 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5">
+						<UtilButtons
+							handleReload={handleReload}
+							onSignOutSubmit={onSignOutSubmit}
+						/>
+						<SearchCard search={search} />
+					</Command>
+				</DrawerContent>
+			</Drawer>
 		</>
 	);
 }
