@@ -4,7 +4,10 @@ import {
 	UnexpectedError,
 } from "@/common/error/error-classes";
 import {
+	CreatedAt,
+	ExportedAt,
 	Id,
+	makeCreatedAt,
 	makeId,
 	makeStatus,
 	Status,
@@ -80,6 +83,8 @@ export const book = z.object({
 	googleImgSrc: GoogleImgSrc.optional(),
 	googleHref: GoogleHref.optional(),
 	markdown: BookMarkdown.optional(),
+	createdAt: CreatedAt,
+	exportedAt: ExportedAt,
 });
 export type Book = Readonly<z.infer<typeof book>>;
 
@@ -95,6 +100,7 @@ export const bookEntity = {
 			return Object.freeze({
 				id: makeId(),
 				status: makeStatus("UNEXPORTED"),
+				createdAt: makeCreatedAt(),
 				...args,
 			});
 		} catch (error) {

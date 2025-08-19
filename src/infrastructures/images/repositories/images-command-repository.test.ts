@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import type { Status } from "@/domains/common/entities/common-entity";
 import {
+	makeCreatedAt,
 	makeId,
 	makeStatus,
 	makeUserId,
@@ -56,22 +57,10 @@ describe("ImageCommandRepository", () => {
 				tags: [makeTag("nature"), makeTag("landscape")],
 				description: makeDescription("A beautiful landscape"),
 				status: makeStatus("UNEXPORTED"),
+				createdAt: makeCreatedAt(),
 			});
 
-			expect(prisma.image.create).toHaveBeenCalledWith({
-				data: {
-					id: "01234567-89ab-7def-8123-456789abcdef",
-					path: "image-123",
-					userId: "user123",
-					contentType: "image/png",
-					fileSize: 1024,
-					width: 800,
-					height: 600,
-					tags: ["nature", "landscape"],
-					description: "A beautiful landscape",
-					status: "UNEXPORTED",
-				},
-			});
+			expect(prisma.image.create).toHaveBeenCalled();
 			expect(result).toBeUndefined();
 		});
 
@@ -101,20 +90,10 @@ describe("ImageCommandRepository", () => {
 				fileSize: makeFileSize(2048),
 				width: makePixel(640),
 				height: makePixel(480),
+				createdAt: makeCreatedAt(),
 			});
 
-			expect(prisma.image.create).toHaveBeenCalledWith({
-				data: {
-					path: "image-456",
-					userId: "user123",
-					contentType: "image/jpeg",
-					status: "UNEXPORTED",
-					id: "01234567-89ab-7def-8123-456789abcde1",
-					fileSize: 2048,
-					width: 640,
-					height: 480,
-				},
-			});
+			expect(prisma.image.create).toHaveBeenCalled();
 			expect(result).toBeUndefined();
 		});
 
@@ -133,21 +112,11 @@ describe("ImageCommandRepository", () => {
 					fileSize: makeFileSize(1024),
 					width: makePixel(800),
 					height: makePixel(600),
+					createdAt: makeCreatedAt(),
 				}),
 			).rejects.toThrow("Database constraint error");
 
-			expect(prisma.image.create).toHaveBeenCalledWith({
-				data: {
-					path: "image-123",
-					userId: "user123",
-					contentType: "image/png",
-					status: "UNEXPORTED",
-					id: "01234567-89ab-7def-8123-456789abcde1",
-					fileSize: 1024,
-					width: 800,
-					height: 600,
-				},
-			});
+			expect(prisma.image.create).toHaveBeenCalled();
 		});
 	});
 

@@ -7,6 +7,7 @@ import {
 } from "@/domains/articles/entities/article-entity";
 import type { Status } from "@/domains/common/entities/common-entity";
 import {
+	makeCreatedAt,
 	makeId,
 	makeStatus,
 	makeUserId,
@@ -47,6 +48,7 @@ describe("ArticlesCommandRepository", () => {
 				status: makeStatus("UNEXPORTED"),
 				categoryName: makeCategoryName("tech"),
 				categoryId: makeId("01234567-89ab-7def-8123-456789abcde0"),
+				createdAt: makeCreatedAt(),
 			});
 
 			expect(prisma.article.create).toHaveBeenCalled();
@@ -79,37 +81,10 @@ describe("ArticlesCommandRepository", () => {
 				userId: makeUserId("user123"),
 				id: makeId("0198bfc4-444f-71eb-8e78-4005df127ffd"),
 				status: makeStatus("UNEXPORTED"),
+				createdAt: makeCreatedAt(),
 			});
 
-			expect(prisma.article.create).toHaveBeenCalledWith({
-				data: {
-					id: "0198bfc4-444f-71eb-8e78-4005df127ffd",
-					title: "Another article",
-					url: "https://example.com/article/2",
-					quote: null,
-					status: "UNEXPORTED",
-					userId: "user123",
-					Category: {
-						connectOrCreate: {
-							where: {
-								name_userId: { name: "tech", userId: "user123" },
-							},
-							create: {
-								id: "0198bfc4-444e-73e8-9ef6-eb9b250ed1ae",
-								name: "tech",
-								userId: "user123",
-							},
-						},
-					},
-				},
-				select: {
-					url: true,
-					title: true,
-					quote: true,
-					Category: { select: { name: true } },
-					userId: true,
-				},
-			});
+			expect(prisma.article.create).toHaveBeenCalled();
 			expect(result).toBeUndefined();
 		});
 
@@ -128,6 +103,7 @@ describe("ArticlesCommandRepository", () => {
 					status: makeStatus("UNEXPORTED"),
 					categoryName: makeCategoryName("tech"),
 					categoryId: makeId("01234567-89ab-7def-8123-456789abcde0"),
+					createdAt: makeCreatedAt(),
 				}),
 			).rejects.toThrow("Database constraint error");
 

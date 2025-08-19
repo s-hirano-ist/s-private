@@ -4,7 +4,10 @@ import {
 	UnexpectedError,
 } from "@/common/error/error-classes";
 import {
+	CreatedAt,
+	ExportedAt,
 	Id,
+	makeCreatedAt,
 	makeId,
 	makeStatus,
 	Status,
@@ -86,6 +89,8 @@ export const article = z.object({
 	status: Status,
 	ogTitle: OgTitle,
 	ogDescription: OgDescription,
+	createdAt: CreatedAt,
+	exportedAt: ExportedAt,
 });
 export type Article = Readonly<z.infer<typeof article>>;
 
@@ -104,6 +109,7 @@ export const articleEntity = {
 				id: makeId(),
 				status: makeStatus("UNEXPORTED"),
 				categoryId: makeId(),
+				createdAt: makeCreatedAt(),
 				...args,
 			});
 		} catch (error) {

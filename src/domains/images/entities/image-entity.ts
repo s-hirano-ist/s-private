@@ -5,7 +5,10 @@ import {
 	UnexpectedError,
 } from "@/common/error/error-classes";
 import {
+	CreatedAt,
+	ExportedAt,
 	Id,
+	makeCreatedAt,
 	makeId,
 	Status,
 	UserId,
@@ -79,6 +82,8 @@ export const image = z.object({
 	tags: z.array(Tag).optional(),
 	description: Description,
 	status: Status,
+	createdAt: CreatedAt,
+	exportedAt: ExportedAt,
 });
 export type Image = z.infer<typeof image>;
 
@@ -99,6 +104,7 @@ export const imageEntity = {
 			return Object.freeze({
 				id: makeId(),
 				status: Status.parse("UNEXPORTED"),
+				createdAt: makeCreatedAt(),
 				...args,
 			});
 		} catch (error) {

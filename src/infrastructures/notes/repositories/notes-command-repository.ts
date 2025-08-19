@@ -10,7 +10,13 @@ import prisma from "@/prisma";
 
 class NotesCommandRepository implements INotesCommandRepository {
 	async create(data: Note) {
-		const response = await prisma.note.create({ data });
+		const response = await prisma.note.create({
+			data,
+			select: {
+				title: true,
+				markdown: true,
+			},
+		});
 		serverLogger.info(
 			`【NOTES】\n\nノート\ntitle: ${response.title} \nquote: ${response.markdown}\nの登録ができました`,
 			{ caller: "addNote", status: 201, userId: data.userId },
