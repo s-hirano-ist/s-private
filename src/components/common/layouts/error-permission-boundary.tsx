@@ -1,6 +1,8 @@
 import { forbidden } from "next/navigation";
 import type { ReactNode } from "react";
-import { serverLogger } from "@/infrastructures/observability/server";
+import { SystemErrorEvent } from "@/domains/common/events/system-error-event";
+import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
+import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
 import { StatusCodeView } from "../display/status/status-code-view";
 
 type Props = {
@@ -21,10 +23,14 @@ export async function ErrorPermissionBoundary({
 	try {
 		return await render();
 	} catch (error) {
-		serverLogger.error(
-			"unexpected",
-			{ caller: errorCaller, status: 500 },
-			error,
+		initializeEventHandlers();
+		await eventDispatcher.dispatch(
+			new SystemErrorEvent({
+				message: "unexpected",
+				status: 500,
+				caller: errorCaller,
+				extraData: error,
+			}),
 		);
 
 		return (

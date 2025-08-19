@@ -1,9 +1,21 @@
 import { AuthError } from "next-auth";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import { PushoverError, UnexpectedError } from "@/common/error/error-classes";
 import { Prisma } from "@/generated";
-import { serverLogger } from "@/infrastructures/observability/server";
+import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { wrapServerSideErrorForClient } from "./error-wrapper";
+
+// Mock the event dispatcher
+vi.mock("@/infrastructures/events/event-dispatcher", () => ({
+	eventDispatcher: {
+		dispatch: vi.fn(),
+	},
+}));
+
+// Mock the event setup
+vi.mock("@/infrastructures/events/event-setup", () => ({
+	initializeEventHandlers: vi.fn(),
+}));
 
 describe("wrapServerSideErrorForClient", () => {
 	test("should handle PushoverError", async () => {
@@ -11,14 +23,19 @@ describe("wrapServerSideErrorForClient", () => {
 
 		const result = await wrapServerSideErrorForClient(error);
 
-		expect(serverLogger.error).toHaveBeenCalledWith(
-			error.message,
-			{
-				caller: "wrapServerSideError",
-				status: 500,
-			},
-			undefined,
-			{ notify: true },
+		expect(eventDispatcher.dispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				eventType: "system.error",
+				payload: expect.objectContaining({
+					message: error.message,
+					status: 500,
+					shouldNotify: true,
+				}),
+				metadata: expect.objectContaining({
+					caller: "wrapServerSideError",
+					userId: "system",
+				}),
+			}),
 		);
 		expect(result).toEqual({
 			success: false,
@@ -31,13 +48,19 @@ describe("wrapServerSideErrorForClient", () => {
 
 		const result = await wrapServerSideErrorForClient(error);
 
-		expect(serverLogger.warn).toHaveBeenCalledWith(
-			error.message,
-			{
-				caller: "wrapServerSideError",
-				status: 500,
-			},
-			{ notify: true },
+		expect(eventDispatcher.dispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				eventType: "system.warning",
+				payload: expect.objectContaining({
+					message: error.message,
+					status: 500,
+					shouldNotify: true,
+				}),
+				metadata: expect.objectContaining({
+					caller: "wrapServerSideError",
+					userId: "system",
+				}),
+			}),
 		);
 		expect(result).toEqual({
 			success: false,
@@ -50,13 +73,19 @@ describe("wrapServerSideErrorForClient", () => {
 
 		const result = await wrapServerSideErrorForClient(error);
 
-		expect(serverLogger.warn).toHaveBeenCalledWith(
-			error.message,
-			{
-				caller: "wrapServerSideError",
-				status: 401, // Updated to more appropriate auth error status
-			},
-			{ notify: true },
+		expect(eventDispatcher.dispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				eventType: "system.warning",
+				payload: expect.objectContaining({
+					message: error.message,
+					status: 401, // Updated to more appropriate auth error status
+					shouldNotify: true,
+				}),
+				metadata: expect.objectContaining({
+					caller: "wrapServerSideError",
+					userId: "system",
+				}),
+			}),
 		);
 		expect(result).toEqual({
 			success: false,
@@ -71,14 +100,19 @@ describe("wrapServerSideErrorForClient", () => {
 
 		const result = await wrapServerSideErrorForClient(error);
 
-		expect(serverLogger.error).toHaveBeenCalledWith(
-			error.message,
-			{
-				caller: "wrapServerSideError",
-				status: 500,
-			},
-			undefined,
-			{ notify: true },
+		expect(eventDispatcher.dispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				eventType: "system.error",
+				payload: expect.objectContaining({
+					message: error.message,
+					status: 500,
+					shouldNotify: true,
+				}),
+				metadata: expect.objectContaining({
+					caller: "wrapServerSideError",
+					userId: "system",
+				}),
+			}),
 		);
 		expect(result).toEqual({
 			success: false,
@@ -94,14 +128,19 @@ describe("wrapServerSideErrorForClient", () => {
 
 		const result = await wrapServerSideErrorForClient(error);
 
-		expect(serverLogger.error).toHaveBeenCalledWith(
-			error.message,
-			{
-				caller: "wrapServerSideError",
-				status: 500,
-			},
-			undefined,
-			{ notify: true },
+		expect(eventDispatcher.dispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				eventType: "system.error",
+				payload: expect.objectContaining({
+					message: error.message,
+					status: 500,
+					shouldNotify: true,
+				}),
+				metadata: expect.objectContaining({
+					caller: "wrapServerSideError",
+					userId: "system",
+				}),
+			}),
 		);
 		expect(result).toEqual({
 			success: false,
@@ -114,14 +153,19 @@ describe("wrapServerSideErrorForClient", () => {
 
 		const result = await wrapServerSideErrorForClient(error);
 
-		expect(serverLogger.error).toHaveBeenCalledWith(
-			error.message,
-			{
-				caller: "wrapServerSideError",
-				status: 500,
-			},
-			undefined,
-			{ notify: true },
+		expect(eventDispatcher.dispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				eventType: "system.error",
+				payload: expect.objectContaining({
+					message: error.message,
+					status: 500,
+					shouldNotify: true,
+				}),
+				metadata: expect.objectContaining({
+					caller: "wrapServerSideError",
+					userId: "system",
+				}),
+			}),
 		);
 		expect(result).toEqual({
 			success: false,
@@ -134,14 +178,20 @@ describe("wrapServerSideErrorForClient", () => {
 
 		const result = await wrapServerSideErrorForClient(error);
 
-		expect(serverLogger.error).toHaveBeenCalledWith(
-			"unexpected",
-			{
-				caller: "wrapServerSideError",
-				status: 500,
-			},
-			"unknown error",
-			{ notify: true },
+		expect(eventDispatcher.dispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				eventType: "system.error",
+				payload: expect.objectContaining({
+					message: "unexpected",
+					status: 500,
+					extraData: "unknown error",
+					shouldNotify: true,
+				}),
+				metadata: expect.objectContaining({
+					caller: "wrapServerSideError",
+					userId: "system",
+				}),
+			}),
 		);
 		expect(result).toEqual({
 			success: false,

@@ -2,8 +2,11 @@
 import "server-only";
 import { AuthError } from "next-auth";
 import type { ServerAction } from "@/common/types";
+import { SystemErrorEvent } from "@/domains/common/events/system-error-event";
+import { SystemWarningEvent } from "@/domains/common/events/system-warning-event";
 import { Prisma } from "@/generated";
-import { serverLogger } from "@/infrastructures/observability/server";
+import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
+import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
 import {
 	DuplicateError,
 	FileNotAllowedError,
@@ -29,15 +32,16 @@ export async function wrapServerSideErrorForClient(
 	error: unknown,
 	formData?: FormData,
 ): Promise<ServerAction> {
+	initializeEventHandlers();
+
 	if (error instanceof PushoverError) {
-		serverLogger.error(
-			error.message,
-			{
-				caller: "wrapServerSideError",
+		await eventDispatcher.dispatch(
+			new SystemErrorEvent({
+				message: error.message,
 				status: 500,
-			},
-			undefined,
-			{ notify: true },
+				caller: "wrapServerSideError",
+				shouldNotify: true,
+			}),
 		);
 		return { success: false, message: error.message };
 	}
@@ -47,11 +51,14 @@ export async function wrapServerSideErrorForClient(
 		error instanceof InvalidFormatError ||
 		error instanceof FileNotAllowedError
 	) {
-		const context = {
-			caller: "wrapServerSideError",
-			status: 500 as const,
-		};
-		serverLogger.warn(error.message, context, { notify: true });
+		await eventDispatcher.dispatch(
+			new SystemWarningEvent({
+				message: error.message,
+				status: 500,
+				caller: "wrapServerSideError",
+				shouldNotify: true,
+			}),
+		);
 		return {
 			success: false,
 			message: error.message,
@@ -59,11 +66,14 @@ export async function wrapServerSideErrorForClient(
 		};
 	}
 	if (error instanceof DuplicateError) {
-		const context = {
-			caller: "wrapServerSideError",
-			status: 400 as const, // Bad request for duplicate resources
-		};
-		serverLogger.warn(error.message, context, { notify: true });
+		await eventDispatcher.dispatch(
+			new SystemWarningEvent({
+				message: error.message,
+				status: 400, // Bad request for duplicate resources
+				caller: "wrapServerSideError",
+				shouldNotify: true,
+			}),
+		);
 		return {
 			success: false,
 			message: "duplicated",
@@ -71,11 +81,14 @@ export async function wrapServerSideErrorForClient(
 		};
 	}
 	if (error instanceof AuthError) {
-		const context = {
-			caller: "wrapServerSideError",
-			status: 401 as const, // More appropriate status for auth errors
-		};
-		serverLogger.warn(error.message, context, { notify: true });
+		await eventDispatcher.dispatch(
+			new SystemWarningEvent({
+				message: error.message,
+				status: 401, // More appropriate status for auth errors
+				caller: "wrapServerSideError",
+				shouldNotify: true,
+			}),
+		);
 		return {
 			success: false,
 			message: "signInUnknown",
@@ -89,26 +102,36 @@ export async function wrapServerSideErrorForClient(
 		error instanceof Prisma.PrismaClientInitializationError ||
 		error instanceof Prisma.PrismaClientKnownRequestError // 400 errors but should not occur due to domain service validation
 	) {
-		const context = {
-			caller: "wrapServerSideError",
-			status: 500 as const,
-		};
-		serverLogger.error(error.message, context, undefined, { notify: true });
+		await eventDispatcher.dispatch(
+			new SystemErrorEvent({
+				message: error.message,
+				status: 500,
+				caller: "wrapServerSideError",
+				shouldNotify: true,
+			}),
+		);
 		return { success: false, message: "prismaUnexpected" };
 	}
 
 	if (error instanceof Error) {
-		const context = {
-			caller: "wrapServerSideError",
-			status: 500 as const,
-		};
-		serverLogger.error(error.message, context, undefined, { notify: true });
+		await eventDispatcher.dispatch(
+			new SystemErrorEvent({
+				message: error.message,
+				status: 500,
+				caller: "wrapServerSideError",
+				shouldNotify: true,
+			}),
+		);
 	} else {
-		const context = {
-			caller: "wrapServerSideError",
-			status: 500 as const,
-		};
-		serverLogger.error("unexpected", context, error, { notify: true });
+		await eventDispatcher.dispatch(
+			new SystemErrorEvent({
+				message: "unexpected",
+				status: 500,
+				caller: "wrapServerSideError",
+				extraData: error,
+				shouldNotify: true,
+			}),
+		);
 	}
 	return { success: false, message: "unexpected" };
 }
