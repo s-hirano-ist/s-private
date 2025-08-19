@@ -23,6 +23,7 @@ import {
 import { cn } from "@/components/common/utils/cn";
 import { SearchCard } from "../../features/search/search-card";
 import { UtilButtons } from "./util-buttons";
+import { Route } from "next";
 
 const LAYOUTS = {
 	dumper: "DUMPER",
@@ -91,9 +92,9 @@ function FooterComponent({ search }: Props) {
 					// Extract locale from pathname (e.g., /en/book/... or /ja/note/...)
 					const localeMatch = pathname.match(/^\/([^/]+)/);
 					const locale = localeMatch ? localeMatch[1] : "";
-					router.replace(`/${locale}?${params.toString()}`);
+					router.replace(`/${locale}?${params.toString()}` as Route);
 				} else {
-					router.replace(`?${params.toString()}`);
+					router.replace(`?${params.toString()}` as Route);
 				}
 			});
 		},
