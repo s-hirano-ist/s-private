@@ -21,7 +21,7 @@
 		["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
 		["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
 	],
-	"cSpell.words": ["biomejs", "HSTS", "pino", "UPSERTED", "vaul"],
+	"cSpell.words": ["biomejs", "HSTS", "pino", "UPSERTED"],
 	"editor.defaultFormatter": "biomejs.biome",
 	"editor.codeActionsOnSave": {
 		"source.fixAll.biome": "explicit"
