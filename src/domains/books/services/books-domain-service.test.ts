@@ -14,6 +14,7 @@ describe("BooksDomainService", () => {
 			findByISBN: vi.fn(),
 			findMany: vi.fn(),
 			count: vi.fn(),
+			search: vi.fn(),
 		} as IBooksQueryRepository;
 
 		booksDomainService = new BooksDomainService(booksQueryRepository);

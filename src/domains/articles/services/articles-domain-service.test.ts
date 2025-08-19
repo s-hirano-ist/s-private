@@ -14,6 +14,7 @@ describe("ArticlesDomainService", () => {
 			findByUrl: vi.fn(),
 			findMany: vi.fn(),
 			count: vi.fn(),
+			search: vi.fn(),
 		} as IArticlesQueryRepository;
 
 		articlesDomainService = new ArticlesDomainService(articlesQueryRepository);

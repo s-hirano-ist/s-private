@@ -23,4 +23,19 @@ export type IArticlesQueryRepository = {
 		}[]
 	>;
 	count(userId: UserId, status: Status): Promise<number>;
+	search(
+		query: string,
+		userId: UserId,
+		limit?: number,
+	): Promise<
+		{
+			id: string;
+			title: string;
+			url: string;
+			quote: string | null;
+			ogTitle: string | null;
+			ogDescription: string | null;
+			Category: { name: string };
+		}[]
+	>;
 };

@@ -47,4 +47,21 @@ export type IBooksQueryRepository = {
 		}[]
 	>;
 	count(userId: UserId, status: Status): Promise<number>;
+	search(
+		query: string,
+		userId: UserId,
+		limit?: number,
+	): Promise<
+		{
+			id: string;
+			title: string;
+			googleTitle: string | null;
+			googleSubTitle: string | null;
+			googleAuthors: string[];
+			googleDescription: string | null;
+			markdown: string | null;
+			rating: number | null;
+			tags: string[];
+		}[]
+	>;
 };

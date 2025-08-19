@@ -1,8 +1,13 @@
 "use server";
 import "server-only";
-import { loadMoreExportedArticles } from "@/application-services/articles/get-articles-from-client";
+import { searchContentFromClient } from "@/application-services/search/search-content-from-client";
+import type { SearchQuery } from "@/domains/common/types/search-types";
 
 export async function search(searchQuery: string) {
-	const tempCount = searchQuery.length;
-	return await loadMoreExportedArticles(tempCount + 1);
+	const query: SearchQuery = {
+		query: searchQuery.trim(),
+		limit: 50,
+	};
+
+	return await searchContentFromClient(query);
 }

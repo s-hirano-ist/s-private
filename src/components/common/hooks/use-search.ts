@@ -46,7 +46,7 @@ export function useSearch({
 				startTransition(async () => {
 					const result = await search(searchQuery);
 					if (result.success && result.data) {
-						const newData = result.data.data.map((d) => {
+						const newData = result.data.results.map((d) => {
 							return { title: d.title };
 						});
 						setSearchResults(newData);

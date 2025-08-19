@@ -26,6 +26,54 @@ class BooksQueryRepository implements IBooksQueryRepository {
 		const data = await prisma.book.count({ where: { userId, status } });
 		return data;
 	}
+
+	search = async (
+		query: string,
+		userId: UserId,
+		limit = 20,
+	): Promise<
+		{
+			id: string;
+			title: string;
+			googleTitle: string | null;
+			googleSubTitle: string | null;
+			googleAuthors: string[];
+			googleDescription: string | null;
+			markdown: string | null;
+			rating: number | null;
+			tags: string[];
+		}[]
+	> => {
+		const data = await prisma.book.findMany({
+			where: {
+				userId,
+				status: "EXPORTED",
+				OR: [
+					{ title: { contains: query, mode: "insensitive" } },
+					{ markdown: { contains: query, mode: "insensitive" } },
+					{ googleTitle: { contains: query, mode: "insensitive" } },
+					{ googleSubTitle: { contains: query, mode: "insensitive" } },
+					{ googleDescription: { contains: query, mode: "insensitive" } },
+					{ googleAuthors: { hasSome: [query] } },
+					{ tags: { hasSome: [query] } },
+				],
+			},
+			select: {
+				id: true,
+				title: true,
+				googleTitle: true,
+				googleSubTitle: true,
+				googleAuthors: true,
+				googleDescription: true,
+				markdown: true,
+				rating: true,
+				tags: true,
+			},
+			take: limit,
+			orderBy: { createdAt: "desc" },
+		});
+		return data;
+	};
 }
 
 export const booksQueryRepository = new BooksQueryRepository();

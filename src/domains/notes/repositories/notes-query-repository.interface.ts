@@ -13,4 +13,15 @@ export type INotesQueryRepository = {
 		params: NotesFindManyParams,
 	): Promise<Array<{ id: string; title: string }>>;
 	count(userId: UserId, status: Status): Promise<number>;
+	search(
+		query: string,
+		userId: UserId,
+		limit?: number,
+	): Promise<
+		{
+			id: string;
+			title: string;
+			markdown: string;
+		}[]
+	>;
 };
