@@ -6,6 +6,10 @@ import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
 import {
+	buildContentCacheTag,
+	buildCountCacheTag,
+} from "@/common/utils/cache-tag-builder";
+import {
 	makeId,
 	makeStatus,
 	makeUserId,
@@ -19,14 +23,15 @@ export async function deleteBooks(id: string): Promise<ServerAction> {
 	try {
 		const userId = await getSelfId();
 
+		const status = makeStatus("UNEXPORTED");
 		await booksCommandRepository.deleteById(
 			makeId(id),
 			makeUserId(userId),
-			makeStatus("UNEXPORTED"),
+			status,
 		);
 
-		revalidateTag(`books_UNEXPORTED_${userId}`);
-		revalidateTag(`books_count_UNEXPORTED_${userId}`);
+		revalidateTag(buildContentCacheTag("books", status, userId));
+		revalidateTag(buildCountCacheTag("books", status, userId));
 
 		return { success: true, message: "deleted" };
 	} catch (error) {

@@ -5,8 +5,13 @@ import { forbidden } from "next/navigation";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
+import {
+	buildContentCacheTag,
+	buildCountCacheTag,
+} from "@/common/utils/cache-tag-builder";
 import { articleEntity } from "@/domains/articles/entities/article-entity";
 import { ArticlesDomainService } from "@/domains/articles/services/articles-domain-service";
+import { makeStatus } from "@/domains/common/entities/common-entity";
 import { articlesCommandRepository } from "@/infrastructures/articles/repositories/articles-command-repository";
 import { articlesQueryRepository } from "@/infrastructures/articles/repositories/articles-query-repository";
 import { parseAddArticleFormData } from "./helpers/form-data-parser";
@@ -40,8 +45,9 @@ export async function addArticle(formData: FormData): Promise<ServerAction> {
 		// Persist
 		await articlesCommandRepository.create(article);
 
-		revalidateTag(`articles_UNEXPORTED_${userId}`);
-		revalidateTag(`articles_count_UNEXPORTED_${userId}`);
+		const status = makeStatus("UNEXPORTED");
+		revalidateTag(buildContentCacheTag("articles", status, userId));
+		revalidateTag(buildCountCacheTag("articles", status, userId));
 
 		revalidateTag("categories");
 

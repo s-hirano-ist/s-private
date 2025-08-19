@@ -5,8 +5,13 @@ import { forbidden } from "next/navigation";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
+import {
+	buildContentCacheTag,
+	buildCountCacheTag,
+} from "@/common/utils/cache-tag-builder";
 import { bookEntity } from "@/domains/books/entities/books-entity";
 import { BooksDomainService } from "@/domains/books/services/books-domain-service";
+import { makeStatus } from "@/domains/common/entities/common-entity";
 import { booksCommandRepository } from "@/infrastructures/books/repositories/books-command-repository";
 import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
 import { parseAddBooksFormData } from "./helpers/form-data-parser";
@@ -36,8 +41,9 @@ export async function addBooks(formData: FormData): Promise<ServerAction> {
 		// Persist
 		await booksCommandRepository.create(book);
 
-		revalidateTag(`books_UNEXPORTED_${userId}`);
-		revalidateTag(`books_count_UNEXPORTED_${userId}`);
+		const status = makeStatus("UNEXPORTED");
+		revalidateTag(buildContentCacheTag("books", status, userId));
+		revalidateTag(buildCountCacheTag("books", status, userId));
 
 		return { success: true, message: "inserted" };
 	} catch (error) {

@@ -5,6 +5,11 @@ import { forbidden } from "next/navigation";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
+import {
+	buildContentCacheTag,
+	buildCountCacheTag,
+} from "@/common/utils/cache-tag-builder";
+import { makeStatus } from "@/domains/common/entities/common-entity";
 import { noteEntity } from "@/domains/notes/entities/note-entity";
 import { NotesDomainService } from "@/domains/notes/services/notes-domain-service";
 import { notesCommandRepository } from "@/infrastructures/notes/repositories/notes-command-repository";
@@ -33,8 +38,9 @@ export async function addNote(formData: FormData): Promise<ServerAction> {
 		await notesCommandRepository.create(note);
 
 		// Cache invalidation
-		revalidateTag(`notes_UNEXPORTED_${userId}`);
-		revalidateTag(`notes_count_UNEXPORTED_${userId}`);
+		const status = makeStatus("UNEXPORTED");
+		revalidateTag(buildContentCacheTag("notes", status, userId));
+		revalidateTag(buildCountCacheTag("notes", status, userId));
 
 		return { success: true, message: "inserted" };
 	} catch (error) {

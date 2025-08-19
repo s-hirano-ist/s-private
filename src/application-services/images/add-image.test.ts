@@ -1,6 +1,11 @@
 import { revalidateTag } from "next/cache";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
+import {
+	buildContentCacheTag,
+	buildCountCacheTag,
+} from "@/common/utils/cache-tag-builder";
+import { makeStatus } from "@/domains/common/entities/common-entity";
 import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
 import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
 import { addImage } from "./add-image";
@@ -75,7 +80,13 @@ describe("addImage", () => {
 
 		expect(imagesCommandRepository.uploadToStorage).toHaveBeenCalledTimes(2);
 		expect(imagesCommandRepository.create).toHaveBeenCalled();
-		expect(revalidateTag).toHaveBeenCalledWith("images_UNEXPORTED_user-id");
+		const status = makeStatus("UNEXPORTED");
+		expect(revalidateTag).toHaveBeenCalledWith(
+			buildContentCacheTag("images", status, "user-id"),
+		);
+		expect(revalidateTag).toHaveBeenCalledWith(
+			buildCountCacheTag("images", status, "user-id"),
+		);
 		expect(result).toEqual({
 			success: true,
 			message: "inserted",

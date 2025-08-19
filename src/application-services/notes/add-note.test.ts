@@ -3,7 +3,14 @@ import { describe, expect, test, vi } from "vitest";
 import { parseAddNoteFormData } from "@/application-services/notes/helpers/form-data-parser";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { DuplicateError } from "@/common/error/error-classes";
-import { makeUserId } from "@/domains/common/entities/common-entity";
+import {
+	buildContentCacheTag,
+	buildCountCacheTag,
+} from "@/common/utils/cache-tag-builder";
+import {
+	makeStatus,
+	makeUserId,
+} from "@/domains/common/entities/common-entity";
 import {
 	makeMarkdown,
 	makeNoteTitle,
@@ -99,7 +106,13 @@ describe("addNote", () => {
 		expect(mockEnsureNoDuplicate).toHaveBeenCalled();
 		expect(vi.mocked(noteEntity.create)).toHaveBeenCalled();
 		expect(notesCommandRepository.create).toHaveBeenCalledWith(mockNote);
-		expect(revalidateTag).toHaveBeenCalledWith("notes_UNEXPORTED_user-123");
+		const status = makeStatus("UNEXPORTED");
+		expect(revalidateTag).toHaveBeenCalledWith(
+			buildContentCacheTag("notes", status, "user-123"),
+		);
+		expect(revalidateTag).toHaveBeenCalledWith(
+			buildCountCacheTag("notes", status, "user-123"),
+		);
 		expect(result.success).toBe(true);
 		expect(result.message).toBe("inserted");
 	});
