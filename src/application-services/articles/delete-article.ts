@@ -6,6 +6,10 @@ import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
 import {
+	buildContentCacheTag,
+	buildCountCacheTag,
+} from "@/common/utils/cache-tag-builder";
+import {
 	makeId,
 	makeStatus,
 	makeUserId,
@@ -19,14 +23,15 @@ export async function deleteArticle(id: string): Promise<ServerAction> {
 	try {
 		const userId = await getSelfId();
 
+		const status = makeStatus("UNEXPORTED");
 		await articlesCommandRepository.deleteById(
 			makeId(id),
 			makeUserId(userId),
-			makeStatus("UNEXPORTED"),
+			status,
 		);
 
-		revalidateTag(`articles_UNEXPORTED_${userId}`);
-		revalidateTag(`articles_count_UNEXPORTED_${userId}`);
+		revalidateTag(buildContentCacheTag("articles", status, userId));
+		revalidateTag(buildCountCacheTag("articles", status, userId));
 
 		return { success: true, message: "deleted" };
 	} catch (error) {

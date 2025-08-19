@@ -24,6 +24,16 @@ package "Common Domain" {
     class "IdGeneratorService" as IdGeneratorService {
         +uuidv7(): string
     }
+    
+    class "CreatedAt" as CreatedAt <<ValueObject>> {
+        +value: Date
+        +makeCreatedAt(): CreatedAt
+    }
+    
+    class "ExportedAt" as ExportedAt <<ValueObject>> {
+        +value: Date | null | undefined
+        +makeExportedAt(): ExportedAt
+    }
 }
 
 package "Articles Domain" {
@@ -83,6 +93,8 @@ package "Articles Domain" {
         +status: Status
         +ogTitle: OgTitle
         +ogDescription: OgDescription
+        +createdAt: CreatedAt
+        +exportedAt: ExportedAt
     }
     
     class "ArticleEntity" as ArticleEntity <<Factory>> {
@@ -175,6 +187,8 @@ package "Books Domain" {
         +googleImgSrc?: GoogleImgSrc
         +googleHref?: GoogleHref
         +markdown?: BookMarkdown
+        +createdAt: CreatedAt
+        +exportedAt: ExportedAt
     }
     
     class "BookEntity" as BookEntity <<Factory>> {
@@ -220,6 +234,8 @@ package "Notes Domain" {
         +title: NoteTitle
         +markdown: Markdown
         +status: Status
+        +createdAt: CreatedAt
+        +exportedAt: ExportedAt
     }
     
     class "NoteEntity" as NoteEntity <<Factory>> {
@@ -313,6 +329,8 @@ package "Images Domain" {
         +tags?: Tag[]
         +description?: Description
         +status: Status
+        +createdAt: CreatedAt
+        +exportedAt: ExportedAt
     }
     
     class "ImageEntity" as ImageEntity <<Factory>> {
@@ -333,18 +351,26 @@ package "Images Domain" {
 Article --> Id
 Article --> UserId
 Article --> Status
+Article --> CreatedAt
+Article --> ExportedAt
 
 Book --> Id
 Book --> UserId
 Book --> Status
+Book --> CreatedAt
+Book --> ExportedAt
 
 Note --> Id
 Note --> UserId
 Note --> Status
+Note --> CreatedAt
+Note --> ExportedAt
 
 Image --> Id
 Image --> UserId
 Image --> Status
+Image --> CreatedAt
+Image --> ExportedAt
 
 ' Entity factories use common types
 ArticleEntity --> Id : creates

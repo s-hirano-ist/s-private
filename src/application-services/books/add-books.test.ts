@@ -3,6 +3,10 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { DuplicateError } from "@/common/error/error-classes";
 import {
+	buildContentCacheTag,
+	buildCountCacheTag,
+} from "@/common/utils/cache-tag-builder";
+import {
 	bookEntity,
 	makeBookTitle,
 	makeISBN,
@@ -111,7 +115,13 @@ describe("addBooks", () => {
 			userId: makeUserId("user-123"),
 		});
 		expect(booksCommandRepository.create).toHaveBeenCalledWith(mockBook);
-		expect(revalidateTag).toHaveBeenCalledWith("books_UNEXPORTED_user-123");
+		const status = makeStatus("UNEXPORTED");
+		expect(revalidateTag).toHaveBeenCalledWith(
+			buildContentCacheTag("books", status, "user-123"),
+		);
+		expect(revalidateTag).toHaveBeenCalledWith(
+			buildCountCacheTag("books", status, "user-123"),
+		);
 
 		expect(result.success).toBe(true);
 		expect(result.message).toBe("inserted");

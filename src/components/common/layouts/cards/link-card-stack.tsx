@@ -1,6 +1,5 @@
 "use client";
 import type { DeleteAction, LoadMoreAction } from "@/common/types";
-import { filterLinkCards } from "@/components/common/features/search/search-filter";
 import { BaseCardStackWrapper } from "@/components/common/layouts/cards/base-card-stack";
 import { LinkCard } from "@/components/common/layouts/cards/link-card";
 import type { LinkCardData, LinkCardStackInitialData } from "./types";
@@ -22,16 +21,11 @@ export function LinkCardStack({
 		item: LinkCardData,
 		_index: number,
 		isLast: boolean,
-		isSearching: boolean,
 		lastElementRef: (node: HTMLElement | null) => void,
 		deleteAction?: DeleteAction,
 		key?: string,
 	) => (
-		<div
-			className="h-full"
-			key={key}
-			ref={isLast && !isSearching ? lastElementRef : null}
-		>
+		<div className="h-full" key={key} ref={isLast ? lastElementRef : null}>
 			<LinkCard
 				data={item}
 				deleteAction={deleteAction}
@@ -43,7 +37,6 @@ export function LinkCardStack({
 	return (
 		<BaseCardStackWrapper
 			deleteAction={deleteAction}
-			filterFunction={filterLinkCards}
 			gridClassName="grid grid-cols-1 items-stretch gap-2 sm:grid-cols-2 sm:gap-4"
 			initial={initial}
 			loadMoreAction={loadMoreAction}

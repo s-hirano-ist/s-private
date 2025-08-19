@@ -3,6 +3,10 @@ import { describe, expect, test, vi } from "vitest";
 import { deleteNote } from "@/application-services/notes/delete-note";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import {
+	buildContentCacheTag,
+	buildCountCacheTag,
+} from "@/common/utils/cache-tag-builder";
+import {
 	makeId,
 	makeStatus,
 	makeUserId,
@@ -52,9 +56,12 @@ describe("deleteNote", () => {
 			makeUserId("test-user-id"),
 			makeStatus("UNEXPORTED"),
 		);
-		expect(revalidateTag).toHaveBeenCalledWith("notes_UNEXPORTED_test-user-id");
+		const status = makeStatus("UNEXPORTED");
 		expect(revalidateTag).toHaveBeenCalledWith(
-			"notes_count_UNEXPORTED_test-user-id",
+			buildContentCacheTag("notes", status, "test-user-id"),
+		);
+		expect(revalidateTag).toHaveBeenCalledWith(
+			buildCountCacheTag("notes", status, "test-user-id"),
 		);
 	});
 

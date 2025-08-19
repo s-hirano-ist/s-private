@@ -1,8 +1,9 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState, useTransition } from "react";
 import { useDebouncedCallback } from "use-debounce";
+import type { search } from "../features/search/search-filter";
 
 const PARAM_NAME = "q";
 
@@ -10,43 +11,50 @@ type SearchableItem = {
 	title: string;
 };
 
-type UseSearchableListOptions<T extends SearchableItem> = {
-	data: T[];
-	filterFunction: (item: T, searchQuery: string) => boolean;
+type UseSearchableListOptions = {
+	search: typeof search;
 	useUrlQuery?: boolean;
 	debounceMs?: number;
 };
 
-type UseSearchableListReturn<T> = {
+type UseSearchableListReturn = {
 	searchQuery: string;
-	searchResults: T[];
+	searchResults: SearchableItem[] | undefined;
 	handleSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
+	isPending: boolean;
 };
 
-export function useSearchableList<T extends SearchableItem>({
-	data,
-	filterFunction = (item, searchQuery) => item.title.includes(searchQuery),
+export function useSearch({
+	search,
 	useUrlQuery = false,
 	debounceMs = 300,
-}: UseSearchableListOptions<T>): UseSearchableListReturn<T> {
+}: UseSearchableListOptions): UseSearchableListReturn {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 
 	// Initialize search query from URL if useUrlQuery is enabled
 	const initialQuery = useUrlQuery ? (searchParams.get(PARAM_NAME) ?? "") : "";
 	const [searchQuery, setSearchQuery] = useState(initialQuery);
-	const [searchResults, setSearchResults] = useState<T[]>(data);
+	const [searchResults, setSearchResults] = useState<SearchableItem[]>();
 
-	// Sync search (filter existing data)
+	const [isPending, startTransition] = useTransition();
+
 	const fetchSearchResults = useCallback(
-		async (searchString: string) => {
-			if (searchString === "") setSearchResults(data);
-			else
-				setSearchResults(
-					data.filter((item) => filterFunction(item, searchString)),
-				);
+		async (searchQuery: string) => {
+			if (searchQuery === "") setSearchResults(undefined);
+			else {
+				startTransition(async () => {
+					const result = await search(searchQuery);
+					if (result.success && result.data) {
+						const newData = result.data.data.map((d) => {
+							return { title: d.title };
+						});
+						setSearchResults(newData);
+					}
+				});
+			}
 		},
-		[data, filterFunction],
+		[search],
 	);
 
 	const debouncedSearch = useDebouncedCallback(async (searchString: string) => {
@@ -66,20 +74,10 @@ export function useSearchableList<T extends SearchableItem>({
 		await debouncedSearch(query);
 	};
 
-	// Sync searchResults when data changes
-	useEffect(() => {
-		if (searchQuery === "") {
-			setSearchResults(data);
-		} else {
-			setSearchResults(
-				data.filter((item) => filterFunction(item, searchQuery)),
-			);
-		}
-	}, [data, searchQuery, filterFunction]);
-
 	return {
 		searchQuery,
 		searchResults,
 		handleSearchChange,
+		isPending,
 	};
 }

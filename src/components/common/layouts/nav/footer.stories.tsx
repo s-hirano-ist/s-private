@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { fn } from "@storybook/test";
 import { Footer } from "./footer";
 
 const meta = {
@@ -27,6 +28,7 @@ export const Default: Story = {
 			},
 		},
 	},
+	args: { search: fn() },
 };
 
 export const OnArticlesPage: Story = {
@@ -38,6 +40,7 @@ export const OnArticlesPage: Story = {
 			},
 		},
 	},
+	args: { search: fn() },
 };
 
 export const OnNotesPage: Story = {
@@ -49,6 +52,7 @@ export const OnNotesPage: Story = {
 			},
 		},
 	},
+	args: { search: fn() },
 };
 
 export const OnBooksPage: Story = {
@@ -60,6 +64,7 @@ export const OnBooksPage: Story = {
 			},
 		},
 	},
+	args: { search: fn() },
 };
 
 export const OnImagesPage: Story = {
@@ -71,6 +76,7 @@ export const OnImagesPage: Story = {
 			},
 		},
 	},
+	args: { search: fn() },
 };
 
 export const WithViewerLayout: Story = {
@@ -82,6 +88,7 @@ export const WithViewerLayout: Story = {
 			},
 		},
 	},
+	args: { search: fn() },
 };
 
 export const WithDumperLayout: Story = {
@@ -93,4 +100,5 @@ export const WithDumperLayout: Story = {
 			},
 		},
 	},
+	args: { search: fn() },
 };

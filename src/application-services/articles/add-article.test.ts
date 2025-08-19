@@ -3,6 +3,10 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { DuplicateError } from "@/common/error/error-classes";
 import {
+	buildContentCacheTag,
+	buildCountCacheTag,
+} from "@/common/utils/cache-tag-builder";
+import {
 	articleEntity,
 	makeArticleTitle,
 	makeCategoryName,
@@ -122,7 +126,13 @@ describe("addArticle", () => {
 		);
 		expect(articleEntity.create).toHaveBeenCalled();
 		expect(articlesCommandRepository.create).toHaveBeenCalledWith(mockArticle);
-		expect(revalidateTag).toHaveBeenCalledWith("articles_UNEXPORTED_user-123");
+		const status = makeStatus("UNEXPORTED");
+		expect(revalidateTag).toHaveBeenCalledWith(
+			buildContentCacheTag("articles", status, "user-123"),
+		);
+		expect(revalidateTag).toHaveBeenCalledWith(
+			buildCountCacheTag("articles", status, "user-123"),
+		);
 
 		expect(result.success).toBe(true);
 		expect(result.message).toBe("inserted");
