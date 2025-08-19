@@ -23,7 +23,6 @@ export default defineConfig({
 				"src/app/?(manifest.ts|loading.tsx|robots.ts|not-found.tsx|instrumentation.ts)",
 				"src/app/api/sign-in/route.ts",
 				"src/env.ts",
-				"src/components/common/providers/**/*.tsx",
 				"src/infrastructures/observability/**/*.ts",
 				"src/infrastructures/i18n/**/*.ts",
 				"src/infrastructures/auth/?(auth|auth.config).ts",

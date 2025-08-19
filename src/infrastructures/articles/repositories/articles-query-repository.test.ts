@@ -1,4 +1,8 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
+import {
+	makeStatus,
+	makeUserId,
+} from "@/domains/common/entities/common-entity";
 import prisma from "@/prisma";
 import {
 	articlesQueryRepository,
@@ -42,8 +46,8 @@ describe("ArticlesQueryRepository", () => {
 			};
 
 			const result = await articlesQueryRepository.findMany(
-				"user123",
-				"EXPORTED",
+				makeUserId("user123"),
+				makeStatus("EXPORTED"),
 				params,
 			);
 
@@ -86,8 +90,8 @@ describe("ArticlesQueryRepository", () => {
 			vi.mocked(prisma.article.findMany).mockResolvedValue([]);
 
 			const result = await articlesQueryRepository.findMany(
-				"user123",
-				"EXPORTED",
+				makeUserId("user123"),
+				makeStatus("EXPORTED"),
 				{},
 			);
 
@@ -126,8 +130,8 @@ describe("ArticlesQueryRepository", () => {
 			};
 
 			const result = await articlesQueryRepository.findMany(
-				"user123",
-				"EXPORTED",
+				makeUserId("user123"),
+				makeStatus("EXPORTED"),
 				params,
 			);
 
@@ -163,7 +167,11 @@ describe("ArticlesQueryRepository", () => {
 			);
 
 			await expect(
-				articlesQueryRepository.findMany("user123", "EXPORTED", {}),
+				articlesQueryRepository.findMany(
+					makeUserId("user123"),
+					makeStatus("EXPORTED"),
+					{},
+				),
 			).rejects.toThrow("Database connection error");
 
 			expect(prisma.article.findMany).toHaveBeenCalledWith({
@@ -185,7 +193,10 @@ describe("ArticlesQueryRepository", () => {
 		test("should return count of articles", async () => {
 			vi.mocked(prisma.article.count).mockResolvedValue(42);
 
-			const result = await articlesQueryRepository.count("user123", "EXPORTED");
+			const result = await articlesQueryRepository.count(
+				makeUserId("user123"),
+				makeStatus("EXPORTED"),
+			);
 
 			expect(prisma.article.count).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "EXPORTED" },
@@ -197,8 +208,8 @@ describe("ArticlesQueryRepository", () => {
 			vi.mocked(prisma.article.count).mockResolvedValue(0);
 
 			const result = await articlesQueryRepository.count(
-				"user123",
-				"UNEXPORTED",
+				makeUserId("user123"),
+				makeStatus("UNEXPORTED"),
 			);
 
 			expect(prisma.article.count).toHaveBeenCalledWith({
@@ -213,7 +224,10 @@ describe("ArticlesQueryRepository", () => {
 			);
 
 			await expect(
-				articlesQueryRepository.count("user123", "EXPORTED"),
+				articlesQueryRepository.count(
+					makeUserId("user123"),
+					makeStatus("EXPORTED"),
+				),
 			).rejects.toThrow("Database count error");
 
 			expect(prisma.article.count).toHaveBeenCalledWith({
@@ -244,7 +258,10 @@ describe("CategoryQueryRepository", () => {
 				skip: 0,
 			};
 
-			const result = await categoryQueryRepository.findMany("user123", params);
+			const result = await categoryQueryRepository.findMany(
+				makeUserId("user123"),
+				params,
+			);
 
 			expect(prisma.category.findMany).toHaveBeenCalledWith({
 				where: { userId: "user123" },
@@ -261,7 +278,9 @@ describe("CategoryQueryRepository", () => {
 		test("should handle empty results", async () => {
 			vi.mocked(prisma.category.findMany).mockResolvedValue([]);
 
-			const result = await categoryQueryRepository.findMany("user123");
+			const result = await categoryQueryRepository.findMany(
+				makeUserId("user123"),
+			);
 
 			expect(prisma.category.findMany).toHaveBeenCalledWith({
 				where: { userId: "user123" },
@@ -278,7 +297,9 @@ describe("CategoryQueryRepository", () => {
 
 			vi.mocked(prisma.category.findMany).mockResolvedValue(mockCategories);
 
-			const result = await categoryQueryRepository.findMany("user123");
+			const result = await categoryQueryRepository.findMany(
+				makeUserId("user123"),
+			);
 
 			expect(prisma.category.findMany).toHaveBeenCalledWith({
 				where: { userId: "user123" },
@@ -295,9 +316,9 @@ describe("CategoryQueryRepository", () => {
 				new Error("Database connection error"),
 			);
 
-			await expect(categoryQueryRepository.findMany("user123")).rejects.toThrow(
-				"Database connection error",
-			);
+			await expect(
+				categoryQueryRepository.findMany(makeUserId("user123")),
+			).rejects.toThrow("Database connection error");
 
 			expect(prisma.category.findMany).toHaveBeenCalledWith({
 				where: { userId: "user123" },

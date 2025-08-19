@@ -1,5 +1,16 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
+import {
+	makeArticleTitle,
+	makeCategoryName,
+	makeQuote,
+	makeUrl,
+} from "@/domains/articles/entities/article-entity";
 import type { Status } from "@/domains/common/entities/common-entity";
+import {
+	makeId,
+	makeStatus,
+	makeUserId,
+} from "@/domains/common/entities/common-entity";
 import prisma from "@/prisma";
 import { articlesCommandRepository } from "./articles-command-repository";
 
@@ -29,14 +40,14 @@ describe("ArticlesCommandRepository", () => {
 			} as any);
 
 			await articlesCommandRepository.create({
-				title: "Test article",
-				url: "https://example.com/article/1",
-				quote: "This is a test quote",
-				userId: "user123",
-				id: "01234567-89ab-4def-9123-456789abcdef",
-				status: "UNEXPORTED",
-				categoryName: "tech",
-				categoryId: "01234567-89ab-cdef-0123-456789abcde0",
+				title: makeArticleTitle("Test article"),
+				url: makeUrl("https://example.com/article/1"),
+				quote: makeQuote("This is a test quote"),
+				userId: makeUserId("user123"),
+				id: makeId("01234567-89ab-7def-9123-456789abcdef"),
+				status: makeStatus("UNEXPORTED"),
+				categoryName: makeCategoryName("tech"),
+				categoryId: makeId("01234567-89ab-7def-8123-456789abcde0"),
 			});
 
 			expect(prisma.article.create).toHaveBeenCalled();
@@ -62,19 +73,19 @@ describe("ArticlesCommandRepository", () => {
 			} as any);
 
 			const result = await articlesCommandRepository.create({
-				title: "Another article",
-				url: "https://example.com/article/2",
-				quote: null,
-				categoryName: "tech",
-				categoryId: "1",
-				userId: "user123",
-				id: "1",
-				status: "UNEXPORTED",
+				title: makeArticleTitle("Another article"),
+				url: makeUrl("https://example.com/article/2"),
+				quote: makeQuote(null),
+				categoryName: makeCategoryName("tech"),
+				categoryId: makeId("0198bfc4-444e-73e8-9ef6-eb9b250ed1ae"),
+				userId: makeUserId("user123"),
+				id: makeId("0198bfc4-444f-71eb-8e78-4005df127ffd"),
+				status: makeStatus("UNEXPORTED"),
 			});
 
 			expect(prisma.article.create).toHaveBeenCalledWith({
 				data: {
-					id: "1",
+					id: "0198bfc4-444f-71eb-8e78-4005df127ffd",
 					title: "Another article",
 					url: "https://example.com/article/2",
 					quote: null,
@@ -85,7 +96,11 @@ describe("ArticlesCommandRepository", () => {
 							where: {
 								name_userId: { name: "tech", userId: "user123" },
 							},
-							create: { id: "1", name: "tech", userId: "user123" },
+							create: {
+								id: "0198bfc4-444e-73e8-9ef6-eb9b250ed1ae",
+								name: "tech",
+								userId: "user123",
+							},
 						},
 					},
 				},
@@ -107,17 +122,14 @@ describe("ArticlesCommandRepository", () => {
 
 			await expect(
 				articlesCommandRepository.create({
-					title: "Test article",
-					url: "https://example.com/article/1",
-					quote: "This is a test quote",
-					userId: "user123",
-					id: "01234567-89ab-4def-9123-456789abcdef",
-					status: "UNEXPORTED",
-					category: {
-						name: "tech",
-						userId: "user123",
-						id: "01234567-89ab-cdef-0123-456789abcde0",
-					},
+					title: makeArticleTitle("Test article"),
+					url: makeUrl("https://example.com/article/1"),
+					quote: makeQuote("This is a test quote"),
+					userId: makeUserId("user123"),
+					id: makeId("01234567-89ab-7def-9123-456789abcdef"),
+					status: makeStatus("UNEXPORTED"),
+					categoryName: makeCategoryName("tech"),
+					categoryId: makeId("01234567-89ab-7def-8123-456789abcde0"),
 				}),
 			).rejects.toThrow("Database constraint error");
 
@@ -143,10 +155,18 @@ describe("ArticlesCommandRepository", () => {
 				categoryId: "1",
 			});
 
-			await articlesCommandRepository.deleteById("1", "user123", "EXPORTED");
+			await articlesCommandRepository.deleteById(
+				makeId("0198bfc4-444e-73e8-9ef6-eb9b250ed1ae"),
+				makeUserId("user123"),
+				makeStatus("EXPORTED"),
+			);
 
 			expect(prisma.article.delete).toHaveBeenCalledWith({
-				where: { id: "1", userId: "user123", status: "EXPORTED" },
+				where: {
+					id: "0198bfc4-444e-73e8-9ef6-eb9b250ed1ae",
+					userId: "user123",
+					status: "EXPORTED",
+				},
 				select: { title: true },
 			});
 		});
@@ -157,18 +177,26 @@ describe("ArticlesCommandRepository", () => {
 			);
 
 			await expect(
-				articlesCommandRepository.deleteById("999", "user123", "EXPORTED"),
+				articlesCommandRepository.deleteById(
+					makeId("0198bfc4-444f-71eb-8e78-46840c337877"),
+					makeUserId("user123"),
+					makeStatus("EXPORTED"),
+				),
 			).rejects.toThrow("Record not found");
 
 			expect(prisma.article.delete).toHaveBeenCalledWith({
-				where: { id: "999", userId: "user123", status: "EXPORTED" },
+				where: {
+					id: "0198bfc4-444f-71eb-8e78-46840c337877",
+					userId: "user123",
+					status: "EXPORTED",
+				},
 				select: { title: true },
 			});
 		});
 
 		test("should delete article with different status", async () => {
 			vi.mocked(prisma.article.delete).mockResolvedValue({
-				id: "2",
+				id: "0198bfc4-444f-71eb-8e78-4eaeec50cd3e",
 				title: "Another article",
 				url: "https://example.com/article/2",
 				quote: null,
@@ -183,10 +211,18 @@ describe("ArticlesCommandRepository", () => {
 				categoryId: "1",
 			});
 
-			await articlesCommandRepository.deleteById("2", "user123", "UNEXPORTED");
+			await articlesCommandRepository.deleteById(
+				makeId("0198bfc4-444f-71eb-8e78-4eaeec50cd3e"),
+				makeUserId("user123"),
+				makeStatus("UNEXPORTED"),
+			);
 
 			expect(prisma.article.delete).toHaveBeenCalledWith({
-				where: { id: "2", userId: "user123", status: "UNEXPORTED" },
+				where: {
+					id: "0198bfc4-444f-71eb-8e78-4eaeec50cd3e",
+					userId: "user123",
+					status: "UNEXPORTED",
+				},
 				select: { title: true },
 			});
 		});

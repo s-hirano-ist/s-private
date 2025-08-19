@@ -1,283 +1,320 @@
-# Contents Domain DDD改善タスク
+# DDD改善タスク一覧
 
 ## 概要
-DDDの原則に基づき、contentsドメインの実装を改善する。主にドメインイベント、集約ルート、仕様パターンの導入を行い、よりビジネスロジックを表現力豊かに実装する。
+DDDの原則に基づき、全ドメイン（articles, notes, images, books）の実装を改善する。現在の良好な実践を維持しつつ、ドメインイベント、集約ルート、仕様パターンの導入により、よりビジネスロジックを表現力豊かに実装する。
 
-## 1. ドメインイベントの導入
+## 1. 現状分析
 
-### 1.1 基盤となるイベントシステムの実装
+### 1.1 良好な実践（✅ 実装済み・維持中）
 
-#### タスク: ベースイベントクラスの作成
-- **ファイル**: `src/domains/common/events/domain-event.ts`
-- **内容**: 
-  ```typescript
-  export abstract class DomainEvent {
-    public readonly occurredAt: Date = new Date();
-    public readonly eventId: string = crypto.randomUUID();
-    
-    abstract get eventName(): string;
-  }
-  ```
+#### DTO変換パターンの適切な実装
+- **実装箇所**: `src/application-services/books/get-books.ts:44-49`
+- **評価**: ✅ **優秀** - アプリケーション層でドメインオブジェクトをUI用DTOに適切に変換し、ドメイン層の純粋性を保持
 
-#### タスク: イベントバスの実装
-- **ファイル**: `src/domains/common/events/event-bus.ts`
-- **内容**:
-  - イベントの発行・購読機能
-  - イベントハンドラーの登録・実行
-  - 非同期処理対応
+#### リポジトリインターフェースの依存関係逆転
+- **実装箇所**: 
+  - インターフェース: `src/domains/books/repositories/books-command-repository.interface.ts`
+  - 実装: `src/infrastructures/books/repositories/books-command-repository.ts`
+- **評価**: ✅ **優秀** - ドメイン層にインターフェースを配置し、インフラ層で実装。依存関係逆転の原則を正しく適用
 
-### 1.2 Contentsドメインイベントの実装
+#### Zodによる堅牢な値オブジェクト実装
+- **実装箇所**: 全ドメインのエンティティファイル（例：`src/domains/books/entities/books-entity.ts`）
+- **評価**: ✅ **優秀** - ブランド型による型安全性の確保、バリデーションと型定義の一元化
 
-#### タスク: ContentCreatedEventの作成
-- **ファイル**: `src/domains/contents/events/content-created-event.ts`
-- **内容**:
-  ```typescript
-  export class ContentCreatedEvent extends DomainEvent {
-    constructor(
-      public readonly content: Content,
-      public readonly userId: UserId
-    ) {
-      super();
-    }
-    
-    get eventName(): string {
-      return 'ContentCreated';
-    }
-  }
-  ```
+#### Form Data Parserの適切な責務分離
+- **実装箇所**: `src/application-services/*/helpers/form-data-parser.ts`
+- **評価**: ✅ **優秀** - アプリケーション層での入力データ変換、ドメイン層への純粋なデータ提供
 
-#### タスク: イベントハンドラーの実装
-- **ファイル**: `src/application-services/contents/handlers/content-created-handler.ts`
-- **責務**:
-  - キャッシュ無効化
-  - ログ記録
-  - 通知送信
-- **内容**: イベントを受け取って副作用を実行
+### 1.2 改善が必要な箇所（❌ 未実装）
 
-### 1.3 エンティティファクトリの修正
+#### 1. エンティティの振る舞いの欠如
+- **現状**: `src/domains/*/entities/*-entity.ts`でファクトリー関数のみ（例：`noteEntity.create`）
+- **問題**: ビジネスロジックがドメイン外に散在、エンティティに`export()`、`publish()`、`archive()`等のメソッドなし
+- **改善案**: エンティティクラスでの振る舞い実装
+- **影響度**: 🔴 **高** - ドメインロジックの中核
 
-#### タスク: contentEntityの修正
-- **ファイル**: `src/domains/contents/entities/contents-entity.ts`
+#### 2. ユビキタス言語の整合性問題
+- **現状**: `src/domains/common/entities/common-entity.ts:6`で`UNEXPORTED`/`EXPORTED`ステータス
+- **問題**: 技術的な用語でビジネス用語と乖離、アプリケーション層でもハードコーディング（例：`addBooks.ts:39`）
+- **改善案**: `DRAFT`/`PUBLISHED`への変更
+- **影響度**: 🟡 **中** - 全ドメイン共通の概念
+
+#### 3. ドメインサービスの命名と責務不明確
+- **現状**: `BooksDomainService`、`NotesDomainService`等の汎用的命名
+- **問題**: 具体的な責務が不明瞭（実際は重複チェックのみ）
+- **改善案**: `BookDuplicationChecker`、`NoteDuplicationChecker`等への変更
+- **影響度**: 🟡 **中** - 可読性とドメイン表現力
+
+#### 4. ドメインサービスのインスタンス化の問題
+- **現状**: アプリケーションサービスで直接インスタンス化（例：`addBooks.ts:18`）
+- **問題**: テスタビリティの低下、依存関係の管理が分散
+- **改善案**: DIコンテナまたはファクトリーパターンの導入
+- **影響度**: 🟡 **中** - テスト容易性
+
+#### 5. リポジトリの責務範囲の問題
+- **現状**: リポジトリがログ出力も担当（確認要：infrastructures層のリポジトリ実装）
+- **問題**: 単一責任の原則に違反
+- **改善案**: イベント駆動でのログ分離
+- **影響度**: 🟡 **中** - 責務分離
+
+#### 6. 集約の境界が不明確
+- **現状**: エンティティが単体で存在、集約ルートが明確でない
+- **問題**: トランザクション境界が不明瞭
+- **改善案**: 集約の導入とトランザクション境界の明確化
+- **影響度**: 🟠 **低** - 現在は問題顕在化せず
+
+#### 7. ドメインイベントの欠如
+- **現状**: イベント駆動の仕組みがない、副作用が直接実装
+- **問題**: 関心事の分離が不十分、横断的関心事の結合
+- **改善案**: ドメインイベントの導入
+- **影響度**: 🟠 **低** - 現在は問題顕在化せず
+
+#### 8. トランザクション管理の不在
+- **現状**: 明示的なトランザクション境界がない
+- **問題**: 部分的な失敗時の整合性保証なし
+- **改善案**: Unit of Workパターンの導入
+- **影響度**: 🟠 **低** - 現在は単純なCRUD操作のみ
+
+### 1.3 新たに発見された課題（🆕 追加検出）
+
+#### 1. revalidateTagでのハードコーディング問題
+- **現状**: `src/application-services/books/add-books.ts:39-40`で`books_UNEXPORTED_${userId}`等をハードコーディング
+- **問題**: ステータス値の変更時に修正漏れのリスク、文字列の分散管理
+- **改善案**: 定数化またはドメインオブジェクトからの動的生成
+- **影響度**: 🔴 **高** - 保守性とバグリスク
+
+#### 2. エンティティファクトリーでの例外処理不統一
+- **現状**: 各エンティティで例外ハンドリングパターンが微妙に異なる
+- **問題**: エラー処理の一貫性不足、予測しにくい例外動作
+- **改善案**: 共通の例外処理パターンの確立
+- **影響度**: 🟡 **中** - 保守性とデバッグ容易性
+
+#### 3. 値オブジェクトのディレクトリ分離未実施
+- **現状**: 値オブジェクトがエンティティファイル内に混在（例：`NoteTitle`、`Markdown`が`note-entity.ts`内）
+- **問題**: 値オブジェクトの再利用性低下、ファイル肥大化
+- **改善案**: `src/domains/*/value-objects/`ディレクトリへの分離
+- **影響度**: 🟡 **中** - ファイル構造の明確化
+
+## 2. 実装タスク（現実的優先度順）
+
+### 🔥 Phase 0: 緊急度高・影響大（すぐに実施すべき）
+
+#### タスク1: revalidateTagハードコーディング解消
+- **対象**: 全アプリケーションサービスの`revalidateTag`呼び出し
+- **変更内容**: ステータス値の定数化・動的生成
+- **理由**: 🔴 **緊急** - ステータス変更時の修正漏れリスク、保守性の致命的問題
+- **工数**: 小（半日程度）
+
+#### タスク2: ユビキタス言語の整合性改善
+- **変更内容**: `src/domains/common/entities/common-entity.ts`
+  - `UNEXPORTED`/`EXPORTED` → `DRAFT`/`PUBLISHED`
+- **影響**: 全ドメインのステータス用語統一
+- **理由**: 🔴 **高** - ビジネス言語との乖離解消、上記タスク1と合わせて実施
+- **工数**: 中（1-2日）
+
+### 🟡 Phase 1: 基盤改善（中期実施・効果確実）
+
+#### タスク3: ドメインサービスの命名改善
+- **対象**: 
+  - `BooksDomainService` → `BookDuplicationChecker`
+  - `NotesDomainService` → `NoteDuplicationChecker`
+  - `ArticlesDomainService` → `ArticleDuplicationChecker`
+- **効果**: 具体的な責務を名前で表現、ドメイン理解の向上
+- **工数**: 小（半日程度）
+
+#### タスク4: エンティティへの振る舞い追加
+- **対象**: 全ドメインのエンティティ
 - **変更内容**:
-  - `create`メソッドがイベントも返すように修正
-  - 戻り値を `{ content: Content; events: DomainEvent[] }` に変更
+  - ファクトリー関数をクラスメソッドに変換
+  - ビジネスロジックをエンティティに移動
+  - `export()`, `publish()`, `archive()`等のメソッド追加
+- **理由**: ドメインロジックの中核強化
+- **工数**: 大（1週間程度）
 
-### 1.4 アプリケーションサービスの修正
+#### タスク5: 値オブジェクトのディレクトリ分離
+- **対象**: 全ドメインの値オブジェクト
+- **変更内容**: `src/domains/*/value-objects/`への分離
+- **効果**: ファイル構造の明確化、再利用性向上
+- **工数**: 中（2-3日）
 
-#### タスク: add-contentsの修正
-- **ファイル**: `src/application-services/contents/add-contents.ts`
-- **変更内容**:
-  - イベントバスの注入
-  - 作成されたイベントの発行
-  - 直接的なキャッシュ無効化とログ記録の削除
+### 🟠 Phase 2: 高度な改善（長期実施・要設計検討）
 
-## 2. 集約ルートの明確化
+#### タスク6: ドメインサービスファクトリーの導入
+- **実装箇所**: `src/domains/*/factories/*-domain-service.factory.ts`
+- **内容**: ドメインサービスのファクトリーパターン実装
+- **効果**: テスタビリティの向上、依存関係の一元管理
+- **工数**: 中（2-3日）
 
-### 2.1 Content集約の設計
+#### タスク7: リポジトリからのログ分離
+- **変更内容**: リポジトリは永続化のみに集中
+- **実装**: イベント駆動でのログ記録責務移動
+- **工数**: 中（3-4日）
 
-#### タスク: Content集約クラスの作成
-- **ファイル**: `src/domains/contents/aggregates/content-aggregate.ts`
-- **内容**:
-  ```typescript
-  export class ContentAggregate {
-    private constructor(
-      private readonly _content: Content,
-      private _comments: Comment[] = [],
-      private _domainEvents: DomainEvent[] = []
-    ) {}
-    
-    static create(args: CreateContentArgs): ContentAggregate {
-      // 集約の作成ロジック
-      // ドメインイベントの生成
-    }
-    
-    // 不変条件の検証
-    private ensureInvariants(): void {
-      // ビジネスルール検証
-    }
-    
-    // イベント取得
-    getUncommittedEvents(): DomainEvent[] {
-      return [...this._domainEvents];
-    }
-    
-    // イベントクリア
-    markEventsAsCommitted(): void {
-      this._domainEvents = [];
-    }
-  }
-  ```
+### 🔵 Phase 3: 上級パターン（将来検討・現在は不要）
 
-### 2.2 集約リポジトリの実装
+#### タスク8: ドメインイベント基盤の実装
+- **ベースイベントクラス**: `src/domains/common/events/domain-event.ts`
+- **イベントバス**: `src/domains/common/events/event-bus.ts`
+- **各ドメインイベント**: `*CreatedEvent`, `*PublishedEvent`等
+- **理由**: 現在のシンプルなCRUD操作では過度な抽象化
+- **検討時期**: 複雑なビジネスロジックが増加した時点
 
-#### タスク: 集約リポジトリインターフェースの定義
-- **ファイル**: `src/domains/contents/repositories/content-aggregate-repository.ts`
-- **内容**:
-  ```typescript
-  export interface IContentAggregateRepository {
-    findById(id: Id, userId: UserId): Promise<ContentAggregate | null>;
-    save(aggregate: ContentAggregate): Promise<void>;
-    remove(aggregate: ContentAggregate): Promise<void>;
-  }
-  ```
+#### タスク9: 集約ルートの実装
+- **各ドメイン集約**: `*Aggregate`クラス群
+- **集約リポジトリ**: 集約単位での永続化
+- **理由**: 現在のエンティティ単位操作で十分
+- **検討時期**: 複数エンティティの整合性管理が必要になった時点
 
-#### タスク: 集約リポジトリの実装
-- **ファイル**: `src/infrastructures/contents/repositories/content-aggregate-repository.ts`
-- **責務**:
-  - 集約の永続化
-  - ドメインイベントの発行
-  - トランザクション管理
+#### タスク10: 仕様パターンの導入
+- **ベース仕様**: `src/domains/common/specifications/specification.ts`
+- **ドメイン固有仕様**: 複雑なビジネスルール表現
+- **理由**: 現在のバリデーションロジックで充足
+- **検討時期**: 複雑な条件分岐が増加した時点
 
-### 2.3 既存サービスの集約対応
+#### タスク11: Unit of Workパターン
+- **Unit of Work**: `src/infrastructures/persistence/unit-of-work.ts`
+- **理由**: 現在は単一エンティティ操作中心
+- **検討時期**: 複数テーブル横断処理が増加した時点
 
-#### タスク: ContentsDomainServiceの修正
-- **変更内容**:
-  - 集約を引数として受け取るように修正
-  - より複雑なビジネスルールの実装
+#### タスク12: CQRS・高度パターン
+- **コマンド/クエリ分離**: アプリケーションサービス再構成
+- **理由**: 現在の読み書き要求で十分
+- **検討時期**: パフォーマンス要件が厳しくなった時点
 
-## 3. 仕様パターンの導入
+## 3. ドメイン別具体的タスク
 
-### 3.1 仕様パターンの基盤実装
+### 3.1 notesドメイン（旧contents）
 
-#### タスク: ベース仕様クラスの作成
-- **ファイル**: `src/domains/common/specifications/specification.ts`
-- **内容**:
-  ```typescript
-  export interface Specification<T> {
-    isSatisfiedBy(candidate: T): boolean;
-    and(other: Specification<T>): Specification<T>;
-    or(other: Specification<T>): Specification<T>;
-    not(): Specification<T>;
-  }
-  
-  export abstract class CompositeSpecification<T> implements Specification<T> {
-    abstract isSatisfiedBy(candidate: T): boolean;
-    
-    and(other: Specification<T>): Specification<T> {
-      return new AndSpecification(this, other);
-    }
-    
-    or(other: Specification<T>): Specification<T> {
-      return new OrSpecification(this, other);
-    }
-    
-    not(): Specification<T> {
-      return new NotSpecification(this);
-    }
-  }
-  ```
+#### 集約設計
+- **NoteAggregate**: ノート本体、コメント、タグの管理
+- **不変条件**: 公開済みノートの編集制限、タイトル重複チェック
 
-#### タスク: 複合仕様の実装
-- **ファイル**: `src/domains/common/specifications/composite-specifications.ts`
-- **内容**: `AndSpecification`, `OrSpecification`, `NotSpecification`の実装
+#### イベント
+- `NoteCreatedEvent`, `NotePublishedEvent`, `NoteArchivedEvent`
 
-### 3.2 Contentsドメイン用仕様の実装
+#### 仕様
+- `PublishableNoteSpec`: 最小文字数、タイトル要件
+- `EditableNoteSpec`: ステータスベースの編集可否
+- `DuplicateTitleSpec`: タイトル重複チェック
 
-#### タスク: コンテンツ仕様クラスの作成
-- **ファイル**: `src/domains/contents/specifications/content-specifications.ts`
-- **実装する仕様**:
-  - `PublishableContentSpec`: 公開可能な条件
-  - `EditableContentSpec`: 編集可能な条件
-  - `ArchivableContentSpec`: アーカイブ可能な条件
-  - `DuplicateTitleSpec`: 重複タイトルチェック
+### 3.2 articlesドメイン（旧news）
 
-#### 具体的な仕様例:
-```typescript
-export class PublishableContentSpec extends CompositeSpecification<Content> {
-  isSatisfiedBy(content: Content): boolean {
-    return content.status === "UNEXPORTED" 
-      && content.markdown.length >= 100
-      && content.title.length >= 5;
-  }
-}
+#### 集約設計
+- **ArticleAggregate**: 記事本体、カテゴリ、OGメタデータの管理
+- **不変条件**: カテゴリの有効性、URL重複チェック
 
-export class EditableContentSpec extends CompositeSpecification<Content> {
-  isSatisfiedBy(content: Content): boolean {
-    return content.status === "UNEXPORTED";
-  }
-}
+#### イベント
+- `ArticleCreatedEvent`, `ArticlePublishedEvent`, `ArticleCategorizedEvent`
+
+#### 仕様
+- `PublishableArticleSpec`: OGメタデータ存在、カテゴリ必須
+- `CategorizableArticleSpec`: カテゴリ割り当て可否
+- `DuplicateUrlSpec`: URL重複チェック
+
+### 3.3 booksドメイン
+
+#### 集約設計
+- **BookAggregate**: 書籍情報、レビュー、GoogleBooks連携データの管理
+- **不変条件**: ISBN妥当性、重複登録防止
+
+#### イベント
+- `BookCreatedEvent`, `BookReviewedEvent`, `BookMetadataUpdatedEvent`
+
+#### 仕様
+- `PublishableBookSpec`: 必要メタデータの存在
+- `DuplicateIsbnSpec`: ISBN重複チェック（現BookDuplicationChecker）
+- `ReviewableBookSpec`: レビュー投稿可否
+
+### 3.4 imagesドメイン
+
+#### 集約設計
+- **ImageAggregate**: 画像メタデータ、タグ、MinIO連携データの管理
+- **不変条件**: ファイル形式妥当性、サイズ制限
+
+#### イベント
+- `ImageUploadedEvent`, `ImageProcessedEvent`, `ImageTaggedEvent`
+
+#### 仕様
+- `UploadableImageSpec`: ファイル形式、サイズチェック
+- `ProcessableImageSpec`: 画像処理可否
+- `TaggableImageSpec`: タグ付け可否
+
+## 4. 推奨される改善後のディレクトリ構造
+
+```
+src/
+├── domains/                      # ドメイン層
+│   ├── notes/
+│   │   ├── aggregates/          # 集約
+│   │   │   └── note.aggregate.ts
+│   │   ├── entities/            # エンティティ
+│   │   │   └── note.entity.ts
+│   │   ├── value-objects/       # 値オブジェクト
+│   │   │   ├── note-title.vo.ts
+│   │   │   └── markdown.vo.ts
+│   │   ├── repositories/        # リポジトリインターフェース
+│   │   ├── services/            # ドメインサービス
+│   │   ├── events/              # ドメインイベント
+│   │   ├── factories/           # ファクトリー
+│   │   └── specifications/      # 仕様オブジェクト
+│   ├── articles/                # 同様の構造
+│   ├── books/                   # 同様の構造
+│   ├── images/                  # 同様の構造
+│   └── common/                  # 共有ドメインオブジェクト
+│       ├── events/
+│       ├── specifications/
+│       └── value-objects/
+├── application-services/         # アプリケーション層
+│   ├── notes/
+│   │   ├── commands/            # コマンド（CQRSパターン）
+│   │   ├── queries/             # クエリ（CQRSパターン）
+│   │   └── handlers/            # イベントハンドラー
+│   └── ...
+├── infrastructures/              # インフラストラクチャ層
+│   ├── persistence/             # 永続化
+│   ├── di/                      # 依存性注入
+│   └── events/                  # イベントバス実装
+└── ...
 ```
 
-### 3.3 リポジトリでの仕様活用
+## 5. テスト戦略
 
-#### タスク: 仕様対応リポジトリメソッドの追加
-- **ファイル**: `src/domains/contents/types.ts`
-- **変更内容**: `IContentsQueryRepository`に仕様ベースの検索メソッドを追加
+### 5.1 ユニットテスト
+- ドメインイベントのテスト
+- 集約のテスト（不変条件の検証）
+- 仕様のテスト（ビジネスルールの検証）
 
-#### タスク: リポジトリ実装の修正
-- **ファイル**: `src/infrastructures/contents/repositories/contents-query-repository.ts`
-- **内容**: 仕様を満たすコンテンツを検索するメソッドの実装
+### 5.2 統合テスト
+- アプリケーションサービステスト（イベント発行の検証）
+- リポジトリテスト（永続化の検証）
 
-### 3.4 ドメインサービスでの仕様活用
+## 6. 実装の注意事項
 
-#### タスク: ContentsDomainServiceの拡張
-- **変更内容**:
-  - 重複チェックを`DuplicateTitleSpec`で実装
-  - その他のビジネスルール検証メソッドの追加
-
-## 4. テストの追加・修正
-
-### 4.1 ユニットテストの作成
-
-#### タスク: ドメインイベントのテスト
-- **ファイル**: `src/domains/contents/events/__tests__/content-created-event.test.ts`
-
-#### タスク: 集約のテスト
-- **ファイル**: `src/domains/contents/aggregates/__tests__/content-aggregate.test.ts`
-
-#### タスク: 仕様のテスト
-- **ファイル**: `src/domains/contents/specifications/__tests__/content-specifications.test.ts`
-
-### 4.2 統合テストの修正
-
-#### タスク: アプリケーションサービステストの修正
-- **ファイル**: `src/application-services/contents/__tests__/add-contents.test.ts`
-- **変更内容**: イベント発行の検証を追加
-
-## 5. ドキュメントの更新
-
-### 5.1 アーキテクチャドキュメント
-
-#### タスク: DDD実装ガイドの作成
-- **ファイル**: `docs/ddd-architecture.md`
-- **内容**:
-  - ドメインイベントの使用方法
-  - 集約の設計原則
-  - 仕様パターンの活用例
-
-#### タスク: コードベース規約の更新
-- **ファイル**: `CLAUDE.md`の更新
-- **内容**: DDD関連の開発規約を追加
-
-## 実装順序と優先度
-
-### Phase 1 (高優先度)
-1. ドメインイベント基盤の実装
-2. ContentCreatedEventの実装と統合
-3. 基本的な仕様パターンの導入
-
-### Phase 2 (中優先度)
-4. 集約ルートの実装
-5. より複雑な仕様の追加
-6. 既存コードのリファクタリング
-
-### Phase 3 (低優先度)
-7. テストの充実
-8. ドキュメントの整備
-9. パフォーマンス最適化
-
-## 注意事項
-
-- **段階的実装**: 既存機能を壊さないよう、段階的に実装する
+- **段階的実装**: 既存機能を壊さないよう、段階的に実装
 - **後方互換性**: 既存のAPIとの互換性を保つ
 - **テスト駆動**: 新機能はテストファーストで実装
-- **コードレビュー**: 各フェーズでのコードレビューを必須とする
 - **パフォーマンス**: イベント処理による性能影響を監視
 
-## 期待される効果
+## 7. 期待される効果と実装方針
 
-1. **保守性の向上**: ビジネスロジックの明示化により、コード理解が容易
-2. **拡張性の向上**: 新機能追加時の影響範囲を最小化
-3. **テスタビリティの向上**: 各コンポーネントの独立テストが可能
-4. **ビジネスとの対話改善**: ドメインモデルがビジネス言語を反映
-5. **品質の向上**: 不変条件の保証により、バグの発生を抑制
+### 7.1 短期効果（Phase 0-1）
+1. **即座の保守性向上**: ハードコーディング解消とユビキタス言語統一
+2. **バグリスク削減**: ステータス変更時の修正漏れ防止
+3. **コード理解の向上**: ドメインサービス命名とエンティティ振る舞い追加
+4. **ファイル構造の明確化**: 値オブジェクト分離による責務明確化
+
+### 7.2 中長期効果（Phase 2-3）
+1. **テスタビリティの向上**: 依存関係管理とファクトリーパターン
+2. **拡張性の向上**: イベント駆動アーキテクチャとドメインイベント
+3. **複雑性への対応**: 集約・仕様パターンによる高度なビジネスロジック表現
+
+### 7.3 実装方針
+- **段階的実装**: 既存機能を壊さず、影響の小さいものから着手
+- **実用性重視**: 過度な抽象化を避け、現在の要求に適した設計
+- **検証可能**: 各フェーズで具体的な改善効果を測定
+- **チーム負荷考慮**: 学習コストと実装工数のバランス
+
+### 7.4 成功指標
+- **Phase 0**: ハードコーディング箇所ゼロ、ステータス用語統一
+- **Phase 1**: ドメインサービス責務明確化、エンティティ振る舞い実装
+- **Phase 2**: テスト容易性向上、責務分離の実現

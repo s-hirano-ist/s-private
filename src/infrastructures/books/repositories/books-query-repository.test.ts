@@ -1,5 +1,9 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-
+import { makeISBN } from "@/domains/books/entities/books-entity";
+import {
+	makeStatus,
+	makeUserId,
+} from "@/domains/common/entities/common-entity";
 import prisma from "@/prisma";
 import { booksQueryRepository } from "./books-query-repository";
 
@@ -25,8 +29,8 @@ describe("BooksQueryRepository", () => {
 			vi.mocked(prisma.book.findUnique).mockResolvedValue(mockBook);
 
 			const result = await booksQueryRepository.findByISBN(
-				"978-0123456789",
-				"user123",
+				makeISBN("978-0123456789"),
+				makeUserId("user123"),
 			);
 
 			expect(prisma.book.findUnique).toHaveBeenCalled();
@@ -37,8 +41,8 @@ describe("BooksQueryRepository", () => {
 			vi.mocked(prisma.book.findUnique).mockResolvedValue(null);
 
 			const result = await booksQueryRepository.findByISBN(
-				"978-9999999999",
-				"user123",
+				makeISBN("978-9999999999"),
+				makeUserId("user123"),
 			);
 
 			expect(prisma.book.findUnique).toHaveBeenCalled();
@@ -51,7 +55,10 @@ describe("BooksQueryRepository", () => {
 			);
 
 			await expect(
-				booksQueryRepository.findByISBN("978-0123456789", "user123"),
+				booksQueryRepository.findByISBN(
+					makeISBN("978-0123456789"),
+					makeUserId("user123"),
+				),
 			).rejects.toThrow("Database error");
 
 			expect(prisma.book.findUnique).toHaveBeenCalled();
@@ -82,8 +89,8 @@ describe("BooksQueryRepository", () => {
 			};
 
 			const result = await booksQueryRepository.findMany(
-				"user123",
-				"EXPORTED",
+				makeUserId("user123"),
+				makeStatus("EXPORTED"),
 				params,
 			);
 
@@ -94,7 +101,10 @@ describe("BooksQueryRepository", () => {
 		test("should handle empty results", async () => {
 			vi.mocked(prisma.book.findMany).mockResolvedValue([]);
 
-			const result = await booksQueryRepository.findMany("user123", "EXPORTED");
+			const result = await booksQueryRepository.findMany(
+				makeUserId("user123"),
+				makeStatus("EXPORTED"),
+			);
 
 			expect(prisma.book.findMany).toHaveBeenCalled();
 			expect(result).toEqual([]);
@@ -116,8 +126,8 @@ describe("BooksQueryRepository", () => {
 			};
 
 			const result = await booksQueryRepository.findMany(
-				"user123",
-				"EXPORTED",
+				makeUserId("user123"),
+				makeStatus("EXPORTED"),
 				params,
 			);
 
@@ -131,7 +141,10 @@ describe("BooksQueryRepository", () => {
 			);
 
 			await expect(
-				booksQueryRepository.findMany("user123", "EXPORTED"),
+				booksQueryRepository.findMany(
+					makeUserId("user123"),
+					makeStatus("EXPORTED"),
+				),
 			).rejects.toThrow("Database connection error");
 
 			expect(prisma.book.findMany).toHaveBeenCalled();
@@ -142,7 +155,10 @@ describe("BooksQueryRepository", () => {
 		test("should return count of books", async () => {
 			vi.mocked(prisma.book.count).mockResolvedValue(25);
 
-			const result = await booksQueryRepository.count("user123", "EXPORTED");
+			const result = await booksQueryRepository.count(
+				makeUserId("user123"),
+				makeStatus("EXPORTED"),
+			);
 
 			expect(prisma.book.count).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "EXPORTED" },
@@ -153,7 +169,10 @@ describe("BooksQueryRepository", () => {
 		test("should return 0 for empty collection", async () => {
 			vi.mocked(prisma.book.count).mockResolvedValue(0);
 
-			const result = await booksQueryRepository.count("user123", "UNEXPORTED");
+			const result = await booksQueryRepository.count(
+				makeUserId("user123"),
+				makeStatus("UNEXPORTED"),
+			);
 
 			expect(prisma.book.count).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "UNEXPORTED" },
@@ -167,7 +186,10 @@ describe("BooksQueryRepository", () => {
 			);
 
 			await expect(
-				booksQueryRepository.count("user123", "EXPORTED"),
+				booksQueryRepository.count(
+					makeUserId("user123"),
+					makeStatus("EXPORTED"),
+				),
 			).rejects.toThrow("Database count error");
 
 			expect(prisma.book.count).toHaveBeenCalledWith({

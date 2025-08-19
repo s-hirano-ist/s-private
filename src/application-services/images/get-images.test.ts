@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
+import { makeStatus } from "@/domains/common/entities/common-entity";
 import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
 import {
 	getExportedImages,
@@ -166,7 +167,7 @@ describe("get-images", () => {
 		test("should handle empty results", async () => {
 			vi.mocked(imagesQueryRepository.findMany).mockResolvedValue([]);
 
-			const result = await getUnexportedImages();
+			const result = await getUnexportedImages(1);
 
 			expect(result).toEqual([]);
 		});
@@ -176,7 +177,7 @@ describe("get-images", () => {
 				new Error("Database error"),
 			);
 
-			await expect(getUnexportedImages()).rejects.toThrow("Database error");
+			await expect(getUnexportedImages(1)).rejects.toThrow("Database error");
 		});
 	});
 
@@ -184,7 +185,7 @@ describe("get-images", () => {
 		test("should return count of images by status", async () => {
 			vi.mocked(imagesQueryRepository.count).mockResolvedValue(25);
 
-			const result = await getImagesCount("EXPORTED");
+			const result = await getImagesCount(makeStatus("EXPORTED"));
 
 			expect(imagesQueryRepository.count).toHaveBeenCalledWith(
 				"test-user-id",
@@ -196,7 +197,7 @@ describe("get-images", () => {
 		test("should return 0 for empty collection", async () => {
 			vi.mocked(imagesQueryRepository.count).mockResolvedValue(0);
 
-			const result = await getImagesCount("UNEXPORTED");
+			const result = await getImagesCount(makeStatus("UNEXPORTED"));
 
 			expect(result).toEqual(0);
 		});
@@ -206,7 +207,7 @@ describe("get-images", () => {
 				new Error("Database error"),
 			);
 
-			await expect(getImagesCount("EXPORTED")).rejects.toThrow(
+			await expect(getImagesCount(makeStatus("EXPORTED"))).rejects.toThrow(
 				"Database error",
 			);
 		});
