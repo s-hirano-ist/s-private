@@ -1,6 +1,6 @@
 "use client";
 import { DownloadIcon, SearchIcon, UploadIcon } from "lucide-react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signOut } from "next-auth/react";
 import {
 	memo,
@@ -22,6 +22,8 @@ import {
 	DrawerTrigger,
 } from "@/components/common/ui/drawer";
 import { cn } from "@/components/common/utils/cn";
+import { SearchCard } from "../../features/search/search-card";
+import type { search } from "../../features/search/search-filter";
 
 const LAYOUTS = {
 	dumper: "DUMPER",
@@ -30,9 +32,12 @@ const LAYOUTS = {
 
 const DEFAULT_LAYOUT = "dumper";
 
-function FooterComponent() {
+type Props = {
+	search: typeof search;
+};
+function FooterComponent({ search }: Props) {
 	const [open, setOpen] = useState(false);
-	const _pathname = usePathname();
+
 	const router = useRouter();
 	const searchParams = useSearchParams();
 
@@ -163,6 +168,7 @@ function FooterComponent() {
 							handleReload={handleReload}
 							onSignOutSubmit={onSignOutSubmit}
 						/>
+						<SearchCard search={search} />
 					</Suspense>
 				</DrawerContent>
 			</Drawer>
