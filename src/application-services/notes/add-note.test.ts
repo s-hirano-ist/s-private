@@ -36,7 +36,8 @@ vi.mock("@/domains/notes/services/notes-domain-service", () => ({
 }));
 
 vi.mock("@/domains/notes/entities/note-entity", async (importOriginal) => {
-	const actual = await importOriginal() as any;
+	// eslint-disable-next-line
+	const actual = (await importOriginal()) as any;
 	return {
 		...actual,
 		noteEntity: {
