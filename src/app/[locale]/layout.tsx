@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import type { ReactNode } from "react";
-import { search } from "@/components/common/features/search/search-filter";
+import { search } from "@/components/common/features/search/search";
 import { Footer } from "@/components/common/layouts/nav/footer";
 import { ThemeProvider } from "@/components/common/providers/theme-provider";
 import { Toaster } from "@/components/common/ui/sonner";

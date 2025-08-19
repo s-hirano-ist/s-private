@@ -4,7 +4,7 @@ import { StatusCodeView } from "@/components/common/display/status/status-code-v
 import { useSearch } from "@/components/common/hooks/use-search";
 import { Input } from "@/components/common/ui/input";
 import Loading from "../../display/loading";
-import type { search } from "./search-filter";
+import type { search } from "./search";
 
 type Props = { search: typeof search };
 

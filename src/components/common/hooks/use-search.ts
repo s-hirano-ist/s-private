@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState, useTransition } from "react";
 import { useDebouncedCallback } from "use-debounce";
-import type { search } from "../features/search/search-filter";
+import type { search } from "../features/search/search";
 
 const PARAM_NAME = "q";
 
