@@ -26,13 +26,13 @@ export function ImageCard({
 	deleteAction,
 }: Props) {
 	return (
-		<div className="relative">
-			<Link className="block" href={`/${basePath}/${href}` as Route}>
-				<Card className="flex h-full flex-col justify-evenly hover:bg-secondary">
+		<div className="relative h-full">
+			<Link className="block h-full" href={`/${basePath}/${href}` as Route}>
+				<Card className="flex h-full flex-col hover:bg-secondary">
 					<CardHeader>
 						<CardTitle className="text-center">{title}</CardTitle>
 					</CardHeader>
-					<CardContent>
+					<CardContent className="flex flex-grow flex-col justify-center">
 						<div className="flex justify-center">
 							<NextImage
 								alt={title}

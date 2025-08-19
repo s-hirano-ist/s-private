@@ -27,7 +27,7 @@ export function ImageCardStack({
 		deleteAction?: DeleteAction,
 		key?: string,
 	) => (
-		<div key={key} ref={isLast ? lastElementRef : null}>
+		<div className="h-full" key={key} ref={isLast ? lastElementRef : null}>
 			<ImageCard
 				basePath={basePath}
 				data={item}
