@@ -15,19 +15,20 @@ export async function loadMoreExportedArticles(
 	const hasPermission = await hasViewerAdminPermission();
 	if (!hasPermission) forbidden();
 
-	const userId = await getSelfId();
-
-	const data = await _getArticles(
-		currentCount,
-		userId,
-		makeStatus("EXPORTED"),
-		{
-			ttl: 400,
-			swr: 40,
-			tags: [`${sanitizeCacheTag(userId)}_articles_${currentCount}`],
-		},
-	);
 	try {
+		const userId = await getSelfId();
+
+		const data = await _getArticles(
+			currentCount,
+			userId,
+			makeStatus("EXPORTED"),
+			{
+				ttl: 400,
+				swr: 40,
+				tags: [`${sanitizeCacheTag(userId)}_articles_${currentCount}`],
+			},
+		);
+
 		return {
 			success: true,
 			message: "success",
@@ -44,14 +45,15 @@ export async function loadMoreUnexportedArticles(
 	const hasPermission = await hasViewerAdminPermission();
 	if (!hasPermission) forbidden();
 
-	const userId = await getSelfId();
-
-	const data = await _getArticles(
-		currentCount,
-		userId,
-		makeStatus("UNEXPORTED"),
-	);
 	try {
+		const userId = await getSelfId();
+
+		const data = await _getArticles(
+			currentCount,
+			userId,
+			makeStatus("UNEXPORTED"),
+		);
+
 		return {
 			success: true,
 			message: "success",

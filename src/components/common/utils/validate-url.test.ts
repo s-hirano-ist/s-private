@@ -164,5 +164,45 @@ describe("validate-url utils", () => {
 				isValid: false,
 			});
 		});
+
+		test("should handle malformed URLs in validateAndNormalizeUrl", () => {
+			const result = validateAndNormalizeUrl("malformed-url-test");
+			expect(result).toEqual({
+				url: "/",
+				isExternal: false,
+				isValid: false,
+			});
+		});
+
+		test("should handle URLs with invalid protocols in validateAndNormalizeUrl", () => {
+			const result = validateAndNormalizeUrl("javascript:alert('test')");
+			expect(result).toEqual({
+				url: "/",
+				isExternal: false,
+				isValid: false,
+			});
+		});
+	});
+
+	describe("edge cases", () => {
+		test("should handle URLs that throw errors during parsing", () => {
+			// Test case where URL constructor might throw but catch block handles it
+			const result = validateAndNormalizeUrl("not-a-valid-url-at-all");
+			expect(result).toEqual({
+				url: "/",
+				isExternal: false,
+				isValid: false,
+			});
+		});
+
+		test("isExternalUrl should handle malformed URLs", () => {
+			// This will cause isValidUrl to return false, so isExternalUrl returns false
+			expect(isExternalUrl("malformed")).toBe(false);
+		});
+
+		test("isExternalUrl should handle non-http protocols", () => {
+			// This will pass isValidUrl but fail the protocol check
+			expect(isExternalUrl("ftp://example.com")).toBe(false);
+		});
 	});
 });

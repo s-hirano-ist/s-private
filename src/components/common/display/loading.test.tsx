@@ -4,7 +4,6 @@ import Loading from "./loading";
 
 // Mock lucide-react
 vi.mock("lucide-react", () => ({
-	// eslint-disable-next-line
 	Loader: ({ className, size }: any) => (
 		<div className={className} data-size={size} data-testid="loader">
 			Loading...

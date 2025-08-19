@@ -25,7 +25,7 @@ export default defineConfig({
 				"src/env.ts",
 				"src/infrastructures/observability/**/*.ts",
 				"src/infrastructures/i18n/**/*.ts",
-				"src/infrastructures/auth/?(auth|auth.config).ts",
+				"src/infrastructures/auth/**/*.ts",
 				"**/types.ts",
 				"src/domains/**/repositories/*.ts",
 				"src/domains/**/types/*.ts",

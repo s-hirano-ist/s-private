@@ -18,7 +18,6 @@ export const GET = auth(
 		const isThumbnail = contentType === "thumbnail";
 		const stream = await getImagesFromStorage(id, isThumbnail);
 
-		// eslint-disable-next-line
 		return new Response(stream as any, {
 			headers: {
 				"Content-Type": "image/jpeg",

@@ -23,14 +23,12 @@ describe("Images API Route", () => {
 		vi.mocked(getImagesFromStorage).mockRejectedValue(
 			new Error("Should not be called"),
 		);
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const request: any = { auth: null };
 		const params = Promise.resolve({
 			contentType: "thumbnail",
 			id: "image-123",
 		});
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const response: any = await GET(request, { params });
 		const data = await response.json();
 
@@ -40,7 +38,6 @@ describe("Images API Route", () => {
 	});
 
 	test("should call forbidden when user doesn't have viewer role", async () => {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const request: any = { auth: { user: { roles: ["dumper"] } } };
 		const params = Promise.resolve({
 			contentType: "thumbnail",
@@ -52,17 +49,14 @@ describe("Images API Route", () => {
 
 	test("should return image stream for thumbnail when user has viewer role", async () => {
 		const mockStream = new ReadableStream();
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		vi.mocked(getImagesFromStorage).mockResolvedValue(mockStream as any);
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const request: any = { auth: { user: { roles: ["viewer"] } } };
 		const params = Promise.resolve({
 			contentType: "thumbnail",
 			id: "image-123",
 		});
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const response: any = await GET(request, { params });
 
 		expect(getImagesFromStorage).toHaveBeenCalledWith("image-123", true);
@@ -73,15 +67,12 @@ describe("Images API Route", () => {
 	});
 
 	test("should return image stream for full image when contentType is not thumbnail", async () => {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const mockStream: any = new ReadableStream();
 		vi.mocked(getImagesFromStorage).mockResolvedValue(mockStream);
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const request: any = { auth: { user: { roles: ["viewer"] } } };
 		const params = Promise.resolve({ contentType: "full", id: "image-123" });
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const response: any = await GET(request, { params });
 
 		expect(getImagesFromStorage).toHaveBeenCalledWith("image-123", false);
@@ -92,18 +83,15 @@ describe("Images API Route", () => {
 	});
 
 	test("should handle user with multiple roles including viewer", async () => {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const mockStream: any = new ReadableStream();
 		vi.mocked(getImagesFromStorage).mockResolvedValue(mockStream);
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const request: any = { auth: { user: { roles: ["dumper", "viewer"] } } };
 		const params = Promise.resolve({
 			contentType: "thumbnail",
 			id: "image-123",
 		});
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const response: any = await GET(request, { params });
 
 		expect(getImagesFromStorage).toHaveBeenCalledWith("image-123", true);

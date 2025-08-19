@@ -1,0 +1,366 @@
+@startuml Domain Classes
+
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 10
+skinparam packageStyle rectangle
+
+package "Common Domain" {
+    class "Id" as Id <<ValueObject>> {
+        +value: string (UUID v7)
+        +makeId(id?: string): Id
+    }
+    
+    class "UserId" as UserId <<ValueObject>> {
+        +value: string
+        +makeUserId(v: string): UserId
+    }
+    
+    class "Status" as Status <<ValueObject>> {
+        +value: "UNEXPORTED" | "EXPORTED"
+        +makeStatus(v: "UNEXPORTED" | "EXPORTED"): Status
+    }
+    
+    class "IdGeneratorService" as IdGeneratorService {
+        +uuidv7(): string
+    }
+}
+
+package "Articles Domain" {
+    class "CategoryName" as CategoryName <<ValueObject>> {
+        +value: string
+        +makeCategoryName(v: string): CategoryName
+        --
+        Constraints:
+        • min: 1, max: 16
+        • trimmed
+    }
+    
+    class "ArticleTitle" as ArticleTitle <<ValueObject>> {
+        +value: string
+        +makeArticleTitle(v: string): ArticleTitle
+        --
+        Constraints:
+        • min: 1, max: 64
+    }
+    
+    class "Quote" as Quote <<ValueObject>> {
+        +value: string | null | undefined
+        +makeQuote(v: string | null | undefined): Quote
+        --
+        Constraints:
+        • max: 256
+        • nullable, optional
+    }
+    
+    class "Url" as Url <<ValueObject>> {
+        +value: string
+        +makeUrl(v: string): Url
+        --
+        Constraints:
+        • valid URL format
+        • http/https only
+    }
+    
+    class "OgTitle" as OgTitle <<ValueObject>> {
+        +value: string | null | undefined
+        +makeOgTitle(v: string | null | undefined): OgTitle
+    }
+    
+    class "OgDescription" as OgDescription <<ValueObject>> {
+        +value: string | null | undefined
+        +makeOgDescription(v: string | null | undefined): OgDescription
+    }
+    
+    class "Article" as Article <<Entity>> {
+        +id: Id
+        +userId: UserId
+        +categoryName: CategoryName
+        +categoryId: Id
+        +title: ArticleTitle
+        +quote: Quote
+        +url: Url
+        +status: Status
+        +ogTitle: OgTitle
+        +ogDescription: OgDescription
+    }
+    
+    class "ArticleEntity" as ArticleEntity <<Factory>> {
+        +create(args: CreateArticleArgs): Article
+    }
+    
+    interface "IArticlesCommandRepository" as IArticlesCommandRepository {
+        +create(data: Article): Promise<void>
+        +deleteById(id: Id, userId: UserId, status: Status): Promise<void>
+    }
+    
+    interface "IArticlesQueryRepository" as IArticlesQueryRepository {
+        +findByUrl(url: Url, userId: UserId): Promise<Article | null>
+        +findMany(userId: UserId, params?: ArticleFindManyParams): Promise<Article[]>
+    }
+    
+    interface "ICategoryQueryRepository" as ICategoryQueryRepository {
+        +findMany(userId: UserId, params?: CategoryFindManyParams): Promise<Category[]>
+    }
+    
+    class "ArticlesDomainService" as ArticlesDomainService {
+        -articlesQueryRepository: IArticlesQueryRepository
+        +ensureNoDuplicate(url: Url, userId: UserId): Promise<void>
+    }
+}
+
+package "Books Domain" {
+    class "ISBN" as ISBN <<ValueObject>> {
+        +value: string
+        +makeISBN(v: string): ISBN
+        --
+        Constraints:
+        • min: 1, max: 17
+        • digits and hyphens only
+    }
+    
+    class "BookTitle" as BookTitle <<ValueObject>> {
+        +value: string
+        +makeBookTitle(v: string): BookTitle
+        --
+        Constraints:
+        • min: 1, max: 256
+    }
+    
+    class "GoogleTitle" as GoogleTitle <<ValueObject>> {
+        +value: string | null
+        +makeGoogleTitle(v: string | null): GoogleTitle
+    }
+    
+    class "GoogleSubTitle" as GoogleSubTitle <<ValueObject>> {
+        +value: string | null
+        +makeGoogleSubTitle(v: string | null): GoogleSubTitle
+    }
+    
+    class "GoogleAuthors" as GoogleAuthors <<ValueObject>> {
+        +value: string[] | null
+        +makeGoogleAuthors(v: string[] | null): GoogleAuthors
+    }
+    
+    class "GoogleDescription" as GoogleDescription <<ValueObject>> {
+        +value: string | null
+        +makeGoogleDescription(v: string | null): GoogleDescription
+    }
+    
+    class "GoogleImgSrc" as GoogleImgSrc <<ValueObject>> {
+        +value: string | null
+        +makeGoogleImgSrc(v: string | null): GoogleImgSrc
+    }
+    
+    class "GoogleHref" as GoogleHref <<ValueObject>> {
+        +value: string | null
+        +makeGoogleHref(v: string | null): GoogleHref
+    }
+    
+    class "BookMarkdown" as BookMarkdown <<ValueObject>> {
+        +value: string | null
+        +makeBookMarkdown(v: string | null): BookMarkdown
+    }
+    
+    class "Book" as Book <<Entity>> {
+        +id: Id
+        +userId: UserId
+        +ISBN: ISBN
+        +title: BookTitle
+        +status: Status
+        +googleTitle?: GoogleTitle
+        +googleSubTitle?: GoogleSubTitle
+        +googleAuthors?: GoogleAuthors
+        +googleDescription?: GoogleDescription
+        +googleImgSrc?: GoogleImgSrc
+        +googleHref?: GoogleHref
+        +markdown?: BookMarkdown
+    }
+    
+    class "BookEntity" as BookEntity <<Factory>> {
+        +create(args: CreateBookArgs): Book
+    }
+    
+    interface "IBooksCommandRepository" as IBooksCommandRepository {
+        +create(data: Book): Promise<void>
+        +deleteById(id: Id, userId: UserId, status: Status): Promise<void>
+    }
+    
+    interface "IBooksQueryRepository" as IBooksQueryRepository {
+        +findByISBN(ISBN: ISBN, userId: UserId): Promise<Book | null>
+        +findMany(userId: UserId, params?: BookFindManyParams): Promise<Book[]>
+    }
+    
+    class "BooksDomainService" as BooksDomainService {
+        -booksQueryRepository: IBooksQueryRepository
+        +ensureNoDuplicate(ISBN: ISBN, userId: UserId): Promise<void>
+    }
+}
+
+package "Notes Domain" {
+    class "NoteTitle" as NoteTitle <<ValueObject>> {
+        +value: string
+        +makeNoteTitle(v: string): NoteTitle
+        --
+        Constraints:
+        • min: 1, max: 64
+    }
+    
+    class "Markdown" as Markdown <<ValueObject>> {
+        +value: string
+        +makeMarkdown(v: string): Markdown
+        --
+        Constraints:
+        • min: 1
+    }
+    
+    class "Note" as Note <<Entity>> {
+        +id: Id
+        +userId: UserId
+        +title: NoteTitle
+        +markdown: Markdown
+        +status: Status
+    }
+    
+    class "NoteEntity" as NoteEntity <<Factory>> {
+        +create(args: CreateNoteArgs): Note
+    }
+    
+    interface "INotesCommandRepository" as INotesCommandRepository {
+        +create(data: Note): Promise<void>
+        +deleteById(id: Id, userId: UserId, status: Status): Promise<void>
+    }
+    
+    interface "INotesQueryRepository" as INotesQueryRepository {
+        +findByTitle(title: NoteTitle, userId: UserId): Promise<Note | null>
+        +findMany(userId: UserId, params?: NoteFindManyParams): Promise<Note[]>
+    }
+    
+    class "NotesDomainService" as NotesDomainService {
+        -notesQueryRepository: INotesQueryRepository
+        +ensureNoDuplicate(title: NoteTitle, userId: UserId): Promise<void>
+    }
+}
+
+package "Images Domain" {
+    class "Path" as Path <<ValueObject>> {
+        +value: string
+        +makePath(v: string): Path
+        --
+        Note: Sanitizes filename and adds UUID prefix
+    }
+    
+    class "ContentType" as ContentType <<ValueObject>> {
+        +value: "image/jpeg" | "image/png" | "image/gif"
+        +makeContentType(v: string): ContentType
+    }
+    
+    class "FileSize" as FileSize <<ValueObject>> {
+        +value: number
+        +makeFileSize(v: number): FileSize
+        --
+        Constraints:
+        • max: 100MB
+        • non-negative integer
+    }
+    
+    class "Pixel" as Pixel <<ValueObject>> {
+        +value: number | undefined
+        +makePixel(v: number): Pixel
+        --
+        Constraints:
+        • positive integer
+        • optional
+    }
+    
+    class "Tag" as Tag <<ValueObject>> {
+        +value: string
+        +makeTag(v: string): Tag
+        --
+        Constraints:
+        • min: 1
+    }
+    
+    class "Description" as Description <<ValueObject>> {
+        +value: string | undefined
+        +makeDescription(v: string): Description
+        --
+        Constraints:
+        • min: 1
+        • optional
+    }
+    
+    class "OriginalBuffer" as OriginalBuffer <<ValueObject>> {
+        +value: Buffer
+        +makeOriginalBuffer(file: File): Promise<OriginalBuffer>
+    }
+    
+    class "ThumbnailBuffer" as ThumbnailBuffer <<ValueObject>> {
+        +value: Buffer
+        +makeThumbnailBuffer(file: File): Promise<ThumbnailBuffer>
+        --
+        Note: Resizes to 192x192 using Sharp
+    }
+    
+    class "Image" as Image <<Entity>> {
+        +id: Id
+        +userId: UserId
+        +path: Path
+        +contentType: ContentType
+        +fileSize: FileSize
+        +width?: Pixel
+        +height?: Pixel
+        +tags?: Tag[]
+        +description?: Description
+        +status: Status
+    }
+    
+    class "ImageEntity" as ImageEntity <<Factory>> {
+        +create(args: CreateImageArgs): Image
+    }
+    
+    interface "IImagesCommandRepository" as IImagesCommandRepository {
+        +create(data: Image): Promise<void>
+        +deleteById(id: Id, userId: UserId, status: Status): Promise<void>
+    }
+    
+    interface "IImagesQueryRepository" as IImagesQueryRepository {
+        +findMany(userId: UserId, params?: ImageFindManyParams): Promise<Image[]>
+    }
+}
+
+' Relationships between Common and Domain entities
+Article --> Id
+Article --> UserId
+Article --> Status
+
+Book --> Id
+Book --> UserId
+Book --> Status
+
+Note --> Id
+Note --> UserId
+Note --> Status
+
+Image --> Id
+Image --> UserId
+Image --> Status
+
+' Entity factories use common types
+ArticleEntity --> Id : creates
+BookEntity --> Id : creates
+NoteEntity --> Id : creates
+ImageEntity --> Id : creates
+
+' Domain services depend on repositories
+ArticlesDomainService --> IArticlesQueryRepository
+BooksDomainService --> IBooksQueryRepository
+NotesDomainService --> INotesQueryRepository
+
+' Entity factories depend on ID generator
+ArticleEntity --> IdGeneratorService
+BookEntity --> IdGeneratorService
+NoteEntity --> IdGeneratorService
+ImageEntity --> IdGeneratorService
+
+@enduml

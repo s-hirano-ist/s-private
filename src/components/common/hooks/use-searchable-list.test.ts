@@ -20,7 +20,7 @@ describe("useSearchableList", () => {
 	];
 
 	// Create stable filter function to prevent infinite re-renders
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 	const stableFilterFunction = (item: any, searchQuery: string) =>
 		item.title.toLowerCase().includes(searchQuery.toLowerCase());
 
@@ -125,7 +125,6 @@ describe("useSearchableList", () => {
 	});
 
 	test("should use custom filter function", () => {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const customFilter = (item: any, searchQuery: string) =>
 			item.id === searchQuery;
 

@@ -18,7 +18,6 @@ const mockData = [
 	{ id: "3", title: "Cherry", description: "A small red fruit" },
 ];
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const renderCard = (item: any, _index: number) => (
 	<div className="p-4 border rounded-lg" key={item.id}>
 		<h3 className="font-bold">{item.title}</h3>
