@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { fn } from "@storybook/test";
-import { ImagesFormClient } from "./images-form-client";
+import { ImageFormClient } from "./image-form-client";
 
 const meta = {
-	component: ImagesFormClient,
+	component: ImageFormClient,
 	parameters: { layout: "centered" },
 	tags: ["autodocs"],
-} satisfies Meta<typeof ImagesFormClient>;
+} satisfies Meta<typeof ImageFormClient>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

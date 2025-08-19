@@ -7,21 +7,21 @@ import {
 type Props = {
 	currentPage: number;
 	getImages: (page: number) => Promise<ImageData[]>;
-	deleteImages?: (id: string) => Promise<ServerAction>;
+	deleteImage?: (id: string) => Promise<ServerAction>;
 };
 
 export async function ImagesStack({
 	currentPage,
 	getImages,
-	deleteImages,
+	deleteImage,
 }: Props) {
 	const images = await getImages(currentPage);
 
 	return (
 		<ImageStackClient
 			data={images}
-			deleteAction={deleteImages}
-			showDeleteButton={deleteImages !== undefined}
+			deleteAction={deleteImage}
+			showDeleteButton={deleteImage !== undefined}
 		/>
 	);
 }

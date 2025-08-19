@@ -9,7 +9,7 @@ type Props = {
 	addImage: (formData: FormData) => Promise<ServerAction>;
 };
 
-export function ImagesFormClient({ addImage }: Props) {
+export function ImageFormClient({ addImage }: Props) {
 	const label = useTranslations("label");
 	const message = useTranslations("message");
 

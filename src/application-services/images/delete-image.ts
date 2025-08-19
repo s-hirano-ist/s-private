@@ -8,7 +8,7 @@ import type { ServerAction } from "@/common/types";
 import { makeStatus } from "@/domains/common/entities/common-entity";
 import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
 
-export async function deleteImages(id: string): Promise<ServerAction> {
+export async function deleteImage(id: string): Promise<ServerAction> {
 	const hasPermission = await hasDumperPostPermission();
 	if (!hasPermission) forbidden();
 

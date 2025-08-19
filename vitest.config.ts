@@ -16,7 +16,7 @@ export default defineConfig({
 				"**/*.stories.tsx",
 				"src/**/*.test.ts?(x)",
 				"src/generated/**/*",
-				"src/app/**/?(layout|page).tsx",
+				"src/app/**/?(layout|page|global-error|error).tsx",
 				"src/app/\\[locale\\]/forbidden.tsx",
 				"src/app/api/auth/\\[...nextauth\\]/route.ts",
 				"src/?(instrumentation-client|instrumentation|minio|middleware|pino|prisma).ts",
@@ -36,6 +36,11 @@ export default defineConfig({
 		include: ["./src/**/*.test.?(c|m)[jt]s?(x)"],
 		exclude: ["./e2e/**/*"],
 		server: { deps: { inline: ["next-auth"] } }, // FIXME: https://github.com/vitest-dev/vitest/issues/4554
+		typecheck: {
+			enabled: true,
+			include: ["./src/**/*.test.?(c|m)[jt]s?(x)"],
+			tsconfig: "./tsconfig.json",
+		},
 	},
 	resolve: { alias: { "@": "/src" } },
 });

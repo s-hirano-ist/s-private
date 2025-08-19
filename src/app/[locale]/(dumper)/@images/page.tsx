@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import { addImages } from "@/application-services/images/add-images";
-import { deleteImages } from "@/application-services/images/delete-images";
+import { addImage } from "@/application-services/images/add-image";
+import { deleteImage } from "@/application-services/images/delete-image";
 import {
 	getExportedImages,
 	getImagesCount,
@@ -13,8 +13,8 @@ import {
 import Loading from "@/components/common/display/loading";
 import { ErrorPermissionBoundary } from "@/components/common/layouts/error-permission-boundary";
 import { LazyTabContent } from "@/components/common/layouts/lazy-tab-content";
+import { ImageForm } from "@/components/images/server/image-form";
 import { ImagesCounter } from "@/components/images/server/images-counter";
-import { ImagesForm } from "@/components/images/server/images-form";
 import { ImagesStack } from "@/components/images/server/images-stack";
 
 type Params = Promise<{ page?: string; tab?: string; layout?: string }>;
@@ -53,9 +53,9 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 				return (
 					<>
 						<ErrorPermissionBoundary
-							errorCaller="ImagesForm"
+							errorCaller="ImageForm"
 							permissionCheck={hasDumperPostPermission}
-							render={() => ImagesForm({ addImage: addImages })}
+							render={() => ImageForm({ addImage })}
 						/>
 
 						<Suspense fallback={<Loading />}>
@@ -64,7 +64,7 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 								permissionCheck={hasViewerAdminPermission}
 								render={() =>
 									ImagesStack({
-										deleteImages,
+										deleteImage,
 										currentPage,
 										getImages: getUnexportedImages,
 									})

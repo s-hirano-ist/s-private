@@ -1,29 +1,29 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Suspense } from "react";
-import { ImagesForm } from "./images-form";
+import { ImageForm } from "./image-form";
 
-type ImagesFormWrapperProps = {
+type ImageFormWrapperProps = {
 	addImage: (
 		formData: FormData,
 	) => Promise<{ success: boolean; message: string }>;
 };
 
-function ImagesFormWrapper({ addImage }: ImagesFormWrapperProps) {
+function ImageFormWrapper({ addImage }: ImageFormWrapperProps) {
 	return (
 		<Suspense>
-			<ImagesForm addImage={addImage} />
+			<ImageForm addImage={addImage} />
 		</Suspense>
 	);
 }
 
 const meta = {
-	component: ImagesFormWrapper,
+	component: ImageFormWrapper,
 	parameters: { layout: "centered" },
 	tags: ["autodocs"],
 	argTypes: {
 		addImage: { action: "addImage" },
 	},
-} satisfies Meta<typeof ImagesFormWrapper>;
+} satisfies Meta<typeof ImageFormWrapper>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
