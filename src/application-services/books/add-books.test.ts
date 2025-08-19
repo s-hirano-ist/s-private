@@ -8,6 +8,7 @@ import {
 	makeISBN,
 } from "@/domains/books/entities/books-entity";
 import {
+	makeCreatedAt,
 	makeId,
 	makeStatus,
 	makeUserId,
@@ -90,6 +91,7 @@ describe("addBooks", () => {
 			title: makeBookTitle("Test Book"),
 			userId: makeUserId("user-123"),
 			status: makeStatus("UNEXPORTED"),
+			createdAt: makeCreatedAt(),
 		} as const;
 
 		mockEnsureNoDuplicate.mockResolvedValue(undefined);

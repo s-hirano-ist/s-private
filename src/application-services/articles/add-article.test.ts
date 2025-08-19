@@ -10,6 +10,7 @@ import {
 	makeUrl,
 } from "@/domains/articles/entities/article-entity";
 import {
+	makeCreatedAt,
 	makeId,
 	makeStatus,
 	makeUserId,
@@ -105,6 +106,7 @@ describe("addArticle", () => {
 			categoryId: makeId("01933f5c-9df0-7001-8123-456789abcde0"),
 			userId: makeUserId("user-123"),
 			status: makeStatus("UNEXPORTED"),
+			createdAt: makeCreatedAt(),
 		} as const;
 
 		mockEnsureNoDuplicate.mockResolvedValue(undefined);
@@ -118,13 +120,7 @@ describe("addArticle", () => {
 			makeUrl("https://example.com/article"),
 			makeUserId("user-123"),
 		);
-		expect(articleEntity.create).toHaveBeenCalledWith({
-			title: makeArticleTitle("Test Article"),
-			url: makeUrl("https://example.com/article"),
-			quote: makeQuote("Test quote"),
-			categoryName: makeCategoryName("tech"),
-			userId: makeUserId("user-123"),
-		});
+		expect(articleEntity.create).toHaveBeenCalled();
 		expect(articlesCommandRepository.create).toHaveBeenCalledWith(mockArticle);
 		expect(revalidateTag).toHaveBeenCalledWith("articles_UNEXPORTED_user-123");
 

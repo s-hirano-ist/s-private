@@ -30,9 +30,11 @@ class ArticlesCommandRepository implements IArticlesCommandRepository {
 							name: data.categoryName,
 							userId: data.userId,
 							id: data.categoryId,
+							createdAt: data.createdAt,
 						},
 					},
 				},
+				createdAt: data.createdAt,
 			},
 			select: {
 				url: true,

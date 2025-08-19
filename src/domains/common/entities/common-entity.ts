@@ -21,3 +21,11 @@ export const makeId = (id?: string): Id => {
 export const UserId = z.string().min(1, "required").brand<"UserId">();
 export type UserId = z.infer<typeof UserId>;
 export const makeUserId = (v: string): UserId => UserId.parse(v);
+
+export const CreatedAt = z.date().brand<"CreatedAt">();
+export type CreatedAt = z.infer<typeof CreatedAt>;
+export const makeCreatedAt = (): CreatedAt => CreatedAt.parse(new Date());
+
+export const ExportedAt = z.date().nullable().optional().brand<"ExportedAt">();
+export type ExportedAt = z.infer<typeof ExportedAt>;
+export const makeExportedAt = (): ExportedAt => ExportedAt.parse(new Date());
