@@ -11,11 +11,13 @@ import {
 	makeStatus,
 	type Status,
 } from "@/domains/common/entities/common-entity";
+import { SystemErrorEvent } from "@/domains/common/events/system-error-event";
 import {
 	articlesQueryRepository,
 	categoryQueryRepository,
 } from "@/infrastructures/articles/repositories/articles-query-repository";
-import { serverLogger } from "@/infrastructures/observability/server";
+import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
+import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
 
 export const _getArticles = async (
 	currentCount: number,
@@ -81,10 +83,14 @@ const _getCategories = async (
 		});
 		return response;
 	} catch (error) {
-		serverLogger.error(
-			"unexpected",
-			{ caller: "AddArticleFormCategory", status: 500 },
-			error,
+		initializeEventHandlers();
+		await eventDispatcher.dispatch(
+			new SystemErrorEvent({
+				message: "unexpected",
+				status: 500,
+				caller: "AddArticleFormCategory",
+				extraData: error,
+			}),
 		);
 		// not critical for viewer nor dumper
 		return [];

@@ -1,14 +1,20 @@
 import type { Article } from "@/domains/articles/entities/article-entity";
+import { ArticleCreatedEvent } from "@/domains/articles/events/article-created-event";
+import { ArticleDeletedEvent } from "@/domains/articles/events/article-deleted-event";
 import type { IArticlesCommandRepository } from "@/domains/articles/repositories/articles-command-repository.interface";
 import type {
 	Id,
 	Status,
 	UserId,
 } from "@/domains/common/entities/common-entity";
-import { serverLogger } from "@/infrastructures/observability/server";
+import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
+import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
 import prisma from "@/prisma";
 
 class ArticlesCommandRepository implements IArticlesCommandRepository {
+	constructor() {
+		initializeEventHandlers();
+	}
 	async create(data: Article) {
 		const response = await prisma.article.create({
 			data: {
@@ -44,10 +50,15 @@ class ArticlesCommandRepository implements IArticlesCommandRepository {
 				userId: true,
 			},
 		});
-		serverLogger.info(
-			`【ARTICLE】\n\nコンテンツ\ntitle: ${response.title} \nquote: ${response.quote} \nurl: ${response.url}\ncategory: ${response.Category.name}\nの登録ができました`,
-			{ caller: "addArticle", status: 201, userId: response.userId },
-			{ notify: true },
+		await eventDispatcher.dispatch(
+			new ArticleCreatedEvent({
+				title: response.title,
+				url: response.url,
+				quote: response.quote ?? "",
+				categoryName: response.Category.name,
+				userId: response.userId,
+				caller: "addArticle",
+			}),
 		);
 	}
 
@@ -56,10 +67,12 @@ class ArticlesCommandRepository implements IArticlesCommandRepository {
 			where: { id, userId, status },
 			select: { title: true },
 		});
-		serverLogger.info(
-			`【ARTICLE】\n\n削除\ntitle: ${data.title}`,
-			{ caller: "deleteArticle", status: 200, userId },
-			{ notify: true },
+		await eventDispatcher.dispatch(
+			new ArticleDeletedEvent({
+				title: data.title,
+				userId,
+				caller: "deleteArticle",
+			}),
 		);
 	}
 }

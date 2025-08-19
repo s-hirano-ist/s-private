@@ -1,15 +1,21 @@
 import "server-only";
 import { unauthorized } from "next/navigation";
+import { SystemWarningEvent } from "@/domains/common/events/system-warning-event";
 import { auth } from "@/infrastructures/auth/auth-provider";
-import { serverLogger } from "@/infrastructures/observability/server";
+import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
+import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
 
 async function checkSelfAuth() {
 	const session = await auth();
 	if (!session) {
-		serverLogger.warn("Unauthorized", {
-			caller: "checkSelfAuth",
-			status: 401,
-		});
+		initializeEventHandlers();
+		await eventDispatcher.dispatch(
+			new SystemWarningEvent({
+				message: "Unauthorized",
+				status: 401,
+				caller: "checkSelfAuth",
+			}),
+		);
 		unauthorized();
 	}
 	return session;
