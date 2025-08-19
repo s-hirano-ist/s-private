@@ -1,18 +1,16 @@
 import sharp from "sharp";
-import z, { ZodError } from "zod";
-import {
-	InvalidFormatError,
-	UnexpectedError,
-} from "@/common/error/error-classes";
+import z from "zod";
 import {
 	CreatedAt,
 	ExportedAt,
 	Id,
 	makeCreatedAt,
 	makeId,
+	makeStatus,
 	Status,
 	UserId,
 } from "@/domains/common/entities/common-entity";
+import { createEntityWithErrorHandling } from "@/domains/common/services/entity-factory";
 import { idGenerator } from "@/domains/common/services/id-generator";
 
 // NOTE: sync with s-contents/update-db.ts
@@ -100,16 +98,13 @@ export type CreateImageArgs = Readonly<{
 
 export const imageEntity = {
 	create: (args: CreateImageArgs): Image => {
-		try {
-			return Object.freeze({
+		return createEntityWithErrorHandling(() =>
+			Object.freeze({
 				id: makeId(),
-				status: Status.parse("UNEXPORTED"),
+				status: makeStatus("UNEXPORTED"),
 				createdAt: makeCreatedAt(),
 				...args,
-			});
-		} catch (error) {
-			if (error instanceof ZodError) throw new InvalidFormatError();
-			throw new UnexpectedError();
-		}
+			}),
+		);
 	},
 };

@@ -1,8 +1,4 @@
-import { ZodError, z } from "zod";
-import {
-	InvalidFormatError,
-	UnexpectedError,
-} from "@/common/error/error-classes";
+import { z } from "zod";
 import {
 	CreatedAt,
 	ExportedAt,
@@ -13,6 +9,7 @@ import {
 	Status,
 	UserId,
 } from "@/domains/common/entities/common-entity";
+import { createEntityWithErrorHandling } from "@/domains/common/services/entity-factory";
 
 // Value objects
 
@@ -104,17 +101,14 @@ type CreateArticleArgs = Readonly<{
 
 export const articleEntity = {
 	create: (args: CreateArticleArgs): Article => {
-		try {
-			return Object.freeze({
+		return createEntityWithErrorHandling(() =>
+			Object.freeze({
 				id: makeId(),
 				status: makeStatus("UNEXPORTED"),
 				categoryId: makeId(),
 				createdAt: makeCreatedAt(),
 				...args,
-			});
-		} catch (error) {
-			if (error instanceof ZodError) throw new InvalidFormatError();
-			throw new UnexpectedError();
-		}
+			}),
+		);
 	},
 };

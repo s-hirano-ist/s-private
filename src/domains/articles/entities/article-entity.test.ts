@@ -1,5 +1,9 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import { ZodError } from "zod";
+import {
+	InvalidFormatError,
+	UnexpectedError,
+} from "@/common/error/error-classes";
 import {
 	articleEntity,
 	makeArticleTitle,
@@ -10,6 +14,7 @@ import {
 	makeUrl,
 } from "@/domains/articles/entities/article-entity";
 import { makeUserId } from "@/domains/common/entities/common-entity";
+import * as entityFactory from "@/domains/common/services/entity-factory";
 
 describe("articleEntity", () => {
 	describe("makeCategoryName", () => {
@@ -192,6 +197,65 @@ describe("articleEntity", () => {
 			expect(typeof article.categoryId).toBe("string");
 			expect(article.id.length).toBeGreaterThan(0);
 			expect(article.categoryId.length).toBeGreaterThan(0);
+		});
+
+		test("should use createEntityWithErrorHandling for exception handling", () => {
+			const createEntityWithErrorHandlingSpy = vi.spyOn(
+				entityFactory,
+				"createEntityWithErrorHandling",
+			);
+
+			articleEntity.create({
+				userId: makeUserId("test-user-id"),
+				categoryName: makeCategoryName("Tech"),
+				title: makeArticleTitle("Test article"),
+				url: makeUrl("https://example.com"),
+			});
+
+			expect(createEntityWithErrorHandlingSpy).toHaveBeenCalledTimes(1);
+			expect(createEntityWithErrorHandlingSpy).toHaveBeenCalledWith(
+				expect.any(Function),
+			);
+
+			createEntityWithErrorHandlingSpy.mockRestore();
+		});
+
+		test("should throw InvalidFormatError when validation fails", () => {
+			const createEntityWithErrorHandlingSpy = vi
+				.spyOn(entityFactory, "createEntityWithErrorHandling")
+				.mockImplementation(() => {
+					throw new InvalidFormatError();
+				});
+
+			expect(() =>
+				articleEntity.create({
+					userId: makeUserId("test-user-id"),
+					categoryName: makeCategoryName("Tech"),
+					title: makeArticleTitle("Test article"),
+					url: makeUrl("https://example.com"),
+				}),
+			).toThrow(InvalidFormatError);
+
+			createEntityWithErrorHandlingSpy.mockRestore();
+		});
+
+		test("should throw UnexpectedError when unexpected error occurs", () => {
+			const createEntityWithErrorHandlingSpy = vi
+				.spyOn(entityFactory, "createEntityWithErrorHandling")
+				.mockImplementation(() => {
+					throw new UnexpectedError();
+				});
+
+			expect(() =>
+				articleEntity.create({
+					userId: makeUserId("test-user-id"),
+					categoryName: makeCategoryName("Tech"),
+					title: makeArticleTitle("Test article"),
+					url: makeUrl("https://example.com"),
+				}),
+			).toThrow(UnexpectedError);
+
+			createEntityWithErrorHandlingSpy.mockRestore();
 		});
 	});
 });
