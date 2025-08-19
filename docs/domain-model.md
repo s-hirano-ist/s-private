@@ -29,6 +29,14 @@ erDiagram
     UserId {
         string userId "User identifier"
     }
+    
+    CreatedAt {
+        date createdAt "Creation timestamp"
+    }
+    
+    ExportedAt {
+        date exportedAt "Export timestamp (nullable)"
+    }
 
     %% Articles Domain
     Article {
@@ -42,6 +50,8 @@ erDiagram
         Status status
         OgTitle ogTitle "nullable"
         OgDescription ogDescription "nullable"
+        CreatedAt createdAt
+        ExportedAt exportedAt "nullable"
     }
     
     Category {
@@ -64,6 +74,8 @@ erDiagram
         GoogleImgSrc googleImgSrc "nullable"
         GoogleHref googleHref "nullable"
         BookMarkdown markdown "nullable"
+        CreatedAt createdAt
+        ExportedAt exportedAt "nullable"
     }
 
     %% Notes Domain
@@ -73,6 +85,8 @@ erDiagram
         NoteTitle title
         Markdown markdown
         Status status
+        CreatedAt createdAt
+        ExportedAt exportedAt "nullable"
     }
 
     %% Images Domain
@@ -87,6 +101,8 @@ erDiagram
         Tag tags "array, nullable"
         Description description "nullable"
         Status status
+        CreatedAt createdAt
+        ExportedAt exportedAt "nullable"
     }
 
     %% Relationships
@@ -101,7 +117,7 @@ graph TB
     subgraph "Common Domain"
         CommonEntity[Common Entity]
         IdGenerator[ID Generator Service]
-        CommonTypes[Common Value Objects<br/>• Id<br/>• UserId<br/>• Status]
+        CommonTypes[Common Value Objects<br/>• Id<br/>• UserId<br/>• Status<br/>• CreatedAt<br/>• ExportedAt]
     end
 
     subgraph "Articles Domain"
@@ -178,18 +194,21 @@ graph LR
 
 ```mermaid
 stateDiagram-v2
-    [*] --> UNEXPORTED : create()
-    UNEXPORTED --> EXPORTED : export
+    [*] --> UNEXPORTED : create()<br/>createdAt設定
+    UNEXPORTED --> EXPORTED : export<br/>exportedAt設定
     EXPORTED --> [*] : delete
     
     note right of UNEXPORTED
         新規作成時の初期状態
         ユーザーが編集可能
+        createdAt: 作成日時
+        exportedAt: null
     end note
     
     note right of EXPORTED
         エクスポート済み
         読み取り専用
+        exportedAt: エクスポート日時
     end note
 ```
 
