@@ -41,6 +41,7 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 							render={() =>
 								ArticlesCounter({ getArticlesCount: getExportedArticlesCount })
 							}
+							fallback={<div />}
 						/>
 
 						<Suspense fallback={<Loading />}>

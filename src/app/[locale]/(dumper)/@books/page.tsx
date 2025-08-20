@@ -40,6 +40,7 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 							render={() =>
 								BooksCounter({ getBooksCount: getExportedBooksCount })
 							}
+							fallback={<div />}
 						/>
 
 						<Suspense fallback={<Loading />}>
