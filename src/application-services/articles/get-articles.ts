@@ -42,7 +42,7 @@ export const _getArticles = async (
 
 		return {
 			data: articles.map((d) => {
-				const description = `${d.quote ? d.quote : ""} \n ${d.ogTitle ? d.ogTitle : ""} \n ${d.ogDescription ? d.ogDescription : ""}`;
+				const description = `${d.quote ? `${d.quote}\n` : ""}${d.ogTitle ? `${d.ogTitle}\n` : ""}${d.ogDescription ? d.ogDescription : ""}`;
 				return {
 					id: d.id,
 					primaryBadgeText: d.Category.name,
