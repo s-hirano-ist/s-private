@@ -36,11 +36,11 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 					<>
 						<ErrorPermissionBoundary
 							errorCaller="BooksCounter"
+							fallback={<div />}
 							permissionCheck={hasViewerAdminPermission}
 							render={() =>
 								BooksCounter({ getBooksCount: getExportedBooksCount })
 							}
-							fallback={<div />}
 						/>
 
 						<Suspense fallback={<Loading />}>
