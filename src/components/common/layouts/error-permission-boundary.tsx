@@ -1,4 +1,4 @@
-import { forbidden } from "next/navigation";
+import { forbidden, unstable_rethrow } from "next/navigation";
 import type { ReactNode } from "react";
 import { SystemErrorEvent } from "@/domains/common/events/system-error-event";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
@@ -16,6 +16,7 @@ export async function ErrorPermissionBoundary({
 	render,
 	permissionCheck,
 	errorCaller,
+	fallback,
 }: Props) {
 	const hasPermission = await permissionCheck();
 	if (!hasPermission) forbidden();
@@ -23,6 +24,8 @@ export async function ErrorPermissionBoundary({
 	try {
 		return await render();
 	} catch (error) {
+		unstable_rethrow(error);
+
 		initializeEventHandlers();
 		await eventDispatcher.dispatch(
 			new SystemErrorEvent({
@@ -32,6 +35,8 @@ export async function ErrorPermissionBoundary({
 				extraData: error,
 			}),
 		);
+
+		if (fallback) return fallback;
 
 		return (
 			<div className="flex flex-col items-center">

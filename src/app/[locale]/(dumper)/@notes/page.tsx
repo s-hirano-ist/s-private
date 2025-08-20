@@ -36,6 +36,7 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 					<>
 						<ErrorPermissionBoundary
 							errorCaller="NotesCounter"
+							fallback={<div />}
 							permissionCheck={hasViewerAdminPermission}
 							render={() =>
 								NotesCounter({ getNotesCount: getExportedNotesCount })
