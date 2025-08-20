@@ -41,17 +41,21 @@ export const _getArticles = async (
 		const totalCount = await _getArticlesCount(userId, status);
 
 		return {
-			data: articles.map((d) => ({
-				id: d.id,
-				primaryBadgeText: d.Category.name,
-				secondaryBadgeText: new URL(d.url).hostname,
-				key: d.id,
-				title: d.title,
-				description:
-					`${d.quote} \n ${d.ogTitle} \n ${d.ogDescription}`.slice(0, 200) +
-					"...",
-				href: d.url,
-			})),
+			data: articles.map((d) => {
+				const description = `${d.quote ? `${d.quote}\n` : ""}${d.ogTitle ? `${d.ogTitle}\n` : ""}${d.ogDescription ? d.ogDescription : ""}`;
+				return {
+					id: d.id,
+					primaryBadgeText: d.Category.name,
+					secondaryBadgeText: new URL(d.url).hostname,
+					key: d.id,
+					title: d.title,
+					description:
+						description.length > 200
+							? `${description.slice(0, 200)}...`
+							: description,
+					href: d.url,
+				};
+			}),
 			totalCount,
 		};
 	} catch (error) {

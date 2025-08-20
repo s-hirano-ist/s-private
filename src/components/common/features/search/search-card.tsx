@@ -1,5 +1,6 @@
 "use client";
-import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 import { StatusCodeView } from "@/components/common/display/status/status-code-view";
 import { useSearch } from "@/components/common/hooks/use-search";
@@ -15,13 +16,29 @@ type Props = { search: typeof searchContentFromClient };
 
 export function SearchCard({ search }: Props) {
 	const t = useTranslations("label");
+	const router = useRouter();
+	const locale = useLocale();
 
 	const { searchQuery, searchResults, handleSearchChange, isPending } =
-		useSearch({ search });
+		useSearch({ search, useUrlQuery: true });
 
 	const handleInputChange = (value: string) => {
 		const event = { target: { value } } as React.ChangeEvent<HTMLInputElement>;
 		handleSearchChange(event);
+	};
+
+	const handleSelect = (item: {
+		href: string;
+		contentType: "articles" | "books" | "notes";
+		url?: string;
+	}) => {
+		if (item.contentType === "articles" && item.url) {
+			window.open(item.url, "_blank");
+		} else if (item.contentType === "books") {
+			router.push(`/${locale}/book/${item.href}`);
+		} else if (item.contentType === "notes") {
+			router.push(`/${locale}/note/${item.href}`);
+		}
 	};
 
 	return (
@@ -45,7 +62,12 @@ export function SearchCard({ search }: Props) {
 					</div>
 				) : (
 					searchResults?.map((item, index) => (
-						<CommandItem key={String(index)}>{item.title}</CommandItem>
+						<CommandItem
+							key={String(index)}
+							onSelect={() => handleSelect(item)}
+						>
+							{item.title}
+						</CommandItem>
 					))
 				)}
 			</CommandList>

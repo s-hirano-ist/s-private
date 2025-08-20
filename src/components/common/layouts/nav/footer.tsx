@@ -1,6 +1,7 @@
 "use client";
 import { DownloadIcon, SearchIcon, UploadIcon } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import type { Route } from "next";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { signOut } from "next-auth/react";
 import {
 	memo,
@@ -38,6 +39,7 @@ function FooterComponent({ search }: Props) {
 	const [open, setOpen] = useState(false);
 
 	const router = useRouter();
+	const pathname = usePathname();
 	const searchParams = useSearchParams();
 
 	const [layout, setLayout] = useState(
@@ -84,10 +86,19 @@ function FooterComponent({ search }: Props) {
 				const params = new URLSearchParams(searchParams);
 				params.delete("page");
 				params.set("layout", value);
-				router.replace(`?${params.toString()}`);
+
+				// If we're on a book or note detail page, navigate back to root
+				if (pathname.includes("/book/") || pathname.includes("/note/")) {
+					// Extract locale from pathname (e.g., /en/book/... or /ja/note/...)
+					const localeMatch = pathname.match(/^\/([^/]+)/);
+					const locale = localeMatch ? localeMatch[1] : "";
+					router.replace(`/${locale}?${params.toString()}` as Route);
+				} else {
+					router.replace(`?${params.toString()}` as Route);
+				}
 			});
 		},
-		[router, searchParams],
+		[router, searchParams, pathname],
 	);
 
 	useEffect(() => {
