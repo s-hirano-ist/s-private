@@ -99,15 +99,6 @@ beforeEach(() => {
 
 	vi.mock("uuid", () => ({ v7: vi.fn() }));
 
-	vi.mock("use-debounce", () => ({
-		useDebouncedCallback: vi.fn().mockImplementation((callback, _delay) => {
-			const mockFn = vi.fn().mockImplementation((...args) => {
-				return callback(...args);
-			});
-			return mockFn;
-		}),
-	}));
-
 	vi.mock("@/minio", () => ({
 		minioClient: {
 			putObject: vi.fn(),
