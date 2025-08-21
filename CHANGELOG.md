@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [9.3.0](https://github.com/s-hirano-ist/s-private/compare/v9.2.0...v9.3.0) (2025-08-21)
+
+
+### Features
+
+* add command for search ([82c6720](https://github.com/s-hirano-ist/s-private/commit/82c67202e9a38e34d8ca8e586b810a6404eda768))
+* add rich search ([4c6ec5a](https://github.com/s-hirano-ist/s-private/commit/4c6ec5a9435c04e7f792b240b5ac1f3394aece0f))
+* change search function temp ([3e65921](https://github.com/s-hirano-ist/s-private/commit/3e65921dfb8078237d54680bac3d6698b755a362))
+
+
+### Bug Fixes
+
+* autofix lint errors ([b17970f](https://github.com/s-hirano-ist/s-private/commit/b17970f7349145b7f648f4819c026e55e11ae130))
+* biome ([a3921f4](https://github.com/s-hirano-ist/s-private/commit/a3921f4f75afd1fadcebde3521d1d73013380c5f))
+* command to dialog ([098d06b](https://github.com/s-hirano-ist/s-private/commit/098d06bb888c10bae1be7ac36f66d334e669b869))
+* command to dialog ([dfb42c0](https://github.com/s-hirano-ist/s-private/commit/dfb42c0387d00a9f83f7b54c78cf0ee33e8effa4))
+* delete close button on modal ([6de7f10](https://github.com/s-hirano-ist/s-private/commit/6de7f10fc49dc8bd178c223a7c2b0edc1a76b9d2))
+* design of image-card ([be71815](https://github.com/s-hirano-ist/s-private/commit/be71815deab0bca767b2cf40ea3301018e5549f8))
+* designs of command search ([92c4a71](https://github.com/s-hirano-ist/s-private/commit/92c4a71196deceedb58c436fc23ae5965e87cb92))
+* error not handling ([98e2738](https://github.com/s-hirano-ist/s-private/commit/98e27381253b8c23cbcfd54377f228628d3c5e3e))
+* error not handling ([f5d098e](https://github.com/s-hirano-ist/s-private/commit/f5d098ed2f8d0c8b9c73876e0e1899fa2a590dd0))
+* link in footer ([be40f21](https://github.com/s-hirano-ist/s-private/commit/be40f21e8e726a19a907b31b7c38b348453f388d))
+* null show on link-card ([6f955f2](https://github.com/s-hirano-ist/s-private/commit/6f955f27051fa7b63bac05f492a5375181ef9801))
+* route error on footer ([bd9e35b](https://github.com/s-hirano-ist/s-private/commit/bd9e35bfb02581e92379bf636a66548890792500))
+* search card bug execute trigger ([0a51f0c](https://github.com/s-hirano-ist/s-private/commit/0a51f0c854b9cabc56dc5f4099db28398fac1aac))
+* search card bug execute trigger ([094d08f](https://github.com/s-hirano-ist/s-private/commit/094d08f819fdfe98eadaca991fd813c3edbda544))
+* search flick bug ([792ff14](https://github.com/s-hirano-ist/s-private/commit/792ff1499dd9111556ef6643858e3f6db9de87ec))
+* search flick bug ([26bf954](https://github.com/s-hirano-ist/s-private/commit/26bf954f3a86f65322583230b5a152a7e969c803))
+* search links ([7715b38](https://github.com/s-hirano-ist/s-private/commit/7715b386ad7d09fa0715a9c0825fcc9480a384d3))
+
 ## [9.2.0](https://github.com/s-hirano-ist/s-private/compare/v9.1.0...v9.2.0) (2025-08-19)
 
 
