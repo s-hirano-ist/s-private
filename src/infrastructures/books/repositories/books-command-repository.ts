@@ -11,37 +11,37 @@ import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
 import prisma from "@/prisma";
 
-class BooksCommandRepository implements IBooksCommandRepository {
-	constructor() {
-		initializeEventHandlers();
-	}
-	async create(data: Book) {
-		const response = await prisma.book.create({
-			data,
-		});
-		await eventDispatcher.dispatch(
-			new BookCreatedEvent({
-				ISBN: response.ISBN,
-				title: response.title,
-				userId: response.userId,
-				caller: "addBooks",
-			}),
-		);
-	}
+initializeEventHandlers();
 
-	async deleteById(id: Id, userId: UserId, status: Status) {
-		const data = await prisma.book.delete({
-			where: { id, userId, status },
-			select: { title: true },
-		});
-		await eventDispatcher.dispatch(
-			new BookDeletedEvent({
-				title: data.title,
-				userId,
-				caller: "deleteBooks",
-			}),
-		);
-	}
+async function create(data: Book) {
+	const response = await prisma.book.create({
+		data,
+	});
+	await eventDispatcher.dispatch(
+		new BookCreatedEvent({
+			ISBN: response.ISBN,
+			title: response.title,
+			userId: response.userId,
+			caller: "addBooks",
+		}),
+	);
 }
 
-export const booksCommandRepository = new BooksCommandRepository();
+async function deleteById(id: Id, userId: UserId, status: Status) {
+	const data = await prisma.book.delete({
+		where: { id, userId, status },
+		select: { title: true },
+	});
+	await eventDispatcher.dispatch(
+		new BookDeletedEvent({
+			title: data.title,
+			userId,
+			caller: "deleteBooks",
+		}),
+	);
+}
+
+export const booksCommandRepository: IBooksCommandRepository = {
+	create,
+	deleteById,
+};

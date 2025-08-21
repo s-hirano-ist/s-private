@@ -35,7 +35,7 @@ export type IArticlesQueryRepository = {
 			quote: string | null;
 			ogTitle: string | null;
 			ogDescription: string | null;
-			Category: { name: string };
+			Category: { id: string; name: string };
 		}[]
 	>;
 };
