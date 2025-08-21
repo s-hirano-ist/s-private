@@ -4,6 +4,17 @@ import type { UserId } from "@/domains/common/entities/common-entity";
 import type { NoteTitle } from "@/domains/notes/entities/note-entity";
 import type { INotesQueryRepository } from "@/domains/notes/repositories/notes-query-repository.interface";
 
+export async function ensureNoDuplicateNote(
+	notesQueryRepository: INotesQueryRepository,
+	title: NoteTitle,
+	userId: UserId,
+): Promise<void> {
+	const exists = await notesQueryRepository.findByTitle(title, userId);
+	if (exists) {
+		throw new DuplicateError();
+	}
+}
+
 export class NotesDomainService {
 	constructor(private readonly notesQueryRepository: INotesQueryRepository) {}
 
@@ -11,9 +22,6 @@ export class NotesDomainService {
 		title: NoteTitle,
 		userId: UserId,
 	): Promise<void> {
-		const exists = await this.notesQueryRepository.findByTitle(title, userId);
-		if (exists) {
-			throw new DuplicateError();
-		}
+		return ensureNoDuplicateNote(this.notesQueryRepository, title, userId);
 	}
 }

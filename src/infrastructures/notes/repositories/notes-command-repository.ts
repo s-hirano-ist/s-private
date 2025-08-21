@@ -11,41 +11,41 @@ import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
 import prisma from "@/prisma";
 
-class NotesCommandRepository implements INotesCommandRepository {
-	constructor() {
-		initializeEventHandlers();
-	}
-	async create(data: Note) {
-		const response = await prisma.note.create({
-			data,
-			select: {
-				title: true,
-				markdown: true,
-			},
-		});
-		await eventDispatcher.dispatch(
-			new NoteCreatedEvent({
-				title: response.title,
-				markdown: response.markdown,
-				userId: data.userId,
-				caller: "addNote",
-			}),
-		);
-	}
+initializeEventHandlers();
 
-	async deleteById(id: Id, userId: UserId, status: Status) {
-		const data = await prisma.note.delete({
-			where: { id, userId, status },
-			select: { title: true },
-		});
-		await eventDispatcher.dispatch(
-			new NoteDeletedEvent({
-				title: data.title,
-				userId,
-				caller: "deleteNote",
-			}),
-		);
-	}
+async function create(data: Note) {
+	const response = await prisma.note.create({
+		data,
+		select: {
+			title: true,
+			markdown: true,
+		},
+	});
+	await eventDispatcher.dispatch(
+		new NoteCreatedEvent({
+			title: response.title,
+			markdown: response.markdown,
+			userId: data.userId,
+			caller: "addNote",
+		}),
+	);
 }
 
-export const notesCommandRepository = new NotesCommandRepository();
+async function deleteById(id: Id, userId: UserId, status: Status) {
+	const data = await prisma.note.delete({
+		where: { id, userId, status },
+		select: { title: true },
+	});
+	await eventDispatcher.dispatch(
+		new NoteDeletedEvent({
+			title: data.title,
+			userId,
+			caller: "deleteNote",
+		}),
+	);
+}
+
+export const notesCommandRepository: INotesCommandRepository = {
+	create,
+	deleteById,
+};

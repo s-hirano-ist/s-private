@@ -4,11 +4,19 @@ import type { IBooksQueryRepository } from "@/domains/books/repositories/books-q
 import type { UserId } from "@/domains/common/entities/common-entity";
 import type { ISBN } from "../entities/books-entity";
 
+export async function ensureNoDuplicateBook(
+	booksQueryRepository: IBooksQueryRepository,
+	ISBN: ISBN,
+	userId: UserId,
+): Promise<void> {
+	const exists = await booksQueryRepository.findByISBN(ISBN, userId);
+	if (exists !== null) throw new DuplicateError();
+}
+
 export class BooksDomainService {
 	constructor(private readonly booksQueryRepository: IBooksQueryRepository) {}
 
 	public async ensureNoDuplicate(ISBN: ISBN, userId: UserId): Promise<void> {
-		const exists = await this.booksQueryRepository.findByISBN(ISBN, userId);
-		if (exists !== null) throw new DuplicateError();
+		return ensureNoDuplicateBook(this.booksQueryRepository, ISBN, userId);
 	}
 }

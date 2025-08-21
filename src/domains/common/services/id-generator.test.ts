@@ -1,10 +1,9 @@
 import { describe, expect, test } from "vitest";
-import { IdGenerator, idGenerator } from "./id-generator";
+import { idGenerator, uuidv7 } from "./id-generator";
 
 describe("IdGenerator", () => {
-	test("should generate valid UUIDv7", () => {
-		const generator = new IdGenerator();
-		const id = generator.uuidv7();
+	test("should generate valid UUIDv7 using function", () => {
+		const id = uuidv7();
 
 		// UUIDv7 format: xxxxxxxx-xxxx-7xxx-xxxx-xxxxxxxxxxxx
 		expect(id).toMatch(
@@ -14,9 +13,8 @@ describe("IdGenerator", () => {
 	});
 
 	test("should generate unique IDs", () => {
-		const generator = new IdGenerator();
-		const id1 = generator.uuidv7();
-		const id2 = generator.uuidv7();
+		const id1 = uuidv7();
+		const id2 = uuidv7();
 
 		expect(id1).not.toBe(id2);
 	});
