@@ -2,7 +2,6 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState, useTransition } from "react";
-import { useDebouncedCallback } from "use-debounce";
 import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 import type { SearchQuery } from "@/domains/common/types/search-types";
 
@@ -18,20 +17,19 @@ type SearchableItem = {
 type UseSearchableListOptions = {
 	search: typeof searchContentFromClient;
 	useUrlQuery?: boolean;
-	debounceMs?: number;
 };
 
 type UseSearchableListReturn = {
 	searchQuery: string;
 	searchResults: SearchableItem[] | undefined;
-	handleSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
+	handleSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+	executeSearch: () => Promise<void>;
 	isPending: boolean;
 };
 
 export function useSearch({
 	search,
 	useUrlQuery = false,
-	debounceMs = 300,
 }: UseSearchableListOptions): UseSearchableListReturn {
 	const router = useRouter();
 	const searchParams = useSearchParams();
@@ -70,27 +68,27 @@ export function useSearch({
 		[search],
 	);
 
-	const debouncedSearch = useDebouncedCallback(async (searchString: string) => {
+	const executeSearch = useCallback(async () => {
 		if (useUrlQuery) {
 			const params = new URLSearchParams(searchParams);
-			if (searchString) params.set(PARAM_NAME, searchString);
+			if (searchQuery) params.set(PARAM_NAME, searchQuery);
 			else params.delete(PARAM_NAME);
 			router.push(`?${params.toString()}`);
 		}
 
-		await fetchSearchResults(searchString);
-	}, debounceMs);
+		await fetchSearchResults(searchQuery);
+	}, [useUrlQuery, searchParams, searchQuery, router, fetchSearchResults]);
 
-	const handleSearchChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+	const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const query = e.target.value;
 		setSearchQuery(query);
-		await debouncedSearch(query);
 	};
 
 	return {
 		searchQuery,
 		searchResults,
 		handleSearchChange,
+		executeSearch,
 		isPending,
 	};
 }

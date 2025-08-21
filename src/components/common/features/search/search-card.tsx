@@ -19,8 +19,13 @@ export function SearchCard({ search }: Props) {
 	const router = useRouter();
 	const locale = useLocale();
 
-	const { searchQuery, searchResults, handleSearchChange, isPending } =
-		useSearch({ search, useUrlQuery: true });
+	const {
+		searchQuery,
+		searchResults,
+		handleSearchChange,
+		executeSearch,
+		isPending,
+	} = useSearch({ search, useUrlQuery: true });
 
 	const handleInputChange = (value: string) => {
 		const event = { target: { value } } as React.ChangeEvent<HTMLInputElement>;
@@ -41,13 +46,22 @@ export function SearchCard({ search }: Props) {
 		}
 	};
 
+	const handleKeyDown = (e: React.KeyboardEvent) => {
+		if (e.key === "Enter") {
+			executeSearch();
+		}
+	};
+
 	return (
 		<>
-			<CommandInput
-				onValueChange={handleInputChange}
-				placeholder={t("search")}
-				value={searchQuery}
-			/>
+			<div className="w-full">
+				<CommandInput
+					onKeyDown={handleKeyDown}
+					onValueChange={handleInputChange}
+					placeholder={t("search")}
+					value={searchQuery}
+				/>
+			</div>
 			<CommandList>
 				{searchResults === undefined ||
 				(searchResults?.length === 0 && searchQuery && !isPending) ? (
