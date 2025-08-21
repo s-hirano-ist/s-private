@@ -28,7 +28,7 @@ function ThemeProviderWrapper({
 						<div className="p-3 bg-background border rounded">
 							Background Color
 						</div>
-						<div className="p-3 bg-primary text-primary-foreground rounded">
+						<div className="p-3 bg-primary text-secondary-foreground rounded">
 							Primary Color
 						</div>
 						<div className="p-3 bg-secondary text-secondary-foreground rounded">
@@ -107,7 +107,7 @@ export const WithCustomContent: Story = {
 					</div>
 				</div>
 				<button
-					className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90"
+					className="px-4 py-2 bg-primary text-secondary-foreground rounded hover:bg-primary/90"
 					type="button"
 				>
 					Theme-aware Button

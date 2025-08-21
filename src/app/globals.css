@@ -17,9 +17,6 @@
 		--popover-foreground: 240 10% 3.9%;
 
 		--primary: 204.7 36.7% 61%;
-		--primary-foreground: 0 0% 98%;
-
-		--primary-grad: rgba(28, 57, 142, 0.6);
 
 		--primary-grad-from: rgba(16, 78, 100, 0.2);
 		--primary-grad-to: rgba(28, 57, 142, 0.2);
@@ -54,9 +51,6 @@
 		--popover-foreground: 0 0% 98%;
 
 		--primary: 0 0% 98%;
-		--primary-foreground: 240 5.9% 10%;
-
-		--primary-grad: rgb(255, 255, 255);
 
 		--primary-grad-from: rgba(16, 78, 100, 0.7);
 		--primary-grad-to: rgba(28, 57, 142, 0.7);

@@ -41,6 +41,7 @@ const preview = {
 						articles: "articles",
 						notes: "notes",
 						images: "images",
+						resignIn: "再サインイン",
 					},
 					statusCode: {
 						"000": "近日公開",

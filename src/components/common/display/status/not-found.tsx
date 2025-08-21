@@ -2,7 +2,12 @@ import type { Route } from "next";
 import Link from "next/link";
 import { Button } from "@/components/common/ui/button";
 
-export function NotFound() {
+type NotFoundProps = {
+	title: string;
+	returnHomeText: string;
+};
+
+export function NotFound({ title, returnHomeText }: NotFoundProps) {
 	return (
 		<div className="space-y-2">
 			<div
@@ -14,13 +19,10 @@ export function NotFound() {
 					404
 					<span className="hidden font-light sm:inline">---</span>
 				</div>
-				<div className="text-sm">------Not Found------</div>
+				<div className="text-sm">------{title}------</div>
 			</div>
-			<p className="px-4 text-center text-primary-grad">
-				The content you are looking for could not be found.
-			</p>
 			<Button asChild className="mx-auto flex w-1/2 flex-col">
-				<Link href={"/" as Route}>Return to Home</Link>
+				<Link href={"/" as Route}>{returnHomeText}</Link>
 			</Button>
 		</div>
 	);
