@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [9.3.1](https://github.com/s-hirano-ist/s-private/compare/v9.3.0...v9.3.1) (2025-08-22)
+
+
+### Bug Fixes
+
+* design small fixes ([4256d99](https://github.com/s-hirano-ist/s-private/commit/4256d99e806e6c38ece90685f671277023329020))
+* designs of books ([c866b69](https://github.com/s-hirano-ist/s-private/commit/c866b69e8b474e7443a2c58af4fc0ee0355f7a69))
+* no zoom ([cc2c980](https://github.com/s-hirano-ist/s-private/commit/cc2c980dd413c4267cee99bf5c160ac7b7a3877d))
+
 ## [9.3.0](https://github.com/s-hirano-ist/s-private/compare/v9.2.0...v9.3.0) (2025-08-21)
 
 
