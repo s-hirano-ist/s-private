@@ -3,12 +3,7 @@ import type { Route } from "next";
 import NextImage from "next/image";
 import type { DeleteAction } from "@/common/types";
 import { DeleteButtonWithModal } from "@/components/common/forms/actions/delete-button-with-modal";
-import {
-	Card,
-	CardContent,
-	CardHeader,
-	CardTitle,
-} from "@/components/common/ui/card";
+import { Card, CardContent, CardTitle } from "@/components/common/ui/card";
 import { Link } from "@/infrastructures/i18n/routing";
 import type { ImageCardData } from "./types";
 
