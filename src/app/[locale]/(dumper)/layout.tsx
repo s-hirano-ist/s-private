@@ -6,6 +6,12 @@ import { RootTab } from "@/components/common/layouts/nav/root-tab";
 export const metadata: Metadata = {
 	title: `${PAGE_NAME}`,
 	description: "Knowledge dumper and viewer.",
+	viewport: {
+		width: "device-width",
+		initialScale: 1,
+		maximumScale: 1,
+		userScalable: false,
+	},
 };
 
 type Props = {
