@@ -45,7 +45,7 @@ export const _getBooks = async (
 				id: d.id,
 				title: d.title,
 				href: d.ISBN,
-				image: d.googleImgSrc ?? "/not-found.png",
+				image: d.googleImgSrc,
 			})),
 			totalCount,
 		};

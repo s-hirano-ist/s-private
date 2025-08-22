@@ -11,6 +11,7 @@ import {
 	DialogTitle,
 } from "@/components/common/ui/dialog";
 import { cn } from "@/components/common/utils/cn";
+import { Button } from "./button";
 
 function Command({
 	className,
@@ -19,7 +20,7 @@ function Command({
 	return (
 		<CommandPrimitive
 			className={cn(
-				"bg-popover text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-md",
+				"bg-background text-foreground flex h-full w-full flex-col overflow-hidden rounded-md",
 				className,
 			)}
 			data-slot="command"
@@ -63,14 +64,16 @@ function CommandDialog({
 
 function CommandInput({
 	className,
+	onSearchClick,
 	...props
-}: React.ComponentProps<typeof CommandPrimitive.Input>) {
+}: React.ComponentProps<typeof CommandPrimitive.Input> & {
+	onSearchClick: () => Promise<void>;
+}) {
 	return (
 		<div
-			className="flex h-9 items-center gap-2 border-b px-3"
+			className="flex h-9 items-center px-4"
 			data-slot="command-input-wrapper"
 		>
-			<SearchIcon className="size-4 shrink-0 opacity-50" />
 			<CommandPrimitive.Input
 				className={cn(
 					"placeholder:text-muted-foreground flex h-10 w-full rounded-md bg-transparent py-3 text-base outline-hidden disabled:cursor-not-allowed disabled:opacity-50",
@@ -79,6 +82,9 @@ function CommandInput({
 				data-slot="command-input"
 				{...props}
 			/>
+			<Button className="shrink-0" onClick={onSearchClick}>
+				<SearchIcon className="size-4" />
+			</Button>
 		</div>
 	);
 }
@@ -127,19 +133,6 @@ function CommandGroup({
 	);
 }
 
-function CommandSeparator({
-	className,
-	...props
-}: React.ComponentProps<typeof CommandPrimitive.Separator>) {
-	return (
-		<CommandPrimitive.Separator
-			className={cn("bg-border -mx-1 h-px", className)}
-			data-slot="command-separator"
-			{...props}
-		/>
-	);
-}
-
 function CommandItem({
 	className,
 	...props
@@ -147,7 +140,7 @@ function CommandItem({
 	return (
 		<CommandPrimitive.Item
 			className={cn(
-				"data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+				"data-[selected=true]:bg-muted data-[selected=true]:text-foreground [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
 				className,
 			)}
 			data-slot="command-item"
@@ -181,5 +174,4 @@ export {
 	CommandGroup,
 	CommandItem,
 	CommandShortcut,
-	CommandSeparator,
 };

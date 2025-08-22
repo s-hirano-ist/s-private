@@ -35,7 +35,12 @@ export async function ViewerBody({ slug, getBookByISBN }: Props) {
 						<CardTitle>
 							{data.googleTitle} {data.googleSubTitle}
 						</CardTitle>
-						<CardDescription>{data.googleDescription}</CardDescription>
+						<CardDescription>
+							{data.googleDescription?.length &&
+							data.googleDescription.length > 200
+								? `${data.googleDescription?.slice(0, 200)}...`
+								: (data.googleDescription ?? "")}
+						</CardDescription>
 					</CardHeader>
 					<CardContent>
 						<p>Authors: {data.googleAuthors?.join(", ")}</p>
