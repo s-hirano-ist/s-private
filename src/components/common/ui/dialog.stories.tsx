@@ -100,7 +100,7 @@ export const CustomStyled: Story = {
 			<DialogTrigger asChild>
 				<Button>Open Dialog</Button>
 			</DialogTrigger>
-			<DialogContent className="bg-primary-grad-to text-white">
+			<DialogContent className="bg-primary-grad text-white">
 				<DialogHeader>
 					<DialogTitle>Custom Styled Dialog</DialogTitle>
 					<DialogDescription>
