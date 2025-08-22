@@ -22,7 +22,7 @@ export default function Page({
 				<main>
 					<div className="flex h-screen w-screen flex-col items-center justify-center space-y-4 text-center">
 						<div
-							className="w-full bg-linear-to-r from-primary-grad-from to-primary-grad-to bg-clip-text p-2 text-center font-extrabold text-transparent"
+							className="w-full bg-linear-to-r from-primary to-primary-grad bg-clip-text p-2 text-center font-extrabold text-transparent"
 							data-testid="status-code-view"
 						>
 							<div className="text-9xl">

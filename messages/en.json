@@ -28,7 +28,9 @@
 		"score": "Score",
 		"delete": "Delete",
 		"cancel": "Cancel",
-		"confirmDelete": "Confirm Delete"
+		"confirmDelete": "Confirm Delete",
+		"resignIn": "Sign in again",
+		"returnHome": "Return to Home"
 	},
 	"statusCode": {
 		"000": "Comming Soon",

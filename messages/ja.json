@@ -28,7 +28,9 @@
 		"score": "スコア",
 		"delete": "削除",
 		"cancel": "キャンセル",
-		"confirmDelete": "削除の確認"
+		"confirmDelete": "削除の確認",
+		"resignIn": "再サインイン",
+		"returnHome": "ホームに戻る"
 	},
 	"statusCode": {
 		"000": "近日公開",

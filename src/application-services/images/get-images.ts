@@ -6,6 +6,7 @@ import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import type { ImageData } from "@/components/common/display/image/image-stack";
 import {
 	makeStatus,
+	makeUserId,
 	type Status,
 } from "@/domains/common/entities/common-entity";
 import type { CacheStrategy } from "@/domains/images/types";
@@ -21,7 +22,7 @@ const _getImagesCount = async (
 	"use cache";
 	cacheTag(`images_count_${status}_${userId}`);
 	try {
-		return await imagesQueryRepository.count(userId, status);
+		return await imagesQueryRepository.count(makeUserId(userId), status);
 	} catch (error) {
 		throw error;
 	}
@@ -36,12 +37,16 @@ export const _getImages = async (
 	"use cache";
 	cacheTag(`images_${status}_${userId}`, `images_${status}_${userId}_${page}`);
 	try {
-		const data = await imagesQueryRepository.findMany(userId, status, {
-			skip: (page - 1) * PAGE_SIZE,
-			take: PAGE_SIZE,
-			orderBy: { createdAt: "desc" },
-			cacheStrategy,
-		});
+		const data = await imagesQueryRepository.findMany(
+			makeUserId(userId),
+			status,
+			{
+				skip: (page - 1) * PAGE_SIZE,
+				take: PAGE_SIZE,
+				orderBy: { createdAt: "desc" },
+				cacheStrategy,
+			},
+		);
 
 		return data.map((d) => {
 			return {

@@ -61,7 +61,7 @@ const _getNotesCount = async (
 	"use cache";
 	cacheTag(`notes_count_${status}_${userId}`);
 	try {
-		return await notesQueryRepository.count(userId, status);
+		return await notesQueryRepository.count(makeUserId(userId), status);
 	} catch (error) {
 		throw error;
 	}

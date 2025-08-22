@@ -10,43 +10,48 @@ import { minioClient } from "@/minio";
 import prisma from "@/prisma";
 import { ORIGINAL_IMAGE_PATH, THUMBNAIL_IMAGE_PATH } from "./common";
 
-class ImagesCommandRepository implements IImagesCommandRepository {
-	constructor() {
-		initializeEventHandlers();
-	}
-	async create(data: Image): Promise<void> {
-		const response = await prisma.image.create({ data });
-		await eventDispatcher.dispatch(
-			new ImageCreatedEvent({
-				id: response.id,
-				userId: response.userId,
-				caller: "addImage",
-			}),
-		);
-	}
+initializeEventHandlers();
 
-	async uploadToStorage(
-		path: Path,
-		buffer: Buffer,
-		isThumbnail: boolean,
-	): Promise<void> {
-		const objKey = `${isThumbnail ? THUMBNAIL_IMAGE_PATH : ORIGINAL_IMAGE_PATH}/${path}`;
-		await minioClient.putObject(env.MINIO_BUCKET_NAME, objKey, buffer);
-	}
-
-	async deleteById(id: string, userId: string, status: Status): Promise<void> {
-		const data = await prisma.image.delete({
-			where: { id, userId, status },
-			select: { path: true },
-		});
-		await eventDispatcher.dispatch(
-			new ImageDeletedEvent({
-				path: data.path,
-				userId,
-				caller: "deleteImage",
-			}),
-		);
-	}
+async function create(data: Image): Promise<void> {
+	const response = await prisma.image.create({ data });
+	await eventDispatcher.dispatch(
+		new ImageCreatedEvent({
+			id: response.id,
+			userId: response.userId,
+			caller: "addImage",
+		}),
+	);
 }
 
-export const imagesCommandRepository = new ImagesCommandRepository();
+async function uploadToStorage(
+	path: Path,
+	buffer: Buffer,
+	isThumbnail: boolean,
+): Promise<void> {
+	const objKey = `${isThumbnail ? THUMBNAIL_IMAGE_PATH : ORIGINAL_IMAGE_PATH}/${path}`;
+	await minioClient.putObject(env.MINIO_BUCKET_NAME, objKey, buffer);
+}
+
+async function deleteById(
+	id: string,
+	userId: string,
+	status: Status,
+): Promise<void> {
+	const data = await prisma.image.delete({
+		where: { id, userId, status },
+		select: { path: true },
+	});
+	await eventDispatcher.dispatch(
+		new ImageDeletedEvent({
+			path: data.path,
+			userId,
+			caller: "deleteImage",
+		}),
+	);
+}
+
+export const imagesCommandRepository: IImagesCommandRepository = {
+	create,
+	uploadToStorage,
+	deleteById,
+};

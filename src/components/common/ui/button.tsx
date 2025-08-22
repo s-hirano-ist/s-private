@@ -10,9 +10,9 @@ const buttonVariants = cva(
 		variants: {
 			variant: {
 				default:
-					"bg-linear-to-r from-primary-grad-from to-primary-grad-to text-primary-grad shadow-sm hover:bg-black/40",
+					"bg-linear-to-r from-primary to-primary-grad text-white shadow-sm hover:bg-black/40",
 				destructive:
-					"bg-destructive text-destructive-foreground shadow-xs hover:bg-destructive/20",
+					"bg-destructive text-white shadow-xs hover:bg-destructive/20",
 				outline:
 					"border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground",
 				secondary:

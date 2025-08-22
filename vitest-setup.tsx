@@ -11,21 +11,7 @@ beforeEach(() => {
 	vi.clearAllMocks();
 
 	vi.mock("@/domains/common/services/id-generator", () => {
-		return {
-			IdGenerator: vi.fn().mockImplementation(() => {
-				let counter = 0;
-				return {
-					uuidv7: () => {
-						const id = `01234567-89ab-7def-8123-456789abc${counter.toString().padStart(3, "0")}`;
-						counter++;
-						return id;
-					},
-				};
-			}),
-			idGenerator: {
-				uuidv7: () => "01234567-89ab-7def-8123-456789abcdef",
-			},
-		};
+		return () => "01234567-89ab-7def-8123-456789abcdef";
 	});
 
 	vi.mock("@/env", () => ({

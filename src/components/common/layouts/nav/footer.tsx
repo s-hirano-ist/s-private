@@ -117,7 +117,7 @@ function FooterComponent({ search }: Props) {
 
 	const navigationButtons = useMemo(
 		() => (
-			<div className="mx-auto grid h-16 max-w-lg grid-cols-3 bg-linear-to-r from-primary-grad-from to-primary-grad-to text-white sm:rounded-3xl">
+			<div className="mx-auto grid h-16 max-w-lg grid-cols-3 bg-linear-to-r from-primary to-primary-grad text-white sm:rounded-3xl">
 				<Button
 					asChild
 					className={cn(
@@ -134,7 +134,7 @@ function FooterComponent({ search }: Props) {
 				</Button>
 				<div className="flex items-center justify-center">
 					<Button
-						className="bg-linear-to-t from-primary-grad-from to-primary-grad-to shadow-sm"
+						className="bg-linear-to-t from-primary to-primary-grad shadow-sm"
 						onClick={() => setOpen(true)}
 						size="navCenter"
 						type="button"

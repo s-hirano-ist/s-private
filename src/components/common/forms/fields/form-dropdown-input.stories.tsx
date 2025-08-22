@@ -118,3 +118,17 @@ export const LongOptionNames: Story = {
 		triggerIcon: <TableOfContentsIcon />,
 	},
 };
+
+export const ManyOptions: Story = {
+	args: {
+		label: "多数のオプション（スクロールテスト）",
+		htmlFor: "many-options",
+		name: "many-options",
+		placeholder: "オプションを選択",
+		options: Array.from({ length: 25 }, (_, i) => ({
+			id: String(i + 1),
+			name: `オプション ${i + 1}`,
+		})),
+		triggerIcon: <TableOfContentsIcon />,
+	},
+};
