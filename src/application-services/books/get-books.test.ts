@@ -218,7 +218,7 @@ describe("get-books", () => {
 						id: "4",
 						title: "Unexported Book 2",
 						href: "978-2222222222",
-						image: "/not-found.png",
+						image: null,
 					},
 				],
 				totalCount: 2,

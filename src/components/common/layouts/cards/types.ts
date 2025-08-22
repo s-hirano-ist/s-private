@@ -7,7 +7,7 @@ export type ImageCardData = {
 	id: string;
 	href: string;
 	title: string;
-	image: string;
+	image: string | null;
 };
 
 export type LinkCardData = {
