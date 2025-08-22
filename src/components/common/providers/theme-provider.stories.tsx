@@ -28,10 +28,10 @@ function ThemeProviderWrapper({
 						<div className="p-3 bg-background border rounded">
 							Background Color
 						</div>
-						<div className="p-3 bg-primary text-secondary-foreground rounded">
+						<div className="p-3 bg-primary text-muted-foreground rounded">
 							Primary Color
 						</div>
-						<div className="p-3 bg-secondary text-secondary-foreground rounded">
+						<div className="p-3 bg-muted text-muted-foreground rounded">
 							Secondary Color
 						</div>
 					</div>
@@ -95,7 +95,7 @@ export const WithCustomContent: Story = {
 			<div className="p-8 space-y-6">
 				<h2 className="text-3xl font-bold tracking-tight">Custom Content</h2>
 				<div className="grid grid-cols-2 gap-4">
-					<div className="p-4 bg-card text-card-foreground border rounded-lg">
+					<div className="p-4 text-primary border rounded-lg">
 						<h3 className="font-semibold mb-2">Card Component</h3>
 						<p className="text-sm text-muted-foreground">
 							This card adapts to the theme.
@@ -107,7 +107,7 @@ export const WithCustomContent: Story = {
 					</div>
 				</div>
 				<button
-					className="px-4 py-2 bg-primary text-secondary-foreground rounded hover:bg-primary/90"
+					className="px-4 py-2 bg-primary text-muted-foreground rounded hover:bg-primary/90"
 					type="button"
 				>
 					Theme-aware Button

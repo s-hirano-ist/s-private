@@ -1,6 +1,8 @@
 "use client";
 import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
+import { useCallback } from "react";
 import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 import { StatusCodeView } from "@/components/common/display/status/status-code-view";
 import { useSearch } from "@/components/common/hooks/use-search";
@@ -11,6 +13,7 @@ import {
 	CommandList,
 } from "@/components/common/ui/command";
 import Loading from "../../display/loading";
+import { UtilButtons } from "../../layouts/nav/util-buttons";
 
 type Props = { search: typeof searchContentFromClient };
 
@@ -51,20 +54,32 @@ export function SearchCard({ search }: Props) {
 			executeSearch();
 		}
 	};
+	const handleReload = useCallback(() => {
+		window.location.reload();
+	}, []);
+
+	const onSignOutSubmit = useCallback(async () => {
+		await signOut();
+	}, []);
 
 	return (
 		<>
 			<div className="w-full">
 				<CommandInput
 					onKeyDown={handleKeyDown}
+					onSearchClick={executeSearch}
 					onValueChange={handleInputChange}
 					placeholder={t("search")}
 					value={searchQuery}
 				/>
 			</div>
 			<CommandList>
-				{searchResults === undefined ||
-				(searchResults?.length === 0 && searchQuery && !isPending) ? (
+				{searchResults === undefined ? (
+					<UtilButtons
+						handleReload={handleReload}
+						onSignOutSubmit={onSignOutSubmit}
+					/>
+				) : searchResults?.length === 0 && searchQuery && !isPending ? (
 					<CommandEmpty>
 						<div className="flex items-center justify-center">
 							<StatusCodeView statusCode="204" />

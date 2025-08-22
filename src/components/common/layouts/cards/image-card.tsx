@@ -28,7 +28,7 @@ export function ImageCard({
 	return (
 		<div className="relative h-full">
 			<Link className="block h-full" href={`/${basePath}/${href}` as Route}>
-				<Card className="flex h-full flex-col hover:bg-secondary">
+				<Card className="flex h-full flex-col hover:bg-muted">
 					<CardHeader>
 						<CardTitle className="text-center">{title}</CardTitle>
 					</CardHeader>

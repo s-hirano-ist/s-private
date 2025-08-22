@@ -5,19 +5,18 @@ import * as React from "react";
 import { cn } from "@/components/common/utils/cn";
 
 const buttonVariants = cva(
-	"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+	"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-primary disabled:pointer-events-none disabled:opacity-50",
 	{
 		variants: {
 			variant: {
 				default:
-					"bg-linear-to-r from-primary to-primary-grad text-white shadow-sm hover:bg-black/40",
+					"bg-linear-to-r from-primary to-primary-grad text-white shadow-sm hover:bg-primary/40",
 				destructive:
-					"bg-destructive text-white shadow-xs hover:bg-destructive/20",
+					"bg-destructive text-white shadow-xs hover:bg-destructive/80",
 				outline:
-					"border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground",
-				secondary:
-					"bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
-				ghost: "hover:bg-accent hover:text-accent-foreground",
+					"border border-muted bg-background shadow-xs hover:bg-muted hover:text-muted-foreground",
+				secondary: "bg-muted text-muted-foreground shadow-xs hover:bg-muted/80",
+				ghost: "hover:text-primary",
 				link: "text-white underline-offset-4 hover:underline",
 				navSide: "hover:bg-black/40 dark:hover:bg-gray-800",
 				navCenter: "bg-white font-medium hover:bg-black/40",

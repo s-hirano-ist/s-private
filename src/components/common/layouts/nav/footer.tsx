@@ -2,7 +2,6 @@
 import { DownloadIcon, SearchIcon, UploadIcon } from "lucide-react";
 import type { Route } from "next";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { signOut } from "next-auth/react";
 import {
 	memo,
 	type ReactNode,
@@ -23,7 +22,6 @@ import {
 } from "@/components/common/ui/drawer";
 import { cn } from "@/components/common/utils/cn";
 import { SearchCard } from "../../features/search/search-card";
-import { UtilButtons } from "./util-buttons";
 
 const LAYOUTS = {
 	dumper: "DUMPER",
@@ -67,14 +65,6 @@ function FooterComponent({ search }: Props) {
 				<div className="text-xs font-thin">{name}</div>
 			</div>
 		);
-	}, []);
-
-	const handleReload = useCallback(() => {
-		window.location.reload();
-	}, []);
-
-	const onSignOutSubmit = useCallback(async () => {
-		await signOut();
 	}, []);
 
 	const handleLayoutChange = useCallback(
@@ -173,10 +163,6 @@ function FooterComponent({ search }: Props) {
 						<DrawerTitle>Command Palette</DrawerTitle>
 					</DrawerHeader>
 					<Command className="[&_[cmdk-group-heading]]:text-muted-foreground **:data-[slot=command-input-wrapper]:h-12 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5">
-						<UtilButtons
-							handleReload={handleReload}
-							onSignOutSubmit={onSignOutSubmit}
-						/>
 						<SearchCard search={search} />
 					</Command>
 				</DrawerContent>
