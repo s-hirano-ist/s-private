@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "@storybook/test";
 import {
 	ClipboardPasteIcon,
 	CopyIcon,
@@ -7,6 +6,7 @@ import {
 	RefreshCwIcon,
 	SearchIcon,
 } from "lucide-react";
+import { fn } from "storybook/test";
 import { FormInputWithButton } from "./form-input-with-button";
 
 const meta = {
