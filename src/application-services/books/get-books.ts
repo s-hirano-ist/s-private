@@ -83,13 +83,6 @@ export const getExportedBooks: GetPaginatedData<ImageCardStackInitialData> =
 		});
 	});
 
-export const getUnexportedBooksCount: GetCount = cache(
-	async (): Promise<number> => {
-		const userId = await getSelfId();
-		return await _getBooksCount(userId, makeStatus("UNEXPORTED"));
-	},
-);
-
 export const getExportedBooksCount: GetCount = cache(
 	async (): Promise<number> => {
 		const userId = await getSelfId();

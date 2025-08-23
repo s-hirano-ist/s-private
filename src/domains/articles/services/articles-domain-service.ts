@@ -4,7 +4,7 @@ import type { IArticlesQueryRepository } from "@/domains/articles/repositories/a
 import type { UserId } from "@/domains/common/entities/common-entity";
 import type { Url } from "../entities/article-entity";
 
-export async function ensureNoDuplicateArticle(
+async function ensureNoDuplicateArticle(
 	articlesQueryRepository: IArticlesQueryRepository,
 	url: Url,
 	userId: UserId,

@@ -13,7 +13,6 @@ const config: StorybookConfig = {
 		// "@storybook/addon-controls",
 		// "@storybook/addon-viewport",
 		// "@storybook/addon-toolbars",
-		// "storybook-dark-mode",
 		// "@storybook/addon-cssresources",
 		// "storybook-addon-performance",
 		// "@storybook/addon-google-analytics",

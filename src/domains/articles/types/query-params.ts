@@ -1,7 +1,7 @@
 import type { CacheStrategy } from "./cache-strategy";
 import type { SortOrder } from "./sort-order";
 
-export type ArticleOrderByField =
+type ArticleOrderByField =
 	| "id"
 	| "title"
 	| "url"
@@ -14,13 +14,13 @@ export type ArticleOrderByField =
 	| "updatedAt"
 	| "exportedAt";
 
-export type CategoryOrderByField = "id" | "name" | "createdAt" | "updatedAt";
+type CategoryOrderByField = "id" | "name" | "createdAt" | "updatedAt";
 
-export type ArticleOrderBy = {
+type ArticleOrderBy = {
 	[K in ArticleOrderByField]?: SortOrder;
 };
 
-export type CategoryOrderBy = {
+type CategoryOrderBy = {
 	[K in CategoryOrderByField]?: SortOrder;
 };
 

@@ -109,11 +109,6 @@ const _getCategories = async (
 	}
 };
 
-export const getUnexportedArticlesCount: GetCount = cache(async () => {
-	const userId = await getSelfId();
-	return _getArticlesCount(userId, makeStatus("UNEXPORTED"));
-});
-
 export const getExportedArticlesCount: GetCount = cache(async () => {
 	const userId = await getSelfId();
 	return _getArticlesCount(userId, makeStatus("EXPORTED"));

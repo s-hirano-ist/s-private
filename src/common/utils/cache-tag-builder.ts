@@ -17,12 +17,3 @@ export function buildCountCacheTag(
 ): string {
 	return `${domain}_count_${status}_${userId}`;
 }
-
-export function buildPaginatedCacheTag(
-	domain: Domain,
-	status: Status,
-	userId: string,
-	count: number,
-): string {
-	return `${domain}_${status}_${userId}_${count}`;
-}

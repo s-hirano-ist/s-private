@@ -1,7 +1,7 @@
 import type { CacheStrategy } from "./cache-strategy";
 import type { SortOrder } from "./sort-order";
 
-export type ImagesOrderByField =
+type ImagesOrderByField =
 	| "id"
 	| "path"
 	| "contentType"
@@ -15,7 +15,7 @@ export type ImagesOrderByField =
 	| "updatedAt"
 	| "exportedAt";
 
-export type ImagesOrderBy = {
+type ImagesOrderBy = {
 	[K in ImagesOrderByField]?: SortOrder;
 };
 

@@ -54,12 +54,10 @@ export const Description = z.string().min(1).optional().brand<"Description">();
 export type Description = z.infer<typeof Description>;
 export const makeDescription = (v: string): Description => Description.parse(v);
 
-export type OriginalBuffer = Buffer<ArrayBufferLike>;
 export const makeOriginalBuffer = async (file: File) => {
 	return Buffer.from(await file.arrayBuffer());
 };
 
-export type ThumbnailBuffer = Buffer<ArrayBufferLike>;
 export const makeThumbnailBuffer = async (file: File) => {
 	const originalBuffer = Buffer.from(await file.arrayBuffer());
 	return await sharp(originalBuffer)
@@ -69,7 +67,7 @@ export const makeThumbnailBuffer = async (file: File) => {
 
 // Entities
 
-export const image = z.object({
+const image = z.object({
 	id: Id,
 	userId: UserId,
 	path: Path,
@@ -85,7 +83,7 @@ export const image = z.object({
 });
 export type Image = z.infer<typeof image>;
 
-export type CreateImageArgs = Readonly<{
+type CreateImageArgs = Readonly<{
 	userId: UserId;
 	path: Path;
 	contentType: ContentType;

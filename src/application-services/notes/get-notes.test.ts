@@ -5,7 +5,6 @@ import {
 	getExportedNotesCount,
 	getNoteByTitle,
 	getUnexportedNotes,
-	getUnexportedNotesCount,
 } from "./get-notes";
 
 vi.mock("@/infrastructures/notes/repositories/notes-query-repository", () => ({
@@ -171,36 +170,6 @@ describe("get-notes", () => {
 			);
 
 			await expect(getExportedNotesCount()).rejects.toThrow("Database error");
-		});
-	});
-
-	describe("getUnexportedNotesCount", () => {
-		test("should return count of unexported notes", async () => {
-			vi.mocked(notesQueryRepository.count).mockResolvedValue(15);
-
-			const result = await getUnexportedNotesCount();
-
-			expect(notesQueryRepository.count).toHaveBeenCalledWith(
-				"test-user-id",
-				"UNEXPORTED",
-			);
-			expect(result).toEqual(15);
-		});
-
-		test("should return 0 for empty collection", async () => {
-			vi.mocked(notesQueryRepository.count).mockResolvedValue(0);
-
-			const result = await getUnexportedNotesCount();
-
-			expect(result).toEqual(0);
-		});
-
-		test("should handle database errors", async () => {
-			vi.mocked(notesQueryRepository.count).mockRejectedValue(
-				new Error("Database error"),
-			);
-
-			await expect(getUnexportedNotesCount()).rejects.toThrow("Database error");
 		});
 	});
 

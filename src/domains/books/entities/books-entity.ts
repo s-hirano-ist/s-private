@@ -27,7 +27,7 @@ const BookTitle = z
 	.min(1, { message: "required" })
 	.max(256, { message: "tooLong" })
 	.brand<"BookTitle">();
-export type BookTitle = z.infer<typeof BookTitle>;
+type BookTitle = z.infer<typeof BookTitle>;
 export const makeBookTitle = (v: string): BookTitle => BookTitle.parse(v);
 
 const GoogleTitle = z.string().nullable().brand<"GoogleTitle">();
@@ -67,7 +67,7 @@ export const makeBookMarkdown = (v: string | null): BookMarkdown =>
 
 // Entities
 
-export const book = z.object({
+const book = z.object({
 	id: Id,
 	userId: UserId,
 	ISBN: ISBN,

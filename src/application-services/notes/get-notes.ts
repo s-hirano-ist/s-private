@@ -67,13 +67,6 @@ const _getNotesCount = async (
 	}
 };
 
-export const getUnexportedNotesCount: GetCount = cache(
-	async (): Promise<number> => {
-		const userId = await getSelfId();
-		return await _getNotesCount(userId, makeStatus("UNEXPORTED"));
-	},
-);
-
 export const getExportedNotesCount: GetCount = cache(
 	async (): Promise<number> => {
 		const userId = await getSelfId();

@@ -3,24 +3,22 @@
 	"ignore": [
 		"src/app/[locale]/forbidden.tsx",
 		"src/app/instrumentation.ts",
-		"src/components/ui/**/*" // shadcn-ui auto gen
+		"src/infrastructures/i18n/request.ts",
+		"src/components/common/ui/**/*" // shadcn-ui auto gen
 	],
 	"ignoreDependencies": [
 		"@tailwindcss/typography", // imported in global.css
 		"@eslint/config-inspector", // eslint inspector
 		"@storybook/addon-measure", // storybook integration not working
 		"@storybook/addon-outline", // storybook integration not working
-		"@testing-library/user-event", // storybook integration not working
 		"@storybook/addon-actions", // storybook integration not working
 		"@storybook/addon-backgrounds", // storybook integration not working
 		"@storybook/addon-controls", // storybook integration not working
 		"@storybook/addon-onboarding", // storybook integration not working
 		"@storybook/addon-toolbars", // storybook integration not working
 		"@storybook/addon-viewport", // storybook integration not working
-		"storybook-dark-mode", // storybook integration not working
 		"eslint-config-next", // storybook integration not working
 		"eslint-plugin-jsx-a11y", // storybook integration not working
-		"eslint-plugin-storybook", // storybook integration not working
 		"eslint-plugin-tailwindcss", // storybook integration not working
 		"postcss-load-config" // postcss
 	],
