@@ -15,7 +15,7 @@ function UtilButtonsWrapper({
 	onSignOutSubmit,
 }: UtilButtonsWrapperProps) {
 	return (
-		<div className="max-w-sm mx-auto">
+		<div className="mx-auto max-w-sm">
 			<UtilButtons
 				handleReload={handleReload}
 				onSignOutSubmit={onSignOutSubmit}

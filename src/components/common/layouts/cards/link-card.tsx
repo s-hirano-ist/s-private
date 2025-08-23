@@ -35,7 +35,7 @@ export function LinkCard({
 	return (
 		<div className="relative h-full">
 			<CardComponent {...linkProps} className="block h-full">
-				<Card className="hover:bg-muted h-full flex flex-col">
+				<Card className="flex h-full flex-col hover:bg-muted">
 					<CardHeader>
 						<div className="flex gap-4">
 							{primaryBadgeText && <Badge>{primaryBadgeText}</Badge>}

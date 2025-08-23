@@ -62,7 +62,7 @@ function FooterComponent({ search }: Props) {
 		return (
 			<div className="flex flex-col items-center">
 				{icon}
-				<div className="text-xs font-thin">{name}</div>
+				<div className="font-thin text-xs">{name}</div>
 			</div>
 		);
 	}, []);
@@ -154,7 +154,7 @@ function FooterComponent({ search }: Props) {
 
 	return (
 		<>
-			<footer className="sticky bottom-0 z-50 mx-auto w-full max-w-lg border border-gray-200 bg-white dark:border-gray-600 dark:bg-gray-700 sm:rounded-3xl ">
+			<footer className="sticky bottom-0 z-50 mx-auto w-full max-w-lg border border-gray-200 bg-white sm:rounded-3xl dark:border-gray-600 dark:bg-gray-700">
 				{navigationButtons}
 			</footer>
 			<Drawer onOpenChange={setOpen} open={open}>
@@ -162,7 +162,7 @@ function FooterComponent({ search }: Props) {
 					<DrawerHeader className="sr-only">
 						<DrawerTitle>Command Palette</DrawerTitle>
 					</DrawerHeader>
-					<Command className="[&_[cmdk-group-heading]]:text-muted-foreground **:data-[slot=command-input-wrapper]:h-12 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5">
+					<Command className="**:data-[slot=command-input-wrapper]:h-12 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5">
 						<SearchCard search={search} />
 					</Command>
 				</DrawerContent>

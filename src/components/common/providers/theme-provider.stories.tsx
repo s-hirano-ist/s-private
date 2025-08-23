@@ -19,19 +19,19 @@ function ThemeProviderWrapper({
 			enableSystem={enableSystem}
 		>
 			{children || (
-				<div className="p-6 space-y-4">
-					<h1 className="text-2xl font-bold">Theme Provider Test</h1>
+				<div className="space-y-4 p-6">
+					<h1 className="font-bold text-2xl">Theme Provider Test</h1>
 					<p className="text-muted-foreground">
 						This content is wrapped in a ThemeProvider.
 					</p>
 					<div className="flex gap-2">
-						<div className="p-3 bg-background border rounded">
+						<div className="rounded border bg-background p-3">
 							Background Color
 						</div>
-						<div className="p-3 bg-primary text-muted-foreground rounded">
+						<div className="rounded bg-primary p-3 text-muted-foreground">
 							Primary Color
 						</div>
-						<div className="p-3 bg-muted text-muted-foreground rounded">
+						<div className="rounded bg-muted p-3 text-muted-foreground">
 							Secondary Color
 						</div>
 					</div>
@@ -92,22 +92,22 @@ export const WithCustomContent: Story = {
 		theme: "light",
 		enableSystem: true,
 		children: (
-			<div className="p-8 space-y-6">
-				<h2 className="text-3xl font-bold tracking-tight">Custom Content</h2>
+			<div className="space-y-6 p-8">
+				<h2 className="font-bold text-3xl tracking-tight">Custom Content</h2>
 				<div className="grid grid-cols-2 gap-4">
-					<div className="p-4 text-primary border rounded-lg">
-						<h3 className="font-semibold mb-2">Card Component</h3>
-						<p className="text-sm text-muted-foreground">
+					<div className="rounded-lg border p-4 text-primary">
+						<h3 className="mb-2 font-semibold">Card Component</h3>
+						<p className="text-muted-foreground text-sm">
 							This card adapts to the theme.
 						</p>
 					</div>
-					<div className="p-4 bg-muted text-muted-foreground rounded-lg">
-						<h3 className="font-semibold mb-2">Muted Section</h3>
+					<div className="rounded-lg bg-muted p-4 text-muted-foreground">
+						<h3 className="mb-2 font-semibold">Muted Section</h3>
 						<p className="text-sm">Secondary content area.</p>
 					</div>
 				</div>
 				<button
-					className="px-4 py-2 bg-primary text-muted-foreground rounded hover:bg-primary/90"
+					className="rounded bg-primary px-4 py-2 text-muted-foreground hover:bg-primary/90"
 					type="button"
 				>
 					Theme-aware Button
