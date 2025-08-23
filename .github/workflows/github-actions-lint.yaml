@@ -12,4 +12,4 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    uses: s-hirano-ist/s-templates/.github/workflows/github-actions-lint.yaml@5023d3279cece1f0b8b5bd5081331176d025d13f
+    uses: s-hirano-ist/s-templates/.github/workflows/github-actions-lint.yaml@9f835cbeb6b2457d3fc0cf3a8bf7b906a8af639b
