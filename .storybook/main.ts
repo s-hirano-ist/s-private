@@ -5,7 +5,6 @@ const config: StorybookConfig = {
 	addons: [
 		"@storybook/addon-links",
 		"@chromatic-com/storybook",
-		"@storybook/addon-coverage",
 		"@storybook/addon-a11y",
 		"@storybook/addon-themes",
 		// "@storybook/addon-onboarding",
@@ -14,7 +13,6 @@ const config: StorybookConfig = {
 		// "@storybook/addon-controls",
 		// "@storybook/addon-viewport",
 		// "@storybook/addon-toolbars",
-		// "storybook-dark-mode",
 		// "@storybook/addon-cssresources",
 		// "storybook-addon-performance",
 		// "@storybook/addon-google-analytics",

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "@storybook/test";
+import { fn } from "storybook/test";
 import { UtilButtons } from "./util-buttons";
 
 type UtilButtonsWrapperProps = {
@@ -15,7 +15,7 @@ function UtilButtonsWrapper({
 	onSignOutSubmit,
 }: UtilButtonsWrapperProps) {
 	return (
-		<div className="max-w-sm mx-auto">
+		<div className="mx-auto max-w-sm">
 			<UtilButtons
 				handleReload={handleReload}
 				onSignOutSubmit={onSignOutSubmit}

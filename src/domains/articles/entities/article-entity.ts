@@ -75,7 +75,7 @@ export const makeOgDescription = (
 
 // Entities
 
-export const article = z.object({
+const article = z.object({
 	id: Id,
 	userId: UserId,
 	categoryName: CategoryName,

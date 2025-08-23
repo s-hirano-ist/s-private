@@ -28,7 +28,7 @@ const _getImagesCount = async (
 	}
 };
 
-export const _getImages = async (
+const _getImages = async (
 	page: number,
 	userId: string,
 	status: Status,

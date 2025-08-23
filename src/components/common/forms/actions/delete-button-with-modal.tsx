@@ -49,7 +49,7 @@ export function DeleteButtonWithModal({ id, title, deleteAction }: Props) {
 	return (
 		<>
 			<Button
-				className="absolute right-2 top-2 text-destructive hover:bg-destructive/10"
+				className="absolute top-2 right-2 text-destructive hover:bg-destructive/10"
 				onClickCapture={(e) => {
 					e.preventDefault();
 					e.stopPropagation();

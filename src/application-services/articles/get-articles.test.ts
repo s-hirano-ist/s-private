@@ -8,7 +8,6 @@ import {
 	getExportedArticles,
 	getExportedArticlesCount,
 	getUnexportedArticles,
-	getUnexportedArticlesCount,
 } from "./get-articles";
 
 vi.mock(
@@ -247,38 +246,6 @@ describe("get-articles", () => {
 			);
 
 			await expect(getExportedArticlesCount()).rejects.toThrow(
-				"Database error",
-			);
-		});
-	});
-
-	describe("getUnexportedArticlesCount", () => {
-		test("should return count of unexported articles", async () => {
-			vi.mocked(articlesQueryRepository.count).mockResolvedValue(25);
-
-			const result = await getUnexportedArticlesCount();
-
-			expect(articlesQueryRepository.count).toHaveBeenCalledWith(
-				"test-user-id",
-				"UNEXPORTED",
-			);
-			expect(result).toEqual(25);
-		});
-
-		test("should return 0 for empty collection", async () => {
-			vi.mocked(articlesQueryRepository.count).mockResolvedValue(0);
-
-			const result = await getUnexportedArticlesCount();
-
-			expect(result).toEqual(0);
-		});
-
-		test("should handle database errors", async () => {
-			vi.mocked(articlesQueryRepository.count).mockRejectedValue(
-				new Error("Database error"),
-			);
-
-			await expect(getUnexportedArticlesCount()).rejects.toThrow(
 				"Database error",
 			);
 		});

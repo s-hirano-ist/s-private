@@ -8,7 +8,7 @@ export function CounterBadge({ totalItems, label }: Props) {
 
 	return (
 		<div className="px-1">
-			<Badge className="flex justify-center w-full">
+			<Badge className="flex w-full justify-center">
 				{t(label)}: {totalItems}
 			</Badge>
 		</div>

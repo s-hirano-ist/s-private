@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "@storybook/test";
 import { ClipboardPasteIcon, TableOfContentsIcon } from "lucide-react";
+import { fn } from "storybook/test";
 import { FormDropdownInput } from "./fields/form-dropdown-input";
 import { FormFileInput } from "./fields/form-file-input";
 import { FormInput } from "./fields/form-input";

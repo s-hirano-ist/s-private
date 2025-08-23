@@ -65,7 +65,7 @@ export function BaseCardStackWrapper<T extends SearchableItem>({
 	});
 
 	return (
-		<div className="py-4 px-2">
+		<div className="px-2 py-4">
 			{allData.length === 0 ? (
 				<StatusCodeView statusCode="204" />
 			) : (

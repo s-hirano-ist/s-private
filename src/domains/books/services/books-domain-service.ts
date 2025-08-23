@@ -4,7 +4,7 @@ import type { IBooksQueryRepository } from "@/domains/books/repositories/books-q
 import type { UserId } from "@/domains/common/entities/common-entity";
 import type { ISBN } from "../entities/books-entity";
 
-export async function ensureNoDuplicateBook(
+async function ensureNoDuplicateBook(
 	booksQueryRepository: IBooksQueryRepository,
 	ISBN: ISBN,
 	userId: UserId,

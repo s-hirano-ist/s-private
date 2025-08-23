@@ -6,9 +6,8 @@ import reactPlugin from "eslint-plugin-react";
 import reactHookPlugin from "eslint-plugin-react-hooks";
 // import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
 import storybookPlugin from "eslint-plugin-storybook";
-import tsEslint from "typescript-eslint";
-
 // import tailwindcssPlugin from "eslint-plugin-tailwindcss";
+import tsEslint from "typescript-eslint";
 
 const compat = new FlatCompat({
 	baseDirectory: import.meta.dirname,

@@ -30,7 +30,7 @@ export const makeMarkdown = (v: string): Markdown => Markdown.parse(v);
 
 // Entities
 
-export const note = z.object({
+const note = z.object({
 	id: Id,
 	userId: UserId,
 	title: NoteTitle,

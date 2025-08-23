@@ -69,7 +69,7 @@ export const WithHelperText: Story = {
 	render: () => (
 		<div>
 			<Input placeholder="Input with helper text" />
-			<p className="mt-2 text-sm text-gray-500">
+			<p className="mt-2 text-gray-500 text-sm">
 				This is some helper text to assist the user.
 			</p>
 		</div>

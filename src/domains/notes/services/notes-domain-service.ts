@@ -4,7 +4,7 @@ import type { UserId } from "@/domains/common/entities/common-entity";
 import type { NoteTitle } from "@/domains/notes/entities/note-entity";
 import type { INotesQueryRepository } from "@/domains/notes/repositories/notes-query-repository.interface";
 
-export async function ensureNoDuplicateNote(
+async function ensureNoDuplicateNote(
 	notesQueryRepository: INotesQueryRepository,
 	title: NoteTitle,
 	userId: UserId,

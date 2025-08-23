@@ -40,9 +40,9 @@ export function UtilButtons({ handleReload, onSignOutSubmit }: Props) {
 	const shouldShowSignOut = useMemo(() => pathname !== "/auth", [pathname]);
 
 	return (
-		<div className="grid gap-3 px-4 py-2 grid-cols-4">
+		<div className="grid grid-cols-4 gap-3 px-4 py-2">
 			<Button
-				className="flex flex-col items-center gap-1 h-16"
+				className="flex h-16 flex-col items-center gap-1"
 				onClick={handleReload}
 				variant="outline"
 			>
@@ -51,7 +51,7 @@ export function UtilButtons({ handleReload, onSignOutSubmit }: Props) {
 				<span className="sr-only">{t("reload")}</span>
 			</Button>
 			<Button
-				className="flex flex-col items-center gap-1 h-16"
+				className="flex h-16 flex-col items-center gap-1"
 				onClick={handleTheme}
 				variant="outline"
 			>
@@ -64,7 +64,7 @@ export function UtilButtons({ handleReload, onSignOutSubmit }: Props) {
 				<span className="sr-only">appearance</span>
 			</Button>
 			<Button
-				className="flex flex-col items-center gap-1 h-16"
+				className="flex h-16 flex-col items-center gap-1"
 				onClick={handleLanguage}
 				variant="outline"
 			>
@@ -74,7 +74,7 @@ export function UtilButtons({ handleReload, onSignOutSubmit }: Props) {
 			</Button>
 			{shouldShowSignOut && (
 				<Button
-					className="flex flex-col items-center gap-1 h-16"
+					className="flex h-16 flex-col items-center gap-1"
 					data-testid="log-out-button"
 					onClick={onSignOutSubmit}
 					variant="outline"
