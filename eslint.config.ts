@@ -20,7 +20,6 @@ export default tsEslint.config(
 			"node_modules/**/*", // Ignore build outputs and dependencies
 			".next/**/*",
 			".storybook-static/**/*", // Ignore Storybook build output
-			".storybook-coverage/**/*", // Ignore Storybook coverage output
 			".vitest-coverage/**/*", // Ignore coverage reports
 		],
 	},

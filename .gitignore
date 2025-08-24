@@ -9,8 +9,6 @@ node_modules
 
 # Testing
 /.vitest-coverage
-/.storybook-coverage
-/.playwright-output
 
 # Next.js
 /.next

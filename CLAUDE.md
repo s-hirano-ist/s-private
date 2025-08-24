@@ -14,7 +14,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Test**: `pnpm test` - Run Vitest unit tests
 - **Test with Type Check**: `pnpm test:typecheck` - Run TypeScript type checking on test files only
 - **Test All**: `pnpm test:all` - Run unit tests and type checking
-- **E2E Test**: `pnpm test:e2e` - Run Playwright tests
 - **Storybook**: `pnpm storybook` - Component development
 - **Storybook Build**: `pnpm storybook:build` - Build static Storybook
 - **Storybook Test**: `pnpm test:storybook` - Run Storybook test runner with coverage
@@ -110,7 +109,6 @@ Schema is maintained in `s-schema/schema.prisma` with String-based primary keys 
 
 ## Testing
 - **Unit Tests**: Vitest with `@testing-library/react`
-- **E2E Tests**: Playwright configuration in `playwright.config.ts`
 - **Storybook**: Component testing with coverage support
 
 ## Code Style & Architecture Rules

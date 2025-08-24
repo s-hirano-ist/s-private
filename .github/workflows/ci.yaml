@@ -155,7 +155,6 @@ jobs:
           with:
             json-summary-path: ./.vitest-coverage/coverage-summary.json
             json-final-path: ./.vitest-coverage/coverage-final.json
-        # - run: pnpm test:e2e # FIXME: later if I have time
 
   storybook:
     runs-on: ubuntu-24.04

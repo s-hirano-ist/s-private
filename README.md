@@ -34,7 +34,6 @@
 - **Primary Formatter/Linter** - [Biome](https://biomejs.dev/) (v2.2.0)
 - **Secondary Linter** - [ESLint](https://eslint.org/) (v9.33.0) for React/Next.js specific rules
 - **Testing Framework** - [Vitest](https://vitest.dev/) (v3.2.4) with [Testing Library](https://testing-library.com/)
-- **E2E Testing** - [Playwright](https://playwright.dev/) (v1.54.2)
 - **Component Development** - [Storybook](https://storybook.js.org/) (v9.1.2)
 
 ### Code Analysis & Quality Assurance
@@ -242,7 +241,6 @@ pnpm lint:inspector        # ESLint configuration inspector
 pnpm test                  # Run Vitest unit tests
 pnpm test:typecheck        # TypeScript type checking tests
 pnpm test:all              # Run all tests (unit + typecheck)
-pnpm test:e2e              # Run Playwright E2E tests
 pnpm test:storybook        # Run Storybook test runner with coverage
 
 # Component Development
@@ -288,11 +286,6 @@ pnpm prisma:studio         # Open Prisma Studio database browser
 - Test files: `*.test.ts`, `*.test.tsx`
 - Testing Library for React component testing
 - Comprehensive coverage for domain logic and components
-
-### End-to-End Testing (Playwright)
-- Configuration: `playwright.config.ts`
-- Cross-browser testing for critical user flows
-- Visual regression testing capabilities
 
 ### Component Testing (Storybook)
 - Component documentation and testing
