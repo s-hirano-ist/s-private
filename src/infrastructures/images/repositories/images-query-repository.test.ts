@@ -1,9 +1,6 @@
 import { Readable } from "node:stream";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import {
-	makeStatus,
-	makeUserId,
-} from "@/domains/common/entities/common-entity";
+import { makeUserId } from "@/domains/common/entities/common-entity";
 import { Path } from "@/domains/images/entities/image-entity";
 import { minioClient } from "@/minio";
 import prisma from "@/prisma";
@@ -35,7 +32,7 @@ describe("ImagesQueryRepository", () => {
 
 			const result = await imagesQueryRepository.findMany(
 				makeUserId("user123"),
-				makeStatus("EXPORTED"),
+				"EXPORTED",
 				params,
 			);
 
@@ -48,7 +45,7 @@ describe("ImagesQueryRepository", () => {
 
 			const result = await imagesQueryRepository.findMany(
 				makeUserId("user123"),
-				makeStatus("EXPORTED"),
+				"EXPORTED",
 			);
 
 			expect(prisma.image.findMany).toHaveBeenCalled();
@@ -66,7 +63,7 @@ describe("ImagesQueryRepository", () => {
 
 			const result = await imagesQueryRepository.findMany(
 				makeUserId("user123"),
-				makeStatus("EXPORTED"),
+				"EXPORTED",
 				params,
 			);
 
@@ -80,10 +77,7 @@ describe("ImagesQueryRepository", () => {
 			);
 
 			await expect(
-				imagesQueryRepository.findMany(
-					makeUserId("user123"),
-					makeStatus("EXPORTED"),
-				),
+				imagesQueryRepository.findMany(makeUserId("user123"), "EXPORTED"),
 			).rejects.toThrow("Database connection error");
 
 			expect(prisma.image.findMany).toHaveBeenCalled();
@@ -96,7 +90,7 @@ describe("ImagesQueryRepository", () => {
 
 			const result = await imagesQueryRepository.count(
 				makeUserId("user123"),
-				makeStatus("EXPORTED"),
+				"EXPORTED",
 			);
 
 			expect(prisma.image.count).toHaveBeenCalledWith({
@@ -110,7 +104,7 @@ describe("ImagesQueryRepository", () => {
 
 			const result = await imagesQueryRepository.count(
 				makeUserId("user123"),
-				makeStatus("UNEXPORTED"),
+				"UNEXPORTED",
 			);
 
 			expect(prisma.image.count).toHaveBeenCalledWith({
@@ -125,10 +119,7 @@ describe("ImagesQueryRepository", () => {
 			);
 
 			await expect(
-				imagesQueryRepository.count(
-					makeUserId("user123"),
-					makeStatus("EXPORTED"),
-				),
+				imagesQueryRepository.count(makeUserId("user123"), "EXPORTED"),
 			).rejects.toThrow("Database count error");
 
 			expect(prisma.image.count).toHaveBeenCalledWith({

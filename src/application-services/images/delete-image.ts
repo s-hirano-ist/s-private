@@ -9,7 +9,7 @@ import {
 	buildContentCacheTag,
 	buildCountCacheTag,
 } from "@/common/utils/cache-tag-builder";
-import { makeStatus } from "@/domains/common/entities/common-entity";
+import { makeUnexportedStatus } from "@/domains/common/entities/common-entity";
 import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
 
 export async function deleteImage(id: string): Promise<ServerAction> {
@@ -19,7 +19,7 @@ export async function deleteImage(id: string): Promise<ServerAction> {
 	try {
 		const userId = await getSelfId();
 
-		const status = makeStatus("UNEXPORTED");
+		const status = makeUnexportedStatus();
 		await imagesCommandRepository.deleteById(id, userId, status);
 
 		revalidateTag(buildContentCacheTag("images", status, userId));

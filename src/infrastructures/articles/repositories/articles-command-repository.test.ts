@@ -9,7 +9,7 @@ import type { Status } from "@/domains/common/entities/common-entity";
 import {
 	makeCreatedAt,
 	makeId,
-	makeStatus,
+	makeUnexportedStatus,
 	makeUserId,
 } from "@/domains/common/entities/common-entity";
 import prisma from "@/prisma";
@@ -45,7 +45,7 @@ describe("ArticlesCommandRepository", () => {
 				quote: makeQuote("This is a test quote"),
 				userId: makeUserId("user123"),
 				id: makeId("01234567-89ab-7def-9123-456789abcdef"),
-				status: makeStatus("UNEXPORTED"),
+				status: makeUnexportedStatus(),
 				categoryName: makeCategoryName("tech"),
 				categoryId: makeId("01234567-89ab-7def-8123-456789abcde0"),
 				createdAt: makeCreatedAt(),
@@ -80,7 +80,7 @@ describe("ArticlesCommandRepository", () => {
 				categoryId: makeId("0198bfc4-444e-73e8-9ef6-eb9b250ed1ae"),
 				userId: makeUserId("user123"),
 				id: makeId("0198bfc4-444f-71eb-8e78-4005df127ffd"),
-				status: makeStatus("UNEXPORTED"),
+				status: makeUnexportedStatus(),
 				createdAt: makeCreatedAt(),
 			});
 
@@ -100,7 +100,7 @@ describe("ArticlesCommandRepository", () => {
 					quote: makeQuote("This is a test quote"),
 					userId: makeUserId("user123"),
 					id: makeId("01234567-89ab-7def-9123-456789abcdef"),
-					status: makeStatus("UNEXPORTED"),
+					status: makeUnexportedStatus(),
 					categoryName: makeCategoryName("tech"),
 					categoryId: makeId("01234567-89ab-7def-8123-456789abcde0"),
 					createdAt: makeCreatedAt(),
@@ -132,7 +132,7 @@ describe("ArticlesCommandRepository", () => {
 			await articlesCommandRepository.deleteById(
 				makeId("0198bfc4-444e-73e8-9ef6-eb9b250ed1ae"),
 				makeUserId("user123"),
-				makeStatus("EXPORTED"),
+				"EXPORTED",
 			);
 
 			expect(prisma.article.delete).toHaveBeenCalledWith({
@@ -154,7 +154,7 @@ describe("ArticlesCommandRepository", () => {
 				articlesCommandRepository.deleteById(
 					makeId("0198bfc4-444f-71eb-8e78-46840c337877"),
 					makeUserId("user123"),
-					makeStatus("EXPORTED"),
+					"EXPORTED",
 				),
 			).rejects.toThrow("Record not found");
 
@@ -188,7 +188,7 @@ describe("ArticlesCommandRepository", () => {
 			await articlesCommandRepository.deleteById(
 				makeId("0198bfc4-444f-71eb-8e78-4eaeec50cd3e"),
 				makeUserId("user123"),
-				makeStatus("UNEXPORTED"),
+				makeUnexportedStatus(),
 			);
 
 			expect(prisma.article.delete).toHaveBeenCalledWith({

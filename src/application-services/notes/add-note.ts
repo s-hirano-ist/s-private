@@ -9,7 +9,6 @@ import {
 	buildContentCacheTag,
 	buildCountCacheTag,
 } from "@/common/utils/cache-tag-builder";
-import { makeStatus } from "@/domains/common/entities/common-entity";
 import { noteEntity } from "@/domains/notes/entities/note-entity";
 import { NotesDomainService } from "@/domains/notes/services/notes-domain-service";
 import { notesCommandRepository } from "@/infrastructures/notes/repositories/notes-command-repository";
@@ -38,9 +37,8 @@ export async function addNote(formData: FormData): Promise<ServerAction> {
 		await notesCommandRepository.create(note);
 
 		// Cache invalidation
-		const status = makeStatus("UNEXPORTED");
-		revalidateTag(buildContentCacheTag("notes", status, userId));
-		revalidateTag(buildCountCacheTag("notes", status, userId));
+		revalidateTag(buildContentCacheTag("notes", note.status, userId));
+		revalidateTag(buildCountCacheTag("notes", note.status, userId));
 
 		return { success: true, message: "inserted" };
 	} catch (error) {

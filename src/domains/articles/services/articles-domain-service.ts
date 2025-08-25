@@ -1,8 +1,22 @@
 import "server-only";
-import { DuplicateError } from "@/common/error/error-classes";
+import { DuplicateError, UnexpectedError } from "@/common/error/error-classes";
 import type { IArticlesQueryRepository } from "@/domains/articles/repositories/articles-query-repository.interface";
-import type { UserId } from "@/domains/common/entities/common-entity";
-import type { Url } from "../entities/article-entity";
+import {
+	makeUserId,
+	type UserId,
+} from "@/domains/common/entities/common-entity";
+import {
+	type ArticleTitle,
+	articleEntity,
+	type CategoryName,
+	makeUrl,
+	type OgDescription,
+	type OgImageUrl,
+	type OgTitle,
+	type Quote,
+	UnexportedArticle,
+	type Url,
+} from "../entities/article-entity";
 
 async function ensureNoDuplicateArticle(
 	articlesQueryRepository: IArticlesQueryRepository,
@@ -15,12 +29,88 @@ async function ensureNoDuplicateArticle(
 	}
 }
 
+type ArticleStatus = "NEED_CREATE" | "NEED_UPDATE" | "NO_UPDATE";
+
+async function changeArticleStatus(
+	articlesQueryRepository: IArticlesQueryRepository,
+	url: Url,
+	categoryName: CategoryName,
+	userId: UserId,
+	title: ArticleTitle,
+	quote: Quote,
+	ogTitle: OgTitle,
+	ogDescription: OgDescription,
+	ogImageUrl: OgImageUrl,
+): Promise<{ status: ArticleStatus; data: UnexportedArticle }> {
+	const data = await articlesQueryRepository.findByUrl(
+		makeUrl(url),
+		makeUserId(userId),
+	);
+	if (!data) {
+		return {
+			status: "NEED_CREATE",
+			data: articleEntity.create({
+				userId,
+				title,
+				quote,
+				url,
+				categoryName,
+			}),
+		};
+	}
+	const newData = UnexportedArticle.safeParse(data);
+	if (!newData.success) throw new UnexpectedError();
+
+	if (
+		data.title !== title ||
+		data.quote !== quote ||
+		data.ogTitle !== ogTitle ||
+		data.ogDescription !== ogDescription ||
+		data.ogImageUrl !== ogImageUrl
+	) {
+		return {
+			status: "NEED_UPDATE",
+			data: articleEntity.update(newData.data, {
+				title,
+				quote,
+				ogTitle,
+				ogDescription,
+				ogImageUrl,
+			}),
+		};
+	}
+	return { status: "NO_UPDATE", data: newData.data };
+}
+
 export class ArticlesDomainService {
 	constructor(
 		private readonly articlesQueryRepository: IArticlesQueryRepository,
 	) {}
 
-	public async ensureNoDuplicate(url: Url, userId: UserId): Promise<void> {
+	public async ensureNoDuplicate(url: Url, userId: UserId) {
 		return ensureNoDuplicateArticle(this.articlesQueryRepository, url, userId);
+	}
+
+	public async changeArticleStatus(
+		url: Url,
+		categoryName: CategoryName,
+		userId: UserId,
+		title: ArticleTitle,
+		quote: Quote,
+		ogTitle: OgTitle,
+		ogDescription: OgDescription,
+		ogImageUrl: OgImageUrl,
+	) {
+		return changeArticleStatus(
+			this.articlesQueryRepository,
+			url,
+			categoryName,
+			userId,
+			title,
+			quote,
+			ogTitle,
+			ogDescription,
+			ogImageUrl,
+		);
 	}
 }

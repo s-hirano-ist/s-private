@@ -8,7 +8,7 @@ import {
 } from "@/common/utils/cache-tag-builder";
 import {
 	makeId,
-	makeStatus,
+	makeUnexportedStatus,
 	makeUserId,
 } from "@/domains/common/entities/common-entity";
 import { notesCommandRepository } from "@/infrastructures/notes/repositories/notes-command-repository";
@@ -54,9 +54,9 @@ describe("deleteNote", () => {
 		expect(notesCommandRepository.deleteById).toHaveBeenCalledWith(
 			makeId(testId),
 			makeUserId("test-user-id"),
-			makeStatus("UNEXPORTED"),
+			"UNEXPORTED",
 		);
-		const status = makeStatus("UNEXPORTED");
+		const status = makeUnexportedStatus();
 		expect(revalidateTag).toHaveBeenCalledWith(
 			buildContentCacheTag("notes", status, "test-user-id"),
 		);
@@ -86,7 +86,7 @@ describe("deleteNote", () => {
 		expect(notesCommandRepository.deleteById).toHaveBeenCalledWith(
 			makeId(testId),
 			makeUserId("test-user-id"),
-			makeStatus("UNEXPORTED"),
+			"UNEXPORTED",
 		);
 		expect(wrapServerSideErrorForClient).toHaveBeenCalledWith(mockError);
 	});

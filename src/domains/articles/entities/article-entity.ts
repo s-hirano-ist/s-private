@@ -1,12 +1,12 @@
 import { z } from "zod";
 import {
 	CreatedAt,
-	ExportedAt,
+	ExportedStatus,
 	Id,
 	makeCreatedAt,
+	makeExportedStatus,
 	makeId,
-	makeStatus,
-	Status,
+	UnexportedStatus,
 	UserId,
 } from "@/domains/common/entities/common-entity";
 import { createEntityWithErrorHandling } from "@/domains/common/services/entity-factory";
@@ -19,7 +19,7 @@ const CategoryName = z
 	.min(1, { message: "required" })
 	.max(16, { message: "tooLong" })
 	.brand<"CategoryName">();
-type CategoryName = z.infer<typeof CategoryName>;
+export type CategoryName = z.infer<typeof CategoryName>;
 export const makeCategoryName = (v: string): CategoryName =>
 	CategoryName.parse(v);
 
@@ -28,7 +28,7 @@ const ArticleTitle = z
 	.min(1, { message: "required" })
 	.max(64, { message: "tooLong" })
 	.brand<"ArticleTitle">();
-type ArticleTitle = z.infer<typeof ArticleTitle>;
+export type ArticleTitle = z.infer<typeof ArticleTitle>;
 export const makeArticleTitle = (v: string): ArticleTitle =>
 	ArticleTitle.parse(v);
 
@@ -38,7 +38,7 @@ const Quote = z
 	.nullable()
 	.optional()
 	.brand<"Quote">();
-type Quote = z.infer<typeof Quote>;
+export type Quote = z.infer<typeof Quote>;
 export const makeQuote = (v: string | null | undefined): Quote =>
 	Quote.parse(v);
 
@@ -63,19 +63,24 @@ export type Url = z.infer<typeof Url>;
 export const makeUrl = (v: string): Url => Url.parse(v);
 
 const OgTitle = z.string().nullable().optional().brand<"OgTitle">();
-type OgTitle = z.infer<typeof OgTitle>;
+export type OgTitle = z.infer<typeof OgTitle>;
 export const makeOgTitle = (v: string | null | undefined): OgTitle =>
 	OgTitle.parse(v);
 
 const OgDescription = z.string().nullable().optional().brand<"OgDescription">();
-type OgDescription = z.infer<typeof OgDescription>;
+export type OgDescription = z.infer<typeof OgDescription>;
 export const makeOgDescription = (
 	v: string | null | undefined,
 ): OgDescription => OgDescription.parse(v);
 
+const OgImageUrl = z.string().nullable().optional().brand<"OgImageUrl">();
+export type OgImageUrl = z.infer<typeof OgImageUrl>;
+export const makeOgImageUrl = (v: string | null | undefined): OgImageUrl =>
+	OgImageUrl.parse(v);
+
 // Entities
 
-const article = z.object({
+const Base = z.object({
 	id: Id,
 	userId: UserId,
 	categoryName: CategoryName,
@@ -83,13 +88,17 @@ const article = z.object({
 	title: ArticleTitle,
 	quote: Quote,
 	url: Url,
-	status: Status,
+	createdAt: CreatedAt,
 	ogTitle: OgTitle,
 	ogDescription: OgDescription,
-	createdAt: CreatedAt,
-	exportedAt: ExportedAt,
+	ogImageUrl: OgImageUrl,
 });
-export type Article = Readonly<z.infer<typeof article>>;
+
+export const UnexportedArticle = Base.extend({ status: UnexportedStatus });
+export type UnexportedArticle = Readonly<z.infer<typeof UnexportedArticle>>;
+
+const ExportedArticle = Base.extend(ExportedStatus.shape);
+type ExportedArticle = Readonly<z.infer<typeof ExportedArticle>>;
 
 type CreateArticleArgs = Readonly<{
 	userId: UserId;
@@ -99,16 +108,41 @@ type CreateArticleArgs = Readonly<{
 	url: Url;
 }>;
 
+type UpdateArticleArgs = Readonly<{
+	title: ArticleTitle;
+	quote: Quote;
+	ogTitle: OgTitle;
+	ogDescription: OgDescription;
+	ogImageUrl: OgImageUrl;
+}>;
+
 export const articleEntity = {
-	create: (args: CreateArticleArgs): Article => {
+	create: (args: CreateArticleArgs): UnexportedArticle => {
 		return createEntityWithErrorHandling(() =>
 			Object.freeze({
 				id: makeId(),
-				status: makeStatus("UNEXPORTED"),
+				status: "UNEXPORTED",
 				categoryId: makeId(),
 				createdAt: makeCreatedAt(),
 				...args,
 			}),
 		);
+	},
+	update: (
+		article: UnexportedArticle,
+		args: UpdateArticleArgs,
+	): UnexportedArticle => {
+		return createEntityWithErrorHandling(() =>
+			Object.freeze({ ...article, ...args }),
+		);
+	},
+	export: (article: UnexportedArticle): ExportedArticle => {
+		return createEntityWithErrorHandling(() => {
+			const exportedStatus = makeExportedStatus();
+			return Object.freeze({
+				...article,
+				...exportedStatus,
+			});
+		});
 	},
 };

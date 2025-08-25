@@ -8,13 +8,14 @@ import {
 	buildCountCacheTag,
 } from "@/common/utils/cache-tag-builder";
 import {
-	makeStatus,
+	makeCreatedAt,
+	makeId,
+	makeUnexportedStatus,
 	makeUserId,
 } from "@/domains/common/entities/common-entity";
 import {
 	makeMarkdown,
 	makeNoteTitle,
-	type Note,
 	noteEntity,
 } from "@/domains/notes/entities/note-entity";
 import { notesCommandRepository } from "@/infrastructures/notes/repositories/notes-command-repository";
@@ -80,11 +81,12 @@ describe("addNote", () => {
 		vi.mocked(getSelfId).mockResolvedValue("user-123");
 
 		const mockNote = {
-			title: "Example Note",
-			markdown: "sample markdown",
-			userId: "user-123",
-			status: "UNEXPORTED",
-			id: "01234567-89ab-7def-9123-456789abcdef",
+			title: makeNoteTitle("Example Note"),
+			markdown: makeMarkdown("sample markdown"),
+			userId: makeUserId("user-123"),
+			status: "UNEXPORTED" as const,
+			id: makeId("01234567-89ab-7def-9123-456789abcdef"),
+			createdAt: makeCreatedAt(),
 		};
 
 		vi.mocked(parseAddNoteFormData).mockReturnValue({
@@ -92,7 +94,7 @@ describe("addNote", () => {
 			markdown: makeMarkdown("sample markdown"),
 			userId: makeUserId("user-123"),
 		});
-		vi.mocked(noteEntity.create).mockReturnValue(mockNote as Note);
+		vi.mocked(noteEntity.create).mockReturnValue(mockNote);
 		mockEnsureNoDuplicate.mockResolvedValue(undefined);
 		vi.mocked(notesCommandRepository.create).mockResolvedValue();
 
@@ -106,7 +108,7 @@ describe("addNote", () => {
 		expect(mockEnsureNoDuplicate).toHaveBeenCalled();
 		expect(vi.mocked(noteEntity.create)).toHaveBeenCalled();
 		expect(notesCommandRepository.create).toHaveBeenCalledWith(mockNote);
-		const status = makeStatus("UNEXPORTED");
+		const status = makeUnexportedStatus();
 		expect(revalidateTag).toHaveBeenCalledWith(
 			buildContentCacheTag("notes", status, "user-123"),
 		);

@@ -16,7 +16,7 @@ import {
 import {
 	makeCreatedAt,
 	makeId,
-	makeStatus,
+	makeUnexportedStatus,
 	makeUserId,
 } from "@/domains/common/entities/common-entity";
 import { articlesCommandRepository } from "@/infrastructures/articles/repositories/articles-command-repository";
@@ -109,7 +109,7 @@ describe("addArticle", () => {
 			categoryName: makeCategoryName("tech"),
 			categoryId: makeId("01933f5c-9df0-7001-8123-456789abcde0"),
 			userId: makeUserId("user-123"),
-			status: makeStatus("UNEXPORTED"),
+			status: "UNEXPORTED",
 			createdAt: makeCreatedAt(),
 		} as const;
 
@@ -126,7 +126,7 @@ describe("addArticle", () => {
 		);
 		expect(articleEntity.create).toHaveBeenCalled();
 		expect(articlesCommandRepository.create).toHaveBeenCalledWith(mockArticle);
-		const status = makeStatus("UNEXPORTED");
+		const status = makeUnexportedStatus();
 		expect(revalidateTag).toHaveBeenCalledWith(
 			buildContentCacheTag("articles", status, "user-123"),
 		);

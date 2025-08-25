@@ -47,6 +47,11 @@ describe("ArticlesDomainService", () => {
 				userId,
 				title: "Existing Article",
 				status: "UNEXPORTED" as const,
+				quote: "Sample quote",
+				ogTitle: "OG Title",
+				ogDescription: "OG Description",
+				ogImageUrl: "https://example.com/og-image.jpg",
+				Category: { id: "category-id", name: "Tech" },
 			};
 
 			vi.mocked(articlesQueryRepository.findByUrl).mockResolvedValue(

@@ -9,7 +9,6 @@ import {
 	buildContentCacheTag,
 	buildCountCacheTag,
 } from "@/common/utils/cache-tag-builder";
-import { makeStatus } from "@/domains/common/entities/common-entity";
 import { imageEntity } from "@/domains/images/entities/image-entity";
 import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
 import { parseAddImageFormData } from "./helpers/form-data-parser";
@@ -47,9 +46,9 @@ export async function addImage(formData: FormData): Promise<ServerAction> {
 		);
 		await imagesCommandRepository.create(image);
 
-		const status = makeStatus("UNEXPORTED");
-		revalidateTag(buildContentCacheTag("images", status, userId));
-		revalidateTag(buildCountCacheTag("images", status, userId));
+		// Cache invalidation
+		revalidateTag(buildContentCacheTag("images", image.status, userId));
+		revalidateTag(buildCountCacheTag("images", image.status, userId));
 
 		return { success: true, message: "inserted" };
 	} catch (error) {

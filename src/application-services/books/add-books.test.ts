@@ -14,7 +14,7 @@ import {
 import {
 	makeCreatedAt,
 	makeId,
-	makeStatus,
+	makeUnexportedStatus,
 	makeUserId,
 } from "@/domains/common/entities/common-entity";
 import { booksCommandRepository } from "@/infrastructures/books/repositories/books-command-repository";
@@ -94,7 +94,7 @@ describe("addBooks", () => {
 			ISBN: makeISBN("978-4-06-519981-0"),
 			title: makeBookTitle("Test Book"),
 			userId: makeUserId("user-123"),
-			status: makeStatus("UNEXPORTED"),
+			status: "UNEXPORTED",
 			createdAt: makeCreatedAt(),
 		} as const;
 
@@ -115,7 +115,7 @@ describe("addBooks", () => {
 			userId: makeUserId("user-123"),
 		});
 		expect(booksCommandRepository.create).toHaveBeenCalledWith(mockBook);
-		const status = makeStatus("UNEXPORTED");
+		const status = makeUnexportedStatus();
 		expect(revalidateTag).toHaveBeenCalledWith(
 			buildContentCacheTag("books", status, "user-123"),
 		);

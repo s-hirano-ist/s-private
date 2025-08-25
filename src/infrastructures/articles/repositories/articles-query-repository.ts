@@ -11,7 +11,15 @@ import prisma from "@/prisma";
 async function findByUrl(url: string, userId: string) {
 	const data = await prisma.article.findUnique({
 		where: { url_userId: { url, userId } },
-		select: { url: true },
+		select: {
+			url: true,
+			Category: true,
+			title: true,
+			ogTitle: true,
+			ogDescription: true,
+			quote: true,
+			ogImageUrl: true,
+		},
 	});
 	return data;
 }

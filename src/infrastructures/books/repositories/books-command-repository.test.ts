@@ -13,7 +13,7 @@ import {
 import {
 	makeCreatedAt,
 	makeId,
-	makeStatus,
+	makeUnexportedStatus,
 	makeUserId,
 } from "@/domains/common/entities/common-entity";
 import prisma from "@/prisma";
@@ -51,7 +51,7 @@ describe("BooksCommandRepository", () => {
 				userId: makeUserId("user123"),
 				ISBN: makeISBN("9784123456789"),
 				title: makeBookTitle("Test Book"),
-				status: makeStatus("UNEXPORTED"),
+				status: "UNEXPORTED",
 				createdAt: makeCreatedAt(),
 			});
 
@@ -84,7 +84,7 @@ describe("BooksCommandRepository", () => {
 				userId: makeUserId("user123"),
 				ISBN: makeISBN("9784567890123"),
 				title: makeBookTitle("Complete Book"),
-				status: makeStatus("UNEXPORTED"),
+				status: "UNEXPORTED",
 				markdown: makeBookMarkdown("# Book Review\nThis is a great book."),
 				googleDescription: makeGoogleDescription("Google Description"),
 				googleAuthors: makeGoogleAuthors(["Author 1", "Author 2"]),
@@ -110,7 +110,7 @@ describe("BooksCommandRepository", () => {
 					userId: makeUserId("user123"),
 					ISBN: makeISBN("9784123456789"),
 					title: makeBookTitle("Test Book"),
-					status: makeStatus("UNEXPORTED"),
+					status: "UNEXPORTED",
 					createdAt: makeCreatedAt(),
 				}),
 			).rejects.toThrow("Database constraint error");
@@ -144,7 +144,7 @@ describe("BooksCommandRepository", () => {
 			await booksCommandRepository.deleteById(
 				makeId("0198bfc4-444e-73e8-9ef6-eb9b250ed1ae"),
 				makeUserId("user123"),
-				makeStatus("EXPORTED"),
+				"EXPORTED",
 			);
 
 			expect(prisma.book.delete).toHaveBeenCalled();
@@ -159,7 +159,7 @@ describe("BooksCommandRepository", () => {
 				booksCommandRepository.deleteById(
 					makeId("0198bfc4-444f-71eb-8e78-46840c337877"),
 					makeUserId("user123"),
-					makeStatus("EXPORTED"),
+					"EXPORTED",
 				),
 			).rejects.toThrow("Record not found");
 
@@ -190,7 +190,7 @@ describe("BooksCommandRepository", () => {
 			await booksCommandRepository.deleteById(
 				makeId("0198bfc4-444f-71eb-8e78-4eaeec50cd3e"),
 				makeUserId("user123"),
-				makeStatus("UNEXPORTED"),
+				makeUnexportedStatus(),
 			);
 
 			expect(prisma.book.delete).toHaveBeenCalledWith({

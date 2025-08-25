@@ -3,7 +3,19 @@ import type { Path } from "../entities/image-entity";
 import type { ImagesFindManyParams } from "../types/query-params";
 
 export type IImagesQueryRepository = {
-	findByPath(path: Path, userId: UserId): Promise<{} | null>;
+	findByPath(
+		path: Path,
+		userId: UserId,
+	): Promise<{
+		id: string;
+		path: string;
+		contentType: string;
+		fileSize: number | null;
+		width: number | null;
+		height: number | null;
+		tags: string[];
+		description: string | null;
+	} | null>;
 	findMany(
 		userId: UserId,
 		status: Status,

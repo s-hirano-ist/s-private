@@ -3,7 +3,7 @@ import type { Status } from "@/domains/common/entities/common-entity";
 import {
 	makeCreatedAt,
 	makeId,
-	makeStatus,
+	makeUnexportedStatus,
 	makeUserId,
 } from "@/domains/common/entities/common-entity";
 import {
@@ -56,7 +56,7 @@ describe("ImageCommandRepository", () => {
 				height: makePixel(600),
 				tags: [makeTag("nature"), makeTag("landscape")],
 				description: makeDescription("A beautiful landscape"),
-				status: makeStatus("UNEXPORTED"),
+				status: makeUnexportedStatus(),
 				createdAt: makeCreatedAt(),
 			});
 
@@ -85,7 +85,7 @@ describe("ImageCommandRepository", () => {
 				path: makeTestPath("image-456"),
 				userId: makeUserId("user123"),
 				contentType: makeContentType("image/jpeg"),
-				status: makeStatus("UNEXPORTED"),
+				status: makeUnexportedStatus(),
 				id: makeId("01234567-89ab-7def-8123-456789abcde1"),
 				fileSize: makeFileSize(2048),
 				width: makePixel(640),
@@ -107,7 +107,7 @@ describe("ImageCommandRepository", () => {
 					path: makeTestPath("image-123"),
 					userId: makeUserId("user123"),
 					contentType: makeContentType("image/png"),
-					status: makeStatus("UNEXPORTED"),
+					status: makeUnexportedStatus(),
 					id: makeId("01234567-89ab-7def-8123-456789abcde1"),
 					fileSize: makeFileSize(1024),
 					width: makePixel(800),
@@ -171,7 +171,7 @@ describe("ImageCommandRepository", () => {
 		test("should delete image and log success", async () => {
 			const id = makeId("0198bfc4-444e-73e8-9ef6-eb9b250ed1ae");
 			const userId = makeUserId("test-user-id");
-			const status = makeStatus("UNEXPORTED");
+			const status = makeUnexportedStatus();
 
 			const mockDeletedImage = {
 				path: "images/user123/image-123.png",
@@ -189,7 +189,7 @@ describe("ImageCommandRepository", () => {
 		test("should delete image with different status and log", async () => {
 			const id = makeId("0198bfc5-555f-74f9-af07-fc9c251fe2bf");
 			const userId = makeUserId("test-user-id-2");
-			const status = makeStatus("EXPORTED");
+			const status = "EXPORTED";
 
 			const mockDeletedImage = {
 				path: "images/user456/image-456.jpg",
@@ -207,7 +207,7 @@ describe("ImageCommandRepository", () => {
 		test("should handle deletion errors", async () => {
 			const id = makeId("0198bfc4-444e-73e8-9ef6-eb9b250ed1ae");
 			const userId = makeUserId("test-user-id");
-			const status = makeStatus("UNEXPORTED");
+			const status = makeUnexportedStatus();
 
 			vi.mocked(prisma.image.delete).mockRejectedValue(
 				new Error("Image not found"),
