@@ -8,7 +8,7 @@ ENV SKIP_ENV_VALIDATION=true
 ENV MINIO_HOST=private.s-hirano.com
 
 COPY package.json pnpm-lock.yaml ./
-COPY s-schema/ ./s-schema/
+COPY prisma/ ./prisma/
 
 RUN pnpm install
 COPY . .
