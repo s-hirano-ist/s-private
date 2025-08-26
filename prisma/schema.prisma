@@ -1,0 +1,127 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // uses connection pooling
+  // directUrl = env("POSTGRES_DIRECT_URL") // uses a direct connection // not needed for prisma postgresql database
+}
+
+enum Status {
+  UNEXPORTED
+  EXPORTED
+}
+
+model Category {
+  id String @id
+
+  name String
+
+  Articles Article[]
+
+  createdAt DateTime @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  userId String @map("user_id")
+
+  @@unique([name, userId])
+  @@map("categories")
+}
+
+model Article {
+  id String @id
+
+  title String
+  url   String
+  quote String?
+
+  ogImageUrl    String? @map("og_image_url")
+  ogTitle       String? @map("og_title")
+  ogDescription String? @map("og_description")
+
+  Category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  categoryId String   @map("category_id")
+
+  status Status
+
+  userId String @map("user_id")
+
+  createdAt  DateTime  @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  exportedAt DateTime? @map("exported_at")
+
+  @@unique([url, userId])
+  @@map("articles")
+}
+
+model Note {
+  id String @id
+
+  title    String
+  markdown String
+
+  status Status
+
+  userId String @map("user_id")
+
+  createdAt  DateTime  @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  exportedAt DateTime? @map("exported_at")
+
+  @@unique([title, userId])
+  @@map("notes")
+}
+
+model Image {
+  id String @id
+
+  path        String
+  contentType String   @map("content_type") // e.g.: image/jpeg, image/png
+  fileSize    Int?     @map("file_size") // byte
+  width       Int? // pixel
+  height      Int? // pixel
+  tags        String[]
+  description String?
+
+  status Status
+
+  userId String @map("user_id")
+
+  createdAt  DateTime  @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  exportedAt DateTime? @map("exported_at")
+
+  @@unique([path, userId])
+  @@map("images")
+}
+
+model Book {
+  id    String @id
+  ISBN  String @map("isbn")
+  title String
+
+  googleTitle       String?  @map("google_title")
+  googleSubTitle    String?  @map("google_subtitle")
+  googleAuthors     String[] @map("google_authors")
+  googleDescription String?  @map("google_description")
+  googleImgSrc      String?  @map("google_img_src")
+  googleHref        String?  @map("google_href")
+
+  markdown String?
+
+  rating Int? // 1-5
+  tags   String[]
+
+  status Status
+
+  userId String @map("user_id")
+
+  createdAt  DateTime  @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  exportedAt DateTime? @map("exported_at")
+
+  @@unique([ISBN, userId])
+  @@map("books")
+}

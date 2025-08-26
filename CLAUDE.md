@@ -86,7 +86,7 @@ Content management system with clean domain architecture:
 - **Image**: File metadata tracking with tags, dimensions, and MinIO path storage
 - **Book**: ISBN-based book tracking with Google Books API integration and ratings
 
-Schema is maintained in `s-schema/schema.prisma` with String-based primary keys and comprehensive unique constraints per user.
+Schema is maintained in `prisma/schema.prisma` with String-based primary keys and comprehensive unique constraints per user.
 
 ### Key Patterns
 - **Server Actions**: All mutations use Next.js server actions with `wrapServerSideErrorForClient`
@@ -96,7 +96,7 @@ Schema is maintained in `s-schema/schema.prisma` with String-based primary keys 
 - **UI Components**: Shadcn/ui foundation with Storybook documentation
 
 ### External Services
-- **Database**: PostgreSQL with Prisma ORM (schema in `s-schema/`)
+- **Database**: PostgreSQL with Prisma ORM (schema in `prisma/`)
 - **Object Storage**: MinIO (configurable, can be local or cloud)
 - **Monitoring**: Sentry for error tracking, Pushover for notifications
 - **Auth**: Auth0 integration via NextAuth.js

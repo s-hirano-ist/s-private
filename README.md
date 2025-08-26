@@ -156,7 +156,7 @@ Content management system with clean domain separation:
 - **User Isolation**: Every model includes `userId` for multi-tenant data separation
 - **Unique Constraints**: Comprehensive per-user unique constraints
 
-Schema location: `s-schema/schema.prisma`
+Schema location: `prisma/schema.prisma`
 
 ### Key Architectural Patterns
 
