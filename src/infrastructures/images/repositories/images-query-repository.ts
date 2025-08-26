@@ -6,10 +6,31 @@ import { minioClient } from "@/minio";
 import prisma from "@/prisma";
 import { ORIGINAL_IMAGE_PATH, THUMBNAIL_IMAGE_PATH } from "./common";
 
-async function findByPath(path: string, userId: string): Promise<{} | null> {
+async function findByPath(
+	path: string,
+	userId: string,
+): Promise<{
+	id: string;
+	path: string;
+	contentType: string;
+	fileSize: number | null;
+	width: number | null;
+	height: number | null;
+	tags: string[];
+	description: string | null;
+} | null> {
 	const data = await prisma.image.findUnique({
 		where: { path_userId: { path, userId } },
-		select: {},
+		select: {
+			id: true,
+			path: true,
+			contentType: true,
+			fileSize: true,
+			width: true,
+			height: true,
+			tags: true,
+			description: true,
+		},
 	});
 	return data;
 }
@@ -49,9 +70,18 @@ async function getFromStorage(
 	return data;
 }
 
+async function getFromStorageOrThrow(
+	path: string,
+	isThumbnail: boolean,
+): Promise<void> {
+	const objKey = `${isThumbnail ? THUMBNAIL_IMAGE_PATH : ORIGINAL_IMAGE_PATH}/${path}`;
+	await minioClient.statObject(env.MINIO_BUCKET_NAME, objKey);
+}
+
 export const imagesQueryRepository: IImagesQueryRepository = {
 	findByPath,
 	findMany,
 	count,
 	getFromStorage,
+	getFromStorageOrThrow,
 };

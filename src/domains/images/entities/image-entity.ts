@@ -2,12 +2,12 @@ import sharp from "sharp";
 import z from "zod";
 import {
 	CreatedAt,
-	ExportedAt,
+	ExportedStatus,
 	Id,
 	makeCreatedAt,
+	makeExportedStatus,
 	makeId,
-	makeStatus,
-	Status,
+	UnexportedStatus,
 	UserId,
 } from "@/domains/common/entities/common-entity";
 import { createEntityWithErrorHandling } from "@/domains/common/services/entity-factory";
@@ -58,16 +58,24 @@ export const makeOriginalBuffer = async (file: File) => {
 	return Buffer.from(await file.arrayBuffer());
 };
 
-export const makeThumbnailBuffer = async (file: File) => {
+export const makeThumbnailBufferFromFile = async (file: File) => {
 	const originalBuffer = Buffer.from(await file.arrayBuffer());
 	return await sharp(originalBuffer)
 		.resize(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT)
 		.toBuffer();
 };
+export const makeThumbnailBufferFromBuffer = async (buffer: Buffer) => {
+	return await sharp(buffer)
+		.resize(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT)
+		.toBuffer();
+};
+export const makeMetadata = async (buffer: Buffer) => {
+	return sharp(buffer).metadata();
+};
 
 // Entities
 
-const image = z.object({
+const Base = z.object({
 	id: Id,
 	userId: UserId,
 	path: Path,
@@ -77,11 +85,14 @@ const image = z.object({
 	height: Pixel,
 	tags: z.array(Tag).optional(),
 	description: Description,
-	status: Status,
 	createdAt: CreatedAt,
-	exportedAt: ExportedAt,
 });
-export type Image = z.infer<typeof image>;
+
+export const UnexportedImage = Base.extend({ status: UnexportedStatus });
+export type UnexportedImage = Readonly<z.infer<typeof UnexportedImage>>;
+
+const ExportedImage = Base.extend(ExportedStatus.shape);
+type ExportedImage = Readonly<z.infer<typeof ExportedImage>>;
 
 type CreateImageArgs = Readonly<{
 	userId: UserId;
@@ -94,15 +105,41 @@ type CreateImageArgs = Readonly<{
 	description?: Description;
 }>;
 
+type UpdateImageArgs = Readonly<{
+	path?: Path;
+	contentType?: ContentType;
+	fileSize?: FileSize;
+	width?: Pixel;
+	height?: Pixel;
+	tags?: Array<Tag>;
+	description?: Description;
+}>;
+
 export const imageEntity = {
-	create: (args: CreateImageArgs): Image => {
+	create: (args: CreateImageArgs): UnexportedImage => {
 		return createEntityWithErrorHandling(() =>
 			Object.freeze({
 				id: makeId(),
-				status: makeStatus("UNEXPORTED"),
+				status: "UNEXPORTED",
 				createdAt: makeCreatedAt(),
 				...args,
 			}),
 		);
+	},
+
+	update: (image: UnexportedImage, args: UpdateImageArgs): UnexportedImage => {
+		return createEntityWithErrorHandling(() =>
+			Object.freeze({ ...image, ...args }),
+		);
+	},
+
+	export: (image: UnexportedImage): ExportedImage => {
+		return createEntityWithErrorHandling(() => {
+			const exportedStatus = makeExportedStatus();
+			return Object.freeze({
+				...image,
+				...exportedStatus,
+			});
+		});
 	},
 };

@@ -20,7 +20,8 @@ describe("deleteBooks", () => {
 		errorModule.wrapServerSideErrorForClient as Mock;
 	const mockMakeId = commonEntityModule.makeId as Mock;
 	const mockMakeUserId = commonEntityModule.makeUserId as Mock;
-	const mockMakeStatus = commonEntityModule.makeStatus as Mock;
+	const mockMakeUnexportedStatus =
+		commonEntityModule.makeUnexportedStatus as Mock;
 
 	beforeEach(() => {
 		vi.clearAllMocks();
@@ -28,7 +29,7 @@ describe("deleteBooks", () => {
 
 		mockMakeId.mockImplementation((id) => id);
 		mockMakeUserId.mockImplementation((userId) => userId);
-		mockMakeStatus.mockImplementation((status) => status);
+		mockMakeUnexportedStatus.mockImplementation(() => "UNEXPORTED");
 	});
 
 	test("should successfully delete a book when user has permission", async () => {

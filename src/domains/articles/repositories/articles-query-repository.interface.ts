@@ -3,7 +3,21 @@ import type { Url } from "../entities/article-entity";
 import type { ArticlesFindManyParams } from "../types/query-params";
 
 export type IArticlesQueryRepository = {
-	findByUrl(url: Url, userId: UserId): Promise<{} | null>;
+	findByUrl(
+		url: Url,
+		userId: UserId,
+	): Promise<{
+		title: string;
+		url: string;
+		quote: string | null;
+		ogTitle: string | null;
+		ogDescription: string | null;
+		ogImageUrl: string | null;
+		Category: {
+			id: string;
+			name: string;
+		};
+	} | null>;
 	findMany(
 		userId: UserId,
 		status: Status,

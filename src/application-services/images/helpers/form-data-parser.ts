@@ -5,7 +5,7 @@ import {
 	makeFileSize,
 	makeOriginalBuffer,
 	makePath,
-	makeThumbnailBuffer,
+	makeThumbnailBufferFromFile,
 } from "@/domains/images/entities/image-entity";
 
 export const parseAddImageFormData = async (
@@ -20,6 +20,6 @@ export const parseAddImageFormData = async (
 		contentType: makeContentType(file.type),
 		fileSize: makeFileSize(file.size),
 		originalBuffer: await makeOriginalBuffer(file),
-		thumbnailBuffer: await makeThumbnailBuffer(file),
+		thumbnailBuffer: await makeThumbnailBufferFromFile(file),
 	};
 };

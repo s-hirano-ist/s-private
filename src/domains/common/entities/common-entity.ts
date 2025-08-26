@@ -3,11 +3,6 @@ import { idGenerator } from "../services/id-generator";
 
 // common value objects
 
-export const Status = z.enum(["UNEXPORTED", "EXPORTED"]).brand<"Status">();
-export type Status = z.infer<typeof Status>;
-export const makeStatus = (v: "UNEXPORTED" | "EXPORTED"): Status =>
-	Status.parse(v);
-
 export const Id = z
 	.uuid({ version: "v7" })
 	.default(() => idGenerator.uuidv7())
@@ -24,8 +19,34 @@ export const makeUserId = (v: string): UserId => UserId.parse(v);
 
 export const CreatedAt = z.date().brand<"CreatedAt">();
 export type CreatedAt = z.infer<typeof CreatedAt>;
-export const makeCreatedAt = (): CreatedAt => CreatedAt.parse(new Date());
+export const makeCreatedAt = (createdAt?: Date): CreatedAt => {
+	if (!createdAt) return CreatedAt.parse(new Date());
+	return CreatedAt.parse(createdAt);
+};
 
-export const ExportedAt = z.date().nullable().optional().brand<"ExportedAt">();
+export const UnexportedStatus = z.literal("UNEXPORTED");
+export type UnexportedStatus = z.infer<typeof UnexportedStatus>;
+export const makeUnexportedStatus = (): UnexportedStatus =>
+	UnexportedStatus.parse("UNEXPORTED");
+
+export const ExportedAt = z.date().brand<"ExportedAt">();
 export type ExportedAt = z.infer<typeof ExportedAt>;
-export const makeExportedAt = (): ExportedAt => ExportedAt.parse(new Date());
+export const makeExportedAt = (exportedAt?: Date): ExportedAt => {
+	if (!exportedAt) return ExportedAt.parse(new Date());
+	return ExportedAt.parse(exportedAt);
+};
+
+export const ExportedStatus = z.object({
+	status: z.literal("EXPORTED"),
+	exportedAt: ExportedAt,
+});
+export type ExportedStatus = z.infer<typeof ExportedStatus>;
+export const makeExportedStatus = (): ExportedStatus =>
+	ExportedStatus.parse({ status: "EXPORTED", exportedAt: new Date() });
+
+export type Status = UnexportedStatus | ExportedStatus["status"];
+
+// Legacy compatibility - will be removed in future
+export const makeStatus = (status: "UNEXPORTED" | "EXPORTED"): Status => {
+	return status as Status;
+};

@@ -1,6 +1,10 @@
-import type { Book } from "@/domains/books/entities/books-entity";
+import type {
+	ISBN,
+	UnexportedBook,
+} from "@/domains/books/entities/books-entity";
 import { BookCreatedEvent } from "@/domains/books/events/book-created-event";
 import { BookDeletedEvent } from "@/domains/books/events/book-deleted-event";
+import { BookUpdatedEvent } from "@/domains/books/events/book-updated-event";
 import type { IBooksCommandRepository } from "@/domains/books/repositories/books-command-repository.interface";
 import type {
 	Id,
@@ -13,9 +17,10 @@ import prisma from "@/prisma";
 
 initializeEventHandlers();
 
-async function create(data: Book) {
+async function create(data: UnexportedBook) {
 	const response = await prisma.book.create({
 		data,
+		select: { ISBN: true, title: true, userId: true },
 	});
 	await eventDispatcher.dispatch(
 		new BookCreatedEvent({
@@ -23,6 +28,22 @@ async function create(data: Book) {
 			title: response.title,
 			userId: response.userId,
 			caller: "addBooks",
+		}),
+	);
+}
+
+async function update(ISBN: ISBN, userId: UserId, data: UnexportedBook) {
+	const response = await prisma.book.update({
+		where: { ISBN_userId: { ISBN, userId } },
+		data,
+		select: { ISBN: true, title: true, userId: true },
+	});
+	await eventDispatcher.dispatch(
+		new BookUpdatedEvent({
+			ISBN: response.ISBN,
+			title: response.title,
+			userId: response.userId,
+			caller: "updateBook",
 		}),
 	);
 }
@@ -41,7 +62,25 @@ async function deleteById(id: Id, userId: UserId, status: Status) {
 	);
 }
 
+async function fetchBookFromGitHub(): Promise<UnexportedBook[]> {
+	const url =
+		"https://raw.githubusercontent.com/s-hirano-ist/s-public/main/src/data/book/data.gen.json";
+	try {
+		const response = await fetch(url);
+		if (!response.ok) {
+			throw new Error(`Failed to fetch book data: ${response.statusText}`);
+		}
+		const data = await response.json();
+		return data as UnexportedBook[];
+	} catch (error) {
+		console.error("Error fetching book data:", error);
+		throw error;
+	}
+}
+
 export const booksCommandRepository: IBooksCommandRepository = {
 	create,
+	update,
 	deleteById,
+	fetchBookFromGitHub,
 };

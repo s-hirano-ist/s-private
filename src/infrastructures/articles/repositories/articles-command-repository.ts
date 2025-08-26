@@ -1,6 +1,10 @@
-import type { Article } from "@/domains/articles/entities/article-entity";
+import type {
+	UnexportedArticle,
+	Url,
+} from "@/domains/articles/entities/article-entity";
 import { ArticleCreatedEvent } from "@/domains/articles/events/article-created-event";
 import { ArticleDeletedEvent } from "@/domains/articles/events/article-deleted-event";
+import { ArticleUpdatedEvent } from "@/domains/articles/events/article-updated-event";
 import type { IArticlesCommandRepository } from "@/domains/articles/repositories/articles-command-repository.interface";
 import type {
 	Id,
@@ -13,7 +17,7 @@ import prisma from "@/prisma";
 
 initializeEventHandlers();
 
-async function create(data: Article) {
+async function create(data: UnexportedArticle) {
 	const response = await prisma.article.create({
 		data: {
 			id: data.id,
@@ -60,6 +64,30 @@ async function create(data: Article) {
 	);
 }
 
+async function update(url: Url, userId: UserId, data: UnexportedArticle) {
+	const response = await prisma.article.update({
+		where: { url_userId: { url, userId } },
+		data,
+		select: {
+			title: true,
+			userId: true,
+			url: true,
+			Category: true,
+			quote: true,
+		},
+	});
+	await eventDispatcher.dispatch(
+		new ArticleUpdatedEvent({
+			title: response.title,
+			url: response.url,
+			quote: response.quote ?? "",
+			categoryName: response.Category.name,
+			userId: response.userId,
+			caller: "updateArticle",
+		}),
+	);
+}
+
 async function deleteById(id: Id, userId: UserId, status: Status) {
 	const data = await prisma.article.delete({
 		where: { id, userId, status },
@@ -76,5 +104,6 @@ async function deleteById(id: Id, userId: UserId, status: Status) {
 
 export const articlesCommandRepository: IArticlesCommandRepository = {
 	create,
+	update,
 	deleteById,
 };

@@ -3,7 +3,7 @@ import type { Status } from "@/domains/common/entities/common-entity";
 import {
 	makeCreatedAt,
 	makeId,
-	makeStatus,
+	makeUnexportedStatus,
 	makeUserId,
 } from "@/domains/common/entities/common-entity";
 import {
@@ -38,7 +38,7 @@ describe("NotesCommandRepository", () => {
 				markdown: makeMarkdown("# Test Note\n\nThis is test markdown note."),
 				userId: makeUserId("user123"),
 				id: makeId("0198bfc4-444e-73e8-9ef6-eb9b250ed1ae"),
-				status: makeStatus("UNEXPORTED"),
+				status: makeUnexportedStatus(),
 				createdAt: makeCreatedAt(),
 			});
 
@@ -57,7 +57,7 @@ describe("NotesCommandRepository", () => {
 					markdown: makeMarkdown("# Test Note\n\nThis is test markdown note."),
 					userId: makeUserId("user123"),
 					id: makeId("0198bfc4-444e-73e8-9ef6-eb9b250ed1ae"),
-					status: makeStatus("EXPORTED"),
+					status: makeUnexportedStatus(),
 					createdAt: makeCreatedAt(),
 				}),
 			).rejects.toThrow("Database constraint error");
@@ -70,7 +70,7 @@ describe("NotesCommandRepository", () => {
 		test("should delete note and log success", async () => {
 			const id = makeId("0198bfc4-444e-73e8-9ef6-eb9b250ed1ae");
 			const userId = makeUserId("test-user-id");
-			const status = makeStatus("UNEXPORTED");
+			const status = "UNEXPORTED";
 
 			const mockDeletedNote = {
 				title: "Deleted Note",
@@ -86,7 +86,7 @@ describe("NotesCommandRepository", () => {
 		test("should delete note with different status", async () => {
 			const id = makeId("0198bfc5-555f-74f9-af07-fc9c251fe2bf");
 			const userId = makeUserId("test-user-id-2");
-			const status = makeStatus("EXPORTED");
+			const status = "EXPORTED";
 
 			const mockDeletedNote = {
 				title: "Another Note",
@@ -102,7 +102,7 @@ describe("NotesCommandRepository", () => {
 		test("should handle deletion errors", async () => {
 			const id = makeId("0198bfc4-444e-73e8-9ef6-eb9b250ed1ae");
 			const userId = makeUserId("test-user-id");
-			const status = makeStatus("UNEXPORTED");
+			const status = "UNEXPORTED";
 
 			vi.mocked(prisma.note.delete).mockRejectedValue(
 				new Error("Note not found"),

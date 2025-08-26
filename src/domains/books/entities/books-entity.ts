@@ -1,12 +1,12 @@
 import { z } from "zod";
 import {
 	CreatedAt,
-	ExportedAt,
+	ExportedStatus,
 	Id,
 	makeCreatedAt,
+	makeExportedStatus,
 	makeId,
-	makeStatus,
-	Status,
+	UnexportedStatus,
 	UserId,
 } from "@/domains/common/entities/common-entity";
 import { createEntityWithErrorHandling } from "@/domains/common/services/entity-factory";
@@ -27,52 +27,54 @@ const BookTitle = z
 	.min(1, { message: "required" })
 	.max(256, { message: "tooLong" })
 	.brand<"BookTitle">();
-type BookTitle = z.infer<typeof BookTitle>;
+export type BookTitle = z.infer<typeof BookTitle>;
 export const makeBookTitle = (v: string): BookTitle => BookTitle.parse(v);
 
 const GoogleTitle = z.string().nullable().brand<"GoogleTitle">();
-type GoogleTitle = z.infer<typeof GoogleTitle>;
-export const makeGoogleTitle = (v: string | null): GoogleTitle =>
+export type GoogleTitle = z.infer<typeof GoogleTitle>;
+export const makeGoogleTitle = (v: string | null | undefined): GoogleTitle =>
 	GoogleTitle.parse(v);
 
 const GoogleSubTitle = z.string().nullable().brand<"GoogleSubTitle">();
-type GoogleSubTitle = z.infer<typeof GoogleSubTitle>;
-export const makeGoogleSubTitle = (v: string | null): GoogleSubTitle =>
-	GoogleSubTitle.parse(v);
+export type GoogleSubTitle = z.infer<typeof GoogleSubTitle>;
+export const makeGoogleSubTitle = (
+	v: string | null | undefined,
+): GoogleSubTitle => GoogleSubTitle.parse(v);
 
 const GoogleAuthors = z.array(z.string()).nullable().brand<"GoogleAuthors">();
-type GoogleAuthors = z.infer<typeof GoogleAuthors>;
-export const makeGoogleAuthors = (v: string[] | null): GoogleAuthors =>
-	GoogleAuthors.parse(v);
+export type GoogleAuthors = z.infer<typeof GoogleAuthors>;
+export const makeGoogleAuthors = (
+	v: string[] | null | undefined,
+): GoogleAuthors => GoogleAuthors.parse(v);
 
 const GoogleDescription = z.string().nullable().brand<"GoogleDescription">();
-type GoogleDescription = z.infer<typeof GoogleDescription>;
-export const makeGoogleDescription = (v: string | null): GoogleDescription =>
-	GoogleDescription.parse(v);
+export type GoogleDescription = z.infer<typeof GoogleDescription>;
+export const makeGoogleDescription = (
+	v: string | null | undefined,
+): GoogleDescription => GoogleDescription.parse(v);
 
 const GoogleImgSrc = z.string().nullable().brand<"GoogleImgSrc">();
-type GoogleImgSrc = z.infer<typeof GoogleImgSrc>;
-export const makeGoogleImgSrc = (v: string | null): GoogleImgSrc =>
+export type GoogleImgSrc = z.infer<typeof GoogleImgSrc>;
+export const makeGoogleImgSrc = (v: string | null | undefined): GoogleImgSrc =>
 	GoogleImgSrc.parse(v);
 
 const GoogleHref = z.string().nullable().brand<"GoogleHref">();
-type GoogleHref = z.infer<typeof GoogleHref>;
-export const makeGoogleHref = (v: string | null): GoogleHref =>
+export type GoogleHref = z.infer<typeof GoogleHref>;
+export const makeGoogleHref = (v: string | null | undefined): GoogleHref =>
 	GoogleHref.parse(v);
 
 const BookMarkdown = z.string().nullable().brand<"BookMarkdown">();
-type BookMarkdown = z.infer<typeof BookMarkdown>;
+export type BookMarkdown = z.infer<typeof BookMarkdown>;
 export const makeBookMarkdown = (v: string | null): BookMarkdown =>
 	BookMarkdown.parse(v);
 
 // Entities
 
-const book = z.object({
+const Base = z.object({
 	id: Id,
 	userId: UserId,
 	ISBN: ISBN,
 	title: BookTitle,
-	status: Status,
 	googleTitle: GoogleTitle.optional(),
 	googleSubTitle: GoogleSubTitle.optional(),
 	googleAuthors: GoogleAuthors.optional(),
@@ -81,9 +83,13 @@ const book = z.object({
 	googleHref: GoogleHref.optional(),
 	markdown: BookMarkdown.optional(),
 	createdAt: CreatedAt,
-	exportedAt: ExportedAt,
 });
-export type Book = Readonly<z.infer<typeof book>>;
+
+export const UnexportedBook = Base.extend({ status: UnexportedStatus });
+export type UnexportedBook = Readonly<z.infer<typeof UnexportedBook>>;
+
+const ExportedBook = Base.extend(ExportedStatus.shape);
+type ExportedBook = Readonly<z.infer<typeof ExportedBook>>;
 
 type CreateBookArgs = Readonly<{
 	userId: UserId;
@@ -91,15 +97,42 @@ type CreateBookArgs = Readonly<{
 	title: BookTitle;
 }>;
 
+type UpdateBookArgs = Readonly<{
+	title: BookTitle;
+	googleTitle: GoogleTitle;
+	googleSubTitle: GoogleSubTitle;
+	googleAuthors: GoogleAuthors;
+	googleDescription: GoogleDescription;
+	googleImgSrc: GoogleImgSrc;
+	googleHref: GoogleHref;
+	markdown: BookMarkdown;
+}>;
+
 export const bookEntity = {
-	create: (args: CreateBookArgs): Book => {
+	create: (args: CreateBookArgs): UnexportedBook => {
 		return createEntityWithErrorHandling(() =>
 			Object.freeze({
 				id: makeId(),
-				status: makeStatus("UNEXPORTED"),
+				status: "UNEXPORTED",
 				createdAt: makeCreatedAt(),
 				...args,
 			}),
 		);
+	},
+
+	update: (book: UnexportedBook, args: UpdateBookArgs): UnexportedBook => {
+		return createEntityWithErrorHandling(() =>
+			Object.freeze({ ...book, ...args }),
+		);
+	},
+
+	export: (book: UnexportedBook): ExportedBook => {
+		return createEntityWithErrorHandling(() => {
+			const exportedStatus = makeExportedStatus();
+			return Object.freeze({
+				...book,
+				...exportedStatus,
+			});
+		});
 	},
 };

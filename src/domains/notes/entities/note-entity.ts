@@ -1,12 +1,12 @@
 import { z } from "zod";
 import {
 	CreatedAt,
-	ExportedAt,
+	ExportedStatus,
 	Id,
 	makeCreatedAt,
+	makeExportedStatus,
 	makeId,
-	makeStatus,
-	Status,
+	UnexportedStatus,
 	UserId,
 } from "@/domains/common/entities/common-entity";
 import { createEntityWithErrorHandling } from "@/domains/common/services/entity-factory";
@@ -25,21 +25,24 @@ const Markdown = z
 	.string({ message: "required" })
 	.min(1, { message: "required" })
 	.brand<"Markdown">();
-type Markdown = z.infer<typeof Markdown>;
+export type Markdown = z.infer<typeof Markdown>;
 export const makeMarkdown = (v: string): Markdown => Markdown.parse(v);
 
 // Entities
 
-const note = z.object({
+const Base = z.object({
 	id: Id,
 	userId: UserId,
 	title: NoteTitle,
 	markdown: Markdown,
-	status: Status,
 	createdAt: CreatedAt,
-	exportedAt: ExportedAt,
 });
-export type Note = Readonly<z.infer<typeof note>>;
+
+export const UnexportedNote = Base.extend({ status: UnexportedStatus });
+export type UnexportedNote = Readonly<z.infer<typeof UnexportedNote>>;
+
+const ExportedNote = Base.extend(ExportedStatus.shape);
+type ExportedNote = Readonly<z.infer<typeof ExportedNote>>;
 
 type CreateNoteArgs = Readonly<{
 	userId: UserId;
@@ -47,15 +50,36 @@ type CreateNoteArgs = Readonly<{
 	markdown: Markdown;
 }>;
 
+type UpdateNoteArgs = Readonly<{
+	title: NoteTitle;
+	markdown: Markdown;
+}>;
+
 export const noteEntity = {
-	create: (args: CreateNoteArgs): Note => {
+	create: (args: CreateNoteArgs): UnexportedNote => {
 		return createEntityWithErrorHandling(() =>
 			Object.freeze({
 				id: makeId(),
-				status: makeStatus("UNEXPORTED"),
+				status: "UNEXPORTED",
 				createdAt: makeCreatedAt(),
 				...args,
 			}),
 		);
+	},
+
+	update: (note: UnexportedNote, args: UpdateNoteArgs): UnexportedNote => {
+		return createEntityWithErrorHandling(() =>
+			Object.freeze({ ...note, ...args }),
+		);
+	},
+
+	export: (note: UnexportedNote): ExportedNote => {
+		return createEntityWithErrorHandling(() => {
+			const exportedStatus = makeExportedStatus();
+			return Object.freeze({
+				...note,
+				...exportedStatus,
+			});
+		});
 	},
 };

@@ -11,7 +11,7 @@ import {
 } from "@/common/utils/cache-tag-builder";
 import {
 	makeId,
-	makeStatus,
+	makeUnexportedStatus,
 	makeUserId,
 } from "@/domains/common/entities/common-entity";
 import { articlesCommandRepository } from "@/infrastructures/articles/repositories/articles-command-repository";
@@ -23,7 +23,7 @@ export async function deleteArticle(id: string): Promise<ServerAction> {
 	try {
 		const userId = await getSelfId();
 
-		const status = makeStatus("UNEXPORTED");
+		const status = makeUnexportedStatus();
 		await articlesCommandRepository.deleteById(
 			makeId(id),
 			makeUserId(userId),

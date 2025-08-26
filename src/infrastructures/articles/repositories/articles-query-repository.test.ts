@@ -1,8 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import {
-	makeStatus,
-	makeUserId,
-} from "@/domains/common/entities/common-entity";
+import { makeUserId } from "@/domains/common/entities/common-entity";
 import prisma from "@/prisma";
 import {
 	articlesQueryRepository,
@@ -47,7 +44,7 @@ describe("ArticlesQueryRepository", () => {
 
 			const result = await articlesQueryRepository.findMany(
 				makeUserId("user123"),
-				makeStatus("EXPORTED"),
+				"EXPORTED",
 				params,
 			);
 
@@ -91,7 +88,7 @@ describe("ArticlesQueryRepository", () => {
 
 			const result = await articlesQueryRepository.findMany(
 				makeUserId("user123"),
-				makeStatus("EXPORTED"),
+				"EXPORTED",
 				{},
 			);
 
@@ -131,7 +128,7 @@ describe("ArticlesQueryRepository", () => {
 
 			const result = await articlesQueryRepository.findMany(
 				makeUserId("user123"),
-				makeStatus("EXPORTED"),
+				"EXPORTED",
 				params,
 			);
 
@@ -167,11 +164,7 @@ describe("ArticlesQueryRepository", () => {
 			);
 
 			await expect(
-				articlesQueryRepository.findMany(
-					makeUserId("user123"),
-					makeStatus("EXPORTED"),
-					{},
-				),
+				articlesQueryRepository.findMany(makeUserId("user123"), "EXPORTED", {}),
 			).rejects.toThrow("Database connection error");
 
 			expect(prisma.article.findMany).toHaveBeenCalledWith({
@@ -195,7 +188,7 @@ describe("ArticlesQueryRepository", () => {
 
 			const result = await articlesQueryRepository.count(
 				makeUserId("user123"),
-				makeStatus("EXPORTED"),
+				"EXPORTED",
 			);
 
 			expect(prisma.article.count).toHaveBeenCalledWith({
@@ -209,7 +202,7 @@ describe("ArticlesQueryRepository", () => {
 
 			const result = await articlesQueryRepository.count(
 				makeUserId("user123"),
-				makeStatus("UNEXPORTED"),
+				"UNEXPORTED",
 			);
 
 			expect(prisma.article.count).toHaveBeenCalledWith({
@@ -224,10 +217,7 @@ describe("ArticlesQueryRepository", () => {
 			);
 
 			await expect(
-				articlesQueryRepository.count(
-					makeUserId("user123"),
-					makeStatus("EXPORTED"),
-				),
+				articlesQueryRepository.count(makeUserId("user123"), "EXPORTED"),
 			).rejects.toThrow("Database count error");
 
 			expect(prisma.article.count).toHaveBeenCalledWith({

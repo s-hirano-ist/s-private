@@ -1,9 +1,6 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
-import {
-	makeStatus,
-	makeUserId,
-} from "@/domains/common/entities/common-entity";
+import { makeUserId } from "@/domains/common/entities/common-entity";
 import { makeNoteTitle } from "@/domains/notes/entities/note-entity";
 import prisma from "@/prisma";
 import { notesQueryRepository } from "./notes-query-repository";
@@ -89,7 +86,7 @@ describe("NotesQueryRepository", () => {
 
 			const result = await notesQueryRepository.findMany(
 				makeUserId("user123"),
-				makeStatus("EXPORTED"),
+				"EXPORTED",
 				params,
 			);
 
@@ -106,7 +103,7 @@ describe("NotesQueryRepository", () => {
 
 			const result = await notesQueryRepository.findMany(
 				makeUserId("user123"),
-				makeStatus("EXPORTED"),
+				"EXPORTED",
 				{},
 			);
 
@@ -128,7 +125,7 @@ describe("NotesQueryRepository", () => {
 
 			const result = await notesQueryRepository.findMany(
 				makeUserId("user123"),
-				makeStatus("EXPORTED"),
+				"EXPORTED",
 				params,
 			);
 
@@ -146,11 +143,7 @@ describe("NotesQueryRepository", () => {
 			);
 
 			await expect(
-				notesQueryRepository.findMany(
-					makeUserId("user123"),
-					makeStatus("EXPORTED"),
-					{},
-				),
+				notesQueryRepository.findMany(makeUserId("user123"), "EXPORTED", {}),
 			).rejects.toThrow("Database connection error");
 
 			expect(prisma.note.findMany).toHaveBeenCalledWith({
@@ -166,7 +159,7 @@ describe("NotesQueryRepository", () => {
 
 			const result = await notesQueryRepository.count(
 				makeUserId("user123"),
-				makeStatus("EXPORTED"),
+				"EXPORTED",
 			);
 
 			expect(prisma.note.count).toHaveBeenCalledWith({
@@ -180,7 +173,7 @@ describe("NotesQueryRepository", () => {
 
 			const result = await notesQueryRepository.count(
 				makeUserId("user123"),
-				makeStatus("UNEXPORTED"),
+				"UNEXPORTED",
 			);
 
 			expect(prisma.note.count).toHaveBeenCalledWith({
@@ -195,10 +188,7 @@ describe("NotesQueryRepository", () => {
 			);
 
 			await expect(
-				notesQueryRepository.count(
-					makeUserId("user123"),
-					makeStatus("EXPORTED"),
-				),
+				notesQueryRepository.count(makeUserId("user123"), "EXPORTED"),
 			).rejects.toThrow("Database count error");
 
 			expect(prisma.note.count).toHaveBeenCalledWith({

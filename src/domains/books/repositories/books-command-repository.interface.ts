@@ -3,9 +3,11 @@ import type {
 	Status,
 	UserId,
 } from "@/domains/common/entities/common-entity";
-import type { Book } from "../entities/books-entity";
+import type { ISBN, UnexportedBook } from "../entities/books-entity";
 
 export type IBooksCommandRepository = {
-	create(data: Book): Promise<void>;
+	create(data: UnexportedBook): Promise<void>;
+	update(ISBN: ISBN, userId: UserId, data: UnexportedBook): Promise<void>;
 	deleteById(id: Id, userId: UserId, status: Status): Promise<void>;
+	fetchBookFromGitHub(): Promise<UnexportedBook[]>;
 };
