@@ -1,7 +1,5 @@
 import fs from "node:fs";
 import { join } from "node:path";
-import * as Minio from "minio";
-import sharp from "sharp";
 import {
 	makeArticleTitle,
 	makeCategoryName,
@@ -31,8 +29,10 @@ import {
 import {
 	makeContentType,
 	makeFileSize,
+	makeMetadata,
 	makePath,
 	makePixel,
+	makeThumbnailBufferFromBuffer,
 } from "@/domains/images/entities/image-entity";
 import { ImagesDomainService } from "@/domains/images/services/images-domain-service";
 import {
@@ -48,52 +48,10 @@ import { imagesCommandRepository } from "@/infrastructures/images/repositories/i
 import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
 import { notesCommandRepository } from "@/infrastructures/notes/repositories/notes-command-repository";
 import { notesQueryRepository } from "@/infrastructures/notes/repositories/notes-query-repository";
-import { PrismaClient } from "../src/generated";
-
-type Book = {
-	ISBN: string;
-	title: string;
-	googleTitle: string;
-	googleSubtitle: string;
-	googleAuthors: string[];
-	googleDescription: string;
-	googleImgSrc: string;
-	googleHref: string;
-	tags: string[];
-	rating: number;
-};
-
-async function fetchBookData(): Promise<Book[]> {
-	const url =
-		"https://raw.githubusercontent.com/s-hirano-ist/s-public/main/src/data/book/data.gen.json";
-	try {
-		const response = await fetch(url);
-		if (!response.ok) {
-			throw new Error(`Failed to fetch book data: ${response.statusText}`);
-		}
-		const data = await response.json();
-		return data as Book[];
-	} catch (error) {
-		console.error("Error fetching book data:", error);
-		throw error;
-	}
-}
 
 // NOTE: sync with s-private/src/constants
 export const ORIGINAL_IMAGE_PATH = "images/original";
 export const THUMBNAIL_IMAGE_PATH = "images/thumbnail";
-const THUMBNAIL_WIDTH = 192;
-const THUMBNAIL_HEIGHT = 192;
-
-const prisma = new PrismaClient();
-
-const minioClient = new Minio.Client({
-	endPoint: process.env.MINIO_HOST ?? "",
-	port: Number(process.env.MINIO_PORT) ?? 9000,
-	useSSL: true,
-	accessKey: process.env.MINIO_ACCESS_KEY,
-	secretKey: process.env.MINIO_SECRET_KEY,
-});
 
 const MINIO_BUCKET_NAME = process.env.MINIO_BUCKET_NAME;
 if (!MINIO_BUCKET_NAME) throw new Error("Env not set.");
@@ -117,17 +75,11 @@ function getJsonBySlug(slug: string, contentsDirectory: string) {
 	return JSON.parse(fileContents);
 }
 
-async function optimizeImage(buffer: Buffer) {
-	return await sharp(buffer)
-		.resize(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT)
-		.toBuffer();
-}
-
 async function addBooks(userId: UserId) {
 	const path = "book";
 	const contentsDirectory = join(process.cwd(), "markdown", path);
 
-	const bookData = await fetchBookData();
+	const bookData = await booksCommandRepository.fetchBookFromGitHub();
 	const slugs = getAllSlugs(contentsDirectory);
 
 	const booksDomainService = new BooksDomainService(booksQueryRepository);
@@ -151,7 +103,7 @@ async function addBooks(userId: UserId) {
 				userId,
 				makeBookTitle(book.title),
 				makeGoogleTitle(book.googleTitle),
-				makeGoogleSubTitle(book.googleSubtitle),
+				makeGoogleSubTitle(book.googleSubTitle),
 				makeGoogleAuthors(book.googleAuthors),
 				makeGoogleDescription(book.googleDescription),
 				makeGoogleImgSrc(book.googleImgSrc),
@@ -189,25 +141,25 @@ async function addImages(userId: UserId) {
 	await Promise.all(
 		slugs.map(async (slug) => {
 			const uint8ArrayImage = fs.readFileSync(join(imagesDirectory, slug));
-			const metadata = await sharp(uint8ArrayImage).metadata();
+			const metadata = await makeMetadata(uint8ArrayImage);
 
-			const optimizedUint8ArrayImage = await optimizeImage(uint8ArrayImage);
+			const optimizedUint8ArrayImage =
+				await makeThumbnailBufferFromBuffer(uint8ArrayImage);
 
-			const originalPath = `${ORIGINAL_IMAGE_PATH}/${slug}`;
-			const thumbnailPath = `${THUMBNAIL_IMAGE_PATH}/${slug}`;
+			const path = makePath(slug);
 
 			// Check if objects already exist before uploading
 			try {
-				await minioClient.statObject(MINIO_BUCKET_NAME ?? "", originalPath);
-				console.log(`Original image already exists: ${originalPath}`);
+				imagesQueryRepository.getFromStorageOrThrow(path, false);
+				console.log(`Original image already exists: ${slug}`);
 			} catch (_error) {
 				try {
-					console.log(`adding image: ${originalPath}`);
+					console.log(`adding image: ${slug}`);
 					// Object doesn't exist, upload it
-					await minioClient.putObject(
-						MINIO_BUCKET_NAME ?? "",
-						originalPath,
+					await imagesCommandRepository.uploadToStorage(
+						path,
 						uint8ArrayImage,
+						false,
 					);
 				} catch (_error) {
 					console.error("Unexpected error occurred");
@@ -215,22 +167,20 @@ async function addImages(userId: UserId) {
 			}
 
 			try {
-				await minioClient.statObject(MINIO_BUCKET_NAME ?? "", thumbnailPath);
-				console.log(`Thumbnail image already exists: ${thumbnailPath}`);
+				imagesQueryRepository.getFromStorageOrThrow(path, true);
+				console.log(`Thumbnail image already exists: ${slug}`);
 			} catch (_error) {
 				try {
 					// Object doesn't exist, upload it
-					await minioClient.putObject(
-						MINIO_BUCKET_NAME ?? "",
-						thumbnailPath,
+					await imagesCommandRepository.uploadToStorage(
+						path,
 						optimizedUint8ArrayImage,
+						true,
 					);
 				} catch (_error) {
 					console.error("Unexpected error occurred");
 				}
 			}
-
-			const path = makePath(slug);
 
 			const { status, data } = await imagesDomainService.changeImageStatus(
 				path,
@@ -366,8 +316,6 @@ async function main() {
 	} catch (error) {
 		console.error(error);
 		process.exit(1);
-	} finally {
-		await prisma.$disconnect();
 	}
 }
 

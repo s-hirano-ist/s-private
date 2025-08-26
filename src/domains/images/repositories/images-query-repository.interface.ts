@@ -28,4 +28,5 @@ export type IImagesQueryRepository = {
 		path: string,
 		isThumbnail: boolean,
 	): Promise<NodeJS.ReadableStream>;
+	getFromStorageOrThrow(path: string, isThumbnail: boolean): Promise<void>;
 };

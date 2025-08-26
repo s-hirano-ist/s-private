@@ -32,32 +32,35 @@ export const makeBookTitle = (v: string): BookTitle => BookTitle.parse(v);
 
 const GoogleTitle = z.string().nullable().brand<"GoogleTitle">();
 export type GoogleTitle = z.infer<typeof GoogleTitle>;
-export const makeGoogleTitle = (v: string | null): GoogleTitle =>
+export const makeGoogleTitle = (v: string | null | undefined): GoogleTitle =>
 	GoogleTitle.parse(v);
 
 const GoogleSubTitle = z.string().nullable().brand<"GoogleSubTitle">();
 export type GoogleSubTitle = z.infer<typeof GoogleSubTitle>;
-export const makeGoogleSubTitle = (v: string | null): GoogleSubTitle =>
-	GoogleSubTitle.parse(v);
+export const makeGoogleSubTitle = (
+	v: string | null | undefined,
+): GoogleSubTitle => GoogleSubTitle.parse(v);
 
 const GoogleAuthors = z.array(z.string()).nullable().brand<"GoogleAuthors">();
 export type GoogleAuthors = z.infer<typeof GoogleAuthors>;
-export const makeGoogleAuthors = (v: string[] | null): GoogleAuthors =>
-	GoogleAuthors.parse(v);
+export const makeGoogleAuthors = (
+	v: string[] | null | undefined,
+): GoogleAuthors => GoogleAuthors.parse(v);
 
 const GoogleDescription = z.string().nullable().brand<"GoogleDescription">();
 export type GoogleDescription = z.infer<typeof GoogleDescription>;
-export const makeGoogleDescription = (v: string | null): GoogleDescription =>
-	GoogleDescription.parse(v);
+export const makeGoogleDescription = (
+	v: string | null | undefined,
+): GoogleDescription => GoogleDescription.parse(v);
 
 const GoogleImgSrc = z.string().nullable().brand<"GoogleImgSrc">();
 export type GoogleImgSrc = z.infer<typeof GoogleImgSrc>;
-export const makeGoogleImgSrc = (v: string | null): GoogleImgSrc =>
+export const makeGoogleImgSrc = (v: string | null | undefined): GoogleImgSrc =>
 	GoogleImgSrc.parse(v);
 
 const GoogleHref = z.string().nullable().brand<"GoogleHref">();
 export type GoogleHref = z.infer<typeof GoogleHref>;
-export const makeGoogleHref = (v: string | null): GoogleHref =>
+export const makeGoogleHref = (v: string | null | undefined): GoogleHref =>
 	GoogleHref.parse(v);
 
 const BookMarkdown = z.string().nullable().brand<"BookMarkdown">();

@@ -58,11 +58,19 @@ export const makeOriginalBuffer = async (file: File) => {
 	return Buffer.from(await file.arrayBuffer());
 };
 
-export const makeThumbnailBuffer = async (file: File) => {
+export const makeThumbnailBufferFromFile = async (file: File) => {
 	const originalBuffer = Buffer.from(await file.arrayBuffer());
 	return await sharp(originalBuffer)
 		.resize(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT)
 		.toBuffer();
+};
+export const makeThumbnailBufferFromBuffer = async (buffer: Buffer) => {
+	return await sharp(buffer)
+		.resize(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT)
+		.toBuffer();
+};
+export const makeMetadata = async (buffer: Buffer) => {
+	return sharp(buffer).metadata();
 };
 
 // Entities

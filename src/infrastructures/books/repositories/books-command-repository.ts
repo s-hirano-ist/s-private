@@ -62,8 +62,25 @@ async function deleteById(id: Id, userId: UserId, status: Status) {
 	);
 }
 
+async function fetchBookFromGitHub(): Promise<UnexportedBook[]> {
+	const url =
+		"https://raw.githubusercontent.com/s-hirano-ist/s-public/main/src/data/book/data.gen.json";
+	try {
+		const response = await fetch(url);
+		if (!response.ok) {
+			throw new Error(`Failed to fetch book data: ${response.statusText}`);
+		}
+		const data = await response.json();
+		return data as UnexportedBook[];
+	} catch (error) {
+		console.error("Error fetching book data:", error);
+		throw error;
+	}
+}
+
 export const booksCommandRepository: IBooksCommandRepository = {
 	create,
 	update,
 	deleteById,
+	fetchBookFromGitHub,
 };

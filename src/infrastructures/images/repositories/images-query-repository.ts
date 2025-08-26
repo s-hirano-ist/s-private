@@ -70,9 +70,18 @@ async function getFromStorage(
 	return data;
 }
 
+async function getFromStorageOrThrow(
+	path: string,
+	isThumbnail: boolean,
+): Promise<void> {
+	const objKey = `${isThumbnail ? THUMBNAIL_IMAGE_PATH : ORIGINAL_IMAGE_PATH}/${path}`;
+	await minioClient.statObject(env.MINIO_BUCKET_NAME, objKey);
+}
+
 export const imagesQueryRepository: IImagesQueryRepository = {
 	findByPath,
 	findMany,
 	count,
 	getFromStorage,
+	getFromStorageOrThrow,
 };

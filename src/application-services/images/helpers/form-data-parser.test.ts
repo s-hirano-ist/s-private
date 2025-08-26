@@ -6,7 +6,7 @@ import {
 	makeFileSize,
 	makeOriginalBuffer,
 	makePath,
-	makeThumbnailBuffer,
+	makeThumbnailBufferFromFile,
 } from "@/domains/images/entities/image-entity";
 import { parseAddImageFormData } from "./form-data-parser";
 
@@ -20,7 +20,7 @@ const mockMakePath = vi.mocked(makePath);
 const mockMakeContentType = vi.mocked(makeContentType);
 const mockMakeFileSize = vi.mocked(makeFileSize);
 const mockMakeOriginalBuffer = vi.mocked(makeOriginalBuffer);
-const mockMakeThumbnailBuffer = vi.mocked(makeThumbnailBuffer);
+const mockMakeThumbnailBuffer = vi.mocked(makeThumbnailBufferFromFile);
 
 describe("parseAddImageFormData", () => {
 	beforeEach(() => {
