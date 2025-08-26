@@ -1,4 +1,3 @@
-import "server-only";
 import { DuplicateError, UnexpectedError } from "@/common/error/error-classes";
 import type { IBooksQueryRepository } from "@/domains/books/repositories/books-query-repository.interface";
 import {

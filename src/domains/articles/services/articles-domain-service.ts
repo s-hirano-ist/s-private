@@ -1,4 +1,3 @@
-import "server-only";
 import { DuplicateError, UnexpectedError } from "@/common/error/error-classes";
 import type { IArticlesQueryRepository } from "@/domains/articles/repositories/articles-query-repository.interface";
 import {
