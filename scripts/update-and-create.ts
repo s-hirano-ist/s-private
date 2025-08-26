@@ -2,7 +2,6 @@ import fs from "node:fs";
 import { join } from "node:path";
 import * as Minio from "minio";
 import sharp from "sharp";
-import { v7 as randomUUIDv7 } from "uuid";
 import {
 	makeArticleTitle,
 	makeCategoryName,
@@ -13,7 +12,29 @@ import {
 	makeUrl,
 } from "@/domains/articles/entities/article-entity";
 import { ArticlesDomainService } from "@/domains/articles/services/articles-domain-service";
-import { makeUserId } from "@/domains/common/entities/common-entity";
+import {
+	makeBookMarkdown,
+	makeBookTitle,
+	makeGoogleAuthors,
+	makeGoogleDescription,
+	makeGoogleHref,
+	makeGoogleImgSrc,
+	makeGoogleSubTitle,
+	makeGoogleTitle,
+	makeISBN,
+} from "@/domains/books/entities/books-entity";
+import { BooksDomainService } from "@/domains/books/services/books-domain-service";
+import {
+	makeUserId,
+	type UserId,
+} from "@/domains/common/entities/common-entity";
+import {
+	makeContentType,
+	makeFileSize,
+	makePath,
+	makePixel,
+} from "@/domains/images/entities/image-entity";
+import { ImagesDomainService } from "@/domains/images/services/images-domain-service";
 import {
 	makeMarkdown,
 	makeNoteTitle,
@@ -21,6 +42,10 @@ import {
 import { NotesDomainService } from "@/domains/notes/services/notes-domain-service";
 import { articlesCommandRepository } from "@/infrastructures/articles/repositories/articles-command-repository";
 import { articlesQueryRepository } from "@/infrastructures/articles/repositories/articles-query-repository";
+import { booksCommandRepository } from "@/infrastructures/books/repositories/books-command-repository";
+import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
+import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
+import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
 import { notesCommandRepository } from "@/infrastructures/notes/repositories/notes-command-repository";
 import { notesQueryRepository } from "@/infrastructures/notes/repositories/notes-query-repository";
 import { PrismaClient } from "../src/generated";
@@ -98,16 +123,15 @@ async function optimizeImage(buffer: Buffer) {
 		.toBuffer();
 }
 
-async function addBooks() {
-	const USER_ID = process.env.USER_ID;
-	if (!USER_ID) throw new Error("Env not set.");
-
+async function addBooks(userId: UserId) {
 	const path = "book";
 	const contentsDirectory = join(process.cwd(), "markdown", path);
 
 	const bookData = await fetchBookData();
-
 	const slugs = getAllSlugs(contentsDirectory);
+
+	const booksDomainService = new BooksDomainService(booksQueryRepository);
+
 	await Promise.all(
 		bookData.map(async (book) => {
 			const slug = slugs.find((slug) => {
@@ -120,53 +144,34 @@ async function addBooks() {
 				);
 
 			const markdown = getMarkdownBySlug(slug, contentsDirectory);
+			const ISBN = makeISBN(book.ISBN);
 
-			const existingBook = await prisma.book.findUnique({
-				where: { ISBN_userId: { ISBN: book.ISBN, userId: USER_ID } },
-			});
-
-			if (existingBook) {
-				await prisma.book.update({
-					where: { ISBN_userId: { ISBN: book.ISBN, userId: USER_ID } },
-					data: {
-						ISBN: book.ISBN,
-						title: book.title,
-						googleTitle: book.googleTitle,
-						googleSubTitle: book.googleSubtitle,
-						googleDescription: book.googleDescription,
-						googleAuthors: book.googleAuthors,
-						googleImgSrc: book.googleImgSrc,
-						googleHref: book.googleHref,
-						markdown,
-						rating: book?.rating,
-						tags: book?.tags,
-						userId: USER_ID,
-						status: "UNEXPORTED",
-						exportedAt: new Date(),
-					},
-				});
-			} else {
-				console.log("NEW BOOK", book);
-				await prisma.book.create({
-					data: {
-						id: randomUUIDv7(),
-						ISBN: book.ISBN,
-						title: book.title,
-						googleTitle: book.googleTitle,
-						googleSubTitle: book.googleSubtitle,
-						googleDescription: book.googleDescription,
-						googleAuthors: book.googleAuthors,
-						googleImgSrc: book.googleImgSrc,
-						googleHref: book.googleHref,
-						markdown,
-						rating: book?.rating,
-						tags: book?.tags,
-						userId: USER_ID,
-						status: "EXPORTED",
-						createdAt: new Date(),
-						exportedAt: new Date(),
-					},
-				});
+			const { status, data } = await booksDomainService.changeBookStatus(
+				ISBN,
+				userId,
+				makeBookTitle(book.title),
+				makeGoogleTitle(book.googleTitle),
+				makeGoogleSubTitle(book.googleSubtitle),
+				makeGoogleAuthors(book.googleAuthors),
+				makeGoogleDescription(book.googleDescription),
+				makeGoogleImgSrc(book.googleImgSrc),
+				makeGoogleHref(book.googleHref),
+				makeBookMarkdown(markdown),
+			);
+			switch (status) {
+				case "NEED_CREATE": {
+					console.log("NEW BOOK", ISBN);
+					booksCommandRepository.create(data);
+					return;
+				}
+				case "NEED_UPDATE":
+					console.log("UPDATE BOOK", ISBN);
+					booksCommandRepository.update(ISBN, userId, data);
+					return;
+				case "NO_UPDATE":
+					return;
+				default:
+					status satisfies never;
 			}
 		}),
 	);
@@ -174,14 +179,13 @@ async function addBooks() {
 	console.log("Added books to the database");
 }
 
-async function addImages() {
-	const USER_ID = process.env.USER_ID;
-	if (!USER_ID) throw new Error("Env not set.");
-
+async function addImages(userId: UserId) {
 	const path = "dump";
 	const imagesDirectory = join(process.cwd(), "image", path);
 
 	const slugs = getAllSlugs(imagesDirectory);
+	const imagesDomainService = new ImagesDomainService(imagesQueryRepository);
+
 	await Promise.all(
 		slugs.map(async (slug) => {
 			const uint8ArrayImage = fs.readFileSync(join(imagesDirectory, slug));
@@ -226,49 +230,37 @@ async function addImages() {
 				}
 			}
 
-			const existingImage = await prisma.image.findUnique({
-				where: { path_userId: { path: slug, userId: USER_ID } },
-			});
+			const path = makePath(slug);
 
-			if (existingImage) {
-				await prisma.image.update({
-					where: { path_userId: { path: slug, userId: USER_ID } },
-					data: {
-						path: slug,
-						contentType: metadata.format ?? "",
-						width: metadata.width,
-						height: metadata.height,
-						fileSize: metadata.size,
-						userId: USER_ID,
-						status: "EXPORTED",
-						exportedAt: new Date(),
-					},
-				});
-			} else {
-				console.log("NEW IMAGE", slug);
-				await prisma.image.create({
-					data: {
-						id: randomUUIDv7(),
-						path: slug,
-						contentType: metadata.format ?? "",
-						width: metadata.width,
-						height: metadata.height,
-						fileSize: metadata.size,
-						userId: USER_ID,
-						status: "UNEXPORTED",
-						createdAt: new Date(),
-						exportedAt: new Date(),
-					},
-				});
+			const { status, data } = await imagesDomainService.changeImageStatus(
+				path,
+				userId,
+				makeContentType(metadata.format),
+				makeFileSize(metadata.size ?? 0),
+				makePixel(metadata.width),
+				makePixel(metadata.height),
+			);
+			switch (status) {
+				case "NEED_CREATE": {
+					console.log("NEW IMAGE", path);
+					imagesCommandRepository.create(data);
+					return;
+				}
+				case "NEED_UPDATE":
+					console.log("UPDATE IMAGE", path);
+					imagesCommandRepository.update(path, userId, data);
+					return;
+				case "NO_UPDATE":
+					return;
+				default:
+					status satisfies never;
 			}
 		}),
 	);
 	console.log("Added images to the database");
 }
 
-async function addArticles() {
-	const userId = makeUserId(process.env.USER_ID ?? "");
-
+async function addArticles(userId: UserId) {
 	const path = "article";
 	const contentsDirectory = join(process.cwd(), "json", path);
 
@@ -280,25 +272,7 @@ async function addArticles() {
 	await Promise.all(
 		slugs.map(async (slug) => {
 			const json = getJsonBySlug(slug, contentsDirectory);
-			let category = await prisma.category.findUnique({
-				where: { name_userId: { name: json.heading, userId } },
-			});
 
-			if (category) {
-				category = await prisma.category.update({
-					where: { name_userId: { name: json.heading, userId } },
-					data: { name: json.heading, userId },
-				});
-			} else {
-				category = await prisma.category.create({
-					data: {
-						id: randomUUIDv7(),
-						name: json.heading,
-						userId,
-						createdAt: new Date(),
-					},
-				});
-			}
 			json.body.map(
 				async (item: {
 					url: string;
@@ -313,7 +287,7 @@ async function addArticles() {
 					const { status, data } =
 						await articlesDomainService.changeArticleStatus(
 							url,
-							makeCategoryName(category.name),
+							makeCategoryName(json.heading),
 							userId,
 							makeArticleTitle(item.title),
 							makeQuote(item.quote),
@@ -344,9 +318,7 @@ async function addArticles() {
 	console.log("Added articles to the database");
 }
 
-async function addNotes() {
-	const userId = makeUserId(process.env.USER_ID ?? "");
-
+async function addNotes(userId: UserId) {
 	const path = "note";
 	const contentsDirectory = join(process.cwd(), "markdown", path);
 
@@ -385,10 +357,12 @@ async function addNotes() {
 
 async function main() {
 	try {
-		await addArticles();
-		await addNotes();
-		await addBooks();
-		await addImages();
+		const userId = makeUserId(process.env.USER_ID ?? "");
+
+		await addArticles(userId);
+		await addNotes(userId);
+		await addBooks(userId);
+		await addImages(userId);
 	} catch (error) {
 		console.error(error);
 		process.exit(1);

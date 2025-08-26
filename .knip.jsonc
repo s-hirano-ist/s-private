@@ -27,9 +27,7 @@
 		"dot" // for depencency-cruiser
 	],
 	"next": {
-		"config": [
-			"next.config.{js,ts,cjs,mjs}"
-		],
+		"config": ["next.config.{js,ts,cjs,mjs}"],
 		"entry": [
 			"{instrumentation,instrumentation-client,middleware}.{js,ts}",
 			"app/global-error.{js,jsx,ts,tsx}",
