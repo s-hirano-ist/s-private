@@ -1,4 +1,3 @@
-import "server-only";
 import { DuplicateError, UnexpectedError } from "@/common/error/error-classes";
 import {
 	makeUserId,
