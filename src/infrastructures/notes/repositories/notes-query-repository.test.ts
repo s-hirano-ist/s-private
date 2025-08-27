@@ -16,6 +16,7 @@ describe("NotesQueryRepository", () => {
 				id: 1,
 				title: "Test Note",
 				markdown: "# Test Note\n\nThis is test markdown note.",
+				status: "EXPORTED",
 			};
 
 			vi.mocked(prisma.note.findUnique).mockResolvedValue(mockNote);
@@ -27,7 +28,7 @@ describe("NotesQueryRepository", () => {
 
 			expect(prisma.note.findUnique).toHaveBeenCalledWith({
 				where: { title_userId: { title: "Test Note", userId: "user123" } },
-				select: { id: true, title: true, markdown: true },
+				select: { id: true, title: true, markdown: true, status: true },
 			});
 			expect(result).toEqual(mockNote);
 		});
@@ -44,7 +45,7 @@ describe("NotesQueryRepository", () => {
 				where: {
 					title_userId: { title: "Nonexistent Note", userId: "user123" },
 				},
-				select: { id: true, title: true, markdown: true },
+				select: { id: true, title: true, markdown: true, status: true },
 			});
 			expect(result).toBeNull();
 		});
@@ -63,7 +64,7 @@ describe("NotesQueryRepository", () => {
 
 			expect(prisma.note.findUnique).toHaveBeenCalledWith({
 				where: { title_userId: { title: "Test Note", userId: "user123" } },
-				select: { id: true, title: true, markdown: true },
+				select: { id: true, title: true, markdown: true, status: true },
 			});
 		});
 	});

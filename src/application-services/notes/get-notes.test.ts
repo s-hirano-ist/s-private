@@ -270,6 +270,7 @@ describe("get-notes", () => {
 				id: "1",
 				title: "Test Note",
 				markdown: "# Test Note\n\nThis is some test note.",
+				status: "EXPORTED",
 			};
 
 			vi.mocked(notesQueryRepository.findByTitle).mockResolvedValue(mockNote);
@@ -311,6 +312,7 @@ describe("get-notes", () => {
 				id: "2",
 				title: specialTitle,
 				markdown: "# Special Note",
+				status: "EXPORTED",
 			};
 
 			vi.mocked(notesQueryRepository.findByTitle).mockResolvedValue(mockNote);

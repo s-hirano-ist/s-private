@@ -7,10 +7,15 @@ import prisma from "@/prisma";
 async function findByTitle(
 	title: NoteTitle,
 	userId: UserId,
-): Promise<{ id: string; title: string; markdown: string } | null> {
+): Promise<{
+	id: string;
+	title: string;
+	markdown: string;
+	status: string;
+} | null> {
 	const data = await prisma.note.findUnique({
 		where: { title_userId: { title, userId } },
-		select: { id: true, title: true, markdown: true },
+		select: { id: true, title: true, markdown: true, status: true },
 	});
 	return data;
 }

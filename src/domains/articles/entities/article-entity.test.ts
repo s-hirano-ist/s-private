@@ -48,7 +48,7 @@ describe("articleEntity", () => {
 		});
 
 		test("should throw error for too long title", () => {
-			expect(() => makeArticleTitle("a".repeat(65))).toThrow(ZodError);
+			expect(() => makeArticleTitle("a".repeat(129))).toThrow(ZodError);
 		});
 	});
 
@@ -69,7 +69,7 @@ describe("articleEntity", () => {
 		});
 
 		test("should throw error for too long quote", () => {
-			expect(() => makeQuote("a".repeat(257))).toThrow(ZodError);
+			expect(() => makeQuote("a".repeat(513))).toThrow(ZodError);
 		});
 	});
 

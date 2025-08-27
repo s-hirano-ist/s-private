@@ -126,6 +126,7 @@ export const Default: Story = {
 			id: "01234567-89ab-7def-9123-456789abcdef",
 			title: "Sample Note",
 			markdown: sampleMarkdown,
+			status: "EXPORTED",
 		}),
 	},
 };
@@ -139,6 +140,7 @@ export const WithEncodedSlug: Story = {
 					id: "01234567-89ab-7def-9123-456789abcdef",
 					title: title,
 					markdown: sampleMarkdown,
+					status: "EXPORTED",
 				};
 			}
 			return null;
@@ -153,6 +155,7 @@ export const LongContent: Story = {
 			id: "01234567-89ab-7def-9123-456789abcdef",
 			title: "Comprehensive Guide",
 			markdown: longMarkdown,
+			status: "EXPORTED",
 		}),
 	},
 };
@@ -164,6 +167,7 @@ export const MinimalContent: Story = {
 			id: "01234567-89ab-7def-9123-456789abcdef",
 			title: "Minimal Note",
 			markdown: "# Minimal Note\n\nJust a simple line.",
+			status: "EXPORTED",
 		}),
 	},
 };
