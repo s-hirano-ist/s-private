@@ -90,7 +90,7 @@ describe("BooksCommandRepository", () => {
 				googleAuthors: makeGoogleAuthors(["Author 1", "Author 2"]),
 				googleImgSrc: makeGoogleImgSrc("https://example.com/image.jpg"),
 				googleHref: makeGoogleHref("https://example.com/book"),
-				googleSubTitle: makeGoogleSubTitle("Google Subtitle"),
+				googleSubtitle: makeGoogleSubTitle("Google Subtitle"),
 				googleTitle: makeGoogleTitle("Google Title"),
 				createdAt: makeCreatedAt(),
 			});

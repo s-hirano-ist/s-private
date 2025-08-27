@@ -17,6 +17,7 @@ async function findByPath(
 	width: number | null;
 	height: number | null;
 	tags: string[];
+	status: string;
 	description: string | null;
 } | null> {
 	const data = await prisma.image.findUnique({
@@ -29,6 +30,7 @@ async function findByPath(
 			width: true,
 			height: true,
 			tags: true,
+			status: true,
 			description: true,
 		},
 	});

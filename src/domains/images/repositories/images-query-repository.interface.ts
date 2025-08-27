@@ -14,6 +14,7 @@ export type IImagesQueryRepository = {
 		width: number | null;
 		height: number | null;
 		tags: string[];
+		status: string;
 		description: string | null;
 	} | null>;
 	findMany(

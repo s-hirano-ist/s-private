@@ -30,11 +30,14 @@ async function changeNoteStatus(
 	title: NoteTitle,
 	userId: UserId,
 	markdown: Markdown,
-): Promise<{ status: NoteStatus; data: UnexportedNote }> {
+): Promise<{ status: NoteStatus; data?: UnexportedNote }> {
 	const data = await notesQueryRepository.findByTitle(
 		makeNoteTitle(title),
 		makeUserId(userId),
 	);
+
+	if (data?.status !== "UNEXPORTED") return { status: "NO_UPDATE" };
+
 	if (!data) {
 		return {
 			status: "NEED_CREATE",

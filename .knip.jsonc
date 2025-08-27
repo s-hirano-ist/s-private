@@ -4,7 +4,8 @@
 		"src/app/[locale]/forbidden.tsx",
 		"src/app/instrumentation.ts",
 		"src/infrastructures/i18n/request.ts",
-		"src/components/common/ui/**/*" // shadcn-ui auto gen
+		"src/components/common/ui/**/*", // shadcn-ui auto gen
+		"src/domains/**"
 	],
 	"ignoreDependencies": [
 		"@tailwindcss/typography", // imported in global.css

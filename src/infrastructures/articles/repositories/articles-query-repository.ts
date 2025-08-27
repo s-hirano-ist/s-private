@@ -19,6 +19,7 @@ async function findByUrl(url: string, userId: string) {
 			ogDescription: true,
 			quote: true,
 			ogImageUrl: true,
+			status: true,
 		},
 	});
 	return data;

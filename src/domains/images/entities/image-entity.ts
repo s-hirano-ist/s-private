@@ -21,14 +21,17 @@ const THUMBNAIL_HEIGHT = 192;
 
 export const Path = z.string().min(1).brand<"Path">();
 export type Path = z.infer<typeof Path>;
-export const makePath = (v: string): Path => {
-	const sanitizedFileName = v.replaceAll(/[^a-zA-Z0-9._-]/g, "");
-	const path = `${idGenerator.uuidv7()}-${sanitizedFileName}`;
-	return Path.parse(path);
+export const makePath = (v: string, sanitizeAndUnique: boolean): Path => {
+	if (sanitizeAndUnique) {
+		const sanitizedFileName = v.replaceAll(/[^a-zA-Z0-9._-]/g, "");
+		const path = `${idGenerator.uuidv7()}-${sanitizedFileName}`;
+		return Path.parse(path);
+	}
+	return Path.parse(v);
 };
 
 export const ContentType = z
-	.enum(["image/jpeg", "image/png", "image/gif"])
+	.enum(["image/jpeg", "image/png", "image/gif", "jpeg", "png"])
 	.brand<"ContentType">();
 export type ContentType = z.infer<typeof ContentType>;
 export const makeContentType = (v: string): ContentType => ContentType.parse(v);

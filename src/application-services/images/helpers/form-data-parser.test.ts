@@ -56,7 +56,7 @@ describe("parseAddImageFormData", () => {
 		expect(mockGetFormDataFile).toHaveBeenCalledWith(formData, "file");
 
 		expect(mockMakeUserId).toHaveBeenCalledWith(userId);
-		expect(mockMakePath).toHaveBeenCalledWith("test-image.png");
+		expect(mockMakePath).toHaveBeenCalledWith("test-image.png", true);
 		expect(mockMakeContentType).toHaveBeenCalledWith("image/png");
 		expect(mockMakeFileSize).toHaveBeenCalledWith(1024);
 		expect(mockMakeOriginalBuffer).toHaveBeenCalledWith(mockFile);
@@ -98,7 +98,7 @@ describe("parseAddImageFormData", () => {
 
 		const result = await parseAddImageFormData(formData, userId);
 
-		expect(mockMakePath).toHaveBeenCalledWith("photo.jpg");
+		expect(mockMakePath).toHaveBeenCalledWith("photo.jpg", true);
 		expect(mockMakeContentType).toHaveBeenCalledWith("image/jpeg");
 		expect(mockMakeFileSize).toHaveBeenCalledWith(2048);
 
@@ -138,7 +138,7 @@ describe("parseAddImageFormData", () => {
 
 		const result = await parseAddImageFormData(formData, userId);
 
-		expect(mockMakePath).toHaveBeenCalledWith("テスト画像.png");
+		expect(mockMakePath).toHaveBeenCalledWith("テスト画像.png", true);
 		expect(result.path).toBe("テスト画像.png");
 		expect(result.userId).toBe("test-user-id-jp");
 	});
@@ -232,6 +232,7 @@ describe("parseAddImageFormData", () => {
 
 		expect(mockMakePath).toHaveBeenCalledWith(
 			"image with spaces & symbols (1).png",
+			true,
 		);
 		expect(result.path).toBe("image with spaces & symbols (1).png");
 	});

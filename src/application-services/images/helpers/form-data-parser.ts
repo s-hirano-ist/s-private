@@ -16,7 +16,7 @@ export const parseAddImageFormData = async (
 
 	return {
 		userId: makeUserId(userId),
-		path: makePath(file.name),
+		path: makePath(file.name, true),
 		contentType: makeContentType(file.type),
 		fileSize: makeFileSize(file.size),
 		originalBuffer: await makeOriginalBuffer(file),
