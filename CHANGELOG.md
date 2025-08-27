@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [9.4.0](https://github.com/s-hirano-ist/s-private/compare/v9.3.1...v9.4.0) (2025-08-27)
+
+
+### Features
+
+* add update db ([80b7423](https://github.com/s-hirano-ist/s-private/commit/80b74237be18bb5a83809623d989413438191b68))
+
+
+### Bug Fixes
+
+* knip ([5466348](https://github.com/s-hirano-ist/s-private/commit/546634829add753386ceac517d16b49e8506fe6e))
+
 ## [9.3.1](https://github.com/s-hirano-ist/s-private/compare/v9.3.0...v9.3.1) (2025-08-22)
 
 
