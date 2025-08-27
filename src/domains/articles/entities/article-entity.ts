@@ -26,7 +26,7 @@ export const makeCategoryName = (v: string): CategoryName =>
 const ArticleTitle = z
 	.string({ message: "required" })
 	.min(1, { message: "required" })
-	.max(64, { message: "tooLong" })
+	.max(128, { message: "tooLong" })
 	.brand<"ArticleTitle">();
 export type ArticleTitle = z.infer<typeof ArticleTitle>;
 export const makeArticleTitle = (v: string): ArticleTitle =>
@@ -34,7 +34,7 @@ export const makeArticleTitle = (v: string): ArticleTitle =>
 
 const Quote = z
 	.string()
-	.max(256, { message: "tooLong" })
+	.max(512, { message: "tooLong" })
 	.nullable()
 	.optional()
 	.brand<"Quote">();

@@ -261,7 +261,7 @@ package "Notes Domain" {
 package "Images Domain" {
     class "Path" as Path <<ValueObject>> {
         +value: string
-        +makePath(v: string): Path
+        +makePath(v: string, sanitizeAndUnique: boolean): Path
         --
         Note: Sanitizes filename and adds UUID prefix
     }

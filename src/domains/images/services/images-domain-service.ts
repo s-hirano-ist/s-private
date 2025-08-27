@@ -9,7 +9,6 @@ import {
 	type Description,
 	type FileSize,
 	imageEntity,
-	makePath,
 	type Path,
 	type Pixel,
 	type Tag,
@@ -25,7 +24,9 @@ async function ensureNoDuplicateImage(
 	if (exists !== null) throw new DuplicateError();
 }
 
-type ImageStatus = "NEED_CREATE" | "NEED_UPDATE" | "NO_UPDATE";
+type ReturnType =
+	| { status: "NEED_CREATE"; data: UnexportedImage }
+	| { status: "NO_UPDATE" };
 
 async function changeImageStatus(
 	imagesQueryRepository: IImagesQueryRepository,
@@ -37,11 +38,10 @@ async function changeImageStatus(
 	height?: Pixel,
 	tags?: Array<Tag>,
 	description?: Description,
-): Promise<{ status: ImageStatus; data: UnexportedImage }> {
-	const data = await imagesQueryRepository.findByPath(
-		makePath(path),
-		makeUserId(userId),
-	);
+): Promise<ReturnType> {
+	const data = await imagesQueryRepository.findByPath(path, makeUserId(userId));
+	if (data?.status !== "UNEXPORTED") return { status: "NO_UPDATE" };
+
 	if (!data) {
 		return {
 			status: "NEED_CREATE",
@@ -60,27 +60,7 @@ async function changeImageStatus(
 	const newData = UnexportedImage.safeParse(data);
 	if (!newData.success) throw new UnexpectedError();
 
-	if (
-		data.contentType !== contentType ||
-		data.fileSize !== fileSize ||
-		data.width !== width ||
-		data.height !== height ||
-		JSON.stringify(data.tags) !== JSON.stringify(tags) ||
-		data.description !== description
-	) {
-		return {
-			status: "NEED_UPDATE",
-			data: imageEntity.update(newData.data, {
-				contentType,
-				fileSize,
-				width,
-				height,
-				tags,
-				description,
-			}),
-		};
-	}
-	return { status: "NO_UPDATE", data: newData.data };
+	return { status: "NO_UPDATE" };
 }
 
 export class ImagesDomainService {

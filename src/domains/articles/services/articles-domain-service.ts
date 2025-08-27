@@ -28,7 +28,10 @@ async function ensureNoDuplicateArticle(
 	}
 }
 
-type ArticleStatus = "NEED_CREATE" | "NEED_UPDATE" | "NO_UPDATE";
+type ArticleStatus = "NEED_CREATE" | "NEED_UPDATE";
+type ReturnType =
+	| { status: ArticleStatus; data: UnexportedArticle }
+	| { status: "NO_UPDATE" };
 
 async function changeArticleStatus(
 	articlesQueryRepository: IArticlesQueryRepository,
@@ -40,11 +43,13 @@ async function changeArticleStatus(
 	ogTitle: OgTitle,
 	ogDescription: OgDescription,
 	ogImageUrl: OgImageUrl,
-): Promise<{ status: ArticleStatus; data: UnexportedArticle }> {
+): Promise<ReturnType> {
 	const data = await articlesQueryRepository.findByUrl(
 		makeUrl(url),
 		makeUserId(userId),
 	);
+	if (data?.status !== "UNEXPORTED") return { status: "NO_UPDATE" };
+
 	if (!data) {
 		return {
 			status: "NEED_CREATE",
@@ -78,7 +83,7 @@ async function changeArticleStatus(
 			}),
 		};
 	}
-	return { status: "NO_UPDATE", data: newData.data };
+	return { status: "NO_UPDATE" };
 }
 
 export class ArticlesDomainService {

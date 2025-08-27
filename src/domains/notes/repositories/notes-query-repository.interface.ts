@@ -6,7 +6,12 @@ export type INotesQueryRepository = {
 	findByTitle(
 		title: NoteTitle,
 		userId: UserId,
-	): Promise<{ id: string; title: string; markdown: string } | null>;
+	): Promise<{
+		id: string;
+		title: string;
+		markdown: string;
+		status: string;
+	} | null>;
 	findMany(
 		userId: UserId,
 		status: Status,

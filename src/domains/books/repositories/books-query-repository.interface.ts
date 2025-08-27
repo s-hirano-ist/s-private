@@ -19,6 +19,7 @@ export type IBooksQueryRepository = {
 		markdown: string | null;
 		rating: number | null;
 		tags: string[];
+		status: string;
 		createdAt: Date;
 		updatedAt: Date;
 		exportedAt: Date | null;

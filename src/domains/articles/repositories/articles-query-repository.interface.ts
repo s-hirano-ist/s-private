@@ -13,6 +13,7 @@ export type IArticlesQueryRepository = {
 		ogTitle: string | null;
 		ogDescription: string | null;
 		ogImageUrl: string | null;
+		status: string;
 		Category: {
 			id: string;
 			name: string;

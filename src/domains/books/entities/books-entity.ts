@@ -35,11 +35,11 @@ export type GoogleTitle = z.infer<typeof GoogleTitle>;
 export const makeGoogleTitle = (v: string | null | undefined): GoogleTitle =>
 	GoogleTitle.parse(v);
 
-const GoogleSubTitle = z.string().nullable().brand<"GoogleSubTitle">();
-export type GoogleSubTitle = z.infer<typeof GoogleSubTitle>;
+const GoogleSubtitle = z.string().nullable().brand<"GoogleSubTitle">();
+export type GoogleSubtitle = z.infer<typeof GoogleSubtitle>;
 export const makeGoogleSubTitle = (
 	v: string | null | undefined,
-): GoogleSubTitle => GoogleSubTitle.parse(v);
+): GoogleSubtitle => GoogleSubtitle.parse(v);
 
 const GoogleAuthors = z.array(z.string()).nullable().brand<"GoogleAuthors">();
 export type GoogleAuthors = z.infer<typeof GoogleAuthors>;
@@ -76,7 +76,7 @@ const Base = z.object({
 	ISBN: ISBN,
 	title: BookTitle,
 	googleTitle: GoogleTitle.optional(),
-	googleSubTitle: GoogleSubTitle.optional(),
+	googleSubtitle: GoogleSubtitle.optional(),
 	googleAuthors: GoogleAuthors.optional(),
 	googleDescription: GoogleDescription.optional(),
 	googleImgSrc: GoogleImgSrc.optional(),
@@ -100,7 +100,7 @@ type CreateBookArgs = Readonly<{
 type UpdateBookArgs = Readonly<{
 	title: BookTitle;
 	googleTitle: GoogleTitle;
-	googleSubTitle: GoogleSubTitle;
+	googleSubtitle: GoogleSubtitle;
 	googleAuthors: GoogleAuthors;
 	googleDescription: GoogleDescription;
 	googleImgSrc: GoogleImgSrc;

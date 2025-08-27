@@ -12,7 +12,7 @@ import {
 	type GoogleDescription,
 	type GoogleHref,
 	type GoogleImgSrc,
-	type GoogleSubTitle,
+	type GoogleSubtitle,
 	type GoogleTitle,
 	type ISBN,
 	makeISBN,
@@ -28,7 +28,10 @@ async function ensureNoDuplicateBook(
 	if (exists !== null) throw new DuplicateError();
 }
 
-type BookStatus = "NEED_CREATE" | "NEED_UPDATE" | "NO_UPDATE";
+type BookStatus = "NEED_CREATE" | "NEED_UPDATE";
+type ReturnType =
+	| { status: BookStatus; data: UnexportedBook }
+	| { status: "NO_UPDATE" };
 
 async function changeBookStatus(
 	booksQueryRepository: IBooksQueryRepository,
@@ -36,17 +39,19 @@ async function changeBookStatus(
 	userId: UserId,
 	title: BookTitle,
 	googleTitle: GoogleTitle,
-	googleSubTitle: GoogleSubTitle,
+	googleSubTitle: GoogleSubtitle,
 	googleAuthors: GoogleAuthors,
 	googleDescription: GoogleDescription,
 	googleImgSrc: GoogleImgSrc,
 	googleHref: GoogleHref,
 	markdown: BookMarkdown,
-): Promise<{ status: BookStatus; data: UnexportedBook }> {
+): Promise<ReturnType> {
 	const data = await booksQueryRepository.findByISBN(
 		makeISBN(ISBN),
 		makeUserId(userId),
 	);
+	if (data?.status !== "UNEXPORTED") return { status: "NO_UPDATE" };
+
 	if (!data) {
 		return {
 			status: "NEED_CREATE",
@@ -71,7 +76,7 @@ async function changeBookStatus(
 			data: bookEntity.update(newData.data, {
 				title,
 				googleTitle,
-				googleSubTitle,
+				googleSubtitle: googleSubTitle,
 				googleAuthors,
 				googleDescription,
 				googleImgSrc,
@@ -80,7 +85,7 @@ async function changeBookStatus(
 			}),
 		};
 	}
-	return { status: "NO_UPDATE", data: newData.data };
+	return { status: "NO_UPDATE" };
 }
 
 export class BooksDomainService {
@@ -95,7 +100,7 @@ export class BooksDomainService {
 		userId: UserId,
 		title: BookTitle,
 		googleTitle: GoogleTitle,
-		googleSubTitle: GoogleSubTitle,
+		googleSubTitle: GoogleSubtitle,
 		googleAuthors: GoogleAuthors,
 		googleDescription: GoogleDescription,
 		googleImgSrc: GoogleImgSrc,
