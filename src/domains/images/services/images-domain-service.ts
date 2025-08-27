@@ -40,7 +40,6 @@ async function changeImageStatus(
 	description?: Description,
 ): Promise<ReturnType> {
 	const data = await imagesQueryRepository.findByPath(path, makeUserId(userId));
-	if (data?.status !== "UNEXPORTED") return { status: "NO_UPDATE" };
 
 	if (!data) {
 		return {
