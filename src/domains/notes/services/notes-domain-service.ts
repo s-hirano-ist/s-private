@@ -25,7 +25,7 @@ async function ensureNoDuplicateNote(
 
 type NoteStatus = "NEED_CREATE" | "NEED_UPDATE" | "NO_UPDATE";
 
-async function changeNoteStatus(
+async function updateNote(
 	notesQueryRepository: INotesQueryRepository,
 	title: NoteTitle,
 	userId: UserId,
@@ -63,11 +63,11 @@ export class NotesDomainService {
 		return ensureNoDuplicateNote(this.notesQueryRepository, title, userId);
 	}
 
-	public async changeNoteStatus(
+	public async updateNote(
 		title: NoteTitle,
 		userId: UserId,
 		markdown: Markdown,
 	) {
-		return changeNoteStatus(this.notesQueryRepository, title, userId, markdown);
+		return updateNote(this.notesQueryRepository, title, userId, markdown);
 	}
 }

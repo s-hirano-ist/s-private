@@ -33,7 +33,7 @@ type ReturnType =
 	| { status: ArticleStatus; data: UnexportedArticle }
 	| { status: "NO_UPDATE" };
 
-async function changeArticleStatus(
+async function updateArticle(
 	articlesQueryRepository: IArticlesQueryRepository,
 	url: Url,
 	categoryName: CategoryName,
@@ -95,7 +95,7 @@ export class ArticlesDomainService {
 		return ensureNoDuplicateArticle(this.articlesQueryRepository, url, userId);
 	}
 
-	public async changeArticleStatus(
+	public async updateArticle(
 		url: Url,
 		categoryName: CategoryName,
 		userId: UserId,
@@ -105,7 +105,7 @@ export class ArticlesDomainService {
 		ogDescription: OgDescription,
 		ogImageUrl: OgImageUrl,
 	) {
-		return changeArticleStatus(
+		return updateArticle(
 			this.articlesQueryRepository,
 			url,
 			categoryName,

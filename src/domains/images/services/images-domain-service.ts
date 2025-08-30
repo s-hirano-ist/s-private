@@ -28,7 +28,7 @@ type ReturnType =
 	| { status: "NEED_CREATE"; data: UnexportedImage }
 	| { status: "NO_UPDATE" };
 
-async function changeImageStatus(
+async function updateImage(
 	imagesQueryRepository: IImagesQueryRepository,
 	path: Path,
 	userId: UserId,
@@ -69,7 +69,7 @@ export class ImagesDomainService {
 		return ensureNoDuplicateImage(this.imagesQueryRepository, path, userId);
 	}
 
-	public async changeImageStatus(
+	public async updateImage(
 		path: Path,
 		userId: UserId,
 		contentType: ContentType,
@@ -79,7 +79,7 @@ export class ImagesDomainService {
 		tags?: Array<Tag>,
 		description?: Description,
 	) {
-		return changeImageStatus(
+		return updateImage(
 			this.imagesQueryRepository,
 			path,
 			userId,
