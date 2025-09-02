@@ -33,7 +33,7 @@ type ReturnType =
 	| { status: BookStatus; data: UnexportedBook }
 	| { status: "NO_UPDATE" };
 
-async function changeBookStatus(
+async function updateBook(
 	booksQueryRepository: IBooksQueryRepository,
 	ISBN: ISBN,
 	userId: UserId,
@@ -95,7 +95,7 @@ export class BooksDomainService {
 		return ensureNoDuplicateBook(this.booksQueryRepository, ISBN, userId);
 	}
 
-	public async changeBookStatus(
+	public async updateBook(
 		ISBN: ISBN,
 		userId: UserId,
 		title: BookTitle,
@@ -107,7 +107,7 @@ export class BooksDomainService {
 		googleHref: GoogleHref,
 		markdown: BookMarkdown,
 	) {
-		return changeBookStatus(
+		return updateBook(
 			this.booksQueryRepository,
 			ISBN,
 			userId,
