@@ -10,48 +10,48 @@
 ## Technology Stack
 
 ### Core Framework
-- **Framework** - [Next.js](https://nextjs.org/) (v15.4.6) with App Router
-- **Language** - [TypeScript](https://www.typescriptlang.org/) (v5.9.2)
-- **Package Manager** - [pnpm](https://pnpm.io/) (v10.14.0)
-- **Runtime** - [React](https://react.dev/) (v19.1.1)
+- **Framework** - [Next.js](https://nextjs.org/) with App Router
+- **Language** - [TypeScript](https://www.typescriptlang.org/)
+- **Package Manager** - [pnpm](https://pnpm.io/)
+- **Runtime** - [React](https://react.dev/)
 
 ### UI & Styling
 - **UI Components** - [Shadcn/ui](https://ui.shadcn.com/) with [Radix UI](https://www.radix-ui.com/)
-- **Styling** - [Tailwind CSS](https://tailwindcss.com/) (v4.1.12)
+- **Styling** - [Tailwind CSS](https://tailwindcss.com/)
 - **Icons** - [Lucide React](https://lucide.dev/) & [Radix Icons](https://icons.radix-ui.com/)
 - **Theming** - [next-themes](https://github.com/pacocoursey/next-themes)
 
 ### Database & Storage
-- **Database** - [PostgreSQL](https://www.postgresql.org/) with [Prisma](https://www.prisma.io/) ORM (v6.14.0)
+- **Database** - [PostgreSQL](https://www.postgresql.org/) with [Prisma](https://www.prisma.io/) ORM
 - **Object Storage** - [MinIO](https://min.io/) (configurable for local/cloud deployment)
 - **Database Acceleration** - [Prisma Accelerate](https://www.prisma.io/accelerate)
 
 ### Authentication & Internationalization
-- **Authentication** - [Auth0](https://auth0.com/) with [NextAuth.js](https://next-auth.js.org/) (v5.0.0-beta.29)
+- **Authentication** - [Auth0](https://auth0.com/) with [NextAuth.js](https://next-auth.js.org/)
 - **Internationalization** - [next-intl](https://next-intl-docs.vercel.app/) (Japanese/English support)
 
 ### Code Quality & Development Tools
-- **Primary Formatter/Linter** - [Biome](https://biomejs.dev/) (v2.2.0)
-- **Secondary Linter** - [ESLint](https://eslint.org/) (v9.33.0) for React/Next.js specific rules
-- **Testing Framework** - [Vitest](https://vitest.dev/) (v3.2.4) with [Testing Library](https://testing-library.com/)
-- **Component Development** - [Storybook](https://storybook.js.org/) (v9.1.2)
+- **Primary Formatter/Linter** - [Biome](https://biomejs.dev/)
+- **Secondary Linter** - [ESLint](https://eslint.org/) for React/Next.js specific rules
+- **Testing Framework** - [Vitest](https://vitest.dev/) with [Testing Library](https://testing-library.com/)
+- **Component Development** - [Storybook](https://storybook.js.org/)
 
 ### Code Analysis & Quality Assurance
-- **Dead Code Detection** - [Knip](https://knip.dev/) (v5.62.0)
-- **Code Duplication Analysis** - [jscpd](https://github.com/kucherenko/jscpd) (v4.0.5)
-- **Dependency Analysis** - [dependency-cruiser](https://github.com/sverweij/dependency-cruiser) (v17.0.1)
+- **Dead Code Detection** - [Knip](https://knip.dev/)
+- **Code Duplication Analysis** - [jscpd](https://github.com/kucherenko/jscpd)
+- **Dependency Analysis** - [dependency-cruiser](https://github.com/sverweij/dependency-cruiser)
 - **Bundle Analysis** - [@next/bundle-analyzer](https://www.npmjs.com/package/@next/bundle-analyzer)
 - **Security Auditing** - [pnpm audit](https://pnpm.io/cli/audit) & [Dependabot](https://docs.github.com/en/code-security/dependabot)
 
 ### Monitoring & Observability
-- **Error Tracking** - [Sentry](https://sentry.io/) (v10.5.0)
+- **Error Tracking** - [Sentry](https://sentry.io/)
 - **Analytics** - [Vercel Analytics](https://vercel.com/analytics) & [Speed Insights](https://vercel.com/docs/speed-insights)
-- **Logging** - [Pino](https://getpino.io/) (v9.9.0)
+- **Logging** - [Pino](https://getpino.io/)
 - **Notifications** - [Pushover](https://pushover.net/) integration
 
 ### Validation & Environment
-- **Schema Validation** - [Zod](https://zod.dev/) (v4.0.17)
-- **Environment Variables** - [@t3-oss/env-nextjs](https://env.t3.gg/) (v0.13.8)
+- **Schema Validation** - [Zod](https://zod.dev/)
+- **Environment Variables** - [@t3-oss/env-nextjs](https://env.t3.gg/)
 
 ## 初期設定
 
@@ -177,7 +177,7 @@ Schema location: `prisma/schema.prisma`
 
 ### Prerequisites
 - [Node.js](https://nodejs.org/) (v18 or later)
-- [pnpm](https://pnpm.io/) (v10.14.0)
+- [pnpm](https://pnpm.io/)
 - [Docker](https://www.docker.com/) (for PostgreSQL database)
 
 ### Initial Setup
