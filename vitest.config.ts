@@ -2,9 +2,6 @@ import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
-	esbuild: {
-		jsxInject: 'import React from "react"',
-	},
 	test: {
 		environment: "jsdom",
 		setupFiles: ["./vitest-setup.tsx"],
@@ -55,11 +52,7 @@ export default defineConfig({
 						enabled: true,
 						headless: true,
 						provider: "playwright",
-						instances: [
-							{
-								browser: "chromium",
-							},
-						],
+						instances: [{ browser: "chromium" }],
 					},
 					setupFiles: [".storybook/vitest.setup.ts"],
 				},
