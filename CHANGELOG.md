@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [9.5.1](https://github.com/s-hirano-ist/s-private/compare/v9.5.0...v9.5.1) (2025-09-08)
+
+
+### Bug Fixes
+
+* tests ([4de9555](https://github.com/s-hirano-ist/s-private/commit/4de9555d920414742593d81c84356a47a2c3bbe6))
+
 ## [9.5.0](https://github.com/s-hirano-ist/s-private/compare/v9.4.0...v9.5.0) (2025-09-02)
 
 
