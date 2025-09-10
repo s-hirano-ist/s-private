@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [9.5.2](https://github.com/s-hirano-ist/s-private/compare/v9.5.1...v9.5.2) (2025-09-10)
+
+
+### Bug Fixes
+
+* ci of pnpm ([8886acb](https://github.com/s-hirano-ist/s-private/commit/8886acbc73fc12026aa312b8aff14f7ef6943ff8))
+
 ## [9.5.1](https://github.com/s-hirano-ist/s-private/compare/v9.5.0...v9.5.1) (2025-09-08)
 
 
