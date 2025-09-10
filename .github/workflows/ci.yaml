@@ -19,11 +19,6 @@ jobs:
           persist-credentials: false
           submodules: true
 
-      - name: Install Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with:
-          node-version: "23"
-
       - name: Install pnpm
         uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4
         with:
@@ -31,18 +26,13 @@ jobs:
           # Optional when there is a packageManager field in the package.json.
           run_install: false
 
-      - name: Get pnpm directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
-
-      - name: Cache dependencies
-        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
+      - name: Install Node.js
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-node-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          node-version: "24"
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
       - run: pnpm i --frozen-lockfile
       - run: pnpm build
         env:
@@ -78,28 +68,18 @@ jobs:
           persist-credentials: false
           submodules: true
 
-      - name: Install Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with:
-          node-version: "23"
-
       - name: Install pnpm
         uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4
         with:
           run_install: false
 
-      - name: Get pnpm directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
-
-      - name: Cache dependencies
-        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
+      - name: Install Node.js
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-node-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          node-version: "24"
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
       - run: pnpm i --frozen-lockfile
       - run: pnpm biome:ci
       - run: pnpm lint
@@ -122,28 +102,23 @@ jobs:
             persist-credentials: false
             submodules: true
 
-        - name: Install Node.js
-          uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-          with:
-            node-version: "23"
-
         - name: Install pnpm
           uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4
           with:
             run_install: false
+
+        - name: Install Node.js
+          uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+          with:
+            node-version: "24"
+            cache: pnpm
+            cache-dependency-path: pnpm-lock.yaml
 
         - name: Get pnpm directory
           shell: bash
           run: |
             echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
 
-        - name: Cache dependencies
-          uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
-          with:
-            path: ${{ env.STORE_PATH }}
-            key: ${{ runner.os }}-node-${{ hashFiles('**/pnpm-lock.yaml') }}
-            restore-keys: |
-              ${{ runner.os }}-node-
         - run: pnpm i --frozen-lockfile
         - run: pnpm exec playwright install
         - run: pnpm test
@@ -169,11 +144,6 @@ jobs:
           persist-credentials: false
           submodules: true
 
-      - name: Install Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with:
-          node-version: "23"
-
       - name: Install pnpm
         uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4
         with:
@@ -181,18 +151,13 @@ jobs:
           # Optional when there is a packageManager field in the package.json.
           run_install: false
 
-      - name: Get pnpm directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
-
-      - name: Cache dependencies
-        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
+      - name: Install Node.js
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-node-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          node-version: "24"
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
       - run: pnpm i --frozen-lockfile
       - run: pnpm storybook:build
         env:
