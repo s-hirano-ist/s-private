@@ -105,7 +105,7 @@
 		"eslint-plugin-storybook": "9.1.5",
 		"eslint-plugin-tailwindcss": "4.0.0-beta.0",
 		"jscpd": "4.0.5",
-		"jsdom": "26.1.0",
+		"jsdom": "27.0.0",
 		"knip": "5.63.1",
 		"license-checker-rseidelsohn": "4.4.2",
 		"playwright": "1.55.0",
