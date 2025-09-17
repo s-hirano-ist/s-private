@@ -44,6 +44,7 @@
         'dockerfile',
       ],
       allowedVersions: '/^[0-9]*[02468]([.-].*)?$/',
+      "minimumReleaseAge": '3 days',
     },
     {
       matchManagers: [
@@ -61,6 +62,7 @@
         'peerDependencies',
       ],
       groupName: 'patch',
+      "minimumReleaseAge": '3 days',
     },
     {
       matchManagers: [
@@ -78,6 +80,7 @@
         'peerDependencies',
       ],
       groupName: 'minor',
+      "minimumReleaseAge": '3 days',
     },
     {
       matchManagers: [
@@ -85,6 +88,7 @@
       ],
       groupName: 'GitHub Actions',
       groupSlug: 'github-actions',
+      "minimumReleaseAge": '3 days',
     },
   ],
 }
