@@ -1,6 +1,5 @@
 import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
-import type { Sharp } from "sharp";
 import { afterEach, beforeEach, vi } from "vitest";
 
 afterEach(() => {
@@ -133,22 +132,4 @@ beforeEach(() => {
 			},
 		},
 	}));
-
-	type PartialSharp = Pick<Sharp, "metadata" | "resize" | "toBuffer">;
-	vi.mock("sharp", () => {
-		return {
-			__esModule: true,
-			default: vi.fn(() => {
-				const mockSharp: PartialSharp = {
-					metadata: vi.fn().mockResolvedValue({
-						width: 800,
-						height: 600,
-					}),
-					resize: vi.fn().mockReturnThis(),
-					toBuffer: vi.fn().mockResolvedValue(Buffer.from("thumbnail")),
-				};
-				return mockSharp;
-			}),
-		};
-	});
 });

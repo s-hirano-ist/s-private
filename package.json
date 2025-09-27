@@ -18,7 +18,10 @@
 		"jscpd": "jscpd -p app/src/**/*.{ts,tsx}",
 		"knip": "pnpm --filter s-private-app knip",
 		"storybook": "pnpm --filter s-private-app storybook",
-		"storybook:build": "pnpm --filter s-private-app storybook:build"
+		"storybook:build": "pnpm --filter s-private-app storybook:build",
+		"deps:check": "pnpm -r deps:check",
+		"deps:circular": "pnpm -r deps:circular",
+		"deps:graph": "pnpm -r deps:graph"
 	},
 	"dependencies": {},
 	"devDependencies": {
