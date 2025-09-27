@@ -3,7 +3,7 @@ import { DuplicateError } from "@/common/error/error-classes";
 import { makeUrl } from "@/domains/articles/entities/article-entity";
 import type { IArticlesQueryRepository } from "@/domains/articles/repositories/articles-query-repository.interface";
 import { ArticlesDomainService } from "@/domains/articles/services/articles-domain-service";
-import { makeUserId } from "@/domains/common/entities/common-entity";
+import { makeUserId } from "../../common/entities/common-entity";
 
 describe("ArticlesDomainService", () => {
 	let articlesQueryRepository: IArticlesQueryRepository;

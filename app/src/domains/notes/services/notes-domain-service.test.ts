@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { DuplicateError } from "@/common/error/error-classes";
-import { makeUserId } from "@/domains/common/entities/common-entity";
 import { makeNoteTitle } from "@/domains/notes/entities/note-entity";
 import type { INotesQueryRepository } from "@/domains/notes/repositories/notes-query-repository.interface";
 import { NotesDomainService } from "@/domains/notes/services/notes-domain-service";
+import { makeUserId } from "../../common/entities/common-entity";
 
 describe("NotesDomainService", () => {
 	let notesQueryRepository: INotesQueryRepository;

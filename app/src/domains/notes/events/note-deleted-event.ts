@@ -1,4 +1,4 @@
-import { BaseDomainEvent } from "@/domains/common/events/base-domain-event";
+import { BaseDomainEvent } from "../../common/events/base-domain-event";
 
 export class NoteDeletedEvent extends BaseDomainEvent {
 	constructor(data: {

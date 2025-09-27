@@ -13,8 +13,8 @@ import {
 	makeQuote,
 	makeUrl,
 } from "@/domains/articles/entities/article-entity";
-import { makeUserId } from "@/domains/common/entities/common-entity";
-import * as entityFactory from "@/domains/common/services/entity-factory";
+import { makeUserId } from "../../common/entities/common-entity";
+import * as entityFactory from "../../common/services/entity-factory";
 
 describe("articleEntity", () => {
 	describe("makeCategoryName", () => {

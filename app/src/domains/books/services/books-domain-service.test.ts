@@ -3,7 +3,7 @@ import { DuplicateError } from "@/common/error/error-classes";
 import { makeISBN } from "@/domains/books/entities/books-entity";
 import { BooksDomainService } from "@/domains/books/services/books-domain-service";
 import type { IBooksQueryRepository } from "@/domains/books/types";
-import { makeUserId } from "@/domains/common/entities/common-entity";
+import { makeUserId } from "../../common/entities/common-entity";
 
 describe("BooksDomainService", () => {
 	let booksQueryRepository: IBooksQueryRepository;

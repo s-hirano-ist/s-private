@@ -1,8 +1,5 @@
 import { describe, expect, test } from "vitest";
-import {
-	makeCreatedAt,
-	makeExportedAt,
-} from "@/domains/common/entities/common-entity";
+import { makeCreatedAt, makeExportedAt } from "./common-entity";
 
 describe("common-entity", () => {
 	describe("makeCreatedAt", () => {

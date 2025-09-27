@@ -1,6 +1,6 @@
 import { DuplicateError, UnexpectedError } from "@/common/error/error-classes";
-import type { UserId } from "@/domains/common/entities/common-entity";
 import type { IImagesQueryRepository } from "@/domains/images/repositories/images-query-repository.interface";
+import type { UserId } from "../../common/entities/common-entity";
 import {
 	type ContentType,
 	type Description,

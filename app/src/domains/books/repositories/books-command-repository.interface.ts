@@ -1,8 +1,4 @@
-import type {
-	Id,
-	Status,
-	UserId,
-} from "@/domains/common/entities/common-entity";
+import type { Id, Status, UserId } from "../../common/entities/common-entity";
 import type { ISBN, UnexportedBook } from "../entities/books-entity";
 
 export type IBooksCommandRepository = {

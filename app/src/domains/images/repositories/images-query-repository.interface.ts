@@ -1,4 +1,4 @@
-import type { Status, UserId } from "@/domains/common/entities/common-entity";
+import type { Status, UserId } from "../../common/entities/common-entity";
 import type { Path } from "../entities/image-entity";
 import type { ImagesFindManyParams } from "../types/query-params";
 

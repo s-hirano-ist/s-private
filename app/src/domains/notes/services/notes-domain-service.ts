@@ -1,5 +1,4 @@
 import { DuplicateError, UnexpectedError } from "@/common/error/error-classes";
-import type { UserId } from "@/domains/common/entities/common-entity";
 import {
 	type Markdown,
 	type NoteTitle,
@@ -7,6 +6,7 @@ import {
 	UnexportedNote,
 } from "@/domains/notes/entities/note-entity";
 import type { INotesQueryRepository } from "@/domains/notes/repositories/notes-query-repository.interface";
+import type { UserId } from "../../common/entities/common-entity";
 
 async function ensureNoDuplicateNote(
 	notesQueryRepository: INotesQueryRepository,

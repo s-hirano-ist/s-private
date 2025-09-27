@@ -1,4 +1,4 @@
-import type { UserId } from "@/domains/common/entities/common-entity";
+import type { UserId } from "../../common/entities/common-entity";
 import type { CategoryFindManyParams } from "../types/query-params";
 
 export type ICategoryQueryRepository = {

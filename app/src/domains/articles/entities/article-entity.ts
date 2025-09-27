@@ -8,8 +8,8 @@ import {
 	makeId,
 	UnexportedStatus,
 	UserId,
-} from "@/domains/common/entities/common-entity";
-import { createEntityWithErrorHandling } from "@/domains/common/services/entity-factory";
+} from "../../common/entities/common-entity";
+import { createEntityWithErrorHandling } from "../../common/services/entity-factory";
 
 // Value objects
 

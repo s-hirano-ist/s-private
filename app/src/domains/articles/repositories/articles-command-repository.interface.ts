@@ -1,8 +1,4 @@
-import type {
-	Id,
-	Status,
-	UserId,
-} from "@/domains/common/entities/common-entity";
+import type { Id, Status, UserId } from "../../common/entities/common-entity";
 import type { UnexportedArticle, Url } from "../entities/article-entity";
 
 export type IArticlesCommandRepository = {

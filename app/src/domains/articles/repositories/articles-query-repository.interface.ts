@@ -1,4 +1,4 @@
-import type { Status, UserId } from "@/domains/common/entities/common-entity";
+import type { Status, UserId } from "../../common/entities/common-entity";
 import type { Url } from "../entities/article-entity";
 import type { ArticlesFindManyParams } from "../types/query-params";
 

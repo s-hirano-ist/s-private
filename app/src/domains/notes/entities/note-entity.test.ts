@@ -1,11 +1,11 @@
 import { describe, expect, test } from "vitest";
 import { ZodError } from "zod";
-import { makeUserId } from "@/domains/common/entities/common-entity";
 import {
 	makeMarkdown,
 	makeNoteTitle,
 	noteEntity,
 } from "@/domains/notes/entities/note-entity";
+import { makeUserId } from "../../common/entities/common-entity";
 
 describe("noteEntity", () => {
 	describe("makeNoteTitle", () => {

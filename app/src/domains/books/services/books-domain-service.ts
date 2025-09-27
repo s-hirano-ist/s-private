@@ -1,6 +1,6 @@
 import { DuplicateError, UnexpectedError } from "@/common/error/error-classes";
 import type { IBooksQueryRepository } from "@/domains/books/repositories/books-query-repository.interface";
-import type { UserId } from "@/domains/common/entities/common-entity";
+import type { UserId } from "../../common/entities/common-entity";
 import {
 	type BookMarkdown,
 	type BookTitle,

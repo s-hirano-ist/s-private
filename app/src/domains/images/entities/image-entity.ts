@@ -9,9 +9,9 @@ import {
 	makeId,
 	UnexportedStatus,
 	UserId,
-} from "@/domains/common/entities/common-entity";
-import { createEntityWithErrorHandling } from "@/domains/common/services/entity-factory";
-import { idGenerator } from "@/domains/common/services/id-generator";
+} from "../../common/entities/common-entity";
+import { createEntityWithErrorHandling } from "../../common/services/entity-factory";
+import { idGenerator } from "../../common/services/id-generator";
 
 // NOTE: sync with s-contents/update-db.ts
 const THUMBNAIL_WIDTH = 192;
