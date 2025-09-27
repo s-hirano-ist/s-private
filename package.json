@@ -6,22 +6,24 @@
 	"packageManager": "pnpm@10.17.0",
 	"type": "module",
 	"scripts": {
-		"lint": "eslint .",
-		"lint:fix": "eslint . --fix",
-		"lint:inspector": "config-inspector --config eslint.config.ts",
+		"dev": "pnpm --recursive dev",
+		"build": "pnpm --recursive build",
 		"biome:ci": "biome ci .",
 		"biome:fix": "biome check --write .",
-		"license:summary": "license-checker-rseidelsohn --summary> library-license.txt",
+		"lint": "pnpm --recursive lint",
+		"lint:fix": "pnpm --recursive lint:fix",
+		"test": "pnpm --recursive test",
+		"license:summary": "pnpm --recursive license:summary",
 		"security": "pnpm audit",
-		"analyze": "ANALYZE=true pnpm build",
-		"knip": "knip",
-		"jscpd": "jscpd -p src/**/*.{ts,tsx}",
-		"deps:check": "depcruise src --config .dependency-cruiser.cjs  --include-only '^src'",
-		"deps:graph": "depcruise src --config .dependency-cruiser.cjs --include-only '^src' --output-type dot | dot -T svg > dependency-graph.svg",
-		"deps:circular": "depcruise src --config .dependency-cruiser.cjs  --include-only '^src' --output-type text --focus-depth 0"
+		"jscpd": "jscpd -p app/src/**/*.{ts,tsx}",
+		"knip": "pnpm --filter s-private-app knip",
+		"storybook": "pnpm --filter s-private-app storybook",
+		"storybook:build": "pnpm --filter s-private-app storybook:build"
 	},
 	"dependencies": {},
 	"devDependencies": {
-		"@biomejs/biome": "2.2.4"
+		"@biomejs/biome": "2.2.4",
+		"jscpd": "4.0.5",
+		"playwright": "1.55.0"
 	}
 }

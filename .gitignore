@@ -8,10 +8,9 @@
 node_modules
 
 # Testing
-/.vitest-coverage
+app/.vitest-coverage
 
 # Next.js
-/.next
 app/.next
 app/out
 
