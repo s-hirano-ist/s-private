@@ -1,17 +1,17 @@
 import { unstable_cacheTag as cacheTag } from "next/cache";
 import { cache } from "react";
+import { makeISBN } from "s-private-domains/books/entities/books-entity";
+import type { CacheStrategy } from "s-private-domains/books/types/cache-strategy";
+import {
+	makeStatus,
+	type Status,
+	type UserId,
+} from "s-private-domains/common/entities/common-entity";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
 import type { GetCount, GetPaginatedData } from "@/common/types";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import type { ImageCardStackInitialData } from "@/components/common/layouts/cards/types";
-import { makeISBN } from "@/domains/books/entities/books-entity";
-import type { CacheStrategy } from "@/domains/books/types";
-import {
-	makeStatus,
-	type Status,
-	type UserId,
-} from "@/domains/common/entities/common-entity";
 import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
 
 export const _getBooks = async (

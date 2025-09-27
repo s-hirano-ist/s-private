@@ -2,6 +2,7 @@
 import "server-only";
 import { revalidateTag } from "next/cache";
 import { forbidden } from "next/navigation";
+import { makeUnexportedStatus } from "s-private-domains/common/entities/common-entity";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
@@ -9,7 +10,6 @@ import {
 	buildContentCacheTag,
 	buildCountCacheTag,
 } from "@/common/utils/cache-tag-builder";
-import { makeUnexportedStatus } from "@/domains/common/entities/common-entity";
 import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
 
 export async function deleteImage(id: string): Promise<ServerAction> {

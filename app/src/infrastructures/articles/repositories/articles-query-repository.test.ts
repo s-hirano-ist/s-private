@@ -1,5 +1,5 @@
+import { makeUserId } from "s-private-domains/common/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { makeUserId } from "@/domains/common/entities/common-entity";
 import prisma from "@/prisma";
 import {
 	articlesQueryRepository,

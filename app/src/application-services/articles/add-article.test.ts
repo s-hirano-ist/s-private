@@ -1,4 +1,17 @@
 import { revalidateTag } from "next/cache";
+import {
+	articleEntity,
+	makeArticleTitle,
+	makeCategoryName,
+	makeQuote,
+	makeUrl,
+} from "s-private-domains/articles/entities/article-entity";
+import {
+	makeCreatedAt,
+	makeId,
+	makeUnexportedStatus,
+	makeUserId,
+} from "s-private-domains/common/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { DuplicateError } from "@/common/error/error-classes";
@@ -6,19 +19,6 @@ import {
 	buildContentCacheTag,
 	buildCountCacheTag,
 } from "@/common/utils/cache-tag-builder";
-import {
-	articleEntity,
-	makeArticleTitle,
-	makeCategoryName,
-	makeQuote,
-	makeUrl,
-} from "@/domains/articles/entities/article-entity";
-import {
-	makeCreatedAt,
-	makeId,
-	makeUnexportedStatus,
-	makeUserId,
-} from "@/domains/common/entities/common-entity";
 import { articlesCommandRepository } from "@/infrastructures/articles/repositories/articles-command-repository";
 import { addArticle } from "./add-article";
 import { parseAddArticleFormData } from "./helpers/form-data-parser";
@@ -42,14 +42,14 @@ vi.mock(
 
 const mockEnsureNoDuplicate = vi.fn();
 
-vi.mock("@/domains/articles/services/articles-domain-service", () => ({
+vi.mock("s-private-domains/articles/services/articles-domain-service", () => ({
 	ArticlesDomainService: vi.fn().mockImplementation(() => ({
 		ensureNoDuplicate: mockEnsureNoDuplicate,
 	})),
 }));
 
 vi.mock(
-	"@/domains/articles/entities/article-entity",
+	"s-private-domains/articles/entities/article-entity",
 	async (importOriginal) => {
 		const actual = (await importOriginal()) as any;
 		return {

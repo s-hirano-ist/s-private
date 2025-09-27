@@ -1,7 +1,7 @@
 import { Readable } from "node:stream";
+import { makeUserId } from "s-private-domains/common/entities/common-entity";
+import { Path } from "s-private-domains/images/entities/image-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { makeUserId } from "@/domains/common/entities/common-entity";
-import { Path } from "@/domains/images/entities/image-entity";
 import { minioClient } from "@/minio";
 import prisma from "@/prisma";
 import { imagesQueryRepository } from "./images-query-repository";

@@ -1,4 +1,15 @@
 import { revalidateTag } from "next/cache";
+import {
+	makeCreatedAt,
+	makeId,
+	makeUnexportedStatus,
+	makeUserId,
+} from "s-private-domains/common/entities/common-entity";
+import {
+	makeMarkdown,
+	makeNoteTitle,
+	noteEntity,
+} from "s-private-domains/notes/entities/note-entity";
 import { describe, expect, test, vi } from "vitest";
 import { parseAddNoteFormData } from "@/application-services/notes/helpers/form-data-parser";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
@@ -7,17 +18,6 @@ import {
 	buildContentCacheTag,
 	buildCountCacheTag,
 } from "@/common/utils/cache-tag-builder";
-import {
-	makeCreatedAt,
-	makeId,
-	makeUnexportedStatus,
-	makeUserId,
-} from "@/domains/common/entities/common-entity";
-import {
-	makeMarkdown,
-	makeNoteTitle,
-	noteEntity,
-} from "@/domains/notes/entities/note-entity";
 import { notesCommandRepository } from "@/infrastructures/notes/repositories/notes-command-repository";
 import { addNote } from "./add-note";
 
@@ -37,21 +37,24 @@ vi.mock("@/infrastructures/notes/repositories/notes-query-repository", () => ({
 
 const mockEnsureNoDuplicate = vi.fn();
 
-vi.mock("@/domains/notes/services/notes-domain-service", () => ({
+vi.mock("s-private-domains/notes/services/notes-domain-service", () => ({
 	NotesDomainService: vi.fn().mockImplementation(() => ({
 		ensureNoDuplicate: mockEnsureNoDuplicate,
 	})),
 }));
 
-vi.mock("@/domains/notes/entities/note-entity", async (importOriginal) => {
-	const actual = (await importOriginal()) as any;
-	return {
-		...actual,
-		noteEntity: {
-			create: vi.fn(),
-		},
-	};
-});
+vi.mock(
+	"s-private-domains/notes/entities/note-entity",
+	async (importOriginal) => {
+		const actual = (await importOriginal()) as any;
+		return {
+			...actual,
+			noteEntity: {
+				create: vi.fn(),
+			},
+		};
+	},
+);
 
 vi.mock("@/application-services/notes/helpers/form-data-parser", () => ({
 	parseAddNoteFormData: vi.fn(),

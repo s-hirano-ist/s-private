@@ -1,15 +1,15 @@
 import { unstable_cacheTag as cacheTag } from "next/cache";
 import { cache } from "react";
-import { getSelfId } from "@/common/auth/session";
-import { PAGE_SIZE } from "@/common/constants";
-import { sanitizeCacheTag } from "@/common/utils/cache-utils";
-import type { ImageData } from "@/components/common/display/image/image-stack";
 import {
 	makeStatus,
 	type Status,
 	type UserId,
-} from "@/domains/common/entities/common-entity";
-import type { CacheStrategy } from "@/domains/images/types";
+} from "s-private-domains/common/entities/common-entity";
+import type { CacheStrategy } from "s-private-domains/images/types/cache-strategy";
+import { getSelfId } from "@/common/auth/session";
+import { PAGE_SIZE } from "@/common/constants";
+import { sanitizeCacheTag } from "@/common/utils/cache-utils";
+import type { ImageData } from "@/components/common/display/image/image-stack";
 import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
 
 const API_ORIGINAL_PATH = "/api/images/original";

@@ -1,18 +1,18 @@
 import { unstable_cacheTag as cacheTag } from "next/cache";
 import { cache } from "react";
+import type { CacheStrategy } from "s-private-domains/articles/types/cache-strategy";
+import {
+	makeStatus,
+	type Status,
+	type UserId,
+} from "s-private-domains/common/entities/common-entity";
+import { SystemErrorEvent } from "s-private-domains/common/events/system-error-event";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
 import type { GetCount, GetPaginatedData } from "@/common/types";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import type { ArticleFormClientData } from "@/components/articles/client/article-form-client";
 import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
-import type { CacheStrategy } from "@/domains/articles/types";
-import {
-	makeStatus,
-	type Status,
-	type UserId,
-} from "@/domains/common/entities/common-entity";
-import { SystemErrorEvent } from "@/domains/common/events/system-error-event";
 import {
 	articlesQueryRepository,
 	categoryQueryRepository,

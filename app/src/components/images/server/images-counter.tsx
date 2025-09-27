@@ -1,6 +1,6 @@
+import { makeStatus } from "s-private-domains/common/entities/common-entity";
 import type { getImagesCount } from "@/application-services/images/get-images";
 import { CounterBadge } from "@/components/common/display/counter-badge";
-import { makeStatus } from "@/domains/common/entities/common-entity";
 
 export type Props = {
 	getImagesCount: typeof getImagesCount;

@@ -1,17 +1,17 @@
-import { beforeEach, describe, expect, test, vi } from "vitest";
-import { getFormDataString } from "@/common/utils/form-data-utils";
 import {
 	makeArticleTitle,
 	makeCategoryName,
 	makeQuote,
 	makeUrl,
-} from "@/domains/articles/entities/article-entity";
-import { makeUserId } from "@/domains/common/entities/common-entity";
+} from "s-private-domains/articles/entities/article-entity";
+import { makeUserId } from "s-private-domains/common/entities/common-entity";
+import { beforeEach, describe, expect, test, vi } from "vitest";
+import { getFormDataString } from "@/common/utils/form-data-utils";
 import { parseAddArticleFormData } from "./form-data-parser";
 
 vi.mock("@/common/utils/form-data-utils");
-vi.mock("@/domains/articles/entities/article-entity");
-vi.mock("@/domains/common/entities/common-entity");
+vi.mock("s-private-domains/articles/entities/article-entity");
+vi.mock("s-private-domains/common/entities/common-entity");
 
 const mockGetFormDataString = vi.mocked(getFormDataString);
 const mockMakeArticleTitle = vi.mocked(makeArticleTitle);

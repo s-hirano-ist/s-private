@@ -1,7 +1,10 @@
-import type { ISBN } from "@/domains/books/entities/books-entity";
-import type { IBooksQueryRepository } from "@/domains/books/repositories/books-query-repository.interface";
-import type { BooksFindManyParams } from "@/domains/books/types/query-params";
-import type { Status, UserId } from "@/domains/common/entities/common-entity";
+import type { ISBN } from "s-private-domains/books/entities/books-entity";
+import type { IBooksQueryRepository } from "s-private-domains/books/repositories/books-query-repository.interface";
+import type { BooksFindManyParams } from "s-private-domains/books/types/query-params";
+import type {
+	Status,
+	UserId,
+} from "s-private-domains/common/entities/common-entity";
 import prisma from "@/prisma";
 
 async function findByISBN(ISBN: ISBN, userId: UserId) {

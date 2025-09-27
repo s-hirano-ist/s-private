@@ -2,6 +2,10 @@
 import "server-only";
 import { revalidateTag } from "next/cache";
 import { forbidden } from "next/navigation";
+import {
+	makeId,
+	makeUnexportedStatus,
+} from "s-private-domains/common/entities/common-entity";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
@@ -9,10 +13,6 @@ import {
 	buildContentCacheTag,
 	buildCountCacheTag,
 } from "@/common/utils/cache-tag-builder";
-import {
-	makeId,
-	makeUnexportedStatus,
-} from "@/domains/common/entities/common-entity";
 import { booksCommandRepository } from "@/infrastructures/books/repositories/books-command-repository";
 
 export async function deleteBooks(id: string): Promise<ServerAction> {

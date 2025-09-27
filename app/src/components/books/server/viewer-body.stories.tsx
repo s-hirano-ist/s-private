@@ -1,6 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Suspense } from "react";
-import { makeId, makeStatus } from "@/domains/common/entities/common-entity";
+import {
+	makeId,
+	makeStatus,
+} from "s-private-domains/common/entities/common-entity";
 import type { Props as ViewerBodyProps } from "./viewer-body";
 import { ViewerBody } from "./viewer-body";
 

@@ -10,20 +10,6 @@ afterEach(() => {
 beforeEach(() => {
 	vi.clearAllMocks();
 
-	vi.mock("@/domains/common/services/id-generator", () => {
-		let counter = 0;
-		const generateId = () => {
-			const id = counter++;
-			return `01234567-89ab-7def-8123-456789abcd${id.toString().padStart(2, "0")}`;
-		};
-		return {
-			uuidv7: generateId,
-			idGenerator: {
-				uuidv7: generateId,
-			},
-		};
-	});
-
 	vi.mock("@/env", () => ({
 		env: {
 			NODE_ENV: "test",
@@ -92,8 +78,6 @@ beforeEach(() => {
 			})),
 		},
 	}));
-
-	vi.mock("uuid", () => ({ v7: vi.fn() }));
 
 	vi.mock("@/minio", () => ({
 		minioClient: {

@@ -1,4 +1,15 @@
 import { revalidateTag } from "next/cache";
+import {
+	bookEntity,
+	makeBookTitle,
+	makeISBN,
+} from "s-private-domains/books/entities/books-entity";
+import {
+	makeCreatedAt,
+	makeId,
+	makeUnexportedStatus,
+	makeUserId,
+} from "s-private-domains/common/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { DuplicateError } from "@/common/error/error-classes";
@@ -6,17 +17,6 @@ import {
 	buildContentCacheTag,
 	buildCountCacheTag,
 } from "@/common/utils/cache-tag-builder";
-import {
-	bookEntity,
-	makeBookTitle,
-	makeISBN,
-} from "@/domains/books/entities/books-entity";
-import {
-	makeCreatedAt,
-	makeId,
-	makeUnexportedStatus,
-	makeUserId,
-} from "@/domains/common/entities/common-entity";
 import { booksCommandRepository } from "@/infrastructures/books/repositories/books-command-repository";
 import { addBooks } from "./add-books";
 import { parseAddBooksFormData } from "./helpers/form-data-parser";
@@ -37,21 +37,24 @@ vi.mock("@/infrastructures/books/repositories/books-query-repository", () => ({
 
 const mockEnsureNoDuplicate = vi.fn();
 
-vi.mock("@/domains/books/services/books-domain-service", () => ({
+vi.mock("s-private-domains/books/services/books-domain-service", () => ({
 	BooksDomainService: vi.fn().mockImplementation(() => ({
 		ensureNoDuplicate: mockEnsureNoDuplicate,
 	})),
 }));
 
-vi.mock("@/domains/books/entities/books-entity", async (importOriginal) => {
-	const actual = (await importOriginal()) as any;
-	return {
-		...actual,
-		bookEntity: {
-			create: vi.fn(),
-		},
-	};
-});
+vi.mock(
+	"s-private-domains/books/entities/books-entity",
+	async (importOriginal) => {
+		const actual = (await importOriginal()) as any;
+		return {
+			...actual,
+			bookEntity: {
+				create: vi.fn(),
+			},
+		};
+	},
+);
 
 vi.mock("./helpers/form-data-parser", () => ({
 	parseAddBooksFormData: vi.fn(),

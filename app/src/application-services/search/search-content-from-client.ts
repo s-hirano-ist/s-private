@@ -1,13 +1,13 @@
 "use server";
 import "server-only";
 import { forbidden } from "next/navigation";
-import { getSelfId, hasViewerAdminPermission } from "@/common/auth/session";
-import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
-import type { ServerActionWithData } from "@/common/types";
 import type {
 	SearchQuery,
 	UnifiedSearchResults,
-} from "@/domains/common/types/search-types";
+} from "s-private-domains/common/types/search-types";
+import { getSelfId, hasViewerAdminPermission } from "@/common/auth/session";
+import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
+import type { ServerActionWithData } from "@/common/types";
 import { searchContent } from "./search-content";
 
 export async function searchContentFromClient(

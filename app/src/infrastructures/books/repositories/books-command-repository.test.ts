@@ -1,4 +1,3 @@
-import { beforeEach, describe, expect, test, vi } from "vitest";
 import {
 	makeBookMarkdown,
 	makeBookTitle,
@@ -9,13 +8,14 @@ import {
 	makeGoogleSubTitle,
 	makeGoogleTitle,
 	makeISBN,
-} from "@/domains/books/entities/books-entity";
+} from "s-private-domains/books/entities/books-entity";
 import {
 	makeCreatedAt,
 	makeId,
 	makeUnexportedStatus,
 	makeUserId,
-} from "@/domains/common/entities/common-entity";
+} from "s-private-domains/common/entities/common-entity";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 import prisma from "@/prisma";
 import { booksCommandRepository } from "./books-command-repository";
 

@@ -1,14 +1,14 @@
+import * as commonEntityModule from "s-private-domains/common/entities/common-entity";
 import { beforeEach, describe, expect, type Mock, test, vi } from "vitest";
 import * as sessionModule from "@/common/auth/session";
 import * as errorModule from "@/common/error/error-wrapper";
-import * as commonEntityModule from "@/domains/common/entities/common-entity";
 import * as booksRepositoryModule from "@/infrastructures/books/repositories/books-command-repository";
 import { deleteBooks } from "./delete-books";
 
 vi.mock("@/common/auth/session");
 vi.mock("@/common/error/error-wrapper");
 vi.mock("@/infrastructures/books/repositories/books-command-repository");
-vi.mock("@/domains/common/entities/common-entity");
+vi.mock("s-private-domains/common/entities/common-entity");
 
 const mockDeleteById = vi.fn();
 

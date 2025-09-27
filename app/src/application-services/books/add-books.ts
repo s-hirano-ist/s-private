@@ -2,6 +2,8 @@
 import "server-only";
 import { revalidateTag } from "next/cache";
 import { forbidden } from "next/navigation";
+import { bookEntity } from "s-private-domains/books/entities/books-entity";
+import { BooksDomainService } from "s-private-domains/books/services/books-domain-service";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
@@ -9,8 +11,6 @@ import {
 	buildContentCacheTag,
 	buildCountCacheTag,
 } from "@/common/utils/cache-tag-builder";
-import { bookEntity } from "@/domains/books/entities/books-entity";
-import { BooksDomainService } from "@/domains/books/services/books-domain-service";
 import { booksCommandRepository } from "@/infrastructures/books/repositories/books-command-repository";
 import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
 import { parseAddBooksFormData } from "./helpers/form-data-parser";

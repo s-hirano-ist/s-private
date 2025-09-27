@@ -1,13 +1,13 @@
 "use server";
 import "server-only";
-import type { UserId } from "@/domains/common/entities/common-entity";
+import type { UserId } from "s-private-domains/common/entities/common-entity";
 import type {
 	ContentType,
 	SearchQuery,
 	SearchResult,
 	SearchResultGroup,
 	UnifiedSearchResults,
-} from "@/domains/common/types/search-types";
+} from "s-private-domains/common/types/search-types";
 import { articlesQueryRepository } from "@/infrastructures/articles/repositories/articles-query-repository";
 import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
 import { notesQueryRepository } from "@/infrastructures/notes/repositories/notes-query-repository";

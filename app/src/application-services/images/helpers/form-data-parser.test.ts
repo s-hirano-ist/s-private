@@ -1,18 +1,18 @@
-import { beforeEach, describe, expect, test, vi } from "vitest";
-import { getFormDataFile } from "@/common/utils/form-data-utils";
-import { makeUserId } from "@/domains/common/entities/common-entity";
+import { makeUserId } from "s-private-domains/common/entities/common-entity";
 import {
 	makeContentType,
 	makeFileSize,
 	makeOriginalBuffer,
 	makePath,
 	makeThumbnailBufferFromFile,
-} from "@/domains/images/entities/image-entity";
+} from "s-private-domains/images/entities/image-entity";
+import { beforeEach, describe, expect, test, vi } from "vitest";
+import { getFormDataFile } from "@/common/utils/form-data-utils";
 import { parseAddImageFormData } from "./form-data-parser";
 
 vi.mock("@/common/utils/form-data-utils");
-vi.mock("@/domains/common/entities/common-entity");
-vi.mock("@/domains/images/entities/image-entity");
+vi.mock("s-private-domains/common/entities/common-entity");
+vi.mock("s-private-domains/images/entities/image-entity");
 
 const mockGetFormDataFile = vi.mocked(getFormDataFile);
 const mockMakeUserId = vi.mocked(makeUserId);

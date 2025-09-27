@@ -1,15 +1,15 @@
-import { beforeEach, describe, expect, test, vi } from "vitest";
-import type { Status } from "@/domains/common/entities/common-entity";
+import type { Status } from "s-private-domains/common/entities/common-entity";
 import {
 	makeCreatedAt,
 	makeId,
 	makeUnexportedStatus,
 	makeUserId,
-} from "@/domains/common/entities/common-entity";
+} from "s-private-domains/common/entities/common-entity";
 import {
 	makeMarkdown,
 	makeNoteTitle,
-} from "@/domains/notes/entities/note-entity";
+} from "s-private-domains/notes/entities/note-entity";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 import prisma from "@/prisma";
 import { notesCommandRepository } from "./notes-command-repository";
 

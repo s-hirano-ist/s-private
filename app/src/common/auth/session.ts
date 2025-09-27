@@ -3,8 +3,8 @@ import { unauthorized } from "next/navigation";
 import {
 	makeUserId,
 	type UserId,
-} from "@/domains/common/entities/common-entity";
-import { SystemWarningEvent } from "@/domains/common/events/system-warning-event";
+} from "s-private-domains/common/entities/common-entity";
+import { SystemWarningEvent } from "s-private-domains/common/events/system-warning-event";
 import { auth } from "@/infrastructures/auth/auth-provider";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { initializeEventHandlers } from "@/infrastructures/events/event-setup";

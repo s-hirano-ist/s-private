@@ -1,12 +1,12 @@
 import { forbidden } from "next/navigation";
+import {
+	makeStatus,
+	makeUserId,
+} from "s-private-domains/common/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasViewerAdminPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
-import {
-	makeStatus,
-	makeUserId,
-} from "@/domains/common/entities/common-entity";
 import { _getBooks } from "./get-books";
 import {
 	loadMoreExportedBooks,
@@ -17,7 +17,7 @@ vi.mock("next/navigation");
 vi.mock("@/common/auth/session");
 vi.mock("@/common/error/error-wrapper");
 vi.mock("@/common/utils/cache-utils");
-vi.mock("@/domains/common/entities/common-entity");
+vi.mock("s-private-domains/common/entities/common-entity");
 vi.mock("./get-books");
 
 const mockHasViewerAdminPermission = vi.mocked(hasViewerAdminPermission);

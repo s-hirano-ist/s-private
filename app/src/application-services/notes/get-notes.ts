@@ -1,17 +1,17 @@
 import { unstable_cacheTag as cacheTag } from "next/cache";
 import { cache } from "react";
+import {
+	makeStatus,
+	type Status,
+	type UserId,
+} from "s-private-domains/common/entities/common-entity";
+import { makeNoteTitle } from "s-private-domains/notes/entities/note-entity";
+import type { CacheStrategy } from "s-private-domains/notes/types/cache-strategy";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
 import type { GetCount, GetPaginatedData } from "@/common/types";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
-import {
-	makeStatus,
-	type Status,
-	type UserId,
-} from "@/domains/common/entities/common-entity";
-import { makeNoteTitle } from "@/domains/notes/entities/note-entity";
-import type { CacheStrategy } from "@/domains/notes/types";
 import { notesQueryRepository } from "@/infrastructures/notes/repositories/notes-query-repository";
 
 export const _getNotes = async (

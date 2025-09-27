@@ -1,12 +1,15 @@
-import type { Status, UserId } from "@/domains/common/entities/common-entity";
+import type {
+	Status,
+	UserId,
+} from "s-private-domains/common/entities/common-entity";
 import type {
 	Path,
 	UnexportedImage,
-} from "@/domains/images/entities/image-entity";
-import { ImageCreatedEvent } from "@/domains/images/events/image-created-event";
-import { ImageDeletedEvent } from "@/domains/images/events/image-deleted-event";
-import { ImageUpdatedEvent } from "@/domains/images/events/image-updated-event";
-import type { IImagesCommandRepository } from "@/domains/images/repositories/images-command-repository.interface";
+} from "s-private-domains/images/entities/image-entity";
+import { ImageCreatedEvent } from "s-private-domains/images/events/image-created-event";
+import { ImageDeletedEvent } from "s-private-domains/images/events/image-deleted-event";
+import { ImageUpdatedEvent } from "s-private-domains/images/events/image-updated-event";
+import type { IImagesCommandRepository } from "s-private-domains/images/repositories/images-command-repository.interface";
 import { env } from "@/env";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { initializeEventHandlers } from "@/infrastructures/events/event-setup";

@@ -1,5 +1,5 @@
+import type { Status } from "s-private-domains/common/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import type { Status } from "@/domains/common/entities/common-entity";
 import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
 import {
 	getBookByISBN,

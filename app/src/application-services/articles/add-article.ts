@@ -2,6 +2,8 @@
 import "server-only";
 import { revalidateTag } from "next/cache";
 import { forbidden } from "next/navigation";
+import { articleEntity } from "s-private-domains/articles/entities/article-entity";
+import { ArticlesDomainService } from "s-private-domains/articles/services/articles-domain-service";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
@@ -9,8 +11,6 @@ import {
 	buildContentCacheTag,
 	buildCountCacheTag,
 } from "@/common/utils/cache-tag-builder";
-import { articleEntity } from "@/domains/articles/entities/article-entity";
-import { ArticlesDomainService } from "@/domains/articles/services/articles-domain-service";
 import { articlesCommandRepository } from "@/infrastructures/articles/repositories/articles-command-repository";
 import { articlesQueryRepository } from "@/infrastructures/articles/repositories/articles-query-repository";
 import { parseAddArticleFormData } from "./helpers/form-data-parser";

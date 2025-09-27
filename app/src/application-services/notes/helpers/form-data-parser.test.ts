@@ -1,15 +1,15 @@
-import { beforeEach, describe, expect, test, vi } from "vitest";
-import { getFormDataString } from "@/common/utils/form-data-utils";
-import { makeUserId } from "@/domains/common/entities/common-entity";
+import { makeUserId } from "s-private-domains/common/entities/common-entity";
 import {
 	makeMarkdown,
 	makeNoteTitle,
-} from "@/domains/notes/entities/note-entity";
+} from "s-private-domains/notes/entities/note-entity";
+import { beforeEach, describe, expect, test, vi } from "vitest";
+import { getFormDataString } from "@/common/utils/form-data-utils";
 import { parseAddNoteFormData } from "./form-data-parser";
 
 vi.mock("@/common/utils/form-data-utils");
-vi.mock("@/domains/common/entities/common-entity");
-vi.mock("@/domains/notes/entities/note-entity");
+vi.mock("s-private-domains/common/entities/common-entity");
+vi.mock("s-private-domains/notes/entities/note-entity");
 
 const mockGetFormDataString = vi.mocked(getFormDataString);
 const mockMakeNoteTitle = vi.mocked(makeNoteTitle);

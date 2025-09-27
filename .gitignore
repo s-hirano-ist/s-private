@@ -8,7 +8,7 @@
 node_modules
 
 # Testing
-app/.vitest-coverage
+.vitest-coverage
 
 # Next.js
 app/.next

@@ -1,10 +1,13 @@
-import type { IArticlesQueryRepository } from "@/domains/articles/repositories/articles-query-repository.interface";
-import type { ICategoryQueryRepository } from "@/domains/articles/repositories/category-query-repository.interface";
+import type { IArticlesQueryRepository } from "s-private-domains/articles/repositories/articles-query-repository.interface";
+import type { ICategoryQueryRepository } from "s-private-domains/articles/repositories/category-query-repository.interface";
 import type {
 	ArticlesFindManyParams,
 	CategoryFindManyParams,
-} from "@/domains/articles/types/query-params";
-import type { Status, UserId } from "@/domains/common/entities/common-entity";
+} from "s-private-domains/articles/types/query-params";
+import type {
+	Status,
+	UserId,
+} from "s-private-domains/common/entities/common-entity";
 import type { Prisma } from "@/generated";
 import prisma from "@/prisma";
 

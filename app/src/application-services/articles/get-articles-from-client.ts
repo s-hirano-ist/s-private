@@ -1,12 +1,12 @@
 "use server";
 import "server-only";
 import { forbidden } from "next/navigation";
+import { makeStatus } from "s-private-domains/common/entities/common-entity";
 import { getSelfId, hasViewerAdminPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerActionWithData } from "@/common/types";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
-import { makeStatus } from "@/domains/common/entities/common-entity";
 import { _getArticles } from "./get-articles";
 
 export async function loadMoreExportedArticles(

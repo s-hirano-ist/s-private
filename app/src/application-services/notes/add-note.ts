@@ -2,6 +2,8 @@
 import "server-only";
 import { revalidateTag } from "next/cache";
 import { forbidden } from "next/navigation";
+import { noteEntity } from "s-private-domains/notes/entities/note-entity";
+import { NotesDomainService } from "s-private-domains/notes/services/notes-domain-service";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
@@ -9,8 +11,6 @@ import {
 	buildContentCacheTag,
 	buildCountCacheTag,
 } from "@/common/utils/cache-tag-builder";
-import { noteEntity } from "@/domains/notes/entities/note-entity";
-import { NotesDomainService } from "@/domains/notes/services/notes-domain-service";
 import { notesCommandRepository } from "@/infrastructures/notes/repositories/notes-command-repository";
 import { notesQueryRepository } from "@/infrastructures/notes/repositories/notes-query-repository";
 import { parseAddNoteFormData } from "./helpers/form-data-parser";

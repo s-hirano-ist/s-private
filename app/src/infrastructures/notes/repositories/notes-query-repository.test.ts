@@ -1,7 +1,6 @@
+import { makeUserId } from "s-private-domains/common/entities/common-entity";
+import { makeNoteTitle } from "s-private-domains/notes/entities/note-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-
-import { makeUserId } from "@/domains/common/entities/common-entity";
-import { makeNoteTitle } from "@/domains/notes/entities/note-entity";
 import prisma from "@/prisma";
 import { notesQueryRepository } from "./notes-query-repository";
 

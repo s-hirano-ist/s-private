@@ -1,11 +1,11 @@
-import { getFormDataString } from "@/common/utils/form-data-utils";
 import {
 	makeArticleTitle,
 	makeCategoryName,
 	makeQuote,
 	makeUrl,
-} from "@/domains/articles/entities/article-entity";
-import type { UserId } from "@/domains/common/entities/common-entity";
+} from "s-private-domains/articles/entities/article-entity";
+import type { UserId } from "s-private-domains/common/entities/common-entity";
+import { getFormDataString } from "@/common/utils/form-data-utils";
 
 export const parseAddArticleFormData = (formData: FormData, userId: UserId) => {
 	const title = getFormDataString(formData, "title");

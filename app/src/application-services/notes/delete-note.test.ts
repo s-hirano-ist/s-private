@@ -1,4 +1,9 @@
 import { revalidateTag } from "next/cache";
+import {
+	makeId,
+	makeUnexportedStatus,
+	makeUserId,
+} from "s-private-domains/common/entities/common-entity";
 import { describe, expect, test, vi } from "vitest";
 import { deleteNote } from "@/application-services/notes/delete-note";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
@@ -6,11 +11,6 @@ import {
 	buildContentCacheTag,
 	buildCountCacheTag,
 } from "@/common/utils/cache-tag-builder";
-import {
-	makeId,
-	makeUnexportedStatus,
-	makeUserId,
-} from "@/domains/common/entities/common-entity";
 import { notesCommandRepository } from "@/infrastructures/notes/repositories/notes-command-repository";
 
 vi.mock(

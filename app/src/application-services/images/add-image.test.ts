@@ -1,14 +1,14 @@
 import { revalidateTag } from "next/cache";
+import {
+	makeUnexportedStatus,
+	makeUserId,
+} from "s-private-domains/common/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import {
 	buildContentCacheTag,
 	buildCountCacheTag,
 } from "@/common/utils/cache-tag-builder";
-import {
-	makeUnexportedStatus,
-	makeUserId,
-} from "@/domains/common/entities/common-entity";
 import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
 import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
 import { addImage } from "./add-image";

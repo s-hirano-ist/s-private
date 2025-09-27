@@ -1,6 +1,6 @@
 import { forbidden, unstable_rethrow } from "next/navigation";
 import type { ReactNode } from "react";
-import { SystemErrorEvent } from "@/domains/common/events/system-error-event";
+import { SystemErrorEvent } from "s-private-domains/common/events/system-error-event";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
 import { StatusCodeView } from "../display/status/status-code-view";
