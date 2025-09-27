@@ -21,7 +21,8 @@
 		"eslint-config-next", // storybook integration not working
 		"eslint-plugin-jsx-a11y", // storybook integration not working
 		"eslint-plugin-tailwindcss", // storybook integration not working
-		"postcss-load-config" // postcss
+		"postcss-load-config", // postcss
+		"s-private-domains"
 	],
 	"ignoreBinaries": [
 		"config-inspector",
