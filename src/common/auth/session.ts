@@ -1,5 +1,9 @@
 import "server-only";
 import { unauthorized } from "next/navigation";
+import {
+	makeUserId,
+	type UserId,
+} from "@/domains/common/entities/common-entity";
 import { SystemWarningEvent } from "@/domains/common/events/system-warning-event";
 import { auth } from "@/infrastructures/auth/auth-provider";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
@@ -21,11 +25,12 @@ async function checkSelfAuth() {
 	return session;
 }
 
-export async function getSelfId() {
+export async function getSelfId(): Promise<UserId> {
 	const { user } = await checkSelfAuth();
-	return user.id;
+	return makeUserId(user.id);
 }
 
+// FIXME: role in common-entity.ts
 async function getSelfRoles() {
 	const { user } = await checkSelfAuth();
 	return user.roles;

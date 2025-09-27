@@ -5,9 +5,9 @@ import {
 	makeQuote,
 	makeUrl,
 } from "@/domains/articles/entities/article-entity";
-import { makeUserId } from "@/domains/common/entities/common-entity";
+import type { UserId } from "@/domains/common/entities/common-entity";
 
-export const parseAddArticleFormData = (formData: FormData, userId: string) => {
+export const parseAddArticleFormData = (formData: FormData, userId: UserId) => {
 	const title = getFormDataString(formData, "title");
 	const quote = getFormDataString(formData, "quote");
 	const url = getFormDataString(formData, "url");
@@ -18,6 +18,6 @@ export const parseAddArticleFormData = (formData: FormData, userId: string) => {
 		quote: makeQuote(quote),
 		url: makeUrl(url),
 		categoryName: makeCategoryName(categoryName),
-		userId: makeUserId(userId),
+		userId,
 	};
 };

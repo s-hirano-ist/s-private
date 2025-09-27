@@ -20,7 +20,7 @@ describe("parseAddBooksFormData", () => {
 
 	test("should parse form data and create book data", () => {
 		const formData = new FormData();
-		const userId = "test-user-id";
+		const userId = makeUserId("test-user-id");
 
 		// Mock form data extraction
 		mockGetFormDataString
@@ -50,7 +50,7 @@ describe("parseAddBooksFormData", () => {
 
 	test("should handle form data with ISBN containing hyphens", () => {
 		const formData = new FormData();
-		const userId = "test-user-id";
+		const userId = makeUserId("test-user-id");
 
 		// Mock form data extraction with hyphenated ISBN
 		mockGetFormDataString
@@ -76,7 +76,7 @@ describe("parseAddBooksFormData", () => {
 
 	test("should handle empty form data", () => {
 		const formData = new FormData();
-		const userId = "test-user-id";
+		const userId = makeUserId("test-user-id");
 
 		// Mock form data extraction returning empty strings
 		mockGetFormDataString.mockReturnValueOnce("").mockReturnValueOnce("");
@@ -97,7 +97,7 @@ describe("parseAddBooksFormData", () => {
 
 	test("should handle form data with Japanese book title", () => {
 		const formData = new FormData();
-		const userId = "test-user-id-jp";
+		const userId = makeUserId("test-user-id-jp");
 
 		// Mock form data extraction with Japanese content
 		mockGetFormDataString
@@ -120,7 +120,7 @@ describe("parseAddBooksFormData", () => {
 
 	test("should handle form data with special characters in title", () => {
 		const formData = new FormData();
-		const userId = "test-user-id";
+		const userId = makeUserId("test-user-id");
 
 		// Mock form data extraction with special characters
 		mockGetFormDataString
@@ -145,7 +145,7 @@ describe("parseAddBooksFormData", () => {
 
 	test("should handle different user IDs", () => {
 		const formData = new FormData();
-		const userId = "different-user-123";
+		const userId = makeUserId("different-user-123");
 
 		// Mock form data extraction
 		mockGetFormDataString

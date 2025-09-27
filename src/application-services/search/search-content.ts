@@ -1,6 +1,9 @@
 "use server";
 import "server-only";
-import { makeUserId } from "@/domains/common/entities/common-entity";
+import {
+	makeUserId,
+	type UserId,
+} from "@/domains/common/entities/common-entity";
 import type {
 	ContentType,
 	SearchQuery,
@@ -41,9 +44,8 @@ function extractSnippet(
 
 export async function searchContent(
 	searchQuery: SearchQuery,
-	userId: string,
+	userId: UserId,
 ): Promise<UnifiedSearchResults> {
-	const userIdBrand = makeUserId(userId);
 	const { query, contentTypes, limit = 20 } = searchQuery;
 	const searchTypes = contentTypes ?? ["articles", "books", "notes"];
 
@@ -54,7 +56,7 @@ export async function searchContent(
 	if (searchTypes.includes("articles")) {
 		const articleResults = await articlesQueryRepository.search(
 			query,
-			userIdBrand,
+			userId,
 			limit,
 		);
 
@@ -82,11 +84,7 @@ export async function searchContent(
 
 	// Search books
 	if (searchTypes.includes("books")) {
-		const bookResults = await booksQueryRepository.search(
-			query,
-			userIdBrand,
-			limit,
-		);
+		const bookResults = await booksQueryRepository.search(query, userId, limit);
 
 		const bookSearchResults: SearchResult[] = bookResults.map((book) => ({
 			href: book.ISBN,
@@ -113,11 +111,7 @@ export async function searchContent(
 
 	// Search notes
 	if (searchTypes.includes("notes")) {
-		const noteResults = await notesQueryRepository.search(
-			query,
-			userIdBrand,
-			limit,
-		);
+		const noteResults = await notesQueryRepository.search(query, userId, limit);
 
 		const noteSearchResults: SearchResult[] = noteResults.map((note) => ({
 			href: note.title,

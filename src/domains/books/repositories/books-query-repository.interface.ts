@@ -25,7 +25,7 @@ export type IBooksQueryRepository = {
 		exportedAt: Date | null;
 	} | null>;
 	findMany(
-		userId: string,
+		userId: UserId,
 		status: Status,
 		params?: BooksFindManyParams,
 	): Promise<

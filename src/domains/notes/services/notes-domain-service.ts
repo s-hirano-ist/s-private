@@ -1,11 +1,7 @@
 import { DuplicateError, UnexpectedError } from "@/common/error/error-classes";
-import {
-	makeUserId,
-	type UserId,
-} from "@/domains/common/entities/common-entity";
+import type { UserId } from "@/domains/common/entities/common-entity";
 import {
 	type Markdown,
-	makeNoteTitle,
 	type NoteTitle,
 	noteEntity,
 	UnexportedNote,
@@ -31,10 +27,7 @@ async function updateNote(
 	userId: UserId,
 	markdown: Markdown,
 ): Promise<{ status: NoteStatus; data?: UnexportedNote }> {
-	const data = await notesQueryRepository.findByTitle(
-		makeNoteTitle(title),
-		makeUserId(userId),
-	);
+	const data = await notesQueryRepository.findByTitle(title, userId);
 
 	if (data?.status !== "UNEXPORTED") return { status: "NO_UPDATE" };
 

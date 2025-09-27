@@ -27,7 +27,7 @@ describe("parseAddArticleFormData", () => {
 
 	test("should parse form data and create article data", () => {
 		const formData = new FormData();
-		const userId = "test-user-id";
+		const userId = makeUserId("test-user-id");
 
 		// Mock form data extraction
 		mockGetFormDataString
@@ -41,7 +41,7 @@ describe("parseAddArticleFormData", () => {
 		mockMakeQuote.mockReturnValue("This is a test quote" as any);
 		mockMakeUrl.mockReturnValue("https://example.com" as any);
 		mockMakeCategoryName.mockReturnValue("Technology" as any);
-		mockMakeUserId.mockReturnValue("test-user-id" as any);
+		mockMakeUserId.mockReturnValue(userId);
 
 		const result = parseAddArticleFormData(formData, userId);
 
@@ -67,7 +67,7 @@ describe("parseAddArticleFormData", () => {
 
 	test("should handle empty form data", () => {
 		const formData = new FormData();
-		const userId = "test-user-id";
+		const userId = makeUserId("test-user-id");
 
 		// Mock form data extraction returning empty strings
 		mockGetFormDataString
@@ -81,7 +81,7 @@ describe("parseAddArticleFormData", () => {
 		mockMakeQuote.mockReturnValue("" as any);
 		mockMakeUrl.mockReturnValue("" as any);
 		mockMakeCategoryName.mockReturnValue("" as any);
-		mockMakeUserId.mockReturnValue("test-user-id" as any);
+		mockMakeUserId.mockReturnValue(userId);
 
 		const result = parseAddArticleFormData(formData, userId);
 
@@ -96,7 +96,7 @@ describe("parseAddArticleFormData", () => {
 
 	test("should handle form data with Japanese content", () => {
 		const formData = new FormData();
-		const userId = "test-user-id-jp";
+		const userId = makeUserId("test-user-id-jp");
 
 		// Mock form data extraction with Japanese content
 		mockGetFormDataString
@@ -110,7 +110,7 @@ describe("parseAddArticleFormData", () => {
 		mockMakeQuote.mockReturnValue("これはテストの引用です" as any);
 		mockMakeUrl.mockReturnValue("https://example.co.jp" as any);
 		mockMakeCategoryName.mockReturnValue("技術" as any);
-		mockMakeUserId.mockReturnValue("test-user-id-jp" as any);
+		mockMakeUserId.mockReturnValue(userId);
 
 		const result = parseAddArticleFormData(formData, userId);
 
@@ -125,7 +125,7 @@ describe("parseAddArticleFormData", () => {
 
 	test("should handle form data with special characters", () => {
 		const formData = new FormData();
-		const userId = "test-user-id";
+		const userId = makeUserId("test-user-id");
 
 		// Mock form data extraction with special characters
 		mockGetFormDataString
@@ -143,7 +143,7 @@ describe("parseAddArticleFormData", () => {
 			"https://example.com/path?param=value&other=test" as any,
 		);
 		mockMakeCategoryName.mockReturnValue("Web & Development" as any);
-		mockMakeUserId.mockReturnValue("test-user-id" as any);
+		mockMakeUserId.mockReturnValue(userId);
 
 		const result = parseAddArticleFormData(formData, userId);
 

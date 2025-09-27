@@ -87,7 +87,7 @@ describe("addBooks", () => {
 
 	test("should create books", async () => {
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
-		vi.mocked(getSelfId).mockResolvedValue("user-123");
+		vi.mocked(getSelfId).mockResolvedValue(makeUserId("user-123"));
 
 		const mockBook = {
 			id: makeId("01933f5c-9df0-7001-9123-456789abcdef"),
@@ -129,7 +129,7 @@ describe("addBooks", () => {
 
 	test("should preserve form data on DuplicateError", async () => {
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
-		vi.mocked(getSelfId).mockResolvedValue("user-123");
+		vi.mocked(getSelfId).mockResolvedValue(makeUserId("user-123"));
 		mockEnsureNoDuplicate.mockRejectedValue(new DuplicateError());
 
 		const result = await addBooks(mockFormData);
@@ -144,7 +144,7 @@ describe("addBooks", () => {
 
 	test("should handle errors and return wrapped error", async () => {
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
-		vi.mocked(getSelfId).mockResolvedValue("user-123");
+		vi.mocked(getSelfId).mockResolvedValue(makeUserId("user-123"));
 
 		const error = new Error("Domain service error");
 		mockEnsureNoDuplicate.mockRejectedValue(error);

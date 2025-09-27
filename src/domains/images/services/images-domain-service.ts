@@ -1,8 +1,5 @@
 import { DuplicateError, UnexpectedError } from "@/common/error/error-classes";
-import {
-	makeUserId,
-	type UserId,
-} from "@/domains/common/entities/common-entity";
+import type { UserId } from "@/domains/common/entities/common-entity";
 import type { IImagesQueryRepository } from "@/domains/images/repositories/images-query-repository.interface";
 import {
 	type ContentType,
@@ -39,7 +36,7 @@ async function updateImage(
 	tags?: Array<Tag>,
 	description?: Description,
 ): Promise<ReturnType> {
-	const data = await imagesQueryRepository.findByPath(path, makeUserId(userId));
+	const data = await imagesQueryRepository.findByPath(path, userId);
 
 	if (!data) {
 		return {

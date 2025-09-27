@@ -1,14 +1,10 @@
 import { DuplicateError, UnexpectedError } from "@/common/error/error-classes";
 import type { IArticlesQueryRepository } from "@/domains/articles/repositories/articles-query-repository.interface";
-import {
-	makeUserId,
-	type UserId,
-} from "@/domains/common/entities/common-entity";
+import type { UserId } from "@/domains/common/entities/common-entity";
 import {
 	type ArticleTitle,
 	articleEntity,
 	type CategoryName,
-	makeUrl,
 	type OgDescription,
 	type OgImageUrl,
 	type OgTitle,
@@ -44,10 +40,7 @@ async function updateArticle(
 	ogDescription: OgDescription,
 	ogImageUrl: OgImageUrl,
 ): Promise<ReturnType> {
-	const data = await articlesQueryRepository.findByUrl(
-		makeUrl(url),
-		makeUserId(userId),
-	);
+	const data = await articlesQueryRepository.findByUrl(url, userId);
 	if (data?.status !== "UNEXPORTED") return { status: "NO_UPDATE" };
 
 	if (!data) {

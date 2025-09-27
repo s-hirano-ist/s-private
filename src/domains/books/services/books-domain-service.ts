@@ -1,9 +1,6 @@
 import { DuplicateError, UnexpectedError } from "@/common/error/error-classes";
 import type { IBooksQueryRepository } from "@/domains/books/repositories/books-query-repository.interface";
-import {
-	makeUserId,
-	type UserId,
-} from "@/domains/common/entities/common-entity";
+import type { UserId } from "@/domains/common/entities/common-entity";
 import {
 	type BookMarkdown,
 	type BookTitle,
@@ -15,7 +12,6 @@ import {
 	type GoogleSubtitle,
 	type GoogleTitle,
 	type ISBN,
-	makeISBN,
 	UnexportedBook,
 } from "../entities/books-entity";
 
@@ -46,10 +42,7 @@ async function updateBook(
 	googleHref: GoogleHref,
 	markdown: BookMarkdown,
 ): Promise<ReturnType> {
-	const data = await booksQueryRepository.findByISBN(
-		makeISBN(ISBN),
-		makeUserId(userId),
-	);
+	const data = await booksQueryRepository.findByISBN(ISBN, userId);
 	if (data?.status !== "UNEXPORTED") return { status: "NO_UPDATE" };
 
 	if (!data) {

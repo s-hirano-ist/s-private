@@ -7,8 +7,8 @@ import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
 import {
 	makeStatus,
-	makeUserId,
 	type Status,
+	type UserId,
 } from "@/domains/common/entities/common-entity";
 import { makeNoteTitle } from "@/domains/notes/entities/note-entity";
 import type { CacheStrategy } from "@/domains/notes/types";
@@ -16,7 +16,7 @@ import { notesQueryRepository } from "@/infrastructures/notes/repositories/notes
 
 export const _getNotes = async (
 	currentCount: number,
-	userId: string,
+	userId: UserId,
 	status: Status,
 	cacheStrategy?: CacheStrategy,
 ): Promise<LinkCardStackInitialData> => {
@@ -26,16 +26,12 @@ export const _getNotes = async (
 		`notes_${status}_${userId}_${currentCount}`,
 	);
 	try {
-		const notes = await notesQueryRepository.findMany(
-			makeUserId(userId),
-			status,
-			{
-				skip: currentCount,
-				take: PAGE_SIZE,
-				orderBy: { createdAt: "desc" },
-				cacheStrategy,
-			},
-		);
+		const notes = await notesQueryRepository.findMany(userId, status, {
+			skip: currentCount,
+			take: PAGE_SIZE,
+			orderBy: { createdAt: "desc" },
+			cacheStrategy,
+		});
 
 		const totalCount = await _getNotesCount(userId, status);
 
@@ -55,13 +51,13 @@ export const _getNotes = async (
 };
 
 const _getNotesCount = async (
-	userId: string,
+	userId: UserId,
 	status: Status,
 ): Promise<number> => {
 	"use cache";
 	cacheTag(`notes_count_${status}_${userId}`);
 	try {
-		return await notesQueryRepository.count(makeUserId(userId), status);
+		return await notesQueryRepository.count(userId, status);
 	} catch (error) {
 		throw error;
 	}
@@ -93,10 +89,7 @@ export const getExportedNotes: GetPaginatedData<LinkCardStackInitialData> =
 export const getNoteByTitle = cache(async (title: string) => {
 	try {
 		const userId = await getSelfId();
-		return await notesQueryRepository.findByTitle(
-			makeNoteTitle(title),
-			makeUserId(userId),
-		);
+		return await notesQueryRepository.findByTitle(makeNoteTitle(title), userId);
 	} catch (error) {
 		throw error;
 	}
