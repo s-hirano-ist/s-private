@@ -11,6 +11,7 @@ import {
 	makeStatus,
 	makeUserId,
 	type Status,
+	type UserId,
 } from "@/domains/common/entities/common-entity";
 import { SystemErrorEvent } from "@/domains/common/events/system-error-event";
 import {
@@ -22,7 +23,7 @@ import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
 
 export const _getArticles = async (
 	currentCount: number,
-	userId: string,
+	userId: UserId,
 	status: Status,
 	cacheStrategy?: CacheStrategy,
 ): Promise<LinkCardStackInitialData> => {
@@ -32,16 +33,12 @@ export const _getArticles = async (
 		`articles_${status}_${userId}_${currentCount}`,
 	);
 	try {
-		const articles = await articlesQueryRepository.findMany(
-			makeUserId(userId),
-			status,
-			{
-				skip: currentCount,
-				take: PAGE_SIZE,
-				orderBy: { createdAt: "desc" },
-				cacheStrategy,
-			},
-		);
+		const articles = await articlesQueryRepository.findMany(userId, status, {
+			skip: currentCount,
+			take: PAGE_SIZE,
+			orderBy: { createdAt: "desc" },
+			cacheStrategy,
+		});
 
 		const totalCount = await _getArticlesCount(userId, status);
 
@@ -69,30 +66,27 @@ export const _getArticles = async (
 };
 
 const _getArticlesCount = async (
-	userId: string,
+	userId: UserId,
 	status: Status,
 ): Promise<number> => {
 	"use cache";
 	cacheTag(`articles_count_${status}_${userId}`);
 	try {
-		return await articlesQueryRepository.count(makeUserId(userId), status);
+		return await articlesQueryRepository.count(userId, status);
 	} catch (error) {
 		throw error;
 	}
 };
 
 const _getCategories = async (
-	userId: string,
+	userId: UserId,
 ): Promise<ArticleFormClientData> => {
 	"use cache";
 	cacheTag("categories", `categories_${userId}`);
 	try {
-		const response = await categoryQueryRepository.findMany(
-			makeUserId(userId),
-			{
-				orderBy: { name: "asc" },
-			},
-		);
+		const response = await categoryQueryRepository.findMany(userId, {
+			orderBy: { name: "asc" },
+		});
 		return response;
 	} catch (error) {
 		initializeEventHandlers();

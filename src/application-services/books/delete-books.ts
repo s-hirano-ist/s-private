@@ -12,7 +12,6 @@ import {
 import {
 	makeId,
 	makeUnexportedStatus,
-	makeUserId,
 } from "@/domains/common/entities/common-entity";
 import { booksCommandRepository } from "@/infrastructures/books/repositories/books-command-repository";
 
@@ -24,11 +23,7 @@ export async function deleteBooks(id: string): Promise<ServerAction> {
 		const userId = await getSelfId();
 
 		const status = makeUnexportedStatus();
-		await booksCommandRepository.deleteById(
-			makeId(id),
-			makeUserId(userId),
-			status,
-		);
+		await booksCommandRepository.deleteById(makeId(id), userId, status);
 
 		revalidateTag(buildContentCacheTag("books", status, userId));
 		revalidateTag(buildCountCacheTag("books", status, userId));

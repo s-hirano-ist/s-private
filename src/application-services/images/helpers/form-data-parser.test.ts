@@ -1,3 +1,4 @@
+import { useId } from "react";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getFormDataFile } from "@/common/utils/form-data-utils";
 import { makeUserId } from "@/domains/common/entities/common-entity";
@@ -29,7 +30,7 @@ describe("parseAddImageFormData", () => {
 
 	test("should parse form data and create image data", async () => {
 		const formData = new FormData();
-		const userId = "test-user-id";
+		const userId = makeUserId("test-user-id");
 
 		const mockFile = {
 			name: "test-image.png",
@@ -44,7 +45,7 @@ describe("parseAddImageFormData", () => {
 		mockGetFormDataFile.mockReturnValue(mockFile);
 
 		// Mock entity creation
-		mockMakeUserId.mockReturnValue("test-user-id" as any);
+		mockMakeUserId.mockReturnValue(userId);
 		mockMakePath.mockReturnValue("test-image.png" as any);
 		mockMakeContentType.mockReturnValue("image/png" as any);
 		mockMakeFileSize.mockReturnValue(1024 as any);
@@ -74,7 +75,7 @@ describe("parseAddImageFormData", () => {
 
 	test("should handle JPEG image file", async () => {
 		const formData = new FormData();
-		const userId = "test-user-id";
+		const userId = makeUserId("test-user-id");
 
 		const mockFile = {
 			name: "photo.jpg",
@@ -114,7 +115,7 @@ describe("parseAddImageFormData", () => {
 
 	test("should handle image with Japanese filename", async () => {
 		const formData = new FormData();
-		const userId = "test-user-id-jp";
+		const userId = makeUserId("test-user-id-jp");
 
 		const mockFile = {
 			name: "テスト画像.png",
@@ -145,7 +146,7 @@ describe("parseAddImageFormData", () => {
 
 	test("should handle WebP image file", async () => {
 		const formData = new FormData();
-		const userId = "test-user-id";
+		const userId = makeUserId("test-user-id");
 
 		const mockFile = {
 			name: "modern-image.webp",
@@ -176,7 +177,7 @@ describe("parseAddImageFormData", () => {
 
 	test("should handle large image file", async () => {
 		const formData = new FormData();
-		const userId = "test-user-id";
+		const userId = makeUserId("test-user-id");
 
 		const mockFile = {
 			name: "large-image.png",
@@ -206,7 +207,7 @@ describe("parseAddImageFormData", () => {
 
 	test("should handle file with special characters in name", async () => {
 		const formData = new FormData();
-		const userId = "test-user-id";
+		const userId = makeUserId("test-user-id");
 
 		const mockFile = {
 			name: "image with spaces & symbols (1).png",
@@ -239,7 +240,7 @@ describe("parseAddImageFormData", () => {
 
 	test("should handle different user IDs", async () => {
 		const formData = new FormData();
-		const userId = "different-user-789";
+		const userId = makeUserId("different-user-789");
 
 		const mockFile = {
 			name: "user-image.jpg",

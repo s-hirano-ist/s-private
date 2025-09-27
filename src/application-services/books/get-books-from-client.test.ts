@@ -3,7 +3,10 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasViewerAdminPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
-import { makeStatus } from "@/domains/common/entities/common-entity";
+import {
+	makeStatus,
+	makeUserId,
+} from "@/domains/common/entities/common-entity";
 import { _getBooks } from "./get-books";
 import {
 	loadMoreExportedBooks,
@@ -36,7 +39,7 @@ describe("get-books-from-client", () => {
 		test("should return success result when user has permission", async () => {
 			const mockData = { data: [], totalCount: 15 };
 			const currentCount = 10;
-			const userId = "test-user-id";
+			const userId = makeUserId("test-user-id");
 
 			mockHasViewerAdminPermission.mockResolvedValue(true);
 			mockGetSelfId.mockResolvedValue(userId);
@@ -85,7 +88,7 @@ describe("get-books-from-client", () => {
 			const wrappedError = { success: false, message: "error" };
 
 			mockHasViewerAdminPermission.mockResolvedValue(true);
-			mockGetSelfId.mockResolvedValue("user-id");
+			mockGetSelfId.mockResolvedValue(makeUserId("user-id"));
 			mockMakeStatus.mockReturnValue("EXPORTED" as any);
 			mockSanitizeCacheTag.mockReturnValue("user-id");
 			mock_getBooks.mockRejectedValue(error);
@@ -102,7 +105,7 @@ describe("get-books-from-client", () => {
 		test("should return success result when user has permission", async () => {
 			const mockData = { data: [], totalCount: 12 };
 			const currentCount = 5;
-			const userId = "test-user-id-2";
+			const userId = makeUserId("test-user-id-2");
 
 			mockHasViewerAdminPermission.mockResolvedValue(true);
 			mockGetSelfId.mockResolvedValue(userId);
@@ -144,7 +147,7 @@ describe("get-books-from-client", () => {
 			const wrappedError = { success: false, message: "networkError" };
 
 			mockHasViewerAdminPermission.mockResolvedValue(true);
-			mockGetSelfId.mockResolvedValue("user-id-2");
+			mockGetSelfId.mockResolvedValue(makeUserId("user-id-2"));
 			mockMakeStatus.mockReturnValue("UNEXPORTED" as any);
 			mock_getBooks.mockRejectedValue(error);
 			mockWrapServerSideErrorForClient.mockResolvedValue(wrappedError);

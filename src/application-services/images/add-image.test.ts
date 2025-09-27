@@ -5,7 +5,10 @@ import {
 	buildContentCacheTag,
 	buildCountCacheTag,
 } from "@/common/utils/cache-tag-builder";
-import { makeUnexportedStatus } from "@/domains/common/entities/common-entity";
+import {
+	makeUnexportedStatus,
+	makeUserId,
+} from "@/domains/common/entities/common-entity";
 import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
 import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
 import { addImage } from "./add-image";
@@ -71,7 +74,7 @@ describe("addImage", () => {
 		mockFormData.append("file", file);
 
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
-		vi.mocked(getSelfId).mockResolvedValue("user-id");
+		vi.mocked(getSelfId).mockResolvedValue(makeUserId("user-id"));
 		vi.mocked(imagesQueryRepository.findByPath).mockResolvedValue(null);
 		vi.mocked(imagesCommandRepository.create).mockResolvedValue();
 		vi.mocked(imagesCommandRepository.uploadToStorage).mockResolvedValue();
@@ -102,7 +105,7 @@ describe("addImage", () => {
 
 		vi.clearAllMocks();
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
-		vi.mocked(getSelfId).mockResolvedValue("user-id");
+		vi.mocked(getSelfId).mockResolvedValue(makeUserId("user-id"));
 
 		const result = await addImage(mockFormData);
 
@@ -124,7 +127,7 @@ describe("addImage", () => {
 
 		vi.clearAllMocks();
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
-		vi.mocked(getSelfId).mockResolvedValue("user-id");
+		vi.mocked(getSelfId).mockResolvedValue(makeUserId("user-id"));
 
 		const result = await addImage(mockFormData);
 
@@ -142,7 +145,7 @@ describe("addImage", () => {
 
 		vi.clearAllMocks();
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
-		vi.mocked(getSelfId).mockResolvedValue("user-id");
+		vi.mocked(getSelfId).mockResolvedValue(makeUserId("user-id"));
 
 		const result = await addImage(mockFormData);
 

@@ -12,7 +12,6 @@ import {
 import {
 	makeId,
 	makeUnexportedStatus,
-	makeUserId,
 } from "@/domains/common/entities/common-entity";
 import { notesCommandRepository } from "@/infrastructures/notes/repositories/notes-command-repository";
 
@@ -24,11 +23,7 @@ export async function deleteNote(id: string): Promise<ServerAction> {
 		const userId = await getSelfId();
 
 		const status = makeUnexportedStatus();
-		await notesCommandRepository.deleteById(
-			makeId(id),
-			makeUserId(userId),
-			status,
-		);
+		await notesCommandRepository.deleteById(makeId(id), userId, status);
 
 		revalidateTag(buildContentCacheTag("notes", status, userId));
 		revalidateTag(buildCountCacheTag("notes", status, userId));

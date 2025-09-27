@@ -78,7 +78,7 @@ describe("addNote", () => {
 
 	test("should create note", async () => {
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
-		vi.mocked(getSelfId).mockResolvedValue("user-123");
+		vi.mocked(getSelfId).mockResolvedValue(makeUserId("user-123"));
 
 		const mockNote = {
 			title: makeNoteTitle("Example Note"),
@@ -121,7 +121,7 @@ describe("addNote", () => {
 
 	test("should preserve form data on DuplicateError", async () => {
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
-		vi.mocked(getSelfId).mockResolvedValue("user-123");
+		vi.mocked(getSelfId).mockResolvedValue(makeUserId("user-123"));
 
 		vi.mocked(parseAddNoteFormData).mockReturnValue({
 			title: makeNoteTitle("Example Note"),
@@ -142,7 +142,7 @@ describe("addNote", () => {
 
 	test("should handle errors and return wrapped error", async () => {
 		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
-		vi.mocked(getSelfId).mockResolvedValue("user-123");
+		vi.mocked(getSelfId).mockResolvedValue(makeUserId("user-123"));
 
 		vi.mocked(parseAddNoteFormData).mockReturnValue({
 			title: makeNoteTitle("Example Note"),

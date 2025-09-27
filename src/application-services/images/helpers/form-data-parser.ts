@@ -1,5 +1,5 @@
 import { getFormDataFile } from "@/common/utils/form-data-utils";
-import { makeUserId } from "@/domains/common/entities/common-entity";
+import type { UserId } from "@/domains/common/entities/common-entity";
 import {
 	makeContentType,
 	makeFileSize,
@@ -10,12 +10,12 @@ import {
 
 export const parseAddImageFormData = async (
 	formData: FormData,
-	userId: string,
+	userId: UserId,
 ) => {
 	const file = getFormDataFile(formData, "file");
 
 	return {
-		userId: makeUserId(userId),
+		userId,
 		path: makePath(file.name, true),
 		contentType: makeContentType(file.type),
 		fileSize: makeFileSize(file.size),
