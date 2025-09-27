@@ -1,9 +1,6 @@
 "use server";
 import "server-only";
-import {
-	makeUserId,
-	type UserId,
-} from "@/domains/common/entities/common-entity";
+import type { UserId } from "@/domains/common/entities/common-entity";
 import type {
 	ContentType,
 	SearchQuery,

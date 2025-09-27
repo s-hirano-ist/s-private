@@ -9,7 +9,6 @@ import type { LinkCardStackInitialData } from "@/components/common/layouts/cards
 import type { CacheStrategy } from "@/domains/articles/types";
 import {
 	makeStatus,
-	makeUserId,
 	type Status,
 	type UserId,
 } from "@/domains/common/entities/common-entity";

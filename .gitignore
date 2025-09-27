@@ -12,7 +12,8 @@ node_modules
 
 # Next.js
 /.next
-/out
+app/.next
+app/out
 
 # Production
 /build
@@ -33,7 +34,7 @@ next-env.d.ts
 minio/certs
 
 # Prisma
-src/generated/
+app/src/generated/
 
 # Sentry Config File
 .env.sentry-build-plugin
