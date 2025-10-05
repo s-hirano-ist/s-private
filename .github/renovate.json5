@@ -9,6 +9,7 @@
     'config:best-practices',
     ':semanticCommitTypeAll(chore)',
     'customManagers:biomeVersions',
+    ':enableVulnerabilityAlertsWithLabel(security)',
   ],
   reviewers: [
     's-hirano-ist',
