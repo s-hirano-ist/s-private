@@ -28,7 +28,6 @@
 		"deps:circular": "depcruise src --config .dependency-cruiser.cjs  --include-only '^src' --output-type text --focus-depth 0"
 	},
 	"dependencies": {
-		"s-private-domains": "workspace:*",
 		"@prisma/client": "6.16.2",
 		"@prisma/extension-accelerate": "2.0.2",
 		"@radix-ui/react-icons": "1.3.2",
@@ -53,7 +52,9 @@
 		"react-dom": "19.1.1",
 		"react-markdown": "10.1.0",
 		"react-syntax-highlighter": "15.6.6",
+		"s-private-domains": "workspace:*",
 		"server-only": "0.0.1",
+		"sharp": "0.34.4",
 		"sonner": "2.0.7",
 		"tailwind-merge": "3.3.1",
 		"vaul": "1.1.2",
