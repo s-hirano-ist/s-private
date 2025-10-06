@@ -3,7 +3,7 @@
 	"version": "9.5.2",
 	"author": "s-hirano-ist",
 	"description": "Private pages and admin tools for s-hirano-ist.",
-	"packageManager": "pnpm@10.17.0",
+	"packageManager": "pnpm@10.18.1",
 	"type": "module",
 	"scripts": {
 		"dev": "pnpm --recursive dev",
