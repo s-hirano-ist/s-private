@@ -22,7 +22,8 @@
 		"eslint-plugin-jsx-a11y", // storybook integration not working
 		"eslint-plugin-tailwindcss", // storybook integration not working
 		"postcss-load-config", // postcss
-		"s-private-domains"
+		"s-private-domains",
+		"sharp"
 	],
 	"ignoreBinaries": [
 		"config-inspector",
