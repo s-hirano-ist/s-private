@@ -1,4 +1,4 @@
-name: 'depcruise'
+name: "depcruise"
 on:
   pull_request:
 
@@ -17,4 +17,4 @@ jobs:
 
       - uses: MH4GF/dependency-cruiser-report-action@885013e37581e3472385ffa93c821b3505336bc1 #v2
         with:
-            package-manager: pnpm
+          package-manager: pnpm
