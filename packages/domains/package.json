@@ -1,0 +1,24 @@
+{
+	"name": "s-private-domains",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"build": "tsc",
+		"test": "vitest",
+		"deps:check": "depcruise . --config .dependency-cruiser.cjs  --include-only '^src'",
+		"deps:graph": "depcruise . --config .dependency-cruiser.cjs --output-type dot | dot -T svg > dependency-graph.svg",
+		"deps:circular": "depcruise . --config .dependency-cruiser.cjs  --include-only '^src' --output-type text --focus-depth 0"
+	},
+	"dependencies": {
+		"sharp": "0.34.4",
+		"uuid": "13.0.0",
+		"zod": "4.1.9"
+	},
+	"devDependencies": {
+		"@vitest/coverage-v8": "3.2.4",
+		"dependency-cruiser": "17.0.1",
+		"typescript": "5.9.2",
+		"vitest": "3.2.4"
+	}
+}
