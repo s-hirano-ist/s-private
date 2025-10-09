@@ -11,7 +11,7 @@ jobs:
         runs-on: ubuntu-24.04
         timeout-minutes: 20
         steps:
-        - uses: googleapis/release-please-action@4cd397a333e5500c1683589c277f56a3c10990e6
+        - uses: googleapis/release-please-action@e5c2aa4f6acd6194e00632c8f262cff67ae17873
           with:
             token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
             # this is a built-in strategy in release-please, see "Action Inputs" for more options

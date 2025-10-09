@@ -20,7 +20,7 @@ jobs:
           submodules: true
 
       - name: Install pnpm
-        uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4
+        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4
         with:
           # version: X.X.X
           # Optional when there is a packageManager field in the package.json.
@@ -29,7 +29,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
-          node-version: "24.8.0"
+          node-version: "24.9.0"
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
@@ -69,14 +69,14 @@ jobs:
           submodules: true
 
       - name: Install pnpm
-        uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4
+        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4
         with:
           run_install: false
 
       - name: Install Node.js
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
-          node-version: "24.8.0"
+          node-version: "24.9.0"
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
@@ -103,14 +103,14 @@ jobs:
           submodules: true
 
       - name: Install pnpm
-        uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4
+        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4
         with:
           run_install: false
 
       - name: Install Node.js
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
-          node-version: "24.8.0"
+          node-version: "24.9.0"
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
@@ -145,7 +145,7 @@ jobs:
           submodules: true
 
       - name: Install pnpm
-        uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4
+        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4
         with:
           # version: X.X.X
           # Optional when there is a packageManager field in the package.json.
@@ -154,7 +154,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
-          node-version: "24.8.0"
+          node-version: "24.9.0"
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
