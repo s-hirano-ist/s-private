@@ -1,9 +1,9 @@
 {
 	"name": "s-private",
-	"version": "9.5.2",
+	"version": "9.6.0",
 	"author": "s-hirano-ist",
 	"description": "Private pages and admin tools for s-hirano-ist.",
-	"packageManager": "pnpm@10.18.1",
+	"packageManager": "pnpm@10.17.0",
 	"type": "module",
 	"scripts": {
 		"dev": "pnpm --recursive dev",
@@ -28,6 +28,6 @@
 	"devDependencies": {
 		"@biomejs/biome": "2.2.4",
 		"jscpd": "4.0.5",
-		"playwright": "1.56.0"
+		"playwright": "1.55.0"
 	}
 }

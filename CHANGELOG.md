@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [9.6.0](https://github.com/s-hirano-ist/s-private/compare/v9.5.2...v9.6.0) (2025-10-09)
+
+
+### Features
+
+* use pnpm workspace ([240665b](https://github.com/s-hirano-ist/s-private/commit/240665b3b8abb9ac09559bb938348afdc7fabcfb))
+
+
+### Bug Fixes
+
+* dependency cruiser ([d67f699](https://github.com/s-hirano-ist/s-private/commit/d67f699035a9abb572b341a1121139c774f8a12b))
+* knip and ci ([c4ac43f](https://github.com/s-hirano-ist/s-private/commit/c4ac43f5cc256c757d55e515553a51110ab7a252))
+
 ## [9.5.2](https://github.com/s-hirano-ist/s-private/compare/v9.5.1...v9.5.2) (2025-09-10)
 
 
