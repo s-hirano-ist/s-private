@@ -35,5 +35,20 @@ export default defineConfig({
 				},
 			},
 		],
+		coverage: {
+			enabled: true,
+			reportOnFailure: true,
+			reportsDirectory: "./.vitest-coverage",
+			include: ["app/**", "packages/components/**", "packages/domains/**"],
+			exclude: [
+				"**/.next/**/*",
+				"**/node_modules/**/*",
+				"**/dist/**/*",
+				"app/src/generated/**/*",
+				"**/*.stories.tsx",
+				"**/*.test.ts?(x)",
+			],
+			reporter: ["text", "json-summary", "json"],
+		},
 	},
 });
