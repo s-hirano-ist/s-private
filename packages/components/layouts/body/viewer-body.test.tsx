@@ -166,7 +166,7 @@ interface User {
 			"id",
 			"links",
 		);
-		expect(screen.getByText("bold")).toHaveStyle("font-weight: bold");
+		expect(screen.getByText("bold")).toHaveStyle("font-weight: bolder");
 		expect(screen.getByText("italic")).toHaveStyle("font-style: italic");
 		expect(screen.getByRole("link", { name: "Internal" })).not.toHaveAttribute(
 			"target",

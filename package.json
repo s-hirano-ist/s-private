@@ -13,7 +13,13 @@
 		"biome:fix": "biome check --write .",
 		"lint": "pnpm --recursive lint",
 		"lint:fix": "pnpm --recursive lint:fix",
-		"test": "pnpm --recursive test",
+		"test": "vitest run",
+		"test:app": "vitest run --project app",
+		"test:components": "vitest run --project components",
+		"test:domains": "vitest run --project domains",
+		"test:watch": "vitest",
+		"test:all": "pnpm test && pnpm --filter s-private-app test:typecheck",
+		"test:typecheck": "pnpm --filter s-private-app test:typecheck",
 		"license:summary": "pnpm --recursive license:summary",
 		"security": "pnpm audit",
 		"jscpd": "jscpd -p app/src/**/*.{ts,tsx}",
@@ -38,9 +44,12 @@
 		"@storybook/addon-vitest": "9.1.10",
 		"@storybook/nextjs-vite": "9.1.10",
 		"@tailwindcss/postcss": "4.1.13",
+		"@vitest/coverage-v8": "3.2.4",
 		"jscpd": "4.0.5",
 		"playwright": "1.56.0",
 		"storybook": "9.1.10",
-		"tailwindcss": "4.1.13"
+		"tailwindcss": "4.1.13",
+		"typescript": "5.9.2",
+		"vitest": "3.2.4"
 	}
 }
