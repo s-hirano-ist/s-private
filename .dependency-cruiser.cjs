@@ -8,10 +8,14 @@ const EXCLUDE_PATHS = [
 	"app/sentry.edge.config.ts",
 	"app/sentry.server.config.ts",
 	".pnpm",
+	// Prisma generated WASM files
+	"app/src/generated/.*\\.wasm",
+	"app/src/generated/wasm-.*-loader\\.mjs",
+	"app/src/env.ts",
 ];
 
 const COLLAPSE_PATTERN =
-	"app/src/app|app/src/generated|app/src/components/common|app/src/infrastructures/observability|app/src/infrastructures/i18n|app/src/infrastructures/auth|app/src/infrastructures/books|app/src/infrastructures/articles|app/src/infrastructures/notes|app/src/infrastructures/images|node_modules/(?:@[^/]+/[^/]+|[^/]+)";
+	"app/src/app|app/src/common/error|app/src/common/utils|app/src/common/auth|app/src/generated|app/src/components/common|app/src/components/notes|app/src/components/books|app/src/components/articles|app/src/components/images|app/src/infrastructures/observability|app/src/infrastructures/i18n|app/src/infrastructures/auth|app/src/infrastructures/books|app/src/infrastructures/articles|app/src/infrastructures/events|app/src/infrastructures/notes|app/src/infrastructures/images|packages/components|packages/domains/books|packages/domains/articles|packages/domains/images|packages/domains/notes|packages/domains/common|packages/domains/errors|node_modules/(?:@[^/]+/[^/]+|[^/]+)";
 
 module.exports = {
 	forbidden: [
@@ -216,10 +220,11 @@ module.exports = {
        (1) compilation and
        (2) resolution (e.g. with the paths property)
 
-       For monorepos, we don't specify a single tsConfig since each package
-       has its own. dependency-cruiser will automatically find the closest
-       tsconfig.json for each file.
+       We use the root tsconfig.json which contains path mappings for the monorepo.
      */
+		tsConfig: {
+			fileName: "tsconfig.json",
+		},
 
 		/* options to pass on to enhanced-resolve, the package dependency-cruiser
        uses to resolve module references to disk.

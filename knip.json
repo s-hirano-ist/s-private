@@ -2,6 +2,7 @@
 	"$schema": "https://unpkg.com/knip@5/schema.json",
 	"ignoreExportsUsedInFile": true,
 	"ignoreDependencies": ["@vitest/coverage-v8"],
+	"ignoreBinaries": ["dot"],
 	"workspaces": {
 		"app": {
 			"ignore": [
@@ -19,7 +20,7 @@
 				"eslint-plugin-tailwindcss",
 				"sharp"
 			],
-			"ignoreBinaries": ["config-inspector", "dot"],
+			"ignoreBinaries": ["config-inspector"],
 			"next": {
 				"config": ["next.config.{js,ts,cjs,mjs}"],
 				"entry": [
@@ -67,8 +68,7 @@
 			"entry": ["**/*.ts", "!**/*.test.ts", "!**/*.spec.ts"],
 			"project": ["**/*.ts"],
 			"ignore": ["**/*.test.ts", "**/*.spec.ts"],
-			"ignoreDependencies": ["jsdom"],
-			"ignoreBinaries": ["dot"]
+			"ignoreDependencies": ["jsdom"]
 		}
 	}
 }
