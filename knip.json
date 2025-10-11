@@ -1,0 +1,74 @@
+{
+	"$schema": "https://unpkg.com/knip@5/schema.json",
+	"ignoreExportsUsedInFile": true,
+	"ignoreDependencies": ["@vitest/coverage-v8"],
+	"workspaces": {
+		"app": {
+			"ignore": [
+				"src/app/[locale]/forbidden.tsx",
+				"src/app/instrumentation.ts",
+				"src/infrastructures/i18n/request.ts"
+			],
+			"ignoreDependencies": [
+				"@tailwindcss/typography",
+				"@eslint/config-inspector",
+				"@chromatic-com/storybook",
+				"@types/react-syntax-highlighter",
+				"eslint-config-next",
+				"eslint-plugin-jsx-a11y",
+				"eslint-plugin-tailwindcss",
+				"sharp"
+			],
+			"ignoreBinaries": ["config-inspector", "dot"],
+			"next": {
+				"config": ["next.config.{js,ts,cjs,mjs}"],
+				"entry": [
+					"{instrumentation,instrumentation-client,middleware}.{js,ts}",
+					"app/global-error.{js,jsx,ts,tsx}",
+					"app/**/{error,layout,loading,not-found,page,template,default}.{js,jsx,ts,tsx}",
+					"app/**/route.{js,jsx,ts,tsx}",
+					"app/{manifest,sitemap,robots}.{js,ts}",
+					"app/**/{icon,apple-icon}.{js,jsx,ts,tsx}",
+					"app/**/{opengraph,twitter}-image.{js,jsx,ts,tsx}",
+					"mdx-components.{js,jsx,ts,tsx}",
+					"pages/**/*.{js,jsx,ts,tsx}",
+					"src/{instrumentation,instrumentation-client,middleware}.{js,ts}",
+					"src/app/global-error.{js,jsx,ts,tsx}",
+					"src/app/**/{error,layout,loading,not-found,page,template,default}.{js,jsx,ts,tsx}",
+					"src/app/**/route.{js,jsx,ts,tsx}",
+					"src/app/{manifest,sitemap,robots}.{js,ts}",
+					"src/app/**/{icon,apple-icon}.{js,jsx,ts,tsx}",
+					"src/app/**/{opengraph,twitter}-image.{js,jsx,ts,tsx}",
+					"src/mdx-components.{js,jsx,ts,tsx}",
+					"src/pages/**/*.{js,jsx,ts,tsx}",
+					"scripts/**/*.ts"
+				]
+			}
+		},
+		"packages/components": {
+			"entry": [
+				"ui/**/*.tsx",
+				"forms/**/*.tsx",
+				"display/**/*.tsx",
+				"layouts/**/*.tsx",
+				"providers/**/*.tsx",
+				"hooks/**/*.ts",
+				"utils/**/*.ts"
+			],
+			"project": ["**/*.{ts,tsx}"],
+			"ignore": ["**/*.stories.tsx", "**/*.test.tsx", "**/*.spec.tsx"],
+			"ignoreDependencies": [
+				"@tailwindcss/typography",
+				"@vitest/eslint-plugin",
+				"postcss"
+			]
+		},
+		"packages/domains": {
+			"entry": ["**/*.ts", "!**/*.test.ts", "!**/*.spec.ts"],
+			"project": ["**/*.ts"],
+			"ignore": ["**/*.test.ts", "**/*.spec.ts"],
+			"ignoreDependencies": ["jsdom"],
+			"ignoreBinaries": ["dot"]
+		}
+	}
+}
