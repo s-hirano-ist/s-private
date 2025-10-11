@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Loading from "s-private-components/display/loading";
 import { addBooks } from "@/application-services/books/add-books";
 import { deleteBooks } from "@/application-services/books/delete-books";
 import {
@@ -17,9 +18,8 @@ import {
 import { BooksCounter } from "@/components/books/server/books-counter";
 import { BooksForm } from "@/components/books/server/books-form";
 import { BooksStack } from "@/components/books/server/books-stack";
-import Loading from "@/components/common/display/loading";
 import { ErrorPermissionBoundary } from "@/components/common/layouts/error-permission-boundary";
-import { LazyTabContent } from "@/components/common/layouts/lazy-tab-content";
+import { LazyTabContent } from "@/components/common/lazy-tab-content";
 
 type Params = Promise<{ tab?: string; layout?: string }>;
 

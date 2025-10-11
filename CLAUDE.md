@@ -14,9 +14,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Test**: `pnpm test` - Run Vitest unit tests
 - **Test with Type Check**: `pnpm test:typecheck` - Run TypeScript type checking on test files only
 - **Test All**: `pnpm test:all` - Run unit tests and type checking
-- **Storybook**: `pnpm storybook` - Component development
+- **Storybook**: `pnpm storybook` - Unified Storybook for all components (app + packages/components)
 - **Storybook Build**: `pnpm storybook:build` - Build static Storybook
-- **Storybook Test**: `pnpm test:storybook` - Run Storybook test runner with coverage
 
 ### Code Quality & Analysis
 - **Check Dependencies**: `pnpm deps:check` - Analyze dependencies and detect issues

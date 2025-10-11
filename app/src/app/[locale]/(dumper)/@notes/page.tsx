@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Loading from "s-private-components/display/loading";
 import { addNote } from "@/application-services/notes/add-note";
 import { deleteNote } from "@/application-services/notes/delete-note";
 import {
@@ -14,9 +15,8 @@ import {
 	hasDumperPostPermission,
 	hasViewerAdminPermission,
 } from "@/common/auth/session";
-import Loading from "@/components/common/display/loading";
 import { ErrorPermissionBoundary } from "@/components/common/layouts/error-permission-boundary";
-import { LazyTabContent } from "@/components/common/layouts/lazy-tab-content";
+import { LazyTabContent } from "@/components/common/lazy-tab-content";
 import { NoteForm } from "@/components/notes/server/note-form";
 import { NotesCounter } from "@/components/notes/server/notes-counter";
 import { NotesStack } from "@/components/notes/server/notes-stack";

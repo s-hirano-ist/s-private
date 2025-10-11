@@ -11,7 +11,7 @@ vi.mock("next-intl", () => ({
 	},
 }));
 
-vi.mock("@/components/common/forms/fields/form-input", () => ({
+vi.mock("s-private-components/forms/fields/form-input", () => ({
 	FormInput: ({ label, name, placeholder, required }: any) => (
 		<input
 			aria-label={label}
@@ -23,7 +23,7 @@ vi.mock("@/components/common/forms/fields/form-input", () => ({
 	),
 }));
 
-vi.mock("@/components/common/forms/generic-form-wrapper", () => ({
+vi.mock("s-private-components/forms/generic-form-wrapper", () => ({
 	GenericFormWrapper: ({ children, action }: any) => (
 		<form data-action={action.name} data-testid="form-wrapper">
 			{children}

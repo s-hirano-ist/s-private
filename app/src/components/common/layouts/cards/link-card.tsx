@@ -1,15 +1,15 @@
 "use client";
 import ReactMarkdown from "react-markdown";
-import type { DeleteAction } from "@/common/types";
-import { DeleteButtonWithModal } from "@/components/common/forms/actions/delete-button-with-modal";
-import { Badge } from "@/components/common/ui/badge";
+import { Badge } from "s-private-components/ui/badge";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@/components/common/ui/card";
+} from "s-private-components/ui/card";
+import type { DeleteAction } from "@/common/types";
+import { DeleteButtonWithModal } from "@/components/common/forms/actions/delete-button-with-modal";
 import { validateAndNormalizeUrl } from "@/components/common/utils/validate-url";
 import { Link } from "@/infrastructures/i18n/routing";
 import type { LinkCardData } from "./types";
