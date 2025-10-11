@@ -1,0 +1,26 @@
+{
+	"$schema": "https://unpkg.com/knip@5/schema.json",
+	"workspaces": {
+		".": {
+			"ignoreDependencies": [
+				"@chromatic-com/storybook",
+				"@storybook/addon-a11y",
+				"@storybook/addon-docs",
+				"@storybook/addon-links",
+				"@storybook/addon-themes",
+				"@storybook/addon-vitest",
+				"@storybook/nextjs-vite",
+				"@tailwindcss/postcss",
+				"@vitest/coverage-v8",
+				"jscpd",
+				"next",
+				"next-intl",
+				"playwright",
+				"storybook",
+				"tailwindcss",
+				"typescript",
+				"vitest"
+			]
+		}
+	}
+}

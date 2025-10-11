@@ -5,30 +5,32 @@
 		"src/app/instrumentation.ts",
 		"src/infrastructures/i18n/request.ts",
 		"src/components/common/ui/**/*", // shadcn-ui auto gen
+		"src/components/**/*.stories.tsx", // storybook stories
+		"src/components/common/display/status/forbidden.tsx", // used in app router
 		"src/domains/**"
 	],
 	"ignoreDependencies": [
 		"@tailwindcss/typography", // imported in global.css
 		"@eslint/config-inspector", // eslint inspector
-		"@storybook/addon-measure", // storybook integration not working
-		"@storybook/addon-outline", // storybook integration not working
-		"@storybook/addon-actions", // storybook integration not working
-		"@storybook/addon-backgrounds", // storybook integration not working
-		"@storybook/addon-controls", // storybook integration not working
-		"@storybook/addon-onboarding", // storybook integration not working
-		"@storybook/addon-toolbars", // storybook integration not working
-		"@storybook/addon-viewport", // storybook integration not working
-		"eslint-config-next", // storybook integration not working
-		"eslint-plugin-jsx-a11y", // storybook integration not working
-		"eslint-plugin-tailwindcss", // storybook integration not working
+		"@chromatic-com/storybook", // storybook dependency
+		"@radix-ui/react-icons", // used in components
+		"@storybook/addon-vitest", // storybook vitest integration
+		"@types/react-syntax-highlighter", // type definitions
+		"eslint-config-next", // eslint integration
+		"eslint-plugin-jsx-a11y", // eslint integration
+		"eslint-plugin-tailwindcss", // eslint integration
+		"postcss", // postcss config
 		"postcss-load-config", // postcss
-		"s-private-domains",
-		"sharp"
+		"radix-ui", // ui library
+		"s-private-components", // workspace dependency
+		"s-private-domains", // workspace dependency
+		"sharp" // image optimization
 	],
 	"ignoreBinaries": [
 		"config-inspector",
 		"dot" // for depencency-cruiser
 	],
+	"ignoreExportsUsedInFile": true,
 	"next": {
 		"config": ["next.config.{js,ts,cjs,mjs}"],
 		"entry": [

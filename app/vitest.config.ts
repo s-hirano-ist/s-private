@@ -5,6 +5,9 @@ import { defineConfig } from "vitest/config";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+// Only include Storybook tests when running directly in app directory (not from workspace root)
+const isDirectRun = process.cwd().endsWith("/app");
+
 export default defineConfig({
 	esbuild: {
 		jsx: "automatic",
@@ -45,26 +48,28 @@ export default defineConfig({
 			include: ["./src/**/*.test.?(c|m)[jt]s?(x)"],
 			tsconfig: "./tsconfig.json",
 		},
-		projects: [
-			{
-				extends: true,
-				plugins: [
-					// The plugin will run tests for the stories defined in your Storybook config
-					// See options at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon#storybooktest
-					storybookTest({ configDir: ".storybook" }),
-				],
-				test: {
-					name: "storybook",
-					browser: {
-						enabled: true,
-						headless: true,
-						provider: "playwright",
-						instances: [{ browser: "chromium" }],
+		projects: isDirectRun
+			? [
+					{
+						extends: true,
+						plugins: [
+							// The plugin will run tests for the stories defined in your Storybook config
+							// See options at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon#storybooktest
+							storybookTest({ configDir: "../.storybook" }),
+						],
+						test: {
+							name: "storybook",
+							browser: {
+								enabled: true,
+								headless: true,
+								provider: "playwright",
+								instances: [{ browser: "chromium" }],
+							},
+							setupFiles: ["../.storybook/vitest.setup.ts"],
+						},
 					},
-					setupFiles: [".storybook/vitest.setup.ts"],
-				},
-			},
-		],
+				]
+			: undefined,
 	},
 	resolve: {
 		alias: {
