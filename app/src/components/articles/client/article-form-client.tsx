@@ -2,12 +2,13 @@
 import { ClipboardPasteIcon, TableOfContentsIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRef } from "react";
+import { FormDropdownInput } from "s-private-components/forms/fields/form-dropdown-input";
+import { FormInput } from "s-private-components/forms/fields/form-input";
+import { FormInputWithButton } from "s-private-components/forms/fields/form-input-with-button";
+import { FormTextarea } from "s-private-components/forms/fields/form-textarea";
+import { GenericFormWrapper } from "s-private-components/forms/generic-form-wrapper";
+import { toast } from "sonner";
 import type { ServerAction } from "@/common/types";
-import { FormDropdownInput } from "@/components/common/forms/fields/form-dropdown-input";
-import { FormInput } from "@/components/common/forms/fields/form-input";
-import { FormInputWithButton } from "@/components/common/forms/fields/form-input-with-button";
-import { FormTextarea } from "@/components/common/forms/fields/form-textarea";
-import { GenericFormWrapper } from "@/components/common/forms/generic-form-wrapper";
 
 export type ArticleFormClientData = { id: string; name: string }[];
 
@@ -21,6 +22,7 @@ export function ArticleFormClient({ categories, addArticle }: Props) {
 	const categoryInputReference = useRef<HTMLInputElement>(null);
 
 	const label = useTranslations("label");
+	const message = useTranslations("message");
 
 	const handlePasteClick = async () => {
 		const clipboardText = await navigator.clipboard.readText();
@@ -28,8 +30,16 @@ export function ArticleFormClient({ categories, addArticle }: Props) {
 			urlInputReference.current.value = clipboardText;
 	};
 
+	const afterSubmit = (responseMessage: string) => {
+		toast(message(responseMessage));
+	};
+
 	return (
-		<GenericFormWrapper action={addArticle}>
+		<GenericFormWrapper<ServerAction>
+			action={addArticle}
+			afterSubmit={afterSubmit}
+			saveLabel={label("save")}
+		>
 			<FormDropdownInput
 				autoComplete="off"
 				htmlFor="category"

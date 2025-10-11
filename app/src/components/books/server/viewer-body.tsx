@@ -1,15 +1,15 @@
 import type { Route } from "next";
 import NextImage from "next/image";
 import { notFound } from "next/navigation";
-import type { getBookByISBN } from "@/application-services/books/get-books";
-import { ViewerBodyClient } from "@/components/common/layouts/body/viewer-body";
+import { ViewerBodyClient } from "s-private-components/layouts/body/viewer-body";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@/components/common/ui/card";
+} from "s-private-components/ui/card";
+import type { getBookByISBN } from "@/application-services/books/get-books";
 import { Link } from "@/infrastructures/i18n/routing";
 
 export type Props = { slug: string; getBookByISBN: typeof getBookByISBN };

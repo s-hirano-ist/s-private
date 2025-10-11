@@ -1,9 +1,10 @@
 import { forbidden, unstable_rethrow } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
+import { StatusCodeView } from "s-private-components/display/status/status-code-view";
 import { SystemErrorEvent } from "s-private-domains/common/events/system-error-event";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
-import { StatusCodeView } from "../display/status/status-code-view";
 
 type Props = {
 	render: () => Promise<ReactNode>;
@@ -20,6 +21,8 @@ export async function ErrorPermissionBoundary({
 }: Props) {
 	const hasPermission = await permissionCheck();
 	if (!hasPermission) forbidden();
+
+	const t = await getTranslations("statusCode");
 
 	try {
 		return await render();
@@ -40,7 +43,7 @@ export async function ErrorPermissionBoundary({
 
 		return (
 			<div className="flex flex-col items-center">
-				<StatusCodeView statusCode="500" />
+				<StatusCodeView statusCode="500" statusCodeString={t("500")} />
 			</div>
 		);
 	}

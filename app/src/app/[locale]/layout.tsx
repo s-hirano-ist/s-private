@@ -2,10 +2,10 @@ import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import type { ReactNode } from "react";
+import { ThemeProvider } from "s-private-components/providers/theme-provider";
+import { Toaster } from "s-private-components/ui/sonner";
 import { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 import { Footer } from "@/components/common/layouts/nav/footer";
-import { ThemeProvider } from "@/components/common/providers/theme-provider";
-import { Toaster } from "@/components/common/ui/sonner";
 import { routing } from "@/infrastructures/i18n/routing";
 
 type Params = {

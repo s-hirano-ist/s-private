@@ -1,11 +1,12 @@
 "use client";
 import Image from "next/image";
 import { useState } from "react";
+import { StatusCodeView } from "s-private-components/display/status/status-code-view";
 import Lightbox from "yet-another-react-lightbox";
 import type { DeleteAction } from "@/common/types";
-import { StatusCodeView } from "@/components/common/display/status/status-code-view";
 import { DeleteButtonWithModal } from "@/components/common/forms/actions/delete-button-with-modal";
 import "yet-another-react-lightbox/styles.css";
+import { useTranslations } from "next-intl";
 
 export type ImageData = {
 	id?: string;
@@ -31,8 +32,10 @@ type SlideImage = {
 export function ImageStack({ data, showDeleteButton, deleteAction }: Props) {
 	const [open, setOpen] = useState(false);
 	const [index, setIndex] = useState(0);
+	const t = useTranslations("statusCode");
 
-	if (data.length === 0) return <StatusCodeView statusCode="204" />;
+	if (data.length === 0)
+		return <StatusCodeView statusCode="204" statusCodeString={t("204")} />;
 
 	const slides: SlideImage[] = data.map((image) => ({
 		src: image.originalPath,

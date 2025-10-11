@@ -1,9 +1,9 @@
 "use client";
 import { useTranslations } from "next-intl";
+import { FormFileInput } from "s-private-components/forms/fields/form-file-input";
+import { GenericFormWrapper } from "s-private-components/forms/generic-form-wrapper";
 import { toast } from "sonner";
 import type { ServerAction } from "@/common/types";
-import { FormFileInput } from "@/components/common/forms/fields/form-file-input";
-import { GenericFormWrapper } from "@/components/common/forms/generic-form-wrapper";
 
 type Props = {
 	addImage: (formData: FormData) => Promise<ServerAction>;
@@ -24,13 +24,18 @@ export function ImageFormClient({ addImage }: Props) {
 			toast(message(response.message));
 		}
 	};
+	const afterSubmit = (responseMessage: string) => {
+		toast(message(responseMessage));
+	};
 
 	return (
-		<GenericFormWrapper
+		<GenericFormWrapper<ServerAction>
 			action={addImage}
-			loadingLabel="uploading"
+			afterSubmit={afterSubmit}
+			loadingLabel={label("uploading")}
 			onSubmit={handleSubmit}
-			submitLabel="upload"
+			saveLabel={label("save")}
+			submitLabel={label("upload")}
 		>
 			<FormFileInput
 				accept="image/*"

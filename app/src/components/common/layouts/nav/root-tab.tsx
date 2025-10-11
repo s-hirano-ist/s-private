@@ -14,8 +14,8 @@ import {
 	TabsContent,
 	TabsList,
 	TabsTrigger,
-} from "@/components/common/ui/tabs";
-import { cn } from "@/components/common/utils/cn";
+} from "s-private-components/ui/tabs";
+import { cn } from "s-private-components/utils/cn";
 
 const TABS = {
 	articles: "ARTICLES",

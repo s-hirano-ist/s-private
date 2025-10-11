@@ -2,9 +2,7 @@
 import { TrashIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { toast } from "sonner";
-import type { DeleteAction } from "@/common/types";
-import { Button } from "@/components/common/ui/button";
+import { Button } from "s-private-components/ui/button";
 import {
 	Dialog,
 	DialogContent,
@@ -12,7 +10,9 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-} from "@/components/common/ui/dialog";
+} from "s-private-components/ui/dialog";
+import { toast } from "sonner";
+import type { DeleteAction } from "@/common/types";
 
 type Props = {
 	deleteAction: DeleteAction;

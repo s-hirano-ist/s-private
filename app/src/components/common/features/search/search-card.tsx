@@ -3,22 +3,24 @@ import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback } from "react";
-import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
-import { StatusCodeView } from "@/components/common/display/status/status-code-view";
-import { useSearch } from "@/components/common/hooks/use-search";
+import Loading from "s-private-components/display/loading";
+import { StatusCodeView } from "s-private-components/display/status/status-code-view";
 import {
 	CommandEmpty,
 	CommandInput,
 	CommandItem,
 	CommandList,
-} from "@/components/common/ui/command";
-import Loading from "../../display/loading";
+} from "s-private-components/ui/command";
+import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
+import { useSearch } from "@/components/common/hooks/use-search";
 import { UtilButtons } from "../../layouts/nav/util-buttons";
 
 type Props = { search: typeof searchContentFromClient };
 
 export function SearchCard({ search }: Props) {
 	const t = useTranslations("label");
+	const statusCodes = useTranslations("statusCode");
+
 	const router = useRouter();
 	const locale = useLocale();
 
@@ -82,7 +84,10 @@ export function SearchCard({ search }: Props) {
 				) : searchResults?.length === 0 && searchQuery && !isPending ? (
 					<CommandEmpty>
 						<div className="flex items-center justify-center">
-							<StatusCodeView statusCode="204" />
+							<StatusCodeView
+								statusCode="204"
+								statusCodeString={statusCodes("204")}
+							/>
 						</div>
 					</CommandEmpty>
 				) : isPending ? (

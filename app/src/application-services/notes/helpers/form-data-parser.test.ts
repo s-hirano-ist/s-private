@@ -1,4 +1,3 @@
-import { makeUserId } from "s-private-domains/common/entities/common-entity";
 import {
 	makeMarkdown,
 	makeNoteTitle,
@@ -8,13 +7,11 @@ import { getFormDataString } from "@/common/utils/form-data-utils";
 import { parseAddNoteFormData } from "./form-data-parser";
 
 vi.mock("@/common/utils/form-data-utils");
-vi.mock("s-private-domains/common/entities/common-entity");
 vi.mock("s-private-domains/notes/entities/note-entity");
 
 const mockGetFormDataString = vi.mocked(getFormDataString);
 const mockMakeNoteTitle = vi.mocked(makeNoteTitle);
 const mockMakeMarkdown = vi.mocked(makeMarkdown);
-const mockMakeUserId = vi.mocked(makeUserId);
 
 describe("parseAddNoteFormData", () => {
 	beforeEach(() => {
@@ -23,7 +20,7 @@ describe("parseAddNoteFormData", () => {
 
 	test("should parse form data and create note data", () => {
 		const formData = new FormData();
-		const userId = makeUserId("test-user-id");
+		const userId = "test-user-id" as any;
 
 		// Mock form data extraction
 		mockGetFormDataString
@@ -35,7 +32,6 @@ describe("parseAddNoteFormData", () => {
 		mockMakeMarkdown.mockReturnValue(
 			"# Test Note\n\nThis is test markdown content." as any,
 		);
-		mockMakeUserId.mockReturnValue("test-user-id" as any);
 
 		const result = parseAddNoteFormData(formData, userId);
 
@@ -46,7 +42,6 @@ describe("parseAddNoteFormData", () => {
 		expect(mockMakeMarkdown).toHaveBeenCalledWith(
 			"# Test Note\n\nThis is test markdown content.",
 		);
-		expect(mockMakeUserId).toHaveBeenCalledWith(userId);
 
 		expect(result).toEqual({
 			title: "Test Note Title",
@@ -57,7 +52,7 @@ describe("parseAddNoteFormData", () => {
 
 	test("should handle empty form data", () => {
 		const formData = new FormData();
-		const userId = makeUserId("test-user-id");
+		const userId = "test-user-id" as any;
 
 		// Mock form data extraction returning empty strings
 		mockGetFormDataString.mockReturnValueOnce("").mockReturnValueOnce("");
@@ -65,7 +60,6 @@ describe("parseAddNoteFormData", () => {
 		// Mock entity creation
 		mockMakeNoteTitle.mockReturnValue("" as any);
 		mockMakeMarkdown.mockReturnValue("" as any);
-		mockMakeUserId.mockReturnValue(userId);
 
 		const result = parseAddNoteFormData(formData, userId);
 
@@ -78,7 +72,7 @@ describe("parseAddNoteFormData", () => {
 
 	test("should handle form data with complex markdown", () => {
 		const formData = new FormData();
-		const userId = makeUserId("test-user-id");
+		const userId = "test-user-id" as any;
 
 		const complexMarkdown = `# Main Title
 
@@ -110,7 +104,6 @@ function hello() {
 		// Mock entity creation
 		mockMakeNoteTitle.mockReturnValue("Complex Note" as any);
 		mockMakeMarkdown.mockReturnValue(complexMarkdown as any);
-		mockMakeUserId.mockReturnValue(userId);
 
 		const result = parseAddNoteFormData(formData, userId);
 
@@ -123,7 +116,7 @@ function hello() {
 
 	test("should handle form data with Japanese content", () => {
 		const formData = new FormData();
-		const userId = makeUserId("test-user-id-jp");
+		const userId = "test-user-id-jp" as any;
 
 		const japaneseMarkdown = `# テストノート
 
@@ -144,7 +137,6 @@ function hello() {
 		// Mock entity creation
 		mockMakeNoteTitle.mockReturnValue("テストノートタイトル" as any);
 		mockMakeMarkdown.mockReturnValue(japaneseMarkdown as any);
-		mockMakeUserId.mockReturnValue("test-user-id-jp" as any);
 
 		const result = parseAddNoteFormData(formData, userId);
 
@@ -157,7 +149,7 @@ function hello() {
 
 	test("should handle form data with special characters", () => {
 		const formData = new FormData();
-		const userId = makeUserId("test-user-id");
+		const userId = "test-user-id" as any;
 
 		const markdownWithSpecialChars = `# Title with "Quotes" & Symbols
 
@@ -177,7 +169,6 @@ Content with <tags>, & ampersands, and "quotes".
 		// Mock entity creation
 		mockMakeNoteTitle.mockReturnValue('Note with "Special" Characters' as any);
 		mockMakeMarkdown.mockReturnValue(markdownWithSpecialChars as any);
-		mockMakeUserId.mockReturnValue("test-user-id" as any);
 
 		const result = parseAddNoteFormData(formData, userId);
 
@@ -190,7 +181,7 @@ Content with <tags>, & ampersands, and "quotes".
 
 	test("should handle different user IDs", () => {
 		const formData = new FormData();
-		const userId = makeUserId("different-user-456");
+		const userId = "different-user-456" as any;
 
 		// Mock form data extraction
 		mockGetFormDataString
@@ -200,17 +191,15 @@ Content with <tags>, & ampersands, and "quotes".
 		// Mock entity creation
 		mockMakeNoteTitle.mockReturnValue("User Specific Note" as any);
 		mockMakeMarkdown.mockReturnValue("# Note for different user" as any);
-		mockMakeUserId.mockReturnValue(userId);
 
 		const result = parseAddNoteFormData(formData, userId);
 
-		expect(mockMakeUserId).toHaveBeenCalledWith("different-user-456");
 		expect(result.userId).toBe("different-user-456");
 	});
 
 	test("should handle very long markdown content", () => {
 		const formData = new FormData();
-		const userId = makeUserId("test-user-id");
+		const userId = "test-user-id" as any;
 
 		const longMarkdown = makeMarkdown(
 			`# Long Content\n\n${"Text ".repeat(1000)}`,
@@ -226,7 +215,6 @@ Content with <tags>, & ampersands, and "quotes".
 		// Mock entity creation
 		mockMakeNoteTitle.mockReturnValue(longNoteTitle);
 		mockMakeMarkdown.mockReturnValue(longMarkdown);
-		mockMakeUserId.mockReturnValue(userId);
 
 		const result = parseAddNoteFormData(formData, userId);
 

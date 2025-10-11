@@ -33,7 +33,7 @@ export default tsEslint.config(
 			"**/*.cjs",
 		],
 	},
-	tsEslint.configs.strict,
+	...tsEslint.configs.strict,
 	reactPlugin.configs.flat.recommended,
 	reactPlugin.configs.flat["jsx-runtime"], // https://github.com/jsx-eslint/eslint-plugin-react?tab=readme-ov-file#flat-configs
 	// jsx-a11y is included in Next.js config, so we avoid duplicate registration
@@ -44,6 +44,12 @@ export default tsEslint.config(
 	// FIXME: not working
 	// ...tailwindcssPlugin.configs["flat/recommended"],
 	{
+		languageOptions: {
+			parserOptions: {
+				projectService: true,
+				tsconfigRootDir: import.meta.dirname,
+			},
+		},
 		settings: { react: { version: "detect" } },
 		rules: {
 			"react/destructuring-assignment": "error", // Props などの分割代入を強制

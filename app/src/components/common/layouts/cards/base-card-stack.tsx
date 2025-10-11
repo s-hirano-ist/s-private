@@ -1,9 +1,10 @@
 "use client";
+import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
+import Loading from "s-private-components/display/loading";
+import { StatusCodeView } from "s-private-components/display/status/status-code-view";
+import { useInfiniteScroll } from "s-private-components/hooks/use-infinite-scroll";
 import type { DeleteAction, LoadMoreAction } from "@/common/types";
-import { StatusCodeView } from "@/components/common/display/status/status-code-view";
-import { useInfiniteScroll } from "@/components/common/hooks/use-infinite-scroll";
-import Loading from "../../display/loading";
 import type { CardStackInitialData } from "./types";
 
 type SearchableItem = {
@@ -64,10 +65,12 @@ export function BaseCardStackWrapper<T extends SearchableItem>({
 		fetchNextPage: handleLoadMore,
 	});
 
+	const t = useTranslations("statusCode");
+
 	return (
 		<div className="px-2 py-4">
 			{allData.length === 0 ? (
-				<StatusCodeView statusCode="204" />
+				<StatusCodeView statusCode="204" statusCodeString={t("204")} />
 			) : (
 				<div className={gridClassName}>
 					{allData.map((item, index) => {

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
+import { ViewerBodyClient } from "s-private-components/layouts/body/viewer-body";
 import type { getNoteByTitle } from "@/application-services/notes/get-notes";
-import { ViewerBodyClient } from "@/components/common/layouts/body/viewer-body";
 
 export type Props = {
 	slug: string;

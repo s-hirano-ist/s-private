@@ -1,9 +1,9 @@
 "use client";
 import type { Route } from "next";
 import NextImage from "next/image";
+import { Card, CardContent, CardTitle } from "s-private-components/ui/card";
 import type { DeleteAction } from "@/common/types";
 import { DeleteButtonWithModal } from "@/components/common/forms/actions/delete-button-with-modal";
-import { Card, CardContent, CardTitle } from "@/components/common/ui/card";
 import { Link } from "@/infrastructures/i18n/routing";
 import type { ImageCardData } from "./types";
 

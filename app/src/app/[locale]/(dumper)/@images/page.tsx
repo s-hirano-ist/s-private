@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Loading from "s-private-components/display/loading";
 import { addImage } from "@/application-services/images/add-image";
 import { deleteImage } from "@/application-services/images/delete-image";
 import {
@@ -10,9 +11,8 @@ import {
 	hasDumperPostPermission,
 	hasViewerAdminPermission,
 } from "@/common/auth/session";
-import Loading from "@/components/common/display/loading";
 import { ErrorPermissionBoundary } from "@/components/common/layouts/error-permission-boundary";
-import { LazyTabContent } from "@/components/common/layouts/lazy-tab-content";
+import { LazyTabContent } from "@/components/common/lazy-tab-content";
 import { ImageForm } from "@/components/images/server/image-form";
 import { ImagesCounter } from "@/components/images/server/images-counter";
 import { ImagesStack } from "@/components/images/server/images-stack";
