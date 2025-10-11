@@ -26,9 +26,9 @@
 		"knip": "knip",
 		"storybook": "storybook dev -p 6006",
 		"storybook:build": "storybook build -o .storybook-static",
-		"deps:check": "pnpm -r deps:check",
-		"deps:circular": "pnpm -r deps:circular",
-		"deps:graph": "pnpm -r deps:graph"
+		"deps:check": "depcruise app/src packages/components packages/domains --config .dependency-cruiser.cjs",
+		"deps:circular": "depcruise app/src packages/components packages/domains --config .dependency-cruiser.cjs --output-type text --focus-depth 0",
+		"deps:graph": "depcruise app/src packages/components packages/domains --config .dependency-cruiser.cjs --output-type dot | dot -T svg > dependency-graph.svg"
 	},
 	"dependencies": {
 		"next": "15.5.3",
@@ -45,6 +45,7 @@
 		"@storybook/nextjs-vite": "9.1.10",
 		"@tailwindcss/postcss": "4.1.13",
 		"@vitest/coverage-v8": "3.2.4",
+		"dependency-cruiser": "17.0.1",
 		"jscpd": "4.0.5",
 		"knip": "5.64.2",
 		"playwright": "1.56.0",
