@@ -67,8 +67,7 @@
 		"packages/domains": {
 			"entry": ["**/*.ts", "!**/*.test.ts", "!**/*.spec.ts"],
 			"project": ["**/*.ts"],
-			"ignore": ["**/*.test.ts", "**/*.spec.ts"],
-			"ignoreDependencies": ["jsdom"]
+			"ignore": ["**/*.test.ts", "**/*.spec.ts"]
 		}
 	}
 }
