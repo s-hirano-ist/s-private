@@ -1,0 +1,17 @@
+{
+	"threshold": 10,
+	"reporters": ["console"],
+	"ignore": [
+		"**/node_modules/**",
+		"app/.next/**",
+		"**/dist/**",
+		"**/.storybook-static/**",
+		"**/coverage/**",
+		"**/.vitest-coverage/**",
+		"**/*.test.ts",
+		"app/src/generated/**"
+	],
+	"pattern": "**/*.{ts,tsx}",
+	"path": ["app/src", "packages/components", "packages/domains"],
+	"absolute": true
+}

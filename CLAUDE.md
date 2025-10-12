@@ -11,12 +11,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Lint Inspector**: `pnpm lint:inspector` - ESLint configuration inspector
 - **Biome**: `pnpm biome:fix` - Biome formatting and linting
 - **Biome CI**: `pnpm biome:ci` - Biome CI checking (non-interactive)
-- **Test**: `pnpm test` - Run Vitest unit tests
+- **Test**: `pnpm test` - Run all Vitest unit tests (workspace-wide)
+- **Test App**: `pnpm test:app` - Run tests for app package only
+- **Test Components**: `pnpm test:components` - Run tests for components package only
+- **Test Domains**: `pnpm test:domains` - Run tests for domains package only
+- **Test Watch**: `pnpm test:watch` - Run tests in watch mode
 - **Test with Type Check**: `pnpm test:typecheck` - Run TypeScript type checking on test files only
-- **Test All**: `pnpm test:all` - Run unit tests and type checking
-- **Storybook**: `pnpm storybook` - Component development
+- **Test All**: `pnpm test:all` - Run all unit tests and type checking
+- **Storybook**: `pnpm storybook` - Unified Storybook for all components (app + packages/components)
 - **Storybook Build**: `pnpm storybook:build` - Build static Storybook
-- **Storybook Test**: `pnpm test:storybook` - Run Storybook test runner with coverage
 
 ### Code Quality & Analysis
 - **Check Dependencies**: `pnpm deps:check` - Analyze dependencies and detect issues
@@ -108,8 +111,31 @@ Schema is maintained in `prisma/schema.prisma` with String-based primary keys an
 - Custom utility types in `src/types.ts`
 
 ## Testing
-- **Unit Tests**: Vitest with `@testing-library/react`
-- **Storybook**: Component testing with coverage support
+
+### Vitest Workspace Configuration
+The project uses Vitest workspace to manage tests across multiple packages:
+- **Workspace Root**: `vitest.config.ts` defines three test projects (app, components, domains)
+- **Individual Configs**: Each package has its own `vitest.config.ts` with specific settings
+- **Unified Execution**: Run all tests from the root with `pnpm test`
+- **Selective Testing**: Test individual packages with `pnpm test:app`, `pnpm test:components`, or `pnpm test:domains`
+
+### Test Setup per Package
+- **app**: jsdom environment with Next.js-specific mocks (auth, prisma, minio, env)
+  - Location: [app/vitest.config.ts](app/vitest.config.ts)
+  - Setup file: [app/vitest-setup.tsx](app/vitest-setup.tsx)
+  - Includes Storybook integration with browser testing
+- **packages/components**: jsdom environment for React component testing
+  - Location: [packages/components/vitest.config.ts](packages/components/vitest.config.ts)
+  - Setup file: [packages/components/vitest-setup.tsx](packages/components/vitest-setup.tsx)
+- **packages/domains**: Node environment for domain logic testing
+  - Location: [packages/domains/vitest.config.ts](packages/domains/vitest.config.ts)
+  - Setup file: [packages/domains/vitest-setup.tsx](packages/domains/vitest-setup.tsx)
+
+### Test Technologies
+- **Test Framework**: Vitest with `@testing-library/react` for component tests
+- **Coverage**: `@vitest/coverage-v8` enabled for all packages
+- **Type Checking**: TypeScript type checking enabled in tests
+- **Storybook**: Component testing with coverage support and Playwright browser testing
 
 ## Code Style & Architecture Rules
 

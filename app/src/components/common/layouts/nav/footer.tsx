@@ -11,16 +11,16 @@ import {
 	useState,
 	useTransition,
 } from "react";
-import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
-import { Button } from "@/components/common/ui/button";
-import { Command } from "@/components/common/ui/command";
+import { Button } from "s-private-components/ui/button";
+import { Command } from "s-private-components/ui/command";
 import {
 	Drawer,
 	DrawerContent,
 	DrawerHeader,
 	DrawerTitle,
-} from "@/components/common/ui/drawer";
-import { cn } from "@/components/common/utils/cn";
+} from "s-private-components/ui/drawer";
+import { cn } from "s-private-components/utils/cn";
+import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 import { SearchCard } from "../../features/search/search-card";
 
 const LAYOUTS = {

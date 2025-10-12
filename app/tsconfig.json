@@ -15,14 +15,20 @@
 		"jsx": "preserve",
 		"incremental": true,
 		"plugins": [{ "name": "next" }],
-		"paths": { "@/*": ["./src/*"] }
+		"paths": {
+			"@/*": ["./src/*"],
+			"s-private-components/*": ["../packages/components/*"],
+			"s-private-domains/*": ["../packages/domains/*"]
+		}
 	},
 	"include": [
 		"next-env.d.ts",
 		"**/*.ts",
 		"**/*.tsx",
 		".next/types/**/*.ts",
-		"vitest.config.ts"
+		"vitest.config.ts",
+		".storybook/**/*.ts",
+		".storybook/**/*.tsx"
 	],
 	"exclude": ["node_modules"]
 }

@@ -1,6 +1,6 @@
 import type { Route } from "next";
 import Link from "next/link";
-import { Button } from "@/components/common/ui/button";
+import { Button } from "s-private-components/ui/button";
 
 type NotFoundProps = {
 	title: string;

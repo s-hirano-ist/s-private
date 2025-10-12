@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useMemo } from "react";
-import { Button } from "@/components/common/ui/button";
+import { Button } from "s-private-components/ui/button";
 import { redirect } from "@/infrastructures/i18n/routing";
 
 type Props = { handleReload: () => void; onSignOutSubmit: () => Promise<void> };
