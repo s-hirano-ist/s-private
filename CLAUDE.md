@@ -28,7 +28,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Bundle Analysis**: `pnpm analyze` - Analyze Next.js bundle size
 - **Dead Code Detection**: `pnpm knip` - Find unused files and dependencies
 - **Copy-Paste Detection**: `pnpm jscpd` - Detect code duplication
-- **Security Audit**: `pnpm security` - Check for vulnerabilities
+
+### Security
+- **Security Audit**: `pnpm security` - Check for vulnerabilities (fails on moderate+)
+- **Security Fix**: `pnpm security:fix` - Auto-fix security vulnerabilities
+- **Security Report**: `pnpm security:report` - Generate JSON security report
+- **Documentation**: See [SECURITY.md](SECURITY.md) for complete security best practices
 
 ### Database Operations
 - **Generate Prisma**: `pnpm prisma:generate` - Generate Prisma client

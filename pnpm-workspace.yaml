@@ -2,5 +2,9 @@ packages:
   - app
   - packages/*
 
+minimumReleaseAge: 1440
+
 onlyBuiltDependencies:
   - '@vercel/speed-insights'
+
+savePrefix: ''

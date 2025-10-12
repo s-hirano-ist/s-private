@@ -40,3 +40,6 @@ app/src/generated/
 
 # Log
 debug.log
+
+# Security
+security-audit.json

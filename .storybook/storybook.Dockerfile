@@ -8,9 +8,10 @@ ENV SKIP_ENV_VALIDATION=true
 ENV MINIO_HOST=private.s-hirano.com
 
 COPY package.json pnpm-lock.yaml ./
-COPY prisma/ ./prisma/
+COPY app/prisma/ ./app/prisma/
 
-RUN pnpm install
+RUN pnpm install --frozen-lockfile
+
 COPY . .
 RUN pnpm run storybook:build
 
