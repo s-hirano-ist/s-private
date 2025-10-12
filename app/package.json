@@ -19,7 +19,7 @@
 	"dependencies": {
 		"@prisma/client": "6.17.0",
 		"@prisma/extension-accelerate": "2.0.2",
-		"@sentry/nextjs": "10.18.0",
+		"@sentry/nextjs": "10.19.0",
 		"@t3-oss/env-nextjs": "0.13.8",
 		"@tailwindcss/typography": "0.5.18",
 		"@vercel/analytics": "1.5.0",
