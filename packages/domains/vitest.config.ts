@@ -7,7 +7,7 @@ export default defineConfig({
 		include: ["./**/*.test.?(c|m)[jt]s?(x)"],
 		typecheck: {
 			enabled: true,
-			include: ["./src/**/*.test.?(c|m)[jt]s?(x)"],
+			include: ["./**/*.test.?(c|m)[jt]s?(x)"],
 			tsconfig: "./tsconfig.json",
 		},
 	},

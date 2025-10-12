@@ -1,7 +1,7 @@
 {
 	"$schema": "https://unpkg.com/knip@5/schema.json",
 	"ignoreExportsUsedInFile": true,
-	"ignoreDependencies": ["@vitest/coverage-v8"],
+	"ignoreDependencies": [],
 	"ignoreBinaries": ["dot"],
 	"workspaces": {
 		"app": {
