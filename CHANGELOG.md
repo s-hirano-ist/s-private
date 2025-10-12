@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [9.6.0](https://github.com/s-hirano-ist/s-private/compare/v9.5.2...v9.6.0) (2025-10-12)
+
+
+### Features
+
+* add Input and Textarea components with styling and utility functions ([7f01608](https://github.com/s-hirano-ist/s-private/commit/7f01608f81f28cf53af86e189fb70ca83f73b1a2))
+* use pnpm workspace ([240665b](https://github.com/s-hirano-ist/s-private/commit/240665b3b8abb9ac09559bb938348afdc7fabcfb))
+
+
+### Bug Fixes
+
+* build ([5fa4d21](https://github.com/s-hirano-ist/s-private/commit/5fa4d212ac57e096e1a8384128679b50b425ed20))
+* coverage ([7107199](https://github.com/s-hirano-ist/s-private/commit/7107199837e0d6a9112086f7eaada2ddfde96ab6))
+* dependency cruiser ([d67f699](https://github.com/s-hirano-ist/s-private/commit/d67f699035a9abb572b341a1121139c774f8a12b))
+* deps ([882e676](https://github.com/s-hirano-ist/s-private/commit/882e6767b49e115ba46796b89722ad65c072b6d1))
+* deps ([4fed944](https://github.com/s-hirano-ist/s-private/commit/4fed944c980e045925d335338f1b384d2b5a89ef))
+* deps ([2e67a35](https://github.com/s-hirano-ist/s-private/commit/2e67a3526a912849404b650371d394abf21fdc91))
+* eslint ([758922b](https://github.com/s-hirano-ist/s-private/commit/758922be68aa5b7aa1f841765466c5dca0aa2abc))
+* jscpd ([8583a4c](https://github.com/s-hirano-ist/s-private/commit/8583a4cb6c96817c18f1c35dda453bbf870f423d))
+* knip ([e9edb82](https://github.com/s-hirano-ist/s-private/commit/e9edb826318fda652e4f322d06cc2329c71729f5))
+* knip ([f1c7261](https://github.com/s-hirano-ist/s-private/commit/f1c72613f59fe5b056ee85438ae285b19162f386))
+* knip ([432ccf3](https://github.com/s-hirano-ist/s-private/commit/432ccf39884d8cb118b424d82c5333c4a69bb603))
+* knip and ci ([c4ac43f](https://github.com/s-hirano-ist/s-private/commit/c4ac43f5cc256c757d55e515553a51110ab7a252))
+* tests ([b4edda4](https://github.com/s-hirano-ist/s-private/commit/b4edda4204f9b2efe47d119a8f44f78394e78da0))
+* tests ([20515d9](https://github.com/s-hirano-ist/s-private/commit/20515d9ebbc6202225757cade44f7787cdd1849e))
+* vitest ([e1fcf8f](https://github.com/s-hirano-ist/s-private/commit/e1fcf8f61b32edb83a92997a27a743472accd627))
+
 ## [9.5.2](https://github.com/s-hirano-ist/s-private/compare/v9.5.1...v9.5.2) (2025-09-10)
 
 
