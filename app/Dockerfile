@@ -15,7 +15,7 @@ WORKDIR /app
 
 # Copy only package.json, pnpm-lock.yaml, and prisma schema for installing dependencies
 COPY package.json pnpm-lock.yaml ./
-COPY prisma/ ./prisma/
+COPY app/prisma/ ./app/prisma/
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
