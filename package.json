@@ -5,6 +5,10 @@
 	"description": "Private pages and admin tools for s-hirano-ist.",
 	"packageManager": "pnpm@10.18.2",
 	"type": "module",
+	"volta": {
+		"node": "22.14.0",
+		"pnpm": "10.18.2"
+	},
 	"scripts": {
 		"dev": "pnpm --recursive dev",
 		"build": "pnpm --recursive build",

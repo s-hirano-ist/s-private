@@ -47,6 +47,40 @@ docker compose up --build -d  # Start PostgreSQL database
 pnpm dev
 ```
 
+### Volta Configuration
+
+This project uses [Volta](https://volta.sh/) for Node.js and package manager version management. The versions are pinned in `package.json`:
+
+- **Node.js**: 22.14.0
+- **pnpm**: 10.18.2
+
+**pnpm Support in Volta** (Experimental):
+Volta's pnpm support is currently experimental. To enable it:
+
+1. Set the environment variable (required):
+   ```bash
+   # macOS/Linux - Add to ~/.zshrc or ~/.bash_profile
+   export VOLTA_FEATURE_PNPM=1
+
+   # Windows - Add to System Environment Variables
+   # VOLTA_FEATURE_PNPM=1
+   ```
+
+2. Install pnpm via Volta:
+   ```bash
+   # If you have existing pnpm installed via Volta
+   volta uninstall pnpm
+
+   # Reinstall pnpm with experimental support enabled
+   volta install pnpm
+   ```
+
+**Limitations**:
+- Global installations (`pnpm install -g`) are not supported
+- This is an experimental feature and may have issues
+
+**Note**: Once configured, Volta will automatically use the correct Node.js and pnpm versions specified in `package.json` when you enter the project directory.
+
 ## Architecture Overview
 
 ### Next.js App Router Structure

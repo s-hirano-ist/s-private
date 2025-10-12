@@ -1,3 +1,6 @@
 packages:
   - app
   - packages/*
+
+onlyBuiltDependencies:
+  - '@vercel/speed-insights'
