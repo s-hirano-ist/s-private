@@ -47,7 +47,6 @@ RUN --mount=type=secret,id=AUTH_SECRET \
     --mount=type=secret,id=MINIO_PORT \
     --mount=type=secret,id=MINIO_SECRET_KEY \
     --mount=type=secret,id=NEXT_PUBLIC_SENTRY_DSN \
-    --mount=type=secret,id=POSTGRES_DIRECT_URL \
     --mount=type=secret,id=DATABASE_URL \
     --mount=type=secret,id=SENTRY_AUTH_TOKEN \
     --mount=type=secret,id=SENTRY_REPORT_URL \
@@ -64,7 +63,6 @@ MINIO_HOST=$(cat /run/secrets/MINIO_HOST)\n\
 MINIO_PORT=$(cat /run/secrets/MINIO_PORT)\n\
 MINIO_SECRET_KEY=$(cat /run/secrets/MINIO_SECRET_KEY)\n\
 NEXT_PUBLIC_SENTRY_DSN=$(cat /run/secrets/NEXT_PUBLIC_SENTRY_DSN)\n\
-POSTGRES_DIRECT_URL=$(cat /run/secrets/POSTGRES_DIRECT_URL)\n\
 DATABASE_URL=$(cat /run/secrets/DATABASE_URL)\n\
 SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN)\n\
 SENTRY_REPORT_URL=$(cat /run/secrets/SENTRY_REPORT_URL)\n" > .env
