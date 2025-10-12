@@ -1,8 +1,13 @@
 {
 	"$schema": "https://unpkg.com/knip@5/schema.json",
 	"ignoreExportsUsedInFile": true,
-	"ignoreDependencies": [],
-	"ignoreBinaries": ["dot"],
+	"ignoreDependencies": [
+		"@eslint/config-inspector",
+		"eslint-config-next",
+		"eslint-plugin-jsx-a11y",
+		"eslint-plugin-tailwindcss"
+	],
+	"ignoreBinaries": ["dot", "config-inspector"],
 	"workspaces": {
 		"app": {
 			"ignore": [
@@ -12,15 +17,9 @@
 			],
 			"ignoreDependencies": [
 				"@tailwindcss/typography",
-				"@eslint/config-inspector",
-				"@chromatic-com/storybook",
 				"@types/react-syntax-highlighter",
-				"eslint-config-next",
-				"eslint-plugin-jsx-a11y",
-				"eslint-plugin-tailwindcss",
 				"sharp"
 			],
-			"ignoreBinaries": ["config-inspector"],
 			"next": {
 				"config": ["next.config.{js,ts,cjs,mjs}"],
 				"entry": [
@@ -58,11 +57,7 @@
 			],
 			"project": ["**/*.{ts,tsx}"],
 			"ignore": ["**/*.stories.tsx", "**/*.test.tsx", "**/*.spec.tsx"],
-			"ignoreDependencies": [
-				"@tailwindcss/typography",
-				"@vitest/eslint-plugin",
-				"postcss"
-			]
+			"ignoreDependencies": ["@tailwindcss/typography", "postcss"]
 		},
 		"packages/domains": {
 			"entry": ["**/*.ts", "!**/*.test.ts", "!**/*.spec.ts"],
