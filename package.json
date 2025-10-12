@@ -21,7 +21,7 @@
 		"test:watch": "vitest",
 		"license:summary": "pnpm --recursive license:summary",
 		"security": "pnpm audit",
-		"jscpd": "jscpd -p app/src/**/*.{ts,tsx}",
+		"jscpd": "jscpd",
 		"knip": "knip",
 		"storybook": "storybook dev -p 6006",
 		"storybook:build": "storybook build -o .storybook-static",
