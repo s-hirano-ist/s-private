@@ -35,6 +35,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Security Report**: `pnpm security:report` - Generate JSON security report
 - **Documentation**: See [SECURITY.md](SECURITY.md) for complete security best practices
 
+#### Automated Dependency Management (Renovate)
+This project uses Renovate for automated dependency updates with security-first approach:
+- **Schedule**: Weekly updates (Mondays before 11am JST)
+- **Vulnerability Alerts**: Automatic PRs for security issues (labeled `security`)
+- **Supply Chain Protection**: 3-day minimum release age for patches/minors (72 hours), 24-hour global minimum (pnpm-workspace.yaml)
+- **Grouped Updates**: Patches, minors, and GitHub Actions are grouped separately
+- **Configuration**: See [.github/renovate.json5](.github/renovate.json5)
+
+#### npm/pnpm Security Settings
+- **Version Pinning**: `save-exact=true` in .npmrc + `savePrefix: ''` in pnpm-workspace.yaml
+- **Lifecycle Script Protection**: `ignore-dep-scripts=true` prevents malicious scripts from external dependencies
+- **CI/CD**: `--frozen-lockfile` enforced in all CI workflows
+- **Minimum Release Age**: 24-hour global setting in pnpm-workspace.yaml to avoid newly published malicious packages
+
 ### Database Operations
 - **Generate Prisma**: `pnpm prisma:generate` - Generate Prisma client
 - **Database Migration**: `pnpm prisma:migrate` - Apply schema changes
@@ -56,7 +70,7 @@ pnpm dev
 
 This project uses [Volta](https://volta.sh/) for Node.js and package manager version management. The versions are pinned in `package.json`:
 
-- **Node.js**: 22.14.0
+- **Node.js**: 22.20.0
 - **pnpm**: 10.18.2
 
 **pnpm Support in Volta** (Experimental):

@@ -41,7 +41,21 @@
 - **Code Duplication Analysis** - [jscpd](https://github.com/kucherenko/jscpd)
 - **Dependency Analysis** - [dependency-cruiser](https://github.com/sverweij/dependency-cruiser)
 - **Bundle Analysis** - [@next/bundle-analyzer](https://www.npmjs.com/package/@next/bundle-analyzer)
-- **Security Auditing** - [pnpm audit](https://pnpm.io/cli/audit) & [Dependabot](https://docs.github.com/en/code-security/dependabot)
+- **Security Auditing** - [pnpm audit](https://pnpm.io/cli/audit)
+
+### Dependency Management & Security
+- **Automated Updates** - [Renovate](https://docs.renovatebot.com/)
+  - Weekly scheduled updates (Mondays before 11am JST)
+  - Automatic vulnerability alerts with `security` label
+  - Minimum release age: 3 days for patches/minors, preventing supply chain attacks
+  - Grouped updates: patches, minors, and GitHub Actions
+  - Lock file maintenance enabled
+- **Manual Security Audits** - `pnpm audit` (moderate+ severity threshold)
+- **Supply Chain Protection**
+  - Package version pinning (`save-exact=true`)
+  - Lifecycle script protection (`ignore-dep-scripts=true`)
+  - Minimum release age: 24 hours (pnpm-workspace.yaml)
+  - Frozen lockfiles in CI/CD
 
 ### Monitoring & Observability
 - **Error Tracking** - [Sentry](https://sentry.io/)
@@ -176,8 +190,8 @@ Schema location: `prisma/schema.prisma`
 ## Development Setup
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) (v18 or later)
-- [pnpm](https://pnpm.io/)
+- [Node.js](https://nodejs.org/) v22.20.0 (managed via [Volta](https://volta.sh/))
+- [pnpm](https://pnpm.io/) v10.18.2 (managed via Volta)
 - [Docker](https://www.docker.com/) (for PostgreSQL database)
 
 ### Initial Setup
@@ -266,8 +280,13 @@ pnpm deps:circular         # Find circular dependencies
 pnpm analyze               # Analyze Next.js bundle size with webpack-bundle-analyzer
 
 # Security & Licenses
-pnpm security             # Check for security vulnerabilities
+pnpm security              # Check for security vulnerabilities (moderate+)
+pnpm security:fix          # Auto-fix security vulnerabilities
+pnpm security:report       # Generate JSON security audit report
 pnpm license:summary       # Generate library license summary
+
+# Note: Automated security updates are handled by Renovate (weekly schedule)
+# Renovate configuration: .github/renovate.json5
 ```
 
 ### Database Operations
