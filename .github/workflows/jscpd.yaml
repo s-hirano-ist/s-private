@@ -1,0 +1,189 @@
+name: "jscpd"
+on:
+  pull_request:
+
+jobs:
+  code-duplication-check:
+    permissions:
+      pull-requests: write
+    timeout-minutes: 10
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout files
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        with:
+          persist-credentials: false
+          submodules: true
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4
+        with:
+          run_install: false
+
+      - name: Install Node.js
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: "24.9.0"
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm i --frozen-lockfile
+
+      - name: Run jscpd
+        id: jscpd
+        run: |
+          # Run jscpd and capture both console and JSON output
+          pnpm jscpd > jscpd-console.txt 2>&1 || true
+          pnpm jscpd:json || true
+
+          # Check if report file exists
+          if [ ! -f jscpd-report.json ]; then
+            echo "No duplications found or report generation failed"
+            echo "has_report=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "has_report=true" >> $GITHUB_OUTPUT
+
+      - name: Parse jscpd results and create PR comment
+        if: steps.jscpd.outputs.has_report == 'true'
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+
+            // Read jscpd report
+            const report = JSON.parse(fs.readFileSync('jscpd-report.json', 'utf8'));
+            const consoleOutput = fs.readFileSync('jscpd-console.txt', 'utf8');
+
+            // Extract statistics
+            const statistics = report.statistics || {};
+            const total = statistics.total || {};
+            const clones = statistics.clones || {};
+            const duplicates = report.duplicates || [];
+
+            const totalLines = total.lines || 0;
+            const duplicateLines = clones.lines || 0;
+            const duplicatePercentage = ((duplicateLines / totalLines) * 100).toFixed(2);
+            const threshold = 10; // from .jscpd.json
+
+            const exceedsThreshold = parseFloat(duplicatePercentage) > threshold;
+            const statusEmoji = exceedsThreshold ? '⚠️' : '✅';
+
+            // Build comment body
+            let comment = `## ${statusEmoji} Code Duplication Report\n\n`;
+            comment += `### Summary\n\n`;
+            comment += `| Metric | Value |\n`;
+            comment += `|--------|-------|\n`;
+            comment += `| Total Lines | ${totalLines.toLocaleString()} |\n`;
+            comment += `| Duplicate Lines | ${duplicateLines.toLocaleString()} |\n`;
+            comment += `| Duplication Rate | **${duplicatePercentage}%** |\n`;
+            comment += `| Threshold | ${threshold}% |\n`;
+            comment += `| Duplicate Blocks | ${duplicates.length} |\n`;
+            comment += `\n`;
+
+            if (exceedsThreshold) {
+              comment += `⚠️ **Warning:** Code duplication rate (${duplicatePercentage}%) exceeds the threshold of ${threshold}%.\n\n`;
+            } else {
+              comment += `✅ Code duplication rate is within the acceptable threshold.\n\n`;
+            }
+
+            // Add detailed report in collapsible section
+            comment += `<details>\n`;
+            comment += `<summary>📊 Detailed Report</summary>\n\n`;
+            comment += `### Console Output\n\n`;
+            comment += `\`\`\`\n${consoleOutput}\`\`\`\n\n`;
+
+            if (duplicates.length > 0) {
+              comment += `### Duplicate Code Blocks\n\n`;
+
+              // Limit to first 10 duplicates to avoid very long comments
+              const displayDuplicates = duplicates.slice(0, 10);
+
+              for (let i = 0; i < displayDuplicates.length; i++) {
+                const dup = displayDuplicates[i];
+                comment += `#### Duplicate ${i + 1}\n\n`;
+                comment += `- **Lines:** ${dup.lines || 'N/A'}\n`;
+                comment += `- **Tokens:** ${dup.tokens || 'N/A'}\n`;
+
+                if (dup.firstFile) {
+                  comment += `- **First occurrence:** \`${dup.firstFile.name}:${dup.firstFile.start}-${dup.firstFile.end}\`\n`;
+                }
+
+                if (dup.secondFile) {
+                  comment += `- **Second occurrence:** \`${dup.secondFile.name}:${dup.secondFile.start}-${dup.secondFile.end}\`\n`;
+                }
+
+                comment += `\n`;
+              }
+
+              if (duplicates.length > 10) {
+                comment += `\n*... and ${duplicates.length - 10} more duplicate blocks. Run \`pnpm jscpd\` locally for the full report.*\n`;
+              }
+            }
+
+            comment += `\n</details>\n`;
+
+            // Post comment to PR
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            // Find existing jscpd comment
+            const existingComment = comments.find(c =>
+              c.user.type === 'Bot' && c.body.includes('Code Duplication Report')
+            );
+
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: comment
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: comment
+              });
+            }
+
+      - name: No duplications found
+        if: steps.jscpd.outputs.has_report == 'false'
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const comment = `## ✅ Code Duplication Report\n\nNo code duplications detected. Great job! 🎉`;
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existingComment = comments.find(c =>
+              c.user.type === 'Bot' && c.body.includes('Code Duplication Report')
+            );
+
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: comment
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: comment
+              });
+            }

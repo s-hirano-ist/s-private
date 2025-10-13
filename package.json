@@ -28,6 +28,7 @@
 		"security:fix": "pnpm audit --fix",
 		"security:report": "pnpm audit --json > security-audit.json",
 		"jscpd": "jscpd",
+		"jscpd:json": "jscpd --format json --output ./jscpd-report.json",
 		"knip": "knip",
 		"storybook": "storybook dev -p 6006",
 		"storybook:build": "storybook build -o .storybook-static",
