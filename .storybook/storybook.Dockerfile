@@ -7,8 +7,11 @@ WORKDIR /app
 ENV SKIP_ENV_VALIDATION=true
 ENV MINIO_HOST=private.s-hirano.com
 
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY app/prisma/ ./app/prisma/
+COPY app/package.json ./app/package.json
+COPY packages/components/package.json ./packages/components/package.json
+COPY packages/domains/package.json ./packages/domains/package.json
 
 RUN pnpm install --frozen-lockfile
 
