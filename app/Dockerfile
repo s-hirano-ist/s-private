@@ -26,7 +26,10 @@ RUN pnpm install --frozen-lockfile
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/node_modules/ ./node_modules/
+COPY --from=deps /app/app/node_modules/ ./app/node_modules/
+COPY --from=deps /app/packages/components/node_modules/ ./packages/components/node_modules/
+COPY --from=deps /app/packages/domains/node_modules/ ./packages/domains/node_modules/
 
 # Copy rest of the application code
 COPY . .
