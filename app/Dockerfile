@@ -14,8 +14,11 @@ FROM base AS deps
 WORKDIR /app
 
 # Copy only package.json, pnpm-lock.yaml, and prisma schema for installing dependencies
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY app/prisma/ ./app/prisma/
+COPY app/package.json ./app/package.json
+COPY packages/components/package.json ./packages/components/package.json
+COPY packages/domains/package.json ./packages/domains/package.json
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
@@ -67,9 +70,6 @@ DATABASE_URL=$(cat /run/secrets/DATABASE_URL)\n\
 SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN)\n\
 SENTRY_REPORT_URL=$(cat /run/secrets/SENTRY_REPORT_URL)\n" > .env
 
-# Generate Prisma client
-RUN pnpm run prisma:generate
-
 # Build the application
 RUN pnpm run build
 
@@ -85,7 +85,7 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 # Copy public assets
-COPY --from=builder /app/public ./public
+COPY --from=builder /app/app/public ./public
 
 # Set the correct permission for prerender cache
 RUN mkdir .next
@@ -93,8 +93,8 @@ RUN chown nextjs:nodejs .next
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/app/.next/static ./.next/static
 
 USER nextjs
 

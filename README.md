@@ -320,7 +320,7 @@ pnpm prisma:studio         # Open Prisma Studio database browser
 
 ### Environments
 - **Development**: Local with Docker Compose
-- **Preview**: Vercel branch deployments  
+- **Preview**: Vercel branch deployments
 - **Production**: Vercel production deployment
 - **Storybook**: Deployed to Cloudflare Pages
 
@@ -360,3 +360,10 @@ READMEに下記を記述。CIにより強制はしないけど、AIコードレ�
 1. knipによる不要ファイル確認
 2. jscpdによるコード重複率確認
 3. depcruiseによる依存ファイル確認
+
+## Docker
+
+```
+docker build -f .storybook/storybook.Dockerfile -t storybook .
+docker build -f app/Dockerfile -t app .
+```
