@@ -43,3 +43,6 @@ debug.log
 
 # Security
 security-audit.json
+
+# Code duplication reports
+jscpd-report/

@@ -38,13 +38,13 @@ jobs:
           pnpm jscpd:json || true
 
           # Check if report file exists
-          if [ ! -f jscpd-report.json ]; then
+          if [ ! -f jscpd-report/jscpd-report.json ]; then
             echo "No duplications found or report generation failed"
-            echo "has_report=false" >> $GITHUB_OUTPUT
+            echo "has_report=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          echo "has_report=true" >> $GITHUB_OUTPUT
+          echo "has_report=true" >> "$GITHUB_OUTPUT"
 
       - name: Parse jscpd results and create PR comment
         if: steps.jscpd.outputs.has_report == 'true'
@@ -55,7 +55,7 @@ jobs:
             const fs = require('fs');
 
             // Read jscpd report
-            const report = JSON.parse(fs.readFileSync('jscpd-report.json', 'utf8'));
+            const report = JSON.parse(fs.readFileSync('jscpd-report/jscpd-report.json', 'utf8'));
             const consoleOutput = fs.readFileSync('jscpd-console.txt', 'utf8');
 
             // Extract statistics

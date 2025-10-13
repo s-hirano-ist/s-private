@@ -57,6 +57,7 @@ This project uses Renovate for automated dependency updates with security-first 
 
 ### Additional Tools
 - **License Summary**: `pnpm license:summary` - Generate library license summary
+- **License Check**: `pnpm license:check` - Check for forbidden licenses (GPL, LGPL variants) across all packages
 - **Post Install**: `pnpm postinstall` - Auto-generate Prisma client after installation
 
 ### Development Setup

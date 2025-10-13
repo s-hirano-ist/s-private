@@ -284,6 +284,7 @@ pnpm security              # Check for security vulnerabilities (moderate+)
 pnpm security:fix          # Auto-fix security vulnerabilities
 pnpm security:report       # Generate JSON security audit report
 pnpm license:summary       # Generate library license summary
+pnpm license:check         # Check for forbidden licenses (GPL, LGPL variants)
 
 # Note: Automated security updates are handled by Renovate (weekly schedule)
 # Renovate configuration: .github/renovate.json5

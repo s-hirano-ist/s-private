@@ -1,15 +1,14 @@
 === Root dependencies ===
-├─ MIT: 51
-├─ Apache-2.0: 9
-├─ ISC: 2
+├─ MIT: 31
+├─ Apache-2.0: 3
 ├─ MIT OR Apache-2.0: 1
-├─ BSD-2-Clause: 1
+├─ ISC: 1
 ├─ BSD-3-Clause: 1
 └─ Custom: https://img.shields.io/badge/License-AGPL: 1
 
 
 === App package ===
-├─ MIT: 32
+├─ MIT: 30
 ├─ Apache-2.0: 7
 ├─ UNKNOWN: 4
 ├─ ISC: 2
