@@ -22,7 +22,6 @@ COPY packages/domains/package.json ./packages/domains/package.json
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
-RUN pnpm --filter s-private-app prisma:generate
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -73,6 +72,8 @@ NEXT_PUBLIC_SENTRY_DSN=$(cat /run/secrets/NEXT_PUBLIC_SENTRY_DSN)\n\
 DATABASE_URL=$(cat /run/secrets/DATABASE_URL)\n\
 SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN)\n\
 SENTRY_REPORT_URL=$(cat /run/secrets/SENTRY_REPORT_URL)\n" > .env
+
+RUN pnpm --filter s-private-app prisma:generate
 
 # Build the application
 RUN pnpm run build
