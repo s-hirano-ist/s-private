@@ -22,6 +22,7 @@ COPY packages/domains/package.json ./packages/domains/package.json
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
+RUN pnpm --filter s-private-app prisma:generate
 
 # Rebuild the source code only when needed
 FROM base AS builder
