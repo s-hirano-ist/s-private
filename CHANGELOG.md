@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [9.7.0](https://github.com/s-hirano-ist/s-private/compare/v9.6.0...v9.7.0) (2025-10-13)
+
+
+### Features
+
+* add jscpd workflow and update package.json for jscpd reporting ([16227c4](https://github.com/s-hirano-ist/s-private/commit/16227c42e4097f31e5ba065b4364e406eabfd3e9))
+* add license check workflow and update related scripts and documentation ([36fc005](https://github.com/s-hirano-ist/s-private/commit/36fc005b55b6a50832a610ba3e9c5f207d886d67))
+* add prisma generate command for s-private-app during dependency installation ([9d0b2d7](https://github.com/s-hirano-ist/s-private/commit/9d0b2d7ac2e5a0fdfe3dadca377319caf3cc49f0))
+* add volta ([f05c8ee](https://github.com/s-hirano-ist/s-private/commit/f05c8eecf6f2c3fa73ef4a54cfce8f0731bcbdad))
+* update license summary and add license checker script ([3ec9cde](https://github.com/s-hirano-ist/s-private/commit/3ec9cde2575098ec40c6bc215ca9caeb1505c3f4))
+* update license summary and add license checker script ([9bef43f](https://github.com/s-hirano-ist/s-private/commit/9bef43fa93187a6a713a0d3719e020257a57b9df))
+
+
+### Bug Fixes
+
+* dockerfile ([1c11755](https://github.com/s-hirano-ist/s-private/commit/1c117551c6b99e1a19b883a02233818408075350))
+* dockerfile ([dadd7ce](https://github.com/s-hirano-ist/s-private/commit/dadd7ce502d98aac20d45d6a597c34ba934d95a6))
+* dockerfile ([d803cbe](https://github.com/s-hirano-ist/s-private/commit/d803cbeeedc7b006f5daf55e1927234fe2f59da3))
+* dockerfile settings ([739b718](https://github.com/s-hirano-ist/s-private/commit/739b718b6fcf0c282b64e1c2de6f0acb4d28d4a0))
+* downgrade eslint ([b23612f](https://github.com/s-hirano-ist/s-private/commit/b23612f8ddf4048cea0f3212fc479e84eff453b8))
+* enhance security documentation and add automated dependency management details ([a1d607b](https://github.com/s-hirano-ist/s-private/commit/a1d607b8a9ce6d64baf17df5f4d9e61688e18f5f))
+* move prisma generate command to the end of Dockerfile for proper execution ([eaf14f9](https://github.com/s-hirano-ist/s-private/commit/eaf14f9ccdf875bc4aceef92538c6ea3efd522a0))
+* update Dockerfile to ensure correct copying of node_modules ([da5bc01](https://github.com/s-hirano-ist/s-private/commit/da5bc014f2a1d5e798c4adb62a48a37baa1816d0))
+* update Dockerfile to ensure correct copying of node_modules ([043832c](https://github.com/s-hirano-ist/s-private/commit/043832c3b8f270753343524fe3ba5992e1d7948c))
+
 ## [9.6.0](https://github.com/s-hirano-ist/s-private/compare/v9.5.2...v9.6.0) (2025-10-12)
 
 
