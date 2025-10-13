@@ -73,6 +73,8 @@ DATABASE_URL=$(cat /run/secrets/DATABASE_URL)\n\
 SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN)\n\
 SENTRY_REPORT_URL=$(cat /run/secrets/SENTRY_REPORT_URL)\n" > .env
 
+RUN pnpm --filter s-private-app prisma:generate
+
 # Build the application
 RUN pnpm run build
 
