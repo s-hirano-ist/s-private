@@ -71,7 +71,7 @@ MINIO_SECRET_KEY=$(cat /run/secrets/MINIO_SECRET_KEY)\n\
 NEXT_PUBLIC_SENTRY_DSN=$(cat /run/secrets/NEXT_PUBLIC_SENTRY_DSN)\n\
 DATABASE_URL=$(cat /run/secrets/DATABASE_URL)\n\
 SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN)\n\
-SENTRY_REPORT_URL=$(cat /run/secrets/SENTRY_REPORT_URL)\n" > .env
+SENTRY_REPORT_URL=$(cat /run/secrets/SENTRY_REPORT_URL)\n" > app/.env
 
 RUN pnpm --filter s-private-app prisma:generate
 
