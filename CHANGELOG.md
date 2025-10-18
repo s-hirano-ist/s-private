@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [9.8.0](https://github.com/s-hirano-ist/s-private/compare/v9.7.0...v9.8.0) (2025-10-18)
+
+
+### Features
+
+* add reports ([95dad9a](https://github.com/s-hirano-ist/s-private/commit/95dad9a0d582c9274b2a060a84a754f7040c8563))
+
+
+### Bug Fixes
+
+* biome ([80f9ddc](https://github.com/s-hirano-ist/s-private/commit/80f9ddcd5de76e76cf64672b4ad29a56e69698c0))
+* biome ([84b212d](https://github.com/s-hirano-ist/s-private/commit/84b212dee73a25f7e5eae7541b781d9f452c00a1))
+* update SENTRY_REPORT_URL path in Dockerfile ([a57b4bc](https://github.com/s-hirano-ist/s-private/commit/a57b4bc9a72c9aa46a394002b7ef7c12038337ef))
+* update SENTRY_REPORT_URL path in Dockerfile ([754612a](https://github.com/s-hirano-ist/s-private/commit/754612a88af1433eab07a4e974c5d301ee93fcba))
+
 ## [9.7.0](https://github.com/s-hirano-ist/s-private/compare/v9.6.0...v9.7.0) (2025-10-13)
 
 
