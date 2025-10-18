@@ -2,6 +2,7 @@
 name: ci
 permissions:
   pull-requests: write
+
 on:
   pull_request:
     types: [opened, synchronize, reopened]
@@ -9,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     permissions: {}
-    timeout-minutes: 20
+    timeout-minutes: 10
     concurrency:
       group: ${{ github.workflow }}-build-${{ github.ref }}
     steps:
@@ -53,11 +54,11 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_REPORT_URL: ${{ secrets.SENTRY_REPORT_URL }}
 
-  lint:
+  biome:
     runs-on: ubuntu-24.04
     permissions:
       pull-requests: write
-    timeout-minutes: 20
+    timeout-minutes: 10
     concurrency:
       group: ${{ github.workflow }}-lint-${{ github.ref }}
     steps:
@@ -81,17 +82,73 @@ jobs:
 
       - run: pnpm i --frozen-lockfile
       - run: pnpm biome:ci
+
+  eslint:
+    runs-on: ubuntu-24.04
+    permissions:
+      pull-requests: write
+    timeout-minutes: 10
+    concurrency:
+      group: ${{ github.workflow }}-lint-${{ github.ref }}
+    steps:
+      - name: Checkout files
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        with:
+          persist-credentials: false
+          submodules: true
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4
+        with:
+          run_install: false
+
+      - name: Install Node.js
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: "24.9.0"
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - run: pnpm i --frozen-lockfile
       - run: pnpm lint
         env:
           SKIP_ENV_VALIDATION: true
           MINIO_HOST: ${{ secrets.MINIO_HOST }}
+
+  knip:
+    runs-on: ubuntu-24.04
+    permissions:
+      pull-requests: write
+    timeout-minutes: 10
+    concurrency:
+      group: ${{ github.workflow }}-lint-${{ github.ref }}
+    steps:
+      - name: Checkout files
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        with:
+          persist-credentials: false
+          submodules: true
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4
+        with:
+          run_install: false
+
+      - name: Install Node.js
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: "24.9.0"
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - run: pnpm i --frozen-lockfile
       - run: pnpm knip
 
   test:
     runs-on: ubuntu-24.04
     permissions:
       pull-requests: write
-    timeout-minutes: 20
+    timeout-minutes: 10
     concurrency:
       group: ${{ github.workflow }}-test-${{ github.ref }}
     steps:
@@ -133,7 +190,7 @@ jobs:
   storybook:
     runs-on: ubuntu-24.04
     permissions: {}
-    timeout-minutes: 20
+    timeout-minutes: 10
     concurrency:
       group: ${{ github.workflow }}-storybook-${{ github.ref }}
     steps:

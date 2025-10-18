@@ -1,4 +1,4 @@
-name: update-license
+name: update-reports
 
 on:
   schedule:
@@ -42,13 +42,16 @@ jobs:
             ${{ runner.os }}-node-
       - run: pnpm i --frozen-lockfile # && npm install -g @lhci/cli@0.12.x
       - run: pnpm license:summary
+      - run: pnpm jscpd:summary
       - run: pnpm biome:fix
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7
         with:
           token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
-          commit-message: "contents: update licenses"
-          title: "contents: update licenses"
+          commit-message: "contents: update reports (license + jscpd)"
+          title: "contents: update reports (license + jscpd)"
           body: |
-            This is an update PR of auto generated licenses.
+            This is an update PR of auto generated reports:
+            - License summary (library-license.txt)
+            - Code duplication analysis (jscpd-summary.txt)

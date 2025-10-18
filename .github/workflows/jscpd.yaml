@@ -125,6 +125,8 @@ jobs:
             }
 
             comment += `\n</details>\n`;
+            comment += `\n---\n`;
+            comment += `📦 **Full Report**: Download the complete jscpd report from [GitHub Actions Artifacts](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})\n`;
 
             // Post comment to PR
             const { data: comments } = await github.rest.issues.listComments({
@@ -160,7 +162,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const comment = `## ✅ Code Duplication Report\n\nNo code duplications detected. Great job! 🎉`;
+            const comment = `## ✅ Code Duplication Report\n\nNo code duplications detected. Great job! 🎉\n\n---\n\n📦 **Full Report**: Download the complete jscpd report from [GitHub Actions Artifacts](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`;
 
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
@@ -187,3 +189,13 @@ jobs:
                 body: comment
               });
             }
+
+      - name: Upload jscpd report as artifact
+        if: always()
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
+        with:
+          name: jscpd-report
+          path: |
+            jscpd-console.txt
+            jscpd-report/
+          retention-days: 90
