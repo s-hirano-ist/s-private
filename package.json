@@ -30,6 +30,7 @@
 		"security:report": "pnpm audit --json > security-audit.json",
 		"jscpd": "jscpd",
 		"jscpd:json": "jscpd -r json -o ./jscpd-report",
+		"jscpd:summary": "jscpd > jscpd-summary.txt 2>&1 || true",
 		"knip": "knip",
 		"storybook": "storybook dev -p 6006",
 		"storybook:build": "storybook build -o .storybook-static",

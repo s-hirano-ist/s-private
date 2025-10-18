@@ -352,7 +352,25 @@ Licensed under the AGPL-3.0 License, Copyright © 2024
 
 ### Licenses of used libraries
 
-See [library-license.txt](https://github.com/s-hirano-ist/s-private/blob/main/library-license.txt) for summary of used licenses.
+See [library-license.txt](https://github.com/s-hirano-ist/s-private/blob/main/library-license.txt) for the summary of licenses used in this project.
+
+**Automatic Updates**: This file is automatically updated monthly via [GitHub Actions](.github/workflows/update-reports.yaml).
+
+To generate the license summary locally:
+```bash
+pnpm license:summary
+```
+
+### Code Duplication Report
+
+See [jscpd-summary.txt](https://github.com/s-hirano-ist/s-private/blob/main/jscpd-summary.txt) for the latest code duplication analysis on the main branch.
+
+**Automatic Updates**: This file is automatically updated monthly via [GitHub Actions](.github/workflows/update-reports.yaml).
+
+To run code duplication analysis locally:
+```bash
+pnpm jscpd
+```
 
 ## TODO
 
