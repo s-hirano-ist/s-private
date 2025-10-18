@@ -12,7 +12,6 @@ node_modules
 
 # Next.js
 app/.next
-app/out
 
 # Production
 /build
@@ -43,3 +42,6 @@ debug.log
 
 # Code duplication reports
 jscpd-report/
+
+# packages
+packages/domains/dist/
