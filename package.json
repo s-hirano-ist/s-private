@@ -3,11 +3,11 @@
 	"version": "9.8.0",
 	"author": "s-hirano-ist",
 	"description": "Private pages and admin tools for s-hirano-ist.",
-	"packageManager": "pnpm@10.18.2",
+	"packageManager": "pnpm@10.21.0",
 	"type": "module",
 	"volta": {
 		"node": "22.20.0",
-		"pnpm": "10.18.2"
+		"pnpm": "10.21.0"
 	},
 	"scripts": {
 		"dev": "pnpm --recursive dev",
