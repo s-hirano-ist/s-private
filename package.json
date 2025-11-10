@@ -6,7 +6,7 @@
 	"packageManager": "pnpm@10.21.0",
 	"type": "module",
 	"volta": {
-		"node": "22.20.0",
+		"node": "22.21.1",
 		"pnpm": "10.21.0"
 	},
 	"scripts": {
