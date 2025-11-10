@@ -1,0 +1,16 @@
+# Source files
+**/*.test.ts
+**/*.spec.ts
+vitest-setup.tsx
+vitest.config.ts
+
+# Build artifacts
+tsconfig.tsbuildinfo
+*.tsbuildinfo
+
+# Development files
+node_modules
+.DS_Store
+
+# Documentation (included separately)
+# README.md is included via package.json "files" field

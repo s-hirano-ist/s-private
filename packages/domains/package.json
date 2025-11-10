@@ -1,9 +1,64 @@
 {
 	"name": "s-private-domains",
-	"version": "1.0.0",
-	"description": "",
+	"version": "0.1.0",
+	"description": "Domain layer for s-private application - Clean architecture domain entities, repositories, and services",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		},
+		"./articles": {
+			"types": "./dist/articles/index.d.ts",
+			"default": "./dist/articles/index.js"
+		},
+		"./books": {
+			"types": "./dist/books/index.d.ts",
+			"default": "./dist/books/index.js"
+		},
+		"./common": {
+			"types": "./dist/common/index.d.ts",
+			"default": "./dist/common/index.js"
+		},
+		"./errors": {
+			"types": "./dist/errors/index.d.ts",
+			"default": "./dist/errors/index.js"
+		},
+		"./images": {
+			"types": "./dist/images/index.d.ts",
+			"default": "./dist/images/index.js"
+		},
+		"./notes": {
+			"types": "./dist/notes/index.d.ts",
+			"default": "./dist/notes/index.js"
+		}
+	},
+	"files": [
+		"dist",
+		"README.md",
+		"LICENSE"
+	],
 	"scripts": {
-		"build": "tsc"
+		"build": "tsc",
+		"prepublishOnly": "pnpm run build",
+		"clean": "rm -rf dist"
+	},
+	"keywords": [
+		"domain-driven-design",
+		"clean-architecture",
+		"typescript",
+		"domain-layer"
+	],
+	"author": "",
+	"license": "AGPL-3.0",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/s-hirano-ist/s-private.git",
+		"directory": "packages/domains"
+	},
+	"publishConfig": {
+		"access": "public"
 	},
 	"dependencies": {
 		"sharp": "0.34.5",
