@@ -1,7 +1,7 @@
 # Build Stage
 # MEMO: alpine based images is not recommended for prod useage https://github.com/nodejs/docker-node#nodealpine
 
-FROM node:23.7.0-slim@sha256:a5163af143b43b0da7572444bd49a22edb4cc1a74d3a46e1ef840f62bce07cac AS base
+FROM node:24.11.1-slim@sha256:f752e4821362614eab35016f01dea3af61d2f59d0445381c25683e4331520a7b AS base
 RUN apt-get update && apt-get install -y ca-certificates && update-ca-certificates
 
 # Install pnpm
