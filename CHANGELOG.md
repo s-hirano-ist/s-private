@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [9.8.1](https://github.com/s-hirano-ist/s-private/compare/v9.8.0...v9.8.1) (2025-11-18)
+
+
+### Bug Fixes
+
+* downgrade @biomejs/biome dependency from 2.3.4 to 2.2.6 ([b72e048](https://github.com/s-hirano-ist/s-private/commit/b72e048fec089dfdfd9fe22be0f2bcbcb5e77714))
+* update dependency-cruiser configuration to exclude additional files ([df4503b](https://github.com/s-hirano-ist/s-private/commit/df4503b4c02af4a94497a16b2564060273c73dc5))
+* update dependency-cruiser configuration to exclude additional files ([22c82d1](https://github.com/s-hirano-ist/s-private/commit/22c82d1651c2bb27d96d2a2ae69ff592918941c1))
+
 ## [9.8.0](https://github.com/s-hirano-ist/s-private/compare/v9.7.0...v9.8.0) (2025-10-18)
 
 
