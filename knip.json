@@ -15,10 +15,7 @@
 				"src/app/instrumentation.ts",
 				"src/infrastructures/i18n/request.ts"
 			],
-			"ignoreDependencies": [
-				"@types/react-syntax-highlighter",
-				"sharp"
-			],
+			"ignoreDependencies": ["@types/react-syntax-highlighter", "sharp"],
 			"next": {
 				"config": ["next.config.{js,ts,cjs,mjs}"],
 				"entry": [
