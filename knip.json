@@ -16,7 +16,6 @@
 				"src/infrastructures/i18n/request.ts"
 			],
 			"ignoreDependencies": [
-				"@tailwindcss/typography",
 				"@types/react-syntax-highlighter",
 				"sharp"
 			],
@@ -57,7 +56,7 @@
 			],
 			"project": ["**/*.{ts,tsx}"],
 			"ignore": ["**/*.stories.tsx", "**/*.test.tsx", "**/*.spec.tsx"],
-			"ignoreDependencies": ["@tailwindcss/typography", "postcss"]
+			"ignoreDependencies": ["postcss"]
 		},
 		"packages/domains": {
 			"entry": ["**/*.ts", "!**/*.test.ts", "!**/*.spec.ts"],
