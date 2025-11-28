@@ -18,7 +18,7 @@ const compat = new FlatCompat({
 export default tsEslint.config(
 	{
 		ignores: [
-			"app/src/generated/**/*",
+			"packages/database/src/generated/**/*",
 			"**/node_modules/**/*",
 			"**/.next/**/*",
 			"**/.storybook-static/**/*",

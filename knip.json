@@ -63,6 +63,9 @@
 			"entry": ["**/*.ts", "!**/*.test.ts", "!**/*.spec.ts"],
 			"project": ["**/*.ts"],
 			"ignore": ["**/*.test.ts", "**/*.spec.ts"]
+		},
+		"packages/database": {
+			"ignoreDependencies": ["@prisma/client", "@prisma/extension-accelerate"]
 		}
 	}
 }
