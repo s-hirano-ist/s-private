@@ -1,3 +1,4 @@
+import type { Prisma } from "s-private-database";
 import type { IArticlesQueryRepository } from "s-private-domains/articles/repositories/articles-query-repository.interface";
 import type { ICategoryQueryRepository } from "s-private-domains/articles/repositories/category-query-repository.interface";
 import type {
@@ -8,7 +9,6 @@ import type {
 	Status,
 	UserId,
 } from "s-private-domains/common/entities/common-entity";
-import type { Prisma } from "@/generated";
 import prisma from "@/prisma";
 
 async function findByUrl(url: string, userId: string) {

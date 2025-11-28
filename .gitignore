@@ -34,6 +34,7 @@ minio/certs
 
 # Prisma
 app/src/generated/
+packages/database/src/generated/
 
 # Sentry Config File
 .env.sentry-build-plugin
