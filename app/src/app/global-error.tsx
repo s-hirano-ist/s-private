@@ -3,7 +3,7 @@ import { captureException } from "@sentry/nextjs";
 // biome-ignore lint: auto-gen
 import type Error from "next/error";
 import { useEffect } from "react";
-import { Button } from "s-private-components/ui/button";
+import { Button } from "s-ui/ui/button";
 
 export default function Page({
 	error,

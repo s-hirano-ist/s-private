@@ -4,7 +4,7 @@ import tailwindcss from "@tailwindcss/postcss";
 const config: StorybookConfig = {
 	stories: [
 		"../app/src/**/*.stories.@(js|jsx|mjs|ts|tsx)",
-		"../packages/components/**/*.stories.@(js|jsx|mjs|ts|tsx)",
+		"../packages/ui/**/*.stories.@(js|jsx|mjs|ts|tsx)",
 	],
 	addons: [
 		"@storybook/addon-links",

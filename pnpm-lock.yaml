@@ -171,15 +171,15 @@ importers:
       react-markdown:
         specifier: 10.1.0
         version: 10.1.0(@types/react@19.2.6)(react@19.2.0)
-      s-private-components:
-        specifier: workspace:*
-        version: link:../packages/components
       s-private-database:
         specifier: workspace:*
         version: link:../packages/database
       s-private-domains:
         specifier: workspace:*
         version: link:../packages/domains
+      s-ui:
+        specifier: workspace:*
+        version: link:../packages/ui
       server-only:
         specifier: 0.0.1
         version: 0.0.1
@@ -221,7 +221,39 @@ importers:
         specifier: 4.1.17
         version: 4.1.17
 
-  packages/components:
+  packages/database:
+    dependencies:
+      '@prisma/client':
+        specifier: 6.19.0
+        version: 6.19.0(prisma@6.19.0(magicast@0.3.5)(typescript@5.9.3))(typescript@5.9.3)
+      '@prisma/extension-accelerate':
+        specifier: 3.0.0
+        version: 3.0.0(@prisma/client@6.19.0(prisma@6.19.0(magicast@0.3.5)(typescript@5.9.3))(typescript@5.9.3))
+    devDependencies:
+      prisma:
+        specifier: 6.19.0
+        version: 6.19.0(magicast@0.3.5)(typescript@5.9.3)
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+
+  packages/domains:
+    dependencies:
+      sharp:
+        specifier: 0.34.5
+        version: 0.34.5
+      uuid:
+        specifier: 13.0.0
+        version: 13.0.0
+      zod:
+        specifier: 4.1.12
+        version: 4.1.12
+    devDependencies:
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+
+  packages/ui:
     dependencies:
       '@tailwindcss/typography':
         specifier: 0.5.19
@@ -284,38 +316,6 @@ importers:
       postcss:
         specifier: 8.5.6
         version: 8.5.6
-      typescript:
-        specifier: 5.9.3
-        version: 5.9.3
-
-  packages/database:
-    dependencies:
-      '@prisma/client':
-        specifier: 6.19.0
-        version: 6.19.0(prisma@6.19.0(magicast@0.3.5)(typescript@5.9.3))(typescript@5.9.3)
-      '@prisma/extension-accelerate':
-        specifier: 3.0.0
-        version: 3.0.0(@prisma/client@6.19.0(prisma@6.19.0(magicast@0.3.5)(typescript@5.9.3))(typescript@5.9.3))
-    devDependencies:
-      prisma:
-        specifier: 6.19.0
-        version: 6.19.0(magicast@0.3.5)(typescript@5.9.3)
-      typescript:
-        specifier: 5.9.3
-        version: 5.9.3
-
-  packages/domains:
-    dependencies:
-      sharp:
-        specifier: 0.34.5
-        version: 0.34.5
-      uuid:
-        specifier: 13.0.0
-        version: 13.0.0
-      zod:
-        specifier: 4.1.12
-        version: 4.1.12
-    devDependencies:
       typescript:
         specifier: 5.9.3
         version: 5.9.3

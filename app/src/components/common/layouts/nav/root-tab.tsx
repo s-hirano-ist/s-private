@@ -9,13 +9,8 @@ import {
 	useState,
 	useTransition,
 } from "react";
-import {
-	Tabs,
-	TabsContent,
-	TabsList,
-	TabsTrigger,
-} from "s-private-components/ui/tabs";
-import { cn } from "s-private-components/utils/cn";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "s-ui/ui/tabs";
+import { cn } from "s-ui/utils/cn";
 
 const TABS = {
 	articles: "ARTICLES",

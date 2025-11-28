@@ -1,4 +1,4 @@
-import Loading from "s-private-components/display/loading";
+import Loading from "s-ui/display/loading";
 
 export default function LoadingPage() {
 	return <Loading />;

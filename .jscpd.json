@@ -12,6 +12,6 @@
 		"app/src/generated/**"
 	],
 	"pattern": "**/*.{ts,tsx}",
-	"path": ["app/src", "packages/components", "packages/domains"],
+	"path": ["app/src", "packages/ui", "packages/domains"],
 	"absolute": true
 }

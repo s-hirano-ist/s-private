@@ -1,7 +1,7 @@
 "use client";
 import { useTranslations } from "next-intl";
-import { FormFileInput } from "s-private-components/forms/fields/form-file-input";
-import { GenericFormWrapper } from "s-private-components/forms/generic-form-wrapper";
+import { FormFileInput } from "s-ui/forms/fields/form-file-input";
+import { GenericFormWrapper } from "s-ui/forms/generic-form-wrapper";
 import { toast } from "sonner";
 import type { ServerAction } from "@/common/types";
 

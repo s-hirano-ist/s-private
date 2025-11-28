@@ -3,7 +3,7 @@
 		"baseUrl": ".",
 		"paths": {
 			"@/*": ["app/src/*"],
-			"s-private-components/*": ["packages/components/*"],
+			"s-ui/*": ["packages/ui/*"],
 			"s-private-domains/*": ["packages/domains/*"]
 		},
 		"skipLibCheck": true

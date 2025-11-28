@@ -13,12 +13,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Biome CI**: `pnpm biome:ci` - Biome CI checking (non-interactive)
 - **Test**: `pnpm test` - Run all Vitest unit tests (workspace-wide)
 - **Test App**: `pnpm test:app` - Run tests for app package only
-- **Test Components**: `pnpm test:components` - Run tests for components package only
+- **Test UI**: `pnpm test:components` - Run tests for UI package only
 - **Test Domains**: `pnpm test:domains` - Run tests for domains package only
 - **Test Watch**: `pnpm test:watch` - Run tests in watch mode
 - **Test with Type Check**: `pnpm test:typecheck` - Run TypeScript type checking on test files only
 - **Test All**: `pnpm test:all` - Run all unit tests and type checking
-- **Storybook**: `pnpm storybook` - Unified Storybook for all components (app + packages/components)
+- **Storybook**: `pnpm storybook` - Unified Storybook for all components (app + packages/ui)
 - **Storybook Build**: `pnpm storybook:build` - Build static Storybook
 
 ### Code Quality & Analysis
@@ -178,9 +178,9 @@ The project uses Vitest workspace to manage tests across multiple packages:
   - Location: [app/vitest.config.ts](app/vitest.config.ts)
   - Setup file: [app/vitest-setup.tsx](app/vitest-setup.tsx)
   - Includes Storybook integration with browser testing
-- **packages/components**: jsdom environment for React component testing
-  - Location: [packages/components/vitest.config.ts](packages/components/vitest.config.ts)
-  - Setup file: [packages/components/vitest-setup.tsx](packages/components/vitest-setup.tsx)
+- **packages/ui**: jsdom environment for React component testing
+  - Location: [packages/ui/vitest.config.ts](packages/ui/vitest.config.ts)
+  - Setup file: [packages/ui/vitest-setup.tsx](packages/ui/vitest-setup.tsx)
 - **packages/domains**: Node environment for domain logic testing
   - Location: [packages/domains/vitest.config.ts](packages/domains/vitest.config.ts)
   - Setup file: [packages/domains/vitest-setup.tsx](packages/domains/vitest-setup.tsx)

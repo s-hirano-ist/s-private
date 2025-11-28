@@ -27,7 +27,7 @@
 		"react": "19.2.0",
 		"react-dom": "19.2.0",
 		"react-markdown": "10.1.0",
-		"s-private-components": "workspace:*",
+		"s-ui": "workspace:*",
 		"s-private-database": "workspace:*",
 		"s-private-domains": "workspace:*",
 		"server-only": "0.0.1",

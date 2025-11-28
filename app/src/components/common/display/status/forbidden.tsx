@@ -1,7 +1,7 @@
 "use client";
 import { useTranslations } from "next-intl";
-import { StatusCodeView } from "s-private-components/display/status/status-code-view";
-import { Button } from "s-private-components/ui/button";
+import { StatusCodeView } from "s-ui/display/status/status-code-view";
+import { Button } from "s-ui/ui/button";
 
 export function Forbidden() {
 	const t = useTranslations("label");

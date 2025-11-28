@@ -41,7 +41,7 @@
 				]
 			}
 		},
-		"packages/components": {
+		"packages/ui": {
 			"entry": [
 				"ui/**/*.tsx",
 				"forms/**/*.tsx",

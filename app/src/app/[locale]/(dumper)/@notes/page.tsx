@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import Loading from "s-private-components/display/loading";
+import Loading from "s-ui/display/loading";
 import { addNote } from "@/application-services/notes/add-note";
 import { deleteNote } from "@/application-services/notes/delete-note";
 import {

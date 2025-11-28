@@ -15,7 +15,7 @@ const EXCLUDE_PATHS = [
 ];
 
 const COLLAPSE_PATTERN =
-	"app/src/app|app/src/common/error|app/src/common/utils|app/src/common/auth|app/src/generated|app/src/components/common|app/src/components/notes|app/src/components/books|app/src/components/articles|app/src/components/images|app/src/infrastructures/observability|app/src/infrastructures/i18n|app/src/infrastructures/auth|app/src/infrastructures/books|app/src/infrastructures/articles|app/src/infrastructures/events|app/src/infrastructures/notes|app/src/infrastructures/images|packages/components|packages/domains/books|packages/domains/articles|packages/domains/images|packages/domains/notes|packages/domains/common|packages/domains/errors|node_modules/(?:@[^/]+/[^/]+|[^/]+)";
+	"app/src/app|app/src/common/error|app/src/common/utils|app/src/common/auth|app/src/generated|app/src/components/common|app/src/components/notes|app/src/components/books|app/src/components/articles|app/src/components/images|app/src/infrastructures/observability|app/src/infrastructures/i18n|app/src/infrastructures/auth|app/src/infrastructures/books|app/src/infrastructures/articles|app/src/infrastructures/events|app/src/infrastructures/notes|app/src/infrastructures/images|packages/ui|packages/domains/books|packages/domains/articles|packages/domains/images|packages/domains/notes|packages/domains/common|packages/domains/errors|node_modules/(?:@[^/]+/[^/]+|[^/]+)";
 
 module.exports = {
 	forbidden: [
