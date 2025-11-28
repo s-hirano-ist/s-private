@@ -5,13 +5,13 @@ import {
 	makeCategoryName,
 	makeQuote,
 	makeUrl,
-} from "s-private-domains/articles/entities/article-entity";
+} from "s-core/articles/entities/article-entity";
 import {
 	makeCreatedAt,
 	makeId,
 	makeUnexportedStatus,
 	makeUserId,
-} from "s-private-domains/common/entities/common-entity";
+} from "s-core/common/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { DuplicateError } from "@/common/error/error-classes";
@@ -42,14 +42,14 @@ vi.mock(
 
 const mockEnsureNoDuplicate = vi.fn();
 
-vi.mock("s-private-domains/articles/services/articles-domain-service", () => ({
+vi.mock("s-core/articles/services/articles-domain-service", () => ({
 	ArticlesDomainService: vi.fn().mockImplementation(() => ({
 		ensureNoDuplicate: mockEnsureNoDuplicate,
 	})),
 }));
 
 vi.mock(
-	"s-private-domains/articles/entities/article-entity",
+	"s-core/articles/entities/article-entity",
 	async (importOriginal) => {
 		const actual = (await importOriginal()) as any;
 		return {

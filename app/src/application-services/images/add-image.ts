@@ -2,7 +2,7 @@
 import "server-only";
 import { revalidateTag } from "next/cache";
 import { forbidden } from "next/navigation";
-import { imageEntity } from "s-private-domains/images/entities/image-entity";
+import { imageEntity } from "s-core/images/entities/image-entity";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";

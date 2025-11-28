@@ -4,12 +4,12 @@ import {
 	makeId,
 	makeUnexportedStatus,
 	makeUserId,
-} from "s-private-domains/common/entities/common-entity";
+} from "s-core/common/entities/common-entity";
 import {
 	makeMarkdown,
 	makeNoteTitle,
 	noteEntity,
-} from "s-private-domains/notes/entities/note-entity";
+} from "s-core/notes/entities/note-entity";
 import { describe, expect, test, vi } from "vitest";
 import { parseAddNoteFormData } from "@/application-services/notes/helpers/form-data-parser";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
@@ -37,14 +37,14 @@ vi.mock("@/infrastructures/notes/repositories/notes-query-repository", () => ({
 
 const mockEnsureNoDuplicate = vi.fn();
 
-vi.mock("s-private-domains/notes/services/notes-domain-service", () => ({
+vi.mock("s-core/notes/services/notes-domain-service", () => ({
 	NotesDomainService: vi.fn().mockImplementation(() => ({
 		ensureNoDuplicate: mockEnsureNoDuplicate,
 	})),
 }));
 
 vi.mock(
-	"s-private-domains/notes/entities/note-entity",
+	"s-core/notes/entities/note-entity",
 	async (importOriginal) => {
 		const actual = (await importOriginal()) as any;
 		return {

@@ -1,8 +1,8 @@
 import { withThemeByClassName } from "@storybook/addon-themes";
 import type { Preview } from "@storybook/nextjs-vite";
-import "../packages/components/globals.css";
+import "../packages/ui/globals.css";
 import { NextIntlClientProvider } from "next-intl";
-import { ThemeProvider } from "../packages/components/providers/theme-provider";
+import { ThemeProvider } from "../packages/ui/providers/theme-provider";
 
 const preview = {
 	decorators: [

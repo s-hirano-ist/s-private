@@ -21,10 +21,10 @@
 		"test": "vitest run",
 		"test:app": "vitest run --project app",
 		"test:components": "vitest run --project components",
-		"test:domains": "vitest run --project domains",
+		"test:core": "vitest run --project core",
 		"test:watch": "vitest",
-		"license:summary": "echo '=== Root dependencies ===' > library-license.txt && license-checker-rseidelsohn --start . --summary >> library-license.txt && echo '\n=== App package ===' >> library-license.txt && license-checker-rseidelsohn --start ./app --summary >> library-license.txt && echo '\n=== UI package ===' >> library-license.txt && license-checker-rseidelsohn --start ./packages/ui --summary >> library-license.txt && echo '\n=== Domains package ===' >> library-license.txt && license-checker-rseidelsohn --start ./packages/domains --summary >> library-license.txt",
-		"license:check": "license-checker-rseidelsohn --start . --failOn 'GPL;GPL-2.0;GPL-3.0;LGPL;LGPL-3.0' && license-checker-rseidelsohn --start ./app --failOn 'GPL;GPL-2.0;GPL-3.0;LGPL;LGPL-3.0' && license-checker-rseidelsohn --start ./packages/ui --failOn 'GPL;GPL-2.0;GPL-3.0;LGPL;LGPL-3.0' && license-checker-rseidelsohn --start ./packages/domains --failOn 'GPL;GPL-2.0;GPL-3.0;LGPL;LGPL-3.0' || (echo '\n=== ERROR: Forbidden licenses detected ===' && echo '\n=== Root package details ===' && license-checker-rseidelsohn --start . --csv && echo '\n=== App package details ===' && license-checker-rseidelsohn --start ./app --csv && echo '\n=== UI package details ===' && license-checker-rseidelsohn --start ./packages/ui --csv && echo '\n=== Domains package details ===' && license-checker-rseidelsohn --start ./packages/domains --csv && exit 1)",
+		"license:summary": "echo '=== Root dependencies ===' > library-license.txt && license-checker-rseidelsohn --start . --summary >> library-license.txt && echo '\n=== App package ===' >> library-license.txt && license-checker-rseidelsohn --start ./app --summary >> library-license.txt && echo '\n=== UI package ===' >> library-license.txt && license-checker-rseidelsohn --start ./packages/ui --summary >> library-license.txt && echo '\n=== Core package ===' >> library-license.txt && license-checker-rseidelsohn --start ./packages/core --summary >> library-license.txt",
+		"license:check": "license-checker-rseidelsohn --start . --failOn 'GPL;GPL-2.0;GPL-3.0;LGPL;LGPL-3.0' && license-checker-rseidelsohn --start ./app --failOn 'GPL;GPL-2.0;GPL-3.0;LGPL;LGPL-3.0' && license-checker-rseidelsohn --start ./packages/ui --failOn 'GPL;GPL-2.0;GPL-3.0;LGPL;LGPL-3.0' && license-checker-rseidelsohn --start ./packages/core --failOn 'GPL;GPL-2.0;GPL-3.0;LGPL;LGPL-3.0' || (echo '\n=== ERROR: Forbidden licenses detected ===' && echo '\n=== Root package details ===' && license-checker-rseidelsohn --start . --csv && echo '\n=== App package details ===' && license-checker-rseidelsohn --start ./app --csv && echo '\n=== UI package details ===' && license-checker-rseidelsohn --start ./packages/ui --csv && echo '\n=== Core package details ===' && license-checker-rseidelsohn --start ./packages/core --csv && exit 1)",
 		"security": "pnpm audit --audit-level=moderate",
 		"security:fix": "pnpm audit --fix",
 		"security:report": "pnpm audit --json > security-audit.json",
@@ -34,9 +34,9 @@
 		"knip": "knip",
 		"storybook": "storybook dev -p 6006",
 		"storybook:build": "storybook build -o .storybook-static",
-		"deps:check": "depcruise app/src packages/ui packages/domains --config .dependency-cruiser.cjs",
-		"deps:circular": "depcruise app/src packages/ui packages/domains --config .dependency-cruiser.cjs --output-type text --focus-depth 0",
-		"deps:graph": "depcruise app/src packages/ui packages/domains --config .dependency-cruiser.cjs --output-type dot | dot -T svg > dependency-graph.svg"
+		"deps:check": "depcruise app/src packages/ui packages/core --config .dependency-cruiser.cjs",
+		"deps:circular": "depcruise app/src packages/ui packages/core --config .dependency-cruiser.cjs --output-type text --focus-depth 0",
+		"deps:graph": "depcruise app/src packages/ui packages/core --config .dependency-cruiser.cjs --output-type dot | dot -T svg > dependency-graph.svg"
 	},
 	"dependencies": {
 		"next": "15.5.6",

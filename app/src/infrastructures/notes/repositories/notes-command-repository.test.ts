@@ -1,14 +1,11 @@
-import type { Status } from "s-private-domains/common/entities/common-entity";
+import type { Status } from "s-core/common/entities/common-entity";
 import {
 	makeCreatedAt,
 	makeId,
 	makeUnexportedStatus,
 	makeUserId,
-} from "s-private-domains/common/entities/common-entity";
-import {
-	makeMarkdown,
-	makeNoteTitle,
-} from "s-private-domains/notes/entities/note-entity";
+} from "s-core/common/entities/common-entity";
+import { makeMarkdown, makeNoteTitle } from "s-core/notes/entities/note-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import prisma from "@/prisma";
 import { notesCommandRepository } from "./notes-command-repository";

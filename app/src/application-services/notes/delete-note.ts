@@ -5,7 +5,7 @@ import { forbidden } from "next/navigation";
 import {
 	makeId,
 	makeUnexportedStatus,
-} from "s-private-domains/common/entities/common-entity";
+} from "s-core/common/entities/common-entity";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";

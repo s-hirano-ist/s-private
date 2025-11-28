@@ -2,8 +2,8 @@
 import "server-only";
 import { revalidateTag } from "next/cache";
 import { forbidden } from "next/navigation";
-import { articleEntity } from "s-private-domains/articles/entities/article-entity";
-import { ArticlesDomainService } from "s-private-domains/articles/services/articles-domain-service";
+import { articleEntity } from "s-core/articles/entities/article-entity";
+import { ArticlesDomainService } from "s-core/articles/services/articles-domain-service";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";

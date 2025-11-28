@@ -4,7 +4,7 @@
 		"paths": {
 			"@/*": ["app/src/*"],
 			"s-ui/*": ["packages/ui/*"],
-			"s-private-domains/*": ["packages/domains/*"]
+			"s-core/*": ["packages/core/*"]
 		},
 		"skipLibCheck": true
 	},

@@ -29,7 +29,7 @@
 		"react-markdown": "10.1.0",
 		"s-ui": "workspace:*",
 		"s-private-database": "workspace:*",
-		"s-private-domains": "workspace:*",
+		"s-core": "workspace:*",
 		"server-only": "0.0.1",
 		"sharp": "0.34.5",
 		"sonner": "2.0.7",

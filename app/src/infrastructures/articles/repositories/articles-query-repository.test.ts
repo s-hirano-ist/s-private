@@ -1,4 +1,4 @@
-import { makeUserId } from "s-private-domains/common/entities/common-entity";
+import { makeUserId } from "s-core/common/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import prisma from "@/prisma";
 import {

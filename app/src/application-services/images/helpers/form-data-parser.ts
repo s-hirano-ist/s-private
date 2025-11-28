@@ -1,11 +1,11 @@
-import type { UserId } from "s-private-domains/common/entities/common-entity";
+import type { UserId } from "s-core/common/entities/common-entity";
 import {
 	makeContentType,
 	makeFileSize,
 	makeOriginalBuffer,
 	makePath,
 	makeThumbnailBufferFromFile,
-} from "s-private-domains/images/entities/image-entity";
+} from "s-core/images/entities/image-entity";
 import { getFormDataFile } from "@/common/utils/form-data-utils";
 
 export const parseAddImageFormData = async (

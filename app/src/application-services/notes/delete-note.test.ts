@@ -3,7 +3,7 @@ import {
 	makeId,
 	makeUnexportedStatus,
 	makeUserId,
-} from "s-private-domains/common/entities/common-entity";
+} from "s-core/common/entities/common-entity";
 import { describe, expect, test, vi } from "vitest";
 import { deleteNote } from "@/application-services/notes/delete-note";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";

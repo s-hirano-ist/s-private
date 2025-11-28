@@ -23,8 +23,8 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			"@": path.resolve(__dirname, "./src"),
-			"s-private-components": path.resolve(__dirname, "../packages/components"),
-			"s-private-domains": path.resolve(__dirname, "../packages/domains"),
+			"s-ui": path.resolve(__dirname, "../packages/ui"),
+			"s-core": path.resolve(__dirname, "../packages/core"),
 		},
 	},
 });

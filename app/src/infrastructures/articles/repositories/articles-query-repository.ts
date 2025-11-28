@@ -1,14 +1,11 @@
-import type { Prisma } from "s-private-database";
-import type { IArticlesQueryRepository } from "s-private-domains/articles/repositories/articles-query-repository.interface";
-import type { ICategoryQueryRepository } from "s-private-domains/articles/repositories/category-query-repository.interface";
+import type { IArticlesQueryRepository } from "s-core/articles/repositories/articles-query-repository.interface";
+import type { ICategoryQueryRepository } from "s-core/articles/repositories/category-query-repository.interface";
 import type {
 	ArticlesFindManyParams,
 	CategoryFindManyParams,
-} from "s-private-domains/articles/types/query-params";
-import type {
-	Status,
-	UserId,
-} from "s-private-domains/common/entities/common-entity";
+} from "s-core/articles/types/query-params";
+import type { Status, UserId } from "s-core/common/entities/common-entity";
+import type { Prisma } from "s-private-database";
 import prisma from "@/prisma";
 
 async function findByUrl(url: string, userId: string) {

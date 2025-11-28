@@ -1,4 +1,4 @@
-import { makeStatus } from "s-private-domains/common/entities/common-entity";
+import { makeStatus } from "s-core/common/entities/common-entity";
 import type { getImagesCount } from "@/application-services/images/get-images";
 import { CounterBadge } from "@/components/common/display/counter-badge";
 

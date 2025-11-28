@@ -1,8 +1,5 @@
 import { forbidden } from "next/navigation";
-import {
-	makeStatus,
-	makeUserId,
-} from "s-private-domains/common/entities/common-entity";
+import { makeStatus, makeUserId } from "s-core/common/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasViewerAdminPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
@@ -17,7 +14,7 @@ vi.mock("next/navigation");
 vi.mock("@/common/auth/session");
 vi.mock("@/common/error/error-wrapper");
 vi.mock("@/common/utils/cache-utils");
-vi.mock("s-private-domains/common/entities/common-entity");
+vi.mock("s-core/common/entities/common-entity");
 vi.mock("./get-articles");
 
 const mockHasViewerAdminPermission = vi.mocked(hasViewerAdminPermission);

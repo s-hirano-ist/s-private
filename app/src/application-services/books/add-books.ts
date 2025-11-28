@@ -2,8 +2,8 @@
 import "server-only";
 import { revalidateTag } from "next/cache";
 import { forbidden } from "next/navigation";
-import { bookEntity } from "s-private-domains/books/entities/books-entity";
-import { BooksDomainService } from "s-private-domains/books/services/books-domain-service";
+import { bookEntity } from "s-core/books/entities/books-entity";
+import { BooksDomainService } from "s-core/books/services/books-domain-service";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";

@@ -55,7 +55,7 @@
 			"ignore": ["**/*.stories.tsx", "**/*.test.tsx", "**/*.spec.tsx"],
 			"ignoreDependencies": ["postcss"]
 		},
-		"packages/domains": {
+		"packages/core": {
 			"entry": ["**/*.ts", "!**/*.test.ts", "!**/*.spec.ts"],
 			"project": ["**/*.ts"],
 			"ignore": ["**/*.test.ts", "**/*.spec.ts"]

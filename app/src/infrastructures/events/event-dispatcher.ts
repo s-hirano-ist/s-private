@@ -1,7 +1,7 @@
 import type {
 	DomainEvent,
 	DomainEventHandler,
-} from "s-private-domains/common/events/domain-event.interface";
+} from "s-core/common/events/domain-event.interface";
 
 class EventDispatcher {
 	private handlers: Map<string, DomainEventHandler[]> = new Map();

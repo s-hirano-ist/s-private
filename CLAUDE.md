@@ -14,7 +14,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Test**: `pnpm test` - Run all Vitest unit tests (workspace-wide)
 - **Test App**: `pnpm test:app` - Run tests for app package only
 - **Test UI**: `pnpm test:components` - Run tests for UI package only
-- **Test Domains**: `pnpm test:domains` - Run tests for domains package only
+- **Test Core**: `pnpm test:core` - Run tests for core package only
 - **Test Watch**: `pnpm test:watch` - Run tests in watch mode
 - **Test with Type Check**: `pnpm test:typecheck` - Run TypeScript type checking on test files only
 - **Test All**: `pnpm test:all` - Run all unit tests and type checking
@@ -168,10 +168,10 @@ Schema is maintained in `prisma/schema.prisma` with String-based primary keys an
 
 ### Vitest Workspace Configuration
 The project uses Vitest workspace to manage tests across multiple packages:
-- **Workspace Root**: `vitest.config.ts` defines three test projects (app, components, domains)
+- **Workspace Root**: `vitest.config.ts` defines three test projects (app, ui, core)
 - **Individual Configs**: Each package has its own `vitest.config.ts` with specific settings
 - **Unified Execution**: Run all tests from the root with `pnpm test`
-- **Selective Testing**: Test individual packages with `pnpm test:app`, `pnpm test:components`, or `pnpm test:domains`
+- **Selective Testing**: Test individual packages with `pnpm test:app`, `pnpm test:components`, or `pnpm test:core`
 
 ### Test Setup per Package
 - **app**: jsdom environment with Next.js-specific mocks (auth, prisma, minio, env)
@@ -181,9 +181,9 @@ The project uses Vitest workspace to manage tests across multiple packages:
 - **packages/ui**: jsdom environment for React component testing
   - Location: [packages/ui/vitest.config.ts](packages/ui/vitest.config.ts)
   - Setup file: [packages/ui/vitest-setup.tsx](packages/ui/vitest-setup.tsx)
-- **packages/domains**: Node environment for domain logic testing
-  - Location: [packages/domains/vitest.config.ts](packages/domains/vitest.config.ts)
-  - Setup file: [packages/domains/vitest-setup.tsx](packages/domains/vitest-setup.tsx)
+- **packages/core**: Node environment for domain logic testing
+  - Location: [packages/core/vitest.config.ts](packages/core/vitest.config.ts)
+  - Setup file: [packages/core/vitest-setup.tsx](packages/core/vitest-setup.tsx)
 
 ### Test Technologies
 - **Test Framework**: Vitest with `@testing-library/react` for component tests
