@@ -1,10 +1,10 @@
 "use server";
 import "server-only";
 import { AuthError } from "next-auth";
+import { Prisma } from "s-private-database";
 import { SystemErrorEvent } from "s-private-domains/common/events/system-error-event";
 import { SystemWarningEvent } from "s-private-domains/common/events/system-warning-event";
 import type { ServerAction } from "@/common/types";
-import { Prisma } from "@/generated";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
 import {

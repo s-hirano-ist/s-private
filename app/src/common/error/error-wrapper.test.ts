@@ -1,7 +1,7 @@
 import { AuthError } from "next-auth";
+import { Prisma } from "s-private-database";
 import { describe, expect, test, vi } from "vitest";
 import { PushoverError, UnexpectedError } from "@/common/error/error-classes";
-import { Prisma } from "@/generated";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { wrapServerSideErrorForClient } from "./error-wrapper";
 

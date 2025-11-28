@@ -15,11 +15,7 @@
 				"src/app/instrumentation.ts",
 				"src/infrastructures/i18n/request.ts"
 			],
-			"ignoreDependencies": [
-				"@tailwindcss/typography",
-				"@types/react-syntax-highlighter",
-				"sharp"
-			],
+			"ignoreDependencies": ["@types/react-syntax-highlighter", "sharp"],
 			"next": {
 				"config": ["next.config.{js,ts,cjs,mjs}"],
 				"entry": [
@@ -57,12 +53,15 @@
 			],
 			"project": ["**/*.{ts,tsx}"],
 			"ignore": ["**/*.stories.tsx", "**/*.test.tsx", "**/*.spec.tsx"],
-			"ignoreDependencies": ["@tailwindcss/typography", "postcss"]
+			"ignoreDependencies": ["postcss"]
 		},
 		"packages/domains": {
 			"entry": ["**/*.ts", "!**/*.test.ts", "!**/*.spec.ts"],
 			"project": ["**/*.ts"],
 			"ignore": ["**/*.test.ts", "**/*.spec.ts"]
+		},
+		"packages/database": {
+			"ignoreDependencies": ["@prisma/client", "@prisma/extension-accelerate"]
 		}
 	}
 }

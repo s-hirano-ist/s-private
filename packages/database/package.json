@@ -1,0 +1,28 @@
+{
+	"name": "s-private-database",
+	"version": "1.0.0",
+	"description": "Prisma database schema and client for s-private project",
+	"type": "module",
+	"exports": {
+		".": "./src/index.ts",
+		"./generated": "./src/generated/index.js",
+		"./generated/*": "./src/generated/*"
+	},
+	"scripts": {
+		"prisma:generate": "prisma generate --no-engine",
+		"prisma:migrate": "prisma migrate dev",
+		"prisma:deploy": "prisma migrate deploy",
+		"prisma:studio": "prisma studio",
+		"build": "tsc",
+		"postinstall": "pnpm prisma:generate",
+		"prepublishOnly": "pnpm prisma:generate"
+	},
+	"dependencies": {
+		"@prisma/client": "6.19.0",
+		"@prisma/extension-accelerate": "3.0.0"
+	},
+	"devDependencies": {
+		"prisma": "6.19.0",
+		"typescript": "5.9.3"
+	}
+}
