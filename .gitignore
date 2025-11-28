@@ -32,7 +32,6 @@ next-env.d.ts
 minio/certs
 
 # Prisma
-app/src/generated/
 packages/database/src/generated/
 
 # Sentry Config File
@@ -45,4 +44,4 @@ debug.log
 jscpd-report/
 
 # packages
-packages/domains/dist/
+packages/core/dist/

@@ -43,18 +43,15 @@ vi.mock("s-core/notes/services/notes-domain-service", () => ({
 	})),
 }));
 
-vi.mock(
-	"s-core/notes/entities/note-entity",
-	async (importOriginal) => {
-		const actual = (await importOriginal()) as any;
-		return {
-			...actual,
-			noteEntity: {
-				create: vi.fn(),
-			},
-		};
-	},
-);
+vi.mock("s-core/notes/entities/note-entity", async (importOriginal) => {
+	const actual = (await importOriginal()) as any;
+	return {
+		...actual,
+		noteEntity: {
+			create: vi.fn(),
+		},
+	};
+});
 
 vi.mock("@/application-services/notes/helpers/form-data-parser", () => ({
 	parseAddNoteFormData: vi.fn(),

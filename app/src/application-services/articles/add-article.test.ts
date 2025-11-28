@@ -48,18 +48,15 @@ vi.mock("s-core/articles/services/articles-domain-service", () => ({
 	})),
 }));
 
-vi.mock(
-	"s-core/articles/entities/article-entity",
-	async (importOriginal) => {
-		const actual = (await importOriginal()) as any;
-		return {
-			...actual,
-			articleEntity: {
-				create: vi.fn(),
-			},
-		};
-	},
-);
+vi.mock("s-core/articles/entities/article-entity", async (importOriginal) => {
+	const actual = (await importOriginal()) as any;
+	return {
+		...actual,
+		articleEntity: {
+			create: vi.fn(),
+		},
+	};
+});
 
 vi.mock("./helpers/form-data-parser", () => ({
 	parseAddArticleFormData: vi.fn(),
