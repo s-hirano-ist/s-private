@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [9.9.0](https://github.com/s-hirano-ist/s-private/compare/v9.8.1...v9.9.0) (2025-11-28)
+
+
+### Features
+
+* add domain layer package ([9c676af](https://github.com/s-hirano-ist/s-private/commit/9c676af69940b2b2e47e5c781b50016122e3f1e7))
+* add s-private database ([8e1d7e5](https://github.com/s-hirano-ist/s-private/commit/8e1d7e5c0e078f85fd7eb0099e2e605a709c6dbb))
+* add s-private database ([d69817b](https://github.com/s-hirano-ist/s-private/commit/d69817be8ff6e6a399ca01fc63c158716a4f2669))
+
+
+### Bug Fixes
+
+* biome ([a662470](https://github.com/s-hirano-ist/s-private/commit/a662470ae51845b962d224a3c911fe77b7900ba8))
+* biome ([9623018](https://github.com/s-hirano-ist/s-private/commit/96230183fb2c608675eee7675b194ccc8f26e0b2))
+* eslint and knip and dockerfile ([8ce4be2](https://github.com/s-hirano-ist/s-private/commit/8ce4be24f44d0db03977646846cad68e030d4b88))
+* knip ([250c10a](https://github.com/s-hirano-ist/s-private/commit/250c10a55a8f656f51ef7448ec44bfa2e3b40ec0))
+
 ## [9.8.1](https://github.com/s-hirano-ist/s-private/compare/v9.8.0...v9.8.1) (2025-11-18)
 
 
