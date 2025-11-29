@@ -1,6 +1,6 @@
 {
-	".": "9.8.1",
-	"packages/core": "0.0.0",
-	"packages/ui": "0.0.0",
-	"packages/database": "0.0.0"
+	".": "10.0.0",
+	"packages/core": "1.0.0",
+	"packages/ui": "1.0.0",
+	"packages/database": "1.0.0"
 }
