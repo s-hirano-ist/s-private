@@ -1,6 +1,6 @@
 {
 	"name": "s-ui",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"description": "UI component library for s-private application",
 	"type": "module",
 	"main": "./dist/index.js",
