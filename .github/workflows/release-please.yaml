@@ -1,20 +1,70 @@
 name: release-please
-permissions:
-    contents: write
-    pull-requests: write
+
+permissions: {}
+
 on:
     push:
         branches:
             - main
+
 jobs:
     release-please:
         runs-on: ubuntu-24.04
         timeout-minutes: 20
+        permissions:
+            contents: write
+            pull-requests: write
+        outputs:
+            releases_created: ${{ steps.release.outputs.releases_created }}
+            paths_released: ${{ steps.release.outputs.paths_released }}
         steps:
-        - uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38
-          with:
-            token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
-            # this is a built-in strategy in release-please, see "Action Inputs" for more options
-            config-file: .release-please-config.json
-            manifest-file: .release-please-manifest.json
-            release-type: node
+            - uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4
+              id: release
+              with:
+                  token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
+                  config-file: .release-please-config.json
+                  manifest-file: .release-please-manifest.json
+
+    publish-packages:
+        needs: release-please
+        if: ${{ needs.release-please.outputs.releases_created == 'true' }}
+        runs-on: ubuntu-24.04
+        timeout-minutes: 20
+        permissions:
+            contents: read
+            id-token: write
+        steps:
+            - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+              with:
+                  persist-credentials: false
+
+            - uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4
+
+            - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6
+              with:
+                  node-version: 24.11.1
+                  registry-url: "https://registry.npmjs.org"
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Build packages
+              run: pnpm --filter "./packages/*" build
+
+            - name: Publish s-core
+              working-directory: packages/core
+              run: pnpm publish --no-git-checks --access public
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+            - name: Publish s-ui
+              working-directory: packages/ui
+              run: pnpm publish --no-git-checks --access public
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+            - name: Publish s-database
+              working-directory: packages/database
+              run: pnpm publish --no-git-checks --access public
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

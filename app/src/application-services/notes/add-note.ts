@@ -2,8 +2,8 @@
 import "server-only";
 import { revalidateTag } from "next/cache";
 import { forbidden } from "next/navigation";
-import { noteEntity } from "s-private-domains/notes/entities/note-entity";
-import { NotesDomainService } from "s-private-domains/notes/services/notes-domain-service";
+import { noteEntity } from "s-core/notes/entities/note-entity";
+import { NotesDomainService } from "s-core/notes/services/notes-domain-service";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";

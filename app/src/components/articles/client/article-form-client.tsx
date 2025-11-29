@@ -2,11 +2,11 @@
 import { ClipboardPasteIcon, TableOfContentsIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRef } from "react";
-import { FormDropdownInput } from "s-private-components/forms/fields/form-dropdown-input";
-import { FormInput } from "s-private-components/forms/fields/form-input";
-import { FormInputWithButton } from "s-private-components/forms/fields/form-input-with-button";
-import { FormTextarea } from "s-private-components/forms/fields/form-textarea";
-import { GenericFormWrapper } from "s-private-components/forms/generic-form-wrapper";
+import { FormDropdownInput } from "s-ui/forms/fields/form-dropdown-input";
+import { FormInput } from "s-ui/forms/fields/form-input";
+import { FormInputWithButton } from "s-ui/forms/fields/form-input-with-button";
+import { FormTextarea } from "s-ui/forms/fields/form-textarea";
+import { GenericFormWrapper } from "s-ui/forms/generic-form-wrapper";
 import { toast } from "sonner";
 import type { ServerAction } from "@/common/types";
 

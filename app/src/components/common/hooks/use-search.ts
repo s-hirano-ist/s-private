@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState, useTransition } from "react";
-import type { SearchQuery } from "s-private-domains/common/types/search-types";
+import type { SearchQuery } from "s-core/common/types/search-types";
 import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 
 const PARAM_NAME = "q";

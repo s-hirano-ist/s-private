@@ -11,15 +11,15 @@ import {
 	useState,
 	useTransition,
 } from "react";
-import { Button } from "s-private-components/ui/button";
-import { Command } from "s-private-components/ui/command";
+import { Button } from "s-ui/ui/button";
+import { Command } from "s-ui/ui/command";
 import {
 	Drawer,
 	DrawerContent,
 	DrawerHeader,
 	DrawerTitle,
-} from "s-private-components/ui/drawer";
-import { cn } from "s-private-components/utils/cn";
+} from "s-ui/ui/drawer";
+import { cn } from "s-ui/utils/cn";
 import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 import { SearchCard } from "../../features/search/search-card";
 

@@ -1,16 +1,12 @@
-import type {
-	Id,
-	Status,
-	UserId,
-} from "s-private-domains/common/entities/common-entity";
+import type { Id, Status, UserId } from "s-core/common/entities/common-entity";
 import type {
 	NoteTitle,
 	UnexportedNote,
-} from "s-private-domains/notes/entities/note-entity";
-import { NoteCreatedEvent } from "s-private-domains/notes/events/note-created-event";
-import { NoteDeletedEvent } from "s-private-domains/notes/events/note-deleted-event";
-import { NoteUpdatedEvent } from "s-private-domains/notes/events/note-updated-event";
-import type { INotesCommandRepository } from "s-private-domains/notes/repositories/notes-command-repository.interface";
+} from "s-core/notes/entities/note-entity";
+import { NoteCreatedEvent } from "s-core/notes/events/note-created-event";
+import { NoteDeletedEvent } from "s-core/notes/events/note-deleted-event";
+import { NoteUpdatedEvent } from "s-core/notes/events/note-updated-event";
+import type { INotesCommandRepository } from "s-core/notes/repositories/notes-command-repository.interface";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
 import prisma from "@/prisma";

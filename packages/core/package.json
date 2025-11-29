@@ -1,7 +1,7 @@
 {
-	"name": "s-private-domains",
+	"name": "s-core",
 	"version": "0.1.0",
-	"description": "Domain layer for s-private application - Clean architecture domain entities, repositories, and services",
+	"description": "Core domain layer for s-private application - Clean architecture domain entities, repositories, and services",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"exports": {
@@ -55,7 +55,7 @@
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/s-hirano-ist/s-private.git",
-		"directory": "packages/domains"
+		"directory": "packages/core"
 	},
 	"publishConfig": {
 		"access": "public"

@@ -3,8 +3,8 @@
 		"baseUrl": ".",
 		"paths": {
 			"@/*": ["app/src/*"],
-			"s-private-components/*": ["packages/components/*"],
-			"s-private-domains/*": ["packages/domains/*"]
+			"s-ui/*": ["packages/ui/*"],
+			"s-core/*": ["packages/core/*"]
 		},
 		"skipLibCheck": true
 	},

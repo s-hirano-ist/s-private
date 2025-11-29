@@ -2,7 +2,7 @@ import { revalidateTag } from "next/cache";
 import {
 	makeUnexportedStatus,
 	makeUserId,
-} from "s-private-domains/common/entities/common-entity";
+} from "s-core/common/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import {

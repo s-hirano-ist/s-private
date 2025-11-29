@@ -3,13 +3,13 @@ import {
 	bookEntity,
 	makeBookTitle,
 	makeISBN,
-} from "s-private-domains/books/entities/books-entity";
+} from "s-core/books/entities/books-entity";
 import {
 	makeCreatedAt,
 	makeId,
 	makeUnexportedStatus,
 	makeUserId,
-} from "s-private-domains/common/entities/common-entity";
+} from "s-core/common/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { DuplicateError } from "@/common/error/error-classes";
@@ -37,24 +37,21 @@ vi.mock("@/infrastructures/books/repositories/books-query-repository", () => ({
 
 const mockEnsureNoDuplicate = vi.fn();
 
-vi.mock("s-private-domains/books/services/books-domain-service", () => ({
+vi.mock("s-core/books/services/books-domain-service", () => ({
 	BooksDomainService: vi.fn().mockImplementation(() => ({
 		ensureNoDuplicate: mockEnsureNoDuplicate,
 	})),
 }));
 
-vi.mock(
-	"s-private-domains/books/entities/books-entity",
-	async (importOriginal) => {
-		const actual = (await importOriginal()) as any;
-		return {
-			...actual,
-			bookEntity: {
-				create: vi.fn(),
-			},
-		};
-	},
-);
+vi.mock("s-core/books/entities/books-entity", async (importOriginal) => {
+	const actual = (await importOriginal()) as any;
+	return {
+		...actual,
+		bookEntity: {
+			create: vi.fn(),
+		},
+	};
+});
 
 vi.mock("./helpers/form-data-parser", () => ({
 	parseAddBooksFormData: vi.fn(),

@@ -35,7 +35,7 @@
 		}
 	},
 	"files": {
-		"includes": ["**", "!security-audit.json"]
+		"includes": ["**", "!security-audit.json", "!.claude"]
 	},
 	"vcs": {
 		"enabled": true,

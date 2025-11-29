@@ -2,7 +2,7 @@
 // https://www.prisma.io/docs/orm/more/help-and-troubleshooting/help-articles/nextjs-prisma-client-dev-practices
 
 import { withAccelerate } from "@prisma/extension-accelerate";
-import { PrismaClient } from "s-private-database";
+import { PrismaClient } from "s-database";
 import { env } from "@/env";
 
 const prismaClientSingleton = () => {

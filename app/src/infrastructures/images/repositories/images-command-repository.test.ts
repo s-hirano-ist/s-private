@@ -1,10 +1,10 @@
-import type { Status } from "s-private-domains/common/entities/common-entity";
+import type { Status } from "s-core/common/entities/common-entity";
 import {
 	makeCreatedAt,
 	makeId,
 	makeUnexportedStatus,
 	makeUserId,
-} from "s-private-domains/common/entities/common-entity";
+} from "s-core/common/entities/common-entity";
 import {
 	makeContentType,
 	makeDescription,
@@ -12,7 +12,7 @@ import {
 	makePixel,
 	makeTag,
 	Path,
-} from "s-private-domains/images/entities/image-entity";
+} from "s-core/images/entities/image-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { minioClient } from "@/minio";
 import prisma from "@/prisma";

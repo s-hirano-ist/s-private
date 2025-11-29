@@ -1,8 +1,5 @@
-import type { UserId } from "s-private-domains/common/entities/common-entity";
-import {
-	makeMarkdown,
-	makeNoteTitle,
-} from "s-private-domains/notes/entities/note-entity";
+import type { UserId } from "s-core/common/entities/common-entity";
+import { makeMarkdown, makeNoteTitle } from "s-core/notes/entities/note-entity";
 import { getFormDataString } from "@/common/utils/form-data-utils";
 
 export const parseAddNoteFormData = (formData: FormData, userId: UserId) => {

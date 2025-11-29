@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useState } from "react";
-import { StatusCodeView } from "s-private-components/display/status/status-code-view";
+import { StatusCodeView } from "s-ui/display/status/status-code-view";
 import Lightbox from "yet-another-react-lightbox";
 import type { DeleteAction } from "@/common/types";
 import { DeleteButtonWithModal } from "@/components/common/forms/actions/delete-button-with-modal";

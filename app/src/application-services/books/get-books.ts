@@ -1,12 +1,12 @@
 import { unstable_cacheTag as cacheTag } from "next/cache";
 import { cache } from "react";
-import { makeISBN } from "s-private-domains/books/entities/books-entity";
-import type { CacheStrategy } from "s-private-domains/books/types/cache-strategy";
+import { makeISBN } from "s-core/books/entities/books-entity";
+import type { CacheStrategy } from "s-core/books/types/cache-strategy";
 import {
 	makeStatus,
 	type Status,
 	type UserId,
-} from "s-private-domains/common/entities/common-entity";
+} from "s-core/common/entities/common-entity";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
 import type { GetCount, GetPaginatedData } from "@/common/types";

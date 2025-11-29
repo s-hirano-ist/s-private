@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import { Badge } from "s-private-components/ui/badge";
+import { Badge } from "s-ui/ui/badge";
 
 type Props = { totalItems: number; label: string };
 

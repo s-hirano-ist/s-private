@@ -1,8 +1,8 @@
 import { forbidden, unstable_rethrow } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
-import { StatusCodeView } from "s-private-components/display/status/status-code-view";
-import { SystemErrorEvent } from "s-private-domains/common/events/system-error-event";
+import { SystemErrorEvent } from "s-core/common/events/system-error-event";
+import { StatusCodeView } from "s-ui/display/status/status-code-view";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
 

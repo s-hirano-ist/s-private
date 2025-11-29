@@ -1,0 +1,72 @@
+{
+	"packages": {
+		".": {
+			"release-type": "node",
+			"component": "s-private"
+		},
+		"packages/core": {
+			"release-type": "node",
+			"component": "s-core"
+		},
+		"packages/ui": {
+			"release-type": "node",
+			"component": "s-ui"
+		},
+		"packages/database": {
+			"release-type": "node",
+			"component": "s-database"
+		}
+	},
+	"release-groups": {
+		"npm-packages": {
+			"packages": ["packages/core", "packages/ui", "packages/database"],
+			"linked-versions": true
+		}
+	},
+	"changelog-sections": [
+		{
+			"type": "feat",
+			"section": "Features"
+		},
+		{
+			"type": "fix",
+			"section": "Bug Fixes"
+		},
+		{
+			"type": "revert",
+			"section": "Bug Fixes"
+		},
+		{
+			"type": "docs",
+			"section": "Documentation"
+		},
+		{
+			"type": "test",
+			"section": "Documentation"
+		},
+		{
+			"type": "chore",
+			"section": "Maintenance"
+		},
+		{
+			"type": "refactor",
+			"section": "Maintenance"
+		},
+		{
+			"type": "style",
+			"section": "Maintenance"
+		},
+		{
+			"type": "perf",
+			"section": "Maintenance"
+		},
+		{
+			"type": "build",
+			"section": "Maintenance"
+		},
+		{
+			"type": "ci",
+			"section": "Maintenance"
+		}
+	]
+}

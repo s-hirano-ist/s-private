@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import Loading from "s-private-components/display/loading";
+import Loading from "s-ui/display/loading";
 import { addArticle } from "@/application-services/articles/add-article";
 import { deleteArticle } from "@/application-services/articles/delete-article";
 import {

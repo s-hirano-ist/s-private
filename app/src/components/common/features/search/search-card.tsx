@@ -3,14 +3,14 @@ import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback } from "react";
-import Loading from "s-private-components/display/loading";
-import { StatusCodeView } from "s-private-components/display/status/status-code-view";
+import Loading from "s-ui/display/loading";
+import { StatusCodeView } from "s-ui/display/status/status-code-view";
 import {
 	CommandEmpty,
 	CommandInput,
 	CommandItem,
 	CommandList,
-} from "s-private-components/ui/command";
+} from "s-ui/ui/command";
 import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 import { useSearch } from "@/components/common/hooks/use-search";
 import { UtilButtons } from "../../layouts/nav/util-buttons";

@@ -4,8 +4,8 @@ import {
 	makeStatus,
 	type Status,
 	type UserId,
-} from "s-private-domains/common/entities/common-entity";
-import type { CacheStrategy } from "s-private-domains/images/types/cache-strategy";
+} from "s-core/common/entities/common-entity";
+import type { CacheStrategy } from "s-core/images/types/cache-strategy";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";

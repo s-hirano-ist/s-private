@@ -4,9 +4,9 @@ import {
 	makeStatus,
 	type Status,
 	type UserId,
-} from "s-private-domains/common/entities/common-entity";
-import { makeNoteTitle } from "s-private-domains/notes/entities/note-entity";
-import type { CacheStrategy } from "s-private-domains/notes/types/cache-strategy";
+} from "s-core/common/entities/common-entity";
+import { makeNoteTitle } from "s-core/notes/entities/note-entity";
+import type { CacheStrategy } from "s-core/notes/types/cache-strategy";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
 import type { GetCount, GetPaginatedData } from "@/common/types";

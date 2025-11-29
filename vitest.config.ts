@@ -38,19 +38,19 @@ export default defineConfig({
 			},
 			// UI Components package
 			{
-				extends: "./packages/components/vitest.config.ts",
+				extends: "./packages/ui/vitest.config.ts",
 				test: {
 					name: "components",
-					root: "./packages/components",
+					root: "./packages/ui",
 					include: ["./**/*.test.?(c|m)[jt]s?(x)"],
 				},
 			},
-			// Domain logic package
+			// Core domain logic package
 			{
-				extends: "./packages/domains/vitest.config.ts",
+				extends: "./packages/core/vitest.config.ts",
 				test: {
-					name: "domains",
-					root: "./packages/domains",
+					name: "core",
+					root: "./packages/core",
 					include: ["./**/*.test.?(c|m)[jt]s?(x)"],
 				},
 			},
@@ -59,7 +59,7 @@ export default defineConfig({
 			enabled: true,
 			reportOnFailure: true,
 			reportsDirectory: "./.vitest-coverage",
-			include: ["app/**", "packages/components/**", "packages/domains/**"],
+			include: ["app/**", "packages/ui/**", "packages/core/**"],
 			exclude: [
 				"**/.next/**/*",
 				"**/node_modules/**/*",

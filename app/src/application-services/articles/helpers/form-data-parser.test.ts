@@ -3,13 +3,13 @@ import {
 	makeCategoryName,
 	makeQuote,
 	makeUrl,
-} from "s-private-domains/articles/entities/article-entity";
+} from "s-core/articles/entities/article-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getFormDataString } from "@/common/utils/form-data-utils";
 import { parseAddArticleFormData } from "./form-data-parser";
 
 vi.mock("@/common/utils/form-data-utils");
-vi.mock("s-private-domains/articles/entities/article-entity");
+vi.mock("s-core/articles/entities/article-entity");
 
 const mockGetFormDataString = vi.mocked(getFormDataString);
 const mockMakeArticleTitle = vi.mocked(makeArticleTitle);

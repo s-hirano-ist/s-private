@@ -1,4 +1,4 @@
-# s-private-domains
+# s-core
 
 Domain layer for s-private application, following Clean Architecture and Domain-Driven Design principles.
 
@@ -15,11 +15,11 @@ This package contains the core domain logic for the s-private content management
 ## Installation
 
 ```bash
-npm install s-private-domains
+npm install s-core
 # or
-pnpm add s-private-domains
+pnpm add s-core
 # or
-yarn add s-private-domains
+yarn add s-core
 ```
 
 ## Usage
@@ -27,7 +27,7 @@ yarn add s-private-domains
 ### Import all domains (with namespaces)
 
 ```typescript
-import { Articles, Books, Notes, Images, Common, Errors } from "s-private-domains";
+import { Articles, Books, Notes, Images, Common, Errors } from "s-core";
 
 // Usage
 const article = new Articles.ArticleEntity(...);
@@ -40,29 +40,29 @@ const image = new Images.ImageEntity(...);
 
 ```typescript
 // Articles domain
-import { ArticleEntity, ArticlesDomainService } from "s-private-domains/articles";
+import { ArticleEntity, ArticlesDomainService } from "s-core/articles";
 
 // Books domain
-import { BooksEntity, BooksDomainService } from "s-private-domains/books";
+import { BooksEntity, BooksDomainService } from "s-core/books";
 
 // Notes domain
-import { NoteEntity, NotesDomainService } from "s-private-domains/notes";
+import { NoteEntity, NotesDomainService } from "s-core/notes";
 
 // Images domain
-import { ImageEntity, ImagesDomainService } from "s-private-domains/images";
+import { ImageEntity, ImagesDomainService } from "s-core/images";
 
 // Common utilities
-import { CommonEntity, IdGenerator } from "s-private-domains/common";
+import { CommonEntity, IdGenerator } from "s-core/common";
 
 // Error classes
-import { DomainError } from "s-private-domains/errors";
+import { DomainError } from "s-core/errors";
 ```
 
 ### Importing specific exports from domain
 
 ```typescript
 // Direct import from domain module
-import * as Articles from "s-private-domains/articles";
+import * as Articles from "s-core/articles";
 
 // Use the exports
 const service = new Articles.ArticlesDomainService();
@@ -72,7 +72,7 @@ const entity = new Articles.ArticleEntity(...);
 ## Package Structure
 
 ```
-s-private-domains/
+s-core/
 ├── articles/       # Article domain (news/link management)
 ├── books/          # Book domain (ISBN-based tracking)
 ├── common/         # Shared domain utilities
