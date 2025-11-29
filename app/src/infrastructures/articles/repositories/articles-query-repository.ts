@@ -1,10 +1,13 @@
-import type { IArticlesQueryRepository } from "s-core/articles/repositories/articles-query-repository.interface";
-import type { ICategoryQueryRepository } from "s-core/articles/repositories/category-query-repository.interface";
+import type { IArticlesQueryRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-query-repository.interface";
+import type { ICategoryQueryRepository } from "@s-hirano-ist/s-core/articles/repositories/category-query-repository.interface";
 import type {
 	ArticlesFindManyParams,
 	CategoryFindManyParams,
-} from "s-core/articles/types/query-params";
-import type { Status, UserId } from "s-core/common/entities/common-entity";
+} from "@s-hirano-ist/s-core/articles/types/query-params";
+import type {
+	Status,
+	UserId,
+} from "@s-hirano-ist/s-core/common/entities/common-entity";
 import type { Prisma } from "s-database";
 import prisma from "@/prisma";
 

@@ -1,13 +1,13 @@
 "use client";
-import ReactMarkdown from "react-markdown";
-import { Badge } from "s-ui/ui/badge";
+import { Badge } from "@s-hirano-ist/s-ui/ui/badge";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "s-ui/ui/card";
+} from "@s-hirano-ist/s-ui/ui/card";
+import ReactMarkdown from "react-markdown";
 import type { DeleteAction } from "@/common/types";
 import { DeleteButtonWithModal } from "@/components/common/forms/actions/delete-button-with-modal";
 import { validateAndNormalizeUrl } from "@/components/common/utils/validate-url";

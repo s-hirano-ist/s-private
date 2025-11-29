@@ -1,9 +1,9 @@
 "use client";
+import Loading from "@s-hirano-ist/s-ui/display/loading";
+import { StatusCodeView } from "@s-hirano-ist/s-ui/display/status/status-code-view";
+import { useInfiniteScroll } from "@s-hirano-ist/s-ui/hooks/use-infinite-scroll";
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
-import Loading from "s-ui/display/loading";
-import { StatusCodeView } from "s-ui/display/status/status-code-view";
-import { useInfiniteScroll } from "s-ui/hooks/use-infinite-scroll";
 import type { DeleteAction, LoadMoreAction } from "@/common/types";
 import type { CardStackInitialData } from "./types";
 

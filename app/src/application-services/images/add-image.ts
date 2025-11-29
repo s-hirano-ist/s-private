@@ -1,8 +1,8 @@
 "use server";
 import "server-only";
+import { imageEntity } from "@s-hirano-ist/s-core/images/entities/image-entity";
 import { revalidateTag } from "next/cache";
 import { forbidden } from "next/navigation";
-import { imageEntity } from "s-core/images/entities/image-entity";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";

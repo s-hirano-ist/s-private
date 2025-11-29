@@ -8,13 +8,13 @@ import {
 	makeGoogleSubTitle,
 	makeGoogleTitle,
 	makeISBN,
-} from "s-core/books/entities/books-entity";
+} from "@s-hirano-ist/s-core/books/entities/books-entity";
 import {
 	makeCreatedAt,
 	makeId,
 	makeUnexportedStatus,
 	makeUserId,
-} from "s-core/common/entities/common-entity";
+} from "@s-hirano-ist/s-core/common/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import prisma from "@/prisma";
 import { booksCommandRepository } from "./books-command-repository";

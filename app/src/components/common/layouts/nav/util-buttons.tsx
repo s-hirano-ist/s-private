@@ -1,10 +1,10 @@
 "use client";
+import { Button } from "@s-hirano-ist/s-ui/ui/button";
 import { Globe, LogOut, Moon, RefreshCw, Sun } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useMemo } from "react";
-import { Button } from "s-ui/ui/button";
 import { redirect } from "@/infrastructures/i18n/routing";
 
 type Props = { handleReload: () => void; onSignOutSubmit: () => Promise<void> };

@@ -1,9 +1,9 @@
-import { revalidateTag } from "next/cache";
 import {
 	makeId,
 	makeUnexportedStatus,
 	makeUserId,
-} from "s-core/common/entities/common-entity";
+} from "@s-hirano-ist/s-core/common/entities/common-entity";
+import { revalidateTag } from "next/cache";
 import { describe, expect, test, vi } from "vitest";
 import { deleteArticle } from "@/application-services/articles/delete-article";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";

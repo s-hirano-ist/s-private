@@ -1,4 +1,4 @@
-import * as commonEntityModule from "s-core/common/entities/common-entity";
+import * as commonEntityModule from "@s-hirano-ist/s-core/common/entities/common-entity";
 import { beforeEach, describe, expect, type Mock, test, vi } from "vitest";
 import * as sessionModule from "@/common/auth/session";
 import * as errorModule from "@/common/error/error-wrapper";
@@ -8,7 +8,7 @@ import { deleteBooks } from "./delete-books";
 vi.mock("@/common/auth/session");
 vi.mock("@/common/error/error-wrapper");
 vi.mock("@/infrastructures/books/repositories/books-command-repository");
-vi.mock("s-core/common/entities/common-entity");
+vi.mock("@s-hirano-ist/s-core/common/entities/common-entity");
 
 const mockDeleteById = vi.fn();
 

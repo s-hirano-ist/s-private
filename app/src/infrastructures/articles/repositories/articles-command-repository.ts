@@ -1,12 +1,16 @@
 import type {
 	UnexportedArticle,
 	Url,
-} from "s-core/articles/entities/article-entity";
-import { ArticleCreatedEvent } from "s-core/articles/events/article-created-event";
-import { ArticleDeletedEvent } from "s-core/articles/events/article-deleted-event";
-import { ArticleUpdatedEvent } from "s-core/articles/events/article-updated-event";
-import type { IArticlesCommandRepository } from "s-core/articles/repositories/articles-command-repository.interface";
-import type { Id, Status, UserId } from "s-core/common/entities/common-entity";
+} from "@s-hirano-ist/s-core/articles/entities/article-entity";
+import { ArticleCreatedEvent } from "@s-hirano-ist/s-core/articles/events/article-created-event";
+import { ArticleDeletedEvent } from "@s-hirano-ist/s-core/articles/events/article-deleted-event";
+import { ArticleUpdatedEvent } from "@s-hirano-ist/s-core/articles/events/article-updated-event";
+import type { IArticlesCommandRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-command-repository.interface";
+import type {
+	Id,
+	Status,
+	UserId,
+} from "@s-hirano-ist/s-core/common/entities/common-entity";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
 import prisma from "@/prisma";

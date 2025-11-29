@@ -4,13 +4,13 @@ import {
 	makeOriginalBuffer,
 	makePath,
 	makeThumbnailBufferFromFile,
-} from "s-core/images/entities/image-entity";
+} from "@s-hirano-ist/s-core/images/entities/image-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getFormDataFile } from "@/common/utils/form-data-utils";
 import { parseAddImageFormData } from "./form-data-parser";
 
 vi.mock("@/common/utils/form-data-utils");
-vi.mock("s-core/images/entities/image-entity");
+vi.mock("@s-hirano-ist/s-core/images/entities/image-entity");
 
 const mockGetFormDataFile = vi.mocked(getFormDataFile);
 const mockMakePath = vi.mocked(makePath);

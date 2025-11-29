@@ -1,12 +1,12 @@
-import { unstable_cacheTag as cacheTag } from "next/cache";
-import { cache } from "react";
-import type { CacheStrategy } from "s-core/articles/types/cache-strategy";
+import type { CacheStrategy } from "@s-hirano-ist/s-core/articles/types/cache-strategy";
 import {
 	makeStatus,
 	type Status,
 	type UserId,
-} from "s-core/common/entities/common-entity";
-import { SystemErrorEvent } from "s-core/common/events/system-error-event";
+} from "@s-hirano-ist/s-core/common/entities/common-entity";
+import { SystemErrorEvent } from "@s-hirano-ist/s-core/common/events/system-error-event";
+import { unstable_cacheTag as cacheTag } from "next/cache";
+import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
 import type { GetCount, GetPaginatedData } from "@/common/types";

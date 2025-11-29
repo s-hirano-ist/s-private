@@ -10,7 +10,7 @@ on:
 jobs:
   release-please:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 10
     permissions:
       contents: write
       pull-requests: write
@@ -51,20 +51,14 @@ jobs:
       - name: Build packages
         run: pnpm --filter "./packages/*" build
 
-      - name: Publish s-core
+      - name: Publish @s-hirano-ist/s-core
         working-directory: packages/core
         run: pnpm publish --no-git-checks --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish s-ui
+      - name: Publish @s-hirano-ist/s-ui
         working-directory: packages/ui
         run: pnpm publish --no-git-checks --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish s-database
         working-directory: packages/database
         run: pnpm publish --no-git-checks --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

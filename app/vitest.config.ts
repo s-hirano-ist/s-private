@@ -23,8 +23,8 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			"@": path.resolve(__dirname, "./src"),
-			"s-ui": path.resolve(__dirname, "../packages/ui"),
-			"s-core": path.resolve(__dirname, "../packages/core"),
+			"@s-hirano-ist/s-ui": path.resolve(__dirname, "../packages/ui"),
+			"@s-hirano-ist/s-core": path.resolve(__dirname, "../packages/core"),
 		},
 	},
 });

@@ -1,6 +1,6 @@
+import { Button } from "@s-hirano-ist/s-ui/ui/button";
 import type { Route } from "next";
 import Link from "next/link";
-import { Button } from "s-ui/ui/button";
 
 type NotFoundProps = {
 	title: string;

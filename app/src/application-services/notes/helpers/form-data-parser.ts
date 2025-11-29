@@ -1,5 +1,8 @@
-import type { UserId } from "s-core/common/entities/common-entity";
-import { makeMarkdown, makeNoteTitle } from "s-core/notes/entities/note-entity";
+import type { UserId } from "@s-hirano-ist/s-core/common/entities/common-entity";
+import {
+	makeMarkdown,
+	makeNoteTitle,
+} from "@s-hirano-ist/s-core/notes/entities/note-entity";
 import { getFormDataString } from "@/common/utils/form-data-utils";
 
 export const parseAddNoteFormData = (formData: FormData, userId: UserId) => {

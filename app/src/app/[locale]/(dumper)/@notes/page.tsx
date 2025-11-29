@@ -1,5 +1,5 @@
+import Loading from "@s-hirano-ist/s-ui/display/loading";
 import { Suspense } from "react";
-import Loading from "s-ui/display/loading";
 import { addNote } from "@/application-services/notes/add-note";
 import { deleteNote } from "@/application-services/notes/delete-note";
 import {

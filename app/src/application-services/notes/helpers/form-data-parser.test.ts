@@ -1,10 +1,13 @@
-import { makeMarkdown, makeNoteTitle } from "s-core/notes/entities/note-entity";
+import {
+	makeMarkdown,
+	makeNoteTitle,
+} from "@s-hirano-ist/s-core/notes/entities/note-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getFormDataString } from "@/common/utils/form-data-utils";
 import { parseAddNoteFormData } from "./form-data-parser";
 
 vi.mock("@/common/utils/form-data-utils");
-vi.mock("s-core/notes/entities/note-entity");
+vi.mock("@s-hirano-ist/s-core/notes/entities/note-entity");
 
 const mockGetFormDataString = vi.mocked(getFormDataString);
 const mockMakeNoteTitle = vi.mocked(makeNoteTitle);

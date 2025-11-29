@@ -1,9 +1,9 @@
 "use server";
 import "server-only";
+import { bookEntity } from "@s-hirano-ist/s-core/books/entities/books-entity";
+import { BooksDomainService } from "@s-hirano-ist/s-core/books/services/books-domain-service";
 import { revalidateTag } from "next/cache";
 import { forbidden } from "next/navigation";
-import { bookEntity } from "s-core/books/entities/books-entity";
-import { BooksDomainService } from "s-core/books/services/books-domain-service";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";

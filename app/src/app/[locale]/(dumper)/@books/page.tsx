@@ -1,5 +1,5 @@
+import Loading from "@s-hirano-ist/s-ui/display/loading";
 import { Suspense } from "react";
-import Loading from "s-ui/display/loading";
 import { addBooks } from "@/application-services/books/add-books";
 import { deleteBooks } from "@/application-services/books/delete-books";
 import {

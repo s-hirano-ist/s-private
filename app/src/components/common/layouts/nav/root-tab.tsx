@@ -1,4 +1,11 @@
 "use client";
+import {
+	Tabs,
+	TabsContent,
+	TabsList,
+	TabsTrigger,
+} from "@s-hirano-ist/s-ui/ui/tabs";
+import { cn } from "@s-hirano-ist/s-ui/utils/cn";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
 	memo,
@@ -9,8 +16,6 @@ import {
 	useState,
 	useTransition,
 } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "s-ui/ui/tabs";
-import { cn } from "s-ui/utils/cn";
 
 const TABS = {
 	articles: "ARTICLES",
