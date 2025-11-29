@@ -1,9 +1,9 @@
+import { ThemeProvider } from "@s-hirano-ist/s-ui/providers/theme-provider";
+import { Toaster } from "@s-hirano-ist/s-ui/ui/sonner";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import type { ReactNode } from "react";
-import { ThemeProvider } from "s-ui/providers/theme-provider";
-import { Toaster } from "s-ui/ui/sonner";
 import { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 import { Footer } from "@/components/common/layouts/nav/footer";
 import { routing } from "@/infrastructures/i18n/routing";

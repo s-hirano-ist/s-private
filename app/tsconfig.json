@@ -17,8 +17,8 @@
 		"plugins": [{ "name": "next" }],
 		"paths": {
 			"@/*": ["./src/*"],
-			"s-ui/*": ["../packages/ui/*"],
-			"s-core/*": ["../packages/core/*"]
+			"@s-hirano-ist/s-ui/*": ["../packages/ui/*"],
+			"@s-hirano-ist/s-core/*": ["../packages/core/*"]
 		}
 	},
 	"include": [

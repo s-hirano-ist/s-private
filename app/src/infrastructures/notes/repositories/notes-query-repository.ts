@@ -1,7 +1,10 @@
-import type { Status, UserId } from "s-core/common/entities/common-entity";
-import type { NoteTitle } from "s-core/notes/entities/note-entity";
-import type { INotesQueryRepository } from "s-core/notes/repositories/notes-query-repository.interface";
-import type { NotesFindManyParams } from "s-core/notes/types/query-params";
+import type {
+	Status,
+	UserId,
+} from "@s-hirano-ist/s-core/common/entities/common-entity";
+import type { NoteTitle } from "@s-hirano-ist/s-core/notes/entities/note-entity";
+import type { INotesQueryRepository } from "@s-hirano-ist/s-core/notes/repositories/notes-query-repository.interface";
+import type { NotesFindManyParams } from "@s-hirano-ist/s-core/notes/types/query-params";
 import prisma from "@/prisma";
 
 async function findByTitle(

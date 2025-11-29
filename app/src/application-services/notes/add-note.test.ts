@@ -1,15 +1,15 @@
-import { revalidateTag } from "next/cache";
 import {
 	makeCreatedAt,
 	makeId,
 	makeUnexportedStatus,
 	makeUserId,
-} from "s-core/common/entities/common-entity";
+} from "@s-hirano-ist/s-core/common/entities/common-entity";
 import {
 	makeMarkdown,
 	makeNoteTitle,
 	noteEntity,
-} from "s-core/notes/entities/note-entity";
+} from "@s-hirano-ist/s-core/notes/entities/note-entity";
+import { revalidateTag } from "next/cache";
 import { describe, expect, test, vi } from "vitest";
 import { parseAddNoteFormData } from "@/application-services/notes/helpers/form-data-parser";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
@@ -37,21 +37,24 @@ vi.mock("@/infrastructures/notes/repositories/notes-query-repository", () => ({
 
 const mockEnsureNoDuplicate = vi.fn();
 
-vi.mock("s-core/notes/services/notes-domain-service", () => ({
+vi.mock("@s-hirano-ist/s-core/notes/services/notes-domain-service", () => ({
 	NotesDomainService: vi.fn().mockImplementation(() => ({
 		ensureNoDuplicate: mockEnsureNoDuplicate,
 	})),
 }));
 
-vi.mock("s-core/notes/entities/note-entity", async (importOriginal) => {
-	const actual = (await importOriginal()) as any;
-	return {
-		...actual,
-		noteEntity: {
-			create: vi.fn(),
-		},
-	};
-});
+vi.mock(
+	"@s-hirano-ist/s-core/notes/entities/note-entity",
+	async (importOriginal) => {
+		const actual = (await importOriginal()) as any;
+		return {
+			...actual,
+			noteEntity: {
+				create: vi.fn(),
+			},
+		};
+	},
+);
 
 vi.mock("@/application-services/notes/helpers/form-data-parser", () => ({
 	parseAddNoteFormData: vi.fn(),

@@ -1,8 +1,8 @@
 "use client";
 
+import type { SearchQuery } from "@s-hirano-ist/s-core/common/types/search-types";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState, useTransition } from "react";
-import type { SearchQuery } from "s-core/common/types/search-types";
 import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 
 const PARAM_NAME = "q";

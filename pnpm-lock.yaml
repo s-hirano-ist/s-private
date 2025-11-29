@@ -177,7 +177,7 @@ importers:
       s-database:
         specifier: workspace:*
         version: link:../packages/database
-      s-ui:
+      @s-hirano-ist/s-ui:
         specifier: workspace:*
         version: link:../packages/ui
       server-only:

@@ -1,8 +1,8 @@
+import { SystemErrorEvent } from "@s-hirano-ist/s-core/common/events/system-error-event";
+import { StatusCodeView } from "@s-hirano-ist/s-ui/display/status/status-code-view";
 import { forbidden, unstable_rethrow } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
-import { SystemErrorEvent } from "s-core/common/events/system-error-event";
-import { StatusCodeView } from "s-ui/display/status/status-code-view";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
 

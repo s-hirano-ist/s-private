@@ -1,9 +1,9 @@
 "use server";
 import "server-only";
+import { noteEntity } from "@s-hirano-ist/s-core/notes/entities/note-entity";
+import { NotesDomainService } from "@s-hirano-ist/s-core/notes/services/notes-domain-service";
 import { revalidateTag } from "next/cache";
 import { forbidden } from "next/navigation";
-import { noteEntity } from "s-core/notes/entities/note-entity";
-import { NotesDomainService } from "s-core/notes/services/notes-domain-service";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";

@@ -1,14 +1,14 @@
-import type { Route } from "next";
-import NextImage from "next/image";
-import { notFound } from "next/navigation";
-import { ViewerBodyClient } from "s-ui/layouts/body/viewer-body";
+import { ViewerBodyClient } from "@s-hirano-ist/s-ui/layouts/body/viewer-body";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "s-ui/ui/card";
+} from "@s-hirano-ist/s-ui/ui/card";
+import type { Route } from "next";
+import NextImage from "next/image";
+import { notFound } from "next/navigation";
 import type { getBookByISBN } from "@/application-services/books/get-books";
 import { Link } from "@/infrastructures/i18n/routing";
 

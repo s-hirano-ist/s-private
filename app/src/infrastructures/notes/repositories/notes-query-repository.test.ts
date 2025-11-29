@@ -1,5 +1,5 @@
-import { makeUserId } from "s-core/common/entities/common-entity";
-import { makeNoteTitle } from "s-core/notes/entities/note-entity";
+import { makeUserId } from "@s-hirano-ist/s-core/common/entities/common-entity";
+import { makeNoteTitle } from "@s-hirano-ist/s-core/notes/entities/note-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import prisma from "@/prisma";
 import { notesQueryRepository } from "./notes-query-repository";

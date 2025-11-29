@@ -1,4 +1,4 @@
-import type { Status } from "s-core/common/entities/common-entity";
+import type { Status } from "@s-hirano-ist/s-core/common/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
 import {

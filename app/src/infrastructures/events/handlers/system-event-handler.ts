@@ -1,7 +1,7 @@
 import type {
 	DomainEvent,
 	DomainEventHandler,
-} from "s-core/common/events/domain-event.interface";
+} from "@s-hirano-ist/s-core/common/events/domain-event.interface";
 import type { LogContext } from "@/infrastructures/observability/logging/logger.interface";
 import { serverLogger } from "@/infrastructures/observability/server";
 

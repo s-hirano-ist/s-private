@@ -1,10 +1,10 @@
 "use server";
 import "server-only";
-import { forbidden } from "next/navigation";
 import type {
 	SearchQuery,
 	UnifiedSearchResults,
-} from "s-core/common/types/search-types";
+} from "@s-hirano-ist/s-core/common/types/search-types";
+import { forbidden } from "next/navigation";
 import { getSelfId, hasViewerAdminPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerActionWithData } from "@/common/types";

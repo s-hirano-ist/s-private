@@ -1,8 +1,5 @@
 "use client";
-import { TrashIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { Button } from "s-ui/ui/button";
+import { Button } from "@s-hirano-ist/s-ui/ui/button";
 import {
 	Dialog,
 	DialogContent,
@@ -10,7 +7,10 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-} from "s-ui/ui/dialog";
+} from "@s-hirano-ist/s-ui/ui/dialog";
+import { TrashIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { toast } from "sonner";
 import type { DeleteAction } from "@/common/types";
 

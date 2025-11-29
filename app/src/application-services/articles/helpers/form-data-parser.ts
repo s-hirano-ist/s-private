@@ -3,8 +3,8 @@ import {
 	makeCategoryName,
 	makeQuote,
 	makeUrl,
-} from "s-core/articles/entities/article-entity";
-import type { UserId } from "s-core/common/entities/common-entity";
+} from "@s-hirano-ist/s-core/articles/entities/article-entity";
+import type { UserId } from "@s-hirano-ist/s-core/common/entities/common-entity";
 import { getFormDataString } from "@/common/utils/form-data-utils";
 
 export const parseAddArticleFormData = (formData: FormData, userId: UserId) => {

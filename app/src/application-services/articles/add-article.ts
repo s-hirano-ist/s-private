@@ -1,9 +1,9 @@
 "use server";
 import "server-only";
+import { articleEntity } from "@s-hirano-ist/s-core/articles/entities/article-entity";
+import { ArticlesDomainService } from "@s-hirano-ist/s-core/articles/services/articles-domain-service";
 import { revalidateTag } from "next/cache";
 import { forbidden } from "next/navigation";
-import { articleEntity } from "s-core/articles/entities/article-entity";
-import { ArticlesDomainService } from "s-core/articles/services/articles-domain-service";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";

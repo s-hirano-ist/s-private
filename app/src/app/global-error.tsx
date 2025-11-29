@@ -1,9 +1,9 @@
 "use client"; // Error components must be Client Components
+import { Button } from "@s-hirano-ist/s-ui/ui/button";
 import { captureException } from "@sentry/nextjs";
 // biome-ignore lint: auto-gen
 import type Error from "next/error";
 import { useEffect } from "react";
-import { Button } from "s-ui/ui/button";
 
 export default function Page({
 	error,

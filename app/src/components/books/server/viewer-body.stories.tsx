@@ -1,6 +1,9 @@
+import {
+	makeId,
+	makeStatus,
+} from "@s-hirano-ist/s-core/common/entities/common-entity";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Suspense } from "react";
-import { makeId, makeStatus } from "s-core/common/entities/common-entity";
 import type { Props as ViewerBodyProps } from "./viewer-body";
 import { ViewerBody } from "./viewer-body";
 

@@ -1,9 +1,16 @@
-import type { ISBN, UnexportedBook } from "s-core/books/entities/books-entity";
-import { BookCreatedEvent } from "s-core/books/events/book-created-event";
-import { BookDeletedEvent } from "s-core/books/events/book-deleted-event";
-import { BookUpdatedEvent } from "s-core/books/events/book-updated-event";
-import type { IBooksCommandRepository } from "s-core/books/repositories/books-command-repository.interface";
-import type { Id, Status, UserId } from "s-core/common/entities/common-entity";
+import type {
+	ISBN,
+	UnexportedBook,
+} from "@s-hirano-ist/s-core/books/entities/books-entity";
+import { BookCreatedEvent } from "@s-hirano-ist/s-core/books/events/book-created-event";
+import { BookDeletedEvent } from "@s-hirano-ist/s-core/books/events/book-deleted-event";
+import { BookUpdatedEvent } from "@s-hirano-ist/s-core/books/events/book-updated-event";
+import type { IBooksCommandRepository } from "@s-hirano-ist/s-core/books/repositories/books-command-repository.interface";
+import type {
+	Id,
+	Status,
+	UserId,
+} from "@s-hirano-ist/s-core/common/entities/common-entity";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
 import prisma from "@/prisma";

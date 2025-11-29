@@ -1,7 +1,7 @@
 "use client";
+import { StatusCodeView } from "@s-hirano-ist/s-ui/display/status/status-code-view";
+import { Button } from "@s-hirano-ist/s-ui/ui/button";
 import { useTranslations } from "next-intl";
-import { StatusCodeView } from "s-ui/display/status/status-code-view";
-import { Button } from "s-ui/ui/button";
 
 export function Forbidden() {
 	const t = useTranslations("label");

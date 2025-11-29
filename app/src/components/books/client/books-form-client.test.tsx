@@ -11,7 +11,7 @@ vi.mock("next-intl", () => ({
 	},
 }));
 
-vi.mock("s-ui/forms/fields/form-input", () => ({
+vi.mock("@s-hirano-ist/s-ui/forms/fields/form-input", () => ({
 	FormInput: ({ label, name, placeholder, required }: any) => (
 		<input
 			aria-label={label}
@@ -23,7 +23,7 @@ vi.mock("s-ui/forms/fields/form-input", () => ({
 	),
 }));
 
-vi.mock("s-ui/forms/generic-form-wrapper", () => ({
+vi.mock("@s-hirano-ist/s-ui/forms/generic-form-wrapper", () => ({
 	GenericFormWrapper: ({ children, action }: any) => (
 		<form data-action={action.name} data-testid="form-wrapper">
 			{children}

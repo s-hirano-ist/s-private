@@ -1,4 +1,4 @@
-# s-core
+# @s-hirano-ist/s-core
 
 Domain layer for s-private application, following Clean Architecture and Domain-Driven Design principles.
 
@@ -15,11 +15,11 @@ This package contains the core domain logic for the s-private content management
 ## Installation
 
 ```bash
-npm install s-core
+npm install @s-hirano-ist/s-core
 # or
-pnpm add s-core
+pnpm add @s-hirano-ist/s-core
 # or
-yarn add s-core
+yarn add @s-hirano-ist/s-core
 ```
 
 ## Usage
@@ -27,7 +27,7 @@ yarn add s-core
 ### Import all domains (with namespaces)
 
 ```typescript
-import { Articles, Books, Notes, Images, Common, Errors } from "s-core";
+import { Articles, Books, Notes, Images, Common, Errors } from "@s-hirano-ist/s-core";
 
 // Usage
 const article = new Articles.ArticleEntity(...);
@@ -40,29 +40,29 @@ const image = new Images.ImageEntity(...);
 
 ```typescript
 // Articles domain
-import { ArticleEntity, ArticlesDomainService } from "s-core/articles";
+import { ArticleEntity, ArticlesDomainService } from "@s-hirano-ist/s-core/articles";
 
 // Books domain
-import { BooksEntity, BooksDomainService } from "s-core/books";
+import { BooksEntity, BooksDomainService } from "@s-hirano-ist/s-core/books";
 
 // Notes domain
-import { NoteEntity, NotesDomainService } from "s-core/notes";
+import { NoteEntity, NotesDomainService } from "@s-hirano-ist/s-core/notes";
 
 // Images domain
-import { ImageEntity, ImagesDomainService } from "s-core/images";
+import { ImageEntity, ImagesDomainService } from "@s-hirano-ist/s-core/images";
 
 // Common utilities
-import { CommonEntity, IdGenerator } from "s-core/common";
+import { CommonEntity, IdGenerator } from "@s-hirano-ist/s-core/common";
 
 // Error classes
-import { DomainError } from "s-core/errors";
+import { DomainError } from "@s-hirano-ist/s-core/errors";
 ```
 
 ### Importing specific exports from domain
 
 ```typescript
 // Direct import from domain module
-import * as Articles from "s-core/articles";
+import * as Articles from "@s-hirano-ist/s-core/articles";
 
 // Use the exports
 const service = new Articles.ArticlesDomainService();
@@ -72,7 +72,7 @@ const entity = new Articles.ArticleEntity(...);
 ## Package Structure
 
 ```
-s-core/
+@s-hirano-ist/s-core/
 ├── articles/       # Article domain (news/link management)
 ├── books/          # Book domain (ISBN-based tracking)
 ├── common/         # Shared domain utilities

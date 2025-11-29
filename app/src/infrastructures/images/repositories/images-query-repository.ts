@@ -1,6 +1,6 @@
-import type { Status } from "s-core/common/entities/common-entity";
-import type { IImagesQueryRepository } from "s-core/images/repositories/images-query-repository.interface";
-import type { ImagesFindManyParams } from "s-core/images/types/query-params";
+import type { Status } from "@s-hirano-ist/s-core/common/entities/common-entity";
+import type { IImagesQueryRepository } from "@s-hirano-ist/s-core/images/repositories/images-query-repository.interface";
+import type { ImagesFindManyParams } from "@s-hirano-ist/s-core/images/types/query-params";
 import { env } from "@/env";
 import { minioClient } from "@/minio";
 import prisma from "@/prisma";

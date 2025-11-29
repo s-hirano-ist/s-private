@@ -1,5 +1,5 @@
+import { ViewerBodyClient } from "@s-hirano-ist/s-ui/layouts/body/viewer-body";
 import { notFound } from "next/navigation";
-import { ViewerBodyClient } from "s-ui/layouts/body/viewer-body";
 import type { getNoteByTitle } from "@/application-services/notes/get-notes";
 
 export type Props = {

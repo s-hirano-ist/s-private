@@ -1,11 +1,11 @@
 "use server";
 import "server-only";
-import { revalidateTag } from "next/cache";
-import { forbidden } from "next/navigation";
 import {
 	makeId,
 	makeUnexportedStatus,
-} from "s-core/common/entities/common-entity";
+} from "@s-hirano-ist/s-core/common/entities/common-entity";
+import { revalidateTag } from "next/cache";
+import { forbidden } from "next/navigation";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";

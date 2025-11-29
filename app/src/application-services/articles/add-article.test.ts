@@ -1,17 +1,17 @@
-import { revalidateTag } from "next/cache";
 import {
 	articleEntity,
 	makeArticleTitle,
 	makeCategoryName,
 	makeQuote,
 	makeUrl,
-} from "s-core/articles/entities/article-entity";
+} from "@s-hirano-ist/s-core/articles/entities/article-entity";
 import {
 	makeCreatedAt,
 	makeId,
 	makeUnexportedStatus,
 	makeUserId,
-} from "s-core/common/entities/common-entity";
+} from "@s-hirano-ist/s-core/common/entities/common-entity";
+import { revalidateTag } from "next/cache";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { DuplicateError } from "@/common/error/error-classes";
@@ -42,21 +42,27 @@ vi.mock(
 
 const mockEnsureNoDuplicate = vi.fn();
 
-vi.mock("s-core/articles/services/articles-domain-service", () => ({
-	ArticlesDomainService: vi.fn().mockImplementation(() => ({
-		ensureNoDuplicate: mockEnsureNoDuplicate,
-	})),
-}));
+vi.mock(
+	"@s-hirano-ist/s-core/articles/services/articles-domain-service",
+	() => ({
+		ArticlesDomainService: vi.fn().mockImplementation(() => ({
+			ensureNoDuplicate: mockEnsureNoDuplicate,
+		})),
+	}),
+);
 
-vi.mock("s-core/articles/entities/article-entity", async (importOriginal) => {
-	const actual = (await importOriginal()) as any;
-	return {
-		...actual,
-		articleEntity: {
-			create: vi.fn(),
-		},
-	};
-});
+vi.mock(
+	"@s-hirano-ist/s-core/articles/entities/article-entity",
+	async (importOriginal) => {
+		const actual = (await importOriginal()) as any;
+		return {
+			...actual,
+			articleEntity: {
+				create: vi.fn(),
+			},
+		};
+	},
+);
 
 vi.mock("./helpers/form-data-parser", () => ({
 	parseAddArticleFormData: vi.fn(),

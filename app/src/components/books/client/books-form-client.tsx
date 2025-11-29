@@ -1,7 +1,7 @@
 "use client";
+import { FormInput } from "@s-hirano-ist/s-ui/forms/fields/form-input";
+import { GenericFormWrapper } from "@s-hirano-ist/s-ui/forms/generic-form-wrapper";
 import { useTranslations } from "next-intl";
-import { FormInput } from "s-ui/forms/fields/form-input";
-import { GenericFormWrapper } from "s-ui/forms/generic-form-wrapper";
 import { toast } from "sonner";
 import type { ServerAction } from "@/common/types";
 

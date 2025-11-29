@@ -1,12 +1,15 @@
-import type { Status, UserId } from "s-core/common/entities/common-entity";
+import type {
+	Status,
+	UserId,
+} from "@s-hirano-ist/s-core/common/entities/common-entity";
 import type {
 	Path,
 	UnexportedImage,
-} from "s-core/images/entities/image-entity";
-import { ImageCreatedEvent } from "s-core/images/events/image-created-event";
-import { ImageDeletedEvent } from "s-core/images/events/image-deleted-event";
-import { ImageUpdatedEvent } from "s-core/images/events/image-updated-event";
-import type { IImagesCommandRepository } from "s-core/images/repositories/images-command-repository.interface";
+} from "@s-hirano-ist/s-core/images/entities/image-entity";
+import { ImageCreatedEvent } from "@s-hirano-ist/s-core/images/events/image-created-event";
+import { ImageDeletedEvent } from "@s-hirano-ist/s-core/images/events/image-deleted-event";
+import { ImageUpdatedEvent } from "@s-hirano-ist/s-core/images/events/image-updated-event";
+import type { IImagesCommandRepository } from "@s-hirano-ist/s-core/images/repositories/images-command-repository.interface";
 import { env } from "@/env";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { initializeEventHandlers } from "@/infrastructures/events/event-setup";

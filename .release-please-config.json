@@ -6,11 +6,11 @@
 		},
 		"packages/core": {
 			"release-type": "node",
-			"component": "s-core"
+			"component": "@s-hirano-ist/s-core"
 		},
 		"packages/ui": {
 			"release-type": "node",
-			"component": "s-ui"
+			"component": "@s-hirano-ist/s-ui"
 		},
 		"packages/database": {
 			"release-type": "node",
