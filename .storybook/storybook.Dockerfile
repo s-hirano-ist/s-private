@@ -8,10 +8,11 @@ ENV SKIP_ENV_VALIDATION=true
 ENV MINIO_HOST=private.s-hirano.com
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY app/prisma/ ./app/prisma/
+COPY packages/database/prisma/ ./packages/database/prisma/
 COPY app/package.json ./app/package.json
-COPY packages/components/package.json ./packages/components/package.json
-COPY packages/domains/package.json ./packages/domains/package.json
+COPY packages/ui/package.json ./packages/ui/package.json
+COPY packages/database/package.json ./packages/database/package.json
+COPY packages/core/package.json ./packages/core/package.json
 
 RUN pnpm install --frozen-lockfile
 

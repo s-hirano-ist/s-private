@@ -17,9 +17,9 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages/database/prisma/ ./packages/database/prisma/
 COPY app/package.json ./app/package.json
-COPY packages/components/package.json ./packages/components/package.json
+COPY packages/ui/package.json ./packages/ui/package.json
 COPY packages/database/package.json ./packages/database/package.json
-COPY packages/domains/package.json ./packages/domains/package.json
+COPY packages/core/package.json ./packages/core/package.json
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
@@ -29,10 +29,10 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules/ ./node_modules/
 COPY --from=deps /app/app/node_modules/ ./app/node_modules/
-COPY --from=deps /app/packages/components/node_modules/ ./packages/components/node_modules/
+COPY --from=deps /app/packages/ui/node_modules/ ./packages/ui/node_modules/
 COPY --from=deps /app/packages/database/node_modules/ ./packages/database/node_modules/
 COPY --from=deps /app/packages/database/src/generated/ ./packages/database/src/generated/
-COPY --from=deps /app/packages/domains/node_modules/ ./packages/domains/node_modules/
+COPY --from=deps /app/packages/core/node_modules/ ./packages/core/node_modules/
 
 # Copy rest of the application code
 COPY . .
