@@ -45,3 +45,5 @@ jscpd-report/
 
 # packages
 packages/core/dist/
+packages/database/dist/
+packages/ui/dist/

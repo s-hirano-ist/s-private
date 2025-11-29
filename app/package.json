@@ -28,7 +28,7 @@
 		"react-dom": "19.2.0",
 		"react-markdown": "10.1.0",
 		"s-ui": "workspace:*",
-		"s-private-database": "workspace:*",
+		"s-database": "workspace:*",
 		"s-core": "workspace:*",
 		"server-only": "0.0.1",
 		"sharp": "0.34.5",

@@ -5,7 +5,7 @@ import type {
 	CategoryFindManyParams,
 } from "s-core/articles/types/query-params";
 import type { Status, UserId } from "s-core/common/entities/common-entity";
-import type { Prisma } from "s-private-database";
+import type { Prisma } from "s-database";
 import prisma from "@/prisma";
 
 async function findByUrl(url: string, userId: string) {

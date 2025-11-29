@@ -1,0 +1,11 @@
+*.stories.tsx
+*.test.tsx
+*.test.ts
+vitest-setup.tsx
+vitest.config.ts
+vitest.shims.d.ts
+tailwind.config.ts
+tsconfig.json
+tsconfig.tsbuildinfo
+.storybook/
+node_modules/

@@ -3,7 +3,7 @@ import "server-only";
 import { AuthError } from "next-auth";
 import { SystemErrorEvent } from "s-core/common/events/system-error-event";
 import { SystemWarningEvent } from "s-core/common/events/system-warning-event";
-import { Prisma } from "s-private-database";
+import { Prisma } from "s-database";
 import type { ServerAction } from "@/common/types";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
