@@ -8,7 +8,7 @@ import type {
 	Status,
 	UserId,
 } from "@s-hirano-ist/s-core/common/entities/common-entity";
-import type { Prisma } from "s-database";
+import type { Prisma } from "@s-hirano-ist/s-database";
 import prisma from "@/prisma";
 
 async function findByUrl(url: string, userId: string) {

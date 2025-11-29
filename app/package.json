@@ -28,7 +28,7 @@
 		"react-dom": "19.2.0",
 		"react-markdown": "10.1.0",
 		"@s-hirano-ist/s-ui": "workspace:*",
-		"s-database": "workspace:*",
+		"@s-hirano-ist/s-database": "workspace:*",
 		"@s-hirano-ist/s-core": "workspace:*",
 		"server-only": "0.0.1",
 		"sharp": "0.34.5",
