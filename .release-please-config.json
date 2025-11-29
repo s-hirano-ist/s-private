@@ -14,7 +14,7 @@
 		},
 		"packages/database": {
 			"release-type": "node",
-			"component": "s-database"
+			"component": "@s-hirano-ist/s-database"
 		}
 	},
 	"release-groups": {

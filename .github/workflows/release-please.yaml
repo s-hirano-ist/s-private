@@ -59,6 +59,6 @@ jobs:
         working-directory: packages/ui
         run: pnpm publish --no-git-checks --access public
 
-      - name: Publish s-database
+      - name: Publish @s-hirano-ist/s-database
         working-directory: packages/database
         run: pnpm publish --no-git-checks --access public

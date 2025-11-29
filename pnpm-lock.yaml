@@ -129,6 +129,9 @@ importers:
       '@s-hirano-ist/s-core':
         specifier: workspace:*
         version: link:../packages/core
+      '@s-hirano-ist/s-database':
+        specifier: workspace:*
+        version: link:../packages/database
       '@s-hirano-ist/s-ui':
         specifier: workspace:*
         version: link:../packages/ui
@@ -177,9 +180,6 @@ importers:
       react-markdown:
         specifier: 10.1.0
         version: 10.1.0(@types/react@19.2.6)(react@19.2.0)
-      s-database:
-        specifier: workspace:*
-        version: link:../packages/database
       server-only:
         specifier: 0.0.1
         version: 0.0.1
