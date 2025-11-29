@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.0.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.0.0...s-private-v10.0.1) (2025-11-29)
+
+
+### Maintenance
+
+* fix release please ([170adc8](https://github.com/s-hirano-ist/s-private/commit/170adc83bdc5a6b3b34d3d1359cf6b5714506a42))
+* fix release please ([3bedc66](https://github.com/s-hirano-ist/s-private/commit/3bedc66b28a0b38f87d5ca33119e4d48e78a79b0))
+
 ## [10.0.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v9.8.1...s-private-v10.0.0) (2025-11-29)
 
 
