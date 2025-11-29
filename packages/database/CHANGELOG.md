@@ -1,0 +1,28 @@
+# Changelog
+
+## 1.0.0 (2025-11-29)
+
+
+### Features
+
+* add ci of npm and add npm package ([2aba09c](https://github.com/s-hirano-ist/s-private/commit/2aba09c5749c00b97837c6476aa001d958ed7194))
+* add s-private database ([8e1d7e5](https://github.com/s-hirano-ist/s-private/commit/8e1d7e5c0e078f85fd7eb0099e2e605a709c6dbb))
+* add s-private database ([d69817b](https://github.com/s-hirano-ist/s-private/commit/d69817be8ff6e6a399ca01fc63c158716a4f2669))
+
+
+### Bug Fixes
+
+* biome ([9623018](https://github.com/s-hirano-ist/s-private/commit/96230183fb2c608675eee7675b194ccc8f26e0b2))
+* npm package name ([e8e6b44](https://github.com/s-hirano-ist/s-private/commit/e8e6b4411e9c7d5d0f03ce69c778a2bfcac255b3))
+* npm package name ([d4aadbd](https://github.com/s-hirano-ist/s-private/commit/d4aadbd5d0eceb014d580b3abb0a247b3e39dd95))
+
+
+### Maintenance
+
+* add npm package settings ([a055891](https://github.com/s-hirano-ist/s-private/commit/a0558910c44ac944534c8c51c9443a191e10dd44))
+* fix branch names ([c029685](https://github.com/s-hirano-ist/s-private/commit/c0296850e70ec877613c52f773f95dbe355c4e04))
+* fix branch names ([8158e13](https://github.com/s-hirano-ist/s-private/commit/8158e138a430f79ec203c1ecd1ad53bf1c9f1a76))
+* fix package.json and dockerfile for release ([75c5b62](https://github.com/s-hirano-ist/s-private/commit/75c5b62670622a31f09c03ec3ccc6b5082051238))
+* fix package.json and dockerfile for release ([0e9b591](https://github.com/s-hirano-ist/s-private/commit/0e9b5912163e853b659631ee6270c0eee99fd2c3))
+* release main ([13a3518](https://github.com/s-hirano-ist/s-private/commit/13a351830a45259af5731cb90f4f6d6907f6fd41))
+* release main ([f5d5343](https://github.com/s-hirano-ist/s-private/commit/f5d5343f9ac5e107e3a2ce965c0a29ec929c6e00))
