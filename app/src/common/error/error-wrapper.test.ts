@@ -1,5 +1,5 @@
-import { AuthError } from "next-auth";
 import { Prisma } from "@s-hirano-ist/s-database";
+import { AuthError } from "next-auth";
 import { describe, expect, test, vi } from "vitest";
 import { PushoverError, UnexpectedError } from "@/common/error/error-classes";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
