@@ -1,8 +1,6 @@
 name: release-please
 
-permissions:
-    contents: write
-    pull-requests: write
+permissions: {}
 
 on:
     push:
@@ -13,6 +11,9 @@ jobs:
     release-please:
         runs-on: ubuntu-24.04
         timeout-minutes: 20
+        permissions:
+            contents: write
+            pull-requests: write
         outputs:
             releases_created: ${{ steps.release.outputs.releases_created }}
             paths_released: ${{ steps.release.outputs.paths_released }}
@@ -29,8 +30,13 @@ jobs:
         if: ${{ needs.release-please.outputs.releases_created == 'true' }}
         runs-on: ubuntu-24.04
         timeout-minutes: 20
+        permissions:
+            contents: read
+            id-token: write
         steps:
             - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+              with:
+                  persist-credentials: false
 
             - uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4
 
