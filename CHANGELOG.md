@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.0.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.0.0...s-private-v10.0.1) (2025-11-29)
+
+
+### Bug Fixes
+
+* biome ([787cb12](https://github.com/s-hirano-ist/s-private/commit/787cb1209934ddb775f28e8bad6141cc17864bbb))
+* npm package name ([e8e6b44](https://github.com/s-hirano-ist/s-private/commit/e8e6b4411e9c7d5d0f03ce69c778a2bfcac255b3))
+* npm package name ([d4aadbd](https://github.com/s-hirano-ist/s-private/commit/d4aadbd5d0eceb014d580b3abb0a247b3e39dd95))
+* pnpm lock yaml ([50fdfd6](https://github.com/s-hirano-ist/s-private/commit/50fdfd6167c7112b9cca48642a9f8523b82965f1))
+
+
+### Maintenance
+
+* fix branch names ([c029685](https://github.com/s-hirano-ist/s-private/commit/c0296850e70ec877613c52f773f95dbe355c4e04))
+* fix branch names ([8158e13](https://github.com/s-hirano-ist/s-private/commit/8158e138a430f79ec203c1ecd1ad53bf1c9f1a76))
+* fix release please ([170adc8](https://github.com/s-hirano-ist/s-private/commit/170adc83bdc5a6b3b34d3d1359cf6b5714506a42))
+* fix release please ([3bedc66](https://github.com/s-hirano-ist/s-private/commit/3bedc66b28a0b38f87d5ca33119e4d48e78a79b0))
+
 ## [10.0.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v9.8.1...s-private-v10.0.0) (2025-11-29)
 
 
