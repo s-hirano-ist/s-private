@@ -10,20 +10,21 @@
 === App package ===
 ├─ MIT: 30
 ├─ Apache-2.0: 7
-├─ UNKNOWN: 4
+├─ AGPL-3.0: 3
+├─ UNKNOWN: 2
 ├─ ISC: 2
 └─ MPL-2.0: 1
 
 
-=== Components package ===
+=== UI package ===
 ├─ MIT: 18
 ├─ Apache-2.0: 2
-├─ ISC: 1
-└─ UNKNOWN: 1
+├─ AGPL-3.0: 1
+└─ ISC: 1
 
 
-=== Domains package ===
+=== Core package ===
 ├─ Apache-2.0: 2
 ├─ MIT: 2
-└─ UNKNOWN: 1
+└─ AGPL-3.0: 1
 
