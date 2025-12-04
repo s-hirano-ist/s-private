@@ -17,12 +17,21 @@
 			"component": "@s-hirano-ist/s-database"
 		}
 	},
-	"release-groups": {
-		"npm-packages": {
-			"packages": ["packages/core", "packages/ui", "packages/database"],
-			"linked-versions": true
+	"plugins": [
+		{
+			"type": "node-workspace",
+			"updateAllPackages": true
+		},
+		{
+			"type": "linked-versions",
+			"groupName": "npm-packages",
+			"components": [
+				"@s-hirano-ist/s-core",
+				"@s-hirano-ist/s-ui",
+				"@s-hirano-ist/s-database"
+			]
 		}
-	},
+	],
 	"changelog-sections": [
 		{
 			"type": "feat",
