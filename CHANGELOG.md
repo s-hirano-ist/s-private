@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.0.3](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.0.2...s-private-v10.0.3) (2025-12-04)
+
+
+### Bug Fixes
+
+* biome ([fe211f8](https://github.com/s-hirano-ist/s-private/commit/fe211f8d6d9e3204dcecdb7614731450218807de))
+* pnpm lock ([b240bf2](https://github.com/s-hirano-ist/s-private/commit/b240bf26d18aad99e2ccabad09b5e84af789357c))
+* test s ([4fe15a0](https://github.com/s-hirano-ist/s-private/commit/4fe15a0e0b7831a073770f8965958ebaea21f876))
+
+
+### Maintenance
+
+* **deps:** update vitest monorepo to v4 ([95a4400](https://github.com/s-hirano-ist/s-private/commit/95a44006c226458d962873bc0c5de4bfe3936632))
+* **deps:** update vitest monorepo to v4 (major) ([d5f3347](https://github.com/s-hirano-ist/s-private/commit/d5f33470bb34c5aae98fd8842b29440d234f1403))
+* update vitest ([f9b10ca](https://github.com/s-hirano-ist/s-private/commit/f9b10ca7520ec7d84077195ba8c1a9552fae686a))
+
 ## [10.0.2](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.0.1...s-private-v10.0.2) (2025-12-04)
 
 
