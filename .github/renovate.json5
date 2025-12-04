@@ -63,7 +63,7 @@
         'peerDependencies',
       ],
       groupName: 'patch',
-      "minimumReleaseAge": '3 days',
+      "minimumReleaseAge": '2 days',
     },
     {
       matchManagers: [
@@ -81,7 +81,7 @@
         'peerDependencies',
       ],
       groupName: 'minor',
-      "minimumReleaseAge": '3 days',
+      "minimumReleaseAge": '2 days',
     },
     {
       matchManagers: [
@@ -89,7 +89,7 @@
       ],
       groupName: 'GitHub Actions',
       groupSlug: 'github-actions',
-      "minimumReleaseAge": '3 days',
+      "minimumReleaseAge": '2 days',
     },
   ],
 }
