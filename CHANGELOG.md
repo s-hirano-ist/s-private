@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.0.2](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.0.1...s-private-v10.0.2) (2025-12-04)
+
+
+### Bug Fixes
+
+* knip ([07ed66c](https://github.com/s-hirano-ist/s-private/commit/07ed66c29ea4ddfa2f41bc022fb65cd4317a1215))
+* migrate v7 ([b44272a](https://github.com/s-hirano-ist/s-private/commit/b44272a3e978252d2f31ed04bcea054206d5cfee))
+
+
+### Maintenance
+
+* change min release age ([d0da148](https://github.com/s-hirano-ist/s-private/commit/d0da1483a402534232b9f22268f498b2c6f5369d))
+* change min release age ([44e6c40](https://github.com/s-hirano-ist/s-private/commit/44e6c400fc1d9da880394a675b25c5185189599f))
+* **deps:** update dependency next to v15.5.7 [security] ([bb29219](https://github.com/s-hirano-ist/s-private/commit/bb29219a8ddfa2710e2dcbff023cfc0fe5b49584))
+* **deps:** update dependency next to v15.5.7 [security] ([ca8908a](https://github.com/s-hirano-ist/s-private/commit/ca8908a196fd137dabd58ce21792975aa826298d))
+* **deps:** update github actions ([9dea232](https://github.com/s-hirano-ist/s-private/commit/9dea232715c49c8125c2d0508cd4208fb703f02f))
+* **deps:** update github actions ([609054e](https://github.com/s-hirano-ist/s-private/commit/609054e64d3dad4ab8912aaac432494fb1949703))
+* **deps:** update pnpm to v10.24.0 ([fa2226b](https://github.com/s-hirano-ist/s-private/commit/fa2226bcca74a0c7f525e0d2e3b0e0cee2b8994d))
+* **deps:** update pnpm to v10.24.0 ([176e889](https://github.com/s-hirano-ist/s-private/commit/176e889893946a435ffe6acbf1cec0b69d8a18e0))
+* **deps:** update prisma monorepo to v7 ([6f286f1](https://github.com/s-hirano-ist/s-private/commit/6f286f16037776b4b316de7ba3ea60b1cad574f3))
+* **deps:** update prisma monorepo to v7 (major) ([b969de5](https://github.com/s-hirano-ist/s-private/commit/b969de524ce1c12665977b099d3069c955b6d1d1))
+* more fixes ([9628bfc](https://github.com/s-hirano-ist/s-private/commit/9628bfcfe6e9542e44f84d7b713aeaed52d4439e))
+* update nextjs ([6e63a11](https://github.com/s-hirano-ist/s-private/commit/6e63a11a948131b106eb4416cffc1305b21a0dea))
+
 ## [10.0.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.0.0...s-private-v10.0.1) (2025-11-29)
 
 

@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.0.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.0.0...@s-hirano-ist/s-database-v1.0.1) (2025-12-04)
+
+
+### Bug Fixes
+
+* knip ([07ed66c](https://github.com/s-hirano-ist/s-private/commit/07ed66c29ea4ddfa2f41bc022fb65cd4317a1215))
+* migrate v7 ([b44272a](https://github.com/s-hirano-ist/s-private/commit/b44272a3e978252d2f31ed04bcea054206d5cfee))
+
+
+### Maintenance
+
+* **deps:** update prisma monorepo to v7 ([6f286f1](https://github.com/s-hirano-ist/s-private/commit/6f286f16037776b4b316de7ba3ea60b1cad574f3))
+* **deps:** update prisma monorepo to v7 (major) ([b969de5](https://github.com/s-hirano-ist/s-private/commit/b969de524ce1c12665977b099d3069c955b6d1d1))
+* more fixes ([9628bfc](https://github.com/s-hirano-ist/s-private/commit/9628bfcfe6e9542e44f84d7b713aeaed52d4439e))
+
 ## 1.0.0 (2025-11-29)
 
 
