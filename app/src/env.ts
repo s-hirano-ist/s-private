@@ -9,6 +9,7 @@ export const env = createEnv({
 		NODE_ENV: z
 			.enum(["development", "test", "production"])
 			.default("development"),
+		DATABASE_URL: z.string(),
 		PUSHOVER_URL: z.string(),
 		PUSHOVER_USER_KEY: z.string(),
 		PUSHOVER_APP_TOKEN: z.string(),
@@ -40,6 +41,7 @@ export const env = createEnv({
 	 */
 	runtimeEnv: {
 		NODE_ENV: process.env.NODE_ENV,
+		DATABASE_URL: process.env.DATABASE_URL,
 		PUSHOVER_URL: process.env.PUSHOVER_URL,
 		PUSHOVER_USER_KEY: process.env.PUSHOVER_USER_KEY,
 		PUSHOVER_APP_TOKEN: process.env.PUSHOVER_APP_TOKEN,
