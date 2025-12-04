@@ -17,6 +17,9 @@ jobs:
     outputs:
       releases_created: ${{ steps.release.outputs.releases_created }}
       paths_released: ${{ steps.release.outputs.paths_released }}
+      core_release_created: ${{ steps.release.outputs['packages/core--release_created'] }}
+      ui_release_created: ${{ steps.release.outputs['packages/ui--release_created'] }}
+      database_release_created: ${{ steps.release.outputs['packages/database--release_created'] }}
     steps:
       - uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4
         id: release
@@ -52,13 +55,22 @@ jobs:
         run: pnpm --filter "./packages/*" build
 
       - name: Publish @s-hirano-ist/s-core
+        if: ${{ needs.release-please.outputs.core_release_created == 'true' }}
         working-directory: packages/core
         run: pnpm publish --no-git-checks --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish @s-hirano-ist/s-ui
+        if: ${{ needs.release-please.outputs.ui_release_created == 'true' }}
         working-directory: packages/ui
         run: pnpm publish --no-git-checks --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish @s-hirano-ist/s-database
+        if: ${{ needs.release-please.outputs.database_release_created == 'true' }}
         working-directory: packages/database
         run: pnpm publish --no-git-checks --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
