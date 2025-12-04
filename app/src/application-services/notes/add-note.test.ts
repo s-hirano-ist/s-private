@@ -38,9 +38,9 @@ vi.mock("@/infrastructures/notes/repositories/notes-query-repository", () => ({
 const mockEnsureNoDuplicate = vi.fn();
 
 vi.mock("@s-hirano-ist/s-core/notes/services/notes-domain-service", () => ({
-	NotesDomainService: vi.fn().mockImplementation(() => ({
-		ensureNoDuplicate: mockEnsureNoDuplicate,
-	})),
+	NotesDomainService: class {
+		ensureNoDuplicate = mockEnsureNoDuplicate;
+	},
 }));
 
 vi.mock(

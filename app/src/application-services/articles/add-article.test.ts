@@ -45,9 +45,9 @@ const mockEnsureNoDuplicate = vi.fn();
 vi.mock(
 	"@s-hirano-ist/s-core/articles/services/articles-domain-service",
 	() => ({
-		ArticlesDomainService: vi.fn().mockImplementation(() => ({
-			ensureNoDuplicate: mockEnsureNoDuplicate,
-		})),
+		ArticlesDomainService: class {
+			ensureNoDuplicate = mockEnsureNoDuplicate;
+		},
 	}),
 );
 

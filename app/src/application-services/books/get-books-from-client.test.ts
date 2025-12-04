@@ -17,7 +17,13 @@ vi.mock("next/navigation");
 vi.mock("@/common/auth/session");
 vi.mock("@/common/error/error-wrapper");
 vi.mock("@/common/utils/cache-utils");
-vi.mock("@s-hirano-ist/s-core/common/entities/common-entity");
+vi.mock("@s-hirano-ist/s-core/common/entities/common-entity", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("@s-hirano-ist/s-core/common/entities/common-entity")>();
+	return {
+		...actual,
+		makeStatus: vi.fn(),
+	};
+});
 vi.mock("./get-books");
 
 const mockHasViewerAdminPermission = vi.mocked(hasViewerAdminPermission);
