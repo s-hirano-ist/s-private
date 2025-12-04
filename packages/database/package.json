@@ -3,8 +3,8 @@
 	"version": "1.0.0",
 	"description": "Prisma database schema and client for s-private project",
 	"type": "module",
-	"main": "./dist/index.js",
-	"types": "./dist/index.d.ts",
+	"main": "./src/index.ts",
+	"types": "./src/index.ts",
 	"exports": {
 		".": {
 			"types": "./src/index.ts",
@@ -17,18 +17,17 @@
 		"access": "public",
 		"exports": {
 			".": {
-				"types": "./dist/index.d.ts",
-				"default": "./dist/index.js"
+				"types": "./src/index.ts",
+				"default": "./src/index.ts"
 			},
 			"./generated": "./src/generated/prisma/client.ts",
 			"./generated/*": "./src/generated/prisma/*"
 		},
-		"main": "./dist/index.js",
-		"types": "./dist/index.d.ts"
+		"main": "./src/index.ts",
+		"types": "./src/index.ts"
 	},
 	"files": [
-		"dist",
-		"src/generated",
+		"src",
 		"prisma",
 		"README.md",
 		"LICENSE"
@@ -40,8 +39,7 @@
 		"prisma:studio": "prisma studio",
 		"build": "tsc --noEmit",
 		"postinstall": "pnpm prisma:generate",
-		"prepublishOnly": "pnpm prisma:generate",
-		"clean": "rm -rf dist"
+		"prepublishOnly": "pnpm prisma:generate"
 	},
 	"repository": {
 		"type": "git",
