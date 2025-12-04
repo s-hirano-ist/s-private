@@ -1,12 +1,10 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "../src/generated"
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL") // uses connection pooling
-  // directUrl = env("POSTGRES_DIRECT_URL") // uses a direct connection // not needed for prisma postgresql database
 }
 
 enum Status {

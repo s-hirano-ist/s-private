@@ -10,8 +10,8 @@
 			"types": "./src/index.ts",
 			"default": "./src/index.ts"
 		},
-		"./generated": "./src/generated/index.js",
-		"./generated/*": "./src/generated/*"
+		"./generated": "./src/generated/prisma/client.ts",
+		"./generated/*": "./src/generated/prisma/*"
 	},
 	"publishConfig": {
 		"access": "public",
@@ -20,8 +20,8 @@
 				"types": "./dist/index.d.ts",
 				"default": "./dist/index.js"
 			},
-			"./generated": "./src/generated/index.js",
-			"./generated/*": "./src/generated/*"
+			"./generated": "./src/generated/prisma/client.ts",
+			"./generated/*": "./src/generated/prisma/*"
 		},
 		"main": "./dist/index.js",
 		"types": "./dist/index.d.ts"
@@ -34,13 +34,13 @@
 		"LICENSE"
 	],
 	"scripts": {
-		"prisma:generate": "prisma generate --no-engine",
+		"prisma:generate": "prisma generate",
 		"prisma:migrate": "prisma migrate dev",
 		"prisma:deploy": "prisma migrate deploy",
 		"prisma:studio": "prisma studio",
-		"build": "tsc",
+		"build": "tsc --noEmit",
 		"postinstall": "pnpm prisma:generate",
-		"prepublishOnly": "pnpm prisma:generate && pnpm run build",
+		"prepublishOnly": "pnpm prisma:generate",
 		"clean": "rm -rf dist"
 	},
 	"repository": {
@@ -51,6 +51,7 @@
 	"license": "AGPL-3.0",
 	"dependencies": {
 		"@prisma/client": "7.0.1",
+		"@prisma/client-runtime-utils": "7.0.1",
 		"@prisma/extension-accelerate": "3.0.0"
 	},
 	"devDependencies": {

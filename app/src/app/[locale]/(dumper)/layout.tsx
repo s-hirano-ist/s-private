@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { PAGE_NAME } from "@/common/constants";
 import { RootTab } from "@/components/common/layouts/nav/root-tab";
@@ -6,12 +6,13 @@ import { RootTab } from "@/components/common/layouts/nav/root-tab";
 export const metadata: Metadata = {
 	title: `${PAGE_NAME}`,
 	description: "Knowledge dumper and viewer.",
-	viewport: {
-		width: "device-width",
-		initialScale: 1,
-		maximumScale: 1,
-		userScalable: false,
-	},
+};
+
+export const viewport: Viewport = {
+	width: "device-width",
+	initialScale: 1,
+	maximumScale: 1,
+	userScalable: false,
 };
 
 type Props = {

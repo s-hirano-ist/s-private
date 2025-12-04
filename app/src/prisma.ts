@@ -6,7 +6,9 @@ import { PrismaClient } from "@s-hirano-ist/s-database";
 import { env } from "@/env";
 
 const prismaClientSingleton = () => {
-	const prisma = new PrismaClient().$extends({
+	const prisma = new PrismaClient({
+		accelerateUrl: env.DATABASE_URL,
+	}).$extends({
 		query: {
 			async $allOperations({ args, query, operation, model }) {
 				const start = Date.now();
