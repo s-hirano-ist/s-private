@@ -33,7 +33,7 @@ const cspHeader = `
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-	serverExternalPackages: ["sharp"],
+	serverExternalPackages: ["sharp", "pino", "thread-stream"],
 	typedRoutes: true,
 	experimental: {
 		serverActions: { bodySizeLimit: "100mb" }, // FIXME: due to DDoS attacks

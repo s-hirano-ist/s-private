@@ -25,8 +25,8 @@ export async function deleteBooks(id: string): Promise<ServerAction> {
 		const status = makeUnexportedStatus();
 		await booksCommandRepository.deleteById(makeId(id), userId, status);
 
-		revalidateTag(buildContentCacheTag("books", status, userId));
-		revalidateTag(buildCountCacheTag("books", status, userId));
+		revalidateTag(buildContentCacheTag("books", status, userId), "max");
+		revalidateTag(buildCountCacheTag("books", status, userId), "max");
 
 		return { success: true, message: "deleted" };
 	} catch (error) {

@@ -35,7 +35,7 @@ describe("deleteImage", () => {
 			"1",
 			"UNEXPORTED",
 		);
-		expect(revalidateTag).toHaveBeenCalledWith("images_UNEXPORTED_1");
+		expect(revalidateTag).toHaveBeenCalledWith("images_UNEXPORTED_1", "max");
 	});
 
 	test("should return error when images not found", async () => {

@@ -22,8 +22,8 @@ export async function deleteImage(id: string): Promise<ServerAction> {
 		const status = makeUnexportedStatus();
 		await imagesCommandRepository.deleteById(id, userId, status);
 
-		revalidateTag(buildContentCacheTag("images", status, userId));
-		revalidateTag(buildCountCacheTag("images", status, userId));
+		revalidateTag(buildContentCacheTag("images", status, userId), "max");
+		revalidateTag(buildCountCacheTag("images", status, userId), "max");
 
 		return { success: true, message: "deleted" };
 	} catch (error) {

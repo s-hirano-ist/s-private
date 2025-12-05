@@ -59,9 +59,11 @@ describe("deleteArticle", () => {
 		const status = makeUnexportedStatus();
 		expect(revalidateTag).toHaveBeenCalledWith(
 			buildContentCacheTag("articles", status, "test-user-id"),
+			"max",
 		);
 		expect(revalidateTag).toHaveBeenCalledWith(
 			buildCountCacheTag("articles", status, "test-user-id"),
+			"max",
 		);
 	});
 

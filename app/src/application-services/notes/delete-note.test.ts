@@ -59,9 +59,11 @@ describe("deleteNote", () => {
 		const status = makeUnexportedStatus();
 		expect(revalidateTag).toHaveBeenCalledWith(
 			buildContentCacheTag("notes", status, "test-user-id"),
+			"max",
 		);
 		expect(revalidateTag).toHaveBeenCalledWith(
 			buildCountCacheTag("notes", status, "test-user-id"),
+			"max",
 		);
 	});
 

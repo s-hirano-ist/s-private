@@ -99,9 +99,11 @@ describe("addImage", () => {
 		const status = makeUnexportedStatus();
 		expect(revalidateTag).toHaveBeenCalledWith(
 			buildContentCacheTag("images", status, "user-id"),
+			"max",
 		);
 		expect(revalidateTag).toHaveBeenCalledWith(
 			buildCountCacheTag("images", status, "user-id"),
+			"max",
 		);
 		expect(result).toEqual({
 			success: true,
