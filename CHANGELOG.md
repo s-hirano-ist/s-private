@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.1.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.1.0...s-private-v10.1.1) (2025-12-05)
+
+
+### Bug Fixes
+
+* eslint ([35e802c](https://github.com/s-hirano-ist/s-private/commit/35e802ca9f0c0608243b86c645211267e67caa15))
+* vitest ([0556792](https://github.com/s-hirano-ist/s-private/commit/055679216a0d657602e79e19030719ce173ac2a9))
+
+
+### Maintenance
+
+* **deps:** lock file maintenance ([62ab0df](https://github.com/s-hirano-ist/s-private/commit/62ab0df07a091fe1d474d4bcadf2a47e6700dcd0))
+* **deps:** update minor ([e409208](https://github.com/s-hirano-ist/s-private/commit/e409208d1d15931cc37a76b58d1344874a16204a))
+* **deps:** update minor ([e6b2a67](https://github.com/s-hirano-ist/s-private/commit/e6b2a674f4302229bb1b0ff20fef7b740fd30630))
+
 ## [10.1.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.0.2...s-private-v10.1.0) (2025-12-05)
 
 
