@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.0.1...@s-hirano-ist/s-ui-v1.1.0) (2025-12-05)
+
+
+### Bug Fixes
+
+* biome ([5daabe8](https://github.com/s-hirano-ist/s-private/commit/5daabe8bde44a2f215b90afa4446422dbc7577c5))
+
+
+### Maintenance
+
+* **deps:** update minor ([0a8e867](https://github.com/s-hirano-ist/s-private/commit/0a8e867cfa9960ac4fef0d92a9a9f8f99bcfd396))
+* **deps:** update minor ([be94ee4](https://github.com/s-hirano-ist/s-private/commit/be94ee42302ad60ac51296c209c3da6dd592dc5b))
+* **deps:** update patch ([a7018f8](https://github.com/s-hirano-ist/s-private/commit/a7018f8432836b3926154016ee7b8ceb164223ab))
+
 ## [1.0.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.0.0...@s-hirano-ist/s-ui-v1.0.1) (2025-12-04)
 
 

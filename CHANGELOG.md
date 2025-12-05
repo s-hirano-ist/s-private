@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.1.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.0.2...s-private-v10.1.0) (2025-12-05)
+
+
+### Features
+
+* update release please ([2a943df](https://github.com/s-hirano-ist/s-private/commit/2a943df18e40dee21704820631f06d9f3ce4c92b))
+
+
+### Bug Fixes
+
+* biome ([5daabe8](https://github.com/s-hirano-ist/s-private/commit/5daabe8bde44a2f215b90afa4446422dbc7577c5))
+* biome ([fe211f8](https://github.com/s-hirano-ist/s-private/commit/fe211f8d6d9e3204dcecdb7614731450218807de))
+* pnpm lock ([b240bf2](https://github.com/s-hirano-ist/s-private/commit/b240bf26d18aad99e2ccabad09b5e84af789357c))
+* test s ([4fe15a0](https://github.com/s-hirano-ist/s-private/commit/4fe15a0e0b7831a073770f8965958ebaea21f876))
+* update biome ([06b8b5f](https://github.com/s-hirano-ist/s-private/commit/06b8b5f9884da5e31ebd973914c900e2bb39b747))
+
+
+### Maintenance
+
+* **deps:** update minor ([0a8e867](https://github.com/s-hirano-ist/s-private/commit/0a8e867cfa9960ac4fef0d92a9a9f8f99bcfd396))
+* **deps:** update minor ([be94ee4](https://github.com/s-hirano-ist/s-private/commit/be94ee42302ad60ac51296c209c3da6dd592dc5b))
+* **deps:** update patch ([a7018f8](https://github.com/s-hirano-ist/s-private/commit/a7018f8432836b3926154016ee7b8ceb164223ab))
+* **deps:** update vitest monorepo to v4 ([95a4400](https://github.com/s-hirano-ist/s-private/commit/95a44006c226458d962873bc0c5de4bfe3936632))
+* **deps:** update vitest monorepo to v4 (major) ([d5f3347](https://github.com/s-hirano-ist/s-private/commit/d5f33470bb34c5aae98fd8842b29440d234f1403))
+* downgrade eslint vitest ([028aa86](https://github.com/s-hirano-ist/s-private/commit/028aa86c2fbbad71ae193bad5b9a27ea5c498a4a))
+* update vitest ([f9b10ca](https://github.com/s-hirano-ist/s-private/commit/f9b10ca7520ec7d84077195ba8c1a9552fae686a))
+
 ## [10.0.2](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.0.1...s-private-v10.0.2) (2025-12-04)
 
 
