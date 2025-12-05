@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.1.0...@s-hirano-ist/s-core-v1.1.1) (2025-12-05)
+
+
+### Bug Fixes
+
+* vitest ([0556792](https://github.com/s-hirano-ist/s-private/commit/055679216a0d657602e79e19030719ce173ac2a9))
+
+
+### Maintenance
+
+* **deps:** update minor ([e409208](https://github.com/s-hirano-ist/s-private/commit/e409208d1d15931cc37a76b58d1344874a16204a))
+
 ## [1.1.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.0.1...@s-hirano-ist/s-core-v1.1.0) (2025-12-05)
 
 
