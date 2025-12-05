@@ -44,10 +44,16 @@ export async function addArticle(formData: FormData): Promise<ServerAction> {
 		// Persist
 		await articlesCommandRepository.create(article);
 
-		revalidateTag(buildContentCacheTag("articles", article.status, userId));
-		revalidateTag(buildCountCacheTag("articles", article.status, userId));
+		revalidateTag(
+			buildContentCacheTag("articles", article.status, userId),
+			"max",
+		);
+		revalidateTag(
+			buildCountCacheTag("articles", article.status, userId),
+			"max",
+		);
 
-		revalidateTag("categories");
+		revalidateTag("categories", "max");
 
 		return { success: true, message: "inserted" };
 	} catch (error) {

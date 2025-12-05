@@ -114,9 +114,11 @@ describe("addNote", () => {
 		const status = makeUnexportedStatus();
 		expect(revalidateTag).toHaveBeenCalledWith(
 			buildContentCacheTag("notes", status, "user-123"),
+			"max",
 		);
 		expect(revalidateTag).toHaveBeenCalledWith(
 			buildCountCacheTag("notes", status, "user-123"),
+			"max",
 		);
 		expect(result.success).toBe(true);
 		expect(result.message).toBe("inserted");

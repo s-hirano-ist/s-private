@@ -37,8 +37,8 @@ export async function addNote(formData: FormData): Promise<ServerAction> {
 		await notesCommandRepository.create(note);
 
 		// Cache invalidation
-		revalidateTag(buildContentCacheTag("notes", note.status, userId));
-		revalidateTag(buildCountCacheTag("notes", note.status, userId));
+		revalidateTag(buildContentCacheTag("notes", note.status, userId), "max");
+		revalidateTag(buildCountCacheTag("notes", note.status, userId), "max");
 
 		return { success: true, message: "inserted" };
 	} catch (error) {
