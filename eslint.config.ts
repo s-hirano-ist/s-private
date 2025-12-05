@@ -58,7 +58,7 @@ export default tsEslint.config(
 				tsconfigRootDir: import.meta.dirname,
 			},
 		},
-		settings: { react: { version: "detect" } },
+		settings: { react: { version: "19.2" } },
 		rules: {
 			// React rules (Biome doesn't have these)
 			"react/destructuring-assignment": "error",

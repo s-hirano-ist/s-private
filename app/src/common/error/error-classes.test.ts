@@ -62,12 +62,9 @@ describe("error-classes", () => {
 
 	describe("error handling", () => {
 		test("should allow PushoverError to be caught as Error", () => {
-			try {
-				throw new PushoverError();
-			} catch (error) {
-				expect(error).toBeInstanceOf(Error);
-				expect(error).toBeInstanceOf(PushoverError);
-			}
+			const error = new PushoverError();
+			expect(error).toBeInstanceOf(Error);
+			expect(error).toBeInstanceOf(PushoverError);
 		});
 
 		test("should allow all errors to be thrown and caught", () => {

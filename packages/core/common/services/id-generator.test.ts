@@ -13,12 +13,7 @@ describe("IdGenerator", () => {
 	});
 
 	// FIXME: This test intermittently fails due to the mocked UUIDv7 implementation in vitest-setup.tsx
-	test.skip("should generate unique IDs", () => {
-		const id1 = uuidv7();
-		const id2 = uuidv7();
-
-		expect(id1).not.toBe(id2);
-	});
+	test.todo("should generate unique IDs");
 
 	test("exported instance should work correctly", () => {
 		const id = idGenerator.uuidv7();
