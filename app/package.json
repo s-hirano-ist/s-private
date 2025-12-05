@@ -24,7 +24,7 @@
 		"minio": "8.0.6",
 		"next": "15.5.7",
 		"next-auth": "5.0.0-beta.30",
-		"next-intl": "4.5.5",
+		"next-intl": "4.5.7",
 		"next-themes": "0.4.6",
 		"pino": "10.1.0",
 		"react": "19.2.0",
@@ -34,13 +34,13 @@
 		"sharp": "0.34.5",
 		"sonner": "2.0.7",
 		"yet-another-react-lightbox": "3.25.0",
-		"zod": "4.1.12"
+		"zod": "4.1.13"
 	},
 	"devDependencies": {
 		"@next/bundle-analyzer": "15.5.6",
 		"@tailwindcss/postcss": "4.1.17",
 		"@types/node": "24.10.1",
-		"@types/react": "19.2.6",
+		"@types/react": "19.2.7",
 		"@types/react-dom": "19.2.3",
 		"@types/react-syntax-highlighter": "15.5.13",
 		"postcss": "8.5.6",
