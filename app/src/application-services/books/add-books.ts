@@ -41,8 +41,8 @@ export async function addBooks(formData: FormData): Promise<ServerAction> {
 		await booksCommandRepository.create(book);
 
 		// Cache invalidation
-		revalidateTag(buildContentCacheTag("books", book.status, userId));
-		revalidateTag(buildCountCacheTag("books", book.status, userId));
+		revalidateTag(buildContentCacheTag("books", book.status, userId), "max");
+		revalidateTag(buildCountCacheTag("books", book.status, userId), "max");
 
 		return { success: true, message: "inserted" };
 	} catch (error) {

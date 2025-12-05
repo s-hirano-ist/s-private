@@ -5,7 +5,7 @@ import {
 } from "@s-hirano-ist/s-core/common/entities/common-entity";
 import { makeNoteTitle } from "@s-hirano-ist/s-core/notes/entities/note-entity";
 import type { CacheStrategy } from "@s-hirano-ist/s-core/notes/types/cache-strategy";
-import { unstable_cacheTag as cacheTag } from "next/cache";
+import { cacheTag } from "next/cache";
 import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";

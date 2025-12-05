@@ -132,9 +132,11 @@ describe("addArticle", () => {
 		const status = makeUnexportedStatus();
 		expect(revalidateTag).toHaveBeenCalledWith(
 			buildContentCacheTag("articles", status, "user-123"),
+			"max",
 		);
 		expect(revalidateTag).toHaveBeenCalledWith(
 			buildCountCacheTag("articles", status, "user-123"),
+			"max",
 		);
 
 		expect(result.success).toBe(true);
