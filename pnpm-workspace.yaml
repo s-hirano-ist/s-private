@@ -2,7 +2,8 @@ packages:
   - app
   - packages/*
 
-minimumReleaseAge: 1440
+# conflict with the renovate settings so disabled for now
+# minimumReleaseAge: 1440
 
 onlyBuiltDependencies:
   - '@vercel/speed-insights'
