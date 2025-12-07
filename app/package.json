@@ -11,7 +11,7 @@
 		"start": "next start"
 	},
 	"dependencies": {
-		"@prisma/extension-accelerate": "3.0.0",
+		"@prisma/extension-accelerate": "3.0.1",
 		"@s-hirano-ist/s-core": "workspace:*",
 		"@s-hirano-ist/s-database": "workspace:*",
 		"@s-hirano-ist/s-ui": "workspace:*",
@@ -24,11 +24,11 @@
 		"minio": "8.0.6",
 		"next": "15.5.7",
 		"next-auth": "5.0.0-beta.30",
-		"next-intl": "4.5.7",
+		"next-intl": "4.5.8",
 		"next-themes": "0.4.6",
 		"pino": "10.1.0",
-		"react": "19.2.0",
-		"react-dom": "19.2.0",
+		"react": "19.2.1",
+		"react-dom": "19.2.1",
 		"react-markdown": "10.1.0",
 		"server-only": "0.0.1",
 		"sharp": "0.34.5",
@@ -37,7 +37,7 @@
 		"zod": "4.1.13"
 	},
 	"devDependencies": {
-		"@next/bundle-analyzer": "15.5.6",
+		"@next/bundle-analyzer": "15.5.7",
 		"@tailwindcss/postcss": "4.1.17",
 		"@types/node": "24.10.1",
 		"@types/react": "19.2.7",
