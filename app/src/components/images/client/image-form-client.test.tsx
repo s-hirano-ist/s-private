@@ -12,6 +12,7 @@ const mockToast = vi.mocked(toast);
 
 const messages = {
 	label: {
+		save: "save",
 		image: "Image",
 		uploading: "Uploading...",
 		upload: "Upload",

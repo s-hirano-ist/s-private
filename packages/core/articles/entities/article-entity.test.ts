@@ -145,7 +145,6 @@ describe("articleEntity", () => {
 			expect(article.title).toBe("Breaking article");
 			expect(article.url).toBe("https://example.com");
 			expect(article.status).toBe("UNEXPORTED");
-			console.log('"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS', article);
 			expect(article.id).toBeDefined();
 			expect(article.categoryId).toBeDefined();
 		});
