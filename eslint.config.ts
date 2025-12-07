@@ -37,6 +37,7 @@ export default defineConfig(
 	...nextConfig,
 	reactPlugin.configs.flat.recommended,
 	reactPlugin.configs.flat["jsx-runtime"],
+
 	{
 		languageOptions: {
 			parserOptions: {
