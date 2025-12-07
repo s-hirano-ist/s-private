@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.1.1...@s-hirano-ist/s-database-v1.1.2) (2025-12-07)
+
+
+### Bug Fixes
+
+* downgrade prisma extension ([fafaee3](https://github.com/s-hirano-ist/s-private/commit/fafaee3c09920476c15db58c00364949ee4554fe))
+
+
+### Maintenance
+
+* **deps:** update patch ([8584e1f](https://github.com/s-hirano-ist/s-private/commit/8584e1fe4ebf4c7dc5b360b5592a416c17918803))
+
 ## [1.1.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.1.0...@s-hirano-ist/s-database-v1.1.1) (2025-12-05)
 
 

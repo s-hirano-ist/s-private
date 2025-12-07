@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.1.1...@s-hirano-ist/s-core-v1.1.2) (2025-12-07)
+
+
+### Documentation
+
+* fix test codes ([1bbc184](https://github.com/s-hirano-ist/s-private/commit/1bbc1842c8ae8abf1cc0771fa9c667201b3bf08c))
+
+
+### Maintenance
+
+* **deps:** update patch ([e7459f8](https://github.com/s-hirano-ist/s-private/commit/e7459f8af3d316fb1857181836e1c463fe277c8a))
+
 ## [1.1.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.1.0...@s-hirano-ist/s-core-v1.1.1) (2025-12-05)
 
 

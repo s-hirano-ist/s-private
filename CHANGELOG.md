@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.1.2](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.1.1...s-private-v10.1.2) (2025-12-07)
+
+
+### Bug Fixes
+
+* downgrade prisma extension ([fafaee3](https://github.com/s-hirano-ist/s-private/commit/fafaee3c09920476c15db58c00364949ee4554fe))
+* knip ([3607890](https://github.com/s-hirano-ist/s-private/commit/36078900b2a9aa6bb62ebe0466bf6892d2d5cab6))
+
+
+### Documentation
+
+* fix test codes ([1bbc184](https://github.com/s-hirano-ist/s-private/commit/1bbc1842c8ae8abf1cc0771fa9c667201b3bf08c))
+
+
+### Maintenance
+
+* **deps:** update patch ([e7459f8](https://github.com/s-hirano-ist/s-private/commit/e7459f8af3d316fb1857181836e1c463fe277c8a))
+* **deps:** update patch ([8584e1f](https://github.com/s-hirano-ist/s-private/commit/8584e1fe4ebf4c7dc5b360b5592a416c17918803))
+* update package.json and pnpm ([b01ccfd](https://github.com/s-hirano-ist/s-private/commit/b01ccfdf2ed33345697aabdb24f442ee0c14e585))
+* update package.json and pnpm ([074f7be](https://github.com/s-hirano-ist/s-private/commit/074f7be063029a65282d428dcc1ddd6a29e8b08e))
+
 ## [10.1.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.1.0...s-private-v10.1.1) (2025-12-05)
 
 

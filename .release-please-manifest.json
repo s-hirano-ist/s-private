@@ -1,6 +1,6 @@
 {
-	".": "10.1.1",
-	"packages/core": "1.1.1",
-	"packages/ui": "1.1.1",
-	"packages/database": "1.1.1"
+	".": "10.1.2",
+	"packages/core": "1.1.2",
+	"packages/ui": "1.1.2",
+	"packages/database": "1.1.2"
 }
