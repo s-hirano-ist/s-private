@@ -59,7 +59,11 @@ export default defineConfig({
 			enabled: true,
 			reportOnFailure: true,
 			reportsDirectory: "./.vitest-coverage",
-			include: ["app/**", "packages/ui/**", "packages/core/**"],
+			include: [
+				"app/**/*.{ts,tsx}",
+				"packages/ui/**/*.{ts,tsx}",
+				"packages/core/**/*.{ts,tsx}",
+			],
 			exclude: [
 				"**/.next/**/*",
 				"**/node_modules/**/*",
