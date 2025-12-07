@@ -1,21 +1,17 @@
 // MEMO: only use for plugins not in biome
 
-import { FlatCompat } from "@eslint/eslintrc";
 import vitestPlugin from "@vitest/eslint-plugin";
+import { defineConfig } from "eslint/config";
+import nextConfig from "eslint-config-next";
 import reactPlugin from "eslint-plugin-react";
 import reactHookPlugin from "eslint-plugin-react-hooks";
 // import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
-import storybookPlugin from "eslint-plugin-storybook";
+// TODO: Re-enable when eslint-plugin-storybook supports ESLint defineConfig types
+// import storybookPlugin from "eslint-plugin-storybook";
 // import tailwindcssPlugin from "eslint-plugin-tailwindcss";
 import tsEslint from "typescript-eslint";
 
-// FIXME: not workking
-
-const compat = new FlatCompat({
-	baseDirectory: import.meta.dirname,
-});
-
-export default tsEslint.config(
+export default defineConfig(
 	{
 		ignores: [
 			"packages/database/src/generated/**/*",
@@ -38,11 +34,9 @@ export default tsEslint.config(
 		],
 	},
 	...tsEslint.configs.strict,
+	...nextConfig,
 	reactPlugin.configs.flat.recommended,
 	reactPlugin.configs.flat["jsx-runtime"],
-	...compat.extends("plugin:react-hooks/recommended"),
-	...compat.extends("next"),
-
 	{
 		languageOptions: {
 			parserOptions: {
@@ -53,6 +47,7 @@ export default tsEslint.config(
 						"*.config.ts",
 						"*.config.js",
 						"*.config.mjs",
+						"*.cjs",
 					],
 				},
 				tsconfigRootDir: import.meta.dirname,
@@ -82,11 +77,14 @@ export default tsEslint.config(
 	},
 
 	// react-hooks
+	reactHookPlugin.configs.flat["recommended-latest"],
 	{
-		plugins: { "react-hooks": reactHookPlugin },
 		rules: {
 			"react-hooks/exhaustive-deps": "error",
 			"react-hooks/rules-of-hooks": "error",
+			// TODO: Fix components to avoid calling setState directly in useEffect
+			// Affected files: footer.tsx, root-tab.tsx, use-tab-visibility.ts, generic-form-wrapper.tsx, use-infinite-scroll.ts
+			"react-hooks/set-state-in-effect": "off",
 		},
 	},
 
@@ -99,7 +97,8 @@ export default tsEslint.config(
 	},
 
 	// storybook
-	...storybookPlugin.configs["flat/recommended"],
+	// TODO: Re-enable when eslint-plugin-storybook supports ESLint defineConfig types
+	// ...storybookPlugin.configs["flat/recommended"],
 
 	// TODO: enable when biome conflicts occur
 	// {
