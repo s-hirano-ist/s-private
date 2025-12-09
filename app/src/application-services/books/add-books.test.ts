@@ -121,9 +121,11 @@ describe("addBooks", () => {
 		const status = makeUnexportedStatus();
 		expect(revalidateTag).toHaveBeenCalledWith(
 			buildContentCacheTag("books", status, "user-123"),
+			"max",
 		);
 		expect(revalidateTag).toHaveBeenCalledWith(
 			buildCountCacheTag("books", status, "user-123"),
+			"max",
 		);
 
 		expect(result.success).toBe(true);

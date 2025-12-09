@@ -47,8 +47,8 @@ export async function addImage(formData: FormData): Promise<ServerAction> {
 		await imagesCommandRepository.create(image);
 
 		// Cache invalidation
-		revalidateTag(buildContentCacheTag("images", image.status, userId));
-		revalidateTag(buildCountCacheTag("images", image.status, userId));
+		revalidateTag(buildContentCacheTag("images", image.status, userId), "max");
+		revalidateTag(buildCountCacheTag("images", image.status, userId), "max");
 
 		return { success: true, message: "inserted" };
 	} catch (error) {

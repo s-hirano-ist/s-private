@@ -7,7 +7,7 @@ const handleI18nRouting = createMiddleware(routing);
 
 // FIXME: https://github.com/amannn/next-intl/issues/596 auth((req))の方法である必要性確認
 
-export default async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
 	const session = await auth();
 	if (!session) {
 		return NextResponse.redirect(new URL("/api/sign-in", request.url));
