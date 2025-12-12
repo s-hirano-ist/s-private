@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.3](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.1.2...@s-hirano-ist/s-ui-v1.1.3) (2025-12-12)
+
+
+### Maintenance
+
+* **deps:** update dependency next to v15.5.8 [security] ([101e3c1](https://github.com/s-hirano-ist/s-private/commit/101e3c147248becdf9c1465ef69ee77dc337b527))
+* **deps:** update minor ([5fe96c6](https://github.com/s-hirano-ist/s-private/commit/5fe96c6b624dc634d2564e6a2a63ec41466dc4a9))
+
 ## [1.1.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.1.1...@s-hirano-ist/s-ui-v1.1.2) (2025-12-07)
 
 
