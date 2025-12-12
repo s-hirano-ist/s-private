@@ -39,7 +39,7 @@
 		"deps:graph": "depcruise app/src packages/ui packages/core --config .dependency-cruiser.cjs --output-type dot | dot -T svg > dependency-graph.svg"
 	},
 	"dependencies": {
-		"next": "15.5.8",
+		"next": "15.5.9",
 		"next-intl": "4.5.8"
 	},
 	"devDependencies": {
