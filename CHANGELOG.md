@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.1.3](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.1.2...s-private-v10.1.3) (2025-12-12)
+
+
+### Maintenance
+
+* **deps:** update dependency next to v15.5.8 [security] ([101e3c1](https://github.com/s-hirano-ist/s-private/commit/101e3c147248becdf9c1465ef69ee77dc337b527))
+* **deps:** update httpd docker tag to v2.4.66 ([abd1c08](https://github.com/s-hirano-ist/s-private/commit/abd1c080c45ac47fb9842dcf2b6a4ef0a666b787))
+* **deps:** update minor ([5fe96c6](https://github.com/s-hirano-ist/s-private/commit/5fe96c6b624dc634d2564e6a2a63ec41466dc4a9))
+
 ## [10.1.2](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.1.1...s-private-v10.1.2) (2025-12-07)
 
 
