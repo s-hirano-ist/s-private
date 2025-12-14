@@ -4,7 +4,6 @@ export * from "./entities/books-entity";
 // Events
 export * from "./events/book-created-event";
 export * from "./events/book-deleted-event";
-export * from "./events/book-updated-event";
 
 // Repositories
 export * from "./repositories/books-command-repository.interface";

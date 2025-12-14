@@ -1,9 +1,8 @@
-import type { Status, UserId } from "../../common/entities/common-entity";
+import type { Status } from "../../common/entities/common-entity";
 import type { Path, UnexportedImage } from "../entities/image-entity";
 
 export type IImagesCommandRepository = {
 	create(data: UnexportedImage): Promise<void>;
-	update(path: Path, userId: UserId, data: UnexportedImage): Promise<void>;
 	uploadToStorage(
 		path: Path,
 		buffer: Buffer,

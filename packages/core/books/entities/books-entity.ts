@@ -97,17 +97,6 @@ type CreateBookArgs = Readonly<{
 	title: BookTitle;
 }>;
 
-type UpdateBookArgs = Readonly<{
-	title: BookTitle;
-	googleTitle: GoogleTitle;
-	googleSubtitle: GoogleSubtitle;
-	googleAuthors: GoogleAuthors;
-	googleDescription: GoogleDescription;
-	googleImgSrc: GoogleImgSrc;
-	googleHref: GoogleHref;
-	markdown: BookMarkdown;
-}>;
-
 export const bookEntity = {
 	create: (args: CreateBookArgs): UnexportedBook => {
 		return createEntityWithErrorHandling(() =>
@@ -117,12 +106,6 @@ export const bookEntity = {
 				createdAt: makeCreatedAt(),
 				...args,
 			}),
-		);
-	},
-
-	update: (book: UnexportedBook, args: UpdateBookArgs): UnexportedBook => {
-		return createEntityWithErrorHandling(() =>
-			Object.freeze({ ...book, ...args }),
 		);
 	},
 

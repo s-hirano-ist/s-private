@@ -50,11 +50,6 @@ type CreateNoteArgs = Readonly<{
 	markdown: Markdown;
 }>;
 
-type UpdateNoteArgs = Readonly<{
-	title: NoteTitle;
-	markdown: Markdown;
-}>;
-
 export const noteEntity = {
 	create: (args: CreateNoteArgs): UnexportedNote => {
 		return createEntityWithErrorHandling(() =>
@@ -64,12 +59,6 @@ export const noteEntity = {
 				createdAt: makeCreatedAt(),
 				...args,
 			}),
-		);
-	},
-
-	update: (note: UnexportedNote, args: UpdateNoteArgs): UnexportedNote => {
-		return createEntityWithErrorHandling(() =>
-			Object.freeze({ ...note, ...args }),
 		);
 	},
 
