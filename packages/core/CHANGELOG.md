@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.5](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.1.4...@s-hirano-ist/s-core-v1.1.5) (2025-12-14)
+
+
+### Maintenance
+
+* **@s-hirano-ist/s-core:** Synchronize npm-packages versions
+
 ## [1.1.4](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.1.3...@s-hirano-ist/s-core-v1.1.4) (2025-12-14)
 
 
