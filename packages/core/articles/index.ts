@@ -4,7 +4,6 @@ export * from "./entities/article-entity";
 // Events
 export * from "./events/article-created-event";
 export * from "./events/article-deleted-event";
-export * from "./events/article-updated-event";
 
 // Repositories
 export * from "./repositories/articles-command-repository.interface";

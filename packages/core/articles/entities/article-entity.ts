@@ -108,14 +108,6 @@ type CreateArticleArgs = Readonly<{
 	url: Url;
 }>;
 
-type UpdateArticleArgs = Readonly<{
-	title: ArticleTitle;
-	quote: Quote;
-	ogTitle: OgTitle;
-	ogDescription: OgDescription;
-	ogImageUrl: OgImageUrl;
-}>;
-
 export const articleEntity = {
 	create: (args: CreateArticleArgs): UnexportedArticle => {
 		return createEntityWithErrorHandling(() =>
@@ -126,14 +118,6 @@ export const articleEntity = {
 				createdAt: makeCreatedAt(),
 				...args,
 			}),
-		);
-	},
-	update: (
-		article: UnexportedArticle,
-		args: UpdateArticleArgs,
-	): UnexportedArticle => {
-		return createEntityWithErrorHandling(() =>
-			Object.freeze({ ...article, ...args }),
 		);
 	},
 	export: (article: UnexportedArticle): ExportedArticle => {
