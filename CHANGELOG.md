@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.1.5](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.1.4...s-private-v10.1.5) (2025-12-14)
+
+
+### Bug Fixes
+
+* add LAST_UPDATED value to Status enum and create migration script ([13b8a00](https://github.com/s-hirano-ist/s-private/commit/13b8a0078ca151ac7304c338aef8f5fdd59b0aa2))
+* prisma migrate ([6884f48](https://github.com/s-hirano-ist/s-private/commit/6884f48476cc98b3bd2e76d58c64b367e27fdcf2))
+* prisma migrate settings ([289369e](https://github.com/s-hirano-ist/s-private/commit/289369e10d4ade14890464b1564ab8e9ac05505f))
+* update prisma config to properly define datasource ([2282d6c](https://github.com/s-hirano-ist/s-private/commit/2282d6c9c692fb0b7889539aa485e541fdf397b9))
+
+
+### Maintenance
+
+* add dotenv and dev dep ([3273f4e](https://github.com/s-hirano-ist/s-private/commit/3273f4e10f03d57df2751c8205798e2796c92b61))
+
 ## [10.1.4](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.1.3...s-private-v10.1.4) (2025-12-14)
 
 
