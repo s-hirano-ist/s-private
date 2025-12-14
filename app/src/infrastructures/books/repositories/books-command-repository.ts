@@ -1,10 +1,6 @@
-import type {
-	ISBN,
-	UnexportedBook,
-} from "@s-hirano-ist/s-core/books/entities/books-entity";
+import type { UnexportedBook } from "@s-hirano-ist/s-core/books/entities/books-entity";
 import { BookCreatedEvent } from "@s-hirano-ist/s-core/books/events/book-created-event";
 import { BookDeletedEvent } from "@s-hirano-ist/s-core/books/events/book-deleted-event";
-import { BookUpdatedEvent } from "@s-hirano-ist/s-core/books/events/book-updated-event";
 import type { IBooksCommandRepository } from "@s-hirano-ist/s-core/books/repositories/books-command-repository.interface";
 import type {
 	Id,
@@ -28,22 +24,6 @@ async function create(data: UnexportedBook) {
 			title: response.title,
 			userId: response.userId,
 			caller: "addBooks",
-		}),
-	);
-}
-
-async function update(ISBN: ISBN, userId: UserId, data: UnexportedBook) {
-	const response = await prisma.book.update({
-		where: { ISBN_userId: { ISBN, userId } },
-		data,
-		select: { ISBN: true, title: true, userId: true },
-	});
-	await eventDispatcher.dispatch(
-		new BookUpdatedEvent({
-			ISBN: response.ISBN,
-			title: response.title,
-			userId: response.userId,
-			caller: "updateBook",
 		}),
 	);
 }
@@ -80,7 +60,6 @@ async function fetchBookFromGitHub(): Promise<UnexportedBook[]> {
 
 export const booksCommandRepository: IBooksCommandRepository = {
 	create,
-	update,
 	deleteById,
 	fetchBookFromGitHub,
 };
