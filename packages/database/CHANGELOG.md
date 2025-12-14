@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.4](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.1.3...@s-hirano-ist/s-database-v1.1.4) (2025-12-14)
+
+
+### Maintenance
+
+* **deps:** update patch ([e021e06](https://github.com/s-hirano-ist/s-private/commit/e021e069b5b42978159621c83dc5af0e7954580b))
+* downgrad e prisma accelerate ([0120c84](https://github.com/s-hirano-ist/s-private/commit/0120c84f6dd62e46c473bede77ad74a34b236adf))
+
 ## [1.1.3](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.1.2...@s-hirano-ist/s-database-v1.1.3) (2025-12-12)
 
 
