@@ -108,16 +108,6 @@ type CreateImageArgs = Readonly<{
 	description?: Description;
 }>;
 
-type UpdateImageArgs = Readonly<{
-	path?: Path;
-	contentType?: ContentType;
-	fileSize?: FileSize;
-	width?: Pixel;
-	height?: Pixel;
-	tags?: Array<Tag>;
-	description?: Description;
-}>;
-
 export const imageEntity = {
 	create: (args: CreateImageArgs): UnexportedImage => {
 		return createEntityWithErrorHandling(() =>
@@ -127,12 +117,6 @@ export const imageEntity = {
 				createdAt: makeCreatedAt(),
 				...args,
 			}),
-		);
-	},
-
-	update: (image: UnexportedImage, args: UpdateImageArgs): UnexportedImage => {
-		return createEntityWithErrorHandling(() =>
-			Object.freeze({ ...image, ...args }),
 		);
 	},
 

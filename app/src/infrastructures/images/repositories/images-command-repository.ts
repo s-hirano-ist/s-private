@@ -8,7 +8,6 @@ import type {
 } from "@s-hirano-ist/s-core/images/entities/image-entity";
 import { ImageCreatedEvent } from "@s-hirano-ist/s-core/images/events/image-created-event";
 import { ImageDeletedEvent } from "@s-hirano-ist/s-core/images/events/image-deleted-event";
-import { ImageUpdatedEvent } from "@s-hirano-ist/s-core/images/events/image-updated-event";
 import type { IImagesCommandRepository } from "@s-hirano-ist/s-core/images/repositories/images-command-repository.interface";
 import { env } from "@/env";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
@@ -29,22 +28,6 @@ async function create(data: UnexportedImage): Promise<void> {
 			id: response.id,
 			userId: response.userId,
 			caller: "addImage",
-		}),
-	);
-}
-
-async function update(path: Path, userId: UserId, data: UnexportedImage) {
-	const response = await prisma.image.update({
-		where: { path_userId: { path, userId } },
-		data,
-		select: { id: true, userId: true, path: true },
-	});
-	await eventDispatcher.dispatch(
-		new ImageUpdatedEvent({
-			id: response.id,
-			path: response.path,
-			userId: response.userId,
-			caller: "updateImage",
 		}),
 	);
 }
@@ -78,7 +61,6 @@ async function deleteById(
 
 export const imagesCommandRepository: IImagesCommandRepository = {
 	create,
-	update,
 	uploadToStorage,
 	deleteById,
 };
