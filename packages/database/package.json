@@ -49,7 +49,7 @@
 	"license": "AGPL-3.0",
 	"dependencies": {
 		"@prisma/client": "7.1.0",
-		"@prisma/extension-accelerate": "3.0.1"
+		"@prisma/extension-accelerate": "3.0.0"
 	},
 	"devDependencies": {
 		"prisma": "7.1.0",
