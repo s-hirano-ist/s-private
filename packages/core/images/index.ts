@@ -4,7 +4,6 @@ export * from "./entities/image-entity";
 // Events
 export * from "./events/image-created-event";
 export * from "./events/image-deleted-event";
-export * from "./events/image-updated-event";
 
 // Repositories
 export * from "./repositories/images-command-repository.interface";

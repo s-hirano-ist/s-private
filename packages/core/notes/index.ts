@@ -4,7 +4,6 @@ export * from "./entities/note-entity";
 // Events
 export * from "./events/note-created-event";
 export * from "./events/note-deleted-event";
-export * from "./events/note-updated-event";
 
 // Repositories
 export * from "./repositories/notes-command-repository.interface";
