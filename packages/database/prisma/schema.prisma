@@ -9,6 +9,7 @@ datasource db {
 
 enum Status {
   UNEXPORTED
+  LAST_UPDATED
   EXPORTED
 }
 
