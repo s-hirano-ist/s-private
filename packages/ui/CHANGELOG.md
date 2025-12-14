@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.4](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.1.3...@s-hirano-ist/s-ui-v1.1.4) (2025-12-14)
+
+
+### Maintenance
+
+* **deps:** update patch ([99d5ba9](https://github.com/s-hirano-ist/s-private/commit/99d5ba99f33404821624d04db651d8db4d61aaa7))
+* **deps:** update patch ([e021e06](https://github.com/s-hirano-ist/s-private/commit/e021e069b5b42978159621c83dc5af0e7954580b))
+
 ## [1.1.3](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.1.2...@s-hirano-ist/s-ui-v1.1.3) (2025-12-12)
 
 

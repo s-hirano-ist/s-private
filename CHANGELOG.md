@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.1.4](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.1.3...s-private-v10.1.4) (2025-12-14)
+
+
+### Maintenance
+
+* **deps:** update github actions ([d53e65f](https://github.com/s-hirano-ist/s-private/commit/d53e65feececb6799e869896390f61f3a865c4e0))
+* **deps:** update github actions ([fb652d2](https://github.com/s-hirano-ist/s-private/commit/fb652d2b17bdbb6e5c800c72b2a8ca9b00bcaebd))
+* **deps:** update node.js to 682368d ([fdaf139](https://github.com/s-hirano-ist/s-private/commit/fdaf139cf7b6244ff6ed69be4d34e790de521e72))
+* **deps:** update patch ([99d5ba9](https://github.com/s-hirano-ist/s-private/commit/99d5ba99f33404821624d04db651d8db4d61aaa7))
+* **deps:** update patch ([e021e06](https://github.com/s-hirano-ist/s-private/commit/e021e069b5b42978159621c83dc5af0e7954580b))
+* downgrad e prisma accelerate ([0120c84](https://github.com/s-hirano-ist/s-private/commit/0120c84f6dd62e46c473bede77ad74a34b236adf))
+
 ## [10.1.3](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.1.2...s-private-v10.1.3) (2025-12-12)
 
 
