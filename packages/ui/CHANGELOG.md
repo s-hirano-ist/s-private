@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.6](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.1.5...@s-hirano-ist/s-ui-v1.1.6) (2025-12-15)
+
+
+### Maintenance
+
+* **deps:** update minor ([aea5033](https://github.com/s-hirano-ist/s-private/commit/aea503303e2c4ef38c69037849f3e0bf6298de5a))
+
 ## [1.1.5](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.1.4...@s-hirano-ist/s-ui-v1.1.5) (2025-12-14)
 
 

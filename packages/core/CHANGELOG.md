@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.6](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.1.5...@s-hirano-ist/s-core-v1.1.6) (2025-12-15)
+
+
+### Maintenance
+
+* delete article no used codes ([995acec](https://github.com/s-hirano-ist/s-private/commit/995aceca498f739501713524cf5afba2f26b8a6a))
+* delete article no used codes ([d914e1a](https://github.com/s-hirano-ist/s-private/commit/d914e1a6c406ab3afce2cf90809f0d89e2c34da7))
+* delete books no used codes ([276c2be](https://github.com/s-hirano-ist/s-private/commit/276c2be1d82e383fe49d96e58359fb914d48f862))
+* delete images no used codes ([e1494be](https://github.com/s-hirano-ist/s-private/commit/e1494bec6091b8d87d92c358697241b238d05287))
+* update notes ([3da40f1](https://github.com/s-hirano-ist/s-private/commit/3da40f1b625a672012ea4c43fe46afb73d5a9ede))
+
 ## [1.1.5](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.1.4...@s-hirano-ist/s-core-v1.1.5) (2025-12-14)
 
 
