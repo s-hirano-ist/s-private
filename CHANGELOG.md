@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.1.6](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.1.5...s-private-v10.1.6) (2025-12-15)
+
+
+### Maintenance
+
+* delete article no used codes ([995acec](https://github.com/s-hirano-ist/s-private/commit/995aceca498f739501713524cf5afba2f26b8a6a))
+* delete article no used codes ([d914e1a](https://github.com/s-hirano-ist/s-private/commit/d914e1a6c406ab3afce2cf90809f0d89e2c34da7))
+* delete books no used codes ([276c2be](https://github.com/s-hirano-ist/s-private/commit/276c2be1d82e383fe49d96e58359fb914d48f862))
+* delete images no used codes ([e1494be](https://github.com/s-hirano-ist/s-private/commit/e1494bec6091b8d87d92c358697241b238d05287))
+* **deps:** update minor ([aea5033](https://github.com/s-hirano-ist/s-private/commit/aea503303e2c4ef38c69037849f3e0bf6298de5a))
+* **deps:** update node.js to v24.12.0 ([992a9b3](https://github.com/s-hirano-ist/s-private/commit/992a9b39ea35648e37a358af133f8c7efd1da256))
+* **deps:** update node.js to v24.12.0 ([8ffe9a8](https://github.com/s-hirano-ist/s-private/commit/8ffe9a8db33613e1f1607d53e60b3911a0b68a0a))
+* **deps:** update pnpm to v10.25.0 ([99331dc](https://github.com/s-hirano-ist/s-private/commit/99331dce3592ec37a996ad1e5a753cccba37a8fa))
+* update notes ([3da40f1](https://github.com/s-hirano-ist/s-private/commit/3da40f1b625a672012ea4c43fe46afb73d5a9ede))
+
 ## [10.1.5](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.1.4...s-private-v10.1.5) (2025-12-14)
 
 
