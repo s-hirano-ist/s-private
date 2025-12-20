@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.2.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.1.6...@s-hirano-ist/s-ui-v1.2.0) (2025-12-20)
+
+
+### Features
+
+* add small changes on ux of app ([c5bed5e](https://github.com/s-hirano-ist/s-private/commit/c5bed5eef4d510ca8df2337000807c82ca752e5a))
+
+
+### Bug Fixes
+
+* types of s-ui ([bd77def](https://github.com/s-hirano-ist/s-private/commit/bd77def16e8bc80062a0d3ec4c909037fc292973))
+
+
+### Documentation
+
+* add documents ([2010d9d](https://github.com/s-hirano-ist/s-private/commit/2010d9dc1e993cb52d899f2aa3279ecacc376dde))
+
+
+### Maintenance
+
+* add typecheck ([83d07d4](https://github.com/s-hirano-ist/s-private/commit/83d07d492a64c66fe32c1c16485840acfdde441a))
+
 ## [1.1.6](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.1.5...@s-hirano-ist/s-ui-v1.1.6) (2025-12-15)
 
 
