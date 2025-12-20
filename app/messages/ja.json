@@ -30,7 +30,10 @@
 		"cancel": "キャンセル",
 		"confirmDelete": "削除の確認",
 		"resignIn": "再サインイン",
-		"returnHome": "ホームに戻る"
+		"returnHome": "ホームに戻る",
+		"useCustomValue": "「{value}」を使用",
+		"noResults": "見つかりませんでした",
+		"searchPlaceholder": "検索..."
 	},
 	"statusCode": {
 		"000": "近日公開",

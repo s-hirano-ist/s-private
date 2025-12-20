@@ -30,7 +30,10 @@
 		"cancel": "Cancel",
 		"confirmDelete": "Confirm Delete",
 		"resignIn": "Sign in again",
-		"returnHome": "Return to Home"
+		"returnHome": "Return to Home",
+		"useCustomValue": "Use \"{value}\"",
+		"noResults": "No results found",
+		"searchPlaceholder": "Search..."
 	},
 	"statusCode": {
 		"000": "Comming Soon",

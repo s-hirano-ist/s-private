@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { FolderIcon, TableOfContentsIcon, TagIcon } from "lucide-react";
 import { FormDropdownInput } from "./form-dropdown-input";
 
 const meta = {
@@ -12,8 +11,18 @@ const meta = {
 		placeholder: { control: { type: "text" } },
 		required: { control: { type: "boolean" } },
 		disabled: { control: { type: "boolean" } },
+		emptyMessage: { control: { type: "text" } },
+		searchPlaceholder: { control: { type: "text" } },
+		customValueLabel: { control: false },
 	},
 	tags: ["autodocs"],
+	decorators: [
+		(Story) => (
+			<div className="w-80">
+				<Story />
+			</div>
+		),
+	],
 } satisfies Meta<typeof FormDropdownInput>;
 
 export default meta;
@@ -50,7 +59,6 @@ export const Default: Story = {
 		name: "category",
 		placeholder: "カテゴリーを選択または入力",
 		options: mockCategories,
-		triggerIcon: <TableOfContentsIcon />,
 		required: true,
 	},
 };
@@ -62,7 +70,6 @@ export const Tags: Story = {
 		name: "tag",
 		placeholder: "タグを選択または入力",
 		options: mockTags,
-		triggerIcon: <TagIcon />,
 	},
 };
 
@@ -73,7 +80,6 @@ export const Folders: Story = {
 		name: "folder",
 		placeholder: "保存先フォルダーを選択",
 		options: mockFolders,
-		triggerIcon: <FolderIcon />,
 		required: true,
 	},
 };
@@ -85,7 +91,7 @@ export const EmptyOptions: Story = {
 		name: "empty",
 		placeholder: "オプションがありません",
 		options: [],
-		triggerIcon: <TableOfContentsIcon />,
+		emptyMessage: "オプションがありません",
 	},
 };
 
@@ -96,7 +102,6 @@ export const Disabled: Story = {
 		name: "disabled",
 		placeholder: "選択できません",
 		options: mockCategories,
-		triggerIcon: <TableOfContentsIcon />,
 		disabled: true,
 	},
 };
@@ -115,7 +120,6 @@ export const LongOptionNames: Story = {
 			{ id: "2", name: "バックエンド開発とデータベース設計・最適化" },
 			{ id: "3", name: "モバイルアプリケーション開発（iOS・Android対応）" },
 		],
-		triggerIcon: <TableOfContentsIcon />,
 	},
 };
 
@@ -129,6 +133,30 @@ export const ManyOptions: Story = {
 			id: String(i + 1),
 			name: `オプション ${i + 1}`,
 		})),
-		triggerIcon: <TableOfContentsIcon />,
+	},
+};
+
+export const CustomSearchPlaceholder: Story = {
+	args: {
+		label: "カスタム検索プレースホルダー",
+		htmlFor: "custom-search",
+		name: "custom-search",
+		placeholder: "選択してください",
+		options: mockCategories,
+		searchPlaceholder: "カテゴリーを検索...",
+		emptyMessage: "該当するカテゴリーがありません",
+	},
+};
+
+export const JapaneseLabels: Story = {
+	args: {
+		label: "カテゴリー",
+		htmlFor: "japanese",
+		name: "japanese",
+		placeholder: "カテゴリーを選択",
+		options: mockCategories,
+		searchPlaceholder: "検索...",
+		emptyMessage: "見つかりませんでした",
+		customValueLabel: (value) => `「${value}」を使用`,
 	},
 };
