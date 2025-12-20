@@ -48,3 +48,6 @@ packages/core/dist/
 packages/database/dist/
 packages/ui/dist/
 packages/notification/dist/
+
+# TypeDoc generated documentation
+docs/api/

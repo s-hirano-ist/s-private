@@ -1,0 +1,12 @@
+{
+	"$schema": "https://typedoc.org/schema.json",
+	"entryPoints": ["./index.ts"],
+	"tsconfig": "./tsconfig.json",
+	"exclude": [
+		"**/*.test.ts",
+		"**/*.test.tsx",
+		"**/*.stories.tsx",
+		"**/dist/**"
+	],
+	"name": "@s-hirano-ist/s-ui"
+}

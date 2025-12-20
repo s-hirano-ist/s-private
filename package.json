@@ -43,7 +43,11 @@
 		"storybook:build": "storybook build -o .storybook-static",
 		"deps:check": "depcruise app/src packages/ui packages/core packages/notification --config .dependency-cruiser.cjs",
 		"deps:circular": "depcruise app/src packages/ui packages/core packages/notification --config .dependency-cruiser.cjs --output-type text --focus-depth 0",
-		"deps:graph": "depcruise app/src packages/ui packages/core packages/notification --config .dependency-cruiser.cjs --output-type dot | dot -T svg > dependency-graph.svg"
+		"deps:graph": "depcruise app/src packages/ui packages/core packages/notification --config .dependency-cruiser.cjs --output-type dot | dot -T svg > dependency-graph.svg",
+		"docs:build": "typedoc",
+		"docs:serve": "npx serve docs/api",
+		"docs:watch": "typedoc --watch",
+		"docs:clean": "rm -rf docs/api"
 	},
 	"dependencies": {
 		"next": "15.5.9",
@@ -81,6 +85,8 @@
 		"playwright": "1.57.0",
 		"storybook": "10.1.10",
 		"tailwindcss": "4.1.18",
+		"typedoc": "0.28.15",
+		"typedoc-plugin-mdn-links": "5.0.10",
 		"typescript": "5.9.3",
 		"typescript-eslint": "8.49.0",
 		"vitest": "4.0.16"
