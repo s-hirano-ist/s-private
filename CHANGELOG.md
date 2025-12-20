@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.2.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.1.6...s-private-v10.2.0) (2025-12-20)
+
+
+### Features
+
+* add s-notification ([4344f0c](https://github.com/s-hirano-ist/s-private/commit/4344f0c0dc3730d16e916c6b4f262f5221303de9))
+* add small changes on ux of app ([c5bed5e](https://github.com/s-hirano-ist/s-private/commit/c5bed5eef4d510ca8df2337000807c82ca752e5a))
+* update package exports and add transpilePackages for improved module handling ([dbe0a48](https://github.com/s-hirano-ist/s-private/commit/dbe0a483327b865639207a1505ca89b4e802d573))
+
+
+### Bug Fixes
+
+* sentry warnings ([c4c61b1](https://github.com/s-hirano-ist/s-private/commit/c4c61b1606a257a4078af741209c8666371619a9))
+* types of s-ui ([bd77def](https://github.com/s-hirano-ist/s-private/commit/bd77def16e8bc80062a0d3ec4c909037fc292973))
+
+
+### Documentation
+
+* add documents ([2010d9d](https://github.com/s-hirano-ist/s-private/commit/2010d9dc1e993cb52d899f2aa3279ecacc376dde))
+* fix deploy hash ([3b244b8](https://github.com/s-hirano-ist/s-private/commit/3b244b80b02c8e30a74d1e62eafa76dc73f85620))
+
+
+### Maintenance
+
+* add typecheck ([83d07d4](https://github.com/s-hirano-ist/s-private/commit/83d07d492a64c66fe32c1c16485840acfdde441a))
+* **deps:** update patch ([d0a26d0](https://github.com/s-hirano-ist/s-private/commit/d0a26d042a20ace2f89b67f25df92efdd5d74951))
+* **deps:** update patch ([612cfa5](https://github.com/s-hirano-ist/s-private/commit/612cfa5cace670a668f9dc3e93473bb139745847))
+* downgrade prisma extension ([8d1f7c3](https://github.com/s-hirano-ist/s-private/commit/8d1f7c30c6f4e480ea29b5ccf8c0f852f1212baf))
+* fix build of ci ([eee3181](https://github.com/s-hirano-ist/s-private/commit/eee3181f21cecbcfdb03188f2fbcc6ee710d46aa))
+* fix knip ([b0a8c36](https://github.com/s-hirano-ist/s-private/commit/b0a8c36dc3b7c0ba3046aa434b1827d59e16b971))
+
 ## [10.1.6](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.1.5...s-private-v10.1.6) (2025-12-15)
 
 

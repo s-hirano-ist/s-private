@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.2.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.1.6...@s-hirano-ist/s-database-v1.2.0) (2025-12-20)
+
+
+### Features
+
+* add small changes on ux of app ([c5bed5e](https://github.com/s-hirano-ist/s-private/commit/c5bed5eef4d510ca8df2337000807c82ca752e5a))
+
+
+### Maintenance
+
+* add typecheck ([83d07d4](https://github.com/s-hirano-ist/s-private/commit/83d07d492a64c66fe32c1c16485840acfdde441a))
+* **deps:** update patch ([612cfa5](https://github.com/s-hirano-ist/s-private/commit/612cfa5cace670a668f9dc3e93473bb139745847))
+* downgrade prisma extension ([8d1f7c3](https://github.com/s-hirano-ist/s-private/commit/8d1f7c30c6f4e480ea29b5ccf8c0f852f1212baf))
+
 ## [1.1.6](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.1.5...@s-hirano-ist/s-database-v1.1.6) (2025-12-15)
 
 
