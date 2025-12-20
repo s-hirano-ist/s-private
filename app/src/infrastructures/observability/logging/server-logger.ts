@@ -1,10 +1,10 @@
 import "server-only";
+import type { NotificationService } from "@s-hirano-ist/s-notification";
 import pino from "pino";
 import {
 	type LogContext,
 	type Logger,
 	type LogOptions,
-	type MonitoringService,
 	mapStatusToLogLevel,
 } from "./logger.interface";
 
@@ -14,11 +14,11 @@ const pinoConfig = {
 
 export class ServerLogger implements Logger {
 	private logger: pino.Logger;
-	private monitoringService: MonitoringService;
+	private notificationService: NotificationService;
 
-	constructor(monitoringService: MonitoringService) {
+	constructor(notificationService: NotificationService) {
 		this.logger = pino(pinoConfig);
-		this.monitoringService = monitoringService;
+		this.notificationService = notificationService;
 	}
 
 	info(message: string, context: LogContext, options?: LogOptions): void {
@@ -76,16 +76,29 @@ export class ServerLogger implements Logger {
 
 		// Send notification if requested
 		if (options?.notify) {
+			const notificationContext = {
+				caller: context.caller,
+				userId: context.userId,
+			};
 			try {
 				switch (finalLevel) {
 					case "info":
-						await this.monitoringService.notifyInfo(message, context);
+						await this.notificationService.notifyInfo(
+							message,
+							notificationContext,
+						);
 						break;
 					case "warn":
-						await this.monitoringService.notifyWarning(message, context);
+						await this.notificationService.notifyWarning(
+							message,
+							notificationContext,
+						);
 						break;
 					case "error":
-						await this.monitoringService.notifyError(message, context);
+						await this.notificationService.notifyError(
+							message,
+							notificationContext,
+						);
 						break;
 				}
 			} catch (notificationError) {

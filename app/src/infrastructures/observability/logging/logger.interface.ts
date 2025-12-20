@@ -10,7 +10,7 @@ export type LogContext = {
 };
 
 export type LogOptions = {
-	notify?: boolean; // Whether to send Pushover notification
+	notify?: boolean; // Whether to send notification
 };
 
 export type Logger = {
@@ -22,12 +22,6 @@ export type Logger = {
 		error?: unknown,
 		options?: LogOptions,
 	): void;
-};
-
-export type MonitoringService = {
-	notifyError(message: string, context: LogContext): Promise<void>;
-	notifyWarning(message: string, context: LogContext): Promise<void>;
-	notifyInfo(message: string, context: LogContext): Promise<void>;
 };
 
 /**

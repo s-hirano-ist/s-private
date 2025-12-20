@@ -1,7 +1,8 @@
 import { Prisma } from "@s-hirano-ist/s-database";
+import { NotificationError } from "@s-hirano-ist/s-notification";
 import { AuthError } from "next-auth";
 import { describe, expect, test, vi } from "vitest";
-import { PushoverError, UnexpectedError } from "@/common/error/error-classes";
+import { UnexpectedError } from "@/common/error/error-classes";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { wrapServerSideErrorForClient } from "./error-wrapper";
 
@@ -18,8 +19,8 @@ vi.mock("@/infrastructures/events/event-setup", () => ({
 }));
 
 describe("wrapServerSideErrorForClient", () => {
-	test("should handle PushoverError", async () => {
-		const error = new PushoverError();
+	test("should handle NotificationError", async () => {
+		const error = new NotificationError();
 
 		const result = await wrapServerSideErrorForClient(error);
 

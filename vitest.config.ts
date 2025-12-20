@@ -54,6 +54,15 @@ export default defineConfig({
 					include: ["./**/*.test.?(c|m)[jt]s?(x)"],
 				},
 			},
+			// Notification package
+			{
+				extends: "./packages/notification/vitest.config.ts",
+				test: {
+					name: "notification",
+					root: "./packages/notification",
+					include: ["./**/*.test.?(c|m)[jt]s?(x)"],
+				},
+			},
 		],
 		coverage: {
 			enabled: true,
@@ -63,6 +72,7 @@ export default defineConfig({
 				"app/**/*.{ts,tsx}",
 				"packages/ui/**/*.{ts,tsx}",
 				"packages/core/**/*.{ts,tsx}",
+				"packages/notification/**/*.{ts,tsx}",
 			],
 			exclude: [
 				"**/.next/**/*",

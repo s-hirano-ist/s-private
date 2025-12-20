@@ -3,27 +3,10 @@ import {
 	DuplicateError,
 	FileNotAllowedError,
 	InvalidFormatError,
-	PushoverError,
 	UnexpectedError,
 } from "./error-classes";
 
 describe("error-classes", () => {
-	describe("PushoverError", () => {
-		test("should create PushoverError with correct message and name", () => {
-			const error = new PushoverError();
-
-			expect(error).toBeInstanceOf(Error);
-			expect(error.message).toBe("pushoverSend");
-			expect(error.name).toBe("PushoverError");
-		});
-
-		test("should be instance of Error", () => {
-			const error = new PushoverError();
-
-			expect(error instanceof Error).toBe(true);
-		});
-	});
-
 	describe("UnexpectedError", () => {
 		test("should create error with correct message and name", () => {
 			const error = new UnexpectedError();
@@ -61,15 +44,8 @@ describe("error-classes", () => {
 	});
 
 	describe("error handling", () => {
-		test("should allow PushoverError to be caught as Error", () => {
-			const error = new PushoverError();
-			expect(error).toBeInstanceOf(Error);
-			expect(error).toBeInstanceOf(PushoverError);
-		});
-
 		test("should allow all errors to be thrown and caught", () => {
 			const errors = [
-				new PushoverError(),
 				new UnexpectedError(),
 				new InvalidFormatError(),
 				new DuplicateError(),
@@ -84,14 +60,14 @@ describe("error-classes", () => {
 		});
 
 		test("errors should be distinguishable by type", () => {
-			const pushoverError = new PushoverError();
 			const unexpectedError = new UnexpectedError();
-
-			expect(pushoverError).toBeInstanceOf(PushoverError);
-			expect(pushoverError).not.toBeInstanceOf(UnexpectedError);
+			const duplicateError = new DuplicateError();
 
 			expect(unexpectedError).toBeInstanceOf(UnexpectedError);
-			expect(unexpectedError).not.toBeInstanceOf(PushoverError);
+			expect(unexpectedError).not.toBeInstanceOf(DuplicateError);
+
+			expect(duplicateError).toBeInstanceOf(DuplicateError);
+			expect(duplicateError).not.toBeInstanceOf(UnexpectedError);
 		});
 	});
 });

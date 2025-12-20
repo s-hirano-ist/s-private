@@ -1,10 +1,3 @@
-export class PushoverError extends Error {
-	constructor() {
-		super("pushoverSend");
-		this.name = "PushoverError";
-	}
-}
-
 export class UnexpectedError extends Error {
 	constructor() {
 		super("unexpected");

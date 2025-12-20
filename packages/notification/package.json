@@ -1,0 +1,42 @@
+{
+	"name": "@s-hirano-ist/s-notification",
+	"version": "1.1.6",
+	"description": "Notification service for s-private application - Pushover integration",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
+	"files": [
+		"dist",
+		"README.md",
+		"LICENSE"
+	],
+	"scripts": {
+		"build": "tsc",
+		"prepublishOnly": "pnpm run build",
+		"clean": "rm -rf dist",
+		"typecheck": "tsc --noEmit"
+	},
+	"keywords": [
+		"notification",
+		"pushover",
+		"typescript"
+	],
+	"author": "",
+	"license": "AGPL-3.0",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/s-hirano-ist/s-private.git",
+		"directory": "packages/notification"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"devDependencies": {
+		"typescript": "5.9.3"
+	}
+}
