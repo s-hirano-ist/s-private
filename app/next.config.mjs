@@ -33,6 +33,7 @@ const cspHeader = `
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+	transpilePackages: ["@s-hirano-ist/s-core", "@s-hirano-ist/s-notification"],
 	serverExternalPackages: ["sharp"],
 	typedRoutes: true,
 	experimental: {

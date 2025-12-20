@@ -2,13 +2,25 @@
 	"name": "@s-hirano-ist/s-notification",
 	"version": "1.1.6",
 	"description": "Notification service for s-private application - Pushover integration",
+	"type": "module",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"exports": {
 		".": {
-			"types": "./dist/index.d.ts",
-			"default": "./dist/index.js"
+			"types": "./index.ts",
+			"default": "./index.ts"
 		}
+	},
+	"publishConfig": {
+		"access": "public",
+		"exports": {
+			".": {
+				"types": "./dist/index.d.ts",
+				"default": "./dist/index.js"
+			}
+		},
+		"main": "./dist/index.js",
+		"types": "./dist/index.d.ts"
 	},
 	"files": [
 		"dist",
@@ -32,9 +44,6 @@
 		"type": "git",
 		"url": "https://github.com/s-hirano-ist/s-private.git",
 		"directory": "packages/notification"
-	},
-	"publishConfig": {
-		"access": "public"
 	},
 	"devDependencies": {
 		"typescript": "5.9.3"
