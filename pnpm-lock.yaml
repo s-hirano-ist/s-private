@@ -121,8 +121,8 @@ importers:
   app:
     dependencies:
       '@prisma/extension-accelerate':
-        specifier: 3.0.1
-        version: 3.0.1(@prisma/client@7.1.0(prisma@7.1.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3))
+        specifier: 3.0.0
+        version: 3.0.0(@prisma/client@7.1.0(prisma@7.1.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3))
       '@s-hirano-ist/s-core':
         specifier: workspace:*
         version: link:../packages/core
@@ -240,8 +240,8 @@ importers:
         specifier: 7.1.0
         version: 7.1.0(prisma@7.1.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3)
       '@prisma/extension-accelerate':
-        specifier: 3.0.1
-        version: 3.0.1(@prisma/client@7.1.0(prisma@7.1.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3))
+        specifier: 3.0.0
+        version: 3.0.0(@prisma/client@7.1.0(prisma@7.1.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3))
     devDependencies:
       dotenv:
         specifier: 17.2.3
@@ -1687,8 +1687,8 @@ packages:
   '@prisma/engines@7.1.0':
     resolution: {integrity: sha512-KQlraOybdHAzVv45KWKJzpR9mJLkib7/TyApQpqrsL7FUHfgjIcy8jrVGt3iNfG6/GDDl+LNlJ84JSQwIfdzxA==}
 
-  '@prisma/extension-accelerate@3.0.1':
-    resolution: {integrity: sha512-xc+kn4AjjTzS9jsdD1JWCebB09y0Aj+C8GjjG7oUm81PF9psvmJOw5rxpl7tOEBz/8hmuNX996XL28ys/OLxVA==}
+  '@prisma/extension-accelerate@3.0.0':
+    resolution: {integrity: sha512-xOhRCdPTdAwwdbxDr14s0rg73o8LunzRf8VtzFi4P6G/SvA3n/OgRIClXpihEQvoyDWVEIE29MdSxaaYdjsIMw==}
     engines: {node: '>=22'}
     peerDependencies:
       '@prisma/client': '>=4.16.1'
@@ -8290,7 +8290,7 @@ snapshots:
       '@prisma/fetch-engine': 7.1.0
       '@prisma/get-platform': 7.1.0
 
-  '@prisma/extension-accelerate@3.0.1(@prisma/client@7.1.0(prisma@7.1.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3))':
+  '@prisma/extension-accelerate@3.0.0(@prisma/client@7.1.0(prisma@7.1.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3))':
     dependencies:
       '@prisma/client': 7.1.0(prisma@7.1.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3)
 
@@ -14355,7 +14355,7 @@ snapshots:
       acorn-import-phases: 1.0.4(acorn@8.15.0)
       browserslist: 4.28.1
       chrome-trace-event: 1.0.4
-      enhanced-resolve: 5.18.3
+      enhanced-resolve: 5.18.4
       es-module-lexer: 1.7.0
       eslint-scope: 5.1.1
       events: 3.3.0
