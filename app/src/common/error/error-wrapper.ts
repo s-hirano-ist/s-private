@@ -3,6 +3,7 @@ import "server-only";
 import { SystemErrorEvent } from "@s-hirano-ist/s-core/common/events/system-error-event";
 import { SystemWarningEvent } from "@s-hirano-ist/s-core/common/events/system-warning-event";
 import { Prisma } from "@s-hirano-ist/s-database";
+import { NotificationError } from "@s-hirano-ist/s-notification";
 import { AuthError } from "next-auth";
 import type { ServerAction } from "@/common/types";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
@@ -11,7 +12,6 @@ import {
 	DuplicateError,
 	FileNotAllowedError,
 	InvalidFormatError,
-	PushoverError,
 	UnexpectedError,
 } from "./error-classes";
 
@@ -34,7 +34,7 @@ export async function wrapServerSideErrorForClient(
 ): Promise<ServerAction> {
 	initializeEventHandlers();
 
-	if (error instanceof PushoverError) {
+	if (error instanceof NotificationError) {
 		await eventDispatcher.dispatch(
 			new SystemErrorEvent({
 				message: error.message,

@@ -2,37 +2,98 @@
 	"name": "@s-hirano-ist/s-core",
 	"version": "1.1.6",
 	"description": "Core domain layer for s-private application - Clean architecture domain entities, repositories, and services",
+	"type": "module",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"exports": {
 		".": {
-			"types": "./dist/index.d.ts",
-			"default": "./dist/index.js"
+			"types": "./index.ts",
+			"default": "./index.ts"
 		},
 		"./articles": {
-			"types": "./dist/articles/index.d.ts",
-			"default": "./dist/articles/index.js"
+			"types": "./articles/index.ts",
+			"default": "./articles/index.ts"
 		},
+		"./articles/entities/*": "./articles/entities/*.ts",
+		"./articles/events/*": "./articles/events/*.ts",
+		"./articles/repositories/*": "./articles/repositories/*.ts",
+		"./articles/services/*": "./articles/services/*.ts",
+		"./articles/types/*": "./articles/types/*.ts",
 		"./books": {
-			"types": "./dist/books/index.d.ts",
-			"default": "./dist/books/index.js"
+			"types": "./books/index.ts",
+			"default": "./books/index.ts"
 		},
+		"./books/entities/*": "./books/entities/*.ts",
+		"./books/events/*": "./books/events/*.ts",
+		"./books/repositories/*": "./books/repositories/*.ts",
+		"./books/services/*": "./books/services/*.ts",
+		"./books/types/*": "./books/types/*.ts",
 		"./common": {
-			"types": "./dist/common/index.d.ts",
-			"default": "./dist/common/index.js"
+			"types": "./common/index.ts",
+			"default": "./common/index.ts"
 		},
+		"./common/entities/*": "./common/entities/*.ts",
+		"./common/events/*": "./common/events/*.ts",
+		"./common/services/*": "./common/services/*.ts",
+		"./common/types/*": "./common/types/*.ts",
 		"./errors": {
-			"types": "./dist/errors/index.d.ts",
-			"default": "./dist/errors/index.js"
+			"types": "./errors/index.ts",
+			"default": "./errors/index.ts"
 		},
+		"./errors/*": "./errors/*.ts",
 		"./images": {
-			"types": "./dist/images/index.d.ts",
-			"default": "./dist/images/index.js"
+			"types": "./images/index.ts",
+			"default": "./images/index.ts"
 		},
+		"./images/entities/*": "./images/entities/*.ts",
+		"./images/events/*": "./images/events/*.ts",
+		"./images/repositories/*": "./images/repositories/*.ts",
+		"./images/services/*": "./images/services/*.ts",
+		"./images/types/*": "./images/types/*.ts",
 		"./notes": {
-			"types": "./dist/notes/index.d.ts",
-			"default": "./dist/notes/index.js"
-		}
+			"types": "./notes/index.ts",
+			"default": "./notes/index.ts"
+		},
+		"./notes/entities/*": "./notes/entities/*.ts",
+		"./notes/events/*": "./notes/events/*.ts",
+		"./notes/repositories/*": "./notes/repositories/*.ts",
+		"./notes/services/*": "./notes/services/*.ts",
+		"./notes/types/*": "./notes/types/*.ts"
+	},
+	"publishConfig": {
+		"access": "public",
+		"exports": {
+			".": {
+				"types": "./dist/index.d.ts",
+				"default": "./dist/index.js"
+			},
+			"./articles": {
+				"types": "./dist/articles/index.d.ts",
+				"default": "./dist/articles/index.js"
+			},
+			"./books": {
+				"types": "./dist/books/index.d.ts",
+				"default": "./dist/books/index.js"
+			},
+			"./common": {
+				"types": "./dist/common/index.d.ts",
+				"default": "./dist/common/index.js"
+			},
+			"./errors": {
+				"types": "./dist/errors/index.d.ts",
+				"default": "./dist/errors/index.js"
+			},
+			"./images": {
+				"types": "./dist/images/index.d.ts",
+				"default": "./dist/images/index.js"
+			},
+			"./notes": {
+				"types": "./dist/notes/index.d.ts",
+				"default": "./dist/notes/index.js"
+			}
+		},
+		"main": "./dist/index.js",
+		"types": "./dist/index.d.ts"
 	},
 	"files": [
 		"dist",
@@ -42,7 +103,8 @@
 	"scripts": {
 		"build": "tsc",
 		"prepublishOnly": "pnpm run build",
-		"clean": "rm -rf dist"
+		"clean": "rm -rf dist",
+		"typecheck": "tsc --noEmit"
 	},
 	"keywords": [
 		"domain-driven-design",
@@ -56,9 +118,6 @@
 		"type": "git",
 		"url": "https://github.com/s-hirano-ist/s-private.git",
 		"directory": "packages/core"
-	},
-	"publishConfig": {
-		"access": "public"
 	},
 	"dependencies": {
 		"sharp": "0.34.5",

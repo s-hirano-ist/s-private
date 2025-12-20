@@ -1,0 +1,26 @@
+{
+	"$schema": "https://typedoc.org/schema.json",
+	"entryPointStrategy": "packages",
+	"entryPoints": ["packages/core", "packages/ui", "packages/notification"],
+	"out": "docs/api",
+	"name": "s-private API Documentation",
+	"readme": "README.md",
+	"includeVersion": true,
+	"excludePrivate": true,
+	"excludeProtected": false,
+	"excludeExternals": true,
+	"excludeInternal": true,
+	"searchInComments": true,
+	"navigationLinks": {
+		"GitHub": "https://github.com/s-hirano-ist/s-private"
+	},
+	"plugin": ["typedoc-plugin-mdn-links"],
+	"categorizeByGroup": true,
+	"sort": ["source-order", "alphabetical"],
+	"validation": {
+		"notExported": true,
+		"invalidLink": true,
+		"notDocumented": false
+	},
+	"logLevel": "Info"
+}

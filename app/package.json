@@ -8,12 +8,14 @@
 		"dev": "next dev",
 		"build": "next build",
 		"analyze": "ANALYZE=true pnpm build",
-		"start": "next start"
+		"start": "next start",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@prisma/extension-accelerate": "3.0.0",
 		"@s-hirano-ist/s-core": "workspace:*",
 		"@s-hirano-ist/s-database": "workspace:*",
+		"@s-hirano-ist/s-notification": "workspace:*",
 		"@s-hirano-ist/s-ui": "workspace:*",
 		"@sentry/nextjs": "10.30.0",
 		"@t3-oss/env-nextjs": "0.13.10",

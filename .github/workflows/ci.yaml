@@ -176,6 +176,7 @@ jobs:
           echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
 
       - run: pnpm i --frozen-lockfile
+      - run: pnpm --filter "./packages/*" build
       - run: pnpm exec playwright install
       - run: pnpm test
         env:

@@ -39,7 +39,8 @@
 		"prisma:studio": "prisma studio",
 		"build": "tsc --noEmit",
 		"postinstall": "pnpm prisma:generate",
-		"prepublishOnly": "pnpm prisma:generate"
+		"prepublishOnly": "pnpm prisma:generate",
+		"typecheck": "tsc --noEmit"
 	},
 	"repository": {
 		"type": "git",

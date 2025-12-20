@@ -1,0 +1,7 @@
+{
+	"$schema": "https://typedoc.org/schema.json",
+	"entryPoints": ["./index.ts"],
+	"tsconfig": "./tsconfig.json",
+	"exclude": ["**/*.test.ts", "**/dist/**"],
+	"name": "@s-hirano-ist/s-notification"
+}
