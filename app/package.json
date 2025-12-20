@@ -8,7 +8,8 @@
 		"dev": "next dev",
 		"build": "next build",
 		"analyze": "ANALYZE=true pnpm build",
-		"start": "next start"
+		"start": "next start",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@prisma/extension-accelerate": "3.0.0",
