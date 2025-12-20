@@ -1,7 +1,8 @@
 import type { CacheStrategy } from "./cache-strategy";
 import type { SortOrder } from "./sort-order";
 
-type NotesOrderByField =
+/** ノートのソートフィールド */
+export type NotesOrderByField =
 	| "id"
 	| "title"
 	| "markdown"
@@ -10,7 +11,8 @@ type NotesOrderByField =
 	| "updatedAt"
 	| "exportedAt";
 
-type NotesOrderBy = {
+/** ノートのソート条件 */
+export type NotesOrderBy = {
 	[K in NotesOrderByField]?: SortOrder;
 };
 

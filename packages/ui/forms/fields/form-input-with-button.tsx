@@ -4,7 +4,8 @@ import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { useFormValues } from "../generic-form-wrapper";
 
-type Props = {
+/** FormInputWithButtonコンポーネントのProps */
+export type FormInputWithButtonProps = {
 	label: string;
 	htmlFor: string;
 	buttonIcon: React.ReactNode;
@@ -22,7 +23,7 @@ export function FormInputWithButton({
 	buttonTestId,
 	defaultValue,
 	...inputProps
-}: Props) {
+}: FormInputWithButtonProps) {
 	const formValues = useFormValues();
 	const preservedValue = formValues[inputProps.name || htmlFor];
 

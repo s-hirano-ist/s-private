@@ -10,7 +10,8 @@ import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { useFormValues } from "../generic-form-wrapper";
 
-type Props = {
+/** FormDropdownInputコンポーネントのProps */
+export type FormDropdownInputProps = {
 	label: string;
 	htmlFor: string;
 	options: { id: string; name: string }[];
@@ -26,7 +27,7 @@ export function FormDropdownInput({
 	inputRef,
 	defaultValue,
 	...inputProps
-}: Props) {
+}: FormDropdownInputProps) {
 	const formValues = useFormValues();
 	const preservedValue = formValues[inputProps.name || htmlFor];
 

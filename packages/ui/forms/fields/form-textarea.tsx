@@ -3,7 +3,8 @@ import { Label } from "../../ui/label";
 import { Textarea } from "../../ui/textarea";
 import { useFormValues } from "../generic-form-wrapper";
 
-type Props = {
+/** FormTextareaコンポーネントのProps */
+export type FormTextareaProps = {
 	label: string;
 	htmlFor: string;
 } & ComponentProps<typeof Textarea>;
@@ -13,7 +14,7 @@ export function FormTextarea({
 	htmlFor,
 	defaultValue,
 	...textareaProps
-}: Props) {
+}: FormTextareaProps) {
 	const formValues = useFormValues();
 	const preservedValue = formValues[textareaProps.name || htmlFor];
 

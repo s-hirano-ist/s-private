@@ -13,7 +13,8 @@ import { createEntityWithErrorHandling } from "../../common/services/entity-fact
 
 // Value objects
 
-const CategoryName = z
+/** カテゴリ名のZodスキーマ (1-16文字) */
+export const CategoryName = z
 	.string({ message: "required" })
 	.trim()
 	.min(1, { message: "required" })
@@ -23,7 +24,8 @@ export type CategoryName = z.infer<typeof CategoryName>;
 export const makeCategoryName = (v: string): CategoryName =>
 	CategoryName.parse(v);
 
-const ArticleTitle = z
+/** 記事タイトルのZodスキーマ (1-128文字) */
+export const ArticleTitle = z
 	.string({ message: "required" })
 	.min(1, { message: "required" })
 	.max(128, { message: "tooLong" })
@@ -32,7 +34,8 @@ export type ArticleTitle = z.infer<typeof ArticleTitle>;
 export const makeArticleTitle = (v: string): ArticleTitle =>
 	ArticleTitle.parse(v);
 
-const Quote = z
+/** 引用のZodスキーマ (最大512文字、null/undefined許容) */
+export const Quote = z
 	.string()
 	.max(512, { message: "tooLong" })
 	.nullable()
@@ -42,7 +45,8 @@ export type Quote = z.infer<typeof Quote>;
 export const makeQuote = (v: string | null | undefined): Quote =>
 	Quote.parse(v);
 
-const Url = z
+/** URLのZodスキーマ (http/httpsのみ許容) */
+export const Url = z
 	.url({ message: "invalidFormat" })
 	.min(1, { message: "required" })
 	.refine(
@@ -62,18 +66,29 @@ const Url = z
 export type Url = z.infer<typeof Url>;
 export const makeUrl = (v: string): Url => Url.parse(v);
 
-const OgTitle = z.string().nullable().optional().brand<"OgTitle">();
+/** OGPタイトルのZodスキーマ (null/undefined許容) */
+export const OgTitle = z.string().nullable().optional().brand<"OgTitle">();
 export type OgTitle = z.infer<typeof OgTitle>;
 export const makeOgTitle = (v: string | null | undefined): OgTitle =>
 	OgTitle.parse(v);
 
-const OgDescription = z.string().nullable().optional().brand<"OgDescription">();
+/** OGP説明のZodスキーマ (null/undefined許容) */
+export const OgDescription = z
+	.string()
+	.nullable()
+	.optional()
+	.brand<"OgDescription">();
 export type OgDescription = z.infer<typeof OgDescription>;
 export const makeOgDescription = (
 	v: string | null | undefined,
 ): OgDescription => OgDescription.parse(v);
 
-const OgImageUrl = z.string().nullable().optional().brand<"OgImageUrl">();
+/** OGP画像URLのZodスキーマ (null/undefined許容) */
+export const OgImageUrl = z
+	.string()
+	.nullable()
+	.optional()
+	.brand<"OgImageUrl">();
 export type OgImageUrl = z.infer<typeof OgImageUrl>;
 export const makeOgImageUrl = (v: string | null | undefined): OgImageUrl =>
 	OgImageUrl.parse(v);
@@ -97,10 +112,13 @@ const Base = z.object({
 export const UnexportedArticle = Base.extend({ status: UnexportedStatus });
 export type UnexportedArticle = Readonly<z.infer<typeof UnexportedArticle>>;
 
-const ExportedArticle = Base.extend(ExportedStatus.shape);
-type ExportedArticle = Readonly<z.infer<typeof ExportedArticle>>;
+/** エクスポート済み記事のZodスキーマ */
+export const ExportedArticle = Base.extend(ExportedStatus.shape);
+/** エクスポート済み記事の型 */
+export type ExportedArticle = Readonly<z.infer<typeof ExportedArticle>>;
 
-type CreateArticleArgs = Readonly<{
+/** 記事作成時の引数 */
+export type CreateArticleArgs = Readonly<{
 	userId: UserId;
 	categoryName: CategoryName;
 	title: ArticleTitle;

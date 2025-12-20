@@ -3,7 +3,8 @@ import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { useFormValues } from "../generic-form-wrapper";
 
-type Props = {
+/** FormInputコンポーネントのProps */
+export type FormInputProps = {
 	label: string;
 	htmlFor: string;
 } & ComponentProps<typeof Input>;
@@ -13,7 +14,7 @@ export function FormInput({
 	htmlFor,
 	defaultValue,
 	...inputProps
-}: Props) {
+}: FormInputProps) {
 	const formValues = useFormValues();
 	const preservedValue = formValues[inputProps.name || htmlFor];
 
