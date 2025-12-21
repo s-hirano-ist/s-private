@@ -79,7 +79,7 @@ export function FormDropdownInput({
 	return (
 		<div className="space-y-1">
 			<Label htmlFor={htmlFor}>{label}</Label>
-			<Popover open={open} onOpenChange={setOpen}>
+			<Popover onOpenChange={setOpen} open={open}>
 				<PopoverTrigger asChild>
 					<Button
 						aria-expanded={open}
@@ -93,17 +93,17 @@ export function FormDropdownInput({
 					</Button>
 				</PopoverTrigger>
 				<PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-					<Command shouldFilter={true}>
+					<Command shouldFilter>
 						<CommandInput
-							placeholder={searchPlaceholder}
-							value={searchValue}
-							onValueChange={setSearchValue}
 							onKeyDown={(e) => {
 								if (e.key === "Enter" && searchValue) {
 									e.preventDefault();
 									handleCustomValue();
 								}
 							}}
+							onValueChange={setSearchValue}
+							placeholder={searchPlaceholder}
+							value={searchValue}
 						/>
 						<CommandList>
 							<CommandEmpty>
@@ -123,8 +123,8 @@ export function FormDropdownInput({
 								{options.map((option) => (
 									<CommandItem
 										key={option.id}
-										value={option.name}
 										onSelect={() => handleSelect(option.name)}
+										value={option.name}
 									>
 										<CheckIcon
 											className={cn(
