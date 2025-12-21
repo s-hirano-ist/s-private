@@ -1,6 +1,6 @@
 import { writeFile } from "node:fs/promises";
 import { makeUnexportedStatus, makeUserId } from "@s-hirano-ist/s-core/common";
-import type { PrismaClient } from "@s-hirano-ist/s-database/generated";
+import type { PrismaClient } from "@s-hirano-ist/s-database";
 import type { BaseEnv } from "../shared/env.js";
 
 type Book = {

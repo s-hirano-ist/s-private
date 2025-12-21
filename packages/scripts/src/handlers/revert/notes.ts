@@ -1,5 +1,5 @@
 import { makeUserId } from "@s-hirano-ist/s-core/common";
-import type { PrismaClient } from "@s-hirano-ist/s-database/generated";
+import type { PrismaClient } from "@s-hirano-ist/s-database";
 import type { BaseEnv } from "../shared/env.js";
 
 export async function revertNotes(

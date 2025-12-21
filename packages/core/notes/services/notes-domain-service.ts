@@ -1,7 +1,7 @@
-import type { UserId } from "../../common/entities/common-entity";
-import { DuplicateError } from "../../errors/error-classes";
-import type { NoteTitle } from "../entities/note-entity";
-import type { INotesQueryRepository } from "../repositories/notes-query-repository.interface";
+import type { UserId } from "../../common/entities/common-entity.js";
+import { DuplicateError } from "../../errors/error-classes.js";
+import type { NoteTitle } from "../entities/note-entity.js";
+import type { INotesQueryRepository } from "../repositories/notes-query-repository.interface.js";
 
 /**
  * Checks if a note with the given title already exists.

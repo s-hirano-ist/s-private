@@ -1,4 +1,4 @@
-import { BaseDomainEvent } from "../../common/events/base-domain-event";
+import { BaseDomainEvent } from "../../common/events/base-domain-event.js";
 
 /**
  * Domain event emitted when an article is created.

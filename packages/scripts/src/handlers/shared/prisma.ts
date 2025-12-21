@@ -1,4 +1,4 @@
-import { PrismaClient } from "@s-hirano-ist/s-database/generated";
+import { PrismaClient } from "@s-hirano-ist/s-database";
 
 let prismaInstance: PrismaClient | null = null;
 

@@ -33,20 +33,20 @@
  */
 
 // Entities
-export * from "./entities/books-entity";
+export * from "./entities/books-entity.js";
 
 // Events
-export * from "./events/book-created-event";
-export * from "./events/book-deleted-event";
+export * from "./events/book-created-event.js";
+export * from "./events/book-deleted-event.js";
 
 // Repositories
-export * from "./repositories/books-command-repository.interface";
-export * from "./repositories/books-query-repository.interface";
+export * from "./repositories/books-command-repository.interface.js";
+export * from "./repositories/books-query-repository.interface.js";
 
 // Services
-export * from "./services/books-domain-service";
+export * from "./services/books-domain-service.js";
 
 // Types
-export * from "./types/cache-strategy";
-export * from "./types/query-params";
-export * from "./types/sort-order";
+export * from "./types/cache-strategy.js";
+export * from "./types/query-params.js";
+export * from "./types/sort-order.js";

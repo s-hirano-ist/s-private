@@ -4,8 +4,10 @@ import {
 	makeUnexportedStatus,
 	makeUserId,
 } from "@s-hirano-ist/s-core/common";
-import type { PrismaClient } from "@s-hirano-ist/s-database/generated";
+import type { PrismaClient } from "@s-hirano-ist/s-database";
 import type { BaseEnv } from "../shared/env.js";
+
+type TransactionClient = Omit<PrismaClient, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">;
 
 export async function resetArticles(
 	prisma: PrismaClient,
@@ -16,7 +18,7 @@ export async function resetArticles(
 	const LAST_UPDATED = makeLastUpdatedStatus();
 	const EXPORTED = "EXPORTED" as const;
 
-	await prisma.$transaction(async (tx) => {
+	await prisma.$transaction(async (tx: TransactionClient) => {
 		// LAST_UPDATED → EXPORTED (前回バッチを確定)
 		await tx.article.updateMany({
 			where: { userId, status: LAST_UPDATED },

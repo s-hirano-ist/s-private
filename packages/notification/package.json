@@ -7,8 +7,8 @@
 	"types": "./dist/index.d.ts",
 	"exports": {
 		".": {
-			"types": "./index.ts",
-			"default": "./index.ts"
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
 		}
 	},
 	"publishConfig": {

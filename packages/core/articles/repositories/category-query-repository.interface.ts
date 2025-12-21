@@ -1,5 +1,5 @@
-import type { UserId } from "../../common/entities/common-entity";
-import type { CategoryFindManyParams } from "../types/query-params";
+import type { UserId } from "../../common/entities/common-entity.js";
+import type { CategoryFindManyParams } from "../types/query-params.js";
 
 /**
  * Query repository interface for the Category domain.

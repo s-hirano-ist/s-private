@@ -1,7 +1,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { makeUnexportedStatus, makeUserId } from "@s-hirano-ist/s-core/common";
-import type { PrismaClient } from "@s-hirano-ist/s-database/generated";
+import type { PrismaClient } from "@s-hirano-ist/s-database";
 import * as Minio from "minio";
 import type { MinioEnv } from "../shared/env.js";
 
@@ -28,7 +28,7 @@ export async function fetchImages(
 	});
 	console.log(`Fetched ${images.length} images.`);
 
-	const downloadPromises = images.map(async (image) => {
+	const downloadPromises = images.map(async (image: { path: string }) => {
 		const { path: imagePath } = image;
 
 		const filePath = path.join(__dirname, "../../image/dump", `${imagePath}`);

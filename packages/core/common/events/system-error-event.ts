@@ -1,4 +1,4 @@
-import { BaseDomainEvent } from "./base-domain-event";
+import { BaseDomainEvent } from "./base-domain-event.js";
 
 /**
  * Domain event for system errors.

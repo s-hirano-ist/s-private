@@ -7,58 +7,33 @@
 	"types": "./dist/index.d.ts",
 	"exports": {
 		".": {
-			"types": "./index.ts",
-			"default": "./index.ts"
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
 		},
 		"./articles": {
-			"types": "./articles/index.ts",
-			"default": "./articles/index.ts"
+			"types": "./dist/articles/index.d.ts",
+			"default": "./dist/articles/index.js"
 		},
-		"./articles/entities/*": "./articles/entities/*.ts",
-		"./articles/events/*": "./articles/events/*.ts",
-		"./articles/repositories/*": "./articles/repositories/*.ts",
-		"./articles/services/*": "./articles/services/*.ts",
-		"./articles/types/*": "./articles/types/*.ts",
 		"./books": {
-			"types": "./books/index.ts",
-			"default": "./books/index.ts"
+			"types": "./dist/books/index.d.ts",
+			"default": "./dist/books/index.js"
 		},
-		"./books/entities/*": "./books/entities/*.ts",
-		"./books/events/*": "./books/events/*.ts",
-		"./books/repositories/*": "./books/repositories/*.ts",
-		"./books/services/*": "./books/services/*.ts",
-		"./books/types/*": "./books/types/*.ts",
 		"./common": {
-			"types": "./common/index.ts",
-			"default": "./common/index.ts"
+			"types": "./dist/common/index.d.ts",
+			"default": "./dist/common/index.js"
 		},
-		"./common/entities/*": "./common/entities/*.ts",
-		"./common/events/*": "./common/events/*.ts",
-		"./common/services/*": "./common/services/*.ts",
-		"./common/types/*": "./common/types/*.ts",
 		"./errors": {
-			"types": "./errors/index.ts",
-			"default": "./errors/index.ts"
+			"types": "./dist/errors/index.d.ts",
+			"default": "./dist/errors/index.js"
 		},
-		"./errors/*": "./errors/*.ts",
 		"./images": {
-			"types": "./images/index.ts",
-			"default": "./images/index.ts"
+			"types": "./dist/images/index.d.ts",
+			"default": "./dist/images/index.js"
 		},
-		"./images/entities/*": "./images/entities/*.ts",
-		"./images/events/*": "./images/events/*.ts",
-		"./images/repositories/*": "./images/repositories/*.ts",
-		"./images/services/*": "./images/services/*.ts",
-		"./images/types/*": "./images/types/*.ts",
 		"./notes": {
-			"types": "./notes/index.ts",
-			"default": "./notes/index.ts"
-		},
-		"./notes/entities/*": "./notes/entities/*.ts",
-		"./notes/events/*": "./notes/events/*.ts",
-		"./notes/repositories/*": "./notes/repositories/*.ts",
-		"./notes/services/*": "./notes/services/*.ts",
-		"./notes/types/*": "./notes/types/*.ts"
+			"types": "./dist/notes/index.d.ts",
+			"default": "./dist/notes/index.js"
+		}
 	},
 	"publishConfig": {
 		"access": "public",

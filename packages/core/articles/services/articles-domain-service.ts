@@ -1,7 +1,7 @@
-import type { UserId } from "../../common/entities/common-entity";
-import { DuplicateError } from "../../errors/error-classes";
-import type { Url } from "../entities/article-entity";
-import type { IArticlesQueryRepository } from "../repositories/articles-query-repository.interface";
+import type { UserId } from "../../common/entities/common-entity.js";
+import { DuplicateError } from "../../errors/error-classes.js";
+import type { Url } from "../entities/article-entity.js";
+import type { IArticlesQueryRepository } from "../repositories/articles-query-repository.interface.js";
 
 /**
  * Checks if an article with the given URL already exists.

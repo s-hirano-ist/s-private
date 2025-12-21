@@ -1,9 +1,9 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { makeUnexportedStatus, makeUserId } from "@s-hirano-ist/s-core/common";
-import type { PrismaClient } from "@s-hirano-ist/s-database/generated";
+import type { PrismaClient } from "@s-hirano-ist/s-database";
 import type { BaseEnv } from "../shared/env.js";
 
-type Article = {
+type ArticleWithCategory = {
 	id: string;
 	title: string;
 	url: string;
@@ -34,7 +34,7 @@ type OutputType = Record<
 	}[]
 >;
 
-function categorizeArticles(articles: Article[]): OutputType {
+function categorizeArticles(articles: ArticleWithCategory[]): OutputType {
 	return articles.reduce((acc, d) => {
 		if (!acc[d.categoryName]) acc[d.categoryName] = [];
 		const { title, quote, url } = d;
@@ -82,7 +82,7 @@ export async function fetchArticles(
 			where: { userId, status: UNEXPORTED },
 			select: { id: true, title: true, quote: true, url: true, Category: true },
 		})
-	).map((d) => {
+	).map((d: { id: string; title: string; quote: string | null; url: string; Category: { name: string } }) => {
 		return { ...d, categoryName: d.Category.name };
 	});
 	console.log("Data fetched.");

@@ -1,6 +1,9 @@
 import { defineCommand } from "citty";
 import consola from "consola";
-import { getBaseEnv, getNotificationService } from "../handlers/shared/index.js";
+import {
+	getBaseEnv,
+	getNotificationService,
+} from "../handlers/shared/index.js";
 import { findDuplicateJsonArticles } from "../handlers/util/find-duplicates.js";
 
 const findDuplicatesCommand = defineCommand({

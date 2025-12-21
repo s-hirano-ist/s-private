@@ -1,7 +1,7 @@
-import type { UserId } from "../../common/entities/common-entity";
-import { DuplicateError } from "../../errors/error-classes";
-import type { ISBN } from "../entities/books-entity";
-import type { IBooksQueryRepository } from "../repositories/books-query-repository.interface";
+import type { UserId } from "../../common/entities/common-entity.js";
+import { DuplicateError } from "../../errors/error-classes.js";
+import type { ISBN } from "../entities/books-entity.js";
+import type { IBooksQueryRepository } from "../repositories/books-query-repository.interface.js";
 
 /**
  * Checks if a book with the given ISBN already exists.

@@ -1,6 +1,9 @@
 import { defineCommand } from "citty";
 import consola from "consola";
-import { getBaseEnv, getNotificationService } from "../handlers/shared/index.js";
+import {
+	getBaseEnv,
+	getNotificationService,
+} from "../handlers/shared/index.js";
 import { updateJsonArticles } from "../handlers/update/json-articles.js";
 import { updateRawArticles } from "../handlers/update/raw-articles.js";
 
