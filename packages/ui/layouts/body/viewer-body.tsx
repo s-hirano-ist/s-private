@@ -5,9 +5,36 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import remarkGfm from "remark-gfm";
 
-/** ViewerBodyClientコンポーネントのProps */
-export type ViewerBodyProps = { children?: ReactNode; markdown: string };
+/**
+ * Props for the ViewerBodyClient component.
+ *
+ * @see {@link ViewerBodyClient} for the component
+ */
+export type ViewerBodyProps = {
+	/** Optional children to render before the markdown content */
+	children?: ReactNode;
+	/** Markdown content to render */
+	markdown: string;
+};
 
+/**
+ * Converts markdown to React elements with syntax highlighting.
+ *
+ * @remarks
+ * Features:
+ * - GitHub Flavored Markdown (GFM) support
+ * - Syntax highlighting with VS Code Dark+ theme
+ * - Auto-generated heading IDs for anchor links
+ * - External link handling with nofollow/noreferrer
+ *
+ * @param markdown - The markdown string to convert
+ * @returns React elements representing the markdown
+ *
+ * @example
+ * ```tsx
+ * const content = await markdownToReact("# Hello\n\nWorld");
+ * ```
+ */
 export async function markdownToReact(markdown: string) {
 	const components: Components = {
 		code({ className, children }) {
@@ -64,6 +91,28 @@ export async function markdownToReact(markdown: string) {
 	);
 }
 
+/**
+ * A markdown viewer component with prose styling.
+ *
+ * @remarks
+ * Server component that renders markdown content with:
+ * - Prose typography from Tailwind CSS
+ * - Dark mode support
+ * - Responsive container width
+ * - Optional children rendered before content
+ *
+ * @param props - Markdown content and optional children
+ * @returns A styled markdown viewer
+ *
+ * @example
+ * ```tsx
+ * <ViewerBodyClient markdown={noteContent}>
+ *   <h1>Note Title</h1>
+ * </ViewerBodyClient>
+ * ```
+ *
+ * @see {@link markdownToReact} for the markdown conversion function
+ */
 export async function ViewerBodyClient({
 	children,
 	markdown,

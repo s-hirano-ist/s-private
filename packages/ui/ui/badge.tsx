@@ -2,6 +2,17 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "../utils/cn";
 
+/**
+ * Badge style variants using class-variance-authority.
+ *
+ * @remarks
+ * Provides consistent styling for badge components with multiple visual variants.
+ *
+ * @example
+ * ```typescript
+ * const className = badgeVariants({ variant: "secondary" });
+ * ```
+ */
 const badgeVariants = cva(
 	"inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-hidden focus:ring-2 focus:ring-primary focus:ring-offset-2",
 	{
@@ -22,9 +33,39 @@ const badgeVariants = cva(
 	},
 );
 
+/**
+ * Props for the Badge component.
+ *
+ * @see {@link Badge} for the component
+ * @see {@link badgeVariants} for available variants
+ */
 export type BadgeProps = {} & React.HTMLAttributes<HTMLDivElement> &
 	VariantProps<typeof badgeVariants>;
 
+/**
+ * A small status indicator component for labels, counts, or statuses.
+ *
+ * @remarks
+ * Badges are used to highlight information like status, counts, or labels.
+ * Built on top of class-variance-authority for consistent styling.
+ *
+ * @param props - Badge props including variant and standard div attributes
+ * @returns A styled badge element
+ *
+ * @example
+ * ```tsx
+ * // Default badge
+ * <Badge>New</Badge>
+ *
+ * // Secondary variant
+ * <Badge variant="secondary">Draft</Badge>
+ *
+ * // Destructive variant for warnings
+ * <Badge variant="destructive">Error</Badge>
+ * ```
+ *
+ * @see {@link badgeVariants} for available style variants
+ */
 function Badge({ className, variant, ...props }: BadgeProps) {
 	return (
 		<div className={cn(badgeVariants({ variant }), className)} {...props} />

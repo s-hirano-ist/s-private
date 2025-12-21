@@ -10,22 +10,89 @@ import {
 import Loading from "../display/loading";
 import { Button } from "../ui/button";
 
+/**
+ * Context for sharing form values across form fields.
+ * @internal
+ */
 const FormValuesContext = createContext<Record<string, string>>({});
 
+/**
+ * Hook to access form values from the GenericFormWrapper context.
+ *
+ * @remarks
+ * Use this hook in form field components to access preserved form values
+ * when a form submission fails and values need to be restored.
+ *
+ * @returns Record of field names to their preserved values
+ *
+ * @example
+ * ```tsx
+ * function MyFormField({ name }) {
+ *   const formValues = useFormValues();
+ *   const preservedValue = formValues[name];
+ *   return <input defaultValue={preservedValue} name={name} />;
+ * }
+ * ```
+ *
+ * @see {@link GenericFormWrapper} for the provider component
+ */
 export const useFormValues = () => useContext(FormValuesContext);
 
-/** GenericFormWrapperコンポーネントのProps */
+/**
+ * Props for the GenericFormWrapper component.
+ *
+ * @typeParam T - The response type from the form action
+ *
+ * @see {@link GenericFormWrapper} for the component
+ */
 export type GenericFormWrapperProps<T> = {
+	/** Server action to handle form submission */
 	action: (formData: FormData) => Promise<T>;
+	/** Form field components */
 	children: ReactNode;
+	/** Label for the save button (fallback) */
 	saveLabel: string;
+	/** Label for the submit button */
 	submitLabel?: string;
+	/** Label shown during loading state */
 	loadingLabel?: string;
+	/** Optional custom submit handler */
 	onSubmit?: (formData: FormData) => Promise<void>;
+	/** Pre-filled form values */
 	preservedValues?: Record<string, string>;
+	/** Callback after form submission with response message */
 	afterSubmit: (responseMessage: string) => void;
 };
 
+/**
+ * A generic form wrapper with server action integration.
+ *
+ * @remarks
+ * Provides a consistent form experience with:
+ * - Server action integration via useActionState
+ * - Loading state with spinner
+ * - Form value preservation on error
+ * - Context-based form state sharing
+ *
+ * @typeParam T - Response type with `message` and `success` properties
+ * @param props - Form wrapper configuration
+ * @returns A form with submit handling and loading states
+ *
+ * @example
+ * ```tsx
+ * <GenericFormWrapper
+ *   action={createArticle}
+ *   saveLabel="Save"
+ *   submitLabel="Create Article"
+ *   afterSubmit={(msg) => toast(msg)}
+ * >
+ *   <FormInput label="Title" htmlFor="title" name="title" />
+ *   <FormTextarea label="Content" htmlFor="content" name="content" />
+ * </GenericFormWrapper>
+ * ```
+ *
+ * @see {@link useFormValues} for accessing form state in child components
+ */
 export function GenericFormWrapper<
 	T extends { message: string; success: boolean },
 >({

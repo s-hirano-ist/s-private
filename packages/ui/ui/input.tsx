@@ -2,8 +2,35 @@ import * as React from "react";
 
 import { cn } from "../utils/cn";
 
+/**
+ * Props for the Input component.
+ *
+ * @see {@link Input} for the component
+ */
 export type InputProps = {} & React.InputHTMLAttributes<HTMLInputElement>;
 
+/**
+ * A styled text input component.
+ *
+ * @remarks
+ * Input is a styled wrapper around the native HTML input element.
+ * It supports all standard input types and attributes.
+ *
+ * @param props - Standard input attributes including type, placeholder, etc.
+ * @returns A styled input element
+ *
+ * @example
+ * ```tsx
+ * // Basic text input
+ * <Input placeholder="Enter text..." />
+ *
+ * // Email input
+ * <Input type="email" placeholder="email@example.com" />
+ *
+ * // Disabled input
+ * <Input disabled value="Cannot edit" />
+ * ```
+ */
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
 	({ className, type, ...props }, ref) => {
 		return (

@@ -5,8 +5,40 @@ import * as React from "react";
 
 import { cn } from "../utils/cn";
 
+/**
+ * Root tabs container component.
+ *
+ * @remarks
+ * Built on Radix UI Tabs primitive. Provides accessible tabbed interface.
+ * Use with TabsList, TabsTrigger, and TabsContent for complete tab UI.
+ *
+ * @example
+ * ```tsx
+ * <Tabs defaultValue="tab1">
+ *   <TabsList>
+ *     <TabsTrigger value="tab1">Tab 1</TabsTrigger>
+ *     <TabsTrigger value="tab2">Tab 2</TabsTrigger>
+ *   </TabsList>
+ *   <TabsContent value="tab1">Content 1</TabsContent>
+ *   <TabsContent value="tab2">Content 2</TabsContent>
+ * </Tabs>
+ * ```
+ *
+ * @see {@link TabsList} for the tab button container
+ * @see {@link TabsTrigger} for individual tab buttons
+ * @see {@link TabsContent} for tab panel content
+ */
 const Tabs = TabsPrimitive.Root;
 
+/**
+ * Container for tab trigger buttons.
+ *
+ * @remarks
+ * Groups TabsTrigger components together with proper styling.
+ *
+ * @see {@link Tabs} for the parent container
+ * @see {@link TabsTrigger} for individual tab buttons
+ */
 const TabsList = React.forwardRef<
 	React.ElementRef<typeof TabsPrimitive.List>,
 	React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
@@ -22,6 +54,15 @@ const TabsList = React.forwardRef<
 ));
 TabsList.displayName = TabsPrimitive.List.displayName;
 
+/**
+ * A tab button that activates a corresponding TabsContent panel.
+ *
+ * @remarks
+ * Shows active state with gradient background.
+ *
+ * @see {@link TabsList} for the parent container
+ * @see {@link TabsContent} for the associated content panel
+ */
 const TabsTrigger = React.forwardRef<
 	React.ElementRef<typeof TabsPrimitive.Trigger>,
 	React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
@@ -37,6 +78,15 @@ const TabsTrigger = React.forwardRef<
 ));
 TabsTrigger.displayName = TabsPrimitive.Trigger.displayName;
 
+/**
+ * Content panel for a tab.
+ *
+ * @remarks
+ * Only visible when its corresponding TabsTrigger is active.
+ *
+ * @see {@link Tabs} for the parent container
+ * @see {@link TabsTrigger} for the associated trigger button
+ */
 const TabsContent = React.forwardRef<
 	React.ElementRef<typeof TabsPrimitive.Content>,
 	React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>

@@ -16,20 +16,70 @@ import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 import { cn } from "../../utils/cn";
 import { useFormValues } from "../generic-form-wrapper";
 
-type Props = {
+/**
+ * Props for the FormDropdownInput component.
+ *
+ * @remarks
+ * This component provides a searchable dropdown with support for custom values.
+ * It integrates with the generic form wrapper for form state management.
+ *
+ * @see {@link FormDropdownInput} for the component
+ */
+export type Props = {
+	/** The label text displayed above the dropdown */
 	label: string;
+	/** The HTML id for the input element */
 	htmlFor: string;
+	/** Array of options with id and display name */
 	options: { id: string; name: string }[];
+	/** Optional ref to access the hidden input element */
 	inputRef?: RefObject<HTMLInputElement | null>;
+	/** Placeholder text when no value is selected */
 	placeholder?: string;
+	/** The form field name (defaults to htmlFor if not provided) */
 	name?: string;
+	/** Whether the field is required */
 	required?: boolean;
+	/** Whether the field is disabled */
 	disabled?: boolean;
+	/** Message shown when no options match the search */
 	emptyMessage?: string;
+	/** Placeholder text for the search input */
 	searchPlaceholder?: string;
+	/** Function to generate the label for custom values */
 	customValueLabel?: (value: string) => string;
 };
 
+/**
+ * A searchable dropdown input component for forms.
+ *
+ * @remarks
+ * Combines Popover and Command components for a combobox experience.
+ * Supports:
+ * - Searchable options
+ * - Custom value entry
+ * - Form state preservation via GenericFormWrapper
+ * - Keyboard navigation
+ *
+ * @param props - Dropdown configuration including options and labels
+ * @returns A searchable dropdown field with hidden input for form submission
+ *
+ * @example
+ * ```tsx
+ * <FormDropdownInput
+ *   label="Category"
+ *   htmlFor="category"
+ *   name="category"
+ *   options={[
+ *     { id: "1", name: "Technology" },
+ *     { id: "2", name: "Business" },
+ *   ]}
+ *   placeholder="Select a category"
+ * />
+ * ```
+ *
+ * @see {@link GenericFormWrapper} for form integration
+ */
 export function FormDropdownInput({
 	label,
 	htmlFor,
