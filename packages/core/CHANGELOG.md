@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.3.0...@s-hirano-ist/s-core-v1.3.1) (2025-12-21)
+
+
+### Documentation
+
+* Enhance documentation for notification service and search types ([9ae2a32](https://github.com/s-hirano-ist/s-private/commit/9ae2a3209242791fd72fd0dc5c903eb43756672e))
+* Enhance documentation for notification service and search types ([bc7cfda](https://github.com/s-hirano-ist/s-private/commit/bc7cfda6e4caf2d2780c645f9ab1c4c9cf1ff812))
+
 ## [1.3.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.2.0...@s-hirano-ist/s-core-v1.3.0) (2025-12-21)
 
 
