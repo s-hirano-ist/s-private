@@ -15,6 +15,10 @@
 		"packages/database": {
 			"release-type": "node",
 			"component": "@s-hirano-ist/s-database"
+		},
+		"packages/notification": {
+			"release-type": "node",
+			"component": "@s-hirano-ist/s-notification"
 		}
 	},
 	"plugins": [
@@ -28,7 +32,8 @@
 			"components": [
 				"@s-hirano-ist/s-core",
 				"@s-hirano-ist/s-ui",
-				"@s-hirano-ist/s-database"
+				"@s-hirano-ist/s-database",
+				"@s-hirano-ist/s-notification"
 			]
 		}
 	],
