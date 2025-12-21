@@ -21,6 +21,7 @@ jobs:
       ui_release_created: ${{ steps.release.outputs['packages/ui--release_created'] }}
       database_release_created: ${{ steps.release.outputs['packages/database--release_created'] }}
       notification_release_created: ${{ steps.release.outputs['packages/notification--release_created'] }}
+      scripts_release_created: ${{ steps.release.outputs['packages/scripts--release_created'] }}
     steps:
       - uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4
         id: release
@@ -79,6 +80,13 @@ jobs:
       - name: Publish @s-hirano-ist/s-notification
         if: ${{ needs.release-please.outputs.notification_release_created == 'true' }}
         working-directory: packages/notification
+        run: pnpm publish --no-git-checks --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish @s-hirano-ist/s-scripts
+        if: ${{ needs.release-please.outputs.scripts_release_created == 'true' }}
+        working-directory: packages/scripts
         run: pnpm publish --no-git-checks --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

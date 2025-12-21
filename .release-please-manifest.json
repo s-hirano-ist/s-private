@@ -3,5 +3,6 @@
 	"packages/core": "1.3.0",
 	"packages/ui": "1.3.0",
 	"packages/database": "1.3.0",
-	"packages/notification": "1.3.0"
+	"packages/notification": "1.3.0",
+	"packages/scripts": "1.3.0"
 }

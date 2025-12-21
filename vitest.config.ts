@@ -63,6 +63,15 @@ export default defineConfig({
 					include: ["./**/*.test.?(c|m)[jt]s?(x)"],
 				},
 			},
+			// Scripts CLI package
+			{
+				extends: "./packages/scripts/vitest.config.ts",
+				test: {
+					name: "scripts",
+					root: "./packages/scripts",
+					include: ["./**/*.test.?(c|m)[jt]s?(x)"],
+				},
+			},
 		],
 		coverage: {
 			enabled: true,
@@ -73,6 +82,7 @@ export default defineConfig({
 				"packages/ui/**/*.{ts,tsx}",
 				"packages/core/**/*.{ts,tsx}",
 				"packages/notification/**/*.{ts,tsx}",
+				"packages/scripts/**/*.{ts,tsx}",
 			],
 			exclude: [
 				"**/.next/**/*",

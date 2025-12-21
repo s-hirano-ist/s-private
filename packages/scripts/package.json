@@ -1,0 +1,83 @@
+{
+	"name": "@s-hirano-ist/s-scripts",
+	"version": "0.1.2",
+	"description": "CLI scripts for content export and transformation in s-private project",
+	"type": "module",
+	"bin": {
+		"s-scripts": "./dist/index.js"
+	},
+	"main": "./dist/cli.js",
+	"types": "./dist/cli.d.ts",
+	"exports": {
+		".": {
+			"types": "./src/cli.ts",
+			"default": "./src/cli.ts"
+		},
+		"./commands": {
+			"types": "./src/commands/index.ts",
+			"default": "./src/commands/index.ts"
+		}
+	},
+	"publishConfig": {
+		"access": "public",
+		"bin": {
+			"s-scripts": "./dist/index.js"
+		},
+		"exports": {
+			".": {
+				"types": "./dist/cli.d.ts",
+				"default": "./dist/cli.js"
+			},
+			"./commands": {
+				"types": "./dist/commands/index.d.ts",
+				"default": "./dist/commands/index.js"
+			}
+		},
+		"main": "./dist/cli.js",
+		"types": "./dist/cli.d.ts"
+	},
+	"files": [
+		"dist",
+		"README.md",
+		"LICENSE"
+	],
+	"scripts": {
+		"build": "tsc",
+		"prepublishOnly": "pnpm run build",
+		"clean": "rm -rf dist",
+		"typecheck": "tsc --noEmit"
+	},
+	"keywords": [
+		"cli",
+		"content-export",
+		"scripts",
+		"typescript"
+	],
+	"author": "",
+	"license": "AGPL-3.0",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/s-hirano-ist/s-private.git",
+		"directory": "packages/scripts"
+	},
+	"dependencies": {
+		"@huggingface/transformers": "3.3.3",
+		"@qdrant/js-client-rest": "1.14.0",
+		"@s-hirano-ist/s-core": "workspace:*",
+		"@s-hirano-ist/s-database": "workspace:*",
+		"@s-hirano-ist/s-notification": "workspace:*",
+		"citty": "0.1.6",
+		"consola": "3.4.0",
+		"glob": "11.0.0",
+		"jsdom": "26.0.0",
+		"minio": "8.0.4",
+		"turndown": "7.2.0",
+		"zod": "3.24.1"
+	},
+	"devDependencies": {
+		"@types/jsdom": "21.1.7",
+		"@types/node": "22.16.0",
+		"@types/turndown": "5.0.5",
+		"typescript": "5.9.3"
+	}
+}
