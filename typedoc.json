@@ -17,6 +17,17 @@
 	"plugin": ["typedoc-plugin-mdn-links"],
 	"categorizeByGroup": true,
 	"sort": ["source-order", "alphabetical"],
+	"requiredToBeDocumented": [
+		"Enum",
+		"EnumMember",
+		"Variable",
+		"Function",
+		"Class",
+		"Interface",
+		"Method",
+		"Accessor",
+		"TypeAlias"
+	],
 	"validation": {
 		"notExported": true,
 		"invalidLink": true,
