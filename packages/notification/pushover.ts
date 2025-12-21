@@ -5,9 +5,27 @@ import type {
 	NotificationService,
 } from "./types";
 
+/**
+ * Pushover notification service implementation.
+ *
+ * @remarks
+ * Implements the NotificationService interface using the Pushover API.
+ * Messages are enriched with context information and sent with appropriate
+ * priority levels based on the notification type.
+ *
+ * @internal
+ */
 class PushoverService implements NotificationService {
 	constructor(private readonly config: NotificationConfig) {}
 
+	/**
+	 * Sends a message to the Pushover API.
+	 *
+	 * @param message - The message to send
+	 * @param priority - The priority level (-1 = low, 0 = normal, 1 = high)
+	 *
+	 * @internal
+	 */
 	private async sendMessage(message: string, priority = 0): Promise<void> {
 		try {
 			const body = new URLSearchParams({
@@ -66,6 +84,42 @@ class PushoverService implements NotificationService {
 	}
 }
 
+/**
+ * Creates a new Pushover notification service instance.
+ *
+ * @remarks
+ * Factory function for creating a NotificationService implementation
+ * that uses the Pushover API for sending push notifications.
+ *
+ * The service enriches messages with context information and sends
+ * notifications with appropriate priority levels:
+ * - Error: Priority 1 (high) - triggers immediate notification
+ * - Warning: Priority 0 (normal) - standard notification
+ * - Info: Priority -1 (low) - silent notification
+ *
+ * @param config - The Pushover API configuration
+ * @returns A NotificationService instance configured for Pushover
+ *
+ * @example
+ * ```typescript
+ * import { createPushoverService } from "@s-hirano-ist/s-notification";
+ *
+ * const notificationService = createPushoverService({
+ *   url: "https://api.pushover.net/1/messages.json",
+ *   userKey: process.env.PUSHOVER_USER_KEY,
+ *   appToken: process.env.PUSHOVER_APP_TOKEN
+ * });
+ *
+ * // Use the service to send notifications
+ * await notificationService.notifyError("Server crash detected", {
+ *   caller: "HealthCheck",
+ *   userId: "admin"
+ * });
+ * ```
+ *
+ * @see {@link NotificationConfig} for configuration options
+ * @see {@link NotificationService} for the service interface
+ */
 export function createPushoverService(
 	config: NotificationConfig,
 ): NotificationService {
