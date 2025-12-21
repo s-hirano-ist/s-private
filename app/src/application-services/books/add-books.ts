@@ -1,3 +1,12 @@
+/**
+ * Book creation server action.
+ *
+ * @remarks
+ * Handles book creation with ISBN validation and duplicate checking.
+ *
+ * @module
+ */
+
 "use server";
 import "server-only";
 import { bookEntity } from "@s-hirano-ist/s-core/books/entities/books-entity";
@@ -15,6 +24,16 @@ import { booksCommandRepository } from "@/infrastructures/books/repositories/boo
 import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
 import { parseAddBooksFormData } from "./helpers/form-data-parser";
 
+/**
+ * Server action to create a new book record.
+ *
+ * @remarks
+ * Validates ISBN uniqueness and creates book with Google Books metadata.
+ * Requires dumper role permission.
+ *
+ * @param formData - Form data containing ISBN and title
+ * @returns Server action result with success/failure status
+ */
 export async function addBooks(formData: FormData): Promise<ServerAction> {
 	const hasPermission = await hasDumperPostPermission();
 	if (!hasPermission) forbidden();

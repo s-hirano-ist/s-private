@@ -4,12 +4,54 @@ import { Popover as PopoverPrimitive } from "radix-ui";
 import * as React from "react";
 import { cn } from "../utils/cn";
 
+/**
+ * Root popover component for floating content.
+ *
+ * @remarks
+ * Built on Radix UI Popover primitive. Provides accessible
+ * floating panels with proper positioning and focus management.
+ *
+ * @example
+ * ```tsx
+ * <Popover>
+ *   <PopoverTrigger asChild>
+ *     <Button>Open Popover</Button>
+ *   </PopoverTrigger>
+ *   <PopoverContent>
+ *     <p>Popover content here</p>
+ *   </PopoverContent>
+ * </Popover>
+ * ```
+ *
+ * @see {@link PopoverContent} for the popover body
+ * @see {@link PopoverTrigger} for the trigger button
+ */
 const Popover = PopoverPrimitive.Root;
 
+/**
+ * Button or element that opens the popover.
+ *
+ * @see {@link Popover} for parent component
+ */
 const PopoverTrigger = PopoverPrimitive.Trigger;
 
+/**
+ * Anchor element for custom popover positioning.
+ *
+ * @remarks
+ * Use when the trigger and anchor should be different elements.
+ */
 const PopoverAnchor = PopoverPrimitive.Anchor;
 
+/**
+ * Content container for the popover.
+ *
+ * @remarks
+ * Includes animations and proper positioning.
+ * Default alignment is center with 4px offset.
+ *
+ * @see {@link Popover} for parent component
+ */
 const PopoverContent = React.forwardRef<
 	React.ElementRef<typeof PopoverPrimitive.Content>,
 	React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>

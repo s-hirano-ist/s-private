@@ -1,3 +1,40 @@
+/**
+ * @packageDocumentation
+ *
+ * UI component library for the content management system.
+ *
+ * @remarks
+ * This package provides reusable React components built with:
+ * - Radix UI primitives for accessibility
+ * - Tailwind CSS for styling
+ * - class-variance-authority for variant management
+ *
+ * ## Component Categories
+ *
+ * - **UI Components** - Base components (Button, Card, Input, Dialog, etc.)
+ * - **Form Components** - Form wrappers and field components
+ * - **Display Components** - Loading states and status displays
+ * - **Layout Components** - Markdown viewer and content layouts
+ * - **Hooks** - Custom React hooks (useInfiniteScroll)
+ * - **Providers** - Theme provider for dark/light mode
+ * - **Utilities** - cn() class merging utility
+ *
+ * @example
+ * ```tsx
+ * import { Button, Card, Input, Toaster } from "@s-hirano-ist/s-ui";
+ *
+ * function MyComponent() {
+ *   return (
+ *     <Card>
+ *       <Input placeholder="Enter text..." />
+ *       <Button>Submit</Button>
+ *       <Toaster />
+ *     </Card>
+ *   );
+ * }
+ * ```
+ */
+
 // UI Components
 
 // Display Components

@@ -1,3 +1,13 @@
+/**
+ * Book query application services.
+ *
+ * @remarks
+ * Provides cached data access for books with pagination support.
+ * Books are identified by ISBN and include Google Books metadata.
+ *
+ * @module
+ */
+
 import { makeISBN } from "@s-hirano-ist/s-core/books/entities/books-entity";
 import type { CacheStrategy } from "@s-hirano-ist/s-core/books/types/cache-strategy";
 import {
@@ -14,6 +24,11 @@ import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import type { ImageCardStackInitialData } from "@/components/common/layouts/cards/types";
 import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
 
+/**
+ * Fetches paginated books with cache support.
+ *
+ * @internal
+ */
 export const _getBooks = async (
 	currentCount: number,
 	userId: UserId,
@@ -50,6 +65,11 @@ export const _getBooks = async (
 	}
 };
 
+/**
+ * Gets total count of books for a user and status.
+ *
+ * @internal
+ */
 const _getBooksCount = async (
 	userId: UserId,
 	status: Status,
@@ -63,12 +83,21 @@ const _getBooksCount = async (
 	}
 };
 
+/**
+ * Fetches paginated unexported books for the current user.
+ */
 export const getUnexportedBooks: GetPaginatedData<ImageCardStackInitialData> =
 	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
 		return _getBooks(currentCount, userId, makeStatus("UNEXPORTED"));
 	});
 
+/**
+ * Fetches paginated exported books for the current user.
+ *
+ * @remarks
+ * Uses Prisma Accelerate caching for viewer performance.
+ */
 export const getExportedBooks: GetPaginatedData<ImageCardStackInitialData> =
 	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
@@ -79,6 +108,9 @@ export const getExportedBooks: GetPaginatedData<ImageCardStackInitialData> =
 		});
 	});
 
+/**
+ * Gets the total count of exported books for the current user.
+ */
 export const getExportedBooksCount: GetCount = cache(
 	async (): Promise<number> => {
 		const userId = await getSelfId();
@@ -86,6 +118,12 @@ export const getExportedBooksCount: GetCount = cache(
 	},
 );
 
+/**
+ * Fetches a single book by its ISBN.
+ *
+ * @param isbn - ISBN to search for
+ * @returns Book data or null if not found
+ */
 export const getBookByISBN = cache(async (isbn: string) => {
 	try {
 		const userId = await getSelfId();

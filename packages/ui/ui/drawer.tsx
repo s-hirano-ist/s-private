@@ -5,30 +5,81 @@ import { Drawer as DrawerPrimitive } from "vaul";
 
 import { cn } from "../utils/cn";
 
+/**
+ * Root drawer component for slide-in panels.
+ *
+ * @remarks
+ * Built on the vaul library. Provides accessible slide-in panels
+ * from any direction (top, bottom, left, right).
+ *
+ * @example
+ * ```tsx
+ * <Drawer>
+ *   <DrawerTrigger asChild>
+ *     <Button>Open Drawer</Button>
+ *   </DrawerTrigger>
+ *   <DrawerContent>
+ *     <DrawerHeader>
+ *       <DrawerTitle>Drawer Title</DrawerTitle>
+ *       <DrawerDescription>Drawer description.</DrawerDescription>
+ *     </DrawerHeader>
+ *     <p>Drawer content</p>
+ *     <DrawerFooter>
+ *       <DrawerClose asChild>
+ *         <Button>Close</Button>
+ *       </DrawerClose>
+ *     </DrawerFooter>
+ *   </DrawerContent>
+ * </Drawer>
+ * ```
+ *
+ * @see {@link DrawerContent} for the drawer body
+ * @see {@link DrawerTrigger} for the trigger button
+ */
 function Drawer({
 	...props
 }: React.ComponentProps<typeof DrawerPrimitive.Root>) {
 	return <DrawerPrimitive.Root data-slot="drawer" {...props} />;
 }
 
+/**
+ * Button or element that opens the drawer.
+ *
+ * @see {@link Drawer} for parent component
+ */
 function DrawerTrigger({
 	...props
 }: React.ComponentProps<typeof DrawerPrimitive.Trigger>) {
 	return <DrawerPrimitive.Trigger data-slot="drawer-trigger" {...props} />;
 }
 
+/**
+ * Portal for rendering drawer outside the DOM hierarchy.
+ * @internal
+ */
 function DrawerPortal({
 	...props
 }: React.ComponentProps<typeof DrawerPrimitive.Portal>) {
 	return <DrawerPrimitive.Portal data-slot="drawer-portal" {...props} />;
 }
 
+/**
+ * Button that closes the drawer.
+ *
+ * @see {@link DrawerFooter} for typical placement
+ */
 function DrawerClose({
 	...props
 }: React.ComponentProps<typeof DrawerPrimitive.Close>) {
 	return <DrawerPrimitive.Close data-slot="drawer-close" {...props} />;
 }
 
+/**
+ * Semi-transparent overlay behind the drawer.
+ *
+ * @remarks
+ * Automatically included by DrawerContent.
+ */
 function DrawerOverlay({
 	className,
 	...props
@@ -45,6 +96,17 @@ function DrawerOverlay({
 	);
 }
 
+/**
+ * Main content container for the drawer.
+ *
+ * @remarks
+ * Supports all four directions via the vaul direction prop.
+ * Includes a drag handle indicator for bottom drawers.
+ *
+ * @see {@link Drawer} for parent component
+ * @see {@link DrawerHeader} for header section
+ * @see {@link DrawerFooter} for footer section
+ */
 function DrawerContent({
 	className,
 	children,
@@ -72,6 +134,12 @@ function DrawerContent({
 	);
 }
 
+/**
+ * Header section for drawer title and description.
+ *
+ * @see {@link DrawerTitle} for the title element
+ * @see {@link DrawerDescription} for the description element
+ */
 function DrawerHeader({ className, ...props }: React.ComponentProps<"div">) {
 	return (
 		<div
@@ -85,6 +153,13 @@ function DrawerHeader({ className, ...props }: React.ComponentProps<"div">) {
 	);
 }
 
+/**
+ * Footer section for drawer actions.
+ *
+ * @remarks
+ * Positioned at the bottom of the drawer.
+ * Typically contains buttons for actions.
+ */
 function DrawerFooter({ className, ...props }: React.ComponentProps<"div">) {
 	return (
 		<div
@@ -95,6 +170,11 @@ function DrawerFooter({ className, ...props }: React.ComponentProps<"div">) {
 	);
 }
 
+/**
+ * Title element for the drawer.
+ *
+ * @see {@link DrawerHeader} for parent section
+ */
 function DrawerTitle({
 	className,
 	...props
@@ -108,6 +188,11 @@ function DrawerTitle({
 	);
 }
 
+/**
+ * Description text for the drawer.
+ *
+ * @see {@link DrawerHeader} for parent section
+ */
 function DrawerDescription({
 	className,
 	...props

@@ -1,3 +1,9 @@
+/**
+ * Book deletion server action.
+ *
+ * @module
+ */
+
 "use server";
 import "server-only";
 import {
@@ -15,6 +21,15 @@ import {
 } from "@/common/utils/cache-tag-builder";
 import { booksCommandRepository } from "@/infrastructures/books/repositories/books-command-repository";
 
+/**
+ * Server action to delete a book.
+ *
+ * @remarks
+ * Only unexported books can be deleted. Requires dumper role permission.
+ *
+ * @param id - Book ID to delete
+ * @returns Server action result with success/failure status
+ */
 export async function deleteBooks(id: string): Promise<ServerAction> {
 	const hasPermission = await hasDumperPostPermission();
 	if (!hasPermission) forbidden();

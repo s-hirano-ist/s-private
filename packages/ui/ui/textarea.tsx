@@ -2,9 +2,33 @@ import * as React from "react";
 
 import { cn } from "../utils/cn";
 
+/**
+ * Props for the Textarea component.
+ *
+ * @see {@link Textarea} for the component
+ */
 export type TextareaProps =
 	{} & React.TextareaHTMLAttributes<HTMLTextAreaElement>;
 
+/**
+ * A styled multi-line text input component.
+ *
+ * @remarks
+ * Textarea is a styled wrapper around the native HTML textarea element.
+ * Supports all standard textarea attributes including rows and cols.
+ *
+ * @param props - Standard textarea attributes including placeholder, rows, etc.
+ * @returns A styled textarea element
+ *
+ * @example
+ * ```tsx
+ * // Basic textarea
+ * <Textarea placeholder="Enter your message..." />
+ *
+ * // With specific row count
+ * <Textarea rows={5} placeholder="Write your content..." />
+ * ```
+ */
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
 	({ className, ...props }, ref) => {
 		return (

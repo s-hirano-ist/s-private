@@ -13,6 +13,34 @@ import {
 	DialogTitle,
 } from "./dialog";
 
+/**
+ * Root command palette component.
+ *
+ * @remarks
+ * Built on the cmdk library. Provides a searchable command menu
+ * with keyboard navigation. Use with CommandInput, CommandList,
+ * CommandGroup, and CommandItem for a complete command palette.
+ *
+ * @param props - cmdk Command props
+ * @returns A command palette container
+ *
+ * @example
+ * ```tsx
+ * <Command>
+ *   <CommandInput placeholder="Search..." />
+ *   <CommandList>
+ *     <CommandGroup heading="Actions">
+ *       <CommandItem>Action 1</CommandItem>
+ *       <CommandItem>Action 2</CommandItem>
+ *     </CommandGroup>
+ *   </CommandList>
+ * </Command>
+ * ```
+ *
+ * @see {@link CommandDialog} for modal variant
+ * @see {@link CommandInput} for search input
+ * @see {@link CommandList} for scrollable list
+ */
 function Command({
 	className,
 	...props
@@ -29,6 +57,32 @@ function Command({
 	);
 }
 
+/**
+ * Command palette displayed in a modal dialog.
+ *
+ * @remarks
+ * Combines Command with Dialog for a modal command palette experience.
+ * Includes accessible title and description for screen readers.
+ *
+ * @param props - Dialog props plus title, description, and layout options
+ * @returns A modal command palette
+ *
+ * @example
+ * ```tsx
+ * <CommandDialog open={open} onOpenChange={setOpen}>
+ *   <CommandInput placeholder="Type a command..." />
+ *   <CommandList>
+ *     <CommandEmpty>No results found.</CommandEmpty>
+ *     <CommandGroup heading="Commands">
+ *       <CommandItem>Profile</CommandItem>
+ *       <CommandItem>Settings</CommandItem>
+ *     </CommandGroup>
+ *   </CommandList>
+ * </CommandDialog>
+ * ```
+ *
+ * @see {@link Command} for non-modal variant
+ */
 function CommandDialog({
 	title = "Command Palette",
 	description = "Search for a command to run...",
@@ -62,6 +116,18 @@ function CommandDialog({
 	);
 }
 
+/**
+ * Search input for the command palette.
+ *
+ * @remarks
+ * Filters command items as the user types.
+ * Optionally includes a search button for explicit search trigger.
+ *
+ * @param props - cmdk Input props plus optional onSearchClick handler
+ * @returns A styled search input
+ *
+ * @see {@link Command} for parent component
+ */
 function CommandInput({
 	className,
 	onSearchClick,
@@ -91,6 +157,16 @@ function CommandInput({
 	);
 }
 
+/**
+ * Scrollable list container for command items.
+ *
+ * @remarks
+ * Contains CommandGroup and CommandItem components.
+ * Fixed height with overflow scrolling.
+ *
+ * @see {@link CommandGroup} for grouping items
+ * @see {@link CommandItem} for individual items
+ */
 function CommandList({
 	className,
 	...props
@@ -107,6 +183,14 @@ function CommandList({
 	);
 }
 
+/**
+ * Empty state displayed when no command items match.
+ *
+ * @remarks
+ * Shown automatically when the filter returns no results.
+ *
+ * @see {@link CommandList} for parent component
+ */
 function CommandEmpty({
 	...props
 }: React.ComponentProps<typeof CommandPrimitive.Empty>) {
@@ -119,6 +203,15 @@ function CommandEmpty({
 	);
 }
 
+/**
+ * Group container for related command items.
+ *
+ * @remarks
+ * Use the heading prop to label the group.
+ *
+ * @see {@link CommandList} for parent component
+ * @see {@link CommandItem} for items within the group
+ */
 function CommandGroup({
 	className,
 	...props
@@ -135,6 +228,15 @@ function CommandGroup({
 	);
 }
 
+/**
+ * Individual selectable item in the command palette.
+ *
+ * @remarks
+ * Supports keyboard navigation and selection.
+ * Shows selected state with background highlight.
+ *
+ * @see {@link CommandGroup} for grouping items
+ */
 function CommandItem({
 	className,
 	...props
@@ -151,6 +253,20 @@ function CommandItem({
 	);
 }
 
+/**
+ * Keyboard shortcut hint displayed in a command item.
+ *
+ * @remarks
+ * Positioned at the end of the command item with muted styling.
+ *
+ * @example
+ * ```tsx
+ * <CommandItem>
+ *   Save
+ *   <CommandShortcut>⌘S</CommandShortcut>
+ * </CommandItem>
+ * ```
+ */
 function CommandShortcut({
 	className,
 	...props

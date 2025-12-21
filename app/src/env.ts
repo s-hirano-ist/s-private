@@ -1,6 +1,25 @@
+/**
+ * Type-safe environment variable configuration.
+ *
+ * @remarks
+ * Uses @t3-oss/env-nextjs with Zod for runtime validation.
+ * Prevents builds with missing or invalid environment variables.
+ *
+ * @see {@link https://env.t3.gg | T3 Env Documentation}
+ *
+ * @module
+ */
+
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
+/**
+ * Validated environment variables.
+ *
+ * @remarks
+ * Access environment variables through this object for type safety.
+ * All variables are validated at build time.
+ */
 export const env = createEnv({
 	/**
 	 * Specify your server-side environment variables schema here. This way you can ensure the app isn't built with invalid env vars.

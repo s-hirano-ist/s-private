@@ -1,3 +1,12 @@
+/**
+ * Image upload server action.
+ *
+ * @remarks
+ * Handles image file upload with thumbnail generation and MinIO storage.
+ *
+ * @module
+ */
+
 "use server";
 import "server-only";
 import { imageEntity } from "@s-hirano-ist/s-core/images/entities/image-entity";
@@ -13,6 +22,19 @@ import {
 import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
 import { parseAddImageFormData } from "./helpers/form-data-parser";
 
+/**
+ * Server action to upload a new image.
+ *
+ * @remarks
+ * Performs the following steps:
+ * 1. Permission check (dumper role required)
+ * 2. Form data parsing with thumbnail generation
+ * 3. Upload original and thumbnail to MinIO
+ * 4. Create database record and invalidate cache
+ *
+ * @param formData - Form data containing the image file
+ * @returns Server action result with success/failure status
+ */
 export async function addImage(formData: FormData): Promise<ServerAction> {
 	const hasPermission = await hasDumperPostPermission();
 	if (!hasPermission) forbidden();

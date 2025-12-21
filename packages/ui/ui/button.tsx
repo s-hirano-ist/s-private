@@ -4,6 +4,27 @@ import * as React from "react";
 
 import { cn } from "../utils/cn";
 
+/**
+ * Button style variants using class-variance-authority.
+ *
+ * @remarks
+ * Provides consistent button styling with multiple visual variants and sizes.
+ *
+ * Variants:
+ * - `default` - Primary gradient button
+ * - `destructive` - Red button for dangerous actions
+ * - `outline` - Bordered button with transparent background
+ * - `secondary` - Muted background button
+ * - `ghost` - Minimal button with hover effect only
+ * - `link` - Underlined text link style
+ * - `navSide` - Navigation sidebar button
+ * - `navCenter` - Centered navigation button
+ *
+ * @example
+ * ```typescript
+ * const className = buttonVariants({ variant: "outline", size: "lg" });
+ * ```
+ */
 const buttonVariants = cva(
 	"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-primary disabled:pointer-events-none disabled:opacity-50",
 	{
@@ -37,11 +58,47 @@ const buttonVariants = cva(
 	},
 );
 
+/**
+ * Props for the Button component.
+ *
+ * @see {@link Button} for the component
+ * @see {@link buttonVariants} for available variants
+ */
 export type ButtonProps = {
+	/** Render as child element using Radix Slot */
 	asChild?: boolean;
 } & React.ButtonHTMLAttributes<HTMLButtonElement> &
 	VariantProps<typeof buttonVariants>;
 
+/**
+ * A versatile button component with multiple variants and sizes.
+ *
+ * @remarks
+ * The Button component is built on top of class-variance-authority for
+ * consistent styling and supports the Radix UI Slot pattern for composition.
+ *
+ * @param props - Button props including variant, size, and standard button attributes
+ * @returns A styled button element
+ *
+ * @example
+ * ```tsx
+ * // Default button
+ * <Button>Click me</Button>
+ *
+ * // Destructive action
+ * <Button variant="destructive">Delete</Button>
+ *
+ * // Large outline button
+ * <Button variant="outline" size="lg">Learn More</Button>
+ *
+ * // As child (renders as anchor)
+ * <Button asChild>
+ *   <a href="/page">Link Button</a>
+ * </Button>
+ * ```
+ *
+ * @see {@link buttonVariants} for available style variants
+ */
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 	({ className, variant, size, asChild = false, ...props }, ref) => {
 		const Comp = asChild ? SlotPrimitive.Slot : "button";

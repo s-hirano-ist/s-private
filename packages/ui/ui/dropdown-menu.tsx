@@ -4,18 +4,70 @@ import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui";
 import * as React from "react";
 import { cn } from "../utils/cn";
 
+/**
+ * Root dropdown menu component.
+ *
+ * @remarks
+ * Built on Radix UI DropdownMenu primitive. Provides accessible
+ * dropdown menus with keyboard navigation.
+ *
+ * @example
+ * ```tsx
+ * <DropdownMenu>
+ *   <DropdownMenuTrigger asChild>
+ *     <Button>Open Menu</Button>
+ *   </DropdownMenuTrigger>
+ *   <DropdownMenuContent>
+ *     <DropdownMenuLabel>My Account</DropdownMenuLabel>
+ *     <DropdownMenuSeparator />
+ *     <DropdownMenuItem>Profile</DropdownMenuItem>
+ *     <DropdownMenuItem>Settings</DropdownMenuItem>
+ *   </DropdownMenuContent>
+ * </DropdownMenu>
+ * ```
+ *
+ * @see {@link DropdownMenuContent} for the menu body
+ * @see {@link DropdownMenuTrigger} for the trigger button
+ */
 const DropdownMenu = DropdownMenuPrimitive.Root;
 
+/**
+ * Button or element that opens the dropdown menu.
+ *
+ * @see {@link DropdownMenu} for parent component
+ */
 const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
 
+/**
+ * Group container for related menu items.
+ *
+ * @see {@link DropdownMenuItem} for items within the group
+ */
 const DropdownMenuGroup = DropdownMenuPrimitive.Group;
 
+/**
+ * Portal for rendering menu outside the DOM hierarchy.
+ * @internal
+ */
 const DropdownMenuPortal = DropdownMenuPrimitive.Portal;
 
+/**
+ * Root for nested submenu.
+ *
+ * @see {@link DropdownMenuSubContent} for submenu content
+ */
 const DropdownMenuSub = DropdownMenuPrimitive.Sub;
 
+/**
+ * Group for radio-style menu items.
+ */
 const DropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup;
 
+/**
+ * Content container for nested submenu.
+ *
+ * @see {@link DropdownMenuSub} for parent component
+ */
 const DropdownMenuSubContent = React.forwardRef<
 	React.ElementRef<typeof DropdownMenuPrimitive.SubContent>,
 	React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubContent>
@@ -32,6 +84,15 @@ const DropdownMenuSubContent = React.forwardRef<
 DropdownMenuSubContent.displayName =
 	DropdownMenuPrimitive.SubContent.displayName;
 
+/**
+ * Main content container for the dropdown menu.
+ *
+ * @remarks
+ * Contains menu items with proper animations and positioning.
+ *
+ * @see {@link DropdownMenu} for parent component
+ * @see {@link DropdownMenuItem} for menu items
+ */
 const DropdownMenuContent = React.forwardRef<
 	React.ElementRef<typeof DropdownMenuPrimitive.Content>,
 	React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>
@@ -51,6 +112,14 @@ const DropdownMenuContent = React.forwardRef<
 ));
 DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName;
 
+/**
+ * Individual selectable item in the dropdown menu.
+ *
+ * @remarks
+ * Supports keyboard navigation and focus states.
+ *
+ * @see {@link DropdownMenuContent} for parent component
+ */
 const DropdownMenuItem = React.forwardRef<
 	React.ElementRef<typeof DropdownMenuPrimitive.Item>,
 	React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item> & {
@@ -69,6 +138,11 @@ const DropdownMenuItem = React.forwardRef<
 ));
 DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName;
 
+/**
+ * Non-interactive label for a menu section.
+ *
+ * @see {@link DropdownMenuContent} for parent component
+ */
 const DropdownMenuLabel = React.forwardRef<
 	React.ElementRef<typeof DropdownMenuPrimitive.Label>,
 	React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Label> & {
@@ -87,6 +161,9 @@ const DropdownMenuLabel = React.forwardRef<
 ));
 DropdownMenuLabel.displayName = DropdownMenuPrimitive.Label.displayName;
 
+/**
+ * Visual separator between menu sections.
+ */
 const DropdownMenuSeparator = React.forwardRef<
 	React.ElementRef<typeof DropdownMenuPrimitive.Separator>,
 	React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Separator>
@@ -99,6 +176,17 @@ const DropdownMenuSeparator = React.forwardRef<
 ));
 DropdownMenuSeparator.displayName = DropdownMenuPrimitive.Separator.displayName;
 
+/**
+ * Keyboard shortcut hint for a menu item.
+ *
+ * @example
+ * ```tsx
+ * <DropdownMenuItem>
+ *   Save
+ *   <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+ * </DropdownMenuItem>
+ * ```
+ */
 function DropdownMenuShortcut({
 	className,
 	...props

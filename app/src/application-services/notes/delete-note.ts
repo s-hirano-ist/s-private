@@ -1,3 +1,9 @@
+/**
+ * Note deletion server action.
+ *
+ * @module
+ */
+
 "use server";
 import "server-only";
 import {
@@ -15,6 +21,15 @@ import {
 } from "@/common/utils/cache-tag-builder";
 import { notesCommandRepository } from "@/infrastructures/notes/repositories/notes-command-repository";
 
+/**
+ * Server action to delete a note.
+ *
+ * @remarks
+ * Only unexported notes can be deleted. Requires dumper role permission.
+ *
+ * @param id - Note ID to delete
+ * @returns Server action result with success/failure status
+ */
 export async function deleteNote(id: string): Promise<ServerAction> {
 	const hasPermission = await hasDumperPostPermission();
 	if (!hasPermission) forbidden();

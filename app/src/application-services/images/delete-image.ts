@@ -1,3 +1,9 @@
+/**
+ * Image deletion server action.
+ *
+ * @module
+ */
+
 "use server";
 import "server-only";
 import { makeUnexportedStatus } from "@s-hirano-ist/s-core/common/entities/common-entity";
@@ -12,6 +18,15 @@ import {
 } from "@/common/utils/cache-tag-builder";
 import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
 
+/**
+ * Server action to delete an image.
+ *
+ * @remarks
+ * Only unexported images can be deleted. Requires dumper role permission.
+ *
+ * @param id - Image ID to delete
+ * @returns Server action result with success/failure status
+ */
 export async function deleteImage(id: string): Promise<ServerAction> {
 	const hasPermission = await hasDumperPostPermission();
 	if (!hasPermission) forbidden();
