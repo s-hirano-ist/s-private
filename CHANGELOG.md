@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.3.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.2.0...s-private-v10.3.0) (2025-12-21)
+
+
+### Features
+
+* add more docs and refactors on ddd ([ccaccd8](https://github.com/s-hirano-ist/s-private/commit/ccaccd821d45e6f356a5317f93e332bcdb1f3235))
+* Enhance documentation and add prop types for UI components ([e1b938f](https://github.com/s-hirano-ist/s-private/commit/e1b938f67621db325f5cdf750feee1b8a423c5bc))
+
+
+### Documentation
+
+* Add LastUpdated status handling and related tests for articles, books, images, and notes ([ba99665](https://github.com/s-hirano-ist/s-private/commit/ba99665c6788ccb8d7e1f46625ba564cab846016))
+* add more docs ([e8b8e1e](https://github.com/s-hirano-ist/s-private/commit/e8b8e1e427a66554d2433652ae2b40553947ca7f))
+* add more docs ([1ecc695](https://github.com/s-hirano-ist/s-private/commit/1ecc6950b429ff8fbd8f442ecf527fb8237571b0))
+* Add notification package configuration and publishing steps ([f06a1e6](https://github.com/s-hirano-ist/s-private/commit/f06a1e6a046698d03ddef78030f7dce92c521969))
+* Add notification package configuration and publishing steps ([c750355](https://github.com/s-hirano-ist/s-private/commit/c75035582052a54f3e099aee4aadb79915e3a081))
+* add UpdatedAt schema and factory function with tests ([e751d01](https://github.com/s-hirano-ist/s-private/commit/e751d013be053eb09794342f6093c765a91a6708))
+* Enhance Prisma configuration and index documentation with detailed remarks and examples ([98ba04d](https://github.com/s-hirano-ist/s-private/commit/98ba04d9b1d59b75d33f6e05bdc66e7ef3410b66))
+* Update required documentation fields in typedoc configuration ([d2d6cd3](https://github.com/s-hirano-ist/s-private/commit/d2d6cd3f03adae089dfc7e5bb9d3d83d1c68a998))
+
+
+### Maintenance
+
+* add custom value handling and search placeholders to dropdown input components ([3ff08be](https://github.com/s-hirano-ist/s-private/commit/3ff08be04bc4d73cfa21cabb72713f502efac04a))
+* add live services section to README with links ([d96ece4](https://github.com/s-hirano-ist/s-private/commit/d96ece4f42e44383134812993b68b5615df0a276))
+* add more docs and refactors ([0b0b26f](https://github.com/s-hirano-ist/s-private/commit/0b0b26f8681dec16bf4c224143119e99ca332c6c))
+* refactor Popover component usage and improve CommandInput props ([4365de1](https://github.com/s-hirano-ist/s-private/commit/4365de12a086221178597a18b5653b92adaa542c))
+* update eslint config to ignore TypeDoc generated files ([deb8299](https://github.com/s-hirano-ist/s-private/commit/deb8299cc18c190f7f031873b45b6e34793936c1))
+
 ## [10.2.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.1.6...s-private-v10.2.0) (2025-12-20)
 
 

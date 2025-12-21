@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.3.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.2.0...@s-hirano-ist/s-ui-v1.3.0) (2025-12-21)
+
+
+### Features
+
+* add more docs and refactors on ddd ([ccaccd8](https://github.com/s-hirano-ist/s-private/commit/ccaccd821d45e6f356a5317f93e332bcdb1f3235))
+* Enhance documentation and add prop types for UI components ([e1b938f](https://github.com/s-hirano-ist/s-private/commit/e1b938f67621db325f5cdf750feee1b8a423c5bc))
+
+
+### Documentation
+
+* add more docs ([1ecc695](https://github.com/s-hirano-ist/s-private/commit/1ecc6950b429ff8fbd8f442ecf527fb8237571b0))
+
+
+### Maintenance
+
+* add custom value handling and search placeholders to dropdown input components ([3ff08be](https://github.com/s-hirano-ist/s-private/commit/3ff08be04bc4d73cfa21cabb72713f502efac04a))
+* add more docs and refactors ([0b0b26f](https://github.com/s-hirano-ist/s-private/commit/0b0b26f8681dec16bf4c224143119e99ca332c6c))
+* refactor Popover component usage and improve CommandInput props ([4365de1](https://github.com/s-hirano-ist/s-private/commit/4365de12a086221178597a18b5653b92adaa542c))
+
 ## [1.2.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.1.6...@s-hirano-ist/s-ui-v1.2.0) (2025-12-20)
 
 

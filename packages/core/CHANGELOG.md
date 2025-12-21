@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.3.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.2.0...@s-hirano-ist/s-core-v1.3.0) (2025-12-21)
+
+
+### Features
+
+* add more docs and refactors on ddd ([ccaccd8](https://github.com/s-hirano-ist/s-private/commit/ccaccd821d45e6f356a5317f93e332bcdb1f3235))
+
+
+### Documentation
+
+* Add LastUpdated status handling and related tests for articles, books, images, and notes ([ba99665](https://github.com/s-hirano-ist/s-private/commit/ba99665c6788ccb8d7e1f46625ba564cab846016))
+* add more docs ([e8b8e1e](https://github.com/s-hirano-ist/s-private/commit/e8b8e1e427a66554d2433652ae2b40553947ca7f))
+* add more docs ([1ecc695](https://github.com/s-hirano-ist/s-private/commit/1ecc6950b429ff8fbd8f442ecf527fb8237571b0))
+* add UpdatedAt schema and factory function with tests ([e751d01](https://github.com/s-hirano-ist/s-private/commit/e751d013be053eb09794342f6093c765a91a6708))
+
+
+### Maintenance
+
+* add more docs and refactors ([0b0b26f](https://github.com/s-hirano-ist/s-private/commit/0b0b26f8681dec16bf4c224143119e99ca332c6c))
+
 ## [1.2.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.1.6...@s-hirano-ist/s-core-v1.2.0) (2025-12-20)
 
 
