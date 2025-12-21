@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.2.0...@s-hirano-ist/s-database-v1.3.0) (2025-12-21)
+
+
+### Features
+
+* add more docs and refactors on ddd ([ccaccd8](https://github.com/s-hirano-ist/s-private/commit/ccaccd821d45e6f356a5317f93e332bcdb1f3235))
+
+
+### Documentation
+
+* Enhance Prisma configuration and index documentation with detailed remarks and examples ([98ba04d](https://github.com/s-hirano-ist/s-private/commit/98ba04d9b1d59b75d33f6e05bdc66e7ef3410b66))
+
 ## [1.2.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.1.6...@s-hirano-ist/s-database-v1.2.0) (2025-12-20)
 
 
