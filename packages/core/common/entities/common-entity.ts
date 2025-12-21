@@ -126,6 +126,45 @@ export const makeCreatedAt = (createdAt?: Date): CreatedAt => {
 };
 
 /**
+ * Zod schema for validating update timestamps.
+ *
+ * @remarks
+ * Validates that the value is a valid Date object.
+ * Used to track when entities are last modified.
+ *
+ * @example
+ * ```typescript
+ * const timestamp = UpdatedAt.parse(new Date());
+ * ```
+ *
+ * @see {@link makeUpdatedAt} for factory function
+ */
+export const UpdatedAt = z.date().brand<"UpdatedAt">();
+
+/**
+ * Branded type for validated update timestamps.
+ */
+export type UpdatedAt = z.infer<typeof UpdatedAt>;
+
+/**
+ * Creates a validated UpdatedAt timestamp.
+ *
+ * @param updatedAt - Optional Date. If not provided, uses current time.
+ * @returns A branded UpdatedAt value
+ * @throws {ZodError} When the value is not a valid Date
+ *
+ * @example
+ * ```typescript
+ * const now = makeUpdatedAt(); // Current time
+ * const specific = makeUpdatedAt(new Date("2024-01-01"));
+ * ```
+ */
+export const makeUpdatedAt = (updatedAt?: Date): UpdatedAt => {
+	if (!updatedAt) return UpdatedAt.parse(new Date());
+	return UpdatedAt.parse(updatedAt);
+};
+
+/**
  * Zod schema for the UNEXPORTED status literal.
  *
  * @remarks
