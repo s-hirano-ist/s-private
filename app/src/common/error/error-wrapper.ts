@@ -1,3 +1,13 @@
+/**
+ * Server-side error handling and client response wrapper.
+ *
+ * @remarks
+ * Converts various error types to client-safe ServerAction responses.
+ * Dispatches domain events for logging and notification.
+ *
+ * @module
+ */
+
 "use server";
 import "server-only";
 import { SystemErrorEvent } from "@s-hirano-ist/s-core/common/events/system-error-event";
@@ -15,6 +25,11 @@ import {
 	UnexpectedError,
 } from "./error-classes";
 
+/**
+ * Converts FormData to a plain record for error responses.
+ *
+ * @internal
+ */
 function formDataToRecord(
 	formData?: FormData,
 ): Record<string, string> | undefined {
@@ -28,6 +43,23 @@ function formDataToRecord(
 	return record;
 }
 
+/**
+ * Wraps server-side errors for safe client response.
+ *
+ * @remarks
+ * Handles multiple error types:
+ * - NotificationError: External notification service failures
+ * - UnexpectedError, InvalidFormatError, FileNotAllowedError: Domain errors
+ * - DuplicateError: Business rule violations
+ * - AuthError: Authentication failures
+ * - Prisma errors: Database errors
+ *
+ * All errors dispatch domain events for logging and optional notification.
+ *
+ * @param error - The caught error to process
+ * @param formData - Optional form data to preserve for retry
+ * @returns Client-safe ServerAction response
+ */
 export async function wrapServerSideErrorForClient(
 	error: unknown,
 	formData?: FormData,

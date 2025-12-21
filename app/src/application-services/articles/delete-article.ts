@@ -1,3 +1,12 @@
+/**
+ * Article deletion server action.
+ *
+ * @remarks
+ * Handles article deletion with permission check and cache invalidation.
+ *
+ * @module
+ */
+
 "use server";
 import "server-only";
 import {
@@ -15,6 +24,16 @@ import {
 } from "@/common/utils/cache-tag-builder";
 import { articlesCommandRepository } from "@/infrastructures/articles/repositories/articles-command-repository";
 
+/**
+ * Server action to delete an article.
+ *
+ * @remarks
+ * Only unexported articles can be deleted.
+ * Requires dumper role permission.
+ *
+ * @param id - Article ID to delete
+ * @returns Server action result with success/failure status
+ */
 export async function deleteArticle(id: string): Promise<ServerAction> {
 	const hasPermission = await hasDumperPostPermission();
 	if (!hasPermission) forbidden();

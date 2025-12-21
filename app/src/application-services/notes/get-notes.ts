@@ -1,3 +1,13 @@
+/**
+ * Note query application services.
+ *
+ * @remarks
+ * Provides cached data access for notes with pagination support.
+ * Uses Next.js cache tags for efficient cache invalidation.
+ *
+ * @module
+ */
+
 import {
 	makeStatus,
 	type Status,
@@ -14,6 +24,17 @@ import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
 import { notesQueryRepository } from "@/infrastructures/notes/repositories/notes-query-repository";
 
+/**
+ * Fetches paginated notes with cache support.
+ *
+ * @param currentCount - Number of items to skip (offset)
+ * @param userId - User ID for data isolation
+ * @param status - Note status filter (UNEXPORTED/EXPORTED)
+ * @param cacheStrategy - Optional Prisma Accelerate cache configuration
+ * @returns Paginated note data with total count
+ *
+ * @internal
+ */
 export const _getNotes = async (
 	currentCount: number,
 	userId: UserId,
@@ -50,6 +71,11 @@ export const _getNotes = async (
 	}
 };
 
+/**
+ * Gets total count of notes for a user and status.
+ *
+ * @internal
+ */
 const _getNotesCount = async (
 	userId: UserId,
 	status: Status,
@@ -63,6 +89,9 @@ const _getNotesCount = async (
 	}
 };
 
+/**
+ * Gets the total count of exported notes for the current user.
+ */
 export const getExportedNotesCount: GetCount = cache(
 	async (): Promise<number> => {
 		const userId = await getSelfId();
@@ -70,12 +99,21 @@ export const getExportedNotesCount: GetCount = cache(
 	},
 );
 
+/**
+ * Fetches paginated unexported notes for the current user.
+ */
 export const getUnexportedNotes: GetPaginatedData<LinkCardStackInitialData> =
 	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
 		return _getNotes(currentCount, userId, makeStatus("UNEXPORTED"));
 	});
 
+/**
+ * Fetches paginated exported notes for the current user.
+ *
+ * @remarks
+ * Uses Prisma Accelerate caching with TTL and SWR for viewer performance.
+ */
 export const getExportedNotes: GetPaginatedData<LinkCardStackInitialData> =
 	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
@@ -86,6 +124,12 @@ export const getExportedNotes: GetPaginatedData<LinkCardStackInitialData> =
 		});
 	});
 
+/**
+ * Fetches a single note by its title.
+ *
+ * @param title - Note title to search for
+ * @returns Note data or null if not found
+ */
 export const getNoteByTitle = cache(async (title: string) => {
 	try {
 		const userId = await getSelfId();

@@ -1,3 +1,12 @@
+/**
+ * Article creation server action.
+ *
+ * @remarks
+ * Handles article creation with domain validation and cache invalidation.
+ *
+ * @module
+ */
+
 "use server";
 import "server-only";
 import { articleEntity } from "@s-hirano-ist/s-core/articles/entities/article-entity";
@@ -15,6 +24,20 @@ import { articlesCommandRepository } from "@/infrastructures/articles/repositori
 import { articlesQueryRepository } from "@/infrastructures/articles/repositories/articles-query-repository";
 import { parseAddArticleFormData } from "./helpers/form-data-parser";
 
+/**
+ * Server action to create a new article.
+ *
+ * @remarks
+ * Performs the following steps:
+ * 1. Permission check (dumper role required)
+ * 2. Form data parsing and validation
+ * 3. Domain duplicate check
+ * 4. Entity creation with value objects
+ * 5. Persistence and cache invalidation
+ *
+ * @param formData - Form data containing title, quote, url, category
+ * @returns Server action result with success/failure status
+ */
 export async function addArticle(formData: FormData): Promise<ServerAction> {
 	const hasPermission = await hasDumperPostPermission();
 	if (!hasPermission) forbidden();

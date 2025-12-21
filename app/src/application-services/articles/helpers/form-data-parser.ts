@@ -1,3 +1,12 @@
+/**
+ * Article form data parsing utilities.
+ *
+ * @remarks
+ * Converts raw FormData into validated domain value objects.
+ *
+ * @module
+ */
+
 import {
 	makeArticleTitle,
 	makeCategoryName,
@@ -7,6 +16,13 @@ import {
 import type { UserId } from "@s-hirano-ist/s-core/common/entities/common-entity";
 import { getFormDataString } from "@/common/utils/form-data-utils";
 
+/**
+ * Parses article creation form data into domain value objects.
+ *
+ * @param formData - Raw form data from article creation form
+ * @param userId - Current user's ID
+ * @returns Validated article data with domain value objects
+ */
 export const parseAddArticleFormData = (formData: FormData, userId: UserId) => {
 	const title = getFormDataString(formData, "title");
 	const quote = getFormDataString(formData, "quote");

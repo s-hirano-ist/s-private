@@ -1,3 +1,9 @@
+/**
+ * Note creation server action.
+ *
+ * @module
+ */
+
 "use server";
 import "server-only";
 import { noteEntity } from "@s-hirano-ist/s-core/notes/entities/note-entity";
@@ -15,6 +21,16 @@ import { notesCommandRepository } from "@/infrastructures/notes/repositories/not
 import { notesQueryRepository } from "@/infrastructures/notes/repositories/notes-query-repository";
 import { parseAddNoteFormData } from "./helpers/form-data-parser";
 
+/**
+ * Server action to create a new note.
+ *
+ * @remarks
+ * Validates title uniqueness and creates markdown-based notes.
+ * Requires dumper role permission.
+ *
+ * @param formData - Form data containing title and markdown content
+ * @returns Server action result with success/failure status
+ */
 export async function addNote(formData: FormData): Promise<ServerAction> {
 	const hasPermission = await hasDumperPostPermission();
 	if (!hasPermission) forbidden();

@@ -1,3 +1,13 @@
+/**
+ * Unified search application service.
+ *
+ * @remarks
+ * Provides full-text search across articles, books, and notes
+ * with relevance scoring and snippet extraction.
+ *
+ * @module
+ */
+
 "use server";
 import "server-only";
 import type { UserId } from "@s-hirano-ist/s-core/common/entities/common-entity";
@@ -12,11 +22,24 @@ import { articlesQueryRepository } from "@/infrastructures/articles/repositories
 import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
 import { notesQueryRepository } from "@/infrastructures/notes/repositories/notes-query-repository";
 
+/**
+ * Truncates text to a maximum length with ellipsis.
+ *
+ * @internal
+ */
 function truncateText(text: string, maxLength = 150): string {
 	if (text.length <= maxLength) return text;
 	return `${text.substring(0, maxLength)}...`;
 }
 
+/**
+ * Extracts a snippet from text around the query match.
+ *
+ * @remarks
+ * Centers the snippet around the first query match for context.
+ *
+ * @internal
+ */
 function extractSnippet(
 	text: string | null,
 	query: string,
@@ -39,6 +62,19 @@ function extractSnippet(
 	return start > 0 ? `...${snippet}` : snippet;
 }
 
+/**
+ * Performs unified search across all content types.
+ *
+ * @remarks
+ * Searches articles, books, and notes with:
+ * - Configurable content type filtering
+ * - Relevance-based result sorting
+ * - Snippet extraction for context
+ *
+ * @param searchQuery - Search query with optional filters
+ * @param userId - User ID for data isolation
+ * @returns Unified search results grouped by content type
+ */
 export async function searchContent(
 	searchQuery: SearchQuery,
 	userId: UserId,
