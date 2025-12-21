@@ -195,6 +195,39 @@ export const makeUnexportedStatus = (): UnexportedStatus =>
 	UnexportedStatus.parse("UNEXPORTED");
 
 /**
+ * Zod schema for the LAST_UPDATED status literal.
+ *
+ * @remarks
+ * Represents the intermediate state of content entities during batch processing.
+ * Content transitions from UNEXPORTED to LAST_UPDATED when marked for export,
+ * then from LAST_UPDATED to EXPORTED when finalized.
+ * Can be reverted back to UNEXPORTED if something goes wrong.
+ *
+ * @see {@link UnexportedStatus} for the initial state
+ * @see {@link ExportedStatus} for the final state
+ * @see {@link Status} for the union type
+ */
+export const LastUpdatedStatus = z.literal("LAST_UPDATED");
+
+/**
+ * Literal type for the LAST_UPDATED status.
+ */
+export type LastUpdatedStatus = z.infer<typeof LastUpdatedStatus>;
+
+/**
+ * Creates a LastUpdatedStatus value.
+ *
+ * @returns The literal "LAST_UPDATED" status
+ *
+ * @example
+ * ```typescript
+ * const status = makeLastUpdatedStatus(); // "LAST_UPDATED"
+ * ```
+ */
+export const makeLastUpdatedStatus = (): LastUpdatedStatus =>
+	LastUpdatedStatus.parse("LAST_UPDATED");
+
+/**
  * Zod schema for validating export timestamps.
  *
  * @remarks
@@ -280,7 +313,8 @@ export const makeExportedStatus = (): ExportedStatus =>
  *
  * @remarks
  * Represents the lifecycle state of content entities.
- * All entities start as "UNEXPORTED" and can transition to "EXPORTED".
+ * State transitions: UNEXPORTED → LAST_UPDATED → EXPORTED
+ * LAST_UPDATED can be reverted back to UNEXPORTED.
  *
  * @example
  * ```typescript
@@ -289,27 +323,33 @@ export const makeExportedStatus = (): ExportedStatus =>
  * }
  * ```
  */
-export type Status = UnexportedStatus | ExportedStatus["status"];
+export type Status =
+	| UnexportedStatus
+	| LastUpdatedStatus
+	| ExportedStatus["status"];
 
 /**
  * Creates a Status value from a string.
  *
- * @param status - The status string ("UNEXPORTED" or "EXPORTED")
+ * @param status - The status string ("UNEXPORTED", "LAST_UPDATED", or "EXPORTED")
  * @returns The status value
  *
- * @deprecated This is for legacy compatibility. Use {@link makeUnexportedStatus}
- * or {@link makeExportedStatus} instead.
+ * @deprecated This is for legacy compatibility. Use {@link makeUnexportedStatus},
+ * {@link makeLastUpdatedStatus}, or {@link makeExportedStatus} instead.
  *
  * @example
  * ```typescript
  * // Prefer these:
  * const unexported = makeUnexportedStatus();
+ * const lastUpdated = makeLastUpdatedStatus();
  * const exported = makeExportedStatus();
  *
  * // Instead of:
  * const status = makeStatus("UNEXPORTED");
  * ```
  */
-export const makeStatus = (status: "UNEXPORTED" | "EXPORTED"): Status => {
+export const makeStatus = (
+	status: "UNEXPORTED" | "LAST_UPDATED" | "EXPORTED",
+): Status => {
 	return status as Status;
 };

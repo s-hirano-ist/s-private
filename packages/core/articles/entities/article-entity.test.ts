@@ -258,4 +258,99 @@ describe("articleEntity", () => {
 			createEntityWithErrorHandlingSpy.mockRestore();
 		});
 	});
+
+	describe("articleEntity.markAsLastUpdated", () => {
+		test("should transition article from UNEXPORTED to LAST_UPDATED", () => {
+			const article = articleEntity.create({
+				userId: makeUserId("test-user-id"),
+				categoryName: makeCategoryName("Tech"),
+				title: makeArticleTitle("Test Article"),
+				url: makeUrl("https://example.com"),
+			});
+
+			const lastUpdatedArticle = articleEntity.markAsLastUpdated(article);
+
+			expect(lastUpdatedArticle.status).toBe("LAST_UPDATED");
+			expect(lastUpdatedArticle.id).toBe(article.id);
+			expect(lastUpdatedArticle.url).toBe(article.url);
+		});
+
+		test("should return frozen object", () => {
+			const article = articleEntity.create({
+				userId: makeUserId("test-user-id"),
+				categoryName: makeCategoryName("Tech"),
+				title: makeArticleTitle("Test Article"),
+				url: makeUrl("https://example.com"),
+			});
+
+			const lastUpdatedArticle = articleEntity.markAsLastUpdated(article);
+
+			expect(Object.isFrozen(lastUpdatedArticle)).toBe(true);
+		});
+	});
+
+	describe("articleEntity.revert", () => {
+		test("should transition article from LAST_UPDATED back to UNEXPORTED", () => {
+			const article = articleEntity.create({
+				userId: makeUserId("test-user-id"),
+				categoryName: makeCategoryName("Tech"),
+				title: makeArticleTitle("Test Article"),
+				url: makeUrl("https://example.com"),
+			});
+			const lastUpdatedArticle = articleEntity.markAsLastUpdated(article);
+
+			const revertedArticle = articleEntity.revert(lastUpdatedArticle);
+
+			expect(revertedArticle.status).toBe("UNEXPORTED");
+			expect(revertedArticle.id).toBe(article.id);
+			expect(revertedArticle.url).toBe(article.url);
+		});
+
+		test("should return frozen object", () => {
+			const article = articleEntity.create({
+				userId: makeUserId("test-user-id"),
+				categoryName: makeCategoryName("Tech"),
+				title: makeArticleTitle("Test Article"),
+				url: makeUrl("https://example.com"),
+			});
+			const lastUpdatedArticle = articleEntity.markAsLastUpdated(article);
+
+			const revertedArticle = articleEntity.revert(lastUpdatedArticle);
+
+			expect(Object.isFrozen(revertedArticle)).toBe(true);
+		});
+	});
+
+	describe("articleEntity.finalize", () => {
+		test("should transition article from LAST_UPDATED to EXPORTED", () => {
+			const article = articleEntity.create({
+				userId: makeUserId("test-user-id"),
+				categoryName: makeCategoryName("Tech"),
+				title: makeArticleTitle("Test Article"),
+				url: makeUrl("https://example.com"),
+			});
+			const lastUpdatedArticle = articleEntity.markAsLastUpdated(article);
+
+			const exportedArticle = articleEntity.finalize(lastUpdatedArticle);
+
+			expect(exportedArticle.status).toBe("EXPORTED");
+			expect(exportedArticle.exportedAt).toBeInstanceOf(Date);
+			expect(exportedArticle.id).toBe(article.id);
+			expect(exportedArticle.url).toBe(article.url);
+		});
+
+		test("should return frozen object", () => {
+			const article = articleEntity.create({
+				userId: makeUserId("test-user-id"),
+				categoryName: makeCategoryName("Tech"),
+				title: makeArticleTitle("Test Article"),
+				url: makeUrl("https://example.com"),
+			});
+			const lastUpdatedArticle = articleEntity.markAsLastUpdated(article);
+
+			const exportedArticle = articleEntity.finalize(lastUpdatedArticle);
+
+			expect(Object.isFrozen(exportedArticle)).toBe(true);
+		});
+	});
 });
