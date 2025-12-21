@@ -94,10 +94,13 @@ const Base = z.object({
 export const UnexportedImage = Base.extend({ status: UnexportedStatus });
 export type UnexportedImage = Readonly<z.infer<typeof UnexportedImage>>;
 
-const ExportedImage = Base.extend(ExportedStatus.shape);
-type ExportedImage = Readonly<z.infer<typeof ExportedImage>>;
+/** エクスポート済み画像のZodスキーマ */
+export const ExportedImage = Base.extend(ExportedStatus.shape);
+/** エクスポート済み画像の型 */
+export type ExportedImage = Readonly<z.infer<typeof ExportedImage>>;
 
-type CreateImageArgs = Readonly<{
+/** 画像作成時の引数 */
+export type CreateImageArgs = Readonly<{
 	userId: UserId;
 	path: Path;
 	contentType: ContentType;

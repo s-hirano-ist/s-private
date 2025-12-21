@@ -14,7 +14,8 @@ const FormValuesContext = createContext<Record<string, string>>({});
 
 export const useFormValues = () => useContext(FormValuesContext);
 
-type Props<T> = {
+/** GenericFormWrapperコンポーネントのProps */
+export type GenericFormWrapperProps<T> = {
 	action: (formData: FormData) => Promise<T>;
 	children: ReactNode;
 	saveLabel: string;
@@ -36,7 +37,7 @@ export function GenericFormWrapper<
 	onSubmit,
 	preservedValues,
 	afterSubmit,
-}: Props<T>) {
+}: GenericFormWrapperProps<T>) {
 	const [formValues, setFormValues] = useState<Record<string, string>>(
 		preservedValues || {},
 	);

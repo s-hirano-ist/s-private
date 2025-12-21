@@ -1,7 +1,8 @@
 import type { CacheStrategy } from "./cache-strategy";
 import type { SortOrder } from "./sort-order";
 
-type BooksOrderByField =
+/** 書籍のソートフィールド */
+export type BooksOrderByField =
 	| "id"
 	| "ISBN"
 	| "title"
@@ -19,7 +20,8 @@ type BooksOrderByField =
 	| "updatedAt"
 	| "exportedAt";
 
-type BooksOrderBy = {
+/** 書籍のソート条件 */
+export type BooksOrderBy = {
 	[K in BooksOrderByField]?: SortOrder;
 };
 

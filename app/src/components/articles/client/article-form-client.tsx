@@ -4,7 +4,7 @@ import { FormInput } from "@s-hirano-ist/s-ui/forms/fields/form-input";
 import { FormInputWithButton } from "@s-hirano-ist/s-ui/forms/fields/form-input-with-button";
 import { FormTextarea } from "@s-hirano-ist/s-ui/forms/fields/form-textarea";
 import { GenericFormWrapper } from "@s-hirano-ist/s-ui/forms/generic-form-wrapper";
-import { ClipboardPasteIcon, TableOfContentsIcon } from "lucide-react";
+import { ClipboardPasteIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRef } from "react";
 import { toast } from "sonner";
@@ -41,14 +41,15 @@ export function ArticleFormClient({ categories, addArticle }: Props) {
 			saveLabel={label("save")}
 		>
 			<FormDropdownInput
-				autoComplete="off"
+				customValueLabel={(v) => label("useCustomValue", { value: v })}
+				emptyMessage={label("noResults")}
 				htmlFor="category"
 				inputRef={categoryInputReference}
 				label={label("category")}
 				name="category"
 				options={categories}
 				required
-				triggerIcon={<TableOfContentsIcon />}
+				searchPlaceholder={label("searchPlaceholder")}
 			/>
 			<FormInput
 				autoComplete="off"

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { ClipboardPasteIcon, TableOfContentsIcon } from "lucide-react";
+import { ClipboardPasteIcon } from "lucide-react";
 import { fn } from "storybook/test";
 import { FormDropdownInput } from "./fields/form-dropdown-input";
 import { FormFileInput } from "./fields/form-file-input";
@@ -99,14 +99,12 @@ export const ArticleForm: Story = {
 		children: (
 			<>
 				<FormDropdownInput
-					autoComplete="off"
 					htmlFor="category"
 					label="カテゴリー"
 					name="category"
 					options={mockCategories}
 					placeholder="カテゴリーを選択"
 					required
-					triggerIcon={<TableOfContentsIcon />}
 				/>
 				<FormInput
 					autoComplete="off"

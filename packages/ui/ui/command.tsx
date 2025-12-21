@@ -67,7 +67,7 @@ function CommandInput({
 	onSearchClick,
 	...props
 }: React.ComponentProps<typeof CommandPrimitive.Input> & {
-	onSearchClick: () => Promise<void>;
+	onSearchClick?: () => Promise<void>;
 }) {
 	return (
 		<div
@@ -82,9 +82,11 @@ function CommandInput({
 				data-slot="command-input"
 				{...props}
 			/>
-			<Button className="shrink-0" onClick={onSearchClick}>
-				<SearchIcon className="size-4" />
-			</Button>
+			{onSearchClick && (
+				<Button className="shrink-0" onClick={onSearchClick}>
+					<SearchIcon className="size-4" />
+				</Button>
+			)}
 		</div>
 	);
 }

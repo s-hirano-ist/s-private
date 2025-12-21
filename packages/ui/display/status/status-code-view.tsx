@@ -1,6 +1,7 @@
 "use client";
 
-type StatusCode = "000" | "204" | "403" | "404" | "500";
+/** ステータスコードの型 */
+export type StatusCode = "000" | "204" | "403" | "404" | "500";
 
 export function StatusCodeView({
 	statusCode,

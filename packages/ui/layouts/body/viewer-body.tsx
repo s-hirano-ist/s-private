@@ -5,7 +5,8 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import remarkGfm from "remark-gfm";
 
-type Props = { children?: ReactNode; markdown: string };
+/** ViewerBodyClientコンポーネントのProps */
+export type ViewerBodyProps = { children?: ReactNode; markdown: string };
 
 export async function markdownToReact(markdown: string) {
 	const components: Components = {
@@ -63,7 +64,10 @@ export async function markdownToReact(markdown: string) {
 	);
 }
 
-export async function ViewerBodyClient({ children, markdown }: Props) {
+export async function ViewerBodyClient({
+	children,
+	markdown,
+}: ViewerBodyProps) {
 	const content = await markdownToReact(markdown);
 
 	return (

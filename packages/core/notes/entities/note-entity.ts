@@ -13,7 +13,8 @@ import { createEntityWithErrorHandling } from "../../common/services/entity-fact
 
 // Value objects
 
-const NoteTitle = z
+/** ノートタイトルのZodスキーマ (1-64文字) */
+export const NoteTitle = z
 	.string({ message: "required" })
 	.min(1, { message: "required" })
 	.max(64, { message: "tooLong" })
@@ -21,7 +22,8 @@ const NoteTitle = z
 export type NoteTitle = z.infer<typeof NoteTitle>;
 export const makeNoteTitle = (v: string): NoteTitle => NoteTitle.parse(v);
 
-const Markdown = z
+/** マークダウンのZodスキーマ */
+export const Markdown = z
 	.string({ message: "required" })
 	.min(1, { message: "required" })
 	.brand<"Markdown">();
@@ -41,10 +43,13 @@ const Base = z.object({
 export const UnexportedNote = Base.extend({ status: UnexportedStatus });
 export type UnexportedNote = Readonly<z.infer<typeof UnexportedNote>>;
 
-const ExportedNote = Base.extend(ExportedStatus.shape);
-type ExportedNote = Readonly<z.infer<typeof ExportedNote>>;
+/** エクスポート済みノートのZodスキーマ */
+export const ExportedNote = Base.extend(ExportedStatus.shape);
+/** エクスポート済みノートの型 */
+export type ExportedNote = Readonly<z.infer<typeof ExportedNote>>;
 
-type CreateNoteArgs = Readonly<{
+/** ノート作成時の引数 */
+export type CreateNoteArgs = Readonly<{
 	userId: UserId;
 	title: NoteTitle;
 	markdown: Markdown;

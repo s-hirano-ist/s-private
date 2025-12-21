@@ -1,7 +1,8 @@
 import type { CacheStrategy } from "./cache-strategy";
 import type { SortOrder } from "./sort-order";
 
-type ArticleOrderByField =
+/** 記事のソートフィールド */
+export type ArticleOrderByField =
 	| "id"
 	| "title"
 	| "url"
@@ -14,13 +15,16 @@ type ArticleOrderByField =
 	| "updatedAt"
 	| "exportedAt";
 
-type CategoryOrderByField = "id" | "name" | "createdAt" | "updatedAt";
+/** カテゴリのソートフィールド */
+export type CategoryOrderByField = "id" | "name" | "createdAt" | "updatedAt";
 
-type ArticleOrderBy = {
+/** 記事のソート条件 */
+export type ArticleOrderBy = {
 	[K in ArticleOrderByField]?: SortOrder;
 };
 
-type CategoryOrderBy = {
+/** カテゴリのソート条件 */
+export type CategoryOrderBy = {
 	[K in CategoryOrderByField]?: SortOrder;
 };
 

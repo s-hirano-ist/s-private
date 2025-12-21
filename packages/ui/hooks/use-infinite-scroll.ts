@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-type UseInfiniteScrollOptions = {
+/** 無限スクロールフックのオプション */
+export type UseInfiniteScrollOptions = {
 	hasNextPage: boolean;
 	isFetchingNextPage: boolean;
 	fetchNextPage: () => Promise<void>;
@@ -10,7 +11,8 @@ type UseInfiniteScrollOptions = {
 	threshold?: number;
 };
 
-type UseInfiniteScrollReturn = {
+/** 無限スクロールフックの戻り値 */
+export type UseInfiniteScrollReturn = {
 	lastElementRef: (node: HTMLElement | null) => void;
 };
 

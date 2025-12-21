@@ -13,7 +13,8 @@ import { createEntityWithErrorHandling } from "../../common/services/entity-fact
 
 // Value objects
 
-const ISBN = z
+/** ISBNのZodスキーマ (1-17文字、数字とハイフンのみ) */
+export const ISBN = z
 	.string({ message: "required" })
 	.min(1, { message: "required" })
 	.max(17, { message: "tooLong" })
@@ -22,7 +23,8 @@ const ISBN = z
 export type ISBN = z.infer<typeof ISBN>;
 export const makeISBN = (v: string): ISBN => ISBN.parse(v);
 
-const BookTitle = z
+/** 書籍タイトルのZodスキーマ (1-256文字) */
+export const BookTitle = z
 	.string({ message: "required" })
 	.min(1, { message: "required" })
 	.max(256, { message: "tooLong" })
@@ -30,40 +32,53 @@ const BookTitle = z
 export type BookTitle = z.infer<typeof BookTitle>;
 export const makeBookTitle = (v: string): BookTitle => BookTitle.parse(v);
 
-const GoogleTitle = z.string().nullable().brand<"GoogleTitle">();
+/** Google Books APIタイトルのZodスキーマ */
+export const GoogleTitle = z.string().nullable().brand<"GoogleTitle">();
 export type GoogleTitle = z.infer<typeof GoogleTitle>;
 export const makeGoogleTitle = (v: string | null | undefined): GoogleTitle =>
 	GoogleTitle.parse(v);
 
-const GoogleSubtitle = z.string().nullable().brand<"GoogleSubTitle">();
+/** Google Books APIサブタイトルのZodスキーマ */
+export const GoogleSubtitle = z.string().nullable().brand<"GoogleSubTitle">();
 export type GoogleSubtitle = z.infer<typeof GoogleSubtitle>;
 export const makeGoogleSubTitle = (
 	v: string | null | undefined,
 ): GoogleSubtitle => GoogleSubtitle.parse(v);
 
-const GoogleAuthors = z.array(z.string()).nullable().brand<"GoogleAuthors">();
+/** Google Books API著者リストのZodスキーマ */
+export const GoogleAuthors = z
+	.array(z.string())
+	.nullable()
+	.brand<"GoogleAuthors">();
 export type GoogleAuthors = z.infer<typeof GoogleAuthors>;
 export const makeGoogleAuthors = (
 	v: string[] | null | undefined,
 ): GoogleAuthors => GoogleAuthors.parse(v);
 
-const GoogleDescription = z.string().nullable().brand<"GoogleDescription">();
+/** Google Books API説明のZodスキーマ */
+export const GoogleDescription = z
+	.string()
+	.nullable()
+	.brand<"GoogleDescription">();
 export type GoogleDescription = z.infer<typeof GoogleDescription>;
 export const makeGoogleDescription = (
 	v: string | null | undefined,
 ): GoogleDescription => GoogleDescription.parse(v);
 
-const GoogleImgSrc = z.string().nullable().brand<"GoogleImgSrc">();
+/** Google Books API画像URLのZodスキーマ */
+export const GoogleImgSrc = z.string().nullable().brand<"GoogleImgSrc">();
 export type GoogleImgSrc = z.infer<typeof GoogleImgSrc>;
 export const makeGoogleImgSrc = (v: string | null | undefined): GoogleImgSrc =>
 	GoogleImgSrc.parse(v);
 
-const GoogleHref = z.string().nullable().brand<"GoogleHref">();
+/** Google Books APIリンクURLのZodスキーマ */
+export const GoogleHref = z.string().nullable().brand<"GoogleHref">();
 export type GoogleHref = z.infer<typeof GoogleHref>;
 export const makeGoogleHref = (v: string | null | undefined): GoogleHref =>
 	GoogleHref.parse(v);
 
-const BookMarkdown = z.string().nullable().brand<"BookMarkdown">();
+/** 書籍マークダウンのZodスキーマ */
+export const BookMarkdown = z.string().nullable().brand<"BookMarkdown">();
 export type BookMarkdown = z.infer<typeof BookMarkdown>;
 export const makeBookMarkdown = (v: string | null): BookMarkdown =>
 	BookMarkdown.parse(v);
@@ -88,10 +103,13 @@ const Base = z.object({
 export const UnexportedBook = Base.extend({ status: UnexportedStatus });
 export type UnexportedBook = Readonly<z.infer<typeof UnexportedBook>>;
 
-const ExportedBook = Base.extend(ExportedStatus.shape);
-type ExportedBook = Readonly<z.infer<typeof ExportedBook>>;
+/** エクスポート済み書籍のZodスキーマ */
+export const ExportedBook = Base.extend(ExportedStatus.shape);
+/** エクスポート済み書籍の型 */
+export type ExportedBook = Readonly<z.infer<typeof ExportedBook>>;
 
-type CreateBookArgs = Readonly<{
+/** 書籍作成時の引数 */
+export type CreateBookArgs = Readonly<{
 	userId: UserId;
 	ISBN: ISBN;
 	title: BookTitle;
