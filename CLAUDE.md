@@ -2,6 +2,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+Before doing any UI, frontend or React development, ALWAYS call the storybook MCP server to get further instructions.
+
 ## Common Development Commands
 
 ### Essential Commands
