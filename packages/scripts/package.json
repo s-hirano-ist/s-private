@@ -1,13 +1,24 @@
 {
 	"name": "@s-hirano-ist/s-scripts",
-	"version": "1.3.1",
+	"version": "0.1.0",
 	"description": "CLI scripts for s-private data operations",
 	"type": "module",
 	"bin": {
 		"fetch-articles": "./dist/fetch-articles.js",
 		"fetch-books": "./dist/fetch-books.js",
 		"fetch-images": "./dist/fetch-images.js",
-		"fetch-notes": "./dist/fetch-notes.js"
+		"fetch-notes": "./dist/fetch-notes.js",
+		"find-duplicate-json-articles": "./dist/find-duplicate-json-articles.js",
+		"reset-articles": "./dist/reset-articles.js",
+		"reset-books": "./dist/reset-books.js",
+		"reset-images": "./dist/reset-images.js",
+		"reset-notes": "./dist/reset-notes.js",
+		"revert-articles": "./dist/revert-articles.js",
+		"revert-books": "./dist/revert-books.js",
+		"revert-images": "./dist/revert-images.js",
+		"revert-notes": "./dist/revert-notes.js",
+		"update-json-articles": "./dist/update-json-articles.js",
+		"update-raw-articles": "./dist/update-raw-articles.js"
 	},
 	"scripts": {
 		"build": "tsc",
@@ -17,7 +28,18 @@
 		"fetch-articles": "tsx src/fetch-articles.ts",
 		"fetch-books": "tsx src/fetch-books.ts",
 		"fetch-images": "tsx src/fetch-images.ts",
-		"fetch-notes": "tsx src/fetch-notes.ts"
+		"fetch-notes": "tsx src/fetch-notes.ts",
+		"find-duplicate-json-articles": "tsx src/find-duplicate-json-articles.ts",
+		"reset-articles": "tsx src/reset-articles.ts",
+		"reset-books": "tsx src/reset-books.ts",
+		"reset-images": "tsx src/reset-images.ts",
+		"reset-notes": "tsx src/reset-notes.ts",
+		"revert-articles": "tsx src/revert-articles.ts",
+		"revert-books": "tsx src/revert-books.ts",
+		"revert-images": "tsx src/revert-images.ts",
+		"revert-notes": "tsx src/revert-notes.ts",
+		"update-json-articles": "tsx src/update-json-articles.ts",
+		"update-raw-articles": "tsx src/update-raw-articles.ts"
 	},
 	"files": [
 		"dist",
@@ -38,10 +60,14 @@
 		"@s-hirano-ist/s-core": "workspace:*",
 		"@s-hirano-ist/s-database": "workspace:*",
 		"@s-hirano-ist/s-notification": "workspace:*",
-		"minio": "8.0.5"
+		"jsdom": "26.0.0",
+		"minio": "8.0.5",
+		"turndown": "7.2.0"
 	},
 	"devDependencies": {
+		"@types/jsdom": "21.1.7",
 		"@types/node": "22.15.31",
+		"@types/turndown": "5.0.5",
 		"tsx": "4.19.4",
 		"typescript": "5.9.3"
 	}

@@ -1,21 +1,9 @@
+#!/usr/bin/env node
 import { existsSync } from "node:fs";
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
 import TurndownService from "turndown";
-
-const PUSHOVER_URL = process.env.PUSHOVER_URL;
-const PUSHOVER_USER_KEY = process.env.PUSHOVER_USER_KEY;
-const PUSHOVER_APP_TOKEN = process.env.PUSHOVER_APP_TOKEN;
-
-if (!PUSHOVER_URL || !PUSHOVER_USER_KEY || !PUSHOVER_APP_TOKEN)
-	throw new Error("ENV not set.");
-
-const notificationService = createPushoverService({
-	url: PUSHOVER_URL,
-	userKey: PUSHOVER_USER_KEY,
-	appToken: PUSHOVER_APP_TOKEN,
-});
 
 const FETCHED_URLS_FILE = "script/fetched_urls.txt";
 const JSON_DIR = "json/article";
@@ -110,18 +98,18 @@ async function fetchWebsiteMarkdown(url: string): Promise<string> {
 	}
 }
 
-interface ArticleItem {
+type ArticleItem = {
 	title: string;
 	quote: string;
 	url: string;
 	skip?: boolean;
-}
+};
 
-interface ArticlesData {
+type ArticlesData = {
 	heading: string;
 	description: string;
 	body: ArticleItem[];
-}
+};
 
 async function jsonToMarkdown(
 	jsonFile: string,
@@ -171,13 +159,29 @@ ${websiteText}
 			console.log(`Exported: ${outputPath}`);
 
 			fetchedUrls.add(url);
-		} catch (error) {
+		} catch (_error) {
 			console.error("Error on file:", url);
 		}
 	}
 }
 
 async function main() {
+	const env = {
+		PUSHOVER_URL: process.env.PUSHOVER_URL,
+		PUSHOVER_USER_KEY: process.env.PUSHOVER_USER_KEY,
+		PUSHOVER_APP_TOKEN: process.env.PUSHOVER_APP_TOKEN,
+	} as const;
+
+	if (Object.values(env).some((v) => !v)) {
+		throw new Error("Required environment variables are not set.");
+	}
+
+	const notificationService = createPushoverService({
+		url: env.PUSHOVER_URL ?? "",
+		userKey: env.PUSHOVER_USER_KEY ?? "",
+		appToken: env.PUSHOVER_APP_TOKEN ?? "",
+	});
+
 	try {
 		const fetchedUrls = await loadFetchedUrls();
 
@@ -207,4 +211,7 @@ async function main() {
 	}
 }
 
-await main();
+main().catch((error) => {
+	console.error(error);
+	process.exit(1);
+});

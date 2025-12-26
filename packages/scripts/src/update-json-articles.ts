@@ -1,22 +1,10 @@
+#!/usr/bin/env node
+import { readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
-import { readdirSync, readFileSync, writeFileSync } from "fs";
 import { JSDOM, VirtualConsole } from "jsdom";
-import { join } from "path";
 
-const PUSHOVER_URL = process.env.PUSHOVER_URL;
-const PUSHOVER_USER_KEY = process.env.PUSHOVER_USER_KEY;
-const PUSHOVER_APP_TOKEN = process.env.PUSHOVER_APP_TOKEN;
-
-if (!PUSHOVER_URL || !PUSHOVER_USER_KEY || !PUSHOVER_APP_TOKEN)
-	throw new Error("ENV not set.");
-
-const notificationService = createPushoverService({
-	url: PUSHOVER_URL,
-	userKey: PUSHOVER_USER_KEY,
-	appToken: PUSHOVER_APP_TOKEN,
-});
-
-interface ArticleItem {
+type ArticleItem = {
 	title: string;
 	url: string;
 	quote?: string;
@@ -24,25 +12,28 @@ interface ArticleItem {
 	ogTitle?: string;
 	ogDescription?: string;
 	skip?: boolean;
-}
+};
 
-interface ArticlesJson {
+type ArticlesJson = {
 	heading: string;
 	description: string;
 	body: ArticleItem[];
-}
+};
 
 // REF: https://zenn.dev/littleforest/articles/scrape-og-tags
 function extractOgpData(metaElements: HTMLMetaElement[]) {
 	return metaElements
 		.filter((element: Element) => element.hasAttribute("property"))
-		.reduce((previous: Record<string, string>, current: Element) => {
-			const property = current.getAttribute("property")?.trim();
-			const content = current.getAttribute("content");
-			if (!property || !content) return previous;
-			previous[property] = content;
-			return previous;
-		}, {});
+		.reduce(
+			(previous: Record<string, string>, current: Element) => {
+				const property = current.getAttribute("property")?.trim();
+				const content = current.getAttribute("content");
+				if (!property || !content) return previous;
+				previous[property] = content;
+				return previous;
+			},
+			{} as Record<string, string>,
+		);
 }
 
 async function getOgTags(
@@ -67,7 +58,7 @@ async function getOgTags(
 		const ogDescription = ogTags?.["og:description"];
 
 		return { ogImageUrl, ogTitle, ogDescription };
-	} catch (error) {
+	} catch (_error) {
 		console.error(`Error fetching OG tags for ${url}:`);
 		return {};
 	}
@@ -85,7 +76,6 @@ async function processArticleFile(filePath: string): Promise<void> {
 
 			// Skip if OG tags already exist
 			if (item.ogImageUrl || item.ogTitle || item.ogDescription || item.skip) {
-				// console.log(`Skipping ${item.url} - OG tags already exist`);
 				continue;
 			}
 
@@ -108,16 +98,32 @@ async function processArticleFile(filePath: string): Promise<void> {
 		// Write back to file
 		writeFileSync(
 			filePath,
-			JSON.stringify(articleData, null, "\t") + "\n",
+			`${JSON.stringify(articleData, null, "\t")}\n`,
 			"utf-8",
 		);
-		console.log(`✅ Completed processing ${filePath}`);
+		console.log(`Completed processing ${filePath}`);
 	} catch (error) {
 		console.error(`Error processing ${filePath}:`, error);
 	}
 }
 
 async function main(): Promise<void> {
+	const env = {
+		PUSHOVER_URL: process.env.PUSHOVER_URL,
+		PUSHOVER_USER_KEY: process.env.PUSHOVER_USER_KEY,
+		PUSHOVER_APP_TOKEN: process.env.PUSHOVER_APP_TOKEN,
+	} as const;
+
+	if (Object.values(env).some((v) => !v)) {
+		throw new Error("Required environment variables are not set.");
+	}
+
+	const notificationService = createPushoverService({
+		url: env.PUSHOVER_URL ?? "",
+		userKey: env.PUSHOVER_USER_KEY ?? "",
+		appToken: env.PUSHOVER_APP_TOKEN ?? "",
+	});
+
 	const articleDir = join(process.cwd(), "json", "article");
 
 	try {
@@ -132,7 +138,7 @@ async function main(): Promise<void> {
 			await processArticleFile(filePath);
 		}
 
-		console.log("🎉 All files processed successfully!");
+		console.log("All files processed successfully!");
 		await notificationService.notifyInfo("update-json-articles completed", {
 			caller: "update-json-articles",
 		});
@@ -148,6 +154,7 @@ async function main(): Promise<void> {
 	}
 }
 
-if (import.meta.main) {
-	main();
-}
+main().catch((error) => {
+	console.error(error);
+	process.exit(1);
+});
