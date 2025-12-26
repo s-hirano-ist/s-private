@@ -1,0 +1,48 @@
+{
+	"name": "@s-hirano-ist/s-scripts",
+	"version": "1.3.1",
+	"description": "CLI scripts for s-private data operations",
+	"type": "module",
+	"bin": {
+		"fetch-articles": "./dist/fetch-articles.js",
+		"fetch-books": "./dist/fetch-books.js",
+		"fetch-images": "./dist/fetch-images.js",
+		"fetch-notes": "./dist/fetch-notes.js"
+	},
+	"scripts": {
+		"build": "tsc",
+		"clean": "rm -rf dist",
+		"typecheck": "tsc --noEmit",
+		"prepublishOnly": "pnpm run build",
+		"fetch-articles": "tsx src/fetch-articles.ts",
+		"fetch-books": "tsx src/fetch-books.ts",
+		"fetch-images": "tsx src/fetch-images.ts",
+		"fetch-notes": "tsx src/fetch-notes.ts"
+	},
+	"files": [
+		"dist",
+		"README.md",
+		"LICENSE"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/s-hirano-ist/s-private.git",
+		"directory": "packages/scripts"
+	},
+	"license": "AGPL-3.0",
+	"publishConfig": {
+		"access": "public"
+	},
+	"dependencies": {
+		"@prisma/client": "7.2.0",
+		"@s-hirano-ist/s-core": "workspace:*",
+		"@s-hirano-ist/s-database": "workspace:*",
+		"@s-hirano-ist/s-notification": "workspace:*",
+		"minio": "8.0.5"
+	},
+	"devDependencies": {
+		"@types/node": "22.15.31",
+		"tsx": "4.19.4",
+		"typescript": "5.9.3"
+	}
+}
