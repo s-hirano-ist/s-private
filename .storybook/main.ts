@@ -22,6 +22,7 @@ const config: StorybookConfig = {
 		// "@storybook/addon-google-analytics",
 		"@storybook/addon-vitest",
 		"@storybook/addon-docs",
+		"@storybook/addon-mcp",
 	],
 	framework: {
 		name: "@storybook/nextjs-vite",
