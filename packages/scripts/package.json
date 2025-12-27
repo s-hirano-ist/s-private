@@ -60,13 +60,13 @@
 		"@s-hirano-ist/s-database": "workspace:*",
 		"@s-hirano-ist/s-notification": "workspace:*",
 		"jsdom": "26.0.0",
-		"minio": "8.0.5",
-		"turndown": "7.2.0"
+		"minio": "8.0.6",
+		"turndown": "7.2.2"
 	},
 	"devDependencies": {
 		"@types/jsdom": "21.1.7",
 		"@types/node": "22.15.31",
-		"@types/turndown": "5.0.5",
+		"@types/turndown": "5.0.6",
 		"tsx": "4.19.4",
 		"typescript": "5.9.3"
 	}
