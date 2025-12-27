@@ -19,6 +19,10 @@
 		"packages/notification": {
 			"release-type": "node",
 			"component": "@s-hirano-ist/s-notification"
+		},
+		"packages/scripts": {
+			"release-type": "node",
+			"component": "@s-hirano-ist/s-scripts"
 		}
 	},
 	"plugins": [
@@ -33,7 +37,8 @@
 				"@s-hirano-ist/s-core",
 				"@s-hirano-ist/s-ui",
 				"@s-hirano-ist/s-database",
-				"@s-hirano-ist/s-notification"
+				"@s-hirano-ist/s-notification",
+				"@s-hirano-ist/s-scripts"
 			]
 		}
 	],
