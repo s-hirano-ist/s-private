@@ -106,25 +106,6 @@ export async function getExistingHashes(
 }
 
 /**
- * Delete points by doc_id
- */
-export async function deleteByDocId(docId: string): Promise<void> {
-	const qdrant = getQdrantClient();
-	const { collectionName } = RAG_CONFIG.qdrant;
-
-	await qdrant.delete(collectionName, {
-		filter: {
-			must: [
-				{
-					key: "doc_id",
-					match: { value: docId },
-				},
-			],
-		},
-	});
-}
-
-/**
  * Search for similar documents
  */
 export async function search(
