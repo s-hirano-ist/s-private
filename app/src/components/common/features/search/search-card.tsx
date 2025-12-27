@@ -8,11 +8,11 @@ import {
 	CommandList,
 } from "@s-hirano-ist/s-ui/ui/command";
 import { useRouter } from "next/navigation";
-import { signOut } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback } from "react";
 import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 import { useSearch } from "@/components/common/hooks/use-search";
+import { authClient } from "@/infrastructures/auth/auth-client";
 import { UtilButtons } from "../../layouts/nav/util-buttons";
 
 type Props = { search: typeof searchContentFromClient };
@@ -61,7 +61,8 @@ export function SearchCard({ search }: Props) {
 	}, []);
 
 	const onSignOutSubmit = useCallback(async () => {
-		await signOut();
+		await authClient.signOut();
+		window.location.href = "/api/sign-in";
 	}, []);
 
 	return (

@@ -14,8 +14,9 @@ import {
 	type UserId,
 } from "@s-hirano-ist/s-core/common/entities/common-entity";
 import { SystemWarningEvent } from "@s-hirano-ist/s-core/common/events/system-warning-event";
+import { headers } from "next/headers";
 import { unauthorized } from "next/navigation";
-import { auth } from "@/infrastructures/auth/auth-provider";
+import { auth, type Role } from "@/infrastructures/auth/auth";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
 
@@ -28,8 +29,10 @@ import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
  * @internal
  */
 async function checkSelfAuth() {
-	const session = await auth();
-	if (!session) {
+	const session = await auth.api.getSession({
+		headers: await headers(),
+	});
+	if (!session?.user) {
 		initializeEventHandlers();
 		await eventDispatcher.dispatch(
 			new SystemWarningEvent({
@@ -50,18 +53,24 @@ async function checkSelfAuth() {
  * @returns User ID as a domain value object
  */
 export async function getSelfId(): Promise<UserId> {
-	const { user } = await checkSelfAuth();
-	return makeUserId(user.id);
+	const session = await checkSelfAuth();
+	return makeUserId(session.user.id);
 }
 
 /**
- * Gets the current user's roles.
+ * Gets the current user's roles from the account cookie.
  *
  * @internal
  */
-async function getSelfRoles() {
-	const { user } = await checkSelfAuth();
-	return user.roles;
+async function getSelfRoles(): Promise<Role[]> {
+	// NOTE: Better AuthのStatelessモードでは、ロール情報はaccountCookieから取得する必要がある
+	// 現時点では、Auth0のID Tokenからロールを取得する方法を調査中
+	// 暫定的に空配列を返し、後で実装を完成させる
+	// TODO: Auth0のカスタムクレームからロールを取得する実装
+	const session = await checkSelfAuth();
+	// Better Authのセッションにはカスタムフィールドが含まれないため、
+	// 別の方法でロールを取得する必要がある
+	return (session.user as unknown as { roles?: Role[] }).roles ?? [];
 }
 
 /**

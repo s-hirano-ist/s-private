@@ -14,7 +14,7 @@ import { SystemErrorEvent } from "@s-hirano-ist/s-core/common/events/system-erro
 import { SystemWarningEvent } from "@s-hirano-ist/s-core/common/events/system-warning-event";
 import { Prisma } from "@s-hirano-ist/s-database";
 import { NotificationError } from "@s-hirano-ist/s-notification";
-import { AuthError } from "next-auth";
+import { APIError } from "better-auth/api";
 import type { ServerAction } from "@/common/types";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
@@ -112,11 +112,11 @@ export async function wrapServerSideErrorForClient(
 			formData: formDataToRecord(formData),
 		};
 	}
-	if (error instanceof AuthError) {
+	if (error instanceof APIError) {
 		await eventDispatcher.dispatch(
 			new SystemWarningEvent({
 				message: error.message,
-				status: 401, // More appropriate status for auth errors
+				status: typeof error.status === "number" ? error.status : 401,
 				caller: "wrapServerSideError",
 				shouldNotify: true,
 			}),
