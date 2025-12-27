@@ -1,13 +1,8 @@
 #!/usr/bin/env node
-import {
-	makeExportedAt,
-	makeLastUpdatedStatus,
-	makeUnexportedStatus,
-	makeUserId,
-	type Status,
-	type UserId,
-} from "@s-hirano-ist/s-core/common";
+import { makeUserId, type UserId } from "@s-hirano-ist/s-core/common";
+import { NotesBatchDomainService } from "@s-hirano-ist/s-core/notes";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
+import { createNotesCommandRepository } from "./infrastructures/notes-command-repository.js";
 
 async function main() {
 	const env = {
@@ -22,7 +17,6 @@ async function main() {
 		throw new Error("Required environment variables are not set.");
 	}
 
-	// Dynamic import for Prisma ESM compatibility
 	const { PrismaClient } = await import("@s-hirano-ist/s-database/generated");
 	const prisma = new PrismaClient({
 		accelerateUrl: env.DATABASE_URL ?? "",
@@ -35,25 +29,20 @@ async function main() {
 	});
 
 	const userId: UserId = makeUserId(env.USERNAME_TO_EXPORT ?? "");
-	const UNEXPORTED: Status = makeUnexportedStatus();
-	const LAST_UPDATED: Status = makeLastUpdatedStatus();
-	const EXPORTED: Status = "EXPORTED";
 
 	async function resetNotes() {
-		await prisma.$transaction(async (tx: any) => {
-			// LAST_UPDATED → EXPORTED (前回バッチを確定)
-			await tx.note.updateMany({
-				where: { userId, status: LAST_UPDATED },
-				data: { status: EXPORTED, exportedAt: makeExportedAt() },
-			});
-			console.log("💾 LAST_UPDATEDのノートをEXPORTEDに変更しました");
+		await prisma.$transaction(async (tx: unknown) => {
+			const commandRepository = createNotesCommandRepository(
+				tx as Parameters<typeof createNotesCommandRepository>[0],
+			);
+			const batchService = new NotesBatchDomainService(commandRepository);
 
-			// UNEXPORTED → LAST_UPDATED (今回バッチをマーク)
-			const result = await tx.note.updateMany({
-				where: { userId, status: UNEXPORTED },
-				data: { status: LAST_UPDATED },
-			});
-			console.log(`💾 ${result.count}件のノートをリセットしました`);
+			const result = await batchService.resetNotes(userId);
+
+			console.log(
+				`💾 LAST_UPDATEDのノートをEXPORTEDに変更しました（${result.finalized.count}件）`,
+			);
+			console.log(`💾 ${result.marked.count}件のノートをリセットしました`);
 		});
 	}
 

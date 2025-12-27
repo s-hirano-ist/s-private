@@ -30,7 +30,8 @@ export * from "./events/base-domain-event.js";
 export * from "./events/domain-event.interface.js";
 export * from "./events/system-error-event.js";
 export * from "./events/system-warning-event.js";
-
+// Repositories
+export * from "./repositories/batch-command-repository.interface.js";
 // Services
 export * from "./services/entity-factory.js";
 export * from "./services/id-generator.js";

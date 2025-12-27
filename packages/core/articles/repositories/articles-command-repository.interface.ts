@@ -12,6 +12,9 @@ import type { UnexportedArticle } from "../entities/article-entity.js";
  * Follows the CQRS pattern - this interface handles write operations only.
  * Implementations should be provided by the infrastructure layer (e.g., Prisma).
  *
+ * For batch operations (bulkUpdateStatus), use {@link IBatchCommandRepository}
+ * from the common module directly.
+ *
  * @example
  * ```typescript
  * // Infrastructure implementation
@@ -29,6 +32,7 @@ import type { UnexportedArticle } from "../entities/article-entity.js";
  * ```
  *
  * @see {@link IArticlesQueryRepository} for read operations
+ * @see {@link IBatchCommandRepository} for batch operations
  */
 export type IArticlesCommandRepository = {
 	/**

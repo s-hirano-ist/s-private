@@ -1,12 +1,8 @@
 #!/usr/bin/env node
-import {
-	makeLastUpdatedStatus,
-	makeUnexportedStatus,
-	makeUserId,
-	type Status,
-	type UserId,
-} from "@s-hirano-ist/s-core/common";
+import { ArticlesBatchDomainService } from "@s-hirano-ist/s-core/articles";
+import { makeUserId, type UserId } from "@s-hirano-ist/s-core/common";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
+import { createArticlesCommandRepository } from "./infrastructures/articles-command-repository.js";
 
 async function main() {
 	const env = {
@@ -34,15 +30,18 @@ async function main() {
 	});
 
 	const userId: UserId = makeUserId(env.USERNAME_TO_EXPORT ?? "");
-	const UNEXPORTED: Status = makeUnexportedStatus();
-	const LAST_UPDATED: Status = makeLastUpdatedStatus();
 
 	try {
-		await prisma.article.updateMany({
-			where: { userId, status: LAST_UPDATED },
-			data: { status: UNEXPORTED },
-		});
-		console.log("💾 LAST_UPDATEDの記事をUNEXPORTEDに変更しました");
+		// DDD: Create repository and domain service
+		const commandRepository = createArticlesCommandRepository(prisma);
+		const batchService = new ArticlesBatchDomainService(commandRepository);
+
+		// Execute batch revert through domain service
+		const result = await batchService.revertArticles(userId);
+
+		console.log(
+			`💾 LAST_UPDATEDの記事をUNEXPORTEDに変更しました（${result.count}件）`,
+		);
 		await notificationService.notifyInfo("revert-articles completed", {
 			caller: "revert-articles",
 		});

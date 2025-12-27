@@ -215,19 +215,6 @@ export const LastUpdatedStatus = z.literal("LAST_UPDATED");
 export type LastUpdatedStatus = z.infer<typeof LastUpdatedStatus>;
 
 /**
- * Creates a LastUpdatedStatus value.
- *
- * @returns The literal "LAST_UPDATED" status
- *
- * @example
- * ```typescript
- * const status = makeLastUpdatedStatus(); // "LAST_UPDATED"
- * ```
- */
-export const makeLastUpdatedStatus = (): LastUpdatedStatus =>
-	LastUpdatedStatus.parse("LAST_UPDATED");
-
-/**
  * Zod schema for validating export timestamps.
  *
  * @remarks
@@ -334,14 +321,13 @@ export type Status =
  * @param status - The status string ("UNEXPORTED", "LAST_UPDATED", or "EXPORTED")
  * @returns The status value
  *
- * @deprecated This is for legacy compatibility. Use {@link makeUnexportedStatus},
- * {@link makeLastUpdatedStatus}, or {@link makeExportedStatus} instead.
+ * @deprecated This is for legacy compatibility. Use {@link makeUnexportedStatus}
+ * or {@link makeExportedStatus} instead.
  *
  * @example
  * ```typescript
  * // Prefer these:
  * const unexported = makeUnexportedStatus();
- * const lastUpdated = makeLastUpdatedStatus();
  * const exported = makeExportedStatus();
  *
  * // Instead of:

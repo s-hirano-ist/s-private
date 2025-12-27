@@ -1,13 +1,8 @@
 #!/usr/bin/env node
-import {
-	makeExportedAt,
-	makeLastUpdatedStatus,
-	makeUnexportedStatus,
-	makeUserId,
-	type Status,
-	type UserId,
-} from "@s-hirano-ist/s-core/common";
+import { ArticlesBatchDomainService } from "@s-hirano-ist/s-core/articles";
+import { makeUserId, type UserId } from "@s-hirano-ist/s-core/common";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
+import { createArticlesCommandRepository } from "./infrastructures/articles-command-repository.js";
 
 async function main() {
 	const env = {
@@ -35,25 +30,22 @@ async function main() {
 	});
 
 	const userId: UserId = makeUserId(env.USERNAME_TO_EXPORT ?? "");
-	const UNEXPORTED: Status = makeUnexportedStatus();
-	const LAST_UPDATED: Status = makeLastUpdatedStatus();
-	const EXPORTED: Status = "EXPORTED";
 
 	async function resetArticles() {
-		await prisma.$transaction(async (tx: any) => {
-			// LAST_UPDATED → EXPORTED (前回バッチを確定)
-			await tx.article.updateMany({
-				where: { userId, status: LAST_UPDATED },
-				data: { status: EXPORTED, exportedAt: makeExportedAt() },
-			});
-			console.log("💾 LAST_UPDATEDの記事をEXPORTEDに変更しました");
+		await prisma.$transaction(async (tx: unknown) => {
+			// DDD: Create repository and domain service with transaction client
+			const commandRepository = createArticlesCommandRepository(
+				tx as Parameters<typeof createArticlesCommandRepository>[0],
+			);
+			const batchService = new ArticlesBatchDomainService(commandRepository);
 
-			// UNEXPORTED → LAST_UPDATED (今回バッチをマーク)
-			const result = await tx.article.updateMany({
-				where: { userId, status: UNEXPORTED },
-				data: { status: LAST_UPDATED },
-			});
-			console.log(`💾 ${result.count}件の記事をリセットしました`);
+			// Execute batch reset through domain service
+			const result = await batchService.resetArticles(userId);
+
+			console.log(
+				`💾 LAST_UPDATEDの記事をEXPORTEDに変更しました（${result.finalized.count}件）`,
+			);
+			console.log(`💾 ${result.marked.count}件の記事をリセットしました`);
 		});
 	}
 

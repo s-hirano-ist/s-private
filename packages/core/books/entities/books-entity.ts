@@ -3,7 +3,6 @@ import {
 	CreatedAt,
 	ExportedStatus,
 	Id,
-	LastUpdatedStatus,
 	makeCreatedAt,
 	makeExportedStatus,
 	makeId,
@@ -333,27 +332,6 @@ export const ExportedBook = Base.extend(ExportedStatus.shape);
 export type ExportedBook = Readonly<z.infer<typeof ExportedBook>>;
 
 /**
- * Zod schema for a book marked for export in the current batch.
- *
- * @remarks
- * Represents a book that has been marked for export but not yet finalized.
- * This intermediate state allows for batch processing with revert capability.
- *
- * @see {@link UnexportedBook} for the initial state
- * @see {@link ExportedBook} for the final state
- */
-export const LastUpdatedBook = Base.extend({ status: LastUpdatedStatus });
-
-/**
- * Type for a book marked for export.
- *
- * @remarks
- * Immutable entity representing a book in the current export batch.
- * Can be reverted back to UnexportedBook or finalized to ExportedBook.
- */
-export type LastUpdatedBook = Readonly<z.infer<typeof LastUpdatedBook>>;
-
-/**
  * Arguments for creating a new book.
  *
  * @remarks
@@ -429,68 +407,6 @@ export const bookEntity = {
 	 * @throws {UnexpectedError} For unexpected errors during export
 	 */
 	export: (book: UnexportedBook): ExportedBook => {
-		return createEntityWithErrorHandling(() => {
-			const exportedStatus = makeExportedStatus();
-			return Object.freeze({
-				...book,
-				...exportedStatus,
-			});
-		});
-	},
-
-	/**
-	 * Marks a book for export in the current batch.
-	 *
-	 * @remarks
-	 * Transitions from UNEXPORTED to LAST_UPDATED status.
-	 * This allows for batch processing with revert capability.
-	 *
-	 * @param book - The unexported book to mark
-	 * @returns A frozen LastUpdatedBook
-	 * @throws {InvalidFormatError} When the book state is invalid
-	 * @throws {UnexpectedError} For unexpected errors
-	 */
-	markAsLastUpdated: (book: UnexportedBook): LastUpdatedBook => {
-		return createEntityWithErrorHandling(() =>
-			Object.freeze({
-				...book,
-				status: "LAST_UPDATED" as const,
-			}),
-		);
-	},
-
-	/**
-	 * Reverts a book from LAST_UPDATED back to UNEXPORTED.
-	 *
-	 * @remarks
-	 * Use this when batch processing fails and needs to be rolled back.
-	 *
-	 * @param book - The last updated book to revert
-	 * @returns A frozen UnexportedBook
-	 * @throws {InvalidFormatError} When the book state is invalid
-	 * @throws {UnexpectedError} For unexpected errors
-	 */
-	revert: (book: LastUpdatedBook): UnexportedBook => {
-		return createEntityWithErrorHandling(() =>
-			Object.freeze({
-				...book,
-				status: "UNEXPORTED" as const,
-			}),
-		);
-	},
-
-	/**
-	 * Finalizes a book from LAST_UPDATED to EXPORTED.
-	 *
-	 * @remarks
-	 * Use this after batch processing succeeds to confirm the export.
-	 *
-	 * @param book - The last updated book to finalize
-	 * @returns A frozen ExportedBook with exportedAt timestamp
-	 * @throws {InvalidFormatError} When the book state is invalid
-	 * @throws {UnexpectedError} For unexpected errors
-	 */
-	finalize: (book: LastUpdatedBook): ExportedBook => {
 		return createEntityWithErrorHandling(() => {
 			const exportedStatus = makeExportedStatus();
 			return Object.freeze({

@@ -43,6 +43,7 @@ export * from "./repositories/notes-command-repository.interface.js";
 export * from "./repositories/notes-query-repository.interface.js";
 
 // Services
+export * from "./services/notes-batch-domain-service.js";
 export * from "./services/notes-domain-service.js";
 
 // Types

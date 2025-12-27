@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import { join } from "node:path";
-import { createPushoverService } from "@s-hirano-ist/s-notification";
 
 type ArticleItem = {
 	title: string;
@@ -163,22 +162,6 @@ function displayResults(duplicates: DuplicateUrl[]): void {
 }
 
 async function main(): Promise<void> {
-	const env = {
-		PUSHOVER_URL: process.env.PUSHOVER_URL,
-		PUSHOVER_USER_KEY: process.env.PUSHOVER_USER_KEY,
-		PUSHOVER_APP_TOKEN: process.env.PUSHOVER_APP_TOKEN,
-	} as const;
-
-	if (Object.values(env).some((v) => !v)) {
-		throw new Error("Required environment variables are not set.");
-	}
-
-	const notificationService = createPushoverService({
-		url: env.PUSHOVER_URL ?? "",
-		userKey: env.PUSHOVER_USER_KEY ?? "",
-		appToken: env.PUSHOVER_APP_TOKEN ?? "",
-	});
-
 	try {
 		console.log("json/articleディレクトリ内のURL重複を検索中...\n");
 
@@ -186,20 +169,8 @@ async function main(): Promise<void> {
 		displayResults(duplicates);
 
 		console.log("\n検索完了");
-		await notificationService.notifyInfo(
-			"find-duplicate-json-articles completed",
-			{
-				caller: "find-duplicate-json-articles",
-			},
-		);
 	} catch (error) {
 		console.error("❌ エラーが発生しました:", error);
-		await notificationService.notifyError(
-			`find-duplicate-json-articles failed: ${error}`,
-			{
-				caller: "find-duplicate-json-articles",
-			},
-		);
 		process.exit(1);
 	}
 }

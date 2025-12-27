@@ -1,10 +1,5 @@
 import { describe, expect, test } from "vitest";
-import {
-	makeCreatedAt,
-	makeExportedAt,
-	makeLastUpdatedStatus,
-	makeUpdatedAt,
-} from "./common-entity";
+import { makeCreatedAt, makeExportedAt, makeUpdatedAt } from "./common-entity";
 
 describe("common-entity", () => {
 	describe("makeCreatedAt", () => {
@@ -40,13 +35,6 @@ describe("common-entity", () => {
 			expect(updatedAt).toBeInstanceOf(Date);
 			expect(updatedAt.getTime()).toBeGreaterThanOrEqual(before.getTime());
 			expect(updatedAt.getTime()).toBeLessThanOrEqual(after.getTime());
-		});
-	});
-
-	describe("makeLastUpdatedStatus", () => {
-		test("should create LAST_UPDATED status", () => {
-			const status = makeLastUpdatedStatus();
-			expect(status).toBe("LAST_UPDATED");
 		});
 	});
 });
