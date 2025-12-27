@@ -5,7 +5,7 @@ import path from "node:path";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
 import TurndownService from "turndown";
 
-const FETCHED_URLS_FILE = "script/fetched_urls.txt";
+const FETCHED_URLS_FILE = "fetched_urls.txt";
 const JSON_DIR = "json/article";
 const OUTPUT_DIR = "raw/article";
 

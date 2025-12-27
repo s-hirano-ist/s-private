@@ -9,6 +9,8 @@
 		"fetch-images": "./dist/fetch-images.js",
 		"fetch-notes": "./dist/fetch-notes.js",
 		"find-duplicate-json-articles": "./dist/find-duplicate-json-articles.js",
+		"rag-ingest": "./dist/rag/ingest.js",
+		"rag-search": "./dist/rag/search.js",
 		"reset-articles": "./dist/reset-articles.js",
 		"reset-books": "./dist/reset-books.js",
 		"reset-images": "./dist/reset-images.js",
@@ -30,6 +32,8 @@
 		"fetch-images": "tsx src/fetch-images.ts",
 		"fetch-notes": "tsx src/fetch-notes.ts",
 		"find-duplicate-json-articles": "tsx src/find-duplicate-json-articles.ts",
+		"rag-ingest": "tsx src/rag/ingest.ts",
+		"rag-search": "tsx src/rag/search.ts",
 		"reset-articles": "tsx src/reset-articles.ts",
 		"reset-books": "tsx src/reset-books.ts",
 		"reset-images": "tsx src/reset-images.ts",
@@ -56,9 +60,12 @@
 		"access": "public"
 	},
 	"dependencies": {
+		"@huggingface/transformers": "3.5.1",
+		"@qdrant/js-client-rest": "1.13.0",
 		"@s-hirano-ist/s-core": "workspace:*",
 		"@s-hirano-ist/s-database": "workspace:*",
 		"@s-hirano-ist/s-notification": "workspace:*",
+		"glob": "11.0.2",
 		"jsdom": "26.0.0",
 		"minio": "8.0.5",
 		"turndown": "7.2.0"
