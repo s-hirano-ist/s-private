@@ -117,7 +117,7 @@ async function main() {
 				Category: true,
 			},
 		});
-		const articles: Article[] = rawArticles.map((d) => ({
+		const articles: Article[] = rawArticles.map((d: (typeof rawArticles)[number]) => ({
 			id: d.id,
 			title: d.title,
 			url: d.url,
