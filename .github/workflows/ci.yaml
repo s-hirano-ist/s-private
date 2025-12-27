@@ -220,3 +220,66 @@ jobs:
         env:
           SKIP_ENV_VALIDATION: true
           MINIO_HOST: ${{ secrets.MINIO_HOST }}
+
+  docker-build-app:
+    runs-on: ubuntu-24.04
+    permissions: {}
+    timeout-minutes: 15
+    concurrency:
+      group: ${{ github.workflow }}-docker-build-app-${{ github.ref }}
+    steps:
+      - name: Checkout files
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+        with:
+          persist-credentials: false
+          submodules: true
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@a53aa4be7b27e56f37c3a4b2eb25e72dd5538cd5 # v3
+
+      - name: Build app Docker image
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6
+        with:
+          context: .
+          file: ./app/Dockerfile
+          push: false
+          secrets: |
+            AUTH_SECRET=${{secrets.AUTH_SECRET}}
+            AUTH0_CLIENT_ID=${{secrets.AUTH0_CLIENT_ID}}
+            AUTH0_CLIENT_SECRET=${{secrets.AUTH0_CLIENT_SECRET}}
+            AUTH0_ISSUER_BASE_URL=${{secrets.AUTH0_ISSUER_BASE_URL}}
+            PUSHOVER_URL=${{secrets.PUSHOVER_URL}}
+            PUSHOVER_APP_TOKEN=${{secrets.PUSHOVER_APP_TOKEN}}
+            PUSHOVER_USER_KEY=${{secrets.PUSHOVER_USER_KEY}}
+            MINIO_ACCESS_KEY=${{secrets.MINIO_ACCESS_KEY}}
+            MINIO_BUCKET_NAME=${{secrets.MINIO_BUCKET_NAME}}
+            MINIO_HOST=${{secrets.MINIO_HOST}}
+            MINIO_PORT=${{secrets.MINIO_PORT}}
+            MINIO_SECRET_KEY=${{secrets.MINIO_SECRET_KEY}}
+            NEXT_PUBLIC_SENTRY_DSN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
+            SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+            SENTRY_REPORT_URL=${{ secrets.SENTRY_REPORT_URL }}
+
+  docker-build-storybook:
+    runs-on: ubuntu-24.04
+    permissions: {}
+    timeout-minutes: 20
+    concurrency:
+      group: ${{ github.workflow }}-docker-build-storybook-${{ github.ref }}
+    steps:
+      - name: Checkout files
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+        with:
+          persist-credentials: false
+          submodules: true
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@a53aa4be7b27e56f37c3a4b2eb25e72dd5538cd5 # v3
+
+      - name: Build storybook Docker image
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6
+        with:
+          context: .
+          file: ./.storybook/storybook.Dockerfile
+          push: false
