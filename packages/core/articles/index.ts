@@ -45,6 +45,7 @@ export * from "./repositories/articles-query-repository.interface.js";
 export * from "./repositories/category-query-repository.interface.js";
 
 // Services
+export * from "./services/articles-batch-domain-service.js";
 export * from "./services/articles-domain-service.js";
 
 // Types

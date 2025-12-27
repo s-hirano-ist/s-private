@@ -1,4 +1,9 @@
 import type { Status } from "../../common/entities/common-entity.js";
+import type {
+	BulkUpdateResult,
+	IBatchCommandRepository,
+	StatusTransitionParams,
+} from "../../common/repositories/batch-command-repository.interface.js";
 import type { Path, UnexportedImage } from "../entities/image-entity.js";
 
 /**
@@ -25,7 +30,7 @@ import type { Path, UnexportedImage } from "../entities/image-entity.js";
  *
  * @see {@link IImagesQueryRepository} for read operations
  */
-export type IImagesCommandRepository = {
+export type IImagesCommandRepository = IBatchCommandRepository & {
 	/**
 	 * Creates a new image in the repository.
 	 *
@@ -55,3 +60,6 @@ export type IImagesCommandRepository = {
 	 */
 	deleteById(id: string, userId: string, status: Status): Promise<void>;
 };
+
+// Re-export for convenience
+export type { BulkUpdateResult, StatusTransitionParams };

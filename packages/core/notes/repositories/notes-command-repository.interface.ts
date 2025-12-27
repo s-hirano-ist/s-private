@@ -3,6 +3,11 @@ import type {
 	Status,
 	UserId,
 } from "../../common/entities/common-entity.js";
+import type {
+	BulkUpdateResult,
+	IBatchCommandRepository,
+	StatusTransitionParams,
+} from "../../common/repositories/batch-command-repository.interface.js";
 import type { UnexportedNote } from "../entities/note-entity.js";
 
 /**
@@ -30,7 +35,7 @@ import type { UnexportedNote } from "../entities/note-entity.js";
  *
  * @see {@link INotesQueryRepository} for read operations
  */
-export type INotesCommandRepository = {
+export type INotesCommandRepository = IBatchCommandRepository & {
 	/**
 	 * Creates a new note in the repository.
 	 *
@@ -47,3 +52,6 @@ export type INotesCommandRepository = {
 	 */
 	deleteById(id: Id, userId: UserId, status: Status): Promise<void>;
 };
+
+// Re-export for convenience
+export type { BulkUpdateResult, StatusTransitionParams };

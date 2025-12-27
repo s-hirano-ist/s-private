@@ -1,12 +1,8 @@
 #!/usr/bin/env node
-import {
-	makeLastUpdatedStatus,
-	makeUnexportedStatus,
-	makeUserId,
-	type Status,
-	type UserId,
-} from "@s-hirano-ist/s-core/common";
+import { BooksBatchDomainService } from "@s-hirano-ist/s-core/books";
+import { makeUserId, type UserId } from "@s-hirano-ist/s-core/common";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
+import { createBooksCommandRepository } from "./infrastructures/books-command-repository.js";
 
 async function main() {
 	const env = {
@@ -21,7 +17,6 @@ async function main() {
 		throw new Error("Required environment variables are not set.");
 	}
 
-	// Dynamic import for Prisma ESM compatibility
 	const { PrismaClient } = await import("@s-hirano-ist/s-database/generated");
 	const prisma = new PrismaClient({
 		accelerateUrl: env.DATABASE_URL ?? "",
@@ -34,15 +29,16 @@ async function main() {
 	});
 
 	const userId: UserId = makeUserId(env.USERNAME_TO_EXPORT ?? "");
-	const UNEXPORTED: Status = makeUnexportedStatus();
-	const LAST_UPDATED: Status = makeLastUpdatedStatus();
 
 	try {
-		await prisma.book.updateMany({
-			where: { userId, status: LAST_UPDATED },
-			data: { status: UNEXPORTED },
-		});
-		console.log("💾 LAST_UPDATEDの本をUNEXPORTEDに変更しました");
+		const commandRepository = createBooksCommandRepository(prisma);
+		const batchService = new BooksBatchDomainService(commandRepository);
+
+		const result = await batchService.revertBooks(userId);
+
+		console.log(
+			`💾 LAST_UPDATEDの本をUNEXPORTEDに変更しました（${result.count}件）`,
+		);
 		await notificationService.notifyInfo("revert-books completed", {
 			caller: "revert-books",
 		});

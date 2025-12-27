@@ -3,6 +3,11 @@ import type {
 	Status,
 	UserId,
 } from "../../common/entities/common-entity.js";
+import type {
+	BulkUpdateResult,
+	IBatchCommandRepository,
+	StatusTransitionParams,
+} from "../../common/repositories/batch-command-repository.interface.js";
 import type { UnexportedArticle } from "../entities/article-entity.js";
 
 /**
@@ -30,7 +35,7 @@ import type { UnexportedArticle } from "../entities/article-entity.js";
  *
  * @see {@link IArticlesQueryRepository} for read operations
  */
-export type IArticlesCommandRepository = {
+export type IArticlesCommandRepository = IBatchCommandRepository & {
 	/**
 	 * Creates a new article in the repository.
 	 *
@@ -47,3 +52,6 @@ export type IArticlesCommandRepository = {
 	 */
 	deleteById(id: Id, userId: UserId, status: Status): Promise<void>;
 };
+
+// Re-export for convenience
+export type { BulkUpdateResult, StatusTransitionParams };

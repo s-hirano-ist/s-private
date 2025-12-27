@@ -1,12 +1,8 @@
 #!/usr/bin/env node
-import {
-	makeLastUpdatedStatus,
-	makeUnexportedStatus,
-	makeUserId,
-	type Status,
-	type UserId,
-} from "@s-hirano-ist/s-core/common";
+import { makeUserId, type UserId } from "@s-hirano-ist/s-core/common";
+import { NotesBatchDomainService } from "@s-hirano-ist/s-core/notes";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
+import { createNotesCommandRepository } from "./infrastructures/notes-command-repository.js";
 
 async function main() {
 	const env = {
@@ -21,7 +17,6 @@ async function main() {
 		throw new Error("Required environment variables are not set.");
 	}
 
-	// Dynamic import for Prisma ESM compatibility
 	const { PrismaClient } = await import("@s-hirano-ist/s-database/generated");
 	const prisma = new PrismaClient({
 		accelerateUrl: env.DATABASE_URL ?? "",
@@ -34,15 +29,16 @@ async function main() {
 	});
 
 	const userId: UserId = makeUserId(env.USERNAME_TO_EXPORT ?? "");
-	const UNEXPORTED: Status = makeUnexportedStatus();
-	const LAST_UPDATED: Status = makeLastUpdatedStatus();
 
 	try {
-		await prisma.note.updateMany({
-			where: { userId, status: LAST_UPDATED },
-			data: { status: UNEXPORTED },
-		});
-		console.log("💾 LAST_UPDATEDのノートをUNEXPORTEDに変更しました");
+		const commandRepository = createNotesCommandRepository(prisma);
+		const batchService = new NotesBatchDomainService(commandRepository);
+
+		const result = await batchService.revertNotes(userId);
+
+		console.log(
+			`💾 LAST_UPDATEDのノートをUNEXPORTEDに変更しました（${result.count}件）`,
+		);
 		await notificationService.notifyInfo("revert-notes completed", {
 			caller: "revert-notes",
 		});

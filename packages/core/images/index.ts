@@ -46,6 +46,7 @@ export * from "./repositories/images-command-repository.interface.js";
 export * from "./repositories/images-query-repository.interface.js";
 
 // Services
+export * from "./services/images-batch-domain-service.js";
 export * from "./services/images-domain-service.js";
 
 // Types

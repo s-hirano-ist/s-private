@@ -3,6 +3,11 @@ import type {
 	Status,
 	UserId,
 } from "../../common/entities/common-entity.js";
+import type {
+	BulkUpdateResult,
+	IBatchCommandRepository,
+	StatusTransitionParams,
+} from "../../common/repositories/batch-command-repository.interface.js";
 import type { UnexportedBook } from "../entities/books-entity.js";
 
 /**
@@ -30,7 +35,7 @@ import type { UnexportedBook } from "../entities/books-entity.js";
  *
  * @see {@link IBooksQueryRepository} for read operations
  */
-export type IBooksCommandRepository = {
+export type IBooksCommandRepository = IBatchCommandRepository & {
 	/**
 	 * Creates a new book in the repository.
 	 *
@@ -57,3 +62,6 @@ export type IBooksCommandRepository = {
 	 */
 	fetchBookFromGitHub(): Promise<UnexportedBook[]>;
 };
+
+// Re-export for convenience
+export type { BulkUpdateResult, StatusTransitionParams };
