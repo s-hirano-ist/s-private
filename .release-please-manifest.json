@@ -1,8 +1,8 @@
 {
-	".": "10.6.0",
-	"packages/core": "1.6.0",
-	"packages/ui": "1.6.0",
-	"packages/database": "1.6.0",
-	"packages/notification": "1.6.0",
-	"packages/scripts": "1.6.0"
+	".": "10.7.0",
+	"packages/core": "1.7.0",
+	"packages/ui": "1.7.0",
+	"packages/database": "1.7.0",
+	"packages/notification": "1.7.0",
+	"packages/scripts": "1.7.0"
 }

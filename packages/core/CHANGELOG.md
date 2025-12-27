@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.7.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.6.0...@s-hirano-ist/s-core-v1.7.0) (2025-12-27)
+
+
+### Features
+
+* add ddd for scripts ([6ebf1e5](https://github.com/s-hirano-ist/s-private/commit/6ebf1e54aa6aef4b96b3dc59a17266a863bdd072))
+* add ddd for scripts ([0480f69](https://github.com/s-hirano-ist/s-private/commit/0480f692f6fc4813569225727ff7276db47b18d8))
+
+
+### Maintenance
+
+* delete no used entities ([b66e072](https://github.com/s-hirano-ist/s-private/commit/b66e07271ad57d522284732197d735679946a67c))
+
 ## [1.6.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.5.2...@s-hirano-ist/s-core-v1.6.0) (2025-12-27)
 
 

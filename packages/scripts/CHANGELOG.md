@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.7.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.6.0...@s-hirano-ist/s-scripts-v1.7.0) (2025-12-27)
+
+
+### Features
+
+* add ddd for scripts ([6ebf1e5](https://github.com/s-hirano-ist/s-private/commit/6ebf1e54aa6aef4b96b3dc59a17266a863bdd072))
+* add ddd for scripts ([0480f69](https://github.com/s-hirano-ist/s-private/commit/0480f692f6fc4813569225727ff7276db47b18d8))
+
+
+### Maintenance
+
+* delete no used entities ([b66e072](https://github.com/s-hirano-ist/s-private/commit/b66e07271ad57d522284732197d735679946a67c))
+* **deps:** update dependency glob to v11.1.0 [security] ([9b31bbc](https://github.com/s-hirano-ist/s-private/commit/9b31bbc5e91836d2e9a48b0d34a665a52b9200d6))
+* **deps:** update dependency glob to v11.1.0 [security] ([0f43a9b](https://github.com/s-hirano-ist/s-private/commit/0f43a9bae49a7e8d3fa520d3b4e9238310abf34d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.7.0
+    * @s-hirano-ist/s-database bumped to 1.7.0
+    * @s-hirano-ist/s-notification bumped to 1.7.0
+
 ## [1.6.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.5.2...@s-hirano-ist/s-scripts-v1.6.0) (2025-12-27)
 
 
