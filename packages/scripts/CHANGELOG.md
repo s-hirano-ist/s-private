@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.5.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.5.0...@s-hirano-ist/s-scripts-v1.5.1) (2025-12-27)
+
+
+### Bug Fixes
+
+* biome ([963a7ab](https://github.com/s-hirano-ist/s-private/commit/963a7ab4b814bafc0832a212ff0d65eec084a018))
+* ci ([594d0f8](https://github.com/s-hirano-ist/s-private/commit/594d0f8ee4efc76f5e066642f72f57274df810e8))
+* errors on s-scripts ([e58a46e](https://github.com/s-hirano-ist/s-private/commit/e58a46e9d1b8bcaad6052ac317a40776c61fa5ec))
+* errors on s-scripts ([59ca7d7](https://github.com/s-hirano-ist/s-private/commit/59ca7d7473c6340485ed7c0e7263f13128a3356a))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.5.1
+    * @s-hirano-ist/s-database bumped to 1.5.1
+    * @s-hirano-ist/s-notification bumped to 1.5.1
+
 ## 1.5.0 (2025-12-27)
 
 
