@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.7.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.6.0...s-private-v10.7.0) (2025-12-27)
+
+
+### Features
+
+* add ddd for scripts ([6ebf1e5](https://github.com/s-hirano-ist/s-private/commit/6ebf1e54aa6aef4b96b3dc59a17266a863bdd072))
+* add ddd for scripts ([0480f69](https://github.com/s-hirano-ist/s-private/commit/0480f692f6fc4813569225727ff7276db47b18d8))
+
+
+### Maintenance
+
+* add ESLint configuration and update lint inspector script ([9f05c93](https://github.com/s-hirano-ist/s-private/commit/9f05c939b7e9150a9c30f3664590f5e2ba2d6048))
+* add Japanese translations for UI messages in article form client ([b2faf65](https://github.com/s-hirano-ist/s-private/commit/b2faf65f101a3caabf83e053c59a6798a108e928))
+* add prisma studio script to package.json ([fd4bbcd](https://github.com/s-hirano-ist/s-private/commit/fd4bbcd4e2248fc27c7eb0dcce8c59be3397230d))
+* delete no used entities ([b66e072](https://github.com/s-hirano-ist/s-private/commit/b66e07271ad57d522284732197d735679946a67c))
+* delete todo ([6068d32](https://github.com/s-hirano-ist/s-private/commit/6068d32dc8e762bbe914a0767846ac0b71cbed7e))
+* **deps:** update dependency glob to v11.1.0 [security] ([9b31bbc](https://github.com/s-hirano-ist/s-private/commit/9b31bbc5e91836d2e9a48b0d34a665a52b9200d6))
+* **deps:** update dependency glob to v11.1.0 [security] ([0f43a9b](https://github.com/s-hirano-ist/s-private/commit/0f43a9bae49a7e8d3fa520d3b4e9238310abf34d))
+* small fixes ([0a48dd1](https://github.com/s-hirano-ist/s-private/commit/0a48dd19a53098bfedc1caeaf6eb925e0645a322))
+* update test scripts and configuration for Vitest and Playwright integration ([fed459c](https://github.com/s-hirano-ist/s-private/commit/fed459ce4ca3a26b01efff92b25f718441a3640e))
+
 ## [10.6.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.5.2...s-private-v10.6.0) (2025-12-27)
 
 
