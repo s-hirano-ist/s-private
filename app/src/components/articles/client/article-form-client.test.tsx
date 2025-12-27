@@ -10,6 +10,9 @@ const messages = {
 		url: "URL",
 		description: "ひとこと",
 		category: "カテゴリー",
+		noResults: "見つかりませんでした",
+		searchPlaceholder: "検索...",
+		useCustomValue: "「{value}」を使用",
 	},
 	message: { inserted: "正常に登録されました。" },
 };
