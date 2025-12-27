@@ -3,7 +3,6 @@
 	"ignoreExportsUsedInFile": true,
 	"ignoreDependencies": [
 		"@eslint/config-inspector",
-		"eslint-plugin-storybook",
 		"eslint-plugin-jsx-a11y",
 		"eslint-plugin-tailwindcss"
 	],

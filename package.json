@@ -17,7 +17,7 @@
 		"biome:fix": "biome check --write .",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
-		"lint:inspector": "config-inspector --config eslint.config.ts",
+		"lint:inspector": "config-inspector --config eslint.config.js",
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"typecheck": "pnpm --recursive typecheck",

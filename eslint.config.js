@@ -6,8 +6,7 @@ import nextConfig from "eslint-config-next";
 import reactPlugin from "eslint-plugin-react";
 import reactHookPlugin from "eslint-plugin-react-hooks";
 // import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
-// TODO: Re-enable when eslint-plugin-storybook supports ESLint defineConfig types
-// import storybookPlugin from "eslint-plugin-storybook";
+import storybookPlugin from "eslint-plugin-storybook";
 // import tailwindcssPlugin from "eslint-plugin-tailwindcss";
 import tsEslint from "typescript-eslint";
 
@@ -98,8 +97,7 @@ export default defineConfig(
 	},
 
 	// storybook
-	// TODO: Re-enable when eslint-plugin-storybook supports ESLint defineConfig types
-	// ...storybookPlugin.configs["flat/recommended"],
+	...storybookPlugin.configs["flat/recommended"],
 
 	// TODO: enable when biome conflicts occur
 	// {
