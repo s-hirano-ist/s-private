@@ -254,13 +254,13 @@ importers:
       '@prisma/extension-accelerate':
         specifier: 3.0.0
         version: 3.0.0(@prisma/client@7.2.0(prisma@7.2.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3))
+      prisma:
+        specifier: 7.2.0
+        version: 7.2.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3)
     devDependencies:
       dotenv:
         specifier: 17.2.3
         version: 17.2.3
-      prisma:
-        specifier: 7.2.0
-        version: 7.2.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3)
       typescript:
         specifier: 5.9.3
         version: 5.9.3

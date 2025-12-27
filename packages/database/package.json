@@ -50,11 +50,11 @@
 	"license": "AGPL-3.0",
 	"dependencies": {
 		"@prisma/client": "7.2.0",
-		"@prisma/extension-accelerate": "3.0.0"
+		"@prisma/extension-accelerate": "3.0.0",
+		"prisma": "7.2.0"
 	},
 	"devDependencies": {
 		"dotenv": "17.2.3",
-		"prisma": "7.2.0",
 		"typescript": "5.9.3"
 	}
 }
