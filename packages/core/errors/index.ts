@@ -29,4 +29,4 @@
  */
 
 // Error classes
-export * from "./error-classes";
+export * from "./error-classes.js";

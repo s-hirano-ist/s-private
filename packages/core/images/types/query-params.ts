@@ -1,5 +1,5 @@
-import type { CacheStrategy } from "./cache-strategy";
-import type { SortOrder } from "./sort-order";
+import type { CacheStrategy } from "./cache-strategy.js";
+import type { SortOrder } from "./sort-order.js";
 
 /**
  * Available fields for sorting image queries.

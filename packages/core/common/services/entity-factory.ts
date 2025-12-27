@@ -2,7 +2,7 @@ import { ZodError } from "zod";
 import {
 	InvalidFormatError,
 	UnexpectedError,
-} from "../../errors/error-classes";
+} from "../../errors/error-classes.js";
 
 /**
  * Wraps entity creation with standardized error handling.

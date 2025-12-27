@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { idGenerator } from "../services/id-generator";
+import { idGenerator } from "../services/id-generator.js";
 
 /**
  * Zod schema for validating UUIDv7 identifiers.

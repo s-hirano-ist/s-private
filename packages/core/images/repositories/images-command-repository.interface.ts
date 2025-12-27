@@ -1,5 +1,5 @@
-import type { Status } from "../../common/entities/common-entity";
-import type { Path, UnexportedImage } from "../entities/image-entity";
+import type { Status } from "../../common/entities/common-entity.js";
+import type { Path, UnexportedImage } from "../entities/image-entity.js";
 
 /**
  * Command repository interface for the Image domain.

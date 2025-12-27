@@ -1,6 +1,6 @@
-import type { Status, UserId } from "../../common/entities/common-entity";
-import type { Url } from "../entities/article-entity";
-import type { ArticlesFindManyParams } from "../types/query-params";
+import type { Status, UserId } from "../../common/entities/common-entity.js";
+import type { Url } from "../entities/article-entity.js";
+import type { ArticlesFindManyParams } from "../types/query-params.js";
 
 /**
  * Query repository interface for the Article domain.

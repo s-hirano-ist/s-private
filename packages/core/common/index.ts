@@ -23,17 +23,17 @@
  */
 
 // Entities
-export * from "./entities/common-entity";
+export * from "./entities/common-entity.js";
 
 // Events
-export * from "./events/base-domain-event";
-export * from "./events/domain-event.interface";
-export * from "./events/system-error-event";
-export * from "./events/system-warning-event";
+export * from "./events/base-domain-event.js";
+export * from "./events/domain-event.interface.js";
+export * from "./events/system-error-event.js";
+export * from "./events/system-warning-event.js";
 
 // Services
-export * from "./services/entity-factory";
-export * from "./services/id-generator";
+export * from "./services/entity-factory.js";
+export * from "./services/id-generator.js";
 
 // Types
-export * from "./types/search-types";
+export * from "./types/search-types.js";

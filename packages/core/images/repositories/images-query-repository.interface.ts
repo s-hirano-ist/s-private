@@ -1,6 +1,6 @@
-import type { Status, UserId } from "../../common/entities/common-entity";
-import type { Path } from "../entities/image-entity";
-import type { ImagesFindManyParams } from "../types/query-params";
+import type { Status, UserId } from "../../common/entities/common-entity.js";
+import type { Path } from "../entities/image-entity.js";
+import type { ImagesFindManyParams } from "../types/query-params.js";
 
 /**
  * Query repository interface for the Image domain.

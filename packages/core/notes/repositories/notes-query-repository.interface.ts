@@ -1,6 +1,6 @@
-import type { Status, UserId } from "../../common/entities/common-entity";
-import type { NoteTitle } from "../entities/note-entity";
-import type { NotesFindManyParams } from "../types/query-params";
+import type { Status, UserId } from "../../common/entities/common-entity.js";
+import type { NoteTitle } from "../entities/note-entity.js";
+import type { NotesFindManyParams } from "../types/query-params.js";
 
 /**
  * Query repository interface for the Note domain.

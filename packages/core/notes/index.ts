@@ -32,20 +32,20 @@
  */
 
 // Entities
-export * from "./entities/note-entity";
+export * from "./entities/note-entity.js";
 
 // Events
-export * from "./events/note-created-event";
-export * from "./events/note-deleted-event";
+export * from "./events/note-created-event.js";
+export * from "./events/note-deleted-event.js";
 
 // Repositories
-export * from "./repositories/notes-command-repository.interface";
-export * from "./repositories/notes-query-repository.interface";
+export * from "./repositories/notes-command-repository.interface.js";
+export * from "./repositories/notes-query-repository.interface.js";
 
 // Services
-export * from "./services/notes-domain-service";
+export * from "./services/notes-domain-service.js";
 
 // Types
-export * from "./types/cache-strategy";
-export * from "./types/query-params";
-export * from "./types/sort-order";
+export * from "./types/cache-strategy.js";
+export * from "./types/query-params.js";
+export * from "./types/sort-order.js";

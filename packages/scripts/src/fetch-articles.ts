@@ -117,13 +117,15 @@ async function main() {
 				Category: true,
 			},
 		});
-		const articles: Article[] = rawArticles.map((d) => ({
-			id: d.id,
-			title: d.title,
-			url: d.url,
-			quote: d.quote,
-			categoryName: d.Category?.name ?? "",
-		}));
+		const articles: Article[] = rawArticles.map(
+			(d: (typeof rawArticles)[number]) => ({
+				id: d.id,
+				title: d.title,
+				url: d.url,
+				quote: d.quote,
+				categoryName: d.Category?.name ?? "",
+			}),
+		);
 		console.log(`📊 ${articles.length} 件のデータを取得しました。`);
 
 		await exportData(categorizeArticles(articles));
