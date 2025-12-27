@@ -136,7 +136,7 @@ export async function wrapServerSideErrorForClient(
 	) {
 		await eventDispatcher.dispatch(
 			new SystemErrorEvent({
-				message: error.message,
+				message: (error as Error).message,
 				status: 500,
 				caller: "wrapServerSideError",
 				shouldNotify: true,
