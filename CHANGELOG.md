@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.4.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.3.1...s-private-v10.4.0) (2025-12-27)
+
+
+### Features
+
+* add fetch  scripts ([b523e9f](https://github.com/s-hirano-ist/s-private/commit/b523e9f34c0c6395d505b658c44f4227f386a73e))
+
+
+### Bug Fixes
+
+* biome ([747e3f3](https://github.com/s-hirano-ist/s-private/commit/747e3f38222bd77fd8a53986e1db9062c9f5d651))
+* fetch**s ([8605b17](https://github.com/s-hirano-ist/s-private/commit/8605b175e8324b3804f739eaba1d3fe5f4f8f3a4))
+
+
+### Maintenance
+
+* --parallel ([5268d99](https://github.com/s-hirano-ist/s-private/commit/5268d99be29ce5379a70fc38d02345559415fda2))
+* add mcp ([f4a5834](https://github.com/s-hirano-ist/s-private/commit/f4a58341970c65f84b7e9249d53ec7ca33f51c7b))
+* add mcp ([bdc2741](https://github.com/s-hirano-ist/s-private/commit/bdc27417fe0f785d225b0da9d7f1b3df0bb51b5f))
+* **deps:** update github actions ([367081b](https://github.com/s-hirano-ist/s-private/commit/367081b917be8192d1dce9fdac908cbe0928b583))
+* **deps:** update github actions (major) ([d40518e](https://github.com/s-hirano-ist/s-private/commit/d40518ed228c20997953af829ecaa9b7275a828b))
+* **deps:** update minor ([e4e08f8](https://github.com/s-hirano-ist/s-private/commit/e4e08f8ebf435dbeed528491de702a49c14560d9))
+* **deps:** update minor ([1c6e1ba](https://github.com/s-hirano-ist/s-private/commit/1c6e1ba6ecd7ad3b8f77e9f929df8d1c76c3eae2))
+* **deps:** update pnpm to v10.26.1 ([bbd773e](https://github.com/s-hirano-ist/s-private/commit/bbd773e881bbd6bde0c6457ba709b2cb8b393a60))
+* **deps:** update pnpm to v10.26.1 ([a127ff3](https://github.com/s-hirano-ist/s-private/commit/a127ff3000b109b684d5c4067026fa19718e5a60))
+* version up ([0179eff](https://github.com/s-hirano-ist/s-private/commit/0179eff7a20c7e6b24370abe16ee121169d834a0))
+
 ## [10.3.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.3.0...s-private-v10.3.1) (2025-12-21)
 
 
