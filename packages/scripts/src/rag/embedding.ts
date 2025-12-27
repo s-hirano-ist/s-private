@@ -12,11 +12,11 @@ let embeddingPipeline: FeatureExtractionPipeline | null = null;
 async function getEmbeddingPipeline(): Promise<FeatureExtractionPipeline> {
 	if (!embeddingPipeline) {
 		console.log(`Loading embedding model: ${RAG_CONFIG.embedding.model}...`);
-		embeddingPipeline = await pipeline(
+		embeddingPipeline = (await pipeline(
 			"feature-extraction",
 			RAG_CONFIG.embedding.model,
 			{ dtype: "fp32" },
-		);
+		)) as unknown as FeatureExtractionPipeline;
 		console.log("Embedding model loaded successfully.");
 	}
 	return embeddingPipeline;
