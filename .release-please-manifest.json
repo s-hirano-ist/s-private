@@ -1,7 +1,8 @@
 {
-	".": "10.4.0",
-	"packages/core": "1.4.0",
-	"packages/ui": "1.4.0",
-	"packages/database": "1.4.0",
-	"packages/notification": "1.4.0"
+	".": "10.5.0",
+	"packages/core": "1.5.0",
+	"packages/ui": "1.5.0",
+	"packages/database": "1.5.0",
+	"packages/notification": "1.5.0",
+	"packages/scripts": "1.5.0"
 }

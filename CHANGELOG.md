@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.5.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.4.0...s-private-v10.5.0) (2025-12-27)
+
+
+### Features
+
+* fix scripts ([1db8ed7](https://github.com/s-hirano-ist/s-private/commit/1db8ed77de1b969ad39f6a4c6cf43e574111beaf))
+
+
+### Bug Fixes
+
+* dockerfile ([493687a](https://github.com/s-hirano-ist/s-private/commit/493687a46f85a33f7f22855a65b3144b5548e944))
+
+
+### Maintenance
+
+* update CI workflows and release configuration for scripts package ([e78b18e](https://github.com/s-hirano-ist/s-private/commit/e78b18e37547e925afa05f6014e178e33cc9b772))
+* update CI workflows and release configuration for scripts package ([8a81097](https://github.com/s-hirano-ist/s-private/commit/8a81097938b1b2c9a122abf4dd4e6d8abf286d57))
+
 ## [10.4.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.3.1...s-private-v10.4.0) (2025-12-27)
 
 
