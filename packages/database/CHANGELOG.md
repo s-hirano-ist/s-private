@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.5.1...@s-hirano-ist/s-database-v1.5.2) (2025-12-27)
+
+
+### Bug Fixes
+
+* update Prisma client configuration and exports ([b146716](https://github.com/s-hirano-ist/s-private/commit/b1467167c15cd2420649c7707d52b910a9cfadc6))
+* update Prisma client configuration and exports ([3c44639](https://github.com/s-hirano-ist/s-private/commit/3c44639611ca2ad3ee2ca7b5412895f5611d6a60))
+
 ## [1.5.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.5.0...@s-hirano-ist/s-database-v1.5.1) (2025-12-27)
 
 
