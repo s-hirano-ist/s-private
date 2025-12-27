@@ -1,5 +1,33 @@
 # Changelog
 
+## [1.6.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.5.2...@s-hirano-ist/s-scripts-v1.6.0) (2025-12-27)
+
+
+### Features
+
+* add rag ([b41c0bd](https://github.com/s-hirano-ist/s-private/commit/b41c0bdd7964f9fd3f32d2a5678869b20e327536))
+* add rag scripts ([460dd43](https://github.com/s-hirano-ist/s-private/commit/460dd438c487794c3624700eca9d7c2685145778))
+
+
+### Bug Fixes
+
+* correct embedding pipeline initialization ([3379ae1](https://github.com/s-hirano-ist/s-private/commit/3379ae19b382a04b62b71ff5f592d0f42969b230))
+* correct path for fetched URLs file ([d5b3d76](https://github.com/s-hirano-ist/s-private/commit/d5b3d761043b60c9ba86340c31f20d0ae1f3551b))
+
+
+### Maintenance
+
+* remove test functions for chunking and embedding ([0fbd5ca](https://github.com/s-hirano-ist/s-private/commit/0fbd5ca5910df38ef5e264d9d49eccdef9d9089e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.6.0
+    * @s-hirano-ist/s-database bumped to 1.6.0
+    * @s-hirano-ist/s-notification bumped to 1.6.0
+
 ## [1.5.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.5.1...@s-hirano-ist/s-scripts-v1.5.2) (2025-12-27)
 
 
