@@ -57,6 +57,10 @@ const preview = {
 								notes: "notes",
 								images: "images",
 								resignIn: "再サインイン",
+								noResults: "見つかりませんでした",
+								searchPlaceholder: "検索...",
+								useCustomValue: "「{value}」を使用",
+								"403": "許可されていません",
 							},
 							statusCode: {
 								"000": "近日公開",
