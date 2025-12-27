@@ -13,6 +13,8 @@ COPY app/package.json ./app/package.json
 COPY packages/ui/package.json ./packages/ui/package.json
 COPY packages/database/package.json ./packages/database/package.json
 COPY packages/core/package.json ./packages/core/package.json
+COPY packages/scripts/package.json ./packages/scripts/package.json
+COPY packages/notification/package.json ./packages/notification/package.json
 
 RUN pnpm install --frozen-lockfile
 
