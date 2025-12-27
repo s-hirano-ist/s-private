@@ -2,8 +2,10 @@ import {
 	makeExportedAt,
 	type UserId,
 } from "../../common/entities/common-entity.js";
-import type { BulkUpdateResult } from "../../common/repositories/batch-command-repository.interface.js";
-import type { IArticlesCommandRepository } from "../repositories/articles-command-repository.interface.js";
+import type {
+	BulkUpdateResult,
+	IBatchCommandRepository,
+} from "../../common/repositories/batch-command-repository.interface.js";
 
 /**
  * Result of the reset operation.
@@ -47,7 +49,7 @@ export type ResetResult = {
  * console.log(`Reverted: ${revertResult.count}`);
  * ```
  *
- * @see {@link IArticlesCommandRepository} for repository interface
+ * @see {@link IBatchCommandRepository} for repository interface
  * @see {@link ResetResult} for reset operation result
  */
 export class ArticlesBatchDomainService {
@@ -56,7 +58,7 @@ export class ArticlesBatchDomainService {
 	 *
 	 * @param commandRepository - The command repository for batch updates
 	 */
-	constructor(private readonly commandRepository: IArticlesCommandRepository) {}
+	constructor(private readonly commandRepository: IBatchCommandRepository) {}
 
 	/**
 	 * Resets articles for a new batch export.

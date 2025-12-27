@@ -2,8 +2,10 @@ import {
 	makeExportedAt,
 	type UserId,
 } from "../../common/entities/common-entity.js";
-import type { BulkUpdateResult } from "../../common/repositories/batch-command-repository.interface.js";
-import type { IImagesCommandRepository } from "../repositories/images-command-repository.interface.js";
+import type {
+	BulkUpdateResult,
+	IBatchCommandRepository,
+} from "../../common/repositories/batch-command-repository.interface.js";
 
 /**
  * Result of the reset operation.
@@ -28,7 +30,7 @@ export type ResetResult = {
  * ```
  */
 export class ImagesBatchDomainService {
-	constructor(private readonly commandRepository: IImagesCommandRepository) {}
+	constructor(private readonly commandRepository: IBatchCommandRepository) {}
 
 	/**
 	 * Resets images for a new batch export.

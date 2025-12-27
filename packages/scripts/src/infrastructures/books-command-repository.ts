@@ -1,10 +1,8 @@
 import type {
 	BulkUpdateResult,
-	IBooksCommandRepository,
+	IBatchCommandRepository,
 	StatusTransitionParams,
-	UnexportedBook,
-} from "@s-hirano-ist/s-core/books";
-import type { Id, Status, UserId } from "@s-hirano-ist/s-core/common";
+} from "@s-hirano-ist/s-core/common";
 
 type PrismaClientLike = {
 	book: {
@@ -13,28 +11,16 @@ type PrismaClientLike = {
 	};
 };
 
+/**
+ * Creates a Books batch command repository for bulk operations.
+ *
+ * @param prisma - The Prisma client or transaction client
+ * @returns An IBatchCommandRepository implementation for books
+ */
 export function createBooksCommandRepository(
 	prisma: PrismaClientLike,
-): IBooksCommandRepository {
+): IBatchCommandRepository {
 	return {
-		async create(_data: UnexportedBook): Promise<void> {
-			throw new Error(
-				"create is not implemented in scripts context. Use app repository instead.",
-			);
-		},
-
-		async deleteById(_id: Id, _userId: UserId, _status: Status): Promise<void> {
-			throw new Error(
-				"deleteById is not implemented in scripts context. Use app repository instead.",
-			);
-		},
-
-		async fetchBookFromGitHub(): Promise<UnexportedBook[]> {
-			throw new Error(
-				"fetchBookFromGitHub is not implemented in scripts context. Use app repository instead.",
-			);
-		},
-
 		async bulkUpdateStatus(
 			params: StatusTransitionParams,
 		): Promise<BulkUpdateResult> {

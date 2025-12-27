@@ -1,11 +1,8 @@
-import type { Status } from "@s-hirano-ist/s-core/common";
 import type {
 	BulkUpdateResult,
-	IImagesCommandRepository,
-	Path,
+	IBatchCommandRepository,
 	StatusTransitionParams,
-	UnexportedImage,
-} from "@s-hirano-ist/s-core/images";
+} from "@s-hirano-ist/s-core/common";
 
 type PrismaClientLike = {
 	image: {
@@ -14,36 +11,16 @@ type PrismaClientLike = {
 	};
 };
 
+/**
+ * Creates an Images batch command repository for bulk operations.
+ *
+ * @param prisma - The Prisma client or transaction client
+ * @returns An IBatchCommandRepository implementation for images
+ */
 export function createImagesCommandRepository(
 	prisma: PrismaClientLike,
-): IImagesCommandRepository {
+): IBatchCommandRepository {
 	return {
-		async create(_data: UnexportedImage): Promise<void> {
-			throw new Error(
-				"create is not implemented in scripts context. Use app repository instead.",
-			);
-		},
-
-		async uploadToStorage(
-			_path: Path,
-			_buffer: Buffer,
-			_isThumbnail: boolean,
-		): Promise<void> {
-			throw new Error(
-				"uploadToStorage is not implemented in scripts context. Use app repository instead.",
-			);
-		},
-
-		async deleteById(
-			_id: string,
-			_userId: string,
-			_status: Status,
-		): Promise<void> {
-			throw new Error(
-				"deleteById is not implemented in scripts context. Use app repository instead.",
-			);
-		},
-
 		async bulkUpdateStatus(
 			params: StatusTransitionParams,
 		): Promise<BulkUpdateResult> {

@@ -3,7 +3,6 @@ import {
 	CreatedAt,
 	ExportedStatus,
 	Id,
-	LastUpdatedStatus,
 	makeCreatedAt,
 	makeExportedStatus,
 	makeId,
@@ -332,27 +331,6 @@ export const ExportedArticle = Base.extend(ExportedStatus.shape);
 export type ExportedArticle = Readonly<z.infer<typeof ExportedArticle>>;
 
 /**
- * Zod schema for an article marked for export in the current batch.
- *
- * @remarks
- * Represents an article that has been marked for export but not yet finalized.
- * This intermediate state allows for batch processing with revert capability.
- *
- * @see {@link UnexportedArticle} for the initial state
- * @see {@link ExportedArticle} for the final state
- */
-export const LastUpdatedArticle = Base.extend({ status: LastUpdatedStatus });
-
-/**
- * Type for an article marked for export.
- *
- * @remarks
- * Immutable entity representing an article in the current export batch.
- * Can be reverted back to UnexportedArticle or finalized to ExportedArticle.
- */
-export type LastUpdatedArticle = Readonly<z.infer<typeof LastUpdatedArticle>>;
-
-/**
  * Arguments for creating a new article.
  *
  * @remarks
@@ -436,68 +414,6 @@ export const articleEntity = {
 	 * @throws {UnexpectedError} For unexpected errors during export
 	 */
 	export: (article: UnexportedArticle): ExportedArticle => {
-		return createEntityWithErrorHandling(() => {
-			const exportedStatus = makeExportedStatus();
-			return Object.freeze({
-				...article,
-				...exportedStatus,
-			});
-		});
-	},
-
-	/**
-	 * Marks an article for export in the current batch.
-	 *
-	 * @remarks
-	 * Transitions from UNEXPORTED to LAST_UPDATED status.
-	 * This allows for batch processing with revert capability.
-	 *
-	 * @param article - The unexported article to mark
-	 * @returns A frozen LastUpdatedArticle
-	 * @throws {InvalidFormatError} When the article state is invalid
-	 * @throws {UnexpectedError} For unexpected errors
-	 */
-	markAsLastUpdated: (article: UnexportedArticle): LastUpdatedArticle => {
-		return createEntityWithErrorHandling(() =>
-			Object.freeze({
-				...article,
-				status: "LAST_UPDATED" as const,
-			}),
-		);
-	},
-
-	/**
-	 * Reverts an article from LAST_UPDATED back to UNEXPORTED.
-	 *
-	 * @remarks
-	 * Use this when batch processing fails and needs to be rolled back.
-	 *
-	 * @param article - The last updated article to revert
-	 * @returns A frozen UnexportedArticle
-	 * @throws {InvalidFormatError} When the article state is invalid
-	 * @throws {UnexpectedError} For unexpected errors
-	 */
-	revert: (article: LastUpdatedArticle): UnexportedArticle => {
-		return createEntityWithErrorHandling(() =>
-			Object.freeze({
-				...article,
-				status: "UNEXPORTED" as const,
-			}),
-		);
-	},
-
-	/**
-	 * Finalizes an article from LAST_UPDATED to EXPORTED.
-	 *
-	 * @remarks
-	 * Use this after batch processing succeeds to confirm the export.
-	 *
-	 * @param article - The last updated article to finalize
-	 * @returns A frozen ExportedArticle with exportedAt timestamp
-	 * @throws {InvalidFormatError} When the article state is invalid
-	 * @throws {UnexpectedError} For unexpected errors
-	 */
-	finalize: (article: LastUpdatedArticle): ExportedArticle => {
 		return createEntityWithErrorHandling(() => {
 			const exportedStatus = makeExportedStatus();
 			return Object.freeze({

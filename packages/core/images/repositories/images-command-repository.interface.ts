@@ -1,9 +1,4 @@
 import type { Status } from "../../common/entities/common-entity.js";
-import type {
-	BulkUpdateResult,
-	IBatchCommandRepository,
-	StatusTransitionParams,
-} from "../../common/repositories/batch-command-repository.interface.js";
 import type { Path, UnexportedImage } from "../entities/image-entity.js";
 
 /**
@@ -12,6 +7,9 @@ import type { Path, UnexportedImage } from "../entities/image-entity.js";
  * @remarks
  * Follows the CQRS pattern - this interface handles write operations only.
  * Implementations should be provided by the infrastructure layer (e.g., Prisma + MinIO).
+ *
+ * For batch operations (bulkUpdateStatus), use {@link IBatchCommandRepository}
+ * from the common module directly.
  *
  * @example
  * ```typescript
@@ -29,8 +27,9 @@ import type { Path, UnexportedImage } from "../entities/image-entity.js";
  * ```
  *
  * @see {@link IImagesQueryRepository} for read operations
+ * @see {@link IBatchCommandRepository} for batch operations
  */
-export type IImagesCommandRepository = IBatchCommandRepository & {
+export type IImagesCommandRepository = {
 	/**
 	 * Creates a new image in the repository.
 	 *
@@ -60,6 +59,3 @@ export type IImagesCommandRepository = IBatchCommandRepository & {
 	 */
 	deleteById(id: string, userId: string, status: Status): Promise<void>;
 };
-
-// Re-export for convenience
-export type { BulkUpdateResult, StatusTransitionParams };

@@ -3,7 +3,6 @@ import {
 	CreatedAt,
 	ExportedStatus,
 	Id,
-	LastUpdatedStatus,
 	makeCreatedAt,
 	makeExportedStatus,
 	makeId,
@@ -144,27 +143,6 @@ export const ExportedNote = Base.extend(ExportedStatus.shape);
 export type ExportedNote = Readonly<z.infer<typeof ExportedNote>>;
 
 /**
- * Zod schema for a note marked for export in the current batch.
- *
- * @remarks
- * Represents a note that has been marked for export but not yet finalized.
- * This intermediate state allows for batch processing with revert capability.
- *
- * @see {@link UnexportedNote} for the initial state
- * @see {@link ExportedNote} for the final state
- */
-export const LastUpdatedNote = Base.extend({ status: LastUpdatedStatus });
-
-/**
- * Type for a note marked for export.
- *
- * @remarks
- * Immutable entity representing a note in the current export batch.
- * Can be reverted back to UnexportedNote or finalized to ExportedNote.
- */
-export type LastUpdatedNote = Readonly<z.infer<typeof LastUpdatedNote>>;
-
-/**
  * Arguments for creating a new note.
  *
  * @remarks
@@ -240,68 +218,6 @@ export const noteEntity = {
 	 * @throws {UnexpectedError} For unexpected errors during export
 	 */
 	export: (note: UnexportedNote): ExportedNote => {
-		return createEntityWithErrorHandling(() => {
-			const exportedStatus = makeExportedStatus();
-			return Object.freeze({
-				...note,
-				...exportedStatus,
-			});
-		});
-	},
-
-	/**
-	 * Marks a note for export in the current batch.
-	 *
-	 * @remarks
-	 * Transitions from UNEXPORTED to LAST_UPDATED status.
-	 * This allows for batch processing with revert capability.
-	 *
-	 * @param note - The unexported note to mark
-	 * @returns A frozen LastUpdatedNote
-	 * @throws {InvalidFormatError} When the note state is invalid
-	 * @throws {UnexpectedError} For unexpected errors
-	 */
-	markAsLastUpdated: (note: UnexportedNote): LastUpdatedNote => {
-		return createEntityWithErrorHandling(() =>
-			Object.freeze({
-				...note,
-				status: "LAST_UPDATED" as const,
-			}),
-		);
-	},
-
-	/**
-	 * Reverts a note from LAST_UPDATED back to UNEXPORTED.
-	 *
-	 * @remarks
-	 * Use this when batch processing fails and needs to be rolled back.
-	 *
-	 * @param note - The last updated note to revert
-	 * @returns A frozen UnexportedNote
-	 * @throws {InvalidFormatError} When the note state is invalid
-	 * @throws {UnexpectedError} For unexpected errors
-	 */
-	revert: (note: LastUpdatedNote): UnexportedNote => {
-		return createEntityWithErrorHandling(() =>
-			Object.freeze({
-				...note,
-				status: "UNEXPORTED" as const,
-			}),
-		);
-	},
-
-	/**
-	 * Finalizes a note from LAST_UPDATED to EXPORTED.
-	 *
-	 * @remarks
-	 * Use this after batch processing succeeds to confirm the export.
-	 *
-	 * @param note - The last updated note to finalize
-	 * @returns A frozen ExportedNote with exportedAt timestamp
-	 * @throws {InvalidFormatError} When the note state is invalid
-	 * @throws {UnexpectedError} For unexpected errors
-	 */
-	finalize: (note: LastUpdatedNote): ExportedNote => {
 		return createEntityWithErrorHandling(() => {
 			const exportedStatus = makeExportedStatus();
 			return Object.freeze({

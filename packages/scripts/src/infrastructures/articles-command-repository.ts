@@ -1,10 +1,8 @@
 import type {
 	BulkUpdateResult,
-	IArticlesCommandRepository,
+	IBatchCommandRepository,
 	StatusTransitionParams,
-	UnexportedArticle,
-} from "@s-hirano-ist/s-core/articles";
-import type { Id, Status, UserId } from "@s-hirano-ist/s-core/common";
+} from "@s-hirano-ist/s-core/common";
 
 /**
  * Prisma client type for transaction support.
@@ -21,16 +19,14 @@ type PrismaClientLike = {
 };
 
 /**
- * Creates an Articles command repository for batch operations.
+ * Creates an Articles batch command repository for bulk operations.
  *
  * @param prisma - The Prisma client or transaction client
- * @returns An IArticlesCommandRepository implementation
+ * @returns An IBatchCommandRepository implementation for articles
  *
  * @remarks
  * This is a specialized implementation for batch scripts.
  * It only implements bulkUpdateStatus for performance.
- * Other methods (create, deleteById) throw errors as they
- * are not needed in the batch processing context.
  *
  * @example
  * ```typescript
@@ -45,20 +41,8 @@ type PrismaClientLike = {
  */
 export function createArticlesCommandRepository(
 	prisma: PrismaClientLike,
-): IArticlesCommandRepository {
+): IBatchCommandRepository {
 	return {
-		async create(_data: UnexportedArticle): Promise<void> {
-			throw new Error(
-				"create is not implemented in scripts context. Use app repository instead.",
-			);
-		},
-
-		async deleteById(_id: Id, _userId: UserId, _status: Status): Promise<void> {
-			throw new Error(
-				"deleteById is not implemented in scripts context. Use app repository instead.",
-			);
-		},
-
 		async bulkUpdateStatus(
 			params: StatusTransitionParams,
 		): Promise<BulkUpdateResult> {

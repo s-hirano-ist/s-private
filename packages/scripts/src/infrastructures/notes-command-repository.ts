@@ -1,10 +1,8 @@
-import type { Id, Status, UserId } from "@s-hirano-ist/s-core/common";
 import type {
 	BulkUpdateResult,
-	INotesCommandRepository,
+	IBatchCommandRepository,
 	StatusTransitionParams,
-	UnexportedNote,
-} from "@s-hirano-ist/s-core/notes";
+} from "@s-hirano-ist/s-core/common";
 
 type PrismaClientLike = {
 	note: {
@@ -13,22 +11,16 @@ type PrismaClientLike = {
 	};
 };
 
+/**
+ * Creates a Notes batch command repository for bulk operations.
+ *
+ * @param prisma - The Prisma client or transaction client
+ * @returns An IBatchCommandRepository implementation for notes
+ */
 export function createNotesCommandRepository(
 	prisma: PrismaClientLike,
-): INotesCommandRepository {
+): IBatchCommandRepository {
 	return {
-		async create(_data: UnexportedNote): Promise<void> {
-			throw new Error(
-				"create is not implemented in scripts context. Use app repository instead.",
-			);
-		},
-
-		async deleteById(_id: Id, _userId: UserId, _status: Status): Promise<void> {
-			throw new Error(
-				"deleteById is not implemented in scripts context. Use app repository instead.",
-			);
-		},
-
 		async bulkUpdateStatus(
 			params: StatusTransitionParams,
 		): Promise<BulkUpdateResult> {

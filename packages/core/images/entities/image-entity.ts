@@ -4,7 +4,6 @@ import {
 	CreatedAt,
 	ExportedStatus,
 	Id,
-	LastUpdatedStatus,
 	makeCreatedAt,
 	makeExportedStatus,
 	makeId,
@@ -358,27 +357,6 @@ export const ExportedImage = Base.extend(ExportedStatus.shape);
 export type ExportedImage = Readonly<z.infer<typeof ExportedImage>>;
 
 /**
- * Zod schema for an image marked for export in the current batch.
- *
- * @remarks
- * Represents an image that has been marked for export but not yet finalized.
- * This intermediate state allows for batch processing with revert capability.
- *
- * @see {@link UnexportedImage} for the initial state
- * @see {@link ExportedImage} for the final state
- */
-export const LastUpdatedImage = Base.extend({ status: LastUpdatedStatus });
-
-/**
- * Type for an image marked for export.
- *
- * @remarks
- * Immutable entity representing an image in the current export batch.
- * Can be reverted back to UnexportedImage or finalized to ExportedImage.
- */
-export type LastUpdatedImage = Readonly<z.infer<typeof LastUpdatedImage>>;
-
-/**
  * Arguments for creating a new image.
  *
  * @remarks
@@ -468,68 +446,6 @@ export const imageEntity = {
 	 * @throws {UnexpectedError} For unexpected errors during export
 	 */
 	export: (image: UnexportedImage): ExportedImage => {
-		return createEntityWithErrorHandling(() => {
-			const exportedStatus = makeExportedStatus();
-			return Object.freeze({
-				...image,
-				...exportedStatus,
-			});
-		});
-	},
-
-	/**
-	 * Marks an image for export in the current batch.
-	 *
-	 * @remarks
-	 * Transitions from UNEXPORTED to LAST_UPDATED status.
-	 * This allows for batch processing with revert capability.
-	 *
-	 * @param image - The unexported image to mark
-	 * @returns A frozen LastUpdatedImage
-	 * @throws {InvalidFormatError} When the image state is invalid
-	 * @throws {UnexpectedError} For unexpected errors
-	 */
-	markAsLastUpdated: (image: UnexportedImage): LastUpdatedImage => {
-		return createEntityWithErrorHandling(() =>
-			Object.freeze({
-				...image,
-				status: "LAST_UPDATED" as const,
-			}),
-		);
-	},
-
-	/**
-	 * Reverts an image from LAST_UPDATED back to UNEXPORTED.
-	 *
-	 * @remarks
-	 * Use this when batch processing fails and needs to be rolled back.
-	 *
-	 * @param image - The last updated image to revert
-	 * @returns A frozen UnexportedImage
-	 * @throws {InvalidFormatError} When the image state is invalid
-	 * @throws {UnexpectedError} For unexpected errors
-	 */
-	revert: (image: LastUpdatedImage): UnexportedImage => {
-		return createEntityWithErrorHandling(() =>
-			Object.freeze({
-				...image,
-				status: "UNEXPORTED" as const,
-			}),
-		);
-	},
-
-	/**
-	 * Finalizes an image from LAST_UPDATED to EXPORTED.
-	 *
-	 * @remarks
-	 * Use this after batch processing succeeds to confirm the export.
-	 *
-	 * @param image - The last updated image to finalize
-	 * @returns A frozen ExportedImage with exportedAt timestamp
-	 * @throws {InvalidFormatError} When the image state is invalid
-	 * @throws {UnexpectedError} For unexpected errors
-	 */
-	finalize: (image: LastUpdatedImage): ExportedImage => {
 		return createEntityWithErrorHandling(() => {
 			const exportedStatus = makeExportedStatus();
 			return Object.freeze({
