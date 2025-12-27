@@ -14,10 +14,6 @@ Before doing any UI, frontend or React development, ALWAYS call the storybook MC
 - **Biome**: `pnpm biome:fix` - Biome formatting and linting
 - **Biome CI**: `pnpm biome:ci` - Biome CI checking (non-interactive)
 - **Test**: `pnpm test` - Run all Vitest unit tests (workspace-wide)
-- **Test App**: `pnpm test:app` - Run tests for app package only
-- **Test UI**: `pnpm test:components` - Run tests for UI package only
-- **Test Core**: `pnpm test:core` - Run tests for core package only
-- **Test Watch**: `pnpm test:watch` - Run tests in watch mode
 - **Test with Type Check**: `pnpm test:typecheck` - Run TypeScript type checking on test files only
 - **Test All**: `pnpm test:all` - Run all unit tests and type checking
 - **Storybook**: `pnpm storybook` - Unified Storybook for all components (app + packages/ui)
@@ -173,7 +169,7 @@ The project uses Vitest workspace to manage tests across multiple packages:
 - **Workspace Root**: `vitest.config.ts` defines three test projects (app, ui, core)
 - **Individual Configs**: Each package has its own `vitest.config.ts` with specific settings
 - **Unified Execution**: Run all tests from the root with `pnpm test`
-- **Selective Testing**: Test individual packages with `pnpm test:app`, `pnpm test:components`, or `pnpm test:core`
+- **Selective Testing**: Test individual packages with `pnpm test`
 
 ### Test Setup per Package
 - **app**: jsdom environment with Next.js-specific mocks (auth, prisma, minio, env)
