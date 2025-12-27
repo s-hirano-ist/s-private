@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.4.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.3.1...@s-hirano-ist/s-database-v1.4.0) (2025-12-27)
+
+
+### Features
+
+* add fetch  scripts ([b523e9f](https://github.com/s-hirano-ist/s-private/commit/b523e9f34c0c6395d505b658c44f4227f386a73e))
+
+
+### Bug Fixes
+
+* fetch**s ([8605b17](https://github.com/s-hirano-ist/s-private/commit/8605b175e8324b3804f739eaba1d3fe5f4f8f3a4))
+
+
+### Maintenance
+
+* **deps:** update minor ([e4e08f8](https://github.com/s-hirano-ist/s-private/commit/e4e08f8ebf435dbeed528491de702a49c14560d9))
+* **deps:** update minor ([1c6e1ba](https://github.com/s-hirano-ist/s-private/commit/1c6e1ba6ecd7ad3b8f77e9f929df8d1c76c3eae2))
+
 ## [1.3.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.3.0...@s-hirano-ist/s-database-v1.3.1) (2025-12-21)
 
 

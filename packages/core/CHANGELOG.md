@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.3.1...@s-hirano-ist/s-core-v1.4.0) (2025-12-27)
+
+
+### Maintenance
+
+* **deps:** update minor ([e4e08f8](https://github.com/s-hirano-ist/s-private/commit/e4e08f8ebf435dbeed528491de702a49c14560d9))
+* **deps:** update minor ([1c6e1ba](https://github.com/s-hirano-ist/s-private/commit/1c6e1ba6ecd7ad3b8f77e9f929df8d1c76c3eae2))
+
 ## [1.3.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.3.0...@s-hirano-ist/s-core-v1.3.1) (2025-12-21)
 
 
