@@ -34,6 +34,13 @@ const cspHeader = `
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 	transpilePackages: ["@s-hirano-ist/s-core", "@s-hirano-ist/s-notification"],
+	webpack: (config) => {
+		// ESM compatibility: resolve .js imports to .ts files for workspace packages
+		config.resolve.extensionAlias = {
+			".js": [".ts", ".tsx", ".js", ".jsx"],
+		};
+		return config;
+	},
 	serverExternalPackages: ["sharp"],
 	typedRoutes: true,
 	experimental: {
