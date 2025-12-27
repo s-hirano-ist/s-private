@@ -1,5 +1,6 @@
-import { signIn } from "@/infrastructures/auth/auth-provider";
+import { redirect } from "next/navigation";
 
 export async function GET() {
-	await signIn("auth0", { redirectTo: "/" }, { prompt: "login" });
+	// Better AuthのGeneric OAuth経由でAuth0にリダイレクト
+	redirect("/api/auth/sign-in/social?provider=auth0&callbackURL=/");
 }

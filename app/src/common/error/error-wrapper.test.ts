@@ -1,6 +1,6 @@
 import { Prisma } from "@s-hirano-ist/s-database";
 import { NotificationError } from "@s-hirano-ist/s-notification";
-import { AuthError } from "next-auth";
+import { APIError } from "better-auth/api";
 import { describe, expect, test, vi } from "vitest";
 import { UnexpectedError } from "@/common/error/error-classes";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
@@ -69,8 +69,8 @@ describe("wrapServerSideErrorForClient", () => {
 		});
 	});
 
-	test("should handle AuthError with unknown auth type", async () => {
-		const error = new AuthError();
+	test("should handle APIError with unknown auth type", async () => {
+		const error = new APIError("UNAUTHORIZED", { message: "Unauthorized" });
 
 		const result = await wrapServerSideErrorForClient(error);
 
@@ -79,7 +79,7 @@ describe("wrapServerSideErrorForClient", () => {
 				eventType: "system.warning",
 				payload: expect.objectContaining({
 					message: error.message,
-					status: 401, // Updated to more appropriate auth error status
+					status: 401,
 					shouldNotify: true,
 				}),
 				metadata: expect.objectContaining({
