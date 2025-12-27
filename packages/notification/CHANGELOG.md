@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-notification-v1.5.0...@s-hirano-ist/s-notification-v1.5.1) (2025-12-27)
+
+
+### Bug Fixes
+
+* errors on s-scripts ([e58a46e](https://github.com/s-hirano-ist/s-private/commit/e58a46e9d1b8bcaad6052ac317a40776c61fa5ec))
+* errors on s-scripts ([59ca7d7](https://github.com/s-hirano-ist/s-private/commit/59ca7d7473c6340485ed7c0e7263f13128a3356a))
+
 ## [1.5.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-notification-v1.4.0...@s-hirano-ist/s-notification-v1.5.0) (2025-12-27)
 
 
