@@ -1,5 +1,6 @@
-import { embed } from "./embedding";
-import { getCollectionStats, search } from "./qdrant-client";
+#!/usr/bin/env node
+import { embed } from "./embedding.js";
+import { getCollectionStats, search } from "./qdrant-client.js";
 
 /**
  * Search for documents matching a query
@@ -9,7 +10,7 @@ async function runSearch(): Promise<void> {
 	const args = process.argv.slice(2);
 
 	if (args.length === 0) {
-		console.log("Usage: bun script/rag/search.ts <query> [options]");
+		console.log("Usage: rag-search <query> [options]");
 		console.log("");
 		console.log("Options:");
 		console.log("  --top-k <number>     Number of results (default: 5)");
@@ -19,11 +20,9 @@ async function runSearch(): Promise<void> {
 		console.log("  --heading <heading>  Filter by top_heading");
 		console.log("");
 		console.log("Examples:");
-		console.log('  bun script/rag/search.ts "ルネサンス 遠近法"');
-		console.log('  bun script/rag/search.ts "AI 脆弱性" --type bookmark_json');
-		console.log(
-			'  bun script/rag/search.ts "React" --heading javascript --top-k 10',
-		);
+		console.log('  rag-search "ルネサンス 遠近法"');
+		console.log('  rag-search "AI 脆弱性" --type bookmark_json');
+		console.log('  rag-search "React" --heading javascript --top-k 10');
 		process.exit(1);
 	}
 
@@ -97,5 +96,24 @@ async function runSearch(): Promise<void> {
 	}
 }
 
-// Run search
-runSearch().catch(console.error);
+async function main() {
+	const env = {
+		QDRANT_URL: process.env.QDRANT_URL,
+	} as const;
+
+	if (!env.QDRANT_URL) {
+		throw new Error("QDRANT_URL environment variable is required.");
+	}
+
+	try {
+		await runSearch();
+	} catch (error) {
+		console.error("❌ エラーが発生しました:", error);
+		process.exit(1);
+	}
+}
+
+main().catch((error) => {
+	console.error(error);
+	process.exit(1);
+});

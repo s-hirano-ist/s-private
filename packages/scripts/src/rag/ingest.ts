@@ -1,14 +1,15 @@
+#!/usr/bin/env node
 import { readFileSync } from "fs";
 import { glob } from "glob";
-import { parseJsonArticle, parseMarkdown } from "./chunker";
-import { type QdrantPayload, RAG_CONFIG } from "./config";
-import { embedBatch } from "./embedding";
+import { parseJsonArticle, parseMarkdown } from "./chunker.js";
+import { type QdrantPayload, RAG_CONFIG } from "./config.js";
+import { embedBatch } from "./embedding.js";
 import {
 	ensureCollection,
 	getCollectionStats,
 	getExistingHashes,
 	upsertPoints,
-} from "./qdrant-client";
+} from "./qdrant-client.js";
 
 const BATCH_SIZE = 20;
 const MAX_RETRIES = 3;
@@ -169,5 +170,24 @@ async function ingest(): Promise<void> {
 	console.log("Ingest completed successfully!");
 }
 
-// Run ingest
-ingest().catch(console.error);
+async function main() {
+	const env = {
+		QDRANT_URL: process.env.QDRANT_URL,
+	} as const;
+
+	if (!env.QDRANT_URL) {
+		throw new Error("QDRANT_URL environment variable is required.");
+	}
+
+	try {
+		await ingest();
+	} catch (error) {
+		console.error("❌ エラーが発生しました:", error);
+		process.exit(1);
+	}
+}
+
+main().catch((error) => {
+	console.error(error);
+	process.exit(1);
+});
