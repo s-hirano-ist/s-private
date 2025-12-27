@@ -48,5 +48,18 @@
  * @see {@link https://www.prisma.io/docs | Prisma Documentation}
  */
 
-export * from "./generated/prisma/client";
-export { Prisma, PrismaClient } from "./generated/prisma/client";
+export type {
+	Article,
+	Book,
+	Category,
+	Image,
+	Note,
+} from "./generated/prisma/client";
+// Re-export everything from generated Prisma client
+// Note: We use separate exports to maintain proper ESM compatibility
+export {
+	$Enums,
+	Prisma,
+	PrismaClient,
+	Status,
+} from "./generated/prisma/client";

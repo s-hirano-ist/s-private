@@ -1,7 +1,4 @@
-import type {
-	Status,
-	UserId,
-} from "@s-hirano-ist/s-core/common/entities/common-entity";
+import type { Status } from "@s-hirano-ist/s-core/common/entities/common-entity";
 import type {
 	Path,
 	UnexportedImage,
