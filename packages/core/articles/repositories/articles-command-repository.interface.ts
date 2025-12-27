@@ -1,5 +1,9 @@
-import type { Id, Status, UserId } from "../../common/entities/common-entity";
-import type { UnexportedArticle } from "../entities/article-entity";
+import type {
+	Id,
+	Status,
+	UserId,
+} from "../../common/entities/common-entity.js";
+import type { UnexportedArticle } from "../entities/article-entity.js";
 
 /**
  * Command repository interface for the Article domain.

@@ -33,21 +33,21 @@
  */
 
 // Entities
-export * from "./entities/article-entity";
+export * from "./entities/article-entity.js";
 
 // Events
-export * from "./events/article-created-event";
-export * from "./events/article-deleted-event";
+export * from "./events/article-created-event.js";
+export * from "./events/article-deleted-event.js";
 
 // Repositories
-export * from "./repositories/articles-command-repository.interface";
-export * from "./repositories/articles-query-repository.interface";
-export * from "./repositories/category-query-repository.interface";
+export * from "./repositories/articles-command-repository.interface.js";
+export * from "./repositories/articles-query-repository.interface.js";
+export * from "./repositories/category-query-repository.interface.js";
 
 // Services
-export * from "./services/articles-domain-service";
+export * from "./services/articles-domain-service.js";
 
 // Types
-export * from "./types/cache-strategy";
-export * from "./types/query-params";
-export * from "./types/sort-order";
+export * from "./types/cache-strategy.js";
+export * from "./types/query-params.js";
+export * from "./types/sort-order.js";

@@ -1,7 +1,7 @@
-import type { UserId } from "../../common/entities/common-entity";
-import { DuplicateError } from "../../errors/error-classes";
-import type { Path } from "../entities/image-entity";
-import type { IImagesQueryRepository } from "../repositories/images-query-repository.interface";
+import type { UserId } from "../../common/entities/common-entity.js";
+import { DuplicateError } from "../../errors/error-classes.js";
+import type { Path } from "../entities/image-entity.js";
+import type { IImagesQueryRepository } from "../repositories/images-query-repository.interface.js";
 
 /**
  * Checks if an image with the given path already exists.

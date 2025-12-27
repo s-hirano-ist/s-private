@@ -30,9 +30,9 @@
  */
 
 // Domain exports with namespaces
-export * as Articles from "./articles";
-export * as Books from "./books";
-export * as Common from "./common";
-export * as Errors from "./errors";
-export * as Images from "./images";
-export * as Notes from "./notes";
+export * as Articles from "./articles/index.js";
+export * as Books from "./books/index.js";
+export * as Common from "./common/index.js";
+export * as Errors from "./errors/index.js";
+export * as Images from "./images/index.js";
+export * as Notes from "./notes/index.js";

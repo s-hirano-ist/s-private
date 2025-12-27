@@ -1,9 +1,9 @@
-import { NotificationError } from "./errors";
+import { NotificationError } from "./errors.js";
 import type {
 	NotificationConfig,
 	NotificationContext,
 	NotificationService,
-} from "./types";
+} from "./types.js";
 
 /**
  * Pushover notification service implementation.

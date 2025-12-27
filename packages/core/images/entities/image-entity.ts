@@ -10,9 +10,9 @@ import {
 	makeId,
 	UnexportedStatus,
 	UserId,
-} from "../../common/entities/common-entity";
-import { createEntityWithErrorHandling } from "../../common/services/entity-factory";
-import { idGenerator } from "../../common/services/id-generator";
+} from "../../common/entities/common-entity.js";
+import { createEntityWithErrorHandling } from "../../common/services/entity-factory.js";
+import { idGenerator } from "../../common/services/id-generator.js";
 
 /**
  * Width of generated thumbnails in pixels.

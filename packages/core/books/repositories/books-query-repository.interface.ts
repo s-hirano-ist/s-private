@@ -1,6 +1,6 @@
-import type { Status, UserId } from "../../common/entities/common-entity";
-import type { ISBN } from "../entities/books-entity";
-import type { BooksFindManyParams } from "../types/query-params";
+import type { Status, UserId } from "../../common/entities/common-entity.js";
+import type { ISBN } from "../entities/books-entity.js";
+import type { BooksFindManyParams } from "../types/query-params.js";
 
 /**
  * Query repository interface for the Book domain.
