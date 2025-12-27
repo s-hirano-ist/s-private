@@ -54,9 +54,8 @@ async function main() {
 	}
 
 	// Dynamic import for Prisma ESM compatibility
-	// @ts-expect-error - Prisma ESM export compatibility
-	const { PrismaClient } = await import("@prisma/client");
-	const prisma = new (PrismaClient as any)({
+	const { PrismaClient } = await import("@s-hirano-ist/s-database/generated");
+	const prisma = new PrismaClient({
 		accelerateUrl: env.DATABASE_URL ?? "",
 	});
 
@@ -108,20 +107,23 @@ async function main() {
 	}
 
 	async function fetchArticles() {
-		const articles = (
-			await prisma.article.findMany({
-				where: { userId, status: UNEXPORTED },
-				select: {
-					id: true,
-					title: true,
-					quote: true,
-					url: true,
-					Category: true,
-				},
-			})
-		).map((d: { Category: { name: string } }) => {
-			return { ...d, categoryName: d.Category.name };
+		const rawArticles = await prisma.article.findMany({
+			where: { userId, status: UNEXPORTED },
+			select: {
+				id: true,
+				title: true,
+				quote: true,
+				url: true,
+				Category: true,
+			},
 		});
+		const articles: Article[] = rawArticles.map((d) => ({
+			id: d.id,
+			title: d.title,
+			url: d.url,
+			quote: d.quote,
+			categoryName: d.Category?.name ?? "",
+		}));
 		console.log(`📊 ${articles.length} 件のデータを取得しました。`);
 
 		await exportData(categorizeArticles(articles));

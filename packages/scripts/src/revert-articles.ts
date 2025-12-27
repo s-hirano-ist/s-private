@@ -22,9 +22,8 @@ async function main() {
 	}
 
 	// Dynamic import for Prisma ESM compatibility
-	// @ts-expect-error - Prisma ESM export compatibility
-	const { PrismaClient } = await import("@prisma/client");
-	const prisma = new (PrismaClient as any)({
+	const { PrismaClient } = await import("@s-hirano-ist/s-database/generated");
+	const prisma = new PrismaClient({
 		accelerateUrl: env.DATABASE_URL ?? "",
 	});
 

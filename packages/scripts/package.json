@@ -1,6 +1,6 @@
 {
 	"name": "@s-hirano-ist/s-scripts",
-	"version": "0.2.0",
+	"version": "0.3.1",
 	"description": "CLI scripts for s-private data operations",
 	"type": "module",
 	"bin": {
@@ -56,7 +56,6 @@
 		"access": "public"
 	},
 	"dependencies": {
-		"@prisma/client": "7.2.0",
 		"@s-hirano-ist/s-core": "workspace:*",
 		"@s-hirano-ist/s-database": "workspace:*",
 		"@s-hirano-ist/s-notification": "workspace:*",
