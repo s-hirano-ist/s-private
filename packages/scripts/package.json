@@ -65,7 +65,7 @@
 		"@s-hirano-ist/s-core": "workspace:*",
 		"@s-hirano-ist/s-database": "workspace:*",
 		"@s-hirano-ist/s-notification": "workspace:*",
-		"glob": "11.1.0",
+		"glob": "13.0.0",
 		"jsdom": "26.0.0",
 		"minio": "8.0.5",
 		"turndown": "7.2.0"
