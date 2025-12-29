@@ -66,12 +66,12 @@
 		"@s-hirano-ist/s-database": "workspace:*",
 		"@s-hirano-ist/s-notification": "workspace:*",
 		"glob": "13.0.0",
-		"jsdom": "26.0.0",
+		"jsdom": "27.4.0",
 		"minio": "8.0.5",
 		"turndown": "7.2.0"
 	},
 	"devDependencies": {
-		"@types/jsdom": "21.1.7",
+		"@types/jsdom": "27.0.0",
 		"@types/node": "24.10.4",
 		"@types/turndown": "5.0.5",
 		"tsx": "4.19.4",
