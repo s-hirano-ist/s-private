@@ -60,8 +60,8 @@
 		"access": "public"
 	},
 	"dependencies": {
-		"@huggingface/transformers": "3.5.1",
-		"@qdrant/js-client-rest": "1.13.0",
+		"@huggingface/transformers": "3.8.1",
+		"@qdrant/js-client-rest": "1.16.2",
 		"@s-hirano-ist/s-core": "workspace:*",
 		"@s-hirano-ist/s-database": "workspace:*",
 		"@s-hirano-ist/s-notification": "workspace:*",
@@ -74,7 +74,7 @@
 		"@types/jsdom": "27.0.0",
 		"@types/node": "24.10.4",
 		"@types/turndown": "5.0.5",
-		"tsx": "4.19.4",
+		"tsx": "4.21.0",
 		"typescript": "5.9.3"
 	}
 }
