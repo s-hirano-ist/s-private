@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.8.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.7.1...@s-hirano-ist/s-scripts-v1.8.0) (2026-01-04)
+
+
+### Features
+
+* add image pagination ([77bc68e](https://github.com/s-hirano-ist/s-private/commit/77bc68eae8af761c59e03f993adb662d242e865c))
+* add image pagination ([f9dff68](https://github.com/s-hirano-ist/s-private/commit/f9dff684186e4775333a41ea6be41c36f3d0086b))
+
+
+### Bug Fixes
+
+* fetch books ([bae058a](https://github.com/s-hirano-ist/s-private/commit/bae058a8b3c1685e9c4236a890ecc2814c002c57))
+* fetch books ([5f27f7e](https://github.com/s-hirano-ist/s-private/commit/5f27f7e21fa0cbf244ff7a036010c0c54c8eba72))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.8.0
+    * @s-hirano-ist/s-database bumped to 1.8.0
+    * @s-hirano-ist/s-notification bumped to 1.8.0
+
 ## [1.7.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.7.0...@s-hirano-ist/s-scripts-v1.7.1) (2026-01-04)
 
 

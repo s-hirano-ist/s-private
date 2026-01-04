@@ -1,6 +1,6 @@
 {
 	"name": "@s-hirano-ist/s-database",
-	"version": "1.7.1",
+	"version": "1.8.0",
 	"description": "Prisma database schema and client for s-private project",
 	"type": "module",
 	"main": "./src/index.ts",
