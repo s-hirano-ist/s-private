@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import {
 	makeUnexportedStatus,
 	makeUserId,
@@ -10,9 +9,6 @@ import {
 } from "@s-hirano-ist/s-core/common";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
 import * as Minio from "minio";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 async function main() {
 	const env = {
@@ -61,7 +57,7 @@ async function main() {
 		});
 		console.log(`📊 取得した画像データ数: ${images.length}。`);
 
-		const outputDir = path.join(__dirname, "../image/dump");
+		const outputDir = path.join(process.cwd(), "image/dump");
 		await mkdir(outputDir, { recursive: true });
 
 		const downloadPromises = images.map(async (image: { path: string }) => {
