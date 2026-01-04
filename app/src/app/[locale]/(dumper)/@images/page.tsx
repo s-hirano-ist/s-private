@@ -43,8 +43,12 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 							<ErrorPermissionBoundary
 								errorCaller="ImagesStack"
 								permissionCheck={hasViewerAdminPermission}
-								render={() =>
-									ImagesStack({ currentPage, getImages: getExportedImages })
+								render={async () =>
+									ImagesStack({
+										currentPage,
+										totalCount: await getImagesCount("EXPORTED"),
+										getImages: getExportedImages,
+									})
 								}
 							/>
 						</Suspense>
@@ -59,15 +63,16 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 							render={() => ImageForm({ addImage })}
 						/>
 
-						<Suspense fallback={<Loading />}>
+						<Suspense fallback={<Loading />} key={currentPage}>
 							<ErrorPermissionBoundary
 								errorCaller="ImagesStack"
 								permissionCheck={hasViewerAdminPermission}
-								render={() =>
+								render={async () =>
 									ImagesStack({
-										deleteImage,
 										currentPage,
+										totalCount: await getImagesCount("UNEXPORTED"),
 										getImages: getUnexportedImages,
+										deleteImage,
 									})
 								}
 							/>

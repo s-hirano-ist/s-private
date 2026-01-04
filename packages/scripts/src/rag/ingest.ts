@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { readFileSync } from "fs";
+import { readFileSync } from "node:fs";
 import { glob } from "glob";
 import { parseJsonArticle, parseMarkdown } from "./chunker.js";
 import { type QdrantPayload, RAG_CONFIG } from "./config.js";

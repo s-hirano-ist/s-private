@@ -12,12 +12,14 @@ type ImageData = {
 
 type ImagesStackWrapperProps = {
 	currentPage: number;
+	totalCount: number;
 	getImages: (page: number) => Promise<ImageData[]>;
 	deleteImage?: (id: string) => Promise<{ success: boolean; message: string }>;
 };
 
 function ImagesStackWrapper({
 	currentPage,
+	totalCount,
 	getImages,
 	deleteImage,
 }: ImagesStackWrapperProps) {
@@ -27,6 +29,7 @@ function ImagesStackWrapper({
 				currentPage={currentPage}
 				deleteImage={deleteImage}
 				getImages={getImages}
+				totalCount={totalCount}
 			/>
 		</Suspense>
 	);
@@ -38,6 +41,7 @@ const meta = {
 	tags: ["autodocs"],
 	argTypes: {
 		currentPage: { control: { type: "number", min: 1 } },
+		totalCount: { control: { type: "number", min: 0 } },
 		getImages: { action: "getImages" },
 		deleteImage: { action: "deleteImage" },
 	},
@@ -80,6 +84,7 @@ const mockImageData: ImageData[] = [
 export const Default: Story = {
 	args: {
 		currentPage: 1,
+		totalCount: 100,
 		getImages: async () => mockImageData,
 		deleteImage: async () => ({
 			success: true,
@@ -91,6 +96,7 @@ export const Default: Story = {
 export const WithoutDeleteAction: Story = {
 	args: {
 		currentPage: 1,
+		totalCount: 50,
 		getImages: async () => mockImageData,
 	},
 };
@@ -98,6 +104,7 @@ export const WithoutDeleteAction: Story = {
 export const Empty: Story = {
 	args: {
 		currentPage: 1,
+		totalCount: 0,
 		getImages: async () => [],
 		deleteImage: async () => ({
 			success: true,
@@ -109,6 +116,7 @@ export const Empty: Story = {
 export const SingleImage: Story = {
 	args: {
 		currentPage: 1,
+		totalCount: 1,
 		getImages: async () => [mockImageData[0]],
 		deleteImage: async () => ({
 			success: true,
@@ -120,6 +128,7 @@ export const SingleImage: Story = {
 export const WithoutDimensions: Story = {
 	args: {
 		currentPage: 1,
+		totalCount: 1,
 		getImages: async () => [
 			{
 				id: "1",
@@ -137,6 +146,7 @@ export const WithoutDimensions: Story = {
 export const MixedFormats: Story = {
 	args: {
 		currentPage: 1,
+		totalCount: 6,
 		getImages: async () => [
 			...mockImageData,
 			{
@@ -164,6 +174,7 @@ export const MixedFormats: Story = {
 export const DifferentPage: Story = {
 	args: {
 		currentPage: 2,
+		totalCount: 50,
 		getImages: async (page) => {
 			if (page === 2) {
 				return [
@@ -188,10 +199,31 @@ export const DifferentPage: Story = {
 export const DeleteError: Story = {
 	args: {
 		currentPage: 1,
+		totalCount: 100,
 		getImages: async () => mockImageData,
 		deleteImage: async () => ({
 			success: false,
 			message: "Failed to delete image",
 		}),
+	},
+};
+
+export const WithPagination: Story = {
+	args: {
+		currentPage: 3,
+		totalCount: 120,
+		getImages: async () => mockImageData,
+		deleteImage: async () => ({
+			success: true,
+			message: "Image deleted successfully",
+		}),
+	},
+};
+
+export const NoPagination: Story = {
+	args: {
+		currentPage: 1,
+		totalCount: 20,
+		getImages: async () => mockImageData,
 	},
 };
