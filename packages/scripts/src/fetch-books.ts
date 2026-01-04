@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { mkdir, writeFile } from "node:fs/promises";
+import { access, mkdir, writeFile } from "node:fs/promises";
 import path, { dirname } from "node:path";
 import {
 	makeUnexportedStatus,
@@ -69,7 +69,7 @@ async function main() {
 	}
 
 	async function downloadBookImages(books: Book[]) {
-		const outputDir = path.join(process.cwd(), "image/books");
+		const outputDir = path.join(process.cwd(), "image/book");
 		await mkdir(outputDir, { recursive: true });
 
 		const booksWithImages = books.filter((book) => book.imagePath !== null);
@@ -77,23 +77,39 @@ async function main() {
 			`📷 ${booksWithImages.length} 件の書籍画像をダウンロードします。`,
 		);
 
+		let skippedCount = 0;
+		let downloadedCount = 0;
+
 		const downloadPromises = booksWithImages.map(
 			async (book: { imagePath: string | null }) => {
 				const { imagePath } = book;
 				if (!imagePath) return;
 
 				const filePath = path.join(outputDir, imagePath);
+
+				// ファイルが既に存在する場合はスキップ
+				try {
+					await access(filePath);
+					skippedCount++;
+					return;
+				} catch {
+					// ファイルが存在しない場合はダウンロード
+				}
+
 				await mkdir(path.dirname(filePath), { recursive: true });
 				await minioClient.fGetObject(
 					env.MINIO_BUCKET_NAME ?? "",
 					`books/original/${imagePath}`,
 					filePath,
 				);
+				downloadedCount++;
 			},
 		);
 
 		await Promise.all(downloadPromises);
-		console.log("💾 すべての書籍画像の保存が完了しました。");
+		console.log(
+			`💾 書籍画像: ${downloadedCount} 件ダウンロード, ${skippedCount} 件スキップ`,
+		);
 	}
 
 	async function fetchBooks() {
