@@ -34,6 +34,7 @@ export function ImageCard({
 									className="h-auto w-full rounded bg-white p-1"
 									height={192}
 									src={image}
+									unoptimized
 									width={192}
 								/>
 							)}
