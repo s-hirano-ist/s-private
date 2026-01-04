@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.8.3](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.8.2...@s-hirano-ist/s-scripts-v1.8.3) (2026-01-04)
+
+
+### Bug Fixes
+
+* skip existing Markdown files during export and improve logging ([6d67e69](https://github.com/s-hirano-ist/s-private/commit/6d67e6972934e0f48d233617986c5c3f9d0d65bd))
+* skip existing Markdown files during export and improve logging ([db69ef0](https://github.com/s-hirano-ist/s-private/commit/db69ef05a0dfc23c4cedb8a94237e3ceff3dd82e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.8.3
+    * @s-hirano-ist/s-database bumped to 1.8.3
+    * @s-hirano-ist/s-notification bumped to 1.8.3
+
 ## [1.8.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.8.1...@s-hirano-ist/s-scripts-v1.8.2) (2026-01-04)
 
 
