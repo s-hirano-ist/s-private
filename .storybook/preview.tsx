@@ -61,6 +61,9 @@ const preview = {
 								searchPlaceholder: "検索...",
 								useCustomValue: "「{value}」を使用",
 								"403": "許可されていません",
+								previous: "前へ",
+								next: "次へ",
+								morePages: "その他のページ",
 							},
 							statusCode: {
 								"000": "近日公開",
