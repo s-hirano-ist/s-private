@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { mkdir, writeFile } from "node:fs/promises";
-import { dirname } from "node:path";
+import path, { dirname } from "node:path";
 import {
 	makeUnexportedStatus,
 	makeUserId,
@@ -8,11 +8,13 @@ import {
 	type UserId,
 } from "@s-hirano-ist/s-core/common";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
+import * as Minio from "minio";
 
 type Book = {
 	id: string;
 	ISBN: string;
 	title: string;
+	imagePath: string | null;
 };
 
 const OUTPUT_DIR = "markdown/books/";
@@ -24,6 +26,11 @@ async function main() {
 		PUSHOVER_USER_KEY: process.env.PUSHOVER_USER_KEY,
 		PUSHOVER_APP_TOKEN: process.env.PUSHOVER_APP_TOKEN,
 		USERNAME_TO_EXPORT: process.env.USERNAME_TO_EXPORT,
+		MINIO_HOST: process.env.MINIO_HOST,
+		MINIO_PORT: process.env.MINIO_PORT,
+		MINIO_BUCKET_NAME: process.env.MINIO_BUCKET_NAME,
+		MINIO_ACCESS_KEY: process.env.MINIO_ACCESS_KEY,
+		MINIO_SECRET_KEY: process.env.MINIO_SECRET_KEY,
 	} as const;
 
 	if (Object.values(env).some((v) => !v)) {
@@ -42,6 +49,14 @@ async function main() {
 		appToken: env.PUSHOVER_APP_TOKEN ?? "",
 	});
 
+	const minioClient = new Minio.Client({
+		endPoint: env.MINIO_HOST ?? "",
+		port: Number(env.MINIO_PORT),
+		useSSL: true,
+		accessKey: env.MINIO_ACCESS_KEY ?? "",
+		secretKey: env.MINIO_SECRET_KEY ?? "",
+	});
+
 	const userId: UserId = makeUserId(env.USERNAME_TO_EXPORT ?? "");
 	const UNEXPORTED: Status = makeUnexportedStatus();
 
@@ -53,6 +68,34 @@ async function main() {
 		}
 	}
 
+	async function downloadBookImages(books: Book[]) {
+		const outputDir = path.join(process.cwd(), "image/books");
+		await mkdir(outputDir, { recursive: true });
+
+		const booksWithImages = books.filter((book) => book.imagePath !== null);
+		console.log(
+			`📷 ${booksWithImages.length} 件の書籍画像をダウンロードします。`,
+		);
+
+		const downloadPromises = booksWithImages.map(
+			async (book: { imagePath: string | null }) => {
+				const { imagePath } = book;
+				if (!imagePath) return;
+
+				const filePath = path.join(outputDir, imagePath);
+				await mkdir(path.dirname(filePath), { recursive: true });
+				await minioClient.fGetObject(
+					env.MINIO_BUCKET_NAME ?? "",
+					`books/original/${imagePath}`,
+					filePath,
+				);
+			},
+		);
+
+		await Promise.all(downloadPromises);
+		console.log("💾 すべての書籍画像の保存が完了しました。");
+	}
+
 	async function fetchBooks() {
 		const books = await prisma.book.findMany({
 			where: { userId, status: UNEXPORTED },
@@ -61,6 +104,8 @@ async function main() {
 
 		await exportData(books);
 		console.log("💾 データがMarkdownファイルに書き出されました。");
+
+		await downloadBookImages(books);
 	}
 
 	try {
