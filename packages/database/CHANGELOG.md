@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.8.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.7.1...@s-hirano-ist/s-database-v1.8.0) (2026-01-04)
+
+
+### Features
+
+* add books add ([c1c0a57](https://github.com/s-hirano-ist/s-private/commit/c1c0a5751bc976233db29c329e8d826b7d57534a))
+* add books image dumper ([09f10c3](https://github.com/s-hirano-ist/s-private/commit/09f10c395cb8fdd01bfb1363421a22b844d0b457))
+
 ## [1.7.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.7.0...@s-hirano-ist/s-database-v1.7.1) (2026-01-04)
 
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.8.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.7.1...@s-hirano-ist/s-ui-v1.8.0) (2026-01-04)
+
+
+### Features
+
+* add image pagination ([77bc68e](https://github.com/s-hirano-ist/s-private/commit/77bc68eae8af761c59e03f993adb662d242e865c))
+* add image pagination ([f9dff68](https://github.com/s-hirano-ist/s-private/commit/f9dff684186e4775333a41ea6be41c36f3d0086b))
+
 ## [1.7.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.7.0...@s-hirano-ist/s-ui-v1.7.1) (2026-01-04)
 
 

@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.8.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.7.1...s-private-v10.8.0) (2026-01-04)
+
+
+### Features
+
+* add books add ([c1c0a57](https://github.com/s-hirano-ist/s-private/commit/c1c0a5751bc976233db29c329e8d826b7d57534a))
+* add books image dumper ([09f10c3](https://github.com/s-hirano-ist/s-private/commit/09f10c395cb8fdd01bfb1363421a22b844d0b457))
+* add image pagination ([77bc68e](https://github.com/s-hirano-ist/s-private/commit/77bc68eae8af761c59e03f993adb662d242e865c))
+* add image pagination ([f9dff68](https://github.com/s-hirano-ist/s-private/commit/f9dff684186e4775333a41ea6be41c36f3d0086b))
+
+
+### Bug Fixes
+
+* compose.yaml image error ([5c24ad7](https://github.com/s-hirano-ist/s-private/commit/5c24ad7c041b6d64b629f92e6813c19ca55aebce))
+* fetch books ([bae058a](https://github.com/s-hirano-ist/s-private/commit/bae058a8b3c1685e9c4236a890ecc2814c002c57))
+* fetch books ([5f27f7e](https://github.com/s-hirano-ist/s-private/commit/5f27f7e21fa0cbf244ff7a036010c0c54c8eba72))
+* page size ([f38cfb7](https://github.com/s-hirano-ist/s-private/commit/f38cfb78997170e107afafc510cbc31716bd30af))
+
+
+### Documentation
+
+* fix tests for image-stack paging ([aab5f67](https://github.com/s-hirano-ist/s-private/commit/aab5f6789551958e886eb0d712766d9a8f1172b9))
+
+
+### Maintenance
+
+* add mcp for nextjs ([f3856e6](https://github.com/s-hirano-ist/s-private/commit/f3856e613e618221f919ba06dc30bbf84b64fb6d))
+* refactor dockerfile ([b9b3dfb](https://github.com/s-hirano-ist/s-private/commit/b9b3dfb7a138abe167b3055d26ba4f6ded51447e))
+* remove caching logic from getBooksImageFromStorage and getImagesFromStorage ([52b759f](https://github.com/s-hirano-ist/s-private/commit/52b759f76055af09dcb4b4b9ad558366b8af5633))
+* small issues ([f76356b](https://github.com/s-hirano-ist/s-private/commit/f76356b854f14ed2c453511e1b9ba936999d69fd))
+
 ## [10.7.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.7.0...s-private-v10.7.1) (2026-01-04)
 
 
