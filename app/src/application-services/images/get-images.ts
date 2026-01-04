@@ -135,11 +135,5 @@ export const getImagesFromStorage = async (
 	path: string,
 	isThumbnail: boolean,
 ) => {
-	"use cache";
-	cacheTag(`images_storage_${path}_${isThumbnail}`);
-	try {
-		return await imagesQueryRepository.getFromStorage(path, isThumbnail);
-	} catch (error) {
-		throw error;
-	}
+	return await imagesQueryRepository.getFromStorage(path, isThumbnail);
 };

@@ -148,7 +148,5 @@ export const getBooksImageFromStorage = async (
 	path: string,
 	isThumbnail: boolean,
 ) => {
-	"use cache";
-	cacheTag(`books_image_${path}_${isThumbnail}`);
 	return await booksQueryRepository.getImageFromStorage(path, isThumbnail);
 };
