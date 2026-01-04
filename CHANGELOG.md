@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.8.2](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.8.1...s-private-v10.8.2) (2026-01-04)
+
+
+### Bug Fixes
+
+* correct output directory and improve image download logic ([ed0c19e](https://github.com/s-hirano-ist/s-private/commit/ed0c19ebeca63c41717423aaed52489569b9b6d1))
+* correct output directory and improve image download logic ([639b1e3](https://github.com/s-hirano-ist/s-private/commit/639b1e3c39d820572e631f16c73ca298665dd60c))
+
 ## [10.8.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.8.0...s-private-v10.8.1) (2026-01-04)
 
 
