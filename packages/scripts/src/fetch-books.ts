@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { access, mkdir, writeFile } from "node:fs/promises";
-import path, { dirname } from "node:path";
+import path from "node:path";
 import {
 	makeUnexportedStatus,
 	makeUserId,
@@ -61,11 +61,30 @@ async function main() {
 	const UNEXPORTED: Status = makeUnexportedStatus();
 
 	async function exportData(data: Book[]) {
+		let skippedCount = 0;
+		let exportedCount = 0;
+
+		await mkdir(OUTPUT_DIR, { recursive: true });
+
 		for (const item of data) {
 			const filePath = `${OUTPUT_DIR}${item.ISBN}.md`;
-			await mkdir(dirname(filePath), { recursive: true });
+
+			// ファイルが既に存在する場合はスキップ
+			try {
+				await access(filePath);
+				skippedCount++;
+				continue;
+			} catch {
+				// ファイルが存在しない場合は書き出し
+			}
+
 			await writeFile(filePath, `# ${item.title}\n`);
+			exportedCount++;
 		}
+
+		console.log(
+			`💾 Markdown: ${exportedCount} 件書き出し, ${skippedCount} 件スキップ`,
+		);
 	}
 
 	async function downloadBookImages(books: Book[]) {
@@ -120,8 +139,6 @@ async function main() {
 		console.log(`📊 ${books.length} 件のデータを取得しました。`);
 
 		await exportData(books);
-		console.log("💾 データがMarkdownファイルに書き出されました。");
-
 		await downloadBookImages(books);
 	}
 
