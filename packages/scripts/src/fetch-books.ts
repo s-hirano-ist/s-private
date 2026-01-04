@@ -17,7 +17,7 @@ type Book = {
 	imagePath: string | null;
 };
 
-const OUTPUT_DIR = "markdown/books/";
+const OUTPUT_DIR = "markdown/book/";
 
 async function main() {
 	const env = {
@@ -81,11 +81,13 @@ async function main() {
 		let downloadedCount = 0;
 
 		const downloadPromises = booksWithImages.map(
-			async (book: { imagePath: string | null }) => {
-				const { imagePath } = book;
+			async (book: { ISBN: string; imagePath: string | null }) => {
+				const { ISBN, imagePath } = book;
 				if (!imagePath) return;
 
-				const filePath = path.join(outputDir, imagePath);
+				const ext = path.extname(imagePath);
+				const fileName = `${ISBN}${ext}`;
+				const filePath = path.join(outputDir, fileName);
 
 				// ファイルが既に存在する場合はスキップ
 				try {
@@ -96,7 +98,6 @@ async function main() {
 					// ファイルが存在しない場合はダウンロード
 				}
 
-				await mkdir(path.dirname(filePath), { recursive: true });
 				await minioClient.fGetObject(
 					env.MINIO_BUCKET_NAME ?? "",
 					`books/original/${imagePath}`,
