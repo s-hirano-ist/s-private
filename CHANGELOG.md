@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.8.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.8.0...s-private-v10.8.1) (2026-01-04)
+
+
+### Bug Fixes
+
+* skip existing book images during download ([46ceb0a](https://github.com/s-hirano-ist/s-private/commit/46ceb0adf148add46e33e069d2a7828c0b09c449))
+* skip existing book images during download ([cc103e2](https://github.com/s-hirano-ist/s-private/commit/cc103e28d76cad52f1fb76b2b37a6cb7d9fa1894))
+
 ## [10.8.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.7.1...s-private-v10.8.0) (2026-01-04)
 
 
