@@ -1,5 +1,5 @@
 # build
-FROM node:24.12.0-alpine@sha256:7e0bd0460b26eb3854ea5b99b887a6a14d665d14cae694b78ae2936d14b2befb AS builder
+FROM node:24.12.0-slim@sha256:04d9cbb7297edb843581b9bb9bbed6d7efb459447d5b6ade8d8ef988e6737804 AS builder
 
 RUN npm install -g pnpm
 WORKDIR /app
@@ -23,4 +23,11 @@ RUN pnpm run storybook:build
 
 # run
 FROM httpd:2.4.66@sha256:b913eada2685f101f93267e0984109966bbcc3afea6c9b48ed389afbf89863aa AS runner
-COPY --from=builder /app/.storybook-static /usr/local/apache2/htdocs/
+
+RUN groupadd --system --gid 1001 storybook && \
+    useradd --system --uid 1001 --gid storybook storybook && \
+    chown -R storybook:storybook /usr/local/apache2/htdocs/
+
+COPY --from=builder --chown=storybook:storybook /app/.storybook-static /usr/local/apache2/htdocs/
+
+USER storybook

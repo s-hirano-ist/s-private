@@ -4,3 +4,15 @@ node_modules
 .next
 .storybook-static
 .vitest-coverage
+
+# Tests
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+__tests__/
+
+# Documentation
+*.md
+!README.md
+docs/
