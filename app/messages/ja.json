@@ -36,7 +36,8 @@
 		"searchPlaceholder": "検索...",
 		"previous": "前へ",
 		"next": "次へ",
-		"morePages": "その他のページ"
+		"morePages": "その他のページ",
+		"bookCover": "書籍画像（任意）"
 	},
 	"statusCode": {
 		"000": "近日公開",

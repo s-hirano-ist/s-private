@@ -44,6 +44,7 @@ export type IBooksQueryRepository = {
 		googleDescription: string | null;
 		googleImgSrc: string | null;
 		googleHref: string | null;
+		imagePath: string | null;
 		markdown: string | null;
 		rating: number | null;
 		tags: string[];
@@ -78,6 +79,7 @@ export type IBooksQueryRepository = {
 			googleDescription: string | null;
 			googleImgSrc: string | null;
 			googleHref: string | null;
+			imagePath: string | null;
 			markdown: string | null;
 			rating: number | null;
 			tags: string[];
@@ -122,4 +124,16 @@ export type IBooksQueryRepository = {
 			tags: string[];
 		}[]
 	>;
+
+	/**
+	 * Retrieves a book cover image from MinIO storage.
+	 *
+	 * @param path - The storage path for the image
+	 * @param isThumbnail - Whether to retrieve the thumbnail or original image
+	 * @returns A readable stream of the image data
+	 */
+	getImageFromStorage(
+		path: string,
+		isThumbnail: boolean,
+	): Promise<NodeJS.ReadableStream>;
 };

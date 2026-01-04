@@ -21,6 +21,7 @@ describe("BooksQueryRepository", () => {
 				googleAuthors: ["Author One", "Author Two"],
 				googleDescription: "Test book description",
 				googleSubTitle: "Test subtitle",
+				imagePath: null,
 			};
 
 			vi.mocked(prisma.book.findUnique).mockResolvedValue(mockBook);
@@ -69,11 +70,13 @@ describe("BooksQueryRepository", () => {
 					title: "First Book",
 					ISBN: "978-0123456789",
 					googleImgSrc: "https://example.com/image1.jpg",
+					imagePath: null,
 				},
 				{
 					title: "Second Book",
 					ISBN: "978-0987654321",
 					googleImgSrc: "https://example.com/image2.jpg",
+					imagePath: null,
 				},
 			];
 
@@ -113,6 +116,7 @@ describe("BooksQueryRepository", () => {
 					title: "Cached Book",
 					ISBN: "978-0123456789",
 					googleImgSrc: "https://example.com/image.jpg",
+					imagePath: null,
 				},
 			];
 

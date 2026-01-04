@@ -108,6 +108,8 @@ model Book {
   googleImgSrc      String?  @map("google_img_src")
   googleHref        String?  @map("google_href")
 
+  imagePath String? @map("image_path")
+
   markdown String?
 
   rating Int? // 1-5

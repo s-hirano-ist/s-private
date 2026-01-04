@@ -36,7 +36,8 @@
 		"searchPlaceholder": "Search...",
 		"previous": "Previous",
 		"next": "Next",
-		"morePages": "More pages"
+		"morePages": "More pages",
+		"bookCover": "Book Cover (Optional)"
 	},
 	"statusCode": {
 		"000": "Comming Soon",

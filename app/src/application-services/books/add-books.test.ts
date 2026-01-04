@@ -1,5 +1,6 @@
 import {
 	bookEntity,
+	makeBookImagePath,
 	makeBookTitle,
 	makeISBN,
 } from "@s-hirano-ist/s-core/books/entities/books-entity";
@@ -67,10 +68,12 @@ mockFormData.append("title", "Test Book");
 describe("addBooks", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
-		vi.mocked(parseAddBooksFormData).mockReturnValue({
+		vi.mocked(parseAddBooksFormData).mockResolvedValue({
 			ISBN: makeISBN("978-4-06-519981-0"),
 			title: makeBookTitle("Test Book"),
 			userId: makeUserId("user-123"),
+			imagePath: makeBookImagePath(null),
+			hasImage: false as const,
 		});
 	});
 
@@ -99,6 +102,7 @@ describe("addBooks", () => {
 			userId: makeUserId("user-123"),
 			status: "UNEXPORTED",
 			createdAt: makeCreatedAt(),
+			imagePath: makeBookImagePath(null),
 		} as const;
 
 		mockEnsureNoDuplicate.mockResolvedValue(undefined);
@@ -116,6 +120,7 @@ describe("addBooks", () => {
 			ISBN: makeISBN("978-4-06-519981-0"),
 			title: makeBookTitle("Test Book"),
 			userId: makeUserId("user-123"),
+			imagePath: makeBookImagePath(null),
 		});
 		expect(booksCommandRepository.create).toHaveBeenCalledWith(mockBook);
 		const status = makeUnexportedStatus();

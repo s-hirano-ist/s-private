@@ -7,9 +7,13 @@ import type {
 	Status,
 	UserId,
 } from "@s-hirano-ist/s-core/common/entities/common-entity";
+import type { Path } from "@s-hirano-ist/s-core/images/entities/image-entity";
+import { env } from "@/env";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
+import { minioClient } from "@/minio";
 import prisma from "@/prisma";
+import { ORIGINAL_BOOK_IMAGE_PATH, THUMBNAIL_BOOK_IMAGE_PATH } from "./common";
 
 initializeEventHandlers();
 
@@ -58,8 +62,18 @@ async function fetchBookFromGitHub(): Promise<UnexportedBook[]> {
 	}
 }
 
+async function uploadImageToStorage(
+	path: Path,
+	buffer: Buffer,
+	isThumbnail: boolean,
+): Promise<void> {
+	const objKey = `${isThumbnail ? THUMBNAIL_BOOK_IMAGE_PATH : ORIGINAL_BOOK_IMAGE_PATH}/${path}`;
+	await minioClient.putObject(env.MINIO_BUCKET_NAME, objKey, buffer);
+}
+
 export const booksCommandRepository: IBooksCommandRepository = {
 	create,
 	deleteById,
 	fetchBookFromGitHub,
+	uploadImageToStorage,
 };

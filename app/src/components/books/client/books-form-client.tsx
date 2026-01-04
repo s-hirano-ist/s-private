@@ -1,4 +1,5 @@
 "use client";
+import { FormFileInput } from "@s-hirano-ist/s-ui/forms/fields/form-file-input";
 import { FormInput } from "@s-hirano-ist/s-ui/forms/fields/form-input";
 import { GenericFormWrapper } from "@s-hirano-ist/s-ui/forms/generic-form-wrapper";
 import { useTranslations } from "next-intl";
@@ -37,6 +38,12 @@ export function BooksFormClient({ addBooks }: Props) {
 				label={label("title")}
 				name="title"
 				required
+			/>
+			<FormFileInput
+				accept="image/*"
+				htmlFor="image"
+				label={label("bookCover")}
+				name="image"
 			/>
 		</GenericFormWrapper>
 	);

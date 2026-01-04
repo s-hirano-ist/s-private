@@ -5,7 +5,10 @@ import type {
 	Status,
 	UserId,
 } from "@s-hirano-ist/s-core/common/entities/common-entity";
+import { env } from "@/env";
+import { minioClient } from "@/minio";
 import prisma from "@/prisma";
+import { ORIGINAL_BOOK_IMAGE_PATH, THUMBNAIL_BOOK_IMAGE_PATH } from "./common";
 
 async function findByISBN(ISBN: ISBN, userId: UserId) {
 	const data = await prisma.book.findUnique({
@@ -83,9 +86,19 @@ async function search(
 	return data;
 }
 
+async function getImageFromStorage(
+	path: string,
+	isThumbnail: boolean,
+): Promise<NodeJS.ReadableStream> {
+	const objKey = `${isThumbnail ? THUMBNAIL_BOOK_IMAGE_PATH : ORIGINAL_BOOK_IMAGE_PATH}/${path}`;
+	const data = await minioClient.getObject(env.MINIO_BUCKET_NAME, objKey);
+	return data;
+}
+
 export const booksQueryRepository: IBooksQueryRepository = {
 	findByISBN,
 	findMany,
 	count,
 	search,
+	getImageFromStorage,
 };
