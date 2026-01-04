@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.8.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.8.0...@s-hirano-ist/s-scripts-v1.8.1) (2026-01-04)
+
+
+### Bug Fixes
+
+* skip existing book images during download ([46ceb0a](https://github.com/s-hirano-ist/s-private/commit/46ceb0adf148add46e33e069d2a7828c0b09c449))
+* skip existing book images during download ([cc103e2](https://github.com/s-hirano-ist/s-private/commit/cc103e28d76cad52f1fb76b2b37a6cb7d9fa1894))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.8.1
+    * @s-hirano-ist/s-database bumped to 1.8.1
+    * @s-hirano-ist/s-notification bumped to 1.8.1
+
 ## [1.8.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.7.1...@s-hirano-ist/s-scripts-v1.8.0) (2026-01-04)
 
 
