@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.7.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.7.0...s-private-v10.7.1) (2026-01-04)
+
+
+### Bug Fixes
+
+* update image fetch script to use process.cwd() for output directory ([d528822](https://github.com/s-hirano-ist/s-private/commit/d528822d6387e439b38dbd5604112952188f24f1))
+* update image fetch script to use process.cwd() for output directory ([729daee](https://github.com/s-hirano-ist/s-private/commit/729daee3dafc4314ee088b47feef88e70f40c870))
+
+
+### Maintenance
+
+* **deps:** update dependency @types/node to v24 ([e9ba99d](https://github.com/s-hirano-ist/s-private/commit/e9ba99d8b386ef47c46c9ba061b805c31fdd0c32))
+* **deps:** update dependency glob to v13 ([bedb4ca](https://github.com/s-hirano-ist/s-private/commit/bedb4cae7c5ba9ef601021782c6c74529fa3a2ed))
+* **deps:** update dependency jsdom to v27 ([05868e1](https://github.com/s-hirano-ist/s-private/commit/05868e16f8983f75ac4b8629da06432e5d664f84))
+* **deps:** update minor ([6de2691](https://github.com/s-hirano-ist/s-private/commit/6de2691b0fe34c2ed5e38ebca0d87dcf40f16121))
+* **deps:** update minor ([82e23b1](https://github.com/s-hirano-ist/s-private/commit/82e23b143246cdb9a83e6a878d6b636919218203))
+* **deps:** update pnpm to v10.26.2 ([444e177](https://github.com/s-hirano-ist/s-private/commit/444e1772195be3f4892d4ec995525850c4a8f1cf))
+
 ## [10.7.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.6.0...s-private-v10.7.0) (2025-12-27)
 
 
