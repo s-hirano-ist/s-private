@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.8.4](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.8.3...s-private-v10.8.4) (2026-01-04)
+
+
+### Bug Fixes
+
+* add unoptimized attribute to NextImage in ImageCard component ([adffc97](https://github.com/s-hirano-ist/s-private/commit/adffc978190dd0e658311709c2f4a0471d260a31))
+* add unoptimized attribute to NextImage in ImageCard component ([e6949d3](https://github.com/s-hirano-ist/s-private/commit/e6949d3ed862c2bcfe59d09026f8065094bba0bc))
+
 ## [10.8.3](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.8.2...s-private-v10.8.3) (2026-01-04)
 
 
