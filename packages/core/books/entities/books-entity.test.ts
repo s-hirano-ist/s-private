@@ -3,6 +3,7 @@ import { ZodError } from "zod";
 import { makeUserId } from "../../common/entities/common-entity";
 import {
 	bookEntity,
+	makeBookImagePath,
 	makeBookMarkdown,
 	makeBookTitle,
 	makeGoogleAuthors,
@@ -61,6 +62,7 @@ describe("booksEntity", () => {
 				userId: makeUserId("test-user-id"),
 				ISBN: makeISBN("9784123456789"),
 				title: makeBookTitle("Clean Code"),
+				imagePath: null,
 			});
 
 			expect(book.userId).toBe("test-user-id");
@@ -68,6 +70,7 @@ describe("booksEntity", () => {
 			expect(book.title).toBe("Clean Code");
 			expect(book.status).toBe("UNEXPORTED");
 			expect(book.id).toBeDefined();
+			expect(book.imagePath).toBeNull();
 		});
 
 		test("should create book with UNEXPORTED status by default", () => {
@@ -75,6 +78,7 @@ describe("booksEntity", () => {
 				userId: makeUserId("test-user-id"),
 				ISBN: makeISBN("9784123456789"),
 				title: makeBookTitle("Test Book"),
+				imagePath: null,
 			});
 
 			expect(book.status).toBe("UNEXPORTED");
@@ -85,6 +89,7 @@ describe("booksEntity", () => {
 				userId: makeUserId("test-user-id"),
 				ISBN: makeISBN("9784123456789"),
 				title: makeBookTitle("Test Book"),
+				imagePath: null,
 			});
 
 			expect(Object.isFrozen(book)).toBe(true);
@@ -165,6 +170,17 @@ describe("booksEntity", () => {
 		test("makeBookMarkdown should handle null value", () => {
 			const bookMarkdown = makeBookMarkdown(null);
 			expect(bookMarkdown).toBeNull();
+		});
+
+		test("makeBookImagePath should create BookImagePath", () => {
+			const imagePath = "books/original/image-123.jpg";
+			const bookImagePath = makeBookImagePath(imagePath);
+			expect(bookImagePath).toBe(imagePath);
+		});
+
+		test("makeBookImagePath should handle null value", () => {
+			const bookImagePath = makeBookImagePath(null);
+			expect(bookImagePath).toBeNull();
 		});
 	});
 });

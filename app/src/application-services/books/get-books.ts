@@ -24,6 +24,8 @@ import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import type { ImageCardStackInitialData } from "@/components/common/layouts/cards/types";
 import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
 
+const API_BOOK_THUMBNAIL_PATH = "/api/books/images/thumbnail";
+
 /**
  * Fetches paginated books with cache support.
  *
@@ -56,7 +58,9 @@ export const _getBooks = async (
 				id: d.id,
 				title: d.title,
 				href: d.ISBN,
-				image: d.googleImgSrc,
+				image: d.imagePath
+					? `${API_BOOK_THUMBNAIL_PATH}/${d.imagePath}`
+					: d.googleImgSrc,
 			})),
 			totalCount,
 		};
@@ -132,3 +136,17 @@ export const getBookByISBN = cache(async (isbn: string) => {
 		throw error;
 	}
 });
+
+/**
+ * Retrieves book cover image from MinIO storage.
+ *
+ * @param path - The storage path for the image
+ * @param isThumbnail - Whether to retrieve the thumbnail or original image
+ * @returns A readable stream of the image data
+ */
+export const getBooksImageFromStorage = async (
+	path: string,
+	isThumbnail: boolean,
+) => {
+	return await booksQueryRepository.getImageFromStorage(path, isThumbnail);
+};

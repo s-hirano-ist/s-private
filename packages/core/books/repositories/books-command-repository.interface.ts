@@ -3,6 +3,7 @@ import type {
 	Status,
 	UserId,
 } from "../../common/entities/common-entity.js";
+import type { Path } from "../../images/entities/image-entity.js";
 import type { UnexportedBook } from "../entities/books-entity.js";
 
 /**
@@ -60,4 +61,17 @@ export type IBooksCommandRepository = {
 	 * @returns Array of unexported book entities
 	 */
 	fetchBookFromGitHub(): Promise<UnexportedBook[]>;
+
+	/**
+	 * Uploads a book cover image to MinIO storage.
+	 *
+	 * @param path - The storage path for the image
+	 * @param buffer - The image buffer data
+	 * @param isThumbnail - Whether this is a thumbnail or original image
+	 */
+	uploadImageToStorage(
+		path: Path,
+		buffer: Buffer,
+		isThumbnail: boolean,
+	): Promise<void>;
 };

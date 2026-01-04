@@ -3,6 +3,10 @@
 		"storybook-mcp": {
 			"type": "http",
 			"url": "http://localhost:6006/mcp"
+		},
+		"next-devtools": {
+			"command": "npx",
+			"args": ["-y", "next-devtools-mcp@latest"]
 		}
 	}
 }

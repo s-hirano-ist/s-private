@@ -41,27 +41,44 @@ export async function addBooks(formData: FormData): Promise<ServerAction> {
 	const booksDomainService = new BooksDomainService(booksQueryRepository);
 
 	try {
-		const { ISBN, title, userId } = parseAddBooksFormData(
-			formData,
-			await getSelfId(),
-		);
+		const parsedData = await parseAddBooksFormData(formData, await getSelfId());
 
 		// Domain business rule validation
-		await booksDomainService.ensureNoDuplicate(ISBN, userId);
+		await booksDomainService.ensureNoDuplicate(
+			parsedData.ISBN,
+			parsedData.userId,
+		);
+
+		// Upload image to MinIO if provided
+		if (parsedData.hasImage) {
+			await booksCommandRepository.uploadImageToStorage(
+				parsedData.path,
+				parsedData.originalBuffer,
+				false,
+			);
+			await booksCommandRepository.uploadImageToStorage(
+				parsedData.path,
+				parsedData.thumbnailBuffer,
+				true,
+			);
+		}
 
 		// Create entity with value objects
 		const book = bookEntity.create({
-			ISBN,
-			title,
-			userId,
+			ISBN: parsedData.ISBN,
+			title: parsedData.title,
+			userId: parsedData.userId,
+			imagePath: parsedData.imagePath,
 		});
 
 		// Persist
 		await booksCommandRepository.create(book);
 
 		// Cache invalidation
-		revalidateTag(buildContentCacheTag("books", book.status, userId));
-		revalidateTag(buildCountCacheTag("books", book.status, userId));
+		revalidateTag(
+			buildContentCacheTag("books", book.status, parsedData.userId),
+		);
+		revalidateTag(buildCountCacheTag("books", book.status, parsedData.userId));
 
 		return { success: true, message: "inserted" };
 	} catch (error) {
