@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.8.3](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.8.2...s-private-v10.8.3) (2026-01-04)
+
+
+### Bug Fixes
+
+* skip existing Markdown files during export and improve logging ([6d67e69](https://github.com/s-hirano-ist/s-private/commit/6d67e6972934e0f48d233617986c5c3f9d0d65bd))
+* skip existing Markdown files during export and improve logging ([db69ef0](https://github.com/s-hirano-ist/s-private/commit/db69ef05a0dfc23c4cedb8a94237e3ceff3dd82e))
+
 ## [10.8.2](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.8.1...s-private-v10.8.2) (2026-01-04)
 
 
