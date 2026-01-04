@@ -6,7 +6,6 @@ import type {
 
 type PrismaClientLike = {
 	book: {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Required for Prisma client compatibility
 		updateMany: (args: any) => Promise<{ count: number }>;
 	};
 };

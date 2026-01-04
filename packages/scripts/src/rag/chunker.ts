@@ -1,4 +1,4 @@
-import { createHash } from "crypto";
+import { createHash } from "node:crypto";
 import { type QdrantPayload, RAG_CONFIG } from "./config.js";
 
 // JSON article structure
@@ -144,7 +144,7 @@ function splitMarkdownByHeadings(content: string): MarkdownSection[] {
 
 		if (headingMatch) {
 			// Save previous section
-			if (currentSection && currentSection.content.trim()) {
+			if (currentSection?.content.trim()) {
 				sections.push(currentSection);
 			}
 
@@ -170,12 +170,12 @@ function splitMarkdownByHeadings(content: string): MarkdownSection[] {
 				level,
 			};
 		} else if (currentSection) {
-			currentSection.content += line + "\n";
+			currentSection.content += `${line}\n`;
 		}
 	}
 
 	// Save last section
-	if (currentSection && currentSection.content.trim()) {
+	if (currentSection?.content.trim()) {
 		sections.push(currentSection);
 	}
 

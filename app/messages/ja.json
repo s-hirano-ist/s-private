@@ -33,7 +33,10 @@
 		"returnHome": "ホームに戻る",
 		"useCustomValue": "「{value}」を使用",
 		"noResults": "見つかりませんでした",
-		"searchPlaceholder": "検索..."
+		"searchPlaceholder": "検索...",
+		"previous": "前へ",
+		"next": "次へ",
+		"morePages": "その他のページ"
 	},
 	"statusCode": {
 		"000": "近日公開",

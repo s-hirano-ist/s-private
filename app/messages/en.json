@@ -33,7 +33,10 @@
 		"returnHome": "Return to Home",
 		"useCustomValue": "Use \"{value}\"",
 		"noResults": "No results found",
-		"searchPlaceholder": "Search..."
+		"searchPlaceholder": "Search...",
+		"previous": "Previous",
+		"next": "Next",
+		"morePages": "More pages"
 	},
 	"statusCode": {
 		"000": "Comming Soon",

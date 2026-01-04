@@ -62,6 +62,7 @@ export * from "./ui/drawer";
 export * from "./ui/dropdown-menu";
 export * from "./ui/input";
 export * from "./ui/label";
+export * from "./ui/pagination";
 export * from "./ui/sonner";
 export * from "./ui/tabs";
 export * from "./ui/textarea";
