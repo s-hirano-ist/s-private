@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.8.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.8.1...@s-hirano-ist/s-scripts-v1.8.2) (2026-01-04)
+
+
+### Bug Fixes
+
+* correct output directory and improve image download logic ([ed0c19e](https://github.com/s-hirano-ist/s-private/commit/ed0c19ebeca63c41717423aaed52489569b9b6d1))
+* correct output directory and improve image download logic ([639b1e3](https://github.com/s-hirano-ist/s-private/commit/639b1e3c39d820572e631f16c73ca298665dd60c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.8.2
+    * @s-hirano-ist/s-database bumped to 1.8.2
+    * @s-hirano-ist/s-notification bumped to 1.8.2
+
 ## [1.8.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.8.0...@s-hirano-ist/s-scripts-v1.8.1) (2026-01-04)
 
 

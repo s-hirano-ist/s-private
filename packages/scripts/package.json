@@ -1,6 +1,6 @@
 {
 	"name": "@s-hirano-ist/s-scripts",
-	"version": "1.8.1",
+	"version": "1.8.2",
 	"description": "CLI scripts for s-private data operations",
 	"type": "module",
 	"bin": {
