@@ -1,5 +1,7 @@
 # Changelog
 
+## [1.8.4](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.8.3...@s-hirano-ist/s-database-v1.8.4) (2026-01-05)
+
 ## [1.8.3](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.8.2...@s-hirano-ist/s-database-v1.8.3) (2026-01-04)
 
 
