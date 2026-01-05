@@ -22,7 +22,7 @@ COPY . .
 RUN pnpm run storybook:build
 
 # run
-FROM httpd:2.4.66@sha256:b913eada2685f101f93267e0984109966bbcc3afea6c9b48ed389afbf89863aa AS runner
+FROM httpd:2.4.66@sha256:e19cdd61f51985351ca9867d384cf1b050487d26bb1b49c470f2fcda1b5f276c AS runner
 
 RUN groupadd --system --gid 1001 storybook && \
     useradd --system --uid 1001 --gid storybook storybook && \
