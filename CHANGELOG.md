@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.8.4](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.8.3...s-private-v10.8.4) (2026-01-05)
+
+
+### Bug Fixes
+
+* add unoptimized attribute to NextImage in ImageCard component ([adffc97](https://github.com/s-hirano-ist/s-private/commit/adffc978190dd0e658311709c2f4a0471d260a31))
+* add unoptimized attribute to NextImage in ImageCard component ([e6949d3](https://github.com/s-hirano-ist/s-private/commit/e6949d3ed862c2bcfe59d09026f8065094bba0bc))
+
+
+### Maintenance
+
+* **deps:** update dependency knip to v5.79.0 ([d8577ae](https://github.com/s-hirano-ist/s-private/commit/d8577ae0a4eb00bdf92fe818d85db25a2bb21b0d))
+* **deps:** update httpd:2.4.66 docker digest to e19cdd6 ([f297183](https://github.com/s-hirano-ist/s-private/commit/f29718384fa8dc3e52dfb30928988c78904af7bd))
+* **deps:** update node.js to b83af04 ([e595a75](https://github.com/s-hirano-ist/s-private/commit/e595a75eea2ae7eeccf0c9a67c3b84956e61e995))
+* **deps:** update pnpm to v10.27.0 ([43c7e36](https://github.com/s-hirano-ist/s-private/commit/43c7e36b969cd02a0b61ac16d83a2f1f9a3ac9b0))
+
 ## [10.8.3](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.8.2...s-private-v10.8.3) (2026-01-04)
 
 

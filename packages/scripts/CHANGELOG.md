@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.8.4](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.8.3...@s-hirano-ist/s-scripts-v1.8.4) (2026-01-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.8.4
+    * @s-hirano-ist/s-database bumped to 1.8.4
+    * @s-hirano-ist/s-notification bumped to 1.8.4
+
 ## [1.8.3](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.8.2...@s-hirano-ist/s-scripts-v1.8.3) (2026-01-04)
 
 
