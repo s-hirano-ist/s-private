@@ -12,7 +12,7 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@prisma/extension-accelerate": "3.0.0",
+		"@prisma/extension-accelerate": "3.0.1",
 		"@s-hirano-ist/s-core": "workspace:*",
 		"@s-hirano-ist/s-database": "workspace:*",
 		"@s-hirano-ist/s-notification": "workspace:*",
@@ -36,7 +36,7 @@
 		"sharp": "0.34.5",
 		"sonner": "2.0.7",
 		"yet-another-react-lightbox": "3.28.0",
-		"zod": "4.3.4"
+		"zod": "4.3.5"
 	},
 	"devDependencies": {
 		"@next/bundle-analyzer": "15.5.9",
