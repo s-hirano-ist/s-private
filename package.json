@@ -74,7 +74,7 @@
 		"eslint-plugin-tailwindcss": "4.0.0-beta.0",
 		"jscpd": "4.0.5",
 		"jsdom": "27.4.0",
-		"knip": "5.79.0",
+		"knip": "5.80.2",
 		"license-checker-rseidelsohn": "4.4.2",
 		"playwright": "1.57.0",
 		"storybook": "10.1.10",
@@ -82,7 +82,7 @@
 		"typedoc": "0.28.15",
 		"typedoc-plugin-mdn-links": "5.0.10",
 		"typescript": "5.9.3",
-		"typescript-eslint": "8.51.0",
+		"typescript-eslint": "8.53.0",
 		"vitest": "4.0.16"
 	}
 }
