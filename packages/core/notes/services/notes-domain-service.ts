@@ -1,5 +1,5 @@
-import type { UserId } from "../../common/entities/common-entity.js";
 import { DuplicateError } from "../../errors/error-classes.js";
+import type { UserId } from "../../shared-kernel/entities/common-entity.js";
 import type { NoteTitle } from "../entities/note-entity.js";
 import type { INotesQueryRepository } from "../repositories/notes-query-repository.interface.js";
 

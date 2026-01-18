@@ -8,8 +8,8 @@
  */
 
 import "server-only";
-import { makeUnexportedStatus } from "@s-hirano-ist/s-core/common/entities/common-entity";
 import { ImageDeletedEvent } from "@s-hirano-ist/s-core/images/events/image-deleted-event";
+import { makeUnexportedStatus } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { revalidateTag } from "next/cache";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";

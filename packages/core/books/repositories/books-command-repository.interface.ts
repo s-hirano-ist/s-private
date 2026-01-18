@@ -2,7 +2,7 @@ import type {
 	Id,
 	Status,
 	UserId,
-} from "../../common/entities/common-entity.js";
+} from "../../shared-kernel/entities/common-entity.js";
 import type { UnexportedBook } from "../entities/books-entity.js";
 
 /**

@@ -1,7 +1,7 @@
 import {
 	makeUnexportedStatus,
 	makeUserId,
-} from "@s-hirano-ist/s-core/common/entities/common-entity";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { revalidateTag } from "next/cache";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";

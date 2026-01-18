@@ -14,8 +14,8 @@ import {
 	makeUnexportedStatus,
 	type Status,
 	type UserId,
-} from "@s-hirano-ist/s-core/common/entities/common-entity";
-import { SystemErrorEvent } from "@s-hirano-ist/s-core/common/events/system-error-event";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { SystemErrorEvent } from "@s-hirano-ist/s-core/shared-kernel/events/system-error-event";
 import { unstable_cacheTag as cacheTag } from "next/cache";
 import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";

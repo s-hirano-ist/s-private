@@ -1,5 +1,5 @@
-import type { UserId } from "../../common/entities/common-entity.js";
 import { DuplicateError } from "../../errors/error-classes.js";
+import type { UserId } from "../../shared-kernel/entities/common-entity.js";
 import type { Url } from "../entities/article-entity.js";
 import type { IArticlesQueryRepository } from "../repositories/articles-query-repository.interface.js";
 

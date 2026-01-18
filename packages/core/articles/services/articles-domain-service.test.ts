@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { makeUserId } from "../../common/entities/common-entity";
 import { DuplicateError } from "../../errors/error-classes";
+import { makeUserId } from "../../shared-kernel/entities/common-entity";
 import { makeUrl } from "../entities/article-entity";
 import type { IArticlesQueryRepository } from "../repositories/articles-query-repository.interface";
 import { ArticlesDomainService } from "../services/articles-domain-service";

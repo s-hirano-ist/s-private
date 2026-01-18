@@ -1,4 +1,4 @@
-import { SystemErrorEvent } from "@s-hirano-ist/s-core/common/events/system-error-event";
+import { SystemErrorEvent } from "@s-hirano-ist/s-core/shared-kernel/events/system-error-event";
 import { StatusCodeView } from "@s-hirano-ist/s-ui/display/status/status-code-view";
 import { forbidden, unstable_rethrow } from "next/navigation";
 import { getTranslations } from "next-intl/server";

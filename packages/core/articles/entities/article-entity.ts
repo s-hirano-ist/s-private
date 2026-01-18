@@ -7,8 +7,8 @@ import {
 	makeId,
 	UnexportedStatus,
 	UserId,
-} from "../../common/entities/common-entity.js";
-import { createEntityWithErrorHandling } from "../../common/services/entity-factory.js";
+} from "../../shared-kernel/entities/common-entity.js";
+import { createEntityWithErrorHandling } from "../../shared-kernel/services/entity-factory.js";
 import { ArticleCreatedEvent } from "../events/article-created-event.js";
 
 // Value objects

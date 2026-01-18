@@ -23,7 +23,7 @@ import {
 	makeUserId,
 	type Status,
 	type UserId,
-} from "@s-hirano-ist/s-core/common/entities/common-entity";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import type { Prisma } from "@s-hirano-ist/s-database";
 import prisma from "@/prisma";
 

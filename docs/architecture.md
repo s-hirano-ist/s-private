@@ -62,7 +62,7 @@
 
 | ディレクトリ | サービス | インターフェース | 技術 |
 |-----------|---------|-----------|------------|
-| `common/services/` | `minioStorageService` | `IStorageService` | MinIOクライアント |
+| `shared-kernel/services/` | `minioStorageService` | `IStorageService` | MinIOクライアント |
 | `books/services/` | `booksStorageService` | `IStorageService` | MinIO（booksパス） |
 | `images/services/` | `sharpImageProcessor` | `IImageProcessor` | Sharpライブラリ |
 
@@ -748,7 +748,7 @@ export const makeCategoryName = (v: string): CategoryName =>
 ```
 
 ```typescript
-// packages/core/common/entities/common-entity.ts
+// packages/core/shared-kernel/entities/common-entity.ts
 export const UserId = z.string().min(1, "required").brand<"UserId">();
 export type UserId = z.infer<typeof UserId>;
 export const makeUserId = (v: string): UserId => UserId.parse(v);
@@ -780,7 +780,7 @@ createArticle(categoryName, title); // コンパイルエラー
 // packages/core/articles/entities/article-entity.ts
 // Note: packages/core内部では相対インポートを使用
 // パッケージ外からは @s-hirano-ist/s-core/common 等のバレルインポートを使用
-import { createEntityWithErrorHandling } from "../../common/services/entity-factory.js";
+import { createEntityWithErrorHandling } from "../../shared-kernel/services/entity-factory.js";
 import { ArticleCreatedEvent } from "../events/article-created-event.js";
 
 export type ArticleWithEvent = readonly [UnexportedArticle, ArticleCreatedEvent];
@@ -815,7 +815,7 @@ export const articleEntity = {
 ```
 
 ```typescript
-// packages/core/common/services/entity-factory.ts
+// packages/core/shared-kernel/services/entity-factory.ts
 export const createEntityWithErrorHandling = <T>(factory: () => T): T => {
   try {
     return factory();
@@ -966,7 +966,7 @@ import {
   makeQuote,
   makeUrl,
 } from "@s-hirano-ist/s-core/articles/entities/article-entity";
-import type { UserId } from "@s-hirano-ist/s-core/common/entities/common-entity";
+import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { getFormDataString } from "@/common/utils/form-data-utils";
 
 export const parseAddArticleFormData = (formData: FormData, userId: UserId) => {
@@ -1135,7 +1135,7 @@ afterSubmit={(msg) => toast(message(msg))}
 
 ```typescript
 // app/src/common/utils/cache-tag-builder.ts
-import type { Status } from "@s-hirano-ist/s-core/common/entities/common-entity";
+import type { Status } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 
 type Domain = "books" | "articles" | "notes" | "images";
 
@@ -1442,7 +1442,7 @@ const noteCard: LinkCardData = transformNoteToLinkCard(noteDTO);
 
 ```
 packages/core/
-├── common/
+├── shared-kernel/
 │   └── events/
 │       ├── base-domain-event.ts       # 基底クラス
 │       ├── domain-event.interface.ts  # インターフェース
@@ -1461,7 +1461,7 @@ app/src/infrastructures/events/
 ### 実装例
 
 ```typescript
-// packages/core/common/events/base-domain-event.ts
+// packages/core/shared-kernel/events/base-domain-event.ts
 export abstract class BaseDomainEvent implements DomainEvent {
   public readonly eventType: string;
   public readonly payload: Record<string, unknown>;
@@ -1485,7 +1485,7 @@ export abstract class BaseDomainEvent implements DomainEvent {
 
 ```typescript
 // packages/core/articles/events/article-created-event.ts
-import { BaseDomainEvent } from "../../common/events/base-domain-event.js";
+import { BaseDomainEvent } from "../../shared-kernel/events/base-domain-event.js";
 
 export class ArticleCreatedEvent extends BaseDomainEvent {
   constructor(data: {

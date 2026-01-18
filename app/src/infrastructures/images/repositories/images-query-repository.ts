@@ -1,11 +1,4 @@
 import {
-	makeCreatedAt,
-	makeExportedAt,
-	makeId,
-	makeUserId,
-	type Status,
-} from "@s-hirano-ist/s-core/common/entities/common-entity";
-import {
 	type ExportedImage,
 	type ImageListItemDTO,
 	makeContentType,
@@ -18,6 +11,13 @@ import {
 } from "@s-hirano-ist/s-core/images/entities/image-entity";
 import type { IImagesQueryRepository } from "@s-hirano-ist/s-core/images/repositories/images-query-repository.interface";
 import type { ImagesFindManyParams } from "@s-hirano-ist/s-core/images/types/query-params";
+import {
+	makeCreatedAt,
+	makeExportedAt,
+	makeId,
+	makeUserId,
+	type Status,
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import prisma from "@/prisma";
 
 async function findByPath(

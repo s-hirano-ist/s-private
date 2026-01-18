@@ -8,12 +8,12 @@
  * @module
  */
 
-import type { UserId } from "@s-hirano-ist/s-core/common/entities/common-entity";
 import {
 	makeContentType,
 	makeFileSize,
 	makePath,
 } from "@s-hirano-ist/s-core/images/entities/image-entity";
+import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { getFormDataFile } from "@/common/utils/form-data-utils";
 import { sharpImageProcessor } from "@/infrastructures/images/services/sharp-image-processor";
 

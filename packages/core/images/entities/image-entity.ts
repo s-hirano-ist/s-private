@@ -7,7 +7,7 @@ import {
 	makeId,
 	UnexportedStatus,
 	UserId,
-} from "../../common/entities/common-entity.js";
+} from "../../shared-kernel/entities/common-entity.js";
 import {
 	ContentType,
 	FileSize,
@@ -15,8 +15,8 @@ import {
 	makeFileSize,
 	makePath,
 	Path,
-} from "../../common/entities/file-entity.js";
-import { createEntityWithErrorHandling } from "../../common/services/entity-factory.js";
+} from "../../shared-kernel/entities/file-entity.js";
+import { createEntityWithErrorHandling } from "../../shared-kernel/services/entity-factory.js";
 import { ImageCreatedEvent } from "../events/image-created-event.js";
 
 // Re-export file-related value objects from common for backwards compatibility

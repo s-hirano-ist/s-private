@@ -1,5 +1,5 @@
-import type { UserId } from "../../common/entities/common-entity.js";
 import { DuplicateError } from "../../errors/error-classes.js";
+import type { UserId } from "../../shared-kernel/entities/common-entity.js";
 import type { Path } from "../entities/image-entity.js";
 import type { IImagesQueryRepository } from "../repositories/images-query-repository.interface.js";
 

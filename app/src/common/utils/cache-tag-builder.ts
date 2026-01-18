@@ -8,7 +8,7 @@
  * @module
  */
 
-import type { Status } from "@s-hirano-ist/s-core/common/entities/common-entity";
+import type { Status } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 
 /** Content domain types for cache tagging */
 type Domain = "books" | "articles" | "notes" | "images";

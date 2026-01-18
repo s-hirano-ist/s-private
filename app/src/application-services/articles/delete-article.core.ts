@@ -12,7 +12,7 @@ import { ArticleDeletedEvent } from "@s-hirano-ist/s-core/articles/events/articl
 import {
 	makeId,
 	makeUnexportedStatus,
-} from "@s-hirano-ist/s-core/common/entities/common-entity";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { revalidateTag } from "next/cache";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";

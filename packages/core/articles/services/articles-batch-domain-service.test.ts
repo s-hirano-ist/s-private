@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { makeUserId } from "../../common/entities/common-entity";
+import { makeUserId } from "../../shared-kernel/entities/common-entity";
 import type { IArticlesCommandRepository } from "../repositories/articles-command-repository.interface";
 import { ArticlesBatchDomainService } from "./articles-batch-domain-service";
 

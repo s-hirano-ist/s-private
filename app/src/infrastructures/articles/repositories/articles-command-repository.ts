@@ -7,8 +7,8 @@ import type {
 	Id,
 	Status,
 	UserId,
-} from "@s-hirano-ist/s-core/common/entities/common-entity";
-import { uuidv7 } from "@s-hirano-ist/s-core/common/services/id-generator";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { uuidv7 } from "@s-hirano-ist/s-core/shared-kernel/services/id-generator";
 import prisma from "@/prisma";
 
 async function create(data: UnexportedArticle): Promise<void> {

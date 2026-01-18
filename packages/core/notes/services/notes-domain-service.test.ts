@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { makeUserId } from "../../common/entities/common-entity";
 import { DuplicateError } from "../../errors/error-classes";
+import { makeUserId } from "../../shared-kernel/entities/common-entity";
 import { makeNoteTitle } from "../entities/note-entity";
 import type { INotesQueryRepository } from "../repositories/notes-query-repository.interface";
 import { NotesDomainService } from "../services/notes-domain-service";

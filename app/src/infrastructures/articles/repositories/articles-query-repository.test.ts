@@ -9,7 +9,7 @@ import {
 import {
 	makeId,
 	makeUserId,
-} from "@s-hirano-ist/s-core/common/entities/common-entity";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import prisma from "@/prisma";
 import {

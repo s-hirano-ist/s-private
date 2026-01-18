@@ -8,11 +8,11 @@
  */
 
 import "server-only";
+import { NoteDeletedEvent } from "@s-hirano-ist/s-core/notes/events/note-deleted-event";
 import {
 	makeId,
 	makeUnexportedStatus,
-} from "@s-hirano-ist/s-core/common/entities/common-entity";
-import { NoteDeletedEvent } from "@s-hirano-ist/s-core/notes/events/note-deleted-event";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { revalidateTag } from "next/cache";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";

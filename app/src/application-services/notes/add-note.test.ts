@@ -1,15 +1,15 @@
 import {
-	makeCreatedAt,
-	makeId,
-	makeUnexportedStatus,
-	makeUserId,
-} from "@s-hirano-ist/s-core/common/entities/common-entity";
-import {
 	makeMarkdown,
 	makeNoteTitle,
 	noteEntity,
 } from "@s-hirano-ist/s-core/notes/entities/note-entity";
 import { NoteCreatedEvent } from "@s-hirano-ist/s-core/notes/events/note-created-event";
+import {
+	makeCreatedAt,
+	makeId,
+	makeUnexportedStatus,
+	makeUserId,
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { revalidateTag } from "next/cache";
 import { describe, expect, test, vi } from "vitest";
 import { parseAddNoteFormData } from "@/application-services/notes/helpers/form-data-parser";

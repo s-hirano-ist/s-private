@@ -12,8 +12,8 @@ import "server-only";
 import {
 	makeUserId,
 	type UserId,
-} from "@s-hirano-ist/s-core/common/entities/common-entity";
-import { SystemWarningEvent } from "@s-hirano-ist/s-core/common/events/system-warning-event";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { SystemWarningEvent } from "@s-hirano-ist/s-core/shared-kernel/events/system-warning-event";
 import { unauthorized } from "next/navigation";
 import { auth } from "@/infrastructures/auth/auth-provider";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";

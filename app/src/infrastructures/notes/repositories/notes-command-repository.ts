@@ -1,13 +1,13 @@
-import type {
-	Id,
-	Status,
-	UserId,
-} from "@s-hirano-ist/s-core/common/entities/common-entity";
 import type { UnexportedNote } from "@s-hirano-ist/s-core/notes/entities/note-entity";
 import type {
 	DeleteNoteResult,
 	INotesCommandRepository,
 } from "@s-hirano-ist/s-core/notes/repositories/notes-command-repository.interface";
+import type {
+	Id,
+	Status,
+	UserId,
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import prisma from "@/prisma";
 
 async function create(data: UnexportedNote): Promise<void> {

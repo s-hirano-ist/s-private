@@ -10,8 +10,8 @@
 
 "use server";
 import "server-only";
-import { SystemErrorEvent } from "@s-hirano-ist/s-core/common/events/system-error-event";
-import { SystemWarningEvent } from "@s-hirano-ist/s-core/common/events/system-warning-event";
+import { SystemErrorEvent } from "@s-hirano-ist/s-core/shared-kernel/events/system-error-event";
+import { SystemWarningEvent } from "@s-hirano-ist/s-core/shared-kernel/events/system-warning-event";
 import { Prisma } from "@s-hirano-ist/s-database";
 import { NotificationError } from "@s-hirano-ist/s-notification";
 import { AuthError } from "next-auth";

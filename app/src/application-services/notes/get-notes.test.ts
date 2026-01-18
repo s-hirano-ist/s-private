@@ -1,13 +1,13 @@
 import {
+	makeMarkdown,
+	makeNoteTitle,
+} from "@s-hirano-ist/s-core/notes/entities/note-entity";
+import {
 	makeCreatedAt,
 	makeExportedAt,
 	makeId,
 	makeUserId,
-} from "@s-hirano-ist/s-core/common/entities/common-entity";
-import {
-	makeMarkdown,
-	makeNoteTitle,
-} from "@s-hirano-ist/s-core/notes/entities/note-entity";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { notesQueryRepository } from "@/infrastructures/notes/repositories/notes-query-repository";
 import {

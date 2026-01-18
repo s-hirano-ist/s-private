@@ -2,7 +2,7 @@ import type {
 	BulkUpdateResult,
 	IBatchCommandRepository,
 	StatusTransitionParams,
-} from "@s-hirano-ist/s-core/common/repositories/batch-command-repository.interface";
+} from "@s-hirano-ist/s-core/shared-kernel/repositories/batch-command-repository.interface";
 
 type PrismaClientLike = {
 	note: {

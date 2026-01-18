@@ -1,9 +1,9 @@
-import type { Status } from "@s-hirano-ist/s-core/common/entities/common-entity";
 import type { UnexportedImage } from "@s-hirano-ist/s-core/images/entities/image-entity";
 import type {
 	DeleteImageResult,
 	IImagesCommandRepository,
 } from "@s-hirano-ist/s-core/images/repositories/images-command-repository.interface";
+import type { Status } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import prisma from "@/prisma";
 
 async function create(data: UnexportedImage): Promise<void> {

@@ -7,7 +7,7 @@ import type {
 	Id,
 	Status,
 	UserId,
-} from "@s-hirano-ist/s-core/common/entities/common-entity";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import prisma from "@/prisma";
 
 async function create(data: UnexportedBook): Promise<void> {

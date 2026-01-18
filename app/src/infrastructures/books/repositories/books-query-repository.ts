@@ -24,7 +24,7 @@ import {
 	makeUserId,
 	type Status,
 	type UserId,
-} from "@s-hirano-ist/s-core/common/entities/common-entity";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { env } from "@/env";
 import { minioClient } from "@/minio";
 import prisma from "@/prisma";
