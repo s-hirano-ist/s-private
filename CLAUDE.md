@@ -17,7 +17,7 @@ Before doing any UI, frontend or React development, ALWAYS call the storybook MC
 - `pnpm build` - ビルド
 - `pnpm test` - テスト実行
 - `pnpm lint:fix` - ESLint修正
-- `pnpm biome:fix` - Biomeフォーマット
+- `pnpm check:fix` - Biomeフォーマット
 - `pnpm prisma:migrate` - DBマイグレーション
 - `pnpm storybook` - Storybook起動
 

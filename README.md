@@ -252,7 +252,7 @@ pnpm build                  # Build production application
 pnpm start                  # Start production server
 
 # Code Quality
-pnpm biome:fix             # Primary formatting and linting (Biome)
+pnpm check:fix             # Primary formatting and linting (Biome)
 pnpm lint                  # ESLint checking
 pnpm lint:fix              # ESLint with auto-fixing
 pnpm lint:inspector        # ESLint configuration inspector

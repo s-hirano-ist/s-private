@@ -67,7 +67,7 @@ Schema is maintained in `prisma/schema.prisma` with String-based primary keys an
 ## Code Style & Architecture Rules
 
 ### Formatters and Linters
-- **Primary Formatter**: Biome (not Prettier) - Use `pnpm biome:fix`
+- **Primary Formatter**: Biome (not Prettier) - Use `pnpm check:fix`
   - Includes import organization, code style enforcement, and TypeScript-specific rules
   - Configured with strict style rules and accessibility checks
 - **Complementary Linter**: ESLint for React/Next.js specific rules
