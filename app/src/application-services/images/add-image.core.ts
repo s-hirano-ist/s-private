@@ -35,7 +35,12 @@ export async function addImageCore(
 	formData: FormData,
 	deps: AddImageDeps,
 ): Promise<ServerAction> {
-	const { commandRepository, queryRepository, storageService, eventDispatcher } = deps;
+	const {
+		commandRepository,
+		queryRepository,
+		storageService,
+		eventDispatcher,
+	} = deps;
 	const imagesDomainService = createImagesDomainService(queryRepository);
 
 	try {

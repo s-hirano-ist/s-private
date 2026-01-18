@@ -84,7 +84,12 @@ function createMockDeps(
 		eventDispatcher: mockEventDispatcher,
 	};
 
-	return { deps, mockCommandRepository, mockEnsureNoDuplicate, mockEventDispatcher };
+	return {
+		deps,
+		mockCommandRepository,
+		mockEnsureNoDuplicate,
+		mockEventDispatcher,
+	};
 }
 
 describe("addArticleCore", () => {
@@ -110,8 +115,12 @@ describe("addArticleCore", () => {
 	test("should create article successfully", async () => {
 		vi.mocked(getSelfId).mockResolvedValue(makeUserId("user-123"));
 
-		const { deps, mockCommandRepository, mockEnsureNoDuplicate, mockEventDispatcher } =
-			createMockDeps();
+		const {
+			deps,
+			mockCommandRepository,
+			mockEnsureNoDuplicate,
+			mockEventDispatcher,
+		} = createMockDeps();
 
 		const mockArticle = {
 			id: makeId("01933f5c-9df0-7001-9123-456789abcdef"),

@@ -44,7 +44,11 @@ export type IImagesCommandRepository = {
 	 * @param status - The expected status of the image
 	 * @returns The path of the deleted image for event dispatching
 	 */
-	deleteById(id: string, userId: string, status: Status): Promise<DeleteImageResult>;
+	deleteById(
+		id: string,
+		userId: string,
+		status: Status,
+	): Promise<DeleteImageResult>;
 };
 
 /**

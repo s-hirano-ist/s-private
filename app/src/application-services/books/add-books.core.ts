@@ -35,7 +35,12 @@ export async function addBooksCore(
 	formData: FormData,
 	deps: AddBooksDeps,
 ): Promise<ServerAction> {
-	const { commandRepository, storageService, domainServiceFactory, eventDispatcher } = deps;
+	const {
+		commandRepository,
+		storageService,
+		domainServiceFactory,
+		eventDispatcher,
+	} = deps;
 	const booksDomainService = domainServiceFactory.createBooksDomainService();
 
 	try {

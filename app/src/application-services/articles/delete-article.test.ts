@@ -54,8 +54,11 @@ describe("deleteArticleCore", () => {
 	test("should delete article successfully", async () => {
 		vi.mocked(getSelfId).mockResolvedValue(makeUserId("test-user-id"));
 
-		const { deps, mockCommandRepository, mockEventDispatcher } = createMockDeps();
-		vi.mocked(mockCommandRepository.deleteById).mockResolvedValue({ title: "Test Article" });
+		const { deps, mockCommandRepository, mockEventDispatcher } =
+			createMockDeps();
+		vi.mocked(mockCommandRepository.deleteById).mockResolvedValue({
+			title: "Test Article",
+		});
 
 		const testId = "01234567-89ab-7def-8123-456789abcdef";
 		const result = await deleteArticleCore(testId, deps);
