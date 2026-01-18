@@ -8,17 +8,11 @@ import { NoteCreatedEvent } from "@s-hirano-ist/s-core/notes/events/note-created
 import {
 	makeCreatedAt,
 	makeId,
-	makeUnexportedStatus,
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { revalidateTag } from "next/cache";
 import { describe, expect, test, vi } from "vitest";
 import { parseAddNoteFormData } from "@/application-services/notes/helpers/form-data-parser";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
-import {
-	buildContentCacheTag,
-	buildCountCacheTag,
-} from "@/common/utils/cache-tag-builder";
 import { notesCommandRepository } from "@/infrastructures/notes/repositories/notes-command-repository";
 import { addNote } from "./add-note";
 
@@ -125,13 +119,6 @@ describe("addNote", () => {
 		expect(mockEnsureNoDuplicate).toHaveBeenCalled();
 		expect(vi.mocked(noteEntity.create)).toHaveBeenCalled();
 		expect(notesCommandRepository.create).toHaveBeenCalledWith(mockNote);
-		const status = makeUnexportedStatus();
-		expect(revalidateTag).toHaveBeenCalledWith(
-			buildContentCacheTag("notes", status, "user-123"),
-		);
-		expect(revalidateTag).toHaveBeenCalledWith(
-			buildCountCacheTag("notes", status, "user-123"),
-		);
 		expect(result.success).toBe(true);
 		expect(result.message).toBe("inserted");
 	});

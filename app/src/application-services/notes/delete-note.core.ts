@@ -13,14 +13,9 @@ import {
 	makeId,
 	makeUnexportedStatus,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { revalidateTag } from "next/cache";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
-import {
-	buildContentCacheTag,
-	buildCountCacheTag,
-} from "@/common/utils/cache-tag-builder";
 import type { DeleteNoteDeps } from "./delete-note.deps";
 
 /**
@@ -46,6 +41,7 @@ export async function deleteNoteCore(
 		const userId = await getSelfId();
 
 		const status = makeUnexportedStatus();
+		// Cache invalidation is handled in repository
 		const { title } = await commandRepository.deleteById(
 			makeId(id),
 			userId,
@@ -60,9 +56,6 @@ export async function deleteNoteCore(
 				caller: "deleteNote",
 			}),
 		);
-
-		revalidateTag(buildContentCacheTag("notes", status, userId));
-		revalidateTag(buildCountCacheTag("notes", status, userId));
 
 		return { success: true, message: "deleted" };
 	} catch (error) {

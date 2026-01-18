@@ -1,4 +1,3 @@
-import { revalidateTag } from "next/cache";
 import { describe, expect, test, vi } from "vitest";
 import { deleteImage } from "@/application-services/images/delete-image";
 import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
@@ -43,7 +42,6 @@ describe("deleteImage", () => {
 			"1",
 			"UNEXPORTED",
 		);
-		expect(revalidateTag).toHaveBeenCalledWith("images_UNEXPORTED_1");
 	});
 
 	test("should return error when images not found", async () => {

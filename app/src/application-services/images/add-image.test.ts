@@ -1,14 +1,6 @@
-import {
-	makeUnexportedStatus,
-	makeUserId,
-} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { revalidateTag } from "next/cache";
+import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
-import {
-	buildContentCacheTag,
-	buildCountCacheTag,
-} from "@/common/utils/cache-tag-builder";
 import { minioStorageService } from "@/infrastructures/common/services/minio-storage-service";
 import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
 import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
@@ -101,13 +93,6 @@ describe("addImage", () => {
 
 		expect(minioStorageService.uploadImage).toHaveBeenCalledTimes(2);
 		expect(imagesCommandRepository.create).toHaveBeenCalled();
-		const status = makeUnexportedStatus();
-		expect(revalidateTag).toHaveBeenCalledWith(
-			buildContentCacheTag("images", status, "user-id"),
-		);
-		expect(revalidateTag).toHaveBeenCalledWith(
-			buildCountCacheTag("images", status, "user-id"),
-		);
 		expect(result).toEqual({
 			success: true,
 			message: "inserted",

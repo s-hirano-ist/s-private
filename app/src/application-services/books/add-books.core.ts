@@ -9,14 +9,9 @@
 
 import "server-only";
 import { bookEntity } from "@s-hirano-ist/s-core/books/entities/books-entity";
-import { revalidateTag } from "next/cache";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
-import {
-	buildContentCacheTag,
-	buildCountCacheTag,
-} from "@/common/utils/cache-tag-builder";
 import type { AddBooksDeps } from "./add-books.deps";
 import { parseAddBooksFormData } from "./helpers/form-data-parser";
 
@@ -75,17 +70,11 @@ export async function addBooksCore(
 			caller: "addBooks",
 		});
 
-		// Persist
+		// Persist (cache invalidation is handled in repository)
 		await commandRepository.create(book);
 
 		// Dispatch domain event
 		await eventDispatcher.dispatch(event);
-
-		// Cache invalidation
-		revalidateTag(
-			buildContentCacheTag("books", book.status, parsedData.userId),
-		);
-		revalidateTag(buildCountCacheTag("books", book.status, parsedData.userId));
 
 		return { success: true, message: "inserted" };
 	} catch (error) {

@@ -8,10 +8,18 @@ import type {
 	Status,
 	UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { revalidateTag } from "next/cache";
+import {
+	buildContentCacheTag,
+	buildCountCacheTag,
+} from "@/infrastructures/common/cache/cache-tag-builder";
 import prisma from "@/prisma";
 
 async function create(data: UnexportedBook): Promise<void> {
 	await prisma.book.create({ data });
+
+	revalidateTag(buildContentCacheTag("books", data.status, data.userId));
+	revalidateTag(buildCountCacheTag("books", data.status, data.userId));
 }
 
 async function deleteById(
@@ -23,6 +31,10 @@ async function deleteById(
 		where: { id, userId, status },
 		select: { title: true },
 	});
+
+	revalidateTag(buildContentCacheTag("books", status, userId));
+	revalidateTag(buildCountCacheTag("books", status, userId));
+
 	return { title: data.title };
 }
 
