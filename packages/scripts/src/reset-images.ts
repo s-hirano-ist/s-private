@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import { makeUserId, type UserId } from "@s-hirano-ist/s-core/common";
-import { ImagesBatchDomainService } from "@s-hirano-ist/s-core/images";
+import { makeUserId, type UserId } from "@s-hirano-ist/s-core/common/entities/common-entity";
+import { ImagesBatchDomainService } from "@s-hirano-ist/s-core/images/services/images-batch-domain-service";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
 import { createImagesCommandRepository } from "./infrastructures/images-command-repository.js";
 

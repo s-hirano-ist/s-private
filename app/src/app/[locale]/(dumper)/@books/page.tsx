@@ -12,11 +12,9 @@ import {
 } from "@/common/auth/session";
 import { ErrorPermissionBoundary } from "@/components/common/layouts/error-permission-boundary";
 import { LazyTabContent } from "@/components/common/lazy-tab-content";
-import {
-	BooksCounterLoader,
-	BooksFormLoader,
-	BooksStackLoader,
-} from "@/loaders/books";
+import { BooksCounterLoader } from "@/loaders/books/books-counter-loader";
+import { BooksFormLoader } from "@/loaders/books/books-form-loader";
+import { BooksStackLoader } from "@/loaders/books/books-stack-loader";
 
 type Params = Promise<{ tab?: string; layout?: string }>;
 

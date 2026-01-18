@@ -6,7 +6,7 @@ import {
 	makeUserId,
 	type Status,
 	type UserId,
-} from "@s-hirano-ist/s-core/common";
+} from "@s-hirano-ist/s-core/common/entities/common-entity";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
 
 type Article = {

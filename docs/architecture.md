@@ -17,7 +17,10 @@
 - [ドメインモデル](#ドメインモデル)
 - [コードスタイルとアーキテクチャルール](#コードスタイルとアーキテクチャルール)
 - [セキュリティ](#セキュリティ)
+- [Authorization Pattern](#authorization-pattern)
+- [i18n Pattern](#i18n-pattern)
 - [Loader Pattern](#loader-pattern)
+- [Error Boundary Pattern](#error-boundary-pattern)
 - [Partial Prerendering (PPR)](#partial-prerendering-ppr)
 - [Dynamic Rendering](#dynamic-rendering)
 - [Server Actions Architecture Pattern](#server-actions-architecture-pattern)
@@ -25,8 +28,10 @@
 - [Domain Entity Creation Pattern](#domain-entity-creation-pattern)
 - [Server-Side Error Handling Pattern](#server-side-error-handling-pattern)
 - [Form Data Parsing Pattern](#form-data-parsing-pattern)
+- [Client Form Pattern](#client-form-pattern)
 - [Cache Invalidation Pattern](#cache-invalidation-pattern)
 - [Data Fetching Pattern](#data-fetching-pattern)
+- [DTO Transform Pattern](#dto-transform-pattern)
 - [Event-Driven Architecture Pattern](#event-driven-architecture-pattern)
 - [Repository CQRS Pattern](#repository-cqrs-pattern)
 - [Dependency Injection Factory Pattern](#dependency-injection-factory-pattern)
@@ -100,23 +105,27 @@ const articlesDomainService = domainServiceFactory.createArticlesDomainService()
 - **コンポーネント規則**: TypeScriptインターフェースは`type`として定義（`interface`ではない）、Reactフックルールを強制
 - **依存関係管理**: 循環依存検出用にdependency cruiserを設定
 
-### コアパッケージのインポートパターン
+### インポートルール
 
-`@s-hirano-ist/s-core`パッケージは2つのインポートスタイルをサポートしています。
+**バレルインポート禁止**
 
-**1. バレルインポート（ほとんどのユースケースで推奨）**
+バレルインポート（`index.ts`経由でのre-export）は以下の理由から禁止です：
+- バンドルサイズの増大（Tree-shakingの効果低下）
+- 循環依存の発生リスク
+- ビルド時間の増加
+- 依存関係の不明確化
+
+**ディープパスインポートを使用**
 ```typescript
-import { ArticlesDomainService, makeUrl, Url } from "@s-hirano-ist/s-core/articles";
-import { makeUserId, makeId } from "@s-hirano-ist/s-core/common";
-```
-
-**2. ディープパスインポート（特定モジュール用）**
-```typescript
+// ✅ Good: 直接ファイルからインポート
 import { ArticlesDomainService } from "@s-hirano-ist/s-core/articles/services/articles-domain-service";
 import type { IArticlesQueryRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-query-repository.interface";
-```
+import { ArticlesStackLoader } from "@/loaders/articles/articles-stack-loader";
 
-コードをすっきりさせるにはバレルインポートを使用し、特定の型インポートが必要な場合やバンドルサイズを最小化したい場合はディープパスを使用してください。
+// ❌ Bad: バレルインポート
+import { ArticlesDomainService } from "@s-hirano-ist/s-core/articles";
+import { ArticlesStackLoader } from "@/loaders/articles";
+```
 
 ### 設定ファイル
 - `biome.json` - 主要フォーマッター/リンター設定
@@ -139,6 +148,156 @@ import type { IArticlesQueryRepository } from "@s-hirano-ist/s-core/articles/rep
 
 完全なセキュリティベストプラクティスについては[SECURITY.md](../SECURITY.md)を参照してください。
 
+## Authorization Pattern
+
+Server Actionsとコンポーネントでの認可チェックパターン。
+
+### 権限チェック関数の命名規則
+
+| パターン | 例 |
+|---------|-----|
+| 権限チェック関数 | `has*Permission` |
+| 例 | `hasDumperPostPermission`, `hasViewerAdminPermission` |
+
+### Server Actionでの認可
+
+```typescript
+// app/src/application-services/articles/add-article.ts
+"use server";
+import "server-only";
+import { forbidden } from "next/navigation";
+import { hasDumperPostPermission } from "@/common/auth/session";
+import type { ServerAction } from "@/common/types";
+import { addArticleCore } from "./add-article.core";
+import { defaultAddArticleDeps } from "./add-article.deps";
+
+export async function addArticle(formData: FormData): Promise<ServerAction> {
+  const hasPermission = await hasDumperPostPermission();
+  if (!hasPermission) forbidden();
+
+  return addArticleCore(formData, defaultAddArticleDeps);
+}
+```
+
+**ポイント:**
+- `forbidden()`はNext.js 15.0+で導入された403エラー用API
+- 認可チェックはServer Action層（`add-*.ts`）で実行し、Core層には渡さない
+- `hasDumperPostPermission`等の権限チェック関数は`@/common/auth/session.ts`に配置
+
+### コンポーネントでの認可
+
+```typescript
+// ページでの使用例
+<ErrorPermissionBoundary
+  errorCaller="ArticlesStack"
+  permissionCheck={hasViewerAdminPermission}
+  render={() => <ArticlesStackLoader variant="exported" />}
+/>
+```
+
+**`ErrorPermissionBoundary`の責務:**
+- `permissionCheck`で権限を確認
+- 権限がない場合はフォールバックUIを表示
+- エラー発生時は`errorCaller`を含めてエラーを伝播
+
+### 実装箇所
+
+| ファイル | 内容 |
+|---------|------|
+| `/app/src/common/auth/session.ts` | 権限チェック関数の定義 |
+| `/app/src/components/common/layouts/error-permission-boundary.tsx` | 認可境界コンポーネント |
+
+## i18n Pattern
+
+next-intlを使用した国際化パターン。
+
+### ディレクトリ構成
+
+```
+app/src/infrastructures/i18n/
+├── routing.ts          # ルーティング設定（Link, redirect, useRouter等）
+└── request.ts          # リクエストスコープ設定
+
+messages/
+├── ja.json             # 日本語翻訳
+└── en.json             # 英語翻訳
+```
+
+### 翻訳ファイル構造
+
+```json
+// messages/ja.json
+{
+  "label": {
+    "save": "保存",
+    "cancel": "キャンセル",
+    "delete": "削除"
+  },
+  "message": {
+    "inserted": "追加しました",
+    "deleted": "削除しました"
+  },
+  "statusCode": {
+    "403": "アクセス権限がありません",
+    "404": "ページが見つかりません"
+  }
+}
+```
+
+### Server Componentでの使用
+
+```typescript
+import { getTranslations } from "next-intl/server";
+
+export async function ServerComponent() {
+  const t = await getTranslations("statusCode");
+
+  return <h1>{t("403")}</h1>;
+}
+```
+
+### Client Componentでの使用
+
+```typescript
+"use client";
+import { useTranslations } from "next-intl";
+
+export function ClientComponent() {
+  const label = useTranslations("label");
+  const message = useTranslations("message");
+
+  return (
+    <button onClick={() => toast(message("inserted"))}>
+      {label("save")}
+    </button>
+  );
+}
+```
+
+### Navigationコンポーネント
+
+```typescript
+// ❌ Bad: next/linkから直接インポート
+import Link from "next/link";
+import { redirect } from "next/navigation";
+
+// ✅ Good: routing.tsからインポート（ロケール自動付与）
+import { Link, redirect, useRouter } from "@/infrastructures/i18n/routing";
+```
+
+**ポイント:**
+- `Link`, `redirect`, `useRouter`は`@/infrastructures/i18n/routing`からインポート
+- これにより現在のロケールが自動的にURLに付与される
+- `next/link`や`next/navigation`から直接インポートしない
+
+### 使い分けまとめ
+
+| コンテキスト | API |
+|------------|-----|
+| Server Component | `getTranslations()` |
+| Client Component | `useTranslations()` |
+| Navigation | `@/infrastructures/i18n/routing` |
+
 ## Loader Pattern
 
 Suspense境界内でデータフェッチを実行し、取得データをプレゼンテーションコンポーネントに渡すパターン。
@@ -149,7 +308,6 @@ Suspense境界内でデータフェッチを実行し、取得データをプレ
 app/src/loaders/
 ├── types.ts                # 共通型定義
 └── [domain]/
-    ├── index.ts            # 再エクスポート
     └── *-loader.tsx        # Loader実装
 ```
 
@@ -219,6 +377,80 @@ export async function ArticlesStackLoader({
 | Client Components | インタラクティブ機能 |
 
 **エラーハンドリング**: Loader内ではエラーをcatchせず、ErrorBoundaryに伝播させる。
+
+## Error Boundary Pattern
+
+認可チェックとエラーハンドリングを統合したコンポーネント境界パターン。
+
+### ErrorPermissionBoundary Props
+
+| Props | 型 | 説明 |
+|-------|---|------|
+| `render` | `() => ReactNode` | 権限がある場合に描画するコンポーネント |
+| `permissionCheck` | `() => Promise<boolean>` | 非同期の権限チェック関数 |
+| `errorCaller` | `string` | エラー追跡用の識別子 |
+| `fallback` | `ReactNode` (optional) | 権限がない場合のフォールバックUI |
+
+### 基本的な使用パターン
+
+```typescript
+// Suspense + ErrorPermissionBoundary + Loader の組み合わせ
+<Suspense fallback={<Loading />}>
+  <ErrorPermissionBoundary
+    errorCaller="ArticlesStack"
+    permissionCheck={hasViewerAdminPermission}
+    render={() => <ArticlesStackLoader variant="exported" />}
+  />
+</Suspense>
+```
+
+### コンポーネント階層
+
+```
+Suspense (Loading状態を処理)
+└── ErrorPermissionBoundary (認可とエラーを処理)
+    └── Loader (データフェッチ)
+        └── Server Component (表示)
+```
+
+### エラー伝播の仕組み
+
+1. **Loader層**: エラーをcatchせずに上位に伝播
+2. **ErrorPermissionBoundary層**: 権限エラーを処理、その他は再throw
+3. **`/app/[locale]/error.tsx`**: 未処理エラーをキャッチしSentryに報告
+
+```typescript
+// app/[locale]/error.tsx の役割
+"use client";
+import * as Sentry from "@sentry/nextjs";
+import { useEffect } from "react";
+
+export default function Error({ error, reset }: ErrorPageProps) {
+  useEffect(() => {
+    Sentry.captureException(error);
+  }, [error]);
+
+  return (
+    <div>
+      <h2>エラーが発生しました</h2>
+      <button onClick={reset}>再試行</button>
+    </div>
+  );
+}
+```
+
+### 実装箇所
+
+| ファイル | 内容 |
+|---------|------|
+| `/app/src/components/common/layouts/error-permission-boundary.tsx` | ErrorPermissionBoundaryコンポーネント |
+| `/app/[locale]/error.tsx` | ルートレベルのエラーハンドラー |
+
+### 注意事項
+
+- Loader内でエラーをtry-catchで握りつぶさない
+- `errorCaller`は問題追跡に使用されるため、コンポーネントを特定できる名前を付ける
+- Sentry連携によりプロダクションエラーを自動監視
 
 ## Partial Prerendering (PPR)
 
@@ -775,6 +1007,126 @@ export async function addArticleCore(formData: FormData, deps: AddArticleDeps) {
 - `wrapServerSideErrorForClient`で`InvalidFormatError`に変換される
 - `userId`は認証層から取得し、パーサーに渡す
 
+## Client Form Pattern
+
+`GenericFormWrapper`を使用した再利用可能なフォームパターン。
+
+### GenericFormWrapper Props
+
+| Props | 型 | 説明 |
+|-------|---|------|
+| `action` | `(formData: FormData) => Promise<T>` | Server Action |
+| `afterSubmit` | `(message: string) => void` | 送信後のコールバック（toast表示等） |
+| `saveLabel` | `string` | 保存ボタンのラベル |
+| `children` | `ReactNode` | フォームフィールド |
+
+### 基本的な使用パターン
+
+```typescript
+"use client";
+import { useTranslations } from "next-intl";
+import { toast } from "sonner";
+import { addArticle } from "@/application-services/articles/add-article";
+import { GenericFormWrapper } from "@s-hirano-ist/ui/forms/generic-form-wrapper";
+import { FormInput, FormTextarea } from "@s-hirano-ist/ui/forms";
+
+export function ArticleForm() {
+  const label = useTranslations("label");
+  const message = useTranslations("message");
+
+  return (
+    <GenericFormWrapper<ServerAction>
+      action={addArticle}
+      afterSubmit={(msg) => toast(message(msg))}
+      saveLabel={label("save")}
+    >
+      <FormInput name="title" label={label("title")} required />
+      <FormInput name="url" label={label("url")} type="url" required />
+      <FormTextarea name="quote" label={label("quote")} />
+    </GenericFormWrapper>
+  );
+}
+```
+
+### 内部実装の仕組み
+
+`GenericFormWrapper`は以下のReact Hooksを活用:
+
+```typescript
+// packages/ui/forms/generic-form-wrapper.tsx
+"use client";
+import { useActionState } from "react";
+import { useFormValues } from "./hooks/use-form-values";
+
+export function GenericFormWrapper<T extends ServerAction>({
+  action,
+  afterSubmit,
+  saveLabel,
+  children,
+}: GenericFormWrapperProps<T>) {
+  const [state, formAction, isPending] = useActionState(action, null);
+  const { formRef, savedValues } = useFormValues<T>(state);
+
+  useEffect(() => {
+    if (state?.success) {
+      afterSubmit(state.message);
+      formRef.current?.reset();
+    }
+  }, [state, afterSubmit]);
+
+  return (
+    <form ref={formRef} action={formAction}>
+      {children}
+      <Button type="submit" disabled={isPending}>
+        {isPending ? <Spinner /> : saveLabel}
+      </Button>
+      {state?.success === false && (
+        <ErrorMessage>{state.message}</ErrorMessage>
+      )}
+    </form>
+  );
+}
+```
+
+### useFormValues Hook
+
+エラー時にフォーム値を保存し、ユーザー入力を失わないようにする:
+
+```typescript
+// packages/ui/forms/hooks/use-form-values.ts
+export function useFormValues<T extends ServerAction>(state: T | null) {
+  const formRef = useRef<HTMLFormElement>(null);
+  const [savedValues, setSavedValues] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    // エラー時にformDataから値を復元
+    if (state?.success === false && state.formData) {
+      const restored = Object.fromEntries(state.formData.entries());
+      setSavedValues(restored);
+    }
+  }, [state]);
+
+  return { formRef, savedValues };
+}
+```
+
+### Toast連携
+
+```typescript
+// afterSubmit コールバックでの toast 表示
+afterSubmit={(msg) => toast(message(msg))}
+
+// message(msg) は i18n キーを解決
+// 例: msg = "inserted" → "追加しました"
+```
+
+### 実装箇所
+
+| ファイル | 内容 |
+|---------|------|
+| `/packages/ui/forms/generic-form-wrapper.tsx` | GenericFormWrapperコンポーネント |
+| `/packages/ui/forms/hooks/use-form-values.ts` | フォーム値保存Hook |
+
 ## Cache Invalidation Pattern
 
 タグベースのキャッシュ無効化パターン。
@@ -972,6 +1324,115 @@ export const getData = cache(async () => {
 - 内部関数は`"use cache"`でキャッシュ、公開関数は`cache()`でラップ
 - `cacheTag()`で複数タグを設定し、柔軟な無効化を可能に
 - Prisma Accelerateはデプロイ環境でのみ有効
+
+## DTO Transform Pattern
+
+Query RepositoryからUIまでのデータ形状変換パターン。
+
+### 3層のデータ形状
+
+| 層 | 形状 | 責務 |
+|---|------|------|
+| Domain | Entity（`UnexportedArticle`, `ExportedArticle`） | ビジネスルール、不変条件 |
+| Query Repository | DTO（`ArticleListItemDTO`） | クエリ最適化、必要フィールドのみ |
+| Application Service | UI型（`LinkCardData`） | 表示に最適化された形状 |
+
+### Query RepositoryでのDTO定義
+
+```typescript
+// packages/core/articles/repositories/articles-query-repository.interface.ts
+export type ArticleListItemDTO = {
+  id: string;
+  title: string;
+  url: string;
+  quote: string | null;
+  categoryName: string;
+  createdAt: Date;
+};
+
+export type IArticlesQueryRepository = {
+  findMany(userId: UserId, status: Status, params: FindManyParams): Promise<ArticleListItemDTO[]>;
+  // ...
+};
+```
+
+### Application Serviceでの変換
+
+```typescript
+// app/src/application-services/articles/get-articles.ts
+import type { LinkCardData } from "@s-hirano-ist/ui/cards/types";
+
+function transformToLinkCard(dto: ArticleListItemDTO): LinkCardData {
+  return {
+    id: dto.id,
+    title: dto.title,
+    description: dto.quote ?? "",
+    primaryBadgeText: dto.categoryName,
+    secondaryBadgeText: new URL(dto.url).hostname,
+    href: dto.url,
+  };
+}
+
+export const getExportedArticles = cache(async (currentCount: number) => {
+  const userId = await getSelfId();
+  const articles = await _getArticles(currentCount, userId, "EXPORTED");
+
+  return {
+    data: articles.map(transformToLinkCard),
+    totalCount: await _getArticlesCount(userId, "EXPORTED"),
+  };
+});
+```
+
+### 変換ロジックの種類
+
+| 変換 | 例 | 説明 |
+|------|---|------|
+| フラット化 | `category.name` → `categoryName` | ネストを解消 |
+| 複合フィールド | `quote ?? ""` | null処理、デフォルト値 |
+| URL処理 | `new URL(url).hostname` | ドメイン抽出 |
+| フォーマット | `formatDate(createdAt)` | 日付整形 |
+| 命名変換 | `url` → `href` | UIコンポーネントの期待する名前 |
+
+### 変換の配置場所
+
+```
+Repository (DTO)
+    ↓ そのまま返す
+Application Service
+    ↓ transformToXxx() で変換
+UI Component (props)
+```
+
+**Application Serviceで変換する理由:**
+- Repositoryはクエリ最適化に専念
+- 変換ロジックをドメイン層から分離
+- UIコンポーネントの要求に合わせやすい
+
+### 実装例: 複数ドメインでの統一
+
+```typescript
+// 各ドメインで同じ UI 型に変換
+// articles
+const articleCard: LinkCardData = transformToLinkCard(articleDTO);
+
+// books
+const bookCard: LinkCardData = transformBookToLinkCard(bookDTO);
+
+// notes
+const noteCard: LinkCardData = transformNoteToLinkCard(noteDTO);
+
+// 同じ LinkCardStack コンポーネントで表示可能
+<LinkCardStack data={[...articleCards, ...bookCards, ...noteCards]} />
+```
+
+### 実装箇所
+
+| ファイル | 内容 |
+|---------|------|
+| `/app/src/application-services/articles/get-articles.ts` | 記事のDTO→UI型変換 |
+| `/app/src/application-services/books/get-books.ts` | 書籍のDTO→UI型変換 |
+| `/packages/ui/cards/types.ts` | UI型定義（`LinkCardData`等） |
 
 ## Event-Driven Architecture Pattern
 

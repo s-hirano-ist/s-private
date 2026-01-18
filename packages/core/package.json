@@ -3,57 +3,28 @@
 	"version": "1.8.4",
 	"description": "Core domain layer for s-private application - Clean architecture domain entities, repositories, and services",
 	"type": "module",
-	"main": "./dist/index.js",
-	"types": "./dist/index.d.ts",
 	"exports": {
-		".": {
-			"types": "./index.ts",
-			"default": "./index.ts"
-		},
-		"./articles": {
-			"types": "./articles/index.ts",
-			"default": "./articles/index.ts"
-		},
 		"./articles/entities/*": "./articles/entities/*.ts",
 		"./articles/events/*": "./articles/events/*.ts",
 		"./articles/repositories/*": "./articles/repositories/*.ts",
 		"./articles/services/*": "./articles/services/*.ts",
 		"./articles/types/*": "./articles/types/*.ts",
-		"./books": {
-			"types": "./books/index.ts",
-			"default": "./books/index.ts"
-		},
 		"./books/entities/*": "./books/entities/*.ts",
 		"./books/events/*": "./books/events/*.ts",
 		"./books/repositories/*": "./books/repositories/*.ts",
 		"./books/services/*": "./books/services/*.ts",
 		"./books/types/*": "./books/types/*.ts",
-		"./common": {
-			"types": "./common/index.ts",
-			"default": "./common/index.ts"
-		},
 		"./common/entities/*": "./common/entities/*.ts",
 		"./common/events/*": "./common/events/*.ts",
+		"./common/repositories/*": "./common/repositories/*.ts",
 		"./common/services/*": "./common/services/*.ts",
 		"./common/types/*": "./common/types/*.ts",
-		"./errors": {
-			"types": "./errors/index.ts",
-			"default": "./errors/index.ts"
-		},
 		"./errors/*": "./errors/*.ts",
-		"./images": {
-			"types": "./images/index.ts",
-			"default": "./images/index.ts"
-		},
 		"./images/entities/*": "./images/entities/*.ts",
 		"./images/events/*": "./images/events/*.ts",
 		"./images/repositories/*": "./images/repositories/*.ts",
 		"./images/services/*": "./images/services/*.ts",
 		"./images/types/*": "./images/types/*.ts",
-		"./notes": {
-			"types": "./notes/index.ts",
-			"default": "./notes/index.ts"
-		},
 		"./notes/entities/*": "./notes/entities/*.ts",
 		"./notes/events/*": "./notes/events/*.ts",
 		"./notes/repositories/*": "./notes/repositories/*.ts",
@@ -63,37 +34,33 @@
 	"publishConfig": {
 		"access": "public",
 		"exports": {
-			".": {
-				"types": "./dist/index.d.ts",
-				"default": "./dist/index.js"
-			},
-			"./articles": {
-				"types": "./dist/articles/index.d.ts",
-				"default": "./dist/articles/index.js"
-			},
-			"./books": {
-				"types": "./dist/books/index.d.ts",
-				"default": "./dist/books/index.js"
-			},
-			"./common": {
-				"types": "./dist/common/index.d.ts",
-				"default": "./dist/common/index.js"
-			},
-			"./errors": {
-				"types": "./dist/errors/index.d.ts",
-				"default": "./dist/errors/index.js"
-			},
-			"./images": {
-				"types": "./dist/images/index.d.ts",
-				"default": "./dist/images/index.js"
-			},
-			"./notes": {
-				"types": "./dist/notes/index.d.ts",
-				"default": "./dist/notes/index.js"
-			}
-		},
-		"main": "./dist/index.js",
-		"types": "./dist/index.d.ts"
+			"./articles/entities/*": "./dist/articles/entities/*.js",
+			"./articles/events/*": "./dist/articles/events/*.js",
+			"./articles/repositories/*": "./dist/articles/repositories/*.js",
+			"./articles/services/*": "./dist/articles/services/*.js",
+			"./articles/types/*": "./dist/articles/types/*.js",
+			"./books/entities/*": "./dist/books/entities/*.js",
+			"./books/events/*": "./dist/books/events/*.js",
+			"./books/repositories/*": "./dist/books/repositories/*.js",
+			"./books/services/*": "./dist/books/services/*.js",
+			"./books/types/*": "./dist/books/types/*.js",
+			"./common/entities/*": "./dist/common/entities/*.js",
+			"./common/events/*": "./dist/common/events/*.js",
+			"./common/repositories/*": "./dist/common/repositories/*.js",
+			"./common/services/*": "./dist/common/services/*.js",
+			"./common/types/*": "./dist/common/types/*.js",
+			"./errors/*": "./dist/errors/*.js",
+			"./images/entities/*": "./dist/images/entities/*.js",
+			"./images/events/*": "./dist/images/events/*.js",
+			"./images/repositories/*": "./dist/images/repositories/*.js",
+			"./images/services/*": "./dist/images/services/*.js",
+			"./images/types/*": "./dist/images/types/*.js",
+			"./notes/entities/*": "./dist/notes/entities/*.js",
+			"./notes/events/*": "./dist/notes/events/*.js",
+			"./notes/repositories/*": "./dist/notes/repositories/*.js",
+			"./notes/services/*": "./dist/notes/services/*.js",
+			"./notes/types/*": "./dist/notes/types/*.js"
+		}
 	},
 	"files": [
 		"dist",

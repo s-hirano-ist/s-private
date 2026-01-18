@@ -8,11 +8,9 @@ import {
 } from "@/common/auth/session";
 import { ErrorPermissionBoundary } from "@/components/common/layouts/error-permission-boundary";
 import { LazyTabContent } from "@/components/common/lazy-tab-content";
-import {
-	ImageFormLoader,
-	ImagesCounterLoader,
-	ImagesStackLoader,
-} from "@/loaders/images";
+import { ImageFormLoader } from "@/loaders/images/image-form-loader";
+import { ImagesCounterLoader } from "@/loaders/images/images-counter-loader";
+import { ImagesStackLoader } from "@/loaders/images/images-stack-loader";
 
 type Params = Promise<{ page?: string; tab?: string; layout?: string }>;
 

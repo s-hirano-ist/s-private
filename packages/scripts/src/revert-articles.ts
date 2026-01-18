@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import { ArticlesBatchDomainService } from "@s-hirano-ist/s-core/articles";
-import { makeUserId, type UserId } from "@s-hirano-ist/s-core/common";
+import { ArticlesBatchDomainService } from "@s-hirano-ist/s-core/articles/services/articles-batch-domain-service";
+import { makeUserId, type UserId } from "@s-hirano-ist/s-core/common/entities/common-entity";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
 import { createArticlesCommandRepository } from "./infrastructures/articles-command-repository.js";
 

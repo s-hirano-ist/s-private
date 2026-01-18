@@ -2,7 +2,7 @@ import type {
 	BulkUpdateResult,
 	IBatchCommandRepository,
 	StatusTransitionParams,
-} from "@s-hirano-ist/s-core/common";
+} from "@s-hirano-ist/s-core/common/repositories/batch-command-repository.interface";
 
 /**
  * Prisma client type for transaction support.

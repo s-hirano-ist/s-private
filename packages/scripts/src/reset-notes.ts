@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import { makeUserId, type UserId } from "@s-hirano-ist/s-core/common";
-import { NotesBatchDomainService } from "@s-hirano-ist/s-core/notes";
+import { makeUserId, type UserId } from "@s-hirano-ist/s-core/common/entities/common-entity";
+import { NotesBatchDomainService } from "@s-hirano-ist/s-core/notes/services/notes-batch-domain-service";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
 import { createNotesCommandRepository } from "./infrastructures/notes-command-repository.js";
 
