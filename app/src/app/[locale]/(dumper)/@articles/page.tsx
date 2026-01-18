@@ -5,7 +5,7 @@ import { deleteArticle } from "@/application-services/articles/delete-article";
 import {
 	loadMoreExportedArticles,
 	loadMoreUnexportedArticles,
-} from "@/application-services/articles/get-articles-from-client";
+} from "@/application-services/articles/load-more-articles";
 import {
 	hasDumperPostPermission,
 	hasViewerAdminPermission,

@@ -1,5 +1,4 @@
 import {
-	makeBookImagePath,
 	makeBookMarkdown,
 	makeBookTitle,
 	makeGoogleAuthors,

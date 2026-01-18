@@ -11,7 +11,7 @@
 import type { IArticlesCommandRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-command-repository.interface";
 import { articlesCommandRepository } from "@/infrastructures/articles/repositories/articles-command-repository";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
-import type { IEventDispatcher } from "./add-article.deps";
+import type { IEventDispatcher } from "../common/event-dispatcher.interface";
 
 /**
  * Dependencies for the deleteArticleCore function.

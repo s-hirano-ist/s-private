@@ -9,11 +9,7 @@
  * @module
  */
 
-import type {
-	DeleteAction,
-	LoadMoreAction,
-	ServerAction,
-} from "@/common/types";
+import type { DeleteAction, LoadMoreAction } from "@/common/types";
 import type {
 	ImageCardStackInitialData,
 	LinkCardStackInitialData,

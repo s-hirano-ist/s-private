@@ -5,7 +5,7 @@ import { deleteNote } from "@/application-services/notes/delete-note";
 import {
 	loadMoreExportedNotes,
 	loadMoreUnexportedNotes,
-} from "@/application-services/notes/get-notes-from-client";
+} from "@/application-services/notes/load-more-notes";
 import {
 	hasDumperPostPermission,
 	hasViewerAdminPermission,

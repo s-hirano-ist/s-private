@@ -13,10 +13,13 @@ import type { IArticlesQueryRepository } from "@s-hirano-ist/s-core/articles/rep
 import { ArticlesDomainService } from "@s-hirano-ist/s-core/articles/services/articles-domain-service";
 import type { IBooksQueryRepository } from "@s-hirano-ist/s-core/books/repositories/books-query-repository.interface";
 import { BooksDomainService } from "@s-hirano-ist/s-core/books/services/books-domain-service";
+import type { IImagesQueryRepository } from "@s-hirano-ist/s-core/images/repositories/images-query-repository.interface";
+import { ImagesDomainService } from "@s-hirano-ist/s-core/images/services/images-domain-service";
 import type { INotesQueryRepository } from "@s-hirano-ist/s-core/notes/repositories/notes-query-repository.interface";
 import { NotesDomainService } from "@s-hirano-ist/s-core/notes/services/notes-domain-service";
 import { articlesQueryRepository } from "@/infrastructures/articles/repositories/articles-query-repository";
 import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
+import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
 import { notesQueryRepository } from "@/infrastructures/notes/repositories/notes-query-repository";
 
 /**
@@ -25,11 +28,12 @@ import { notesQueryRepository } from "@/infrastructures/notes/repositories/notes
  * @remarks
  * Allows overriding default repository implementations for testing.
  */
-export interface DomainServiceFactoryConfig {
+export type DomainServiceFactoryConfig = {
 	articlesQueryRepository?: IArticlesQueryRepository;
 	booksQueryRepository?: IBooksQueryRepository;
+	imagesQueryRepository?: IImagesQueryRepository;
 	notesQueryRepository?: INotesQueryRepository;
-}
+};
 
 /**
  * Default factory configuration using production repository implementations.
@@ -37,6 +41,7 @@ export interface DomainServiceFactoryConfig {
 const defaultConfig: Required<DomainServiceFactoryConfig> = {
 	articlesQueryRepository,
 	booksQueryRepository,
+	imagesQueryRepository,
 	notesQueryRepository,
 };
 
@@ -85,6 +90,15 @@ export function createDomainServiceFactory(
 		 */
 		createBooksDomainService: (): BooksDomainService => {
 			return new BooksDomainService(mergedConfig.booksQueryRepository);
+		},
+
+		/**
+		 * Creates an ImagesDomainService instance.
+		 *
+		 * @returns A new ImagesDomainService with injected dependencies
+		 */
+		createImagesDomainService: (): ImagesDomainService => {
+			return new ImagesDomainService(mergedConfig.imagesQueryRepository);
 		},
 
 		/**

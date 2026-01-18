@@ -17,7 +17,7 @@ import {
 	buildContentCacheTag,
 	buildCountCacheTag,
 } from "@/common/utils/cache-tag-builder";
-import { type AddImageDeps, createImagesDomainService } from "./add-image.deps";
+import type { AddImageDeps } from "./add-image.deps";
 import { parseAddImageFormData } from "./helpers/form-data-parser";
 
 /**
@@ -37,11 +37,11 @@ export async function addImageCore(
 ): Promise<ServerAction> {
 	const {
 		commandRepository,
-		queryRepository,
 		storageService,
+		domainServiceFactory,
 		eventDispatcher,
 	} = deps;
-	const imagesDomainService = createImagesDomainService(queryRepository);
+	const imagesDomainService = domainServiceFactory.createImagesDomainService();
 
 	try {
 		const {

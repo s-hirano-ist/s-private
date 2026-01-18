@@ -15,7 +15,7 @@ import {
 	domainServiceFactory,
 } from "@/infrastructures/factories/domain-service-factory";
 import { notesCommandRepository } from "@/infrastructures/notes/repositories/notes-command-repository";
-import type { IEventDispatcher } from "../articles/add-article.deps";
+import type { IEventDispatcher } from "../common/event-dispatcher.interface";
 
 /**
  * Dependencies for the addNoteCore function.

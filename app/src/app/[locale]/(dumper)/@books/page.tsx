@@ -5,7 +5,7 @@ import { deleteBooks } from "@/application-services/books/delete-books";
 import {
 	loadMoreExportedBooks,
 	loadMoreUnexportedBooks,
-} from "@/application-services/books/get-books-from-client";
+} from "@/application-services/books/load-more-books";
 import {
 	hasDumperPostPermission,
 	hasViewerAdminPermission,
