@@ -1,6 +1,6 @@
 import {
+	makeExportedStatus,
 	makeId,
-	makeStatus,
 } from "@s-hirano-ist/s-core/common/entities/common-entity";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Suspense } from "react";
@@ -44,7 +44,7 @@ const mockBookData = {
 	imagePath: null,
 	rating: null,
 	tags: ["typescript", "programming", "javascript"],
-	status: makeStatus("EXPORTED"),
+	status: makeExportedStatus().status,
 	createdAt: new Date("2024-01-01"),
 	updatedAt: new Date("2024-01-01"),
 	exportedAt: null,
@@ -131,7 +131,7 @@ export const MinimalData: Story = {
 			imagePath: null,
 			rating: null,
 			tags: [],
-			status: makeStatus("EXPORTED"),
+			status: makeExportedStatus().status,
 			createdAt: new Date("2024-01-01"),
 			updatedAt: new Date("2024-01-01"),
 			exportedAt: null,

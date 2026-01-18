@@ -1,5 +1,6 @@
 import {
-	makeStatus,
+	makeExportedStatus,
+	makeUnexportedStatus,
 	makeUserId,
 } from "@s-hirano-ist/s-core/common/entities/common-entity";
 import { forbidden } from "next/navigation";
@@ -17,7 +18,20 @@ vi.mock("next/navigation");
 vi.mock("@/common/auth/session");
 vi.mock("@/common/error/error-wrapper");
 vi.mock("@/common/utils/cache-utils");
-vi.mock("@s-hirano-ist/s-core/common/entities/common-entity");
+vi.mock(
+	"@s-hirano-ist/s-core/common/entities/common-entity",
+	async (importOriginal) => {
+		const actual =
+			await importOriginal<
+				typeof import("@s-hirano-ist/s-core/common/entities/common-entity")
+			>();
+		return {
+			...actual,
+			makeExportedStatus: vi.fn(),
+			makeUnexportedStatus: vi.fn(),
+		};
+	},
+);
 vi.mock("./get-articles");
 
 const mockHasViewerAdminPermission = vi.mocked(hasViewerAdminPermission);
@@ -27,7 +41,8 @@ const mockWrapServerSideErrorForClient = vi.mocked(
 	wrapServerSideErrorForClient,
 );
 const mockSanitizeCacheTag = vi.mocked(sanitizeCacheTag);
-const mockMakeStatus = vi.mocked(makeStatus);
+const mockMakeExportedStatus = vi.mocked(makeExportedStatus);
+const mockMakeUnexportedStatus = vi.mocked(makeUnexportedStatus);
 const mock_getArticles = vi.mocked(_getArticles);
 
 describe("get-articles-from-client", () => {
@@ -43,7 +58,7 @@ describe("get-articles-from-client", () => {
 
 			mockHasViewerAdminPermission.mockResolvedValue(true);
 			mockGetSelfId.mockResolvedValue(userId);
-			mockMakeStatus.mockReturnValue("EXPORTED" as any);
+			mockMakeExportedStatus.mockReturnValue({ status: "EXPORTED" } as any);
 			mockSanitizeCacheTag.mockReturnValue("test-user-id");
 			mock_getArticles.mockResolvedValue(mockData);
 
@@ -51,7 +66,7 @@ describe("get-articles-from-client", () => {
 
 			expect(mockHasViewerAdminPermission).toHaveBeenCalledOnce();
 			expect(mockGetSelfId).toHaveBeenCalledOnce();
-			expect(mockMakeStatus).toHaveBeenCalledWith("EXPORTED");
+			expect(mockMakeExportedStatus).toHaveBeenCalledOnce();
 			expect(mockSanitizeCacheTag).toHaveBeenCalledWith(userId);
 			expect(mock_getArticles).toHaveBeenCalledWith(
 				currentCount,
@@ -89,7 +104,7 @@ describe("get-articles-from-client", () => {
 
 			mockHasViewerAdminPermission.mockResolvedValue(true);
 			mockGetSelfId.mockResolvedValue(makeUserId("user-id"));
-			mockMakeStatus.mockReturnValue("EXPORTED" as any);
+			mockMakeExportedStatus.mockReturnValue({ status: "EXPORTED" } as any);
 			mockSanitizeCacheTag.mockReturnValue("user-id");
 			mock_getArticles.mockRejectedValue(error);
 			mockWrapServerSideErrorForClient.mockResolvedValue(wrappedError);
@@ -109,14 +124,14 @@ describe("get-articles-from-client", () => {
 
 			mockHasViewerAdminPermission.mockResolvedValue(true);
 			mockGetSelfId.mockResolvedValue(userId);
-			mockMakeStatus.mockReturnValue("UNEXPORTED" as any);
+			mockMakeUnexportedStatus.mockReturnValue("UNEXPORTED" as any);
 			mock_getArticles.mockResolvedValue(mockData);
 
 			const result = await loadMoreUnexportedArticles(currentCount);
 
 			expect(mockHasViewerAdminPermission).toHaveBeenCalledOnce();
 			expect(mockGetSelfId).toHaveBeenCalledOnce();
-			expect(mockMakeStatus).toHaveBeenCalledWith("UNEXPORTED");
+			expect(mockMakeUnexportedStatus).toHaveBeenCalledOnce();
 			expect(mock_getArticles).toHaveBeenCalledWith(
 				currentCount,
 				userId,
@@ -148,7 +163,7 @@ describe("get-articles-from-client", () => {
 
 			mockHasViewerAdminPermission.mockResolvedValue(true);
 			mockGetSelfId.mockResolvedValue(makeUserId("user-id-2"));
-			mockMakeStatus.mockReturnValue("UNEXPORTED" as any);
+			mockMakeUnexportedStatus.mockReturnValue("UNEXPORTED" as any);
 			mock_getArticles.mockRejectedValue(error);
 			mockWrapServerSideErrorForClient.mockResolvedValue(wrappedError);
 

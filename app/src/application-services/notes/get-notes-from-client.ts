@@ -1,6 +1,9 @@
 "use server";
 import "server-only";
-import { makeStatus } from "@s-hirano-ist/s-core/common/entities/common-entity";
+import {
+	makeExportedStatus,
+	makeUnexportedStatus,
+} from "@s-hirano-ist/s-core/common/entities/common-entity";
 import { forbidden } from "next/navigation";
 import { getSelfId, hasViewerAdminPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
@@ -18,11 +21,16 @@ export async function loadMoreExportedNotes(
 	try {
 		const userId = await getSelfId();
 
-		const data = await _getNotes(currentCount, userId, makeStatus("EXPORTED"), {
-			ttl: 400,
-			swr: 40,
-			tags: [`${sanitizeCacheTag(userId)}_notes_${currentCount}`],
-		});
+		const data = await _getNotes(
+			currentCount,
+			userId,
+			makeExportedStatus().status,
+			{
+				ttl: 400,
+				swr: 40,
+				tags: [`${sanitizeCacheTag(userId)}_notes_${currentCount}`],
+			},
+		);
 
 		return {
 			success: true,
@@ -43,11 +51,7 @@ export async function loadMoreUnexportedNotes(
 	try {
 		const userId = await getSelfId();
 
-		const data = await _getNotes(
-			currentCount,
-			userId,
-			makeStatus("UNEXPORTED"),
-		);
+		const data = await _getNotes(currentCount, userId, makeUnexportedStatus());
 
 		return {
 			success: true,

@@ -11,7 +11,8 @@
 import { makeISBN } from "@s-hirano-ist/s-core/books/entities/books-entity";
 import type { CacheStrategy } from "@s-hirano-ist/s-core/books/types/cache-strategy";
 import {
-	makeStatus,
+	makeExportedStatus,
+	makeUnexportedStatus,
 	type Status,
 	type UserId,
 } from "@s-hirano-ist/s-core/common/entities/common-entity";
@@ -93,7 +94,7 @@ const _getBooksCount = async (
 export const getUnexportedBooks: GetPaginatedData<ImageCardStackInitialData> =
 	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
-		return _getBooks(currentCount, userId, makeStatus("UNEXPORTED"));
+		return _getBooks(currentCount, userId, makeUnexportedStatus());
 	});
 
 /**
@@ -105,7 +106,7 @@ export const getUnexportedBooks: GetPaginatedData<ImageCardStackInitialData> =
 export const getExportedBooks: GetPaginatedData<ImageCardStackInitialData> =
 	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
-		return _getBooks(currentCount, userId, makeStatus("EXPORTED"), {
+		return _getBooks(currentCount, userId, makeExportedStatus().status, {
 			ttl: 400,
 			swr: 40,
 			tags: [`${sanitizeCacheTag(userId)}_books_${currentCount}`],
@@ -118,7 +119,7 @@ export const getExportedBooks: GetPaginatedData<ImageCardStackInitialData> =
 export const getExportedBooksCount: GetCount = cache(
 	async (): Promise<number> => {
 		const userId = await getSelfId();
-		return await _getBooksCount(userId, makeStatus("EXPORTED"));
+		return await _getBooksCount(userId, makeExportedStatus().status);
 	},
 );
 

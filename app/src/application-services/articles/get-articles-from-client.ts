@@ -1,6 +1,9 @@
 "use server";
 import "server-only";
-import { makeStatus } from "@s-hirano-ist/s-core/common/entities/common-entity";
+import {
+	makeExportedStatus,
+	makeUnexportedStatus,
+} from "@s-hirano-ist/s-core/common/entities/common-entity";
 import { forbidden } from "next/navigation";
 import { getSelfId, hasViewerAdminPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
@@ -21,7 +24,7 @@ export async function loadMoreExportedArticles(
 		const data = await _getArticles(
 			currentCount,
 			userId,
-			makeStatus("EXPORTED"),
+			makeExportedStatus().status,
 			{
 				ttl: 400,
 				swr: 40,
@@ -51,7 +54,7 @@ export async function loadMoreUnexportedArticles(
 		const data = await _getArticles(
 			currentCount,
 			userId,
-			makeStatus("UNEXPORTED"),
+			makeUnexportedStatus(),
 		);
 
 		return {

@@ -10,7 +10,8 @@
 
 import type { CacheStrategy } from "@s-hirano-ist/s-core/articles/types/cache-strategy";
 import {
-	makeStatus,
+	makeExportedStatus,
+	makeUnexportedStatus,
 	type Status,
 	type UserId,
 } from "@s-hirano-ist/s-core/common/entities/common-entity";
@@ -147,7 +148,7 @@ const _getCategories = async (
  */
 export const getExportedArticlesCount: GetCount = cache(async () => {
 	const userId = await getSelfId();
-	return _getArticlesCount(userId, makeStatus("EXPORTED"));
+	return _getArticlesCount(userId, makeExportedStatus().status);
 });
 
 /**
@@ -159,7 +160,7 @@ export const getExportedArticlesCount: GetCount = cache(async () => {
 export const getUnexportedArticles: GetPaginatedData<LinkCardStackInitialData> =
 	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
-		return _getArticles(currentCount, userId, makeStatus("UNEXPORTED"));
+		return _getArticles(currentCount, userId, makeUnexportedStatus());
 	});
 
 /**
@@ -174,7 +175,7 @@ export const getUnexportedArticles: GetPaginatedData<LinkCardStackInitialData> =
 export const getExportedArticles: GetPaginatedData<LinkCardStackInitialData> =
 	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
-		return _getArticles(currentCount, userId, makeStatus("EXPORTED"), {
+		return _getArticles(currentCount, userId, makeExportedStatus().status, {
 			ttl: 400,
 			swr: 40,
 			tags: [`${sanitizeCacheTag(userId)}_articles_${currentCount}`],
