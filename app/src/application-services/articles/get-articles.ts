@@ -22,7 +22,7 @@ import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
 import type { GetCount, GetPaginatedData } from "@/common/types";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
-import type { ArticleFormClientData } from "@/components/articles/client/article-form-client";
+import type { ArticleFormData } from "@/components/articles/client/article-form";
 import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
 import {
 	articlesQueryRepository,
@@ -116,9 +116,7 @@ const _getArticlesCount = async (
  *
  * @internal
  */
-const _getCategories = async (
-	userId: UserId,
-): Promise<ArticleFormClientData> => {
+const _getCategories = async (userId: UserId): Promise<ArticleFormData> => {
 	"use cache";
 	cacheTag("categories", `categories_${userId}`);
 	try {
@@ -187,7 +185,7 @@ export const getExportedArticles: GetPaginatedData<LinkCardStackInitialData> =
  *
  * @returns Array of category names for dropdown selection
  */
-export const getCategories = cache(async (): Promise<ArticleFormClientData> => {
+export const getCategories = cache(async (): Promise<ArticleFormData> => {
 	const userId = await getSelfId();
 	return _getCategories(userId);
 });

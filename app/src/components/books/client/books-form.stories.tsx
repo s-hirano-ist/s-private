@@ -1,14 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { BooksFormClient } from "./books-form-client";
+import { BooksForm } from "./books-form";
 
 const meta = {
-	component: BooksFormClient,
+	component: BooksForm,
 	parameters: { layout: "centered" },
 	tags: ["autodocs"],
 	argTypes: {
 		addBooks: { action: "addBooks" },
 	},
-} satisfies Meta<typeof BooksFormClient>;
+} satisfies Meta<typeof BooksForm>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

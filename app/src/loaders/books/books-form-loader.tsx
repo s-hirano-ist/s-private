@@ -1,7 +1,7 @@
 import "server-only";
 
 import type { ServerAction } from "@/common/types";
-import { BooksFormClient } from "@/components/books/client/books-form-client";
+import { BooksForm } from "@/components/books/client/books-form";
 import type { BaseLoaderProps } from "@/loaders/types";
 
 export type BooksFormLoaderProps = BaseLoaderProps & {
@@ -9,5 +9,5 @@ export type BooksFormLoaderProps = BaseLoaderProps & {
 };
 
 export async function BooksFormLoader({ addBooks }: BooksFormLoaderProps) {
-	return <BooksFormClient addBooks={addBooks} />;
+	return <BooksForm addBooks={addBooks} />;
 }

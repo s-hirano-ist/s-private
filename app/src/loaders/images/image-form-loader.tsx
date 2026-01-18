@@ -1,7 +1,7 @@
 import "server-only";
 
 import type { ServerAction } from "@/common/types";
-import { ImageFormClient } from "@/components/images/client/image-form-client";
+import { ImageForm } from "@/components/images/client/image-form";
 import type { BaseLoaderProps } from "@/loaders/types";
 
 export type ImageFormLoaderProps = BaseLoaderProps & {
@@ -9,5 +9,5 @@ export type ImageFormLoaderProps = BaseLoaderProps & {
 };
 
 export async function ImageFormLoader({ addImage }: ImageFormLoaderProps) {
-	return <ImageFormClient addImage={addImage} />;
+	return <ImageForm addImage={addImage} />;
 }

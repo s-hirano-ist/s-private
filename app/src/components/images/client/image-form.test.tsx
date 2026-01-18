@@ -4,7 +4,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { toast } from "sonner";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import type { ServerAction } from "@/common/types";
-import { ImageFormClient } from "./image-form-client";
+import { ImageForm } from "./image-form";
 
 vi.mock("sonner");
 
@@ -27,7 +27,7 @@ const messages = {
 	},
 };
 
-describe("ImageFormClient", () => {
+describe("ImageForm", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 	});
@@ -37,7 +37,7 @@ describe("ImageFormClient", () => {
 	) => {
 		return render(
 			<NextIntlClientProvider locale="en" messages={messages}>
-				<ImageFormClient addImage={addImage} />
+				<ImageForm addImage={addImage} />
 			</NextIntlClientProvider>,
 		);
 	};

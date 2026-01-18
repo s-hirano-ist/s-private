@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import { describe, expect, test, vi } from "vitest";
-import { ArticleFormClient } from "./article-form-client";
+import { ArticleForm } from "./article-form";
 
 const messages = {
 	label: {
@@ -17,7 +17,7 @@ const messages = {
 	message: { inserted: "正常に登録されました。" },
 };
 
-describe("ArticleFormClient", () => {
+describe("ArticleForm", () => {
 	test("pastes clipboard content into the URL field", async () => {
 		const clipboardText = "https://example.com";
 		Object.assign(navigator, {
@@ -26,7 +26,7 @@ describe("ArticleFormClient", () => {
 
 		render(
 			<NextIntlClientProvider locale="ja" messages={messages}>
-				<ArticleFormClient addArticle={vi.fn()} categories={[]} />
+				<ArticleForm addArticle={vi.fn()} categories={[]} />
 			</NextIntlClientProvider>,
 		);
 		const pasteButton = screen.getByTestId("paste-button");

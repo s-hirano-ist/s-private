@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, test, vi } from "vitest";
-import { BooksFormClient } from "./books-form-client";
+import { BooksForm } from "./books-form";
 
 vi.mock("next-intl", () => ({
 	useTranslations: () => (key: string) => {
@@ -31,11 +31,11 @@ vi.mock("@s-hirano-ist/s-ui/forms/generic-form-wrapper", () => ({
 	),
 }));
 
-describe("BooksFormClient", () => {
+describe("BooksForm", () => {
 	test("should render form with ISBN and title inputs", () => {
 		const mockAddBooks = vi.fn().mockResolvedValue({ message: "Success" });
 
-		render(<BooksFormClient addBooks={mockAddBooks} />);
+		render(<BooksForm addBooks={mockAddBooks} />);
 
 		expect(screen.getByTestId("form-wrapper")).toBeInTheDocument();
 		expect(screen.getByTestId("form-input-isbn")).toBeInTheDocument();
@@ -45,7 +45,7 @@ describe("BooksFormClient", () => {
 	test("should render ISBN input with correct props", () => {
 		const mockAddBooks = vi.fn().mockResolvedValue({ message: "Success" });
 
-		render(<BooksFormClient addBooks={mockAddBooks} />);
+		render(<BooksForm addBooks={mockAddBooks} />);
 
 		const isbnInput = screen.getByTestId("form-input-isbn");
 		expect(isbnInput).toHaveAttribute("name", "isbn");
@@ -57,7 +57,7 @@ describe("BooksFormClient", () => {
 	test("should render title input with correct props", () => {
 		const mockAddBooks = vi.fn().mockResolvedValue({ message: "Success" });
 
-		render(<BooksFormClient addBooks={mockAddBooks} />);
+		render(<BooksForm addBooks={mockAddBooks} />);
 
 		const titleInput = screen.getByTestId("form-input-title");
 		expect(titleInput).toHaveAttribute("name", "title");
@@ -68,7 +68,7 @@ describe("BooksFormClient", () => {
 	test("should pass action to form wrapper", () => {
 		const mockAddBooks = vi.fn().mockResolvedValue({ message: "Success" });
 
-		render(<BooksFormClient addBooks={mockAddBooks} />);
+		render(<BooksForm addBooks={mockAddBooks} />);
 
 		const formWrapper = screen.getByTestId("form-wrapper");
 		// The action is passed to the form wrapper - checking that it exists is sufficient

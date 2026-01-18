@@ -10,14 +10,14 @@ import { useRef } from "react";
 import { toast } from "sonner";
 import type { ServerAction } from "@/common/types";
 
-export type ArticleFormClientData = { id: string; name: string }[];
+export type ArticleFormData = { id: string; name: string }[];
 
 type Props = {
-	categories: ArticleFormClientData;
+	categories: ArticleFormData;
 	addArticle: (formData: FormData) => Promise<ServerAction>;
 };
 
-export function ArticleFormClient({ categories, addArticle }: Props) {
+export function ArticleForm({ categories, addArticle }: Props) {
 	const urlInputReference = useRef<HTMLInputElement>(null);
 	const categoryInputReference = useRef<HTMLInputElement>(null);
 

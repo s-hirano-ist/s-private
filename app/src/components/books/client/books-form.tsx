@@ -1,16 +1,16 @@
 "use client";
+import { FormFileInput } from "@s-hirano-ist/s-ui/forms/fields/form-file-input";
 import { FormInput } from "@s-hirano-ist/s-ui/forms/fields/form-input";
-import { FormTextarea } from "@s-hirano-ist/s-ui/forms/fields/form-textarea";
 import { GenericFormWrapper } from "@s-hirano-ist/s-ui/forms/generic-form-wrapper";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import type { ServerAction } from "@/common/types";
 
 type Props = {
-	addNote: (formData: FormData) => Promise<ServerAction>;
+	addBooks: (formData: FormData) => Promise<ServerAction>;
 };
 
-export function NoteFormClient({ addNote }: Props) {
+export function BooksForm({ addBooks }: Props) {
 	const label = useTranslations("label");
 	const message = useTranslations("message");
 
@@ -20,10 +20,18 @@ export function NoteFormClient({ addNote }: Props) {
 
 	return (
 		<GenericFormWrapper<ServerAction>
-			action={addNote}
+			action={addBooks}
 			afterSubmit={afterSubmit}
 			saveLabel={label("save")}
 		>
+			<FormInput
+				autoComplete="off"
+				htmlFor="isbn"
+				label="ISBN"
+				name="isbn"
+				placeholder="978-4-XXXX-XXXX-X"
+				required
+			/>
 			<FormInput
 				autoComplete="off"
 				htmlFor="title"
@@ -31,13 +39,11 @@ export function NoteFormClient({ addNote }: Props) {
 				name="title"
 				required
 			/>
-			<FormTextarea
-				autoComplete="off"
-				className="min-h-[200px]"
-				htmlFor="markdown"
-				label={label("description")}
-				name="markdown"
-				required
+			<FormFileInput
+				accept="image/*"
+				htmlFor="image"
+				label={label("bookCover")}
+				name="image"
 			/>
 		</GenericFormWrapper>
 	);
