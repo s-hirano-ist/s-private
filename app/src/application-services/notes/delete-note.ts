@@ -6,25 +6,19 @@
 
 "use server";
 import "server-only";
-import {
-	makeId,
-	makeUnexportedStatus,
-} from "@s-hirano-ist/s-core/common/entities/common-entity";
-import { revalidateTag } from "next/cache";
 import { forbidden } from "next/navigation";
-import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
-import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
+import { hasDumperPostPermission } from "@/common/auth/session";
 import type { ServerAction } from "@/common/types";
-import {
-	buildContentCacheTag,
-	buildCountCacheTag,
-} from "@/common/utils/cache-tag-builder";
-import { notesCommandRepository } from "@/infrastructures/notes/repositories/notes-command-repository";
+import { deleteNoteCore } from "./delete-note.core";
+import { defaultDeleteNoteDeps } from "./delete-note.deps";
 
 /**
  * Server action to delete a note.
  *
  * @remarks
+ * This is the public-facing Server Action that handles authentication and authorization,
+ * then delegates to deleteNoteCore for business logic.
+ *
  * Only unexported notes can be deleted. Requires dumper role permission.
  *
  * @param id - Note ID to delete
@@ -34,17 +28,5 @@ export async function deleteNote(id: string): Promise<ServerAction> {
 	const hasPermission = await hasDumperPostPermission();
 	if (!hasPermission) forbidden();
 
-	try {
-		const userId = await getSelfId();
-
-		const status = makeUnexportedStatus();
-		await notesCommandRepository.deleteById(makeId(id), userId, status);
-
-		revalidateTag(buildContentCacheTag("notes", status, userId));
-		revalidateTag(buildCountCacheTag("notes", status, userId));
-
-		return { success: true, message: "deleted" };
-	} catch (error) {
-		return await wrapServerSideErrorForClient(error);
-	}
+	return deleteNoteCore(id, defaultDeleteNoteDeps);
 }

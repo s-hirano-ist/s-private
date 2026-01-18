@@ -1,60 +1,68 @@
+import type { IArticlesCommandRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-command-repository.interface";
 import {
 	makeId,
 	makeUnexportedStatus,
 	makeUserId,
 } from "@s-hirano-ist/s-core/common/entities/common-entity";
 import { revalidateTag } from "next/cache";
-import { describe, expect, test, vi } from "vitest";
-import { deleteArticle } from "@/application-services/articles/delete-article";
-import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
+import { beforeEach, describe, expect, test, vi } from "vitest";
+import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import {
 	buildContentCacheTag,
 	buildCountCacheTag,
 } from "@/common/utils/cache-tag-builder";
-import { articlesCommandRepository } from "@/infrastructures/articles/repositories/articles-command-repository";
+import { deleteArticle } from "./delete-article";
+import { deleteArticleCore } from "./delete-article.core";
+import type { DeleteArticleDeps } from "./delete-article.deps";
 
-vi.mock(
-	"@/infrastructures/articles/repositories/articles-command-repository",
-	() => ({
-		articlesCommandRepository: {
-			deleteById: vi.fn(),
-		},
-	}),
-);
-
-vi.mock("@/common/error/error-wrapper", () => ({
-	wrapServerSideErrorForClient: vi.fn(),
-}));
-
-const mockGetSelfId = vi.fn();
-const mockHasDumperPostPermission = vi.fn();
-
+// Minimal mocks - only for auth
 vi.mock("@/common/auth/session", () => ({
-	getSelfId: () => mockGetSelfId(),
-	hasDumperPostPermission: () => mockHasDumperPostPermission(),
+	getSelfId: vi.fn(),
+	hasDumperPostPermission: vi.fn(),
 }));
 
-describe("deleteArticle", () => {
-	test("should delete article successfully", async () => {
-		mockHasDumperPostPermission.mockResolvedValue(true);
-		mockGetSelfId.mockResolvedValue("test-user-id");
+/**
+ * Creates mock dependencies for testing deleteArticleCore.
+ */
+function createMockDeps(): {
+	deps: DeleteArticleDeps;
+	mockCommandRepository: IArticlesCommandRepository;
+} {
+	const mockCommandRepository: IArticlesCommandRepository = {
+		create: vi.fn(),
+		deleteById: vi.fn(),
+	};
 
-		vi.mocked(articlesCommandRepository.deleteById).mockResolvedValueOnce(
-			undefined,
-		);
+	const deps: DeleteArticleDeps = {
+		commandRepository: mockCommandRepository,
+	};
+
+	return { deps, mockCommandRepository };
+}
+
+describe("deleteArticleCore", () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
+
+	test("should delete article successfully", async () => {
+		vi.mocked(getSelfId).mockResolvedValue(makeUserId("test-user-id"));
+
+		const { deps, mockCommandRepository } = createMockDeps();
+		vi.mocked(mockCommandRepository.deleteById).mockResolvedValue(undefined);
 
 		const testId = "01234567-89ab-7def-8123-456789abcdef";
-		const result = await deleteArticle(testId);
+		const result = await deleteArticleCore(testId, deps);
 
 		expect(result).toEqual({
 			success: true,
 			message: "deleted",
 		});
 
-		expect(articlesCommandRepository.deleteById).toHaveBeenCalledWith(
+		expect(mockCommandRepository.deleteById).toHaveBeenCalledWith(
 			makeId(testId),
 			makeUserId("test-user-id"),
-			"UNEXPORTED",
+			makeUnexportedStatus(),
 		);
 		const status = makeUnexportedStatus();
 		expect(revalidateTag).toHaveBeenCalledWith(
@@ -66,37 +74,57 @@ describe("deleteArticle", () => {
 	});
 
 	test("should return error when article not found", async () => {
-		mockHasDumperPostPermission.mockResolvedValue(true);
-		mockGetSelfId.mockResolvedValue("test-user-id");
+		vi.mocked(getSelfId).mockResolvedValue(makeUserId("test-user-id"));
 
+		const { deps, mockCommandRepository } = createMockDeps();
 		const mockError = new Error("Record not found");
-		vi.mocked(articlesCommandRepository.deleteById).mockRejectedValue(
-			mockError,
-		);
-		vi.mocked(wrapServerSideErrorForClient).mockResolvedValue({
-			success: false,
-			message: "unexpected",
-		});
+		vi.mocked(mockCommandRepository.deleteById).mockRejectedValue(mockError);
 
 		const testId = "01234567-89ab-7def-8123-456789abcde0";
-		const result = await deleteArticle(testId);
+		const result = await deleteArticleCore(testId, deps);
 
 		expect(result).toEqual({
 			success: false,
 			message: "unexpected",
 		});
-		expect(articlesCommandRepository.deleteById).toHaveBeenCalledWith(
+		expect(mockCommandRepository.deleteById).toHaveBeenCalledWith(
 			makeId(testId),
 			makeUserId("test-user-id"),
-			"UNEXPORTED",
+			makeUnexportedStatus(),
 		);
-		expect(wrapServerSideErrorForClient).toHaveBeenCalledWith(mockError);
+	});
+
+	test("should return error when getSelfId fails", async () => {
+		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
+
+		const { deps } = createMockDeps();
+		const testId = "01234567-89ab-7def-8123-456789abcdef";
+		const result = await deleteArticleCore(testId, deps);
+
+		expect(result.success).toBe(false);
+	});
+});
+
+describe("deleteArticle (Server Action)", () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
 	});
 
 	test("should call forbidden when user lacks permission", async () => {
-		mockHasDumperPostPermission.mockResolvedValue(false);
+		vi.mocked(hasDumperPostPermission).mockResolvedValue(false);
 
 		const testId = "01234567-89ab-7def-8123-456789abcde1";
 		await expect(deleteArticle(testId)).rejects.toThrow("FORBIDDEN");
+	});
+
+	test("should call deleteArticleCore with default deps when permitted", async () => {
+		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
+
+		const testId = "01234567-89ab-7def-8123-456789abcdef";
+		const result = await deleteArticle(testId);
+
+		expect(hasDumperPostPermission).toHaveBeenCalled();
+		expect(result.success).toBe(false);
 	});
 });

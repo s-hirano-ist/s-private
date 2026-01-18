@@ -333,6 +333,168 @@ ImagesQueryRepository     → Image集約の読み取り
 
 ---
 
+## Application Service層
+
+Application Service層は、ドメインロジックとインフラストラクチャ層をつなぐ役割を担います。Server Actionとしてクライアントに公開され、認証・認可とビジネスロジックを分離した設計になっています。
+
+### ファイル構成パターン
+
+各機能（add, delete等）は以下の4ファイル構成で実装されます：
+
+```
+src/application-services/{domain}/
+├── {action}.deps.ts    ← 依存の型定義とデフォルト値
+├── {action}.core.ts    ← Core関数（ビジネスロジック、"use server"なし）
+├── {action}.ts         ← Server Action wrapper（認証・認可のみ）
+└── {action}.test.ts    ← テスト（Core関数を直接テスト）
+```
+
+| ファイル | 責務 | "use server" |
+|---------|------|-------------|
+| `*.deps.ts` | 依存の型定義（Repository, Domain Service Factory）とデフォルト値 | なし |
+| `*.core.ts` | ビジネスロジック（フォームパース、ドメイン検証、永続化、キャッシュ無効化） | なし |
+| `*.ts` | Server Action（認証・認可チェック後にCoreを呼び出し） | あり |
+| `*.test.ts` | Core関数のユニットテスト（モック依存注入） | なし |
+
+### 設計原則
+
+#### 1. 認証・認可とビジネスロジックの分離
+
+Server Actionは認証・認可チェックのみを行い、ビジネスロジックはCore関数に委譲します：
+
+```typescript
+// add-article.ts (Server Action)
+"use server";
+export async function addArticle(formData: FormData): Promise<ServerAction> {
+  const hasPermission = await hasDumperPostPermission();
+  if (!hasPermission) forbidden();
+
+  return addArticleCore(formData, defaultAddArticleDeps);
+}
+```
+
+```typescript
+// add-article.core.ts (Core関数)
+import "server-only";
+export async function addArticleCore(
+  formData: FormData,
+  deps: AddArticleDeps,
+): Promise<ServerAction> {
+  // ビジネスロジック（フォームパース、重複チェック、エンティティ作成、永続化）
+}
+```
+
+#### 2. セキュリティ
+
+- **Core関数は`"use server"`の外に配置**: クライアントから直接呼び出し不可
+- **`import "server-only"`でクライアント側インポート防止**: Core関数ファイルに必須
+- **クライアントからはServer Actionのみ呼び出し可能**: 認証・認可を必ず通過
+
+#### 3. テスタビリティ
+
+Core関数は依存性注入（DI）で設計されており、テスト時にモック依存を注入可能：
+
+```typescript
+// add-article.deps.ts
+export type AddArticleDeps = {
+  commandRepository: IArticlesCommandRepository;
+  domainServiceFactory: ReturnType<typeof createDomainServiceFactory>;
+};
+
+export const defaultAddArticleDeps: AddArticleDeps = {
+  commandRepository: articlesCommandRepository,
+  domainServiceFactory: domainServiceFactory,
+};
+```
+
+```typescript
+// add-article.test.ts
+function createMockDeps(): { deps: AddArticleDeps; ... } {
+  const mockCommandRepository: IArticlesCommandRepository = {
+    create: vi.fn(),
+    deleteById: vi.fn(),
+  };
+  // ...
+  return { deps, mockCommandRepository, mockEnsureNoDuplicate };
+}
+
+test("should create article successfully", async () => {
+  const { deps, mockCommandRepository } = createMockDeps();
+  const result = await addArticleCore(mockFormData, deps);
+  expect(mockCommandRepository.create).toHaveBeenCalled();
+});
+```
+
+### アーキテクチャ図
+
+```mermaid
+graph TB
+    subgraph "Client"
+        Client[React Component]
+    end
+
+    subgraph "Server Action Layer"
+        SA["Server Action<br/>add-article.ts<br/>(認証・認可)"]
+    end
+
+    subgraph "Core Layer"
+        Core["Core Function<br/>add-article.core.ts<br/>(ビジネスロジック)"]
+    end
+
+    subgraph "Dependencies Layer"
+        Deps["Dependencies<br/>add-article.deps.ts"]
+        Deps --> Repo[Command Repository]
+        Deps --> DSF[Domain Service Factory]
+    end
+
+    subgraph "Domain Layer"
+        DS[Domain Service<br/>重複チェック]
+        Entity[Entity Factory<br/>エンティティ生成]
+    end
+
+    Client -->|"呼び出し可能"| SA
+    Client -.->|"呼び出し不可<br/>(server-only)"| Core
+    SA -->|"権限チェック後"| Core
+    Core -->|"依存注入"| Deps
+    Core --> DS
+    Core --> Entity
+
+    style SA fill:#e3f2fd
+    style Core fill:#fff3e0
+    style Client fill:#e8f5e9
+```
+
+### データフロー
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant SA as Server Action
+    participant Core as Core Function
+    participant DS as Domain Service
+    participant Repo as Repository
+
+    C->>SA: formData
+    SA->>SA: hasDumperPostPermission()
+    alt 権限なし
+        SA-->>C: forbidden()
+    end
+    SA->>Core: formData, deps
+    Core->>Core: parseFormData()
+    Core->>DS: ensureNoDuplicate()
+    alt 重複あり
+        Core-->>SA: { success: false, message: "duplicated" }
+        SA-->>C: エラーレスポンス
+    end
+    Core->>Core: entity.create()
+    Core->>Repo: create(entity)
+    Core->>Core: revalidateTag()
+    Core-->>SA: { success: true }
+    SA-->>C: 成功レスポンス
+```
+
+---
+
 ## 特徴
 
 ### Value Objects の活用
