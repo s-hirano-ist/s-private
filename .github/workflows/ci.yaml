@@ -81,7 +81,7 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm i --frozen-lockfile
-      - run: pnpm biome:ci
+      - run: pnpm check:ci
 
   eslint:
     runs-on: ubuntu-24.04

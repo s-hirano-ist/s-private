@@ -9,6 +9,11 @@ vi.mock("@/common/auth/session");
 vi.mock("@/common/error/error-wrapper");
 vi.mock("@/infrastructures/books/repositories/books-command-repository");
 vi.mock("@s-hirano-ist/s-core/common/entities/common-entity");
+vi.mock("@/infrastructures/events/event-dispatcher", () => ({
+	eventDispatcher: {
+		dispatch: vi.fn().mockResolvedValue(undefined),
+	},
+}));
 
 const mockDeleteById = vi.fn();
 
@@ -38,7 +43,7 @@ describe("deleteBooks", () => {
 
 		mockHasDumperPostPermission.mockResolvedValue(true);
 		mockGetSelfId.mockResolvedValue(userId);
-		mockDeleteById.mockResolvedValue(undefined);
+		mockDeleteById.mockResolvedValue({ title: "Test Book" });
 
 		const result = await deleteBooks(bookId);
 

@@ -34,6 +34,13 @@ import type { UnexportedArticle } from "../entities/article-entity.js";
  * @see {@link IArticlesQueryRepository} for read operations
  * @see {@link IBatchCommandRepository} for batch operations
  */
+/**
+ * Result of a delete operation containing data needed for events.
+ */
+export type DeleteArticleResult = {
+	title: string;
+};
+
 export type IArticlesCommandRepository = {
 	/**
 	 * Creates a new article in the repository.
@@ -48,6 +55,11 @@ export type IArticlesCommandRepository = {
 	 * @param id - The article ID to delete
 	 * @param userId - The user ID for tenant isolation
 	 * @param status - The expected status of the article
+	 * @returns The deleted article data needed for domain events
 	 */
-	deleteById(id: Id, userId: UserId, status: Status): Promise<void>;
+	deleteById(
+		id: Id,
+		userId: UserId,
+		status: Status,
+	): Promise<DeleteArticleResult>;
 };

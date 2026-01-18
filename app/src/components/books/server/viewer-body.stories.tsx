@@ -1,6 +1,20 @@
 import {
+	makeBookImagePath,
+	makeBookMarkdown,
+	makeBookTitle,
+	makeGoogleAuthors,
+	makeGoogleDescription,
+	makeGoogleHref,
+	makeGoogleImgSrc,
+	makeGoogleSubTitle,
+	makeGoogleTitle,
+	makeISBN,
+} from "@s-hirano-ist/s-core/books/entities/books-entity";
+import {
+	makeCreatedAt,
+	makeExportedAt,
 	makeId,
-	makeStatus,
+	makeUserId,
 } from "@s-hirano-ist/s-core/common/entities/common-entity";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Suspense } from "react";
@@ -28,27 +42,30 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const mockBookData = {
+const mockBookData = Object.freeze({
 	id: makeId(),
-	ISBN: "978-0123456789",
-	title: "TypeScript Handbook",
-	markdown:
+	userId: makeUserId("mock-user-id"),
+	ISBN: makeISBN("978-0123456789"),
+	title: makeBookTitle("TypeScript Handbook"),
+	markdown: makeBookMarkdown(
 		"# TypeScript Handbook\n\nThis is a comprehensive guide to TypeScript.\n\n## Getting Started\n\nTypeScript is a typed superset of JavaScript...",
-	googleTitle: "TypeScript Handbook",
-	googleSubTitle: "The Complete Guide",
-	googleDescription:
+	),
+	googleTitle: makeGoogleTitle("TypeScript Handbook"),
+	googleSubTitle: makeGoogleSubTitle("The Complete Guide"),
+	googleDescription: makeGoogleDescription(
 		"A comprehensive guide to TypeScript programming language with practical examples and best practices.",
-	googleAuthors: ["Microsoft TypeScript Team", "Anders Hejlsberg"],
-	googleHref: "https://www.typescriptlang.org/docs/",
-	googleImgSrc: "https://picsum.photos/id/1/192/192",
-	imagePath: null,
-	rating: null,
-	tags: ["typescript", "programming", "javascript"],
-	status: makeStatus("EXPORTED"),
-	createdAt: new Date("2024-01-01"),
-	updatedAt: new Date("2024-01-01"),
-	exportedAt: null,
-};
+	),
+	googleAuthors: makeGoogleAuthors([
+		"Microsoft TypeScript Team",
+		"Anders Hejlsberg",
+	]),
+	googleHref: makeGoogleHref("https://www.typescriptlang.org/docs/"),
+	googleImgSrc: makeGoogleImgSrc("https://picsum.photos/id/1/192/192"),
+	imagePath: makeBookImagePath(null),
+	status: "EXPORTED" as const,
+	createdAt: makeCreatedAt(new Date("2024-01-01")),
+	exportedAt: makeExportedAt(new Date("2024-01-01")),
+});
 
 export const Default: Story = {
 	args: {
@@ -62,7 +79,7 @@ export const WithLongContent: Story = {
 		slug: "978-0123456789",
 		getBookByISBN: async () => ({
 			...mockBookData,
-			markdown: `# TypeScript Handbook
+			markdown: makeBookMarkdown(`# TypeScript Handbook
 
 This is a comprehensive guide to TypeScript.
 
@@ -109,7 +126,7 @@ interface Person {
   name: string;
   age: number;
 }
-\`\`\``,
+\`\`\``),
 		}),
 	},
 };
@@ -117,25 +134,26 @@ interface Person {
 export const MinimalData: Story = {
 	args: {
 		slug: "978-0123456789",
-		getBookByISBN: async () => ({
-			id: makeId(),
-			ISBN: "978-0123456789",
-			title: "Minimal Book",
-			markdown: "# Minimal Book\n\nJust some basic content.",
-			googleTitle: null,
-			googleSubTitle: null,
-			googleDescription: null,
-			googleAuthors: [],
-			googleHref: null,
-			googleImgSrc: null,
-			imagePath: null,
-			rating: null,
-			tags: [],
-			status: makeStatus("EXPORTED"),
-			createdAt: new Date("2024-01-01"),
-			updatedAt: new Date("2024-01-01"),
-			exportedAt: null,
-		}),
+		getBookByISBN: async () =>
+			Object.freeze({
+				id: makeId(),
+				userId: makeUserId("mock-user-id"),
+				ISBN: makeISBN("978-0123456789"),
+				title: makeBookTitle("Minimal Book"),
+				markdown: makeBookMarkdown(
+					"# Minimal Book\n\nJust some basic content.",
+				),
+				googleTitle: makeGoogleTitle(null),
+				googleSubTitle: makeGoogleSubTitle(null),
+				googleDescription: makeGoogleDescription(null),
+				googleAuthors: makeGoogleAuthors(null),
+				googleHref: makeGoogleHref(null),
+				googleImgSrc: makeGoogleImgSrc(null),
+				imagePath: makeBookImagePath(null),
+				status: "EXPORTED" as const,
+				createdAt: makeCreatedAt(new Date("2024-01-01")),
+				exportedAt: makeExportedAt(new Date("2024-01-01")),
+			}),
 	},
 };
 
@@ -144,7 +162,7 @@ export const WithoutImage: Story = {
 		slug: "978-0123456789",
 		getBookByISBN: async () => ({
 			...mockBookData,
-			googleImgSrc: null,
+			googleImgSrc: makeGoogleImgSrc(null),
 		}),
 	},
 };

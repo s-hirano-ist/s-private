@@ -1,5 +1,10 @@
 import type { Status, UserId } from "../../common/entities/common-entity.js";
-import type { Path } from "../entities/image-entity.js";
+import type {
+	ExportedImage,
+	ImageListItemDTO,
+	Path,
+	UnexportedImage,
+} from "../entities/image-entity.js";
 import type { ImagesFindManyParams } from "../types/query-params.js";
 
 /**
@@ -12,14 +17,18 @@ import type { ImagesFindManyParams } from "../types/query-params.js";
  * For object storage operations (get image), use {@link IStorageService}
  * from the common module.
  *
+ * Return types are either full entities (for single item lookup) or DTOs
+ * (for list operations) with properly branded types.
+ *
  * @example
  * ```typescript
  * // Infrastructure implementation
  * class PrismaImagesQueryRepository implements IImagesQueryRepository {
  *   async findByPath(path: Path, userId: UserId) {
- *     return await prisma.image.findUnique({
+ *     const data = await prisma.image.findUnique({
  *       where: { path, userId }
  *     });
+ *     return data ? toImageEntity(data) : null;
  *   }
  * }
  * ```
@@ -33,22 +42,16 @@ export type IImagesQueryRepository = {
 	 *
 	 * @param path - The validated path to search for
 	 * @param userId - The user ID for tenant isolation
-	 * @returns The image data if found, null otherwise
+	 * @returns The image entity if found, null otherwise
+	 *
+	 * @remarks
+	 * Returns a full entity type (UnexportedImage or ExportedImage)
+	 * for domain operations like duplicate checking.
 	 */
 	findByPath(
 		path: Path,
 		userId: UserId,
-	): Promise<{
-		id: string;
-		path: string;
-		contentType: string;
-		fileSize: number | null;
-		width: number | null;
-		height: number | null;
-		tags: string[];
-		status: string;
-		description: string | null;
-	} | null>;
+	): Promise<UnexportedImage | ExportedImage | null>;
 
 	/**
 	 * Retrieves multiple images with pagination and filtering.
@@ -56,7 +59,7 @@ export type IImagesQueryRepository = {
 	 * @param userId - The user ID for tenant isolation
 	 * @param status - Filter by UNEXPORTED or EXPORTED status
 	 * @param params - Optional pagination, sorting, and caching parameters
-	 * @returns Array of image data objects
+	 * @returns Array of ImageListItemDTO objects
 	 *
 	 * @see {@link ImagesFindManyParams} for parameter options
 	 */
@@ -64,9 +67,7 @@ export type IImagesQueryRepository = {
 		userId: UserId,
 		status: Status,
 		params?: ImagesFindManyParams,
-	): Promise<
-		{ id: string; path: string; height: number | null; width: number | null }[]
-	>;
+	): Promise<ImageListItemDTO[]>;
 
 	/**
 	 * Counts images matching the given criteria.

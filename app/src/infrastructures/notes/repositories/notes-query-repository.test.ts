@@ -1,5 +1,13 @@
-import { makeUserId } from "@s-hirano-ist/s-core/common/entities/common-entity";
-import { makeNoteTitle } from "@s-hirano-ist/s-core/notes/entities/note-entity";
+import {
+	makeCreatedAt,
+	makeExportedAt,
+	makeId,
+	makeUserId,
+} from "@s-hirano-ist/s-core/common/entities/common-entity";
+import {
+	makeMarkdown,
+	makeNoteTitle,
+} from "@s-hirano-ist/s-core/notes/entities/note-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import prisma from "@/prisma";
 import { notesQueryRepository } from "./notes-query-repository";
@@ -12,10 +20,13 @@ describe("NotesQueryRepository", () => {
 	describe("findByTitle", () => {
 		test("should find note by title, userId", async () => {
 			const mockNote = {
-				id: 1,
+				id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b",
+				userId: "user123",
 				title: "Test Note",
 				markdown: "# Test Note\n\nThis is test markdown note.",
 				status: "EXPORTED",
+				createdAt: new Date("2024-01-01"),
+				exportedAt: new Date("2024-01-02"),
 			};
 
 			vi.mocked(prisma.note.findUnique).mockResolvedValue(mockNote);
@@ -27,9 +38,25 @@ describe("NotesQueryRepository", () => {
 
 			expect(prisma.note.findUnique).toHaveBeenCalledWith({
 				where: { title_userId: { title: "Test Note", userId: "user123" } },
-				select: { id: true, title: true, markdown: true, status: true },
+				select: {
+					id: true,
+					userId: true,
+					title: true,
+					markdown: true,
+					status: true,
+					createdAt: true,
+					exportedAt: true,
+				},
 			});
-			expect(result).toEqual(mockNote);
+			expect(result).toEqual({
+				id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b"),
+				userId: makeUserId("user123"),
+				title: makeNoteTitle("Test Note"),
+				markdown: makeMarkdown("# Test Note\n\nThis is test markdown note."),
+				status: "EXPORTED",
+				createdAt: makeCreatedAt(new Date("2024-01-01")),
+				exportedAt: makeExportedAt(new Date("2024-01-02")),
+			});
 		});
 
 		test("should return null when note not found", async () => {
@@ -44,7 +71,15 @@ describe("NotesQueryRepository", () => {
 				where: {
 					title_userId: { title: "Nonexistent Note", userId: "user123" },
 				},
-				select: { id: true, title: true, markdown: true, status: true },
+				select: {
+					id: true,
+					userId: true,
+					title: true,
+					markdown: true,
+					status: true,
+					createdAt: true,
+					exportedAt: true,
+				},
 			});
 			expect(result).toBeNull();
 		});
@@ -63,7 +98,15 @@ describe("NotesQueryRepository", () => {
 
 			expect(prisma.note.findUnique).toHaveBeenCalledWith({
 				where: { title_userId: { title: "Test Note", userId: "user123" } },
-				select: { id: true, title: true, markdown: true, status: true },
+				select: {
+					id: true,
+					userId: true,
+					title: true,
+					markdown: true,
+					status: true,
+					createdAt: true,
+					exportedAt: true,
+				},
 			});
 		});
 	});
@@ -71,9 +114,9 @@ describe("NotesQueryRepository", () => {
 	describe("findMany", () => {
 		test("should find multiple notes successfully", async () => {
 			const mockNotes = [
-				{ id: 1, title: "First Note" },
-				{ id: 2, title: "Second Note" },
-				{ id: 3, title: "Third Note" },
+				{ id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b", title: "First Note" },
+				{ id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c", title: "Second Note" },
+				{ id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d", title: "Third Note" },
 			];
 
 			vi.mocked(prisma.note.findMany).mockResolvedValue(mockNotes);
@@ -95,7 +138,20 @@ describe("NotesQueryRepository", () => {
 				select: { id: true, title: true },
 				...params,
 			});
-			expect(result).toEqual(mockNotes);
+			expect(result).toEqual([
+				{
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b"),
+					title: makeNoteTitle("First Note"),
+				},
+				{
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c"),
+					title: makeNoteTitle("Second Note"),
+				},
+				{
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d"),
+					title: makeNoteTitle("Third Note"),
+				},
+			]);
 		});
 
 		test("should handle empty results", async () => {
@@ -115,7 +171,9 @@ describe("NotesQueryRepository", () => {
 		});
 
 		test("should work with cache strategy", async () => {
-			const mockNotes = [{ id: 1, title: "Cached Note" }];
+			const mockNotes = [
+				{ id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e", title: "Cached Note" },
+			];
 
 			vi.mocked(prisma.note.findMany).mockResolvedValue(mockNotes);
 
@@ -134,7 +192,12 @@ describe("NotesQueryRepository", () => {
 				select: { id: true, title: true },
 				cacheStrategy: { ttl: 300, swr: 30, tags: ["notes"] },
 			});
-			expect(result).toEqual(mockNotes);
+			expect(result).toEqual([
+				{
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e"),
+					title: makeNoteTitle("Cached Note"),
+				},
+			]);
 		});
 
 		test("should handle database errors", async () => {

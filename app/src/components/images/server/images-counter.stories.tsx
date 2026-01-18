@@ -1,16 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { Suspense } from "react";
 import {
 	type Props as ImageCounterProps,
 	ImagesCounter,
 } from "./images-counter";
 
-function ImagesCounterWrapper({ getImagesCount }: ImageCounterProps) {
-	return (
-		<Suspense>
-			<ImagesCounter getImagesCount={getImagesCount} />
-		</Suspense>
-	);
+function ImagesCounterWrapper({ count }: ImageCounterProps) {
+	return <ImagesCounter count={count} />;
 }
 
 const meta = {
@@ -18,7 +13,7 @@ const meta = {
 	parameters: { layout: "centered" },
 	tags: ["autodocs"],
 	argTypes: {
-		getImagesCount: { action: "getImagesCount" },
+		count: { control: "number" },
 	},
 } satisfies Meta<typeof ImagesCounterWrapper>;
 
@@ -26,18 +21,18 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 export const Default: Story = {
 	args: {
-		getImagesCount: async () => 42,
+		count: 42,
 	},
 };
 
 export const Empty: Story = {
 	args: {
-		getImagesCount: async () => 0,
+		count: 0,
 	},
 };
 
 export const LargeCounts: Story = {
 	args: {
-		getImagesCount: async () => 1000,
+		count: 1000,
 	},
 };

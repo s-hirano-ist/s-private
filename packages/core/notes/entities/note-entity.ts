@@ -4,12 +4,12 @@ import {
 	ExportedStatus,
 	Id,
 	makeCreatedAt,
-	makeExportedStatus,
 	makeId,
 	UnexportedStatus,
 	UserId,
 } from "../../common/entities/common-entity.js";
 import { createEntityWithErrorHandling } from "../../common/services/entity-factory.js";
+import { NoteCreatedEvent } from "../events/note-created-event.js";
 
 // Value objects
 
@@ -155,6 +155,7 @@ export type ExportedNote = Readonly<z.infer<typeof ExportedNote>>;
  *   userId: makeUserId("user-123"),
  *   title: makeNoteTitle("Meeting Notes"),
  *   markdown: makeMarkdown("# Meeting Notes\n\n- Item 1\n- Item 2"),
+ *   caller: "addNote",
  * };
  * ```
  */
@@ -165,7 +166,14 @@ export type CreateNoteArgs = Readonly<{
 	title: NoteTitle;
 	/** The markdown content */
 	markdown: Markdown;
+	/** The caller identifier for event tracking */
+	caller: string;
 }>;
+
+/**
+ * Return type for note creation: tuple of [entity, event].
+ */
+export type NoteWithEvent = readonly [UnexportedNote, NoteCreatedEvent];
 
 /**
  * Factory object for Note domain entity operations.
@@ -173,57 +181,72 @@ export type CreateNoteArgs = Readonly<{
  * @remarks
  * Provides immutable entity creation following DDD patterns.
  * All returned entities are frozen using Object.freeze().
+ * Returns a tuple of [entity, event] for domain event dispatching.
  *
  * @example
  * ```typescript
- * // Create a new unexported note
- * const note = noteEntity.create({
+ * // Create a new unexported note with its domain event
+ * const [note, event] = noteEntity.create({
  *   userId: makeUserId("user-123"),
  *   title: makeNoteTitle("Meeting Notes"),
  *   markdown: makeMarkdown("# Content"),
+ *   caller: "addNote",
  * });
  *
- * // Export the note (changes status to EXPORTED)
- * const exported = noteEntity.export(note);
+ * // Persist and dispatch event
+ * await repository.create(note);
+ * await eventDispatcher.dispatch(event);
  * ```
  *
  * @see {@link CreateNoteArgs} for creation parameters
+ * @see {@link NoteWithEvent} for return type
  */
 export const noteEntity = {
 	/**
-	 * Creates a new unexported note entity.
+	 * Creates a new unexported note entity with its domain event.
 	 *
 	 * @param args - The creation arguments containing required fields
-	 * @returns A frozen UnexportedNote instance with generated id and timestamps
+	 * @returns A tuple of [UnexportedNote, NoteCreatedEvent]
 	 * @throws {InvalidFormatError} When validation of any field fails
 	 * @throws {UnexpectedError} For unexpected errors during creation
 	 */
-	create: (args: CreateNoteArgs): UnexportedNote => {
-		return createEntityWithErrorHandling(() =>
+	create: (args: CreateNoteArgs): NoteWithEvent => {
+		const { caller, ...entityArgs } = args;
+		const note = createEntityWithErrorHandling(() =>
 			Object.freeze({
 				id: makeId(),
 				status: "UNEXPORTED",
 				createdAt: makeCreatedAt(),
-				...args,
+				...entityArgs,
 			}),
 		);
-	},
 
-	/**
-	 * Transitions a note from UNEXPORTED to EXPORTED status.
-	 *
-	 * @param note - The unexported note to export
-	 * @returns A frozen ExportedNote with exportedAt timestamp
-	 * @throws {InvalidFormatError} When the note state is invalid
-	 * @throws {UnexpectedError} For unexpected errors during export
-	 */
-	export: (note: UnexportedNote): ExportedNote => {
-		return createEntityWithErrorHandling(() => {
-			const exportedStatus = makeExportedStatus();
-			return Object.freeze({
-				...note,
-				...exportedStatus,
-			});
+		const event = new NoteCreatedEvent({
+			title: note.title as string,
+			markdown: note.markdown as string,
+			userId: note.userId as string,
+			caller,
 		});
+
+		return [note, event] as const;
 	},
 };
+
+// DTO Types
+
+/**
+ * DTO for note list display.
+ */
+export type NoteListItemDTO = Readonly<{
+	id: Id;
+	title: NoteTitle;
+}>;
+
+/**
+ * DTO for note search results.
+ */
+export type NoteSearchItemDTO = Readonly<{
+	id: Id;
+	title: NoteTitle;
+	markdown: Markdown;
+}>;

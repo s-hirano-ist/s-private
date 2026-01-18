@@ -1,5 +1,11 @@
 import type { Status, UserId } from "../../common/entities/common-entity.js";
-import type { NoteTitle } from "../entities/note-entity.js";
+import type {
+	ExportedNote,
+	NoteListItemDTO,
+	NoteSearchItemDTO,
+	NoteTitle,
+	UnexportedNote,
+} from "../entities/note-entity.js";
 import type { NotesFindManyParams } from "../types/query-params.js";
 
 /**
@@ -9,14 +15,18 @@ import type { NotesFindManyParams } from "../types/query-params.js";
  * Follows the CQRS pattern - this interface handles read operations only.
  * Implementations should be provided by the infrastructure layer (e.g., Prisma).
  *
+ * Return types are either full entities (for single item lookup) or DTOs
+ * (for list/search operations) with properly branded types.
+ *
  * @example
  * ```typescript
  * // Infrastructure implementation
  * class PrismaNotesQueryRepository implements INotesQueryRepository {
  *   async findByTitle(title: NoteTitle, userId: UserId) {
- *     return await prisma.note.findUnique({
+ *     const data = await prisma.note.findUnique({
  *       where: { title, userId }
  *     });
+ *     return data ? toNoteEntity(data) : null;
  *   }
  * }
  * ```
@@ -29,17 +39,16 @@ export type INotesQueryRepository = {
 	 *
 	 * @param title - The validated title to search for
 	 * @param userId - The user ID for tenant isolation
-	 * @returns The note data if found, null otherwise
+	 * @returns The note entity if found, null otherwise
+	 *
+	 * @remarks
+	 * Returns a full entity type (UnexportedNote or ExportedNote)
+	 * for domain operations like duplicate checking.
 	 */
 	findByTitle(
 		title: NoteTitle,
 		userId: UserId,
-	): Promise<{
-		id: string;
-		title: string;
-		markdown: string;
-		status: string;
-	} | null>;
+	): Promise<UnexportedNote | ExportedNote | null>;
 
 	/**
 	 * Retrieves multiple notes with pagination and filtering.
@@ -47,7 +56,7 @@ export type INotesQueryRepository = {
 	 * @param userId - The user ID for tenant isolation
 	 * @param status - Filter by UNEXPORTED or EXPORTED status
 	 * @param params - Pagination, sorting, and caching parameters
-	 * @returns Array of note data objects
+	 * @returns Array of NoteListItemDTO objects
 	 *
 	 * @see {@link NotesFindManyParams} for parameter options
 	 */
@@ -55,7 +64,7 @@ export type INotesQueryRepository = {
 		userId: UserId,
 		status: Status,
 		params: NotesFindManyParams,
-	): Promise<Array<{ id: string; title: string }>>;
+	): Promise<NoteListItemDTO[]>;
 
 	/**
 	 * Counts notes matching the given criteria.
@@ -72,17 +81,11 @@ export type INotesQueryRepository = {
 	 * @param query - The search query string
 	 * @param userId - The user ID for tenant isolation
 	 * @param limit - Optional maximum number of results
-	 * @returns Array of matching note data objects
+	 * @returns Array of NoteSearchItemDTO objects
 	 */
 	search(
 		query: string,
 		userId: UserId,
 		limit?: number,
-	): Promise<
-		{
-			id: string;
-			title: string;
-			markdown: string;
-		}[]
-	>;
+	): Promise<NoteSearchItemDTO[]>;
 };

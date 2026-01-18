@@ -19,14 +19,18 @@ import {
 type Props = {
 	currentPage: number;
 	totalCount: number;
-	getImages: (page: number) => Promise<ImageData[]>;
-	deleteImage?: (id: string) => Promise<ServerAction>;
+	data: ImageData[];
+	deleteAction?: (id: string) => Promise<ServerAction>;
+	layout?: string;
 };
 
-function generatePageLink(page: number): Route {
+function generatePageLink(page: number, layout?: string): Route {
 	const params = new URLSearchParams();
 	params.set("tab", "images");
 	params.set("page", String(page));
+	if (layout) {
+		params.set("layout", layout);
+	}
 	return `?${params.toString()}` as Route;
 }
 
@@ -71,10 +75,10 @@ function generatePaginationItems(
 export async function ImagesStack({
 	currentPage,
 	totalCount,
-	getImages,
-	deleteImage,
+	data,
+	deleteAction,
+	layout,
 }: Props) {
-	const images = await getImages(currentPage);
 	const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 	const t = await getTranslations("label");
 
@@ -83,9 +87,9 @@ export async function ImagesStack({
 	return (
 		<>
 			<ImageStackClient
-				data={images}
-				deleteAction={deleteImage}
-				showDeleteButton={deleteImage !== undefined}
+				data={data}
+				deleteAction={deleteAction}
+				showDeleteButton={deleteAction !== undefined}
 			/>
 			{showPagination && (
 				<Pagination className="mt-4">
@@ -93,7 +97,7 @@ export async function ImagesStack({
 						{currentPage > 1 && (
 							<PaginationItem>
 								<PaginationPrevious
-									href={generatePageLink(currentPage - 1)}
+									href={generatePageLink(currentPage - 1, layout)}
 									label={t("previous")}
 								/>
 							</PaginationItem>
@@ -106,7 +110,7 @@ export async function ImagesStack({
 							) : (
 								<PaginationItem key={item.page}>
 									<PaginationLink
-										href={generatePageLink(item.page)}
+										href={generatePageLink(item.page, layout)}
 										isActive={item.page === currentPage}
 									>
 										{item.page}
@@ -117,7 +121,7 @@ export async function ImagesStack({
 						{currentPage < totalPages && (
 							<PaginationItem>
 								<PaginationNext
-									href={generatePageLink(currentPage + 1)}
+									href={generatePageLink(currentPage + 1, layout)}
 									label={t("next")}
 								/>
 							</PaginationItem>

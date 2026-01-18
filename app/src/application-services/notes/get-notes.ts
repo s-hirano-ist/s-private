@@ -9,7 +9,8 @@
  */
 
 import {
-	makeStatus,
+	makeExportedStatus,
+	makeUnexportedStatus,
 	type Status,
 	type UserId,
 } from "@s-hirano-ist/s-core/common/entities/common-entity";
@@ -95,7 +96,7 @@ const _getNotesCount = async (
 export const getExportedNotesCount: GetCount = cache(
 	async (): Promise<number> => {
 		const userId = await getSelfId();
-		return await _getNotesCount(userId, makeStatus("EXPORTED"));
+		return await _getNotesCount(userId, makeExportedStatus().status);
 	},
 );
 
@@ -105,7 +106,7 @@ export const getExportedNotesCount: GetCount = cache(
 export const getUnexportedNotes: GetPaginatedData<LinkCardStackInitialData> =
 	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
-		return _getNotes(currentCount, userId, makeStatus("UNEXPORTED"));
+		return _getNotes(currentCount, userId, makeUnexportedStatus());
 	});
 
 /**
@@ -117,7 +118,7 @@ export const getUnexportedNotes: GetPaginatedData<LinkCardStackInitialData> =
 export const getExportedNotes: GetPaginatedData<LinkCardStackInitialData> =
 	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
-		return _getNotes(currentCount, userId, makeStatus("EXPORTED"), {
+		return _getNotes(currentCount, userId, makeExportedStatus().status, {
 			ttl: 400,
 			swr: 40,
 			tags: [`${sanitizeCacheTag(userId)}_notes_${currentCount}`],

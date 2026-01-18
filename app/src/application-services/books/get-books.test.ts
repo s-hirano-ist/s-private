@@ -1,4 +1,16 @@
-import type { Status } from "@s-hirano-ist/s-core/common/entities/common-entity";
+import {
+	makeBookMarkdown,
+	makeBookTitle,
+	makeGoogleImgSrc,
+	makeGoogleTitle,
+	makeISBN,
+} from "@s-hirano-ist/s-core/books/entities/books-entity";
+import {
+	makeCreatedAt,
+	makeExportedAt,
+	makeId,
+	makeUserId,
+} from "@s-hirano-ist/s-core/common/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
 import {
@@ -29,40 +41,18 @@ describe("get-books", () => {
 		test("should fetch and transform books correctly", async () => {
 			vi.mocked(booksQueryRepository.findMany).mockResolvedValue([
 				{
-					id: "1",
-					title: "Test Book 1",
-					ISBN: "978-0123456789",
-					tags: [],
-					createdAt: new Date(),
-					updatedAt: new Date(),
-					exportedAt: new Date(),
-					googleTitle: null,
-					googleSubTitle: null,
-					googleAuthors: [],
-					googleDescription: null,
-					googleImgSrc: "https://example.com/image-1.jpg",
-					googleHref: null,
-					imagePath: null,
-					markdown: null,
-					rating: null,
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b"),
+					title: makeBookTitle("Test Book 1"),
+					ISBN: makeISBN("978-0123456789"),
+					googleImgSrc: makeGoogleImgSrc("https://example.com/image-1.jpg"),
+					imagePath: undefined,
 				},
 				{
-					id: "2",
-					title: "Test Book 2",
-					ISBN: "978-0987654321",
-					tags: [],
-					createdAt: new Date(),
-					updatedAt: new Date(),
-					exportedAt: new Date(),
-					googleTitle: null,
-					googleSubTitle: null,
-					googleAuthors: [],
-					googleDescription: null,
-					googleImgSrc: "https://example.com/image-2.jpg",
-					googleHref: null,
-					imagePath: null,
-					markdown: null,
-					rating: null,
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c"),
+					title: makeBookTitle("Test Book 2"),
+					ISBN: makeISBN("978-0987654321"),
+					googleImgSrc: makeGoogleImgSrc("https://example.com/image-2.jpg"),
+					imagePath: undefined,
 				},
 			]);
 			vi.mocked(booksQueryRepository.count).mockResolvedValue(5);
@@ -89,13 +79,13 @@ describe("get-books", () => {
 			expect(result).toEqual({
 				data: [
 					{
-						id: "1",
+						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b",
 						title: "Test Book 1",
 						href: "978-0123456789",
 						image: "https://example.com/image-1.jpg",
 					},
 					{
-						id: "2",
+						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c",
 						title: "Test Book 2",
 						href: "978-0987654321",
 						image: "https://example.com/image-2.jpg",
@@ -160,40 +150,20 @@ describe("get-books", () => {
 		test("should fetch and transform unexported books correctly", async () => {
 			vi.mocked(booksQueryRepository.findMany).mockResolvedValue([
 				{
-					id: "3",
-					title: "Unexported Book 1",
-					ISBN: "978-1111111111",
-					tags: [],
-					createdAt: new Date(),
-					updatedAt: new Date(),
-					exportedAt: null,
-					googleTitle: null,
-					googleSubTitle: null,
-					googleAuthors: [],
-					googleDescription: null,
-					googleImgSrc: "https://example.com/unexported-1.jpg",
-					googleHref: null,
-					imagePath: null,
-					markdown: null,
-					rating: null,
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d"),
+					title: makeBookTitle("Unexported Book 1"),
+					ISBN: makeISBN("978-1111111111"),
+					googleImgSrc: makeGoogleImgSrc(
+						"https://example.com/unexported-1.jpg",
+					),
+					imagePath: undefined,
 				},
 				{
-					id: "4",
-					title: "Unexported Book 2",
-					ISBN: "978-2222222222",
-					tags: [],
-					createdAt: new Date(),
-					updatedAt: new Date(),
-					exportedAt: null,
-					googleTitle: null,
-					googleSubTitle: null,
-					googleAuthors: [],
-					googleDescription: null,
-					googleImgSrc: null,
-					googleHref: null,
-					imagePath: null,
-					markdown: null,
-					rating: null,
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e"),
+					title: makeBookTitle("Unexported Book 2"),
+					ISBN: makeISBN("978-2222222222"),
+					googleImgSrc: undefined,
+					imagePath: undefined,
 				},
 			]);
 			vi.mocked(booksQueryRepository.count).mockResolvedValue(2);
@@ -213,13 +183,13 @@ describe("get-books", () => {
 			expect(result).toEqual({
 				data: [
 					{
-						id: "3",
+						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d",
 						title: "Unexported Book 1",
 						href: "978-1111111111",
 						image: "https://example.com/unexported-1.jpg",
 					},
 					{
-						id: "4",
+						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e",
 						title: "Unexported Book 2",
 						href: "978-2222222222",
 						image: null,
@@ -253,23 +223,16 @@ describe("get-books", () => {
 	describe("getBookByISBN", () => {
 		test("should fetch book by ISBN successfully", async () => {
 			const mockBook = {
-				id: "book-1",
-				ISBN: "978-0123456789",
-				title: "Test Book",
-				status: "EXPORTED" as Status,
-				tags: [],
-				createdAt: new Date(),
-				updatedAt: new Date(),
-				exportedAt: new Date(),
-				googleTitle: "Test Book - Google",
-				googleSubTitle: null,
-				googleAuthors: [],
-				googleDescription: null,
-				googleImgSrc: "https://example.com/book.jpg",
-				googleHref: null,
-				imagePath: null,
-				markdown: "# Book Content",
-				rating: null,
+				id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7f"),
+				userId: makeUserId("test-user-id"),
+				ISBN: makeISBN("978-0123456789"),
+				title: makeBookTitle("Test Book"),
+				status: "EXPORTED" as const,
+				createdAt: makeCreatedAt(new Date("2024-01-01")),
+				exportedAt: makeExportedAt(new Date("2024-01-02")),
+				googleTitle: makeGoogleTitle("Test Book - Google"),
+				googleImgSrc: makeGoogleImgSrc("https://example.com/book.jpg"),
+				markdown: makeBookMarkdown("# Book Content"),
 			};
 
 			vi.mocked(booksQueryRepository.findByISBN).mockResolvedValue(mockBook);

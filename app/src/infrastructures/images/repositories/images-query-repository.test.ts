@@ -1,4 +1,11 @@
-import { makeUserId } from "@s-hirano-ist/s-core/common/entities/common-entity";
+import {
+	makeId,
+	makeUserId,
+} from "@s-hirano-ist/s-core/common/entities/common-entity";
+import {
+	makePath,
+	makePixel,
+} from "@s-hirano-ist/s-core/images/entities/image-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import prisma from "@/prisma";
 import { imagesQueryRepository } from "./images-query-repository";
@@ -11,9 +18,24 @@ describe("ImagesQueryRepository", () => {
 	describe("findMany", () => {
 		test("should find multiple images successfully", async () => {
 			const mockImages = [
-				{ paths: "image-123" },
-				{ paths: "image-456" },
-				{ paths: "image-789" },
+				{
+					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b",
+					path: "image-123.jpg",
+					width: 800,
+					height: 600,
+				},
+				{
+					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c",
+					path: "image-456.jpg",
+					width: 1920,
+					height: 1080,
+				},
+				{
+					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d",
+					path: "image-789.jpg",
+					width: null,
+					height: null,
+				},
 			];
 
 			vi.mocked(prisma.image.findMany).mockResolvedValue(mockImages);
@@ -31,7 +53,26 @@ describe("ImagesQueryRepository", () => {
 			);
 
 			expect(prisma.image.findMany).toHaveBeenCalled();
-			expect(result).toEqual(mockImages);
+			expect(result).toEqual([
+				{
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b"),
+					path: makePath("image-123.jpg", false),
+					width: makePixel(800),
+					height: makePixel(600),
+				},
+				{
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c"),
+					path: makePath("image-456.jpg", false),
+					width: makePixel(1920),
+					height: makePixel(1080),
+				},
+				{
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d"),
+					path: makePath("image-789.jpg", false),
+					width: undefined,
+					height: undefined,
+				},
+			]);
 		});
 
 		test("should handle empty results", async () => {
@@ -47,7 +88,14 @@ describe("ImagesQueryRepository", () => {
 		});
 
 		test("should work with cache strategy", async () => {
-			const mockImages = [{ paths: "image-123" }];
+			const mockImages = [
+				{
+					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e",
+					path: "image-123.jpg",
+					width: 640,
+					height: 480,
+				},
+			];
 
 			vi.mocked(prisma.image.findMany).mockResolvedValue(mockImages);
 
@@ -62,7 +110,14 @@ describe("ImagesQueryRepository", () => {
 			);
 
 			expect(prisma.image.findMany).toHaveBeenCalled();
-			expect(result).toEqual(mockImages);
+			expect(result).toEqual([
+				{
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e"),
+					path: makePath("image-123.jpg", false),
+					width: makePixel(640),
+					height: makePixel(480),
+				},
+			]);
 		});
 
 		test("should handle database errors", async () => {

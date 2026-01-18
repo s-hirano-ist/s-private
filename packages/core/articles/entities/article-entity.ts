@@ -4,12 +4,12 @@ import {
 	ExportedStatus,
 	Id,
 	makeCreatedAt,
-	makeExportedStatus,
 	makeId,
 	UnexportedStatus,
 	UserId,
 } from "../../common/entities/common-entity.js";
 import { createEntityWithErrorHandling } from "../../common/services/entity-factory.js";
+import { ArticleCreatedEvent } from "../events/article-created-event.js";
 
 // Value objects
 
@@ -153,6 +153,7 @@ export const makeQuote = (v: string | null | undefined): Quote =>
 export const Url = z
 	.url({ message: "invalidFormat" })
 	.min(1, { message: "required" })
+	.max(1024, { message: "tooLong" })
 	.refine(
 		(url: string) => {
 			try {
@@ -196,7 +197,12 @@ export const makeUrl = (v: string): Url => Url.parse(v);
  *
  * @see {@link makeOgTitle} for factory function
  */
-export const OgTitle = z.string().nullable().optional().brand<"OgTitle">();
+export const OgTitle = z
+	.string()
+	.max(512, { message: "tooLong" })
+	.nullable()
+	.optional()
+	.brand<"OgTitle">();
 
 /**
  * Branded type for validated OG titles.
@@ -223,6 +229,7 @@ export const makeOgTitle = (v: string | null | undefined): OgTitle =>
  */
 export const OgDescription = z
 	.string()
+	.max(1024, { message: "tooLong" })
 	.nullable()
 	.optional()
 	.brand<"OgDescription">();
@@ -253,6 +260,7 @@ export const makeOgDescription = (
  */
 export const OgImageUrl = z
 	.string()
+	.max(1024, { message: "tooLong" })
 	.nullable()
 	.optional()
 	.brand<"OgImageUrl">();
@@ -282,7 +290,6 @@ const Base = z.object({
 	id: Id,
 	userId: UserId,
 	categoryName: CategoryName,
-	categoryId: Id,
 	title: ArticleTitle,
 	quote: Quote,
 	url: Url,
@@ -335,7 +342,7 @@ export type ExportedArticle = Readonly<z.infer<typeof ExportedArticle>>;
  *
  * @remarks
  * Provides the required fields for article creation.
- * The id, categoryId, createdAt, and status are auto-generated.
+ * The id, createdAt, and status are auto-generated.
  *
  * @example
  * ```typescript
@@ -345,6 +352,7 @@ export type ExportedArticle = Readonly<z.infer<typeof ExportedArticle>>;
  *   title: makeArticleTitle("Article Title"),
  *   url: makeUrl("https://example.com"),
  *   quote: makeQuote("Notable excerpt"),
+ *   caller: "addArticle",
  * };
  * ```
  */
@@ -359,7 +367,17 @@ export type CreateArticleArgs = Readonly<{
 	quote?: Quote;
 	/** The article URL */
 	url: Url;
+	/** The caller identifier for event tracking */
+	caller: string;
 }>;
+
+/**
+ * Return type for article creation: tuple of [entity, event].
+ */
+export type ArticleWithEvent = readonly [
+	UnexportedArticle,
+	ArticleCreatedEvent,
+];
 
 /**
  * Factory object for Article domain entity operations.
@@ -367,59 +385,75 @@ export type CreateArticleArgs = Readonly<{
  * @remarks
  * Provides immutable entity creation following DDD patterns.
  * All returned entities are frozen using Object.freeze().
+ * Returns a tuple of [entity, event] for domain event dispatching.
  *
  * @example
  * ```typescript
- * // Create a new unexported article
- * const article = articleEntity.create({
+ * // Create a new unexported article with its domain event
+ * const [article, event] = articleEntity.create({
  *   userId: makeUserId("user-123"),
  *   categoryName: makeCategoryName("Tech"),
  *   title: makeArticleTitle("Article Title"),
  *   url: makeUrl("https://example.com"),
+ *   caller: "addArticle",
  * });
  *
- * // Export the article (changes status to EXPORTED)
- * const exported = articleEntity.export(article);
+ * // Persist and dispatch event
+ * await repository.create(article);
+ * await eventDispatcher.dispatch(event);
  * ```
  *
  * @see {@link CreateArticleArgs} for creation parameters
+ * @see {@link ArticleWithEvent} for return type
  */
 export const articleEntity = {
 	/**
-	 * Creates a new unexported article entity.
+	 * Creates a new unexported article entity with its domain event.
 	 *
 	 * @param args - The creation arguments containing required fields
-	 * @returns A frozen UnexportedArticle instance with generated id and timestamps
+	 * @returns A tuple of [UnexportedArticle, ArticleCreatedEvent]
 	 * @throws {InvalidFormatError} When validation of any field fails
 	 * @throws {UnexpectedError} For unexpected errors during creation
 	 */
-	create: (args: CreateArticleArgs): UnexportedArticle => {
-		return createEntityWithErrorHandling(() =>
+	create: (args: CreateArticleArgs): ArticleWithEvent => {
+		const { caller, ...entityArgs } = args;
+		const article = createEntityWithErrorHandling(() =>
 			Object.freeze({
 				id: makeId(),
 				status: "UNEXPORTED",
-				categoryId: makeId(),
 				createdAt: makeCreatedAt(),
-				...args,
+				...entityArgs,
 			}),
 		);
-	},
 
-	/**
-	 * Transitions an article from UNEXPORTED to EXPORTED status.
-	 *
-	 * @param article - The unexported article to export
-	 * @returns A frozen ExportedArticle with exportedAt timestamp
-	 * @throws {InvalidFormatError} When the article state is invalid
-	 * @throws {UnexpectedError} For unexpected errors during export
-	 */
-	export: (article: UnexportedArticle): ExportedArticle => {
-		return createEntityWithErrorHandling(() => {
-			const exportedStatus = makeExportedStatus();
-			return Object.freeze({
-				...article,
-				...exportedStatus,
-			});
+		const event = new ArticleCreatedEvent({
+			title: article.title as string,
+			url: article.url as string,
+			quote: (article.quote as string) ?? "",
+			categoryName: article.categoryName as string,
+			userId: article.userId as string,
+			caller,
 		});
+
+		return [article, event] as const;
 	},
 };
+
+// DTO Types
+
+/**
+ * DTO for article list display.
+ *
+ * @remarks
+ * Contains only the fields needed for list views, with branded types.
+ * Uses `categoryName` instead of nested `Category.name` for cleaner access.
+ */
+export type ArticleListItemDTO = Readonly<{
+	id: Id;
+	title: ArticleTitle;
+	url: Url;
+	quote: Quote;
+	ogTitle: OgTitle;
+	ogDescription: OgDescription;
+	categoryName: CategoryName;
+}>;

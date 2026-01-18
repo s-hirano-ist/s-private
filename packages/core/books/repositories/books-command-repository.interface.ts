@@ -42,6 +42,13 @@ import type { UnexportedBook } from "../entities/books-entity.js";
  * @see {@link IStorageService} for object storage operations
  * @see {@link IGitHubBookFetcher} for external book imports
  */
+/**
+ * Result of a delete operation containing data needed for events.
+ */
+export type DeleteBookResult = {
+	title: string;
+};
+
 export type IBooksCommandRepository = {
 	/**
 	 * Creates a new book in the repository.
@@ -56,6 +63,7 @@ export type IBooksCommandRepository = {
 	 * @param id - The book ID to delete
 	 * @param userId - The user ID for tenant isolation
 	 * @param status - The expected status of the book
+	 * @returns The deleted book data needed for domain events
 	 */
-	deleteById(id: Id, userId: UserId, status: Status): Promise<void>;
+	deleteById(id: Id, userId: UserId, status: Status): Promise<DeleteBookResult>;
 };

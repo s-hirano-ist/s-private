@@ -1,23 +1,20 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { Suspense } from "react";
 import {
 	ArticlesStack,
 	type Props as ArticlesStackProps,
 } from "./articles-stack";
 
 function ArticlesStackWrapper({
-	getArticles,
-	deleteArticle,
+	initialData,
+	deleteAction,
 	loadMoreAction,
 }: ArticlesStackProps) {
 	return (
-		<Suspense>
-			<ArticlesStack
-				deleteArticle={deleteArticle}
-				getArticles={getArticles}
-				loadMoreAction={loadMoreAction}
-			/>
-		</Suspense>
+		<ArticlesStack
+			deleteAction={deleteAction}
+			initialData={initialData}
+			loadMoreAction={loadMoreAction}
+		/>
 	);
 }
 
@@ -26,8 +23,7 @@ const meta = {
 	parameters: { layout: "padded" },
 	tags: ["autodocs"],
 	argTypes: {
-		getArticles: { action: "getArticles" },
-		deleteArticle: { action: "deleteArticle" },
+		deleteAction: { action: "deleteAction" },
 		loadMoreAction: { action: "loadMoreAction" },
 	},
 } satisfies Meta<typeof ArticlesStackWrapper>;
@@ -46,7 +42,7 @@ const mockLoadMoreAction = async () => ({
 
 export const Default: Story = {
 	args: {
-		getArticles: async () => ({
+		initialData: {
 			data: [
 				{
 					id: "1",
@@ -78,8 +74,8 @@ export const Default: Story = {
 				},
 			],
 			totalCount: 100,
-		}),
-		deleteArticle: async () => ({
+		},
+		deleteAction: async () => ({
 			success: true,
 			message: "articles deleted successfully",
 		}),
@@ -89,7 +85,7 @@ export const Default: Story = {
 
 export const WithoutDeleteAction: Story = {
 	args: {
-		getArticles: async () => ({
+		initialData: {
 			data: [
 				{
 					id: "1",
@@ -121,19 +117,19 @@ export const WithoutDeleteAction: Story = {
 				},
 			],
 			totalCount: 100,
-		}),
-		deleteArticle: undefined,
+		},
+		deleteAction: undefined,
 		loadMoreAction: mockLoadMoreAction,
 	},
 };
 
 export const Empty: Story = {
 	args: {
-		getArticles: async () => ({
+		initialData: {
 			data: [],
 			totalCount: 100,
-		}),
-		deleteArticle: async () => ({
+		},
+		deleteAction: async () => ({
 			success: true,
 			message: "article deleted successfully",
 		}),
@@ -143,7 +139,7 @@ export const Empty: Story = {
 
 export const SingleItem: Story = {
 	args: {
-		getArticles: async () => ({
+		initialData: {
 			data: [
 				{
 					id: "1",
@@ -157,8 +153,8 @@ export const SingleItem: Story = {
 				},
 			],
 			totalCount: 100,
-		}),
-		deleteArticle: async () => ({
+		},
+		deleteAction: async () => ({
 			success: true,
 			message: "article deleted successfully",
 		}),
@@ -168,9 +164,9 @@ export const SingleItem: Story = {
 
 export const WithInfiniteScroll: Story = {
 	args: {
-		getArticles: async () => ({
+		initialData: {
 			data: Array.from({ length: 100 }, (_, i) => ({
-				id: String(i + 1), // 1〜100
+				id: String(i + 1),
 				key: `tech-articles-${i + 1}`,
 				title: `Sample Article ${i + 1}`,
 				description: `This is the description for article number ${i + 1}.`,
@@ -179,8 +175,8 @@ export const WithInfiniteScroll: Story = {
 				href: `https://example.com/article-${i + 1}`,
 			})),
 			totalCount: 100,
-		}),
-		deleteArticle: async () => ({
+		},
+		deleteAction: async () => ({
 			success: true,
 			message: "article deleted successfully",
 		}),

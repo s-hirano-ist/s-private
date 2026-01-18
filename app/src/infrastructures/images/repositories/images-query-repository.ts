@@ -1,4 +1,21 @@
-import type { Status } from "@s-hirano-ist/s-core/common/entities/common-entity";
+import {
+	makeCreatedAt,
+	makeExportedAt,
+	makeId,
+	makeUserId,
+	type Status,
+} from "@s-hirano-ist/s-core/common/entities/common-entity";
+import {
+	type ExportedImage,
+	type ImageListItemDTO,
+	makeContentType,
+	makeDescription,
+	makeFileSize,
+	makePath,
+	makePixel,
+	makeTag,
+	type UnexportedImage,
+} from "@s-hirano-ist/s-core/images/entities/image-entity";
 import type { IImagesQueryRepository } from "@s-hirano-ist/s-core/images/repositories/images-query-repository.interface";
 import type { ImagesFindManyParams } from "@s-hirano-ist/s-core/images/types/query-params";
 import prisma from "@/prisma";
@@ -6,21 +23,12 @@ import prisma from "@/prisma";
 async function findByPath(
 	path: string,
 	userId: string,
-): Promise<{
-	id: string;
-	path: string;
-	contentType: string;
-	fileSize: number | null;
-	width: number | null;
-	height: number | null;
-	tags: string[];
-	status: string;
-	description: string | null;
-} | null> {
+): Promise<UnexportedImage | ExportedImage | null> {
 	const data = await prisma.image.findUnique({
 		where: { path_userId: { path, userId } },
 		select: {
 			id: true,
+			userId: true,
 			path: true,
 			contentType: true,
 			fileSize: true,
@@ -29,18 +37,41 @@ async function findByPath(
 			tags: true,
 			status: true,
 			description: true,
+			createdAt: true,
+			exportedAt: true,
 		},
 	});
-	return data;
+	if (!data) return null;
+
+	const base = {
+		id: makeId(data.id),
+		userId: makeUserId(data.userId),
+		path: makePath(data.path, false),
+		contentType: makeContentType(data.contentType),
+		fileSize: makeFileSize(data.fileSize ?? 0),
+		width: data.width !== null ? makePixel(data.width) : undefined,
+		height: data.height !== null ? makePixel(data.height) : undefined,
+		tags: data.tags.length > 0 ? data.tags.map(makeTag) : undefined,
+		description:
+			data.description !== null ? makeDescription(data.description) : undefined,
+		createdAt: makeCreatedAt(data.createdAt),
+	};
+
+	if (data.status === "EXPORTED" && data.exportedAt) {
+		return Object.freeze({
+			...base,
+			status: "EXPORTED" as const,
+			exportedAt: makeExportedAt(data.exportedAt),
+		});
+	}
+	return Object.freeze({ ...base, status: "UNEXPORTED" as const });
 }
 
 async function findMany(
 	userId: string,
 	status: Status,
 	params?: ImagesFindManyParams,
-): Promise<
-	{ id: string; path: string; height: number | null; width: number | null }[]
-> {
+): Promise<ImageListItemDTO[]> {
 	const data = await prisma.image.findMany({
 		where: { userId, status },
 		select: {
@@ -51,7 +82,12 @@ async function findMany(
 		},
 		...params,
 	});
-	return data;
+	return data.map((d) => ({
+		id: makeId(d.id),
+		path: makePath(d.path, false),
+		width: d.width !== null ? makePixel(d.width) : undefined,
+		height: d.height !== null ? makePixel(d.height) : undefined,
+	}));
 }
 
 async function count(userId: string, status: Status): Promise<number> {

@@ -5,6 +5,8 @@ import {
 	makeQuote,
 	makeUrl,
 } from "@s-hirano-ist/s-core/articles/entities/article-entity";
+import { ArticleCreatedEvent } from "@s-hirano-ist/s-core/articles/events/article-created-event";
+import type { IArticlesCommandRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-command-repository.interface";
 import {
 	makeCreatedAt,
 	makeId,
@@ -19,50 +21,16 @@ import {
 	buildContentCacheTag,
 	buildCountCacheTag,
 } from "@/common/utils/cache-tag-builder";
-import { articlesCommandRepository } from "@/infrastructures/articles/repositories/articles-command-repository";
 import { addArticle } from "./add-article";
+import { addArticleCore } from "./add-article.core";
+import type { AddArticleDeps } from "./add-article.deps";
 import { parseAddArticleFormData } from "./helpers/form-data-parser";
 
+// Minimal mocks - only for auth and form parsing
 vi.mock("@/common/auth/session", () => ({
 	getSelfId: vi.fn(),
 	hasDumperPostPermission: vi.fn(),
 }));
-
-vi.mock(
-	"@/infrastructures/articles/repositories/articles-command-repository",
-	() => ({ articlesCommandRepository: { create: vi.fn() } }),
-);
-
-vi.mock(
-	"@/infrastructures/articles/repositories/articles-query-repository",
-	() => ({
-		articlesQueryRepository: {},
-	}),
-);
-
-const mockEnsureNoDuplicate = vi.fn();
-
-vi.mock(
-	"@s-hirano-ist/s-core/articles/services/articles-domain-service",
-	() => ({
-		ArticlesDomainService: class {
-			ensureNoDuplicate = mockEnsureNoDuplicate;
-		},
-	}),
-);
-
-vi.mock(
-	"@s-hirano-ist/s-core/articles/entities/article-entity",
-	async (importOriginal) => {
-		const actual = (await importOriginal()) as any;
-		return {
-			...actual,
-			articleEntity: {
-				create: vi.fn(),
-			},
-		};
-	},
-);
 
 vi.mock("./helpers/form-data-parser", () => ({
 	parseAddArticleFormData: vi.fn(),
@@ -74,7 +42,57 @@ mockFormData.append("url", "https://example.com/article");
 mockFormData.append("quote", "Test quote");
 mockFormData.append("category", "tech");
 
-describe("addArticle", () => {
+/**
+ * Creates mock dependencies for testing addArticleCore.
+ *
+ * @param ensureNoDuplicateImpl - Custom implementation for ensureNoDuplicate
+ */
+function createMockDeps(
+	ensureNoDuplicateImpl: () => Promise<void> = async () => {},
+): {
+	deps: AddArticleDeps;
+	mockCommandRepository: IArticlesCommandRepository;
+	mockEnsureNoDuplicate: ReturnType<typeof vi.fn>;
+	mockEventDispatcher: { dispatch: ReturnType<typeof vi.fn> };
+} {
+	const mockCommandRepository: IArticlesCommandRepository = {
+		create: vi.fn(),
+		deleteById: vi.fn(),
+	};
+
+	const mockEnsureNoDuplicate = vi
+		.fn()
+		.mockImplementation(ensureNoDuplicateImpl);
+
+	const mockEventDispatcher = {
+		dispatch: vi.fn().mockResolvedValue(undefined),
+	};
+
+	// Create a mock domain service factory that returns a mock domain service
+	const mockDomainServiceFactory = {
+		createArticlesDomainService: () => ({
+			ensureNoDuplicate: mockEnsureNoDuplicate,
+		}),
+		createBooksDomainService: vi.fn(),
+		createNotesDomainService: vi.fn(),
+	};
+
+	const deps: AddArticleDeps = {
+		commandRepository: mockCommandRepository,
+		domainServiceFactory:
+			mockDomainServiceFactory as unknown as AddArticleDeps["domainServiceFactory"],
+		eventDispatcher: mockEventDispatcher,
+	};
+
+	return {
+		deps,
+		mockCommandRepository,
+		mockEnsureNoDuplicate,
+		mockEventDispatcher,
+	};
+}
+
+describe("addArticleCore", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 		vi.mocked(parseAddArticleFormData).mockReturnValue({
@@ -88,21 +106,21 @@ describe("addArticle", () => {
 
 	test("should return success false on Unauthorized", async () => {
 		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
-		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+		const { deps } = createMockDeps();
 
-		const result = await addArticle(mockFormData);
+		const result = await addArticleCore(mockFormData, deps);
 		expect(result.success).toBe(false);
 	});
 
-	test("should return forbidden when user doesn't have permission", async () => {
-		vi.mocked(hasDumperPostPermission).mockResolvedValue(false);
-
-		await expect(addArticle(mockFormData)).rejects.toThrow("FORBIDDEN");
-	});
-
-	test("should create article", async () => {
-		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+	test("should create article successfully", async () => {
 		vi.mocked(getSelfId).mockResolvedValue(makeUserId("user-123"));
+
+		const {
+			deps,
+			mockCommandRepository,
+			mockEnsureNoDuplicate,
+			mockEventDispatcher,
+		} = createMockDeps();
 
 		const mockArticle = {
 			id: makeId("01933f5c-9df0-7001-9123-456789abcdef"),
@@ -110,25 +128,33 @@ describe("addArticle", () => {
 			url: makeUrl("https://example.com/article"),
 			quote: makeQuote("Test quote"),
 			categoryName: makeCategoryName("tech"),
-			categoryId: makeId("01933f5c-9df0-7001-8123-456789abcde0"),
 			userId: makeUserId("user-123"),
-			status: "UNEXPORTED",
+			status: makeUnexportedStatus(),
 			createdAt: makeCreatedAt(),
 		} as const;
 
-		mockEnsureNoDuplicate.mockResolvedValue(undefined);
-		vi.mocked(articleEntity.create).mockReturnValue(mockArticle);
-		vi.mocked(articlesCommandRepository.create).mockResolvedValue();
+		const mockEvent = new ArticleCreatedEvent({
+			title: "Test Article",
+			url: "https://example.com/article",
+			quote: "Test quote",
+			categoryName: "tech",
+			userId: "user-123",
+			caller: "addArticle",
+		});
 
-		const result = await addArticle(mockFormData);
+		// Mock articleEntity.create to return tuple
+		vi.spyOn(articleEntity, "create").mockReturnValue([mockArticle, mockEvent]);
 
-		expect(vi.mocked(hasDumperPostPermission)).toHaveBeenCalled();
+		const result = await addArticleCore(mockFormData, deps);
+
 		expect(mockEnsureNoDuplicate).toHaveBeenCalledWith(
 			makeUrl("https://example.com/article"),
 			makeUserId("user-123"),
 		);
 		expect(articleEntity.create).toHaveBeenCalled();
-		expect(articlesCommandRepository.create).toHaveBeenCalledWith(mockArticle);
+		expect(mockCommandRepository.create).toHaveBeenCalledWith(mockArticle);
+		expect(mockEventDispatcher.dispatch).toHaveBeenCalledWith(mockEvent);
+
 		const status = makeUnexportedStatus();
 		expect(revalidateTag).toHaveBeenCalledWith(
 			buildContentCacheTag("articles", status, "user-123"),
@@ -139,14 +165,20 @@ describe("addArticle", () => {
 
 		expect(result.success).toBe(true);
 		expect(result.message).toBe("inserted");
+
+		// Restore original
+		vi.mocked(articleEntity.create).mockRestore();
 	});
 
 	test("should preserve form data on DuplicateError", async () => {
-		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
 		vi.mocked(getSelfId).mockResolvedValue(makeUserId("user-123"));
-		mockEnsureNoDuplicate.mockRejectedValue(new DuplicateError());
 
-		const result = await addArticle(mockFormData);
+		// Create deps with ensureNoDuplicate that throws DuplicateError
+		const { deps } = createMockDeps(async () => {
+			throw new DuplicateError();
+		});
+
+		const result = await addArticleCore(mockFormData, deps);
 
 		expect(result.success).toBe(false);
 		expect(result.message).toBe("duplicated");
@@ -158,15 +190,46 @@ describe("addArticle", () => {
 		});
 	});
 
-	test("should handle errors and return wrapped error", async () => {
-		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+	test("should handle unexpected errors", async () => {
 		vi.mocked(getSelfId).mockResolvedValue(makeUserId("user-123"));
 
-		const error = new Error("Domain service error");
-		mockEnsureNoDuplicate.mockRejectedValue(error);
+		// Create deps with ensureNoDuplicate that throws unexpected error
+		const { deps } = createMockDeps(async () => {
+			throw new Error("Database error");
+		});
 
-		const result = await addArticle(mockFormData);
+		const result = await addArticleCore(mockFormData, deps);
 
 		expect(result).toEqual({ success: false, message: "unexpected" });
+	});
+});
+
+describe("addArticle (Server Action)", () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
+
+	test("should return forbidden when user doesn't have permission", async () => {
+		vi.mocked(hasDumperPostPermission).mockResolvedValue(false);
+
+		await expect(addArticle(mockFormData)).rejects.toThrow("FORBIDDEN");
+	});
+
+	test("should call addArticleCore with default deps when permitted", async () => {
+		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
+		vi.mocked(parseAddArticleFormData).mockReturnValue({
+			title: makeArticleTitle("Test Article"),
+			url: makeUrl("https://example.com/article"),
+			quote: makeQuote("Test quote"),
+			categoryName: makeCategoryName("tech"),
+			userId: makeUserId("user-123"),
+		});
+
+		// This will fail at getSelfId, but it proves the flow works
+		const result = await addArticle(mockFormData);
+
+		expect(hasDumperPostPermission).toHaveBeenCalled();
+		expect(result.success).toBe(false);
 	});
 });

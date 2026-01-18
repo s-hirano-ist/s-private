@@ -4,6 +4,7 @@ import {
 	makeBookTitle,
 	makeISBN,
 } from "@s-hirano-ist/s-core/books/entities/books-entity";
+import { BookCreatedEvent } from "@s-hirano-ist/s-core/books/events/book-created-event";
 import {
 	makeCreatedAt,
 	makeId,
@@ -31,6 +32,12 @@ vi.mock(
 	"@/infrastructures/books/repositories/books-command-repository",
 	() => ({ booksCommandRepository: { create: vi.fn() } }),
 );
+
+vi.mock("@/infrastructures/events/event-dispatcher", () => ({
+	eventDispatcher: {
+		dispatch: vi.fn().mockResolvedValue(undefined),
+	},
+}));
 
 vi.mock("@/infrastructures/books/repositories/books-query-repository", () => ({
 	booksQueryRepository: {},
@@ -105,8 +112,15 @@ describe("addBooks", () => {
 			imagePath: makeBookImagePath(null),
 		} as const;
 
+		const mockEvent = new BookCreatedEvent({
+			ISBN: "978-4-06-519981-0",
+			title: "Test Book",
+			userId: "user-123",
+			caller: "addBooks",
+		});
+
 		mockEnsureNoDuplicate.mockResolvedValue(undefined);
-		vi.mocked(bookEntity.create).mockReturnValue(mockBook);
+		vi.mocked(bookEntity.create).mockReturnValue([mockBook, mockEvent]);
 		vi.mocked(booksCommandRepository.create).mockResolvedValue();
 
 		const result = await addBooks(mockFormData);
@@ -121,6 +135,7 @@ describe("addBooks", () => {
 			title: makeBookTitle("Test Book"),
 			userId: makeUserId("user-123"),
 			imagePath: makeBookImagePath(null),
+			caller: "addBooks",
 		});
 		expect(booksCommandRepository.create).toHaveBeenCalledWith(mockBook);
 		const status = makeUnexportedStatus();

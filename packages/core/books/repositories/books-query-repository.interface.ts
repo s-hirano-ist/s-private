@@ -1,5 +1,11 @@
 import type { Status, UserId } from "../../common/entities/common-entity.js";
-import type { ISBN } from "../entities/books-entity.js";
+import type {
+	BookListItemDTO,
+	BookSearchItemDTO,
+	ExportedBook,
+	ISBN,
+	UnexportedBook,
+} from "../entities/books-entity.js";
 import type { BooksFindManyParams } from "../types/query-params.js";
 
 /**
@@ -9,14 +15,18 @@ import type { BooksFindManyParams } from "../types/query-params.js";
  * Follows the CQRS pattern - this interface handles read operations only.
  * Implementations should be provided by the infrastructure layer (e.g., Prisma).
  *
+ * Return types are either full entities (for single item lookup) or DTOs
+ * (for list/search operations) with properly branded types.
+ *
  * @example
  * ```typescript
  * // Infrastructure implementation
  * class PrismaBooksQueryRepository implements IBooksQueryRepository {
  *   async findByISBN(ISBN: ISBN, userId: UserId) {
- *     return await prisma.book.findUnique({
+ *     const data = await prisma.book.findUnique({
  *       where: { ISBN, userId }
  *     });
+ *     return data ? toBookEntity(data) : null;
  *   }
  * }
  * ```
@@ -29,30 +39,16 @@ export type IBooksQueryRepository = {
 	 *
 	 * @param ISBN - The validated ISBN to search for
 	 * @param userId - The user ID for tenant isolation
-	 * @returns The book data if found, null otherwise
+	 * @returns The book entity if found, null otherwise
+	 *
+	 * @remarks
+	 * Returns a full entity type (UnexportedBook or ExportedBook)
+	 * for domain operations like duplicate checking.
 	 */
 	findByISBN(
 		ISBN: ISBN,
 		userId: UserId,
-	): Promise<{
-		ISBN: string;
-		id: string;
-		title: string;
-		googleTitle: string | null;
-		googleSubTitle: string | null;
-		googleAuthors: string[];
-		googleDescription: string | null;
-		googleImgSrc: string | null;
-		googleHref: string | null;
-		imagePath: string | null;
-		markdown: string | null;
-		rating: number | null;
-		tags: string[];
-		status: string;
-		createdAt: Date;
-		updatedAt: Date;
-		exportedAt: Date | null;
-	} | null>;
+	): Promise<UnexportedBook | ExportedBook | null>;
 
 	/**
 	 * Retrieves multiple books with pagination and filtering.
@@ -60,7 +56,7 @@ export type IBooksQueryRepository = {
 	 * @param userId - The user ID for tenant isolation
 	 * @param status - Filter by UNEXPORTED or EXPORTED status
 	 * @param params - Optional pagination, sorting, and caching parameters
-	 * @returns Array of book data objects
+	 * @returns Array of BookListItemDTO objects
 	 *
 	 * @see {@link BooksFindManyParams} for parameter options
 	 */
@@ -68,26 +64,7 @@ export type IBooksQueryRepository = {
 		userId: UserId,
 		status: Status,
 		params?: BooksFindManyParams,
-	): Promise<
-		{
-			ISBN: string;
-			id: string;
-			title: string;
-			googleTitle: string | null;
-			googleSubTitle: string | null;
-			googleAuthors: string[];
-			googleDescription: string | null;
-			googleImgSrc: string | null;
-			googleHref: string | null;
-			imagePath: string | null;
-			markdown: string | null;
-			rating: number | null;
-			tags: string[];
-			createdAt: Date;
-			updatedAt: Date;
-			exportedAt: Date | null;
-		}[]
-	>;
+	): Promise<BookListItemDTO[]>;
 
 	/**
 	 * Counts books matching the given criteria.
@@ -104,26 +81,13 @@ export type IBooksQueryRepository = {
 	 * @param query - The search query string
 	 * @param userId - The user ID for tenant isolation
 	 * @param limit - Optional maximum number of results
-	 * @returns Array of matching book data objects
+	 * @returns Array of BookSearchItemDTO objects
 	 */
 	search(
 		query: string,
 		userId: UserId,
 		limit?: number,
-	): Promise<
-		{
-			id: string;
-			title: string;
-			ISBN: string;
-			googleTitle: string | null;
-			googleSubTitle: string | null;
-			googleAuthors: string[];
-			googleDescription: string | null;
-			markdown: string | null;
-			rating: number | null;
-			tags: string[];
-		}[]
-	>;
+	): Promise<BookSearchItemDTO[]>;
 
 	/**
 	 * Retrieves a book cover image from MinIO storage.

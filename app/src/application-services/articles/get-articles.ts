@@ -10,7 +10,8 @@
 
 import type { CacheStrategy } from "@s-hirano-ist/s-core/articles/types/cache-strategy";
 import {
-	makeStatus,
+	makeExportedStatus,
+	makeUnexportedStatus,
 	type Status,
 	type UserId,
 } from "@s-hirano-ist/s-core/common/entities/common-entity";
@@ -21,7 +22,7 @@ import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
 import type { GetCount, GetPaginatedData } from "@/common/types";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
-import type { ArticleFormClientData } from "@/components/articles/client/article-form-client";
+import type { ArticleFormData } from "@/components/articles/client/article-form";
 import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
 import {
 	articlesQueryRepository,
@@ -67,7 +68,7 @@ export const _getArticles = async (
 				const description = `${d.quote ? `${d.quote}\n` : ""}${d.ogTitle ? `${d.ogTitle}\n` : ""}${d.ogDescription ? d.ogDescription : ""}`;
 				return {
 					id: d.id,
-					primaryBadgeText: d.Category.name,
+					primaryBadgeText: d.categoryName,
 					secondaryBadgeText: new URL(d.url).hostname,
 					key: d.id,
 					title: d.title,
@@ -115,9 +116,7 @@ const _getArticlesCount = async (
  *
  * @internal
  */
-const _getCategories = async (
-	userId: UserId,
-): Promise<ArticleFormClientData> => {
+const _getCategories = async (userId: UserId): Promise<ArticleFormData> => {
 	"use cache";
 	cacheTag("categories", `categories_${userId}`);
 	try {
@@ -147,7 +146,7 @@ const _getCategories = async (
  */
 export const getExportedArticlesCount: GetCount = cache(async () => {
 	const userId = await getSelfId();
-	return _getArticlesCount(userId, makeStatus("EXPORTED"));
+	return _getArticlesCount(userId, makeExportedStatus().status);
 });
 
 /**
@@ -159,7 +158,7 @@ export const getExportedArticlesCount: GetCount = cache(async () => {
 export const getUnexportedArticles: GetPaginatedData<LinkCardStackInitialData> =
 	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
-		return _getArticles(currentCount, userId, makeStatus("UNEXPORTED"));
+		return _getArticles(currentCount, userId, makeUnexportedStatus());
 	});
 
 /**
@@ -174,7 +173,7 @@ export const getUnexportedArticles: GetPaginatedData<LinkCardStackInitialData> =
 export const getExportedArticles: GetPaginatedData<LinkCardStackInitialData> =
 	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
-		return _getArticles(currentCount, userId, makeStatus("EXPORTED"), {
+		return _getArticles(currentCount, userId, makeExportedStatus().status, {
 			ttl: 400,
 			swr: 40,
 			tags: [`${sanitizeCacheTag(userId)}_articles_${currentCount}`],
@@ -186,7 +185,7 @@ export const getExportedArticles: GetPaginatedData<LinkCardStackInitialData> =
  *
  * @returns Array of category names for dropdown selection
  */
-export const getCategories = cache(async (): Promise<ArticleFormClientData> => {
+export const getCategories = cache(async (): Promise<ArticleFormData> => {
 	const userId = await getSelfId();
 	return _getCategories(userId);
 });

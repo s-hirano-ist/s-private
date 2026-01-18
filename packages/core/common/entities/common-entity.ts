@@ -314,28 +314,3 @@ export type Status =
 	| UnexportedStatus
 	| LastUpdatedStatus
 	| ExportedStatus["status"];
-
-/**
- * Creates a Status value from a string.
- *
- * @param status - The status string ("UNEXPORTED", "LAST_UPDATED", or "EXPORTED")
- * @returns The status value
- *
- * @deprecated This is for legacy compatibility. Use {@link makeUnexportedStatus}
- * or {@link makeExportedStatus} instead.
- *
- * @example
- * ```typescript
- * // Prefer these:
- * const unexported = makeUnexportedStatus();
- * const exported = makeExportedStatus();
- *
- * // Instead of:
- * const status = makeStatus("UNEXPORTED");
- * ```
- */
-export const makeStatus = (
-	status: "UNEXPORTED" | "LAST_UPDATED" | "EXPORTED",
-): Status => {
-	return status as Status;
-};

@@ -6,22 +6,19 @@
 
 "use server";
 import "server-only";
-import { makeUnexportedStatus } from "@s-hirano-ist/s-core/common/entities/common-entity";
-import { revalidateTag } from "next/cache";
 import { forbidden } from "next/navigation";
-import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
-import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
+import { hasDumperPostPermission } from "@/common/auth/session";
 import type { ServerAction } from "@/common/types";
-import {
-	buildContentCacheTag,
-	buildCountCacheTag,
-} from "@/common/utils/cache-tag-builder";
-import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
+import { deleteImageCore } from "./delete-image.core";
+import { defaultDeleteImageDeps } from "./delete-image.deps";
 
 /**
  * Server action to delete an image.
  *
  * @remarks
+ * This is the public-facing Server Action that handles authentication and authorization,
+ * then delegates to deleteImageCore for business logic.
+ *
  * Only unexported images can be deleted. Requires dumper role permission.
  *
  * @param id - Image ID to delete
@@ -31,17 +28,5 @@ export async function deleteImage(id: string): Promise<ServerAction> {
 	const hasPermission = await hasDumperPostPermission();
 	if (!hasPermission) forbidden();
 
-	try {
-		const userId = await getSelfId();
-
-		const status = makeUnexportedStatus();
-		await imagesCommandRepository.deleteById(id, userId, status);
-
-		revalidateTag(buildContentCacheTag("images", status, userId));
-		revalidateTag(buildCountCacheTag("images", status, userId));
-
-		return { success: true, message: "deleted" };
-	} catch (error) {
-		return await wrapServerSideErrorForClient(error);
-	}
+	return deleteImageCore(id, defaultDeleteImageDeps);
 }

@@ -4,13 +4,13 @@ import {
 	ExportedStatus,
 	Id,
 	makeCreatedAt,
-	makeExportedStatus,
 	makeId,
 	UnexportedStatus,
 	UserId,
 } from "../../common/entities/common-entity.js";
 import { createEntityWithErrorHandling } from "../../common/services/entity-factory.js";
 import { idGenerator } from "../../common/services/id-generator.js";
+import { ImageCreatedEvent } from "../events/image-created-event.js";
 
 // Value objects
 
@@ -28,7 +28,11 @@ import { idGenerator } from "../../common/services/id-generator.js";
  *
  * @see {@link makePath} for factory function
  */
-export const Path = z.string().min(1).brand<"Path">();
+export const Path = z
+	.string()
+	.min(1)
+	.max(512, { message: "tooLong" })
+	.brand<"Path">();
 
 /**
  * Branded type for validated image paths.
@@ -194,7 +198,12 @@ export const makeTag = (v: string): Tag => Tag.parse(v);
  *
  * @see {@link makeDescription} for factory function
  */
-export const Description = z.string().min(1).optional().brand<"Description">();
+export const Description = z
+	.string()
+	.min(1)
+	.max(1024, { message: "tooLong" })
+	.optional()
+	.brand<"Description">();
 
 /**
  * Branded type for validated descriptions.
@@ -284,6 +293,7 @@ export type ExportedImage = Readonly<z.infer<typeof ExportedImage>>;
  *   fileSize: makeFileSize(1024 * 1024),
  *   width: makePixel(1920),
  *   height: makePixel(1080),
+ *   caller: "addImage",
  * };
  * ```
  */
@@ -304,7 +314,14 @@ export type CreateImageArgs = Readonly<{
 	tags?: Array<Tag>;
 	/** Optional description */
 	description?: Description;
+	/** The caller identifier for event tracking */
+	caller: string;
 }>;
+
+/**
+ * Return type for image creation: tuple of [entity, event].
+ */
+export type ImageWithEvent = readonly [UnexportedImage, ImageCreatedEvent];
 
 /**
  * Factory object for Image domain entity operations.
@@ -312,58 +329,68 @@ export type CreateImageArgs = Readonly<{
  * @remarks
  * Provides immutable entity creation following DDD patterns.
  * All returned entities are frozen using Object.freeze().
+ * Returns a tuple of [entity, event] for domain event dispatching.
  *
  * @example
  * ```typescript
- * // Create a new unexported image
- * const image = imageEntity.create({
+ * // Create a new unexported image with its domain event
+ * const [image, event] = imageEntity.create({
  *   userId: makeUserId("user-123"),
  *   path: makePath("image.jpg", true),
  *   contentType: makeContentType("image/jpeg"),
  *   fileSize: makeFileSize(1024),
+ *   caller: "addImage",
  * });
  *
- * // Export the image (changes status to EXPORTED)
- * const exported = imageEntity.export(image);
+ * // Persist and dispatch event
+ * await repository.create(image);
+ * await eventDispatcher.dispatch(event);
  * ```
  *
  * @see {@link CreateImageArgs} for creation parameters
+ * @see {@link ImageWithEvent} for return type
  */
 export const imageEntity = {
 	/**
-	 * Creates a new unexported image entity.
+	 * Creates a new unexported image entity with its domain event.
 	 *
 	 * @param args - The creation arguments containing required fields
-	 * @returns A frozen UnexportedImage instance with generated id and timestamps
+	 * @returns A tuple of [UnexportedImage, ImageCreatedEvent]
 	 * @throws {InvalidFormatError} When validation of any field fails
 	 * @throws {UnexpectedError} For unexpected errors during creation
 	 */
-	create: (args: CreateImageArgs): UnexportedImage => {
-		return createEntityWithErrorHandling(() =>
+	create: (args: CreateImageArgs): ImageWithEvent => {
+		const { caller, ...entityArgs } = args;
+		const image = createEntityWithErrorHandling(() =>
 			Object.freeze({
 				id: makeId(),
 				status: "UNEXPORTED",
 				createdAt: makeCreatedAt(),
-				...args,
+				...entityArgs,
 			}),
 		);
-	},
 
-	/**
-	 * Transitions an image from UNEXPORTED to EXPORTED status.
-	 *
-	 * @param image - The unexported image to export
-	 * @returns A frozen ExportedImage with exportedAt timestamp
-	 * @throws {InvalidFormatError} When the image state is invalid
-	 * @throws {UnexpectedError} For unexpected errors during export
-	 */
-	export: (image: UnexportedImage): ExportedImage => {
-		return createEntityWithErrorHandling(() => {
-			const exportedStatus = makeExportedStatus();
-			return Object.freeze({
-				...image,
-				...exportedStatus,
-			});
+		const event = new ImageCreatedEvent({
+			id: image.id as string,
+			userId: image.userId as string,
+			caller,
 		});
+
+		return [image, event] as const;
 	},
 };
+
+// DTO Types
+
+/**
+ * DTO for image list display.
+ *
+ * @remarks
+ * Contains only the fields needed for list views, with branded types.
+ */
+export type ImageListItemDTO = Readonly<{
+	id: Id;
+	path: Path;
+	width: Pixel | undefined;
+	height: Pixel | undefined;
+}>;

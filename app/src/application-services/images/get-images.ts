@@ -9,7 +9,8 @@
  */
 
 import {
-	makeStatus,
+	makeExportedStatus,
+	makeUnexportedStatus,
 	type Status,
 	type UserId,
 } from "@s-hirano-ist/s-core/common/entities/common-entity";
@@ -104,7 +105,7 @@ export const getImagesCount = async (status: Status): Promise<number> => {
 export const getExportedImages = cache(
 	async (page: number): Promise<ImageData[]> => {
 		const userId = await getSelfId();
-		return _getImages(page, userId, makeStatus("EXPORTED"), {
+		return _getImages(page, userId, makeExportedStatus().status, {
 			ttl: 400,
 			swr: 40,
 			tags: [`${sanitizeCacheTag(userId)}_images`],
@@ -121,7 +122,7 @@ export const getExportedImages = cache(
 export const getUnexportedImages = cache(
 	async (page: number): Promise<ImageData[]> => {
 		const userId = await getSelfId();
-		return _getImages(page, userId, makeStatus("UNEXPORTED"));
+		return _getImages(page, userId, makeUnexportedStatus());
 	},
 );
 

@@ -1,12 +1,9 @@
-import type { GetCount } from "@/common/types";
 import { CounterBadge } from "@/components/common/display/counter-badge";
 
 export type Props = {
-	getArticlesCount: GetCount;
+	count: number;
 };
 
-export async function ArticlesCounter({ getArticlesCount }: Props) {
-	const articlesCount = await getArticlesCount();
-
-	return <CounterBadge label="totalArticles" totalItems={articlesCount} />;
+export function ArticlesCounter({ count }: Props) {
+	return <CounterBadge label="totalArticles" totalItems={count} />;
 }

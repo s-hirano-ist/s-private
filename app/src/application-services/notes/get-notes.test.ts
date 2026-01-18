@@ -1,3 +1,13 @@
+import {
+	makeCreatedAt,
+	makeExportedAt,
+	makeId,
+	makeUserId,
+} from "@s-hirano-ist/s-core/common/entities/common-entity";
+import {
+	makeMarkdown,
+	makeNoteTitle,
+} from "@s-hirano-ist/s-core/notes/entities/note-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { notesQueryRepository } from "@/infrastructures/notes/repositories/notes-query-repository";
 import {
@@ -28,14 +38,12 @@ describe("get-notes", () => {
 		test("should fetch and transform notes correctly", async () => {
 			const mockNotes = [
 				{
-					id: "1",
-					key: "1",
-					title: "Test Note 1",
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b"),
+					title: makeNoteTitle("Test Note 1"),
 				},
 				{
-					id: "2",
-					key: "2",
-					title: "Test Note 2",
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c"),
+					title: makeNoteTitle("Test Note 2"),
 				},
 			];
 
@@ -58,15 +66,15 @@ describe("get-notes", () => {
 			expect(result).toEqual({
 				data: [
 					{
-						id: "1",
-						key: "1",
+						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b",
+						key: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b",
 						title: "Test Note 1",
 						description: "",
 						href: "/note/Test%20Note%201",
 					},
 					{
-						id: "2",
-						key: "2",
+						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c",
+						key: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c",
 						title: "Test Note 2",
 						description: "",
 						href: "/note/Test%20Note%202",
@@ -99,9 +107,8 @@ describe("get-notes", () => {
 		test("should handle notes with null images", async () => {
 			const mockNotes = [
 				{
-					id: "",
-					key: "1",
-					title: "Test Note",
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d"),
+					title: makeNoteTitle("Test Note"),
 				},
 			];
 
@@ -113,8 +120,8 @@ describe("get-notes", () => {
 			expect(result).toEqual({
 				data: [
 					{
-						id: "",
-						key: "",
+						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d",
+						key: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d",
 						title: "Test Note",
 						description: "",
 						href: "/note/Test%20Note",
@@ -127,9 +134,8 @@ describe("get-notes", () => {
 		test("should use title as href for notes", async () => {
 			const mockNotes = [
 				{
-					id: "",
-					key: "1",
-					title: "My Special Note Title",
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e"),
+					title: makeNoteTitle("My Special Note Title"),
 				},
 			];
 
@@ -177,14 +183,12 @@ describe("get-notes", () => {
 		test("should fetch and transform unexported notes correctly", async () => {
 			const mockNotes = [
 				{
-					id: "3",
-					key: "3",
-					title: "Unexported Note 1",
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7f"),
+					title: makeNoteTitle("Unexported Note 1"),
 				},
 				{
-					id: "4",
-					key: "4",
-					title: "Unexported Note 2",
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a80"),
+					title: makeNoteTitle("Unexported Note 2"),
 				},
 			];
 
@@ -206,15 +210,15 @@ describe("get-notes", () => {
 			expect(result).toEqual({
 				data: [
 					{
-						id: "3",
-						key: "3",
+						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7f",
+						key: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7f",
 						title: "Unexported Note 1",
 						description: "",
 						href: "/note/Unexported%20Note%201",
 					},
 					{
-						id: "4",
-						key: "4",
+						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a80",
+						key: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a80",
 						title: "Unexported Note 2",
 						description: "",
 						href: "/note/Unexported%20Note%202",
@@ -247,9 +251,8 @@ describe("get-notes", () => {
 		test("should encode special characters in href for unexported", async () => {
 			const mockNotes = [
 				{
-					id: "5",
-					key: "5",
-					title: "Note with & Special Characters!",
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a81"),
+					title: makeNoteTitle("Note with & Special Characters!"),
 				},
 			];
 
@@ -267,10 +270,13 @@ describe("get-notes", () => {
 	describe("getNoteByTitle", () => {
 		test("should fetch note by title successfully", async () => {
 			const mockNote = {
-				id: "1",
-				title: "Test Note",
-				markdown: "# Test Note\n\nThis is some test note.",
-				status: "EXPORTED",
+				id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a82"),
+				userId: makeUserId("test-user-id"),
+				title: makeNoteTitle("Test Note"),
+				markdown: makeMarkdown("# Test Note\n\nThis is some test note."),
+				status: "EXPORTED" as const,
+				createdAt: makeCreatedAt(new Date("2024-01-01")),
+				exportedAt: makeExportedAt(new Date("2024-01-02")),
 			};
 
 			vi.mocked(notesQueryRepository.findByTitle).mockResolvedValue(mockNote);
@@ -309,10 +315,13 @@ describe("get-notes", () => {
 		test("should handle special characters in title", async () => {
 			const specialTitle = "Note with & Special Characters!";
 			const mockNote = {
-				id: "2",
-				title: specialTitle,
-				markdown: "# Special Note",
-				status: "EXPORTED",
+				id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a83"),
+				userId: makeUserId("test-user-id"),
+				title: makeNoteTitle(specialTitle),
+				markdown: makeMarkdown("# Special Note"),
+				status: "EXPORTED" as const,
+				createdAt: makeCreatedAt(new Date("2024-01-01")),
+				exportedAt: makeExportedAt(new Date("2024-01-02")),
 			};
 
 			vi.mocked(notesQueryRepository.findByTitle).mockResolvedValue(mockNote);

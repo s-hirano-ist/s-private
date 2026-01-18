@@ -1,3 +1,13 @@
+import {
+	makeCreatedAt,
+	makeExportedAt,
+	makeId,
+	makeUserId,
+} from "@s-hirano-ist/s-core/common/entities/common-entity";
+import {
+	makeMarkdown,
+	makeNoteTitle,
+} from "@s-hirano-ist/s-core/notes/entities/note-entity";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Suspense } from "react";
 import type { Props as ViewerBodyProps } from "./viewer-body";
@@ -122,12 +132,16 @@ Detailed explanation of topic 2.
 export const Default: Story = {
 	args: {
 		slug: "sample-note",
-		getNoteByTitle: async () => ({
-			id: "01234567-89ab-7def-9123-456789abcdef",
-			title: "Sample Note",
-			markdown: sampleMarkdown,
-			status: "EXPORTED",
-		}),
+		getNoteByTitle: async () =>
+			Object.freeze({
+				id: makeId(),
+				userId: makeUserId("mock-user-id"),
+				title: makeNoteTitle("Sample Note"),
+				markdown: makeMarkdown(sampleMarkdown),
+				status: "EXPORTED" as const,
+				createdAt: makeCreatedAt(new Date("2024-01-01")),
+				exportedAt: makeExportedAt(new Date("2024-01-01")),
+			}),
 	},
 };
 
@@ -136,12 +150,15 @@ export const WithEncodedSlug: Story = {
 		slug: encodeURIComponent("Sample Note with Spaces"),
 		getNoteByTitle: async (title) => {
 			if (title === "Sample Note with Spaces") {
-				return {
-					id: "01234567-89ab-7def-9123-456789abcdef",
-					title: title,
-					markdown: sampleMarkdown,
-					status: "EXPORTED",
-				};
+				return Object.freeze({
+					id: makeId(),
+					userId: makeUserId("mock-user-id"),
+					title: makeNoteTitle(title),
+					markdown: makeMarkdown(sampleMarkdown),
+					status: "EXPORTED" as const,
+					createdAt: makeCreatedAt(new Date("2024-01-01")),
+					exportedAt: makeExportedAt(new Date("2024-01-01")),
+				});
 			}
 			return null;
 		},
@@ -151,24 +168,32 @@ export const WithEncodedSlug: Story = {
 export const LongContent: Story = {
 	args: {
 		slug: "comprehensive-guide",
-		getNoteByTitle: async () => ({
-			id: "01234567-89ab-7def-9123-456789abcdef",
-			title: "Comprehensive Guide",
-			markdown: longMarkdown,
-			status: "EXPORTED",
-		}),
+		getNoteByTitle: async () =>
+			Object.freeze({
+				id: makeId(),
+				userId: makeUserId("mock-user-id"),
+				title: makeNoteTitle("Comprehensive Guide"),
+				markdown: makeMarkdown(longMarkdown),
+				status: "EXPORTED" as const,
+				createdAt: makeCreatedAt(new Date("2024-01-01")),
+				exportedAt: makeExportedAt(new Date("2024-01-01")),
+			}),
 	},
 };
 
 export const MinimalContent: Story = {
 	args: {
 		slug: "minimal",
-		getNoteByTitle: async () => ({
-			id: "01234567-89ab-7def-9123-456789abcdef",
-			title: "Minimal Note",
-			markdown: "# Minimal Note\n\nJust a simple line.",
-			status: "EXPORTED",
-		}),
+		getNoteByTitle: async () =>
+			Object.freeze({
+				id: makeId(),
+				userId: makeUserId("mock-user-id"),
+				title: makeNoteTitle("Minimal Note"),
+				markdown: makeMarkdown("# Minimal Note\n\nJust a simple line."),
+				status: "EXPORTED" as const,
+				createdAt: makeCreatedAt(new Date("2024-01-01")),
+				exportedAt: makeExportedAt(new Date("2024-01-01")),
+			}),
 	},
 };
 

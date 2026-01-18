@@ -1,3 +1,12 @@
+import {
+	makeArticleTitle,
+	makeCategoryName,
+	makeOgDescription,
+	makeOgTitle,
+	makeQuote,
+	makeUrl,
+} from "@s-hirano-ist/s-core/articles/entities/article-entity";
+import { makeId } from "@s-hirano-ist/s-core/common/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import {
 	articlesQueryRepository,
@@ -36,22 +45,22 @@ describe("get-articles", () => {
 		test("should fetch and transform exported articles correctly", async () => {
 			vi.mocked(articlesQueryRepository.findMany).mockResolvedValue([
 				{
-					id: "1",
-					title: "Test Article 1",
-					quote: "Test quote 1",
-					url: "https://example1.com",
-					ogTitle: "OG Title 1",
-					ogDescription: "OG Description 1",
-					Category: { name: "Tech", id: "1" },
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b"),
+					title: makeArticleTitle("Test Article 1"),
+					quote: makeQuote("Test quote 1"),
+					url: makeUrl("https://example1.com"),
+					ogTitle: makeOgTitle("OG Title 1"),
+					ogDescription: makeOgDescription("OG Description 1"),
+					categoryName: makeCategoryName("Tech"),
 				},
 				{
-					id: "2",
-					title: "Test Article 2",
-					quote: "Test quote 2",
-					url: "https://example2.com",
-					ogTitle: "OG Title 2",
-					ogDescription: "OG Description 2",
-					Category: { name: "Science", id: "2" },
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c"),
+					title: makeArticleTitle("Test Article 2"),
+					quote: makeQuote("Test quote 2"),
+					url: makeUrl("https://example2.com"),
+					ogTitle: makeOgTitle("OG Title 2"),
+					ogDescription: makeOgDescription("OG Description 2"),
+					categoryName: makeCategoryName("Science"),
 				},
 			]);
 			vi.mocked(articlesQueryRepository.count).mockResolvedValue(50);
@@ -72,8 +81,8 @@ describe("get-articles", () => {
 			expect(result).toEqual({
 				data: [
 					{
-						id: "1",
-						key: "1",
+						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b",
+						key: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b",
 						title: "Test Article 1",
 						description: "Test quote 1\nOG Title 1\nOG Description 1",
 						href: "https://example1.com",
@@ -81,8 +90,8 @@ describe("get-articles", () => {
 						secondaryBadgeText: "example1.com",
 					},
 					{
-						id: "2",
-						key: "2",
+						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c",
+						key: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c",
 						title: "Test Article 2",
 						description: "Test quote 2\nOG Title 2\nOG Description 2",
 						href: "https://example2.com",
@@ -141,22 +150,22 @@ describe("get-articles", () => {
 		test("should fetch and transform unexported articles correctly", async () => {
 			vi.mocked(articlesQueryRepository.findMany).mockResolvedValue([
 				{
-					id: "1",
-					title: "Unexported Article 1",
-					quote: "Test quote 1",
-					url: "https://example1.com",
-					Category: { name: "Tech", id: "1" },
-					ogTitle: "OG Title 1",
-					ogDescription: "OG Description 1",
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d"),
+					title: makeArticleTitle("Unexported Article 1"),
+					quote: makeQuote("Test quote 1"),
+					url: makeUrl("https://example1.com"),
+					categoryName: makeCategoryName("Tech"),
+					ogTitle: makeOgTitle("OG Title 1"),
+					ogDescription: makeOgDescription("OG Description 1"),
 				},
 				{
-					id: "2",
-					title: "Unexported Article 2",
-					quote: null,
-					url: "https://example2.com",
-					Category: { name: "Science", id: "2" },
-					ogTitle: "OG Title 2",
-					ogDescription: "OG Description 2",
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e"),
+					title: makeArticleTitle("Unexported Article 2"),
+					quote: makeQuote(null),
+					url: makeUrl("https://example2.com"),
+					categoryName: makeCategoryName("Science"),
+					ogTitle: makeOgTitle("OG Title 2"),
+					ogDescription: makeOgDescription("OG Description 2"),
 				},
 			]);
 			vi.mocked(articlesQueryRepository.count).mockResolvedValue(25);
@@ -176,8 +185,8 @@ describe("get-articles", () => {
 			expect(result).toEqual({
 				data: [
 					{
-						id: "1",
-						key: "1",
+						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d",
+						key: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d",
 						title: "Unexported Article 1",
 						description: "Test quote 1\nOG Title 1\nOG Description 1",
 						href: "https://example1.com",
@@ -185,8 +194,8 @@ describe("get-articles", () => {
 						secondaryBadgeText: "example1.com",
 					},
 					{
-						id: "2",
-						key: "2",
+						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e",
+						key: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e",
 						title: "Unexported Article 2",
 						description: "OG Title 2\nOG Description 2",
 						href: "https://example2.com",

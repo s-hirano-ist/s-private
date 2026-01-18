@@ -99,46 +99,52 @@ This project follows clean architecture principles with domain-driven design, en
 #### Directory Structure
 
 ```
-src/
-├── domains/                    # Domain Layer (Core Business Logic)
-│   ├── articles/              # News/link management domain
-│   ├── notes/                 # Markdown content domain  
-│   ├── images/                # File metadata domain
-│   ├── books/                 # ISBN-based book tracking domain
-│   ├── auth/                  # Authentication domain
-│   └── common/                # Shared domain utilities
+├── packages/                       # Monorepo packages
+│   ├── core/                       # Domain Layer (Core Business Logic)
+│   │   ├── articles/               # News/link management domain
+│   │   ├── notes/                  # Markdown content domain
+│   │   ├── images/                 # File metadata domain
+│   │   ├── books/                  # ISBN-based book tracking domain
+│   │   └── common/                 # Shared domain utilities
+│   │
+│   ├── database/                   # Database Layer
+│   │   └── prisma/                 # Prisma ORM & migrations
+│   │
+│   ├── ui/                         # Shared UI Components
+│   │   └── ui/                     # shadcn/ui components
+│   │
+│   └── notification/               # Notification services
 │
-├── application-services/       # Application Layer (Use Cases)
-│   ├── articles/              # Article-specific application services
-│   ├── notes/                 # Note-specific application services
-│   ├── images/                # Image-specific application services
-│   └── books/                 # Book-specific application services
-│
-├── infrastructures/           # Infrastructure Layer (External Concerns)
-│   ├── repositories/          # Prisma ORM implementations
-│   ├── auth/                  # Auth0 + NextAuth.js integration
-│   ├── i18n/                  # next-intl configuration
-│   └── observability/         # Sentry, logging, monitoring
-│
-├── components/                # UI Components (Interface Layer)
-│   ├── articles/              # Article-specific components
-│   ├── notes/                 # Note-specific components
-│   ├── images/                # Image-specific components
-│   ├── books/                 # Book-specific components
-│   └── ui/                    # Shared UI components (shadcn/ui)
-│
-└── app/                       # Next.js App Router
-    └── [locale]/              # Internationalized routes (en/ja)
-        ├── (dumper)/          # Dumper role pages
-        │   ├── @notes/        # Parallel route for notes
-        │   ├── @images/       # Parallel route for images
-        │   ├── @articles/     # Parallel route for articles
-        │   └── @dump/         # Parallel route for dump
-        └── (viewer)/          # Viewer role pages
-            ├── @books/        # Parallel route for books
-            ├── @notes/        # Parallel route for notes
-            ├── @images/       # Parallel route for images
-            └── @articles/     # Parallel route for articles
+└── app/src/                        # Next.js Application
+    ├── application-services/       # Application Layer (Use Cases)
+    │   ├── articles/
+    │   ├── notes/
+    │   ├── images/
+    │   └── books/
+    │
+    ├── infrastructures/            # Infrastructure Layer (External Concerns)
+    │   ├── repositories/           # Prisma ORM implementations
+    │   ├── auth/                   # Auth0 + NextAuth.js integration
+    │   ├── i18n/                   # next-intl configuration
+    │   └── observability/          # Sentry, logging, monitoring
+    │
+    ├── components/                 # UI Components (Interface Layer)
+    │   ├── articles/
+    │   ├── notes/
+    │   ├── images/
+    │   ├── books/
+    │   └── common/
+    │
+    └── app/                        # Next.js App Router
+        └── [locale]/               # Internationalized routes (en/ja)
+            ├── (dumper)/           # Dumper role pages
+            │   ├── @articles/      # Parallel route for articles
+            │   ├── @books/         # Parallel route for books
+            │   ├── @images/        # Parallel route for images
+            │   └── @notes/         # Parallel route for notes
+            ├── book/[slug]/        # Book detail page
+            ├── note/[slug]/        # Note detail page
+            └── error/              # Error page
 ```
 
 #### Domain Boundaries
@@ -153,7 +159,7 @@ Each domain is completely isolated with its own:
 
 - **Internationalization**: All routes support `[locale]` pattern for English/Japanese
 - **Parallel Routes**: Extensive use of `@name` parallel routes for complex multi-panel UIs
-- **Role-based Routing**: Separate route groups for `(dumper)` and `(viewer)` roles
+- **Role-based Routing**: Route group `(dumper)` for content management with parallel routes
 - **Server Actions**: All mutations use Next.js server actions with error boundary wrapping
 
 ### Database Architecture
@@ -176,7 +182,7 @@ Content management system with clean domain separation:
 - **User Isolation**: Every model includes `userId` for multi-tenant data separation
 - **Unique Constraints**: Comprehensive per-user unique constraints
 
-Schema location: `prisma/schema.prisma`
+Schema location: `packages/database/prisma/schema.prisma`
 
 ### Key Architectural Patterns
 
@@ -211,7 +217,7 @@ pnpm install
 ### Environment Configuration
 
 Create environment files based on the templates:
-- Copy `.env.example` to `.env.local` and configure required variables
+- Copy `app/.env.sample` to `app/.env.local` and configure required variables
 - Set up Auth0 credentials, database URLs, and external service API keys
 
 ### Database Setup
@@ -252,7 +258,7 @@ pnpm build                  # Build production application
 pnpm start                  # Start production server
 
 # Code Quality
-pnpm biome:fix             # Primary formatting and linting (Biome)
+pnpm check:fix             # Primary formatting and linting (Biome)
 pnpm lint                  # ESLint checking
 pnpm lint:fix              # ESLint with auto-fixing
 pnpm lint:inspector        # ESLint configuration inspector

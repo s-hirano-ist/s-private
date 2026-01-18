@@ -78,7 +78,7 @@ describe("parseAddImageFormData", () => {
 		const mockFile = {
 			name: "photo.jpg",
 			type: "image/jpeg",
-			size: 2048,
+			size: 1024,
 		} as File;
 
 		const mockOriginalBuffer = Buffer.from("jpeg-original-data");
@@ -90,7 +90,7 @@ describe("parseAddImageFormData", () => {
 		// Mock entity creation
 		mockMakePath.mockReturnValue("photo.jpg" as any);
 		mockMakeContentType.mockReturnValue("image/jpeg" as any);
-		mockMakeFileSize.mockReturnValue(2048 as any);
+		mockMakeFileSize.mockReturnValue(1024 as any);
 		mockFileToBuffer.mockResolvedValue(mockOriginalBuffer);
 		mockCreateThumbnail.mockResolvedValue(mockThumbnailBuffer);
 
@@ -98,13 +98,13 @@ describe("parseAddImageFormData", () => {
 
 		expect(mockMakePath).toHaveBeenCalledWith("photo.jpg", true);
 		expect(mockMakeContentType).toHaveBeenCalledWith("image/jpeg");
-		expect(mockMakeFileSize).toHaveBeenCalledWith(2048);
+		expect(mockMakeFileSize).toHaveBeenCalledWith(1024);
 
 		expect(result).toEqual({
 			userId: "test-user-id",
 			path: "photo.jpg",
 			contentType: "image/jpeg",
-			fileSize: 2048,
+			fileSize: 1024,
 			originalBuffer: mockOriginalBuffer,
 			thumbnailBuffer: mockThumbnailBuffer,
 		});

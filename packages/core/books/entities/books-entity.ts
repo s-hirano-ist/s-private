@@ -4,12 +4,12 @@ import {
 	ExportedStatus,
 	Id,
 	makeCreatedAt,
-	makeExportedStatus,
 	makeId,
 	UnexportedStatus,
 	UserId,
 } from "../../common/entities/common-entity.js";
 import { createEntityWithErrorHandling } from "../../common/services/entity-factory.js";
+import { BookCreatedEvent } from "../events/book-created-event.js";
 
 // Value objects
 
@@ -101,7 +101,11 @@ export const makeBookTitle = (v: string): BookTitle => BookTitle.parse(v);
  *
  * @see {@link makeGoogleTitle} for factory function
  */
-export const GoogleTitle = z.string().nullable().brand<"GoogleTitle">();
+export const GoogleTitle = z
+	.string()
+	.max(512, { message: "tooLong" })
+	.nullable()
+	.brand<"GoogleTitle">();
 
 /**
  * Branded type for Google Books API titles.
@@ -125,7 +129,11 @@ export const makeGoogleTitle = (v: string | null | undefined): GoogleTitle =>
  *
  * @see {@link makeGoogleSubTitle} for factory function
  */
-export const GoogleSubtitle = z.string().nullable().brand<"GoogleSubTitle">();
+export const GoogleSubtitle = z
+	.string()
+	.max(512, { message: "tooLong" })
+	.nullable()
+	.brand<"GoogleSubTitle">();
 
 /**
  * Branded type for Google Books API subtitles.
@@ -207,7 +215,11 @@ export const makeGoogleDescription = (
  *
  * @see {@link makeGoogleImgSrc} for factory function
  */
-export const GoogleImgSrc = z.string().nullable().brand<"GoogleImgSrc">();
+export const GoogleImgSrc = z
+	.string()
+	.max(1024, { message: "tooLong" })
+	.nullable()
+	.brand<"GoogleImgSrc">();
 
 /**
  * Branded type for Google Books API image URLs.
@@ -231,7 +243,11 @@ export const makeGoogleImgSrc = (v: string | null | undefined): GoogleImgSrc =>
  *
  * @see {@link makeGoogleHref} for factory function
  */
-export const GoogleHref = z.string().nullable().brand<"GoogleHref">();
+export const GoogleHref = z
+	.string()
+	.max(1024, { message: "tooLong" })
+	.nullable()
+	.brand<"GoogleHref">();
 
 /**
  * Branded type for Google Books API links.
@@ -279,7 +295,11 @@ export const makeBookMarkdown = (v: string | null): BookMarkdown =>
  *
  * @see {@link makeBookImagePath} for factory function
  */
-export const BookImagePath = z.string().nullable().brand<"BookImagePath">();
+export const BookImagePath = z
+	.string()
+	.max(512, { message: "tooLong" })
+	.nullable()
+	.brand<"BookImagePath">();
 
 /**
  * Branded type for book image paths.
@@ -308,7 +328,7 @@ const Base = z.object({
 	ISBN: ISBN,
 	title: BookTitle,
 	googleTitle: GoogleTitle.optional(),
-	googleSubtitle: GoogleSubtitle.optional(),
+	googleSubTitle: GoogleSubtitle.optional(),
 	googleAuthors: GoogleAuthors.optional(),
 	googleDescription: GoogleDescription.optional(),
 	googleImgSrc: GoogleImgSrc.optional(),
@@ -369,6 +389,7 @@ export type ExportedBook = Readonly<z.infer<typeof ExportedBook>>;
  *   userId: makeUserId("user-123"),
  *   ISBN: makeISBN("978-4-06-521234-5"),
  *   title: makeBookTitle("The Pragmatic Programmer"),
+ *   caller: "addBook",
  * };
  * ```
  */
@@ -381,7 +402,14 @@ export type CreateBookArgs = Readonly<{
 	title: BookTitle;
 	/** Optional path to user-uploaded book cover image */
 	imagePath?: BookImagePath;
+	/** The caller identifier for event tracking */
+	caller: string;
 }>;
+
+/**
+ * Return type for book creation: tuple of [entity, event].
+ */
+export type BookWithEvent = readonly [UnexportedBook, BookCreatedEvent];
 
 /**
  * Factory object for Book domain entity operations.
@@ -389,57 +417,88 @@ export type CreateBookArgs = Readonly<{
  * @remarks
  * Provides immutable entity creation following DDD patterns.
  * All returned entities are frozen using Object.freeze().
+ * Returns a tuple of [entity, event] for domain event dispatching.
  *
  * @example
  * ```typescript
- * // Create a new unexported book
- * const book = bookEntity.create({
+ * // Create a new unexported book with its domain event
+ * const [book, event] = bookEntity.create({
  *   userId: makeUserId("user-123"),
  *   ISBN: makeISBN("978-4-06-521234-5"),
  *   title: makeBookTitle("The Pragmatic Programmer"),
+ *   caller: "addBook",
  * });
  *
- * // Export the book (changes status to EXPORTED)
- * const exported = bookEntity.export(book);
+ * // Persist and dispatch event
+ * await repository.create(book);
+ * await eventDispatcher.dispatch(event);
  * ```
  *
  * @see {@link CreateBookArgs} for creation parameters
+ * @see {@link BookWithEvent} for return type
  */
 export const bookEntity = {
 	/**
-	 * Creates a new unexported book entity.
+	 * Creates a new unexported book entity with its domain event.
 	 *
 	 * @param args - The creation arguments containing required fields
-	 * @returns A frozen UnexportedBook instance with generated id and timestamps
+	 * @returns A tuple of [UnexportedBook, BookCreatedEvent]
 	 * @throws {InvalidFormatError} When validation of any field fails
 	 * @throws {UnexpectedError} For unexpected errors during creation
 	 */
-	create: (args: CreateBookArgs): UnexportedBook => {
-		return createEntityWithErrorHandling(() =>
+	create: (args: CreateBookArgs): BookWithEvent => {
+		const { caller, ...entityArgs } = args;
+		const book = createEntityWithErrorHandling(() =>
 			Object.freeze({
 				id: makeId(),
 				status: "UNEXPORTED",
 				createdAt: makeCreatedAt(),
-				...args,
+				...entityArgs,
 			}),
 		);
-	},
 
-	/**
-	 * Transitions a book from UNEXPORTED to EXPORTED status.
-	 *
-	 * @param book - The unexported book to export
-	 * @returns A frozen ExportedBook with exportedAt timestamp
-	 * @throws {InvalidFormatError} When the book state is invalid
-	 * @throws {UnexpectedError} For unexpected errors during export
-	 */
-	export: (book: UnexportedBook): ExportedBook => {
-		return createEntityWithErrorHandling(() => {
-			const exportedStatus = makeExportedStatus();
-			return Object.freeze({
-				...book,
-				...exportedStatus,
-			});
+		const event = new BookCreatedEvent({
+			ISBN: book.ISBN as string,
+			title: book.title as string,
+			userId: book.userId as string,
+			caller,
 		});
+
+		return [book, event] as const;
 	},
 };
+
+// DTO Types
+
+/**
+ * DTO for book list display.
+ *
+ * @remarks
+ * Contains fields needed for list views, with branded types.
+ */
+export type BookListItemDTO = Readonly<{
+	id: Id;
+	ISBN: ISBN;
+	title: BookTitle;
+	googleImgSrc: GoogleImgSrc | undefined;
+	imagePath: BookImagePath | undefined;
+}>;
+
+/**
+ * DTO for book search results.
+ *
+ * @remarks
+ * Contains fields needed for search display, with branded types.
+ */
+export type BookSearchItemDTO = Readonly<{
+	id: Id;
+	ISBN: ISBN;
+	title: BookTitle;
+	googleTitle: GoogleTitle | undefined;
+	googleSubTitle: GoogleSubtitle | undefined;
+	googleAuthors: GoogleAuthors | undefined;
+	googleDescription: GoogleDescription | undefined;
+	markdown: BookMarkdown | undefined;
+	rating: number | null;
+	tags: string[];
+}>;

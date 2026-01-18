@@ -1,6 +1,6 @@
 # ドメインモデル図
 
-このドキュメントは、`src/domains/` 配下で定義されているドメインモデルの構造と関係性を可視化しています。
+このドキュメントは、`packages/core/` 配下で定義されているドメインモデルの構造と関係性を可視化しています。
 
 ## ドメイン概要
 
@@ -19,21 +19,23 @@
 erDiagram
     %% Common Domain Value Objects
     Status {
-        enum status "UNEXPORTED | EXPORTED"
+        literal UNEXPORTED "初期状態"
+        literal LAST_UPDATED "バッチ処理中"
+        object EXPORTED "{ status: EXPORTED, exportedAt: Date }"
     }
-    
+
     Id {
         string id "UUID v7"
     }
-    
+
     UserId {
         string userId "User identifier"
     }
-    
+
     CreatedAt {
         date createdAt "Creation timestamp"
     }
-    
+
     ExportedAt {
         date exportedAt "Export timestamp (nullable)"
     }
@@ -43,17 +45,17 @@ erDiagram
         Id id PK
         UserId userId FK
         CategoryName categoryName
-        Id categoryId FK
         ArticleTitle title
         Quote quote "nullable"
         Url url
         Status status
         OgTitle ogTitle "nullable"
         OgDescription ogDescription "nullable"
+        OgImageUrl ogImageUrl "nullable"
         CreatedAt createdAt
         ExportedAt exportedAt "nullable"
     }
-    
+
     Category {
         Id id PK
         CategoryName name
@@ -106,7 +108,6 @@ erDiagram
     }
 
     %% Relationships
-    Article ||--o{ Category : "belongs to"
     Category ||--o{ Article : "has many"
 ```
 
@@ -115,46 +116,38 @@ erDiagram
 ```mermaid
 graph TB
     subgraph "Common Domain"
-        CommonEntity[Common Entity]
         IdGenerator[ID Generator Service]
-        CommonTypes[Common Value Objects<br/>• Id<br/>• UserId<br/>• Status<br/>• CreatedAt<br/>• ExportedAt]
+        CommonTypes[Common Value Objects<br/>Id, UserId, Status, CreatedAt, ExportedAt]
     end
 
     subgraph "Articles Domain"
-        ArticleEntity[Article Entity]
-        CategoryEntity[Category Entity]
-        ArticleRepo[Article Repository Interface]
-        CategoryRepo[Category Repository Interface]
-        ArticleService[Articles Domain Service]
-        ArticleTypes[Article Value Objects<br/>• ArticleTitle<br/>• CategoryName<br/>• Url<br/>• Quote<br/>• OgTitle<br/>• OgDescription]
+        ArticleEntity[Article / Category]
+        ArticleRepo[Repository Interfaces]
+        ArticleService[Domain Service<br/>重複URL検証]
     end
 
     subgraph "Books Domain"
-        BookEntity[Book Entity]
-        BookRepo[Books Repository Interface]
-        BookService[Books Domain Service]
-        BookTypes[Book Value Objects<br/>• ISBN<br/>• BookTitle<br/>• GoogleTitle<br/>• GoogleSubTitle<br/>• GoogleAuthors<br/>• GoogleDescription<br/>• GoogleImgSrc<br/>• GoogleHref<br/>• BookMarkdown]
+        BookEntity[Book]
+        BookRepo[Repository Interfaces]
+        BookService[Domain Service<br/>重複ISBN検証]
     end
 
     subgraph "Notes Domain"
-        NoteEntity[Note Entity]
-        NoteRepo[Notes Repository Interface]
-        NoteService[Notes Domain Service]
-        NoteTypes[Note Value Objects<br/>• NoteTitle<br/>• Markdown]
+        NoteEntity[Note]
+        NoteRepo[Repository Interfaces]
+        NoteService[Domain Service<br/>重複タイトル検証]
     end
 
     subgraph "Images Domain"
-        ImageEntity[Image Entity]
-        ImageRepo[Images Repository Interface]
-        ImageTypes[Image Value Objects<br/>• Path<br/>• ContentType<br/>• FileSize<br/>• Pixel<br/>• Tag<br/>• Description<br/>• OriginalBuffer<br/>• ThumbnailBuffer]
+        ImageEntity[Image]
+        ImageRepo[Repository Interfaces]
     end
 
-    %% Dependencies (all domains depend on Common)
     ArticleEntity --> CommonTypes
     BookEntity --> CommonTypes
     NoteEntity --> CommonTypes
     ImageEntity --> CommonTypes
-    
+
     ArticleEntity --> IdGenerator
     BookEntity --> IdGenerator
     NoteEntity --> IdGenerator
@@ -165,28 +158,14 @@ graph TB
     NoteService --> NoteRepo
 ```
 
-## ドメインサービスの責務
+### ドメインサービスの責務
 
-```mermaid
-graph LR
-    subgraph "Domain Services"
-        ArticlesDomainService[Articles Domain Service<br/>• 重複URL検証]
-        BooksDomainService[Books Domain Service<br/>• 重複ISBN検証]
-        NotesDomainService[Notes Domain Service<br/>• 重複タイトル検証]
-        IdGeneratorService[ID Generator Service<br/>• UUID v7生成]
-    end
-
-    subgraph "Repository Interfaces"
-        ArticlesRepo[Articles Repository<br/>• findByUrl<br/>• create<br/>• deleteById]
-        BooksRepo[Books Repository<br/>• findByISBN<br/>• create<br/>• deleteById]
-        NotesRepo[Notes Repository<br/>• findByTitle<br/>• create<br/>• deleteById]
-        ImagesRepo[Images Repository<br/>• create<br/>• deleteById]
-    end
-
-    ArticlesDomainService --> ArticlesRepo
-    BooksDomainService --> BooksRepo
-    NotesDomainService --> NotesRepo
-```
+| ドメインサービス | 主な責務 | 使用するリポジトリメソッド |
+|-----------------|---------|------------------------|
+| ArticlesDomainService | 重複URL検証 | findByUrl |
+| BooksDomainService | 重複ISBN検証 | findByISBN |
+| NotesDomainService | 重複タイトル検証 | findByTitle |
+| IdGeneratorService | UUID v7生成 | - |
 
 ## 共通ライフサイクル
 
@@ -194,39 +173,178 @@ graph LR
 
 ```mermaid
 stateDiagram-v2
-    [*] --> UNEXPORTED : create()<br/>createdAt設定
-    UNEXPORTED --> EXPORTED : export<br/>exportedAt設定
+    [*] --> UNEXPORTED : create()
+    UNEXPORTED --> LAST_UPDATED : バッチ処理開始
+    LAST_UPDATED --> EXPORTED : バッチ処理完了
+    LAST_UPDATED --> UNEXPORTED : revert
     EXPORTED --> [*] : delete
-    
-    note right of UNEXPORTED
-        新規作成時の初期状態
-        ユーザーが編集可能
-        createdAt: 作成日時
-        exportedAt: null
-    end note
-    
-    note right of EXPORTED
-        エクスポート済み
-        読み取り専用
-        exportedAt: エクスポート日時
-    end note
 ```
 
-## 特徴
+- **UNEXPORTED**: 新規作成時の初期状態。ユーザーが編集可能。`exportedAt: null`
+- **LAST_UPDATED**: バッチ処理中の中間状態。エクスポート待ち
+- **EXPORTED**: エクスポート済み。読み取り専用。`exportedAt`にエクスポート日時が設定される
 
-### Value Objects の活用
-- 全ての値は適切に型付けされた Value Objects として定義
-- Zod を使用した実行時バリデーション
-- Brand Types による型安全性の確保
+## 集約（Aggregate）境界
 
-### Repository パターン
-- 各ドメインに Command と Query の Repository インターフェースを分離
-- 依存性逆転の原則に従った設計
+DDDにおける集約は、データ変更のための整合性境界を定義します。
 
-### ドメインサービス
-- 複雑なビジネスロジック（重複チェック等）をドメインサービスに配置
-- 各ドメインの固有ルールを適切にカプセル化
+```mermaid
+graph TB
+    subgraph "Articles Aggregate"
+        ArticleRoot["📦 Article<br/>(集約ルート)"]
+        ArticleCategory["Category<br/>(参照のみ)"]
+        ArticleRoot -.->|"categoryId参照"| ArticleCategory
+    end
 
-### エンティティファクトリー
-- エンティティの生成ロジックをファクトリーメソッドとして実装
-- 不正な状態のオブジェクト生成を防止
+    subgraph "Other Aggregates"
+        BookRoot["📦 Book"]
+        NoteRoot["📦 Note"]
+        ImageRoot["📦 Image"]
+    end
+
+    style ArticleRoot fill:#e1f5fe
+    style BookRoot fill:#e1f5fe
+    style NoteRoot fill:#e1f5fe
+    style ImageRoot fill:#e1f5fe
+    style ArticleCategory fill:#fff9c4
+```
+
+### 集約の詳細と不変条件
+
+| 集約 | 集約ルート | 不変条件 | 検証サービス |
+|------|-----------|----------|-------------|
+| **Articles** | Article | URLはユーザーごとに一意 | `ArticlesDomainService.ensureNoDuplicate` |
+| **Books** | Book | ISBNはユーザーごとに一意 | `BooksDomainService.ensureNoDuplicate` |
+| **Notes** | Note | タイトルはユーザーごとに一意 | `NotesDomainService.ensureNoDuplicate` |
+| **Images** | Image | パスはユーザーごとに一意 | `ImagesDomainService.ensureNoDuplicate` |
+
+全集約共通: ステータス遷移は UNEXPORTED → LAST_UPDATED → EXPORTED
+
+### 設計上の考慮事項
+
+- **Categoryの位置付け**: Articleはドメイン層で`categoryName`（値オブジェクト）を保持し、インフラ層で`categoryId`（FK）として永続化。`connectOrCreate`パターンで管理
+- **トランザクション境界**: 各集約は独立してトランザクション整合性を保証
+- **リポジトリの責任**: 各集約ルートに対して1つのCommand/Queryリポジトリペアを定義
+
+## Application Service層
+
+Application Service層は、ドメインロジックとインフラストラクチャ層をつなぐ役割を担います。認証・認可とビジネスロジックを分離した設計になっています。
+
+### ファイル構成パターン
+
+```
+app/src/application-services/{domain}/
+├── {action}.deps.ts    ← 依存の型定義とデフォルト値
+├── {action}.core.ts    ← Core関数（ビジネスロジック、"use server"なし）
+├── {action}.ts         ← Server Action wrapper（認証・認可のみ）
+└── {action}.test.ts    ← テスト（Core関数を直接テスト）
+```
+
+| ファイル | 責務 | "use server" |
+|---------|------|-------------|
+| `*.deps.ts` | 依存の型定義（Repository, Domain Service Factory）とデフォルト値 | なし |
+| `*.core.ts` | ビジネスロジック（フォームパース、ドメイン検証、永続化、キャッシュ無効化） | なし |
+| `*.ts` | Server Action（認証・認可チェック後にCoreを呼び出し） | あり |
+| `*.test.ts` | Core関数のユニットテスト（モック依存注入） | なし |
+
+### 設計原則
+
+```typescript
+// add-article.ts (Server Action) - 認証・認可のみ
+"use server";
+export async function addArticle(formData: FormData): Promise<ServerAction> {
+  const hasPermission = await hasDumperPostPermission();
+  if (!hasPermission) forbidden();
+  return addArticleCore(formData, defaultAddArticleDeps);
+}
+
+// add-article.core.ts (Core関数) - ビジネスロジック
+import "server-only";
+export async function addArticleCore(formData: FormData, deps: AddArticleDeps): Promise<ServerAction> {
+  // フォームパース、重複チェック、エンティティ作成、永続化
+}
+```
+
+**セキュリティ**: Core関数は`"use server"`の外に配置し、`import "server-only"`でクライアント側インポートを防止。クライアントからはServer Actionのみ呼び出し可能。
+
+**テスタビリティ**: Core関数は依存性注入（DI）で設計。テスト時にモック依存を注入可能。
+
+### アーキテクチャ図
+
+```mermaid
+graph TB
+    subgraph "Client"
+        ClientComponent[React Component]
+    end
+
+    subgraph "Server Action Layer"
+        SA["Server Action<br/>(認証・認可)"]
+    end
+
+    subgraph "Core Layer"
+        Core["Core Function<br/>(ビジネスロジック)"]
+    end
+
+    subgraph "Dependencies"
+        Repo[Command Repository]
+        DSF[Domain Service Factory]
+    end
+
+    subgraph "Domain Layer"
+        DS[Domain Service]
+        Entity[Entity Factory]
+    end
+
+    ClientComponent -->|"呼び出し可能"| SA
+    ClientComponent -.->|"呼び出し不可<br/>(server-only)"| Core
+    SA -->|"権限チェック後"| Core
+    Core --> Repo
+    Core --> DSF
+    Core --> DS
+    Core --> Entity
+
+    style SA fill:#e3f2fd
+    style Core fill:#fff3e0
+    style ClientComponent fill:#e8f5e9
+```
+
+## 設計の特徴
+
+- **Value Objects**: 全ての値は適切に型付けされた Value Objects として定義。Zodによる実行時バリデーションとBrand Typesによる型安全性
+- **Repositoryパターン**: 各ドメインにCommand/Queryリポジトリを分離。依存性逆転の原則に従った設計
+- **ドメインサービス**: 複雑なビジネスロジック（重複チェック等）を配置し、各ドメインの固有ルールをカプセル化
+- **エンティティファクトリー**: エンティティの生成ロジックをファクトリーメソッドとして実装し、不正な状態のオブジェクト生成を防止
+
+## DDDからの意図的な逸脱
+
+このドキュメントでは、DDDの原則から意図的に外れる設計判断とその理由を記載します。
+
+### 001: 状態遷移ルールがバッチサービスに存在する
+
+#### 概要
+
+状態遷移ロジック（`UNEXPORTED → LAST_UPDATED → EXPORTED`）がエンティティ外のバッチサービスに存在しています。
+
+#### DDDの原則との乖離
+
+- 状態遷移ルールがエンティティ外に存在
+- 不正な状態遷移を型レベルで防げない
+- DDDの原則（エンティティがビジネスルールを持つ）に反する
+
+#### 対応しない理由
+
+**パフォーマンス優先**: バッチ処理で `updateMany` による一括ステータス更新を行いたいため。
+
+エンティティに状態遷移メソッドを追加すると、各レコードを個別に取得・更新する必要があり、大量データのバッチ処理で著しいパフォーマンス低下を招きます。
+
+#### 対象ファイル
+
+- `packages/core/articles/services/articles-batch-domain-service.ts`
+- `packages/core/notes/services/notes-batch-domain-service.ts`
+- `packages/core/books/services/books-batch-domain-service.ts`
+- `packages/core/images/services/images-batch-domain-service.ts`
+
+#### リスク軽減策
+
+- バッチサービス内に状態遷移ロジックをコメントで明記
+- 状態遷移を行うメソッドをバッチサービスに集約し、分散を防ぐ

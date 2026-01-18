@@ -34,6 +34,13 @@ import type { UnexportedNote } from "../entities/note-entity.js";
  * @see {@link INotesQueryRepository} for read operations
  * @see {@link IBatchCommandRepository} for batch operations
  */
+/**
+ * Result of a delete operation containing data needed for events.
+ */
+export type DeleteNoteResult = {
+	title: string;
+};
+
 export type INotesCommandRepository = {
 	/**
 	 * Creates a new note in the repository.
@@ -48,6 +55,7 @@ export type INotesCommandRepository = {
 	 * @param id - The note ID to delete
 	 * @param userId - The user ID for tenant isolation
 	 * @param status - The expected status of the note
+	 * @returns The deleted note data needed for domain events
 	 */
-	deleteById(id: Id, userId: UserId, status: Status): Promise<void>;
+	deleteById(id: Id, userId: UserId, status: Status): Promise<DeleteNoteResult>;
 };
