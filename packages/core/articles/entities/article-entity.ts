@@ -281,7 +281,6 @@ const Base = z.object({
 	id: Id,
 	userId: UserId,
 	categoryName: CategoryName,
-	categoryId: Id,
 	title: ArticleTitle,
 	quote: Quote,
 	url: Url,
@@ -334,7 +333,7 @@ export type ExportedArticle = Readonly<z.infer<typeof ExportedArticle>>;
  *
  * @remarks
  * Provides the required fields for article creation.
- * The id, categoryId, createdAt, and status are auto-generated.
+ * The id, createdAt, and status are auto-generated.
  *
  * @example
  * ```typescript
@@ -395,7 +394,6 @@ export const articleEntity = {
 			Object.freeze({
 				id: makeId(),
 				status: "UNEXPORTED",
-				categoryId: makeId(),
 				createdAt: makeCreatedAt(),
 				...args,
 			}),

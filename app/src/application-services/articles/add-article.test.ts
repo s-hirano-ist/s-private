@@ -110,7 +110,6 @@ describe("addArticle", () => {
 			url: makeUrl("https://example.com/article"),
 			quote: makeQuote("Test quote"),
 			categoryName: makeCategoryName("tech"),
-			categoryId: makeId("01933f5c-9df0-7001-8123-456789abcde0"),
 			userId: makeUserId("user-123"),
 			status: "UNEXPORTED",
 			createdAt: makeCreatedAt(),

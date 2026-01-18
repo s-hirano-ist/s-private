@@ -47,7 +47,6 @@ describe("ArticlesCommandRepository", () => {
 				id: makeId("01234567-89ab-7def-9123-456789abcdef"),
 				status: makeUnexportedStatus(),
 				categoryName: makeCategoryName("tech"),
-				categoryId: makeId("01234567-89ab-7def-8123-456789abcde0"),
 				createdAt: makeCreatedAt(),
 			});
 
@@ -77,7 +76,6 @@ describe("ArticlesCommandRepository", () => {
 				url: makeUrl("https://example.com/article/2"),
 				quote: makeQuote(null),
 				categoryName: makeCategoryName("tech"),
-				categoryId: makeId("0198bfc4-444e-73e8-9ef6-eb9b250ed1ae"),
 				userId: makeUserId("user123"),
 				id: makeId("0198bfc4-444f-71eb-8e78-4005df127ffd"),
 				status: makeUnexportedStatus(),
@@ -102,7 +100,6 @@ describe("ArticlesCommandRepository", () => {
 					id: makeId("01234567-89ab-7def-9123-456789abcdef"),
 					status: makeUnexportedStatus(),
 					categoryName: makeCategoryName("tech"),
-					categoryId: makeId("01234567-89ab-7def-8123-456789abcde0"),
 					createdAt: makeCreatedAt(),
 				}),
 			).rejects.toThrow("Database constraint error");

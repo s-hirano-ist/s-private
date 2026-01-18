@@ -146,7 +146,6 @@ describe("articleEntity", () => {
 			expect(article.url).toBe("https://example.com");
 			expect(article.status).toBe("UNEXPORTED");
 			expect(article.id).toBeDefined();
-			expect(article.categoryId).toBeDefined();
 		});
 
 		test("should create article with optional quote", () => {
@@ -183,7 +182,7 @@ describe("articleEntity", () => {
 			expect(Object.isFrozen(article)).toBe(true);
 		});
 
-		test("should generate IDs for article and category", () => {
+		test("should generate ID for article", () => {
 			const article = articleEntity.create({
 				userId: makeUserId("test-user-id"),
 				categoryName: makeCategoryName("Tech"),
@@ -192,11 +191,8 @@ describe("articleEntity", () => {
 			});
 
 			expect(article.id).toBeDefined();
-			expect(article.categoryId).toBeDefined();
 			expect(typeof article.id).toBe("string");
-			expect(typeof article.categoryId).toBe("string");
 			expect(article.id.length).toBeGreaterThan(0);
-			expect(article.categoryId.length).toBeGreaterThan(0);
 		});
 
 		test("should use createEntityWithErrorHandling for exception handling", () => {

@@ -7,6 +7,7 @@ import type {
 	Status,
 	UserId,
 } from "@s-hirano-ist/s-core/common/entities/common-entity";
+import { uuidv7 } from "@s-hirano-ist/s-core/common/services/id-generator";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
 import prisma from "@/prisma";
@@ -33,7 +34,7 @@ async function create(data: UnexportedArticle) {
 					create: {
 						name: data.categoryName,
 						userId: data.userId,
-						id: data.categoryId,
+						id: uuidv7(),
 						createdAt: data.createdAt,
 					},
 				},
