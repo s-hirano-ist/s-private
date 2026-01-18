@@ -100,7 +100,11 @@ export const makeBookTitle = (v: string): BookTitle => BookTitle.parse(v);
  *
  * @see {@link makeGoogleTitle} for factory function
  */
-export const GoogleTitle = z.string().nullable().brand<"GoogleTitle">();
+export const GoogleTitle = z
+	.string()
+	.max(512, { message: "tooLong" })
+	.nullable()
+	.brand<"GoogleTitle">();
 
 /**
  * Branded type for Google Books API titles.
@@ -124,7 +128,11 @@ export const makeGoogleTitle = (v: string | null | undefined): GoogleTitle =>
  *
  * @see {@link makeGoogleSubTitle} for factory function
  */
-export const GoogleSubtitle = z.string().nullable().brand<"GoogleSubTitle">();
+export const GoogleSubtitle = z
+	.string()
+	.max(512, { message: "tooLong" })
+	.nullable()
+	.brand<"GoogleSubTitle">();
 
 /**
  * Branded type for Google Books API subtitles.
@@ -206,7 +214,11 @@ export const makeGoogleDescription = (
  *
  * @see {@link makeGoogleImgSrc} for factory function
  */
-export const GoogleImgSrc = z.string().nullable().brand<"GoogleImgSrc">();
+export const GoogleImgSrc = z
+	.string()
+	.max(1024, { message: "tooLong" })
+	.nullable()
+	.brand<"GoogleImgSrc">();
 
 /**
  * Branded type for Google Books API image URLs.
@@ -230,7 +242,11 @@ export const makeGoogleImgSrc = (v: string | null | undefined): GoogleImgSrc =>
  *
  * @see {@link makeGoogleHref} for factory function
  */
-export const GoogleHref = z.string().nullable().brand<"GoogleHref">();
+export const GoogleHref = z
+	.string()
+	.max(1024, { message: "tooLong" })
+	.nullable()
+	.brand<"GoogleHref">();
 
 /**
  * Branded type for Google Books API links.
@@ -278,7 +294,11 @@ export const makeBookMarkdown = (v: string | null): BookMarkdown =>
  *
  * @see {@link makeBookImagePath} for factory function
  */
-export const BookImagePath = z.string().nullable().brand<"BookImagePath">();
+export const BookImagePath = z
+	.string()
+	.max(512, { message: "tooLong" })
+	.nullable()
+	.brand<"BookImagePath">();
 
 /**
  * Branded type for book image paths.

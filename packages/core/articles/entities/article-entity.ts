@@ -152,6 +152,7 @@ export const makeQuote = (v: string | null | undefined): Quote =>
 export const Url = z
 	.url({ message: "invalidFormat" })
 	.min(1, { message: "required" })
+	.max(1024, { message: "tooLong" })
 	.refine(
 		(url: string) => {
 			try {
@@ -195,7 +196,12 @@ export const makeUrl = (v: string): Url => Url.parse(v);
  *
  * @see {@link makeOgTitle} for factory function
  */
-export const OgTitle = z.string().nullable().optional().brand<"OgTitle">();
+export const OgTitle = z
+	.string()
+	.max(512, { message: "tooLong" })
+	.nullable()
+	.optional()
+	.brand<"OgTitle">();
 
 /**
  * Branded type for validated OG titles.
@@ -222,6 +228,7 @@ export const makeOgTitle = (v: string | null | undefined): OgTitle =>
  */
 export const OgDescription = z
 	.string()
+	.max(1024, { message: "tooLong" })
 	.nullable()
 	.optional()
 	.brand<"OgDescription">();
@@ -252,6 +259,7 @@ export const makeOgDescription = (
  */
 export const OgImageUrl = z
 	.string()
+	.max(1024, { message: "tooLong" })
 	.nullable()
 	.optional()
 	.brand<"OgImageUrl">();

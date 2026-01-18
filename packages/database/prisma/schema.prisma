@@ -14,38 +14,38 @@ enum Status {
 }
 
 model Category {
-  id String @id
+  id String @id @db.VarChar(36)
 
-  name String
+  name String @db.VarChar(16)
 
   Articles Article[]
 
   createdAt DateTime @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  userId String @map("user_id")
+  userId String @map("user_id") @db.VarChar(128)
 
   @@unique([name, userId])
   @@map("categories")
 }
 
 model Article {
-  id String @id
+  id String @id @db.VarChar(36)
 
-  title String
-  url   String
-  quote String?
+  title String @db.VarChar(128)
+  url   String @db.VarChar(2048)
+  quote String? @db.VarChar(512)
 
-  ogImageUrl    String? @map("og_image_url")
-  ogTitle       String? @map("og_title")
-  ogDescription String? @map("og_description")
+  ogImageUrl    String? @map("og_image_url") @db.VarChar(2048)
+  ogTitle       String? @map("og_title") @db.VarChar(512)
+  ogDescription String? @map("og_description") @db.VarChar(1024)
 
   Category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  categoryId String   @map("category_id")
+  categoryId String   @map("category_id") @db.VarChar(36)
 
   status Status
 
-  userId String @map("user_id")
+  userId String @map("user_id") @db.VarChar(128)
 
   createdAt  DateTime  @map("created_at")
   updatedAt  DateTime  @updatedAt @map("updated_at")
@@ -56,14 +56,14 @@ model Article {
 }
 
 model Note {
-  id String @id
+  id String @id @db.VarChar(36)
 
-  title    String
-  markdown String
+  title    String @db.VarChar(64)
+  markdown String @db.Text
 
   status Status
 
-  userId String @map("user_id")
+  userId String @map("user_id") @db.VarChar(128)
 
   createdAt  DateTime  @map("created_at")
   updatedAt  DateTime  @updatedAt @map("updated_at")
@@ -74,19 +74,19 @@ model Note {
 }
 
 model Image {
-  id String @id
+  id String @id @db.VarChar(36)
 
-  path        String
-  contentType String   @map("content_type") // e.g.: image/jpeg, image/png
+  path        String   @db.VarChar(512)
+  contentType String   @map("content_type") @db.VarChar(32) // e.g.: image/jpeg, image/png
   fileSize    Int?     @map("file_size") // byte
   width       Int? // pixel
   height      Int? // pixel
   tags        String[]
-  description String?
+  description String?  @db.VarChar(1024)
 
   status Status
 
-  userId String @map("user_id")
+  userId String @map("user_id") @db.VarChar(128)
 
   createdAt  DateTime  @map("created_at")
   updatedAt  DateTime  @updatedAt @map("updated_at")
@@ -97,27 +97,27 @@ model Image {
 }
 
 model Book {
-  id    String @id
-  ISBN  String @map("isbn")
-  title String
+  id    String @id @db.VarChar(36)
+  ISBN  String @map("isbn") @db.VarChar(17)
+  title String @db.VarChar(256)
 
-  googleTitle       String?  @map("google_title")
-  googleSubTitle    String?  @map("google_subtitle")
+  googleTitle       String?  @map("google_title") @db.VarChar(512)
+  googleSubTitle    String?  @map("google_subtitle") @db.VarChar(512)
   googleAuthors     String[] @map("google_authors")
-  googleDescription String?  @map("google_description")
-  googleImgSrc      String?  @map("google_img_src")
-  googleHref        String?  @map("google_href")
+  googleDescription String?  @map("google_description") @db.Text
+  googleImgSrc      String?  @map("google_img_src") @db.VarChar(2048)
+  googleHref        String?  @map("google_href") @db.VarChar(2048)
 
-  imagePath String? @map("image_path")
+  imagePath String? @map("image_path") @db.VarChar(512)
 
-  markdown String?
+  markdown String? @db.Text
 
   rating Int? // 1-5
   tags   String[]
 
   status Status
 
-  userId String @map("user_id")
+  userId String @map("user_id") @db.VarChar(128)
 
   createdAt  DateTime  @map("created_at")
   updatedAt  DateTime  @updatedAt @map("updated_at")

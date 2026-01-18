@@ -86,7 +86,7 @@ describe("ImageCommandRepository", () => {
 				contentType: makeContentType("image/jpeg"),
 				status: makeUnexportedStatus(),
 				id: makeId("01234567-89ab-7def-8123-456789abcde1"),
-				fileSize: makeFileSize(2048),
+				fileSize: makeFileSize(1024),
 				width: makePixel(640),
 				height: makePixel(480),
 				createdAt: makeCreatedAt(),

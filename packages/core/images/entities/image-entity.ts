@@ -29,7 +29,11 @@ import { idGenerator } from "../../common/services/id-generator.js";
  *
  * @see {@link makePath} for factory function
  */
-export const Path = z.string().min(1).brand<"Path">();
+export const Path = z
+	.string()
+	.min(1)
+	.max(512, { message: "tooLong" })
+	.brand<"Path">();
 
 /**
  * Branded type for validated image paths.
@@ -195,7 +199,12 @@ export const makeTag = (v: string): Tag => Tag.parse(v);
  *
  * @see {@link makeDescription} for factory function
  */
-export const Description = z.string().min(1).optional().brand<"Description">();
+export const Description = z
+	.string()
+	.min(1)
+	.max(1024, { message: "tooLong" })
+	.optional()
+	.brand<"Description">();
 
 /**
  * Branded type for validated descriptions.
