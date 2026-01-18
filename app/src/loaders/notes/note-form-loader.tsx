@@ -1,7 +1,7 @@
 import "server-only";
 
 import type { ServerAction } from "@/common/types";
-import { NoteForm } from "@/components/notes/server/note-form";
+import { NoteFormClient } from "@/components/notes/client/note-form-client";
 import type { BaseLoaderProps } from "@/loaders/types";
 
 export type NoteFormLoaderProps = BaseLoaderProps & {
@@ -9,5 +9,5 @@ export type NoteFormLoaderProps = BaseLoaderProps & {
 };
 
 export async function NoteFormLoader({ addNote }: NoteFormLoaderProps) {
-	return <NoteForm addNote={addNote} />;
+	return <NoteFormClient addNote={addNote} />;
 }

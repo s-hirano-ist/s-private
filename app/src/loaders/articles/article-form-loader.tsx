@@ -2,7 +2,7 @@ import "server-only";
 
 import { getCategories } from "@/application-services/articles/get-articles";
 import type { ServerAction } from "@/common/types";
-import { ArticleForm } from "@/components/articles/server/article-form";
+import { ArticleFormClient } from "@/components/articles/client/article-form-client";
 import type { BaseLoaderProps } from "@/loaders/types";
 
 export type ArticleFormLoaderProps = BaseLoaderProps & {
@@ -14,5 +14,5 @@ export async function ArticleFormLoader({
 }: ArticleFormLoaderProps) {
 	const categories = await getCategories();
 
-	return <ArticleForm addArticle={addArticle} categories={categories} />;
+	return <ArticleFormClient addArticle={addArticle} categories={categories} />;
 }
