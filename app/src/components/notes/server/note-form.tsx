@@ -5,6 +5,6 @@ type Props = {
 	addNote: (formData: FormData) => Promise<ServerAction>;
 };
 
-export async function NoteForm({ addNote }: Props) {
+export function NoteForm({ addNote }: Props) {
 	return <NoteFormClient addNote={addNote} />;
 }

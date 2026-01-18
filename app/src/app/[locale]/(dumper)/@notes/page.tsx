@@ -3,11 +3,6 @@ import { Suspense } from "react";
 import { addNote } from "@/application-services/notes/add-note";
 import { deleteNote } from "@/application-services/notes/delete-note";
 import {
-	getExportedNotes,
-	getExportedNotesCount,
-	getUnexportedNotes,
-} from "@/application-services/notes/get-notes";
-import {
 	loadMoreExportedNotes,
 	loadMoreUnexportedNotes,
 } from "@/application-services/notes/get-notes-from-client";
@@ -17,9 +12,11 @@ import {
 } from "@/common/auth/session";
 import { ErrorPermissionBoundary } from "@/components/common/layouts/error-permission-boundary";
 import { LazyTabContent } from "@/components/common/lazy-tab-content";
-import { NoteForm } from "@/components/notes/server/note-form";
-import { NotesCounter } from "@/components/notes/server/notes-counter";
-import { NotesStack } from "@/components/notes/server/notes-stack";
+import {
+	NoteFormLoader,
+	NotesCounterLoader,
+	NotesStackLoader,
+} from "@/loaders/notes";
 
 type Params = Promise<{ tab?: string; layout?: string }>;
 
@@ -38,9 +35,7 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 							errorCaller="NotesCounter"
 							fallback={<div />}
 							permissionCheck={hasViewerAdminPermission}
-							render={() =>
-								NotesCounter({ getNotesCount: getExportedNotesCount })
-							}
+							render={() => NotesCounterLoader({})}
 						/>
 
 						<Suspense fallback={<Loading />}>
@@ -48,9 +43,9 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 								errorCaller="NotesStack"
 								permissionCheck={hasViewerAdminPermission}
 								render={() =>
-									NotesStack({
-										getNotes: getExportedNotes,
+									NotesStackLoader({
 										loadMoreAction: loadMoreExportedNotes,
+										variant: "exported",
 									})
 								}
 							/>
@@ -63,7 +58,7 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 						<ErrorPermissionBoundary
 							errorCaller="NoteForm"
 							permissionCheck={hasDumperPostPermission}
-							render={() => NoteForm({ addNote })}
+							render={() => NoteFormLoader({ addNote })}
 						/>
 
 						<Suspense fallback={<Loading />}>
@@ -71,10 +66,10 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 								errorCaller="NotesStack"
 								permissionCheck={hasViewerAdminPermission}
 								render={() =>
-									NotesStack({
-										getNotes: getUnexportedNotes,
+									NotesStackLoader({
+										deleteAction: deleteNote,
 										loadMoreAction: loadMoreUnexportedNotes,
-										deleteNote,
+										variant: "unexported",
 									})
 								}
 							/>

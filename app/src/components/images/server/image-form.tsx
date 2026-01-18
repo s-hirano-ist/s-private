@@ -5,6 +5,6 @@ type Props = {
 	addImage: (formData: FormData) => Promise<ServerAction>;
 };
 
-export async function ImageForm({ addImage }: Props) {
+export function ImageForm({ addImage }: Props) {
 	return <ImageFormClient addImage={addImage} />;
 }

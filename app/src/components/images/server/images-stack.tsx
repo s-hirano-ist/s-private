@@ -19,8 +19,8 @@ import {
 type Props = {
 	currentPage: number;
 	totalCount: number;
-	getImages: (page: number) => Promise<ImageData[]>;
-	deleteImage?: (id: string) => Promise<ServerAction>;
+	data: ImageData[];
+	deleteAction?: (id: string) => Promise<ServerAction>;
 	layout?: string;
 };
 
@@ -75,11 +75,10 @@ function generatePaginationItems(
 export async function ImagesStack({
 	currentPage,
 	totalCount,
-	getImages,
-	deleteImage,
+	data,
+	deleteAction,
 	layout,
 }: Props) {
-	const images = await getImages(currentPage);
 	const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 	const t = await getTranslations("label");
 
@@ -88,9 +87,9 @@ export async function ImagesStack({
 	return (
 		<>
 			<ImageStackClient
-				data={images}
-				deleteAction={deleteImage}
-				showDeleteButton={deleteImage !== undefined}
+				data={data}
+				deleteAction={deleteAction}
+				showDeleteButton={deleteAction !== undefined}
 			/>
 			{showPagination && (
 				<Pagination className="mt-4">

@@ -3,11 +3,6 @@ import { Suspense } from "react";
 import { addBooks } from "@/application-services/books/add-books";
 import { deleteBooks } from "@/application-services/books/delete-books";
 import {
-	getExportedBooks,
-	getExportedBooksCount,
-	getUnexportedBooks,
-} from "@/application-services/books/get-books";
-import {
 	loadMoreExportedBooks,
 	loadMoreUnexportedBooks,
 } from "@/application-services/books/get-books-from-client";
@@ -15,11 +10,13 @@ import {
 	hasDumperPostPermission,
 	hasViewerAdminPermission,
 } from "@/common/auth/session";
-import { BooksCounter } from "@/components/books/server/books-counter";
-import { BooksForm } from "@/components/books/server/books-form";
-import { BooksStack } from "@/components/books/server/books-stack";
 import { ErrorPermissionBoundary } from "@/components/common/layouts/error-permission-boundary";
 import { LazyTabContent } from "@/components/common/lazy-tab-content";
+import {
+	BooksCounterLoader,
+	BooksFormLoader,
+	BooksStackLoader,
+} from "@/loaders/books";
 
 type Params = Promise<{ tab?: string; layout?: string }>;
 
@@ -38,9 +35,7 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 							errorCaller="BooksCounter"
 							fallback={<div />}
 							permissionCheck={hasViewerAdminPermission}
-							render={() =>
-								BooksCounter({ getBooksCount: getExportedBooksCount })
-							}
+							render={() => BooksCounterLoader({})}
 						/>
 
 						<Suspense fallback={<Loading />}>
@@ -48,9 +43,9 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 								errorCaller="BooksStack"
 								permissionCheck={hasViewerAdminPermission}
 								render={() =>
-									BooksStack({
-										getBooks: getExportedBooks,
+									BooksStackLoader({
 										loadMoreAction: loadMoreExportedBooks,
+										variant: "exported",
 									})
 								}
 							/>
@@ -63,7 +58,7 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 						<ErrorPermissionBoundary
 							errorCaller="BooksForm"
 							permissionCheck={hasDumperPostPermission}
-							render={() => BooksForm({ addBooks })}
+							render={() => BooksFormLoader({ addBooks })}
 						/>
 
 						<Suspense fallback={<Loading />}>
@@ -71,10 +66,10 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 								errorCaller="BooksStack"
 								permissionCheck={hasViewerAdminPermission}
 								render={() =>
-									BooksStack({
-										deleteBooks,
-										getBooks: getUnexportedBooks,
+									BooksStackLoader({
+										deleteAction: deleteBooks,
 										loadMoreAction: loadMoreUnexportedBooks,
+										variant: "unexported",
 									})
 								}
 							/>

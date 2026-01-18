@@ -5,6 +5,6 @@ type Props = {
 	addBooks: (formData: FormData) => Promise<ServerAction>;
 };
 
-export async function BooksForm({ addBooks }: Props) {
+export function BooksForm({ addBooks }: Props) {
 	return <BooksFormClient addBooks={addBooks} />;
 }

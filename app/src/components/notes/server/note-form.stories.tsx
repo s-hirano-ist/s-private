@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { Suspense } from "react";
 import { NoteForm } from "./note-form";
 
 type NoteFormWrapperProps = {
@@ -9,11 +8,7 @@ type NoteFormWrapperProps = {
 };
 
 function NoteFormWrapper({ addNote }: NoteFormWrapperProps) {
-	return (
-		<Suspense>
-			<NoteForm addNote={addNote} />
-		</Suspense>
-	);
+	return <NoteForm addNote={addNote} />;
 }
 
 const meta = {

@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { Suspense } from "react";
 import { BooksForm } from "./books-form";
 
 type BooksFormWrapperProps = {
@@ -9,11 +8,7 @@ type BooksFormWrapperProps = {
 };
 
 function BooksFormWrapper({ addBooks }: BooksFormWrapperProps) {
-	return (
-		<Suspense>
-			<BooksForm addBooks={addBooks} />
-		</Suspense>
-	);
+	return <BooksForm addBooks={addBooks} />;
 }
 
 const meta = {

@@ -1,28 +1,22 @@
-import type {
-	DeleteAction,
-	GetPaginatedData,
-	LoadMoreAction,
-} from "@/common/types";
+import type { DeleteAction, LoadMoreAction } from "@/common/types";
 import { LinkCardStack } from "@/components/common/layouts/cards/link-card-stack";
 import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
 
 export type Props = {
-	getArticles: GetPaginatedData<LinkCardStackInitialData>;
-	deleteArticle?: DeleteAction;
+	initialData: LinkCardStackInitialData;
+	deleteAction?: DeleteAction;
 	loadMoreAction: LoadMoreAction<LinkCardStackInitialData>;
 };
 
-export async function ArticlesStack({
-	getArticles,
-	deleteArticle,
+export function ArticlesStack({
+	initialData,
+	deleteAction,
 	loadMoreAction,
 }: Props) {
-	const articles = await getArticles(0);
-
 	return (
 		<LinkCardStack
-			deleteAction={deleteArticle}
-			initial={articles}
+			deleteAction={deleteAction}
+			initial={initialData}
 			loadMoreAction={loadMoreAction}
 		/>
 	);

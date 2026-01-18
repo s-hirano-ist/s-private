@@ -1,23 +1,18 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { Suspense } from "react";
 import { ArticleForm } from "./article-form";
 
 type ArticleFormWrapperProps = {
 	addArticle: (
 		formData: FormData,
 	) => Promise<{ success: boolean; message: string }>;
-	getCategories: () => Promise<Array<{ id: string; name: string }>>;
+	categories: Array<{ id: string; name: string }>;
 };
 
 function ArticleFormWrapper({
 	addArticle,
-	getCategories,
+	categories,
 }: ArticleFormWrapperProps) {
-	return (
-		<Suspense>
-			<ArticleForm addArticle={addArticle} getCategories={getCategories} />
-		</Suspense>
-	);
+	return <ArticleForm addArticle={addArticle} categories={categories} />;
 }
 
 const meta = {
@@ -26,7 +21,6 @@ const meta = {
 	tags: ["autodocs"],
 	argTypes: {
 		addArticle: { action: "addArticle" },
-		getCategories: { action: "getCategories" },
 	},
 } satisfies Meta<typeof ArticleFormWrapper>;
 
@@ -39,7 +33,7 @@ export const Default: Story = {
 			success: true,
 			message: "articles added successfully",
 		}),
-		getCategories: async () => [
+		categories: [
 			{ id: "1", name: "Technology" },
 			{ id: "2", name: "Science" },
 			{ id: "3", name: "Business" },
@@ -53,7 +47,7 @@ export const WithManyCategories: Story = {
 			success: true,
 			message: "articles added successfully",
 		}),
-		getCategories: async () => [
+		categories: [
 			{ id: "1", name: "Technology" },
 			{ id: "2", name: "Science" },
 			{ id: "3", name: "Business" },
@@ -71,7 +65,7 @@ export const EmptyCategories: Story = {
 			success: true,
 			message: "articles added successfully",
 		}),
-		getCategories: async () => [],
+		categories: [],
 	},
 };
 
@@ -81,7 +75,7 @@ export const ErrorOnSubmit: Story = {
 			success: false,
 			message: "Failed to add articles",
 		}),
-		getCategories: async () => [
+		categories: [
 			{ id: "1", name: "Technology" },
 			{ id: "2", name: "Science" },
 		],

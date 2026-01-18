@@ -3,12 +3,6 @@ import { Suspense } from "react";
 import { addArticle } from "@/application-services/articles/add-article";
 import { deleteArticle } from "@/application-services/articles/delete-article";
 import {
-	getCategories,
-	getExportedArticles,
-	getExportedArticlesCount,
-	getUnexportedArticles,
-} from "@/application-services/articles/get-articles";
-import {
 	loadMoreExportedArticles,
 	loadMoreUnexportedArticles,
 } from "@/application-services/articles/get-articles-from-client";
@@ -16,11 +10,13 @@ import {
 	hasDumperPostPermission,
 	hasViewerAdminPermission,
 } from "@/common/auth/session";
-import { ArticleForm } from "@/components/articles/server/article-form";
-import { ArticlesCounter } from "@/components/articles/server/articles-counter";
-import { ArticlesStack } from "@/components/articles/server/articles-stack";
 import { ErrorPermissionBoundary } from "@/components/common/layouts/error-permission-boundary";
 import { LazyTabContent } from "@/components/common/lazy-tab-content";
+import {
+	ArticleFormLoader,
+	ArticlesCounterLoader,
+	ArticlesStackLoader,
+} from "@/loaders/articles";
 
 type Params = Promise<{ tab?: string; layout?: string }>;
 
@@ -39,9 +35,7 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 							errorCaller="ArticlesCounter"
 							fallback={<div />}
 							permissionCheck={hasViewerAdminPermission}
-							render={() =>
-								ArticlesCounter({ getArticlesCount: getExportedArticlesCount })
-							}
+							render={() => ArticlesCounterLoader({})}
 						/>
 
 						<Suspense fallback={<Loading />}>
@@ -49,9 +43,9 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 								errorCaller="ArticlesStack"
 								permissionCheck={hasViewerAdminPermission}
 								render={() =>
-									ArticlesStack({
-										getArticles: getExportedArticles,
+									ArticlesStackLoader({
 										loadMoreAction: loadMoreExportedArticles,
+										variant: "exported",
 									})
 								}
 							/>
@@ -64,7 +58,7 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 						<ErrorPermissionBoundary
 							errorCaller="ArticleForm"
 							permissionCheck={hasDumperPostPermission}
-							render={() => ArticleForm({ addArticle, getCategories })}
+							render={() => ArticleFormLoader({ addArticle })}
 						/>
 
 						<Suspense fallback={<Loading />}>
@@ -72,10 +66,10 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 								errorCaller="ArticlesStack"
 								permissionCheck={hasViewerAdminPermission}
 								render={() =>
-									ArticlesStack({
-										getArticles: getUnexportedArticles,
+									ArticlesStackLoader({
+										deleteAction: deleteArticle,
 										loadMoreAction: loadMoreUnexportedArticles,
-										deleteArticle,
+										variant: "unexported",
 									})
 								}
 							/>

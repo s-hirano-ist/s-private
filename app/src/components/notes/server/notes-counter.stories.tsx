@@ -1,14 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { Suspense } from "react";
 import type { Props as NotesCounterProps } from "./notes-counter";
 import { NotesCounter } from "./notes-counter";
 
-function NotesCounterWrapper({ getNotesCount }: NotesCounterProps) {
-	return (
-		<Suspense>
-			<NotesCounter getNotesCount={getNotesCount} />
-		</Suspense>
-	);
+function NotesCounterWrapper({ count }: NotesCounterProps) {
+	return <NotesCounter count={count} />;
 }
 
 const meta = {
@@ -16,7 +11,7 @@ const meta = {
 	parameters: { layout: "centered" },
 	tags: ["autodocs"],
 	argTypes: {
-		getNotesCount: { action: "getNotesCount" },
+		count: { control: "number" },
 	},
 } satisfies Meta<typeof NotesCounterWrapper>;
 
@@ -25,18 +20,18 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
 	args: {
-		getNotesCount: async () => 42,
+		count: 42,
 	},
 };
 
 export const Empty: Story = {
 	args: {
-		getNotesCount: async () => 0,
+		count: 0,
 	},
 };
 
 export const LargeCounts: Story = {
 	args: {
-		getNotesCount: async () => 1000,
+		count: 1000,
 	},
 };

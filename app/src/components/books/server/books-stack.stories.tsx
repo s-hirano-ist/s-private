@@ -1,20 +1,17 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { Suspense } from "react";
 import { BooksStack, type Props as BooksStackProps } from "./books-stack";
 
 function BooksStackWrapper({
-	getBooks,
-	deleteBooks,
+	initialData,
+	deleteAction,
 	loadMoreAction,
 }: BooksStackProps) {
 	return (
-		<Suspense>
-			<BooksStack
-				deleteBooks={deleteBooks}
-				getBooks={getBooks}
-				loadMoreAction={loadMoreAction}
-			/>
-		</Suspense>
+		<BooksStack
+			deleteAction={deleteAction}
+			initialData={initialData}
+			loadMoreAction={loadMoreAction}
+		/>
 	);
 }
 
@@ -23,15 +20,14 @@ const meta = {
 	parameters: { layout: "padded" },
 	tags: ["autodocs"],
 	argTypes: {
-		getBooks: { action: "getBooks" },
-		deleteBooks: { action: "deleteBooks" },
+		deleteAction: { action: "deleteAction" },
 	},
 } satisfies Meta<typeof BooksStackWrapper>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const mockGetBooks = async () => ({
+const mockInitialData = {
 	data: [
 		{
 			id: "1",
@@ -53,7 +49,7 @@ const mockGetBooks = async () => ({
 		},
 	],
 	totalCount: 100,
-});
+};
 
 const mockLoadMoreAction = async () => ({
 	success: true,
@@ -66,9 +62,9 @@ const mockLoadMoreAction = async () => ({
 
 export const Default: Story = {
 	args: {
-		getBooks: mockGetBooks,
+		initialData: mockInitialData,
 		loadMoreAction: mockLoadMoreAction,
-		deleteBooks: async () => ({
+		deleteAction: async () => ({
 			success: true,
 			message: "Book deleted successfully",
 		}),
@@ -77,17 +73,19 @@ export const Default: Story = {
 
 export const WithoutDeleteAction: Story = {
 	args: {
-		getBooks: mockGetBooks,
+		initialData: mockInitialData,
 		loadMoreAction: mockLoadMoreAction,
 	},
 };
 
 export const Empty: Story = {
 	args: {
-		getBooks: mockGetBooks,
+		initialData: {
+			data: [],
+			totalCount: 0,
+		},
 		loadMoreAction: mockLoadMoreAction,
-
-		deleteBooks: async () => ({
+		deleteAction: async () => ({
 			success: true,
 			message: "Book deleted successfully",
 		}),
@@ -96,10 +94,19 @@ export const Empty: Story = {
 
 export const SingleBook: Story = {
 	args: {
-		getBooks: mockGetBooks,
+		initialData: {
+			data: [
+				{
+					id: "1",
+					href: "/book/isbn-123",
+					title: "TypeScript Handbook",
+					image: "https://picsum.photos/id/1/192/192",
+				},
+			],
+			totalCount: 1,
+		},
 		loadMoreAction: mockLoadMoreAction,
-
-		deleteBooks: async () => ({
+		deleteAction: async () => ({
 			success: true,
 			message: "Book deleted successfully",
 		}),

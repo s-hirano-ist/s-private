@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { Suspense } from "react";
 import { ImageForm } from "./image-form";
 
 type ImageFormWrapperProps = {
@@ -9,11 +8,7 @@ type ImageFormWrapperProps = {
 };
 
 function ImageFormWrapper({ addImage }: ImageFormWrapperProps) {
-	return (
-		<Suspense>
-			<ImageForm addImage={addImage} />
-		</Suspense>
-	);
+	return <ImageForm addImage={addImage} />;
 }
 
 const meta = {

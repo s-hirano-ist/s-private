@@ -1,20 +1,17 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { Suspense } from "react";
 import { NotesStack, type Props as NotesStackProps } from "./notes-stack";
 
 function NotesStackWrapper({
-	getNotes,
-	deleteNote,
+	initialData,
+	deleteAction,
 	loadMoreAction,
 }: NotesStackProps) {
 	return (
-		<Suspense>
-			<NotesStack
-				deleteNote={deleteNote}
-				getNotes={getNotes}
-				loadMoreAction={loadMoreAction}
-			/>
-		</Suspense>
+		<NotesStack
+			deleteAction={deleteAction}
+			initialData={initialData}
+			loadMoreAction={loadMoreAction}
+		/>
 	);
 }
 
@@ -23,8 +20,7 @@ const meta = {
 	parameters: { layout: "padded" },
 	tags: ["autodocs"],
 	argTypes: {
-		getNotes: { action: "getNotes" },
-		deleteNote: { action: "deleteNote" },
+		deleteAction: { action: "deleteAction" },
 		loadMoreAction: { action: "loadMoreAction" },
 	},
 } satisfies Meta<typeof NotesStackWrapper>;
@@ -32,7 +28,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const mockGetNotes = async () => ({
+const mockInitialData = {
 	data: [
 		{
 			id: "1",
@@ -74,7 +70,7 @@ const mockGetNotes = async () => ({
 		},
 	],
 	totalCount: 100,
-});
+};
 
 const mockLoadMoreAction = async () => ({
 	success: true,
@@ -87,8 +83,8 @@ const mockLoadMoreAction = async () => ({
 
 export const Default: Story = {
 	args: {
-		getNotes: mockGetNotes,
-		deleteNote: async () => ({
+		initialData: mockInitialData,
+		deleteAction: async () => ({
 			success: true,
 			message: "Note deleted successfully",
 		}),
@@ -98,15 +94,18 @@ export const Default: Story = {
 
 export const WithoutDeleteAction: Story = {
 	args: {
-		getNotes: mockGetNotes,
+		initialData: mockInitialData,
 		loadMoreAction: mockLoadMoreAction,
 	},
 };
 
 export const Empty: Story = {
 	args: {
-		getNotes: mockGetNotes,
-		deleteNote: async () => ({
+		initialData: {
+			data: [],
+			totalCount: 0,
+		},
+		deleteAction: async () => ({
 			success: true,
 			message: "Note deleted successfully",
 		}),
@@ -116,8 +115,22 @@ export const Empty: Story = {
 
 export const SingleItem: Story = {
 	args: {
-		getNotes: mockGetNotes,
-		deleteNote: async () => ({
+		initialData: {
+			data: [
+				{
+					id: "1",
+					key: "note-guide-1",
+					title: "Getting Started with TypeScript",
+					description:
+						"A comprehensive guide to getting started with TypeScript for beginners.",
+					primaryBadgeText: "Guide",
+					secondaryBadgeText: "TypeScript",
+					href: "/note/getting-started-typescript",
+				},
+			],
+			totalCount: 1,
+		},
+		deleteAction: async () => ({
 			success: true,
 			message: "Note deleted successfully",
 		}),
@@ -127,8 +140,8 @@ export const SingleItem: Story = {
 
 export const WithInfiniteScroll: Story = {
 	args: {
-		getNotes: mockGetNotes,
-		deleteNote: async () => ({
+		initialData: mockInitialData,
+		deleteAction: async () => ({
 			success: true,
 			message: "Note deleted successfully",
 		}),
