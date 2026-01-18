@@ -1,42 +1,42 @@
-# Architecture
+# アーキテクチャ
 
-## Clean Architecture Organization
+## クリーンアーキテクチャの構成
 
-The codebase follows clean architecture with domain-driven design:
+本コードベースはドメイン駆動設計に基づくクリーンアーキテクチャを採用しています。
 
-### Domain Layer (`src/domains/`)
-- `entities/` - Core business logic and domain entities
-- `repositories/` - Repository interfaces (dependency inversion)
-- `services/` - Domain services for complex business logic
-- `types/` - Domain-specific types and constants
+### ドメイン層 (`packages/core/`)
+- `entities/` - コアビジネスロジックとドメインエンティティ
+- `repositories/` - リポジトリインターフェース（依存性の逆転）
+- `services/` - 複雑なビジネスロジックのためのドメインサービス
+- `types/` - ドメイン固有の型と定数
 
-### Application Services Layer (`src/application-services/`)
-- Orchestrates domain operations and use cases
-- Handles form data parsing and validation
-- Each domain has dedicated application services
+### アプリケーションサービス層 (`app/src/application-services/`)
+- ドメイン操作とユースケースのオーケストレーション
+- フォームデータのパースとバリデーション処理
+- 各ドメインに専用のアプリケーションサービスを配置
 
-### Infrastructure Layer (`src/infrastructures/`)
-- Repository implementations (Prisma ORM)
-- External service integrations (auth, i18n, observability)
-- Technical concerns (MinIO, logging, monitoring)
+### インフラストラクチャ層 (`app/src/infrastructures/`)
+- リポジトリ実装（Prisma ORM）
+- 外部サービス連携（認証、i18n、監視）
+- 技術的関心事（MinIO、ロギング、モニタリング）
 
-#### Infrastructure Services (Adapters)
+#### インフラストラクチャサービス（アダプター）
 
-Infrastructure services implement domain interfaces using specific technologies. These are **adapters** that bridge the domain layer to external systems.
+インフラストラクチャサービスは、特定の技術を使用してドメインインターフェースを実装します。これらはドメイン層を外部システムに接続する**アダプター**です。
 
-| Directory | Service | Interface | Technology |
+| ディレクトリ | サービス | インターフェース | 技術 |
 |-----------|---------|-----------|------------|
-| `common/services/` | `minioStorageService` | `IStorageService` | MinIO client |
-| `books/services/` | `booksStorageService` | `IStorageService` | MinIO (books path) |
-| `images/services/` | `sharpImageProcessor` | `IImageProcessor` | Sharp library |
+| `common/services/` | `minioStorageService` | `IStorageService` | MinIOクライアント |
+| `books/services/` | `booksStorageService` | `IStorageService` | MinIO（booksパス） |
+| `images/services/` | `sharpImageProcessor` | `IImageProcessor` | Sharpライブラリ |
 
-**Naming Convention:**
-- Use technology-based naming when the implementation is specific to that technology (e.g., `minio-*`, `sharp-*`)
-- Use domain-based naming when the adapter has domain-specific configuration (e.g., `books-storage-service` uses book-specific paths)
+**命名規則:**
+- 実装が特定の技術に固有の場合は技術ベースの命名を使用（例：`minio-*`、`sharp-*`）
+- アダプターがドメイン固有の設定を持つ場合はドメインベースの命名を使用（例：`books-storage-service`はbook固有のパスを使用）
 
-#### Domain Service Factory
+#### ドメインサービスファクトリ
 
-Domain services are instantiated via `domainServiceFactory` in `infrastructures/factories/`:
+ドメインサービスは`app/src/infrastructures/factories/`の`domainServiceFactory`を通じてインスタンス化されます。
 
 ```typescript
 import { domainServiceFactory } from "@/infrastructures/factories/domain-service-factory";
@@ -44,78 +44,66 @@ import { domainServiceFactory } from "@/infrastructures/factories/domain-service
 const articlesDomainService = domainServiceFactory.createArticlesDomainService();
 ```
 
-This centralizes dependency injection and simplifies testing with mock implementations.
+これにより依存性注入が一元化され、モック実装によるテストが簡素化されます。
 
-**Main domains**: `articles`, `notes`, `images`, `books` with supporting domains for `auth` and `common` utilities
+## ドメインモデル
 
-## Database Architecture
+ドメインモデルの詳細（エンティティ、ステータスライフサイクル、集約境界、Application Service層）については [docs/domain-model.md](domain-model.md) を参照してください。
 
-Content management system with clean domain architecture:
-- **Core models**: `Article`, `Note`, `Image`, `Book` - Content management with status tracking
-- **Supporting models**: `Category` - Hierarchical organization for Article items
-- **Common status lifecycle**: `UNEXPORTED` → `EXPORTED` (all content types)
-- **User isolation**: All models include `userId` for multi-tenant data separation
+スキーマは `packages/database/prisma/schema.prisma` で管理されています。
 
-### Model Details
-- **Article**: News/link management with OG metadata and category association
-- **Note**: Markdown-based content creation and management
-- **Image**: File metadata tracking with tags, dimensions, and MinIO path storage
-- **Book**: ISBN-based book tracking with Google Books API integration and ratings
+## コードスタイルとアーキテクチャルール
 
-Schema is maintained in `prisma/schema.prisma` with String-based primary keys and comprehensive unique constraints per user.
+### フォーマッターとリンター
+- **主要フォーマッター**: Biome（Prettierではない）- `pnpm check:fix`を使用
+  - インポート整理、コードスタイル強制、TypeScript固有のルールを含む
+  - 厳格なスタイルルールとアクセシビリティチェックを設定
+- **補助リンター**: React/Next.js固有ルール用のESLint
+  - Reactフックの強制を含むTypeScript厳格設定
+  - フレームワーク固有のベストプラクティス用Next.jsプラグイン統合
 
-## Code Style & Architecture Rules
+### アーキテクチャルール
+- **パッケージマネージャー**: pnpm（必須）
+- **インポートルール**: 上位ディレクトリへの相対インポート禁止（`../../*`）- 絶対インポートを使用
+- **ドメイン境界**: クロスドメインインポート禁止 - 各ドメインは独立
+- **コンポーネント規則**: TypeScriptインターフェースは`type`として定義（`interface`ではない）、Reactフックルールを強制
+- **依存関係管理**: 循環依存検出用にdependency cruiserを設定
 
-### Formatters and Linters
-- **Primary Formatter**: Biome (not Prettier) - Use `pnpm check:fix`
-  - Includes import organization, code style enforcement, and TypeScript-specific rules
-  - Configured with strict style rules and accessibility checks
-- **Complementary Linter**: ESLint for React/Next.js specific rules
-  - TypeScript strict configuration with React hooks enforcement
-  - Next.js plugin integration for framework-specific best practices
+### コアパッケージのインポートパターン
 
-### Architecture Rules
-- **Package Manager**: pnpm (required)
-- **Import Rules**: No relative imports going up directories (`../../*`) - use absolute imports
-- **Domain Boundaries**: Cross-domain imports forbidden - each domain is isolated
-- **Component Conventions**: TypeScript interfaces as `type` (not `interface`), React hooks rules enforced
-- **Dependency Management**: Dependency cruiser configured to detect circular dependencies
+`@s-hirano-ist/s-core`パッケージは2つのインポートスタイルをサポートしています。
 
-### Core Package Import Patterns
-
-The `@s-hirano-ist/s-core` package supports two import styles:
-
-**1. Barrel Imports (Recommended for most use cases)**
+**1. バレルインポート（ほとんどのユースケースで推奨）**
 ```typescript
 import { ArticlesDomainService, makeUrl, Url } from "@s-hirano-ist/s-core/articles";
 import { makeUserId, makeId } from "@s-hirano-ist/s-core/common";
 ```
 
-**2. Deep Path Imports (For specific modules)**
+**2. ディープパスインポート（特定モジュール用）**
 ```typescript
 import { ArticlesDomainService } from "@s-hirano-ist/s-core/articles/services/articles-domain-service";
 import type { IArticlesQueryRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-query-repository.interface";
 ```
 
-Use barrel imports for cleaner code; use deep paths when you need specific type imports or want to minimize bundle size.
+コードをすっきりさせるにはバレルインポートを使用し、特定の型インポートが必要な場合やバンドルサイズを最小化したい場合はディープパスを使用してください。
 
-### Configuration Files
-- `biome.json` - Primary formatter/linter configuration
-- `eslint.config.ts` - Complementary ESLint setup for React/Next.js
-- `.dependency-cruiser.cjs` - Architectural boundary enforcement
+### 設定ファイル
+- `biome.json` - 主要フォーマッター/リンター設定
+- `eslint.config.ts` - React/Next.js用補助ESLint設定
+- `.dependency-cruiser.cjs` - アーキテクチャ境界の強制
 
-## Security
+## セキュリティ
 
-### Automated Dependency Management (Renovate)
-- **Schedule**: Weekly updates (Mondays before 11am JST)
-- **Vulnerability Alerts**: Automatic PRs for security issues (labeled `security`)
-- **Supply Chain Protection**: 3-day minimum release age for patches/minors (72 hours), 24-hour global minimum
-- **Configuration**: See [.github/renovate.json5](../.github/renovate.json5)
+### 自動依存関係管理（Renovate）
+- **スケジュール**: 週次更新（月曜日11時（JST）前）
+- **脆弱性アラート**: セキュリティ問題の自動PR（`security`ラベル付き）
+- **サプライチェーン保護**: パッチ/マイナーの最小リリース経過時間3日（72時間）、グローバル最小24時間
+- **設定**: [.github/renovate.json5](../.github/renovate.json5)を参照
 
-### npm/pnpm Security Settings
-- **Version Pinning**: `save-exact=true` in .npmrc + `savePrefix: ''` in pnpm-workspace.yaml
-- **Lifecycle Script Protection**: `ignore-dep-scripts=true` prevents malicious scripts
-- **CI/CD**: `--frozen-lockfile` enforced in all CI workflows
-- **Minimum Release Age**: 24-hour global setting to avoid newly published malicious packages
+### npm/pnpmセキュリティ設定
+- **バージョン固定**: .npmrcの`save-exact=true` + pnpm-workspace.yamlの`savePrefix: ''`
+- **ライフサイクルスクリプト保護**: `ignore-dep-scripts=true`で悪意のあるスクリプトを防止
+- **CI/CD**: 全CIワークフローで`--frozen-lockfile`を強制
+- **最小リリース経過時間**: 新規公開された悪意のあるパッケージを避けるための24時間グローバル設定
 
-See [SECURITY.md](../SECURITY.md) for complete security best practices.
+完全なセキュリティベストプラクティスについては[SECURITY.md](../SECURITY.md)を参照してください。

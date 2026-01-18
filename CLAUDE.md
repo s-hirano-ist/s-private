@@ -1,6 +1,7 @@
 # CLAUDE.md
 
 Next.js 15 + TypeScript + Clean Architectureベースのコンテンツ管理システム。
+docs/** にはより詳細な設計等のルールが記載されています。必要に応じて参照してください。
 
 Before doing any UI, frontend or React development, ALWAYS call the storybook MCP server to get further instructions.
 
