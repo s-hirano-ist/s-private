@@ -13,8 +13,10 @@ import type { IImagesCommandRepository } from "@s-hirano-ist/s-core/images/repos
 import type { IImagesQueryRepository } from "@s-hirano-ist/s-core/images/repositories/images-query-repository.interface";
 import { ImagesDomainService } from "@s-hirano-ist/s-core/images/services/images-domain-service";
 import { minioStorageService } from "@/infrastructures/common/services/minio-storage-service";
+import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
 import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
+import type { IEventDispatcher } from "../articles/add-article.deps";
 
 /**
  * Dependencies for the addImageCore function.
@@ -23,6 +25,7 @@ export type AddImageDeps = {
 	commandRepository: IImagesCommandRepository;
 	queryRepository: IImagesQueryRepository;
 	storageService: IStorageService;
+	eventDispatcher: IEventDispatcher;
 };
 
 /**
@@ -32,6 +35,7 @@ export const defaultAddImageDeps: AddImageDeps = {
 	commandRepository: imagesCommandRepository,
 	queryRepository: imagesQueryRepository,
 	storageService: minioStorageService,
+	eventDispatcher: eventDispatcher,
 };
 
 /**

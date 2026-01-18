@@ -70,13 +70,6 @@ export type PaginatedImageCardLoaderProps = BaseLoaderProps & {
 };
 
 /**
- * フォーム用Loader Props
- */
-export type FormLoaderProps<TFormData = FormData> = BaseLoaderProps & {
-  submitAction: (formData: TFormData) => Promise<ServerAction>;
-};
-
-/**
  * カウンター用Loader Props
  */
 export type CounterLoaderProps = BaseLoaderProps;

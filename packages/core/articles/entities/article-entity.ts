@@ -9,6 +9,7 @@ import {
 	UserId,
 } from "../../common/entities/common-entity.js";
 import { createEntityWithErrorHandling } from "../../common/services/entity-factory.js";
+import { ArticleCreatedEvent } from "../events/article-created-event.js";
 
 // Value objects
 
@@ -351,6 +352,7 @@ export type ExportedArticle = Readonly<z.infer<typeof ExportedArticle>>;
  *   title: makeArticleTitle("Article Title"),
  *   url: makeUrl("https://example.com"),
  *   quote: makeQuote("Notable excerpt"),
+ *   caller: "addArticle",
  * };
  * ```
  */
@@ -365,7 +367,17 @@ export type CreateArticleArgs = Readonly<{
 	quote?: Quote;
 	/** The article URL */
 	url: Url;
+	/** The caller identifier for event tracking */
+	caller: string;
 }>;
+
+/**
+ * Return type for article creation: tuple of [entity, event].
+ */
+export type ArticleWithEvent = readonly [
+	UnexportedArticle,
+	ArticleCreatedEvent,
+];
 
 /**
  * Factory object for Article domain entity operations.
@@ -373,39 +385,57 @@ export type CreateArticleArgs = Readonly<{
  * @remarks
  * Provides immutable entity creation following DDD patterns.
  * All returned entities are frozen using Object.freeze().
+ * Returns a tuple of [entity, event] for domain event dispatching.
  *
  * @example
  * ```typescript
- * // Create a new unexported article
- * const article = articleEntity.create({
+ * // Create a new unexported article with its domain event
+ * const [article, event] = articleEntity.create({
  *   userId: makeUserId("user-123"),
  *   categoryName: makeCategoryName("Tech"),
  *   title: makeArticleTitle("Article Title"),
  *   url: makeUrl("https://example.com"),
+ *   caller: "addArticle",
  * });
  *
+ * // Persist and dispatch event
+ * await repository.create(article);
+ * await eventDispatcher.dispatch(event);
  * ```
  *
  * @see {@link CreateArticleArgs} for creation parameters
+ * @see {@link ArticleWithEvent} for return type
  */
 export const articleEntity = {
 	/**
-	 * Creates a new unexported article entity.
+	 * Creates a new unexported article entity with its domain event.
 	 *
 	 * @param args - The creation arguments containing required fields
-	 * @returns A frozen UnexportedArticle instance with generated id and timestamps
+	 * @returns A tuple of [UnexportedArticle, ArticleCreatedEvent]
 	 * @throws {InvalidFormatError} When validation of any field fails
 	 * @throws {UnexpectedError} For unexpected errors during creation
 	 */
-	create: (args: CreateArticleArgs): UnexportedArticle => {
-		return createEntityWithErrorHandling(() =>
+	create: (args: CreateArticleArgs): ArticleWithEvent => {
+		const { caller, ...entityArgs } = args;
+		const article = createEntityWithErrorHandling(() =>
 			Object.freeze({
 				id: makeId(),
 				status: "UNEXPORTED",
 				createdAt: makeCreatedAt(),
-				...args,
+				...entityArgs,
 			}),
 		);
+
+		const event = new ArticleCreatedEvent({
+			title: article.title as string,
+			url: article.url as string,
+			quote: (article.quote as string) ?? "",
+			categoryName: article.categoryName as string,
+			userId: article.userId as string,
+			caller,
+		});
+
+		return [article, event] as const;
 	},
 };
 

@@ -48,14 +48,6 @@ export type PaginatedImageCardLoaderProps = BaseLoaderProps & {
 };
 
 /**
- * Props for form loaders that need to submit data.
- */
-export type FormLoaderProps<TFormData = FormData> = BaseLoaderProps & {
-	/** Server action to handle form submission */
-	submitAction: (formData: TFormData) => Promise<ServerAction>;
-};
-
-/**
  * Props for counter badge loaders.
  */
 export type CounterLoaderProps = BaseLoaderProps;

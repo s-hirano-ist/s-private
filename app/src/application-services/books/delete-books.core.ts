@@ -8,6 +8,7 @@
  */
 
 import "server-only";
+import { BookDeletedEvent } from "@s-hirano-ist/s-core/books/events/book-deleted-event";
 import {
 	makeId,
 	makeUnexportedStatus,
@@ -32,20 +33,33 @@ import type { DeleteBooksDeps } from "./delete-books.deps";
  * Only unexported books can be deleted.
  *
  * @param id - Book ID to delete
- * @param deps - Dependencies (repository)
+ * @param deps - Dependencies (repository, event dispatcher)
  * @returns Server action result with success/failure status
  */
 export async function deleteBooksCore(
 	id: string,
 	deps: DeleteBooksDeps,
 ): Promise<ServerAction> {
-	const { commandRepository } = deps;
+	const { commandRepository, eventDispatcher } = deps;
 
 	try {
 		const userId = await getSelfId();
 
 		const status = makeUnexportedStatus();
-		await commandRepository.deleteById(makeId(id), userId, status);
+		const { title } = await commandRepository.deleteById(
+			makeId(id),
+			userId,
+			status,
+		);
+
+		// Dispatch domain event
+		await eventDispatcher.dispatch(
+			new BookDeletedEvent({
+				title,
+				userId: userId as string,
+				caller: "deleteBooks",
+			}),
+		);
 
 		revalidateTag(buildContentCacheTag("books", status, userId));
 		revalidateTag(buildCountCacheTag("books", status, userId));

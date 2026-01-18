@@ -9,11 +9,13 @@
  */
 
 import type { INotesCommandRepository } from "@s-hirano-ist/s-core/notes/repositories/notes-command-repository.interface";
+import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import {
 	type createDomainServiceFactory,
 	domainServiceFactory,
 } from "@/infrastructures/factories/domain-service-factory";
 import { notesCommandRepository } from "@/infrastructures/notes/repositories/notes-command-repository";
+import type { IEventDispatcher } from "../articles/add-article.deps";
 
 /**
  * Dependencies for the addNoteCore function.
@@ -21,6 +23,7 @@ import { notesCommandRepository } from "@/infrastructures/notes/repositories/not
 export type AddNoteDeps = {
 	commandRepository: INotesCommandRepository;
 	domainServiceFactory: ReturnType<typeof createDomainServiceFactory>;
+	eventDispatcher: IEventDispatcher;
 };
 
 /**
@@ -29,4 +32,5 @@ export type AddNoteDeps = {
 export const defaultAddNoteDeps: AddNoteDeps = {
 	commandRepository: notesCommandRepository,
 	domainServiceFactory: domainServiceFactory,
+	eventDispatcher: eventDispatcher,
 };

@@ -22,6 +22,12 @@ vi.mock(
 	}),
 );
 
+vi.mock("@/infrastructures/events/event-dispatcher", () => ({
+	eventDispatcher: {
+		dispatch: vi.fn().mockResolvedValue(undefined),
+	},
+}));
+
 vi.mock("@/common/error/error-wrapper", () => ({
 	wrapServerSideErrorForClient: vi.fn(),
 }));
@@ -39,9 +45,9 @@ describe("deleteNote", () => {
 		mockHasDumperPostPermission.mockResolvedValue(true);
 		mockGetSelfId.mockResolvedValue("test-user-id");
 
-		vi.mocked(notesCommandRepository.deleteById).mockResolvedValueOnce(
-			undefined,
-		);
+		vi.mocked(notesCommandRepository.deleteById).mockResolvedValueOnce({
+			title: "Test Note",
+		});
 
 		const testId = "01234567-89ab-7def-8123-456789abcdef";
 		const result = await deleteNote(testId);

@@ -12,6 +12,7 @@ import {
 	makeId,
 	makeUnexportedStatus,
 } from "@s-hirano-ist/s-core/common/entities/common-entity";
+import { NoteDeletedEvent } from "@s-hirano-ist/s-core/notes/events/note-deleted-event";
 import { revalidateTag } from "next/cache";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
@@ -32,20 +33,33 @@ import type { DeleteNoteDeps } from "./delete-note.deps";
  * Only unexported notes can be deleted.
  *
  * @param id - Note ID to delete
- * @param deps - Dependencies (repository)
+ * @param deps - Dependencies (repository, event dispatcher)
  * @returns Server action result with success/failure status
  */
 export async function deleteNoteCore(
 	id: string,
 	deps: DeleteNoteDeps,
 ): Promise<ServerAction> {
-	const { commandRepository } = deps;
+	const { commandRepository, eventDispatcher } = deps;
 
 	try {
 		const userId = await getSelfId();
 
 		const status = makeUnexportedStatus();
-		await commandRepository.deleteById(makeId(id), userId, status);
+		const { title } = await commandRepository.deleteById(
+			makeId(id),
+			userId,
+			status,
+		);
+
+		// Dispatch domain event
+		await eventDispatcher.dispatch(
+			new NoteDeletedEvent({
+				title,
+				userId: userId as string,
+				caller: "deleteNote",
+			}),
+		);
 
 		revalidateTag(buildContentCacheTag("notes", status, userId));
 		revalidateTag(buildCountCacheTag("notes", status, userId));

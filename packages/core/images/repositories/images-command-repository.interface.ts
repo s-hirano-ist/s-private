@@ -42,6 +42,17 @@ export type IImagesCommandRepository = {
 	 * @param id - The image ID to delete
 	 * @param userId - The user ID for tenant isolation
 	 * @param status - The expected status of the image
+	 * @returns The path of the deleted image for event dispatching
 	 */
-	deleteById(id: string, userId: string, status: Status): Promise<void>;
+	deleteById(id: string, userId: string, status: Status): Promise<DeleteImageResult>;
+};
+
+/**
+ * Result type for deleteById operation.
+ *
+ * @remarks
+ * Returns the path of the deleted image for event dispatching.
+ */
+export type DeleteImageResult = {
+	path: string;
 };

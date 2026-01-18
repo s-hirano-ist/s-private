@@ -35,7 +35,7 @@ export async function addImageCore(
 	formData: FormData,
 	deps: AddImageDeps,
 ): Promise<ServerAction> {
-	const { commandRepository, queryRepository, storageService } = deps;
+	const { commandRepository, queryRepository, storageService, eventDispatcher } = deps;
 	const imagesDomainService = createImagesDomainService(queryRepository);
 
 	try {
@@ -51,16 +51,21 @@ export async function addImageCore(
 		// Domain business rule validation
 		await imagesDomainService.ensureNoDuplicate(path, userId);
 
-		const image = imageEntity.create({
+		// Create entity with value objects and domain event
+		const [image, event] = imageEntity.create({
 			userId,
 			path,
 			contentType,
 			fileSize,
+			caller: "addImage",
 		});
 
 		await storageService.uploadImage(image.path, originalBuffer, false);
 		await storageService.uploadImage(image.path, thumbnailBuffer, true);
 		await commandRepository.create(image);
+
+		// Dispatch domain event
+		await eventDispatcher.dispatch(event);
 
 		// Cache invalidation
 		revalidateTag(buildContentCacheTag("images", image.status, userId));

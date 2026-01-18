@@ -5,6 +5,7 @@ import {
 	makeQuote,
 	makeUrl,
 } from "@s-hirano-ist/s-core/articles/entities/article-entity";
+import { ArticleCreatedEvent } from "@s-hirano-ist/s-core/articles/events/article-created-event";
 import type { IArticlesCommandRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-command-repository.interface";
 import {
 	makeCreatedAt,
@@ -52,6 +53,7 @@ function createMockDeps(
 	deps: AddArticleDeps;
 	mockCommandRepository: IArticlesCommandRepository;
 	mockEnsureNoDuplicate: ReturnType<typeof vi.fn>;
+	mockEventDispatcher: { dispatch: ReturnType<typeof vi.fn> };
 } {
 	const mockCommandRepository: IArticlesCommandRepository = {
 		create: vi.fn(),
@@ -61,6 +63,10 @@ function createMockDeps(
 	const mockEnsureNoDuplicate = vi
 		.fn()
 		.mockImplementation(ensureNoDuplicateImpl);
+
+	const mockEventDispatcher = {
+		dispatch: vi.fn().mockResolvedValue(undefined),
+	};
 
 	// Create a mock domain service factory that returns a mock domain service
 	const mockDomainServiceFactory = {
@@ -75,9 +81,10 @@ function createMockDeps(
 		commandRepository: mockCommandRepository,
 		domainServiceFactory:
 			mockDomainServiceFactory as unknown as AddArticleDeps["domainServiceFactory"],
+		eventDispatcher: mockEventDispatcher,
 	};
 
-	return { deps, mockCommandRepository, mockEnsureNoDuplicate };
+	return { deps, mockCommandRepository, mockEnsureNoDuplicate, mockEventDispatcher };
 }
 
 describe("addArticleCore", () => {
@@ -103,7 +110,7 @@ describe("addArticleCore", () => {
 	test("should create article successfully", async () => {
 		vi.mocked(getSelfId).mockResolvedValue(makeUserId("user-123"));
 
-		const { deps, mockCommandRepository, mockEnsureNoDuplicate } =
+		const { deps, mockCommandRepository, mockEnsureNoDuplicate, mockEventDispatcher } =
 			createMockDeps();
 
 		const mockArticle = {
@@ -117,8 +124,17 @@ describe("addArticleCore", () => {
 			createdAt: makeCreatedAt(),
 		} as const;
 
-		// Mock articleEntity.create
-		vi.spyOn(articleEntity, "create").mockReturnValue(mockArticle);
+		const mockEvent = new ArticleCreatedEvent({
+			title: "Test Article",
+			url: "https://example.com/article",
+			quote: "Test quote",
+			categoryName: "tech",
+			userId: "user-123",
+			caller: "addArticle",
+		});
+
+		// Mock articleEntity.create to return tuple
+		vi.spyOn(articleEntity, "create").mockReturnValue([mockArticle, mockEvent]);
 
 		const result = await addArticleCore(mockFormData, deps);
 
@@ -128,6 +144,7 @@ describe("addArticleCore", () => {
 		);
 		expect(articleEntity.create).toHaveBeenCalled();
 		expect(mockCommandRepository.create).toHaveBeenCalledWith(mockArticle);
+		expect(mockEventDispatcher.dispatch).toHaveBeenCalledWith(mockEvent);
 
 		const status = makeUnexportedStatus();
 		expect(revalidateTag).toHaveBeenCalledWith(

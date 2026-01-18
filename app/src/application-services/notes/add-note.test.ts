@@ -9,6 +9,7 @@ import {
 	makeNoteTitle,
 	noteEntity,
 } from "@s-hirano-ist/s-core/notes/entities/note-entity";
+import { NoteCreatedEvent } from "@s-hirano-ist/s-core/notes/events/note-created-event";
 import { revalidateTag } from "next/cache";
 import { describe, expect, test, vi } from "vitest";
 import { parseAddNoteFormData } from "@/application-services/notes/helpers/form-data-parser";
@@ -30,6 +31,12 @@ vi.mock(
 	"@/infrastructures/notes/repositories/notes-command-repository",
 	() => ({ notesCommandRepository: { create: vi.fn() } }),
 );
+
+vi.mock("@/infrastructures/events/event-dispatcher", () => ({
+	eventDispatcher: {
+		dispatch: vi.fn().mockResolvedValue(undefined),
+	},
+}));
 
 vi.mock("@/infrastructures/notes/repositories/notes-query-repository", () => ({
 	notesQueryRepository: {},
@@ -92,12 +99,19 @@ describe("addNote", () => {
 			createdAt: makeCreatedAt(),
 		};
 
+		const mockEvent = new NoteCreatedEvent({
+			title: "Example Note",
+			markdown: "sample markdown",
+			userId: "user-123",
+			caller: "addNote",
+		});
+
 		vi.mocked(parseAddNoteFormData).mockReturnValue({
 			title: makeNoteTitle("Example Note"),
 			markdown: makeMarkdown("sample markdown"),
 			userId: makeUserId("user-123"),
 		});
-		vi.mocked(noteEntity.create).mockReturnValue(mockNote);
+		vi.mocked(noteEntity.create).mockReturnValue([mockNote, mockEvent]);
 		mockEnsureNoDuplicate.mockResolvedValue(undefined);
 		vi.mocked(notesCommandRepository.create).mockResolvedValue();
 

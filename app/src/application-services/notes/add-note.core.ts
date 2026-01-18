@@ -28,14 +28,14 @@ import { parseAddNoteFormData } from "./helpers/form-data-parser";
  * It is designed to be easily testable by accepting dependencies as parameters.
  *
  * @param formData - Form data containing title and markdown content
- * @param deps - Dependencies (repository, domain service factory)
+ * @param deps - Dependencies (repository, domain service factory, event dispatcher)
  * @returns Server action result with success/failure status
  */
 export async function addNoteCore(
 	formData: FormData,
 	deps: AddNoteDeps,
 ): Promise<ServerAction> {
-	const { commandRepository, domainServiceFactory } = deps;
+	const { commandRepository, domainServiceFactory, eventDispatcher } = deps;
 	const notesDomainService = domainServiceFactory.createNotesDomainService();
 
 	try {
@@ -47,11 +47,19 @@ export async function addNoteCore(
 		// Domain business rule validation
 		await notesDomainService.ensureNoDuplicate(title, userId);
 
-		// Create entity with value objects
-		const note = noteEntity.create({ title, markdown, userId });
+		// Create entity with value objects and domain event
+		const [note, event] = noteEntity.create({
+			title,
+			markdown,
+			userId,
+			caller: "addNote",
+		});
 
 		// Persist
 		await commandRepository.create(note);
+
+		// Dispatch domain event
+		await eventDispatcher.dispatch(event);
 
 		// Cache invalidation
 		revalidateTag(buildContentCacheTag("notes", note.status, userId));

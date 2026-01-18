@@ -133,11 +133,12 @@ describe("articleEntity", () => {
 
 	describe("articleEntity.create", () => {
 		test("should create article with valid arguments", () => {
-			const article = articleEntity.create({
+			const [article, event] = articleEntity.create({
 				userId: makeUserId("test-user-id"),
 				categoryName: makeCategoryName("Tech"),
 				title: makeArticleTitle("Breaking article"),
 				url: makeUrl("https://example.com"),
+				caller: "test",
 			});
 
 			expect(article.userId).toBe("test-user-id");
@@ -146,48 +147,53 @@ describe("articleEntity", () => {
 			expect(article.url).toBe("https://example.com");
 			expect(article.status).toBe("UNEXPORTED");
 			expect(article.id).toBeDefined();
+			expect(event.eventType).toBe("article.created");
 		});
 
 		test("should create article with optional quote", () => {
-			const article = articleEntity.create({
+			const [article] = articleEntity.create({
 				userId: makeUserId("test-user-id"),
 				categoryName: makeCategoryName("Science"),
 				title: makeArticleTitle("Science article"),
 				quote: makeQuote("This is a quote"),
 				url: makeUrl("https://science.com"),
+				caller: "test",
 			});
 
 			expect(article.quote).toBe("This is a quote");
 		});
 
 		test("should create article with UNEXPORTED status by default", () => {
-			const article = articleEntity.create({
+			const [article] = articleEntity.create({
 				userId: makeUserId("test-user-id"),
 				categoryName: makeCategoryName("Tech"),
 				title: makeArticleTitle("Test article"),
 				url: makeUrl("https://example.com"),
+				caller: "test",
 			});
 
 			expect(article.status).toBe("UNEXPORTED");
 		});
 
 		test("should be frozen object", () => {
-			const article = articleEntity.create({
+			const [article] = articleEntity.create({
 				userId: makeUserId("test-user-id"),
 				categoryName: makeCategoryName("Tech"),
 				title: makeArticleTitle("Test article"),
 				url: makeUrl("https://example.com"),
+				caller: "test",
 			});
 
 			expect(Object.isFrozen(article)).toBe(true);
 		});
 
 		test("should generate ID for article", () => {
-			const article = articleEntity.create({
+			const [article] = articleEntity.create({
 				userId: makeUserId("test-user-id"),
 				categoryName: makeCategoryName("Tech"),
 				title: makeArticleTitle("Test article"),
 				url: makeUrl("https://example.com"),
+				caller: "test",
 			});
 
 			expect(article.id).toBeDefined();
@@ -206,6 +212,7 @@ describe("articleEntity", () => {
 				categoryName: makeCategoryName("Tech"),
 				title: makeArticleTitle("Test article"),
 				url: makeUrl("https://example.com"),
+				caller: "test",
 			});
 
 			expect(createEntityWithErrorHandlingSpy).toHaveBeenCalledTimes(1);
@@ -229,6 +236,7 @@ describe("articleEntity", () => {
 					categoryName: makeCategoryName("Tech"),
 					title: makeArticleTitle("Test article"),
 					url: makeUrl("https://example.com"),
+					caller: "test",
 				}),
 			).toThrow(InvalidFormatError);
 
@@ -248,6 +256,7 @@ describe("articleEntity", () => {
 					categoryName: makeCategoryName("Tech"),
 					title: makeArticleTitle("Test article"),
 					url: makeUrl("https://example.com"),
+					caller: "test",
 				}),
 			).toThrow(UnexpectedError);
 

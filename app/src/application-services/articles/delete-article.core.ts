@@ -8,6 +8,7 @@
  */
 
 import "server-only";
+import { ArticleDeletedEvent } from "@s-hirano-ist/s-core/articles/events/article-deleted-event";
 import {
 	makeId,
 	makeUnexportedStatus,
@@ -32,20 +33,33 @@ import type { DeleteArticleDeps } from "./delete-article.deps";
  * Only unexported articles can be deleted.
  *
  * @param id - Article ID to delete
- * @param deps - Dependencies (repository)
+ * @param deps - Dependencies (repository, event dispatcher)
  * @returns Server action result with success/failure status
  */
 export async function deleteArticleCore(
 	id: string,
 	deps: DeleteArticleDeps,
 ): Promise<ServerAction> {
-	const { commandRepository } = deps;
+	const { commandRepository, eventDispatcher } = deps;
 
 	try {
 		const userId = await getSelfId();
 
 		const status = makeUnexportedStatus();
-		await commandRepository.deleteById(makeId(id), userId, status);
+		const { title } = await commandRepository.deleteById(
+			makeId(id),
+			userId,
+			status,
+		);
+
+		// Dispatch domain event
+		await eventDispatcher.dispatch(
+			new ArticleDeletedEvent({
+				title,
+				userId: userId as string,
+				caller: "deleteArticle",
+			}),
+		);
 
 		revalidateTag(buildContentCacheTag("articles", status, userId));
 		revalidateTag(buildCountCacheTag("articles", status, userId));

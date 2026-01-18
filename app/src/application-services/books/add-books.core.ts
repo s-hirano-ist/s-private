@@ -28,14 +28,14 @@ import { parseAddBooksFormData } from "./helpers/form-data-parser";
  * It is designed to be easily testable by accepting dependencies as parameters.
  *
  * @param formData - Form data containing ISBN and title
- * @param deps - Dependencies (repository, storage service, domain service factory)
+ * @param deps - Dependencies (repository, storage service, domain service factory, event dispatcher)
  * @returns Server action result with success/failure status
  */
 export async function addBooksCore(
 	formData: FormData,
 	deps: AddBooksDeps,
 ): Promise<ServerAction> {
-	const { commandRepository, storageService, domainServiceFactory } = deps;
+	const { commandRepository, storageService, domainServiceFactory, eventDispatcher } = deps;
 	const booksDomainService = domainServiceFactory.createBooksDomainService();
 
 	try {
@@ -61,16 +61,20 @@ export async function addBooksCore(
 			);
 		}
 
-		// Create entity with value objects
-		const book = bookEntity.create({
+		// Create entity with value objects and domain event
+		const [book, event] = bookEntity.create({
 			ISBN: parsedData.ISBN,
 			title: parsedData.title,
 			userId: parsedData.userId,
 			imagePath: parsedData.imagePath,
+			caller: "addBooks",
 		});
 
 		// Persist
 		await commandRepository.create(book);
+
+		// Dispatch domain event
+		await eventDispatcher.dispatch(event);
 
 		// Cache invalidation
 		revalidateTag(

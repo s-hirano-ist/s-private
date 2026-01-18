@@ -9,11 +9,20 @@
  */
 
 import type { IArticlesCommandRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-command-repository.interface";
+import type { DomainEvent } from "@s-hirano-ist/s-core/common/events/domain-event.interface";
 import { articlesCommandRepository } from "@/infrastructures/articles/repositories/articles-command-repository";
+import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import {
 	type createDomainServiceFactory,
 	domainServiceFactory,
 } from "@/infrastructures/factories/domain-service-factory";
+
+/**
+ * Event dispatcher interface for dependency injection.
+ */
+export type IEventDispatcher = {
+	dispatch(event: DomainEvent): Promise<void>;
+};
 
 /**
  * Dependencies for the addArticleCore function.
@@ -21,6 +30,7 @@ import {
 export type AddArticleDeps = {
 	commandRepository: IArticlesCommandRepository;
 	domainServiceFactory: ReturnType<typeof createDomainServiceFactory>;
+	eventDispatcher: IEventDispatcher;
 };
 
 /**
@@ -29,4 +39,5 @@ export type AddArticleDeps = {
 export const defaultAddArticleDeps: AddArticleDeps = {
 	commandRepository: articlesCommandRepository,
 	domainServiceFactory: domainServiceFactory,
+	eventDispatcher: eventDispatcher,
 };

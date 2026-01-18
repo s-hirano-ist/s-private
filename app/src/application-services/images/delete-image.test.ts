@@ -8,6 +8,12 @@ vi.mock(
 	() => ({ imagesCommandRepository: { deleteById: vi.fn() } }),
 );
 
+vi.mock("@/infrastructures/events/event-dispatcher", () => ({
+	eventDispatcher: {
+		dispatch: vi.fn().mockResolvedValue(undefined),
+	},
+}));
+
 const mockGetSelfId = vi.fn();
 const mockHasDumperPostPermission = vi.fn();
 
@@ -21,7 +27,9 @@ describe("deleteImage", () => {
 		mockHasDumperPostPermission.mockResolvedValue(true);
 		mockGetSelfId.mockResolvedValue("1");
 
-		vi.mocked(imagesCommandRepository.deleteById).mockResolvedValueOnce();
+		vi.mocked(imagesCommandRepository.deleteById).mockResolvedValueOnce({
+			path: "test-image.jpg",
+		});
 
 		const result = await deleteImage("1");
 

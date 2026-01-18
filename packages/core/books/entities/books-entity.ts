@@ -9,6 +9,7 @@ import {
 	UserId,
 } from "../../common/entities/common-entity.js";
 import { createEntityWithErrorHandling } from "../../common/services/entity-factory.js";
+import { BookCreatedEvent } from "../events/book-created-event.js";
 
 // Value objects
 
@@ -388,6 +389,7 @@ export type ExportedBook = Readonly<z.infer<typeof ExportedBook>>;
  *   userId: makeUserId("user-123"),
  *   ISBN: makeISBN("978-4-06-521234-5"),
  *   title: makeBookTitle("The Pragmatic Programmer"),
+ *   caller: "addBook",
  * };
  * ```
  */
@@ -400,7 +402,14 @@ export type CreateBookArgs = Readonly<{
 	title: BookTitle;
 	/** Optional path to user-uploaded book cover image */
 	imagePath?: BookImagePath;
+	/** The caller identifier for event tracking */
+	caller: string;
 }>;
+
+/**
+ * Return type for book creation: tuple of [entity, event].
+ */
+export type BookWithEvent = readonly [UnexportedBook, BookCreatedEvent];
 
 /**
  * Factory object for Book domain entity operations.
@@ -408,38 +417,54 @@ export type CreateBookArgs = Readonly<{
  * @remarks
  * Provides immutable entity creation following DDD patterns.
  * All returned entities are frozen using Object.freeze().
+ * Returns a tuple of [entity, event] for domain event dispatching.
  *
  * @example
  * ```typescript
- * // Create a new unexported book
- * const book = bookEntity.create({
+ * // Create a new unexported book with its domain event
+ * const [book, event] = bookEntity.create({
  *   userId: makeUserId("user-123"),
  *   ISBN: makeISBN("978-4-06-521234-5"),
  *   title: makeBookTitle("The Pragmatic Programmer"),
+ *   caller: "addBook",
  * });
  *
+ * // Persist and dispatch event
+ * await repository.create(book);
+ * await eventDispatcher.dispatch(event);
  * ```
  *
  * @see {@link CreateBookArgs} for creation parameters
+ * @see {@link BookWithEvent} for return type
  */
 export const bookEntity = {
 	/**
-	 * Creates a new unexported book entity.
+	 * Creates a new unexported book entity with its domain event.
 	 *
 	 * @param args - The creation arguments containing required fields
-	 * @returns A frozen UnexportedBook instance with generated id and timestamps
+	 * @returns A tuple of [UnexportedBook, BookCreatedEvent]
 	 * @throws {InvalidFormatError} When validation of any field fails
 	 * @throws {UnexpectedError} For unexpected errors during creation
 	 */
-	create: (args: CreateBookArgs): UnexportedBook => {
-		return createEntityWithErrorHandling(() =>
+	create: (args: CreateBookArgs): BookWithEvent => {
+		const { caller, ...entityArgs } = args;
+		const book = createEntityWithErrorHandling(() =>
 			Object.freeze({
 				id: makeId(),
 				status: "UNEXPORTED",
 				createdAt: makeCreatedAt(),
-				...args,
+				...entityArgs,
 			}),
 		);
+
+		const event = new BookCreatedEvent({
+			ISBN: book.ISBN as string,
+			title: book.title as string,
+			userId: book.userId as string,
+			caller,
+		});
+
+		return [book, event] as const;
 	},
 };
 

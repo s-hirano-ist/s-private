@@ -36,10 +36,11 @@ describe("noteEntity", () => {
 
 	describe("noteEntity.create", () => {
 		test("should create note with valid arguments", () => {
-			const note = noteEntity.create({
+			const [note, event] = noteEntity.create({
 				userId: makeUserId("test-user-id"),
 				title: makeNoteTitle("My Article"),
 				markdown: makeMarkdown("# Hello World\n\nThis is my article."),
+				caller: "test",
 			});
 
 			expect(note.userId).toBe("test-user-id");
@@ -47,23 +48,26 @@ describe("noteEntity", () => {
 			expect(note.markdown).toBe("# Hello World\n\nThis is my article.");
 			expect(note.status).toBe("UNEXPORTED");
 			expect(note.id).toBeDefined();
+			expect(event.eventType).toBe("note.created");
 		});
 
 		test("should create note with UNEXPORTED status by default", () => {
-			const note = noteEntity.create({
+			const [note] = noteEntity.create({
 				userId: makeUserId("test-user-id"),
 				title: makeNoteTitle("Test Article"),
 				markdown: makeMarkdown("Note here"),
+				caller: "test",
 			});
 
 			expect(note.status).toBe("UNEXPORTED");
 		});
 
 		test("should be frozen object", () => {
-			const note = noteEntity.create({
+			const [note] = noteEntity.create({
 				userId: makeUserId("test-user-id"),
 				title: makeNoteTitle("Test Article"),
 				markdown: makeMarkdown("Note here"),
+				caller: "test",
 			});
 
 			expect(Object.isFrozen(note)).toBe(true);

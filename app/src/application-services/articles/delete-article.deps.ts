@@ -10,12 +10,15 @@
 
 import type { IArticlesCommandRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-command-repository.interface";
 import { articlesCommandRepository } from "@/infrastructures/articles/repositories/articles-command-repository";
+import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
+import type { IEventDispatcher } from "./add-article.deps";
 
 /**
  * Dependencies for the deleteArticleCore function.
  */
 export type DeleteArticleDeps = {
 	commandRepository: IArticlesCommandRepository;
+	eventDispatcher: IEventDispatcher;
 };
 
 /**
@@ -23,4 +26,5 @@ export type DeleteArticleDeps = {
  */
 export const defaultDeleteArticleDeps: DeleteArticleDeps = {
 	commandRepository: articlesCommandRepository,
+	eventDispatcher: eventDispatcher,
 };

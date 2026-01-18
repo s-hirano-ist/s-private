@@ -10,12 +10,15 @@
 
 import type { IBooksCommandRepository } from "@s-hirano-ist/s-core/books/repositories/books-command-repository.interface";
 import { booksCommandRepository } from "@/infrastructures/books/repositories/books-command-repository";
+import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
+import type { IEventDispatcher } from "../articles/add-article.deps";
 
 /**
  * Dependencies for the deleteBooksCore function.
  */
 export type DeleteBooksDeps = {
 	commandRepository: IBooksCommandRepository;
+	eventDispatcher: IEventDispatcher;
 };
 
 /**
@@ -23,4 +26,5 @@ export type DeleteBooksDeps = {
  */
 export const defaultDeleteBooksDeps: DeleteBooksDeps = {
 	commandRepository: booksCommandRepository,
+	eventDispatcher: eventDispatcher,
 };

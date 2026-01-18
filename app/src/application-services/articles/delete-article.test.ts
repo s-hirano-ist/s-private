@@ -27,17 +27,23 @@ vi.mock("@/common/auth/session", () => ({
 function createMockDeps(): {
 	deps: DeleteArticleDeps;
 	mockCommandRepository: IArticlesCommandRepository;
+	mockEventDispatcher: { dispatch: ReturnType<typeof vi.fn> };
 } {
 	const mockCommandRepository: IArticlesCommandRepository = {
 		create: vi.fn(),
 		deleteById: vi.fn(),
 	};
 
-	const deps: DeleteArticleDeps = {
-		commandRepository: mockCommandRepository,
+	const mockEventDispatcher = {
+		dispatch: vi.fn().mockResolvedValue(undefined),
 	};
 
-	return { deps, mockCommandRepository };
+	const deps: DeleteArticleDeps = {
+		commandRepository: mockCommandRepository,
+		eventDispatcher: mockEventDispatcher,
+	};
+
+	return { deps, mockCommandRepository, mockEventDispatcher };
 }
 
 describe("deleteArticleCore", () => {
@@ -48,8 +54,8 @@ describe("deleteArticleCore", () => {
 	test("should delete article successfully", async () => {
 		vi.mocked(getSelfId).mockResolvedValue(makeUserId("test-user-id"));
 
-		const { deps, mockCommandRepository } = createMockDeps();
-		vi.mocked(mockCommandRepository.deleteById).mockResolvedValue(undefined);
+		const { deps, mockCommandRepository, mockEventDispatcher } = createMockDeps();
+		vi.mocked(mockCommandRepository.deleteById).mockResolvedValue({ title: "Test Article" });
 
 		const testId = "01234567-89ab-7def-8123-456789abcdef";
 		const result = await deleteArticleCore(testId, deps);
@@ -64,6 +70,7 @@ describe("deleteArticleCore", () => {
 			makeUserId("test-user-id"),
 			makeUnexportedStatus(),
 		);
+		expect(mockEventDispatcher.dispatch).toHaveBeenCalled();
 		const status = makeUnexportedStatus();
 		expect(revalidateTag).toHaveBeenCalledWith(
 			buildContentCacheTag("articles", status, "test-user-id"),

@@ -9,6 +9,7 @@
 
 import "server-only";
 import { makeUnexportedStatus } from "@s-hirano-ist/s-core/common/entities/common-entity";
+import { ImageDeletedEvent } from "@s-hirano-ist/s-core/images/events/image-deleted-event";
 import { revalidateTag } from "next/cache";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
@@ -36,13 +37,22 @@ export async function deleteImageCore(
 	id: string,
 	deps: DeleteImageDeps,
 ): Promise<ServerAction> {
-	const { commandRepository } = deps;
+	const { commandRepository, eventDispatcher } = deps;
 
 	try {
 		const userId = await getSelfId();
 
 		const status = makeUnexportedStatus();
-		await commandRepository.deleteById(id, userId, status);
+		const { path } = await commandRepository.deleteById(id, userId, status);
+
+		// Dispatch domain event
+		await eventDispatcher.dispatch(
+			new ImageDeletedEvent({
+				path,
+				userId: userId as string,
+				caller: "deleteImage",
+			}),
+		);
 
 		revalidateTag(buildContentCacheTag("images", status, userId));
 		revalidateTag(buildCountCacheTag("images", status, userId));
