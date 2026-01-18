@@ -1,5 +1,5 @@
+import { InvalidFormatError } from "@s-hirano-ist/s-core/errors/error-classes";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { InvalidFormatError } from "@/common/error/error-classes";
 import { getFormDataFile, getFormDataString } from "./form-data-utils";
 
 describe("form-data-utils", () => {

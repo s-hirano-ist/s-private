@@ -1,3 +1,4 @@
+import { DuplicateError } from "@s-hirano-ist/s-core/errors/error-classes";
 import {
 	makeMarkdown,
 	makeNoteTitle,
@@ -14,7 +15,6 @@ import { revalidateTag } from "next/cache";
 import { describe, expect, test, vi } from "vitest";
 import { parseAddNoteFormData } from "@/application-services/notes/helpers/form-data-parser";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
-import { DuplicateError } from "@/common/error/error-classes";
 import {
 	buildContentCacheTag,
 	buildCountCacheTag,

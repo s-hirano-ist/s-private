@@ -5,6 +5,7 @@ import {
 	makeISBN,
 } from "@s-hirano-ist/s-core/books/entities/books-entity";
 import { BookCreatedEvent } from "@s-hirano-ist/s-core/books/events/book-created-event";
+import { DuplicateError } from "@s-hirano-ist/s-core/errors/error-classes";
 import {
 	makeCreatedAt,
 	makeId,
@@ -14,7 +15,6 @@ import {
 import { revalidateTag } from "next/cache";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
-import { DuplicateError } from "@/common/error/error-classes";
 import {
 	buildContentCacheTag,
 	buildCountCacheTag,

@@ -888,7 +888,10 @@ export async function wrapServerSideErrorForClient(
 ```
 
 ```typescript
-// app/src/common/error/error-classes.ts
+// packages/core/errors/error-classes.ts
+// エラークラスはドメイン層に配置され、app層からは以下のようにインポート:
+// import { DuplicateError } from "@s-hirano-ist/s-core/errors/error-classes";
+
 export class UnexpectedError extends Error {
   constructor() { super("unexpected"); this.name = "UnexpectedError"; }
 }
@@ -904,11 +907,16 @@ export class DuplicateError extends Error {
 export class FileNotAllowedError extends Error {
   constructor() { super("invalidFileFormat"); this.name = "FileNotAllowedError"; }
 }
-
-export class NotificationError extends Error {
-  constructor() { super("notificationFailed"); this.name = "NotificationError"; }
-}
 ```
+
+**エラークラスの分類基準:**
+
+| エラークラス | 用途 | 発生箇所 |
+|------------|------|---------|
+| `UnexpectedError` | 予期せぬシステムエラー | catch-all |
+| `InvalidFormatError` | Zodバリデーションエラー | エンティティファクトリ |
+| `DuplicateError` | ビジネスルール違反（重複） | ドメインサービス |
+| `FileNotAllowedError` | ファイル形式不正 | imagesドメイン |
 
 ### エラータイプ別処理
 

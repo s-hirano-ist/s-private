@@ -10,6 +10,12 @@
 
 "use server";
 import "server-only";
+import {
+	DuplicateError,
+	FileNotAllowedError,
+	InvalidFormatError,
+	UnexpectedError,
+} from "@s-hirano-ist/s-core/errors/error-classes";
 import { SystemErrorEvent } from "@s-hirano-ist/s-core/shared-kernel/events/system-error-event";
 import { SystemWarningEvent } from "@s-hirano-ist/s-core/shared-kernel/events/system-warning-event";
 import { Prisma } from "@s-hirano-ist/s-database";
@@ -17,12 +23,6 @@ import { NotificationError } from "@s-hirano-ist/s-notification";
 import { AuthError } from "next-auth";
 import type { ServerAction } from "@/common/types";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
-import {
-	DuplicateError,
-	FileNotAllowedError,
-	InvalidFormatError,
-	UnexpectedError,
-} from "./error-classes";
 
 /**
  * Converts FormData to a plain record for error responses.

@@ -1,8 +1,8 @@
+import { UnexpectedError } from "@s-hirano-ist/s-core/errors/error-classes";
 import { Prisma } from "@s-hirano-ist/s-database";
 import { NotificationError } from "@s-hirano-ist/s-notification";
 import { AuthError } from "next-auth";
 import { describe, expect, test, vi } from "vitest";
-import { UnexpectedError } from "@/common/error/error-classes";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { wrapServerSideErrorForClient } from "./error-wrapper";
 
