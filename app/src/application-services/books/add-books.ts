@@ -10,7 +10,6 @@
 "use server";
 import "server-only";
 import { bookEntity } from "@s-hirano-ist/s-core/books/entities/books-entity";
-import { BooksDomainService } from "@s-hirano-ist/s-core/books/services/books-domain-service";
 import { revalidateTag } from "next/cache";
 import { forbidden } from "next/navigation";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
@@ -21,8 +20,8 @@ import {
 	buildCountCacheTag,
 } from "@/common/utils/cache-tag-builder";
 import { booksCommandRepository } from "@/infrastructures/books/repositories/books-command-repository";
-import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
 import { booksStorageService } from "@/infrastructures/books/services/books-storage-service";
+import { domainServiceFactory } from "@/infrastructures/factories/domain-service-factory";
 import { parseAddBooksFormData } from "./helpers/form-data-parser";
 
 /**
@@ -39,7 +38,7 @@ export async function addBooks(formData: FormData): Promise<ServerAction> {
 	const hasPermission = await hasDumperPostPermission();
 	if (!hasPermission) forbidden();
 
-	const booksDomainService = new BooksDomainService(booksQueryRepository);
+	const booksDomainService = domainServiceFactory.createBooksDomainService();
 
 	try {
 		const parsedData = await parseAddBooksFormData(formData, await getSelfId());

@@ -7,7 +7,6 @@
 "use server";
 import "server-only";
 import { noteEntity } from "@s-hirano-ist/s-core/notes/entities/note-entity";
-import { NotesDomainService } from "@s-hirano-ist/s-core/notes/services/notes-domain-service";
 import { revalidateTag } from "next/cache";
 import { forbidden } from "next/navigation";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
@@ -17,8 +16,8 @@ import {
 	buildContentCacheTag,
 	buildCountCacheTag,
 } from "@/common/utils/cache-tag-builder";
+import { domainServiceFactory } from "@/infrastructures/factories/domain-service-factory";
 import { notesCommandRepository } from "@/infrastructures/notes/repositories/notes-command-repository";
-import { notesQueryRepository } from "@/infrastructures/notes/repositories/notes-query-repository";
 import { parseAddNoteFormData } from "./helpers/form-data-parser";
 
 /**
@@ -35,7 +34,7 @@ export async function addNote(formData: FormData): Promise<ServerAction> {
 	const hasPermission = await hasDumperPostPermission();
 	if (!hasPermission) forbidden();
 
-	const notesDomainService = new NotesDomainService(notesQueryRepository);
+	const notesDomainService = domainServiceFactory.createNotesDomainService();
 
 	try {
 		const { title, markdown, userId } = parseAddNoteFormData(

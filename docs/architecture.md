@@ -20,6 +20,32 @@ The codebase follows clean architecture with domain-driven design:
 - External service integrations (auth, i18n, observability)
 - Technical concerns (MinIO, logging, monitoring)
 
+#### Infrastructure Services (Adapters)
+
+Infrastructure services implement domain interfaces using specific technologies. These are **adapters** that bridge the domain layer to external systems.
+
+| Directory | Service | Interface | Technology |
+|-----------|---------|-----------|------------|
+| `common/services/` | `minioStorageService` | `IStorageService` | MinIO client |
+| `books/services/` | `booksStorageService` | `IStorageService` | MinIO (books path) |
+| `images/services/` | `sharpImageProcessor` | `IImageProcessor` | Sharp library |
+
+**Naming Convention:**
+- Use technology-based naming when the implementation is specific to that technology (e.g., `minio-*`, `sharp-*`)
+- Use domain-based naming when the adapter has domain-specific configuration (e.g., `books-storage-service` uses book-specific paths)
+
+#### Domain Service Factory
+
+Domain services are instantiated via `domainServiceFactory` in `infrastructures/factories/`:
+
+```typescript
+import { domainServiceFactory } from "@/infrastructures/factories/domain-service-factory";
+
+const articlesDomainService = domainServiceFactory.createArticlesDomainService();
+```
+
+This centralizes dependency injection and simplifies testing with mock implementations.
+
 **Main domains**: `articles`, `notes`, `images`, `books` with supporting domains for `auth` and `common` utilities
 
 ## Database Architecture
@@ -54,6 +80,24 @@ Schema is maintained in `prisma/schema.prisma` with String-based primary keys an
 - **Domain Boundaries**: Cross-domain imports forbidden - each domain is isolated
 - **Component Conventions**: TypeScript interfaces as `type` (not `interface`), React hooks rules enforced
 - **Dependency Management**: Dependency cruiser configured to detect circular dependencies
+
+### Core Package Import Patterns
+
+The `@s-hirano-ist/s-core` package supports two import styles:
+
+**1. Barrel Imports (Recommended for most use cases)**
+```typescript
+import { ArticlesDomainService, makeUrl, Url } from "@s-hirano-ist/s-core/articles";
+import { makeUserId, makeId } from "@s-hirano-ist/s-core/common";
+```
+
+**2. Deep Path Imports (For specific modules)**
+```typescript
+import { ArticlesDomainService } from "@s-hirano-ist/s-core/articles/services/articles-domain-service";
+import type { IArticlesQueryRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-query-repository.interface";
+```
+
+Use barrel imports for cleaner code; use deep paths when you need specific type imports or want to minimize bundle size.
 
 ### Configuration Files
 - `biome.json` - Primary formatter/linter configuration

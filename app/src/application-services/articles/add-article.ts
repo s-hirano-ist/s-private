@@ -10,7 +10,6 @@
 "use server";
 import "server-only";
 import { articleEntity } from "@s-hirano-ist/s-core/articles/entities/article-entity";
-import { ArticlesDomainService } from "@s-hirano-ist/s-core/articles/services/articles-domain-service";
 import { revalidateTag } from "next/cache";
 import { forbidden } from "next/navigation";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
@@ -21,7 +20,7 @@ import {
 	buildCountCacheTag,
 } from "@/common/utils/cache-tag-builder";
 import { articlesCommandRepository } from "@/infrastructures/articles/repositories/articles-command-repository";
-import { articlesQueryRepository } from "@/infrastructures/articles/repositories/articles-query-repository";
+import { domainServiceFactory } from "@/infrastructures/factories/domain-service-factory";
 import { parseAddArticleFormData } from "./helpers/form-data-parser";
 
 /**
@@ -42,9 +41,8 @@ export async function addArticle(formData: FormData): Promise<ServerAction> {
 	const hasPermission = await hasDumperPostPermission();
 	if (!hasPermission) forbidden();
 
-	const articlesDomainService = new ArticlesDomainService(
-		articlesQueryRepository,
-	);
+	const articlesDomainService =
+		domainServiceFactory.createArticlesDomainService();
 
 	try {
 		const { title, quote, url, categoryName, userId } = parseAddArticleFormData(
