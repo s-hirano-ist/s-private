@@ -30,6 +30,7 @@
   rangeStrategy: 'bump',
   lockFileMaintenance: {
     enabled: true,
+    automerge: true,
   },
   vulnerabilityAlerts: {
     labels: [
