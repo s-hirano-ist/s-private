@@ -12,7 +12,7 @@ import { _getNotes } from "./get-notes";
 import {
 	loadMoreExportedNotes,
 	loadMoreUnexportedNotes,
-} from "./get-notes-from-client";
+} from "./load-more-notes";
 
 vi.mock("next/navigation");
 vi.mock("@/common/auth/session");
@@ -45,7 +45,7 @@ const mockMakeExportedStatus = vi.mocked(makeExportedStatus);
 const mockMakeUnexportedStatus = vi.mocked(makeUnexportedStatus);
 const mock_getNotes = vi.mocked(_getNotes);
 
-describe("get-notes-from-client", () => {
+describe("load-more-notes", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 	});
