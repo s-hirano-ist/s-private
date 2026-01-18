@@ -20,6 +20,7 @@ import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import type { ImageData } from "@/components/common/display/image/image-stack";
+import { minioStorageService } from "@/infrastructures/common/services/minio-storage-service";
 import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
 
 /** API path for original images */
@@ -135,5 +136,5 @@ export const getImagesFromStorage = async (
 	path: string,
 	isThumbnail: boolean,
 ) => {
-	return await imagesQueryRepository.getFromStorage(path, isThumbnail);
+	return await minioStorageService.getImage(path, isThumbnail);
 };

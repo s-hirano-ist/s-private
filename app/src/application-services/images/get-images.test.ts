@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
+import { minioStorageService } from "@/infrastructures/common/services/minio-storage-service";
 import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
 import {
 	getExportedImages,
@@ -13,10 +14,13 @@ vi.mock(
 		imagesQueryRepository: {
 			findMany: vi.fn(),
 			count: vi.fn(),
-			getFromStorage: vi.fn(),
 		},
 	}),
 );
+
+vi.mock("@/infrastructures/common/services/minio-storage-service", () => ({
+	minioStorageService: { getImage: vi.fn() },
+}));
 
 vi.mock("@/common/auth/session", () => ({
 	getSelfId: vi.fn().mockResolvedValue("test-user-id"),
@@ -216,13 +220,11 @@ describe("get-images", () => {
 		test("should fetch image from storage with correct path and thumbnail flag", async () => {
 			const mockStream = {} as NodeJS.ReadableStream;
 
-			vi.mocked(imagesQueryRepository.getFromStorage).mockResolvedValue(
-				mockStream,
-			);
+			vi.mocked(minioStorageService.getImage).mockResolvedValue(mockStream);
 
 			const result = await getImagesFromStorage("test-image-key.jpg", false);
 
-			expect(imagesQueryRepository.getFromStorage).toHaveBeenCalledWith(
+			expect(minioStorageService.getImage).toHaveBeenCalledWith(
 				"test-image-key.jpg",
 				false,
 			);
@@ -231,7 +233,7 @@ describe("get-images", () => {
 		});
 
 		test("should handle storage errors", async () => {
-			vi.mocked(imagesQueryRepository.getFromStorage).mockRejectedValue(
+			vi.mocked(minioStorageService.getImage).mockRejectedValue(
 				new Error("Storage error"),
 			);
 

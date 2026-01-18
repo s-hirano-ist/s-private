@@ -7,7 +7,10 @@ import type { ImagesFindManyParams } from "../types/query-params.js";
  *
  * @remarks
  * Follows the CQRS pattern - this interface handles read operations only.
- * Implementations should be provided by the infrastructure layer (e.g., Prisma + MinIO).
+ * Implementations should be provided by the infrastructure layer (e.g., Prisma).
+ *
+ * For object storage operations (get image), use {@link IStorageService}
+ * from the common module.
  *
  * @example
  * ```typescript
@@ -22,6 +25,7 @@ import type { ImagesFindManyParams } from "../types/query-params.js";
  * ```
  *
  * @see {@link IImagesCommandRepository} for write operations
+ * @see {@link IStorageService} for object storage operations
  */
 export type IImagesQueryRepository = {
 	/**
@@ -72,25 +76,4 @@ export type IImagesQueryRepository = {
 	 * @returns The count of matching images
 	 */
 	count(userId: UserId, status: Status): Promise<number>;
-
-	/**
-	 * Retrieves an image from object storage.
-	 *
-	 * @param path - The storage path of the image
-	 * @param isThumbnail - Whether to retrieve the thumbnail version
-	 * @returns A readable stream of the image data
-	 */
-	getFromStorage(
-		path: string,
-		isThumbnail: boolean,
-	): Promise<NodeJS.ReadableStream>;
-
-	/**
-	 * Verifies an image exists in storage or throws an error.
-	 *
-	 * @param path - The storage path of the image
-	 * @param isThumbnail - Whether to check the thumbnail version
-	 * @throws When the image is not found in storage
-	 */
-	getFromStorageOrThrow(path: string, isThumbnail: boolean): Promise<void>;
 };

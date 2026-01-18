@@ -14,7 +14,6 @@ import {
 	Path,
 } from "@s-hirano-ist/s-core/images/entities/image-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { minioClient } from "@/minio";
 import prisma from "@/prisma";
 import { imagesCommandRepository } from "./images-command-repository";
 
@@ -117,53 +116,6 @@ describe("ImageCommandRepository", () => {
 			).rejects.toThrow("Database constraint error");
 
 			expect(prisma.image.create).toHaveBeenCalled();
-		});
-	});
-
-	describe("uploadToStorage", () => {
-		test("should upload to storage successfully", async () => {
-			const buffer = Buffer.from("test image data");
-			const path = "images/user123/image-123.png";
-
-			vi.mocked(minioClient.putObject).mockResolvedValue({
-				etag: "test-etag",
-				versionId: "test-version",
-			});
-
-			await imagesCommandRepository.uploadToStorage(
-				makeTestPath(path),
-				buffer,
-				false,
-			);
-
-			expect(minioClient.putObject).toHaveBeenCalledWith(
-				"test-bucket",
-				`images/original/${path}`,
-				buffer,
-			);
-		});
-
-		test("should handle storage upload errors", async () => {
-			const buffer = Buffer.from("test image data");
-			const path = "images/user123/image-123.png";
-
-			vi.mocked(minioClient.putObject).mockRejectedValue(
-				new Error("Storage upload failed"),
-			);
-
-			await expect(
-				imagesCommandRepository.uploadToStorage(
-					makeTestPath(path),
-					buffer,
-					false,
-				),
-			).rejects.toThrow("Storage upload failed");
-
-			expect(minioClient.putObject).toHaveBeenCalledWith(
-				"test-bucket",
-				`images/original/${path}`,
-				buffer,
-			);
 		});
 	});
 

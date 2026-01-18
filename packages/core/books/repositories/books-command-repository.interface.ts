@@ -3,7 +3,6 @@ import type {
 	Status,
 	UserId,
 } from "../../common/entities/common-entity.js";
-import type { Path } from "../../images/entities/image-entity.js";
 import type { UnexportedBook } from "../entities/books-entity.js";
 
 /**
@@ -15,6 +14,12 @@ import type { UnexportedBook } from "../entities/books-entity.js";
  *
  * For batch operations (bulkUpdateStatus), use {@link IBatchCommandRepository}
  * from the common module directly.
+ *
+ * For object storage operations (upload cover images), use {@link IStorageService}
+ * from the common module.
+ *
+ * For external book data import, use {@link IGitHubBookFetcher}
+ * from the services module.
  *
  * @example
  * ```typescript
@@ -34,6 +39,8 @@ import type { UnexportedBook } from "../entities/books-entity.js";
  *
  * @see {@link IBooksQueryRepository} for read operations
  * @see {@link IBatchCommandRepository} for batch operations
+ * @see {@link IStorageService} for object storage operations
+ * @see {@link IGitHubBookFetcher} for external book imports
  */
 export type IBooksCommandRepository = {
 	/**
@@ -51,27 +58,4 @@ export type IBooksCommandRepository = {
 	 * @param status - The expected status of the book
 	 */
 	deleteById(id: Id, userId: UserId, status: Status): Promise<void>;
-
-	/**
-	 * Fetches books from an external GitHub repository.
-	 *
-	 * @remarks
-	 * Used for importing book data from external sources.
-	 *
-	 * @returns Array of unexported book entities
-	 */
-	fetchBookFromGitHub(): Promise<UnexportedBook[]>;
-
-	/**
-	 * Uploads a book cover image to MinIO storage.
-	 *
-	 * @param path - The storage path for the image
-	 * @param buffer - The image buffer data
-	 * @param isThumbnail - Whether this is a thumbnail or original image
-	 */
-	uploadImageToStorage(
-		path: Path,
-		buffer: Buffer,
-		isThumbnail: boolean,
-	): Promise<void>;
 };
