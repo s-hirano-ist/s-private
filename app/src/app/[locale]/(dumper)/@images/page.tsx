@@ -48,6 +48,7 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 										currentPage,
 										totalCount: await getImagesCount("EXPORTED"),
 										getImages: getExportedImages,
+										layout,
 									})
 								}
 							/>
@@ -73,6 +74,7 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 										totalCount: await getImagesCount("UNEXPORTED"),
 										getImages: getUnexportedImages,
 										deleteImage,
+										layout,
 									})
 								}
 							/>
