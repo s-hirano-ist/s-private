@@ -24,6 +24,8 @@
 
 // Entities
 export * from "./entities/common-entity.js";
+// Note: file-entity.js exports are NOT re-exported here due to ContentType naming conflict
+// with search-types.js. Import directly from "@s-hirano-ist/s-core/common/entities/file-entity"
 
 // Events
 export * from "./events/base-domain-event.js";

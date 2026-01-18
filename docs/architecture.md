@@ -1,5 +1,22 @@
 # アーキテクチャ
 
+## 目次
+- [クリーンアーキテクチャの構成](#クリーンアーキテクチャの構成)
+- [ドメインモデル](#ドメインモデル)
+- [コードスタイルとアーキテクチャルール](#コードスタイルとアーキテクチャルール)
+- [セキュリティ](#セキュリティ)
+- [Loader Pattern](#loader-pattern)
+- [Server Actions Architecture Pattern](#server-actions-architecture-pattern)
+- [Value Object Pattern with Zod Branding](#value-object-pattern-with-zod-branding)
+- [Domain Entity Creation Pattern](#domain-entity-creation-pattern)
+- [Server-Side Error Handling Pattern](#server-side-error-handling-pattern)
+- [Form Data Parsing Pattern](#form-data-parsing-pattern)
+- [Cache Invalidation Pattern](#cache-invalidation-pattern)
+- [Data Fetching Pattern](#data-fetching-pattern)
+- [Event-Driven Architecture Pattern](#event-driven-architecture-pattern)
+- [Repository CQRS Pattern](#repository-cqrs-pattern)
+- [Dependency Injection Factory Pattern](#dependency-injection-factory-pattern)
+
 ## クリーンアーキテクチャの構成
 
 本コードベースはドメイン駆動設計に基づくクリーンアーキテクチャを採用しています。
@@ -447,6 +464,11 @@ export async function wrapServerSideErrorForClient(
     return { success: false, message: error.message, formData: ... };
   }
 
+  if (error instanceof NotificationError) {
+    await eventDispatcher.dispatch(new SystemWarningEvent({ ... }));
+    return { success: false, message: "notificationFailed" };
+  }
+
   if (error instanceof Prisma.PrismaClientKnownRequestError) {
     await eventDispatcher.dispatch(new SystemErrorEvent({ ... }));
     return { success: false, message: "prismaUnexpected" };
@@ -475,6 +497,10 @@ export class DuplicateError extends Error {
 export class FileNotAllowedError extends Error {
   constructor() { super("invalidFileFormat"); this.name = "FileNotAllowedError"; }
 }
+
+export class NotificationError extends Error {
+  constructor() { super("notificationFailed"); this.name = "NotificationError"; }
+}
 ```
 
 ### エラータイプ別処理
@@ -482,10 +508,13 @@ export class FileNotAllowedError extends Error {
 | エラータイプ | レスポンス message | イベント | ステータス |
 |-------------|-------------------|---------|-----------|
 | `DuplicateError` | `"duplicated"` | SystemWarningEvent | 400 |
-| `InvalidFormatError` | `"invalidFormat"` | SystemWarningEvent | 500 |
-| `FileNotAllowedError` | `"invalidFileFormat"` | SystemWarningEvent | 500 |
+| `InvalidFormatError` | `error.message` | SystemWarningEvent | 500 |
+| `FileNotAllowedError` | `error.message` | SystemWarningEvent | 500 |
+| `NotificationError` | `"notificationFailed"` | SystemWarningEvent | 500 |
 | `AuthError` | `"signInUnknown"` | SystemWarningEvent | 401 |
-| Prisma errors | `"prismaUnexpected"` | SystemErrorEvent | 500 |
+| `PrismaClientKnownRequestError` | `"prismaUnexpected"` | SystemErrorEvent | 500 |
+| `PrismaClientValidationError` | `"prismaUnexpected"` | SystemErrorEvent | 500 |
+| `PrismaClientInitializationError` | `"prismaUnexpected"` | SystemErrorEvent | 500 |
 | その他 | `"unexpected"` | SystemErrorEvent | 500 |
 
 ### 使用例
@@ -627,6 +656,19 @@ revalidateTag("categories"); // カテゴリ一覧も無効化
 - タグはユーザーIDを含めてマルチテナント分離を維持
 - ステータス変更時は両方のステータスのキャッシュを無効化
 - カテゴリ等の関連データも忘れずに無効化
+
+### キャッシュタグのサニタイズ
+
+ユーザーIDをキャッシュタグに含める際は、`sanitizeCacheTag`でサニタイズする:
+
+```typescript
+// app/src/common/utils/cache-utils.ts
+export function sanitizeCacheTag(userId: string): string {
+  return userId.replaceAll(/[^a-zA-Z_]/g, "");
+}
+```
+
+**目的:** キャッシュタグに使用できない文字（`|`等のAuth0ユーザーID内の特殊文字）を除去
 
 ## Data Fetching Pattern
 

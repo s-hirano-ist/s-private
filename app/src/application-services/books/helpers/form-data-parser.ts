@@ -14,7 +14,7 @@ import {
 	makeContentType,
 	makeFileSize,
 	makePath,
-} from "@s-hirano-ist/s-core/images/entities/image-entity";
+} from "@s-hirano-ist/s-core/common/entities/file-entity";
 import { getFormDataString } from "@/common/utils/form-data-utils";
 import { sharpImageProcessor } from "@/infrastructures/images/services/sharp-image-processor";
 
