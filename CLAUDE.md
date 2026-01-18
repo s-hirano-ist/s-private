@@ -22,9 +22,9 @@ Before doing any UI, frontend or React development, ALWAYS call the storybook MC
 - `pnpm storybook` - Storybook起動
 
 ## ディレクトリ構造
-- `src/domains/` - ドメイン層（entities, repositories, services）
-- `src/application-services/` - アプリケーション層
-- `src/infrastructures/` - インフラ層（Prisma実装）
+- `packages/core/` - ドメイン層（entities, repositories, services）
+- `app/src/application-services/` - アプリケーション層
+- `app/src/infrastructures/` - インフラ層（Prisma実装）
 - `app/[locale]/` - Next.js App Router（i18n対応: en/ja）
 
 ## 主要ドメイン
@@ -45,7 +45,7 @@ Before doing any UI, frontend or React development, ALWAYS call the storybook MC
 - next-intl（i18n）
 
 ## 環境設定
-`.env.sample` → `.env.local`にコピー。型定義は`src/env.ts`。
+`app/.env.sample` → `.env.local`にコピー。型定義は`app/src/env.ts`。
 
 ## 詳細資料
 - セットアップ: [docs/setup.md](docs/setup.md)
@@ -53,4 +53,4 @@ Before doing any UI, frontend or React development, ALWAYS call the storybook MC
 - アーキテクチャ: [docs/architecture.md](docs/architecture.md)
 - ドメインモデル: [docs/domain-model.md](docs/domain-model.md)
 - セキュリティ: [SECURITY.md](SECURITY.md)
-- スキーマ: [prisma/schema.prisma](prisma/schema.prisma)
+- スキーマ: [packages/database/prisma/schema.prisma](packages/database/prisma/schema.prisma)

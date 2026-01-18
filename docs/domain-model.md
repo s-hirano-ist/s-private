@@ -1,6 +1,6 @@
 # ドメインモデル図
 
-このドキュメントは、`src/domains/` 配下で定義されているドメインモデルの構造と関係性を可視化しています。
+このドキュメントは、`packages/core/` 配下で定義されているドメインモデルの構造と関係性を可視化しています。
 
 ## ドメイン概要
 
@@ -19,7 +19,9 @@
 erDiagram
     %% Common Domain Value Objects
     Status {
-        enum status "UNEXPORTED | EXPORTED"
+        literal UNEXPORTED "初期状態"
+        literal LAST_UPDATED "バッチ処理中"
+        object EXPORTED "{ status: EXPORTED, exportedAt: Date }"
     }
     
     Id {
@@ -43,13 +45,13 @@ erDiagram
         Id id PK
         UserId userId FK
         CategoryName categoryName
-        Id categoryId FK
         ArticleTitle title
         Quote quote "nullable"
         Url url
         Status status
         OgTitle ogTitle "nullable"
         OgDescription ogDescription "nullable"
+        OgImageUrl ogImageUrl "nullable"
         CreatedAt createdAt
         ExportedAt exportedAt "nullable"
     }
@@ -106,7 +108,6 @@ erDiagram
     }
 
     %% Relationships
-    Article ||--o{ Category : "belongs to"
     Category ||--o{ Article : "has many"
 ```
 
@@ -126,7 +127,7 @@ graph TB
         ArticleRepo[Article Repository Interface]
         CategoryRepo[Category Repository Interface]
         ArticleService[Articles Domain Service]
-        ArticleTypes[Article Value Objects<br/>• ArticleTitle<br/>• CategoryName<br/>• Url<br/>• Quote<br/>• OgTitle<br/>• OgDescription]
+        ArticleTypes[Article Value Objects<br/>• ArticleTitle<br/>• CategoryName<br/>• Url<br/>• Quote<br/>• OgTitle<br/>• OgDescription<br/>• OgImageUrl]
     end
 
     subgraph "Books Domain"
@@ -195,20 +196,29 @@ graph LR
 ```mermaid
 stateDiagram-v2
     [*] --> UNEXPORTED : create()<br/>createdAt設定
-    UNEXPORTED --> EXPORTED : export<br/>exportedAt設定
+    UNEXPORTED --> LAST_UPDATED : バッチ処理開始
+    LAST_UPDATED --> EXPORTED : バッチ処理完了<br/>exportedAt設定
+    LAST_UPDATED --> UNEXPORTED : revert
     EXPORTED --> [*] : delete
-    
+
     note right of UNEXPORTED
         新規作成時の初期状態
         ユーザーが編集可能
         createdAt: 作成日時
         exportedAt: null
     end note
-    
+
+    note right of LAST_UPDATED
+        バッチ処理中の中間状態
+        エクスポート待ち
+        exportedAt: null
+    end note
+
     note right of EXPORTED
         エクスポート済み
         読み取り専用
         exportedAt: エクスポート日時
+        ※ { status, exportedAt } オブジェクト型
     end note
 ```
 
@@ -280,7 +290,7 @@ graph LR
 ### 設計上の考慮事項
 
 #### 1. Category の位置付け
-- **現状**: CategoryはArticle集約内で`categoryName`と`categoryId`として保持
+- **現状**: Articleはドメイン層で`categoryName`（値オブジェクト）を保持し、インフラ層で`categoryId`（FK）として永続化
 - **設計判断**: Categoryは独立した集約ではなく、Article作成時に`connectOrCreate`パターンで管理
 - **理由**: Categoryの更新頻度が低く、単独で整合性を保証する必要がないため
 
@@ -313,22 +323,22 @@ ImagesQueryRepository     → Image集約の読み取り
 
 #### Article集約
 1. URLは同一ユーザー内で重複不可（`ArticlesDomainService.ensureNoDuplicate`で検証）
-2. ステータス遷移は UNEXPORTED → EXPORTED のみ
+2. ステータス遷移は UNEXPORTED → LAST_UPDATED → EXPORTED
 3. 必須フィールド: userId, categoryName, title, url
 
 #### Book集約
 1. ISBNは同一ユーザー内で重複不可（`BooksDomainService.ensureNoDuplicate`で検証）
-2. ステータス遷移は UNEXPORTED → EXPORTED のみ
+2. ステータス遷移は UNEXPORTED → LAST_UPDATED → EXPORTED
 3. 必須フィールド: userId, ISBN, title
 
 #### Note集約
 1. タイトルは同一ユーザー内で重複不可（`NotesDomainService.ensureNoDuplicate`で検証）
-2. ステータス遷移は UNEXPORTED → EXPORTED のみ
+2. ステータス遷移は UNEXPORTED → LAST_UPDATED → EXPORTED
 3. 必須フィールド: userId, title, markdown
 
 #### Image集約
-1. パスは同一ユーザー内で重複不可（生成時にUUID prefix付与で保証）
-2. ステータス遷移は UNEXPORTED → EXPORTED のみ
+1. パスは同一ユーザー内で重複不可（生成時にUUID prefix付与 + `ImagesDomainService.ensureNoDuplicate`で検証）
+2. ステータス遷移は UNEXPORTED → LAST_UPDATED → EXPORTED
 3. 必須フィールド: userId, path, contentType, fileSize
 
 ---
@@ -342,7 +352,7 @@ Application Service層は、ドメインロジックとインフラストラク�
 各機能（add, delete等）は以下の4ファイル構成で実装されます：
 
 ```
-src/application-services/{domain}/
+app/src/application-services/{domain}/
 ├── {action}.deps.ts    ← 依存の型定義とデフォルト値
 ├── {action}.core.ts    ← Core関数（ビジネスロジック、"use server"なし）
 ├── {action}.ts         ← Server Action wrapper（認証・認可のみ）
@@ -538,9 +548,10 @@ sequenceDiagram
 
 #### 対象ファイル
 
-- `src/domains/articles/services/articles-batch-domain-service.ts`
-- `src/domains/notes/services/notes-batch-domain-service.ts`
-- `src/domains/books/services/books-batch-domain-service.ts`
+- `packages/core/articles/services/articles-batch-domain-service.ts`
+- `packages/core/notes/services/notes-batch-domain-service.ts`
+- `packages/core/books/services/books-batch-domain-service.ts`
+- `packages/core/images/services/images-batch-domain-service.ts`
 
 #### リスク軽減策
 
