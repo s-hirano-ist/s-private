@@ -68,7 +68,7 @@ export const _getArticles = async (
 				const description = `${d.quote ? `${d.quote}\n` : ""}${d.ogTitle ? `${d.ogTitle}\n` : ""}${d.ogDescription ? d.ogDescription : ""}`;
 				return {
 					id: d.id,
-					primaryBadgeText: d.Category.name,
+					primaryBadgeText: d.categoryName,
 					secondaryBadgeText: new URL(d.url).hostname,
 					key: d.id,
 					title: d.title,

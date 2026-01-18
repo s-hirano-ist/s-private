@@ -61,7 +61,7 @@ export const _getBooks = async (
 				href: d.ISBN,
 				image: d.imagePath
 					? `${API_BOOK_THUMBNAIL_PATH}/${d.imagePath}`
-					: d.googleImgSrc,
+					: (d.googleImgSrc ?? null),
 			})),
 			totalCount,
 		};

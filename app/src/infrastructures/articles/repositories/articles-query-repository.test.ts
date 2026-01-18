@@ -1,4 +1,15 @@
-import { makeUserId } from "@s-hirano-ist/s-core/common/entities/common-entity";
+import {
+	makeArticleTitle,
+	makeCategoryName,
+	makeOgDescription,
+	makeOgTitle,
+	makeQuote,
+	makeUrl,
+} from "@s-hirano-ist/s-core/articles/entities/article-entity";
+import {
+	makeId,
+	makeUserId,
+} from "@s-hirano-ist/s-core/common/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import prisma from "@/prisma";
 import {
@@ -15,22 +26,22 @@ describe("ArticlesQueryRepository", () => {
 		test("should find multiple articles successfully", async () => {
 			const mockArticles = [
 				{
-					id: "1",
+					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b",
 					title: "First article",
 					url: "https://example.com/article/1",
 					quote: "First quote",
 					ogTitle: "First OG Title",
 					ogDescription: "First OG Description",
-					Category: { id: 1, name: "Tech" },
+					Category: { name: "Tech" },
 				},
 				{
-					id: "2",
+					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c",
 					title: "Second article",
 					url: "https://example.com/article/2",
 					quote: null,
 					ogTitle: "Second OG Title",
 					ogDescription: "Second OG Description",
-					Category: { id: 2, name: "Science" },
+					Category: { name: "Science" },
 				},
 			];
 
@@ -57,28 +68,28 @@ describe("ArticlesQueryRepository", () => {
 					quote: true,
 					ogTitle: true,
 					ogDescription: true,
-					Category: { select: { id: true, name: true } },
+					Category: { select: { name: true } },
 				},
 				...params,
 			});
 			expect(result).toEqual([
 				{
-					id: "1",
-					title: "First article",
-					url: "https://example.com/article/1",
-					quote: "First quote",
-					ogTitle: "First OG Title",
-					ogDescription: "First OG Description",
-					Category: { id: 1, name: "Tech" },
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b"),
+					title: makeArticleTitle("First article"),
+					url: makeUrl("https://example.com/article/1"),
+					quote: makeQuote("First quote"),
+					ogTitle: makeOgTitle("First OG Title"),
+					ogDescription: makeOgDescription("First OG Description"),
+					categoryName: makeCategoryName("Tech"),
 				},
 				{
-					id: "2",
-					title: "Second article",
-					url: "https://example.com/article/2",
-					quote: null,
-					ogTitle: "Second OG Title",
-					ogDescription: "Second OG Description",
-					Category: { id: 2, name: "Science" },
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c"),
+					title: makeArticleTitle("Second article"),
+					url: makeUrl("https://example.com/article/2"),
+					quote: makeQuote(null),
+					ogTitle: makeOgTitle("Second OG Title"),
+					ogDescription: makeOgDescription("Second OG Description"),
+					categoryName: makeCategoryName("Science"),
 				},
 			]);
 		});
@@ -101,7 +112,7 @@ describe("ArticlesQueryRepository", () => {
 					quote: true,
 					ogTitle: true,
 					ogDescription: true,
-					Category: { select: { id: true, name: true } },
+					Category: { select: { name: true } },
 				},
 			});
 			expect(result).toEqual([]);
@@ -110,13 +121,13 @@ describe("ArticlesQueryRepository", () => {
 		test("should work with cache strategy", async () => {
 			const mockArticles = [
 				{
-					id: "1",
+					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d",
 					title: "Cached article",
 					url: "https://example.com/article/1",
 					quote: "Cached quote",
 					ogTitle: "Cached OG Title",
 					ogDescription: "Cached OG Description",
-					Category: { id: 1, name: "Tech" },
+					Category: { name: "Tech" },
 				},
 			];
 
@@ -141,19 +152,19 @@ describe("ArticlesQueryRepository", () => {
 					quote: true,
 					ogTitle: true,
 					ogDescription: true,
-					Category: { select: { id: true, name: true } },
+					Category: { select: { name: true } },
 				},
 				cacheStrategy: { ttl: 300, swr: 30, tags: ["articles"] },
 			});
 			expect(result).toEqual([
 				{
-					id: "1",
-					title: "Cached article",
-					url: "https://example.com/article/1",
-					quote: "Cached quote",
-					ogTitle: "Cached OG Title",
-					ogDescription: "Cached OG Description",
-					Category: { id: 1, name: "Tech" },
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d"),
+					title: makeArticleTitle("Cached article"),
+					url: makeUrl("https://example.com/article/1"),
+					quote: makeQuote("Cached quote"),
+					ogTitle: makeOgTitle("Cached OG Title"),
+					ogDescription: makeOgDescription("Cached OG Description"),
+					categoryName: makeCategoryName("Tech"),
 				},
 			]);
 		});
@@ -176,7 +187,7 @@ describe("ArticlesQueryRepository", () => {
 					quote: true,
 					ogTitle: true,
 					ogDescription: true,
-					Category: { select: { id: true, name: true } },
+					Category: { select: { name: true } },
 				},
 			});
 		});

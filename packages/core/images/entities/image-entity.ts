@@ -4,7 +4,9 @@ import {
 	ExportedStatus,
 	Id,
 	makeCreatedAt,
+	makeExportedAt,
 	makeId,
+	makeUserId,
 	UnexportedStatus,
 	UserId,
 } from "../../common/entities/common-entity.js";
@@ -346,3 +348,18 @@ export const imageEntity = {
 		);
 	},
 };
+
+// DTO Types
+
+/**
+ * DTO for image list display.
+ *
+ * @remarks
+ * Contains only the fields needed for list views, with branded types.
+ */
+export type ImageListItemDTO = Readonly<{
+	id: Id;
+	path: Path;
+	width: Pixel | undefined;
+	height: Pixel | undefined;
+}>;

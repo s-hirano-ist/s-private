@@ -103,7 +103,7 @@ export async function searchContent(
 					query,
 				),
 				url: article.url,
-				category: article.Category,
+				category: { id: "", name: article.categoryName },
 			}),
 		);
 
@@ -124,10 +124,11 @@ export async function searchContent(
 			contentType: "books" as ContentType,
 			title: book.title,
 			snippet: extractSnippet(
-				book.markdown ||
-					book.googleDescription ||
-					book.googleSubTitle ||
-					book.googleTitle,
+				book.markdown ??
+					book.googleDescription ??
+					book.googleSubTitle ??
+					book.googleTitle ??
+					null,
 				query,
 			),
 			rating: book.rating,

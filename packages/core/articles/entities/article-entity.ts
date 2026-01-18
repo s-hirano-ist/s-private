@@ -400,3 +400,22 @@ export const articleEntity = {
 		);
 	},
 };
+
+// DTO Types
+
+/**
+ * DTO for article list display.
+ *
+ * @remarks
+ * Contains only the fields needed for list views, with branded types.
+ * Uses `categoryName` instead of nested `Category.name` for cleaner access.
+ */
+export type ArticleListItemDTO = Readonly<{
+	id: Id;
+	title: ArticleTitle;
+	url: Url;
+	quote: Quote;
+	ogTitle: OgTitle;
+	ogDescription: OgDescription;
+	categoryName: CategoryName;
+}>;

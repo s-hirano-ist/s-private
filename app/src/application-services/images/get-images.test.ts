@@ -1,3 +1,8 @@
+import { makeId } from "@s-hirano-ist/s-core/common/entities/common-entity";
+import {
+	makePath,
+	makePixel,
+} from "@s-hirano-ist/s-core/images/entities/image-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { minioStorageService } from "@/infrastructures/common/services/minio-storage-service";
 import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
@@ -35,16 +40,16 @@ describe("get-images", () => {
 		test("should fetch exported images with correct parameters", async () => {
 			const mockImages = [
 				{
-					path: "image1.jpg",
-					id: "1",
-					height: 100,
-					width: 200,
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b"),
+					path: makePath("image1.jpg", false),
+					height: makePixel(100),
+					width: makePixel(200),
 				},
 				{
-					path: "image2.jpg",
-					id: "2",
-					height: 150,
-					width: 250,
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c"),
+					path: makePath("image2.jpg", false),
+					height: makePixel(150),
+					width: makePixel(250),
 				},
 			];
 
@@ -65,14 +70,14 @@ describe("get-images", () => {
 
 			expect(result).toEqual([
 				{
-					id: "1",
+					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b",
 					originalPath: "/api/images/original/image1.jpg",
 					thumbnailPath: "/api/images/thumbnail/image1.jpg",
 					height: 100,
 					width: 200,
 				},
 				{
-					id: "2",
+					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c",
 					originalPath: "/api/images/original/image2.jpg",
 					thumbnailPath: "/api/images/thumbnail/image2.jpg",
 					height: 150,
@@ -119,16 +124,16 @@ describe("get-images", () => {
 		test("should fetch unexported images correctly", async () => {
 			const mockImages = [
 				{
-					path: "unexported1.jpg",
-					id: "1",
-					height: 300,
-					width: 400,
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d"),
+					path: makePath("unexported1.jpg", false),
+					height: makePixel(300),
+					width: makePixel(400),
 				},
 				{
-					path: "unexported2.jpg",
-					id: "2",
-					height: 350,
-					width: 450,
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e"),
+					path: makePath("unexported2.jpg", false),
+					height: makePixel(350),
+					width: makePixel(450),
 				},
 			];
 
@@ -151,14 +156,14 @@ describe("get-images", () => {
 
 			expect(result).toEqual([
 				{
-					id: "1",
+					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d",
 					originalPath: "/api/images/original/unexported1.jpg",
 					thumbnailPath: "/api/images/thumbnail/unexported1.jpg",
 					height: 300,
 					width: 400,
 				},
 				{
-					id: "2",
+					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e",
 					originalPath: "/api/images/original/unexported2.jpg",
 					thumbnailPath: "/api/images/thumbnail/unexported2.jpg",
 					height: 350,

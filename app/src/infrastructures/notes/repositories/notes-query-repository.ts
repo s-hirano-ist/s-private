@@ -1,8 +1,20 @@
-import type {
-	Status,
-	UserId,
+import {
+	makeCreatedAt,
+	makeExportedAt,
+	makeId,
+	makeUserId,
+	type Status,
+	type UserId,
 } from "@s-hirano-ist/s-core/common/entities/common-entity";
-import type { NoteTitle } from "@s-hirano-ist/s-core/notes/entities/note-entity";
+import {
+	type ExportedNote,
+	makeMarkdown,
+	makeNoteTitle,
+	type NoteListItemDTO,
+	type NoteSearchItemDTO,
+	type NoteTitle,
+	type UnexportedNote,
+} from "@s-hirano-ist/s-core/notes/entities/note-entity";
 import type { INotesQueryRepository } from "@s-hirano-ist/s-core/notes/repositories/notes-query-repository.interface";
 import type { NotesFindManyParams } from "@s-hirano-ist/s-core/notes/types/query-params";
 import prisma from "@/prisma";
@@ -10,30 +22,53 @@ import prisma from "@/prisma";
 async function findByTitle(
 	title: NoteTitle,
 	userId: UserId,
-): Promise<{
-	id: string;
-	title: string;
-	markdown: string;
-	status: string;
-} | null> {
+): Promise<UnexportedNote | ExportedNote | null> {
 	const data = await prisma.note.findUnique({
 		where: { title_userId: { title, userId } },
-		select: { id: true, title: true, markdown: true, status: true },
+		select: {
+			id: true,
+			userId: true,
+			title: true,
+			markdown: true,
+			status: true,
+			createdAt: true,
+			exportedAt: true,
+		},
 	});
-	return data;
+	if (!data) return null;
+
+	const base = {
+		id: makeId(data.id),
+		userId: makeUserId(data.userId),
+		title: makeNoteTitle(data.title),
+		markdown: makeMarkdown(data.markdown),
+		createdAt: makeCreatedAt(data.createdAt),
+	};
+
+	if (data.status === "EXPORTED" && data.exportedAt) {
+		return Object.freeze({
+			...base,
+			status: "EXPORTED" as const,
+			exportedAt: makeExportedAt(data.exportedAt),
+		});
+	}
+	return Object.freeze({ ...base, status: "UNEXPORTED" as const });
 }
 
 async function findMany(
 	userId: UserId,
 	status: Status,
 	params: NotesFindManyParams,
-): Promise<Array<{ id: string; title: string }>> {
+): Promise<NoteListItemDTO[]> {
 	const data = await prisma.note.findMany({
 		where: { userId, status },
 		select: { id: true, title: true },
 		...params,
 	});
-	return data;
+	return data.map((d) => ({
+		id: makeId(d.id),
+		title: makeNoteTitle(d.title),
+	}));
 }
 
 async function count(userId: UserId, status: Status): Promise<number> {
@@ -45,13 +80,7 @@ async function search(
 	query: string,
 	userId: UserId,
 	limit = 20,
-): Promise<
-	{
-		id: string;
-		title: string;
-		markdown: string;
-	}[]
-> {
+): Promise<NoteSearchItemDTO[]> {
 	const data = await prisma.note.findMany({
 		where: {
 			userId,
@@ -69,7 +98,11 @@ async function search(
 		take: limit,
 		orderBy: { createdAt: "desc" },
 	});
-	return data;
+	return data.map((d) => ({
+		id: makeId(d.id),
+		title: makeNoteTitle(d.title),
+		markdown: makeMarkdown(d.markdown),
+	}));
 }
 
 export const notesQueryRepository: INotesQueryRepository = {

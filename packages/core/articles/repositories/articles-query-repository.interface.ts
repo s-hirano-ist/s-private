@@ -1,5 +1,10 @@
 import type { Status, UserId } from "../../common/entities/common-entity.js";
-import type { Url } from "../entities/article-entity.js";
+import type {
+	ArticleListItemDTO,
+	ExportedArticle,
+	UnexportedArticle,
+	Url,
+} from "../entities/article-entity.js";
 import type { ArticlesFindManyParams } from "../types/query-params.js";
 
 /**
@@ -9,14 +14,18 @@ import type { ArticlesFindManyParams } from "../types/query-params.js";
  * Follows the CQRS pattern - this interface handles read operations only.
  * Implementations should be provided by the infrastructure layer (e.g., Prisma).
  *
+ * Return types are either full entities (for single item lookup) or DTOs
+ * (for list/search operations) with properly branded types.
+ *
  * @example
  * ```typescript
  * // Infrastructure implementation
  * class PrismaArticlesQueryRepository implements IArticlesQueryRepository {
  *   async findByUrl(url: Url, userId: UserId) {
- *     return await prisma.article.findUnique({
+ *     const data = await prisma.article.findUnique({
  *       where: { url, userId }
  *     });
+ *     return data ? toArticleEntity(data) : null;
  *   }
  * }
  * ```
@@ -29,24 +38,16 @@ export type IArticlesQueryRepository = {
 	 *
 	 * @param url - The validated URL to search for
 	 * @param userId - The user ID for tenant isolation
-	 * @returns The article data if found, null otherwise
+	 * @returns The article entity if found, null otherwise
+	 *
+	 * @remarks
+	 * Returns a full entity type (UnexportedArticle or ExportedArticle)
+	 * for domain operations like duplicate checking.
 	 */
 	findByUrl(
 		url: Url,
 		userId: UserId,
-	): Promise<{
-		title: string;
-		url: string;
-		quote: string | null;
-		ogTitle: string | null;
-		ogDescription: string | null;
-		ogImageUrl: string | null;
-		status: string;
-		Category: {
-			id: string;
-			name: string;
-		};
-	} | null>;
+	): Promise<UnexportedArticle | ExportedArticle | null>;
 
 	/**
 	 * Retrieves multiple articles with pagination and filtering.
@@ -54,7 +55,11 @@ export type IArticlesQueryRepository = {
 	 * @param userId - The user ID for tenant isolation
 	 * @param status - Filter by UNEXPORTED or EXPORTED status
 	 * @param params - Pagination, sorting, and caching parameters
-	 * @returns Array of article data objects
+	 * @returns Array of ArticleListItemDTO objects
+	 *
+	 * @remarks
+	 * Returns DTOs with `categoryName` for direct property access,
+	 * avoiding nested `Category.name` pattern.
 	 *
 	 * @see {@link ArticlesFindManyParams} for parameter options
 	 */
@@ -62,20 +67,7 @@ export type IArticlesQueryRepository = {
 		userId: UserId,
 		status: Status,
 		params: ArticlesFindManyParams,
-	): Promise<
-		{
-			id: string;
-			title: string;
-			url: string;
-			quote: string | null;
-			ogTitle: string | null;
-			ogDescription: string | null;
-			Category: {
-				id: string;
-				name: string;
-			};
-		}[]
-	>;
+	): Promise<ArticleListItemDTO[]>;
 
 	/**
 	 * Counts articles matching the given criteria.
@@ -92,21 +84,14 @@ export type IArticlesQueryRepository = {
 	 * @param query - The search query string
 	 * @param userId - The user ID for tenant isolation
 	 * @param limit - Optional maximum number of results (default varies by implementation)
-	 * @returns Array of matching article data objects
+	 * @returns Array of ArticleListItemDTO objects
+	 *
+	 * @remarks
+	 * Returns DTOs with `categoryName` for direct property access.
 	 */
 	search(
 		query: string,
 		userId: UserId,
 		limit?: number,
-	): Promise<
-		{
-			id: string;
-			title: string;
-			url: string;
-			quote: string | null;
-			ogTitle: string | null;
-			ogDescription: string | null;
-			Category: { id: string; name: string };
-		}[]
-	>;
+	): Promise<ArticleListItemDTO[]>;
 };

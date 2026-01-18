@@ -1,5 +1,21 @@
-import { makeISBN } from "@s-hirano-ist/s-core/books/entities/books-entity";
-import { makeUserId } from "@s-hirano-ist/s-core/common/entities/common-entity";
+import {
+	makeBookImagePath,
+	makeBookMarkdown,
+	makeBookTitle,
+	makeGoogleAuthors,
+	makeGoogleDescription,
+	makeGoogleHref,
+	makeGoogleImgSrc,
+	makeGoogleSubTitle,
+	makeGoogleTitle,
+	makeISBN,
+} from "@s-hirano-ist/s-core/books/entities/books-entity";
+import {
+	makeCreatedAt,
+	makeExportedAt,
+	makeId,
+	makeUserId,
+} from "@s-hirano-ist/s-core/common/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import prisma from "@/prisma";
 import { booksQueryRepository } from "./books-query-repository";
@@ -12,6 +28,8 @@ describe("BooksQueryRepository", () => {
 	describe("findByISBN", () => {
 		test("should find book by ISBN, userId, and status", async () => {
 			const mockBook = {
+				id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b",
+				userId: "user123",
 				title: "Test Book",
 				ISBN: "978-0123456789",
 				googleImgSrc: "https://example.com/image.jpg",
@@ -22,6 +40,9 @@ describe("BooksQueryRepository", () => {
 				googleDescription: "Test book description",
 				googleSubTitle: "Test subtitle",
 				imagePath: null,
+				status: "EXPORTED",
+				createdAt: new Date("2024-01-01"),
+				exportedAt: new Date("2024-01-02"),
 			};
 
 			vi.mocked(prisma.book.findUnique).mockResolvedValue(mockBook);
@@ -32,7 +53,23 @@ describe("BooksQueryRepository", () => {
 			);
 
 			expect(prisma.book.findUnique).toHaveBeenCalled();
-			expect(result).toEqual(mockBook);
+			expect(result).toEqual({
+				id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b"),
+				userId: makeUserId("user123"),
+				ISBN: makeISBN("978-0123456789"),
+				title: makeBookTitle("Test Book"),
+				googleTitle: makeGoogleTitle("Test Google Title"),
+				googleSubTitle: makeGoogleSubTitle("Test subtitle"),
+				googleAuthors: makeGoogleAuthors(["Author One", "Author Two"]),
+				googleDescription: makeGoogleDescription("Test book description"),
+				googleImgSrc: makeGoogleImgSrc("https://example.com/image.jpg"),
+				googleHref: makeGoogleHref("https://books.google.com/test"),
+				imagePath: undefined,
+				markdown: makeBookMarkdown("# Test Book Content"),
+				status: "EXPORTED",
+				createdAt: makeCreatedAt(new Date("2024-01-01")),
+				exportedAt: makeExportedAt(new Date("2024-01-02")),
+			});
 		});
 
 		test("should return null when book not found", async () => {
@@ -67,12 +104,14 @@ describe("BooksQueryRepository", () => {
 		test("should find multiple books successfully", async () => {
 			const mockBooks = [
 				{
+					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c",
 					title: "First Book",
 					ISBN: "978-0123456789",
 					googleImgSrc: "https://example.com/image1.jpg",
 					imagePath: null,
 				},
 				{
+					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d",
 					title: "Second Book",
 					ISBN: "978-0987654321",
 					googleImgSrc: "https://example.com/image2.jpg",
@@ -95,7 +134,22 @@ describe("BooksQueryRepository", () => {
 			);
 
 			expect(prisma.book.findMany).toHaveBeenCalled();
-			expect(result).toEqual(mockBooks);
+			expect(result).toEqual([
+				{
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c"),
+					ISBN: makeISBN("978-0123456789"),
+					title: makeBookTitle("First Book"),
+					googleImgSrc: makeGoogleImgSrc("https://example.com/image1.jpg"),
+					imagePath: undefined,
+				},
+				{
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d"),
+					ISBN: makeISBN("978-0987654321"),
+					title: makeBookTitle("Second Book"),
+					googleImgSrc: makeGoogleImgSrc("https://example.com/image2.jpg"),
+					imagePath: undefined,
+				},
+			]);
 		});
 
 		test("should handle empty results", async () => {
@@ -113,6 +167,7 @@ describe("BooksQueryRepository", () => {
 		test("should work with cache strategy", async () => {
 			const mockBooks = [
 				{
+					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e",
 					title: "Cached Book",
 					ISBN: "978-0123456789",
 					googleImgSrc: "https://example.com/image.jpg",
@@ -133,7 +188,15 @@ describe("BooksQueryRepository", () => {
 			);
 
 			expect(prisma.book.findMany).toHaveBeenCalled();
-			expect(result).toEqual(mockBooks);
+			expect(result).toEqual([
+				{
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e"),
+					ISBN: makeISBN("978-0123456789"),
+					title: makeBookTitle("Cached Book"),
+					googleImgSrc: makeGoogleImgSrc("https://example.com/image.jpg"),
+					imagePath: undefined,
+				},
+			]);
 		});
 
 		test("should handle database errors", async () => {

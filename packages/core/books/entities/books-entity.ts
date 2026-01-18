@@ -307,7 +307,7 @@ const Base = z.object({
 	ISBN: ISBN,
 	title: BookTitle,
 	googleTitle: GoogleTitle.optional(),
-	googleSubtitle: GoogleSubtitle.optional(),
+	googleSubTitle: GoogleSubtitle.optional(),
 	googleAuthors: GoogleAuthors.optional(),
 	googleDescription: GoogleDescription.optional(),
 	googleImgSrc: GoogleImgSrc.optional(),
@@ -422,3 +422,38 @@ export const bookEntity = {
 		);
 	},
 };
+
+// DTO Types
+
+/**
+ * DTO for book list display.
+ *
+ * @remarks
+ * Contains fields needed for list views, with branded types.
+ */
+export type BookListItemDTO = Readonly<{
+	id: Id;
+	ISBN: ISBN;
+	title: BookTitle;
+	googleImgSrc: GoogleImgSrc | undefined;
+	imagePath: BookImagePath | undefined;
+}>;
+
+/**
+ * DTO for book search results.
+ *
+ * @remarks
+ * Contains fields needed for search display, with branded types.
+ */
+export type BookSearchItemDTO = Readonly<{
+	id: Id;
+	ISBN: ISBN;
+	title: BookTitle;
+	googleTitle: GoogleTitle | undefined;
+	googleSubTitle: GoogleSubtitle | undefined;
+	googleAuthors: GoogleAuthors | undefined;
+	googleDescription: GoogleDescription | undefined;
+	markdown: BookMarkdown | undefined;
+	rating: number | null;
+	tags: string[];
+}>;
