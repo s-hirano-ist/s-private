@@ -220,6 +220,12 @@ graph TB
 
 全集約共通: ステータス遷移は UNEXPORTED → LAST_UPDATED → EXPORTED
 
+> **コードリファレンス**: 各集約ルートはコード内のJSDocでも明示的に文書化されています。
+> - `packages/core/articles/entities/article-entity.ts` - `articleEntity`
+> - `packages/core/books/entities/books-entity.ts` - `bookEntity`
+> - `packages/core/notes/entities/note-entity.ts` - `noteEntity`
+> - `packages/core/images/entities/image-entity.ts` - `imageEntity`
+
 ### 設計上の考慮事項
 
 - **Categoryの位置付け**: Articleはドメイン層で`categoryName`（値オブジェクト）を保持し、インフラ層で`categoryId`（FK）として永続化。`connectOrCreate`パターンで管理

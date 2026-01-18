@@ -1,3 +1,30 @@
+/**
+ * Image Aggregate Root and related Value Objects.
+ *
+ * @remarks
+ * This module defines the Image aggregate root following DDD principles.
+ * Image is the sole entry point for all image-related operations within
+ * the Images bounded context.
+ *
+ * **Aggregate Root**: {@link imageEntity}
+ *
+ * **Invariants**:
+ * - Path must be unique per user (enforced by {@link ImagesDomainService})
+ * - Status transitions: UNEXPORTED → LAST_UPDATED → EXPORTED
+ *
+ * **Value Objects defined here**:
+ * - {@link Pixel} - Image dimension (positive integer)
+ * - {@link Tag} - Image tag for organization
+ * - {@link Description} - Optional image description (max 1024 chars)
+ *
+ * **Re-exported from shared-kernel**:
+ * - {@link Path}, {@link ContentType}, {@link FileSize} - File-related value objects
+ *
+ * @see {@link ImagesDomainService} for domain business rules
+ * @see docs/domain-model.md for aggregate boundary documentation
+ * @module
+ */
+
 import z from "zod";
 import {
 	CreatedAt,
@@ -207,7 +234,13 @@ export type ImageWithEvent = readonly [UnexportedImage, ImageCreatedEvent];
 /**
  * Factory object for Image domain entity operations.
  *
+ * **This is the Aggregate Root** for the Images bounded context.
+ *
  * @remarks
+ * As the aggregate root, Image is the only entry point for creating and
+ * managing image entities. All image-related operations must go through
+ * this factory to ensure domain invariants are maintained.
+ *
  * Provides immutable entity creation following DDD patterns.
  * All returned entities are frozen using Object.freeze().
  * Returns a tuple of [entity, event] for domain event dispatching.
@@ -230,6 +263,7 @@ export type ImageWithEvent = readonly [UnexportedImage, ImageCreatedEvent];
  *
  * @see {@link CreateImageArgs} for creation parameters
  * @see {@link ImageWithEvent} for return type
+ * @see {@link ImagesDomainService} for invariant validation (duplicate path check)
  */
 export const imageEntity = {
 	/**

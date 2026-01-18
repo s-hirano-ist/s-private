@@ -1,3 +1,29 @@
+/**
+ * Article Aggregate Root and related Value Objects.
+ *
+ * @remarks
+ * This module defines the Article aggregate root following DDD principles.
+ * Article is the sole entry point for all article-related operations within
+ * the Articles bounded context.
+ *
+ * **Aggregate Root**: {@link articleEntity}
+ *
+ * **Invariants**:
+ * - URL must be unique per user (enforced by {@link ArticlesDomainService})
+ * - Status transitions: UNEXPORTED → LAST_UPDATED → EXPORTED
+ *
+ * **Value Objects defined here**:
+ * - {@link CategoryName} - Article category identifier
+ * - {@link ArticleTitle} - Article title (1-128 chars)
+ * - {@link Quote} - Optional excerpt (max 512 chars)
+ * - {@link Url} - HTTP/HTTPS URL
+ * - {@link OgTitle}, {@link OgDescription}, {@link OgImageUrl} - Open Graph metadata
+ *
+ * @see {@link ArticlesDomainService} for domain business rules
+ * @see docs/domain-model.md for aggregate boundary documentation
+ * @module
+ */
+
 import { z } from "zod";
 import {
 	CreatedAt,
@@ -382,7 +408,13 @@ export type ArticleWithEvent = readonly [
 /**
  * Factory object for Article domain entity operations.
  *
+ * **This is the Aggregate Root** for the Articles bounded context.
+ *
  * @remarks
+ * As the aggregate root, Article is the only entry point for creating and
+ * managing article entities. All article-related operations must go through
+ * this factory to ensure domain invariants are maintained.
+ *
  * Provides immutable entity creation following DDD patterns.
  * All returned entities are frozen using Object.freeze().
  * Returns a tuple of [entity, event] for domain event dispatching.
@@ -405,6 +437,7 @@ export type ArticleWithEvent = readonly [
  *
  * @see {@link CreateArticleArgs} for creation parameters
  * @see {@link ArticleWithEvent} for return type
+ * @see {@link ArticlesDomainService} for invariant validation (duplicate URL check)
  */
 export const articleEntity = {
 	/**
