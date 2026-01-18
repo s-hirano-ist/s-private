@@ -4,7 +4,6 @@ import {
 	ExportedStatus,
 	Id,
 	makeCreatedAt,
-	makeExportedStatus,
 	makeId,
 	UnexportedStatus,
 	UserId,
@@ -323,8 +322,6 @@ export type CreateImageArgs = Readonly<{
  *   fileSize: makeFileSize(1024),
  * });
  *
- * // Export the image (changes status to EXPORTED)
- * const exported = imageEntity.export(image);
  * ```
  *
  * @see {@link CreateImageArgs} for creation parameters
@@ -347,23 +344,5 @@ export const imageEntity = {
 				...args,
 			}),
 		);
-	},
-
-	/**
-	 * Transitions an image from UNEXPORTED to EXPORTED status.
-	 *
-	 * @param image - The unexported image to export
-	 * @returns A frozen ExportedImage with exportedAt timestamp
-	 * @throws {InvalidFormatError} When the image state is invalid
-	 * @throws {UnexpectedError} For unexpected errors during export
-	 */
-	export: (image: UnexportedImage): ExportedImage => {
-		return createEntityWithErrorHandling(() => {
-			const exportedStatus = makeExportedStatus();
-			return Object.freeze({
-				...image,
-				...exportedStatus,
-			});
-		});
 	},
 };

@@ -4,7 +4,6 @@ import {
 	ExportedStatus,
 	Id,
 	makeCreatedAt,
-	makeExportedStatus,
 	makeId,
 	UnexportedStatus,
 	UserId,
@@ -183,8 +182,6 @@ export type CreateNoteArgs = Readonly<{
  *   markdown: makeMarkdown("# Content"),
  * });
  *
- * // Export the note (changes status to EXPORTED)
- * const exported = noteEntity.export(note);
  * ```
  *
  * @see {@link CreateNoteArgs} for creation parameters
@@ -207,23 +204,5 @@ export const noteEntity = {
 				...args,
 			}),
 		);
-	},
-
-	/**
-	 * Transitions a note from UNEXPORTED to EXPORTED status.
-	 *
-	 * @param note - The unexported note to export
-	 * @returns A frozen ExportedNote with exportedAt timestamp
-	 * @throws {InvalidFormatError} When the note state is invalid
-	 * @throws {UnexpectedError} For unexpected errors during export
-	 */
-	export: (note: UnexportedNote): ExportedNote => {
-		return createEntityWithErrorHandling(() => {
-			const exportedStatus = makeExportedStatus();
-			return Object.freeze({
-				...note,
-				...exportedStatus,
-			});
-		});
 	},
 };

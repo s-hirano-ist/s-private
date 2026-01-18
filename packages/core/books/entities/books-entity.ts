@@ -4,7 +4,6 @@ import {
 	ExportedStatus,
 	Id,
 	makeCreatedAt,
-	makeExportedStatus,
 	makeId,
 	UnexportedStatus,
 	UserId,
@@ -399,8 +398,6 @@ export type CreateBookArgs = Readonly<{
  *   title: makeBookTitle("The Pragmatic Programmer"),
  * });
  *
- * // Export the book (changes status to EXPORTED)
- * const exported = bookEntity.export(book);
  * ```
  *
  * @see {@link CreateBookArgs} for creation parameters
@@ -423,23 +420,5 @@ export const bookEntity = {
 				...args,
 			}),
 		);
-	},
-
-	/**
-	 * Transitions a book from UNEXPORTED to EXPORTED status.
-	 *
-	 * @param book - The unexported book to export
-	 * @returns A frozen ExportedBook with exportedAt timestamp
-	 * @throws {InvalidFormatError} When the book state is invalid
-	 * @throws {UnexpectedError} For unexpected errors during export
-	 */
-	export: (book: UnexportedBook): ExportedBook => {
-		return createEntityWithErrorHandling(() => {
-			const exportedStatus = makeExportedStatus();
-			return Object.freeze({
-				...book,
-				...exportedStatus,
-			});
-		});
 	},
 };

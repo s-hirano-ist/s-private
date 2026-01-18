@@ -4,7 +4,6 @@ import {
 	ExportedStatus,
 	Id,
 	makeCreatedAt,
-	makeExportedStatus,
 	makeId,
 	UnexportedStatus,
 	UserId,
@@ -378,8 +377,6 @@ export type CreateArticleArgs = Readonly<{
  *   url: makeUrl("https://example.com"),
  * });
  *
- * // Export the article (changes status to EXPORTED)
- * const exported = articleEntity.export(article);
  * ```
  *
  * @see {@link CreateArticleArgs} for creation parameters
@@ -403,23 +400,5 @@ export const articleEntity = {
 				...args,
 			}),
 		);
-	},
-
-	/**
-	 * Transitions an article from UNEXPORTED to EXPORTED status.
-	 *
-	 * @param article - The unexported article to export
-	 * @returns A frozen ExportedArticle with exportedAt timestamp
-	 * @throws {InvalidFormatError} When the article state is invalid
-	 * @throws {UnexpectedError} For unexpected errors during export
-	 */
-	export: (article: UnexportedArticle): ExportedArticle => {
-		return createEntityWithErrorHandling(() => {
-			const exportedStatus = makeExportedStatus();
-			return Object.freeze({
-				...article,
-				...exportedStatus,
-			});
-		});
 	},
 };
