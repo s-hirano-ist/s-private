@@ -14,7 +14,7 @@
 				"src/app/instrumentation.ts",
 				"src/infrastructures/i18n/request.ts"
 			],
-			"ignoreDependencies": ["@types/react-syntax-highlighter", "sharp"],
+			"ignoreDependencies": ["@types/react-syntax-highlighter"],
 			"next": {
 				"config": ["next.config.{js,ts,cjs,mjs}"],
 				"entry": [
@@ -57,7 +57,8 @@
 		"packages/core": {
 			"entry": ["**/*.ts", "!**/*.test.ts", "!**/*.spec.ts"],
 			"project": ["**/*.ts"],
-			"ignore": ["**/*.test.ts", "**/*.spec.ts"]
+			"ignore": ["**/*.test.ts", "**/*.spec.ts"],
+			"ignoreDependencies": ["sharp"]
 		},
 		"packages/database": {
 			"ignoreDependencies": ["@prisma/client", "@prisma/extension-accelerate"]
