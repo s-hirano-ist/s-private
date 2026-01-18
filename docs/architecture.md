@@ -1,11 +1,25 @@
 # アーキテクチャ
 
+## バージョン要件
+
+本ドキュメントは **Next.js 15.1+** を前提としています。
+
+| API | 最小バージョン | 備考 |
+|-----|--------------|------|
+| `forbidden()` | Next.js 15.0 | 認可エラー用（403） |
+| `cacheTag()` | Next.js 15.1 | 15.0では`unstable_cacheTag`として提供 |
+| `cacheLife()` | Next.js 15.1 | 15.0では`unstable_cacheLife`として提供 |
+| `"use cache"` | Next.js 15.0 | `dynamicIO`フラグ有効時のみ |
+| `connection()` | Next.js 15.0 | 動的レンダリングのオプトイン |
+
 ## 目次
 - [クリーンアーキテクチャの構成](#クリーンアーキテクチャの構成)
 - [ドメインモデル](#ドメインモデル)
 - [コードスタイルとアーキテクチャルール](#コードスタイルとアーキテクチャルール)
 - [セキュリティ](#セキュリティ)
 - [Loader Pattern](#loader-pattern)
+- [Partial Prerendering (PPR)](#partial-prerendering-ppr)
+- [Dynamic Rendering](#dynamic-rendering)
 - [Server Actions Architecture Pattern](#server-actions-architecture-pattern)
 - [Value Object Pattern with Zod Branding](#value-object-pattern-with-zod-branding)
 - [Domain Entity Creation Pattern](#domain-entity-creation-pattern)
@@ -206,6 +220,119 @@ export async function ArticlesStackLoader({
 
 **エラーハンドリング**: Loader内ではエラーをcatchせず、ErrorBoundaryに伝播させる。
 
+## Partial Prerendering (PPR)
+
+Next.js 15で導入されたPartial Prerenderingは、静的シェルと動的コンテンツを組み合わせるレンダリング戦略。
+
+### 概要
+
+PPRは以下の特性を持つ:
+- **静的シェル**: ページの静的部分をビルド時にプリレンダリング
+- **動的ホール**: Suspense境界内の動的コンテンツを遅延読み込み
+- **ストリーミング**: 静的部分を即座に配信し、動的部分をストリーミング
+
+### 有効化
+
+```typescript
+// next.config.ts
+const nextConfig: NextConfig = {
+  experimental: {
+    ppr: true,
+  },
+};
+```
+
+### Loader Pattern との組み合わせ
+
+本コードベースのLoader Patternは、PPRと自然に統合できる:
+
+```typescript
+// 静的シェル（即座に配信）
+export default function ArticlesPage() {
+  return (
+    <div>
+      <Header /> {/* 静的 */}
+      <Sidebar /> {/* 静的 */}
+
+      {/* 動的ホール（Suspense境界内でストリーミング） */}
+      <Suspense fallback={<ArticlesSkeleton />}>
+        <ArticlesStackLoader variant="exported" />
+      </Suspense>
+    </div>
+  );
+}
+```
+
+**ポイント:**
+- 認証情報を必要としないUIコンポーネントは静的シェルとして即座に配信
+- データフェッチを伴うLoaderはSuspense境界内に配置し、動的ホールとして扱う
+- Skeleton/Loading UIを適切に設計し、ユーザー体験を最適化
+
+### 注意事項
+
+- PPRは現在experimental機能
+- `cookies()`, `headers()`, `searchParams`を使用するコンポーネントは自動的に動的になる
+- 静的/動的の境界を意識した設計が重要
+
+## Dynamic Rendering
+
+Next.js 15での動的レンダリングの制御方法。
+
+### 動的レンダリングのトリガー
+
+以下のAPIを使用すると、そのルート/コンポーネントは動的にレンダリングされる:
+
+| API | 用途 |
+|-----|------|
+| `cookies()` | Cookie読み取り |
+| `headers()` | リクエストヘッダー読み取り |
+| `searchParams` | クエリパラメータ |
+| `connection()` | 明示的な動的オプトイン |
+
+### `dynamicIO` フラグ
+
+Next.js 15.1+では`dynamicIO`フラグにより、IO操作の動的/静的な振る舞いを制御:
+
+```typescript
+// next.config.ts
+const nextConfig: NextConfig = {
+  experimental: {
+    dynamicIO: true,
+  },
+};
+```
+
+`dynamicIO`有効時:
+- `fetch`、データベースクエリ等のIO操作はデフォルトで動的
+- `"use cache"`ディレクティブでキャッシュを明示的にオプトイン
+- 動的IOを行わないルートは自動的に静的プリレンダリング
+
+### `connection()` API
+
+動的レンダリングを明示的にオプトインする:
+
+```typescript
+import { connection } from "next/server";
+
+async function DynamicComponent() {
+  await connection(); // このコンポーネントを動的にする
+
+  const data = await fetchRealTimeData();
+  return <div>{data}</div>;
+}
+```
+
+**使用場面:**
+- リアルタイムデータが必要な場合
+- キャッシュを完全に回避したい場合
+- リクエスト時の最新データが必須な場合
+
+### 本コードベースでの方針
+
+1. **デフォルト**: `"use cache"`でキャッシュし、`revalidateTag`で無効化
+2. **認証が必要なページ**: 認証チェックにより自動的に動的
+3. **リアルタイム要件**: `connection()` APIで明示的にオプトイン
+
 ## Server Actions Architecture Pattern
 
 Server Actionsを3層分離構造（action/core/deps）で実装し、テスタビリティと認証責務の分離を実現するパターン。
@@ -283,7 +410,10 @@ export async function addArticleCore(
 import type { IArticlesCommandRepository } from "@s-hirano-ist/s-core/articles";
 import { articlesCommandRepository } from "@/infrastructures/articles/repositories";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
-import { domainServiceFactory } from "@/infrastructures/factories/domain-service-factory";
+import {
+  type createDomainServiceFactory,
+  domainServiceFactory,
+} from "@/infrastructures/factories/domain-service-factory";
 
 export type AddArticleDeps = {
   commandRepository: IArticlesCommandRepository;
@@ -307,6 +437,49 @@ export const defaultAddArticleDeps: AddArticleDeps = {
 | Deps | `add-*.deps.ts` | 依存性の型定義とデフォルト実装 |
 
 **注意**: `"use server"`ファイルからは非同期関数のみエクスポート可能なため、deps は分離が必要。
+
+### Progressive Enhancement
+
+Server ActionsはProgressive Enhancementをサポートし、JavaScriptが無効な環境でも動作する。
+
+**フォームでの使用:**
+
+```typescript
+// JavaScriptなしでも動作するフォーム
+<form action={addArticle}>
+  <input name="title" required />
+  <input name="url" type="url" required />
+  <button type="submit">追加</button>
+</form>
+```
+
+**`useActionState`との組み合わせ:**
+
+```typescript
+"use client";
+import { useActionState } from "react";
+import { addArticle } from "@/application-services/articles/add-article";
+
+function ArticleForm() {
+  const [state, formAction, isPending] = useActionState(addArticle, null);
+
+  return (
+    <form action={formAction}>
+      <input name="title" required disabled={isPending} />
+      <button type="submit" disabled={isPending}>
+        {isPending ? "追加中..." : "追加"}
+      </button>
+      {state?.success === false && <p className="error">{state.message}</p>}
+    </form>
+  );
+}
+```
+
+**Progressive Enhancement のポイント:**
+- `action`属性を使用し、`onSubmit`ではなくネイティブフォーム送信を活用
+- JavaScriptが有効な場合は`useActionState`で楽観的UI更新を提供
+- JavaScriptが無効でもフォームは正常に送信され、ページがリロードされる
+- `disabled={isPending}`で二重送信を防止
 
 ## Value Object Pattern with Zod Branding
 
@@ -373,6 +546,8 @@ createArticle(categoryName, title); // コンパイルエラー
 
 ```typescript
 // packages/core/articles/entities/article-entity.ts
+// Note: packages/core内部では相対インポートを使用
+// パッケージ外からは @s-hirano-ist/s-core/common 等のバレルインポートを使用
 import { createEntityWithErrorHandling } from "../../common/services/entity-factory.js";
 import { ArticleCreatedEvent } from "../events/article-created-event.js";
 
@@ -670,6 +845,36 @@ export function sanitizeCacheTag(userId: string): string {
 
 **目的:** キャッシュタグに使用できない文字（`|`等のAuth0ユーザーID内の特殊文字）を除去
 
+### `revalidatePath` vs `revalidateTag` の使い分け
+
+| 観点 | `revalidatePath` | `revalidateTag` |
+|------|------------------|-----------------|
+| **無効化対象** | 特定パスに関連する全キャッシュ | 特定タグを持つキャッシュのみ |
+| **粒度** | 粗い（パス単位） | 細かい（タグ単位） |
+| **使用場面** | ページ全体の再検証が必要な場合 | 特定データの更新時 |
+| **パフォーマンス** | 広範囲のキャッシュ無効化 | 最小限のキャッシュ無効化 |
+
+**判断基準:**
+
+```typescript
+// ✅ revalidateTag: 特定データの更新
+await commandRepository.create(article);
+revalidateTag(`articles_UNEXPORTED_${userId}`);
+revalidateTag(`articles_count_UNEXPORTED_${userId}`);
+
+// ✅ revalidatePath: レイアウト全体の再検証が必要な場合
+// （例: サイドバーのカウント表示など複数コンポーネントに影響）
+revalidatePath("/dashboard", "layout");
+
+// ✅ revalidatePath: 動的ルートの特定ページ
+revalidatePath(`/articles/${articleId}`);
+```
+
+**本コードベースの方針:**
+- **基本**: `revalidateTag`を使用し、最小限のキャッシュ無効化を維持
+- **`cacheTag`との対応**: データフェッチ時に設定したタグと同じタグで無効化
+- **ブロードキャスト無効化**: 複数ユーザーに影響する変更は`revalidatePath`を検討
+
 ## Data Fetching Pattern
 
 `"use cache"`ディレクティブとReact `cache()`を使用したデータフェッチパターン。
@@ -678,7 +883,7 @@ export function sanitizeCacheTag(userId: string): string {
 
 ```typescript
 // app/src/application-services/articles/get-articles.ts
-import { unstable_cacheTag as cacheTag } from "next/cache";
+import { cacheTag } from "next/cache";
 import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
 
@@ -726,6 +931,34 @@ export const getExportedArticles: GetPaginatedData<LinkCardStackInitialData> =
 | Next.js | `"use cache"` + `cacheTag()` | ビルド/リクエスト間キャッシュ |
 | React | `cache()` | リクエスト内重複排除（同一リクエストで複数回呼ばれても1回のみ実行） |
 | Prisma Accelerate | `cacheStrategy` | データベースレベルキャッシュ（TTL/SWR） |
+
+### `cache()` と `"use cache"` の使い分け
+
+| 観点 | `cache()` (React) | `"use cache"` (Next.js) |
+|------|-------------------|-------------------------|
+| **スコープ** | 単一リクエスト内 | リクエスト間（永続的） |
+| **用途** | 同一レンダリングツリー内での重複排除 | ビルド時/ISR/動的キャッシュ |
+| **無効化** | リクエスト終了で自動消滅 | `revalidateTag()` / `revalidatePath()` |
+| **認証データ** | 適切（リクエストスコープ） | 注意が必要（`cacheTag`でユーザー分離） |
+
+**判断基準:**
+1. **同一リクエスト内で複数回呼ばれる可能性がある** → `cache()` でラップ
+2. **リクエスト間でキャッシュしたい** → `"use cache"` ディレクティブ
+3. **両方の恩恵を受けたい** → 内部関数に `"use cache"`、公開関数を `cache()` でラップ（本コードベースの標準パターン）
+
+```typescript
+// 推奨パターン: 両方を組み合わせ
+const _getData = async (userId: UserId) => {
+  "use cache";
+  cacheTag(`data_${userId}`);
+  return await repository.findMany(userId);
+};
+
+export const getData = cache(async () => {
+  const userId = await getSelfId();
+  return _getData(userId);
+});
+```
 
 ### 命名規則
 
