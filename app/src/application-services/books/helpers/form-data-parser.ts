@@ -13,11 +13,10 @@ import type { UserId } from "@s-hirano-ist/s-core/common/entities/common-entity"
 import {
 	makeContentType,
 	makeFileSize,
-	makeOriginalBuffer,
 	makePath,
-	makeThumbnailBufferFromFile,
 } from "@s-hirano-ist/s-core/images/entities/image-entity";
 import { getFormDataString } from "@/common/utils/form-data-utils";
+import { sharpImageProcessor } from "@/infrastructures/images/services/sharp-image-processor";
 
 /**
  * Gets optional file from FormData, returns null if not provided or empty.
@@ -63,6 +62,12 @@ export const parseAddBooksFormData = async (
 	}
 
 	const path = makePath(file.name, true);
+	const originalBuffer = await sharpImageProcessor.fileToBuffer(file);
+	const thumbnailBuffer = await sharpImageProcessor.createThumbnail(
+		originalBuffer,
+		192,
+		192,
+	);
 
 	return {
 		...baseData,
@@ -71,7 +76,7 @@ export const parseAddBooksFormData = async (
 		path,
 		contentType: makeContentType(file.type),
 		fileSize: makeFileSize(file.size),
-		originalBuffer: await makeOriginalBuffer(file),
-		thumbnailBuffer: await makeThumbnailBufferFromFile(file),
+		originalBuffer,
+		thumbnailBuffer,
 	};
 };

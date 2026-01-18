@@ -1,4 +1,3 @@
-import sharp from "sharp";
 import z from "zod";
 import {
 	CreatedAt,
@@ -12,18 +11,6 @@ import {
 } from "../../common/entities/common-entity.js";
 import { createEntityWithErrorHandling } from "../../common/services/entity-factory.js";
 import { idGenerator } from "../../common/services/id-generator.js";
-
-/**
- * Width of generated thumbnails in pixels.
- * @internal
- */
-const THUMBNAIL_WIDTH = 192;
-
-/**
- * Height of generated thumbnails in pixels.
- * @internal
- */
-const THUMBNAIL_HEIGHT = 192;
 
 // Value objects
 
@@ -222,81 +209,6 @@ export type Description = z.infer<typeof Description>;
  * @throws {ZodError} When the description is empty
  */
 export const makeDescription = (v: string): Description => Description.parse(v);
-
-/**
- * Converts a File object to a Buffer.
- *
- * @param file - The File object to convert
- * @returns A Buffer containing the file data
- *
- * @example
- * ```typescript
- * const buffer = await makeOriginalBuffer(uploadedFile);
- * ```
- */
-export const makeOriginalBuffer = async (file: File) => {
-	return Buffer.from(await file.arrayBuffer());
-};
-
-/**
- * Creates a thumbnail buffer from a File object.
- *
- * @remarks
- * Resizes the image to 192x192 pixels using sharp.
- *
- * @param file - The File object to create a thumbnail from
- * @returns A Buffer containing the thumbnail image data
- *
- * @example
- * ```typescript
- * const thumbnail = await makeThumbnailBufferFromFile(uploadedFile);
- * ```
- */
-export const makeThumbnailBufferFromFile = async (file: File) => {
-	const originalBuffer = Buffer.from(await file.arrayBuffer());
-	return await sharp(originalBuffer)
-		.resize(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT)
-		.toBuffer();
-};
-
-/**
- * Creates a thumbnail buffer from an existing Buffer.
- *
- * @remarks
- * Resizes the image to 192x192 pixels using sharp.
- *
- * @param buffer - The Buffer to create a thumbnail from
- * @returns A Buffer containing the thumbnail image data
- *
- * @example
- * ```typescript
- * const thumbnail = await makeThumbnailBufferFromBuffer(imageBuffer);
- * ```
- */
-export const makeThumbnailBufferFromBuffer = async (buffer: Buffer) => {
-	return await sharp(buffer)
-		.resize(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT)
-		.toBuffer();
-};
-
-/**
- * Extracts metadata from an image buffer.
- *
- * @remarks
- * Uses sharp to extract image metadata including dimensions, format, etc.
- *
- * @param buffer - The image buffer to analyze
- * @returns The image metadata from sharp
- *
- * @example
- * ```typescript
- * const metadata = await makeMetadata(imageBuffer);
- * console.log(metadata.width, metadata.height);
- * ```
- */
-export const makeMetadata = async (buffer: Buffer) => {
-	return sharp(buffer).metadata();
-};
 
 // Entities
 

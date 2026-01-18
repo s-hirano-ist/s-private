@@ -35,6 +35,7 @@ export * from "./repositories/batch-command-repository.interface.js";
 // Services
 export * from "./services/entity-factory.js";
 export * from "./services/id-generator.js";
+export * from "./services/storage-service.interface.js";
 
 // Types
 export * from "./types/search-types.js";

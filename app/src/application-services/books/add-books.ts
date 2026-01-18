@@ -22,6 +22,7 @@ import {
 } from "@/common/utils/cache-tag-builder";
 import { booksCommandRepository } from "@/infrastructures/books/repositories/books-command-repository";
 import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
+import { booksStorageService } from "@/infrastructures/books/services/books-storage-service";
 import { parseAddBooksFormData } from "./helpers/form-data-parser";
 
 /**
@@ -51,12 +52,12 @@ export async function addBooks(formData: FormData): Promise<ServerAction> {
 
 		// Upload image to MinIO if provided
 		if (parsedData.hasImage) {
-			await booksCommandRepository.uploadImageToStorage(
+			await booksStorageService.uploadImage(
 				parsedData.path,
 				parsedData.originalBuffer,
 				false,
 			);
-			await booksCommandRepository.uploadImageToStorage(
+			await booksStorageService.uploadImage(
 				parsedData.path,
 				parsedData.thumbnailBuffer,
 				true,

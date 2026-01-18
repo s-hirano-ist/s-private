@@ -1,6 +1,7 @@
 {
 	"compilerOptions": {
 		"lib": ["esnext"],
+		"types": ["node"],
 		"target": "ES2022",
 		"allowJs": true,
 		"skipLibCheck": true,

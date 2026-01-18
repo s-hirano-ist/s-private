@@ -1,23 +1,23 @@
 import {
 	makeContentType,
 	makeFileSize,
-	makeOriginalBuffer,
 	makePath,
-	makeThumbnailBufferFromFile,
 } from "@s-hirano-ist/s-core/images/entities/image-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getFormDataFile } from "@/common/utils/form-data-utils";
+import { sharpImageProcessor } from "@/infrastructures/images/services/sharp-image-processor";
 import { parseAddImageFormData } from "./form-data-parser";
 
 vi.mock("@/common/utils/form-data-utils");
 vi.mock("@s-hirano-ist/s-core/images/entities/image-entity");
+vi.mock("@/infrastructures/images/services/sharp-image-processor");
 
 const mockGetFormDataFile = vi.mocked(getFormDataFile);
 const mockMakePath = vi.mocked(makePath);
 const mockMakeContentType = vi.mocked(makeContentType);
 const mockMakeFileSize = vi.mocked(makeFileSize);
-const mockMakeOriginalBuffer = vi.mocked(makeOriginalBuffer);
-const mockMakeThumbnailBuffer = vi.mocked(makeThumbnailBufferFromFile);
+const mockFileToBuffer = vi.mocked(sharpImageProcessor.fileToBuffer);
+const mockCreateThumbnail = vi.mocked(sharpImageProcessor.createThumbnail);
 
 describe("parseAddImageFormData", () => {
 	beforeEach(() => {
@@ -44,8 +44,8 @@ describe("parseAddImageFormData", () => {
 		mockMakePath.mockReturnValue("test-image.png" as any);
 		mockMakeContentType.mockReturnValue("image/png" as any);
 		mockMakeFileSize.mockReturnValue(1024 as any);
-		mockMakeOriginalBuffer.mockResolvedValue(mockOriginalBuffer as any);
-		mockMakeThumbnailBuffer.mockResolvedValue(mockThumbnailBuffer as any);
+		mockFileToBuffer.mockResolvedValue(mockOriginalBuffer);
+		mockCreateThumbnail.mockResolvedValue(mockThumbnailBuffer);
 
 		const result = await parseAddImageFormData(formData, userId);
 
@@ -54,8 +54,12 @@ describe("parseAddImageFormData", () => {
 		expect(mockMakePath).toHaveBeenCalledWith("test-image.png", true);
 		expect(mockMakeContentType).toHaveBeenCalledWith("image/png");
 		expect(mockMakeFileSize).toHaveBeenCalledWith(1024);
-		expect(mockMakeOriginalBuffer).toHaveBeenCalledWith(mockFile);
-		expect(mockMakeThumbnailBuffer).toHaveBeenCalledWith(mockFile);
+		expect(mockFileToBuffer).toHaveBeenCalledWith(mockFile);
+		expect(mockCreateThumbnail).toHaveBeenCalledWith(
+			mockOriginalBuffer,
+			192,
+			192,
+		);
 
 		expect(result).toEqual({
 			userId: "test-user-id",
@@ -87,8 +91,8 @@ describe("parseAddImageFormData", () => {
 		mockMakePath.mockReturnValue("photo.jpg" as any);
 		mockMakeContentType.mockReturnValue("image/jpeg" as any);
 		mockMakeFileSize.mockReturnValue(2048 as any);
-		mockMakeOriginalBuffer.mockResolvedValue(mockOriginalBuffer as any);
-		mockMakeThumbnailBuffer.mockResolvedValue(mockThumbnailBuffer as any);
+		mockFileToBuffer.mockResolvedValue(mockOriginalBuffer);
+		mockCreateThumbnail.mockResolvedValue(mockThumbnailBuffer);
 
 		const result = await parseAddImageFormData(formData, userId);
 
@@ -126,44 +130,14 @@ describe("parseAddImageFormData", () => {
 		mockMakePath.mockReturnValue("テスト画像.png" as any);
 		mockMakeContentType.mockReturnValue("image/png" as any);
 		mockMakeFileSize.mockReturnValue(1536 as any);
-		mockMakeOriginalBuffer.mockResolvedValue(mockOriginalBuffer as any);
-		mockMakeThumbnailBuffer.mockResolvedValue(mockThumbnailBuffer as any);
+		mockFileToBuffer.mockResolvedValue(mockOriginalBuffer);
+		mockCreateThumbnail.mockResolvedValue(mockThumbnailBuffer);
 
 		const result = await parseAddImageFormData(formData, userId);
 
 		expect(mockMakePath).toHaveBeenCalledWith("テスト画像.png", true);
 		expect(result.path).toBe("テスト画像.png");
 		expect(result.userId).toBe("test-user-id-jp");
-	});
-
-	test("should handle WebP image file", async () => {
-		const formData = new FormData();
-		const userId = "test-user-id" as any;
-
-		const mockFile = {
-			name: "modern-image.webp",
-			type: "image/webp",
-			size: 512,
-		} as File;
-
-		const mockOriginalBuffer = Buffer.from("webp-original-data");
-		const mockThumbnailBuffer = Buffer.from("webp-thumbnail-data");
-
-		// Mock form data extraction
-		mockGetFormDataFile.mockReturnValue(mockFile);
-
-		// Mock entity creation
-		mockMakePath.mockReturnValue("modern-image.webp" as any);
-		mockMakeContentType.mockReturnValue("image/webp" as any);
-		mockMakeFileSize.mockReturnValue(512 as any);
-		mockMakeOriginalBuffer.mockResolvedValue(mockOriginalBuffer as any);
-		mockMakeThumbnailBuffer.mockResolvedValue(mockThumbnailBuffer as any);
-
-		const result = await parseAddImageFormData(formData, userId);
-
-		expect(result.contentType).toBe("image/webp");
-		expect(result.path).toBe("modern-image.webp");
-		expect(result.fileSize).toBe(512);
 	});
 
 	test("should handle large image file", async () => {
@@ -186,8 +160,8 @@ describe("parseAddImageFormData", () => {
 		mockMakePath.mockReturnValue("large-image.png" as any);
 		mockMakeContentType.mockReturnValue("image/png" as any);
 		mockMakeFileSize.mockReturnValue(5242880 as any);
-		mockMakeOriginalBuffer.mockResolvedValue(mockOriginalBuffer as any);
-		mockMakeThumbnailBuffer.mockResolvedValue(mockThumbnailBuffer as any);
+		mockFileToBuffer.mockResolvedValue(mockOriginalBuffer);
+		mockCreateThumbnail.mockResolvedValue(mockThumbnailBuffer);
 
 		const result = await parseAddImageFormData(formData, userId);
 
@@ -215,8 +189,8 @@ describe("parseAddImageFormData", () => {
 		mockMakePath.mockReturnValue("image with spaces & symbols (1).png" as any);
 		mockMakeContentType.mockReturnValue("image/png" as any);
 		mockMakeFileSize.mockReturnValue(1024 as any);
-		mockMakeOriginalBuffer.mockResolvedValue(mockOriginalBuffer as any);
-		mockMakeThumbnailBuffer.mockResolvedValue(mockThumbnailBuffer as any);
+		mockFileToBuffer.mockResolvedValue(mockOriginalBuffer);
+		mockCreateThumbnail.mockResolvedValue(mockThumbnailBuffer);
 
 		const result = await parseAddImageFormData(formData, userId);
 
@@ -247,8 +221,8 @@ describe("parseAddImageFormData", () => {
 		mockMakePath.mockReturnValue("user-image.jpg" as any);
 		mockMakeContentType.mockReturnValue("image/jpeg" as any);
 		mockMakeFileSize.mockReturnValue(1024 as any);
-		mockMakeOriginalBuffer.mockResolvedValue(mockOriginalBuffer as any);
-		mockMakeThumbnailBuffer.mockResolvedValue(mockThumbnailBuffer as any);
+		mockFileToBuffer.mockResolvedValue(mockOriginalBuffer);
+		mockCreateThumbnail.mockResolvedValue(mockThumbnailBuffer);
 
 		const result = await parseAddImageFormData(formData, userId);
 

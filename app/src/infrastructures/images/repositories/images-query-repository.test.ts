@@ -1,13 +1,7 @@
-import { Readable } from "node:stream";
 import { makeUserId } from "@s-hirano-ist/s-core/common/entities/common-entity";
-import { Path } from "@s-hirano-ist/s-core/images/entities/image-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { minioClient } from "@/minio";
 import prisma from "@/prisma";
 import { imagesQueryRepository } from "./images-query-repository";
-
-// Simple path parser for testing
-const makeTestPath = (v: string): Path => Path.parse(v);
 
 describe("ImagesQueryRepository", () => {
 	beforeEach(() => {
@@ -125,43 +119,6 @@ describe("ImagesQueryRepository", () => {
 			expect(prisma.image.count).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "EXPORTED" },
 			});
-		});
-	});
-
-	describe("getFromStorage", () => {
-		test("should get object from storage successfully", async () => {
-			const mockStream = new Readable();
-			const path = "images/user123/image-123.png";
-
-			vi.mocked(minioClient.getObject).mockResolvedValue(mockStream);
-
-			const result = await imagesQueryRepository.getFromStorage(
-				makeTestPath(path),
-				false,
-			);
-
-			expect(minioClient.getObject).toHaveBeenCalledWith(
-				"test-bucket",
-				`images/original/${path}`,
-			);
-			expect(result).toBe(mockStream);
-		});
-
-		test("should handle storage errors", async () => {
-			const path = "images/user123/nonexistent.png";
-
-			vi.mocked(minioClient.getObject).mockRejectedValue(
-				new Error("Object not found"),
-			);
-
-			await expect(
-				imagesQueryRepository.getFromStorage(makeTestPath(path), false),
-			).rejects.toThrow("Object not found");
-
-			expect(minioClient.getObject).toHaveBeenCalledWith(
-				"test-bucket",
-				`images/original/${path}`,
-			);
 		});
 	});
 });

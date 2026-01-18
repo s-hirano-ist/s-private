@@ -9,6 +9,7 @@ import {
 	buildContentCacheTag,
 	buildCountCacheTag,
 } from "@/common/utils/cache-tag-builder";
+import { minioStorageService } from "@/infrastructures/common/services/minio-storage-service";
 import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
 import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
 import { addImage } from "./add-image";
@@ -22,7 +23,7 @@ vi.mock("@/common/auth/session", () => ({
 vi.mock(
 	"@/infrastructures/images/repositories/images-command-repository",
 	() => ({
-		imagesCommandRepository: { create: vi.fn(), uploadToStorage: vi.fn() },
+		imagesCommandRepository: { create: vi.fn() },
 	}),
 );
 
@@ -30,6 +31,10 @@ vi.mock(
 	"@/infrastructures/images/repositories/images-query-repository",
 	() => ({ imagesQueryRepository: { findByPath: vi.fn() } }),
 );
+
+vi.mock("@/infrastructures/common/services/minio-storage-service", () => ({
+	minioStorageService: { uploadImage: vi.fn() },
+}));
 
 vi.mock("./helpers/form-data-parser", () => ({
 	parseAddImageFormData: vi.fn(),
@@ -90,11 +95,11 @@ describe("addImage", () => {
 		});
 		vi.mocked(imagesQueryRepository.findByPath).mockResolvedValue(null);
 		vi.mocked(imagesCommandRepository.create).mockResolvedValue();
-		vi.mocked(imagesCommandRepository.uploadToStorage).mockResolvedValue();
+		vi.mocked(minioStorageService.uploadImage).mockResolvedValue();
 
 		const result = await addImage(mockFormData);
 
-		expect(imagesCommandRepository.uploadToStorage).toHaveBeenCalledTimes(2);
+		expect(minioStorageService.uploadImage).toHaveBeenCalledTimes(2);
 		expect(imagesCommandRepository.create).toHaveBeenCalled();
 		const status = makeUnexportedStatus();
 		expect(revalidateTag).toHaveBeenCalledWith(

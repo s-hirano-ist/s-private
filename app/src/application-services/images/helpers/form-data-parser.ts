@@ -12,11 +12,10 @@ import type { UserId } from "@s-hirano-ist/s-core/common/entities/common-entity"
 import {
 	makeContentType,
 	makeFileSize,
-	makeOriginalBuffer,
 	makePath,
-	makeThumbnailBufferFromFile,
 } from "@s-hirano-ist/s-core/images/entities/image-entity";
 import { getFormDataFile } from "@/common/utils/form-data-utils";
+import { sharpImageProcessor } from "@/infrastructures/images/services/sharp-image-processor";
 
 /**
  * Parses image upload form data into domain value objects.
@@ -33,13 +32,19 @@ export const parseAddImageFormData = async (
 	userId: UserId,
 ) => {
 	const file = getFormDataFile(formData, "file");
+	const originalBuffer = await sharpImageProcessor.fileToBuffer(file);
+	const thumbnailBuffer = await sharpImageProcessor.createThumbnail(
+		originalBuffer,
+		192,
+		192,
+	);
 
 	return {
 		userId,
 		path: makePath(file.name, true),
 		contentType: makeContentType(file.type),
 		fileSize: makeFileSize(file.size),
-		originalBuffer: await makeOriginalBuffer(file),
-		thumbnailBuffer: await makeThumbnailBufferFromFile(file),
+		originalBuffer,
+		thumbnailBuffer,
 	};
 };

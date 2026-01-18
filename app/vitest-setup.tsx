@@ -82,6 +82,8 @@ beforeEach(() => {
 		minioClient: {
 			putObject: vi.fn(),
 			getObject: vi.fn(),
+			statObject: vi.fn(),
+			removeObject: vi.fn(),
 		},
 	}));
 

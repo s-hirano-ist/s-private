@@ -46,6 +46,7 @@ export * from "./repositories/books-query-repository.interface.js";
 // Services
 export * from "./services/books-batch-domain-service.js";
 export * from "./services/books-domain-service.js";
+export * from "./services/github-book-fetcher.interface.js";
 
 // Types
 export * from "./types/cache-strategy.js";

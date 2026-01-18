@@ -10,6 +10,7 @@
 "use server";
 import "server-only";
 import { imageEntity } from "@s-hirano-ist/s-core/images/entities/image-entity";
+import { ImagesDomainService } from "@s-hirano-ist/s-core/images/services/images-domain-service";
 import { revalidateTag } from "next/cache";
 import { forbidden } from "next/navigation";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
@@ -19,7 +20,9 @@ import {
 	buildContentCacheTag,
 	buildCountCacheTag,
 } from "@/common/utils/cache-tag-builder";
+import { minioStorageService } from "@/infrastructures/common/services/minio-storage-service";
 import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
+import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
 import { parseAddImageFormData } from "./helpers/form-data-parser";
 
 /**
@@ -29,8 +32,9 @@ import { parseAddImageFormData } from "./helpers/form-data-parser";
  * Performs the following steps:
  * 1. Permission check (dumper role required)
  * 2. Form data parsing with thumbnail generation
- * 3. Upload original and thumbnail to MinIO
- * 4. Create database record and invalidate cache
+ * 3. Domain duplicate check (path uniqueness)
+ * 4. Upload original and thumbnail to MinIO
+ * 5. Create database record and invalidate cache
  *
  * @param formData - Form data containing the image file
  * @returns Server action result with success/failure status
@@ -38,6 +42,8 @@ import { parseAddImageFormData } from "./helpers/form-data-parser";
 export async function addImage(formData: FormData): Promise<ServerAction> {
 	const hasPermission = await hasDumperPostPermission();
 	if (!hasPermission) forbidden();
+
+	const imagesDomainService = new ImagesDomainService(imagesQueryRepository);
 
 	try {
 		const {
@@ -49,6 +55,9 @@ export async function addImage(formData: FormData): Promise<ServerAction> {
 			originalBuffer,
 		} = await parseAddImageFormData(formData, await getSelfId());
 
+		// Domain business rule validation
+		await imagesDomainService.ensureNoDuplicate(path, userId);
+
 		const image = imageEntity.create({
 			userId,
 			path,
@@ -56,16 +65,8 @@ export async function addImage(formData: FormData): Promise<ServerAction> {
 			fileSize,
 		});
 
-		await imagesCommandRepository.uploadToStorage(
-			image.path,
-			originalBuffer,
-			false,
-		);
-		await imagesCommandRepository.uploadToStorage(
-			image.path,
-			thumbnailBuffer,
-			true,
-		);
+		await minioStorageService.uploadImage(image.path, originalBuffer, false);
+		await minioStorageService.uploadImage(image.path, thumbnailBuffer, true);
 		await imagesCommandRepository.create(image);
 
 		// Cache invalidation

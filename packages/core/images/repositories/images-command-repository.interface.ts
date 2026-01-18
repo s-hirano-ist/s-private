@@ -1,15 +1,18 @@
 import type { Status } from "../../common/entities/common-entity.js";
-import type { Path, UnexportedImage } from "../entities/image-entity.js";
+import type { UnexportedImage } from "../entities/image-entity.js";
 
 /**
  * Command repository interface for the Image domain.
  *
  * @remarks
  * Follows the CQRS pattern - this interface handles write operations only.
- * Implementations should be provided by the infrastructure layer (e.g., Prisma + MinIO).
+ * Implementations should be provided by the infrastructure layer (e.g., Prisma).
  *
  * For batch operations (bulkUpdateStatus), use {@link IBatchCommandRepository}
  * from the common module directly.
+ *
+ * For object storage operations (upload, delete), use {@link IStorageService}
+ * from the common module.
  *
  * @example
  * ```typescript
@@ -18,16 +21,12 @@ import type { Path, UnexportedImage } from "../entities/image-entity.js";
  *   async create(data: UnexportedImage) {
  *     await prisma.image.create({ data });
  *   }
- *
- *   async uploadToStorage(path: Path, buffer: Buffer, isThumbnail: boolean) {
- *     const bucketPath = isThumbnail ? `thumbnails/${path}` : path;
- *     await minio.putObject(bucket, bucketPath, buffer);
- *   }
  * }
  * ```
  *
  * @see {@link IImagesQueryRepository} for read operations
  * @see {@link IBatchCommandRepository} for batch operations
+ * @see {@link IStorageService} for object storage operations
  */
 export type IImagesCommandRepository = {
 	/**
@@ -36,19 +35,6 @@ export type IImagesCommandRepository = {
 	 * @param data - The unexported image entity to persist
 	 */
 	create(data: UnexportedImage): Promise<void>;
-
-	/**
-	 * Uploads an image buffer to object storage.
-	 *
-	 * @param path - The storage path for the image
-	 * @param buffer - The image data buffer
-	 * @param isThumbnail - Whether this is a thumbnail upload
-	 */
-	uploadToStorage(
-		path: Path,
-		buffer: Buffer,
-		isThumbnail: boolean,
-	): Promise<void>;
 
 	/**
 	 * Deletes an image by its ID.
