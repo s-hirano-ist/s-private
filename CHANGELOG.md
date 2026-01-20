@@ -2,6 +2,54 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.9.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.8.4...s-private-v10.9.0) (2026-01-20)
+
+
+### Features
+
+* enhance repositories with DTOs for books, images, and notes ([7cc3bb4](https://github.com/s-hirano-ist/s-private/commit/7cc3bb415f0802bea6613025fb9c594c5109843d))
+
+
+### Bug Fixes
+
+* ddd issues and small fixes ([3dd6f3c](https://github.com/s-hirano-ist/s-private/commit/3dd6f3c89424391db13e3a30d8b57c10ac437cd6))
+* tests ([9ffeeea](https://github.com/s-hirano-ist/s-private/commit/9ffeeea1defffc8d1668c2d1d8bb5d3c2cea62c4))
+
+
+### Maintenance
+
+* add reviewer to update reports pull request ([48fc68e](https://github.com/s-hirano-ist/s-private/commit/48fc68e6269a392aa6c01f2139e02edebbe00a20))
+* DDD原則からの逸脱に関するドキュメントを作成し、状態遷移ルールの分散を削除 ([d834c43](https://github.com/s-hirano-ist/s-private/commit/d834c4374888af6d0347399edfdb7b58b98ba709))
+* DDD原則からの逸脱に関するドキュメントを追加し、設計判断と理由を明確化 ([fc2992d](https://github.com/s-hirano-ist/s-private/commit/fc2992d04be387cf2fa7623ca3856a8ae8cf1f07))
+* **deps:** lock file maintenance ([f0e7a41](https://github.com/s-hirano-ist/s-private/commit/f0e7a41c779f7848672d26e318694041ffef5f46))
+* **deps:** lock file maintenance ([e9f47b7](https://github.com/s-hirano-ist/s-private/commit/e9f47b79a0446bdf4f5d384140296bb7bcb2204b))
+* **deps:** update github actions ([a5561a5](https://github.com/s-hirano-ist/s-private/commit/a5561a5be8a3ebff1343e91f1b0c52d8b18009cd))
+* **deps:** update httpd:2.4.66 docker digest to dd17859 ([e099155](https://github.com/s-hirano-ist/s-private/commit/e099155e40b005e57c1027660e58dac43a13a1b5))
+* **deps:** update minor ([0e78a8a](https://github.com/s-hirano-ist/s-private/commit/0e78a8a4944cc371a25cfe8f0b3be2ef93f5232b))
+* **deps:** update minor ([13d3547](https://github.com/s-hirano-ist/s-private/commit/13d35473c047d5c1f46f03d065670aa9f8ff6ef4))
+* **deps:** update node.js to 7326fb2 ([fe07757](https://github.com/s-hirano-ist/s-private/commit/fe07757fe6bdea7e877bec32784e485ff2795905))
+* dir names ([0c7eb7d](https://github.com/s-hirano-ist/s-private/commit/0c7eb7dc33b751bb62205386e072fa18e5d25c15))
+* dirs ([fcca9cb](https://github.com/s-hirano-ist/s-private/commit/fcca9cb105b3f1b42e261e35859908c4aee0770e))
+* enable automerge for lockfile maintenance ([6572776](https://github.com/s-hirano-ist/s-private/commit/6572776b3d95eb7dee2a4986641ca86da98d159c))
+* enable automerge for lockfile maintenance ([adabb45](https://github.com/s-hirano-ist/s-private/commit/adabb45dd8d63a61e78fe3a40d4689f9464336f6))
+* entities ([96e8bc3](https://github.com/s-hirano-ist/s-private/commit/96e8bc322aff1482b083db3559a1e45d22d78f1f))
+* fix knip issues ([1d4aeb8](https://github.com/s-hirano-ist/s-private/commit/1d4aeb8b1b0e6277c91d5171781b133b75b61872))
+* image parser ([5a49fa9](https://github.com/s-hirano-ist/s-private/commit/5a49fa945e424a53d868bc175115f224be72500f))
+* image parser ([4f3dfd0](https://github.com/s-hirano-ist/s-private/commit/4f3dfd0598c3bdc0992449c40de065d1e4ab41b8))
+* implement domain service factory for dependency injection and update service instantiation in article, book, and note actions ([bc4685f](https://github.com/s-hirano-ist/s-private/commit/bc4685fb11696c3e3dcfa42adad8f3ed038453a6))
+* makeStatusをmakeExportedStatusおよびmakeUnexportedStatusに置き換え、コードの一貫性を向上 ([265d317](https://github.com/s-hirano-ist/s-private/commit/265d3173a73db0c7aaaac91a58c90c4087a61f97))
+* pass layout parameter to image pagination links ([0a1cc50](https://github.com/s-hirano-ist/s-private/commit/0a1cc508f1d6e9aa8a943a88438923ecbde06a9e))
+* refactor coding pattern names ([4713693](https://github.com/s-hirano-ist/s-private/commit/4713693d26d11ff16c931fa81728d2eb6a2b5533))
+* refactor format fixes and docs ([279b4fd](https://github.com/s-hirano-ist/s-private/commit/279b4fdf9deee48b170cf5911a32f9ccaf12693e))
+* remove categoryId from article creation and related tests to streamline ID generation ([295751c](https://github.com/s-hirano-ist/s-private/commit/295751c8e7006eeab359ebe267a102d239a425b5))
+* remove security audit file for deprecated vulnerability information ([92bdef5](https://github.com/s-hirano-ist/s-private/commit/92bdef540f4cf399b0e0b67634f3f7ca23943c45))
+* remove unused export functions from entity files ([b449342](https://github.com/s-hirano-ist/s-private/commit/b4493425bfde38b0a358d114c83b04f40b6ee54d))
+* replace biome commands with check commands for consistency and clarity ([53e039a](https://github.com/s-hirano-ist/s-private/commit/53e039a07949557f1736b00486f1c73587a39170))
+* restructure documentation for clarity and organization ([7359c6b](https://github.com/s-hirano-ist/s-private/commit/7359c6b5e21c291e04db9e8d5b3addf656b43e63))
+* ドキュメントのファイルパスを修正し、整合性を向上 ([ce64c9c](https://github.com/s-hirano-ist/s-private/commit/ce64c9cc11e660e64bd67e5788477a1eea9b28e9))
+* 各種ドメインルールと改善案を文書化し、状態遷移やリポジトリの戻り値型を統一 ([5f01b7f](https://github.com/s-hirano-ist/s-private/commit/5f01b7f3f119e2e9459b1057eae721962deb518f))
+* 画像、記事、書籍エンティティの制約を強化し、ファイルサイズを修正 ([a18bd82](https://github.com/s-hirano-ist/s-private/commit/a18bd82130d6edbd3006d1b5b1ce1abaa2eea871))
+
 ## [10.8.4](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.8.3...s-private-v10.8.4) (2026-01-05)
 
 

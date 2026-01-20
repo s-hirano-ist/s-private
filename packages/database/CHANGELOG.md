@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.9.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.8.4...@s-hirano-ist/s-database-v1.9.0) (2026-01-20)
+
+
+### Bug Fixes
+
+* ddd issues and small fixes ([3dd6f3c](https://github.com/s-hirano-ist/s-private/commit/3dd6f3c89424391db13e3a30d8b57c10ac437cd6))
+
+
+### Maintenance
+
+* 画像、記事、書籍エンティティの制約を強化し、ファイルサイズを修正 ([a18bd82](https://github.com/s-hirano-ist/s-private/commit/a18bd82130d6edbd3006d1b5b1ce1abaa2eea871))
+
 ## [1.8.4](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.8.3...@s-hirano-ist/s-database-v1.8.4) (2026-01-05)
 
 ## [1.8.3](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.8.2...@s-hirano-ist/s-database-v1.8.3) (2026-01-04)
