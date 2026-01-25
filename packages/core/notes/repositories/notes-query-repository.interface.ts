@@ -10,6 +10,7 @@ import type {
 	UnexportedNote,
 } from "../entities/note-entity.js";
 import type { NotesFindManyParams } from "../types/query-params.js";
+import type { INotesCommandRepository } from "./notes-command-repository.interface.js";
 
 /**
  * Query repository interface for the Note domain.

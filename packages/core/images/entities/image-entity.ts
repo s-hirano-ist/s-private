@@ -9,7 +9,7 @@
  * **Aggregate Root**: {@link imageEntity}
  *
  * **Invariants**:
- * - Path must be unique per user (enforced by {@link ImagesDomainService})
+ * - Path must be unique per user (enforced by `ImagesDomainService`)
  * - Status transitions: UNEXPORTED → LAST_UPDATED → EXPORTED
  *
  * **Value Objects defined here**:
@@ -20,7 +20,7 @@
  * **Re-exported from shared-kernel**:
  * - {@link Path}, {@link ContentType}, {@link FileSize} - File-related value objects
  *
- * @see {@link ImagesDomainService} for domain business rules
+ * @see `ImagesDomainService` for domain business rules
  * @see docs/domain-model.md for aggregate boundary documentation
  * @module
  */
@@ -263,7 +263,7 @@ export type ImageWithEvent = readonly [UnexportedImage, ImageCreatedEvent];
  *
  * @see {@link CreateImageArgs} for creation parameters
  * @see {@link ImageWithEvent} for return type
- * @see {@link ImagesDomainService} for invariant validation (duplicate path check)
+ * @see `ImagesDomainService` for invariant validation (duplicate path check)
  */
 export const imageEntity = {
 	/**

@@ -9,7 +9,7 @@
  * **Aggregate Root**: {@link bookEntity}
  *
  * **Invariants**:
- * - ISBN must be unique per user (enforced by {@link BooksDomainService})
+ * - ISBN must be unique per user (enforced by `BooksDomainService`)
  * - Status transitions: UNEXPORTED → LAST_UPDATED → EXPORTED
  *
  * **Value Objects defined here**:
@@ -20,7 +20,7 @@
  * - {@link BookMarkdown} - User notes/review content
  * - {@link BookImagePath} - User-uploaded cover image path
  *
- * @see {@link BooksDomainService} for domain business rules
+ * @see `BooksDomainService` for domain business rules
  * @see docs/domain-model.md for aggregate boundary documentation
  * @module
  */
@@ -469,7 +469,7 @@ export type BookWithEvent = readonly [UnexportedBook, BookCreatedEvent];
  *
  * @see {@link CreateBookArgs} for creation parameters
  * @see {@link BookWithEvent} for return type
- * @see {@link BooksDomainService} for invariant validation (duplicate ISBN check)
+ * @see `BooksDomainService` for invariant validation (duplicate ISBN check)
  */
 export const bookEntity = {
 	/**

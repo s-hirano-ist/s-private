@@ -9,7 +9,7 @@
  * **Aggregate Root**: {@link articleEntity}
  *
  * **Invariants**:
- * - URL must be unique per user (enforced by {@link ArticlesDomainService})
+ * - URL must be unique per user (enforced by `ArticlesDomainService`)
  * - Status transitions: UNEXPORTED → LAST_UPDATED → EXPORTED
  *
  * **Value Objects defined here**:
@@ -19,7 +19,7 @@
  * - {@link Url} - HTTP/HTTPS URL
  * - {@link OgTitle}, {@link OgDescription}, {@link OgImageUrl} - Open Graph metadata
  *
- * @see {@link ArticlesDomainService} for domain business rules
+ * @see `ArticlesDomainService` for domain business rules
  * @see docs/domain-model.md for aggregate boundary documentation
  * @module
  */
@@ -437,7 +437,7 @@ export type ArticleWithEvent = readonly [
  *
  * @see {@link CreateArticleArgs} for creation parameters
  * @see {@link ArticleWithEvent} for return type
- * @see {@link ArticlesDomainService} for invariant validation (duplicate URL check)
+ * @see `ArticlesDomainService` for invariant validation (duplicate URL check)
  */
 export const articleEntity = {
 	/**

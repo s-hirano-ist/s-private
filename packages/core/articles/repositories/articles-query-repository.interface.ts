@@ -9,6 +9,7 @@ import type {
 	Url,
 } from "../entities/article-entity.js";
 import type { ArticlesFindManyParams } from "../types/query-params.js";
+import type { IArticlesCommandRepository } from "./articles-command-repository.interface.js";
 
 /**
  * Query repository interface for the Article domain.
