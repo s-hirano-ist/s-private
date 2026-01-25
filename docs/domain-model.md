@@ -322,6 +322,57 @@ graph TB
 - **ドメインサービス**: 複雑なビジネスロジック（重複チェック等）を配置し、各ドメインの固有ルールをカプセル化
 - **エンティティファクトリー**: エンティティの生成ロジックをファクトリーメソッドとして実装し、不正な状態のオブジェクト生成を防止
 
+## Context Map
+
+### Bounded Contexts 一覧
+
+| Bounded Context | 説明 | 主な責務 |
+|----------------|------|---------|
+| Articles | 記事管理 | URL収集、OGメタデータ取得、カテゴリ分類 |
+| Books | 書籍管理 | ISBN管理、Google Books連携、GitHub Books連携 |
+| Notes | ノート管理 | Markdownノート作成・編集 |
+| Images | 画像管理 | 画像アップロード、MinIOストレージ連携、サムネイル生成 |
+| Shared-Kernel | 共有カーネル | 共通Value Objects (Id, UserId, Status, Timestamp等) |
+
+### ドメイン間関係図
+
+```
+┌─────────────────────────────────────────────────────┐
+│                   Shared-Kernel                      │
+│  (Id, UserId, Status, CreatedAt, ExportedAt, etc.)  │
+└─────────────────────────────────────────────────────┘
+         ▲           ▲           ▲           ▲
+         │           │           │           │
+    ┌────┴────┐ ┌────┴────┐ ┌────┴────┐ ┌────┴────┐
+    │Articles │ │  Books  │ │  Notes  │ │ Images  │
+    └─────────┘ └─────────┘ └─────────┘ └─────────┘
+    (独立)      (独立)      (独立)      (独立)
+```
+
+### 関係パターン
+
+| Source Context | Target Context | Relationship | 説明 |
+|---------------|----------------|--------------|------|
+| All Domains | Shared-Kernel | Shared Kernel | 共通Value Objects・サービスを共有 |
+| Articles | Category | Same Aggregate | CategoryはArticle集約の内部エンティティ |
+
+### 独立性の原則
+
+- **相互非依存**: Articles, Books, Notes, Images は相互に依存しない
+- **Shared-Kernelのみ参照**: 各ドメインは共有カーネルの共通コンポーネントのみ参照可能
+- **Cross-domain import禁止**: 各ドメイン間の直接importは禁止
+
+### 外部システム連携
+
+| External System | Domain | Integration Pattern | Interface |
+|----------------|--------|---------------------|-----------|
+| OG Metadata Service | Articles | ACL (Anti-Corruption Layer) | `IOgObjectFetcher` |
+| Google Books API | Books | ACL | Google* Value Objects |
+| GitHub Books | Books | ACL | `IGitHubBookFetcher` |
+| MinIO | Images, Books | Infrastructure Adapter | `IStorageService` |
+| Image Processor | Images | Infrastructure Adapter | `IImageProcessor` |
+| Auth0 | All | Separate Context | NextAuth.js統合 |
+
 ## DDDからの意図的な逸脱
 
 このドキュメントでは、DDDの原則から意図的に外れる設計判断とその理由を記載します。
@@ -705,3 +756,85 @@ async function create(data: UnexportedArticle): Promis<void> {
 - キャッシュタグ生成ロジックを共通化（`buildContentCacheTag`, `buildCountCacheTag`）
 - 各Repositoryで同一パターンを維持し、一貫性を保証
 - キャッシュ戦略の変更時は全Repositoryを一括更新
+
+### 010: Anemic Domain Model（データの入れ物としてのEntity）
+
+#### 概要
+
+Entity/Value Objectに振る舞い（ビジネスメソッド）がなく、ビジネスロジックがApplication Service（Core関数）に集中しています。
+
+#### DDDの原則との乖離
+
+- Entityが状態遷移や更新メソッドを持たない
+- ビジネスロジックがApplication Service層に集中
+- DDDの「豊かなドメインモデル」パターンに反する
+
+#### 対応しない理由
+
+**関数型アプローチとの整合性**: 本プロジェクトはTypeScript + Zodによる関数型スタイルを採用。Entityを不変データ構造として扱い、変換関数（純粋関数）をApplication Service層に配置するアプローチは、関数型プログラミングの原則に沿っています。
+
+**テスタビリティの維持**: Core関数は依存性注入により容易にテスト可能。Entityにメソッドを追加しても、リポジトリ依存が発生するためテスト容易性は向上しません。
+
+**シンプルさの維持**: 現在のドメインは4つ（Articles, Books, Notes, Images）で、各ドメインのビジネスロジックは「重複チェック」「状態遷移」程度。Entity内にメソッドを持たせる複雑性に見合いません。
+
+**Zodスキーマとの相性**: Entityの型定義はZodスキーマから推論しており、メソッド追加には別途ラッパークラスが必要となり、型定義が二重化します。
+
+#### 対象ファイル
+
+- `packages/core/articles/entities/article-entity.ts`
+- `packages/core/books/entities/books-entity.ts`
+- `packages/core/notes/entities/note-entity.ts`
+- `packages/core/images/entities/image-entity.ts`
+
+#### リスク軽減策
+
+- ビジネスロジックをCore関数に集約し、分散を防ぐ
+- Application Serviceのテンプレートパターンを維持し、一貫性を保証
+- 複雑なドメインロジックが必要になった場合は、Domain Serviceとして切り出す
+
+### 011: Entity更新パターンの省略
+
+#### 概要
+
+Entity更新がRepository直接操作になっており、Entity側に `with*`, `update*` 等の更新メソッドがありません。
+
+```typescript
+// 現在の実装: Repositoryで直接更新
+await commandRepository.updateOgMetadata(id, ogMetadata);
+await commandRepository.updateStatus(id, status);
+```
+
+#### DDDの原則との乖離
+
+- Entityの内部状態が外部から直接変更される
+- 更新時の不変条件チェックがEntity内で行われない
+- ドメインイベント発行との連携がEntity外で行われる
+
+厳密なDDDでは、Entityに `withStatus()`, `updateOgMetadata()` 等のメソッドを持たせ、不変条件のチェックやドメインイベントの生成をEntity内で行います。
+
+#### 対応しない理由
+
+**010と同様の設計判断**: Anemic Domain Modelを意図的に採用しているため、更新メソッドもEntity外に配置する方が一貫性があります。
+
+**更新パターンの単純さ**: 現在の更新操作は主に以下の3種類のみ。専用メソッドを設けるほど複雑ではありません。
+
+| 更新種別 | 対象ドメイン | 説明 |
+|---------|------------|------|
+| OGメタデータ更新 | Articles | URLからOG情報を取得して更新 |
+| Google Books情報更新 | Books | ISBNからGoogle Books情報を取得して更新 |
+| ステータス更新 | All | UNEXPORTED → LAST_UPDATED → EXPORTED |
+
+**バッチ処理との整合性**: ステータス更新はバッチ処理で一括実行されるため、個別Entityメソッドは使用されません（逸脱001参照）。
+
+#### 対象ファイル
+
+- `app/src/infrastructures/articles/repositories/articles-command-repository.ts`
+- `app/src/infrastructures/books/repositories/books-command-repository.ts`
+- `app/src/application-services/articles/update-article-og-metadata.core.ts`
+- `app/src/application-services/books/update-google-books-info.core.ts`
+
+#### リスク軽減策
+
+- 更新操作をRepository/Application Serviceに集約し、分散を防ぐ
+- 各更新メソッドで必要に応じてバリデーションを実施
+- 複雑な更新ロジックが必要になった場合は、Domain Serviceとして切り出す
