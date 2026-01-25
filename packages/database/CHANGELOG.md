@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.9.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.9.0...@s-hirano-ist/s-database-v1.9.1) (2026-01-25)
+
+
+### Maintenance
+
+* **deps:** update patch ([53c521e](https://github.com/s-hirano-ist/s-private/commit/53c521e74d0a19db7368c2d5d76e64be9492ff3b))
+* downgrade prisma acc ([046ce11](https://github.com/s-hirano-ist/s-private/commit/046ce11f042a6b2bb8a0b8f4f64c39f5cffcd34b))
+
 ## [1.9.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.8.4...@s-hirano-ist/s-database-v1.9.0) (2026-01-20)
 
 
