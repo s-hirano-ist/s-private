@@ -12,7 +12,7 @@ import {
 	makeGoogleSubTitle,
 	makeGoogleTitle,
 	makeISBN,
-} from "../entities/books-entity";
+} from "../entities/book-entity";
 
 describe("booksEntity", () => {
 	describe("makeISBN", () => {

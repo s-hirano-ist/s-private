@@ -8,7 +8,7 @@ import type {
 	ExportedBook,
 	ISBN,
 	UnexportedBook,
-} from "../entities/books-entity.js";
+} from "../entities/book-entity.js";
 import type { BooksFindManyParams } from "../types/query-params.js";
 import type { IBooksCommandRepository } from "./books-command-repository.interface.js";
 

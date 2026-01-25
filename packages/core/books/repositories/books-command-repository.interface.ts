@@ -3,7 +3,7 @@ import type {
 	Status,
 	UserId,
 } from "../../shared-kernel/entities/common-entity.js";
-import type { UnexportedBook } from "../entities/books-entity.js";
+import type { UnexportedBook } from "../entities/book-entity.js";
 
 /**
  * Command repository interface for the Book domain.

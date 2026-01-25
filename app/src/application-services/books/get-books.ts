@@ -8,7 +8,7 @@
  * @module
  */
 
-import { makeISBN } from "@s-hirano-ist/s-core/books/entities/books-entity";
+import { makeISBN } from "@s-hirano-ist/s-core/books/entities/book-entity";
 import type { CacheStrategy } from "@s-hirano-ist/s-core/books/types/cache-strategy";
 import {
 	makeExportedStatus,

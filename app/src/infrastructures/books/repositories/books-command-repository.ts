@@ -1,4 +1,4 @@
-import type { UnexportedBook } from "@s-hirano-ist/s-core/books/entities/books-entity";
+import type { UnexportedBook } from "@s-hirano-ist/s-core/books/entities/book-entity";
 import type {
 	DeleteBookResult,
 	IBooksCommandRepository,

@@ -2,7 +2,7 @@ import {
 	bookEntity,
 	makeBookTitle,
 	makeISBN,
-} from "@s-hirano-ist/s-core/books/entities/books-entity";
+} from "@s-hirano-ist/s-core/books/entities/book-entity";
 import { BookCreatedEvent } from "@s-hirano-ist/s-core/books/events/book-created-event";
 import {
 	makeCreatedAt,
@@ -45,7 +45,7 @@ vi.mock("@s-hirano-ist/s-core/books/services/books-domain-service", () => ({
 }));
 
 vi.mock(
-	"@s-hirano-ist/s-core/books/entities/books-entity",
+	"@s-hirano-ist/s-core/books/entities/book-entity",
 	async (importOriginal) => {
 		const actual = (await importOriginal()) as any;
 		return {

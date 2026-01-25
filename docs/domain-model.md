@@ -68,6 +68,7 @@ erDiagram
         UserId userId FK
         ISBN ISBN
         BookTitle title
+        Path imagePath "nullable"
         Status status
         GoogleTitle googleTitle "nullable"
         GoogleSubTitle googleSubTitle "nullable"
@@ -223,7 +224,7 @@ graph TB
 
 > **コードリファレンス**: 各集約ルートはコード内のJSDocでも明示的に文書化されています。
 > - `packages/core/articles/entities/article-entity.ts` - `articleEntity`
-> - `packages/core/books/entities/books-entity.ts` - `bookEntity`
+> - `packages/core/books/entities/book-entity.ts` - `bookEntity`
 > - `packages/core/notes/entities/note-entity.ts` - `noteEntity`
 > - `packages/core/images/entities/image-entity.ts` - `imageEntity`
 
@@ -366,9 +367,7 @@ graph TB
 
 | External System | Domain | Integration Pattern | Interface |
 |----------------|--------|---------------------|-----------|
-| OG Metadata Service | Articles | ACL (Anti-Corruption Layer) | `IOgObjectFetcher` |
-| Google Books API | Books | ACL | Google* Value Objects |
-| GitHub Books | Books | ACL | `IGitHubBookFetcher` |
+| GitHub Books | Books | ACL (Anti-Corruption Layer) | `IGitHubBookFetcher` |
 | MinIO | Images, Books | Infrastructure Adapter | `IStorageService` |
 | Image Processor | Images | Infrastructure Adapter | `IImageProcessor` |
 | Auth0 | All | Separate Context | NextAuth.js統合 |
@@ -497,7 +496,7 @@ DDDでは value-objects/ ディレクトリに分離することが一般的。
 #### 対象ファイル
 
 - `packages/core/articles/entities/article-entity.ts`
-- `packages/core/books/entities/books-entity.ts`
+- `packages/core/books/entities/book-entity.ts`
 - `packages/core/notes/entities/note-entity.ts`
 - `packages/core/images/entities/image-entity.ts`
 
@@ -693,10 +692,8 @@ export class GoogleBooksFetcherImpl implements IGoogleBookFetcher {
 
 #### 対象ファイル
 
-- `packages/core/books/repositories/google-books-fetcher.ts`（インターフェース）
-- `app/src/infrastructures/books/google-books-fetcher-impl.ts`（実装）
-- `packages/core/articles/repositories/og-object-fetcher.ts`（インターフェース）
-- `app/src/infrastructures/articles/og-object-fetcher-impl.ts`（実装）
+- `packages/core/books/services/github-book-fetcher.interface.ts`（インターフェース）
+- `app/src/infrastructures/books/github-books-fetcher-impl.ts`（実装）
 
 #### リスク軽減策
 
@@ -712,8 +709,8 @@ Repositoryにキャッシュ無効化（`revalidateTag`）が含まれており�
 
 ```typescript
 // 現在の実装: Repositoryでキャッシュ無効化を実行
-async function create(data: UnexportedArticle): Promis<void> {
-  await prisma.article.create({ data });e
+async function create(data: UnexportedArticle): Promise<void> {
+  await prisma.article.create({ data });
   revalidateTag(buildContentCacheTag("articles", data.status, data.userId));
   revalidateTag(buildCountCacheTag("articles", data.status, data.userId));
 }
@@ -782,7 +779,7 @@ Entity/Value Objectに振る舞い（ビジネスメソッド）がなく、ビ�
 #### 対象ファイル
 
 - `packages/core/articles/entities/article-entity.ts`
-- `packages/core/books/entities/books-entity.ts`
+- `packages/core/books/entities/book-entity.ts`
 - `packages/core/notes/entities/note-entity.ts`
 - `packages/core/images/entities/image-entity.ts`
 

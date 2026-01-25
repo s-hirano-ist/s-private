@@ -7,7 +7,7 @@
 import {
 	makeBookTitle,
 	makeISBN,
-} from "@s-hirano-ist/s-core/books/entities/books-entity";
+} from "@s-hirano-ist/s-core/books/entities/book-entity";
 import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import {
 	makeContentType,

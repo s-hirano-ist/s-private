@@ -4,7 +4,7 @@ import {
 	makeGoogleImgSrc,
 	makeGoogleTitle,
 	makeISBN,
-} from "@s-hirano-ist/s-core/books/entities/books-entity";
+} from "@s-hirano-ist/s-core/books/entities/book-entity";
 import {
 	makeCreatedAt,
 	makeExportedAt,

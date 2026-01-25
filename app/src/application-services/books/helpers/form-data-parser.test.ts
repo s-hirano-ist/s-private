@@ -1,13 +1,13 @@
 import {
 	makeBookTitle,
 	makeISBN,
-} from "@s-hirano-ist/s-core/books/entities/books-entity";
+} from "@s-hirano-ist/s-core/books/entities/book-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getFormDataString } from "@/common/utils/form-data-utils";
 import { parseAddBooksFormData } from "./form-data-parser";
 
 vi.mock("@/common/utils/form-data-utils");
-vi.mock("@s-hirano-ist/s-core/books/entities/books-entity");
+vi.mock("@s-hirano-ist/s-core/books/entities/book-entity");
 
 const mockGetFormDataString = vi.mocked(getFormDataString);
 const mockMakeISBN = vi.mocked(makeISBN);

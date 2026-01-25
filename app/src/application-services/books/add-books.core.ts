@@ -8,7 +8,7 @@
  */
 
 import "server-only";
-import { bookEntity } from "@s-hirano-ist/s-core/books/entities/books-entity";
+import { bookEntity } from "@s-hirano-ist/s-core/books/entities/book-entity";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
