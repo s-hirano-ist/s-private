@@ -12,6 +12,8 @@ const EXCLUDE_PATHS = [
 	"app/src/generated/.*\\.wasm",
 	"app/src/generated/wasm-.*-loader\\.mjs",
 	"app/src/env.ts",
+	"/dist/",
+	"packages/database/src/generated",
 ];
 
 const COLLAPSE_PATTERN =
@@ -56,14 +58,10 @@ module.exports = {
 					"app/src/app/robots\\.ts$",
 					"app/src/app/manifest\\.ts$",
 					"app/src/app/api/.*/route\\.ts$", // API routes
-					// Prisma generated files
 					"app/src/generated/runtime/.*",
-					// Repository interfaces (DIP - Dependency Inversion Principle)
-					".*-repository\\.interface\\.ts$",
-					// Domain types and constants
+					"\\.interface\\.ts$",
+					"app/src/loaders/types\\.ts$",
 					"packages/core/.*/types/.*\\.ts$",
-					// Domain events (DDD pattern)
-					"packages/core/common/events/.*\\.ts$",
 					// Common type definitions
 					"app/src/common/types\\.ts$",
 					"app/src/components/common/layouts/cards/types\\.ts$",
@@ -138,7 +136,11 @@ module.exports = {
 				"module: add it to your package.json. In all other cases you likely already know what to do.",
 			severity: "error",
 			from: {},
-			to: { couldNotResolve: true },
+			to: {
+				couldNotResolve: true,
+				// Exclude react/jsx-runtime (false positive from tsconfig jsx: react-jsx)
+				pathNot: ["^react/jsx-runtime$"],
+			},
 		},
 		{
 			name: "no-duplicate-dep-types",

@@ -554,3 +554,101 @@ await commandRepository.create(article);              // 3. 永続化
 
 - Application Service のテンプレートパターンを維持
 - 新規Application Service作成時は既存コードを参照
+
+### 007: インフラ層内でのPrisma型直接使用
+
+#### 概要
+
+Prisma固有の型（`Prisma.ArticleWhereInput`等）がインフラ層内で直接使用されています。
+
+```typescript
+// 現在の実装: Prisma型の直接使用
+import { Prisma } from "@repo/database";
+
+const whereInput: Prisma.ArticleWhereInput = {
+  userId,
+  url,
+  isDeleted: false,
+};
+```
+
+#### DDDの原則との乖離
+
+- DDDではインフラ層内でもDB固有型を抽象化するのが理想
+- ORM変更時にインフラ層全体の修正が必要
+- Prisma固有の概念（`WhereInput`、`Include`等）がコードベースに散在
+
+厳密なDDDでは、リポジトリインターフェースに加えて、クエリ条件やソート条件も抽象化した型を定義します。
+
+#### 対応しない理由
+
+**インフラ層内に閉じた使用**: Prisma型の使用はインフラ層（`app/src/infrastructures/`）内に限定されており、Domain層やApplication層への漏洩はありません。
+
+- 過度な抽象化はかえって複雑性を増す
+- ORM変更の可能性が現実的に低い
+- Prisma型による型安全性の恩恵が大きい（タイポ検知、補完、リファクタリング支援）
+- 既存のリポジトリインターフェースがDomain層への境界として十分機能
+
+#### 対象ファイル
+
+- `app/src/infrastructures/*/prisma-*-query-repository.ts`
+- `app/src/infrastructures/*/prisma-*-command-repository.ts`
+
+#### リスク軽減策
+
+- リポジトリインターフェース（Domain層）にはPrisma型を含めない
+- Prisma型の使用をインフラ層のimplementationファイルに限定
+- ORM変更時はインフラ層のみ修正すればよい設計を維持
+
+### 008: 外部サービス連携のACL明示の省略
+
+#### 概要
+
+OGメタデータ取得、Google Books API連携に、明示的な腐敗防止層（Anti-Corruption Layer）パターンとしての専用インターフェースやアダプターが存在しません。
+
+```typescript
+// 現在の実装: インフラ層で外部API→ドメインモデル変換を直接実施
+export class GoogleBooksFetcherImpl implements IGoogleBookFetcher {
+  async fetch(isbn: string): Promise<GoogleBooksVolume | null> {
+    const response = await fetch(`https://www.googleapis.com/books/v1/...`);
+    const data = await response.json();
+    // 外部API形式からドメインモデルへの変換
+    return this.toGoogleBooksVolume(data);
+  }
+}
+```
+
+#### DDDの原則との乖離
+
+- DDDのACL（腐敗防止層）は、外部システムの概念がドメインを汚染するのを防ぐ専用層
+- 外部APIのDTO→ドメインモデル変換を明示的なTranslatorクラスとして分離すべき
+- 外部システムごとに専用のAdapter/Gatewayパターンを適用すべき
+
+厳密なDDDでは、外部システムとの連携に `ExternalSystemGateway` + `ExternalSystemTranslator` のような明示的な層を設けます。
+
+#### 対応しない理由
+
+**実質的にACLとして機能**: 現在の実装は形式的なACLパターンではないものの、実質的に同等の役割を果たしています。
+
+- `IGoogleBookFetcher` インターフェースがDomain層で定義済み
+- 外部データ→ドメインモデル変換はインフラ層の実装クラス内で完結
+- 外部API変更時の影響範囲はインフラ層に限定済み
+
+**形式的なACLレイヤー追加は過度な抽象化**:
+
+- 現在の外部サービス連携は2箇所（OGメタデータ、Google Books）のみ
+- 各サービスとの連携が単純（1リクエスト/1レスポンス）
+- 専用のGateway/Translatorクラス分離は複雑性に見合わない
+
+#### 対象ファイル
+
+- `packages/core/books/repositories/google-books-fetcher.ts`（インターフェース）
+- `app/src/infrastructures/books/google-books-fetcher-impl.ts`（実装）
+- `packages/core/articles/repositories/og-object-fetcher.ts`（インターフェース）
+- `app/src/infrastructures/articles/og-object-fetcher-impl.ts`（実装）
+
+#### リスク軽減策
+
+- Domain層でインターフェースを定義し、依存方向を維持
+- 外部API形式の変更はインフラ層の実装クラスのみで吸収
+- 外部サービス連携が複雑化した場合のみ、明示的なACL層を検討
