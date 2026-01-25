@@ -35,6 +35,7 @@ import {
 	UserId,
 } from "../../shared-kernel/entities/common-entity.js";
 import { createEntityWithErrorHandling } from "../../shared-kernel/services/entity-factory.js";
+import { isValidHttpUrl } from "../../shared-kernel/services/url-validation.js";
 import { ArticleCreatedEvent } from "../events/article-created-event.js";
 
 // Value objects
@@ -180,19 +181,7 @@ export const Url = z
 	.url({ message: "invalidFormat" })
 	.min(1, { message: "required" })
 	.max(1024, { message: "tooLong" })
-	.refine(
-		(url: string) => {
-			try {
-				const urlObject = new URL(url);
-				return (
-					urlObject.protocol === "http:" || urlObject.protocol === "https:"
-				);
-			} catch {
-				return false;
-			}
-		},
-		{ message: "invalidFormat" },
-	)
+	.refine(isValidHttpUrl, { message: "invalidFormat" })
 	.brand<"Url">();
 
 /**
@@ -287,6 +276,7 @@ export const makeOgDescription = (
 export const OgImageUrl = z
 	.string()
 	.max(1024, { message: "tooLong" })
+	.refine(isValidHttpUrl, { message: "invalidFormat" })
 	.nullable()
 	.optional()
 	.brand<"OgImageUrl">();

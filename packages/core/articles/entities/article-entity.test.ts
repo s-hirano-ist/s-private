@@ -11,6 +11,7 @@ import {
 	makeArticleTitle,
 	makeCategoryName,
 	makeOgDescription,
+	makeOgImageUrl,
 	makeOgTitle,
 	makeQuote,
 	makeUrl,
@@ -128,6 +129,49 @@ describe("articleEntity", () => {
 		test("should accept undefined", () => {
 			const desc = makeOgDescription(undefined);
 			expect(desc).toBeUndefined();
+		});
+	});
+
+	describe("makeOgImageUrl", () => {
+		test("should create valid HTTPS URL", () => {
+			const url = makeOgImageUrl("https://example.com/image.jpg");
+			expect(url).toBe("https://example.com/image.jpg");
+		});
+
+		test("should create valid HTTP URL", () => {
+			const url = makeOgImageUrl("http://example.com/image.jpg");
+			expect(url).toBe("http://example.com/image.jpg");
+		});
+
+		test("should accept null", () => {
+			const url = makeOgImageUrl(null);
+			expect(url).toBeNull();
+		});
+
+		test("should accept undefined", () => {
+			const url = makeOgImageUrl(undefined);
+			expect(url).toBeUndefined();
+		});
+
+		test("should throw error for non-HTTP protocol", () => {
+			expect(() => makeOgImageUrl("ftp://example.com/image.jpg")).toThrow(
+				ZodError,
+			);
+		});
+
+		test("should throw error for data URL", () => {
+			expect(() =>
+				makeOgImageUrl("data:image/png;base64,iVBORw0KGgo="),
+			).toThrow(ZodError);
+		});
+
+		test("should throw error for invalid URL format", () => {
+			expect(() => makeOgImageUrl("not-a-url")).toThrow(ZodError);
+		});
+
+		test("should throw error for too long URL", () => {
+			const longUrl = `https://example.com/${"a".repeat(1020)}`;
+			expect(() => makeOgImageUrl(longUrl)).toThrow(ZodError);
 		});
 	});
 

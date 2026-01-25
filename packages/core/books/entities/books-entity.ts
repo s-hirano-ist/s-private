@@ -36,6 +36,7 @@ import {
 } from "../../shared-kernel/entities/common-entity.js";
 import { Path } from "../../shared-kernel/entities/file-entity.js";
 import { createEntityWithErrorHandling } from "../../shared-kernel/services/entity-factory.js";
+import { isValidHttpUrl } from "../../shared-kernel/services/url-validation.js";
 import { BookCreatedEvent } from "../events/book-created-event.js";
 
 // Value objects
@@ -245,6 +246,7 @@ export const makeGoogleDescription = (
 export const GoogleImgSrc = z
 	.string()
 	.max(1024, { message: "tooLong" })
+	.refine(isValidHttpUrl, { message: "invalidFormat" })
 	.nullable()
 	.brand<"GoogleImgSrc">();
 
@@ -273,6 +275,7 @@ export const makeGoogleImgSrc = (v: string | null | undefined): GoogleImgSrc =>
 export const GoogleHref = z
 	.string()
 	.max(1024, { message: "tooLong" })
+	.refine(isValidHttpUrl, { message: "invalidFormat" })
 	.nullable()
 	.brand<"GoogleHref">();
 

@@ -145,9 +145,31 @@ describe("booksEntity", () => {
 			expect(googleImgSrc).toBe(imgSrc);
 		});
 
+		test("makeGoogleImgSrc should create GoogleImgSrc with HTTP URL", () => {
+			const imgSrc = "http://books.google.com/books/content/images/cover.jpg";
+			const googleImgSrc = makeGoogleImgSrc(imgSrc);
+			expect(googleImgSrc).toBe(imgSrc);
+		});
+
 		test("makeGoogleImgSrc should handle null value", () => {
 			const googleImgSrc = makeGoogleImgSrc(null);
 			expect(googleImgSrc).toBeNull();
+		});
+
+		test("makeGoogleImgSrc should throw error for non-HTTP protocol", () => {
+			expect(() => makeGoogleImgSrc("ftp://example.com/image.jpg")).toThrow(
+				ZodError,
+			);
+		});
+
+		test("makeGoogleImgSrc should throw error for data URL", () => {
+			expect(() =>
+				makeGoogleImgSrc("data:image/png;base64,iVBORw0KGgo="),
+			).toThrow(ZodError);
+		});
+
+		test("makeGoogleImgSrc should throw error for invalid URL format", () => {
+			expect(() => makeGoogleImgSrc("not-a-url")).toThrow(ZodError);
 		});
 
 		test("makeGoogleHref should create GoogleHref", () => {
@@ -156,9 +178,29 @@ describe("booksEntity", () => {
 			expect(googleHref).toBe(href);
 		});
 
+		test("makeGoogleHref should create GoogleHref with HTTP URL", () => {
+			const href = "http://books.google.com/books?id=example";
+			const googleHref = makeGoogleHref(href);
+			expect(googleHref).toBe(href);
+		});
+
 		test("makeGoogleHref should handle null value", () => {
 			const googleHref = makeGoogleHref(null);
 			expect(googleHref).toBeNull();
+		});
+
+		test("makeGoogleHref should throw error for non-HTTP protocol", () => {
+			expect(() => makeGoogleHref("ftp://books.google.com/books")).toThrow(
+				ZodError,
+			);
+		});
+
+		test("makeGoogleHref should throw error for javascript URL", () => {
+			expect(() => makeGoogleHref("javascript:alert('XSS')")).toThrow(ZodError);
+		});
+
+		test("makeGoogleHref should throw error for invalid URL format", () => {
+			expect(() => makeGoogleHref("not-a-url")).toThrow(ZodError);
 		});
 
 		test("makeBookMarkdown should create BookMarkdown", () => {
