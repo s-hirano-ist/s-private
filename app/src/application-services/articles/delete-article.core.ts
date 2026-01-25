@@ -12,15 +12,10 @@ import { ArticleDeletedEvent } from "@s-hirano-ist/s-core/articles/events/articl
 import {
 	makeId,
 	makeUnexportedStatus,
-} from "@s-hirano-ist/s-core/common/entities/common-entity";
-import { revalidateTag } from "next/cache";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
-import {
-	buildContentCacheTag,
-	buildCountCacheTag,
-} from "@/common/utils/cache-tag-builder";
 import type { DeleteArticleDeps } from "./delete-article.deps";
 
 /**
@@ -46,6 +41,7 @@ export async function deleteArticleCore(
 		const userId = await getSelfId();
 
 		const status = makeUnexportedStatus();
+		// Cache invalidation is handled in repository
 		const { title } = await commandRepository.deleteById(
 			makeId(id),
 			userId,
@@ -60,9 +56,6 @@ export async function deleteArticleCore(
 				caller: "deleteArticle",
 			}),
 		);
-
-		revalidateTag(buildContentCacheTag("articles", status, userId));
-		revalidateTag(buildCountCacheTag("articles", status, userId));
 
 		return { success: true, message: "deleted" };
 	} catch (error) {

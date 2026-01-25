@@ -1,13 +1,13 @@
 import {
+	makeMarkdown,
+	makeNoteTitle,
+} from "@s-hirano-ist/s-core/notes/entities/note-entity";
+import {
 	makeCreatedAt,
 	makeExportedAt,
 	makeId,
 	makeUserId,
-} from "@s-hirano-ist/s-core/common/entities/common-entity";
-import {
-	makeMarkdown,
-	makeNoteTitle,
-} from "@s-hirano-ist/s-core/notes/entities/note-entity";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Suspense } from "react";
 import type { Props as ViewerBodyProps } from "./viewer-body";

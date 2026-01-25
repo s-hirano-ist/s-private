@@ -7,8 +7,13 @@ import type {
 	Id,
 	Status,
 	UserId,
-} from "@s-hirano-ist/s-core/common/entities/common-entity";
-import { uuidv7 } from "@s-hirano-ist/s-core/common/services/id-generator";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { uuidv7 } from "@s-hirano-ist/s-core/shared-kernel/services/id-generator";
+import { revalidateTag } from "next/cache";
+import {
+	buildContentCacheTag,
+	buildCountCacheTag,
+} from "@/infrastructures/common/cache/cache-tag-builder";
 import prisma from "@/prisma";
 
 async function create(data: UnexportedArticle): Promise<void> {
@@ -39,6 +44,10 @@ async function create(data: UnexportedArticle): Promise<void> {
 			createdAt: data.createdAt,
 		},
 	});
+
+	revalidateTag(buildContentCacheTag("articles", data.status, data.userId));
+	revalidateTag(buildCountCacheTag("articles", data.status, data.userId));
+	revalidateTag("categories");
 }
 
 async function deleteById(
@@ -50,6 +59,10 @@ async function deleteById(
 		where: { id, userId, status },
 		select: { title: true },
 	});
+
+	revalidateTag(buildContentCacheTag("articles", status, userId));
+	revalidateTag(buildCountCacheTag("articles", status, userId));
+
 	return { title: data.title };
 }
 

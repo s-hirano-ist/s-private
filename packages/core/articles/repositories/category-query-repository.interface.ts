@@ -1,4 +1,4 @@
-import type { UserId } from "../../common/entities/common-entity.js";
+import type { UserId } from "../../shared-kernel/entities/common-entity.js";
 import type { CategoryFindManyParams } from "../types/query-params.js";
 
 /**

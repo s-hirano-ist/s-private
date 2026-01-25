@@ -1,11 +1,11 @@
 import { describe, expect, test, vi } from "vitest";
 import { ZodError } from "zod";
-import { makeUserId } from "../../common/entities/common-entity";
-import * as entityFactory from "../../common/services/entity-factory";
 import {
 	InvalidFormatError,
 	UnexpectedError,
 } from "../../errors/error-classes";
+import { makeUserId } from "../../shared-kernel/entities/common-entity";
+import * as entityFactory from "../../shared-kernel/services/entity-factory";
 import {
 	articleEntity,
 	makeArticleTitle,

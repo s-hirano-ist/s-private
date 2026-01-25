@@ -8,8 +8,8 @@
  * @module
  */
 
-import type { IStorageService } from "@s-hirano-ist/s-core/common/services/storage-service.interface";
 import type { IImagesCommandRepository } from "@s-hirano-ist/s-core/images/repositories/images-command-repository.interface";
+import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/services/storage-service.interface";
 import { minioStorageService } from "@/infrastructures/common/services/minio-storage-service";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import {

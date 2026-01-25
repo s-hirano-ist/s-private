@@ -1,8 +1,8 @@
-import { makeId } from "@s-hirano-ist/s-core/common/entities/common-entity";
 import {
 	makePath,
 	makePixel,
 } from "@s-hirano-ist/s-core/images/entities/image-entity";
+import { makeId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { minioStorageService } from "@/infrastructures/common/services/minio-storage-service";
 import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";

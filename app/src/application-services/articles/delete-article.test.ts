@@ -3,14 +3,9 @@ import {
 	makeId,
 	makeUnexportedStatus,
 	makeUserId,
-} from "@s-hirano-ist/s-core/common/entities/common-entity";
-import { revalidateTag } from "next/cache";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
-import {
-	buildContentCacheTag,
-	buildCountCacheTag,
-} from "@/common/utils/cache-tag-builder";
 import { deleteArticle } from "./delete-article";
 import { deleteArticleCore } from "./delete-article.core";
 import type { DeleteArticleDeps } from "./delete-article.deps";
@@ -74,13 +69,6 @@ describe("deleteArticleCore", () => {
 			makeUnexportedStatus(),
 		);
 		expect(mockEventDispatcher.dispatch).toHaveBeenCalled();
-		const status = makeUnexportedStatus();
-		expect(revalidateTag).toHaveBeenCalledWith(
-			buildContentCacheTag("articles", status, "test-user-id"),
-		);
-		expect(revalidateTag).toHaveBeenCalledWith(
-			buildCountCacheTag("articles", status, "test-user-id"),
-		);
 	});
 
 	test("should return error when article not found", async () => {

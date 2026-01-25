@@ -1,3 +1,30 @@
+/**
+ * Book Aggregate Root and related Value Objects.
+ *
+ * @remarks
+ * This module defines the Book aggregate root following DDD principles.
+ * Book is the sole entry point for all book-related operations within
+ * the Books bounded context.
+ *
+ * **Aggregate Root**: {@link bookEntity}
+ *
+ * **Invariants**:
+ * - ISBN must be unique per user (enforced by {@link BooksDomainService})
+ * - Status transitions: UNEXPORTED → LAST_UPDATED → EXPORTED
+ *
+ * **Value Objects defined here**:
+ * - {@link ISBN} - Book ISBN identifier (ISBN-10 or ISBN-13)
+ * - {@link BookTitle} - Book title (1-256 chars)
+ * - {@link GoogleTitle}, {@link GoogleSubtitle}, {@link GoogleAuthors},
+ *   {@link GoogleDescription}, {@link GoogleImgSrc}, {@link GoogleHref} - Google Books API metadata
+ * - {@link BookMarkdown} - User notes/review content
+ * - {@link BookImagePath} - User-uploaded cover image path
+ *
+ * @see {@link BooksDomainService} for domain business rules
+ * @see docs/domain-model.md for aggregate boundary documentation
+ * @module
+ */
+
 import { z } from "zod";
 import {
 	CreatedAt,
@@ -7,8 +34,8 @@ import {
 	makeId,
 	UnexportedStatus,
 	UserId,
-} from "../../common/entities/common-entity.js";
-import { createEntityWithErrorHandling } from "../../common/services/entity-factory.js";
+} from "../../shared-kernel/entities/common-entity.js";
+import { createEntityWithErrorHandling } from "../../shared-kernel/services/entity-factory.js";
 import { BookCreatedEvent } from "../events/book-created-event.js";
 
 // Value objects
@@ -414,7 +441,13 @@ export type BookWithEvent = readonly [UnexportedBook, BookCreatedEvent];
 /**
  * Factory object for Book domain entity operations.
  *
+ * **This is the Aggregate Root** for the Books bounded context.
+ *
  * @remarks
+ * As the aggregate root, Book is the only entry point for creating and
+ * managing book entities. All book-related operations must go through
+ * this factory to ensure domain invariants are maintained.
+ *
  * Provides immutable entity creation following DDD patterns.
  * All returned entities are frozen using Object.freeze().
  * Returns a tuple of [entity, event] for domain event dispatching.
@@ -436,6 +469,7 @@ export type BookWithEvent = readonly [UnexportedBook, BookCreatedEvent];
  *
  * @see {@link CreateBookArgs} for creation parameters
  * @see {@link BookWithEvent} for return type
+ * @see {@link BooksDomainService} for invariant validation (duplicate ISBN check)
  */
 export const bookEntity = {
 	/**

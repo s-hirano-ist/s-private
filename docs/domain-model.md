@@ -220,6 +220,12 @@ graph TB
 
 全集約共通: ステータス遷移は UNEXPORTED → LAST_UPDATED → EXPORTED
 
+> **コードリファレンス**: 各集約ルートはコード内のJSDocでも明示的に文書化されています。
+> - `packages/core/articles/entities/article-entity.ts` - `articleEntity`
+> - `packages/core/books/entities/books-entity.ts` - `bookEntity`
+> - `packages/core/notes/entities/note-entity.ts` - `noteEntity`
+> - `packages/core/images/entities/image-entity.ts` - `imageEntity`
+
 ### 設計上の考慮事項
 
 - **Categoryの位置付け**: Articleはドメイン層で`categoryName`（値オブジェクト）を保持し、インフラ層で`categoryId`（FK）として永続化。`connectOrCreate`パターンで管理
@@ -348,3 +354,29 @@ graph TB
 
 - バッチサービス内に状態遷移ロジックをコメントで明記
 - 状態遷移を行うメソッドをバッチサービスに集約し、分散を防ぐ
+
+### 002: ドメインイベントサブスクライバーの省略
+
+#### 概要
+
+ドメインイベントの発行機構は実装されているが、購読（サブスクライバー）側の本格的な実装（EventBus、イベントハンドラー等）は省略しています。
+
+#### DDDの原則との乖離
+
+- イベント駆動アーキテクチャの活用が限定的
+- イベントサブスクライバーの構造化がない
+- イベントの永続化がない
+
+#### 対応しない理由
+
+**現状の規模ではオーバースペック**: 現在のシステム規模では、本格的なイベントバスやサブスクライバー機構は過度な抽象化となります。
+
+将来的にシステムが拡大し、以下のようなユースケースが必要になった時点で検討:
+- 通知システム（コンテンツ作成時にPushover通知）
+- 検索インデックス（コンテンツ更新時にインデックス再構築）
+- キャッシュ無効化（イベントベースのキャッシュ制御）
+
+#### リスク軽減策
+
+- 現在のイベント発行機構（`[Entity, Event]` タプル返却、`eventDispatcher.dispatch`）は維持
+- 必要性が明確になった時点で段階的に実装を追加

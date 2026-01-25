@@ -2,7 +2,7 @@ import {
 	makeExportedStatus,
 	makeUnexportedStatus,
 	makeUserId,
-} from "@s-hirano-ist/s-core/common/entities/common-entity";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { forbidden } from "next/navigation";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasViewerAdminPermission } from "@/common/auth/session";
@@ -19,11 +19,11 @@ vi.mock("@/common/auth/session");
 vi.mock("@/common/error/error-wrapper");
 vi.mock("@/common/utils/cache-utils");
 vi.mock(
-	"@s-hirano-ist/s-core/common/entities/common-entity",
+	"@s-hirano-ist/s-core/shared-kernel/entities/common-entity",
 	async (importOriginal) => {
 		const actual =
 			await importOriginal<
-				typeof import("@s-hirano-ist/s-core/common/entities/common-entity")
+				typeof import("@s-hirano-ist/s-core/shared-kernel/entities/common-entity")
 			>();
 		return {
 			...actual,

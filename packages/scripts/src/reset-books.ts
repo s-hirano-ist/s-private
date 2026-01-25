@@ -1,6 +1,9 @@
 #!/usr/bin/env node
-import { BooksBatchDomainService } from "@s-hirano-ist/s-core/books";
-import { makeUserId, type UserId } from "@s-hirano-ist/s-core/common";
+import { BooksBatchDomainService } from "@s-hirano-ist/s-core/books/services/books-batch-domain-service";
+import {
+	makeUserId,
+	type UserId,
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
 import { createBooksCommandRepository } from "./infrastructures/books-command-repository.js";
 

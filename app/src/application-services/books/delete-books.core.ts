@@ -12,15 +12,10 @@ import { BookDeletedEvent } from "@s-hirano-ist/s-core/books/events/book-deleted
 import {
 	makeId,
 	makeUnexportedStatus,
-} from "@s-hirano-ist/s-core/common/entities/common-entity";
-import { revalidateTag } from "next/cache";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
-import {
-	buildContentCacheTag,
-	buildCountCacheTag,
-} from "@/common/utils/cache-tag-builder";
 import type { DeleteBooksDeps } from "./delete-books.deps";
 
 /**
@@ -46,6 +41,7 @@ export async function deleteBooksCore(
 		const userId = await getSelfId();
 
 		const status = makeUnexportedStatus();
+		// Cache invalidation is handled in repository
 		const { title } = await commandRepository.deleteById(
 			makeId(id),
 			userId,
@@ -60,9 +56,6 @@ export async function deleteBooksCore(
 				caller: "deleteBooks",
 			}),
 		);
-
-		revalidateTag(buildContentCacheTag("books", status, userId));
-		revalidateTag(buildCountCacheTag("books", status, userId));
 
 		return { success: true, message: "deleted" };
 	} catch (error) {

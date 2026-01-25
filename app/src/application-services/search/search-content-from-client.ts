@@ -3,7 +3,7 @@ import "server-only";
 import type {
 	SearchQuery,
 	UnifiedSearchResults,
-} from "@s-hirano-ist/s-core/common/types/search-types";
+} from "@s-hirano-ist/s-core/shared-kernel/types/search-types";
 import { forbidden } from "next/navigation";
 import { getSelfId, hasViewerAdminPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";

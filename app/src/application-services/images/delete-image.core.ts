@@ -8,16 +8,11 @@
  */
 
 import "server-only";
-import { makeUnexportedStatus } from "@s-hirano-ist/s-core/common/entities/common-entity";
 import { ImageDeletedEvent } from "@s-hirano-ist/s-core/images/events/image-deleted-event";
-import { revalidateTag } from "next/cache";
+import { makeUnexportedStatus } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
-import {
-	buildContentCacheTag,
-	buildCountCacheTag,
-} from "@/common/utils/cache-tag-builder";
 import type { DeleteImageDeps } from "./delete-image.deps";
 
 /**
@@ -43,6 +38,7 @@ export async function deleteImageCore(
 		const userId = await getSelfId();
 
 		const status = makeUnexportedStatus();
+		// Cache invalidation is handled in repository
 		const { path } = await commandRepository.deleteById(id, userId, status);
 
 		// Dispatch domain event
@@ -53,9 +49,6 @@ export async function deleteImageCore(
 				caller: "deleteImage",
 			}),
 		);
-
-		revalidateTag(buildContentCacheTag("images", status, userId));
-		revalidateTag(buildCountCacheTag("images", status, userId));
 
 		return { success: true, message: "deleted" };
 	} catch (error) {

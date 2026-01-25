@@ -8,7 +8,7 @@
  * @module
  */
 
-import type { IStorageService } from "@s-hirano-ist/s-core/common/services/storage-service.interface";
+import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/services/storage-service.interface";
 import { env } from "@/env";
 import { minioClient } from "@/minio";
 

@@ -1,12 +1,4 @@
 import {
-	makeCreatedAt,
-	makeExportedAt,
-	makeId,
-	makeUserId,
-	type Status,
-	type UserId,
-} from "@s-hirano-ist/s-core/common/entities/common-entity";
-import {
 	type ExportedNote,
 	makeMarkdown,
 	makeNoteTitle,
@@ -17,6 +9,14 @@ import {
 } from "@s-hirano-ist/s-core/notes/entities/note-entity";
 import type { INotesQueryRepository } from "@s-hirano-ist/s-core/notes/repositories/notes-query-repository.interface";
 import type { NotesFindManyParams } from "@s-hirano-ist/s-core/notes/types/query-params";
+import {
+	makeCreatedAt,
+	makeExportedAt,
+	makeId,
+	makeUserId,
+	type Status,
+	type UserId,
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import prisma from "@/prisma";
 
 async function findByTitle(

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import type { IBooksQueryRepository } from "../../books/repositories/books-query-repository.interface";
-import { makeUserId } from "../../common/entities/common-entity";
 import { DuplicateError } from "../../errors/error-classes";
+import { makeUserId } from "../../shared-kernel/entities/common-entity";
 import { makeISBN } from "../entities/books-entity";
 import { BooksDomainService } from "../services/books-domain-service";
 

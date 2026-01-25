@@ -7,20 +7,15 @@ import {
 } from "@s-hirano-ist/s-core/articles/entities/article-entity";
 import { ArticleCreatedEvent } from "@s-hirano-ist/s-core/articles/events/article-created-event";
 import type { IArticlesCommandRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-command-repository.interface";
+import { DuplicateError } from "@s-hirano-ist/s-core/errors/error-classes";
 import {
 	makeCreatedAt,
 	makeId,
 	makeUnexportedStatus,
 	makeUserId,
-} from "@s-hirano-ist/s-core/common/entities/common-entity";
-import { revalidateTag } from "next/cache";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
-import { DuplicateError } from "@/common/error/error-classes";
-import {
-	buildContentCacheTag,
-	buildCountCacheTag,
-} from "@/common/utils/cache-tag-builder";
 import { addArticle } from "./add-article";
 import { addArticleCore } from "./add-article.core";
 import type { AddArticleDeps } from "./add-article.deps";
@@ -154,14 +149,6 @@ describe("addArticleCore", () => {
 		expect(articleEntity.create).toHaveBeenCalled();
 		expect(mockCommandRepository.create).toHaveBeenCalledWith(mockArticle);
 		expect(mockEventDispatcher.dispatch).toHaveBeenCalledWith(mockEvent);
-
-		const status = makeUnexportedStatus();
-		expect(revalidateTag).toHaveBeenCalledWith(
-			buildContentCacheTag("articles", status, "user-123"),
-		);
-		expect(revalidateTag).toHaveBeenCalledWith(
-			buildCountCacheTag("articles", status, "user-123"),
-		);
 
 		expect(result.success).toBe(true);
 		expect(result.message).toBe("inserted");

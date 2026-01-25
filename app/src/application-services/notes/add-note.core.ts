@@ -9,14 +9,9 @@
 
 import "server-only";
 import { noteEntity } from "@s-hirano-ist/s-core/notes/entities/note-entity";
-import { revalidateTag } from "next/cache";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
-import {
-	buildContentCacheTag,
-	buildCountCacheTag,
-} from "@/common/utils/cache-tag-builder";
 import type { AddNoteDeps } from "./add-note.deps";
 import { parseAddNoteFormData } from "./helpers/form-data-parser";
 
@@ -55,15 +50,11 @@ export async function addNoteCore(
 			caller: "addNote",
 		});
 
-		// Persist
+		// Persist (cache invalidation is handled in repository)
 		await commandRepository.create(note);
 
 		// Dispatch domain event
 		await eventDispatcher.dispatch(event);
-
-		// Cache invalidation
-		revalidateTag(buildContentCacheTag("notes", note.status, userId));
-		revalidateTag(buildCountCacheTag("notes", note.status, userId));
 
 		return { success: true, message: "inserted" };
 	} catch (error) {

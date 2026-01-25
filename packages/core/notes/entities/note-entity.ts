@@ -1,3 +1,26 @@
+/**
+ * Note Aggregate Root and related Value Objects.
+ *
+ * @remarks
+ * This module defines the Note aggregate root following DDD principles.
+ * Note is the sole entry point for all note-related operations within
+ * the Notes bounded context.
+ *
+ * **Aggregate Root**: {@link noteEntity}
+ *
+ * **Invariants**:
+ * - Title must be unique per user (enforced by {@link NotesDomainService})
+ * - Status transitions: UNEXPORTED → LAST_UPDATED → EXPORTED
+ *
+ * **Value Objects defined here**:
+ * - {@link NoteTitle} - Note title (1-64 chars)
+ * - {@link Markdown} - Markdown content (no max length)
+ *
+ * @see {@link NotesDomainService} for domain business rules
+ * @see docs/domain-model.md for aggregate boundary documentation
+ * @module
+ */
+
 import { z } from "zod";
 import {
 	CreatedAt,
@@ -7,8 +30,8 @@ import {
 	makeId,
 	UnexportedStatus,
 	UserId,
-} from "../../common/entities/common-entity.js";
-import { createEntityWithErrorHandling } from "../../common/services/entity-factory.js";
+} from "../../shared-kernel/entities/common-entity.js";
+import { createEntityWithErrorHandling } from "../../shared-kernel/services/entity-factory.js";
 import { NoteCreatedEvent } from "../events/note-created-event.js";
 
 // Value objects
@@ -178,7 +201,13 @@ export type NoteWithEvent = readonly [UnexportedNote, NoteCreatedEvent];
 /**
  * Factory object for Note domain entity operations.
  *
+ * **This is the Aggregate Root** for the Notes bounded context.
+ *
  * @remarks
+ * As the aggregate root, Note is the only entry point for creating and
+ * managing note entities. All note-related operations must go through
+ * this factory to ensure domain invariants are maintained.
+ *
  * Provides immutable entity creation following DDD patterns.
  * All returned entities are frozen using Object.freeze().
  * Returns a tuple of [entity, event] for domain event dispatching.
@@ -200,6 +229,7 @@ export type NoteWithEvent = readonly [UnexportedNote, NoteCreatedEvent];
  *
  * @see {@link CreateNoteArgs} for creation parameters
  * @see {@link NoteWithEvent} for return type
+ * @see {@link NotesDomainService} for invariant validation (duplicate title check)
  */
 export const noteEntity = {
 	/**

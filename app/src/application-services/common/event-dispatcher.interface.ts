@@ -8,7 +8,7 @@
  * @module
  */
 
-import type { DomainEvent } from "@s-hirano-ist/s-core/common/events/domain-event.interface";
+import type { DomainEvent } from "@s-hirano-ist/s-core/shared-kernel/events/domain-event.interface";
 
 /**
  * Event dispatcher interface for dependency injection.

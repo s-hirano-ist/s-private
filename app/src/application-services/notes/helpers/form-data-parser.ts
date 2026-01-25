@@ -4,11 +4,11 @@
  * @module
  */
 
-import type { UserId } from "@s-hirano-ist/s-core/common/entities/common-entity";
 import {
 	makeMarkdown,
 	makeNoteTitle,
 } from "@s-hirano-ist/s-core/notes/entities/note-entity";
+import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { getFormDataString } from "@/common/utils/form-data-utils";
 
 /**

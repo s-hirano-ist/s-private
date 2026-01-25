@@ -10,19 +10,20 @@
 
 "use server";
 import "server-only";
-import { SystemErrorEvent } from "@s-hirano-ist/s-core/common/events/system-error-event";
-import { SystemWarningEvent } from "@s-hirano-ist/s-core/common/events/system-warning-event";
-import { Prisma } from "@s-hirano-ist/s-database";
-import { NotificationError } from "@s-hirano-ist/s-notification";
-import { AuthError } from "next-auth";
-import type { ServerAction } from "@/common/types";
-import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import {
 	DuplicateError,
 	FileNotAllowedError,
 	InvalidFormatError,
 	UnexpectedError,
-} from "./error-classes";
+} from "@s-hirano-ist/s-core/errors/error-classes";
+import { SystemErrorEvent } from "@s-hirano-ist/s-core/shared-kernel/events/system-error-event";
+import { SystemWarningEvent } from "@s-hirano-ist/s-core/shared-kernel/events/system-warning-event";
+import { Prisma } from "@s-hirano-ist/s-database";
+import { NotificationError } from "@s-hirano-ist/s-notification";
+import * as Minio from "minio";
+import { AuthError } from "next-auth";
+import type { ServerAction } from "@/common/types";
+import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 
 /**
  * Converts FormData to a plain record for error responses.
@@ -74,7 +75,18 @@ export async function wrapServerSideErrorForClient(
 		);
 		return { success: false, message: error.message };
 	}
-	// FIXME: add error handling for MinIO errors
+	// MinIO S3 server errors
+	if (error instanceof Minio.S3Error) {
+		await eventDispatcher.dispatch(
+			new SystemErrorEvent({
+				message: `MinIO S3 Error: ${error.code} - ${error.message}`,
+				status: 500,
+				caller: "wrapServerSideError",
+				shouldNotify: true,
+			}),
+		);
+		return { success: false, message: "storageError" };
+	}
 	if (
 		error instanceof UnexpectedError ||
 		error instanceof InvalidFormatError ||

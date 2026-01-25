@@ -1,4 +1,4 @@
-import { BaseDomainEvent } from "../../common/events/base-domain-event.js";
+import { BaseDomainEvent } from "../../shared-kernel/events/base-domain-event.js";
 
 /**
  * Domain event emitted when an image is deleted.

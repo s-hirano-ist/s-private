@@ -1,16 +1,10 @@
 import {
 	makeId,
-	makeUnexportedStatus,
 	makeUserId,
-} from "@s-hirano-ist/s-core/common/entities/common-entity";
-import { revalidateTag } from "next/cache";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { describe, expect, test, vi } from "vitest";
 import { deleteNote } from "@/application-services/notes/delete-note";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
-import {
-	buildContentCacheTag,
-	buildCountCacheTag,
-} from "@/common/utils/cache-tag-builder";
 import { notesCommandRepository } from "@/infrastructures/notes/repositories/notes-command-repository";
 
 vi.mock(
@@ -61,13 +55,6 @@ describe("deleteNote", () => {
 			makeId(testId),
 			makeUserId("test-user-id"),
 			"UNEXPORTED",
-		);
-		const status = makeUnexportedStatus();
-		expect(revalidateTag).toHaveBeenCalledWith(
-			buildContentCacheTag("notes", status, "test-user-id"),
-		);
-		expect(revalidateTag).toHaveBeenCalledWith(
-			buildCountCacheTag("notes", status, "test-user-id"),
 		);
 	});
 

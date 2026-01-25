@@ -1,6 +1,6 @@
 import "server-only";
 
-import { makeExportedStatus } from "@s-hirano-ist/s-core/common/entities/common-entity";
+import { makeExportedStatus } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { getImagesCount } from "@/application-services/images/get-images";
 import { ImagesCounter } from "@/components/images/server/images-counter";
 import type { CounterLoaderProps } from "@/loaders/types";

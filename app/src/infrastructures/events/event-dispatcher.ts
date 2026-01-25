@@ -11,7 +11,7 @@
 import type {
 	DomainEvent,
 	DomainEventHandler,
-} from "@s-hirano-ist/s-core/common/events/domain-event.interface";
+} from "@s-hirano-ist/s-core/shared-kernel/events/domain-event.interface";
 
 /**
  * Central event dispatcher for domain events.

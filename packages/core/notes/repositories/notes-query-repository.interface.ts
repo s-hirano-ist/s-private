@@ -1,4 +1,7 @@
-import type { Status, UserId } from "../../common/entities/common-entity.js";
+import type {
+	Status,
+	UserId,
+} from "../../shared-kernel/entities/common-entity.js";
 import type {
 	ExportedNote,
 	NoteListItemDTO,

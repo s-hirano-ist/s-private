@@ -1,4 +1,4 @@
-import type { Status } from "../../common/entities/common-entity.js";
+import type { Status } from "../../shared-kernel/entities/common-entity.js";
 import type { UnexportedImage } from "../entities/image-entity.js";
 
 /**
