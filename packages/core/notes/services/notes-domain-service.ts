@@ -4,27 +4,6 @@ import type { NoteTitle } from "../entities/note-entity.js";
 import type { INotesQueryRepository } from "../repositories/notes-query-repository.interface.js";
 
 /**
- * Checks if a note with the given title already exists.
- *
- * @param notesQueryRepository - The query repository to check against
- * @param title - The title to check for duplicates
- * @param userId - The user ID for tenant isolation
- * @throws {DuplicateError} When a note with this title already exists
- *
- * @internal
- */
-async function ensureNoDuplicateNote(
-	notesQueryRepository: INotesQueryRepository,
-	title: NoteTitle,
-	userId: UserId,
-): Promise<void> {
-	const exists = await notesQueryRepository.findByTitle(title, userId);
-	if (exists) {
-		throw new DuplicateError();
-	}
-}
-
-/**
  * Domain service for Note business logic.
  *
  * @remarks
@@ -67,7 +46,13 @@ export class NotesDomainService {
 	 * @remarks
 	 * This is a domain invariant check that should be called before creating notes.
 	 */
-	public async ensureNoDuplicate(title: NoteTitle, userId: UserId) {
-		return ensureNoDuplicateNote(this.notesQueryRepository, title, userId);
+	public async ensureNoDuplicate(
+		title: NoteTitle,
+		userId: UserId,
+	): Promise<void> {
+		const exists = await this.notesQueryRepository.findByTitle(title, userId);
+		if (exists) {
+			throw new DuplicateError();
+		}
 	}
 }

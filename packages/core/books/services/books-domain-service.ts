@@ -4,25 +4,6 @@ import type { ISBN } from "../entities/book-entity.js";
 import type { IBooksQueryRepository } from "../repositories/books-query-repository.interface.js";
 
 /**
- * Checks if a book with the given ISBN already exists.
- *
- * @param booksQueryRepository - The query repository to check against
- * @param ISBN - The ISBN to check for duplicates
- * @param userId - The user ID for tenant isolation
- * @throws {DuplicateError} When a book with this ISBN already exists
- *
- * @internal
- */
-async function ensureNoDuplicateBook(
-	booksQueryRepository: IBooksQueryRepository,
-	isbn: ISBN,
-	userId: UserId,
-): Promise<void> {
-	const exists = await booksQueryRepository.findByISBN(isbn, userId);
-	if (exists !== null) throw new DuplicateError();
-}
-
-/**
  * Domain service for Book business logic.
  *
  * @remarks
@@ -65,7 +46,10 @@ export class BooksDomainService {
 	 * @remarks
 	 * This is a domain invariant check that should be called before creating books.
 	 */
-	public async ensureNoDuplicate(isbn: ISBN, userId: UserId) {
-		return ensureNoDuplicateBook(this.booksQueryRepository, isbn, userId);
+	public async ensureNoDuplicate(isbn: ISBN, userId: UserId): Promise<void> {
+		const exists = await this.booksQueryRepository.findByISBN(isbn, userId);
+		if (exists !== null) {
+			throw new DuplicateError();
+		}
 	}
 }

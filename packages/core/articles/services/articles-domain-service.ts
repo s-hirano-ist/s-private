@@ -4,27 +4,6 @@ import type { Url } from "../entities/article-entity.js";
 import type { IArticlesQueryRepository } from "../repositories/articles-query-repository.interface.js";
 
 /**
- * Checks if an article with the given URL already exists.
- *
- * @param articlesQueryRepository - The query repository to check against
- * @param url - The URL to check for duplicates
- * @param userId - The user ID for tenant isolation
- * @throws {DuplicateError} When an article with this URL already exists
- *
- * @internal
- */
-async function ensureNoDuplicateArticle(
-	articlesQueryRepository: IArticlesQueryRepository,
-	url: Url,
-	userId: UserId,
-): Promise<void> {
-	const exists = await articlesQueryRepository.findByUrl(url, userId);
-	if (exists !== null) {
-		throw new DuplicateError();
-	}
-}
-
-/**
  * Domain service for Article business logic.
  *
  * @remarks
@@ -69,7 +48,10 @@ export class ArticlesDomainService {
 	 * @remarks
 	 * This is a domain invariant check that should be called before creating articles.
 	 */
-	public async ensureNoDuplicate(url: Url, userId: UserId) {
-		return ensureNoDuplicateArticle(this.articlesQueryRepository, url, userId);
+	public async ensureNoDuplicate(url: Url, userId: UserId): Promise<void> {
+		const exists = await this.articlesQueryRepository.findByUrl(url, userId);
+		if (exists !== null) {
+			throw new DuplicateError();
+		}
 	}
 }
