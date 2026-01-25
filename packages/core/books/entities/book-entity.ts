@@ -29,6 +29,7 @@ import {
 	CreatedAt,
 	ExportedStatus,
 	Id,
+	LastUpdatedStatus,
 	makeCreatedAt,
 	makeId,
 	UnexportedStatus,
@@ -358,6 +359,26 @@ export const UnexportedBook = Base.extend({ status: UnexportedStatus });
  * Immutable entity representing a book pending export.
  */
 export type UnexportedBook = Readonly<z.infer<typeof UnexportedBook>>;
+
+/**
+ * Zod schema for a last-updated book.
+ *
+ * @remarks
+ * Represents a book that has been modified since last export.
+ * This is an intermediate state between UNEXPORTED and EXPORTED.
+ *
+ * @see {@link UnexportedBook} for the initial state
+ * @see {@link ExportedBook} for the published state
+ */
+export const LastUpdatedBook = Base.extend({ status: LastUpdatedStatus });
+
+/**
+ * Type for a last-updated book entity.
+ *
+ * @remarks
+ * Immutable entity representing a book that has been modified.
+ */
+export type LastUpdatedBook = Readonly<z.infer<typeof LastUpdatedBook>>;
 
 /**
  * Zod schema for an exported book.

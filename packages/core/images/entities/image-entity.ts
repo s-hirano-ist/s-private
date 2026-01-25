@@ -28,6 +28,7 @@ import {
 	CreatedAt,
 	ExportedStatus,
 	Id,
+	LastUpdatedStatus,
 	makeCreatedAt,
 	makeId,
 	UnexportedStatus,
@@ -108,6 +109,26 @@ export const UnexportedImage = Base.extend({ status: UnexportedStatus });
  * Immutable entity representing an image pending export.
  */
 export type UnexportedImage = Readonly<z.infer<typeof UnexportedImage>>;
+
+/**
+ * Zod schema for a last-updated image.
+ *
+ * @remarks
+ * Represents an image that has been modified since last export.
+ * This is an intermediate state between UNEXPORTED and EXPORTED.
+ *
+ * @see {@link UnexportedImage} for the initial state
+ * @see {@link ExportedImage} for the published state
+ */
+export const LastUpdatedImage = Base.extend({ status: LastUpdatedStatus });
+
+/**
+ * Type for a last-updated image entity.
+ *
+ * @remarks
+ * Immutable entity representing an image that has been modified.
+ */
+export type LastUpdatedImage = Readonly<z.infer<typeof LastUpdatedImage>>;
 
 /**
  * Zod schema for an exported image.

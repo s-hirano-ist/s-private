@@ -101,8 +101,6 @@ erDiagram
         FileSize fileSize
         Pixel width "nullable"
         Pixel height "nullable"
-        Tag tags "array, nullable"
-        Description description "nullable"
         Status status
         CreatedAt createdAt
         ExportedAt exportedAt "nullable"
@@ -834,3 +832,40 @@ await commandRepository.updateStatus(id, status);
 - 更新操作をRepository/Application Serviceに集約し、分散を防ぐ
 - 各更新メソッドで必要に応じてバリデーションを実施
 - 複雑な更新ロジックが必要になった場合は、Domain Serviceとして切り出す
+
+### 012: DIコンテナ・CQRS等の高度な設計パターンの不採用
+
+#### 概要
+
+DIコンテナ（InversifyJS, tsyringe等）やCQRS（Command Query Responsibility Segregation）、その他の高度なDDD設計パターンは導入しません。
+
+#### DDDの原則との乖離
+
+- DIコンテナによる依存性の自動解決が行われない
+- コマンドとクエリの明示的な分離アーキテクチャがない
+- イベントソーシングパターンの不採用
+
+#### 対応しない理由
+
+**現状の規模ではオーバースペック**: 本プロジェクトは単一ユーザー向けの個人コンテンツ管理システムであり、以下の理由からこれらのパターンは過度な複雑性をもたらします。
+
+- **DIコンテナ**: 現在の手動DI（ファクトリ関数による依存注入）で十分。コンテナ導入による設定・学習コストが利点を上回る
+- **CQRS**: 読み取りと書き込みのスケーリング要件がない。単一DBで十分対応可能
+- **イベントソーシング**: 状態の履歴管理や監査要件がない。現在のステータス遷移で十分
+
+**TypeScript/Next.jsエコシステムとの整合性**: Next.js App RouterのServer Actions + 関数型スタイルのアプローチでは、クラスベースのDIコンテナよりも関数とファクトリによる依存注入の方が自然です。
+
+#### リスク軽減策
+
+- 依存注入は`*.deps.ts`ファイルでファクトリ関数として実装
+- Command/Queryリポジトリの分離は維持（CQRSの軽量版として機能）
+- 将来的に規模が拡大した場合のみ再検討
+
+#### 再検討条件
+
+以下の条件が発生した場合、これらのパターンの導入を検討する：
+
+- マルチテナント対応が必要になった場合
+- 読み取り/書き込みの負荷が大きく異なるスケーリング要件が発生した場合
+- 複数チームでの並行開発が必要になった場合
+- 状態の完全な履歴追跡や監査ログが必要になった場合
