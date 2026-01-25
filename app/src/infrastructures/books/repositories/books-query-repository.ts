@@ -34,15 +34,15 @@ import { minioClient } from "@/minio";
 import prisma from "@/prisma";
 
 async function findByISBN(
-	ISBN: ISBN,
+	isbn: ISBN,
 	userId: UserId,
 ): Promise<UnexportedBook | ExportedBook | null> {
 	const data = await prisma.book.findUnique({
-		where: { ISBN_userId: { ISBN, userId } },
+		where: { isbn_userId: { isbn, userId } },
 		select: {
 			id: true,
 			userId: true,
-			ISBN: true,
+			isbn: true,
 			title: true,
 			googleTitle: true,
 			googleSubTitle: true,
@@ -62,7 +62,7 @@ async function findByISBN(
 	const base = {
 		id: makeId(data.id),
 		userId: makeUserId(data.userId),
-		ISBN: makeISBN(data.ISBN),
+		isbn: makeISBN(data.isbn),
 		title: makeBookTitle(data.title),
 		googleTitle: data.googleTitle
 			? makeGoogleTitle(data.googleTitle)
@@ -105,7 +105,7 @@ async function findMany(
 		where: { userId, status },
 		select: {
 			id: true,
-			ISBN: true,
+			isbn: true,
 			title: true,
 			googleImgSrc: true,
 			imagePath: true,
@@ -114,7 +114,7 @@ async function findMany(
 	});
 	return data.map((d) => ({
 		id: makeId(d.id),
-		ISBN: makeISBN(d.ISBN),
+		isbn: makeISBN(d.isbn),
 		title: makeBookTitle(d.title),
 		googleImgSrc: d.googleImgSrc ? makeGoogleImgSrc(d.googleImgSrc) : undefined,
 		imagePath: d.imagePath ? makePath(d.imagePath, false) : undefined,
@@ -147,7 +147,7 @@ async function search(
 		},
 		select: {
 			id: true,
-			ISBN: true,
+			isbn: true,
 			title: true,
 			googleTitle: true,
 			googleSubTitle: true,
@@ -162,7 +162,7 @@ async function search(
 	});
 	return data.map((d) => ({
 		id: makeId(d.id),
-		ISBN: makeISBN(d.ISBN),
+		isbn: makeISBN(d.isbn),
 		title: makeBookTitle(d.title),
 		googleTitle: d.googleTitle ? makeGoogleTitle(d.googleTitle) : undefined,
 		googleSubTitle: d.googleSubTitle

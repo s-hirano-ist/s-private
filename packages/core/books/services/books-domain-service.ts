@@ -15,10 +15,10 @@ import type { IBooksQueryRepository } from "../repositories/books-query-reposito
  */
 async function ensureNoDuplicateBook(
 	booksQueryRepository: IBooksQueryRepository,
-	ISBN: ISBN,
+	isbn: ISBN,
 	userId: UserId,
 ): Promise<void> {
-	const exists = await booksQueryRepository.findByISBN(ISBN, userId);
+	const exists = await booksQueryRepository.findByISBN(isbn, userId);
 	if (exists !== null) throw new DuplicateError();
 }
 
@@ -58,14 +58,14 @@ export class BooksDomainService {
 	/**
 	 * Validates that no book with the same ISBN exists for the user.
 	 *
-	 * @param ISBN - The ISBN to check for duplicates
+	 * @param isbn - The ISBN to check for duplicates
 	 * @param userId - The user ID for tenant isolation
 	 * @throws {DuplicateError} When a book with this ISBN already exists
 	 *
 	 * @remarks
 	 * This is a domain invariant check that should be called before creating books.
 	 */
-	public async ensureNoDuplicate(ISBN: ISBN, userId: UserId) {
-		return ensureNoDuplicateBook(this.booksQueryRepository, ISBN, userId);
+	public async ensureNoDuplicate(isbn: ISBN, userId: UserId) {
+		return ensureNoDuplicateBook(this.booksQueryRepository, isbn, userId);
 	}
 }

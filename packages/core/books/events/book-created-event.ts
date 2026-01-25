@@ -11,7 +11,7 @@ import type { BookDeletedEvent } from "./book-deleted-event.js";
  * @example
  * ```typescript
  * const event = new BookCreatedEvent({
- *   ISBN: "978-4-06-521234-5",
+ *   isbn: "978-4-06-521234-5",
  *   title: "The Pragmatic Programmer",
  *   userId: "user-123",
  *   caller: "addBook",
@@ -29,13 +29,13 @@ export class BookCreatedEvent extends BaseDomainEvent {
 	 * Creates a new BookCreatedEvent.
 	 *
 	 * @param data - Event data containing book details and metadata
-	 * @param data.ISBN - The book's ISBN identifier
+	 * @param data.isbn - The book's ISBN identifier
 	 * @param data.title - The book title
 	 * @param data.userId - The user who created the book
 	 * @param data.caller - The function/method that triggered the event
 	 */
 	constructor(data: {
-		ISBN: string;
+		isbn: string;
 		title: string;
 		userId: string;
 		caller: string;
@@ -43,7 +43,7 @@ export class BookCreatedEvent extends BaseDomainEvent {
 		super(
 			"book.created",
 			{
-				ISBN: data.ISBN,
+				isbn: data.isbn,
 				title: data.title,
 			},
 			{

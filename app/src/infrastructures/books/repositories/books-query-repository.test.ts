@@ -30,7 +30,7 @@ describe("BooksQueryRepository", () => {
 				id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b",
 				userId: "user123",
 				title: "Test Book",
-				ISBN: "978-0123456789",
+				isbn: "978-0123456789",
 				googleImgSrc: "https://example.com/image.jpg",
 				markdown: "# Test Book Content",
 				googleTitle: "Test Google Title",
@@ -55,7 +55,7 @@ describe("BooksQueryRepository", () => {
 			expect(result).toEqual({
 				id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b"),
 				userId: makeUserId("user123"),
-				ISBN: makeISBN("978-0123456789"),
+				isbn: makeISBN("978-0123456789"),
 				title: makeBookTitle("Test Book"),
 				googleTitle: makeGoogleTitle("Test Google Title"),
 				googleSubTitle: makeGoogleSubTitle("Test subtitle"),
@@ -105,14 +105,14 @@ describe("BooksQueryRepository", () => {
 				{
 					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c",
 					title: "First Book",
-					ISBN: "978-0123456789",
+					isbn: "978-0123456789",
 					googleImgSrc: "https://example.com/image1.jpg",
 					imagePath: null,
 				},
 				{
 					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d",
 					title: "Second Book",
-					ISBN: "978-0987654321",
+					isbn: "978-0987654321",
 					googleImgSrc: "https://example.com/image2.jpg",
 					imagePath: null,
 				},
@@ -136,14 +136,14 @@ describe("BooksQueryRepository", () => {
 			expect(result).toEqual([
 				{
 					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c"),
-					ISBN: makeISBN("978-0123456789"),
+					isbn: makeISBN("978-0123456789"),
 					title: makeBookTitle("First Book"),
 					googleImgSrc: makeGoogleImgSrc("https://example.com/image1.jpg"),
 					imagePath: undefined,
 				},
 				{
 					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d"),
-					ISBN: makeISBN("978-0987654321"),
+					isbn: makeISBN("978-0987654321"),
 					title: makeBookTitle("Second Book"),
 					googleImgSrc: makeGoogleImgSrc("https://example.com/image2.jpg"),
 					imagePath: undefined,
@@ -168,7 +168,7 @@ describe("BooksQueryRepository", () => {
 				{
 					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e",
 					title: "Cached Book",
-					ISBN: "978-0123456789",
+					isbn: "978-0123456789",
 					googleImgSrc: "https://example.com/image.jpg",
 					imagePath: null,
 				},
@@ -190,7 +190,7 @@ describe("BooksQueryRepository", () => {
 			expect(result).toEqual([
 				{
 					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e"),
-					ISBN: makeISBN("978-0123456789"),
+					isbn: makeISBN("978-0123456789"),
 					title: makeBookTitle("Cached Book"),
 					googleImgSrc: makeGoogleImgSrc("https://example.com/image.jpg"),
 					imagePath: undefined,

@@ -7,7 +7,7 @@
 本システムは Clean Architecture に基づいて設計されており、以下の4つの主要ドメインを持っています：
 
 - **Articles**: 記事管理（カテゴリー付き、OGメタデータ対応）
-- **Books**: 書籍管理（ISBN、Google Books API連携）
+- **Books**: 書籍管理（ISBN、GitHub Books連携）
 - **Notes**: ノート管理（Markdown形式）
 - **Images**: 画像管理（MinIO連携、サムネイル生成）
 
@@ -330,7 +330,7 @@ graph TB
 | Bounded Context | 説明 | 主な責務 |
 |----------------|------|---------|
 | Articles | 記事管理 | URL収集、OGメタデータ取得、カテゴリ分類 |
-| Books | 書籍管理 | ISBN管理、Google Books連携、GitHub Books連携 |
+| Books | 書籍管理 | ISBN管理、GitHub Books連携 |
 | Notes | ノート管理 | Markdownノート作成・編集 |
 | Images | 画像管理 | 画像アップロード、MinIOストレージ連携、サムネイル生成 |
 | Shared-Kernel | 共有カーネル | 共通Value Objects (Id, UserId, Status, Timestamp等) |
@@ -654,16 +654,16 @@ const whereInput: Prisma.ArticleWhereInput = {
 
 #### 概要
 
-OGメタデータ取得、Google Books API連携に、明示的な腐敗防止層（Anti-Corruption Layer）パターンとしての専用インターフェースやアダプターが存在しません。
+GitHub Books連携に、明示的な腐敗防止層（Anti-Corruption Layer）パターンとしての専用インターフェースやアダプターが存在しません。
 
 ```typescript
-// 現在の実装: インフラ層で外部API→ドメインモデル変換を直接実施
-export class GoogleBooksFetcherImpl implements IGoogleBookFetcher {
-  async fetch(isbn: string): Promise<GoogleBooksVolume | null> {
-    const response = await fetch(`https://www.googleapis.com/books/v1/...`);
+// 現在の実装: インフラ層で外部データ→ドメインモデル変換を直接実施
+export class GitHubBooksFetcherImpl implements IGitHubBookFetcher {
+  async fetchBooks(): Promise<UnexportedBook[]> {
+    const response = await fetch(GITHUB_API_URL);
     const data = await response.json();
-    // 外部API形式からドメインモデルへの変換
-    return this.toGoogleBooksVolume(data);
+    // 外部形式からドメインモデルへの変換
+    return data.map(this.toUnexportedBook);
   }
 }
 ```
@@ -680,20 +680,19 @@ export class GoogleBooksFetcherImpl implements IGoogleBookFetcher {
 
 **実質的にACLとして機能**: 現在の実装は形式的なACLパターンではないものの、実質的に同等の役割を果たしています。
 
-- `IGoogleBookFetcher` インターフェースがDomain層で定義済み
+- `IGitHubBookFetcher` インターフェースがDomain層で定義済み
 - 外部データ→ドメインモデル変換はインフラ層の実装クラス内で完結
 - 外部API変更時の影響範囲はインフラ層に限定済み
 
 **形式的なACLレイヤー追加は過度な抽象化**:
 
-- 現在の外部サービス連携は2箇所（OGメタデータ、Google Books）のみ
-- 各サービスとの連携が単純（1リクエスト/1レスポンス）
+- 現在の外部サービス連携は1箇所（GitHub Books）のみ
+- サービスとの連携が単純（1リクエスト/1レスポンス）
 - 専用のGateway/Translatorクラス分離は複雑性に見合わない
 
 #### 対象ファイル
 
 - `packages/core/books/services/github-book-fetcher.interface.ts`（インターフェース）
-- `app/src/infrastructures/books/github-books-fetcher-impl.ts`（実装）
 
 #### リスク軽減策
 
@@ -827,8 +826,6 @@ await commandRepository.updateStatus(id, status);
 
 - `app/src/infrastructures/articles/repositories/articles-command-repository.ts`
 - `app/src/infrastructures/books/repositories/books-command-repository.ts`
-- `app/src/application-services/articles/update-article-og-metadata.core.ts`
-- `app/src/application-services/books/update-google-books-info.core.ts`
 
 #### リスク軽減策
 

@@ -30,7 +30,7 @@ export class LoggingEventHandler implements DomainEventHandler {
 				message = `【IMAGE】\n\n削除\npath: ${payload.path}`;
 				break;
 			case "book.created":
-				message = `【BOOKS】\n\nコンテンツ\nISBN: ${payload.ISBN} \ntitle: ${payload.title}\nの登録ができました`;
+				message = `【BOOKS】\n\nコンテンツ\nISBN: ${payload.isbn} \ntitle: ${payload.title}\nの登録ができました`;
 				break;
 			case "book.deleted":
 				message = `【BOOKS】\n\n削除\ntitle: ${payload.title}`;

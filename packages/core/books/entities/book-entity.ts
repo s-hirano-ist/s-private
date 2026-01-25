@@ -327,7 +327,7 @@ export const makeBookMarkdown = (v: string | null): BookMarkdown =>
 const Base = z.object({
 	id: Id,
 	userId: UserId,
-	ISBN: ISBN,
+	isbn: ISBN,
 	title: BookTitle,
 	googleTitle: GoogleTitle.optional(),
 	googleSubTitle: GoogleSubtitle.optional(),
@@ -389,7 +389,7 @@ export type ExportedBook = Readonly<z.infer<typeof ExportedBook>>;
  * ```typescript
  * const args: CreateBookArgs = {
  *   userId: makeUserId("user-123"),
- *   ISBN: makeISBN("978-4-06-521234-5"),
+ *   isbn: makeISBN("978-4-06-521234-5"),
  *   title: makeBookTitle("The Pragmatic Programmer"),
  *   caller: "addBook",
  * };
@@ -399,7 +399,7 @@ export type CreateBookArgs = Readonly<{
 	/** The user who owns the book */
 	userId: UserId;
 	/** The book's ISBN identifier */
-	ISBN: ISBN;
+	isbn: ISBN;
 	/** The book title */
 	title: BookTitle;
 	/** Optional path to user-uploaded book cover image */
@@ -432,7 +432,7 @@ export type BookWithEvent = readonly [UnexportedBook, BookCreatedEvent];
  * // Create a new unexported book with its domain event
  * const [book, event] = bookEntity.create({
  *   userId: makeUserId("user-123"),
- *   ISBN: makeISBN("978-4-06-521234-5"),
+ *   isbn: makeISBN("978-4-06-521234-5"),
  *   title: makeBookTitle("The Pragmatic Programmer"),
  *   caller: "addBook",
  * });
@@ -467,7 +467,7 @@ export const bookEntity = {
 		);
 
 		const event = new BookCreatedEvent({
-			ISBN: book.ISBN as string,
+			isbn: book.isbn as string,
 			title: book.title as string,
 			userId: book.userId as string,
 			caller,
@@ -487,7 +487,7 @@ export const bookEntity = {
  */
 export type BookListItemDTO = Readonly<{
 	id: Id;
-	ISBN: ISBN;
+	isbn: ISBN;
 	title: BookTitle;
 	googleImgSrc: GoogleImgSrc | undefined;
 	imagePath: Path | undefined;
@@ -501,7 +501,7 @@ export type BookListItemDTO = Readonly<{
  */
 export type BookSearchItemDTO = Readonly<{
 	id: Id;
-	ISBN: ISBN;
+	isbn: ISBN;
 	title: BookTitle;
 	googleTitle: GoogleTitle | undefined;
 	googleSubTitle: GoogleSubtitle | undefined;

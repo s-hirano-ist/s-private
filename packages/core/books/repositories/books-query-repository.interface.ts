@@ -26,9 +26,9 @@ import type { IBooksCommandRepository } from "./books-command-repository.interfa
  * ```typescript
  * // Infrastructure implementation
  * class PrismaBooksQueryRepository implements IBooksQueryRepository {
- *   async findByISBN(ISBN: ISBN, userId: UserId) {
+ *   async findByISBN(isbn: ISBN, userId: UserId) {
  *     const data = await prisma.book.findUnique({
- *       where: { ISBN, userId }
+ *       where: { isbn, userId }
  *     });
  *     return data ? toBookEntity(data) : null;
  *   }
@@ -41,7 +41,7 @@ export type IBooksQueryRepository = {
 	/**
 	 * Finds a book by its ISBN for a specific user.
 	 *
-	 * @param ISBN - The validated ISBN to search for
+	 * @param isbn - The validated ISBN to search for
 	 * @param userId - The user ID for tenant isolation
 	 * @returns The book entity if found, null otherwise
 	 *
@@ -50,7 +50,7 @@ export type IBooksQueryRepository = {
 	 * for domain operations like duplicate checking.
 	 */
 	findByISBN(
-		ISBN: ISBN,
+		isbn: ISBN,
 		userId: UserId,
 	): Promise<UnexportedBook | ExportedBook | null>;
 

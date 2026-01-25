@@ -59,13 +59,13 @@ describe("booksEntity", () => {
 		test("should create book with valid arguments", () => {
 			const [book, event] = bookEntity.create({
 				userId: makeUserId("test-user-id"),
-				ISBN: makeISBN("9784123456789"),
+				isbn: makeISBN("9784123456789"),
 				title: makeBookTitle("Clean Code"),
 				caller: "test",
 			});
 
 			expect(book.userId).toBe("test-user-id");
-			expect(book.ISBN).toBe("9784123456789");
+			expect(book.isbn).toBe("9784123456789");
 			expect(book.title).toBe("Clean Code");
 			expect(book.status).toBe("UNEXPORTED");
 			expect(book.id).toBeDefined();
@@ -76,7 +76,7 @@ describe("booksEntity", () => {
 		test("should create book with UNEXPORTED status by default", () => {
 			const [book] = bookEntity.create({
 				userId: makeUserId("test-user-id"),
-				ISBN: makeISBN("9784123456789"),
+				isbn: makeISBN("9784123456789"),
 				title: makeBookTitle("Test Book"),
 				caller: "test",
 			});
@@ -87,7 +87,7 @@ describe("booksEntity", () => {
 		test("should be frozen object", () => {
 			const [book] = bookEntity.create({
 				userId: makeUserId("test-user-id"),
-				ISBN: makeISBN("9784123456789"),
+				isbn: makeISBN("9784123456789"),
 				title: makeBookTitle("Test Book"),
 				caller: "test",
 			});

@@ -63,7 +63,7 @@ export const _getBooks = async (
 			data: books.map((d) => ({
 				id: d.id,
 				title: d.title,
-				href: d.ISBN,
+				href: d.isbn,
 				image: d.imagePath
 					? `${API_BOOK_THUMBNAIL_PATH}/${d.imagePath}`
 					: (d.googleImgSrc ?? null),

@@ -43,7 +43,7 @@ describe("BooksDomainService", () => {
 
 			const mockBook = {
 				id: "existing-book-id",
-				ISBN: isbn,
+				isbn: isbn,
 				userId,
 				title: "Existing Book",
 				status: "UNEXPORTED" as const,

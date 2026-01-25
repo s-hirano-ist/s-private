@@ -42,12 +42,12 @@ export const parseAddBooksFormData = async (
 	formData: FormData,
 	userId: UserId,
 ) => {
-	const ISBN = getFormDataString(formData, "isbn");
+	const isbnInput = getFormDataString(formData, "isbn");
 	const title = getFormDataString(formData, "title");
 	const file = getOptionalFormDataFile(formData, "image");
 
 	const baseData = {
-		ISBN: makeISBN(ISBN),
+		isbn: makeISBN(isbnInput),
 		title: makeBookTitle(title),
 		userId,
 	};

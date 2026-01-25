@@ -120,7 +120,7 @@ export async function searchContent(
 		const bookResults = await booksQueryRepository.search(query, userId, limit);
 
 		const bookSearchResults: SearchResult[] = bookResults.map((book) => ({
-			href: book.ISBN,
+			href: book.isbn,
 			contentType: "books" as ContentType,
 			title: book.title,
 			snippet: extractSnippet(
