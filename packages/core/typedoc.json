@@ -6,8 +6,7 @@
 		"./books/**/*.ts",
 		"./images/**/*.ts",
 		"./notes/**/*.ts",
-		"./shared-kernel/**/*.ts",
-		"./errors/**/*.ts"
+		"./shared-kernel/**/*.ts"
 	],
 	"tsconfig": "./tsconfig.json",
 	"exclude": [
