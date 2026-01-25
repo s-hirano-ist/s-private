@@ -7,13 +7,13 @@ import {
 } from "@s-hirano-ist/s-core/articles/entities/article-entity";
 import { ArticleCreatedEvent } from "@s-hirano-ist/s-core/articles/events/article-created-event";
 import type { IArticlesCommandRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-command-repository.interface";
-import { DuplicateError } from "@s-hirano-ist/s-core/errors/error-classes";
 import {
 	makeCreatedAt,
 	makeId,
 	makeUnexportedStatus,
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { addArticle } from "./add-article";

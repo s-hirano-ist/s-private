@@ -1,4 +1,4 @@
-import { InvalidFormatError } from "@s-hirano-ist/s-core/errors/error-classes";
+import { InvalidFormatError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getFormDataFile, getFormDataString } from "./form-data-utils";
 

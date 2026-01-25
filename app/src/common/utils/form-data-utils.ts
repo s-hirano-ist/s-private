@@ -4,7 +4,7 @@
  * @module
  */
 
-import { InvalidFormatError } from "@s-hirano-ist/s-core/errors/error-classes";
+import { InvalidFormatError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 
 /**
  * Extracts a string value from FormData.

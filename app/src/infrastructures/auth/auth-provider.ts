@@ -1,4 +1,4 @@
-import { UnexpectedError } from "@s-hirano-ist/s-core/errors/error-classes";
+import { UnexpectedError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import NextAuth, { type DefaultSession } from "next-auth";
 import { env } from "@/env";
 import authConfig from "./auth-config";
