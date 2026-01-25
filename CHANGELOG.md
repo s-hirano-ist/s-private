@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.9.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.9.0...s-private-v10.9.1) (2026-01-25)
+
+
+### Bug Fixes
+
+* docs build ([9ec284c](https://github.com/s-hirano-ist/s-private/commit/9ec284c92d3cf7f3a1bb185c25dcaa67dd940bd0))
+
+
+### Maintenance
+
+* **deps:** update patch ([230a388](https://github.com/s-hirano-ist/s-private/commit/230a3885b92b61f23b2a9aeaf9f184dad44d340c))
+* **deps:** update patch ([53c521e](https://github.com/s-hirano-ist/s-private/commit/53c521e74d0a19db7368c2d5d76e64be9492ff3b))
+* downgrade prisma acc ([1f37992](https://github.com/s-hirano-ist/s-private/commit/1f37992542311db5d710282ad63bed78c78ffd66))
+* downgrade prisma acc ([046ce11](https://github.com/s-hirano-ist/s-private/commit/046ce11f042a6b2bb8a0b8f4f64c39f5cffcd34b))
+* small issues ([dea2a66](https://github.com/s-hirano-ist/s-private/commit/dea2a660b7d100713839a981124678069cc88113))
+
 ## [10.9.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.8.4...s-private-v10.9.0) (2026-01-20)
 
 
