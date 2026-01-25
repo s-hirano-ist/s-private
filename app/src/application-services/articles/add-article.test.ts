@@ -48,6 +48,7 @@ function createMockDeps(
 	deps: AddArticleDeps;
 	mockCommandRepository: IArticlesCommandRepository;
 	mockEnsureNoDuplicate: ReturnType<typeof vi.fn>;
+	mockResolveOrCreate: ReturnType<typeof vi.fn>;
 	mockEventDispatcher: { dispatch: ReturnType<typeof vi.fn> };
 } {
 	const mockCommandRepository: IArticlesCommandRepository = {
@@ -59,6 +60,10 @@ function createMockDeps(
 		.fn()
 		.mockImplementation(ensureNoDuplicateImpl);
 
+	const mockResolveOrCreate = vi
+		.fn()
+		.mockResolvedValue(makeId("01933f5c-9df0-7001-9123-456789abcdef"));
+
 	const mockEventDispatcher = {
 		dispatch: vi.fn().mockResolvedValue(undefined),
 	};
@@ -67,6 +72,9 @@ function createMockDeps(
 	const mockDomainServiceFactory = {
 		createArticlesDomainService: () => ({
 			ensureNoDuplicate: mockEnsureNoDuplicate,
+		}),
+		createCategoryService: () => ({
+			resolveOrCreate: mockResolveOrCreate,
 		}),
 		createBooksDomainService: vi.fn(),
 		createNotesDomainService: vi.fn(),
@@ -83,6 +91,7 @@ function createMockDeps(
 		deps,
 		mockCommandRepository,
 		mockEnsureNoDuplicate,
+		mockResolveOrCreate,
 		mockEventDispatcher,
 	};
 }
@@ -114,6 +123,7 @@ describe("addArticleCore", () => {
 			deps,
 			mockCommandRepository,
 			mockEnsureNoDuplicate,
+			mockResolveOrCreate,
 			mockEventDispatcher,
 		} = createMockDeps();
 
@@ -122,6 +132,7 @@ describe("addArticleCore", () => {
 			title: makeArticleTitle("Test Article"),
 			url: makeUrl("https://example.com/article"),
 			quote: makeQuote("Test quote"),
+			categoryId: makeId("01933f5c-9df0-7001-9123-456789abcdef"),
 			categoryName: makeCategoryName("tech"),
 			userId: makeUserId("user-123"),
 			status: makeUnexportedStatus(),
@@ -144,6 +155,10 @@ describe("addArticleCore", () => {
 
 		expect(mockEnsureNoDuplicate).toHaveBeenCalledWith(
 			makeUrl("https://example.com/article"),
+			makeUserId("user-123"),
+		);
+		expect(mockResolveOrCreate).toHaveBeenCalledWith(
+			makeCategoryName("tech"),
 			makeUserId("user-123"),
 		);
 		expect(articleEntity.create).toHaveBeenCalled();

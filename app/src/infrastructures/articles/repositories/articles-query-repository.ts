@@ -36,6 +36,7 @@ async function findByUrl(
 		select: {
 			id: true,
 			userId: true,
+			categoryId: true,
 			url: true,
 			Category: { select: { name: true } },
 			title: true,
@@ -53,6 +54,7 @@ async function findByUrl(
 	const base = {
 		id: makeId(data.id),
 		userId: makeUserId(data.userId),
+		categoryId: makeId(data.categoryId),
 		categoryName: makeCategoryName(data.Category.name),
 		title: makeArticleTitle(data.title),
 		quote: makeQuote(data.quote),
@@ -168,6 +170,17 @@ async function findManyCategories(
 	});
 }
 
+async function findByNameAndUser(
+	name: string,
+	userId: string,
+): Promise<{ id: string } | null> {
+	return prisma.category.findUnique({
+		where: { name_userId: { name, userId } },
+		select: { id: true },
+	});
+}
+
 export const categoryQueryRepository: ICategoryQueryRepository = {
 	findMany: findManyCategories,
+	findByNameAndUser,
 };

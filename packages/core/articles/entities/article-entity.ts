@@ -315,6 +315,7 @@ export const makeOgImageUrl = (v: string | null | undefined): OgImageUrl =>
 const Base = z.object({
 	id: Id,
 	userId: UserId,
+	categoryId: Id,
 	categoryName: CategoryName,
 	title: ArticleTitle,
 	quote: Quote,
@@ -374,6 +375,7 @@ export type ExportedArticle = Readonly<z.infer<typeof ExportedArticle>>;
  * ```typescript
  * const args: CreateArticleArgs = {
  *   userId: makeUserId("user-123"),
+ *   categoryId: makeId("category-uuid"),
  *   categoryName: makeCategoryName("Tech"),
  *   title: makeArticleTitle("Article Title"),
  *   url: makeUrl("https://example.com"),
@@ -385,7 +387,9 @@ export type ExportedArticle = Readonly<z.infer<typeof ExportedArticle>>;
 export type CreateArticleArgs = Readonly<{
 	/** The user who owns the article */
 	userId: UserId;
-	/** The category for organizing the article */
+	/** The resolved category ID (FK to Category table) */
+	categoryId: Id;
+	/** The category name for display and events */
 	categoryName: CategoryName;
 	/** The article title */
 	title: ArticleTitle;

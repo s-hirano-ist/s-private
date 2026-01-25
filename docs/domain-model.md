@@ -163,6 +163,7 @@ graph TB
 | ドメインサービス | 主な責務 | 使用するリポジトリメソッド |
 |-----------------|---------|------------------------|
 | ArticlesDomainService | 重複URL検証 | findByUrl |
+| CategoryService | カテゴリ解決（既存検索または新規作成） | findByNameAndUser, create |
 | BooksDomainService | 重複ISBN検証 | findByISBN |
 | NotesDomainService | 重複タイトル検証 | findByTitle |
 | IdGeneratorService | UUID v7生成 | - |
@@ -228,7 +229,7 @@ graph TB
 
 ### 設計上の考慮事項
 
-- **Categoryの位置付け**: Articleはドメイン層で`categoryName`（値オブジェクト）を保持し、インフラ層で`categoryId`（FK）として永続化。`connectOrCreate`パターンで管理
+- **Categoryの位置付け**: Articleはドメイン層で`categoryId`（FK参照）と`categoryName`（値オブジェクト、表示用）の両方を保持。`CategoryService.resolveOrCreate()`でカテゴリ解決を行い、リポジトリは純粋な永続化のみを担当
 - **トランザクション境界**: 各集約は独立してトランザクション整合性を保証
 - **リポジトリの責任**: 各集約ルートに対して1つのCommand/Queryリポジトリペアを定義
 
