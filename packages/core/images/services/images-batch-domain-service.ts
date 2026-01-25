@@ -5,15 +5,15 @@ import {
 import type {
 	BulkUpdateResult,
 	IBatchCommandRepository,
+	ResetStatusResult,
 } from "../../shared-kernel/repositories/batch-command-repository.interface.js";
 
 /**
  * Result of the reset operation.
+ *
+ * @deprecated Use {@link ResetStatusResult} from batch-command-repository.interface instead
  */
-export type ResetResult = {
-	finalized: BulkUpdateResult;
-	marked: BulkUpdateResult;
-};
+export type ResetResult = ResetStatusResult;
 
 /**
  * Domain service for batch operations on Images.
@@ -34,22 +34,13 @@ export class ImagesBatchDomainService {
 
 	/**
 	 * Resets images for a new batch export.
+	 *
+	 * @remarks
+	 * Delegates to repository's resetStatus which performs two operations
+	 * atomically within a single transaction.
 	 */
 	public async resetImages(userId: UserId): Promise<ResetResult> {
-		const finalized = await this.commandRepository.bulkUpdateStatus({
-			userId,
-			fromStatus: "LAST_UPDATED",
-			toStatus: "EXPORTED",
-			exportedAt: makeExportedAt(),
-		});
-
-		const marked = await this.commandRepository.bulkUpdateStatus({
-			userId,
-			fromStatus: "UNEXPORTED",
-			toStatus: "LAST_UPDATED",
-		});
-
-		return { finalized, marked };
+		return this.commandRepository.resetStatus(userId, makeExportedAt());
 	}
 
 	/**

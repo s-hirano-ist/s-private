@@ -34,19 +34,17 @@ async function main() {
 	const userId: UserId = makeUserId(env.USERNAME_TO_EXPORT ?? "");
 
 	async function resetNotes() {
-		await prisma.$transaction(async (tx: unknown) => {
-			const commandRepository = createNotesCommandRepository(
-				tx as Parameters<typeof createNotesCommandRepository>[0],
-			);
-			const batchService = new NotesBatchDomainService(commandRepository);
+		// DDD: Create repository and domain service
+		// Transaction is handled internally by repository's resetStatus method
+		const commandRepository = createNotesCommandRepository(prisma);
+		const batchService = new NotesBatchDomainService(commandRepository);
 
-			const result = await batchService.resetNotes(userId);
+		const result = await batchService.resetNotes(userId);
 
-			console.log(
-				`💾 LAST_UPDATEDのノートをEXPORTEDに変更しました（${result.finalized.count}件）`,
-			);
-			console.log(`💾 ${result.marked.count}件のノートをリセットしました`);
-		});
+		console.log(
+			`💾 LAST_UPDATEDのノートをEXPORTEDに変更しました（${result.finalized.count}件）`,
+		);
+		console.log(`💾 ${result.marked.count}件のノートをリセットしました`);
 	}
 
 	try {

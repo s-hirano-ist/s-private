@@ -1,62 +1,48 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { makeUserId } from "../../shared-kernel/entities/common-entity";
-import type { IBooksCommandRepository } from "../repositories/books-command-repository.interface";
+import type { IBatchCommandRepository } from "../../shared-kernel/repositories/batch-command-repository.interface";
 import { BooksBatchDomainService } from "./books-batch-domain-service";
 
 describe("BooksBatchDomainService", () => {
-	let booksCommandRepository: IBooksCommandRepository;
+	let batchCommandRepository: IBatchCommandRepository;
 	let batchService: BooksBatchDomainService;
 
 	beforeEach(() => {
-		booksCommandRepository = {
-			create: vi.fn(),
-			deleteById: vi.fn(),
-			fetchBookFromGitHub: vi.fn(),
+		batchCommandRepository = {
 			bulkUpdateStatus: vi.fn(),
-		} as IBooksCommandRepository;
+			resetStatus: vi.fn(),
+		};
 
-		batchService = new BooksBatchDomainService(booksCommandRepository);
+		batchService = new BooksBatchDomainService(batchCommandRepository);
 	});
 
 	describe("resetBooks", () => {
-		test("should finalize LAST_UPDATED books and mark UNEXPORTED books", async () => {
+		test("should delegate to repository's resetStatus method", async () => {
 			const userId = makeUserId("test-user-id");
 
-			vi.mocked(booksCommandRepository.bulkUpdateStatus)
-				.mockResolvedValueOnce({ count: 5 })
-				.mockResolvedValueOnce({ count: 10 });
+			vi.mocked(batchCommandRepository.resetStatus).mockResolvedValue({
+				finalized: { count: 5 },
+				marked: { count: 10 },
+			});
 
 			const result = await batchService.resetBooks(userId);
 
 			expect(result.finalized.count).toBe(5);
 			expect(result.marked.count).toBe(10);
 
-			expect(booksCommandRepository.bulkUpdateStatus).toHaveBeenNthCalledWith(
-				1,
-				expect.objectContaining({
-					userId,
-					fromStatus: "LAST_UPDATED",
-					toStatus: "EXPORTED",
-					exportedAt: expect.any(Date),
-				}),
-			);
-
-			expect(booksCommandRepository.bulkUpdateStatus).toHaveBeenNthCalledWith(
-				2,
-				expect.objectContaining({
-					userId,
-					fromStatus: "UNEXPORTED",
-					toStatus: "LAST_UPDATED",
-				}),
+			expect(batchCommandRepository.resetStatus).toHaveBeenCalledWith(
+				userId,
+				expect.any(Date),
 			);
 		});
 
 		test("should handle zero books case", async () => {
 			const userId = makeUserId("test-user-id");
 
-			vi.mocked(booksCommandRepository.bulkUpdateStatus)
-				.mockResolvedValueOnce({ count: 0 })
-				.mockResolvedValueOnce({ count: 0 });
+			vi.mocked(batchCommandRepository.resetStatus).mockResolvedValue({
+				finalized: { count: 0 },
+				marked: { count: 0 },
+			});
 
 			const result = await batchService.resetBooks(userId);
 
@@ -69,14 +55,14 @@ describe("BooksBatchDomainService", () => {
 		test("should revert LAST_UPDATED books to UNEXPORTED", async () => {
 			const userId = makeUserId("test-user-id");
 
-			vi.mocked(booksCommandRepository.bulkUpdateStatus).mockResolvedValue({
+			vi.mocked(batchCommandRepository.bulkUpdateStatus).mockResolvedValue({
 				count: 7,
 			});
 
 			const result = await batchService.revertBooks(userId);
 
 			expect(result.count).toBe(7);
-			expect(booksCommandRepository.bulkUpdateStatus).toHaveBeenCalledWith({
+			expect(batchCommandRepository.bulkUpdateStatus).toHaveBeenCalledWith({
 				userId,
 				fromStatus: "LAST_UPDATED",
 				toStatus: "UNEXPORTED",
@@ -86,7 +72,7 @@ describe("BooksBatchDomainService", () => {
 		test("should handle zero books case", async () => {
 			const userId = makeUserId("test-user-id");
 
-			vi.mocked(booksCommandRepository.bulkUpdateStatus).mockResolvedValue({
+			vi.mocked(batchCommandRepository.bulkUpdateStatus).mockResolvedValue({
 				count: 0,
 			});
 
