@@ -23,12 +23,12 @@ import { PAGE_SIZE } from "@/common/constants";
 import type { GetCount, GetPaginatedData } from "@/common/types";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
+import { notesQueryRepository } from "@/infrastructures/notes/repositories/notes-query-repository";
 import {
 	buildContentCacheTag,
 	buildCountCacheTag,
 	buildPaginatedContentCacheTag,
-} from "@/infrastructures/common/cache/cache-tag-builder";
-import { notesQueryRepository } from "@/infrastructures/notes/repositories/notes-query-repository";
+} from "@/infrastructures/shared/cache/cache-tag-builder";
 
 /**
  * Fetches paginated notes with cache support.

@@ -1142,7 +1142,7 @@ afterSubmit={(msg) => toast(message(msg))}
 ### 実装例
 
 ```typescript
-// app/src/infrastructures/common/cache/cache-tag-builder.ts
+// app/src/infrastructures/shared/cache/cache-tag-builder.ts
 import type { Status } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 
@@ -1196,7 +1196,7 @@ import {
   buildContentCacheTag,
   buildCountCacheTag,
   buildCategoriesCacheTag,
-} from "@/infrastructures/common/cache/cache-tag-builder";
+} from "@/infrastructures/shared/cache/cache-tag-builder";
 
 // 永続化後にキャッシュを無効化
 await commandRepository.create(article);
@@ -1217,7 +1217,7 @@ import {
   buildCountCacheTag,
   buildPaginatedContentCacheTag,
   buildCategoriesCacheTag,
-} from "@/infrastructures/common/cache/cache-tag-builder";
+} from "@/infrastructures/shared/cache/cache-tag-builder";
 
 // データフェッチ時にキャッシュタグを設定
 export const _getArticles = async (currentCount: number, userId: UserId, status: Status) => {
@@ -1325,7 +1325,7 @@ UNEXPORTED ──────────────→ LAST_UPDATED ───�
 #### 実装例: ステータス変更時の無効化ヘルパー
 
 ```typescript
-// app/src/infrastructures/common/cache/cache-invalidation-helpers.ts
+// app/src/infrastructures/shared/cache/cache-invalidation-helpers.ts
 import { revalidateTag } from "next/cache";
 import { buildContentCacheTag, buildCountCacheTag } from "./cache-tag-builder";
 
@@ -1381,7 +1381,7 @@ export function invalidateOnBatchRevert(domain: Domain, userId: string): void {
 
 ```typescript
 // batch-reset.core.ts
-import { invalidateOnBatchReset } from "@/infrastructures/common/cache/cache-invalidation-helpers";
+import { invalidateOnBatchReset } from "@/infrastructures/shared/cache/cache-invalidation-helpers";
 
 export async function batchResetCore(deps: BatchResetDeps): Promise<ServerAction> {
   const userId = await getSelfId();
@@ -1409,7 +1409,7 @@ import { getSelfId } from "@/common/auth/session";
 import {
   buildContentCacheTag,
   buildPaginatedContentCacheTag,
-} from "@/infrastructures/common/cache/cache-tag-builder";
+} from "@/infrastructures/shared/cache/cache-tag-builder";
 
 // 内部実装: "use cache"でキャッシュ
 export const _getArticles = async (
@@ -1472,7 +1472,7 @@ export const getExportedArticles: GetPaginatedData<LinkCardStackInitialData> =
 
 ```typescript
 // 推奨パターン: 両方を組み合わせ + ビルダー関数使用
-import { buildContentCacheTag } from "@/infrastructures/common/cache/cache-tag-builder";
+import { buildContentCacheTag } from "@/infrastructures/shared/cache/cache-tag-builder";
 
 const _getData = async (userId: UserId, status: Status) => {
   "use cache";

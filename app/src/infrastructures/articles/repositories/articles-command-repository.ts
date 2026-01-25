@@ -12,7 +12,7 @@ import { revalidateTag } from "next/cache";
 import {
 	buildContentCacheTag,
 	buildCountCacheTag,
-} from "@/infrastructures/common/cache/cache-tag-builder";
+} from "@/infrastructures/shared/cache/cache-tag-builder";
 import prisma from "@/prisma";
 
 async function create(data: UnexportedArticle): Promise<void> {

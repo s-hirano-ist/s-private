@@ -28,14 +28,14 @@ import {
 	articlesQueryRepository,
 	categoryQueryRepository,
 } from "@/infrastructures/articles/repositories/articles-query-repository";
+import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
+import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
 import {
 	buildCategoriesCacheTag,
 	buildContentCacheTag,
 	buildCountCacheTag,
 	buildPaginatedContentCacheTag,
-} from "@/infrastructures/common/cache/cache-tag-builder";
-import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
-import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
+} from "@/infrastructures/shared/cache/cache-tag-builder";
 
 /**
  * Fetches paginated articles with cache support.
