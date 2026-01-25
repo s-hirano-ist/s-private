@@ -3,7 +3,6 @@ import { ZodError } from "zod";
 import { makeUserId } from "../../shared-kernel/entities/common-entity";
 import {
 	bookEntity,
-	makeBookImagePath,
 	makeBookMarkdown,
 	makeBookTitle,
 	makeGoogleAuthors,
@@ -62,7 +61,6 @@ describe("booksEntity", () => {
 				userId: makeUserId("test-user-id"),
 				ISBN: makeISBN("9784123456789"),
 				title: makeBookTitle("Clean Code"),
-				imagePath: null,
 				caller: "test",
 			});
 
@@ -71,7 +69,7 @@ describe("booksEntity", () => {
 			expect(book.title).toBe("Clean Code");
 			expect(book.status).toBe("UNEXPORTED");
 			expect(book.id).toBeDefined();
-			expect(book.imagePath).toBeNull();
+			expect(book.imagePath).toBeUndefined();
 			expect(event.eventType).toBe("book.created");
 		});
 
@@ -80,7 +78,6 @@ describe("booksEntity", () => {
 				userId: makeUserId("test-user-id"),
 				ISBN: makeISBN("9784123456789"),
 				title: makeBookTitle("Test Book"),
-				imagePath: null,
 				caller: "test",
 			});
 
@@ -92,7 +89,6 @@ describe("booksEntity", () => {
 				userId: makeUserId("test-user-id"),
 				ISBN: makeISBN("9784123456789"),
 				title: makeBookTitle("Test Book"),
-				imagePath: null,
 				caller: "test",
 			});
 
@@ -174,17 +170,6 @@ describe("booksEntity", () => {
 		test("makeBookMarkdown should handle null value", () => {
 			const bookMarkdown = makeBookMarkdown(null);
 			expect(bookMarkdown).toBeNull();
-		});
-
-		test("makeBookImagePath should create BookImagePath", () => {
-			const imagePath = "books/original/image-123.jpg";
-			const bookImagePath = makeBookImagePath(imagePath);
-			expect(bookImagePath).toBe(imagePath);
-		});
-
-		test("makeBookImagePath should handle null value", () => {
-			const bookImagePath = makeBookImagePath(null);
-			expect(bookImagePath).toBeNull();
 		});
 	});
 });

@@ -18,7 +18,6 @@
  * - {@link GoogleTitle}, {@link GoogleSubtitle}, {@link GoogleAuthors},
  *   {@link GoogleDescription}, {@link GoogleImgSrc}, {@link GoogleHref} - Google Books API metadata
  * - {@link BookMarkdown} - User notes/review content
- * - {@link BookImagePath} - User-uploaded cover image path
  *
  * @see `BooksDomainService` for domain business rules
  * @see docs/domain-model.md for aggregate boundary documentation
@@ -35,6 +34,7 @@ import {
 	UnexportedStatus,
 	UserId,
 } from "../../shared-kernel/entities/common-entity.js";
+import { Path } from "../../shared-kernel/entities/file-entity.js";
 import { createEntityWithErrorHandling } from "../../shared-kernel/services/entity-factory.js";
 import { BookCreatedEvent } from "../events/book-created-event.js";
 
@@ -314,34 +314,6 @@ export type BookMarkdown = z.infer<typeof BookMarkdown>;
 export const makeBookMarkdown = (v: string | null): BookMarkdown =>
 	BookMarkdown.parse(v);
 
-/**
- * Zod schema for book image path.
- *
- * @remarks
- * Optional path to user-uploaded book cover image stored in MinIO.
- *
- * @see {@link makeBookImagePath} for factory function
- */
-export const BookImagePath = z
-	.string()
-	.max(512, { message: "tooLong" })
-	.nullable()
-	.brand<"BookImagePath">();
-
-/**
- * Branded type for book image paths.
- */
-export type BookImagePath = z.infer<typeof BookImagePath>;
-
-/**
- * Creates a validated BookImagePath from a string or null.
- *
- * @param v - The image path or null
- * @returns A branded BookImagePath value
- */
-export const makeBookImagePath = (v: string | null): BookImagePath =>
-	BookImagePath.parse(v);
-
 // Entities
 
 /**
@@ -360,7 +332,7 @@ const Base = z.object({
 	googleDescription: GoogleDescription.optional(),
 	googleImgSrc: GoogleImgSrc.optional(),
 	googleHref: GoogleHref.optional(),
-	imagePath: BookImagePath.optional(),
+	imagePath: Path.optional(),
 	markdown: BookMarkdown.optional(),
 	createdAt: CreatedAt,
 });
@@ -428,7 +400,7 @@ export type CreateBookArgs = Readonly<{
 	/** The book title */
 	title: BookTitle;
 	/** Optional path to user-uploaded book cover image */
-	imagePath?: BookImagePath;
+	imagePath?: Path;
 	/** The caller identifier for event tracking */
 	caller: string;
 }>;
@@ -515,7 +487,7 @@ export type BookListItemDTO = Readonly<{
 	ISBN: ISBN;
 	title: BookTitle;
 	googleImgSrc: GoogleImgSrc | undefined;
-	imagePath: BookImagePath | undefined;
+	imagePath: Path | undefined;
 }>;
 
 /**

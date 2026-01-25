@@ -3,7 +3,6 @@ import {
 	type BookSearchItemDTO,
 	type ExportedBook,
 	type ISBN,
-	makeBookImagePath,
 	makeBookMarkdown,
 	makeBookTitle,
 	makeGoogleAuthors,
@@ -25,6 +24,7 @@ import {
 	type Status,
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { makePath } from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
 import { env } from "@/env";
 import { minioClient } from "@/minio";
 import prisma from "@/prisma";
@@ -78,7 +78,7 @@ async function findByISBN(
 			? makeGoogleImgSrc(data.googleImgSrc)
 			: undefined,
 		googleHref: data.googleHref ? makeGoogleHref(data.googleHref) : undefined,
-		imagePath: data.imagePath ? makeBookImagePath(data.imagePath) : undefined,
+		imagePath: data.imagePath ? makePath(data.imagePath, false) : undefined,
 		markdown: data.markdown ? makeBookMarkdown(data.markdown) : undefined,
 		createdAt: makeCreatedAt(data.createdAt),
 	};
@@ -114,7 +114,7 @@ async function findMany(
 		ISBN: makeISBN(d.ISBN),
 		title: makeBookTitle(d.title),
 		googleImgSrc: d.googleImgSrc ? makeGoogleImgSrc(d.googleImgSrc) : undefined,
-		imagePath: d.imagePath ? makeBookImagePath(d.imagePath) : undefined,
+		imagePath: d.imagePath ? makePath(d.imagePath, false) : undefined,
 	}));
 }
 

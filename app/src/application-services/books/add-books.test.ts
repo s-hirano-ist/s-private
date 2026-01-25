@@ -1,6 +1,5 @@
 import {
 	bookEntity,
-	makeBookImagePath,
 	makeBookTitle,
 	makeISBN,
 } from "@s-hirano-ist/s-core/books/entities/books-entity";
@@ -73,7 +72,7 @@ describe("addBooks", () => {
 			ISBN: makeISBN("978-4-06-519981-0"),
 			title: makeBookTitle("Test Book"),
 			userId: makeUserId("user-123"),
-			imagePath: makeBookImagePath(null),
+			imagePath: undefined,
 			hasImage: false as const,
 		});
 	});
@@ -103,7 +102,7 @@ describe("addBooks", () => {
 			userId: makeUserId("user-123"),
 			status: "UNEXPORTED",
 			createdAt: makeCreatedAt(),
-			imagePath: makeBookImagePath(null),
+			imagePath: undefined,
 		} as const;
 
 		const mockEvent = new BookCreatedEvent({
@@ -128,7 +127,7 @@ describe("addBooks", () => {
 			ISBN: makeISBN("978-4-06-519981-0"),
 			title: makeBookTitle("Test Book"),
 			userId: makeUserId("user-123"),
-			imagePath: makeBookImagePath(null),
+			imagePath: undefined,
 			caller: "addBooks",
 		});
 		expect(booksCommandRepository.create).toHaveBeenCalledWith(mockBook);
