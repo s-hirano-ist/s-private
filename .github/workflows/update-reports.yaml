@@ -55,4 +55,3 @@ jobs:
             This is an update PR of auto generated reports:
             - License summary (library-license.txt)
             - Code duplication analysis (jscpd-summary.txt)
-          reviewers: "s-hirano-ist"
