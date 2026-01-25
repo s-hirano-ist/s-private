@@ -67,13 +67,13 @@
 		"@s-hirano-ist/s-notification": "workspace:*",
 		"glob": "13.0.0",
 		"jsdom": "27.4.0",
-		"minio": "8.0.5",
-		"turndown": "7.2.0"
+		"minio": "8.0.6",
+		"turndown": "7.2.2"
 	},
 	"devDependencies": {
 		"@types/jsdom": "27.0.0",
-		"@types/node": "24.10.4",
-		"@types/turndown": "5.0.5",
+		"@types/node": "24.10.9",
+		"@types/turndown": "5.0.6",
 		"tsx": "4.21.0",
 		"typescript": "5.9.3"
 	}
