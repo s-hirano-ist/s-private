@@ -1142,8 +1142,9 @@ afterSubmit={(msg) => toast(message(msg))}
 ### 実装例
 
 ```typescript
-// app/src/common/utils/cache-tag-builder.ts
+// app/src/infrastructures/common/cache/cache-tag-builder.ts
 import type { Status } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 
 type Domain = "books" | "articles" | "notes" | "images";
 
@@ -1152,7 +1153,7 @@ export function buildContentCacheTag(
   status: Status,
   userId: string,
 ): string {
-  return `${domain}_${status}_${userId}`;
+  return `${domain}_${status}_${sanitizeCacheTag(userId)}`;
 }
 
 export function buildCountCacheTag(
@@ -1160,7 +1161,20 @@ export function buildCountCacheTag(
   status: Status,
   userId: string,
 ): string {
-  return `${domain}_count_${status}_${userId}`;
+  return `${domain}_count_${status}_${sanitizeCacheTag(userId)}`;
+}
+
+export function buildPaginatedContentCacheTag(
+  domain: Domain,
+  status: Status,
+  userId: string,
+  currentCount: number,
+): string {
+  return `${domain}_${status}_${sanitizeCacheTag(userId)}_${currentCount}`;
+}
+
+export function buildCategoriesCacheTag(userId: string): string {
+  return `categories_${sanitizeCacheTag(userId)}`;
 }
 ```
 
@@ -1168,26 +1182,63 @@ export function buildCountCacheTag(
 
 | 関数 | タグ形式 | 例 |
 |------|---------|-----|
-| `buildContentCacheTag` | `{domain}_{status}_{userId}` | `articles_UNEXPORTED_user-123` |
-| `buildCountCacheTag` | `{domain}_count_{status}_{userId}` | `articles_count_EXPORTED_user-123` |
+| `buildContentCacheTag` | `{domain}_{status}_{sanitizedUserId}` | `articles_UNEXPORTED_auth` |
+| `buildCountCacheTag` | `{domain}_count_{status}_{sanitizedUserId}` | `articles_count_EXPORTED_auth` |
+| `buildPaginatedContentCacheTag` | `{domain}_{status}_{sanitizedUserId}_{count}` | `articles_UNEXPORTED_auth_0` |
+| `buildCategoriesCacheTag` | `categories_{sanitizedUserId}` | `categories_auth` |
 
-### 使用例
+### 使用例（revalidateTag）
 
 ```typescript
 // add-article.core.ts
 import { revalidateTag } from "next/cache";
-import { buildContentCacheTag, buildCountCacheTag } from "@/common/utils/cache-tag-builder";
+import {
+  buildContentCacheTag,
+  buildCountCacheTag,
+  buildCategoriesCacheTag,
+} from "@/infrastructures/common/cache/cache-tag-builder";
 
 // 永続化後にキャッシュを無効化
 await commandRepository.create(article);
 
 revalidateTag(buildContentCacheTag("articles", article.status, userId));
 revalidateTag(buildCountCacheTag("articles", article.status, userId));
-revalidateTag("categories"); // カテゴリ一覧も無効化
+revalidateTag("categories"); // グローバルカテゴリ一覧
+revalidateTag(buildCategoriesCacheTag(userId)); // ユーザー固有カテゴリ一覧
+```
+
+### 使用例（cacheTag）
+
+```typescript
+// get-articles.ts
+import { unstable_cacheTag as cacheTag } from "next/cache";
+import {
+  buildContentCacheTag,
+  buildCountCacheTag,
+  buildPaginatedContentCacheTag,
+  buildCategoriesCacheTag,
+} from "@/infrastructures/common/cache/cache-tag-builder";
+
+// データフェッチ時にキャッシュタグを設定
+export const _getArticles = async (currentCount: number, userId: UserId, status: Status) => {
+  "use cache";
+  cacheTag(
+    buildContentCacheTag("articles", status, userId),
+    buildPaginatedContentCacheTag("articles", status, userId, currentCount),
+  );
+  // ...
+};
+
+const _getCategories = async (userId: UserId) => {
+  "use cache";
+  cacheTag("categories", buildCategoriesCacheTag(userId));
+  // ...
+};
 ```
 
 ### 注意事項
 
+- **必ずビルダー関数を使用**: `cacheTag()`と`revalidateTag()`で同じビルダー関数を使用し、タグの一貫性を保証
 - タグはユーザーIDを含めてマルチテナント分離を維持
 - ステータス変更時は両方のステータスのキャッシュを無効化
 - カテゴリ等の関連データも忘れずに無効化
@@ -1204,6 +1255,8 @@ export function sanitizeCacheTag(userId: string): string {
 ```
 
 **目的:** キャッシュタグに使用できない文字（`|`等のAuth0ユーザーID内の特殊文字）を除去
+
+**重要:** ビルダー関数は内部で`sanitizeCacheTag`を呼び出すため、呼び出し側で個別にサニタイズする必要はない
 
 ### `revalidatePath` vs `revalidateTag` の使い分け
 
@@ -1243,9 +1296,13 @@ revalidatePath(`/articles/${articleId}`);
 
 ```typescript
 // app/src/application-services/articles/get-articles.ts
-import { cacheTag } from "next/cache";
+import { unstable_cacheTag as cacheTag } from "next/cache";
 import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
+import {
+  buildContentCacheTag,
+  buildPaginatedContentCacheTag,
+} from "@/infrastructures/common/cache/cache-tag-builder";
 
 // 内部実装: "use cache"でキャッシュ
 export const _getArticles = async (
@@ -1256,8 +1313,8 @@ export const _getArticles = async (
 ): Promise<LinkCardStackInitialData> => {
   "use cache";
   cacheTag(
-    `articles_${status}_${userId}`,
-    `articles_${status}_${userId}_${currentCount}`,
+    buildContentCacheTag("articles", status, userId),
+    buildPaginatedContentCacheTag("articles", status, userId, currentCount),
   );
 
   const articles = await articlesQueryRepository.findMany(userId, status, {
@@ -1307,16 +1364,18 @@ export const getExportedArticles: GetPaginatedData<LinkCardStackInitialData> =
 3. **両方の恩恵を受けたい** → 内部関数に `"use cache"`、公開関数を `cache()` でラップ（本コードベースの標準パターン）
 
 ```typescript
-// 推奨パターン: 両方を組み合わせ
-const _getData = async (userId: UserId) => {
+// 推奨パターン: 両方を組み合わせ + ビルダー関数使用
+import { buildContentCacheTag } from "@/infrastructures/common/cache/cache-tag-builder";
+
+const _getData = async (userId: UserId, status: Status) => {
   "use cache";
-  cacheTag(`data_${userId}`);
-  return await repository.findMany(userId);
+  cacheTag(buildContentCacheTag("articles", status, userId));
+  return await repository.findMany(userId, status);
 };
 
 export const getData = cache(async () => {
   const userId = await getSelfId();
-  return _getData(userId);
+  return _getData(userId, makeUnexportedStatus());
 });
 ```
 
