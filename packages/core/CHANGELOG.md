@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.9.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.8.4...@s-hirano-ist/s-core-v1.9.0) (2026-01-20)
+
+
+### Features
+
+* enhance repositories with DTOs for books, images, and notes ([7cc3bb4](https://github.com/s-hirano-ist/s-private/commit/7cc3bb415f0802bea6613025fb9c594c5109843d))
+
+
+### Bug Fixes
+
+* ddd issues and small fixes ([3dd6f3c](https://github.com/s-hirano-ist/s-private/commit/3dd6f3c89424391db13e3a30d8b57c10ac437cd6))
+
+
+### Maintenance
+
+* entities ([96e8bc3](https://github.com/s-hirano-ist/s-private/commit/96e8bc322aff1482b083db3559a1e45d22d78f1f))
+* image parser ([5a49fa9](https://github.com/s-hirano-ist/s-private/commit/5a49fa945e424a53d868bc175115f224be72500f))
+* image parser ([4f3dfd0](https://github.com/s-hirano-ist/s-private/commit/4f3dfd0598c3bdc0992449c40de065d1e4ab41b8))
+* makeStatusをmakeExportedStatusおよびmakeUnexportedStatusに置き換え、コードの一貫性を向上 ([265d317](https://github.com/s-hirano-ist/s-private/commit/265d3173a73db0c7aaaac91a58c90c4087a61f97))
+* refactor format fixes and docs ([279b4fd](https://github.com/s-hirano-ist/s-private/commit/279b4fdf9deee48b170cf5911a32f9ccaf12693e))
+* remove categoryId from article creation and related tests to streamline ID generation ([295751c](https://github.com/s-hirano-ist/s-private/commit/295751c8e7006eeab359ebe267a102d239a425b5))
+* remove unused export functions from entity files ([b449342](https://github.com/s-hirano-ist/s-private/commit/b4493425bfde38b0a358d114c83b04f40b6ee54d))
+* 画像、記事、書籍エンティティの制約を強化し、ファイルサイズを修正 ([a18bd82](https://github.com/s-hirano-ist/s-private/commit/a18bd82130d6edbd3006d1b5b1ce1abaa2eea871))
+
 ## [1.8.4](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.8.3...@s-hirano-ist/s-core-v1.8.4) (2026-01-05)
 
 ## [1.8.3](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.8.2...@s-hirano-ist/s-core-v1.8.3) (2026-01-04)
