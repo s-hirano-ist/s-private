@@ -102,7 +102,7 @@ PaginationItem.displayName = "PaginationItem";
 /**
  * Props for the PaginationLink component.
  */
-type PaginationLinkProps = {
+export type PaginationLinkProps = {
 	/** Whether this link represents the current page */
 	isActive?: boolean;
 } & Pick<ButtonProps, "size"> &
@@ -143,7 +143,7 @@ PaginationLink.displayName = "PaginationLink";
 /**
  * Props for the PaginationPrevious component.
  */
-type PaginationPreviousProps = {
+export type PaginationPreviousProps = {
 	/** Text label for the previous button. Defaults to "Previous". */
 	label?: string;
 } & React.ComponentProps<typeof PaginationLink>;
@@ -180,7 +180,7 @@ PaginationPrevious.displayName = "PaginationPrevious";
 /**
  * Props for the PaginationNext component.
  */
-type PaginationNextProps = {
+export type PaginationNextProps = {
 	/** Text label for the next button. Defaults to "Next". */
 	label?: string;
 } & React.ComponentProps<typeof PaginationLink>;
@@ -217,7 +217,7 @@ PaginationNext.displayName = "PaginationNext";
 /**
  * Props for the PaginationEllipsis component.
  */
-type PaginationEllipsisProps = {
+export type PaginationEllipsisProps = {
 	/** Screen reader label for the ellipsis. Defaults to "More pages". */
 	srLabel?: string;
 } & React.ComponentProps<"span">;
