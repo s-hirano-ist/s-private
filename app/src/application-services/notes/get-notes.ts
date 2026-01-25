@@ -23,6 +23,11 @@ import { PAGE_SIZE } from "@/common/constants";
 import type { GetCount, GetPaginatedData } from "@/common/types";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
+import {
+	buildContentCacheTag,
+	buildCountCacheTag,
+	buildPaginatedContentCacheTag,
+} from "@/infrastructures/common/cache/cache-tag-builder";
 import { notesQueryRepository } from "@/infrastructures/notes/repositories/notes-query-repository";
 
 /**
@@ -44,8 +49,8 @@ export const _getNotes = async (
 ): Promise<LinkCardStackInitialData> => {
 	"use cache";
 	cacheTag(
-		`notes_${status}_${userId}`,
-		`notes_${status}_${userId}_${currentCount}`,
+		buildContentCacheTag("notes", status, userId),
+		buildPaginatedContentCacheTag("notes", status, userId, currentCount),
 	);
 	try {
 		const notes = await notesQueryRepository.findMany(userId, status, {
@@ -82,7 +87,7 @@ const _getNotesCount = async (
 	status: Status,
 ): Promise<number> => {
 	"use cache";
-	cacheTag(`notes_count_${status}_${userId}`);
+	cacheTag(buildCountCacheTag("notes", status, userId));
 	try {
 		return await notesQueryRepository.count(userId, status);
 	} catch (error) {

@@ -21,6 +21,11 @@ import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import type { ImageData } from "@/components/common/display/image/image-stack";
+import {
+	buildContentCacheTag,
+	buildCountCacheTag,
+	buildPaginatedContentCacheTag,
+} from "@/infrastructures/common/cache/cache-tag-builder";
 import { minioStorageService } from "@/infrastructures/common/services/minio-storage-service";
 import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
 
@@ -39,7 +44,7 @@ const _getImagesCount = async (
 	status: Status,
 ): Promise<number> => {
 	"use cache";
-	cacheTag(`images_count_${status}_${userId}`);
+	cacheTag(buildCountCacheTag("images", status, userId));
 	try {
 		return await imagesQueryRepository.count(userId, status);
 	} catch (error) {
@@ -59,7 +64,10 @@ const _getImages = async (
 	cacheStrategy?: CacheStrategy,
 ): Promise<ImageData[]> => {
 	"use cache";
-	cacheTag(`images_${status}_${userId}`, `images_${status}_${userId}_${page}`);
+	cacheTag(
+		buildContentCacheTag("images", status, userId),
+		buildPaginatedContentCacheTag("images", status, userId, page),
+	);
 	try {
 		const data = await imagesQueryRepository.findMany(userId, status, {
 			skip: (page - 1) * PAGE_SIZE,

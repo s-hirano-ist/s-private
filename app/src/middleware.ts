@@ -5,7 +5,9 @@ import { routing } from "./infrastructures/i18n/routing";
 
 const handleI18nRouting = createMiddleware(routing);
 
-// FIXME: https://github.com/amannn/next-intl/issues/596 auth((req))の方法である必要性確認
+// Note: Using direct auth() call in middleware is the recommended approach
+// for next-intl + NextAuth.js v5 integration.
+// See: https://github.com/amannn/next-intl/issues/596
 
 export default async function middleware(request: NextRequest) {
 	const session = await auth();

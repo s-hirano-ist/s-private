@@ -28,6 +28,12 @@ import {
 	articlesQueryRepository,
 	categoryQueryRepository,
 } from "@/infrastructures/articles/repositories/articles-query-repository";
+import {
+	buildCategoriesCacheTag,
+	buildContentCacheTag,
+	buildCountCacheTag,
+	buildPaginatedContentCacheTag,
+} from "@/infrastructures/common/cache/cache-tag-builder";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
 
@@ -50,8 +56,8 @@ export const _getArticles = async (
 ): Promise<LinkCardStackInitialData> => {
 	"use cache";
 	cacheTag(
-		`articles_${status}_${userId}`,
-		`articles_${status}_${userId}_${currentCount}`,
+		buildContentCacheTag("articles", status, userId),
+		buildPaginatedContentCacheTag("articles", status, userId, currentCount),
 	);
 	try {
 		const articles = await articlesQueryRepository.findMany(userId, status, {
@@ -100,7 +106,7 @@ const _getArticlesCount = async (
 	status: Status,
 ): Promise<number> => {
 	"use cache";
-	cacheTag(`articles_count_${status}_${userId}`);
+	cacheTag(buildCountCacheTag("articles", status, userId));
 	try {
 		return await articlesQueryRepository.count(userId, status);
 	} catch (error) {
@@ -118,7 +124,7 @@ const _getArticlesCount = async (
  */
 const _getCategories = async (userId: UserId): Promise<ArticleFormData> => {
 	"use cache";
-	cacheTag("categories", `categories_${userId}`);
+	cacheTag("categories", buildCategoriesCacheTag(userId));
 	try {
 		const response = await categoryQueryRepository.findMany(userId, {
 			orderBy: { name: "asc" },

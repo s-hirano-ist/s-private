@@ -3,7 +3,11 @@ import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Noto_Sans_JP } from "next/font/google";
-// FIXME: view transition does not work on search page
+// FIXME: Enable View Transitions when the API is stable.
+// Note: View Transitions disabled due to React 19 unstable_ViewTransition
+// conflicting with Drawer/Dialog components on the Search page.
+// This is a known issue with the experimental API. Re-evaluate when
+// React provides a stable View Transitions API.
 // import { unstable_ViewTransition as ViewTransitions } from "react";
 import { env } from "@/env";
 

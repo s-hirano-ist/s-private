@@ -9,6 +9,7 @@
  */
 
 import type { Status } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 
 /** Content domain types for cache tagging */
 type Domain = "books" | "articles" | "notes" | "images";
@@ -26,7 +27,7 @@ export function buildContentCacheTag(
 	status: Status,
 	userId: string,
 ): string {
-	return `${domain}_${status}_${userId}`;
+	return `${domain}_${status}_${sanitizeCacheTag(userId)}`;
 }
 
 /**
@@ -42,5 +43,33 @@ export function buildCountCacheTag(
 	status: Status,
 	userId: string,
 ): string {
-	return `${domain}_count_${status}_${userId}`;
+	return `${domain}_count_${status}_${sanitizeCacheTag(userId)}`;
+}
+
+/**
+ * Builds a cache tag for paginated content queries.
+ *
+ * @param domain - Content domain (books, articles, notes, images)
+ * @param status - Content status (UNEXPORTED/EXPORTED)
+ * @param userId - User ID for data isolation
+ * @param currentCount - Current pagination offset
+ * @returns Cache tag string in format `{domain}_{status}_{userId}_{currentCount}`
+ */
+export function buildPaginatedContentCacheTag(
+	domain: Domain,
+	status: Status,
+	userId: string,
+	currentCount: number,
+): string {
+	return `${domain}_${status}_${sanitizeCacheTag(userId)}_${currentCount}`;
+}
+
+/**
+ * Builds a cache tag for categories queries.
+ *
+ * @param userId - User ID for data isolation
+ * @returns Cache tag string in format `categories_{userId}`
+ */
+export function buildCategoriesCacheTag(userId: string): string {
+	return `categories_${sanitizeCacheTag(userId)}`;
 }

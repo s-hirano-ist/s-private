@@ -1,6 +1,7 @@
 import { UnexpectedError } from "@s-hirano-ist/s-core/errors/error-classes";
 import { Prisma } from "@s-hirano-ist/s-database";
 import { NotificationError } from "@s-hirano-ist/s-notification";
+import * as Minio from "minio";
 import { AuthError } from "next-auth";
 import { describe, expect, test, vi } from "vitest";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
@@ -16,6 +17,17 @@ vi.mock("@/infrastructures/events/event-dispatcher", () => ({
 // Mock the event setup
 vi.mock("@/infrastructures/events/event-setup", () => ({
 	initializeEventHandlers: vi.fn(),
+}));
+
+// Mock MinIO
+vi.mock("minio", () => ({
+	S3Error: class S3Error extends Error {
+		code?: string;
+		constructor(message: string) {
+			super(message);
+			this.name = "S3Error";
+		}
+	},
 }));
 
 describe("wrapServerSideErrorForClient", () => {
@@ -197,6 +209,32 @@ describe("wrapServerSideErrorForClient", () => {
 		expect(result).toEqual({
 			success: false,
 			message: "unexpected",
+		});
+	});
+
+	test("should handle MinIO S3Error", async () => {
+		const error = new Minio.S3Error("Access Denied");
+		error.code = "AccessDenied";
+
+		const result = await wrapServerSideErrorForClient(error);
+
+		expect(eventDispatcher.dispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				eventType: "system.error",
+				payload: expect.objectContaining({
+					message: "MinIO S3 Error: AccessDenied - Access Denied",
+					status: 500,
+					shouldNotify: true,
+				}),
+				metadata: expect.objectContaining({
+					caller: "wrapServerSideError",
+					userId: "system",
+				}),
+			}),
+		);
+		expect(result).toEqual({
+			success: false,
+			message: "storageError",
 		});
 	});
 });

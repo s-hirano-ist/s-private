@@ -24,6 +24,11 @@ import type { GetCount, GetPaginatedData } from "@/common/types";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import type { ImageCardStackInitialData } from "@/components/common/layouts/cards/types";
 import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
+import {
+	buildContentCacheTag,
+	buildCountCacheTag,
+	buildPaginatedContentCacheTag,
+} from "@/infrastructures/common/cache/cache-tag-builder";
 
 const API_BOOK_THUMBNAIL_PATH = "/api/books/images/thumbnail";
 
@@ -40,8 +45,8 @@ export const _getBooks = async (
 ): Promise<ImageCardStackInitialData> => {
 	"use cache";
 	cacheTag(
-		`books_${status}_${userId}`,
-		`books_${status}_${userId}_${currentCount}`,
+		buildContentCacheTag("books", status, userId),
+		buildPaginatedContentCacheTag("books", status, userId, currentCount),
 	);
 
 	try {
@@ -80,7 +85,7 @@ const _getBooksCount = async (
 	status: Status,
 ): Promise<number> => {
 	"use cache";
-	cacheTag(`books_count_${status}_${userId}`);
+	cacheTag(buildCountCacheTag("books", status, userId));
 	try {
 		return await booksQueryRepository.count(userId, status);
 	} catch (error) {
