@@ -391,3 +391,69 @@ graph TB
 - マイクロサービス分離が必要となった場合
 - 非同期イベント処理が必要となった場合（大量イベント）
 - イベントソーシングの導入を検討する場合
+
+### 003: Category エンティティファクトリの省略
+
+#### 概要
+
+Category エンティティには他のエンティティ（Article, Book, Note, Image）のような `*Entity.create()` ファクトリを設けていません。
+
+#### DDDの原則との乖離
+
+- エンティティの生成ロジックがドメインサービス（CategoryService）内に直接実装されている
+- 他のエンティティとファクトリパターンが異なる
+
+#### 対応しない理由
+
+**CategoryはArticle集約の内部エンティティ**: CategoryはArticle集約の一部であり、独立したライフサイクルを持ちません。
+
+- Categoryの作成はArticle作成のコンテキスト内でのみ発生する
+- Category単体のCRUD操作は存在しない
+- `CategoryService.resolveOrCreate()` がカテゴリ解決ロジックをカプセル化している
+
+独自のファクトリを設けることは過度な抽象化となり、実際の使用パターンと一致しません。
+
+#### 対象ファイル
+
+- `packages/core/articles/services/category-service.ts`
+
+#### リスク軽減策
+
+- CategoryService内にCategory生成ロジックを集約し、分散を防ぐ
+- domain-model.md の集約境界図でCategoryの位置付けを明示
+
+### 004: 値オブジェクトのエンティティファイル内コロケーション
+
+#### 概要
+
+1ファイル内にエンティティと複数の値オブジェクトが定義されている。
+DDDでは value-objects/ ディレクトリに分離することが一般的。
+
+#### DDDの原則との乖離
+
+- 値オブジェクト（ArticleTitle, Url, Quote 等）がエンティティファイル内に同居
+- ディレクトリ構造上の分離がない
+
+#### 対応しない理由
+
+**Zodスキーマベースの利点**: 現在のアプローチは Zod スキーマで値オブジェクトを定義しており、以下のメリットがある:
+
+- エンティティとその構成要素（値オブジェクト）が同一ファイルにあることで、関連性が明確
+- 値オブジェクトの変更がエンティティに与える影響を即座に把握可能
+- import 文の簡潔化
+- ファイル数の削減による可読性向上
+
+#### 対象ファイル
+
+- `packages/core/articles/entities/article-entity.ts`
+- `packages/core/books/entities/books-entity.ts`
+- `packages/core/notes/entities/note-entity.ts`
+- `packages/core/images/entities/image-entity.ts`
+
+#### 再検討条件
+
+以下の条件が発生した場合、分離を検討する：
+
+- 値オブジェクトを複数ドメイン間で共有する必要が生じた場合
+- 1ファイルの行数が著しく増加し可読性が低下した場合
+- 値オブジェクトに複雑なビジネスロジックが追加された場合
