@@ -34,19 +34,17 @@ async function main() {
 	const userId: UserId = makeUserId(env.USERNAME_TO_EXPORT ?? "");
 
 	async function resetImages() {
-		await prisma.$transaction(async (tx: unknown) => {
-			const commandRepository = createImagesCommandRepository(
-				tx as Parameters<typeof createImagesCommandRepository>[0],
-			);
-			const batchService = new ImagesBatchDomainService(commandRepository);
+		// DDD: Create repository and domain service
+		// Transaction is handled internally by repository's resetStatus method
+		const commandRepository = createImagesCommandRepository(prisma);
+		const batchService = new ImagesBatchDomainService(commandRepository);
 
-			const result = await batchService.resetImages(userId);
+		const result = await batchService.resetImages(userId);
 
-			console.log(
-				`💾 LAST_UPDATEDの画像をEXPORTEDに変更しました（${result.finalized.count}件）`,
-			);
-			console.log(`💾 ${result.marked.count}件の画像をリセットしました`);
-		});
+		console.log(
+			`💾 LAST_UPDATEDの画像をEXPORTEDに変更しました（${result.finalized.count}件）`,
+		);
+		console.log(`💾 ${result.marked.count}件の画像をリセットしました`);
 	}
 
 	try {

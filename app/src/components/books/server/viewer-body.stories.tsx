@@ -1,5 +1,4 @@
 import {
-	makeBookImagePath,
 	makeBookMarkdown,
 	makeBookTitle,
 	makeGoogleAuthors,
@@ -61,7 +60,7 @@ const mockBookData = Object.freeze({
 	]),
 	googleHref: makeGoogleHref("https://www.typescriptlang.org/docs/"),
 	googleImgSrc: makeGoogleImgSrc("https://picsum.photos/id/1/192/192"),
-	imagePath: makeBookImagePath(null),
+	imagePath: undefined,
 	status: "EXPORTED" as const,
 	createdAt: makeCreatedAt(new Date("2024-01-01")),
 	exportedAt: makeExportedAt(new Date("2024-01-01")),
@@ -149,7 +148,7 @@ export const MinimalData: Story = {
 				googleAuthors: makeGoogleAuthors(null),
 				googleHref: makeGoogleHref(null),
 				googleImgSrc: makeGoogleImgSrc(null),
-				imagePath: makeBookImagePath(null),
+				imagePath: undefined,
 				status: "EXPORTED" as const,
 				createdAt: makeCreatedAt(new Date("2024-01-01")),
 				exportedAt: makeExportedAt(new Date("2024-01-01")),

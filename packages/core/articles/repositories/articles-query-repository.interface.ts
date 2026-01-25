@@ -4,11 +4,13 @@ import type {
 } from "../../shared-kernel/entities/common-entity.js";
 import type {
 	ArticleListItemDTO,
+	ArticleSearchItemDTO,
 	ExportedArticle,
 	UnexportedArticle,
 	Url,
 } from "../entities/article-entity.js";
 import type { ArticlesFindManyParams } from "../types/query-params.js";
+import type { IArticlesCommandRepository } from "./articles-command-repository.interface.js";
 
 /**
  * Query repository interface for the Article domain.
@@ -87,7 +89,7 @@ export type IArticlesQueryRepository = {
 	 * @param query - The search query string
 	 * @param userId - The user ID for tenant isolation
 	 * @param limit - Optional maximum number of results (default varies by implementation)
-	 * @returns Array of ArticleListItemDTO objects
+	 * @returns Array of ArticleSearchItemDTO objects
 	 *
 	 * @remarks
 	 * Returns DTOs with `categoryName` for direct property access.
@@ -96,5 +98,5 @@ export type IArticlesQueryRepository = {
 		query: string,
 		userId: UserId,
 		limit?: number,
-	): Promise<ArticleListItemDTO[]>;
+	): Promise<ArticleSearchItemDTO[]>;
 };

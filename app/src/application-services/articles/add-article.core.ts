@@ -25,8 +25,9 @@ import { parseAddArticleFormData } from "./helpers/form-data-parser";
  * Performs the following steps:
  * 1. Form data parsing and validation
  * 2. Domain duplicate check
- * 3. Entity creation with value objects and domain event
- * 4. Persistence, event dispatch, and cache invalidation
+ * 3. Category resolution (find existing or create new)
+ * 4. Entity creation with value objects and domain event
+ * 5. Persistence, event dispatch, and cache invalidation
  *
  * @param formData - Form data containing title, quote, url, category
  * @param deps - Dependencies (repository, domain service factory, event dispatcher)
@@ -39,6 +40,7 @@ export async function addArticleCore(
 	const { commandRepository, domainServiceFactory, eventDispatcher } = deps;
 	const articlesDomainService =
 		domainServiceFactory.createArticlesDomainService();
+	const categoryService = domainServiceFactory.createCategoryService();
 
 	try {
 		const { title, quote, url, categoryName, userId } = parseAddArticleFormData(
@@ -49,11 +51,18 @@ export async function addArticleCore(
 		// Domain business rule validation
 		await articlesDomainService.ensureNoDuplicate(url, userId);
 
+		// Resolve category (find existing or create new)
+		const categoryId = await categoryService.resolveOrCreate(
+			categoryName,
+			userId,
+		);
+
 		// Create entity with value objects and domain event
 		const [article, event] = articleEntity.create({
 			title,
 			quote,
 			url,
+			categoryId,
 			categoryName,
 			userId,
 			caller: "addArticle",

@@ -1,4 +1,5 @@
 import { BaseDomainEvent } from "./base-domain-event.js";
+import type { SystemErrorEvent } from "./system-error-event.js";
 
 /**
  * Domain event for system warnings.

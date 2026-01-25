@@ -1,3 +1,8 @@
+import {
+	makeId,
+	makeUnexportedStatus,
+	makeUserId,
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { describe, expect, test, vi } from "vitest";
 import { deleteImage } from "@/application-services/images/delete-image";
 import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
@@ -21,16 +26,21 @@ vi.mock("@/common/auth/session", () => ({
 	hasDumperPostPermission: () => mockHasDumperPostPermission(),
 }));
 
+// Test UUIDs (UUIDv7 format)
+const TEST_IMAGE_ID = "01234567-89ab-7def-8123-456789abcdef";
+const TEST_NOT_FOUND_ID = "01234567-89ab-7def-8123-456789abcde0";
+const TEST_USER_ID = "test-user-id";
+
 describe("deleteImage", () => {
 	test("should delete images successfully", async () => {
 		mockHasDumperPostPermission.mockResolvedValue(true);
-		mockGetSelfId.mockResolvedValue("1");
+		mockGetSelfId.mockResolvedValue(makeUserId(TEST_USER_ID));
 
 		vi.mocked(imagesCommandRepository.deleteById).mockResolvedValueOnce({
 			path: "test-image.jpg",
 		});
 
-		const result = await deleteImage("1");
+		const result = await deleteImage(TEST_IMAGE_ID);
 
 		expect(result).toEqual({
 			success: true,
@@ -38,28 +48,28 @@ describe("deleteImage", () => {
 		});
 
 		expect(imagesCommandRepository.deleteById).toHaveBeenCalledWith(
-			"1",
-			"1",
-			"UNEXPORTED",
+			makeId(TEST_IMAGE_ID),
+			makeUserId(TEST_USER_ID),
+			makeUnexportedStatus(),
 		);
 	});
 
 	test("should return error when images not found", async () => {
 		mockHasDumperPostPermission.mockResolvedValue(true);
-		mockGetSelfId.mockResolvedValue("1");
+		mockGetSelfId.mockResolvedValue(makeUserId(TEST_USER_ID));
 
 		vi.mocked(imagesCommandRepository.deleteById).mockRejectedValue(
 			new Error("Record not found"),
 		);
 
-		const result = await deleteImage("999");
+		const result = await deleteImage(TEST_NOT_FOUND_ID);
 
 		expect(result.success).toBe(false);
 		expect(result.message).toBe("unexpected");
 		expect(imagesCommandRepository.deleteById).toHaveBeenCalledWith(
-			"999",
-			"1",
-			"UNEXPORTED",
+			makeId(TEST_NOT_FOUND_ID),
+			makeUserId(TEST_USER_ID),
+			makeUnexportedStatus(),
 		);
 	});
 });

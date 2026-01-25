@@ -5,7 +5,6 @@
  */
 
 import {
-	makeBookImagePath,
 	makeBookTitle,
 	makeISBN,
 } from "@s-hirano-ist/s-core/books/entities/books-entity";
@@ -56,7 +55,7 @@ export const parseAddBooksFormData = async (
 	if (file === null) {
 		return {
 			...baseData,
-			imagePath: makeBookImagePath(null),
+			imagePath: undefined,
 			hasImage: false as const,
 		};
 	}
@@ -71,7 +70,7 @@ export const parseAddBooksFormData = async (
 
 	return {
 		...baseData,
-		imagePath: makeBookImagePath(path),
+		imagePath: path,
 		hasImage: true as const,
 		path,
 		contentType: makeContentType(file.type),

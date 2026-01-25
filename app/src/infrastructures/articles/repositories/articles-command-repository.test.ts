@@ -1,6 +1,5 @@
 import {
 	makeArticleTitle,
-	makeCategoryName,
 	makeQuote,
 	makeUrl,
 } from "@s-hirano-ist/s-core/articles/entities/article-entity";
@@ -46,7 +45,7 @@ describe("ArticlesCommandRepository", () => {
 				userId: makeUserId("user123"),
 				id: makeId("01234567-89ab-7def-9123-456789abcdef"),
 				status: makeUnexportedStatus(),
-				categoryName: makeCategoryName("tech"),
+				categoryId: makeId("01933f5c-9df0-7001-9123-456789abcdef"),
 				createdAt: makeCreatedAt(),
 			});
 
@@ -75,7 +74,7 @@ describe("ArticlesCommandRepository", () => {
 				title: makeArticleTitle("Another article"),
 				url: makeUrl("https://example.com/article/2"),
 				quote: makeQuote(null),
-				categoryName: makeCategoryName("tech"),
+				categoryId: makeId("01933f5c-9df0-7001-9123-456789abcdef"),
 				userId: makeUserId("user123"),
 				id: makeId("0198bfc4-444f-71eb-8e78-4005df127ffd"),
 				status: makeUnexportedStatus(),
@@ -99,7 +98,7 @@ describe("ArticlesCommandRepository", () => {
 					userId: makeUserId("user123"),
 					id: makeId("01234567-89ab-7def-9123-456789abcdef"),
 					status: makeUnexportedStatus(),
-					categoryName: makeCategoryName("tech"),
+					categoryId: makeId("01933f5c-9df0-7001-9123-456789abcdef"),
 					createdAt: makeCreatedAt(),
 				}),
 			).rejects.toThrow("Database constraint error");

@@ -4,8 +4,8 @@ import {
 } from "@s-hirano-ist/s-core/images/entities/image-entity";
 import { makeId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { minioStorageService } from "@/infrastructures/common/services/minio-storage-service";
 import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
+import { minioStorageService } from "@/infrastructures/shared/storage/minio-storage-service";
 import {
 	getExportedImages,
 	getImagesCount,
@@ -23,7 +23,7 @@ vi.mock(
 	}),
 );
 
-vi.mock("@/infrastructures/common/services/minio-storage-service", () => ({
+vi.mock("@/infrastructures/shared/storage/minio-storage-service", () => ({
 	minioStorageService: { getImage: vi.fn() },
 }));
 

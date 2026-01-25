@@ -24,10 +24,13 @@ Before doing any UI, frontend or React development, ALWAYS call the storybook MC
 - `pnpm storybook` - Storybook起動
 
 ## ディレクトリ構造
-- `packages/core/` - ドメイン層（entities, repositories, services）
+- `packages/core/` - ドメイン層（entities, repositories, services, shared-kernel）
+- `packages/ui/` - 共有UIコンポーネント（shadcn/ui, forms, hooks等）
+- `packages/scripts/` - ビルド・ユーティリティスクリプト
 - `app/src/application-services/` - アプリケーション層
-- `app/src/infrastructures/` - インフラ層（Prisma実装）
-- `app/[locale]/` - Next.js App Router（i18n対応: en/ja）
+- `app/src/infrastructures/` - インフラ層（Prisma実装、DI factories）
+- `app/src/loaders/` - データローダー層
+- `app/src/app/[locale]/` - Next.js App Router（i18n対応: en/ja）
 
 ## 主要ドメイン
 `articles`, `notes`, `images`, `books` - 各コンテンツのCRUDと状態管理（UNEXPORTED → EXPORTED）

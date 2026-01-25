@@ -1,5 +1,5 @@
-import { DuplicateError } from "../../errors/error-classes.js";
 import type { UserId } from "../../shared-kernel/entities/common-entity.js";
+import { DuplicateError } from "../../shared-kernel/errors/error-classes.js";
 import type { ISBN } from "../entities/books-entity.js";
 import type { IBooksQueryRepository } from "../repositories/books-query-repository.interface.js";
 

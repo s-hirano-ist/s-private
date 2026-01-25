@@ -1,6 +1,11 @@
 import type {
+	ExportedAt,
+	UserId,
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import type {
 	BulkUpdateResult,
 	IBatchCommandRepository,
+	ResetStatusResult,
 	StatusTransitionParams,
 } from "@s-hirano-ist/s-core/shared-kernel/repositories/batch-command-repository.interface";
 
@@ -8,6 +13,9 @@ type PrismaClientLike = {
 	image: {
 		updateMany: (args: any) => Promise<{ count: number }>;
 	};
+	$transaction: <T extends Promise<{ count: number }>[]>(
+		queries: [...T],
+	) => Promise<{ [K in keyof T]: { count: number } }>;
 };
 
 /**
@@ -37,6 +45,38 @@ export function createImagesCommandRepository(
 			});
 
 			return { count: result.count };
+		},
+
+		async resetStatus(
+			userId: UserId,
+			exportedAt: ExportedAt,
+		): Promise<ResetStatusResult> {
+			const [finalized, marked] = await prisma.$transaction([
+				prisma.image.updateMany({
+					where: {
+						userId: userId as string,
+						status: "LAST_UPDATED",
+					},
+					data: {
+						status: "EXPORTED",
+						exportedAt: exportedAt as Date,
+					},
+				}),
+				prisma.image.updateMany({
+					where: {
+						userId: userId as string,
+						status: "UNEXPORTED",
+					},
+					data: {
+						status: "LAST_UPDATED",
+					},
+				}),
+			]);
+
+			return {
+				finalized: { count: finalized.count },
+				marked: { count: marked.count },
+			};
 		},
 	};
 }

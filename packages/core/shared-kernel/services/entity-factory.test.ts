@@ -1,9 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { z } from "zod";
-import {
-	InvalidFormatError,
-	UnexpectedError,
-} from "../../errors/error-classes";
+import { InvalidFormatError, UnexpectedError } from "../errors/error-classes";
 import { createEntityWithErrorHandling } from "./entity-factory";
 
 describe("createEntityWithErrorHandling", () => {

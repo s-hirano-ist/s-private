@@ -44,7 +44,7 @@ erDiagram
     Article {
         Id id PK
         UserId userId FK
-        CategoryName categoryName
+        Id categoryId FK "Category参照"
         ArticleTitle title
         Quote quote "nullable"
         Url url
@@ -163,6 +163,7 @@ graph TB
 | ドメインサービス | 主な責務 | 使用するリポジトリメソッド |
 |-----------------|---------|------------------------|
 | ArticlesDomainService | 重複URL検証 | findByUrl |
+| CategoryService | カテゴリ解決（既存検索または新規作成） | findByNameAndUser, create |
 | BooksDomainService | 重複ISBN検証 | findByISBN |
 | NotesDomainService | 重複タイトル検証 | findByTitle |
 | IdGeneratorService | UUID v7生成 | - |
@@ -228,7 +229,7 @@ graph TB
 
 ### 設計上の考慮事項
 
-- **Categoryの位置付け**: Articleはドメイン層で`categoryName`（値オブジェクト）を保持し、インフラ層で`categoryId`（FK）として永続化。`connectOrCreate`パターンで管理
+- **Categoryの位置付け**: Category は概念的には Article 集約の一部であり、独立したライフサイクルを持たない。Article 作成時にのみ `CategoryService.resolveOrCreate()` で解決/作成される。ただし、実装上はクエリ最適化とコード整理のため独自リポジトリ（Command/Query）を持つ。これは集約の分離ではなく、サブエンティティの永続化パターンとしての設計選択である
 - **トランザクション境界**: 各集約は独立してトランザクション整合性を保証
 - **リポジトリの責任**: 各集約ルートに対して1つのCommand/Queryリポジトリペアを定義
 
@@ -380,3 +381,176 @@ graph TB
 
 - 現在のイベント発行機構（`[Entity, Event]` タプル返却、`eventDispatcher.dispatch`）は維持
 - 必要性が明確になった時点で段階的に実装を追加
+
+#### 再検討条件
+
+以下の条件が発生した場合、EventBusパターンの導入を検討する：
+
+- 通知失敗時のリトライが必要となった場合
+- イベント監査ログが必要となった場合（コンプライアンス要件）
+- マイクロサービス分離が必要となった場合
+- 非同期イベント処理が必要となった場合（大量イベント）
+- イベントソーシングの導入を検討する場合
+
+### 003: Category エンティティファクトリの省略
+
+#### 概要
+
+Category エンティティには他のエンティティ（Article, Book, Note, Image）のような `*Entity.create()` ファクトリを設けていません。
+
+#### DDDの原則との乖離
+
+- エンティティの生成ロジックがドメインサービス（CategoryService）内に直接実装されている
+- 他のエンティティとファクトリパターンが異なる
+
+#### 対応しない理由
+
+**CategoryはArticle集約の内部エンティティ**: CategoryはArticle集約の一部であり、独立したライフサイクルを持ちません。
+
+- Categoryの作成はArticle作成のコンテキスト内でのみ発生する
+- Category単体のCRUD操作は存在しない
+- `CategoryService.resolveOrCreate()` がカテゴリ解決ロジックをカプセル化している
+
+独自のファクトリを設けることは過度な抽象化となり、実際の使用パターンと一致しません。
+
+#### 対象ファイル
+
+- `packages/core/articles/services/category-service.ts`
+
+#### リスク軽減策
+
+- CategoryService内にCategory生成ロジックを集約し、分散を防ぐ
+- domain-model.md の集約境界図でCategoryの位置付けを明示
+
+### 004: 値オブジェクトのエンティティファイル内コロケーション
+
+#### 概要
+
+1ファイル内にエンティティと複数の値オブジェクトが定義されている。
+DDDでは value-objects/ ディレクトリに分離することが一般的。
+
+#### DDDの原則との乖離
+
+- 値オブジェクト（ArticleTitle, Url, Quote 等）がエンティティファイル内に同居
+- ディレクトリ構造上の分離がない
+
+#### 対応しない理由
+
+**Zodスキーマベースの利点**: 現在のアプローチは Zod スキーマで値オブジェクトを定義しており、以下のメリットがある:
+
+- エンティティとその構成要素（値オブジェクト）が同一ファイルにあることで、関連性が明確
+- 値オブジェクトの変更がエンティティに与える影響を即座に把握可能
+- import 文の簡潔化
+- ファイル数の削減による可読性向上
+
+#### 対象ファイル
+
+- `packages/core/articles/entities/article-entity.ts`
+- `packages/core/books/entities/books-entity.ts`
+- `packages/core/notes/entities/note-entity.ts`
+- `packages/core/images/entities/image-entity.ts`
+
+#### 再検討条件
+
+以下の条件が発生した場合、分離を検討する：
+
+- 値オブジェクトを複数ドメイン間で共有する必要が生じた場合
+- 1ファイルの行数が著しく増加し可読性が低下した場合
+- 値オブジェクトに複雑なビジネスロジックが追加された場合
+
+### 005: DB操作とイベント発行のトランザクション境界
+
+#### 概要
+
+DB操作とイベント発行が別々のトランザクションで行われており、厳密なDDDでは不整合リスクがある設計になっています。
+
+```typescript
+// 現在の実装: 複数操作が別々のトランザクション
+await commandRepository.create(article);    // DB書き込み
+await eventDispatcher.dispatch(event);       // イベント発行
+revalidateTag(...);                          // キャッシュ無効化
+```
+
+#### DDDの原則との乖離
+
+- DB書き込み成功後、イベント発行失敗の可能性
+- 不整合状態のリスク（DBには記録あり、イベント未発行）
+- キャッシュ無効化失敗時の古いデータ表示
+- イベント発行とDB操作が同一トランザクションで保証されていない
+
+厳密なDDDでは、Outbox Pattern、明示的トランザクション、Saga Pattern などで整合性を担保します。
+
+#### 対応しない理由
+
+**現状の規模ではオーバースペック**: 単一ユーザー・単一サーバーの現規模では、これらのパターン導入による複雑性増加がメリットを上回ります。
+
+**TypeScriptでの表現が困難**: Outbox Pattern はポーリングや CDC（Change Data Capture）等の追加インフラが必要であり、Saga Pattern の補償トランザクションは TypeScript の型システムで安全に表現することが非常に難しいです。
+
+考慮した改善パターン:
+
+| パターン | 概要 | 見送り理由 |
+|---------|------|-----------|
+| Outbox Pattern | イベントをDBに保存し別プロセスで発行 | 追加インフラ（ポーリング/CDC）が必要 |
+| 明示的トランザクション | `prisma.$transaction()` で一括処理 | イベント発行を含めるとDB外部依存が発生 |
+| Saga Pattern | 失敗時に補償トランザクションを実行 | 補償ロジックの型安全な表現が困難 |
+
+#### 対象ファイル
+
+- `app/src/application-services/*/add-*.core.ts`
+- `app/src/application-services/*/update-*.core.ts`
+- `app/src/application-services/*/delete-*.core.ts`
+- `app/src/infrastructures/*/prisma-*-command-repository.ts`
+
+#### リスク軽減策
+
+- 現状の規模では失敗確率が極めて低い
+- 仮に不整合が発生しても、手動での復旧が容易な規模
+- イベント発行失敗時のエラーログで検知可能
+
+#### 再検討条件
+
+以下の条件が発生した場合、トランザクション境界の見直しを検討する：
+
+- 複数サービス間でのイベント連携が必要になった場合
+- 高頻度の書き込み操作でイベント発行失敗が観測された場合
+- コンプライアンス要件でイベント監査ログの完全性が必要になった場合
+- マイクロサービス分離を検討する場合
+
+### 006: 不変条件検証とエンティティ生成の分離
+
+#### 概要
+
+不変条件の検証（重複チェック）がエンティティ生成の外で行われており、Application Service が検証とエンティティ生成の順序を正しく呼び出す責任を負っています。
+
+```typescript
+// Application Service での使用パターン
+await domainService.ensureNoDuplicate(url, userId);  // 1. 検証
+const [article, event] = articleEntity.create({ ... }); // 2. 生成
+await commandRepository.create(article);              // 3. 永続化
+```
+
+#### DDDの原則との乖離
+
+- 不変条件の検証がエンティティ生成の外で行われている
+- Application Service が検証とエンティティ生成の順序を正しく呼び出す責任を負っている
+- 検証を忘れた場合、不正なエンティティが生成されるリスク
+
+#### 対応しない理由
+
+**現状の規模ではオーバースペック**: 型レベルでの検証済み保証（Branded Types等）やファクトリへの検証ロジック統合は、現在のコードベース規模に対して過度な複雑性をもたらします。
+
+- Application Service のパターンが確立されており、新規作成時のテンプレートとして機能
+- 検証漏れのリスクは低い（既存の全Application Serviceが同一パターンに従っている）
+- ファクトリを非同期にするとリポジトリ依存が発生し、ドメイン層の純粋性が損なわれる
+
+#### 対象ファイル
+
+- `packages/core/articles/services/articles-domain-service.ts`
+- `packages/core/books/services/books-domain-service.ts`
+- `packages/core/notes/services/notes-domain-service.ts`
+- `packages/core/images/services/images-domain-service.ts`
+
+#### リスク軽減策
+
+- Application Service のテンプレートパターンを維持
+- 新規Application Service作成時は既存コードを参照

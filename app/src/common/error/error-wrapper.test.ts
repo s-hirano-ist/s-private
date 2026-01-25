@@ -1,4 +1,4 @@
-import { UnexpectedError } from "@s-hirano-ist/s-core/errors/error-classes";
+import { UnexpectedError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import { Prisma } from "@s-hirano-ist/s-database";
 import { NotificationError } from "@s-hirano-ist/s-notification";
 import * as Minio from "minio";

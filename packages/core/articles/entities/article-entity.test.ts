@@ -1,16 +1,17 @@
 import { describe, expect, test, vi } from "vitest";
 import { ZodError } from "zod";
+import { makeId, makeUserId } from "../../shared-kernel/entities/common-entity";
 import {
 	InvalidFormatError,
 	UnexpectedError,
-} from "../../errors/error-classes";
-import { makeUserId } from "../../shared-kernel/entities/common-entity";
+} from "../../shared-kernel/errors/error-classes";
 import * as entityFactory from "../../shared-kernel/services/entity-factory";
 import {
 	articleEntity,
 	makeArticleTitle,
 	makeCategoryName,
 	makeOgDescription,
+	makeOgImageUrl,
 	makeOgTitle,
 	makeQuote,
 	makeUrl,
@@ -131,10 +132,54 @@ describe("articleEntity", () => {
 		});
 	});
 
+	describe("makeOgImageUrl", () => {
+		test("should create valid HTTPS URL", () => {
+			const url = makeOgImageUrl("https://example.com/image.jpg");
+			expect(url).toBe("https://example.com/image.jpg");
+		});
+
+		test("should create valid HTTP URL", () => {
+			const url = makeOgImageUrl("http://example.com/image.jpg");
+			expect(url).toBe("http://example.com/image.jpg");
+		});
+
+		test("should accept null", () => {
+			const url = makeOgImageUrl(null);
+			expect(url).toBeNull();
+		});
+
+		test("should accept undefined", () => {
+			const url = makeOgImageUrl(undefined);
+			expect(url).toBeUndefined();
+		});
+
+		test("should throw error for non-HTTP protocol", () => {
+			expect(() => makeOgImageUrl("ftp://example.com/image.jpg")).toThrow(
+				ZodError,
+			);
+		});
+
+		test("should throw error for data URL", () => {
+			expect(() =>
+				makeOgImageUrl("data:image/png;base64,iVBORw0KGgo="),
+			).toThrow(ZodError);
+		});
+
+		test("should throw error for invalid URL format", () => {
+			expect(() => makeOgImageUrl("not-a-url")).toThrow(ZodError);
+		});
+
+		test("should throw error for too long URL", () => {
+			const longUrl = `https://example.com/${"a".repeat(1020)}`;
+			expect(() => makeOgImageUrl(longUrl)).toThrow(ZodError);
+		});
+	});
+
 	describe("articleEntity.create", () => {
 		test("should create article with valid arguments", () => {
 			const [article, event] = articleEntity.create({
 				userId: makeUserId("test-user-id"),
+				categoryId: makeId("01933f5c-9df0-7001-9123-456789abcdef"),
 				categoryName: makeCategoryName("Tech"),
 				title: makeArticleTitle("Breaking article"),
 				url: makeUrl("https://example.com"),
@@ -142,17 +187,22 @@ describe("articleEntity", () => {
 			});
 
 			expect(article.userId).toBe("test-user-id");
-			expect(article.categoryName).toBe("Tech");
+			expect(article.categoryId).toBe("01933f5c-9df0-7001-9123-456789abcdef");
+			// categoryName はエンティティに含まれない（イベント用）
+			expect("categoryName" in article).toBe(false);
 			expect(article.title).toBe("Breaking article");
 			expect(article.url).toBe("https://example.com");
 			expect(article.status).toBe("UNEXPORTED");
 			expect(article.id).toBeDefined();
 			expect(event.eventType).toBe("article.created");
+			// イベントには categoryName が含まれる
+			expect(event.payload.categoryName).toBe("Tech");
 		});
 
 		test("should create article with optional quote", () => {
 			const [article] = articleEntity.create({
 				userId: makeUserId("test-user-id"),
+				categoryId: makeId("01933f5c-9df0-7001-9123-456789abcdef"),
 				categoryName: makeCategoryName("Science"),
 				title: makeArticleTitle("Science article"),
 				quote: makeQuote("This is a quote"),
@@ -166,6 +216,7 @@ describe("articleEntity", () => {
 		test("should create article with UNEXPORTED status by default", () => {
 			const [article] = articleEntity.create({
 				userId: makeUserId("test-user-id"),
+				categoryId: makeId("01933f5c-9df0-7001-9123-456789abcdef"),
 				categoryName: makeCategoryName("Tech"),
 				title: makeArticleTitle("Test article"),
 				url: makeUrl("https://example.com"),
@@ -178,6 +229,7 @@ describe("articleEntity", () => {
 		test("should be frozen object", () => {
 			const [article] = articleEntity.create({
 				userId: makeUserId("test-user-id"),
+				categoryId: makeId("01933f5c-9df0-7001-9123-456789abcdef"),
 				categoryName: makeCategoryName("Tech"),
 				title: makeArticleTitle("Test article"),
 				url: makeUrl("https://example.com"),
@@ -190,6 +242,7 @@ describe("articleEntity", () => {
 		test("should generate ID for article", () => {
 			const [article] = articleEntity.create({
 				userId: makeUserId("test-user-id"),
+				categoryId: makeId("01933f5c-9df0-7001-9123-456789abcdef"),
 				categoryName: makeCategoryName("Tech"),
 				title: makeArticleTitle("Test article"),
 				url: makeUrl("https://example.com"),
@@ -209,6 +262,7 @@ describe("articleEntity", () => {
 
 			articleEntity.create({
 				userId: makeUserId("test-user-id"),
+				categoryId: makeId("01933f5c-9df0-7001-9123-456789abcdef"),
 				categoryName: makeCategoryName("Tech"),
 				title: makeArticleTitle("Test article"),
 				url: makeUrl("https://example.com"),
@@ -233,6 +287,7 @@ describe("articleEntity", () => {
 			expect(() =>
 				articleEntity.create({
 					userId: makeUserId("test-user-id"),
+					categoryId: makeId("01933f5c-9df0-7001-9123-456789abcdef"),
 					categoryName: makeCategoryName("Tech"),
 					title: makeArticleTitle("Test article"),
 					url: makeUrl("https://example.com"),
@@ -253,6 +308,7 @@ describe("articleEntity", () => {
 			expect(() =>
 				articleEntity.create({
 					userId: makeUserId("test-user-id"),
+					categoryId: makeId("01933f5c-9df0-7001-9123-456789abcdef"),
 					categoryName: makeCategoryName("Tech"),
 					title: makeArticleTitle("Test article"),
 					url: makeUrl("https://example.com"),

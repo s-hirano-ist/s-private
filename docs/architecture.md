@@ -1142,7 +1142,7 @@ afterSubmit={(msg) => toast(message(msg))}
 ### 実装例
 
 ```typescript
-// app/src/infrastructures/common/cache/cache-tag-builder.ts
+// app/src/infrastructures/shared/cache/cache-tag-builder.ts
 import type { Status } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 
@@ -1196,7 +1196,7 @@ import {
   buildContentCacheTag,
   buildCountCacheTag,
   buildCategoriesCacheTag,
-} from "@/infrastructures/common/cache/cache-tag-builder";
+} from "@/infrastructures/shared/cache/cache-tag-builder";
 
 // 永続化後にキャッシュを無効化
 await commandRepository.create(article);
@@ -1217,7 +1217,7 @@ import {
   buildCountCacheTag,
   buildPaginatedContentCacheTag,
   buildCategoriesCacheTag,
-} from "@/infrastructures/common/cache/cache-tag-builder";
+} from "@/infrastructures/shared/cache/cache-tag-builder";
 
 // データフェッチ時にキャッシュタグを設定
 export const _getArticles = async (currentCount: number, userId: UserId, status: Status) => {
@@ -1288,6 +1288,113 @@ revalidatePath(`/articles/${articleId}`);
 - **`cacheTag`との対応**: データフェッチ時に設定したタグと同じタグで無効化
 - **ブロードキャスト無効化**: 複数ユーザーに影響する変更は`revalidatePath`を検討
 
+### キャッシュ無効化マトリクス
+
+どの操作でどのタグを無効化すべきかを体系化したマトリクス。
+
+#### 単一エンティティ操作
+
+| 操作 | 無効化するタグ | 備考 |
+|------|---------------|------|
+| create | `{domain}_{status}`, `{domain}_count_{status}`, `categories` | 新規作成時。articlesドメインのみcategoriesも無効化 |
+| update (ステータス変更なし) | `{domain}_{id}` | 内容のみ変更時 |
+| update (ステータス変更あり) | `{domain}_{old_status}`, `{domain}_{new_status}`, `{domain}_count_{old_status}`, `{domain}_count_{new_status}` | 両ステータスのキャッシュを無効化 |
+| delete | `{domain}_{status}`, `{domain}_count_{status}` | 削除時 |
+
+#### バッチ操作
+
+| 操作 | 無効化するタグ | ステータス遷移 | 備考 |
+|------|---------------|---------------|------|
+| batch reset | `{domain}_UNEXPORTED`, `{domain}_LAST_UPDATED`, `{domain}_EXPORTED`, `{domain}_count_UNEXPORTED`, `{domain}_count_LAST_UPDATED`, `{domain}_count_EXPORTED` | LAST_UPDATED→EXPORTED, UNEXPORTED→LAST_UPDATED | 全ステータスを無効化 |
+| batch revert | `{domain}_UNEXPORTED`, `{domain}_LAST_UPDATED`, `{domain}_count_UNEXPORTED`, `{domain}_count_LAST_UPDATED` | LAST_UPDATED→UNEXPORTED | 関連ステータスを無効化 |
+
+#### ステータス遷移図と無効化ルール
+
+```
+UNEXPORTED ──────────────→ LAST_UPDATED ──────────────→ EXPORTED
+    ↑                           │
+    └───────── (revert) ────────┘
+```
+
+| 遷移 | トリガー | 無効化するタグ |
+|------|---------|---------------|
+| UNEXPORTED → LAST_UPDATED | batch reset | `{domain}_UNEXPORTED`, `{domain}_LAST_UPDATED`, `{domain}_count_UNEXPORTED`, `{domain}_count_LAST_UPDATED` |
+| LAST_UPDATED → EXPORTED | batch reset | `{domain}_LAST_UPDATED`, `{domain}_EXPORTED`, `{domain}_count_LAST_UPDATED`, `{domain}_count_EXPORTED` |
+| LAST_UPDATED → UNEXPORTED | batch revert | `{domain}_UNEXPORTED`, `{domain}_LAST_UPDATED`, `{domain}_count_UNEXPORTED`, `{domain}_count_LAST_UPDATED` |
+
+#### 実装例: ステータス変更時の無効化ヘルパー
+
+```typescript
+// app/src/infrastructures/shared/cache/cache-invalidation-helpers.ts
+import { revalidateTag } from "next/cache";
+import { buildContentCacheTag, buildCountCacheTag } from "./cache-tag-builder";
+
+type Domain = "books" | "articles" | "notes" | "images";
+type Status = "UNEXPORTED" | "LAST_UPDATED" | "EXPORTED";
+
+/**
+ * ステータス変更時のキャッシュ無効化
+ */
+export function invalidateOnStatusChange(
+  domain: Domain,
+  oldStatus: Status,
+  newStatus: Status,
+  userId: string,
+): void {
+  // 旧ステータスのキャッシュを無効化
+  revalidateTag(buildContentCacheTag(domain, oldStatus, userId));
+  revalidateTag(buildCountCacheTag(domain, oldStatus, userId));
+
+  // 新ステータスのキャッシュを無効化
+  revalidateTag(buildContentCacheTag(domain, newStatus, userId));
+  revalidateTag(buildCountCacheTag(domain, newStatus, userId));
+}
+
+/**
+ * バッチリセット時のキャッシュ無効化
+ * UNEXPORTED → LAST_UPDATED, LAST_UPDATED → EXPORTED
+ */
+export function invalidateOnBatchReset(domain: Domain, userId: string): void {
+  const statuses: Status[] = ["UNEXPORTED", "LAST_UPDATED", "EXPORTED"];
+
+  for (const status of statuses) {
+    revalidateTag(buildContentCacheTag(domain, status, userId));
+    revalidateTag(buildCountCacheTag(domain, status, userId));
+  }
+}
+
+/**
+ * バッチリバート時のキャッシュ無効化
+ * LAST_UPDATED → UNEXPORTED
+ */
+export function invalidateOnBatchRevert(domain: Domain, userId: string): void {
+  const statuses: Status[] = ["UNEXPORTED", "LAST_UPDATED"];
+
+  for (const status of statuses) {
+    revalidateTag(buildContentCacheTag(domain, status, userId));
+    revalidateTag(buildCountCacheTag(domain, status, userId));
+  }
+}
+```
+
+**使用例:**
+
+```typescript
+// batch-reset.core.ts
+import { invalidateOnBatchReset } from "@/infrastructures/shared/cache/cache-invalidation-helpers";
+
+export async function batchResetCore(deps: BatchResetDeps): Promise<ServerAction> {
+  const userId = await getSelfId();
+
+  await deps.commandRepository.batchReset(userId);
+
+  // 全ステータスのキャッシュを無効化
+  invalidateOnBatchReset("articles", userId);
+
+  return { success: true, message: "reset" };
+}
+```
+
 ## Data Fetching Pattern
 
 `"use cache"`ディレクティブとReact `cache()`を使用したデータフェッチパターン。
@@ -1302,7 +1409,7 @@ import { getSelfId } from "@/common/auth/session";
 import {
   buildContentCacheTag,
   buildPaginatedContentCacheTag,
-} from "@/infrastructures/common/cache/cache-tag-builder";
+} from "@/infrastructures/shared/cache/cache-tag-builder";
 
 // 内部実装: "use cache"でキャッシュ
 export const _getArticles = async (
@@ -1365,7 +1472,7 @@ export const getExportedArticles: GetPaginatedData<LinkCardStackInitialData> =
 
 ```typescript
 // 推奨パターン: 両方を組み合わせ + ビルダー関数使用
-import { buildContentCacheTag } from "@/infrastructures/common/cache/cache-tag-builder";
+import { buildContentCacheTag } from "@/infrastructures/shared/cache/cache-tag-builder";
 
 const _getData = async (userId: UserId, status: Status) => {
   "use cache";

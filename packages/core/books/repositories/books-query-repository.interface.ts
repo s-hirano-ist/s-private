@@ -10,6 +10,7 @@ import type {
 	UnexportedBook,
 } from "../entities/books-entity.js";
 import type { BooksFindManyParams } from "../types/query-params.js";
+import type { IBooksCommandRepository } from "./books-command-repository.interface.js";
 
 /**
  * Query repository interface for the Book domain.

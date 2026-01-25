@@ -2,6 +2,7 @@ import type {
 	Status,
 	UserId,
 } from "../../shared-kernel/entities/common-entity.js";
+import type { IStorageService } from "../../shared-kernel/services/storage-service.interface.js";
 import type {
 	ExportedImage,
 	ImageListItemDTO,
@@ -9,6 +10,7 @@ import type {
 	UnexportedImage,
 } from "../entities/image-entity.js";
 import type { ImagesFindManyParams } from "../types/query-params.js";
+import type { IImagesCommandRepository } from "./images-command-repository.interface.js";
 
 /**
  * Query repository interface for the Image domain.

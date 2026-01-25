@@ -1,7 +1,20 @@
 {
 	"$schema": "https://typedoc.org/schema.json",
-	"entryPoints": ["./index.ts"],
+	"entryPointStrategy": "expand",
+	"entryPoints": [
+		"./articles/**/*.ts",
+		"./books/**/*.ts",
+		"./images/**/*.ts",
+		"./notes/**/*.ts",
+		"./shared-kernel/**/*.ts",
+		"./errors/**/*.ts"
+	],
 	"tsconfig": "./tsconfig.json",
-	"exclude": ["**/*.test.ts", "**/dist/**"],
+	"exclude": [
+		"**/*.test.ts",
+		"**/dist/**",
+		"**/vitest.config.ts",
+		"**/vitest-setup.tsx"
+	],
 	"name": "@s-hirano-ist/s-core"
 }

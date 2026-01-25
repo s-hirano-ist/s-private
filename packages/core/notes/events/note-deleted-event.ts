@@ -1,4 +1,5 @@
 import { BaseDomainEvent } from "../../shared-kernel/events/base-domain-event.js";
+import type { NoteCreatedEvent } from "./note-created-event.js";
 
 /**
  * Domain event emitted when a note is deleted.

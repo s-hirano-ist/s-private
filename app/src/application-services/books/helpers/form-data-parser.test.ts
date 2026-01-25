@@ -1,5 +1,4 @@
 import {
-	makeBookImagePath,
 	makeBookTitle,
 	makeISBN,
 } from "@s-hirano-ist/s-core/books/entities/books-entity";
@@ -13,12 +12,10 @@ vi.mock("@s-hirano-ist/s-core/books/entities/books-entity");
 const mockGetFormDataString = vi.mocked(getFormDataString);
 const mockMakeISBN = vi.mocked(makeISBN);
 const mockMakeBookTitle = vi.mocked(makeBookTitle);
-const mockMakeBookImagePath = vi.mocked(makeBookImagePath);
 
 describe("parseAddBooksFormData", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
-		mockMakeBookImagePath.mockReturnValue(null as any);
 	});
 
 	test("should parse form data and create book data", async () => {
@@ -46,7 +43,7 @@ describe("parseAddBooksFormData", () => {
 			ISBN: "9784123456789",
 			title: "Clean Code",
 			userId: "test-user-id",
-			imagePath: null,
+			imagePath: undefined,
 			hasImage: false,
 		});
 	});
@@ -73,7 +70,7 @@ describe("parseAddBooksFormData", () => {
 			ISBN: "978-4-123-45678-9",
 			title: "The Pragmatic Programmer",
 			userId: "test-user-id",
-			imagePath: null,
+			imagePath: undefined,
 			hasImage: false,
 		});
 	});
@@ -95,7 +92,7 @@ describe("parseAddBooksFormData", () => {
 			ISBN: "",
 			title: "",
 			userId: "test-user-id",
-			imagePath: null,
+			imagePath: undefined,
 			hasImage: false,
 		});
 	});
@@ -119,7 +116,7 @@ describe("parseAddBooksFormData", () => {
 			ISBN: "9784567890123",
 			title: "リーダブルコード",
 			userId: "test-user-id-jp",
-			imagePath: null,
+			imagePath: undefined,
 			hasImage: false,
 		});
 	});
@@ -145,7 +142,7 @@ describe("parseAddBooksFormData", () => {
 			ISBN: "9784567890123",
 			title: 'Book Title with "Quotes" & Symbols',
 			userId: "test-user-id",
-			imagePath: null,
+			imagePath: undefined,
 			hasImage: false,
 		});
 	});

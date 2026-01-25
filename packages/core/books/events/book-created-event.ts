@@ -1,4 +1,5 @@
 import { BaseDomainEvent } from "../../shared-kernel/events/base-domain-event.js";
+import type { BookDeletedEvent } from "./book-deleted-event.js";
 
 /**
  * Domain event emitted when a book is created.

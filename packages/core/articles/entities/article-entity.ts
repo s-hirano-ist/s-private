@@ -9,7 +9,7 @@
  * **Aggregate Root**: {@link articleEntity}
  *
  * **Invariants**:
- * - URL must be unique per user (enforced by {@link ArticlesDomainService})
+ * - URL must be unique per user (enforced by `ArticlesDomainService`)
  * - Status transitions: UNEXPORTED → LAST_UPDATED → EXPORTED
  *
  * **Value Objects defined here**:
@@ -19,7 +19,7 @@
  * - {@link Url} - HTTP/HTTPS URL
  * - {@link OgTitle}, {@link OgDescription}, {@link OgImageUrl} - Open Graph metadata
  *
- * @see {@link ArticlesDomainService} for domain business rules
+ * @see `ArticlesDomainService` for domain business rules
  * @see docs/domain-model.md for aggregate boundary documentation
  * @module
  */
@@ -35,6 +35,7 @@ import {
 	UserId,
 } from "../../shared-kernel/entities/common-entity.js";
 import { createEntityWithErrorHandling } from "../../shared-kernel/services/entity-factory.js";
+import { isValidHttpUrl } from "../../shared-kernel/services/url-validation.js";
 import { ArticleCreatedEvent } from "../events/article-created-event.js";
 
 // Value objects
@@ -180,19 +181,7 @@ export const Url = z
 	.url({ message: "invalidFormat" })
 	.min(1, { message: "required" })
 	.max(1024, { message: "tooLong" })
-	.refine(
-		(url: string) => {
-			try {
-				const urlObject = new URL(url);
-				return (
-					urlObject.protocol === "http:" || urlObject.protocol === "https:"
-				);
-			} catch {
-				return false;
-			}
-		},
-		{ message: "invalidFormat" },
-	)
+	.refine(isValidHttpUrl, { message: "invalidFormat" })
 	.brand<"Url">();
 
 /**
@@ -287,6 +276,7 @@ export const makeOgDescription = (
 export const OgImageUrl = z
 	.string()
 	.max(1024, { message: "tooLong" })
+	.refine(isValidHttpUrl, { message: "invalidFormat" })
 	.nullable()
 	.optional()
 	.brand<"OgImageUrl">();
@@ -315,7 +305,7 @@ export const makeOgImageUrl = (v: string | null | undefined): OgImageUrl =>
 const Base = z.object({
 	id: Id,
 	userId: UserId,
-	categoryName: CategoryName,
+	categoryId: Id,
 	title: ArticleTitle,
 	quote: Quote,
 	url: Url,
@@ -374,6 +364,7 @@ export type ExportedArticle = Readonly<z.infer<typeof ExportedArticle>>;
  * ```typescript
  * const args: CreateArticleArgs = {
  *   userId: makeUserId("user-123"),
+ *   categoryId: makeId("category-uuid"),
  *   categoryName: makeCategoryName("Tech"),
  *   title: makeArticleTitle("Article Title"),
  *   url: makeUrl("https://example.com"),
@@ -385,7 +376,9 @@ export type ExportedArticle = Readonly<z.infer<typeof ExportedArticle>>;
 export type CreateArticleArgs = Readonly<{
 	/** The user who owns the article */
 	userId: UserId;
-	/** The category for organizing the article */
+	/** The resolved category ID (FK to Category table) */
+	categoryId: Id;
+	/** イベント用のカテゴリ名（エンティティには含まれない、ログ・監査用スナップショット） */
 	categoryName: CategoryName;
 	/** The article title */
 	title: ArticleTitle;
@@ -437,7 +430,7 @@ export type ArticleWithEvent = readonly [
  *
  * @see {@link CreateArticleArgs} for creation parameters
  * @see {@link ArticleWithEvent} for return type
- * @see {@link ArticlesDomainService} for invariant validation (duplicate URL check)
+ * @see `ArticlesDomainService` for invariant validation (duplicate URL check)
  */
 export const articleEntity = {
 	/**
@@ -449,7 +442,7 @@ export const articleEntity = {
 	 * @throws {UnexpectedError} For unexpected errors during creation
 	 */
 	create: (args: CreateArticleArgs): ArticleWithEvent => {
-		const { caller, ...entityArgs } = args;
+		const { caller, categoryName, ...entityArgs } = args;
 		const article = createEntityWithErrorHandling(() =>
 			Object.freeze({
 				id: makeId(),
@@ -463,7 +456,7 @@ export const articleEntity = {
 			title: article.title as string,
 			url: article.url as string,
 			quote: (article.quote as string) ?? "",
-			categoryName: article.categoryName as string,
+			categoryName: categoryName as string,
 			userId: article.userId as string,
 			caller,
 		});
@@ -490,3 +483,17 @@ export type ArticleListItemDTO = Readonly<{
 	ogDescription: OgDescription;
 	categoryName: CategoryName;
 }>;
+
+/**
+ * DTO for article search results.
+ *
+ * @remarks
+ * Contains fields needed for search display.
+ * Extends ArticleListItemDTO with optional search metadata.
+ */
+export type ArticleSearchItemDTO = ArticleListItemDTO & {
+	/** Field where the query matched (optional, for future use) */
+	matchedField?: string;
+	/** Relevance score (optional, for future use) */
+	relevanceScore?: number;
+};

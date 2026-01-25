@@ -5,6 +5,7 @@ import {
 import type {
 	BulkUpdateResult,
 	IBatchCommandRepository,
+	ResetStatusResult,
 } from "../../shared-kernel/repositories/batch-command-repository.interface.js";
 
 /**
@@ -13,13 +14,10 @@ import type {
  * @remarks
  * Contains the count of articles that were finalized (LAST_UPDATED -> EXPORTED)
  * and marked (UNEXPORTED -> LAST_UPDATED).
+ *
+ * @deprecated Use {@link ResetStatusResult} from batch-command-repository.interface instead
  */
-export type ResetResult = {
-	/** Number of articles finalized from LAST_UPDATED to EXPORTED */
-	finalized: BulkUpdateResult;
-	/** Number of articles marked from UNEXPORTED to LAST_UPDATED */
-	marked: BulkUpdateResult;
-};
+export type ResetResult = ResetStatusResult;
 
 /**
  * Domain service for batch operations on Articles.
@@ -67,30 +65,13 @@ export class ArticlesBatchDomainService {
 	 * @returns The result containing finalized and marked counts
 	 *
 	 * @remarks
-	 * Performs two operations in sequence:
+	 * Delegates to repository's resetStatus which performs two operations
+	 * atomically within a single transaction:
 	 * 1. Finalize: LAST_UPDATED -> EXPORTED (complete previous batch)
 	 * 2. Mark: UNEXPORTED -> LAST_UPDATED (prepare current batch)
-	 *
-	 * This operation should be wrapped in a transaction by the caller
-	 * to ensure atomicity.
 	 */
 	public async resetArticles(userId: UserId): Promise<ResetResult> {
-		// Step 1: Finalize previous batch (LAST_UPDATED -> EXPORTED)
-		const finalized = await this.commandRepository.bulkUpdateStatus({
-			userId,
-			fromStatus: "LAST_UPDATED",
-			toStatus: "EXPORTED",
-			exportedAt: makeExportedAt(),
-		});
-
-		// Step 2: Mark current batch (UNEXPORTED -> LAST_UPDATED)
-		const marked = await this.commandRepository.bulkUpdateStatus({
-			userId,
-			fromStatus: "UNEXPORTED",
-			toStatus: "LAST_UPDATED",
-		});
-
-		return { finalized, marked };
+		return this.commandRepository.resetStatus(userId, makeExportedAt());
 	}
 
 	/**

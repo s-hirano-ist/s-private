@@ -19,6 +19,21 @@ export type BulkUpdateResult = {
 };
 
 /**
+ * Result of a reset status operation.
+ *
+ * @remarks
+ * Contains the results of two bulk updates executed within a single transaction:
+ * 1. Finalize: LAST_UPDATED -> EXPORTED
+ * 2. Mark: UNEXPORTED -> LAST_UPDATED
+ */
+export type ResetStatusResult = {
+	/** Number of records finalized from LAST_UPDATED to EXPORTED */
+	finalized: BulkUpdateResult;
+	/** Number of records marked from UNEXPORTED to LAST_UPDATED */
+	marked: BulkUpdateResult;
+};
+
+/**
  * Parameters for a status transition operation.
  *
  * @remarks
@@ -92,4 +107,24 @@ export type IBatchCommandRepository = {
 	 * @returns The number of records updated
 	 */
 	bulkUpdateStatus(params: StatusTransitionParams): Promise<BulkUpdateResult>;
+
+	/**
+	 * Resets entity statuses within a single transaction.
+	 *
+	 * @param userId - The user ID for tenant isolation
+	 * @param exportedAt - The timestamp for EXPORTED transitions
+	 * @returns The result containing finalized and marked counts
+	 *
+	 * @remarks
+	 * Performs two operations atomically:
+	 * 1. Finalize: LAST_UPDATED -> EXPORTED (complete previous batch)
+	 * 2. Mark: UNEXPORTED -> LAST_UPDATED (prepare current batch)
+	 *
+	 * The implementation handles transaction management internally,
+	 * ensuring atomicity of both operations.
+	 */
+	resetStatus(
+		userId: UserId,
+		exportedAt: ExportedAt,
+	): Promise<ResetStatusResult>;
 };

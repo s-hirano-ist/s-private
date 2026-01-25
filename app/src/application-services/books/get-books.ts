@@ -28,7 +28,7 @@ import {
 	buildContentCacheTag,
 	buildCountCacheTag,
 	buildPaginatedContentCacheTag,
-} from "@/infrastructures/common/cache/cache-tag-builder";
+} from "@/infrastructures/shared/cache/cache-tag-builder";
 
 const API_BOOK_THUMBNAIL_PATH = "/api/books/images/thumbnail";
 

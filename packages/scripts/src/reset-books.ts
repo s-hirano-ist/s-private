@@ -34,19 +34,17 @@ async function main() {
 	const userId: UserId = makeUserId(env.USERNAME_TO_EXPORT ?? "");
 
 	async function resetBooks() {
-		await prisma.$transaction(async (tx: unknown) => {
-			const commandRepository = createBooksCommandRepository(
-				tx as Parameters<typeof createBooksCommandRepository>[0],
-			);
-			const batchService = new BooksBatchDomainService(commandRepository);
+		// DDD: Create repository and domain service
+		// Transaction is handled internally by repository's resetStatus method
+		const commandRepository = createBooksCommandRepository(prisma);
+		const batchService = new BooksBatchDomainService(commandRepository);
 
-			const result = await batchService.resetBooks(userId);
+		const result = await batchService.resetBooks(userId);
 
-			console.log(
-				`💾 LAST_UPDATEDの本をEXPORTEDに変更しました（${result.finalized.count}件）`,
-			);
-			console.log(`💾 ${result.marked.count}件の本をリセットしました`);
-		});
+		console.log(
+			`💾 LAST_UPDATEDの本をEXPORTEDに変更しました（${result.finalized.count}件）`,
+		);
+		console.log(`💾 ${result.marked.count}件の本をリセットしました`);
 	}
 
 	try {

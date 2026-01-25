@@ -7,13 +7,13 @@ import {
 } from "@s-hirano-ist/s-core/articles/entities/article-entity";
 import { ArticleCreatedEvent } from "@s-hirano-ist/s-core/articles/events/article-created-event";
 import type { IArticlesCommandRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-command-repository.interface";
-import { DuplicateError } from "@s-hirano-ist/s-core/errors/error-classes";
 import {
 	makeCreatedAt,
 	makeId,
 	makeUnexportedStatus,
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { addArticle } from "./add-article";
@@ -48,6 +48,7 @@ function createMockDeps(
 	deps: AddArticleDeps;
 	mockCommandRepository: IArticlesCommandRepository;
 	mockEnsureNoDuplicate: ReturnType<typeof vi.fn>;
+	mockResolveOrCreate: ReturnType<typeof vi.fn>;
 	mockEventDispatcher: { dispatch: ReturnType<typeof vi.fn> };
 } {
 	const mockCommandRepository: IArticlesCommandRepository = {
@@ -59,6 +60,10 @@ function createMockDeps(
 		.fn()
 		.mockImplementation(ensureNoDuplicateImpl);
 
+	const mockResolveOrCreate = vi
+		.fn()
+		.mockResolvedValue(makeId("01933f5c-9df0-7001-9123-456789abcdef"));
+
 	const mockEventDispatcher = {
 		dispatch: vi.fn().mockResolvedValue(undefined),
 	};
@@ -67,6 +72,9 @@ function createMockDeps(
 	const mockDomainServiceFactory = {
 		createArticlesDomainService: () => ({
 			ensureNoDuplicate: mockEnsureNoDuplicate,
+		}),
+		createCategoryService: () => ({
+			resolveOrCreate: mockResolveOrCreate,
 		}),
 		createBooksDomainService: vi.fn(),
 		createNotesDomainService: vi.fn(),
@@ -83,6 +91,7 @@ function createMockDeps(
 		deps,
 		mockCommandRepository,
 		mockEnsureNoDuplicate,
+		mockResolveOrCreate,
 		mockEventDispatcher,
 	};
 }
@@ -114,6 +123,7 @@ describe("addArticleCore", () => {
 			deps,
 			mockCommandRepository,
 			mockEnsureNoDuplicate,
+			mockResolveOrCreate,
 			mockEventDispatcher,
 		} = createMockDeps();
 
@@ -122,7 +132,7 @@ describe("addArticleCore", () => {
 			title: makeArticleTitle("Test Article"),
 			url: makeUrl("https://example.com/article"),
 			quote: makeQuote("Test quote"),
-			categoryName: makeCategoryName("tech"),
+			categoryId: makeId("01933f5c-9df0-7001-9123-456789abcdef"),
 			userId: makeUserId("user-123"),
 			status: makeUnexportedStatus(),
 			createdAt: makeCreatedAt(),
@@ -144,6 +154,10 @@ describe("addArticleCore", () => {
 
 		expect(mockEnsureNoDuplicate).toHaveBeenCalledWith(
 			makeUrl("https://example.com/article"),
+			makeUserId("user-123"),
+		);
+		expect(mockResolveOrCreate).toHaveBeenCalledWith(
+			makeCategoryName("tech"),
 			makeUserId("user-123"),
 		);
 		expect(articleEntity.create).toHaveBeenCalled();

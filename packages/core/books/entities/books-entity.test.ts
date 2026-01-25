@@ -3,7 +3,6 @@ import { ZodError } from "zod";
 import { makeUserId } from "../../shared-kernel/entities/common-entity";
 import {
 	bookEntity,
-	makeBookImagePath,
 	makeBookMarkdown,
 	makeBookTitle,
 	makeGoogleAuthors,
@@ -62,7 +61,6 @@ describe("booksEntity", () => {
 				userId: makeUserId("test-user-id"),
 				ISBN: makeISBN("9784123456789"),
 				title: makeBookTitle("Clean Code"),
-				imagePath: null,
 				caller: "test",
 			});
 
@@ -71,7 +69,7 @@ describe("booksEntity", () => {
 			expect(book.title).toBe("Clean Code");
 			expect(book.status).toBe("UNEXPORTED");
 			expect(book.id).toBeDefined();
-			expect(book.imagePath).toBeNull();
+			expect(book.imagePath).toBeUndefined();
 			expect(event.eventType).toBe("book.created");
 		});
 
@@ -80,7 +78,6 @@ describe("booksEntity", () => {
 				userId: makeUserId("test-user-id"),
 				ISBN: makeISBN("9784123456789"),
 				title: makeBookTitle("Test Book"),
-				imagePath: null,
 				caller: "test",
 			});
 
@@ -92,7 +89,6 @@ describe("booksEntity", () => {
 				userId: makeUserId("test-user-id"),
 				ISBN: makeISBN("9784123456789"),
 				title: makeBookTitle("Test Book"),
-				imagePath: null,
 				caller: "test",
 			});
 
@@ -149,9 +145,31 @@ describe("booksEntity", () => {
 			expect(googleImgSrc).toBe(imgSrc);
 		});
 
+		test("makeGoogleImgSrc should create GoogleImgSrc with HTTP URL", () => {
+			const imgSrc = "http://books.google.com/books/content/images/cover.jpg";
+			const googleImgSrc = makeGoogleImgSrc(imgSrc);
+			expect(googleImgSrc).toBe(imgSrc);
+		});
+
 		test("makeGoogleImgSrc should handle null value", () => {
 			const googleImgSrc = makeGoogleImgSrc(null);
 			expect(googleImgSrc).toBeNull();
+		});
+
+		test("makeGoogleImgSrc should throw error for non-HTTP protocol", () => {
+			expect(() => makeGoogleImgSrc("ftp://example.com/image.jpg")).toThrow(
+				ZodError,
+			);
+		});
+
+		test("makeGoogleImgSrc should throw error for data URL", () => {
+			expect(() =>
+				makeGoogleImgSrc("data:image/png;base64,iVBORw0KGgo="),
+			).toThrow(ZodError);
+		});
+
+		test("makeGoogleImgSrc should throw error for invalid URL format", () => {
+			expect(() => makeGoogleImgSrc("not-a-url")).toThrow(ZodError);
 		});
 
 		test("makeGoogleHref should create GoogleHref", () => {
@@ -160,9 +178,29 @@ describe("booksEntity", () => {
 			expect(googleHref).toBe(href);
 		});
 
+		test("makeGoogleHref should create GoogleHref with HTTP URL", () => {
+			const href = "http://books.google.com/books?id=example";
+			const googleHref = makeGoogleHref(href);
+			expect(googleHref).toBe(href);
+		});
+
 		test("makeGoogleHref should handle null value", () => {
 			const googleHref = makeGoogleHref(null);
 			expect(googleHref).toBeNull();
+		});
+
+		test("makeGoogleHref should throw error for non-HTTP protocol", () => {
+			expect(() => makeGoogleHref("ftp://books.google.com/books")).toThrow(
+				ZodError,
+			);
+		});
+
+		test("makeGoogleHref should throw error for javascript URL", () => {
+			expect(() => makeGoogleHref("javascript:alert('XSS')")).toThrow(ZodError);
+		});
+
+		test("makeGoogleHref should throw error for invalid URL format", () => {
+			expect(() => makeGoogleHref("not-a-url")).toThrow(ZodError);
 		});
 
 		test("makeBookMarkdown should create BookMarkdown", () => {
@@ -174,17 +212,6 @@ describe("booksEntity", () => {
 		test("makeBookMarkdown should handle null value", () => {
 			const bookMarkdown = makeBookMarkdown(null);
 			expect(bookMarkdown).toBeNull();
-		});
-
-		test("makeBookImagePath should create BookImagePath", () => {
-			const imagePath = "books/original/image-123.jpg";
-			const bookImagePath = makeBookImagePath(imagePath);
-			expect(bookImagePath).toBe(imagePath);
-		});
-
-		test("makeBookImagePath should handle null value", () => {
-			const bookImagePath = makeBookImagePath(null);
-			expect(bookImagePath).toBeNull();
 		});
 	});
 });

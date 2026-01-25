@@ -9,14 +9,14 @@
  * **Aggregate Root**: {@link noteEntity}
  *
  * **Invariants**:
- * - Title must be unique per user (enforced by {@link NotesDomainService})
+ * - Title must be unique per user (enforced by `NotesDomainService`)
  * - Status transitions: UNEXPORTED → LAST_UPDATED → EXPORTED
  *
  * **Value Objects defined here**:
  * - {@link NoteTitle} - Note title (1-64 chars)
  * - {@link Markdown} - Markdown content (no max length)
  *
- * @see {@link NotesDomainService} for domain business rules
+ * @see `NotesDomainService` for domain business rules
  * @see docs/domain-model.md for aggregate boundary documentation
  * @module
  */
@@ -229,7 +229,7 @@ export type NoteWithEvent = readonly [UnexportedNote, NoteCreatedEvent];
  *
  * @see {@link CreateNoteArgs} for creation parameters
  * @see {@link NoteWithEvent} for return type
- * @see {@link NotesDomainService} for invariant validation (duplicate title check)
+ * @see `NotesDomainService` for invariant validation (duplicate title check)
  */
 export const noteEntity = {
 	/**

@@ -8,12 +8,11 @@ import type {
 	Status,
 	UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { uuidv7 } from "@s-hirano-ist/s-core/shared-kernel/services/id-generator";
 import { revalidateTag } from "next/cache";
 import {
 	buildContentCacheTag,
 	buildCountCacheTag,
-} from "@/infrastructures/common/cache/cache-tag-builder";
+} from "@/infrastructures/shared/cache/cache-tag-builder";
 import prisma from "@/prisma";
 
 async function create(data: UnexportedArticle): Promise<void> {
@@ -25,22 +24,7 @@ async function create(data: UnexportedArticle): Promise<void> {
 			quote: data.quote,
 			userId: data.userId,
 			status: data.status,
-			Category: {
-				connectOrCreate: {
-					where: {
-						name_userId: {
-							name: data.categoryName,
-							userId: data.userId,
-						},
-					},
-					create: {
-						name: data.categoryName,
-						userId: data.userId,
-						id: uuidv7(),
-						createdAt: data.createdAt,
-					},
-				},
-			},
+			categoryId: data.categoryId,
 			createdAt: data.createdAt,
 		},
 	});

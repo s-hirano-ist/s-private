@@ -1,4 +1,5 @@
 import { BaseDomainEvent } from "../../shared-kernel/events/base-domain-event.js";
+import type { ArticleDeletedEvent } from "./article-deleted-event.js";
 
 /**
  * Domain event emitted when an article is created.

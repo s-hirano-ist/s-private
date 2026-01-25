@@ -1,4 +1,3 @@
-import { DuplicateError } from "@s-hirano-ist/s-core/errors/error-classes";
 import {
 	makeMarkdown,
 	makeNoteTitle,
@@ -10,6 +9,7 @@ import {
 	makeId,
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import { describe, expect, test, vi } from "vitest";
 import { parseAddNoteFormData } from "@/application-services/notes/helpers/form-data-parser";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";

@@ -1,9 +1,9 @@
 import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
-import { minioStorageService } from "@/infrastructures/common/services/minio-storage-service";
 import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
 import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
+import { minioStorageService } from "@/infrastructures/shared/storage/minio-storage-service";
 import { addImage } from "./add-image";
 import { parseAddImageFormData } from "./helpers/form-data-parser";
 
@@ -24,7 +24,7 @@ vi.mock(
 	() => ({ imagesQueryRepository: { findByPath: vi.fn() } }),
 );
 
-vi.mock("@/infrastructures/common/services/minio-storage-service", () => ({
+vi.mock("@/infrastructures/shared/storage/minio-storage-service", () => ({
 	minioStorageService: { uploadImage: vi.fn() },
 }));
 

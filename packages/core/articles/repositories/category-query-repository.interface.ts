@@ -1,4 +1,5 @@
 import type { UserId } from "../../shared-kernel/entities/common-entity.js";
+import type { CategoryName } from "../entities/article-entity.js";
 import type { CategoryFindManyParams } from "../types/query-params.js";
 
 /**
@@ -16,6 +17,13 @@ import type { CategoryFindManyParams } from "../types/query-params.js";
  *     return await prisma.category.findMany({
  *       where: { userId },
  *       ...params
+ *     });
+ *   }
+ *
+ *   async findByNameAndUser(name: CategoryName, userId: UserId) {
+ *     return await prisma.category.findUnique({
+ *       where: { name_userId: { name, userId } },
+ *       select: { id: true }
  *     });
  *   }
  * }
@@ -40,4 +48,16 @@ export type ICategoryQueryRepository = {
 			name: string;
 		}[]
 	>;
+
+	/**
+	 * Finds a category by name and user ID.
+	 *
+	 * @param name - The category name to search for
+	 * @param userId - The user ID for tenant isolation
+	 * @returns The category ID if found, null otherwise
+	 */
+	findByNameAndUser(
+		name: CategoryName,
+		userId: UserId,
+	): Promise<{ id: string } | null>;
 };

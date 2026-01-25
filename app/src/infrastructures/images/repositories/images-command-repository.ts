@@ -3,12 +3,16 @@ import type {
 	DeleteImageResult,
 	IImagesCommandRepository,
 } from "@s-hirano-ist/s-core/images/repositories/images-command-repository.interface";
-import type { Status } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import type {
+	Id,
+	Status,
+	UserId,
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { revalidateTag } from "next/cache";
 import {
 	buildContentCacheTag,
 	buildCountCacheTag,
-} from "@/infrastructures/common/cache/cache-tag-builder";
+} from "@/infrastructures/shared/cache/cache-tag-builder";
 import prisma from "@/prisma";
 
 async function create(data: UnexportedImage): Promise<void> {
@@ -21,8 +25,8 @@ async function create(data: UnexportedImage): Promise<void> {
 }
 
 async function deleteById(
-	id: string,
-	userId: string,
+	id: Id,
+	userId: UserId,
 	status: Status,
 ): Promise<DeleteImageResult> {
 	const data = await prisma.image.delete({
