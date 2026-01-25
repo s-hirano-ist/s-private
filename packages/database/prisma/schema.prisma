@@ -81,8 +81,6 @@ model Image {
   fileSize    Int?     @map("file_size") // byte
   width       Int? // pixel
   height      Int? // pixel
-  tags        String[]
-  description String?  @db.VarChar(1024)
 
   status Status
 

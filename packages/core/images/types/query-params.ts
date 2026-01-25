@@ -15,8 +15,6 @@ export type ImagesOrderByField =
 	| "fileSize"
 	| "width"
 	| "height"
-	| "tags"
-	| "description"
 	| "status"
 	| "createdAt"
 	| "updatedAt"
