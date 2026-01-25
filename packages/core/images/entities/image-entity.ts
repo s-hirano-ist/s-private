@@ -287,6 +287,7 @@ export const imageEntity = {
 
 		const event = new ImageCreatedEvent({
 			id: image.id as string,
+			path: image.path as string,
 			userId: image.userId as string,
 			caller,
 		});
