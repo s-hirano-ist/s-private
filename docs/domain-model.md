@@ -515,3 +515,42 @@ revalidateTag(...);                          // キャッシュ無効化
 - 高頻度の書き込み操作でイベント発行失敗が観測された場合
 - コンプライアンス要件でイベント監査ログの完全性が必要になった場合
 - マイクロサービス分離を検討する場合
+
+### 006: 不変条件検証とエンティティ生成の分離
+
+#### 概要
+
+不変条件の検証（重複チェック）がエンティティ生成の外で行われており、Application Service が検証とエンティティ生成の順序を正しく呼び出す責任を負っています。
+
+```typescript
+// Application Service での使用パターン
+await domainService.ensureNoDuplicate(url, userId);  // 1. 検証
+const [article, event] = articleEntity.create({ ... }); // 2. 生成
+await commandRepository.create(article);              // 3. 永続化
+```
+
+#### DDDの原則との乖離
+
+- 不変条件の検証がエンティティ生成の外で行われている
+- Application Service が検証とエンティティ生成の順序を正しく呼び出す責任を負っている
+- 検証を忘れた場合、不正なエンティティが生成されるリスク
+
+#### 対応しない理由
+
+**現状の規模ではオーバースペック**: 型レベルでの検証済み保証（Branded Types等）やファクトリへの検証ロジック統合は、現在のコードベース規模に対して過度な複雑性をもたらします。
+
+- Application Service のパターンが確立されており、新規作成時のテンプレートとして機能
+- 検証漏れのリスクは低い（既存の全Application Serviceが同一パターンに従っている）
+- ファクトリを非同期にするとリポジトリ依存が発生し、ドメイン層の純粋性が損なわれる
+
+#### 対象ファイル
+
+- `packages/core/articles/services/articles-domain-service.ts`
+- `packages/core/books/services/books-domain-service.ts`
+- `packages/core/notes/services/notes-domain-service.ts`
+- `packages/core/images/services/images-domain-service.ts`
+
+#### リスク軽減策
+
+- Application Service のテンプレートパターンを維持
+- 新規Application Service作成時は既存コードを参照

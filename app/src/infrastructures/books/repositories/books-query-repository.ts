@@ -26,12 +26,12 @@ import {
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { makePath } from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
 import { env } from "@/env";
-import { minioClient } from "@/minio";
-import prisma from "@/prisma";
 import {
 	ORIGINAL_BOOK_IMAGE_PATH,
 	THUMBNAIL_BOOK_IMAGE_PATH,
 } from "@/infrastructures/shared/storage/books-storage-service";
+import { minioClient } from "@/minio";
+import prisma from "@/prisma";
 
 async function findByISBN(
 	ISBN: ISBN,
