@@ -466,3 +466,17 @@ graph TB
 **対象ファイル**:
 - `packages/core/shared-kernel/events/base-domain-event.ts`
 - `packages/core/shared-kernel/events/domain-event.interface.ts`
+
+### 014: インフラ関連型のshared-kernel配置
+
+**概要**: `InfraQueryOptions`（ページネーション・キャッシュ設定）がドメイン層の`shared-kernel/types/`に配置されている。
+
+**理由**:
+- ページネーション・キャッシュは全クエリで必須であり、リポジトリインターフェースから除外するとDIが破綻する
+- `packages/core`は独立パッケージであり、app層のインフラ型を参照できないため、shared-kernelに配置
+- 型を完全に分離すると呼び出し側でキャストが必要になり型安全性が低下
+- 影響は限定的（`InfraQueryOptions`、`PaginationOptions`、`CacheStrategy`のみ）で制御可能
+
+**対象ファイル**:
+- `packages/core/shared-kernel/types/query-options.ts`
+- `packages/core/*/repositories/*-query-repository.interface.ts`

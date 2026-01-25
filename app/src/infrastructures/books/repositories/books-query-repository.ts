@@ -14,8 +14,10 @@ import {
 	makeISBN,
 	type UnexportedBook,
 } from "@s-hirano-ist/s-core/books/entities/book-entity";
-import type { IBooksQueryRepository } from "@s-hirano-ist/s-core/books/repositories/books-query-repository.interface";
-import type { BooksFindManyParams } from "@s-hirano-ist/s-core/books/types/query-params";
+import type {
+	BooksFindManyParams,
+	IBooksQueryRepository,
+} from "@s-hirano-ist/s-core/books/repositories/books-query-repository.interface";
 import {
 	makeCreatedAt,
 	makeExportedAt,

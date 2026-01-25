@@ -2,6 +2,7 @@ import type {
 	Status,
 	UserId,
 } from "../../shared-kernel/entities/common-entity.js";
+import type { InfraQueryOptions } from "../../shared-kernel/types/query-options.js";
 import type {
 	BookListItemDTO,
 	BookSearchItemDTO,
@@ -9,8 +10,28 @@ import type {
 	ISBN,
 	UnexportedBook,
 } from "../entities/book-entity.js";
-import type { BooksFindManyParams } from "../types/query-params.js";
+import type { BooksOrderBy } from "../types/query-params.js";
 import type { IBooksCommandRepository } from "./books-command-repository.interface.js";
+
+/**
+ * Parameters for paginated book queries.
+ *
+ * @example
+ * ```typescript
+ * const params: BooksFindManyParams = {
+ *   orderBy: { createdAt: "desc" },
+ *   take: 20,
+ *   skip: 0,
+ *   cacheStrategy: { ttl: 60, tags: ["books"] },
+ * };
+ * ```
+ *
+ * @see {@link BooksOrderBy} for sorting options
+ */
+export type BooksFindManyParams = {
+	/** Sort configuration */
+	orderBy?: BooksOrderBy;
+} & InfraQueryOptions;
 
 /**
  * Query repository interface for the Book domain.

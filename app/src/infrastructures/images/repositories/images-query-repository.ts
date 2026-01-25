@@ -7,8 +7,10 @@ import {
 	makePixel,
 	type UnexportedImage,
 } from "@s-hirano-ist/s-core/images/entities/image-entity";
-import type { IImagesQueryRepository } from "@s-hirano-ist/s-core/images/repositories/images-query-repository.interface";
-import type { ImagesFindManyParams } from "@s-hirano-ist/s-core/images/types/query-params";
+import type {
+	IImagesQueryRepository,
+	ImagesFindManyParams,
+} from "@s-hirano-ist/s-core/images/repositories/images-query-repository.interface";
 import {
 	makeCreatedAt,
 	makeExportedAt,

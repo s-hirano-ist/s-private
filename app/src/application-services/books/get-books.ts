@@ -9,13 +9,13 @@
  */
 
 import { makeISBN } from "@s-hirano-ist/s-core/books/entities/book-entity";
-import type { CacheStrategy } from "@s-hirano-ist/s-core/books/types/cache-strategy";
 import {
 	makeExportedStatus,
 	makeUnexportedStatus,
 	type Status,
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import type { CacheStrategy } from "@s-hirano-ist/s-core/shared-kernel/types/query-options";
 import { unstable_cacheTag as cacheTag } from "next/cache";
 import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";

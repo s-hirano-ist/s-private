@@ -1,4 +1,3 @@
-import type { CacheStrategy } from "./cache-strategy.js";
 import type { SortOrder } from "./sort-order.js";
 
 /**
@@ -34,31 +33,4 @@ export type NotesOrderByField =
  */
 export type NotesOrderBy = {
 	[K in NotesOrderByField]?: SortOrder;
-};
-
-/**
- * Parameters for paginated note queries.
- *
- * @example
- * ```typescript
- * const params: NotesFindManyParams = {
- *   orderBy: { createdAt: "desc" },
- *   take: 20,
- *   skip: 0,
- *   cacheStrategy: { ttl: 60, tags: ["notes"] },
- * };
- * ```
- *
- * @see {@link NotesOrderBy} for sorting options
- * @see {@link CacheStrategy} for caching configuration
- */
-export type NotesFindManyParams = {
-	/** Sort configuration */
-	orderBy?: NotesOrderBy;
-	/** Maximum number of results to return */
-	take?: number;
-	/** Number of results to skip (for pagination) */
-	skip?: number;
-	/** Caching configuration for the query */
-	cacheStrategy?: CacheStrategy;
 };

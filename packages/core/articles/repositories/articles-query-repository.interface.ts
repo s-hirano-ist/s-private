@@ -2,6 +2,7 @@ import type {
 	Status,
 	UserId,
 } from "../../shared-kernel/entities/common-entity.js";
+import type { InfraQueryOptions } from "../../shared-kernel/types/query-options.js";
 import type {
 	ArticleListItemDTO,
 	ArticleSearchItemDTO,
@@ -9,8 +10,28 @@ import type {
 	UnexportedArticle,
 	Url,
 } from "../entities/article-entity.js";
-import type { ArticlesFindManyParams } from "../types/query-params.js";
+import type { ArticleOrderBy } from "../types/query-params.js";
 import type { IArticlesCommandRepository } from "./articles-command-repository.interface.js";
+
+/**
+ * Parameters for paginated article queries.
+ *
+ * @example
+ * ```typescript
+ * const params: ArticlesFindManyParams = {
+ *   orderBy: { createdAt: "desc" },
+ *   take: 20,
+ *   skip: 0,
+ *   cacheStrategy: { ttl: 60, tags: ["articles"] },
+ * };
+ * ```
+ *
+ * @see {@link ArticleOrderBy} for sorting options
+ */
+export type ArticlesFindManyParams = {
+	/** Sort configuration */
+	orderBy?: ArticleOrderBy;
+} & InfraQueryOptions;
 
 /**
  * Query repository interface for the Article domain.

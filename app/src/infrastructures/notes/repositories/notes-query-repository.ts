@@ -7,8 +7,10 @@ import {
 	type NoteTitle,
 	type UnexportedNote,
 } from "@s-hirano-ist/s-core/notes/entities/note-entity";
-import type { INotesQueryRepository } from "@s-hirano-ist/s-core/notes/repositories/notes-query-repository.interface";
-import type { NotesFindManyParams } from "@s-hirano-ist/s-core/notes/types/query-params";
+import type {
+	INotesQueryRepository,
+	NotesFindManyParams,
+} from "@s-hirano-ist/s-core/notes/repositories/notes-query-repository.interface";
 import {
 	makeCreatedAt,
 	makeExportedAt,

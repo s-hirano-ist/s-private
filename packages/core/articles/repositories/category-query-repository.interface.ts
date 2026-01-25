@@ -1,6 +1,26 @@
 import type { Id, UserId } from "../../shared-kernel/entities/common-entity.js";
+import type { PaginationOptions } from "../../shared-kernel/types/query-options.js";
 import type { CategoryName } from "../entities/article-entity.js";
-import type { CategoryFindManyParams } from "../types/query-params.js";
+import type { CategoryOrderBy } from "../types/query-params.js";
+
+/**
+ * Parameters for paginated category queries.
+ *
+ * @example
+ * ```typescript
+ * const params: CategoryFindManyParams = {
+ *   orderBy: { name: "asc" },
+ *   take: 50,
+ *   skip: 0,
+ * };
+ * ```
+ *
+ * @see {@link CategoryOrderBy} for sorting options
+ */
+export type CategoryFindManyParams = {
+	/** Sort configuration */
+	orderBy?: CategoryOrderBy;
+} & PaginationOptions;
 
 /**
  * DTO for category list display.
