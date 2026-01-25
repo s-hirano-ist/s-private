@@ -14,15 +14,13 @@ import { minioClient } from "@/minio";
 
 /**
  * Path prefix for original book images in MinIO bucket.
- * @internal
  */
-const ORIGINAL_BOOK_IMAGE_PATH = "books/original";
+export const ORIGINAL_BOOK_IMAGE_PATH = "books/original";
 
 /**
  * Path prefix for thumbnail book images in MinIO bucket.
- * @internal
  */
-const THUMBNAIL_BOOK_IMAGE_PATH = "books/thumbnail";
+export const THUMBNAIL_BOOK_IMAGE_PATH = "books/thumbnail";
 
 /**
  * Builds the object key for MinIO operations.

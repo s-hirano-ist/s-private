@@ -11,7 +11,7 @@
 import type { IBooksCommandRepository } from "@s-hirano-ist/s-core/books/repositories/books-command-repository.interface";
 import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/services/storage-service.interface";
 import { booksCommandRepository } from "@/infrastructures/books/repositories/books-command-repository";
-import { booksStorageService } from "@/infrastructures/books/services/books-storage-service";
+import { booksStorageService } from "@/infrastructures/shared/storage/books-storage-service";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import {
 	type createDomainServiceFactory,
