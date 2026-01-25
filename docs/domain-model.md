@@ -652,3 +652,56 @@ export class GoogleBooksFetcherImpl implements IGoogleBookFetcher {
 - Domain層でインターフェースを定義し、依存方向を維持
 - 外部API形式の変更はインフラ層の実装クラスのみで吸収
 - 外部サービス連携が複雑化した場合のみ、明示的なACL層を検討
+
+### 009: キャッシュ無効化のRepository内配置
+
+#### 概要
+
+Repositoryにキャッシュ無効化（`revalidateTag`）が含まれており、データ永続化とキャッシュ戦略が混在しています。
+
+```typescript
+// 現在の実装: Repositoryでキャッシュ無効化を実行
+async function create(data: UnexportedArticle): Promis<void> {
+  await prisma.article.create({ data });e
+  revalidateTag(buildContentCacheTag("articles", data.status, data.userId));
+  revalidateTag(buildCountCacheTag("articles", data.status, data.userId));
+}
+```
+
+#### DDDの原則との乖離
+
+- **関心事の混在**: Repositoryがデータ永続化とキャッシュ戦略の両方を担当
+- **ロジック分散**: キャッシュ無効化ロジックが各Repositoryに分散
+- **テスト困難**: テスト時にキャッシュ無効化の影響を制御しづらい
+
+厳密なDDDでは、Repositoryは純粋なデータアクセスに専念し、キャッシュ無効化はApplication Service層やイベント駆動で行うべきとされます。
+
+#### 対応しない理由
+
+**キャッシュ無効化がインフラ層内に閉じている**: 現在の`revalidateTag`呼び出しはインフラ層（`app/src/infrastructures/`）内に限定されており、Domain層やApplication層への漏洩はありません。
+
+- Next.jsの`revalidateTag`はインフラ関心事として妥当な配置
+- 現状の実装でも一貫性があり、理解しやすい
+- 各Repositoryが同一パターンに従っており、予測可能な動作
+- Application Serviceへの移動は責務の二重化を招く可能性
+
+**改善案の検討結果**:
+
+| パターン | 概要 | 見送り理由 |
+|---------|------|-----------|
+| Application Service層への移動 | キャッシュ無効化をApplication Serviceで実行 | Repositoryとの責務重複、呼び出し忘れリスク |
+| Decoratorパターン | キャッシュ無効化を専用Decoratorで実装 | 過度な抽象化、デバッグ困難 |
+| イベント駆動 | ドメインイベントでキャッシュ無効化 | イベントサブスクライバー未実装（002参照） |
+
+#### 対象ファイル
+
+- `app/src/infrastructures/articles/repositories/articles-command-repository.ts`
+- `app/src/infrastructures/books/repositories/books-command-repository.ts`
+- `app/src/infrastructures/notes/repositories/notes-command-repository.ts`
+- `app/src/infrastructures/images/repositories/images-command-repository.ts`
+
+#### リスク軽減策
+
+- キャッシュタグ生成ロジックを共通化（`buildContentCacheTag`, `buildCountCacheTag`）
+- 各Repositoryで同一パターンを維持し、一貫性を保証
+- キャッシュ戦略の変更時は全Repositoryを一括更新
