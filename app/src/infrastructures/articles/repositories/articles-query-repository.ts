@@ -1,5 +1,6 @@
 import {
 	type ArticleListItemDTO,
+	type ArticleSearchItemDTO,
 	type ExportedArticle,
 	makeArticleTitle,
 	makeCategoryName,
@@ -112,7 +113,7 @@ async function search(
 	query: string,
 	userId: UserId,
 	limit = 20,
-): Promise<ArticleListItemDTO[]> {
+): Promise<ArticleSearchItemDTO[]> {
 	const where: Prisma.ArticleWhereInput = {
 		userId,
 		status: "EXPORTED",
