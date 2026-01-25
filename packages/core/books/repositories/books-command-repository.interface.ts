@@ -3,7 +3,7 @@ import type {
 	Status,
 	UserId,
 } from "../../shared-kernel/entities/common-entity.js";
-import type { UnexportedBook } from "../entities/book-entity.js";
+import type { BookTitle, UnexportedBook } from "../entities/book-entity.js";
 
 /**
  * Command repository interface for the Book domain.
@@ -46,7 +46,7 @@ import type { UnexportedBook } from "../entities/book-entity.js";
  * Result of a delete operation containing data needed for events.
  */
 export type DeleteBookResult = {
-	title: string;
+	title: BookTitle;
 };
 
 export type IBooksCommandRepository = {

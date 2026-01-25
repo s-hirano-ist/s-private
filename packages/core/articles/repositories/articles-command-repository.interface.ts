@@ -3,7 +3,10 @@ import type {
 	Status,
 	UserId,
 } from "../../shared-kernel/entities/common-entity.js";
-import type { UnexportedArticle } from "../entities/article-entity.js";
+import type {
+	ArticleTitle,
+	UnexportedArticle,
+} from "../entities/article-entity.js";
 
 /**
  * Command repository interface for the Article domain.
@@ -38,7 +41,7 @@ import type { UnexportedArticle } from "../entities/article-entity.js";
  * Result of a delete operation containing data needed for events.
  */
 export type DeleteArticleResult = {
-	title: string;
+	title: ArticleTitle;
 };
 
 export type IArticlesCommandRepository = {

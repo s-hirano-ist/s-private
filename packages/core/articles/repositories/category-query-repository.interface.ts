@@ -1,6 +1,17 @@
-import type { UserId } from "../../shared-kernel/entities/common-entity.js";
+import type { Id, UserId } from "../../shared-kernel/entities/common-entity.js";
 import type { CategoryName } from "../entities/article-entity.js";
 import type { CategoryFindManyParams } from "../types/query-params.js";
+
+/**
+ * DTO for category list display.
+ *
+ * @remarks
+ * Contains branded types for type safety.
+ */
+export type CategoryListItemDTO = Readonly<{
+	id: Id;
+	name: CategoryName;
+}>;
 
 /**
  * Query repository interface for the Category domain.
@@ -14,17 +25,19 @@ import type { CategoryFindManyParams } from "../types/query-params.js";
  * // Infrastructure implementation
  * class PrismaCategoryQueryRepository implements ICategoryQueryRepository {
  *   async findMany(userId: UserId, params?: CategoryFindManyParams) {
- *     return await prisma.category.findMany({
+ *     const data = await prisma.category.findMany({
  *       where: { userId },
  *       ...params
  *     });
+ *     return data.map(d => ({ id: makeId(d.id), name: makeCategoryName(d.name) }));
  *   }
  *
  *   async findByNameAndUser(name: CategoryName, userId: UserId) {
- *     return await prisma.category.findUnique({
+ *     const data = await prisma.category.findUnique({
  *       where: { name_userId: { name, userId } },
  *       select: { id: true }
  *     });
+ *     return data ? { id: makeId(data.id) } : null;
  *   }
  * }
  * ```
@@ -37,27 +50,22 @@ export type ICategoryQueryRepository = {
 	 *
 	 * @param userId - The user ID for tenant isolation
 	 * @param params - Optional pagination and sorting parameters
-	 * @returns Array of category data objects
+	 * @returns Array of category DTOs with branded types
 	 */
 	findMany(
 		userId: UserId,
 		params?: CategoryFindManyParams,
-	): Promise<
-		{
-			id: string;
-			name: string;
-		}[]
-	>;
+	): Promise<CategoryListItemDTO[]>;
 
 	/**
 	 * Finds a category by name and user ID.
 	 *
 	 * @param name - The category name to search for
 	 * @param userId - The user ID for tenant isolation
-	 * @returns The category ID if found, null otherwise
+	 * @returns The category ID (branded) if found, null otherwise
 	 */
 	findByNameAndUser(
 		name: CategoryName,
 		userId: UserId,
-	): Promise<{ id: string } | null>;
+	): Promise<{ id: Id } | null>;
 };

@@ -3,7 +3,7 @@ import type {
 	Status,
 	UserId,
 } from "../../shared-kernel/entities/common-entity.js";
-import type { UnexportedNote } from "../entities/note-entity.js";
+import type { NoteTitle, UnexportedNote } from "../entities/note-entity.js";
 
 /**
  * Command repository interface for the Note domain.
@@ -38,7 +38,7 @@ import type { UnexportedNote } from "../entities/note-entity.js";
  * Result of a delete operation containing data needed for events.
  */
 export type DeleteNoteResult = {
-	title: string;
+	title: NoteTitle;
 };
 
 export type INotesCommandRepository = {

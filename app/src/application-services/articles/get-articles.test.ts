@@ -264,12 +264,12 @@ describe("get-articles", () => {
 		test("should fetch categories correctly", async () => {
 			const mockCategories = [
 				{
-					id: "01234567-89ab-4def-9123-456789abcdef",
-					name: "Science",
+					id: makeId("01234567-89ab-7def-9123-456789abcdef"),
+					name: makeCategoryName("Science"),
 				},
 				{
-					id: "01234567-89ab-cdef-0123-456789abcde0",
-					name: "Tech",
+					id: makeId("01234567-89ab-7def-8123-456789abcde0"),
+					name: makeCategoryName("Tech"),
 				},
 			];
 
@@ -288,12 +288,12 @@ describe("get-articles", () => {
 
 			expect(result).toEqual([
 				{
-					id: "01234567-89ab-4def-9123-456789abcdef",
-					name: "Science",
+					id: makeId("01234567-89ab-7def-9123-456789abcdef"),
+					name: makeCategoryName("Science"),
 				},
 				{
-					id: "01234567-89ab-cdef-0123-456789abcde0",
-					name: "Tech",
+					id: makeId("01234567-89ab-7def-8123-456789abcde0"),
+					name: makeCategoryName("Tech"),
 				},
 			]);
 		});

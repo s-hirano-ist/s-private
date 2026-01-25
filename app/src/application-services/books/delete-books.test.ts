@@ -1,4 +1,8 @@
-import * as commonEntityModule from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { makeBookTitle } from "@s-hirano-ist/s-core/books/entities/book-entity";
+import {
+	makeId,
+	makeUserId,
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, type Mock, test, vi } from "vitest";
 import * as sessionModule from "@/common/auth/session";
 import * as errorModule from "@/common/error/error-wrapper";
@@ -8,7 +12,6 @@ import { deleteBooks } from "./delete-books";
 vi.mock("@/common/auth/session");
 vi.mock("@/common/error/error-wrapper");
 vi.mock("@/infrastructures/books/repositories/books-command-repository");
-vi.mock("@s-hirano-ist/s-core/shared-kernel/entities/common-entity");
 vi.mock("@/infrastructures/events/event-dispatcher", () => ({
 	eventDispatcher: {
 		dispatch: vi.fn().mockResolvedValue(undefined),
@@ -23,31 +26,27 @@ describe("deleteBooks", () => {
 	const mockGetSelfId = sessionModule.getSelfId as Mock;
 	const mockWrapServerSideErrorForClient =
 		errorModule.wrapServerSideErrorForClient as Mock;
-	const mockMakeId = commonEntityModule.makeId as Mock;
-	const mockMakeUserId = commonEntityModule.makeUserId as Mock;
-	const mockMakeUnexportedStatus =
-		commonEntityModule.makeUnexportedStatus as Mock;
 
 	beforeEach(() => {
 		vi.clearAllMocks();
 		booksRepositoryModule.booksCommandRepository.deleteById = mockDeleteById;
-
-		mockMakeId.mockImplementation((id) => id);
-		mockMakeUserId.mockImplementation((userId) => userId);
-		mockMakeUnexportedStatus.mockImplementation(() => "UNEXPORTED");
 	});
 
 	test("should successfully delete a book when user has permission", async () => {
 		const bookId = "01933f5c-9df0-7001-9123-456789abcdef";
-		const userId = "01933f5c-9df0-7002-9876-543210fedcba";
+		const userId = "test-user-id";
 
 		mockHasDumperPostPermission.mockResolvedValue(true);
-		mockGetSelfId.mockResolvedValue(userId);
-		mockDeleteById.mockResolvedValue({ title: "Test Book" });
+		mockGetSelfId.mockResolvedValue(makeUserId(userId));
+		mockDeleteById.mockResolvedValue({ title: makeBookTitle("Test Book") });
 
 		const result = await deleteBooks(bookId);
 
-		expect(mockDeleteById).toHaveBeenCalledWith(bookId, userId, "UNEXPORTED");
+		expect(mockDeleteById).toHaveBeenCalledWith(
+			makeId(bookId),
+			makeUserId(userId),
+			"UNEXPORTED",
+		);
 		expect(result).toEqual({ success: true, message: "deleted" });
 	});
 
@@ -61,12 +60,12 @@ describe("deleteBooks", () => {
 
 	test("should handle errors and wrap them properly", async () => {
 		const bookId = "01933f5c-9df0-7001-9123-456789abcdef";
-		const userId = "01933f5c-9df0-7002-9876-543210fedcba";
+		const userId = "test-user-id";
 		const error = new Error("Test error");
 		const wrappedError = { success: false, message: "Error occurred" };
 
 		mockHasDumperPostPermission.mockResolvedValue(true);
-		mockGetSelfId.mockResolvedValue(userId);
+		mockGetSelfId.mockResolvedValue(makeUserId(userId));
 		mockDeleteById.mockRejectedValue(error);
 		mockWrapServerSideErrorForClient.mockResolvedValue(wrappedError);
 

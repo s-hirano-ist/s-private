@@ -18,6 +18,7 @@ import type {
 	CategoryFindManyParams,
 } from "@s-hirano-ist/s-core/articles/types/query-params";
 import {
+	type Id,
 	makeCreatedAt,
 	makeExportedAt,
 	makeId,
@@ -164,21 +165,26 @@ async function findManyCategories(
 	userId: string,
 	params?: CategoryFindManyParams,
 ) {
-	return prisma.category.findMany({
+	const data = await prisma.category.findMany({
 		where: { userId },
 		select: { id: true, name: true },
 		...params,
 	});
+	return data.map((d) => ({
+		id: makeId(d.id),
+		name: makeCategoryName(d.name),
+	}));
 }
 
 async function findByNameAndUser(
 	name: string,
 	userId: string,
-): Promise<{ id: string } | null> {
-	return prisma.category.findUnique({
+): Promise<{ id: Id } | null> {
+	const data = await prisma.category.findUnique({
 		where: { name_userId: { name, userId } },
 		select: { id: true },
 	});
+	return data ? { id: makeId(data.id) } : null;
 }
 
 export const categoryQueryRepository: ICategoryQueryRepository = {
