@@ -15,8 +15,6 @@
 
 /**
  * Payload for system error events.
- *
- * @see {@link SystemErrorEvent}
  */
 export type SystemErrorPayload = {
 	message: string;
@@ -27,8 +25,6 @@ export type SystemErrorPayload = {
 
 /**
  * Payload for system warning events.
- *
- * @see {@link SystemWarningEvent}
  */
 export type SystemWarningPayload = {
 	message: string;
@@ -43,8 +39,6 @@ export type SystemWarningPayload = {
 
 /**
  * Payload for article created events.
- *
- * @see {@link ArticleCreatedEvent}
  */
 export type ArticleCreatedPayload = {
 	title: string;
@@ -55,8 +49,6 @@ export type ArticleCreatedPayload = {
 
 /**
  * Payload for article deleted events.
- *
- * @see {@link ArticleDeletedEvent}
  */
 export type ArticleDeletedPayload = {
 	title: string;
@@ -68,8 +60,6 @@ export type ArticleDeletedPayload = {
 
 /**
  * Payload for note created events.
- *
- * @see {@link NoteCreatedEvent}
  */
 export type NoteCreatedPayload = {
 	title: string;
@@ -78,8 +68,6 @@ export type NoteCreatedPayload = {
 
 /**
  * Payload for note deleted events.
- *
- * @see {@link NoteDeletedEvent}
  */
 export type NoteDeletedPayload = {
 	title: string;
@@ -91,8 +79,6 @@ export type NoteDeletedPayload = {
 
 /**
  * Payload for image created events.
- *
- * @see {@link ImageCreatedEvent}
  */
 export type ImageCreatedPayload = {
 	id: string;
@@ -101,8 +87,6 @@ export type ImageCreatedPayload = {
 
 /**
  * Payload for image deleted events.
- *
- * @see {@link ImageDeletedEvent}
  */
 export type ImageDeletedPayload = {
 	path: string;
@@ -114,8 +98,6 @@ export type ImageDeletedPayload = {
 
 /**
  * Payload for book created events.
- *
- * @see {@link BookCreatedEvent}
  */
 export type BookCreatedPayload = {
 	isbn: string;
@@ -124,8 +106,6 @@ export type BookCreatedPayload = {
 
 /**
  * Payload for book deleted events.
- *
- * @see {@link BookDeletedEvent}
  */
 export type BookDeletedPayload = {
 	title: string;
