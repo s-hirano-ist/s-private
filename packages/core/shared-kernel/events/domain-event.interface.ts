@@ -23,11 +23,13 @@ import type { BaseDomainEvent } from "./base-domain-event.js";
  * @see {@link BaseDomainEvent} for abstract base class
  * @see {@link DomainEventHandler} for handling events
  */
-export type DomainEvent = {
+export type DomainEvent<
+	TPayload extends Record<string, unknown> = Record<string, unknown>,
+> = {
 	/** The type of event (e.g., "article.created", "book.deleted") */
 	eventType: string;
 	/** Event-specific data */
-	payload: Record<string, unknown>;
+	payload: TPayload;
 	/** Contextual information about the event */
 	metadata: {
 		/** When the event occurred */
@@ -65,5 +67,5 @@ export type DomainEventHandler = {
 	 *
 	 * @param event - The domain event to handle
 	 */
-	handle(event: DomainEvent): Promise<void>;
+	handle(event: DomainEvent<Record<string, unknown>>): Promise<void>;
 };

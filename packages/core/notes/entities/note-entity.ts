@@ -273,9 +273,9 @@ export const noteEntity = {
 		);
 
 		const event = new NoteCreatedEvent({
-			title: note.title as string,
-			markdown: note.markdown as string,
-			userId: note.userId as string,
+			title: note.title,
+			markdown: note.markdown,
+			userId: note.userId,
 			caller,
 		});
 

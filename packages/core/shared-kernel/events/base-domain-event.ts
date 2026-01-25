@@ -7,13 +7,17 @@ import type { DomainEvent } from "./domain-event.interface.js";
  * Provides common functionality for domain events including automatic
  * timestamp generation. Extend this class to create specific event types.
  *
+ * @typeParam TPayload - The type of the event payload
+ *
  * @example
  * ```typescript
- * class ArticleCreatedEvent extends BaseDomainEvent {
- *   constructor(data: { title: string; userId: string; caller: string }) {
+ * type ArticleCreatedPayload = { title: string; url: string };
+ *
+ * class ArticleCreatedEvent extends BaseDomainEvent<ArticleCreatedPayload> {
+ *   constructor(data: { title: string; url: string; userId: string; caller: string }) {
  *     super(
  *       "article.created",
- *       { title: data.title },
+ *       { title: data.title, url: data.url },
  *       { caller: data.caller, userId: data.userId }
  *     );
  *   }
@@ -22,12 +26,14 @@ import type { DomainEvent } from "./domain-event.interface.js";
  *
  * @see {@link DomainEvent} for the interface
  */
-export abstract class BaseDomainEvent implements DomainEvent {
+export abstract class BaseDomainEvent<TPayload extends Record<string, unknown>>
+	implements DomainEvent<TPayload>
+{
 	/** The type of event (e.g., "article.created") */
 	public readonly eventType: string;
 
 	/** Event-specific data */
-	public readonly payload: Record<string, unknown>;
+	public readonly payload: TPayload;
 
 	/** Contextual information about the event */
 	public readonly metadata: {
@@ -45,7 +51,7 @@ export abstract class BaseDomainEvent implements DomainEvent {
 	 */
 	constructor(
 		eventType: string,
-		payload: Record<string, unknown>,
+		payload: TPayload,
 		metadata: {
 			caller: string;
 			userId: string;

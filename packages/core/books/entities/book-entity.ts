@@ -488,9 +488,9 @@ export const bookEntity = {
 		);
 
 		const event = new BookCreatedEvent({
-			isbn: book.isbn as string,
-			title: book.title as string,
-			userId: book.userId as string,
+			isbn: book.isbn,
+			title: book.title,
+			userId: book.userId,
 			caller,
 		});
 

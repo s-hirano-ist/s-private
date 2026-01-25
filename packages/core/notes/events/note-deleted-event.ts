@@ -1,4 +1,5 @@
 import { BaseDomainEvent } from "../../shared-kernel/events/base-domain-event.js";
+import type { NoteDeletedPayload } from "../../shared-kernel/events/payload-types.js";
 import type { NoteCreatedEvent } from "./note-created-event.js";
 
 /**
@@ -23,7 +24,7 @@ import type { NoteCreatedEvent } from "./note-created-event.js";
  * @see {@link BaseDomainEvent} for base class
  * @see {@link NoteCreatedEvent} for creation event
  */
-export class NoteDeletedEvent extends BaseDomainEvent {
+export class NoteDeletedEvent extends BaseDomainEvent<NoteDeletedPayload> {
 	/**
 	 * Creates a new NoteDeletedEvent.
 	 *

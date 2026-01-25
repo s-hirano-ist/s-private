@@ -1,4 +1,5 @@
 import { BaseDomainEvent } from "./base-domain-event.js";
+import type { SystemErrorPayload } from "./payload-types.js";
 import type { SystemWarningEvent } from "./system-warning-event.js";
 
 /**
@@ -26,7 +27,7 @@ import type { SystemWarningEvent } from "./system-warning-event.js";
  * @see {@link SystemWarningEvent} for non-critical issues
  * @see {@link BaseDomainEvent} for base class
  */
-export class SystemErrorEvent extends BaseDomainEvent {
+export class SystemErrorEvent extends BaseDomainEvent<SystemErrorPayload> {
 	/**
 	 * Creates a new system error event.
 	 *

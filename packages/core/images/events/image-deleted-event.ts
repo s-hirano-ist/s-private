@@ -1,4 +1,5 @@
 import { BaseDomainEvent } from "../../shared-kernel/events/base-domain-event.js";
+import type { ImageDeletedPayload } from "../../shared-kernel/events/payload-types.js";
 import type { ImageCreatedEvent } from "./image-created-event.js";
 
 /**
@@ -23,7 +24,7 @@ import type { ImageCreatedEvent } from "./image-created-event.js";
  * @see {@link BaseDomainEvent} for base class
  * @see {@link ImageCreatedEvent} for creation event
  */
-export class ImageDeletedEvent extends BaseDomainEvent {
+export class ImageDeletedEvent extends BaseDomainEvent<ImageDeletedPayload> {
 	/**
 	 * Creates a new ImageDeletedEvent.
 	 *

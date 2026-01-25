@@ -1,4 +1,5 @@
 import { BaseDomainEvent } from "../../shared-kernel/events/base-domain-event.js";
+import type { BookDeletedPayload } from "../../shared-kernel/events/payload-types.js";
 import type { BookCreatedEvent } from "./book-created-event.js";
 
 /**
@@ -23,7 +24,7 @@ import type { BookCreatedEvent } from "./book-created-event.js";
  * @see {@link BaseDomainEvent} for base class
  * @see {@link BookCreatedEvent} for creation event
  */
-export class BookDeletedEvent extends BaseDomainEvent {
+export class BookDeletedEvent extends BaseDomainEvent<BookDeletedPayload> {
 	/**
 	 * Creates a new BookDeletedEvent.
 	 *

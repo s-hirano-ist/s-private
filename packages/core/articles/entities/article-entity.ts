@@ -474,11 +474,11 @@ export const articleEntity = {
 		);
 
 		const event = new ArticleCreatedEvent({
-			title: article.title as string,
-			url: article.url as string,
-			quote: (article.quote as string) ?? "",
-			categoryName: categoryName as string,
-			userId: article.userId as string,
+			title: article.title,
+			url: article.url,
+			quote: article.quote ?? "",
+			categoryName,
+			userId: article.userId,
 			caller,
 		});
 
