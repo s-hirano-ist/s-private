@@ -105,28 +105,61 @@ This project follows clean architecture principles with domain-driven design, en
 │   │   ├── notes/                  # Markdown content domain
 │   │   ├── images/                 # File metadata domain
 │   │   ├── books/                  # ISBN-based book tracking domain
+│   │   ├── shared-kernel/          # Cross-domain shared logic
+│   │   ├── errors/                 # Domain error definitions
 │   │   └── common/                 # Shared domain utilities
 │   │
 │   ├── database/                   # Database Layer
 │   │   └── prisma/                 # Prisma ORM & migrations
 │   │
 │   ├── ui/                         # Shared UI Components
-│   │   └── ui/                     # shadcn/ui components
+│   │   ├── ui/                     # shadcn/ui base components
+│   │   ├── display/                # Display components (status, etc.)
+│   │   ├── forms/                  # Form components & fields
+│   │   ├── layouts/                # Layout components (body, etc.)
+│   │   ├── hooks/                  # Shared React hooks
+│   │   ├── providers/              # Context providers
+│   │   └── utils/                  # UI utilities
 │   │
-│   └── notification/               # Notification services
+│   ├── notification/               # Notification services
+│   │
+│   └── scripts/                    # Build & utility scripts
+│       └── src/
+│           ├── infrastructures/
+│           └── rag/
 │
 └── app/src/                        # Next.js Application
     ├── application-services/       # Application Layer (Use Cases)
     │   ├── articles/
     │   ├── notes/
     │   ├── images/
-    │   └── books/
+    │   ├── books/
+    │   ├── search/                 # Search functionality
+    │   └── common/                 # Shared application utilities
     │
     ├── infrastructures/            # Infrastructure Layer (External Concerns)
-    │   ├── repositories/           # Prisma ORM implementations
+    │   ├── articles/               # Article repository implementation
+    │   ├── notes/                  # Note repository implementation
+    │   ├── images/                 # Image repository implementation
+    │   ├── books/                  # Book repository implementation
     │   ├── auth/                   # Auth0 + NextAuth.js integration
     │   ├── i18n/                   # next-intl configuration
-    │   └── observability/          # Sentry, logging, monitoring
+    │   ├── observability/          # Sentry, logging, monitoring
+    │   ├── events/                 # Event handling
+    │   ├── factories/              # Dependency injection factories
+    │   ├── transaction/            # Transaction management
+    │   └── common/                 # Shared infrastructure utilities
+    │
+    ├── loaders/                    # Data loading layer
+    │   ├── articles/
+    │   ├── notes/
+    │   ├── images/
+    │   └── books/
+    │
+    ├── common/                     # Shared utilities
+    │   ├── auth/
+    │   ├── error/
+    │   └── utils/
     │
     ├── components/                 # UI Components (Interface Layer)
     │   ├── articles/
