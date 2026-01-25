@@ -52,14 +52,12 @@ export function useSearch({
 					};
 					const result = await search(query);
 					if (result.success && result.data) {
-						const newData = result.data.results.map((d) => {
-							return {
-								href: d.href,
-								contentType: d.contentType,
-								title: d.title,
-								url: d.url,
-							};
-						});
+						const newData = result.data.results.map((d) => ({
+							href: d.href,
+							contentType: d.contentType,
+							title: d.title,
+							url: d.contentType === "articles" ? d.url : undefined,
+						}));
 						setSearchResults(newData);
 					}
 				});
