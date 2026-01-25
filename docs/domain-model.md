@@ -44,7 +44,7 @@ erDiagram
     Article {
         Id id PK
         UserId userId FK
-        CategoryName categoryName
+        Id categoryId FK "Category参照"
         ArticleTitle title
         Quote quote "nullable"
         Url url

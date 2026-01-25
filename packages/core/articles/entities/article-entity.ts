@@ -316,7 +316,6 @@ const Base = z.object({
 	id: Id,
 	userId: UserId,
 	categoryId: Id,
-	categoryName: CategoryName,
 	title: ArticleTitle,
 	quote: Quote,
 	url: Url,
@@ -389,7 +388,7 @@ export type CreateArticleArgs = Readonly<{
 	userId: UserId;
 	/** The resolved category ID (FK to Category table) */
 	categoryId: Id;
-	/** The category name for display and events */
+	/** イベント用のカテゴリ名（エンティティには含まれない、ログ・監査用スナップショット） */
 	categoryName: CategoryName;
 	/** The article title */
 	title: ArticleTitle;
@@ -453,7 +452,7 @@ export const articleEntity = {
 	 * @throws {UnexpectedError} For unexpected errors during creation
 	 */
 	create: (args: CreateArticleArgs): ArticleWithEvent => {
-		const { caller, ...entityArgs } = args;
+		const { caller, categoryName, ...entityArgs } = args;
 		const article = createEntityWithErrorHandling(() =>
 			Object.freeze({
 				id: makeId(),
@@ -467,7 +466,7 @@ export const articleEntity = {
 			title: article.title as string,
 			url: article.url as string,
 			quote: (article.quote as string) ?? "",
-			categoryName: article.categoryName as string,
+			categoryName: categoryName as string,
 			userId: article.userId as string,
 			caller,
 		});

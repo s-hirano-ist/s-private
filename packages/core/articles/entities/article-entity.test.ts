@@ -4,7 +4,7 @@ import {
 	InvalidFormatError,
 	UnexpectedError,
 } from "../../errors/error-classes";
-import { makeUserId } from "../../shared-kernel/entities/common-entity";
+import { makeId, makeUserId } from "../../shared-kernel/entities/common-entity";
 import * as entityFactory from "../../shared-kernel/services/entity-factory";
 import {
 	articleEntity,
@@ -135,6 +135,7 @@ describe("articleEntity", () => {
 		test("should create article with valid arguments", () => {
 			const [article, event] = articleEntity.create({
 				userId: makeUserId("test-user-id"),
+				categoryId: makeId("01933f5c-9df0-7001-9123-456789abcdef"),
 				categoryName: makeCategoryName("Tech"),
 				title: makeArticleTitle("Breaking article"),
 				url: makeUrl("https://example.com"),
@@ -142,17 +143,22 @@ describe("articleEntity", () => {
 			});
 
 			expect(article.userId).toBe("test-user-id");
-			expect(article.categoryName).toBe("Tech");
+			expect(article.categoryId).toBe("01933f5c-9df0-7001-9123-456789abcdef");
+			// categoryName はエンティティに含まれない（イベント用）
+			expect("categoryName" in article).toBe(false);
 			expect(article.title).toBe("Breaking article");
 			expect(article.url).toBe("https://example.com");
 			expect(article.status).toBe("UNEXPORTED");
 			expect(article.id).toBeDefined();
 			expect(event.eventType).toBe("article.created");
+			// イベントには categoryName が含まれる
+			expect(event.payload.categoryName).toBe("Tech");
 		});
 
 		test("should create article with optional quote", () => {
 			const [article] = articleEntity.create({
 				userId: makeUserId("test-user-id"),
+				categoryId: makeId("01933f5c-9df0-7001-9123-456789abcdef"),
 				categoryName: makeCategoryName("Science"),
 				title: makeArticleTitle("Science article"),
 				quote: makeQuote("This is a quote"),
@@ -166,6 +172,7 @@ describe("articleEntity", () => {
 		test("should create article with UNEXPORTED status by default", () => {
 			const [article] = articleEntity.create({
 				userId: makeUserId("test-user-id"),
+				categoryId: makeId("01933f5c-9df0-7001-9123-456789abcdef"),
 				categoryName: makeCategoryName("Tech"),
 				title: makeArticleTitle("Test article"),
 				url: makeUrl("https://example.com"),
@@ -178,6 +185,7 @@ describe("articleEntity", () => {
 		test("should be frozen object", () => {
 			const [article] = articleEntity.create({
 				userId: makeUserId("test-user-id"),
+				categoryId: makeId("01933f5c-9df0-7001-9123-456789abcdef"),
 				categoryName: makeCategoryName("Tech"),
 				title: makeArticleTitle("Test article"),
 				url: makeUrl("https://example.com"),
@@ -190,6 +198,7 @@ describe("articleEntity", () => {
 		test("should generate ID for article", () => {
 			const [article] = articleEntity.create({
 				userId: makeUserId("test-user-id"),
+				categoryId: makeId("01933f5c-9df0-7001-9123-456789abcdef"),
 				categoryName: makeCategoryName("Tech"),
 				title: makeArticleTitle("Test article"),
 				url: makeUrl("https://example.com"),
@@ -209,6 +218,7 @@ describe("articleEntity", () => {
 
 			articleEntity.create({
 				userId: makeUserId("test-user-id"),
+				categoryId: makeId("01933f5c-9df0-7001-9123-456789abcdef"),
 				categoryName: makeCategoryName("Tech"),
 				title: makeArticleTitle("Test article"),
 				url: makeUrl("https://example.com"),
@@ -233,6 +243,7 @@ describe("articleEntity", () => {
 			expect(() =>
 				articleEntity.create({
 					userId: makeUserId("test-user-id"),
+					categoryId: makeId("01933f5c-9df0-7001-9123-456789abcdef"),
 					categoryName: makeCategoryName("Tech"),
 					title: makeArticleTitle("Test article"),
 					url: makeUrl("https://example.com"),
@@ -253,6 +264,7 @@ describe("articleEntity", () => {
 			expect(() =>
 				articleEntity.create({
 					userId: makeUserId("test-user-id"),
+					categoryId: makeId("01933f5c-9df0-7001-9123-456789abcdef"),
 					categoryName: makeCategoryName("Tech"),
 					title: makeArticleTitle("Test article"),
 					url: makeUrl("https://example.com"),
