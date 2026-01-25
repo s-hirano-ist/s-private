@@ -1,4 +1,3 @@
-import type { CacheStrategy } from "./cache-strategy.js";
 import type { SortOrder } from "./sort-order.js";
 
 /**
@@ -43,31 +42,4 @@ export type BooksOrderByField =
  */
 export type BooksOrderBy = {
 	[K in BooksOrderByField]?: SortOrder;
-};
-
-/**
- * Parameters for paginated book queries.
- *
- * @example
- * ```typescript
- * const params: BooksFindManyParams = {
- *   orderBy: { createdAt: "desc" },
- *   take: 20,
- *   skip: 0,
- *   cacheStrategy: { ttl: 60, tags: ["books"] },
- * };
- * ```
- *
- * @see {@link BooksOrderBy} for sorting options
- * @see {@link CacheStrategy} for caching configuration
- */
-export type BooksFindManyParams = {
-	/** Sort configuration */
-	orderBy?: BooksOrderBy;
-	/** Maximum number of results to return */
-	take?: number;
-	/** Number of results to skip (for pagination) */
-	skip?: number;
-	/** Caching configuration for the query */
-	cacheStrategy?: CacheStrategy;
 };

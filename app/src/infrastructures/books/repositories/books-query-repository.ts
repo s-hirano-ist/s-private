@@ -13,9 +13,11 @@ import {
 	makeGoogleTitle,
 	makeISBN,
 	type UnexportedBook,
-} from "@s-hirano-ist/s-core/books/entities/books-entity";
-import type { IBooksQueryRepository } from "@s-hirano-ist/s-core/books/repositories/books-query-repository.interface";
-import type { BooksFindManyParams } from "@s-hirano-ist/s-core/books/types/query-params";
+} from "@s-hirano-ist/s-core/books/entities/book-entity";
+import type {
+	BooksFindManyParams,
+	IBooksQueryRepository,
+} from "@s-hirano-ist/s-core/books/repositories/books-query-repository.interface";
 import {
 	makeCreatedAt,
 	makeExportedAt,
@@ -25,24 +27,18 @@ import {
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { makePath } from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
-import { env } from "@/env";
-import {
-	ORIGINAL_BOOK_IMAGE_PATH,
-	THUMBNAIL_BOOK_IMAGE_PATH,
-} from "@/infrastructures/shared/storage/books-storage-service";
-import { minioClient } from "@/minio";
 import prisma from "@/prisma";
 
 async function findByISBN(
-	ISBN: ISBN,
+	isbn: ISBN,
 	userId: UserId,
 ): Promise<UnexportedBook | ExportedBook | null> {
 	const data = await prisma.book.findUnique({
-		where: { ISBN_userId: { ISBN, userId } },
+		where: { isbn_userId: { isbn, userId } },
 		select: {
 			id: true,
 			userId: true,
-			ISBN: true,
+			isbn: true,
 			title: true,
 			googleTitle: true,
 			googleSubTitle: true,
@@ -62,7 +58,7 @@ async function findByISBN(
 	const base = {
 		id: makeId(data.id),
 		userId: makeUserId(data.userId),
-		ISBN: makeISBN(data.ISBN),
+		isbn: makeISBN(data.isbn),
 		title: makeBookTitle(data.title),
 		googleTitle: data.googleTitle
 			? makeGoogleTitle(data.googleTitle)
@@ -105,7 +101,7 @@ async function findMany(
 		where: { userId, status },
 		select: {
 			id: true,
-			ISBN: true,
+			isbn: true,
 			title: true,
 			googleImgSrc: true,
 			imagePath: true,
@@ -114,7 +110,7 @@ async function findMany(
 	});
 	return data.map((d) => ({
 		id: makeId(d.id),
-		ISBN: makeISBN(d.ISBN),
+		isbn: makeISBN(d.isbn),
 		title: makeBookTitle(d.title),
 		googleImgSrc: d.googleImgSrc ? makeGoogleImgSrc(d.googleImgSrc) : undefined,
 		imagePath: d.imagePath ? makePath(d.imagePath, false) : undefined,
@@ -147,7 +143,7 @@ async function search(
 		},
 		select: {
 			id: true,
-			ISBN: true,
+			isbn: true,
 			title: true,
 			googleTitle: true,
 			googleSubTitle: true,
@@ -162,7 +158,7 @@ async function search(
 	});
 	return data.map((d) => ({
 		id: makeId(d.id),
-		ISBN: makeISBN(d.ISBN),
+		isbn: makeISBN(d.isbn),
 		title: makeBookTitle(d.title),
 		googleTitle: d.googleTitle ? makeGoogleTitle(d.googleTitle) : undefined,
 		googleSubTitle: d.googleSubTitle
@@ -181,19 +177,9 @@ async function search(
 	}));
 }
 
-async function getImageFromStorage(
-	path: string,
-	isThumbnail: boolean,
-): Promise<NodeJS.ReadableStream> {
-	const objKey = `${isThumbnail ? THUMBNAIL_BOOK_IMAGE_PATH : ORIGINAL_BOOK_IMAGE_PATH}/${path}`;
-	const data = await minioClient.getObject(env.MINIO_BUCKET_NAME, objKey);
-	return data;
-}
-
 export const booksQueryRepository: IBooksQueryRepository = {
 	findByISBN,
 	findMany,
 	count,
 	search,
-	getImageFromStorage,
 };

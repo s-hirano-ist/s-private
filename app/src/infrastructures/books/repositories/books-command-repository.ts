@@ -1,4 +1,7 @@
-import type { UnexportedBook } from "@s-hirano-ist/s-core/books/entities/books-entity";
+import {
+	makeBookTitle,
+	type UnexportedBook,
+} from "@s-hirano-ist/s-core/books/entities/book-entity";
 import type {
 	DeleteBookResult,
 	IBooksCommandRepository,
@@ -35,7 +38,7 @@ async function deleteById(
 	revalidateTag(buildContentCacheTag("books", status, userId));
 	revalidateTag(buildCountCacheTag("books", status, userId));
 
-	return { title: data.title };
+	return { title: makeBookTitle(data.title) };
 }
 
 export const booksCommandRepository: IBooksCommandRepository = {

@@ -14,8 +14,6 @@
  *
  * **Value Objects defined here**:
  * - {@link Pixel} - Image dimension (positive integer)
- * - {@link Tag} - Image tag for organization
- * - {@link Description} - Optional image description (max 1024 chars)
  *
  * **Re-exported from shared-kernel**:
  * - {@link Path}, {@link ContentType}, {@link FileSize} - File-related value objects
@@ -30,6 +28,7 @@ import {
 	CreatedAt,
 	ExportedStatus,
 	Id,
+	LastUpdatedStatus,
 	makeCreatedAt,
 	makeId,
 	UnexportedStatus,
@@ -74,59 +73,6 @@ export type Pixel = z.infer<typeof Pixel>;
  */
 export const makePixel = (v: number): Pixel => Pixel.parse(v);
 
-/**
- * Zod schema for validating image tags.
- *
- * @remarks
- * Tags are non-empty strings used for organizing images.
- *
- * @see {@link makeTag} for factory function
- */
-export const Tag = z.string().min(1).brand<"Tag">();
-
-/**
- * Branded type for validated tags.
- */
-export type Tag = z.infer<typeof Tag>;
-
-/**
- * Creates a validated Tag from a string.
- *
- * @param v - The tag string
- * @returns A branded Tag value
- * @throws {ZodError} When the tag is empty
- */
-export const makeTag = (v: string): Tag => Tag.parse(v);
-
-/**
- * Zod schema for validating image descriptions.
- *
- * @remarks
- * Optional non-empty string for describing the image content.
- *
- * @see {@link makeDescription} for factory function
- */
-export const Description = z
-	.string()
-	.min(1)
-	.max(1024, { message: "tooLong" })
-	.optional()
-	.brand<"Description">();
-
-/**
- * Branded type for validated descriptions.
- */
-export type Description = z.infer<typeof Description>;
-
-/**
- * Creates a validated Description from a string.
- *
- * @param v - The description string
- * @returns A branded Description value
- * @throws {ZodError} When the description is empty
- */
-export const makeDescription = (v: string): Description => Description.parse(v);
-
 // Entities
 
 /**
@@ -142,8 +88,6 @@ const Base = z.object({
 	fileSize: FileSize,
 	width: Pixel,
 	height: Pixel,
-	tags: z.array(Tag).optional(),
-	description: Description,
 	createdAt: CreatedAt,
 });
 
@@ -165,6 +109,26 @@ export const UnexportedImage = Base.extend({ status: UnexportedStatus });
  * Immutable entity representing an image pending export.
  */
 export type UnexportedImage = Readonly<z.infer<typeof UnexportedImage>>;
+
+/**
+ * Zod schema for a last-updated image.
+ *
+ * @remarks
+ * Represents an image that has been modified since last export.
+ * This is an intermediate state between UNEXPORTED and EXPORTED.
+ *
+ * @see {@link UnexportedImage} for the initial state
+ * @see {@link ExportedImage} for the published state
+ */
+export const LastUpdatedImage = Base.extend({ status: LastUpdatedStatus });
+
+/**
+ * Type for a last-updated image entity.
+ *
+ * @remarks
+ * Immutable entity representing an image that has been modified.
+ */
+export type LastUpdatedImage = Readonly<z.infer<typeof LastUpdatedImage>>;
 
 /**
  * Zod schema for an exported image.
@@ -218,10 +182,6 @@ export type CreateImageArgs = Readonly<{
 	width?: Pixel;
 	/** Optional height in pixels */
 	height?: Pixel;
-	/** Optional tags for organization */
-	tags?: Array<Tag>;
-	/** Optional description */
-	description?: Description;
 	/** The caller identifier for event tracking */
 	caller: string;
 }>;
@@ -286,8 +246,9 @@ export const imageEntity = {
 		);
 
 		const event = new ImageCreatedEvent({
-			id: image.id as string,
-			userId: image.userId as string,
+			id: image.id,
+			path: image.path,
+			userId: image.userId,
 			caller,
 		});
 

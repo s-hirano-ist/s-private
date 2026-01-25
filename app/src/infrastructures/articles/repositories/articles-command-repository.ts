@@ -1,4 +1,7 @@
-import type { UnexportedArticle } from "@s-hirano-ist/s-core/articles/entities/article-entity";
+import {
+	makeArticleTitle,
+	type UnexportedArticle,
+} from "@s-hirano-ist/s-core/articles/entities/article-entity";
 import type {
 	DeleteArticleResult,
 	IArticlesCommandRepository,
@@ -47,7 +50,7 @@ async function deleteById(
 	revalidateTag(buildContentCacheTag("articles", status, userId));
 	revalidateTag(buildCountCacheTag("articles", status, userId));
 
-	return { title: data.title };
+	return { title: makeArticleTitle(data.title) };
 }
 
 export const articlesCommandRepository: IArticlesCommandRepository = {

@@ -2,15 +2,15 @@ import {
 	type ExportedImage,
 	type ImageListItemDTO,
 	makeContentType,
-	makeDescription,
 	makeFileSize,
 	makePath,
 	makePixel,
-	makeTag,
 	type UnexportedImage,
 } from "@s-hirano-ist/s-core/images/entities/image-entity";
-import type { IImagesQueryRepository } from "@s-hirano-ist/s-core/images/repositories/images-query-repository.interface";
-import type { ImagesFindManyParams } from "@s-hirano-ist/s-core/images/types/query-params";
+import type {
+	IImagesQueryRepository,
+	ImagesFindManyParams,
+} from "@s-hirano-ist/s-core/images/repositories/images-query-repository.interface";
 import {
 	makeCreatedAt,
 	makeExportedAt,
@@ -34,9 +34,7 @@ async function findByPath(
 			fileSize: true,
 			width: true,
 			height: true,
-			tags: true,
 			status: true,
-			description: true,
 			createdAt: true,
 			exportedAt: true,
 		},
@@ -51,9 +49,6 @@ async function findByPath(
 		fileSize: makeFileSize(data.fileSize ?? 0),
 		width: data.width !== null ? makePixel(data.width) : undefined,
 		height: data.height !== null ? makePixel(data.height) : undefined,
-		tags: data.tags.length > 0 ? data.tags.map(makeTag) : undefined,
-		description:
-			data.description !== null ? makeDescription(data.description) : undefined,
 		createdAt: makeCreatedAt(data.createdAt),
 	};
 

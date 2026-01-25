@@ -4,25 +4,6 @@ import type { Path } from "../entities/image-entity.js";
 import type { IImagesQueryRepository } from "../repositories/images-query-repository.interface.js";
 
 /**
- * Checks if an image with the given path already exists.
- *
- * @param imagesQueryRepository - The query repository to check against
- * @param path - The path to check for duplicates
- * @param userId - The user ID for tenant isolation
- * @throws {DuplicateError} When an image with this path already exists
- *
- * @internal
- */
-async function ensureNoDuplicateImage(
-	imagesQueryRepository: IImagesQueryRepository,
-	path: Path,
-	userId: UserId,
-): Promise<void> {
-	const exists = await imagesQueryRepository.findByPath(path, userId);
-	if (exists !== null) throw new DuplicateError();
-}
-
-/**
  * Domain service for Image business logic.
  *
  * @remarks
@@ -65,7 +46,10 @@ export class ImagesDomainService {
 	 * @remarks
 	 * This is a domain invariant check that should be called before creating images.
 	 */
-	public async ensureNoDuplicate(path: Path, userId: UserId) {
-		return ensureNoDuplicateImage(this.imagesQueryRepository, path, userId);
+	public async ensureNoDuplicate(path: Path, userId: UserId): Promise<void> {
+		const exists = await this.imagesQueryRepository.findByPath(path, userId);
+		if (exists !== null) {
+			throw new DuplicateError();
+		}
 	}
 }

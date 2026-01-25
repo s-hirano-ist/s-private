@@ -1,4 +1,7 @@
-import type { UnexportedNote } from "@s-hirano-ist/s-core/notes/entities/note-entity";
+import {
+	makeNoteTitle,
+	type UnexportedNote,
+} from "@s-hirano-ist/s-core/notes/entities/note-entity";
 import type {
 	DeleteNoteResult,
 	INotesCommandRepository,
@@ -35,7 +38,7 @@ async function deleteById(
 	revalidateTag(buildContentCacheTag("notes", status, userId));
 	revalidateTag(buildCountCacheTag("notes", status, userId));
 
-	return { title: data.title };
+	return { title: makeNoteTitle(data.title) };
 }
 
 export const notesCommandRepository: INotesCommandRepository = {

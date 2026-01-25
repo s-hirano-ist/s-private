@@ -1,9 +1,7 @@
 import {
 	makeContentType,
-	makeDescription,
 	makeFileSize,
 	makePixel,
-	makeTag,
 	Path,
 } from "@s-hirano-ist/s-core/images/entities/image-entity";
 import type { Status } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
@@ -35,8 +33,6 @@ describe("ImageCommandRepository", () => {
 				fileSize: 1024,
 				width: 800,
 				height: 600,
-				tags: ["nature", "landscape"],
-				description: "A beautiful landscape",
 				status: "UNEXPORTED" as Status,
 				createdAt: new Date(),
 				updatedAt: new Date(),
@@ -53,8 +49,6 @@ describe("ImageCommandRepository", () => {
 				fileSize: makeFileSize(1024),
 				width: makePixel(800),
 				height: makePixel(600),
-				tags: [makeTag("nature"), makeTag("landscape")],
-				description: makeDescription("A beautiful landscape"),
 				status: makeUnexportedStatus(),
 				createdAt: makeCreatedAt(),
 			});
@@ -72,8 +66,6 @@ describe("ImageCommandRepository", () => {
 				fileSize: null,
 				width: null,
 				height: null,
-				tags: [],
-				description: null,
 				status: "UNEXPORTED" as Status,
 				createdAt: new Date(),
 				updatedAt: new Date(),

@@ -1,3 +1,4 @@
+import { makeArticleTitle } from "@s-hirano-ist/s-core/articles/entities/article-entity";
 import type { IArticlesCommandRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-command-repository.interface";
 import {
 	makeId,
@@ -52,7 +53,7 @@ describe("deleteArticleCore", () => {
 		const { deps, mockCommandRepository, mockEventDispatcher } =
 			createMockDeps();
 		vi.mocked(mockCommandRepository.deleteById).mockResolvedValue({
-			title: "Test Article",
+			title: makeArticleTitle("Test Article"),
 		});
 
 		const testId = "01234567-89ab-7def-8123-456789abcdef";

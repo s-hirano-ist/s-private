@@ -1,4 +1,5 @@
 import { BaseDomainEvent } from "../../shared-kernel/events/base-domain-event.js";
+import type { ArticleDeletedPayload } from "../../shared-kernel/events/payload-types.js";
 import type { ArticleCreatedEvent } from "./article-created-event.js";
 
 /**
@@ -23,7 +24,7 @@ import type { ArticleCreatedEvent } from "./article-created-event.js";
  * @see {@link BaseDomainEvent} for base class
  * @see {@link ArticleCreatedEvent} for creation event
  */
-export class ArticleDeletedEvent extends BaseDomainEvent {
+export class ArticleDeletedEvent extends BaseDomainEvent<ArticleDeletedPayload> {
 	/**
 	 * Creates a new ArticleDeletedEvent.
 	 *

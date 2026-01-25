@@ -8,15 +8,26 @@
 export type ContentType = "articles" | "books" | "notes";
 
 /**
- * A single search result item.
+ * Base search result with common fields.
  *
  * @remarks
- * Represents a matched item from a search query, containing
- * common fields and optional content-type-specific fields.
+ * Contains fields shared across all content types.
+ */
+export type BaseSearchResult = Readonly<{
+	/** The URL path to the content item */
+	href: string;
+	/** The title of the content item */
+	title: string;
+	/** A text snippet from the content for preview */
+	snippet: string;
+}>;
+
+/**
+ * Article-specific search result.
  *
  * @example
  * ```typescript
- * const articleResult: SearchResult = {
+ * const articleResult: ArticleSearchResult = {
  *   href: "/articles/123",
  *   contentType: "articles",
  *   title: "Getting Started with TypeScript",
@@ -24,8 +35,24 @@ export type ContentType = "articles" | "books" | "notes";
  *   url: "https://example.com/article",
  *   category: { id: "tech", name: "Technology" }
  * };
+ * ```
+ */
+export type ArticleSearchResult = BaseSearchResult &
+	Readonly<{
+		/** Discriminant for articles */
+		contentType: "articles";
+		/** The external URL */
+		url: string;
+		/** The category information */
+		category: { id: string; name: string };
+	}>;
+
+/**
+ * Book-specific search result.
  *
- * const bookResult: SearchResult = {
+ * @example
+ * ```typescript
+ * const bookResult: BookSearchResult = {
  *   href: "/books/456",
  *   contentType: "books",
  *   title: "Clean Code",
@@ -35,24 +62,73 @@ export type ContentType = "articles" | "books" | "notes";
  * };
  * ```
  */
-export type SearchResult = {
-	/** The URL path to the content item */
-	href: string;
-	/** The type of content this result represents */
-	contentType: ContentType;
-	/** The title of the content item */
-	title: string;
-	/** A text snippet from the content for preview */
-	snippet: string;
-	/** The external URL (articles only) */
-	url?: string;
-	/** The user rating (books only) */
-	rating?: number | null;
-	/** Associated tags (books only) */
-	tags?: string[];
-	/** The category information (articles only) */
-	category?: { id: string; name: string };
-};
+export type BookSearchResult = BaseSearchResult &
+	Readonly<{
+		/** Discriminant for books */
+		contentType: "books";
+		/** The user rating */
+		rating: number | null;
+		/** Associated tags */
+		tags: string[];
+	}>;
+
+/**
+ * Note-specific search result.
+ *
+ * @example
+ * ```typescript
+ * const noteResult: NoteSearchResult = {
+ *   href: "/notes/789",
+ *   contentType: "notes",
+ *   title: "Meeting Notes",
+ *   snippet: "Discussion about project timeline..."
+ * };
+ * ```
+ */
+export type NoteSearchResult = BaseSearchResult &
+	Readonly<{
+		/** Discriminant for notes */
+		contentType: "notes";
+	}>;
+
+/**
+ * A single search result item (discriminated union).
+ *
+ * @remarks
+ * Represents a matched item from a search query.
+ * Use type guards or contentType checks to access domain-specific fields.
+ */
+export type SearchResult =
+	| ArticleSearchResult
+	| BookSearchResult
+	| NoteSearchResult;
+
+/**
+ * Type guard for article search results.
+ */
+export function isArticleSearchResult(
+	result: SearchResult,
+): result is ArticleSearchResult {
+	return result.contentType === "articles";
+}
+
+/**
+ * Type guard for book search results.
+ */
+export function isBookSearchResult(
+	result: SearchResult,
+): result is BookSearchResult {
+	return result.contentType === "books";
+}
+
+/**
+ * Type guard for note search results.
+ */
+export function isNoteSearchResult(
+	result: SearchResult,
+): result is NoteSearchResult {
+	return result.contentType === "notes";
+}
 
 /**
  * Search query parameters.

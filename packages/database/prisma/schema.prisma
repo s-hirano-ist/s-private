@@ -81,8 +81,6 @@ model Image {
   fileSize    Int?     @map("file_size") // byte
   width       Int? // pixel
   height      Int? // pixel
-  tags        String[]
-  description String?  @db.VarChar(1024)
 
   status Status
 
@@ -97,8 +95,8 @@ model Image {
 }
 
 model Book {
-  id    String @id @db.VarChar(36)
-  ISBN  String @map("isbn") @db.VarChar(17)
+  id   String @id @db.VarChar(36)
+  isbn String @db.VarChar(17)
   title String @db.VarChar(256)
 
   googleTitle       String?  @map("google_title") @db.VarChar(512)
@@ -123,6 +121,6 @@ model Book {
   updatedAt  DateTime  @updatedAt @map("updated_at")
   exportedAt DateTime? @map("exported_at")
 
-  @@unique([ISBN, userId])
+  @@unique([isbn, userId])
   @@map("books")
 }

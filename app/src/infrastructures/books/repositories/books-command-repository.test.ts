@@ -8,7 +8,7 @@ import {
 	makeGoogleSubTitle,
 	makeGoogleTitle,
 	makeISBN,
-} from "@s-hirano-ist/s-core/books/entities/books-entity";
+} from "@s-hirano-ist/s-core/books/entities/book-entity";
 import {
 	makeCreatedAt,
 	makeId,
@@ -29,7 +29,7 @@ describe("BooksCommandRepository", () => {
 			vi.mocked(prisma.book.create).mockResolvedValue({
 				id: "1",
 				userId: "user123",
-				ISBN: "9784123456789",
+				isbn: "9784123456789",
 				title: "Test Book",
 				status: "UNEXPORTED",
 				markdown: "sample markdown",
@@ -50,7 +50,7 @@ describe("BooksCommandRepository", () => {
 			await booksCommandRepository.create({
 				id: makeId("01234567-89ab-7def-9123-456789abcdef"),
 				userId: makeUserId("user123"),
-				ISBN: makeISBN("9784123456789"),
+				isbn: makeISBN("9784123456789"),
 				title: makeBookTitle("Test Book"),
 				status: "UNEXPORTED",
 				createdAt: makeCreatedAt(),
@@ -63,7 +63,7 @@ describe("BooksCommandRepository", () => {
 			vi.mocked(prisma.book.create).mockResolvedValue({
 				id: "2",
 				userId: "user123",
-				ISBN: "9784567890123",
+				isbn: "9784567890123",
 				title: "Complete Book",
 				status: "EXPORTED",
 				markdown: "# Book Review\nThis is a great book.",
@@ -84,7 +84,7 @@ describe("BooksCommandRepository", () => {
 			const result = await booksCommandRepository.create({
 				id: makeId("0198bfc4-444f-71eb-8e78-4005df127ffd"),
 				userId: makeUserId("user123"),
-				ISBN: makeISBN("9784567890123"),
+				isbn: makeISBN("9784567890123"),
 				title: makeBookTitle("Complete Book"),
 				status: "UNEXPORTED",
 				markdown: makeBookMarkdown("# Book Review\nThis is a great book."),
@@ -110,7 +110,7 @@ describe("BooksCommandRepository", () => {
 				booksCommandRepository.create({
 					id: makeId("01234567-89ab-7def-9123-456789abcdef"),
 					userId: makeUserId("user123"),
-					ISBN: makeISBN("9784123456789"),
+					isbn: makeISBN("9784123456789"),
 					title: makeBookTitle("Test Book"),
 					status: "UNEXPORTED",
 					createdAt: makeCreatedAt(),
@@ -126,7 +126,7 @@ describe("BooksCommandRepository", () => {
 			vi.mocked(prisma.book.delete).mockResolvedValue({
 				id: "1",
 				userId: "user123",
-				ISBN: "9784123456789",
+				isbn: "9784123456789",
 				title: "Test Book",
 				status: "EXPORTED",
 				googleTitle: null,
@@ -173,7 +173,7 @@ describe("BooksCommandRepository", () => {
 			vi.mocked(prisma.book.delete).mockResolvedValue({
 				id: "2",
 				userId: "user123",
-				ISBN: "9784567890123",
+				isbn: "9784567890123",
 				title: "Another Book",
 				status: "UNEXPORTED",
 				googleTitle: null,

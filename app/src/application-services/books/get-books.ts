@@ -8,14 +8,14 @@
  * @module
  */
 
-import { makeISBN } from "@s-hirano-ist/s-core/books/entities/books-entity";
-import type { CacheStrategy } from "@s-hirano-ist/s-core/books/types/cache-strategy";
+import { makeISBN } from "@s-hirano-ist/s-core/books/entities/book-entity";
 import {
 	makeExportedStatus,
 	makeUnexportedStatus,
 	type Status,
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import type { CacheStrategy } from "@s-hirano-ist/s-core/shared-kernel/types/query-options";
 import { unstable_cacheTag as cacheTag } from "next/cache";
 import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
@@ -29,6 +29,7 @@ import {
 	buildCountCacheTag,
 	buildPaginatedContentCacheTag,
 } from "@/infrastructures/shared/cache/cache-tag-builder";
+import { booksStorageService } from "@/infrastructures/shared/storage/books-storage-service";
 
 const API_BOOK_THUMBNAIL_PATH = "/api/books/images/thumbnail";
 
@@ -63,7 +64,7 @@ export const _getBooks = async (
 			data: books.map((d) => ({
 				id: d.id,
 				title: d.title,
-				href: d.ISBN,
+				href: d.isbn,
 				image: d.imagePath
 					? `${API_BOOK_THUMBNAIL_PATH}/${d.imagePath}`
 					: (d.googleImgSrc ?? null),
@@ -154,5 +155,5 @@ export const getBooksImageFromStorage = async (
 	path: string,
 	isThumbnail: boolean,
 ) => {
-	return await booksQueryRepository.getImageFromStorage(path, isThumbnail);
+	return await booksStorageService.getImage(path, isThumbnail);
 };

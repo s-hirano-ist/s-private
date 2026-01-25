@@ -3,14 +3,35 @@ import type {
 	UserId,
 } from "../../shared-kernel/entities/common-entity.js";
 import type { IStorageService } from "../../shared-kernel/services/storage-service.interface.js";
+import type { InfraQueryOptions } from "../../shared-kernel/types/query-options.js";
 import type {
 	ExportedImage,
 	ImageListItemDTO,
 	Path,
 	UnexportedImage,
 } from "../entities/image-entity.js";
-import type { ImagesFindManyParams } from "../types/query-params.js";
+import type { ImagesOrderBy } from "../types/query-params.js";
 import type { IImagesCommandRepository } from "./images-command-repository.interface.js";
+
+/**
+ * Parameters for paginated image queries.
+ *
+ * @example
+ * ```typescript
+ * const params: ImagesFindManyParams = {
+ *   orderBy: { createdAt: "desc" },
+ *   take: 20,
+ *   skip: 0,
+ *   cacheStrategy: { ttl: 60, tags: ["images"] },
+ * };
+ * ```
+ *
+ * @see {@link ImagesOrderBy} for sorting options
+ */
+export type ImagesFindManyParams = {
+	/** Sort configuration */
+	orderBy?: ImagesOrderBy;
+} & InfraQueryOptions;
 
 /**
  * Query repository interface for the Image domain.

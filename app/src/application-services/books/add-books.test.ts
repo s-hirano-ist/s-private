@@ -2,7 +2,7 @@ import {
 	bookEntity,
 	makeBookTitle,
 	makeISBN,
-} from "@s-hirano-ist/s-core/books/entities/books-entity";
+} from "@s-hirano-ist/s-core/books/entities/book-entity";
 import { BookCreatedEvent } from "@s-hirano-ist/s-core/books/events/book-created-event";
 import {
 	makeCreatedAt,
@@ -45,7 +45,7 @@ vi.mock("@s-hirano-ist/s-core/books/services/books-domain-service", () => ({
 }));
 
 vi.mock(
-	"@s-hirano-ist/s-core/books/entities/books-entity",
+	"@s-hirano-ist/s-core/books/entities/book-entity",
 	async (importOriginal) => {
 		const actual = (await importOriginal()) as any;
 		return {
@@ -69,7 +69,7 @@ describe("addBooks", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 		vi.mocked(parseAddBooksFormData).mockResolvedValue({
-			ISBN: makeISBN("978-4-06-519981-0"),
+			isbn: makeISBN("978-4-06-519981-0"),
 			title: makeBookTitle("Test Book"),
 			userId: makeUserId("user-123"),
 			imagePath: undefined,
@@ -97,7 +97,7 @@ describe("addBooks", () => {
 
 		const mockBook = {
 			id: makeId("01933f5c-9df0-7001-9123-456789abcdef"),
-			ISBN: makeISBN("978-4-06-519981-0"),
+			isbn: makeISBN("978-4-06-519981-0"),
 			title: makeBookTitle("Test Book"),
 			userId: makeUserId("user-123"),
 			status: "UNEXPORTED",
@@ -106,7 +106,7 @@ describe("addBooks", () => {
 		} as const;
 
 		const mockEvent = new BookCreatedEvent({
-			ISBN: "978-4-06-519981-0",
+			isbn: "978-4-06-519981-0",
 			title: "Test Book",
 			userId: "user-123",
 			caller: "addBooks",
@@ -124,7 +124,7 @@ describe("addBooks", () => {
 			makeUserId("user-123"),
 		);
 		expect(bookEntity.create).toHaveBeenCalledWith({
-			ISBN: makeISBN("978-4-06-519981-0"),
+			isbn: makeISBN("978-4-06-519981-0"),
 			title: makeBookTitle("Test Book"),
 			userId: makeUserId("user-123"),
 			imagePath: undefined,

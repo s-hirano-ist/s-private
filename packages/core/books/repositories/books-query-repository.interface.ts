@@ -2,15 +2,36 @@ import type {
 	Status,
 	UserId,
 } from "../../shared-kernel/entities/common-entity.js";
+import type { InfraQueryOptions } from "../../shared-kernel/types/query-options.js";
 import type {
 	BookListItemDTO,
 	BookSearchItemDTO,
 	ExportedBook,
 	ISBN,
 	UnexportedBook,
-} from "../entities/books-entity.js";
-import type { BooksFindManyParams } from "../types/query-params.js";
+} from "../entities/book-entity.js";
+import type { BooksOrderBy } from "../types/query-params.js";
 import type { IBooksCommandRepository } from "./books-command-repository.interface.js";
+
+/**
+ * Parameters for paginated book queries.
+ *
+ * @example
+ * ```typescript
+ * const params: BooksFindManyParams = {
+ *   orderBy: { createdAt: "desc" },
+ *   take: 20,
+ *   skip: 0,
+ *   cacheStrategy: { ttl: 60, tags: ["books"] },
+ * };
+ * ```
+ *
+ * @see {@link BooksOrderBy} for sorting options
+ */
+export type BooksFindManyParams = {
+	/** Sort configuration */
+	orderBy?: BooksOrderBy;
+} & InfraQueryOptions;
 
 /**
  * Query repository interface for the Book domain.
@@ -26,9 +47,9 @@ import type { IBooksCommandRepository } from "./books-command-repository.interfa
  * ```typescript
  * // Infrastructure implementation
  * class PrismaBooksQueryRepository implements IBooksQueryRepository {
- *   async findByISBN(ISBN: ISBN, userId: UserId) {
+ *   async findByISBN(isbn: ISBN, userId: UserId) {
  *     const data = await prisma.book.findUnique({
- *       where: { ISBN, userId }
+ *       where: { isbn, userId }
  *     });
  *     return data ? toBookEntity(data) : null;
  *   }
@@ -41,7 +62,7 @@ export type IBooksQueryRepository = {
 	/**
 	 * Finds a book by its ISBN for a specific user.
 	 *
-	 * @param ISBN - The validated ISBN to search for
+	 * @param isbn - The validated ISBN to search for
 	 * @param userId - The user ID for tenant isolation
 	 * @returns The book entity if found, null otherwise
 	 *
@@ -50,7 +71,7 @@ export type IBooksQueryRepository = {
 	 * for domain operations like duplicate checking.
 	 */
 	findByISBN(
-		ISBN: ISBN,
+		isbn: ISBN,
 		userId: UserId,
 	): Promise<UnexportedBook | ExportedBook | null>;
 
@@ -92,16 +113,4 @@ export type IBooksQueryRepository = {
 		userId: UserId,
 		limit?: number,
 	): Promise<BookSearchItemDTO[]>;
-
-	/**
-	 * Retrieves a book cover image from MinIO storage.
-	 *
-	 * @param path - The storage path for the image
-	 * @param isThumbnail - Whether to retrieve the thumbnail or original image
-	 * @returns A readable stream of the image data
-	 */
-	getImageFromStorage(
-		path: string,
-		isThumbnail: boolean,
-	): Promise<NodeJS.ReadableStream>;
 };

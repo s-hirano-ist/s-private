@@ -8,7 +8,7 @@ import {
 	makeGoogleSubTitle,
 	makeGoogleTitle,
 	makeISBN,
-} from "@s-hirano-ist/s-core/books/entities/books-entity";
+} from "@s-hirano-ist/s-core/books/entities/book-entity";
 import {
 	makeCreatedAt,
 	makeExportedAt,
@@ -44,7 +44,7 @@ type Story = StoryObj<typeof meta>;
 const mockBookData = Object.freeze({
 	id: makeId(),
 	userId: makeUserId("mock-user-id"),
-	ISBN: makeISBN("978-0123456789"),
+	isbn: makeISBN("978-0123456789"),
 	title: makeBookTitle("TypeScript Handbook"),
 	markdown: makeBookMarkdown(
 		"# TypeScript Handbook\n\nThis is a comprehensive guide to TypeScript.\n\n## Getting Started\n\nTypeScript is a typed superset of JavaScript...",
@@ -137,7 +137,7 @@ export const MinimalData: Story = {
 			Object.freeze({
 				id: makeId(),
 				userId: makeUserId("mock-user-id"),
-				ISBN: makeISBN("978-0123456789"),
+				isbn: makeISBN("978-0123456789"),
 				title: makeBookTitle("Minimal Book"),
 				markdown: makeBookMarkdown(
 					"# Minimal Book\n\nJust some basic content.",

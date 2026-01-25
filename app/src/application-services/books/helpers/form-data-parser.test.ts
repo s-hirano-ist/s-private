@@ -1,13 +1,13 @@
 import {
 	makeBookTitle,
 	makeISBN,
-} from "@s-hirano-ist/s-core/books/entities/books-entity";
+} from "@s-hirano-ist/s-core/books/entities/book-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getFormDataString } from "@/common/utils/form-data-utils";
 import { parseAddBooksFormData } from "./form-data-parser";
 
 vi.mock("@/common/utils/form-data-utils");
-vi.mock("@s-hirano-ist/s-core/books/entities/books-entity");
+vi.mock("@s-hirano-ist/s-core/books/entities/book-entity");
 
 const mockGetFormDataString = vi.mocked(getFormDataString);
 const mockMakeISBN = vi.mocked(makeISBN);
@@ -40,7 +40,7 @@ describe("parseAddBooksFormData", () => {
 		expect(mockMakeBookTitle).toHaveBeenCalledWith("Clean Code");
 
 		expect(result).toEqual({
-			ISBN: "9784123456789",
+			isbn: "9784123456789",
 			title: "Clean Code",
 			userId: "test-user-id",
 			imagePath: undefined,
@@ -67,7 +67,7 @@ describe("parseAddBooksFormData", () => {
 		expect(mockMakeBookTitle).toHaveBeenCalledWith("The Pragmatic Programmer");
 
 		expect(result).toEqual({
-			ISBN: "978-4-123-45678-9",
+			isbn: "978-4-123-45678-9",
 			title: "The Pragmatic Programmer",
 			userId: "test-user-id",
 			imagePath: undefined,
@@ -89,7 +89,7 @@ describe("parseAddBooksFormData", () => {
 		const result = await parseAddBooksFormData(formData, userId);
 
 		expect(result).toEqual({
-			ISBN: "",
+			isbn: "",
 			title: "",
 			userId: "test-user-id",
 			imagePath: undefined,
@@ -113,7 +113,7 @@ describe("parseAddBooksFormData", () => {
 		const result = await parseAddBooksFormData(formData, userId);
 
 		expect(result).toEqual({
-			ISBN: "9784567890123",
+			isbn: "9784567890123",
 			title: "リーダブルコード",
 			userId: "test-user-id-jp",
 			imagePath: undefined,
@@ -139,7 +139,7 @@ describe("parseAddBooksFormData", () => {
 		const result = await parseAddBooksFormData(formData, userId);
 
 		expect(result).toEqual({
-			ISBN: "9784567890123",
+			isbn: "9784567890123",
 			title: 'Book Title with "Quotes" & Symbols',
 			userId: "test-user-id",
 			imagePath: undefined,

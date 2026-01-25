@@ -4,7 +4,7 @@ import {
 	makeGoogleImgSrc,
 	makeGoogleTitle,
 	makeISBN,
-} from "@s-hirano-ist/s-core/books/entities/books-entity";
+} from "@s-hirano-ist/s-core/books/entities/book-entity";
 import {
 	makeCreatedAt,
 	makeExportedAt,
@@ -43,14 +43,14 @@ describe("get-books", () => {
 				{
 					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b"),
 					title: makeBookTitle("Test Book 1"),
-					ISBN: makeISBN("978-0123456789"),
+					isbn: makeISBN("978-0123456789"),
 					googleImgSrc: makeGoogleImgSrc("https://example.com/image-1.jpg"),
 					imagePath: undefined,
 				},
 				{
 					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c"),
 					title: makeBookTitle("Test Book 2"),
-					ISBN: makeISBN("978-0987654321"),
+					isbn: makeISBN("978-0987654321"),
 					googleImgSrc: makeGoogleImgSrc("https://example.com/image-2.jpg"),
 					imagePath: undefined,
 				},
@@ -152,7 +152,7 @@ describe("get-books", () => {
 				{
 					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d"),
 					title: makeBookTitle("Unexported Book 1"),
-					ISBN: makeISBN("978-1111111111"),
+					isbn: makeISBN("978-1111111111"),
 					googleImgSrc: makeGoogleImgSrc(
 						"https://example.com/unexported-1.jpg",
 					),
@@ -161,7 +161,7 @@ describe("get-books", () => {
 				{
 					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e"),
 					title: makeBookTitle("Unexported Book 2"),
-					ISBN: makeISBN("978-2222222222"),
+					isbn: makeISBN("978-2222222222"),
 					googleImgSrc: undefined,
 					imagePath: undefined,
 				},
@@ -225,7 +225,7 @@ describe("get-books", () => {
 			const mockBook = {
 				id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7f"),
 				userId: makeUserId("test-user-id"),
-				ISBN: makeISBN("978-0123456789"),
+				isbn: makeISBN("978-0123456789"),
 				title: makeBookTitle("Test Book"),
 				status: "EXPORTED" as const,
 				createdAt: makeCreatedAt(new Date("2024-01-01")),

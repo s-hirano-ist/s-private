@@ -12,6 +12,8 @@ const EXCLUDE_PATHS = [
 	"app/src/generated/.*\\.wasm",
 	"app/src/generated/wasm-.*-loader\\.mjs",
 	"app/src/env.ts",
+	"/dist/",
+	"packages/database/src/generated",
 ];
 
 const COLLAPSE_PATTERN =
@@ -56,15 +58,12 @@ module.exports = {
 					"app/src/app/robots\\.ts$",
 					"app/src/app/manifest\\.ts$",
 					"app/src/app/api/.*/route\\.ts$", // API routes
-					// Prisma generated files
 					"app/src/generated/runtime/.*",
-					// Repository interfaces (DIP - Dependency Inversion Principle)
-					".*-repository\\.interface\\.ts$",
-					// Domain types and constants
+					// Files imported via path aliases (@/, @s-hirano-ist/s-core/) that dependency-cruiser cannot resolve
+					// These are NOT orphans - they're used but imported through tsconfig path mappings
+					"\\.interface\\.ts$",
 					"packages/core/.*/types/.*\\.ts$",
-					// Domain events (DDD pattern)
-					"packages/core/common/events/.*\\.ts$",
-					// Common type definitions
+					"app/src/loaders/types\\.ts$",
 					"app/src/common/types\\.ts$",
 					"app/src/components/common/layouts/cards/types\\.ts$",
 				],
@@ -138,7 +137,11 @@ module.exports = {
 				"module: add it to your package.json. In all other cases you likely already know what to do.",
 			severity: "error",
 			from: {},
-			to: { couldNotResolve: true },
+			to: {
+				couldNotResolve: true,
+				// Exclude react/jsx-runtime (false positive from tsconfig jsx: react-jsx)
+				pathNot: ["^react/jsx-runtime$"],
+			},
 		},
 		{
 			name: "no-duplicate-dep-types",
@@ -217,6 +220,40 @@ module.exports = {
 			to: {
 				dependencyTypes: ["npm-peer"],
 			},
+		},
+
+		/* Cross-domain import rules for packages/core */
+		{
+			name: "no-cross-domain-import-from-articles",
+			severity: "error",
+			comment:
+				"articlesドメインは他ドメインをimportしてはならない（shared-kernelは許可）",
+			from: { path: "^packages/core/articles/" },
+			to: { path: "^packages/core/(books|notes|images)/" },
+		},
+		{
+			name: "no-cross-domain-import-from-books",
+			severity: "error",
+			comment:
+				"booksドメインは他ドメインをimportしてはならない（shared-kernelは許可）",
+			from: { path: "^packages/core/books/" },
+			to: { path: "^packages/core/(articles|notes|images)/" },
+		},
+		{
+			name: "no-cross-domain-import-from-notes",
+			severity: "error",
+			comment:
+				"notesドメインは他ドメインをimportしてはならない（shared-kernelは許可）",
+			from: { path: "^packages/core/notes/" },
+			to: { path: "^packages/core/(articles|books|images)/" },
+		},
+		{
+			name: "no-cross-domain-import-from-images",
+			severity: "error",
+			comment:
+				"imagesドメインは他ドメインをimportしてはならない（shared-kernelは許可）",
+			from: { path: "^packages/core/images/" },
+			to: { path: "^packages/core/(articles|books|notes)/" },
 		},
 	],
 	options: {

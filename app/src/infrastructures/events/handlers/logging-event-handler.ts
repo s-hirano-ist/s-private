@@ -24,13 +24,13 @@ export class LoggingEventHandler implements DomainEventHandler {
 				message = `【NOTES】\n\n削除\ntitle: ${payload.title}`;
 				break;
 			case "image.created":
-				message = `【IMAGE】\n\nコンテンツ\nfileName: ${payload.fileName}\nの登録ができました`;
+				message = `【IMAGE】\n\nコンテンツ\nid: ${payload.id}\npath: ${payload.path}\nの登録ができました`;
 				break;
 			case "image.deleted":
 				message = `【IMAGE】\n\n削除\npath: ${payload.path}`;
 				break;
 			case "book.created":
-				message = `【BOOKS】\n\nコンテンツ\nISBN: ${payload.ISBN} \ntitle: ${payload.title}\nの登録ができました`;
+				message = `【BOOKS】\n\nコンテンツ\nISBN: ${payload.isbn} \ntitle: ${payload.title}\nの登録ができました`;
 				break;
 			case "book.deleted":
 				message = `【BOOKS】\n\n削除\ntitle: ${payload.title}`;

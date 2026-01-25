@@ -2,6 +2,7 @@ import type {
 	Status,
 	UserId,
 } from "../../shared-kernel/entities/common-entity.js";
+import type { InfraQueryOptions } from "../../shared-kernel/types/query-options.js";
 import type {
 	ExportedNote,
 	NoteListItemDTO,
@@ -9,8 +10,28 @@ import type {
 	NoteTitle,
 	UnexportedNote,
 } from "../entities/note-entity.js";
-import type { NotesFindManyParams } from "../types/query-params.js";
+import type { NotesOrderBy } from "../types/query-params.js";
 import type { INotesCommandRepository } from "./notes-command-repository.interface.js";
+
+/**
+ * Parameters for paginated note queries.
+ *
+ * @example
+ * ```typescript
+ * const params: NotesFindManyParams = {
+ *   orderBy: { createdAt: "desc" },
+ *   take: 20,
+ *   skip: 0,
+ *   cacheStrategy: { ttl: 60, tags: ["notes"] },
+ * };
+ * ```
+ *
+ * @see {@link NotesOrderBy} for sorting options
+ */
+export type NotesFindManyParams = {
+	/** Sort configuration */
+	orderBy?: NotesOrderBy;
+} & InfraQueryOptions;
 
 /**
  * Query repository interface for the Note domain.

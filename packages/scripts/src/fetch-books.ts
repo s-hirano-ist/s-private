@@ -12,7 +12,7 @@ import * as Minio from "minio";
 
 type Book = {
 	id: string;
-	ISBN: string;
+	isbn: string;
 	title: string;
 	imagePath: string | null;
 };
@@ -67,7 +67,7 @@ async function main() {
 		await mkdir(OUTPUT_DIR, { recursive: true });
 
 		for (const item of data) {
-			const filePath = `${OUTPUT_DIR}${item.ISBN}.md`;
+			const filePath = `${OUTPUT_DIR}${item.isbn}.md`;
 
 			// ファイルが既に存在する場合はスキップ
 			try {
@@ -100,12 +100,12 @@ async function main() {
 		let downloadedCount = 0;
 
 		const downloadPromises = booksWithImages.map(
-			async (book: { ISBN: string; imagePath: string | null }) => {
-				const { ISBN, imagePath } = book;
+			async (book: { isbn: string; imagePath: string | null }) => {
+				const { isbn, imagePath } = book;
 				if (!imagePath) return;
 
 				const ext = path.extname(imagePath);
-				const fileName = `${ISBN}${ext}`;
+				const fileName = `${isbn}${ext}`;
 				const filePath = path.join(outputDir, fileName);
 
 				// ファイルが既に存在する場合はスキップ

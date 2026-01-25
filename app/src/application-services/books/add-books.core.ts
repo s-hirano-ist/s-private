@@ -8,7 +8,7 @@
  */
 
 import "server-only";
-import { bookEntity } from "@s-hirano-ist/s-core/books/entities/books-entity";
+import { bookEntity } from "@s-hirano-ist/s-core/books/entities/book-entity";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
@@ -43,7 +43,7 @@ export async function addBooksCore(
 
 		// Domain business rule validation
 		await booksDomainService.ensureNoDuplicate(
-			parsedData.ISBN,
+			parsedData.isbn,
 			parsedData.userId,
 		);
 
@@ -63,7 +63,7 @@ export async function addBooksCore(
 
 		// Create entity with value objects and domain event
 		const [book, event] = bookEntity.create({
-			ISBN: parsedData.ISBN,
+			isbn: parsedData.isbn,
 			title: parsedData.title,
 			userId: parsedData.userId,
 			imagePath: parsedData.imagePath,

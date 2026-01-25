@@ -26,6 +26,7 @@ import {
 	CreatedAt,
 	ExportedStatus,
 	Id,
+	LastUpdatedStatus,
 	makeCreatedAt,
 	makeId,
 	UnexportedStatus,
@@ -147,6 +148,26 @@ export const UnexportedNote = Base.extend({ status: UnexportedStatus });
 export type UnexportedNote = Readonly<z.infer<typeof UnexportedNote>>;
 
 /**
+ * Zod schema for a last-updated note.
+ *
+ * @remarks
+ * Represents a note that has been modified since last export.
+ * This is an intermediate state between UNEXPORTED and EXPORTED.
+ *
+ * @see {@link UnexportedNote} for the initial state
+ * @see {@link ExportedNote} for the published state
+ */
+export const LastUpdatedNote = Base.extend({ status: LastUpdatedStatus });
+
+/**
+ * Type for a last-updated note entity.
+ *
+ * @remarks
+ * Immutable entity representing a note that has been modified.
+ */
+export type LastUpdatedNote = Readonly<z.infer<typeof LastUpdatedNote>>;
+
+/**
  * Zod schema for an exported note.
  *
  * @remarks
@@ -252,9 +273,9 @@ export const noteEntity = {
 		);
 
 		const event = new NoteCreatedEvent({
-			title: note.title as string,
-			markdown: note.markdown as string,
-			userId: note.userId as string,
+			title: note.title,
+			markdown: note.markdown,
+			userId: note.userId,
 			caller,
 		});
 

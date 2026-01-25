@@ -1,4 +1,3 @@
-import type { CacheStrategy } from "./cache-strategy.js";
 import type { SortOrder } from "./sort-order.js";
 
 /**
@@ -15,8 +14,6 @@ export type ImagesOrderByField =
 	| "fileSize"
 	| "width"
 	| "height"
-	| "tags"
-	| "description"
 	| "status"
 	| "createdAt"
 	| "updatedAt"
@@ -39,31 +36,4 @@ export type ImagesOrderByField =
  */
 export type ImagesOrderBy = {
 	[K in ImagesOrderByField]?: SortOrder;
-};
-
-/**
- * Parameters for paginated image queries.
- *
- * @example
- * ```typescript
- * const params: ImagesFindManyParams = {
- *   orderBy: { createdAt: "desc" },
- *   take: 20,
- *   skip: 0,
- *   cacheStrategy: { ttl: 60, tags: ["images"] },
- * };
- * ```
- *
- * @see {@link ImagesOrderBy} for sorting options
- * @see {@link CacheStrategy} for caching configuration
- */
-export type ImagesFindManyParams = {
-	/** Sort configuration */
-	orderBy?: ImagesOrderBy;
-	/** Maximum number of results to return */
-	take?: number;
-	/** Number of results to skip (for pagination) */
-	skip?: number;
-	/** Caching configuration for the query */
-	cacheStrategy?: CacheStrategy;
 };

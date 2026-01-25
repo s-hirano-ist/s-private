@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import type { IBooksQueryRepository } from "../../books/repositories/books-query-repository.interface";
 import { makeUserId } from "../../shared-kernel/entities/common-entity";
 import { DuplicateError } from "../../shared-kernel/errors/error-classes";
-import { makeISBN } from "../entities/books-entity";
+import { makeISBN } from "../entities/book-entity";
 import { BooksDomainService } from "../services/books-domain-service";
 
 describe("BooksDomainService", () => {
@@ -43,7 +43,7 @@ describe("BooksDomainService", () => {
 
 			const mockBook = {
 				id: "existing-book-id",
-				ISBN: isbn,
+				isbn: isbn,
 				userId,
 				title: "Existing Book",
 				status: "UNEXPORTED" as const,

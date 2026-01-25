@@ -29,6 +29,7 @@ import {
 	CreatedAt,
 	ExportedStatus,
 	Id,
+	LastUpdatedStatus,
 	makeCreatedAt,
 	makeId,
 	UnexportedStatus,
@@ -335,6 +336,26 @@ export const UnexportedArticle = Base.extend({ status: UnexportedStatus });
 export type UnexportedArticle = Readonly<z.infer<typeof UnexportedArticle>>;
 
 /**
+ * Zod schema for a last-updated article.
+ *
+ * @remarks
+ * Represents an article that has been modified since last export.
+ * This is an intermediate state between UNEXPORTED and EXPORTED.
+ *
+ * @see {@link UnexportedArticle} for the initial state
+ * @see {@link ExportedArticle} for the published state
+ */
+export const LastUpdatedArticle = Base.extend({ status: LastUpdatedStatus });
+
+/**
+ * Type for a last-updated article entity.
+ *
+ * @remarks
+ * Immutable entity representing an article that has been modified.
+ */
+export type LastUpdatedArticle = Readonly<z.infer<typeof LastUpdatedArticle>>;
+
+/**
  * Zod schema for an exported article.
  *
  * @remarks
@@ -453,11 +474,11 @@ export const articleEntity = {
 		);
 
 		const event = new ArticleCreatedEvent({
-			title: article.title as string,
-			url: article.url as string,
-			quote: (article.quote as string) ?? "",
-			categoryName: categoryName as string,
-			userId: article.userId as string,
+			title: article.title,
+			url: article.url,
+			quote: article.quote ?? "",
+			categoryName,
+			userId: article.userId,
 			caller,
 		});
 

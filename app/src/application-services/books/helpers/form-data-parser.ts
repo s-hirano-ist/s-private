@@ -7,7 +7,7 @@
 import {
 	makeBookTitle,
 	makeISBN,
-} from "@s-hirano-ist/s-core/books/entities/books-entity";
+} from "@s-hirano-ist/s-core/books/entities/book-entity";
 import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import {
 	makeContentType,
@@ -42,12 +42,12 @@ export const parseAddBooksFormData = async (
 	formData: FormData,
 	userId: UserId,
 ) => {
-	const ISBN = getFormDataString(formData, "isbn");
+	const isbnInput = getFormDataString(formData, "isbn");
 	const title = getFormDataString(formData, "title");
 	const file = getOptionalFormDataFile(formData, "image");
 
 	const baseData = {
-		ISBN: makeISBN(ISBN),
+		isbn: makeISBN(isbnInput),
 		title: makeBookTitle(title),
 		userId,
 	};

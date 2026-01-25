@@ -12,7 +12,9 @@
 import "server-only";
 import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import type {
-	ContentType,
+	ArticleSearchResult,
+	BookSearchResult,
+	NoteSearchResult,
 	SearchQuery,
 	SearchResult,
 	SearchResultGroup,
@@ -93,10 +95,10 @@ export async function searchContent(
 			limit,
 		);
 
-		const articleSearchResults: SearchResult[] = articleResults.map(
+		const articleSearchResults: ArticleSearchResult[] = articleResults.map(
 			(article) => ({
 				href: article.url,
-				contentType: "articles" as ContentType,
+				contentType: "articles" as const,
 				title: article.title,
 				snippet: extractSnippet(
 					article.quote || article.ogDescription || article.ogTitle,
@@ -119,9 +121,9 @@ export async function searchContent(
 	if (searchTypes.includes("books")) {
 		const bookResults = await booksQueryRepository.search(query, userId, limit);
 
-		const bookSearchResults: SearchResult[] = bookResults.map((book) => ({
-			href: book.ISBN,
-			contentType: "books" as ContentType,
+		const bookSearchResults: BookSearchResult[] = bookResults.map((book) => ({
+			href: book.isbn,
+			contentType: "books" as const,
 			title: book.title,
 			snippet: extractSnippet(
 				book.markdown ??
@@ -147,9 +149,9 @@ export async function searchContent(
 	if (searchTypes.includes("notes")) {
 		const noteResults = await notesQueryRepository.search(query, userId, limit);
 
-		const noteSearchResults: SearchResult[] = noteResults.map((note) => ({
+		const noteSearchResults: NoteSearchResult[] = noteResults.map((note) => ({
 			href: note.title,
-			contentType: "notes" as ContentType,
+			contentType: "notes" as const,
 			title: note.title,
 			snippet: extractSnippet(note.markdown, query),
 		}));

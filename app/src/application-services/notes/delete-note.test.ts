@@ -1,3 +1,4 @@
+import { makeNoteTitle } from "@s-hirano-ist/s-core/notes/entities/note-entity";
 import {
 	makeId,
 	makeUserId,
@@ -40,7 +41,7 @@ describe("deleteNote", () => {
 		mockGetSelfId.mockResolvedValue("test-user-id");
 
 		vi.mocked(notesCommandRepository.deleteById).mockResolvedValueOnce({
-			title: "Test Note",
+			title: makeNoteTitle("Test Note"),
 		});
 
 		const testId = "01234567-89ab-7def-8123-456789abcdef";

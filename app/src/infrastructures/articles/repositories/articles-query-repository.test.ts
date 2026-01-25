@@ -246,9 +246,9 @@ describe("CategoryQueryRepository", () => {
 	describe("findMany", () => {
 		test("should find multiple categories successfully", async () => {
 			const mockCategories = [
-				{ id: 1, name: "tech" },
-				{ id: 2, name: "science" },
-				{ id: 3, name: "politics" },
+				{ id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7a", name: "tech" },
+				{ id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b", name: "science" },
+				{ id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c", name: "politics" },
 			];
 
 			vi.mocked(prisma.category.findMany).mockResolvedValue(mockCategories);
@@ -270,9 +270,18 @@ describe("CategoryQueryRepository", () => {
 				...params,
 			});
 			expect(result).toEqual([
-				{ id: 1, name: "tech" },
-				{ id: 2, name: "science" },
-				{ id: 3, name: "politics" },
+				{
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7a"),
+					name: makeCategoryName("tech"),
+				},
+				{
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b"),
+					name: makeCategoryName("science"),
+				},
+				{
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c"),
+					name: makeCategoryName("politics"),
+				},
 			]);
 		});
 
@@ -292,8 +301,8 @@ describe("CategoryQueryRepository", () => {
 
 		test("should work without parameters", async () => {
 			const mockCategories = [
-				{ id: 1, name: "tech" },
-				{ id: 2, name: "science" },
+				{ id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7a", name: "tech" },
+				{ id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b", name: "science" },
 			];
 
 			vi.mocked(prisma.category.findMany).mockResolvedValue(mockCategories);
@@ -307,8 +316,14 @@ describe("CategoryQueryRepository", () => {
 				select: { id: true, name: true },
 			});
 			expect(result).toEqual([
-				{ id: 1, name: "tech" },
-				{ id: 2, name: "science" },
+				{
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7a"),
+					name: makeCategoryName("tech"),
+				},
+				{
+					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b"),
+					name: makeCategoryName("science"),
+				},
 			]);
 		});
 
