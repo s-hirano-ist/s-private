@@ -255,8 +255,8 @@ importers:
         specifier: 7.2.0
         version: 7.2.0(prisma@7.2.0(@types/react@19.2.9)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3)
       '@prisma/extension-accelerate':
-        specifier: 3.0.1
-        version: 3.0.1(@prisma/client@7.2.0(prisma@7.2.0(@types/react@19.2.9)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3))
+        specifier: 3.0.0
+        version: 3.0.0(@prisma/client@7.2.0(prisma@7.2.0(@types/react@19.2.9)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3))
       prisma:
         specifier: 7.2.0
         version: 7.2.0(@types/react@19.2.9)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3)
@@ -1633,6 +1633,12 @@ packages:
 
   '@prisma/engines@7.2.0':
     resolution: {integrity: sha512-HUeOI/SvCDsHrR9QZn24cxxZcujOjcS3w1oW/XVhnSATAli5SRMOfp/WkG3TtT5rCxDA4xOnlJkW7xkho4nURA==}
+
+  '@prisma/extension-accelerate@3.0.0':
+    resolution: {integrity: sha512-xOhRCdPTdAwwdbxDr14s0rg73o8LunzRf8VtzFi4P6G/SvA3n/OgRIClXpihEQvoyDWVEIE29MdSxaaYdjsIMw==}
+    engines: {node: '>=22'}
+    peerDependencies:
+      '@prisma/client': '>=4.16.1'
 
   '@prisma/extension-accelerate@3.0.1':
     resolution: {integrity: sha512-xc+kn4AjjTzS9jsdD1JWCebB09y0Aj+C8GjjG7oUm81PF9psvmJOw5rxpl7tOEBz/8hmuNX996XL28ys/OLxVA==}
@@ -8430,6 +8436,10 @@ snapshots:
       '@prisma/engines-version': 7.2.0-4.0c8ef2ce45c83248ab3df073180d5eda9e8be7a3
       '@prisma/fetch-engine': 7.2.0
       '@prisma/get-platform': 7.2.0
+
+  '@prisma/extension-accelerate@3.0.0(@prisma/client@7.2.0(prisma@7.2.0(@types/react@19.2.9)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3))':
+    dependencies:
+      '@prisma/client': 7.2.0(prisma@7.2.0(@types/react@19.2.9)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3)
 
   '@prisma/extension-accelerate@3.0.1(@prisma/client@7.2.0(prisma@7.2.0(@types/react@19.2.9)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3))':
     dependencies:
