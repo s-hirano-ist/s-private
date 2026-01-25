@@ -29,6 +29,7 @@ import {
 	buildCountCacheTag,
 	buildPaginatedContentCacheTag,
 } from "@/infrastructures/shared/cache/cache-tag-builder";
+import { booksStorageService } from "@/infrastructures/shared/storage/books-storage-service";
 
 const API_BOOK_THUMBNAIL_PATH = "/api/books/images/thumbnail";
 
@@ -154,5 +155,5 @@ export const getBooksImageFromStorage = async (
 	path: string,
 	isThumbnail: boolean,
 ) => {
-	return await booksQueryRepository.getImageFromStorage(path, isThumbnail);
+	return await booksStorageService.getImage(path, isThumbnail);
 };

@@ -25,12 +25,6 @@ import {
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { makePath } from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
-import { env } from "@/env";
-import {
-	ORIGINAL_BOOK_IMAGE_PATH,
-	THUMBNAIL_BOOK_IMAGE_PATH,
-} from "@/infrastructures/shared/storage/books-storage-service";
-import { minioClient } from "@/minio";
 import prisma from "@/prisma";
 
 async function findByISBN(
@@ -181,19 +175,9 @@ async function search(
 	}));
 }
 
-async function getImageFromStorage(
-	path: string,
-	isThumbnail: boolean,
-): Promise<NodeJS.ReadableStream> {
-	const objKey = `${isThumbnail ? THUMBNAIL_BOOK_IMAGE_PATH : ORIGINAL_BOOK_IMAGE_PATH}/${path}`;
-	const data = await minioClient.getObject(env.MINIO_BUCKET_NAME, objKey);
-	return data;
-}
-
 export const booksQueryRepository: IBooksQueryRepository = {
 	findByISBN,
 	findMany,
 	count,
 	search,
-	getImageFromStorage,
 };

@@ -92,16 +92,4 @@ export type IBooksQueryRepository = {
 		userId: UserId,
 		limit?: number,
 	): Promise<BookSearchItemDTO[]>;
-
-	/**
-	 * Retrieves a book cover image from MinIO storage.
-	 *
-	 * @param path - The storage path for the image
-	 * @param isThumbnail - Whether to retrieve the thumbnail or original image
-	 * @returns A readable stream of the image data
-	 */
-	getImageFromStorage(
-		path: string,
-		isThumbnail: boolean,
-	): Promise<NodeJS.ReadableStream>;
 };
