@@ -42,7 +42,7 @@
 		"docs:clean": "rm -rf docs/api"
 	},
 	"dependencies": {
-		"next": "15.5.9",
+		"next": "15.5.10",
 		"next-intl": "4.7.0"
 	},
 	"devDependencies": {
