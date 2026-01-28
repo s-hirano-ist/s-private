@@ -22,7 +22,7 @@ describe("MinioStorageService", () => {
 
 			expect(minioClient.putObject).toHaveBeenCalledWith(
 				"test-bucket",
-				`originals/${path}`,
+				`images/original/${path}`,
 				buffer,
 			);
 		});
@@ -40,7 +40,7 @@ describe("MinioStorageService", () => {
 
 			expect(minioClient.putObject).toHaveBeenCalledWith(
 				"test-bucket",
-				`thumbnails/${path}`,
+				`images/thumbnail/${path}`,
 				buffer,
 			);
 		});
@@ -59,7 +59,7 @@ describe("MinioStorageService", () => {
 
 			expect(minioClient.putObject).toHaveBeenCalledWith(
 				"test-bucket",
-				`originals/${path}`,
+				`images/original/${path}`,
 				buffer,
 			);
 		});
@@ -76,7 +76,7 @@ describe("MinioStorageService", () => {
 
 			expect(minioClient.getObject).toHaveBeenCalledWith(
 				"test-bucket",
-				`originals/${path}`,
+				`images/original/${path}`,
 			);
 			expect(result).toBe(mockStream);
 		});
@@ -91,7 +91,7 @@ describe("MinioStorageService", () => {
 
 			expect(minioClient.getObject).toHaveBeenCalledWith(
 				"test-bucket",
-				`thumbnails/${path}`,
+				`images/thumbnail/${path}`,
 			);
 			expect(result).toBe(mockStream);
 		});
@@ -109,7 +109,7 @@ describe("MinioStorageService", () => {
 
 			expect(minioClient.getObject).toHaveBeenCalledWith(
 				"test-bucket",
-				`originals/${path}`,
+				`images/original/${path}`,
 			);
 		});
 	});
@@ -124,7 +124,7 @@ describe("MinioStorageService", () => {
 
 			expect(minioClient.statObject).toHaveBeenCalledWith(
 				"test-bucket",
-				`originals/${path}`,
+				`images/original/${path}`,
 			);
 		});
 
@@ -151,7 +151,7 @@ describe("MinioStorageService", () => {
 
 			expect(minioClient.removeObject).toHaveBeenCalledWith(
 				"test-bucket",
-				`originals/${path}`,
+				`images/original/${path}`,
 			);
 		});
 
@@ -164,7 +164,7 @@ describe("MinioStorageService", () => {
 
 			expect(minioClient.removeObject).toHaveBeenCalledWith(
 				"test-bucket",
-				`thumbnails/${path}`,
+				`images/thumbnail/${path}`,
 			);
 		});
 

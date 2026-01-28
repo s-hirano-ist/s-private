@@ -16,13 +16,13 @@ import { minioClient } from "@/minio";
  * Path prefix for original images in MinIO bucket.
  * @internal
  */
-const ORIGINAL_IMAGE_PATH = "originals";
+const ORIGINAL_IMAGE_PATH = "images/original";
 
 /**
  * Path prefix for thumbnail images in MinIO bucket.
  * @internal
  */
-const THUMBNAIL_IMAGE_PATH = "thumbnails";
+const THUMBNAIL_IMAGE_PATH = "images/thumbnail";
 
 /**
  * Builds the object key for MinIO operations.
