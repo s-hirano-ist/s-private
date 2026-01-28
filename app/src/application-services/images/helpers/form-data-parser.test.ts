@@ -1,8 +1,12 @@
 import {
+	type ContentType,
+	type FileSize,
 	makeContentType,
 	makeFileSize,
 	makePath,
+	type Path,
 } from "@s-hirano-ist/s-core/images/entities/image-entity";
+import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getFormDataFile } from "@/common/utils/form-data-utils";
 import { sharpImageProcessor } from "@/infrastructures/images/services/sharp-image-processor";
@@ -26,7 +30,7 @@ describe("parseAddImageFormData", () => {
 
 	test("should parse form data and create image data", async () => {
 		const formData = new FormData();
-		const userId = "test-user-id" as any;
+		const userId = makeUserId("test-user-id");
 
 		const mockFile = {
 			name: "test-image.png",
@@ -41,9 +45,9 @@ describe("parseAddImageFormData", () => {
 		mockGetFormDataFile.mockReturnValue(mockFile);
 
 		// Mock entity creation
-		mockMakePath.mockReturnValue("test-image.png" as any);
-		mockMakeContentType.mockReturnValue("image/png" as any);
-		mockMakeFileSize.mockReturnValue(1024 as any);
+		mockMakePath.mockReturnValue("test-image.png" as Path);
+		mockMakeContentType.mockReturnValue("image/png" as ContentType);
+		mockMakeFileSize.mockReturnValue(1024 as FileSize);
 		mockFileToBuffer.mockResolvedValue(mockOriginalBuffer);
 		mockCreateThumbnail.mockResolvedValue(mockThumbnailBuffer);
 
@@ -73,7 +77,7 @@ describe("parseAddImageFormData", () => {
 
 	test("should handle JPEG image file", async () => {
 		const formData = new FormData();
-		const userId = "test-user-id" as any;
+		const userId = makeUserId("test-user-id");
 
 		const mockFile = {
 			name: "photo.jpg",
@@ -88,9 +92,9 @@ describe("parseAddImageFormData", () => {
 		mockGetFormDataFile.mockReturnValue(mockFile);
 
 		// Mock entity creation
-		mockMakePath.mockReturnValue("photo.jpg" as any);
-		mockMakeContentType.mockReturnValue("image/jpeg" as any);
-		mockMakeFileSize.mockReturnValue(1024 as any);
+		mockMakePath.mockReturnValue("photo.jpg" as Path);
+		mockMakeContentType.mockReturnValue("image/jpeg" as ContentType);
+		mockMakeFileSize.mockReturnValue(1024 as FileSize);
 		mockFileToBuffer.mockResolvedValue(mockOriginalBuffer);
 		mockCreateThumbnail.mockResolvedValue(mockThumbnailBuffer);
 
@@ -112,7 +116,7 @@ describe("parseAddImageFormData", () => {
 
 	test("should handle image with Japanese filename", async () => {
 		const formData = new FormData();
-		const userId = "test-user-id-jp" as any;
+		const userId = makeUserId("test-user-id-jp");
 
 		const mockFile = {
 			name: "テスト画像.png",
@@ -127,9 +131,9 @@ describe("parseAddImageFormData", () => {
 		mockGetFormDataFile.mockReturnValue(mockFile);
 
 		// Mock entity creation
-		mockMakePath.mockReturnValue("テスト画像.png" as any);
-		mockMakeContentType.mockReturnValue("image/png" as any);
-		mockMakeFileSize.mockReturnValue(1536 as any);
+		mockMakePath.mockReturnValue("テスト画像.png" as Path);
+		mockMakeContentType.mockReturnValue("image/png" as ContentType);
+		mockMakeFileSize.mockReturnValue(1536 as FileSize);
 		mockFileToBuffer.mockResolvedValue(mockOriginalBuffer);
 		mockCreateThumbnail.mockResolvedValue(mockThumbnailBuffer);
 
@@ -142,7 +146,7 @@ describe("parseAddImageFormData", () => {
 
 	test("should handle large image file", async () => {
 		const formData = new FormData();
-		const userId = "test-user-id" as any;
+		const userId = makeUserId("test-user-id");
 
 		const mockFile = {
 			name: "large-image.png",
@@ -157,9 +161,9 @@ describe("parseAddImageFormData", () => {
 		mockGetFormDataFile.mockReturnValue(mockFile);
 
 		// Mock entity creation
-		mockMakePath.mockReturnValue("large-image.png" as any);
-		mockMakeContentType.mockReturnValue("image/png" as any);
-		mockMakeFileSize.mockReturnValue(5242880 as any);
+		mockMakePath.mockReturnValue("large-image.png" as Path);
+		mockMakeContentType.mockReturnValue("image/png" as ContentType);
+		mockMakeFileSize.mockReturnValue(5242880 as FileSize);
 		mockFileToBuffer.mockResolvedValue(mockOriginalBuffer);
 		mockCreateThumbnail.mockResolvedValue(mockThumbnailBuffer);
 
@@ -171,7 +175,7 @@ describe("parseAddImageFormData", () => {
 
 	test("should handle file with special characters in name", async () => {
 		const formData = new FormData();
-		const userId = "test-user-id" as any;
+		const userId = makeUserId("test-user-id");
 
 		const mockFile = {
 			name: "image with spaces & symbols (1).png",
@@ -186,9 +190,9 @@ describe("parseAddImageFormData", () => {
 		mockGetFormDataFile.mockReturnValue(mockFile);
 
 		// Mock entity creation
-		mockMakePath.mockReturnValue("image with spaces & symbols (1).png" as any);
-		mockMakeContentType.mockReturnValue("image/png" as any);
-		mockMakeFileSize.mockReturnValue(1024 as any);
+		mockMakePath.mockReturnValue("image with spaces & symbols (1).png" as Path);
+		mockMakeContentType.mockReturnValue("image/png" as ContentType);
+		mockMakeFileSize.mockReturnValue(1024 as FileSize);
 		mockFileToBuffer.mockResolvedValue(mockOriginalBuffer);
 		mockCreateThumbnail.mockResolvedValue(mockThumbnailBuffer);
 
@@ -203,7 +207,7 @@ describe("parseAddImageFormData", () => {
 
 	test("should handle different user IDs", async () => {
 		const formData = new FormData();
-		const userId = "different-user-789" as any;
+		const userId = makeUserId("different-user-789");
 
 		const mockFile = {
 			name: "user-image.jpg",
@@ -218,9 +222,9 @@ describe("parseAddImageFormData", () => {
 		mockGetFormDataFile.mockReturnValue(mockFile);
 
 		// Mock entity creation
-		mockMakePath.mockReturnValue("user-image.jpg" as any);
-		mockMakeContentType.mockReturnValue("image/jpeg" as any);
-		mockMakeFileSize.mockReturnValue(1024 as any);
+		mockMakePath.mockReturnValue("user-image.jpg" as Path);
+		mockMakeContentType.mockReturnValue("image/jpeg" as ContentType);
+		mockMakeFileSize.mockReturnValue(1024 as FileSize);
 		mockFileToBuffer.mockResolvedValue(mockOriginalBuffer);
 		mockCreateThumbnail.mockResolvedValue(mockThumbnailBuffer);
 

@@ -25,7 +25,7 @@
 				"noUselessElse": "error"
 			},
 			"suspicious": {
-				"noExplicitAny": "off",
+				"noExplicitAny": "warn",
 				"noUnknownAtRules": "off"
 			},
 			"complexity": {
