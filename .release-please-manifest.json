@@ -1,8 +1,8 @@
 {
-	".": "10.9.1",
-	"packages/core": "1.9.1",
-	"packages/ui": "1.9.1",
-	"packages/database": "1.9.1",
-	"packages/notification": "1.9.1",
-	"packages/scripts": "1.9.1"
+	".": "10.9.2",
+	"packages/core": "1.9.2",
+	"packages/ui": "1.9.2",
+	"packages/database": "1.9.2",
+	"packages/notification": "1.9.2",
+	"packages/scripts": "1.9.2"
 }

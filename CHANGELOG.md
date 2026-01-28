@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.9.2](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.9.1...s-private-v10.9.2) (2026-01-28)
+
+
+### Documentation
+
+* delete issue ([c2a494c](https://github.com/s-hirano-ist/s-private/commit/c2a494cd4b8bc5b547998d2381a41f046b1dc944))
+
+
+### Maintenance
+
+* add files ([02b2de6](https://github.com/s-hirano-ist/s-private/commit/02b2de6affffbe7e669f70364cd03a516a59fe30))
+* **deps:** update dependency @chromatic-com/storybook to v5 ([4ef05c7](https://github.com/s-hirano-ist/s-private/commit/4ef05c7d9725baa922d4692451c0a6381ca1a024))
+* **deps:** update dependency @chromatic-com/storybook to v5 ([96fb172](https://github.com/s-hirano-ist/s-private/commit/96fb172f906f1e241b896af2a46a154150b32021))
+* **deps:** update node.js to v24.13.0 ([0de9443](https://github.com/s-hirano-ist/s-private/commit/0de9443758f74a4ccc0e77ba998983d08b939276))
+* **deps:** update node.js to v24.13.0 ([bd21320](https://github.com/s-hirano-ist/s-private/commit/bd213207e7d241e9b5c6dcf1333fbe27632a4bf1))
+* **deps:** update pnpm to v10.28.1 ([8c229c0](https://github.com/s-hirano-ist/s-private/commit/8c229c0cbd48a33989347f61e423e6d8f4e4751e))
+* **deps:** update pnpm to v10.28.1 ([13ea8a8](https://github.com/s-hirano-ist/s-private/commit/13ea8a8f0bf77f384ad7f3d9069b0b11aa997030))
+* small issues ([f673de3](https://github.com/s-hirano-ist/s-private/commit/f673de3b42649238b3f627285e8b76a4bf4a9b24))
+* use plan dir ([84cc59a](https://github.com/s-hirano-ist/s-private/commit/84cc59a8a2d45f9ab69e9acc0620dc3738bd3996))
+
 ## [10.9.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.9.0...s-private-v10.9.1) (2026-01-25)
 
 

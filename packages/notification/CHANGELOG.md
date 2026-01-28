@@ -1,5 +1,7 @@
 # Changelog
 
+## [1.9.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-notification-v1.9.1...@s-hirano-ist/s-notification-v1.9.2) (2026-01-28)
+
 ## [1.9.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-notification-v1.9.0...@s-hirano-ist/s-notification-v1.9.1) (2026-01-25)
 
 
