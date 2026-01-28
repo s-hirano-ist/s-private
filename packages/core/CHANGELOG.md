@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.10.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.9.2...@s-hirano-ist/s-core-v1.10.0) (2026-01-28)
+
+
+### Documentation
+
+* **articles:** add unit tests for CategoryService ([f210411](https://github.com/s-hirano-ist/s-private/commit/f210411fd5b6dd5709bbbc0eddf3370173d87e03))
+* **articles:** add unit tests for CategoryService ([7792e78](https://github.com/s-hirano-ist/s-private/commit/7792e7800bcdb0d1f8be1f30ffa2e916ae6d8858))
+
 ## [1.9.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.9.1...@s-hirano-ist/s-core-v1.9.2) (2026-01-28)
 
 ## [1.9.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.9.0...@s-hirano-ist/s-core-v1.9.1) (2026-01-25)
