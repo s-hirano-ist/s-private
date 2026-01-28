@@ -52,3 +52,5 @@ packages/scripts/dist/
 
 # TypeDoc generated documentation
 docs/api/
+
+/plans
