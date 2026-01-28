@@ -238,7 +238,7 @@ describe("DeleteButtonWithModal", () => {
 		const mockParentClick = vi.fn();
 
 		render(
-			// biome-ignore lint: vitest
+			// biome-ignore lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Test only - verifying event propagation behavior, not user accessibility
 			<div onClick={mockParentClick}>
 				<DeleteButtonWithModal
 					deleteAction={mockDeleteAction}

@@ -87,7 +87,7 @@ export const InDialog: Story = {
 		return (
 			<>
 				<Button onClick={() => setOpen(true)}>Open Command Palette</Button>
-				<CommandDialog open={open} onOpenChange={setOpen}>
+				<CommandDialog onOpenChange={setOpen} open={open}>
 					<CommandInput placeholder="Type a command or search..." />
 					<CommandList>
 						<CommandEmpty>No results found.</CommandEmpty>

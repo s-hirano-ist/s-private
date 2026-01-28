@@ -44,7 +44,7 @@ const prismaClientSingleton = () => {
 	return prisma.$extends(withAccelerate());
 };
 
-// biome-ignore lint: prisma template
+// biome-ignore lint/suspicious/noShadowRestrictedNames: Required to extend globalThis for Prisma singleton pattern - caches client across hot-reloads in development
 declare const globalThis: {
 	prismaGlobal: ReturnType<typeof prismaClientSingleton>;
 } & typeof global;
