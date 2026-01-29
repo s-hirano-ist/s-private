@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.10.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.9.2...@s-hirano-ist/s-ui-v1.10.0) (2026-01-28)
+
+
+### Features
+
+* **ui:** add Storybook stories for Pagination, Popover, Drawer, Command ([fb291d7](https://github.com/s-hirano-ist/s-private/commit/fb291d7946b964c2e5e985975524349325a495af))
+
+
+### Documentation
+
+* **articles:** add unit tests for CategoryService ([f210411](https://github.com/s-hirano-ist/s-private/commit/f210411fd5b6dd5709bbbc0eddf3370173d87e03))
+
+
+### Maintenance
+
+* **deps:** update dependency next to v15.5.10 [security] ([bd5ef59](https://github.com/s-hirano-ist/s-private/commit/bd5ef5986a59937ec22de0f38b941897b28c7bcf))
+* **deps:** update dependency next to v15.5.10 [security] ([2472a6a](https://github.com/s-hirano-ist/s-private/commit/2472a6a5eabd8f4695eb01fb3ce5c216c0fd2118))
+* improve biome-ignore comments with specific rule names ([698efe8](https://github.com/s-hirano-ist/s-private/commit/698efe8f3f6b70aaaacfa623a09d228d3cb8435d))
+
 ## [1.9.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.9.1...@s-hirano-ist/s-ui-v1.9.2) (2026-01-28)
 
 ## [1.9.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.9.0...@s-hirano-ist/s-ui-v1.9.1) (2026-01-25)
