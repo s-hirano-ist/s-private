@@ -53,7 +53,7 @@ beforeEach(() => {
 	});
 
 	vi.mock("next/cache", () => ({
-		unstable_cacheTag: vi.fn(),
+		cacheTag: vi.fn(),
 		revalidateTag: vi.fn(),
 	}));
 

@@ -21,8 +21,12 @@ import prisma from "@/prisma";
 async function create(data: UnexportedNote): Promise<void> {
 	await prisma.note.create({ data });
 
-	revalidateTag(buildContentCacheTag("notes", data.status, data.userId));
-	revalidateTag(buildCountCacheTag("notes", data.status, data.userId));
+	revalidateTag(buildContentCacheTag("notes", data.status, data.userId), {
+		expire: 0,
+	});
+	revalidateTag(buildCountCacheTag("notes", data.status, data.userId), {
+		expire: 0,
+	});
 }
 
 async function deleteById(
@@ -35,8 +39,8 @@ async function deleteById(
 		select: { title: true },
 	});
 
-	revalidateTag(buildContentCacheTag("notes", status, userId));
-	revalidateTag(buildCountCacheTag("notes", status, userId));
+	revalidateTag(buildContentCacheTag("notes", status, userId), { expire: 0 });
+	revalidateTag(buildCountCacheTag("notes", status, userId), { expire: 0 });
 
 	return { title: makeNoteTitle(data.title) };
 }

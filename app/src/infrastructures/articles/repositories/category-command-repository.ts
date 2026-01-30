@@ -15,7 +15,7 @@ async function create(data: CategoryCreateData): Promise<void> {
 		},
 	});
 
-	revalidateTag("categories");
+	revalidateTag("categories", "max");
 }
 
 export const categoryCommandRepository: ICategoryCommandRepository = {

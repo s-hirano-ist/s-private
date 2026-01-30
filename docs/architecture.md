@@ -7,7 +7,7 @@
 | API | 最小バージョン | 備考 |
 |-----|--------------|------|
 | `forbidden()` | Next.js 15.0 | 認可エラー用（403） |
-| `cacheTag()` | Next.js 15.1 | 15.0では`unstable_cacheTag`として提供 |
+| `cacheTag()` | Next.js 15.1 | キャッシュタグによる無効化制御 |
 | `cacheLife()` | Next.js 15.1 | 15.0では`unstable_cacheLife`として提供 |
 | `"use cache"` | Next.js 15.0 | `dynamicIO`フラグ有効時のみ |
 | `connection()` | Next.js 15.0 | 動的レンダリングのオプトイン |
@@ -1211,7 +1211,7 @@ revalidateTag(buildCategoriesCacheTag(userId)); // ユーザー固有カテゴ�
 
 ```typescript
 // get-articles.ts
-import { unstable_cacheTag as cacheTag } from "next/cache";
+import { cacheTag } from "next/cache";
 import {
   buildContentCacheTag,
   buildCountCacheTag,
@@ -1403,7 +1403,7 @@ export async function batchResetCore(deps: BatchResetDeps): Promise<ServerAction
 
 ```typescript
 // app/src/application-services/articles/get-articles.ts
-import { unstable_cacheTag as cacheTag } from "next/cache";
+import { cacheTag } from "next/cache";
 import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
 import {

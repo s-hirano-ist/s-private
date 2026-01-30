@@ -20,8 +20,12 @@ async function create(data: UnexportedImage): Promise<void> {
 		data,
 	});
 
-	revalidateTag(buildContentCacheTag("images", data.status, data.userId));
-	revalidateTag(buildCountCacheTag("images", data.status, data.userId));
+	revalidateTag(buildContentCacheTag("images", data.status, data.userId), {
+		expire: 0,
+	});
+	revalidateTag(buildCountCacheTag("images", data.status, data.userId), {
+		expire: 0,
+	});
 }
 
 async function deleteById(
@@ -34,8 +38,8 @@ async function deleteById(
 		select: { path: true },
 	});
 
-	revalidateTag(buildContentCacheTag("images", status, userId));
-	revalidateTag(buildCountCacheTag("images", status, userId));
+	revalidateTag(buildContentCacheTag("images", status, userId), { expire: 0 });
+	revalidateTag(buildCountCacheTag("images", status, userId), { expire: 0 });
 
 	return { path: data.path };
 }
