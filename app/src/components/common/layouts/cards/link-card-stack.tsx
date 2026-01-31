@@ -1,7 +1,10 @@
 "use client";
 import type { DeleteAction, LoadMoreAction } from "@/common/types";
 import { DeleteButtonWithModal } from "@/components/common/forms/actions/delete-button-with-modal";
-import { BaseCardStackWrapper } from "@/components/common/layouts/cards/base-card-stack";
+import {
+	BaseCardStackWrapper,
+	type RenderCardProps,
+} from "@/components/common/layouts/cards/base-card-stack";
 import { LinkCard } from "@/components/common/layouts/cards/link-card";
 import type { LinkCardData, LinkCardStackInitialData } from "./types";
 
@@ -16,15 +19,14 @@ export function LinkCardStack({
 	deleteAction,
 	loadMoreAction,
 }: Props) {
-	const renderCard = (
-		item: LinkCardData,
-		_index: number,
-		isLast: boolean,
-		lastElementRef: (node: HTMLElement | null) => void,
-		deleteAction?: DeleteAction,
-		key?: string,
-	) => (
-		<div className="h-full" key={key} ref={isLast ? lastElementRef : null}>
+	const renderCard = ({
+		item,
+		isLast,
+		lastElementRef,
+		deleteAction,
+		itemKey,
+	}: RenderCardProps<LinkCardData>) => (
+		<div className="h-full" key={itemKey} ref={isLast ? lastElementRef : null}>
 			<LinkCard
 				actions={
 					deleteAction !== undefined ? (
