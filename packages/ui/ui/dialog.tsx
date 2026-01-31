@@ -1,5 +1,6 @@
 "use client";
 
+import { cva, type VariantProps } from "class-variance-authority";
 import { Dialog as DialogPrimitive } from "radix-ui";
 import * as React from "react";
 
@@ -71,6 +72,22 @@ const DialogOverlay = React.forwardRef<
 ));
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
+const dialogContentVariants = cva(
+	"data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] fixed top-[50%] left-[50%] z-50 grid w-full translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=closed]:animate-out data-[state=open]:animate-in sm:rounded-lg",
+	{
+		variants: {
+			size: {
+				default: "max-w-lg",
+				md: "max-w-2xl",
+				lg: "max-w-4xl",
+			},
+		},
+		defaultVariants: {
+			size: "default",
+		},
+	},
+);
+
 /**
  * Main content container for the dialog.
  *
@@ -78,7 +95,7 @@ DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
  * Centered modal with overlay, animations, and proper styling.
  * Includes the DialogOverlay automatically.
  *
- * @param props - Content props including fullWidth option
+ * @param props - Content props including size variant option
  * @returns A styled dialog content container
  *
  * @see {@link Dialog} for parent component
@@ -87,18 +104,13 @@ DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
  */
 const DialogContent = React.forwardRef<
 	React.ElementRef<typeof DialogPrimitive.Content>,
-	React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
-		fullWidth?: boolean;
-	}
->(({ className, children, fullWidth = false, ...props }, ref) => (
+	React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> &
+		VariantProps<typeof dialogContentVariants>
+>(({ className, children, size, ...props }, ref) => (
 	<DialogPortal>
 		<DialogOverlay />
 		<DialogPrimitive.Content
-			className={cn(
-				"data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] fixed top-[50%] left-[50%] z-50 grid w-full max-w-4xl translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=closed]:animate-out data-[state=open]:animate-in sm:rounded-lg",
-				!fullWidth && "max-w-lg",
-				className,
-			)}
+			className={cn(dialogContentVariants({ size }), className)}
 			ref={ref}
 			{...props}
 		>
