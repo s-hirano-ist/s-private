@@ -48,7 +48,7 @@ import {
  *
  * @internal
  */
-export const _getArticles = async (
+const _getArticles = async (
 	currentCount: number,
 	userId: UserId,
 	status: Status,

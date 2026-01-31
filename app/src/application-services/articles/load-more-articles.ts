@@ -1,16 +1,11 @@
 "use server";
 import "server-only";
-import {
-	makeExportedStatus,
-	makeUnexportedStatus,
-} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { forbidden } from "next/navigation";
-import { getSelfId, hasViewerAdminPermission } from "@/common/auth/session";
+import { hasViewerAdminPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerActionWithData } from "@/common/types";
-import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
-import { _getArticles } from "./get-articles";
+import { getExportedArticles, getUnexportedArticles } from "./get-articles";
 
 export async function loadMoreExportedArticles(
 	currentCount: number,
@@ -19,18 +14,7 @@ export async function loadMoreExportedArticles(
 	if (!hasPermission) forbidden();
 
 	try {
-		const userId = await getSelfId();
-
-		const data = await _getArticles(
-			currentCount,
-			userId,
-			makeExportedStatus().status,
-			{
-				ttl: 400,
-				swr: 40,
-				tags: [`${sanitizeCacheTag(userId)}_articles_${currentCount}`],
-			},
-		);
+		const data = await getExportedArticles(currentCount);
 
 		return {
 			success: true,
@@ -49,13 +33,7 @@ export async function loadMoreUnexportedArticles(
 	if (!hasPermission) forbidden();
 
 	try {
-		const userId = await getSelfId();
-
-		const data = await _getArticles(
-			currentCount,
-			userId,
-			makeUnexportedStatus(),
-		);
+		const data = await getUnexportedArticles(currentCount);
 
 		return {
 			success: true,
