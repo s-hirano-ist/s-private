@@ -1,7 +1,7 @@
 "use client";
 
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
-import { type RefObject, useEffect, useState } from "react";
+import { type RefObject, useState } from "react";
 import { Button } from "../../ui/button";
 import {
 	Command,
@@ -94,23 +94,21 @@ export function FormDropdownInput({
 	customValueLabel = (v) => `Use "${v}"`,
 }: Props) {
 	const [open, setOpen] = useState(false);
-	const [value, setValue] = useState("");
 	const [searchValue, setSearchValue] = useState("");
 
 	const formValues = useFormValues();
 	const preservedValue = formValues[name || htmlFor];
 
-	useEffect(() => {
-		if (preservedValue) {
+	const [value, setValue] = useState(preservedValue ?? "");
+	const [prevPreservedValue, setPrevPreservedValue] = useState(preservedValue);
+
+	// Sync preservedValue to value during render (not in useEffect)
+	if (preservedValue !== prevPreservedValue) {
+		setPrevPreservedValue(preservedValue);
+		if (preservedValue !== undefined) {
 			setValue(preservedValue);
 		}
-	}, [preservedValue]);
-
-	useEffect(() => {
-		if (inputRef?.current) {
-			inputRef.current.value = value;
-		}
-	}, [value, inputRef]);
+	}
 
 	const handleSelect = (selectedValue: string) => {
 		setValue(selectedValue);
