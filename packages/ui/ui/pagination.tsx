@@ -70,7 +70,11 @@ type PaginationContentProps = {
  * @param props - Standard ul element props with optional className override
  * @returns A list container for pagination items
  */
-function PaginationContent({ className, ref, ...props }: PaginationContentProps) {
+function PaginationContent({
+	className,
+	ref,
+	...props
+}: PaginationContentProps) {
 	return (
 		<ul
 			className={cn("flex flex-row items-center gap-1", className)}
