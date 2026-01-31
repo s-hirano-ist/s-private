@@ -7,23 +7,20 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@s-hirano-ist/s-ui/ui/card";
+import type { ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
-import type { DeleteAction } from "@/common/types";
-import { DeleteButtonWithModal } from "@/components/common/forms/actions/delete-button-with-modal";
 import { validateAndNormalizeUrl } from "@/components/common/utils/validate-url";
 import { Link } from "@/infrastructures/i18n/routing";
 import type { LinkCardData } from "./types";
 
 type Props = {
 	data: LinkCardData;
-	showDeleteButton: boolean;
-	deleteAction?: DeleteAction;
+	actions?: ReactNode;
 };
 
 export function LinkCard({
-	data: { id, title, description, primaryBadgeText, secondaryBadgeText, href },
-	showDeleteButton,
-	deleteAction,
+	data: { title, description, primaryBadgeText, secondaryBadgeText, href },
+	actions,
 }: Props) {
 	const { url: validatedHref, isExternal } = validateAndNormalizeUrl(href);
 
@@ -56,13 +53,7 @@ export function LinkCard({
 					</CardContent>
 				</Card>
 			</CardComponent>
-			{showDeleteButton && deleteAction !== undefined && (
-				<DeleteButtonWithModal
-					deleteAction={deleteAction}
-					id={id}
-					title={title}
-				/>
-			)}
+			{actions}
 		</div>
 	);
 }
