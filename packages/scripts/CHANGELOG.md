@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.12.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.11.0...@s-hirano-ist/s-scripts-v1.12.0) (2026-01-31)
+
+
+### Features
+
+* change bundler from nodenext to esnext ([9883cdc](https://github.com/s-hirano-ist/s-private/commit/9883cdc3e981b96977b9d11952844d7849fcebb9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.12.0
+    * @s-hirano-ist/s-database bumped to 1.12.0
+    * @s-hirano-ist/s-notification bumped to 1.12.0
+
 ## [1.11.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.10.0...@s-hirano-ist/s-scripts-v1.11.0) (2026-01-31)
 
 

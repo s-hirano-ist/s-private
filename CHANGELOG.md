@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.12.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.11.0...s-private-v10.12.0) (2026-01-31)
+
+
+### Features
+
+* change bundler from nodenext to esnext ([9883cdc](https://github.com/s-hirano-ist/s-private/commit/9883cdc3e981b96977b9d11952844d7849fcebb9))
+
+
+### Maintenance
+
+* **deps:** lock file maintenance ([8d01f20](https://github.com/s-hirano-ist/s-private/commit/8d01f20ff74b237cbca17b2c4f9d615a03e664c1))
+
 ## [10.11.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.10.0...s-private-v10.11.0) (2026-01-31)
 
 
