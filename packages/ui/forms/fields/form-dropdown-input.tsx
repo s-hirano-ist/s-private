@@ -50,6 +50,11 @@ export type Props = {
 	customValueLabel?: (value: string) => string;
 };
 
+// Default values extracted as constants for stable reference
+const DEFAULT_EMPTY_MESSAGE = "No results found";
+const DEFAULT_SEARCH_PLACEHOLDER = "Search...";
+const DEFAULT_CUSTOM_VALUE_LABEL = (v: string) => `Use "${v}"`;
+
 /**
  * A searchable dropdown input component for forms.
  *
@@ -89,9 +94,9 @@ export function FormDropdownInput({
 	name,
 	required,
 	disabled,
-	emptyMessage = "No results found",
-	searchPlaceholder = "Search...",
-	customValueLabel = (v) => `Use "${v}"`,
+	emptyMessage = DEFAULT_EMPTY_MESSAGE,
+	searchPlaceholder = DEFAULT_SEARCH_PLACEHOLDER,
+	customValueLabel = DEFAULT_CUSTOM_VALUE_LABEL,
 }: Props) {
 	const [open, setOpen] = useState(false);
 	const [searchValue, setSearchValue] = useState("");
