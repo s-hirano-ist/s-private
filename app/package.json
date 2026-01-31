@@ -39,7 +39,7 @@
 		"zod": "4.3.6"
 	},
 	"devDependencies": {
-		"@next/bundle-analyzer": "15.5.9",
+		"@next/bundle-analyzer": "16.1.6",
 		"@tailwindcss/postcss": "4.1.18",
 		"@types/node": "24.10.9",
 		"@types/react": "19.2.9",
