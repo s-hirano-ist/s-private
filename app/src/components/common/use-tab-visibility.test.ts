@@ -106,9 +106,7 @@ describe("useTabVisibility", () => {
 
 			mockUseSearchParams.mockReturnValue(mockSearchParams as any);
 
-			const { result } = renderHook(() =>
-				useTabVisibility("books", "preload"),
-			);
+			const { result } = renderHook(() => useTabVisibility("books", "preload"));
 
 			// Initially no preloading
 			expect(result.current.shouldPreload).toBe(false);
