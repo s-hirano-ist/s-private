@@ -5,8 +5,8 @@
 	"description": "Private pages and admin tools for s-hirano-ist.",
 	"type": "module",
 	"scripts": {
-		"dev": "next dev --webpack",
-		"build": "next build --webpack",
+		"dev": "next dev",
+		"build": "next build",
 		"analyze": "ANALYZE=true pnpm build",
 		"start": "next start",
 		"typecheck": "tsc --noEmit"

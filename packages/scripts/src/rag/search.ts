@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import { embed } from "./embedding.js";
-import { getCollectionStats, search } from "./qdrant-client.js";
+import { embed } from "./embedding";
+import { getCollectionStats, search } from "./qdrant-client";
 
 /**
  * Search for documents matching a query

@@ -5,7 +5,7 @@ import {
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
-import { createImagesCommandRepository } from "./infrastructures/images-command-repository.js";
+import { createImagesCommandRepository } from "./infrastructures/images-command-repository";
 
 async function main() {
 	const env = {

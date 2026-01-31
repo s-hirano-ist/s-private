@@ -1,17 +1,17 @@
 import type {
 	Status,
 	UserId,
-} from "../../shared-kernel/entities/common-entity.js";
-import type { InfraQueryOptions } from "../../shared-kernel/types/query-options.js";
+} from "../../shared-kernel/entities/common-entity";
+import type { InfraQueryOptions } from "../../shared-kernel/types/query-options";
 import type {
 	ArticleListItemDTO,
 	ArticleSearchItemDTO,
 	ExportedArticle,
 	UnexportedArticle,
 	Url,
-} from "../entities/article-entity.js";
-import type { ArticleOrderBy } from "../types/query-params.js";
-import type { IArticlesCommandRepository } from "./articles-command-repository.interface.js";
+} from "../entities/article-entity";
+import type { ArticleOrderBy } from "../types/query-params";
+import type { IArticlesCommandRepository } from "./articles-command-repository.interface";
 
 /**
  * Parameters for paginated article queries.

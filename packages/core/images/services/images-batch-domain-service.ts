@@ -1,12 +1,12 @@
 import {
 	makeExportedAt,
 	type UserId,
-} from "../../shared-kernel/entities/common-entity.js";
+} from "../../shared-kernel/entities/common-entity";
 import type {
 	BulkUpdateResult,
 	IBatchCommandRepository,
 	ResetStatusResult,
-} from "../../shared-kernel/repositories/batch-command-repository.interface.js";
+} from "../../shared-kernel/repositories/batch-command-repository.interface";
 
 /**
  * Result of the reset operation.

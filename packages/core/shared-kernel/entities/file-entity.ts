@@ -1,5 +1,5 @@
 import z from "zod";
-import { idGenerator } from "../services/id-generator.js";
+import { idGenerator } from "../services/id-generator";
 
 // Value objects
 

@@ -2,8 +2,8 @@ import type {
 	CreatedAt,
 	Id,
 	UserId,
-} from "../../shared-kernel/entities/common-entity.js";
-import type { CategoryName } from "../entities/article-entity.js";
+} from "../../shared-kernel/entities/common-entity";
+import type { CategoryName } from "../entities/article-entity";
 
 /**
  * Command repository interface for the Category domain.

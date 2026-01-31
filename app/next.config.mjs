@@ -34,14 +34,7 @@ const cspHeader = `
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 	transpilePackages: ["@s-hirano-ist/s-core", "@s-hirano-ist/s-notification"],
-	webpack: (config) => {
-		// ESM compatibility: resolve .js imports to .ts files for workspace packages
-		config.resolve.extensionAlias = {
-			".js": [".ts", ".tsx", ".js", ".jsx"],
-		};
-		return config;
-	},
-	serverExternalPackages: ["sharp"],
+	serverExternalPackages: ["sharp", "@prisma/client"],
 	typedRoutes: true,
 	cacheComponents: true, // v16: moved from experimental.useCache
 	experimental: {
@@ -100,7 +93,7 @@ const nextConfig = {
 };
 
 const withNextIntl = createNextIntlPlugin(
-	"src/infrastructures/i18n/request.ts",
+	"./src/infrastructures/i18n/request.ts",
 );
 const bundleAnalyzer = withBundleAnalyzer({
 	enabled: process.env.ANALYZE === "true",
@@ -137,17 +130,6 @@ export default withNextIntl(
 			hideSourceMaps: true,
 
 			sourcemaps: { deleteSourcemapsAfterUpload: true },
-
-			// Webpack-related settings
-			webpack: {
-				// Automatically annotate React components to show their full name in breadcrumbs and session replay
-				reactComponentAnnotation: { enabled: true },
-				// Automatically tree-shake Sentry logger statements to reduce bundle size
-				treeshake: { removeDebugLogging: true },
-				// Enables automatic instrumentation of Vercel Cron Monitors
-				// See: https://docs.sentry.io/product/crons/ and https://vercel.com/docs/cron-jobs
-				automaticVercelMonitors: true,
-			},
 		}),
 	),
 );

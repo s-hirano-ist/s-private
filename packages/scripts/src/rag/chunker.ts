@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { type QdrantPayload, RAG_CONFIG } from "./config.js";
+import { type QdrantPayload, RAG_CONFIG } from "./config";
 
 // JSON article structure
 type ArticleBody = {

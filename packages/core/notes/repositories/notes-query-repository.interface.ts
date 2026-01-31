@@ -1,17 +1,17 @@
 import type {
 	Status,
 	UserId,
-} from "../../shared-kernel/entities/common-entity.js";
-import type { InfraQueryOptions } from "../../shared-kernel/types/query-options.js";
+} from "../../shared-kernel/entities/common-entity";
+import type { InfraQueryOptions } from "../../shared-kernel/types/query-options";
 import type {
 	ExportedNote,
 	NoteListItemDTO,
 	NoteSearchItemDTO,
 	NoteTitle,
 	UnexportedNote,
-} from "../entities/note-entity.js";
-import type { NotesOrderBy } from "../types/query-params.js";
-import type { INotesCommandRepository } from "./notes-command-repository.interface.js";
+} from "../entities/note-entity";
+import type { NotesOrderBy } from "../types/query-params";
+import type { INotesCommandRepository } from "./notes-command-repository.interface";
 
 /**
  * Parameters for paginated note queries.

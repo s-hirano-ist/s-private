@@ -1,4 +1,4 @@
-import type { ExportedAt, Status, UserId } from "../entities/common-entity.js";
+import type { ExportedAt, Status, UserId } from "../entities/common-entity";
 
 /**
  * Result of a bulk update operation.

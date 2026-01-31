@@ -31,9 +31,9 @@ import {
 	makeId,
 	UnexportedStatus,
 	UserId,
-} from "../../shared-kernel/entities/common-entity.js";
-import { createEntityWithErrorHandling } from "../../shared-kernel/services/entity-factory.js";
-import { NoteCreatedEvent } from "../events/note-created-event.js";
+} from "../../shared-kernel/entities/common-entity";
+import { createEntityWithErrorHandling } from "../../shared-kernel/services/entity-factory";
+import { NoteCreatedEvent } from "../events/note-created-event";
 
 // Value objects
 
