@@ -2,8 +2,8 @@
 import {
 	createContext,
 	type ReactNode,
+	use,
 	useActionState,
-	useContext,
 	useState,
 } from "react";
 import Loading from "../display/loading";
@@ -35,7 +35,7 @@ const FormValuesContext = createContext<Record<string, string>>({});
  *
  * @see {@link GenericFormWrapper} for the provider component
  */
-export const useFormValues = () => useContext(FormValuesContext);
+export const useFormValues = () => use(FormValuesContext);
 
 /**
  * Props for the GenericFormWrapper component.
