@@ -21,8 +21,12 @@ import prisma from "@/prisma";
 async function create(data: UnexportedBook): Promise<void> {
 	await prisma.book.create({ data });
 
-	revalidateTag(buildContentCacheTag("books", data.status, data.userId));
-	revalidateTag(buildCountCacheTag("books", data.status, data.userId));
+	revalidateTag(buildContentCacheTag("books", data.status, data.userId), {
+		expire: 0,
+	});
+	revalidateTag(buildCountCacheTag("books", data.status, data.userId), {
+		expire: 0,
+	});
 }
 
 async function deleteById(
@@ -35,8 +39,8 @@ async function deleteById(
 		select: { title: true },
 	});
 
-	revalidateTag(buildContentCacheTag("books", status, userId));
-	revalidateTag(buildCountCacheTag("books", status, userId));
+	revalidateTag(buildContentCacheTag("books", status, userId), { expire: 0 });
+	revalidateTag(buildCountCacheTag("books", status, userId), { expire: 0 });
 
 	return { title: makeBookTitle(data.title) };
 }

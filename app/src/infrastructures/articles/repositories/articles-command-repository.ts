@@ -32,9 +32,13 @@ async function create(data: UnexportedArticle): Promise<void> {
 		},
 	});
 
-	revalidateTag(buildContentCacheTag("articles", data.status, data.userId));
-	revalidateTag(buildCountCacheTag("articles", data.status, data.userId));
-	revalidateTag("categories");
+	revalidateTag(buildContentCacheTag("articles", data.status, data.userId), {
+		expire: 0,
+	});
+	revalidateTag(buildCountCacheTag("articles", data.status, data.userId), {
+		expire: 0,
+	});
+	revalidateTag("categories", { expire: 0 });
 }
 
 async function deleteById(
@@ -47,8 +51,10 @@ async function deleteById(
 		select: { title: true },
 	});
 
-	revalidateTag(buildContentCacheTag("articles", status, userId));
-	revalidateTag(buildCountCacheTag("articles", status, userId));
+	revalidateTag(buildContentCacheTag("articles", status, userId), {
+		expire: 0,
+	});
+	revalidateTag(buildCountCacheTag("articles", status, userId), { expire: 0 });
 
 	return { title: makeArticleTitle(data.title) };
 }

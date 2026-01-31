@@ -1,13 +1,15 @@
 import { StatusCodeView } from "@s-hirano-ist/s-ui/display/status/status-code-view";
 import { Button } from "@s-hirano-ist/s-ui/ui/button";
 import type { Route } from "next";
-import { useTranslations } from "next-intl";
+import { connection } from "next/server";
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/infrastructures/i18n/routing";
 
 // Auth0 Error page
-
-export default function Page() {
-	const t = useTranslations("statusCode");
+export default async function Page() {
+	// v16: Access connection to enable crypto.randomUUID() for Sentry wrapper
+	await connection();
+	const t = await getTranslations("statusCode");
 
 	return (
 		<main>

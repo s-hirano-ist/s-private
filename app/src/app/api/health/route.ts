@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 
-export const runtime = "edge";
-
+// Note: edge runtime removed for cacheComponents compatibility in Next.js 16
 export async function GET() {
 	return NextResponse.json({ status: "ok" });
 }

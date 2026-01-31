@@ -16,7 +16,7 @@ import {
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { SystemErrorEvent } from "@s-hirano-ist/s-core/shared-kernel/events/system-error-event";
 import type { CacheStrategy } from "@s-hirano-ist/s-core/shared-kernel/types/query-options";
-import { unstable_cacheTag as cacheTag } from "next/cache";
+import { cacheTag } from "next/cache";
 import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";

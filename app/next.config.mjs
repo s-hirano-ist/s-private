@@ -43,6 +43,7 @@ const nextConfig = {
 	},
 	serverExternalPackages: ["sharp"],
 	typedRoutes: true,
+	cacheComponents: true, // v16: moved from experimental.useCache
 	experimental: {
 		serverActions: { bodySizeLimit: "100mb" }, // FIXME: due to DDoS attacks
 		authInterrupts: true,
@@ -51,7 +52,6 @@ const nextConfig = {
 			static: 180,
 		},
 		viewTransition: true,
-		useCache: true,
 	},
 	pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
 	output: "standalone",
