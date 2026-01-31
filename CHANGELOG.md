@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.11.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.10.0...s-private-v10.11.0) (2026-01-31)
+
+
+### Features
+
+* add skills ([d44828b](https://github.com/s-hirano-ist/s-private/commit/d44828b761220ffbc6a1d541bda9fe3a04b98ad4))
+* upgrade nextjs to v16 ([4b79536](https://github.com/s-hirano-ist/s-private/commit/4b79536cc1e79f76c443892222cf0eb68b46d133))
+* upgrade nextjs v16 ([46947ef](https://github.com/s-hirano-ist/s-private/commit/46947ef0f4418028a54844da3e87075e044e115f))
+
+
+### Bug Fixes
+
+* middleware to proxy ([bd1ba23](https://github.com/s-hirano-ist/s-private/commit/bd1ba23c07b7588fc7203fc6daa07d5ec1c9316c))
+
+
+### Documentation
+
+* add issues ([7d8bfe2](https://github.com/s-hirano-ist/s-private/commit/7d8bfe2579d6b23206e91aacf74b3b69f5789754))
+* add issues ([936b8c4](https://github.com/s-hirano-ist/s-private/commit/936b8c4be394588eb20e6756973339c37c712366))
+
+
+### Maintenance
+
+* **deps:** update dependency @next/bundle-analyzer to v16 ([b583c5d](https://github.com/s-hirano-ist/s-private/commit/b583c5deeff26621675d67bef52993a2c33916ea))
+* **deps:** update dependency @next/bundle-analyzer to v16 ([8fae205](https://github.com/s-hirano-ist/s-private/commit/8fae205a9e101a36ac0e7191550588ee21ba1efb))
+* **deps:** update dependency next-intl to v4.8.0 ([f213849](https://github.com/s-hirano-ist/s-private/commit/f2138494d443a537d9fe530ca914de4eccad8bac))
+* **deps:** update dependency next-intl to v4.8.0 ([4097b47](https://github.com/s-hirano-ist/s-private/commit/4097b47aa02e4975a5a8dfdf6367e74248c884b2))
+* **deps:** update github actions ([0392f35](https://github.com/s-hirano-ist/s-private/commit/0392f35f6bdd9f4cd056f177ecd16461aa40429e))
+* **deps:** update github actions ([75de3dd](https://github.com/s-hirano-ist/s-private/commit/75de3dd423cf12a8990a2d5f2ceb3ef808e1061b))
+* **deps:** update minor ([9bb46de](https://github.com/s-hirano-ist/s-private/commit/9bb46debb94d97101d054698ceb421183e6275c9))
+* **deps:** update pnpm to v10.28.2 ([4cf4943](https://github.com/s-hirano-ist/s-private/commit/4cf4943d91d4148099a9aab99a10f3e63cb237b6))
+* **deps:** update pnpm to v10.28.2 ([2f782ed](https://github.com/s-hirano-ist/s-private/commit/2f782eded8533408580fcd07213cbd2405e35397))
+
 ## [10.10.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.9.2...s-private-v10.10.0) (2026-01-28)
 
 

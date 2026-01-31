@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.10.0...@s-hirano-ist/s-core-v1.11.0) (2026-01-31)
+
+
+### Maintenance
+
+* **@s-hirano-ist/s-core:** Synchronize npm-packages versions
+
 ## [1.10.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.9.2...@s-hirano-ist/s-core-v1.10.0) (2026-01-28)
 
 

@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.11.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.10.0...@s-hirano-ist/s-ui-v1.11.0) (2026-01-31)
+
+
+### Features
+
+* upgrade nextjs to v16 ([4b79536](https://github.com/s-hirano-ist/s-private/commit/4b79536cc1e79f76c443892222cf0eb68b46d133))
+* upgrade nextjs v16 ([46947ef](https://github.com/s-hirano-ist/s-private/commit/46947ef0f4418028a54844da3e87075e044e115f))
+
+
+### Maintenance
+
+* **deps:** update minor ([9bb46de](https://github.com/s-hirano-ist/s-private/commit/9bb46debb94d97101d054698ceb421183e6275c9))
+
 ## [1.10.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.9.2...@s-hirano-ist/s-ui-v1.10.0) (2026-01-28)
 
 
