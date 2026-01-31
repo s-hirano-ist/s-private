@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.11.0...@s-hirano-ist/s-ui-v1.12.0) (2026-01-31)
+
+
+### Maintenance
+
+* **@s-hirano-ist/s-ui:** Synchronize npm-packages versions
+
 ## [1.11.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.10.0...@s-hirano-ist/s-ui-v1.11.0) (2026-01-31)
 
 
