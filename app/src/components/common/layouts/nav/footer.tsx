@@ -26,7 +26,9 @@ import { SearchCard } from "../../features/search/search-card";
 const LAYOUTS = {
 	dumper: "DUMPER",
 	viewer: "VIEWER",
-};
+} as const;
+
+const LAYOUT_KEYS = new Set(Object.keys(LAYOUTS));
 
 const DEFAULT_LAYOUT = "dumper";
 
@@ -95,7 +97,7 @@ function FooterComponent({ search }: Props) {
 		const currentLayout = searchParams.get("layout");
 		if (!currentLayout) return;
 
-		if (!Object.keys(LAYOUTS).includes(currentLayout)) {
+		if (!LAYOUT_KEYS.has(currentLayout)) {
 			const params = new URLSearchParams(searchParams);
 			params.delete("layout");
 			router.replace(`?${params.toString()}`);

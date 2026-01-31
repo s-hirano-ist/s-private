@@ -22,7 +22,9 @@ const TABS = {
 	notes: "NOTES",
 	images: "IMAGES",
 	books: "BOOKS",
-};
+} as const;
+
+const TAB_KEYS = new Set(Object.keys(TABS));
 
 type Props = {
 	books: ReactNode;
@@ -72,7 +74,7 @@ function RootTabComponent({ articles, books, notes, images }: Props) {
 		const currentTab = searchParams.get("tab");
 		if (!currentTab) return;
 
-		if (!Object.keys(TABS).includes(currentTab)) {
+		if (!TAB_KEYS.has(currentTab)) {
 			const params = new URLSearchParams(searchParams);
 			params.delete("tab");
 			router.replace(`?${params.toString()}`);
