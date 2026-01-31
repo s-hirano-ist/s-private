@@ -1,14 +1,8 @@
-import {
-	makeExportedStatus,
-	makeUnexportedStatus,
-	makeUserId,
-} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { forbidden } from "next/navigation";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { getSelfId, hasViewerAdminPermission } from "@/common/auth/session";
+import { hasViewerAdminPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
-import { sanitizeCacheTag } from "@/common/utils/cache-utils";
-import { _getBooks } from "./get-books";
+import { getExportedBooks, getUnexportedBooks } from "./get-books";
 import {
 	loadMoreExportedBooks,
 	loadMoreUnexportedBooks,
@@ -17,33 +11,15 @@ import {
 vi.mock("next/navigation");
 vi.mock("@/common/auth/session");
 vi.mock("@/common/error/error-wrapper");
-vi.mock("@/common/utils/cache-utils");
-vi.mock(
-	"@s-hirano-ist/s-core/shared-kernel/entities/common-entity",
-	async (importOriginal) => {
-		const actual =
-			await importOriginal<
-				typeof import("@s-hirano-ist/s-core/shared-kernel/entities/common-entity")
-			>();
-		return {
-			...actual,
-			makeExportedStatus: vi.fn(),
-			makeUnexportedStatus: vi.fn(),
-		};
-	},
-);
 vi.mock("./get-books");
 
 const mockHasViewerAdminPermission = vi.mocked(hasViewerAdminPermission);
-const mockGetSelfId = vi.mocked(getSelfId);
 const mockForbidden = vi.mocked(forbidden);
 const mockWrapServerSideErrorForClient = vi.mocked(
 	wrapServerSideErrorForClient,
 );
-const mockSanitizeCacheTag = vi.mocked(sanitizeCacheTag);
-const mockMakeExportedStatus = vi.mocked(makeExportedStatus);
-const mockMakeUnexportedStatus = vi.mocked(makeUnexportedStatus);
-const mock_getBooks = vi.mocked(_getBooks);
+const mockGetExportedBooks = vi.mocked(getExportedBooks);
+const mockGetUnexportedBooks = vi.mocked(getUnexportedBooks);
 
 describe("load-more-books", () => {
 	beforeEach(() => {
@@ -54,30 +30,14 @@ describe("load-more-books", () => {
 		test("should return success result when user has permission", async () => {
 			const mockData = { data: [], totalCount: 15 };
 			const currentCount = 10;
-			const userId = makeUserId("test-user-id");
 
 			mockHasViewerAdminPermission.mockResolvedValue(true);
-			mockGetSelfId.mockResolvedValue(userId);
-			mockMakeExportedStatus.mockReturnValue({ status: "EXPORTED" } as any);
-			mockSanitizeCacheTag.mockReturnValue("test-user-id");
-			mock_getBooks.mockResolvedValue(mockData);
+			mockGetExportedBooks.mockResolvedValue(mockData);
 
 			const result = await loadMoreExportedBooks(currentCount);
 
 			expect(mockHasViewerAdminPermission).toHaveBeenCalledOnce();
-			expect(mockGetSelfId).toHaveBeenCalledOnce();
-			expect(mockMakeExportedStatus).toHaveBeenCalledOnce();
-			expect(mockSanitizeCacheTag).toHaveBeenCalledWith(userId);
-			expect(mock_getBooks).toHaveBeenCalledWith(
-				currentCount,
-				userId,
-				"EXPORTED",
-				{
-					ttl: 400,
-					swr: 40,
-					tags: [`test-user-id_books_${currentCount}`],
-				},
-			);
+			expect(mockGetExportedBooks).toHaveBeenCalledWith(currentCount);
 			expect(result).toEqual({
 				success: true,
 				message: "success",
@@ -95,7 +55,7 @@ describe("load-more-books", () => {
 
 			expect(mockHasViewerAdminPermission).toHaveBeenCalledOnce();
 			expect(mockForbidden).toHaveBeenCalledOnce();
-			expect(mockGetSelfId).not.toHaveBeenCalled();
+			expect(mockGetExportedBooks).not.toHaveBeenCalled();
 		});
 
 		test("should handle error and wrap it", async () => {
@@ -103,10 +63,7 @@ describe("load-more-books", () => {
 			const wrappedError = { success: false, message: "error" };
 
 			mockHasViewerAdminPermission.mockResolvedValue(true);
-			mockGetSelfId.mockResolvedValue(makeUserId("user-id"));
-			mockMakeExportedStatus.mockReturnValue({ status: "EXPORTED" } as any);
-			mockSanitizeCacheTag.mockReturnValue("user-id");
-			mock_getBooks.mockRejectedValue(error);
+			mockGetExportedBooks.mockRejectedValue(error);
 			mockWrapServerSideErrorForClient.mockResolvedValue(wrappedError);
 
 			const result = await loadMoreExportedBooks(10);
@@ -120,23 +77,14 @@ describe("load-more-books", () => {
 		test("should return success result when user has permission", async () => {
 			const mockData = { data: [], totalCount: 12 };
 			const currentCount = 5;
-			const userId = makeUserId("test-user-id-2");
 
 			mockHasViewerAdminPermission.mockResolvedValue(true);
-			mockGetSelfId.mockResolvedValue(userId);
-			mockMakeUnexportedStatus.mockReturnValue("UNEXPORTED" as any);
-			mock_getBooks.mockResolvedValue(mockData);
+			mockGetUnexportedBooks.mockResolvedValue(mockData);
 
 			const result = await loadMoreUnexportedBooks(currentCount);
 
 			expect(mockHasViewerAdminPermission).toHaveBeenCalledOnce();
-			expect(mockGetSelfId).toHaveBeenCalledOnce();
-			expect(mockMakeUnexportedStatus).toHaveBeenCalledOnce();
-			expect(mock_getBooks).toHaveBeenCalledWith(
-				currentCount,
-				userId,
-				"UNEXPORTED",
-			);
+			expect(mockGetUnexportedBooks).toHaveBeenCalledWith(currentCount);
 			expect(result).toEqual({
 				success: true,
 				message: "success",
@@ -154,7 +102,7 @@ describe("load-more-books", () => {
 
 			expect(mockHasViewerAdminPermission).toHaveBeenCalledOnce();
 			expect(mockForbidden).toHaveBeenCalledOnce();
-			expect(mockGetSelfId).not.toHaveBeenCalled();
+			expect(mockGetUnexportedBooks).not.toHaveBeenCalled();
 		});
 
 		test("should handle error and wrap it", async () => {
@@ -162,9 +110,7 @@ describe("load-more-books", () => {
 			const wrappedError = { success: false, message: "networkError" };
 
 			mockHasViewerAdminPermission.mockResolvedValue(true);
-			mockGetSelfId.mockResolvedValue(makeUserId("user-id-2"));
-			mockMakeUnexportedStatus.mockReturnValue("UNEXPORTED" as any);
-			mock_getBooks.mockRejectedValue(error);
+			mockGetUnexportedBooks.mockRejectedValue(error);
 			mockWrapServerSideErrorForClient.mockResolvedValue(wrappedError);
 
 			const result = await loadMoreUnexportedBooks(5);

@@ -1,16 +1,11 @@
 "use server";
 import "server-only";
-import {
-	makeExportedStatus,
-	makeUnexportedStatus,
-} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { forbidden } from "next/navigation";
-import { getSelfId, hasViewerAdminPermission } from "@/common/auth/session";
+import { hasViewerAdminPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerActionWithData } from "@/common/types";
-import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import type { ImageCardStackInitialData } from "@/components/common/layouts/cards/types";
-import { _getBooks } from "./get-books";
+import { getExportedBooks, getUnexportedBooks } from "./get-books";
 
 export async function loadMoreExportedBooks(
 	currentCount: number,
@@ -19,18 +14,7 @@ export async function loadMoreExportedBooks(
 	if (!hasPermission) forbidden();
 
 	try {
-		const userId = await getSelfId();
-
-		const data = await _getBooks(
-			currentCount,
-			userId,
-			makeExportedStatus().status,
-			{
-				ttl: 400,
-				swr: 40,
-				tags: [`${sanitizeCacheTag(userId)}_books_${currentCount}`],
-			},
-		);
+		const data = await getExportedBooks(currentCount);
 
 		return {
 			success: true,
@@ -49,9 +33,7 @@ export async function loadMoreUnexportedBooks(
 	if (!hasPermission) forbidden();
 
 	try {
-		const userId = await getSelfId();
-
-		const data = await _getBooks(currentCount, userId, makeUnexportedStatus());
+		const data = await getUnexportedBooks(currentCount);
 
 		return {
 			success: true,
