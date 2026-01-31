@@ -34,11 +34,11 @@ import {
 	makeId,
 	UnexportedStatus,
 	UserId,
-} from "../../shared-kernel/entities/common-entity.js";
-import { Path } from "../../shared-kernel/entities/file-entity.js";
-import { createEntityWithErrorHandling } from "../../shared-kernel/services/entity-factory.js";
-import { isValidHttpUrl } from "../../shared-kernel/services/url-validation.js";
-import { BookCreatedEvent } from "../events/book-created-event.js";
+} from "../../shared-kernel/entities/common-entity";
+import { Path } from "../../shared-kernel/entities/file-entity";
+import { createEntityWithErrorHandling } from "../../shared-kernel/services/entity-factory";
+import { isValidHttpUrl } from "../../shared-kernel/services/url-validation";
+import { BookCreatedEvent } from "../events/book-created-event";
 
 // Value objects
 

@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 import { readFileSync } from "node:fs";
 import { glob } from "glob";
-import { parseJsonArticle, parseMarkdown } from "./chunker.js";
-import { type QdrantPayload, RAG_CONFIG } from "./config.js";
-import { embedBatch } from "./embedding.js";
+import { parseJsonArticle, parseMarkdown } from "./chunker";
+import { type QdrantPayload, RAG_CONFIG } from "./config";
+import { embedBatch } from "./embedding";
 import {
 	ensureCollection,
 	getCollectionStats,
 	getExistingHashes,
 	upsertPoints,
-} from "./qdrant-client.js";
+} from "./qdrant-client";
 
 const BATCH_SIZE = 20;
 const MAX_RETRIES = 3;

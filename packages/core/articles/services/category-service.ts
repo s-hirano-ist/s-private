@@ -3,10 +3,10 @@ import {
 	makeCreatedAt,
 	makeId,
 	type UserId,
-} from "../../shared-kernel/entities/common-entity.js";
-import type { CategoryName } from "../entities/article-entity.js";
-import type { ICategoryCommandRepository } from "../repositories/category-command-repository.interface.js";
-import type { ICategoryQueryRepository } from "../repositories/category-query-repository.interface.js";
+} from "../../shared-kernel/entities/common-entity";
+import type { CategoryName } from "../entities/article-entity";
+import type { ICategoryCommandRepository } from "../repositories/category-command-repository.interface";
+import type { ICategoryQueryRepository } from "../repositories/category-query-repository.interface";
 
 /**
  * Domain service for Category resolution.

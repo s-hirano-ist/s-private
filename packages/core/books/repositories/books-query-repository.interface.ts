@@ -1,17 +1,17 @@
 import type {
 	Status,
 	UserId,
-} from "../../shared-kernel/entities/common-entity.js";
-import type { InfraQueryOptions } from "../../shared-kernel/types/query-options.js";
+} from "../../shared-kernel/entities/common-entity";
+import type { InfraQueryOptions } from "../../shared-kernel/types/query-options";
 import type {
 	BookListItemDTO,
 	BookSearchItemDTO,
 	ExportedBook,
 	ISBN,
 	UnexportedBook,
-} from "../entities/book-entity.js";
-import type { BooksOrderBy } from "../types/query-params.js";
-import type { IBooksCommandRepository } from "./books-command-repository.interface.js";
+} from "../entities/book-entity";
+import type { BooksOrderBy } from "../types/query-params";
+import type { IBooksCommandRepository } from "./books-command-repository.interface";
 
 /**
  * Parameters for paginated book queries.

@@ -1,4 +1,4 @@
-import type { SortOrder } from "./sort-order.js";
+import type { SortOrder } from "./sort-order";
 
 /**
  * Available fields for sorting note queries.

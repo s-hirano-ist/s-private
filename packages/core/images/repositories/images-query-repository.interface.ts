@@ -1,17 +1,17 @@
 import type {
 	Status,
 	UserId,
-} from "../../shared-kernel/entities/common-entity.js";
-import type { IStorageService } from "../../shared-kernel/services/storage-service.interface.js";
-import type { InfraQueryOptions } from "../../shared-kernel/types/query-options.js";
+} from "../../shared-kernel/entities/common-entity";
+import type { IStorageService } from "../../shared-kernel/services/storage-service.interface";
+import type { InfraQueryOptions } from "../../shared-kernel/types/query-options";
 import type {
 	ExportedImage,
 	ImageListItemDTO,
 	Path,
 	UnexportedImage,
-} from "../entities/image-entity.js";
-import type { ImagesOrderBy } from "../types/query-params.js";
-import type { IImagesCommandRepository } from "./images-command-repository.interface.js";
+} from "../entities/image-entity";
+import type { ImagesOrderBy } from "../types/query-params";
+import type { IImagesCommandRepository } from "./images-command-repository.interface";
 
 /**
  * Parameters for paginated image queries.

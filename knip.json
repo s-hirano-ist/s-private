@@ -61,7 +61,11 @@
 			"ignoreDependencies": ["sharp"]
 		},
 		"packages/database": {
-			"ignoreDependencies": ["@prisma/client", "@prisma/extension-accelerate"]
+			"ignoreDependencies": [
+				"@prisma/client",
+				"@prisma/extension-accelerate",
+				"@prisma/client-runtime-utils"
+			]
 		}
 	}
 }

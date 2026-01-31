@@ -2,7 +2,7 @@ import {
 	type FeatureExtractionPipeline,
 	pipeline,
 } from "@huggingface/transformers";
-import { RAG_CONFIG } from "./config.js";
+import { RAG_CONFIG } from "./config";
 
 let embeddingPipeline: FeatureExtractionPipeline | null = null;
 

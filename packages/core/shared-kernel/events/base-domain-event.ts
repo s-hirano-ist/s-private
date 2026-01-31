@@ -1,4 +1,4 @@
-import type { DomainEvent } from "./domain-event.interface.js";
+import type { DomainEvent } from "./domain-event.interface";
 
 /**
  * Abstract base class for all domain events.

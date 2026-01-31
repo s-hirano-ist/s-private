@@ -1,6 +1,6 @@
-import { BaseDomainEvent } from "../../shared-kernel/events/base-domain-event.js";
-import type { NoteDeletedPayload } from "../../shared-kernel/events/payload-types.js";
-import type { NoteCreatedEvent } from "./note-created-event.js";
+import { BaseDomainEvent } from "../../shared-kernel/events/base-domain-event";
+import type { NoteDeletedPayload } from "../../shared-kernel/events/payload-types";
+import type { NoteCreatedEvent } from "./note-created-event";
 
 /**
  * Domain event emitted when a note is deleted.
