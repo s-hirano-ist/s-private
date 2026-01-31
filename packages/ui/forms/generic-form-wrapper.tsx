@@ -4,7 +4,6 @@ import {
 	type ReactNode,
 	useActionState,
 	useContext,
-	useEffect,
 	useState,
 } from "react";
 import Loading from "../display/loading";
@@ -108,12 +107,16 @@ export function GenericFormWrapper<
 	const [formValues, setFormValues] = useState<Record<string, string>>(
 		preservedValues || {},
 	);
+	const [prevPreservedValues, setPrevPreservedValues] =
+		useState(preservedValues);
 
-	useEffect(() => {
+	// Sync preservedValues to formValues during render (not in useEffect)
+	if (preservedValues !== prevPreservedValues) {
+		setPrevPreservedValues(preservedValues);
 		if (preservedValues) {
 			setFormValues(preservedValues);
 		}
-	}, [preservedValues]);
+	}
 
 	const submitForm = async (
 		_previousState: T | null,
