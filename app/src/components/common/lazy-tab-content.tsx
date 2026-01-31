@@ -9,6 +9,10 @@ type Props = {
 	loadingStrategy?: LoadingStrategy;
 };
 
+// Default values extracted as constants for stable memo comparison
+const DEFAULT_FALLBACK = null;
+const DEFAULT_LOADING_STRATEGY: LoadingStrategy = "preload";
+
 /**
  * タブの遅延読み込み用コンポーネント
  * タブが初回表示されるまでchildrenをレンダリングしない
@@ -17,8 +21,8 @@ type Props = {
 function LazyTabContentComponent({
 	tabName,
 	children,
-	fallback = null,
-	loadingStrategy = "preload",
+	fallback = DEFAULT_FALLBACK,
+	loadingStrategy = DEFAULT_LOADING_STRATEGY,
 }: Props) {
 	const { shouldLoad, shouldPreload, isVisible } = useTabVisibility(
 		tabName,
