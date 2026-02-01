@@ -43,8 +43,9 @@ function modalReducer(state: ModalState, action: ModalAction): ModalState {
 		case "START_DELETE":
 			return { status: "deleting" };
 		case "DELETE_COMPLETE":
-		case "DELETE_ERROR":
 			return { status: "closed" };
+		case "DELETE_ERROR":
+			return { status: "open" };
 		default:
 			return state;
 	}
