@@ -220,7 +220,7 @@ graph TB
 
 全集約共通: ステータス遷移は UNEXPORTED → LAST_UPDATED → EXPORTED
 
-> **コードリファレンス**: 各集約ルートは `packages/core/{domain}/entities/{domain}-entity.ts` に定義
+> **コードリファレンス**: 各集約ルート（単一エンティティで構成）は `packages/core/{domain}/entities/{domain}-entity.ts` に定義
 
 ### 設計上の考慮事項
 
