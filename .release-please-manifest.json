@@ -1,8 +1,8 @@
 {
-	".": "10.12.0",
-	"packages/core": "1.12.0",
-	"packages/ui": "1.12.0",
-	"packages/database": "1.12.0",
-	"packages/notification": "1.12.0",
-	"packages/scripts": "1.12.0"
+	".": "10.12.1",
+	"packages/core": "1.12.1",
+	"packages/ui": "1.12.1",
+	"packages/database": "1.12.1",
+	"packages/notification": "1.12.1",
+	"packages/scripts": "1.12.1"
 }

@@ -2,6 +2,77 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.12.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.12.0...s-private-v10.12.1) (2026-02-01)
+
+
+### Bug Fixes
+
+* biome ([4d1f56e](https://github.com/s-hirano-ist/s-private/commit/4d1f56e87e2c6c736e24e916a4080870354aa5ae))
+* delete button test ([d084bfc](https://github.com/s-hirano-ist/s-private/commit/d084bfce2081c5f79395dac97bf8c984aa9b85d3))
+* issues ([54e20a4](https://github.com/s-hirano-ist/s-private/commit/54e20a4b5dce82981cf5ef6c739a3a4fb7c3d31c))
+* next analyze ([dca1f7d](https://github.com/s-hirano-ist/s-private/commit/dca1f7da7f8e52d2603214a8b39179f63625f8f6))
+* **parallel-routes:** return null instead of notFound in default.tsx ([6e38757](https://github.com/s-hirano-ist/s-private/commit/6e38757c20a6ef748ba3346a822757ab8fa01334))
+* transaction error ([5ea7c6e](https://github.com/s-hirano-ist/s-private/commit/5ea7c6e2d7f5efca605c88d57797c4824f37b2b4))
+
+
+### Documentation
+
+* add ddd and review skills and issues ([e9af323](https://github.com/s-hirano-ist/s-private/commit/e9af3234eb57b9c5e900c49dca09428e7b1cbc04))
+* add issue description ([bfb1de0](https://github.com/s-hirano-ist/s-private/commit/bfb1de0b2aff331ecabbfa54e91f4d709af39539))
+* add issues ([6245278](https://github.com/s-hirano-ist/s-private/commit/62452786d19432de73a61bb770b5f138daddaf82))
+* add review issues ([2b8b7d8](https://github.com/s-hirano-ist/s-private/commit/2b8b7d8476f388ed77c7b4cd0ac50b67dc38fdc5))
+* add sample prompts ([fcbbb7b](https://github.com/s-hirano-ist/s-private/commit/fcbbb7bee5b0ee821fa2e8044b80edeee16ba5ca))
+* fix issue workflow to run pnpm check:fix ([e5e58f3](https://github.com/s-hirano-ist/s-private/commit/e5e58f367a8e2365b5c53bb1690d4c7dfdd721d7))
+* fix skills ([f9f1fce](https://github.com/s-hirano-ist/s-private/commit/f9f1fce279a67c65868e549a1c1ca876973a6f14))
+* **FormDropdownInput:** document state management pattern rationale ([d6de419](https://github.com/s-hirano-ist/s-private/commit/d6de4191f9226861d0ea43e69b80aaa3e9a42cc2))
+
+
+### Maintenance
+
+* add issues ([f46e6f9](https://github.com/s-hirano-ist/s-private/commit/f46e6f9d2db8e2c1ed12d92cfbb5db5f1fd56055))
+* add issues ([f669224](https://github.com/s-hirano-ist/s-private/commit/f6692247aa2e9e367c1e63b02dbf7a6aba5a508c))
+* add issues ([86a3b7a](https://github.com/s-hirano-ist/s-private/commit/86a3b7a39f6bd336a624c644abe535c5d06f909c))
+* add issues ([0a8f3c5](https://github.com/s-hirano-ist/s-private/commit/0a8f3c5d5648dfb58cc9d15947ab8b09fd562368))
+* add skills ([af9df12](https://github.com/s-hirano-ist/s-private/commit/af9df1251a6b77c30006ee0cd5be42b235243eb8))
+* **BaseCardStack:** improve render props with typed object parameter ([271e00a](https://github.com/s-hirano-ist/s-private/commit/271e00aaae97cb839e14a46a547753d2e4a13460))
+* **BaseCardStackWrapper:** use children-as-function pattern ([bc898cd](https://github.com/s-hirano-ist/s-private/commit/bc898cde8bce3fcb849d60e7c248c9922609e482))
+* **books:** parallelize image upload operations ([52e4220](https://github.com/s-hirano-ist/s-private/commit/52e4220a6406402c96462a388c5cb21d126f0092))
+* **Button:** migrate from forwardRef to React 19 ref prop ([5ec03ee](https://github.com/s-hirano-ist/s-private/commit/5ec03eec0c8ba442bf6711f0f7a7260b3d21b97a))
+* **Card:** migrate all Card components from forwardRef to React 19 pattern ([f97f0c9](https://github.com/s-hirano-ist/s-private/commit/f97f0c9c1c328936dd346a9fcd578423aa46f67b))
+* cleanup import types and delete resolved issue files ([15f8b07](https://github.com/s-hirano-ist/s-private/commit/15f8b0766ac5b4f7b56721bf16225c55ea602f53))
+* **DeleteButtonWithModal:** use reducer for explicit state machine ([d1fcd6e](https://github.com/s-hirano-ist/s-private/commit/d1fcd6e761e765434c66085d6de9781769541062))
+* **DialogContent:** replace boolean prop with size variant ([d7cb56b](https://github.com/s-hirano-ist/s-private/commit/d7cb56bc5132a426225102199c125b244d4a7246))
+* **DropdownMenu:** migrate 5 components to React 19 ref-as-prop pattern ([e3004fa](https://github.com/s-hirano-ist/s-private/commit/e3004fa00c8aa1ef6848571fcf9033eb018340a6))
+* **Footer:** use URL as single source of truth for layout state ([92c6ed4](https://github.com/s-hirano-ist/s-private/commit/92c6ed4d239fee5c21f49d0ae55c348c9cad2e16))
+* **FormInputWithButton:** use key-based re-mount instead of useEffect ([673ba1b](https://github.com/s-hirano-ist/s-private/commit/673ba1bb10317fd8b49750cc71a74dfaddb1b9dc))
+* **GenericFormWrapper:** derive form values with useMemo ([1c5a86b](https://github.com/s-hirano-ist/s-private/commit/1c5a86b086bbadb9afdceb39c05e88d5ab5b8915))
+* **GenericFormWrapper:** migrate useContext to React 19 use() API ([8a01382](https://github.com/s-hirano-ist/s-private/commit/8a01382b763448a9500d4fe253d8b7873d0ed714))
+* **GenericFormWrapper:** sync props during render instead of useEffect ([cf6b62e](https://github.com/s-hirano-ist/s-private/commit/cf6b62e1635d831f89f0a4a463d0980b9d3344b2))
+* get articles export ([5f81e03](https://github.com/s-hirano-ist/s-private/commit/5f81e03f5ee224e7857c20d2d5f132ab7b775a92))
+* **ImageCard:** replace boolean props with composition pattern ([d292ae5](https://github.com/s-hirano-ist/s-private/commit/d292ae54ae20f6fd31423d9903371f045f8481eb)), closes [#001](https://github.com/s-hirano-ist/s-private/issues/001)
+* **images:** parallelize image upload operations ([00cd4a4](https://github.com/s-hirano-ist/s-private/commit/00cd4a4d5f7dcf796d22b397fceb1bc9dacb2739))
+* **ImageStack:** replace boolean prop with composition pattern ([9274def](https://github.com/s-hirano-ist/s-private/commit/9274deff7901aaaabd442b1c83fbfcacd125d025))
+* **LazyTabContent:** replace boolean prop with loading strategy ([f92521f](https://github.com/s-hirano-ist/s-private/commit/f92521f59f44df0cee560c0ea3cbf090667e771f))
+* **LinkCard:** replace boolean props with composition pattern ([ea13117](https://github.com/s-hirano-ist/s-private/commit/ea13117b156c78fa2412efedf76c58cd25549dfa)), closes [#002](https://github.com/s-hirano-ist/s-private/issues/002)
+* migrate Dialog forwardRef and use Set for locale lookup ([befdeda](https://github.com/s-hirano-ist/s-private/commit/befdedaeeda7661f83659df65ac8ed6462e8cdfb))
+* migrate Input forwardRef and fix FormDropdownInput rerender ([3c335b8](https://github.com/s-hirano-ist/s-private/commit/3c335b84c0ee042b956486f5af8c0102de2a4535))
+* migrate Label forwardRef and fix FormDropdownInput defaults ([8ea179d](https://github.com/s-hirano-ist/s-private/commit/8ea179d40ad413ebd1f5c3c17c39c0337fe4f4c7))
+* migrate Textarea forwardRef and fix LazyTabContent memo defaults ([66d8136](https://github.com/s-hirano-ist/s-private/commit/66d8136507e5a0349b30a08de9514f91351fcd37))
+* **nav:** use Set for O(1) key lookups in Footer and RootTab ([0aa2cd1](https://github.com/s-hirano-ist/s-private/commit/0aa2cd1c388a868ef552c6991fb5edb88b8bbf69))
+* **Pagination:** migrate 2 components to React 19 ref-as-prop pattern ([969a52c](https://github.com/s-hirano-ist/s-private/commit/969a52cd7be381c0642581246aad245426909cbc))
+* parallel issue ([843faf7](https://github.com/s-hirano-ist/s-private/commit/843faf791dae5a6c82fb9429734694dd06006605))
+* **Popover:** migrate PopoverContent to React 19 ref-as-prop pattern ([cbeeeec](https://github.com/s-hirano-ist/s-private/commit/cbeeeec2c2c1237cf9d067a9a6a203b9d050b188))
+* remove unnecessary try-catch blocks that only re-throw errors ([003db18](https://github.com/s-hirano-ist/s-private/commit/003db1885fb18a8b4db45db0d53d05969872e9d6))
+* remove unnecessary try-catch blocks that only re-throw errors ([1ca50fd](https://github.com/s-hirano-ist/s-private/commit/1ca50fd403be98a83b21f682b9ee584f9bfa85c5))
+* remove useMemo from simple boolean expression ([617b688](https://github.com/s-hirano-ist/s-private/commit/617b688bd50c8d1a3f59acf8d2a1320e42635bee))
+* remove useMemo from simple boolean expression ([aa83475](https://github.com/s-hirano-ist/s-private/commit/aa834756b7a511a13214e839fdddd4c6f70e5b04))
+* replace useMemo with useCallback for function memoization ([731a189](https://github.com/s-hirano-ist/s-private/commit/731a1898dbf619bc0e346b1664c06fa6769c18c4))
+* **RootTab:** use URL as single source of truth for tab state ([18a9b5e](https://github.com/s-hirano-ist/s-private/commit/18a9b5e178134c6c236218fe359eca26dd604798))
+* **search:** cache query.toLowerCase() outside sort loop ([02cb4d7](https://github.com/s-hirano-ist/s-private/commit/02cb4d78612489a895a0bfa8540523c6bcb82510))
+* **search:** use Set for O(1) content type lookups ([22c8b94](https://github.com/s-hirano-ist/s-private/commit/22c8b94a4e55ce2ff63c3267759f4c95c6897227))
+* small code base issues ([04b632b](https://github.com/s-hirano-ist/s-private/commit/04b632bf99b9c73b8ed1d891a45b6e8032fe44d3))
+* **Tabs:** migrate 3 components to React 19 ref-as-prop pattern ([0e9a4b9](https://github.com/s-hirano-ist/s-private/commit/0e9a4b92028ff66bfeeb30aa452d98923ce9be03))
+
 ## [10.12.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.11.0...s-private-v10.12.0) (2026-01-31)
 
 
