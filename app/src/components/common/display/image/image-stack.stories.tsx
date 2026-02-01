@@ -1,14 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { ImageStack } from "./image-stack";
-
-const meta = {
-	component: ImageStack,
-	tags: ["autodocs"],
-} satisfies Meta<typeof ImageStack>;
-
-export default meta;
-
-type Story = StoryObj<typeof meta>;
+import { EditableImageStack, ImageStack } from "./image-stack";
 
 const mockData = [
 	{
@@ -34,24 +25,38 @@ const mockData = [
 	},
 ];
 
-export const Default: Story = {
+const imageStackMeta = {
+	component: ImageStack,
+	tags: ["autodocs"],
+} satisfies Meta<typeof ImageStack>;
+
+export default imageStackMeta;
+
+type ImageStackStory = StoryObj<typeof imageStackMeta>;
+
+export const Default: ImageStackStory = {
 	args: {
 		data: mockData,
-		showDeleteButton: false,
 	},
 };
 
-export const WithDeleteButton: Story = {
-	args: {
-		data: mockData,
-		showDeleteButton: true,
-		deleteAction: async () => ({ success: true, message: "deleted" }),
-	},
-};
-
-export const NoData: Story = {
+export const NoData: ImageStackStory = {
 	args: {
 		data: [],
-		showDeleteButton: false,
+	},
+};
+
+const editableImageStackMeta = {
+	component: EditableImageStack,
+	tags: ["autodocs"],
+} satisfies Meta<typeof EditableImageStack>;
+
+type EditableImageStackStory = StoryObj<typeof editableImageStackMeta>;
+
+export const WithDeleteButton: EditableImageStackStory = {
+	render: (args) => <EditableImageStack {...args} />,
+	args: {
+		data: mockData,
+		deleteAction: async () => ({ success: true, message: "deleted" }),
 	},
 };

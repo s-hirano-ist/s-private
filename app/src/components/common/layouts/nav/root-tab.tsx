@@ -13,7 +13,7 @@ import {
 	useCallback,
 	useEffect,
 	useMemo,
-	useState,
+	useOptimistic,
 	useTransition,
 } from "react";
 
@@ -38,9 +38,19 @@ const DEFAULT_TAB = "articles";
 function RootTabComponent({ articles, books, notes, images }: Props) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
-
-	const [tab, setTab] = useState(searchParams.get("tab") ?? DEFAULT_TAB);
 	const [isPending, startTransition] = useTransition();
+
+	// Derive tab from searchParams - single source of truth
+	const tab = useMemo(() => {
+		const param = searchParams.get("tab");
+		if (param && TAB_KEYS.has(param)) {
+			return param;
+		}
+		return DEFAULT_TAB;
+	}, [searchParams]);
+
+	// Use optimistic for perceived performance
+	const [optimisticTab, setOptimisticTab] = useOptimistic(tab);
 
 	// Prefetch all tab routes on component mount
 	useEffect(() => {
@@ -57,32 +67,26 @@ function RootTabComponent({ articles, books, notes, images }: Props) {
 
 	const handleTabChange = useCallback(
 		(value: string) => {
-			// Optimistic UI update
-			setTab(value);
-
 			startTransition(() => {
+				setOptimisticTab(value);
 				const params = new URLSearchParams(searchParams);
 				params.delete("page");
 				params.set("tab", value);
 				router.replace(`?${params.toString()}`);
 			});
 		},
-		[router, searchParams],
+		[router, searchParams, setOptimisticTab],
 	);
 
+	// Redirect invalid tab values
 	useEffect(() => {
 		const currentTab = searchParams.get("tab");
-		if (!currentTab) return;
-
-		if (!TAB_KEYS.has(currentTab)) {
+		if (currentTab && !TAB_KEYS.has(currentTab)) {
 			const params = new URLSearchParams(searchParams);
 			params.delete("tab");
 			router.replace(`?${params.toString()}`);
-			setTab(DEFAULT_TAB);
-		} else if (currentTab !== tab) {
-			setTab(currentTab);
 		}
-	}, [searchParams, router, tab]);
+	}, [searchParams, router]);
 
 	const tabsList = useMemo(
 		() => (
@@ -109,7 +113,7 @@ function RootTabComponent({ articles, books, notes, images }: Props) {
 			className="mx-auto max-w-5xl sm:px-2"
 			defaultValue={DEFAULT_TAB}
 			onValueChange={handleTabChange}
-			value={tab}
+			value={optimisticTab}
 		>
 			{tabsList}
 			<TabsContent value="articles">{articles}</TabsContent>

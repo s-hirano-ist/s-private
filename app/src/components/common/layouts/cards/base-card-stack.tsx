@@ -12,7 +12,7 @@ type SearchableItem = {
 } & ({ key: string } | { id: string });
 
 /**
- * Props passed to the renderCard function.
+ * Props passed to the children function.
  */
 export type RenderCardProps<T> = {
 	item: T;
@@ -27,7 +27,7 @@ type BaseCardStackProps<T extends SearchableItem> = {
 	initial: CardStackInitialData<T>;
 	deleteAction?: DeleteAction;
 	loadMoreAction: LoadMoreAction<CardStackInitialData<T>>;
-	renderCard: (props: RenderCardProps<T>) => React.ReactNode;
+	children: (props: RenderCardProps<T>) => React.ReactNode;
 	gridClassName: string;
 };
 
@@ -35,7 +35,7 @@ export function BaseCardStackWrapper<T extends SearchableItem>({
 	initial,
 	deleteAction,
 	loadMoreAction,
-	renderCard,
+	children,
 	gridClassName,
 }: BaseCardStackProps<T>) {
 	const [isPending, startTransition] = useTransition();
@@ -81,7 +81,7 @@ export function BaseCardStackWrapper<T extends SearchableItem>({
 					{allData.map((item, index) => {
 						const isLast = index === allData.length - 1;
 						const itemKey = "key" in item ? item.key : item.id;
-						return renderCard({
+						return children({
 							item,
 							index,
 							isLast,

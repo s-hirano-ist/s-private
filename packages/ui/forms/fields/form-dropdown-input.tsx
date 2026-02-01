@@ -66,6 +66,16 @@ const DEFAULT_CUSTOM_VALUE_LABEL = (v: string) => `Use "${v}"`;
  * - Form state preservation via GenericFormWrapper
  * - Keyboard navigation
  *
+ * **State Management Note:**
+ * This component uses local state for the selected value because:
+ * 1. The FormValuesContext is read-only (used for restoring values after form errors)
+ * 2. User selections need immediate UI feedback
+ * 3. The hidden input submits the current value to the form
+ *
+ * The prevPreservedValue pattern syncs context changes (e.g., after form error)
+ * to local state during render, following React's recommended approach for
+ * "adjusting state when props change".
+ *
  * @param props - Dropdown configuration including options and labels
  * @returns A searchable dropdown field with hidden input for form submission
  *
@@ -102,12 +112,16 @@ export function FormDropdownInput({
 	const [searchValue, setSearchValue] = useState("");
 
 	const formValues = useFormValues();
-	const preservedValue = formValues[name || htmlFor];
+	const fieldName = name || htmlFor;
+	const preservedValue = formValues[fieldName];
 
-	const [value, setValue] = useState(preservedValue ?? "");
+	// Local state is necessary because FormValuesContext is read-only.
+	// The context only provides values for restoration after form submission errors.
+	const [value, setValue] = useState(() => preservedValue ?? "");
 	const [prevPreservedValue, setPrevPreservedValue] = useState(preservedValue);
 
-	// Sync preservedValue to value during render (not in useEffect)
+	// Sync context value to local state when context changes (e.g., after form error).
+	// This follows React's pattern for adjusting state when props change.
 	if (preservedValue !== prevPreservedValue) {
 		setPrevPreservedValue(preservedValue);
 		if (preservedValue !== undefined) {
@@ -195,7 +209,7 @@ export function FormDropdownInput({
 			</Popover>
 			<input
 				id={htmlFor}
-				name={name || htmlFor}
+				name={fieldName}
 				ref={inputRef}
 				required={required}
 				type="hidden"

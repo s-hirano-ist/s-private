@@ -17,6 +17,7 @@ import {
 	useCallback,
 	useEffect,
 	useMemo,
+	useOptimistic,
 	useState,
 	useTransition,
 } from "react";
@@ -41,11 +42,19 @@ function FooterComponent({ search }: Props) {
 	const router = useRouter();
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
-
-	const [layout, setLayout] = useState(
-		searchParams.get("layout") ?? DEFAULT_LAYOUT,
-	);
 	const [isPending, startTransition] = useTransition();
+
+	// Derive layout from searchParams - single source of truth
+	const layout = useMemo(() => {
+		const param = searchParams.get("layout");
+		if (param && LAYOUT_KEYS.has(param)) {
+			return param;
+		}
+		return DEFAULT_LAYOUT;
+	}, [searchParams]);
+
+	// Use optimistic for perceived performance
+	const [optimisticLayout, setOptimisticLayout] = useOptimistic(layout);
 
 	// Prefetch both layout routes on component mount
 	useEffect(() => {
@@ -71,10 +80,8 @@ function FooterComponent({ search }: Props) {
 
 	const handleLayoutChange = useCallback(
 		(value: string) => {
-			// Optimistic UI update
-			setLayout(value);
-
 			startTransition(() => {
+				setOptimisticLayout(value);
 				const params = new URLSearchParams(searchParams);
 				params.delete("page");
 				params.set("layout", value);
@@ -90,22 +97,18 @@ function FooterComponent({ search }: Props) {
 				}
 			});
 		},
-		[router, searchParams, pathname],
+		[router, searchParams, pathname, setOptimisticLayout],
 	);
 
+	// Redirect invalid layout values
 	useEffect(() => {
 		const currentLayout = searchParams.get("layout");
-		if (!currentLayout) return;
-
-		if (!LAYOUT_KEYS.has(currentLayout)) {
+		if (currentLayout && !LAYOUT_KEYS.has(currentLayout)) {
 			const params = new URLSearchParams(searchParams);
 			params.delete("layout");
 			router.replace(`?${params.toString()}`);
-			setLayout(DEFAULT_LAYOUT);
-		} else if (currentLayout !== layout) {
-			setLayout(currentLayout);
 		}
-	}, [searchParams, router, layout]);
+	}, [searchParams, router]);
 
 	const navigationButtons = useMemo(
 		() => (
@@ -114,8 +117,8 @@ function FooterComponent({ search }: Props) {
 					asChild
 					className={cn(
 						"sm:rounded-s-3xl",
-						layout === "dumper" ? "bg-black/10" : "",
-						isPending && layout !== "dumper" ? "opacity-50" : "",
+						optimisticLayout === "dumper" ? "bg-black/10" : "",
+						isPending && optimisticLayout !== "dumper" ? "opacity-50" : "",
 					)}
 					disabled={isPending}
 					onClick={() => handleLayoutChange("dumper")}
@@ -139,8 +142,8 @@ function FooterComponent({ search }: Props) {
 				<Button
 					asChild
 					className={cn(
-						layout === "viewer" ? "bg-black/10" : "",
-						isPending && layout !== "viewer" ? "opacity-50" : "",
+						optimisticLayout === "viewer" ? "bg-black/10" : "",
+						isPending && optimisticLayout !== "viewer" ? "opacity-50" : "",
 					)}
 					disabled={isPending}
 					onClick={() => handleLayoutChange("viewer")}
@@ -151,7 +154,7 @@ function FooterComponent({ search }: Props) {
 				</Button>
 			</div>
 		),
-		[layout, isPending, handleLayoutChange, Icon],
+		[optimisticLayout, isPending, handleLayoutChange, Icon],
 	);
 
 	return (
