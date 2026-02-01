@@ -67,9 +67,8 @@ function RootTabComponent({ articles, books, notes, images }: Props) {
 
 	const handleTabChange = useCallback(
 		(value: string) => {
-			setOptimisticTab(value);
-
 			startTransition(() => {
+				setOptimisticTab(value);
 				const params = new URLSearchParams(searchParams);
 				params.delete("page");
 				params.set("tab", value);

@@ -80,9 +80,8 @@ function FooterComponent({ search }: Props) {
 
 	const handleLayoutChange = useCallback(
 		(value: string) => {
-			setOptimisticLayout(value);
-
 			startTransition(() => {
+				setOptimisticLayout(value);
 				const params = new URLSearchParams(searchParams);
 				params.delete("page");
 				params.set("layout", value);
