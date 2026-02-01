@@ -9,10 +9,8 @@
 
 import "server-only";
 import { BookDeletedEvent } from "@s-hirano-ist/s-core/books/events/book-deleted-event";
-import {
-	makeId,
-	makeUnexportedStatus,
-} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import type { Id } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { makeUnexportedStatus } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
@@ -27,12 +25,12 @@ import type { DeleteBooksDeps } from "./delete-books.deps";
  *
  * Only unexported books can be deleted.
  *
- * @param id - Book ID to delete
+ * @param id - Book ID to delete (already validated)
  * @param deps - Dependencies (repository, event dispatcher)
  * @returns Server action result with success/failure status
  */
 export async function deleteBooksCore(
-	id: string,
+	id: Id,
 	deps: DeleteBooksDeps,
 ): Promise<ServerAction> {
 	const { commandRepository, eventDispatcher } = deps;
@@ -42,11 +40,7 @@ export async function deleteBooksCore(
 
 		const status = makeUnexportedStatus();
 		// Cache invalidation is handled in repository
-		const { title } = await commandRepository.deleteById(
-			makeId(id),
-			userId,
-			status,
-		);
+		const { title } = await commandRepository.deleteById(id, userId, status);
 
 		// Dispatch domain event
 		await eventDispatcher.dispatch(

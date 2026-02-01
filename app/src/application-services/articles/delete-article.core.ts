@@ -9,10 +9,8 @@
 
 import "server-only";
 import { ArticleDeletedEvent } from "@s-hirano-ist/s-core/articles/events/article-deleted-event";
-import {
-	makeId,
-	makeUnexportedStatus,
-} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import type { Id } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { makeUnexportedStatus } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
@@ -27,12 +25,12 @@ import type { DeleteArticleDeps } from "./delete-article.deps";
  *
  * Only unexported articles can be deleted.
  *
- * @param id - Article ID to delete
+ * @param id - Article ID to delete (already validated)
  * @param deps - Dependencies (repository, event dispatcher)
  * @returns Server action result with success/failure status
  */
 export async function deleteArticleCore(
-	id: string,
+	id: Id,
 	deps: DeleteArticleDeps,
 ): Promise<ServerAction> {
 	const { commandRepository, eventDispatcher } = deps;
@@ -42,11 +40,7 @@ export async function deleteArticleCore(
 
 		const status = makeUnexportedStatus();
 		// Cache invalidation is handled in repository
-		const { title } = await commandRepository.deleteById(
-			makeId(id),
-			userId,
-			status,
-		);
+		const { title } = await commandRepository.deleteById(id, userId, status);
 
 		// Dispatch domain event
 		await eventDispatcher.dispatch(

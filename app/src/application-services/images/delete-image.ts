@@ -6,8 +6,10 @@
 
 "use server";
 import "server-only";
+import { makeId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { forbidden } from "next/navigation";
 import { hasDumperPostPermission } from "@/common/auth/session";
+import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
 import { deleteImageCore } from "./delete-image.core";
 import { defaultDeleteImageDeps } from "./delete-image.deps";
@@ -21,12 +23,17 @@ import { defaultDeleteImageDeps } from "./delete-image.deps";
  *
  * Only unexported images can be deleted. Requires dumper role permission.
  *
- * @param id - Image ID to delete
+ * @param rawId - Image ID to delete (validated at this layer)
  * @returns Server action result with success/failure status
  */
-export async function deleteImage(id: string): Promise<ServerAction> {
+export async function deleteImage(rawId: string): Promise<ServerAction> {
 	const hasPermission = await hasDumperPostPermission();
 	if (!hasPermission) forbidden();
 
-	return deleteImageCore(id, defaultDeleteImageDeps);
+	try {
+		const id = makeId(rawId);
+		return deleteImageCore(id, defaultDeleteImageDeps);
+	} catch (error) {
+		return await wrapServerSideErrorForClient(error);
+	}
 }

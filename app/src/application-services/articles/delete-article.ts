@@ -6,8 +6,10 @@
 
 "use server";
 import "server-only";
+import { makeId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { forbidden } from "next/navigation";
 import { hasDumperPostPermission } from "@/common/auth/session";
+import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
 import { deleteArticleCore } from "./delete-article.core";
 import { defaultDeleteArticleDeps } from "./delete-article.deps";
@@ -22,12 +24,17 @@ import { defaultDeleteArticleDeps } from "./delete-article.deps";
  * Only unexported articles can be deleted.
  * Requires dumper role permission.
  *
- * @param id - Article ID to delete
+ * @param rawId - Article ID to delete (validated at this layer)
  * @returns Server action result with success/failure status
  */
-export async function deleteArticle(id: string): Promise<ServerAction> {
+export async function deleteArticle(rawId: string): Promise<ServerAction> {
 	const hasPermission = await hasDumperPostPermission();
 	if (!hasPermission) forbidden();
 
-	return deleteArticleCore(id, defaultDeleteArticleDeps);
+	try {
+		const id = makeId(rawId);
+		return deleteArticleCore(id, defaultDeleteArticleDeps);
+	} catch (error) {
+		return await wrapServerSideErrorForClient(error);
+	}
 }

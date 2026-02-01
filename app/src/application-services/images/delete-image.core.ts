@@ -9,10 +9,8 @@
 
 import "server-only";
 import { ImageDeletedEvent } from "@s-hirano-ist/s-core/images/events/image-deleted-event";
-import {
-	makeId,
-	makeUnexportedStatus,
-} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import type { Id } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { makeUnexportedStatus } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import type { ServerAction } from "@/common/types";
@@ -27,12 +25,12 @@ import type { DeleteImageDeps } from "./delete-image.deps";
  *
  * Only unexported images can be deleted.
  *
- * @param id - Image ID to delete
+ * @param id - Image ID to delete (already validated)
  * @param deps - Dependencies (repository)
  * @returns Server action result with success/failure status
  */
 export async function deleteImageCore(
-	id: string,
+	id: Id,
 	deps: DeleteImageDeps,
 ): Promise<ServerAction> {
 	const { commandRepository, eventDispatcher } = deps;
@@ -42,11 +40,7 @@ export async function deleteImageCore(
 
 		const status = makeUnexportedStatus();
 		// Cache invalidation is handled in repository
-		const { path } = await commandRepository.deleteById(
-			makeId(id),
-			userId,
-			status,
-		);
+		const { path } = await commandRepository.deleteById(id, userId, status);
 
 		// Dispatch domain event
 		await eventDispatcher.dispatch(
