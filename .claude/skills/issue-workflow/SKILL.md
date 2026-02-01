@@ -1,6 +1,6 @@
 ---
 name: work-issue
-description: issues/ディレクトリのタスクを1つ実装し、PRを作成するワークフロー
+description: issues/ディレクトリのタスクを1つ実装し、git commitを行なうワークフロー
 globs:
   - "issues/**/*.md"
 ---
@@ -22,6 +22,7 @@ issueがなくなるまで以下を繰り返す:
 - issueファイルの内容を読み込み
 - 指示に従って実装を行う
 - CLAUDE.mdのルールに従う
+- pnpm check:fixを行なう
 
 ### 3. コミット
 - issueファイルを削除
