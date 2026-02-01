@@ -17,7 +17,7 @@
 		"@s-hirano-ist/s-database": "workspace:*",
 		"@s-hirano-ist/s-notification": "workspace:*",
 		"@s-hirano-ist/s-ui": "workspace:*",
-		"@sentry/nextjs": "10.37.0",
+		"@sentry/nextjs": "10.38.0",
 		"@t3-oss/env-nextjs": "0.13.10",
 		"@tailwindcss/typography": "0.5.19",
 		"@vercel/analytics": "1.6.1",
