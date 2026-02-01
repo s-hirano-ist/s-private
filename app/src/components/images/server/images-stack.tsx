@@ -12,8 +12,9 @@ import { getTranslations } from "next-intl/server";
 import { PAGE_SIZE } from "@/common/constants";
 import type { ServerAction } from "@/common/types";
 import {
+	EditableImageStack,
 	type ImageData,
-	ImageStack as ImageStackClient,
+	ImageStack,
 } from "@/components/common/display/image/image-stack";
 
 type Props = {
@@ -86,11 +87,11 @@ export async function ImagesStack({
 
 	return (
 		<>
-			<ImageStackClient
-				data={data}
-				deleteAction={deleteAction}
-				showDeleteButton={deleteAction !== undefined}
-			/>
+			{deleteAction !== undefined ? (
+				<EditableImageStack data={data} deleteAction={deleteAction} />
+			) : (
+				<ImageStack data={data} />
+			)}
 			{showPagination && (
 				<Pagination className="mt-4">
 					<PaginationContent>
