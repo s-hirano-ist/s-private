@@ -38,7 +38,7 @@ const API_BOOK_THUMBNAIL_PATH = "/api/books/images/thumbnail";
  *
  * @internal
  */
-export const _getBooks = async (
+const _getBooks = async (
 	currentCount: number,
 	userId: UserId,
 	status: Status,
@@ -51,14 +51,15 @@ export const _getBooks = async (
 	);
 
 	try {
-		const books = await booksQueryRepository.findMany(userId, status, {
-			skip: currentCount,
-			take: PAGE_SIZE,
-			orderBy: { createdAt: "desc" },
-			cacheStrategy,
-		});
-
-		const totalCount = await _getBooksCount(userId, status);
+		const [books, totalCount] = await Promise.all([
+			booksQueryRepository.findMany(userId, status, {
+				skip: currentCount,
+				take: PAGE_SIZE,
+				orderBy: { createdAt: "desc" },
+				cacheStrategy,
+			}),
+			_getBooksCount(userId, status),
+		]);
 
 		return {
 			data: books.map((d) => ({

@@ -2,23 +2,20 @@
 import { Card, CardContent, CardTitle } from "@s-hirano-ist/s-ui/ui/card";
 import type { Route } from "next";
 import NextImage from "next/image";
-import type { DeleteAction } from "@/common/types";
-import { DeleteButtonWithModal } from "@/components/common/forms/actions/delete-button-with-modal";
+import type { ReactNode } from "react";
 import { Link } from "@/infrastructures/i18n/routing";
 import type { ImageCardData } from "./types";
 
 type Props = {
 	data: ImageCardData;
 	basePath: string;
-	showDeleteButton?: boolean;
-	deleteAction?: DeleteAction;
+	actions?: ReactNode;
 };
 
 export function ImageCard({
 	basePath,
-	data: { id, title, href, image },
-	showDeleteButton = false,
-	deleteAction,
+	data: { title, href, image },
+	actions,
 }: Props) {
 	return (
 		<div className="relative h-full">
@@ -42,13 +39,7 @@ export function ImageCard({
 					</CardContent>
 				</Card>
 			</Link>
-			{showDeleteButton && deleteAction !== undefined && (
-				<DeleteButtonWithModal
-					deleteAction={deleteAction}
-					id={id}
-					title={title}
-				/>
-			)}
+			{actions}
 		</div>
 	);
 }

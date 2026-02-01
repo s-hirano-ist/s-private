@@ -48,7 +48,7 @@ import {
  *
  * @internal
  */
-export const _getArticles = async (
+const _getArticles = async (
 	currentCount: number,
 	userId: UserId,
 	status: Status,
@@ -60,14 +60,15 @@ export const _getArticles = async (
 		buildPaginatedContentCacheTag("articles", status, userId, currentCount),
 	);
 	try {
-		const articles = await articlesQueryRepository.findMany(userId, status, {
-			skip: currentCount,
-			take: PAGE_SIZE,
-			orderBy: { createdAt: "desc" },
-			cacheStrategy,
-		});
-
-		const totalCount = await _getArticlesCount(userId, status);
+		const [articles, totalCount] = await Promise.all([
+			articlesQueryRepository.findMany(userId, status, {
+				skip: currentCount,
+				take: PAGE_SIZE,
+				orderBy: { createdAt: "desc" },
+				cacheStrategy,
+			}),
+			_getArticlesCount(userId, status),
+		]);
 
 		return {
 			data: articles.map((d) => {

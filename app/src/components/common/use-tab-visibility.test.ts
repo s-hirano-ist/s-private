@@ -99,14 +99,14 @@ describe("useTabVisibility", () => {
 	});
 
 	describe("preloading functionality", () => {
-		test("should enable preloading after 1 second when enablePreloading is true", () => {
+		test("should enable preloading after 1 second when loadingStrategy is preload", () => {
 			const mockSearchParams = {
 				get: vi.fn().mockReturnValue("articles"),
 			};
 
 			mockUseSearchParams.mockReturnValue(mockSearchParams as any);
 
-			const { result } = renderHook(() => useTabVisibility("books", true));
+			const { result } = renderHook(() => useTabVisibility("books", "preload"));
 
 			// Initially no preloading
 			expect(result.current.shouldPreload).toBe(false);
@@ -119,14 +119,14 @@ describe("useTabVisibility", () => {
 			expect(result.current.shouldPreload).toBe(true);
 		});
 
-		test("should not enable preloading when enablePreloading is false", () => {
+		test("should not enable preloading when loadingStrategy is lazy", () => {
 			const mockSearchParams = {
 				get: vi.fn().mockReturnValue("articles"),
 			};
 
 			mockUseSearchParams.mockReturnValue(mockSearchParams as any);
 
-			const { result } = renderHook(() => useTabVisibility("books", false));
+			const { result } = renderHook(() => useTabVisibility("books", "lazy"));
 
 			act(() => {
 				vi.advanceTimersByTime(1000);
@@ -142,7 +142,9 @@ describe("useTabVisibility", () => {
 
 			mockUseSearchParams.mockReturnValue(mockSearchParams as any);
 
-			const { result } = renderHook(() => useTabVisibility("articles", true));
+			const { result } = renderHook(() =>
+				useTabVisibility("articles", "preload"),
+			);
 
 			act(() => {
 				vi.advanceTimersByTime(1000);
@@ -160,7 +162,9 @@ describe("useTabVisibility", () => {
 
 			const clearTimeoutSpy = vi.spyOn(global, "clearTimeout");
 
-			const { unmount } = renderHook(() => useTabVisibility("books", true));
+			const { unmount } = renderHook(() =>
+				useTabVisibility("books", "preload"),
+			);
 
 			unmount();
 

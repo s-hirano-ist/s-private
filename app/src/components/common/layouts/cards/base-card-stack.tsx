@@ -11,18 +11,23 @@ type SearchableItem = {
 	title: string;
 } & ({ key: string } | { id: string });
 
+/**
+ * Props passed to the renderCard function.
+ */
+export type RenderCardProps<T> = {
+	item: T;
+	index: number;
+	isLast: boolean;
+	lastElementRef: (node: HTMLElement | null) => void;
+	deleteAction?: DeleteAction;
+	itemKey: string;
+};
+
 type BaseCardStackProps<T extends SearchableItem> = {
 	initial: CardStackInitialData<T>;
 	deleteAction?: DeleteAction;
 	loadMoreAction: LoadMoreAction<CardStackInitialData<T>>;
-	renderCard: (
-		item: T,
-		index: number,
-		isLast: boolean,
-		lastElementRef: (node: HTMLElement | null) => void,
-		deleteAction?: DeleteAction,
-		key?: string,
-	) => React.ReactNode;
+	renderCard: (props: RenderCardProps<T>) => React.ReactNode;
 	gridClassName: string;
 };
 
@@ -76,14 +81,14 @@ export function BaseCardStackWrapper<T extends SearchableItem>({
 					{allData.map((item, index) => {
 						const isLast = index === allData.length - 1;
 						const itemKey = "key" in item ? item.key : item.id;
-						return renderCard(
+						return renderCard({
 							item,
 							index,
 							isLast,
 							lastElementRef,
 							deleteAction,
 							itemKey,
-						);
+						});
 					})}
 				</div>
 			)}

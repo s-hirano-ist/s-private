@@ -60,8 +60,10 @@ export async function addImageCore(
 			caller: "addImage",
 		});
 
-		await storageService.uploadImage(image.path, originalBuffer, false);
-		await storageService.uploadImage(image.path, thumbnailBuffer, true);
+		await Promise.all([
+			storageService.uploadImage(image.path, originalBuffer, false),
+			storageService.uploadImage(image.path, thumbnailBuffer, true),
+		]);
 		// Cache invalidation is handled in repository
 		await commandRepository.create(image);
 

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { fn } from "storybook/test";
+import { DeleteButtonWithModal } from "@/components/common/forms/actions/delete-button-with-modal";
 import { LinkCard } from "./link-card";
 
 const meta = {
@@ -23,7 +24,6 @@ export const Default: Story = {
 			primaryBadgeText: "Tech",
 			secondaryBadgeText: "example.com",
 		},
-		showDeleteButton: false,
 	},
 };
 
@@ -38,9 +38,19 @@ export const WithDeleteButton: Story = {
 			primaryBadgeText: "Tech",
 			secondaryBadgeText: "example.com",
 		},
-		showDeleteButton: true,
-		deleteAction: fn(),
 	},
+	render: (args) => (
+		<LinkCard
+			{...args}
+			actions={
+				<DeleteButtonWithModal
+					deleteAction={fn()}
+					id={args.data.id}
+					title={args.data.title}
+				/>
+			}
+		/>
+	),
 };
 
 export const WithoutBadgeText: Story = {
@@ -52,7 +62,6 @@ export const WithoutBadgeText: Story = {
 			description: "This article doesn't have a category.",
 			href: "https://example.com",
 		},
-		showDeleteButton: false,
 	},
 };
 
@@ -66,7 +75,6 @@ export const WithoutDescription: Story = {
 			primaryBadgeText: "Tech",
 			secondaryBadgeText: "example.com",
 		},
-		showDeleteButton: false,
 	},
 };
 
@@ -83,7 +91,6 @@ export const LongTitle: Story = {
 			primaryBadgeText: "Tech",
 			secondaryBadgeText: "example.com",
 		},
-		showDeleteButton: false,
 	},
 };
 
@@ -98,7 +105,6 @@ export const InternalLink: Story = {
 			primaryBadgeText: "Tech",
 			secondaryBadgeText: "example.com",
 		},
-		showDeleteButton: false,
 	},
 };
 
@@ -113,7 +119,6 @@ export const ExternalLink: Story = {
 			primaryBadgeText: "Tech",
 			secondaryBadgeText: "example.com",
 		},
-		showDeleteButton: false,
 	},
 };
 
@@ -128,6 +133,5 @@ export const InvalidUrl: Story = {
 			primaryBadgeText: "Tech",
 			secondaryBadgeText: "example.com",
 		},
-		showDeleteButton: false,
 	},
 };

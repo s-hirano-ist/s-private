@@ -41,7 +41,7 @@ import {
  *
  * @internal
  */
-export const _getNotes = async (
+const _getNotes = async (
 	currentCount: number,
 	userId: UserId,
 	status: Status,
@@ -53,14 +53,15 @@ export const _getNotes = async (
 		buildPaginatedContentCacheTag("notes", status, userId, currentCount),
 	);
 	try {
-		const notes = await notesQueryRepository.findMany(userId, status, {
-			skip: currentCount,
-			take: PAGE_SIZE,
-			orderBy: { createdAt: "desc" },
-			cacheStrategy,
-		});
-
-		const totalCount = await _getNotesCount(userId, status);
+		const [notes, totalCount] = await Promise.all([
+			notesQueryRepository.findMany(userId, status, {
+				skip: currentCount,
+				take: PAGE_SIZE,
+				orderBy: { createdAt: "desc" },
+				cacheStrategy,
+			}),
+			_getNotesCount(userId, status),
+		]);
 
 		return {
 			data: notes.map((d) => ({

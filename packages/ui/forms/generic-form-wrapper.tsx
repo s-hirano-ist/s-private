@@ -2,9 +2,8 @@
 import {
 	createContext,
 	type ReactNode,
+	use,
 	useActionState,
-	useContext,
-	useEffect,
 	useState,
 } from "react";
 import Loading from "../display/loading";
@@ -36,7 +35,7 @@ const FormValuesContext = createContext<Record<string, string>>({});
  *
  * @see {@link GenericFormWrapper} for the provider component
  */
-export const useFormValues = () => useContext(FormValuesContext);
+export const useFormValues = () => use(FormValuesContext);
 
 /**
  * Props for the GenericFormWrapper component.
@@ -108,12 +107,16 @@ export function GenericFormWrapper<
 	const [formValues, setFormValues] = useState<Record<string, string>>(
 		preservedValues || {},
 	);
+	const [prevPreservedValues, setPrevPreservedValues] =
+		useState(preservedValues);
 
-	useEffect(() => {
+	// Sync preservedValues to formValues during render (not in useEffect)
+	if (preservedValues !== prevPreservedValues) {
+		setPrevPreservedValues(preservedValues);
 		if (preservedValues) {
 			setFormValues(preservedValues);
 		}
-	}, [preservedValues]);
+	}
 
 	const submitForm = async (
 		_previousState: T | null,

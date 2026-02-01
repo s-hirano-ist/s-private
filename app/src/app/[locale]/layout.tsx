@@ -8,6 +8,8 @@ import { searchContentFromClient } from "@/application-services/search/search-co
 import { Footer } from "@/components/common/layouts/nav/footer";
 import { routing } from "@/infrastructures/i18n/routing";
 
+const VALID_LOCALES = new Set(routing.locales);
+
 type Params = {
 	children: ReactNode;
 	params: Promise<{ locale: string }>;
@@ -16,7 +18,7 @@ type Params = {
 export default async function LocaleLayout({ children, params }: Params) {
 	const { locale } = await params;
 	// Ensure that the incoming `locale` is valid
-	if (!routing.locales.includes(locale as "en" | "ja")) {
+	if (!VALID_LOCALES.has(locale as "en" | "ja")) {
 		notFound();
 	}
 

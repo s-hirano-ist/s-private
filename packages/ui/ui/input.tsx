@@ -1,4 +1,4 @@
-import * as React from "react";
+import type * as React from "react";
 
 import { cn } from "../utils/cn";
 
@@ -7,7 +7,10 @@ import { cn } from "../utils/cn";
  *
  * @see {@link Input} for the component
  */
-export type InputProps = {} & React.InputHTMLAttributes<HTMLInputElement>;
+export type InputProps = {
+	/** Forwarded ref */
+	ref?: React.Ref<HTMLInputElement>;
+} & React.InputHTMLAttributes<HTMLInputElement>;
 
 /**
  * A styled text input component.
@@ -31,21 +34,19 @@ export type InputProps = {} & React.InputHTMLAttributes<HTMLInputElement>;
  * <Input disabled value="Cannot edit" />
  * ```
  */
-const Input = React.forwardRef<HTMLInputElement, InputProps>(
-	({ className, type, ...props }, ref) => {
-		return (
-			<input
-				className={cn(
-					"flex h-9 w-full rounded-md border border-muted bg-transparent px-3 py-1 text-base shadow-xs transition-colors file:border-0 file:bg-transparent file:font-medium file:text-base placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50",
-					className,
-				)}
-				ref={ref}
-				type={type}
-				{...props}
-			/>
-		);
-	},
-);
+function Input({ className, type, ref, ...props }: InputProps) {
+	return (
+		<input
+			className={cn(
+				"flex h-9 w-full rounded-md border border-muted bg-transparent px-3 py-1 text-base shadow-xs transition-colors file:border-0 file:bg-transparent file:font-medium file:text-base placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50",
+				className,
+			)}
+			ref={ref}
+			type={type}
+			{...props}
+		/>
+	);
+}
 Input.displayName = "Input";
 
 export { Input };

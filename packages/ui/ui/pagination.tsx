@@ -32,7 +32,7 @@
  */
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 import Link from "next/link";
-import * as React from "react";
+import type * as React from "react";
 
 import { cn } from "../utils/cn";
 import { type ButtonProps, buttonVariants } from "./button";
@@ -57,6 +57,10 @@ function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
 }
 Pagination.displayName = "Pagination";
 
+type PaginationContentProps = {
+	ref?: React.Ref<HTMLUListElement>;
+} & React.ComponentProps<"ul">;
+
 /**
  * Flex container for pagination items.
  *
@@ -64,13 +68,13 @@ Pagination.displayName = "Pagination";
  * Renders an unordered list with horizontal flex layout and gap between items.
  *
  * @param props - Standard ul element props with optional className override
- * @param ref - Forwarded ref to the ul element
  * @returns A list container for pagination items
  */
-const PaginationContent = React.forwardRef<
-	HTMLUListElement,
-	React.ComponentProps<"ul">
->(function PaginationContent({ className, ...props }, ref) {
+function PaginationContent({
+	className,
+	ref,
+	...props
+}: PaginationContentProps) {
 	return (
 		<ul
 			className={cn("flex flex-row items-center gap-1", className)}
@@ -78,8 +82,12 @@ const PaginationContent = React.forwardRef<
 			{...props}
 		/>
 	);
-});
+}
 PaginationContent.displayName = "PaginationContent";
+
+type PaginationItemProps = {
+	ref?: React.Ref<HTMLLIElement>;
+} & React.ComponentProps<"li">;
 
 /**
  * Individual pagination item wrapper.
@@ -88,15 +96,11 @@ PaginationContent.displayName = "PaginationContent";
  * Wraps each pagination control (link, ellipsis, etc.) in a list item.
  *
  * @param props - Standard li element props with optional className override
- * @param ref - Forwarded ref to the li element
  * @returns A list item wrapper for pagination controls
  */
-const PaginationItem = React.forwardRef<
-	HTMLLIElement,
-	React.ComponentProps<"li">
->(function PaginationItem({ className, ...props }, ref) {
+function PaginationItem({ className, ref, ...props }: PaginationItemProps) {
 	return <li className={cn("", className)} ref={ref} {...props} />;
-});
+}
 PaginationItem.displayName = "PaginationItem";
 
 /**

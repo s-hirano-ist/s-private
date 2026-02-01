@@ -2,16 +2,22 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
+export type LoadingStrategy = "preload" | "lazy";
+
 /**
  * タブの可視性を管理するカスタムフック
  * タブが初回表示された時のみtrueになり、以降はタブが切り替わってもtrueのまま
  * プリローディング機能を含む
  */
-export function useTabVisibility(tabName: string, enablePreloading = true) {
+export function useTabVisibility(
+	tabName: string,
+	loadingStrategy: LoadingStrategy = "preload",
+) {
 	const searchParams = useSearchParams();
 	const [hasBeenVisible, setHasBeenVisible] = useState(false);
 	const [shouldPreload, setShouldPreload] = useState(false);
 
+	const enablePreloading = loadingStrategy === "preload";
 	const currentTab = searchParams.get("tab") ?? "articles";
 	const isCurrentlyVisible = currentTab === tabName;
 

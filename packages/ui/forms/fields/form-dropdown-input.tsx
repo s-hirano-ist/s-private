@@ -1,7 +1,7 @@
 "use client";
 
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
-import { type RefObject, useEffect, useState } from "react";
+import { type RefObject, useState } from "react";
 import { Button } from "../../ui/button";
 import {
 	Command,
@@ -50,6 +50,11 @@ export type Props = {
 	customValueLabel?: (value: string) => string;
 };
 
+// Default values extracted as constants for stable reference
+const DEFAULT_EMPTY_MESSAGE = "No results found";
+const DEFAULT_SEARCH_PLACEHOLDER = "Search...";
+const DEFAULT_CUSTOM_VALUE_LABEL = (v: string) => `Use "${v}"`;
+
 /**
  * A searchable dropdown input component for forms.
  *
@@ -89,28 +94,26 @@ export function FormDropdownInput({
 	name,
 	required,
 	disabled,
-	emptyMessage = "No results found",
-	searchPlaceholder = "Search...",
-	customValueLabel = (v) => `Use "${v}"`,
+	emptyMessage = DEFAULT_EMPTY_MESSAGE,
+	searchPlaceholder = DEFAULT_SEARCH_PLACEHOLDER,
+	customValueLabel = DEFAULT_CUSTOM_VALUE_LABEL,
 }: Props) {
 	const [open, setOpen] = useState(false);
-	const [value, setValue] = useState("");
 	const [searchValue, setSearchValue] = useState("");
 
 	const formValues = useFormValues();
 	const preservedValue = formValues[name || htmlFor];
 
-	useEffect(() => {
-		if (preservedValue) {
+	const [value, setValue] = useState(preservedValue ?? "");
+	const [prevPreservedValue, setPrevPreservedValue] = useState(preservedValue);
+
+	// Sync preservedValue to value during render (not in useEffect)
+	if (preservedValue !== prevPreservedValue) {
+		setPrevPreservedValue(preservedValue);
+		if (preservedValue !== undefined) {
 			setValue(preservedValue);
 		}
-	}, [preservedValue]);
-
-	useEffect(() => {
-		if (inputRef?.current) {
-			inputRef.current.value = value;
-		}
-	}, [value, inputRef]);
+	}
 
 	const handleSelect = (selectedValue: string) => {
 		setValue(selectedValue);

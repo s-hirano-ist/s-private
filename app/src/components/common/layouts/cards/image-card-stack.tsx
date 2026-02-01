@@ -1,6 +1,10 @@
 "use client";
 import type { DeleteAction, LoadMoreAction } from "@/common/types";
-import { BaseCardStackWrapper } from "@/components/common/layouts/cards/base-card-stack";
+import { DeleteButtonWithModal } from "@/components/common/forms/actions/delete-button-with-modal";
+import {
+	BaseCardStackWrapper,
+	type RenderCardProps,
+} from "@/components/common/layouts/cards/base-card-stack";
 import { ImageCard } from "@/components/common/layouts/cards/image-card";
 import type { ImageCardData, ImageCardStackInitialData } from "./types";
 
@@ -17,22 +21,26 @@ export function ImageCardStack({
 	deleteAction,
 	loadMoreAction,
 }: Props) {
-	const showDeleteButton = deleteAction !== undefined;
-
-	const renderCard = (
-		item: ImageCardData,
-		_index: number,
-		isLast: boolean,
-		lastElementRef: (node: HTMLElement | null) => void,
-		deleteAction?: DeleteAction,
-		key?: string,
-	) => (
-		<div className="h-full" key={key} ref={isLast ? lastElementRef : null}>
+	const renderCard = ({
+		item,
+		isLast,
+		lastElementRef,
+		deleteAction,
+		itemKey,
+	}: RenderCardProps<ImageCardData>) => (
+		<div className="h-full" key={itemKey} ref={isLast ? lastElementRef : null}>
 			<ImageCard
+				actions={
+					deleteAction !== undefined ? (
+						<DeleteButtonWithModal
+							deleteAction={deleteAction}
+							id={item.id}
+							title={item.title}
+						/>
+					) : undefined
+				}
 				basePath={basePath}
 				data={item}
-				deleteAction={deleteAction}
-				showDeleteButton={showDeleteButton}
 			/>
 		</div>
 	);

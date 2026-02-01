@@ -6,6 +6,8 @@ docs/** にはより詳細な設計等のルールが記載されています。
 
 Before doing any UI, frontend or React development, ALWAYS call the storybook MCP server to get further instructions.
 
+issuesには、取り組み検討中の課題を記述している。issueに取り組むように指示があり、完了したらissueは削除すること。
+
 ## 技術スタック
 - Next.js 15 (App Router, Server Actions)
 - TypeScript + Zod

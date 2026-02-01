@@ -2,7 +2,7 @@
 
 import { cva, type VariantProps } from "class-variance-authority";
 import { Label as LabelPrimitive } from "radix-ui";
-import * as React from "react";
+import type * as React from "react";
 
 import { cn } from "../utils/cn";
 
@@ -13,6 +13,17 @@ import { cn } from "../utils/cn";
 const labelVariants = cva(
 	"text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
 );
+
+/**
+ * Props for the Label component.
+ *
+ * @see {@link Label} for the component
+ */
+type LabelProps = {
+	/** Forwarded ref */
+	ref?: React.Ref<React.ComponentRef<typeof LabelPrimitive.Root>>;
+} & React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> &
+	VariantProps<typeof labelVariants>;
 
 /**
  * A label component for form inputs.
@@ -30,17 +41,15 @@ const labelVariants = cva(
  * <Input id="email" type="email" />
  * ```
  */
-const Label = React.forwardRef<
-	React.ElementRef<typeof LabelPrimitive.Root>,
-	React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> &
-		VariantProps<typeof labelVariants>
->(({ className, ...props }, ref) => (
-	<LabelPrimitive.Root
-		className={cn(labelVariants(), className)}
-		ref={ref}
-		{...props}
-	/>
-));
+function Label({ className, ref, ...props }: LabelProps) {
+	return (
+		<LabelPrimitive.Root
+			className={cn(labelVariants(), className)}
+			ref={ref}
+			{...props}
+		/>
+	);
+}
 Label.displayName = LabelPrimitive.Root.displayName;
 
 export { Label };

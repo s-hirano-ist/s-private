@@ -82,13 +82,13 @@ export async function searchContent(
 	userId: UserId,
 ): Promise<UnifiedSearchResults> {
 	const { query, contentTypes, limit = 20 } = searchQuery;
-	const searchTypes = contentTypes ?? ["articles", "books", "notes"];
+	const searchTypes = new Set(contentTypes ?? ["articles", "books", "notes"]);
 
 	const results: SearchResult[] = [];
 	const groups: SearchResultGroup[] = [];
 
 	// Search articles
-	if (searchTypes.includes("articles")) {
+	if (searchTypes.has("articles")) {
 		const articleResults = await articlesQueryRepository.search(
 			query,
 			userId,
@@ -118,7 +118,7 @@ export async function searchContent(
 	}
 
 	// Search books
-	if (searchTypes.includes("books")) {
+	if (searchTypes.has("books")) {
 		const bookResults = await booksQueryRepository.search(query, userId, limit);
 
 		const bookSearchResults: BookSearchResult[] = bookResults.map((book) => ({
@@ -146,7 +146,7 @@ export async function searchContent(
 	}
 
 	// Search notes
-	if (searchTypes.includes("notes")) {
+	if (searchTypes.has("notes")) {
 		const noteResults = await notesQueryRepository.search(query, userId, limit);
 
 		const noteSearchResults: NoteSearchResult[] = noteResults.map((note) => ({
@@ -165,20 +165,14 @@ export async function searchContent(
 	}
 
 	// Sort results by relevance (currently by creation date, but could be enhanced)
+	const queryLower = query.toLowerCase();
+
 	results.sort((a, b) => {
 		// Simple relevance scoring based on title vs content matches
-		const aInTitle = a.title.toLowerCase().includes(query.toLowerCase())
-			? 2
-			: 0;
-		const bInTitle = b.title.toLowerCase().includes(query.toLowerCase())
-			? 2
-			: 0;
-		const aInSnippet = a.snippet.toLowerCase().includes(query.toLowerCase())
-			? 1
-			: 0;
-		const bInSnippet = b.snippet.toLowerCase().includes(query.toLowerCase())
-			? 1
-			: 0;
+		const aInTitle = a.title.toLowerCase().includes(queryLower) ? 2 : 0;
+		const bInTitle = b.title.toLowerCase().includes(queryLower) ? 2 : 0;
+		const aInSnippet = a.snippet.toLowerCase().includes(queryLower) ? 1 : 0;
+		const bInSnippet = b.snippet.toLowerCase().includes(queryLower) ? 1 : 0;
 
 		const aScore = aInTitle + aInSnippet;
 		const bScore = bInTitle + bInSnippet;
