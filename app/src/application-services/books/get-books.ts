@@ -50,31 +50,27 @@ const _getBooks = async (
 		buildPaginatedContentCacheTag("books", status, userId, currentCount),
 	);
 
-	try {
-		const [books, totalCount] = await Promise.all([
-			booksQueryRepository.findMany(userId, status, {
-				skip: currentCount,
-				take: PAGE_SIZE,
-				orderBy: { createdAt: "desc" },
-				cacheStrategy,
-			}),
-			_getBooksCount(userId, status),
-		]);
+	const [books, totalCount] = await Promise.all([
+		booksQueryRepository.findMany(userId, status, {
+			skip: currentCount,
+			take: PAGE_SIZE,
+			orderBy: { createdAt: "desc" },
+			cacheStrategy,
+		}),
+		_getBooksCount(userId, status),
+	]);
 
-		return {
-			data: books.map((d) => ({
-				id: d.id,
-				title: d.title,
-				href: d.isbn,
-				image: d.imagePath
-					? `${API_BOOK_THUMBNAIL_PATH}/${d.imagePath}`
-					: (d.googleImgSrc ?? null),
-			})),
-			totalCount,
-		};
-	} catch (error) {
-		throw error;
-	}
+	return {
+		data: books.map((d) => ({
+			id: d.id,
+			title: d.title,
+			href: d.isbn,
+			image: d.imagePath
+				? `${API_BOOK_THUMBNAIL_PATH}/${d.imagePath}`
+				: (d.googleImgSrc ?? null),
+		})),
+		totalCount,
+	};
 };
 
 /**
@@ -88,11 +84,7 @@ const _getBooksCount = async (
 ): Promise<number> => {
 	"use cache";
 	cacheTag(buildCountCacheTag("books", status, userId));
-	try {
-		return await booksQueryRepository.count(userId, status);
-	} catch (error) {
-		throw error;
-	}
+	return await booksQueryRepository.count(userId, status);
 };
 
 /**
@@ -137,12 +129,8 @@ export const getExportedBooksCount: GetCount = cache(
  * @returns Book data or null if not found
  */
 export const getBookByISBN = cache(async (isbn: string) => {
-	try {
-		const userId = await getSelfId();
-		return await booksQueryRepository.findByISBN(makeISBN(isbn), userId);
-	} catch (error) {
-		throw error;
-	}
+	const userId = await getSelfId();
+	return await booksQueryRepository.findByISBN(makeISBN(isbn), userId);
 });
 
 /**

@@ -52,30 +52,26 @@ const _getNotes = async (
 		buildContentCacheTag("notes", status, userId),
 		buildPaginatedContentCacheTag("notes", status, userId, currentCount),
 	);
-	try {
-		const [notes, totalCount] = await Promise.all([
-			notesQueryRepository.findMany(userId, status, {
-				skip: currentCount,
-				take: PAGE_SIZE,
-				orderBy: { createdAt: "desc" },
-				cacheStrategy,
-			}),
-			_getNotesCount(userId, status),
-		]);
+	const [notes, totalCount] = await Promise.all([
+		notesQueryRepository.findMany(userId, status, {
+			skip: currentCount,
+			take: PAGE_SIZE,
+			orderBy: { createdAt: "desc" },
+			cacheStrategy,
+		}),
+		_getNotesCount(userId, status),
+	]);
 
-		return {
-			data: notes.map((d) => ({
-				id: d.id,
-				key: d.id,
-				title: d.title,
-				description: "",
-				href: `/note/${encodeURIComponent(d.title)}`,
-			})),
-			totalCount,
-		};
-	} catch (error) {
-		throw error;
-	}
+	return {
+		data: notes.map((d) => ({
+			id: d.id,
+			key: d.id,
+			title: d.title,
+			description: "",
+			href: `/note/${encodeURIComponent(d.title)}`,
+		})),
+		totalCount,
+	};
 };
 
 /**
@@ -89,11 +85,7 @@ const _getNotesCount = async (
 ): Promise<number> => {
 	"use cache";
 	cacheTag(buildCountCacheTag("notes", status, userId));
-	try {
-		return await notesQueryRepository.count(userId, status);
-	} catch (error) {
-		throw error;
-	}
+	return await notesQueryRepository.count(userId, status);
 };
 
 /**
@@ -138,10 +130,6 @@ export const getExportedNotes: GetPaginatedData<LinkCardStackInitialData> =
  * @returns Note data or null if not found
  */
 export const getNoteByTitle = cache(async (title: string) => {
-	try {
-		const userId = await getSelfId();
-		return await notesQueryRepository.findByTitle(makeNoteTitle(title), userId);
-	} catch (error) {
-		throw error;
-	}
+	const userId = await getSelfId();
+	return await notesQueryRepository.findByTitle(makeNoteTitle(title), userId);
 });

@@ -45,11 +45,7 @@ const _getImagesCount = async (
 ): Promise<number> => {
 	"use cache";
 	cacheTag(buildCountCacheTag("images", status, userId));
-	try {
-		return await imagesQueryRepository.count(userId, status);
-	} catch (error) {
-		throw error;
-	}
+	return await imagesQueryRepository.count(userId, status);
 };
 
 /**
@@ -68,26 +64,22 @@ const _getImages = async (
 		buildContentCacheTag("images", status, userId),
 		buildPaginatedContentCacheTag("images", status, userId, page),
 	);
-	try {
-		const data = await imagesQueryRepository.findMany(userId, status, {
-			skip: (page - 1) * PAGE_SIZE,
-			take: PAGE_SIZE,
-			orderBy: { createdAt: "desc" },
-			cacheStrategy,
-		});
+	const data = await imagesQueryRepository.findMany(userId, status, {
+		skip: (page - 1) * PAGE_SIZE,
+		take: PAGE_SIZE,
+		orderBy: { createdAt: "desc" },
+		cacheStrategy,
+	});
 
-		return data.map((d) => {
-			return {
-				id: d.id,
-				originalPath: `${API_ORIGINAL_PATH}/${d.path}`,
-				thumbnailPath: `${API_THUMBNAIL_PATH}/${d.path}`,
-				height: d.height,
-				width: d.width,
-			};
-		});
-	} catch (error) {
-		throw error;
-	}
+	return data.map((d) => {
+		return {
+			id: d.id,
+			originalPath: `${API_ORIGINAL_PATH}/${d.path}`,
+			thumbnailPath: `${API_THUMBNAIL_PATH}/${d.path}`,
+			height: d.height,
+			width: d.width,
+		};
+	});
 };
 
 /**
