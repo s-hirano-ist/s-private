@@ -1,5 +1,39 @@
 # Changelog
 
+## [1.12.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.12.0...@s-hirano-ist/s-ui-v1.12.1) (2026-02-01)
+
+
+### Bug Fixes
+
+* biome ([4d1f56e](https://github.com/s-hirano-ist/s-private/commit/4d1f56e87e2c6c736e24e916a4080870354aa5ae))
+* issues ([54e20a4](https://github.com/s-hirano-ist/s-private/commit/54e20a4b5dce82981cf5ef6c739a3a4fb7c3d31c))
+
+
+### Documentation
+
+* **FormDropdownInput:** document state management pattern rationale ([d6de419](https://github.com/s-hirano-ist/s-private/commit/d6de4191f9226861d0ea43e69b80aaa3e9a42cc2))
+
+
+### Maintenance
+
+* **Button:** migrate from forwardRef to React 19 ref prop ([5ec03ee](https://github.com/s-hirano-ist/s-private/commit/5ec03eec0c8ba442bf6711f0f7a7260b3d21b97a))
+* **Card:** migrate all Card components from forwardRef to React 19 pattern ([f97f0c9](https://github.com/s-hirano-ist/s-private/commit/f97f0c9c1c328936dd346a9fcd578423aa46f67b))
+* cleanup import types and delete resolved issue files ([15f8b07](https://github.com/s-hirano-ist/s-private/commit/15f8b0766ac5b4f7b56721bf16225c55ea602f53))
+* **DialogContent:** replace boolean prop with size variant ([d7cb56b](https://github.com/s-hirano-ist/s-private/commit/d7cb56bc5132a426225102199c125b244d4a7246))
+* **DropdownMenu:** migrate 5 components to React 19 ref-as-prop pattern ([e3004fa](https://github.com/s-hirano-ist/s-private/commit/e3004fa00c8aa1ef6848571fcf9033eb018340a6))
+* **FormInputWithButton:** use key-based re-mount instead of useEffect ([673ba1b](https://github.com/s-hirano-ist/s-private/commit/673ba1bb10317fd8b49750cc71a74dfaddb1b9dc))
+* **GenericFormWrapper:** derive form values with useMemo ([1c5a86b](https://github.com/s-hirano-ist/s-private/commit/1c5a86b086bbadb9afdceb39c05e88d5ab5b8915))
+* **GenericFormWrapper:** migrate useContext to React 19 use() API ([8a01382](https://github.com/s-hirano-ist/s-private/commit/8a01382b763448a9500d4fe253d8b7873d0ed714))
+* **GenericFormWrapper:** sync props during render instead of useEffect ([cf6b62e](https://github.com/s-hirano-ist/s-private/commit/cf6b62e1635d831f89f0a4a463d0980b9d3344b2))
+* migrate Dialog forwardRef and use Set for locale lookup ([befdeda](https://github.com/s-hirano-ist/s-private/commit/befdedaeeda7661f83659df65ac8ed6462e8cdfb))
+* migrate Input forwardRef and fix FormDropdownInput rerender ([3c335b8](https://github.com/s-hirano-ist/s-private/commit/3c335b84c0ee042b956486f5af8c0102de2a4535))
+* migrate Label forwardRef and fix FormDropdownInput defaults ([8ea179d](https://github.com/s-hirano-ist/s-private/commit/8ea179d40ad413ebd1f5c3c17c39c0337fe4f4c7))
+* migrate Textarea forwardRef and fix LazyTabContent memo defaults ([66d8136](https://github.com/s-hirano-ist/s-private/commit/66d8136507e5a0349b30a08de9514f91351fcd37))
+* **Pagination:** migrate 2 components to React 19 ref-as-prop pattern ([969a52c](https://github.com/s-hirano-ist/s-private/commit/969a52cd7be381c0642581246aad245426909cbc))
+* **Popover:** migrate PopoverContent to React 19 ref-as-prop pattern ([cbeeeec](https://github.com/s-hirano-ist/s-private/commit/cbeeeec2c2c1237cf9d067a9a6a203b9d050b188))
+* small code base issues ([04b632b](https://github.com/s-hirano-ist/s-private/commit/04b632bf99b9c73b8ed1d891a45b6e8032fe44d3))
+* **Tabs:** migrate 3 components to React 19 ref-as-prop pattern ([0e9a4b9](https://github.com/s-hirano-ist/s-private/commit/0e9a4b92028ff66bfeeb30aa452d98923ce9be03))
+
 ## [1.12.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.11.0...@s-hirano-ist/s-ui-v1.12.0) (2026-01-31)
 
 
