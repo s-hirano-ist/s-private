@@ -67,7 +67,14 @@ function ImageStackGrid({
 	return (
 		<div className="grid grid-cols-4 gap-2 p-2 sm:p-4">
 			{data.map((image, i) => (
-				<div className="relative" key={image.id || image.originalPath}>
+				<div
+					className="relative"
+					key={image.id || image.originalPath}
+					style={{
+						contentVisibility: "auto",
+						containIntrinsicSize: "auto 96px",
+					}}
+				>
 					<ImageClickable image={image} onImageClick={() => onImageClick(i)} />
 					{renderOverlay?.(image)}
 				</div>

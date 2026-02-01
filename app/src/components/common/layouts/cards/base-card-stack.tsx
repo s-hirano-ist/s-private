@@ -81,14 +81,24 @@ export function BaseCardStackWrapper<T extends SearchableItem>({
 					{allData.map((item, index) => {
 						const isLast = index === allData.length - 1;
 						const itemKey = "key" in item ? item.key : item.id;
-						return children({
-							item,
-							index,
-							isLast,
-							lastElementRef,
-							deleteAction,
-							itemKey,
-						});
+						return (
+							<div
+								key={itemKey}
+								style={{
+									contentVisibility: "auto",
+									containIntrinsicSize: "auto 200px",
+								}}
+							>
+								{children({
+									item,
+									index,
+									isLast,
+									lastElementRef,
+									deleteAction,
+									itemKey,
+								})}
+							</div>
+						);
 					})}
 				</div>
 			)}
