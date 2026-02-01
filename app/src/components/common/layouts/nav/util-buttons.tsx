@@ -37,7 +37,7 @@ export function UtilButtons({ handleReload, onSignOutSubmit }: Props) {
 		[pathname, locale],
 	);
 
-	const shouldShowSignOut = useMemo(() => pathname !== "/auth", [pathname]);
+	const shouldShowSignOut = pathname !== "/auth";
 
 	return (
 		<div className="grid grid-cols-4 gap-3 px-4 py-2">
