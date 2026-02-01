@@ -14,6 +14,23 @@
  * @module
  */
 
+import { z } from "zod";
+
+/**
+ * Zod schema for validating pagination count parameters.
+ *
+ * @remarks
+ * Validates currentCount/offset parameters for pagination to prevent:
+ * - Negative values
+ * - NaN/Infinity values
+ * - Excessively large values that could cause DoS
+ */
+export const paginationCountSchema = z
+	.number()
+	.int({ message: "mustBeInteger" })
+	.min(0, { message: "mustBeNonNegative" })
+	.max(10000, { message: "exceedsMaximum" });
+
 /**
  * Pagination parameters for repository queries.
  */
