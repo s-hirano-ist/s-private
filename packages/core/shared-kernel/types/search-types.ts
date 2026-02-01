@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 /**
  * Content types that can be searched.
  *
@@ -131,6 +133,30 @@ export function isNoteSearchResult(
 }
 
 /**
+ * Zod schema for validating search query parameters.
+ *
+ * @remarks
+ * Validates and sanitizes search input to prevent DoS attacks and invalid data.
+ * - query: 1-256 characters
+ * - contentTypes: optional array of valid content types
+ * - limit: 1-100, defaults to 20
+ */
+export const searchQuerySchema = z.object({
+	query: z
+		.string()
+		.min(1, { message: "required" })
+		.max(256, { message: "tooLong" }),
+	contentTypes: z.array(z.enum(["articles", "books", "notes"])).optional(),
+	limit: z
+		.number()
+		.int()
+		.min(1, { message: "minimum" })
+		.max(100, { message: "maximum" })
+		.optional()
+		.default(20),
+});
+
+/**
  * Search query parameters.
  *
  * @remarks
@@ -145,14 +171,7 @@ export function isNoteSearchResult(
  * };
  * ```
  */
-export type SearchQuery = {
-	/** The search term to match against content */
-	query: string;
-	/** Optional filter to limit search to specific content types */
-	contentTypes?: ContentType[];
-	/** Maximum number of results to return */
-	limit?: number;
-};
+export type SearchQuery = z.infer<typeof searchQuerySchema>;
 
 /**
  * Search results grouped by content type.
