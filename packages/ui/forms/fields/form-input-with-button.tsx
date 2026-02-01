@@ -1,4 +1,4 @@
-import { type ComponentProps, type RefObject, useEffect } from "react";
+import type { ComponentProps, RefObject } from "react";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
@@ -34,6 +34,7 @@ export type FormInputWithButtonProps = {
  * - Password input with visibility toggle
  *
  * Integrates with GenericFormWrapper for form state preservation.
+ * Uses key-based re-mounting to sync preserved values without useEffect.
  *
  * @param props - Input and button configuration
  * @returns An input field with an action button
@@ -63,13 +64,8 @@ export function FormInputWithButton({
 	...inputProps
 }: FormInputWithButtonProps) {
 	const formValues = useFormValues();
-	const preservedValue = formValues[inputProps.name || htmlFor];
-
-	useEffect(() => {
-		if (preservedValue && inputRef?.current) {
-			inputRef.current.value = preservedValue;
-		}
-	}, [preservedValue, inputRef]);
+	const fieldName = inputProps.name || htmlFor;
+	const preservedValue = formValues[fieldName];
 
 	return (
 		<div className="space-y-1">
@@ -78,6 +74,9 @@ export function FormInputWithButton({
 				<Input
 					defaultValue={preservedValue || defaultValue}
 					id={htmlFor}
+					// Key change forces re-mount when preservedValue changes,
+					// ensuring defaultValue is applied without useEffect sync
+					key={preservedValue}
 					ref={inputRef}
 					{...inputProps}
 				/>
