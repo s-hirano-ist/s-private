@@ -167,7 +167,7 @@ export async function searchContent(
 	// Sort results by relevance (currently by creation date, but could be enhanced)
 	const queryLower = query.toLowerCase();
 
-	results.sort((a, b) => {
+	const sortedResults = results.toSorted((a, b) => {
 		// Simple relevance scoring based on title vs content matches
 		const aInTitle = a.title.toLowerCase().includes(queryLower) ? 2 : 0;
 		const bInTitle = b.title.toLowerCase().includes(queryLower) ? 2 : 0;
@@ -181,7 +181,7 @@ export async function searchContent(
 	});
 
 	return {
-		results: results.slice(0, limit),
+		results: sortedResults.slice(0, limit),
 		groups,
 		totalCount: results.length,
 		query,
