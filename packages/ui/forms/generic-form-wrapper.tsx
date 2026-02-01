@@ -4,6 +4,7 @@ import {
 	type ReactNode,
 	use,
 	useActionState,
+	useMemo,
 	useState,
 } from "react";
 import Loading from "../display/loading";
@@ -104,19 +105,17 @@ export function GenericFormWrapper<
 	preservedValues,
 	afterSubmit,
 }: GenericFormWrapperProps<T>) {
-	const [formValues, setFormValues] = useState<Record<string, string>>(
-		preservedValues || {},
-	);
-	const [prevPreservedValues, setPrevPreservedValues] =
-		useState(preservedValues);
+	// Server response form data (only set on error, cleared on success)
+	const [serverFormData, setServerFormData] = useState<Record<
+		string,
+		string
+	> | null>(null);
 
-	// Sync preservedValues to formValues during render (not in useEffect)
-	if (preservedValues !== prevPreservedValues) {
-		setPrevPreservedValues(preservedValues);
-		if (preservedValues) {
-			setFormValues(preservedValues);
-		}
-	}
+	// Derive form values: server response takes precedence, then preserved values
+	const formValues = useMemo(() => {
+		if (serverFormData) return serverFormData;
+		return preservedValues || {};
+	}, [serverFormData, preservedValues]);
 
 	const submitForm = async (
 		_previousState: T | null,
@@ -130,13 +129,13 @@ export function GenericFormWrapper<
 		afterSubmit(response.message);
 
 		if (response.success) {
-			// Clear form on success
-			setFormValues({});
+			// Clear server form data on success
+			setServerFormData(null);
 			return response;
 		}
 		// Preserve form data on error
 		if ("formData" in response && response.formData) {
-			setFormValues(response.formData as Record<string, string>);
+			setServerFormData(response.formData as Record<string, string>);
 		}
 		return response;
 	};
