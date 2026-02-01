@@ -49,6 +49,17 @@ export async function markdownToReact(markdown: string) {
 				</SyntaxHighlighter>
 			);
 		},
+		img({ src, alt, ...props }) {
+			if (!alt) {
+				return (
+					// biome-ignore lint/performance/noImgElement: Markdown images have dynamic external URLs
+					// biome-ignore lint/a11y/noRedundantRoles: Explicit presentation role for screenreaders
+					<img alt="" role="presentation" src={src} {...props} />
+				);
+			}
+			// biome-ignore lint/performance/noImgElement: Markdown images have dynamic external URLs
+			return <img alt={alt} src={src} {...props} />;
+		},
 		a({ href, children }) {
 			const isExternal = href?.startsWith("http");
 			return (
