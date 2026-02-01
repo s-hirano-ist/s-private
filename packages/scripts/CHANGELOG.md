@@ -5,7 +5,7 @@
 
 ### Maintenance
 
-* **@s-hirano-ist/s-scripts:** Synchronize npm-packages versions
+* release main ([0c27ac0](https://github.com/s-hirano-ist/s-private/commit/0c27ac01e3f6e32814ea40d47ae7108a91e23194))
 
 
 ### Dependencies

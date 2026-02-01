@@ -31,6 +31,7 @@
 * migrate Textarea forwardRef and fix LazyTabContent memo defaults ([66d8136](https://github.com/s-hirano-ist/s-private/commit/66d8136507e5a0349b30a08de9514f91351fcd37))
 * **Pagination:** migrate 2 components to React 19 ref-as-prop pattern ([969a52c](https://github.com/s-hirano-ist/s-private/commit/969a52cd7be381c0642581246aad245426909cbc))
 * **Popover:** migrate PopoverContent to React 19 ref-as-prop pattern ([cbeeeec](https://github.com/s-hirano-ist/s-private/commit/cbeeeec2c2c1237cf9d067a9a6a203b9d050b188))
+* release main ([0c27ac0](https://github.com/s-hirano-ist/s-private/commit/0c27ac01e3f6e32814ea40d47ae7108a91e23194))
 * small code base issues ([04b632b](https://github.com/s-hirano-ist/s-private/commit/04b632bf99b9c73b8ed1d891a45b6e8032fe44d3))
 * **Tabs:** migrate 3 components to React 19 ref-as-prop pattern ([0e9a4b9](https://github.com/s-hirano-ist/s-private/commit/0e9a4b92028ff66bfeeb30aa452d98923ce9be03))
 
