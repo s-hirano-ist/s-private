@@ -78,12 +78,25 @@ const nextConfig = {
 						value: "strict-origin-when-cross-origin",
 					},
 					{
+						key: "Cache-Control",
+						value: "private, no-store, must-revalidate",
+					},
+					{
 						key: "Content-Security-Policy",
 						value: cspHeader.replaceAll("\n", ""),
 					},
 					{
 						key: "Report-To",
 						value: `{"group":"csp-endpoint","max_age":10886400,"endpoints":[{"url":"${process.env.SENTRY_REPORT_URL}"}],"include_subdomains":true}`,
+					},
+				],
+			},
+			{
+				source: "/_next/static/(.*)",
+				headers: [
+					{
+						key: "Cache-Control",
+						value: "public, max-age=31536000, immutable",
 					},
 				],
 			},
