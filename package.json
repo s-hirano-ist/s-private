@@ -74,7 +74,7 @@
 		"eslint-plugin-tailwindcss": "4.0.0-beta.0",
 		"jscpd": "4.0.7",
 		"jsdom": "27.4.0",
-		"knip": "5.82.1",
+		"knip": "5.83.1",
 		"license-checker-rseidelsohn": "4.4.2",
 		"playwright": "1.58.0",
 		"storybook": "10.2.1",
