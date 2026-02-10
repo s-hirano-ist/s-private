@@ -8,10 +8,25 @@ import {
 	CardTitle,
 } from "@s-hirano-ist/s-ui/ui/card";
 import type { ReactNode } from "react";
+import type { Components } from "react-markdown";
 import ReactMarkdown from "react-markdown";
 import { validateAndNormalizeUrl } from "@/components/common/utils/validate-url";
 import { Link } from "@/infrastructures/i18n/routing";
 import type { LinkCardData } from "./types";
+
+const markdownComponents: Components = {
+	img({ src, alt, ...props }) {
+		if (!alt) {
+			return (
+				// biome-ignore lint/performance/noImgElement: Markdown images have dynamic external URLs
+				// biome-ignore lint/a11y/noRedundantRoles: Explicit presentation role for screenreaders
+				<img alt="" role="presentation" src={src} {...props} />
+			);
+		}
+		// biome-ignore lint/performance/noImgElement: Markdown images have dynamic external URLs
+		return <img alt={alt} src={src} {...props} />;
+	},
+};
 
 type Props = {
 	data: LinkCardData;
@@ -45,7 +60,9 @@ export function LinkCard({
 						<CardTitle>{title}</CardTitle>
 						<CardDescription className="break-words">
 							{description ? (
-								<ReactMarkdown>{description}</ReactMarkdown>
+								<ReactMarkdown components={markdownComponents}>
+									{description}
+								</ReactMarkdown>
 							) : (
 								"　"
 							)}
