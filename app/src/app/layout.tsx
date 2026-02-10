@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
@@ -12,6 +13,18 @@ import { Noto_Sans_JP } from "next/font/google";
 import { env } from "@/env";
 
 const notoSansJp = Noto_Sans_JP({ subsets: ["latin"] });
+
+export const metadata: Metadata = {
+	title: {
+		default: "s-private",
+		template: "%s | s-private",
+	},
+	description: "Dumper and Viewer of s-hirano-ist's memories.",
+	robots: {
+		index: false,
+		follow: false,
+	},
+};
 
 export default function RootLayout({
 	children,
