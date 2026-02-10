@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.12.2](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.12.1...s-private-v10.12.2) (2026-02-10)
+
+
+### Documentation
+
+* add issues ([3227f75](https://github.com/s-hirano-ist/s-private/commit/3227f75be4bb46bedcfd245075650912d067cfea))
+* add issues ([debc07d](https://github.com/s-hirano-ist/s-private/commit/debc07d881a392655526e90125e9ffcd3c2c98f0))
+* add review skill ([260a008](https://github.com/s-hirano-ist/s-private/commit/260a0089e2e83fc4fa9fc9c0d5142c2ef59d5b4d))
+* fix ddd description ([34ed7cc](https://github.com/s-hirano-ist/s-private/commit/34ed7ccf623dc83785ca85429b27bc17c8461ae4))
+* fix ddd description ([db25ee0](https://github.com/s-hirano-ist/s-private/commit/db25ee08cc08dd289dbdd0b12d08365598a44959))
+
+
+### Maintenance
+
+* **deps:** lock file maintenance ([a915f42](https://github.com/s-hirano-ist/s-private/commit/a915f42a460cca7afe0ea11c5bf9c5b9ae7c0b6d))
+* **deps:** lock file maintenance ([5111f35](https://github.com/s-hirano-ist/s-private/commit/5111f351875834b8ac6ff004df2dc6cb562c9a10))
+* **deps:** update actions/checkout digest to de0fac2 ([f8c8404](https://github.com/s-hirano-ist/s-private/commit/f8c8404b8adaf79af05785f6fe74e3c34fa60370))
+* **deps:** update dependency knip to v5.83.1 ([87abe22](https://github.com/s-hirano-ist/s-private/commit/87abe22f1f21af3f7629d87fea80c5ae1bcc7d2d))
+* **deps:** update httpd:2.4.66 docker digest to b89c19a ([7107076](https://github.com/s-hirano-ist/s-private/commit/7107076ec0b9f2baa7bb841e5268081661839bfe))
+* **deps:** update node.js to 4660b1c ([033c393](https://github.com/s-hirano-ist/s-private/commit/033c3936aaaf4b8cb6513ae05afbe362671f8547))
+* hoist RegExp patterns to module scope ([f438aa5](https://github.com/s-hirano-ist/s-private/commit/f438aa525f1432e5679ae32aae1f146e43e1b884))
+* use toSorted() instead of sort() for immutable array sorting ([2177868](https://github.com/s-hirano-ist/s-private/commit/21778686e0f0399ed04a4cb7baad176bae5c0c8f))
+
 ## [10.12.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.12.0...s-private-v10.12.1) (2026-02-01)
 
 
