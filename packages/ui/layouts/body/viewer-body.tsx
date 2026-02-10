@@ -5,6 +5,13 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import remarkGfm from "remark-gfm";
 
+const LANGUAGE_REGEX = /language-(\w+)/;
+const SLUG_REGEX = /[^\w]+/g;
+
+function generateHeadingId(children: ReactNode): string {
+	return children?.toString().toLowerCase().replace(SLUG_REGEX, "-") ?? "";
+}
+
 /**
  * Props for the ViewerBodyClient component.
  *
@@ -38,7 +45,7 @@ export type ViewerBodyProps = {
 export async function markdownToReact(markdown: string) {
 	const components: Components = {
 		code({ className, children }) {
-			const match = /language-(\w+)/.exec(className || "");
+			const match = LANGUAGE_REGEX.exec(className || "");
 			const isInline = !match;
 
 			return isInline ? (
@@ -73,24 +80,15 @@ export async function markdownToReact(markdown: string) {
 			);
 		},
 		h1: ({ children }) => {
-			const id = children
-				?.toString()
-				.toLowerCase()
-				.replace(/[^\w]+/g, "-");
+			const id = generateHeadingId(children);
 			return <h1 id={id}>{children}</h1>;
 		},
 		h2: ({ children }) => {
-			const id = children
-				?.toString()
-				.toLowerCase()
-				.replace(/[^\w]+/g, "-");
+			const id = generateHeadingId(children);
 			return <h2 id={id}>{children}</h2>;
 		},
 		h3: ({ children }) => {
-			const id = children
-				?.toString()
-				.toLowerCase()
-				.replace(/[^\w]+/g, "-");
+			const id = generateHeadingId(children);
 			return <h3 id={id}>{children}</h3>;
 		},
 	};
