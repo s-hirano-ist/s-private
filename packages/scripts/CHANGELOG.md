@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.12.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.12.1...@s-hirano-ist/s-scripts-v1.12.2) (2026-02-10)
+
+
+### Maintenance
+
+* **@s-hirano-ist/s-scripts:** Synchronize npm-packages versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.12.2
+    * @s-hirano-ist/s-database bumped to 1.12.2
+    * @s-hirano-ist/s-notification bumped to 1.12.2
+
 ## [1.12.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.12.0...@s-hirano-ist/s-scripts-v1.12.1) (2026-02-01)
 
 

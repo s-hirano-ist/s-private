@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.12.1...@s-hirano-ist/s-ui-v1.12.2) (2026-02-10)
+
+
+### Maintenance
+
+* hoist RegExp patterns to module scope ([f438aa5](https://github.com/s-hirano-ist/s-private/commit/f438aa525f1432e5679ae32aae1f146e43e1b884))
+
 ## [1.12.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.12.0...@s-hirano-ist/s-ui-v1.12.1) (2026-02-01)
 
 
