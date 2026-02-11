@@ -22,7 +22,9 @@ describe("useTabVisibility", () => {
 			const mockSearchParams = {
 				get: vi.fn().mockReturnValue("articles"),
 			};
-			mockUseSearchParams.mockReturnValue(mockSearchParams as any);
+			mockUseSearchParams.mockReturnValue(
+				mockSearchParams as unknown as ReturnType<typeof useSearchParams>,
+			);
 
 			const { result } = renderHook(() => useTabVisibility("articles"));
 
@@ -33,7 +35,9 @@ describe("useTabVisibility", () => {
 			const mockSearchParams = {
 				get: vi.fn().mockReturnValue("notes"),
 			};
-			mockUseSearchParams.mockReturnValue(mockSearchParams as any);
+			mockUseSearchParams.mockReturnValue(
+				mockSearchParams as unknown as ReturnType<typeof useSearchParams>,
+			);
 
 			const { result } = renderHook(() => useTabVisibility("articles"));
 
@@ -44,7 +48,9 @@ describe("useTabVisibility", () => {
 			const mockSearchParams = {
 				get: vi.fn().mockReturnValue(null),
 			};
-			mockUseSearchParams.mockReturnValue(mockSearchParams as any);
+			mockUseSearchParams.mockReturnValue(
+				mockSearchParams as unknown as ReturnType<typeof useSearchParams>,
+			);
 
 			const { result } = renderHook(() => useTabVisibility("articles"));
 
@@ -57,7 +63,9 @@ describe("useTabVisibility", () => {
 			const mockSearchParams = {
 				get: vi.fn().mockReturnValue("articles"),
 			};
-			mockUseSearchParams.mockReturnValue(mockSearchParams as any);
+			mockUseSearchParams.mockReturnValue(
+				mockSearchParams as unknown as ReturnType<typeof useSearchParams>,
+			);
 
 			const { result } = renderHook(() => useTabVisibility("articles"));
 
@@ -68,7 +76,9 @@ describe("useTabVisibility", () => {
 			const mockSearchParams = {
 				get: vi.fn().mockReturnValue("articles"),
 			};
-			mockUseSearchParams.mockReturnValue(mockSearchParams as any);
+			mockUseSearchParams.mockReturnValue(
+				mockSearchParams as unknown as ReturnType<typeof useSearchParams>,
+			);
 
 			const { result, rerender } = renderHook(() =>
 				useTabVisibility("articles"),
@@ -90,7 +100,9 @@ describe("useTabVisibility", () => {
 				get: vi.fn().mockReturnValue("notes"),
 			};
 
-			mockUseSearchParams.mockReturnValue(mockSearchParams as any);
+			mockUseSearchParams.mockReturnValue(
+				mockSearchParams as unknown as ReturnType<typeof useSearchParams>,
+			);
 
 			const { result } = renderHook(() => useTabVisibility("books"));
 
@@ -104,7 +116,9 @@ describe("useTabVisibility", () => {
 				get: vi.fn().mockReturnValue("articles"),
 			};
 
-			mockUseSearchParams.mockReturnValue(mockSearchParams as any);
+			mockUseSearchParams.mockReturnValue(
+				mockSearchParams as unknown as ReturnType<typeof useSearchParams>,
+			);
 
 			const { result } = renderHook(() => useTabVisibility("books", "preload"));
 
@@ -124,7 +138,9 @@ describe("useTabVisibility", () => {
 				get: vi.fn().mockReturnValue("articles"),
 			};
 
-			mockUseSearchParams.mockReturnValue(mockSearchParams as any);
+			mockUseSearchParams.mockReturnValue(
+				mockSearchParams as unknown as ReturnType<typeof useSearchParams>,
+			);
 
 			const { result } = renderHook(() => useTabVisibility("books", "lazy"));
 
@@ -140,7 +156,9 @@ describe("useTabVisibility", () => {
 				get: vi.fn().mockReturnValue("articles"),
 			};
 
-			mockUseSearchParams.mockReturnValue(mockSearchParams as any);
+			mockUseSearchParams.mockReturnValue(
+				mockSearchParams as unknown as ReturnType<typeof useSearchParams>,
+			);
 
 			const { result } = renderHook(() =>
 				useTabVisibility("articles", "preload"),
@@ -158,7 +176,9 @@ describe("useTabVisibility", () => {
 				get: vi.fn().mockReturnValue("articles"),
 			};
 
-			mockUseSearchParams.mockReturnValue(mockSearchParams as any);
+			mockUseSearchParams.mockReturnValue(
+				mockSearchParams as unknown as ReturnType<typeof useSearchParams>,
+			);
 
 			const clearTimeoutSpy = vi.spyOn(global, "clearTimeout");
 
@@ -178,7 +198,9 @@ describe("useTabVisibility", () => {
 				get: vi.fn().mockReturnValue("articles"),
 			};
 
-			mockUseSearchParams.mockReturnValue(mockSearchParams as any);
+			mockUseSearchParams.mockReturnValue(
+				mockSearchParams as unknown as ReturnType<typeof useSearchParams>,
+			);
 
 			const { result, rerender } = renderHook(() =>
 				useTabVisibility("articles"),
@@ -204,7 +226,9 @@ describe("useTabVisibility", () => {
 				get: vi.fn().mockReturnValue("notes"),
 			};
 
-			mockUseSearchParams.mockReturnValue(mockSearchParams as any);
+			mockUseSearchParams.mockReturnValue(
+				mockSearchParams as unknown as ReturnType<typeof useSearchParams>,
+			);
 
 			const { result, rerender } = renderHook(() =>
 				useTabVisibility("articles"),

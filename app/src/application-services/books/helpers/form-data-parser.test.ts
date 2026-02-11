@@ -1,7 +1,10 @@
 import {
+	type BookTitle,
+	type ISBN,
 	makeBookTitle,
 	makeISBN,
 } from "@s-hirano-ist/s-core/books/entities/book-entity";
+import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getFormDataString } from "@/common/utils/form-data-utils";
 import { parseAddBooksFormData } from "./form-data-parser";
@@ -20,7 +23,7 @@ describe("parseAddBooksFormData", () => {
 
 	test("should parse form data and create book data", async () => {
 		const formData = new FormData();
-		const userId = "test-user-id" as any;
+		const userId = "test-user-id" as UserId;
 
 		// Mock form data extraction
 		mockGetFormDataString
@@ -28,8 +31,8 @@ describe("parseAddBooksFormData", () => {
 			.mockReturnValueOnce("Clean Code");
 
 		// Mock entity creation
-		mockMakeISBN.mockReturnValue("9784123456789" as any);
-		mockMakeBookTitle.mockReturnValue("Clean Code" as any);
+		mockMakeISBN.mockReturnValue("9784123456789" as ISBN);
+		mockMakeBookTitle.mockReturnValue("Clean Code" as BookTitle);
 
 		const result = await parseAddBooksFormData(formData, userId);
 
@@ -50,7 +53,7 @@ describe("parseAddBooksFormData", () => {
 
 	test("should handle form data with ISBN containing hyphens", async () => {
 		const formData = new FormData();
-		const userId = "test-user-id" as any;
+		const userId = "test-user-id" as UserId;
 
 		// Mock form data extraction with hyphenated ISBN
 		mockGetFormDataString
@@ -58,8 +61,8 @@ describe("parseAddBooksFormData", () => {
 			.mockReturnValueOnce("The Pragmatic Programmer");
 
 		// Mock entity creation
-		mockMakeISBN.mockReturnValue("978-4-123-45678-9" as any);
-		mockMakeBookTitle.mockReturnValue("The Pragmatic Programmer" as any);
+		mockMakeISBN.mockReturnValue("978-4-123-45678-9" as ISBN);
+		mockMakeBookTitle.mockReturnValue("The Pragmatic Programmer" as BookTitle);
 
 		const result = await parseAddBooksFormData(formData, userId);
 
@@ -77,14 +80,14 @@ describe("parseAddBooksFormData", () => {
 
 	test("should handle empty form data", async () => {
 		const formData = new FormData();
-		const userId = "test-user-id" as any;
+		const userId = "test-user-id" as UserId;
 
 		// Mock form data extraction returning empty strings
 		mockGetFormDataString.mockReturnValueOnce("").mockReturnValueOnce("");
 
 		// Mock entity creation
-		mockMakeISBN.mockReturnValue("" as any);
-		mockMakeBookTitle.mockReturnValue("" as any);
+		mockMakeISBN.mockReturnValue("" as ISBN);
+		mockMakeBookTitle.mockReturnValue("" as BookTitle);
 
 		const result = await parseAddBooksFormData(formData, userId);
 
@@ -99,7 +102,7 @@ describe("parseAddBooksFormData", () => {
 
 	test("should handle form data with Japanese book title", async () => {
 		const formData = new FormData();
-		const userId = "test-user-id-jp" as any;
+		const userId = "test-user-id-jp" as UserId;
 
 		// Mock form data extraction with Japanese content
 		mockGetFormDataString
@@ -107,8 +110,8 @@ describe("parseAddBooksFormData", () => {
 			.mockReturnValueOnce("リーダブルコード");
 
 		// Mock entity creation
-		mockMakeISBN.mockReturnValue("9784567890123" as any);
-		mockMakeBookTitle.mockReturnValue("リーダブルコード" as any);
+		mockMakeISBN.mockReturnValue("9784567890123" as ISBN);
+		mockMakeBookTitle.mockReturnValue("リーダブルコード" as BookTitle);
 
 		const result = await parseAddBooksFormData(formData, userId);
 
@@ -123,7 +126,7 @@ describe("parseAddBooksFormData", () => {
 
 	test("should handle form data with special characters in title", async () => {
 		const formData = new FormData();
-		const userId = "test-user-id" as any;
+		const userId = "test-user-id" as UserId;
 
 		// Mock form data extraction with special characters
 		mockGetFormDataString
@@ -131,9 +134,9 @@ describe("parseAddBooksFormData", () => {
 			.mockReturnValueOnce('Book Title with "Quotes" & Symbols');
 
 		// Mock entity creation
-		mockMakeISBN.mockReturnValue("9784567890123" as any);
+		mockMakeISBN.mockReturnValue("9784567890123" as ISBN);
 		mockMakeBookTitle.mockReturnValue(
-			'Book Title with "Quotes" & Symbols' as any,
+			'Book Title with "Quotes" & Symbols' as BookTitle,
 		);
 
 		const result = await parseAddBooksFormData(formData, userId);
@@ -149,7 +152,7 @@ describe("parseAddBooksFormData", () => {
 
 	test("should handle different user IDs", async () => {
 		const formData = new FormData();
-		const userId = "different-user-123" as any;
+		const userId = "different-user-123" as UserId;
 
 		// Mock form data extraction
 		mockGetFormDataString
@@ -157,8 +160,8 @@ describe("parseAddBooksFormData", () => {
 			.mockReturnValueOnce("Design Patterns");
 
 		// Mock entity creation
-		mockMakeISBN.mockReturnValue("9780123456789" as any);
-		mockMakeBookTitle.mockReturnValue("Design Patterns" as any);
+		mockMakeISBN.mockReturnValue("9780123456789" as ISBN);
+		mockMakeBookTitle.mockReturnValue("Design Patterns" as BookTitle);
 
 		const result = await parseAddBooksFormData(formData, userId);
 

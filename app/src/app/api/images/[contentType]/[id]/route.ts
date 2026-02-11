@@ -1,3 +1,4 @@
+import { Readable } from "node:stream";
 import { forbidden } from "next/navigation";
 import { NextResponse } from "next/server";
 import { getImagesFromStorage } from "@/application-services/images/get-images";
@@ -16,9 +17,12 @@ export const GET = auth(
 		if (!request.auth.user.roles.includes("viewer")) forbidden();
 
 		const isThumbnail = contentType === "thumbnail";
-		const stream = await getImagesFromStorage(id, isThumbnail);
+		const nodeStream = await getImagesFromStorage(id, isThumbnail);
+		const webStream = Readable.toWeb(
+			nodeStream as Readable,
+		) as unknown as ReadableStream;
 
-		return new Response(stream as any, {
+		return new Response(webStream, {
 			headers: {
 				"Content-Type": "image/jpeg",
 				"Cache-Control": "public, max-age=31536000, immutable",

@@ -1,9 +1,14 @@
 import {
+	type ArticleTitle,
+	type CategoryName,
 	makeArticleTitle,
 	makeCategoryName,
 	makeQuote,
 	makeUrl,
+	type Quote,
+	type Url,
 } from "@s-hirano-ist/s-core/articles/entities/article-entity";
+import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getFormDataString } from "@/common/utils/form-data-utils";
 import { parseAddArticleFormData } from "./form-data-parser";
@@ -24,7 +29,7 @@ describe("parseAddArticleFormData", () => {
 
 	test("should parse form data and create article data", () => {
 		const formData = new FormData();
-		const userId = "test-user-id" as any;
+		const userId = "test-user-id" as UserId;
 
 		// Mock form data extraction
 		mockGetFormDataString
@@ -34,10 +39,10 @@ describe("parseAddArticleFormData", () => {
 			.mockReturnValueOnce("Technology");
 
 		// Mock entity creation
-		mockMakeArticleTitle.mockReturnValue("Test Article Title" as any);
-		mockMakeQuote.mockReturnValue("This is a test quote" as any);
-		mockMakeUrl.mockReturnValue("https://example.com" as any);
-		mockMakeCategoryName.mockReturnValue("Technology" as any);
+		mockMakeArticleTitle.mockReturnValue("Test Article Title" as ArticleTitle);
+		mockMakeQuote.mockReturnValue("This is a test quote" as Quote);
+		mockMakeUrl.mockReturnValue("https://example.com" as Url);
+		mockMakeCategoryName.mockReturnValue("Technology" as CategoryName);
 
 		const result = parseAddArticleFormData(formData, userId);
 
@@ -62,7 +67,7 @@ describe("parseAddArticleFormData", () => {
 
 	test("should handle empty form data", () => {
 		const formData = new FormData();
-		const userId = "test-user-id" as any;
+		const userId = "test-user-id" as UserId;
 
 		// Mock form data extraction returning empty strings
 		mockGetFormDataString
@@ -72,10 +77,10 @@ describe("parseAddArticleFormData", () => {
 			.mockReturnValueOnce("");
 
 		// Mock entity creation
-		mockMakeArticleTitle.mockReturnValue("" as any);
-		mockMakeQuote.mockReturnValue("" as any);
-		mockMakeUrl.mockReturnValue("" as any);
-		mockMakeCategoryName.mockReturnValue("" as any);
+		mockMakeArticleTitle.mockReturnValue("" as ArticleTitle);
+		mockMakeQuote.mockReturnValue("" as Quote);
+		mockMakeUrl.mockReturnValue("" as Url);
+		mockMakeCategoryName.mockReturnValue("" as CategoryName);
 
 		const result = parseAddArticleFormData(formData, userId);
 
@@ -90,7 +95,7 @@ describe("parseAddArticleFormData", () => {
 
 	test("should handle form data with Japanese content", () => {
 		const formData = new FormData();
-		const userId = "test-user-id-jp" as any;
+		const userId = "test-user-id-jp" as UserId;
 
 		// Mock form data extraction with Japanese content
 		mockGetFormDataString
@@ -100,10 +105,10 @@ describe("parseAddArticleFormData", () => {
 			.mockReturnValueOnce("技術");
 
 		// Mock entity creation
-		mockMakeArticleTitle.mockReturnValue("テスト記事タイトル" as any);
-		mockMakeQuote.mockReturnValue("これはテストの引用です" as any);
-		mockMakeUrl.mockReturnValue("https://example.co.jp" as any);
-		mockMakeCategoryName.mockReturnValue("技術" as any);
+		mockMakeArticleTitle.mockReturnValue("テスト記事タイトル" as ArticleTitle);
+		mockMakeQuote.mockReturnValue("これはテストの引用です" as Quote);
+		mockMakeUrl.mockReturnValue("https://example.co.jp" as Url);
+		mockMakeCategoryName.mockReturnValue("技術" as CategoryName);
 
 		const result = parseAddArticleFormData(formData, userId);
 
@@ -118,7 +123,7 @@ describe("parseAddArticleFormData", () => {
 
 	test("should handle form data with special characters", () => {
 		const formData = new FormData();
-		const userId = "test-user-id" as any;
+		const userId = "test-user-id" as UserId;
 
 		// Mock form data extraction with special characters
 		mockGetFormDataString
@@ -129,13 +134,13 @@ describe("parseAddArticleFormData", () => {
 
 		// Mock entity creation
 		mockMakeArticleTitle.mockReturnValue(
-			'Article with "quotes" & symbols' as any,
+			'Article with "quotes" & symbols' as ArticleTitle,
 		);
-		mockMakeQuote.mockReturnValue("Quote with <tags> and & symbols" as any);
+		mockMakeQuote.mockReturnValue("Quote with <tags> and & symbols" as Quote);
 		mockMakeUrl.mockReturnValue(
-			"https://example.com/path?param=value&other=test" as any,
+			"https://example.com/path?param=value&other=test" as Url,
 		);
-		mockMakeCategoryName.mockReturnValue("Web & Development" as any);
+		mockMakeCategoryName.mockReturnValue("Web & Development" as CategoryName);
 
 		const result = parseAddArticleFormData(formData, userId);
 

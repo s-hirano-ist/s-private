@@ -54,3 +54,6 @@ packages/scripts/dist/
 docs/api/
 
 /plans
+
+# docker sandbox
+.pnpm-store/

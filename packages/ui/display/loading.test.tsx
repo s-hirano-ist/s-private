@@ -4,7 +4,7 @@ import Loading from "./loading";
 
 // Mock lucide-react
 vi.mock("lucide-react", () => ({
-	Loader: ({ className, size }: any) => (
+	Loader: ({ className, size }: { className?: string; size?: number }) => (
 		<div className={className} data-size={size} data-testid="loader">
 			Loading...
 		</div>

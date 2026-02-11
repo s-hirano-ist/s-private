@@ -47,7 +47,7 @@ vi.mock("@s-hirano-ist/s-core/books/services/books-domain-service", () => ({
 vi.mock(
 	"@s-hirano-ist/s-core/books/entities/book-entity",
 	async (importOriginal) => {
-		const actual = (await importOriginal()) as any;
+		const actual = await importOriginal<Record<string, unknown>>();
 		return {
 			...actual,
 			bookEntity: {

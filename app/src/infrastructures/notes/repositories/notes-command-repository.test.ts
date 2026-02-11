@@ -72,11 +72,9 @@ describe("NotesCommandRepository", () => {
 			const userId = makeUserId("test-user-id");
 			const status = "UNEXPORTED";
 
-			const mockDeletedNote = {
+			vi.mocked(prisma.note.delete).mockResolvedValue({
 				title: "Deleted Note",
-			} as any;
-
-			vi.mocked(prisma.note.delete).mockResolvedValue(mockDeletedNote);
+			} as Awaited<ReturnType<typeof prisma.note.delete>>);
 
 			await notesCommandRepository.deleteById(id, userId, status);
 
@@ -88,11 +86,9 @@ describe("NotesCommandRepository", () => {
 			const userId = makeUserId("test-user-id-2");
 			const status = "EXPORTED";
 
-			const mockDeletedNote = {
+			vi.mocked(prisma.note.delete).mockResolvedValue({
 				title: "Another Note",
-			} as any;
-
-			vi.mocked(prisma.note.delete).mockResolvedValue(mockDeletedNote);
+			} as Awaited<ReturnType<typeof prisma.note.delete>>);
 
 			await notesCommandRepository.deleteById(id, userId, status);
 

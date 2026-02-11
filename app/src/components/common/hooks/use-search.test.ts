@@ -26,7 +26,9 @@ describe("useSearch", () => {
 			getAll: (key: string) => params.getAll(key),
 			size: params.size,
 		};
-		mockUseSearchParams.mockReturnValue(mockSearchParams as any);
+		mockUseSearchParams.mockReturnValue(
+			mockSearchParams as unknown as ReturnType<typeof useSearchParams>,
+		);
 		mockUseRouter.mockReturnValue({
 			push: mockPush,
 			replace: vi.fn(),

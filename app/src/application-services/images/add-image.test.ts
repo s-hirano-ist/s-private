@@ -1,3 +1,8 @@
+import type {
+	ContentType,
+	FileSize,
+	Path,
+} from "@s-hirano-ist/s-core/images/entities/image-entity";
 import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
@@ -79,11 +84,11 @@ describe("addImage", () => {
 		vi.mocked(getSelfId).mockResolvedValue(makeUserId("user-id"));
 		vi.mocked(parseAddImageFormData).mockResolvedValue({
 			userId: makeUserId("user-id"),
-			path: "myImage.jpeg" as any,
-			contentType: "image/jpeg" as any,
-			fileSize: validFileSize as any,
-			originalBuffer: Buffer.from([]) as any,
-			thumbnailBuffer: Buffer.from([]) as any,
+			path: "myImage.jpeg" as Path,
+			contentType: "image/jpeg" as ContentType,
+			fileSize: validFileSize as FileSize,
+			originalBuffer: Buffer.from([]),
+			thumbnailBuffer: Buffer.from([]),
 		});
 		vi.mocked(imagesQueryRepository.findByPath).mockResolvedValue(null);
 		vi.mocked(imagesCommandRepository.create).mockResolvedValue();
