@@ -14,5 +14,9 @@
 			}
 		]
 	},
+	"statusLine": {
+		"type": "command",
+		"command": "cat | bash ./.claude/statusline.sh"
+	},
 	"plansDirectory": "./plans"
 }
