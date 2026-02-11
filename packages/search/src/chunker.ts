@@ -212,14 +212,13 @@ function splitByParagraphs(text: string, maxLength: number): string[] {
 }
 
 /**
- * Parse Markdown file and generate chunks
+ * Core markdown parsing logic with explicit doc_id
  */
-export function parseMarkdown(
-	filePath: string,
+function parseMarkdownWithDocId(
+	docId: string,
 	content: string,
 ): QdrantPayload[] {
 	const { frontmatter, body } = parseFrontmatter(content);
-	const docId = `file:${filePath}`;
 	const chunks: QdrantPayload[] = [];
 
 	// Skip draft files
@@ -260,4 +259,66 @@ export function parseMarkdown(
 	}
 
 	return chunks;
+}
+
+/**
+ * Parse Markdown file and generate chunks
+ */
+export function parseMarkdown(
+	filePath: string,
+	content: string,
+): QdrantPayload[] {
+	return parseMarkdownWithDocId(`file:${filePath}`, content);
+}
+
+/**
+ * Parse a DB note into chunks for Qdrant ingestion
+ */
+export function parseDbNote(
+	noteId: string,
+	title: string,
+	markdown: string,
+): QdrantPayload[] {
+	const docId = `db:note:${noteId}`;
+	const syntheticContent = `---\nheading: ${title}\n---\n\n## ${title}\n\n${markdown}`;
+	return parseMarkdownWithDocId(docId, syntheticContent);
+}
+
+/**
+ * Parse a DB article into chunks for Qdrant ingestion
+ */
+export function parseDbArticle(article: {
+	id: string;
+	title: string;
+	url: string;
+	ogTitle?: string | null;
+	ogDescription?: string | null;
+	quote?: string | null;
+	categoryName: string;
+}): QdrantPayload[] {
+	const docId = `db:article:${article.id}`;
+	const textParts: string[] = [];
+	if (article.title) textParts.push(article.title);
+	if (article.ogTitle && article.ogTitle !== article.title)
+		textParts.push(article.ogTitle);
+	if (article.ogDescription) textParts.push(article.ogDescription);
+	if (article.quote) textParts.push(article.quote);
+	if (article.url) textParts.push(article.url);
+
+	const text = textParts.join("\n");
+	if (!text.trim()) return [];
+
+	return [
+		{
+			type: "bookmark_json",
+			top_heading: article.categoryName,
+			doc_id: docId,
+			chunk_id: `${docId}#0`,
+			title: article.title || article.ogTitle || "Untitled",
+			url: article.url,
+			heading_path: [article.categoryName],
+			text,
+			content_hash: generateHash(text),
+		},
+	];
 }

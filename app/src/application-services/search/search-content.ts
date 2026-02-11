@@ -132,7 +132,7 @@ export async function searchContent(
 			} satisfies ArticleSearchResult;
 		} else if (ct === "books") {
 			result = {
-				href: r.title,
+				href: encodeURIComponent(r.title),
 				contentType: "books" as const,
 				title: r.title,
 				snippet: truncateText(r.text),
@@ -141,7 +141,7 @@ export async function searchContent(
 			} satisfies BookSearchResult;
 		} else {
 			result = {
-				href: r.title,
+				href: encodeURIComponent(r.title),
 				contentType: "notes" as const,
 				title: r.title,
 				snippet: truncateText(r.text),
