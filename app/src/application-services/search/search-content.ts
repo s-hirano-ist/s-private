@@ -2,8 +2,8 @@
  * Unified search application service.
  *
  * @remarks
- * Provides full-text search across articles, books, and notes
- * with relevance scoring and snippet extraction.
+ * Provides vector search across articles, books, and notes
+ * via the search-api (Qdrant backend).
  *
  * @module
  */
@@ -14,15 +14,14 @@ import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-
 import type {
 	ArticleSearchResult,
 	BookSearchResult,
+	ContentType,
 	NoteSearchResult,
 	SearchQuery,
 	SearchResult,
 	SearchResultGroup,
 	UnifiedSearchResults,
 } from "@s-hirano-ist/s-core/shared-kernel/types/search-types";
-import { articlesQueryRepository } from "@/infrastructures/articles/repositories/articles-query-repository";
-import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
-import { notesQueryRepository } from "@/infrastructures/notes/repositories/notes-query-repository";
+import { env } from "@/env";
 
 /**
  * Truncates text to a maximum length with ellipsis.
@@ -35,153 +34,141 @@ function truncateText(text: string, maxLength = 150): string {
 }
 
 /**
- * Extracts a snippet from text around the query match.
- *
- * @remarks
- * Centers the snippet around the first query match for context.
+ * Maps search-api type + doc_id to a ContentType.
  *
  * @internal
  */
-function extractSnippet(
-	text: string | null,
-	query: string,
-	maxLength = 150,
-): string {
-	if (!text) return "";
-
-	const queryLower = query.toLowerCase();
-	const textLower = text.toLowerCase();
-	const queryIndex = textLower.indexOf(queryLower);
-
-	if (queryIndex === -1) {
-		return truncateText(text, maxLength);
-	}
-
-	const start = Math.max(0, queryIndex - 50);
-	const end = Math.min(text.length, queryIndex + query.length + 100);
-	const snippet = text.substring(start, end);
-
-	return start > 0 ? `...${snippet}` : snippet;
+function resolveContentType(
+	type: "markdown_note" | "bookmark_json",
+	docId: string,
+): ContentType {
+	if (type === "bookmark_json") return "articles";
+	return docId.includes("/book/") ? "books" : "notes";
 }
 
 /**
- * Performs unified search across all content types.
+ * Builds the search-api `type` filter from contentTypes.
+ *
+ * @internal
+ */
+function buildTypeFilter(
+	contentTypes: ContentType[],
+): "bookmark_json" | "markdown_note" | undefined {
+	const hasArticles = contentTypes.includes("articles");
+	const hasBooks = contentTypes.includes("books");
+	const hasNotes = contentTypes.includes("notes");
+
+	if (hasArticles && !hasBooks && !hasNotes) return "bookmark_json";
+	if (!hasArticles && (hasBooks || hasNotes)) return "markdown_note";
+	return undefined;
+}
+
+/**
+ * Performs unified search across all content types via search-api.
  *
  * @remarks
- * Searches articles, books, and notes with:
- * - Configurable content type filtering
- * - Relevance-based result sorting
- * - Snippet extraction for context
+ * Searches articles, books, and notes through the Qdrant vector search backend.
+ * Results are sorted by relevance score from the search-api.
  *
  * @param searchQuery - Search query with optional filters
- * @param userId - User ID for data isolation
+ * @param _userId - User ID (reserved for future per-user filtering)
  * @returns Unified search results grouped by content type
  */
 export async function searchContent(
 	searchQuery: SearchQuery,
-	userId: UserId,
+	_userId: UserId,
 ): Promise<UnifiedSearchResults> {
 	const { query, contentTypes, limit = 20 } = searchQuery;
 	const searchTypes = new Set(contentTypes ?? ["articles", "books", "notes"]);
 
-	const results: SearchResult[] = [];
-	const groups: SearchResultGroup[] = [];
+	const typeFilter = contentTypes ? buildTypeFilter(contentTypes) : undefined;
 
-	// Search articles
-	if (searchTypes.has("articles")) {
-		const articleResults = await articlesQueryRepository.search(
+	const response = await fetch(`${env.SEARCH_API_URL}/search`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${env.SEARCH_API_KEY}`,
+		},
+		body: JSON.stringify({
 			query,
-			userId,
-			limit,
-		);
-
-		const articleSearchResults: ArticleSearchResult[] = articleResults.map(
-			(article) => ({
-				href: article.url,
-				contentType: "articles" as const,
-				title: article.title,
-				snippet: extractSnippet(
-					article.quote || article.ogDescription || article.ogTitle,
-					query,
-				),
-				url: article.url,
-				category: { id: "", name: article.categoryName },
-			}),
-		);
-
-		results.push(...articleSearchResults);
-		groups.push({
-			contentType: "articles",
-			results: articleSearchResults,
-			totalCount: articleSearchResults.length,
-		});
-	}
-
-	// Search books
-	if (searchTypes.has("books")) {
-		const bookResults = await booksQueryRepository.search(query, userId, limit);
-
-		const bookSearchResults: BookSearchResult[] = bookResults.map((book) => ({
-			href: book.isbn,
-			contentType: "books" as const,
-			title: book.title,
-			snippet: extractSnippet(
-				book.markdown ??
-					book.googleDescription ??
-					book.googleSubTitle ??
-					book.googleTitle ??
-					null,
-				query,
-			),
-			rating: book.rating,
-			tags: book.tags,
-		}));
-
-		results.push(...bookSearchResults);
-		groups.push({
-			contentType: "books",
-			results: bookSearchResults,
-			totalCount: bookSearchResults.length,
-		});
-	}
-
-	// Search notes
-	if (searchTypes.has("notes")) {
-		const noteResults = await notesQueryRepository.search(query, userId, limit);
-
-		const noteSearchResults: NoteSearchResult[] = noteResults.map((note) => ({
-			href: note.title,
-			contentType: "notes" as const,
-			title: note.title,
-			snippet: extractSnippet(note.markdown, query),
-		}));
-
-		results.push(...noteSearchResults);
-		groups.push({
-			contentType: "notes",
-			results: noteSearchResults,
-			totalCount: noteSearchResults.length,
-		});
-	}
-
-	// Sort results by relevance (currently by creation date, but could be enhanced)
-	const queryLower = query.toLowerCase();
-
-	const sortedResults = results.toSorted((a, b) => {
-		// Simple relevance scoring based on title vs content matches
-		const aInTitle = a.title.toLowerCase().includes(queryLower) ? 2 : 0;
-		const bInTitle = b.title.toLowerCase().includes(queryLower) ? 2 : 0;
-		const aInSnippet = a.snippet.toLowerCase().includes(queryLower) ? 1 : 0;
-		const bInSnippet = b.snippet.toLowerCase().includes(queryLower) ? 1 : 0;
-
-		const aScore = aInTitle + aInSnippet;
-		const bScore = bInTitle + bInSnippet;
-
-		return bScore - aScore;
+			topK: limit,
+			...(typeFilter ? { type: typeFilter } : {}),
+		}),
 	});
 
+	if (!response.ok) {
+		throw new Error(`Search API returned ${response.status}`);
+	}
+
+	const data = (await response.json()) as {
+		results: Array<{
+			title: string;
+			text: string;
+			url?: string;
+			type: "markdown_note" | "bookmark_json";
+			heading_path: string[];
+			doc_id: string;
+			score?: number;
+		}>;
+	};
+
+	const results: SearchResult[] = [];
+	const groupMap = new Map<ContentType, SearchResult[]>();
+
+	for (const r of data.results) {
+		const ct = resolveContentType(r.type, r.doc_id);
+
+		if (!searchTypes.has(ct)) continue;
+
+		let result: SearchResult;
+		if (ct === "articles") {
+			result = {
+				href: r.url ?? "",
+				contentType: "articles" as const,
+				title: r.title,
+				snippet: truncateText(r.text),
+				url: r.url ?? "",
+				category: { id: "", name: r.heading_path[0] ?? "" },
+			} satisfies ArticleSearchResult;
+		} else if (ct === "books") {
+			result = {
+				href: r.title,
+				contentType: "books" as const,
+				title: r.title,
+				snippet: truncateText(r.text),
+				rating: null,
+				tags: [],
+			} satisfies BookSearchResult;
+		} else {
+			result = {
+				href: r.title,
+				contentType: "notes" as const,
+				title: r.title,
+				snippet: truncateText(r.text),
+			} satisfies NoteSearchResult;
+		}
+
+		results.push(result);
+
+		const group = groupMap.get(ct) ?? [];
+		group.push(result);
+		groupMap.set(ct, group);
+	}
+
+	const groups: SearchResultGroup[] = [];
+	for (const ct of ["articles", "books", "notes"] as const) {
+		const groupResults = groupMap.get(ct);
+		if (groupResults) {
+			groups.push({
+				contentType: ct,
+				results: groupResults,
+				totalCount: groupResults.length,
+			});
+		}
+	}
+
 	return {
-		results: sortedResults.slice(0, limit),
+		results: results.slice(0, limit),
 		groups,
 		totalCount: results.length,
 		query,

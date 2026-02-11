@@ -46,6 +46,8 @@ export const env = createEnv({
 		MINIO_BUCKET_NAME: z.string(),
 		MINIO_ACCESS_KEY: z.string(),
 		MINIO_SECRET_KEY: z.string(),
+		SEARCH_API_URL: z.string(),
+		SEARCH_API_KEY: z.string(),
 	},
 
 	/**
@@ -75,6 +77,8 @@ export const env = createEnv({
 		MINIO_BUCKET_NAME: process.env.MINIO_BUCKET_NAME,
 		MINIO_ACCESS_KEY: process.env.MINIO_ACCESS_KEY,
 		MINIO_SECRET_KEY: process.env.MINIO_SECRET_KEY,
+		SEARCH_API_URL: process.env.SEARCH_API_URL,
+		SEARCH_API_KEY: process.env.SEARCH_API_KEY,
 		NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN, // MEMO: ok to leak
 	},
 	/**

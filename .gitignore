@@ -49,6 +49,8 @@ packages/database/dist/
 packages/ui/dist/
 packages/notification/dist/
 packages/scripts/dist/
+packages/search/dist/
+services/search-api/dist/
 
 # TypeDoc generated documentation
 docs/api/

@@ -3,7 +3,6 @@ import {
 	makeMarkdown,
 	makeNoteTitle,
 	type NoteListItemDTO,
-	type NoteSearchItemDTO,
 	type NoteTitle,
 	type UnexportedNote,
 } from "@s-hirano-ist/s-core/notes/entities/note-entity";
@@ -78,38 +77,8 @@ async function count(userId: UserId, status: Status): Promise<number> {
 	return data;
 }
 
-async function search(
-	query: string,
-	userId: UserId,
-	limit = 20,
-): Promise<NoteSearchItemDTO[]> {
-	const data = await prisma.note.findMany({
-		where: {
-			userId,
-			status: "EXPORTED",
-			OR: [
-				{ title: { contains: query, mode: "insensitive" } },
-				{ markdown: { contains: query, mode: "insensitive" } },
-			],
-		},
-		select: {
-			id: true,
-			title: true,
-			markdown: true,
-		},
-		take: limit,
-		orderBy: { createdAt: "desc" },
-	});
-	return data.map((d) => ({
-		id: makeId(d.id),
-		title: makeNoteTitle(d.title),
-		markdown: makeMarkdown(d.markdown),
-	}));
-}
-
 export const notesQueryRepository: INotesQueryRepository = {
 	findByTitle,
 	findMany,
 	count,
-	search,
 };

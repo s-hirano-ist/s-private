@@ -1,8 +1,39 @@
+import { existsSync, readFileSync } from "node:fs";
+import { mkdir, writeFile } from "node:fs/promises";
+import { homedir } from "node:os";
+import { dirname, join } from "node:path";
 import {
+	env,
 	type FeatureExtractionPipeline,
 	pipeline,
 } from "@huggingface/transformers";
 import { RAG_CONFIG } from "./config";
+
+const CACHE_DIR = join(homedir(), ".cache", "huggingface", "transformers");
+
+// Disable built-in FileCache (broken with XET storage + return_path=true)
+// Use custom cache instead for reliable caching
+env.useFSCache = false;
+env.useBrowserCache = false;
+env.useCustomCache = true;
+env.allowRemoteModels = true;
+env.customCache = {
+	async match(request: string) {
+		const key = request.replace(/^https?:\/\//, "");
+		const filePath = join(CACHE_DIR, key);
+		if (existsSync(filePath)) {
+			return new Response(readFileSync(filePath));
+		}
+		return undefined;
+	},
+	async put(request: string, response: Response) {
+		const key = request.replace(/^https?:\/\//, "");
+		const filePath = join(CACHE_DIR, key);
+		await mkdir(dirname(filePath), { recursive: true });
+		const buffer = Buffer.from(await response.arrayBuffer());
+		await writeFile(filePath, buffer);
+	},
+};
 
 let embeddingPipeline: FeatureExtractionPipeline | null = null;
 
@@ -12,6 +43,7 @@ let embeddingPipeline: FeatureExtractionPipeline | null = null;
 async function getEmbeddingPipeline(): Promise<FeatureExtractionPipeline> {
 	if (!embeddingPipeline) {
 		console.log(`Loading embedding model: ${RAG_CONFIG.embedding.model}...`);
+		console.log(`Cache directory: ${CACHE_DIR}`);
 		embeddingPipeline = (await pipeline(
 			"feature-extraction",
 			RAG_CONFIG.embedding.model,

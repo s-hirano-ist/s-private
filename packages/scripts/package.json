@@ -60,10 +60,10 @@
 		"access": "public"
 	},
 	"dependencies": {
-		"@huggingface/transformers": "3.8.1",
-		"@qdrant/js-client-rest": "1.16.2",
 		"@s-hirano-ist/s-core": "workspace:*",
+		"@s-hirano-ist/s-search": "workspace:*",
 		"@s-hirano-ist/s-database": "workspace:*",
+		"dotenv": "16.5.0",
 		"@s-hirano-ist/s-notification": "workspace:*",
 		"glob": "13.0.0",
 		"jsdom": "27.4.0",

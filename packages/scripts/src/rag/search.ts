@@ -1,98 +1,60 @@
 #!/usr/bin/env node
-import { embed } from "./embedding";
-import { getCollectionStats, search } from "./qdrant-client";
+import "dotenv/config";
+import { ensureCollection } from "@s-hirano-ist/s-search/qdrant-client";
+import type { SearchOptions } from "@s-hirano-ist/s-search/search";
+import { searchContent } from "@s-hirano-ist/s-search/search";
 
-/**
- * Search for documents matching a query
- */
-async function runSearch(): Promise<void> {
-	// Parse command line arguments
+function parseArgs(): { query: string; options: SearchOptions } {
 	const args = process.argv.slice(2);
-
-	if (args.length === 0) {
-		console.log("Usage: rag-search <query> [options]");
-		console.log("");
-		console.log("Options:");
-		console.log("  --top-k <number>     Number of results (default: 5)");
-		console.log(
-			"  --type <type>        Filter by type: markdown_note | bookmark_json",
-		);
-		console.log("  --heading <heading>  Filter by top_heading");
-		console.log("");
-		console.log("Examples:");
-		console.log('  rag-search "ルネサンス 遠近法"');
-		console.log('  rag-search "AI 脆弱性" --type bookmark_json');
-		console.log('  rag-search "React" --heading javascript --top-k 10');
-		process.exit(1);
-	}
-
-	// Parse options
-	let query = "";
-	let topK = 5;
-	let filterType: "markdown_note" | "bookmark_json" | undefined;
-	let filterHeading: string | undefined;
+	const options: SearchOptions = {};
+	const positional: string[] = [];
 
 	for (let i = 0; i < args.length; i++) {
-		if (args[i] === "--top-k" && args[i + 1]) {
-			topK = Number.parseInt(args[i + 1], 10);
-			i++;
-		} else if (args[i] === "--type" && args[i + 1]) {
-			filterType = args[i + 1] as "markdown_note" | "bookmark_json";
-			i++;
-		} else if (args[i] === "--heading" && args[i + 1]) {
-			filterHeading = args[i + 1];
-			i++;
-		} else if (!args[i].startsWith("--")) {
-			query = args[i];
+		const arg = args[i];
+		if (arg === "--top-k" && i + 1 < args.length) {
+			options.topK = Number(args[++i]);
+		} else if (arg === "--type" && i + 1 < args.length) {
+			options.type = args[++i] as SearchOptions["type"];
+		} else if (arg === "--heading" && i + 1 < args.length) {
+			options.heading = args[++i];
+		} else {
+			positional.push(arg);
 		}
 	}
 
+	const query = positional.join(" ");
 	if (!query) {
-		console.error("Error: Query is required");
+		console.error(
+			"Usage: rag-search <query> [--top-k N] [--type markdown_note|bookmark_json] [--heading HEADING]",
+		);
 		process.exit(1);
 	}
 
-	// Check collection status
-	const stats = await getCollectionStats();
-	if (stats.status === "not_found") {
-		console.error("Error: Collection not found. Run ingest first.");
-		process.exit(1);
-	}
+	return { query, options };
+}
+
+async function search(): Promise<void> {
+	const { query, options } = parseArgs();
 
 	console.log(`Searching for: "${query}"`);
-	console.log(`Collection has ${stats.pointsCount} points\n`);
+	if (options.topK) console.log(`  top-k: ${options.topK}`);
+	if (options.type) console.log(`  type: ${options.type}`);
+	if (options.heading) console.log(`  heading: ${options.heading}`);
+	console.log();
 
-	// Generate query embedding
-	console.log("Generating query embedding...");
-	const queryVector = await embed(query, true);
+	await ensureCollection();
 
-	// Search
-	console.log("Searching...\n");
-	const results = await search(queryVector, {
-		topK,
-		filter: {
-			type: filterType,
-			top_heading: filterHeading,
-		},
-	});
+	const response = await searchContent(query, options);
 
-	// Display results
-	console.log(`Found ${results.length} results:\n`);
-	console.log("=".repeat(80));
+	console.log(`Found ${response.totalResults} results:\n`);
 
-	for (let i = 0; i < results.length; i++) {
-		const r = results[i];
-		console.log(`\n[${i + 1}] Score: ${r.score.toFixed(4)}`);
-		console.log(`    Title: ${r.title}`);
-		console.log(`    Type: ${r.type}`);
-		console.log(`    Path: ${r.heading_path.join(" > ")}`);
-		if (r.url) {
-			console.log(`    URL: ${r.url}`);
-		}
-		console.log(
-			`    Text: ${r.text.slice(0, 200)}${r.text.length > 200 ? "..." : ""}`,
-		);
-		console.log("-".repeat(80));
+	for (const [i, result] of response.results.entries()) {
+		console.log(`--- Result ${i + 1} (score: ${result.score.toFixed(4)}) ---`);
+		console.log(`Title: ${result.title}`);
+		if (result.url) console.log(`URL: ${result.url}`);
+		console.log(`Type: ${result.type}`);
+		console.log(`Heading: ${result.heading_path.join(" > ")}`);
+		console.log(`\n${result.text}\n`);
 	}
 }
 
@@ -106,7 +68,7 @@ async function main() {
 	}
 
 	try {
-		await runSearch();
+		await search();
 	} catch (error) {
 		console.error("❌ エラーが発生しました:", error);
 		process.exit(1);

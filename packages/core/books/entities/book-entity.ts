@@ -513,22 +513,3 @@ export type BookListItemDTO = Readonly<{
 	googleImgSrc: GoogleImgSrc | undefined;
 	imagePath: Path | undefined;
 }>;
-
-/**
- * DTO for book search results.
- *
- * @remarks
- * Contains fields needed for search display, with branded types.
- */
-export type BookSearchItemDTO = Readonly<{
-	id: Id;
-	isbn: ISBN;
-	title: BookTitle;
-	googleTitle: GoogleTitle | undefined;
-	googleSubTitle: GoogleSubtitle | undefined;
-	googleAuthors: GoogleAuthors | undefined;
-	googleDescription: GoogleDescription | undefined;
-	markdown: BookMarkdown | undefined;
-	rating: number | null;
-	tags: string[];
-}>;

@@ -1,6 +1,5 @@
 import {
 	type ArticleListItemDTO,
-	type ArticleSearchItemDTO,
 	type ExportedArticle,
 	makeArticleTitle,
 	makeCategoryName,
@@ -26,9 +25,7 @@ import {
 	makeId,
 	makeUserId,
 	type Status,
-	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import type { Prisma } from "@s-hirano-ist/s-database";
 import prisma from "@/prisma";
 
 async function findByUrl(
@@ -112,55 +109,10 @@ async function count(userId: string, status: Status): Promise<number> {
 	return prisma.article.count({ where: { userId, status } });
 }
 
-async function search(
-	query: string,
-	userId: UserId,
-	limit = 20,
-): Promise<ArticleSearchItemDTO[]> {
-	const where: Prisma.ArticleWhereInput = {
-		userId,
-		status: "EXPORTED",
-		...(query
-			? {
-					OR: [
-						{ title: { contains: query, mode: "insensitive" } },
-						{ quote: { contains: query, mode: "insensitive" } },
-						{ ogTitle: { contains: query, mode: "insensitive" } },
-						{ ogDescription: { contains: query, mode: "insensitive" } },
-					],
-				}
-			: {}),
-	};
-	const data = await prisma.article.findMany({
-		where,
-		select: {
-			id: true,
-			title: true,
-			url: true,
-			quote: true,
-			ogTitle: true,
-			ogDescription: true,
-			Category: { select: { name: true } },
-		},
-		take: limit,
-		orderBy: { createdAt: "desc" },
-	});
-	return data.map((d) => ({
-		id: makeId(d.id),
-		title: makeArticleTitle(d.title),
-		url: makeUrl(d.url),
-		quote: makeQuote(d.quote),
-		ogTitle: makeOgTitle(d.ogTitle),
-		ogDescription: makeOgDescription(d.ogDescription),
-		categoryName: makeCategoryName(d.Category.name),
-	}));
-}
-
 export const articlesQueryRepository: IArticlesQueryRepository = {
 	findByUrl,
 	findMany,
 	count,
-	search,
 };
 
 async function findManyCategories(

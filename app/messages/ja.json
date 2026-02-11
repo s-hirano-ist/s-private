@@ -22,8 +22,6 @@
 		"totalImages": "画像数",
 		"totalArticles": "ニュース総数",
 		"search": "検索",
-		"aiSearch": "AI知識検索",
-		"aiSearchDescription": "AI検索を使用してナレッジベースを検索",
 		"searching": "検索中...",
 		"score": "スコア",
 		"delete": "削除",

@@ -1,0 +1,47 @@
+{
+	"name": "@s-hirano-ist/s-search",
+	"version": "1.12.2",
+	"type": "module",
+	"exports": {
+		"./config": {
+			"types": "./dist/config.d.ts",
+			"import": "./dist/config.js"
+		},
+		"./embedding": {
+			"types": "./dist/embedding.d.ts",
+			"import": "./dist/embedding.js"
+		},
+		"./qdrant-client": {
+			"types": "./dist/qdrant-client.d.ts",
+			"import": "./dist/qdrant-client.js"
+		},
+		"./chunker": {
+			"types": "./dist/chunker.d.ts",
+			"import": "./dist/chunker.js"
+		},
+		"./ingest": {
+			"types": "./dist/ingest.d.ts",
+			"import": "./dist/ingest.js"
+		},
+		"./search": {
+			"types": "./dist/search.d.ts",
+			"import": "./dist/search.js"
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "tsc",
+		"clean": "rm -rf dist",
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@huggingface/transformers": "3.8.1",
+		"@qdrant/js-client-rest": "1.16.2"
+	},
+	"devDependencies": {
+		"@types/node": "24.10.9",
+		"typescript": "5.9.3"
+	}
+}

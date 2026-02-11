@@ -504,17 +504,3 @@ export type ArticleListItemDTO = Readonly<{
 	ogDescription: OgDescription;
 	categoryName: CategoryName;
 }>;
-
-/**
- * DTO for article search results.
- *
- * @remarks
- * Contains fields needed for search display.
- * Extends ArticleListItemDTO with optional search metadata.
- */
-export type ArticleSearchItemDTO = ArticleListItemDTO & {
-	/** Field where the query matched (optional, for future use) */
-	matchedField?: string;
-	/** Relevance score (optional, for future use) */
-	relevanceScore?: number;
-};
