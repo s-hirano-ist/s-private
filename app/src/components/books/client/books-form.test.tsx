@@ -12,7 +12,17 @@ vi.mock("next-intl", () => ({
 }));
 
 vi.mock("@s-hirano-ist/s-ui/forms/fields/form-input", () => ({
-	FormInput: ({ label, name, placeholder, required }: any) => (
+	FormInput: ({
+		label,
+		name,
+		placeholder,
+		required,
+	}: {
+		label: string;
+		name: string;
+		placeholder?: string;
+		required?: boolean;
+	}) => (
 		<input
 			aria-label={label}
 			data-testid={`form-input-${name}`}
@@ -24,7 +34,13 @@ vi.mock("@s-hirano-ist/s-ui/forms/fields/form-input", () => ({
 }));
 
 vi.mock("@s-hirano-ist/s-ui/forms/generic-form-wrapper", () => ({
-	GenericFormWrapper: ({ children, action }: any) => (
+	GenericFormWrapper: ({
+		children,
+		action,
+	}: {
+		children: React.ReactNode;
+		action: (...args: unknown[]) => unknown;
+	}) => (
 		<form data-action={action.name} data-testid="form-wrapper">
 			{children}
 		</form>

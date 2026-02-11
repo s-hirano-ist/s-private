@@ -117,10 +117,9 @@ describe("ImageCommandRepository", () => {
 			const userId = makeUserId("test-user-id");
 			const status = makeUnexportedStatus();
 
-			const mockDeletedImage = {
+			vi.mocked(prisma.image.delete).mockResolvedValue({
 				path: "images/user123/image-123.png",
-			};
-			vi.mocked(prisma.image.delete).mockResolvedValue(mockDeletedImage as any);
+			} as Awaited<ReturnType<typeof prisma.image.delete>>);
 
 			await imagesCommandRepository.deleteById(id, userId, status);
 
@@ -135,10 +134,9 @@ describe("ImageCommandRepository", () => {
 			const userId = makeUserId("test-user-id-2");
 			const status = "EXPORTED";
 
-			const mockDeletedImage = {
+			vi.mocked(prisma.image.delete).mockResolvedValue({
 				path: "images/user456/image-456.jpg",
-			};
-			vi.mocked(prisma.image.delete).mockResolvedValue(mockDeletedImage as any);
+			} as Awaited<ReturnType<typeof prisma.image.delete>>);
 
 			await imagesCommandRepository.deleteById(id, userId, status);
 

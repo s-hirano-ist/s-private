@@ -36,7 +36,7 @@ describe("ArticlesCommandRepository", () => {
 				updatedAt: new Date(),
 				exportedAt: null,
 				Category: { name: "1" },
-			} as any);
+			} as Awaited<ReturnType<typeof prisma.article.create>>);
 
 			await articlesCommandRepository.create({
 				title: makeArticleTitle("Test article"),
@@ -68,7 +68,7 @@ describe("ArticlesCommandRepository", () => {
 				updatedAt: new Date(),
 				userId: "user123",
 				Category: { name: "tech" },
-			} as any);
+			} as Awaited<ReturnType<typeof prisma.article.create>>);
 
 			const result = await articlesCommandRepository.create({
 				title: makeArticleTitle("Another article"),

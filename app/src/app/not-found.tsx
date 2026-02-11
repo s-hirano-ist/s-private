@@ -8,7 +8,10 @@ async function getLocale() {
 	const cookieStore = await cookies();
 	const localeCookie = cookieStore.get("NEXT_LOCALE");
 
-	if (localeCookie && routing.locales.includes(localeCookie.value as any)) {
+	if (
+		localeCookie &&
+		(routing.locales as readonly string[]).includes(localeCookie.value)
+	) {
 		return localeCookie.value as "en" | "ja";
 	}
 
@@ -19,7 +22,7 @@ async function getLocale() {
 	if (acceptLanguage) {
 		const preferredLocale = acceptLanguage.split(",")[0].split("-")[0];
 
-		if (routing.locales.includes(preferredLocale as any)) {
+		if ((routing.locales as readonly string[]).includes(preferredLocale)) {
 			return preferredLocale as "en" | "ja";
 		}
 	}

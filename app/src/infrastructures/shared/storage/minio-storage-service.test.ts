@@ -118,7 +118,9 @@ describe("MinioStorageService", () => {
 		test("should verify image exists in storage", async () => {
 			const path = "image-123.png";
 
-			vi.mocked(minioClient.statObject).mockResolvedValue({} as any);
+			vi.mocked(minioClient.statObject).mockResolvedValue(
+				{} as Awaited<ReturnType<typeof minioClient.statObject>>,
+			);
 
 			await minioStorageService.getImageOrThrow(path, false);
 

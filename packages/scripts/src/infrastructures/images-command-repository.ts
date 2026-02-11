@@ -11,7 +11,10 @@ import type {
 
 type PrismaClientLike = {
 	image: {
-		updateMany: (args: any) => Promise<{ count: number }>;
+		updateMany: (args: {
+			where: { userId: string; status: string };
+			data: Record<string, string | Date>;
+		}) => Promise<{ count: number }>;
 	};
 	$transaction: <T extends Promise<{ count: number }>[]>(
 		queries: [...T],
