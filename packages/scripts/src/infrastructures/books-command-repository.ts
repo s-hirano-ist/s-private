@@ -8,12 +8,13 @@ import type {
 	ResetStatusResult,
 	StatusTransitionParams,
 } from "@s-hirano-ist/s-core/shared-kernel/repositories/batch-command-repository.interface";
+import type { Status } from "@s-hirano-ist/s-database";
 
 type PrismaClientLike = {
 	book: {
 		updateMany: (args: {
-			where: { userId: string; status: string };
-			data: Record<string, string | Date>;
+			where: { userId: string; status: Status };
+			data: { status: Status; exportedAt?: Date };
 		}) => Promise<{ count: number }>;
 	};
 	$transaction: <T extends Promise<{ count: number }>[]>(
@@ -39,10 +40,10 @@ export function createBooksCommandRepository(
 			const result = await prisma.book.updateMany({
 				where: {
 					userId: userId as string,
-					status: fromStatus as string,
+					status: fromStatus as Status,
 				},
 				data: {
-					status: toStatus as string,
+					status: toStatus as Status,
 					...(exportedAt && { exportedAt: exportedAt as Date }),
 				},
 			});
