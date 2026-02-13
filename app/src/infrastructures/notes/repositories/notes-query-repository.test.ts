@@ -170,36 +170,6 @@ describe("NotesQueryRepository", () => {
 			expect(result).toEqual([]);
 		});
 
-		test("should work with cache strategy", async () => {
-			const mockNotes = [
-				{ id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e", title: "Cached Note" },
-			];
-
-			vi.mocked(prisma.note.findMany).mockResolvedValue(mockNotes);
-
-			const params = {
-				cacheStrategy: { ttl: 300, swr: 30, tags: ["notes"] },
-			};
-
-			const result = await notesQueryRepository.findMany(
-				makeUserId("user123"),
-				"EXPORTED",
-				params,
-			);
-
-			expect(prisma.note.findMany).toHaveBeenCalledWith({
-				where: { userId: "user123", status: "EXPORTED" },
-				select: { id: true, title: true },
-				cacheStrategy: { ttl: 300, swr: 30, tags: ["notes"] },
-			});
-			expect(result).toEqual([
-				{
-					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e"),
-					title: makeNoteTitle("Cached Note"),
-				},
-			]);
-		});
-
 		test("should handle database errors", async () => {
 			vi.mocked(prisma.note.findMany).mockRejectedValue(
 				new Error("Database connection error"),

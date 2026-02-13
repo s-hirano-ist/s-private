@@ -118,57 +118,6 @@ describe("ArticlesQueryRepository", () => {
 			expect(result).toEqual([]);
 		});
 
-		test("should work with cache strategy", async () => {
-			const mockArticles = [
-				{
-					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d",
-					title: "Cached article",
-					url: "https://example.com/article/1",
-					quote: "Cached quote",
-					ogTitle: "Cached OG Title",
-					ogDescription: "Cached OG Description",
-					Category: { name: "Tech" },
-				},
-			];
-
-			vi.mocked(prisma.article.findMany).mockResolvedValue(mockArticles);
-
-			const params = {
-				cacheStrategy: { ttl: 300, swr: 30, tags: ["articles"] },
-			};
-
-			const result = await articlesQueryRepository.findMany(
-				makeUserId("user123"),
-				"EXPORTED",
-				params,
-			);
-
-			expect(prisma.article.findMany).toHaveBeenCalledWith({
-				where: { userId: "user123", status: "EXPORTED" },
-				select: {
-					id: true,
-					title: true,
-					url: true,
-					quote: true,
-					ogTitle: true,
-					ogDescription: true,
-					Category: { select: { name: true } },
-				},
-				cacheStrategy: { ttl: 300, swr: 30, tags: ["articles"] },
-			});
-			expect(result).toEqual([
-				{
-					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d"),
-					title: makeArticleTitle("Cached article"),
-					url: makeUrl("https://example.com/article/1"),
-					quote: makeQuote("Cached quote"),
-					ogTitle: makeOgTitle("Cached OG Title"),
-					ogDescription: makeOgDescription("Cached OG Description"),
-					categoryName: makeCategoryName("Tech"),
-				},
-			]);
-		});
-
 		test("should handle database errors", async () => {
 			vi.mocked(prisma.article.findMany).mockRejectedValue(
 				new Error("Database connection error"),

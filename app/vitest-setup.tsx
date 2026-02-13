@@ -113,9 +113,6 @@ beforeEach(() => {
 				update: vi.fn(),
 				delete: vi.fn(),
 				count: vi.fn(),
-				$accelerate: {
-					invalidate: vi.fn(),
-				},
 			},
 			book: {
 				findMany: vi.fn(),

@@ -87,39 +87,6 @@ describe("ImagesQueryRepository", () => {
 			expect(result).toEqual([]);
 		});
 
-		test("should work with cache strategy", async () => {
-			const mockImages = [
-				{
-					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e",
-					path: "image-123.jpg",
-					width: 640,
-					height: 480,
-				},
-			];
-
-			vi.mocked(prisma.image.findMany).mockResolvedValue(mockImages);
-
-			const params = {
-				cacheStrategy: { ttl: 300, swr: 30, tags: ["images"] },
-			};
-
-			const result = await imagesQueryRepository.findMany(
-				makeUserId("user123"),
-				"EXPORTED",
-				params,
-			);
-
-			expect(prisma.image.findMany).toHaveBeenCalled();
-			expect(result).toEqual([
-				{
-					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e"),
-					path: makePath("image-123.jpg", false),
-					width: makePixel(640),
-					height: makePixel(480),
-				},
-			]);
-		});
-
 		test("should handle database errors", async () => {
 			vi.mocked(prisma.image.findMany).mockRejectedValue(
 				new Error("Database connection error"),

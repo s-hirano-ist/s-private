@@ -163,41 +163,6 @@ describe("BooksQueryRepository", () => {
 			expect(result).toEqual([]);
 		});
 
-		test("should work with cache strategy", async () => {
-			const mockBooks = [
-				{
-					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e",
-					title: "Cached Book",
-					isbn: "978-0123456789",
-					googleImgSrc: "https://example.com/image.jpg",
-					imagePath: null,
-				},
-			];
-
-			vi.mocked(prisma.book.findMany).mockResolvedValue(mockBooks);
-
-			const params = {
-				cacheStrategy: { ttl: 400, swr: 40, tags: ["books"] },
-			};
-
-			const result = await booksQueryRepository.findMany(
-				makeUserId("user123"),
-				"EXPORTED",
-				params,
-			);
-
-			expect(prisma.book.findMany).toHaveBeenCalled();
-			expect(result).toEqual([
-				{
-					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e"),
-					isbn: makeISBN("978-0123456789"),
-					title: makeBookTitle("Cached Book"),
-					googleImgSrc: makeGoogleImgSrc("https://example.com/image.jpg"),
-					imagePath: undefined,
-				},
-			]);
-		});
-
 		test("should handle database errors", async () => {
 			vi.mocked(prisma.book.findMany).mockRejectedValue(
 				new Error("Database connection error"),

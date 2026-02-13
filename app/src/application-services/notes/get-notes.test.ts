@@ -59,7 +59,6 @@ describe("get-notes", () => {
 					skip: 0,
 					take: 24,
 					orderBy: { createdAt: "desc" },
-					cacheStrategy: { ttl: 400, swr: 40, tags: ["testuserid_notes_0"] },
 				}),
 			);
 

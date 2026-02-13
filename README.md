@@ -30,8 +30,6 @@
 ### Database & Storage
 - **Database** - [PostgreSQL](https://www.postgresql.org/) with [Prisma](https://www.prisma.io/) ORM
 - **Object Storage** - [MinIO](https://min.io/) (configurable for local/cloud deployment)
-- **Database Acceleration** - [Prisma Accelerate](https://www.prisma.io/accelerate)
-
 ### Authentication & Internationalization
 - **Authentication** - [Auth0](https://auth0.com/) with [NextAuth.js](https://next-auth.js.org/)
 - **Internationalization** - [next-intl](https://next-intl-docs.vercel.app/) (Japanese/English support)

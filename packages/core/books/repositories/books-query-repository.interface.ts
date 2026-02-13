@@ -22,7 +22,6 @@ import type { IBooksCommandRepository } from "./books-command-repository.interfa
  *   orderBy: { createdAt: "desc" },
  *   take: 20,
  *   skip: 0,
- *   cacheStrategy: { ttl: 60, tags: ["books"] },
  * };
  * ```
  *

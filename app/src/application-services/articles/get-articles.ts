@@ -15,13 +15,11 @@ import {
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { SystemErrorEvent } from "@s-hirano-ist/s-core/shared-kernel/events/system-error-event";
-import type { CacheStrategy } from "@s-hirano-ist/s-core/shared-kernel/types/query-options";
 import { cacheTag } from "next/cache";
 import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
 import type { GetCount, GetPaginatedData } from "@/common/types";
-import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import type { ArticleFormData } from "@/components/articles/client/article-form";
 import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
 import {
@@ -43,7 +41,6 @@ import {
  * @param currentCount - Number of items to skip (offset)
  * @param userId - User ID for data isolation
  * @param status - Article status filter (UNEXPORTED/EXPORTED)
- * @param cacheStrategy - Optional Prisma Accelerate cache configuration
  * @returns Paginated article data with total count
  *
  * @internal
@@ -52,7 +49,6 @@ const _getArticles = async (
 	currentCount: number,
 	userId: UserId,
 	status: Status,
-	cacheStrategy?: CacheStrategy,
 ): Promise<LinkCardStackInitialData> => {
 	"use cache";
 	cacheTag(
@@ -64,7 +60,6 @@ const _getArticles = async (
 			skip: currentCount,
 			take: PAGE_SIZE,
 			orderBy: { createdAt: "desc" },
-			cacheStrategy,
 		}),
 		_getArticlesCount(userId, status),
 	]);
@@ -163,20 +158,13 @@ export const getUnexportedArticles: GetPaginatedData<LinkCardStackInitialData> =
 /**
  * Fetches paginated exported articles for the current user.
  *
- * @remarks
- * Uses Prisma Accelerate caching with TTL and SWR for viewer performance.
- *
  * @param currentCount - Number of items to skip (offset)
  * @returns Paginated article data for viewer
  */
 export const getExportedArticles: GetPaginatedData<LinkCardStackInitialData> =
 	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
-		return _getArticles(currentCount, userId, makeExportedStatus().status, {
-			ttl: 400,
-			swr: 40,
-			tags: [`${sanitizeCacheTag(userId)}_articles_${currentCount}`],
-		});
+		return _getArticles(currentCount, userId, makeExportedStatus().status);
 	});
 
 /**
