@@ -26,7 +26,6 @@ type ArticleJson = {
 
 async function main() {
 	const dryRun = process.argv.includes("--dry-run");
-	const purge = process.argv.includes("--purge");
 
 	const env = {
 		DATABASE_URL: process.env.DATABASE_URL,
@@ -133,47 +132,82 @@ async function main() {
 				}
 
 				for (const item of json.body) {
-					fileUrls.add(item.url);
+					try {
+						fileUrls.add(item.url);
 
-					const existing = existingArticlesMap.get(item.url);
-					if (existing) {
-						const fileQuote = item.quote ?? null;
-						const fileOgImageUrl = item.ogImageUrl ?? null;
-						const fileOgTitle = item.ogTitle ?? null;
-						const fileOgDescription = item.ogDescription ?? null;
+						const existing = existingArticlesMap.get(item.url);
+						if (existing) {
+							const fileQuote = item.quote ?? null;
+							const fileOgImageUrl = item.ogImageUrl ?? null;
+							const fileOgTitle = item.ogTitle ?? null;
+							const fileOgDescription = item.ogDescription ?? null;
 
-						if (
-							existing.title === item.title &&
-							existing.quote === fileQuote &&
-							existing.ogImageUrl === fileOgImageUrl &&
-							existing.ogTitle === fileOgTitle &&
-							existing.ogDescription === fileOgDescription
-						) {
-							skippedCount++;
+							if (
+								existing.title === item.title &&
+								existing.quote === fileQuote &&
+								existing.ogImageUrl === fileOgImageUrl &&
+								existing.ogTitle === fileOgTitle &&
+								existing.ogDescription === fileOgDescription
+							) {
+								// console.log(
+								// 	`⏭️  スキップ（変更なし）: ${item.title} (${item.url})`,
+								// );
+								skippedCount++;
+								continue;
+							}
+
+							if (dryRun) {
+								console.log(
+									`🔄 [dry-run] 更新予定: ${item.title} (${item.url})`,
+								);
+							} else {
+								await prisma.article.update({
+									where: { id: existing.id },
+									data: {
+										title: item.title,
+										quote: fileQuote,
+										ogImageUrl: fileOgImageUrl,
+										ogTitle: fileOgTitle,
+										ogDescription: fileOgDescription,
+									},
+								});
+								console.log(`🔄 更新: ${item.title}`);
+							}
+							updatedCount++;
 							continue;
 						}
 
 						if (dryRun) {
-							console.log(`🔄 [dry-run] 更新予定: ${item.title} (${item.url})`);
-						} else {
-							await prisma.article.update({
-								where: { id: existing.id },
-								data: {
-									title: item.title,
-									quote: fileQuote,
-									ogImageUrl: fileOgImageUrl,
-									ogTitle: fileOgTitle,
-									ogDescription: fileOgDescription,
-								},
+							console.log(`🔍 [dry-run] 挿入予定: ${item.title} (${item.url})`);
+							insertedCount++;
+							existingArticlesMap.set(item.url, {
+								id: "",
+								url: item.url,
+								title: item.title,
+								quote: item.quote ?? null,
+								ogImageUrl: item.ogImageUrl ?? null,
+								ogTitle: item.ogTitle ?? null,
+								ogDescription: item.ogDescription ?? null,
 							});
-							console.log(`🔄 更新: ${item.title}`);
+							continue;
 						}
-						updatedCount++;
-						continue;
-					}
 
-					if (dryRun) {
-						console.log(`🔍 [dry-run] 挿入予定: ${item.title} (${item.url})`);
+						await prisma.article.create({
+							data: {
+								id: String(makeId()),
+								title: item.title,
+								url: item.url,
+								quote: item.quote ?? null,
+								ogImageUrl: item.ogImageUrl ?? null,
+								ogTitle: item.ogTitle ?? null,
+								ogDescription: item.ogDescription ?? null,
+								categoryId,
+								status: exported.status,
+								exportedAt: exported.exportedAt,
+								userId,
+								createdAt: new Date(),
+							},
+						});
 						insertedCount++;
 						existingArticlesMap.set(item.url, {
 							id: "",
@@ -184,36 +218,20 @@ async function main() {
 							ogTitle: item.ogTitle ?? null,
 							ogDescription: item.ogDescription ?? null,
 						});
-						continue;
+						console.log(`✅ 挿入: ${item.title}`);
+					} catch (itemError) {
+						console.error(
+							`❌ エラー（${basename(filePath)} > ${item.title}）:`,
+							`url(${item.url.length}文字)=${item.url}`,
+							`title(${item.title.length}文字)`,
+							`quote(${(item.quote ?? "").length}文字)`,
+							`ogImageUrl(${(item.ogImageUrl ?? "").length}文字)`,
+							`ogTitle(${(item.ogTitle ?? "").length}文字)`,
+							`ogDescription(${(item.ogDescription ?? "").length}文字)`,
+							itemError,
+						);
+						errorCount++;
 					}
-
-					await prisma.article.create({
-						data: {
-							id: String(makeId()),
-							title: item.title,
-							url: item.url,
-							quote: item.quote ?? null,
-							ogImageUrl: item.ogImageUrl ?? null,
-							ogTitle: item.ogTitle ?? null,
-							ogDescription: item.ogDescription ?? null,
-							categoryId,
-							status: exported.status,
-							exportedAt: exported.exportedAt,
-							userId,
-							createdAt: new Date(),
-						},
-					});
-					insertedCount++;
-					existingArticlesMap.set(item.url, {
-						id: "",
-						url: item.url,
-						title: item.title,
-						quote: item.quote ?? null,
-						ogImageUrl: item.ogImageUrl ?? null,
-						ogTitle: item.ogTitle ?? null,
-						ogDescription: item.ogDescription ?? null,
-					});
-					console.log(`✅ 挿入: ${item.title}`);
 				}
 			} catch (error) {
 				console.error(`❌ エラー（${basename(filePath)}）:`, error);
@@ -221,12 +239,16 @@ async function main() {
 			}
 		}
 
-		console.log(
-			`\n📊 結果: 挿入 ${insertedCount} 件, 更新 ${updatedCount} 件, スキップ ${skippedCount} 件, エラー ${errorCount} 件, カテゴリ新規 ${categoryCreatedCount} 件${dryRun ? " (dry-run)" : ""}`,
-		);
+		return {
+			insertedCount,
+			updatedCount,
+			skippedCount,
+			errorCount,
+			categoryCreatedCount,
+		};
 	}
 
-	async function purgeArticles() {
+	async function purgeArticles(): Promise<number> {
 		const exportedArticles = await prisma.article.findMany({
 			where: { userId, status: exported.status },
 			select: { id: true, url: true },
@@ -237,8 +259,8 @@ async function main() {
 		);
 
 		if (toDelete.length === 0) {
-			console.log("\n🗑️  削除対象なし");
-			return;
+			console.log("🗑️  削除対象なし");
+			return 0;
 		}
 
 		let deletedCount = 0;
@@ -252,14 +274,21 @@ async function main() {
 			deletedCount++;
 		}
 
-		console.log(
-			`\n📊 Purge結果: 削除 ${deletedCount} 件${dryRun ? " (dry-run)" : ""}`,
-		);
+		return deletedCount;
 	}
 
 	try {
-		await ingestArticles();
-		if (purge) await purgeArticles();
+		const {
+			insertedCount,
+			updatedCount,
+			skippedCount,
+			errorCount,
+			categoryCreatedCount,
+		} = await ingestArticles();
+		const deletedCount = await purgeArticles();
+		console.log(
+			`\n📊 結果: 挿入 ${insertedCount} 件, 更新 ${updatedCount} 件, スキップ ${skippedCount} 件, 削除 ${deletedCount} 件, エラー ${errorCount} 件, カテゴリ新規 ${categoryCreatedCount} 件${dryRun ? " (dry-run)" : ""}`,
+		);
 		await notificationService.notifyInfo(`${SCRIPT_NAME} completed`, {
 			caller: SCRIPT_NAME,
 		});

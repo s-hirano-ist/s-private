@@ -35,7 +35,6 @@ function parseBookFile(content: string): {
 
 async function main() {
 	const dryRun = process.argv.includes("--dry-run");
-	const purge = process.argv.includes("--purge");
 
 	const env = {
 		DATABASE_URL: process.env.DATABASE_URL,
@@ -92,12 +91,14 @@ async function main() {
 		let errorCount = 0;
 
 		for (const filePath of files) {
+			const isbn = basename(filePath, ".md");
+			let title = "";
+			let markdown: string | null = null;
 			try {
-				const isbn = basename(filePath, ".md");
 				fileIsbns.add(isbn);
 
 				const content = await readFile(filePath, "utf-8");
-				const { title, markdown } = parseBookFile(content);
+				({ title, markdown } = parseBookFile(content));
 
 				if (!title) {
 					console.error(`⚠️  タイトルなし: ${basename(filePath)}`);
@@ -108,6 +109,7 @@ async function main() {
 				const existing = existingBooksMap.get(isbn);
 				if (existing) {
 					if (existing.title === title && existing.markdown === markdown) {
+						// console.log(`⏭️  スキップ（変更なし）: ${isbn} (${existing.title})`);
 						skippedCount++;
 						continue;
 					}
@@ -146,17 +148,21 @@ async function main() {
 				insertedCount++;
 				console.log(`✅ 挿入: ${isbn} (${title})`);
 			} catch (error) {
-				console.error(`❌ エラー（${basename(filePath)}）:`, error);
+				console.error(
+					`❌ エラー（${basename(filePath)}）:`,
+					`isbn=${isbn}`,
+					`title(${title.length}文字)`,
+					`markdown(${(markdown ?? "").length}文字)`,
+					error,
+				);
 				errorCount++;
 			}
 		}
 
-		console.log(
-			`\n📊 結果: 挿入 ${insertedCount} 件, 更新 ${updatedCount} 件, スキップ ${skippedCount} 件, エラー ${errorCount} 件${dryRun ? " (dry-run)" : ""}`,
-		);
+		return { insertedCount, updatedCount, skippedCount, errorCount };
 	}
 
-	async function purgeBooks() {
+	async function purgeBooks(): Promise<number> {
 		const exportedBooks = await prisma.book.findMany({
 			where: { userId, status: exported.status },
 			select: { id: true, isbn: true },
@@ -167,8 +173,8 @@ async function main() {
 		);
 
 		if (toDelete.length === 0) {
-			console.log("\n🗑️  削除対象なし");
-			return;
+			console.log("🗑️  削除対象なし");
+			return 0;
 		}
 
 		let deletedCount = 0;
@@ -182,14 +188,16 @@ async function main() {
 			deletedCount++;
 		}
 
-		console.log(
-			`\n📊 Purge結果: 削除 ${deletedCount} 件${dryRun ? " (dry-run)" : ""}`,
-		);
+		return deletedCount;
 	}
 
 	try {
-		await ingestBooks();
-		if (purge) await purgeBooks();
+		const { insertedCount, updatedCount, skippedCount, errorCount } =
+			await ingestBooks();
+		const deletedCount = await purgeBooks();
+		console.log(
+			`\n📊 結果: 挿入 ${insertedCount} 件, 更新 ${updatedCount} 件, スキップ ${skippedCount} 件, 削除 ${deletedCount} 件, エラー ${errorCount} 件${dryRun ? " (dry-run)" : ""}`,
+		);
 		await notificationService.notifyInfo(`${SCRIPT_NAME} completed`, {
 			caller: SCRIPT_NAME,
 		});

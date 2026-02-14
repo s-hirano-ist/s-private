@@ -61,7 +61,6 @@ function parseNoteFile(
 
 async function main() {
 	const dryRun = process.argv.includes("--dry-run");
-	const purge = process.argv.includes("--purge");
 
 	const env = {
 		DATABASE_URL: process.env.DATABASE_URL,
@@ -113,9 +112,10 @@ async function main() {
 		let errorCount = 0;
 
 		for (const filePath of files) {
+			let parsed: { title: string; markdown: string } | null = null;
 			try {
 				const content = await readFile(filePath, "utf-8");
-				const parsed = parseNoteFile(filePath, content);
+				parsed = parseNoteFile(filePath, content);
 
 				if (!parsed) {
 					console.log(`⏭️  スキップ（draft）: ${basename(filePath)}`);
@@ -128,6 +128,7 @@ async function main() {
 				const existing = existingNotesMap.get(parsed.title);
 				if (existing) {
 					if (existing.markdown === parsed.markdown) {
+						// console.log(`⏭️  スキップ（変更なし）: ${parsed.title}`);
 						skippedCount++;
 						continue;
 					}
@@ -164,17 +165,21 @@ async function main() {
 				insertedCount++;
 				console.log(`✅ 挿入: ${parsed.title}`);
 			} catch (error) {
-				console.error(`❌ エラー（${basename(filePath)}）:`, error);
+				console.error(
+					`❌ エラー（${basename(filePath)}）:`,
+					parsed
+						? `title(${parsed.title.length}文字) markdown(${parsed.markdown.length}文字)`
+						: "parse前",
+					error,
+				);
 				errorCount++;
 			}
 		}
 
-		console.log(
-			`\n📊 結果: 挿入 ${insertedCount} 件, 更新 ${updatedCount} 件, スキップ ${skippedCount} 件, エラー ${errorCount} 件${dryRun ? " (dry-run)" : ""}`,
-		);
+		return { insertedCount, updatedCount, skippedCount, errorCount };
 	}
 
-	async function purgeNotes() {
+	async function purgeNotes(): Promise<number> {
 		const exportedNotes = await prisma.note.findMany({
 			where: { userId, status: exported.status },
 			select: { id: true, title: true },
@@ -185,8 +190,8 @@ async function main() {
 		);
 
 		if (toDelete.length === 0) {
-			console.log("\n🗑️  削除対象なし");
-			return;
+			console.log("🗑️  削除対象なし");
+			return 0;
 		}
 
 		let deletedCount = 0;
@@ -200,14 +205,16 @@ async function main() {
 			deletedCount++;
 		}
 
-		console.log(
-			`\n📊 Purge結果: 削除 ${deletedCount} 件${dryRun ? " (dry-run)" : ""}`,
-		);
+		return deletedCount;
 	}
 
 	try {
-		await ingestNotes();
-		if (purge) await purgeNotes();
+		const { insertedCount, updatedCount, skippedCount, errorCount } =
+			await ingestNotes();
+		const deletedCount = await purgeNotes();
+		console.log(
+			`\n📊 結果: 挿入 ${insertedCount} 件, 更新 ${updatedCount} 件, スキップ ${skippedCount} 件, 削除 ${deletedCount} 件, エラー ${errorCount} 件${dryRun ? " (dry-run)" : ""}`,
+		);
 		await notificationService.notifyInfo(`${SCRIPT_NAME} completed`, {
 			caller: SCRIPT_NAME,
 		});
