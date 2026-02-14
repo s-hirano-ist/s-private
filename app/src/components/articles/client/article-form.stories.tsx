@@ -62,7 +62,7 @@ export const FillForm: Story = {
 		await userEvent.type(quoteInput, "テストの引用文");
 		await expect(quoteInput).toHaveValue("テストの引用文");
 
-		const urlInput = canvas.getByLabelText("URL");
+		const urlInput = canvas.getByRole("textbox", { name: "URL" });
 		await userEvent.type(urlInput, "https://example.com/test");
 		await expect(urlInput).toHaveValue("https://example.com/test");
 	},
