@@ -85,7 +85,7 @@ sudo whoami  # → root と表示されれば OK
 ssh conoha-embedding
 ```
 
-### 3.1 Docker インストール
+### 3.1 Docker・git インストール
 
 ```bash
 # Docker 公式リポジトリからインストール
@@ -95,6 +95,9 @@ sudo systemctl start docker
 
 # deploy ユーザーを docker グループに追加（再ログイン必要）
 sudo usermod -aG docker deploy
+
+# git インストール
+sudo apt install -y git
 ```
 
 再ログインして `docker ps` が実行できることを確認:
@@ -187,62 +190,27 @@ sudo systemctl restart ssh
 
 > **実行環境: VPS（deploy ユーザーで SSH）**
 
-### compose.yaml
+### リポジトリ取得
 
-VPS の `~/embedding-api/compose.yaml` に配置:
+public リポジトリのため HTTPS で認証なし clone が可能（deploy key 不要）。
 
-```yaml
-services:
-  embedding-api:
-    image: ${DOCKER_HUB_USERNAME}/s-embedding-api:latest
-    container_name: embedding-api
-    restart: unless-stopped
-    environment:
-      - API_KEY=${EMBEDDING_API_KEY}
-      - PORT=3001
-    volumes:
-      - hf-cache:/home/embedding/.cache/huggingface/transformers
-    networks:
-      - tunnel-net
-    healthcheck:
-      test: ["CMD", "node", "-e", "fetch('http://localhost:3001/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
-      interval: 30s
-      timeout: 3s
-      retries: 3
-
-  cloudflared:
-    image: cloudflare/cloudflared:latest
-    container_name: cloudflared
-    restart: unless-stopped
-    command: tunnel run
-    environment:
-      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
-    networks:
-      - tunnel-net
-    depends_on:
-      embedding-api:
-        condition: service_healthy
-
-volumes:
-  hf-cache:
-
-networks:
-  tunnel-net:
-    driver: bridge
+```bash
+git clone https://github.com/s-hirano-ist/s-private.git ~/s-private
 ```
+
+compose.yaml はリポジトリ内 `services/embedding-api/compose.yaml` に含まれている。
 
 ### .env
 
-VPS の `~/embedding-api/.env` に配置:
+`~/s-private/services/embedding-api/.env` に配置:
 
 ```bash
-DOCKER_HUB_USERNAME=your-dockerhub-username
 EMBEDDING_API_KEY=your-secure-api-key
 CLOUDFLARE_TUNNEL_TOKEN=your-tunnel-token
 ```
 
 ```bash
-chmod 600 .env
+chmod 600 ~/s-private/services/embedding-api/.env
 ```
 
 ### 起動
@@ -250,10 +218,10 @@ chmod 600 .env
 ```bash
 ssh conoha-embedding
 
-# 作業ディレクトリ
-mkdir -p ~/embedding-api && cd ~/embedding-api
+cd ~/s-private/services/embedding-api
 
-# compose.yaml と .env を配置後
+# ビルド & 起動
+docker compose build
 docker compose up -d
 
 # ログ確認
@@ -338,13 +306,14 @@ Service Token は Cloudflare Zero Trust ダッシュボード > Access > Service
 
 ## 更新手順
 
-CD パイプライン（`.github/workflows/cd.yaml`）が `autorelease` ラベル付き PR で Docker Hub にイメージを push する。
-VPS 側での更新:
-
 ```bash
 ssh conoha-embedding
-cd ~/embedding-api
-docker compose pull
+cd ~/s-private
+
+# 最新のコードを取得してリビルド
+git pull
+cd services/embedding-api
+docker compose build
 docker compose up -d
 ```
 

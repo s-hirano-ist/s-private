@@ -1,0 +1,39 @@
+services:
+  embedding-api:
+    build:
+      context: ../..
+      dockerfile: services/embedding-api/Dockerfile
+    container_name: embedding-api
+    restart: unless-stopped
+    environment:
+      - API_KEY=${EMBEDDING_API_KEY}
+      - PORT=3001
+    volumes:
+      - hf-cache:/home/embedding/.cache/huggingface/transformers
+    networks:
+      - tunnel-net
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3001/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+    networks:
+      - tunnel-net
+    depends_on:
+      embedding-api:
+        condition: service_healthy
+
+volumes:
+  hf-cache:
+
+networks:
+  tunnel-net:
+    driver: bridge
