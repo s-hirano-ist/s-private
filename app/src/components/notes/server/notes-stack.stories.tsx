@@ -17,7 +17,7 @@ function NotesStackWrapper({
 
 const meta = {
 	component: NotesStackWrapper,
-	parameters: { layout: "padded", a11y: { test: "todo" } },
+	parameters: { layout: "padded" },
 	argTypes: {
 		deleteAction: { action: "deleteAction" },
 		loadMoreAction: { action: "loadMoreAction" },

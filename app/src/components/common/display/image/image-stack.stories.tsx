@@ -52,7 +52,6 @@ const editableImageStackMeta = {
 type EditableImageStackStory = StoryObj<typeof editableImageStackMeta>;
 
 export const WithDeleteButton: EditableImageStackStory = {
-	parameters: { a11y: { test: "todo" } },
 	render: (args) => <EditableImageStack {...args} />,
 	args: {
 		data: mockData,

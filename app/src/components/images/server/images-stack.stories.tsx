@@ -37,7 +37,7 @@ function ImagesStackWrapper({
 
 const meta = {
 	component: ImagesStackWrapper,
-	parameters: { layout: "padded", a11y: { test: "todo" } },
+	parameters: { layout: "padded" },
 	argTypes: {
 		currentPage: { control: { type: "number", min: 1 } },
 		totalCount: { control: { type: "number", min: 0 } },

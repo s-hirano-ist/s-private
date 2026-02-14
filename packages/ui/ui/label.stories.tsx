@@ -16,9 +16,8 @@ export const Default: Story = {
 };
 
 export const WithCustomClass: Story = {
-	parameters: { a11y: { test: "todo" } },
 	render: () => (
-		<Label className="text-red-500" htmlFor="input-id">
+		<Label className="text-destructive" htmlFor="input-id">
 			Label with Custom Class
 		</Label>
 	),

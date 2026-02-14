@@ -4,7 +4,7 @@ import { ArticleForm } from "./article-form";
 
 const meta = {
 	component: ArticleForm,
-	parameters: { layout: "centered", a11y: { test: "todo" } },
+	parameters: { layout: "centered" },
 } satisfies Meta<typeof ArticleForm>;
 
 export default meta;

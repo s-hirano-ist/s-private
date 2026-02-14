@@ -57,7 +57,6 @@ export const Default: Story = {
 };
 
 export const WithDeleteButton: Story = {
-	parameters: { a11y: { test: "todo" } },
 	args: {
 		initial: { data: mockData, totalCount: 100 },
 		loadMoreAction: mockLoadMoreAction,

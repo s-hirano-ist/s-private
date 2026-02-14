@@ -4,7 +4,7 @@ import { DeleteButtonWithModal } from "./delete-button-with-modal";
 
 const meta = {
 	component: DeleteButtonWithModal,
-	parameters: { layout: "centered", a11y: { test: "todo" } },
+	parameters: { layout: "centered" },
 } satisfies Meta<typeof DeleteButtonWithModal>;
 
 export default meta;

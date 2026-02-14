@@ -3,7 +3,7 @@ import { FormDropdownInput } from "./form-dropdown-input";
 
 const meta = {
 	component: FormDropdownInput,
-	parameters: { layout: "centered", a11y: { test: "todo" } },
+	parameters: { layout: "centered" },
 	argTypes: {
 		label: { control: { type: "text" } },
 		htmlFor: { control: { type: "text" } },

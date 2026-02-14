@@ -4,7 +4,7 @@ import { ImageCardStack } from "./image-card-stack";
 
 const meta = {
 	component: ImageCardStack,
-	parameters: { layout: "centered", a11y: { test: "todo" } },
+	parameters: { layout: "centered" },
 } satisfies Meta<typeof ImageCardStack>;
 
 export default meta;

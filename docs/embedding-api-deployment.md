@@ -223,12 +223,6 @@ cd ~/s-private/services/embedding-api
 # ビルド & 起動
 docker compose build
 docker compose up -d
-
-# ログ確認
-docker compose logs -f
-
-# ヘルスチェック
-docker compose exec embedding-api node -e "fetch('http://localhost:3001/health').then(r=>r.json()).then(console.log)"
 ```
 
 ---

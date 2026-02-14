@@ -28,7 +28,7 @@ function ThemeProviderWrapper({
 						<div className="rounded border bg-background p-3">
 							Background Color
 						</div>
-						<div className="rounded bg-primary p-3 text-muted-foreground">
+						<div className="rounded bg-primary p-3 text-primary-foreground">
 							Primary Color
 						</div>
 						<div className="rounded bg-muted p-3 text-muted-foreground">
@@ -43,7 +43,7 @@ function ThemeProviderWrapper({
 
 const meta = {
 	component: ThemeProviderWrapper,
-	parameters: { layout: "centered", a11y: { test: "todo" } },
+	parameters: { layout: "centered" },
 	argTypes: {
 		theme: {
 			control: { type: "select", options: ["light", "dark", "system"] },
@@ -106,7 +106,7 @@ export const WithCustomContent: Story = {
 					</div>
 				</div>
 				<button
-					className="rounded bg-primary px-4 py-2 text-muted-foreground hover:bg-primary/90"
+					className="rounded bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
 					type="button"
 				>
 					Theme-aware Button

@@ -22,6 +22,8 @@ export type FormInputWithButtonProps = {
 	inputRef?: RefObject<HTMLInputElement | null>;
 	/** Test id for the button element */
 	buttonTestId?: string;
+	/** Accessible label for the button (defaults to label) */
+	buttonAriaLabel?: string;
 } & Omit<ComponentProps<typeof Input>, "ref">;
 
 /**
@@ -60,6 +62,7 @@ export function FormInputWithButton({
 	onButtonClick,
 	inputRef,
 	buttonTestId,
+	buttonAriaLabel,
 	defaultValue,
 	...inputProps
 }: FormInputWithButtonProps) {
@@ -81,6 +84,7 @@ export function FormInputWithButton({
 					{...inputProps}
 				/>
 				<Button
+					aria-label={buttonAriaLabel ?? label}
 					data-testid={buttonTestId}
 					onClick={onButtonClick}
 					type="button"

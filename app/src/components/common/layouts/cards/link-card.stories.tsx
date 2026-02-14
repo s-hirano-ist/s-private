@@ -27,7 +27,6 @@ export const Default: Story = {
 };
 
 export const WithDeleteButton: Story = {
-	parameters: { a11y: { test: "todo" } },
 	args: {
 		data: {
 			id: "2",
