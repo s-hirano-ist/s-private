@@ -4,7 +4,6 @@
  * @remarks
  * Implements the singleton pattern to prevent multiple Prisma instances
  * in development hot-reload. Includes:
- * - Prisma Accelerate for edge caching
  * - Query timing logs for performance monitoring
  *
  * @see {@link https://www.prisma.io/docs/orm/more/help-and-troubleshooting/help-articles/nextjs-prisma-client-dev-practices | Prisma Next.js Best Practices}
@@ -12,7 +11,6 @@
  * @module
  */
 
-import { withAccelerate } from "@prisma/extension-accelerate";
 import { PrismaClient } from "@s-hirano-ist/s-database";
 import { env } from "@/env";
 
@@ -22,7 +20,6 @@ import { env } from "@/env";
  * @remarks
  * Extends the base client with:
  * - Query timing middleware for all operations
- * - Prisma Accelerate extension for edge caching
  *
  * @internal
  */
@@ -41,7 +38,7 @@ const prismaClientSingleton = () => {
 		},
 	});
 
-	return prisma.$extends(withAccelerate());
+	return prisma;
 };
 
 // biome-ignore lint/suspicious/noShadowRestrictedNames: Required to extend globalThis for Prisma singleton pattern - caches client across hot-reloads in development

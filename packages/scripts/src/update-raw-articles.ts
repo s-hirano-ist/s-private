@@ -3,6 +3,7 @@ import { existsSync } from "node:fs";
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
+import iconv from "iconv-lite";
 import TurndownService from "turndown";
 
 const FETCHED_URLS_FILE = "fetched_urls.txt";
@@ -26,6 +27,42 @@ async function saveFetchedUrls(urls: Set<string>): Promise<void> {
 	await writeFile(FETCHED_URLS_FILE, sortedUrls.join("\n"), "utf-8");
 }
 
+function normalizeCharset(charset: string): string {
+	const normalized = charset.toLowerCase().replace(/[^a-z0-9]/g, "");
+	const mapping: Record<string, string> = {
+		shiftjis: "Shift_JIS",
+		sjis: "Shift_JIS",
+		xsjis: "Shift_JIS",
+		eucjp: "EUC-JP",
+		xeucjp: "EUC-JP",
+	};
+	return mapping[normalized] || charset;
+}
+
+function detectCharset(headers: Headers, buffer: Buffer): string {
+	// 1. Content-Type ヘッダーから検出
+	const contentType = headers.get("content-type") || "";
+	const headerMatch = contentType.match(/charset=([^\s;]+)/i);
+	if (headerMatch) return normalizeCharset(headerMatch[1]);
+
+	// 2. HTML meta タグから検出（ASCII範囲で仮デコード）
+	const preview = buffer
+		.subarray(0, Math.min(4096, buffer.length))
+		.toString("ascii");
+
+	// <meta charset="...">
+	const metaCharset = preview.match(/<meta\s+charset=["']?([^"'\s>]+)/i);
+	if (metaCharset) return normalizeCharset(metaCharset[1]);
+
+	// <meta http-equiv="Content-Type" content="...; charset=...">
+	const metaHttpEquiv = preview.match(
+		/<meta[^>]+http-equiv=["']?Content-Type["']?[^>]+content=["'][^"']*charset=([^"'\s;]+)/i,
+	);
+	if (metaHttpEquiv) return normalizeCharset(metaHttpEquiv[1]);
+
+	return "utf-8";
+}
+
 async function fetchWebsiteMarkdown(url: string): Promise<string> {
 	try {
 		const response = await fetch(url, {
@@ -39,7 +76,9 @@ async function fetchWebsiteMarkdown(url: string): Promise<string> {
 			throw new Error(`HTTP error! status: ${response.status}`);
 		}
 
-		const html = await response.text();
+		const buffer = Buffer.from(await response.arrayBuffer());
+		const charset = detectCharset(response.headers, buffer);
+		const html = iconv.decode(buffer, charset);
 
 		const turndownService = new TurndownService({
 			headingStyle: "atx",

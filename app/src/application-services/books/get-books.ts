@@ -15,13 +15,11 @@ import {
 	type Status,
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import type { CacheStrategy } from "@s-hirano-ist/s-core/shared-kernel/types/query-options";
 import { cacheTag } from "next/cache";
 import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
 import type { GetCount, GetPaginatedData } from "@/common/types";
-import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import type { ImageCardStackInitialData } from "@/components/common/layouts/cards/types";
 import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
 import {
@@ -42,7 +40,6 @@ const _getBooks = async (
 	currentCount: number,
 	userId: UserId,
 	status: Status,
-	cacheStrategy?: CacheStrategy,
 ): Promise<ImageCardStackInitialData> => {
 	"use cache";
 	cacheTag(
@@ -55,7 +52,6 @@ const _getBooks = async (
 			skip: currentCount,
 			take: PAGE_SIZE,
 			orderBy: { createdAt: "desc" },
-			cacheStrategy,
 		}),
 		_getBooksCount(userId, status),
 	]);
@@ -98,18 +94,11 @@ export const getUnexportedBooks: GetPaginatedData<ImageCardStackInitialData> =
 
 /**
  * Fetches paginated exported books for the current user.
- *
- * @remarks
- * Uses Prisma Accelerate caching for viewer performance.
  */
 export const getExportedBooks: GetPaginatedData<ImageCardStackInitialData> =
 	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
-		return _getBooks(currentCount, userId, makeExportedStatus().status, {
-			ttl: 400,
-			swr: 40,
-			tags: [`${sanitizeCacheTag(userId)}_books_${currentCount}`],
-		});
+		return _getBooks(currentCount, userId, makeExportedStatus().status);
 	});
 
 /**

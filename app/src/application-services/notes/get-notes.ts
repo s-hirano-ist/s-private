@@ -15,13 +15,11 @@ import {
 	type Status,
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import type { CacheStrategy } from "@s-hirano-ist/s-core/shared-kernel/types/query-options";
 import { cacheTag } from "next/cache";
 import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
 import type { GetCount, GetPaginatedData } from "@/common/types";
-import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
 import { notesQueryRepository } from "@/infrastructures/notes/repositories/notes-query-repository";
 import {
@@ -36,7 +34,6 @@ import {
  * @param currentCount - Number of items to skip (offset)
  * @param userId - User ID for data isolation
  * @param status - Note status filter (UNEXPORTED/EXPORTED)
- * @param cacheStrategy - Optional Prisma Accelerate cache configuration
  * @returns Paginated note data with total count
  *
  * @internal
@@ -45,7 +42,6 @@ const _getNotes = async (
 	currentCount: number,
 	userId: UserId,
 	status: Status,
-	cacheStrategy?: CacheStrategy,
 ): Promise<LinkCardStackInitialData> => {
 	"use cache";
 	cacheTag(
@@ -57,7 +53,6 @@ const _getNotes = async (
 			skip: currentCount,
 			take: PAGE_SIZE,
 			orderBy: { createdAt: "desc" },
-			cacheStrategy,
 		}),
 		_getNotesCount(userId, status),
 	]);
@@ -109,18 +104,11 @@ export const getUnexportedNotes: GetPaginatedData<LinkCardStackInitialData> =
 
 /**
  * Fetches paginated exported notes for the current user.
- *
- * @remarks
- * Uses Prisma Accelerate caching with TTL and SWR for viewer performance.
  */
 export const getExportedNotes: GetPaginatedData<LinkCardStackInitialData> =
 	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
-		return _getNotes(currentCount, userId, makeExportedStatus().status, {
-			ttl: 400,
-			swr: 40,
-			tags: [`${sanitizeCacheTag(userId)}_notes_${currentCount}`],
-		});
+		return _getNotes(currentCount, userId, makeExportedStatus().status);
 	});
 
 /**

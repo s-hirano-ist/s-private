@@ -22,7 +22,6 @@ import type { IArticlesCommandRepository } from "./articles-command-repository.i
  *   orderBy: { createdAt: "desc" },
  *   take: 20,
  *   skip: 0,
- *   cacheStrategy: { ttl: 60, tags: ["articles"] },
  * };
  * ```
  *

@@ -1416,7 +1416,6 @@ export const _getArticles = async (
   currentCount: number,
   userId: UserId,
   status: Status,
-  cacheStrategy?: CacheStrategy,
 ): Promise<LinkCardStackInitialData> => {
   "use cache";
   cacheTag(
@@ -1428,7 +1427,6 @@ export const _getArticles = async (
     skip: currentCount,
     take: PAGE_SIZE,
     orderBy: { createdAt: "desc" },
-    cacheStrategy,
   });
 
   const totalCount = await _getArticlesCount(userId, status);
@@ -1440,11 +1438,7 @@ export const _getArticles = async (
 export const getExportedArticles: GetPaginatedData<LinkCardStackInitialData> =
   cache(async (currentCount: number) => {
     const userId = await getSelfId();
-    return _getArticles(currentCount, userId, makeExportedStatus().status, {
-      ttl: 400,
-      swr: 40,
-      tags: [`${sanitizeCacheTag(userId)}_articles_${currentCount}`],
-    });
+    return _getArticles(currentCount, userId, makeExportedStatus().status);
   });
 ```
 
@@ -1454,7 +1448,6 @@ export const getExportedArticles: GetPaginatedData<LinkCardStackInitialData> =
 |---|------|------|
 | Next.js | `"use cache"` + `cacheTag()` | ビルド/リクエスト間キャッシュ |
 | React | `cache()` | リクエスト内重複排除（同一リクエストで複数回呼ばれても1回のみ実行） |
-| Prisma Accelerate | `cacheStrategy` | データベースレベルキャッシュ（TTL/SWR） |
 
 ### `cache()` と `"use cache"` の使い分け
 
@@ -1497,7 +1490,6 @@ export const getData = cache(async () => {
 
 - 内部関数は`"use cache"`でキャッシュ、公開関数は`cache()`でラップ
 - `cacheTag()`で複数タグを設定し、柔軟な無効化を可能に
-- Prisma Accelerateはデプロイ環境でのみ有効
 
 ## DTO Transform Pattern
 

@@ -475,7 +475,7 @@ graph TB
 - ページネーション・キャッシュは全クエリで必須であり、リポジトリインターフェースから除外するとDIが破綻する
 - `packages/core`は独立パッケージであり、app層のインフラ型を参照できないため、shared-kernelに配置
 - 型を完全に分離すると呼び出し側でキャストが必要になり型安全性が低下
-- 影響は限定的（`InfraQueryOptions`、`PaginationOptions`、`CacheStrategy`のみ）で制御可能
+- 影響は限定的（`InfraQueryOptions`、`PaginationOptions`のみ）で制御可能
 
 **対象ファイル**:
 - `packages/core/shared-kernel/types/query-options.ts`

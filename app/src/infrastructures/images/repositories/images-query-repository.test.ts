@@ -21,20 +21,41 @@ describe("ImagesQueryRepository", () => {
 				{
 					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b",
 					path: "image-123.jpg",
+					contentType: "image/jpeg",
+					fileSize: 1024,
 					width: 800,
 					height: 600,
+					status: "EXPORTED" as const,
+					userId: "user123",
+					createdAt: new Date("2024-01-01"),
+					updatedAt: new Date("2024-01-01"),
+					exportedAt: null,
 				},
 				{
 					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c",
 					path: "image-456.jpg",
+					contentType: "image/jpeg",
+					fileSize: 2048,
 					width: 1920,
 					height: 1080,
+					status: "EXPORTED" as const,
+					userId: "user123",
+					createdAt: new Date("2024-01-02"),
+					updatedAt: new Date("2024-01-02"),
+					exportedAt: null,
 				},
 				{
 					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d",
 					path: "image-789.jpg",
+					contentType: "image/jpeg",
+					fileSize: null,
 					width: null,
 					height: null,
+					status: "EXPORTED" as const,
+					userId: "user123",
+					createdAt: new Date("2024-01-03"),
+					updatedAt: new Date("2024-01-03"),
+					exportedAt: null,
 				},
 			];
 
@@ -85,39 +106,6 @@ describe("ImagesQueryRepository", () => {
 
 			expect(prisma.image.findMany).toHaveBeenCalled();
 			expect(result).toEqual([]);
-		});
-
-		test("should work with cache strategy", async () => {
-			const mockImages = [
-				{
-					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e",
-					path: "image-123.jpg",
-					width: 640,
-					height: 480,
-				},
-			];
-
-			vi.mocked(prisma.image.findMany).mockResolvedValue(mockImages);
-
-			const params = {
-				cacheStrategy: { ttl: 300, swr: 30, tags: ["images"] },
-			};
-
-			const result = await imagesQueryRepository.findMany(
-				makeUserId("user123"),
-				"EXPORTED",
-				params,
-			);
-
-			expect(prisma.image.findMany).toHaveBeenCalled();
-			expect(result).toEqual([
-				{
-					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e"),
-					path: makePath("image-123.jpg", false),
-					width: makePixel(640),
-					height: makePixel(480),
-				},
-			]);
 		});
 
 		test("should handle database errors", async () => {

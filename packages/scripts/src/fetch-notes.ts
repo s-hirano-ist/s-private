@@ -32,9 +32,7 @@ async function main() {
 
 	// Dynamic import for Prisma ESM compatibility
 	const { PrismaClient } = await import("@s-hirano-ist/s-database/generated");
-	const prisma = new PrismaClient({
-		accelerateUrl: env.DATABASE_URL ?? "",
-	});
+	const prisma = new PrismaClient({ accelerateUrl: env.DATABASE_URL ?? "" });
 
 	const notificationService = createPushoverService({
 		url: env.PUSHOVER_URL ?? "",

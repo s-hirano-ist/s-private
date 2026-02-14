@@ -22,7 +22,6 @@ import type { IImagesCommandRepository } from "./images-command-repository.inter
  *   orderBy: { createdAt: "desc" },
  *   take: 20,
  *   skip: 0,
- *   cacheStrategy: { ttl: 60, tags: ["images"] },
  * };
  * ```
  *

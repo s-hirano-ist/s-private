@@ -39,8 +39,11 @@ describe("BooksQueryRepository", () => {
 				googleDescription: "Test book description",
 				googleSubTitle: "Test subtitle",
 				imagePath: null,
-				status: "EXPORTED",
+				status: "EXPORTED" as const,
+				rating: null,
+				tags: [] as string[],
 				createdAt: new Date("2024-01-01"),
+				updatedAt: new Date("2024-01-01"),
 				exportedAt: new Date("2024-01-02"),
 			};
 
@@ -108,6 +111,19 @@ describe("BooksQueryRepository", () => {
 					isbn: "978-0123456789",
 					googleImgSrc: "https://example.com/image1.jpg",
 					imagePath: null,
+					userId: "user123",
+					googleTitle: null,
+					googleSubTitle: null,
+					googleAuthors: [] as string[],
+					googleDescription: null,
+					googleHref: null,
+					markdown: null,
+					rating: null,
+					tags: [] as string[],
+					status: "EXPORTED" as const,
+					createdAt: new Date("2024-01-01"),
+					updatedAt: new Date("2024-01-01"),
+					exportedAt: null,
 				},
 				{
 					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d",
@@ -115,6 +131,19 @@ describe("BooksQueryRepository", () => {
 					isbn: "978-0987654321",
 					googleImgSrc: "https://example.com/image2.jpg",
 					imagePath: null,
+					userId: "user123",
+					googleTitle: null,
+					googleSubTitle: null,
+					googleAuthors: [] as string[],
+					googleDescription: null,
+					googleHref: null,
+					markdown: null,
+					rating: null,
+					tags: [] as string[],
+					status: "EXPORTED" as const,
+					createdAt: new Date("2024-01-02"),
+					updatedAt: new Date("2024-01-02"),
+					exportedAt: null,
 				},
 			];
 
@@ -161,41 +190,6 @@ describe("BooksQueryRepository", () => {
 
 			expect(prisma.book.findMany).toHaveBeenCalled();
 			expect(result).toEqual([]);
-		});
-
-		test("should work with cache strategy", async () => {
-			const mockBooks = [
-				{
-					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e",
-					title: "Cached Book",
-					isbn: "978-0123456789",
-					googleImgSrc: "https://example.com/image.jpg",
-					imagePath: null,
-				},
-			];
-
-			vi.mocked(prisma.book.findMany).mockResolvedValue(mockBooks);
-
-			const params = {
-				cacheStrategy: { ttl: 400, swr: 40, tags: ["books"] },
-			};
-
-			const result = await booksQueryRepository.findMany(
-				makeUserId("user123"),
-				"EXPORTED",
-				params,
-			);
-
-			expect(prisma.book.findMany).toHaveBeenCalled();
-			expect(result).toEqual([
-				{
-					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e"),
-					isbn: makeISBN("978-0123456789"),
-					title: makeBookTitle("Cached Book"),
-					googleImgSrc: makeGoogleImgSrc("https://example.com/image.jpg"),
-					imagePath: undefined,
-				},
-			]);
 		});
 
 		test("should handle database errors", async () => {

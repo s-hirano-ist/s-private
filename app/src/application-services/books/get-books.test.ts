@@ -66,13 +66,6 @@ describe("get-books", () => {
 					skip: 0,
 					take: 24,
 					orderBy: { createdAt: "desc" },
-					cacheStrategy: expect.objectContaining({
-						ttl: 400,
-						swr: 40,
-						tags: expect.arrayContaining([
-							expect.stringContaining("testuserid_books"),
-						]),
-					}),
 				}),
 			);
 

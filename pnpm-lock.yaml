@@ -132,9 +132,6 @@ importers:
 
   app:
     dependencies:
-      '@prisma/extension-accelerate':
-        specifier: 3.0.0
-        version: 3.0.0(@prisma/client@7.3.0(prisma@7.3.0(@types/react@19.2.9)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3))
       '@s-hirano-ist/s-core':
         specifier: workspace:*
         version: link:../packages/core
@@ -257,9 +254,6 @@ importers:
       '@prisma/client-runtime-utils':
         specifier: 7.3.0
         version: 7.3.0
-      '@prisma/extension-accelerate':
-        specifier: 3.0.0
-        version: 3.0.0(@prisma/client@7.3.0(prisma@7.3.0(@types/react@19.2.9)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3))
       prisma:
         specifier: 7.3.0
         version: 7.3.0(@types/react@19.2.9)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3)
@@ -300,6 +294,9 @@ importers:
       glob:
         specifier: 13.0.0
         version: 13.0.0
+      iconv-lite:
+        specifier: 0.7.2
+        version: 0.7.2
       jsdom:
         specifier: 27.4.0
         version: 27.4.0
@@ -1676,12 +1673,6 @@ packages:
 
   '@prisma/engines@7.3.0':
     resolution: {integrity: sha512-cWRQoPDXPtR6stOWuWFZf9pHdQ/o8/QNWn0m0zByxf5Kd946Q875XdEJ52pEsX88vOiXUmjuPG3euw82mwQNMg==}
-
-  '@prisma/extension-accelerate@3.0.0':
-    resolution: {integrity: sha512-xOhRCdPTdAwwdbxDr14s0rg73o8LunzRf8VtzFi4P6G/SvA3n/OgRIClXpihEQvoyDWVEIE29MdSxaaYdjsIMw==}
-    engines: {node: '>=22'}
-    peerDependencies:
-      '@prisma/client': '>=4.16.1'
 
   '@prisma/fetch-engine@7.3.0':
     resolution: {integrity: sha512-Mm0F84JMqM9Vxk70pzfNpGJ1lE4hYjOeLMu7nOOD1i83nvp8MSAcFYBnHqLvEZiA6onUR+m8iYogtOY4oPO5lQ==}
@@ -8449,10 +8440,6 @@ snapshots:
       '@prisma/engines-version': 7.3.0-16.9d6ad21cbbceab97458517b147a6a09ff43aa735
       '@prisma/fetch-engine': 7.3.0
       '@prisma/get-platform': 7.3.0
-
-  '@prisma/extension-accelerate@3.0.0(@prisma/client@7.3.0(prisma@7.3.0(@types/react@19.2.9)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3))':
-    dependencies:
-      '@prisma/client': 7.3.0(prisma@7.3.0(@types/react@19.2.9)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3)
 
   '@prisma/fetch-engine@7.3.0':
     dependencies:

@@ -14,12 +14,10 @@ import {
 	type Status,
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import type { CacheStrategy } from "@s-hirano-ist/s-core/shared-kernel/types/query-options";
 import { cacheTag } from "next/cache";
 import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
-import { sanitizeCacheTag } from "@/common/utils/cache-utils";
 import type { ImageData } from "@/components/common/display/image/image-stack";
 import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
 import {
@@ -57,7 +55,6 @@ const _getImages = async (
 	page: number,
 	userId: UserId,
 	status: Status,
-	cacheStrategy?: CacheStrategy,
 ): Promise<ImageData[]> => {
 	"use cache";
 	cacheTag(
@@ -68,7 +65,6 @@ const _getImages = async (
 		skip: (page - 1) * PAGE_SIZE,
 		take: PAGE_SIZE,
 		orderBy: { createdAt: "desc" },
-		cacheStrategy,
 	});
 
 	return data.map((d) => {
@@ -96,20 +92,13 @@ export const getImagesCount = async (status: Status): Promise<number> => {
 /**
  * Fetches paginated exported images for the current user.
  *
- * @remarks
- * Uses Prisma Accelerate caching for viewer performance.
- *
  * @param page - Page number (1-based)
  * @returns Array of image data with API paths
  */
 export const getExportedImages = cache(
 	async (page: number): Promise<ImageData[]> => {
 		const userId = await getSelfId();
-		return _getImages(page, userId, makeExportedStatus().status, {
-			ttl: 400,
-			swr: 40,
-			tags: [`${sanitizeCacheTag(userId)}_images`],
-		});
+		return _getImages(page, userId, makeExportedStatus().status);
 	},
 );
 
