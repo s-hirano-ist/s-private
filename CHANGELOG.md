@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.13.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.13.0...s-private-v10.13.1) (2026-02-14)
+
+
+### Bug Fixes
+
+* build and test ([5edaf82](https://github.com/s-hirano-ist/s-private/commit/5edaf822d53fdf87f899ea94f92ceed6fed9272d))
+* next.config for search ([6d22d4e](https://github.com/s-hirano-ist/s-private/commit/6d22d4e3c5384081ea977bc104b2f2e5f5f7c719))
+* next.config for search ([912bca9](https://github.com/s-hirano-ist/s-private/commit/912bca9833d15aaa9c61ee3ec661cb19979c771f))
+* nextjs build ([e19c962](https://github.com/s-hirano-ist/s-private/commit/e19c96222a7de53f2817770f38afcd98803c96f9))
+* nextjs build ([e0be9d7](https://github.com/s-hirano-ist/s-private/commit/e0be9d748728d1d6da47e47af7fe703ec008ee1b))
+* qdrant search features ([ef7ba19](https://github.com/s-hirano-ist/s-private/commit/ef7ba190d8073f1ce8cdbbf84c2c4017da65df60))
+* qdrant search features ([4440627](https://github.com/s-hirano-ist/s-private/commit/444062709e99fbe7f6489ebd74fbcee4de68707c))
+* release please and search api ([16e11fa](https://github.com/s-hirano-ist/s-private/commit/16e11fa1db911a6e8a29d6317b01cc00c7de8efb))
+
+
+### Maintenance
+
+* embedding ([3b59540](https://github.com/s-hirano-ist/s-private/commit/3b5954024b2814f14edc5bdcbaa1dbb2184ba9f3))
+* move r2 to local minio ([849de81](https://github.com/s-hirano-ist/s-private/commit/849de814a4a2529f10203e4525b670564c8cce63))
+* package.json of search ([7a018e3](https://github.com/s-hirano-ist/s-private/commit/7a018e3ad3544cee6876aaf3600c5b77ddf9cd8d))
+
 ## [10.13.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.12.2...s-private-v10.13.0) (2026-02-14)
 
 
