@@ -48,6 +48,13 @@ const nextConfig = {
 		},
 		viewTransition: true,
 	},
+	webpack: (config) => {
+		config.resolve.conditionNames = [
+			"source",
+			...config.resolve.conditionNames,
+		];
+		return config;
+	},
 	pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
 	output: "standalone",
 	images: {
