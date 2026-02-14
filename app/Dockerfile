@@ -63,6 +63,11 @@ RUN --mount=type=secret,id=AUTH_SECRET \
     --mount=type=secret,id=DATABASE_URL \
     --mount=type=secret,id=SENTRY_AUTH_TOKEN \
     --mount=type=secret,id=SENTRY_REPORT_URL \
+    --mount=type=secret,id=EMBEDDING_API_URL \
+    --mount=type=secret,id=EMBEDDING_API_KEY \
+    --mount=type=secret,id=CF_ACCESS_CLIENT_ID \
+    --mount=type=secret,id=CF_ACCESS_CLIENT_SECRET \
+    --mount=type=secret,id=QDRANT_URL \
     echo "AUTH_SECRET=$(cat /run/secrets/AUTH_SECRET)\n\
 AUTH0_CLIENT_ID=$(cat /run/secrets/AUTH0_CLIENT_ID)\n\
 AUTH0_CLIENT_SECRET=$(cat /run/secrets/AUTH0_CLIENT_SECRET)\n\
@@ -78,7 +83,12 @@ MINIO_SECRET_KEY=$(cat /run/secrets/MINIO_SECRET_KEY)\n\
 NEXT_PUBLIC_SENTRY_DSN=$(cat /run/secrets/NEXT_PUBLIC_SENTRY_DSN)\n\
 DATABASE_URL=$(cat /run/secrets/DATABASE_URL)\n\
 SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN)\n\
-SENTRY_REPORT_URL=$(cat /run/secrets/SENTRY_REPORT_URL)\n" > app/.env
+SENTRY_REPORT_URL=$(cat /run/secrets/SENTRY_REPORT_URL)\n\
+EMBEDDING_API_URL=$(cat /run/secrets/EMBEDDING_API_URL)\n\
+EMBEDDING_API_KEY=$(cat /run/secrets/EMBEDDING_API_KEY)\n\
+CF_ACCESS_CLIENT_ID=$(cat /run/secrets/CF_ACCESS_CLIENT_ID)\n\
+CF_ACCESS_CLIENT_SECRET=$(cat /run/secrets/CF_ACCESS_CLIENT_SECRET)\n\
+QDRANT_URL=$(cat /run/secrets/QDRANT_URL)\n" > app/.env
 
 # Build the application (prisma:generate runs automatically via postinstall)
 RUN pnpm run build
