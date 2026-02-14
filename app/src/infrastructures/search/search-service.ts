@@ -9,6 +9,8 @@ getQdrantClient({ url: env.QDRANT_URL, apiKey: env.QDRANT_API_KEY });
 const embeddingClient = createEmbeddingClient({
 	apiUrl: env.EMBEDDING_API_URL,
 	apiKey: env.EMBEDDING_API_KEY,
+	cfAccessClientId: env.CF_ACCESS_CLIENT_ID,
+	cfAccessClientSecret: env.CF_ACCESS_CLIENT_SECRET,
 });
 
 export type SearchOptions = {

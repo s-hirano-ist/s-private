@@ -182,7 +182,28 @@ sudo systemctl restart ssh
    - Subdomain: `embedding-api` (or 任意)
    - Domain: 所有ドメイン
    - Service: `http://embedding-api:3001`
-5. Access Policy (推奨): Zero Trust → Access → Applications で、このホスト名にアクセスポリシーを設定
+5. **Access Policy (必須)**: 以下の手順で Cloudflare Access を設定する
+
+### 4.1 Cloudflare Access アプリケーション作成
+
+1. Zero Trust → Access → Applications → **Add an application**
+2. Type: **Self-hosted**
+3. Application name: `embedding-api`
+4. Session Duration: 任意（デフォルト 24h）
+5. Application domain: Tunnel で設定したホスト名（例: `embedding-api.<domain>`）
+
+### 4.2 Service Token の発行
+
+1. Zero Trust → Access → Service Auth → **Create Service Token**
+2. Token 名: `embedding-api-client`
+3. 発行される `CF-Access-Client-Id` と `CF-Access-Client-Secret` を安全な場所に保管
+4. これらの値をアプリケーション側の環境変数 `CF_ACCESS_CLIENT_ID` / `CF_ACCESS_CLIENT_SECRET` に設定する
+
+### 4.3 Access Policy 設定
+
+1. Policy name: `Service Token Policy`
+2. Action: **Service Auth**
+3. Include rule: **Service Token** — 発行済みの Service Token を指定
 
 ---
 
@@ -264,44 +285,56 @@ fetch('http://localhost:3001/embed', {
 # 期待: {"embedding": [0.123, ...]} 形式の JSON レスポンス
 ```
 
-### 6.3 Cloudflare Tunnel 経由の検証（ローカル）
+### 6.3 Cloudflare Tunnel + Access 経由の検証（ローカル）
 
-6.2 が成功し、以下が失敗する場合、問題は Tunnel 設定にある。
+6.2 が成功し、以下が失敗する場合、問題は Tunnel または Access 設定にある。
+Cloudflare Access が有効なため、全リクエストに **Service Token ヘッダーが必須**。
 
 ```bash
 # ヘルスチェック
-curl -s https://embedding-api.<domain>/health
+curl -s https://embedding-api.<domain>/health \
+  -H "CF-Access-Client-Id: $CF_ACCESS_CLIENT_ID" \
+  -H "CF-Access-Client-Secret: $CF_ACCESS_CLIENT_SECRET"
 # 期待: {"status":"ok"}
 
 # 単一テキスト埋め込み
 curl -s -X POST https://embedding-api.<domain>/embed \
+  -H "CF-Access-Client-Id: $CF_ACCESS_CLIENT_ID" \
+  -H "CF-Access-Client-Secret: $CF_ACCESS_CLIENT_SECRET" \
   -H "Authorization: Bearer $EMBEDDING_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"text": "テストクエリ", "isQuery": true}'
 
 # バッチ埋め込み
 curl -s -X POST https://embedding-api.<domain>/embed-batch \
+  -H "CF-Access-Client-Id: $CF_ACCESS_CLIENT_ID" \
+  -H "CF-Access-Client-Secret: $CF_ACCESS_CLIENT_SECRET" \
   -H "Authorization: Bearer $EMBEDDING_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"texts": ["テスト1", "テスト2"], "isQuery": false}'
-
-# OpenAPI 仕様（JSON）
-curl -s https://embedding-api.<domain>/doc
 ```
 
-**Swagger UI:** ブラウザで `https://embedding-api.<domain>/ui` にアクセスし、API 仕様を確認する。
+> **注意:** Cloudflare Access が有効な状態では `/health`, `/doc`, `/ui` を含む全エンドポイントが Service Token なしではアクセス不可になる。これは意図した動作であり、API 仕様の外部露出を防ぐ。
 
-### 6.4 Cloudflare Access 設定時の注意
+### 6.4 Cloudflare Access の検証
 
-Cloudflare Access Policy を有効にしている場合、curl リクエストには **Service Token** ヘッダーが必要になる:
+Service Token なしでアクセスが**拒否される**ことを確認する:
 
 ```bash
-curl -s https://embedding-api.<domain>/health \
-  -H "CF-Access-Client-Id: <client-id>" \
-  -H "CF-Access-Client-Secret: <client-secret>"
+# Service Token なしでアクセス → 403 Forbidden が返ること
+curl -s -o /dev/null -w "%{http_code}" https://embedding-api.<domain>/health
+# 期待: 403
 ```
 
-Service Token は Cloudflare Zero Trust ダッシュボード > Access > Service Auth から発行できる。
+Service Token ありでアクセスが**許可される**ことを確認する:
+
+```bash
+# Service Token ありでアクセス → 200 OK が返ること
+curl -s -o /dev/null -w "%{http_code}" https://embedding-api.<domain>/health \
+  -H "CF-Access-Client-Id: $CF_ACCESS_CLIENT_ID" \
+  -H "CF-Access-Client-Secret: $CF_ACCESS_CLIENT_SECRET"
+# 期待: 200
+```
 
 ---
 

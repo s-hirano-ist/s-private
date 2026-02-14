@@ -48,6 +48,8 @@ export const env = createEnv({
 		MINIO_SECRET_KEY: z.string(),
 		EMBEDDING_API_URL: z.string(),
 		EMBEDDING_API_KEY: z.string(),
+		CF_ACCESS_CLIENT_ID: z.string(),
+		CF_ACCESS_CLIENT_SECRET: z.string(),
 		QDRANT_URL: z.string(),
 		QDRANT_API_KEY: z.string().optional(),
 	},
@@ -81,6 +83,8 @@ export const env = createEnv({
 		MINIO_SECRET_KEY: process.env.MINIO_SECRET_KEY,
 		EMBEDDING_API_URL: process.env.EMBEDDING_API_URL,
 		EMBEDDING_API_KEY: process.env.EMBEDDING_API_KEY,
+		CF_ACCESS_CLIENT_ID: process.env.CF_ACCESS_CLIENT_ID,
+		CF_ACCESS_CLIENT_SECRET: process.env.CF_ACCESS_CLIENT_SECRET,
 		QDRANT_URL: process.env.QDRANT_URL,
 		QDRANT_API_KEY: process.env.QDRANT_API_KEY,
 		NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN, // MEMO: ok to leak

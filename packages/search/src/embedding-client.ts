@@ -1,19 +1,27 @@
 export type EmbeddingClientConfig = {
 	apiUrl: string;
 	apiKey: string;
+	cfAccessClientId: string;
+	cfAccessClientSecret: string;
 };
 
 export function createEmbeddingClient(config: EmbeddingClientConfig) {
-	const { apiUrl, apiKey } = config;
+	const { apiUrl, apiKey, cfAccessClientId, cfAccessClientSecret } = config;
+
+	function buildHeaders(): Record<string, string> {
+		return {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${apiKey}`,
+			"CF-Access-Client-Id": cfAccessClientId,
+			"CF-Access-Client-Secret": cfAccessClientSecret,
+		};
+	}
 
 	return {
 		async embed(text: string, isQuery?: boolean): Promise<number[]> {
 			const response = await fetch(`${apiUrl}/embed`, {
 				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${apiKey}`,
-				},
+				headers: buildHeaders(),
 				body: JSON.stringify({ text, isQuery: isQuery ?? false }),
 			});
 
@@ -30,10 +38,7 @@ export function createEmbeddingClient(config: EmbeddingClientConfig) {
 		async embedBatch(texts: string[], isQuery?: boolean): Promise<number[][]> {
 			const response = await fetch(`${apiUrl}/embed-batch`, {
 				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${apiKey}`,
-				},
+				headers: buildHeaders(),
 				body: JSON.stringify({ texts, isQuery: isQuery ?? false }),
 			});
 

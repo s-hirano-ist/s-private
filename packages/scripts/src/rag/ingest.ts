@@ -98,6 +98,8 @@ async function ingest(): Promise<void> {
 		? createEmbeddingClient({
 				apiUrl: process.env.EMBEDDING_API_URL,
 				apiKey: process.env.EMBEDDING_API_KEY ?? "",
+				cfAccessClientId: process.env.CF_ACCESS_CLIENT_ID ?? "",
+				cfAccessClientSecret: process.env.CF_ACCESS_CLIENT_SECRET ?? "",
 			}).embedBatch
 		: undefined;
 
@@ -115,10 +117,17 @@ async function ingest(): Promise<void> {
 async function main() {
 	const env = {
 		QDRANT_URL: process.env.QDRANT_URL,
+		CF_ACCESS_CLIENT_ID: process.env.CF_ACCESS_CLIENT_ID,
+		CF_ACCESS_CLIENT_SECRET: process.env.CF_ACCESS_CLIENT_SECRET,
 	} as const;
 
 	if (!env.QDRANT_URL) {
 		throw new Error("QDRANT_URL environment variable is required.");
+	}
+	if (!env.CF_ACCESS_CLIENT_ID || !env.CF_ACCESS_CLIENT_SECRET) {
+		throw new Error(
+			"CF_ACCESS_CLIENT_ID and CF_ACCESS_CLIENT_SECRET environment variables are required.",
+		);
 	}
 
 	try {

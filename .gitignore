@@ -1,61 +1,38 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# common
+dist/
+*.tsbuildinfo
+.env
+.env.production
+.DS_Store
+node_modules
+debug.log
+
 # Storybook
 .storybook-static
 *storybook.log
 
-# Dependencies
-node_modules
-
 # Testing
 .vitest-coverage
 
-# Next.js
+# App
 app/.next
-
-# Production
-/build
-.vercel
-
-# Misc
-.DS_Store
-
-# Env files
-.env
-.env.production
-
-# TypeScript
-*.tsbuildinfo
 next-env.d.ts
-
-# MinIO SSL
-minio/certs
-
-# Prisma
-packages/database/src/generated/
-packages/database/dbml/
-
-# Sentry Config File
+.vercel
 .env.sentry-build-plugin
 
-# Log
-debug.log
+# Database
+packages/database/src/generated/
 
 # Code duplication reports
 jscpd-report/
 
-# packages
-packages/core/dist/
-packages/database/dist/
-packages/ui/dist/
-packages/notification/dist/
-packages/scripts/dist/
-packages/search/dist/
-services/search-api/dist/
-
-# TypeDoc generated documentation
+# Documentation
 docs/api/
+packages/database/dbml/
 
+# claude
 /plans
 
 # docker sandbox
