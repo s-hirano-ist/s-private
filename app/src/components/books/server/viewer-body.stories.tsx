@@ -31,7 +31,6 @@ function ViewerBodyWrapper({ slug, getBookByISBN }: ViewerBodyProps) {
 const meta = {
 	component: ViewerBodyWrapper,
 	parameters: { layout: "padded" },
-	tags: ["autodocs"],
 	argTypes: {
 		slug: { control: "text" },
 		getBookByISBN: { action: "getBookByISBN" },

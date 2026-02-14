@@ -24,7 +24,6 @@ function ViewerBodyWrapper({ slug, getNoteByTitle }: ViewerBodyProps) {
 const meta = {
 	component: ViewerBodyWrapper,
 	parameters: { layout: "padded" },
-	tags: ["autodocs"],
 	argTypes: {
 		slug: { control: "text" },
 		getNoteByTitle: { action: "getNoteByTitle" },

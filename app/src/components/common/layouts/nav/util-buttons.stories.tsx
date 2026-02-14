@@ -32,7 +32,6 @@ const meta = {
 			appDirectory: true,
 		},
 	},
-	tags: ["autodocs"],
 	argTypes: {
 		handleReload: { action: "handleReload" },
 		onSignOutSubmit: { action: "onSignOutSubmit" },

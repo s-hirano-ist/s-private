@@ -4,7 +4,6 @@ import { Textarea } from "./textarea";
 const meta = {
 	component: Textarea,
 	parameters: { layout: "centered" },
-	tags: ["autodocs"],
 } satisfies Meta<typeof Textarea>;
 
 export default meta;

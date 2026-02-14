@@ -27,5 +27,5 @@ COPY --from=builder /app/services/embedding-api/node_modules ./node_modules
 COPY --from=builder /app/packages/search/dist ./packages/search/dist
 COPY --from=builder /app/packages/search/package.json ./packages/search/
 EXPOSE 3001
-HEALTHCHECK --interval=30s CMD curl -f http://localhost:3001/health || exit 1
+HEALTHCHECK --interval=30s CMD node -e "fetch('http://localhost:3001/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"
 CMD ["node", "dist/index.js"]

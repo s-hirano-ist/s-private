@@ -16,7 +16,6 @@ import {
 const meta = {
 	component: Command,
 	parameters: { layout: "centered" },
-	tags: ["autodocs"],
 } satisfies Meta<typeof Command>;
 
 export default meta;

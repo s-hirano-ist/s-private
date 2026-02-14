@@ -5,7 +5,6 @@ import { NoteForm } from "./note-form";
 const meta = {
 	component: NoteForm,
 	parameters: { layout: "centered" },
-	tags: ["autodocs"],
 } satisfies Meta<typeof NoteForm>;
 
 export default meta;
@@ -27,7 +26,7 @@ export const FillAndSubmit: Story = {
 		await userEvent.type(titleInput, "テストノート");
 		await expect(titleInput).toHaveValue("テストノート");
 
-		const markdownInput = canvas.getByLabelText("ひとこと");
+		const markdownInput = canvas.getByLabelText("詳細");
 		await userEvent.type(markdownInput, "# テストマークダウン");
 		await expect(markdownInput).toHaveValue("# テストマークダウン");
 

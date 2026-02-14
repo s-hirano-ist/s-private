@@ -4,7 +4,6 @@ import { Badge } from "./badge";
 const meta = {
 	component: Badge,
 	parameters: { layout: "centered" },
-	tags: ["autodocs"],
 } satisfies Meta<typeof Badge>;
 
 export default meta;

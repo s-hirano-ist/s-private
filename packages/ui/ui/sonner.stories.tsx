@@ -5,7 +5,6 @@ import { Toaster as Sonner } from "./sonner";
 
 const meta = {
 	component: Sonner,
-	tags: ["autodocs"],
 } satisfies Meta<typeof Sonner>;
 
 export default meta;

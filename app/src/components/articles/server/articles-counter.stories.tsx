@@ -9,7 +9,6 @@ function ArticlesCounterWrapper({ count }: ArticlesCounterProps) {
 const meta = {
 	component: ArticlesCounterWrapper,
 	parameters: { layout: "centered" },
-	tags: ["autodocs"],
 	argTypes: {
 		count: { control: "number" },
 	},

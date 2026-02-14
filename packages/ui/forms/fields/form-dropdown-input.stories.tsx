@@ -15,7 +15,6 @@ const meta = {
 		searchPlaceholder: { control: { type: "text" } },
 		customValueLabel: { control: false },
 	},
-	tags: ["autodocs"],
 	decorators: [
 		(Story) => (
 			<div className="w-80">

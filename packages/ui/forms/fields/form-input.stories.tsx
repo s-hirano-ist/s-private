@@ -16,7 +16,6 @@ const meta = {
 			options: ["text", "email", "password", "url", "tel", "number"],
 		},
 	},
-	tags: ["autodocs"],
 } satisfies Meta<typeof FormInput>;
 
 export default meta;

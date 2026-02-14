@@ -35,7 +35,8 @@
 		"previous": "前へ",
 		"next": "次へ",
 		"morePages": "その他のページ",
-		"bookCover": "書籍画像（任意）"
+		"bookCover": "書籍画像（任意）",
+		"403": "許可されていません"
 	},
 	"statusCode": {
 		"000": "近日公開",

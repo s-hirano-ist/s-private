@@ -5,7 +5,6 @@ import { ImageCardStack } from "./image-card-stack";
 const meta = {
 	component: ImageCardStack,
 	parameters: { layout: "centered" },
-	tags: ["autodocs"],
 } satisfies Meta<typeof ImageCardStack>;
 
 export default meta;

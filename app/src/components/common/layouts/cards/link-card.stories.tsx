@@ -6,7 +6,6 @@ import { LinkCard } from "./link-card";
 const meta = {
 	component: LinkCard,
 	parameters: { layout: "fullscreen" },
-	tags: ["autodocs"],
 } satisfies Meta<typeof LinkCard>;
 
 export default meta;

@@ -44,7 +44,6 @@ function ThemeProviderWrapper({
 const meta = {
 	component: ThemeProviderWrapper,
 	parameters: { layout: "centered" },
-	tags: ["autodocs"],
 	argTypes: {
 		theme: {
 			control: { type: "select", options: ["light", "dark", "system"] },
@@ -68,8 +67,8 @@ export const DarkTheme: Story = {
 		theme: "dark",
 		enableSystem: true,
 	},
-	parameters: {
-		backgrounds: { default: "dark" },
+	globals: {
+		backgrounds: { value: "dark" },
 	},
 };
 

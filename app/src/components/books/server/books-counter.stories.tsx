@@ -9,7 +9,6 @@ function BooksCounterWrapper({ count }: BooksCounterProps) {
 const meta = {
 	component: BooksCounterWrapper,
 	parameters: { layout: "centered" },
-	tags: ["autodocs"],
 	argTypes: {
 		count: { control: "number" },
 	},

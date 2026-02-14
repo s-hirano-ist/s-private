@@ -4,7 +4,6 @@ import { StatusCodeView } from "./status-code-view";
 const meta = {
 	component: StatusCodeView,
 	parameters: { layout: "centered" },
-	tags: ["autodocs"],
 } satisfies Meta<typeof StatusCodeView>;
 
 export default meta;

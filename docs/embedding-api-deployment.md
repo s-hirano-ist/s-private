@@ -16,7 +16,7 @@ VPS 上では全ポートを firewall で閉じ、Cloudflare Tunnel の outbound
 
 ## Step 1: SSH 鍵の設定
 
-### ローカルマシンで
+> **実行環境: ローカルマシン**
 
 ```bash
 # 鍵生成（Ed25519推奨）
@@ -36,60 +36,136 @@ Host conoha-embedding
     IdentitiesOnly yes
 ```
 
-### VPS 側で
+---
+
+## Step 2: VPS 初期設定
+
+> **実行環境: VPS（root で SSH）**
+
+```bash
+ssh root@<VPS_IP>
+```
 
 ```bash
 # deploy ユーザー作成
 adduser --disabled-password deploy
-usermod -aG docker deploy
 
-# SSH鍵設定
+# sudo 権限を付与
+usermod -aG sudo deploy
+
+# SSH鍵を deploy ユーザーにコピー
 mkdir -p /home/deploy/.ssh
 cp ~/.ssh/authorized_keys /home/deploy/.ssh/
 chown -R deploy:deploy /home/deploy/.ssh
 chmod 700 /home/deploy/.ssh
 chmod 600 /home/deploy/.ssh/authorized_keys
-
-# root SSH ログイン無効化 & パスワード認証無効化
-sed -i 's/^#*PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
-sed -i 's/^#*PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
-systemctl restart sshd
 ```
 
----
+### 確認: deploy ユーザーで SSH + sudo できることを検証
 
-## Step 2: ファイアウォール設定（UFW）
+**別のターミナルで**以下を実行し、root セッションはまだ閉じないこと:
 
 ```bash
-# SSH のみ許可、他は全て拒否
-ufw default deny incoming
-ufw default allow outgoing
-ufw allow ssh
-ufw enable
-
-# 確認（3001 等のポートは開けない → Cloudflare Tunnel のみ）
-ufw status
+ssh -i ~/.ssh/conoha_embedding deploy@<VPS_IP>
+sudo whoami  # → root と表示されれば OK
 ```
 
 ---
 
-## Step 3: Docker インストール
+## Step 3: サーバー基盤設定
+
+> **実行環境: VPS（deploy ユーザーで SSH）**
+
+```bash
+ssh -i ~/.ssh/conoha_embedding deploy@<VPS_IP>
+```
+
+### 3.1 Swap 設定
+
+メモリが少ない VPS（512MB〜1GB）では swap を設定する:
+
+```bash
+sudo fallocate -l 1G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+
+# 確認
+free -h
+```
+
+### 3.2 Docker インストール
 
 ```bash
 # Docker 公式リポジトリからインストール
-curl -fsSL https://get.docker.com | sh
-systemctl enable docker
-systemctl start docker
+curl -fsSL https://get.docker.com | sudo sh
+sudo systemctl enable docker
+sudo systemctl start docker
 
 # deploy ユーザーを docker グループに追加（再ログイン必要）
-usermod -aG docker deploy
+sudo usermod -aG docker deploy
+```
+
+再ログインして `docker ps` が実行できることを確認:
+
+```bash
+exit
+ssh -i ~/.ssh/conoha_embedding deploy@<VPS_IP>
+docker ps  # → エラーなく実行できれば OK
+```
+
+### 3.3 ファイアウォール設定（UFW）
+
+```bash
+# SSH のみ許可、他は全て拒否
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow ssh
+sudo ufw enable
+
+# 確認（3001 等のポートは開けない → Cloudflare Tunnel のみ）
+sudo ufw status
+```
+
+### 3.4 自動セキュリティ更新
+
+```bash
+sudo apt update && sudo apt install -y unattended-upgrades
+sudo dpkg-reconfigure -plow unattended-upgrades
+```
+
+### 3.5 Docker ログローテーション
+
+```bash
+sudo tee /etc/docker/daemon.json > /dev/null <<'EOF'
+{
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "10m",
+    "max-file": "3"
+  }
+}
+EOF
+sudo systemctl restart docker
+```
+
+### 3.6 root SSH 無効化 & パスワード認証無効化
+
+> **重要: これは全てのセットアップが完了した後に実行すること。**
+> 実行前に、別ターミナルで deploy ユーザーの SSH + sudo が動作することを再度確認すること。
+
+```bash
+sudo sed -i 's/^#*PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
+sudo sed -i 's/^#*PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
+sudo systemctl restart sshd
 ```
 
 ---
 
 ## Step 4: Cloudflare Tunnel セットアップ
 
-### Cloudflare Dashboard で
+> **実行環境: Cloudflare Dashboard**
 
 1. Zero Trust → Networks → Tunnels → Create a tunnel
 2. Tunnel 名: `embedding-api`
@@ -103,6 +179,8 @@ usermod -aG docker deploy
 ---
 
 ## Step 5: デプロイ実行
+
+> **実行環境: VPS（deploy ユーザーで SSH）**
 
 ### compose.yaml
 
@@ -122,7 +200,7 @@ services:
     networks:
       - tunnel-net
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3001/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
       interval: 30s
       timeout: 3s
       retries: 3
@@ -165,7 +243,6 @@ chmod 600 .env
 ### 起動
 
 ```bash
-# deploy ユーザーで SSH
 ssh conoha-embedding
 
 # 作業ディレクトリ
@@ -178,12 +255,14 @@ docker compose up -d
 docker compose logs -f
 
 # ヘルスチェック
-docker compose exec embedding-api curl -s http://localhost:3001/health
+docker compose exec embedding-api node -e "fetch('http://localhost:3001/health').then(r=>r.json()).then(console.log)"
 ```
 
 ---
 
 ## Step 6: 検証
+
+> **実行環境: ローカルマシン**
 
 1. **ヘルスチェック:** Cloudflare Tunnel 経由で `https://embedding-api.<domain>/health` にアクセスし `{"status":"ok"}` を確認
 2. **機能テスト:**
@@ -232,3 +311,11 @@ docker compose exec cloudflared env | grep TUNNEL_TOKEN
 
 ### メモリ不足
 embedding モデルは約 200MB のメモリを使用する。VPS のメモリが 512MB 以上あることを確認。
+swap が設定されているか確認:
+
+```bash
+free -h
+swapon --show
+```
+
+swap が未設定の場合は Step 3.1 を参照。

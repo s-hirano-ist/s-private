@@ -5,7 +5,6 @@ import { ImageForm } from "./image-form";
 const meta = {
 	component: ImageForm,
 	parameters: { layout: "centered" },
-	tags: ["autodocs"],
 } satisfies Meta<typeof ImageForm>;
 
 export default meta;
