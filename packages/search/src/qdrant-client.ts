@@ -6,10 +6,13 @@ let client: QdrantClient | null = null;
 /**
  * Get or create Qdrant client
  */
-export function getQdrantClient(): QdrantClient {
+export function getQdrantClient(config?: {
+	url?: string;
+	apiKey?: string;
+}): QdrantClient {
 	if (!client) {
-		const url = process.env.QDRANT_URL;
-		const apiKey = process.env.QDRANT_API_KEY;
+		const url = config?.url ?? process.env.QDRANT_URL;
+		const apiKey = config?.apiKey ?? process.env.QDRANT_API_KEY;
 
 		if (!url) {
 			throw new Error("QDRANT_URL environment variable is required");

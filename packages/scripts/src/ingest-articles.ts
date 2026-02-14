@@ -61,14 +61,33 @@ async function main() {
 		const files = await glob(`${contentsPath}/json/article/*.json`);
 		console.log(`📁 ${files.length} 件のJSONファイルを検出しました。`);
 
+		type ExistingArticle = {
+			id: string;
+			url: string;
+			title: string;
+			quote: string | null;
+			ogImageUrl: string | null;
+			ogTitle: string | null;
+			ogDescription: string | null;
+		};
 		const existingArticles = await prisma.article.findMany({
 			where: { userId },
-			select: { url: true },
+			select: {
+				id: true,
+				url: true,
+				title: true,
+				quote: true,
+				ogImageUrl: true,
+				ogTitle: true,
+				ogDescription: true,
+			},
 		});
-		const existingUrls = new Set(
-			existingArticles.map((a: { url: string }) => a.url),
+		const existingArticlesMap = new Map(
+			existingArticles.map((a: ExistingArticle) => [a.url, a]),
 		);
-		console.log(`📊 DB に ${existingUrls.size} 件の既存記事があります。`);
+		console.log(
+			`📊 DB に ${existingArticlesMap.size} 件の既存記事があります。`,
+		);
 
 		const existingCategories = await prisma.category.findMany({
 			where: { userId },
@@ -80,6 +99,7 @@ async function main() {
 		);
 
 		let insertedCount = 0;
+		let updatedCount = 0;
 		let skippedCount = 0;
 		let errorCount = 0;
 		let categoryCreatedCount = 0;
@@ -115,15 +135,55 @@ async function main() {
 				for (const item of json.body) {
 					fileUrls.add(item.url);
 
-					if (existingUrls.has(item.url)) {
-						skippedCount++;
+					const existing = existingArticlesMap.get(item.url);
+					if (existing) {
+						const fileQuote = item.quote ?? null;
+						const fileOgImageUrl = item.ogImageUrl ?? null;
+						const fileOgTitle = item.ogTitle ?? null;
+						const fileOgDescription = item.ogDescription ?? null;
+
+						if (
+							existing.title === item.title &&
+							existing.quote === fileQuote &&
+							existing.ogImageUrl === fileOgImageUrl &&
+							existing.ogTitle === fileOgTitle &&
+							existing.ogDescription === fileOgDescription
+						) {
+							skippedCount++;
+							continue;
+						}
+
+						if (dryRun) {
+							console.log(`🔄 [dry-run] 更新予定: ${item.title} (${item.url})`);
+						} else {
+							await prisma.article.update({
+								where: { id: existing.id },
+								data: {
+									title: item.title,
+									quote: fileQuote,
+									ogImageUrl: fileOgImageUrl,
+									ogTitle: fileOgTitle,
+									ogDescription: fileOgDescription,
+								},
+							});
+							console.log(`🔄 更新: ${item.title}`);
+						}
+						updatedCount++;
 						continue;
 					}
 
 					if (dryRun) {
 						console.log(`🔍 [dry-run] 挿入予定: ${item.title} (${item.url})`);
 						insertedCount++;
-						existingUrls.add(item.url);
+						existingArticlesMap.set(item.url, {
+							id: "",
+							url: item.url,
+							title: item.title,
+							quote: item.quote ?? null,
+							ogImageUrl: item.ogImageUrl ?? null,
+							ogTitle: item.ogTitle ?? null,
+							ogDescription: item.ogDescription ?? null,
+						});
 						continue;
 					}
 
@@ -144,7 +204,15 @@ async function main() {
 						},
 					});
 					insertedCount++;
-					existingUrls.add(item.url);
+					existingArticlesMap.set(item.url, {
+						id: "",
+						url: item.url,
+						title: item.title,
+						quote: item.quote ?? null,
+						ogImageUrl: item.ogImageUrl ?? null,
+						ogTitle: item.ogTitle ?? null,
+						ogDescription: item.ogDescription ?? null,
+					});
 					console.log(`✅ 挿入: ${item.title}`);
 				}
 			} catch (error) {
@@ -154,7 +222,7 @@ async function main() {
 		}
 
 		console.log(
-			`\n📊 結果: 挿入 ${insertedCount} 件, スキップ ${skippedCount} 件, エラー ${errorCount} 件, カテゴリ新規 ${categoryCreatedCount} 件${dryRun ? " (dry-run)" : ""}`,
+			`\n📊 結果: 挿入 ${insertedCount} 件, 更新 ${updatedCount} 件, スキップ ${skippedCount} 件, エラー ${errorCount} 件, カテゴリ新規 ${categoryCreatedCount} 件${dryRun ? " (dry-run)" : ""}`,
 		);
 	}
 

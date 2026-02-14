@@ -32,12 +32,17 @@ export type IngestResult = {
 	skippedChunks: number;
 };
 
+export type IngestOptions = {
+	embedBatchFn?: (texts: string[], isQuery?: boolean) => Promise<number[][]>;
+};
+
 /**
  * Ingest chunks into Qdrant with change detection, batch embedding, and retry logic.
  * This function does NOT handle file I/O — callers are responsible for parsing files into chunks.
  */
 export async function ingestChunks(
 	chunks: QdrantPayload[],
+	options?: IngestOptions,
 ): Promise<IngestResult> {
 	console.log(`Total chunks: ${chunks.length}\n`);
 
@@ -66,6 +71,7 @@ export async function ingestChunks(
 	}
 
 	// Generate embeddings and upsert in batches
+	const batchEmbed = options?.embedBatchFn ?? embedBatch;
 	console.log("Generating embeddings and upserting...");
 	let processed = 0;
 
@@ -74,7 +80,7 @@ export async function ingestChunks(
 		const texts = batch.map((c) => c.text);
 
 		// Generate embeddings
-		const embeddings = await embedBatch(texts, false);
+		const embeddings = await batchEmbed(texts, false);
 
 		// Prepare points
 		const points = batch.map((chunk, idx) => ({

@@ -98,14 +98,17 @@ async function main() {
 
 		const existingNotes = await prisma.note.findMany({
 			where: { userId },
-			select: { title: true },
+			select: { id: true, title: true, markdown: true },
 		});
-		const existingTitles = new Set(
-			existingNotes.map((n: { title: string }) => n.title),
+		const existingNotesMap = new Map(
+			existingNotes.map(
+				(n: { id: string; title: string; markdown: string }) => [n.title, n],
+			),
 		);
-		console.log(`📊 DB に ${existingTitles.size} 件の既存ノートがあります。`);
+		console.log(`📊 DB に ${existingNotesMap.size} 件の既存ノートがあります。`);
 
 		let insertedCount = 0;
+		let updatedCount = 0;
 		let skippedCount = 0;
 		let errorCount = 0;
 
@@ -122,8 +125,22 @@ async function main() {
 
 				fileTitles.add(parsed.title);
 
-				if (existingTitles.has(parsed.title)) {
-					skippedCount++;
+				const existing = existingNotesMap.get(parsed.title);
+				if (existing) {
+					if (existing.markdown === parsed.markdown) {
+						skippedCount++;
+						continue;
+					}
+					if (dryRun) {
+						console.log(`🔄 [dry-run] 更新予定: ${parsed.title}`);
+					} else {
+						await prisma.note.update({
+							where: { id: existing.id },
+							data: { markdown: parsed.markdown },
+						});
+						console.log(`🔄 更新: ${parsed.title}`);
+					}
+					updatedCount++;
 					continue;
 				}
 
@@ -153,7 +170,7 @@ async function main() {
 		}
 
 		console.log(
-			`\n📊 結果: 挿入 ${insertedCount} 件, スキップ ${skippedCount} 件, エラー ${errorCount} 件${dryRun ? " (dry-run)" : ""}`,
+			`\n📊 結果: 挿入 ${insertedCount} 件, 更新 ${updatedCount} 件, スキップ ${skippedCount} 件, エラー ${errorCount} 件${dryRun ? " (dry-run)" : ""}`,
 		);
 	}
 

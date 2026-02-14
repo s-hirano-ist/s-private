@@ -1,8 +1,17 @@
 #!/usr/bin/env node
 import "dotenv/config";
-import { ensureCollection } from "@s-hirano-ist/s-search/qdrant-client";
-import type { SearchOptions } from "@s-hirano-ist/s-search/search";
-import { searchContent } from "@s-hirano-ist/s-search/search";
+import type { SearchResult } from "@s-hirano-ist/s-search/config";
+import { embed } from "@s-hirano-ist/s-search/embedding";
+import {
+	ensureCollection,
+	search as qdrantSearch,
+} from "@s-hirano-ist/s-search/qdrant-client";
+
+type SearchOptions = {
+	topK?: number;
+	type?: "markdown_note" | "bookmark_json";
+	heading?: string;
+};
 
 function parseArgs(): { query: string; options: SearchOptions } {
 	const args = process.argv.slice(2);
@@ -31,6 +40,18 @@ function parseArgs(): { query: string; options: SearchOptions } {
 	}
 
 	return { query, options };
+}
+
+async function searchContent(
+	query: string,
+	options: SearchOptions = {},
+): Promise<{ results: SearchResult[]; query: string; totalResults: number }> {
+	const queryVector = await embed(query, true);
+	const results = await qdrantSearch(queryVector, {
+		topK: options.topK,
+		filter: { type: options.type, top_heading: options.heading },
+	});
+	return { results, query, totalResults: results.length };
 }
 
 async function search(): Promise<void> {

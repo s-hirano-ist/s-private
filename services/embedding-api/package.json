@@ -1,5 +1,5 @@
 {
-	"name": "@s-hirano-ist/search-api",
+	"name": "@s-hirano-ist/embedding-api",
 	"version": "1.12.2",
 	"type": "module",
 	"scripts": {
@@ -12,6 +12,7 @@
 		"@hono/node-server": "1.14.3",
 		"@hono/swagger-ui": "0.5.3",
 		"@hono/zod-openapi": "1.2.1",
+		"@huggingface/transformers": "3.8.1",
 		"@s-hirano-ist/s-search": "workspace:*",
 		"hono": "4.7.11",
 		"zod": "4.3.6"

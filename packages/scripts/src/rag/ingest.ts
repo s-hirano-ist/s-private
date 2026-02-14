@@ -6,6 +6,7 @@ import {
 	parseMarkdown,
 } from "@s-hirano-ist/s-search/chunker";
 import type { QdrantPayload } from "@s-hirano-ist/s-search/config";
+import { createEmbeddingClient } from "@s-hirano-ist/s-search/embedding-client";
 import { ingestChunks } from "@s-hirano-ist/s-search/ingest";
 import {
 	ensureCollection,
@@ -92,8 +93,16 @@ async function ingest(): Promise<void> {
 		}
 	}
 
+	// Use VPS embedding if EMBEDDING_API_URL is set, otherwise local
+	const embedBatchFn = process.env.EMBEDDING_API_URL
+		? createEmbeddingClient({
+				apiUrl: process.env.EMBEDDING_API_URL,
+				apiKey: process.env.EMBEDDING_API_KEY ?? "",
+			}).embedBatch
+		: undefined;
+
 	// Delegate to core ingest logic
-	const result = await ingestChunks(allChunks);
+	const result = await ingestChunks(allChunks, { embedBatchFn });
 
 	// Get final stats
 	const finalStats = await getCollectionStats();

@@ -11,6 +11,10 @@
 			"types": "./dist/embedding.d.ts",
 			"import": "./dist/embedding.js"
 		},
+		"./embedding-client": {
+			"types": "./dist/embedding-client.d.ts",
+			"import": "./dist/embedding-client.js"
+		},
 		"./qdrant-client": {
 			"types": "./dist/qdrant-client.d.ts",
 			"import": "./dist/qdrant-client.js"
@@ -22,10 +26,6 @@
 		"./ingest": {
 			"types": "./dist/ingest.d.ts",
 			"import": "./dist/ingest.js"
-		},
-		"./search": {
-			"types": "./dist/search.d.ts",
-			"import": "./dist/search.js"
 		}
 	},
 	"files": [
@@ -37,8 +37,10 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@huggingface/transformers": "3.8.1",
 		"@qdrant/js-client-rest": "1.16.2"
+	},
+	"optionalDependencies": {
+		"@huggingface/transformers": "3.8.1"
 	},
 	"devDependencies": {
 		"@types/node": "24.10.9",

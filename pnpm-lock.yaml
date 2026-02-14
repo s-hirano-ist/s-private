@@ -138,6 +138,9 @@ importers:
       '@s-hirano-ist/s-notification':
         specifier: workspace:*
         version: link:../packages/notification
+      '@s-hirano-ist/s-search':
+        specifier: workspace:*
+        version: link:../packages/search
       '@s-hirano-ist/s-ui':
         specifier: workspace:*
         version: link:../packages/ui
@@ -325,9 +328,6 @@ importers:
 
   packages/search:
     dependencies:
-      '@huggingface/transformers':
-        specifier: 3.8.1
-        version: 3.8.1
       '@qdrant/js-client-rest':
         specifier: 1.16.2
         version: 1.16.2(typescript@5.9.3)
@@ -338,6 +338,10 @@ importers:
       typescript:
         specifier: 5.9.3
         version: 5.9.3
+    optionalDependencies:
+      '@huggingface/transformers':
+        specifier: 3.8.1
+        version: 3.8.1
 
   packages/ui:
     dependencies:
@@ -424,7 +428,7 @@ importers:
         specifier: 5.9.3
         version: 5.9.3
 
-  services/search-api:
+  services/embedding-api:
     dependencies:
       '@hono/node-server':
         specifier: 1.14.3
@@ -435,6 +439,9 @@ importers:
       '@hono/zod-openapi':
         specifier: 1.2.1
         version: 1.2.1(hono@4.7.11)(zod@4.3.6)
+      '@huggingface/transformers':
+        specifier: 3.8.1
+        version: 3.8.1
       '@s-hirano-ist/s-search':
         specifier: workspace:*
         version: link:../../packages/search

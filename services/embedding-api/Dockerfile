@@ -4,26 +4,26 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 FROM base AS deps
 WORKDIR /app
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
-COPY services/search-api/package.json ./services/search-api/
+COPY services/embedding-api/package.json ./services/embedding-api/
 COPY packages/search/package.json ./packages/search/
-RUN pnpm install --frozen-lockfile --filter @s-hirano-ist/search-api...
+RUN pnpm install --frozen-lockfile --filter @s-hirano-ist/embedding-api...
 
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/services/search-api/node_modules ./services/search-api/node_modules
+COPY --from=deps /app/services/embedding-api/node_modules ./services/embedding-api/node_modules
 COPY --from=deps /app/packages/search/node_modules ./packages/search/node_modules
 COPY packages/search/ ./packages/search/
-COPY services/search-api/ ./services/search-api/
+COPY services/embedding-api/ ./services/embedding-api/
 COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
 RUN pnpm --filter @s-hirano-ist/s-search build
-RUN pnpm --filter @s-hirano-ist/search-api build
+RUN pnpm --filter @s-hirano-ist/embedding-api build
 
 FROM base AS runner
 WORKDIR /app
 ENV NODE_ENV=production
-COPY --from=builder /app/services/search-api/dist ./dist
-COPY --from=builder /app/services/search-api/node_modules ./node_modules
+COPY --from=builder /app/services/embedding-api/dist ./dist
+COPY --from=builder /app/services/embedding-api/node_modules ./node_modules
 COPY --from=builder /app/packages/search/dist ./packages/search/dist
 COPY --from=builder /app/packages/search/package.json ./packages/search/
 EXPOSE 3001

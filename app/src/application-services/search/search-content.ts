@@ -21,7 +21,7 @@ import type {
 	SearchResultGroup,
 	UnifiedSearchResults,
 } from "@s-hirano-ist/s-core/shared-kernel/types/search-types";
-import { env } from "@/env";
+import { searchVectors } from "@/infrastructures/search/search-service";
 
 /**
  * Truncates text to a maximum length with ellipsis.
@@ -83,34 +83,10 @@ export async function searchContent(
 
 	const typeFilter = contentTypes ? buildTypeFilter(contentTypes) : undefined;
 
-	const response = await fetch(`${env.SEARCH_API_URL}/search`, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			Authorization: `Bearer ${env.SEARCH_API_KEY}`,
-		},
-		body: JSON.stringify({
-			query,
-			topK: limit,
-			...(typeFilter ? { type: typeFilter } : {}),
-		}),
+	const data = await searchVectors(query, {
+		topK: limit,
+		type: typeFilter,
 	});
-
-	if (!response.ok) {
-		throw new Error(`Search API returned ${response.status}`);
-	}
-
-	const data = (await response.json()) as {
-		results: Array<{
-			title: string;
-			text: string;
-			url?: string;
-			type: "markdown_note" | "bookmark_json";
-			heading_path: string[];
-			doc_id: string;
-			score?: number;
-		}>;
-	};
 
 	const results: SearchResult[] = [];
 	const groupMap = new Map<ContentType, SearchResult[]>();

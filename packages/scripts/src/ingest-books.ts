@@ -72,14 +72,22 @@ async function main() {
 
 		const existingBooks = await prisma.book.findMany({
 			where: { userId },
-			select: { isbn: true },
+			select: { id: true, isbn: true, title: true, markdown: true },
 		});
-		const existingIsbns = new Set(
-			existingBooks.map((b: { isbn: string }) => b.isbn),
+		const existingBooksMap = new Map(
+			existingBooks.map(
+				(b: {
+					id: string;
+					isbn: string;
+					title: string;
+					markdown: string | null;
+				}) => [b.isbn, b],
+			),
 		);
-		console.log(`📊 DB に ${existingIsbns.size} 件の既存書籍があります。`);
+		console.log(`📊 DB に ${existingBooksMap.size} 件の既存書籍があります。`);
 
 		let insertedCount = 0;
+		let updatedCount = 0;
 		let skippedCount = 0;
 		let errorCount = 0;
 
@@ -88,17 +96,31 @@ async function main() {
 				const isbn = basename(filePath, ".md");
 				fileIsbns.add(isbn);
 
-				if (existingIsbns.has(isbn)) {
-					skippedCount++;
-					continue;
-				}
-
 				const content = await readFile(filePath, "utf-8");
 				const { title, markdown } = parseBookFile(content);
 
 				if (!title) {
 					console.error(`⚠️  タイトルなし: ${basename(filePath)}`);
 					errorCount++;
+					continue;
+				}
+
+				const existing = existingBooksMap.get(isbn);
+				if (existing) {
+					if (existing.title === title && existing.markdown === markdown) {
+						skippedCount++;
+						continue;
+					}
+					if (dryRun) {
+						console.log(`🔄 [dry-run] 更新予定: ${isbn} (${title})`);
+					} else {
+						await prisma.book.update({
+							where: { id: existing.id },
+							data: { title, markdown },
+						});
+						console.log(`🔄 更新: ${isbn} (${title})`);
+					}
+					updatedCount++;
 					continue;
 				}
 
@@ -130,7 +152,7 @@ async function main() {
 		}
 
 		console.log(
-			`\n📊 結果: 挿入 ${insertedCount} 件, スキップ ${skippedCount} 件, エラー ${errorCount} 件${dryRun ? " (dry-run)" : ""}`,
+			`\n📊 結果: 挿入 ${insertedCount} 件, 更新 ${updatedCount} 件, スキップ ${skippedCount} 件, エラー ${errorCount} 件${dryRun ? " (dry-run)" : ""}`,
 		);
 	}
 
