@@ -61,6 +61,7 @@ function parseNoteFile(
 
 async function main() {
 	const dryRun = process.argv.includes("--dry-run");
+	const purge = process.argv.includes("--purge");
 
 	const env = {
 		DATABASE_URL: process.env.DATABASE_URL,
@@ -89,6 +90,8 @@ async function main() {
 	const userId: UserId = makeUserId(env.USERNAME_TO_EXPORT ?? "");
 	const exported = makeExportedStatus();
 
+	const fileTitles = new Set<string>();
+
 	async function ingestNotes() {
 		const files = await glob(`${contentsPath}/markdown/note/*.md`);
 		console.log(`📁 ${files.length} 件のファイルを検出しました。`);
@@ -116,6 +119,8 @@ async function main() {
 					skippedCount++;
 					continue;
 				}
+
+				fileTitles.add(parsed.title);
 
 				if (existingTitles.has(parsed.title)) {
 					skippedCount++;
@@ -152,8 +157,40 @@ async function main() {
 		);
 	}
 
+	async function purgeNotes() {
+		const exportedNotes = await prisma.note.findMany({
+			where: { userId, status: exported.status },
+			select: { id: true, title: true },
+		});
+
+		const toDelete = exportedNotes.filter(
+			(n: { id: string; title: string }) => !fileTitles.has(n.title),
+		);
+
+		if (toDelete.length === 0) {
+			console.log("\n🗑️  削除対象なし");
+			return;
+		}
+
+		let deletedCount = 0;
+		for (const note of toDelete) {
+			if (dryRun) {
+				console.log(`🗑️  [dry-run] 削除予定: ${note.title}`);
+			} else {
+				await prisma.note.delete({ where: { id: note.id } });
+				console.log(`🗑️  削除: ${note.title}`);
+			}
+			deletedCount++;
+		}
+
+		console.log(
+			`\n📊 Purge結果: 削除 ${deletedCount} 件${dryRun ? " (dry-run)" : ""}`,
+		);
+	}
+
 	try {
 		await ingestNotes();
+		if (purge) await purgeNotes();
 		await notificationService.notifyInfo(`${SCRIPT_NAME} completed`, {
 			caller: SCRIPT_NAME,
 		});

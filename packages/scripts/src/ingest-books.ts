@@ -35,6 +35,7 @@ function parseBookFile(content: string): {
 
 async function main() {
 	const dryRun = process.argv.includes("--dry-run");
+	const purge = process.argv.includes("--purge");
 
 	const env = {
 		DATABASE_URL: process.env.DATABASE_URL,
@@ -63,6 +64,8 @@ async function main() {
 	const userId: UserId = makeUserId(env.USERNAME_TO_EXPORT ?? "");
 	const exported = makeExportedStatus();
 
+	const fileIsbns = new Set<string>();
+
 	async function ingestBooks() {
 		const files = await glob(`${contentsPath}/markdown/book/*.md`);
 		console.log(`📁 ${files.length} 件のファイルを検出しました。`);
@@ -83,6 +86,7 @@ async function main() {
 		for (const filePath of files) {
 			try {
 				const isbn = basename(filePath, ".md");
+				fileIsbns.add(isbn);
 
 				if (existingIsbns.has(isbn)) {
 					skippedCount++;
@@ -130,8 +134,40 @@ async function main() {
 		);
 	}
 
+	async function purgeBooks() {
+		const exportedBooks = await prisma.book.findMany({
+			where: { userId, status: exported.status },
+			select: { id: true, isbn: true },
+		});
+
+		const toDelete = exportedBooks.filter(
+			(b: { id: string; isbn: string }) => !fileIsbns.has(b.isbn),
+		);
+
+		if (toDelete.length === 0) {
+			console.log("\n🗑️  削除対象なし");
+			return;
+		}
+
+		let deletedCount = 0;
+		for (const book of toDelete) {
+			if (dryRun) {
+				console.log(`🗑️  [dry-run] 削除予定: ${book.isbn}`);
+			} else {
+				await prisma.book.delete({ where: { id: book.id } });
+				console.log(`🗑️  削除: ${book.isbn}`);
+			}
+			deletedCount++;
+		}
+
+		console.log(
+			`\n📊 Purge結果: 削除 ${deletedCount} 件${dryRun ? " (dry-run)" : ""}`,
+		);
+	}
+
 	try {
 		await ingestBooks();
+		if (purge) await purgeBooks();
 		await notificationService.notifyInfo(`${SCRIPT_NAME} completed`, {
 			caller: SCRIPT_NAME,
 		});

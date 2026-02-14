@@ -26,6 +26,7 @@ type ArticleJson = {
 
 async function main() {
 	const dryRun = process.argv.includes("--dry-run");
+	const purge = process.argv.includes("--purge");
 
 	const env = {
 		DATABASE_URL: process.env.DATABASE_URL,
@@ -53,6 +54,8 @@ async function main() {
 
 	const userId: UserId = makeUserId(env.USERNAME_TO_EXPORT ?? "");
 	const exported = makeExportedStatus();
+
+	const fileUrls = new Set<string>();
 
 	async function ingestArticles() {
 		const files = await glob(`${contentsPath}/json/article/*.json`);
@@ -110,6 +113,8 @@ async function main() {
 				}
 
 				for (const item of json.body) {
+					fileUrls.add(item.url);
+
 					if (existingUrls.has(item.url)) {
 						skippedCount++;
 						continue;
@@ -153,8 +158,40 @@ async function main() {
 		);
 	}
 
+	async function purgeArticles() {
+		const exportedArticles = await prisma.article.findMany({
+			where: { userId, status: exported.status },
+			select: { id: true, url: true },
+		});
+
+		const toDelete = exportedArticles.filter(
+			(a: { id: string; url: string }) => !fileUrls.has(a.url),
+		);
+
+		if (toDelete.length === 0) {
+			console.log("\n🗑️  削除対象なし");
+			return;
+		}
+
+		let deletedCount = 0;
+		for (const article of toDelete) {
+			if (dryRun) {
+				console.log(`🗑️  [dry-run] 削除予定: ${article.url}`);
+			} else {
+				await prisma.article.delete({ where: { id: article.id } });
+				console.log(`🗑️  削除: ${article.url}`);
+			}
+			deletedCount++;
+		}
+
+		console.log(
+			`\n📊 Purge結果: 削除 ${deletedCount} 件${dryRun ? " (dry-run)" : ""}`,
+		);
+	}
+
 	try {
 		await ingestArticles();
+		if (purge) await purgeArticles();
 		await notificationService.notifyInfo(`${SCRIPT_NAME} completed`, {
 			caller: SCRIPT_NAME,
 		});
