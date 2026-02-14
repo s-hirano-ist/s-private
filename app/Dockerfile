@@ -22,6 +22,7 @@ COPY packages/database/package.json ./packages/database/package.json
 COPY packages/core/package.json ./packages/core/package.json
 COPY packages/scripts/package.json ./packages/scripts/package.json
 COPY packages/notification/package.json ./packages/notification/package.json
+COPY packages/search/package.json ./packages/search/package.json
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
@@ -37,6 +38,7 @@ COPY --from=deps /app/packages/database/src/generated/ ./packages/database/src/g
 COPY --from=deps /app/packages/core/node_modules/ ./packages/core/node_modules/
 COPY --from=deps /app/packages/scripts/node_modules/ ./packages/scripts/node_modules/
 COPY --from=deps /app/packages/notification/node_modules/ ./packages/notification/node_modules/
+COPY --from=deps /app/packages/search/node_modules/ ./packages/search/node_modules/
 
 # Copy rest of the application code
 COPY . .

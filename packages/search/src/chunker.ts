@@ -141,7 +141,7 @@ function splitMarkdownByHeadings(content: string): MarkdownSection[] {
 	const headingStack: { level: number; title: string }[] = [];
 
 	for (const line of lines) {
-		const headingMatch = line.match(/^(#{2,3})\s+(.+)$/);
+		const headingMatch = line.match(/^(#{2,3})\s+(\S.*)$/);
 
 		if (headingMatch) {
 			// Save previous section

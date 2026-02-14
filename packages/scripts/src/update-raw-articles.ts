@@ -33,12 +33,12 @@ function detectCharset(headers: Headers, buffer: Buffer): string {
 		.toString("ascii");
 
 	// <meta charset="...">
-	const metaCharset = preview.match(/<meta\s+charset=["']?([^"'\s>]+)/i);
+	const metaCharset = preview.match(/<meta\s{1,200}charset=["']?([^"'\s>]+)/i);
 	if (metaCharset) return normalizeCharset(metaCharset[1]);
 
 	// <meta http-equiv="Content-Type" content="...; charset=...">
 	const metaHttpEquiv = preview.match(
-		/<meta[^>]+http-equiv=["']?Content-Type["']?[^>]+content=["'][^"']*charset=([^"'\s;]+)/i,
+		/<meta[^>]{1,500}http-equiv=["']?Content-Type["']?[^>]{1,500}content=["'][^"']{0,500}charset=([^"'\s;]+)/i,
 	);
 	if (metaHttpEquiv) return normalizeCharset(metaHttpEquiv[1]);
 
