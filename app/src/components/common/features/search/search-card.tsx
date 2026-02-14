@@ -31,6 +31,7 @@ export function SearchCard({ search }: Props) {
 		handleSearchChange,
 		executeSearch,
 		isPending,
+		isError,
 	} = useSearch({ search, useUrlQuery: true });
 
 	const handleInputChange = (value: string) => {
@@ -87,6 +88,15 @@ export function SearchCard({ search }: Props) {
 						handleReload={handleReload}
 						onSignOutSubmit={onSignOutSubmit}
 					/>
+				) : isError ? (
+					<CommandEmpty>
+						<div className="flex items-center justify-center">
+							<StatusCodeView
+								statusCode="500"
+								statusCodeString={statusCodes("500")}
+							/>
+						</div>
+					</CommandEmpty>
 				) : searchResults?.length === 0 && searchQuery && !isPending ? (
 					<CommandEmpty>
 						<div className="flex items-center justify-center">
@@ -123,7 +133,7 @@ export function SearchCard({ search }: Props) {
 								primaryBadgeText: item.category,
 								href: item.url ?? item.href,
 							}}
-							key={item.url ?? String(index)}
+							key={String(index)}
 						/>
 					))}
 				</div>

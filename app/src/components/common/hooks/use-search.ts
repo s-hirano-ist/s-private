@@ -2,7 +2,7 @@
 
 import type { SearchQuery } from "@s-hirano-ist/s-core/shared-kernel/types/search-types";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useState, useTransition } from "react";
+import { useCallback, useRef, useState, useTransition } from "react";
 import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 
 const PARAM_NAME = "q";
@@ -27,6 +27,7 @@ type UseSearchableListReturn = {
 	handleSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 	executeSearch: () => Promise<void>;
 	isPending: boolean;
+	isError: boolean;
 };
 
 export function useSearch({
@@ -40,19 +41,35 @@ export function useSearch({
 	const initialQuery = useUrlQuery ? (searchParams.get(PARAM_NAME) ?? "") : "";
 	const [searchQuery, setSearchQuery] = useState(initialQuery);
 	const [searchResults, setSearchResults] = useState<SearchableItem[]>();
+	const [isError, setIsError] = useState(false);
 
 	const [isPending, startTransition] = useTransition();
+	const abortControllerRef = useRef<AbortController | null>(null);
 
 	const fetchSearchResults = useCallback(
 		async (searchQuery: string) => {
-			if (searchQuery === "") setSearchResults(undefined);
-			else {
-				startTransition(async () => {
+			abortControllerRef.current?.abort();
+
+			if (searchQuery === "") {
+				setSearchResults(undefined);
+				setIsError(false);
+				return;
+			}
+
+			const controller = new AbortController();
+			abortControllerRef.current = controller;
+
+			startTransition(async () => {
+				try {
+					setIsError(false);
 					const query: SearchQuery = {
 						query: searchQuery.trim(),
 						limit: 50,
 					};
 					const result = await search(query);
+
+					if (controller.signal.aborted) return;
+
 					if (result.success && result.data) {
 						const newData = result.data.results.map((d) => ({
 							href: d.href,
@@ -64,9 +81,16 @@ export function useSearch({
 								d.contentType === "articles" ? d.category.name : undefined,
 						}));
 						setSearchResults(newData);
+					} else {
+						setSearchResults([]);
+						setIsError(true);
 					}
-				});
-			}
+				} catch {
+					if (controller.signal.aborted) return;
+					setSearchResults([]);
+					setIsError(true);
+				}
+			});
 		},
 		[search],
 	);
@@ -93,5 +117,6 @@ export function useSearch({
 		handleSearchChange,
 		executeSearch,
 		isPending,
+		isError,
 	};
 }

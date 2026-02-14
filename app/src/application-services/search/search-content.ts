@@ -34,6 +34,17 @@ function truncateText(text: string, maxLength = 150): string {
 }
 
 /**
+ * Extracts ISBN from a book doc_id.
+ *
+ * @example extractBookISBN("file:markdown/book/9784003362211.md") → "9784003362211"
+ * @internal
+ */
+function extractBookISBN(docId: string): string | undefined {
+	const match = docId.match(/\/book\/([^/]+)\.md$/);
+	return match?.[1];
+}
+
+/**
  * Maps search-api type + doc_id to a ContentType.
  *
  * @internal
@@ -107,8 +118,9 @@ export async function searchContent(
 				category: { id: "", name: r.heading_path[0] ?? "" },
 			} satisfies ArticleSearchResult;
 		} else if (ct === "books") {
+			const isbn = extractBookISBN(r.doc_id);
 			result = {
-				href: encodeURIComponent(r.title),
+				href: isbn ?? encodeURIComponent(r.title),
 				contentType: "books" as const,
 				title: r.title,
 				snippet: truncateText(r.text),

@@ -293,9 +293,29 @@ sudo systemctl restart ssh
    - Action: **Service Auth**
    - Include rule: **Service Token** — Step 5.1 で発行した Service Token を指定
 
-### 5.3 ブラウザから `/ui`（Swagger UI）にアクセスする
+### 5.3 アクセス方法
 
-CF Access で全エンドポイントが保護されているため、ブラウザから `/ui` に直接アクセスするにはメール OTP ベースの Allow ポリシーを追加する。
+CF Access により全エンドポイント（`/health`, `/doc`, `/ui` 含む）が保護される。外部からのアクセス方法は以下の2パターン。
+
+#### 1. Service Token 経由（プログラムからのアクセス）
+
+Step 5.1 で発行した Service Token のヘッダーを付与してリクエストする。
+
+```bash
+# Service Token ありでアクセス → 200 OK
+curl -s https://embedding-api.<domain>/health \
+  -H "CF-Access-Client-Id: $CF_ACCESS_CLIENT_ID" \
+  -H "CF-Access-Client-Secret: $CF_ACCESS_CLIENT_SECRET"
+# 期待: {"status":"ok"}
+
+# Service Token なしでアクセス → 302 Redirect（CF Access ログインページへ）
+curl -s -o /dev/null -w "%{http_code}" https://embedding-api.<domain>/health
+# 期待: 302
+```
+
+#### 2. ブラウザ経由（Swagger UI 等）
+
+メール OTP ベースの Allow ポリシーを追加することでブラウザからもアクセス可能にする。
 
 1. Zero Trust → Access → Applications → `embedding-api` を選択
 2. 既存の Service Token ポリシー（5.2）はそのまま残す
@@ -305,10 +325,7 @@ CF Access で全エンドポイントが保護されているため、ブラウ�
    - Include rule: **Emails** — 自分のメールアドレスを指定
 4. Identity providers に **One-time PIN** が有効であることを確認（デフォルトで有効）
 
-設定後の動作:
-
-- **ブラウザ**: `https://embedding-api.<domain>/ui` にアクセス → Cloudflare のログイン画面 → メール OTP 認証 → Swagger UI 表示
-- **プログラム**: 従来通り Service Token ヘッダー（`CF-Access-Client-Id` / `CF-Access-Client-Secret`）で認証
+設定後、`https://embedding-api.<domain>/ui` にアクセス → Cloudflare のログイン画面 → メール OTP 認証 → Swagger UI 表示
 
 ---
 
@@ -374,91 +391,9 @@ Tunnel を介さず、Docker ネットワーク内で API が応答するか確�
 # ヘルスチェック
 docker compose exec embedding-api node -e "fetch('http://localhost:3001/health').then(r=>r.text()).then(console.log)"
 # 期待: {"status":"ok"}
-
-# /embed エンドポイント（Bearer 認証付き）
-# コンテナ内の環境変数 API_KEY を使用（compose.yaml で API_KEY=${EMBEDDING_API_KEY} と設定）
-docker compose exec embedding-api node -e "
-fetch('http://localhost:3001/embed', {
-  method: 'POST',
-  headers: {
-    'Authorization': 'Bearer ' + process.env.API_KEY,
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({text: 'テストクエリ', isQuery: true})
-}).then(r => r.text()).then(console.log)
-"
-# 期待: {"embedding": [0.123, ...]} 形式の JSON レスポンス
 ```
 
-### 7.3 Cloudflare Tunnel + Access 経由の検証（ローカル）
-
-7.2 が成功し、以下が失敗する場合、問題は Tunnel または Access 設定にある。
-Cloudflare Access が有効なため、全リクエストに **Service Token ヘッダーが必須**。
-
-```bash
-# ヘルスチェック
-curl -s https://embedding-api.<domain>/health \
-  -H "CF-Access-Client-Id: $CF_ACCESS_CLIENT_ID" \
-  -H "CF-Access-Client-Secret: $CF_ACCESS_CLIENT_SECRET"
-# 期待: {"status":"ok"}
-
-# 単一テキスト埋め込み
-curl -s -X POST https://embedding-api.<domain>/embed \
-  -H "CF-Access-Client-Id: $CF_ACCESS_CLIENT_ID" \
-  -H "CF-Access-Client-Secret: $CF_ACCESS_CLIENT_SECRET" \
-  -H "Authorization: Bearer $EMBEDDING_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"text": "テストクエリ", "isQuery": true}'
-
-# バッチ埋め込み
-curl -s -X POST https://embedding-api.<domain>/embed-batch \
-  -H "CF-Access-Client-Id: $CF_ACCESS_CLIENT_ID" \
-  -H "CF-Access-Client-Secret: $CF_ACCESS_CLIENT_SECRET" \
-  -H "Authorization: Bearer $EMBEDDING_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"texts": ["テスト1", "テスト2"], "isQuery": false}'
-```
-
-> **注意:** Cloudflare Access が有効な状態では `/health`, `/doc`, `/ui` を含む全エンドポイントが保護される。Service Token なしのリクエストは CF Access ログインページへリダイレクト（302）され、API には到達しない。ブラウザからは Email OTP 認証でアクセス可能。
-
-### 7.4 Cloudflare Access の検証
-
-Service Token なしでアクセスが**保護されている**ことを確認する:
-
-```bash
-# Service Token なしでアクセス → 302 Redirect（CF Access ログインページへ）が返ること
-curl -s -o /dev/null -w "%{http_code}" https://embedding-api.<domain>/health
-# 期待: 302
-```
-
-Service Token ありでアクセスが**許可される**ことを確認する:
-
-```bash
-# Service Token ありでアクセス → 200 OK が返ること
-curl -s -o /dev/null -w "%{http_code}" https://embedding-api.<domain>/health \
-  -H "CF-Access-Client-Id: $CF_ACCESS_CLIENT_ID" \
-  -H "CF-Access-Client-Secret: $CF_ACCESS_CLIENT_SECRET"
-# 期待: 200
-```
-
----
-
-## Step 8: Vercel デプロイ app からのアクセス
-
-Vercel にデプロイされた Next.js app から Embedding API にアクセスする場合、`embedding-client.ts` が全リクエストに `CF-Access-Client-Id` / `CF-Access-Client-Secret` ヘッダーを自動付与する。
-
-### Vercel Environment Variables
-
-Vercel の Project Settings → Environment Variables に以下を設定する:
-
-| 変数名 | 説明 |
-| --- | --- |
-| `EMBEDDING_API_URL` | `https://embedding-api.<domain>` |
-| `EMBEDDING_API_KEY` | API の Bearer トークン（Step 6 の `.env` で設定した `EMBEDDING_API_KEY` と同じ値） |
-| `CF_ACCESS_CLIENT_ID` | Cloudflare Service Token の Client ID（Step 5.1 で発行） |
-| `CF_ACCESS_CLIENT_SECRET` | Cloudflare Service Token の Client Secret（Step 5.1 で発行） |
-| `QDRANT_URL` | Qdrant のURL |
-| `QDRANT_API_KEY` | Qdrant の API キー（該当する場合） |
+> **注意:** 外部（Cloudflare Tunnel 経由）からの検証は Step 5.3 を参照。
 
 ---
 
@@ -479,14 +414,6 @@ docker compose up -d
 
 ## トラブルシューティング
 
-### モデルダウンロードが遅い/失敗する
-初回起動時に `intfloat/multilingual-e5-small` モデル (~100MB) をダウンロードする。`hf-cache` ボリュームにキャッシュされるため、2回目以降は高速。
-
-```bash
-# キャッシュ状態を確認
-docker compose exec embedding-api ls -la /home/embedding/.cache/huggingface/transformers/
-```
-
 ### Cloudflare Tunnel が接続されない
 ```bash
 # cloudflared のログを確認
@@ -494,13 +421,6 @@ docker compose logs cloudflared
 
 # TUNNEL_TOKEN が正しいか確認
 docker compose exec cloudflared env | grep TUNNEL_TOKEN
-```
-
-### メモリ不足
-embedding モデルは約 200MB のメモリを使用する。VPS のメモリが 512MB 以上あることを確認。
-
-```bash
-free -h
 ```
 
 ### ロックアウト復旧

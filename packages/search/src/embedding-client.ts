@@ -23,6 +23,7 @@ export function createEmbeddingClient(config: EmbeddingClientConfig) {
 				method: "POST",
 				headers: buildHeaders(),
 				body: JSON.stringify({ text, isQuery: isQuery ?? false }),
+				signal: AbortSignal.timeout(30_000),
 			});
 
 			if (!response.ok) {
@@ -40,6 +41,7 @@ export function createEmbeddingClient(config: EmbeddingClientConfig) {
 				method: "POST",
 				headers: buildHeaders(),
 				body: JSON.stringify({ texts, isQuery: isQuery ?? false }),
+				signal: AbortSignal.timeout(60_000),
 			});
 
 			if (!response.ok) {

@@ -59,7 +59,6 @@ export function parseJsonArticle(
 			textParts.push(item.ogTitle);
 		if (item.ogDescription) textParts.push(item.ogDescription);
 		if (item.quote) textParts.push(item.quote);
-		if (item.url) textParts.push(item.url);
 
 		const text = textParts.join("\n");
 
@@ -303,7 +302,6 @@ export function parseDbArticle(article: {
 		textParts.push(article.ogTitle);
 	if (article.ogDescription) textParts.push(article.ogDescription);
 	if (article.quote) textParts.push(article.quote);
-	if (article.url) textParts.push(article.url);
 
 	const text = textParts.join("\n");
 	if (!text.trim()) return [];
