@@ -32,12 +32,15 @@ const cspHeader = `
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-	transpilePackages: ["@s-hirano-ist/s-core", "@s-hirano-ist/s-notification"],
+	transpilePackages: [
+		"@s-hirano-ist/s-core",
+		"@s-hirano-ist/s-notification",
+		"@s-hirano-ist/s-search",
+	],
 	serverExternalPackages: ["sharp", "@prisma/client"],
 	typedRoutes: true,
 	cacheComponents: true, // v16: moved from experimental.useCache
 	experimental: {
-		serverActions: { bodySizeLimit: "100mb" }, // FIXME: due to DDoS attacks
 		authInterrupts: true,
 		staleTimes: {
 			dynamic: 30,
