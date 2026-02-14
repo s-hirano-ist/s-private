@@ -352,7 +352,7 @@ git clone https://github.com/s-hirano-ist/s-private.git ~/s-private
 
 ```
 compose.yaml          ← 全サービス定義（embedding-api, cloudflared, 将来: minio, qdrant）
-.env.vps              ← VPS 用環境変数（EMBEDDING_API_KEY, CLOUDFLARE_TUNNEL_TOKEN 等）
+.env                  ← VPS 用環境変数（EMBEDDING_API_KEY, CLOUDFLARE_TUNNEL_TOKEN 等）
 services/
   embedding-api/
     Dockerfile        ← embedding-api のビルド定義
@@ -363,7 +363,7 @@ services/
 
 ### 3.3 環境変数の設定
 
-`~/s-private/.env.vps` に配置:
+`~/s-private/.env` に配置:
 
 ```bash
 # Embedding API
@@ -379,7 +379,7 @@ CLOUDFLARE_TUNNEL_TOKEN=your-tunnel-token
 ```
 
 ```bash
-chmod 600 ~/s-private/.env.vps
+chmod 600 ~/s-private/.env
 ```
 
 ### 3.4 起動・更新・検証
@@ -391,8 +391,8 @@ ssh conoha-vps
 cd ~/s-private
 
 # ビルド & 起動
-docker compose --env-file .env.vps build
-docker compose --env-file .env.vps up -d
+docker compose build
+docker compose up -d
 ```
 
 #### 更新
@@ -403,24 +403,24 @@ cd ~/s-private
 
 # 最新のコードを取得してリビルド
 git pull
-docker compose --env-file .env.vps build
-docker compose --env-file .env.vps up -d
+docker compose build
+docker compose up -d
 ```
 
 #### 検証
 
 ```bash
 # 両コンテナが running かつ healthy であることを確認
-docker compose --env-file .env.vps ps
+docker compose ps
 
 # エラーログがないことを確認
-docker compose --env-file .env.vps logs --tail=50
+docker compose logs --tail=50
 ```
 
 VPS 内部からの直接検証（Tunnel を介さず Docker ネットワーク内で API が応答するか確認）:
 
 ```bash
-docker compose --env-file .env.vps exec embedding-api node -e "fetch('http://localhost:3001/health').then(r=>r.text()).then(console.log)"
+docker compose exec embedding-api node -e "fetch('http://localhost:3001/health').then(r=>r.text()).then(console.log)"
 # 期待: {"status":"ok"}
 ```
 
@@ -456,10 +456,10 @@ docker compose --env-file .env.vps exec embedding-api node -e "fetch('http://loc
 
 ```bash
 # cloudflared のログを確認
-docker compose --env-file .env.vps logs cloudflared
+docker compose logs cloudflared
 
 # TUNNEL_TOKEN が正しいか確認
-docker compose --env-file .env.vps exec cloudflared env | grep TUNNEL_TOKEN
+docker compose exec cloudflared env | grep TUNNEL_TOKEN
 ```
 
 ### ロックアウト復旧

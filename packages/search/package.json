@@ -6,27 +6,27 @@
 	"exports": {
 		"./config": {
 			"types": "./src/config.ts",
-			"default": "./src/config.ts"
+			"import": "./dist/config.js"
 		},
 		"./embedding": {
 			"types": "./src/embedding.ts",
-			"default": "./src/embedding.ts"
+			"import": "./dist/embedding.js"
 		},
 		"./embedding-client": {
 			"types": "./src/embedding-client.ts",
-			"default": "./src/embedding-client.ts"
+			"import": "./dist/embedding-client.js"
 		},
 		"./qdrant-client": {
 			"types": "./src/qdrant-client.ts",
-			"default": "./src/qdrant-client.ts"
+			"import": "./dist/qdrant-client.js"
 		},
 		"./chunker": {
 			"types": "./src/chunker.ts",
-			"default": "./src/chunker.ts"
+			"import": "./dist/chunker.js"
 		},
 		"./ingest": {
 			"types": "./src/ingest.ts",
-			"default": "./src/ingest.ts"
+			"import": "./dist/ingest.js"
 		}
 	},
 	"publishConfig": {
