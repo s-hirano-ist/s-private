@@ -294,6 +294,9 @@ importers:
       glob:
         specifier: 13.0.0
         version: 13.0.0
+      iconv-lite:
+        specifier: 0.7.2
+        version: 0.7.2
       jsdom:
         specifier: 27.4.0
         version: 27.4.0
