@@ -1,6 +1,6 @@
-import type { QdrantPayload } from "./config";
-import { embedBatch } from "./embedding";
-import { getExistingHashes, upsertPoints } from "./qdrant-client";
+import type { QdrantPayload } from "./config.js";
+import { embedBatch } from "./embedding.js";
+import { getExistingHashes, upsertPoints } from "./qdrant-client.js";
 
 const BATCH_SIZE = 20;
 const MAX_RETRIES = 3;
