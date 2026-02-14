@@ -38,11 +38,11 @@ model Category {
 model Article {
   id String @id @db.VarChar(36)
 
-  title String @db.VarChar(128)
-  url   String @db.VarChar(2048)
+  title String  @db.VarChar(128)
+  url   String  @db.VarChar(2048)
   quote String? @db.VarChar(512)
 
-  ogImageUrl    String? @map("og_image_url") @db.VarChar(2048)
+  ogImageUrl    String? @map("og_image_url") @db.VarChar(4096)
   ogTitle       String? @map("og_title") @db.VarChar(512)
   ogDescription String? @map("og_description") @db.VarChar(1024)
 
@@ -82,9 +82,9 @@ model Note {
 model Image {
   id String @id @db.VarChar(36)
 
-  path        String   @db.VarChar(512)
-  contentType String   @map("content_type") @db.VarChar(32) // e.g.: image/jpeg, image/png
-  fileSize    Int?     @map("file_size") // byte
+  path        String @db.VarChar(512)
+  contentType String @map("content_type") @db.VarChar(32) // e.g.: image/jpeg, image/png
+  fileSize    Int?   @map("file_size") // byte
   width       Int? // pixel
   height      Int? // pixel
 
@@ -101,8 +101,8 @@ model Image {
 }
 
 model Book {
-  id   String @id @db.VarChar(36)
-  isbn String @db.VarChar(17)
+  id    String @id @db.VarChar(36)
+  isbn  String @db.VarChar(17)
   title String @db.VarChar(256)
 
   googleTitle       String?  @map("google_title") @db.VarChar(512)
