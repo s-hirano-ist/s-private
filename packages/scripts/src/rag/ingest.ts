@@ -5,7 +5,7 @@ import {
 	parseJsonArticle,
 	parseMarkdown,
 } from "@s-hirano-ist/s-search/chunker";
-import type { QdrantPayload } from "@s-hirano-ist/s-search/config";
+import type { ContentType, QdrantPayload } from "@s-hirano-ist/s-search/config";
 import { createEmbeddingClient } from "@s-hirano-ist/s-search/embedding-client";
 import { ingestChunks } from "@s-hirano-ist/s-search/ingest";
 import {
@@ -18,30 +18,31 @@ import { INGEST_CONFIG } from "./ingest-config";
 type FileInfo = {
 	path: string;
 	type: "json" | "markdown";
+	contentType: ContentType;
 };
 
 /**
- * List all files to process
+ * List all files to process with content type information
  */
 async function listFiles(): Promise<FileInfo[]> {
 	const files: FileInfo[] = [];
 
-	// JSON files
-	const jsonFiles = await glob(INGEST_CONFIG.paths.json);
-	for (const path of jsonFiles) {
-		files.push({ path, type: "json" });
+	// Articles (JSON)
+	const articleFiles = await glob(INGEST_CONFIG.paths.articles);
+	for (const path of articleFiles) {
+		files.push({ path, type: "json", contentType: "articles" });
 	}
 
-	// Markdown files (supports array of patterns)
-	const mdPatterns = Array.isArray(INGEST_CONFIG.paths.markdown)
-		? INGEST_CONFIG.paths.markdown
-		: [INGEST_CONFIG.paths.markdown];
+	// Notes (Markdown)
+	const noteFiles = await glob(INGEST_CONFIG.paths.notes);
+	for (const path of noteFiles) {
+		files.push({ path, type: "markdown", contentType: "notes" });
+	}
 
-	for (const pattern of mdPatterns) {
-		const mdFiles = await glob(pattern);
-		for (const path of mdFiles) {
-			files.push({ path, type: "markdown" });
-		}
+	// Books (Markdown)
+	const bookFiles = await glob(INGEST_CONFIG.paths.books);
+	for (const path of bookFiles) {
+		files.push({ path, type: "markdown", contentType: "books" });
 	}
 
 	return files;
@@ -56,13 +57,13 @@ function parseFile(file: FileInfo): QdrantPayload[] {
 	if (file.type === "json") {
 		return parseJsonArticle(file.path, content);
 	}
-	return parseMarkdown(file.path, content);
+	return parseMarkdown(file.path, content, file.contentType);
 }
 
 /**
  * CLI entry point: list files, parse into chunks, delegate to ingestChunks
  */
-async function ingest(): Promise<void> {
+async function ingest(force: boolean): Promise<void> {
 	console.log("Starting ingest...\n");
 
 	// Ensure collection exists
@@ -72,13 +73,20 @@ async function ingest(): Promise<void> {
 	const initialStats = await getCollectionStats();
 	console.log(`Initial points count: ${initialStats.pointsCount}\n`);
 
+	if (force) {
+		console.log("Force mode enabled: skipping change detection\n");
+	}
+
 	// List all files
 	const files = await listFiles();
+	const articleCount = files.filter((f) => f.contentType === "articles").length;
+	const noteCount = files.filter((f) => f.contentType === "notes").length;
+	const bookCount = files.filter((f) => f.contentType === "books").length;
+
 	console.log(`Found ${files.length} files to process`);
-	console.log(`  - JSON: ${files.filter((f) => f.type === "json").length}`);
-	console.log(
-		`  - Markdown: ${files.filter((f) => f.type === "markdown").length}\n`,
-	);
+	console.log(`  - Articles: ${articleCount}`);
+	console.log(`  - Notes: ${noteCount}`);
+	console.log(`  - Books: ${bookCount}\n`);
 
 	// Parse all files into chunks
 	console.log("Parsing files...");
@@ -104,7 +112,7 @@ async function ingest(): Promise<void> {
 		: undefined;
 
 	// Delegate to core ingest logic
-	const result = await ingestChunks(allChunks, { embedBatchFn });
+	const result = await ingestChunks(allChunks, { embedBatchFn, force });
 
 	// Get final stats
 	const finalStats = await getCollectionStats();
@@ -130,8 +138,10 @@ async function main() {
 		);
 	}
 
+	const force = process.argv.includes("--force");
+
 	try {
-		await ingest();
+		await ingest(force);
 	} catch (error) {
 		console.error("❌ エラーが発生しました:", error);
 		process.exit(1);

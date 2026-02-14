@@ -1,7 +1,7 @@
 services:
   embedding-api:
     build:
-      context: ../..
+      context: .
       dockerfile: services/embedding-api/Dockerfile
     container_name: embedding-api
     restart: unless-stopped

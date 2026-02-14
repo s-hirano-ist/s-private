@@ -23,9 +23,13 @@ export const RAG_CONFIG = {
 	},
 } as const;
 
+// Content type for distinguishing articles, books, and notes
+export type ContentType = "articles" | "books" | "notes";
+
 // Payload type for Qdrant
 export type QdrantPayload = {
 	type: "markdown_note" | "bookmark_json";
+	content_type: ContentType;
 	top_heading: string;
 	doc_id: string;
 	chunk_id: string;
@@ -44,5 +48,6 @@ export type SearchResult = {
 	url?: string;
 	heading_path: string[];
 	type: "markdown_note" | "bookmark_json";
+	content_type: ContentType;
 	doc_id: string;
 };

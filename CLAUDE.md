@@ -65,5 +65,5 @@ issuesには、取り組み検討中の課題を記述している。issueに取
 - アーキテクチャ: [docs/architecture.md](docs/architecture.md)
 - ドメインモデル: [docs/domain-model.md](docs/domain-model.md)
 - セキュリティ: [SECURITY.md](SECURITY.md)
-- Embedding APIデプロイ: [docs/embedding-api-deployment.md](docs/embedding-api-deployment.md)
+- VPSデプロイ: [docs/vps-deployment.md](docs/vps-deployment.md)
 - スキーマ: [packages/database/prisma/schema.prisma](packages/database/prisma/schema.prisma)

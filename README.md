@@ -142,8 +142,7 @@ This project follows clean architecture principles with domain-driven design, en
 ├── services/                       # External Services
 │   └── embedding-api/              # Embedding API (Hono + HuggingFace Transformers)
 │       ├── src/                    # API source code
-│       ├── Dockerfile
-│       └── compose.yaml
+│       └── Dockerfile
 │
 └── app/src/                        # Next.js Application
     ├── application-services/       # Application Layer (Use Cases)
@@ -278,7 +277,7 @@ Schema location: `packages/database/prisma/schema.prisma`
 - **File Storage**: MinIO for object storage (configurable for local/cloud)
 - **Monitoring**: Sentry for error tracking, Pushover for notifications
 - **APIs**: Google Books API for ISBN-based book metadata enrichment
-- **Embedding API**: ConoHa VPS (Docker) + Cloudflare Tunnel ([deployment guide](docs/embedding-api-deployment.md))
+- **VPS Services**: ConoHa VPS (Docker) + Cloudflare Tunnel ([deployment guide](docs/vps-deployment.md))
 - **Vector Database**: Qdrant for semantic vector search
 
 ## Development Setup

@@ -1,6 +1,7 @@
 {
 	"name": "@s-hirano-ist/s-search",
-	"version": "1.12.2",
+	"version": "1.13.0",
+	"description": "RAG search library with Qdrant and embedding API client",
 	"type": "module",
 	"exports": {
 		"./config": {
@@ -58,12 +59,28 @@
 		}
 	},
 	"files": [
-		"dist"
+		"dist",
+		"README.md",
+		"LICENSE"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/s-hirano-ist/s-private.git",
+		"directory": "packages/search"
+	},
+	"license": "AGPL-3.0",
+	"author": "s-hirano-ist",
+	"keywords": [
+		"rag",
+		"search",
+		"qdrant",
+		"embedding"
 	],
 	"scripts": {
 		"build": "tsc && tsc-esm-fix --target dist",
 		"clean": "rm -rf dist",
-		"typecheck": "tsc --noEmit"
+		"typecheck": "tsc --noEmit",
+		"prepublishOnly": "pnpm run build"
 	},
 	"dependencies": {
 		"@qdrant/js-client-rest": "1.16.2"

@@ -45,36 +45,6 @@ function extractBookISBN(docId: string): string | undefined {
 }
 
 /**
- * Maps search-api type + doc_id to a ContentType.
- *
- * @internal
- */
-function resolveContentType(
-	type: "markdown_note" | "bookmark_json",
-	docId: string,
-): ContentType {
-	if (type === "bookmark_json") return "articles";
-	return docId.includes("/book/") ? "books" : "notes";
-}
-
-/**
- * Builds the search-api `type` filter from contentTypes.
- *
- * @internal
- */
-function buildTypeFilter(
-	contentTypes: ContentType[],
-): "bookmark_json" | "markdown_note" | undefined {
-	const hasArticles = contentTypes.includes("articles");
-	const hasBooks = contentTypes.includes("books");
-	const hasNotes = contentTypes.includes("notes");
-
-	if (hasArticles && !hasBooks && !hasNotes) return "bookmark_json";
-	if (!hasArticles && (hasBooks || hasNotes)) return "markdown_note";
-	return undefined;
-}
-
-/**
  * Performs unified search across all content types via search-api.
  *
  * @remarks
@@ -92,18 +62,16 @@ export async function searchContent(
 	const { query, contentTypes, limit = 20 } = searchQuery;
 	const searchTypes = new Set(contentTypes ?? ["articles", "books", "notes"]);
 
-	const typeFilter = contentTypes ? buildTypeFilter(contentTypes) : undefined;
-
 	const data = await searchVectors(query, {
 		topK: limit,
-		type: typeFilter,
+		contentType: contentTypes,
 	});
 
 	const results: SearchResult[] = [];
 	const groupMap = new Map<ContentType, SearchResult[]>();
 
 	for (const r of data.results) {
-		const ct = resolveContentType(r.type, r.doc_id);
+		const ct = r.content_type;
 
 		if (!searchTypes.has(ct)) continue;
 
