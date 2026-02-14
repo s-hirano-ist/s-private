@@ -20,7 +20,10 @@
 		"revert-images": "./dist/revert-images.js",
 		"revert-notes": "./dist/revert-notes.js",
 		"update-json-articles": "./dist/update-json-articles.js",
-		"update-raw-articles": "./dist/update-raw-articles.js"
+		"update-raw-articles": "./dist/update-raw-articles.js",
+		"ingest-notes": "./dist/ingest-notes.js",
+		"ingest-books": "./dist/ingest-books.js",
+		"ingest-articles": "./dist/ingest-articles.js"
 	},
 	"scripts": {
 		"build": "tsc && tsc-esm-fix --target dist",
@@ -43,7 +46,10 @@
 		"revert-images": "tsx src/revert-images.ts",
 		"revert-notes": "tsx src/revert-notes.ts",
 		"update-json-articles": "tsx src/update-json-articles.ts",
-		"update-raw-articles": "tsx src/update-raw-articles.ts"
+		"update-raw-articles": "tsx src/update-raw-articles.ts",
+		"ingest-notes": "tsx src/ingest-notes.ts",
+		"ingest-books": "tsx src/ingest-books.ts",
+		"ingest-articles": "tsx src/ingest-articles.ts"
 	},
 	"files": [
 		"dist",
