@@ -4,30 +4,12 @@
 	"description": "RAG search library with Qdrant and embedding API client",
 	"type": "module",
 	"exports": {
-		"./config": {
-			"types": "./src/config.ts",
-			"import": "./dist/config.js"
-		},
-		"./embedding": {
-			"types": "./src/embedding.ts",
-			"import": "./dist/embedding.js"
-		},
-		"./embedding-client": {
-			"types": "./src/embedding-client.ts",
-			"import": "./dist/embedding-client.js"
-		},
-		"./qdrant-client": {
-			"types": "./src/qdrant-client.ts",
-			"import": "./dist/qdrant-client.js"
-		},
-		"./chunker": {
-			"types": "./src/chunker.ts",
-			"import": "./dist/chunker.js"
-		},
-		"./ingest": {
-			"types": "./src/ingest.ts",
-			"import": "./dist/ingest.js"
-		}
+		"./config": "./src/config.ts",
+		"./embedding": "./src/embedding.ts",
+		"./embedding-client": "./src/embedding-client.ts",
+		"./qdrant-client": "./src/qdrant-client.ts",
+		"./chunker": "./src/chunker.ts",
+		"./ingest": "./src/ingest.ts"
 	},
 	"publishConfig": {
 		"access": "public",

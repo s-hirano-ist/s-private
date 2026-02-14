@@ -250,7 +250,8 @@ describe("useSearch", () => {
 				await result.current.executeSearch();
 			});
 
-			expect(result.current.searchResults).toBeUndefined();
+			expect(result.current.searchResults).toEqual([]);
+			expect(result.current.isError).toBe(true);
 		});
 	});
 
