@@ -24,7 +24,6 @@
  * isValidHttpUrl("http://example.com");  // true
  * isValidHttpUrl("ftp://example.com");   // false
  * isValidHttpUrl("");                     // true (supports nullable)
- * isValidHttpUrl(null as unknown as string); // true (supports nullable)
  * ```
  */
 export const isValidHttpUrl = (url: string): boolean => {

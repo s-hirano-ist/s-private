@@ -3,6 +3,7 @@ import type { Preview } from "@storybook/nextjs-vite";
 import "../packages/ui/globals.css";
 import { NextIntlClientProvider } from "next-intl";
 import { ThemeProvider } from "../packages/ui/providers/theme-provider";
+import { Toaster } from "../packages/ui/ui/sonner";
 
 const preview = {
 	decorators: [
@@ -51,6 +52,7 @@ const preview = {
 								searching: "検索中...",
 								score: "スコア",
 								delete: "削除",
+								bookCover: "本の表紙",
 								cancel: "キャンセル",
 								confirmDelete: "削除の確認",
 								articles: "articles",
@@ -93,6 +95,7 @@ const preview = {
 							},
 						}}
 					>
+						<Toaster />
 						<div className="w-96">
 							<Story />
 						</div>

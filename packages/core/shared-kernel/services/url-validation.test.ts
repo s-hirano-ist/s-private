@@ -60,19 +60,9 @@ describe("isValidHttpUrl", () => {
 		test("should return false for partial URL", () => {
 			expect(isValidHttpUrl("://example.com")).toBe(false);
 		});
-	});
 
-	describe("nullable support", () => {
-		test("should return true for empty string", () => {
+		test("should return true for empty string (supports nullable fields)", () => {
 			expect(isValidHttpUrl("")).toBe(true);
-		});
-
-		test("should return true for null cast as string", () => {
-			expect(isValidHttpUrl(null as unknown as string)).toBe(true);
-		});
-
-		test("should return true for undefined cast as string", () => {
-			expect(isValidHttpUrl(undefined as unknown as string)).toBe(true);
 		});
 	});
 });

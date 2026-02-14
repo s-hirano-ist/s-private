@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { expect } from "storybook/test";
 import Loading from "./loading";
 
 const meta = {
@@ -11,4 +12,10 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+	play: async ({ canvasElement }) => {
+		const svg = canvasElement.querySelector("svg");
+		await expect(svg).toBeInTheDocument();
+		await expect(svg).toHaveClass("animate-spin");
+	},
+};

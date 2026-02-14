@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { ArticleForm } from "./article-form";
 
 const meta = {
@@ -44,5 +44,27 @@ export const EmptyCategories: Story = {
 	args: {
 		categories: [],
 		addArticle: fn(),
+	},
+};
+
+export const FillForm: Story = {
+	args: {
+		categories: mockCategories,
+		addArticle: fn(),
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+
+		const titleInput = canvas.getByLabelText("タイトル");
+		await userEvent.type(titleInput, "テスト記事タイトル");
+		await expect(titleInput).toHaveValue("テスト記事タイトル");
+
+		const quoteInput = canvas.getByLabelText("ひとこと");
+		await userEvent.type(quoteInput, "テストの引用文");
+		await expect(quoteInput).toHaveValue("テストの引用文");
+
+		const urlInput = canvas.getByLabelText("URL");
+		await userEvent.type(urlInput, "https://example.com/test");
+		await expect(urlInput).toHaveValue("https://example.com/test");
 	},
 };

@@ -1,4 +1,5 @@
 import { act, renderHook } from "@testing-library/react";
+import { ReadonlyURLSearchParams } from "next/dist/client/components/readonly-url-search-params";
 import { useSearchParams } from "next/navigation";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { useTabVisibility } from "./use-tab-visibility";
@@ -19,11 +20,8 @@ describe("useTabVisibility", () => {
 
 	describe("basic visibility functionality", () => {
 		test("should return isVisible true when tab matches current tab", () => {
-			const mockSearchParams = {
-				get: vi.fn().mockReturnValue("articles"),
-			};
 			mockUseSearchParams.mockReturnValue(
-				mockSearchParams as unknown as ReturnType<typeof useSearchParams>,
+				new ReadonlyURLSearchParams("tab=articles"),
 			);
 
 			const { result } = renderHook(() => useTabVisibility("articles"));
@@ -32,11 +30,8 @@ describe("useTabVisibility", () => {
 		});
 
 		test("should return isVisible false when tab does not match current tab", () => {
-			const mockSearchParams = {
-				get: vi.fn().mockReturnValue("notes"),
-			};
 			mockUseSearchParams.mockReturnValue(
-				mockSearchParams as unknown as ReturnType<typeof useSearchParams>,
+				new ReadonlyURLSearchParams("tab=notes"),
 			);
 
 			const { result } = renderHook(() => useTabVisibility("articles"));
@@ -45,12 +40,7 @@ describe("useTabVisibility", () => {
 		});
 
 		test("should default to 'articles' tab when no tab param is provided", () => {
-			const mockSearchParams = {
-				get: vi.fn().mockReturnValue(null),
-			};
-			mockUseSearchParams.mockReturnValue(
-				mockSearchParams as unknown as ReturnType<typeof useSearchParams>,
-			);
+			mockUseSearchParams.mockReturnValue(new ReadonlyURLSearchParams(""));
 
 			const { result } = renderHook(() => useTabVisibility("articles"));
 
@@ -60,11 +50,8 @@ describe("useTabVisibility", () => {
 
 	describe("shouldLoad functionality", () => {
 		test("should return shouldLoad true when currently visible", () => {
-			const mockSearchParams = {
-				get: vi.fn().mockReturnValue("articles"),
-			};
 			mockUseSearchParams.mockReturnValue(
-				mockSearchParams as unknown as ReturnType<typeof useSearchParams>,
+				new ReadonlyURLSearchParams("tab=articles"),
 			);
 
 			const { result } = renderHook(() => useTabVisibility("articles"));
@@ -73,11 +60,8 @@ describe("useTabVisibility", () => {
 		});
 
 		test("should keep shouldLoad true after being visible once", () => {
-			const mockSearchParams = {
-				get: vi.fn().mockReturnValue("articles"),
-			};
 			mockUseSearchParams.mockReturnValue(
-				mockSearchParams as unknown as ReturnType<typeof useSearchParams>,
+				new ReadonlyURLSearchParams("tab=articles"),
 			);
 
 			const { result, rerender } = renderHook(() =>
@@ -88,7 +72,9 @@ describe("useTabVisibility", () => {
 			expect(result.current.shouldLoad).toBe(true);
 
 			// Change to different tab
-			mockSearchParams.get.mockReturnValue("notes");
+			mockUseSearchParams.mockReturnValue(
+				new ReadonlyURLSearchParams("tab=notes"),
+			);
 			rerender();
 
 			// Should still be true because it was visible once
@@ -96,12 +82,8 @@ describe("useTabVisibility", () => {
 		});
 
 		test("should return shouldLoad false for tab that has never been visible", () => {
-			const mockSearchParams = {
-				get: vi.fn().mockReturnValue("notes"),
-			};
-
 			mockUseSearchParams.mockReturnValue(
-				mockSearchParams as unknown as ReturnType<typeof useSearchParams>,
+				new ReadonlyURLSearchParams("tab=notes"),
 			);
 
 			const { result } = renderHook(() => useTabVisibility("books"));
@@ -112,12 +94,8 @@ describe("useTabVisibility", () => {
 
 	describe("preloading functionality", () => {
 		test("should enable preloading after 1 second when loadingStrategy is preload", () => {
-			const mockSearchParams = {
-				get: vi.fn().mockReturnValue("articles"),
-			};
-
 			mockUseSearchParams.mockReturnValue(
-				mockSearchParams as unknown as ReturnType<typeof useSearchParams>,
+				new ReadonlyURLSearchParams("tab=articles"),
 			);
 
 			const { result } = renderHook(() => useTabVisibility("books", "preload"));
@@ -134,12 +112,8 @@ describe("useTabVisibility", () => {
 		});
 
 		test("should not enable preloading when loadingStrategy is lazy", () => {
-			const mockSearchParams = {
-				get: vi.fn().mockReturnValue("articles"),
-			};
-
 			mockUseSearchParams.mockReturnValue(
-				mockSearchParams as unknown as ReturnType<typeof useSearchParams>,
+				new ReadonlyURLSearchParams("tab=articles"),
 			);
 
 			const { result } = renderHook(() => useTabVisibility("books", "lazy"));
@@ -152,12 +126,8 @@ describe("useTabVisibility", () => {
 		});
 
 		test("should not enable preloading for currently visible tab", () => {
-			const mockSearchParams = {
-				get: vi.fn().mockReturnValue("articles"),
-			};
-
 			mockUseSearchParams.mockReturnValue(
-				mockSearchParams as unknown as ReturnType<typeof useSearchParams>,
+				new ReadonlyURLSearchParams("tab=articles"),
 			);
 
 			const { result } = renderHook(() =>
@@ -172,12 +142,8 @@ describe("useTabVisibility", () => {
 		});
 
 		test("should clear timeout when component unmounts", () => {
-			const mockSearchParams = {
-				get: vi.fn().mockReturnValue("articles"),
-			};
-
 			mockUseSearchParams.mockReturnValue(
-				mockSearchParams as unknown as ReturnType<typeof useSearchParams>,
+				new ReadonlyURLSearchParams("tab=articles"),
 			);
 
 			const clearTimeoutSpy = vi.spyOn(global, "clearTimeout");
@@ -194,12 +160,8 @@ describe("useTabVisibility", () => {
 
 	describe("tab switching scenarios", () => {
 		test("should update visibility when tab changes", () => {
-			const mockSearchParams = {
-				get: vi.fn().mockReturnValue("articles"),
-			};
-
 			mockUseSearchParams.mockReturnValue(
-				mockSearchParams as unknown as ReturnType<typeof useSearchParams>,
+				new ReadonlyURLSearchParams("tab=articles"),
 			);
 
 			const { result, rerender } = renderHook(() =>
@@ -209,25 +171,25 @@ describe("useTabVisibility", () => {
 			expect(result.current.isVisible).toBe(true);
 
 			// Switch to notes tab
-			mockSearchParams.get.mockReturnValue("notes");
+			mockUseSearchParams.mockReturnValue(
+				new ReadonlyURLSearchParams("tab=notes"),
+			);
 			rerender();
 
 			expect(result.current.isVisible).toBe(false);
 
 			// Switch back to articles tab
-			mockSearchParams.get.mockReturnValue("articles");
+			mockUseSearchParams.mockReturnValue(
+				new ReadonlyURLSearchParams("tab=articles"),
+			);
 			rerender();
 
 			expect(result.current.isVisible).toBe(true);
 		});
 
 		test("should handle hasBeenVisible state correctly during tab switches", () => {
-			const mockSearchParams = {
-				get: vi.fn().mockReturnValue("notes"),
-			};
-
 			mockUseSearchParams.mockReturnValue(
-				mockSearchParams as unknown as ReturnType<typeof useSearchParams>,
+				new ReadonlyURLSearchParams("tab=notes"),
 			);
 
 			const { result, rerender } = renderHook(() =>
@@ -238,14 +200,18 @@ describe("useTabVisibility", () => {
 			expect(result.current.shouldLoad).toBe(false);
 
 			// Switch to articles tab
-			mockSearchParams.get.mockReturnValue("articles");
+			mockUseSearchParams.mockReturnValue(
+				new ReadonlyURLSearchParams("tab=articles"),
+			);
 			rerender();
 
 			// Now visible and should load
 			expect(result.current.shouldLoad).toBe(true);
 
 			// Switch away from articles tab
-			mockSearchParams.get.mockReturnValue("books");
+			mockUseSearchParams.mockReturnValue(
+				new ReadonlyURLSearchParams("tab=books"),
+			);
 			rerender();
 
 			// No longer visible but should still load because it was visible once

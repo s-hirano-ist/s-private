@@ -1,4 +1,5 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
+import { ReadonlyURLSearchParams } from "next/dist/client/components/readonly-url-search-params";
 import { useRouter, useSearchParams } from "next/navigation";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { useSearch } from "./use-search";
@@ -13,21 +14,9 @@ describe("useSearch", () => {
 	const mockSearchFn = vi.fn();
 
 	const setupMocks = (initialQuery: string | null = null) => {
-		const params = new URLSearchParams();
-		const mockSearchParams = {
-			get: vi.fn().mockReturnValue(initialQuery),
-			toString: () => params.toString(),
-			[Symbol.iterator]: () => params[Symbol.iterator](),
-			entries: () => params.entries(),
-			keys: () => params.keys(),
-			values: () => params.values(),
-			forEach: params.forEach.bind(params),
-			has: (key: string) => params.has(key),
-			getAll: (key: string) => params.getAll(key),
-			size: params.size,
-		};
+		const queryString = initialQuery ? `q=${initialQuery}` : "";
 		mockUseSearchParams.mockReturnValue(
-			mockSearchParams as unknown as ReturnType<typeof useSearchParams>,
+			new ReadonlyURLSearchParams(queryString),
 		);
 		mockUseRouter.mockReturnValue({
 			push: mockPush,
