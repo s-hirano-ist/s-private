@@ -12,7 +12,8 @@
 	"excludeInternal": true,
 	"searchInComments": true,
 	"navigationLinks": {
-		"GitHub": "https://github.com/s-hirano-ist/s-private"
+		"GitHub": "https://github.com/s-hirano-ist/s-private",
+		"Database Schema": "./database/index.html"
 	},
 	"plugin": ["typedoc-plugin-mdn-links"],
 	"categorizeByGroup": true,

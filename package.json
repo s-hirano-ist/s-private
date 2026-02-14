@@ -36,7 +36,7 @@
 		"deps:circular": "depcruise app/src packages/ui packages/core packages/notification --config .dependency-cruiser.cjs --output-type text --focus-depth 0",
 		"deps:graph": "depcruise app/src packages/ui packages/core packages/notification --config .dependency-cruiser.cjs --output-type dot | dot -T svg > dependency-graph.svg",
 		"prisma:studio": "pnpm --filter s-database prisma:studio",
-		"docs:build": "typedoc",
+		"docs:build": "typedoc && pnpm --filter @s-hirano-ist/s-database docs:build",
 		"docs:serve": "npx serve docs/api",
 		"docs:watch": "typedoc --watch",
 		"docs:clean": "rm -rf docs/api",

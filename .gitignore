@@ -33,6 +33,7 @@ minio/certs
 
 # Prisma
 packages/database/src/generated/
+packages/database/dbml/
 
 # Sentry Config File
 .env.sentry-build-plugin
