@@ -2,6 +2,66 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.13.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.12.2...s-private-v10.13.0) (2026-02-14)
+
+
+### Features
+
+* add c ompose.yaml ([934e0b4](https://github.com/s-hirano-ist/s-private/commit/934e0b42ed4dfd77714516937fd4f7ce2aaf3260))
+* add db migration ([5069509](https://github.com/s-hirano-ist/s-private/commit/5069509624442f812c320b7ab011c34bb0a8fc1c))
+* add ingest scripts ([d072827](https://github.com/s-hirano-ist/s-private/commit/d0728270d78d7ba18855e1409fa4c3601ccc1350))
+* add ingestion api ([4b5f27f](https://github.com/s-hirano-ist/s-private/commit/4b5f27f1fd3ac2a981a1e9c15fbbece422e090e0))
+* add purge option to ingest ([0cff06b](https://github.com/s-hirano-ist/s-private/commit/0cff06b23242c4c545f540a4d95412df4210c305))
+* add qdrant search api ([3a4d402](https://github.com/s-hirano-ist/s-private/commit/3a4d4022b6c13a1b1b7e383deaa78e3cb90d8bb6))
+* add rag search ([7c9fe7f](https://github.com/s-hirano-ist/s-private/commit/7c9fe7f9c931b4e783b88aff956b2e5475b09fe8))
+* disable prisma accelerate ([1a50e9f](https://github.com/s-hirano-ist/s-private/commit/1a50e9ffd7c668e750231c8a2e00d1662c3110a5))
+* disable prisma accelerate ([65802dd](https://github.com/s-hirano-ist/s-private/commit/65802dd4d01e4b4a935336cb02619072462bea6d))
+* use cf token ([9518108](https://github.com/s-hirano-ist/s-private/commit/9518108fda1a72e9eb46ad62a5d47ee38ec9e895))
+
+
+### Bug Fixes
+
+* add js ([0f323e0](https://github.com/s-hirano-ist/s-private/commit/0f323e060079bc998c5ba8c2e5b487110757e320))
+* articles ([490a013](https://github.com/s-hirano-ist/s-private/commit/490a013bf0d32e3d1ab6649a569250eaa0d749a6))
+* biome ([0726c69](https://github.com/s-hirano-ist/s-private/commit/0726c69568625325073e80882afc0ac880b966df))
+* docker builds ([865b0c3](https://github.com/s-hirano-ist/s-private/commit/865b0c3e79141df17a3acfd9711488fa4609bf27))
+* docker file and ci build ([3329790](https://github.com/s-hirano-ist/s-private/commit/332979074a5ecd2645c1cc29cfa11dd3f6070737))
+* docker file build ([2c0c59f](https://github.com/s-hirano-ist/s-private/commit/2c0c59f21fc0cf925b2ea533411a9767fcaebb7d))
+* dockerfile ([9b6b3dc](https://github.com/s-hirano-ist/s-private/commit/9b6b3dc13ee6fcc8845f901384077f09676a6a48))
+* nextconfig ([4821cc7](https://github.com/s-hirano-ist/s-private/commit/4821cc793f8b8d9c886e8af597545d8d13b64318))
+* rag style ([47303bd](https://github.com/s-hirano-ist/s-private/commit/47303bdf6a19e69731e94115cdba8685bf231d4d))
+* storybook run test ([aa66810](https://github.com/s-hirano-ist/s-private/commit/aa66810dcb615996d3904fe4f9e4c62c4b35ea2b))
+* tests ([b60e042](https://github.com/s-hirano-ist/s-private/commit/b60e04275ac2efc24d02acd3dbbe669cd0643886))
+* update raw article bug on shift-jis ([514a82b](https://github.com/s-hirano-ist/s-private/commit/514a82b164027f34caffbfc8765fe07e9c14f94f))
+
+
+### Documentation
+
+* fix tests ([3163697](https://github.com/s-hirano-ist/s-private/commit/316369701050974480bf5702ac57f787e1aa4cde))
+* fix tests ([a58a470](https://github.com/s-hirano-ist/s-private/commit/a58a4703f208d2703f8bb574b598a322ab1f4a19))
+* refactor use play functions ([efccfb4](https://github.com/s-hirano-ist/s-private/commit/efccfb4f45362a4fca3b5b19ab29c29b28f44d42))
+* refactor use play functions ([a89214b](https://github.com/s-hirano-ist/s-private/commit/a89214b739e85dde794f164d816b3ab2f12bbcc0))
+
+
+### Maintenance
+
+* a11y ([9981599](https://github.com/s-hirano-ist/s-private/commit/9981599f0d96792fd92fb1e4dab2604a38be5018))
+* add dbdocs ([f5522e7](https://github.com/s-hirano-ist/s-private/commit/f5522e701a58c5bc9f4f0c7428f9a478629cea3e))
+* add dbdocs ([68aebc2](https://github.com/s-hirano-ist/s-private/commit/68aebc24adede1c6496efccd0bc92c25fac5ec18))
+* add statusline on claude code ([b1bce8e](https://github.com/s-hirano-ist/s-private/commit/b1bce8e5c536a623b483b0def5dde2e0d40f00eb))
+* add stotybook a11y settings ([1450ca7](https://github.com/s-hirano-ist/s-private/commit/1450ca707fd4c0d49629f275dc770aa4e0cbd00f))
+* add tsc-esm-fix ([8cc1707](https://github.com/s-hirano-ist/s-private/commit/8cc17078543bb70f19785d55063932d78659be49))
+* delete ingest db ([08e08f9](https://github.com/s-hirano-ist/s-private/commit/08e08f96282e07490899d30c029ee7ce99098e33))
+* do not use any ([6d56a95](https://github.com/s-hirano-ist/s-private/commit/6d56a95987df2fe542380e00cf8dc631a5d44b98))
+* do not use any and claude code ([dd46559](https://github.com/s-hirano-ist/s-private/commit/dd46559b07339354d1d600139756dfeccca9e689))
+* embedding model ([cca5147](https://github.com/s-hirano-ist/s-private/commit/cca514729c7b4c7cfc732cbbd0dd6518cb40e9ce))
+* ingest packages ([08edf72](https://github.com/s-hirano-ist/s-private/commit/08edf7225934af5ce65cd587bfd61c188a9f6740))
+* storybook ([f30e8e2](https://github.com/s-hirano-ist/s-private/commit/f30e8e24e871acd4c7ab96535aaf202a79777856))
+* update dockerfile ([4de741a](https://github.com/s-hirano-ist/s-private/commit/4de741abcb0e7c6e24afc3e4974c86bd07692aa7))
+* update e5 large ([4c274e4](https://github.com/s-hirano-ist/s-private/commit/4c274e40959bd5d3c28ca3d4a3123a7e7ceb4622))
+* update ingest and update raw articles ([3f69f31](https://github.com/s-hirano-ist/s-private/commit/3f69f31dd43b50885986286a622e4eda06a7d1b1))
+* use radix-ui indivi packages ([b7e5e1a](https://github.com/s-hirano-ist/s-private/commit/b7e5e1a9f8feae08f36d8e72cc32e3ac71676253))
+
 ## [10.12.2](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.12.1...s-private-v10.12.2) (2026-02-10)
 
 

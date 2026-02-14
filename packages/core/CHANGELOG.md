@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.13.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.12.2...@s-hirano-ist/s-core-v1.13.0) (2026-02-14)
+
+
+### Features
+
+* add qdrant search api ([3a4d402](https://github.com/s-hirano-ist/s-private/commit/3a4d4022b6c13a1b1b7e383deaa78e3cb90d8bb6))
+* add rag search ([7c9fe7f](https://github.com/s-hirano-ist/s-private/commit/7c9fe7f9c931b4e783b88aff956b2e5475b09fe8))
+* disable prisma accelerate ([1a50e9f](https://github.com/s-hirano-ist/s-private/commit/1a50e9ffd7c668e750231c8a2e00d1662c3110a5))
+* disable prisma accelerate ([65802dd](https://github.com/s-hirano-ist/s-private/commit/65802dd4d01e4b4a935336cb02619072462bea6d))
+
+
+### Documentation
+
+* refactor use play functions ([efccfb4](https://github.com/s-hirano-ist/s-private/commit/efccfb4f45362a4fca3b5b19ab29c29b28f44d42))
+* refactor use play functions ([a89214b](https://github.com/s-hirano-ist/s-private/commit/a89214b739e85dde794f164d816b3ab2f12bbcc0))
+
 ## [1.12.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.12.1...@s-hirano-ist/s-core-v1.12.2) (2026-02-10)
 
 

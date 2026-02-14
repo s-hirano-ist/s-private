@@ -1,5 +1,52 @@
 # Changelog
 
+## [1.13.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.12.2...@s-hirano-ist/s-scripts-v1.13.0) (2026-02-14)
+
+
+### Features
+
+* add ingest scripts ([d072827](https://github.com/s-hirano-ist/s-private/commit/d0728270d78d7ba18855e1409fa4c3601ccc1350))
+* add ingestion api ([4b5f27f](https://github.com/s-hirano-ist/s-private/commit/4b5f27f1fd3ac2a981a1e9c15fbbece422e090e0))
+* add purge option to ingest ([0cff06b](https://github.com/s-hirano-ist/s-private/commit/0cff06b23242c4c545f540a4d95412df4210c305))
+* add qdrant search api ([3a4d402](https://github.com/s-hirano-ist/s-private/commit/3a4d4022b6c13a1b1b7e383deaa78e3cb90d8bb6))
+* add rag search ([7c9fe7f](https://github.com/s-hirano-ist/s-private/commit/7c9fe7f9c931b4e783b88aff956b2e5475b09fe8))
+* disable prisma accelerate ([1a50e9f](https://github.com/s-hirano-ist/s-private/commit/1a50e9ffd7c668e750231c8a2e00d1662c3110a5))
+* disable prisma accelerate ([65802dd](https://github.com/s-hirano-ist/s-private/commit/65802dd4d01e4b4a935336cb02619072462bea6d))
+* use cf token ([9518108](https://github.com/s-hirano-ist/s-private/commit/9518108fda1a72e9eb46ad62a5d47ee38ec9e895))
+
+
+### Bug Fixes
+
+* articles ([490a013](https://github.com/s-hirano-ist/s-private/commit/490a013bf0d32e3d1ab6649a569250eaa0d749a6))
+* docker builds ([865b0c3](https://github.com/s-hirano-ist/s-private/commit/865b0c3e79141df17a3acfd9711488fa4609bf27))
+* rag style ([47303bd](https://github.com/s-hirano-ist/s-private/commit/47303bdf6a19e69731e94115cdba8685bf231d4d))
+* update raw article bug on shift-jis ([514a82b](https://github.com/s-hirano-ist/s-private/commit/514a82b164027f34caffbfc8765fe07e9c14f94f))
+
+
+### Documentation
+
+* fix tests ([3163697](https://github.com/s-hirano-ist/s-private/commit/316369701050974480bf5702ac57f787e1aa4cde))
+* fix tests ([a58a470](https://github.com/s-hirano-ist/s-private/commit/a58a4703f208d2703f8bb574b598a322ab1f4a19))
+
+
+### Maintenance
+
+* delete ingest db ([08e08f9](https://github.com/s-hirano-ist/s-private/commit/08e08f96282e07490899d30c029ee7ce99098e33))
+* do not use any ([6d56a95](https://github.com/s-hirano-ist/s-private/commit/6d56a95987df2fe542380e00cf8dc631a5d44b98))
+* do not use any and claude code ([dd46559](https://github.com/s-hirano-ist/s-private/commit/dd46559b07339354d1d600139756dfeccca9e689))
+* ingest packages ([08edf72](https://github.com/s-hirano-ist/s-private/commit/08edf7225934af5ce65cd587bfd61c188a9f6740))
+* update e5 large ([4c274e4](https://github.com/s-hirano-ist/s-private/commit/4c274e40959bd5d3c28ca3d4a3123a7e7ceb4622))
+* update ingest and update raw articles ([3f69f31](https://github.com/s-hirano-ist/s-private/commit/3f69f31dd43b50885986286a622e4eda06a7d1b1))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.13.0
+    * @s-hirano-ist/s-database bumped to 1.13.0
+    * @s-hirano-ist/s-notification bumped to 1.13.0
+
 ## [1.12.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.12.1...@s-hirano-ist/s-scripts-v1.12.2) (2026-02-10)
 
 

@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.13.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.12.2...@s-hirano-ist/s-ui-v1.13.0) (2026-02-14)
+
+
+### Features
+
+* add rag search ([7c9fe7f](https://github.com/s-hirano-ist/s-private/commit/7c9fe7f9c931b4e783b88aff956b2e5475b09fe8))
+
+
+### Documentation
+
+* refactor use play functions ([efccfb4](https://github.com/s-hirano-ist/s-private/commit/efccfb4f45362a4fca3b5b19ab29c29b28f44d42))
+* refactor use play functions ([a89214b](https://github.com/s-hirano-ist/s-private/commit/a89214b739e85dde794f164d816b3ab2f12bbcc0))
+
+
+### Maintenance
+
+* a11y ([9981599](https://github.com/s-hirano-ist/s-private/commit/9981599f0d96792fd92fb1e4dab2604a38be5018))
+* add stotybook a11y settings ([1450ca7](https://github.com/s-hirano-ist/s-private/commit/1450ca707fd4c0d49629f275dc770aa4e0cbd00f))
+* do not use any ([6d56a95](https://github.com/s-hirano-ist/s-private/commit/6d56a95987df2fe542380e00cf8dc631a5d44b98))
+* do not use any and claude code ([dd46559](https://github.com/s-hirano-ist/s-private/commit/dd46559b07339354d1d600139756dfeccca9e689))
+* storybook ([f30e8e2](https://github.com/s-hirano-ist/s-private/commit/f30e8e24e871acd4c7ab96535aaf202a79777856))
+* use radix-ui indivi packages ([b7e5e1a](https://github.com/s-hirano-ist/s-private/commit/b7e5e1a9f8feae08f36d8e72cc32e3ac71676253))
+
 ## [1.12.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.12.1...@s-hirano-ist/s-ui-v1.12.2) (2026-02-10)
 
 
