@@ -22,7 +22,7 @@ VPS 上では全ポートを firewall で閉じ、Cloudflare Tunnel の outbound
 # 鍵生成（Ed25519推奨）
 ssh-keygen -t ed25519 -C "conoha-embedding-api" -f ~/.ssh/conoha_embedding
 
-# 公開鍵をVPSにコピー
+# 公開鍵をVPSにコピー（初回はデフォルトのポート22で接続）
 ssh-copy-id -i ~/.ssh/conoha_embedding.pub root@<VPS_IP>
 ```
 
@@ -32,15 +32,19 @@ ssh-copy-id -i ~/.ssh/conoha_embedding.pub root@<VPS_IP>
 Host conoha-embedding
     HostName <VPS_IP>
     User deploy
+    Port 10022
     IdentityFile ~/.ssh/conoha_embedding
     IdentitiesOnly yes
 ```
+
+> **注意:** `Port 10022` は Step 4.6 でSSHポートを変更した後に有効になる。初期セットアップ中（ポート変更前）は `ssh -p 22 conoha-embedding` のようにポートを明示的に指定するか、一時的に `Port` 行をコメントアウトすること。
 
 ---
 
 ## Step 2: VPS 初期設定
 
 > **実行環境: VPS（root で SSH）**
+> **注意:** この時点ではまだ SSH ポートはデフォルト（22）。ポート変更は Step 4.6 で行う。
 
 ```bash
 ssh root@<VPS_IP>
@@ -71,21 +75,53 @@ passwd deploy
 **別のターミナルで**以下を実行し、root セッションはまだ閉じないこと:
 
 ```bash
+# 初期セットアップ中はポート22（デフォルト）で接続
 ssh -i ~/.ssh/conoha_embedding deploy@<VPS_IP>
 sudo whoami  # → root と表示されれば OK
 ```
 
 ---
 
-## Step 3: サーバー基盤設定
+## Step 3: ConoHa セキュリティグループ設定
+
+> **実行環境: ConoHa コントロールパネル**
+> **重要:** SSH ポート変更（Step 4.6）の前に、新ポートをセキュリティグループで許可しておくこと。これを忘れると VPS にアクセスできなくなる。
+
+ConoHa VPS にはVPS外部のファイアウォールとしてセキュリティグループが存在する。
+デフォルトの `default` グループは全通信を許可しているため、必要なポートのみ許可するカスタムグループを作成する。
+
+### 3.1 セキュリティグループの作成
+
+1. ConoHa コントロールパネル → セキュリティ → セキュリティグループ → **セキュリティグループ作成**
+2. グループ名: `embedding-api-sg`
+3. 以下の **Inbound ルール**を追加:
+
+| 方向 | プロトコル | ポート | CIDR | 用途 |
+| --- | --- | --- | --- | --- |
+| Ingress | TCP | 10022 | 0.0.0.0/0 | SSH（カスタムポート） |
+
+> **注意:** Cloudflare Tunnel は outbound 接続のため、Inbound ルールは SSH のみで十分。HTTP/HTTPS ポートを開ける必要はない。
+
+### 3.2 セキュリティグループの適用
+
+1. ConoHa コントロールパネル → サーバー → 対象 VPS → ネットワーク情報
+2. セキュリティグループの設定で、デフォルトの `default` グループを削除
+3. 作成した `embedding-api-sg` を追加して保存
+
+> **確認:** セキュリティグループ変更後、既存の SSH 接続（ポート22）が維持されていることを確認。変更は新規接続から適用される場合があるため、既存セッションは切断しないこと。初期セットアップ中はポート22での接続も必要なため、必要に応じて一時的にポート22のルールも追加しておく。
+
+---
+
+## Step 4: サーバー基盤設定
 
 > **実行環境: VPS（deploy ユーザーで SSH）**
+> **注意:** Step 1 の SSH config で `Port 10022` を設定済みの場合、ポート変更が完了するまでは `ssh -p 22 conoha-embedding` で接続すること。
 
 ```bash
-ssh conoha-embedding
+ssh -p 22 conoha-embedding
 ```
 
-### 3.1 Docker・git インストール
+### 4.1 Docker・git インストール
 
 ```bash
 # Docker 公式リポジトリからインストール
@@ -104,40 +140,51 @@ sudo apt install -y git
 
 ```bash
 exit
-ssh conoha-embedding
+ssh -p 22 conoha-embedding  # ポート変更前のため明示的にポート22を指定
 docker ps  # → エラーなく実行できれば OK
 ```
 
-### 3.2 ファイアウォール設定（UFW）
+### 4.2 ファイアウォール設定（UFW）
 
 ```bash
-# SSH のみ許可、他は全て拒否
+# SSH カスタムポートのみ許可、他は全て拒否
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
-sudo ufw allow ssh
+sudo ufw allow 10022/tcp comment 'SSH custom port'
 sudo ufw enable
 
 # 確認（3001 等のポートは開けない → Cloudflare Tunnel のみ）
 sudo ufw status
 ```
 
-### 3.3 fail2ban 動作確認
+> **注意:** ポート変更（Step 4.6）が完了するまでは、デフォルトポート22でも接続できるよう `sudo ufw allow ssh` も一時的に追加しておくこと。ポート変更完了後に `sudo ufw delete allow ssh` で旧ポートを閉じる（Step 4.6 参照）。
+
+### 4.3 fail2ban 設定
 
 ConoHa VPS ではデフォルトでインストール・有効化済み。
+カスタムポートを認識するよう設定を追加する。
 
 ```bash
+# カスタムポート用の jail 設定
+sudo tee /etc/fail2ban/jail.local > /dev/null <<'EOF'
+[sshd]
+port = 10022
+EOF
+
+sudo systemctl restart fail2ban
+
 # 動作確認
 sudo fail2ban-client status sshd
 ```
 
-### 3.4 自動セキュリティ更新
+### 4.4 自動セキュリティ更新
 
 ```bash
 sudo apt update && sudo apt install -y unattended-upgrades
 sudo dpkg-reconfigure -plow unattended-upgrades
 ```
 
-### 3.5 Docker ログローテーション
+### 4.5 Docker ログローテーション
 
 ```bash
 sudo tee /etc/docker/daemon.json > /dev/null <<'EOF'
@@ -152,7 +199,46 @@ EOF
 sudo systemctl restart docker
 ```
 
-### 3.6 root SSH 無効化 & パスワード認証無効化
+### 4.6 SSH ポート変更
+
+> **重要: ロックアウト防止のため、以下の順序を厳守すること。**
+> 1. ConoHa セキュリティグループでポート 10022 を許可済みであること（Step 3）
+> 2. UFW でポート 10022 を許可済みであること（Step 4.2）
+
+```bash
+# sshd_config のポートを変更
+sudo sed -i 's/^#*Port .*/Port 10022/' /etc/ssh/sshd_config
+
+# 文法チェック（エラーがあればここで止まる）
+sudo sshd -t
+
+# SSH サービスを再起動
+sudo systemctl restart ssh
+
+# !! このターミナルは絶対に閉じないこと !!
+```
+
+**別のターミナルで**新ポートでの接続を確認:
+
+```bash
+ssh conoha-embedding
+# Port 10022 が config に設定済みなので、そのまま接続できるはず
+sudo whoami  # → root と表示されれば OK
+```
+
+接続確認が取れたら、旧ポート 22 を閉じる:
+
+```bash
+# UFW から旧ポートを削除
+sudo ufw delete allow ssh
+
+# 確認
+sudo ufw status
+```
+
+> **注意:** ConoHa セキュリティグループからもポート 22 のルールを削除しておくこと（Step 3 で一時的に追加していた場合）。
+
+### 4.7 root SSH 無効化 & パスワード認証無効化
 
 > **重要: これは全てのセットアップが完了した後に実行すること。**
 > 実行前に、別ターミナルで deploy ユーザーの SSH + sudo が動作することを再度確認すること。
@@ -171,7 +257,7 @@ sudo systemctl restart ssh
 
 ---
 
-## Step 4: Cloudflare Tunnel セットアップ
+## Step 5: Cloudflare Tunnel セットアップ
 
 > **実行環境: Cloudflare Dashboard**
 
@@ -184,7 +270,7 @@ sudo systemctl restart ssh
    - Service: `http://embedding-api:3001`
 5. **Access Policy (必須)**: 以下の手順で Cloudflare Access を設定する
 
-### 4.1 Service Token の発行
+### 5.1 Service Token の発行
 
 アプリケーション作成ウィザード内でポリシーに紐付けるため、先に Service Token を発行しておく。
 
@@ -193,7 +279,7 @@ sudo systemctl restart ssh
 3. 発行される `CF-Access-Client-Id` と `CF-Access-Client-Secret` を安全な場所に保管
 4. これらの値をアプリケーション側の環境変数 `CF_ACCESS_CLIENT_ID` / `CF_ACCESS_CLIENT_SECRET` に設定する
 
-### 4.2 Cloudflare Access アプリケーション作成 + ポリシー設定
+### 5.2 Cloudflare Access アプリケーション作成 + ポリシー設定
 
 > **注意:** Cloudflare Access は **deny by default** で動作する。ポリシーなしのアプリケーションは全アクセスを拒否するため、アプリケーション作成ウィザード内でポリシーも合わせて設定すること。
 
@@ -205,14 +291,14 @@ sudo systemctl restart ssh
 6. ウィザード内の Policy 設定ステップで以下を追加:
    - Policy name: `Service Token Policy`
    - Action: **Service Auth**
-   - Include rule: **Service Token** — Step 4.1 で発行した Service Token を指定
+   - Include rule: **Service Token** — Step 5.1 で発行した Service Token を指定
 
-### 4.3 ブラウザから `/ui`（Swagger UI）にアクセスする
+### 5.3 ブラウザから `/ui`（Swagger UI）にアクセスする
 
 CF Access で全エンドポイントが保護されているため、ブラウザから `/ui` に直接アクセスするにはメール OTP ベースの Allow ポリシーを追加する。
 
 1. Zero Trust → Access → Applications → `embedding-api` を選択
-2. 既存の Service Token ポリシー（4.2）はそのまま残す
+2. 既存の Service Token ポリシー（5.2）はそのまま残す
 3. 新規ポリシーを追加:
    - Policy name: `Email OTP Policy`
    - Action: **Allow**
@@ -226,7 +312,7 @@ CF Access で全エンドポイントが保護されているため、ブラウ�
 
 ---
 
-## Step 5: デプロイ実行
+## Step 6: デプロイ実行
 
 > **実行環境: VPS（deploy ユーザーで SSH）**
 
@@ -267,9 +353,9 @@ docker compose up -d
 
 ---
 
-## Step 6: 検証
+## Step 7: 検証
 
-### 6.1 コンテナ状態確認（VPS）
+### 7.1 コンテナ状態確認（VPS）
 
 ```bash
 # 両コンテナが running かつ healthy であることを確認
@@ -279,7 +365,7 @@ docker compose ps
 docker compose logs --tail=50
 ```
 
-### 6.2 VPS 内部からの直接検証（VPS）
+### 7.2 VPS 内部からの直接検証（VPS）
 
 Tunnel を介さず、Docker ネットワーク内で API が応答するか確認する。
 この手順で失敗する場合、問題は API コンテナ自体にある。
@@ -304,9 +390,9 @@ fetch('http://localhost:3001/embed', {
 # 期待: {"embedding": [0.123, ...]} 形式の JSON レスポンス
 ```
 
-### 6.3 Cloudflare Tunnel + Access 経由の検証（ローカル）
+### 7.3 Cloudflare Tunnel + Access 経由の検証（ローカル）
 
-6.2 が成功し、以下が失敗する場合、問題は Tunnel または Access 設定にある。
+7.2 が成功し、以下が失敗する場合、問題は Tunnel または Access 設定にある。
 Cloudflare Access が有効なため、全リクエストに **Service Token ヘッダーが必須**。
 
 ```bash
@@ -335,7 +421,7 @@ curl -s -X POST https://embedding-api.<domain>/embed-batch \
 
 > **注意:** Cloudflare Access が有効な状態では `/health`, `/doc`, `/ui` を含む全エンドポイントが保護される。Service Token なしのリクエストは CF Access ログインページへリダイレクト（302）され、API には到達しない。ブラウザからは Email OTP 認証でアクセス可能。
 
-### 6.4 Cloudflare Access の検証
+### 7.4 Cloudflare Access の検証
 
 Service Token なしでアクセスが**保護されている**ことを確認する:
 
@@ -357,7 +443,7 @@ curl -s -o /dev/null -w "%{http_code}" https://embedding-api.<domain>/health \
 
 ---
 
-## Step 7: Vercel デプロイ app からのアクセス
+## Step 8: Vercel デプロイ app からのアクセス
 
 Vercel にデプロイされた Next.js app から Embedding API にアクセスする場合、`embedding-client.ts` が全リクエストに `CF-Access-Client-Id` / `CF-Access-Client-Secret` ヘッダーを自動付与する。
 
@@ -368,9 +454,9 @@ Vercel の Project Settings → Environment Variables に以下を設定する:
 | 変数名 | 説明 |
 | --- | --- |
 | `EMBEDDING_API_URL` | `https://embedding-api.<domain>` |
-| `EMBEDDING_API_KEY` | API の Bearer トークン（Step 5 の `.env` で設定した `EMBEDDING_API_KEY` と同じ値） |
-| `CF_ACCESS_CLIENT_ID` | Cloudflare Service Token の Client ID（Step 4.1 で発行） |
-| `CF_ACCESS_CLIENT_SECRET` | Cloudflare Service Token の Client Secret（Step 4.1 で発行） |
+| `EMBEDDING_API_KEY` | API の Bearer トークン（Step 6 の `.env` で設定した `EMBEDDING_API_KEY` と同じ値） |
+| `CF_ACCESS_CLIENT_ID` | Cloudflare Service Token の Client ID（Step 5.1 で発行） |
+| `CF_ACCESS_CLIENT_SECRET` | Cloudflare Service Token の Client Secret（Step 5.1 で発行） |
 | `QDRANT_URL` | Qdrant のURL |
 | `QDRANT_API_KEY` | Qdrant の API キー（該当する場合） |
 
@@ -419,7 +505,9 @@ free -h
 
 ### ロックアウト復旧
 
-SSH 接続ができなくなった場合（fail2ban による ban、鍵の紛失等）の復旧手順。
+SSH 接続ができなくなった場合（fail2ban による ban、鍵の紛失、ポート設定ミス等）の復旧手順。
+
+> **注意:** SSH はカスタムポート **10022** で動作している。接続時は `ssh -p 10022 deploy@<VPS_IP>` または SSH config のポート設定を確認すること。
 
 #### fail2ban で ban された場合
 
@@ -439,6 +527,7 @@ sudo fail2ban-client set sshd unbanip <YOUR_IP>
 2. deploy ユーザーと Step 2 で設定した緊急用パスワードでログイン
 3. 必要に応じて以下を実行:
    - fail2ban の unban（上記参照）
-   - SSH 設定の修正: `sudo nano /etc/ssh/sshd_config`
-   - ファイアウォールの確認: `sudo ufw status`
+   - SSH 設定の修正: `sudo nano /etc/ssh/sshd_config`（ポートが `Port 10022` になっていることを確認）
+   - ファイアウォールの確認: `sudo ufw status`（10022/tcp が ALLOW になっていることを確認）
+   - ConoHa セキュリティグループの確認: コントロールパネルでポート 10022 の Inbound ルールが存在することを確認
    - サービスの再起動: `sudo systemctl restart ssh`

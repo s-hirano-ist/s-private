@@ -30,6 +30,12 @@
 ### Database & Storage
 - **Database** - [PostgreSQL](https://www.postgresql.org/) with [Prisma](https://www.prisma.io/) ORM
 - **Object Storage** - [MinIO](https://min.io/) (configurable for local/cloud deployment)
+### AI & Search
+- **Embedding Model** - [intfloat/multilingual-e5-small](https://huggingface.co/intfloat/multilingual-e5-small) (HuggingFace Transformers)
+- **Vector Database** - [Qdrant](https://qdrant.tech/)
+- **Embedding API Framework** - [Hono](https://hono.dev/)
+- **Tunnel** - [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/) (Zero Trust)
+
 ### Authentication & Internationalization
 - **Authentication** - [Auth0](https://auth0.com/) with [NextAuth.js](https://next-auth.js.org/)
 - **Internationalization** - [next-intl](https://next-intl-docs.vercel.app/) (Japanese/English support)
@@ -125,10 +131,19 @@ This project follows clean architecture principles with domain-driven design, en
 │   │
 │   ├── notification/               # Notification services
 │   │
+│   ├── search/                     # RAG Search Library
+│   │   └── src/                    # Qdrant client, Embedding API client
+│   │
 │   └── scripts/                    # Build & utility scripts
 │       └── src/
 │           ├── infrastructures/
 │           └── rag/
+│
+├── services/                       # External Services
+│   └── embedding-api/              # Embedding API (Hono + HuggingFace Transformers)
+│       ├── src/                    # API source code
+│       ├── Dockerfile
+│       └── compose.yaml
 │
 └── app/src/                        # Next.js Application
     ├── application-services/       # Application Layer (Use Cases)
@@ -197,6 +212,36 @@ Each domain is completely isolated with its own:
 - **Role-based Routing**: Route group `(dumper)` for content management with parallel routes
 - **Server Actions**: All mutations use Next.js server actions with error boundary wrapping
 
+### RAG & Search Architecture
+
+```
+┌──────────────┐     ┌─────────────────────────────────────────┐
+│  Next.js App │     │  ConoHa VPS (Docker)                    │
+│  (Vercel)    │     │                                         │
+│              │ CF  │  ┌───────────────┐                      │
+│  packages/   │────▶│  │ Embedding API │  Cloudflare Tunnel   │
+│  search/     │Tunnel│  │ (Hono:3001)   │◀── cloudflared       │
+│              │     │  └───────┬───────┘                      │
+└──────┬───────┘     └──────────┼──────────────────────────────┘
+       │                        │
+       │                        │ multilingual-e5-small
+       ▼                        ▼
+┌──────────────┐     ┌──────────────────┐
+│   Qdrant     │     │ HuggingFace      │
+│ (Vector DB)  │     │ Transformers     │
+└──────────────┘     └──────────────────┘
+```
+
+#### Data Flow
+
+- **Ingestion**: コンテンツ → Embedding API → ベクトル化 → Qdrant に保存
+- **Search**: 検索クエリ → Embedding API → クエリベクトル化 → Qdrant で類似検索 → 結果返却
+
+#### Key Components
+
+- **`packages/search/`** - RAG 検索ライブラリ（Qdrant クライアント、Embedding API クライアント、検索ロジック）
+- **`services/embedding-api/`** - Embedding API サービス（Hono + HuggingFace Transformers、ConoHa VPS にデプロイ）
+
 ### Database Architecture
 
 Content management system with clean domain separation:
@@ -233,6 +278,8 @@ Schema location: `packages/database/prisma/schema.prisma`
 - **File Storage**: MinIO for object storage (configurable for local/cloud)
 - **Monitoring**: Sentry for error tracking, Pushover for notifications
 - **APIs**: Google Books API for ISBN-based book metadata enrichment
+- **Embedding API**: ConoHa VPS (Docker) + Cloudflare Tunnel ([deployment guide](docs/embedding-api-deployment.md))
+- **Vector Database**: Qdrant for semantic vector search
 
 ## Development Setup
 
@@ -391,6 +438,7 @@ pnpm docs:clean            # Remove generated documentation
 - **Preview**: Vercel branch deployments
 - **Production**: Vercel production deployment
 - **Storybook**: Deployed to Cloudflare Pages
+- **Embedding API**: ConoHa VPS (Docker) + Cloudflare Tunnel
 
 ## Code Standards & Architecture Rules
 

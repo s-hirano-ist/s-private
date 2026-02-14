@@ -132,7 +132,16 @@ describe("useSearch", () => {
 			mockSearchFn.mockResolvedValue({
 				success: true,
 				data: {
-					results: [{ href: "/test", contentType: "articles", title: "Test" }],
+					results: [
+						{
+							href: "/test",
+							contentType: "articles",
+							title: "Test",
+							url: "https://example.com",
+							snippet: "snippet",
+							category: { id: "1", name: "Tech" },
+						},
+					],
 				},
 			});
 
@@ -173,8 +182,17 @@ describe("useSearch", () => {
 							contentType: "articles",
 							title: "Article 1",
 							url: "https://example.com",
+							snippet: "article snippet",
+							category: { id: "1", name: "Tech" },
 						},
-						{ href: "/books/2", contentType: "books", title: "Book 1" },
+						{
+							href: "/books/2",
+							contentType: "books",
+							title: "Book 1",
+							snippet: "book snippet",
+							rating: 5,
+							tags: ["programming"],
+						},
 					],
 				},
 			};
@@ -199,12 +217,16 @@ describe("useSearch", () => {
 						contentType: "articles",
 						title: "Article 1",
 						url: "https://example.com",
+						snippet: "article snippet",
+						category: "Tech",
 					},
 					{
 						href: "/books/2",
 						contentType: "books",
 						title: "Book 1",
 						url: undefined,
+						snippet: "book snippet",
+						category: undefined,
 					},
 				]);
 			});

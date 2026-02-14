@@ -12,6 +12,8 @@ type SearchableItem = {
 	contentType: "articles" | "books" | "notes";
 	title: string;
 	url?: string;
+	snippet?: string;
+	category?: string;
 };
 
 type UseSearchableListOptions = {
@@ -57,6 +59,9 @@ export function useSearch({
 							contentType: d.contentType,
 							title: d.title,
 							url: d.contentType === "articles" ? d.url : undefined,
+							snippet: d.snippet,
+							category:
+								d.contentType === "articles" ? d.category.name : undefined,
 						}));
 						setSearchResults(newData);
 					}
