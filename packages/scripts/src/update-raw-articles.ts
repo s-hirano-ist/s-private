@@ -46,7 +46,9 @@ function detectCharset(headers: Headers, buffer: Buffer): string {
 	if (headerMatch) return normalizeCharset(headerMatch[1]);
 
 	// 2. HTML meta タグから検出（ASCII範囲で仮デコード）
-	const preview = buffer.subarray(0, Math.min(4096, buffer.length)).toString("ascii");
+	const preview = buffer
+		.subarray(0, Math.min(4096, buffer.length))
+		.toString("ascii");
 
 	// <meta charset="...">
 	const metaCharset = preview.match(/<meta\s+charset=["']?([^"'\s>]+)/i);

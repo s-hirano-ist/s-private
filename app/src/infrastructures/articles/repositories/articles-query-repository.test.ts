@@ -209,9 +209,27 @@ describe("CategoryQueryRepository", () => {
 	describe("findMany", () => {
 		test("should find multiple categories successfully", async () => {
 			const mockCategories = [
-				{ id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7a", name: "tech", userId: "user123", createdAt: new Date("2024-01-01"), updatedAt: new Date("2024-01-01") },
-				{ id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b", name: "science", userId: "user123", createdAt: new Date("2024-01-01"), updatedAt: new Date("2024-01-01") },
-				{ id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c", name: "politics", userId: "user123", createdAt: new Date("2024-01-01"), updatedAt: new Date("2024-01-01") },
+				{
+					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7a",
+					name: "tech",
+					userId: "user123",
+					createdAt: new Date("2024-01-01"),
+					updatedAt: new Date("2024-01-01"),
+				},
+				{
+					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b",
+					name: "science",
+					userId: "user123",
+					createdAt: new Date("2024-01-01"),
+					updatedAt: new Date("2024-01-01"),
+				},
+				{
+					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c",
+					name: "politics",
+					userId: "user123",
+					createdAt: new Date("2024-01-01"),
+					updatedAt: new Date("2024-01-01"),
+				},
 			];
 
 			vi.mocked(prisma.category.findMany).mockResolvedValue(mockCategories);
@@ -264,8 +282,20 @@ describe("CategoryQueryRepository", () => {
 
 		test("should work without parameters", async () => {
 			const mockCategories = [
-				{ id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7a", name: "tech", userId: "user123", createdAt: new Date("2024-01-01"), updatedAt: new Date("2024-01-01") },
-				{ id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b", name: "science", userId: "user123", createdAt: new Date("2024-01-01"), updatedAt: new Date("2024-01-01") },
+				{
+					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7a",
+					name: "tech",
+					userId: "user123",
+					createdAt: new Date("2024-01-01"),
+					updatedAt: new Date("2024-01-01"),
+				},
+				{
+					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b",
+					name: "science",
+					userId: "user123",
+					createdAt: new Date("2024-01-01"),
+					updatedAt: new Date("2024-01-01"),
+				},
 			];
 
 			vi.mocked(prisma.category.findMany).mockResolvedValue(mockCategories);
