@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.14.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.13.0...@s-hirano-ist/s-scripts-v1.14.0) (2026-02-14)
+
+
+### Bug Fixes
+
+* qdrant search features ([ef7ba19](https://github.com/s-hirano-ist/s-private/commit/ef7ba190d8073f1ce8cdbbf84c2c4017da65df60))
+* release please and search api ([16e11fa](https://github.com/s-hirano-ist/s-private/commit/16e11fa1db911a6e8a29d6317b01cc00c7de8efb))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.14.0
+    * @s-hirano-ist/s-search bumped to 1.14.0
+    * @s-hirano-ist/s-database bumped to 1.14.0
+    * @s-hirano-ist/s-notification bumped to 1.14.0
+
 ## [1.13.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.12.2...@s-hirano-ist/s-scripts-v1.13.0) (2026-02-14)
 
 
