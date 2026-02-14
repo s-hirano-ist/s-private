@@ -18,7 +18,7 @@ COPY services/embedding-api/ ./services/embedding-api/
 COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
 RUN pnpm --filter @s-hirano-ist/s-search build
 RUN pnpm --filter @s-hirano-ist/embedding-api build
-RUN pnpm --filter @s-hirano-ist/embedding-api deploy --prod /app/deployed
+RUN pnpm --filter @s-hirano-ist/embedding-api deploy --prod --legacy /app/deployed
 
 FROM base AS runner
 WORKDIR /app
