@@ -24,7 +24,8 @@
 		"ingest-notes": "./dist/ingest-notes.js",
 		"ingest-books": "./dist/ingest-books.js",
 		"ingest-articles": "./dist/ingest-articles.js",
-		"ingest-images": "./dist/ingest-images.js"
+		"ingest-images": "./dist/ingest-images.js",
+		"cleanup-minio-images": "./dist/cleanup-minio-images.js"
 	},
 	"scripts": {
 		"build": "tsc && tsc-esm-fix --target dist",
@@ -51,7 +52,8 @@
 		"ingest-notes": "tsx src/ingest-notes.ts",
 		"ingest-books": "tsx src/ingest-books.ts",
 		"ingest-articles": "tsx src/ingest-articles.ts",
-		"ingest-images": "tsx src/ingest-images.ts"
+		"ingest-images": "tsx src/ingest-images.ts",
+		"cleanup-minio-images": "tsx src/cleanup-minio-images.ts"
 	},
 	"files": [
 		"dist",

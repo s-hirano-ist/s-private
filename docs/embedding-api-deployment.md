@@ -59,6 +59,11 @@ cp ~/.ssh/authorized_keys /home/deploy/.ssh/
 chown -R deploy:deploy /home/deploy/.ssh
 chmod 700 /home/deploy/.ssh
 chmod 600 /home/deploy/.ssh/authorized_keys
+
+# deploy ユーザーに緊急用パスワードを設定（VNCコンソール用）
+# --disabled-password のままだと VNC コンソールからログインできない
+passwd deploy
+# → 設定したパスワードは安全な場所に保管すること
 ```
 
 ### 確認: deploy ユーザーで SSH + sudo できることを検証
@@ -77,25 +82,10 @@ sudo whoami  # → root と表示されれば OK
 > **実行環境: VPS（deploy ユーザーで SSH）**
 
 ```bash
-ssh -i ~/.ssh/conoha_embedding deploy@<VPS_IP>
+ssh conoha-embedding
 ```
 
-### 3.1 Swap 設定
-
-メモリが少ない VPS（512MB〜1GB）では swap を設定する:
-
-```bash
-sudo fallocate -l 1G /swapfile
-sudo chmod 600 /swapfile
-sudo mkswap /swapfile
-sudo swapon /swapfile
-echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
-
-# 確認
-free -h
-```
-
-### 3.2 Docker インストール
+### 3.1 Docker インストール
 
 ```bash
 # Docker 公式リポジトリからインストール
@@ -111,11 +101,11 @@ sudo usermod -aG docker deploy
 
 ```bash
 exit
-ssh -i ~/.ssh/conoha_embedding deploy@<VPS_IP>
+ssh conoha-embedding
 docker ps  # → エラーなく実行できれば OK
 ```
 
-### 3.3 ファイアウォール設定（UFW）
+### 3.2 ファイアウォール設定（UFW）
 
 ```bash
 # SSH のみ許可、他は全て拒否
@@ -126,6 +116,15 @@ sudo ufw enable
 
 # 確認（3001 等のポートは開けない → Cloudflare Tunnel のみ）
 sudo ufw status
+```
+
+### 3.3 fail2ban 動作確認
+
+ConoHa VPS ではデフォルトでインストール・有効化済み。
+
+```bash
+# 動作確認
+sudo fail2ban-client status sshd
 ```
 
 ### 3.4 自動セキュリティ更新
@@ -158,7 +157,13 @@ sudo systemctl restart docker
 ```bash
 sudo sed -i 's/^#*PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
 sudo sed -i 's/^#*PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
-sudo systemctl restart sshd
+
+# 文法チェック（エラーがあればここで止まる）
+sudo sshd -t
+
+sudo systemctl restart ssh
+
+# !! このターミナルは閉じずに、別ターミナルで接続確認 !!
 ```
 
 ---
@@ -366,11 +371,33 @@ docker compose exec cloudflared env | grep TUNNEL_TOKEN
 
 ### メモリ不足
 embedding モデルは約 200MB のメモリを使用する。VPS のメモリが 512MB 以上あることを確認。
-swap が設定されているか確認:
 
 ```bash
 free -h
-swapon --show
 ```
 
-swap が未設定の場合は Step 3.1 を参照。
+### ロックアウト復旧
+
+SSH 接続ができなくなった場合（fail2ban による ban、鍵の紛失等）の復旧手順。
+
+#### fail2ban で ban された場合
+
+VNC コンソール（ConoHa コントロールパネル）から deploy ユーザーでログインし:
+
+```bash
+# ban 状況を確認
+sudo fail2ban-client status sshd
+
+# 特定の IP を unban
+sudo fail2ban-client set sshd unbanip <YOUR_IP>
+```
+
+#### VNC コンソールからの復旧手順
+
+1. ConoHa コントロールパネル → サーバー → 対象VPS → コンソール を開く
+2. deploy ユーザーと Step 2 で設定した緊急用パスワードでログイン
+3. 必要に応じて以下を実行:
+   - fail2ban の unban（上記参照）
+   - SSH 設定の修正: `sudo nano /etc/ssh/sshd_config`
+   - ファイアウォールの確認: `sudo ufw status`
+   - サービスの再起動: `sudo systemctl restart ssh`
