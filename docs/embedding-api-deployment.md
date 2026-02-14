@@ -184,26 +184,45 @@ sudo systemctl restart ssh
    - Service: `http://embedding-api:3001`
 5. **Access Policy (必須)**: 以下の手順で Cloudflare Access を設定する
 
-### 4.1 Cloudflare Access アプリケーション作成
+### 4.1 Service Token の発行
 
-1. Zero Trust → Access → Applications → **Add an application**
-2. Type: **Self-hosted**
-3. Application name: `embedding-api`
-4. Session Duration: 任意（デフォルト 24h）
-5. Application domain: Tunnel で設定したホスト名（例: `embedding-api.<domain>`）
-
-### 4.2 Service Token の発行
+アプリケーション作成ウィザード内でポリシーに紐付けるため、先に Service Token を発行しておく。
 
 1. Zero Trust → Access → Service Auth → **Create Service Token**
 2. Token 名: `embedding-api-client`
 3. 発行される `CF-Access-Client-Id` と `CF-Access-Client-Secret` を安全な場所に保管
 4. これらの値をアプリケーション側の環境変数 `CF_ACCESS_CLIENT_ID` / `CF_ACCESS_CLIENT_SECRET` に設定する
 
-### 4.3 Access Policy 設定
+### 4.2 Cloudflare Access アプリケーション作成 + ポリシー設定
 
-1. Policy name: `Service Token Policy`
-2. Action: **Service Auth**
-3. Include rule: **Service Token** — 発行済みの Service Token を指定
+> **注意:** Cloudflare Access は **deny by default** で動作する。ポリシーなしのアプリケーションは全アクセスを拒否するため、アプリケーション作成ウィザード内でポリシーも合わせて設定すること。
+
+1. Zero Trust → Access → Applications → **Add an application**
+2. Type: **Self-hosted**
+3. Application name: `embedding-api`
+4. Session Duration: 任意（デフォルト 24h）
+5. Application domain: Tunnel で設定したホスト名（例: `embedding-api.<domain>`）
+6. ウィザード内の Policy 設定ステップで以下を追加:
+   - Policy name: `Service Token Policy`
+   - Action: **Service Auth**
+   - Include rule: **Service Token** — Step 4.1 で発行した Service Token を指定
+
+### 4.3 ブラウザから `/ui`（Swagger UI）にアクセスする
+
+CF Access で全エンドポイントが保護されているため、ブラウザから `/ui` に直接アクセスするにはメール OTP ベースの Allow ポリシーを追加する。
+
+1. Zero Trust → Access → Applications → `embedding-api` を選択
+2. 既存の Service Token ポリシー（4.2）はそのまま残す
+3. 新規ポリシーを追加:
+   - Policy name: `Email OTP Policy`
+   - Action: **Allow**
+   - Include rule: **Emails** — 自分のメールアドレスを指定
+4. Identity providers に **One-time PIN** が有効であることを確認（デフォルトで有効）
+
+設定後の動作:
+
+- **ブラウザ**: `https://embedding-api.<domain>/ui` にアクセス → Cloudflare のログイン画面 → メール OTP 認証 → Swagger UI 表示
+- **プログラム**: 従来通り Service Token ヘッダー（`CF-Access-Client-Id` / `CF-Access-Client-Secret`）で認証
 
 ---
 
@@ -314,16 +333,16 @@ curl -s -X POST https://embedding-api.<domain>/embed-batch \
   -d '{"texts": ["テスト1", "テスト2"], "isQuery": false}'
 ```
 
-> **注意:** Cloudflare Access が有効な状態では `/health`, `/doc`, `/ui` を含む全エンドポイントが Service Token なしではアクセス不可になる。これは意図した動作であり、API 仕様の外部露出を防ぐ。
+> **注意:** Cloudflare Access が有効な状態では `/health`, `/doc`, `/ui` を含む全エンドポイントが保護される。Service Token なしのリクエストは CF Access ログインページへリダイレクト（302）され、API には到達しない。ブラウザからは Email OTP 認証でアクセス可能。
 
 ### 6.4 Cloudflare Access の検証
 
-Service Token なしでアクセスが**拒否される**ことを確認する:
+Service Token なしでアクセスが**保護されている**ことを確認する:
 
 ```bash
-# Service Token なしでアクセス → 403 Forbidden が返ること
+# Service Token なしでアクセス → 302 Redirect（CF Access ログインページへ）が返ること
 curl -s -o /dev/null -w "%{http_code}" https://embedding-api.<domain>/health
-# 期待: 403
+# 期待: 302
 ```
 
 Service Token ありでアクセスが**許可される**ことを確認する:
@@ -335,6 +354,25 @@ curl -s -o /dev/null -w "%{http_code}" https://embedding-api.<domain>/health \
   -H "CF-Access-Client-Secret: $CF_ACCESS_CLIENT_SECRET"
 # 期待: 200
 ```
+
+---
+
+## Step 7: Vercel デプロイ app からのアクセス
+
+Vercel にデプロイされた Next.js app から Embedding API にアクセスする場合、`embedding-client.ts` が全リクエストに `CF-Access-Client-Id` / `CF-Access-Client-Secret` ヘッダーを自動付与する。
+
+### Vercel Environment Variables
+
+Vercel の Project Settings → Environment Variables に以下を設定する:
+
+| 変数名 | 説明 |
+| --- | --- |
+| `EMBEDDING_API_URL` | `https://embedding-api.<domain>` |
+| `EMBEDDING_API_KEY` | API の Bearer トークン（Step 5 の `.env` で設定した `EMBEDDING_API_KEY` と同じ値） |
+| `CF_ACCESS_CLIENT_ID` | Cloudflare Service Token の Client ID（Step 4.1 で発行） |
+| `CF_ACCESS_CLIENT_SECRET` | Cloudflare Service Token の Client Secret（Step 4.1 で発行） |
+| `QDRANT_URL` | Qdrant のURL |
+| `QDRANT_API_KEY` | Qdrant の API キー（該当する場合） |
 
 ---
 

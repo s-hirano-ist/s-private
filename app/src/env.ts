@@ -28,10 +28,13 @@ export const env = createEnv({
 		NODE_ENV: z
 			.enum(["development", "test", "production"])
 			.default("development"),
+		/** @example "postgresql://USERNAME:PASSWORD@IP_ADDRESS:PORT/DB_NAME?schema=SCHEMA_NAME" */
 		DATABASE_URL: z.string(),
+		/** @default "https://api.pushover.net/1/messages.json" */
 		PUSHOVER_URL: z.string(),
 		PUSHOVER_USER_KEY: z.string(),
 		PUSHOVER_APP_TOKEN: z.string(),
+		/** Generate by `openssl rand -base64 32`. Required in production. */
 		AUTH_SECRET:
 			process.env.NODE_ENV === "production"
 				? z.string()
@@ -46,10 +49,14 @@ export const env = createEnv({
 		MINIO_BUCKET_NAME: z.string(),
 		MINIO_ACCESS_KEY: z.string(),
 		MINIO_SECRET_KEY: z.string(),
+		/** @example "http://localhost:3001" */
 		EMBEDDING_API_URL: z.string(),
 		EMBEDDING_API_KEY: z.string(),
+		/** Cloudflare Access Service Token */
 		CF_ACCESS_CLIENT_ID: z.string(),
+		/** Cloudflare Access Service Token */
 		CF_ACCESS_CLIENT_SECRET: z.string(),
+		/** @example "http://localhost:6333" */
 		QDRANT_URL: z.string(),
 		QDRANT_API_KEY: z.string().optional(),
 	},
@@ -91,6 +98,9 @@ export const env = createEnv({
 	},
 	/**
 	 * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful for Docker builds.
+	 *
+	 * Other non-validated env vars:
+	 * - `NODE_TLS_REJECT_UNAUTHORIZED`: Set to "0" for self-signed certs only on localhost. {@link https://nodejs.org/api/cli.html#node_tls_reject_unauthorizedvalue}
 	 */
 	skipValidation: !!process.env.SKIP_ENV_VALIDATION,
 	/**
