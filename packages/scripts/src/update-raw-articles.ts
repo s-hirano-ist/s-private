@@ -6,26 +6,8 @@ import { createPushoverService } from "@s-hirano-ist/s-notification";
 import iconv from "iconv-lite";
 import TurndownService from "turndown";
 
-const FETCHED_URLS_FILE = "fetched_urls.txt";
 const JSON_DIR = "json/article";
 const OUTPUT_DIR = "raw/article";
-
-async function loadFetchedUrls(): Promise<Set<string>> {
-	try {
-		if (existsSync(FETCHED_URLS_FILE)) {
-			const content = await readFile(FETCHED_URLS_FILE, "utf-8");
-			return new Set(content.split("\n").filter((url) => url.trim()));
-		}
-	} catch (error) {
-		console.error("Error loading fetched URLs:", error);
-	}
-	return new Set();
-}
-
-async function saveFetchedUrls(urls: Set<string>): Promise<void> {
-	const sortedUrls = Array.from(urls).sort();
-	await writeFile(FETCHED_URLS_FILE, sortedUrls.join("\n"), "utf-8");
-}
 
 function normalizeCharset(charset: string): string {
 	const normalized = charset.toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -150,10 +132,7 @@ type ArticlesData = {
 	body: ArticleItem[];
 };
 
-async function jsonToMarkdown(
-	jsonFile: string,
-	fetchedUrls: Set<string>,
-): Promise<void> {
+async function jsonToMarkdown(jsonFile: string): Promise<void> {
 	const rawData = await readFile(jsonFile, "utf-8");
 	const data: ArticlesData = JSON.parse(rawData);
 
@@ -166,7 +145,12 @@ async function jsonToMarkdown(
 	for (const item of bodyList) {
 		const { title, quote, url, skip } = item;
 		try {
-			if (fetchedUrls.has(url) || skip) {
+			const strippedUrl = url.replace(/^https?:\/\//, "");
+			const safeUrl = encodeURIComponent(strippedUrl);
+			const outputFilename = `${safeUrl}.md`;
+			const outputPath = path.join(OUTPUT_DIR, outputFilename);
+
+			if (existsSync(outputPath) || skip) {
 				continue;
 			}
 
@@ -175,11 +159,6 @@ async function jsonToMarkdown(
 			if (!websiteText) {
 				continue;
 			}
-
-			const strippedUrl = url.replace(/^https?:\/\//, "");
-			const safeUrl = encodeURIComponent(strippedUrl);
-			const outputFilename = `${safeUrl}.md`;
-			const outputPath = path.join(OUTPUT_DIR, outputFilename);
 
 			const markdownContent = `# [${title}](${url})
 
@@ -196,8 +175,6 @@ ${websiteText}
 
 			await writeFile(outputPath, markdownContent, "utf-8");
 			console.log(`Exported: ${outputPath}`);
-
-			fetchedUrls.add(url);
 		} catch (_error) {
 			console.error("Error on file:", url);
 		}
@@ -222,8 +199,6 @@ async function main() {
 	});
 
 	try {
-		const fetchedUrls = await loadFetchedUrls();
-
 		const jsonFiles = await readdir(JSON_DIR);
 		const jsonFilePaths = jsonFiles
 			.filter((file) => file.endsWith(".json"))
@@ -231,10 +206,8 @@ async function main() {
 
 		for (const jsonFile of jsonFilePaths) {
 			console.log(`Processing: ${jsonFile}`);
-			await jsonToMarkdown(jsonFile, fetchedUrls);
+			await jsonToMarkdown(jsonFile);
 		}
-
-		await saveFetchedUrls(fetchedUrls);
 		await notificationService.notifyInfo("update-raw-articles completed", {
 			caller: "update-raw-articles",
 		});

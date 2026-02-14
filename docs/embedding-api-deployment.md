@@ -262,17 +262,72 @@ docker compose exec embedding-api node -e "fetch('http://localhost:3001/health')
 
 ## Step 6: 検証
 
-> **実行環境: ローカルマシン**
+### 6.1 コンテナ状態確認（VPS）
 
-1. **ヘルスチェック:** Cloudflare Tunnel 経由で `https://embedding-api.<domain>/health` にアクセスし `{"status":"ok"}` を確認
-2. **機能テスト:**
-   ```bash
-   curl -X POST https://embedding-api.<domain>/embed \
-     -H "Authorization: Bearer $EMBEDDING_API_KEY" \
-     -H "Content-Type: application/json" \
-     -d '{"text": "テストクエリ", "isQuery": true}'
-   ```
-3. **Swagger UI:** `https://embedding-api.<domain>/ui` でAPI仕様を確認
+```bash
+# 両コンテナが running かつ healthy であることを確認
+docker compose ps
+
+# エラーログがないことを確認
+docker compose logs --tail=50
+```
+
+### 6.2 VPS 内部からの直接検証（VPS）
+
+Tunnel を介さず、Docker ネットワーク内で API が応答するか確認する。
+この手順で失敗する場合、問題は API コンテナ自体にある。
+
+```bash
+# ヘルスチェック
+docker compose exec embedding-api curl -s http://localhost:3001/health
+# 期待: {"status":"ok"}
+
+# /embed エンドポイント（Bearer 認証付き）
+docker compose exec embedding-api curl -s -X POST http://localhost:3001/embed \
+  -H "Authorization: Bearer $EMBEDDING_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"text": "テストクエリ", "isQuery": true}'
+# 期待: {"embedding": [0.123, ...]} 形式の JSON レスポンス
+```
+
+### 6.3 Cloudflare Tunnel 経由の検証（ローカル）
+
+6.2 が成功し、以下が失敗する場合、問題は Tunnel 設定にある。
+
+```bash
+# ヘルスチェック
+curl -s https://embedding-api.<domain>/health
+# 期待: {"status":"ok"}
+
+# 単一テキスト埋め込み
+curl -s -X POST https://embedding-api.<domain>/embed \
+  -H "Authorization: Bearer $EMBEDDING_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"text": "テストクエリ", "isQuery": true}'
+
+# バッチ埋め込み
+curl -s -X POST https://embedding-api.<domain>/embed-batch \
+  -H "Authorization: Bearer $EMBEDDING_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"texts": ["テスト1", "テスト2"], "isQuery": false}'
+
+# OpenAPI 仕様（JSON）
+curl -s https://embedding-api.<domain>/doc
+```
+
+**Swagger UI:** ブラウザで `https://embedding-api.<domain>/ui` にアクセスし、API 仕様を確認する。
+
+### 6.4 Cloudflare Access 設定時の注意
+
+Cloudflare Access Policy を有効にしている場合、curl リクエストには **Service Token** ヘッダーが必要になる:
+
+```bash
+curl -s https://embedding-api.<domain>/health \
+  -H "CF-Access-Client-Id: <client-id>" \
+  -H "CF-Access-Client-Secret: <client-secret>"
+```
+
+Service Token は Cloudflare Zero Trust ダッシュボード > Access > Service Auth から発行できる。
 
 ---
 
