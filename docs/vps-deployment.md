@@ -7,7 +7,7 @@ VPS 上では全ポートを firewall で閉じ、Cloudflare Tunnel の outbound
 
 ```
 Internet → Cloudflare Tunnel → cloudflared (VPS内) ─┬→ embedding-api:3001
-                                                    ├→ minio:9000 (予定)
+                                                    ├→ minio:9000 / minio:9001
                                                     ├→ qdrant:6333 (予定)
                                                     └→ ...
                                                     ↑ Docker内部ネットワーク
@@ -351,7 +351,7 @@ git clone https://github.com/s-hirano-ist/s-private.git ~/s-private
 リポジトリルートの `compose.yaml` に全サービスを定義している。
 
 ```
-compose.yaml          ← 全サービス定義（embedding-api, cloudflared, 将来: minio, qdrant）
+compose.yaml          ← 全サービス定義（embedding-api, minio, cloudflared, 将来: qdrant）
 .env                  ← VPS 用環境変数（EMBEDDING_API_KEY, CLOUDFLARE_TUNNEL_TOKEN 等）
 services/
   embedding-api/
@@ -372,9 +372,12 @@ EMBEDDING_API_KEY=your-secure-api-key  # ※ openssl rand -base64 32 とかで�
 # Cloudflare Tunnel
 CLOUDFLARE_TUNNEL_TOKEN=your-tunnel-token
 
+# MinIO
+MINIO_ROOT_USER=your-minio-user         # ※ デフォルトの minioadmin は使わない
+MINIO_ROOT_PASSWORD=your-minio-password  # ※ openssl rand -base64 32 で生成
+MINIO_BUCKET_NAME=your-bucket-name
+
 # 将来追加:
-# MINIO_ROOT_USER=...
-# MINIO_ROOT_PASSWORD=...
 # QDRANT_API_KEY=...
 ```
 
@@ -440,9 +443,42 @@ docker compose exec embedding-api node -e "fetch('http://localhost:3001/health')
 - **メモリ使用量**: 約 200MB（multilingual-e5-small）
 - **Cloudflare Public Hostname**: `embedding-api.<domain>` → `http://embedding-api:3001`
 
-### A.2 MinIO（予定）
+### A.2 MinIO
 
-<!-- TODO: MinIO サービス追加時に記載 -->
+- **コンテナ名**: `minio`
+- **ポート**: 9000 (S3 API) / 9001 (Console)
+- **ヘルスチェック**: `mc ready local`
+- **環境変数**: `MINIO_ROOT_USER`, `MINIO_ROOT_PASSWORD`, `MINIO_BUCKET_NAME`
+- **ボリューム**: `minio-data` — オブジェクトストレージデータ
+- **初期化**: `minio-init` コンテナが MinIO healthy 後にバケットを自動作成（`--ignore-existing` で冪等）
+
+#### VPS `.env` の記載例
+
+```bash
+MINIO_ROOT_USER=your-minio-user         # ※ デフォルトの minioadmin は使わない
+MINIO_ROOT_PASSWORD=your-minio-password  # ※ openssl rand -base64 32 で生成
+MINIO_BUCKET_NAME=your-bucket-name
+```
+
+#### Cloudflare Public Hostname 設定
+
+| Subdomain | Service | CF Access |
+| --- | --- | --- |
+| `minio.<domain>` | `http://minio:9000` | なし（S3 の AWS Signature V4 認証で保護） |
+| `minio-console.<domain>` | `http://minio:9001` | 有効（Email OTP） |
+
+> **注意:** MinIO S3 API は CF Access を設定しない。MinIO クライアントがカスタムヘッダー（`CF-Access-Client-Id` 等）に非対応のため、S3 の組み込み認証（AWS Signature V4）に依存する。VPS では UFW で全ポートをブロック済みのため、外部からは Cloudflare Tunnel 経由のみアクセス可能。
+
+#### Next.js アプリの環境変数例（本番）
+
+```bash
+MINIO_HOST=minio.<domain>
+MINIO_PORT=443
+MINIO_USE_SSL=true
+MINIO_ACCESS_KEY=your-minio-user
+MINIO_SECRET_KEY=your-minio-password
+MINIO_BUCKET_NAME=your-bucket-name
+```
 
 ### A.3 Qdrant（予定）
 

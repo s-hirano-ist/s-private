@@ -49,6 +49,7 @@ export const env = createEnv({
 		MINIO_BUCKET_NAME: z.string(),
 		MINIO_ACCESS_KEY: z.string(),
 		MINIO_SECRET_KEY: z.string(),
+		MINIO_USE_SSL: z.boolean().default(true),
 		/** @example "http://localhost:3001" */
 		EMBEDDING_API_URL: z.string(),
 		EMBEDDING_API_KEY: z.string(),
@@ -88,6 +89,7 @@ export const env = createEnv({
 		MINIO_BUCKET_NAME: process.env.MINIO_BUCKET_NAME,
 		MINIO_ACCESS_KEY: process.env.MINIO_ACCESS_KEY,
 		MINIO_SECRET_KEY: process.env.MINIO_SECRET_KEY,
+		MINIO_USE_SSL: process.env.MINIO_USE_SSL === "true",
 		EMBEDDING_API_URL: process.env.EMBEDDING_API_URL,
 		EMBEDDING_API_KEY: process.env.EMBEDDING_API_KEY,
 		CF_ACCESS_CLIENT_ID: process.env.CF_ACCESS_CLIENT_ID,
