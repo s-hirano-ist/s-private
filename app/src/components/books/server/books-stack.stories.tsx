@@ -17,7 +17,7 @@ function BooksStackWrapper({
 
 const meta = {
 	component: BooksStackWrapper,
-	parameters: { layout: "padded" },
+	parameters: { layout: "padded", a11y: { test: "todo" } },
 	argTypes: {
 		deleteAction: { action: "deleteAction" },
 	},

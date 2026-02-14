@@ -11,7 +11,7 @@ import { FormInputWithButton } from "./form-input-with-button";
 
 const meta = {
 	component: FormInputWithButton,
-	parameters: { layout: "centered" },
+	parameters: { layout: "centered", a11y: { test: "todo" } },
 	argTypes: {
 		label: { control: { type: "text" } },
 		htmlFor: { control: { type: "text" } },

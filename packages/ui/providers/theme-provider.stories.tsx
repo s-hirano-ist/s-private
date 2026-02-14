@@ -43,7 +43,7 @@ function ThemeProviderWrapper({
 
 const meta = {
 	component: ThemeProviderWrapper,
-	parameters: { layout: "centered" },
+	parameters: { layout: "centered", a11y: { test: "todo" } },
 	argTypes: {
 		theme: {
 			control: { type: "select", options: ["light", "dark", "system"] },

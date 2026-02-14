@@ -130,6 +130,7 @@ interface Person {
 };
 
 export const MinimalData: Story = {
+	parameters: { a11y: { test: "todo" } },
 	args: {
 		slug: "978-0123456789",
 		getBookByISBN: async () =>

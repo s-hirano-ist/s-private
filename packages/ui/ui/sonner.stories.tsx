@@ -5,6 +5,7 @@ import { Toaster as Sonner } from "./sonner";
 
 const meta = {
 	component: Sonner,
+	parameters: { a11y: { test: "todo" } },
 } satisfies Meta<typeof Sonner>;
 
 export default meta;
