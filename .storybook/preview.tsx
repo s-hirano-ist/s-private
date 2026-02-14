@@ -2,8 +2,8 @@ import { withThemeByClassName } from "@storybook/addon-themes";
 import type { Preview } from "@storybook/nextjs-vite";
 import "../packages/ui/globals.css";
 import { NextIntlClientProvider } from "next-intl";
-import { Toaster } from "../packages/ui/ui/sonner";
 import { ThemeProvider } from "../packages/ui/providers/theme-provider";
+import { Toaster } from "../packages/ui/ui/sonner";
 
 const preview = {
 	decorators: [
