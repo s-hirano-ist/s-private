@@ -21,7 +21,6 @@ const meta = {
 			return { message: "success" };
 		}),
 	},
-	tags: ["autodocs"],
 	decorators: [
 		(Story) => (
 			<div className="w-96">

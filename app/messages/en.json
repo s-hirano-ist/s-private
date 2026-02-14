@@ -22,8 +22,6 @@
 		"totalImages": "Total number of images",
 		"totalArticles": "Total number of articles",
 		"search": "Search",
-		"aiSearch": "AI Knowledge Search",
-		"aiSearchDescription": "Search through our knowledge base using AI-powered search",
 		"searching": "Searching...",
 		"score": "Score",
 		"delete": "Delete",
@@ -37,7 +35,8 @@
 		"previous": "Previous",
 		"next": "Next",
 		"morePages": "More pages",
-		"bookCover": "Book Cover (Optional)"
+		"bookCover": "Book Cover (Optional)",
+		"403": "Forbidden"
 	},
 	"statusCode": {
 		"000": "Comming Soon",

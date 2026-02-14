@@ -5,7 +5,6 @@ import { BooksForm } from "./books-form";
 const meta = {
 	component: BooksForm,
 	parameters: { layout: "centered" },
-	tags: ["autodocs"],
 } satisfies Meta<typeof BooksForm>;
 
 export default meta;

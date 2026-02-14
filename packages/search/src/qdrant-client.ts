@@ -6,10 +6,13 @@ let client: QdrantClient | null = null;
 /**
  * Get or create Qdrant client
  */
-export function getQdrantClient(): QdrantClient {
+export function getQdrantClient(config?: {
+	url?: string;
+	apiKey?: string;
+}): QdrantClient {
 	if (!client) {
-		const url = process.env.QDRANT_URL;
-		const apiKey = process.env.QDRANT_API_KEY;
+		const url = config?.url ?? process.env.QDRANT_URL;
+		const apiKey = config?.apiKey ?? process.env.QDRANT_API_KEY;
 
 		if (!url) {
 			throw new Error("QDRANT_URL environment variable is required");
@@ -46,6 +49,20 @@ export async function ensureCollection(): Promise<void> {
 	} else {
 		console.log(`Collection ${collectionName} already exists.`);
 	}
+
+	// Ensure payload indexes exist for filterable fields
+	// createPayloadIndex is idempotent — safe to call on existing collections
+	await qdrant.createPayloadIndex(collectionName, {
+		field_name: "type",
+		field_schema: "keyword",
+		wait: true,
+	});
+	await qdrant.createPayloadIndex(collectionName, {
+		field_name: "top_heading",
+		field_schema: "keyword",
+		wait: true,
+	});
+	console.log("Payload indexes ensured for: type, top_heading");
 }
 
 /**

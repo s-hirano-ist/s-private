@@ -79,6 +79,7 @@ export function DeleteButtonWithModal({ id, title, deleteAction }: Props) {
 	return (
 		<>
 			<Button
+				aria-label={label("delete")}
 				className="absolute top-2 right-2 text-destructive hover:bg-destructive/10"
 				onClickCapture={(e) => {
 					e.preventDefault();

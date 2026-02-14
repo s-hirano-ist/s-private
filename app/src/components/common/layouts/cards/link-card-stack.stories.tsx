@@ -5,7 +5,6 @@ import { LinkCardStack } from "./link-card-stack";
 const meta = {
 	component: LinkCardStack,
 	parameters: { layout: "fullscreen" },
-	tags: ["autodocs"],
 } satisfies Meta<typeof LinkCardStack>;
 
 export default meta;

@@ -3,7 +3,6 @@ import { CounterBadge } from "./counter-badge";
 
 const meta = {
 	component: CounterBadge,
-	tags: ["autodocs"],
 } satisfies Meta<typeof CounterBadge>;
 
 export default meta;

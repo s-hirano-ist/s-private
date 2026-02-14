@@ -3,7 +3,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./tabs";
 
 const meta = {
 	component: Tabs,
-	tags: ["autodocs"],
 } satisfies Meta<typeof Tabs>;
 
 export default meta;

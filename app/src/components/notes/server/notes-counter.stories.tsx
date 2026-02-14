@@ -9,7 +9,6 @@ function NotesCounterWrapper({ count }: NotesCounterProps) {
 const meta = {
 	component: NotesCounterWrapper,
 	parameters: { layout: "centered" },
-	tags: ["autodocs"],
 	argTypes: {
 		count: { control: "number" },
 	},

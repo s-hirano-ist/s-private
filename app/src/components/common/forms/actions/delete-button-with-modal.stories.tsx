@@ -5,7 +5,6 @@ import { DeleteButtonWithModal } from "./delete-button-with-modal";
 const meta = {
 	component: DeleteButtonWithModal,
 	parameters: { layout: "centered" },
-	tags: ["autodocs"],
 } satisfies Meta<typeof DeleteButtonWithModal>;
 
 export default meta;

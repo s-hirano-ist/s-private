@@ -27,7 +27,6 @@ const mockData = [
 
 const imageStackMeta = {
 	component: ImageStack,
-	tags: ["autodocs"],
 } satisfies Meta<typeof ImageStack>;
 
 export default imageStackMeta;
@@ -48,7 +47,6 @@ export const NoData: ImageStackStory = {
 
 const editableImageStackMeta = {
 	component: EditableImageStack,
-	tags: ["autodocs"],
 } satisfies Meta<typeof EditableImageStack>;
 
 type EditableImageStackStory = StoryObj<typeof editableImageStackMeta>;

@@ -18,7 +18,6 @@ function NotesStackWrapper({
 const meta = {
 	component: NotesStackWrapper,
 	parameters: { layout: "padded" },
-	tags: ["autodocs"],
 	argTypes: {
 		deleteAction: { action: "deleteAction" },
 		loadMoreAction: { action: "loadMoreAction" },

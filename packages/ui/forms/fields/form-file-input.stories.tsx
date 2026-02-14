@@ -13,7 +13,6 @@ const meta = {
 		disabled: { control: { type: "boolean" } },
 		multiple: { control: { type: "boolean" } },
 	},
-	tags: ["autodocs"],
 } satisfies Meta<typeof FormFileInput>;
 
 export default meta;

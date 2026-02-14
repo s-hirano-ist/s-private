@@ -47,6 +47,10 @@
 - **Bundle Analysis** - [@next/bundle-analyzer](https://www.npmjs.com/package/@next/bundle-analyzer)
 - **Security Auditing** - [pnpm audit](https://pnpm.io/cli/audit)
 
+### Documentation
+- **API Documentation** - [TypeDoc](https://typedoc.org/) with packages strategy
+- **Database Schema Visualization** - [DBML](https://dbml.dbdiagram.io/) with [prisma-dbml-generator](https://github.com/notiz-dev/prisma-dbml-generator)
+
 ### Dependency Management & Security
 - **Automated Updates** - [Renovate](https://docs.renovatebot.com/)
   - Weekly scheduled updates (Mondays before 11am JST)
@@ -342,6 +346,26 @@ pnpm prisma:migrate        # Create and apply new migrations
 pnpm prisma:deploy         # Deploy migrations (production)
 pnpm prisma:studio         # Open Prisma Studio database browser
 ```
+
+### Documentation
+
+```bash
+# API Documentation (TypeDoc)
+pnpm docs:build            # Generate API docs (TypeDoc + DB schema)
+pnpm docs:serve            # Serve generated docs locally
+pnpm docs:watch            # Watch mode for TypeDoc
+pnpm docs:clean            # Remove generated documentation
+
+# Output: docs/api/ (gitignored)
+# Live: https://docs.s-hirano.com
+```
+
+#### Documentation Configuration
+
+- Root `typedoc.json` uses packages strategy (`packages/core`, `packages/ui`, `packages/notification`)
+- Each package has its own `typedoc.json` for granular control
+- `prisma-dbml-generator` auto-generates DBML from Prisma schema → `dbml-renderer` converts to SVG
+- `docs:build` generates all documentation at once (TypeDoc + DB schema HTML)
 
 ## Testing Strategy
 

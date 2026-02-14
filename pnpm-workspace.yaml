@@ -1,5 +1,6 @@
 packages:
   - app
+  - services/*
   - packages/*
 
 # conflict with the renovate settings so disabled for now

@@ -18,7 +18,6 @@ function BooksStackWrapper({
 const meta = {
 	component: BooksStackWrapper,
 	parameters: { layout: "padded" },
-	tags: ["autodocs"],
 	argTypes: {
 		deleteAction: { action: "deleteAction" },
 	},

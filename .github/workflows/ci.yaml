@@ -53,6 +53,11 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_REPORT_URL: ${{ secrets.SENTRY_REPORT_URL }}
+          EMBEDDING_API_URL: ${{secrets.EMBEDDING_API_URL}}
+          EMBEDDING_API_KEY: ${{secrets.EMBEDDING_API_KEY}}
+          CF_ACCESS_CLIENT_ID: ${{secrets.CF_ACCESS_CLIENT_ID}}
+          CF_ACCESS_CLIENT_SECRET: ${{secrets.CF_ACCESS_CLIENT_SECRET}}
+          QDRANT_URL: ${{secrets.QDRANT_URL}}
 
   biome:
     runs-on: ubuntu-24.04
@@ -260,6 +265,11 @@ jobs:
             DATABASE_URL=${{ secrets.DATABASE_URL }}
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
             SENTRY_REPORT_URL=${{ secrets.SENTRY_REPORT_URL }}
+            EMBEDDING_API_URL=${{secrets.EMBEDDING_API_URL}}
+            EMBEDDING_API_KEY=${{secrets.EMBEDDING_API_KEY}}
+            CF_ACCESS_CLIENT_ID=${{secrets.CF_ACCESS_CLIENT_ID}}
+            CF_ACCESS_CLIENT_SECRET=${{secrets.CF_ACCESS_CLIENT_SECRET}}
+            QDRANT_URL=${{secrets.QDRANT_URL}}
 
   docker-build-storybook:
     runs-on: ubuntu-24.04

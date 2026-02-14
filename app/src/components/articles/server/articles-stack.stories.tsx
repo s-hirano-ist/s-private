@@ -21,7 +21,6 @@ function ArticlesStackWrapper({
 const meta = {
 	component: ArticlesStackWrapper,
 	parameters: { layout: "padded" },
-	tags: ["autodocs"],
 	argTypes: {
 		deleteAction: { action: "deleteAction" },
 		loadMoreAction: { action: "loadMoreAction" },

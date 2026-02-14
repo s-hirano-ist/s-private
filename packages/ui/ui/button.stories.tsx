@@ -31,7 +31,6 @@ const meta = {
 	args: {
 		onClick: fn(),
 	},
-	tags: ["autodocs"],
 } satisfies Meta<typeof Button>;
 
 export default meta;
@@ -94,8 +93,8 @@ export const OnDarkBackground: Story = {
 		children: "ボタン",
 		variant: "outline",
 	},
-	parameters: {
-		backgrounds: { default: "dark" },
+	globals: {
+		backgrounds: { value: "dark" },
 	},
 };
 
@@ -105,7 +104,7 @@ export const MobileView: Story = {
 		children: "ボタン",
 		size: "sm",
 	},
-	parameters: {
-		viewport: { defaultViewport: "mobile" },
+	globals: {
+		viewport: { value: "mobile1" },
 	},
 };

@@ -6,14 +6,10 @@ const meta = {
 	component: Footer,
 	parameters: {
 		layout: "fullscreen",
-		backgrounds: {
-			default: "light",
-		},
 		nextjs: {
 			appDirectory: true,
 		},
 	},
-	tags: ["autodocs"],
 } satisfies Meta<typeof Footer>;
 
 export default meta;

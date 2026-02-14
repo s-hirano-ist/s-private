@@ -6,7 +6,6 @@ import type { InfraQueryOptions } from "../../shared-kernel/types/query-options"
 import type {
 	ExportedNote,
 	NoteListItemDTO,
-	NoteSearchItemDTO,
 	NoteTitle,
 	UnexportedNote,
 } from "../entities/note-entity";
@@ -98,18 +97,4 @@ export type INotesQueryRepository = {
 	 * @returns The count of matching notes
 	 */
 	count(userId: UserId, status: Status): Promise<number>;
-
-	/**
-	 * Searches notes by text query.
-	 *
-	 * @param query - The search query string
-	 * @param userId - The user ID for tenant isolation
-	 * @param limit - Optional maximum number of results
-	 * @returns Array of NoteSearchItemDTO objects
-	 */
-	search(
-		query: string,
-		userId: UserId,
-		limit?: number,
-	): Promise<NoteSearchItemDTO[]>;
 };

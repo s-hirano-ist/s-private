@@ -16,24 +16,11 @@ export const RAG_CONFIG = {
 		},
 	},
 
-	// File paths
-	paths: {
-		markdown: [
-			"markdown/note/**/*.md",
-			"markdown/book/**/*.md",
-			"raw/article/**/*.md",
-		],
-		json: "json/article/**/*.json",
-	},
-
 	// Chunking settings
 	chunking: {
 		maxChunkLength: 2000,
-		headingLevels: [2, 3], // ## and ###
+		headingLevels: [2, 3],
 	},
-
-	// Cache file for hash comparison
-	hashCachePath: ".rag-hash-cache.json",
 } as const;
 
 // Payload type for Qdrant

@@ -34,7 +34,9 @@ describe("ArticleForm", () => {
 		fireEvent.click(pasteButton);
 
 		await waitFor(() => {
-			expect(screen.getByLabelText("URL")).toHaveValue(clipboardText);
+			expect(screen.getByRole("textbox", { name: "URL" })).toHaveValue(
+				clipboardText,
+			);
 		});
 	});
 });

@@ -1,6 +1,5 @@
 import {
 	type BookListItemDTO,
-	type BookSearchItemDTO,
 	type ExportedBook,
 	type ISBN,
 	makeBookMarkdown,
@@ -122,64 +121,8 @@ async function count(userId: UserId, status: Status): Promise<number> {
 	return data;
 }
 
-async function search(
-	query: string,
-	userId: UserId,
-	limit = 20,
-): Promise<BookSearchItemDTO[]> {
-	const data = await prisma.book.findMany({
-		where: {
-			userId,
-			status: "EXPORTED",
-			OR: [
-				{ title: { contains: query, mode: "insensitive" } },
-				{ markdown: { contains: query, mode: "insensitive" } },
-				{ googleTitle: { contains: query, mode: "insensitive" } },
-				{ googleSubTitle: { contains: query, mode: "insensitive" } },
-				{ googleDescription: { contains: query, mode: "insensitive" } },
-				{ googleAuthors: { hasSome: [query] } },
-				{ tags: { hasSome: [query] } },
-			],
-		},
-		select: {
-			id: true,
-			isbn: true,
-			title: true,
-			googleTitle: true,
-			googleSubTitle: true,
-			googleAuthors: true,
-			googleDescription: true,
-			markdown: true,
-			rating: true,
-			tags: true,
-		},
-		take: limit,
-		orderBy: { createdAt: "desc" },
-	});
-	return data.map((d) => ({
-		id: makeId(d.id),
-		isbn: makeISBN(d.isbn),
-		title: makeBookTitle(d.title),
-		googleTitle: d.googleTitle ? makeGoogleTitle(d.googleTitle) : undefined,
-		googleSubTitle: d.googleSubTitle
-			? makeGoogleSubTitle(d.googleSubTitle)
-			: undefined,
-		googleAuthors:
-			d.googleAuthors.length > 0
-				? makeGoogleAuthors(d.googleAuthors)
-				: undefined,
-		googleDescription: d.googleDescription
-			? makeGoogleDescription(d.googleDescription)
-			: undefined,
-		markdown: d.markdown ? makeBookMarkdown(d.markdown) : undefined,
-		rating: d.rating,
-		tags: d.tags,
-	}));
-}
-
 export const booksQueryRepository: IBooksQueryRepository = {
 	findByISBN,
 	findMany,
 	count,
-	search,
 };

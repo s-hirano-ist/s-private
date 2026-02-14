@@ -10,7 +10,6 @@ import {
 
 const meta: Meta = {
 	component: Card,
-	tags: ["autodocs"],
 } satisfies Meta<typeof Card>;
 
 export default meta;

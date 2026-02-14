@@ -20,7 +20,12 @@
 		"revert-images": "./dist/revert-images.js",
 		"revert-notes": "./dist/revert-notes.js",
 		"update-json-articles": "./dist/update-json-articles.js",
-		"update-raw-articles": "./dist/update-raw-articles.js"
+		"update-raw-articles": "./dist/update-raw-articles.js",
+		"ingest-notes": "./dist/ingest-notes.js",
+		"ingest-books": "./dist/ingest-books.js",
+		"ingest-articles": "./dist/ingest-articles.js",
+		"ingest-images": "./dist/ingest-images.js",
+		"cleanup-minio-images": "./dist/cleanup-minio-images.js"
 	},
 	"scripts": {
 		"build": "tsc && tsc-esm-fix --target dist",
@@ -43,7 +48,12 @@
 		"revert-images": "tsx src/revert-images.ts",
 		"revert-notes": "tsx src/revert-notes.ts",
 		"update-json-articles": "tsx src/update-json-articles.ts",
-		"update-raw-articles": "tsx src/update-raw-articles.ts"
+		"update-raw-articles": "tsx src/update-raw-articles.ts",
+		"ingest-notes": "tsx src/ingest-notes.ts",
+		"ingest-books": "tsx src/ingest-books.ts",
+		"ingest-articles": "tsx src/ingest-articles.ts",
+		"ingest-images": "tsx src/ingest-images.ts",
+		"cleanup-minio-images": "tsx src/cleanup-minio-images.ts"
 	},
 	"files": [
 		"dist",
@@ -60,14 +70,15 @@
 		"access": "public"
 	},
 	"dependencies": {
-		"@huggingface/transformers": "3.8.1",
-		"@qdrant/js-client-rest": "1.16.2",
 		"@s-hirano-ist/s-core": "workspace:*",
+		"@s-hirano-ist/s-search": "workspace:*",
 		"@s-hirano-ist/s-database": "workspace:*",
+		"dotenv": "16.5.0",
 		"@s-hirano-ist/s-notification": "workspace:*",
 		"glob": "13.0.0",
 		"jsdom": "27.4.0",
 		"minio": "8.0.6",
+		"sharp": "0.33.5",
 		"iconv-lite": "0.7.2",
 		"turndown": "7.2.2"
 	},

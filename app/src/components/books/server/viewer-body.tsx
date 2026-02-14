@@ -23,7 +23,7 @@ export async function ViewerBody({ slug, getBookByISBN }: Props) {
 			<Card className="grid grid-cols-4 gap-4 p-4">
 				<div className="flex items-center justify-center">
 					<NextImage
-						alt={data.googleTitle ?? ""}
+						alt={data.googleTitle ?? data.title ?? ""}
 						className="rounded bg-white p-1"
 						height={192}
 						src={data.googleImgSrc ?? "/not-found.png"}
@@ -33,7 +33,7 @@ export async function ViewerBody({ slug, getBookByISBN }: Props) {
 				<Link className="col-span-3" href={data.googleHref ?? ("/" as Route)}>
 					<CardHeader>
 						<CardTitle>
-							{data.googleTitle} {data.googleSubTitle}
+							{data.googleTitle ?? data.title} {data.googleSubTitle}
 						</CardTitle>
 						<CardDescription>
 							{data.googleDescription?.length &&

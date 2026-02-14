@@ -5,7 +5,6 @@ import { ArticleForm } from "./article-form";
 const meta = {
 	component: ArticleForm,
 	parameters: { layout: "centered" },
-	tags: ["autodocs"],
 } satisfies Meta<typeof ArticleForm>;
 
 export default meta;
@@ -59,11 +58,11 @@ export const FillForm: Story = {
 		await userEvent.type(titleInput, "テスト記事タイトル");
 		await expect(titleInput).toHaveValue("テスト記事タイトル");
 
-		const quoteInput = canvas.getByLabelText("ひとこと");
+		const quoteInput = canvas.getByLabelText("詳細");
 		await userEvent.type(quoteInput, "テストの引用文");
 		await expect(quoteInput).toHaveValue("テストの引用文");
 
-		const urlInput = canvas.getByLabelText("URL");
+		const urlInput = canvas.getByRole("textbox", { name: "URL" });
 		await userEvent.type(urlInput, "https://example.com/test");
 		await expect(urlInput).toHaveValue("https://example.com/test");
 	},

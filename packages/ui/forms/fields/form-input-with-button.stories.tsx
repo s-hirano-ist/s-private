@@ -28,7 +28,6 @@ const meta = {
 	args: {
 		onButtonClick: fn(),
 	},
-	tags: ["autodocs"],
 } satisfies Meta<typeof FormInputWithButton>;
 
 export default meta;

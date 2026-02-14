@@ -4,7 +4,6 @@ import { ImageCard } from "./image-card";
 const meta = {
 	component: ImageCard,
 	parameters: { layout: "centered" },
-	tags: ["autodocs"],
 } satisfies Meta<typeof ImageCard>;
 
 export default meta;

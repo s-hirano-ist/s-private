@@ -5,7 +5,6 @@ import Loading from "./loading";
 const meta = {
 	component: Loading,
 	parameters: { layout: "centered" },
-	tags: ["autodocs"],
 } satisfies Meta<typeof Loading>;
 
 export default meta;

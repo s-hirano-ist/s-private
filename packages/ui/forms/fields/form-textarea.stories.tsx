@@ -13,7 +13,6 @@ const meta = {
 		disabled: { control: { type: "boolean" } },
 		rows: { control: { type: "number" } },
 	},
-	tags: ["autodocs"],
 } satisfies Meta<typeof FormTextarea>;
 
 export default meta;

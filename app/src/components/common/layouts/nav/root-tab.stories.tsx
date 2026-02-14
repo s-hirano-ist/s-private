@@ -4,7 +4,6 @@ import { RootTab } from "./root-tab";
 const meta = {
 	component: RootTab,
 	parameters: { layout: "fullscreen" },
-	tags: ["autodocs"],
 } satisfies Meta<typeof RootTab>;
 
 export default meta;

@@ -292,12 +292,3 @@ export type NoteListItemDTO = Readonly<{
 	id: Id;
 	title: NoteTitle;
 }>;
-
-/**
- * DTO for note search results.
- */
-export type NoteSearchItemDTO = Readonly<{
-	id: Id;
-	title: NoteTitle;
-	markdown: Markdown;
-}>;

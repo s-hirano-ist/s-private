@@ -150,6 +150,7 @@ export function FormDropdownInput({
 				<PopoverTrigger asChild>
 					<Button
 						aria-expanded={open}
+						aria-label={label}
 						className="w-full justify-between"
 						disabled={disabled}
 						role="combobox"

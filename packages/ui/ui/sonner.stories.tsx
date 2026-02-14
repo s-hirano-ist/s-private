@@ -5,7 +5,6 @@ import { Toaster as Sonner } from "./sonner";
 
 const meta = {
 	component: Sonner,
-	tags: ["autodocs"],
 } satisfies Meta<typeof Sonner>;
 
 export default meta;
@@ -17,12 +16,7 @@ function SonnerExample() {
 		toast("sample description");
 	};
 
-	return (
-		<>
-			<Sonner />
-			<Button onClick={handleToast}>Show Toast</Button>
-		</>
-	);
+	return <Button onClick={handleToast}>Show Toast</Button>;
 }
 
 export const Default: Story = {

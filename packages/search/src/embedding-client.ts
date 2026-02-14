@@ -1,0 +1,55 @@
+export type EmbeddingClientConfig = {
+	apiUrl: string;
+	apiKey: string;
+	cfAccessClientId: string;
+	cfAccessClientSecret: string;
+};
+
+export function createEmbeddingClient(config: EmbeddingClientConfig) {
+	const { apiUrl, apiKey, cfAccessClientId, cfAccessClientSecret } = config;
+
+	function buildHeaders(): Record<string, string> {
+		return {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${apiKey}`,
+			"CF-Access-Client-Id": cfAccessClientId,
+			"CF-Access-Client-Secret": cfAccessClientSecret,
+		};
+	}
+
+	return {
+		async embed(text: string, isQuery?: boolean): Promise<number[]> {
+			const response = await fetch(`${apiUrl}/embed`, {
+				method: "POST",
+				headers: buildHeaders(),
+				body: JSON.stringify({ text, isQuery: isQuery ?? false }),
+			});
+
+			if (!response.ok) {
+				throw new Error(
+					`Embedding API returned ${response.status}: ${await response.text()}`,
+				);
+			}
+
+			const data = (await response.json()) as { vector: number[] };
+			return data.vector;
+		},
+
+		async embedBatch(texts: string[], isQuery?: boolean): Promise<number[][]> {
+			const response = await fetch(`${apiUrl}/embed-batch`, {
+				method: "POST",
+				headers: buildHeaders(),
+				body: JSON.stringify({ texts, isQuery: isQuery ?? false }),
+			});
+
+			if (!response.ok) {
+				throw new Error(
+					`Embedding API returned ${response.status}: ${await response.text()}`,
+				);
+			}
+
+			const data = (await response.json()) as { vectors: number[][] };
+			return data.vectors;
+		},
+	};
+}

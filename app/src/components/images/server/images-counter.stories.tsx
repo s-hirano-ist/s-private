@@ -11,7 +11,6 @@ function ImagesCounterWrapper({ count }: ImageCounterProps) {
 const meta = {
 	component: ImagesCounterWrapper,
 	parameters: { layout: "centered" },
-	tags: ["autodocs"],
 	argTypes: {
 		count: { control: "number" },
 	},

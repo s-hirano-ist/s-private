@@ -5,7 +5,6 @@ import { Label } from "./label";
 const meta = {
 	component: Label,
 	parameters: { layout: "centered" },
-	tags: ["autodocs"],
 } satisfies Meta<typeof Label>;
 
 export default meta;
@@ -18,7 +17,7 @@ export const Default: Story = {
 
 export const WithCustomClass: Story = {
 	render: () => (
-		<Label className="text-red-500" htmlFor="input-id">
+		<Label className="text-destructive" htmlFor="input-id">
 			Label with Custom Class
 		</Label>
 	),

@@ -5,7 +5,6 @@ import type {
 import type { InfraQueryOptions } from "../../shared-kernel/types/query-options";
 import type {
 	ArticleListItemDTO,
-	ArticleSearchItemDTO,
 	ExportedArticle,
 	UnexportedArticle,
 	Url,
@@ -102,21 +101,4 @@ export type IArticlesQueryRepository = {
 	 * @returns The count of matching articles
 	 */
 	count(userId: UserId, status: Status): Promise<number>;
-
-	/**
-	 * Searches articles by text query.
-	 *
-	 * @param query - The search query string
-	 * @param userId - The user ID for tenant isolation
-	 * @param limit - Optional maximum number of results (default varies by implementation)
-	 * @returns Array of ArticleSearchItemDTO objects
-	 *
-	 * @remarks
-	 * Returns DTOs with `categoryName` for direct property access.
-	 */
-	search(
-		query: string,
-		userId: UserId,
-		limit?: number,
-	): Promise<ArticleSearchItemDTO[]>;
 };
