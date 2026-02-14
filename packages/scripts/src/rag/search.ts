@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import "dotenv/config";
-import type { SearchResult } from "@s-hirano-ist/s-search/config";
+import type { ContentType, SearchResult } from "@s-hirano-ist/s-search/config";
 import { embed } from "@s-hirano-ist/s-search/embedding";
 import {
 	ensureCollection,
@@ -11,6 +11,7 @@ type SearchOptions = {
 	topK?: number;
 	type?: "markdown_note" | "bookmark_json";
 	heading?: string;
+	contentType?: ContentType | ContentType[];
 };
 
 function parseArgs(): { query: string; options: SearchOptions } {
@@ -26,6 +27,10 @@ function parseArgs(): { query: string; options: SearchOptions } {
 			options.type = args[++i] as SearchOptions["type"];
 		} else if (arg === "--heading" && i + 1 < args.length) {
 			options.heading = args[++i];
+		} else if (arg === "--content-type" && i + 1 < args.length) {
+			const value = args[++i];
+			const types = value.split(",") as ContentType[];
+			options.contentType = types.length === 1 ? types[0] : types;
 		} else {
 			positional.push(arg);
 		}
@@ -34,7 +39,7 @@ function parseArgs(): { query: string; options: SearchOptions } {
 	const query = positional.join(" ");
 	if (!query) {
 		console.error(
-			"Usage: rag-search <query> [--top-k N] [--type markdown_note|bookmark_json] [--heading HEADING]",
+			"Usage: rag-search <query> [--top-k N] [--type markdown_note|bookmark_json] [--heading HEADING] [--content-type articles|books|notes]",
 		);
 		process.exit(1);
 	}
@@ -49,7 +54,11 @@ async function searchContent(
 	const queryVector = await embed(query, true);
 	const results = await qdrantSearch(queryVector, {
 		topK: options.topK,
-		filter: { type: options.type, top_heading: options.heading },
+		filter: {
+			type: options.type,
+			top_heading: options.heading,
+			content_type: options.contentType,
+		},
 	});
 	return { results, query, totalResults: results.length };
 }
@@ -61,6 +70,10 @@ async function search(): Promise<void> {
 	if (options.topK) console.log(`  top-k: ${options.topK}`);
 	if (options.type) console.log(`  type: ${options.type}`);
 	if (options.heading) console.log(`  heading: ${options.heading}`);
+	if (options.contentType)
+		console.log(
+			`  content-type: ${Array.isArray(options.contentType) ? options.contentType.join(",") : options.contentType}`,
+		);
 	console.log();
 
 	await ensureCollection();
@@ -74,6 +87,7 @@ async function search(): Promise<void> {
 		console.log(`Title: ${result.title}`);
 		if (result.url) console.log(`URL: ${result.url}`);
 		console.log(`Type: ${result.type}`);
+		console.log(`Content-Type: ${result.content_type}`);
 		console.log(`Heading: ${result.heading_path.join(" > ")}`);
 		console.log(`\n${result.text}\n`);
 	}

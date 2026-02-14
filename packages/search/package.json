@@ -1,32 +1,15 @@
 {
 	"name": "@s-hirano-ist/s-search",
-	"version": "1.12.2",
+	"version": "1.13.0",
+	"description": "RAG search library with Qdrant and embedding API client",
 	"type": "module",
 	"exports": {
-		"./config": {
-			"types": "./src/config.ts",
-			"default": "./src/config.ts"
-		},
-		"./embedding": {
-			"types": "./src/embedding.ts",
-			"default": "./src/embedding.ts"
-		},
-		"./embedding-client": {
-			"types": "./src/embedding-client.ts",
-			"default": "./src/embedding-client.ts"
-		},
-		"./qdrant-client": {
-			"types": "./src/qdrant-client.ts",
-			"default": "./src/qdrant-client.ts"
-		},
-		"./chunker": {
-			"types": "./src/chunker.ts",
-			"default": "./src/chunker.ts"
-		},
-		"./ingest": {
-			"types": "./src/ingest.ts",
-			"default": "./src/ingest.ts"
-		}
+		"./config": "./src/config.ts",
+		"./embedding": "./src/embedding.ts",
+		"./embedding-client": "./src/embedding-client.ts",
+		"./qdrant-client": "./src/qdrant-client.ts",
+		"./chunker": "./src/chunker.ts",
+		"./ingest": "./src/ingest.ts"
 	},
 	"publishConfig": {
 		"access": "public",
@@ -58,12 +41,28 @@
 		}
 	},
 	"files": [
-		"dist"
+		"dist",
+		"README.md",
+		"LICENSE"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/s-hirano-ist/s-private.git",
+		"directory": "packages/search"
+	},
+	"license": "AGPL-3.0",
+	"author": "s-hirano-ist",
+	"keywords": [
+		"rag",
+		"search",
+		"qdrant",
+		"embedding"
 	],
 	"scripts": {
 		"build": "tsc && tsc-esm-fix --target dist",
 		"clean": "rm -rf dist",
-		"typecheck": "tsc --noEmit"
+		"typecheck": "tsc --noEmit",
+		"prepublishOnly": "pnpm run build"
 	},
 	"dependencies": {
 		"@qdrant/js-client-rest": "1.16.2"

@@ -1,6 +1,7 @@
 export const INGEST_CONFIG = {
 	paths: {
-		markdown: ["markdown/note/**/*.md", "markdown/book/**/*.md"],
-		json: "json/article/**/*.json",
+		notes: "markdown/note/**/*.md",
+		books: "markdown/book/**/*.md",
+		articles: "json/article/**/*.json",
 	},
 } as const;

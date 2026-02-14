@@ -15,6 +15,7 @@ issuesには、取り組み検討中の課題を記述している。issueに取
 - Shadcn/ui + Tailwind CSS
 - Auth0 + NextAuth.js
 - MinIO (Object Storage)
+- Qdrant (Vector Database) + Embedding API (Hono)
 
 ## コマンド
 - `pnpm dev` - 開発サーバー
@@ -32,6 +33,8 @@ issuesには、取り組み検討中の課題を記述している。issueに取
 - `app/src/application-services/` - アプリケーション層
 - `app/src/infrastructures/` - インフラ層（Prisma実装、DI factories）
 - `app/src/loaders/` - データローダー層
+- `packages/search/` - RAG検索ライブラリ（Qdrant・Embedding APIクライアント）
+- `services/embedding-api/` - Embedding APIサービス（Hono + HuggingFace Transformers）
 - `app/src/app/[locale]/` - Next.js App Router（i18n対応: en/ja）
 
 ## 主要ドメイン
@@ -50,6 +53,8 @@ issuesには、取り組み検討中の課題を記述している。issueに取
 - Sentry（エラー監視）+ Pushover（通知）
 - Auth0 + NextAuth.js（認証）
 - next-intl（i18n）
+- Embedding API（ConoHa VPS + Cloudflare Tunnel）
+- Qdrant（ベクトルデータベース）
 
 ## 環境設定
 `app/.env.sample` → `.env.local`にコピー。型定義は`app/src/env.ts`。
@@ -60,4 +65,5 @@ issuesには、取り組み検討中の課題を記述している。issueに取
 - アーキテクチャ: [docs/architecture.md](docs/architecture.md)
 - ドメインモデル: [docs/domain-model.md](docs/domain-model.md)
 - セキュリティ: [SECURITY.md](SECURITY.md)
+- VPSデプロイ: [docs/vps-deployment.md](docs/vps-deployment.md)
 - スキーマ: [packages/database/prisma/schema.prisma](packages/database/prisma/schema.prisma)

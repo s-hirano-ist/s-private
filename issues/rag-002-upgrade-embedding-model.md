@@ -7,7 +7,7 @@
 | **Category** | RAG / Search Quality |
 | **Priority** | MEDIUM |
 | **Check Item** | Embedding モデルのアップグレード |
-| **Affected File** | `packages/search/src/config.ts`, `packages/search/src/embedding.ts`, `services/embedding-api/src/index.ts`, `docs/embedding-api-deployment.md` |
+| **Affected File** | `packages/search/src/config.ts`, `packages/search/src/embedding.ts`, `services/embedding-api/src/index.ts`, `docs/vps-deployment.md` |
 
 ## Problem Description
 
@@ -63,7 +63,7 @@
 - コード変更は不要（`RAG_CONFIG.qdrant.vectorSize` を参照しているため自動追従）
 - ただし、既存コレクションとの互換性がないため、旧コレクション削除 or 新コレクション作成が必要
 
-### 5. `docs/embedding-api-deployment.md`
+### 5. `docs/vps-deployment.md`
 
 - トラブルシューティングのメモリ記載更新: `"約 200MB"` → 新モデルのメモリ使用量
 - モデルダウンロードサイズの更新: `"~100MB"` → 新モデルのサイズ
@@ -77,7 +77,7 @@
 1. [ ] `config.ts` のモデル名・次元数・コレクション名を更新
 2. [ ] `embedding.ts` の dtype を検討（fp32 vs fp16 — メモリと精度のトレードオフ）
 3. [ ] `services/embedding-api/src/index.ts` の OpenAPI description を更新
-4. [ ] `docs/embedding-api-deployment.md` のメモリ・モデルサイズ記載を更新
+4. [ ] `docs/vps-deployment.md` のメモリ・モデルサイズ記載を更新
 5. [ ] VPS でモデルダウンロード・メモリ使用量を実測（`docker stats` で確認）
 6. [ ] Qdrant に新コレクション `knowledge_v2` を作成
 7. [ ] `rag-ingest` で全データを再 embedding・再投入
@@ -97,5 +97,5 @@
 - `packages/search/src/embedding.ts` — embedding パイプライン
 - `packages/search/src/qdrant-client.ts` — Qdrant コレクション管理
 - `services/embedding-api/src/index.ts` — Embedding API サーバー
-- `docs/embedding-api-deployment.md` — VPS デプロイ手順書
+- `docs/vps-deployment.md` — VPS デプロイ手順書
 - [intfloat/multilingual-e5-large (HuggingFace)](https://huggingface.co/intfloat/multilingual-e5-large)

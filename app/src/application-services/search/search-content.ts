@@ -34,33 +34,14 @@ function truncateText(text: string, maxLength = 150): string {
 }
 
 /**
- * Maps search-api type + doc_id to a ContentType.
+ * Extracts ISBN from a book doc_id.
  *
+ * @example extractBookISBN("file:markdown/book/9784003362211.md") → "9784003362211"
  * @internal
  */
-function resolveContentType(
-	type: "markdown_note" | "bookmark_json",
-	docId: string,
-): ContentType {
-	if (type === "bookmark_json") return "articles";
-	return docId.includes("/book/") ? "books" : "notes";
-}
-
-/**
- * Builds the search-api `type` filter from contentTypes.
- *
- * @internal
- */
-function buildTypeFilter(
-	contentTypes: ContentType[],
-): "bookmark_json" | "markdown_note" | undefined {
-	const hasArticles = contentTypes.includes("articles");
-	const hasBooks = contentTypes.includes("books");
-	const hasNotes = contentTypes.includes("notes");
-
-	if (hasArticles && !hasBooks && !hasNotes) return "bookmark_json";
-	if (!hasArticles && (hasBooks || hasNotes)) return "markdown_note";
-	return undefined;
+function extractBookISBN(docId: string): string | undefined {
+	const match = docId.match(/\/book\/([^/]+)\.md$/);
+	return match?.[1];
 }
 
 /**
@@ -81,18 +62,16 @@ export async function searchContent(
 	const { query, contentTypes, limit = 20 } = searchQuery;
 	const searchTypes = new Set(contentTypes ?? ["articles", "books", "notes"]);
 
-	const typeFilter = contentTypes ? buildTypeFilter(contentTypes) : undefined;
-
 	const data = await searchVectors(query, {
 		topK: limit,
-		type: typeFilter,
+		contentType: contentTypes,
 	});
 
 	const results: SearchResult[] = [];
 	const groupMap = new Map<ContentType, SearchResult[]>();
 
 	for (const r of data.results) {
-		const ct = resolveContentType(r.type, r.doc_id);
+		const ct = r.content_type;
 
 		if (!searchTypes.has(ct)) continue;
 
@@ -107,8 +86,9 @@ export async function searchContent(
 				category: { id: "", name: r.heading_path[0] ?? "" },
 			} satisfies ArticleSearchResult;
 		} else if (ct === "books") {
+			const isbn = extractBookISBN(r.doc_id);
 			result = {
-				href: encodeURIComponent(r.title),
+				href: isbn ?? encodeURIComponent(r.title),
 				contentType: "books" as const,
 				title: r.title,
 				snippet: truncateText(r.text),

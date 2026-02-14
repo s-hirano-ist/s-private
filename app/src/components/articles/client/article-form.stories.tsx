@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { expect, fn, userEvent, within } from "storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import { ArticleForm } from "./article-form";
 
 const meta = {
@@ -43,6 +43,40 @@ export const EmptyCategories: Story = {
 	args: {
 		categories: [],
 		addArticle: fn(),
+	},
+};
+
+export const PasteUrl: Story = {
+	args: {
+		categories: [],
+		addArticle: fn(),
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const clipboardText = "https://example.com";
+
+		const originalClipboard = navigator.clipboard;
+		const mockClipboard = { readText: fn().mockResolvedValue(clipboardText) };
+		Object.defineProperty(navigator, "clipboard", {
+			value: mockClipboard,
+			writable: true,
+			configurable: true,
+		});
+
+		const pasteButton = canvas.getByTestId("paste-button");
+		await userEvent.click(pasteButton);
+
+		await waitFor(() => {
+			expect(canvas.getByRole("textbox", { name: "URL" })).toHaveValue(
+				clipboardText,
+			);
+		});
+
+		Object.defineProperty(navigator, "clipboard", {
+			value: originalClipboard,
+			writable: true,
+			configurable: true,
+		});
 	},
 };
 

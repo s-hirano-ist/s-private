@@ -34,6 +34,7 @@ export type IngestResult = {
 
 export type IngestOptions = {
 	embedBatchFn?: (texts: string[], isQuery?: boolean) => Promise<number[][]>;
+	force?: boolean;
 };
 
 /**
@@ -46,18 +47,27 @@ export async function ingestChunks(
 ): Promise<IngestResult> {
 	console.log(`Total chunks: ${chunks.length}\n`);
 
-	// Get existing hashes for change detection
-	console.log("Checking for changes...");
-	const chunkIds = chunks.map((c) => c.chunk_id);
-	const existingHashes = await getExistingHashes(chunkIds);
+	let changedChunks: QdrantPayload[];
+	let skippedChunks: number;
 
-	// Filter to only changed chunks
-	const changedChunks = chunks.filter((chunk) => {
-		const existingHash = existingHashes.get(chunk.chunk_id);
-		return existingHash !== chunk.content_hash;
-	});
+	if (options?.force) {
+		// Force mode: treat all chunks as changed
+		changedChunks = chunks;
+		skippedChunks = 0;
+	} else {
+		// Get existing hashes for change detection
+		console.log("Checking for changes...");
+		const chunkIds = chunks.map((c) => c.chunk_id);
+		const existingHashes = await getExistingHashes(chunkIds);
 
-	const skippedChunks = chunks.length - changedChunks.length;
+		// Filter to only changed chunks
+		changedChunks = chunks.filter((chunk) => {
+			const existingHash = existingHashes.get(chunk.chunk_id);
+			return existingHash !== chunk.content_hash;
+		});
+
+		skippedChunks = chunks.length - changedChunks.length;
+	}
 	console.log(`Changed chunks: ${changedChunks.length}`);
 	console.log(`Skipped (unchanged): ${skippedChunks}\n`);
 

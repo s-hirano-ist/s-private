@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import type { QdrantPayload } from "./config";
+import type { ContentType, QdrantPayload } from "./config";
 import { RAG_CONFIG } from "./config";
 
 // JSON article structure
@@ -59,7 +59,6 @@ export function parseJsonArticle(
 			textParts.push(item.ogTitle);
 		if (item.ogDescription) textParts.push(item.ogDescription);
 		if (item.quote) textParts.push(item.quote);
-		if (item.url) textParts.push(item.url);
 
 		const text = textParts.join("\n");
 
@@ -70,6 +69,7 @@ export function parseJsonArticle(
 
 		chunks.push({
 			type: "bookmark_json",
+			content_type: "articles",
 			top_heading: json.heading,
 			doc_id: docId,
 			chunk_id: chunkId,
@@ -217,6 +217,7 @@ function splitByParagraphs(text: string, maxLength: number): string[] {
 function parseMarkdownWithDocId(
 	docId: string,
 	content: string,
+	contentType: ContentType = "notes",
 ): QdrantPayload[] {
 	const { frontmatter, body } = parseFrontmatter(content);
 	const chunks: QdrantPayload[] = [];
@@ -245,6 +246,7 @@ function parseMarkdownWithDocId(
 
 			chunks.push({
 				type: "markdown_note",
+				content_type: contentType,
 				top_heading: frontmatter.heading,
 				doc_id: docId,
 				chunk_id: chunkId,
@@ -267,8 +269,9 @@ function parseMarkdownWithDocId(
 export function parseMarkdown(
 	filePath: string,
 	content: string,
+	contentType: ContentType = "notes",
 ): QdrantPayload[] {
-	return parseMarkdownWithDocId(`file:${filePath}`, content);
+	return parseMarkdownWithDocId(`file:${filePath}`, content, contentType);
 }
 
 /**
@@ -281,7 +284,7 @@ export function parseDbNote(
 ): QdrantPayload[] {
 	const docId = `db:note:${noteId}`;
 	const syntheticContent = `---\nheading: ${title}\n---\n\n## ${title}\n\n${markdown}`;
-	return parseMarkdownWithDocId(docId, syntheticContent);
+	return parseMarkdownWithDocId(docId, syntheticContent, "notes");
 }
 
 /**
@@ -303,7 +306,6 @@ export function parseDbArticle(article: {
 		textParts.push(article.ogTitle);
 	if (article.ogDescription) textParts.push(article.ogDescription);
 	if (article.quote) textParts.push(article.quote);
-	if (article.url) textParts.push(article.url);
 
 	const text = textParts.join("\n");
 	if (!text.trim()) return [];
@@ -311,6 +313,7 @@ export function parseDbArticle(article: {
 	return [
 		{
 			type: "bookmark_json",
+			content_type: "articles",
 			top_heading: article.categoryName,
 			doc_id: docId,
 			chunk_id: `${docId}#0`,

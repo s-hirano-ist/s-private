@@ -23,6 +23,10 @@
 		"packages/scripts": {
 			"release-type": "node",
 			"component": "@s-hirano-ist/s-scripts"
+		},
+		"packages/search": {
+			"release-type": "node",
+			"component": "@s-hirano-ist/s-search"
 		}
 	},
 	"plugins": [
@@ -38,7 +42,8 @@
 				"@s-hirano-ist/s-ui",
 				"@s-hirano-ist/s-database",
 				"@s-hirano-ist/s-notification",
-				"@s-hirano-ist/s-scripts"
+				"@s-hirano-ist/s-scripts",
+				"@s-hirano-ist/s-search"
 			]
 		}
 	],

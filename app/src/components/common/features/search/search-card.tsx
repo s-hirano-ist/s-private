@@ -10,9 +10,10 @@ import {
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 import { useSearch } from "@/components/common/hooks/use-search";
+import { LinkCard } from "../../layouts/cards/link-card";
 import { UtilButtons } from "../../layouts/nav/util-buttons";
 
 type Props = { search: typeof searchContentFromClient };
@@ -30,6 +31,7 @@ export function SearchCard({ search }: Props) {
 		handleSearchChange,
 		executeSearch,
 		isPending,
+		isError,
 	} = useSearch({ search, useUrlQuery: true });
 
 	const handleInputChange = (value: string) => {
@@ -37,14 +39,19 @@ export function SearchCard({ search }: Props) {
 		handleSearchChange(event);
 	};
 
+	const { articles, nonArticles } = useMemo(() => {
+		if (!searchResults) return { articles: [], nonArticles: [] };
+		return {
+			articles: searchResults.filter((r) => r.contentType === "articles"),
+			nonArticles: searchResults.filter((r) => r.contentType !== "articles"),
+		};
+	}, [searchResults]);
+
 	const handleSelect = (item: {
 		href: string;
 		contentType: "articles" | "books" | "notes";
-		url?: string;
 	}) => {
-		if (item.contentType === "articles" && item.url) {
-			window.open(item.url, "_blank");
-		} else if (item.contentType === "books") {
+		if (item.contentType === "books") {
 			router.push(`/${locale}/book/${item.href}`);
 		} else if (item.contentType === "notes") {
 			router.push(`/${locale}/note/${item.href}`);
@@ -81,6 +88,15 @@ export function SearchCard({ search }: Props) {
 						handleReload={handleReload}
 						onSignOutSubmit={onSignOutSubmit}
 					/>
+				) : isError ? (
+					<CommandEmpty>
+						<div className="flex items-center justify-center">
+							<StatusCodeView
+								statusCode="500"
+								statusCodeString={statusCodes("500")}
+							/>
+						</div>
+					</CommandEmpty>
 				) : searchResults?.length === 0 && searchQuery && !isPending ? (
 					<CommandEmpty>
 						<div className="flex items-center justify-center">
@@ -95,7 +111,7 @@ export function SearchCard({ search }: Props) {
 						<Loading />
 					</div>
 				) : (
-					searchResults?.map((item, index) => (
+					nonArticles.map((item, index) => (
 						<CommandItem
 							key={String(index)}
 							onSelect={() => handleSelect(item)}
@@ -105,6 +121,23 @@ export function SearchCard({ search }: Props) {
 					))
 				)}
 			</CommandList>
+			{articles.length > 0 && (
+				<div className="grid grid-cols-1 gap-2 p-2 sm:grid-cols-2">
+					{articles.map((item, index) => (
+						<LinkCard
+							data={{
+								id: String(index),
+								key: item.url ?? item.href,
+								title: item.title,
+								description: item.snippet,
+								primaryBadgeText: item.category,
+								href: item.url ?? item.href,
+							}}
+							key={String(index)}
+						/>
+					))}
+				</div>
+			)}
 		</>
 	);
 }

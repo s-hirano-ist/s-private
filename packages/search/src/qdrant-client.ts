@@ -1,5 +1,10 @@
 import { QdrantClient } from "@qdrant/js-client-rest";
-import { type QdrantPayload, RAG_CONFIG, type SearchResult } from "./config";
+import {
+	type ContentType,
+	type QdrantPayload,
+	RAG_CONFIG,
+	type SearchResult,
+} from "./config";
 
 let client: QdrantClient | null = null;
 
@@ -62,7 +67,12 @@ export async function ensureCollection(): Promise<void> {
 		field_schema: "keyword",
 		wait: true,
 	});
-	console.log("Payload indexes ensured for: type, top_heading");
+	await qdrant.createPayloadIndex(collectionName, {
+		field_name: "content_type",
+		field_schema: "keyword",
+		wait: true,
+	});
+	console.log("Payload indexes ensured for: type, top_heading, content_type");
 }
 
 /**
@@ -132,6 +142,7 @@ export async function search(
 		filter?: {
 			type?: "markdown_note" | "bookmark_json";
 			top_heading?: string;
+			content_type?: ContentType | ContentType[];
 		};
 	} = {},
 ): Promise<SearchResult[]> {
@@ -142,7 +153,7 @@ export async function search(
 	// Build filter conditions
 	const filterConditions: Array<{
 		key: string;
-		match: { value: string };
+		match: { value: string } | { any: string[] };
 	}> = [];
 
 	if (filter?.type) {
@@ -157,6 +168,20 @@ export async function search(
 			key: "top_heading",
 			match: { value: filter.top_heading },
 		});
+	}
+
+	if (filter?.content_type) {
+		if (Array.isArray(filter.content_type)) {
+			filterConditions.push({
+				key: "content_type",
+				match: { any: filter.content_type },
+			});
+		} else {
+			filterConditions.push({
+				key: "content_type",
+				match: { value: filter.content_type },
+			});
+		}
 	}
 
 	const result = await qdrant.search(collectionName, {
@@ -176,6 +201,7 @@ export async function search(
 			url: payload.url,
 			heading_path: payload.heading_path,
 			type: payload.type,
+			content_type: payload.content_type,
 			doc_id: payload.doc_id,
 		};
 	});

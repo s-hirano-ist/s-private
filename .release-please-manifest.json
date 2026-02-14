@@ -4,5 +4,6 @@
 	"packages/ui": "1.13.0",
 	"packages/database": "1.13.0",
 	"packages/notification": "1.13.0",
-	"packages/scripts": "1.13.0"
+	"packages/scripts": "1.13.0",
+	"packages/search": "1.13.0"
 }

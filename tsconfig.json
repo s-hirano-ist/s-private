@@ -7,7 +7,9 @@
 			"@s-hirano-ist/s-core/*": ["packages/core/*"]
 		},
 		"skipLibCheck": true,
-		"jsx": "react-jsx"
+		"jsx": "react-jsx",
+		"module": "esnext",
+		"moduleResolution": "bundler"
 	},
 	"include": ["app/src/**/*", "packages/*/src/**/*", "packages/*/**/*"],
 	"exclude": ["node_modules", ".next", "**/node_modules"]
