@@ -51,7 +51,12 @@ const nextConfig = {
 	webpack: (config) => {
 		config.resolve.conditionNames = [
 			"source",
-			...config.resolve.conditionNames,
+			...(config.resolve.conditionNames ?? [
+				"import",
+				"module",
+				"require",
+				"default",
+			]),
 		];
 		return config;
 	},
