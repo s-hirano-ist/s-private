@@ -45,7 +45,7 @@ describe("BooksCommandRepository", () => {
 				createdAt: new Date(),
 				updatedAt: new Date(),
 				exportedAt: null,
-			} as Awaited<ReturnType<typeof prisma.book.create>>);
+			});
 
 			await booksCommandRepository.create({
 				id: makeId("01234567-89ab-7def-9123-456789abcdef"),
@@ -79,7 +79,7 @@ describe("BooksCommandRepository", () => {
 				createdAt: new Date(),
 				updatedAt: new Date(),
 				exportedAt: new Date(),
-			} as Awaited<ReturnType<typeof prisma.book.create>>);
+			});
 
 			const result = await booksCommandRepository.create({
 				id: makeId("0198bfc4-444f-71eb-8e78-4005df127ffd"),

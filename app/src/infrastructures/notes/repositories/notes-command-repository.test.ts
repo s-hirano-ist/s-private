@@ -73,8 +73,15 @@ describe("NotesCommandRepository", () => {
 			const status = "UNEXPORTED";
 
 			vi.mocked(prisma.note.delete).mockResolvedValue({
+				id: "0198bfc4-444e-73e8-9ef6-eb9b250ed1ae",
 				title: "Deleted Note",
-			} as Awaited<ReturnType<typeof prisma.note.delete>>);
+				markdown: "# Deleted Note",
+				status: "UNEXPORTED",
+				userId: "test-user-id",
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				exportedAt: null,
+			});
 
 			await notesCommandRepository.deleteById(id, userId, status);
 
@@ -87,8 +94,15 @@ describe("NotesCommandRepository", () => {
 			const status = "EXPORTED";
 
 			vi.mocked(prisma.note.delete).mockResolvedValue({
+				id: "0198bfc5-555f-74f9-af07-fc9c251fe2bf",
 				title: "Another Note",
-			} as Awaited<ReturnType<typeof prisma.note.delete>>);
+				markdown: "# Another Note",
+				status: "EXPORTED",
+				userId: "test-user-id-2",
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				exportedAt: new Date(),
+			});
 
 			await notesCommandRepository.deleteById(id, userId, status);
 

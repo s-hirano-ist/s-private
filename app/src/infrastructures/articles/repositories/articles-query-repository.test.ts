@@ -30,8 +30,15 @@ describe("ArticlesQueryRepository", () => {
 					title: "First article",
 					url: "https://example.com/article/1",
 					quote: "First quote",
+					ogImageUrl: null,
 					ogTitle: "First OG Title",
 					ogDescription: "First OG Description",
+					categoryId: "cat-1",
+					status: "EXPORTED" as const,
+					userId: "user123",
+					createdAt: new Date("2024-01-01"),
+					updatedAt: new Date("2024-01-01"),
+					exportedAt: null,
 					Category: { name: "Tech" },
 				},
 				{
@@ -39,8 +46,15 @@ describe("ArticlesQueryRepository", () => {
 					title: "Second article",
 					url: "https://example.com/article/2",
 					quote: null,
+					ogImageUrl: null,
 					ogTitle: "Second OG Title",
 					ogDescription: "Second OG Description",
+					categoryId: "cat-2",
+					status: "EXPORTED" as const,
+					userId: "user123",
+					createdAt: new Date("2024-01-02"),
+					updatedAt: new Date("2024-01-02"),
+					exportedAt: null,
 					Category: { name: "Science" },
 				},
 			];
@@ -195,9 +209,9 @@ describe("CategoryQueryRepository", () => {
 	describe("findMany", () => {
 		test("should find multiple categories successfully", async () => {
 			const mockCategories = [
-				{ id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7a", name: "tech" },
-				{ id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b", name: "science" },
-				{ id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c", name: "politics" },
+				{ id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7a", name: "tech", userId: "user123", createdAt: new Date("2024-01-01"), updatedAt: new Date("2024-01-01") },
+				{ id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b", name: "science", userId: "user123", createdAt: new Date("2024-01-01"), updatedAt: new Date("2024-01-01") },
+				{ id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c", name: "politics", userId: "user123", createdAt: new Date("2024-01-01"), updatedAt: new Date("2024-01-01") },
 			];
 
 			vi.mocked(prisma.category.findMany).mockResolvedValue(mockCategories);
@@ -250,8 +264,8 @@ describe("CategoryQueryRepository", () => {
 
 		test("should work without parameters", async () => {
 			const mockCategories = [
-				{ id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7a", name: "tech" },
-				{ id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b", name: "science" },
+				{ id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7a", name: "tech", userId: "user123", createdAt: new Date("2024-01-01"), updatedAt: new Date("2024-01-01") },
+				{ id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b", name: "science", userId: "user123", createdAt: new Date("2024-01-01"), updatedAt: new Date("2024-01-01") },
 			];
 
 			vi.mocked(prisma.category.findMany).mockResolvedValue(mockCategories);

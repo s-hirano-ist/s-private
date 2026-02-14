@@ -118,8 +118,18 @@ describe("ImageCommandRepository", () => {
 			const status = makeUnexportedStatus();
 
 			vi.mocked(prisma.image.delete).mockResolvedValue({
+				id: "0198bfc4-444e-73e8-9ef6-eb9b250ed1ae",
 				path: "images/user123/image-123.png",
-			} as Awaited<ReturnType<typeof prisma.image.delete>>);
+				contentType: "image/png",
+				fileSize: 1024,
+				width: 800,
+				height: 600,
+				status: "UNEXPORTED",
+				userId: "test-user-id",
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				exportedAt: null,
+			});
 
 			await imagesCommandRepository.deleteById(id, userId, status);
 
@@ -135,8 +145,18 @@ describe("ImageCommandRepository", () => {
 			const status = "EXPORTED";
 
 			vi.mocked(prisma.image.delete).mockResolvedValue({
+				id: "0198bfc5-555f-74f9-af07-fc9c251fe2bf",
 				path: "images/user456/image-456.jpg",
-			} as Awaited<ReturnType<typeof prisma.image.delete>>);
+				contentType: "image/jpeg",
+				fileSize: 2048,
+				width: 1920,
+				height: 1080,
+				status: "EXPORTED",
+				userId: "test-user-id-2",
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				exportedAt: new Date(),
+			});
 
 			await imagesCommandRepository.deleteById(id, userId, status);
 

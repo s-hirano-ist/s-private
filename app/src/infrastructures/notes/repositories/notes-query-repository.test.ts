@@ -24,8 +24,9 @@ describe("NotesQueryRepository", () => {
 				userId: "user123",
 				title: "Test Note",
 				markdown: "# Test Note\n\nThis is test markdown note.",
-				status: "EXPORTED",
+				status: "EXPORTED" as const,
 				createdAt: new Date("2024-01-01"),
+				updatedAt: new Date("2024-01-01"),
 				exportedAt: new Date("2024-01-02"),
 			};
 
@@ -114,9 +115,9 @@ describe("NotesQueryRepository", () => {
 	describe("findMany", () => {
 		test("should find multiple notes successfully", async () => {
 			const mockNotes = [
-				{ id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b", title: "First Note" },
-				{ id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c", title: "Second Note" },
-				{ id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d", title: "Third Note" },
+				{ id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b", title: "First Note", markdown: "# First", status: "EXPORTED" as const, userId: "user123", createdAt: new Date("2024-01-01"), updatedAt: new Date("2024-01-01"), exportedAt: null },
+				{ id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c", title: "Second Note", markdown: "# Second", status: "EXPORTED" as const, userId: "user123", createdAt: new Date("2024-01-02"), updatedAt: new Date("2024-01-02"), exportedAt: null },
+				{ id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d", title: "Third Note", markdown: "# Third", status: "EXPORTED" as const, userId: "user123", createdAt: new Date("2024-01-03"), updatedAt: new Date("2024-01-03"), exportedAt: null },
 			];
 
 			vi.mocked(prisma.note.findMany).mockResolvedValue(mockNotes);

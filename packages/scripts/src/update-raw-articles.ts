@@ -3,6 +3,7 @@ import { existsSync } from "node:fs";
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
+import iconv from "iconv-lite";
 import TurndownService from "turndown";
 
 const FETCHED_URLS_FILE = "fetched_urls.txt";
@@ -29,25 +30,23 @@ async function saveFetchedUrls(urls: Set<string>): Promise<void> {
 function normalizeCharset(charset: string): string {
 	const normalized = charset.toLowerCase().replace(/[^a-z0-9]/g, "");
 	const mapping: Record<string, string> = {
-		shiftjis: "shift-jis",
-		sjis: "shift-jis",
-		xsjis: "shift-jis",
-		eucjp: "euc-jp",
-		xeucjp: "euc-jp",
+		shiftjis: "Shift_JIS",
+		sjis: "Shift_JIS",
+		xsjis: "Shift_JIS",
+		eucjp: "EUC-JP",
+		xeucjp: "EUC-JP",
 	};
-	return mapping[normalized] || charset.toLowerCase();
+	return mapping[normalized] || charset;
 }
 
-function detectCharset(headers: Headers, buffer: ArrayBuffer): string {
+function detectCharset(headers: Headers, buffer: Buffer): string {
 	// 1. Content-Type ヘッダーから検出
 	const contentType = headers.get("content-type") || "";
 	const headerMatch = contentType.match(/charset=([^\s;]+)/i);
 	if (headerMatch) return normalizeCharset(headerMatch[1]);
 
 	// 2. HTML meta タグから検出（ASCII範囲で仮デコード）
-	const preview = new TextDecoder("ascii", { fatal: false }).decode(
-		new Uint8Array(buffer, 0, Math.min(4096, buffer.byteLength)),
-	);
+	const preview = buffer.subarray(0, Math.min(4096, buffer.length)).toString("ascii");
 
 	// <meta charset="...">
 	const metaCharset = preview.match(/<meta\s+charset=["']?([^"'\s>]+)/i);
@@ -75,9 +74,9 @@ async function fetchWebsiteMarkdown(url: string): Promise<string> {
 			throw new Error(`HTTP error! status: ${response.status}`);
 		}
 
-		const buffer = await response.arrayBuffer();
+		const buffer = Buffer.from(await response.arrayBuffer());
 		const charset = detectCharset(response.headers, buffer);
-		const html = new TextDecoder(charset).decode(buffer);
+		const html = iconv.decode(buffer, charset);
 
 		const turndownService = new TurndownService({
 			headingStyle: "atx",
