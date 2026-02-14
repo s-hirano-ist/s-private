@@ -246,14 +246,21 @@ Tunnel を介さず、Docker ネットワーク内で API が応答するか確�
 
 ```bash
 # ヘルスチェック
-docker compose exec embedding-api curl -s http://localhost:3001/health
+docker compose exec embedding-api node -e "fetch('http://localhost:3001/health').then(r=>r.text()).then(console.log)"
 # 期待: {"status":"ok"}
 
 # /embed エンドポイント（Bearer 認証付き）
-docker compose exec embedding-api curl -s -X POST http://localhost:3001/embed \
-  -H "Authorization: Bearer $EMBEDDING_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"text": "テストクエリ", "isQuery": true}'
+# コンテナ内の環境変数 API_KEY を使用（compose.yaml で API_KEY=${EMBEDDING_API_KEY} と設定）
+docker compose exec embedding-api node -e "
+fetch('http://localhost:3001/embed', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer ' + process.env.API_KEY,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({text: 'テストクエリ', isQuery: true})
+}).then(r => r.text()).then(console.log)
+"
 # 期待: {"embedding": [0.123, ...]} 形式の JSON レスポンス
 ```
 

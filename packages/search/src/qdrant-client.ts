@@ -1,5 +1,5 @@
 import { QdrantClient } from "@qdrant/js-client-rest";
-import { type QdrantPayload, RAG_CONFIG, type SearchResult } from "./config.js";
+import { type QdrantPayload, RAG_CONFIG, type SearchResult } from "./config";
 
 let client: QdrantClient | null = null;
 
