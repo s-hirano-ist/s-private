@@ -205,7 +205,7 @@ compose.yaml はリポジトリ内 `services/embedding-api/compose.yaml` に含�
 `~/s-private/services/embedding-api/.env` に配置:
 
 ```bash
-EMBEDDING_API_KEY=your-secure-api-key
+EMBEDDING_API_KEY=your-secure-api-key # ※  openssl rand -base64 32 とかで生成
 CLOUDFLARE_TUNNEL_TOKEN=your-tunnel-token
 ```
 

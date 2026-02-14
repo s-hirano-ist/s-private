@@ -18,14 +18,13 @@ COPY services/embedding-api/ ./services/embedding-api/
 COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
 RUN pnpm --filter @s-hirano-ist/s-search build
 RUN pnpm --filter @s-hirano-ist/embedding-api build
+RUN pnpm --filter @s-hirano-ist/embedding-api deploy --prod /app/deployed
 
 FROM base AS runner
 WORKDIR /app
 ENV NODE_ENV=production
-COPY --from=builder /app/services/embedding-api/dist ./dist
-COPY --from=builder /app/services/embedding-api/node_modules ./node_modules
-COPY --from=builder /app/packages/search/dist ./packages/search/dist
-COPY --from=builder /app/packages/search/package.json ./packages/search/
+COPY --from=builder /app/deployed/node_modules ./node_modules
+COPY --from=builder /app/deployed/dist ./dist
 EXPOSE 3001
 HEALTHCHECK --interval=30s CMD node -e "fetch('http://localhost:3001/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"
 CMD ["node", "dist/index.js"]
