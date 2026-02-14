@@ -17,14 +17,19 @@ if [ ! -f "$DBML_FILE" ]; then
   exit 1
 fi
 
-# 2. Convert DBML to SVG
+# 2. Convert DBML to SVG (temporary file)
 echo "Converting DBML to SVG..."
 mkdir -p "$OUT_DIR"
-npx dbml-renderer -i "$DBML_FILE" -o "$OUT_DIR/er-diagram.svg" -f svg
+SVG_TMP="$(mktemp)"
+npx dbml-renderer -i "$DBML_FILE" -o "$SVG_TMP" -f svg
 
-# 3. Generate HTML wrapper page
+# Strip XML declaration and DOCTYPE lines for HTML inline embedding
+SVG_CONTENT="$(sed '/^<?xml/d; /^<!DOCTYPE/d' "$SVG_TMP")"
+rm -f "$SVG_TMP"
+
+# 3. Generate HTML wrapper page with inline SVG
 echo "Generating HTML page..."
-cat > "$OUT_DIR/index.html" << 'HTML'
+cat > "$OUT_DIR/index.html" <<HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -71,7 +76,7 @@ cat > "$OUT_DIR/index.html" << 'HTML'
       border-radius: 8px;
       padding: 1rem;
     }
-    .diagram-container img {
+    .diagram-container svg {
       width: 100%;
       height: auto;
       display: block;
@@ -94,7 +99,7 @@ cat > "$OUT_DIR/index.html" << 'HTML'
   </header>
   <main>
     <div class="diagram-container">
-      <img src="er-diagram.svg" alt="ER Diagram">
+      $SVG_CONTENT
     </div>
   </main>
   <footer>
