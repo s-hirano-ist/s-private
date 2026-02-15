@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.15.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-search-v1.14.0...@s-hirano-ist/s-search-v1.15.0) (2026-02-15)
+
+
+### Bug Fixes
+
+* cd and ci of workflows ([3038bcf](https://github.com/s-hirano-ist/s-private/commit/3038bcf778725f386f1bcc1bda5cf2e7ef888cd2))
+* small settings ([89c00c8](https://github.com/s-hirano-ist/s-private/commit/89c00c89441a656b888352a11dd500cff38f6b38))
+* tsconfig of scripts ([ee1da0c](https://github.com/s-hirano-ist/s-private/commit/ee1da0c68a8884555220cfe94432a3a2ab920c9f))
+
+
+### Maintenance
+
+* add compose for qdrant ([0117bc5](https://github.com/s-hirano-ist/s-private/commit/0117bc567eccb1baead94ab43c777cd10540e159))
+* pacakges of s-search ([fba4b15](https://github.com/s-hirano-ist/s-private/commit/fba4b15c91ce503097cdf2cf081e9c9cbaca7af1))
+
 ## [1.14.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-search-v1.13.0...@s-hirano-ist/s-search-v1.14.0) (2026-02-14)
 
 

@@ -1,5 +1,39 @@
 # Changelog
 
+## [1.15.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.14.0...@s-hirano-ist/s-scripts-v1.15.0) (2026-02-15)
+
+
+### Features
+
+* add search minio ([1a2046e](https://github.com/s-hirano-ist/s-private/commit/1a2046e1adbac877690e9f4856eb1ad77ed75708))
+
+
+### Bug Fixes
+
+* cd and ci of workflows ([3038bcf](https://github.com/s-hirano-ist/s-private/commit/3038bcf778725f386f1bcc1bda5cf2e7ef888cd2))
+* env checks ([55ea69e](https://github.com/s-hirano-ist/s-private/commit/55ea69e5ab4c9c2ef02b429f08fc87080c69711c))
+* env checks ([c2e3df5](https://github.com/s-hirano-ist/s-private/commit/c2e3df5ccbc95d63ebc4cddd49b52e5d97601a52))
+* small settings ([89c00c8](https://github.com/s-hirano-ist/s-private/commit/89c00c89441a656b888352a11dd500cff38f6b38))
+* small settings on ingest ([7284ba2](https://github.com/s-hirano-ist/s-private/commit/7284ba247937c78c46a59a9c0e97903bdf928864))
+* tsconfig of scripts ([ee1da0c](https://github.com/s-hirano-ist/s-private/commit/ee1da0c68a8884555220cfe94432a3a2ab920c9f))
+
+
+### Maintenance
+
+* add compose for qdrant ([0117bc5](https://github.com/s-hirano-ist/s-private/commit/0117bc567eccb1baead94ab43c777cd10540e159))
+* fix minio client ([bc33aac](https://github.com/s-hirano-ist/s-private/commit/bc33aac0680ef66ea2c1d3369b7d3c5dc745061f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.15.0
+    * @s-hirano-ist/s-search bumped to 1.15.0
+    * @s-hirano-ist/s-database bumped to 1.15.0
+    * @s-hirano-ist/s-notification bumped to 1.15.0
+    * @s-hirano-ist/s-storage bumped to 1.15.0
+
 ## [1.14.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.13.0...@s-hirano-ist/s-scripts-v1.14.0) (2026-02-14)
 
 
