@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.14.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.13.1...s-private-v10.14.0) (2026-02-15)
+
+
+### Features
+
+* add search minio ([1a2046e](https://github.com/s-hirano-ist/s-private/commit/1a2046e1adbac877690e9f4856eb1ad77ed75708))
+
+
+### Bug Fixes
+
+* cd and ci of workflows ([3038bcf](https://github.com/s-hirano-ist/s-private/commit/3038bcf778725f386f1bcc1bda5cf2e7ef888cd2))
+* ci for docker deploy ([3c5a764](https://github.com/s-hirano-ist/s-private/commit/3c5a764ba3813fd2799b0275945057430be2397a))
+* compose.yaml ([680c487](https://github.com/s-hirano-ist/s-private/commit/680c487323c0cc05e59d858eab34c88f2db02a3b))
+* env checks ([55ea69e](https://github.com/s-hirano-ist/s-private/commit/55ea69e5ab4c9c2ef02b429f08fc87080c69711c))
+* env checks ([c2e3df5](https://github.com/s-hirano-ist/s-private/commit/c2e3df5ccbc95d63ebc4cddd49b52e5d97601a52))
+* small settings ([89c00c8](https://github.com/s-hirano-ist/s-private/commit/89c00c89441a656b888352a11dd500cff38f6b38))
+* small settings on ingest ([7284ba2](https://github.com/s-hirano-ist/s-private/commit/7284ba247937c78c46a59a9c0e97903bdf928864))
+* storybook ([1e23636](https://github.com/s-hirano-ist/s-private/commit/1e2363696936ade72342c0ad4b71d7231306bc81))
+* tsconfig of scripts ([ee1da0c](https://github.com/s-hirano-ist/s-private/commit/ee1da0c68a8884555220cfe94432a3a2ab920c9f))
+
+
+### Maintenance
+
+* add compose for qdrant ([0117bc5](https://github.com/s-hirano-ist/s-private/commit/0117bc567eccb1baead94ab43c777cd10540e159))
+* add compose for qdrant ([71b6087](https://github.com/s-hirano-ist/s-private/commit/71b6087441eaa85b9f4605df82f9cf344f62125b))
+* **deps:** update dependency hono to v4.11.7 [security] ([29bd180](https://github.com/s-hirano-ist/s-private/commit/29bd18037b921734e9819d387625e07a0ff18499))
+* fix minio client ([bc33aac](https://github.com/s-hirano-ist/s-private/commit/bc33aac0680ef66ea2c1d3369b7d3c5dc745061f))
+* pacakges of s-search ([fba4b15](https://github.com/s-hirano-ist/s-private/commit/fba4b15c91ce503097cdf2cf081e9c9cbaca7af1))
+* update qdrant ([24c403d](https://github.com/s-hirano-ist/s-private/commit/24c403d95a6b6dfdd7c9dfee89eadabfbbc65ce3))
+
 ## [10.13.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.13.0...s-private-v10.13.1) (2026-02-14)
 
 
