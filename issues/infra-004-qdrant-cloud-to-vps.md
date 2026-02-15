@@ -1,1 +1,1 @@
-# qdrant cloudからvps × dockerに移動
+# Qdrant cloud から vps × docker に移動

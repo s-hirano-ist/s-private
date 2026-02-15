@@ -66,7 +66,9 @@ export function useSearch({
 						query: searchQuery.trim(),
 						limit: 50,
 					};
+					console.log("[Search] query:", query);
 					const result = await search(query);
+					console.log("[Search] result:", result);
 
 					if (controller.signal.aborted) return;
 
@@ -96,6 +98,8 @@ export function useSearch({
 	);
 
 	const executeSearch = useCallback(async () => {
+		if (isPending) return;
+
 		if (useUrlQuery) {
 			const params = new URLSearchParams(searchParams);
 			if (searchQuery) params.set(PARAM_NAME, searchQuery);
@@ -104,7 +108,14 @@ export function useSearch({
 		}
 
 		await fetchSearchResults(searchQuery);
-	}, [useUrlQuery, searchParams, searchQuery, router, fetchSearchResults]);
+	}, [
+		isPending,
+		useUrlQuery,
+		searchParams,
+		searchQuery,
+		router,
+		fetchSearchResults,
+	]);
 
 	const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const query = e.target.value;

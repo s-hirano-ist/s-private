@@ -1,12 +1,9 @@
 "use client";
 import Loading from "@s-hirano-ist/s-ui/display/loading";
 import { StatusCodeView } from "@s-hirano-ist/s-ui/display/status/status-code-view";
-import {
-	CommandEmpty,
-	CommandInput,
-	CommandItem,
-	CommandList,
-} from "@s-hirano-ist/s-ui/ui/command";
+import { Button } from "@s-hirano-ist/s-ui/ui/button";
+import { Input } from "@s-hirano-ist/s-ui/ui/input";
+import { SearchIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
@@ -34,11 +31,6 @@ export function SearchCard({ search }: Props) {
 		isError,
 	} = useSearch({ search, useUrlQuery: true });
 
-	const handleInputChange = (value: string) => {
-		const event = { target: { value } } as React.ChangeEvent<HTMLInputElement>;
-		handleSearchChange(event);
-	};
-
 	const { articles, nonArticles } = useMemo(() => {
 		if (!searchResults) return { articles: [], nonArticles: [] };
 		return {
@@ -59,7 +51,7 @@ export function SearchCard({ search }: Props) {
 	};
 
 	const handleKeyDown = (e: React.KeyboardEvent) => {
-		if (e.key === "Enter") {
+		if (e.key === "Enter" && !isPending) {
 			executeSearch();
 		}
 	};
@@ -73,54 +65,60 @@ export function SearchCard({ search }: Props) {
 
 	return (
 		<>
-			<div className="w-full">
-				<CommandInput
+			<div className="flex h-12 items-center gap-2 border-b px-4">
+				<Input
+					className="border-none shadow-none focus-visible:ring-0"
+					onChange={handleSearchChange}
 					onKeyDown={handleKeyDown}
-					onSearchClick={executeSearch}
-					onValueChange={handleInputChange}
 					placeholder={t("search")}
 					value={searchQuery}
 				/>
+				<Button
+					className="shrink-0"
+					disabled={isPending}
+					onClick={executeSearch}
+					size="icon"
+				>
+					<SearchIcon className="size-4" />
+				</Button>
 			</div>
-			<CommandList>
+			<div className="h-[300px] overflow-y-auto">
 				{searchResults === undefined ? (
 					<UtilButtons
 						handleReload={handleReload}
 						onSignOutSubmit={onSignOutSubmit}
 					/>
 				) : isError ? (
-					<CommandEmpty>
-						<div className="flex items-center justify-center">
-							<StatusCodeView
-								statusCode="500"
-								statusCodeString={statusCodes("500")}
-							/>
-						</div>
-					</CommandEmpty>
+					<div className="flex items-center justify-center">
+						<StatusCodeView
+							statusCode="500"
+							statusCodeString={statusCodes("500")}
+						/>
+					</div>
 				) : searchResults?.length === 0 && searchQuery && !isPending ? (
-					<CommandEmpty>
-						<div className="flex items-center justify-center">
-							<StatusCodeView
-								statusCode="204"
-								statusCodeString={statusCodes("204")}
-							/>
-						</div>
-					</CommandEmpty>
+					<div className="flex items-center justify-center">
+						<StatusCodeView
+							statusCode="204"
+							statusCodeString={statusCodes("204")}
+						/>
+					</div>
 				) : isPending ? (
 					<div className="p-4">
 						<Loading />
 					</div>
 				) : (
 					nonArticles.map((item, index) => (
-						<CommandItem
+						<button
+							className="w-full cursor-pointer rounded-sm px-2 py-3 text-left text-sm hover:bg-muted"
 							key={String(index)}
-							onSelect={() => handleSelect(item)}
+							onClick={() => handleSelect(item)}
+							type="button"
 						>
 							{item.title}
-						</CommandItem>
+						</button>
 					))
 				)}
-			</CommandList>
+			</div>
 			{articles.length > 0 && (
 				<div className="grid grid-cols-1 gap-2 p-2 sm:grid-cols-2">
 					{articles.map((item, index) => (

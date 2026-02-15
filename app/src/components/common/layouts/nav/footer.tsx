@@ -1,6 +1,5 @@
 "use client";
 import { Button } from "@s-hirano-ist/s-ui/ui/button";
-import { Command } from "@s-hirano-ist/s-ui/ui/command";
 import {
 	Drawer,
 	DrawerContent,
@@ -165,11 +164,9 @@ function FooterComponent({ search }: Props) {
 			<Drawer onOpenChange={setOpen} open={open}>
 				<DrawerContent className="max-h-[80vh]">
 					<DrawerHeader className="sr-only">
-						<DrawerTitle>Command Palette</DrawerTitle>
+						<DrawerTitle>Search</DrawerTitle>
 					</DrawerHeader>
-					<Command className="**:data-[slot=command-input-wrapper]:h-12 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5">
-						<SearchCard search={search} />
-					</Command>
+					<SearchCard search={search} />
 				</DrawerContent>
 			</Drawer>
 		</>
