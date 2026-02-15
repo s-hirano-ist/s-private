@@ -29,7 +29,7 @@ export function SearchCard({ search }: Props) {
 		executeSearch,
 		isPending,
 		isError,
-	} = useSearch({ search, useUrlQuery: true });
+	} = useSearch({ search });
 
 	const { articles, nonArticles } = useMemo(() => {
 		if (!searchResults) return { articles: [], nonArticles: [] };
