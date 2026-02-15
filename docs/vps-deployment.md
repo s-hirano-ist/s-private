@@ -22,7 +22,7 @@ Internet → Cloudflare Tunnel → cloudflared (VPS内) ─┬→ embedding-api:
 |---|---|---|
 | [`vps-init.sh`](../infra/scripts/vps-init.sh) | VPS (root) | deploy ユーザー作成、Docker/git、UFW、fail2ban、自動更新、ログローテ |
 | [`vps-harden-ssh.sh`](../infra/scripts/vps-harden-ssh.sh) | VPS (deploy) | SSH ポート変更、root 無効化、パスワード認証無効化 |
-| [`deploy.sh`](../infra/scripts/deploy.sh) | ローカル | リポジトリ取得、ビルド、デプロイ、状態確認 |
+| [`deploy.sh`](../infra/scripts/deploy.sh) | ローカル | リポジトリ取得、pull、デプロイ、状態確認 |
 
 ---
 
@@ -148,7 +148,7 @@ ssh -p 22 conoha-vps
 
 1. Zero Trust → Networks → Tunnels → `conoha-vps` → Public Hostname タブ
 2. **Add a public hostname**:
-   - Subdomain: サービス識別名（例: `embedding-api`, `minio`, `qdrant`）
+   - Subdomain: サービス識別名（例: `embedding-api`, `minio`）
    - Domain: 所有ドメイン
    - Service: `http://<コンテナ名>:<ポート>`（例: `http://embedding-api:3001`）
 3. 必要に応じて 5.3 と同様に Access アプリケーション + ポリシーを作成
@@ -187,7 +187,19 @@ curl -s -o /dev/null -w "%{http_code}" https://<service>.<domain>/health
 
 設定後、`https://<service>.<domain>/ui` にアクセス → Cloudflare のログイン画面 → メール OTP 認証 → UI 表示
 
-### Step 6: 環境変数の準備（手動）
+### Step 6: Docker Hub 認証（private image 用・手動・VPS deploy）
+
+compose.yaml で private な Docker Hub イメージを使用するため、VPS 上で Docker Hub にログインする。
+
+```bash
+ssh conoha-vps
+docker login -u <DOCKERHUB_USERNAME>
+# パスワード or Access Token を入力
+```
+
+> 認証情報は `~/.docker/config.json` に保存される。Access Token の使用を推奨（Docker Hub → Account Settings → Security → New Access Token）。
+
+### Step 7: 環境変数の準備（手動）
 
 VPS 上の `~/s-private/.env` に配置:
 
@@ -202,16 +214,13 @@ CLOUDFLARE_TUNNEL_TOKEN=your-tunnel-token
 MINIO_ROOT_USER=your-minio-user         # ※ デフォルトの minioadmin は使わない
 MINIO_ROOT_PASSWORD=your-minio-password  # ※ openssl rand -base64 32 で生成
 MINIO_BUCKET_NAME=your-bucket-name
-
-# Qdrant
-QDRANT_API_KEY=your-qdrant-api-key  # ※ openssl rand -base64 32 で生成
 ```
 
 ```bash
 chmod 600 ~/s-private/.env
 ```
 
-### Step 7: デプロイ（スクリプト・ローカル）
+### Step 8: デプロイ（スクリプト・ローカル）
 
 ```bash
 # 初回セットアップ
@@ -235,15 +244,11 @@ chmod 600 ~/s-private/.env
 リポジトリルートの `compose.yaml` に全サービスを定義している。
 
 ```
-compose.yaml          ← 全サービス定義（embedding-api, minio, cloudflared, qdrant）
+compose.yaml          ← 全サービス定義（embedding-api, minio, cloudflared）
 .env                  ← VPS 用環境変数（EMBEDDING_API_KEY, CLOUDFLARE_TUNNEL_TOKEN 等）
-services/
-  embedding-api/
-    Dockerfile        ← embedding-api のビルド定義
-    src/              ← ソースコード
 ```
 
-サービスを追加する場合は `compose.yaml` にサービス定義を追加し、必要に応じて Dockerfile を配置する。
+全サービスは Docker Hub の image を `docker compose pull` で取得する。サービスを追加する場合は `compose.yaml` にサービス定義（`image:` 指定）を追加する。
 
 ---
 
@@ -294,45 +299,6 @@ MINIO_USE_SSL=true
 MINIO_ACCESS_KEY=your-minio-user
 MINIO_SECRET_KEY=your-minio-password
 MINIO_BUCKET_NAME=your-bucket-name
-```
-
-### A.3 Qdrant
-
-- **コンテナ名**: `qdrant`
-- **イメージ**: `qdrant/qdrant:v1.14.0`
-- **ポート**: 6333 (REST API)
-- **ヘルスチェック**: `/healthz` エンドポイント
-- **環境変数**: `QDRANT_API_KEY`（API キー認証）
-- **ボリューム**: `qdrant-data` — ベクトルデータ永続化
-- **メモリ使用量**: ~100-200MB（データ量に依存）
-- **Cloudflare Public Hostname**: `qdrant.<domain>` → `http://qdrant:6333`
-
-#### VPS `.env` の記載例
-
-```bash
-QDRANT_API_KEY=your-qdrant-api-key  # ※ openssl rand -base64 32 で生成
-```
-
-#### Cloudflare Public Hostname 設定
-
-| Subdomain | Service | CF Access |
-| --- | --- | --- |
-| `qdrant.<domain>` | `http://qdrant:6333` | 有効（Service Token） |
-
-#### Next.js アプリの環境変数例（本番）
-
-```bash
-QDRANT_URL=https://qdrant.<domain>
-QDRANT_API_KEY=your-qdrant-api-key
-```
-
-#### データ移行
-
-Qdrant Cloud → VPS 移行時はデータの再インジェストが必要:
-
-```bash
-# VPS 上の Qdrant に対して ingest スクリプトを実行
-QDRANT_URL=https://qdrant.<domain> pnpm rag-ingest --force
 ```
 
 ---

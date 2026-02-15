@@ -55,6 +55,20 @@ async function getEmbeddingPipeline(): Promise<FeatureExtractionPipeline> {
 }
 
 /**
+ * Eagerly initialize the embedding pipeline (call at server startup)
+ */
+export async function initEmbeddingPipeline(): Promise<void> {
+	await getEmbeddingPipeline();
+}
+
+/**
+ * Check if the embedding pipeline is ready
+ */
+export function isEmbeddingReady(): boolean {
+	return embeddingPipeline !== null;
+}
+
+/**
  * Generate embedding for a single text
  * @param text - Input text to embed
  * @param isQuery - Whether this is a query (vs passage)

@@ -2,7 +2,12 @@ import { serve } from "@hono/node-server";
 import { swaggerUI } from "@hono/swagger-ui";
 import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import { RAG_CONFIG } from "@s-hirano-ist/s-search/config";
-import { embed, embedBatch } from "@s-hirano-ist/s-search/embedding";
+import {
+	embed,
+	embedBatch,
+	initEmbeddingPipeline,
+	isEmbeddingReady,
+} from "@s-hirano-ist/s-search/embedding";
 import { logger } from "hono/logger";
 import { z } from "zod";
 
@@ -124,6 +129,10 @@ const healthRoute = createRoute({
 			content: { "application/json": { schema: healthResponseSchema } },
 			description: "正常稼働",
 		},
+		503: {
+			content: { "application/json": { schema: healthResponseSchema } },
+			description: "モデルロード中",
+		},
 	},
 });
 
@@ -141,6 +150,9 @@ app.openapi(embedBatchRoute, async (c) => {
 });
 
 app.openapi(healthRoute, (c) => {
+	if (!isEmbeddingReady()) {
+		return c.json({ status: "loading" }, 503);
+	}
 	return c.json({ status: "ok" }, 200);
 });
 
@@ -171,3 +183,9 @@ const port = Number(process.env.PORT ?? 3001);
 console.log(`Embedding API starting on port ${port}...`);
 
 serve({ fetch: app.fetch, port });
+
+// Eager load embedding model (fire-and-forget)
+initEmbeddingPipeline().catch((err) => {
+	console.error("Failed to load embedding model:", err);
+	process.exit(1);
+});
