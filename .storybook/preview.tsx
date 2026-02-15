@@ -1,11 +1,13 @@
 import { withThemeByClassName } from "@storybook/addon-themes";
 import type { Preview } from "@storybook/nextjs-vite";
 import "../packages/ui/globals.css";
-import { NextIntlClientProvider } from "next-intl";
 import { MINIMAL_VIEWPORTS } from "storybook/viewport";
+import enMessages from "../app/messages/en.json";
 import jaMessages from "../app/messages/ja.json";
 import { ThemeProvider } from "../packages/ui/providers/theme-provider";
 import { Toaster } from "../packages/ui/ui/sonner";
+
+const messages = { en: enMessages, ja: jaMessages };
 
 const preview = {
 	tags: ["autodocs"],
@@ -27,12 +29,10 @@ const preview = {
 					defaultTheme="light"
 					enableSystem={false}
 				>
-					<NextIntlClientProvider locale="ja" messages={jaMessages}>
-						<Toaster />
-						<div className="w-96">
-							<Story />
-						</div>
-					</NextIntlClientProvider>
+					<Toaster />
+					<div className="w-96">
+						<Story />
+					</div>
 				</ThemeProvider>
 			);
 		},
@@ -68,6 +68,12 @@ const preview = {
 
 		a11y: {
 			test: "error",
+		},
+
+		nextIntl: {
+			defaultLocale: "ja",
+			locales: ["ja", "en"],
+			messages,
 		},
 	},
 } satisfies Preview;
