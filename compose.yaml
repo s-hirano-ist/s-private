@@ -58,6 +58,24 @@ services:
     networks:
       - tunnel-net
 
+  qdrant:
+    image: qdrant/qdrant:v1.14.0
+    container_name: qdrant
+    restart: unless-stopped
+    environment:
+      - QDRANT__SERVICE__API_KEY=${QDRANT_API_KEY}
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant-data:/qdrant/storage
+    networks:
+      - tunnel-net
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/localhost/6333 && echo -e 'GET /healthz HTTP/1.1\r\nHost: localhost\r\n\r\n' >&3 && cat <&3 | grep -q 200"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
   cloudflared:
     image: cloudflare/cloudflared:latest
     container_name: cloudflared
@@ -70,10 +88,13 @@ services:
     depends_on:
       embedding-api:
         condition: service_healthy
+      qdrant:
+        condition: service_healthy
 
 volumes:
   hf-cache:
   minio-data:
+  qdrant-data:
 
 networks:
   tunnel-net:
