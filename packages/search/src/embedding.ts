@@ -7,7 +7,7 @@ import {
 	type FeatureExtractionPipeline,
 	pipeline,
 } from "@huggingface/transformers";
-import { RAG_CONFIG } from "./config";
+import { RAG_CONFIG } from "./config.ts";
 
 const CACHE_DIR = join(homedir(), ".cache", "huggingface", "transformers");
 

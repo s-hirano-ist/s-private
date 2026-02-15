@@ -4,7 +4,7 @@ import {
 	type QdrantPayload,
 	RAG_CONFIG,
 	type SearchResult,
-} from "./config";
+} from "./config.ts";
 
 let client: QdrantClient | null = null;
 

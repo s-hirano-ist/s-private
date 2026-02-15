@@ -5,31 +5,32 @@
 	"type": "module",
 	"exports": {
 		"./config": {
-			"types": "./dist/config.d.ts",
-			"import": "./dist/config.js"
+			"types": "./src/config.ts",
+			"import": "./src/config.ts"
 		},
 		"./embedding": {
-			"types": "./dist/embedding.d.ts",
-			"import": "./dist/embedding.js"
+			"types": "./src/embedding.ts",
+			"import": "./src/embedding.ts"
 		},
 		"./embedding-client": {
-			"types": "./dist/embedding-client.d.ts",
-			"import": "./dist/embedding-client.js"
+			"types": "./src/embedding-client.ts",
+			"import": "./src/embedding-client.ts"
 		},
 		"./qdrant-client": {
-			"types": "./dist/qdrant-client.d.ts",
-			"import": "./dist/qdrant-client.js"
+			"types": "./src/qdrant-client.ts",
+			"import": "./src/qdrant-client.ts"
 		},
 		"./chunker": {
-			"types": "./dist/chunker.d.ts",
-			"import": "./dist/chunker.js"
+			"types": "./src/chunker.ts",
+			"import": "./src/chunker.ts"
 		},
 		"./ingest": {
-			"types": "./dist/ingest.d.ts",
-			"import": "./dist/ingest.js"
+			"types": "./src/ingest.ts",
+			"import": "./src/ingest.ts"
 		}
 	},
 	"files": [
+		"src",
 		"dist",
 		"README.md",
 		"LICENSE"
@@ -48,7 +49,7 @@
 		"embedding"
 	],
 	"scripts": {
-		"build": "tsc && tsc-esm-fix --target dist",
+		"build": "tsc",
 		"clean": "rm -rf dist",
 		"typecheck": "tsc --noEmit",
 		"prepublishOnly": "pnpm run build"
@@ -61,7 +62,6 @@
 	},
 	"devDependencies": {
 		"@types/node": "24.10.9",
-		"tsc-esm-fix": "3.1.2",
 		"typescript": "5.9.3"
 	}
 }

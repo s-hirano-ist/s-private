@@ -16,7 +16,6 @@ COPY --from=deps /app/packages/search/node_modules ./packages/search/node_module
 COPY packages/search/ ./packages/search/
 COPY services/embedding-api/ ./services/embedding-api/
 COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
-RUN pnpm --filter @s-hirano-ist/s-search build
 RUN pnpm --filter @s-hirano-ist/embedding-api build
 RUN pnpm --filter @s-hirano-ist/embedding-api deploy --prod --legacy /app/deployed
 
