@@ -1,0 +1,55 @@
+{
+	"name": "@s-hirano-ist/s-storage",
+	"version": "1.14.0",
+	"description": "MinIO storage client for s-private application",
+	"type": "module",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./index.ts",
+			"default": "./index.ts"
+		}
+	},
+	"publishConfig": {
+		"access": "public",
+		"exports": {
+			".": {
+				"types": "./dist/index.d.ts",
+				"default": "./dist/index.js"
+			}
+		},
+		"main": "./dist/index.js",
+		"types": "./dist/index.d.ts"
+	},
+	"files": [
+		"dist",
+		"README.md",
+		"LICENSE"
+	],
+	"scripts": {
+		"build": "tsc && tsc-esm-fix --target dist",
+		"prepublishOnly": "pnpm run build",
+		"clean": "rm -rf dist",
+		"typecheck": "tsc --noEmit"
+	},
+	"keywords": [
+		"minio",
+		"storage",
+		"typescript"
+	],
+	"author": "",
+	"license": "AGPL-3.0",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/s-hirano-ist/s-private.git",
+		"directory": "packages/storage"
+	},
+	"dependencies": {
+		"minio": "8.0.6"
+	},
+	"devDependencies": {
+		"tsc-esm-fix": "3.1.2",
+		"typescript": "5.9.3"
+	}
+}

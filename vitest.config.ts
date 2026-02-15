@@ -84,6 +84,7 @@ export default defineConfig({
 				"**/*.test.ts?(x)",
 				"**/types.ts",
 				"**/*.interface.ts",
+				".storybook/**/*",
 			],
 			reporter: ["text", "json-summary", "json"],
 		},

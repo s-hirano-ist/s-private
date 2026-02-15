@@ -8,8 +8,8 @@ import {
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
+import { createMinioClient } from "@s-hirano-ist/s-storage";
 import { glob } from "glob";
-import * as Minio from "minio";
 import sharp from "sharp";
 
 const SCRIPT_NAME = "ingest-images";
@@ -44,11 +44,7 @@ async function main() {
 		PUSHOVER_USER_KEY: process.env.PUSHOVER_USER_KEY,
 		PUSHOVER_APP_TOKEN: process.env.PUSHOVER_APP_TOKEN,
 		USERNAME_TO_EXPORT: process.env.USERNAME_TO_EXPORT,
-		MINIO_HOST: process.env.MINIO_HOST,
-		MINIO_PORT: process.env.MINIO_PORT,
 		MINIO_BUCKET_NAME: process.env.MINIO_BUCKET_NAME,
-		MINIO_ACCESS_KEY: process.env.MINIO_ACCESS_KEY,
-		MINIO_SECRET_KEY: process.env.MINIO_SECRET_KEY,
 	} as const;
 
 	if (Object.values(env).some((v) => !v)) {
@@ -67,13 +63,7 @@ async function main() {
 		appToken: env.PUSHOVER_APP_TOKEN ?? "",
 	});
 
-	const minioClient = new Minio.Client({
-		endPoint: env.MINIO_HOST ?? "",
-		port: Number(env.MINIO_PORT),
-		useSSL: true,
-		accessKey: env.MINIO_ACCESS_KEY ?? "",
-		secretKey: env.MINIO_SECRET_KEY ?? "",
-	});
+	const minioClient = createMinioClient();
 
 	const bucketName = env.MINIO_BUCKET_NAME ?? "";
 

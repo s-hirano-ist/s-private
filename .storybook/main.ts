@@ -13,6 +13,7 @@ const config: StorybookConfig = {
 		"@storybook/addon-vitest",
 		"@storybook/addon-docs",
 		"@storybook/addon-mcp",
+		"storybook-next-intl",
 	],
 	framework: {
 		name: "@storybook/nextjs-vite",

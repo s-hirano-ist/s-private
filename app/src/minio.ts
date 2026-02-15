@@ -9,8 +9,7 @@
  */
 
 import "server-only";
-import * as Minio from "minio";
-import { env } from "@/env";
+import { createMinioClient } from "@s-hirano-ist/s-storage";
 
 /**
  * MinIO client instance for object storage operations.
@@ -20,11 +19,8 @@ import { env } from "@/env";
  * - Uploading original images
  * - Uploading thumbnails
  * - Retrieving image binary data
+ *
+ * When SSL is enabled (production), CF-Access headers are injected via custom transport
+ * for Cloudflare Tunnel authentication.
  */
-export const minioClient = new Minio.Client({
-	endPoint: env.MINIO_HOST,
-	port: env.MINIO_PORT,
-	useSSL: env.MINIO_USE_SSL,
-	accessKey: env.MINIO_ACCESS_KEY,
-	secretKey: env.MINIO_SECRET_KEY,
-});
+export const minioClient = createMinioClient();

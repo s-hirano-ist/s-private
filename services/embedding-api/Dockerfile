@@ -17,12 +17,15 @@ COPY packages/search/ ./packages/search/
 COPY services/embedding-api/ ./services/embedding-api/
 COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
 RUN pnpm --filter @s-hirano-ist/s-search build
-# Patch s-search exports to use dist/ for Node.js ESM (pnpm deploy does not apply publishConfig for workspace deps)
-RUN node -e "\
+RUN node -e " \
   const fs = require('fs'); \
-  const pkg = JSON.parse(fs.readFileSync('./packages/search/package.json', 'utf8')); \
-  pkg.exports = pkg.publishConfig.exports; \
-  fs.writeFileSync('./packages/search/package.json', JSON.stringify(pkg, null, '\t') + '\n');"
+  const path = './packages/search/package.json'; \
+  const pkg = JSON.parse(fs.readFileSync(path, 'utf8')); \
+  if (pkg.publishConfig && pkg.publishConfig.exports) { \
+    pkg.exports = pkg.publishConfig.exports; \
+  } \
+  fs.writeFileSync(path, JSON.stringify(pkg, null, '\t') + '\n'); \
+"
 RUN pnpm --filter @s-hirano-ist/embedding-api build
 RUN pnpm --filter @s-hirano-ist/embedding-api deploy --prod --legacy /app/deployed
 

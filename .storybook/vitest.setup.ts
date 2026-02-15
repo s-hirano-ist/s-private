@@ -1,5 +1,6 @@
 import * as a11yAddonAnnotations from "@storybook/addon-a11y/preview";
 import { setProjectAnnotations } from "@storybook/nextjs-vite";
+import * as nextIntlAnnotations from "storybook-next-intl/preview";
 import { vi } from "vitest";
 import * as projectAnnotations from "./preview";
 
@@ -29,4 +30,8 @@ vi.mock("next-intl/server", () => ({
 
 // This is an important step to apply the right configuration when testing your stories.
 // More info at: https://storybook.js.org/docs/api/portable-stories/portable-stories-vitest#setprojectannotations
-setProjectAnnotations([a11yAddonAnnotations, projectAnnotations]);
+setProjectAnnotations([
+	a11yAddonAnnotations,
+	nextIntlAnnotations,
+	projectAnnotations,
+]);

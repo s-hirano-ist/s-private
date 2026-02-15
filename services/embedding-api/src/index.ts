@@ -3,9 +3,13 @@ import { swaggerUI } from "@hono/swagger-ui";
 import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import { RAG_CONFIG } from "@s-hirano-ist/s-search/config";
 import { embed, embedBatch } from "@s-hirano-ist/s-search/embedding";
+import { logger } from "hono/logger";
 import { z } from "zod";
 
 const app = new OpenAPIHono();
+
+// --- Access log middleware ---
+app.use(logger());
 
 // --- Bearer token auth middleware ---
 const PUBLIC_PATHS = ["/health", "/doc", "/ui"];

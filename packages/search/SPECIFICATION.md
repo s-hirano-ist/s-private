@@ -10,7 +10,7 @@ s-contentsリポジトリおよびDBのコンテンツを Qdrant に格納し、
 | ソース | glob パターン | Qdrant type | 備考 |
 |--------|-------------|-------------|------|
 | ノート | `markdown/note/**/*.md` | `markdown_note` | YAML frontmatter あり |
-| 書籍メモ | `markdown/book/**/*.md` | `markdown_note` | frontmatter なし、ISBNファイル名 |
+| 書籍メモ | `markdown/book/**/*.md` | `markdown_note` | YAML frontmatter あり |
 | ブックマーク | `json/article/**/*.json` | `bookmark_json` | カテゴリ別JSON |
 
 ingest設定: `packages/scripts/src/rag/ingest-config.ts`
@@ -37,7 +37,11 @@ draft: false
 ### 3.2 Markdown Book (`markdown/book/**/*.md`)
 
 ```
-# 書籍タイトル
+---
+heading: 書籍タイトル
+description: 書籍の説明
+draft: false
+---
 
 本文テキスト...
 
@@ -45,9 +49,10 @@ draft: false
 ...
 ```
 
-- frontmatter なし → パーサーが `heading: "unknown"` を割り当て
-- ファイル名は ISBN（例: `9784003362211.md`）
-- H1 がタイトルだが、チャンカーはH2/H3のみ分割対象 → H1以下〜最初のH2 までの本文はチャンクに含まれない可能性あり
+- YAML frontmatter あり（notes と同一構造: `heading`, `description`, `draft`）
+- `heading`: 書籍タイトル → `top_heading` に使用
+- `draft: true` のファイルはスキップ
+- H2/H3 で見出し分割
 
 ### 3.3 Article JSON (`json/article/**/*.json`)
 
@@ -70,7 +75,7 @@ draft: false
 
 - `heading` → `top_heading` に使用
 - 各 `body` 要素が1チャンク
-- テキスト = `title + ogTitle + ogDescription + quote + url` を改行結合
+- テキスト = `title + ogTitle(titleと異なる場合) + ogDescription + quote` を改行結合
 
 ## 4. チャンキング戦略
 
@@ -78,31 +83,57 @@ draft: false
 
 **Markdown系:**
 1. frontmatter 解析（YAML簡易パーサー）
-2. H2/H3 見出しで階層分割（`splitMarkdownByHeadings`）
-3. 各セクションが `maxChunkLength`(2000文字) 超過時にパラグラフ分割
-4. `heading_path` = `[frontmatter.heading, ...見出し階層]`
+2. H1行（`# タイトル`）を除去（frontmatter の `description` と重複するため）
+3. H2/H3 見出しで階層分割（`splitMarkdownByHeadings`）
+4. 最初の H2/H3 前のコンテンツを「プリアンブル」セクションとしてキャプチャ
+   - H2/H3 が存在しないファイルの場合、全コンテンツがプリアンブルになる
+   - プリアンブルの `title` = `frontmatter.description ?? frontmatter.heading`
+   - プリアンブルの `heading_path` = `[frontmatter.heading]`
+5. 各セクションが `maxChunkLength`(2000文字) 超過時にパラグラフ分割
+6. 通常セクションの `heading_path` = `[frontmatter.heading, ...見出し階層]`
 
 **JSON系:**
 - 各body要素 = 1チャンク（分割なし）
 - `heading_path` = `[json.heading]`
 
-**DB連携パーサー（`parseDbNote`, `parseDbArticle`）:**
-- DB上のnote/articleも同一チャンカーで処理可能
-- `doc_id` = `db:note:{id}` / `db:article:{id}` 形式
+**DB連携パーサー:**
+
+`parseDbNote(noteId, title, markdown)`:
+- DB上のnoteをMarkdownチャンカーで処理
+- `doc_id` = `db:note:{noteId}`
+
+`parseDbArticle(article)`:
+- 引数: `{ id, title, url, ogTitle?, ogDescription?, quote?, categoryName }`
+- DB上のarticleを1チャンクとして処理
+- `doc_id` = `db:article:{id}`
 
 ## 5. ペイロード構造
 
 ```typescript
+type ContentType = "articles" | "books" | "notes";
+
 type QdrantPayload = {
   type: "markdown_note" | "bookmark_json";
-  top_heading: string;       // カテゴリ/見出しルート
-  doc_id: string;            // "file:{path}" or "db:{type}:{id}"
-  chunk_id: string;          // "{doc_id}#{index}"
-  title: string;             // セクションタイトル
-  url?: string;              // ブックマークのみ
-  heading_path: string[];    // 見出し階層パス
-  text: string;              // チャンクテキスト本文
-  content_hash: string;      // SHA256先頭16文字（変更検出用）
+  content_type: ContentType;   // コンテンツ種別
+  top_heading: string;         // カテゴリ/見出しルート
+  doc_id: string;              // "file:{path}" or "db:{type}:{id}"
+  chunk_id: string;            // "{doc_id}#{index}"
+  title: string;               // セクションタイトル
+  url?: string;                // ブックマークのみ
+  heading_path: string[];      // 見出し階層パス
+  text: string;                // チャンクテキスト本文
+  content_hash: string;        // SHA256先頭16文字（変更検出用）
+};
+
+type SearchResult = {
+  score: number;
+  text: string;
+  title: string;
+  url?: string;
+  heading_path: string[];
+  type: "markdown_note" | "bookmark_json";
+  content_type: ContentType;
+  doc_id: string;
 };
 ```
 
@@ -113,13 +144,32 @@ type QdrantPayload = {
 - ローカル実行（HuggingFace Transformers）またはリモートAPI
 - 設定: `packages/search/src/config.ts`
 
+**リモートAPI (`createEmbeddingClient`):**
+
+```typescript
+type EmbeddingClientConfig = {
+  apiUrl: string;                // Embedding APIのベースURL
+  apiKey: string;                // Bearer認証トークン
+  cfAccessClientId: string;      // Cloudflare Access Client ID
+  cfAccessClientSecret: string;  // Cloudflare Access Client Secret
+};
+```
+
+- エンドポイント: `POST /embed`（単発）, `POST /embed-batch`（バッチ）
+- タイムアウト: 単発 30秒 / バッチ 60秒
+- Cloudflare Access対応: `CF-Access-Client-Id`, `CF-Access-Client-Secret` ヘッダーを付与
+
 ## 7. ベクトルDB (Qdrant)
 
 - コレクション: `knowledge_v1`
 - ベクトルサイズ: 384
 - 距離関数: Cosine
-- ペイロードインデックス: `type`（keyword）, `top_heading`（keyword）
+- ペイロードインデックス: `type`（keyword）, `top_heading`（keyword）, `content_type`（keyword）
 - ポイントID: `chunk_id` の文字列ハッシュ → unsigned 32bit整数
+
+**`getCollectionStats()`:**
+- コレクション統計取得（`pointsCount`, `status`）
+- コレクション未作成時は `{ pointsCount: 0, status: "not_found" }` を返却
 
 ## 8. Ingestパイプライン
 
@@ -129,7 +179,20 @@ type QdrantPayload = {
 ファイル一覧(glob) → パース(chunker) → 変更検出(hash比較) → バッチEmbed(20件) → Qdrant Upsert
 ```
 
-- 変更検出: `content_hash` で差分のみ処理
+```typescript
+type IngestOptions = {
+  embedBatchFn?: (texts: string[], isQuery?: boolean) => Promise<number[][]>;
+  force?: boolean;  // true で変更検出をバイパスし全チャンクを再処理
+};
+
+type IngestResult = {
+  totalChunks: number;
+  changedChunks: number;
+  skippedChunks: number;
+};
+```
+
+- 変更検出: `content_hash` で差分のみ処理（`force: true` でバイパス可能）
 - バッチサイズ: 20
 - リトライ: 最大3回、2秒間隔
 - バッチ間ディレイ: 100ms
@@ -140,7 +203,8 @@ type QdrantPayload = {
 クエリ → "query: " プレフィックス付きEmbed → Qdrant vector search → フィルタ適用 → SearchResult[]
 ```
 
-- フィルタ: `type`, `top_heading` による絞り込み
+- フィルタ: `type`, `top_heading`, `content_type` による絞り込み
+  - `content_type`: 単一値（`ContentType`）または配列（`ContentType[]`）でOR検索が可能
 - デフォルト topK: 10
 
 ## 参照ファイル

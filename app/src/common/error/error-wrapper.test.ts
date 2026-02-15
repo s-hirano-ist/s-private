@@ -1,7 +1,7 @@
 import { UnexpectedError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import { Prisma } from "@s-hirano-ist/s-database";
 import { NotificationError } from "@s-hirano-ist/s-notification";
-import * as Minio from "minio";
+import { S3Error } from "@s-hirano-ist/s-storage";
 import { AuthError } from "next-auth";
 import { describe, expect, test, vi } from "vitest";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
@@ -19,8 +19,8 @@ vi.mock("@/infrastructures/events/event-setup", () => ({
 	initializeEventHandlers: vi.fn(),
 }));
 
-// Mock MinIO
-vi.mock("minio", () => ({
+// Mock S3Error from storage package
+vi.mock("@s-hirano-ist/s-storage", () => ({
 	S3Error: class S3Error extends Error {
 		code?: string;
 		constructor(message: string) {
@@ -213,7 +213,7 @@ describe("wrapServerSideErrorForClient", () => {
 	});
 
 	test("should handle MinIO S3Error", async () => {
-		const error = new Minio.S3Error("Access Denied");
+		const error = new S3Error("Access Denied");
 		error.code = "AccessDenied";
 
 		const result = await wrapServerSideErrorForClient(error);
