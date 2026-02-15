@@ -2,6 +2,7 @@
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
+import iconv from "iconv-lite";
 import { JSDOM, VirtualConsole } from "jsdom";
 
 type ArticleItem = {
@@ -19,6 +20,42 @@ type ArticlesJson = {
 	description: string;
 	body: ArticleItem[];
 };
+
+function normalizeCharset(charset: string): string {
+	const normalized = charset.toLowerCase().replace(/[^a-z0-9]/g, "");
+	const mapping: Record<string, string> = {
+		shiftjis: "Shift_JIS",
+		sjis: "Shift_JIS",
+		xsjis: "Shift_JIS",
+		eucjp: "EUC-JP",
+		xeucjp: "EUC-JP",
+	};
+	return mapping[normalized] || charset;
+}
+
+function detectCharset(headers: Headers, buffer: Buffer): string {
+	// 1. Content-Type ヘッダーから検出
+	const contentType = headers.get("content-type") || "";
+	const headerMatch = contentType.match(/charset=([^\s;]+)/i);
+	if (headerMatch) return normalizeCharset(headerMatch[1]);
+
+	// 2. HTML meta タグから検出（ASCII範囲で仮デコード）
+	const preview = buffer
+		.subarray(0, Math.min(4096, buffer.length))
+		.toString("ascii");
+
+	// <meta charset="...">
+	const metaCharset = preview.match(/<meta\s{1,200}charset=["']?([^"'\s>]+)/i);
+	if (metaCharset) return normalizeCharset(metaCharset[1]);
+
+	// <meta http-equiv="Content-Type" content="...; charset=...">
+	const metaHttpEquiv = preview.match(
+		/<meta[^>]{1,500}http-equiv=["']?Content-Type["']?[^>]{1,500}content=["'][^"']{0,500}charset=([^"'\s;]+)/i,
+	);
+	if (metaHttpEquiv) return normalizeCharset(metaHttpEquiv[1]);
+
+	return "utf-8";
+}
 
 // REF: https://zenn.dev/littleforest/articles/scrape-og-tags
 function extractOgpData(metaElements: HTMLMetaElement[]) {
@@ -42,9 +79,22 @@ async function getOgTags(
 	try {
 		console.log(`Fetching OG tags for: ${url}`);
 
+		const response = await fetch(url, {
+			headers: {
+				"User-Agent":
+					"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+			},
+		});
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`);
+		}
+		const buffer = Buffer.from(await response.arrayBuffer());
+		const charset = detectCharset(response.headers, buffer);
+		const html = iconv.decode(buffer, charset);
+
 		// REF: https://github.com/jsdom/jsdom#virtual-consoles
 		const virtualConsole = new VirtualConsole();
-		const dom = await JSDOM.fromURL(url, { virtualConsole });
+		const dom = new JSDOM(html, { virtualConsole });
 		virtualConsole.on("error", () => {});
 		virtualConsole.on("warn", () => {});
 		virtualConsole.on("info", () => {});

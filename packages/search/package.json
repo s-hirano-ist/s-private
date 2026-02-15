@@ -4,40 +4,29 @@
 	"description": "RAG search library with Qdrant and embedding API client",
 	"type": "module",
 	"exports": {
-		"./config": "./src/config.ts",
-		"./embedding": "./src/embedding.ts",
-		"./embedding-client": "./src/embedding-client.ts",
-		"./qdrant-client": "./src/qdrant-client.ts",
-		"./chunker": "./src/chunker.ts",
-		"./ingest": "./src/ingest.ts"
-	},
-	"publishConfig": {
-		"access": "public",
-		"exports": {
-			"./config": {
-				"types": "./dist/config.d.ts",
-				"import": "./dist/config.js"
-			},
-			"./embedding": {
-				"types": "./dist/embedding.d.ts",
-				"import": "./dist/embedding.js"
-			},
-			"./embedding-client": {
-				"types": "./dist/embedding-client.d.ts",
-				"import": "./dist/embedding-client.js"
-			},
-			"./qdrant-client": {
-				"types": "./dist/qdrant-client.d.ts",
-				"import": "./dist/qdrant-client.js"
-			},
-			"./chunker": {
-				"types": "./dist/chunker.d.ts",
-				"import": "./dist/chunker.js"
-			},
-			"./ingest": {
-				"types": "./dist/ingest.d.ts",
-				"import": "./dist/ingest.js"
-			}
+		"./config": {
+			"types": "./dist/config.d.ts",
+			"import": "./dist/config.js"
+		},
+		"./embedding": {
+			"types": "./dist/embedding.d.ts",
+			"import": "./dist/embedding.js"
+		},
+		"./embedding-client": {
+			"types": "./dist/embedding-client.d.ts",
+			"import": "./dist/embedding-client.js"
+		},
+		"./qdrant-client": {
+			"types": "./dist/qdrant-client.d.ts",
+			"import": "./dist/qdrant-client.js"
+		},
+		"./chunker": {
+			"types": "./dist/chunker.d.ts",
+			"import": "./dist/chunker.js"
+		},
+		"./ingest": {
+			"types": "./dist/ingest.d.ts",
+			"import": "./dist/ingest.js"
 		}
 	},
 	"files": [

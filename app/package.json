@@ -5,8 +5,8 @@
 	"description": "Private pages and admin tools for s-hirano-ist.",
 	"type": "module",
 	"scripts": {
-		"dev": "next dev",
-		"build": "next build",
+		"dev": "pnpm --filter @s-hirano-ist/s-search build && next dev",
+		"build": "pnpm --filter @s-hirano-ist/s-search build && next build",
 		"analyze": "next experimental-analyze",
 		"start": "next start",
 		"typecheck": "tsc --noEmit"
