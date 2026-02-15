@@ -7,11 +7,11 @@
 # --init (初回セットアップ):
 #   - git clone でリポジトリを ~/s-private に取得
 #   - .env ファイルの作成ガイド表示 (EMBEDDING_API_KEY, CLOUDFLARE_TUNNEL_TOKEN 等)
-#   - docker compose build → up -d
+#   - docker compose pull → up -d
 #
 # --update (コード更新 & 再デプロイ):
 #   - git pull で最新コード取得
-#   - docker compose build → up -d
+#   - docker compose pull → up -d
 #
 # --status (状態確認):
 #   - docker compose ps でサービス一覧
@@ -37,8 +37,8 @@ usage() {
     echo "Usage: $0 <MODE> <SSH_HOST>"
     echo ""
     echo "Modes:"
-    echo "  --init     初回セットアップ (git clone, .env ガイド, build, up)"
-    echo "  --update   更新 (git pull, build, up -d)"
+    echo "  --init     初回セットアップ (git clone, .env ガイド, pull, up)"
+    echo "  --update   更新 (git pull, pull, up -d)"
     echo "  --status   状態確認 (ps, logs, health check)"
     echo ""
     echo "Arguments:"
@@ -133,9 +133,9 @@ do_init() {
     fi
     echo ""
 
-    echo "[3/4] Docker イメージをビルド中..."
-    ssh_exec "cd ${REMOTE_DIR} && docker compose build"
-    echo "  → ビルド完了。"
+    echo "[3/4] Docker イメージを pull 中..."
+    ssh_exec "cd ${REMOTE_DIR} && docker compose pull"
+    echo "  → pull 完了。"
     echo ""
 
     echo "[4/4] サービスを起動中..."
@@ -171,9 +171,9 @@ do_update() {
     echo "  → pull 完了。"
     echo ""
 
-    echo "[2/3] Docker イメージをリビルド中..."
-    ssh_exec "cd ${REMOTE_DIR} && docker compose build"
-    echo "  → ビルド完了。"
+    echo "[2/3] Docker イメージを pull 中..."
+    ssh_exec "cd ${REMOTE_DIR} && docker compose pull"
+    echo "  → pull 完了。"
     echo ""
 
     echo "[3/3] サービスを再起動中..."

@@ -1,1 +1,1 @@
-# infra prisma to vps
+# Prisma cloud から vps × docker に移動

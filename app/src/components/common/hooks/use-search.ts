@@ -1,11 +1,8 @@
 "use client";
 
 import type { SearchQuery } from "@s-hirano-ist/s-core/shared-kernel/types/search-types";
-import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useRef, useState, useTransition } from "react";
 import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
-
-const PARAM_NAME = "q";
 
 type SearchableItem = {
 	href: string;
@@ -18,7 +15,6 @@ type SearchableItem = {
 
 type UseSearchableListOptions = {
 	search: typeof searchContentFromClient;
-	useUrlQuery?: boolean;
 };
 
 type UseSearchableListReturn = {
@@ -32,14 +28,8 @@ type UseSearchableListReturn = {
 
 export function useSearch({
 	search,
-	useUrlQuery = false,
 }: UseSearchableListOptions): UseSearchableListReturn {
-	const router = useRouter();
-	const searchParams = useSearchParams();
-
-	// Initialize search query from URL if useUrlQuery is enabled
-	const initialQuery = useUrlQuery ? (searchParams.get(PARAM_NAME) ?? "") : "";
-	const [searchQuery, setSearchQuery] = useState(initialQuery);
+	const [searchQuery, setSearchQuery] = useState("");
 	const [searchResults, setSearchResults] = useState<SearchableItem[]>();
 	const [isError, setIsError] = useState(false);
 
@@ -66,7 +56,9 @@ export function useSearch({
 						query: searchQuery.trim(),
 						limit: 50,
 					};
+					console.log("[Search] query:", query);
 					const result = await search(query);
+					console.log("[Search] result:", result);
 
 					if (controller.signal.aborted) return;
 
@@ -96,15 +88,9 @@ export function useSearch({
 	);
 
 	const executeSearch = useCallback(async () => {
-		if (useUrlQuery) {
-			const params = new URLSearchParams(searchParams);
-			if (searchQuery) params.set(PARAM_NAME, searchQuery);
-			else params.delete(PARAM_NAME);
-			router.push(`?${params.toString()}`);
-		}
-
+		if (isPending) return;
 		await fetchSearchResults(searchQuery);
-	}, [useUrlQuery, searchParams, searchQuery, router, fetchSearchResults]);
+	}, [isPending, searchQuery, fetchSearchResults]);
 
 	const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const query = e.target.value;
