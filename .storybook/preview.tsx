@@ -73,7 +73,7 @@ const preview = {
 		nextIntl: {
 			defaultLocale: "ja",
 			locales: ["ja", "en"],
-			messages,
+			messagesByLocale: messages,
 		},
 	},
 } satisfies Preview;

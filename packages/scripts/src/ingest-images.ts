@@ -49,6 +49,7 @@ async function main() {
 		MINIO_BUCKET_NAME: process.env.MINIO_BUCKET_NAME,
 		MINIO_ACCESS_KEY: process.env.MINIO_ACCESS_KEY,
 		MINIO_SECRET_KEY: process.env.MINIO_SECRET_KEY,
+		MINIO_USE_SSL: process.env.MINIO_USE_SSL,
 	} as const;
 
 	if (Object.values(env).some((v) => !v)) {
@@ -70,7 +71,7 @@ async function main() {
 	const minioClient = new Minio.Client({
 		endPoint: env.MINIO_HOST ?? "",
 		port: Number(env.MINIO_PORT),
-		useSSL: true,
+		useSSL: env.MINIO_USE_SSL === "true",
 		accessKey: env.MINIO_ACCESS_KEY ?? "",
 		secretKey: env.MINIO_SECRET_KEY ?? "",
 	});
