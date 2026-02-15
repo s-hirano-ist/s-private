@@ -10,7 +10,7 @@ s-contentsリポジトリおよびDBのコンテンツを Qdrant に格納し、
 | ソース | glob パターン | Qdrant type | 備考 |
 |--------|-------------|-------------|------|
 | ノート | `markdown/note/**/*.md` | `markdown_note` | YAML frontmatter あり |
-| 書籍メモ | `markdown/book/**/*.md` | `markdown_note` | frontmatter なし、ISBNファイル名 |
+| 書籍メモ | `markdown/book/**/*.md` | `markdown_note` | YAML frontmatter あり |
 | ブックマーク | `json/article/**/*.json` | `bookmark_json` | カテゴリ別JSON |
 
 ingest設定: `packages/scripts/src/rag/ingest-config.ts`
@@ -37,7 +37,11 @@ draft: false
 ### 3.2 Markdown Book (`markdown/book/**/*.md`)
 
 ```
-# 書籍タイトル
+---
+heading: 書籍タイトル
+description: 書籍の説明
+draft: false
+---
 
 本文テキスト...
 
@@ -45,9 +49,10 @@ draft: false
 ...
 ```
 
-- frontmatter なし → パーサーが `heading: "unknown"` を割り当て
-- ファイル名は ISBN（例: `9784003362211.md`）
-- H1 がタイトルだが、チャンカーはH2/H3のみ分割対象 → H1以下〜最初のH2 までの本文はチャンクに含まれない可能性あり
+- YAML frontmatter あり（notes と同一構造: `heading`, `description`, `draft`）
+- `heading`: 書籍タイトル → `top_heading` に使用
+- `draft: true` のファイルはスキップ
+- H2/H3 で見出し分割
 
 ### 3.3 Article JSON (`json/article/**/*.json`)
 
@@ -78,9 +83,14 @@ draft: false
 
 **Markdown系:**
 1. frontmatter 解析（YAML簡易パーサー）
-2. H2/H3 見出しで階層分割（`splitMarkdownByHeadings`）
-3. 各セクションが `maxChunkLength`(2000文字) 超過時にパラグラフ分割
-4. `heading_path` = `[frontmatter.heading, ...見出し階層]`
+2. H1行（`# タイトル`）を除去（frontmatter の `description` と重複するため）
+3. H2/H3 見出しで階層分割（`splitMarkdownByHeadings`）
+4. 最初の H2/H3 前のコンテンツを「プリアンブル」セクションとしてキャプチャ
+   - H2/H3 が存在しないファイルの場合、全コンテンツがプリアンブルになる
+   - プリアンブルの `title` = `frontmatter.description ?? frontmatter.heading`
+   - プリアンブルの `heading_path` = `[frontmatter.heading]`
+5. 各セクションが `maxChunkLength`(2000文字) 超過時にパラグラフ分割
+6. 通常セクションの `heading_path` = `[frontmatter.heading, ...見出し階層]`
 
 **JSON系:**
 - 各body要素 = 1チャンク（分割なし）

@@ -140,10 +140,32 @@ function splitMarkdownByHeadings(content: string): MarkdownSection[] {
 	let currentSection: MarkdownSection | null = null;
 	const headingStack: { level: number; title: string }[] = [];
 
+	// Preamble buffer (content before first H2/H3)
+	let preambleContent = "";
+	let preambleDone = false;
+
 	for (const line of lines) {
+		// Skip H1 lines (redundant with frontmatter description)
+		if (/^#\s+\S/.test(line)) {
+			continue;
+		}
+
 		const headingMatch = line.match(/^(#{2,3})\s+(\S.*)$/);
 
 		if (headingMatch) {
+			// Finalize preamble on first H2/H3
+			if (!preambleDone) {
+				preambleDone = true;
+				if (preambleContent.trim()) {
+					sections.push({
+						headingPath: [],
+						title: "",
+						content: preambleContent,
+						level: 0,
+					});
+				}
+			}
+
 			// Save previous section
 			if (currentSection?.content.trim()) {
 				sections.push(currentSection);
@@ -170,9 +192,22 @@ function splitMarkdownByHeadings(content: string): MarkdownSection[] {
 				content: "",
 				level,
 			};
+		} else if (!preambleDone) {
+			// Content before first H2/H3 goes to preamble
+			preambleContent += `${line}\n`;
 		} else if (currentSection) {
 			currentSection.content += `${line}\n`;
 		}
+	}
+
+	// If no H2/H3 found, all content is preamble
+	if (!preambleDone && preambleContent.trim()) {
+		sections.push({
+			headingPath: [],
+			title: "",
+			content: preambleContent,
+			level: 0,
+		});
 	}
 
 	// Save last section
@@ -241,7 +276,13 @@ function parseMarkdownWithDocId(
 		for (const text of textChunks) {
 			if (!text.trim()) continue;
 
-			const fullHeadingPath = [frontmatter.heading, ...section.headingPath];
+			const isPreamble = section.level === 0 && section.title === "";
+			const sectionTitle = isPreamble
+				? (frontmatter.description ?? frontmatter.heading)
+				: section.title;
+			const fullHeadingPath = isPreamble
+				? [frontmatter.heading]
+				: [frontmatter.heading, ...section.headingPath];
 			const chunkId = generateChunkId(docId, chunkIndex);
 
 			chunks.push({
@@ -250,7 +291,7 @@ function parseMarkdownWithDocId(
 				top_heading: frontmatter.heading,
 				doc_id: docId,
 				chunk_id: chunkId,
-				title: section.title,
+				title: sectionTitle,
 				heading_path: fullHeadingPath,
 				text,
 				content_hash: generateHash(text),

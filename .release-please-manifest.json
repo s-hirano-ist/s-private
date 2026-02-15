@@ -6,5 +6,6 @@
 	"packages/notification": "1.14.0",
 	"packages/scripts": "1.14.0",
 	"packages/search": "1.14.0",
-	"packages/storage": "1.14.0"
+	"packages/storage": "1.14.0",
+	"services/embedding-api": "1.12.2"
 }

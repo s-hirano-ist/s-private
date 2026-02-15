@@ -31,6 +31,10 @@
 		"packages/storage": {
 			"release-type": "node",
 			"component": "@s-hirano-ist/s-storage"
+		},
+		"services/embedding-api": {
+			"release-type": "node",
+			"component": "@s-hirano-ist/embedding-api"
 		}
 	},
 	"plugins": [

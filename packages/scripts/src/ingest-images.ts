@@ -44,12 +44,7 @@ async function main() {
 		PUSHOVER_USER_KEY: process.env.PUSHOVER_USER_KEY,
 		PUSHOVER_APP_TOKEN: process.env.PUSHOVER_APP_TOKEN,
 		USERNAME_TO_EXPORT: process.env.USERNAME_TO_EXPORT,
-		MINIO_HOST: process.env.MINIO_HOST,
-		MINIO_PORT: process.env.MINIO_PORT,
 		MINIO_BUCKET_NAME: process.env.MINIO_BUCKET_NAME,
-		MINIO_ACCESS_KEY: process.env.MINIO_ACCESS_KEY,
-		MINIO_SECRET_KEY: process.env.MINIO_SECRET_KEY,
-		MINIO_USE_SSL: process.env.MINIO_USE_SSL,
 	} as const;
 
 	if (Object.values(env).some((v) => !v)) {
@@ -68,20 +63,7 @@ async function main() {
 		appToken: env.PUSHOVER_APP_TOKEN ?? "",
 	});
 
-	const useSSL = env.MINIO_USE_SSL === "true";
-	const minioClient = createMinioClient(
-		{
-			endPoint: env.MINIO_HOST ?? "",
-			port: Number(env.MINIO_PORT),
-			useSSL,
-			accessKey: env.MINIO_ACCESS_KEY ?? "",
-			secretKey: env.MINIO_SECRET_KEY ?? "",
-		},
-		{
-			clientId: process.env.CF_ACCESS_CLIENT_ID ?? "",
-			clientSecret: process.env.CF_ACCESS_CLIENT_SECRET ?? "",
-		},
-	);
+	const minioClient = createMinioClient();
 
 	const bucketName = env.MINIO_BUCKET_NAME ?? "";
 
