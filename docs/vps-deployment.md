@@ -280,10 +280,10 @@ MINIO_BUCKET_NAME=your-bucket-name
 
 | Subdomain | Service | CF Access |
 | --- | --- | --- |
-| `minio.<domain>` | `http://minio:9000` | なし（S3 の AWS Signature V4 認証で保護） |
+| `minio.<domain>` | `http://minio:9000` | 有効（Service Token） |
 | `minio-console.<domain>` | `http://minio:9001` | 有効（Email OTP） |
 
-> **注意:** MinIO S3 API は CF Access を設定しない。MinIO クライアントがカスタムヘッダー（`CF-Access-Client-Id` 等）に非対応のため、S3 の組み込み認証（AWS Signature V4）に依存する。VPS では UFW で全ポートをブロック済みのため、外部からは Cloudflare Tunnel 経由のみアクセス可能。
+> **注意:** MinIO S3 API も CF Access（Service Token）で保護する。minio-js の `transport` オプションでカスタム HTTP トランスポートを設定し、CF-Access ヘッダーを注入する。ヘッダーは AWS Signature V4 の署名計算後にトランスポート層で追加されるため、S3 署名に影響しない。
 
 #### Next.js アプリの環境変数例（本番）
 

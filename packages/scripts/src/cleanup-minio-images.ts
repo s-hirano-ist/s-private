@@ -3,6 +3,7 @@ import { basename, extname } from "node:path";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
 import { glob } from "glob";
 import * as Minio from "minio";
+import { createCfAccessTransport } from "./minio-transport.ts";
 
 const SCRIPT_NAME = "cleanup-minio-images";
 
@@ -56,12 +57,14 @@ async function main() {
 		appToken: env.PUSHOVER_APP_TOKEN ?? "",
 	});
 
+	const transport = createCfAccessTransport();
 	const minioClient = new Minio.Client({
 		endPoint: env.MINIO_HOST ?? "",
 		port: Number(env.MINIO_PORT),
 		useSSL: true,
 		accessKey: env.MINIO_ACCESS_KEY ?? "",
 		secretKey: env.MINIO_SECRET_KEY ?? "",
+		...(transport && { transport }),
 	});
 
 	const bucketName = env.MINIO_BUCKET_NAME ?? "";
