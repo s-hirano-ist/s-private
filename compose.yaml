@@ -63,6 +63,7 @@ services:
       - MINIO_BUCKET_NAME=${MINIO_BUCKET_NAME}
     networks:
       - tunnel-net
+
   # TODO: enable qdrant
   # qdrant:
   #   image: qdrant/qdrant:v1.16.3
@@ -100,13 +101,13 @@ services:
     depends_on:
       embedding-api:
         condition: service_healthy
-      qdrant:
-        condition: service_healthy
+      # qdrant:
+      # condition: service_healthy
 
 volumes:
   hf-cache:
   minio-data:
-  qdrant-data:
+  # qdrant-data:
 
 networks:
   tunnel-net:

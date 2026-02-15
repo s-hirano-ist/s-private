@@ -8,8 +8,6 @@ VPS 上では全ポートを firewall で閉じ、Cloudflare Tunnel の outbound
 ```
 Internet → Cloudflare Tunnel → cloudflared (VPS内) ─┬→ embedding-api:3001
                                                     ├→ minio:9000 / minio:9001
-                                                    ├→ qdrant:6333
-                                                    └→ ...
                                                     ↑ Docker内部ネットワーク
 ```
 
