@@ -9,7 +9,10 @@ export function createMinioClient(
 	const resolved = config ?? {
 		endPoint: process.env.MINIO_HOST ?? "",
 		port: Number(process.env.MINIO_PORT),
-		useSSL: process.env.MINIO_USE_SSL === "true",
+		useSSL:
+			process.env.MINIO_USE_SSL !== undefined
+				? process.env.MINIO_USE_SSL === "true"
+				: !["localhost", "127.0.0.1"].includes(process.env.MINIO_HOST ?? ""),
 		accessKey: process.env.MINIO_ACCESS_KEY ?? "",
 		secretKey: process.env.MINIO_SECRET_KEY ?? "",
 	};
@@ -22,6 +25,12 @@ export function createMinioClient(
 	const transport = resolved.useSSL
 		? createCfAccessTransport(resolvedCfAccess)
 		: undefined;
+
+	if (resolved.useSSL && !transport) {
+		throw new Error(
+			"CF_ACCESS_CLIENT_ID and CF_ACCESS_CLIENT_SECRET are required when useSSL is true.",
+		);
+	}
 
 	return new Client({
 		endPoint: resolved.endPoint,

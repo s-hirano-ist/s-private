@@ -24,6 +24,17 @@ async function main() {
 		throw new Error("Required environment variables are not set.");
 	}
 
+	if (process.env.MINIO_USE_SSL === "true") {
+		if (
+			!process.env.CF_ACCESS_CLIENT_ID ||
+			!process.env.CF_ACCESS_CLIENT_SECRET
+		) {
+			throw new Error(
+				"CF_ACCESS_CLIENT_ID and CF_ACCESS_CLIENT_SECRET are required when MINIO_USE_SSL is true.",
+			);
+		}
+	}
+
 	// Dynamic import for Prisma ESM compatibility
 	const { PrismaClient } = await import("@s-hirano-ist/s-database/generated");
 	const prisma = new PrismaClient({ accelerateUrl: env.DATABASE_URL ?? "" });

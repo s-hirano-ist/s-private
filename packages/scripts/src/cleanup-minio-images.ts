@@ -44,6 +44,17 @@ async function main() {
 		throw new Error("Required environment variables are not set.");
 	}
 
+	if (process.env.MINIO_USE_SSL === "true") {
+		if (
+			!process.env.CF_ACCESS_CLIENT_ID ||
+			!process.env.CF_ACCESS_CLIENT_SECRET
+		) {
+			throw new Error(
+				"CF_ACCESS_CLIENT_ID and CF_ACCESS_CLIENT_SECRET are required when MINIO_USE_SSL is true.",
+			);
+		}
+	}
+
 	const contentsPath = process.env.S_CONTENTS_PATH ?? process.cwd();
 
 	const notificationService = createPushoverService({
