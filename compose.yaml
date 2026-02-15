@@ -1,8 +1,6 @@
 services:
   embedding-api:
-    build:
-      context: .
-      dockerfile: services/embedding-api/Dockerfile
+    image: s0hirano/embedding-api:latest
     container_name: embedding-api
     restart: unless-stopped
     environment:
