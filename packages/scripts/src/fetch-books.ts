@@ -8,8 +8,7 @@ import {
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
-import * as Minio from "minio";
-import { createCfAccessTransport } from "./minio-transport.ts";
+import { createMinioClient } from "@s-hirano-ist/s-storage";
 
 type Book = {
 	id: string;
@@ -48,15 +47,19 @@ async function main() {
 		appToken: env.PUSHOVER_APP_TOKEN ?? "",
 	});
 
-	const transport = createCfAccessTransport();
-	const minioClient = new Minio.Client({
-		endPoint: env.MINIO_HOST ?? "",
-		port: Number(env.MINIO_PORT),
-		useSSL: true,
-		accessKey: env.MINIO_ACCESS_KEY ?? "",
-		secretKey: env.MINIO_SECRET_KEY ?? "",
-		...(transport && { transport }),
-	});
+	const minioClient = createMinioClient(
+		{
+			endPoint: env.MINIO_HOST ?? "",
+			port: Number(env.MINIO_PORT),
+			useSSL: true,
+			accessKey: env.MINIO_ACCESS_KEY ?? "",
+			secretKey: env.MINIO_SECRET_KEY ?? "",
+		},
+		{
+			clientId: process.env.CF_ACCESS_CLIENT_ID ?? "",
+			clientSecret: process.env.CF_ACCESS_CLIENT_SECRET ?? "",
+		},
+	);
 
 	const userId: UserId = makeUserId(env.USERNAME_TO_EXPORT ?? "");
 	const UNEXPORTED: Status = makeUnexportedStatus();

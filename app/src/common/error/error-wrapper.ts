@@ -20,7 +20,7 @@ import { SystemErrorEvent } from "@s-hirano-ist/s-core/shared-kernel/events/syst
 import { SystemWarningEvent } from "@s-hirano-ist/s-core/shared-kernel/events/system-warning-event";
 import { Prisma } from "@s-hirano-ist/s-database";
 import { NotificationError } from "@s-hirano-ist/s-notification";
-import * as Minio from "minio";
+import { S3Error } from "@s-hirano-ist/s-storage";
 import { AuthError } from "next-auth";
 import type { ServerAction } from "@/common/types";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
@@ -76,7 +76,7 @@ export async function wrapServerSideErrorForClient(
 		return { success: false, message: error.message };
 	}
 	// MinIO S3 server errors
-	if (error instanceof Minio.S3Error) {
+	if (error instanceof S3Error) {
 		await eventDispatcher.dispatch(
 			new SystemErrorEvent({
 				message: `MinIO S3 Error: ${error.code} - ${error.message}`,

@@ -23,6 +23,7 @@ jobs:
       notification_release_created: ${{ steps.release.outputs['packages/notification--release_created'] }}
       scripts_release_created: ${{ steps.release.outputs['packages/scripts--release_created'] }}
       search_release_created: ${{ steps.release.outputs['packages/search--release_created'] }}
+      storage_release_created: ${{ steps.release.outputs['packages/storage--release_created'] }}
     steps:
       - uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4
         id: release
@@ -95,6 +96,13 @@ jobs:
       - name: Publish @s-hirano-ist/s-search
         if: ${{ needs.release-please.outputs.search_release_created == 'true' }}
         working-directory: packages/search
+        run: pnpm publish --no-git-checks --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish @s-hirano-ist/s-storage
+        if: ${{ needs.release-please.outputs.storage_release_created == 'true' }}
+        working-directory: packages/storage
         run: pnpm publish --no-git-checks --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

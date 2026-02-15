@@ -1,18 +1,14 @@
 import type { RequestOptions } from "node:http";
 import * as https from "node:https";
 import type { ClientOptions } from "minio";
+import type { CfAccessConfig } from "./types";
 
 type Transport = NonNullable<ClientOptions["transport"]>;
 
-/**
- * Create a custom transport that injects CF-Access headers for Cloudflare Tunnel authentication.
- * Returns undefined if CF_ACCESS environment variables are not set (e.g., local development).
- */
-export function createCfAccessTransport(): Transport | undefined {
-	const clientId = process.env.CF_ACCESS_CLIENT_ID;
-	const clientSecret = process.env.CF_ACCESS_CLIENT_SECRET;
-
-	if (!clientId || !clientSecret) {
+export function createCfAccessTransport(
+	config?: CfAccessConfig,
+): Transport | undefined {
+	if (!config?.clientId || !config?.clientSecret) {
 		return undefined;
 	}
 
@@ -20,8 +16,8 @@ export function createCfAccessTransport(): Transport | undefined {
 		request(options: string | URL | RequestOptions, ...rest: unknown[]) {
 			if (typeof options === "object" && !(options instanceof URL)) {
 				const headers = (options.headers ?? {}) as Record<string, string>;
-				headers["CF-Access-Client-Id"] = clientId;
-				headers["CF-Access-Client-Secret"] = clientSecret;
+				headers["CF-Access-Client-Id"] = config.clientId;
+				headers["CF-Access-Client-Secret"] = config.clientSecret;
 				options.headers = headers;
 			}
 

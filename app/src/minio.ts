@@ -8,29 +8,9 @@
  * @module
  */
 
-import type { RequestOptions } from "node:http";
-import * as https from "node:https";
 import "server-only";
-import * as Minio from "minio";
+import { createMinioClient } from "@s-hirano-ist/s-storage";
 import { env } from "@/env";
-
-/**
- * Custom transport that injects CF-Access headers for Cloudflare Tunnel authentication.
- * Only used when connecting via SSL (production).
- */
-const cfAccessTransport = {
-	request(options: string | URL | RequestOptions, ...rest: unknown[]) {
-		if (typeof options === "object" && !(options instanceof URL)) {
-			const headers = (options.headers ?? {}) as Record<string, string>;
-			headers["CF-Access-Client-Id"] = env.CF_ACCESS_CLIENT_ID;
-			headers["CF-Access-Client-Secret"] = env.CF_ACCESS_CLIENT_SECRET;
-			options.headers = headers;
-		}
-
-		// biome-ignore lint/suspicious/noExplicitAny: https.request has complex overloads incompatible with Transport type
-		return (https.request as any)(options, ...rest);
-	},
-} as NonNullable<Minio.ClientOptions["transport"]>;
 
 /**
  * MinIO client instance for object storage operations.
@@ -44,11 +24,16 @@ const cfAccessTransport = {
  * When SSL is enabled (production), CF-Access headers are injected via custom transport
  * for Cloudflare Tunnel authentication.
  */
-export const minioClient = new Minio.Client({
-	endPoint: env.MINIO_HOST,
-	port: env.MINIO_PORT,
-	useSSL: env.MINIO_USE_SSL,
-	accessKey: env.MINIO_ACCESS_KEY,
-	secretKey: env.MINIO_SECRET_KEY,
-	...(env.MINIO_USE_SSL && { transport: cfAccessTransport }),
-});
+export const minioClient = createMinioClient(
+	{
+		endPoint: env.MINIO_HOST,
+		port: env.MINIO_PORT,
+		useSSL: env.MINIO_USE_SSL,
+		accessKey: env.MINIO_ACCESS_KEY,
+		secretKey: env.MINIO_SECRET_KEY,
+	},
+	{
+		clientId: env.CF_ACCESS_CLIENT_ID,
+		clientSecret: env.CF_ACCESS_CLIENT_SECRET,
+	},
+);

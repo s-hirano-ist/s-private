@@ -141,6 +141,9 @@ importers:
       '@s-hirano-ist/s-search':
         specifier: workspace:*
         version: link:../packages/search
+      '@s-hirano-ist/s-storage':
+        specifier: workspace:*
+        version: link:../packages/storage
       '@s-hirano-ist/s-ui':
         specifier: workspace:*
         version: link:../packages/ui
@@ -162,9 +165,6 @@ importers:
       lucide-react:
         specifier: 0.563.0
         version: 0.563.0(react@19.2.3)
-      minio:
-        specifier: 8.0.6
-        version: 8.0.6
       next:
         specifier: 16.1.6
         version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -294,6 +294,9 @@ importers:
       '@s-hirano-ist/s-search':
         specifier: workspace:*
         version: link:../search
+      '@s-hirano-ist/s-storage':
+        specifier: workspace:*
+        version: link:../storage
       dotenv:
         specifier: 16.5.0
         version: 16.5.0
@@ -306,9 +309,6 @@ importers:
       jsdom:
         specifier: 27.4.0
         version: 27.4.0
-      minio:
-        specifier: 8.0.6
-        version: 8.0.6
       sharp:
         specifier: 0.33.5
         version: 0.33.5
@@ -351,6 +351,19 @@ importers:
       '@huggingface/transformers':
         specifier: 3.8.1
         version: 3.8.1
+
+  packages/storage:
+    dependencies:
+      minio:
+        specifier: 8.0.6
+        version: 8.0.6
+    devDependencies:
+      tsc-esm-fix:
+        specifier: 3.1.2
+        version: 3.1.2
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
 
   packages/ui:
     dependencies:

@@ -27,6 +27,10 @@
 		"packages/search": {
 			"release-type": "node",
 			"component": "@s-hirano-ist/s-search"
+		},
+		"packages/storage": {
+			"release-type": "node",
+			"component": "@s-hirano-ist/s-storage"
 		}
 	},
 	"plugins": [
@@ -43,7 +47,8 @@
 				"@s-hirano-ist/s-database",
 				"@s-hirano-ist/s-notification",
 				"@s-hirano-ist/s-scripts",
-				"@s-hirano-ist/s-search"
+				"@s-hirano-ist/s-search",
+				"@s-hirano-ist/s-storage"
 			]
 		}
 	],

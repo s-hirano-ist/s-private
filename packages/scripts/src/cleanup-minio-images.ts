@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 import { basename, extname } from "node:path";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
+import { createMinioClient, type MinioClient } from "@s-hirano-ist/s-storage";
 import { glob } from "glob";
-import * as Minio from "minio";
-import { createCfAccessTransport } from "./minio-transport.ts";
 
 const SCRIPT_NAME = "cleanup-minio-images";
 
@@ -16,7 +15,7 @@ function isImageFile(filePath: string): boolean {
 }
 
 function listObjects(
-	client: Minio.Client,
+	client: MinioClient,
 	bucket: string,
 	prefix: string,
 ): Promise<string[]> {
@@ -57,15 +56,19 @@ async function main() {
 		appToken: env.PUSHOVER_APP_TOKEN ?? "",
 	});
 
-	const transport = createCfAccessTransport();
-	const minioClient = new Minio.Client({
-		endPoint: env.MINIO_HOST ?? "",
-		port: Number(env.MINIO_PORT),
-		useSSL: true,
-		accessKey: env.MINIO_ACCESS_KEY ?? "",
-		secretKey: env.MINIO_SECRET_KEY ?? "",
-		...(transport && { transport }),
-	});
+	const minioClient = createMinioClient(
+		{
+			endPoint: env.MINIO_HOST ?? "",
+			port: Number(env.MINIO_PORT),
+			useSSL: true,
+			accessKey: env.MINIO_ACCESS_KEY ?? "",
+			secretKey: env.MINIO_SECRET_KEY ?? "",
+		},
+		{
+			clientId: process.env.CF_ACCESS_CLIENT_ID ?? "",
+			clientSecret: process.env.CF_ACCESS_CLIENT_SECRET ?? "",
+		},
+	);
 
 	const bucketName = env.MINIO_BUCKET_NAME ?? "";
 
