@@ -226,12 +226,12 @@ jobs:
           SKIP_ENV_VALIDATION: true
           MINIO_HOST: ${{ secrets.MINIO_HOST }}
 
-  docker-build-app:
+  docker-build-embedding-api:
     runs-on: ubuntu-24.04
     permissions: {}
     timeout-minutes: 15
     concurrency:
-      group: ${{ github.workflow }}-docker-build-app-${{ github.ref }}
+      group: ${{ github.workflow }}-docker-build-embedding-api-${{ github.ref }}
     steps:
       - name: Checkout files
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -242,34 +242,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
 
-      - name: Build app Docker image
+      - name: Build embedding-api Docker image
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6
         with:
           context: .
-          file: ./app/Dockerfile
+          file: ./services/embedding-api/Dockerfile
           push: false
-          secrets: |
-            AUTH_SECRET=${{secrets.AUTH_SECRET}}
-            AUTH0_CLIENT_ID=${{secrets.AUTH0_CLIENT_ID}}
-            AUTH0_CLIENT_SECRET=${{secrets.AUTH0_CLIENT_SECRET}}
-            AUTH0_ISSUER_BASE_URL=${{secrets.AUTH0_ISSUER_BASE_URL}}
-            PUSHOVER_URL=${{secrets.PUSHOVER_URL}}
-            PUSHOVER_APP_TOKEN=${{secrets.PUSHOVER_APP_TOKEN}}
-            PUSHOVER_USER_KEY=${{secrets.PUSHOVER_USER_KEY}}
-            MINIO_ACCESS_KEY=${{secrets.MINIO_ACCESS_KEY}}
-            MINIO_BUCKET_NAME=${{secrets.MINIO_BUCKET_NAME}}
-            MINIO_HOST=${{secrets.MINIO_HOST}}
-            MINIO_PORT=${{secrets.MINIO_PORT}}
-            MINIO_SECRET_KEY=${{secrets.MINIO_SECRET_KEY}}
-            NEXT_PUBLIC_SENTRY_DSN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
-            DATABASE_URL=${{ secrets.DATABASE_URL }}
-            SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
-            SENTRY_REPORT_URL=${{ secrets.SENTRY_REPORT_URL }}
-            EMBEDDING_API_URL=${{secrets.EMBEDDING_API_URL}}
-            EMBEDDING_API_KEY=${{secrets.EMBEDDING_API_KEY}}
-            CF_ACCESS_CLIENT_ID=${{secrets.CF_ACCESS_CLIENT_ID}}
-            CF_ACCESS_CLIENT_SECRET=${{secrets.CF_ACCESS_CLIENT_SECRET}}
-            QDRANT_URL=${{secrets.QDRANT_URL}}
 
   docker-build-storybook:
     runs-on: ubuntu-24.04
