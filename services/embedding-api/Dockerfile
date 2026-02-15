@@ -16,6 +16,16 @@ COPY --from=deps /app/packages/search/node_modules ./packages/search/node_module
 COPY packages/search/ ./packages/search/
 COPY services/embedding-api/ ./services/embedding-api/
 COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
+RUN pnpm --filter @s-hirano-ist/s-search build
+RUN node -e " \
+  const fs = require('fs'); \
+  const path = './packages/search/package.json'; \
+  const pkg = JSON.parse(fs.readFileSync(path, 'utf8')); \
+  if (pkg.publishConfig && pkg.publishConfig.exports) { \
+    pkg.exports = pkg.publishConfig.exports; \
+  } \
+  fs.writeFileSync(path, JSON.stringify(pkg, null, '\t') + '\n'); \
+"
 RUN pnpm --filter @s-hirano-ist/embedding-api build
 RUN pnpm --filter @s-hirano-ist/embedding-api deploy --prod --legacy /app/deployed
 
