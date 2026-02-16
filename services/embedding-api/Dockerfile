@@ -1,4 +1,4 @@
-FROM node:24.13.0-slim AS base
+FROM node:24.13.1-slim@sha256:a81a03dd965b4052269a57fac857004022b522a4bf06e7a739e25e18bce45af2 AS base
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
 FROM base AS deps
