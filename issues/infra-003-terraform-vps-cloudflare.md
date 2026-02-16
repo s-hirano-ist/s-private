@@ -163,11 +163,7 @@ export CLOUDFLARE_ACCOUNT_ID="<対象アカウント ID>"
 ### 1. cf-terraforming のインストール
 
 ```bash
-# Homebrew（macOS）
 brew install cloudflare/cloudflare/cf-terraforming
-
-# Go install
-go install github.com/cloudflare/cf-terraforming/cmd/cf-terraforming@latest
 ```
 
 ### 2. 対象リソースタイプ一覧
