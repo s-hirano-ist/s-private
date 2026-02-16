@@ -14,11 +14,11 @@
 		"@hono/zod-openapi": "1.2.1",
 		"@huggingface/transformers": "3.8.1",
 		"@s-hirano-ist/s-search": "workspace:*",
-		"hono": "4.11.7",
+		"hono": "4.11.9",
 		"zod": "4.3.6"
 	},
 	"devDependencies": {
-		"@types/node": "24.10.9",
+		"@types/node": "24.10.13",
 		"tsx": "4.21.0",
 		"typescript": "5.9.3"
 	}
