@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.13.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/embedding-api-v1.13.0...@s-hirano-ist/embedding-api-v1.13.1) (2026-02-16)
+
+
+### Bug Fixes
+
+* add more dockerfile settings ([6e8749d](https://github.com/s-hirano-ist/s-private/commit/6e8749d646bfb5a22c8fa16b5b3534ede072b3fa))
+
+
+### Maintenance
+
+* **deps:** update minor ([71ecdd7](https://github.com/s-hirano-ist/s-private/commit/71ecdd773c778fbcd2e78e5c433a0182095ae9a7))
+* **deps:** update minor ([5de01e5](https://github.com/s-hirano-ist/s-private/commit/5de01e581bc6d0fd3faebf79c608c389d1a93ce5))
+* **deps:** update node.js to v24.13.1 ([3157cce](https://github.com/s-hirano-ist/s-private/commit/3157cce8ceb1e1fd77791263dd90ed26368a9145))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-search bumped to 1.15.1
+
 ## [1.13.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/embedding-api-v1.12.2...@s-hirano-ist/embedding-api-v1.13.0) (2026-02-15)
 
 

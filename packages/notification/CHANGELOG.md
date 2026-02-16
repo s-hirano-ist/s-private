@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.15.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-notification-v1.15.0...@s-hirano-ist/s-notification-v1.15.1) (2026-02-16)
+
+
+### Maintenance
+
+* **@s-hirano-ist/s-notification:** Synchronize npm-packages versions
+
 ## [1.15.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-notification-v1.14.0...@s-hirano-ist/s-notification-v1.15.0) (2026-02-15)
 
 
