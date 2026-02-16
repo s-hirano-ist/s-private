@@ -24,7 +24,7 @@ services:
       start_period: 120s
 
   minio:
-    image: minio/minio:RELEASE.2025-04-22T22-12-26Z
+    image: minio/minio:RELEASE.2025-04-22T22-12-26Z@sha256:a1ea29fa28355559ef137d71fc570e508a214ec84ff8083e39bc5428980b015e
     container_name: minio
     restart: unless-stopped
     command: server /data --console-address ":9001"
@@ -45,7 +45,7 @@ services:
       retries: 3
 
   minio-init:
-    image: minio/mc:RELEASE.2025-05-21T01-59-54Z
+    image: minio/mc:RELEASE.2025-05-21T01-59-54Z@sha256:09f93f534cde415d192bb6084dd0e0ddd1715fb602f8a922ad121fd2bf0f8b44
     container_name: minio-init
     depends_on:
       minio:
@@ -64,7 +64,7 @@ services:
       - tunnel-net
 
   cloudflared:
-    image: cloudflare/cloudflared:latest
+    image: cloudflare/cloudflared:latest@sha256:404528c1cd63c3eb882c257ae524919e4376115e6fe57befca8d603656a91a4c
     container_name: cloudflared
     restart: unless-stopped
     command: tunnel run
