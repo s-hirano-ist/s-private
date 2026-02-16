@@ -89,7 +89,7 @@
 		"@huggingface/transformers": "3.8.1"
 	},
 	"devDependencies": {
-		"@types/node": "24.10.9",
+		"@types/node": "24.10.13",
 		"typescript": "5.9.3"
 	}
 }
