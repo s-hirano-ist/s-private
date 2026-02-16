@@ -30,7 +30,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
         with:
-          node-version: "24.13.0"
+          node-version: "24.13.1"
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
@@ -81,7 +81,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
         with:
-          node-version: "24.13.0"
+          node-version: "24.13.1"
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
@@ -110,7 +110,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
         with:
-          node-version: "24.13.0"
+          node-version: "24.13.1"
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
@@ -142,7 +142,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
         with:
-          node-version: "24.13.0"
+          node-version: "24.13.1"
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
@@ -171,7 +171,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
         with:
-          node-version: "24.13.0"
+          node-version: "24.13.1"
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
@@ -216,7 +216,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
         with:
-          node-version: "24.13.0"
+          node-version: "24.13.1"
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
@@ -243,7 +243,7 @@ jobs:
         uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
 
       - name: Build embedding-api Docker image
-        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
         with:
           context: .
           file: ./services/embedding-api/Dockerfile
@@ -266,7 +266,7 @@ jobs:
         uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
 
       - name: Build storybook Docker image
-        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
         with:
           context: .
           file: ./.storybook/storybook.Dockerfile
@@ -293,7 +293,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
         with:
-          node-version: "24.13.0"
+          node-version: "24.13.1"
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
