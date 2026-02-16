@@ -1,11 +1,11 @@
 {
-	".": "10.14.0",
-	"packages/core": "1.15.0",
-	"packages/ui": "1.15.0",
-	"packages/database": "1.15.0",
-	"packages/notification": "1.15.0",
-	"packages/scripts": "1.15.0",
-	"packages/search": "1.15.0",
-	"packages/storage": "1.15.0",
-	"services/embedding-api": "1.13.0"
+	".": "10.14.1",
+	"packages/core": "1.15.1",
+	"packages/ui": "1.15.1",
+	"packages/database": "1.15.1",
+	"packages/notification": "1.15.1",
+	"packages/scripts": "1.15.1",
+	"packages/search": "1.15.1",
+	"packages/storage": "1.15.1",
+	"services/embedding-api": "1.13.1"
 }

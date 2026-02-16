@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.15.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-search-v1.15.0...@s-hirano-ist/s-search-v1.15.1) (2026-02-16)
+
+
+### Bug Fixes
+
+* add more dockerfile settings ([6e8749d](https://github.com/s-hirano-ist/s-private/commit/6e8749d646bfb5a22c8fa16b5b3534ede072b3fa))
+
 ## [1.15.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-search-v1.14.0...@s-hirano-ist/s-search-v1.15.0) (2026-02-15)
 
 

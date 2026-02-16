@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.14.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.14.0...s-private-v10.14.1) (2026-02-16)
+
+
+### Bug Fixes
+
+* add more dockerfile settings ([6e8749d](https://github.com/s-hirano-ist/s-private/commit/6e8749d646bfb5a22c8fa16b5b3534ede072b3fa))
+* search bugs ([151995e](https://github.com/s-hirano-ist/s-private/commit/151995e876ceefba6218b14a9e836e258c5266c4))
+* search card reredner ([6c8f12b](https://github.com/s-hirano-ist/s-private/commit/6c8f12b19891b4246f43163b43814d20a462d835))
+* tests ([4841022](https://github.com/s-hirano-ist/s-private/commit/48410229e89b7c62e374ac3e605258b859a73a43))
+* tests ([5e99ead](https://github.com/s-hirano-ist/s-private/commit/5e99ead72b69d83d00030e2cb1fc4198783e4a95))
+
+
+### Maintenance
+
+* **deps:** update dependency dotenv to v17 ([589f893](https://github.com/s-hirano-ist/s-private/commit/589f893b98b5074f09431936ab62d8064de0d102))
+* **deps:** update minor ([71ecdd7](https://github.com/s-hirano-ist/s-private/commit/71ecdd773c778fbcd2e78e5c433a0182095ae9a7))
+* **deps:** update minor ([5de01e5](https://github.com/s-hirano-ist/s-private/commit/5de01e581bc6d0fd3faebf79c608c389d1a93ce5))
+* **deps:** update node.js to v24.13.1 ([3157cce](https://github.com/s-hirano-ist/s-private/commit/3157cce8ceb1e1fd77791263dd90ed26368a9145))
+* **deps:** update pnpm to v10.29.3 ([744cdef](https://github.com/s-hirano-ist/s-private/commit/744cdef0a6180ef0d1070d853ae71a707d1537ad))
+* refactor compose.yaml ([ddd9335](https://github.com/s-hirano-ist/s-private/commit/ddd93351e7a3f7b7b2ea887d99ebb518ff863f52))
+
 ## [10.14.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.13.1...s-private-v10.14.0) (2026-02-15)
 
 

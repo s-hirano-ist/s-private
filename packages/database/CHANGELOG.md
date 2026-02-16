@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.15.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.15.0...@s-hirano-ist/s-database-v1.15.1) (2026-02-16)
+
+
+### Maintenance
+
+* **deps:** update minor ([71ecdd7](https://github.com/s-hirano-ist/s-private/commit/71ecdd773c778fbcd2e78e5c433a0182095ae9a7))
+* **deps:** update minor ([5de01e5](https://github.com/s-hirano-ist/s-private/commit/5de01e581bc6d0fd3faebf79c608c389d1a93ce5))
+
 ## [1.15.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.14.0...@s-hirano-ist/s-database-v1.15.0) (2026-02-15)
 
 

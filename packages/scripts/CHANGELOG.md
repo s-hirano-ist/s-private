@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.15.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.15.0...@s-hirano-ist/s-scripts-v1.15.1) (2026-02-16)
+
+
+### Maintenance
+
+* **deps:** update dependency dotenv to v17 ([589f893](https://github.com/s-hirano-ist/s-private/commit/589f893b98b5074f09431936ab62d8064de0d102))
+* **deps:** update minor ([71ecdd7](https://github.com/s-hirano-ist/s-private/commit/71ecdd773c778fbcd2e78e5c433a0182095ae9a7))
+* **deps:** update minor ([5de01e5](https://github.com/s-hirano-ist/s-private/commit/5de01e581bc6d0fd3faebf79c608c389d1a93ce5))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.15.1
+    * @s-hirano-ist/s-search bumped to 1.15.1
+    * @s-hirano-ist/s-database bumped to 1.15.1
+    * @s-hirano-ist/s-notification bumped to 1.15.1
+    * @s-hirano-ist/s-storage bumped to 1.15.1
+
 ## [1.15.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.14.0...@s-hirano-ist/s-scripts-v1.15.0) (2026-02-15)
 
 
