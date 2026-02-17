@@ -260,8 +260,8 @@ compose.yaml          ← 全サービス定義（embedding-api, minio, cloudfla
 - **ポート**: 3001
 - **ヘルスチェック**: `http://localhost:3001/health`
 - **環境変数**: `EMBEDDING_API_KEY`, `PORT=3001`
-- **ボリューム**: `hf-cache` — HuggingFace モデルキャッシュ（初回ダウンロード ~100MB）
-- **メモリ使用量**: 約 200MB（multilingual-e5-small）
+- **ボリューム**: `hf-cache` — HuggingFace モデルキャッシュ（初回ダウンロード ~600MB）
+- **メモリ使用量**: 約 1.1GB（multilingual-e5-large）
 - **Cloudflare Public Hostname**: `embedding-api.<domain>` → `http://embedding-api:3001`
 
 ### A.2 MinIO
@@ -299,6 +299,19 @@ MINIO_USE_SSL=true
 MINIO_ACCESS_KEY=your-minio-user
 MINIO_SECRET_KEY=your-minio-password
 MINIO_BUCKET_NAME=your-bucket-name
+```
+
+---
+
+## Appendix B: 運用コマンド
+
+### B.1 旧 Qdrant コレクションの削除
+
+Embedding モデル変更等でコレクションを移行した際、不要になった旧コレクションを削除する。
+
+```bash
+# ローカルから実行（.env に QDRANT_URL を設定済みの前提）
+pnpm --filter @s-hirano-ist/s-scripts rag-delete-collection knowledge_v1
 ```
 
 ---

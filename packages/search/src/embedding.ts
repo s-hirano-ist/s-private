@@ -1,37 +1,65 @@
-import { existsSync, readFileSync } from "node:fs";
-import { mkdir, writeFile } from "node:fs/promises";
+import { createWriteStream, existsSync } from "node:fs";
+import { mkdir } from "node:fs/promises";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
+import { Readable } from "node:stream";
+import { pipeline } from "node:stream/promises";
 import {
 	env,
 	type FeatureExtractionPipeline,
-	pipeline,
+	pipeline as transformersPipeline,
 } from "@huggingface/transformers";
 import { RAG_CONFIG } from "./config.ts";
 
 const CACHE_DIR = join(homedir(), ".cache", "huggingface", "transformers");
 
-// Disable built-in FileCache (broken with XET storage + return_path=true)
-// Use custom cache instead for reliable caching
-env.useFSCache = false;
+/**
+ * Convert a HuggingFace Hub URL (cache key) to a local file path.
+ * Strips "/resolve/{revision}/" so the layout matches localModelPath expectations.
+ */
+function cacheKeyToFilePath(cacheKey: string): string {
+	try {
+		const url = new URL(cacheKey);
+		const cleaned = url.pathname.replace(/\/resolve\/[^/]+\//, "/");
+		return join(CACHE_DIR, cleaned.replace(/^\//, ""));
+	} catch {
+		const key = cacheKey.replace(/^https?:\/\//, "");
+		return join(CACHE_DIR, key);
+	}
+}
+
+const sessionPutKeys = new Map<string, string>();
+
+env.localModelPath = CACHE_DIR;
+env.useFSCache = true;
 env.useBrowserCache = false;
 env.useCustomCache = true;
 env.allowRemoteModels = true;
+
 env.customCache = {
-	async match(request: string) {
-		const key = request.replace(/^https?:\/\//, "");
-		const filePath = join(CACHE_DIR, key);
-		if (existsSync(filePath)) {
-			return new Response(readFileSync(filePath));
-		}
+	async match(request: string): Promise<string | undefined> {
+		const filePath = sessionPutKeys.get(request);
+		if (filePath && existsSync(filePath)) return filePath;
 		return undefined;
 	},
-	async put(request: string, response: Response) {
-		const key = request.replace(/^https?:\/\//, "");
-		const filePath = join(CACHE_DIR, key);
+	async put(request: string, response: Response): Promise<void> {
+		if (!response.body) return;
+		const filePath = cacheKeyToFilePath(request);
 		await mkdir(dirname(filePath), { recursive: true });
-		const buffer = Buffer.from(await response.arrayBuffer());
-		await writeFile(filePath, buffer);
+		const nodeStream = Readable.fromWeb(
+			response.body as import("node:stream/web").ReadableStream,
+		);
+		const fileStream = createWriteStream(filePath);
+		try {
+			await pipeline(nodeStream, fileStream);
+		} catch (error) {
+			try {
+				const { unlink } = await import("node:fs/promises");
+				await unlink(filePath);
+			} catch {}
+			throw error;
+		}
+		sessionPutKeys.set(request, filePath);
 	},
 };
 
@@ -44,10 +72,10 @@ async function getEmbeddingPipeline(): Promise<FeatureExtractionPipeline> {
 	if (!embeddingPipeline) {
 		console.log(`Loading embedding model: ${RAG_CONFIG.embedding.model}...`);
 		console.log(`Cache directory: ${CACHE_DIR}`);
-		embeddingPipeline = (await pipeline(
+		embeddingPipeline = (await transformersPipeline(
 			"feature-extraction",
 			RAG_CONFIG.embedding.model,
-			{ dtype: "fp32" },
+			{ dtype: "fp32", use_external_data_format: true },
 		)) as unknown as FeatureExtractionPipeline;
 		console.log("Embedding model loaded successfully.");
 	}

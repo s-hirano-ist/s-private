@@ -139,7 +139,7 @@ type SearchResult = {
 
 ## 6. Embedding
 
-- モデル: `intfloat/multilingual-e5-small`（384次元）
+- モデル: `intfloat/multilingual-e5-large`（1024次元）
 - E5プレフィックス: `query: `（検索時）/ `passage: `（格納時）
 - ローカル実行（HuggingFace Transformers）またはリモートAPI
 - 設定: `packages/search/src/config.ts`
@@ -161,11 +161,15 @@ type EmbeddingClientConfig = {
 
 ## 7. ベクトルDB (Qdrant)
 
-- コレクション: `knowledge_v1`
-- ベクトルサイズ: 384
+- コレクション: `knowledge_v2`
+- ベクトルサイズ: 1024
 - 距離関数: Cosine
 - ペイロードインデックス: `type`（keyword）, `top_heading`（keyword）, `content_type`（keyword）
 - ポイントID: `chunk_id` の文字列ハッシュ → unsigned 32bit整数
+
+**`deleteCollection(collectionName)`:**
+- 指定名のコレクションを削除
+- モデル変更等でコレクション移行後、旧コレクションの削除に使用
 
 **`getCollectionStats()`:**
 - コレクション統計取得（`pointsCount`, `status`）
@@ -217,3 +221,4 @@ type IngestResult = {
 - `packages/search/src/ingest.ts` - Ingestコアロジック
 - `packages/scripts/src/rag/ingest.ts` - Ingest CLIエントリポイント
 - `packages/scripts/src/rag/ingest-config.ts` - globパターン設定
+- `packages/scripts/src/rag/delete-collection.ts` - コレクション削除CLIスクリプト

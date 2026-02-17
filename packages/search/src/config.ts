@@ -2,14 +2,14 @@
 export const RAG_CONFIG = {
 	// Qdrant settings
 	qdrant: {
-		collectionName: "knowledge_v1",
-		vectorSize: 384, // multilingual-e5-small
+		collectionName: "knowledge_v2",
+		vectorSize: 1024, // multilingual-e5-large
 		distance: "Cosine" as const,
 	},
 
 	// Embedding settings
 	embedding: {
-		model: "intfloat/multilingual-e5-small",
+		model: "intfloat/multilingual-e5-large",
 		prefix: {
 			query: "query: ",
 			passage: "passage: ",
