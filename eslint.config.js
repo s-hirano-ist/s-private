@@ -76,7 +76,7 @@ export default defineConfig(
 		},
 	},
 
-	// react-hooks
+	// react-hooks (includes React Compiler rules via recommended-latest)
 	reactHookPlugin.configs.flat["recommended-latest"],
 	{
 		rules: {

@@ -3,6 +3,7 @@
 	"ignoreExportsUsedInFile": true,
 	"ignoreDependencies": [
 		"@eslint/config-inspector",
+		"babel-plugin-react-compiler",
 		"eslint-plugin-jsx-a11y",
 		"eslint-plugin-tailwindcss"
 	],

@@ -39,6 +39,7 @@ const nextConfig = {
 	],
 	serverExternalPackages: ["sharp", "@prisma/client"],
 	typedRoutes: true,
+	reactCompiler: true,
 	cacheComponents: true, // v16: moved from experimental.useCache
 	experimental: {
 		authInterrupts: true,
