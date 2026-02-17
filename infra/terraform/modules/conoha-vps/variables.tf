@@ -7,13 +7,13 @@ variable "instance_name" {
 variable "image_name" {
   description = "OS イメージ名"
   type        = string
-  default     = "Ubuntu 24.04"
+  default     = "vmi-ubuntu-24.04-amd64"
 }
 
 variable "flavor_name" {
   description = "ConoHa フレーバー（プラン）名"
   type        = string
-  default     = "g2l-t-c3m2"
+  default     = "g2l-p-c4m4"
 }
 
 variable "ssh_public_key" {
@@ -43,4 +43,16 @@ variable "security_group_name" {
   description = "セキュリティグループ名"
   type        = string
   default     = "vps-sg"
+}
+
+variable "volume_size" {
+  description = "ブートボリュームサイズ（GB）"
+  type        = number
+  default     = 100
+}
+
+variable "volume_type" {
+  description = "ブートボリュームタイプ（ConoHa リージョン固有）"
+  type        = string
+  default     = "c3j1-ds02-boot"
 }

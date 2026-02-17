@@ -11,6 +11,8 @@ module "conoha_vps" {
   ssh_port            = var.ssh_port
   keypair_name        = var.keypair_name
   security_group_name = var.security_group_name
+  volume_size         = var.volume_size
+  volume_type         = var.volume_type
 }
 
 # ============================================================

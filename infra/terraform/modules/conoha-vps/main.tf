@@ -43,14 +43,39 @@ resource "openstack_networking_secgroup_rule_v2" "egress_v6" {
 }
 
 # ============================================================
+# OS イメージ（名前 → UUID 解決）
+# ============================================================
+data "openstack_images_image_v2" "os" {
+  name        = var.image_name
+  most_recent = true
+}
+
+# ============================================================
+# ブートボリューム（イメージから事前作成）
+# ============================================================
+resource "openstack_blockstorage_volume_v3" "boot" {
+  name        = "${var.instance_name}-boot"
+  size        = var.volume_size
+  image_id    = data.openstack_images_image_v2.os.id
+  volume_type = var.volume_type
+}
+
+# ============================================================
 # VPS インスタンス
 # ============================================================
 resource "openstack_compute_instance_v2" "vps" {
   name            = var.instance_name
-  image_name      = var.image_name
   flavor_name     = var.flavor_name
   key_pair        = openstack_compute_keypair_v2.deploy.name
   security_groups = [openstack_networking_secgroup_v2.vps.name]
+
+  block_device {
+    uuid             = openstack_blockstorage_volume_v3.boot.id
+    source_type      = "volume"
+    destination_type = "volume"
+  }
+
+  depends_on = [openstack_blockstorage_volume_v3.boot]
 
   user_data = templatefile(
     "${path.module}/templates/cloud-init.yaml.tpl",

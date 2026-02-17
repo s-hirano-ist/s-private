@@ -7,26 +7,18 @@ Terraform で ConoHa VPS のプロビジョニングを自動化する。
 
 ### 1. Terraform インストール
 
-[tfenv](https://github.com/tfutils/tfenv) の使用を推奨:
+確認
 
 ```bash
-# tfenv インストール（macOS）
-brew install tfenv
-
-# Terraform インストール
-tfenv install 1.5.0
-tfenv use 1.5.0
-
-# 確認
 terraform version
 ```
 
 ### 2. ConoHa API 認証情報の取得
 
-[ConoHa コントロールパネル](https://manage.conoha.jp) > API > API情報 から取得し、環境変数に設定:
+[ConoHa コントロールパネル](https://cp.conoha.jp/VPS/API/) > API > API情報 から取得し、環境変数に設定:
 
 ```bash
-export OS_AUTH_URL="https://identity.tyo3.conoha.io/v3"
+export OS_AUTH_URL="https://identity.c3j1.conoha.io/v3"
 export OS_USERNAME="gncu..."
 export OS_PASSWORD="your-api-password"
 export OS_TENANT_ID="your-tenant-id"
