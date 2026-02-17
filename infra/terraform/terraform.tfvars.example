@@ -1,0 +1,34 @@
+# ConoHa VPS Terraform 変数サンプル
+# このファイルを terraform.tfvars にコピーして値を設定してください:
+#   cp terraform.tfvars.example terraform.tfvars
+
+# SSH 公開鍵（必須）
+ssh_public_key = "ssh-ed25519 AAAA... user@host"
+
+# インスタンス名
+# instance_name = "conoha-vps"
+
+# OS イメージ
+# image_name = "Ubuntu 24.04"
+
+# ConoHa フレーバー（プラン）
+# flavor_name = "g2l-t-c3m2"
+#
+# 利用可能なフレーバー一覧（VPS 割引きっぷ対象）:
+#   g2l-t-c1m512  - 1 vCPU / 512MB RAM
+#   g2l-t-c2m1    - 2 vCPU / 1GB RAM
+#   g2l-t-c3m2    - 3 vCPU / 2GB RAM  ← デフォルト
+#   g2l-t-c4m4    - 4 vCPU / 4GB RAM
+#   g2l-t-c6m8    - 6 vCPU / 8GB RAM
+#   g2l-t-c8m16   - 8 vCPU / 16GB RAM
+#   g2l-t-c12m32  - 12 vCPU / 32GB RAM
+#   g2l-t-c24m64  - 24 vCPU / 64GB RAM
+
+# カスタム SSH ポート（1024〜65535）
+# ssh_port = 10022
+
+# OpenStack keypair 名
+# keypair_name = "deploy-key"
+
+# セキュリティグループ名
+# security_group_name = "vps-sg"
