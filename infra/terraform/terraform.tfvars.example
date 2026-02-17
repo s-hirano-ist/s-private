@@ -1,0 +1,47 @@
+# ConoHa VPS Terraform 変数サンプル
+# このファイルを terraform.tfvars にコピーして値を設定してください:
+#   cp terraform.tfvars.example terraform.tfvars
+
+# SSH 公開鍵（必須）
+ssh_public_key = "ssh-ed25519 AAAA... user@host"
+
+# インスタンス名
+# instance_name = "conoha-vps"
+
+# OS イメージ
+# image_name = "vmi-ubuntu-24.04-amd64"
+
+# ConoHa フレーバー（プラン）
+# flavor_name = "g2l-p-c4m4"
+#
+# フレーバー命名規則: g2l-{t|p}-c{vCPU}m{RAM}
+#   t = 割引きっぷ（月額固定、プロジェクトあたりインスタンス数制限あり）
+#   p = 時間課金（従量制、インスタンス数制限なし）
+#
+# 時間課金フレーバー（デフォルト）:
+#   g2l-p-c1m512  - 1 vCPU / 512MB RAM
+#   g2l-p-c2m1    - 2 vCPU / 1GB RAM
+#   g2l-p-c3m2    - 3 vCPU / 2GB RAM
+#   g2l-p-c4m4    - 4 vCPU / 4GB RAM  ← デフォルト
+#   g2l-p-c6m8    - 6 vCPU / 8GB RAM
+#   g2l-p-c8m16   - 8 vCPU / 16GB RAM
+#   g2l-p-c12m32  - 12 vCPU / 32GB RAM
+#   g2l-p-c24m64  - 24 vCPU / 64GB RAM
+#
+# 割引きっぷフレーバー（プロジェクトクォータ制限に注意）:
+#   g2l-t-c4m4 等（既存インスタンスがある場合、制限に抵触する可能性あり）
+
+# カスタム SSH ポート（1024〜65535）
+# ssh_port = 10022
+
+# OpenStack keypair 名
+# keypair_name = "deploy-key"
+
+# セキュリティグループ名
+# security_group_name = "vps-sg"
+
+# ブートボリュームサイズ（GB）
+# volume_size = 100
+
+# ブートボリュームタイプ（ConoHa リージョン固有、参照: https://doc.conoha.jp/api-vps3/volume-get_types_list-v3/）
+# volume_type = "c3j1-ds02-boot"
