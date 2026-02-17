@@ -242,9 +242,6 @@ importers:
       '@types/node':
         specifier: 24.10.13
         version: 24.10.13
-      tsc-esm-fix:
-        specifier: 3.1.2
-        version: 3.1.2
       typescript:
         specifier: 5.9.3
         version: 5.9.3
@@ -276,9 +273,6 @@ importers:
 
   packages/notification:
     devDependencies:
-      tsc-esm-fix:
-        specifier: 3.1.2
-        version: 3.1.2
       typescript:
         specifier: 5.9.3
         version: 5.9.3
@@ -328,9 +322,6 @@ importers:
       '@types/turndown':
         specifier: 5.0.6
         version: 5.0.6
-      tsc-esm-fix:
-        specifier: 3.1.2
-        version: 3.1.2
       tsx:
         specifier: 4.21.0
         version: 4.21.0

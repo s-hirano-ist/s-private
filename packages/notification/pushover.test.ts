@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { createPushoverService } from "./pushover";
-import type { NotificationConfig, NotificationContext } from "./types";
+import { createPushoverService } from "./pushover.js";
+import type { NotificationConfig, NotificationContext } from "./types.js";
 
 // Mock fetch
 const mockFetch = vi.fn();

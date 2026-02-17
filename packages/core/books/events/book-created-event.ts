@@ -1,6 +1,6 @@
-import { BaseDomainEvent } from "../../shared-kernel/events/base-domain-event";
-import type { BookCreatedPayload } from "../../shared-kernel/events/payload-types";
-import type { BookDeletedEvent } from "./book-deleted-event";
+import { BaseDomainEvent } from "../../shared-kernel/events/base-domain-event.js";
+import type { BookCreatedPayload } from "../../shared-kernel/events/payload-types.js";
+import type { BookDeletedEvent } from "./book-deleted-event.js";
 
 /**
  * Domain event emitted when a book is created.

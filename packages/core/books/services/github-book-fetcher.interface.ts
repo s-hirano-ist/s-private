@@ -1,4 +1,4 @@
-import type { UnexportedBook } from "../entities/book-entity";
+import type { UnexportedBook } from "../entities/book-entity.js";
 
 /**
  * Interface for fetching books from external GitHub repository.

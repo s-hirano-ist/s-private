@@ -1,7 +1,7 @@
-import type { UserId } from "../../shared-kernel/entities/common-entity";
-import { DuplicateError } from "../../shared-kernel/errors/error-classes";
-import type { NoteTitle } from "../entities/note-entity";
-import type { INotesQueryRepository } from "../repositories/notes-query-repository.interface";
+import type { UserId } from "../../shared-kernel/entities/common-entity.js";
+import { DuplicateError } from "../../shared-kernel/errors/error-classes.js";
+import type { NoteTitle } from "../entities/note-entity.js";
+import type { INotesQueryRepository } from "../repositories/notes-query-repository.interface.js";
 
 /**
  * Domain service for Note business logic.

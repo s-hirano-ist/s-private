@@ -28,7 +28,7 @@
 		"LICENSE"
 	],
 	"scripts": {
-		"build": "tsc && tsc-esm-fix --target dist",
+		"build": "tsc",
 		"prepublishOnly": "pnpm run build",
 		"clean": "rm -rf dist",
 		"typecheck": "tsc --noEmit"
@@ -46,7 +46,6 @@
 		"directory": "packages/notification"
 	},
 	"devDependencies": {
-		"tsc-esm-fix": "3.1.2",
 		"typescript": "5.9.3"
 	}
 }

@@ -1,6 +1,6 @@
-import { BaseDomainEvent } from "./base-domain-event";
-import type { SystemErrorPayload } from "./payload-types";
-import type { SystemWarningEvent } from "./system-warning-event";
+import { BaseDomainEvent } from "./base-domain-event.js";
+import type { SystemErrorPayload } from "./payload-types.js";
+import type { SystemWarningEvent } from "./system-warning-event.js";
 
 /**
  * Domain event for system errors.
