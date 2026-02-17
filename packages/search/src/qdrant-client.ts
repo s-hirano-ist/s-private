@@ -33,6 +33,14 @@ export function getQdrantClient(config?: {
 }
 
 /**
+ * Delete a collection by name
+ */
+export async function deleteCollection(collectionName: string): Promise<void> {
+	const qdrant = getQdrantClient();
+	await qdrant.deleteCollection(collectionName);
+}
+
+/**
  * Create collection if not exists
  */
 export async function ensureCollection(): Promise<void> {

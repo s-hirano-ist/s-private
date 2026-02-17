@@ -7,7 +7,7 @@ services:
       - API_KEY=${EMBEDDING_API_KEY}
       - PORT=3001
     volumes:
-      - hf-cache:/home/embedding/.cache/huggingface/transformers
+      - hf-cache:/root/.cache/huggingface/transformers
     networks:
       - tunnel-net
     healthcheck:

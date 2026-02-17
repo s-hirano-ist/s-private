@@ -31,7 +31,7 @@
 - **Database** - [PostgreSQL](https://www.postgresql.org/) with [Prisma](https://www.prisma.io/) ORM
 - **Object Storage** - [MinIO](https://min.io/) (configurable for local/cloud deployment)
 ### AI & Search
-- **Embedding Model** - [intfloat/multilingual-e5-small](https://huggingface.co/intfloat/multilingual-e5-small) (HuggingFace Transformers)
+- **Embedding Model** - [intfloat/multilingual-e5-large](https://huggingface.co/intfloat/multilingual-e5-large) (HuggingFace Transformers)
 - **Vector Database** - [Qdrant](https://qdrant.tech/)
 - **Embedding API Framework** - [Hono](https://hono.dev/)
 - **Tunnel** - [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/) (Zero Trust)
@@ -223,7 +223,7 @@ Each domain is completely isolated with its own:
 │              │     │  └───────┬───────┘                      │
 └──────┬───────┘     └──────────┼──────────────────────────────┘
        │                        │
-       │                        │ multilingual-e5-small
+       │                        │ multilingual-e5-large
        ▼                        ▼
 ┌──────────────┐     ┌──────────────────┐
 │   Qdrant     │     │ HuggingFace      │

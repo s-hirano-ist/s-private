@@ -162,7 +162,7 @@ app.doc("/doc", {
 	info: {
 		title: "Embedding API",
 		version: "1.0.0",
-		description: "テキスト埋め込み API（multilingual-e5-small, 384次元）",
+		description: "テキスト埋め込み API（multilingual-e5-large, 1024次元）",
 	},
 	servers: [{ url: "http://localhost:3001", description: "Local" }],
 	security: [{ Bearer: [] }],
