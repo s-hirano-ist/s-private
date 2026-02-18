@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.16.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-storage-v1.15.1...@s-hirano-ist/s-storage-v1.16.0) (2026-02-18)
+
+
+### Maintenance
+
+* **@s-hirano-ist/s-storage:** Synchronize npm-packages versions
+
 ## [1.15.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-storage-v1.15.0...@s-hirano-ist/s-storage-v1.15.1) (2026-02-16)
 
 

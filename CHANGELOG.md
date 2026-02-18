@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.15.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.14.1...s-private-v10.15.0) (2026-02-18)
+
+
+### Features
+
+* add terraform ([2f9dd15](https://github.com/s-hirano-ist/s-private/commit/2f9dd15319f7b08fa85af484b1378e198fd7060b))
+* add terraform init ([845d5fe](https://github.com/s-hirano-ist/s-private/commit/845d5fe43070d771f257b4f95e00011a44041912))
+* add vps settings for terraform ([a919625](https://github.com/s-hirano-ist/s-private/commit/a919625c8ea4410916998e233a96fd99b8f14ee4))
+* change embedding model to e5 large ([7c53129](https://github.com/s-hirano-ist/s-private/commit/7c531299ecafcc7986ca20fb29e7ba7d34ea6673))
+* enable React Compiler 1.0 ([321e8d1](https://github.com/s-hirano-ist/s-private/commit/321e8d1a24668e8ca612f479b303b16a8d763b45))
+
+
+### Bug Fixes
+
+* add babel-plugin-react-compiler to knip ignoreDependencies ([f6479d9](https://github.com/s-hirano-ist/s-private/commit/f6479d94971ad8d185f3bb251dd42b995f4703e1))
+* vaul to baseui ([1efaef4](https://github.com/s-hirano-ist/s-private/commit/1efaef4a6dd88cd2855880ea29ffa13a1c6cb98a))
+
+
+### Maintenance
+
+* add terraform for vps ([71a7e0a](https://github.com/s-hirano-ist/s-private/commit/71a7e0acb7360de64aa3a3e3f9c2b4285df40a26))
+* **deps:** pin dependencies ([76c5bc8](https://github.com/s-hirano-ist/s-private/commit/76c5bc802e63335149a4441daad2692cc78bbbf2))
+* **deps:** update patch ([64c35f4](https://github.com/s-hirano-ist/s-private/commit/64c35f425880f5b56afe45b9522af4f5055188e0))
+
 ## [10.14.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.14.0...s-private-v10.14.1) (2026-02-16)
 
 

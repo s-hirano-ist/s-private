@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.16.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.15.1...@s-hirano-ist/s-scripts-v1.16.0) (2026-02-18)
+
+
+### Features
+
+* change embedding model to e5 large ([7c53129](https://github.com/s-hirano-ist/s-private/commit/7c531299ecafcc7986ca20fb29e7ba7d34ea6673))
+
+
+### Maintenance
+
+* **deps:** update patch ([64c35f4](https://github.com/s-hirano-ist/s-private/commit/64c35f425880f5b56afe45b9522af4f5055188e0))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.16.0
+    * @s-hirano-ist/s-search bumped to 1.16.0
+    * @s-hirano-ist/s-database bumped to 1.16.0
+    * @s-hirano-ist/s-notification bumped to 1.16.0
+    * @s-hirano-ist/s-storage bumped to 1.16.0
+
 ## [1.15.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.15.0...@s-hirano-ist/s-scripts-v1.15.1) (2026-02-16)
 
 
