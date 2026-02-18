@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.14.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/embedding-api-v1.13.1...@s-hirano-ist/embedding-api-v1.14.0) (2026-02-18)
+
+
+### Features
+
+* change embedding model to e5 large ([7c53129](https://github.com/s-hirano-ist/s-private/commit/7c531299ecafcc7986ca20fb29e7ba7d34ea6673))
+
+
+### Maintenance
+
+* **deps:** update patch ([64c35f4](https://github.com/s-hirano-ist/s-private/commit/64c35f425880f5b56afe45b9522af4f5055188e0))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-search bumped to 1.16.0
+
 ## [1.13.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/embedding-api-v1.13.0...@s-hirano-ist/embedding-api-v1.13.1) (2026-02-16)
 
 

@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.16.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.15.1...@s-hirano-ist/s-ui-v1.16.0) (2026-02-18)
+
+
+### Bug Fixes
+
+* vaul to baseui ([1efaef4](https://github.com/s-hirano-ist/s-private/commit/1efaef4a6dd88cd2855880ea29ffa13a1c6cb98a))
+
+
+### Maintenance
+
+* **deps:** update patch ([64c35f4](https://github.com/s-hirano-ist/s-private/commit/64c35f425880f5b56afe45b9522af4f5055188e0))
+
 ## [1.15.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.15.0...@s-hirano-ist/s-ui-v1.15.1) (2026-02-16)
 
 
