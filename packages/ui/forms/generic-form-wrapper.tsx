@@ -4,7 +4,6 @@ import {
 	type ReactNode,
 	use,
 	useActionState,
-	useMemo,
 	useState,
 } from "react";
 import Loading from "../display/loading";
@@ -112,10 +111,7 @@ export function GenericFormWrapper<
 	> | null>(null);
 
 	// Derive form values: server response takes precedence, then preserved values
-	const formValues = useMemo(() => {
-		if (serverFormData) return serverFormData;
-		return preservedValues || {};
-	}, [serverFormData, preservedValues]);
+	const formValues = serverFormData ?? preservedValues ?? {};
 
 	const submitForm = async (
 		_previousState: T | null,

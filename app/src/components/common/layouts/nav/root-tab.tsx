@@ -7,15 +7,7 @@ import {
 } from "@s-hirano-ist/s-ui/ui/tabs";
 import { cn } from "@s-hirano-ist/s-ui/utils/cn";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-	memo,
-	type ReactNode,
-	useCallback,
-	useEffect,
-	useMemo,
-	useOptimistic,
-	useTransition,
-} from "react";
+import { type ReactNode, useEffect, useOptimistic, useTransition } from "react";
 
 const TABS = {
 	articles: "ARTICLES",
@@ -35,19 +27,14 @@ type Props = {
 
 const DEFAULT_TAB = "articles";
 
-function RootTabComponent({ articles, books, notes, images }: Props) {
+export function RootTab({ articles, books, notes, images }: Props) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const [isPending, startTransition] = useTransition();
 
 	// Derive tab from searchParams - single source of truth
-	const tab = useMemo(() => {
-		const param = searchParams.get("tab");
-		if (param && TAB_KEYS.has(param)) {
-			return param;
-		}
-		return DEFAULT_TAB;
-	}, [searchParams]);
+	const tabParam = searchParams.get("tab");
+	const tab = tabParam && TAB_KEYS.has(tabParam) ? tabParam : DEFAULT_TAB;
 
 	// Use optimistic for perceived performance
 	const [optimisticTab, setOptimisticTab] = useOptimistic(tab);
@@ -65,18 +52,15 @@ function RootTabComponent({ articles, books, notes, images }: Props) {
 		});
 	}, [router, searchParams, tab]);
 
-	const handleTabChange = useCallback(
-		(value: string) => {
-			startTransition(() => {
-				setOptimisticTab(value);
-				const params = new URLSearchParams(searchParams);
-				params.delete("page");
-				params.set("tab", value);
-				router.replace(`?${params.toString()}`);
-			});
-		},
-		[router, searchParams, setOptimisticTab],
-	);
+	const handleTabChange = (value: string) => {
+		startTransition(() => {
+			setOptimisticTab(value);
+			const params = new URLSearchParams(searchParams);
+			params.delete("page");
+			params.set("tab", value);
+			router.replace(`?${params.toString()}`);
+		});
+	};
 
 	// Redirect invalid tab values
 	useEffect(() => {
@@ -88,24 +72,21 @@ function RootTabComponent({ articles, books, notes, images }: Props) {
 		}
 	}, [searchParams, router]);
 
-	const tabsList = useMemo(
-		() => (
-			<TabsList className={cn("w-full", isPending && "opacity-50")}>
-				{Object.entries(TABS).map(([key, value]) => {
-					return (
-						<TabsTrigger
-							className="w-full"
-							disabled={isPending}
-							key={key}
-							value={key}
-						>
-							{value}
-						</TabsTrigger>
-					);
-				})}
-			</TabsList>
-		),
-		[isPending],
+	const tabsList = (
+		<TabsList className={cn("w-full", isPending && "opacity-50")}>
+			{Object.entries(TABS).map(([key, value]) => {
+				return (
+					<TabsTrigger
+						className="w-full"
+						disabled={isPending}
+						key={key}
+						value={key}
+					>
+						{value}
+					</TabsTrigger>
+				);
+			})}
+		</TabsList>
 	);
 
 	return (
@@ -123,5 +104,3 @@ function RootTabComponent({ articles, books, notes, images }: Props) {
 		</Tabs>
 	);
 }
-
-export const RootTab = memo(RootTabComponent);

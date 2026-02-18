@@ -1,5 +1,5 @@
 "use client";
-import { memo, type ReactNode, Suspense } from "react";
+import { type ReactNode, Suspense } from "react";
 import { type LoadingStrategy, useTabVisibility } from "./use-tab-visibility";
 
 type Props = {
@@ -18,7 +18,7 @@ const DEFAULT_LOADING_STRATEGY: LoadingStrategy = "preload";
  * タブが初回表示されるまでchildrenをレンダリングしない
  * プリローディング機能付き
  */
-function LazyTabContentComponent({
+export function LazyTabContent({
 	tabName,
 	children,
 	fallback = DEFAULT_FALLBACK,
@@ -52,5 +52,3 @@ function LazyTabContentComponent({
 
 	return <>{fallback}</>;
 }
-
-export const LazyTabContent = memo(LazyTabContentComponent);

@@ -11,11 +11,8 @@ import { DownloadIcon, SearchIcon, UploadIcon } from "lucide-react";
 import type { Route } from "next";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
-	memo,
 	type ReactNode,
-	useCallback,
 	useEffect,
-	useMemo,
 	useOptimistic,
 	useState,
 	useTransition,
@@ -35,7 +32,7 @@ const DEFAULT_LAYOUT = "dumper";
 type Props = {
 	search: typeof searchContentFromClient;
 };
-function FooterComponent({ search }: Props) {
+export function Footer({ search }: Props) {
 	const [open, setOpen] = useState(false);
 
 	const router = useRouter();
@@ -44,13 +41,9 @@ function FooterComponent({ search }: Props) {
 	const [isPending, startTransition] = useTransition();
 
 	// Derive layout from searchParams - single source of truth
-	const layout = useMemo(() => {
-		const param = searchParams.get("layout");
-		if (param && LAYOUT_KEYS.has(param)) {
-			return param;
-		}
-		return DEFAULT_LAYOUT;
-	}, [searchParams]);
+	const layoutParam = searchParams.get("layout");
+	const layout =
+		layoutParam && LAYOUT_KEYS.has(layoutParam) ? layoutParam : DEFAULT_LAYOUT;
 
 	// Use optimistic for perceived performance
 	const [optimisticLayout, setOptimisticLayout] = useOptimistic(layout);
@@ -68,36 +61,33 @@ function FooterComponent({ search }: Props) {
 		});
 	}, [router, searchParams, layout]);
 
-	const Icon = useCallback((name: string, icon: ReactNode) => {
+	function Icon(name: string, icon: ReactNode) {
 		return (
 			<div className="flex flex-col items-center">
 				{icon}
 				<div className="font-thin text-xs">{name}</div>
 			</div>
 		);
-	}, []);
+	}
 
-	const handleLayoutChange = useCallback(
-		(value: string) => {
-			startTransition(() => {
-				setOptimisticLayout(value);
-				const params = new URLSearchParams(searchParams);
-				params.delete("page");
-				params.set("layout", value);
+	const handleLayoutChange = (value: string) => {
+		startTransition(() => {
+			setOptimisticLayout(value);
+			const params = new URLSearchParams(searchParams);
+			params.delete("page");
+			params.set("layout", value);
 
-				// If we're on a book or note detail page, navigate back to root
-				if (pathname.includes("/book/") || pathname.includes("/note/")) {
-					// Extract locale from pathname (e.g., /en/book/... or /ja/note/...)
-					const localeMatch = pathname.match(/^\/([^/]+)/);
-					const locale = localeMatch ? localeMatch[1] : "";
-					router.replace(`/${locale}?${params.toString()}` as Route);
-				} else {
-					router.replace(`?${params.toString()}` as Route);
-				}
-			});
-		},
-		[router, searchParams, pathname, setOptimisticLayout],
-	);
+			// If we're on a book or note detail page, navigate back to root
+			if (pathname.includes("/book/") || pathname.includes("/note/")) {
+				// Extract locale from pathname (e.g., /en/book/... or /ja/note/...)
+				const localeMatch = pathname.match(/^\/([^/]+)/);
+				const locale = localeMatch ? localeMatch[1] : "";
+				router.replace(`/${locale}?${params.toString()}` as Route);
+			} else {
+				router.replace(`?${params.toString()}` as Route);
+			}
+		});
+	};
 
 	// Redirect invalid layout values
 	useEffect(() => {
@@ -109,51 +99,48 @@ function FooterComponent({ search }: Props) {
 		}
 	}, [searchParams, router]);
 
-	const navigationButtons = useMemo(
-		() => (
-			<div className="mx-auto grid h-16 max-w-lg grid-cols-3 bg-linear-to-r from-primary to-primary-grad text-white sm:rounded-3xl">
+	const navigationButtons = (
+		<div className="mx-auto grid h-16 max-w-lg grid-cols-3 bg-linear-to-r from-primary to-primary-grad text-white sm:rounded-3xl">
+			<Button
+				asChild
+				className={cn(
+					"sm:rounded-s-3xl",
+					optimisticLayout === "dumper" ? "bg-black/10" : "",
+					isPending && optimisticLayout !== "dumper" ? "opacity-50" : "",
+				)}
+				disabled={isPending}
+				onClick={() => handleLayoutChange("dumper")}
+				size="navSide"
+				variant="navSide"
+			>
+				{Icon("DUMPER", <UploadIcon className="size-6" />)}
+			</Button>
+			<div className="flex items-center justify-center">
 				<Button
-					asChild
-					className={cn(
-						"sm:rounded-s-3xl",
-						optimisticLayout === "dumper" ? "bg-black/10" : "",
-						isPending && optimisticLayout !== "dumper" ? "opacity-50" : "",
-					)}
-					disabled={isPending}
-					onClick={() => handleLayoutChange("dumper")}
-					size="navSide"
-					variant="navSide"
+					className="bg-linear-to-t from-primary to-primary-grad shadow-sm"
+					onClick={() => setOpen(true)}
+					size="navCenter"
+					type="button"
+					variant="navCenter"
 				>
-					{Icon("DUMPER", <UploadIcon className="size-6" />)}
-				</Button>
-				<div className="flex items-center justify-center">
-					<Button
-						className="bg-linear-to-t from-primary to-primary-grad shadow-sm"
-						onClick={() => setOpen(true)}
-						size="navCenter"
-						type="button"
-						variant="navCenter"
-					>
-						{Icon("", <SearchIcon className="size-6 text-white" />)}
-						<span className="sr-only">Action</span>
-					</Button>
-				</div>
-				<Button
-					asChild
-					className={cn(
-						optimisticLayout === "viewer" ? "bg-black/10" : "",
-						isPending && optimisticLayout !== "viewer" ? "opacity-50" : "",
-					)}
-					disabled={isPending}
-					onClick={() => handleLayoutChange("viewer")}
-					size="navSide"
-					variant="navSide"
-				>
-					{Icon("VIEWER", <DownloadIcon className="size-6" />)}
+					{Icon("", <SearchIcon className="size-6 text-white" />)}
+					<span className="sr-only">Action</span>
 				</Button>
 			</div>
-		),
-		[optimisticLayout, isPending, handleLayoutChange, Icon],
+			<Button
+				asChild
+				className={cn(
+					optimisticLayout === "viewer" ? "bg-black/10" : "",
+					isPending && optimisticLayout !== "viewer" ? "opacity-50" : "",
+				)}
+				disabled={isPending}
+				onClick={() => handleLayoutChange("viewer")}
+				size="navSide"
+				variant="navSide"
+			>
+				{Icon("VIEWER", <DownloadIcon className="size-6" />)}
+			</Button>
+		</div>
 	);
 
 	return (
@@ -172,5 +159,3 @@ function FooterComponent({ search }: Props) {
 		</>
 	);
 }
-
-export const Footer = memo(FooterComponent);

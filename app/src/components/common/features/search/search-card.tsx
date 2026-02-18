@@ -7,7 +7,6 @@ import { SearchIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
-import { useCallback, useMemo } from "react";
 import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 import { useSearch } from "@/components/common/hooks/use-search";
 import { LinkCard } from "../../layouts/cards/link-card";
@@ -31,13 +30,12 @@ export function SearchCard({ search }: Props) {
 		isError,
 	} = useSearch({ search });
 
-	const { articles, nonArticles } = useMemo(() => {
-		if (!searchResults) return { articles: [], nonArticles: [] };
-		return {
-			articles: searchResults.filter((r) => r.contentType === "articles"),
-			nonArticles: searchResults.filter((r) => r.contentType !== "articles"),
-		};
-	}, [searchResults]);
+	const articles = searchResults
+		? searchResults.filter((r) => r.contentType === "articles")
+		: [];
+	const nonArticles = searchResults
+		? searchResults.filter((r) => r.contentType !== "articles")
+		: [];
 
 	const handleSelect = (item: {
 		href: string;
@@ -55,13 +53,13 @@ export function SearchCard({ search }: Props) {
 			executeSearch();
 		}
 	};
-	const handleReload = useCallback(() => {
+	const handleReload = () => {
 		window.location.reload();
-	}, []);
+	};
 
-	const onSignOutSubmit = useCallback(async () => {
+	const onSignOutSubmit = async () => {
 		await signOut();
-	}, []);
+	};
 
 	return (
 		<>

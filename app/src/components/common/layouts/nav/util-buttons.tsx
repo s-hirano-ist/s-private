@@ -4,7 +4,6 @@ import { Globe, LogOut, Moon, RefreshCw, Sun } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
-import { useCallback } from "react";
 import { redirect } from "@/infrastructures/i18n/routing";
 
 type Props = { handleReload: () => void; onSignOutSubmit: () => Promise<void> };
@@ -19,17 +18,17 @@ export function UtilButtons({ handleReload, onSignOutSubmit }: Props) {
 	const locale = useLocale();
 	const t = useTranslations("utils");
 
-	const handleTheme = useCallback(() => {
+	const handleTheme = () => {
 		if (theme === "light") setTheme("dark");
 		else setTheme("light");
-	}, [theme, setTheme]);
+	};
 
-	const handleLanguage = useCallback(() => {
+	const handleLanguage = () => {
 		redirect({
 			href: removeLangPrefix(pathname),
 			locale: locale === "en" ? "ja" : "en",
 		});
-	}, [pathname, locale]);
+	};
 
 	const shouldShowSignOut = pathname !== "/auth";
 
