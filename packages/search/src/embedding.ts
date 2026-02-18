@@ -38,8 +38,20 @@ env.allowRemoteModels = true;
 
 env.customCache = {
 	async match(request: string): Promise<string | undefined> {
-		const filePath = sessionPutKeys.get(request);
-		if (filePath && existsSync(filePath)) return filePath;
+		const sessionPath = sessionPutKeys.get(request);
+		if (sessionPath && existsSync(sessionPath)) return sessionPath;
+
+		if (!request.startsWith("http") && existsSync(request)) {
+			sessionPutKeys.set(request, request);
+			return request;
+		}
+
+		const derivedPath = cacheKeyToFilePath(request);
+		if (existsSync(derivedPath)) {
+			sessionPutKeys.set(request, derivedPath);
+			return derivedPath;
+		}
+
 		return undefined;
 	},
 	async put(request: string, response: Response): Promise<void> {
@@ -86,7 +98,21 @@ async function getEmbeddingPipeline(): Promise<FeatureExtractionPipeline> {
  * Eagerly initialize the embedding pipeline (call at server startup)
  */
 export async function initEmbeddingPipeline(): Promise<void> {
-	await getEmbeddingPipeline();
+	const MAX_RETRIES = 3;
+	for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+		try {
+			await getEmbeddingPipeline();
+			return;
+		} catch (error) {
+			if (attempt === MAX_RETRIES) throw error;
+			const delay = attempt * 5000;
+			console.warn(
+				`Model loading attempt ${attempt}/${MAX_RETRIES} failed, retrying in ${delay}ms...`,
+				error,
+			);
+			await new Promise((resolve) => setTimeout(resolve, delay));
+		}
+	}
 }
 
 /**
