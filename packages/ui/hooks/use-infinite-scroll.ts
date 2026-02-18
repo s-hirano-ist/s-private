@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * Options for the useInfiniteScroll hook.
@@ -80,34 +80,24 @@ export function useInfiniteScroll({
 	const observer = useRef<IntersectionObserver | null>(null);
 	const [isInitialized, setIsInitialized] = useState(false);
 
-	const lastElementRef = useCallback(
-		(node: HTMLElement | null) => {
-			if (isFetchingNextPage) return;
-			if (observer.current) observer.current.disconnect();
+	const lastElementRef = (node: HTMLElement | null) => {
+		if (isFetchingNextPage) return;
+		if (observer.current) observer.current.disconnect();
 
-			observer.current = new IntersectionObserver(
-				(entries) => {
-					if (entries[0]?.isIntersecting && hasNextPage && isInitialized) {
-						fetchNextPage();
-					}
-				},
-				{
-					rootMargin,
-					threshold,
-				},
-			);
+		observer.current = new IntersectionObserver(
+			(entries) => {
+				if (entries[0]?.isIntersecting && hasNextPage && isInitialized) {
+					fetchNextPage();
+				}
+			},
+			{
+				rootMargin,
+				threshold,
+			},
+		);
 
-			if (node) observer.current.observe(node);
-		},
-		[
-			isFetchingNextPage,
-			hasNextPage,
-			fetchNextPage,
-			rootMargin,
-			threshold,
-			isInitialized,
-		],
-	);
+		if (node) observer.current.observe(node);
+	};
 
 	// Initialize after first render to avoid SSR issues
 	useEffect(() => {
