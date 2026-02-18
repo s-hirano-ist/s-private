@@ -1,9 +1,7 @@
 import { createWriteStream, existsSync } from "node:fs";
-import { mkdir } from "node:fs/promises";
+import { mkdir, unlink, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
-import { Readable } from "node:stream";
-import { pipeline } from "node:stream/promises";
 import {
 	env,
 	type FeatureExtractionPipeline,
@@ -52,26 +50,47 @@ env.customCache = {
 			return derivedPath;
 		}
 
+		console.log(`[cache:match] MISS key=${String(request).slice(0, 80)}`);
 		return undefined;
 	},
 	async put(request: string, response: Response): Promise<void> {
-		if (!response.body) return;
 		const filePath = cacheKeyToFilePath(request);
+		console.log(`[cache:put] key=${request.slice(0, 80)} -> ${filePath}`);
 		await mkdir(dirname(filePath), { recursive: true });
-		const nodeStream = Readable.fromWeb(
-			response.body as import("node:stream/web").ReadableStream,
-		);
+
+		if (!response.body) {
+			console.warn(
+				"[cache:put] response.body is null, using arrayBuffer fallback",
+			);
+			const buffer = new Uint8Array(await response.arrayBuffer());
+			await writeFile(filePath, buffer);
+			sessionPutKeys.set(request, filePath);
+			return;
+		}
+
+		// getReader() + manual write: same pattern as FileCache.put in @huggingface/transformers
 		const fileStream = createWriteStream(filePath);
 		try {
-			await pipeline(nodeStream, fileStream);
+			const reader = response.body.getReader();
+			while (true) {
+				const { done, value } = await reader.read();
+				if (done) break;
+				await new Promise<void>((resolve, reject) => {
+					fileStream.write(value, (err) => (err ? reject(err) : resolve()));
+				});
+			}
+			await new Promise<void>((resolve, reject) => {
+				fileStream.close((err?: Error | null) => (err ? reject(err) : resolve()));
+			});
 		} catch (error) {
+			fileStream.destroy();
 			try {
-				const { unlink } = await import("node:fs/promises");
 				await unlink(filePath);
 			} catch {}
 			throw error;
 		}
 		sessionPutKeys.set(request, filePath);
+		console.log(`[cache:put] completed: ${filePath}`);
 	},
 };
 
