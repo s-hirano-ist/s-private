@@ -1,19 +1,19 @@
 # CLAUDE.md
 
-Next.js 15 + TypeScript + Clean Architectureベースのコンテンツ管理システム。
+Next.js 16 + TypeScript + Clean Architectureベースのコンテンツ管理システム。
 docs/** にはより詳細な設計等のルールが記載されています。必要に応じて参照してください。
 また、新たな設計パターンを追加する場合は、docs/** の設計該当箇所に適宜内容を追加してください。
 
-Before doing any UI, frontend or React development, ALWAYS call the storybook MCP server to get further instructions.
-
-issuesには、取り組み検討中の課題を記述している。issueに取り組むように指示があり、完了したらissueは削除すること。
+- Before doing any UI, frontend or React development, ALWAYS call the storybook MCP server to get further instructions.
+- issuesには、取り組み検討中の課題を記述している。issueに取り組むように指示があり、完了したらissueは削除すること。
+- 計画時、後方互換性は基本的に捨てること。
 
 ## 技術スタック
-- Next.js 15 (App Router, Server Actions)
+- Next.js 16 (App Router, Server Actions)
 - TypeScript + Zod
 - Prisma + PostgreSQL
 - Shadcn/ui + Tailwind CSS
-- Auth0 + NextAuth.js
+- Auth0 + Auth.js
 - MinIO (Object Storage)
 - Qdrant (Vector Database) + Embedding API (Hono)
 
@@ -51,7 +51,7 @@ issuesには、取り組み検討中の課題を記述している。issueに取
 - PostgreSQL + Prisma ORM
 - MinIO（オブジェクトストレージ）
 - Sentry（エラー監視）+ Pushover（通知）
-- Auth0 + NextAuth.js（認証）
+- Auth0 + uth.js（認証）
 - next-intl（i18n）
 - Embedding API（ConoHa VPS + Cloudflare Tunnel）
 - Qdrant（ベクトルデータベース）

@@ -71,6 +71,28 @@
 5. `pnpm test` — テスト通過を確認
 6. `pnpm lint:fix && pnpm check:fix` — lint/format通過を確認
 
+## 注意点・エッジケース
+
+> 参考: https://zenn.dev/uhyo/articles/rewrite-relative-import-extensions-read-before-use
+
+TypeScript公式チームは、このオプションの使用場面を「Node.jsの `--experimental-strip-types` を使う場合」に限定して推奨している。本プロジェクトではtscによるトランスパイルを行っているため、従来の「ソースコードで `.js` 拡張子を書く」アプローチも代替手段として検討可能。
+
+### Dynamic import
+
+実行時に決定されるimportパス（`import(dynamicPath)`）には静的な書き換えが効かず、ランタイムに正規表現ベースの書き換え関数が埋め込まれる。本プロジェクトで動的importを使用している箇所がある場合は注意が必要。
+
+### CommonJS構文
+
+`import foo = require('./foo.ts')` 形式の場合、ディレクトリ解決の違いにより誤った書き換えが生じうる。本プロジェクトはESMのため影響は少ないが、留意点として記録。
+
+### Subpath imports
+
+`#` で始まるパス（package.jsonの `imports` フィールド）は機械的な書き換えが不正確になる可能性がある。
+
+### 代替アプローチ
+
+「ランタイムで `.js` になるからソースコードでも `.js` で書く」というメンタルモデルの方がシンプルで保守性が高いという見解もある。ただし、`packages/search` では既に `.ts` 拡張子 + `rewriteRelativeImportExtensions` を採用済みのため、統一性の観点からは現行方針を維持する判断も妥当。
+
 ## References
 
 - 既存の採用例: `packages/search/tsconfig.json`（`rewriteRelativeImportExtensions: true`）
