@@ -1,8 +1,8 @@
 // MEMO: only use for plugins not in biome
 
+import nextPlugin from "@next/eslint-plugin-next";
 import vitestPlugin from "@vitest/eslint-plugin";
-import { defineConfig } from "eslint/config";
-import nextConfig from "eslint-config-next";
+import { defineConfig, globalIgnores } from "eslint/config";
 import reactPlugin from "eslint-plugin-react";
 import reactHookPlugin from "eslint-plugin-react-hooks";
 // import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
@@ -11,18 +11,16 @@ import storybookPlugin from "eslint-plugin-storybook";
 import tsEslint from "typescript-eslint";
 
 export default defineConfig(
-	{
-		ignores: [
-			"packages/database/src/generated/**/*",
-			"**/node_modules/**/*",
-			"**/.next/**/*",
-			"**/.storybook-static/**/*",
-			"**/.vitest-coverage/**/*",
-			"**/dist/**/*",
-			"**/next-env.d.ts", // Next.js auto-generated file
-			"docs/**/*", // TypeDoc generated files
-		],
-	},
+	globalIgnores([
+		"packages/database/src/generated/**/*",
+		"**/node_modules/**/*",
+		"**/.next/**/*",
+		"**/.storybook-static/**/*",
+		"**/.vitest-coverage/**/*",
+		"**/dist/**/*",
+		"**/next-env.d.ts", // Next.js auto-generated file
+		"docs/**/*", // TypeDoc generated files
+	]),
 	{
 		files: [
 			"**/*.js",
@@ -34,7 +32,7 @@ export default defineConfig(
 		],
 	},
 	...tsEslint.configs.strict,
-	...nextConfig,
+	nextPlugin.configs.recommended,
 	reactPlugin.configs.flat.recommended,
 	reactPlugin.configs.flat["jsx-runtime"],
 	{
@@ -48,6 +46,8 @@ export default defineConfig(
 						"*.config.js",
 						"*.config.mjs",
 						"*.cjs",
+						"app/*.config.mjs",
+						"app/*.config.js",
 					],
 				},
 				tsconfigRootDir: import.meta.dirname,
