@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.15.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.15.0...s-private-v10.15.1) (2026-02-18)
+
+
+### Bug Fixes
+
+* compose ([fbc33da](https://github.com/s-hirano-ist/s-private/commit/fbc33da771b27c5c47bc3f59838f0d8b03664844))
+
+
+### Maintenance
+
+* add embedding api issue ([30affbb](https://github.com/s-hirano-ist/s-private/commit/30affbb5b79c9ad6a756f7f0065b3fe14f39bebf))
+* update compose ([0630bb9](https://github.com/s-hirano-ist/s-private/commit/0630bb95094a28ebfe98512de55e4d8d37bd9e10))
+
 ## [10.15.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.14.1...s-private-v10.15.0) (2026-02-18)
 
 

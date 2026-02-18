@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.14.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/embedding-api-v1.14.0...@s-hirano-ist/embedding-api-v1.14.1) (2026-02-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-search bumped to 1.16.1
+
 ## [1.14.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/embedding-api-v1.13.1...@s-hirano-ist/embedding-api-v1.14.0) (2026-02-18)
 
 

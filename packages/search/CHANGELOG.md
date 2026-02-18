@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.16.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-search-v1.16.0...@s-hirano-ist/s-search-v1.16.1) (2026-02-18)
+
+
+### Maintenance
+
+* add embedding api issue ([30affbb](https://github.com/s-hirano-ist/s-private/commit/30affbb5b79c9ad6a756f7f0065b3fe14f39bebf))
+
 ## [1.16.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-search-v1.15.1...@s-hirano-ist/s-search-v1.16.0) (2026-02-18)
 
 

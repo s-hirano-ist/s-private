@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.16.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.16.0...@s-hirano-ist/s-ui-v1.16.1) (2026-02-18)
+
+
+### Bug Fixes
+
+* compose ([fbc33da](https://github.com/s-hirano-ist/s-private/commit/fbc33da771b27c5c47bc3f59838f0d8b03664844))
+
 ## [1.16.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.15.1...@s-hirano-ist/s-ui-v1.16.0) (2026-02-18)
 
 
