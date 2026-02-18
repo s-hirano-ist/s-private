@@ -1,7 +1,5 @@
-import { createWriteStream, existsSync } from "node:fs";
-import { mkdir, unlink, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
-import { dirname, join } from "node:path";
+import { join } from "node:path";
 import {
 	env,
 	type FeatureExtractionPipeline,
@@ -11,88 +9,12 @@ import { RAG_CONFIG } from "./config.ts";
 
 const CACHE_DIR = join(homedir(), ".cache", "huggingface", "transformers");
 
-/**
- * Convert a HuggingFace Hub URL (cache key) to a local file path.
- * Strips "/resolve/{revision}/" so the layout matches localModelPath expectations.
- */
-function cacheKeyToFilePath(cacheKey: string): string {
-	try {
-		const url = new URL(cacheKey);
-		const cleaned = url.pathname.replace(/\/resolve\/[^/]+\//, "/");
-		return join(CACHE_DIR, cleaned.replace(/^\//, ""));
-	} catch {
-		const key = cacheKey.replace(/^https?:\/\//, "");
-		return join(CACHE_DIR, key);
-	}
-}
-
-const sessionPutKeys = new Map<string, string>();
-
+env.cacheDir = CACHE_DIR;
 env.localModelPath = CACHE_DIR;
 env.useFSCache = true;
 env.useBrowserCache = false;
-env.useCustomCache = true;
+env.useCustomCache = false;
 env.allowRemoteModels = true;
-
-env.customCache = {
-	async match(request: string): Promise<string | undefined> {
-		const sessionPath = sessionPutKeys.get(request);
-		if (sessionPath && existsSync(sessionPath)) return sessionPath;
-
-		if (!request.startsWith("http") && existsSync(request)) {
-			sessionPutKeys.set(request, request);
-			return request;
-		}
-
-		const derivedPath = cacheKeyToFilePath(request);
-		if (existsSync(derivedPath)) {
-			sessionPutKeys.set(request, derivedPath);
-			return derivedPath;
-		}
-
-		console.log(`[cache:match] MISS key=${String(request).slice(0, 80)}`);
-		return undefined;
-	},
-	async put(request: string, response: Response): Promise<void> {
-		const filePath = cacheKeyToFilePath(request);
-		console.log(`[cache:put] key=${request.slice(0, 80)} -> ${filePath}`);
-		await mkdir(dirname(filePath), { recursive: true });
-
-		if (!response.body) {
-			console.warn(
-				"[cache:put] response.body is null, using arrayBuffer fallback",
-			);
-			const buffer = new Uint8Array(await response.arrayBuffer());
-			await writeFile(filePath, buffer);
-			sessionPutKeys.set(request, filePath);
-			return;
-		}
-
-		// getReader() + manual write: same pattern as FileCache.put in @huggingface/transformers
-		const fileStream = createWriteStream(filePath);
-		try {
-			const reader = response.body.getReader();
-			while (true) {
-				const { done, value } = await reader.read();
-				if (done) break;
-				await new Promise<void>((resolve, reject) => {
-					fileStream.write(value, (err) => (err ? reject(err) : resolve()));
-				});
-			}
-			await new Promise<void>((resolve, reject) => {
-				fileStream.close((err?: Error | null) => (err ? reject(err) : resolve()));
-			});
-		} catch (error) {
-			fileStream.destroy();
-			try {
-				await unlink(filePath);
-			} catch {}
-			throw error;
-		}
-		sessionPutKeys.set(request, filePath);
-		console.log(`[cache:put] completed: ${filePath}`);
-	},
-};
 
 let embeddingPipeline: FeatureExtractionPipeline | null = null;
 
