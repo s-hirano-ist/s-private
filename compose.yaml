@@ -1,6 +1,6 @@
 services:
   embedding-api:
-    image: s0hirano/embedding-api:latest
+    image: s0hirano/embedding-api:1.14.0
     container_name: embedding-api
     restart: unless-stopped
     environment:
