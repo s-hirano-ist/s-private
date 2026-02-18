@@ -1,7 +1,7 @@
 "use client";
 
-import type * as React from "react";
-import { Drawer as DrawerPrimitive } from "vaul";
+import { DrawerPreview as DrawerPrimitive } from "@base-ui/react/drawer";
+import * as React from "react";
 
 import { cn } from "../utils/cn";
 
@@ -9,14 +9,14 @@ import { cn } from "../utils/cn";
  * Root drawer component for slide-in panels.
  *
  * @remarks
- * Built on the vaul library. Provides accessible slide-in panels
- * from any direction (top, bottom, left, right).
+ * Built on the Base UI DrawerPreview. Provides accessible slide-in panels
+ * with swipe-to-dismiss support.
  *
  * @example
  * ```tsx
  * <Drawer>
- *   <DrawerTrigger asChild>
- *     <Button>Open Drawer</Button>
+ *   <DrawerTrigger render={<Button />}>
+ *     Open Drawer
  *   </DrawerTrigger>
  *   <DrawerContent>
  *     <DrawerHeader>
@@ -25,9 +25,7 @@ import { cn } from "../utils/cn";
  *     </DrawerHeader>
  *     <p>Drawer content</p>
  *     <DrawerFooter>
- *       <DrawerClose asChild>
- *         <Button>Close</Button>
- *       </DrawerClose>
+ *       <DrawerClose render={<Button />}>Close</DrawerClose>
  *     </DrawerFooter>
  *   </DrawerContent>
  * </Drawer>
@@ -45,12 +43,33 @@ function Drawer({
 /**
  * Button or element that opens the drawer.
  *
+ * @remarks
+ * Supports `render` prop (Base UI native) to render as a custom element.
+ * Also supports legacy `asChild` prop for backward compatibility.
+ *
  * @see {@link Drawer} for parent component
  */
 function DrawerTrigger({
+	asChild,
+	children,
 	...props
-}: React.ComponentProps<typeof DrawerPrimitive.Trigger>) {
-	return <DrawerPrimitive.Trigger data-slot="drawer-trigger" {...props} />;
+}: React.ComponentProps<typeof DrawerPrimitive.Trigger> & {
+	asChild?: boolean;
+}) {
+	if (asChild && React.isValidElement(children)) {
+		return (
+			<DrawerPrimitive.Trigger
+				data-slot="drawer-trigger"
+				render={children as React.ReactElement}
+				{...props}
+			/>
+		);
+	}
+	return (
+		<DrawerPrimitive.Trigger data-slot="drawer-trigger" {...props}>
+			{children}
+		</DrawerPrimitive.Trigger>
+	);
 }
 
 /**
@@ -66,12 +85,33 @@ function DrawerPortal({
 /**
  * Button that closes the drawer.
  *
+ * @remarks
+ * Supports `render` prop (Base UI native) to render as a custom element.
+ * Also supports legacy `asChild` prop for backward compatibility.
+ *
  * @see {@link DrawerFooter} for typical placement
  */
 function DrawerClose({
+	asChild,
+	children,
 	...props
-}: React.ComponentProps<typeof DrawerPrimitive.Close>) {
-	return <DrawerPrimitive.Close data-slot="drawer-close" {...props} />;
+}: React.ComponentProps<typeof DrawerPrimitive.Close> & {
+	asChild?: boolean;
+}) {
+	if (asChild && React.isValidElement(children)) {
+		return (
+			<DrawerPrimitive.Close
+				data-slot="drawer-close"
+				render={children as React.ReactElement}
+				{...props}
+			/>
+		);
+	}
+	return (
+		<DrawerPrimitive.Close data-slot="drawer-close" {...props}>
+			{children}
+		</DrawerPrimitive.Close>
+	);
 }
 
 /**
@@ -83,11 +123,11 @@ function DrawerClose({
 function DrawerOverlay({
 	className,
 	...props
-}: React.ComponentProps<typeof DrawerPrimitive.Overlay>) {
+}: React.ComponentProps<typeof DrawerPrimitive.Backdrop>) {
 	return (
-		<DrawerPrimitive.Overlay
+		<DrawerPrimitive.Backdrop
 			className={cn(
-				"data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50 data-[state=closed]:animate-out data-[state=open]:animate-in",
+				"fixed inset-0 z-50 bg-black/50 transition-opacity duration-300 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0",
 				className,
 			)}
 			data-slot="drawer-overlay"
@@ -100,8 +140,8 @@ function DrawerOverlay({
  * Main content container for the drawer.
  *
  * @remarks
- * Supports all four directions via the vaul direction prop.
- * Includes a drag handle indicator for bottom drawers.
+ * Renders as a bottom sheet with swipe-to-dismiss.
+ * Includes a drag handle indicator.
  *
  * @see {@link Drawer} for parent component
  * @see {@link DrawerHeader} for header section
@@ -111,25 +151,22 @@ function DrawerContent({
 	className,
 	children,
 	...props
-}: React.ComponentProps<typeof DrawerPrimitive.Content>) {
+}: React.ComponentProps<typeof DrawerPrimitive.Popup>) {
 	return (
-		<DrawerPortal data-slot="drawer-portal">
+		<DrawerPortal>
 			<DrawerOverlay />
-			<DrawerPrimitive.Content
+			<DrawerPrimitive.Popup
 				className={cn(
-					"group/drawer-content fixed z-50 flex h-auto flex-col bg-background",
-					"data-[vaul-drawer-direction=top]:inset-x-0 data-[vaul-drawer-direction=top]:top-0 data-[vaul-drawer-direction=top]:mb-24 data-[vaul-drawer-direction=top]:max-h-[80vh] data-[vaul-drawer-direction=top]:rounded-b-lg data-[vaul-drawer-direction=top]:border-b",
-					"data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-0 data-[vaul-drawer-direction=bottom]:mt-24 data-[vaul-drawer-direction=bottom]:max-h-[80vh] data-[vaul-drawer-direction=bottom]:rounded-t-lg data-[vaul-drawer-direction=bottom]:border-t",
-					"data-[vaul-drawer-direction=right]:inset-y-0 data-[vaul-drawer-direction=right]:right-0 data-[vaul-drawer-direction=right]:w-3/4 data-[vaul-drawer-direction=right]:border-l data-[vaul-drawer-direction=right]:sm:max-w-sm",
-					"data-[vaul-drawer-direction=left]:inset-y-0 data-[vaul-drawer-direction=left]:left-0 data-[vaul-drawer-direction=left]:w-3/4 data-[vaul-drawer-direction=left]:border-r data-[vaul-drawer-direction=left]:sm:max-w-sm",
+					"group/drawer-content fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto max-h-[80vh] flex-col rounded-t-lg border-t bg-background",
+					"transition-transform duration-300 data-[ending-style]:translate-y-full data-[starting-style]:translate-y-full",
 					className,
 				)}
 				data-slot="drawer-content"
 				{...props}
 			>
-				<div className="mx-auto mt-4 hidden h-2 w-[100px] shrink-0 rounded-full bg-muted group-data-[vaul-drawer-direction=bottom]/drawer-content:block" />
+				<div className="mx-auto mt-4 h-2 w-[100px] shrink-0 rounded-full bg-muted" />
 				{children}
-			</DrawerPrimitive.Content>
+			</DrawerPrimitive.Popup>
 		</DrawerPortal>
 	);
 }
@@ -144,7 +181,7 @@ function DrawerHeader({ className, ...props }: React.ComponentProps<"div">) {
 	return (
 		<div
 			className={cn(
-				"flex flex-col gap-0.5 p-4 group-data-[vaul-drawer-direction=bottom]/drawer-content:text-center group-data-[vaul-drawer-direction=top]/drawer-content:text-center md:gap-1.5 md:text-left",
+				"flex flex-col gap-0.5 p-4 text-center md:gap-1.5 md:text-left",
 				className,
 			)}
 			data-slot="drawer-header"
