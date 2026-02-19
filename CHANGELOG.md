@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.16.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.15.1...s-private-v10.16.0) (2026-02-19)
+
+
+### Features
+
+* add allowed origins ([7e52e72](https://github.com/s-hirano-ist/s-private/commit/7e52e724305378b87cbc25ed291bbda45f588dc8))
+
+
+### Bug Fixes
+
+* biome ([c6a1d98](https://github.com/s-hirano-ist/s-private/commit/c6a1d982e37524e0a7457c7af811fa8136b03bf3))
+* embedding model ([c6c8ae8](https://github.com/s-hirano-ist/s-private/commit/c6c8ae85e759e40cd4a62206900e0dbdc29d257f))
+* embedding model bug ([2a7d2da](https://github.com/s-hirano-ist/s-private/commit/2a7d2dabd67bc4f1405977357ed95eb5903c6834))
+* embedding model bug ([8da2a6d](https://github.com/s-hirano-ist/s-private/commit/8da2a6d985b2b97d1dba20d6957d5b0d397e0b23))
+* embedding model error ([2c6e6f5](https://github.com/s-hirano-ist/s-private/commit/2c6e6f59f1fa18b4ae20ed5feb61e1f31d98510c))
+* knip ([69fd056](https://github.com/s-hirano-ist/s-private/commit/69fd0560b9e04a64ab13229f1f236564f54e6fa9))
+* knip ([e95615a](https://github.com/s-hirano-ist/s-private/commit/e95615ab557f7ba96c22615b0a5eee2a4b307529))
+* loading error ([38d3795](https://github.com/s-hirano-ist/s-private/commit/38d37951c4c7ffc75d8521ac346e9926efbd2fa0))
+
+
+### Documentation
+
+* fix issue ([3b9f0d7](https://github.com/s-hirano-ist/s-private/commit/3b9f0d7dd161f414fc21c9ab4a05df923cf93596))
+
+
+### Maintenance
+
+* issues ([b57968a](https://github.com/s-hirano-ist/s-private/commit/b57968a20f729bb09a5a042eb16a2eea5c255d91))
+
 ## [10.15.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.15.0...s-private-v10.15.1) (2026-02-18)
 
 

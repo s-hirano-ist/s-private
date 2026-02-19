@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.14.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/embedding-api-v1.14.1...@s-hirano-ist/embedding-api-v1.14.2) (2026-02-19)
+
+
+### Bug Fixes
+
+* embedding model bug ([2a7d2da](https://github.com/s-hirano-ist/s-private/commit/2a7d2dabd67bc4f1405977357ed95eb5903c6834))
+* embedding model error ([2c6e6f5](https://github.com/s-hirano-ist/s-private/commit/2c6e6f59f1fa18b4ae20ed5feb61e1f31d98510c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-search bumped to 1.16.2
+
 ## [1.14.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/embedding-api-v1.14.0...@s-hirano-ist/embedding-api-v1.14.1) (2026-02-18)
 
 
