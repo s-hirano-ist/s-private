@@ -92,5 +92,14 @@
       groupSlug: 'github-actions',
       "minimumReleaseAge": '2 days',
     },
+    {
+      matchManagers: [
+        'docker-compose',
+      ],
+      matchPackageNames: [
+        's0hirano/embedding-api',
+      ],
+      enabled: false,
+    },
   ],
 }

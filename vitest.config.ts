@@ -64,6 +64,13 @@ export default defineConfig({
 					include: ["./**/*.test.?(c|m)[jt]s?(x)"],
 				},
 			},
+			// Benchmarks (Node environment, used by `vitest bench --project bench`)
+			{
+				test: {
+					name: "bench",
+					include: ["packages/**/*.bench.?(c|m)[jt]s?(x)"],
+				},
+			},
 		],
 		coverage: {
 			enabled: true,
