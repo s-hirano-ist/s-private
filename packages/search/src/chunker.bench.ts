@@ -1,5 +1,10 @@
 import { bench, describe } from "vitest";
-import { parseDbArticle, parseDbNote, parseJsonArticle, parseMarkdown } from "./chunker.ts";
+import {
+	parseDbArticle,
+	parseDbNote,
+	parseJsonArticle,
+	parseMarkdown,
+} from "./chunker.ts";
 
 // ---------------------------------------------------------------------------
 // Test data generators
@@ -37,9 +42,7 @@ description: A moderately sized article
 	for (let i = 1; i <= 5; i++) {
 		sections.push(`## Section ${i}\n`);
 		for (let j = 0; j < 3; j++) {
-			sections.push(
-				`Paragraph ${j + 1} of section ${i}. `.repeat(8) + "\n",
-			);
+			sections.push(`Paragraph ${j + 1} of section ${i}. `.repeat(8) + "\n");
 		}
 	}
 
@@ -92,7 +95,7 @@ function generateJsonLarge(): string {
 		heading: "Large Bookmarks Collection",
 		description: "An extensive collection",
 		body: Array.from({ length: 200 }, (_, i) => ({
-			title: `Article ${i + 1}: ${`Topic `.repeat(5)}`,
+			title: `Article ${i + 1}: ${"Topic ".repeat(5)}`,
 			url: `https://example.com/articles/${i + 1}`,
 			ogTitle: `Open Graph Title for Article ${i + 1}`,
 			ogDescription: `Detailed description for article ${i + 1}. `.repeat(3),
