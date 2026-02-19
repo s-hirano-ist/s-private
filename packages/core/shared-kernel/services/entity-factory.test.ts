@@ -1,7 +1,10 @@
 import { describe, expect, test } from "vitest";
 import { z } from "zod";
-import { InvalidFormatError, UnexpectedError } from "../errors/error-classes";
-import { createEntityWithErrorHandling } from "./entity-factory";
+import {
+	InvalidFormatError,
+	UnexpectedError,
+} from "../errors/error-classes.ts";
+import { createEntityWithErrorHandling } from "./entity-factory.ts";
 
 describe("createEntityWithErrorHandling", () => {
 	test("should return result when factory succeeds", () => {

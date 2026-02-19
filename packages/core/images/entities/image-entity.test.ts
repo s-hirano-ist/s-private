@@ -1,17 +1,17 @@
 import { describe, expect, test, vi } from "vitest";
 import { ZodError } from "zod";
-import { makeUserId } from "../../shared-kernel/entities/common-entity";
+import { makeUserId } from "../../shared-kernel/entities/common-entity.ts";
 import {
 	makeContentType,
 	makeFileSize,
 	makePath,
-} from "../../shared-kernel/entities/file-entity";
+} from "../../shared-kernel/entities/file-entity.ts";
 import {
 	InvalidFormatError,
 	UnexpectedError,
-} from "../../shared-kernel/errors/error-classes";
-import * as entityFactory from "../../shared-kernel/services/entity-factory";
-import { imageEntity, makePixel } from "./image-entity";
+} from "../../shared-kernel/errors/error-classes.ts";
+import * as entityFactory from "../../shared-kernel/services/entity-factory.ts";
+import { imageEntity, makePixel } from "./image-entity.ts";
 
 describe("imageEntity", () => {
 	describe("makePixel", () => {

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { makeUserId } from "../../shared-kernel/entities/common-entity";
-import type { IBatchCommandRepository } from "../../shared-kernel/repositories/batch-command-repository.interface";
-import { ArticlesBatchDomainService } from "./articles-batch-domain-service";
+import { makeUserId } from "../../shared-kernel/entities/common-entity.ts";
+import type { IBatchCommandRepository } from "../../shared-kernel/repositories/batch-command-repository.interface.ts";
+import { ArticlesBatchDomainService } from "./articles-batch-domain-service.ts";
 
 describe("ArticlesBatchDomainService", () => {
 	let batchCommandRepository: IBatchCommandRepository;

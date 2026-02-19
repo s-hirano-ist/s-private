@@ -2,8 +2,8 @@ import type {
 	Id,
 	Status,
 	UserId,
-} from "../../shared-kernel/entities/common-entity";
-import type { BookTitle, UnexportedBook } from "../entities/book-entity";
+} from "../../shared-kernel/entities/common-entity.ts";
+import type { BookTitle, UnexportedBook } from "../entities/book-entity.ts";
 
 /**
  * Command repository interface for the Book domain.

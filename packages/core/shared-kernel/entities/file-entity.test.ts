@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { ZodError } from "zod";
-import { makeContentType, makeFileSize, makePath } from "./file-entity";
+import { makeContentType, makeFileSize, makePath } from "./file-entity.ts";
 
 describe("file-entity", () => {
 	describe("makePath", () => {

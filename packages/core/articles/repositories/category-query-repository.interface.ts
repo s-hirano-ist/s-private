@@ -1,7 +1,7 @@
-import type { Id, UserId } from "../../shared-kernel/entities/common-entity";
-import type { PaginationOptions } from "../../shared-kernel/types/query-options";
-import type { CategoryName } from "../entities/article-entity";
-import type { CategoryOrderBy } from "../types/query-params";
+import type { Id, UserId } from "../../shared-kernel/entities/common-entity.ts";
+import type { PaginationOptions } from "../../shared-kernel/types/query-options.ts";
+import type { CategoryName } from "../entities/article-entity.ts";
+import type { CategoryOrderBy } from "../types/query-params.ts";
 
 /**
  * Parameters for paginated category queries.

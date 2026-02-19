@@ -13,7 +13,7 @@ import {
 	getCollectionStats,
 } from "@s-hirano-ist/s-search/qdrant-client";
 import { glob } from "glob";
-import { INGEST_CONFIG } from "./ingest-config";
+import { INGEST_CONFIG } from "./ingest-config.ts";
 
 type FileInfo = {
 	path: string;

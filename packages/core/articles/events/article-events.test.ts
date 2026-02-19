@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { ArticleCreatedEvent } from "./article-created-event";
-import { ArticleDeletedEvent } from "./article-deleted-event";
+import { ArticleCreatedEvent } from "./article-created-event.ts";
+import { ArticleDeletedEvent } from "./article-deleted-event.ts";
 
 describe("ArticleCreatedEvent", () => {
 	test("should have eventType 'article.created'", () => {

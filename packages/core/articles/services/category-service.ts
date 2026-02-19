@@ -3,10 +3,10 @@ import {
 	makeCreatedAt,
 	makeId,
 	type UserId,
-} from "../../shared-kernel/entities/common-entity";
-import type { CategoryName } from "../entities/article-entity";
-import type { ICategoryCommandRepository } from "../repositories/category-command-repository.interface";
-import type { ICategoryQueryRepository } from "../repositories/category-query-repository.interface";
+} from "../../shared-kernel/entities/common-entity.ts";
+import type { CategoryName } from "../entities/article-entity.ts";
+import type { ICategoryCommandRepository } from "../repositories/category-command-repository.interface.ts";
+import type { ICategoryQueryRepository } from "../repositories/category-query-repository.interface.ts";
 
 /**
  * Domain service for Category resolution.

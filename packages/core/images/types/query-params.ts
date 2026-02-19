@@ -1,4 +1,4 @@
-import type { SortOrder } from "./sort-order";
+import type { SortOrder } from "./sort-order.ts";
 
 /**
  * Available fields for sorting image queries.

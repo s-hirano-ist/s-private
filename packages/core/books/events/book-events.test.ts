@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { BookCreatedEvent } from "./book-created-event";
-import { BookDeletedEvent } from "./book-deleted-event";
+import { BookCreatedEvent } from "./book-created-event.ts";
+import { BookDeletedEvent } from "./book-deleted-event.ts";
 
 describe("BookCreatedEvent", () => {
 	test("should have eventType 'book.created'", () => {

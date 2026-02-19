@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import type { IBooksQueryRepository } from "../../books/repositories/books-query-repository.interface";
-import { makeUserId } from "../../shared-kernel/entities/common-entity";
-import { DuplicateError } from "../../shared-kernel/errors/error-classes";
-import { makeISBN } from "../entities/book-entity";
-import { BooksDomainService } from "../services/books-domain-service";
+import type { IBooksQueryRepository } from "../../books/repositories/books-query-repository.interface.ts";
+import { makeUserId } from "../../shared-kernel/entities/common-entity.ts";
+import { DuplicateError } from "../../shared-kernel/errors/error-classes.ts";
+import { makeISBN } from "../entities/book-entity.ts";
+import { BooksDomainService } from "../services/books-domain-service.ts";
 
 describe("BooksDomainService", () => {
 	let booksQueryRepository: IBooksQueryRepository;

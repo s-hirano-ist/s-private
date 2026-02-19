@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { ImageCreatedEvent } from "./image-created-event";
-import { ImageDeletedEvent } from "./image-deleted-event";
+import { ImageCreatedEvent } from "./image-created-event.ts";
+import { ImageDeletedEvent } from "./image-deleted-event.ts";
 
 describe("ImageCreatedEvent", () => {
 	test("should have eventType 'image.created'", () => {

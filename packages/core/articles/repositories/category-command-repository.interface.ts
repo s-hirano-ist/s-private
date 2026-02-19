@@ -2,8 +2,8 @@ import type {
 	CreatedAt,
 	Id,
 	UserId,
-} from "../../shared-kernel/entities/common-entity";
-import type { CategoryName } from "../entities/article-entity";
+} from "../../shared-kernel/entities/common-entity.ts";
+import type { CategoryName } from "../entities/article-entity.ts";
 
 /**
  * Command repository interface for the Category domain.

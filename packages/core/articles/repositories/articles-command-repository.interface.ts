@@ -2,11 +2,11 @@ import type {
 	Id,
 	Status,
 	UserId,
-} from "../../shared-kernel/entities/common-entity";
+} from "../../shared-kernel/entities/common-entity.ts";
 import type {
 	ArticleTitle,
 	UnexportedArticle,
-} from "../entities/article-entity";
+} from "../entities/article-entity.ts";
 
 /**
  * Command repository interface for the Article domain.

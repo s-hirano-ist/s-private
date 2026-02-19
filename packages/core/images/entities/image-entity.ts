@@ -33,7 +33,7 @@ import {
 	makeId,
 	UnexportedStatus,
 	UserId,
-} from "../../shared-kernel/entities/common-entity";
+} from "../../shared-kernel/entities/common-entity.ts";
 import {
 	ContentType,
 	FileSize,
@@ -41,9 +41,9 @@ import {
 	makeFileSize,
 	makePath,
 	Path,
-} from "../../shared-kernel/entities/file-entity";
-import { createEntityWithErrorHandling } from "../../shared-kernel/services/entity-factory";
-import { ImageCreatedEvent } from "../events/image-created-event";
+} from "../../shared-kernel/entities/file-entity.ts";
+import { createEntityWithErrorHandling } from "../../shared-kernel/services/entity-factory.ts";
+import { ImageCreatedEvent } from "../events/image-created-event.ts";
 
 // Re-export file-related value objects from common for backwards compatibility
 export { ContentType, FileSize, makeContentType, makeFileSize, makePath, Path };

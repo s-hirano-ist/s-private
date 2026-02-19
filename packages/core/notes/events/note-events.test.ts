@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { NoteCreatedEvent } from "./note-created-event";
-import { NoteDeletedEvent } from "./note-deleted-event";
+import { NoteCreatedEvent } from "./note-created-event.ts";
+import { NoteDeletedEvent } from "./note-deleted-event.ts";
 
 describe("NoteCreatedEvent", () => {
 	test("should have eventType 'note.created'", () => {

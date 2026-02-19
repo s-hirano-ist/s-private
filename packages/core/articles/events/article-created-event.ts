@@ -1,6 +1,6 @@
-import { BaseDomainEvent } from "../../shared-kernel/events/base-domain-event";
-import type { ArticleCreatedPayload } from "../../shared-kernel/events/payload-types";
-import type { ArticleDeletedEvent } from "./article-deleted-event";
+import { BaseDomainEvent } from "../../shared-kernel/events/base-domain-event.ts";
+import type { ArticleCreatedPayload } from "../../shared-kernel/events/payload-types.ts";
+import type { ArticleDeletedEvent } from "./article-deleted-event.ts";
 
 /**
  * Domain event emitted when an article is created.
