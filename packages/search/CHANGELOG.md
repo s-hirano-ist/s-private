@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.16.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-search-v1.16.1...@s-hirano-ist/s-search-v1.16.2) (2026-02-19)
+
+
+### Bug Fixes
+
+* embedding model ([c6c8ae8](https://github.com/s-hirano-ist/s-private/commit/c6c8ae85e759e40cd4a62206900e0dbdc29d257f))
+* embedding model bug ([2a7d2da](https://github.com/s-hirano-ist/s-private/commit/2a7d2dabd67bc4f1405977357ed95eb5903c6834))
+* embedding model bug ([8da2a6d](https://github.com/s-hirano-ist/s-private/commit/8da2a6d985b2b97d1dba20d6957d5b0d397e0b23))
+
 ## [1.16.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-search-v1.16.0...@s-hirano-ist/s-search-v1.16.1) (2026-02-18)
 
 
