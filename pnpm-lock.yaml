@@ -242,9 +242,6 @@ importers:
       '@types/node':
         specifier: 24.10.13
         version: 24.10.13
-      tsc-esm-fix:
-        specifier: 3.1.2
-        version: 3.1.2
       typescript:
         specifier: 5.9.3
         version: 5.9.3
@@ -276,9 +273,6 @@ importers:
 
   packages/notification:
     devDependencies:
-      tsc-esm-fix:
-        specifier: 3.1.2
-        version: 3.1.2
       typescript:
         specifier: 5.9.3
         version: 5.9.3
@@ -328,9 +322,6 @@ importers:
       '@types/turndown':
         specifier: 5.0.6
         version: 5.0.6
-      tsc-esm-fix:
-        specifier: 3.1.2
-        version: 3.1.2
       tsx:
         specifier: 4.21.0
         version: 4.21.0
@@ -361,9 +352,6 @@ importers:
         specifier: 8.0.6
         version: 8.0.6
     devDependencies:
-      tsc-esm-fix:
-        specifier: 3.1.2
-        version: 3.1.2
       typescript:
         specifier: 5.9.3
         version: 5.9.3
@@ -2947,10 +2935,6 @@ packages:
       '@tmcp/auth':
         optional: true
 
-  '@topoconfig/extends@0.16.2':
-    resolution: {integrity: sha512-sTF+qpWakr5jf1Hn/kkFSi833xPW15s/loMAiKSYSSVv4vDonxf6hwCGzMXjLq+7HZoaK6BgaV72wXr1eY7FcQ==}
-    hasBin: true
-
   '@tybys/wasm-util@0.10.1':
     resolution: {integrity: sha512-9tTaPJLSiejZKx+Bmog4uSubteqTvFrVrURwkmHixBo0G4seD0zUxp98E1DzUBJxLQ3NPwXrGKDiVjwx/DpPsg==}
 
@@ -4089,9 +4073,6 @@ packages:
     resolution: {integrity: sha512-ziP2ziP7D6MVFK/mFTOQAAb7t2VAD6mhBMjD1Pu9CWDMzozssDN49RprKn8u85mTuK/W6kyiRg9WOyr1Y7lNqg==}
     engines: {node: ^20.12||^22||>=24}
     hasBin: true
-
-  depseek@0.4.3:
-    resolution: {integrity: sha512-0Ex/Uoz9Y9oipbqvgSc7FoV2q4GTDGORkg8TGgM9Pd3RyvRzrDYScKplWiqHU7WqckbKN5kukqD0opEayu2bXg==}
 
   dequal@2.0.3:
     resolution: {integrity: sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==}
@@ -7070,11 +7051,6 @@ packages:
   ts-pattern@4.3.0:
     resolution: {integrity: sha512-pefrkcd4lmIVR0LA49Imjf9DYLK8vtWhqBPA3Ya1ir8xCW0O2yjL9dsCVvI7pCodLC5q7smNpEtDR2yVulQxOg==}
 
-  tsc-esm-fix@3.1.2:
-    resolution: {integrity: sha512-1/OpZssMcEp2ae6DyZV+yvDviofuCdDf7dEWEaBvm/ac8vtS04lFyl0LVs8LQE56vjKHytgzVjPIL9udM4QuNg==}
-    engines: {node: '>=18.0.0'}
-    hasBin: true
-
   tsconfck@3.1.6:
     resolution: {integrity: sha512-ks6Vjr/jEw0P1gmOVwutM3B7fWxoWBL2KRDb1JfqGVawBmO5UsvmWOQFGHBPl5yxYz4eERr19E6L7NMv+Fej4w==}
     engines: {node: ^18 || >=20}
@@ -7134,9 +7110,6 @@ packages:
   type-fest@0.8.1:
     resolution: {integrity: sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==}
     engines: {node: '>=8'}
-
-  type-flag@3.0.0:
-    resolution: {integrity: sha512-3YaYwMseXCAhBB14RXW5cRQfJQlEknS6i4C8fCfeUdS3ihG9EdccdR9kt3vP73ZdeTGmPb4bZtkDn5XMIn1DLA==}
 
   typed-array-buffer@1.0.3:
     resolution: {integrity: sha512-nAYYwfY3qnzX30IkA6AQZjVbtK6duGontcQm1WSG1MD94YLqK0515GNApXkoxKOWMusVssAHWLh9SeaoefYFGw==}
@@ -10029,8 +10002,6 @@ snapshots:
       esm-env: 1.2.2
       tmcp: 1.19.2(typescript@5.9.3)
 
-  '@topoconfig/extends@0.16.2': {}
-
   '@tybys/wasm-util@0.10.1':
     dependencies:
       tslib: 2.8.1
@@ -11236,8 +11207,6 @@ snapshots:
       semver: 7.7.4
       tsconfig-paths-webpack-plugin: 4.2.0
       watskeburt: 5.0.2
-
-  depseek@0.4.3: {}
 
   dequal@2.0.3: {}
 
@@ -14831,15 +14800,6 @@ snapshots:
 
   ts-pattern@4.3.0: {}
 
-  tsc-esm-fix@3.1.2:
-    dependencies:
-      '@topoconfig/extends': 0.16.2
-      depseek: 0.4.3
-      fast-glob: 3.3.3
-      fs-extra: 11.3.3
-      json5: 2.2.3
-      type-flag: 3.0.0
-
   tsconfck@3.1.6(typescript@5.9.3):
     optionalDependencies:
       typescript: 5.9.3
@@ -14892,8 +14852,6 @@ snapshots:
   type-fest@0.7.1: {}
 
   type-fest@0.8.1: {}
-
-  type-flag@3.0.0: {}
 
   typed-array-buffer@1.0.3:
     dependencies:

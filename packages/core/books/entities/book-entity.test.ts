@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { ZodError } from "zod";
-import { makeUserId } from "../../shared-kernel/entities/common-entity";
+import { makeUserId } from "../../shared-kernel/entities/common-entity.js";
 import {
 	bookEntity,
 	makeBookMarkdown,
@@ -12,7 +12,7 @@ import {
 	makeGoogleSubTitle,
 	makeGoogleTitle,
 	makeISBN,
-} from "../entities/book-entity";
+} from "../entities/book-entity.js";
 
 describe("booksEntity", () => {
 	describe("makeISBN", () => {

@@ -2,8 +2,8 @@ import type {
 	Id,
 	Status,
 	UserId,
-} from "../../shared-kernel/entities/common-entity";
-import type { NoteTitle, UnexportedNote } from "../entities/note-entity";
+} from "../../shared-kernel/entities/common-entity.js";
+import type { NoteTitle, UnexportedNote } from "../entities/note-entity.js";
 
 /**
  * Command repository interface for the Note domain.

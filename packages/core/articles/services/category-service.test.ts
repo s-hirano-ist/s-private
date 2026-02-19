@@ -1,9 +1,12 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { makeId, makeUserId } from "../../shared-kernel/entities/common-entity";
-import { makeCategoryName } from "../entities/article-entity";
-import type { ICategoryCommandRepository } from "../repositories/category-command-repository.interface";
-import type { ICategoryQueryRepository } from "../repositories/category-query-repository.interface";
-import { CategoryService } from "./category-service";
+import {
+	makeId,
+	makeUserId,
+} from "../../shared-kernel/entities/common-entity.js";
+import { makeCategoryName } from "../entities/article-entity.js";
+import type { ICategoryCommandRepository } from "../repositories/category-command-repository.interface.js";
+import type { ICategoryQueryRepository } from "../repositories/category-query-repository.interface.js";
+import { CategoryService } from "./category-service.js";
 
 describe("CategoryService", () => {
 	let categoryQueryRepository: ICategoryQueryRepository;

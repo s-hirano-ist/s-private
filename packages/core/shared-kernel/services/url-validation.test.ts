@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { isValidHttpUrl } from "./url-validation";
+import { isValidHttpUrl } from "./url-validation.js";
 
 describe("isValidHttpUrl", () => {
 	describe("valid HTTP/HTTPS URLs", () => {

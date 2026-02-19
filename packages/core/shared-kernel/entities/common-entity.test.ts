@@ -1,5 +1,9 @@
 import { describe, expect, test } from "vitest";
-import { makeCreatedAt, makeExportedAt, makeUpdatedAt } from "./common-entity";
+import {
+	makeCreatedAt,
+	makeExportedAt,
+	makeUpdatedAt,
+} from "./common-entity.js";
 
 describe("common-entity", () => {
 	describe("makeCreatedAt", () => {

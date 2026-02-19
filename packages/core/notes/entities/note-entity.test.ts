@@ -1,11 +1,11 @@
 import { describe, expect, test } from "vitest";
 import { ZodError } from "zod";
-import { makeUserId } from "../../shared-kernel/entities/common-entity";
+import { makeUserId } from "../../shared-kernel/entities/common-entity.js";
 import {
 	makeMarkdown,
 	makeNoteTitle,
 	noteEntity,
-} from "../entities/note-entity";
+} from "../entities/note-entity.js";
 
 describe("noteEntity", () => {
 	describe("makeNoteTitle", () => {

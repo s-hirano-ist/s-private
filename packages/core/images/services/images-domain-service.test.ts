@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { makeUserId } from "../../shared-kernel/entities/common-entity";
-import { DuplicateError } from "../../shared-kernel/errors/error-classes";
-import { makePath } from "../entities/image-entity";
-import type { IImagesQueryRepository } from "../repositories/images-query-repository.interface";
-import { ImagesDomainService } from "./images-domain-service";
+import { makeUserId } from "../../shared-kernel/entities/common-entity.js";
+import { DuplicateError } from "../../shared-kernel/errors/error-classes.js";
+import { makePath } from "../entities/image-entity.js";
+import type { IImagesQueryRepository } from "../repositories/images-query-repository.interface.js";
+import { ImagesDomainService } from "./images-domain-service.js";
 
 describe("ImagesDomainService", () => {
 	let imagesQueryRepository: IImagesQueryRepository;

@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { makeUserId } from "../../shared-kernel/entities/common-entity";
-import { DuplicateError } from "../../shared-kernel/errors/error-classes";
-import { makeUrl } from "../entities/article-entity";
-import type { IArticlesQueryRepository } from "../repositories/articles-query-repository.interface";
-import { ArticlesDomainService } from "../services/articles-domain-service";
+import { makeUserId } from "../../shared-kernel/entities/common-entity.js";
+import { DuplicateError } from "../../shared-kernel/errors/error-classes.js";
+import { makeUrl } from "../entities/article-entity.js";
+import type { IArticlesQueryRepository } from "../repositories/articles-query-repository.interface.js";
+import { ArticlesDomainService } from "../services/articles-domain-service.js";
 
 describe("ArticlesDomainService", () => {
 	let articlesQueryRepository: IArticlesQueryRepository;

@@ -34,10 +34,10 @@ import {
 	makeId,
 	UnexportedStatus,
 	UserId,
-} from "../../shared-kernel/entities/common-entity";
-import { createEntityWithErrorHandling } from "../../shared-kernel/services/entity-factory";
-import { isValidHttpUrl } from "../../shared-kernel/services/url-validation";
-import { ArticleCreatedEvent } from "../events/article-created-event";
+} from "../../shared-kernel/entities/common-entity.js";
+import { createEntityWithErrorHandling } from "../../shared-kernel/services/entity-factory.js";
+import { isValidHttpUrl } from "../../shared-kernel/services/url-validation.js";
+import { ArticleCreatedEvent } from "../events/article-created-event.js";
 
 // Value objects
 

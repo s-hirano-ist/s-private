@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { makeUserId } from "../../shared-kernel/entities/common-entity";
-import type { IBatchCommandRepository } from "../../shared-kernel/repositories/batch-command-repository.interface";
-import { NotesBatchDomainService } from "./notes-batch-domain-service";
+import { makeUserId } from "../../shared-kernel/entities/common-entity.js";
+import type { IBatchCommandRepository } from "../../shared-kernel/repositories/batch-command-repository.interface.js";
+import { NotesBatchDomainService } from "./notes-batch-domain-service.js";
 
 describe("NotesBatchDomainService", () => {
 	let batchCommandRepository: IBatchCommandRepository;
