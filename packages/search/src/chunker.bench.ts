@@ -42,7 +42,7 @@ description: A moderately sized article
 	for (let i = 1; i <= 5; i++) {
 		sections.push(`## Section ${i}\n`);
 		for (let j = 0; j < 3; j++) {
-			sections.push(`Paragraph ${j + 1} of section ${i}. `.repeat(8) + "\n");
+			sections.push(`${`Paragraph ${j + 1} of section ${i}. `.repeat(8)}\n`);
 		}
 	}
 
@@ -67,9 +67,9 @@ description: A comprehensive technical article
 		// 20 sections → ~24KB body, well above maxChunkLength (2000) to trigger splitting
 		for (let j = 0; j < 6; j++) {
 			sections.push(
-				`This is paragraph ${j + 1} of chapter ${i} covering detailed technical content. `.repeat(
+				`${`This is paragraph ${j + 1} of chapter ${i} covering detailed technical content. `.repeat(
 					5,
-				) + "\n",
+				)}\n`,
 			);
 		}
 	}
