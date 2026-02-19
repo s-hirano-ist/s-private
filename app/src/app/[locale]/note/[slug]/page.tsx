@@ -1,4 +1,6 @@
+import Loading from "@s-hirano-ist/s-ui/display/loading";
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { getNoteByTitle } from "@/application-services/notes/get-notes";
 import { hasViewerAdminPermission } from "@/common/auth/session";
 import { PAGE_NAME } from "@/common/constants";
@@ -24,10 +26,12 @@ export default async function Page({ params }: { params: Params }) {
 	const { slug } = await params;
 
 	return (
-		<ErrorPermissionBoundary
-			errorCaller="NotesViewerBody"
-			permissionCheck={hasViewerAdminPermission}
-			render={() => ViewerBody({ getNoteByTitle, slug })}
-		/>
+		<Suspense fallback={<Loading />}>
+			<ErrorPermissionBoundary
+				errorCaller="NotesViewerBody"
+				permissionCheck={hasViewerAdminPermission}
+				render={() => ViewerBody({ getNoteByTitle, slug })}
+			/>
+		</Suspense>
 	);
 }
