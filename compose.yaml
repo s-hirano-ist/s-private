@@ -1,6 +1,6 @@
 services:
   embedding-api:
-    image: s0hirano/embedding-api:1.14.0
+    image: s0hirano/embedding-api:1.14.1@sha256:75cb8c4375d64fc974000bc6f343bf80461656d042f90932a33aa59dc5efc21c
     container_name: embedding-api
     restart: unless-stopped
     environment:
