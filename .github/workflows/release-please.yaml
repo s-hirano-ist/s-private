@@ -115,12 +115,12 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     permissions:
-      contents: read
+      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
-          persist-credentials: false
+          token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
           submodules: true
 
       - name: Log in to Docker Hub
@@ -142,9 +142,26 @@ jobs:
         uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
 
       - name: Build and push Docker image
+        id: docker-build
         uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
         with:
           context: .
           file: ./services/embedding-api/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
+
+      - name: Update compose.yaml with new image reference
+        run: |
+          NEW_VERSION="${{ needs.release-please.outputs.embedding_api_version }}"
+          NEW_DIGEST="${{ steps.docker-build.outputs.digest }}"
+          NEW_IMAGE="s0hirano/embedding-api:${NEW_VERSION}@${NEW_DIGEST}"
+          sed -i "s|image: s0hirano/embedding-api:.*|image: ${NEW_IMAGE}|" compose.yaml
+
+      - name: Commit and push compose.yaml
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add compose.yaml
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
+          git commit -m "chore: update embedding-api image to v${{ needs.release-please.outputs.embedding_api_version }}"
+          git push
