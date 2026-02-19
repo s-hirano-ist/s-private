@@ -1,9 +1,5 @@
-import { createWriteStream, existsSync } from "node:fs";
-import { mkdir } from "node:fs/promises";
 import { homedir } from "node:os";
-import { dirname, join } from "node:path";
-import { Readable } from "node:stream";
-import { pipeline } from "node:stream/promises";
+import { join } from "node:path";
 import {
 	env,
 	type FeatureExtractionPipeline,
@@ -13,67 +9,12 @@ import { RAG_CONFIG } from "./config.ts";
 
 const CACHE_DIR = join(homedir(), ".cache", "huggingface", "transformers");
 
-/**
- * Convert a HuggingFace Hub URL (cache key) to a local file path.
- * Strips "/resolve/{revision}/" so the layout matches localModelPath expectations.
- */
-function cacheKeyToFilePath(cacheKey: string): string {
-	try {
-		const url = new URL(cacheKey);
-		const cleaned = url.pathname.replace(/\/resolve\/[^/]+\//, "/");
-		return join(CACHE_DIR, cleaned.replace(/^\//, ""));
-	} catch {
-		const key = cacheKey.replace(/^https?:\/\//, "");
-		return join(CACHE_DIR, key);
-	}
-}
-
-const sessionPutKeys = new Map<string, string>();
-
+env.cacheDir = CACHE_DIR;
 env.localModelPath = CACHE_DIR;
 env.useFSCache = true;
 env.useBrowserCache = false;
-env.useCustomCache = true;
+env.useCustomCache = false;
 env.allowRemoteModels = true;
-
-env.customCache = {
-	async match(request: string): Promise<string | undefined> {
-		const sessionPath = sessionPutKeys.get(request);
-		if (sessionPath && existsSync(sessionPath)) return sessionPath;
-
-		if (!request.startsWith("http") && existsSync(request)) {
-			sessionPutKeys.set(request, request);
-			return request;
-		}
-
-		const derivedPath = cacheKeyToFilePath(request);
-		if (existsSync(derivedPath)) {
-			sessionPutKeys.set(request, derivedPath);
-			return derivedPath;
-		}
-
-		return undefined;
-	},
-	async put(request: string, response: Response): Promise<void> {
-		if (!response.body) return;
-		const filePath = cacheKeyToFilePath(request);
-		await mkdir(dirname(filePath), { recursive: true });
-		const nodeStream = Readable.fromWeb(
-			response.body as import("node:stream/web").ReadableStream,
-		);
-		const fileStream = createWriteStream(filePath);
-		try {
-			await pipeline(nodeStream, fileStream);
-		} catch (error) {
-			try {
-				const { unlink } = await import("node:fs/promises");
-				await unlink(filePath);
-			} catch {}
-			throw error;
-		}
-		sessionPutKeys.set(request, filePath);
-	},
-};
 
 let embeddingPipeline: FeatureExtractionPipeline | null = null;
 

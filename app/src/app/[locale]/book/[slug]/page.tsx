@@ -1,4 +1,6 @@
+import Loading from "@s-hirano-ist/s-ui/display/loading";
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { getBookByISBN } from "@/application-services/books/get-books";
 import { hasViewerAdminPermission } from "@/common/auth/session";
 import { PAGE_NAME } from "@/common/constants";
@@ -24,10 +26,12 @@ export default async function Page({ params }: { params: Params }) {
 	const { slug } = await params;
 
 	return (
-		<ErrorPermissionBoundary
-			errorCaller="BooksViewerBody"
-			permissionCheck={hasViewerAdminPermission}
-			render={() => ViewerBody({ getBookByISBN, slug })}
-		/>
+		<Suspense fallback={<Loading />}>
+			<ErrorPermissionBoundary
+				errorCaller="BooksViewerBody"
+				permissionCheck={hasViewerAdminPermission}
+				render={() => ViewerBody({ getBookByISBN, slug })}
+			/>
+		</Suspense>
 	);
 }

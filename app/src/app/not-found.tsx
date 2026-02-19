@@ -1,5 +1,7 @@
+import Loading from "@s-hirano-ist/s-ui/display/loading";
 import { cookies, headers } from "next/headers";
 import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
 import { NotFound } from "@/components/common/display/status/not-found";
 import { routing } from "@/infrastructures/i18n/routing";
 
@@ -31,12 +33,20 @@ async function getLocale() {
 	return routing.defaultLocale as "en" | "ja";
 }
 
-export default async function Page() {
+async function NotFoundContent() {
 	const locale = await getLocale();
 	const label = await getTranslations({ locale, namespace: "label" });
 	const statusCode = await getTranslations({ locale, namespace: "statusCode" });
 
 	return (
 		<NotFound returnHomeText={label("returnHome")} title={statusCode("404")} />
+	);
+}
+
+export default function Page() {
+	return (
+		<Suspense fallback={<Loading />}>
+			<NotFoundContent />
+		</Suspense>
 	);
 }
