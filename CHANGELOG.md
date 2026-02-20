@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.16.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.16.0...s-private-v10.16.1) (2026-02-20)
+
+
+### Bug Fixes
+
+* add release please compose.yaml update trigger ([2d9e132](https://github.com/s-hirano-ist/s-private/commit/2d9e13247bae5774dcae7974555a1916bd0a0bc4))
+* bentchmark ci ([a4e9f93](https://github.com/s-hirano-ist/s-private/commit/a4e9f9323ee2d9b817360fa7889b7ef306d99c3e))
+* bentchmark ci ([e40f9f7](https://github.com/s-hirano-ist/s-private/commit/e40f9f73799e50dc8aedf19cb80155dea2644a13))
+* biome ([e03f93a](https://github.com/s-hirano-ist/s-private/commit/e03f93aa80a8b2ec01bdc4939d4ef123d3d03908))
+* token ([f70ce76](https://github.com/s-hirano-ist/s-private/commit/f70ce760fb510138dda80963465f3e2776357d70))
+
+
+### Maintenance
+
+* add vitest bentch ([e06efa2](https://github.com/s-hirano-ist/s-private/commit/e06efa2a4f5b20b6f2a117812660690999ba11fe))
+* add vitest bentch and autodeploy ([7ba4138](https://github.com/s-hirano-ist/s-private/commit/7ba413841a0af46945fa1833d71fd223270cda13))
+* **deps:** update dependency hono to v4.11.10 [security] ([8d6fb64](https://github.com/s-hirano-ist/s-private/commit/8d6fb64aca401aed8be5539890cc658032a2c6b4))
+* **deps:** update dependency hono to v4.11.10 [security] ([9778bf4](https://github.com/s-hirano-ist/s-private/commit/9778bf49a59febbf8973548be7b10c302264f695))
+* **deps:** update s0hirano/embedding-api docker tag to v1.14.1 ([041427f](https://github.com/s-hirano-ist/s-private/commit/041427f8b6f1122cce4ff3e4924417c7d6a2cbd8))
+* **deps:** update s0hirano/embedding-api docker tag to v1.14.1 ([6e7a10d](https://github.com/s-hirano-ist/s-private/commit/6e7a10db4574644575ff926eb5de4b565eee117a))
+* update embedding mdoel ([e7c4e77](https://github.com/s-hirano-ist/s-private/commit/e7c4e774fe2e1e61a9565261d9635907a4ac34c8))
+* update embedding mdoel ([6ea8eff](https://github.com/s-hirano-ist/s-private/commit/6ea8effea887a17c8caee0f769c10d184a9c8eb1))
+
 ## [10.16.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.15.1...s-private-v10.16.0) (2026-02-19)
 
 

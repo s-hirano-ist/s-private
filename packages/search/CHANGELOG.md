@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.16.3](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-search-v1.16.2...@s-hirano-ist/s-search-v1.16.3) (2026-02-20)
+
+
+### Bug Fixes
+
+* biome ([e03f93a](https://github.com/s-hirano-ist/s-private/commit/e03f93aa80a8b2ec01bdc4939d4ef123d3d03908))
+
+
+### Maintenance
+
+* add vitest bentch ([e06efa2](https://github.com/s-hirano-ist/s-private/commit/e06efa2a4f5b20b6f2a117812660690999ba11fe))
+* add vitest bentch and autodeploy ([7ba4138](https://github.com/s-hirano-ist/s-private/commit/7ba413841a0af46945fa1833d71fd223270cda13))
+
 ## [1.16.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-search-v1.16.1...@s-hirano-ist/s-search-v1.16.2) (2026-02-19)
 
 
