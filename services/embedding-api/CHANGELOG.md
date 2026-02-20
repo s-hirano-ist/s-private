@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.14.3](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/embedding-api-v1.14.2...@s-hirano-ist/embedding-api-v1.14.3) (2026-02-20)
+
+
+### Maintenance
+
+* **deps:** update dependency hono to v4.11.10 [security] ([8d6fb64](https://github.com/s-hirano-ist/s-private/commit/8d6fb64aca401aed8be5539890cc658032a2c6b4))
+* **deps:** update dependency hono to v4.11.10 [security] ([9778bf4](https://github.com/s-hirano-ist/s-private/commit/9778bf49a59febbf8973548be7b10c302264f695))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-search bumped to 1.16.3
+
 ## [1.14.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/embedding-api-v1.14.1...@s-hirano-ist/embedding-api-v1.14.2) (2026-02-19)
 
 
