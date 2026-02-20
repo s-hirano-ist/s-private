@@ -68,7 +68,10 @@ export default defineConfig({
 			{
 				test: {
 					name: "bench",
-					include: ["packages/**/*.bench.?(c|m)[jt]s?(x)"],
+					include: [],
+					benchmark: {
+						include: ["packages/**/*.bench.?(c|m)[jt]s?(x)"],
+					},
 				},
 			},
 		],
