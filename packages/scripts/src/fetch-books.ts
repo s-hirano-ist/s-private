@@ -77,7 +77,14 @@ async function main() {
 				// ファイルが存在しない場合は書き出し
 			}
 
-			await writeFile(filePath, `# ${item.title}\n`);
+			const frontmatter = [
+				"---",
+				`heading: ${item.isbn}`,
+				`description: ${item.title}`,
+				"draft: false",
+				"---",
+			].join("\n");
+			await writeFile(filePath, `${frontmatter}\n\n# ${item.title}\n`);
 			exportedCount++;
 		}
 
