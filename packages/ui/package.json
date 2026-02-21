@@ -10,6 +10,10 @@
 			"types": "./index.ts",
 			"default": "./index.ts"
 		},
+		"./next": {
+			"types": "./next.ts",
+			"default": "./next.ts"
+		},
 		"./ui/*": "./ui/*.tsx",
 		"./forms/*": "./forms/**/*.tsx",
 		"./display/*": "./display/**/*.tsx",
@@ -32,6 +36,10 @@
 			".": {
 				"types": "./dist/index.d.ts",
 				"default": "./dist/index.js"
+			},
+			"./next": {
+				"types": "./dist/next.d.ts",
+				"default": "./dist/next.js"
 			},
 			"./ui/*": {
 				"types": "./dist/ui/*.d.ts",
