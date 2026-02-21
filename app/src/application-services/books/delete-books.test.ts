@@ -52,7 +52,7 @@ describe("deleteBooksCore", () => {
 			title: makeBookTitle("Test Book"),
 		});
 
-		const testId = "01933f5c-9df0-7001-9123-456789abcdef";
+		const testId = makeId("01933f5c-9df0-7001-9123-456789abcdef");
 		const result = await deleteBooksCore(testId, deps);
 
 		expect(result).toEqual({
@@ -60,7 +60,7 @@ describe("deleteBooksCore", () => {
 			message: "deleted",
 		});
 		expect(mockCommandRepository.deleteById).toHaveBeenCalledWith(
-			makeId(testId),
+			testId,
 			makeUserId("test-user-id"),
 			makeUnexportedStatus(),
 		);
@@ -74,7 +74,7 @@ describe("deleteBooksCore", () => {
 		const mockError = new Error("Record not found");
 		vi.mocked(mockCommandRepository.deleteById).mockRejectedValue(mockError);
 
-		const testId = "01933f5c-9df0-7001-9123-456789abcde0";
+		const testId = makeId("01933f5c-9df0-7001-9123-456789abcde0");
 		const result = await deleteBooksCore(testId, deps);
 
 		expect(result).toEqual({
@@ -82,7 +82,7 @@ describe("deleteBooksCore", () => {
 			message: "unexpected",
 		});
 		expect(mockCommandRepository.deleteById).toHaveBeenCalledWith(
-			makeId(testId),
+			testId,
 			makeUserId("test-user-id"),
 			makeUnexportedStatus(),
 		);
@@ -92,7 +92,7 @@ describe("deleteBooksCore", () => {
 		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
 
 		const { deps } = createMockDeps();
-		const testId = "01933f5c-9df0-7001-9123-456789abcdef";
+		const testId = makeId("01933f5c-9df0-7001-9123-456789abcdef");
 		const result = await deleteBooksCore(testId, deps);
 
 		expect(result.success).toBe(false);
