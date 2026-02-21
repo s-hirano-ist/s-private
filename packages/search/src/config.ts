@@ -1,15 +1,22 @@
 // RAG Configuration
+
+function requireEnv(name: string): string {
+	const value = process.env[name];
+	if (!value) throw new Error(`${name} environment variable is required`);
+	return value;
+}
+
 export const RAG_CONFIG = {
 	qdrant: {
-		collectionName: process.env.QDRANT_COLLECTION_NAME ?? "knowledge_v2",
-		vectorSize: Number(process.env.EMBEDDING_VECTOR_SIZE ?? 1024),
+		collectionName: requireEnv("QDRANT_COLLECTION_NAME"),
+		vectorSize: Number(requireEnv("EMBEDDING_VECTOR_SIZE")),
 		distance: "Cosine" as const,
 	},
 	embedding: {
-		model: process.env.EMBEDDING_MODEL ?? "intfloat/multilingual-e5-large",
+		model: requireEnv("EMBEDDING_MODEL"),
 		prefix: {
-			query: process.env.EMBEDDING_QUERY_PREFIX ?? "query: ",
-			passage: process.env.EMBEDDING_PASSAGE_PREFIX ?? "passage: ",
+			query: requireEnv("EMBEDDING_QUERY_PREFIX"),
+			passage: requireEnv("EMBEDDING_PASSAGE_PREFIX"),
 		},
 	},
 	chunking: { maxChunkLength: 2000, headingLevels: [2, 3] },

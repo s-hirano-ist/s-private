@@ -70,6 +70,13 @@ export default defineConfig({
 					name: "search",
 					root: "./packages/search",
 					include: ["./**/*.test.?(c|m)[jt]s?(x)"],
+					env: {
+						QDRANT_COLLECTION_NAME: "knowledge_v2",
+						EMBEDDING_VECTOR_SIZE: "1024",
+						EMBEDDING_MODEL: "intfloat/multilingual-e5-large",
+						EMBEDDING_QUERY_PREFIX: "query: ",
+						EMBEDDING_PASSAGE_PREFIX: "passage: ",
+					},
 				},
 			},
 			// Benchmarks (Node environment, used by `vitest bench --project bench`)
