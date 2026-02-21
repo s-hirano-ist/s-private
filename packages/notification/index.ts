@@ -41,6 +41,6 @@
  * });
  * ```
  */
-export * from "./errors";
-export { createPushoverService } from "./pushover";
-export * from "./types";
+export * from "./errors.ts";
+export { createPushoverService } from "./pushover.ts";
+export * from "./types.ts";

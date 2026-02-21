@@ -1,6 +1,6 @@
-import { BaseDomainEvent } from "../../shared-kernel/events/base-domain-event";
-import type { ImageDeletedPayload } from "../../shared-kernel/events/payload-types";
-import type { ImageCreatedEvent } from "./image-created-event";
+import { BaseDomainEvent } from "../../shared-kernel/events/base-domain-event.ts";
+import type { ImageDeletedPayload } from "../../shared-kernel/events/payload-types.ts";
+import type { ImageCreatedEvent } from "./image-created-event.ts";
 
 /**
  * Domain event emitted when an image is deleted.

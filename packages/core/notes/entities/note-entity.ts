@@ -31,9 +31,9 @@ import {
 	makeId,
 	UnexportedStatus,
 	UserId,
-} from "../../shared-kernel/entities/common-entity";
-import { createEntityWithErrorHandling } from "../../shared-kernel/services/entity-factory";
-import { NoteCreatedEvent } from "../events/note-created-event";
+} from "../../shared-kernel/entities/common-entity.ts";
+import { createEntityWithErrorHandling } from "../../shared-kernel/services/entity-factory.ts";
+import { NoteCreatedEvent } from "../events/note-created-event.ts";
 
 // Value objects
 

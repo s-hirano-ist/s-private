@@ -1,7 +1,7 @@
 import type { RequestOptions } from "node:http";
 import * as https from "node:https";
 import type { ClientOptions } from "minio";
-import type { CfAccessConfig } from "./types";
+import type { CfAccessConfig } from "./types.ts";
 
 type Transport = NonNullable<ClientOptions["transport"]>;
 

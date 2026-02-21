@@ -2,11 +2,11 @@ import type {
 	Id,
 	Status,
 	UserId,
-} from "../../shared-kernel/entities/common-entity";
-import type { IBatchCommandRepository } from "../../shared-kernel/repositories/batch-command-repository.interface";
-import type { IStorageService } from "../../shared-kernel/services/storage-service.interface";
-import type { UnexportedImage } from "../entities/image-entity";
-import type { IImagesQueryRepository } from "./images-query-repository.interface";
+} from "../../shared-kernel/entities/common-entity.ts";
+import type { IBatchCommandRepository } from "../../shared-kernel/repositories/batch-command-repository.interface.ts";
+import type { IStorageService } from "../../shared-kernel/services/storage-service.interface.ts";
+import type { UnexportedImage } from "../entities/image-entity.ts";
+import type { IImagesQueryRepository } from "./images-query-repository.interface.ts";
 
 /**
  * Command repository interface for the Image domain.

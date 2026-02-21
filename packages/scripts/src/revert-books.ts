@@ -5,7 +5,7 @@ import {
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
-import { createBooksCommandRepository } from "./infrastructures/books-command-repository";
+import { createBooksCommandRepository } from "./infrastructures/books-command-repository.ts";
 
 async function main() {
 	const env = {

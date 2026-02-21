@@ -1,5 +1,5 @@
 import type { Client } from "minio";
-import type { StoragePathConfig, StorageServiceOperations } from "./types";
+import type { StoragePathConfig, StorageServiceOperations } from "./types.ts";
 
 export function createStorageService(
 	client: Client,

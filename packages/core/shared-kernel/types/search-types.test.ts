@@ -9,7 +9,7 @@ import {
 	type NoteSearchResult,
 	type SearchResult,
 	searchQuerySchema,
-} from "./search-types";
+} from "./search-types.ts";
 
 const articleResult: ArticleSearchResult = {
 	href: "/articles/123",

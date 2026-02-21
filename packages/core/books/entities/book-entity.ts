@@ -34,11 +34,11 @@ import {
 	makeId,
 	UnexportedStatus,
 	UserId,
-} from "../../shared-kernel/entities/common-entity";
-import { Path } from "../../shared-kernel/entities/file-entity";
-import { createEntityWithErrorHandling } from "../../shared-kernel/services/entity-factory";
-import { isValidHttpUrl } from "../../shared-kernel/services/url-validation";
-import { BookCreatedEvent } from "../events/book-created-event";
+} from "../../shared-kernel/entities/common-entity.ts";
+import { Path } from "../../shared-kernel/entities/file-entity.ts";
+import { createEntityWithErrorHandling } from "../../shared-kernel/services/entity-factory.ts";
+import { isValidHttpUrl } from "../../shared-kernel/services/url-validation.ts";
+import { BookCreatedEvent } from "../events/book-created-event.ts";
 
 // Value objects
 

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { BaseDomainEvent } from "./base-domain-event";
+import { BaseDomainEvent } from "./base-domain-event.ts";
 
 type TestPayload = { message: string };
 

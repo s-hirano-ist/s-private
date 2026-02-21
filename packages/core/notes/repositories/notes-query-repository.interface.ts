@@ -1,16 +1,16 @@
 import type {
 	Status,
 	UserId,
-} from "../../shared-kernel/entities/common-entity";
-import type { InfraQueryOptions } from "../../shared-kernel/types/query-options";
+} from "../../shared-kernel/entities/common-entity.ts";
+import type { InfraQueryOptions } from "../../shared-kernel/types/query-options.ts";
 import type {
 	ExportedNote,
 	NoteListItemDTO,
 	NoteTitle,
 	UnexportedNote,
-} from "../entities/note-entity";
-import type { NotesOrderBy } from "../types/query-params";
-import type { INotesCommandRepository } from "./notes-command-repository.interface";
+} from "../entities/note-entity.ts";
+import type { NotesOrderBy } from "../types/query-params.ts";
+import type { INotesCommandRepository } from "./notes-command-repository.interface.ts";
 
 /**
  * Parameters for paginated note queries.

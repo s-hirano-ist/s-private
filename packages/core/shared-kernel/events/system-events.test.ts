@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { SystemErrorEvent } from "./system-error-event";
-import { SystemWarningEvent } from "./system-warning-event";
+import { SystemErrorEvent } from "./system-error-event.ts";
+import { SystemWarningEvent } from "./system-warning-event.ts";
 
 describe("SystemErrorEvent", () => {
 	test("should have eventType 'system.error'", () => {

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { idGenerator, uuidv7 } from "./id-generator";
+import { idGenerator, uuidv7 } from "./id-generator.ts";
 
 describe("IdGenerator", () => {
 	test("should generate valid UUIDv7 using function", () => {

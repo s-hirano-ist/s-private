@@ -1,17 +1,17 @@
 import type {
 	Status,
 	UserId,
-} from "../../shared-kernel/entities/common-entity";
-import type { IStorageService } from "../../shared-kernel/services/storage-service.interface";
-import type { InfraQueryOptions } from "../../shared-kernel/types/query-options";
+} from "../../shared-kernel/entities/common-entity.ts";
+import type { IStorageService } from "../../shared-kernel/services/storage-service.interface.ts";
+import type { InfraQueryOptions } from "../../shared-kernel/types/query-options.ts";
 import type {
 	ExportedImage,
 	ImageListItemDTO,
 	Path,
 	UnexportedImage,
-} from "../entities/image-entity";
-import type { ImagesOrderBy } from "../types/query-params";
-import type { IImagesCommandRepository } from "./images-command-repository.interface";
+} from "../entities/image-entity.ts";
+import type { ImagesOrderBy } from "../types/query-params.ts";
+import type { IImagesCommandRepository } from "./images-command-repository.interface.ts";
 
 /**
  * Parameters for paginated image queries.

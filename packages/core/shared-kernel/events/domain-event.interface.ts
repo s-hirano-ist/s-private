@@ -1,4 +1,4 @@
-import type { BaseDomainEvent } from "./base-domain-event";
+import type { BaseDomainEvent } from "./base-domain-event.ts";
 
 /**
  * Base interface for all domain events.

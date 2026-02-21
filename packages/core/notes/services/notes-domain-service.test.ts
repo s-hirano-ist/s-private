@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { makeUserId } from "../../shared-kernel/entities/common-entity";
-import { DuplicateError } from "../../shared-kernel/errors/error-classes";
-import { makeNoteTitle } from "../entities/note-entity";
-import type { INotesQueryRepository } from "../repositories/notes-query-repository.interface";
-import { NotesDomainService } from "../services/notes-domain-service";
+import { makeUserId } from "../../shared-kernel/entities/common-entity.ts";
+import { DuplicateError } from "../../shared-kernel/errors/error-classes.ts";
+import { makeNoteTitle } from "../entities/note-entity.ts";
+import type { INotesQueryRepository } from "../repositories/notes-query-repository.interface.ts";
+import { NotesDomainService } from "../services/notes-domain-service.ts";
 
 describe("NotesDomainService", () => {
 	let notesQueryRepository: INotesQueryRepository;

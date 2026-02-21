@@ -1,7 +1,7 @@
-import type { UserId } from "../../shared-kernel/entities/common-entity";
-import { DuplicateError } from "../../shared-kernel/errors/error-classes";
-import type { Url } from "../entities/article-entity";
-import type { IArticlesQueryRepository } from "../repositories/articles-query-repository.interface";
+import type { UserId } from "../../shared-kernel/entities/common-entity.ts";
+import { DuplicateError } from "../../shared-kernel/errors/error-classes.ts";
+import type { Url } from "../entities/article-entity.ts";
+import type { IArticlesQueryRepository } from "../repositories/articles-query-repository.interface.ts";
 
 /**
  * Domain service for Article business logic.

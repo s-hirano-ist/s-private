@@ -4,7 +4,7 @@ import {
 	FileNotAllowedError,
 	InvalidFormatError,
 	UnexpectedError,
-} from "./error-classes";
+} from "./error-classes.ts";
 
 describe("error-classes", () => {
 	describe("UnexpectedError", () => {

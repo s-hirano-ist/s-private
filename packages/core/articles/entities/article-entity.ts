@@ -34,10 +34,10 @@ import {
 	makeId,
 	UnexportedStatus,
 	UserId,
-} from "../../shared-kernel/entities/common-entity";
-import { createEntityWithErrorHandling } from "../../shared-kernel/services/entity-factory";
-import { isValidHttpUrl } from "../../shared-kernel/services/url-validation";
-import { ArticleCreatedEvent } from "../events/article-created-event";
+} from "../../shared-kernel/entities/common-entity.ts";
+import { createEntityWithErrorHandling } from "../../shared-kernel/services/entity-factory.ts";
+import { isValidHttpUrl } from "../../shared-kernel/services/url-validation.ts";
+import { ArticleCreatedEvent } from "../events/article-created-event.ts";
 
 // Value objects
 
