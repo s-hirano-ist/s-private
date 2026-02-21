@@ -47,7 +47,7 @@ const nextConfig = {
 	experimental: {
 		authInterrupts: true,
 		staleTimes: {
-			dynamic: 30,
+			dynamic: 0,
 			static: 180,
 		},
 		viewTransition: true,

@@ -10,7 +10,7 @@ import {
 } from "@s-hirano-ist/s-ui/ui/dialog";
 import { TrashIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useReducer } from "react";
+import { useReducer, useTransition } from "react";
 import { toast } from "sonner";
 import type { DeleteAction } from "@/common/types";
 
@@ -53,23 +53,26 @@ function modalReducer(state: ModalState, action: ModalAction): ModalState {
 
 export function DeleteButtonWithModal({ id, title, deleteAction }: Props) {
 	const [state, dispatch] = useReducer(modalReducer, { status: "closed" });
+	const [isPending, startTransition] = useTransition();
 
 	const label = useTranslations("label");
 	const message = useTranslations("message");
 
 	const isOpen = state.status !== "closed";
-	const isDeleting = state.status === "deleting";
+	const isDeleting = state.status === "deleting" || isPending;
 
-	const handleDelete = async () => {
-		try {
-			dispatch({ type: "START_DELETE" });
-			const response = await deleteAction(id);
-			toast(message(response.message));
-			dispatch({ type: "DELETE_COMPLETE" });
-		} catch {
-			toast.error(message("error"));
-			dispatch({ type: "DELETE_ERROR" });
-		}
+	const handleDelete = () => {
+		dispatch({ type: "START_DELETE" });
+		startTransition(async () => {
+			try {
+				const response = await deleteAction(id);
+				toast(message(response.message));
+				dispatch({ type: "DELETE_COMPLETE" });
+			} catch {
+				toast.error(message("error"));
+				dispatch({ type: "DELETE_ERROR" });
+			}
+		});
 	};
 
 	const handleOpenChange = (open: boolean) => {
