@@ -1,6 +1,6 @@
 {
 	"name": "@s-hirano-ist/s-ui",
-	"version": "1.16.3",
+	"version": "1.17.0",
 	"description": "UI component library for s-private application",
 	"type": "module",
 	"main": "./dist/index.js",

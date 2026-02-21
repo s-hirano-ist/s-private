@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.17.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.16.3...@s-hirano-ist/s-scripts-v1.17.0) (2026-02-21)
+
+
+### Features
+
+* change embedding model from js to hg ([99bd6a3](https://github.com/s-hirano-ist/s-private/commit/99bd6a3c339f2ab532d061604bf79c3ad0fa80b0))
+
+
+### Documentation
+
+* add more tests ([e5167b2](https://github.com/s-hirano-ist/s-private/commit/e5167b20de6e31db29416560754e078a5fec714c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.17.0
+    * @s-hirano-ist/s-search bumped to 1.17.0
+    * @s-hirano-ist/s-database bumped to 1.17.0
+    * @s-hirano-ist/s-notification bumped to 1.17.0
+    * @s-hirano-ist/s-storage bumped to 1.17.0
+
 ## [1.16.3](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.16.2...@s-hirano-ist/s-scripts-v1.16.3) (2026-02-20)
 
 

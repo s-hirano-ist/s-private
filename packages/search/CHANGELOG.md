@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.17.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-search-v1.16.3...@s-hirano-ist/s-search-v1.17.0) (2026-02-21)
+
+
+### Features
+
+* add back buttonj ([8792278](https://github.com/s-hirano-ist/s-private/commit/8792278ab3d078c6f7ccccc14d7c7a9489a2cb70))
+* change embedding model from js to hg ([99bd6a3](https://github.com/s-hirano-ist/s-private/commit/99bd6a3c339f2ab532d061604bf79c3ad0fa80b0))
+
+
+### Bug Fixes
+
+* biome ([79300e0](https://github.com/s-hirano-ist/s-private/commit/79300e07449fb7f90f70206c4e974752d4b3000d))
+
+
+### Documentation
+
+* add more tests ([0e30551](https://github.com/s-hirano-ist/s-private/commit/0e30551b59a3dbc42f395bf069d90fd1d5e333e8))
+* add more tests ([e5167b2](https://github.com/s-hirano-ist/s-private/commit/e5167b20de6e31db29416560754e078a5fec714c))
+
+
+### Maintenance
+
+* add more tests ([a5e4185](https://github.com/s-hirano-ist/s-private/commit/a5e4185395f71e249e50ad14395fa715bcc17b5a))
+* more issues on tests ([8b14f43](https://github.com/s-hirano-ist/s-private/commit/8b14f43de848779e05d6083f61fe358f8e556900))
+* update knowledge ([5546865](https://github.com/s-hirano-ist/s-private/commit/554686519756955003f9405675bf68f632117e33))
+
 ## [1.16.3](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-search-v1.16.2...@s-hirano-ist/s-search-v1.16.3) (2026-02-20)
 
 
