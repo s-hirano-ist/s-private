@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { ClipboardPasteIcon } from "lucide-react";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import { FormDropdownInput } from "./fields/form-dropdown-input";
 import { FormFileInput } from "./fields/form-file-input";
 import { FormInput } from "./fields/form-input";
@@ -253,5 +253,74 @@ export const LongForm: Story = {
 		),
 		afterSubmit: fn(),
 		saveLabel: "save",
+	},
+};
+
+export const SubmitSuccess: Story = {
+	args: {
+		children: (
+			<FormInput
+				autoComplete="off"
+				htmlFor="title"
+				label="タイトル"
+				name="title"
+				placeholder="タイトルを入力"
+				required
+			/>
+		),
+		action: fn().mockResolvedValue({
+			success: true,
+			message: "success",
+		}),
+		afterSubmit: fn(),
+		saveLabel: "save",
+	},
+	play: async ({ args, canvasElement }) => {
+		const canvas = within(canvasElement);
+
+		const titleInput = canvas.getByLabelText("タイトル");
+		await userEvent.type(titleInput, "テスト記事");
+
+		await expect(titleInput).toHaveValue("テスト記事");
+
+		const submitButton = canvas.getByRole("button", { name: "save" });
+		await userEvent.click(submitButton);
+
+		await expect(args.action).toHaveBeenCalled();
+	},
+};
+
+export const SubmitError: Story = {
+	args: {
+		children: (
+			<FormInput
+				autoComplete="off"
+				htmlFor="title"
+				label="タイトル"
+				name="title"
+				placeholder="タイトルを入力"
+				required
+			/>
+		),
+		action: fn().mockResolvedValue({
+			success: false,
+			message: "error",
+			formData: { title: "保持値" },
+		}),
+		afterSubmit: fn(),
+		saveLabel: "save",
+	},
+	play: async ({ args, canvasElement }) => {
+		const canvas = within(canvasElement);
+
+		const titleInput = canvas.getByLabelText("タイトル");
+		await userEvent.type(titleInput, "テスト記事");
+
+		await expect(titleInput).toHaveValue("テスト記事");
+
+		const submitButton = canvas.getByRole("button", { name: "save" });
+		await userEvent.click(submitButton);
+
+		await expect(args.action).toHaveBeenCalled();
 	},
 };

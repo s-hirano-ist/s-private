@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { expect, userEvent, waitFor, within } from "storybook/test";
 import { Button } from "./button";
 import {
 	Dialog,
@@ -41,6 +42,26 @@ export const Primary: Story = {
 			</DialogContent>
 		</Dialog>
 	),
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const body = within(document.body);
+
+		const trigger = canvas.getByRole("button", { name: "Open Dialog" });
+		await userEvent.click(trigger);
+
+		await waitFor(() =>
+			expect(body.getByText("Dialog Title")).toBeInTheDocument(),
+		);
+		await expect(
+			body.getByText("This is the main content of the dialog."),
+		).toBeInTheDocument();
+		await expect(
+			body.getByRole("button", { name: "Cancel" }),
+		).toBeInTheDocument();
+		await expect(
+			body.getByRole("button", { name: "Confirm" }),
+		).toBeInTheDocument();
+	},
 };
 
 export const WithoutFooter: Story = {

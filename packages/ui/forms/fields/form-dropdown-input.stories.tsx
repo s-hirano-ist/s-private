@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { expect, userEvent, waitFor, within } from "storybook/test";
 import { FormDropdownInput } from "./form-dropdown-input";
 
 const meta = {
@@ -157,5 +158,100 @@ export const JapaneseLabels: Story = {
 		searchPlaceholder: "検索...",
 		emptyMessage: "見つかりませんでした",
 		customValueLabel: (value) => `「${value}」を使用`,
+	},
+};
+
+export const SelectOption: Story = {
+	args: {
+		label: "カテゴリー",
+		htmlFor: "category-select",
+		name: "category-select",
+		placeholder: "カテゴリーを選択または入力",
+		options: mockCategories,
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const body = within(document.body);
+
+		const trigger = canvas.getByRole("combobox");
+		await userEvent.click(trigger);
+
+		await waitFor(() =>
+			expect(body.getByText("テクノロジー")).toBeInTheDocument(),
+		);
+		await expect(body.getByText("ビジネス")).toBeInTheDocument();
+		await expect(body.getByText("デザイン")).toBeInTheDocument();
+
+		await userEvent.click(body.getByText("テクノロジー"));
+
+		await waitFor(() =>
+			expect(canvas.getByRole("combobox")).toHaveTextContent("テクノロジー"),
+		);
+	},
+};
+
+export const SearchAndFilter: Story = {
+	args: {
+		label: "カテゴリー",
+		htmlFor: "category-search",
+		name: "category-search",
+		placeholder: "カテゴリーを選択または入力",
+		options: mockCategories,
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const body = within(document.body);
+
+		const trigger = canvas.getByRole("combobox");
+		await userEvent.click(trigger);
+
+		const searchInput = await waitFor(() =>
+			body.getByPlaceholderText("Search..."),
+		);
+
+		await userEvent.type(searchInput, "プログラ");
+
+		await waitFor(() =>
+			expect(body.getByText("プログラミング")).toBeInTheDocument(),
+		);
+
+		await userEvent.click(body.getByText("プログラミング"));
+
+		await waitFor(() =>
+			expect(canvas.getByRole("combobox")).toHaveTextContent("プログラミング"),
+		);
+	},
+};
+
+export const CustomValueEntry: Story = {
+	args: {
+		label: "カテゴリー",
+		htmlFor: "category-custom",
+		name: "category-custom",
+		placeholder: "カテゴリーを選択または入力",
+		options: mockCategories,
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const body = within(document.body);
+
+		const trigger = canvas.getByRole("combobox");
+		await userEvent.click(trigger);
+
+		const searchInput = await waitFor(() =>
+			body.getByPlaceholderText("Search..."),
+		);
+
+		await userEvent.type(searchInput, "カスタム値");
+
+		await waitFor(() =>
+			expect(body.getByText('Use "カスタム値"')).toBeInTheDocument(),
+		);
+
+		await userEvent.click(body.getByText('Use "カスタム値"'));
+
+		await waitFor(() =>
+			expect(canvas.getByRole("combobox")).toHaveTextContent("カスタム値"),
+		);
 	},
 };

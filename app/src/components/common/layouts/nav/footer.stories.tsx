@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import { Footer } from "./footer";
 
 const meta = {
@@ -97,4 +97,50 @@ export const WithDumperLayout: Story = {
 		},
 	},
 	args: { search: fn() },
+};
+
+export const SwitchToViewer: Story = {
+	parameters: {
+		nextjs: {
+			navigation: {
+				pathname: "/en",
+				query: {},
+			},
+		},
+		a11y: { disable: true },
+	},
+	args: { search: fn() },
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+
+		const viewerText = canvas.getByText("VIEWER");
+		await userEvent.click(viewerText);
+
+		await waitFor(() => {
+			const viewerContainer = viewerText.closest("div.grid");
+			expect(viewerContainer).toBeInTheDocument();
+		});
+	},
+};
+
+export const OpenSearchDrawer: Story = {
+	parameters: {
+		nextjs: {
+			navigation: {
+				pathname: "/en",
+				query: {},
+			},
+		},
+		a11y: { disable: true },
+	},
+	args: { search: fn() },
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const body = within(document.body);
+
+		const searchButton = canvas.getByRole("button", { name: "Action" });
+		await userEvent.click(searchButton);
+
+		await waitFor(() => expect(body.getByText("Search")).toBeInTheDocument());
+	},
 };

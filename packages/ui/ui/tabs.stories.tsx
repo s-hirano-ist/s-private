@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { expect, userEvent, waitFor, within } from "storybook/test";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./tabs";
 
 const meta = {
@@ -22,4 +23,29 @@ export const Default: Story = {
 			<TabsContent value="password">Change your password here.</TabsContent>
 		</Tabs>
 	),
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+
+		await expect(
+			canvas.getByText("Make changes to your account here."),
+		).toBeInTheDocument();
+
+		const passwordTab = canvas.getByRole("tab", { name: "Password" });
+		await userEvent.click(passwordTab);
+
+		await waitFor(() =>
+			expect(
+				canvas.getByText("Change your password here."),
+			).toBeInTheDocument(),
+		);
+
+		const accountTab = canvas.getByRole("tab", { name: "Account" });
+		await userEvent.click(accountTab);
+
+		await waitFor(() =>
+			expect(
+				canvas.getByText("Make changes to your account here."),
+			).toBeInTheDocument(),
+		);
+	},
 };
