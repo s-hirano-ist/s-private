@@ -306,6 +306,7 @@ describe("get-articles", () => {
 			);
 
 			const result = await getCategories();
+
 			expect(result).toEqual([]);
 		});
 	});

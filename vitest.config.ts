@@ -119,6 +119,7 @@ export default defineConfig({
 				"app/postcss.config.js",
 				"app/sentry.*.config.ts",
 				"app/src/env.ts",
+				"app/messages/**/*",
 
 				// テスト困難なインフラ・スクリプト
 				"packages/search/src/config.ts",

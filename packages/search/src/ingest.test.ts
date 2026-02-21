@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, type Mock, test, vi } from "vitest";
 import type { QdrantPayload } from "./config.ts";
-import { type IngestOptions, ingestChunks } from "./ingest.ts";
+import { ingestChunks } from "./ingest.ts";
 import { getExistingHashes, upsertPoints } from "./qdrant-client.ts";
 
 vi.mock("./qdrant-client.ts", () => ({

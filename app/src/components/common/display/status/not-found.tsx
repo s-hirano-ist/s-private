@@ -1,3 +1,4 @@
+import { StatusCodeView } from "@s-hirano-ist/s-ui/display/status/status-code-view";
 import { Button } from "@s-hirano-ist/s-ui/ui/button";
 import type { Route } from "next";
 import Link from "next/link";
@@ -9,19 +10,9 @@ type NotFoundProps = {
 
 export function NotFound({ title, returnHomeText }: NotFoundProps) {
 	return (
-		<div className="space-y-2">
-			<div
-				className="w-full bg-linear-to-r from-primary to-primary-grad bg-clip-text p-2 text-center font-extrabold text-transparent"
-				data-testid="status-code-view"
-			>
-				<div className="text-9xl">
-					<span className="hidden font-light sm:inline">---</span>
-					404
-					<span className="hidden font-light sm:inline">---</span>
-				</div>
-				<div className="text-sm">------{title}------</div>
-			</div>
-			<Button asChild className="mx-auto flex w-1/2 flex-col">
+		<div className="flex flex-col items-center gap-6 py-8">
+			<StatusCodeView statusCode="404" statusCodeString={title} />
+			<Button asChild variant="outline">
 				<Link href={"/" as Route}>{returnHomeText}</Link>
 			</Button>
 		</div>

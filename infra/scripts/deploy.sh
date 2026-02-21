@@ -6,7 +6,7 @@
 #
 # --init (初回セットアップ):
 #   - git clone でリポジトリを ~/s-private に取得
-#   - .env ファイルの作成ガイド表示 (EMBEDDING_API_KEY, CLOUDFLARE_TUNNEL_TOKEN 等)
+#   - .env ファイルの作成ガイド表示 (CLOUDFLARE_TUNNEL_TOKEN 等)
 #   - docker compose --profile vps pull → up -d
 #
 # --update (コード更新 & 再デプロイ):

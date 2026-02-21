@@ -35,7 +35,7 @@ export type Props = {
 	/** Optional ref to access the hidden input element */
 	inputRef?: RefObject<HTMLInputElement | null>;
 	/** Placeholder text when no value is selected */
-	placeholder?: string;
+	placeholder: string;
 	/** The form field name (defaults to htmlFor if not provided) */
 	name?: string;
 	/** Whether the field is required */
@@ -156,7 +156,7 @@ export function FormDropdownInput({
 						role="combobox"
 						variant="outline"
 					>
-						{value || placeholder || "Select..."}
+						{value || placeholder}
 						<ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 					</Button>
 				</PopoverTrigger>

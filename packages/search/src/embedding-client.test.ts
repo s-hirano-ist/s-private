@@ -30,18 +30,17 @@ describe("createEmbeddingClient", () => {
 			const result = await client.embed("hello world", true);
 
 			expect(result).toEqual(mockEmbedding);
-			expect(fetchSpy).toHaveBeenCalledOnce();
-
-			const [url, options] = fetchSpy.mock.calls[0];
-			expect(url).toBe("https://embed.example.com/embed");
-			expect(options?.method).toBe("POST");
-
-			const body = JSON.parse(options?.body as string);
-			expect(body.inputs).toBe(
-				`${RAG_CONFIG.embedding.prefix.query}hello world`,
+			expect(fetchSpy).toHaveBeenCalledExactlyOnceWith(
+				"https://embed.example.com/embed",
+				expect.objectContaining({
+					method: "POST",
+					body: JSON.stringify({
+						inputs: `${RAG_CONFIG.embedding.prefix.query}hello world`,
+						normalize: true,
+						truncate: true,
+					}),
+				}),
 			);
-			expect(body.normalize).toBe(true);
-			expect(body.truncate).toBe(true);
 		});
 
 		test("sends request with passage prefix when isQuery is false", async () => {
@@ -80,13 +79,16 @@ describe("createEmbeddingClient", () => {
 			const client = createEmbeddingClient(CLIENT_CONFIG);
 			await client.embed("test");
 
-			const headers = fetchSpy.mock.calls[0][1]?.headers as Record<
-				string,
-				string
-			>;
-			expect(headers["Content-Type"]).toBe("application/json");
-			expect(headers["CF-Access-Client-Id"]).toBe("cf-id");
-			expect(headers["CF-Access-Client-Secret"]).toBe("cf-secret");
+			expect(fetchSpy).toHaveBeenCalledWith(
+				expect.any(String),
+				expect.objectContaining({
+					headers: {
+						"Content-Type": "application/json",
+						"CF-Access-Client-Id": "cf-id",
+						"CF-Access-Client-Secret": "cf-secret",
+					},
+				}),
+			);
 		});
 
 		test("throws on non-ok response", async () => {
@@ -114,7 +116,6 @@ describe("createEmbeddingClient", () => {
 			const result = await client.embedBatch(["text1", "text2"], true);
 
 			expect(result).toEqual(mockEmbeddings);
-
 			const body = JSON.parse(fetchSpy.mock.calls[0][1]?.body as string);
 			expect(body.inputs).toEqual([
 				`${RAG_CONFIG.embedding.prefix.query}text1`,

@@ -78,10 +78,13 @@ describe("event-setup", () => {
 		const { initializeEventHandlers } = await import("./event-setup");
 
 		initializeEventHandlers();
+
 		expect(eventDispatcher.register).toHaveBeenCalledTimes(10);
 
 		vi.mocked(eventDispatcher.register).mockClear();
+
 		initializeEventHandlers();
+
 		expect(eventDispatcher.register).not.toHaveBeenCalled();
 	});
 });

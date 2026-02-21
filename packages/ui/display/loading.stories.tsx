@@ -13,8 +13,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
 	play: async ({ canvasElement }) => {
-		const svg = canvasElement.querySelector("svg");
-		await expect(svg).toBeInTheDocument();
-		await expect(svg).toHaveClass("animate-spin");
+		const dots = canvasElement.querySelectorAll(".rounded-full");
+		await expect(dots.length).toBe(3);
 	},
 };

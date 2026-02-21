@@ -25,6 +25,7 @@ describe("EventDispatcher", () => {
 		const event = createMockEvent("test.dispatch");
 
 		eventDispatcher.register("test.dispatch", handler);
+
 		await eventDispatcher.dispatch(event);
 
 		expect(handler.handle).toHaveBeenCalledTimes(1);
@@ -40,6 +41,7 @@ describe("EventDispatcher", () => {
 
 		eventDispatcher.register("test.multiple", handler1);
 		eventDispatcher.register("test.multiple", handler2);
+
 		await eventDispatcher.dispatch(event);
 
 		expect(handler1.handle).toHaveBeenCalledTimes(1);
@@ -55,6 +57,7 @@ describe("EventDispatcher", () => {
 
 		eventDispatcher.register("test.unregister", handler);
 		eventDispatcher.unregister("test.unregister", handler);
+
 		await eventDispatcher.dispatch(event);
 
 		expect(handler.handle).not.toHaveBeenCalled();
@@ -70,6 +73,7 @@ describe("EventDispatcher", () => {
 		const event = createMockEvent("test.other-type");
 
 		eventDispatcher.register("test.specific-type", handler);
+
 		await eventDispatcher.dispatch(event);
 
 		expect(handler.handle).not.toHaveBeenCalled();

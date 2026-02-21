@@ -4,58 +4,25 @@ import {
 	makeISBN,
 } from "@s-hirano-ist/s-core/books/entities/book-entity";
 import { BookCreatedEvent } from "@s-hirano-ist/s-core/books/events/book-created-event";
+import type { IBooksCommandRepository } from "@s-hirano-ist/s-core/books/repositories/books-command-repository.interface";
 import {
 	makeCreatedAt,
 	makeId,
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
+import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/services/storage-service.interface";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
-import { booksCommandRepository } from "@/infrastructures/books/repositories/books-command-repository";
 import { addBooks } from "./add-books";
+import { addBooksCore } from "./add-books.core";
+import type { AddBooksDeps } from "./add-books.deps";
 import { parseAddBooksFormData } from "./helpers/form-data-parser";
 
 vi.mock("@/common/auth/session", () => ({
 	getSelfId: vi.fn(),
 	hasDumperPostPermission: vi.fn(),
 }));
-
-vi.mock(
-	"@/infrastructures/books/repositories/books-command-repository",
-	() => ({ booksCommandRepository: { create: vi.fn() } }),
-);
-
-vi.mock("@/infrastructures/events/event-dispatcher", () => ({
-	eventDispatcher: {
-		dispatch: vi.fn().mockResolvedValue(undefined),
-	},
-}));
-
-vi.mock("@/infrastructures/books/repositories/books-query-repository", () => ({
-	booksQueryRepository: {},
-}));
-
-const mockEnsureNoDuplicate = vi.fn();
-
-vi.mock("@s-hirano-ist/s-core/books/services/books-domain-service", () => ({
-	BooksDomainService: class {
-		ensureNoDuplicate = mockEnsureNoDuplicate;
-	},
-}));
-
-vi.mock(
-	"@s-hirano-ist/s-core/books/entities/book-entity",
-	async (importOriginal) => {
-		const actual = await importOriginal<Record<string, unknown>>();
-		return {
-			...actual,
-			bookEntity: {
-				create: vi.fn(),
-			},
-		};
-	},
-);
 
 vi.mock("./helpers/form-data-parser", () => ({
 	parseAddBooksFormData: vi.fn(),
@@ -65,7 +32,63 @@ const mockFormData = new FormData();
 mockFormData.append("isbn", "111-2222-3333");
 mockFormData.append("title", "Test Book");
 
-describe("addBooks", () => {
+function createMockDeps(
+	ensureNoDuplicateImpl: () => Promise<void> = async () => {},
+): {
+	deps: AddBooksDeps;
+	mockCommandRepository: IBooksCommandRepository;
+	mockStorageService: IStorageService;
+	mockEnsureNoDuplicate: ReturnType<typeof vi.fn>;
+	mockEventDispatcher: { dispatch: ReturnType<typeof vi.fn> };
+} {
+	const mockCommandRepository: IBooksCommandRepository = {
+		create: vi.fn(),
+		deleteById: vi.fn(),
+	};
+
+	const mockStorageService: IStorageService = {
+		uploadImage: vi.fn(),
+		getImage: vi.fn(),
+		getImageOrThrow: vi.fn(),
+		deleteImage: vi.fn(),
+	};
+
+	const mockEnsureNoDuplicate = vi
+		.fn()
+		.mockImplementation(ensureNoDuplicateImpl);
+
+	const mockEventDispatcher = {
+		dispatch: vi.fn().mockResolvedValue(undefined),
+	};
+
+	const mockDomainServiceFactory = {
+		createBooksDomainService: () => ({
+			ensureNoDuplicate: mockEnsureNoDuplicate,
+		}),
+		createArticlesDomainService: vi.fn(),
+		createNotesDomainService: vi.fn(),
+		createImagesDomainService: vi.fn(),
+		createCategoryService: vi.fn(),
+	};
+
+	const deps: AddBooksDeps = {
+		commandRepository: mockCommandRepository,
+		storageService: mockStorageService,
+		domainServiceFactory:
+			mockDomainServiceFactory as unknown as AddBooksDeps["domainServiceFactory"],
+		eventDispatcher: mockEventDispatcher,
+	};
+
+	return {
+		deps,
+		mockCommandRepository,
+		mockStorageService,
+		mockEnsureNoDuplicate,
+		mockEventDispatcher,
+	};
+}
+
+describe("addBooksCore", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 		vi.mocked(parseAddBooksFormData).mockResolvedValue({
@@ -79,21 +102,22 @@ describe("addBooks", () => {
 
 	test("should return success false on Unauthorized", async () => {
 		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
-		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+		const { deps } = createMockDeps();
 
-		const result = await addBooks(mockFormData);
+		const result = await addBooksCore(mockFormData, deps);
+
 		expect(result.success).toBe(false);
 	});
 
-	test("should return forbidden when user doesn't have permission", async () => {
-		vi.mocked(hasDumperPostPermission).mockResolvedValue(false);
-
-		await expect(addBooks(mockFormData)).rejects.toThrow("FORBIDDEN");
-	});
-
-	test("should create books", async () => {
-		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+	test("should create book successfully", async () => {
 		vi.mocked(getSelfId).mockResolvedValue(makeUserId("user-123"));
+
+		const {
+			deps,
+			mockCommandRepository,
+			mockEnsureNoDuplicate,
+			mockEventDispatcher,
+		} = createMockDeps();
 
 		const mockBook = {
 			id: makeId("01933f5c-9df0-7001-9123-456789abcdef"),
@@ -112,13 +136,10 @@ describe("addBooks", () => {
 			caller: "addBooks",
 		});
 
-		mockEnsureNoDuplicate.mockResolvedValue(undefined);
-		vi.mocked(bookEntity.create).mockReturnValue([mockBook, mockEvent]);
-		vi.mocked(booksCommandRepository.create).mockResolvedValue();
+		vi.spyOn(bookEntity, "create").mockReturnValue([mockBook, mockEvent]);
 
-		const result = await addBooks(mockFormData);
+		const result = await addBooksCore(mockFormData, deps);
 
-		expect(vi.mocked(hasDumperPostPermission)).toHaveBeenCalled();
 		expect(mockEnsureNoDuplicate).toHaveBeenCalledWith(
 			makeISBN("978-4-06-519981-0"),
 			makeUserId("user-123"),
@@ -130,18 +151,23 @@ describe("addBooks", () => {
 			imagePath: undefined,
 			caller: "addBooks",
 		});
-		expect(booksCommandRepository.create).toHaveBeenCalledWith(mockBook);
+		expect(mockCommandRepository.create).toHaveBeenCalledWith(mockBook);
+		expect(mockEventDispatcher.dispatch).toHaveBeenCalledWith(mockEvent);
 
 		expect(result.success).toBe(true);
 		expect(result.message).toBe("inserted");
+
+		vi.mocked(bookEntity.create).mockRestore();
 	});
 
 	test("should preserve form data on DuplicateError", async () => {
-		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
 		vi.mocked(getSelfId).mockResolvedValue(makeUserId("user-123"));
-		mockEnsureNoDuplicate.mockRejectedValue(new DuplicateError());
 
-		const result = await addBooks(mockFormData);
+		const { deps } = createMockDeps(async () => {
+			throw new DuplicateError();
+		});
+
+		const result = await addBooksCore(mockFormData, deps);
 
 		expect(result.success).toBe(false);
 		expect(result.message).toBe("duplicated");
@@ -151,15 +177,44 @@ describe("addBooks", () => {
 		});
 	});
 
-	test("should handle errors and return wrapped error", async () => {
-		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+	test("should handle unexpected errors", async () => {
 		vi.mocked(getSelfId).mockResolvedValue(makeUserId("user-123"));
 
-		const error = new Error("Domain service error");
-		mockEnsureNoDuplicate.mockRejectedValue(error);
+		const { deps } = createMockDeps(async () => {
+			throw new Error("Database error");
+		});
+
+		const result = await addBooksCore(mockFormData, deps);
+
+		expect(result).toEqual({ success: false, message: "unexpected" });
+	});
+});
+
+describe("addBooks (Server Action)", () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
+
+	test("should return forbidden when user doesn't have permission", async () => {
+		vi.mocked(hasDumperPostPermission).mockResolvedValue(false);
+
+		await expect(addBooks(mockFormData)).rejects.toThrow("FORBIDDEN");
+	});
+
+	test("should call addBooksCore with default deps when permitted", async () => {
+		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
+		vi.mocked(parseAddBooksFormData).mockResolvedValue({
+			isbn: makeISBN("978-4-06-519981-0"),
+			title: makeBookTitle("Test Book"),
+			userId: makeUserId("user-123"),
+			imagePath: undefined,
+			hasImage: false as const,
+		});
 
 		const result = await addBooks(mockFormData);
 
-		expect(result).toEqual({ success: false, message: "unexpected" });
+		expect(hasDumperPostPermission).toHaveBeenCalled();
+		expect(result.success).toBe(false);
 	});
 });

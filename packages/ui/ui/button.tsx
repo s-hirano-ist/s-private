@@ -26,21 +26,23 @@ import { cn } from "../utils/cn";
  * ```
  */
 const buttonVariants = cva(
-	"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-primary disabled:pointer-events-none disabled:opacity-50",
+	"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all duration-200 active:scale-[0.97] focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-primary disabled:pointer-events-none disabled:opacity-50",
 	{
 		variants: {
 			variant: {
 				default:
-					"bg-linear-to-r from-primary to-primary-grad text-white shadow-sm hover:bg-primary/40",
+					"bg-linear-to-r from-primary to-primary-grad text-white shadow-[0_2px_16px_rgb(var(--primary)/0.3)] hover:shadow-[0_4px_24px_rgb(var(--primary)/0.45)] hover:brightness-110",
 				destructive:
-					"bg-destructive text-white shadow-xs hover:bg-destructive/80",
+					"bg-destructive text-white shadow-[0_2px_16px_rgb(var(--destructive)/0.3)] hover:shadow-[0_4px_24px_rgb(var(--destructive)/0.45)] hover:brightness-110",
 				outline:
-					"border border-muted bg-background shadow-xs hover:bg-muted hover:text-muted-foreground",
-				secondary: "bg-muted text-muted-foreground shadow-xs hover:bg-muted/80",
-				ghost: "hover:text-primary",
+					"border border-foreground/10 bg-background/60 backdrop-blur-sm shadow-xs hover:bg-background/90 hover:shadow-md hover:border-primary/30",
+				secondary:
+					"bg-muted/60 text-muted-foreground backdrop-blur-sm shadow-xs hover:bg-muted/80",
+				ghost: "hover:text-primary hover:bg-primary/5",
 				link: "text-white underline-offset-4 hover:underline",
-				navSide: "hover:bg-black/40 dark:hover:bg-gray-800",
-				navCenter: "bg-white font-medium hover:bg-black/40",
+				navSide: "rounded-full hover:bg-primary/10 transition-all duration-200",
+				navCenter:
+					"bg-linear-to-br from-primary to-primary-grad text-white rounded-full shadow-[0_4px_20px_rgb(var(--primary)/0.4)] ring-4 ring-background hover:scale-110 hover:shadow-[0_6px_28px_rgb(var(--primary)/0.5)] active:scale-95 transition-all duration-200",
 			},
 			size: {
 				default: "h-9 px-4 py-2",

@@ -41,7 +41,7 @@ function Card({ className, ref, ...props }: CardProps) {
 	return (
 		<div
 			className={cn(
-				"rounded-xl border border-muted bg-primary-foreground text-primary shadow-sm",
+				"rounded-xl border border-muted bg-primary-foreground text-primary shadow-sm transition-all duration-200 ease-out",
 				className,
 			)}
 			ref={ref}
@@ -68,7 +68,7 @@ type CardHeaderProps = {
 function CardHeader({ className, ref, ...props }: CardHeaderProps) {
 	return (
 		<div
-			className={cn("flex flex-col space-y-1.5 p-6", className)}
+			className={cn("flex flex-col space-y-1 p-4", className)}
 			ref={ref}
 			{...props}
 		/>
@@ -138,7 +138,7 @@ type CardContentProps = {
  * @see {@link Card} for the parent container
  */
 function CardContent({ className, ref, ...props }: CardContentProps) {
-	return <div className={cn("p-6 pt-0", className)} ref={ref} {...props} />;
+	return <div className={cn("p-4 pt-0", className)} ref={ref} {...props} />;
 }
 CardContent.displayName = "CardContent";
 
@@ -158,7 +158,7 @@ type CardFooterProps = {
 function CardFooter({ className, ref, ...props }: CardFooterProps) {
 	return (
 		<div
-			className={cn("flex items-center p-6 pt-0", className)}
+			className={cn("flex items-center p-4 pt-0", className)}
 			ref={ref}
 			{...props}
 		/>

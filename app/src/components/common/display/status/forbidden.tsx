@@ -7,10 +7,10 @@ export function Forbidden() {
 	const t = useTranslations("label");
 
 	return (
-		<div className="space-y-2">
+		<div className="flex flex-col items-center gap-6 py-8">
 			<StatusCodeView statusCode="403" statusCodeString={t("403")} />
-			<form action="/api/auth/signout" className="flex flex-col" method="post">
-				<Button className="mx-auto" type="submit">
+			<form action="/api/auth/signout" method="post">
+				<Button type="submit" variant="outline">
 					{t("resignIn")}
 				</Button>
 			</form>

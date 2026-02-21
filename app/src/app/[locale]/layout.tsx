@@ -33,8 +33,8 @@ async function LocaleLayoutContent({ children, params }: Params) {
 				disableTransitionOnChange
 				enableSystem
 			>
-				<main className="flex h-screen flex-col justify-between">
-					<div className="grow pb-4">{children}</div>
+				<main className="min-h-screen">
+					<div className="pb-24">{children}</div>
 					<Footer search={searchContentFromClient} />
 				</main>
 				<Toaster />

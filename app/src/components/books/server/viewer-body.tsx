@@ -10,6 +10,7 @@ import type { Route } from "next";
 import NextImage from "next/image";
 import { notFound } from "next/navigation";
 import type { getBookByISBN } from "@/application-services/books/get-books";
+import { BackButton } from "@/components/common/back-button";
 import { Link } from "@/infrastructures/i18n/routing";
 
 export type Props = { slug: string; getBookByISBN: typeof getBookByISBN };
@@ -20,6 +21,7 @@ export async function ViewerBody({ slug, getBookByISBN }: Props) {
 
 	return (
 		<ViewerBodyClient markdown={data?.markdown ?? ""}>
+			<BackButton />
 			<Card className="grid grid-cols-4 gap-4 p-4">
 				<div className="flex items-center justify-center">
 					<NextImage

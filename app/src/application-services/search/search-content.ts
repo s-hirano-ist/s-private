@@ -97,7 +97,7 @@ export async function searchContent(
 			} satisfies BookSearchResult;
 		} else {
 			result = {
-				href: encodeURIComponent(r.title),
+				href: encodeURIComponent(r.heading_path[0] ?? r.title),
 				contentType: "notes" as const,
 				title: r.title,
 				snippet: truncateText(r.text),

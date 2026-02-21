@@ -4,60 +4,26 @@ import {
 	noteEntity,
 } from "@s-hirano-ist/s-core/notes/entities/note-entity";
 import { NoteCreatedEvent } from "@s-hirano-ist/s-core/notes/events/note-created-event";
+import type { INotesCommandRepository } from "@s-hirano-ist/s-core/notes/repositories/notes-command-repository.interface";
 import {
 	makeCreatedAt,
 	makeId,
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
-import { describe, expect, test, vi } from "vitest";
-import { parseAddNoteFormData } from "@/application-services/notes/helpers/form-data-parser";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
-import { notesCommandRepository } from "@/infrastructures/notes/repositories/notes-command-repository";
 import { addNote } from "./add-note";
+import { addNoteCore } from "./add-note.core";
+import type { AddNoteDeps } from "./add-note.deps";
+import { parseAddNoteFormData } from "./helpers/form-data-parser";
 
 vi.mock("@/common/auth/session", () => ({
 	getSelfId: vi.fn(),
 	hasDumperPostPermission: vi.fn(),
 }));
 
-vi.mock(
-	"@/infrastructures/notes/repositories/notes-command-repository",
-	() => ({ notesCommandRepository: { create: vi.fn() } }),
-);
-
-vi.mock("@/infrastructures/events/event-dispatcher", () => ({
-	eventDispatcher: {
-		dispatch: vi.fn().mockResolvedValue(undefined),
-	},
-}));
-
-vi.mock("@/infrastructures/notes/repositories/notes-query-repository", () => ({
-	notesQueryRepository: {},
-}));
-
-const mockEnsureNoDuplicate = vi.fn();
-
-vi.mock("@s-hirano-ist/s-core/notes/services/notes-domain-service", () => ({
-	NotesDomainService: class {
-		ensureNoDuplicate = mockEnsureNoDuplicate;
-	},
-}));
-
-vi.mock(
-	"@s-hirano-ist/s-core/notes/entities/note-entity",
-	async (importOriginal) => {
-		const actual = await importOriginal<Record<string, unknown>>();
-		return {
-			...actual,
-			noteEntity: {
-				create: vi.fn(),
-			},
-		};
-	},
-);
-
-vi.mock("@/application-services/notes/helpers/form-data-parser", () => ({
+vi.mock("./helpers/form-data-parser", () => ({
 	parseAddNoteFormData: vi.fn(),
 }));
 
@@ -65,24 +31,80 @@ const mockFormData = new FormData();
 mockFormData.append("title", "Example Note");
 mockFormData.append("markdown", "This is an example note quote.");
 
-describe("addNote", () => {
+function createMockDeps(
+	ensureNoDuplicateImpl: () => Promise<void> = async () => {},
+): {
+	deps: AddNoteDeps;
+	mockCommandRepository: INotesCommandRepository;
+	mockEnsureNoDuplicate: ReturnType<typeof vi.fn>;
+	mockEventDispatcher: { dispatch: ReturnType<typeof vi.fn> };
+} {
+	const mockCommandRepository: INotesCommandRepository = {
+		create: vi.fn(),
+		deleteById: vi.fn(),
+	};
+
+	const mockEnsureNoDuplicate = vi
+		.fn()
+		.mockImplementation(ensureNoDuplicateImpl);
+
+	const mockEventDispatcher = {
+		dispatch: vi.fn().mockResolvedValue(undefined),
+	};
+
+	const mockDomainServiceFactory = {
+		createNotesDomainService: () => ({
+			ensureNoDuplicate: mockEnsureNoDuplicate,
+		}),
+		createArticlesDomainService: vi.fn(),
+		createBooksDomainService: vi.fn(),
+		createImagesDomainService: vi.fn(),
+		createCategoryService: vi.fn(),
+	};
+
+	const deps: AddNoteDeps = {
+		commandRepository: mockCommandRepository,
+		domainServiceFactory:
+			mockDomainServiceFactory as unknown as AddNoteDeps["domainServiceFactory"],
+		eventDispatcher: mockEventDispatcher,
+	};
+
+	return {
+		deps,
+		mockCommandRepository,
+		mockEnsureNoDuplicate,
+		mockEventDispatcher,
+	};
+}
+
+describe("addNoteCore", () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+		vi.mocked(parseAddNoteFormData).mockReturnValue({
+			title: makeNoteTitle("Example Note"),
+			markdown: makeMarkdown("sample markdown"),
+			userId: makeUserId("user-123"),
+		});
+	});
+
 	test("should return success false on Unauthorized", async () => {
 		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
-		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+		const { deps } = createMockDeps();
 
-		const result = await addNote(mockFormData);
+		const result = await addNoteCore(mockFormData, deps);
+
 		expect(result.success).toBe(false);
 	});
 
-	test("should return forbidden when user doesn't have permission", async () => {
-		vi.mocked(hasDumperPostPermission).mockResolvedValue(false);
-
-		await expect(addNote(mockFormData)).rejects.toThrow("FORBIDDEN");
-	});
-
-	test("should create note", async () => {
-		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+	test("should create note successfully", async () => {
 		vi.mocked(getSelfId).mockResolvedValue(makeUserId("user-123"));
+
+		const {
+			deps,
+			mockCommandRepository,
+			mockEnsureNoDuplicate,
+			mockEventDispatcher,
+		} = createMockDeps();
 
 		const mockNote = {
 			title: makeNoteTitle("Example Note"),
@@ -100,41 +122,37 @@ describe("addNote", () => {
 			caller: "addNote",
 		});
 
-		vi.mocked(parseAddNoteFormData).mockReturnValue({
-			title: makeNoteTitle("Example Note"),
-			markdown: makeMarkdown("sample markdown"),
-			userId: makeUserId("user-123"),
-		});
-		vi.mocked(noteEntity.create).mockReturnValue([mockNote, mockEvent]);
-		mockEnsureNoDuplicate.mockResolvedValue(undefined);
-		vi.mocked(notesCommandRepository.create).mockResolvedValue();
+		vi.spyOn(noteEntity, "create").mockReturnValue([mockNote, mockEvent]);
 
-		const result = await addNote(mockFormData);
+		const result = await addNoteCore(mockFormData, deps);
 
-		expect(vi.mocked(hasDumperPostPermission)).toHaveBeenCalled();
-		expect(vi.mocked(parseAddNoteFormData)).toHaveBeenCalledWith(
-			mockFormData,
-			"user-123",
+		expect(mockEnsureNoDuplicate).toHaveBeenCalledWith(
+			makeNoteTitle("Example Note"),
+			makeUserId("user-123"),
 		);
-		expect(mockEnsureNoDuplicate).toHaveBeenCalled();
-		expect(vi.mocked(noteEntity.create)).toHaveBeenCalled();
-		expect(notesCommandRepository.create).toHaveBeenCalledWith(mockNote);
+		expect(noteEntity.create).toHaveBeenCalled();
+		expect(mockCommandRepository.create).toHaveBeenCalledWith(mockNote);
+		expect(mockEventDispatcher.dispatch).toHaveBeenCalledWith(mockEvent);
+
 		expect(result.success).toBe(true);
 		expect(result.message).toBe("inserted");
+
+		vi.mocked(noteEntity.create).mockRestore();
 	});
 
 	test("should preserve form data on DuplicateError", async () => {
-		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
 		vi.mocked(getSelfId).mockResolvedValue(makeUserId("user-123"));
-
 		vi.mocked(parseAddNoteFormData).mockReturnValue({
 			title: makeNoteTitle("Example Note"),
 			markdown: makeMarkdown("This is an example note quote."),
 			userId: makeUserId("user-123"),
 		});
-		mockEnsureNoDuplicate.mockRejectedValue(new DuplicateError());
 
-		const result = await addNote(mockFormData);
+		const { deps } = createMockDeps(async () => {
+			throw new DuplicateError();
+		});
+
+		const result = await addNoteCore(mockFormData, deps);
 
 		expect(result.success).toBe(false);
 		expect(result.message).toBe("duplicated");
@@ -144,21 +162,42 @@ describe("addNote", () => {
 		});
 	});
 
-	test("should handle errors and return wrapped error", async () => {
-		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+	test("should handle unexpected errors", async () => {
 		vi.mocked(getSelfId).mockResolvedValue(makeUserId("user-123"));
 
+		const { deps } = createMockDeps(async () => {
+			throw new Error("Domain service error");
+		});
+
+		const result = await addNoteCore(mockFormData, deps);
+
+		expect(result).toEqual({ success: false, message: "unexpected" });
+	});
+});
+
+describe("addNote (Server Action)", () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
+
+	test("should return forbidden when user doesn't have permission", async () => {
+		vi.mocked(hasDumperPostPermission).mockResolvedValue(false);
+
+		await expect(addNote(mockFormData)).rejects.toThrow("FORBIDDEN");
+	});
+
+	test("should call addNoteCore with default deps when permitted", async () => {
+		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
 		vi.mocked(parseAddNoteFormData).mockReturnValue({
 			title: makeNoteTitle("Example Note"),
-			markdown: makeMarkdown("This is an example note quote."),
+			markdown: makeMarkdown("sample markdown"),
 			userId: makeUserId("user-123"),
 		});
 
-		const error = new Error("Domain service error");
-		mockEnsureNoDuplicate.mockRejectedValue(error);
-
 		const result = await addNote(mockFormData);
 
-		expect(result).toEqual({ success: false, message: "unexpected" });
+		expect(hasDumperPostPermission).toHaveBeenCalled();
+		expect(result.success).toBe(false);
 	});
 });

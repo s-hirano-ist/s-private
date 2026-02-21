@@ -17,7 +17,14 @@
 		"./providers/*": "./providers/*.tsx",
 		"./hooks/*": "./hooks/*.ts",
 		"./utils/*": "./utils/*.ts",
-		"./globals.css": "./globals.css"
+		"./globals.css": {
+			"style": "./globals.css",
+			"default": "./globals.css"
+		},
+		"./theme.css": {
+			"style": "./theme.css",
+			"default": "./theme.css"
+		}
 	},
 	"publishConfig": {
 		"access": "public",
@@ -54,7 +61,14 @@
 				"types": "./dist/utils/*.d.ts",
 				"default": "./dist/utils/*.js"
 			},
-			"./globals.css": "./globals.css"
+			"./globals.css": {
+				"style": "./globals.css",
+				"default": "./globals.css"
+			},
+			"./theme.css": {
+				"style": "./theme.css",
+				"default": "./theme.css"
+			}
 		},
 		"main": "./dist/index.js",
 		"types": "./dist/index.d.ts"
@@ -62,6 +76,7 @@
 	"files": [
 		"dist",
 		"globals.css",
+		"theme.css",
 		"README.md",
 		"LICENSE"
 	],
