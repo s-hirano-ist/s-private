@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.17.0...@s-hirano-ist/s-database-v1.18.0) (2026-02-21)
+
+
+### Maintenance
+
+* **@s-hirano-ist/s-database:** Synchronize npm-packages versions
+
 ## [1.17.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.16.3...@s-hirano-ist/s-database-v1.17.0) (2026-02-21)
 
 

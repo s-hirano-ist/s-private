@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.18.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.17.0...s-private-v10.18.0) (2026-02-21)
+
+
+### Features
+
+* add more designs to s-ui ([4129520](https://github.com/s-hirano-ist/s-private/commit/41295207103f935d08d3ac4373022d59f3de19b0))
+* add more designs to s-ui ([9ea89f9](https://github.com/s-hirano-ist/s-private/commit/9ea89f9b10b29e8033bd91df620d94463b94085a))
+
+
+### Bug Fixes
+
+* tab change ([a896fc0](https://github.com/s-hirano-ist/s-private/commit/a896fc0cc7a957855b93a9917d16449bec93074b))
+
 ## [10.17.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.16.1...s-private-v10.17.0) (2026-02-21)
 
 
