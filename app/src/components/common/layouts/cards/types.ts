@@ -8,6 +8,8 @@ export type ImageCardData = {
 	href: string;
 	title: string;
 	image: string | null;
+	subtitle?: string;
+	authors?: string;
 };
 
 export type LinkCardData = {

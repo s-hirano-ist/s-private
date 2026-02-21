@@ -40,10 +40,14 @@ describe("get-notes", () => {
 				{
 					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b"),
 					title: makeNoteTitle("Test Note 1"),
+					markdown: makeMarkdown("# Hello\nThis is **note** content."),
+					createdAt: makeCreatedAt(new Date("2024-06-15")),
 				},
 				{
 					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c"),
 					title: makeNoteTitle("Test Note 2"),
+					markdown: makeMarkdown("Simple text"),
+					createdAt: makeCreatedAt(new Date("2024-07-01")),
 				},
 			];
 
@@ -68,14 +72,20 @@ describe("get-notes", () => {
 						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b",
 						key: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b",
 						title: "Test Note 1",
-						description: "",
+						description: "Hello This is note content.",
+						primaryBadgeText: new Date("2024-06-15").toLocaleDateString(
+							"ja-JP",
+						),
 						href: "/note/Test%20Note%201",
 					},
 					{
 						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c",
 						key: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c",
 						title: "Test Note 2",
-						description: "",
+						description: "Simple text",
+						primaryBadgeText: new Date("2024-07-01").toLocaleDateString(
+							"ja-JP",
+						),
 						href: "/note/Test%20Note%202",
 					},
 				],
@@ -103,11 +113,13 @@ describe("get-notes", () => {
 			await expect(getExportedNotes(0)).rejects.toThrow("Database error");
 		});
 
-		test("should handle notes with null images", async () => {
+		test("should handle notes with minimal content", async () => {
 			const mockNotes = [
 				{
 					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d"),
 					title: makeNoteTitle("Test Note"),
+					markdown: makeMarkdown("x"),
+					createdAt: makeCreatedAt(new Date("2024-01-01")),
 				},
 			];
 
@@ -122,7 +134,10 @@ describe("get-notes", () => {
 						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d",
 						key: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d",
 						title: "Test Note",
-						description: "",
+						description: "x",
+						primaryBadgeText: new Date("2024-01-01").toLocaleDateString(
+							"ja-JP",
+						),
 						href: "/note/Test%20Note",
 					},
 				],
@@ -135,6 +150,8 @@ describe("get-notes", () => {
 				{
 					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e"),
 					title: makeNoteTitle("My Special Note Title"),
+					markdown: makeMarkdown("content"),
+					createdAt: makeCreatedAt(new Date("2024-01-01")),
 				},
 			];
 
@@ -184,10 +201,14 @@ describe("get-notes", () => {
 				{
 					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7f"),
 					title: makeNoteTitle("Unexported Note 1"),
+					markdown: makeMarkdown("First note content"),
+					createdAt: makeCreatedAt(new Date("2024-03-15")),
 				},
 				{
 					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a80"),
 					title: makeNoteTitle("Unexported Note 2"),
+					markdown: makeMarkdown("Second note"),
+					createdAt: makeCreatedAt(new Date("2024-04-01")),
 				},
 			];
 
@@ -212,14 +233,20 @@ describe("get-notes", () => {
 						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7f",
 						key: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7f",
 						title: "Unexported Note 1",
-						description: "",
+						description: "First note content",
+						primaryBadgeText: new Date("2024-03-15").toLocaleDateString(
+							"ja-JP",
+						),
 						href: "/note/Unexported%20Note%201",
 					},
 					{
 						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a80",
 						key: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a80",
 						title: "Unexported Note 2",
-						description: "",
+						description: "Second note",
+						primaryBadgeText: new Date("2024-04-01").toLocaleDateString(
+							"ja-JP",
+						),
 						href: "/note/Unexported%20Note%202",
 					},
 				],
@@ -252,6 +279,8 @@ describe("get-notes", () => {
 				{
 					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a81"),
 					title: makeNoteTitle("Note with & Special Characters!"),
+					markdown: makeMarkdown("content"),
+					createdAt: makeCreatedAt(new Date("2024-01-01")),
 				},
 			];
 

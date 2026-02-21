@@ -58,13 +58,28 @@ const _getNotes = async (
 	]);
 
 	return {
-		data: notes.map((d) => ({
-			id: d.id,
-			key: d.id,
-			title: d.title,
-			description: "",
-			href: `/note/${encodeURIComponent(d.title)}`,
-		})),
+		data: notes.map((d) => {
+			const plainText = String(d.markdown)
+				.replace(/^#{1,6}\s+/gm, "")
+				.replace(/[*_~`]/g, "")
+				.replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
+				.replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1")
+				.replace(/\n+/g, " ")
+				.trim();
+			const description =
+				plainText.length > 150 ? `${plainText.slice(0, 150)}...` : plainText;
+
+			return {
+				id: d.id,
+				key: d.id,
+				title: d.title,
+				description,
+				primaryBadgeText: new Date(
+					d.createdAt as unknown as string,
+				).toLocaleDateString("ja-JP"),
+				href: `/note/${encodeURIComponent(d.title)}`,
+			};
+		}),
 		totalCount,
 	};
 };

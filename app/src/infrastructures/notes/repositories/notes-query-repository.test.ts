@@ -163,21 +163,27 @@ describe("NotesQueryRepository", () => {
 
 			expect(prisma.note.findMany).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "EXPORTED" },
-				select: { id: true, title: true },
+				select: { id: true, title: true, markdown: true, createdAt: true },
 				...params,
 			});
 			expect(result).toEqual([
 				{
 					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b"),
 					title: makeNoteTitle("First Note"),
+					markdown: makeMarkdown("# First"),
+					createdAt: makeCreatedAt(new Date("2024-01-01")),
 				},
 				{
 					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c"),
 					title: makeNoteTitle("Second Note"),
+					markdown: makeMarkdown("# Second"),
+					createdAt: makeCreatedAt(new Date("2024-01-02")),
 				},
 				{
 					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d"),
 					title: makeNoteTitle("Third Note"),
+					markdown: makeMarkdown("# Third"),
+					createdAt: makeCreatedAt(new Date("2024-01-03")),
 				},
 			]);
 		});
@@ -193,7 +199,7 @@ describe("NotesQueryRepository", () => {
 
 			expect(prisma.note.findMany).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "EXPORTED" },
-				select: { id: true, title: true },
+				select: { id: true, title: true, markdown: true, createdAt: true },
 			});
 			expect(result).toEqual([]);
 		});
@@ -209,7 +215,7 @@ describe("NotesQueryRepository", () => {
 
 			expect(prisma.note.findMany).toHaveBeenCalledWith({
 				where: { userId: "user123", status: "EXPORTED" },
-				select: { id: true, title: true },
+				select: { id: true, title: true, markdown: true, createdAt: true },
 			});
 		});
 	});

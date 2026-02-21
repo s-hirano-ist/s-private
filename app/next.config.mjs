@@ -41,9 +41,6 @@ const nextConfig = {
 	typedRoutes: true,
 	reactCompiler: true,
 	cacheComponents: true, // v16: moved from experimental.useCache
-	serverActions: {
-		allowedOrigins: ["s-hirano.com", "*.vercel.app", "localhost:3000"],
-	},
 	experimental: {
 		authInterrupts: true,
 		staleTimes: {
@@ -51,6 +48,9 @@ const nextConfig = {
 			static: 180,
 		},
 		viewTransition: true,
+		serverActions: {
+			allowedOrigins: ["s-hirano.com", "*.vercel.app", "localhost:3000"],
+		},
 	},
 	pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
 	output: "standalone",
