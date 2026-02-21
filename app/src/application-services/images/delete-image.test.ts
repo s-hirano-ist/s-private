@@ -51,7 +51,7 @@ describe("deleteImageCore", () => {
 			path: "test-image.jpg",
 		});
 
-		const testId = "01234567-89ab-7def-8123-456789abcdef";
+		const testId = makeId("01234567-89ab-7def-8123-456789abcdef");
 		const result = await deleteImageCore(testId, deps);
 
 		expect(result).toEqual({
@@ -59,7 +59,7 @@ describe("deleteImageCore", () => {
 			message: "deleted",
 		});
 		expect(mockCommandRepository.deleteById).toHaveBeenCalledWith(
-			makeId(testId),
+			testId,
 			makeUserId("test-user-id"),
 			makeUnexportedStatus(),
 		);
@@ -74,13 +74,13 @@ describe("deleteImageCore", () => {
 			new Error("Record not found"),
 		);
 
-		const testId = "01234567-89ab-7def-8123-456789abcde0";
+		const testId = makeId("01234567-89ab-7def-8123-456789abcde0");
 		const result = await deleteImageCore(testId, deps);
 
 		expect(result.success).toBe(false);
 		expect(result.message).toBe("unexpected");
 		expect(mockCommandRepository.deleteById).toHaveBeenCalledWith(
-			makeId(testId),
+			testId,
 			makeUserId("test-user-id"),
 			makeUnexportedStatus(),
 		);
@@ -90,7 +90,7 @@ describe("deleteImageCore", () => {
 		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
 
 		const { deps } = createMockDeps();
-		const testId = "01234567-89ab-7def-8123-456789abcdef";
+		const testId = makeId("01234567-89ab-7def-8123-456789abcdef");
 		const result = await deleteImageCore(testId, deps);
 
 		expect(result.success).toBe(false);

@@ -6,6 +6,7 @@
 
 "use server";
 import "server-only";
+import { makeId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { forbidden } from "next/navigation";
 import { hasDumperPostPermission } from "@/common/auth/session";
 import type { ServerAction } from "@/common/types";
@@ -21,12 +22,14 @@ import { defaultDeleteNoteDeps } from "./delete-note.deps";
  *
  * Only unexported notes can be deleted. Requires dumper role permission.
  *
- * @param id - Note ID to delete
+ * @param rawId - Note ID to delete
  * @returns Server action result with success/failure status
  */
-export async function deleteNote(id: string): Promise<ServerAction> {
+export async function deleteNote(rawId: string): Promise<ServerAction> {
 	const hasPermission = await hasDumperPostPermission();
 	if (!hasPermission) forbidden();
+
+	const id = makeId(rawId);
 
 	return deleteNoteCore(id, defaultDeleteNoteDeps);
 }
