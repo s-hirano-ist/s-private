@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.18.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.18.0...s-private-v10.18.1) (2026-02-21)
+
+
+### Bug Fixes
+
+* fetch books ([c31908c](https://github.com/s-hirano-ist/s-private/commit/c31908c353f290f5357993f755355bb62432d2c7))
+* fetch books ([4f91178](https://github.com/s-hirano-ist/s-private/commit/4f911780c1854e13840dc520637d12d21b8fe7fb))
+* READMEのビルドステータスバッジを修正（cd.yaml→ci.yaml） ([1781a2c](https://github.com/s-hirano-ist/s-private/commit/1781a2ca169867c09441a94e797ae31f88d765bb))
+* remove tsc-esm-fix and use .js extension imports directly ([b25dd35](https://github.com/s-hirano-ist/s-private/commit/b25dd3515a7110a24a93f7d05402abd89808c828))
+* remove tsc-esm-fix and use .ts imports with rewriteRelativeImportExtensions ([619f159](https://github.com/s-hirano-ist/s-private/commit/619f1591e731f5cd2d578b3a9d99a85e7a91858b))
+
 ## [10.18.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.17.0...s-private-v10.18.0) (2026-02-21)
 
 

@@ -1,6 +1,6 @@
 {
 	"name": "@s-hirano-ist/s-notification",
-	"version": "1.18.0",
+	"version": "1.18.1",
 	"description": "Notification service for s-private application - Pushover integration",
 	"type": "module",
 	"main": "./dist/index.js",

@@ -1,6 +1,6 @@
 {
 	"name": "@s-hirano-ist/s-search",
-	"version": "1.18.0",
+	"version": "1.18.1",
 	"description": "RAG search library with Qdrant and embedding API client",
 	"type": "module",
 	"exports": {

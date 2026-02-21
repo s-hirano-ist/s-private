@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.18.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.18.0...@s-hirano-ist/s-scripts-v1.18.1) (2026-02-21)
+
+
+### Bug Fixes
+
+* fetch books ([c31908c](https://github.com/s-hirano-ist/s-private/commit/c31908c353f290f5357993f755355bb62432d2c7))
+* fetch books ([4f91178](https://github.com/s-hirano-ist/s-private/commit/4f911780c1854e13840dc520637d12d21b8fe7fb))
+* remove tsc-esm-fix and use .js extension imports directly ([b25dd35](https://github.com/s-hirano-ist/s-private/commit/b25dd3515a7110a24a93f7d05402abd89808c828))
+* remove tsc-esm-fix and use .ts imports with rewriteRelativeImportExtensions ([619f159](https://github.com/s-hirano-ist/s-private/commit/619f1591e731f5cd2d578b3a9d99a85e7a91858b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.18.1
+    * @s-hirano-ist/s-search bumped to 1.18.1
+    * @s-hirano-ist/s-database bumped to 1.18.1
+    * @s-hirano-ist/s-notification bumped to 1.18.1
+    * @s-hirano-ist/s-storage bumped to 1.18.1
+
 ## [1.18.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.17.0...@s-hirano-ist/s-scripts-v1.18.0) (2026-02-21)
 
 
