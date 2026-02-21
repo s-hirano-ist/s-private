@@ -1,5 +1,6 @@
+import Loading from "@s-hirano-ist/s-ui/display/loading";
 import type { Metadata, Viewport } from "next";
-import type { ReactNode } from "react";
+import { type ReactNode, Suspense } from "react";
 import { PAGE_NAME } from "@/common/constants";
 import { RootTab } from "@/components/common/layouts/nav/root-tab";
 
@@ -29,6 +30,11 @@ export default async function Layout({
 	books,
 }: Props) {
 	return (
-		<RootTab articles={articles} books={books} images={images} notes={notes} />
+		<RootTab
+			articles={<Suspense fallback={<Loading />}>{articles}</Suspense>}
+			books={<Suspense fallback={<Loading />}>{books}</Suspense>}
+			images={<Suspense fallback={<Loading />}>{images}</Suspense>}
+			notes={<Suspense fallback={<Loading />}>{notes}</Suspense>}
+		/>
 	);
 }

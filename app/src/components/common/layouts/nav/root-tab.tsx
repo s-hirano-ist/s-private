@@ -97,10 +97,12 @@ export function RootTab({ articles, books, notes, images }: Props) {
 			value={optimisticTab}
 		>
 			{tabsList}
-			<TabsContent value="articles">{articles}</TabsContent>
-			<TabsContent value="notes">{notes}</TabsContent>
-			<TabsContent value="books">{books}</TabsContent>
-			<TabsContent value="images">{images}</TabsContent>
+			<div className={cn(isPending && "opacity-50 pointer-events-none")}>
+				<TabsContent value="articles">{articles}</TabsContent>
+				<TabsContent value="notes">{notes}</TabsContent>
+				<TabsContent value="books">{books}</TabsContent>
+				<TabsContent value="images">{images}</TabsContent>
+			</div>
 		</Tabs>
 	);
 }
