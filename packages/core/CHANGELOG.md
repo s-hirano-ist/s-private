@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.17.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.16.3...@s-hirano-ist/s-core-v1.17.0) (2026-02-21)
+
+
+### Documentation
+
+* add more tests ([e5167b2](https://github.com/s-hirano-ist/s-private/commit/e5167b20de6e31db29416560754e078a5fec714c))
+* add more tests ([818643c](https://github.com/s-hirano-ist/s-private/commit/818643c85d5425a930d5c2754610f2cdd4bef2b0))
+
 ## [1.16.3](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.16.2...@s-hirano-ist/s-core-v1.16.3) (2026-02-20)
 
 

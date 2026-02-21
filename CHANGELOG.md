@@ -2,6 +2,50 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.17.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.16.1...s-private-v10.17.0) (2026-02-21)
+
+
+### Features
+
+* add back buttonj ([8792278](https://github.com/s-hirano-ist/s-private/commit/8792278ab3d078c6f7ccccc14d7c7a9489a2cb70))
+* add more cool design ([5e6b5ab](https://github.com/s-hirano-ist/s-private/commit/5e6b5ab38909e43ab91678bfe74e03cee421a5d5))
+* change embedding model from js to hg ([99bd6a3](https://github.com/s-hirano-ist/s-private/commit/99bd6a3c339f2ab532d061604bf79c3ad0fa80b0))
+
+
+### Bug Fixes
+
+* biome ([79300e0](https://github.com/s-hirano-ist/s-private/commit/79300e07449fb7f90f70206c4e974752d4b3000d))
+* button design ([773d4bd](https://github.com/s-hirano-ist/s-private/commit/773d4bdb502f9b77f64727f28201ae55471237a7))
+* cache error ([1bf63df](https://github.com/s-hirano-ist/s-private/commit/1bf63dfe266ca9afafa0e00682ba88d2fcdb9532))
+* import of css ([ea18088](https://github.com/s-hirano-ist/s-private/commit/ea18088a4d340012676b0b99885a8aff3f0ca3ab))
+* search bug ([0478ece](https://github.com/s-hirano-ist/s-private/commit/0478ece9303141988ee2c129fb9f69e0b33167a5))
+* select multi lingual ([b833bde](https://github.com/s-hirano-ist/s-private/commit/b833bde5d58a87008aabe9ddb2d3f803c9f4c671))
+* tests ([da0d1d2](https://github.com/s-hirano-ist/s-private/commit/da0d1d20594a34f9b020f80a7816cfb5c8df4301))
+* tests ([1b3d004](https://github.com/s-hirano-ist/s-private/commit/1b3d0043c4eed32687e857a2256723c576676761))
+
+
+### Documentation
+
+* add dev style words to readme ([28fb4e4](https://github.com/s-hirano-ist/s-private/commit/28fb4e452663996ffe451387c7de3cea045c94af))
+* add env.sample for embedding models ([4a64525](https://github.com/s-hirano-ist/s-private/commit/4a645250cfab7a3352b95584465ad9f1e45dc5a9))
+* add more tests ([0e30551](https://github.com/s-hirano-ist/s-private/commit/0e30551b59a3dbc42f395bf069d90fd1d5e333e8))
+* add more tests ([10ff0de](https://github.com/s-hirano-ist/s-private/commit/10ff0dee2bd101e30247da3580909c4c1f929721))
+* add more tests ([47f9df4](https://github.com/s-hirano-ist/s-private/commit/47f9df4615c2a3846be34ae9726e7eb6ad489720))
+* add more tests ([e5167b2](https://github.com/s-hirano-ist/s-private/commit/e5167b20de6e31db29416560754e078a5fec714c))
+* add more tests ([818643c](https://github.com/s-hirano-ist/s-private/commit/818643c85d5425a930d5c2754610f2cdd4bef2b0))
+* update envs ([35688f3](https://github.com/s-hirano-ist/s-private/commit/35688f3bd32dd5b9eed73168ca03f2a739a84317))
+
+
+### Maintenance
+
+* add more tests ([a5e4185](https://github.com/s-hirano-ist/s-private/commit/a5e4185395f71e249e50ad14395fa715bcc17b5a))
+* design ([45aa858](https://github.com/s-hirano-ist/s-private/commit/45aa858eaad2fa25479d1d8aa81cdde62dc81235))
+* fix tests ([43abc2a](https://github.com/s-hirano-ist/s-private/commit/43abc2ae9eeea65be96950b404ef5edc97ae9fea))
+* more issues on tests ([8b14f43](https://github.com/s-hirano-ist/s-private/commit/8b14f43de848779e05d6083f61fe358f8e556900))
+* move revalidateTag to updateTag ([fac64ef](https://github.com/s-hirano-ist/s-private/commit/fac64efe08c33d832191d615e1d510c23d721f2b))
+* set embedding env to ci.yaml ([fd0b5d5](https://github.com/s-hirano-ist/s-private/commit/fd0b5d53cb6246998ed8c434db21ded6b7c32bdb))
+* update knowledge ([5546865](https://github.com/s-hirano-ist/s-private/commit/554686519756955003f9405675bf68f632117e33))
+
 ## [10.16.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.16.0...s-private-v10.16.1) (2026-02-20)
 
 

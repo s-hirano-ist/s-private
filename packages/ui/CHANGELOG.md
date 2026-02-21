@@ -1,5 +1,32 @@
 # Changelog
 
+## [1.17.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.16.3...@s-hirano-ist/s-ui-v1.17.0) (2026-02-21)
+
+
+### Features
+
+* add more cool design ([5e6b5ab](https://github.com/s-hirano-ist/s-private/commit/5e6b5ab38909e43ab91678bfe74e03cee421a5d5))
+
+
+### Bug Fixes
+
+* biome ([79300e0](https://github.com/s-hirano-ist/s-private/commit/79300e07449fb7f90f70206c4e974752d4b3000d))
+* button design ([773d4bd](https://github.com/s-hirano-ist/s-private/commit/773d4bdb502f9b77f64727f28201ae55471237a7))
+* import of css ([ea18088](https://github.com/s-hirano-ist/s-private/commit/ea18088a4d340012676b0b99885a8aff3f0ca3ab))
+* select multi lingual ([b833bde](https://github.com/s-hirano-ist/s-private/commit/b833bde5d58a87008aabe9ddb2d3f803c9f4c671))
+* tests ([1b3d004](https://github.com/s-hirano-ist/s-private/commit/1b3d0043c4eed32687e857a2256723c576676761))
+
+
+### Documentation
+
+* add more tests ([47f9df4](https://github.com/s-hirano-ist/s-private/commit/47f9df4615c2a3846be34ae9726e7eb6ad489720))
+
+
+### Maintenance
+
+* design ([45aa858](https://github.com/s-hirano-ist/s-private/commit/45aa858eaad2fa25479d1d8aa81cdde62dc81235))
+* more issues on tests ([8b14f43](https://github.com/s-hirano-ist/s-private/commit/8b14f43de848779e05d6083f61fe358f8e556900))
+
 ## [1.16.3](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.16.2...@s-hirano-ist/s-ui-v1.16.3) (2026-02-20)
 
 
