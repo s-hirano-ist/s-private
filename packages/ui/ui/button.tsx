@@ -39,8 +39,10 @@ const buttonVariants = cva(
 				secondary: "bg-muted text-muted-foreground shadow-xs hover:bg-muted/80",
 				ghost: "hover:text-primary",
 				link: "text-white underline-offset-4 hover:underline",
-				navSide: "hover:bg-black/40 dark:hover:bg-gray-800",
-				navCenter: "bg-white font-medium hover:bg-black/40",
+				navSide:
+					"rounded-full hover:bg-primary/10 transition-all duration-200",
+				navCenter:
+					"bg-linear-to-br from-primary to-primary-grad text-white rounded-full shadow-[0_4px_20px_rgb(var(--primary)/0.4)] ring-4 ring-background hover:scale-110 hover:shadow-[0_6px_28px_rgb(var(--primary)/0.5)] active:scale-95 transition-all duration-200",
 			},
 			size: {
 				default: "h-9 px-4 py-2",

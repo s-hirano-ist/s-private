@@ -61,11 +61,25 @@ export function Footer({ search }: Props) {
 		});
 	}, [router, searchParams, layout]);
 
-	function Icon(name: string, icon: ReactNode) {
+	function Icon(name: string, icon: ReactNode, isActive?: boolean) {
 		return (
-			<div className="flex flex-col items-center">
+			<div
+				className={cn(
+					"flex flex-col items-center gap-0.5 transition-colors duration-200",
+					isActive && "text-primary",
+				)}
+			>
 				{icon}
-				<div className="font-thin text-xs">{name}</div>
+				<div
+					className={cn(
+						"text-[10px]",
+						isActive
+							? "font-medium text-primary"
+							: "font-normal text-muted-foreground",
+					)}
+				>
+					{name}
+				</div>
 			</div>
 		);
 	}
@@ -99,53 +113,55 @@ export function Footer({ search }: Props) {
 		}
 	}, [searchParams, router]);
 
+	const isDumperActive = optimisticLayout === "dumper";
+	const isViewerActive = optimisticLayout === "viewer";
+
 	const navigationButtons = (
-		<div className="mx-auto grid h-16 max-w-lg grid-cols-3 bg-linear-to-r from-primary to-primary-grad text-white sm:rounded-3xl">
+		<div className="mx-auto grid h-14 max-w-lg grid-cols-3 items-center rounded-full text-foreground">
 			<Button
 				asChild
 				className={cn(
-					"sm:rounded-s-3xl",
-					optimisticLayout === "dumper" ? "bg-black/10" : "",
-					isPending && optimisticLayout !== "dumper" ? "opacity-50" : "",
+					isDumperActive && "bg-primary/15",
+					isPending && !isDumperActive && "opacity-50",
 				)}
 				disabled={isPending}
 				onClick={() => handleLayoutChange("dumper")}
 				size="navSide"
 				variant="navSide"
 			>
-				{Icon("DUMPER", <UploadIcon className="size-6" />)}
+				{Icon("DUMPER", <UploadIcon className="size-5" />, isDumperActive)}
 			</Button>
 			<div className="flex items-center justify-center">
 				<Button
-					className="bg-linear-to-t from-primary to-primary-grad shadow-sm"
+					className="-mt-5"
 					onClick={() => setOpen(true)}
 					size="navCenter"
 					type="button"
 					variant="navCenter"
 				>
-					{Icon("", <SearchIcon className="size-6 text-white" />)}
+					<SearchIcon className="size-5 text-white" />
 					<span className="sr-only">Action</span>
 				</Button>
 			</div>
 			<Button
 				asChild
 				className={cn(
-					optimisticLayout === "viewer" ? "bg-black/10" : "",
-					isPending && optimisticLayout !== "viewer" ? "opacity-50" : "",
+					isViewerActive && "bg-primary/15",
+					isPending && !isViewerActive && "opacity-50",
 				)}
 				disabled={isPending}
 				onClick={() => handleLayoutChange("viewer")}
 				size="navSide"
 				variant="navSide"
 			>
-				{Icon("VIEWER", <DownloadIcon className="size-6" />)}
+				{Icon("VIEWER", <DownloadIcon className="size-5" />, isViewerActive)}
 			</Button>
 		</div>
 	);
 
 	return (
 		<>
-			<footer className="sticky bottom-0 z-50 mx-auto w-full max-w-lg border border-white/20 bg-white/80 backdrop-blur-xl sm:rounded-3xl dark:border-white/10 dark:bg-gray-900/80">
+			<footer className="fixed bottom-3 left-1/2 z-50 w-[calc(100%-1.5rem)] max-w-md -translate-x-1/2 rounded-full border border-white/20 bg-white/70 shadow-lg backdrop-blur-xl dark:border-white/10 dark:bg-gray-900/70">
 				{navigationButtons}
 			</footer>
 			<Drawer onOpenChange={setOpen} open={open}>
