@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.18.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-notification-v1.18.0...@s-hirano-ist/s-notification-v1.18.1) (2026-02-21)
+
+
+### Bug Fixes
+
+* remove tsc-esm-fix and use .js extension imports directly ([b25dd35](https://github.com/s-hirano-ist/s-private/commit/b25dd3515a7110a24a93f7d05402abd89808c828))
+* remove tsc-esm-fix and use .ts imports with rewriteRelativeImportExtensions ([619f159](https://github.com/s-hirano-ist/s-private/commit/619f1591e731f5cd2d578b3a9d99a85e7a91858b))
+
 ## [1.18.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-notification-v1.17.0...@s-hirano-ist/s-notification-v1.18.0) (2026-02-21)
 
 
