@@ -19,7 +19,7 @@
 		"lint:fix": "eslint . --fix",
 		"lint:inspector": "config-inspector --config eslint.config.js",
 		"bench": "vitest bench --project bench",
-		"test": "vitest run --project app --project components --project core --project notification --project storybook",
+		"test": "vitest run --project app --project components --project core --project notification --project search --project storybook",
 		"test:watch": "vitest",
 		"typecheck": "pnpm --recursive typecheck",
 		"license:summary": "echo '=== Root dependencies ===' > library-license.txt && license-checker-rseidelsohn --start . --summary >> library-license.txt && echo '\n=== App package ===' >> library-license.txt && license-checker-rseidelsohn --start ./app --summary >> library-license.txt && echo '\n=== UI package ===' >> library-license.txt && license-checker-rseidelsohn --start ./packages/ui --summary >> library-license.txt && echo '\n=== Core package ===' >> library-license.txt && license-checker-rseidelsohn --start ./packages/core --summary >> library-license.txt",

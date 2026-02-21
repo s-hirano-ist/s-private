@@ -11,7 +11,7 @@ import type {
 	Status,
 	UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { revalidateTag } from "next/cache";
+import { updateTag } from "next/cache";
 import {
 	buildContentCacheTag,
 	buildCountCacheTag,
@@ -32,13 +32,9 @@ async function create(data: UnexportedArticle): Promise<void> {
 		},
 	});
 
-	revalidateTag(buildContentCacheTag("articles", data.status, data.userId), {
-		expire: 0,
-	});
-	revalidateTag(buildCountCacheTag("articles", data.status, data.userId), {
-		expire: 0,
-	});
-	revalidateTag("categories", { expire: 0 });
+	updateTag(buildContentCacheTag("articles", data.status, data.userId));
+	updateTag(buildCountCacheTag("articles", data.status, data.userId));
+	updateTag("categories");
 }
 
 async function deleteById(
@@ -51,10 +47,8 @@ async function deleteById(
 		select: { title: true },
 	});
 
-	revalidateTag(buildContentCacheTag("articles", status, userId), {
-		expire: 0,
-	});
-	revalidateTag(buildCountCacheTag("articles", status, userId), { expire: 0 });
+	updateTag(buildContentCacheTag("articles", status, userId));
+	updateTag(buildCountCacheTag("articles", status, userId));
 
 	return { title: makeArticleTitle(data.title) };
 }

@@ -8,7 +8,7 @@ import type {
 	Status,
 	UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { revalidateTag } from "next/cache";
+import { updateTag } from "next/cache";
 import {
 	buildContentCacheTag,
 	buildCountCacheTag,
@@ -20,12 +20,8 @@ async function create(data: UnexportedImage): Promise<void> {
 		data,
 	});
 
-	revalidateTag(buildContentCacheTag("images", data.status, data.userId), {
-		expire: 0,
-	});
-	revalidateTag(buildCountCacheTag("images", data.status, data.userId), {
-		expire: 0,
-	});
+	updateTag(buildContentCacheTag("images", data.status, data.userId));
+	updateTag(buildCountCacheTag("images", data.status, data.userId));
 }
 
 async function deleteById(
@@ -38,8 +34,8 @@ async function deleteById(
 		select: { path: true },
 	});
 
-	revalidateTag(buildContentCacheTag("images", status, userId), { expire: 0 });
-	revalidateTag(buildCountCacheTag("images", status, userId), { expire: 0 });
+	updateTag(buildContentCacheTag("images", status, userId));
+	updateTag(buildCountCacheTag("images", status, userId));
 
 	return { path: data.path };
 }
