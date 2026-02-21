@@ -14,17 +14,17 @@ import { cn } from "../utils/cn";
  * ```
  */
 const badgeVariants = cva(
-	"inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-hidden focus:ring-2 focus:ring-primary focus:ring-offset-2",
+	"inline-flex items-center rounded-full border px-3 py-0.5 text-xs font-medium transition-colors focus:outline-hidden focus:ring-2 focus:ring-primary focus:ring-offset-2",
 	{
 		variants: {
 			variant: {
 				default:
-					"border-transparent bg-linear-to-r from-primary to-primary-grad text-white shadow-sm hover:bg-muted/80",
+					"border-primary/20 bg-primary/10 text-primary hover:bg-primary/20",
 				secondary:
 					"border-transparent bg-muted text-muted-foreground hover:bg-muted/80",
 				destructive:
-					"border-transparent bg-destructive text-white shadow-sm hover:bg-destructive/80",
-				outline: "",
+					"border-transparent bg-destructive/10 text-destructive hover:bg-destructive/20",
+				outline: "border-muted bg-muted/50 text-muted-foreground",
 			},
 		},
 		defaultVariants: {

@@ -58,3 +58,8 @@ https://colors.design4u.jp/app/index.html?hex0=%234076a2&stp0=2&str0=1.0&ptn0=0&
 		@apply bg-background text-foreground;
 	}
 }
+
+@keyframes loading-dot {
+	0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+	40% { opacity: 1; transform: scale(1); }
+}

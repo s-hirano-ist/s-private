@@ -47,7 +47,7 @@ export function LinkCard({
 	return (
 		<div className="relative h-full">
 			<CardComponent {...linkProps} className="block h-full">
-				<Card className="flex h-full flex-col hover:bg-muted">
+				<Card className="flex h-full flex-col border-l-3 border-l-primary/40 hover:-translate-y-0.5 hover:shadow-md hover:border-primary/30">
 					<CardHeader>
 						<div className="flex gap-4">
 							{primaryBadgeText && <Badge>{primaryBadgeText}</Badge>}
@@ -58,7 +58,7 @@ export function LinkCard({
 					</CardHeader>
 					<CardContent className="flex-grow">
 						<CardTitle>{title}</CardTitle>
-						<CardDescription className="break-words">
+						<CardDescription className="line-clamp-3 break-words">
 							{description ? (
 								<ReactMarkdown components={markdownComponents}>
 									{description}

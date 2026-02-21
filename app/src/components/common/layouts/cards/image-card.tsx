@@ -20,7 +20,7 @@ export function ImageCard({
 	return (
 		<div className="relative h-full">
 			<Link className="block h-full" href={`/${basePath}/${href}` as Route}>
-				<Card className="flex h-full flex-col hover:bg-muted">
+				<Card className="flex h-full flex-col hover:-translate-y-0.5 hover:shadow-md hover:border-primary/30">
 					<CardContent className="flex flex-grow flex-col justify-center">
 						<div className="flex justify-center">
 							{image === null || image.includes("notFound.png") ? (

@@ -91,10 +91,12 @@ export function BaseCardStackWrapper<T extends SearchableItem>({
 						const itemKey = "key" in item ? item.key : item.id;
 						return (
 							<div
+								className="animate-[card-enter_200ms_ease-out_both]"
 								key={itemKey}
 								style={{
 									contentVisibility: "auto",
 									containIntrinsicSize: "auto 200px",
+									animationDelay: `${Math.min(index * 30, 300)}ms`,
 								}}
 							>
 								{children({

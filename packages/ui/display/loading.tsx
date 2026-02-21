@@ -1,11 +1,10 @@
-import { Loader } from "lucide-react";
-
 /**
- * A centered loading spinner component.
+ * A centered loading indicator with pulsing dots.
  *
  * @remarks
- * Displays an animated spinner using Lucide's Loader icon.
+ * Displays three dots with staggered pulse animation.
  * Used for loading states throughout the application.
+ * Requires `loading-dot` keyframe defined in globals.css.
  *
  * @returns A centered loading indicator
  *
@@ -16,8 +15,10 @@ import { Loader } from "lucide-react";
  */
 function Loading() {
 	return (
-		<div className="flex h-full items-center justify-center p-16">
-			<Loader className="animate-spin" size={48} />
+		<div className="flex h-full items-center justify-center gap-1.5 p-16">
+			<div className="size-2 rounded-full bg-primary animate-[loading-dot_1.4s_ease-in-out_infinite]" />
+			<div className="size-2 rounded-full bg-primary animate-[loading-dot_1.4s_ease-in-out_0.2s_infinite]" />
+			<div className="size-2 rounded-full bg-primary animate-[loading-dot_1.4s_ease-in-out_0.4s_infinite]" />
 		</div>
 	);
 }

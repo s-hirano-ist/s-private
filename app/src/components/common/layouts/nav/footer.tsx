@@ -145,7 +145,7 @@ export function Footer({ search }: Props) {
 
 	return (
 		<>
-			<footer className="sticky bottom-0 z-50 mx-auto w-full max-w-lg border border-gray-200 bg-white sm:rounded-3xl dark:border-gray-600 dark:bg-gray-700">
+			<footer className="sticky bottom-0 z-50 mx-auto w-full max-w-lg border border-white/20 bg-white/80 backdrop-blur-xl sm:rounded-3xl dark:border-white/10 dark:bg-gray-900/80">
 				{navigationButtons}
 			</footer>
 			<Drawer onOpenChange={setOpen} open={open}>
