@@ -85,20 +85,50 @@ export default defineConfig({
 			reportOnFailure: true,
 			reportsDirectory: "./.vitest-coverage",
 			exclude: [
+				// ビルド成果物・依存関係
 				"**/.next/**/*",
 				"**/node_modules/**/*",
 				"**/dist/**/*",
+
+				// 生成コード
 				"app/src/generated/**/*",
+				"packages/database/**/*",
+
+				// テスト・Storybook・ベンチマーク
 				"**/*.stories.tsx",
 				"**/*.test.ts?(x)",
-				"**/types.ts",
-				"**/*.interface.ts",
-				".storybook/**/*",
 				"**/*.bench.ts",
+				".storybook/**/*",
+
+				// 型定義・インターフェース（ロジックを含まないもの）
+				"**/types.ts",
+				"packages/core/**/*.interface.ts",
+
+				// 設定ファイル
+				"**/vitest.config.ts",
+				"**/vitest-setup.*",
+				"app/next.config.mjs",
+				"app/tailwind.config.ts",
+				"app/postcss.config.js",
+				"app/sentry.*.config.ts",
+				"app/src/env.ts",
+
+				// テスト困難なインフラ・スクリプト
 				"packages/search/src/config.ts",
 				"packages/storage/**/*",
 				"packages/scripts/**/*",
-				"app/src/app/**/*",
+
+				// Next.js App Router（ページ/レイアウト/メタデータのみ除外、API routeは含める）
+				"app/src/app/[locale]/**/*",
+				"app/src/app/layout.tsx",
+				"app/src/app/not-found.tsx",
+				"app/src/app/error.tsx",
+				"app/src/app/global-error.tsx",
+				"app/src/app/manifest.ts",
+				"app/src/app/robots.ts",
+				"app/src/app/globals.css",
+
+				// データローダー（サーバーコンポーネント依存で単体テスト困難）
 				"app/src/loaders/**/*",
 			],
 			reporter: ["text", "json-summary", "json"],
