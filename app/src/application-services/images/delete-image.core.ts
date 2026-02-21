@@ -42,11 +42,7 @@ export async function deleteImageCore(
 
 		const status = makeUnexportedStatus();
 		// Cache invalidation is handled in repository
-		const { path } = await commandRepository.deleteById(
-			id,
-			userId,
-			status,
-		);
+		const { path } = await commandRepository.deleteById(id, userId, status);
 
 		// Dispatch domain event
 		await eventDispatcher.dispatch(

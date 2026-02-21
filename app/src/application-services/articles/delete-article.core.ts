@@ -42,11 +42,7 @@ export async function deleteArticleCore(
 
 		const status = makeUnexportedStatus();
 		// Cache invalidation is handled in repository
-		const { title } = await commandRepository.deleteById(
-			id,
-			userId,
-			status,
-		);
+		const { title } = await commandRepository.deleteById(id, userId, status);
 
 		// Dispatch domain event
 		await eventDispatcher.dispatch(
