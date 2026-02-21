@@ -1,0 +1,19 @@
+[
+  "/api/auth/[...nextauth]",
+  "/api/books/images/[contentType]/[path]",
+  "/api/images/[contentType]/[id]",
+  "/[locale]",
+  "/[locale]",
+  "/[locale]",
+  "/[locale]",
+  "/[locale]/book/[slug]",
+  "/[locale]/error",
+  "/[locale]/note/[slug]",
+  "/_not-found",
+  "/api/health",
+  "/api/sign-in",
+  "/apple-icon.png",
+  "/favicon.ico",
+  "/manifest.webmanifest",
+  "/robots.txt"
+]
