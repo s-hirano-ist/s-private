@@ -204,8 +204,14 @@ docker login -u <DOCKERHUB_USERNAME>
 VPS 上の `~/s-private/.env` に配置:
 
 ```bash
-# Embedding API (TEI)
-EMBEDDING_MODEL=intfloat/multilingual-e5-large  # ※ TEI の --model-id に渡される。省略時はデフォルト値を使用
+# Embedding API (TEI) — すべて必須
+EMBEDDING_MODEL=intfloat/multilingual-e5-large  # ※ TEI の --model-id に渡される
+EMBEDDING_VECTOR_SIZE=1024                       # ※ モデルに合わせて変更
+EMBEDDING_QUERY_PREFIX=query:
+EMBEDDING_PASSAGE_PREFIX=passage:
+
+# Qdrant — 必須
+QDRANT_COLLECTION_NAME=knowledge_v2
 
 # Cloudflare Tunnel
 CLOUDFLARE_TUNNEL_TOKEN=your-tunnel-token
@@ -274,7 +280,7 @@ docker compose --profile vps up -d
 - **コンテナ名**: `embedding-api`
 - **ポート**: 3001
 - **ヘルスチェック**: `http://localhost:3001/health`
-- **環境変数**: `EMBEDDING_MODEL`（デフォルト: `intfloat/multilingual-e5-large`）
+- **環境変数**: `EMBEDDING_MODEL`（必須）
 - **ボリューム**: `hf-cache` → `/data` — HuggingFace モデルキャッシュ（初回ダウンロード ~600MB）
 - **メモリ使用量**: 約 1.1GB（multilingual-e5-large）
 - **Cloudflare Public Hostname**: `embedding-api.<domain>` → `http://embedding-api:3001`
