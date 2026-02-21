@@ -31,7 +31,7 @@ describe("search-content", () => {
 						title: "Note",
 						text: shortText,
 						doc_id: "doc1",
-						heading_path: [],
+						heading_path: ["Note"],
 					},
 				],
 				query: "test",
@@ -52,7 +52,7 @@ describe("search-content", () => {
 						title: "Note",
 						text: longText,
 						doc_id: "doc1",
-						heading_path: [],
+						heading_path: ["Note"],
 					},
 				],
 				query: "test",
@@ -168,10 +168,10 @@ describe("search-content", () => {
 				results: [
 					{
 						content_type: "notes",
-						title: "Note Title",
+						title: "Section Title",
 						text: "Note content",
 						doc_id: "doc1",
-						heading_path: [],
+						heading_path: ["My Note"],
 					},
 				],
 				query: "test",
@@ -181,9 +181,9 @@ describe("search-content", () => {
 			const result = await searchContent({ query: "test", limit: 20 }, userId);
 
 			expect(result.results[0]).toEqual({
-				href: encodeURIComponent("Note Title"),
+				href: encodeURIComponent("My Note"),
 				contentType: "notes",
-				title: "Note Title",
+				title: "Section Title",
 				snippet: "Note content",
 			});
 		});
@@ -226,7 +226,7 @@ describe("search-content", () => {
 				title: `Note ${i}`,
 				text: `Content ${i}`,
 				doc_id: `doc${i}`,
-				heading_path: [],
+				heading_path: [`Note ${i}`],
 			}));
 
 			searchVectors.mockResolvedValue({
@@ -264,7 +264,7 @@ describe("search-content", () => {
 						title: "Note 1",
 						text: "content",
 						doc_id: "doc3",
-						heading_path: [],
+						heading_path: ["Note 1"],
 					},
 				],
 				query: "test",
@@ -289,7 +289,7 @@ describe("search-content", () => {
 						title: "Note",
 						text: "content",
 						doc_id: "doc1",
-						heading_path: [],
+						heading_path: ["Note"],
 					},
 				],
 				query: "typescript",
