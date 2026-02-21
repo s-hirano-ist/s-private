@@ -11,10 +11,6 @@ describe("IdGenerator", () => {
 		);
 		expect(id).toHaveLength(36);
 	});
-
-	// FIXME: This test intermittently fails due to the mocked UUIDv7 implementation in vitest-setup.tsx
-	test.todo("should generate unique IDs");
-
 	test("exported instance should work correctly", () => {
 		const id = idGenerator.uuidv7();
 

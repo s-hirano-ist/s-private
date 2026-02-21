@@ -4,7 +4,7 @@
 
 ```bash
 pnpm install
-docker compose up --build -d  # Start PostgreSQL database
+docker compose up -d  # Start PostgreSQL, Embedding API (TEI), etc.
 pnpm dev
 ```
 
@@ -65,5 +65,11 @@ Copy `.env.sample` to `.env.local` and fill in required values.
 **Object Storage (MinIO)**:
 - `MINIO_HOST`, `MINIO_PORT`, `MINIO_BUCKET_NAME` - MinIO server configuration
 - `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY` - MinIO credentials
+
+**RAG Search (Embedding + Vector DB)**:
+- `EMBEDDING_API_URL` - TEI endpoint URL (e.g., `http://localhost:3001`)
+- `CF_ACCESS_CLIENT_ID`, `CF_ACCESS_CLIENT_SECRET` - Cloudflare Access credentials (VPS only)
+- `QDRANT_URL` - Qdrant server URL
+- `QDRANT_API_KEY` - Qdrant API key
 
 Type definitions and validation are in `src/env.ts` using `@t3-oss/env-nextjs` with Zod.

@@ -204,8 +204,8 @@ docker login -u <DOCKERHUB_USERNAME>
 VPS 上の `~/s-private/.env` に配置:
 
 ```bash
-# Embedding API
-EMBEDDING_API_KEY=your-secure-api-key  # ※ openssl rand -base64 32 とかで生成
+# Embedding API (TEI)
+EMBEDDING_MODEL=intfloat/multilingual-e5-large  # ※ TEI の --model-id に渡される。省略時はデフォルト値を使用
 
 # Cloudflare Tunnel
 CLOUDFLARE_TUNNEL_TOKEN=your-tunnel-token
@@ -245,24 +245,40 @@ chmod 600 ~/s-private/.env
 
 ```
 compose.yaml          ← 全サービス定義（embedding-api, minio, cloudflared）
-.env                  ← VPS 用環境変数（EMBEDDING_API_KEY, CLOUDFLARE_TUNNEL_TOKEN 等）
+.env                  ← VPS 用環境変数（EMBEDDING_MODEL, CLOUDFLARE_TUNNEL_TOKEN 等）
 ```
 
 全サービスは Docker Hub の image を `docker compose pull` で取得する。サービスを追加する場合は `compose.yaml` にサービス定義（`image:` 指定）を追加する。
+
+#### profiles による選択起動
+
+`minio`, `minio-init`, `cloudflared` は `profiles: [vps]` が設定されており、明示的に `--profile vps` を指定しない限り起動しない。
+
+```bash
+# embedding-api のみ起動（ローカル開発用）
+docker compose up
+
+# 全サービス起動（VPS 用）
+docker compose --profile vps up -d
+```
+
+`deploy.sh` は自動的に `--profile vps` を付与するため、VPS デプロイ時は意識する必要はない。
 
 ---
 
 ## Appendix A: サービス別設定
 
-### A.1 Embedding API
+### A.1 Embedding API (TEI)
 
+- **イメージ**: `ghcr.io/huggingface/text-embeddings-inference:cpu-1.9`
 - **コンテナ名**: `embedding-api`
 - **ポート**: 3001
 - **ヘルスチェック**: `http://localhost:3001/health`
-- **環境変数**: `EMBEDDING_API_KEY`, `PORT=3001`
-- **ボリューム**: `hf-cache` — HuggingFace モデルキャッシュ（初回ダウンロード ~600MB）
+- **環境変数**: `EMBEDDING_MODEL`（デフォルト: `intfloat/multilingual-e5-large`）
+- **ボリューム**: `hf-cache` → `/data` — HuggingFace モデルキャッシュ（初回ダウンロード ~600MB）
 - **メモリ使用量**: 約 1.1GB（multilingual-e5-large）
 - **Cloudflare Public Hostname**: `embedding-api.<domain>` → `http://embedding-api:3001`
+- **認証**: Cloudflare Access のみ（TEI側のAPI key不要）
 
 ### A.2 MinIO
 

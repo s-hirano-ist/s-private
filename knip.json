@@ -7,7 +7,6 @@
 		"eslint-plugin-jsx-a11y",
 		"eslint-plugin-tailwindcss"
 	],
-	"ignoreFiles": ["services/embedding-api/scripts/download-model.mjs"],
 	"ignoreBinaries": ["dot", "config-inspector", "serve", "only-allow"],
 	"workspaces": {
 		"app": {
@@ -68,9 +67,6 @@
 				"@prisma/client-runtime-utils",
 				"@softwaretechnik/dbml-renderer"
 			]
-		},
-		"services/embedding-api": {
-			"ignoreDependencies": ["@huggingface/transformers"]
 		}
 	}
 }

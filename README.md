@@ -13,6 +13,9 @@
 > [!IMPORTANT]
 > This is a contents dump and search app made by s-hirano. Some codes are not best practices due to trying experimental features and new techs.
 
+> [!NOTE]
+> このプロジェクトでは、学習・検証を目的としてあえて幅広い技術スタックを採用しています。単一の最適解を追求するのではなく、様々な技術の実践的な知見を得ることを重視しています。
+
 ## Technology Stack
 
 ### Core Framework

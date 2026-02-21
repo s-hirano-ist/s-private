@@ -8,10 +8,6 @@
 			"types": "./src/config.ts",
 			"import": "./src/config.ts"
 		},
-		"./embedding": {
-			"types": "./src/embedding.ts",
-			"import": "./src/embedding.ts"
-		},
 		"./embedding-client": {
 			"types": "./src/embedding-client.ts",
 			"import": "./src/embedding-client.ts"
@@ -54,10 +50,6 @@
 				"types": "./dist/config.d.ts",
 				"import": "./dist/config.js"
 			},
-			"./embedding": {
-				"types": "./dist/embedding.d.ts",
-				"import": "./dist/embedding.js"
-			},
 			"./embedding-client": {
 				"types": "./dist/embedding-client.d.ts",
 				"import": "./dist/embedding-client.js"
@@ -84,9 +76,6 @@
 	},
 	"dependencies": {
 		"@qdrant/js-client-rest": "1.16.2"
-	},
-	"optionalDependencies": {
-		"@huggingface/transformers": "3.8.1"
 	},
 	"devDependencies": {
 		"@types/node": "24.10.13",

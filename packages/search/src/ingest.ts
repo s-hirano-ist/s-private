@@ -1,5 +1,4 @@
 import type { QdrantPayload } from "./config.ts";
-import { embedBatch } from "./embedding.ts";
 import { getExistingHashes, upsertPoints } from "./qdrant-client.ts";
 
 const BATCH_SIZE = 20;
@@ -33,7 +32,7 @@ export type IngestResult = {
 };
 
 export type IngestOptions = {
-	embedBatchFn?: (texts: string[], isQuery?: boolean) => Promise<number[][]>;
+	embedBatchFn: (texts: string[], isQuery?: boolean) => Promise<number[][]>;
 	force?: boolean;
 };
 
@@ -43,14 +42,14 @@ export type IngestOptions = {
  */
 export async function ingestChunks(
 	chunks: QdrantPayload[],
-	options?: IngestOptions,
+	options: IngestOptions,
 ): Promise<IngestResult> {
 	console.log(`Total chunks: ${chunks.length}\n`);
 
 	let changedChunks: QdrantPayload[];
 	let skippedChunks: number;
 
-	if (options?.force) {
+	if (options.force) {
 		// Force mode: treat all chunks as changed
 		changedChunks = chunks;
 		skippedChunks = 0;
@@ -81,7 +80,7 @@ export async function ingestChunks(
 	}
 
 	// Generate embeddings and upsert in batches
-	const batchEmbed = options?.embedBatchFn ?? embedBatch;
+	const batchEmbed = options.embedBatchFn;
 	console.log("Generating embeddings and upserting...");
 	let processed = 0;
 

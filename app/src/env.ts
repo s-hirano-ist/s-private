@@ -52,7 +52,6 @@ export const env = createEnv({
 		MINIO_USE_SSL: z.boolean().default(true),
 		/** @example "http://localhost:3001" */
 		EMBEDDING_API_URL: z.string(),
-		EMBEDDING_API_KEY: z.string(),
 		/** Cloudflare Access Service Token */
 		CF_ACCESS_CLIENT_ID: z.string(),
 		/** Cloudflare Access Service Token */
@@ -91,7 +90,6 @@ export const env = createEnv({
 		MINIO_SECRET_KEY: process.env.MINIO_SECRET_KEY,
 		MINIO_USE_SSL: process.env.MINIO_USE_SSL === "true",
 		EMBEDDING_API_URL: process.env.EMBEDDING_API_URL,
-		EMBEDDING_API_KEY: process.env.EMBEDDING_API_KEY,
 		CF_ACCESS_CLIENT_ID: process.env.CF_ACCESS_CLIENT_ID,
 		CF_ACCESS_CLIENT_SECRET: process.env.CF_ACCESS_CLIENT_SECRET,
 		QDRANT_URL: process.env.QDRANT_URL,

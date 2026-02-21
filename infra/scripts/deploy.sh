@@ -7,15 +7,15 @@
 # --init (初回セットアップ):
 #   - git clone でリポジトリを ~/s-private に取得
 #   - .env ファイルの作成ガイド表示 (EMBEDDING_API_KEY, CLOUDFLARE_TUNNEL_TOKEN 等)
-#   - docker compose pull → up -d
+#   - docker compose --profile vps pull → up -d
 #
 # --update (コード更新 & 再デプロイ):
 #   - git pull で最新コード取得
-#   - docker compose pull → up -d
+#   - docker compose --profile vps pull → up -d
 #
 # --status (状態確認):
-#   - docker compose ps でサービス一覧
-#   - docker compose logs --tail=20 で最新ログ
+#   - docker compose --profile vps ps でサービス一覧
+#   - docker compose --profile vps logs --tail=20 で最新ログ
 #   - embedding-api の /health エンドポイントでヘルスチェック
 #
 # 使い方:
@@ -117,7 +117,7 @@ do_init() {
         echo "  → ${REMOTE_DIR}/.env を作成してください。"
         echo ""
         echo "  必要な環境変数:"
-        echo "    EMBEDDING_API_KEY=<openssl rand -base64 32 で生成>"
+        echo "    EMBEDDING_MODEL=intfloat/multilingual-e5-large  # TEI用モデルID（省略可）"
         echo "    CLOUDFLARE_TUNNEL_TOKEN=<Cloudflare Dashboard から取得>"
         echo "    MINIO_ROOT_USER=<任意のユーザー名>"
         echo "    MINIO_ROOT_PASSWORD=<openssl rand -base64 32 で生成>"
@@ -134,12 +134,12 @@ do_init() {
     echo ""
 
     echo "[3/4] Docker イメージを pull 中..."
-    ssh_exec "cd ${REMOTE_DIR} && docker compose pull"
+    ssh_exec "cd ${REMOTE_DIR} && docker compose --profile vps pull"
     echo "  → pull 完了。"
     echo ""
 
     echo "[4/4] サービスを起動中..."
-    ssh_exec "cd ${REMOTE_DIR} && docker compose up -d"
+    ssh_exec "cd ${REMOTE_DIR} && docker compose --profile vps up -d"
     echo "  → 起動完了。"
     echo ""
 
@@ -172,12 +172,12 @@ do_update() {
     echo ""
 
     echo "[2/3] Docker イメージを pull 中..."
-    ssh_exec "cd ${REMOTE_DIR} && docker compose pull"
+    ssh_exec "cd ${REMOTE_DIR} && docker compose --profile vps pull"
     echo "  → pull 完了。"
     echo ""
 
     echo "[3/3] サービスを再起動中..."
-    ssh_exec "cd ${REMOTE_DIR} && docker compose up -d"
+    ssh_exec "cd ${REMOTE_DIR} && docker compose --profile vps up -d"
     echo "  → 再起動完了。"
     echo ""
 
@@ -206,12 +206,12 @@ do_status() {
 
     echo "[1/3] Docker Compose サービス状態:"
     echo "------------------------------------------------------------"
-    ssh_exec "cd ${REMOTE_DIR} && docker compose ps"
+    ssh_exec "cd ${REMOTE_DIR} && docker compose --profile vps ps"
     echo ""
 
     echo "[2/3] 最新ログ (各サービス末尾20行):"
     echo "------------------------------------------------------------"
-    ssh_exec "cd ${REMOTE_DIR} && docker compose logs --tail=20"
+    ssh_exec "cd ${REMOTE_DIR} && docker compose --profile vps logs --tail=20"
     echo ""
 
     echo "[3/3] ヘルスチェック:"
@@ -219,7 +219,7 @@ do_status() {
 
     # embedding-api ヘルスチェック
     echo -n "  embedding-api: "
-    if ssh_exec "docker compose -f ${REMOTE_DIR}/compose.yaml exec -T embedding-api node -e \"fetch('http://localhost:3001/health').then(r=>r.text()).then(console.log)\"" 2>/dev/null; then
+    if ssh_exec "docker compose -f ${REMOTE_DIR}/compose.yaml exec -T embedding-api curl -sf http://localhost:3001/health" 2>/dev/null; then
         echo "  → OK"
     else
         echo "  → FAIL (コンテナが起動していないか、ヘルスチェックに失敗)"

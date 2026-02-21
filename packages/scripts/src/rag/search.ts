@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import "dotenv/config";
 import type { ContentType, SearchResult } from "@s-hirano-ist/s-search/config";
-import { embed } from "@s-hirano-ist/s-search/embedding";
+import { createEmbeddingClient } from "@s-hirano-ist/s-search/embedding-client";
 import {
 	ensureCollection,
 	search as qdrantSearch,
@@ -47,11 +47,17 @@ function parseArgs(): { query: string; options: SearchOptions } {
 	return { query, options };
 }
 
+const embeddingClient = createEmbeddingClient({
+	apiUrl: process.env.EMBEDDING_API_URL ?? "",
+	cfAccessClientId: process.env.CF_ACCESS_CLIENT_ID ?? "",
+	cfAccessClientSecret: process.env.CF_ACCESS_CLIENT_SECRET ?? "",
+});
+
 async function searchContent(
 	query: string,
 	options: SearchOptions = {},
 ): Promise<{ results: SearchResult[]; query: string; totalResults: number }> {
-	const queryVector = await embed(query, true);
+	const queryVector = await embeddingClient.embed(query, true);
 	const results = await qdrantSearch(queryVector, {
 		topK: options.topK,
 		filter: {
@@ -96,10 +102,14 @@ async function search(): Promise<void> {
 async function main() {
 	const env = {
 		QDRANT_URL: process.env.QDRANT_URL,
+		EMBEDDING_API_URL: process.env.EMBEDDING_API_URL,
 	} as const;
 
 	if (!env.QDRANT_URL) {
 		throw new Error("QDRANT_URL environment variable is required.");
+	}
+	if (!env.EMBEDDING_API_URL) {
+		throw new Error("EMBEDDING_API_URL environment variable is required.");
 	}
 
 	try {
