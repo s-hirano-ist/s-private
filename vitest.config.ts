@@ -64,6 +64,14 @@ export default defineConfig({
 					include: ["./**/*.test.?(c|m)[jt]s?(x)"],
 				},
 			},
+			// Search package
+			{
+				test: {
+					name: "search",
+					root: "./packages/search",
+					include: ["./**/*.test.?(c|m)[jt]s?(x)"],
+				},
+			},
 			// Benchmarks (Node environment, used by `vitest bench --project bench`)
 			{
 				test: {
@@ -86,6 +94,12 @@ export default defineConfig({
 				"**/types.ts",
 				"**/*.interface.ts",
 				".storybook/**/*",
+				"**/*.bench.ts",
+				"packages/search/src/config.ts",
+				"packages/storage/**/*",
+				"packages/scripts/**/*",
+				"app/src/app/**/*",
+				"app/src/loaders/**/*",
 			],
 			reporter: ["text", "json-summary", "json"],
 		},
