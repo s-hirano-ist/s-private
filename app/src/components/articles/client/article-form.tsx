@@ -48,6 +48,7 @@ export function ArticleForm({ categories, addArticle }: Props) {
 				label={label("category")}
 				name="category"
 				options={categories}
+				placeholder={label("select")}
 				required
 				searchPlaceholder={label("searchPlaceholder")}
 			/>
