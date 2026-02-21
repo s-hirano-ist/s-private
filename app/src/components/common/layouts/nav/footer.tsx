@@ -74,7 +74,7 @@ export function Footer({ search }: Props) {
 					className={cn(
 						"text-[10px]",
 						isActive
-							? "font-medium text-primary"
+							? "font-medium text-foreground"
 							: "font-normal text-muted-foreground",
 					)}
 				>
