@@ -55,7 +55,7 @@ export function StatusCodeView({
 }) {
 	return (
 		<div
-			className="flex flex-col items-center gap-3 py-12 animate-[card-enter_300ms_ease-out_both]"
+			className="flex animate-[card-enter_300ms_ease-out_both] flex-col items-center gap-3 py-12"
 			data-testid="status-code-view"
 		>
 			<div className="rounded-full bg-primary/10 p-4">
@@ -64,9 +64,7 @@ export function StatusCodeView({
 			<div className="bg-linear-to-r from-primary to-primary-grad bg-clip-text font-black text-8xl text-transparent tracking-tighter">
 				{String(statusCode)}
 			</div>
-			<div className="text-base text-muted-foreground">
-				{statusCodeString}
-			</div>
+			<div className="text-base text-muted-foreground">{statusCodeString}</div>
 		</div>
 	);
 }

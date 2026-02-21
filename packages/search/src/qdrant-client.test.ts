@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, type Mock, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 
 const mockClient = {
 	deleteCollection: vi.fn(),

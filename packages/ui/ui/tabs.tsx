@@ -47,7 +47,7 @@ function TabsList({ className, ref, ...props }: TabsListProps) {
 	return (
 		<TabsPrimitive.List
 			className={cn(
-				"inline-flex h-10 items-center justify-center border-b border-muted p-1 text-muted-foreground",
+				"inline-flex h-10 items-center justify-center border-muted border-b p-1 text-muted-foreground",
 				className,
 			)}
 			ref={ref}
@@ -74,7 +74,7 @@ function TabsTrigger({ className, ref, ...props }: TabsTriggerProps) {
 	return (
 		<TabsPrimitive.Trigger
 			className={cn(
-				"inline-flex items-center justify-center whitespace-nowrap px-3 py-2 font-medium text-muted-foreground text-sm border-b-2 border-transparent ring-offset-background transition-all duration-200 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-primary data-[state=active]:border-primary data-[state=active]:font-bold hover:text-primary/80",
+				"inline-flex items-center justify-center whitespace-nowrap border-transparent border-b-2 px-3 py-2 font-medium text-muted-foreground text-sm ring-offset-background transition-all duration-200 hover:text-primary/80 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:border-primary data-[state=active]:font-bold data-[state=active]:text-primary",
 				className,
 			)}
 			ref={ref}

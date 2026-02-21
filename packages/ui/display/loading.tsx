@@ -16,9 +16,9 @@
 function Loading() {
 	return (
 		<div className="flex h-full items-center justify-center gap-1.5 p-16">
-			<div className="size-2 rounded-full bg-primary animate-[loading-dot_1.4s_ease-in-out_infinite]" />
-			<div className="size-2 rounded-full bg-primary animate-[loading-dot_1.4s_ease-in-out_0.2s_infinite]" />
-			<div className="size-2 rounded-full bg-primary animate-[loading-dot_1.4s_ease-in-out_0.4s_infinite]" />
+			<div className="size-2 animate-[loading-dot_1.4s_ease-in-out_infinite] rounded-full bg-primary" />
+			<div className="size-2 animate-[loading-dot_1.4s_ease-in-out_0.2s_infinite] rounded-full bg-primary" />
+			<div className="size-2 animate-[loading-dot_1.4s_ease-in-out_0.4s_infinite] rounded-full bg-primary" />
 		</div>
 	);
 }

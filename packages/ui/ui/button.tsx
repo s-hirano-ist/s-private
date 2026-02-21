@@ -40,8 +40,7 @@ const buttonVariants = cva(
 					"bg-muted/60 text-muted-foreground backdrop-blur-sm shadow-xs hover:bg-muted/80",
 				ghost: "hover:text-primary hover:bg-primary/5",
 				link: "text-white underline-offset-4 hover:underline",
-				navSide:
-					"rounded-full hover:bg-primary/10 transition-all duration-200",
+				navSide: "rounded-full hover:bg-primary/10 transition-all duration-200",
 				navCenter:
 					"bg-linear-to-br from-primary to-primary-grad text-white rounded-full shadow-[0_4px_20px_rgb(var(--primary)/0.4)] ring-4 ring-background hover:scale-110 hover:shadow-[0_6px_28px_rgb(var(--primary)/0.5)] active:scale-95 transition-all duration-200",
 			},
