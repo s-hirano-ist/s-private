@@ -30,18 +30,14 @@ describe("createEmbeddingClient", () => {
 			const result = await client.embed("hello world", true);
 
 			expect(result).toEqual(mockEmbedding);
-			expect(fetchSpy).toHaveBeenCalledOnce();
-			expect(fetchSpy).toHaveBeenCalledWith(
-				"https://embed.example.com/embed",
-				expect.objectContaining({
+			expect(fetchSpy).toHaveBeenCalledExactlyOnceWith("https://embed.example.com/embed", expect.objectContaining({
 					method: "POST",
 					body: JSON.stringify({
 						inputs: `${RAG_CONFIG.embedding.prefix.query}hello world`,
 						normalize: true,
 						truncate: true,
 					}),
-				}),
-			);
+				}));
 		});
 
 		test("sends request with passage prefix when isQuery is false", async () => {
