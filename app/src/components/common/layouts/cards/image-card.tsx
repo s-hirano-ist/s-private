@@ -46,7 +46,9 @@ export function ImageCard({
 							)}
 						</div>
 						{hasImage && (
-							<CardTitle className="line-clamp-2 text-sm">{title}</CardTitle>
+							<CardTitle aria-hidden className="line-clamp-2 text-sm">
+								{title}
+							</CardTitle>
 						)}
 						{(subtitle || authors) && (
 							<CardDescription className="mt-1 line-clamp-2 text-xs">
