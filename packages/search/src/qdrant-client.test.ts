@@ -32,6 +32,7 @@ describe("qdrant-client", () => {
 		test("creates client with provided config", async () => {
 			const { QdrantClient } = await import("@qdrant/js-client-rest");
 			const { getQdrantClient } = await loadModule();
+
 			const client = getQdrantClient({
 				url: "http://localhost:6333",
 				apiKey: "test-key",
@@ -47,16 +48,15 @@ describe("qdrant-client", () => {
 		test("falls back to environment variables", async () => {
 			process.env.QDRANT_URL = "http://env-url:6333";
 			process.env.QDRANT_API_KEY = "env-key";
-
 			const { QdrantClient } = await import("@qdrant/js-client-rest");
 			const { getQdrantClient } = await loadModule();
+
 			getQdrantClient();
 
 			expect(QdrantClient).toHaveBeenCalledWith({
 				url: "http://env-url:6333",
 				apiKey: "env-key",
 			});
-
 			delete process.env.QDRANT_URL;
 			delete process.env.QDRANT_API_KEY;
 		});
@@ -73,6 +73,7 @@ describe("qdrant-client", () => {
 		test("returns singleton on subsequent calls", async () => {
 			const { QdrantClient } = await import("@qdrant/js-client-rest");
 			const { getQdrantClient } = await loadModule();
+
 			const first = getQdrantClient({ url: "http://localhost:6333" });
 			const second = getQdrantClient();
 
@@ -100,7 +101,6 @@ describe("qdrant-client", () => {
 			mockClient.getCollections.mockResolvedValue({ collections: [] });
 			mockClient.createCollection.mockResolvedValue(true);
 			mockClient.createPayloadIndex.mockResolvedValue({});
-
 			const { ensureCollection, getQdrantClient } = await loadModule();
 			getQdrantClient({ url: "http://localhost:6333" });
 
@@ -115,7 +115,6 @@ describe("qdrant-client", () => {
 				collections: [{ name: "knowledge_v2" }],
 			});
 			mockClient.createPayloadIndex.mockResolvedValue({});
-
 			const { ensureCollection, getQdrantClient } = await loadModule();
 			getQdrantClient({ url: "http://localhost:6333" });
 
@@ -130,32 +129,41 @@ describe("qdrant-client", () => {
 				collections: [{ name: "knowledge_v2" }],
 			});
 			mockClient.createPayloadIndex.mockResolvedValue({});
-
 			const { ensureCollection, getQdrantClient } = await loadModule();
 			getQdrantClient({ url: "http://localhost:6333" });
 
 			await ensureCollection();
 
-			const calls = mockClient.createPayloadIndex.mock.calls;
-			expect(calls[0][1]).toMatchObject({
-				field_name: "type",
-				field_schema: "keyword",
-			});
-			expect(calls[1][1]).toMatchObject({
-				field_name: "top_heading",
-				field_schema: "keyword",
-			});
-			expect(calls[2][1]).toMatchObject({
-				field_name: "content_type",
-				field_schema: "keyword",
-			});
+			expect(mockClient.createPayloadIndex).toHaveBeenNthCalledWith(
+				1,
+				expect.any(String),
+				expect.objectContaining({
+					field_name: "type",
+					field_schema: "keyword",
+				}),
+			);
+			expect(mockClient.createPayloadIndex).toHaveBeenNthCalledWith(
+				2,
+				expect.any(String),
+				expect.objectContaining({
+					field_name: "top_heading",
+					field_schema: "keyword",
+				}),
+			);
+			expect(mockClient.createPayloadIndex).toHaveBeenNthCalledWith(
+				3,
+				expect.any(String),
+				expect.objectContaining({
+					field_name: "content_type",
+					field_schema: "keyword",
+				}),
+			);
 		});
 	});
 
 	describe("upsertPoints", () => {
 		test("converts string IDs to numeric via hashToUint and upserts", async () => {
 			mockClient.upsert.mockResolvedValue({});
-
 			const { upsertPoints, getQdrantClient } = await loadModule();
 			getQdrantClient({ url: "http://localhost:6333" });
 
@@ -197,7 +205,6 @@ describe("qdrant-client", () => {
 					payload: { chunk_id: "c2", content_hash: "hash-b" },
 				},
 			]);
-
 			const { getExistingHashes, getQdrantClient } = await loadModule();
 			getQdrantClient({ url: "http://localhost:6333" });
 
@@ -219,7 +226,6 @@ describe("qdrant-client", () => {
 
 		test("returns empty map on error", async () => {
 			mockClient.retrieve.mockRejectedValue(new Error("connection error"));
-
 			const { getExistingHashes, getQdrantClient } = await loadModule();
 			getQdrantClient({ url: "http://localhost:6333" });
 
@@ -247,7 +253,6 @@ describe("qdrant-client", () => {
 
 		test("returns mapped search results", async () => {
 			mockClient.search.mockResolvedValue(mockSearchResult);
-
 			const { search, getQdrantClient } = await loadModule();
 			getQdrantClient({ url: "http://localhost:6333" });
 
@@ -269,49 +274,57 @@ describe("qdrant-client", () => {
 
 		test("builds filter with type condition", async () => {
 			mockClient.search.mockResolvedValue([]);
-
 			const { search, getQdrantClient } = await loadModule();
 			getQdrantClient({ url: "http://localhost:6333" });
 
 			await search([0.1], { filter: { type: "markdown_note" } });
 
-			const call = mockClient.search.mock.calls[0];
-			expect(call[1].filter).toEqual({
-				must: [{ key: "type", match: { value: "markdown_note" } }],
-			});
+			expect(mockClient.search).toHaveBeenCalledWith(
+				expect.any(String),
+				expect.objectContaining({
+					filter: {
+						must: [{ key: "type", match: { value: "markdown_note" } }],
+					},
+				}),
+			);
 		});
 
 		test("builds filter with top_heading condition", async () => {
 			mockClient.search.mockResolvedValue([]);
-
 			const { search, getQdrantClient } = await loadModule();
 			getQdrantClient({ url: "http://localhost:6333" });
 
 			await search([0.1], { filter: { top_heading: "Introduction" } });
 
-			const call = mockClient.search.mock.calls[0];
-			expect(call[1].filter).toEqual({
-				must: [{ key: "top_heading", match: { value: "Introduction" } }],
-			});
+			expect(mockClient.search).toHaveBeenCalledWith(
+				expect.any(String),
+				expect.objectContaining({
+					filter: {
+						must: [{ key: "top_heading", match: { value: "Introduction" } }],
+					},
+				}),
+			);
 		});
 
 		test("builds filter with single content_type", async () => {
 			mockClient.search.mockResolvedValue([]);
-
 			const { search, getQdrantClient } = await loadModule();
 			getQdrantClient({ url: "http://localhost:6333" });
 
 			await search([0.1], { filter: { content_type: "articles" } });
 
-			const call = mockClient.search.mock.calls[0];
-			expect(call[1].filter).toEqual({
-				must: [{ key: "content_type", match: { value: "articles" } }],
-			});
+			expect(mockClient.search).toHaveBeenCalledWith(
+				expect.any(String),
+				expect.objectContaining({
+					filter: {
+						must: [{ key: "content_type", match: { value: "articles" } }],
+					},
+				}),
+			);
 		});
 
 		test("builds filter with content_type array", async () => {
 			mockClient.search.mockResolvedValue([]);
-
 			const { search, getQdrantClient } = await loadModule();
 			getQdrantClient({ url: "http://localhost:6333" });
 
@@ -319,15 +332,20 @@ describe("qdrant-client", () => {
 				filter: { content_type: ["articles", "books"] },
 			});
 
-			const call = mockClient.search.mock.calls[0];
-			expect(call[1].filter).toEqual({
-				must: [{ key: "content_type", match: { any: ["articles", "books"] } }],
-			});
+			expect(mockClient.search).toHaveBeenCalledWith(
+				expect.any(String),
+				expect.objectContaining({
+					filter: {
+						must: [
+							{ key: "content_type", match: { any: ["articles", "books"] } },
+						],
+					},
+				}),
+			);
 		});
 
 		test("passes no filter when none specified", async () => {
 			mockClient.search.mockResolvedValue([]);
-
 			const { search, getQdrantClient } = await loadModule();
 			getQdrantClient({ url: "http://localhost:6333" });
 
@@ -345,7 +363,6 @@ describe("qdrant-client", () => {
 				points_count: 42,
 				status: "green",
 			});
-
 			const { getCollectionStats, getQdrantClient } = await loadModule();
 			getQdrantClient({ url: "http://localhost:6333" });
 
@@ -358,7 +375,6 @@ describe("qdrant-client", () => {
 			mockClient.getCollection.mockRejectedValue(
 				new Error("collection not found"),
 			);
-
 			const { getCollectionStats, getQdrantClient } = await loadModule();
 			getQdrantClient({ url: "http://localhost:6333" });
 

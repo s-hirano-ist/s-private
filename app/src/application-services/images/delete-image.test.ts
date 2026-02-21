@@ -1,75 +1,123 @@
+import type { IImagesCommandRepository } from "@s-hirano-ist/s-core/images/repositories/images-command-repository.interface";
 import {
 	makeId,
 	makeUnexportedStatus,
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { describe, expect, test, vi } from "vitest";
-import { deleteImage } from "@/application-services/images/delete-image";
-import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
-
-vi.mock(
-	"@/infrastructures/images/repositories/images-command-repository",
-	() => ({ imagesCommandRepository: { deleteById: vi.fn() } }),
-);
-
-vi.mock("@/infrastructures/events/event-dispatcher", () => ({
-	eventDispatcher: {
-		dispatch: vi.fn().mockResolvedValue(undefined),
-	},
-}));
-
-const mockGetSelfId = vi.fn();
-const mockHasDumperPostPermission = vi.fn();
+import { beforeEach, describe, expect, test, vi } from "vitest";
+import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
+import { deleteImage } from "./delete-image";
+import { deleteImageCore } from "./delete-image.core";
+import type { DeleteImageDeps } from "./delete-image.deps";
 
 vi.mock("@/common/auth/session", () => ({
-	getSelfId: () => mockGetSelfId(),
-	hasDumperPostPermission: () => mockHasDumperPostPermission(),
+	getSelfId: vi.fn(),
+	hasDumperPostPermission: vi.fn(),
 }));
 
-// Test UUIDs (UUIDv7 format)
-const TEST_IMAGE_ID = "01234567-89ab-7def-8123-456789abcdef";
-const TEST_NOT_FOUND_ID = "01234567-89ab-7def-8123-456789abcde0";
-const TEST_USER_ID = "test-user-id";
+function createMockDeps(): {
+	deps: DeleteImageDeps;
+	mockCommandRepository: IImagesCommandRepository;
+	mockEventDispatcher: { dispatch: ReturnType<typeof vi.fn> };
+} {
+	const mockCommandRepository: IImagesCommandRepository = {
+		create: vi.fn(),
+		deleteById: vi.fn(),
+	};
 
-describe("deleteImage", () => {
-	test("should delete images successfully", async () => {
-		mockHasDumperPostPermission.mockResolvedValue(true);
-		mockGetSelfId.mockResolvedValue(makeUserId(TEST_USER_ID));
+	const mockEventDispatcher = {
+		dispatch: vi.fn().mockResolvedValue(undefined),
+	};
 
-		vi.mocked(imagesCommandRepository.deleteById).mockResolvedValueOnce({
+	const deps: DeleteImageDeps = {
+		commandRepository: mockCommandRepository,
+		eventDispatcher: mockEventDispatcher,
+	};
+
+	return { deps, mockCommandRepository, mockEventDispatcher };
+}
+
+describe("deleteImageCore", () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
+
+	test("should delete image successfully", async () => {
+		vi.mocked(getSelfId).mockResolvedValue(makeUserId("test-user-id"));
+
+		const { deps, mockCommandRepository, mockEventDispatcher } =
+			createMockDeps();
+		vi.mocked(mockCommandRepository.deleteById).mockResolvedValue({
 			path: "test-image.jpg",
 		});
 
-		const result = await deleteImage(TEST_IMAGE_ID);
+		const testId = "01234567-89ab-7def-8123-456789abcdef";
+		const result = await deleteImageCore(testId, deps);
 
 		expect(result).toEqual({
 			success: true,
 			message: "deleted",
 		});
+		expect(mockCommandRepository.deleteById).toHaveBeenCalledWith(
+			makeId(testId),
+			makeUserId("test-user-id"),
+			makeUnexportedStatus(),
+		);
+		expect(mockEventDispatcher.dispatch).toHaveBeenCalled();
+	});
 
-		expect(imagesCommandRepository.deleteById).toHaveBeenCalledWith(
-			makeId(TEST_IMAGE_ID),
-			makeUserId(TEST_USER_ID),
+	test("should return error when image not found", async () => {
+		vi.mocked(getSelfId).mockResolvedValue(makeUserId("test-user-id"));
+
+		const { deps, mockCommandRepository } = createMockDeps();
+		vi.mocked(mockCommandRepository.deleteById).mockRejectedValue(
+			new Error("Record not found"),
+		);
+
+		const testId = "01234567-89ab-7def-8123-456789abcde0";
+		const result = await deleteImageCore(testId, deps);
+
+		expect(result.success).toBe(false);
+		expect(result.message).toBe("unexpected");
+		expect(mockCommandRepository.deleteById).toHaveBeenCalledWith(
+			makeId(testId),
+			makeUserId("test-user-id"),
 			makeUnexportedStatus(),
 		);
 	});
 
-	test("should return error when images not found", async () => {
-		mockHasDumperPostPermission.mockResolvedValue(true);
-		mockGetSelfId.mockResolvedValue(makeUserId(TEST_USER_ID));
+	test("should return error when getSelfId fails", async () => {
+		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
 
-		vi.mocked(imagesCommandRepository.deleteById).mockRejectedValue(
-			new Error("Record not found"),
-		);
-
-		const result = await deleteImage(TEST_NOT_FOUND_ID);
+		const { deps } = createMockDeps();
+		const testId = "01234567-89ab-7def-8123-456789abcdef";
+		const result = await deleteImageCore(testId, deps);
 
 		expect(result.success).toBe(false);
-		expect(result.message).toBe("unexpected");
-		expect(imagesCommandRepository.deleteById).toHaveBeenCalledWith(
-			makeId(TEST_NOT_FOUND_ID),
-			makeUserId(TEST_USER_ID),
-			makeUnexportedStatus(),
-		);
+	});
+});
+
+describe("deleteImage (Server Action)", () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
+
+	test("should call forbidden when user lacks permission", async () => {
+		vi.mocked(hasDumperPostPermission).mockResolvedValue(false);
+
+		const testId = "01234567-89ab-7def-8123-456789abcde1";
+
+		await expect(deleteImage(testId)).rejects.toThrow("FORBIDDEN");
+	});
+
+	test("should call deleteImageCore with default deps when permitted", async () => {
+		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
+
+		const testId = "01234567-89ab-7def-8123-456789abcdef";
+		const result = await deleteImage(testId);
+
+		expect(hasDumperPostPermission).toHaveBeenCalled();
+		expect(result.success).toBe(false);
 	});
 });

@@ -39,6 +39,7 @@ describe("search-content", () => {
 			});
 
 			const result = await searchContent({ query: "test", limit: 20 }, userId);
+
 			expect(result.results[0].snippet).toBe(shortText);
 		});
 
@@ -59,6 +60,7 @@ describe("search-content", () => {
 			});
 
 			const result = await searchContent({ query: "test", limit: 20 }, userId);
+
 			expect(result.results[0].snippet).toBe(`${"a".repeat(150)}...`);
 		});
 	});
@@ -80,6 +82,7 @@ describe("search-content", () => {
 			});
 
 			const result = await searchContent({ query: "test", limit: 20 }, userId);
+
 			expect(result.results[0].href).toBe("9784003362211");
 		});
 
@@ -99,6 +102,7 @@ describe("search-content", () => {
 			});
 
 			const result = await searchContent({ query: "test", limit: 20 }, userId);
+
 			expect(result.results[0].href).toBe(encodeURIComponent("Test Book"));
 		});
 	});
@@ -121,6 +125,7 @@ describe("search-content", () => {
 			});
 
 			const result = await searchContent({ query: "test", limit: 20 }, userId);
+
 			expect(result.results[0]).toEqual({
 				href: "https://example.com",
 				contentType: "articles",
@@ -147,6 +152,7 @@ describe("search-content", () => {
 			});
 
 			const result = await searchContent({ query: "test", limit: 20 }, userId);
+
 			expect(result.results[0]).toEqual({
 				href: "1234567890",
 				contentType: "books",
@@ -173,6 +179,7 @@ describe("search-content", () => {
 			});
 
 			const result = await searchContent({ query: "test", limit: 20 }, userId);
+
 			expect(result.results[0]).toEqual({
 				href: encodeURIComponent("Note Title"),
 				contentType: "notes",
@@ -208,6 +215,7 @@ describe("search-content", () => {
 				{ query: "test", contentTypes: ["articles"], limit: 20 },
 				userId,
 			);
+
 			expect(result.results).toHaveLength(1);
 			expect(result.results[0].contentType).toBe("articles");
 		});
@@ -228,6 +236,7 @@ describe("search-content", () => {
 			});
 
 			const result = await searchContent({ query: "test", limit: 2 }, userId);
+
 			expect(result.results).toHaveLength(2);
 		});
 
@@ -263,6 +272,7 @@ describe("search-content", () => {
 			});
 
 			const result = await searchContent({ query: "test", limit: 20 }, userId);
+
 			expect(result.groups).toHaveLength(2);
 			expect(result.groups[0].contentType).toBe("articles");
 			expect(result.groups[0].results).toHaveLength(2);
@@ -290,6 +300,7 @@ describe("search-content", () => {
 				{ query: "typescript", limit: 20 },
 				userId,
 			);
+
 			expect(result.totalCount).toBe(1);
 			expect(result.query).toBe("typescript");
 		});
@@ -305,6 +316,7 @@ describe("search-content", () => {
 				{ query: "nonexistent", limit: 20 },
 				userId,
 			);
+
 			expect(result.results).toHaveLength(0);
 			expect(result.groups).toHaveLength(0);
 			expect(result.totalCount).toBe(0);

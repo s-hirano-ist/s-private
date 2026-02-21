@@ -1,77 +1,125 @@
 import { makeBookTitle } from "@s-hirano-ist/s-core/books/entities/book-entity";
+import type { IBooksCommandRepository } from "@s-hirano-ist/s-core/books/repositories/books-command-repository.interface";
 import {
 	makeId,
+	makeUnexportedStatus,
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { beforeEach, describe, expect, type Mock, test, vi } from "vitest";
-import * as sessionModule from "@/common/auth/session";
-import * as errorModule from "@/common/error/error-wrapper";
-import * as booksRepositoryModule from "@/infrastructures/books/repositories/books-command-repository";
+import { beforeEach, describe, expect, test, vi } from "vitest";
+import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { deleteBooks } from "./delete-books";
+import { deleteBooksCore } from "./delete-books.core";
+import type { DeleteBooksDeps } from "./delete-books.deps";
 
-vi.mock("@/common/auth/session");
-vi.mock("@/common/error/error-wrapper");
-vi.mock("@/infrastructures/books/repositories/books-command-repository");
-vi.mock("@/infrastructures/events/event-dispatcher", () => ({
-	eventDispatcher: {
-		dispatch: vi.fn().mockResolvedValue(undefined),
-	},
+vi.mock("@/common/auth/session", () => ({
+	getSelfId: vi.fn(),
+	hasDumperPostPermission: vi.fn(),
 }));
 
-const mockDeleteById = vi.fn();
+function createMockDeps(): {
+	deps: DeleteBooksDeps;
+	mockCommandRepository: IBooksCommandRepository;
+	mockEventDispatcher: { dispatch: ReturnType<typeof vi.fn> };
+} {
+	const mockCommandRepository: IBooksCommandRepository = {
+		create: vi.fn(),
+		deleteById: vi.fn(),
+	};
 
-describe("deleteBooks", () => {
-	const mockHasDumperPostPermission =
-		sessionModule.hasDumperPostPermission as Mock;
-	const mockGetSelfId = sessionModule.getSelfId as Mock;
-	const mockWrapServerSideErrorForClient =
-		errorModule.wrapServerSideErrorForClient as Mock;
+	const mockEventDispatcher = {
+		dispatch: vi.fn().mockResolvedValue(undefined),
+	};
 
+	const deps: DeleteBooksDeps = {
+		commandRepository: mockCommandRepository,
+		eventDispatcher: mockEventDispatcher,
+	};
+
+	return { deps, mockCommandRepository, mockEventDispatcher };
+}
+
+describe("deleteBooksCore", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
-		booksRepositoryModule.booksCommandRepository.deleteById = mockDeleteById;
 	});
 
-	test("should successfully delete a book when user has permission", async () => {
-		const bookId = "01933f5c-9df0-7001-9123-456789abcdef";
-		const userId = "test-user-id";
+	test("should delete book successfully", async () => {
+		vi.mocked(getSelfId).mockResolvedValue(makeUserId("test-user-id"));
 
-		mockHasDumperPostPermission.mockResolvedValue(true);
-		mockGetSelfId.mockResolvedValue(makeUserId(userId));
-		mockDeleteById.mockResolvedValue({ title: makeBookTitle("Test Book") });
+		const { deps, mockCommandRepository, mockEventDispatcher } =
+			createMockDeps();
+		vi.mocked(mockCommandRepository.deleteById).mockResolvedValue({
+			title: makeBookTitle("Test Book"),
+		});
 
-		const result = await deleteBooks(bookId);
+		const testId = "01933f5c-9df0-7001-9123-456789abcdef";
+		const result = await deleteBooksCore(testId, deps);
 
-		expect(mockDeleteById).toHaveBeenCalledWith(
-			makeId(bookId),
-			makeUserId(userId),
-			"UNEXPORTED",
+		expect(result).toEqual({
+			success: true,
+			message: "deleted",
+		});
+		expect(mockCommandRepository.deleteById).toHaveBeenCalledWith(
+			makeId(testId),
+			makeUserId("test-user-id"),
+			makeUnexportedStatus(),
 		);
-		expect(result).toEqual({ success: true, message: "deleted" });
+		expect(mockEventDispatcher.dispatch).toHaveBeenCalled();
 	});
 
-	test("should throw forbidden error when user lacks permission", async () => {
-		mockHasDumperPostPermission.mockResolvedValue(false);
+	test("should return error when book not found", async () => {
+		vi.mocked(getSelfId).mockResolvedValue(makeUserId("test-user-id"));
 
-		await expect(
-			deleteBooks("01933f5c-9df0-7001-9123-456789abcdef"),
-		).rejects.toThrow();
+		const { deps, mockCommandRepository } = createMockDeps();
+		const mockError = new Error("Record not found");
+		vi.mocked(mockCommandRepository.deleteById).mockRejectedValue(mockError);
+
+		const testId = "01933f5c-9df0-7001-9123-456789abcde0";
+		const result = await deleteBooksCore(testId, deps);
+
+		expect(result).toEqual({
+			success: false,
+			message: "unexpected",
+		});
+		expect(mockCommandRepository.deleteById).toHaveBeenCalledWith(
+			makeId(testId),
+			makeUserId("test-user-id"),
+			makeUnexportedStatus(),
+		);
 	});
 
-	test("should handle errors and wrap them properly", async () => {
-		const bookId = "01933f5c-9df0-7001-9123-456789abcdef";
-		const userId = "test-user-id";
-		const error = new Error("Test error");
-		const wrappedError = { success: false, message: "Error occurred" };
+	test("should return error when getSelfId fails", async () => {
+		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
 
-		mockHasDumperPostPermission.mockResolvedValue(true);
-		mockGetSelfId.mockResolvedValue(makeUserId(userId));
-		mockDeleteById.mockRejectedValue(error);
-		mockWrapServerSideErrorForClient.mockResolvedValue(wrappedError);
+		const { deps } = createMockDeps();
+		const testId = "01933f5c-9df0-7001-9123-456789abcdef";
+		const result = await deleteBooksCore(testId, deps);
 
-		const result = await deleteBooks(bookId);
+		expect(result.success).toBe(false);
+	});
+});
 
-		expect(mockWrapServerSideErrorForClient).toHaveBeenCalledWith(error);
-		expect(result).toEqual(wrappedError);
+describe("deleteBooks (Server Action)", () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
+
+	test("should call forbidden when user lacks permission", async () => {
+		vi.mocked(hasDumperPostPermission).mockResolvedValue(false);
+
+		const testId = "01933f5c-9df0-7001-9123-456789abcde1";
+
+		await expect(deleteBooks(testId)).rejects.toThrow("FORBIDDEN");
+	});
+
+	test("should call deleteBooksCore with default deps when permitted", async () => {
+		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
+
+		const testId = "01933f5c-9df0-7001-9123-456789abcdef";
+		const result = await deleteBooks(testId);
+
+		expect(hasDumperPostPermission).toHaveBeenCalled();
+		expect(result.success).toBe(false);
 	});
 });
