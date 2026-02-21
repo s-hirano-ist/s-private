@@ -561,7 +561,7 @@ async function DynamicComponent() {
 
 ### 本コードベースでの方針
 
-1. **デフォルト**: `"use cache"`でキャッシュし、`revalidateTag`で無効化
+1. **デフォルト**: `"use cache"`でキャッシュし、`updateTag`で無効化（Server Action内）
 2. **認証が必要なページ**: 認証チェックにより自動的に動的
 3. **リアルタイム要件**: `connection()` APIで明示的にオプトイン
 
@@ -1187,11 +1187,11 @@ export function buildCategoriesCacheTag(userId: string): string {
 | `buildPaginatedContentCacheTag` | `{domain}_{status}_{sanitizedUserId}_{count}` | `articles_UNEXPORTED_auth_0` |
 | `buildCategoriesCacheTag` | `categories_{sanitizedUserId}` | `categories_auth` |
 
-### 使用例（revalidateTag）
+### 使用例（updateTag - Server Action内）
 
 ```typescript
 // add-article.core.ts
-import { revalidateTag } from "next/cache";
+import { updateTag } from "next/cache";
 import {
   buildContentCacheTag,
   buildCountCacheTag,
@@ -1201,10 +1201,10 @@ import {
 // 永続化後にキャッシュを無効化
 await commandRepository.create(article);
 
-revalidateTag(buildContentCacheTag("articles", article.status, userId));
-revalidateTag(buildCountCacheTag("articles", article.status, userId));
-revalidateTag("categories"); // グローバルカテゴリ一覧
-revalidateTag(buildCategoriesCacheTag(userId)); // ユーザー固有カテゴリ一覧
+updateTag(buildContentCacheTag("articles", article.status, userId));
+updateTag(buildCountCacheTag("articles", article.status, userId));
+updateTag("categories"); // グローバルカテゴリ一覧
+updateTag(buildCategoriesCacheTag(userId)); // ユーザー固有カテゴリ一覧
 ```
 
 ### 使用例（cacheTag）
@@ -1238,7 +1238,7 @@ const _getCategories = async (userId: UserId) => {
 
 ### 注意事項
 
-- **必ずビルダー関数を使用**: `cacheTag()`と`revalidateTag()`で同じビルダー関数を使用し、タグの一貫性を保証
+- **必ずビルダー関数を使用**: `cacheTag()`と`updateTag()`で同じビルダー関数を使用し、タグの一貫性を保証
 - タグはユーザーIDを含めてマルチテナント分離を維持
 - ステータス変更時は両方のステータスのキャッシュを無効化
 - カテゴリ等の関連データも忘れずに無効化
@@ -1258,33 +1258,32 @@ export function sanitizeCacheTag(userId: string): string {
 
 **重要:** ビルダー関数は内部で`sanitizeCacheTag`を呼び出すため、呼び出し側で個別にサニタイズする必要はない
 
-### `revalidatePath` vs `revalidateTag` の使い分け
+### `updateTag` vs `revalidateTag` vs `revalidatePath` の使い分け
 
-| 観点 | `revalidatePath` | `revalidateTag` |
-|------|------------------|-----------------|
-| **無効化対象** | 特定パスに関連する全キャッシュ | 特定タグを持つキャッシュのみ |
-| **粒度** | 粗い（パス単位） | 細かい（タグ単位） |
-| **使用場面** | ページ全体の再検証が必要な場合 | 特定データの更新時 |
-| **パフォーマンス** | 広範囲のキャッシュ無効化 | 最小限のキャッシュ無効化 |
+| 観点 | `updateTag` | `revalidateTag` | `revalidatePath` |
+|------|-------------|-----------------|------------------|
+| **用途** | Server Action内のキャッシュ無効化 | Route Handler/webhook向け | パス単位の無効化 |
+| **read-your-own-writes** | 保証あり | なし | なし |
+| **無効化対象** | 特定タグを持つキャッシュ | 特定タグを持つキャッシュ | 特定パスに関連する全キャッシュ |
+| **粒度** | 細かい（タグ単位） | 細かい（タグ単位） | 粗い（パス単位） |
 
 **判断基準:**
 
 ```typescript
-// ✅ revalidateTag: 特定データの更新
+// ✅ updateTag: Server Action内での特定データの更新（推奨）
 await commandRepository.create(article);
-revalidateTag(`articles_UNEXPORTED_${userId}`);
-revalidateTag(`articles_count_UNEXPORTED_${userId}`);
+updateTag(`articles_UNEXPORTED_${userId}`);
+updateTag(`articles_count_UNEXPORTED_${userId}`);
+
+// ✅ revalidateTag: Route Handler/webhookでの無効化
+revalidateTag("articles", { expire: 0 });
 
 // ✅ revalidatePath: レイアウト全体の再検証が必要な場合
-// （例: サイドバーのカウント表示など複数コンポーネントに影響）
 revalidatePath("/dashboard", "layout");
-
-// ✅ revalidatePath: 動的ルートの特定ページ
-revalidatePath(`/articles/${articleId}`);
 ```
 
 **本コードベースの方針:**
-- **基本**: `revalidateTag`を使用し、最小限のキャッシュ無効化を維持
+- **基本**: Server Action内では`updateTag`を使用し、read-your-own-writes保証を得る
 - **`cacheTag`との対応**: データフェッチ時に設定したタグと同じタグで無効化
 - **ブロードキャスト無効化**: 複数ユーザーに影響する変更は`revalidatePath`を検討
 
@@ -1326,7 +1325,7 @@ UNEXPORTED ──────────────→ LAST_UPDATED ───�
 
 ```typescript
 // app/src/infrastructures/shared/cache/cache-invalidation-helpers.ts
-import { revalidateTag } from "next/cache";
+import { updateTag } from "next/cache";
 import { buildContentCacheTag, buildCountCacheTag } from "./cache-tag-builder";
 
 type Domain = "books" | "articles" | "notes" | "images";
@@ -1342,12 +1341,12 @@ export function invalidateOnStatusChange(
   userId: string,
 ): void {
   // 旧ステータスのキャッシュを無効化
-  revalidateTag(buildContentCacheTag(domain, oldStatus, userId));
-  revalidateTag(buildCountCacheTag(domain, oldStatus, userId));
+  updateTag(buildContentCacheTag(domain, oldStatus, userId));
+  updateTag(buildCountCacheTag(domain, oldStatus, userId));
 
   // 新ステータスのキャッシュを無効化
-  revalidateTag(buildContentCacheTag(domain, newStatus, userId));
-  revalidateTag(buildCountCacheTag(domain, newStatus, userId));
+  updateTag(buildContentCacheTag(domain, newStatus, userId));
+  updateTag(buildCountCacheTag(domain, newStatus, userId));
 }
 
 /**
@@ -1358,8 +1357,8 @@ export function invalidateOnBatchReset(domain: Domain, userId: string): void {
   const statuses: Status[] = ["UNEXPORTED", "LAST_UPDATED", "EXPORTED"];
 
   for (const status of statuses) {
-    revalidateTag(buildContentCacheTag(domain, status, userId));
-    revalidateTag(buildCountCacheTag(domain, status, userId));
+    updateTag(buildContentCacheTag(domain, status, userId));
+    updateTag(buildCountCacheTag(domain, status, userId));
   }
 }
 
@@ -1371,8 +1370,8 @@ export function invalidateOnBatchRevert(domain: Domain, userId: string): void {
   const statuses: Status[] = ["UNEXPORTED", "LAST_UPDATED"];
 
   for (const status of statuses) {
-    revalidateTag(buildContentCacheTag(domain, status, userId));
-    revalidateTag(buildCountCacheTag(domain, status, userId));
+    updateTag(buildContentCacheTag(domain, status, userId));
+    updateTag(buildCountCacheTag(domain, status, userId));
   }
 }
 ```
@@ -1455,7 +1454,7 @@ export const getExportedArticles: GetPaginatedData<LinkCardStackInitialData> =
 |------|-------------------|-------------------------|
 | **スコープ** | 単一リクエスト内 | リクエスト間（永続的） |
 | **用途** | 同一レンダリングツリー内での重複排除 | ビルド時/ISR/動的キャッシュ |
-| **無効化** | リクエスト終了で自動消滅 | `revalidateTag()` / `revalidatePath()` |
+| **無効化** | リクエスト終了で自動消滅 | `updateTag()` (Server Action) / `revalidateTag()` (Route Handler) |
 | **認証データ** | 適切（リクエストスコープ） | 注意が必要（`cacheTag`でユーザー分離） |
 
 **判断基準:**

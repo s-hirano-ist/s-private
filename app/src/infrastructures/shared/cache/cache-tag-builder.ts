@@ -3,7 +3,7 @@
  *
  * @remarks
  * Generates consistent cache tags for content and count queries.
- * Used with revalidateTag() for targeted cache invalidation.
+ * Used with updateTag() for targeted cache invalidation in Server Actions.
  *
  * @module
  */

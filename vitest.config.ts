@@ -64,6 +64,21 @@ export default defineConfig({
 					include: ["./**/*.test.?(c|m)[jt]s?(x)"],
 				},
 			},
+			// Search package
+			{
+				test: {
+					name: "search",
+					root: "./packages/search",
+					include: ["./src/**/*.test.?(c|m)[jt]s?(x)"],
+					env: {
+						QDRANT_COLLECTION_NAME: "knowledge_v2",
+						EMBEDDING_VECTOR_SIZE: "1024",
+						EMBEDDING_MODEL: "intfloat/multilingual-e5-large",
+						EMBEDDING_QUERY_PREFIX: "query: ",
+						EMBEDDING_PASSAGE_PREFIX: "passage: ",
+					},
+				},
+			},
 			// Benchmarks (Node environment, used by `vitest bench --project bench`)
 			{
 				test: {
@@ -77,15 +92,51 @@ export default defineConfig({
 			reportOnFailure: true,
 			reportsDirectory: "./.vitest-coverage",
 			exclude: [
+				// ビルド成果物・依存関係
 				"**/.next/**/*",
 				"**/node_modules/**/*",
 				"**/dist/**/*",
+
+				// 生成コード
 				"app/src/generated/**/*",
+				"packages/database/**/*",
+
+				// テスト・Storybook・ベンチマーク
 				"**/*.stories.tsx",
 				"**/*.test.ts?(x)",
-				"**/types.ts",
-				"**/*.interface.ts",
+				"**/*.bench.ts",
 				".storybook/**/*",
+
+				// 型定義・インターフェース（ロジックを含まないもの）
+				"**/types.ts",
+				"packages/core/**/*.interface.ts",
+
+				// 設定ファイル
+				"**/vitest.config.ts",
+				"**/vitest-setup.*",
+				"app/next.config.mjs",
+				"app/tailwind.config.ts",
+				"app/postcss.config.js",
+				"app/sentry.*.config.ts",
+				"app/src/env.ts",
+
+				// テスト困難なインフラ・スクリプト
+				"packages/search/src/config.ts",
+				"packages/storage/**/*",
+				"packages/scripts/**/*",
+
+				// Next.js App Router（ページ/レイアウト/メタデータのみ除外、API routeは含める）
+				"app/src/app/[locale]/**/*",
+				"app/src/app/layout.tsx",
+				"app/src/app/not-found.tsx",
+				"app/src/app/error.tsx",
+				"app/src/app/global-error.tsx",
+				"app/src/app/manifest.ts",
+				"app/src/app/robots.ts",
+				"app/src/app/globals.css",
+
+				// データローダー（サーバーコンポーネント依存で単体テスト困難）
+				"app/src/loaders/**/*",
 			],
 			reporter: ["text", "json-summary", "json"],
 		},

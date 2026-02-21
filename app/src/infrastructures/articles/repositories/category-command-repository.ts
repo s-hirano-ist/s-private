@@ -2,7 +2,7 @@ import type {
 	CategoryCreateData,
 	ICategoryCommandRepository,
 } from "@s-hirano-ist/s-core/articles/repositories/category-command-repository.interface";
-import { revalidateTag } from "next/cache";
+import { updateTag } from "next/cache";
 import prisma from "@/prisma";
 
 async function create(data: CategoryCreateData): Promise<void> {
@@ -15,7 +15,7 @@ async function create(data: CategoryCreateData): Promise<void> {
 		},
 	});
 
-	revalidateTag("categories", "max");
+	updateTag("categories");
 }
 
 export const categoryCommandRepository: ICategoryCommandRepository = {

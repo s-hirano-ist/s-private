@@ -11,7 +11,7 @@ import type {
 	Status,
 	UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { revalidateTag } from "next/cache";
+import { updateTag } from "next/cache";
 import {
 	buildContentCacheTag,
 	buildCountCacheTag,
@@ -21,12 +21,8 @@ import prisma from "@/prisma";
 async function create(data: UnexportedBook): Promise<void> {
 	await prisma.book.create({ data });
 
-	revalidateTag(buildContentCacheTag("books", data.status, data.userId), {
-		expire: 0,
-	});
-	revalidateTag(buildCountCacheTag("books", data.status, data.userId), {
-		expire: 0,
-	});
+	updateTag(buildContentCacheTag("books", data.status, data.userId));
+	updateTag(buildCountCacheTag("books", data.status, data.userId));
 }
 
 async function deleteById(
@@ -39,8 +35,8 @@ async function deleteById(
 		select: { title: true },
 	});
 
-	revalidateTag(buildContentCacheTag("books", status, userId), { expire: 0 });
-	revalidateTag(buildCountCacheTag("books", status, userId), { expire: 0 });
+	updateTag(buildContentCacheTag("books", status, userId));
+	updateTag(buildCountCacheTag("books", status, userId));
 
 	return { title: makeBookTitle(data.title) };
 }

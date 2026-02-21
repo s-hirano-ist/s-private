@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { expect, userEvent, waitFor, within } from "storybook/test";
 import { Button } from "./button";
 import {
 	Drawer,
@@ -39,6 +40,27 @@ export const Default: Story = {
 			</DrawerContent>
 		</Drawer>
 	),
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const body = within(document.body);
+
+		const trigger = canvas.getByRole("button", { name: "Open Drawer" });
+		await userEvent.click(trigger);
+
+		await waitFor(() =>
+			expect(body.getByText("Drawer Title")).toBeInTheDocument(),
+		);
+		await expect(
+			body.getByText("This is the drawer description providing more context."),
+		).toBeInTheDocument();
+
+		const closeButton = body.getByRole("button", { name: "Close" });
+		await userEvent.click(closeButton);
+
+		await waitFor(() =>
+			expect(body.queryByText("Drawer Title")).not.toBeInTheDocument(),
+		);
+	},
 };
 
 export const WithContent: Story = {
@@ -72,4 +94,26 @@ export const WithContent: Story = {
 			</DrawerContent>
 		</Drawer>
 	),
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const body = within(document.body);
+
+		const trigger = canvas.getByRole("button", { name: "Open Drawer" });
+		await userEvent.click(trigger);
+
+		await waitFor(() => expect(body.getByText("Settings")).toBeInTheDocument());
+		await expect(body.getByText("Option 1")).toBeInTheDocument();
+		await expect(body.getByText("Option 2")).toBeInTheDocument();
+		await expect(body.getByText("Option 3")).toBeInTheDocument();
+		await expect(
+			body.getByRole("button", { name: "Save Changes" }),
+		).toBeInTheDocument();
+
+		const cancelButton = body.getByRole("button", { name: "Cancel" });
+		await userEvent.click(cancelButton);
+
+		await waitFor(() =>
+			expect(body.queryByText("Settings")).not.toBeInTheDocument(),
+		);
+	},
 };

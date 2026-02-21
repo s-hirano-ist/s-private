@@ -41,6 +41,14 @@ export function BaseCardStackWrapper<T extends SearchableItem>({
 	const [isPending, startTransition] = useTransition();
 	const [allData, setAllData] = useState(initial.data);
 	const [totalCount, setTotalCount] = useState(initial.totalCount);
+	const [prevInitialData, setPrevInitialData] = useState(initial.data);
+
+	if (prevInitialData !== initial.data) {
+		setPrevInitialData(initial.data);
+		setAllData(initial.data);
+		setTotalCount(initial.totalCount);
+	}
+
 	const hasNextPage = allData.length < totalCount;
 
 	const handleLoadMore = async () => {

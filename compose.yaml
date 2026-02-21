@@ -7,7 +7,7 @@ services:
     ports:
       - "127.0.0.1:3001:3001"
     command: >-
-      --model-id ${EMBEDDING_MODEL:-intfloat/multilingual-e5-large}
+      --model-id ${EMBEDDING_MODEL}
       --port 3001
       --pooling mean
     volumes:

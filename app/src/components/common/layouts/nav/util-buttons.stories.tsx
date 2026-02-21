@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { UtilButtons } from "./util-buttons";
 
 type UtilButtonsWrapperProps = {
@@ -55,6 +55,19 @@ export const Default: Story = {
 				pathname: "/en",
 			},
 		},
+	},
+	play: async ({ args, canvasElement }) => {
+		const canvas = within(canvasElement);
+
+		const buttons = canvas.getAllByRole("button");
+		// First button is reload
+		await userEvent.click(buttons[0]);
+		await expect(args.handleReload).toHaveBeenCalled();
+
+		// Fourth button is sign out (data-testid="log-out-button")
+		const signOutButton = canvas.getByTestId("log-out-button");
+		await userEvent.click(signOutButton);
+		await expect(args.onSignOutSubmit).toHaveBeenCalled();
 	},
 };
 
