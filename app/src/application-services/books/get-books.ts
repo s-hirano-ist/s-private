@@ -64,6 +64,10 @@ const _getBooks = async (
 			image: d.imagePath
 				? `${API_BOOK_THUMBNAIL_PATH}/${d.imagePath}`
 				: (d.googleImgSrc ?? null),
+			subtitle: d.googleSubTitle ? String(d.googleSubTitle) : undefined,
+			authors: d.googleAuthors
+				? (d.googleAuthors as unknown as string[]).join(", ")
+				: undefined,
 		})),
 		totalCount,
 	};

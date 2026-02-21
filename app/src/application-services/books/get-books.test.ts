@@ -1,7 +1,9 @@
 import {
 	makeBookMarkdown,
 	makeBookTitle,
+	makeGoogleAuthors,
 	makeGoogleImgSrc,
+	makeGoogleSubTitle,
 	makeGoogleTitle,
 	makeISBN,
 } from "@s-hirano-ist/s-core/books/entities/book-entity";
@@ -46,6 +48,8 @@ describe("get-books", () => {
 					isbn: makeISBN("978-0123456789"),
 					googleImgSrc: makeGoogleImgSrc("https://example.com/image-1.jpg"),
 					imagePath: undefined,
+					googleAuthors: makeGoogleAuthors(["Author A"]),
+					googleSubTitle: makeGoogleSubTitle("Subtitle 1"),
 				},
 				{
 					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c"),
@@ -53,6 +57,8 @@ describe("get-books", () => {
 					isbn: makeISBN("978-0987654321"),
 					googleImgSrc: makeGoogleImgSrc("https://example.com/image-2.jpg"),
 					imagePath: undefined,
+					googleAuthors: undefined,
+					googleSubTitle: undefined,
 				},
 			]);
 			vi.mocked(booksQueryRepository.count).mockResolvedValue(5);
@@ -76,12 +82,16 @@ describe("get-books", () => {
 						title: "Test Book 1",
 						href: "978-0123456789",
 						image: "https://example.com/image-1.jpg",
+						authors: "Author A",
+						subtitle: "Subtitle 1",
 					},
 					{
 						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c",
 						title: "Test Book 2",
 						href: "978-0987654321",
 						image: "https://example.com/image-2.jpg",
+						authors: undefined,
+						subtitle: undefined,
 					},
 				],
 				totalCount: 5,
@@ -150,6 +160,8 @@ describe("get-books", () => {
 						"https://example.com/unexported-1.jpg",
 					),
 					imagePath: undefined,
+					googleAuthors: makeGoogleAuthors(["Author B", "Author C"]),
+					googleSubTitle: undefined,
 				},
 				{
 					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e"),
@@ -157,6 +169,8 @@ describe("get-books", () => {
 					isbn: makeISBN("978-2222222222"),
 					googleImgSrc: undefined,
 					imagePath: undefined,
+					googleAuthors: undefined,
+					googleSubTitle: undefined,
 				},
 			]);
 			vi.mocked(booksQueryRepository.count).mockResolvedValue(2);
@@ -180,12 +194,16 @@ describe("get-books", () => {
 						title: "Unexported Book 1",
 						href: "978-1111111111",
 						image: "https://example.com/unexported-1.jpg",
+						authors: "Author B, Author C",
+						subtitle: undefined,
 					},
 					{
 						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e",
 						title: "Unexported Book 2",
 						href: "978-2222222222",
 						image: null,
+						authors: undefined,
+						subtitle: undefined,
 					},
 				],
 				totalCount: 2,

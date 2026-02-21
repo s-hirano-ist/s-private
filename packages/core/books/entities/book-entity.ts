@@ -512,4 +512,6 @@ export type BookListItemDTO = Readonly<{
 	title: BookTitle;
 	googleImgSrc: GoogleImgSrc | undefined;
 	imagePath: Path | undefined;
+	googleAuthors: GoogleAuthors | undefined;
+	googleSubTitle: GoogleSubtitle | undefined;
 }>;

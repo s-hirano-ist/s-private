@@ -63,12 +63,14 @@ async function findMany(
 ): Promise<NoteListItemDTO[]> {
 	const data = await prisma.note.findMany({
 		where: { userId, status },
-		select: { id: true, title: true },
+		select: { id: true, title: true, markdown: true, createdAt: true },
 		...params,
 	});
 	return data.map((d) => ({
 		id: makeId(d.id),
 		title: makeNoteTitle(d.title),
+		markdown: makeMarkdown(d.markdown),
+		createdAt: makeCreatedAt(d.createdAt),
 	}));
 }
 

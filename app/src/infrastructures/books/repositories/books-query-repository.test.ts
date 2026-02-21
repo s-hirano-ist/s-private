@@ -169,6 +169,8 @@ describe("BooksQueryRepository", () => {
 					title: makeBookTitle("First Book"),
 					googleImgSrc: makeGoogleImgSrc("https://example.com/image1.jpg"),
 					imagePath: undefined,
+					googleAuthors: undefined,
+					googleSubTitle: undefined,
 				},
 				{
 					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d"),
@@ -176,6 +178,8 @@ describe("BooksQueryRepository", () => {
 					title: makeBookTitle("Second Book"),
 					googleImgSrc: makeGoogleImgSrc("https://example.com/image2.jpg"),
 					imagePath: undefined,
+					googleAuthors: undefined,
+					googleSubTitle: undefined,
 				},
 			]);
 		});

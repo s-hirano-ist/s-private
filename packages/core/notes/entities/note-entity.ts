@@ -291,4 +291,6 @@ export const noteEntity = {
 export type NoteListItemDTO = Readonly<{
 	id: Id;
 	title: NoteTitle;
+	markdown: Markdown;
+	createdAt: CreatedAt;
 }>;

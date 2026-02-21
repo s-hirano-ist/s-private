@@ -97,7 +97,7 @@ export function RootTab({ articles, books, notes, images }: Props) {
 			value={optimisticTab}
 		>
 			{tabsList}
-			<div className={cn(isPending && "opacity-50 pointer-events-none")}>
+			<div className={cn(isPending && "pointer-events-none opacity-50")}>
 				<TabsContent value="articles">{articles}</TabsContent>
 				<TabsContent value="notes">{notes}</TabsContent>
 				<TabsContent value="books">{books}</TabsContent>

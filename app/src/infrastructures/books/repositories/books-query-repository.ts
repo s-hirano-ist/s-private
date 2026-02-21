@@ -104,6 +104,8 @@ async function findMany(
 			title: true,
 			googleImgSrc: true,
 			imagePath: true,
+			googleAuthors: true,
+			googleSubTitle: true,
 		},
 		...params,
 	});
@@ -113,6 +115,13 @@ async function findMany(
 		title: makeBookTitle(d.title),
 		googleImgSrc: d.googleImgSrc ? makeGoogleImgSrc(d.googleImgSrc) : undefined,
 		imagePath: d.imagePath ? makePath(d.imagePath, false) : undefined,
+		googleAuthors:
+			d.googleAuthors.length > 0
+				? makeGoogleAuthors(d.googleAuthors)
+				: undefined,
+		googleSubTitle: d.googleSubTitle
+			? makeGoogleSubTitle(d.googleSubTitle)
+			: undefined,
 	}));
 }
 
