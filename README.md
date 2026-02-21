@@ -1,7 +1,7 @@
 # s-private
 
 ![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)
-![CI/CD status](https://img.shields.io/github/actions/workflow/status/s-hirano-ist/s-private/cd.yaml?branch=main)
+![CI status](https://img.shields.io/github/actions/workflow/status/s-hirano-ist/s-private/ci.yaml?branch=main)
 ![GitHub stars](https://img.shields.io/github/stars/s-hirano-ist/s-private.svg)
 
 ## Live Services
