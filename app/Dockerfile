@@ -23,7 +23,6 @@ COPY packages/core/package.json ./packages/core/package.json
 COPY packages/scripts/package.json ./packages/scripts/package.json
 COPY packages/notification/package.json ./packages/notification/package.json
 COPY packages/search/package.json ./packages/search/package.json
-COPY services/embedding-api/package.json ./services/embedding-api/package.json
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
@@ -40,7 +39,6 @@ COPY --from=deps /app/packages/core/node_modules/ ./packages/core/node_modules/
 COPY --from=deps /app/packages/scripts/node_modules/ ./packages/scripts/node_modules/
 COPY --from=deps /app/packages/notification/node_modules/ ./packages/notification/node_modules/
 COPY --from=deps /app/packages/search/node_modules/ ./packages/search/node_modules/
-COPY --from=deps /app/services/embedding-api/node_modules/ ./services/embedding-api/node_modules/
 
 # Copy rest of the application code
 COPY . .
@@ -68,7 +66,6 @@ RUN --mount=type=secret,id=AUTH_SECRET \
     --mount=type=secret,id=SENTRY_AUTH_TOKEN \
     --mount=type=secret,id=SENTRY_REPORT_URL \
     --mount=type=secret,id=EMBEDDING_API_URL \
-    --mount=type=secret,id=EMBEDDING_API_KEY \
     --mount=type=secret,id=CF_ACCESS_CLIENT_ID \
     --mount=type=secret,id=CF_ACCESS_CLIENT_SECRET \
     --mount=type=secret,id=QDRANT_URL \
@@ -89,7 +86,6 @@ DATABASE_URL=$(cat /run/secrets/DATABASE_URL)\n\
 SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN)\n\
 SENTRY_REPORT_URL=$(cat /run/secrets/SENTRY_REPORT_URL)\n\
 EMBEDDING_API_URL=$(cat /run/secrets/EMBEDDING_API_URL)\n\
-EMBEDDING_API_KEY=$(cat /run/secrets/EMBEDDING_API_KEY)\n\
 CF_ACCESS_CLIENT_ID=$(cat /run/secrets/CF_ACCESS_CLIENT_ID)\n\
 CF_ACCESS_CLIENT_SECRET=$(cat /run/secrets/CF_ACCESS_CLIENT_SECRET)\n\
 QDRANT_URL=$(cat /run/secrets/QDRANT_URL)\n" > app/.env

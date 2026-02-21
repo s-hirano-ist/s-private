@@ -15,7 +15,7 @@ docs/** にはより詳細な設計等のルールが記載されています。
 - Shadcn/ui + Tailwind CSS
 - Auth0 + Auth.js
 - MinIO (Object Storage)
-- Qdrant (Vector Database) + Embedding API (Hono)
+- Qdrant (Vector Database) + HuggingFace TEI (Text Embeddings Inference)
 
 ## コマンド
 - `pnpm dev` - 開発サーバー
@@ -34,7 +34,6 @@ docs/** にはより詳細な設計等のルールが記載されています。
 - `app/src/infrastructures/` - インフラ層（Prisma実装、DI factories）
 - `app/src/loaders/` - データローダー層
 - `packages/search/` - RAG検索ライブラリ（Qdrant・Embedding APIクライアント）
-- `services/embedding-api/` - Embedding APIサービス（Hono + HuggingFace Transformers）
 - `app/src/app/[locale]/` - Next.js App Router（i18n対応: en/ja）
 
 ## 主要ドメイン
@@ -53,7 +52,7 @@ docs/** にはより詳細な設計等のルールが記載されています。
 - Sentry（エラー監視）+ Pushover（通知）
 - Auth0 + uth.js（認証）
 - next-intl（i18n）
-- Embedding API（ConoHa VPS + Cloudflare Tunnel）
+- HuggingFace TEI（Docker / ConoHa VPS + Cloudflare Tunnel）
 - Qdrant（ベクトルデータベース）
 
 ## 環境設定

@@ -101,15 +101,11 @@ async function ingest(force: boolean): Promise<void> {
 		}
 	}
 
-	// Use VPS embedding if EMBEDDING_API_URL is set, otherwise local
-	const embedBatchFn = process.env.EMBEDDING_API_URL
-		? createEmbeddingClient({
-				apiUrl: process.env.EMBEDDING_API_URL,
-				apiKey: process.env.EMBEDDING_API_KEY ?? "",
-				cfAccessClientId: process.env.CF_ACCESS_CLIENT_ID ?? "",
-				cfAccessClientSecret: process.env.CF_ACCESS_CLIENT_SECRET ?? "",
-			}).embedBatch
-		: undefined;
+	const embedBatchFn = createEmbeddingClient({
+		apiUrl: process.env.EMBEDDING_API_URL ?? "",
+		cfAccessClientId: process.env.CF_ACCESS_CLIENT_ID ?? "",
+		cfAccessClientSecret: process.env.CF_ACCESS_CLIENT_SECRET ?? "",
+	}).embedBatch;
 
 	// Delegate to core ingest logic
 	const result = await ingestChunks(allChunks, { embedBatchFn, force });
@@ -125,12 +121,16 @@ async function ingest(force: boolean): Promise<void> {
 async function main() {
 	const env = {
 		QDRANT_URL: process.env.QDRANT_URL,
+		EMBEDDING_API_URL: process.env.EMBEDDING_API_URL,
 		CF_ACCESS_CLIENT_ID: process.env.CF_ACCESS_CLIENT_ID,
 		CF_ACCESS_CLIENT_SECRET: process.env.CF_ACCESS_CLIENT_SECRET,
 	} as const;
 
 	if (!env.QDRANT_URL) {
 		throw new Error("QDRANT_URL environment variable is required.");
+	}
+	if (!env.EMBEDDING_API_URL) {
+		throw new Error("EMBEDDING_API_URL environment variable is required.");
 	}
 	if (!env.CF_ACCESS_CLIENT_ID || !env.CF_ACCESS_CLIENT_SECRET) {
 		throw new Error(

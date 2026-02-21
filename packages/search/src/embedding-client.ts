@@ -1,17 +1,17 @@
+import { RAG_CONFIG } from "./config.ts";
+
 export type EmbeddingClientConfig = {
 	apiUrl: string;
-	apiKey: string;
 	cfAccessClientId: string;
 	cfAccessClientSecret: string;
 };
 
 export function createEmbeddingClient(config: EmbeddingClientConfig) {
-	const { apiUrl, apiKey, cfAccessClientId, cfAccessClientSecret } = config;
+	const { apiUrl, cfAccessClientId, cfAccessClientSecret } = config;
 
 	function buildHeaders(): Record<string, string> {
 		return {
 			"Content-Type": "application/json",
-			Authorization: `Bearer ${apiKey}`,
 			"CF-Access-Client-Id": cfAccessClientId,
 			"CF-Access-Client-Secret": cfAccessClientSecret,
 		};
@@ -19,10 +19,18 @@ export function createEmbeddingClient(config: EmbeddingClientConfig) {
 
 	return {
 		async embed(text: string, isQuery?: boolean): Promise<number[]> {
+			const prefix = isQuery
+				? RAG_CONFIG.embedding.prefix.query
+				: RAG_CONFIG.embedding.prefix.passage;
+
 			const response = await fetch(`${apiUrl}/embed`, {
 				method: "POST",
 				headers: buildHeaders(),
-				body: JSON.stringify({ text, isQuery: isQuery ?? false }),
+				body: JSON.stringify({
+					inputs: prefix + text,
+					normalize: true,
+					truncate: true,
+				}),
 				signal: AbortSignal.timeout(30_000),
 			});
 
@@ -32,15 +40,21 @@ export function createEmbeddingClient(config: EmbeddingClientConfig) {
 				);
 			}
 
-			const data = (await response.json()) as { vector: number[] };
-			return data.vector;
+			const data = (await response.json()) as number[][];
+			return data[0];
 		},
 
 		async embedBatch(texts: string[], isQuery?: boolean): Promise<number[][]> {
-			const response = await fetch(`${apiUrl}/embed-batch`, {
+			const prefix = isQuery
+				? RAG_CONFIG.embedding.prefix.query
+				: RAG_CONFIG.embedding.prefix.passage;
+
+			const inputs = texts.map((t) => prefix + t);
+
+			const response = await fetch(`${apiUrl}/embed`, {
 				method: "POST",
 				headers: buildHeaders(),
-				body: JSON.stringify({ texts, isQuery: isQuery ?? false }),
+				body: JSON.stringify({ inputs, normalize: true, truncate: true }),
 				signal: AbortSignal.timeout(60_000),
 			});
 
@@ -50,8 +64,7 @@ export function createEmbeddingClient(config: EmbeddingClientConfig) {
 				);
 			}
 
-			const data = (await response.json()) as { vectors: number[][] };
-			return data.vectors;
+			return (await response.json()) as number[][];
 		},
 	};
 }

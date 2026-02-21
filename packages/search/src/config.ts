@@ -1,26 +1,18 @@
 // RAG Configuration
 export const RAG_CONFIG = {
-	// Qdrant settings
 	qdrant: {
-		collectionName: "knowledge_v2",
-		vectorSize: 1024, // multilingual-e5-large
+		collectionName: process.env.QDRANT_COLLECTION_NAME ?? "knowledge_v2",
+		vectorSize: Number(process.env.EMBEDDING_VECTOR_SIZE ?? 1024),
 		distance: "Cosine" as const,
 	},
-
-	// Embedding settings
 	embedding: {
-		model: "intfloat/multilingual-e5-large",
+		model: process.env.EMBEDDING_MODEL ?? "intfloat/multilingual-e5-large",
 		prefix: {
-			query: "query: ",
-			passage: "passage: ",
+			query: process.env.EMBEDDING_QUERY_PREFIX ?? "query: ",
+			passage: process.env.EMBEDDING_PASSAGE_PREFIX ?? "passage: ",
 		},
 	},
-
-	// Chunking settings
-	chunking: {
-		maxChunkLength: 2000,
-		headingLevels: [2, 3],
-	},
+	chunking: { maxChunkLength: 2000, headingLevels: [2, 3] },
 } as const;
 
 // Content type for distinguishing articles, books, and notes
