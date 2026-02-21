@@ -57,6 +57,11 @@ jobs:
           CF_ACCESS_CLIENT_ID: ${{secrets.CF_ACCESS_CLIENT_ID}}
           CF_ACCESS_CLIENT_SECRET: ${{secrets.CF_ACCESS_CLIENT_SECRET}}
           QDRANT_URL: ${{secrets.QDRANT_URL}}
+          QDRANT_COLLECTION_NAME: ${{secrets.QDRANT_COLLECTION_NAME}}
+          EMBEDDING_VECTOR_SIZE: ${{secrets.EMBEDDING_VECTOR_SIZE}}
+          EMBEDDING_MODEL: ${{secrets.EMBEDDING_MODEL}}
+          EMBEDDING_QUERY_PREFIX: ${{secrets.EMBEDDING_QUERY_PREFIX}}
+          EMBEDDING_PASSAGE_PREFIX: ${{secrets.EMBEDDING_PASSAGE_PREFIX}}
 
   biome:
     runs-on: ubuntu-24.04
@@ -185,6 +190,11 @@ jobs:
       - run: pnpm test
         env:
           MINIO_HOST: ${{secrets.MINIO_HOST}}
+          QDRANT_COLLECTION_NAME: ${{secrets.QDRANT_COLLECTION_NAME}}
+          EMBEDDING_VECTOR_SIZE: ${{secrets.EMBEDDING_VECTOR_SIZE}}
+          EMBEDDING_MODEL: ${{secrets.EMBEDDING_MODEL}}
+          EMBEDDING_QUERY_PREFIX: ${{secrets.EMBEDDING_QUERY_PREFIX}}
+          EMBEDDING_PASSAGE_PREFIX: ${{secrets.EMBEDDING_PASSAGE_PREFIX}}
       - name: Show coverage
         if: always()
         uses: davelosert/vitest-coverage-report-action@15b5b41bb7d36796d89f4bf482b09529c53f3446 # v2
