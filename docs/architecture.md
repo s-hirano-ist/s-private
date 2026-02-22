@@ -103,7 +103,7 @@ const articlesDomainService = domainServiceFactory.createArticlesDomainService()
 - **インポートルール**: 上位ディレクトリへの相対インポート禁止（`../../*`）- 絶対インポートを使用
 - **ドメイン境界**: クロスドメインインポート禁止 - 各ドメインは独立
 - **コンポーネント規則**: TypeScriptインターフェースは`type`として定義（`interface`ではない）、Reactフックルールを強制
-- **依存関係管理**: 循環依存検出用にdependency cruiserを設定
+- **依存関係管理**: 循環依存検出用にdependency cruiserを設定（詳細は[code-analysis.md](code-analysis.md)を参照）
 
 ### インポートルール
 
@@ -130,7 +130,7 @@ import { ArticlesStackLoader } from "@/loaders/articles";
 ### 設定ファイル
 - `biome.json` - 主要フォーマッター/リンター設定
 - `eslint.config.ts` - React/Next.js用補助ESLint設定
-- `.dependency-cruiser.cjs` - アーキテクチャ境界の強制
+- `.dependency-cruiser.cjs` - アーキテクチャ境界の強制（詳細は[code-analysis.md](code-analysis.md)を参照）
 
 ## セキュリティ
 

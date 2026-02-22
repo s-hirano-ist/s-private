@@ -386,6 +386,8 @@ pnpm license:check         # Check for forbidden licenses (GPL, LGPL variants)
 # Renovate configuration: .github/renovate.json5
 ```
 
+> 各ツールの設定詳細・CI連携については [docs/code-analysis.md](docs/code-analysis.md) を参照。
+
 ### Database Operations
 
 ```bash
@@ -488,14 +490,6 @@ To run code duplication analysis locally:
 ```bash
 pnpm jscpd
 ```
-
-## TODO
-
-READMEに下記を記述。CIにより強制はしないけど、AIコードレビュー時に役立てる設計
-
-1. knipによる不要ファイル確認
-2. jscpdによるコード重複率確認
-3. depcruiseによる依存ファイル確認
 
 ## Docker
 
