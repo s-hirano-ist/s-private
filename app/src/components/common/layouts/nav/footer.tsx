@@ -95,7 +95,7 @@ export function Footer({ search }: Props) {
 				// Extract locale from pathname (e.g., /en/book/... or /ja/note/...)
 				const localeMatch = pathname.match(/^\/([^/]+)/);
 				const locale = localeMatch ? localeMatch[1] : "";
-				router.replace(`/${locale}?${params.toString()}` as Route);
+				router.replace(`/${locale}/articles?${params.toString()}` as Route);
 			} else {
 				router.replace(`?${params.toString()}` as Route);
 			}

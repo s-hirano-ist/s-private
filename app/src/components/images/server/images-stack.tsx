@@ -27,7 +27,6 @@ type Props = {
 
 function generatePageLink(page: number, layout?: string): Route {
 	const params = new URLSearchParams();
-	params.set("tab", "images");
 	params.set("page", String(page));
 	if (layout) {
 		params.set("layout", layout);
