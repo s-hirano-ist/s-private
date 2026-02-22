@@ -149,5 +149,9 @@ export default withNextIntl(
 		hideSourceMaps: true,
 
 		sourcemaps: { deleteSourcemapsAfterUpload: true },
+
+		bundleSizeOptimizations: {
+			excludeDebugStatements: true,
+		},
 	}),
 );

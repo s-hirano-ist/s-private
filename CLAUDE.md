@@ -65,4 +65,5 @@ docs/** にはより詳細な設計等のルールが記載されています。
 - ドメインモデル: [docs/domain-model.md](docs/domain-model.md)
 - セキュリティ: [SECURITY.md](SECURITY.md)
 - VPSデプロイ: [docs/vps-deployment.md](docs/vps-deployment.md)
+- コード分析: [docs/code-analysis.md](docs/code-analysis.md)
 - スキーマ: [packages/database/prisma/schema.prisma](packages/database/prisma/schema.prisma)
