@@ -41,7 +41,7 @@
 		}
 	},
 	"files": {
-		"includes": ["**", "!security-audit.json", "!analyze-before-refactor/*"]
+		"includes": ["**", "!security-audit.json"]
 	},
 	"vcs": {
 		"enabled": true,
