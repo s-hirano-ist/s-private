@@ -2,6 +2,12 @@
 
 ## 概要
 
+- [ ] vps
+    - [ ] sshもtunnel経由
+- [ ] cloudflare
+- [ ] prisma
+- [ ] vercel
+
 現在手動 + シェルスクリプトで行っている VPS 初期セットアップと Cloudflare Tunnel 設定を、Terraform + cloud-init で完全自動化する。
 
 ## 背景

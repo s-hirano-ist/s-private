@@ -126,6 +126,15 @@ export const LazyLoadedComponent = meta.story({
 }
 ```
 
+## 代替ツールの検討
+
+Chromatic以外にLokiによるビジュアルリグレッションテストも検討対象。
+
+- **Loki**: オープンソースのビジュアルリグレッションテストツール。Storybookと統合可能で、Chromaticのようなサービス契約不要。
+- Chromatic vs Loki の比較評価を行い、コスト・機能・CI統合の観点から最適なツールを選定する。
+
+（元GH#1993: storybook CI 差分検知 with Loki?）
+
 ## Implementation Steps
 
 1. [ ] Chromatic にプロジェクトを登録し、`CHROMATIC_PROJECT_TOKEN` を取得
