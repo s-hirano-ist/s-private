@@ -47,7 +47,6 @@ const detectors = [
   ["Next.js Runtime", c => c.includes("hydrateRoot") || c.includes("AppRouter") || (c.includes("__NEXT") && c.includes("ReactDOM"))],
   ["Sentry", c => c.includes("Sentry") || c.includes("@sentry") || c.includes("SENTRY_BAGGAGE")],
   ["Sentry Replay", c => c.includes("replayIntegration") || c.includes("rrweb")],
-  ["react-markdown", c => c.includes("ReactMarkdown") || c.includes("remarkParse") || c.includes("micromark")],
   ["react-syntax-highlighter", c => c.includes("SyntaxHighlighter") || c.includes("refractor")],
   ["next-intl", c => c.includes("next-intl") || c.includes("useTranslations")],
   ["next-auth", c => c.includes("AuthError") || c.includes("next-auth")],
