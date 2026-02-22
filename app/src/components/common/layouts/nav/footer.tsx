@@ -1,14 +1,9 @@
 "use client";
 import { Button } from "@s-hirano-ist/s-ui/ui/button";
-import {
-	Drawer,
-	DrawerContent,
-	DrawerHeader,
-	DrawerTitle,
-} from "@s-hirano-ist/s-ui/ui/drawer";
 import { cn } from "@s-hirano-ist/s-ui/utils/cn";
 import { DownloadIcon, SearchIcon, UploadIcon } from "lucide-react";
 import type { Route } from "next";
+import dynamic from "next/dynamic";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
 	type ReactNode,
@@ -18,7 +13,11 @@ import {
 	useTransition,
 } from "react";
 import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
-import { SearchCard } from "../../features/search/search-card";
+
+const SearchDrawer = dynamic(
+	() => import("./search-drawer").then((mod) => mod.SearchDrawer),
+	{ ssr: false },
+);
 
 const LAYOUTS = {
 	dumper: "DUMPER",
@@ -164,14 +163,9 @@ export function Footer({ search }: Props) {
 			<footer className="fixed bottom-3 left-1/2 z-50 w-[calc(100%-1.5rem)] max-w-md -translate-x-1/2 rounded-full border border-white/20 bg-white/70 shadow-lg backdrop-blur-xl dark:border-white/10 dark:bg-gray-900/70">
 				{navigationButtons}
 			</footer>
-			<Drawer onOpenChange={setOpen} open={open}>
-				<DrawerContent className="max-h-[80vh]">
-					<DrawerHeader className="sr-only">
-						<DrawerTitle>Search</DrawerTitle>
-					</DrawerHeader>
-					<SearchCard search={search} />
-				</DrawerContent>
-			</Drawer>
+			{open && (
+				<SearchDrawer onOpenChange={setOpen} open={open} search={search} />
+			)}
 		</>
 	);
 }
