@@ -5,7 +5,7 @@ docs/** にはより詳細な設計等のルールが記載されています。
 また、新たな設計パターンを追加する場合は、docs/** の設計該当箇所に適宜内容を追加してください。
 
 - Before doing any UI, frontend or React development, ALWAYS call the storybook MCP server to get further instructions.
-- issuesには、取り組み検討中の課題を記述している。issueに取り組むように指示があり、完了したらissueは削除すること。
+- 課題管理はローカルの `issues/` ディレクトリで行う（GitHub Issuesではなく）。issueに取り組むように指示があり、完了したらissueファイルは削除すること。
 - 計画時、後方互換性は基本的に捨てること。
 
 ## 技術スタック
