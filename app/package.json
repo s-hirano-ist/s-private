@@ -37,6 +37,12 @@
 		"yet-another-react-lightbox": "3.29.1",
 		"zod": "4.3.6"
 	},
+	"browserslist": [
+		"last 2 Chrome versions",
+		"last 2 Firefox versions",
+		"last 2 Safari versions",
+		"last 2 Edge versions"
+	],
 	"devDependencies": {
 		"@tailwindcss/postcss": "4.1.18",
 		"@types/node": "24.10.13",
