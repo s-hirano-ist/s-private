@@ -51,9 +51,6 @@ export * from "./forms/generic-form-wrapper";
 // Hooks
 export * from "./hooks/use-infinite-scroll";
 
-// Layout Components
-export * from "./layouts/body/viewer-body";
-
 // UI Components
 export * from "./ui/badge";
 export * from "./ui/button";

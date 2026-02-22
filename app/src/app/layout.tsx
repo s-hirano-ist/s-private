@@ -12,7 +12,7 @@ import { Noto_Sans_JP } from "next/font/google";
 // import { unstable_ViewTransition as ViewTransitions } from "react";
 import { env } from "@/env";
 
-const notoSansJp = Noto_Sans_JP({ subsets: ["latin"] });
+const notoSansJp = Noto_Sans_JP({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
 	title: {

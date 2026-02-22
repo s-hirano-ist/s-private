@@ -1,12 +1,16 @@
 "use client";
 import { StatusCodeView } from "@s-hirano-ist/s-ui/display/status/status-code-view";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useState } from "react";
-import Lightbox from "yet-another-react-lightbox";
 import type { DeleteAction } from "@/common/types";
 import { DeleteButtonWithModal } from "@/components/common/forms/actions/delete-button-with-modal";
 import "yet-another-react-lightbox/styles.css";
 import { useTranslations } from "next-intl";
+
+const Lightbox = dynamic(() => import("yet-another-react-lightbox"), {
+	ssr: false,
+});
 
 export type ImageData = {
 	id?: string;
@@ -110,12 +114,14 @@ export function ImageStack({ data }: ImageStackProps) {
 	return (
 		<>
 			<ImageStackGrid data={data} onImageClick={handleImageClick} />
-			<Lightbox
-				close={() => setOpen(false)}
-				index={index}
-				open={open}
-				slides={slides}
-			/>
+			{open && (
+				<Lightbox
+					close={() => setOpen(false)}
+					index={index}
+					open={open}
+					slides={slides}
+				/>
+			)}
 		</>
 	);
 }
@@ -161,12 +167,14 @@ export function EditableImageStack({
 					) : null
 				}
 			/>
-			<Lightbox
-				close={() => setOpen(false)}
-				index={index}
-				open={open}
-				slides={slides}
-			/>
+			{open && (
+				<Lightbox
+					close={() => setOpen(false)}
+					index={index}
+					open={open}
+					slides={slides}
+				/>
+			)}
 		</>
 	);
 }
