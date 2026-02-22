@@ -33,6 +33,7 @@ ls -lhS app/.next/static/chunks/*.css
 ### 3. チャンク内容の特定
 
 各チャンク（特に上位10件）の中身を特定する。以下のスクリプトを `/tmp/identify-chunks.js` に書き出して実行:
+※ 必要に応じてdetectors等は更新すること。更新の必要性が出てきたときは、本skillの内容にもアップデートを加えること。
 
 ```javascript
 const fs = require("fs");

@@ -4,7 +4,7 @@ import { cn } from "@s-hirano-ist/s-ui/utils/cn";
 import { DownloadIcon, SearchIcon, UploadIcon } from "lucide-react";
 import type { Route } from "next";
 import dynamic from "next/dynamic";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
 	type ReactNode,
 	useEffect,
@@ -19,15 +19,6 @@ const SearchDrawer = dynamic(
 	{ ssr: false },
 );
 
-const LAYOUTS = {
-	dumper: "DUMPER",
-	viewer: "VIEWER",
-} as const;
-
-const LAYOUT_KEYS = new Set(Object.keys(LAYOUTS));
-
-const DEFAULT_LAYOUT = "dumper";
-
 type Props = {
 	search: typeof searchContentFromClient;
 };
@@ -36,29 +27,19 @@ export function Footer({ search }: Props) {
 
 	const router = useRouter();
 	const pathname = usePathname();
-	const searchParams = useSearchParams();
 	const [isPending, startTransition] = useTransition();
 
-	// Derive layout from searchParams - single source of truth
-	const layoutParam = searchParams.get("layout");
-	const layout =
-		layoutParam && LAYOUT_KEYS.has(layoutParam) ? layoutParam : DEFAULT_LAYOUT;
+	const layout = pathname.endsWith("/viewer") ? "viewer" : "dumper";
 
-	// Use optimistic for perceived performance
 	const [optimisticLayout, setOptimisticLayout] = useOptimistic(layout);
 
-	// Prefetch both layout routes on component mount
 	useEffect(() => {
-		const currentParams = new URLSearchParams(searchParams);
-		Object.keys(LAYOUTS).forEach((layoutKey) => {
-			if (layoutKey !== layout) {
-				const prefetchParams = new URLSearchParams(currentParams);
-				prefetchParams.set("layout", layoutKey);
-				prefetchParams.delete("page");
-				router.prefetch(`?${prefetchParams.toString()}`);
-			}
-		});
-	}, [router, searchParams, layout]);
+		if (pathname.endsWith("/viewer")) {
+			router.prefetch(pathname.replace(/\/viewer$/, "") as Route);
+		} else {
+			router.prefetch(`${pathname}/viewer` as Route);
+		}
+	}, [router, pathname]);
 
 	function Icon(name: string, icon: ReactNode, isActive?: boolean) {
 		return (
@@ -86,31 +67,22 @@ export function Footer({ search }: Props) {
 	const handleLayoutChange = (value: string) => {
 		startTransition(() => {
 			setOptimisticLayout(value);
-			const params = new URLSearchParams(searchParams);
-			params.delete("page");
-			params.set("layout", value);
 
-			// If we're on a book or note detail page, navigate back to root
 			if (pathname.includes("/book/") || pathname.includes("/note/")) {
-				// Extract locale from pathname (e.g., /en/book/... or /ja/note/...)
 				const localeMatch = pathname.match(/^\/([^/]+)/);
 				const locale = localeMatch ? localeMatch[1] : "";
-				router.replace(`/${locale}?${params.toString()}` as Route);
+				const target =
+					value === "viewer"
+						? `/${locale}/articles/viewer`
+						: `/${locale}/articles`;
+				router.replace(target as Route);
+			} else if (value === "viewer") {
+				router.replace(`${pathname.replace(/\/viewer$/, "")}/viewer` as Route);
 			} else {
-				router.replace(`?${params.toString()}` as Route);
+				router.replace(pathname.replace(/\/viewer$/, "") as Route);
 			}
 		});
 	};
-
-	// Redirect invalid layout values
-	useEffect(() => {
-		const currentLayout = searchParams.get("layout");
-		if (currentLayout && !LAYOUT_KEYS.has(currentLayout)) {
-			const params = new URLSearchParams(searchParams);
-			params.delete("layout");
-			router.replace(`?${params.toString()}`);
-		}
-	}, [searchParams, router]);
 
 	const isDumperActive = optimisticLayout === "dumper";
 	const isViewerActive = optimisticLayout === "viewer";

@@ -163,12 +163,6 @@ export function FormDropdownInput({
 				<PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
 					<Command shouldFilter>
 						<CommandInput
-							onKeyDown={(e) => {
-								if (e.key === "Enter" && searchValue) {
-									e.preventDefault();
-									handleCustomValue();
-								}
-							}}
 							onValueChange={setSearchValue}
 							placeholder={searchPlaceholder}
 							value={searchValue}

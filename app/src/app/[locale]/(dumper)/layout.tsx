@@ -1,8 +1,7 @@
-import Loading from "@s-hirano-ist/s-ui/display/loading";
 import type { Metadata, Viewport } from "next";
-import { type ReactNode, Suspense } from "react";
+import type { ReactNode } from "react";
 import { PAGE_NAME } from "@/common/constants";
-import { RootTab } from "@/components/common/layouts/nav/root-tab";
+import { TabNav } from "@/components/common/layouts/nav/tab-nav";
 
 export const metadata: Metadata = {
 	title: `${PAGE_NAME}`,
@@ -16,25 +15,11 @@ export const viewport: Viewport = {
 	userScalable: false,
 };
 
-type Props = {
-	articles: ReactNode;
-	notes: ReactNode;
-	images: ReactNode;
-	books: ReactNode;
-};
-
-export default async function Layout({
-	articles,
-	notes,
-	images,
-	books,
-}: Props) {
+export default function Layout({ children }: { children: ReactNode }) {
 	return (
-		<RootTab
-			articles={<Suspense fallback={<Loading />}>{articles}</Suspense>}
-			books={<Suspense fallback={<Loading />}>{books}</Suspense>}
-			images={<Suspense fallback={<Loading />}>{images}</Suspense>}
-			notes={<Suspense fallback={<Loading />}>{notes}</Suspense>}
-		/>
+		<div className="mx-auto max-w-5xl sm:px-2">
+			<TabNav />
+			{children}
+		</div>
 	);
 }
