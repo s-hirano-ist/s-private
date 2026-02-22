@@ -22,15 +22,11 @@ type Props = {
 	totalCount: number;
 	data: ImageData[];
 	deleteAction?: (id: string) => Promise<ServerAction>;
-	layout?: string;
 };
 
-function generatePageLink(page: number, layout?: string): Route {
+function generatePageLink(page: number): Route {
 	const params = new URLSearchParams();
 	params.set("page", String(page));
-	if (layout) {
-		params.set("layout", layout);
-	}
 	return `?${params.toString()}` as Route;
 }
 
@@ -77,7 +73,6 @@ export async function ImagesStack({
 	totalCount,
 	data,
 	deleteAction,
-	layout,
 }: Props) {
 	const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 	const t = await getTranslations("label");
@@ -97,7 +92,7 @@ export async function ImagesStack({
 						{currentPage > 1 && (
 							<PaginationItem>
 								<PaginationPrevious
-									href={generatePageLink(currentPage - 1, layout)}
+									href={generatePageLink(currentPage - 1)}
 									label={t("previous")}
 								/>
 							</PaginationItem>
@@ -110,7 +105,7 @@ export async function ImagesStack({
 							) : (
 								<PaginationItem key={item.page}>
 									<PaginationLink
-										href={generatePageLink(item.page, layout)}
+										href={generatePageLink(item.page)}
 										isActive={item.page === currentPage}
 									>
 										{item.page}
@@ -121,7 +116,7 @@ export async function ImagesStack({
 						{currentPage < totalPages && (
 							<PaginationItem>
 								<PaginationNext
-									href={generatePageLink(currentPage + 1, layout)}
+									href={generatePageLink(currentPage + 1)}
 									label={t("next")}
 								/>
 							</PaginationItem>

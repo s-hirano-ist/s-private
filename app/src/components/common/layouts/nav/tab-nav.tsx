@@ -1,6 +1,6 @@
 "use client";
 import { cn } from "@s-hirano-ist/s-ui/utils/cn";
-import { useSearchParams, useSelectedLayoutSegment } from "next/navigation";
+import { useSelectedLayoutSegments } from "next/navigation";
 import { Link } from "@/infrastructures/i18n/routing";
 
 const TABS = {
@@ -11,16 +11,16 @@ const TABS = {
 } as const;
 
 export function TabNav() {
-	const segment = useSelectedLayoutSegment();
-	const searchParams = useSearchParams();
-	const layout = searchParams.get("layout");
+	const segments = useSelectedLayoutSegments();
+	const activeTab = segments[0];
+	const isViewer = segments.includes("viewer");
 
 	return (
 		<nav className="inline-flex h-10 w-full items-center justify-center border-muted border-b p-1 text-muted-foreground">
 			{Object.entries(TABS).map(([key, label]) => {
-				const isActive = segment === key;
-				const href = layout
-					? (`/${key}?layout=${layout}` as const)
+				const isActive = activeTab === key;
+				const href = isViewer
+					? (`/${key}/viewer` as const)
 					: (`/${key}` as const);
 
 				return (

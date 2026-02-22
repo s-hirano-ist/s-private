@@ -19,7 +19,7 @@ export const Default: Story = {
 	parameters: {
 		nextjs: {
 			navigation: {
-				pathname: "/en",
+				pathname: "/en/articles",
 				query: {},
 			},
 		},
@@ -31,7 +31,7 @@ export const OnArticlesPage: Story = {
 	parameters: {
 		nextjs: {
 			navigation: {
-				pathname: "/en",
+				pathname: "/en/articles",
 				query: {},
 			},
 		},
@@ -79,8 +79,8 @@ export const WithViewerLayout: Story = {
 	parameters: {
 		nextjs: {
 			navigation: {
-				pathname: "/en",
-				query: { layout: "viewer" },
+				pathname: "/en/articles/viewer",
+				query: {},
 			},
 		},
 	},
@@ -91,8 +91,8 @@ export const WithDumperLayout: Story = {
 	parameters: {
 		nextjs: {
 			navigation: {
-				pathname: "/en",
-				query: { layout: "dumper" },
+				pathname: "/en/articles",
+				query: {},
 			},
 		},
 	},
@@ -103,7 +103,7 @@ export const SwitchToViewer: Story = {
 	parameters: {
 		nextjs: {
 			navigation: {
-				pathname: "/en",
+				pathname: "/en/articles",
 				query: {},
 			},
 		},
@@ -127,7 +127,7 @@ export const OpenSearchDrawer: Story = {
 	parameters: {
 		nextjs: {
 			navigation: {
-				pathname: "/en",
+				pathname: "/en/articles",
 				query: {},
 			},
 		},

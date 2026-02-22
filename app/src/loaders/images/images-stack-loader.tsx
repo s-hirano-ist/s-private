@@ -13,14 +13,12 @@ export type ImagesStackLoaderProps = BaseLoaderProps & {
 	variant: "exported" | "unexported";
 	currentPage: number;
 	deleteAction?: (id: string) => Promise<ServerAction>;
-	layout?: string;
 };
 
 export async function ImagesStackLoader({
 	variant,
 	currentPage,
 	deleteAction,
-	layout,
 }: ImagesStackLoaderProps) {
 	const status = variant === "exported" ? "EXPORTED" : "UNEXPORTED";
 	const getImages =
@@ -36,7 +34,6 @@ export async function ImagesStackLoader({
 			currentPage={currentPage}
 			data={images}
 			deleteAction={deleteAction}
-			layout={layout}
 			totalCount={totalCount}
 		/>
 	);
