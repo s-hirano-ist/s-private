@@ -85,8 +85,8 @@ describe("file-entity", () => {
 			expect(makeFileSize(1024)).toBe(1024);
 		});
 
-		test("should accept 100MB (upper limit)", () => {
-			const size = 100 * 1024 * 1024;
+		test("should accept 10MB (upper limit)", () => {
+			const size = 10 * 1024 * 1024;
 			expect(makeFileSize(size)).toBe(size);
 		});
 
@@ -98,8 +98,8 @@ describe("file-entity", () => {
 			expect(() => makeFileSize(1.5)).toThrow(ZodError);
 		});
 
-		test("should throw error for exceeding 100MB", () => {
-			expect(() => makeFileSize(100 * 1024 * 1024 + 1)).toThrow(ZodError);
+		test("should throw error for exceeding 10MB", () => {
+			expect(() => makeFileSize(10 * 1024 * 1024 + 1)).toThrow(ZodError);
 		});
 	});
 });

@@ -49,6 +49,7 @@ const nextConfig = {
 		},
 		viewTransition: true,
 		serverActions: {
+			bodySizeLimit: "10mb",
 			allowedOrigins: ["s-hirano.com", "*.vercel.app", "localhost:3000"],
 		},
 	},
