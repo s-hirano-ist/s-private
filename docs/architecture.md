@@ -94,6 +94,7 @@ const articlesDomainService = domainServiceFactory.createArticlesDomainService()
 - **主要フォーマッター**: Biome（Prettierではない）- `pnpm check:fix`を使用
   - インポート整理、コードスタイル強制、TypeScript固有のルールを含む
   - 厳格なスタイルルールとアクセシビリティチェックを設定
+  - **コンポーネントa11yテスト**: Storybookの全ストーリーに対して`@storybook/addon-a11y`（axe-core）で自動チェック（詳細は[testing.md](testing.md)を参照）
 - **補助リンター**: React/Next.js固有ルール用のESLint
   - Reactフックの強制を含むTypeScript厳格設定
   - フレームワーク固有のベストプラクティス用Next.jsプラグイン統合

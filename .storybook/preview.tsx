@@ -10,7 +10,7 @@ import { Toaster } from "../packages/ui/ui/sonner";
 const messages = { en: enMessages, ja: jaMessages };
 
 const preview = {
-	tags: ["autodocs"],
+	tags: ["autodocs", "a11y-test"],
 	initialGlobals: {
 		backgrounds: { value: "white" },
 	},
@@ -68,6 +68,19 @@ const preview = {
 
 		a11y: {
 			test: "error",
+			options: {
+				rules: {
+					"html-has-lang": { enabled: true },
+					"html-lang-valid": { enabled: true },
+					"color-contrast": { enabled: true },
+					"image-alt": { enabled: true },
+					label: { enabled: true },
+					"landmark-unique": { enabled: true },
+				},
+			},
+			config: {
+				rules: [{ id: "region", enabled: false }],
+			},
 		},
 
 		nextIntl: {
