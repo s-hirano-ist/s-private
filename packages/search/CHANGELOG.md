@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-search-v1.18.1...@s-hirano-ist/s-search-v1.19.0) (2026-02-25)
+
+
+### Maintenance
+
+* **deps:** update minor ([2c92730](https://github.com/s-hirano-ist/s-private/commit/2c92730f624c67f76e038c5bbc633ce9ac6b1960))
+
 ## [1.18.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-search-v1.18.0...@s-hirano-ist/s-search-v1.18.1) (2026-02-21)
 
 

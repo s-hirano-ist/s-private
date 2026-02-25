@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.19.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.18.1...@s-hirano-ist/s-ui-v1.19.0) (2026-02-25)
+
+
+### Features
+
+* divide parallel to direct route ([5771177](https://github.com/s-hirano-ist/s-private/commit/57711772a9eb0922ea5993715e0ea6cdae2e7509))
+
+
+### Bug Fixes
+
+* bug of drawer ([b64ec36](https://github.com/s-hirano-ist/s-private/commit/b64ec36026283b53a3d065aeb500697fb3ea66e6))
+
+
+### Maintenance
+
+* add font opt and .... ([c4983f3](https://github.com/s-hirano-ist/s-private/commit/c4983f305445bd1a85681438086fe35c25d0c735))
+* add more perf settings ([a91ddfd](https://github.com/s-hirano-ist/s-private/commit/a91ddfdd98594c68da11bbac3130396c277c4126))
+* **deps:** update minor ([2c92730](https://github.com/s-hirano-ist/s-private/commit/2c92730f624c67f76e038c5bbc633ce9ac6b1960))
+* **deps:** update patch ([f4e9e6a](https://github.com/s-hirano-ist/s-private/commit/f4e9e6a3b7d6fc6e098f8df80da9c819f11eb686))
+* **deps:** update patch ([140fb32](https://github.com/s-hirano-ist/s-private/commit/140fb324ef97ad3d3fa5c0f8318f220e1578ad00))
+* use absolute import ([acbe142](https://github.com/s-hirano-ist/s-private/commit/acbe14290c667d31dc59e4517d551b83c9e1ea86))
+
 ## [1.18.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.18.0...@s-hirano-ist/s-ui-v1.18.1) (2026-02-21)
 
 

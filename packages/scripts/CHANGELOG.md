@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.19.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.18.1...@s-hirano-ist/s-scripts-v1.19.0) (2026-02-25)
+
+
+### Maintenance
+
+* **deps:** update minor ([2c92730](https://github.com/s-hirano-ist/s-private/commit/2c92730f624c67f76e038c5bbc633ce9ac6b1960))
+* **deps:** update patch ([f4e9e6a](https://github.com/s-hirano-ist/s-private/commit/f4e9e6a3b7d6fc6e098f8df80da9c819f11eb686))
+* **deps:** update patch ([140fb32](https://github.com/s-hirano-ist/s-private/commit/140fb324ef97ad3d3fa5c0f8318f220e1578ad00))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.19.0
+    * @s-hirano-ist/s-search bumped to 1.19.0
+    * @s-hirano-ist/s-database bumped to 1.19.0
+    * @s-hirano-ist/s-notification bumped to 1.19.0
+    * @s-hirano-ist/s-storage bumped to 1.19.0
+
 ## [1.18.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.18.0...@s-hirano-ist/s-scripts-v1.18.1) (2026-02-21)
 
 

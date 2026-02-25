@@ -1,6 +1,6 @@
 {
 	"name": "@s-hirano-ist/s-core",
-	"version": "1.18.1",
+	"version": "1.19.0",
 	"description": "Core domain layer for s-private application - Clean architecture domain entities, repositories, and services",
 	"type": "module",
 	"exports": {

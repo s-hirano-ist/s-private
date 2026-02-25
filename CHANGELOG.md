@@ -2,6 +2,56 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.19.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.18.1...s-private-v10.19.0) (2026-02-25)
+
+
+### Features
+
+* add page divide ([6a579b8](https://github.com/s-hirano-ist/s-private/commit/6a579b800170a8e8fc7837a88b447226b14aa52c))
+* divide parallel to direct route ([5771177](https://github.com/s-hirano-ist/s-private/commit/57711772a9eb0922ea5993715e0ea6cdae2e7509))
+* divide parallel to direct route ([d3aa05d](https://github.com/s-hirano-ist/s-private/commit/d3aa05dad306232d6aeeae8a857f640df535668e))
+
+
+### Bug Fixes
+
+* bug of drawer ([b64ec36](https://github.com/s-hirano-ist/s-private/commit/b64ec36026283b53a3d065aeb500697fb3ea66e6))
+* designs of notes and books ([d4a74d7](https://github.com/s-hirano-ist/s-private/commit/d4a74d77a1d2b944a47671eaeb943b0896c6a2ea))
+* designs of notes and books ([5c8aa79](https://github.com/s-hirano-ist/s-private/commit/5c8aa7996ae8e34539b1e603fcb666b49933e5ea))
+* knip ([607f6e3](https://github.com/s-hirano-ist/s-private/commit/607f6e345dfd943bb65252b6e7071c6bfe80aff2))
+* move delete ID validation from core to server action layer ([1392e04](https://github.com/s-hirano-ist/s-private/commit/1392e040de4b3db65ff9b881f75098fe22364b55))
+* tests ([8b71afa](https://github.com/s-hirano-ist/s-private/commit/8b71afa4afae41d20e3596a173b935eabd4bcaaf))
+
+
+### Documentation
+
+* add issues ([d91a7e9](https://github.com/s-hirano-ist/s-private/commit/d91a7e9f8abfaf4994d133b18a9740887e71883b))
+* add issues ([37fd4cf](https://github.com/s-hirano-ist/s-private/commit/37fd4cfed5287c7511113dd4644ec19bb72c8438))
+* add more docs ([ba091cc](https://github.com/s-hirano-ist/s-private/commit/ba091cc1c183aa2d5885fc9ccfe536985b3af5f7))
+* delete perf docs ([de792c5](https://github.com/s-hirano-ist/s-private/commit/de792c550f440c53f138cf96d90a06636d1b802f))
+* update issues ([c114c12](https://github.com/s-hirano-ist/s-private/commit/c114c12dedc02a5b6d3cfb9ad11382ae5d4000a3))
+
+
+### Maintenance
+
+* add analyze skill ([825731c](https://github.com/s-hirano-ist/s-private/commit/825731cc8672b6762a6a768a5b1e5550ddd173b9))
+* add analyze skill ([6656614](https://github.com/s-hirano-ist/s-private/commit/6656614154590b25ad9bc48b3422c304c6f50c8d))
+* add browser settings ([a11d20f](https://github.com/s-hirano-ist/s-private/commit/a11d20f7c988aa3a4c2ab9a1344a095fad178777))
+* add docs ([1611c08](https://github.com/s-hirano-ist/s-private/commit/1611c08db989a8a0f06d3d3ad04bf75b9d569e7b))
+* add docs ([f8d8580](https://github.com/s-hirano-ist/s-private/commit/f8d85802ca1ddd8d2e989e15b407023a4659e61b))
+* add font opt and .... ([c4983f3](https://github.com/s-hirano-ist/s-private/commit/c4983f305445bd1a85681438086fe35c25d0c735))
+* add more perf ([74a59cf](https://github.com/s-hirano-ist/s-private/commit/74a59cfd423eb422c64b15bbf20717ecb4dd32a4))
+* add more perf settings ([a91ddfd](https://github.com/s-hirano-ist/s-private/commit/a91ddfdd98594c68da11bbac3130396c277c4126))
+* apply biome formatting ([ab28377](https://github.com/s-hirano-ist/s-private/commit/ab28377af7da04bde15b81987eff4d2df22dd017))
+* delete sentry heavy settings ([513f967](https://github.com/s-hirano-ist/s-private/commit/513f967dc996d1a0ca0f728d7f0d2bb82f143ee2))
+* **deps:** pin ghcr.io/huggingface/text-embeddings-inference docker tag to 16230cd ([e7b35d3](https://github.com/s-hirano-ist/s-private/commit/e7b35d36b25d1221cae191e842fd3306a1d80881))
+* **deps:** pin ghcr.io/huggingface/text-embeddings-inference docker tag to 16230cd ([def52f4](https://github.com/s-hirano-ist/s-private/commit/def52f47d7348ed5ac18b7c51c8f6bf840408406))
+* **deps:** update minor ([2c92730](https://github.com/s-hirano-ist/s-private/commit/2c92730f624c67f76e038c5bbc633ce9ac6b1960))
+* **deps:** update patch ([f4e9e6a](https://github.com/s-hirano-ist/s-private/commit/f4e9e6a3b7d6fc6e098f8df80da9c819f11eb686))
+* **deps:** update patch ([140fb32](https://github.com/s-hirano-ist/s-private/commit/140fb324ef97ad3d3fa5c0f8318f220e1578ad00))
+* **deps:** update pnpm to v10.30.1 ([f8cde8f](https://github.com/s-hirano-ist/s-private/commit/f8cde8fad3e2f22aa1ba83699125d81591e9562b))
+* **deps:** update pnpm to v10.30.1 ([d11f022](https://github.com/s-hirano-ist/s-private/commit/d11f022e88a22f7c3b19de3e3a1dcf1d28a9fd4d))
+* use absolute import ([acbe142](https://github.com/s-hirano-ist/s-private/commit/acbe14290c667d31dc59e4517d551b83c9e1ea86))
+
 ## [10.18.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v10.18.0...s-private-v10.18.1) (2026-02-21)
 
 
