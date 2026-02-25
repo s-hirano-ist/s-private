@@ -1,6 +1,6 @@
 services:
   embedding-api:
-    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.9
+    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.9@sha256:16230cd8f679ae5f8a51d585033628b1c0d45cd70c2bc9b0d208170d71218fdb
     container_name: embedding-api
     platform: linux/amd64
     restart: unless-stopped
