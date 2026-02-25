@@ -50,6 +50,20 @@ async function main() {
 	const userId: UserId = makeUserId(env.USERNAME_TO_EXPORT ?? "");
 	const UNEXPORTED: Status = makeUnexportedStatus();
 
+	async function withRetry<T>(fn: () => Promise<T>, retries = 3): Promise<T> {
+		for (let attempt = 0; attempt < retries; attempt++) {
+			try {
+				return await fn();
+			} catch (error) {
+				if (attempt === retries - 1) throw error;
+				const delay = 1000 * 2 ** attempt;
+				console.warn(`⚠️ リトライ ${attempt + 1}/${retries} (${delay}ms後)...`);
+				await new Promise((r) => setTimeout(r, delay));
+			}
+		}
+		throw new Error("unreachable");
+	}
+
 	async function fetchImages() {
 		const images = await prisma.image.findMany({
 			where: { userId, status: UNEXPORTED },
@@ -59,19 +73,19 @@ async function main() {
 		const outputDir = path.join(process.cwd(), "image/dump");
 		await mkdir(outputDir, { recursive: true });
 
-		const downloadPromises = images.map(async (image: { path: string }) => {
-			const { path: imagePath } = image;
+		for (const image of images) {
+			const { path: imagePath } = image as { path: string };
 			const filePath = path.join(outputDir, imagePath);
 
 			await mkdir(path.dirname(filePath), { recursive: true });
-			await minioClient.fGetObject(
-				env.MINIO_BUCKET_NAME ?? "",
-				`images/original/${imagePath}`,
-				filePath,
+			await withRetry(() =>
+				minioClient.fGetObject(
+					env.MINIO_BUCKET_NAME ?? "",
+					`images/original/${imagePath}`,
+					filePath,
+				),
 			);
-		});
-
-		await Promise.all(downloadPromises);
+		}
 		console.log("💾 すべての画像の保存が完了しました。");
 	}
 

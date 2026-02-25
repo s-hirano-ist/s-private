@@ -93,6 +93,20 @@ async function main() {
 		);
 	}
 
+	async function withRetry<T>(fn: () => Promise<T>, retries = 3): Promise<T> {
+		for (let attempt = 0; attempt < retries; attempt++) {
+			try {
+				return await fn();
+			} catch (error) {
+				if (attempt === retries - 1) throw error;
+				const delay = 1000 * 2 ** attempt;
+				console.warn(`⚠️ リトライ ${attempt + 1}/${retries} (${delay}ms後)...`);
+				await new Promise((r) => setTimeout(r, delay));
+			}
+		}
+		throw new Error("unreachable");
+	}
+
 	async function downloadBookImages(books: Book[]) {
 		const outputDir = path.join(process.cwd(), "image/book");
 		await mkdir(outputDir, { recursive: true });
@@ -105,34 +119,32 @@ async function main() {
 		let skippedCount = 0;
 		let downloadedCount = 0;
 
-		const downloadPromises = booksWithImages.map(
-			async (book: { isbn: string; imagePath: string | null }) => {
-				const { isbn, imagePath } = book;
-				if (!imagePath) return;
+		for (const book of booksWithImages) {
+			const { isbn, imagePath } = book;
+			if (!imagePath) continue;
 
-				const ext = path.extname(imagePath);
-				const fileName = `${isbn}${ext}`;
-				const filePath = path.join(outputDir, fileName);
+			const ext = path.extname(imagePath);
+			const fileName = `${isbn}${ext}`;
+			const filePath = path.join(outputDir, fileName);
 
-				// ファイルが既に存在する場合はスキップ
-				try {
-					await access(filePath);
-					skippedCount++;
-					return;
-				} catch {
-					// ファイルが存在しない場合はダウンロード
-				}
+			// ファイルが既に存在する場合はスキップ
+			try {
+				await access(filePath);
+				skippedCount++;
+				continue;
+			} catch {
+				// ファイルが存在しない場合はダウンロード
+			}
 
-				await minioClient.fGetObject(
+			await withRetry(() =>
+				minioClient.fGetObject(
 					env.MINIO_BUCKET_NAME ?? "",
 					`books/original/${imagePath}`,
 					filePath,
-				);
-				downloadedCount++;
-			},
-		);
-
-		await Promise.all(downloadPromises);
+				),
+			);
+			downloadedCount++;
+		}
 		console.log(
 			`💾 書籍画像: ${downloadedCount} 件ダウンロード, ${skippedCount} 件スキップ`,
 		);
