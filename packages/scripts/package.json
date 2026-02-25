@@ -78,7 +78,7 @@
 		"dotenv": "17.3.1",
 		"@s-hirano-ist/s-notification": "workspace:*",
 		"@s-hirano-ist/s-storage": "workspace:*",
-		"glob": "13.0.3",
+		"glob": "13.0.6",
 		"jsdom": "28.1.0",
 		"sharp": "0.34.5",
 		"iconv-lite": "0.7.2",

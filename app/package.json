@@ -26,7 +26,7 @@
 		"lucide-react": "0.575.0",
 		"next": "16.1.6",
 		"next-auth": "5.0.0-beta.30",
-		"next-intl": "4.8.2",
+		"next-intl": "4.8.3",
 		"next-themes": "0.4.6",
 		"pino": "10.3.1",
 		"react": "19.2.4",
@@ -44,12 +44,12 @@
 		"last 2 Edge versions"
 	],
 	"devDependencies": {
-		"@tailwindcss/postcss": "4.2.0",
+		"@tailwindcss/postcss": "4.2.1",
 		"@types/node": "24.10.13",
 		"@types/react": "19.2.14",
 		"@types/react-dom": "19.2.3",
 		"@types/react-syntax-highlighter": "15.5.13",
 		"postcss": "8.5.6",
-		"tailwindcss": "4.2.0"
+		"tailwindcss": "4.2.1"
 	}
 }
