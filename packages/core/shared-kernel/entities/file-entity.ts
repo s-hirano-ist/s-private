@@ -108,7 +108,7 @@ export const FileSize = z
 	.number()
 	.int()
 	.nonnegative()
-	.max(100 * 1024 * 1024) // 100MB
+	.max(10 * 1024 * 1024) // 10MB
 	.brand<"FileSize">();
 
 /**
