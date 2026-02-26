@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.18.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.18.1...@s-hirano-ist/s-database-v1.18.2) (2026-02-26)
+
+
+### Maintenance
+
+* **deps:** update patch ([f4e9e6a](https://github.com/s-hirano-ist/s-private/commit/f4e9e6a3b7d6fc6e098f8df80da9c819f11eb686))
+* **deps:** update patch ([140fb32](https://github.com/s-hirano-ist/s-private/commit/140fb324ef97ad3d3fa5c0f8318f220e1578ad00))
+
 ## [1.18.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.18.0...@s-hirano-ist/s-database-v1.18.1) (2026-02-21)
 
 

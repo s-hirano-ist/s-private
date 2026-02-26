@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.18.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.18.1...@s-hirano-ist/s-core-v1.18.2) (2026-02-26)
+
+
+### Bug Fixes
+
+* designs of notes and books ([d4a74d7](https://github.com/s-hirano-ist/s-private/commit/d4a74d77a1d2b944a47671eaeb943b0896c6a2ea))
+* designs of notes and books ([5c8aa79](https://github.com/s-hirano-ist/s-private/commit/5c8aa7996ae8e34539b1e603fcb666b49933e5ea))
+
 ## [1.18.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.18.0...@s-hirano-ist/s-core-v1.18.1) (2026-02-21)
 
 
