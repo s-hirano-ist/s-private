@@ -36,20 +36,7 @@
 	"plugins": [
 		{
 			"type": "node-workspace",
-			"updateAllPackages": true
-		},
-		{
-			"type": "linked-versions",
-			"groupName": "npm-packages",
-			"components": [
-				"@s-hirano-ist/s-core",
-				"@s-hirano-ist/s-ui",
-				"@s-hirano-ist/s-database",
-				"@s-hirano-ist/s-notification",
-				"@s-hirano-ist/s-scripts",
-				"@s-hirano-ist/s-search",
-				"@s-hirano-ist/s-storage"
-			]
+			"updateAllPackages": false
 		}
 	],
 	"changelog-sections": [

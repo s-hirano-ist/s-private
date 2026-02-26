@@ -1,5 +1,5 @@
 {
-	".": "10.18.1",
+	".": "2.0.0",
 	"packages/core": "1.18.1",
 	"packages/ui": "1.18.1",
 	"packages/database": "1.18.1",
