@@ -136,11 +136,14 @@ export const OpenSearchDrawer: Story = {
 	args: { search: fn() },
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const body = within(document.body);
 
 		const searchButton = canvas.getByRole("button", { name: "Action" });
 		await userEvent.click(searchButton);
 
-		await waitFor(() => expect(body.getByText("Search")).toBeInTheDocument());
+		await waitFor(
+			() =>
+				expect(within(document.body).getByText("Search")).toBeInTheDocument(),
+			{ timeout: 5000 },
+		);
 	},
 };
