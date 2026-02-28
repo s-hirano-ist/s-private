@@ -16,6 +16,10 @@ debug.log
 # Testing
 .vitest-coverage
 
+# Mutation testing
+reports/mutation/
+.stryker-tmp/
+
 # App
 app/.next
 next-env.d.ts

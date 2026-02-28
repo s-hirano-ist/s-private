@@ -87,6 +87,46 @@ pnpm vitest run --project storybook
 pnpm test
 ```
 
+## Mutation Testing（Stryker Mutator）
+
+[Stryker Mutator](https://stryker-mutator.io/) によるミューテーションテスト。コードに意図的な変異（mutant）を加え、テストがそれを検知できるか（killed）を計測する。
+
+### 対象
+
+`packages/core/` のドメインロジック層:
+- `**/entities/*.ts`
+- `**/events/*.ts`
+- `**/services/*.ts`
+- `**/errors/*.ts`
+
+### コマンド
+
+```bash
+pnpm test:mutation:core   # packages/core対象のミューテーションテスト実行
+```
+
+### Thresholds
+
+| レベル | スコア | 意味 |
+|-------|--------|------|
+| high | 80% | 良好 |
+| low | 60% | 警告 |
+| break | 50% | CI失敗 |
+
+### レポート
+
+HTMLレポートが `reports/mutation/index.html` に生成される（`.gitignore`で除外済み）。
+
+### CI統合
+
+GitHub Actionsの `mutation-test.yaml` ワークフローで、PRにて `packages/core/**/*.ts` または `stryker.config.json` が変更された場合に自動実行。レポートはartifactとして14日間保持。
+
+### 設定
+
+- 設定ファイル: [`stryker.config.json`](../stryker.config.json)
+- テストランナー: `@stryker-mutator/vitest-runner`
+- 型チェッカー: `@stryker-mutator/typescript-checker`
+
 ## memlab メモリリーク検知
 
 [memlab](https://facebook.github.io/memlab/) によるPuppeteerベースのヒープスナップショット比較でメモリリークを自動検知する。
