@@ -1,7 +1,7 @@
 {
 	"$schema": "https://unpkg.com/knip@5/schema.json",
 	"ignoreExportsUsedInFile": true,
-	"ignore": ["memlab/**/*"],
+	"ignore": ["memlab/**/*", "e2e/**/*"],
 	"ignoreDependencies": [
 		"@eslint/config-inspector",
 		"babel-plugin-react-compiler",

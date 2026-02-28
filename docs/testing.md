@@ -154,3 +154,35 @@ pnpm memlab:all       # 全シナリオ実行
 ### CI統合
 
 GitHub Actionsの `memlab.yaml` ワークフローで `workflow_dispatch` トリガーにより手動実行可能。結果はartifactとしてアップロードされる。
+
+## Chaos レジリエンステスト（Playwright CDP）
+
+Playwright の CDP (Chrome DevTools Protocol) を使ったネットワークシミュレーションにより、UIレジリエンスを検証する。
+
+### 前提条件
+
+- アプリケーションが `http://localhost:3000` で起動済み、または `webServer` 設定で自動起動
+- `E2E_AUTH0_USERNAME` / `E2E_AUTH0_PASSWORD` 環境変数の設定
+- Chromium ブラウザ（CDP はChromiumのみ対応）
+
+### コマンド
+
+```bash
+pnpm test:chaos           # 全Chaosテスト実行
+pnpm test:chaos --headed  # ブラウザ表示付きで実行
+```
+
+### テストシナリオ
+
+| テストファイル | シナリオ | 検証内容 |
+|--------------|---------|---------|
+| `e2e/chaos/network-delay.spec.ts` | 3G遅延 | loading表示、タブナビゲーション、フォーム送信 |
+| `e2e/chaos/network-offline.spec.ts` | オフライン | エラーtoast、ナビゲーション、復帰後リカバリ |
+| `e2e/chaos/error-boundary.spec.ts` | サーバーエラー | error.tsx表示、Try again復帰、Server Action toast |
+
+### 構成
+
+- `playwright.config.ts` - Playwright設定（Chromiumのみ、workers:1）
+- `e2e/fixtures/auth.setup.ts` - Auth0認証セットアップ
+- `e2e/helpers/cdp-network.ts` - CDPネットワーク条件プリセット（slow3G, offline, fast）
+- `e2e/helpers/selectors.ts` - 共有セレクタ・ルート定数
