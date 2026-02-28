@@ -1,0 +1,114 @@
+name: memlab
+
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  memlab:
+    runs-on: ubuntu-24.04
+    permissions: {}
+    timeout-minutes: 30
+    steps:
+      - name: Checkout files
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+          submodules: true
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4
+        with:
+          run_install: false
+
+      - name: Install Node.js
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
+        with:
+          node-version: "24.13.1"
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - run: pnpm i --frozen-lockfile
+
+      - name: Build application
+        run: pnpm build
+        env:
+          AUTH_SECRET: ${{secrets.AUTH_SECRET}}
+          AUTH0_CLIENT_ID: ${{secrets.AUTH0_CLIENT_ID}}
+          AUTH0_CLIENT_SECRET: ${{secrets.AUTH0_CLIENT_SECRET}}
+          AUTH0_ISSUER_BASE_URL: ${{secrets.AUTH0_ISSUER_BASE_URL}}
+          PUSHOVER_URL: ${{secrets.PUSHOVER_URL}}
+          PUSHOVER_APP_TOKEN: ${{secrets.PUSHOVER_APP_TOKEN}}
+          PUSHOVER_USER_KEY: ${{secrets.PUSHOVER_USER_KEY}}
+          MINIO_ACCESS_KEY: ${{secrets.MINIO_ACCESS_KEY}}
+          MINIO_BUCKET_NAME: ${{secrets.MINIO_BUCKET_NAME}}
+          MINIO_HOST: ${{secrets.MINIO_HOST}}
+          MINIO_PORT: ${{secrets.MINIO_PORT}}
+          MINIO_SECRET_KEY: ${{secrets.MINIO_SECRET_KEY}}
+          NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_REPORT_URL: ${{ secrets.SENTRY_REPORT_URL }}
+          EMBEDDING_API_URL: ${{secrets.EMBEDDING_API_URL}}
+          CF_ACCESS_CLIENT_ID: ${{secrets.CF_ACCESS_CLIENT_ID}}
+          CF_ACCESS_CLIENT_SECRET: ${{secrets.CF_ACCESS_CLIENT_SECRET}}
+          QDRANT_URL: ${{secrets.QDRANT_URL}}
+          QDRANT_COLLECTION_NAME: ${{secrets.QDRANT_COLLECTION_NAME}}
+          EMBEDDING_VECTOR_SIZE: ${{secrets.EMBEDDING_VECTOR_SIZE}}
+          EMBEDDING_MODEL: ${{secrets.EMBEDDING_MODEL}}
+          EMBEDDING_QUERY_PREFIX: ${{secrets.EMBEDDING_QUERY_PREFIX}}
+          EMBEDDING_PASSAGE_PREFIX: ${{secrets.EMBEDDING_PASSAGE_PREFIX}}
+
+      - name: Start server
+        run: pnpm --filter s-private-app start &
+        env:
+          AUTH_SECRET: ${{secrets.AUTH_SECRET}}
+          AUTH0_CLIENT_ID: ${{secrets.AUTH0_CLIENT_ID}}
+          AUTH0_CLIENT_SECRET: ${{secrets.AUTH0_CLIENT_SECRET}}
+          AUTH0_ISSUER_BASE_URL: ${{secrets.AUTH0_ISSUER_BASE_URL}}
+          PUSHOVER_URL: ${{secrets.PUSHOVER_URL}}
+          PUSHOVER_APP_TOKEN: ${{secrets.PUSHOVER_APP_TOKEN}}
+          PUSHOVER_USER_KEY: ${{secrets.PUSHOVER_USER_KEY}}
+          MINIO_ACCESS_KEY: ${{secrets.MINIO_ACCESS_KEY}}
+          MINIO_BUCKET_NAME: ${{secrets.MINIO_BUCKET_NAME}}
+          MINIO_HOST: ${{secrets.MINIO_HOST}}
+          MINIO_PORT: ${{secrets.MINIO_PORT}}
+          MINIO_SECRET_KEY: ${{secrets.MINIO_SECRET_KEY}}
+          NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_REPORT_URL: ${{ secrets.SENTRY_REPORT_URL }}
+          EMBEDDING_API_URL: ${{secrets.EMBEDDING_API_URL}}
+          CF_ACCESS_CLIENT_ID: ${{secrets.CF_ACCESS_CLIENT_ID}}
+          CF_ACCESS_CLIENT_SECRET: ${{secrets.CF_ACCESS_CLIENT_SECRET}}
+          QDRANT_URL: ${{secrets.QDRANT_URL}}
+          QDRANT_COLLECTION_NAME: ${{secrets.QDRANT_COLLECTION_NAME}}
+          EMBEDDING_VECTOR_SIZE: ${{secrets.EMBEDDING_VECTOR_SIZE}}
+          EMBEDDING_MODEL: ${{secrets.EMBEDDING_MODEL}}
+          EMBEDDING_QUERY_PREFIX: ${{secrets.EMBEDDING_QUERY_PREFIX}}
+          EMBEDDING_PASSAGE_PREFIX: ${{secrets.EMBEDDING_PASSAGE_PREFIX}}
+
+      - name: Wait for server
+        run: |
+          for i in $(seq 1 30); do
+            if curl -s http://localhost:3000/api/health > /dev/null 2>&1; then
+              echo "Server is ready"
+              exit 0
+            fi
+            echo "Waiting for server... ($i/30)"
+            sleep 2
+          done
+          echo "Server failed to start"
+          exit 1
+
+      - name: Run memlab scenarios
+        run: pnpm memlab:all
+
+      - name: Upload memlab results
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: memlab-results
+          path: memlab_reports/
+          retention-days: 14

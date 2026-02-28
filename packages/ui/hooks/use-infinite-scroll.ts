@@ -104,5 +104,15 @@ export function useInfiniteScroll({
 		setIsInitialized(true);
 	}, []);
 
+	// Cleanup observer on unmount to prevent memory leaks
+	useEffect(() => {
+		return () => {
+			if (observer.current) {
+				observer.current.disconnect();
+				observer.current = null;
+			}
+		};
+	}, []);
+
 	return { lastElementRef };
 }

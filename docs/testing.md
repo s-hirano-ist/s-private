@@ -86,3 +86,31 @@ pnpm vitest run --project storybook
 # 全テスト実行（a11y含む）
 pnpm test
 ```
+
+## memlab メモリリーク検知
+
+[memlab](https://facebook.github.io/memlab/) によるPuppeteerベースのヒープスナップショット比較でメモリリークを自動検知する。
+
+### 前提条件
+
+- アプリケーションが `http://localhost:3000` で起動済みであること
+- 認証壁があるため、ログイン済みのセッションが必要
+
+### コマンド
+
+```bash
+pnpm memlab:article   # 記事タブ間ナビゲーションシナリオ
+pnpm memlab:drawer    # SearchDrawer開閉シナリオ
+pnpm memlab:all       # 全シナリオ実行
+```
+
+### シナリオ
+
+| シナリオ | ファイル | 検知対象 |
+|---------|---------|---------|
+| 記事ナビゲーション | `memlab/scenarios/article-list-navigation.ts` | IntersectionObserverリーク |
+| Drawer開閉 | `memlab/scenarios/drawer-open-close.ts` | DOM参照リーク |
+
+### CI統合
+
+GitHub Actionsの `memlab.yaml` ワークフローで `workflow_dispatch` トリガーにより手動実行可能。結果はartifactとしてアップロードされる。

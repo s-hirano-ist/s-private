@@ -21,6 +21,7 @@ export default defineConfig(
 			"**/dist/**/*",
 			"**/next-env.d.ts", // Next.js auto-generated file
 			"docs/**/*", // TypeDoc generated files
+			"memlab/**/*", // memlab scenarios (standalone scripts)
 		],
 	},
 	{

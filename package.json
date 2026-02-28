@@ -43,6 +43,9 @@
 		"docs:serve": "npx serve docs/api",
 		"docs:watch": "typedoc --watch",
 		"docs:clean": "rm -rf docs/api",
+		"memlab:article": "memlab run --scenario memlab/scenarios/article-list-navigation.ts",
+		"memlab:drawer": "memlab run --scenario memlab/scenarios/drawer-open-close.ts",
+		"memlab:all": "pnpm memlab:article && pnpm memlab:drawer",
 		"preinstall": "npx only-allow pnpm"
 	},
 	"dependencies": {
@@ -87,6 +90,7 @@
 		"typedoc-plugin-mdn-links": "5.1.1",
 		"typescript": "5.9.3",
 		"typescript-eslint": "8.56.1",
+		"memlab": "1.1.42",
 		"vitest": "4.0.18"
 	}
 }

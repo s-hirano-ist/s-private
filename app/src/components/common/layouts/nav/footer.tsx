@@ -105,6 +105,7 @@ export function Footer({ search }: Props) {
 			<div className="flex items-center justify-center">
 				<Button
 					className="-mt-5"
+					data-testid="search-button"
 					onClick={() => setOpen(true)}
 					size="navCenter"
 					type="button"
