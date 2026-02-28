@@ -22,6 +22,7 @@ test-results/
 # Mutation testing
 reports/mutation/
 .stryker-tmp/
+stryker.log
 
 # App
 app/.next
