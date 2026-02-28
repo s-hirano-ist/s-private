@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.18.3](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.18.2...@s-hirano-ist/s-scripts-v1.18.3) (2026-02-28)
+
+
+### Maintenance
+
+* **deps:** update dependency @types/jsdom to v28 ([d544109](https://github.com/s-hirano-ist/s-private/commit/d5441091ddd0a64426d13aca72cadebaf7cf324a))
+* **deps:** update patch ([54b8be6](https://github.com/s-hirano-ist/s-private/commit/54b8be6c9023c3d0aa28dac1591aa5b34b790e6b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.18.3
+    * @s-hirano-ist/s-search bumped to 1.18.3
+
 ## [1.18.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.18.1...@s-hirano-ist/s-scripts-v1.18.2) (2026-02-26)
 
 

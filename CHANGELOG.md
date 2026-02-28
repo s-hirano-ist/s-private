@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.0.0...s-private-v3.0.1) (2026-02-28)
+
+
+### Bug Fixes
+
+* biome warning ([51d16c3](https://github.com/s-hirano-ist/s-private/commit/51d16c397bc8fe0246537ab6dffddb16581e2378))
+* knip ([ed89815](https://github.com/s-hirano-ist/s-private/commit/ed89815555977139f3ebc9b18df489e9e7a8929a))
+* stryker ([aaa5dd1](https://github.com/s-hirano-ist/s-private/commit/aaa5dd11a88a3af664091365a2bcad2290e2c924))
+* vitest mutation test bug ([0bd1b67](https://github.com/s-hirano-ist/s-private/commit/0bd1b67f72613d91a3ccd8d696dbd2d9be454e11))
+
+
+### Documentation
+
+* add a11y ([ed5f918](https://github.com/s-hirano-ist/s-private/commit/ed5f9188f7a9c16c95d7365a1d2ee9299a271ad2))
+* add chaos toolkit ([afa6945](https://github.com/s-hirano-ist/s-private/commit/afa6945f720b5b897afa79e3bab75638e262ed7d))
+* add memory leak check ([20ab1f6](https://github.com/s-hirano-ist/s-private/commit/20ab1f61b6b827a9d6207d6895350e609045658f))
+* add more tests ([6bf5fcf](https://github.com/s-hirano-ist/s-private/commit/6bf5fcf26534504f199ef23d301d28066fbedc38))
+* add mutation test ([a81824a](https://github.com/s-hirano-ist/s-private/commit/a81824a6a790dab998f841f50c82ead03a8a1497))
+* add perf wrapper ([ae61037](https://github.com/s-hirano-ist/s-private/commit/ae610376ce1a02a6cb359d602d7e67f43831d856))
+* delete release please independent issue ([596c10c](https://github.com/s-hirano-ist/s-private/commit/596c10c34dfe4173139117a2647d62ad0cb626ea))
+
+
+### Maintenance
+
+* add more to gh ignore ([fb94620](https://github.com/s-hirano-ist/s-private/commit/fb946209a388a4c2cfb7f33e5839ec2f8435a7b7))
+* **deps:** update actions/upload-artifact action to v7 ([4d42e99](https://github.com/s-hirano-ist/s-private/commit/4d42e999bd24574dc538667a82bc7eae154e3a45))
+* **deps:** update dependency @sentry/nextjs to v10.40.0 ([6bb5b25](https://github.com/s-hirano-ist/s-private/commit/6bb5b250ded6a607987bc103059b8a5ceb13a209))
+* **deps:** update dependency @types/jsdom to v28 ([d544109](https://github.com/s-hirano-ist/s-private/commit/d5441091ddd0a64426d13aca72cadebaf7cf324a))
+* **deps:** update github actions ([85e5778](https://github.com/s-hirano-ist/s-private/commit/85e5778f07f3ab90d1083fbacba368e4fb018467))
+* **deps:** update httpd:2.4.66 docker digest to 96b1e8f ([1cf8092](https://github.com/s-hirano-ist/s-private/commit/1cf809201952432d46f4373f15958bc3a281a805))
+* **deps:** update node.js to v24.14.0 ([f3efe77](https://github.com/s-hirano-ist/s-private/commit/f3efe7758d935841df152efd204cf119b45e3538))
+* **deps:** update patch ([54b8be6](https://github.com/s-hirano-ist/s-private/commit/54b8be6c9023c3d0aa28dac1591aa5b34b790e6b))
+* **deps:** update pnpm to v10.30.2 ([78c1cf5](https://github.com/s-hirano-ist/s-private/commit/78c1cf5fd4d2ccc7ce73c088a9cbf28a792b6751))
+* fix biome and knip ([6ed957c](https://github.com/s-hirano-ist/s-private/commit/6ed957cba9b9a896054e646a8d242eb188867c23))
+
 ## [3.0.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v2.0.0...s-private-v3.0.0) (2026-02-26)
 
 
