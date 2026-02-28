@@ -1,7 +1,4 @@
-import type { Sharp } from "sharp";
 import { afterEach, beforeEach, vi } from "vitest";
-
-type PartialSharp = Pick<Sharp, "metadata" | "resize" | "toBuffer">;
 
 vi.mock("uuid", () => ({
 	v7: () => {
@@ -12,17 +9,14 @@ vi.mock("uuid", () => ({
 vi.mock("sharp", () => {
 	return {
 		__esModule: true,
-		default: vi.fn(() => {
-			const mockSharp: PartialSharp = {
-				metadata: vi.fn().mockResolvedValue({
-					width: 800,
-					height: 600,
-				}),
-				resize: vi.fn().mockReturnThis(),
-				toBuffer: vi.fn().mockResolvedValue(Buffer.from("thumbnail")),
-			};
-			return mockSharp;
-		}),
+		default: vi.fn(() => ({
+			metadata: vi.fn().mockResolvedValue({
+				width: 800,
+				height: 600,
+			}),
+			resize: vi.fn().mockReturnThis(),
+			toBuffer: vi.fn().mockResolvedValue(Buffer.from("thumbnail")),
+		})),
 	};
 });
 

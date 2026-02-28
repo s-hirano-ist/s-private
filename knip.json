@@ -56,8 +56,7 @@
 		},
 		"packages/core": {
 			"entry": ["**/*.ts", "!**/*.test.ts", "!**/*.spec.ts"],
-			"project": ["**/*.ts"],
-			"ignoreDependencies": ["sharp"]
+			"project": ["**/*.ts"]
 		},
 		"packages/database": {
 			"ignoreDependencies": [
