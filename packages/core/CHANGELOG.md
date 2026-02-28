@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.18.3](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.18.2...@s-hirano-ist/s-core-v1.18.3) (2026-02-28)
+
+
+### Bug Fixes
+
+* knip ([ed89815](https://github.com/s-hirano-ist/s-private/commit/ed89815555977139f3ebc9b18df489e9e7a8929a))
+* vitest mutation test bug ([0bd1b67](https://github.com/s-hirano-ist/s-private/commit/0bd1b67f72613d91a3ccd8d696dbd2d9be454e11))
+
+
+### Documentation
+
+* add more tests ([6bf5fcf](https://github.com/s-hirano-ist/s-private/commit/6bf5fcf26534504f199ef23d301d28066fbedc38))
+
+
+### Maintenance
+
+* **deps:** update patch ([54b8be6](https://github.com/s-hirano-ist/s-private/commit/54b8be6c9023c3d0aa28dac1591aa5b34b790e6b))
+
 ## [1.18.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.18.1...@s-hirano-ist/s-core-v1.18.2) (2026-02-26)
 
 

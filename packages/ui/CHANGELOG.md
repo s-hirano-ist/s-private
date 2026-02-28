@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.19.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.19.0...@s-hirano-ist/s-ui-v1.19.1) (2026-02-28)
+
+
+### Documentation
+
+* add a11y ([ed5f918](https://github.com/s-hirano-ist/s-private/commit/ed5f9188f7a9c16c95d7365a1d2ee9299a271ad2))
+* add memory leak check ([20ab1f6](https://github.com/s-hirano-ist/s-private/commit/20ab1f61b6b827a9d6207d6895350e609045658f))
+* add more tests ([6bf5fcf](https://github.com/s-hirano-ist/s-private/commit/6bf5fcf26534504f199ef23d301d28066fbedc38))
+* add perf wrapper ([ae61037](https://github.com/s-hirano-ist/s-private/commit/ae610376ce1a02a6cb359d602d7e67f43831d856))
+
+
+### Maintenance
+
+* **deps:** update patch ([54b8be6](https://github.com/s-hirano-ist/s-private/commit/54b8be6c9023c3d0aa28dac1591aa5b34b790e6b))
+
 ## [1.19.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.18.1...@s-hirano-ist/s-ui-v1.19.0) (2026-02-26)
 
 
