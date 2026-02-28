@@ -86,7 +86,7 @@
 	},
 	"devDependencies": {
 		"@types/jsdom": "28.0.0",
-		"@types/node": "24.10.13",
+		"@types/node": "24.10.14",
 		"@types/turndown": "5.0.6",
 		"tsx": "4.21.0",
 		"typescript": "5.9.3"
