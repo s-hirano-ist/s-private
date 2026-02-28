@@ -11,7 +11,10 @@
 	"ignoreBinaries": ["dot", "config-inspector", "serve", "only-allow"],
 	"workspaces": {
 		"app": {
-			"ignore": ["src/infrastructures/i18n/request.ts"],
+			"ignore": [
+				"src/infrastructures/i18n/request.ts",
+				"src/components/common/layouts/cards/base-card-stack.bench.tsx"
+			],
 			"ignoreDependencies": ["@types/react-syntax-highlighter"],
 			"next": {
 				"config": ["next.config.{js,ts,cjs,mjs}"],
