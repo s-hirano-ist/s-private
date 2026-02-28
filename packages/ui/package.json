@@ -129,7 +129,7 @@
 		"tailwind-merge": "3.5.0"
 	},
 	"devDependencies": {
-		"@storybook/nextjs-vite": "10.2.11",
+		"@storybook/nextjs-vite": "10.2.12",
 		"@types/react": "19.2.14",
 		"@types/react-dom": "19.2.3",
 		"@types/react-syntax-highlighter": "15.5.13",
