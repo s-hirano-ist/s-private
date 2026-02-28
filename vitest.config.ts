@@ -86,6 +86,15 @@ export default defineConfig({
 					include: ["packages/**/*.bench.?(c|m)[jt]s?(x)"],
 				},
 			},
+			// Component benchmarks (jsdom environment, used by `vitest bench --project app-bench`)
+			{
+				extends: "./app/vitest.config.ts",
+				test: {
+					name: "app-bench",
+					root: "./app",
+					include: ["./src/**/*.bench.?(c|m)[jt]s?(x)"],
+				},
+			},
 		],
 		coverage: {
 			enabled: true,
@@ -105,6 +114,7 @@ export default defineConfig({
 				"**/*.stories.tsx",
 				"**/*.test.ts?(x)",
 				"**/*.bench.ts",
+				"**/*.bench.tsx",
 				".storybook/**/*",
 
 				// 型定義・インターフェース（ロジックを含まないもの）

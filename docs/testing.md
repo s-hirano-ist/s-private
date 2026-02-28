@@ -38,6 +38,17 @@ The project uses Vitest workspace to manage tests across multiple packages:
 - **Type Checking**: TypeScript type checking enabled in tests
 - **Storybook**: Component testing with coverage support and Playwright browser testing
 
+## Component Benchmarks
+
+Vitest bench によるコンポーネントレンダリングのベンチマーク。
+
+```bash
+pnpm bench:components   # コンポーネントベンチマークのみ
+pnpm bench:all          # 全ベンチマーク（packages + components）
+```
+
+詳細は [performance-profiling.md](./performance-profiling.md) を参照。
+
 ## Storybook Accessibility Testing
 
 Storybookの全ストーリーに対して axe-core ベースのa11yテストを自動実行する。

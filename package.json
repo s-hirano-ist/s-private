@@ -19,6 +19,8 @@
 		"lint:fix": "eslint . --fix",
 		"lint:inspector": "config-inspector --config eslint.config.js",
 		"bench": "vitest bench --project bench",
+		"bench:components": "vitest bench --project app-bench",
+		"bench:all": "vitest bench --project bench --project app-bench",
 		"test": "vitest run --project app --project components --project core --project notification --project search --project storybook",
 		"test:watch": "vitest",
 		"typecheck": "pnpm --recursive typecheck",

@@ -1,4 +1,5 @@
 "use client";
+import { ProfilerWrapper } from "@s-hirano-ist/s-ui/dev/profiler-wrapper";
 import Loading from "@s-hirano-ist/s-ui/display/loading";
 import { StatusCodeView } from "@s-hirano-ist/s-ui/display/status/status-code-view";
 import { useInfiniteScroll } from "@s-hirano-ist/s-ui/hooks/use-infinite-scroll";
@@ -81,38 +82,43 @@ export function BaseCardStackWrapper<T extends SearchableItem>({
 	const t = useTranslations("statusCode");
 
 	return (
-		<div className="px-2 py-4">
-			{allData.length === 0 ? (
-				<StatusCodeView statusCode="204" statusCodeString={t("204")} />
-			) : (
-				<div className={gridClassName}>
-					{allData.map((item, index) => {
-						const isLast = index === allData.length - 1;
-						const itemKey = "key" in item ? item.key : item.id;
-						return (
-							<div
-								className="animate-[card-enter_200ms_ease-out_both]"
-								key={itemKey}
-								style={{
-									contentVisibility: "auto",
-									containIntrinsicSize: "auto 200px",
-									animationDelay: `${Math.min(index * 30, 300)}ms`,
-								}}
-							>
-								{children({
-									item,
-									index,
-									isLast,
-									lastElementRef,
-									deleteAction,
-									itemKey,
-								})}
-							</div>
-						);
-					})}
-				</div>
-			)}
-			{isPending && <Loading />}
-		</div>
+		<ProfilerWrapper
+			enabled={process.env.NODE_ENV === "development"}
+			id="BaseCardStack"
+		>
+			<div className="px-2 py-4">
+				{allData.length === 0 ? (
+					<StatusCodeView statusCode="204" statusCodeString={t("204")} />
+				) : (
+					<div className={gridClassName}>
+						{allData.map((item, index) => {
+							const isLast = index === allData.length - 1;
+							const itemKey = "key" in item ? item.key : item.id;
+							return (
+								<div
+									className="animate-[card-enter_200ms_ease-out_both]"
+									key={itemKey}
+									style={{
+										contentVisibility: "auto",
+										containIntrinsicSize: "auto 200px",
+										animationDelay: `${Math.min(index * 30, 300)}ms`,
+									}}
+								>
+									{children({
+										item,
+										index,
+										isLast,
+										lastElementRef,
+										deleteAction,
+										itemKey,
+									})}
+								</div>
+							);
+						})}
+					</div>
+				)}
+				{isPending && <Loading />}
+			</div>
+		</ProfilerWrapper>
 	);
 }
