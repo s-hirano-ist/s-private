@@ -72,6 +72,7 @@ export function SearchCard({ search }: Props) {
 					value={searchQuery}
 				/>
 				<Button
+					aria-label={t("search")}
 					className="shrink-0"
 					disabled={isPending}
 					onClick={executeSearch}

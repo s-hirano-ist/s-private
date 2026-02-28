@@ -13,36 +13,63 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-	render: () => <Input placeholder="Default input" />,
+	render: () => (
+		<Input aria-label="Default input" placeholder="Default input" />
+	),
 };
 
 export const WithCustomClass: Story = {
 	render: () => (
-		<Input className="border-red-500" placeholder="Input with custom class" />
+		<Input
+			aria-label="Input with custom class"
+			className="border-red-500"
+			placeholder="Input with custom class"
+		/>
 	),
 };
 
 export const Disabled: Story = {
-	render: () => <Input disabled placeholder="Disabled input" />,
+	render: () => (
+		<Input aria-label="Disabled input" disabled placeholder="Disabled input" />
+	),
 };
 
 export const WithTypePassword: Story = {
-	render: () => <Input placeholder="Password input" type="password" />,
+	render: () => (
+		<Input
+			aria-label="Password input"
+			placeholder="Password input"
+			type="password"
+		/>
+	),
 };
 
 export const WithError: Story = {
 	render: () => (
-		<Input className="border-red-500" placeholder="Input with error" />
+		<Input
+			aria-label="Input with error"
+			className="border-red-500"
+			placeholder="Input with error"
+		/>
 	),
 };
 
 export const FullWidth: Story = {
-	render: () => <Input className="w-full" placeholder="Full width input" />,
+	render: () => (
+		<Input
+			aria-label="Full width input"
+			className="w-full"
+			placeholder="Full width input"
+		/>
+	),
 };
 
 export const WithLongPlaceholder: Story = {
 	render: () => (
-		<Input placeholder="This is an input with a very long placeholder to see how it handles overflow and responsiveness" />
+		<Input
+			aria-label="Long placeholder input"
+			placeholder="This is an input with a very long placeholder to see how it handles overflow and responsiveness"
+		/>
 	),
 };
 
@@ -59,7 +86,7 @@ export const WithIcon: Story = {
 	render: () => (
 		<div className="flex items-center space-x-2">
 			<AxeIcon />
-			<Input placeholder="Input with icon" />
+			<Input aria-label="Input with icon" placeholder="Input with icon" />
 		</div>
 	),
 };
@@ -67,7 +94,10 @@ export const WithIcon: Story = {
 export const WithHelperText: Story = {
 	render: () => (
 		<div>
-			<Input placeholder="Input with helper text" />
+			<Input
+				aria-label="Input with helper text"
+				placeholder="Input with helper text"
+			/>
 			<p className="mt-2 text-gray-500 text-sm">
 				This is some helper text to assist the user.
 			</p>
