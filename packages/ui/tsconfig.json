@@ -28,6 +28,7 @@
 		"**/*.stories.tsx",
 		"**/*.test.tsx",
 		"**/*.test.ts",
+		"**/*.bench.tsx",
 		"vitest-setup.tsx",
 		"vitest.config.ts"
 	]

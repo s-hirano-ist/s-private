@@ -74,7 +74,6 @@ const meta = {
 		nextjs: {
 			navigation: { pathname: "/en" },
 		},
-		a11y: { disable: true },
 	},
 } satisfies Meta<typeof SearchCard>;
 
@@ -88,6 +87,7 @@ export const Default: Story = {
 
 export const WithArticleResults: Story = {
 	args: { search: fn().mockResolvedValue(mockArticleResults) },
+	parameters: { a11y: { disable: true } },
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const input = canvas.getByRole("textbox");
@@ -97,6 +97,7 @@ export const WithArticleResults: Story = {
 
 export const WithNonArticleResults: Story = {
 	args: { search: fn().mockResolvedValue(mockNonArticleResults) },
+	parameters: { a11y: { disable: true } },
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const input = canvas.getByRole("textbox");
@@ -106,6 +107,7 @@ export const WithNonArticleResults: Story = {
 
 export const EmptyResults: Story = {
 	args: { search: fn().mockResolvedValue(mockEmptyResults) },
+	parameters: { a11y: { disable: true } },
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const input = canvas.getByRole("textbox");
@@ -115,6 +117,7 @@ export const EmptyResults: Story = {
 
 export const ErrorState: Story = {
 	args: { search: fn().mockResolvedValue(mockErrorResult) },
+	parameters: { a11y: { disable: true } },
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const input = canvas.getByRole("textbox");

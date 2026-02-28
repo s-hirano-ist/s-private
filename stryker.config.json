@@ -1,0 +1,35 @@
+{
+	"$schema": "https://raw.githubusercontent.com/stryker-mutator/stryker/master/packages/core/schema/stryker-core.schema.json",
+	"plugins": [
+		"@stryker-mutator/vitest-runner",
+		"@stryker-mutator/typescript-checker"
+	],
+	"testRunner": "vitest",
+	"vitest": {
+		"configFile": "packages/core/vitest.config.ts"
+	},
+	"checkers": ["typescript"],
+	"tsconfigFile": "packages/core/tsconfig.json",
+	"mutate": [
+		"packages/core/**/entities/*.ts",
+		"packages/core/**/events/*.ts",
+		"packages/core/**/services/*.ts",
+		"packages/core/**/errors/*.ts",
+		"!packages/core/**/*.test.ts",
+		"!packages/core/**/*.interface.ts",
+		"!packages/core/vitest-setup.tsx",
+		"!packages/core/vitest.config.ts",
+		"!packages/core/dist/**"
+	],
+	"thresholds": {
+		"high": 80,
+		"low": 60,
+		"break": 50
+	},
+	"reporters": ["html", "clear-text", "progress"],
+	"htmlReporter": {
+		"fileName": "reports/mutation/index.html"
+	},
+	"timeoutMS": 60000,
+	"concurrency": 4
+}

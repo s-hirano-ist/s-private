@@ -15,6 +15,14 @@ debug.log
 
 # Testing
 .vitest-coverage
+.auth/
+playwright-report/
+test-results/
+
+# Mutation testing
+reports/mutation/
+.stryker-tmp/
+stryker.log
 
 # App
 app/.next

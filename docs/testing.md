@@ -38,6 +38,17 @@ The project uses Vitest workspace to manage tests across multiple packages:
 - **Type Checking**: TypeScript type checking enabled in tests
 - **Storybook**: Component testing with coverage support and Playwright browser testing
 
+## Component Benchmarks
+
+Vitest bench によるコンポーネントレンダリングのベンチマーク。
+
+```bash
+pnpm bench:components   # コンポーネントベンチマークのみ
+pnpm bench:all          # 全ベンチマーク（packages + components）
+```
+
+詳細は [performance-profiling.md](./performance-profiling.md) を参照。
+
 ## Storybook Accessibility Testing
 
 Storybookの全ストーリーに対して axe-core ベースのa11yテストを自動実行する。
@@ -75,3 +86,103 @@ pnpm vitest run --project storybook
 # 全テスト実行（a11y含む）
 pnpm test
 ```
+
+## Mutation Testing（Stryker Mutator）
+
+[Stryker Mutator](https://stryker-mutator.io/) によるミューテーションテスト。コードに意図的な変異（mutant）を加え、テストがそれを検知できるか（killed）を計測する。
+
+### 対象
+
+`packages/core/` のドメインロジック層:
+- `**/entities/*.ts`
+- `**/events/*.ts`
+- `**/services/*.ts`
+- `**/errors/*.ts`
+
+### コマンド
+
+```bash
+pnpm test:mutation:core   # packages/core対象のミューテーションテスト実行
+```
+
+### Thresholds
+
+| レベル | スコア | 意味 |
+|-------|--------|------|
+| high | 80% | 良好 |
+| low | 60% | 警告 |
+| break | 50% | CI失敗 |
+
+### レポート
+
+HTMLレポートが `reports/mutation/index.html` に生成される（`.gitignore`で除外済み）。
+
+### CI統合
+
+GitHub Actionsの `mutation-test.yaml` ワークフローで、PRにて `packages/core/**/*.ts` または `stryker.config.json` が変更された場合に自動実行。レポートはartifactとして14日間保持。
+
+### 設定
+
+- 設定ファイル: [`stryker.config.json`](../stryker.config.json)
+- テストランナー: `@stryker-mutator/vitest-runner`
+- 型チェッカー: `@stryker-mutator/typescript-checker`
+
+## memlab メモリリーク検知
+
+[memlab](https://facebook.github.io/memlab/) によるPuppeteerベースのヒープスナップショット比較でメモリリークを自動検知する。
+
+### 前提条件
+
+- アプリケーションが `http://localhost:3000` で起動済みであること
+- 認証壁があるため、ログイン済みのセッションが必要
+
+### コマンド
+
+```bash
+pnpm memlab:article   # 記事タブ間ナビゲーションシナリオ
+pnpm memlab:drawer    # SearchDrawer開閉シナリオ
+pnpm memlab:all       # 全シナリオ実行
+```
+
+### シナリオ
+
+| シナリオ | ファイル | 検知対象 |
+|---------|---------|---------|
+| 記事ナビゲーション | `memlab/scenarios/article-list-navigation.ts` | IntersectionObserverリーク |
+| Drawer開閉 | `memlab/scenarios/drawer-open-close.ts` | DOM参照リーク |
+
+### CI統合
+
+GitHub Actionsの `memlab.yaml` ワークフローで `workflow_dispatch` トリガーにより手動実行可能。結果はartifactとしてアップロードされる。
+
+## Chaos レジリエンステスト（Playwright CDP）
+
+Playwright の CDP (Chrome DevTools Protocol) を使ったネットワークシミュレーションにより、UIレジリエンスを検証する。
+
+### 前提条件
+
+- アプリケーションが `http://localhost:3000` で起動済み、または `webServer` 設定で自動起動
+- `E2E_AUTH0_USERNAME` / `E2E_AUTH0_PASSWORD` 環境変数の設定
+- Chromium ブラウザ（CDP はChromiumのみ対応）
+
+### コマンド
+
+```bash
+pnpm test:chaos           # 全Chaosテスト実行
+pnpm test:chaos --headed  # ブラウザ表示付きで実行
+```
+
+### テストシナリオ
+
+| テストファイル | シナリオ | 検証内容 |
+|--------------|---------|---------|
+| `e2e/chaos/network-delay.spec.ts` | 3G遅延 | loading表示、タブナビゲーション、フォーム送信 |
+| `e2e/chaos/network-offline.spec.ts` | オフライン | エラーtoast、ナビゲーション、復帰後リカバリ |
+| `e2e/chaos/error-boundary.spec.ts` | サーバーエラー | error.tsx表示、Try again復帰、Server Action toast |
+
+### 構成
+
+- `playwright.config.ts` - Playwright設定（Chromiumのみ、workers:1）
+- `e2e/fixtures/auth.setup.ts` - Auth0認証セットアップ
+- `e2e/helpers/cdp-network.ts` - CDPネットワーク条件プリセット（slow3G, offline, fast）
+- `e2e/helpers/selectors.ts` - 共有セレクタ・ルート定数

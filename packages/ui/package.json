@@ -21,6 +21,7 @@
 		"./providers/*": "./providers/*.tsx",
 		"./hooks/*": "./hooks/*.ts",
 		"./utils/*": "./utils/*.ts",
+		"./dev/*": "./dev/*.tsx",
 		"./globals.css": {
 			"style": "./globals.css",
 			"default": "./globals.css"
@@ -68,6 +69,10 @@
 			"./utils/*": {
 				"types": "./dist/utils/*.d.ts",
 				"default": "./dist/utils/*.js"
+			},
+			"./dev/*": {
+				"types": "./dist/dev/*.d.ts",
+				"default": "./dist/dev/*.js"
 			},
 			"./globals.css": {
 				"style": "./globals.css",

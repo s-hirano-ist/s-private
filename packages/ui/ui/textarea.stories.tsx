@@ -11,28 +11,48 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-	render: () => <Textarea placeholder="Default textarea" />,
+	render: () => (
+		<Textarea aria-label="Default textarea" placeholder="Default textarea" />
+	),
 };
 
 export const CustomHeight: Story = {
 	render: () => (
-		<Textarea className="h-24" placeholder="Textarea with custom height" />
+		<Textarea
+			aria-label="Textarea with custom height"
+			className="h-24"
+			placeholder="Textarea with custom height"
+		/>
 	),
 };
 
 export const Disabled: Story = {
-	render: () => <Textarea disabled placeholder="Disabled textarea" />,
+	render: () => (
+		<Textarea
+			aria-label="Disabled textarea"
+			disabled
+			placeholder="Disabled textarea"
+		/>
+	),
 };
 
 export const WithError: Story = {
 	render: () => (
-		<Textarea className="border-red-500" placeholder="Textarea with error" />
+		<Textarea
+			aria-label="Textarea with error"
+			className="border-red-500"
+			placeholder="Textarea with error"
+		/>
 	),
 };
 
 export const FullWidth: Story = {
 	render: () => (
-		<Textarea className="w-full" placeholder="Full width textarea" />
+		<Textarea
+			aria-label="Full width textarea"
+			className="w-full"
+			placeholder="Full width textarea"
+		/>
 	),
 };
 
@@ -52,16 +72,19 @@ export const WithLabel: Story = {
 
 export const WithCustomPlaceholder: Story = {
 	render: () => (
-		<Textarea placeholder="This is a custom placeholder for the textarea" />
+		<Textarea
+			aria-label="Custom placeholder textarea"
+			placeholder="This is a custom placeholder for the textarea"
+		/>
 	),
 };
 
 export const MultipleTextarea: Story = {
 	render: () => (
 		<div className="space-y-4">
-			<Textarea placeholder="First textarea" />
-			<Textarea placeholder="Second textarea" />
-			<Textarea placeholder="Third textarea" />
+			<Textarea aria-label="First textarea" placeholder="First textarea" />
+			<Textarea aria-label="Second textarea" placeholder="Second textarea" />
+			<Textarea aria-label="Third textarea" placeholder="Third textarea" />
 		</div>
 	),
 };

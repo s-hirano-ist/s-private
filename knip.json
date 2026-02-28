@@ -1,6 +1,7 @@
 {
 	"$schema": "https://unpkg.com/knip@5/schema.json",
 	"ignoreExportsUsedInFile": true,
+	"ignore": ["memlab/**/*", "e2e/**/*"],
 	"ignoreDependencies": [
 		"@eslint/config-inspector",
 		"babel-plugin-react-compiler",
@@ -11,9 +12,8 @@
 	"workspaces": {
 		"app": {
 			"ignore": [
-				"src/app/[locale]/forbidden.tsx",
-				"src/app/instrumentation.ts",
-				"src/infrastructures/i18n/request.ts"
+				"src/infrastructures/i18n/request.ts",
+				"src/components/common/layouts/cards/base-card-stack.bench.tsx"
 			],
 			"ignoreDependencies": ["@types/react-syntax-highlighter"],
 			"next": {
@@ -52,14 +52,11 @@
 				"utils/**/*.ts"
 			],
 			"project": ["**/*.{ts,tsx}"],
-			"ignore": ["**/*.stories.tsx", "**/*.test.tsx", "**/*.spec.tsx"],
 			"ignoreDependencies": ["postcss"]
 		},
 		"packages/core": {
 			"entry": ["**/*.ts", "!**/*.test.ts", "!**/*.spec.ts"],
-			"project": ["**/*.ts"],
-			"ignore": ["**/*.test.ts", "**/*.spec.ts"],
-			"ignoreDependencies": ["sharp"]
+			"project": ["**/*.ts"]
 		},
 		"packages/database": {
 			"ignoreDependencies": [

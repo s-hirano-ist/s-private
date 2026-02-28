@@ -1,5 +1,7 @@
 # Issue: Chromatic によるビジュアルリグレッションテストの本格運用
 
+※ https://zenn.dev/knowledgework/articles/297ccfb866a5b5 等も参考に再計画が必要
+
 ## Metadata
 
 | Field | Value |
