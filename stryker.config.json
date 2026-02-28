@@ -5,7 +5,9 @@
 		"@stryker-mutator/typescript-checker"
 	],
 	"testRunner": "vitest",
-	"vitest_comment": "vitest runner uses the configFile from the vitest workspace or the project-level config",
+	"vitest": {
+		"configFile": "packages/core/vitest.config.ts"
+	},
 	"checkers": ["typescript"],
 	"tsconfigFile": "packages/core/tsconfig.json",
 	"mutate": [
