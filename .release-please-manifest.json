@@ -1,10 +1,10 @@
 {
-	".": "3.0.1",
-	"packages/core": "1.18.3",
-	"packages/ui": "1.19.1",
-	"packages/database": "1.18.2",
+	".": "3.0.2",
+	"packages/core": "1.18.4",
+	"packages/ui": "1.19.2",
+	"packages/database": "1.18.3",
 	"packages/notification": "1.18.1",
-	"packages/scripts": "1.18.3",
-	"packages/search": "1.18.3",
+	"packages/scripts": "1.18.4",
+	"packages/search": "1.18.4",
 	"packages/storage": "1.18.1"
 }

@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.2](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.0.1...s-private-v3.0.2) (2026-03-01)
+
+
+### Maintenance
+
+* **deps:** update patch ([6c9458c](https://github.com/s-hirano-ist/s-private/commit/6c9458c638fa7c41418b5d7e4a8c24841a3d41f3))
+* **deps:** update pnpm to v10.30.3 ([4e6376a](https://github.com/s-hirano-ist/s-private/commit/4e6376a37da41ac094d4bebee4c93709d2a1caa5))
+
 ## [3.0.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.0.0...s-private-v3.0.1) (2026-02-28)
 
 
