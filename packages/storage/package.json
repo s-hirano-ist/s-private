@@ -46,7 +46,7 @@
 		"directory": "packages/storage"
 	},
 	"dependencies": {
-		"minio": "8.0.6"
+		"minio": "8.0.7"
 	},
 	"devDependencies": {
 		"typescript": "5.9.3"
