@@ -115,8 +115,8 @@ importers:
         specifier: 4.4.2
         version: 4.4.2
       memlab:
-        specifier: 1.1.60
-        version: 1.1.60(typescript@5.9.3)
+        specifier: 2.0.0
+        version: 2.0.0(typescript@5.9.3)
       playwright:
         specifier: 1.58.2
         version: 1.58.2
@@ -1424,25 +1424,25 @@ packages:
       '@types/react': '>=16'
       react: '>=16'
 
-  '@memlab/api@1.0.42':
-    resolution: {integrity: sha512-VKBB01vRmnvE62FhNNDCO62kKVbamUTWqT06TX7kMhhKcokBSMN+mdaUwq3lvPzLIL5ap1TrQeHlfrGEgsyqaQ==}
+  '@memlab/api@2.0.0':
+    resolution: {integrity: sha512-YWEnFE8SlAGjbjpeDKMddzan89mUINjNJmORxwL17fnK23H+NyEcxdoiRszeeDA5c/g4VqfFzwxlOvB8WzQASQ==}
 
-  '@memlab/cli@1.0.45':
-    resolution: {integrity: sha512-LSUBdGW6p7jyavG3mVqnV1E04XZ0fs9EVNJey+HdS2gT6AFvfSfx3grZ5y47Q72FhWQyvypnbKKm7yguShb++Q==}
+  '@memlab/cli@2.0.0':
+    resolution: {integrity: sha512-dH9CzMKCo7z8hTNWE/z7/JfBT9RVXAAY6BVBSVqfHa9rE1/R62S80ew/QTo6rvbbUhSsjbdc0sRtZ8mGLKlEqw==}
     hasBin: true
 
-  '@memlab/core@1.1.43':
-    resolution: {integrity: sha512-ob8GfuffKiJ8b2MGCj7KGlv85qqIFMwPLGxZzg3oEMkMGtK7jFKvtmOUV0lG6i6tUGtkgHCGoE+P3foKJlZ+eg==}
+  '@memlab/core@2.0.0':
+    resolution: {integrity: sha512-M75IlakurHdpqJcTBgxfTPmucXMmrT4lPu826gwb2+A4x0VJKCh/eZe80ta/TGSugxjszZG1aRVEfK1X9SiIHQ==}
     engines: {node: '>= 12.6.0'}
 
-  '@memlab/e2e@1.0.43':
-    resolution: {integrity: sha512-/eH6b9XkEemcBOqFJdPTaRkQ0kZdEqszjA0Pz0oujTzm8zv5Eg3DQmBtfA/peBUCK0AHFQ0lKgbG7W7n9LED8g==}
+  '@memlab/e2e@2.0.0':
+    resolution: {integrity: sha512-VcHab+Pbh+jZyWubniew0ZKgnytzkvINVPTQkBJnazcKenLQXlGb7i9fxUvz5XvlgXoG7pziDsMsSBFDQyrUWQ==}
 
-  '@memlab/heap-analysis@1.0.40':
-    resolution: {integrity: sha512-hJzoHl0z9ZCc9bQasqsN2qSvzTp4xEwKAqj/lQhQdMb+S1foPFB/2noqrr6geAZHCmpzIYCXUriMkrN/3dr7gQ==}
+  '@memlab/heap-analysis@2.0.0':
+    resolution: {integrity: sha512-SeNHbJRscwnV1Wnd+H8aenBaQSUOCqErJRWSGTUMzPabIBLDzn3EotyqXxsN5rMkI/SN6VOXx0TX0hu1Yt8cSQ==}
 
-  '@memlab/lens@1.0.3':
-    resolution: {integrity: sha512-ky6a5+/zGlBK0+tjcytgs36VA8F4ui3Cx4e3Z7mTY4/dJv7LzmhhRHgjlpzmx5G1Fe8/zssza4+bPfBzf6Q0Jg==}
+  '@memlab/lens@2.0.0':
+    resolution: {integrity: sha512-2aoX/v0PI0qgW65+ZnhbWimFFSGDRTm8p8qQ04zNDTrqtlOWUuugT2yu3XeExVSLhLlrMcqL0PsuZ/SbOcbggw==}
 
   '@mixmark-io/domino@2.2.0':
     resolution: {integrity: sha512-Y28PR25bHXUg88kCV7nivXrP2Nj2RueZ3/l/jdx6J9f8J4nsEGcgX0Qe6lt7Pa+J79+kPiJU3LguR6O/6zrLOw==}
@@ -2051,8 +2051,8 @@ packages:
       react: ^18.0.0 || ^19.0.0
       react-dom: ^18.0.0 || ^19.0.0
 
-  '@puppeteer/browsers@2.3.0':
-    resolution: {integrity: sha512-ioXoq9gPxkss4MYhD+SFaU9p1IHFUX0ILAWFPyjGaBdjLsYAlZw6j1iLA0N/m12uVHLFDfSYNF7EQccjinIMDA==}
+  '@puppeteer/browsers@2.13.0':
+    resolution: {integrity: sha512-46BZJYJjc/WwmKjsvDFykHtXrtomsCIrwYQPOP7VfMJoZY2bsDF9oROBABR3paDjDcmkUye1Pb1BqdcdiipaWA==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -4155,8 +4155,8 @@ packages:
     resolution: {integrity: sha512-rNjApaLzuwaOTjCiT8lSDdGN1APCiqkChLMJxJPWLunPAt5fy8xgU9/jNOchV84wfIxrA0lRQB7oCT8jrn/wrQ==}
     engines: {node: '>=6.0'}
 
-  chromium-bidi@0.6.3:
-    resolution: {integrity: sha512-qXlsCmpCZJAnoTYI83Iu6EdYQpMYdVkCfq08KDh2pmlVqK5t5IA9mGs4/LwCwp4fqisSOMXZxP3HIh8w8aRn0A==}
+  chromium-bidi@14.0.0:
+    resolution: {integrity: sha512-9gYlLtS6tStdRWzrtXaTMnqcM4dudNegMXJxkR0I/CXObHalYeYcAMPrL19eroNZHtJ8DQmu1E+ZNOYu/IXMXw==}
     peerDependencies:
       devtools-protocol: '*'
 
@@ -4448,8 +4448,8 @@ packages:
   devlop@1.1.0:
     resolution: {integrity: sha512-RWmIqhcFf1lRYBvNmr7qTNuyCt/7/ns2jbpp1+PalgE/rDQcBT0fioSMUpJ93irlUhC5hrg4cYqe6U+0ImW0rA==}
 
-  devtools-protocol@0.0.1312386:
-    resolution: {integrity: sha512-DPnhUXvmvKT2dFA/j7B+riVLUt9Q6RKJlcppojL5CoRywJJKLDYnRlw0gTFKfgDPHP5E04UoB71SxoJlVZy8FA==}
+  devtools-protocol@0.0.1566079:
+    resolution: {integrity: sha512-MJfAEA1UfVhSs7fbSQOG4czavUp1ajfg6prlAN0+cmfa2zNjaIbvq8VneP7do1WAQQIvgNJWSMeP6UyI90gIlQ==}
 
   diff-match-patch@1.0.5:
     resolution: {integrity: sha512-IayShXAgj/QMXgB0IWmKx+rOPuGMhqm5w6jvFxmVenXKIzRqTAAsbBPT3kWQeGANj3jGgvcvv4yK6SxqYmikgw==}
@@ -5910,8 +5910,8 @@ packages:
   mdurl@2.0.0:
     resolution: {integrity: sha512-Lf+9+2r+Tdp5wXDXC4PcIBjTDtq4UKjCPMQhKIuzpJNW0b96kVqSwW0bT7FhRSfmAiFYgP+SCRvdrDozfh0U5w==}
 
-  memlab@1.1.60:
-    resolution: {integrity: sha512-yOG6fwmj5N0RyCntlCwC+41SLTIXRWhtgu+Jscc5HrxAcJQFkdgTbLXL9Ib9viB7T1ciuxsm4scQYxfZLdn/5Q==}
+  memlab@2.0.0:
+    resolution: {integrity: sha512-ZLoDChIiaViYgGS6kkqc7c0MJHikQAFcMGPf+GrkczhKq0gIyoaSPBbCeyv75UL8zRmcwTtWD6u7r/9We9lAmw==}
     hasBin: true
 
   merge-stream@2.0.0:
@@ -6701,14 +6701,13 @@ packages:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
 
-  puppeteer-core@22.15.0:
-    resolution: {integrity: sha512-cHArnywCiAAVXa3t4GGL2vttNxh7GqXtIYGym99egkNJ3oG//wL9LkvO4WE8W1TJe95t1F1ocu9X4xWaGsOKOA==}
+  puppeteer-core@24.37.5:
+    resolution: {integrity: sha512-ybL7iE78YPN4T6J+sPLO7r0lSByp/0NN6PvfBEql219cOnttoTFzCWKiBOjstXSqi/OKpwae623DWAsL7cn2MQ==}
     engines: {node: '>=18'}
 
-  puppeteer@22.15.0:
-    resolution: {integrity: sha512-XjCY1SiSEi1T7iSYuxS82ft85kwDJUS7wj1Z0eGVXKdtr5g4xnVcbjwxhq5xBnpK/E7x1VZZoJDxpjAOasHT4Q==}
+  puppeteer@24.37.5:
+    resolution: {integrity: sha512-3PAOIQLceyEmn1Fi76GkGO2EVxztv5OtdlB1m8hMUZL3f8KDHnlvXbvCXv+Ls7KzF1R0KdKBqLuT/Hhrok12hQ==}
     engines: {node: '>=18'}
-    deprecated: < 24.15.0 is no longer supported
     hasBin: true
 
   pure-rand@6.1.0:
@@ -7441,9 +7440,6 @@ packages:
   through2@4.0.2:
     resolution: {integrity: sha512-iOqSav00cVxEEICeD7TjLB1sueEL+81Wpzp2bY17uZjZN0pWZPuo4suZ/61VujxmqSGFfgOcNuTZ85QJwNZQpw==}
 
-  through@2.3.8:
-    resolution: {integrity: sha512-w89qg7PI8wAdvX60bMDP+bFoD5Dvhm9oLheFp5O4a2QF0cSBGsBX4qZmadPMvVqlLJBBci+WqGGOAPvcDeNSVg==}
-
   tiny-invariant@1.3.3:
     resolution: {integrity: sha512-+FbBPE1o9QAYvviau/qC5SE3caw21q3xkvWKBtja5vgqOWIHHJ3ioaq1VPfn/Szqctz2bU/oYeKd9/z5BL+PVg==}
 
@@ -7613,6 +7609,9 @@ packages:
     resolution: {integrity: sha512-0Ql2ORqBORLMdAW89TQKZsb1PQkFGImFfVmncXWe7a+AA3+7dh7Se9exxZowH4kbnlvKEFkMxUYdHUpjYWFJaA==}
     engines: {node: '>=18'}
 
+  typed-query-selector@2.12.1:
+    resolution: {integrity: sha512-uzR+FzI8qrUEIu96oaeBJmd9E7CFEiQ3goA5qCVgc4s5llSubcfGHq9yUstZx/k4s9dXHVKsE35YWoFyvEqEHA==}
+
   typed-rest-client@2.2.0:
     resolution: {integrity: sha512-/e2Rk9g20N0r44kaQLb3v6QGuryOD8SPb53t43Y5kqXXA+SqWuU7zLiMxetw61jNn/JFrxTdr5nPDhGY/eTNhQ==}
     engines: {node: '>= 16.0.0'}
@@ -7650,9 +7649,6 @@ packages:
   unbox-primitive@1.1.0:
     resolution: {integrity: sha512-nWJ91DjeOkej/TA8pXQ3myruKpKEYgqvpw9lz4OPHj/NWFNluYrjbz9j01CJ8yKQd2g4jFoOkINCTW2I5LEEyw==}
     engines: {node: '>= 0.4'}
-
-  unbzip2-stream@1.4.3:
-    resolution: {integrity: sha512-mlExGW4w71ebDJviH16lQLtZS32VKqsSfk80GCfUlwT/4/hNRFsoscrF/c++9xinkMzECL1uL9DDwXqFWkruPg==}
 
   uncrypto@0.1.3:
     resolution: {integrity: sha512-Ql87qFHB3s/De2ClA9e0gsnS6zXG27SkTiSJwjCc9MebbfapQfuPzumMIUMi38ezPZVNFcHI9sUIepeQfw8J8Q==}
@@ -7726,9 +7722,6 @@ packages:
 
   uri-template-matcher@1.1.2:
     resolution: {integrity: sha512-uZc1h12jdO3m/R77SfTEOuo6VbMhgWznaawKpBjRGSJb7i91x5PgI37NQJtG+Cerxkk0yr1pylBY2qG1kQ+aEQ==}
-
-  urlpattern-polyfill@10.0.0:
-    resolution: {integrity: sha512-H/A06tKD7sS1O1X2SshBVeA5FLycRpjqiBeqGKmBwBDBy28EnRjORxTNe269KSSr5un5qyWi1iL61wLxpd+ZOg==}
 
   use-callback-ref@1.3.3:
     resolution: {integrity: sha512-jQL3lRnocaFtu3V00JToYz/4QkNWswxijDaCVNZRiRTO3HQDLsdu1ZtmIUvV4yPp+rvWm5j0y0TG/S61cuijTg==}
@@ -7920,6 +7913,9 @@ packages:
   web-encoding@1.1.5:
     resolution: {integrity: sha512-HYLeVCdJ0+lBYV2FvNZmv3HJ2Nt0QYXqZojk3d9FJOLkwnuhzM9tmamh8d7HPM8QqjKH8DeHkFTx+CFlWpZZDA==}
 
+  webdriver-bidi-protocol@0.4.1:
+    resolution: {integrity: sha512-ARrjNjtWRRs2w4Tk7nqrf2gBI0QXWuOmMCx2hU+1jUt6d00MjMxURrhxhGbrsoiZKJrhTSTzbIrc554iKI10qw==}
+
   webidl-conversions@3.0.1:
     resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
 
@@ -8095,9 +8091,6 @@ packages:
     engines: {node: '>=18.0.0'}
     peerDependencies:
       zod: ^3.25.0 || ^4.0.0
-
-  zod@3.23.8:
-    resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
 
   zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
@@ -9024,18 +9017,18 @@ snapshots:
       '@types/react': 19.2.14
       react: 19.2.4
 
-  '@memlab/api@1.0.42(typescript@5.9.3)':
+  '@memlab/api@2.0.0(typescript@5.9.3)':
     dependencies:
-      '@memlab/core': 1.1.43(typescript@5.9.3)
-      '@memlab/e2e': 1.0.43(typescript@5.9.3)
-      '@memlab/heap-analysis': 1.0.40(typescript@5.9.3)
+      '@memlab/core': 2.0.0(typescript@5.9.3)
+      '@memlab/e2e': 2.0.0(typescript@5.9.3)
+      '@memlab/heap-analysis': 2.0.0(typescript@5.9.3)
       ansi: 0.3.1
       babar: 0.2.3
       chalk: 4.1.2
       fs-extra: 4.0.3
       minimist: 1.2.8
-      puppeteer: 22.15.0(typescript@5.9.3)
-      puppeteer-core: 22.15.0
+      puppeteer: 24.37.5(typescript@5.9.3)
+      puppeteer-core: 24.37.5
       string-width: 4.2.3
       util.promisify: 1.1.3
       xvfb: 0.4.0
@@ -9048,20 +9041,20 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@memlab/cli@1.0.45(typescript@5.9.3)':
+  '@memlab/cli@2.0.0(typescript@5.9.3)':
     dependencies:
-      '@memlab/api': 1.0.42(typescript@5.9.3)
-      '@memlab/core': 1.1.43(typescript@5.9.3)
-      '@memlab/e2e': 1.0.43(typescript@5.9.3)
-      '@memlab/heap-analysis': 1.0.40(typescript@5.9.3)
+      '@memlab/api': 2.0.0(typescript@5.9.3)
+      '@memlab/core': 2.0.0(typescript@5.9.3)
+      '@memlab/e2e': 2.0.0(typescript@5.9.3)
+      '@memlab/heap-analysis': 2.0.0(typescript@5.9.3)
       ansi: 0.3.1
       babar: 0.2.3
       blessed: 0.1.81
       chalk: 4.1.2
       fs-extra: 4.0.3
       minimist: 1.2.8
-      puppeteer: 22.15.0(typescript@5.9.3)
-      puppeteer-core: 22.15.0
+      puppeteer: 24.37.5(typescript@5.9.3)
+      puppeteer-core: 24.37.5
       string-width: 4.2.3
       util.promisify: 1.1.3
       xvfb: 0.4.0
@@ -9074,15 +9067,15 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@memlab/core@1.1.43(typescript@5.9.3)':
+  '@memlab/core@2.0.0(typescript@5.9.3)':
     dependencies:
       ansi: 0.3.1
       babar: 0.2.3
       chalk: 4.1.2
       fs-extra: 4.0.3
       minimist: 1.2.8
-      puppeteer: 22.15.0(typescript@5.9.3)
-      puppeteer-core: 22.15.0
+      puppeteer: 24.37.5(typescript@5.9.3)
+      puppeteer-core: 24.37.5
       string-width: 4.2.3
       util.promisify: 1.1.3
       xvfb: 0.4.0
@@ -9095,21 +9088,21 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@memlab/e2e@1.0.43(typescript@5.9.3)':
+  '@memlab/e2e@2.0.0(typescript@5.9.3)':
     dependencies:
       '@babel/generator': 7.29.0
       '@babel/parser': 7.29.0
       '@babel/template': 7.28.6
       '@babel/traverse': 7.29.0
-      '@memlab/core': 1.1.43(typescript@5.9.3)
-      '@memlab/lens': 1.0.3
+      '@memlab/core': 2.0.0(typescript@5.9.3)
+      '@memlab/lens': 2.0.0
       ansi: 0.3.1
       babar: 0.2.3
       chalk: 4.1.2
       fs-extra: 4.0.3
       minimist: 1.2.8
-      puppeteer: 22.15.0(typescript@5.9.3)
-      puppeteer-core: 22.15.0
+      puppeteer: 24.37.5(typescript@5.9.3)
+      puppeteer-core: 24.37.5
       string-width: 4.2.3
       util.promisify: 1.1.3
       xvfb: 0.4.0
@@ -9122,17 +9115,17 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@memlab/heap-analysis@1.0.40(typescript@5.9.3)':
+  '@memlab/heap-analysis@2.0.0(typescript@5.9.3)':
     dependencies:
-      '@memlab/core': 1.1.43(typescript@5.9.3)
-      '@memlab/e2e': 1.0.43(typescript@5.9.3)
+      '@memlab/core': 2.0.0(typescript@5.9.3)
+      '@memlab/e2e': 2.0.0(typescript@5.9.3)
       ansi: 0.3.1
       babar: 0.2.3
       chalk: 4.1.2
       fs-extra: 4.0.3
       minimist: 1.2.8
-      puppeteer: 22.15.0(typescript@5.9.3)
-      puppeteer-core: 22.15.0
+      puppeteer: 24.37.5(typescript@5.9.3)
+      puppeteer-core: 24.37.5
       string-width: 4.2.3
       util.promisify: 1.1.3
       xvfb: 0.4.0
@@ -9145,7 +9138,7 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@memlab/lens@1.0.3': {}
+  '@memlab/lens@2.0.0': {}
 
   '@mixmark-io/domino@2.2.0': {}
 
@@ -9817,7 +9810,7 @@ snapshots:
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
 
-  '@puppeteer/browsers@2.3.0':
+  '@puppeteer/browsers@2.13.0':
     dependencies:
       debug: 4.4.3
       extract-zip: 2.0.1
@@ -9825,7 +9818,6 @@ snapshots:
       proxy-agent: 6.5.0
       semver: 7.7.4
       tar-fs: 3.1.1
-      unbzip2-stream: 1.4.3
       yargs: 17.7.2
     transitivePeerDependencies:
       - bare-abort-controller
@@ -11993,12 +11985,11 @@ snapshots:
 
   chrome-trace-event@1.0.4: {}
 
-  chromium-bidi@0.6.3(devtools-protocol@0.0.1312386):
+  chromium-bidi@14.0.0(devtools-protocol@0.0.1566079):
     dependencies:
-      devtools-protocol: 0.0.1312386
+      devtools-protocol: 0.0.1566079
       mitt: 3.0.1
-      urlpattern-polyfill: 10.0.0
-      zod: 3.23.8
+      zod: 3.25.76
 
   ci-info@3.8.0: {}
 
@@ -12282,7 +12273,7 @@ snapshots:
     dependencies:
       dequal: 2.0.3
 
-  devtools-protocol@0.0.1312386: {}
+  devtools-protocol@0.0.1566079: {}
 
   diff-match-patch@1.0.5: {}
 
@@ -14060,21 +14051,21 @@ snapshots:
 
   mdurl@2.0.0: {}
 
-  memlab@1.1.60(typescript@5.9.3):
+  memlab@2.0.0(typescript@5.9.3):
     dependencies:
-      '@memlab/api': 1.0.42(typescript@5.9.3)
-      '@memlab/cli': 1.0.45(typescript@5.9.3)
-      '@memlab/core': 1.1.43(typescript@5.9.3)
-      '@memlab/e2e': 1.0.43(typescript@5.9.3)
-      '@memlab/heap-analysis': 1.0.40(typescript@5.9.3)
-      '@memlab/lens': 1.0.3
+      '@memlab/api': 2.0.0(typescript@5.9.3)
+      '@memlab/cli': 2.0.0(typescript@5.9.3)
+      '@memlab/core': 2.0.0(typescript@5.9.3)
+      '@memlab/e2e': 2.0.0(typescript@5.9.3)
+      '@memlab/heap-analysis': 2.0.0(typescript@5.9.3)
+      '@memlab/lens': 2.0.0
       ansi: 0.3.1
       babar: 0.2.3
       chalk: 4.1.2
       fs-extra: 4.0.3
       minimist: 1.2.8
-      puppeteer: 22.15.0(typescript@5.9.3)
-      puppeteer-core: 22.15.0
+      puppeteer: 24.37.5(typescript@5.9.3)
+      puppeteer-core: 24.37.5
       string-width: 4.2.3
       util.promisify: 1.1.3
       xvfb: 0.4.0
@@ -15040,12 +15031,14 @@ snapshots:
 
   punycode@2.3.1: {}
 
-  puppeteer-core@22.15.0:
+  puppeteer-core@24.37.5:
     dependencies:
-      '@puppeteer/browsers': 2.3.0
-      chromium-bidi: 0.6.3(devtools-protocol@0.0.1312386)
+      '@puppeteer/browsers': 2.13.0
+      chromium-bidi: 14.0.0(devtools-protocol@0.0.1566079)
       debug: 4.4.3
-      devtools-protocol: 0.0.1312386
+      devtools-protocol: 0.0.1566079
+      typed-query-selector: 2.12.1
+      webdriver-bidi-protocol: 0.4.1
       ws: 8.19.0
     transitivePeerDependencies:
       - bare-abort-controller
@@ -15055,12 +15048,14 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  puppeteer@22.15.0(typescript@5.9.3):
+  puppeteer@24.37.5(typescript@5.9.3):
     dependencies:
-      '@puppeteer/browsers': 2.3.0
+      '@puppeteer/browsers': 2.13.0
+      chromium-bidi: 14.0.0(devtools-protocol@0.0.1566079)
       cosmiconfig: 9.0.0(typescript@5.9.3)
-      devtools-protocol: 0.0.1312386
-      puppeteer-core: 22.15.0
+      devtools-protocol: 0.0.1566079
+      puppeteer-core: 24.37.5
+      typed-query-selector: 2.12.1
     transitivePeerDependencies:
       - bare-abort-controller
       - bare-buffer
@@ -15990,8 +15985,6 @@ snapshots:
     dependencies:
       readable-stream: 3.6.2
 
-  through@2.3.8: {}
-
   tiny-invariant@1.3.3: {}
 
   tinybench@2.9.0: {}
@@ -16151,6 +16144,8 @@ snapshots:
 
   typed-inject@5.0.0: {}
 
+  typed-query-selector@2.12.1: {}
+
   typed-rest-client@2.2.0:
     dependencies:
       des.js: 1.1.0
@@ -16195,11 +16190,6 @@ snapshots:
       has-bigints: 1.1.0
       has-symbols: 1.1.0
       which-boxed-primitive: 1.1.1
-
-  unbzip2-stream@1.4.3:
-    dependencies:
-      buffer: 5.7.1
-      through: 2.3.8
 
   uncrypto@0.1.3: {}
 
@@ -16298,8 +16288,6 @@ snapshots:
       punycode: 2.3.1
 
   uri-template-matcher@1.1.2: {}
-
-  urlpattern-polyfill@10.0.0: {}
 
   use-callback-ref@1.3.3(@types/react@19.2.14)(react@19.2.4):
     dependencies:
@@ -16485,6 +16473,8 @@ snapshots:
       util: 0.12.5
     optionalDependencies:
       '@zxing/text-encoding': 0.9.0
+
+  webdriver-bidi-protocol@0.4.1: {}
 
   webidl-conversions@3.0.1: {}
 
@@ -16686,8 +16676,6 @@ snapshots:
   zod-validation-error@4.0.2(zod@4.3.6):
     dependencies:
       zod: 4.3.6
-
-  zod@3.23.8: {}
 
   zod@3.25.76: {}
 
