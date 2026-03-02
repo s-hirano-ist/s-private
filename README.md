@@ -4,6 +4,10 @@
 ![CI status](https://img.shields.io/github/actions/workflow/status/s-hirano-ist/s-private/ci.yaml?branch=main)
 ![GitHub stars](https://img.shields.io/github/stars/s-hirano-ist/s-private.svg)
 
+
+> [!IMPORTANT]
+> 仕事でできることは仕事でやる できないことをここで供養しよう
+
 ## Live Services
 
 - **Documentation**: [docs.s-hirano.com](https://docs.s-hirano.com)
