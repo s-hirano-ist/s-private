@@ -290,8 +290,8 @@ Schema location: `packages/database/prisma/schema.prisma`
 ## Development Setup
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) v22.20.0 (managed via [Volta](https://volta.sh/))
-- [pnpm](https://pnpm.io/) v10.18.2 (managed via Volta)
+- [Node.js](https://nodejs.org/) v24.14.0 (managed via [Mise](https://mise.jdx.dev/))
+- [pnpm](https://pnpm.io/) v10.30.3 (managed via Mise)
 - [Docker](https://www.docker.com/) (for PostgreSQL database)
 
 ### Initial Setup

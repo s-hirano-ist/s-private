@@ -8,41 +8,19 @@ docker compose up -d  # Start PostgreSQL, Embedding API (TEI), etc.
 pnpm dev
 ```
 
-## Volta Configuration
+## Mise Configuration
 
-This project uses [Volta](https://volta.sh/) for Node.js and package manager version management. The versions are pinned in `package.json`:
+This project uses [Mise](https://mise.jdx.dev/) for Node.js and package manager version management. The tools and their versions are defined in `.mise.toml`.
 
-- **Node.js**: 22.20.0
-- **pnpm**: 10.18.2
+To set up your environment:
 
-### pnpm Support in Volta (Experimental)
-
-Volta's pnpm support is currently experimental. To enable it:
-
-1. Set the environment variable (required):
+1. Install [Mise](https://mise.jdx.dev/getting-started.html)
+2. Run the following command in the project root to install the required tools:
    ```bash
-   # macOS/Linux - Add to ~/.zshrc or ~/.bash_profile
-   export VOLTA_FEATURE_PNPM=1
-
-   # Windows - Add to System Environment Variables
-   # VOLTA_FEATURE_PNPM=1
+   mise install
    ```
 
-2. Install pnpm via Volta:
-   ```bash
-   # If you have existing pnpm installed via Volta
-   volta uninstall pnpm
-
-   # Reinstall pnpm with experimental support enabled
-   volta install pnpm
-   ```
-
-### Limitations
-
-- Global installations (`pnpm install -g`) are not supported
-- This is an experimental feature and may have issues
-
-**Note**: Once configured, Volta will automatically use the correct Node.js and pnpm versions specified in `package.json` when you enter the project directory.
+**Note**: Once installed, Mise will automatically use the correct Node.js and pnpm versions specified in `.mise.toml` when you enter the project directory.
 
 ## Environment Variables
 
