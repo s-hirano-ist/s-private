@@ -22,7 +22,7 @@ services:
       start_period: 120s
 
   minio:
-    image: minio/minio:RELEASE.2025-04-22T22-12-26Z@sha256:a1ea29fa28355559ef137d71fc570e508a214ec84ff8083e39bc5428980b015e
+    image: pgsty/minio:RELEASE.2026-02-14T12-00-00Z-amd64@sha256:e6238b30c37e1143d80b71a6bea91446587009df5d7839f14659b11087d651fb
     container_name: minio
     profiles: [vps]
     restart: unless-stopped
@@ -44,7 +44,7 @@ services:
       retries: 3
 
   minio-init:
-    image: minio/mc:RELEASE.2025-05-21T01-59-54Z@sha256:09f93f534cde415d192bb6084dd0e0ddd1715fb602f8a922ad121fd2bf0f8b44
+    image: pgsty/mc:RELEASE.2026-03-13T08-57-32Z-amd64@sha256:27e3c66b01d1e3922e0a9bd3eb9f532cb52f448942b7f5e37bae8d313835eb22
     container_name: minio-init
     profiles: [vps]
     depends_on:
