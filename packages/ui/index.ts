@@ -69,3 +69,4 @@ export * from "./ui/textarea";
 
 // Utilities
 export * from "./utils/cn";
+export * from "./utils/haptic";

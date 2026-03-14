@@ -8,6 +8,7 @@ import {
 } from "react";
 import Loading from "../display/loading";
 import { Button } from "../ui/button";
+import { haptic } from "../utils/haptic";
 
 /**
  * Context for sharing form values across form fields.
@@ -142,7 +143,12 @@ export function GenericFormWrapper<
 		<FormValuesContext.Provider value={formValues}>
 			<form action={submitAction} className="space-y-4 px-2 py-4">
 				{isPending ? <Loading /> : children}
-				<Button className="w-full" disabled={isPending} type="submit">
+				<Button
+					className="w-full"
+					disabled={isPending}
+					onClick={() => haptic()}
+					type="submit"
+				>
 					{isPending && loadingLabel
 						? loadingLabel
 						: submitLabel

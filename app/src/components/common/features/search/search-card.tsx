@@ -3,6 +3,7 @@ import Loading from "@s-hirano-ist/s-ui/display/loading";
 import { StatusCodeView } from "@s-hirano-ist/s-ui/display/status/status-code-view";
 import { Button } from "@s-hirano-ist/s-ui/ui/button";
 import { Input } from "@s-hirano-ist/s-ui/ui/input";
+import { haptic } from "@s-hirano-ist/s-ui/utils/haptic";
 import { SearchIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
@@ -41,6 +42,7 @@ export function SearchCard({ search }: Props) {
 		href: string;
 		contentType: "articles" | "books" | "notes";
 	}) => {
+		haptic();
 		if (item.contentType === "books") {
 			router.push(`/${locale}/book/${item.href}`);
 		} else if (item.contentType === "notes") {

@@ -1,6 +1,7 @@
 "use client";
 import { Button } from "@s-hirano-ist/s-ui/ui/button";
 import { cn } from "@s-hirano-ist/s-ui/utils/cn";
+import { haptic } from "@s-hirano-ist/s-ui/utils/haptic";
 import { DownloadIcon, SearchIcon, UploadIcon } from "lucide-react";
 import type { Route } from "next";
 import dynamic from "next/dynamic";
@@ -65,6 +66,7 @@ export function Footer({ search }: Props) {
 	}
 
 	const handleLayoutChange = (value: string) => {
+		haptic();
 		startTransition(() => {
 			setOptimisticLayout(value);
 
@@ -106,7 +108,10 @@ export function Footer({ search }: Props) {
 				<Button
 					className="-mt-5"
 					data-testid="search-button"
-					onClick={() => setOpen(true)}
+					onClick={() => {
+						haptic();
+						setOpen(true);
+					}}
 					size="navCenter"
 					type="button"
 					variant="navCenter"

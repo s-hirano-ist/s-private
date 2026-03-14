@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@s-hirano-ist/s-ui/ui/button";
+import { haptic } from "@s-hirano-ist/s-ui/utils/haptic";
 import { Globe, LogOut, Moon, RefreshCw, Sun } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
@@ -19,11 +20,13 @@ export function UtilButtons({ handleReload, onSignOutSubmit }: Props) {
 	const t = useTranslations("utils");
 
 	const handleTheme = () => {
+		haptic();
 		if (theme === "light") setTheme("dark");
 		else setTheme("light");
 	};
 
 	const handleLanguage = () => {
+		haptic();
 		redirect({
 			href: removeLangPrefix(pathname),
 			locale: locale === "en" ? "ja" : "en",
@@ -36,7 +39,10 @@ export function UtilButtons({ handleReload, onSignOutSubmit }: Props) {
 		<div className="grid grid-cols-4 gap-3 px-4 py-2">
 			<Button
 				className="flex h-16 flex-col items-center gap-1"
-				onClick={handleReload}
+				onClick={() => {
+					haptic();
+					handleReload();
+				}}
 				variant="outline"
 			>
 				<RefreshCw className="size-5" />
@@ -69,7 +75,10 @@ export function UtilButtons({ handleReload, onSignOutSubmit }: Props) {
 				<Button
 					className="flex h-16 flex-col items-center gap-1"
 					data-testid="log-out-button"
-					onClick={onSignOutSubmit}
+					onClick={() => {
+						haptic();
+						onSignOutSubmit();
+					}}
 					variant="outline"
 				>
 					<LogOut className="size-5" />

@@ -14,6 +14,7 @@ import {
 import { Label } from "../../ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 import { cn } from "../../utils/cn";
+import { haptic } from "../../utils/haptic";
 import { useFormValues } from "../generic-form-wrapper";
 
 /**
@@ -130,6 +131,7 @@ export function FormDropdownInput({
 	}
 
 	const handleSelect = (selectedValue: string) => {
+		haptic();
 		setValue(selectedValue);
 		setSearchValue("");
 		setOpen(false);

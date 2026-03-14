@@ -8,7 +8,8 @@ test.describe("Error boundary resilience", () => {
 		// Intercept RSC payload requests and return 500
 		await page.route("**/articles*", (route) => {
 			const headers = route.request().headers();
-			if (headers.rsc || headers["next-router-state-tree"]) {
+			if (headers.rsc |
+			| headers["next-router-state-tree"]) {
 				return route.fulfill({
 					status: 500,
 					contentType: "text/plain",
