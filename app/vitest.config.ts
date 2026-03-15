@@ -9,7 +9,7 @@ export default defineConfig({
 		jsx: "automatic",
 	},
 	test: {
-		environment: "jsdom",
+		environment: "happy-dom",
 		setupFiles: ["./vitest-setup.tsx"],
 		include: ["./src/**/*.test.?(c|m)[jt]s?(x)"],
 		exclude: ["./e2e/**/*"],

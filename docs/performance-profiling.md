@@ -41,7 +41,7 @@ import { ProfilerWrapper } from "@s-hirano-ist/s-ui/dev/profiler-wrapper";
 # packages 内のベンチマーク（Node 環境）
 pnpm bench
 
-# コンポーネントベンチマーク（jsdom 環境）
+# コンポーネントベンチマーク（happy-dom 環境）
 pnpm bench:components
 
 # 全ベンチマーク実行
@@ -77,6 +77,6 @@ experimental: {
 
 ### 注意事項
 
-- Vitest の jsdom 環境では React Compiler は適用されない（babel transform が走らないため）
+- Vitest の happy-dom 環境では React Compiler は適用されない（babel transform が走らないため）
 - 正確な React Compiler 有効/無効の比較はブラウザ上の DevTools Profiler で行うこと
 - ベンチマーク結果はコンポーネントの相対的なコストの把握に使用する

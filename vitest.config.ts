@@ -86,7 +86,7 @@ export default defineConfig({
 					include: ["packages/**/*.bench.?(c|m)[jt]s?(x)"],
 				},
 			},
-			// Component benchmarks (jsdom environment, used by `vitest bench --project app-bench`)
+			// Component benchmarks (happy-dom environment, used by `vitest bench --project app-bench`)
 			{
 				extends: "./app/vitest.config.ts",
 				test: {

@@ -16,13 +16,13 @@ The project uses Vitest workspace to manage tests across multiple packages:
 ## Test Setup per Package
 
 ### app
-- **Environment**: jsdom with Next.js-specific mocks (auth, prisma, minio, env)
+- **Environment**: happy-dom with Next.js-specific mocks (auth, prisma, minio, env)
 - **Config**: [app/vitest.config.ts](../app/vitest.config.ts)
 - **Setup**: [app/vitest-setup.tsx](../app/vitest-setup.tsx)
 - **Features**: Includes Storybook integration with browser testing
 
 ### packages/ui
-- **Environment**: jsdom for React component testing
+- **Environment**: happy-dom for React component testing
 - **Config**: [packages/ui/vitest.config.ts](../packages/ui/vitest.config.ts)
 - **Setup**: [packages/ui/vitest-setup.tsx](../packages/ui/vitest-setup.tsx)
 

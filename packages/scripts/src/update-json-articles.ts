@@ -2,8 +2,8 @@
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
+import * as cheerio from "cheerio";
 import iconv from "iconv-lite";
-import { JSDOM, VirtualConsole } from "jsdom";
 
 type ArticleItem = {
 	title: string;
@@ -57,22 +57,6 @@ function detectCharset(headers: Headers, buffer: Buffer): string {
 	return "utf-8";
 }
 
-// REF: https://zenn.dev/littleforest/articles/scrape-og-tags
-function extractOgpData(metaElements: HTMLMetaElement[]) {
-	return metaElements
-		.filter((element: Element) => element.hasAttribute("property"))
-		.reduce(
-			(previous: Record<string, string>, current: Element) => {
-				const property = current.getAttribute("property")?.trim();
-				const content = current.getAttribute("content");
-				if (!property || !content) return previous;
-				previous[property] = content;
-				return previous;
-			},
-			{} as Record<string, string>,
-		);
-}
-
 async function getOgTags(
 	url: string,
 ): Promise<{ ogImageUrl?: string; ogTitle?: string; ogDescription?: string }> {
@@ -92,20 +76,19 @@ async function getOgTags(
 		const charset = detectCharset(response.headers, buffer);
 		const html = iconv.decode(buffer, charset);
 
-		// REF: https://github.com/jsdom/jsdom#virtual-consoles
-		const virtualConsole = new VirtualConsole();
-		const dom = new JSDOM(html, { virtualConsole });
-		virtualConsole.on("error", () => {});
-		virtualConsole.on("warn", () => {});
-		virtualConsole.on("info", () => {});
-		virtualConsole.on("dir", () => {});
+		const $ = cheerio.load(html);
+		const ogTags: Record<string, string> = {};
+		$("meta[property]").each((_, el) => {
+			const property = $(el).attr("property")?.trim();
+			const content = $(el).attr("content");
+			if (property && content) {
+				ogTags[property] = content;
+			}
+		});
 
-		const meta = dom.window.document.head.querySelectorAll("meta");
-		const ogTags = extractOgpData([...meta]);
-
-		const ogImageUrl = ogTags?.["og:image"];
-		const ogTitle = ogTags?.["og:title"];
-		const ogDescription = ogTags?.["og:description"];
+		const ogImageUrl = ogTags["og:image"];
+		const ogTitle = ogTags["og:title"];
+		const ogDescription = ogTags["og:description"];
 
 		return { ogImageUrl, ogTitle, ogDescription };
 	} catch (_error) {
