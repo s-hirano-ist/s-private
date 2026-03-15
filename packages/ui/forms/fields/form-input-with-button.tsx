@@ -2,6 +2,7 @@ import type { ComponentProps, RefObject } from "react";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
+import { haptic } from "../../utils/haptic";
 import { useFormValues } from "../generic-form-wrapper";
 
 /**
@@ -86,7 +87,10 @@ export function FormInputWithButton({
 				<Button
 					aria-label={buttonAriaLabel ?? label}
 					data-testid={buttonTestId}
-					onClick={onButtonClick}
+					onClick={() => {
+						haptic();
+						onButtonClick();
+					}}
 					type="button"
 					variant="ghost"
 				>

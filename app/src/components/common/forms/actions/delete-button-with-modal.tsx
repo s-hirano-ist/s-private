@@ -8,6 +8,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@s-hirano-ist/s-ui/ui/dialog";
+import { haptic } from "@s-hirano-ist/s-ui/utils/haptic";
 import { TrashIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useReducer, useTransition } from "react";
@@ -87,6 +88,7 @@ export function DeleteButtonWithModal({ id, title, deleteAction }: Props) {
 				onClickCapture={(e) => {
 					e.preventDefault();
 					e.stopPropagation();
+					haptic(100);
 					dispatch({ type: "OPEN" });
 				}}
 				size="icon"

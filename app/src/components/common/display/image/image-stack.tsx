@@ -1,5 +1,6 @@
 "use client";
 import { StatusCodeView } from "@s-hirano-ist/s-ui/display/status/status-code-view";
+import { haptic } from "@s-hirano-ist/s-ui/utils/haptic";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useState } from "react";
@@ -107,6 +108,7 @@ export function ImageStack({ data }: ImageStackProps) {
 	}));
 
 	const handleImageClick = (imageIndex: number) => {
+		haptic();
 		setIndex(imageIndex);
 		setOpen(true);
 	};
@@ -155,6 +157,7 @@ export function EditableImageStack({
 				data={data}
 				onImageClick={(i) => {
 					setIndex(i);
+					haptic();
 					setOpen(true);
 				}}
 				renderOverlay={(image) =>
