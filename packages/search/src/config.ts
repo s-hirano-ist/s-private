@@ -2,7 +2,10 @@
 
 function requireEnv(name: string): string {
 	const value = process.env[name];
-	if (!value) throw new Error(`${name} environment variable is required`);
+	if (!value) {
+		if (process.env.SKIP_ENV_VALIDATION) return "";
+		throw new Error(`${name} environment variable is required`);
+	}
 	return value;
 }
 

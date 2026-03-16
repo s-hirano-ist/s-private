@@ -1,6 +1,11 @@
 @import "tailwindcss";
 @import "../../../packages/ui/theme.css";
 
+@theme {
+	--font-sans: "Noto Sans JP Variable", ui-sans-serif, system-ui, sans-serif,
+		"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
 @config "../../tailwind.config.ts";
 @plugin "@tailwindcss/typography";
 

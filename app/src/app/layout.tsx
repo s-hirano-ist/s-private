@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Noto_Sans_JP } from "next/font/google";
+import "@fontsource-variable/noto-sans-jp";
 // FIXME: Enable View Transitions when the API is stable.
 // Note: View Transitions disabled due to React 19 unstable_ViewTransition
 // conflicting with Drawer/Dialog components on the Search page.
@@ -11,8 +11,6 @@ import { Noto_Sans_JP } from "next/font/google";
 // React provides a stable View Transitions API.
 // import { unstable_ViewTransition as ViewTransitions } from "react";
 import { env } from "@/env";
-
-const notoSansJp = Noto_Sans_JP({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
 	title: {
@@ -41,7 +39,7 @@ export default function RootLayout({
 					/>
 				)}
 			</head>
-			<body className={notoSansJp.className}>
+			<body className="font-sans">
 				{children}
 				<Analytics />
 				<SpeedInsights />
