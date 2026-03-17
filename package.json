@@ -48,7 +48,7 @@
 		"preinstall": "npx only-allow pnpm"
 	},
 	"dependencies": {
-		"next": "16.1.6",
+		"next": "16.1.7",
 		"next-intl": "4.8.3"
 	},
 	"devDependencies": {
