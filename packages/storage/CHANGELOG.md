@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.18.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-storage-v1.18.1...@s-hirano-ist/s-storage-v1.18.2) (2026-03-18)
+
+
+### Maintenance
+
+* **deps:** update patch ([3a8e027](https://github.com/s-hirano-ist/s-private/commit/3a8e0270f05ad8e85b0e90a58199ff79bf7e04db))
+* **deps:** update patch ([e7b1006](https://github.com/s-hirano-ist/s-private/commit/e7b1006c5e5914bbc43c2b1ad3d286be0527f3ea))
+
 ## [1.18.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-storage-v1.18.0...@s-hirano-ist/s-storage-v1.18.1) (2026-02-21)
 
 
