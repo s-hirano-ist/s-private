@@ -19,7 +19,7 @@
 		"@s-hirano-ist/s-storage": "workspace:*",
 		"@s-hirano-ist/s-ui": "workspace:*",
 		"@sentry/nextjs": "10.40.0",
-		"@t3-oss/env-nextjs": "0.13.10",
+		"@t3-oss/env-nextjs": "0.13.11",
 		"@tailwindcss/typography": "0.5.19",
 		"@vercel/analytics": "2.0.1",
 		"@vercel/speed-insights": "2.0.0",
@@ -34,7 +34,7 @@
 		"server-only": "0.0.1",
 		"sharp": "0.34.5",
 		"sonner": "2.0.7",
-		"yet-another-react-lightbox": "3.29.1",
+		"yet-another-react-lightbox": "3.29.2",
 		"zod": "4.3.6"
 	},
 	"browserslist": [
@@ -44,12 +44,12 @@
 		"last 2 Edge versions"
 	],
 	"devDependencies": {
-		"@tailwindcss/postcss": "4.2.1",
+		"@tailwindcss/postcss": "4.2.2",
 		"@types/node": "24.10.15",
 		"@types/react": "19.2.14",
 		"@types/react-dom": "19.2.3",
 		"@types/react-syntax-highlighter": "15.5.13",
 		"postcss": "8.5.8",
-		"tailwindcss": "4.2.1"
+		"tailwindcss": "4.2.2"
 	}
 }
