@@ -7,6 +7,17 @@ packages:
 # minimumReleaseAge: 1440
 
 onlyBuiltDependencies:
-  - '@vercel/speed-insights'
+  - '@memlab/cli'
+  - '@parcel/watcher'
+  - '@prisma/engines'
+  - '@sentry/cli'
+  - '@swc/core'
+  - esbuild
+  - memlab
+  - prisma
+  - puppeteer
+  - sharp
+  - sleep
+  - unrs-resolver
 
 savePrefix: ''
