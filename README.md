@@ -304,9 +304,17 @@ pnpm install
 
 ### Environment Configuration
 
-Create environment files based on the templates:
-- Copy `app/.env.sample` to `app/.env.local` and configure required variables
-- Set up Auth0 credentials, database URLs, and external service API keys
+環境変数は [Vercel Dashboard](https://vercel.com) で一元管理し、ローカルに `.env` ファイルを配置する必要はありません。
+
+```bash
+vercel link          # 初回のみ: Vercel プロジェクトをリンク
+```
+
+以降、`pnpm dev` / `pnpm docker:up` / `pnpm prisma:studio` 等のスクリプトは自動的に `vercel env run` 経由で環境変数を取得します。
+
+型定義とバリデーション: [`app/src/env.ts`](app/src/env.ts)（`@t3-oss/env-nextjs` + Zod）
+
+> 環境変数の全体的な管理戦略（ローカル・CI・本番・VPS）については[環境変数管理](#環境変数管理)を参照。
 
 ### Database Setup
 
@@ -447,6 +455,40 @@ pnpm docs:clean            # Remove generated documentation
 - **Production**: Vercel production deployment
 - **Storybook**: Deployed to Cloudflare Pages
 - **Embedding API**: ConoHa VPS (Docker) + Cloudflare Tunnel
+
+### 環境変数管理
+
+環境変数は Vercel Dashboard を Single Source of Truth として、全環境で一貫した方法で管理する。
+
+| 環境 | 管理方法 | 注入方法 |
+|---|---|---|
+| **ローカル開発** | Vercel Dashboard | `vercel env run -e development -- <command>` |
+| **CI (GitHub Actions)** | Vercel Dashboard + GitHub Secrets | `npx vercel@latest env run -e development --token=$VERCEL_TOKEN -- <command>` |
+| **本番 (Vercel)** | Vercel Dashboard | ビルド・ランタイムに自動注入 |
+| **VPS (Docker Compose)** | `~/s-private/.env` | Docker Compose が `.env` を自動読み込み |
+
+#### ローカル開発
+
+1. [Vercel Dashboard](https://vercel.com) でプロジェクトの Environment Variables を設定
+2. `vercel link` でプロジェクトをリンク（初回のみ）
+3. `pnpm dev` 等のスクリプトは自動的に Vercel から環境変数を取得
+
+#### CI (GitHub Actions)
+
+必要な GitHub Secrets:
+- `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` — Vercel 環境変数の取得
+- `NPM_TOKEN` — パッケージ公開（release-please のみ）
+- `ACTIONS_GITHUB_TOKEN` — リリース PR 作成
+
+環境変数が不要なジョブ（eslint, storybook）では `SKIP_ENV_VALIDATION: "true"` を設定。
+
+#### VPS (Docker Compose)
+
+VPS 上の Docker Compose サービス用の環境変数は `~/s-private/.env` に配置する。詳細は [docs/vps-deployment.md Step 7](docs/vps-deployment.md) を参照。
+
+#### 型定義・バリデーション
+
+[`app/src/env.ts`](app/src/env.ts) で `@t3-oss/env-nextjs` + Zod を使用し、ビルド時に全変数をバリデーションする。`SKIP_ENV_VALIDATION` を設定するとバリデーションをスキップできる。
 
 ## Code Standards & Architecture Rules
 

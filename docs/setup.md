@@ -42,4 +42,4 @@ vercel env run -e development -- <command>
 ### 変数一覧
 
 環境変数のスキーマと型定義は `app/src/env.ts`（`@t3-oss/env-nextjs` + Zod）を参照してください。
-Docker Compose 用の変数は `.env.sample` を参照してください。
+Docker Compose 用の変数（VPS デプロイ時）は [docs/vps-deployment.md Step 7](vps-deployment.md) を参照してください。ローカル開発では `vercel env run` 経由で自動注入されるため、別途設定は不要です。
