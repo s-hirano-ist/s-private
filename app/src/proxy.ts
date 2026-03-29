@@ -1,6 +1,8 @@
+import crypto from "node:crypto";
 import { type NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
 import { auth } from "@/infrastructures/auth/auth-provider";
+import { buildCspHeader } from "@/infrastructures/security/csp";
 import { routing } from "./infrastructures/i18n/routing";
 
 const handleI18nRouting = createMiddleware(routing);
@@ -15,7 +17,15 @@ export default async function proxy(request: NextRequest) {
 		return NextResponse.redirect(new URL("/api/sign-in", request.url));
 	}
 
-	return handleI18nRouting(request);
+	const nonce = crypto.randomBytes(16).toString("base64");
+	request.headers.set("x-nonce", nonce);
+
+	const response = handleI18nRouting(request);
+
+	const csp = buildCspHeader(nonce, process.env.NODE_ENV === "development");
+	response.headers.set("Content-Security-Policy", csp);
+
+	return response;
 }
 
 export const config = {

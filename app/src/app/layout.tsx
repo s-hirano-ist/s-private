@@ -4,6 +4,7 @@ import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Noto_Sans_JP } from "next/font/google";
+import { headers } from "next/headers";
 // FIXME: Enable View Transitions when the API is stable.
 // Note: View Transitions disabled due to React 19 unstable_ViewTransition
 // conflicting with Drawer/Dialog components on the Search page.
@@ -26,9 +27,11 @@ export const metadata: Metadata = {
 	},
 };
 
-export default function RootLayout({
+export default async function RootLayout({
 	children,
 }: Readonly<{ children: ReactNode }>) {
+	const nonce = (await headers()).get("x-nonce") ?? "";
+
 	return (
 		<html lang="ja" suppressHydrationWarning>
 			{/*https://github.com/pacocoursey/next-themes*/}
@@ -37,6 +40,7 @@ export default function RootLayout({
 				{env.NODE_ENV === "development" && (
 					<script
 						async
+						nonce={nonce}
 						src="https://unpkg.com/react-scan/dist/auto.global.js"
 					/>
 				)}
