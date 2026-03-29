@@ -56,7 +56,7 @@ docs/** にはより詳細な設計等のルールが記載されています。
 - Qdrant（ベクトルデータベース）
 
 ## 環境設定
-`app/.env.sample` → `.env.local`にコピー。型定義は`app/src/env.ts`。
+環境変数はVercel Dashboardで一元管理。ローカルでは`vercel link`後、`vercel env run`で注入（`.env`ファイル不要）。型定義は`app/src/env.ts`。
 
 ## 詳細資料
 - セットアップ: [docs/setup.md](docs/setup.md)

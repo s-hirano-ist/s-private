@@ -6,7 +6,7 @@
 	"packageManager": "pnpm@10.32.1",
 	"type": "module",
 	"scripts": {
-		"dev": "pnpm --recursive --parallel --stream dev",
+		"dev": "vercel env run -e development -- pnpm --recursive --parallel --stream dev",
 		"build": "pnpm --recursive build",
 		"clean": "rm -rf app/node_modules app/.next packages/*/node_modules packages/*/dist",
 		"check:ci": "biome ci .",
@@ -34,7 +34,11 @@
 		"deps:check": "depcruise app/src packages/ui packages/core packages/notification --config .dependency-cruiser.cjs",
 		"deps:circular": "depcruise app/src packages/ui packages/core packages/notification --config .dependency-cruiser.cjs --output-type text --focus-depth 0",
 		"deps:graph": "depcruise app/src packages/ui packages/core packages/notification --config .dependency-cruiser.cjs --output-type dot | dot -T svg > dependency-graph.svg",
-		"prisma:studio": "pnpm --filter s-database prisma:studio",
+		"prisma:migrate": "vercel env run -e development -- pnpm --filter s-database prisma:migrate",
+		"prisma:deploy": "vercel env run -e development -- pnpm --filter s-database prisma:deploy",
+		"prisma:studio": "vercel env run -e development -- pnpm --filter s-database prisma:studio",
+		"docker:up": "vercel env run -e development -- docker compose up -d",
+		"docker:down": "docker compose down",
 		"docs:build": "typedoc && pnpm --filter @s-hirano-ist/s-database docs:build",
 		"docs:serve": "npx serve docs/api",
 		"docs:watch": "typedoc --watch",
@@ -81,8 +85,8 @@
 		"eslint-plugin-react-hooks": "7.0.1",
 		"eslint-plugin-storybook": "10.3.3",
 		"eslint-plugin-tailwindcss": "4.0.0-beta.0",
-		"jscpd": "4.0.8",
 		"happy-dom": "20.8.8",
+		"jscpd": "4.0.8",
 		"knip": "5.88.1",
 		"license-checker-rseidelsohn": "4.4.2",
 		"memlab": "2.0.0",
@@ -94,6 +98,7 @@
 		"typedoc-plugin-mdn-links": "5.1.1",
 		"typescript": "5.9.3",
 		"typescript-eslint": "8.57.2",
+		"vercel": "50.37.3",
 		"vitest": "4.1.1"
 	}
 }
