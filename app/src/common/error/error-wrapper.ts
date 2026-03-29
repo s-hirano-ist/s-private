@@ -22,6 +22,7 @@ import { Prisma } from "@s-hirano-ist/s-database";
 import { NotificationError } from "@s-hirano-ist/s-notification";
 import { S3Error } from "@s-hirano-ist/s-storage";
 import { AuthError } from "next-auth";
+import { ZodError } from "zod";
 import type { ServerAction } from "@/common/types";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 
@@ -152,6 +153,23 @@ export async function wrapServerSideErrorForClient(
 			}),
 		);
 		return { success: false, message: "prismaUnexpected" };
+	}
+
+	if (error instanceof ZodError) {
+		const message = error.issues[0]?.message ?? "invalidFormat";
+		await eventDispatcher.dispatch(
+			new SystemWarningEvent({
+				message: `Validation error: ${message}`,
+				status: 400,
+				caller: "wrapServerSideError",
+				shouldNotify: false,
+			}),
+		);
+		return {
+			success: false,
+			message,
+			formData: formDataToRecord(formData),
+		};
 	}
 
 	if (error instanceof Error) {
