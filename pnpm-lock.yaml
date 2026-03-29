@@ -8416,12 +8416,6 @@ packages:
   trough@2.2.0:
     resolution: {integrity: sha512-tmMpK00BjZiUyVyvrBK7knerNgmgvcV/KLVyuma/SC+TQN167GrMRciANTz09+k3zW8L8t60jWO1GpfkZdjTaw==}
 
-  ts-api-utils@2.4.0:
-    resolution: {integrity: sha512-3TaVTaAv2gTiMB35i3FiGJaRfwb3Pyn/j3m/bfAvGe8FB7CF6u+LMYqYlDh7reQf7UNvoTvdfAqHGmPGOSsPmA==}
-    engines: {node: '>=18.12'}
-    peerDependencies:
-      typescript: '>=4.8.4'
-
   ts-api-utils@2.5.0:
     resolution: {integrity: sha512-OJ/ibxhPlqrMM0UiNHJ/0CKQkoKF243/AEmplt3qpRgkW8VG7IfOS41h7V8TjITqdByHzrjcS/2si+y4lIh8NA==}
     engines: {node: '>=18.12'}
@@ -12358,7 +12352,7 @@ snapshots:
       minimatch: 10.2.4
       semver: 7.7.4
       tinyglobby: 0.2.15
-      ts-api-utils: 2.4.0(typescript@6.0.2)
+      ts-api-utils: 2.5.0(typescript@6.0.2)
       typescript: 6.0.2
     transitivePeerDependencies:
       - supports-color
@@ -17911,10 +17905,6 @@ snapshots:
   trim-lines@3.0.1: {}
 
   trough@2.2.0: {}
-
-  ts-api-utils@2.4.0(typescript@6.0.2):
-    dependencies:
-      typescript: 6.0.2
 
   ts-api-utils@2.5.0(typescript@6.0.2):
     dependencies:
