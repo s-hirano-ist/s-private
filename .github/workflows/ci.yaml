@@ -1,4 +1,5 @@
 # FIXME: refactor for multiple declation and cache
+# FIXME: skip env 不要
 name: ci
 permissions:
   pull-requests: write
@@ -37,33 +38,10 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm i --frozen-lockfile
-      - run: pnpm build
+      - run: npx vercel@latest env run -e production --token=${{ secrets.VERCEL_TOKEN }} -- pnpm build
         env:
-          AUTH_SECRET: ${{secrets.AUTH_SECRET}}
-          AUTH0_CLIENT_ID: ${{secrets.AUTH0_CLIENT_ID}}
-          AUTH0_CLIENT_SECRET: ${{secrets.AUTH0_CLIENT_SECRET}}
-          AUTH0_ISSUER_BASE_URL: ${{secrets.AUTH0_ISSUER_BASE_URL}}
-          PUSHOVER_URL: ${{secrets.PUSHOVER_URL}}
-          PUSHOVER_APP_TOKEN: ${{secrets.PUSHOVER_APP_TOKEN}}
-          PUSHOVER_USER_KEY: ${{secrets.PUSHOVER_USER_KEY}}
-          MINIO_ACCESS_KEY: ${{secrets.MINIO_ACCESS_KEY}}
-          MINIO_BUCKET_NAME: ${{secrets.MINIO_BUCKET_NAME}}
-          MINIO_HOST: ${{secrets.MINIO_HOST}}
-          MINIO_PORT: ${{secrets.MINIO_PORT}}
-          MINIO_SECRET_KEY: ${{secrets.MINIO_SECRET_KEY}}
-          NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_REPORT_URL: ${{ secrets.SENTRY_REPORT_URL }}
-          EMBEDDING_API_URL: ${{secrets.EMBEDDING_API_URL}}
-          CF_ACCESS_CLIENT_ID: ${{secrets.CF_ACCESS_CLIENT_ID}}
-          CF_ACCESS_CLIENT_SECRET: ${{secrets.CF_ACCESS_CLIENT_SECRET}}
-          QDRANT_URL: ${{secrets.QDRANT_URL}}
-          QDRANT_COLLECTION_NAME: ${{secrets.QDRANT_COLLECTION_NAME}}
-          EMBEDDING_VECTOR_SIZE: ${{secrets.EMBEDDING_VECTOR_SIZE}}
-          EMBEDDING_MODEL: ${{secrets.EMBEDDING_MODEL}}
-          EMBEDDING_QUERY_PREFIX: ${{secrets.EMBEDDING_QUERY_PREFIX}}
-          EMBEDDING_PASSAGE_PREFIX: ${{secrets.EMBEDDING_PASSAGE_PREFIX}}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
   biome:
     runs-on: ubuntu-24.04
@@ -121,10 +99,11 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm i --frozen-lockfile
-      - run: pnpm lint
+      - run: npx vercel@latest env run -e production --token=${{ secrets.VERCEL_TOKEN }} -- pnpm lint
         env:
-          SKIP_ENV_VALIDATION: true
-          MINIO_HOST: ${{ secrets.MINIO_HOST }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          SKIP_ENV_VALIDATION: "true"
 
   knip:
     runs-on: ubuntu-24.04
@@ -189,14 +168,10 @@ jobs:
       - run: pnpm i --frozen-lockfile
       - run: pnpm --filter "./packages/*" build
       - run: pnpm exec playwright install
-      - run: pnpm test
+      - run: npx vercel@latest env run -e production --token=${{ secrets.VERCEL_TOKEN }} -- pnpm test
         env:
-          MINIO_HOST: ${{secrets.MINIO_HOST}}
-          QDRANT_COLLECTION_NAME: ${{secrets.QDRANT_COLLECTION_NAME}}
-          EMBEDDING_VECTOR_SIZE: ${{secrets.EMBEDDING_VECTOR_SIZE}}
-          EMBEDDING_MODEL: ${{secrets.EMBEDDING_MODEL}}
-          EMBEDDING_QUERY_PREFIX: ${{secrets.EMBEDDING_QUERY_PREFIX}}
-          EMBEDDING_PASSAGE_PREFIX: ${{secrets.EMBEDDING_PASSAGE_PREFIX}}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
       - name: Show coverage
         if: always()
         uses: davelosert/vitest-coverage-report-action@2500dafcee7dd64f85ab689c0b83798a8359770e # v2
@@ -232,10 +207,11 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm i --frozen-lockfile
-      - run: pnpm storybook:build
+      - run: npx vercel@latest env run -e production --token=${{ secrets.VERCEL_TOKEN }} -- pnpm storybook:build
         env:
-          SKIP_ENV_VALIDATION: true
-          MINIO_HOST: ${{ secrets.MINIO_HOST }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          SKIP_ENV_VALIDATION: "true"
 
   docker-build-storybook:
     runs-on: ubuntu-24.04

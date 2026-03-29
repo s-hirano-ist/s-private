@@ -32,62 +32,16 @@ jobs:
       - run: pnpm i --frozen-lockfile
 
       - name: Build application
-        run: pnpm build
+        run: npx vercel@latest env run -e production --token=${{ secrets.VERCEL_TOKEN }} -- pnpm build
         env:
-          AUTH_SECRET: ${{secrets.AUTH_SECRET}}
-          AUTH0_CLIENT_ID: ${{secrets.AUTH0_CLIENT_ID}}
-          AUTH0_CLIENT_SECRET: ${{secrets.AUTH0_CLIENT_SECRET}}
-          AUTH0_ISSUER_BASE_URL: ${{secrets.AUTH0_ISSUER_BASE_URL}}
-          PUSHOVER_URL: ${{secrets.PUSHOVER_URL}}
-          PUSHOVER_APP_TOKEN: ${{secrets.PUSHOVER_APP_TOKEN}}
-          PUSHOVER_USER_KEY: ${{secrets.PUSHOVER_USER_KEY}}
-          MINIO_ACCESS_KEY: ${{secrets.MINIO_ACCESS_KEY}}
-          MINIO_BUCKET_NAME: ${{secrets.MINIO_BUCKET_NAME}}
-          MINIO_HOST: ${{secrets.MINIO_HOST}}
-          MINIO_PORT: ${{secrets.MINIO_PORT}}
-          MINIO_SECRET_KEY: ${{secrets.MINIO_SECRET_KEY}}
-          NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_REPORT_URL: ${{ secrets.SENTRY_REPORT_URL }}
-          EMBEDDING_API_URL: ${{secrets.EMBEDDING_API_URL}}
-          CF_ACCESS_CLIENT_ID: ${{secrets.CF_ACCESS_CLIENT_ID}}
-          CF_ACCESS_CLIENT_SECRET: ${{secrets.CF_ACCESS_CLIENT_SECRET}}
-          QDRANT_URL: ${{secrets.QDRANT_URL}}
-          QDRANT_COLLECTION_NAME: ${{secrets.QDRANT_COLLECTION_NAME}}
-          EMBEDDING_VECTOR_SIZE: ${{secrets.EMBEDDING_VECTOR_SIZE}}
-          EMBEDDING_MODEL: ${{secrets.EMBEDDING_MODEL}}
-          EMBEDDING_QUERY_PREFIX: ${{secrets.EMBEDDING_QUERY_PREFIX}}
-          EMBEDDING_PASSAGE_PREFIX: ${{secrets.EMBEDDING_PASSAGE_PREFIX}}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Start server
-        run: pnpm --filter s-private-app start &
+        run: npx vercel@latest env run -e production --token=${{ secrets.VERCEL_TOKEN }} -- pnpm --filter s-private-app start &
         env:
-          AUTH_SECRET: ${{secrets.AUTH_SECRET}}
-          AUTH0_CLIENT_ID: ${{secrets.AUTH0_CLIENT_ID}}
-          AUTH0_CLIENT_SECRET: ${{secrets.AUTH0_CLIENT_SECRET}}
-          AUTH0_ISSUER_BASE_URL: ${{secrets.AUTH0_ISSUER_BASE_URL}}
-          PUSHOVER_URL: ${{secrets.PUSHOVER_URL}}
-          PUSHOVER_APP_TOKEN: ${{secrets.PUSHOVER_APP_TOKEN}}
-          PUSHOVER_USER_KEY: ${{secrets.PUSHOVER_USER_KEY}}
-          MINIO_ACCESS_KEY: ${{secrets.MINIO_ACCESS_KEY}}
-          MINIO_BUCKET_NAME: ${{secrets.MINIO_BUCKET_NAME}}
-          MINIO_HOST: ${{secrets.MINIO_HOST}}
-          MINIO_PORT: ${{secrets.MINIO_PORT}}
-          MINIO_SECRET_KEY: ${{secrets.MINIO_SECRET_KEY}}
-          NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_REPORT_URL: ${{ secrets.SENTRY_REPORT_URL }}
-          EMBEDDING_API_URL: ${{secrets.EMBEDDING_API_URL}}
-          CF_ACCESS_CLIENT_ID: ${{secrets.CF_ACCESS_CLIENT_ID}}
-          CF_ACCESS_CLIENT_SECRET: ${{secrets.CF_ACCESS_CLIENT_SECRET}}
-          QDRANT_URL: ${{secrets.QDRANT_URL}}
-          QDRANT_COLLECTION_NAME: ${{secrets.QDRANT_COLLECTION_NAME}}
-          EMBEDDING_VECTOR_SIZE: ${{secrets.EMBEDDING_VECTOR_SIZE}}
-          EMBEDDING_MODEL: ${{secrets.EMBEDDING_MODEL}}
-          EMBEDDING_QUERY_PREFIX: ${{secrets.EMBEDDING_QUERY_PREFIX}}
-          EMBEDDING_PASSAGE_PREFIX: ${{secrets.EMBEDDING_PASSAGE_PREFIX}}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Wait for server
         run: |
