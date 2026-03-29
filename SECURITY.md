@@ -94,37 +94,42 @@ This ensures all dependencies are installed with exact versions (e.g., `1.2.3` i
 
 ### Lifecycle Script Protection
 
-**Configuration** ([.npmrc](.npmrc)):
-```ini
-# Disable lifecycle scripts for external dependencies
-ignore-dep-scripts=true
-
-# Enable pre/post scripts for our own packages (e.g., Prisma postinstall)
-enable-pre-post-scripts=true
+**Configuration** ([pnpm-workspace.yaml](pnpm-workspace.yaml)):
+```yaml
+onlyBuiltDependencies:
+  - '@memlab/cli'
+  - '@parcel/watcher'
+  - '@prisma/engines'
+  - '@sentry/cli'
+  - '@swc/core'
+  - esbuild
+  - memlab
+  - prisma
+  - puppeteer
+  - sharp
+  - sleep
+  - unrs-resolver
 ```
 
 **Why this matters**:
-- Prevents malicious `postinstall`, `preinstall` scripts from external packages
-- Protects against supply chain attacks via compromised dependencies
-- Our own workspace packages can still run necessary scripts (like Prisma client generation)
+- `onlyBuiltDependencies` に登録されたパッケージのみがライフサイクルスクリプト（`postinstall`、`preinstall`等）を実行可能
+- 未登録パッケージのスクリプトはブロックされ、サプライチェーン攻撃を防止
+- 新しい依存追加時は `pnpm approve-builds` で対話的にレビュー・承認
 
 ### Minimum Release Age
 
-**Global Setting** ([pnpm-workspace.yaml](pnpm-workspace.yaml)):
-```yaml
-minimumReleaseAge: 1440  # 24 hours
+**Renovate Setting** ([.github/renovate.json5](.github/renovate.json5)):
+```json5
+minimumReleaseAge: '2 days'  // npm patches, minors, GitHub Actions
+minimumReleaseAge: '3 days'  // Dockerfile (Node.js)
 ```
 
-**Additional Renovate Setting** ([.github/renovate.json5](.github/renovate.json5)):
-```json5
-minimumReleaseAge: '3 days'  # 72 hours for patches/minors
-```
+> Note: pnpm-workspace.yaml の `minimumReleaseAge` はRenovateとの競合により無効化中。Renovate側の設定で代替。
 
 **Why this matters**:
 - Delays installation of newly published packages
 - Gives the community time to identify and report malicious packages
 - Reduces exposure to supply chain attacks via package hijacking
-- Balances security with access to bug fixes and features
 
 ### Frozen Lockfiles in CI/CD
 
@@ -190,8 +195,8 @@ pnpm i --frozen-lockfile
 ### Multi-layered Defense Strategy
 
 1. **Version Pinning**: Exact versions prevent unexpected updates
-2. **Lifecycle Script Protection**: Blocks malicious install scripts
-3. **Minimum Release Age**: 24-hour global + 3-day Renovate delay
+2. **Lifecycle Script Protection**: `onlyBuiltDependencies` で承認済みパッケージのみスクリプト実行可能
+3. **Minimum Release Age**: 2-3日の Renovate delay
 4. **Frozen Lockfiles**: Reproducible builds in CI/CD
 5. **Automated Monitoring**: Renovate tracks vulnerabilities
 6. **Manual Auditing**: `pnpm audit` for on-demand checks
@@ -277,6 +282,6 @@ pnpm security
 
 ---
 
-**Last Updated**: 2025-10-13
+**Last Updated**: 2026-03-29
 
 For questions about this security policy, contact s-hirano-ist@outlook.com.

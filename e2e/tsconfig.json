@@ -1,12 +1,10 @@
 {
 	"compilerOptions": {
-		"target": "ESNext",
-		"module": "ESNext",
-		"moduleResolution": "bundler",
+		"types": ["node"],
 		"strict": true,
-		"typeRoots": ["../app/node_modules/@types"],
 		"skipLibCheck": true,
 		"noEmit": true,
+		"verbatimModuleSyntax": true,
 		"jsx": "react-jsx"
 	},
 	"include": ["./**/*.ts"]

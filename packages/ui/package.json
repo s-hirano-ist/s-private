@@ -134,6 +134,6 @@
 		"@types/react-dom": "19.2.3",
 		"@types/react-syntax-highlighter": "15.5.13",
 		"postcss": "8.5.8",
-		"typescript": "5.9.3"
+		"typescript": "6.0.2"
 	}
 }
