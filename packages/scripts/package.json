@@ -79,13 +79,13 @@
 		"@s-hirano-ist/s-notification": "workspace:*",
 		"@s-hirano-ist/s-storage": "workspace:*",
 		"glob": "13.0.6",
-		"cheerio": "1.0.0",
+		"cheerio": "1.2.0",
 		"sharp": "0.34.5",
 		"iconv-lite": "0.7.2",
 		"turndown": "7.2.2"
 	},
 	"devDependencies": {
-		"@types/node": "24.10.15",
+		"@types/node": "24.12.0",
 		"@types/turndown": "5.0.6",
 		"tsx": "4.21.0",
 		"typescript": "5.9.3"
