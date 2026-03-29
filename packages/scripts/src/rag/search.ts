@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import "dotenv/config";
 import type { ContentType, SearchResult } from "@s-hirano-ist/s-search/config";
 import { createEmbeddingClient } from "@s-hirano-ist/s-search/embedding-client";
 import {

@@ -4,8 +4,9 @@
 
 ```bash
 pnpm install
-docker compose up -d  # Start PostgreSQL, Embedding API (TEI), etc.
-pnpm dev
+vercel link          # 初回のみ: Vercel プロジェクトをリンク
+pnpm docker:up       # Docker Compose 起動（環境変数は Vercel から注入）
+pnpm dev             # 開発サーバー起動（環境変数は Vercel から注入）
 ```
 
 ## Mise Configuration
@@ -24,30 +25,21 @@ To set up your environment:
 
 ## Environment Variables
 
-Copy `.env.sample` to `.env.local` and fill in required values.
+環境変数は **Vercel Dashboard** で一元管理し、ローカルに `.env` ファイルを置く必要はありません。
 
-### Required Variables
+### セットアップ
 
-**Authentication (Auth0)**:
-- `AUTH_SECRET` - NextAuth.js secret (generate with `openssl rand -base64 32`)
-- `AUTH0_CLIENT_ID`, `AUTH0_CLIENT_SECRET`, `AUTH0_ISSUER_BASE_URL` - Auth0 configuration
+1. [Vercel Dashboard](https://vercel.com) で対象プロジェクトの Environment Variables を設定
+2. ローカルで `vercel link` を実行してプロジェクトをリンク（初回のみ）
 
-**Database**:
-- `DATABASE_URL` - PostgreSQL connection string
+以降、`pnpm dev` / `pnpm docker:up` / `pnpm prisma:studio` 等のスクリプトは自動的に Vercel から環境変数を取得します。
 
-**External Services**:
-- `PUSHOVER_URL`, `PUSHOVER_USER_KEY`, `PUSHOVER_APP_TOKEN` - Notification service
-- `SENTRY_AUTH_TOKEN`, `SENTRY_REPORT_URL` - Error monitoring
-- `NEXT_PUBLIC_SENTRY_DSN` - Client-side Sentry (public variable)
+任意のコマンドに環境変数を注入したい場合:
+```bash
+vercel env run -e development -- <command>
+```
 
-**Object Storage (MinIO)**:
-- `MINIO_HOST`, `MINIO_PORT`, `MINIO_BUCKET_NAME` - MinIO server configuration
-- `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY` - MinIO credentials
+### 変数一覧
 
-**RAG Search (Embedding + Vector DB)**:
-- `EMBEDDING_API_URL` - TEI endpoint URL (e.g., `http://localhost:3001`)
-- `CF_ACCESS_CLIENT_ID`, `CF_ACCESS_CLIENT_SECRET` - Cloudflare Access credentials (VPS only)
-- `QDRANT_URL` - Qdrant server URL
-- `QDRANT_API_KEY` - Qdrant API key
-
-Type definitions and validation are in `src/env.ts` using `@t3-oss/env-nextjs` with Zod.
+環境変数のスキーマと型定義は `app/src/env.ts`（`@t3-oss/env-nextjs` + Zod）を参照してください。
+Docker Compose 用の変数は `.env.sample` を参照してください。
