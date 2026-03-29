@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
+import { type ReactNode, Suspense } from "react";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -27,22 +27,29 @@ export const metadata: Metadata = {
 	},
 };
 
-export default async function RootLayout({
+async function ReactScanScript() {
+	const nonce = (await headers()).get("x-nonce") ?? "";
+	return (
+		<script
+			async
+			nonce={nonce}
+			src="https://unpkg.com/react-scan/dist/auto.global.js"
+		/>
+	);
+}
+
+export default function RootLayout({
 	children,
 }: Readonly<{ children: ReactNode }>) {
-	const nonce = (await headers()).get("x-nonce") ?? "";
-
 	return (
 		<html lang="ja" suppressHydrationWarning>
 			{/*https://github.com/pacocoursey/next-themes*/}
 			<head>
 				{/* https://github.com/aidenybai/react-scan */}
 				{env.NODE_ENV === "development" && (
-					<script
-						async
-						nonce={nonce}
-						src="https://unpkg.com/react-scan/dist/auto.global.js"
-					/>
+					<Suspense>
+						<ReactScanScript />
+					</Suspense>
 				)}
 			</head>
 			<body className={notoSansJp.className}>

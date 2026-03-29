@@ -1,12 +1,7 @@
 export function buildCspHeader(nonce: string, isDevelopment: boolean): string {
-	const scriptSrc = [
-		"'self'",
-		`'nonce-${nonce}'`,
-		"'strict-dynamic'",
-		"https://va.vercel-scripts.com",
-		"https://vercel.live",
-		...(isDevelopment ? ["'unsafe-eval'", "https://unpkg.com"] : []),
-	].join(" ");
+	const scriptSrc = isDevelopment
+		? "'self' 'unsafe-eval' 'unsafe-inline' https://unpkg.com https://va.vercel-scripts.com https://vercel.live"
+		: `'nonce-${nonce}' 'strict-dynamic' 'self' https://va.vercel-scripts.com https://vercel.live`;
 
 	const directives = [
 		`default-src 'self' https://vercel.live`,
