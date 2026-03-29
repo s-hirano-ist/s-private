@@ -87,7 +87,7 @@
 		"eslint-plugin-tailwindcss": "4.0.0-beta.0",
 		"happy-dom": "20.8.8",
 		"jscpd": "4.0.8",
-		"knip": "5.88.1",
+		"knip": "6.0.5",
 		"license-checker-rseidelsohn": "4.4.2",
 		"memlab": "2.0.0",
 		"playwright": "1.58.2",
