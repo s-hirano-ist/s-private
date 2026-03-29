@@ -1,4 +1,4 @@
-# s-local dev UI for AI
+# s-local dev UI and MCP for AI
 
 ## 概要
 
