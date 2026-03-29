@@ -1,18 +1,14 @@
 {
 	"compilerOptions": {
-		"lib": ["dom", "dom.iterable", "esnext"],
+		"lib": ["dom", "esnext"],
 		"target": "ES2022",
 		"allowJs": true,
 		"skipLibCheck": true,
 		"strict": true,
-		"forceConsistentCasingInFileNames": true,
 		"noEmit": true,
-		"esModuleInterop": true,
-		"module": "esnext",
-		"moduleResolution": "bundler",
 		"allowImportingTsExtensions": true,
 		"resolveJsonModule": true,
-		"isolatedModules": true,
+		"verbatimModuleSyntax": true,
 		"jsx": "react-jsx",
 		"incremental": true,
 		"plugins": [
@@ -24,7 +20,10 @@
 			"@/*": ["./src/*"],
 			"@s-hirano-ist/s-ui/*": ["../packages/ui/*"],
 			"@s-hirano-ist/s-core/*": ["../packages/core/*"]
-		}
+		},
+		"module": "esnext",
+		"moduleResolution": "bundler",
+		"esModuleInterop": true
 	},
 	"include": [
 		"next-env.d.ts",
