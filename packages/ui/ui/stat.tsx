@@ -101,4 +101,4 @@ function StatDescription({ className, ref, ...props }: StatDescriptionProps) {
 }
 StatDescription.displayName = "StatDescription";
 
-export { Stat, StatTitle, StatValue, StatDescription };
+export { Stat, StatDescription, StatTitle, StatValue };
