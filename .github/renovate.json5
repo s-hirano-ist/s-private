@@ -18,7 +18,6 @@
     'npm',
     'github-actions',
     'docker-compose',
-    'dockerfile',
   ],
   dependencyDashboard: true,
   schedule: [
@@ -38,17 +37,7 @@
     ],
   },
   packageRules: [
-    {
-      matchPackageNames: [
-        'node',
-      ],
-      matchManagers: [
-        'dockerfile',
-      ],
-      allowedVersions: '/^[0-9]*[02468]([.-].*)?$/',
-      "minimumReleaseAge": '3 days',
-    },
-    {
+{
       matchManagers: [
         'npm',
       ],
