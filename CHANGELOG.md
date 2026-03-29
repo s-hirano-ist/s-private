@@ -2,6 +2,70 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.2.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.1.0...s-private-v3.2.0) (2026-03-29)
+
+
+### Features
+
+* **error:** add ZodError handling in wrapServerSideErrorForClient ([ffbd7f6](https://github.com/s-hirano-ist/s-private/commit/ffbd7f670b318aa3f53af9067c97713f2665f9f9))
+* **error:** add ZodError handling in wrapServerSideErrorForClient ([8dc74ef](https://github.com/s-hirano-ist/s-private/commit/8dc74efe162a7d91411507d7d8cd4a50575e98b5))
+
+
+### Bug Fixes
+
+* biome ([d42b540](https://github.com/s-hirano-ist/s-private/commit/d42b54019ab71034fb92e295a8ffbf22e147f194))
+* biome version ([49838c1](https://github.com/s-hirano-ist/s-private/commit/49838c109119243f321a8e015b077cbc50837d29))
+* renovate ([7e4c457](https://github.com/s-hirano-ist/s-private/commit/7e4c457ef54c053b0b65ababa49c538cd85eec4a))
+* typescript migrations ([9882642](https://github.com/s-hirano-ist/s-private/commit/9882642cf8c57575ad09f19f9e3a84c79210bca0))
+
+
+### Documentation
+
+* delete issue ([8a54bec](https://github.com/s-hirano-ist/s-private/commit/8a54bec07df2227373b3de1d0a326ec8ce6e0f53))
+* update readme and setup ([5c9aee3](https://github.com/s-hirano-ist/s-private/commit/5c9aee36ec582d8e86d8f7bd47f8521e77eaa04a))
+
+
+### Maintenance
+
+* add vercel env ([71c6889](https://github.com/s-hirano-ist/s-private/commit/71c6889b0bfe66b8825a1e27745d06912683a145))
+* add vercel env ([e531f14](https://github.com/s-hirano-ist/s-private/commit/e531f145912c61ed861dce3702e9e12d405e1480))
+* delete dockerfile ([99f4707](https://github.com/s-hirano-ist/s-private/commit/99f470707eb8a8af03b69a315cdfeb0e83f7c6e2))
+* delete storybook docker ([66fc499](https://github.com/s-hirano-ist/s-private/commit/66fc499df99e2a262f1fedcfab7d18ba50c1c1de))
+* **deps:** downgrade @base-ui/react from 1.3.0 to 1.2.0 ([37fa2ae](https://github.com/s-hirano-ist/s-private/commit/37fa2ae941b39de7c856de1d4fa991f07fc693d1))
+* **deps:** lock file maintenance ([7cb2775](https://github.com/s-hirano-ist/s-private/commit/7cb277519bf75a9d2ec1a8cdfb2e2860e1741afc))
+* **deps:** lock file maintenance ([f93811d](https://github.com/s-hirano-ist/s-private/commit/f93811d706ecaa528afa80802bbd53965cc8214a))
+* **deps:** update dependency happy-dom to v20.8.8 [security] ([0d535b2](https://github.com/s-hirano-ist/s-private/commit/0d535b2ab421e2a6be8ddff1223984577c77e40d))
+* **deps:** update dependency happy-dom to v20.8.8 [security] ([18ff7eb](https://github.com/s-hirano-ist/s-private/commit/18ff7eb770f83fa37edb1df6636db39db864c33d))
+* **deps:** update dependency knip to v6 ([5e51f05](https://github.com/s-hirano-ist/s-private/commit/5e51f059d7d0adf4c4ca5d82c9e3ad2a656328a0))
+* **deps:** update dependency knip to v6 ([be708db](https://github.com/s-hirano-ist/s-private/commit/be708dbf5e5fec32c29cc1f93b7e9c482662a91a))
+* **deps:** update dependency lucide-react to v1 ([c3e78c1](https://github.com/s-hirano-ist/s-private/commit/c3e78c1de857ddef097f577ae81f1282980ae4e3))
+* **deps:** update dependency lucide-react to v1 ([b5a46d4](https://github.com/s-hirano-ist/s-private/commit/b5a46d433c4950e92c34909a9f4d38abf24b3f25))
+* **deps:** update dependency typescript to v6 ([b171237](https://github.com/s-hirano-ist/s-private/commit/b171237d3f940bf7aabb02a03879cfa8d7ce03b2))
+* **deps:** update dependency typescript to v6 ([69b2268](https://github.com/s-hirano-ist/s-private/commit/69b2268c39fa70c7219e34930f07884b6b8f3313))
+* **deps:** update ghcr.io/huggingface/text-embeddings-inference:cpu-1.9 docker digest to ad950d3 ([f651092](https://github.com/s-hirano-ist/s-private/commit/f65109206baa32c9b4c8dec84ca346ce104ee854))
+* **deps:** update ghcr.io/huggingface/text-embeddings-inference:cpu-1.9 docker digest to ad950d3 ([6ec35e5](https://github.com/s-hirano-ist/s-private/commit/6ec35e5bb3e96d7f101d1175cdc9546c01cd689e))
+* **deps:** update github actions ([fb5ea1f](https://github.com/s-hirano-ist/s-private/commit/fb5ea1fe1149300d4c9fc79704a85ac4c25c1384))
+* **deps:** update github actions ([20821ff](https://github.com/s-hirano-ist/s-private/commit/20821ff656ca49c303b0286421f97f1b8b960309))
+* **deps:** update github actions to v5 ([f49d168](https://github.com/s-hirano-ist/s-private/commit/f49d168e0e9df22126a34fa6e70e4015088ff545))
+* **deps:** update httpd:2.4.66 docker digest to 331548c ([14e214e](https://github.com/s-hirano-ist/s-private/commit/14e214e714cf3bc245df104289d69ca387cf0d25))
+* **deps:** update minor ([21d521e](https://github.com/s-hirano-ist/s-private/commit/21d521e5c76bed45cacdfb0730614ba7a69d30f4))
+* **deps:** update minor ([4d62f94](https://github.com/s-hirano-ist/s-private/commit/4d62f94a63c9aeaf31042ec9cca549deb2c54854))
+* **deps:** update node.js to d8e448a ([77ddf8c](https://github.com/s-hirano-ist/s-private/commit/77ddf8ccd1a86ac87802e6aff89c1cf268dba35e))
+* **deps:** update node.js to d8e448a ([4dbc622](https://github.com/s-hirano-ist/s-private/commit/4dbc6226e4a80df8b12ff75f071d12c510234d34))
+* **deps:** update patch ([024cda9](https://github.com/s-hirano-ist/s-private/commit/024cda9c524a994a4387cf7ed62c82d03dd75de1))
+* **deps:** update patch ([3232db6](https://github.com/s-hirano-ist/s-private/commit/3232db6525f29bd509ae2ad610f8ba199782611a))
+* **deps:** update patch ([fc2a45d](https://github.com/s-hirano-ist/s-private/commit/fc2a45dcba5e118e2d1a3abcfdb5289c7f444859))
+* **deps:** update patch ([f660874](https://github.com/s-hirano-ist/s-private/commit/f66087490fe65e9dd172834fac88d80ea394c67a))
+* **deps:** update pnpm to v10.33.0 ([5bba8b5](https://github.com/s-hirano-ist/s-private/commit/5bba8b57138be7feed04f923baca9219c2cb52dc))
+* **deps:** update pnpm to v10.33.0 ([8920746](https://github.com/s-hirano-ist/s-private/commit/89207466bc1996c84757c53415eca46b2fccf1c0))
+* do not use dotenv ([743be7b](https://github.com/s-hirano-ist/s-private/commit/743be7b51b93085532734b58c6260a193e43dd47))
+* fix to use dev env ([9f73f0a](https://github.com/s-hirano-ist/s-private/commit/9f73f0a4fde36fbe4bad6470afe17c4b6be0d389))
+* pnpm settings ([8f8aa62](https://github.com/s-hirano-ist/s-private/commit/8f8aa6219306a27dfbb283231ebce53e7cdcc7ad))
+* remove unused claude tool from configuration ([6b6d317](https://github.com/s-hirano-ist/s-private/commit/6b6d3170a45ffca68598f74f4ead7e92fe31cac1))
+* update audit ([5d105d3](https://github.com/s-hirano-ist/s-private/commit/5d105d39eb4f1a3563ef8104d01e0d881e2da693))
+* update audit ([58550c3](https://github.com/s-hirano-ist/s-private/commit/58550c3b0ed7f80e0530d68e63591fc2dc545541))
+* update tsonfig ([f739b2d](https://github.com/s-hirano-ist/s-private/commit/f739b2d5fa69a1b66922acaeeafb5041af532e1d))
+
 ## [3.1.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.0.1...s-private-v3.1.0) (2026-03-18)
 
 

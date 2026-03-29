@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.19.3](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.19.2...@s-hirano-ist/s-ui-v1.19.3) (2026-03-29)
+
+
+### Bug Fixes
+
+* biome ([d42b540](https://github.com/s-hirano-ist/s-private/commit/d42b54019ab71034fb92e295a8ffbf22e147f194))
+
+
+### Maintenance
+
+* **deps:** downgrade @base-ui/react from 1.3.0 to 1.2.0 ([37fa2ae](https://github.com/s-hirano-ist/s-private/commit/37fa2ae941b39de7c856de1d4fa991f07fc693d1))
+* **deps:** update dependency lucide-react to v1 ([c3e78c1](https://github.com/s-hirano-ist/s-private/commit/c3e78c1de857ddef097f577ae81f1282980ae4e3))
+* **deps:** update dependency lucide-react to v1 ([b5a46d4](https://github.com/s-hirano-ist/s-private/commit/b5a46d433c4950e92c34909a9f4d38abf24b3f25))
+* **deps:** update dependency typescript to v6 ([b171237](https://github.com/s-hirano-ist/s-private/commit/b171237d3f940bf7aabb02a03879cfa8d7ce03b2))
+* **deps:** update dependency typescript to v6 ([69b2268](https://github.com/s-hirano-ist/s-private/commit/69b2268c39fa70c7219e34930f07884b6b8f3313))
+* **deps:** update minor ([21d521e](https://github.com/s-hirano-ist/s-private/commit/21d521e5c76bed45cacdfb0730614ba7a69d30f4))
+* **deps:** update minor ([4d62f94](https://github.com/s-hirano-ist/s-private/commit/4d62f94a63c9aeaf31042ec9cca549deb2c54854))
+* **deps:** update patch ([fc2a45d](https://github.com/s-hirano-ist/s-private/commit/fc2a45dcba5e118e2d1a3abcfdb5289c7f444859))
+* update tsonfig ([f739b2d](https://github.com/s-hirano-ist/s-private/commit/f739b2d5fa69a1b66922acaeeafb5041af532e1d))
+
 ## [1.19.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.19.1...@s-hirano-ist/s-ui-v1.19.2) (2026-03-18)
 
 

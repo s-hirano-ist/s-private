@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.18.5](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-search-v1.18.4...@s-hirano-ist/s-search-v1.18.5) (2026-03-29)
+
+
+### Bug Fixes
+
+* typescript migrations ([9882642](https://github.com/s-hirano-ist/s-private/commit/9882642cf8c57575ad09f19f9e3a84c79210bca0))
+
+
+### Maintenance
+
+* **deps:** update dependency typescript to v6 ([b171237](https://github.com/s-hirano-ist/s-private/commit/b171237d3f940bf7aabb02a03879cfa8d7ce03b2))
+* **deps:** update dependency typescript to v6 ([69b2268](https://github.com/s-hirano-ist/s-private/commit/69b2268c39fa70c7219e34930f07884b6b8f3313))
+* **deps:** update minor ([21d521e](https://github.com/s-hirano-ist/s-private/commit/21d521e5c76bed45cacdfb0730614ba7a69d30f4))
+* **deps:** update minor ([4d62f94](https://github.com/s-hirano-ist/s-private/commit/4d62f94a63c9aeaf31042ec9cca549deb2c54854))
+* update tsonfig ([f739b2d](https://github.com/s-hirano-ist/s-private/commit/f739b2d5fa69a1b66922acaeeafb5041af532e1d))
+
 ## [1.18.4](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-search-v1.18.3...@s-hirano-ist/s-search-v1.18.4) (2026-03-18)
 
 
