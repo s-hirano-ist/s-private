@@ -4,6 +4,7 @@ import { NotificationError } from "@s-hirano-ist/s-notification";
 import { S3Error } from "@s-hirano-ist/s-storage";
 import { AuthError } from "next-auth";
 import { describe, expect, test, vi } from "vitest";
+import type { ZodError } from "zod";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { wrapServerSideErrorForClient } from "./error-wrapper";
 
@@ -209,6 +210,59 @@ describe("wrapServerSideErrorForClient", () => {
 		expect(result).toEqual({
 			success: false,
 			message: "unexpected",
+		});
+	});
+
+	test("should handle ZodError with required message", async () => {
+		const { z } = await import("zod");
+		const schema = z.string().min(1, { message: "required" });
+		let error: ZodError;
+		try {
+			schema.parse("");
+			throw new Error("should not reach");
+		} catch (e) {
+			error = e as ZodError;
+		}
+		const formData = new FormData();
+		formData.append("category", "");
+		formData.append("title", "test");
+
+		const result = await wrapServerSideErrorForClient(error, formData);
+
+		expect(eventDispatcher.dispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				eventType: "system.warning",
+				payload: expect.objectContaining({
+					message: "Validation error: required",
+					status: 400,
+					shouldNotify: false,
+				}),
+			}),
+		);
+		expect(result).toEqual({
+			success: false,
+			message: "required",
+			formData: { category: "", title: "test" },
+		});
+	});
+
+	test("should handle ZodError with tooLong message", async () => {
+		const { z } = await import("zod");
+		const schema = z.string().max(3, { message: "tooLong" });
+		let error: ZodError;
+		try {
+			schema.parse("toolong");
+			throw new Error("should not reach");
+		} catch (e) {
+			error = e as ZodError;
+		}
+
+		const result = await wrapServerSideErrorForClient(error);
+
+		expect(result).toEqual({
+			success: false,
+			message: "tooLong",
+			formData: undefined,
 		});
 	});
 
