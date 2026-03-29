@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.18.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-notification-v1.18.1...@s-hirano-ist/s-notification-v1.18.2) (2026-03-29)
+
+
+### Maintenance
+
+* **deps:** update dependency typescript to v6 ([b171237](https://github.com/s-hirano-ist/s-private/commit/b171237d3f940bf7aabb02a03879cfa8d7ce03b2))
+* **deps:** update dependency typescript to v6 ([69b2268](https://github.com/s-hirano-ist/s-private/commit/69b2268c39fa70c7219e34930f07884b6b8f3313))
+* update tsonfig ([f739b2d](https://github.com/s-hirano-ist/s-private/commit/f739b2d5fa69a1b66922acaeeafb5041af532e1d))
+
 ## [1.18.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-notification-v1.18.0...@s-hirano-ist/s-notification-v1.18.1) (2026-02-21)
 
 

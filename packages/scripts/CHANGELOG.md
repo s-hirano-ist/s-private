@@ -1,5 +1,34 @@
 # Changelog
 
+## [1.18.5](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.18.4...@s-hirano-ist/s-scripts-v1.18.5) (2026-03-29)
+
+
+### Bug Fixes
+
+* typescript migrations ([9882642](https://github.com/s-hirano-ist/s-private/commit/9882642cf8c57575ad09f19f9e3a84c79210bca0))
+
+
+### Maintenance
+
+* add vercel env ([71c6889](https://github.com/s-hirano-ist/s-private/commit/71c6889b0bfe66b8825a1e27745d06912683a145))
+* **deps:** update dependency typescript to v6 ([b171237](https://github.com/s-hirano-ist/s-private/commit/b171237d3f940bf7aabb02a03879cfa8d7ce03b2))
+* **deps:** update dependency typescript to v6 ([69b2268](https://github.com/s-hirano-ist/s-private/commit/69b2268c39fa70c7219e34930f07884b6b8f3313))
+* **deps:** update minor ([21d521e](https://github.com/s-hirano-ist/s-private/commit/21d521e5c76bed45cacdfb0730614ba7a69d30f4))
+* **deps:** update minor ([4d62f94](https://github.com/s-hirano-ist/s-private/commit/4d62f94a63c9aeaf31042ec9cca549deb2c54854))
+* do not use dotenv ([743be7b](https://github.com/s-hirano-ist/s-private/commit/743be7b51b93085532734b58c6260a193e43dd47))
+* update tsonfig ([f739b2d](https://github.com/s-hirano-ist/s-private/commit/f739b2d5fa69a1b66922acaeeafb5041af532e1d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.18.5
+    * @s-hirano-ist/s-database bumped to 1.18.4
+    * @s-hirano-ist/s-notification bumped to 1.18.2
+    * @s-hirano-ist/s-search bumped to 1.18.5
+    * @s-hirano-ist/s-storage bumped to 1.18.3
+
 ## [1.18.4](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.18.3...@s-hirano-ist/s-scripts-v1.18.4) (2026-03-18)
 
 
