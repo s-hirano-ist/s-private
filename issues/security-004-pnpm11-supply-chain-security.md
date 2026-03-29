@@ -57,5 +57,4 @@ trustPolicyExclude:
 - `.mise.toml`（pnpm バージョン）
 - `pnpm-workspace.yaml`（セキュリティ設定）
 - `.npmrc`（設定移行）
-- `app/Dockerfile`（pnpm インストール方法）
 - `SECURITY.md`（ドキュメント更新）

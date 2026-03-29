@@ -537,8 +537,3 @@ To run code duplication analysis locally:
 pnpm jscpd
 ```
 
-## Docker
-
-```
-docker build -f app/Dockerfile -t app .
-```
