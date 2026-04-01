@@ -1,6 +1,6 @@
 === Root dependencies ===
 ├─ MIT: 34
-├─ Apache-2.0: 8
+├─ Apache-2.0: 9
 ├─ MIT OR Apache-2.0: 1
 ├─ ISC: 1
 ├─ BSD-3-Clause: 1
@@ -8,12 +8,10 @@
 
 
 === App package ===
-├─ MIT: 36
+├─ MIT: 37
 ├─ Apache-2.0: 9
 ├─ AGPL-3.0: 6
 ├─ ISC: 3
-├─ MPL-2.0: 1
-├─ BSD-2-Clause: 1
 └─ UNKNOWN: 1
 
 
