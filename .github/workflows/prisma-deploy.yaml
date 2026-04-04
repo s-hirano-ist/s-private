@@ -1,0 +1,39 @@
+name: prisma-deploy
+permissions: {}
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "packages/database/prisma/migrations/**"
+jobs:
+  prisma-deploy:
+    runs-on: ubuntu-24.04
+    permissions: {}
+    timeout-minutes: 10
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+    steps:
+      - name: Checkout files
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+          submodules: true
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5
+        with:
+          run_install: false
+
+      - name: Install Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
+        with:
+          node-version: "24.14.1"
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - run: pnpm i --frozen-lockfile
+      - run: npx vercel@latest env run -e production --token=${{ secrets.VERCEL_TOKEN }} -- pnpm --filter s-database prisma:deploy
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
