@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.2.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.2.0...s-private-v3.2.1) (2026-04-05)
+
+
+### Documentation
+
+* add issues of auth0 ([ae1c219](https://github.com/s-hirano-ist/s-private/commit/ae1c2190b8959831af6967b3d0bf73c0fb8f95cd))
+
+
+### Maintenance
+
+* add deployment for prisma ([9cf993a](https://github.com/s-hirano-ist/s-private/commit/9cf993ac7fad227696a09c38d2e3cd214095b7ad))
+* add deployment for prisma ([2b731b4](https://github.com/s-hirano-ist/s-private/commit/2b731b4883c612b19106d9ac1e604a4e502e60c6))
+* add more issues ([fab52d1](https://github.com/s-hirano-ist/s-private/commit/fab52d17f2ba47790d26c1009a52972279934af9))
+* add more issues ([379fddb](https://github.com/s-hirano-ist/s-private/commit/379fddb07a35825c46a665805ea25b3ba00ba97b))
+* change license of s-ui ([ba89fa9](https://github.com/s-hirano-ist/s-private/commit/ba89fa981e0bbb3fddf5ccba1dec08d7b824b25a))
+* change license of s-ui ([9872827](https://github.com/s-hirano-ist/s-private/commit/98728273403d135bf66f9be5e19a577dd3052981))
+* **deps:** lock file maintenance ([7218926](https://github.com/s-hirano-ist/s-private/commit/7218926e7ca72ca95dfa47d7100dd6e88b480bfe))
+
 ## [3.2.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.1.0...s-private-v3.2.0) (2026-03-29)
 
 
