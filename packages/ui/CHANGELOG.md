@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.19.4](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.19.3...@s-hirano-ist/s-ui-v1.19.4) (2026-04-05)
+
+
+### Maintenance
+
+* change license of s-ui ([ba89fa9](https://github.com/s-hirano-ist/s-private/commit/ba89fa981e0bbb3fddf5ccba1dec08d7b824b25a))
+* change license of s-ui ([9872827](https://github.com/s-hirano-ist/s-private/commit/98728273403d135bf66f9be5e19a577dd3052981))
+
 ## [1.19.3](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.19.2...@s-hirano-ist/s-ui-v1.19.3) (2026-03-29)
 
 

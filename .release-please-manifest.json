@@ -1,7 +1,7 @@
 {
-	".": "3.2.0",
+	".": "3.2.1",
 	"packages/core": "1.18.5",
-	"packages/ui": "1.19.3",
+	"packages/ui": "1.19.4",
 	"packages/database": "1.18.4",
 	"packages/notification": "1.18.2",
 	"packages/scripts": "1.18.5",
