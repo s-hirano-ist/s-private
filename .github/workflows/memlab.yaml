@@ -31,17 +31,18 @@ jobs:
 
       - run: pnpm i --frozen-lockfile
 
+      - name: Install Doppler CLI
+        uses: dopplerhq/cli-action@v3
+
       - name: Build application
-        run: npx vercel@latest env run -e development --token=${{ secrets.VERCEL_TOKEN }} -- pnpm build
+        run: doppler run -- pnpm build
         env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_DEV }}
 
       - name: Start server
-        run: npx vercel@latest env run -e development --token=${{ secrets.VERCEL_TOKEN }} -- pnpm --filter s-private-app start &
+        run: doppler run -- pnpm --filter s-private-app start &
         env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_DEV }}
 
       - name: Wait for server
         run: |

@@ -33,7 +33,8 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm i --frozen-lockfile
-      - run: npx vercel@latest env run -e production --token=${{ secrets.VERCEL_TOKEN }} -- pnpm --filter s-database prisma:deploy
+      - name: Install Doppler CLI
+        uses: dopplerhq/cli-action@v3
+      - run: doppler run -- pnpm --filter s-database prisma:deploy
         env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_PRD }}

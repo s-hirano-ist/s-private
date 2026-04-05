@@ -27,3 +27,12 @@ output "ssh_connection_command" {
   description = "SSH 接続コマンド"
   value       = module.conoha_vps.ssh_connection_command
 }
+
+# ============================================================
+# GitHub
+# ============================================================
+
+output "github_secret_names" {
+  description = "GitHub 管理対象シークレット名"
+  value       = module.github.secret_names
+}

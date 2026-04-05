@@ -304,13 +304,14 @@ pnpm install
 
 ### Environment Configuration
 
-環境変数は [Vercel Dashboard](https://vercel.com) で一元管理し、ローカルに `.env` ファイルを配置する必要はありません。
+環境変数は [Doppler](https://www.doppler.com/) で一元管理し、ローカルに `.env` ファイルを配置する必要はありません。
 
 ```bash
-vercel link          # 初回のみ: Vercel プロジェクトをリンク
+doppler login        # 初回のみ: Doppler にログイン
+doppler setup        # 初回のみ: プロジェクト・環境を選択
 ```
 
-以降、`pnpm dev` / `pnpm docker:up` / `pnpm prisma:studio` 等のスクリプトは自動的に `vercel env run` 経由で環境変数を取得します。
+以降、`pnpm dev` / `pnpm docker:up` / `pnpm prisma:studio` 等のスクリプトは自動的に `doppler run` 経由で環境変数を取得します。
 
 型定義とバリデーション: [`app/src/env.ts`](app/src/env.ts)（`@t3-oss/env-nextjs` + Zod）
 
@@ -458,25 +459,27 @@ pnpm docs:clean            # Remove generated documentation
 
 ### 環境変数管理
 
-環境変数は Vercel Dashboard を Single Source of Truth として、全環境で一貫した方法で管理する。
+環境変数は Doppler を Single Source of Truth として、全環境で一貫した方法で管理する。Doppler → Vercel integration により本番環境にも自動同期される。
 
 | 環境 | 管理方法 | 注入方法 |
 |---|---|---|
-| **ローカル開発** | Vercel Dashboard | `vercel env run -e development -- <command>` |
-| **CI (GitHub Actions)** | Vercel Dashboard + GitHub Secrets | `npx vercel@latest env run -e development --token=$VERCEL_TOKEN -- <command>` |
-| **本番 (Vercel)** | Vercel Dashboard | ビルド・ランタイムに自動注入 |
+| **ローカル開発** | Doppler | `doppler run -- <command>` |
+| **CI (GitHub Actions)** | Doppler + GitHub Secrets | `doppler run -- <command>`（`DOPPLER_TOKEN` で認証） |
+| **本番 (Vercel)** | Doppler → Vercel integration | 自動同期 |
 | **VPS (Docker Compose)** | `~/s-private/.env` | Docker Compose が `.env` を自動読み込み |
 
 #### ローカル開発
 
-1. [Vercel Dashboard](https://vercel.com) でプロジェクトの Environment Variables を設定
-2. `vercel link` でプロジェクトをリンク（初回のみ）
-3. `pnpm dev` 等のスクリプトは自動的に Vercel から環境変数を取得
+1. [Doppler CLI](https://docs.doppler.com/docs/install-cli) をインストール
+2. `doppler login` でログイン（初回のみ）
+3. `doppler setup` でプロジェクト・環境を選択（初回のみ）
+4. `pnpm dev` 等のスクリプトは自動的に Doppler から環境変数を取得
 
 #### CI (GitHub Actions)
 
 必要な GitHub Secrets:
-- `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` — Vercel 環境変数の取得
+- `DOPPLER_TOKEN_DEV` — Doppler development 環境の Service Token
+- `DOPPLER_TOKEN_PRD` — Doppler production 環境の Service Token
 - `NPM_TOKEN` — パッケージ公開（release-please のみ）
 - `ACTIONS_GITHUB_TOKEN` — リリース PR 作成
 

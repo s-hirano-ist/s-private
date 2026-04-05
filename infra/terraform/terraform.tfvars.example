@@ -45,3 +45,16 @@ ssh_public_key = "ssh-ed25519 AAAA... user@host"
 
 # ブートボリュームタイプ（ConoHa リージョン固有、参照: https://doc.conoha.jp/api-vps3/volume-get_types_list-v3/）
 # volume_type = "c3j1-ds02-boot"
+
+# ============================================================
+# GitHub リポジトリ設定
+# ============================================================
+
+# リポジトリ名
+# github_repository = "s-private"
+
+# 以下のシークレットは環境変数または terraform.tfvars で渡す:
+#   export TF_VAR_doppler_token_dev="dp.st.dev_xxx"
+#   export TF_VAR_doppler_token_prd="dp.st.prd_xxx"
+#   export TF_VAR_npm_token="..."
+#   export TF_VAR_actions_github_token="ghp_..."

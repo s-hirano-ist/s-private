@@ -4,9 +4,10 @@
 
 ```bash
 pnpm install
-vercel link          # 初回のみ: Vercel プロジェクトをリンク
-pnpm docker:up       # Docker Compose 起動（環境変数は Vercel から注入）
-pnpm dev             # 開発サーバー起動（環境変数は Vercel から注入）
+doppler login        # 初回のみ: Doppler にログイン
+doppler setup        # 初回のみ: プロジェクト・環境を選択
+pnpm docker:up       # Docker Compose 起動（環境変数は Doppler から注入）
+pnpm dev             # 開発サーバー起動（環境変数は Doppler から注入）
 ```
 
 ## Mise Configuration
@@ -25,21 +26,22 @@ To set up your environment:
 
 ## Environment Variables
 
-環境変数は **Vercel Dashboard** で一元管理し、ローカルに `.env` ファイルを置く必要はありません。
+環境変数は **Doppler** で一元管理し、ローカルに `.env` ファイルを置く必要はありません。
 
 ### セットアップ
 
-1. [Vercel Dashboard](https://vercel.com) で対象プロジェクトの Environment Variables を設定
-2. ローカルで `vercel link` を実行してプロジェクトをリンク（初回のみ）
+1. [Doppler CLI](https://docs.doppler.com/docs/install-cli) をインストール
+2. `doppler login` でログイン（初回のみ）
+3. プロジェクトルートで `doppler setup` を実行し、プロジェクト・環境を選択（初回のみ）
 
-以降、`pnpm dev` / `pnpm docker:up` / `pnpm prisma:studio` 等のスクリプトは自動的に Vercel から環境変数を取得します。
+以降、`pnpm dev` / `pnpm docker:up` / `pnpm prisma:studio` 等のスクリプトは自動的に Doppler から環境変数を取得します。
 
 任意のコマンドに環境変数を注入したい場合:
 ```bash
-vercel env run -e development -- <command>
+doppler run -- <command>
 ```
 
 ### 変数一覧
 
 環境変数のスキーマと型定義は `app/src/env.ts`（`@t3-oss/env-nextjs` + Zod）を参照してください。
-Docker Compose 用の変数（VPS デプロイ時）は [docs/vps-deployment.md Step 7](vps-deployment.md) を参照してください。ローカル開発では `vercel env run` 経由で自動注入されるため、別途設定は不要です。
+Docker Compose 用の変数（VPS デプロイ時）は [docs/vps-deployment.md Step 7](vps-deployment.md) を参照してください。ローカル開発では `doppler run` 経由で自動注入されるため、別途設定は不要です。

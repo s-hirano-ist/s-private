@@ -38,10 +38,11 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm i --frozen-lockfile
-      - run: npx vercel@latest env run -e development --token=${{ secrets.VERCEL_TOKEN }} -- pnpm build
+      - name: Install Doppler CLI
+        uses: dopplerhq/cli-action@v3
+      - run: doppler run -- pnpm build
         env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_DEV }}
 
   biome:
     runs-on: ubuntu-24.04
@@ -99,10 +100,11 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm i --frozen-lockfile
-      - run: npx vercel@latest env run -e development --token=${{ secrets.VERCEL_TOKEN }} -- pnpm lint
+      - name: Install Doppler CLI
+        uses: dopplerhq/cli-action@v3
+      - run: doppler run -- pnpm lint
         env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_DEV }}
           SKIP_ENV_VALIDATION: "true"
 
   knip:
@@ -168,10 +170,11 @@ jobs:
       - run: pnpm i --frozen-lockfile
       - run: pnpm --filter "./packages/*" build
       - run: pnpm exec playwright install
-      - run: npx vercel@latest env run -e development --token=${{ secrets.VERCEL_TOKEN }} -- pnpm test
+      - name: Install Doppler CLI
+        uses: dopplerhq/cli-action@v3
+      - run: doppler run -- pnpm test
         env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_DEV }}
       - name: Show coverage
         if: always()
         uses: davelosert/vitest-coverage-report-action@2500dafcee7dd64f85ab689c0b83798a8359770e # v2
@@ -207,10 +210,11 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm i --frozen-lockfile
-      - run: npx vercel@latest env run -e development --token=${{ secrets.VERCEL_TOKEN }} -- pnpm storybook:build
+      - name: Install Doppler CLI
+        uses: dopplerhq/cli-action@v3
+      - run: doppler run -- pnpm storybook:build
         env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_DEV }}
           SKIP_ENV_VALIDATION: "true"
 
   docs:

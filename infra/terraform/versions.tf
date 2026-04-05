@@ -6,6 +6,10 @@ terraform {
       source  = "cloudflare/cloudflare"
       version = "~> 5.0"
     }
+    github = {
+      source  = "integrations/github"
+      version = "~> 6.0"
+    }
     openstack = {
       source  = "terraform-provider-openstack/openstack"
       version = "~> 3.0"
@@ -15,6 +19,11 @@ terraform {
 
 provider "cloudflare" {
   # CLOUDFLARE_API_TOKEN 環境変数から自動読み込み
+}
+
+provider "github" {
+  owner = "s-hirano-ist"
+  # GITHUB_TOKEN 環境変数から自動読み込み
 }
 
 provider "openstack" {

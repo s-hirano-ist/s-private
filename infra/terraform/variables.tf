@@ -51,3 +51,37 @@ variable "volume_type" {
   type        = string
   default     = "c3j1-ds02-boot"
 }
+
+# ============================================================
+# GitHub
+# ============================================================
+
+variable "github_repository" {
+  description = "GitHub リポジトリ名"
+  type        = string
+  default     = "s-private"
+}
+
+variable "doppler_token_dev" {
+  description = "Doppler Service Token（development 環境用、GitHub Secret 用）"
+  type        = string
+  sensitive   = true
+}
+
+variable "doppler_token_prd" {
+  description = "Doppler Service Token（production 環境用、GitHub Secret 用）"
+  type        = string
+  sensitive   = true
+}
+
+variable "npm_token" {
+  description = "npm レジストリ認証トークン（GitHub Secret 用）"
+  type        = string
+  sensitive   = true
+}
+
+variable "actions_github_token" {
+  description = "GitHub PAT for release-please / create-pull-request（GitHub Secret 用）"
+  type        = string
+  sensitive   = true
+}

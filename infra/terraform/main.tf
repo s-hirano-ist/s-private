@@ -16,6 +16,22 @@ module "conoha_vps" {
 }
 
 # ============================================================
+# GitHub リポジトリ設定
+# ============================================================
+module "github" {
+  source = "./modules/github"
+
+  repository = var.github_repository
+
+  secrets = {
+    DOPPLER_TOKEN_DEV    = var.doppler_token_dev
+    DOPPLER_TOKEN_PRD    = var.doppler_token_prd
+    NPM_TOKEN            = var.npm_token
+    ACTIONS_GITHUB_TOKEN = var.actions_github_token
+  }
+}
+
+# ============================================================
 # Cloudflare（将来追加予定）
 # ============================================================
 # module "cloudflare" {
