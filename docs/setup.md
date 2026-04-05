@@ -23,6 +23,25 @@ To set up your environment:
 
 **Note**: Once installed, Mise will automatically use the correct Node.js and pnpm versions specified in `.mise.toml` when you enter the project directory.
 
+## Local PostgreSQL (Docker + mise tasks)
+
+Vercel 経由のクラウドDBとは別に、Docker + mise タスクでローカル PostgreSQL を利用できます。
+
+```bash
+mise run db:up            # PostgreSQL コンテナ起動
+mise run db:deploy        # 既存マイグレーションを適用
+mise run db:migrate       # Prisma migrate dev 実行（新規マイグレーション作成）
+mise run db:studio        # Prisma Studio 起動
+mise run db:status        # コンテナ状態確認
+mise run db:down          # コンテナ停止
+mise run db:destroy       # コンテナ・ボリューム完全削除
+```
+
+ローカル PostgreSQL はポート **15432** で起動します（システム PostgreSQL との競合回避）。
+接続URL: `postgresql://s_private:s_private@localhost:15432/s_private?schema=public`
+
+**注意**: ローカル PostgreSQL は Prisma CLI 操作（migrate, studio）用です。Next.js アプリのランタイムは引き続き Vercel 経由のクラウドDBを使用します。
+
 ## Environment Variables
 
 環境変数は **Vercel Dashboard** で一元管理し、ローカルに `.env` ファイルを置く必要はありません。

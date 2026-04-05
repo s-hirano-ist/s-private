@@ -1,3 +1,72 @@
 [tools]
 node = "24.14.0"
 pnpm = "10.30.3"
+
+[env]
+LOCAL_DATABASE_URL = "postgresql://s_private:s_private@localhost:15432/s_private?schema=public"
+
+[tasks."db:up"]
+description = "Start local PostgreSQL container"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+docker compose up -d postgres
+echo "PostgreSQL started on port 15432"
+echo "DATABASE_URL=$LOCAL_DATABASE_URL"
+"""
+
+[tasks."db:down"]
+description = "Stop local PostgreSQL container"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+docker compose stop postgres
+echo "PostgreSQL stopped"
+"""
+
+[tasks."db:status"]
+description = "Check local PostgreSQL container status"
+run = "docker compose ps postgres"
+
+[tasks."db:migrate"]
+description = "Run Prisma migrate dev against local PostgreSQL"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+cd packages/database
+DATABASE_URL="$LOCAL_DATABASE_URL" pnpm prisma migrate dev
+"""
+
+[tasks."db:deploy"]
+description = "Run Prisma migrate deploy against local PostgreSQL"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+cd packages/database
+DATABASE_URL="$LOCAL_DATABASE_URL" pnpm prisma migrate deploy
+"""
+
+[tasks."db:studio"]
+description = "Open Prisma Studio against local PostgreSQL"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+cd packages/database
+DATABASE_URL="$LOCAL_DATABASE_URL" pnpm prisma studio
+"""
+
+[tasks."db:destroy"]
+description = "Stop PostgreSQL container and remove volume"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+echo "This will DELETE the local PostgreSQL container and all data"
+read -p "Are you sure? [y/N] " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+  docker compose down -v --remove-orphans postgres 2>/dev/null || true
+  echo "PostgreSQL container and volume removed."
+else
+  echo "Aborted."
+fi
+"""

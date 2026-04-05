@@ -1,4 +1,22 @@
 services:
+  postgres:
+    image: postgres:17-alpine@sha256:b25af5f71e5e809d0e4e0e80e4813eb25e15fd58e2065ce2a1a51da4fa235f85
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: s_private
+      POSTGRES_PASSWORD: s_private
+      POSTGRES_DB: s_private
+    ports:
+      - "127.0.0.1:15432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U s_private"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
   embedding-api:
     image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.9@sha256:ad950d30878eceb72aaf32024d26fa2b1d04a75304fa0b4776b49aa1941fea07
     container_name: embedding-api
@@ -78,6 +96,7 @@ services:
         condition: service_healthy
 
 volumes:
+  postgres-data:
   hf-cache:
   minio-data:
 
