@@ -99,8 +99,8 @@ Clone found (tsx):
    /home/runner/work/s-private/s-private/app/src/components/common/features/search/search-card.stories.tsx [89:19 - 94:20]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/app/src/components/common/display/image/image-stack.tsx [137:24 - 152:7] (15 lines, 173 tokens)
-   /home/runner/work/s-private/s-private/app/src/components/common/display/image/image-stack.tsx [94:16 - 109:6]
+ - /home/runner/work/s-private/s-private/app/src/components/common/display/image/image-stack.tsx [139:24 - 154:7] (15 lines, 173 tokens)
+   /home/runner/work/s-private/s-private/app/src/components/common/display/image/image-stack.tsx [95:16 - 110:6]
 
 Clone found (tsx):
  - /home/runner/work/s-private/s-private/app/src/app/[locale]/book/[slug]/page.tsx [8:56 - 21:25] (13 lines, 101 tokens)
@@ -197,13 +197,13 @@ Clone found (tsx):
 ┌────────────┬────────────────┬─────────────┬──────────────┬──────────────┬──────────────────┬───────────────────┐
 │ Format     │ Files analyzed │ Total lines │ Total tokens │ Clones found │ Duplicated lines │ Duplicated tokens │
 ├────────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤
-│ typescript │ 149            │ 10171       │ 45621        │ 12           │ 149 (1.46%)      │ 1244 (2.73%)      │
+│ typescript │ 150            │ 10236       │ 46017        │ 12           │ 149 (1.46%)      │ 1244 (2.7%)       │
 ├────────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤
-│ tsx        │ 152            │ 11023       │ 72783        │ 36           │ 492 (4.46%)      │ 4114 (5.65%)      │
+│ tsx        │ 152            │ 11060       │ 73033        │ 36           │ 492 (4.45%)      │ 4114 (5.63%)      │
 ├────────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤
-│ javascript │ 101            │ 2130        │ 12499        │ 1            │ 21 (0.99%)       │ 130 (1.04%)       │
+│ javascript │ 101            │ 2151        │ 12600        │ 1            │ 21 (0.98%)       │ 130 (1.03%)       │
 ├────────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤
-│ Total:     │ 402            │ 23324       │ 130903       │ 49           │ 662 (2.84%)      │ 5488 (4.19%)      │
+│ Total:     │ 403            │ 23447       │ 131650       │ 49           │ 662 (2.82%)      │ 5488 (4.17%)      │
 └────────────┴────────────────┴─────────────┴──────────────┴──────────────┴──────────────────┴───────────────────┘
 Found 49 clones.
-Detection time:: 944.118ms
+Detection time:: 895.238ms
