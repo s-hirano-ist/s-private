@@ -90,5 +90,10 @@
       ],
       enabled: false,
     },
+    {
+      matchManagers: ["mise"],
+      groupName: "mise tools",
+      groupSlug: "mise-tools",
+    },
   ],
 }

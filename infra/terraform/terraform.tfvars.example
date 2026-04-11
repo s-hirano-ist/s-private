@@ -53,8 +53,11 @@ ssh_public_key = "ssh-ed25519 AAAA... user@host"
 # リポジトリ名
 # github_repository = "s-private"
 
-# 以下のシークレットは環境変数または terraform.tfvars で渡す:
-#   export TF_VAR_doppler_token_dev="dp.st.dev_xxx"
-#   export TF_VAR_doppler_token_prd="dp.st.prd_xxx"
-#   export TF_VAR_npm_token="..."
-#   export TF_VAR_actions_github_token="ghp_..."
+# ============================================================
+# Doppler
+# ============================================================
+
+# NPM_TOKEN, ACTIONS_GITHUB_TOKEN は Doppler ci 環境で管理。
+# Terraform 実行には以下の環境変数が必要:
+#   export DOPPLER_TOKEN=$(doppler configure get token --plain)
+#   export GITHUB_TOKEN="<Fine-grained PAT>"
