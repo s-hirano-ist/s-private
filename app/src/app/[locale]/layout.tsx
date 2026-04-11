@@ -1,6 +1,7 @@
 import Loading from "@s-hirano-ist/s-ui/display/loading";
 import { ThemeProvider } from "@s-hirano-ist/s-ui/providers/theme-provider";
 import { Toaster } from "@s-hirano-ist/s-ui/ui/sonner";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
@@ -23,6 +24,7 @@ async function LocaleLayoutContent({ children, params }: Params) {
 		notFound();
 	}
 
+	const nonce = (await headers()).get("x-nonce") ?? "";
 	const messages = await getMessages();
 
 	return (
@@ -32,6 +34,7 @@ async function LocaleLayoutContent({ children, params }: Params) {
 				defaultTheme="system"
 				disableTransitionOnChange
 				enableSystem
+				nonce={nonce}
 			>
 				<main className="min-h-screen">
 					<div className="pb-24">{children}</div>

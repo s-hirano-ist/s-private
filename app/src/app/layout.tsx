@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
+import { type ReactNode, Suspense } from "react";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Noto_Sans_JP } from "next/font/google";
+import { headers } from "next/headers";
 // FIXME: Enable View Transitions when the API is stable.
 // Note: View Transitions disabled due to React 19 unstable_ViewTransition
 // conflicting with Drawer/Dialog components on the Search page.
@@ -26,6 +27,17 @@ export const metadata: Metadata = {
 	},
 };
 
+async function ReactScanScript() {
+	const nonce = (await headers()).get("x-nonce") ?? "";
+	return (
+		<script
+			async
+			nonce={nonce}
+			src="https://unpkg.com/react-scan/dist/auto.global.js"
+		/>
+	);
+}
+
 export default function RootLayout({
 	children,
 }: Readonly<{ children: ReactNode }>) {
@@ -35,10 +47,9 @@ export default function RootLayout({
 			<head>
 				{/* https://github.com/aidenybai/react-scan */}
 				{env.NODE_ENV === "development" && (
-					<script
-						async
-						src="https://unpkg.com/react-scan/dist/auto.global.js"
-					/>
+					<Suspense>
+						<ReactScanScript />
+					</Suspense>
 				)}
 			</head>
 			<body className={notoSansJp.className}>
