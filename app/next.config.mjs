@@ -17,7 +17,7 @@ const cspHeader = `
 	connect-src 'self';
 	script-src 'self' 'unsafe-eval' 'unsafe-inline' https://unpkg.com https://va.vercel-scripts.com https://vercel.live;
     style-src 'self' 'unsafe-inline';
-	img-src 'self' blob: data: https://${process.env.MINIO_HOST}:${process.env.MINIO_PORT};
+	img-src 'self' blob: data: https://${process.env.MINIO_HOST}:${process.env.MINIO_PORT ?? "443"};
     font-src 'self';
     object-src 'none';
     base-uri 'self';

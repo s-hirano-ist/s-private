@@ -30,8 +30,9 @@ export const env = createEnv({
 			.default("development"),
 		/** @example "postgresql://USERNAME:PASSWORD@IP_ADDRESS:PORT/DB_NAME?schema=SCHEMA_NAME" */
 		DATABASE_URL: z.string(),
-		/** @default "https://api.pushover.net/1/messages.json" */
-		PUSHOVER_URL: z.string(),
+		PUSHOVER_URL: z
+			.string()
+			.default("https://api.pushover.net/1/messages.json"),
 		PUSHOVER_USER_KEY: z.string(),
 		PUSHOVER_APP_TOKEN: z.string(),
 		/** Generate by `openssl rand -base64 32`. Required in production. */
@@ -45,7 +46,7 @@ export const env = createEnv({
 		SENTRY_AUTH_TOKEN: z.string(),
 		SENTRY_REPORT_URL: z.string(),
 		MINIO_HOST: z.string(),
-		MINIO_PORT: z.number(),
+		MINIO_PORT: z.number().default(443),
 		MINIO_BUCKET_NAME: z.string(),
 		MINIO_ACCESS_KEY: z.string(),
 		MINIO_SECRET_KEY: z.string(),
@@ -53,9 +54,9 @@ export const env = createEnv({
 		/** @example "http://localhost:3001" */
 		EMBEDDING_API_URL: z.string(),
 		/** Cloudflare Access Service Token */
-		CF_ACCESS_CLIENT_ID: z.string(),
+		CF_ACCESS_CLIENT_ID: z.string().optional(),
 		/** Cloudflare Access Service Token */
-		CF_ACCESS_CLIENT_SECRET: z.string(),
+		CF_ACCESS_CLIENT_SECRET: z.string().optional(),
 		/** @example "http://localhost:6333" */
 		QDRANT_URL: z.string(),
 		QDRANT_API_KEY: z.string().optional(),
@@ -84,7 +85,7 @@ export const env = createEnv({
 		SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
 		SENTRY_REPORT_URL: process.env.SENTRY_REPORT_URL,
 		MINIO_HOST: process.env.MINIO_HOST,
-		MINIO_PORT: Number(process.env.MINIO_PORT),
+		MINIO_PORT: Number(process.env.MINIO_PORT ?? "443"),
 		MINIO_BUCKET_NAME: process.env.MINIO_BUCKET_NAME,
 		MINIO_ACCESS_KEY: process.env.MINIO_ACCESS_KEY,
 		MINIO_SECRET_KEY: process.env.MINIO_SECRET_KEY,
