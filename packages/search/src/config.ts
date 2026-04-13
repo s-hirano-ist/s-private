@@ -6,17 +6,21 @@ function requireEnv(name: string): string {
 	return value;
 }
 
+function envWithDefault(name: string, defaultValue: string): string {
+	return process.env[name] || defaultValue;
+}
+
 export const RAG_CONFIG = {
 	qdrant: {
 		collectionName: requireEnv("QDRANT_COLLECTION_NAME"),
-		vectorSize: Number(requireEnv("EMBEDDING_VECTOR_SIZE")),
+		vectorSize: Number(envWithDefault("EMBEDDING_VECTOR_SIZE", "384")),
 		distance: "Cosine" as const,
 	},
 	embedding: {
-		model: requireEnv("EMBEDDING_MODEL"),
+		model: envWithDefault("EMBEDDING_MODEL", "intfloat/multilingual-e5-small"),
 		prefix: {
-			query: requireEnv("EMBEDDING_QUERY_PREFIX"),
-			passage: requireEnv("EMBEDDING_PASSAGE_PREFIX"),
+			query: envWithDefault("EMBEDDING_QUERY_PREFIX", "query: "),
+			passage: envWithDefault("EMBEDDING_PASSAGE_PREFIX", "passage: "),
 		},
 	},
 	chunking: { maxChunkLength: 2000, headingLevels: [2, 3] },
