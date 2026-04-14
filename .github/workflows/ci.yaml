@@ -38,7 +38,7 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm i --frozen-lockfile
-      - run: npx vercel@latest env run -e development --token=${{ secrets.VERCEL_TOKEN }} -- pnpm build
+      - run: pnpm exec vercel env run -e development --token=${{ secrets.VERCEL_TOKEN }} -- pnpm build
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
@@ -99,7 +99,7 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm i --frozen-lockfile
-      - run: npx vercel@latest env run -e development --token=${{ secrets.VERCEL_TOKEN }} -- pnpm lint
+      - run: pnpm exec vercel env run -e development --token=${{ secrets.VERCEL_TOKEN }} -- pnpm lint
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
@@ -168,7 +168,7 @@ jobs:
       - run: pnpm i --frozen-lockfile
       - run: pnpm --filter "./packages/*" build
       - run: pnpm exec playwright install
-      - run: npx vercel@latest env run -e development --token=${{ secrets.VERCEL_TOKEN }} -- pnpm test
+      - run: pnpm exec vercel env run -e development --token=${{ secrets.VERCEL_TOKEN }} -- pnpm test
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
@@ -207,7 +207,7 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm i --frozen-lockfile
-      - run: npx vercel@latest env run -e development --token=${{ secrets.VERCEL_TOKEN }} -- pnpm storybook:build
+      - run: pnpm exec vercel env run -e development --token=${{ secrets.VERCEL_TOKEN }} -- pnpm storybook:build
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
