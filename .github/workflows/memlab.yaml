@@ -49,6 +49,7 @@ jobs:
           MINIO_SECRET_KEY: ${{ secrets.MINIO_SECRET_KEY }}
           EMBEDDING_API_URL: ${{ secrets.EMBEDDING_API_URL }}
           QDRANT_URL: ${{ secrets.QDRANT_URL }}
+          QDRANT_COLLECTION_NAME: ${{ secrets.QDRANT_COLLECTION_NAME }}
           NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
 
       - name: Start server
@@ -69,6 +70,7 @@ jobs:
           MINIO_SECRET_KEY: ${{ secrets.MINIO_SECRET_KEY }}
           EMBEDDING_API_URL: ${{ secrets.EMBEDDING_API_URL }}
           QDRANT_URL: ${{ secrets.QDRANT_URL }}
+          QDRANT_COLLECTION_NAME: ${{ secrets.QDRANT_COLLECTION_NAME }}
           NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
 
       - name: Wait for server
