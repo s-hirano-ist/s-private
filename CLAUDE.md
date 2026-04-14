@@ -29,6 +29,9 @@ docs/** にはより詳細な設計等のルールが記載されています。
 ## ディレクトリ構造
 - `packages/core/` - ドメイン層（entities, repositories, services, shared-kernel）
 - `packages/ui/` - 共有UIコンポーネント（shadcn/ui, forms, hooks等）
+- `packages/database/` - データベース層（Prisma ORM・マイグレーション）
+- `packages/notification/` - 通知サービス（Pushover）
+- `packages/storage/` - MinIOストレージクライアント
 - `packages/scripts/` - ビルド・ユーティリティスクリプト
 - `app/src/application-services/` - アプリケーション層
 - `app/src/infrastructures/` - インフラ層（Prisma実装、DI factories）
@@ -37,7 +40,7 @@ docs/** にはより詳細な設計等のルールが記載されています。
 - `app/src/app/[locale]/` - Next.js App Router（i18n対応: en/ja）
 
 ## 主要ドメイン
-`articles`, `notes`, `images`, `books` - 各コンテンツのCRUDと状態管理（UNEXPORTED → EXPORTED）
+`articles`, `notes`, `images`, `books` - 各コンテンツのCRUDと状態管理（UNEXPORTED → LAST_UPDATED → EXPORTED）
 
 ## 設計方針
 - Clean Architecture + ドメイン駆動設計
@@ -50,7 +53,7 @@ docs/** にはより詳細な設計等のルールが記載されています。
 - PostgreSQL + Prisma ORM
 - MinIO（オブジェクトストレージ）
 - Sentry（エラー監視）+ Pushover（通知）
-- Auth0 + uth.js（認証）
+- Auth0 + Auth.js（認証）
 - next-intl（i18n）
 - HuggingFace TEI（Docker / ConoHa VPS + Cloudflare Tunnel）
 - Qdrant（ベクトルデータベース）

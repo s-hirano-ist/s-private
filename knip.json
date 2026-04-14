@@ -16,6 +16,7 @@
 				"src/components/common/layouts/cards/base-card-stack.bench.tsx"
 			],
 			"ignoreDependencies": ["@types/react-syntax-highlighter"],
+			"ignoreBinaries": ["doppler"],
 			"next": {
 				"config": ["next.config.{js,ts,cjs,mjs}"],
 				"entry": [

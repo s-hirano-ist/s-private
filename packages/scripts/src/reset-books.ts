@@ -20,8 +20,8 @@ async function main() {
 		throw new Error("Required environment variables are not set.");
 	}
 
-	const { PrismaClient } = await import("@s-hirano-ist/s-database/generated");
-	const prisma = new PrismaClient({ accelerateUrl: env.DATABASE_URL ?? "" });
+	const { createPrismaClient } = await import("@s-hirano-ist/s-database");
+	const prisma = createPrismaClient(env.DATABASE_URL ?? "");
 
 	const notificationService = createPushoverService({
 		url: env.PUSHOVER_URL ?? "",

@@ -38,9 +38,8 @@
 - **Database** - [PostgreSQL](https://www.postgresql.org/) with [Prisma](https://www.prisma.io/) ORM
 - **Object Storage** - [MinIO](https://min.io/) (configurable for local/cloud deployment)
 ### AI & Search
-- **Embedding Model** - [intfloat/multilingual-e5-large](https://huggingface.co/intfloat/multilingual-e5-large) (HuggingFace Transformers)
+- **Embedding Model** - [intfloat/multilingual-e5-large](https://huggingface.co/intfloat/multilingual-e5-large) via [HuggingFace TEI](https://github.com/huggingface/text-embeddings-inference) (Docker)
 - **Vector Database** - [Qdrant](https://qdrant.tech/)
-- **Embedding API Framework** - [Hono](https://hono.dev/)
 - **Tunnel** - [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/) (Zero Trust)
 
 ### Authentication & Internationalization
@@ -138,6 +137,9 @@ This project follows clean architecture principles with domain-driven design, en
 │   │
 │   ├── notification/               # Notification services
 │   │
+│   ├── storage/                    # MinIO Storage Client
+│   │   └── src/                    # MinIO client implementation
+│   │
 │   ├── search/                     # RAG Search Library
 │   │   └── src/                    # Qdrant client, Embedding API client
 │   │
@@ -145,11 +147,6 @@ This project follows clean architecture principles with domain-driven design, en
 │       └── src/
 │           ├── infrastructures/
 │           └── rag/
-│
-├── services/                       # External Services
-│   └── embedding-api/              # Embedding API (Hono + HuggingFace Transformers)
-│       ├── src/                    # API source code
-│       └── Dockerfile
 │
 └── app/src/                        # Next.js Application
     ├── application-services/       # Application Layer (Use Cases)
@@ -170,8 +167,8 @@ This project follows clean architecture principles with domain-driven design, en
     │   ├── observability/          # Sentry, logging, monitoring
     │   ├── events/                 # Event handling
     │   ├── factories/              # Dependency injection factories
-    │   ├── transaction/            # Transaction management
-    │   └── common/                 # Shared infrastructure utilities
+    │   ├── search/                 # Search infrastructure
+    │   └── shared/                 # Shared infrastructure utilities
     │
     ├── loaders/                    # Data loading layer
     │   ├── articles/
@@ -194,10 +191,10 @@ This project follows clean architecture principles with domain-driven design, en
     └── app/                        # Next.js App Router
         └── [locale]/               # Internationalized routes (en/ja)
             ├── (dumper)/           # Dumper role pages
-            │   ├── @articles/      # Parallel route for articles
-            │   ├── @books/         # Parallel route for books
-            │   ├── @images/        # Parallel route for images
-            │   └── @notes/         # Parallel route for notes
+            │   ├── articles/       # Articles management page
+            │   ├── books/          # Books management page
+            │   ├── images/         # Images management page
+            │   └── notes/          # Notes management page
             ├── book/[slug]/        # Book detail page
             ├── note/[slug]/        # Note detail page
             └── error/              # Error page
@@ -214,8 +211,7 @@ Each domain is completely isolated with its own:
 #### Next.js App Router Features
 
 - **Internationalization**: All routes support `[locale]` pattern for English/Japanese
-- **Parallel Routes**: Extensive use of `@name` parallel routes for complex multi-panel UIs
-- **Role-based Routing**: Route group `(dumper)` for content management with parallel routes
+- **Route Groups**: `(dumper)` route group for content management pages
 - **Server Actions**: All mutations use Next.js server actions with error boundary wrapping
 
 ### RAG & Search Architecture
@@ -225,17 +221,17 @@ Each domain is completely isolated with its own:
 │  Next.js App │     │  ConoHa VPS (Docker)                    │
 │  (Vercel)    │     │                                         │
 │              │ CF  │  ┌───────────────┐                      │
-│  packages/   │────▶│  │ Embedding API │  Cloudflare Tunnel   │
-│  search/     │Tunnel│  │ (Hono:3001)   │◀── cloudflared       │
-│              │     │  └───────┬───────┘                      │
-└──────┬───────┘     └──────────┼──────────────────────────────┘
-       │                        │
-       │                        │ multilingual-e5-large
-       ▼                        ▼
-┌──────────────┐     ┌──────────────────┐
-│   Qdrant     │     │ HuggingFace      │
-│ (Vector DB)  │     │ Transformers     │
-└──────────────┘     └──────────────────┘
+│  packages/   │────▶│  │ HuggingFace   │  Cloudflare Tunnel   │
+│  search/     │Tunnel│  │ TEI (:3001)   │◀── cloudflared       │
+│              │     │  └───────────────┘                      │
+└──────┬───────┘     │  multilingual-e5-large                  │
+       │             └─────────────────────────────────────────┘
+       │
+       ▼
+┌──────────────┐
+│   Qdrant     │
+│ (Vector DB)  │
+└──────────────┘
 ```
 
 #### Data Flow
@@ -246,7 +242,7 @@ Each domain is completely isolated with its own:
 #### Key Components
 
 - **`packages/search/`** - RAG 検索ライブラリ（Qdrant クライアント、Embedding API クライアント、検索ロジック）
-- **`services/embedding-api/`** - Embedding API サービス（Hono + HuggingFace Transformers、ConoHa VPS にデプロイ）
+- **HuggingFace TEI** - Embedding API サービス（`compose.yaml` で定義、ConoHa VPS にデプロイ）
 
 ### Database Architecture
 
@@ -263,7 +259,7 @@ Content management system with clean domain separation:
 - **User** - Multi-tenant user isolation across all content types
 
 #### Common Patterns
-- **Status Lifecycle**: `UNEXPORTED` → `EXPORTED` (all content types)
+- **Status Lifecycle**: `UNEXPORTED` → `LAST_UPDATED` → `EXPORTED` (all content types)
 - **String-based IDs**: All models use String primary keys with UUIDs
 - **User Isolation**: Every model includes `userId` for multi-tenant data separation
 - **Unique Constraints**: Comprehensive per-user unique constraints
@@ -290,8 +286,9 @@ Schema location: `packages/database/prisma/schema.prisma`
 ## Development Setup
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) v24.14.0 (managed via [Mise](https://mise.jdx.dev/))
+- [Node.js](https://nodejs.org/) v24.14.1 (managed via [Mise](https://mise.jdx.dev/))
 - [pnpm](https://pnpm.io/) v10.30.3 (managed via Mise)
+- [Doppler CLI](https://docs.doppler.com/docs/install-cli) v3.75.3 (managed via Mise)
 - [Docker](https://www.docker.com/) (for PostgreSQL database)
 
 ### Initial Setup
@@ -304,13 +301,14 @@ pnpm install
 
 ### Environment Configuration
 
-環境変数は [Vercel Dashboard](https://vercel.com) で一元管理し、ローカルに `.env` ファイルを配置する必要はありません。
+環境変数は [Doppler](https://www.doppler.com/) で一元管理し、ローカルに `.env` ファイルを配置する必要はありません。
 
 ```bash
-vercel link          # 初回のみ: Vercel プロジェクトをリンク
+doppler login        # 初回のみ: Doppler にログイン
+doppler setup        # 初回のみ: プロジェクトと環境を選択
 ```
 
-以降、`pnpm dev` / `pnpm docker:up` / `pnpm prisma:studio` 等のスクリプトは自動的に `vercel env run` 経由で環境変数を取得します。
+以降、`pnpm dev` / `pnpm build` / `pnpm start` 等のスクリプトは自動的に `doppler run` 経由で環境変数を取得します。
 
 型定義とバリデーション: [`app/src/env.ts`](app/src/env.ts)（`@t3-oss/env-nextjs` + Zod）
 
@@ -458,25 +456,26 @@ pnpm docs:clean            # Remove generated documentation
 
 ### 環境変数管理
 
-環境変数は Vercel Dashboard を Single Source of Truth として、全環境で一貫した方法で管理する。
+環境変数は Doppler を Single Source of Truth として管理する。CI では Vercel Dashboard 経由で注入する。
 
 | 環境 | 管理方法 | 注入方法 |
 |---|---|---|
-| **ローカル開発** | Vercel Dashboard | `vercel env run -e development -- <command>` |
-| **CI (GitHub Actions)** | Vercel Dashboard + GitHub Secrets | `npx vercel@latest env run -e development --token=$VERCEL_TOKEN -- <command>` |
+| **ローカル開発** | Doppler | `doppler run -- <command>`（package.json スクリプトに組み込み済み） |
+| **CI (GitHub Actions)** | GitHub Secrets | ワークフローの `env:` で `${{ secrets.XXX }}` として注入 |
 | **本番 (Vercel)** | Vercel Dashboard | ビルド・ランタイムに自動注入 |
 | **VPS (Docker Compose)** | `~/s-private/.env` | Docker Compose が `.env` を自動読み込み |
 
 #### ローカル開発
 
-1. [Vercel Dashboard](https://vercel.com) でプロジェクトの Environment Variables を設定
-2. `vercel link` でプロジェクトをリンク（初回のみ）
-3. `pnpm dev` 等のスクリプトは自動的に Vercel から環境変数を取得
+1. [Doppler](https://www.doppler.com/) でプロジェクトの環境変数を設定
+2. `doppler login` + `doppler setup` で初期設定（初回のみ）
+3. `pnpm dev` / `pnpm build` / `pnpm start` 等のスクリプトは自動的に Doppler から環境変数を取得
 
 #### CI (GitHub Actions)
 
 必要な GitHub Secrets:
-- `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` — Vercel 環境変数の取得
+- アプリ環境変数: `DATABASE_URL`, `AUTH_SECRET`, `AUTH0_CLIENT_ID`, `AUTH0_CLIENT_SECRET`, `AUTH0_ISSUER_BASE_URL`, `SENTRY_AUTH_TOKEN`, `SENTRY_REPORT_URL`, `MINIO_HOST`, `MINIO_BUCKET_NAME`, `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY`, `PUSHOVER_USER_KEY`, `PUSHOVER_APP_TOKEN`, `EMBEDDING_API_URL`, `QDRANT_URL`, `QDRANT_COLLECTION_NAME`, `NEXT_PUBLIC_SENTRY_DSN`
+- 本番 DB: `PRODUCTION_DATABASE_URL` — Prisma マイグレーションデプロイ用
 - `NPM_TOKEN` — パッケージ公開（release-please のみ）
 - `ACTIONS_GITHUB_TOKEN` — リリース PR 作成
 

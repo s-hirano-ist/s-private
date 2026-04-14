@@ -11,7 +11,7 @@
  * @module
  */
 
-import { PrismaClient } from "@s-hirano-ist/s-database";
+import { PrismaClient, PrismaPg } from "@s-hirano-ist/s-database";
 import { env } from "@/env";
 
 /**
@@ -24,9 +24,13 @@ import { env } from "@/env";
  * @internal
  */
 const prismaClientSingleton = () => {
-	const prisma = new PrismaClient({
-		accelerateUrl: env.DATABASE_URL,
-	}).$extends({
+	const client = env.DATABASE_URL.startsWith("prisma://")
+		? new PrismaClient({ accelerateUrl: env.DATABASE_URL })
+		: new PrismaClient({
+				adapter: new PrismaPg({ connectionString: env.DATABASE_URL }),
+			});
+
+	return client.$extends({
 		query: {
 			async $allOperations({ args, query, operation, model }) {
 				const start = Date.now();
@@ -37,8 +41,6 @@ const prismaClientSingleton = () => {
 			},
 		},
 	});
-
-	return prisma;
 };
 
 // biome-ignore lint/suspicious/noShadowRestrictedNames: Required to extend globalThis for Prisma singleton pattern - caches client across hot-reloads in development

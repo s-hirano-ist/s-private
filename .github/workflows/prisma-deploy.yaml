@@ -33,7 +33,6 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm i --frozen-lockfile
-      - run: npx vercel@latest env run -e production --token=${{ secrets.VERCEL_TOKEN }} -- pnpm --filter s-database prisma:deploy
+      - run: pnpm --filter s-database prisma:deploy
         env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}

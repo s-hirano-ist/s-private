@@ -42,7 +42,7 @@ type PrismaClientLike = {
  *
  * @example
  * ```typescript
- * const prisma = new PrismaClient({ accelerateUrl: env.DATABASE_URL });
+ * const prisma = createPrismaClient(env.DATABASE_URL);
  *
  * await prisma.$transaction(async (tx) => {
  *   const repo = createArticlesCommandRepository(tx);
