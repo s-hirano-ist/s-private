@@ -21,7 +21,7 @@ jobs:
           submodules: true
 
       - name: Install pnpm
-        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5
+        uses: pnpm/action-setup@08c4be7e2e672a47d11bd04269e27e5f3e8529cb # v6
         with:
           run_install: false
 
@@ -38,7 +38,7 @@ jobs:
         run: pnpm docs:build
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
         with:
           path: docs/api
 
