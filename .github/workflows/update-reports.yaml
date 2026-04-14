@@ -34,7 +34,7 @@ jobs:
           echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
 
       - name: Cache dependencies
-        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
         with:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-node-${{ hashFiles('**/pnpm-lock.yaml') }}
@@ -46,7 +46,7 @@ jobs:
       - run: pnpm check:fix
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8
         with:
           token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
           commit-message: "contents: update reports (license + jscpd)"

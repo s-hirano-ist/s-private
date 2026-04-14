@@ -205,7 +205,7 @@ jobs:
           NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
       - name: Show coverage
         if: always()
-        uses: davelosert/vitest-coverage-report-action@2500dafcee7dd64f85ab689c0b83798a8359770e # v2
+        uses: davelosert/vitest-coverage-report-action@3c50566c523e04813df28de8f7c48dd97d663f1c # v2
         with:
           json-summary-path: ./.vitest-coverage/coverage-summary.json
           json-final-path: ./.vitest-coverage/coverage-final.json
