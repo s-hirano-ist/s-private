@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.2.2](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.2.1...s-private-v3.2.2) (2026-04-14)
+
+
+### Bug Fixes
+
+* env ([17bd59c](https://github.com/s-hirano-ist/s-private/commit/17bd59ce6d28a96794806848855e34f60af78d64))
+* env on dev run ([5b78d25](https://github.com/s-hirano-ist/s-private/commit/5b78d258e49ca6e450864a67312ae28675a20d42))
+* env on dev run ([2d75d75](https://github.com/s-hirano-ist/s-private/commit/2d75d7589b425aef8497533468766a73a433f823))
+
+
+### Maintenance
+
+* add default env ([76d4d2a](https://github.com/s-hirano-ist/s-private/commit/76d4d2a66a279684e61a0da5e8df17d08d0d8034))
+* add dev environment settings ([1f25a0a](https://github.com/s-hirano-ist/s-private/commit/1f25a0a316dcaf061ecb955145917ac653b2cf3f))
+* add prisma dev settings ([70d9d94](https://github.com/s-hirano-ist/s-private/commit/70d9d94c5b02ab88c3df34180dd97cc8abd70ef6))
+* add req envs ([e121e18](https://github.com/s-hirano-ist/s-private/commit/e121e18307d29d62028d1a8e8708236053583c50))
+* **deps:** update dependency @hono/node-server@&lt;1.19.10 to v1.19.13 [security] ([98512ce](https://github.com/s-hirano-ist/s-private/commit/98512ce830c5935385b6f4816de34ecb387514ee))
+* **deps:** update dependency hono@&lt;4.12.4 to v4.12.12 [security] ([8b4ebd2](https://github.com/s-hirano-ist/s-private/commit/8b4ebd246e9e38f49c52120ecfc8b7c25af69366))
+* **deps:** update dependency hono@&lt;4.12.4 to v4.12.12 [security] ([9d4ce74](https://github.com/s-hirano-ist/s-private/commit/9d4ce74de37f45b785458f1750fd3a2482d479c3))
+* **deps:** update dependency minimatch@&gt;=10.0.0 &lt;10.2.1 to v10.2.5 ([deaa370](https://github.com/s-hirano-ist/s-private/commit/deaa3701cad71aacb264c7df121070964fd374e9))
+* **deps:** update dependency next to v16.2.3 [security] ([303f8e7](https://github.com/s-hirano-ist/s-private/commit/303f8e7910ee256bda7f42fc1980ce84c984ecd4))
+* **deps:** update dependency next to v16.2.3 [security] ([ff507ec](https://github.com/s-hirano-ist/s-private/commit/ff507ec79f619c34f0e51e7bbbb8ac68f35a42c1))
+* **deps:** update dependency undici@&lt;6.21.1 to v8 ([da6a886](https://github.com/s-hirano-ist/s-private/commit/da6a886cbda88757d252adef4314a4e9d473d25f))
+* **deps:** update github actions ([0e98c8c](https://github.com/s-hirano-ist/s-private/commit/0e98c8cac5aaccf12d3f44ba5147f38f9601d6e4))
+* **deps:** update github actions ([33fe191](https://github.com/s-hirano-ist/s-private/commit/33fe191e022066938405c3e57997415a6fe58e29))
+* **deps:** update patch ([5c53fe2](https://github.com/s-hirano-ist/s-private/commit/5c53fe2c6c45171b83d6367f3bf34e3d10cad419))
+* fix ([1a10ed7](https://github.com/s-hirano-ist/s-private/commit/1a10ed7aa68060a00ae402693dac558aec4b65f1))
+* fix ([4763e2e](https://github.com/s-hirano-ist/s-private/commit/4763e2e1c0180e8bb5a454db13b86d89b222aaf3))
+* fix ci ([c4c64c0](https://github.com/s-hirano-ist/s-private/commit/c4c64c0955002d66a1320244495e145a6b4f2182))
+* fix ci ([2d587bb](https://github.com/s-hirano-ist/s-private/commit/2d587bbca8d8bd62df8a8e1918e3e675134140db))
+* fix knip ([6681cf5](https://github.com/s-hirano-ist/s-private/commit/6681cf564da02e7188e677c2f5c867093d79e435))
+* update doppler ([daedf53](https://github.com/s-hirano-ist/s-private/commit/daedf531011e7bf49b6f6d95db310ab0100c27e6))
+* update renovate ([55c796e](https://github.com/s-hirano-ist/s-private/commit/55c796eff64102dfd12021e64a8bc9f956e5f9a3))
+
 ## [3.2.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.2.0...s-private-v3.2.1) (2026-04-05)
 
 
