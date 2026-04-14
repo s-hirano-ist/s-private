@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.18.5](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.18.4...@s-hirano-ist/s-database-v1.18.5) (2026-04-14)
+
+
+### Maintenance
+
+* add dev environment settings ([1f25a0a](https://github.com/s-hirano-ist/s-private/commit/1f25a0a316dcaf061ecb955145917ac653b2cf3f))
+* add prisma dev settings ([70d9d94](https://github.com/s-hirano-ist/s-private/commit/70d9d94c5b02ab88c3df34180dd97cc8abd70ef6))
+
 ## [1.18.4](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.18.3...@s-hirano-ist/s-database-v1.18.4) (2026-03-29)
 
 

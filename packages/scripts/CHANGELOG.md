@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.18.6](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.18.5...@s-hirano-ist/s-scripts-v1.18.6) (2026-04-14)
+
+
+### Maintenance
+
+* add dev environment settings ([1f25a0a](https://github.com/s-hirano-ist/s-private/commit/1f25a0a316dcaf061ecb955145917ac653b2cf3f))
+* add prisma dev settings ([70d9d94](https://github.com/s-hirano-ist/s-private/commit/70d9d94c5b02ab88c3df34180dd97cc8abd70ef6))
+* **deps:** update patch ([5c53fe2](https://github.com/s-hirano-ist/s-private/commit/5c53fe2c6c45171b83d6367f3bf34e3d10cad419))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.18.6
+    * @s-hirano-ist/s-database bumped to 1.18.5
+    * @s-hirano-ist/s-search bumped to 1.18.6
+    * @s-hirano-ist/s-storage bumped to 1.18.4
+
 ## [1.18.5](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.18.4...@s-hirano-ist/s-scripts-v1.18.5) (2026-03-29)
 
 

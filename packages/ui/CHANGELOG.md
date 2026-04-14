@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.19.5](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.19.4...@s-hirano-ist/s-ui-v1.19.5) (2026-04-14)
+
+
+### Maintenance
+
+* **deps:** update dependency next to v16.2.3 [security] ([303f8e7](https://github.com/s-hirano-ist/s-private/commit/303f8e7910ee256bda7f42fc1980ce84c984ecd4))
+* **deps:** update dependency next to v16.2.3 [security] ([ff507ec](https://github.com/s-hirano-ist/s-private/commit/ff507ec79f619c34f0e51e7bbbb8ac68f35a42c1))
+* **deps:** update patch ([5c53fe2](https://github.com/s-hirano-ist/s-private/commit/5c53fe2c6c45171b83d6367f3bf34e3d10cad419))
+
 ## [1.19.4](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.19.3...@s-hirano-ist/s-ui-v1.19.4) (2026-04-05)
 
 
