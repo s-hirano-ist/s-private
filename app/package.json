@@ -5,10 +5,10 @@
 	"description": "Private pages and admin tools for s-hirano-ist.",
 	"type": "module",
 	"scripts": {
-		"dev": "next dev",
-		"build": "next build",
-		"analyze": "next experimental-analyze",
-		"start": "next start",
+		"dev": "doppler run -- next dev",
+		"build": "if [ -n \"$CI\" ]; then next build; else doppler run -- next build; fi",
+		"analyze": "doppler run -- next experimental-analyze",
+		"start": "doppler run -- next start",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {

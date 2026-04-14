@@ -1,3 +1,9 @@
+[env]
+_.file = ".env.local"
+
 [tools]
-node = "24.14.0"
+node = "24.14.1"
 pnpm = "10.30.3"
+doppler = { version = "3.75.3", exe = "doppler" }
+terraform = "1.14.8"
+"npm:agent-browser" = "0.25.3"
