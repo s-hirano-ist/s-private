@@ -71,7 +71,7 @@ export default defineConfig({
 					root: "./packages/search",
 					include: ["./src/**/*.test.?(c|m)[jt]s?(x)"],
 					env: {
-						QDRANT_COLLECTION_NAME: "knowledge_v2",
+						QDRANT_COLLECTION_NAME: "knowledge_v1",
 						EMBEDDING_VECTOR_SIZE: "1024",
 						EMBEDDING_MODEL: "intfloat/multilingual-e5-small",
 					},
