@@ -18,12 +18,12 @@
 		"@s-hirano-ist/s-notification": "workspace:*",
 		"@s-hirano-ist/s-storage": "workspace:*",
 		"@s-hirano-ist/s-ui": "workspace:*",
-		"@sentry/nextjs": "10.46.0",
+		"@sentry/nextjs": "10.48.0",
 		"@t3-oss/env-nextjs": "0.13.11",
 		"@tailwindcss/typography": "0.5.19",
 		"@vercel/analytics": "2.0.1",
 		"@vercel/speed-insights": "2.0.0",
-		"lucide-react": "1.7.0",
+		"lucide-react": "1.8.0",
 		"next": "16.2.3",
 		"next-auth": "5.0.0-beta.30",
 		"next-intl": "4.9.1",
@@ -34,7 +34,7 @@
 		"server-only": "0.0.1",
 		"sharp": "0.34.5",
 		"sonner": "2.0.7",
-		"yet-another-react-lightbox": "3.29.2",
+		"yet-another-react-lightbox": "3.31.0",
 		"zod": "4.3.6"
 	},
 	"browserslist": [
