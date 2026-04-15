@@ -21,6 +21,9 @@
     'mise',
   ],
   dependencyDashboard: true,
+  branchConcurrentLimit: 3,
+  prConcurrentLimit: 5,
+  separateMultipleMajor: false,
   schedule: [
     'before 11am on monday',
   ],
@@ -31,6 +34,7 @@
   lockFileMaintenance: {
     enabled: true,
     automerge: true,
+    schedule: ['before 5am on the first day of the month'],
   },
   vulnerabilityAlerts: {
     labels: [
@@ -44,23 +48,6 @@
       ],
       matchUpdateTypes: [
         'patch',
-      ],
-      matchPackageNames: [
-        '*',
-      ],
-      matchDepTypes: [
-        'dependencies',
-        'devDependencies',
-        'peerDependencies',
-      ],
-      groupName: 'patch',
-      "minimumReleaseAge": '2 days',
-    },
-    {
-      matchManagers: [
-        'npm',
-      ],
-      matchUpdateTypes: [
         'minor',
       ],
       matchPackageNames: [
@@ -71,8 +58,8 @@
         'devDependencies',
         'peerDependencies',
       ],
-      groupName: 'minor',
-      "minimumReleaseAge": '2 days',
+      groupName: 'non-major',
+      minimumReleaseAge: '2 days',
     },
     {
       matchManagers: [
