@@ -119,8 +119,6 @@ do_init() {
         echo "  必要な環境変数:"
         echo "    EMBEDDING_MODEL=intfloat/multilingual-e5-small   # TEI用モデルID（必須）"
         echo "    EMBEDDING_VECTOR_SIZE=384                        # ベクトル次元数（必須）"
-        echo "    EMBEDDING_QUERY_PREFIX=query:                    # クエリプレフィックス（必須）"
-        echo "    EMBEDDING_PASSAGE_PREFIX=passage:                # パッセージプレフィックス（必須）"
         echo "    QDRANT_COLLECTION_NAME=knowledge_v1              # コレクション名（必須）"
         echo "    CLOUDFLARE_TUNNEL_TOKEN=<Cloudflare Dashboard から取得>"
         echo "    MINIO_ROOT_USER=<任意のユーザー名>"
