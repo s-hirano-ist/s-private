@@ -112,7 +112,7 @@ describe("qdrant-client", () => {
 
 		test("skips creation when collection already exists", async () => {
 			mockClient.getCollections.mockResolvedValue({
-				collections: [{ name: "knowledge_v2" }],
+				collections: [{ name: "knowledge_v1" }],
 			});
 			mockClient.createPayloadIndex.mockResolvedValue({});
 			const { ensureCollection, getQdrantClient } = await loadModule();
@@ -126,7 +126,7 @@ describe("qdrant-client", () => {
 
 		test("creates payload indexes for type, top_heading, content_type", async () => {
 			mockClient.getCollections.mockResolvedValue({
-				collections: [{ name: "knowledge_v2" }],
+				collections: [{ name: "knowledge_v1" }],
 			});
 			mockClient.createPayloadIndex.mockResolvedValue({});
 			const { ensureCollection, getQdrantClient } = await loadModule();
@@ -187,7 +187,7 @@ describe("qdrant-client", () => {
 
 			expect(mockClient.upsert).toHaveBeenCalledOnce();
 			const call = mockClient.upsert.mock.calls[0];
-			expect(call[0]).toBe("knowledge_v2");
+			expect(call[0]).toBe("knowledge_v1");
 			const point = call[1].points[0];
 			expect(typeof point.id).toBe("number");
 			expect(point.id).toBeGreaterThanOrEqual(0);

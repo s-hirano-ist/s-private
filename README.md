@@ -38,7 +38,7 @@
 - **Database** - [PostgreSQL](https://www.postgresql.org/) with [Prisma](https://www.prisma.io/) ORM
 - **Object Storage** - [MinIO](https://min.io/) (configurable for local/cloud deployment)
 ### AI & Search
-- **Embedding Model** - [intfloat/multilingual-e5-large](https://huggingface.co/intfloat/multilingual-e5-large) via [HuggingFace TEI](https://github.com/huggingface/text-embeddings-inference) (Docker)
+- **Embedding Model** - [intfloat/multilingual-e5-small](https://huggingface.co/intfloat/multilingual-e5-small) via [HuggingFace TEI](https://github.com/huggingface/text-embeddings-inference) (Docker)
 - **Vector Database** - [Qdrant](https://qdrant.tech/)
 - **Tunnel** - [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/) (Zero Trust)
 
@@ -224,7 +224,7 @@ Each domain is completely isolated with its own:
 │  packages/   │────▶│  │ HuggingFace   │  Cloudflare Tunnel   │
 │  search/     │Tunnel│  │ TEI (:3001)   │◀── cloudflared       │
 │              │     │  └───────────────┘                      │
-└──────┬───────┘     │  multilingual-e5-large                  │
+└──────┬───────┘     │  multilingual-e5-small                  │
        │             └─────────────────────────────────────────┘
        │
        ▼
