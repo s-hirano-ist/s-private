@@ -73,9 +73,7 @@ export default defineConfig({
 					env: {
 						QDRANT_COLLECTION_NAME: "knowledge_v2",
 						EMBEDDING_VECTOR_SIZE: "1024",
-						EMBEDDING_MODEL: "intfloat/multilingual-e5-large",
-						EMBEDDING_QUERY_PREFIX: "query: ",
-						EMBEDDING_PASSAGE_PREFIX: "passage: ",
+						EMBEDDING_MODEL: "intfloat/multilingual-e5-small",
 					},
 				},
 			},

@@ -25,14 +25,6 @@ function makeChunk(id: string, hash: string): QdrantPayload {
 	};
 }
 
-function makeEmbedFn(): Mock {
-	return vi
-		.fn()
-		.mockImplementation((texts: string[]) =>
-			Promise.resolve(texts.map(() => [0.1, 0.2, 0.3])),
-		);
-}
-
 describe("ingestChunks", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
@@ -47,14 +39,12 @@ describe("ingestChunks", () => {
 				["c2", "hash-b"],
 			]),
 		);
-		const embedFn = makeEmbedFn();
 
-		const result = await ingestChunks(chunks, { embedBatchFn: embedFn });
+		const result = await ingestChunks(chunks, {});
 
 		expect(result.totalChunks).toBe(2);
 		expect(result.changedChunks).toBe(0);
 		expect(result.skippedChunks).toBe(2);
-		expect(embedFn).not.toHaveBeenCalled();
 		expect(mockedUpsertPoints).not.toHaveBeenCalled();
 	});
 
@@ -66,81 +56,69 @@ describe("ingestChunks", () => {
 				["c2", "hash-b"],
 			]),
 		);
-		const embedFn = makeEmbedFn();
 
-		const result = await ingestChunks(chunks, { embedBatchFn: embedFn });
+		const result = await ingestChunks(chunks, {});
 
 		expect(result.changedChunks).toBe(1);
 		expect(result.skippedChunks).toBe(1);
-		expect(embedFn).toHaveBeenCalledOnce();
 		expect(mockedUpsertPoints).toHaveBeenCalledOnce();
 	});
 
 	test("processes new chunks not in existing hashes", async () => {
 		const chunks = [makeChunk("c1", "hash-a")];
 		mockedGetExistingHashes.mockResolvedValue(new Map());
-		const embedFn = makeEmbedFn();
 
-		const result = await ingestChunks(chunks, { embedBatchFn: embedFn });
+		const result = await ingestChunks(chunks, {});
 
 		expect(result.changedChunks).toBe(1);
 		expect(result.skippedChunks).toBe(0);
-		expect(embedFn).toHaveBeenCalledOnce();
+		expect(mockedUpsertPoints).toHaveBeenCalledOnce();
 	});
 
 	test("force mode skips getExistingHashes and processes all chunks", async () => {
 		const chunks = [makeChunk("c1", "hash-a"), makeChunk("c2", "hash-b")];
-		const embedFn = makeEmbedFn();
 
-		const result = await ingestChunks(chunks, {
-			embedBatchFn: embedFn,
-			force: true,
-		});
+		const result = await ingestChunks(chunks, { force: true });
 
 		expect(mockedGetExistingHashes).not.toHaveBeenCalled();
 		expect(result.changedChunks).toBe(2);
 		expect(result.skippedChunks).toBe(0);
-		expect(embedFn).toHaveBeenCalledOnce();
+		expect(mockedUpsertPoints).toHaveBeenCalledOnce();
 	});
 
 	test("batches processing in groups of 20", async () => {
 		const chunks = Array.from({ length: 45 }, (_, i) =>
 			makeChunk(`c${i}`, `hash-${i}`),
 		);
-		const embedFn = makeEmbedFn();
 
-		await ingestChunks(chunks, { embedBatchFn: embedFn, force: true });
+		await ingestChunks(chunks, { force: true });
 
 		// 45 chunks / 20 batch size = 3 batches
-		expect(embedFn).toHaveBeenCalledTimes(3);
 		expect(mockedUpsertPoints).toHaveBeenCalledTimes(3);
 
 		// Verify batch sizes
-		expect(embedFn.mock.calls[0][0]).toHaveLength(20);
-		expect(embedFn.mock.calls[1][0]).toHaveLength(20);
-		expect(embedFn.mock.calls[2][0]).toHaveLength(5);
+		expect(mockedUpsertPoints.mock.calls[0][0]).toHaveLength(20);
+		expect(mockedUpsertPoints.mock.calls[1][0]).toHaveLength(20);
+		expect(mockedUpsertPoints.mock.calls[2][0]).toHaveLength(5);
 	});
 
 	test("returns early for empty input", async () => {
-		const embedFn = makeEmbedFn();
-
-		const result = await ingestChunks([], { embedBatchFn: embedFn });
+		const result = await ingestChunks([], {});
 
 		expect(result.totalChunks).toBe(0);
 		expect(result.changedChunks).toBe(0);
-		expect(embedFn).not.toHaveBeenCalled();
+		expect(mockedUpsertPoints).not.toHaveBeenCalled();
 	});
 
-	test("passes embeddings and payloads correctly to upsertPoints", async () => {
+	test("passes text and payloads correctly to upsertPoints", async () => {
 		const chunk = makeChunk("c1", "hash-a");
-		const embedFn = vi.fn().mockResolvedValue([[1.0, 2.0, 3.0]]);
 
-		await ingestChunks([chunk], { embedBatchFn: embedFn, force: true });
+		await ingestChunks([chunk], { force: true });
 
 		expect(mockedUpsertPoints).toHaveBeenCalledWith([
 			{
 				id: "c1",
-				vector: [1.0, 2.0, 3.0],
+				text: "Content for c1",
 				payload: chunk,
 			},
 		]);

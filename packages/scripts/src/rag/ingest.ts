@@ -5,7 +5,6 @@ import {
 	parseMarkdown,
 } from "@s-hirano-ist/s-search/chunker";
 import type { ContentType, QdrantPayload } from "@s-hirano-ist/s-search/config";
-import { createEmbeddingClient } from "@s-hirano-ist/s-search/embedding-client";
 import { ingestChunks } from "@s-hirano-ist/s-search/ingest";
 import {
 	ensureCollection,
@@ -100,14 +99,8 @@ async function ingest(force: boolean): Promise<void> {
 		}
 	}
 
-	const embedBatchFn = createEmbeddingClient({
-		apiUrl: process.env.EMBEDDING_API_URL ?? "",
-		cfAccessClientId: process.env.CF_ACCESS_CLIENT_ID ?? "",
-		cfAccessClientSecret: process.env.CF_ACCESS_CLIENT_SECRET ?? "",
-	}).embedBatch;
-
-	// Delegate to core ingest logic
-	const result = await ingestChunks(allChunks, { embedBatchFn, force });
+	// Delegate to core ingest logic (Qdrant Inference handles embedding)
+	const result = await ingestChunks(allChunks, { force });
 
 	// Get final stats
 	const finalStats = await getCollectionStats();
@@ -118,23 +111,8 @@ async function ingest(force: boolean): Promise<void> {
 }
 
 async function main() {
-	const env = {
-		QDRANT_URL: process.env.QDRANT_URL,
-		EMBEDDING_API_URL: process.env.EMBEDDING_API_URL,
-		CF_ACCESS_CLIENT_ID: process.env.CF_ACCESS_CLIENT_ID,
-		CF_ACCESS_CLIENT_SECRET: process.env.CF_ACCESS_CLIENT_SECRET,
-	} as const;
-
-	if (!env.QDRANT_URL) {
+	if (!process.env.QDRANT_URL) {
 		throw new Error("QDRANT_URL environment variable is required.");
-	}
-	if (!env.EMBEDDING_API_URL) {
-		throw new Error("EMBEDDING_API_URL environment variable is required.");
-	}
-	if (!env.CF_ACCESS_CLIENT_ID || !env.CF_ACCESS_CLIENT_SECRET) {
-		throw new Error(
-			"CF_ACCESS_CLIENT_ID and CF_ACCESS_CLIENT_SECRET environment variables are required.",
-		);
 	}
 
 	const force = process.argv.includes("--force");

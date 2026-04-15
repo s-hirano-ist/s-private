@@ -205,13 +205,11 @@ VPS 上の `~/s-private/.env` に配置:
 
 ```bash
 # Embedding API (TEI) — すべて必須
-EMBEDDING_MODEL=intfloat/multilingual-e5-large  # ※ TEI の --model-id に渡される
-EMBEDDING_VECTOR_SIZE=1024                       # ※ モデルに合わせて変更
-EMBEDDING_QUERY_PREFIX=query:
-EMBEDDING_PASSAGE_PREFIX=passage:
+EMBEDDING_MODEL=intfloat/multilingual-e5-small  # ※ TEI の --model-id に渡される
+EMBEDDING_VECTOR_SIZE=384                        # ※ モデルに合わせて変更
 
 # Qdrant — 必須
-QDRANT_COLLECTION_NAME=knowledge_v2
+QDRANT_COLLECTION_NAME=knowledge_v1
 
 # Cloudflare Tunnel
 CLOUDFLARE_TUNNEL_TOKEN=your-tunnel-token
