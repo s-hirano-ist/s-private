@@ -59,7 +59,7 @@ export const makePath = (v: string, sanitizeAndUnique: boolean): Path => {
  * Zod schema for validating file content types.
  *
  * @remarks
- * Only allows JPEG, PNG, and GIF formats.
+ * Only allows JPEG, PNG, GIF, and WebP formats.
  *
  * @example
  * ```typescript
@@ -69,7 +69,15 @@ export const makePath = (v: string, sanitizeAndUnique: boolean): Path => {
  * @see {@link makeContentType} for factory function
  */
 export const ContentType = z
-	.enum(["image/jpeg", "image/png", "image/gif", "jpeg", "png"])
+	.enum([
+		"image/jpeg",
+		"image/png",
+		"image/gif",
+		"image/webp",
+		"jpeg",
+		"png",
+		"webp",
+	])
 	.brand<"ContentType">();
 
 /**
