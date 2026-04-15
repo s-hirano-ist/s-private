@@ -84,10 +84,10 @@ export async function ensureCollection(): Promise<void> {
 }
 
 /**
- * Upsert points to Qdrant
+ * Upsert points to Qdrant (uses Qdrant Inference for server-side embedding)
  */
 export async function upsertPoints(
-	points: { id: string; vector: number[]; payload: QdrantPayload }[],
+	points: { id: string; text: string; payload: QdrantPayload }[],
 ): Promise<void> {
 	const qdrant = getQdrantClient();
 	const { collectionName } = RAG_CONFIG.qdrant;
@@ -95,7 +95,7 @@ export async function upsertPoints(
 	// Qdrant requires numeric or UUID IDs, so we hash the chunk_id
 	const qdrantPoints = points.map((p) => ({
 		id: hashToUint(p.id),
-		vector: p.vector,
+		vector: { text: p.text, model: RAG_CONFIG.embedding.model },
 		payload: p.payload,
 	}));
 
@@ -141,10 +141,10 @@ export async function getExistingHashes(
 }
 
 /**
- * Search for similar documents
+ * Search for similar documents (uses Qdrant Inference for server-side embedding)
  */
 export async function search(
-	queryVector: number[],
+	queryText: string,
 	options: {
 		topK?: number;
 		filter?: {
@@ -192,15 +192,15 @@ export async function search(
 		}
 	}
 
-	const result = await qdrant.search(collectionName, {
-		vector: queryVector,
+	const result = await qdrant.query(collectionName, {
+		query: { text: queryText, model: RAG_CONFIG.embedding.model },
 		limit: topK,
 		with_payload: true,
 		filter:
 			filterConditions.length > 0 ? { must: filterConditions } : undefined,
 	});
 
-	return result.map((r) => {
+	return result.points.map((r) => {
 		const payload = r.payload as QdrantPayload;
 		return {
 			score: r.score,

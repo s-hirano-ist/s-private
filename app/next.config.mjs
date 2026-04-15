@@ -36,6 +36,7 @@ const nextConfig = {
 		"@s-hirano-ist/s-core",
 		"@s-hirano-ist/s-notification",
 		"@s-hirano-ist/s-search",
+		"@s-hirano-ist/s-ui",
 	],
 	serverExternalPackages: ["sharp", "@prisma/client"],
 	typedRoutes: true,

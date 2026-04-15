@@ -3,43 +3,53 @@
 ## Quick Start
 
 ```bash
+mise install         # Node.js, pnpm, Doppler CLI 等をインストール
 pnpm install
-vercel link          # 初回のみ: Vercel プロジェクトをリンク
-pnpm docker:up       # Docker Compose 起動（環境変数は Vercel から注入）
-pnpm dev             # 開発サーバー起動（環境変数は Vercel から注入）
+vercel link          # 初回のみ: Vercel プロジェクトをリンク（prisma/docker用）
+pnpm docker:up       # Docker Compose 起動（環境変数は Vercel dev から注入）
+pnpm dev             # 開発サーバー起動（環境変数は Doppler から注入）
 ```
 
 ## Mise Configuration
 
-This project uses [Mise](https://mise.jdx.dev/) for Node.js and package manager version management. The tools and their versions are defined in `.mise.toml`.
+This project uses [Mise](https://mise.jdx.dev/) for tool version management. Node.js, pnpm, Doppler CLI 等のバージョンは `.mise.toml` で定義されています。
 
-To set up your environment:
-
-1. Install [Mise](https://mise.jdx.dev/getting-started.html)
-2. Run the following command in the project root to install the required tools:
+1. [Mise](https://mise.jdx.dev/getting-started.html) をインストール
+2. プロジェクトルートで以下を実行:
    ```bash
    mise install
    ```
 
-**Note**: Once installed, Mise will automatically use the correct Node.js and pnpm versions specified in `.mise.toml` when you enter the project directory.
+**Note**: Mise はプロジェクトディレクトリに入ると `.mise.toml` で指定されたツールバージョンを自動的に使用します。また、`.env.local` の環境変数も自動的に読み込みます（`_.file = ".env.local"`）。
 
 ## Environment Variables
 
-環境変数は **Vercel Dashboard** で一元管理し、ローカルに `.env` ファイルを置く必要はありません。
+環境変数は **dev/preview 環境は Doppler**、**本番環境は Vercel Dashboard** で管理します。ローカルに `.env` ファイルを置く必要はありません。
+
+> Vercel CLI に一本化しない理由: `vercel env run` は dev 環境から本番環境の変数にもアクセスできてしまうため、セキュリティ上 dev/preview は Doppler で分離しています。
 
 ### セットアップ
 
-1. [Vercel Dashboard](https://vercel.com) で対象プロジェクトの Environment Variables を設定
-2. ローカルで `vercel link` を実行してプロジェクトをリンク（初回のみ）
+`.env.local` に Doppler サービストークンを設定します。サービストークンにはプロジェクト・環境情報が含まれるため、`doppler login` / `doppler setup` は不要です。
 
-以降、`pnpm dev` / `pnpm docker:up` / `pnpm prisma:studio` 等のスクリプトは自動的に Vercel から環境変数を取得します。
+```bash
+# .env.local（プロジェクトルート）
+DOPPLER_TOKEN=dp.st.dev.xxxxxxxxxxxx
+```
+
+サービストークンは [Doppler Dashboard](https://dashboard.doppler.com/) > プロジェクト > dev 環境 > Access > Service Tokens から発行できます。
+
+Mise が `.env.local` を自動読み込みし（`.mise.toml` の `_.file = ".env.local"`）、`doppler run` が `DOPPLER_TOKEN` を検出して環境変数を取得します。
+
+以降、`pnpm dev` 等の app スクリプトは Doppler から、`pnpm prisma:*` / `pnpm docker:up` 等のルートスクリプトは Vercel dev 環境から環境変数を取得します。
 
 任意のコマンドに環境変数を注入したい場合:
 ```bash
-vercel env run -e development -- <command>
+doppler run -- <command>                     # dev/preview 環境変数
+vercel env run -e development -- <command>   # Vercel dev 環境変数（DB/Docker用）
 ```
 
 ### 変数一覧
 
 環境変数のスキーマと型定義は `app/src/env.ts`（`@t3-oss/env-nextjs` + Zod）を参照してください。
-Docker Compose 用の変数（VPS デプロイ時）は [docs/vps-deployment.md Step 7](vps-deployment.md) を参照してください。ローカル開発では `vercel env run` 経由で自動注入されるため、別途設定は不要です。
+Docker Compose 用の変数（VPS デプロイ時）は [docs/vps-deployment.md Step 7](vps-deployment.md) を参照してください。

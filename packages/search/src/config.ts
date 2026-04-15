@@ -18,10 +18,6 @@ export const RAG_CONFIG = {
 	},
 	embedding: {
 		model: envWithDefault("EMBEDDING_MODEL", "intfloat/multilingual-e5-small"),
-		prefix: {
-			query: envWithDefault("EMBEDDING_QUERY_PREFIX", "query: "),
-			passage: envWithDefault("EMBEDDING_PASSAGE_PREFIX", "passage: "),
-		},
 	},
 	chunking: { maxChunkLength: 2000, headingLevels: [2, 3] },
 } as const;

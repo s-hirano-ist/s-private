@@ -2,14 +2,14 @@
 
 ## バージョン要件
 
-本ドキュメントは **Next.js 15.1+** を前提としています。
+本ドキュメントは **Next.js 16+** を前提としています（プロジェクト使用バージョン: 16.2.3）。
 
-| API | 最小バージョン | 備考 |
+| API | 導入バージョン | 備考 |
 |-----|--------------|------|
 | `forbidden()` | Next.js 15.0 | 認可エラー用（403） |
 | `cacheTag()` | Next.js 15.1 | キャッシュタグによる無効化制御 |
 | `cacheLife()` | Next.js 15.1 | 15.0では`unstable_cacheLife`として提供 |
-| `"use cache"` | Next.js 15.0 | `dynamicIO`フラグ有効時のみ |
+| `"use cache"` | Next.js 15.0 | v16では`cacheComponents: true`で有効化 |
 | `connection()` | Next.js 15.0 | 動的レンダリングのオプトイン |
 
 ## 目次

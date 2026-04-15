@@ -8,10 +8,6 @@
 			"types": "./src/config.ts",
 			"import": "./src/config.ts"
 		},
-		"./embedding-client": {
-			"types": "./src/embedding-client.ts",
-			"import": "./src/embedding-client.ts"
-		},
 		"./qdrant-client": {
 			"types": "./src/qdrant-client.ts",
 			"import": "./src/qdrant-client.ts"
@@ -49,10 +45,6 @@
 			"./config": {
 				"types": "./dist/config.d.ts",
 				"import": "./dist/config.js"
-			},
-			"./embedding-client": {
-				"types": "./dist/embedding-client.d.ts",
-				"import": "./dist/embedding-client.js"
 			},
 			"./qdrant-client": {
 				"types": "./dist/qdrant-client.d.ts",

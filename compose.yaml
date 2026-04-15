@@ -1,26 +1,4 @@
 services:
-  embedding-api:
-    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.9@sha256:ad950d30878eceb72aaf32024d26fa2b1d04a75304fa0b4776b49aa1941fea07
-    container_name: embedding-api
-    platform: linux/amd64
-    restart: unless-stopped
-    ports:
-      - "127.0.0.1:3001:3001"
-    command: >-
-      --model-id ${EMBEDDING_MODEL}
-      --port 3001
-      --pooling mean
-    volumes:
-      - hf-cache:/data
-    networks:
-      - tunnel-net
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
-      interval: 30s
-      timeout: 3s
-      retries: 3
-      start_period: 120s
-
   minio:
     image: pgsty/minio:RELEASE.2026-02-14T12-00-00Z-amd64@sha256:e6238b30c37e1143d80b71a6bea91446587009df5d7839f14659b11087d651fb
     container_name: minio
@@ -73,12 +51,8 @@ services:
       - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN:-}
     networks:
       - tunnel-net
-    depends_on:
-      embedding-api:
-        condition: service_healthy
 
 volumes:
-  hf-cache:
   minio-data:
 
 networks:

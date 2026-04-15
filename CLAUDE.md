@@ -59,7 +59,7 @@ docs/** にはより詳細な設計等のルールが記載されています。
 - Qdrant（ベクトルデータベース）
 
 ## 環境設定
-環境変数はVercel Dashboardで一元管理。ローカルでは`vercel link`後、`vercel env run`で注入（`.env`ファイル不要）。型定義は`app/src/env.ts`。
+環境変数はdev/preview環境はDoppler、本番環境はVercel Dashboardで管理。ローカル開発では`.env.local`にDopplerサービストークン（`DOPPLER_TOKEN`）を設定し、Miseが自動読み込み→`doppler run`で環境変数を注入。一部ルートスクリプト（prisma:*, docker:*）は`vercel env run -e development`を使用。型定義は`app/src/env.ts`。初回セットアップ: `mise install` → `.env.local`にトークン設定 → `pnpm install` → `vercel link`。
 
 ## 詳細資料
 - セットアップ: [docs/setup.md](docs/setup.md)

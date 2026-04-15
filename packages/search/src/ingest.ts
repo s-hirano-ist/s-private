@@ -32,7 +32,6 @@ export type IngestResult = {
 };
 
 export type IngestOptions = {
-	embedBatchFn: (texts: string[], isQuery?: boolean) => Promise<number[][]>;
 	force?: boolean;
 };
 
@@ -79,22 +78,17 @@ export async function ingestChunks(
 		};
 	}
 
-	// Generate embeddings and upsert in batches
-	const batchEmbed = options.embedBatchFn;
-	console.log("Generating embeddings and upserting...");
+	// Upsert in batches (Qdrant Inference handles embedding server-side)
+	console.log("Upserting to Qdrant...");
 	let processed = 0;
 
 	for (let i = 0; i < changedChunks.length; i += BATCH_SIZE) {
 		const batch = changedChunks.slice(i, i + BATCH_SIZE);
-		const texts = batch.map((c) => c.text);
 
-		// Generate embeddings
-		const embeddings = await batchEmbed(texts, false);
-
-		// Prepare points
-		const points = batch.map((chunk, idx) => ({
+		// Prepare points with text for Qdrant Inference
+		const points = batch.map((chunk) => ({
 			id: chunk.chunk_id,
-			vector: embeddings[idx],
+			text: chunk.text,
 			payload: chunk,
 		}));
 
