@@ -58,10 +58,19 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "./generated";
 
 export function createPrismaClient(databaseUrl: string) {
-	if (databaseUrl.startsWith("prisma://")) {
+	const isAccelerate =
+		databaseUrl.startsWith("prisma://") ||
+		databaseUrl.startsWith("prisma+postgres://");
+
+	if (isAccelerate) {
 		return new PrismaClient({ accelerateUrl: databaseUrl });
 	}
 	return new PrismaClient({
-		adapter: new PrismaPg({ connectionString: databaseUrl }),
+		adapter: new PrismaPg({
+			connectionString: databaseUrl,
+			max: 5,
+			idleTimeoutMillis: 30_000,
+			connectionTimeoutMillis: 10_000,
+		}),
 	});
 }

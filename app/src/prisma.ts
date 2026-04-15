@@ -24,10 +24,19 @@ import { env } from "@/env";
  * @internal
  */
 const prismaClientSingleton = () => {
-	const client = env.DATABASE_URL.startsWith("prisma://")
+	const isAccelerate =
+		env.DATABASE_URL.startsWith("prisma://") ||
+		env.DATABASE_URL.startsWith("prisma+postgres://");
+
+	const client = isAccelerate
 		? new PrismaClient({ accelerateUrl: env.DATABASE_URL })
 		: new PrismaClient({
-				adapter: new PrismaPg({ connectionString: env.DATABASE_URL }),
+				adapter: new PrismaPg({
+					connectionString: env.DATABASE_URL,
+					max: 5,
+					idleTimeoutMillis: 30_000,
+					connectionTimeoutMillis: 10_000,
+				}),
 			});
 
 	return client.$extends({
