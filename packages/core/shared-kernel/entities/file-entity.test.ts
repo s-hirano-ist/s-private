@@ -63,8 +63,12 @@ describe("file-entity", () => {
 			expect(makeContentType("png")).toBe("png");
 		});
 
-		test("should throw error for unsupported content type", () => {
-			expect(() => makeContentType("image/webp")).toThrow(ZodError);
+		test("should accept image/webp", () => {
+			expect(makeContentType("image/webp")).toBe("image/webp");
+		});
+
+		test("should accept webp", () => {
+			expect(makeContentType("webp")).toBe("webp");
 		});
 
 		test("should throw error for empty string", () => {
