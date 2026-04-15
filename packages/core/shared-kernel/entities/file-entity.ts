@@ -69,7 +69,15 @@ export const makePath = (v: string, sanitizeAndUnique: boolean): Path => {
  * @see {@link makeContentType} for factory function
  */
 export const ContentType = z
-	.enum(["image/jpeg", "image/png", "image/gif", "image/webp", "jpeg", "png", "webp"])
+	.enum([
+		"image/jpeg",
+		"image/png",
+		"image/gif",
+		"image/webp",
+		"jpeg",
+		"png",
+		"webp",
+	])
 	.brand<"ContentType">();
 
 /**
