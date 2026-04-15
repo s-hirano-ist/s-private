@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.2.3](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.2.2...s-private-v3.2.3) (2026-04-15)
+
+
+### Bug Fixes
+
+* biome ([d451e07](https://github.com/s-hirano-ist/s-private/commit/d451e07c9ea2b24648139d338fd2092edfa24085))
+* docs ([61419aa](https://github.com/s-hirano-ist/s-private/commit/61419aabc534a0d12aa31b3a413ac4c1ca75c128))
+* file type to add webp ([4cd7ecc](https://github.com/s-hirano-ist/s-private/commit/4cd7eccc997f76be1147f241ff55019c08b982a4))
+* file type to add webp ([58d536a](https://github.com/s-hirano-ist/s-private/commit/58d536a9559aa5da68bab72386ba1029724723b3))
+* knowledge v1 ([1616219](https://github.com/s-hirano-ist/s-private/commit/1616219cdd1ac61e651505d705dc0879a0d7624d))
+* prisma ([52af816](https://github.com/s-hirano-ist/s-private/commit/52af816f0b937899eb5a824d9b3ce4a68711dbdf))
+
+
+### Documentation
+
+* update deploy script ([26b54e5](https://github.com/s-hirano-ist/s-private/commit/26b54e502e74c9e7884353b6e69654a981faa17a))
+
+
+### Maintenance
+
+* delete terraform ([9da075c](https://github.com/s-hirano-ist/s-private/commit/9da075cb0346e6523b3fc82ae2af5a4e40c167b1))
+* **deps:** update mise ([3e3cff7](https://github.com/s-hirano-ist/s-private/commit/3e3cff718b0869b045639585459c8692be0581c1))
+* **deps:** update mise ([8a2fde1](https://github.com/s-hirano-ist/s-private/commit/8a2fde17850ed48f742172461f93db09a3029e5e))
+* docs and refactor ([9b45758](https://github.com/s-hirano-ist/s-private/commit/9b45758e5363cde8bc54d8d5dfac9ca7c342e57c))
+* docs of embedding model ([eaa02b4](https://github.com/s-hirano-ist/s-private/commit/eaa02b4713ddaa2e0b646ab8dae2b1bd998e9a37))
+* update renovate bug ([63490be](https://github.com/s-hirano-ist/s-private/commit/63490bec55392fce6bfd5a762c4ed2c4e3bdd752))
+* update renovate bug ([ec4f27d](https://github.com/s-hirano-ist/s-private/commit/ec4f27dc8e8bdcc4d08c2abffbd63fb190f55e37))
+
 ## [3.2.2](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.2.1...s-private-v3.2.2) (2026-04-14)
 
 

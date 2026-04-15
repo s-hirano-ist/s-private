@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.6](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.18.5...@s-hirano-ist/s-database-v1.18.6) (2026-04-15)
+
+
+### Bug Fixes
+
+* prisma ([52af816](https://github.com/s-hirano-ist/s-private/commit/52af816f0b937899eb5a824d9b3ce4a68711dbdf))
+
 ## [1.18.5](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.18.4...@s-hirano-ist/s-database-v1.18.5) (2026-04-14)
 
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.18.7](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.18.6...@s-hirano-ist/s-core-v1.18.7) (2026-04-15)
+
+
+### Bug Fixes
+
+* biome ([d451e07](https://github.com/s-hirano-ist/s-private/commit/d451e07c9ea2b24648139d338fd2092edfa24085))
+* file type to add webp ([4cd7ecc](https://github.com/s-hirano-ist/s-private/commit/4cd7eccc997f76be1147f241ff55019c08b982a4))
+* file type to add webp ([58d536a](https://github.com/s-hirano-ist/s-private/commit/58d536a9559aa5da68bab72386ba1029724723b3))
+
 ## [1.18.6](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.18.5...@s-hirano-ist/s-core-v1.18.6) (2026-04-14)
 
 

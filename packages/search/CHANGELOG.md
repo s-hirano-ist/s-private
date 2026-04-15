@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.18.7](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-search-v1.18.6...@s-hirano-ist/s-search-v1.18.7) (2026-04-15)
+
+
+### Bug Fixes
+
+* docs ([61419aa](https://github.com/s-hirano-ist/s-private/commit/61419aabc534a0d12aa31b3a413ac4c1ca75c128))
+* knowledge v1 ([1616219](https://github.com/s-hirano-ist/s-private/commit/1616219cdd1ac61e651505d705dc0879a0d7624d))
+
+
+### Maintenance
+
+* docs and refactor ([9b45758](https://github.com/s-hirano-ist/s-private/commit/9b45758e5363cde8bc54d8d5dfac9ca7c342e57c))
+* docs of embedding model ([eaa02b4](https://github.com/s-hirano-ist/s-private/commit/eaa02b4713ddaa2e0b646ab8dae2b1bd998e9a37))
+
 ## [1.18.6](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-search-v1.18.5...@s-hirano-ist/s-search-v1.18.6) (2026-04-14)
 
 
