@@ -26,7 +26,10 @@
 		"ingest-books": "./dist/ingest-books.js",
 		"ingest-articles": "./dist/ingest-articles.js",
 		"ingest-images": "./dist/ingest-images.js",
-		"cleanup-minio-images": "./dist/cleanup-minio-images.js"
+		"cleanup-minio-images": "./dist/cleanup-minio-images.js",
+		"fix-image-formats": "./dist/fix-image-formats.js",
+		"fix-book-frontmatter": "./dist/fix-book-frontmatter.js",
+		"validate-json-articles": "./dist/validate-json-articles.js"
 	},
 	"scripts": {
 		"build": "tsc",
@@ -55,7 +58,10 @@
 		"ingest-books": "tsx src/ingest-books.ts",
 		"ingest-articles": "tsx src/ingest-articles.ts",
 		"ingest-images": "tsx src/ingest-images.ts",
-		"cleanup-minio-images": "tsx src/cleanup-minio-images.ts"
+		"cleanup-minio-images": "tsx src/cleanup-minio-images.ts",
+		"fix-image-formats": "tsx src/fix-image-formats.ts",
+		"fix-book-frontmatter": "tsx src/fix-book-frontmatter.ts",
+		"validate-json-articles": "tsx src/validate-json-articles.ts"
 	},
 	"files": [
 		"dist",
