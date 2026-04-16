@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.18.7](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.18.6...@s-hirano-ist/s-scripts-v1.18.7) (2026-04-15)
+
+
+### Bug Fixes
+
+* docs ([61419aa](https://github.com/s-hirano-ist/s-private/commit/61419aabc534a0d12aa31b3a413ac4c1ca75c128))
+
+
+### Maintenance
+
+* docs and refactor ([9b45758](https://github.com/s-hirano-ist/s-private/commit/9b45758e5363cde8bc54d8d5dfac9ca7c342e57c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.18.7
+    * @s-hirano-ist/s-database bumped to 1.18.6
+    * @s-hirano-ist/s-search bumped to 1.18.7
+
 ## [1.18.6](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.18.5...@s-hirano-ist/s-scripts-v1.18.6) (2026-04-14)
 
 
