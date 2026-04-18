@@ -31,8 +31,7 @@
 		"fix-image-formats": "./dist/fix-image-formats.js",
 		"fix-book-frontmatter": "./dist/fix-book-frontmatter.js",
 		"validate-json-articles": "./dist/validate-json-articles.js",
-		"enrich-books": "./dist/enrich-books.js",
-		"generate-book-data": "./dist/generate-book-data.js"
+		"enrich-books": "./dist/enrich-books.js"
 	},
 	"scripts": {
 		"build": "tsc",
@@ -66,8 +65,7 @@
 		"fix-image-formats": "tsx src/fix-image-formats.ts",
 		"fix-book-frontmatter": "tsx src/fix-book-frontmatter.ts",
 		"validate-json-articles": "tsx src/validate-json-articles.ts",
-		"enrich-books": "tsx src/enrich-books.ts",
-		"generate-book-data": "tsx src/generate-book-data.ts"
+		"enrich-books": "tsx src/enrich-books.ts"
 	},
 	"files": [
 		"dist",
