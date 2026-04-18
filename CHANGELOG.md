@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.5.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.4.1...s-private-v3.5.0) (2026-04-18)
+
+
+### Features
+
+* **scripts:** add s-content-format bin backed by dprint ([3e06ccf](https://github.com/s-hirano-ist/s-private/commit/3e06ccf7f112e4c8a692f81624e12393f40e25cf))
+* **scripts:** add s-content-format bin backed by dprint ([3e22bc2](https://github.com/s-hirano-ist/s-private/commit/3e22bc26fec7c27564eb51b6602450668c9d10ac))
+
+
+### Documentation
+
+* fix test warning ([1f053b5](https://github.com/s-hirano-ist/s-private/commit/1f053b520e554902eb3642ba8b27da4cae259dd8))
+* fix test warning ([4bfa057](https://github.com/s-hirano-ist/s-private/commit/4bfa0571e1d92d1fd68d9c2ef956995c1d248ffd))
+
 ## [3.4.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.4.0...s-private-v3.4.1) (2026-04-18)
 
 

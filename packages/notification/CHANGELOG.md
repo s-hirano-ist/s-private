@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.18.3](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-notification-v1.18.2...@s-hirano-ist/s-notification-v1.18.3) (2026-04-18)
+
+
+### Documentation
+
+* fix test warning ([1f053b5](https://github.com/s-hirano-ist/s-private/commit/1f053b520e554902eb3642ba8b27da4cae259dd8))
+* fix test warning ([4bfa057](https://github.com/s-hirano-ist/s-private/commit/4bfa0571e1d92d1fd68d9c2ef956995c1d248ffd))
+
 ## [1.18.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-notification-v1.18.1...@s-hirano-ist/s-notification-v1.18.2) (2026-03-29)
 
 
