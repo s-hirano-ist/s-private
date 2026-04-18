@@ -86,25 +86,23 @@ async function main(): Promise<void> {
 	const dryRun = process.argv.includes("--dry-run");
 	const contentsPath = process.env.S_CONTENTS_PATH ?? process.cwd();
 
-	console.log(`画像をWebPフォーマットに変換中...${dryRun ? " (dry-run)" : ""}`);
-
-	const bookDir = join(contentsPath, "image", "book");
-	const dumpDir = join(contentsPath, "image", "dump");
-
-	console.log("📌 image/note/ はSVGファイルのためスキップします。");
-
-	const bookResult = await processDirectory(bookDir, "image/book", dryRun);
-	const dumpResult = await processDirectory(dumpDir, "image/dump", dryRun);
-
-	const totalConverted = bookResult.converted + dumpResult.converted;
-	const totalSkipped = bookResult.skipped + dumpResult.skipped;
-	const totalErrors = bookResult.errors + dumpResult.errors;
-
 	console.log(
-		`\n📊 合計: 変換 ${totalConverted} 件, スキップ ${totalSkipped} 件, エラー ${totalErrors} 件${dryRun ? " (dry-run)" : ""}`,
+		`書籍画像をWebPフォーマットに変換中...${dryRun ? " (dry-run)" : ""}`,
 	);
 
-	if (totalErrors > 0) {
+	const bookDir = join(contentsPath, "image", "book");
+
+	const { converted, skipped, errors } = await processDirectory(
+		bookDir,
+		"image/book",
+		dryRun,
+	);
+
+	console.log(
+		`\n📊 合計: 変換 ${converted} 件, スキップ ${skipped} 件, エラー ${errors} 件${dryRun ? " (dry-run)" : ""}`,
+	);
+
+	if (errors > 0) {
 		process.exit(1);
 	}
 }
