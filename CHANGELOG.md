@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.6.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.5.0...s-private-v3.6.0) (2026-04-18)
+
+
+### Features
+
+* add book dumper for s-public ([2c920ce](https://github.com/s-hirano-ist/s-private/commit/2c920ce940cd5b490b2e4e1295f923fe52466e59))
+* add book dumper for s-public ([f8cf4f4](https://github.com/s-hirano-ist/s-private/commit/f8cf4f44ae0bcbd9ca49c937ff07eec4654d1b32))
+
+
+### Bug Fixes
+
+* isbn to only allow 13 digits without hyphens ([85486de](https://github.com/s-hirano-ist/s-private/commit/85486dec6271d218ae2ee577a7b53743589dc964))
+* not found img not showing ([3cb0e42](https://github.com/s-hirano-ist/s-private/commit/3cb0e4229d0d6d566aa078fbb0397e0c35ba62a3))
+
 ## [3.5.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.4.1...s-private-v3.5.0) (2026-04-18)
 
 
