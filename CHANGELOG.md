@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.4.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.3.0...s-private-v3.4.0) (2026-04-18)
+
+
+### Features
+
+* upload images on ingest books ([0c3b2a5](https://github.com/s-hirano-ist/s-private/commit/0c3b2a565f241f59981e0172b7235663887ed1e6))
+* upload images on ingest books ([43c547b](https://github.com/s-hirano-ist/s-private/commit/43c547b3b49515413044ede5748c210b8606ba02))
+
+
+### Bug Fixes
+
+* image script ([4422038](https://github.com/s-hirano-ist/s-private/commit/4422038edb5d0f2bd6e5eb71775fcae675b2c734))
+* image script ([299d348](https://github.com/s-hirano-ist/s-private/commit/299d348b17e880b36faafe7e3000a24c99e6c132))
+
+
+### Maintenance
+
+* **deps:** update dependency @hono/node-server@&lt;1.19.10 to v1.19.14 ([38ca2c1](https://github.com/s-hirano-ist/s-private/commit/38ca2c18c1ea2afb752225d2628185eecdfb45ba))
+* **deps:** update dependency @hono/node-server@&lt;1.19.10 to v1.19.14 ([a716a32](https://github.com/s-hirano-ist/s-private/commit/a716a3286e2699996774fb603931f9ba86b89fcd))
+
 ## [3.3.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.2.3...s-private-v3.3.0) (2026-04-16)
 
 
