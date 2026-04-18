@@ -8,6 +8,7 @@ import {
 	makeGoogleSubTitle,
 	makeGoogleTitle,
 	makeISBN,
+	makeTags,
 } from "@s-hirano-ist/s-core/books/entities/book-entity";
 import {
 	makeCreatedAt,
@@ -60,6 +61,8 @@ describe("BooksQueryRepository", () => {
 				userId: makeUserId("user123"),
 				isbn: makeISBN("978-0123456789"),
 				title: makeBookTitle("Test Book"),
+				rating: undefined,
+				tags: makeTags([]),
 				googleTitle: makeGoogleTitle("Test Google Title"),
 				googleSubTitle: makeGoogleSubTitle("Test subtitle"),
 				googleAuthors: makeGoogleAuthors(["Author One", "Author Two"]),

@@ -8,6 +8,8 @@ import {
 	makeGoogleSubTitle,
 	makeGoogleTitle,
 	makeISBN,
+	makeRating,
+	makeTags,
 } from "@s-hirano-ist/s-core/books/entities/book-entity";
 import {
 	makeCreatedAt,
@@ -52,6 +54,8 @@ describe("BooksCommandRepository", () => {
 				userId: makeUserId("user123"),
 				isbn: makeISBN("9784123456789"),
 				title: makeBookTitle("Test Book"),
+				rating: makeRating(3),
+				tags: makeTags([]),
 				status: "UNEXPORTED",
 				createdAt: makeCreatedAt(),
 			});
@@ -86,6 +90,8 @@ describe("BooksCommandRepository", () => {
 				userId: makeUserId("user123"),
 				isbn: makeISBN("9784567890123"),
 				title: makeBookTitle("Complete Book"),
+				rating: makeRating(5),
+				tags: makeTags(["tag1", "tag2"]),
 				status: "UNEXPORTED",
 				markdown: makeBookMarkdown("# Book Review\nThis is a great book."),
 				googleDescription: makeGoogleDescription("Google Description"),
@@ -112,6 +118,8 @@ describe("BooksCommandRepository", () => {
 					userId: makeUserId("user123"),
 					isbn: makeISBN("9784123456789"),
 					title: makeBookTitle("Test Book"),
+					rating: makeRating(3),
+					tags: makeTags([]),
 					status: "UNEXPORTED",
 					createdAt: makeCreatedAt(),
 				}),

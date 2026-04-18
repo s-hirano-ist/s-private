@@ -2,24 +2,34 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { basename, join } from "node:path";
 import { glob } from "glob";
+import matter from "gray-matter";
+import yaml from "js-yaml";
 
-function hasFrontmatter(content: string): boolean {
-	return content.startsWith("---");
+const REQUIRED_KEYS = [
+	"heading",
+	"description",
+	"draft",
+	"rating",
+	"tags",
+	"googleTitle",
+	"googleSubtitle",
+	"googleAuthors",
+	"googleDescription",
+	"googleImgSrc",
+	"googleHref",
+] as const;
+
+function dumpFrontmatter(data: Record<string, unknown>): string {
+	return yaml.dump(data, {
+		lineWidth: -1,
+		forceQuotes: false,
+		noRefs: true,
+	});
 }
 
-function extractTitleFromH1(content: string): string | null {
+function extractTitleFromContent(content: string): string | null {
 	const match = content.match(/^# (.+)$/m);
 	return match ? match[1].trim() : null;
-}
-
-function generateFrontmatter(isbn: string, title: string): string {
-	return [
-		"---",
-		`heading: ${isbn}`,
-		`description: ${title}`,
-		"draft: false",
-		"---",
-	].join("\n");
 }
 
 async function main(): Promise<void> {
@@ -43,32 +53,56 @@ async function main(): Promise<void> {
 		const isbn = basename(filePath, ".md");
 
 		try {
-			const content = await readFile(filePath, "utf8");
+			const raw = await readFile(filePath, "utf8");
+			const parsed = matter(raw);
+			const existing = parsed.data as Record<string, unknown>;
 
-			if (hasFrontmatter(content)) {
+			const hasAllKeys = REQUIRED_KEYS.every((k) => Object.hasOwn(existing, k));
+			if (hasAllKeys) {
 				skippedCount++;
 				continue;
 			}
 
-			const title = extractTitleFromH1(content);
-			if (!title) {
-				console.error(
-					`⚠️ ${fileName}: H1タイトルが見つかりません。スキップします。`,
-				);
-				errorCount++;
-				continue;
+			let description =
+				typeof existing.description === "string" ? existing.description : "";
+			if (!description) {
+				const h1 = extractTitleFromContent(parsed.content);
+				if (!h1) {
+					console.error(
+						`⚠️ ${fileName}: description も H1 も見つかりません。スキップします。`,
+					);
+					errorCount++;
+					continue;
+				}
+				description = h1;
 			}
 
-			const frontmatter = generateFrontmatter(isbn, title);
-			const newContent = `${frontmatter}\n\n${content}`;
+			const next: Record<string, unknown> = {
+				heading: existing.heading ?? isbn,
+				description,
+				draft: existing.draft ?? false,
+				rating: "rating" in existing ? existing.rating : null,
+				tags: Array.isArray(existing.tags) ? existing.tags : [],
+				googleTitle: "googleTitle" in existing ? existing.googleTitle : null,
+				googleSubtitle:
+					"googleSubtitle" in existing ? existing.googleSubtitle : null,
+				googleAuthors: Array.isArray(existing.googleAuthors)
+					? existing.googleAuthors
+					: [],
+				googleDescription:
+					"googleDescription" in existing ? existing.googleDescription : null,
+				googleImgSrc: "googleImgSrc" in existing ? existing.googleImgSrc : null,
+				googleHref: "googleHref" in existing ? existing.googleHref : null,
+			};
+
+			const body = parsed.content.replace(/^\n+/, "");
+			const newContent = `---\n${dumpFrontmatter(next)}---\n\n${body}`;
 
 			if (dryRun) {
 				console.log(`🔍 [dry-run] 修正予定: ${fileName}`);
-				console.log(`   heading: ${isbn}`);
-				console.log(`   description: ${title}`);
 			} else {
 				await writeFile(filePath, newContent, "utf8");
-				console.log(`✅ 修正完了: ${fileName} (${title})`);
+				console.log(`✅ 修正完了: ${fileName} (${description})`);
 			}
 			fixedCount++;
 		} catch (error) {

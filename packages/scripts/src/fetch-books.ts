@@ -9,15 +9,32 @@ import {
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
 import { createMinioClient } from "@s-hirano-ist/s-storage";
+import yaml from "js-yaml";
 
 type Book = {
 	id: string;
 	isbn: string;
 	title: string;
+	rating: number | null;
+	tags: string[];
+	googleTitle: string | null;
+	googleSubTitle: string | null;
+	googleAuthors: string[];
+	googleDescription: string | null;
+	googleImgSrc: string | null;
+	googleHref: string | null;
 	imagePath: string | null;
 };
 
 const OUTPUT_DIR = "markdown/book/";
+
+function dumpFrontmatter(data: Record<string, unknown>): string {
+	return yaml.dump(data, {
+		lineWidth: -1,
+		forceQuotes: false,
+		noRefs: true,
+	});
+}
 
 async function main() {
 	const env = {
@@ -77,14 +94,20 @@ async function main() {
 				// ファイルが存在しない場合は書き出し
 			}
 
-			const frontmatter = [
-				"---",
-				`heading: ${item.isbn}`,
-				`description: ${item.title}`,
-				"draft: false",
-				"---",
-			].join("\n");
-			await writeFile(filePath, `${frontmatter}\n\n# ${item.title}\n`);
+			const frontmatter = dumpFrontmatter({
+				heading: item.isbn,
+				description: item.title,
+				draft: false,
+				rating: item.rating,
+				tags: item.tags,
+				googleTitle: item.googleTitle,
+				googleSubtitle: item.googleSubTitle,
+				googleAuthors: item.googleAuthors,
+				googleDescription: item.googleDescription,
+				googleImgSrc: item.googleImgSrc,
+				googleHref: item.googleHref,
+			});
+			await writeFile(filePath, `---\n${frontmatter}---\n\n# ${item.title}\n`);
 			exportedCount++;
 		}
 

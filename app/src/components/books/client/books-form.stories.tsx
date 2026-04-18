@@ -29,6 +29,14 @@ export const Default: Story = {
 		await expect(titleInput).toBeInTheDocument();
 		await expect(titleInput).toBeRequired();
 
+		const ratingInput = canvas.getByLabelText("評価 (1-5)");
+		await expect(ratingInput).toBeInTheDocument();
+		await expect(ratingInput).toBeRequired();
+		await expect(ratingInput).toHaveAttribute("type", "number");
+
+		const tagsInput = canvas.getByLabelText("タグ（カンマ区切り）");
+		await expect(tagsInput).toBeInTheDocument();
+
 		await expect(
 			canvas.getByRole("button", { name: "保存" }),
 		).toBeInTheDocument();
@@ -53,12 +61,18 @@ export const FillAndSubmit: Story = {
 
 		const isbnInput = canvas.getByLabelText("ISBN");
 		const titleInput = canvas.getByLabelText("タイトル");
+		const ratingInput = canvas.getByLabelText("評価 (1-5)");
+		const tagsInput = canvas.getByLabelText("タグ（カンマ区切り）");
 
 		await userEvent.type(isbnInput, "978-4-1234-5678-9");
 		await userEvent.type(titleInput, "テストブック");
+		await userEvent.type(ratingInput, "4");
+		await userEvent.type(tagsInput, "技術, 設計");
 
 		await expect(isbnInput).toHaveValue("978-4-1234-5678-9");
 		await expect(titleInput).toHaveValue("テストブック");
+		await expect(ratingInput).toHaveValue(4);
+		await expect(tagsInput).toHaveValue("技術, 設計");
 
 		const submitButton = canvas.getByRole("button", { name: "保存" });
 		await userEvent.click(submitButton);

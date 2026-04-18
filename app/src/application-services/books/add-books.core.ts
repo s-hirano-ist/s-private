@@ -67,6 +67,8 @@ export async function addBooksCore(
 		const [book, event] = bookEntity.create({
 			isbn: parsedData.isbn,
 			title: parsedData.title,
+			rating: parsedData.rating,
+			tags: parsedData.tags,
 			userId: parsedData.userId,
 			imagePath: parsedData.imagePath,
 			caller: "addBooks",
