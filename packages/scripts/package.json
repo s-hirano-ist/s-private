@@ -30,7 +30,9 @@
 		"cleanup-minio-images": "./dist/cleanup-minio-images.js",
 		"fix-image-formats": "./dist/fix-image-formats.js",
 		"fix-book-frontmatter": "./dist/fix-book-frontmatter.js",
-		"validate-json-articles": "./dist/validate-json-articles.js"
+		"validate-json-articles": "./dist/validate-json-articles.js",
+		"enrich-books": "./dist/enrich-books.js",
+		"generate-book-data": "./dist/generate-book-data.js"
 	},
 	"scripts": {
 		"build": "tsc",
@@ -63,7 +65,9 @@
 		"cleanup-minio-images": "tsx src/cleanup-minio-images.ts",
 		"fix-image-formats": "tsx src/fix-image-formats.ts",
 		"fix-book-frontmatter": "tsx src/fix-book-frontmatter.ts",
-		"validate-json-articles": "tsx src/validate-json-articles.ts"
+		"validate-json-articles": "tsx src/validate-json-articles.ts",
+		"enrich-books": "tsx src/enrich-books.ts",
+		"generate-book-data": "tsx src/generate-book-data.ts"
 	},
 	"files": [
 		"dist",
@@ -81,6 +85,7 @@
 		"access": "public"
 	},
 	"dependencies": {
+		"@googleapis/books": "8.0.1",
 		"@s-hirano-ist/s-core": "workspace:*",
 		"@s-hirano-ist/s-database": "workspace:*",
 		"@s-hirano-ist/s-notification": "workspace:*",
@@ -89,11 +94,14 @@
 		"cheerio": "1.2.0",
 		"dprint": "0.54.0",
 		"glob": "13.0.6",
+		"gray-matter": "4.0.3",
 		"iconv-lite": "0.7.2",
+		"js-yaml": "4.1.1",
 		"sharp": "0.34.5",
 		"turndown": "7.2.4"
 	},
 	"devDependencies": {
+		"@types/js-yaml": "4.0.9",
 		"@types/node": "24.12.2",
 		"@types/turndown": "5.0.6",
 		"tsx": "4.21.0",

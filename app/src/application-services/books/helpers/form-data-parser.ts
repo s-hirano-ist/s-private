@@ -7,6 +7,8 @@
 import {
 	makeBookTitle,
 	makeISBN,
+	makeRating,
+	makeTags,
 } from "@s-hirano-ist/s-core/books/entities/book-entity";
 import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import {
@@ -44,11 +46,20 @@ export const parseAddBooksFormData = async (
 ) => {
 	const isbnInput = getFormDataString(formData, "isbn");
 	const title = getFormDataString(formData, "title");
+	const ratingInput = getFormDataString(formData, "rating");
+	const tagsInput = getFormDataString(formData, "tags");
 	const file = getOptionalFormDataFile(formData, "image");
+
+	const parsedTags = tagsInput
+		.split(",")
+		.map((t) => t.trim())
+		.filter((t) => t.length > 0);
 
 	const baseData = {
 		isbn: makeISBN(isbnInput),
 		title: makeBookTitle(title),
+		rating: makeRating(Number(ratingInput)),
+		tags: makeTags(parsedTags),
 		userId,
 	};
 

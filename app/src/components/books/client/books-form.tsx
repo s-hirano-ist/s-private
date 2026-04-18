@@ -39,6 +39,24 @@ export function BooksForm({ addBooks }: Props) {
 				name="title"
 				required
 			/>
+			<FormInput
+				autoComplete="off"
+				htmlFor="rating"
+				label={label("rating")}
+				max={5}
+				min={1}
+				name="rating"
+				required
+				step={1}
+				type="number"
+			/>
+			<FormInput
+				autoComplete="off"
+				htmlFor="tags"
+				label={label("tags")}
+				name="tags"
+				placeholder="tag1, tag2"
+			/>
 			<FormFileInput
 				accept="image/*"
 				htmlFor="image"

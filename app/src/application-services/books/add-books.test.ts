@@ -2,6 +2,8 @@ import {
 	bookEntity,
 	makeBookTitle,
 	makeISBN,
+	makeRating,
+	makeTags,
 } from "@s-hirano-ist/s-core/books/entities/book-entity";
 import { BookCreatedEvent } from "@s-hirano-ist/s-core/books/events/book-created-event";
 import type { IBooksCommandRepository } from "@s-hirano-ist/s-core/books/repositories/books-command-repository.interface";
@@ -94,6 +96,8 @@ describe("addBooksCore", () => {
 		vi.mocked(parseAddBooksFormData).mockResolvedValue({
 			isbn: makeISBN("978-4-06-519981-0"),
 			title: makeBookTitle("Test Book"),
+			rating: makeRating(4),
+			tags: makeTags(["test"]),
 			userId: makeUserId("user-123"),
 			imagePath: undefined,
 			hasImage: false as const,
@@ -123,6 +127,8 @@ describe("addBooksCore", () => {
 			id: makeId("01933f5c-9df0-7001-9123-456789abcdef"),
 			isbn: makeISBN("978-4-06-519981-0"),
 			title: makeBookTitle("Test Book"),
+			rating: makeRating(4),
+			tags: makeTags(["test"]),
 			userId: makeUserId("user-123"),
 			status: "UNEXPORTED",
 			createdAt: makeCreatedAt(),
@@ -147,6 +153,8 @@ describe("addBooksCore", () => {
 		expect(bookEntity.create).toHaveBeenCalledWith({
 			isbn: makeISBN("978-4-06-519981-0"),
 			title: makeBookTitle("Test Book"),
+			rating: makeRating(4),
+			tags: makeTags(["test"]),
 			userId: makeUserId("user-123"),
 			imagePath: undefined,
 			caller: "addBooks",
@@ -207,6 +215,8 @@ describe("addBooks (Server Action)", () => {
 		vi.mocked(parseAddBooksFormData).mockResolvedValue({
 			isbn: makeISBN("978-4-06-519981-0"),
 			title: makeBookTitle("Test Book"),
+			rating: makeRating(4),
+			tags: makeTags(["test"]),
 			userId: makeUserId("user-123"),
 			imagePath: undefined,
 			hasImage: false as const,

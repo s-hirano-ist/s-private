@@ -11,7 +11,21 @@ import {
 import { createPushoverService } from "@s-hirano-ist/s-notification";
 import { createMinioClient } from "@s-hirano-ist/s-storage";
 import { glob } from "glob";
+import matter from "gray-matter";
 import sharp from "sharp";
+
+type BookFrontmatter = {
+	heading?: string | number;
+	description?: string;
+	rating?: number | null;
+	tags?: string[];
+	googleTitle?: string | null;
+	googleSubtitle?: string | null;
+	googleAuthors?: string[];
+	googleDescription?: string | null;
+	googleImgSrc?: string | null;
+	googleHref?: string | null;
+};
 
 const SCRIPT_NAME = "ingest-books";
 
@@ -36,25 +50,44 @@ function getContentType(filePath: string): string | null {
 	}
 }
 
-function parseBookFile(content: string): {
+type ParsedBook = {
 	title: string;
 	markdown: string | null;
-} {
-	const lines = content.split("\n");
-	let title = "";
-	let bodyStartIndex = 0;
+	rating: number | null;
+	tags: string[];
+	googleTitle: string | null;
+	googleSubTitle: string | null;
+	googleAuthors: string[];
+	googleDescription: string | null;
+	googleImgSrc: string | null;
+	googleHref: string | null;
+};
 
-	for (let i = 0; i < lines.length; i++) {
-		const line = lines[i];
-		if (line?.startsWith("# ")) {
-			title = line.slice(2).trim();
-			bodyStartIndex = i + 1;
-			break;
-		}
+function parseBookFile(content: string): ParsedBook {
+	const parsed = matter(content);
+	const data = parsed.data as BookFrontmatter;
+
+	// title: description を優先、無ければ本文の H1 からフォールバック
+	let title = data.description?.trim() ?? "";
+	if (!title) {
+		const h1Match = parsed.content.match(/^# (.+)$/m);
+		title = h1Match ? h1Match[1].trim() : "";
 	}
 
-	const body = lines.slice(bodyStartIndex).join("\n").trim();
-	return { title, markdown: body || null };
+	const body = parsed.content.trim();
+
+	return {
+		title,
+		markdown: body || null,
+		rating: data.rating ?? null,
+		tags: data.tags ?? [],
+		googleTitle: data.googleTitle ?? null,
+		googleSubTitle: data.googleSubtitle ?? null,
+		googleAuthors: data.googleAuthors ?? [],
+		googleDescription: data.googleDescription ?? null,
+		googleImgSrc: data.googleImgSrc ?? null,
+		googleHref: data.googleHref ?? null,
+	};
 }
 
 async function main() {
@@ -152,19 +185,28 @@ async function main() {
 				title: true,
 				markdown: true,
 				imagePath: true,
+				rating: true,
+				tags: true,
+				googleTitle: true,
+				googleSubTitle: true,
+				googleAuthors: true,
+				googleDescription: true,
+				googleImgSrc: true,
+				googleHref: true,
 			},
 		});
-		const existingBooksMap = new Map(
-			existingBooks.map(
-				(b: {
-					id: string;
-					isbn: string;
-					title: string;
-					markdown: string | null;
-					imagePath: string | null;
-				}) => [b.isbn, b],
-			),
+		type ExistingBook = (typeof existingBooks)[number];
+		const existingBooksMap = new Map<string, ExistingBook>(
+			existingBooks.map((b: ExistingBook) => [b.isbn, b]),
 		);
+
+		function arrayEquals(a: string[], b: string[]): boolean {
+			if (a.length !== b.length) return false;
+			for (let i = 0; i < a.length; i++) {
+				if (a[i] !== b[i]) return false;
+			}
+			return true;
+		}
 		console.log(`📊 DB に ${existingBooksMap.size} 件の既存書籍があります。`);
 
 		let insertedCount = 0;
@@ -182,7 +224,9 @@ async function main() {
 				fileIsbns.add(isbn);
 
 				const content = await readFile(filePath, "utf-8");
-				({ title, markdown } = parseBookFile(content));
+				const parsed = parseBookFile(content);
+				title = parsed.title;
+				markdown = parsed.markdown;
 
 				if (!title) {
 					console.error(`⚠️  タイトルなし: ${basename(filePath)}`);
@@ -201,7 +245,15 @@ async function main() {
 					if (
 						existing.title === title &&
 						existing.markdown === markdown &&
-						existing.imagePath === expectedImagePath
+						existing.imagePath === expectedImagePath &&
+						existing.rating === parsed.rating &&
+						arrayEquals(existing.tags, parsed.tags) &&
+						existing.googleTitle === parsed.googleTitle &&
+						existing.googleSubTitle === parsed.googleSubTitle &&
+						arrayEquals(existing.googleAuthors, parsed.googleAuthors) &&
+						existing.googleDescription === parsed.googleDescription &&
+						existing.googleImgSrc === parsed.googleImgSrc &&
+						existing.googleHref === parsed.googleHref
 					) {
 						skippedCount++;
 						continue;
@@ -221,7 +273,19 @@ async function main() {
 					} else {
 						await prisma.book.update({
 							where: { id: existing.id },
-							data: { title, markdown, imagePath: newImagePath },
+							data: {
+								title,
+								markdown,
+								imagePath: newImagePath,
+								rating: parsed.rating,
+								tags: parsed.tags,
+								googleTitle: parsed.googleTitle,
+								googleSubTitle: parsed.googleSubTitle,
+								googleAuthors: parsed.googleAuthors,
+								googleDescription: parsed.googleDescription,
+								googleImgSrc: parsed.googleImgSrc,
+								googleHref: parsed.googleHref,
+							},
 						});
 						console.log(`🔄 更新: ${isbn} (${title})`);
 					}
@@ -255,7 +319,14 @@ async function main() {
 						exportedAt: exported.exportedAt,
 						userId,
 						createdAt: new Date(),
-						tags: [],
+						rating: parsed.rating,
+						tags: parsed.tags,
+						googleTitle: parsed.googleTitle,
+						googleSubTitle: parsed.googleSubTitle,
+						googleAuthors: parsed.googleAuthors,
+						googleDescription: parsed.googleDescription,
+						googleImgSrc: parsed.googleImgSrc,
+						googleHref: parsed.googleHref,
 					},
 				});
 				insertedCount++;

@@ -303,6 +303,64 @@ export const makeGoogleHref = (v: string | null | undefined): GoogleHref =>
 	GoogleHref.parse(v);
 
 /**
+ * Zod schema for book rating.
+ *
+ * @remarks
+ * Integer between 1 and 5 inclusive. Required for all book entries.
+ *
+ * @see {@link makeRating} for factory function
+ */
+export const Rating = z
+	.number({ message: "required" })
+	.int({ message: "invalidFormat" })
+	.min(1, { message: "outOfRange" })
+	.max(5, { message: "outOfRange" })
+	.brand<"Rating">();
+
+/**
+ * Branded type for validated book ratings.
+ */
+export type Rating = z.infer<typeof Rating>;
+
+/**
+ * Creates a validated Rating from a number.
+ *
+ * @param v - The rating value (integer between 1 and 5)
+ * @returns A branded Rating value
+ * @throws {ZodError} When the input is not an integer or out of the 1-5 range.
+ */
+export const makeRating = (v: number): Rating => Rating.parse(v);
+
+/**
+ * Zod schema for book tags.
+ *
+ * @remarks
+ * An array of short string tags used for categorization. Each tag must be
+ * between 1 and 64 characters. An empty array is permitted when the caller
+ * does not wish to assign any tag.
+ *
+ * @see {@link makeTags} for factory function
+ */
+export const Tags = z
+	.array(
+		z.string().min(1, { message: "required" }).max(64, { message: "tooLong" }),
+	)
+	.brand<"Tags">();
+
+/**
+ * Branded type for validated book tags.
+ */
+export type Tags = z.infer<typeof Tags>;
+
+/**
+ * Creates a validated Tags array.
+ *
+ * @param v - The tags array (may be empty)
+ * @returns A branded Tags value
+ */
+export const makeTags = (v: string[]): Tags => Tags.parse(v);
+
+/**
  * Zod schema for book markdown content.
  *
  * @remarks
@@ -338,6 +396,8 @@ const Base = z.object({
 	userId: UserId,
 	isbn: ISBN,
 	title: BookTitle,
+	rating: Rating.optional(),
+	tags: Tags.optional(),
 	googleTitle: GoogleTitle.optional(),
 	googleSubTitle: GoogleSubtitle.optional(),
 	googleAuthors: GoogleAuthors.optional(),
@@ -431,6 +491,10 @@ export type CreateBookArgs = Readonly<{
 	isbn: ISBN;
 	/** The book title */
 	title: BookTitle;
+	/** User rating, 1-5 inclusive */
+	rating: Rating;
+	/** Free-form categorization tags (may be empty) */
+	tags: Tags;
 	/** Optional path to user-uploaded book cover image */
 	imagePath?: Path;
 	/** The caller identifier for event tracking */

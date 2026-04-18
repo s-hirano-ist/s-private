@@ -11,6 +11,8 @@ import {
 	makeGoogleSubTitle,
 	makeGoogleTitle,
 	makeISBN,
+	makeRating,
+	makeTags,
 	type UnexportedBook,
 } from "@s-hirano-ist/s-core/books/entities/book-entity";
 import type {
@@ -39,6 +41,8 @@ async function findByISBN(
 			userId: true,
 			isbn: true,
 			title: true,
+			rating: true,
+			tags: true,
 			googleTitle: true,
 			googleSubTitle: true,
 			googleAuthors: true,
@@ -59,6 +63,8 @@ async function findByISBN(
 		userId: makeUserId(data.userId),
 		isbn: makeISBN(data.isbn),
 		title: makeBookTitle(data.title),
+		rating: data.rating !== null ? makeRating(data.rating) : undefined,
+		tags: makeTags(data.tags),
 		googleTitle: data.googleTitle
 			? makeGoogleTitle(data.googleTitle)
 			: undefined,

@@ -12,6 +12,8 @@ import {
 	makeGoogleSubTitle,
 	makeGoogleTitle,
 	makeISBN,
+	makeRating,
+	makeTags,
 } from "../entities/book-entity.ts";
 
 describe("booksEntity", () => {
@@ -63,18 +65,62 @@ describe("booksEntity", () => {
 		});
 	});
 
+	describe("makeRating", () => {
+		test("should accept 1 as lower bound", () => {
+			expect(makeRating(1)).toBe(1);
+		});
+
+		test("should accept 5 as upper bound", () => {
+			expect(makeRating(5)).toBe(5);
+		});
+
+		test("should throw for 0", () => {
+			expect(() => makeRating(0)).toThrow(ZodError);
+		});
+
+		test("should throw for 6", () => {
+			expect(() => makeRating(6)).toThrow(ZodError);
+		});
+
+		test("should throw for non-integer", () => {
+			expect(() => makeRating(3.5)).toThrow(ZodError);
+		});
+	});
+
+	describe("makeTags", () => {
+		test("should accept empty array", () => {
+			expect(makeTags([])).toEqual([]);
+		});
+
+		test("should accept array of strings", () => {
+			expect(makeTags(["a", "b"])).toEqual(["a", "b"]);
+		});
+
+		test("should throw for empty string element", () => {
+			expect(() => makeTags([""])).toThrow(ZodError);
+		});
+
+		test("should throw for too long tag", () => {
+			expect(() => makeTags(["a".repeat(65)])).toThrow(ZodError);
+		});
+	});
+
 	describe("bookEntity.create", () => {
 		test("should create book with valid arguments", () => {
 			const [book, event] = bookEntity.create({
 				userId: makeUserId("test-user-id"),
 				isbn: makeISBN("9784123456789"),
 				title: makeBookTitle("Clean Code"),
+				rating: makeRating(5),
+				tags: makeTags(["programming"]),
 				caller: "test",
 			});
 
 			expect(book.userId).toBe("test-user-id");
 			expect(book.isbn).toBe("9784123456789");
 			expect(book.title).toBe("Clean Code");
+			expect(book.rating).toBe(5);
+			expect(book.tags).toEqual(["programming"]);
 			expect(book.status).toBe("UNEXPORTED");
 			expect(book.id).toBeDefined();
 			expect(book.imagePath).toBeUndefined();
@@ -86,6 +132,8 @@ describe("booksEntity", () => {
 				userId: makeUserId("test-user-id"),
 				isbn: makeISBN("9784123456789"),
 				title: makeBookTitle("Test Book"),
+				rating: makeRating(3),
+				tags: makeTags([]),
 				caller: "test",
 			});
 
@@ -97,6 +145,8 @@ describe("booksEntity", () => {
 				userId: makeUserId("test-user-id"),
 				isbn: makeISBN("9784123456789"),
 				title: makeBookTitle("Test Book"),
+				rating: makeRating(3),
+				tags: makeTags([]),
 				caller: "test",
 			});
 
