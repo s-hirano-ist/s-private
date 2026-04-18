@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { readFile } from "node:fs/promises";
-import { basename } from "node:path";
+import { basename, extname } from "node:path";
 import {
 	makeExportedStatus,
 	makeId,
@@ -8,9 +8,32 @@ import {
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
+import { createMinioClient } from "@s-hirano-ist/s-storage";
 import { glob } from "glob";
+import sharp from "sharp";
 
 const SCRIPT_NAME = "ingest-books";
+
+const ORIGINAL_BOOK_IMAGE_PATH = "books/original";
+const THUMBNAIL_BOOK_IMAGE_PATH = "books/thumbnail";
+const THUMBNAIL_SIZE = 192;
+
+function getContentType(filePath: string): string | null {
+	const ext = extname(filePath).toLowerCase();
+	switch (ext) {
+		case ".jpg":
+		case ".jpeg":
+			return "image/jpeg";
+		case ".png":
+			return "image/png";
+		case ".gif":
+			return "image/gif";
+		case ".webp":
+			return "image/webp";
+		default:
+			return null;
+	}
+}
 
 function parseBookFile(content: string): {
 	title: string;
@@ -42,10 +65,22 @@ async function main() {
 		PUSHOVER_USER_KEY: process.env.PUSHOVER_USER_KEY,
 		PUSHOVER_APP_TOKEN: process.env.PUSHOVER_APP_TOKEN,
 		USERNAME_TO_EXPORT: process.env.USERNAME_TO_EXPORT,
+		MINIO_BUCKET_NAME: process.env.MINIO_BUCKET_NAME,
 	} as const;
 
 	if (Object.values(env).some((v) => !v)) {
 		throw new Error("Required environment variables are not set.");
+	}
+
+	if (process.env.MINIO_USE_SSL === "true") {
+		if (
+			!process.env.CF_ACCESS_CLIENT_ID ||
+			!process.env.CF_ACCESS_CLIENT_SECRET
+		) {
+			throw new Error(
+				"CF_ACCESS_CLIENT_ID and CF_ACCESS_CLIENT_SECRET are required when MINIO_USE_SSL is true.",
+			);
+		}
 	}
 
 	const contentsPath = process.env.S_CONTENTS_PATH ?? process.cwd();
@@ -60,18 +95,58 @@ async function main() {
 		appToken: env.PUSHOVER_APP_TOKEN ?? "",
 	});
 
+	const minioClient = createMinioClient();
+
+	const bucketName = env.MINIO_BUCKET_NAME ?? "";
+
 	const userId: UserId = makeUserId(env.USERNAME_TO_EXPORT ?? "");
 	const exported = makeExportedStatus();
 
 	const fileIsbns = new Set<string>();
 
+	async function uploadBookImage(localPath: string): Promise<string> {
+		const fileName = basename(localPath);
+		const buffer = await readFile(localPath);
+
+		const originalKey = `${ORIGINAL_BOOK_IMAGE_PATH}/${fileName}`;
+		try {
+			await minioClient.statObject(bucketName, originalKey);
+		} catch {
+			await minioClient.putObject(bucketName, originalKey, buffer);
+			console.log(`📤 MinIO アップロード（original）: ${fileName}`);
+		}
+
+		const thumbnailBuffer = await sharp(buffer)
+			.resize(THUMBNAIL_SIZE, THUMBNAIL_SIZE, { fit: "cover" })
+			.toBuffer();
+		const thumbnailKey = `${THUMBNAIL_BOOK_IMAGE_PATH}/${fileName}`;
+		await minioClient.putObject(bucketName, thumbnailKey, thumbnailBuffer);
+
+		return fileName;
+	}
+
 	async function ingestBooks() {
 		const files = await glob(`${contentsPath}/markdown/book/*.md`);
 		console.log(`📁 ${files.length} 件のファイルを検出しました。`);
 
+		const imageFiles = await glob(`${contentsPath}/image/book/*`);
+		const bookImageMap = new Map<string, string>();
+		for (const f of imageFiles) {
+			if (getContentType(f) === null) continue;
+			const isbn = basename(f, extname(f));
+			bookImageMap.set(isbn, f);
+		}
+		console.log(`🖼️  ${bookImageMap.size} 件の書籍画像を検出しました。`);
+
 		const existingBooks = await prisma.book.findMany({
 			where: { userId },
-			select: { id: true, isbn: true, title: true, markdown: true },
+			select: {
+				id: true,
+				isbn: true,
+				title: true,
+				markdown: true,
+				imagePath: true,
+			},
 		});
 		const existingBooksMap = new Map(
 			existingBooks.map(
@@ -80,6 +155,7 @@ async function main() {
 					isbn: string;
 					title: string;
 					markdown: string | null;
+					imagePath: string | null;
 				}) => [b.isbn, b],
 			),
 		);
@@ -106,24 +182,52 @@ async function main() {
 					continue;
 				}
 
+				const localImagePath = bookImageMap.get(isbn);
 				const existing = existingBooksMap.get(isbn);
+
 				if (existing) {
-					if (existing.title === title && existing.markdown === markdown) {
-						// console.log(`⏭️  スキップ（変更なし）: ${isbn} (${existing.title})`);
+					const expectedImagePath = localImagePath
+						? basename(localImagePath)
+						: existing.imagePath;
+
+					if (
+						existing.title === title &&
+						existing.markdown === markdown &&
+						existing.imagePath === expectedImagePath
+					) {
 						skippedCount++;
 						continue;
 					}
+
+					let newImagePath: string | null = existing.imagePath;
+					if (localImagePath) {
+						if (dryRun) {
+							newImagePath = basename(localImagePath);
+						} else {
+							newImagePath = await uploadBookImage(localImagePath);
+						}
+					}
+
 					if (dryRun) {
 						console.log(`🔄 [dry-run] 更新予定: ${isbn} (${title})`);
 					} else {
 						await prisma.book.update({
 							where: { id: existing.id },
-							data: { title, markdown },
+							data: { title, markdown, imagePath: newImagePath },
 						});
 						console.log(`🔄 更新: ${isbn} (${title})`);
 					}
 					updatedCount++;
 					continue;
+				}
+
+				let newImagePath: string | null = null;
+				if (localImagePath) {
+					if (dryRun) {
+						newImagePath = basename(localImagePath);
+					} else {
+						newImagePath = await uploadBookImage(localImagePath);
+					}
 				}
 
 				if (dryRun) {
@@ -138,6 +242,7 @@ async function main() {
 						isbn,
 						title,
 						markdown,
+						imagePath: newImagePath,
 						status: exported.status,
 						exportedAt: exported.exportedAt,
 						userId,
