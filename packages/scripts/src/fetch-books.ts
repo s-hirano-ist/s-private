@@ -15,7 +15,7 @@ type Book = {
 	id: string;
 	isbn: string;
 	title: string;
-	rating: number | null;
+	rating: number;
 	tags: string[];
 	googleTitle: string | null;
 	googleSubTitle: string | null;

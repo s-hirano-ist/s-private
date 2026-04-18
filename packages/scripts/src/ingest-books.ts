@@ -17,7 +17,7 @@ import sharp from "sharp";
 type BookFrontmatter = {
 	heading?: string | number;
 	description?: string;
-	rating?: number | null;
+	rating?: number;
 	tags?: string[];
 	googleTitle?: string | null;
 	googleSubtitle?: string | null;
@@ -53,7 +53,7 @@ function getContentType(filePath: string): string | null {
 type ParsedBook = {
 	title: string;
 	markdown: string | null;
-	rating: number | null;
+	rating: number;
 	tags: string[];
 	googleTitle: string | null;
 	googleSubTitle: string | null;
@@ -76,10 +76,16 @@ function parseBookFile(content: string): ParsedBook {
 
 	const body = parsed.content.trim();
 
+	if (data.rating === undefined || data.rating === null) {
+		throw new Error(
+			"rating は必須です (frontmatter に rating フィールドがありません)",
+		);
+	}
+
 	return {
 		title,
 		markdown: body || null,
-		rating: data.rating ?? null,
+		rating: data.rating,
 		tags: data.tags ?? [],
 		googleTitle: data.googleTitle ?? null,
 		googleSubTitle: data.googleSubtitle ?? null,

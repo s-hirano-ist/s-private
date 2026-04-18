@@ -6,6 +6,7 @@ import {
 	makeGoogleSubTitle,
 	makeGoogleTitle,
 	makeISBN,
+	makeRating,
 } from "@s-hirano-ist/s-core/books/entities/book-entity";
 import {
 	makeCreatedAt,
@@ -244,6 +245,7 @@ describe("get-books", () => {
 				googleTitle: makeGoogleTitle("Test Book - Google"),
 				googleImgSrc: makeGoogleImgSrc("https://example.com/book.jpg"),
 				markdown: makeBookMarkdown("# Book Content"),
+				rating: makeRating(4),
 			};
 
 			vi.mocked(booksQueryRepository.findByISBN).mockResolvedValue(mockBook);

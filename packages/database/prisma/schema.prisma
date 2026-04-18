@@ -116,7 +116,7 @@ model Book {
 
   markdown String? @db.Text
 
-  rating Int? // 1-5
+  rating Int // 1-5
   tags   String[]
 
   status Status
