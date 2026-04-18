@@ -12,6 +12,7 @@ onlyBuiltDependencies:
   - '@prisma/engines'
   - '@sentry/cli'
   - '@swc/core'
+  - dprint
   - esbuild
   - memlab
   - prisma
