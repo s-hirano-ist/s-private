@@ -396,7 +396,7 @@ const Base = z.object({
 	userId: UserId,
 	isbn: ISBN,
 	title: BookTitle,
-	rating: Rating.optional(),
+	rating: Rating,
 	tags: Tags.optional(),
 	googleTitle: GoogleTitle.optional(),
 	googleSubTitle: GoogleSubtitle.optional(),

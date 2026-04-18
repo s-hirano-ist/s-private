@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import type { IBooksQueryRepository } from "../../books/repositories/books-query-repository.interface.ts";
 import { makeUserId } from "../../shared-kernel/entities/common-entity.ts";
 import { DuplicateError } from "../../shared-kernel/errors/error-classes.ts";
-import { makeISBN } from "../entities/book-entity.ts";
+import { makeISBN, makeRating } from "../entities/book-entity.ts";
 import { BooksDomainService } from "../services/books-domain-service.ts";
 
 describe("BooksDomainService", () => {
@@ -54,7 +54,7 @@ describe("BooksDomainService", () => {
 				googleImgSrc: null,
 				googleHref: null,
 				markdown: null,
-				rating: null,
+				rating: makeRating(3),
 				tags: [],
 				createdAt: new Date(),
 				updatedAt: new Date(),

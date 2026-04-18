@@ -63,7 +63,7 @@ async function findByISBN(
 		userId: makeUserId(data.userId),
 		isbn: makeISBN(data.isbn),
 		title: makeBookTitle(data.title),
-		rating: data.rating !== null ? makeRating(data.rating) : undefined,
+		rating: makeRating(data.rating),
 		tags: makeTags(data.tags),
 		googleTitle: data.googleTitle
 			? makeGoogleTitle(data.googleTitle)

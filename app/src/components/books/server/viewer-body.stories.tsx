@@ -8,6 +8,7 @@ import {
 	makeGoogleSubTitle,
 	makeGoogleTitle,
 	makeISBN,
+	makeRating,
 } from "@s-hirano-ist/s-core/books/entities/book-entity";
 import {
 	makeCreatedAt,
@@ -63,6 +64,7 @@ const mockBookData = Object.freeze({
 	status: "EXPORTED" as const,
 	createdAt: makeCreatedAt(new Date("2024-01-01")),
 	exportedAt: makeExportedAt(new Date("2024-01-01")),
+	rating: makeRating(4),
 });
 
 export const Default: Story = {
@@ -151,6 +153,7 @@ export const MinimalData: Story = {
 				status: "EXPORTED" as const,
 				createdAt: makeCreatedAt(new Date("2024-01-01")),
 				exportedAt: makeExportedAt(new Date("2024-01-01")),
+				rating: makeRating(3),
 			}),
 	},
 };
