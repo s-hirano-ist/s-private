@@ -4,6 +4,7 @@
 	"description": "CLI scripts for s-private data operations",
 	"type": "module",
 	"bin": {
+		"s-content-format": "./dist/s-content-format.js",
 		"fetch-articles": "./dist/fetch-articles.js",
 		"fetch-books": "./dist/fetch-books.js",
 		"fetch-images": "./dist/fetch-images.js",
@@ -36,6 +37,7 @@
 		"clean": "rm -rf dist",
 		"typecheck": "tsc --noEmit",
 		"prepublishOnly": "pnpm run build",
+		"s-content-format": "tsx src/s-content-format.ts",
 		"fetch-articles": "tsx src/fetch-articles.ts",
 		"fetch-books": "tsx src/fetch-books.ts",
 		"fetch-images": "tsx src/fetch-images.ts",
@@ -65,6 +67,7 @@
 	},
 	"files": [
 		"dist",
+		"configs",
 		"README.md",
 		"LICENSE"
 	],
@@ -84,6 +87,7 @@
 		"@s-hirano-ist/s-search": "workspace:*",
 		"@s-hirano-ist/s-storage": "workspace:*",
 		"cheerio": "1.2.0",
+		"dprint": "0.54.0",
 		"glob": "13.0.6",
 		"iconv-lite": "0.7.2",
 		"sharp": "0.34.5",
