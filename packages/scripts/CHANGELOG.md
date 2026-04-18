@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.21.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.20.1...@s-hirano-ist/s-scripts-v1.21.0) (2026-04-18)
+
+
+### Features
+
+* **scripts:** add s-content-format bin backed by dprint ([3e06ccf](https://github.com/s-hirano-ist/s-private/commit/3e06ccf7f112e4c8a692f81624e12393f40e25cf))
+* **scripts:** add s-content-format bin backed by dprint ([3e22bc2](https://github.com/s-hirano-ist/s-private/commit/3e22bc26fec7c27564eb51b6602450668c9d10ac))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.18.8
+    * @s-hirano-ist/s-notification bumped to 1.18.3
+
 ## [1.20.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.20.0...@s-hirano-ist/s-scripts-v1.20.1) (2026-04-18)
 
 
