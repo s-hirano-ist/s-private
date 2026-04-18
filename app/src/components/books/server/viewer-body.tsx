@@ -7,10 +7,10 @@ import {
 	CardTitle,
 } from "@s-hirano-ist/s-ui/ui/card";
 import type { Route } from "next";
-import NextImage from "next/image";
 import { notFound } from "next/navigation";
 import type { getBookByISBN } from "@/application-services/books/get-books";
 import { BackButton } from "@/components/common/back-button";
+import { ImageWithFallback } from "@/components/common/display/image/image-with-fallback";
 import { Link } from "@/infrastructures/i18n/routing";
 
 export type Props = { slug: string; getBookByISBN: typeof getBookByISBN };
@@ -24,11 +24,11 @@ export async function ViewerBody({ slug, getBookByISBN }: Props) {
 			<BackButton />
 			<Card className="grid grid-cols-4 gap-4 p-4">
 				<div className="flex items-center justify-center">
-					<NextImage
+					<ImageWithFallback
 						alt={data.googleTitle ?? data.title ?? ""}
 						className="rounded bg-white p-1"
 						height={192}
-						src={data.googleImgSrc ?? "/not-found.png"}
+						src={data.googleImgSrc}
 						width={192}
 					/>
 				</div>
