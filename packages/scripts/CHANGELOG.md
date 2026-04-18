@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.20.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.19.0...@s-hirano-ist/s-scripts-v1.20.0) (2026-04-18)
+
+
+### Features
+
+* upload images on ingest books ([0c3b2a5](https://github.com/s-hirano-ist/s-private/commit/0c3b2a565f241f59981e0172b7235663887ed1e6))
+* upload images on ingest books ([43c547b](https://github.com/s-hirano-ist/s-private/commit/43c547b3b49515413044ede5748c210b8606ba02))
+
 ## [1.19.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.18.7...@s-hirano-ist/s-scripts-v1.19.0) (2026-04-16)
 
 
