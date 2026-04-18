@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.20.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.20.0...@s-hirano-ist/s-scripts-v1.20.1) (2026-04-18)
+
+
+### Bug Fixes
+
+* update images ([c9ac23c](https://github.com/s-hirano-ist/s-private/commit/c9ac23c2461e2e0610aae02572bddec5c2c3fc3c))
+* update images ([c7bd433](https://github.com/s-hirano-ist/s-private/commit/c7bd433b18b0d62625ca74b734fce1b570acf2b4))
+
 ## [1.20.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.19.0...@s-hirano-ist/s-scripts-v1.20.0) (2026-04-18)
 
 
