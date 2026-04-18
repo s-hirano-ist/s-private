@@ -29,7 +29,7 @@ export function BooksForm({ addBooks }: Props) {
 				htmlFor="isbn"
 				label="ISBN"
 				name="isbn"
-				placeholder="978-4-XXXX-XXXX-X"
+				placeholder="9784774189673"
 				required
 			/>
 			<FormInput

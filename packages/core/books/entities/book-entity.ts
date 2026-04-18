@@ -46,13 +46,13 @@ import { BookCreatedEvent } from "../events/book-created-event.ts";
  * Zod schema for validating ISBN identifiers.
  *
  * @remarks
- * Validates that the ISBN is a string of 1-17 characters containing only
- * digits and hyphens. Supports both ISBN-10 and ISBN-13 formats.
+ * Normalizes the input by stripping all hyphens, then validates that the
+ * result is exactly 13 digits (ISBN-13). ISBN-10 is not supported.
  *
  * @example
  * ```typescript
- * const isbn = ISBN.parse("978-4-06-521234-5");
- * const isbn10 = ISBN.parse("4-06-521234-X");
+ * const isbn = ISBN.parse("978-4-06-521234-5"); // "9784065212345"
+ * const same = ISBN.parse("9784065212345");     // "9784065212345"
  * ```
  *
  * @see {@link makeISBN} for factory function
@@ -60,9 +60,13 @@ import { BookCreatedEvent } from "../events/book-created-event.ts";
 export const ISBN = z
 	.string({ message: "required" })
 	.min(1, { message: "required" })
-	.max(17, { message: "tooLong" })
-	.regex(/^[\d-]+$/, { message: "invalidFormat" })
-	.brand<"ISBN">();
+	.transform((v) => v.replace(/-/g, ""))
+	.pipe(
+		z
+			.string()
+			.regex(/^\d{13}$/, { message: "invalidFormat" })
+			.brand<"ISBN">(),
+	);
 
 /**
  * Branded type for validated ISBN identifiers.
@@ -72,13 +76,17 @@ export type ISBN = z.infer<typeof ISBN>;
 /**
  * Creates a validated ISBN from a string.
  *
- * @param v - The raw ISBN string
- * @returns A branded ISBN value
- * @throws {ZodError} When validation fails
+ * Hyphens in the input are stripped automatically; the result is always
+ * the normalized 13-digit form.
+ *
+ * @param v - The raw ISBN string (with or without hyphens)
+ * @returns A branded ISBN value (13 digits, no hyphens)
+ * @throws {ZodError} When the input is not exactly 13 digits after
+ *   stripping hyphens, or contains non-digit characters.
  *
  * @example
  * ```typescript
- * const isbn = makeISBN("978-4-06-521234-5");
+ * const isbn = makeISBN("978-4-06-521234-5"); // "9784065212345"
  * ```
  */
 export const makeISBN = (v: string): ISBN => ISBN.parse(v);

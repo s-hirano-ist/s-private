@@ -80,7 +80,7 @@ describe("get-books", () => {
 					{
 						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b",
 						title: "Test Book 1",
-						href: "978-0123456789",
+						href: "9780123456789",
 						image: "https://example.com/image-1.jpg",
 						authors: "Author A",
 						subtitle: "Subtitle 1",
@@ -88,7 +88,7 @@ describe("get-books", () => {
 					{
 						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c",
 						title: "Test Book 2",
-						href: "978-0987654321",
+						href: "9780987654321",
 						image: "https://example.com/image-2.jpg",
 						authors: undefined,
 						subtitle: undefined,
@@ -192,7 +192,7 @@ describe("get-books", () => {
 					{
 						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d",
 						title: "Unexported Book 1",
-						href: "978-1111111111",
+						href: "9781111111111",
 						image: "https://example.com/unexported-1.jpg",
 						authors: "Author B, Author C",
 						subtitle: undefined,
@@ -200,7 +200,7 @@ describe("get-books", () => {
 					{
 						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e",
 						title: "Unexported Book 2",
-						href: "978-2222222222",
+						href: "9782222222222",
 						image: null,
 						authors: undefined,
 						subtitle: undefined,
@@ -251,7 +251,7 @@ describe("get-books", () => {
 			const result = await getBookByISBN("978-0123456789");
 
 			expect(booksQueryRepository.findByISBN).toHaveBeenCalledWith(
-				"978-0123456789",
+				"9780123456789",
 				"test-user-id",
 			);
 			expect(result).toEqual(mockBook);
@@ -263,7 +263,7 @@ describe("get-books", () => {
 			const result = await getBookByISBN("978-9999999999");
 
 			expect(booksQueryRepository.findByISBN).toHaveBeenCalledWith(
-				"978-9999999999",
+				"9789999999999",
 				"test-user-id",
 			);
 			expect(result).toBeNull();

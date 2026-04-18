@@ -6,8 +6,8 @@ import {
 	CardTitle,
 } from "@s-hirano-ist/s-ui/ui/card";
 import type { Route } from "next";
-import NextImage from "next/image";
 import type { ReactNode } from "react";
+import { ImageWithFallback } from "@/components/common/display/image/image-with-fallback";
 import { Link } from "@/infrastructures/i18n/routing";
 import type { ImageCardData } from "./types";
 
@@ -22,7 +22,7 @@ export function ImageCard({
 	data: { title, href, image, authors, subtitle },
 	actions,
 }: Props) {
-	const hasImage = image !== null && !image.includes("notFound.png");
+	const hasImage = image !== null;
 
 	return (
 		<div className="relative h-full">
@@ -31,7 +31,7 @@ export function ImageCard({
 					<CardContent className="flex flex-grow flex-col">
 						<div className="flex justify-center py-2">
 							{hasImage ? (
-								<NextImage
+								<ImageWithFallback
 									alt={title}
 									className="h-auto max-h-48 w-auto rounded bg-white object-contain p-1"
 									height={192}
