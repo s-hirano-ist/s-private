@@ -1,6 +1,7 @@
 import { forbidden } from "next/navigation";
 import { NextResponse } from "next/server";
 import { getBooksImageFromStorage } from "@/application-services/books/get-books";
+import { getContentTypeFromPath } from "@/common/utils/content-type-utils";
 import { auth } from "@/infrastructures/auth/auth-provider";
 
 export const GET = auth(
@@ -20,7 +21,7 @@ export const GET = auth(
 
 		return new Response(stream as unknown as BodyInit, {
 			headers: {
-				"Content-Type": "image/jpeg",
+				"Content-Type": getContentTypeFromPath(path),
 				"Cache-Control": "public, max-age=31536000, immutable",
 			},
 		});

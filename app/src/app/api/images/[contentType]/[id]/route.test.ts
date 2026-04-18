@@ -89,6 +89,42 @@ describe("Images API Route", () => {
 		);
 	});
 
+	test("should return correct Content-Type for webp images", async () => {
+		const mockStream = new Readable({ read() {} });
+		vi.mocked(getImagesFromStorage).mockResolvedValue(mockStream);
+
+		const request = {
+			auth: { user: { roles: ["viewer"] } },
+		} as unknown as Parameters<typeof GET>[0];
+		const params = Promise.resolve({
+			contentType: "thumbnail",
+			id: "image-123.webp",
+		});
+
+		const response = (await GET(request, { params })) as Response;
+
+		expect(getImagesFromStorage).toHaveBeenCalledWith("image-123.webp", true);
+		expect(response.headers.get("Content-Type")).toBe("image/webp");
+	});
+
+	test("should return correct Content-Type for png images", async () => {
+		const mockStream = new Readable({ read() {} });
+		vi.mocked(getImagesFromStorage).mockResolvedValue(mockStream);
+
+		const request = {
+			auth: { user: { roles: ["viewer"] } },
+		} as unknown as Parameters<typeof GET>[0];
+		const params = Promise.resolve({
+			contentType: "original",
+			id: "image-123.png",
+		});
+
+		const response = (await GET(request, { params })) as Response;
+
+		expect(getImagesFromStorage).toHaveBeenCalledWith("image-123.png", false);
+		expect(response.headers.get("Content-Type")).toBe("image/png");
+	});
+
 	test("should handle user with multiple roles including viewer", async () => {
 		const mockStream = new Readable({ read() {} });
 		vi.mocked(getImagesFromStorage).mockResolvedValue(mockStream);

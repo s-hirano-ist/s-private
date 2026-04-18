@@ -2,6 +2,7 @@ import { Readable } from "node:stream";
 import { forbidden } from "next/navigation";
 import { NextResponse } from "next/server";
 import { getImagesFromStorage } from "@/application-services/images/get-images";
+import { getContentTypeFromPath } from "@/common/utils/content-type-utils";
 import { auth } from "@/infrastructures/auth/auth-provider";
 
 export const GET = auth(
@@ -24,7 +25,7 @@ export const GET = auth(
 
 		return new Response(webStream, {
 			headers: {
-				"Content-Type": "image/jpeg",
+				"Content-Type": getContentTypeFromPath(id),
 				"Cache-Control": "public, max-age=31536000, immutable",
 			},
 		});
