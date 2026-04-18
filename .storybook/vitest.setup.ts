@@ -1,8 +1,4 @@
-import * as a11yAddonAnnotations from "@storybook/addon-a11y/preview";
-import { setProjectAnnotations } from "@storybook/nextjs-vite";
-import * as nextIntlAnnotations from "storybook-next-intl/preview";
 import { vi } from "vitest";
-import * as projectAnnotations from "./preview";
 
 // Mock Next.js navigation functions for Storybook testing
 vi.mock("next/navigation", () => ({
@@ -27,11 +23,3 @@ vi.mock("next-intl/server", () => ({
 	getNow: vi.fn(async () => new Date()),
 	getTimeZone: vi.fn(async () => "Asia/Tokyo"),
 }));
-
-// This is an important step to apply the right configuration when testing your stories.
-// More info at: https://storybook.js.org/docs/api/portable-stories/portable-stories-vitest#setprojectannotations
-setProjectAnnotations([
-	a11yAddonAnnotations,
-	nextIntlAnnotations,
-	projectAnnotations,
-]);

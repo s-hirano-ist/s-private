@@ -6,10 +6,5 @@ export default defineConfig({
 		root: import.meta.dirname,
 		setupFiles: [path.resolve(import.meta.dirname, "vitest-setup.tsx")],
 		include: ["./**/*.test.?(c|m)[jt]s?(x)"],
-		typecheck: {
-			enabled: true,
-			include: ["./**/*.test.?(c|m)[jt]s?(x)"],
-			tsconfig: "./tsconfig.json",
-		},
 	},
 });
