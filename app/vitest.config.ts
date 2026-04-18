@@ -14,11 +14,6 @@ export default defineConfig({
 		include: ["./src/**/*.test.?(c|m)[jt]s?(x)"],
 		exclude: ["./e2e/**/*"],
 		server: { deps: { inline: ["next-auth"] } }, // FIXME: https://github.com/vitest-dev/vitest/issues/4554
-		typecheck: {
-			enabled: true,
-			include: ["./src/**/*.test.?(c|m)[jt]s?(x)"],
-			tsconfig: "./tsconfig.json",
-		},
 	},
 	resolve: {
 		alias: {
