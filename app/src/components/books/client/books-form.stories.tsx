@@ -22,7 +22,7 @@ export const Default: Story = {
 
 		const isbnInput = canvas.getByLabelText("ISBN");
 		await expect(isbnInput).toBeInTheDocument();
-		await expect(isbnInput).toHaveAttribute("placeholder", "978-4-XXXX-XXXX-X");
+		await expect(isbnInput).toHaveAttribute("placeholder", "9784774189673");
 		await expect(isbnInput).toBeRequired();
 
 		const titleInput = canvas.getByLabelText("タイトル");

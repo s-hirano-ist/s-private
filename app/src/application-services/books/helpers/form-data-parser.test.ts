@@ -60,8 +60,8 @@ describe("parseAddBooksFormData", () => {
 			.mockReturnValueOnce("978-4-123-45678-9")
 			.mockReturnValueOnce("The Pragmatic Programmer");
 
-		// Mock entity creation
-		mockMakeISBN.mockReturnValue("978-4-123-45678-9" as ISBN);
+		// Mock entity creation - makeISBN strips hyphens and returns 13 digits
+		mockMakeISBN.mockReturnValue("9784123456789" as ISBN);
 		mockMakeBookTitle.mockReturnValue("The Pragmatic Programmer" as BookTitle);
 
 		const result = await parseAddBooksFormData(formData, userId);
@@ -70,7 +70,7 @@ describe("parseAddBooksFormData", () => {
 		expect(mockMakeBookTitle).toHaveBeenCalledWith("The Pragmatic Programmer");
 
 		expect(result).toEqual({
-			isbn: "978-4-123-45678-9",
+			isbn: "9784123456789",
 			title: "The Pragmatic Programmer",
 			userId: "test-user-id",
 			imagePath: undefined,

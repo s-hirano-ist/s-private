@@ -16,9 +16,9 @@ import {
 
 describe("booksEntity", () => {
 	describe("makeISBN", () => {
-		test("should create valid ISBN", () => {
+		test("should normalize ISBN with hyphens to 13 digits", () => {
 			const isbn = makeISBN("978-4-123-45678-9");
-			expect(isbn).toBe("978-4-123-45678-9");
+			expect(isbn).toBe("9784123456789");
 		});
 
 		test("should accept ISBN without hyphens", () => {
@@ -30,8 +30,16 @@ describe("booksEntity", () => {
 			expect(() => makeISBN("")).toThrow(ZodError);
 		});
 
-		test("should throw error for too long string", () => {
-			expect(() => makeISBN("978-4-123-45678-90-extra")).toThrow(ZodError);
+		test("should throw error when fewer than 13 digits after stripping hyphens", () => {
+			expect(() => makeISBN("978-4-12-3456")).toThrow(ZodError);
+		});
+
+		test("should throw error when more than 13 digits after stripping hyphens", () => {
+			expect(() => makeISBN("97841234567890")).toThrow(ZodError);
+		});
+
+		test("should throw error for ISBN-10 input", () => {
+			expect(() => makeISBN("4-06-521234-X")).toThrow(ZodError);
 		});
 
 		test("should throw error for invalid characters", () => {

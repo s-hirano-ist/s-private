@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { readFile } from "node:fs/promises";
 import { basename, extname } from "node:path";
+import { makeISBN } from "@s-hirano-ist/s-core/books/entities/book-entity";
 import {
 	makeExportedStatus,
 	makeId,
@@ -133,8 +134,13 @@ async function main() {
 		const bookImageMap = new Map<string, string>();
 		for (const f of imageFiles) {
 			if (getContentType(f) === null) continue;
-			const isbn = basename(f, extname(f));
-			bookImageMap.set(isbn, f);
+			const rawIsbn = basename(f, extname(f));
+			try {
+				const isbn = makeISBN(rawIsbn);
+				bookImageMap.set(isbn, f);
+			} catch {
+				console.error(`⚠️  無効な画像ISBN: ${basename(f)}`);
+			}
 		}
 		console.log(`🖼️  ${bookImageMap.size} 件の書籍画像を検出しました。`);
 
@@ -167,10 +173,12 @@ async function main() {
 		let errorCount = 0;
 
 		for (const filePath of files) {
-			const isbn = basename(filePath, ".md");
+			const rawIsbn = basename(filePath, ".md");
+			let isbn = rawIsbn;
 			let title = "";
 			let markdown: string | null = null;
 			try {
+				isbn = makeISBN(rawIsbn);
 				fileIsbns.add(isbn);
 
 				const content = await readFile(filePath, "utf-8");
