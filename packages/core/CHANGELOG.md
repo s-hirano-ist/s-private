@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.19.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.18.8...@s-hirano-ist/s-core-v1.19.0) (2026-04-18)
+
+
+### Features
+
+* add book dumper for s-public ([2c920ce](https://github.com/s-hirano-ist/s-private/commit/2c920ce940cd5b490b2e4e1295f923fe52466e59))
+* add book dumper for s-public ([f8cf4f4](https://github.com/s-hirano-ist/s-private/commit/f8cf4f44ae0bcbd9ca49c937ff07eec4654d1b32))
+
+
+### Bug Fixes
+
+* isbn to only allow 13 digits without hyphens ([85486de](https://github.com/s-hirano-ist/s-private/commit/85486dec6271d218ae2ee577a7b53743589dc964))
+
 ## [1.18.8](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.18.7...@s-hirano-ist/s-core-v1.18.8) (2026-04-18)
 
 
