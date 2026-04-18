@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.22.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.22.0...@s-hirano-ist/s-scripts-v1.22.1) (2026-04-18)
+
+
+### Bug Fixes
+
+* do not use gen books ([63cf0ff](https://github.com/s-hirano-ist/s-private/commit/63cf0ff63e9ae1e5a2eab67159933177cae5f9ae))
+
 ## [1.22.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.21.0...@s-hirano-ist/s-scripts-v1.22.0) (2026-04-18)
 
 

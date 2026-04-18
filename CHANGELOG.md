@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.6.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.6.0...s-private-v3.6.1) (2026-04-18)
+
+
+### Bug Fixes
+
+* do not use gen books ([63cf0ff](https://github.com/s-hirano-ist/s-private/commit/63cf0ff63e9ae1e5a2eab67159933177cae5f9ae))
+
 ## [3.6.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.5.0...s-private-v3.6.0) (2026-04-18)
 
 
