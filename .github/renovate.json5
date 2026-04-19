@@ -19,6 +19,7 @@
     'github-actions',
     'docker-compose',
     'mise',
+    'asdf',
   ],
   dependencyDashboard: true,
   branchConcurrentLimit: 3,
@@ -85,6 +86,7 @@
       matchManagers: [
         'mise',
         'npm',
+        'asdf',
       ],
       groupName: 'node and pnpm',
       groupSlug: 'node-pnpm',
