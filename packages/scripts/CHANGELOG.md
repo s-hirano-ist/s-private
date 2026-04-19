@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.23.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.23.0...@s-hirano-ist/s-scripts-v1.23.1) (2026-04-19)
+
+
+### Bug Fixes
+
+* always re-fetch book metadata from Google Books API ([6e9a3c6](https://github.com/s-hirano-ist/s-private/commit/6e9a3c68049e3ac3055a279bbad366ccbbfbc202))
+
 ## [1.23.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.22.1...@s-hirano-ist/s-scripts-v1.23.0) (2026-04-19)
 
 
