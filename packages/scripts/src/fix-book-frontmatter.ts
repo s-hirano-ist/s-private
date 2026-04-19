@@ -65,15 +65,8 @@ async function main(): Promise<void> {
 				continue;
 			}
 
-			// googleTitle が存在する場合は description を上書き (Google Books 由来の値を採用)
-			const legacyGoogleTitle =
-				typeof existing.googleTitle === "string" && existing.googleTitle !== ""
-					? existing.googleTitle
-					: null;
-
 			let description =
-				legacyGoogleTitle ??
-				(typeof existing.description === "string" ? existing.description : "");
+				typeof existing.description === "string" ? existing.description : "";
 			if (!description) {
 				const h1 = extractTitleFromContent(parsed.content);
 				if (!h1) {
