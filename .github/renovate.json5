@@ -78,6 +78,19 @@
       minimumReleaseAge: '2 days',
     },
     {
+      matchDepNames: [
+        'node',
+        'pnpm',
+      ],
+      matchManagers: [
+        'mise',
+        'npm',
+      ],
+      groupName: 'node and pnpm',
+      groupSlug: 'node-pnpm',
+      minimumReleaseAge: '2 days',
+    },
+    {
       matchManagers: [
         'docker-compose',
       ],
