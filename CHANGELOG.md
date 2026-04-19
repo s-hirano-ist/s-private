@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.7.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.6.1...s-private-v3.7.0) (2026-04-19)
+
+
+### Features
+
+* add rating to required ([f22b7c1](https://github.com/s-hirano-ist/s-private/commit/f22b7c1e0f3095dbda87cb325e0bab0c1c0cb61c))
+* add viewer body ([70aa171](https://github.com/s-hirano-ist/s-private/commit/70aa171eeddebd5c946b71e353406aacb00300a2))
+* delete google books ([edee864](https://github.com/s-hirano-ist/s-private/commit/edee8642ae4431738f2988cc7dd317360b7a2e42))
+
+
+### Bug Fixes
+
+* books legacy ([4b5c5b6](https://github.com/s-hirano-ist/s-private/commit/4b5c5b6e8f535b7db433d13d42839c293e979127))
+* delete exported at and created at ([a5c793c](https://github.com/s-hirano-ist/s-private/commit/a5c793ce80282c350a6b3257c06a9826e791cd24))
+* drawer ([a1b8579](https://github.com/s-hirano-ist/s-private/commit/a1b857911c02c8432a3866fe4799389e941fd147))
+* enrich books ([eb7aeef](https://github.com/s-hirano-ist/s-private/commit/eb7aeef9c118a6d02d9ff538a88617eea64c55f5))
+* update rating to required ([188e47e](https://github.com/s-hirano-ist/s-private/commit/188e47eda44744392fb30513cead06b037465edd))
+* update rating to required ([0b91738](https://github.com/s-hirano-ist/s-private/commit/0b9173832179953d50179337560ff5e73086d41c))
+
+
+### Maintenance
+
+* **deps:** update non-major ([daa8a5a](https://github.com/s-hirano-ist/s-private/commit/daa8a5a7e305982379d7ba02fccdcf35261cc924))
+* **deps:** update non-major ([f29957a](https://github.com/s-hirano-ist/s-private/commit/f29957a6cf2a2420a3283ac0d7704e0a6fa213c6))
+* fix format of prisma deploy ([09242ef](https://github.com/s-hirano-ist/s-private/commit/09242efe9c16bc2258cc1ddb605d690ed4a5b4a9))
+* fix format of prisma deploy ([169e208](https://github.com/s-hirano-ist/s-private/commit/169e20812a8a83438c8b3be629b629b1c2a0610b))
+
 ## [3.6.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.6.0...s-private-v3.6.1) (2026-04-18)
 
 

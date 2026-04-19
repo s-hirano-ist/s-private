@@ -1,5 +1,37 @@
 # Changelog
 
+## [1.23.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.22.1...@s-hirano-ist/s-scripts-v1.23.0) (2026-04-19)
+
+
+### Features
+
+* delete google books ([edee864](https://github.com/s-hirano-ist/s-private/commit/edee8642ae4431738f2988cc7dd317360b7a2e42))
+
+
+### Bug Fixes
+
+* books legacy ([4b5c5b6](https://github.com/s-hirano-ist/s-private/commit/4b5c5b6e8f535b7db433d13d42839c293e979127))
+* enrich books ([eb7aeef](https://github.com/s-hirano-ist/s-private/commit/eb7aeef9c118a6d02d9ff538a88617eea64c55f5))
+* update rating to required ([188e47e](https://github.com/s-hirano-ist/s-private/commit/188e47eda44744392fb30513cead06b037465edd))
+* update rating to required ([0b91738](https://github.com/s-hirano-ist/s-private/commit/0b9173832179953d50179337560ff5e73086d41c))
+
+
+### Maintenance
+
+* **deps:** update non-major ([daa8a5a](https://github.com/s-hirano-ist/s-private/commit/daa8a5a7e305982379d7ba02fccdcf35261cc924))
+* **deps:** update non-major ([f29957a](https://github.com/s-hirano-ist/s-private/commit/f29957a6cf2a2420a3283ac0d7704e0a6fa213c6))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.20.0
+    * @s-hirano-ist/s-database bumped to 1.19.0
+    * @s-hirano-ist/s-notification bumped to 1.18.4
+    * @s-hirano-ist/s-search bumped to 1.18.8
+    * @s-hirano-ist/s-storage bumped to 1.18.5
+
 ## [1.22.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.22.0...@s-hirano-ist/s-scripts-v1.22.1) (2026-04-18)
 
 

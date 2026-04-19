@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.18.5](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-storage-v1.18.4...@s-hirano-ist/s-storage-v1.18.5) (2026-04-19)
+
+
+### Maintenance
+
+* **deps:** update non-major ([daa8a5a](https://github.com/s-hirano-ist/s-private/commit/daa8a5a7e305982379d7ba02fccdcf35261cc924))
+* **deps:** update non-major ([f29957a](https://github.com/s-hirano-ist/s-private/commit/f29957a6cf2a2420a3283ac0d7704e0a6fa213c6))
+
 ## [1.18.4](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-storage-v1.18.3...@s-hirano-ist/s-storage-v1.18.4) (2026-04-14)
 
 
