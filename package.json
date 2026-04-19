@@ -5,7 +5,7 @@
 	"description": "Private pages and admin tools for s-hirano-ist.",
 	"packageManager": "pnpm@10.33.0",
 	"engines": {
-		"node": "24.x"
+		"node": "24.15.0"
 	},
 	"type": "module",
 	"scripts": {
