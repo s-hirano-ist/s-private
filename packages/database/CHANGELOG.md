@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.19.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.18.6...@s-hirano-ist/s-database-v1.19.0) (2026-04-19)
+
+
+### Features
+
+* add rating to required ([f22b7c1](https://github.com/s-hirano-ist/s-private/commit/f22b7c1e0f3095dbda87cb325e0bab0c1c0cb61c))
+* delete google books ([edee864](https://github.com/s-hirano-ist/s-private/commit/edee8642ae4431738f2988cc7dd317360b7a2e42))
+
+
+### Bug Fixes
+
+* update rating to required ([188e47e](https://github.com/s-hirano-ist/s-private/commit/188e47eda44744392fb30513cead06b037465edd))
+* update rating to required ([0b91738](https://github.com/s-hirano-ist/s-private/commit/0b9173832179953d50179337560ff5e73086d41c))
+
+
+### Maintenance
+
+* **deps:** update non-major ([daa8a5a](https://github.com/s-hirano-ist/s-private/commit/daa8a5a7e305982379d7ba02fccdcf35261cc924))
+* **deps:** update non-major ([f29957a](https://github.com/s-hirano-ist/s-private/commit/f29957a6cf2a2420a3283ac0d7704e0a6fa213c6))
+
 ## [1.18.6](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.18.5...@s-hirano-ist/s-database-v1.18.6) (2026-04-15)
 
 

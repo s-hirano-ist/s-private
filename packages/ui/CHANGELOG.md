@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.19.7](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.19.6...@s-hirano-ist/s-ui-v1.19.7) (2026-04-19)
+
+
+### Bug Fixes
+
+* drawer ([a1b8579](https://github.com/s-hirano-ist/s-private/commit/a1b857911c02c8432a3866fe4799389e941fd147))
+
+
+### Maintenance
+
+* **deps:** update non-major ([daa8a5a](https://github.com/s-hirano-ist/s-private/commit/daa8a5a7e305982379d7ba02fccdcf35261cc924))
+* **deps:** update non-major ([f29957a](https://github.com/s-hirano-ist/s-private/commit/f29957a6cf2a2420a3283ac0d7704e0a6fa213c6))
+
 ## [1.19.6](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.19.5...@s-hirano-ist/s-ui-v1.19.6) (2026-04-18)
 
 
