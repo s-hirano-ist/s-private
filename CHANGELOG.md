@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.7.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.7.0...s-private-v3.7.1) (2026-04-19)
+
+
+### Bug Fixes
+
+* always re-fetch book metadata from Google Books API ([6e9a3c6](https://github.com/s-hirano-ist/s-private/commit/6e9a3c68049e3ac3055a279bbad366ccbbfbc202))
+
 ## [3.7.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.6.1...s-private-v3.7.0) (2026-04-19)
 
 
