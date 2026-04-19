@@ -19,6 +19,7 @@
     'github-actions',
     'docker-compose',
     'mise',
+    'nvm',
   ],
   dependencyDashboard: true,
   branchConcurrentLimit: 3,
@@ -75,6 +76,20 @@
       ],
       groupName: 'mise',
       groupSlug: 'mise',
+      minimumReleaseAge: '2 days',
+    },
+    {
+      matchDepNames: [
+        'node',
+        'pnpm',
+      ],
+      matchManagers: [
+        'mise',
+        'npm',
+        'nvm',
+      ],
+      groupName: 'node and pnpm',
+      groupSlug: 'node-pnpm',
       minimumReleaseAge: '2 days',
     },
     {
