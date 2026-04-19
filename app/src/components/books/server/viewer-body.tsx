@@ -15,12 +15,6 @@ import { ImageWithFallback } from "@/components/common/display/image/image-with-
 
 export type Props = { slug: string; getBookByISBN: typeof getBookByISBN };
 
-const statusVariant = {
-	UNEXPORTED: "secondary",
-	LAST_UPDATED: "outline",
-	EXPORTED: "default",
-} as const;
-
 export async function ViewerBody({ slug, getBookByISBN }: Props) {
 	const data = await getBookByISBN(slug);
 	if (!data) notFound();
@@ -83,11 +77,8 @@ export async function ViewerBody({ slug, getBookByISBN }: Props) {
 								</div>
 							)}
 
-							<div className="flex flex-wrap items-center gap-2">
-								<Badge variant={statusVariant[data.status]}>
-									{data.status}
-								</Badge>
-								{data.googleHref && (
+							{data.googleHref && (
+								<div>
 									<a
 										className="text-sm underline"
 										href={data.googleHref}
@@ -96,12 +87,12 @@ export async function ViewerBody({ slug, getBookByISBN }: Props) {
 									>
 										Google Books
 									</a>
-								)}
-							</div>
+								</div>
+							)}
 
-							<dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 border-t pt-3 text-muted-foreground text-xs">
-								<dt>ISBN</dt>
-								<dd>{data.isbn}</dd>
+							<dl className="flex items-center gap-3 border-t pt-3 text-muted-foreground text-xs">
+								<dt className="font-medium">ISBN</dt>
+								<dd className="m-0">{data.isbn}</dd>
 							</dl>
 						</CardContent>
 					</div>
