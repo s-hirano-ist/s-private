@@ -70,7 +70,6 @@ erDiagram
         BookTitle title
         Path imagePath "nullable"
         Status status
-        GoogleTitle googleTitle "nullable"
         GoogleSubTitle googleSubTitle "nullable"
         GoogleAuthors googleAuthors "nullable"
         GoogleDescription googleDescription "nullable"

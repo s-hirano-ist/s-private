@@ -17,7 +17,6 @@ type Book = {
 	title: string;
 	rating: number;
 	tags: string[];
-	googleTitle: string | null;
 	googleSubTitle: string | null;
 	googleAuthors: string[];
 	googleDescription: string | null;
@@ -96,11 +95,10 @@ async function main() {
 
 			const frontmatter = dumpFrontmatter({
 				heading: item.isbn,
-				description: item.title,
+				title: item.title,
 				draft: false,
 				rating: item.rating,
 				tags: item.tags,
-				googleTitle: item.googleTitle,
 				googleSubtitle: item.googleSubTitle,
 				googleAuthors: item.googleAuthors,
 				googleDescription: item.googleDescription,

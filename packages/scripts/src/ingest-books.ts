@@ -16,10 +16,9 @@ import sharp from "sharp";
 
 type BookFrontmatter = {
 	heading?: string | number;
-	description?: string;
+	title?: string;
 	rating?: number;
 	tags?: string[];
-	googleTitle?: string | null;
 	googleSubtitle?: string | null;
 	googleAuthors?: string[];
 	googleDescription?: string | null;
@@ -55,7 +54,6 @@ type ParsedBook = {
 	markdown: string | null;
 	rating: number;
 	tags: string[];
-	googleTitle: string | null;
 	googleSubTitle: string | null;
 	googleAuthors: string[];
 	googleDescription: string | null;
@@ -67,8 +65,8 @@ function parseBookFile(content: string): ParsedBook {
 	const parsed = matter(content);
 	const data = parsed.data as BookFrontmatter;
 
-	// title: description を優先、無ければ本文の H1 からフォールバック
-	let title = data.description?.trim() ?? "";
+	// title: frontmatter.title を優先、無ければ本文の H1 からフォールバック
+	let title = data.title?.trim() ?? "";
 	if (!title) {
 		const h1Match = parsed.content.match(/^# (.+)$/m);
 		title = h1Match ? h1Match[1].trim() : "";
@@ -87,7 +85,6 @@ function parseBookFile(content: string): ParsedBook {
 		markdown: body || null,
 		rating: data.rating,
 		tags: data.tags ?? [],
-		googleTitle: data.googleTitle ?? null,
 		googleSubTitle: data.googleSubtitle ?? null,
 		googleAuthors: data.googleAuthors ?? [],
 		googleDescription: data.googleDescription ?? null,
@@ -193,7 +190,6 @@ async function main() {
 				imagePath: true,
 				rating: true,
 				tags: true,
-				googleTitle: true,
 				googleSubTitle: true,
 				googleAuthors: true,
 				googleDescription: true,
@@ -254,7 +250,6 @@ async function main() {
 						existing.imagePath === expectedImagePath &&
 						existing.rating === parsed.rating &&
 						arrayEquals(existing.tags, parsed.tags) &&
-						existing.googleTitle === parsed.googleTitle &&
 						existing.googleSubTitle === parsed.googleSubTitle &&
 						arrayEquals(existing.googleAuthors, parsed.googleAuthors) &&
 						existing.googleDescription === parsed.googleDescription &&
@@ -285,7 +280,6 @@ async function main() {
 								imagePath: newImagePath,
 								rating: parsed.rating,
 								tags: parsed.tags,
-								googleTitle: parsed.googleTitle,
 								googleSubTitle: parsed.googleSubTitle,
 								googleAuthors: parsed.googleAuthors,
 								googleDescription: parsed.googleDescription,
@@ -327,7 +321,6 @@ async function main() {
 						createdAt: new Date(),
 						rating: parsed.rating,
 						tags: parsed.tags,
-						googleTitle: parsed.googleTitle,
 						googleSubTitle: parsed.googleSubTitle,
 						googleAuthors: parsed.googleAuthors,
 						googleDescription: parsed.googleDescription,

@@ -2,6 +2,9 @@
 /**
  * markdown/book/*.md の frontmatter のうち google* が欠落しているものについて、
  * Google Books API を呼び出して frontmatter を補完するスクリプト。
+ *
+ * API が title を返した場合は frontmatter.title を上書きする。
+ * notFound (API が volume を返さない) の場合は手動入力 title を保持する。
  */
 import { readFile, writeFile } from "node:fs/promises";
 import { basename, join } from "node:path";
@@ -55,8 +58,8 @@ async function main(): Promise<void> {
 			const parsed = matter(raw);
 			const data = parsed.data as Record<string, unknown>;
 
-			// googleTitle が既に埋まっているならスキップ
-			if (data.googleTitle != null && data.googleTitle !== "") {
+			// googleImgSrc が既に埋まっているならスキップ (enrich 実行済みの判定キー)
+			if (data.googleImgSrc != null && data.googleImgSrc !== "") {
 				skippedCount++;
 				continue;
 			}
@@ -81,15 +84,18 @@ async function main(): Promise<void> {
 
 			const next: Record<string, unknown> = {
 				...data,
-				googleTitle:
-					volume?.title ??
-					(typeof data.description === "string" ? data.description : isbn),
 				googleSubtitle: volume?.subtitle ?? "",
 				googleAuthors: volume?.authors ?? [],
 				googleDescription: volume?.description ?? "No description",
 				googleImgSrc: httpsImgSrc,
 				googleHref: httpsHref,
 			};
+
+			// API が title を返した場合のみ frontmatter.title を上書き。
+			// notFound の場合は手動入力 title を保持する。
+			if (typeof volume?.title === "string" && volume.title !== "") {
+				next.title = volume.title;
+			}
 
 			const body = parsed.content.replace(/^\n+/, "");
 			const newContent = `---\n${dumpFrontmatter(next)}---\n\n${body}`;

@@ -11,7 +11,6 @@ export type BooksOrderByField =
 	| "id"
 	| "ISBN"
 	| "title"
-	| "googleTitle"
 	| "googleSubTitle"
 	| "googleAuthors"
 	| "googleDescription"

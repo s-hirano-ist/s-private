@@ -9,7 +9,6 @@ import {
 	makeGoogleHref,
 	makeGoogleImgSrc,
 	makeGoogleSubTitle,
-	makeGoogleTitle,
 	makeISBN,
 	makeRating,
 	makeTags,
@@ -43,7 +42,6 @@ async function findByISBN(
 			title: true,
 			rating: true,
 			tags: true,
-			googleTitle: true,
 			googleSubTitle: true,
 			googleAuthors: true,
 			googleDescription: true,
@@ -65,9 +63,6 @@ async function findByISBN(
 		title: makeBookTitle(data.title),
 		rating: makeRating(data.rating),
 		tags: makeTags(data.tags),
-		googleTitle: data.googleTitle
-			? makeGoogleTitle(data.googleTitle)
-			: undefined,
 		googleSubTitle: data.googleSubTitle
 			? makeGoogleSubTitle(data.googleSubTitle)
 			: undefined,

@@ -103,9 +103,8 @@ model Image {
 model Book {
   id    String @id @db.VarChar(36)
   isbn  String @db.VarChar(17)
-  title String @db.VarChar(256)
+  title String @db.VarChar(512)
 
-  googleTitle       String?  @map("google_title") @db.VarChar(512)
   googleSubTitle    String?  @map("google_subtitle") @db.VarChar(512)
   googleAuthors     String[] @map("google_authors")
   googleDescription String?  @map("google_description") @db.Text

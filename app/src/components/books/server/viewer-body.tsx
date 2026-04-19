@@ -25,7 +25,7 @@ export async function ViewerBody({ slug, getBookByISBN }: Props) {
 	const data = await getBookByISBN(slug);
 	if (!data) notFound();
 
-	const altText = data.googleTitle ?? data.title ?? "";
+	const altText = data.title ?? "";
 	const tags = data.tags as unknown as string[] | undefined;
 	const authors = data.googleAuthors as unknown as string[] | null | undefined;
 
@@ -35,13 +35,6 @@ export async function ViewerBody({ slug, getBookByISBN }: Props) {
 			<Card className="p-4">
 				<div className="grid grid-cols-1 gap-4 md:grid-cols-4">
 					<div className="flex flex-col items-center justify-center gap-2">
-						<ImageWithFallback
-							alt={altText}
-							className="rounded bg-white p-1"
-							height={192}
-							src={data.googleImgSrc}
-							width={192}
-						/>
 						{data.imagePath && (
 							<ImageWithFallback
 								alt={`${altText} (uploaded)`}
@@ -56,10 +49,9 @@ export async function ViewerBody({ slug, getBookByISBN }: Props) {
 						<CardHeader>
 							<CardTitle className="flex flex-col gap-1">
 								<span>{data.title}</span>
-								{data.googleTitle && (
+								{data.googleSubTitle && (
 									<span className="font-normal text-muted-foreground text-sm">
-										Google: {data.googleTitle}
-										{data.googleSubTitle ? ` — ${data.googleSubTitle}` : ""}
+										{data.googleSubTitle}
 									</span>
 								)}
 							</CardTitle>
@@ -110,20 +102,6 @@ export async function ViewerBody({ slug, getBookByISBN }: Props) {
 							<dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 border-t pt-3 text-muted-foreground text-xs">
 								<dt>ISBN</dt>
 								<dd>{data.isbn}</dd>
-								<dt>Created</dt>
-								<dd>
-									{(data.createdAt as unknown as Date).toLocaleDateString()}
-								</dd>
-								{data.status === "EXPORTED" && (
-									<>
-										<dt>Exported</dt>
-										<dd>
-											{(
-												data.exportedAt as unknown as Date
-											).toLocaleDateString()}
-										</dd>
-									</>
-								)}
 							</dl>
 						</CardContent>
 					</div>
