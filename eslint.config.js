@@ -3,6 +3,7 @@
 import vitestPlugin from "@vitest/eslint-plugin";
 import { defineConfig } from "eslint/config";
 import nextConfig from "eslint-config-next";
+import boundariesPlugin from "eslint-plugin-boundaries";
 import reactPlugin from "eslint-plugin-react";
 import reactHookPlugin from "eslint-plugin-react-hooks";
 // import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
@@ -100,6 +101,224 @@ export default defineConfig(
 
 	// storybook
 	...storybookPlugin.configs["flat/recommended"],
+
+	// eslint-plugin-boundaries: Clean Architectureレイヤー境界をIDEで即時検出
+	// dependency-cruiserと役割分担: こちらはwarnで開発体験補完、CIはdependency-cruiser
+	{
+		files: ["app/src/**/*.{ts,tsx}", "packages/**/*.{ts,tsx}"],
+		ignores: [
+			"**/*.stories.{ts,tsx}",
+			"**/*.{test,spec}.{ts,tsx}",
+			"**/vitest.config.ts",
+			"**/vitest-setup.tsx",
+			"**/*.d.ts",
+			"packages/database/src/generated/**/*",
+		],
+		plugins: { boundaries: boundariesPlugin },
+		settings: {
+			"import/resolver": {
+				typescript: {
+					alwaysTryTypes: true,
+					project: ["./tsconfig.json", "./packages/*/tsconfig.json"],
+				},
+				node: true,
+			},
+			"boundaries/include": ["app/src/**/*", "packages/**/*"],
+			"boundaries/ignore": [
+				"**/*.stories.{ts,tsx}",
+				"**/*.{test,spec}.{ts,tsx}",
+				"**/*.d.ts",
+				"packages/database/src/generated/**/*",
+			],
+			// 順序重要: shared-kernelをcore-domainの前、infrastructure(domain付き)をsharedより前に
+			"boundaries/elements": [
+				{
+					type: "core-shared-kernel",
+					pattern: "packages/core/shared-kernel/**/*",
+					mode: "file",
+				},
+				{
+					type: "core-domain",
+					pattern: "packages/core/:domain/**/*",
+					mode: "file",
+					capture: ["domain"],
+				},
+				{
+					type: "app-application-service",
+					pattern: "app/src/application-services/:domain/**/*",
+					mode: "file",
+					capture: ["domain"],
+				},
+				{
+					type: "app-application-service-common",
+					pattern: "app/src/application-services/common/**/*",
+					mode: "file",
+				},
+				{
+					type: "app-infrastructure",
+					pattern: "app/src/infrastructures/:domain/**/*",
+					mode: "file",
+					capture: ["domain"],
+				},
+				{
+					type: "app-infrastructure-shared",
+					pattern:
+						"app/src/infrastructures/!(articles|books|notes|images|search)/**/*",
+					mode: "file",
+				},
+				{ type: "app-loader", pattern: "app/src/loaders/**/*", mode: "file" },
+				{
+					type: "app-component",
+					pattern: "app/src/components/**/*",
+					mode: "file",
+				},
+				{ type: "app-route", pattern: "app/src/app/**/*", mode: "file" },
+				{ type: "app-common", pattern: "app/src/common/**/*", mode: "file" },
+				{ type: "pkg-ui", pattern: "packages/ui/**/*", mode: "file" },
+				{
+					type: "pkg-database",
+					pattern: "packages/database/**/*",
+					mode: "file",
+				},
+				{
+					type: "pkg-notification",
+					pattern: "packages/notification/**/*",
+					mode: "file",
+				},
+				{ type: "pkg-search", pattern: "packages/search/**/*", mode: "file" },
+				{ type: "pkg-storage", pattern: "packages/storage/**/*", mode: "file" },
+			],
+		},
+		rules: {
+			"boundaries/element-types": [
+				"warn",
+				{
+					default: "disallow",
+					rules: [
+						{
+							from: ["core-shared-kernel"],
+							allow: ["core-shared-kernel"],
+						},
+						{
+							from: ["core-domain"],
+							allow: [
+								"core-shared-kernel",
+								["core-domain", { domain: "${from.domain}" }],
+							],
+						},
+						{
+							from: ["app-application-service"],
+							allow: [
+								"core-shared-kernel",
+								["core-domain", { domain: "${from.domain}" }],
+								"app-application-service-common",
+								["app-application-service", { domain: "${from.domain}" }],
+								"app-infrastructure",
+								"app-infrastructure-shared",
+								"app-common",
+							],
+						},
+						{
+							from: ["app-application-service-common"],
+							allow: [
+								"core-shared-kernel",
+								"core-domain",
+								"app-application-service-common",
+								"app-infrastructure",
+								"app-infrastructure-shared",
+								"app-common",
+							],
+						},
+						{
+							from: ["app-infrastructure"],
+							allow: [
+								"core-shared-kernel",
+								["core-domain", { domain: "${from.domain}" }],
+								"app-infrastructure",
+								"app-infrastructure-shared",
+								"app-common",
+								"pkg-database",
+								"pkg-search",
+								"pkg-storage",
+								"pkg-notification",
+							],
+						},
+						{
+							from: ["app-infrastructure-shared"],
+							allow: [
+								"core-shared-kernel",
+								"core-domain",
+								"app-infrastructure",
+								"app-infrastructure-shared",
+								"app-common",
+								"pkg-database",
+								"pkg-search",
+								"pkg-storage",
+								"pkg-notification",
+							],
+						},
+						{
+							from: ["app-loader"],
+							allow: [
+								"core-shared-kernel",
+								"core-domain",
+								"app-application-service",
+								"app-application-service-common",
+								"app-loader",
+								"app-component",
+								"app-common",
+								"app-infrastructure-shared",
+							],
+						},
+						{
+							from: ["app-component"],
+							allow: [
+								"core-shared-kernel",
+								"app-application-service",
+								"app-application-service-common",
+								"app-loader",
+								"app-component",
+								"app-common",
+								"app-infrastructure-shared",
+								"pkg-ui",
+							],
+						},
+						{
+							from: ["app-route"],
+							allow: [
+								"core-shared-kernel",
+								"app-application-service",
+								"app-application-service-common",
+								"app-infrastructure",
+								"app-infrastructure-shared",
+								"app-loader",
+								"app-component",
+								"app-common",
+								"app-route",
+								"pkg-ui",
+							],
+						},
+						{
+							from: ["app-common"],
+							allow: [
+								"core-shared-kernel",
+								"app-common",
+								"app-infrastructure-shared",
+							],
+						},
+						{ from: ["pkg-ui"], allow: ["pkg-ui"] },
+						{ from: ["pkg-database"], allow: ["pkg-database"] },
+						{ from: ["pkg-notification"], allow: ["pkg-notification"] },
+						{ from: ["pkg-search"], allow: ["pkg-search", "pkg-database"] },
+						{ from: ["pkg-storage"], allow: ["pkg-storage"] },
+					],
+				},
+			],
+			"boundaries/no-unknown": "off",
+			"boundaries/no-unknown-files": "off",
+			"boundaries/entry-point": "off",
+		},
+	},
 
 	// TODO: enable when biome conflicts occur
 	// {
