@@ -64,7 +64,10 @@ export async function ViewerBody({ slug, getBookByISBN }: Props) {
 							</div>
 
 							{authors && authors.length > 0 && (
-								<p>Authors: {authors.join(", ")}</p>
+								<p className="text-muted-foreground text-sm">
+									<span className="font-medium">Authors:</span>{" "}
+									{authors.join(", ")}
+								</p>
 							)}
 
 							{tags && tags.length > 0 && (
@@ -76,6 +79,10 @@ export async function ViewerBody({ slug, getBookByISBN }: Props) {
 									))}
 								</div>
 							)}
+
+							<p className="text-muted-foreground text-sm">
+								<span className="font-medium">ISBN:</span> {data.isbn}
+							</p>
 
 							{data.googleHref && (
 								<div>
@@ -89,11 +96,6 @@ export async function ViewerBody({ slug, getBookByISBN }: Props) {
 									</a>
 								</div>
 							)}
-
-							<dl className="flex items-center gap-3 border-t pt-3 text-muted-foreground text-xs">
-								<dt className="font-medium">ISBN</dt>
-								<dd className="m-0">{data.isbn}</dd>
-							</dl>
 						</CardContent>
 					</div>
 				</div>
