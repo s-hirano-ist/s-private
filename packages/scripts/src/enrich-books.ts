@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 /**
- * markdown/book/*.md の frontmatter のうち google* が欠落しているものについて、
- * Google Books API を呼び出して frontmatter を補完するスクリプト。
+ * markdown/book/*.md の frontmatter について、毎回 Google Books API を呼び出して
+ * google* および title を最新状態に更新するスクリプト。
  *
  * API が title を返した場合は frontmatter.title を上書きする。
  * notFound (API が volume を返さない) の場合は手動入力 title を保持する。
+ * markdown 本文 (h1 含む) には触れないため、自己入力の h1 はそのまま維持される。
  */
 import { readFile, writeFile } from "node:fs/promises";
 import { basename, join } from "node:path";
@@ -46,7 +47,6 @@ async function main(): Promise<void> {
 	);
 
 	let enrichedCount = 0;
-	let skippedCount = 0;
 	let errorCount = 0;
 
 	for (const filePath of files.sort()) {
@@ -57,12 +57,6 @@ async function main(): Promise<void> {
 			const raw = await readFile(filePath, "utf8");
 			const parsed = matter(raw);
 			const data = parsed.data as Record<string, unknown>;
-
-			// googleImgSrc が既に埋まっているならスキップ (enrich 実行済みの判定キー)
-			if (data.googleImgSrc != null && data.googleImgSrc !== "") {
-				skippedCount++;
-				continue;
-			}
 
 			console.log(`🔍 ${fileName}: Google Books API 問い合わせ中...`);
 			const book = await api.volumes.list({ q: `isbn:${isbn}` });
@@ -114,7 +108,7 @@ async function main(): Promise<void> {
 	}
 
 	console.log(
-		`\n📊 結果: 補完 ${enrichedCount} 件, スキップ ${skippedCount} 件, エラー ${errorCount} 件${dryRun ? " (dry-run)" : ""}`,
+		`\n📊 結果: 更新 ${enrichedCount} 件, エラー ${errorCount} 件${dryRun ? " (dry-run)" : ""}`,
 	);
 }
 
