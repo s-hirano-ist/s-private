@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.7.2](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.7.1...s-private-v3.7.2) (2026-04-19)
+
+
+### Bug Fixes
+
+* **books:** clean up viewer body metadata alignment ([ebc847a](https://github.com/s-hirano-ist/s-private/commit/ebc847a6225a5b116630245c6efdde3aa96a0991))
+* **books:** remove EXPORTED badge and fix ISBN row alignment on viewer detail page ([1a729b8](https://github.com/s-hirano-ist/s-private/commit/1a729b89280a8f9175cf32ebbc1a5b2dd61ecae5))
+
+
+### Maintenance
+
+* **deps:** update dependency undici@&lt;6.21.1 to v8.1.0 ([ac02be6](https://github.com/s-hirano-ist/s-private/commit/ac02be6dea2ef4e657b1ffe200ed015a5bcd3562))
+* **deps:** update dependency vercel to v51.6.1 ([ffb36c9](https://github.com/s-hirano-ist/s-private/commit/ffb36c96f26b4976db4582e1fdb5113a132605ff))
+* **deps:** update mise ([640d817](https://github.com/s-hirano-ist/s-private/commit/640d81764bb145ea40bb55a7a79cf93615eef830))
+* **deps:** update pnpm/action-setup digest to 71c9247 ([519f159](https://github.com/s-hirano-ist/s-private/commit/519f1596fd6d24bbd22630d7aa14bdaaabfc0f23))
+* switch node source to .nvmrc for cloudflare compat ([8c40f66](https://github.com/s-hirano-ist/s-private/commit/8c40f668adcea1045f993adbca801ca4988385c6))
+* sync node/pnpm versions across mise, package.json, and workflows ([0d38cb5](https://github.com/s-hirano-ist/s-private/commit/0d38cb55731d5d38d01d38bae83f8ce26e64610c))
+* use .tool-versions for node/pnpm instead of .mise.toml ([046b869](https://github.com/s-hirano-ist/s-private/commit/046b8693624d852d6e7eec9c0c2cf0527460391b))
+
 ## [3.7.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.7.0...s-private-v3.7.1) (2026-04-19)
 
 
