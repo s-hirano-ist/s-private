@@ -16,7 +16,7 @@ import sharp from "sharp";
 
 type BookFrontmatter = {
 	heading?: string | number;
-	description?: string;
+	title?: string;
 	rating?: number;
 	tags?: string[];
 	googleSubtitle?: string | null;
@@ -65,8 +65,8 @@ function parseBookFile(content: string): ParsedBook {
 	const parsed = matter(content);
 	const data = parsed.data as BookFrontmatter;
 
-	// title: description を優先、無ければ本文の H1 からフォールバック
-	let title = data.description?.trim() ?? "";
+	// title: frontmatter.title を優先、無ければ本文の H1 からフォールバック
+	let title = data.title?.trim() ?? "";
 	if (!title) {
 		const h1Match = parsed.content.match(/^# (.+)$/m);
 		title = h1Match ? h1Match[1].trim() : "";

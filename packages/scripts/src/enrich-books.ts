@@ -3,7 +3,7 @@
  * markdown/book/*.md の frontmatter のうち google* が欠落しているものについて、
  * Google Books API を呼び出して frontmatter を補完するスクリプト。
  *
- * API が title を返した場合は description (= title ソース) を上書きする。
+ * API が title を返した場合は frontmatter.title を上書きする。
  * notFound (API が volume を返さない) の場合は手動入力 title を保持する。
  */
 import { readFile, writeFile } from "node:fs/promises";
@@ -91,10 +91,10 @@ async function main(): Promise<void> {
 				googleHref: httpsHref,
 			};
 
-			// API が title を返した場合のみ description (= title ソース) を上書き。
+			// API が title を返した場合のみ frontmatter.title を上書き。
 			// notFound の場合は手動入力 title を保持する。
 			if (typeof volume?.title === "string" && volume.title !== "") {
-				next.description = volume.title;
+				next.title = volume.title;
 			}
 
 			const body = parsed.content.replace(/^\n+/, "");

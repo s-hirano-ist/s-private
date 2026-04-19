@@ -95,7 +95,7 @@ async function main() {
 
 			const frontmatter = dumpFrontmatter({
 				heading: item.isbn,
-				description: item.title,
+				title: item.title,
 				draft: false,
 				rating: item.rating,
 				tags: item.tags,

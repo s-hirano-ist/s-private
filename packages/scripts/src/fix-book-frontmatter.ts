@@ -7,7 +7,7 @@ import yaml from "js-yaml";
 
 const REQUIRED_KEYS = [
 	"heading",
-	"description",
+	"title",
 	"draft",
 	"rating",
 	"tags",
@@ -65,23 +65,23 @@ async function main(): Promise<void> {
 				continue;
 			}
 
-			let description =
-				typeof existing.description === "string" ? existing.description : "";
-			if (!description) {
+			// title: frontmatter.title を優先、無ければ本文 H1 にフォールバック
+			let title = typeof existing.title === "string" ? existing.title : "";
+			if (!title) {
 				const h1 = extractTitleFromContent(parsed.content);
 				if (!h1) {
 					console.error(
-						`⚠️ ${fileName}: description も H1 も見つかりません。スキップします。`,
+						`⚠️ ${fileName}: title も H1 も見つかりません。スキップします。`,
 					);
 					errorCount++;
 					continue;
 				}
-				description = h1;
+				title = h1;
 			}
 
 			const next: Record<string, unknown> = {
 				heading: existing.heading ?? isbn,
-				description,
+				title,
 				draft: existing.draft ?? false,
 				rating: "rating" in existing ? existing.rating : null,
 				tags: Array.isArray(existing.tags) ? existing.tags : [],
@@ -103,7 +103,7 @@ async function main(): Promise<void> {
 				console.log(`🔍 [dry-run] 修正予定: ${fileName}`);
 			} else {
 				await writeFile(filePath, newContent, "utf8");
-				console.log(`✅ 修正完了: ${fileName} (${description})`);
+				console.log(`✅ 修正完了: ${fileName} (${title})`);
 			}
 			fixedCount++;
 		} catch (error) {
