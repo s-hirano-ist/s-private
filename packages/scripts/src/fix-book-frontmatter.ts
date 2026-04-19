@@ -11,13 +11,14 @@ const REQUIRED_KEYS = [
 	"draft",
 	"rating",
 	"tags",
-	"googleTitle",
 	"googleSubtitle",
 	"googleAuthors",
 	"googleDescription",
 	"googleImgSrc",
 	"googleHref",
 ] as const;
+
+const LEGACY_KEYS = ["googleTitle"] as const;
 
 function dumpFrontmatter(data: Record<string, unknown>): string {
 	return yaml.dump(data, {
@@ -58,13 +59,21 @@ async function main(): Promise<void> {
 			const existing = parsed.data as Record<string, unknown>;
 
 			const hasAllKeys = REQUIRED_KEYS.every((k) => Object.hasOwn(existing, k));
-			if (hasAllKeys) {
+			const hasLegacyKeys = LEGACY_KEYS.some((k) => Object.hasOwn(existing, k));
+			if (hasAllKeys && !hasLegacyKeys) {
 				skippedCount++;
 				continue;
 			}
 
+			// googleTitle が存在する場合は description を上書き (Google Books 由来の値を採用)
+			const legacyGoogleTitle =
+				typeof existing.googleTitle === "string" && existing.googleTitle !== ""
+					? existing.googleTitle
+					: null;
+
 			let description =
-				typeof existing.description === "string" ? existing.description : "";
+				legacyGoogleTitle ??
+				(typeof existing.description === "string" ? existing.description : "");
 			if (!description) {
 				const h1 = extractTitleFromContent(parsed.content);
 				if (!h1) {
@@ -83,7 +92,6 @@ async function main(): Promise<void> {
 				draft: existing.draft ?? false,
 				rating: "rating" in existing ? existing.rating : null,
 				tags: Array.isArray(existing.tags) ? existing.tags : [],
-				googleTitle: "googleTitle" in existing ? existing.googleTitle : null,
 				googleSubtitle:
 					"googleSubtitle" in existing ? existing.googleSubtitle : null,
 				googleAuthors: Array.isArray(existing.googleAuthors)

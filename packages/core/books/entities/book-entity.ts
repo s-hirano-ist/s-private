@@ -14,8 +14,8 @@
  *
  * **Value Objects defined here**:
  * - {@link ISBN} - Book ISBN identifier (ISBN-10 or ISBN-13)
- * - {@link BookTitle} - Book title (1-256 chars)
- * - {@link GoogleTitle}, {@link GoogleSubtitle}, {@link GoogleAuthors},
+ * - {@link BookTitle} - Book title (1-512 chars; Google Books API value preferred, user input as fallback)
+ * - {@link GoogleSubtitle}, {@link GoogleAuthors},
  *   {@link GoogleDescription}, {@link GoogleImgSrc}, {@link GoogleHref} - Google Books API metadata
  * - {@link BookMarkdown} - User notes/review content
  *
@@ -95,7 +95,9 @@ export const makeISBN = (v: string): ISBN => ISBN.parse(v);
  * Zod schema for validating book titles.
  *
  * @remarks
- * Validates that the title is a non-empty string between 1 and 256 characters.
+ * Validates that the title is a non-empty string between 1 and 512 characters.
+ * The upper bound matches the Google Books API title length; actual values
+ * may originate either from user input or the Google Books API.
  *
  * @example
  * ```typescript
@@ -107,7 +109,7 @@ export const makeISBN = (v: string): ISBN => ISBN.parse(v);
 export const BookTitle = z
 	.string({ message: "required" })
 	.min(1, { message: "required" })
-	.max(256, { message: "tooLong" })
+	.max(512, { message: "tooLong" })
 	.brand<"BookTitle">();
 
 /**
@@ -120,7 +122,7 @@ export type BookTitle = z.infer<typeof BookTitle>;
  *
  * @param v - The raw title string
  * @returns A branded BookTitle value
- * @throws {ZodError} When validation fails (empty or exceeds 256 chars)
+ * @throws {ZodError} When validation fails (empty or exceeds 512 chars)
  *
  * @example
  * ```typescript
@@ -128,35 +130,6 @@ export type BookTitle = z.infer<typeof BookTitle>;
  * ```
  */
 export const makeBookTitle = (v: string): BookTitle => BookTitle.parse(v);
-
-/**
- * Zod schema for Google Books API title.
- *
- * @remarks
- * Optional string for the title fetched from Google Books API.
- * Null values are allowed when no Google Books data is available.
- *
- * @see {@link makeGoogleTitle} for factory function
- */
-export const GoogleTitle = z
-	.string()
-	.max(512, { message: "tooLong" })
-	.nullable()
-	.brand<"GoogleTitle">();
-
-/**
- * Branded type for Google Books API titles.
- */
-export type GoogleTitle = z.infer<typeof GoogleTitle>;
-
-/**
- * Creates a validated GoogleTitle from a string or null.
- *
- * @param v - The Google Books title, null, or undefined
- * @returns A branded GoogleTitle value
- */
-export const makeGoogleTitle = (v: string | null | undefined): GoogleTitle =>
-	GoogleTitle.parse(v);
 
 /**
  * Zod schema for Google Books API subtitle.
@@ -398,7 +371,6 @@ const Base = z.object({
 	title: BookTitle,
 	rating: Rating,
 	tags: Tags.optional(),
-	googleTitle: GoogleTitle.optional(),
 	googleSubTitle: GoogleSubtitle.optional(),
 	googleAuthors: GoogleAuthors.optional(),
 	googleDescription: GoogleDescription.optional(),

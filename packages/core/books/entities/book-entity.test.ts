@@ -10,7 +10,6 @@ import {
 	makeGoogleHref,
 	makeGoogleImgSrc,
 	makeGoogleSubTitle,
-	makeGoogleTitle,
 	makeISBN,
 	makeRating,
 	makeTags,
@@ -59,8 +58,13 @@ describe("booksEntity", () => {
 			expect(() => makeBookTitle("")).toThrow(ZodError);
 		});
 
+		test("should accept title up to 512 characters", () => {
+			const boundaryTitle = "a".repeat(512);
+			expect(makeBookTitle(boundaryTitle)).toBe(boundaryTitle);
+		});
+
 		test("should throw error for too long title", () => {
-			const longTitle = "a".repeat(257);
+			const longTitle = "a".repeat(513);
 			expect(() => makeBookTitle(longTitle)).toThrow(ZodError);
 		});
 	});
@@ -155,16 +159,6 @@ describe("booksEntity", () => {
 	});
 
 	describe("Google-related factory functions", () => {
-		test("makeGoogleTitle should create GoogleTitle", () => {
-			const googleTitle = makeGoogleTitle("Google Book Title");
-			expect(googleTitle).toBe("Google Book Title");
-		});
-
-		test("makeGoogleTitle should handle null value", () => {
-			const googleTitle = makeGoogleTitle(null);
-			expect(googleTitle).toBeNull();
-		});
-
 		test("makeGoogleSubTitle should create GoogleSubTitle", () => {
 			const googleSubTitle = makeGoogleSubTitle("Subtitle from Google");
 			expect(googleSubTitle).toBe("Subtitle from Google");

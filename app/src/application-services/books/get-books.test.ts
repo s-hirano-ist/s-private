@@ -4,7 +4,6 @@ import {
 	makeGoogleAuthors,
 	makeGoogleImgSrc,
 	makeGoogleSubTitle,
-	makeGoogleTitle,
 	makeISBN,
 	makeRating,
 } from "@s-hirano-ist/s-core/books/entities/book-entity";
@@ -242,7 +241,6 @@ describe("get-books", () => {
 				status: "EXPORTED" as const,
 				createdAt: makeCreatedAt(new Date("2024-01-01")),
 				exportedAt: makeExportedAt(new Date("2024-01-02")),
-				googleTitle: makeGoogleTitle("Test Book - Google"),
 				googleImgSrc: makeGoogleImgSrc("https://example.com/book.jpg"),
 				markdown: makeBookMarkdown("# Book Content"),
 				rating: makeRating(4),

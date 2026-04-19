@@ -6,7 +6,6 @@ import {
 	makeGoogleHref,
 	makeGoogleImgSrc,
 	makeGoogleSubTitle,
-	makeGoogleTitle,
 	makeISBN,
 	makeRating,
 } from "@s-hirano-ist/s-core/books/entities/book-entity";
@@ -49,7 +48,6 @@ const mockBookData = Object.freeze({
 	markdown: makeBookMarkdown(
 		"# TypeScript Handbook\n\nThis is a comprehensive guide to TypeScript.\n\n## Getting Started\n\nTypeScript is a typed superset of JavaScript...",
 	),
-	googleTitle: makeGoogleTitle("TypeScript Handbook"),
 	googleSubTitle: makeGoogleSubTitle("The Complete Guide"),
 	googleDescription: makeGoogleDescription(
 		"A comprehensive guide to TypeScript programming language with practical examples and best practices.",
@@ -143,7 +141,6 @@ export const MinimalData: Story = {
 				markdown: makeBookMarkdown(
 					"# Minimal Book\n\nJust some basic content.",
 				),
-				googleTitle: makeGoogleTitle(null),
 				googleSubTitle: makeGoogleSubTitle(null),
 				googleDescription: makeGoogleDescription(null),
 				googleAuthors: makeGoogleAuthors(null),

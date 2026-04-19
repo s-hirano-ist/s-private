@@ -47,7 +47,6 @@ describe("BooksDomainService", () => {
 				userId,
 				title: "Existing Book",
 				status: "UNEXPORTED" as const,
-				googleTitle: null,
 				googleSubTitle: null,
 				googleAuthors: [],
 				googleDescription: null,
