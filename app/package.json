@@ -8,7 +8,7 @@
 		"dev": "doppler run -- next dev",
 		"build": "if [ -n \"$CI\" ]; then next build; else doppler run -- next build; fi",
 		"analyze": "doppler run -- next experimental-analyze",
-		"start": "doppler run -- next start",
+		"start": "if [ -n \"$CI\" ]; then next start; else doppler run -- next start; fi",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {

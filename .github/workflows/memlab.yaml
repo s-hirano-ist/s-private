@@ -54,7 +54,7 @@ jobs:
           NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
 
       - name: Start server
-        run: pnpm --filter s-private-app start &
+        run: pnpm --filter s-private-app start > server.log 2>&1 &
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
@@ -86,6 +86,8 @@ jobs:
             sleep 2
           done
           echo "Server failed to start"
+          echo "--- server.log ---"
+          cat server.log || true
           exit 1
 
       - name: Run memlab scenarios
