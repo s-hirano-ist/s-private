@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.7.3](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.7.2...s-private-v3.7.3) (2026-04-20)
+
+
+### Bug Fixes
+
+* **ci:** add CF Access credentials to memlab workflow ([606f5c4](https://github.com/s-hirano-ist/s-private/commit/606f5c453f929d08d5940d2c7e7e873d1e800bef))
+* **ci:** add CF Access credentials to memlab workflow ([b98d590](https://github.com/s-hirano-ist/s-private/commit/b98d59031ca3be229b3fa1d5191fd8cb8fc2bd6d))
+* **ci:** bypass doppler in CI for app start script ([71d9ed4](https://github.com/s-hirano-ist/s-private/commit/71d9ed493aedb16d9be400be5a2be44db7385352))
+* **ci:** install Chrome for Puppeteer before running memlab ([4d31502](https://github.com/s-hirano-ist/s-private/commit/4d3150221db23050c0c01453201754bdba5706f9))
+* **ci:** install Chrome for Puppeteer before running memlab ([b4914bf](https://github.com/s-hirano-ist/s-private/commit/b4914bfd55284f171cdd58372b67cd695173c563))
+* **ci:** pin puppeteer version when installing Chrome for memlab ([c37bccf](https://github.com/s-hirano-ist/s-private/commit/c37bccfc99c6c9f92b70ae21297a0c7e1d1a9649))
+* **ci:** pin puppeteer version when installing Chrome for memlab ([78d316f](https://github.com/s-hirano-ist/s-private/commit/78d316fed3f0dba3e4fb6717aed5328117240490))
+* eslint settings ([6f92824](https://github.com/s-hirano-ist/s-private/commit/6f92824e9cfb3654943d9248fc4e3f3e9c8c78f3))
+* **memlab:** convert scenarios to CJS so memlab can load them ([6a2f790](https://github.com/s-hirano-ist/s-private/commit/6a2f7903b821147c8dad7e010222cd2bef203235))
+
+
+### Maintenance
+
+* add eslint boundaries ([691fb27](https://github.com/s-hirano-ist/s-private/commit/691fb273e781a2f0b7b6c9d160595560c933a0af))
+* **deps:** update node.js to v24.15.0 ([1b80bd1](https://github.com/s-hirano-ist/s-private/commit/1b80bd10be3a99e8cdb65f0bb44933f613466e11))
+
 ## [3.7.2](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.7.1...s-private-v3.7.2) (2026-04-19)
 
 
