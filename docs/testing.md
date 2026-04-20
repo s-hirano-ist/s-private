@@ -148,8 +148,8 @@ pnpm memlab:all       # 全シナリオ実行
 
 | シナリオ | ファイル | 検知対象 |
 |---------|---------|---------|
-| 記事ナビゲーション | `memlab/scenarios/article-list-navigation.ts` | IntersectionObserverリーク |
-| Drawer開閉 | `memlab/scenarios/drawer-open-close.ts` | DOM参照リーク |
+| 記事ナビゲーション | `memlab/scenarios/article-list-navigation.cjs` | IntersectionObserverリーク |
+| Drawer開閉 | `memlab/scenarios/drawer-open-close.cjs` | DOM参照リーク |
 
 ### CI統合
 
