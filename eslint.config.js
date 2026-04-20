@@ -190,127 +190,198 @@ export default defineConfig(
 			],
 		},
 		rules: {
-			"boundaries/element-types": [
+			"boundaries/dependencies": [
 				"warn",
 				{
 					default: "disallow",
 					rules: [
 						{
-							from: ["core-shared-kernel"],
-							allow: ["core-shared-kernel"],
+							from: { type: "core-shared-kernel" },
+							allow: { to: { type: "core-shared-kernel" } },
 						},
 						{
-							from: ["core-domain"],
+							from: { type: "core-domain" },
 							allow: [
-								"core-shared-kernel",
-								["core-domain", { domain: "${from.domain}" }],
+								{ to: { type: "core-shared-kernel" } },
+								{
+									to: {
+										type: "core-domain",
+										captured: { domain: "{{from.domain}}" },
+									},
+								},
 							],
 						},
 						{
-							from: ["app-application-service"],
+							from: { type: "app-application-service" },
 							allow: [
-								"core-shared-kernel",
-								["core-domain", { domain: "${from.domain}" }],
-								"app-application-service-common",
-								["app-application-service", { domain: "${from.domain}" }],
-								"app-infrastructure",
-								"app-infrastructure-shared",
-								"app-common",
+								{
+									to: {
+										type: [
+											"core-shared-kernel",
+											"app-application-service-common",
+											"app-infrastructure",
+											"app-infrastructure-shared",
+											"app-common",
+										],
+									},
+								},
+								{
+									to: {
+										type: "core-domain",
+										captured: { domain: "{{from.domain}}" },
+									},
+								},
+								{
+									to: {
+										type: "app-application-service",
+										captured: { domain: "{{from.domain}}" },
+									},
+								},
 							],
 						},
 						{
-							from: ["app-application-service-common"],
+							from: { type: "app-application-service-common" },
+							allow: {
+								to: {
+									type: [
+										"core-shared-kernel",
+										"core-domain",
+										"app-application-service-common",
+										"app-infrastructure",
+										"app-infrastructure-shared",
+										"app-common",
+									],
+								},
+							},
+						},
+						{
+							from: { type: "app-infrastructure" },
 							allow: [
-								"core-shared-kernel",
-								"core-domain",
-								"app-application-service-common",
-								"app-infrastructure",
-								"app-infrastructure-shared",
-								"app-common",
+								{
+									to: {
+										type: [
+											"core-shared-kernel",
+											"app-infrastructure",
+											"app-infrastructure-shared",
+											"app-common",
+											"pkg-database",
+											"pkg-search",
+											"pkg-storage",
+											"pkg-notification",
+										],
+									},
+								},
+								{
+									to: {
+										type: "core-domain",
+										captured: { domain: "{{from.domain}}" },
+									},
+								},
 							],
 						},
 						{
-							from: ["app-infrastructure"],
-							allow: [
-								"core-shared-kernel",
-								["core-domain", { domain: "${from.domain}" }],
-								"app-infrastructure",
-								"app-infrastructure-shared",
-								"app-common",
-								"pkg-database",
-								"pkg-search",
-								"pkg-storage",
-								"pkg-notification",
-							],
+							from: { type: "app-infrastructure-shared" },
+							allow: {
+								to: {
+									type: [
+										"core-shared-kernel",
+										"core-domain",
+										"app-infrastructure",
+										"app-infrastructure-shared",
+										"app-common",
+										"pkg-database",
+										"pkg-search",
+										"pkg-storage",
+										"pkg-notification",
+									],
+								},
+							},
 						},
 						{
-							from: ["app-infrastructure-shared"],
-							allow: [
-								"core-shared-kernel",
-								"core-domain",
-								"app-infrastructure",
-								"app-infrastructure-shared",
-								"app-common",
-								"pkg-database",
-								"pkg-search",
-								"pkg-storage",
-								"pkg-notification",
-							],
+							from: { type: "app-loader" },
+							allow: {
+								to: {
+									type: [
+										"core-shared-kernel",
+										"core-domain",
+										"app-application-service",
+										"app-application-service-common",
+										"app-loader",
+										"app-component",
+										"app-common",
+										"app-infrastructure-shared",
+									],
+								},
+							},
 						},
 						{
-							from: ["app-loader"],
-							allow: [
-								"core-shared-kernel",
-								"core-domain",
-								"app-application-service",
-								"app-application-service-common",
-								"app-loader",
-								"app-component",
-								"app-common",
-								"app-infrastructure-shared",
-							],
+							from: { type: "app-component" },
+							allow: {
+								to: {
+									type: [
+										"core-shared-kernel",
+										"app-application-service",
+										"app-application-service-common",
+										"app-loader",
+										"app-component",
+										"app-common",
+										"app-infrastructure-shared",
+										"pkg-ui",
+									],
+								},
+							},
 						},
 						{
-							from: ["app-component"],
-							allow: [
-								"core-shared-kernel",
-								"app-application-service",
-								"app-application-service-common",
-								"app-loader",
-								"app-component",
-								"app-common",
-								"app-infrastructure-shared",
-								"pkg-ui",
-							],
+							from: { type: "app-route" },
+							allow: {
+								to: {
+									type: [
+										"core-shared-kernel",
+										"app-application-service",
+										"app-application-service-common",
+										"app-infrastructure",
+										"app-infrastructure-shared",
+										"app-loader",
+										"app-component",
+										"app-common",
+										"app-route",
+										"pkg-ui",
+									],
+								},
+							},
 						},
 						{
-							from: ["app-route"],
-							allow: [
-								"core-shared-kernel",
-								"app-application-service",
-								"app-application-service-common",
-								"app-infrastructure",
-								"app-infrastructure-shared",
-								"app-loader",
-								"app-component",
-								"app-common",
-								"app-route",
-								"pkg-ui",
-							],
+							from: { type: "app-common" },
+							allow: {
+								to: {
+									type: [
+										"core-shared-kernel",
+										"app-common",
+										"app-infrastructure-shared",
+									],
+								},
+							},
 						},
 						{
-							from: ["app-common"],
-							allow: [
-								"core-shared-kernel",
-								"app-common",
-								"app-infrastructure-shared",
-							],
+							from: { type: "pkg-ui" },
+							allow: { to: { type: "pkg-ui" } },
 						},
-						{ from: ["pkg-ui"], allow: ["pkg-ui"] },
-						{ from: ["pkg-database"], allow: ["pkg-database"] },
-						{ from: ["pkg-notification"], allow: ["pkg-notification"] },
-						{ from: ["pkg-search"], allow: ["pkg-search", "pkg-database"] },
-						{ from: ["pkg-storage"], allow: ["pkg-storage"] },
+						{
+							from: { type: "pkg-database" },
+							allow: { to: { type: "pkg-database" } },
+						},
+						{
+							from: { type: "pkg-notification" },
+							allow: { to: { type: "pkg-notification" } },
+						},
+						{
+							from: { type: "pkg-search" },
+							allow: { to: { type: ["pkg-search", "pkg-database"] } },
+						},
+						{
+							from: { type: "pkg-storage" },
+							allow: { to: { type: "pkg-storage" } },
+						},
 					],
 				},
 			],
