@@ -32,7 +32,7 @@ jobs:
       - run: pnpm i --frozen-lockfile
 
       - name: Install Chrome for Puppeteer
-        run: pnpm dlx puppeteer browsers install chrome
+        run: pnpm dlx puppeteer@24.40.0 browsers install chrome
 
       - name: Build application
         run: pnpm build
