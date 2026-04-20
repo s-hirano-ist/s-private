@@ -2,8 +2,14 @@
  * Scenario: Navigate between article tabs (articles → notes → articles).
  * Detects IntersectionObserver leaks from useInfiniteScroll hook.
  */
+const { loginWithAuth0 } = require("../helpers/auth.cjs");
+
 module.exports = {
-	url: () => "http://localhost:3000/ja/main/articles",
+	url: () => "http://localhost:3000/ja/articles",
+
+	setup: async (page) => {
+		await loginWithAuth0(page);
+	},
 
 	action: async (page) => {
 		const notesTab = await page.waitForSelector('nav a[href*="/notes"]');

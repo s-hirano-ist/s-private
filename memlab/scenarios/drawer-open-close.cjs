@@ -2,8 +2,14 @@
  * Scenario: Open and close the SearchDrawer.
  * Detects DOM reference leaks from Drawer component lifecycle.
  */
+const { loginWithAuth0 } = require("../helpers/auth.cjs");
+
 module.exports = {
-	url: () => "http://localhost:3000/ja/main/articles",
+	url: () => "http://localhost:3000/ja/articles",
+
+	setup: async (page) => {
+		await loginWithAuth0(page);
+	},
 
 	action: async (page) => {
 		const searchButton = await page.waitForSelector(
