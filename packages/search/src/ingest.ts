@@ -1,5 +1,10 @@
 import type { QdrantPayload } from "./config.ts";
-import { getExistingHashes, upsertPoints } from "./qdrant-client.ts";
+import {
+	deletePointsByChunkIds,
+	getExistingHashes,
+	listAllChunkIds,
+	upsertPoints,
+} from "./qdrant-client.ts";
 
 const BATCH_SIZE = 20;
 const MAX_RETRIES = 3;
@@ -107,4 +112,38 @@ export async function ingestChunks(
 		changedChunks: changedChunks.length,
 		skippedChunks,
 	};
+}
+
+export type PruneResult = {
+	deletedCount: number;
+};
+
+/**
+ * Remove points from Qdrant whose chunk_id is not in the current set.
+ * Call after ingestChunks to keep Qdrant in sync with the source of truth.
+ */
+export async function pruneOrphans(
+	currentChunkIds: string[],
+): Promise<PruneResult> {
+	const existingIds = await listAllChunkIds();
+	const currentSet = new Set(currentChunkIds);
+	const orphanIds = existingIds.filter((id) => !currentSet.has(id));
+
+	console.log(`Existing Qdrant chunks: ${existingIds.length}`);
+	console.log(`Orphan chunks to delete: ${orphanIds.length}`);
+
+	if (orphanIds.length === 0) {
+		return { deletedCount: 0 };
+	}
+
+	let deleted = 0;
+	for (let i = 0; i < orphanIds.length; i += BATCH_SIZE) {
+		const batch = orphanIds.slice(i, i + BATCH_SIZE);
+		await withRetry(() => deletePointsByChunkIds(batch));
+		deleted += batch.length;
+		console.log(`  Prune progress: ${deleted}/${orphanIds.length}`);
+		await sleep(100);
+	}
+
+	return { deletedCount: deleted };
 }
