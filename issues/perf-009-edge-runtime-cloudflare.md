@@ -3,7 +3,7 @@
 ## 概要
 
 Cloudflare Workers/Edge Runtimeへの対応を検討し、レスポンス速度を改善する。
-
+https://tech.hello.ai/entry/vercel-cloudflare-migration 等の実装を参考にする。
 ## 課題
 
 - Edge RuntimeにSharpが対応していない
