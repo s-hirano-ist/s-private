@@ -95,6 +95,9 @@ jobs:
 
       - name: Run memlab scenarios
         run: pnpm memlab:all
+        env:
+          E2E_AUTH0_USERNAME: ${{ secrets.E2E_AUTH0_USERNAME }}
+          E2E_AUTH0_PASSWORD: ${{ secrets.E2E_AUTH0_PASSWORD }}
 
       - name: Upload memlab results
         if: always()
