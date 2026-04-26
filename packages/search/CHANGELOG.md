@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.9](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-search-v1.18.8...@s-hirano-ist/s-search-v1.18.9) (2026-04-26)
+
+
+### Bug Fixes
+
+* update ingest to vdb ([eeb5fdf](https://github.com/s-hirano-ist/s-private/commit/eeb5fdfcc1e3b4a7d0d27ef1188d67b73b553357))
+
 ## [1.18.8](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-search-v1.18.7...@s-hirano-ist/s-search-v1.18.8) (2026-04-19)
 
 

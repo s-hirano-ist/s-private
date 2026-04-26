@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.23.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.23.1...@s-hirano-ist/s-scripts-v1.23.2) (2026-04-26)
+
+
+### Bug Fixes
+
+* update ingest to vdb ([eeb5fdf](https://github.com/s-hirano-ist/s-private/commit/eeb5fdfcc1e3b4a7d0d27ef1188d67b73b553357))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-search bumped to 1.18.9
+
 ## [1.23.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.23.0...@s-hirano-ist/s-scripts-v1.23.1) (2026-04-19)
 
 
