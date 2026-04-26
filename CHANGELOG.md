@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.7.4](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.7.3...s-private-v3.7.4) (2026-04-26)
+
+
+### Bug Fixes
+
+* update ingest to vdb ([eeb5fdf](https://github.com/s-hirano-ist/s-private/commit/eeb5fdfcc1e3b4a7d0d27ef1188d67b73b553357))
+
+
+### Documentation
+
+* delete issues ([43cc5fb](https://github.com/s-hirano-ist/s-private/commit/43cc5fbafc220e6a2c6c8601218cad86ab65a747))
+
 ## [3.7.3](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.7.2...s-private-v3.7.3) (2026-04-20)
 
 
