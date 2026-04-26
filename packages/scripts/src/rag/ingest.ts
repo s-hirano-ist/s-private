@@ -5,7 +5,7 @@ import {
 	parseMarkdown,
 } from "@s-hirano-ist/s-search/chunker";
 import type { ContentType, QdrantPayload } from "@s-hirano-ist/s-search/config";
-import { ingestChunks } from "@s-hirano-ist/s-search/ingest";
+import { ingestChunks, pruneOrphans } from "@s-hirano-ist/s-search/ingest";
 import {
 	ensureCollection,
 	getCollectionStats,
@@ -58,24 +58,29 @@ function parseFile(file: FileInfo): QdrantPayload[] {
 	return parseMarkdown(file.path, content, file.contentType);
 }
 
+type IngestFlags = {
+	force: boolean;
+	dryRun: boolean;
+};
+
 /**
  * CLI entry point: list files, parse into chunks, delegate to ingestChunks
  */
-async function ingest(force: boolean): Promise<void> {
+async function ingest(flags: IngestFlags): Promise<void> {
 	console.log("Starting ingest...\n");
 
-	// Ensure collection exists
-	await ensureCollection();
+	if (!flags.dryRun) {
+		await ensureCollection();
+		const initialStats = await getCollectionStats();
+		console.log(`Initial points count: ${initialStats.pointsCount}\n`);
+	} else {
+		console.log("Dry-run mode: no writes to Qdrant\n");
+	}
 
-	// Get initial stats
-	const initialStats = await getCollectionStats();
-	console.log(`Initial points count: ${initialStats.pointsCount}\n`);
-
-	if (force) {
+	if (flags.force) {
 		console.log("Force mode enabled: skipping change detection\n");
 	}
 
-	// List all files
 	const files = await listFiles();
 	const articleCount = files.filter((f) => f.contentType === "articles").length;
 	const noteCount = files.filter((f) => f.contentType === "notes").length;
@@ -86,7 +91,6 @@ async function ingest(force: boolean): Promise<void> {
 	console.log(`  - Notes: ${noteCount}`);
 	console.log(`  - Books: ${bookCount}\n`);
 
-	// Parse all files into chunks
 	console.log("Parsing files...");
 	const allChunks: QdrantPayload[] = [];
 
@@ -99,33 +103,44 @@ async function ingest(force: boolean): Promise<void> {
 		}
 	}
 
-	// Delegate to core ingest logic (Qdrant Inference handles embedding)
-	const result = await ingestChunks(allChunks, { force });
+	console.log(`Total chunks parsed: ${allChunks.length}`);
 
-	// Get final stats
+	if (flags.dryRun) {
+		console.log("Dry-run complete. Skipping upsert and prune.");
+		return;
+	}
+
+	const result = await ingestChunks(allChunks, { force: flags.force });
+
+	const pruneResult = await pruneOrphans(allChunks.map((c) => c.chunk_id));
+
 	const finalStats = await getCollectionStats();
 	console.log(`\nFinal points count: ${finalStats.pointsCount}`);
 	console.log(
-		`Ingest completed successfully! (${result.changedChunks} changed, ${result.skippedChunks} skipped)`,
+		`Ingest completed! (${result.changedChunks} changed, ${result.skippedChunks} skipped, ${pruneResult.deletedCount} pruned)`,
 	);
 }
 
 async function main() {
 	if (!process.env.QDRANT_URL) {
-		throw new Error("QDRANT_URL environment variable is required.");
+		console.error("QDRANT_URL environment variable is required.");
+		process.exit(1);
 	}
 
-	const force = process.argv.includes("--force");
+	const flags: IngestFlags = {
+		force: process.argv.includes("--force"),
+		dryRun: process.argv.includes("--dry-run"),
+	};
 
 	try {
-		await ingest(force);
+		await ingest(flags);
 	} catch (error) {
 		console.error("❌ エラーが発生しました:", error);
-		process.exit(1);
+		process.exit(2);
 	}
 }
 
 main().catch((error) => {
 	console.error(error);
-	process.exit(1);
+	process.exit(2);
 });

@@ -216,6 +216,64 @@ export async function search(
 }
 
 /**
+ * List all chunk_ids stored in the collection by scrolling through payloads.
+ */
+export async function listAllChunkIds(): Promise<string[]> {
+	const qdrant = getQdrantClient();
+	const { collectionName } = RAG_CONFIG.qdrant;
+
+	const chunkIds: string[] = [];
+	const pageSize = 256;
+	let nextOffset: string | number | Record<string, unknown> | undefined | null;
+
+	try {
+		do {
+			const result = await qdrant.scroll(collectionName, {
+				limit: pageSize,
+				offset:
+					typeof nextOffset === "string" || typeof nextOffset === "number"
+						? nextOffset
+						: undefined,
+				with_payload: ["chunk_id"],
+				with_vector: false,
+			});
+
+			for (const point of result.points) {
+				const payload = point.payload as QdrantPayload | undefined;
+				if (payload?.chunk_id) {
+					chunkIds.push(payload.chunk_id);
+				}
+			}
+
+			nextOffset = result.next_page_offset;
+		} while (nextOffset !== null && nextOffset !== undefined);
+	} catch {
+		// Collection might not exist or be empty
+	}
+
+	return chunkIds;
+}
+
+/**
+ * Delete points by their chunk_ids (hashed to numeric Qdrant IDs).
+ */
+export async function deletePointsByChunkIds(
+	chunkIds: string[],
+): Promise<void> {
+	if (chunkIds.length === 0) return;
+
+	const qdrant = getQdrantClient();
+	const { collectionName } = RAG_CONFIG.qdrant;
+
+	const numericIds = chunkIds.map((id) => hashToUint(id));
+
+	await qdrant.delete(collectionName, {
+		wait: true,
+		points: numericIds,
+	});
+}
+
+/**
  * Get collection stats
  */
 export async function getCollectionStats(): Promise<{
