@@ -268,8 +268,8 @@ importers:
   packages/core:
     dependencies:
       uuid:
-        specifier: 13.0.0
-        version: 13.0.0
+        specifier: 14.0.0
+        version: 14.0.0
       zod:
         specifier: 4.3.6
         version: 4.3.6
@@ -8983,8 +8983,8 @@ packages:
     resolution: {integrity: sha512-GIEaZ6o86fj09Wtf0VfZ5XP7tmd4t3jM5aZCgmBi231D0DB1AEBa3Aa6MP48DMsAIi96WkpWLimIWVwOjbDMOw==}
     engines: {node: '>= 0.8'}
 
-  uuid@13.0.0:
-    resolution: {integrity: sha512-XQegIaBTVUjSHliKqcnFqYypAd4S+WCYt5NIeRs6w/UAry7z8Y9j5ZwRRL4kzq9U3sD6v+85er9FvkEaBpji2w==}
+  uuid@14.0.0:
+    resolution: {integrity: sha512-Qo+uWgilfSmAhXCMav1uYFynlQO7fMFiMVZsQqZRMIXp0O7rR7qjkj+cPvBHLgBqi960QCoo/PH2/6ZtVqKvrg==}
     hasBin: true
 
   uuid@3.4.0:
@@ -18861,7 +18861,7 @@ snapshots:
       object.getownpropertydescriptors: 2.1.9
       safe-array-concat: 1.1.3
 
-  uuid@13.0.0: {}
+  uuid@14.0.0: {}
 
   uuid@3.4.0: {}
 
