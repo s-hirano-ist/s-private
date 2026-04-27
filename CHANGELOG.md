@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.7.5](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.7.4...s-private-v3.7.5) (2026-04-27)
+
+
+### Maintenance
+
+* **deps:** update dependency uuid to v14 [security] ([4a17f96](https://github.com/s-hirano-ist/s-private/commit/4a17f96a52d1e548bee945d3c56c81c92dcc2cea))
+* **deps:** update github actions ([06abedd](https://github.com/s-hirano-ist/s-private/commit/06abedd6f17e02d69edf44d6cde5e8dfec7ce752))
+* **deps:** update github actions ([7b4d8c6](https://github.com/s-hirano-ist/s-private/commit/7b4d8c62e26491dffed821f76e146c3eacb1bd7d))
+
 ## [3.7.4](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.7.3...s-private-v3.7.4) (2026-04-26)
 
 
