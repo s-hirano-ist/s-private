@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.20.0...@s-hirano-ist/s-core-v1.20.1) (2026-04-27)
+
+
+### Maintenance
+
+* **deps:** update dependency uuid to v14 [security] ([4a17f96](https://github.com/s-hirano-ist/s-private/commit/4a17f96a52d1e548bee945d3c56c81c92dcc2cea))
+
 ## [1.20.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.19.0...@s-hirano-ist/s-core-v1.20.0) (2026-04-19)
 
 
