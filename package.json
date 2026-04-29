@@ -74,7 +74,7 @@
 	"devDependencies": {
 		"@biomejs/biome": "2.4.12",
 		"@chromatic-com/storybook": "5.1.2",
-		"@eslint/config-inspector": "1.5.0",
+		"@eslint/config-inspector": "2.0.0",
 		"@playwright/test": "1.59.1",
 		"@storybook/addon-a11y": "10.3.5",
 		"@storybook/addon-docs": "10.3.5",
