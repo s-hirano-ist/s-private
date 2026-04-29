@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.7.6](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.7.5...s-private-v3.7.6) (2026-04-29)
+
+
+### Maintenance
+
+* **deps:** update dependency @eslint/config-inspector to v2 ([a7b12db](https://github.com/s-hirano-ist/s-private/commit/a7b12db77d85c1834bd3d3f916bdc244b1866898))
+* **deps:** update dependency @hono/node-server@&lt;1.19.10 to v2 ([2cbe12a](https://github.com/s-hirano-ist/s-private/commit/2cbe12ae9ca14dcf7c31f05c9f5d02f82b73bd5b))
+* **deps:** update dependency effect@&gt;=3.0.0 &lt;3.20.0 to v3.21.2 ([131f45d](https://github.com/s-hirano-ist/s-private/commit/131f45daee3d7aa72974095616ad37ac09dd3d48))
+* **deps:** update dependency vercel to v52 ([39af168](https://github.com/s-hirano-ist/s-private/commit/39af16800fad08311833a26d34bf908132566e9f))
+* **deps:** update googleapis/release-please-action action to v5 ([b6ba60a](https://github.com/s-hirano-ist/s-private/commit/b6ba60a9173a682282c494ba949a9bd6ecd6ee9a))
+* **deps:** update pnpm to v10.33.2 ([5559ac4](https://github.com/s-hirano-ist/s-private/commit/5559ac405e9cfa7ef06b2bbd96ec57c56658682d))
+* upgrade ESLint to v10 ([687cf09](https://github.com/s-hirano-ist/s-private/commit/687cf09580c4221d2f6a6c05ae7a2eecb2c7db77))
+
 ## [3.7.5](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.7.4...s-private-v3.7.5) (2026-04-27)
 
 
