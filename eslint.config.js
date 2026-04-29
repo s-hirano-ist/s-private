@@ -38,6 +38,15 @@ export default defineConfig(
 	},
 	...tsEslint.configs.strict,
 	...nextConfig,
+	// eslint-config-next bundles an outdated babel-eslint-parser whose ScopeManager
+	// lacks `addGlobals` (required by ESLint v10). Override it back to typescript-eslint's
+	// parser for non-TS files so scope analysis stays compatible.
+	{
+		files: ["**/*.{js,jsx,mjs,cjs}"],
+		languageOptions: {
+			parser: tsEslint.parser,
+		},
+	},
 	reactPlugin.configs.flat.recommended,
 	reactPlugin.configs.flat["jsx-runtime"],
 	{
@@ -51,7 +60,10 @@ export default defineConfig(
 						"*.config.js",
 						"*.config.mjs",
 						"*.cjs",
+						"app/*.config.js",
+						"app/*.config.mjs",
 					],
+					maximumDefaultProjectFileMatchCount_THIS_WILL_SLOW_DOWN_LINTING: 12,
 				},
 				tsconfigRootDir: import.meta.dirname,
 			},
