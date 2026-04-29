@@ -47,21 +47,19 @@ export async function addBooksCore(
 			parsedData.userId,
 		);
 
-		// Upload image to MinIO if provided
-		if (parsedData.hasImage) {
-			await Promise.all([
-				storageService.uploadImage(
-					parsedData.path,
-					parsedData.originalBuffer,
-					false,
-				),
-				storageService.uploadImage(
-					parsedData.path,
-					parsedData.thumbnailBuffer,
-					true,
-				),
-			]);
-		}
+		// Upload image to MinIO (original + thumbnail)
+		await Promise.all([
+			storageService.uploadImage(
+				parsedData.path,
+				parsedData.originalBuffer,
+				false,
+			),
+			storageService.uploadImage(
+				parsedData.path,
+				parsedData.thumbnailBuffer,
+				true,
+			),
+		]);
 
 		// Create entity with value objects and domain event
 		const [book, event] = bookEntity.create({

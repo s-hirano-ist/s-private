@@ -62,6 +62,7 @@ export function BooksForm({ addBooks }: Props) {
 				htmlFor="image"
 				label={label("bookCover")}
 				name="image"
+				required
 			/>
 		</GenericFormWrapper>
 	);

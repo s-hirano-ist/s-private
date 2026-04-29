@@ -1,5 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { expect, fn, userEvent, within } from "storybook/test";
+import {
+	expect,
+	fireEvent,
+	fn,
+	userEvent,
+	waitFor,
+	within,
+} from "storybook/test";
 import { BooksForm } from "./books-form";
 
 const meta = {
@@ -63,20 +70,28 @@ export const FillAndSubmit: Story = {
 		const titleInput = canvas.getByLabelText("タイトル");
 		const ratingInput = canvas.getByLabelText("評価 (1-5)");
 		const tagsInput = canvas.getByLabelText("タグ（カンマ区切り）");
+		const imageInput = canvas.getByLabelText(/書籍画像/) as HTMLInputElement;
 
 		await userEvent.type(isbnInput, "978-4-1234-5678-9");
 		await userEvent.type(titleInput, "テストブック");
 		await userEvent.type(ratingInput, "4");
 		await userEvent.type(tagsInput, "技術, 設計");
+		await userEvent.upload(
+			imageInput,
+			new File(["dummy"], "cover.png", { type: "image/png" }),
+		);
 
 		await expect(isbnInput).toHaveValue("978-4-1234-5678-9");
 		await expect(titleInput).toHaveValue("テストブック");
 		await expect(ratingInput).toHaveValue(4);
 		await expect(tagsInput).toHaveValue("技術, 設計");
+		await expect(imageInput.files?.[0]?.name).toBe("cover.png");
 
 		const submitButton = canvas.getByRole("button", { name: "保存" });
-		await userEvent.click(submitButton);
+		const form = submitButton.closest("form");
+		await expect(form).not.toBeNull();
+		if (form) fireEvent.submit(form);
 
-		await expect(args.addBooks).toHaveBeenCalled();
+		await waitFor(() => expect(args.addBooks).toHaveBeenCalled());
 	},
 };

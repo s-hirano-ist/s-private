@@ -12,6 +12,11 @@ import {
 	makeId,
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import {
+	makeContentType,
+	makeFileSize,
+	makePath,
+} from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
 import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/services/storage-service.interface";
 import { beforeEach, describe, expect, test, vi } from "vitest";
@@ -91,16 +96,23 @@ function createMockDeps(
 }
 
 describe("addBooksCore", () => {
+	let stableImagePath: ReturnType<typeof makePath>;
+
 	beforeEach(() => {
 		vi.clearAllMocks();
+		stableImagePath = makePath("cover.jpg", true);
 		vi.mocked(parseAddBooksFormData).mockResolvedValue({
 			isbn: makeISBN("978-4-06-519981-0"),
 			title: makeBookTitle("Test Book"),
 			rating: makeRating(4),
 			tags: makeTags(["test"]),
 			userId: makeUserId("user-123"),
-			imagePath: undefined,
-			hasImage: false as const,
+			imagePath: stableImagePath,
+			path: stableImagePath,
+			contentType: makeContentType("image/jpeg"),
+			fileSize: makeFileSize(1024),
+			originalBuffer: Buffer.from([]),
+			thumbnailBuffer: Buffer.from([]),
 		});
 	});
 
@@ -132,7 +144,7 @@ describe("addBooksCore", () => {
 			userId: makeUserId("user-123"),
 			status: "UNEXPORTED",
 			createdAt: makeCreatedAt(),
-			imagePath: undefined,
+			imagePath: stableImagePath,
 		} as const;
 
 		const mockEvent = new BookCreatedEvent({
@@ -156,7 +168,7 @@ describe("addBooksCore", () => {
 			rating: makeRating(4),
 			tags: makeTags(["test"]),
 			userId: makeUserId("user-123"),
-			imagePath: undefined,
+			imagePath: stableImagePath,
 			caller: "addBooks",
 		});
 		expect(mockCommandRepository.create).toHaveBeenCalledWith(mockBook);
@@ -218,8 +230,12 @@ describe("addBooks (Server Action)", () => {
 			rating: makeRating(4),
 			tags: makeTags(["test"]),
 			userId: makeUserId("user-123"),
-			imagePath: undefined,
-			hasImage: false as const,
+			imagePath: makePath("cover.jpg", true),
+			path: makePath("cover.jpg", true),
+			contentType: makeContentType("image/jpeg"),
+			fileSize: makeFileSize(1024),
+			originalBuffer: Buffer.from([]),
+			thumbnailBuffer: Buffer.from([]),
 		});
 
 		const result = await addBooks(mockFormData);

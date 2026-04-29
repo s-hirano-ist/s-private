@@ -467,8 +467,8 @@ export type CreateBookArgs = Readonly<{
 	rating: Rating;
 	/** Free-form categorization tags (may be empty) */
 	tags: Tags;
-	/** Optional path to user-uploaded book cover image */
-	imagePath?: Path;
+	/** Path to user-uploaded book cover image (required) */
+	imagePath: Path;
 	/** The caller identifier for event tracking */
 	caller: string;
 }>;
