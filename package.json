@@ -94,7 +94,7 @@
 		"@vitest/eslint-plugin": "1.6.16",
 		"babel-plugin-react-compiler": "1.0.0",
 		"dependency-cruiser": "17.3.10",
-		"eslint": "9.39.4",
+		"eslint": "10.2.1",
 		"eslint-config-next": "16.2.4",
 		"eslint-import-resolver-typescript": "4.4.4",
 		"eslint-plugin-boundaries": "6.0.2",
