@@ -36,7 +36,7 @@
 		"previous": "Previous",
 		"next": "Next",
 		"morePages": "More pages",
-		"bookCover": "Book Cover (Optional)",
+		"bookCover": "Book Cover",
 		"rating": "Rating (1-5)",
 		"tags": "Tags (comma-separated)",
 		"403": "Forbidden"

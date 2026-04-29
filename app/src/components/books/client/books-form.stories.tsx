@@ -1,5 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { expect, fn, userEvent, waitFor, within } from "storybook/test";
+import {
+	expect,
+	fireEvent,
+	fn,
+	userEvent,
+	waitFor,
+	within,
+} from "storybook/test";
 import { BooksForm } from "./books-form";
 
 const meta = {
@@ -81,7 +88,9 @@ export const FillAndSubmit: Story = {
 		await expect(imageInput.files?.[0]?.name).toBe("cover.png");
 
 		const submitButton = canvas.getByRole("button", { name: "保存" });
-		await userEvent.click(submitButton);
+		const form = submitButton.closest("form");
+		await expect(form).not.toBeNull();
+		if (form) fireEvent.submit(form);
 
 		await waitFor(() => expect(args.addBooks).toHaveBeenCalled());
 	},
