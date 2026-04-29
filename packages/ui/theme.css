@@ -5,6 +5,7 @@
 #000000
 #1b1b1b
 #424242
+#5d5d5d
 #6d6d6d
 #9b9b9b
 #cccccc → #e9e9e9
@@ -25,7 +26,7 @@ https://colors.design4u.jp/app/index.html?hex0=%234076a2&stp0=2&str0=1.0&ptn0=0&
 		--primary-foreground: 255 255 255; /* #ffffff */
 
 		--muted: 233 233 233; /* #e9e9e9 */
-		--muted-foreground: 109 109 109; /* #6d6d6d */
+		--muted-foreground: 93 93 93; /* #5d5d5d */
 
 		--destructive: 178 45 53; /* #b22d35 */
 
