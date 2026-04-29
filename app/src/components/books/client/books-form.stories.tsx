@@ -63,11 +63,16 @@ export const FillAndSubmit: Story = {
 		const titleInput = canvas.getByLabelText("タイトル");
 		const ratingInput = canvas.getByLabelText("評価 (1-5)");
 		const tagsInput = canvas.getByLabelText("タグ（カンマ区切り）");
+		const imageInput = canvas.getByLabelText(/書籍画像/);
 
 		await userEvent.type(isbnInput, "978-4-1234-5678-9");
 		await userEvent.type(titleInput, "テストブック");
 		await userEvent.type(ratingInput, "4");
 		await userEvent.type(tagsInput, "技術, 設計");
+		await userEvent.upload(
+			imageInput,
+			new File(["dummy"], "cover.png", { type: "image/png" }),
+		);
 
 		await expect(isbnInput).toHaveValue("978-4-1234-5678-9");
 		await expect(titleInput).toHaveValue("テストブック");
