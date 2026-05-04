@@ -71,8 +71,8 @@ Clone found (tsx):
    /home/runner/work/s-private/s-private/packages/ui/forms/generic-form-wrapper.stories.tsx [273:10 - 291:2]
 
 Clone found (typescript):
- - /home/runner/work/s-private/s-private/app/src/app/api/images/[contentType]/[id]/route.ts [12:2 - 20:11] (8 lines, 91 tokens)
-   /home/runner/work/s-private/s-private/app/src/app/api/books/images/[contentType]/[path]/route.ts [11:2 - 19:7]
+ - /home/runner/work/s-private/s-private/app/src/app/api/images/[contentType]/[id]/route.ts [13:2 - 21:11] (8 lines, 91 tokens)
+   /home/runner/work/s-private/s-private/app/src/app/api/books/images/[contentType]/[path]/route.ts [12:2 - 20:7]
 
 Clone found (tsx):
  - /home/runner/work/s-private/s-private/app/src/components/common/layouts/nav/footer.stories.tsx [126:17 - 140:13] (14 lines, 118 tokens)
@@ -119,11 +119,11 @@ Clone found (typescript):
    /home/runner/work/s-private/s-private/app/src/infrastructures/notes/repositories/notes-query-repository.ts [45:2 - 60:7]
 
 Clone found (typescript):
- - /home/runner/work/s-private/s-private/app/src/infrastructures/books/repositories/books-query-repository.ts [48:10 - 60:5] (12 lines, 90 tokens)
+ - /home/runner/work/s-private/s-private/app/src/infrastructures/books/repositories/books-query-repository.ts [50:10 - 62:5] (12 lines, 90 tokens)
    /home/runner/work/s-private/s-private/app/src/infrastructures/notes/repositories/notes-query-repository.ts [32:6 - 44:6]
 
 Clone found (typescript):
- - /home/runner/work/s-private/s-private/app/src/infrastructures/books/repositories/books-query-repository.ts [80:9 - 97:2] (17 lines, 142 tokens)
+ - /home/runner/work/s-private/s-private/app/src/infrastructures/books/repositories/books-query-repository.ts [81:9 - 98:2] (17 lines, 142 tokens)
    /home/runner/work/s-private/s-private/app/src/infrastructures/images/repositories/images-query-repository.ts [51:7 - 62:2]
 
 Clone found (typescript):
@@ -197,13 +197,13 @@ Clone found (tsx):
 ┌────────────┬────────────────┬─────────────┬──────────────┬──────────────┬──────────────────┬───────────────────┐
 │ Format     │ Files analyzed │ Total lines │ Total tokens │ Clones found │ Duplicated lines │ Duplicated tokens │
 ├────────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤
-│ typescript │ 150            │ 10236       │ 46017        │ 12           │ 149 (1.46%)      │ 1244 (2.7%)       │
+│ typescript │ 151            │ 10285       │ 46296        │ 12           │ 149 (1.45%)      │ 1244 (2.69%)      │
 ├────────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤
-│ tsx        │ 152            │ 11060       │ 73033        │ 36           │ 492 (4.45%)      │ 4114 (5.63%)      │
+│ tsx        │ 153            │ 11174       │ 73963        │ 36           │ 492 (4.4%)       │ 4114 (5.56%)      │
 ├────────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤
-│ javascript │ 101            │ 2151        │ 12600        │ 1            │ 21 (0.98%)       │ 130 (1.03%)       │
+│ javascript │ 102            │ 2223        │ 13129        │ 1            │ 21 (0.94%)       │ 130 (0.99%)       │
 ├────────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤
-│ Total:     │ 403            │ 23447       │ 131650       │ 49           │ 662 (2.82%)      │ 5488 (4.17%)      │
+│ Total:     │ 406            │ 23682       │ 133388       │ 49           │ 662 (2.8%)       │ 5488 (4.11%)      │
 └────────────┴────────────────┴─────────────┴──────────────┴──────────────┴──────────────────┴───────────────────┘
 Found 49 clones.
-Detection time:: 895.238ms
+time: 897.569ms
