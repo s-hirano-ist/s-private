@@ -1,10 +1,10 @@
 {
-	".": "3.7.5",
-	"packages/core": "1.20.1",
-	"packages/ui": "1.19.7",
-	"packages/database": "1.19.0",
+	".": "3.7.6",
+	"packages/core": "1.20.2",
+	"packages/ui": "1.19.8",
+	"packages/database": "1.19.1",
 	"packages/notification": "1.18.4",
-	"packages/scripts": "1.23.3",
+	"packages/scripts": "1.23.4",
 	"packages/search": "1.18.9",
 	"packages/storage": "1.18.5"
 }

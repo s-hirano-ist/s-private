@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.19.8](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.19.7...@s-hirano-ist/s-ui-v1.19.8) (2026-05-05)
+
+
+### Bug Fixes
+
+* a11y ([86adf7c](https://github.com/s-hirano-ist/s-private/commit/86adf7c969ea42dde66679e14a67c150558b4358))
+* color of muted foreground ([38e774a](https://github.com/s-hirano-ist/s-private/commit/38e774ae7d3e5f578717b95d3fd555bf7472be62))
+
+
+### Maintenance
+
+* **deps:** update non-major ([396152f](https://github.com/s-hirano-ist/s-private/commit/396152f1b8cc7cf441165e1af9e8264ca4a6df73))
+
 ## [1.19.7](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.19.6...@s-hirano-ist/s-ui-v1.19.7) (2026-04-19)
 
 

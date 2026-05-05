@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.19.0...@s-hirano-ist/s-database-v1.19.1) (2026-05-05)
+
+
+### Maintenance
+
+* **deps:** update non-major ([396152f](https://github.com/s-hirano-ist/s-private/commit/396152f1b8cc7cf441165e1af9e8264ca4a6df73))
+
 ## [1.19.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.18.6...@s-hirano-ist/s-database-v1.19.0) (2026-04-19)
 
 
