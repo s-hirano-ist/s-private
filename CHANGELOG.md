@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.7.6](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.7.5...s-private-v3.7.6) (2026-05-05)
+
+
+### Bug Fixes
+
+* a11y ([86adf7c](https://github.com/s-hirano-ist/s-private/commit/86adf7c969ea42dde66679e14a67c150558b4358))
+* color of muted foreground ([38e774a](https://github.com/s-hirano-ist/s-private/commit/38e774ae7d3e5f578717b95d3fd555bf7472be62))
+* form image required ([69d439f](https://github.com/s-hirano-ist/s-private/commit/69d439f2ba277925c5986cdb363113bf904912bc))
+* test ([9f7b1a2](https://github.com/s-hirano-ist/s-private/commit/9f7b1a27a051bb98166df314a3a6b9be2f85835a))
+
+
+### Documentation
+
+* fix form ([6e2bb6b](https://github.com/s-hirano-ist/s-private/commit/6e2bb6bd7e1fa97e5f9af32578db82ab355f250f))
+* fix tests ([535e816](https://github.com/s-hirano-ist/s-private/commit/535e8163f7e5ffda52043cc3f9449045a45aba6b))
+
+
+### Maintenance
+
+* biome versions ([d0773a5](https://github.com/s-hirano-ist/s-private/commit/d0773a54cee3e8b8c74d77840035b144cd2a23d7))
+* **deps:** update dependency @eslint/config-inspector to v2 ([a7b12db](https://github.com/s-hirano-ist/s-private/commit/a7b12db77d85c1834bd3d3f916bdc244b1866898))
+* **deps:** update dependency @hono/node-server@&lt;1.19.10 to v2 ([2cbe12a](https://github.com/s-hirano-ist/s-private/commit/2cbe12ae9ca14dcf7c31f05c9f5d02f82b73bd5b))
+* **deps:** update dependency @hono/node-server@&lt;1.19.10 to v2.0.1 ([785068a](https://github.com/s-hirano-ist/s-private/commit/785068a2a86e628f00e887d429cbb8cae28504c3))
+* **deps:** update dependency effect@&gt;=3.0.0 &lt;3.20.0 to v3.21.2 ([131f45d](https://github.com/s-hirano-ist/s-private/commit/131f45daee3d7aa72974095616ad37ac09dd3d48))
+* **deps:** update dependency hono@&lt;4.12.4 to v4.12.15 ([eaaf890](https://github.com/s-hirano-ist/s-private/commit/eaaf890ccb18f048e7387cd1fcd93b6ddb74f9cb))
+* **deps:** update dependency hono@&lt;4.12.4 to v4.12.16 ([a785095](https://github.com/s-hirano-ist/s-private/commit/a785095a7f9a4c90992015210cb090d1c03baec8))
+* **deps:** update dependency vercel to v52 ([39af168](https://github.com/s-hirano-ist/s-private/commit/39af16800fad08311833a26d34bf908132566e9f))
+* **deps:** update googleapis/release-please-action action to v5 ([b6ba60a](https://github.com/s-hirano-ist/s-private/commit/b6ba60a9173a682282c494ba949a9bd6ecd6ee9a))
+* **deps:** update non-major ([396152f](https://github.com/s-hirano-ist/s-private/commit/396152f1b8cc7cf441165e1af9e8264ca4a6df73))
+* **deps:** update pnpm to v10.33.2 ([5559ac4](https://github.com/s-hirano-ist/s-private/commit/5559ac405e9cfa7ef06b2bbd96ec57c56658682d))
+* **deps:** update pnpm/action-setup digest to 26f6d4f ([a9de387](https://github.com/s-hirano-ist/s-private/commit/a9de3875b9d678795798ca7aa4bd2ebc1ac82ba7))
+* upgrade ESLint to v10 ([687cf09](https://github.com/s-hirano-ist/s-private/commit/687cf09580c4221d2f6a6c05ae7a2eecb2c7db77))
+
 ## [3.7.5](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.7.4...s-private-v3.7.5) (2026-04-27)
 
 

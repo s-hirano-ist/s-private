@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.20.1...@s-hirano-ist/s-core-v1.20.2) (2026-05-05)
+
+
+### Bug Fixes
+
+* form image required ([69d439f](https://github.com/s-hirano-ist/s-private/commit/69d439f2ba277925c5986cdb363113bf904912bc))
+
 ## [1.20.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.20.0...@s-hirano-ist/s-core-v1.20.1) (2026-04-27)
 
 
