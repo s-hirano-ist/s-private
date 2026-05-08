@@ -3,22 +3,31 @@ packages:
   - services/*
   - packages/*
 
-# conflict with the renovate settings so disabled for now
-# minimumReleaseAge: 1440
-
-onlyBuiltDependencies:
-  - '@memlab/cli'
-  - '@parcel/watcher'
-  - '@prisma/engines'
-  - '@sentry/cli'
-  - '@swc/core'
-  - dprint
-  - esbuild
-  - memlab
-  - prisma
-  - puppeteer
-  - sharp
-  - sleep
-  - unrs-resolver
-
 savePrefix: ''
+
+allowBuilds:
+  '@memlab/cli': true
+  '@parcel/watcher': true
+  '@prisma/engines': true
+  '@sentry/cli': true
+  '@swc/core': true
+  dprint: true
+  esbuild: true
+  memlab: true
+  prisma: true
+  puppeteer: true
+  sharp: true
+  sleep: true
+  unrs-resolver: true
+
+overrides:
+  'cross-spawn@<7.0.5': 7.0.6
+  'tar@<7.5.8': 7.5.13
+  'minimatch@>=10.0.0 <10.2.1': 10.2.5
+  'path-to-regexp@>=8.0.0 <8.4.0': 8.4.2
+  'picomatch@>=4.0.0 <4.0.4': 4.0.4
+  'hono@<4.12.4': 4.12.16
+  '@hono/node-server@<1.19.10': 2.0.1
+  'effect@>=3.0.0 <3.20.0': 3.21.2
+  'undici@<6.21.1': 8.1.0
+  vite: ^7.3.1
