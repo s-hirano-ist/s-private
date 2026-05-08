@@ -56,7 +56,7 @@
 	},
 	"dependencies": {
 		"next": "16.2.4",
-		"next-intl": "4.9.1"
+		"next-intl": "4.9.2"
 	},
 	"pnpm": {
 		"overrides": {
