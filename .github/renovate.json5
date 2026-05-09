@@ -131,5 +131,12 @@
       ],
       enabled: false,
     },
+    {
+      matchFileNames: [
+        'pnpm-workspace.yaml',
+      ],
+      enabled: false,
+      description: 'pnpm-workspace.yaml overrides act as security/compat floors; bumping them mutates the file without regenerating pnpm-lock.yaml, which trips ERR_PNPM_LOCKFILE_CONFIG_MISMATCH under pnpm v11 --frozen-lockfile. Update manually when a new vuln requires raising the floor.',
+    },
   ],
 }
