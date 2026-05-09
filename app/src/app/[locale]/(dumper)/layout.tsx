@@ -4,7 +4,7 @@ import { PAGE_NAME } from "@/common/constants";
 import { TabNav } from "@/components/common/layouts/nav/tab-nav";
 
 export const metadata: Metadata = {
-	title: `${PAGE_NAME}`,
+	title: PAGE_NAME,
 	description: "Knowledge dumper and viewer.",
 };
 

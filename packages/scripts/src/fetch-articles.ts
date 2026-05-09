@@ -67,12 +67,12 @@ async function main() {
 	const UNEXPORTED: Status = makeUnexportedStatus();
 
 	function categorizeArticles(articles: Article[]): OutputType {
-		return articles.reduce((acc, d) => {
+		return articles.reduce<OutputType>((acc, d) => {
 			if (!acc[d.categoryName]) acc[d.categoryName] = [];
 			const { title, quote, url } = d;
 			acc[d.categoryName].push({ title, quote: quote ?? "", url });
 			return acc;
-		}, {} as OutputType);
+		}, {});
 	}
 
 	async function readFileOrCreate(key: string): Promise<Template> {
@@ -137,16 +137,19 @@ async function main() {
 		});
 	} catch (error) {
 		console.error("❌ エラーが発生しました:", error);
-		await notificationService.notifyError(`fetch-articles failed: ${error}`, {
-			caller: "fetch-articles",
-		});
+		await notificationService.notifyError(
+			`fetch-articles failed: ${String(error)}`,
+			{
+				caller: "fetch-articles",
+			},
+		);
 		process.exit(1);
 	} finally {
 		await prisma.$disconnect();
 	}
 }
 
-main().catch((error) => {
+main().catch((error: unknown) => {
 	console.error(error);
 	process.exit(1);
 });

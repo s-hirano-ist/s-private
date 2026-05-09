@@ -67,7 +67,7 @@ export function Footer({ search }: Props) {
 			setOptimisticLayout(value);
 
 			if (pathname.includes("/book/") || pathname.includes("/note/")) {
-				const localeMatch = pathname.match(/^\/([^/]+)/);
+				const localeMatch = /^\/([^/]+)/.exec(pathname);
 				const locale = localeMatch ? localeMatch[1] : "";
 				const target =
 					value === "viewer"

@@ -74,9 +74,7 @@ const _getNotes = async (
 				key: d.id,
 				title: d.title,
 				description,
-				primaryBadgeText: new Date(
-					d.createdAt as unknown as string,
-				).toLocaleDateString("ja-JP"),
+				primaryBadgeText: new Date(d.createdAt).toLocaleDateString("ja-JP"),
 				href: `/note/${encodeURIComponent(d.title)}`,
 			};
 		}),

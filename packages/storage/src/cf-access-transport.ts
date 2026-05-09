@@ -24,5 +24,5 @@ export function createCfAccessTransport(
 			// biome-ignore lint/suspicious/noExplicitAny: https.request has complex overloads incompatible with Transport type
 			return (https.request as any)(options, ...rest);
 		},
-	} as Transport;
+	};
 }

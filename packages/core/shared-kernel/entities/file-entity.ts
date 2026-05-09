@@ -48,7 +48,7 @@ export type Path = z.infer<typeof Path>;
  */
 export const makePath = (v: string, sanitizeAndUnique: boolean): Path => {
 	if (sanitizeAndUnique) {
-		const sanitizedFileName = v.replaceAll(/[^a-zA-Z0-9._-]/g, "");
+		const sanitizedFileName = v.replaceAll(/[^\w.-]/g, "");
 		const path = `${idGenerator.uuidv7()}-${sanitizedFileName}`;
 		return Path.parse(path);
 	}

@@ -48,7 +48,7 @@ export async function deleteNoteCore(
 		await eventDispatcher.dispatch(
 			new NoteDeletedEvent({
 				title,
-				userId: userId as string,
+				userId: userId,
 				caller: "deleteNote",
 			}),
 		);

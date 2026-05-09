@@ -27,7 +27,7 @@ type Props = {
 function generatePageLink(page: number): Route {
 	const params = new URLSearchParams();
 	params.set("page", String(page));
-	return `?${params.toString()}` as Route;
+	return `?${params.toString()}`;
 }
 
 type PaginationItemType =

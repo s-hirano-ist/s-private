@@ -67,5 +67,5 @@ export type DomainEventHandler = {
 	 *
 	 * @param event - The domain event to handle
 	 */
-	handle(event: DomainEvent<Record<string, unknown>>): Promise<void>;
+	handle(event: DomainEvent): Promise<void>;
 };

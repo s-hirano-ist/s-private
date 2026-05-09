@@ -14,7 +14,7 @@ describe("ImagesDomainService", () => {
 			findByPath: vi.fn(),
 			findMany: vi.fn(),
 			count: vi.fn(),
-		} as IImagesQueryRepository;
+		};
 
 		imagesDomainService = new ImagesDomainService(imagesQueryRepository);
 	});

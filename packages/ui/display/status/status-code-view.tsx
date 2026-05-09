@@ -62,7 +62,7 @@ export function StatusCodeView({
 				{STATUS_ICON_MAP[statusCode]}
 			</div>
 			<div className="bg-linear-to-r from-primary to-primary-grad bg-clip-text font-black text-8xl text-transparent tracking-tighter">
-				{String(statusCode)}
+				{statusCode}
 			</div>
 			<div className="text-base text-muted-foreground">{statusCodeString}</div>
 		</div>

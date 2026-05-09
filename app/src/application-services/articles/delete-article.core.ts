@@ -48,7 +48,7 @@ export async function deleteArticleCore(
 		await eventDispatcher.dispatch(
 			new ArticleDeletedEvent({
 				title,
-				userId: userId as string,
+				userId: userId,
 				caller: "deleteArticle",
 			}),
 		);

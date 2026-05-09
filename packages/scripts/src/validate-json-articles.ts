@@ -181,7 +181,7 @@ async function main(): Promise<void> {
 				allIssues.push({
 					file: fileName,
 					level: "error",
-					message: `ファイル読み込みエラー: ${error}`,
+					message: `ファイル読み込みエラー: ${String(error)}`,
 				});
 			}
 		}
@@ -197,7 +197,7 @@ async function main(): Promise<void> {
 	}
 }
 
-main().catch((error) => {
+main().catch((error: unknown) => {
 	console.error("❌ エラーが発生しました:", error);
 	process.exit(1);
 });

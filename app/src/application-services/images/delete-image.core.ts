@@ -48,7 +48,7 @@ export async function deleteImageCore(
 		await eventDispatcher.dispatch(
 			new ImageDeletedEvent({
 				path,
-				userId: userId as string,
+				userId: userId,
 				caller: "deleteImage",
 			}),
 		);

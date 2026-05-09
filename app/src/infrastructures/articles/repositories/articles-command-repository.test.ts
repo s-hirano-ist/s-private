@@ -62,7 +62,7 @@ describe("ArticlesCommandRepository", () => {
 				categoryId: "1",
 				ogImageUrl: "https://example.com/og-image.jpg",
 				exportedAt: new Date(),
-				status: "EXPORTED" as Status,
+				status: "EXPORTED",
 				createdAt: new Date(),
 				updatedAt: new Date(),
 				userId: "user123",

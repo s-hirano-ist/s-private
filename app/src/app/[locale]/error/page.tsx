@@ -16,7 +16,7 @@ export default async function Page() {
 			<div className="flex h-screen w-screen flex-col items-center justify-center space-y-4 text-center">
 				<StatusCodeView statusCode="500" statusCodeString={t("500")} />
 				<Button asChild variant="outline">
-					<Link href={"/" as Route}>Go back to Home</Link>
+					<Link href={"/"}>Go back to Home</Link>
 				</Button>
 			</div>
 		</main>

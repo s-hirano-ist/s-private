@@ -91,7 +91,7 @@ function parseFrontmatter(content: string): {
 	frontmatter: MarkdownFrontmatter;
 	body: string;
 } {
-	const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+	const frontmatterMatch = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/.exec(content);
 
 	if (!frontmatterMatch) {
 		return {
@@ -150,7 +150,7 @@ function splitMarkdownByHeadings(content: string): MarkdownSection[] {
 			continue;
 		}
 
-		const headingMatch = line.match(/^(#{2,3})\s+(\S.*)$/);
+		const headingMatch = /^(#{2,3})\s+(\S.*)$/.exec(line);
 
 		if (headingMatch) {
 			// Finalize preamble on first H2/H3
@@ -226,7 +226,7 @@ function splitByParagraphs(text: string, maxLength: number): string[] {
 		return [text];
 	}
 
-	const paragraphs = text.split(/\n\n+/);
+	const paragraphs = text.split(/\n{2,}/);
 	const chunks: string[] = [];
 	let currentChunk = "";
 
