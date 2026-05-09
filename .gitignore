@@ -39,7 +39,7 @@ jscpd-report/
 
 # Documentation
 docs/api/
-packages/database/dbml/
+packages/database/erd/
 
 # claude
 /plans

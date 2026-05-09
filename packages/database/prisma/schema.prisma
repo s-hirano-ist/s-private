@@ -3,10 +3,10 @@ generator client {
   output   = "../src/generated"
 }
 
-generator dbml {
-  provider   = "prisma-dbml-generator"
-  output     = "../dbml"
-  outputName = "schema.dbml"
+generator erd {
+  provider = "prisma-erd-generator"
+  output   = "../erd/schema.md"
+  mmdcPath = ""
 }
 
 datasource db {

@@ -35,7 +35,7 @@
 		"LICENSE"
 	],
 	"scripts": {
-		"prisma:generate": "prisma generate",
+		"prisma:generate": "mkdir -p erd && prisma generate",
 		"prisma:migrate": "prisma migrate dev",
 		"prisma:deploy": "prisma migrate deploy",
 		"prisma:studio": "prisma studio",
@@ -58,8 +58,7 @@
 		"prisma": "7.8.0"
 	},
 	"devDependencies": {
-		"@softwaretechnik/dbml-renderer": "1.0.31",
-		"prisma-dbml-generator": "0.12.0",
+		"prisma-erd-generator": "2.4.2",
 		"typescript": "6.0.3"
 	}
 }
