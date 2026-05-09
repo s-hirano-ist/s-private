@@ -7,7 +7,7 @@
  * This package provides reusable React components built with:
  * - Radix UI primitives for accessibility
  * - Tailwind CSS for styling
- * - class-variance-authority for variant management
+ * - tailwind-variants for variant management
  *
  * ## Component Categories
  *

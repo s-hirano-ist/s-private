@@ -1,8 +1,8 @@
 "use client";
 
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { cva, type VariantProps } from "class-variance-authority";
 import type * as React from "react";
+import { tv, type VariantProps } from "tailwind-variants";
 
 import { cn } from "../utils/cn";
 
@@ -75,21 +75,19 @@ function DialogOverlay({ className, ref, ...props }: DialogOverlayProps) {
 }
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
-const dialogContentVariants = cva(
-	"data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] fixed top-[50%] left-[50%] z-50 grid w-full translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=closed]:animate-out data-[state=open]:animate-in sm:rounded-lg",
-	{
-		variants: {
-			size: {
-				default: "max-w-lg",
-				md: "max-w-2xl",
-				lg: "max-w-4xl",
-			},
-		},
-		defaultVariants: {
-			size: "default",
+const dialogContentVariants = tv({
+	base: "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] fixed top-[50%] left-[50%] z-50 grid w-full translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=closed]:animate-out data-[state=open]:animate-in sm:rounded-lg",
+	variants: {
+		size: {
+			default: "max-w-lg",
+			md: "max-w-2xl",
+			lg: "max-w-4xl",
 		},
 	},
-);
+	defaultVariants: {
+		size: "default",
+	},
+});
 
 type DialogContentProps = {
 	ref?: React.Ref<React.ComponentRef<typeof DialogPrimitive.Content>>;
