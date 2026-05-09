@@ -1,3 +1,4 @@
+# Node version SSOT: .nvmrc (mise reads it via idiomatic_version_file_enable_tools)
 [settings]
 idiomatic_version_file_enable_tools = ["node"]
 

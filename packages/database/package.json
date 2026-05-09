@@ -38,7 +38,7 @@
 		"prisma:deploy": "prisma migrate deploy",
 		"prisma:studio": "prisma studio",
 		"docs:build": "bash scripts/generate-db-docs.sh",
-		"build": "tsc --noEmit",
+		"build": "prisma generate && tsc --noEmit",
 		"postinstall": "pnpm prisma:generate",
 		"prepublishOnly": "pnpm prisma:generate",
 		"typecheck": "tsc --noEmit"

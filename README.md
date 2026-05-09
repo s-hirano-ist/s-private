@@ -72,8 +72,9 @@
   - Lock file maintenance enabled
 - **Manual Security Audits** - `pnpm audit` (moderate+ severity threshold)
 - **Supply Chain Protection**
-  - Package version pinning (`save-exact=true`)
-  - Lifecycle script protection (`ignore-dep-scripts=true`)
+  - Package version pinning (`savePrefix: ''` in pnpm-workspace.yaml)
+  - Lifecycle script protection (`allowBuilds` + `strictDepBuilds: true`)
+  - Exotic subdep blocking (`blockExoticSubdeps: true`) and trust policy (`trustPolicy: no-downgrade`)
   - Minimum release age: 24 hours (pnpm-workspace.yaml)
   - Frozen lockfiles in CI/CD
 
@@ -280,7 +281,7 @@ Schema location: `packages/database/prisma/schema.prisma`
 ## Development Setup
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) v24.14.1 (managed via [Mise](https://mise.jdx.dev/))
+- [Node.js](https://nodejs.org/) — version pinned in [.nvmrc](.nvmrc), installed via [Mise](https://mise.jdx.dev/)
 - [pnpm](https://pnpm.io/) v11.0.8 (managed via Mise)
 - [Doppler CLI](https://docs.doppler.com/docs/install-cli) v3.75.3 (managed via Mise)
 - [Docker](https://www.docker.com/) (for PostgreSQL database)

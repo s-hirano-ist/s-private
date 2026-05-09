@@ -32,6 +32,8 @@
     'dependencies',
   ],
   rangeStrategy: 'bump',
+  platformAutomerge: true,
+  automergeStrategy: 'squash',
   lockFileMaintenance: {
     enabled: true,
     automerge: true,
@@ -43,7 +45,7 @@
     ],
   },
   packageRules: [
-{
+    {
       matchManagers: [
         'npm',
       ],
@@ -56,7 +58,6 @@
       ],
       matchDepTypes: [
         'dependencies',
-        'devDependencies',
         'peerDependencies',
       ],
       groupName: 'non-major',
@@ -64,11 +65,31 @@
     },
     {
       matchManagers: [
+        'npm',
+      ],
+      matchUpdateTypes: [
+        'patch',
+        'minor',
+      ],
+      matchPackageNames: [
+        '*',
+      ],
+      matchDepTypes: [
+        'devDependencies',
+      ],
+      groupName: 'non-major (devDependencies)',
+      groupSlug: 'non-major-dev',
+      minimumReleaseAge: '2 days',
+      automerge: true,
+    },
+    {
+      matchManagers: [
         'github-actions',
       ],
       groupName: 'GitHub Actions',
       groupSlug: 'github-actions',
-      "minimumReleaseAge": '2 days',
+      minimumReleaseAge: '2 days',
+      automerge: true,
     },
     {
       matchManagers: [
@@ -77,6 +98,7 @@
       groupName: 'mise',
       groupSlug: 'mise',
       minimumReleaseAge: '2 days',
+      automerge: true,
     },
     {
       matchDepNames: [
@@ -91,6 +113,14 @@
       groupName: 'node and pnpm',
       groupSlug: 'node-pnpm',
       minimumReleaseAge: '2 days',
+      automerge: false,
+    },
+    {
+      matchManagers: [
+        'docker-compose',
+      ],
+      minimumReleaseAge: '2 days',
+      automerge: true,
     },
     {
       matchManagers: [

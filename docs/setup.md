@@ -12,7 +12,10 @@ pnpm dev             # 開発サーバー起動（環境変数は Doppler から
 
 ## Mise Configuration
 
-This project uses [Mise](https://mise.jdx.dev/) for tool version management. Node.js, pnpm, Doppler CLI 等のバージョンは `.mise.toml` で定義されています。
+This project uses [Mise](https://mise.jdx.dev/) for tool version management.
+
+- **Node.js** のバージョンは `.nvmrc` を Single Source of Truth とし、Mise は `.mise.toml` の `idiomatic_version_file_enable_tools = ["node"]` 設定によりこれを読み込みます。`package.json#engines.node` は Vercel と pnpm 用のミラーで、CI で `.nvmrc` との一致が検証されます。Vercel ダッシュボードの Node.js Version 設定も同じメジャー (24.x) に揃えてください。
+- **pnpm / Doppler CLI** など他ツールのバージョンは `.mise.toml` の `[tools]` で定義されています。
 
 1. [Mise](https://mise.jdx.dev/getting-started.html) をインストール
 2. プロジェクトルートで以下を実行:
