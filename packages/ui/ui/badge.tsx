@@ -1,9 +1,9 @@
-import { cva, type VariantProps } from "class-variance-authority";
+import { tv, type VariantProps } from "tailwind-variants";
 
 import { cn } from "../utils/cn";
 
 /**
- * Badge style variants using class-variance-authority.
+ * Badge style variants using tailwind-variants.
  *
  * @remarks
  * Provides consistent styling for badge components with multiple visual variants.
@@ -13,25 +13,23 @@ import { cn } from "../utils/cn";
  * const className = badgeVariants({ variant: "secondary" });
  * ```
  */
-const badgeVariants = cva(
-	"inline-flex items-center rounded-full border px-3 py-0.5 text-xs font-medium transition-colors focus:outline-hidden focus:ring-2 focus:ring-primary focus:ring-offset-2",
-	{
-		variants: {
-			variant: {
-				default:
-					"border-primary/20 bg-primary/5 text-primary hover:bg-primary/10",
-				secondary:
-					"border-transparent bg-muted text-muted-foreground hover:bg-muted/80",
-				destructive:
-					"border-transparent bg-destructive/10 text-destructive hover:bg-destructive/20",
-				outline: "border-muted bg-muted/50 text-muted-foreground",
-			},
-		},
-		defaultVariants: {
-			variant: "default",
+const badgeVariants = tv({
+	base: "inline-flex items-center rounded-full border px-3 py-0.5 text-xs font-medium transition-colors focus:outline-hidden focus:ring-2 focus:ring-primary focus:ring-offset-2",
+	variants: {
+		variant: {
+			default:
+				"border-primary/20 bg-primary/5 text-primary hover:bg-primary/10",
+			secondary:
+				"border-transparent bg-muted text-muted-foreground hover:bg-muted/80",
+			destructive:
+				"border-transparent bg-destructive/10 text-destructive hover:bg-destructive/20",
+			outline: "border-muted bg-muted/50 text-muted-foreground",
 		},
 	},
-);
+	defaultVariants: {
+		variant: "default",
+	},
+});
 
 /**
  * Props for the Badge component.
@@ -47,7 +45,7 @@ export type BadgeProps = {} & React.HTMLAttributes<HTMLDivElement> &
  *
  * @remarks
  * Badges are used to highlight information like status, counts, or labels.
- * Built on top of class-variance-authority for consistent styling.
+ * Built on top of tailwind-variants for consistent styling.
  *
  * @param props - Badge props including variant and standard div attributes
  * @returns A styled badge element

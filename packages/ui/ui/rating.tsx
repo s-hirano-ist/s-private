@@ -1,9 +1,10 @@
-import { cva, type VariantProps } from "class-variance-authority";
 import type * as React from "react";
+import { tv, type VariantProps } from "tailwind-variants";
 
 import { cn } from "../utils/cn";
 
-const ratingVariants = cva("flex gap-0.5", {
+const ratingVariants = tv({
+	base: "flex gap-0.5",
 	variants: {
 		size: {
 			sm: "[&_svg]:size-3",

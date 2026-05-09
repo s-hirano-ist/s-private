@@ -107,7 +107,6 @@
 	"license": "MIT",
 	"dependencies": {
 		"@tailwindcss/typography": "0.5.19",
-		"class-variance-authority": "0.7.1",
 		"clsx": "2.1.1",
 		"cmdk": "1.1.1",
 		"lucide-react": "1.11.0",
@@ -126,7 +125,8 @@
 		"remark-gfm": "4.0.1",
 		"sonner": "2.0.7",
 		"@base-ui/react": "1.4.1",
-		"tailwind-merge": "3.5.0"
+		"tailwind-merge": "3.5.0",
+		"tailwind-variants": "3.2.2"
 	},
 	"devDependencies": {
 		"@storybook/nextjs-vite": "10.3.5",
