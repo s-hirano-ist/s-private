@@ -281,7 +281,7 @@ Schema location: `packages/database/prisma/schema.prisma`
 ## Development Setup
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) v24.14.1 (managed via [Mise](https://mise.jdx.dev/))
+- [Node.js](https://nodejs.org/) — version pinned in [.nvmrc](.nvmrc), installed via [Mise](https://mise.jdx.dev/)
 - [pnpm](https://pnpm.io/) v11.0.8 (managed via Mise)
 - [Doppler CLI](https://docs.doppler.com/docs/install-cli) v3.75.3 (managed via Mise)
 - [Docker](https://www.docker.com/) (for PostgreSQL database)

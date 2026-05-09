@@ -72,6 +72,15 @@ jobs:
           persist-credentials: false
           submodules: true
 
+      - name: Verify .nvmrc matches package.json#engines.node
+        run: |
+          nvmrc=$(tr -d '[:space:]' < .nvmrc)
+          engines=$(jq -r '.engines.node' package.json)
+          if [ "$nvmrc" != "$engines" ]; then
+            echo "::error::.nvmrc ($nvmrc) and package.json engines.node ($engines) differ — SSOT is .nvmrc"
+            exit 1
+          fi
+
       - name: Install pnpm
         uses: pnpm/action-setup@26f6d4f2c533a43e6b5da0b4a5dd983f98f7b49a # v6
         with:
