@@ -58,8 +58,7 @@
 		"prisma": "7.8.0"
 	},
 	"devDependencies": {
-		"@softwaretechnik/dbml-renderer": "1.0.31",
-		"prisma-dbml-generator": "0.12.0",
+		"prisma-erd-generator": "2.4.2",
 		"typescript": "6.0.3"
 	}
 }

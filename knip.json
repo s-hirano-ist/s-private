@@ -63,7 +63,7 @@
 			"ignoreDependencies": [
 				"@prisma/client",
 				"@prisma/client-runtime-utils",
-				"@softwaretechnik/dbml-renderer"
+				"prisma-erd-generator"
 			]
 		}
 	}

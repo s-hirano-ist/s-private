@@ -6,28 +6,21 @@ PKG_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 REPO_ROOT="$(cd "$PKG_DIR/../.." && pwd)"
 OUT_DIR="$REPO_ROOT/docs/api/database"
 
-# 1. Generate DBML from Prisma schema
-echo "Generating DBML from Prisma schema..."
+echo "Generating ER diagram from Prisma schema..."
 cd "$PKG_DIR"
-npx prisma generate --generator dbml
+pnpm prisma:generate
 
-DBML_FILE="$PKG_DIR/dbml/schema.dbml"
-if [ ! -f "$DBML_FILE" ]; then
-  echo "Error: DBML file not generated at $DBML_FILE" >&2
+ERD_FILE="$PKG_DIR/erd/schema.md"
+if [ ! -f "$ERD_FILE" ]; then
+  echo "Error: ERD file not generated at $ERD_FILE" >&2
   exit 1
 fi
 
-# 2. Convert DBML to SVG (temporary file)
-echo "Converting DBML to SVG..."
+# Extract mermaid block (strip the ```mermaid fences)
+MERMAID_CONTENT="$(sed -n '/^```mermaid$/,/^```$/p' "$ERD_FILE" | sed '1d;$d')"
+
 mkdir -p "$OUT_DIR"
-SVG_TMP="$(mktemp)"
-npx dbml-renderer -i "$DBML_FILE" -o "$SVG_TMP" -f svg
 
-# Strip XML declaration and DOCTYPE lines for HTML inline embedding
-SVG_CONTENT="$(sed '/^<?xml/d; /^<!DOCTYPE/d' "$SVG_TMP")"
-rm -f "$SVG_TMP"
-
-# 3. Generate HTML wrapper page with inline SVG
 echo "Generating HTML page..."
 cat > "$OUT_DIR/index.html" <<HTML
 <!DOCTYPE html>
@@ -76,10 +69,9 @@ cat > "$OUT_DIR/index.html" <<HTML
       border-radius: 8px;
       padding: 1rem;
     }
-    .diagram-container svg {
-      width: 100%;
-      height: auto;
-      display: block;
+    .diagram-container .mermaid {
+      display: flex;
+      justify-content: center;
     }
     footer {
       text-align: center;
@@ -99,12 +91,18 @@ cat > "$OUT_DIR/index.html" <<HTML
   </header>
   <main>
     <div class="diagram-container">
-      $SVG_CONTENT
+      <pre class="mermaid">
+$MERMAID_CONTENT
+      </pre>
     </div>
   </main>
   <footer>
     Auto-generated from Prisma schema
   </footer>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: true, theme: "default" });
+  </script>
 </body>
 </html>
 HTML
