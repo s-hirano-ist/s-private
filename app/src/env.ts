@@ -10,6 +10,7 @@
  * @module
  */
 
+import "@s-hirano-ist/s-database/resolve-db-env";
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
@@ -30,6 +31,8 @@ export const env = createEnv({
 			.default("development"),
 		/** @example "postgresql://USERNAME:PASSWORD@IP_ADDRESS:PORT/DB_NAME?schema=SCHEMA_NAME" */
 		DATABASE_URL: z.string(),
+		/** Direct (non-pooled) connection URL used by Prisma migrations. */
+		DIRECT_URL: z.string(),
 		PUSHOVER_URL: z
 			.string()
 			.default("https://api.pushover.net/1/messages.json"),
@@ -73,6 +76,7 @@ export const env = createEnv({
 	runtimeEnv: {
 		NODE_ENV: process.env.NODE_ENV,
 		DATABASE_URL: process.env.DATABASE_URL,
+		DIRECT_URL: process.env.DIRECT_URL,
 		PUSHOVER_URL: process.env.PUSHOVER_URL,
 		PUSHOVER_USER_KEY: process.env.PUSHOVER_USER_KEY,
 		PUSHOVER_APP_TOKEN: process.env.PUSHOVER_APP_TOKEN,

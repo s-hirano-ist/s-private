@@ -1,3 +1,4 @@
+import "@s-hirano-ist/s-database/resolve-db-env";
 import * as Sentry from "@sentry/nextjs";
 
 export async function register() {
