@@ -84,6 +84,13 @@ jobs:
           submodules: true
 
       - uses: ./.github/actions/setup-pnpm
+      # Next.js typedRoutes 由来の Route 型は `next typegen` で
+      # `app/.next/types/` に生成される。これが無いと CI 環境で
+      # `as Route` キャストが「不要」と判定され lint が落ちるため、
+      # lint 前に必ず型生成を走らせる。
+      - run: pnpm --filter s-private-app exec next typegen
+        env:
+          SKIP_ENV_VALIDATION: "true"
       - run: pnpm lint
         env:
           SKIP_ENV_VALIDATION: "true"
