@@ -21,6 +21,10 @@
     'mise',
     'nvm',
   ],
+  // Mend Cloud で pnpm install の lifecycle scripts (sharp / @prisma/engines /
+  // @sentry/cli / esbuild) がメモリを使い切り OOM kill される問題への対処。
+  // CI (--frozen-lockfile) と本番 deploy 側の install では通常通りバイナリを取得する。
+  ignoreScripts: true,
   dependencyDashboard: true,
   branchConcurrentLimit: 3,
   prConcurrentLimit: 5,
@@ -36,8 +40,8 @@
   automergeStrategy: 'squash',
   lockFileMaintenance: {
     enabled: true,
-    automerge: true,
-    schedule: ['before 5am on the first day of the month'],
+    automerge: false,
+    schedule: ['before 5am on the first day of january,april,july,october'],
   },
   vulnerabilityAlerts: {
     labels: [
