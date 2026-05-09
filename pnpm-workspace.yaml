@@ -20,6 +20,10 @@ allowBuilds:
   sleep: true
   unrs-resolver: true
 
+# Renovate (Mend Cloud) で `pnpm install --recursive` が OOM Killer に
+# SIGKILL される事象の回避。pnpm 11 の workspace 並列解決のメモリピークを抑制。
+childConcurrency: 1
+
 # pnpm 11 supply-chain security hardening
 strictDepBuilds: true
 blockExoticSubdeps: true
