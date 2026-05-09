@@ -18,6 +18,10 @@ on:
         description: dry-run (書き込みなしでログ出力のみ)
         type: boolean
         default: false
+      bypassSchedule:
+        description: schedule を無視して即時 PR 作成 (動作確認用)
+        type: boolean
+        default: false
   # Dependency Dashboard issue のチェックボックス操作で Renovate を再起動する。
   # 例: "Check this box to trigger a request for Renovate to run again"。
   issues:
@@ -55,3 +59,5 @@ jobs:
           # PAT 所有者 (s-hirano-ist) を commit author に固定。
           # 既定値の renovate@whitesourcesoftware.com は Mend 所有アドレスのため警告が出る。
           RENOVATE_GIT_AUTHOR: "s-hirano-ist <s-hirano-ist@users.noreply.github.com>"
+          # bypassSchedule=true の時は renovate.json5 の schedule を無視させる。
+          RENOVATE_FORCE: ${{ inputs.bypassSchedule && '{"schedule":[]}' || '' }}
