@@ -1,15 +1,7 @@
 name: "Setup pnpm + Node"
-description: "Composite action: checkout (optional), pnpm + Node + dependency install with integrated cache"
+description: "pnpm + Node + dependency install with integrated cache. Caller must checkout the repo first."
 
 inputs:
-  checkout:
-    description: "Run actions/checkout. Set to 'false' if the caller already checked out."
-    required: false
-    default: "true"
-  submodules:
-    description: "Forwarded to actions/checkout (true|false|recursive)"
-    required: false
-    default: "true"
   install:
     description: "Run 'pnpm i --frozen-lockfile' after setup."
     required: false
@@ -22,13 +14,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Checkout files
-      if: ${{ inputs.checkout == 'true' }}
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-      with:
-        persist-credentials: false
-        submodules: ${{ inputs.submodules }}
-
     - name: Install pnpm
       uses: pnpm/action-setup@91ab88e2619ed1f46221f0ba42d1492c02baf788 # v6
       with:
