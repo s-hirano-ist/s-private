@@ -6,6 +6,7 @@ on:
     branches: [ main ]
     paths:
       - "packages/database/prisma/migrations/**"
+  workflow_dispatch:
 jobs:
   prisma-deploy:
     runs-on: ubuntu-24.04
@@ -33,6 +34,10 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm i --frozen-lockfile
+      - run: pnpm --filter s-database prisma:generate
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DIRECT_URL }}
+          DIRECT_URL: ${{ secrets.PRODUCTION_DIRECT_URL }}
       - run: pnpm --filter s-database prisma:deploy
         env:
           DATABASE_URL: ${{ secrets.PRODUCTION_DIRECT_URL }}
