@@ -18,9 +18,22 @@ on:
         description: dry-run (書き込みなしでログ出力のみ)
         type: boolean
         default: false
+  # Dependency Dashboard issue のチェックボックス操作で Renovate を再起動する。
+  # 例: "Check this box to trigger a request for Renovate to run again"。
+  issues:
+    types: [edited]
+  # Renovate が作った PR 上の rebase/retry チェックボックスにも反応する。
+  pull_request:
+    types: [edited]
 
 jobs:
   renovate:
+    # 無関係な issue/PR 編集では走らないように絞り込む。
+    if: >-
+      github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issues' && github.event.issue.title == 'Dependency Dashboard') ||
+      (github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'renovate/'))
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     concurrency:
