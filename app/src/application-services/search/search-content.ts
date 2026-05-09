@@ -40,7 +40,7 @@ function truncateText(text: string, maxLength = 150): string {
  * @internal
  */
 function extractBookISBN(docId: string): string | undefined {
-	const match = docId.match(/\/book\/([^/]+)\.md$/);
+	const match = /\/book\/([^/]+)\.md$/.exec(docId);
 	return match?.[1];
 }
 
@@ -59,7 +59,7 @@ export async function searchContent(
 	searchQuery: SearchQuery,
 	_userId: UserId,
 ): Promise<UnifiedSearchResults> {
-	const { query, contentTypes, limit = 20 } = searchQuery;
+	const { query, contentTypes, limit } = searchQuery;
 	const searchTypes = new Set(contentTypes ?? ["articles", "books", "notes"]);
 
 	const data = await searchVectors(query, {

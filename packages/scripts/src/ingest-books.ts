@@ -68,7 +68,7 @@ function parseBookFile(content: string): ParsedBook {
 	// title: frontmatter.title を優先、無ければ本文の H1 からフォールバック
 	let title = data.title?.trim() ?? "";
 	if (!title) {
-		const h1Match = parsed.content.match(/^# (.+)$/m);
+		const h1Match = /^# (.+)$/m.exec(parsed.content);
 		title = h1Match ? h1Match[1].trim() : "";
 	}
 
@@ -386,16 +386,19 @@ async function main() {
 		});
 	} catch (error) {
 		console.error("❌ エラーが発生しました:", error);
-		await notificationService.notifyError(`${SCRIPT_NAME} failed: ${error}`, {
-			caller: SCRIPT_NAME,
-		});
+		await notificationService.notifyError(
+			`${SCRIPT_NAME} failed: ${String(error)}`,
+			{
+				caller: SCRIPT_NAME,
+			},
+		);
 		process.exit(1);
 	} finally {
 		await prisma.$disconnect();
 	}
 }
 
-main().catch((error) => {
+main().catch((error: unknown) => {
 	console.error(error);
 	process.exit(1);
 });

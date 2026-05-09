@@ -30,7 +30,7 @@ async function getLocale() {
 	}
 
 	// Default to Japanese
-	return routing.defaultLocale as "en" | "ja";
+	return routing.defaultLocale;
 }
 
 async function NotFoundContent() {

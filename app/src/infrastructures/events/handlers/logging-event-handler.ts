@@ -10,30 +10,32 @@ export class LoggingEventHandler implements DomainEventHandler {
 
 		let message: string;
 
+		const p = (key: string): string => String(payload[key]);
+
 		switch (eventType) {
 			case "article.created":
-				message = `【ARTICLE】\n\nコンテンツ\ntitle: ${payload.title} \nquote: ${payload.quote} \nurl: ${payload.url}\ncategory: ${payload.categoryName}\nの登録ができました`;
+				message = `【ARTICLE】\n\nコンテンツ\ntitle: ${p("title")} \nquote: ${p("quote")} \nurl: ${p("url")}\ncategory: ${p("categoryName")}\nの登録ができました`;
 				break;
 			case "article.deleted":
-				message = `【ARTICLE】\n\n削除\ntitle: ${payload.title}`;
+				message = `【ARTICLE】\n\n削除\ntitle: ${p("title")}`;
 				break;
 			case "note.created":
-				message = `【NOTES】\n\nノート\ntitle: ${payload.title} \nquote: ${payload.markdown}\nの登録ができました`;
+				message = `【NOTES】\n\nノート\ntitle: ${p("title")} \nquote: ${p("markdown")}\nの登録ができました`;
 				break;
 			case "note.deleted":
-				message = `【NOTES】\n\n削除\ntitle: ${payload.title}`;
+				message = `【NOTES】\n\n削除\ntitle: ${p("title")}`;
 				break;
 			case "image.created":
-				message = `【IMAGE】\n\nコンテンツ\nid: ${payload.id}\npath: ${payload.path}\nの登録ができました`;
+				message = `【IMAGE】\n\nコンテンツ\nid: ${p("id")}\npath: ${p("path")}\nの登録ができました`;
 				break;
 			case "image.deleted":
-				message = `【IMAGE】\n\n削除\npath: ${payload.path}`;
+				message = `【IMAGE】\n\n削除\npath: ${p("path")}`;
 				break;
 			case "book.created":
-				message = `【BOOKS】\n\nコンテンツ\nISBN: ${payload.isbn} \ntitle: ${payload.title}\nの登録ができました`;
+				message = `【BOOKS】\n\nコンテンツ\nISBN: ${p("isbn")} \ntitle: ${p("title")}\nの登録ができました`;
 				break;
 			case "book.deleted":
-				message = `【BOOKS】\n\n削除\ntitle: ${payload.title}`;
+				message = `【BOOKS】\n\n削除\ntitle: ${p("title")}`;
 				break;
 			default:
 				message = `Unknown event: ${eventType}`;

@@ -70,7 +70,7 @@ export const FillAndSubmit: Story = {
 		const titleInput = canvas.getByLabelText("タイトル");
 		const ratingInput = canvas.getByLabelText("評価 (1-5)");
 		const tagsInput = canvas.getByLabelText("タグ（カンマ区切り）");
-		const imageInput = canvas.getByLabelText(/書籍画像/) as HTMLInputElement;
+		const imageInput = canvas.getByLabelText<HTMLInputElement>(/書籍画像/);
 
 		await userEvent.type(isbnInput, "978-4-1234-5678-9");
 		await userEvent.type(titleInput, "テストブック");

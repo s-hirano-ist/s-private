@@ -6,7 +6,7 @@ import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import remarkGfm from "remark-gfm";
 
 const LANGUAGE_REGEX = /language-(\w+)/;
-const SLUG_REGEX = /[^\w]+/g;
+const SLUG_REGEX = /\W+/g;
 
 function generateHeadingId(children: ReactNode): string {
 	return children?.toString().toLowerCase().replace(SLUG_REGEX, "-") ?? "";

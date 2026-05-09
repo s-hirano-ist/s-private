@@ -52,7 +52,7 @@ export function SearchCard({ search }: Props) {
 
 	const handleKeyDown = (e: React.KeyboardEvent) => {
 		if (e.key === "Enter" && !isPending) {
-			executeSearch();
+			void executeSearch();
 		}
 	};
 	const handleReload = () => {

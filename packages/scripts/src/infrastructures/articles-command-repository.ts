@@ -62,12 +62,12 @@ export function createArticlesCommandRepository(
 
 			const result = await prisma.article.updateMany({
 				where: {
-					userId: userId as string,
-					status: fromStatus as Status,
+					userId: userId,
+					status: fromStatus,
 				},
 				data: {
-					status: toStatus as Status,
-					...(exportedAt && { exportedAt: exportedAt as Date }),
+					status: toStatus,
+					...(exportedAt && { exportedAt: exportedAt }),
 				},
 			});
 
@@ -81,17 +81,17 @@ export function createArticlesCommandRepository(
 			const [finalized, marked] = await prisma.$transaction([
 				prisma.article.updateMany({
 					where: {
-						userId: userId as string,
+						userId: userId,
 						status: "LAST_UPDATED",
 					},
 					data: {
 						status: "EXPORTED",
-						exportedAt: exportedAt as Date,
+						exportedAt: exportedAt,
 					},
 				}),
 				prisma.article.updateMany({
 					where: {
-						userId: userId as string,
+						userId: userId,
 						status: "UNEXPORTED",
 					},
 					data: {

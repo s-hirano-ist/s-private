@@ -7,5 +7,5 @@
  * @returns The sanitized user ID containing only alphabets and underscores
  */
 export function sanitizeCacheTag(userId: string): string {
-	return userId.replaceAll(/[^a-zA-Z_]/g, "");
+	return userId.replaceAll(/[^a-z_]/gi, "");
 }

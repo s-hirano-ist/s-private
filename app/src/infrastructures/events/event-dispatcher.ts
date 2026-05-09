@@ -21,7 +21,7 @@ import type {
  * All handlers for an event type are executed in parallel.
  */
 class EventDispatcher {
-	private handlers: Map<string, DomainEventHandler[]> = new Map();
+	private handlers = new Map<string, DomainEventHandler[]>();
 
 	/**
 	 * Registers a handler for a specific event type.

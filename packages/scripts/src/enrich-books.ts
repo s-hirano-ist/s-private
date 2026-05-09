@@ -56,7 +56,7 @@ async function main(): Promise<void> {
 		try {
 			const raw = await readFile(filePath, "utf8");
 			const parsed = matter(raw);
-			const data = parsed.data as Record<string, unknown>;
+			const data = parsed.data;
 
 			console.log(`🔍 ${fileName}: Google Books API 問い合わせ中...`);
 			const book = await api.volumes.list({ q: `isbn:${isbn}` });
@@ -112,7 +112,7 @@ async function main(): Promise<void> {
 	);
 }
 
-main().catch((error) => {
+main().catch((error: unknown) => {
 	console.error("❌ エラーが発生しました:", error);
 	process.exit(1);
 });

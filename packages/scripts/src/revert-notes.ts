@@ -45,16 +45,19 @@ async function main() {
 		});
 	} catch (error) {
 		console.error("❌ エラーが発生しました:", error);
-		await notificationService.notifyError(`revert-notes failed: ${error}`, {
-			caller: "revert-notes",
-		});
+		await notificationService.notifyError(
+			`revert-notes failed: ${String(error)}`,
+			{
+				caller: "revert-notes",
+			},
+		);
 		process.exit(1);
 	} finally {
 		await prisma.$disconnect();
 	}
 }
 
-main().catch((error) => {
+main().catch((error: unknown) => {
 	console.error(error);
 	process.exit(1);
 });

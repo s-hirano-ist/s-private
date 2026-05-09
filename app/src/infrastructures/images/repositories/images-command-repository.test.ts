@@ -66,7 +66,7 @@ describe("ImageCommandRepository", () => {
 				fileSize: null,
 				width: null,
 				height: null,
-				status: "UNEXPORTED" as Status,
+				status: "UNEXPORTED",
 				createdAt: new Date(),
 				updatedAt: new Date(),
 				exportedAt: new Date(),

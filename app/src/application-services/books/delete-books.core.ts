@@ -48,7 +48,7 @@ export async function deleteBooksCore(
 		await eventDispatcher.dispatch(
 			new BookDeletedEvent({
 				title,
-				userId: userId as string,
+				userId: userId,
 				caller: "deleteBooks",
 			}),
 		);

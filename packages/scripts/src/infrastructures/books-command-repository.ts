@@ -39,12 +39,12 @@ export function createBooksCommandRepository(
 
 			const result = await prisma.book.updateMany({
 				where: {
-					userId: userId as string,
-					status: fromStatus as Status,
+					userId: userId,
+					status: fromStatus,
 				},
 				data: {
-					status: toStatus as Status,
-					...(exportedAt && { exportedAt: exportedAt as Date }),
+					status: toStatus,
+					...(exportedAt && { exportedAt: exportedAt }),
 				},
 			});
 
@@ -58,17 +58,17 @@ export function createBooksCommandRepository(
 			const [finalized, marked] = await prisma.$transaction([
 				prisma.book.updateMany({
 					where: {
-						userId: userId as string,
+						userId: userId,
 						status: "LAST_UPDATED",
 					},
 					data: {
 						status: "EXPORTED",
-						exportedAt: exportedAt as Date,
+						exportedAt: exportedAt,
 					},
 				}),
 				prisma.book.updateMany({
 					where: {
-						userId: userId as string,
+						userId: userId,
 						status: "UNEXPORTED",
 					},
 					data: {

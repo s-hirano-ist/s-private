@@ -34,7 +34,7 @@ async function main() {
 	console.log(`Collection "${collectionName}" deleted successfully.`);
 }
 
-main().catch((error) => {
+main().catch((error: unknown) => {
 	console.error("Failed to delete collection:", error);
 	process.exit(1);
 });

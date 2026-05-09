@@ -29,7 +29,7 @@ function dumpFrontmatter(data: Record<string, unknown>): string {
 }
 
 function extractTitleFromContent(content: string): string | null {
-	const match = content.match(/^# (.+)$/m);
+	const match = /^# (.+)$/m.exec(content);
 	return match ? match[1].trim() : null;
 }
 
@@ -56,7 +56,7 @@ async function main(): Promise<void> {
 		try {
 			const raw = await readFile(filePath, "utf8");
 			const parsed = matter(raw);
-			const existing = parsed.data as Record<string, unknown>;
+			const existing = parsed.data;
 
 			const hasAllKeys = REQUIRED_KEYS.every((k) => Object.hasOwn(existing, k));
 			const hasLegacyKeys = LEGACY_KEYS.some((k) => Object.hasOwn(existing, k));
@@ -107,7 +107,7 @@ async function main(): Promise<void> {
 			}
 			fixedCount++;
 		} catch (error) {
-			console.error(`❌ ${fileName}: ${error}`);
+			console.error(`❌ ${fileName}: ${String(error)}`);
 			errorCount++;
 		}
 	}
@@ -117,7 +117,7 @@ async function main(): Promise<void> {
 	);
 }
 
-main().catch((error) => {
+main().catch((error: unknown) => {
 	console.error("❌ エラーが発生しました:", error);
 	process.exit(1);
 });

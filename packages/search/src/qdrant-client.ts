@@ -159,10 +159,10 @@ export async function search(
 	const { topK = 10, filter } = options;
 
 	// Build filter conditions
-	const filterConditions: Array<{
+	const filterConditions: {
 		key: string;
 		match: { value: string } | { any: string[] };
-	}> = [];
+	}[] = [];
 
 	if (filter?.type) {
 		filterConditions.push({

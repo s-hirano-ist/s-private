@@ -1,14 +1,16 @@
 // MEMO: only use for plugins not in biome
 
 import eslintReact from "@eslint-react/eslint-plugin";
+import nextPlugin from "@next/eslint-plugin-next";
 import vitestPlugin from "@vitest/eslint-plugin";
 import { defineConfig } from "eslint/config";
-import nextConfig from "eslint-config-next";
 import boundariesPlugin from "eslint-plugin-boundaries";
-import reactHookPlugin from "eslint-plugin-react-hooks";
 // import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
+import reactHookPlugin from "eslint-plugin-react-hooks";
+import regexpPlugin from "eslint-plugin-regexp";
 import storybookPlugin from "eslint-plugin-storybook";
 // import tailwindcssPlugin from "eslint-plugin-tailwindcss";
+import globals from "globals";
 import tsEslint from "typescript-eslint";
 
 export default defineConfig(
@@ -36,38 +38,61 @@ export default defineConfig(
 			"**/*.cjs",
 		],
 	},
-	...tsEslint.configs.strict,
-	...nextConfig,
-	// eslint-config-next bundles an outdated babel-eslint-parser whose ScopeManager
-	// lacks `addGlobals` (required by ESLint v10). Override it back to typescript-eslint's
-	// parser for non-TS files so scope analysis stays compatible.
+
+	// typescript-eslint: 全 TS ファイルでパーサを登録（base のみ）
 	{
-		files: ["**/*.{js,jsx,mjs,cjs}"],
-		languageOptions: {
-			parser: tsEslint.parser,
-		},
+		files: ["**/*.{ts,tsx,mts,cts}"],
+		extends: [tsEslint.configs.base],
 	},
-	eslintReact.configs["recommended-typescript"],
-	// eslint-config-next bundles eslint-plugin-react. Disable conflicting rules
-	// so @eslint-react owns React linting and we don't double-report.
-	eslintReact.configs["disable-conflict-eslint-plugin-react"],
-	// eslint-plugin-react@7.37.5 is incompatible with ESLint v10
-	// (issue jsx-eslint/eslint-plugin-react#3977). Disable the residual
-	// react/* rules pulled in via eslint-config-next that
-	// disable-conflict-eslint-plugin-react does not cover.
+
+	// typescript-eslint: type-checked variants for the strictest possible setup.
+	// Restrict to source dirs so config files (.dependency-cruiser.cjs, etc.)
+	// don't trigger type-aware rules without parserServices.
 	{
+		files: ["app/**/*.{ts,tsx}", "packages/**/*.{ts,tsx}"],
+		extends: [
+			tsEslint.configs.strictTypeChecked,
+			tsEslint.configs.stylisticTypeChecked,
+		],
+	},
+
+	// Next.js: register @next/eslint-plugin-next directly to avoid the
+	// "next/typescript" config redefining @typescript-eslint plugin (the previous
+	// `eslint-config-next` index caused a fatal ConfigError under ESLint v10).
+	{
+		name: "next/core-web-vitals",
+		plugins: { "@next/next": nextPlugin },
 		rules: {
-			"react/jsx-no-duplicate-props": "off",
-			"react/jsx-no-undef": "off",
-			"react/jsx-uses-react": "off",
-			"react/jsx-uses-vars": "off",
-			"react/no-is-mounted": "off",
-			"react/no-unescaped-entities": "off",
-			"react/require-render-return": "off",
+			...nextPlugin.configs.recommended.rules,
+			...nextPlugin.configs["core-web-vitals"].rules,
 		},
 	},
+
+	// @eslint-react: type-checked rules + プロジェクト固有の調整。
+	// plugin 定義と rules を同一ブロックに置く必要があるため extends 内で完結させる。
 	{
+		files: ["app/**/*.{ts,tsx}", "packages/**/*.{ts,tsx}"],
+		extends: [eslintReact.configs["strict-type-checked"]],
+		rules: {
+			// @eslint-react rules (Biome doesn't have these)
+			"@eslint-react/use-state": "error",
+			"@eslint-react/jsx-no-useless-fragment": "error",
+			"@eslint-react/dom-no-dangerously-set-innerhtml": "error",
+
+			// Hooks lint は eslint-plugin-react-hooks (React 公式 + React Compiler 連携) に委譲
+			"@eslint-react/exhaustive-deps": "off",
+			"@eslint-react/rules-of-hooks": "off",
+		},
+	},
+
+	// typescript-eslint パーサ設定 + ルール調整
+	{
+		files: ["**/*.{ts,tsx}"],
 		languageOptions: {
+			globals: {
+				...globals.browser,
+				...globals.node,
+			},
 			parserOptions: {
 				projectService: {
 					allowDefaultProject: [
@@ -85,20 +110,62 @@ export default defineConfig(
 				tsconfigRootDir: import.meta.dirname,
 			},
 		},
+	},
+	{
+		files: ["app/**/*.{ts,tsx}", "packages/**/*.{ts,tsx}"],
 		rules: {
-			// @eslint-react rules (Biome doesn't have these)
-			"@eslint-react/use-state": "error",
-			"@eslint-react/jsx-no-useless-fragment": "error",
-			"@eslint-react/dom-no-dangerously-set-innerhtml": "error",
-
-			// Hooks lint は eslint-plugin-react-hooks (React 公式 + React Compiler 連携) に委譲
-			"@eslint-react/exhaustive-deps": "off",
-			"@eslint-react/rules-of-hooks": "off",
-
 			// Biome 委譲（既存の方針維持）
 			"@typescript-eslint/no-unused-vars": "off", // Biome handles this
 			"@typescript-eslint/no-empty-object-type": "off", // Biome: noBannedTypes
 			"@typescript-eslint/no-explicit-any": "off", // Biome: noExplicitAny
+
+			// type-checked 拡張で実コードと整合させるための調整
+			"@typescript-eslint/no-misused-promises": [
+				"error",
+				{ checksVoidReturn: { attributes: false } },
+			],
+			"@typescript-eslint/restrict-template-expressions": [
+				"error",
+				{ allowNumber: true, allowBoolean: true, allowNullish: true },
+			],
+			"@typescript-eslint/no-confusing-void-expression": [
+				"error",
+				{ ignoreArrowShorthand: true, ignoreVoidOperator: true },
+			],
+
+			// Next.js の Page / Server Component / Server Action は規約上 async 必須で、
+			// body に await が無いケースが多発するため off。
+			"@typescript-eslint/require-await": "off",
+
+			// プリミティブ型では empty string / 0 fallthrough が意図的なケースも多く、
+			// `??` への一律変換は意味が変わる。プリミティブのみ `||` を許容。
+			"@typescript-eslint/prefer-nullish-coalescing": [
+				"error",
+				{
+					ignorePrimitives: {
+						string: true,
+						number: true,
+						boolean: true,
+						bigint: true,
+					},
+				},
+			],
+
+			// 段階導入: 既存コードに広範な該当が予想されるため warn でスタート
+			"@typescript-eslint/no-unsafe-assignment": "warn",
+			"@typescript-eslint/no-unsafe-member-access": "warn",
+			"@typescript-eslint/no-unsafe-argument": "warn",
+			"@typescript-eslint/no-unsafe-call": "warn",
+			"@typescript-eslint/no-unsafe-return": "warn",
+			"@typescript-eslint/no-non-null-assertion": "warn",
+			"@typescript-eslint/no-unnecessary-condition": "warn",
+			"@typescript-eslint/no-base-to-string": "warn",
+			"@typescript-eslint/no-deprecated": "warn",
+
+			// type/interface 混在許容（プロジェクト方針）
+			"@typescript-eslint/consistent-type-definitions": "off",
+			"@typescript-eslint/consistent-indexed-object-style": "off",
+			"@typescript-eslint/consistent-type-assertions": "off",
 		},
 	},
 
@@ -108,9 +175,7 @@ export default defineConfig(
 		rules: {
 			"react-hooks/exhaustive-deps": "error",
 			"react-hooks/rules-of-hooks": "error",
-			// TODO: Fix components to avoid calling setState directly in useEffect
-			// Affected files: footer.tsx, root-tab.tsx, use-tab-visibility.ts, generic-form-wrapper.tsx, use-infinite-scroll.ts
-			"react-hooks/set-state-in-effect": "off",
+			"react-hooks/set-state-in-effect": "error",
 		},
 	},
 
@@ -122,11 +187,33 @@ export default defineConfig(
 		},
 	},
 
+	// テストファイル/Storybook: mock パターンと play 関数で多発する false-positive を緩和
+	{
+		files: [
+			"**/*.{test,spec}.{ts,tsx}",
+			"**/__tests__/**/*.{ts,tsx}",
+			"**/*.stories.{ts,tsx}",
+			"**/vitest-setup.tsx",
+			"**/vitest.setup.ts",
+		],
+		rules: {
+			"@typescript-eslint/unbound-method": "off",
+			"@typescript-eslint/no-empty-function": "off",
+			"@typescript-eslint/no-confusing-void-expression": "off",
+			"@typescript-eslint/require-await": "off",
+			"@typescript-eslint/no-non-null-assertion": "off",
+			"@typescript-eslint/no-floating-promises": "off",
+		},
+	},
+
 	// storybook
 	...storybookPlugin.configs["flat/recommended"],
 
+	// regexp: 正規表現ベストプラクティスとバグ検出（Biome に該当ルールなし）
+	regexpPlugin.configs["flat/recommended"],
+
 	// eslint-plugin-boundaries: Clean Architectureレイヤー境界をIDEで即時検出
-	// dependency-cruiserと役割分担: こちらはwarnで開発体験補完、CIはdependency-cruiser
+	// dependency-cruiserと役割分担: こちらはerrorで即時違反を防ぎ、CIはdependency-cruiser
 	{
 		files: ["app/src/**/*.{ts,tsx}", "packages/**/*.{ts,tsx}"],
 		ignores: [
@@ -214,7 +301,7 @@ export default defineConfig(
 		},
 		rules: {
 			"boundaries/dependencies": [
-				"warn",
+				"error",
 				{
 					default: "disallow",
 					rules: [
@@ -381,6 +468,11 @@ export default defineConfig(
 										"core-shared-kernel",
 										"app-common",
 										"app-infrastructure-shared",
+										// error-wrapper はエラー型の instanceof 判定で
+										// 各 infrastructure パッケージの error 型を直接参照する。
+										"pkg-database",
+										"pkg-notification",
+										"pkg-storage",
 									],
 								},
 							},
@@ -413,10 +505,4 @@ export default defineConfig(
 			"boundaries/entry-point": "off",
 		},
 	},
-
-	// TODO: enable when biome conflicts occur
-	// {
-	// 	files: ["**/*"],
-	// 	ignores: ["**/*"],
-	// },
 );

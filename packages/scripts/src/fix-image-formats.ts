@@ -74,7 +74,7 @@ async function processDirectory(
 			console.log(`✅ 変換完了: ${fileName} → ${basename(outputPath)}`);
 			converted++;
 		} catch (error) {
-			console.error(`❌ ${fileName}: ${error}`);
+			console.error(`❌ ${fileName}: ${String(error)}`);
 			errors++;
 		}
 	}
@@ -107,7 +107,7 @@ async function main(): Promise<void> {
 	}
 }
 
-main().catch((error) => {
+main().catch((error: unknown) => {
 	console.error("❌ エラーが発生しました:", error);
 	process.exit(1);
 });

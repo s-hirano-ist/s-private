@@ -26,7 +26,7 @@ export function ImageCard({
 
 	return (
 		<div className="relative h-full">
-			<Link className="block h-full" href={`/${basePath}/${href}` as Route}>
+			<Link className="block h-full" href={`/${basePath}/${href}`}>
 				<Card className="flex h-full flex-col border-l-3 border-l-primary/40 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md">
 					<CardContent className="flex flex-grow flex-col">
 						<div className="flex justify-center py-2">

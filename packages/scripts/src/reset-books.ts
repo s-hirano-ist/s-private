@@ -52,16 +52,19 @@ async function main() {
 		});
 	} catch (error) {
 		console.error("❌ エラーが発生しました:", error);
-		await notificationService.notifyError(`reset-books failed: ${error}`, {
-			caller: "reset-books",
-		});
+		await notificationService.notifyError(
+			`reset-books failed: ${String(error)}`,
+			{
+				caller: "reset-books",
+			},
+		);
 		process.exit(1);
 	} finally {
 		await prisma.$disconnect();
 	}
 }
 
-main().catch((error) => {
+main().catch((error: unknown) => {
 	console.error(error);
 	process.exit(1);
 });

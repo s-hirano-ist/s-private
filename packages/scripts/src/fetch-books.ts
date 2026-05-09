@@ -188,16 +188,19 @@ async function main() {
 		});
 	} catch (error) {
 		console.error("❌ エラーが発生しました:", error);
-		await notificationService.notifyError(`fetch-books failed: ${error}`, {
-			caller: "fetch-books",
-		});
+		await notificationService.notifyError(
+			`fetch-books failed: ${String(error)}`,
+			{
+				caller: "fetch-books",
+			},
+		);
 		process.exit(1);
 	} finally {
 		await prisma.$disconnect();
 	}
 }
 
-main().catch((error) => {
+main().catch((error: unknown) => {
 	console.error(error);
 	process.exit(1);
 });

@@ -69,16 +69,19 @@ async function main() {
 		});
 	} catch (error) {
 		console.error("❌ エラーが発生しました:", error);
-		await notificationService.notifyError(`fetch-notes failed: ${error}`, {
-			caller: "fetch-notes",
-		});
+		await notificationService.notifyError(
+			`fetch-notes failed: ${String(error)}`,
+			{
+				caller: "fetch-notes",
+			},
+		);
 		process.exit(1);
 	} finally {
 		await prisma.$disconnect();
 	}
 }
 
-main().catch((error) => {
+main().catch((error: unknown) => {
 	console.error(error);
 	process.exit(1);
 });

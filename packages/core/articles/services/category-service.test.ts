@@ -20,7 +20,7 @@ describe("CategoryService", () => {
 
 		categoryCommandRepository = {
 			create: vi.fn(),
-		} as ICategoryCommandRepository;
+		};
 
 		categoryService = new CategoryService(
 			categoryQueryRepository,

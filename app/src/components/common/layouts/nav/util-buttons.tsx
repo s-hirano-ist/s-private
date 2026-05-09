@@ -10,7 +10,7 @@ import { redirect } from "@/infrastructures/i18n/routing";
 type Props = { handleReload: () => void; onSignOutSubmit: () => Promise<void> };
 
 const removeLangPrefix = (pathname: string): string => {
-	return pathname.replace(/^\/(en|ja)(\/|$)/, "/");
+	return pathname.replace(/^\/(?:en|ja)(?:\/|$)/, "/");
 };
 
 export function UtilButtons({ handleReload, onSignOutSubmit }: Props) {
@@ -77,7 +77,7 @@ export function UtilButtons({ handleReload, onSignOutSubmit }: Props) {
 					data-testid="log-out-button"
 					onClick={() => {
 						haptic();
-						onSignOutSubmit();
+						void onSignOutSubmit();
 					}}
 					variant="outline"
 				>

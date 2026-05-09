@@ -36,7 +36,7 @@ function normalizeCharset(charset: string): string {
 function detectCharset(headers: Headers, buffer: Buffer): string {
 	// 1. Content-Type ヘッダーから検出
 	const contentType = headers.get("content-type") || "";
-	const headerMatch = contentType.match(/charset=([^\s;]+)/i);
+	const headerMatch = /charset=([^\s;]+)/i.exec(contentType);
 	if (headerMatch) return normalizeCharset(headerMatch[1]);
 
 	// 2. HTML meta タグから検出（ASCII範囲で仮デコード）
@@ -45,13 +45,14 @@ function detectCharset(headers: Headers, buffer: Buffer): string {
 		.toString("ascii");
 
 	// <meta charset="...">
-	const metaCharset = preview.match(/<meta\s{1,200}charset=["']?([^"'\s>]+)/i);
+	const metaCharset = /<meta\s{1,200}charset=["']?([^"'\s>]+)/i.exec(preview);
 	if (metaCharset) return normalizeCharset(metaCharset[1]);
 
 	// <meta http-equiv="Content-Type" content="...; charset=...">
-	const metaHttpEquiv = preview.match(
-		/<meta[^>]{1,500}http-equiv=["']?Content-Type["']?[^>]{1,500}content=["'][^"']{0,500}charset=([^"'\s;]+)/i,
-	);
+	const metaHttpEquiv =
+		/<meta[^>]{1,500}http-equiv=["']?Content-Type["']?[^>]{1,500}content=["'][^"']{0,500}charset=([^"'\s;]+)/i.exec(
+			preview,
+		);
 	if (metaHttpEquiv) return normalizeCharset(metaHttpEquiv[1]);
 
 	return "utf-8";
@@ -104,9 +105,7 @@ async function processArticleFile(filePath: string): Promise<void> {
 
 		console.log(`Processing ${filePath}...`);
 
-		for (let i = 0; i < articleData.body.length; i++) {
-			const item = articleData.body[i];
-
+		for (const item of articleData.body) {
 			// Skip if OG tags already exist
 			if (item.ogImageUrl || item.ogTitle || item.ogDescription || item.skip) {
 				continue;
@@ -178,7 +177,7 @@ async function main(): Promise<void> {
 	} catch (error) {
 		console.error("Error in main process:", error);
 		await notificationService.notifyError(
-			`update-json-articles failed: ${error}`,
+			`update-json-articles failed: ${String(error)}`,
 			{
 				caller: "update-json-articles",
 			},
@@ -187,7 +186,7 @@ async function main(): Promise<void> {
 	}
 }
 
-main().catch((error) => {
+main().catch((error: unknown) => {
 	console.error(error);
 	process.exit(1);
 });
