@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.19.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.19.0...@s-hirano-ist/s-database-v1.19.1) (2026-05-09)
+
+
+### Bug Fixes
+
+* build of vercel ([f8120c0](https://github.com/s-hirano-ist/s-private/commit/f8120c038781df22de6615938100b6535d1cafc2))
+
+
+### Maintenance
+
+* **deps:** update non-major ([396152f](https://github.com/s-hirano-ist/s-private/commit/396152f1b8cc7cf441165e1af9e8264ca4a6df73))
+* migrate database configuration to use Supabase Direct URL ([32ab615](https://github.com/s-hirano-ist/s-private/commit/32ab61553ba13ef11fcff42301c26db0ee156f78))
+* migrate database configuration to use Supabase Direct URL ([c616119](https://github.com/s-hirano-ist/s-private/commit/c616119b3521fff874aa1a336ae7d44b55334f4e))
+* **security:** enable pnpm 11 supply-chain hardening ([34bed16](https://github.com/s-hirano-ist/s-private/commit/34bed16c414b6c552138dff2859c5f53ee4dc4ec))
+
 ## [1.19.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.18.6...@s-hirano-ist/s-database-v1.19.0) (2026-04-19)
 
 
