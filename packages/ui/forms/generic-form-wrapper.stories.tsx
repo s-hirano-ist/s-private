@@ -195,15 +195,13 @@ export const CustomLabels: Story = {
 		submitLabel: "send",
 		loadingLabel: "sending",
 		children: (
-			<>
-				<FormInput
-					htmlFor="message"
-					label="メッセージ"
-					name="message"
-					placeholder="メッセージを入力"
-					required
-				/>
-			</>
+			<FormInput
+				htmlFor="message"
+				label="メッセージ"
+				name="message"
+				placeholder="メッセージを入力"
+				required
+			/>
 		),
 		afterSubmit: fn(),
 		saveLabel: "save",
