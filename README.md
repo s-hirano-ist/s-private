@@ -74,7 +74,7 @@
 - **Supply Chain Protection**
   - Package version pinning (`savePrefix: ''` in pnpm-workspace.yaml)
   - Lifecycle script protection (`allowBuilds` + `strictDepBuilds: true`)
-  - Exotic subdep blocking (`blockExoticSubdeps: true`) and trust policy (`trustPolicy: no-downgrade`)
+  - Exotic subdep blocking (`blockExoticSubdeps: true`)
   - Minimum release age: 24 hours (pnpm-workspace.yaml)
   - Frozen lockfiles in CI/CD
 
