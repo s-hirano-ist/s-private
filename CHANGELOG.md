@@ -2,6 +2,64 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.7.6](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.7.5...s-private-v3.7.6) (2026-05-09)
+
+
+### Bug Fixes
+
+* a11y ([86adf7c](https://github.com/s-hirano-ist/s-private/commit/86adf7c969ea42dde66679e14a67c150558b4358))
+* build of vercel ([f8120c0](https://github.com/s-hirano-ist/s-private/commit/f8120c038781df22de6615938100b6535d1cafc2))
+* color of muted foreground ([38e774a](https://github.com/s-hirano-ist/s-private/commit/38e774ae7d3e5f578717b95d3fd555bf7472be62))
+* **deps:** pin vite to ^7 to keep storybook nextjs-vite working ([b058f2c](https://github.com/s-hirano-ist/s-private/commit/b058f2c49a3bebd946550a93a62512e01e214df1))
+* **deps:** sync pnpm-lock.yaml with overrides ([a367727](https://github.com/s-hirano-ist/s-private/commit/a36772733bf4a9e3b66538df41947289fed4d348))
+* **deps:** sync pnpm-lock.yaml with overrides ([1d05046](https://github.com/s-hirano-ist/s-private/commit/1d0504643e996a33d77b00e37b3698d965658d43))
+* drawer viewport ([14272c6](https://github.com/s-hirano-ist/s-private/commit/14272c60a7e235d95dce22599cbe3b7d0e99204f))
+* form image required ([69d439f](https://github.com/s-hirano-ist/s-private/commit/69d439f2ba277925c5986cdb363113bf904912bc))
+* test ([9f7b1a2](https://github.com/s-hirano-ist/s-private/commit/9f7b1a27a051bb98166df314a3a6b9be2f85835a))
+
+
+### Documentation
+
+* fix form ([6e2bb6b](https://github.com/s-hirano-ist/s-private/commit/6e2bb6bd7e1fa97e5f9af32578db82ab355f250f))
+* fix tests ([535e816](https://github.com/s-hirano-ist/s-private/commit/535e8163f7e5ffda52043cc3f9449045a45aba6b))
+
+
+### Maintenance
+
+* add workflow_dispatch trigger and generate Prisma client in de… ([60ed1df](https://github.com/s-hirano-ist/s-private/commit/60ed1df7cb59d5be223cb8d5a525f4edd0e638ff))
+* add workflow_dispatch trigger and generate Prisma client in deployment ([5048315](https://github.com/s-hirano-ist/s-private/commit/50483157e5269300768711ae9cbf5a109b2408ef))
+* biome versions ([d0773a5](https://github.com/s-hirano-ist/s-private/commit/d0773a54cee3e8b8c74d77840035b144cd2a23d7))
+* **ci:** normalize MH4GF action version comment for renovate ([df541db](https://github.com/s-hirano-ist/s-private/commit/df541dbc1e875db3e4c6c84e188e37768c3a2bdf))
+* **deps:** update dependency @eslint/config-inspector to v2 ([a7b12db](https://github.com/s-hirano-ist/s-private/commit/a7b12db77d85c1834bd3d3f916bdc244b1866898))
+* **deps:** update dependency @hono/node-server@&lt;1.19.10 to v2 ([2cbe12a](https://github.com/s-hirano-ist/s-private/commit/2cbe12ae9ca14dcf7c31f05c9f5d02f82b73bd5b))
+* **deps:** update dependency @hono/node-server@&lt;1.19.10 to v2.0.1 ([785068a](https://github.com/s-hirano-ist/s-private/commit/785068a2a86e628f00e887d429cbb8cae28504c3))
+* **deps:** update dependency doppler to v3.76.0 ([3a6fba9](https://github.com/s-hirano-ist/s-private/commit/3a6fba9691f49a6039f9445998ea916a55f49621))
+* **deps:** update dependency doppler to v3.76.0 ([1531759](https://github.com/s-hirano-ist/s-private/commit/1531759fc632a56ae33279fb076e6bf7143db787))
+* **deps:** update dependency effect@&gt;=3.0.0 &lt;3.20.0 to v3.21.2 ([131f45d](https://github.com/s-hirano-ist/s-private/commit/131f45daee3d7aa72974095616ad37ac09dd3d48))
+* **deps:** update dependency hono@&lt;4.12.4 to v4.12.15 ([eaaf890](https://github.com/s-hirano-ist/s-private/commit/eaaf890ccb18f048e7387cd1fcd93b6ddb74f9cb))
+* **deps:** update dependency hono@&lt;4.12.4 to v4.12.16 ([a785095](https://github.com/s-hirano-ist/s-private/commit/a785095a7f9a4c90992015210cb090d1c03baec8))
+* **deps:** update dependency hono@&lt;4.12.4 to v4.12.17 ([217e16e](https://github.com/s-hirano-ist/s-private/commit/217e16e8ccaedda6f44f8ca3d81a68fa8f5be653))
+* **deps:** update dependency next-intl to v4.9.2 [security] ([5a97bef](https://github.com/s-hirano-ist/s-private/commit/5a97beffc087a66f980058821e890af64ade1280))
+* **deps:** update dependency next-intl to v4.9.2 [security] ([7d44f2a](https://github.com/s-hirano-ist/s-private/commit/7d44f2a87065097fd4a9a2fbbe31fd8c66de8315))
+* **deps:** update dependency vercel to v52 ([39af168](https://github.com/s-hirano-ist/s-private/commit/39af16800fad08311833a26d34bf908132566e9f))
+* **deps:** update dependency vercel to v52.2.0 [security] ([aca9836](https://github.com/s-hirano-ist/s-private/commit/aca98365bc4ebcc94b8b9dbf0cf5263c40a57422))
+* **deps:** update googleapis/release-please-action action to v5 ([b6ba60a](https://github.com/s-hirano-ist/s-private/commit/b6ba60a9173a682282c494ba949a9bd6ecd6ee9a))
+* **deps:** update non-major ([396152f](https://github.com/s-hirano-ist/s-private/commit/396152f1b8cc7cf441165e1af9e8264ca4a6df73))
+* **deps:** update pnpm to v10.33.2 ([5559ac4](https://github.com/s-hirano-ist/s-private/commit/5559ac405e9cfa7ef06b2bbd96ec57c56658682d))
+* **deps:** update pnpm to v11.0.9 ([c8d85c7](https://github.com/s-hirano-ist/s-private/commit/c8d85c7281b4b0fdaa28f55140bb3ad864130d77))
+* **deps:** update pnpm/action-setup digest to 26f6d4f ([a9de387](https://github.com/s-hirano-ist/s-private/commit/a9de3875b9d678795798ca7aa4bd2ebc1ac82ba7))
+* **deps:** update pnpm/action-setup digest to 91ab88e ([45d8811](https://github.com/s-hirano-ist/s-private/commit/45d8811c91790e60dbfc424f9e3edf1bbf572733))
+* **deps:** update vercel to version 53.2.0 ([515e431](https://github.com/s-hirano-ist/s-private/commit/515e4317a9d7abee6e6ea82c4dde188a7d50c279))
+* **deps:** update vercel to version 53.2.0 ([c26700f](https://github.com/s-hirano-ist/s-private/commit/c26700fe7d85eef415f57c0adcfe46a9ac66117e))
+* migrate database configuration to use Supabase Direct URL ([32ab615](https://github.com/s-hirano-ist/s-private/commit/32ab61553ba13ef11fcff42301c26db0ee156f78))
+* migrate database configuration to use Supabase Direct URL ([c616119](https://github.com/s-hirano-ist/s-private/commit/c616119b3521fff874aa1a336ae7d44b55334f4e))
+* mise ssot on node version ([cc2b7ef](https://github.com/s-hirano-ist/s-private/commit/cc2b7ef30400738ab4e5204af3c93c281ae636fc))
+* **security:** enable pnpm 11 supply-chain hardening ([34bed16](https://github.com/s-hirano-ist/s-private/commit/34bed16c414b6c552138dff2859c5f53ee4dc4ec))
+* **security:** enable pnpm 11 supply-chain hardening ([c878067](https://github.com/s-hirano-ist/s-private/commit/c87806782d7b9087590e42b9a7e6500f0d204cb5))
+* upgrade ESLint to v10 ([687cf09](https://github.com/s-hirano-ist/s-private/commit/687cf09580c4221d2f6a6c05ae7a2eecb2c7db77))
+* upgrade pnpm to v11.0.8 ([007030c](https://github.com/s-hirano-ist/s-private/commit/007030c4a4dca3d34f7dfb4daeff84941f753558))
+* use automerge on packages ([fd9b79e](https://github.com/s-hirano-ist/s-private/commit/fd9b79e8d24c9458f71712ed24023b6cb3f42bb0))
+
 ## [3.7.5](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.7.4...s-private-v3.7.5) (2026-04-27)
 
 
