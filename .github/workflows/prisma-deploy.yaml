@@ -35,4 +35,5 @@ jobs:
       - run: pnpm i --frozen-lockfile
       - run: pnpm --filter s-database prisma:deploy
         env:
-          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+          DATABASE_URL: ${{ secrets.PRODUCTION_DIRECT_URL }}
+          DIRECT_URL: ${{ secrets.PRODUCTION_DIRECT_URL }}

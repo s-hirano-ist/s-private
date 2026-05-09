@@ -155,18 +155,20 @@ function DrawerContent({
 	return (
 		<DrawerPortal>
 			<DrawerOverlay />
-			<DrawerPrimitive.Popup
-				className={cn(
-					"group/drawer-content fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto max-h-[80vh] flex-col rounded-t-lg border-t bg-background",
-					"transition-transform duration-300 data-[ending-style]:translate-y-full data-[starting-style]:translate-y-full",
-					className,
-				)}
-				data-slot="drawer-content"
-				{...props}
-			>
-				<div className="mx-auto mt-4 h-2 w-[100px] shrink-0 rounded-full bg-muted" />
-				{children}
-			</DrawerPrimitive.Popup>
+			<DrawerPrimitive.Viewport data-slot="drawer-viewport">
+				<DrawerPrimitive.Popup
+					className={cn(
+						"group/drawer-content fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto max-h-[80vh] flex-col rounded-t-lg border-t bg-background",
+						"transition-transform duration-300 data-[ending-style]:translate-y-full data-[starting-style]:translate-y-full",
+						className,
+					)}
+					data-slot="drawer-content"
+					{...props}
+				>
+					<div className="mx-auto mt-4 h-2 w-[100px] shrink-0 rounded-full bg-muted" />
+					{children}
+				</DrawerPrimitive.Popup>
+			</DrawerPrimitive.Viewport>
 		</DrawerPortal>
 	);
 }
