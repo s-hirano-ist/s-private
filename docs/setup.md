@@ -53,3 +53,35 @@ vercel env run -e development -- <command>   # Vercel dev 環境変数（DB/Dock
 
 環境変数のスキーマと型定義は `app/src/env.ts`（`@t3-oss/env-nextjs` + Zod）を参照してください。
 Docker Compose 用の変数（VPS デプロイ時）は [docs/vps-deployment.md Step 7](vps-deployment.md) を参照してください。
+
+## Database (Supabase Postgres)
+
+DB ホスティングは Supabase Postgres を使用します。Prisma ORM 経由で接続し、`@prisma/adapter-pg` (node-postgres) で直接 Postgres に話します。
+
+### 接続URLの構成
+
+`DATABASE_URL` と `DIRECT_URL` の2系統を Doppler に登録します:
+
+| 変数 | 用途 | ポート | モード |
+|---|---|---|---|
+| `DATABASE_URL` | アプリ実行用 (Server Actions, API) | 6543 | Transaction Pooler (Supavisor) |
+| `DIRECT_URL` | `prisma migrate` 専用 | 5432 | Direct or Session Pooler |
+
+`prisma migrate` は advisory lock を取るため transaction mode では動かず、必ず Direct/Session を使います。アプリ実行時は serverless 向けに Transaction Pooler を使います。
+
+### 個人 dev 環境 (Free tier)
+
+開発者ごとに個人 Supabase プロジェクトを作るのを推奨します。共有 dev プロジェクトを使うと並列作業時に壊れやすいためです。
+
+1. [Supabase Dashboard](https://supabase.com/dashboard) で `s-private-dev-<name>` プロジェクトを作成。
+2. プロジェクトの **Connect** から `Transaction pooler` (6543) と `Session pooler` または `Direct connection` (5432) の URL を取得。
+3. Doppler の personal config (`dev_<name>`) に以下を設定:
+   ```
+   DATABASE_URL=<Transaction Pooler URL :6543>
+   DIRECT_URL=<Direct or Session URL :5432>
+   ```
+4. 初回だけ migrate を流す:
+   ```bash
+   pnpm --filter s-database prisma:deploy
+   ```
+5. Free tier は7日間無アクセスで pause されるので、定期的に Studio を開くか、軽量 ping で起動状態を保ちます。
