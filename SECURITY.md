@@ -78,43 +78,56 @@ pnpm security:report
 
 ### Version Pinning
 
-**Multiple layers of version pinning to prevent unexpected updates**:
-
-1. **Root-level** ([.npmrc](.npmrc)):
-   ```ini
-   save-exact=true
-   ```
-
-2. **Workspace-level** ([pnpm-workspace.yaml](pnpm-workspace.yaml)):
-   ```yaml
-   savePrefix: ''
-   ```
+**Workspace-level pinning** ([pnpm-workspace.yaml](pnpm-workspace.yaml)):
+```yaml
+savePrefix: ''
+```
 
 This ensures all dependencies are installed with exact versions (e.g., `1.2.3` instead of `^1.2.3`).
+`.npmrc` is reserved for auth/registry settings only since pnpm 11 — non-auth pnpm options live in `pnpm-workspace.yaml`.
 
 ### Lifecycle Script Protection
 
 **Configuration** ([pnpm-workspace.yaml](pnpm-workspace.yaml)):
 ```yaml
-onlyBuiltDependencies:
-  - '@memlab/cli'
-  - '@parcel/watcher'
-  - '@prisma/engines'
-  - '@sentry/cli'
-  - '@swc/core'
-  - esbuild
-  - memlab
-  - prisma
-  - puppeteer
-  - sharp
-  - sleep
-  - unrs-resolver
+allowBuilds:
+  '@memlab/cli': true
+  '@parcel/watcher': true
+  '@prisma/engines': true
+  '@sentry/cli': true
+  '@swc/core': true
+  dprint: true
+  esbuild: true
+  memlab: true
+  prisma: true
+  puppeteer: true
+  sharp: true
+  sleep: true
+  unrs-resolver: true
 ```
 
 **Why this matters**:
-- `onlyBuiltDependencies` に登録されたパッケージのみがライフサイクルスクリプト（`postinstall`、`preinstall`等）を実行可能
+- `allowBuilds` のキーに `true` が設定されたパッケージのみがライフサイクルスクリプト（`postinstall`、`preinstall`等）を実行可能
+- 値を `false` にすれば明示的な deny も表現可能（pnpm 11 で `onlyBuiltDependencies` / `ignoredBuiltDependencies` から統合）
 - 未登録パッケージのスクリプトはブロックされ、サプライチェーン攻撃を防止
 - 新しい依存追加時は `pnpm approve-builds` で対話的にレビュー・承認
+
+### pnpm 11 Hardening
+
+**Configuration** ([pnpm-workspace.yaml](pnpm-workspace.yaml)):
+```yaml
+strictDepBuilds: true
+blockExoticSubdeps: true
+trustPolicy: no-downgrade
+```
+
+| 設定 | 役割 |
+|------|------|
+| `strictDepBuilds: true` | `allowBuilds` 未登録のパッケージがライフサイクルスクリプトを持つ場合、インストールをハードエラー化（pnpm 10 までは警告のみ） |
+| `blockExoticSubdeps: true` | 推移的依存が npm レジストリ以外のソース（Git URL / tarball URL）から取得されることをブロック。直接依存は対象外 |
+| `trustPolicy: no-downgrade` | パッケージの信頼レベル（provenance / trusted publisher 等）が以前より低下した場合にインストールをブロック。パッケージ乗っ取り攻撃への対策 |
+
+例外を設けたい場合は `trustPolicyExclude` で個別に `package@version` を指定する。
 
 ### Minimum Release Age
 
@@ -195,11 +208,14 @@ pnpm i --frozen-lockfile
 ### Multi-layered Defense Strategy
 
 1. **Version Pinning**: Exact versions prevent unexpected updates
-2. **Lifecycle Script Protection**: `onlyBuiltDependencies` で承認済みパッケージのみスクリプト実行可能
-3. **Minimum Release Age**: 2-3日の Renovate delay
-4. **Frozen Lockfiles**: Reproducible builds in CI/CD
-5. **Automated Monitoring**: Renovate tracks vulnerabilities
-6. **Manual Auditing**: `pnpm audit` for on-demand checks
+2. **Lifecycle Script Protection**: `allowBuilds` で承認済みパッケージのみスクリプト実行可能
+3. **Strict Build Enforcement**: `strictDepBuilds: true` で未登録パッケージの build script をハードエラー化
+4. **Exotic Subdep Blocking**: `blockExoticSubdeps: true` で npm レジストリ以外由来の推移的依存を遮断
+5. **Trust Policy**: `trustPolicy: no-downgrade` でパッケージ乗っ取り（provenance 低下）を検知
+6. **Minimum Release Age**: 2-3日の Renovate delay
+7. **Frozen Lockfiles**: Reproducible builds in CI/CD
+8. **Automated Monitoring**: Renovate tracks vulnerabilities
+9. **Manual Auditing**: `pnpm audit` for on-demand checks
 
 ### Package Installation Safety
 
@@ -282,6 +298,6 @@ pnpm security
 
 ---
 
-**Last Updated**: 2026-03-29
+**Last Updated**: 2026-05-09
 
 For questions about this security policy, contact s-hirano-ist@outlook.com.

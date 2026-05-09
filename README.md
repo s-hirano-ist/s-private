@@ -72,8 +72,9 @@
   - Lock file maintenance enabled
 - **Manual Security Audits** - `pnpm audit` (moderate+ severity threshold)
 - **Supply Chain Protection**
-  - Package version pinning (`save-exact=true`)
-  - Lifecycle script protection (`ignore-dep-scripts=true`)
+  - Package version pinning (`savePrefix: ''` in pnpm-workspace.yaml)
+  - Lifecycle script protection (`allowBuilds` + `strictDepBuilds: true`)
+  - Exotic subdep blocking (`blockExoticSubdeps: true`) and trust policy (`trustPolicy: no-downgrade`)
   - Minimum release age: 24 hours (pnpm-workspace.yaml)
   - Frozen lockfiles in CI/CD
 
