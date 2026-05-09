@@ -7,5 +7,5 @@ _.file = ".env.local"
 
 [tools]
 pnpm = "11.0.9"
-doppler = { version = "3.75.3", exe = "doppler" }
+doppler = { version = "3.76.0", exe = "doppler" }
 "npm:agent-browser" = "0.26.0"
