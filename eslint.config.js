@@ -1,10 +1,10 @@
 // MEMO: only use for plugins not in biome
 
+import eslintReact from "@eslint-react/eslint-plugin";
 import vitestPlugin from "@vitest/eslint-plugin";
 import { defineConfig } from "eslint/config";
 import nextConfig from "eslint-config-next";
 import boundariesPlugin from "eslint-plugin-boundaries";
-import reactPlugin from "eslint-plugin-react";
 import reactHookPlugin from "eslint-plugin-react-hooks";
 // import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
 import storybookPlugin from "eslint-plugin-storybook";
@@ -47,8 +47,25 @@ export default defineConfig(
 			parser: tsEslint.parser,
 		},
 	},
-	reactPlugin.configs.flat.recommended,
-	reactPlugin.configs.flat["jsx-runtime"],
+	eslintReact.configs["recommended-typescript"],
+	// eslint-config-next bundles eslint-plugin-react. Disable conflicting rules
+	// so @eslint-react owns React linting and we don't double-report.
+	eslintReact.configs["disable-conflict-eslint-plugin-react"],
+	// eslint-plugin-react@7.37.5 is incompatible with ESLint v10
+	// (issue jsx-eslint/eslint-plugin-react#3977). Disable the residual
+	// react/* rules pulled in via eslint-config-next that
+	// disable-conflict-eslint-plugin-react does not cover.
+	{
+		rules: {
+			"react/jsx-no-duplicate-props": "off",
+			"react/jsx-no-undef": "off",
+			"react/jsx-uses-react": "off",
+			"react/jsx-uses-vars": "off",
+			"react/no-is-mounted": "off",
+			"react/no-unescaped-entities": "off",
+			"react/require-render-return": "off",
+		},
+	},
 	{
 		languageOptions: {
 			parserOptions: {
@@ -68,23 +85,17 @@ export default defineConfig(
 				tsconfigRootDir: import.meta.dirname,
 			},
 		},
-		settings: { react: { version: "19.2" } },
 		rules: {
-			// React rules (Biome doesn't have these)
-			"react/destructuring-assignment": "error",
-			"react/function-component-definition": ["error", {}],
-			"react/hook-use-state": "error",
-			"react/jsx-boolean-value": "error",
-			"react/jsx-fragments": "error",
-			"react/jsx-curly-brace-presence": "error",
-			"react/jsx-sort-props": "error",
-			"react/jsx-pascal-case": "error",
-			"react/no-danger": "error",
-			"react/prop-types": "off",
+			// @eslint-react rules (Biome doesn't have these)
+			"@eslint-react/use-state": "error",
+			"@eslint-react/jsx-no-useless-fragment": "error",
+			"@eslint-react/dom-no-dangerously-set-innerhtml": "error",
 
-			// Disable rules that conflict with Biome
-			// Biome handles: self-closing elements, unused vars, any type
-			"react/self-closing-comp": "off", // Biome: useSelfClosingElements
+			// Hooks lint は eslint-plugin-react-hooks (React 公式 + React Compiler 連携) に委譲
+			"@eslint-react/exhaustive-deps": "off",
+			"@eslint-react/rules-of-hooks": "off",
+
+			// Biome 委譲（既存の方針維持）
 			"@typescript-eslint/no-unused-vars": "off", // Biome handles this
 			"@typescript-eslint/no-empty-object-type": "off", // Biome: noBannedTypes
 			"@typescript-eslint/no-explicit-any": "off", // Biome: noExplicitAny

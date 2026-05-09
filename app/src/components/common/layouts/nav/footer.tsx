@@ -18,6 +18,30 @@ import { SearchDrawer } from "./search-drawer";
 type Props = {
 	search: typeof searchContentFromClient;
 };
+
+function NavIcon(name: string, icon: ReactNode, isActive?: boolean) {
+	return (
+		<div
+			className={cn(
+				"flex flex-col items-center gap-0.5 transition-colors duration-200",
+				isActive && "text-primary",
+			)}
+		>
+			{icon}
+			<div
+				className={cn(
+					"text-[10px]",
+					isActive
+						? "font-medium text-foreground"
+						: "font-normal text-muted-foreground",
+				)}
+			>
+				{name}
+			</div>
+		</div>
+	);
+}
+
 export function Footer({ search }: Props) {
 	const [open, setOpen] = useState(false);
 
@@ -36,29 +60,6 @@ export function Footer({ search }: Props) {
 			router.prefetch(`${pathname}/viewer` as Route);
 		}
 	}, [router, pathname]);
-
-	function Icon(name: string, icon: ReactNode, isActive?: boolean) {
-		return (
-			<div
-				className={cn(
-					"flex flex-col items-center gap-0.5 transition-colors duration-200",
-					isActive && "text-primary",
-				)}
-			>
-				{icon}
-				<div
-					className={cn(
-						"text-[10px]",
-						isActive
-							? "font-medium text-foreground"
-							: "font-normal text-muted-foreground",
-					)}
-				>
-					{name}
-				</div>
-			</div>
-		);
-	}
 
 	const handleLayoutChange = (value: string) => {
 		haptic();
@@ -97,7 +98,7 @@ export function Footer({ search }: Props) {
 				size="navSide"
 				variant="navSide"
 			>
-				{Icon("DUMPER", <UploadIcon className="size-5" />, isDumperActive)}
+				{NavIcon("DUMPER", <UploadIcon className="size-5" />, isDumperActive)}
 			</Button>
 			<div className="flex items-center justify-center">
 				<Button
@@ -126,7 +127,7 @@ export function Footer({ search }: Props) {
 				size="navSide"
 				variant="navSide"
 			>
-				{Icon("VIEWER", <DownloadIcon className="size-5" />, isViewerActive)}
+				{NavIcon("VIEWER", <DownloadIcon className="size-5" />, isViewerActive)}
 			</Button>
 		</div>
 	);
