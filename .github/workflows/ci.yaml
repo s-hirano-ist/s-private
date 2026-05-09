@@ -15,6 +15,12 @@ jobs:
     concurrency:
       group: ${{ github.workflow }}-build-${{ github.ref }}
     steps:
+      - name: Checkout files
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+          submodules: true
+
       - uses: ./.github/actions/setup-pnpm
       - run: pnpm build
         env: &build_env
@@ -61,8 +67,6 @@ jobs:
           fi
 
       - uses: ./.github/actions/setup-pnpm
-        with:
-          checkout: "false"
       - run: pnpm check:ci
 
   eslint:
@@ -73,6 +77,12 @@ jobs:
     concurrency:
       group: ${{ github.workflow }}-eslint-${{ github.ref }}
     steps:
+      - name: Checkout files
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+          submodules: true
+
       - uses: ./.github/actions/setup-pnpm
       - run: pnpm lint
         env:
@@ -86,6 +96,12 @@ jobs:
     concurrency:
       group: ${{ github.workflow }}-knip-${{ github.ref }}
     steps:
+      - name: Checkout files
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+          submodules: true
+
       - uses: ./.github/actions/setup-pnpm
       - run: pnpm knip
 
@@ -97,6 +113,12 @@ jobs:
     concurrency:
       group: ${{ github.workflow }}-test-${{ github.ref }}
     steps:
+      - name: Checkout files
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+          submodules: true
+
       - uses: ./.github/actions/setup-pnpm
       - run: pnpm --filter "./packages/*" build
       - run: pnpm exec playwright install
@@ -116,6 +138,12 @@ jobs:
     concurrency:
       group: ${{ github.workflow }}-storybook-${{ github.ref }}
     steps:
+      - name: Checkout files
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+          submodules: true
+
       - uses: ./.github/actions/setup-pnpm
       - run: pnpm storybook:build
         env:
@@ -128,6 +156,12 @@ jobs:
     concurrency:
       group: ${{ github.workflow }}-docs-${{ github.ref }}
     steps:
+      - name: Checkout files
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+          submodules: true
+
       - uses: ./.github/actions/setup-pnpm
       - name: Build TypeDoc
         run: pnpm docs:build
