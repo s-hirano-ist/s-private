@@ -100,7 +100,7 @@
 	},
 	"devDependencies": {
 		"@types/js-yaml": "4.0.9",
-		"@types/node": "24.12.2",
+		"@types/node": "24.12.3",
 		"@types/turndown": "5.0.6",
 		"tsx": "4.21.0",
 		"typescript": "6.0.3"
