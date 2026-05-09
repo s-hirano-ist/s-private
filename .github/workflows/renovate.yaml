@@ -52,3 +52,6 @@ jobs:
           RENOVATE_DRY_RUN: ${{ inputs.dryRun && 'full' || '' }}
           RENOVATE_REPOSITORIES: ${{ github.repository }}
           RENOVATE_PLATFORM: github
+          # PAT 所有者 (s-hirano-ist) を commit author に固定。
+          # 既定値の renovate@whitesourcesoftware.com は Mend 所有アドレスのため警告が出る。
+          RENOVATE_GIT_AUTHOR: "s-hirano-ist <s-hirano-ist@users.noreply.github.com>"
