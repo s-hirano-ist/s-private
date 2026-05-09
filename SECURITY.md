@@ -118,16 +118,14 @@ allowBuilds:
 ```yaml
 strictDepBuilds: true
 blockExoticSubdeps: true
-trustPolicy: no-downgrade
 ```
 
 | 設定 | 役割 |
 |------|------|
 | `strictDepBuilds: true` | `allowBuilds` 未登録のパッケージがライフサイクルスクリプトを持つ場合、インストールをハードエラー化（pnpm 10 までは警告のみ） |
 | `blockExoticSubdeps: true` | 推移的依存が npm レジストリ以外のソース（Git URL / tarball URL）から取得されることをブロック。直接依存は対象外 |
-| `trustPolicy: no-downgrade` | パッケージの信頼レベル（provenance / trusted publisher 等）が以前より低下した場合にインストールをブロック。パッケージ乗っ取り攻撃への対策 |
 
-例外を設けたい場合は `trustPolicyExclude` で個別に `package@version` を指定する。
+> Note: `trustPolicy: no-downgrade` は Renovate / Dependabot 側が `ERR_PNPM_TRUST_DOWNGRADE` を握りつぶして lockfile 更新ジョブごと落ちるため一時撤去中（[pnpm-workspace.yaml](pnpm-workspace.yaml) の TODO コメント参照）。代替として下記の Minimum Release Age + 手動レビューで provenance 低下監視を担保。
 
 ### Minimum Release Age
 
@@ -211,11 +209,10 @@ pnpm i --frozen-lockfile
 2. **Lifecycle Script Protection**: `allowBuilds` で承認済みパッケージのみスクリプト実行可能
 3. **Strict Build Enforcement**: `strictDepBuilds: true` で未登録パッケージの build script をハードエラー化
 4. **Exotic Subdep Blocking**: `blockExoticSubdeps: true` で npm レジストリ以外由来の推移的依存を遮断
-5. **Trust Policy**: `trustPolicy: no-downgrade` でパッケージ乗っ取り（provenance 低下）を検知
-6. **Minimum Release Age**: 2-3日の Renovate delay
-7. **Frozen Lockfiles**: Reproducible builds in CI/CD
-8. **Automated Monitoring**: Renovate tracks vulnerabilities
-9. **Manual Auditing**: `pnpm audit` for on-demand checks
+5. **Minimum Release Age**: 2-3日の Renovate delay
+6. **Frozen Lockfiles**: Reproducible builds in CI/CD
+7. **Automated Monitoring**: Renovate tracks vulnerabilities
+8. **Manual Auditing**: `pnpm audit` for on-demand checks
 
 ### Package Installation Safety
 

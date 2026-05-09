@@ -145,7 +145,6 @@ import { ArticlesStackLoader } from "@/loaders/articles";
 - **バージョン固定**: pnpm-workspace.yamlの`savePrefix: ''`
 - **ライフサイクルスクリプト保護**: `allowBuilds`（明示許可制）+ `strictDepBuilds: true`で未登録パッケージのスクリプト実行をハードエラー化
 - **推移的依存の制限**: `blockExoticSubdeps: true`でnpmレジストリ以外（Git/tarball URL）由来の間接依存をブロック
-- **信頼レベル監視**: `trustPolicy: no-downgrade`でパッケージ乗っ取り（provenance低下）を検知
 - **CI/CD**: 全CIワークフローで`--frozen-lockfile`を強制
 - **最小リリース経過時間**: 新規公開された悪意のあるパッケージを避けるための24時間グローバル設定
 

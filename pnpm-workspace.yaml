@@ -23,7 +23,14 @@ allowBuilds:
 # pnpm 11 supply-chain security hardening
 strictDepBuilds: true
 blockExoticSubdeps: true
-trustPolicy: no-downgrade
+# TODO: 再有効化検討 — `trustPolicy: no-downgrade` は Renovate / Dependabot 側で
+# `ERR_PNPM_TRUST_DOWNGRADE` を握りつぶし lockfile 更新ジョブが落ちるため一時撤去。
+# 参照: https://github.com/dependabot/dependabot-core/issues/14077
+#       https://github.com/orgs/pnpm/discussions/10706
+# 再有効化条件: Renovate がこのエラーを recoverable として扱い、該当バージョンを
+# スキップして lockfile を生成できるようになった時点で復活させる。
+# 現状の代替防御: Renovate の minimumReleaseAge('2 days') + strictDepBuilds
+# + blockExoticSubdeps + allowBuilds 明示許可 + 手動レビュー。
 
 overrides:
   'cross-spawn@<7.0.5': 7.0.6
