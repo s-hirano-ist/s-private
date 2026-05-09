@@ -22,8 +22,8 @@
     'nvm',
   ],
   dependencyDashboard: true,
-  branchConcurrentLimit: 1,
-  prConcurrentLimit: 3,
+  branchConcurrentLimit: 3,
+  prConcurrentLimit: 5,
   separateMultipleMajor: false,
   schedule: [
     'before 11am on monday',
@@ -34,10 +34,10 @@
   rangeStrategy: 'bump',
   platformAutomerge: true,
   automergeStrategy: 'squash',
-  // Mend Cloud で全 workspace 一括再生成が OOM の主因となるため停止。
-  // 必要時はローカルで `pnpm install` を回して手動 PR を作る。
   lockFileMaintenance: {
-    enabled: false,
+    enabled: true,
+    automerge: true,
+    schedule: ['before 5am on the first day of the month'],
   },
   vulnerabilityAlerts: {
     labels: [
