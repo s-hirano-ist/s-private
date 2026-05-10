@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.20.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.19.1...@s-hirano-ist/s-database-v1.20.0) (2026-05-10)
+
+
+### Features
+
+* **database:** bridge Vercel Supabase POSTGRES_* env vars to DATABASE_URL/DIRECT_URL ([dbcd427](https://github.com/s-hirano-ist/s-private/commit/dbcd4270730f6a7f5effbc7eb61fd4bd30624b2c))
+* **database:** bridge Vercel Supabase POSTGRES_* to DATABASE_URL/DIRECT_URL ([5acd76e](https://github.com/s-hirano-ist/s-private/commit/5acd76efa9e6a3dd76d9192deef719202f1320f1))
+
+
+### Bug Fixes
+
+* **database:** append sslmode=no-verify to bridged Vercel-Supabase URLs ([c4c9511](https://github.com/s-hirano-ist/s-private/commit/c4c951151128c2fb25c770f38a3b149e92c5b798))
+* **database:** bridged Vercel-Supabase URLs failing TLS verification ([ba79a4c](https://github.com/s-hirano-ist/s-private/commit/ba79a4c3a4baa8d91963dd8f86eedd8c90158df8))
+* **database:** ensure erd output dir exists before prisma generate ([62f615a](https://github.com/s-hirano-ist/s-private/commit/62f615a64dd57290cd93985ab6ca1320106983e9))
+* **database:** normalize existing sslmode to no-verify on Marketplace URLs ([a9c3b78](https://github.com/s-hirano-ist/s-private/commit/a9c3b782294e83cab1e8e2194112e1d64b016087))
+* **database:** normalize sslmode to no-verify on Marketplace URLs ([a8606dd](https://github.com/s-hirano-ist/s-private/commit/a8606dd8a4c2b8584c3ca6bf8964b51bce4e6e51))
+
+
+### Maintenance
+
+* **database:** replace prisma-dbml-generator with prisma-erd-generator ([eaad73f](https://github.com/s-hirano-ist/s-private/commit/eaad73ff35b6ec9fe3a63da7bd5847da3200f72c))
+* **database:** replace prisma-dbml-generator with prisma-erd-generator ([1dc8395](https://github.com/s-hirano-ist/s-private/commit/1dc8395d8fddce2320728f48a735f4c80ac3c0ca))
+
 ## [1.19.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.19.0...@s-hirano-ist/s-database-v1.19.1) (2026-05-09)
 
 

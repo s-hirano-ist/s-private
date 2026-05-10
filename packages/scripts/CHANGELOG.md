@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.23.5](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.23.4...@s-hirano-ist/s-scripts-v1.23.5) (2026-05-10)
+
+
+### Maintenance
+
+* **deps:** update non-major (devdependencies) ([f8f89ed](https://github.com/s-hirano-ist/s-private/commit/f8f89edda6b2ea04233581fa2c7b8e25d667f0c9))
+* **deps:** update non-major (devdependencies) ([f457360](https://github.com/s-hirano-ist/s-private/commit/f4573603be4764585fc06f9d5a49b87429f2c702))
+* **lint:** adopt strictTypeChecked ESLint config and fix violations ([0855808](https://github.com/s-hirano-ist/s-private/commit/08558082ff09f7fec5be897400233adefdbecd72))
+* **lint:** adopt strictTypeChecked ESLint config and fix violations ([3741fff](https://github.com/s-hirano-ist/s-private/commit/3741fff05bd88a40d69c459006fb24bd4a6b222e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.20.3
+    * @s-hirano-ist/s-database bumped to 1.20.0
+    * @s-hirano-ist/s-search bumped to 1.18.10
+    * @s-hirano-ist/s-storage bumped to 1.18.6
+
 ## [1.23.4](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.23.3...@s-hirano-ist/s-scripts-v1.23.4) (2026-05-09)
 
 

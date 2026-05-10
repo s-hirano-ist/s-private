@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.19.9](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.19.8...@s-hirano-ist/s-ui-v1.19.9) (2026-05-10)
+
+
+### Maintenance
+
+* **deps:** update non-major (devdependencies) ([f8f89ed](https://github.com/s-hirano-ist/s-private/commit/f8f89edda6b2ea04233581fa2c7b8e25d667f0c9))
+* **deps:** update non-major (devdependencies) ([f457360](https://github.com/s-hirano-ist/s-private/commit/f4573603be4764585fc06f9d5a49b87429f2c702))
+* **lint:** adopt strictTypeChecked ESLint config and fix violations ([0855808](https://github.com/s-hirano-ist/s-private/commit/08558082ff09f7fec5be897400233adefdbecd72))
+* **lint:** adopt strictTypeChecked ESLint config and fix violations ([3741fff](https://github.com/s-hirano-ist/s-private/commit/3741fff05bd88a40d69c459006fb24bd4a6b222e))
+* **lint:** migrate from eslint-plugin-react to [@eslint-react](https://github.com/eslint-react) ([7aa51da](https://github.com/s-hirano-ist/s-private/commit/7aa51da6eea4872b09baf7add456f10eb0ffff9d))
+* **lint:** migrate from eslint-plugin-react to [@eslint-react](https://github.com/eslint-react) ([90b4557](https://github.com/s-hirano-ist/s-private/commit/90b45572c0ee203354babcffca94af4c744afb40))
+* **ui:** migrate class-variance-authority to tailwind-variants ([3bb82b5](https://github.com/s-hirano-ist/s-private/commit/3bb82b5a92ce065db88dced05f510e8e118fd9c0))
+* **ui:** migrate class-variance-authority to tailwind-variants ([39bd9d6](https://github.com/s-hirano-ist/s-private/commit/39bd9d6da7c19c7ca13b96353129e9de85fad921))
+
 ## [1.19.8](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.19.7...@s-hirano-ist/s-ui-v1.19.8) (2026-05-09)
 
 
