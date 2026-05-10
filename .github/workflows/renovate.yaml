@@ -55,3 +55,6 @@ jobs:
           # PAT 所有者 (s-hirano-ist) を commit author に固定。
           # 既定値の renovate@whitesourcesoftware.com は Mend 所有アドレスのため警告が出る。
           RENOVATE_GIT_AUTHOR: "s-hirano-ist <s-hirano-ist@users.noreply.github.com>"
+          # schedule trigger 以外 (workflow_dispatch / issues / pull_request) は
+          # ユーザの能動的なアクションなので renovate.json5 の schedule を無視して即時実行する。
+          RENOVATE_FORCE: ${{ github.event_name != 'schedule' && '{"schedule":[]}' || '' }}
