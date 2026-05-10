@@ -18,22 +18,16 @@ on:
         description: dry-run (書き込みなしでログ出力のみ)
         type: boolean
         default: false
-  # Dependency Dashboard issue のチェックボックス操作で Renovate を再起動する。
-  # 例: "Check this box to trigger a request for Renovate to run again"。
-  issues:
-    types: [edited]
-  # Renovate が作った PR 上の rebase/retry チェックボックスにも反応する。
-  pull_request:
-    types: [edited]
+  # NOTE: `issues: edited` トリガーは外している。Renovate 自身が
+  # Dependency Dashboard issue の body を毎回更新するため、トリガーを残すと
+  # 「Renovate run が dashboard を更新 → issues:edited が発火 → 別の run が起動」
+  # の自走ループになり大量の `repository-changed` abort を生む。
+  # PAT 所有者と人間ユーザが同一なので sender フィルタも効かない。
+  # Dashboard checkbox を toggle しても次の scheduled / workflow_dispatch run で
+  # 読み取られるので機能は失われない (即時反応しなくなるだけ)。
 
 jobs:
   renovate:
-    # 無関係な issue/PR 編集では走らないように絞り込む。
-    if: >-
-      github.event_name == 'schedule' ||
-      github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'issues' && github.event.issue.title == 'Dependency Dashboard') ||
-      (github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'renovate/'))
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     concurrency:
