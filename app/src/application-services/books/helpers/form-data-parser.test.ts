@@ -26,8 +26,37 @@ import { sharpImageProcessor } from "@/infrastructures/images/services/sharp-ima
 import { parseAddBooksFormData } from "./form-data-parser";
 
 vi.mock("@/common/utils/form-data-utils");
-vi.mock("@s-hirano-ist/s-core/books/entities/book-entity");
-vi.mock("@s-hirano-ist/s-core/shared-kernel/entities/file-entity");
+vi.mock(
+	"@s-hirano-ist/s-core/books/entities/book-entity",
+	async (importOriginal) => {
+		const actual =
+			await importOriginal<
+				typeof import("@s-hirano-ist/s-core/books/entities/book-entity")
+			>();
+		return {
+			...actual,
+			makeISBN: vi.fn(),
+			makeBookTitle: vi.fn(),
+			makeRating: vi.fn(),
+			makeTags: vi.fn(),
+		};
+	},
+);
+vi.mock(
+	"@s-hirano-ist/s-core/shared-kernel/entities/file-entity",
+	async (importOriginal) => {
+		const actual =
+			await importOriginal<
+				typeof import("@s-hirano-ist/s-core/shared-kernel/entities/file-entity")
+			>();
+		return {
+			...actual,
+			makePath: vi.fn(),
+			makeContentType: vi.fn(),
+			makeFileSize: vi.fn(),
+		};
+	},
+);
 vi.mock("@/infrastructures/images/services/sharp-image-processor", () => ({
 	sharpImageProcessor: {
 		fileToBuffer: vi.fn(),

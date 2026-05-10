@@ -55,8 +55,8 @@
 		"preinstall": "npx only-allow pnpm"
 	},
 	"dependencies": {
-		"next": "16.2.4",
-		"next-intl": "4.9.2"
+		"next": "16.2.6",
+		"next-intl": "4.11.0"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.4.15",
