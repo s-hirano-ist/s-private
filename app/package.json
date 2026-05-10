@@ -45,11 +45,11 @@
 	],
 	"devDependencies": {
 		"@tailwindcss/postcss": "4.2.4",
-		"@types/node": "24.12.2",
+		"@types/node": "24.12.3",
 		"@types/react": "19.2.14",
 		"@types/react-dom": "19.2.3",
 		"@types/react-syntax-highlighter": "15.5.13",
-		"postcss": "8.5.12",
+		"postcss": "8.5.14",
 		"tailwindcss": "4.2.4"
 	}
 }
