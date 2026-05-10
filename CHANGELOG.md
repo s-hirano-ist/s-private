@@ -2,6 +2,75 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.8.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.7.6...s-private-v3.8.0) (2026-05-10)
+
+
+### Features
+
+* **database:** bridge Vercel Supabase POSTGRES_* env vars to DATABASE_URL/DIRECT_URL ([dbcd427](https://github.com/s-hirano-ist/s-private/commit/dbcd4270730f6a7f5effbc7eb61fd4bd30624b2c))
+* **database:** bridge Vercel Supabase POSTGRES_* to DATABASE_URL/DIRECT_URL ([5acd76e](https://github.com/s-hirano-ist/s-private/commit/5acd76efa9e6a3dd76d9192deef719202f1320f1))
+
+
+### Bug Fixes
+
+* **build:** run prisma generate before next build on Vercel ([1977c52](https://github.com/s-hirano-ist/s-private/commit/1977c5242f2dd160856507741eb829b12f6716c3))
+* **build:** run prisma generate before next build on Vercel ([4b22b8b](https://github.com/s-hirano-ist/s-private/commit/4b22b8b05b12ca1b1bbdf1d3c49eef06b0fe2bdb))
+* **ci:** add explicit checkout to ci/memlab/update-reports workflows ([271da92](https://github.com/s-hirano-ist/s-private/commit/271da92790de5203eb846e598829bdc1adf3373d))
+* **ci:** pin depcruise action to Node 24 ([e368087](https://github.com/s-hirano-ist/s-private/commit/e368087f2e3ebb7c5848b56bca2b421d806e2650))
+* **ci:** pin depcruise action to Node 24 ([8097560](https://github.com/s-hirano-ist/s-private/commit/809756014ceb9b42375926b7a17a0e1588e98a8c))
+* **ci:** require caller checkout before setup-pnpm ([2c5b926](https://github.com/s-hirano-ist/s-private/commit/2c5b9260d13227095f2563f0dfb79d12d0454bbc))
+* **database:** append sslmode=no-verify to bridged Vercel-Supabase URLs ([c4c9511](https://github.com/s-hirano-ist/s-private/commit/c4c951151128c2fb25c770f38a3b149e92c5b798))
+* **database:** bridged Vercel-Supabase URLs failing TLS verification ([ba79a4c](https://github.com/s-hirano-ist/s-private/commit/ba79a4c3a4baa8d91963dd8f86eedd8c90158df8))
+* **database:** ensure erd output dir exists before prisma generate ([62f615a](https://github.com/s-hirano-ist/s-private/commit/62f615a64dd57290cd93985ab6ca1320106983e9))
+* **database:** normalize existing sslmode to no-verify on Marketplace URLs ([a9c3b78](https://github.com/s-hirano-ist/s-private/commit/a9c3b782294e83cab1e8e2194112e1d64b016087))
+* **database:** normalize sslmode to no-verify on Marketplace URLs ([a8606dd](https://github.com/s-hirano-ist/s-private/commit/a8606dd8a4c2b8584c3ca6bf8964b51bce4e6e51))
+* **deps:** suspend pnpm trustPolicy to unblock Renovate lockfile ([6e8255b](https://github.com/s-hirano-ist/s-private/commit/6e8255b58f2c34fce5b630b6a4e61a641ef92569))
+* **deps:** suspend pnpm trustPolicy to unblock Renovate lockfile ([7126227](https://github.com/s-hirano-ist/s-private/commit/7126227bedcb418e02aa91d6c9f1a7d968af245a))
+* pnpm/Renovate OOM 緩和策 ([#2296](https://github.com/s-hirano-ist/s-private/issues/2296) の 51cee7fe) ([7b3a054](https://github.com/s-hirano-ist/s-private/commit/7b3a0545a4e4aee1609a0736e29113a38029f177))
+* **renovate:** reduce concurrency to avoid OOM on Mend Cloud ([51cee7f](https://github.com/s-hirano-ist/s-private/commit/51cee7fe3da9fa1b0a1ab6656e3316bdfc3f0031))
+
+
+### Maintenance
+
+* **ci:** add setup-pnpm composite action ([a4312f9](https://github.com/s-hirano-ist/s-private/commit/a4312f92a6da8a2fd806e1878b3efc7a8d08c87f))
+* **ci:** consolidate ci.yaml with setup-pnpm and shared env anchor ([ced512f](https://github.com/s-hirano-ist/s-private/commit/ced512ff49c2164d3077a32e70f546b706efb8e9))
+* **ci:** consolidate ci/memlab env via YAML anchor and unify cache ([a24c2e5](https://github.com/s-hirano-ist/s-private/commit/a24c2e5ce8ac93ce70b15be0659938b355d85c49))
+* **ci:** introduce setup-pnpm composite action ([0935261](https://github.com/s-hirano-ist/s-private/commit/0935261098acfb776e418b51a6d2e87a41cbaf23))
+* **ci:** migrate small workflows to setup-pnpm composite ([b9b8030](https://github.com/s-hirano-ist/s-private/commit/b9b8030278171a634ba664e34bbd5531e6619acf))
+* **ci:** unify cache strategy in update-reports.yaml ([15d45b3](https://github.com/s-hirano-ist/s-private/commit/15d45b3167046a87c1ff9367117cd8aadb427eeb))
+* **ci:** use setup-pnpm and env anchor in memlab.yaml ([b8eb127](https://github.com/s-hirano-ist/s-private/commit/b8eb1278535f66d8f703a51d702c05a29ee5e2d3))
+* cleanup eslint-plugin-import dep & mitigate Renovate OOM ([93b7315](https://github.com/s-hirano-ist/s-private/commit/93b731562a44d28d7b77198fe18809990f40f267))
+* **database:** replace prisma-dbml-generator with prisma-erd-generator ([eaad73f](https://github.com/s-hirano-ist/s-private/commit/eaad73ff35b6ec9fe3a63da7bd5847da3200f72c))
+* **database:** replace prisma-dbml-generator with prisma-erd-generator ([1dc8395](https://github.com/s-hirano-ist/s-private/commit/1dc8395d8fddce2320728f48a735f4c80ac3c0ca))
+* **deps:** remove redundant eslint-plugin-import explicit entry ([c342fe8](https://github.com/s-hirano-ist/s-private/commit/c342fe8b7b1f9241234737c483fdf787e09658d6))
+* **deps:** update dependency npm:agent-browser to v0.27.0 ([f1b3b11](https://github.com/s-hirano-ist/s-private/commit/f1b3b118151fb85e3233898729e9fa4320c5024b))
+* **deps:** update non-major (devdependencies) ([3c37617](https://github.com/s-hirano-ist/s-private/commit/3c376178bc4a2ff4cef56514048d11b10e0d3cdf))
+* **deps:** update non-major (devdependencies) ([f8f89ed](https://github.com/s-hirano-ist/s-private/commit/f8f89edda6b2ea04233581fa2c7b8e25d667f0c9))
+* **deps:** update non-major (devdependencies) ([f457360](https://github.com/s-hirano-ist/s-private/commit/f4573603be4764585fc06f9d5a49b87429f2c702))
+* **license:** replace license-checker-rseidelsohn with pnpm licenses list ([4daf06c](https://github.com/s-hirano-ist/s-private/commit/4daf06ce0702322a06f9821ea463153993375716))
+* **license:** replace license-checker-rseidelsohn with pnpm licenses list ([0c08165](https://github.com/s-hirano-ist/s-private/commit/0c081654284e91b557e5e092a6b81c3f1f2f36c4))
+* **lint:** adopt strictTypeChecked ESLint config and fix violations ([0855808](https://github.com/s-hirano-ist/s-private/commit/08558082ff09f7fec5be897400233adefdbecd72))
+* **lint:** adopt strictTypeChecked ESLint config and fix violations ([3741fff](https://github.com/s-hirano-ist/s-private/commit/3741fff05bd88a40d69c459006fb24bd4a6b222e))
+* **lint:** migrate from eslint-plugin-react to [@eslint-react](https://github.com/eslint-react) ([7aa51da](https://github.com/s-hirano-ist/s-private/commit/7aa51da6eea4872b09baf7add456f10eb0ffff9d))
+* **lint:** migrate from eslint-plugin-react to [@eslint-react](https://github.com/eslint-react) ([90b4557](https://github.com/s-hirano-ist/s-private/commit/90b45572c0ee203354babcffca94af4c744afb40))
+* **renovate:** add bypassSchedule input for ad-hoc force runs ([d878008](https://github.com/s-hirano-ist/s-private/commit/d878008dd501b9b2de999a50086e4f743f27ae73))
+* **renovate:** add bypassSchedule input for ad-hoc force runs ([3068c71](https://github.com/s-hirano-ist/s-private/commit/3068c7103aab3bee61e60bfa5d69524a1d922f3f))
+* **renovate:** auto-bypass schedule for non-scheduled triggers ([f79ed18](https://github.com/s-hirano-ist/s-private/commit/f79ed18efa7b5958379569c5f1bab742f1a35ac7))
+* **renovate:** drop issues/PR edit triggers to break feedback loop ([c35c458](https://github.com/s-hirano-ist/s-private/commit/c35c45893112ca858368687ffcf9e36696a59c75))
+* **renovate:** drop issues/pull_request triggers to break feedback loop ([4838ace](https://github.com/s-hirano-ist/s-private/commit/4838ace7c79d9ea02615da41be06f2b2a1a7ac27))
+* **renovate:** pin gitAuthor to PAT owner identity ([5b6af58](https://github.com/s-hirano-ist/s-private/commit/5b6af58a5b7ee2d80fcae03e6eec44805cd7b3ef))
+* **renovate:** pin gitAuthor to PAT owner identity ([9d32366](https://github.com/s-hirano-ist/s-private/commit/9d32366233722c9de60db17d642a5e9b87475a88))
+* **renovate:** self-host Renovate on GitHub Actions to escape Mend Cloud OOM ([0e65851](https://github.com/s-hirano-ist/s-private/commit/0e65851102bfcd5f2567c8e5333d822976862ccf))
+* **renovate:** self-host Renovate on GitHub Actions to escape Mend Cloud OOM ([81d1da8](https://github.com/s-hirano-ist/s-private/commit/81d1da860f2d9f701e8a5c11fbb8a3d5d1de8762))
+* **renovate:** skip lifecycle scripts to avoid Mend Cloud OOM ([6073881](https://github.com/s-hirano-ist/s-private/commit/60738818adaff15a9eb6a2ea77fe082185cae7ad))
+* **renovate:** skip lifecycle scripts to avoid Mend Cloud OOM ([ddc5520](https://github.com/s-hirano-ist/s-private/commit/ddc5520a1669c9fea0615f5e308d2ac8d02e0433))
+* **renovate:** trigger on Dependency Dashboard checkbox edits ([741eac7](https://github.com/s-hirano-ist/s-private/commit/741eac7562aa4aed1742fc369f0870d315fccf98))
+* run next typegen before lint to populate typedRoutes ([521cfdd](https://github.com/s-hirano-ist/s-private/commit/521cfddcedf0620f91cc94d0312251b99955725c))
+* **ui:** migrate class-variance-authority to tailwind-variants ([3bb82b5](https://github.com/s-hirano-ist/s-private/commit/3bb82b5a92ce065db88dced05f510e8e118fd9c0))
+* **ui:** migrate class-variance-authority to tailwind-variants ([39bd9d6](https://github.com/s-hirano-ist/s-private/commit/39bd9d6da7c19c7ca13b96353129e9de85fad921))
+* **workspace:** remove overrides for package versions ([5686e4c](https://github.com/s-hirano-ist/s-private/commit/5686e4c1cfe71cb7f03ec7717429ca93d888bad5))
+* **workspace:** remove overrides for package versions ([577c135](https://github.com/s-hirano-ist/s-private/commit/577c135affc4a3a5c6a8803265cc42fcf3add7a4))
+
 ## [3.7.6](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.7.5...s-private-v3.7.6) (2026-05-09)
 
 

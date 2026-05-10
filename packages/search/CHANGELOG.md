@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.18.10](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-search-v1.18.9...@s-hirano-ist/s-search-v1.18.10) (2026-05-10)
+
+
+### Maintenance
+
+* **deps:** update non-major (devdependencies) ([f8f89ed](https://github.com/s-hirano-ist/s-private/commit/f8f89edda6b2ea04233581fa2c7b8e25d667f0c9))
+* **deps:** update non-major (devdependencies) ([f457360](https://github.com/s-hirano-ist/s-private/commit/f4573603be4764585fc06f9d5a49b87429f2c702))
+* **lint:** adopt strictTypeChecked ESLint config and fix violations ([0855808](https://github.com/s-hirano-ist/s-private/commit/08558082ff09f7fec5be897400233adefdbecd72))
+* **lint:** adopt strictTypeChecked ESLint config and fix violations ([3741fff](https://github.com/s-hirano-ist/s-private/commit/3741fff05bd88a40d69c459006fb24bd4a6b222e))
+
 ## [1.18.9](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-search-v1.18.8...@s-hirano-ist/s-search-v1.18.9) (2026-04-26)
 
 
