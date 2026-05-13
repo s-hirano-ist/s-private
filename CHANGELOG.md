@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.8.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.8.0...s-private-v3.8.1) (2026-05-13)
+
+
+### Documentation
+
+* **books:** preserve real Zod schemas in form-data-parser mocks ([39452cc](https://github.com/s-hirano-ist/s-private/commit/39452ccff596ac76b27266415dc270538d13a1eb))
+
+
+### Maintenance
+
+* **deps:** override transitive deps to fix all dependabot alerts ([3117e3b](https://github.com/s-hirano-ist/s-private/commit/3117e3b46c37db4db8c3950296b6beecac4282ab))
+* **deps:** update dependency @hono/node-server@&lt;1.19.13 to ^1.19.14 ([bf7a9dc](https://github.com/s-hirano-ist/s-private/commit/bf7a9dc0a6428cccc7197d787584b04d271db609))
+* **deps:** update dependency next-intl to v4.11.1 ([f9c153a](https://github.com/s-hirano-ist/s-private/commit/f9c153ac747d0263991347349e7650879c0c723f))
+
 ## [3.8.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.7.6...s-private-v3.8.0) (2026-05-10)
 
 
