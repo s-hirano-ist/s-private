@@ -14,20 +14,22 @@
   reviewers: [
     's-hirano-ist',
   ],
+  // Dependabot がサポートしない範囲のみ Renovate で扱う:
+  //   - mise / nvm: ツールバージョン管理
+  //   - biome customManager: extends の customManagers:biomeVersions が拾う
+  //   - lockFileMaintenance: 四半期に pnpm-lock 全リフレッシュ
+  // npm / github-actions / docker-compose は .github/dependabot.yml に移行済み。
   enabledManagers: [
-    'npm',
-    'github-actions',
-    'docker-compose',
     'mise',
     'nvm',
   ],
-  // Mend Cloud で pnpm install の lifecycle scripts (sharp / @prisma/engines /
-  // @sentry/cli / esbuild) がメモリを使い切り OOM kill される問題への対処。
+  // Mend Cloud / self-host いずれでも pnpm install の lifecycle scripts (sharp /
+  // @prisma/engines / @sentry/cli / esbuild) によるメモリ消費を抑える保険。
   // CI (--frozen-lockfile) と本番 deploy 側の install では通常通りバイナリを取得する。
   ignoreScripts: true,
   dependencyDashboard: true,
-  branchConcurrentLimit: 3,
-  prConcurrentLimit: 5,
+  branchConcurrentLimit: 2,
+  prConcurrentLimit: 2,
   separateMultipleMajor: false,
   schedule: [
     'before 11am on monday',
@@ -51,52 +53,6 @@
   packageRules: [
     {
       matchManagers: [
-        'npm',
-      ],
-      matchUpdateTypes: [
-        'patch',
-        'minor',
-      ],
-      matchPackageNames: [
-        '*',
-      ],
-      matchDepTypes: [
-        'dependencies',
-        'peerDependencies',
-      ],
-      groupName: 'non-major',
-      minimumReleaseAge: '2 days',
-    },
-    {
-      matchManagers: [
-        'npm',
-      ],
-      matchUpdateTypes: [
-        'patch',
-        'minor',
-      ],
-      matchPackageNames: [
-        '*',
-      ],
-      matchDepTypes: [
-        'devDependencies',
-      ],
-      groupName: 'non-major (devDependencies)',
-      groupSlug: 'non-major-dev',
-      minimumReleaseAge: '2 days',
-      automerge: true,
-    },
-    {
-      matchManagers: [
-        'github-actions',
-      ],
-      groupName: 'GitHub Actions',
-      groupSlug: 'github-actions',
-      minimumReleaseAge: '2 days',
-      automerge: true,
-    },
-    {
-      matchManagers: [
         'mise',
       ],
       groupName: 'mise',
@@ -111,29 +67,12 @@
       ],
       matchManagers: [
         'mise',
-        'npm',
         'nvm',
       ],
       groupName: 'node and pnpm',
       groupSlug: 'node-pnpm',
       minimumReleaseAge: '2 days',
       automerge: false,
-    },
-    {
-      matchManagers: [
-        'docker-compose',
-      ],
-      minimumReleaseAge: '2 days',
-      automerge: true,
-    },
-    {
-      matchManagers: [
-        'docker-compose',
-      ],
-      matchPackageNames: [
-        's0hirano/embedding-api',
-      ],
-      enabled: false,
     },
   ],
 }
