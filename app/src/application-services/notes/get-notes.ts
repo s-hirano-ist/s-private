@@ -33,7 +33,7 @@ import { cache } from "react";
  *
  * @internal
  */
-const _getNotesCount = async (
+const getNotesCountCached = async (
 	userId: UserId,
 	status: Status,
 ): Promise<number> => {
@@ -52,7 +52,7 @@ const _getNotesCount = async (
  *
  * @internal
  */
-const _getNotes = async (
+const getNotesCached = async (
 	currentCount: number,
 	userId: UserId,
 	status: Status,
@@ -68,7 +68,7 @@ const _getNotes = async (
 			take: PAGE_SIZE,
 			orderBy: { createdAt: "desc" },
 		}),
-		_getNotesCount(userId, status),
+		getNotesCountCached(userId, status),
 	]);
 
 	return {
@@ -102,7 +102,7 @@ const _getNotes = async (
 export const getExportedNotesCount: GetCount = cache(
 	async (): Promise<number> => {
 		const userId = await getSelfId();
-		return await _getNotesCount(userId, makeExportedStatus().status);
+		return await getNotesCountCached(userId, makeExportedStatus().status);
 	},
 );
 
@@ -112,7 +112,7 @@ export const getExportedNotesCount: GetCount = cache(
 export const getUnexportedNotes: GetPaginatedData<LinkCardStackInitialData> =
 	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
-		return _getNotes(currentCount, userId, makeUnexportedStatus());
+		return getNotesCached(currentCount, userId, makeUnexportedStatus());
 	});
 
 /**
@@ -121,7 +121,7 @@ export const getUnexportedNotes: GetPaginatedData<LinkCardStackInitialData> =
 export const getExportedNotes: GetPaginatedData<LinkCardStackInitialData> =
 	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
-		return _getNotes(currentCount, userId, makeExportedStatus().status);
+		return getNotesCached(currentCount, userId, makeExportedStatus().status);
 	});
 
 /**

@@ -36,7 +36,7 @@ const API_BOOK_THUMBNAIL_PATH = "/api/books/images/thumbnail";
  *
  * @internal
  */
-const _getBooksCount = async (
+const getBooksCountCached = async (
 	userId: UserId,
 	status: Status,
 ): Promise<number> => {
@@ -50,7 +50,7 @@ const _getBooksCount = async (
  *
  * @internal
  */
-const _getBooks = async (
+const getBooksCached = async (
 	currentCount: number,
 	userId: UserId,
 	status: Status,
@@ -67,7 +67,7 @@ const _getBooks = async (
 			take: PAGE_SIZE,
 			orderBy: { createdAt: "desc" },
 		}),
-		_getBooksCount(userId, status),
+		getBooksCountCached(userId, status),
 	]);
 
 	return {
@@ -93,7 +93,7 @@ const _getBooks = async (
 export const getUnexportedBooks: GetPaginatedData<ImageCardStackInitialData> =
 	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
-		return _getBooks(currentCount, userId, makeUnexportedStatus());
+		return getBooksCached(currentCount, userId, makeUnexportedStatus());
 	});
 
 /**
@@ -102,7 +102,7 @@ export const getUnexportedBooks: GetPaginatedData<ImageCardStackInitialData> =
 export const getExportedBooks: GetPaginatedData<ImageCardStackInitialData> =
 	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
-		return _getBooks(currentCount, userId, makeExportedStatus().status);
+		return getBooksCached(currentCount, userId, makeExportedStatus().status);
 	});
 
 /**
@@ -111,7 +111,7 @@ export const getExportedBooks: GetPaginatedData<ImageCardStackInitialData> =
 export const getExportedBooksCount: GetCount = cache(
 	async (): Promise<number> => {
 		const userId = await getSelfId();
-		return await _getBooksCount(userId, makeExportedStatus().status);
+		return await getBooksCountCached(userId, makeExportedStatus().status);
 	},
 );
 

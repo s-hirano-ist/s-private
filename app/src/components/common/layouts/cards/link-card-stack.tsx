@@ -37,7 +37,7 @@ export function LinkCardStack({
 				>
 					<LinkCard
 						actions={
-							itemDeleteAction !== undefined ? (
+							itemDeleteAction ? (
 								<DeleteButtonWithModal
 									deleteAction={itemDeleteAction}
 									id={item.id}

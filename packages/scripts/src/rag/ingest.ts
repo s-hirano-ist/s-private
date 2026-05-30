@@ -69,12 +69,12 @@ type IngestFlags = {
 async function ingest(flags: IngestFlags): Promise<void> {
 	console.log("Starting ingest...\n");
 
-	if (!flags.dryRun) {
+	if (flags.dryRun) {
+		console.log("Dry-run mode: no writes to Qdrant\n");
+	} else {
 		await ensureCollection();
 		const initialStats = await getCollectionStats();
 		console.log(`Initial points count: ${initialStats.pointsCount}\n`);
-	} else {
-		console.log("Dry-run mode: no writes to Qdrant\n");
 	}
 
 	if (flags.force) {

@@ -50,7 +50,9 @@ export async function ensureCollection(): Promise<void> {
 	const collections = await qdrant.getCollections();
 	const exists = collections.collections.some((c) => c.name === collectionName);
 
-	if (!exists) {
+	if (exists) {
+		console.log(`Collection ${collectionName} already exists.`);
+	} else {
 		console.log(`Creating collection: ${collectionName}`);
 		await qdrant.createCollection(collectionName, {
 			vectors: {
@@ -59,8 +61,6 @@ export async function ensureCollection(): Promise<void> {
 			},
 		});
 		console.log(`Collection ${collectionName} created successfully.`);
-	} else {
-		console.log(`Collection ${collectionName} already exists.`);
 	}
 
 	// Ensure payload indexes exist for filterable fields

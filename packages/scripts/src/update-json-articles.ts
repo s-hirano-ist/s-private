@@ -124,7 +124,9 @@ async function processArticleFile(filePath: string): Promise<void> {
 			else console.warn(`No OG description found for ${item.url}`);
 
 			// Add a small delay to avoid overwhelming servers
-			await new Promise((resolve) => setTimeout(resolve, 1000));
+			await new Promise((resolve) => {
+				setTimeout(resolve, 1000);
+			});
 		}
 
 		// Write back to file

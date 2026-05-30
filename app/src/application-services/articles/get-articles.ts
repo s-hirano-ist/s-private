@@ -44,7 +44,7 @@ import { cache } from "react";
  *
  * @internal
  */
-const _getArticlesCount = async (
+const getArticlesCountCached = async (
 	userId: UserId,
 	status: Status,
 ): Promise<number> => {
@@ -63,7 +63,7 @@ const _getArticlesCount = async (
  *
  * @internal
  */
-const _getArticles = async (
+const getArticlesCached = async (
 	currentCount: number,
 	userId: UserId,
 	status: Status,
@@ -79,7 +79,7 @@ const _getArticles = async (
 			take: PAGE_SIZE,
 			orderBy: { createdAt: "desc" },
 		}),
-		_getArticlesCount(userId, status),
+		getArticlesCountCached(userId, status),
 	]);
 
 	return {
@@ -110,7 +110,9 @@ const _getArticles = async (
  *
  * @internal
  */
-const _getCategories = async (userId: UserId): Promise<ArticleFormData> => {
+const getCategoriesCached = async (
+	userId: UserId,
+): Promise<ArticleFormData> => {
 	"use cache";
 	cacheTag("categories", buildCategoriesCacheTag(userId));
 	try {
@@ -140,7 +142,7 @@ const _getCategories = async (userId: UserId): Promise<ArticleFormData> => {
  */
 export const getExportedArticlesCount: GetCount = cache(async () => {
 	const userId = await getSelfId();
-	return _getArticlesCount(userId, makeExportedStatus().status);
+	return getArticlesCountCached(userId, makeExportedStatus().status);
 });
 
 /**
@@ -152,7 +154,7 @@ export const getExportedArticlesCount: GetCount = cache(async () => {
 export const getUnexportedArticles: GetPaginatedData<LinkCardStackInitialData> =
 	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
-		return _getArticles(currentCount, userId, makeUnexportedStatus());
+		return getArticlesCached(currentCount, userId, makeUnexportedStatus());
 	});
 
 /**
@@ -164,7 +166,7 @@ export const getUnexportedArticles: GetPaginatedData<LinkCardStackInitialData> =
 export const getExportedArticles: GetPaginatedData<LinkCardStackInitialData> =
 	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
-		return _getArticles(currentCount, userId, makeExportedStatus().status);
+		return getArticlesCached(currentCount, userId, makeExportedStatus().status);
 	});
 
 /**
@@ -174,5 +176,5 @@ export const getExportedArticles: GetPaginatedData<LinkCardStackInitialData> =
  */
 export const getCategories = cache(async (): Promise<ArticleFormData> => {
 	const userId = await getSelfId();
-	return _getCategories(userId);
+	return getCategoriesCached(userId);
 });

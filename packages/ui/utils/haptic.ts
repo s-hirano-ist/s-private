@@ -1,7 +1,7 @@
 const isTouchDevice =
-	typeof window !== "undefined"
-		? window.matchMedia("(pointer: coarse)").matches
-		: false;
+	typeof window === "undefined"
+		? false
+		: window.matchMedia("(pointer: coarse)").matches;
 
 /**
  * Trigger haptic feedback on mobile devices.

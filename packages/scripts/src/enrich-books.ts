@@ -27,7 +27,9 @@ function dumpFrontmatter(data: Record<string, unknown>): string {
 }
 
 const sleep = (ms: number): Promise<void> =>
-	new Promise((resolve) => setTimeout(resolve, ms));
+	new Promise((resolve) => {
+		setTimeout(resolve, ms);
+	});
 
 async function main(): Promise<void> {
 	const dryRun = process.argv.includes("--dry-run");

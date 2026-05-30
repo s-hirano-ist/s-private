@@ -43,7 +43,9 @@ async function withRetry<T>(fn: () => Promise<T>, retries = 3): Promise<T> {
 			if (attempt === retries - 1) throw error;
 			const delay = 1000 * 2 ** attempt;
 			console.warn(`⚠️ リトライ ${attempt + 1}/${retries} (${delay}ms後)...`);
-			await new Promise((r) => setTimeout(r, delay));
+			await new Promise((r) => {
+				setTimeout(r, delay);
+			});
 		}
 	}
 	throw new Error("unreachable");
