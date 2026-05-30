@@ -103,10 +103,10 @@ pnpm jscpd:summary  # サマリーを jscpd-summary.txt に出力
 ```bash
 pnpm deps:check      # 依存関係ルールのチェック（全ルール適用）
 pnpm deps:circular   # 循環依存の検出（テキスト出力）
-pnpm deps:graph      # 依存関係グラフをSVGとして出力（dependency-graph.svg）
+pnpm deps:graph      # 依存関係グラフをmermaidとして出力（dependency-graph.md）
 ```
 
-`deps:graph`の実行にはGraphviz（`dot`コマンド）が必要。
+`deps:graph`はmermaid形式で出力するためGraphviz不要。生成物（`dependency-graph.md`）はコミットせず、必要時にローカル生成してVS Code・GitHub上でネイティブ描画する。
 
 ### CI連携
 

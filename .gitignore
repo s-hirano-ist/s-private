@@ -37,6 +37,10 @@ packages/database/src/generated/
 # Code duplication reports
 jscpd-report/
 
+# dependency-cruiser graph (generated on demand)
+/dependency-graph.md
+/dependency-graph.svg
+
 # Documentation
 docs/api/
 packages/database/erd/
