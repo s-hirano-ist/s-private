@@ -12,7 +12,6 @@
  * @module
  */
 
-import "./src/resolve-db-env";
 import { defineConfig } from "prisma/config";
 
 /**
@@ -42,6 +41,6 @@ export default defineConfig({
 		path: "prisma/migrations",
 	},
 	datasource: {
-		url: process.env.DIRECT_URL ?? "",
+		url: process.env.DATABASE_URL ?? "",
 	},
 });
