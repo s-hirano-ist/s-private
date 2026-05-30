@@ -74,3 +74,64 @@ export function createPrismaClient(databaseUrl: string) {
 		}),
 	});
 }
+
+/**
+ * Postgres / Prisma error codes that signal a serialization conflict and are
+ * safe to retry.
+ *
+ * @remarks
+ * CockroachDB defaults to `SERIALIZABLE` isolation and aborts conflicting
+ * transactions with SQLSTATE `40001`. Prisma surfaces the same condition as
+ * `P2034` ("Transaction failed due to a write conflict or a deadlock"). Unlike
+ * some Postgres drivers, Prisma does not retry these automatically.
+ */
+const SERIALIZATION_RETRY_CODES = new Set(["40001", "P2034"]);
+
+function isRetryableTransactionError(error: unknown): boolean {
+	if (typeof error !== "object" || error === null) return false;
+	const code = (error as { code?: unknown }).code;
+	return typeof code === "string" && SERIALIZATION_RETRY_CODES.has(code);
+}
+
+/**
+ * Runs a database operation, retrying it on CockroachDB serialization
+ * conflicts (`40001` / Prisma `P2034`) with exponential backoff.
+ *
+ * @remarks
+ * Wrap multi-statement transactions (`prisma.$transaction([...])`) and any
+ * write that may contend under `SERIALIZABLE` isolation. Non-retryable errors
+ * are rethrown immediately.
+ *
+ * @param fn - The operation to execute (and possibly re-execute).
+ * @param options.maxRetries - Maximum retry attempts after the first try (default 5).
+ * @param options.baseDelayMs - Base backoff delay in milliseconds (default 50).
+ *
+ * @example
+ * ```typescript
+ * await withTransactionRetry(() =>
+ *   prisma.$transaction([
+ *     prisma.book.updateMany({ ... }),
+ *     prisma.book.updateMany({ ... }),
+ *   ]),
+ * );
+ * ```
+ */
+export async function withTransactionRetry<T>(
+	fn: () => Promise<T>,
+	options: { maxRetries?: number; baseDelayMs?: number } = {},
+): Promise<T> {
+	const { maxRetries = 5, baseDelayMs = 50 } = options;
+	let attempt = 0;
+	for (;;) {
+		try {
+			return await fn();
+		} catch (error) {
+			if (attempt >= maxRetries || !isRetryableTransactionError(error)) {
+				throw error;
+			}
+			const delay = baseDelayMs * 2 ** attempt;
+			await new Promise((resolve) => setTimeout(resolve, delay));
+			attempt += 1;
+		}
+	}
+}

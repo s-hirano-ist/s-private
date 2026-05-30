@@ -11,7 +11,7 @@ docs/** にはより詳細な設計等のルールが記載されています。
 ## 技術スタック
 - Next.js 16 (App Router, Server Actions)
 - TypeScript + Zod
-- Prisma + PostgreSQL
+- Prisma + CockroachDB
 - Shadcn/ui + Tailwind CSS
 - Auth0 + Auth.js
 - MinIO (Object Storage)
@@ -23,7 +23,8 @@ docs/** にはより詳細な設計等のルールが記載されています。
 - `pnpm test` - テスト実行
 - `pnpm lint:fix` - ESLint修正
 - `pnpm check:fix` - Biomeフォーマット
-- `pnpm prisma:migrate` - DBマイグレーション
+- `pnpm prisma:migrate:diff` - 新規マイグレーションSQL生成（DB不要のdiffフロー。ローカルDBは持たず `migrate dev` は不使用。`crdb_internal_region` drift でクラウドに対して失敗するため）
+- `pnpm prisma:deploy` - マイグレーション適用（クラウドはこちらを使う）
 - `pnpm storybook` - Storybook起動
 
 ## ディレクトリ構造
@@ -50,7 +51,7 @@ docs/** にはより詳細な設計等のルールが記載されています。
 - 絶対パスimport必須（`../../*`禁止）
 
 ## 外部サービス
-- PostgreSQL + Prisma ORM
+- CockroachDB Cloud + Prisma ORM
 - MinIO（オブジェクトストレージ）
 - Sentry（エラー監視）+ Pushover（通知）
 - Auth0 + Auth.js（認証）
@@ -59,7 +60,7 @@ docs/** にはより詳細な設計等のルールが記載されています。
 - Qdrant（ベクトルデータベース）
 
 ## 環境設定
-環境変数はdev/preview環境はDoppler、本番環境はVercel Dashboardで管理。ローカル開発では`.env.local`にDopplerサービストークン（`DOPPLER_TOKEN`）を設定し、Miseが自動読み込み→`doppler run`で環境変数を注入。一部ルートスクリプト（prisma:*, docker:*）は`vercel env run -e development`を使用。型定義は`app/src/env.ts`。初回セットアップ: `mise install` → `.env.local`にトークン設定 → `pnpm install` → `vercel link`。
+環境変数はdev/preview環境はDoppler、本番環境はVercel Dashboardで管理。ローカル開発では`.env.local`にDopplerサービストークン（`DOPPLER_TOKEN`）を設定し、Miseが自動読み込み→`doppler run`で環境変数を注入。一部ルートスクリプト（prisma:*）は`vercel env run -e development`を使用。型定義は`app/src/env.ts`。初回セットアップ: `mise install` → `.env.local`にトークン設定 → `pnpm install` → `vercel link`。
 
 ## 詳細資料
 - セットアップ: [docs/setup.md](docs/setup.md)

@@ -35,7 +35,7 @@
 - **Theming** - [next-themes](https://github.com/pacocoursey/next-themes)
 
 ### Database & Storage
-- **Database** - [PostgreSQL](https://www.postgresql.org/) with [Prisma](https://www.prisma.io/) ORM
+- **Database** - [CockroachDB](https://www.cockroachlabs.com/) (PostgreSQL-compatible, distributed) with [Prisma](https://www.prisma.io/) ORM
 - **Object Storage** - [MinIO](https://min.io/) (configurable for local/cloud deployment)
 ### AI & Search
 - **Embedding Model** - [intfloat/multilingual-e5-small](https://huggingface.co/intfloat/multilingual-e5-small) via [HuggingFace TEI](https://github.com/huggingface/text-embeddings-inference) (Docker)
@@ -284,7 +284,7 @@ Schema location: `packages/database/prisma/schema.prisma`
 - [Node.js](https://nodejs.org/) — version pinned in [.nvmrc](.nvmrc), installed via [Mise](https://mise.jdx.dev/)
 - [pnpm](https://pnpm.io/) v11.0.8 (managed via Mise)
 - [Doppler CLI](https://docs.doppler.com/docs/install-cli) v3.75.3 (managed via Mise)
-- [Docker](https://www.docker.com/) (for PostgreSQL database)
+- [Docker](https://www.docker.com/) (for local CockroachDB database)
 
 ### Initial Setup
 
@@ -305,12 +305,12 @@ pnpm install
 # .env.local にDopplerサービストークンを設定（Doppler Dashboard から発行）
 echo "DOPPLER_TOKEN=dp.st.dev.xxxxxxxxxxxx" > .env.local
 
-vercel link          # 初回のみ: Vercel プロジェクトをリンク（prisma/docker 用）
+vercel link          # 初回のみ: Vercel プロジェクトをリンク（prisma スクリプト用）
 ```
 
 Mise が `.env.local` を自動読み込みし、`doppler run` が `DOPPLER_TOKEN` を検出して環境変数を取得します。`doppler login` / `doppler setup` は不要です。
 
-`pnpm dev` / `pnpm build` / `pnpm start` 等の app スクリプトは `doppler run` 経由で環境変数を取得します。`pnpm prisma:*` / `pnpm docker:up` 等のルートスクリプトは `vercel env run -e development` を使用します。
+`pnpm dev` / `pnpm build` / `pnpm start` 等の app スクリプトは `doppler run` 経由で環境変数を取得します。`pnpm prisma:*` 等のルートスクリプトは `vercel env run -e development` を使用します。
 
 型定義とバリデーション: [`app/src/env.ts`](app/src/env.ts)（`@t3-oss/env-nextjs` + Zod）
 
@@ -318,16 +318,10 @@ Mise が `.env.local` を自動読み込みし、`doppler run` が `DOPPLER_TOKE
 
 ### Database Setup
 
-Start PostgreSQL database and run migrations:
+ローカル開発は **CockroachDB Cloud の dev-db クラスタに直結**します（ローカル DB は不要）。マイグレーション運用（`migrate dev` 不使用・DB 不要の diff フロー・`schema_locked`）の詳細は [docs/setup.md](docs/setup.md) を参照。
 
 ```bash
-# Start PostgreSQL with Docker
-docker compose up --build -d
-
-# Run database migrations (Prisma client は pnpm install 時に自動生成)
-pnpm prisma:migrate
-
-# (Optional) Open Prisma Studio for database inspection
+# (Optional) Open Prisma Studio for database inspection (クラウド dev-db に接続)
 pnpm prisma:studio
 ```
 
@@ -399,8 +393,8 @@ pnpm license:check         # Check for forbidden licenses (GPL, LGPL variants)
 
 ```bash
 # Prisma Commands (Prisma client は pnpm install 時に postinstall で自動生成)
-pnpm prisma:migrate        # Create and apply new migrations
-pnpm prisma:deploy         # Deploy migrations (production)
+pnpm --filter s-database prisma:migrate:diff   # Generate migration SQL (DB 不要の diff フロー)
+pnpm prisma:deploy         # Deploy migrations (cloud dev-db / production)
 pnpm prisma:studio         # Open Prisma Studio database browser
 ```
 
@@ -443,7 +437,7 @@ pnpm docs:clean            # Remove generated documentation
 - **Production**: Auto-deployment to Vercel when PRs are merged to `main`
 
 ### Environments
-- **Development**: Local with Docker Compose
+- **Development**: CockroachDB Cloud dev-db に直結（ローカル DB 不要）
 - **Preview**: Vercel branch deployments
 - **Production**: Vercel production deployment
 - **Storybook**: Deployed to Cloudflare Pages
@@ -456,7 +450,7 @@ pnpm docs:clean            # Remove generated documentation
 | 環境 | 管理方法 | 注入方法 |
 |---|---|---|
 | **ローカル開発（app）** | Doppler | `doppler run -- <command>`（app/package.json スクリプトに組み込み済み） |
-| **ローカル開発（prisma/docker）** | Vercel Dashboard (dev) | `vercel env run -e development -- <command>`（root package.json スクリプトに組み込み済み） |
+| **ローカル開発（prisma）** | Vercel Dashboard (dev) | `vercel env run -e development -- <command>`（root package.json スクリプトに組み込み済み） |
 | **CI (GitHub Actions)** | GitHub Secrets | ワークフローの `env:` で `${{ secrets.XXX }}` として注入 |
 | **本番 (Vercel)** | Vercel Dashboard | ビルド・ランタイムに自動注入 |
 | **VPS (Docker Compose)** | `~/s-private/.env` | Docker Compose が `.env` を自動読み込み |
@@ -465,9 +459,9 @@ pnpm docs:clean            # Remove generated documentation
 
 1. `mise install` でツール一式をインストール（Node.js, pnpm, Doppler CLI 等）
 2. `.env.local` に Doppler サービストークンを設定（[Doppler Dashboard](https://dashboard.doppler.com/) > dev 環境 > Access > Service Tokens から発行）
-3. `vercel link` で Vercel プロジェクトをリンク（初回のみ、prisma/docker 用）
+3. `vercel link` で Vercel プロジェクトをリンク（初回のみ、prisma 用）
 4. `pnpm dev` / `pnpm build` / `pnpm start` 等の app スクリプトは Doppler から環境変数を取得
-5. `pnpm prisma:*` / `pnpm docker:up` 等のルートスクリプトは Vercel dev 環境から環境変数を取得
+5. `pnpm prisma:*` 等のルートスクリプトは Vercel dev 環境から環境変数を取得
 
 #### CI (GitHub Actions)
 

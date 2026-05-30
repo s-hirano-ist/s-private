@@ -25,8 +25,6 @@ jobs:
       - run: pnpm --filter s-database prisma:generate
         env:
           DATABASE_URL: ${{ secrets.PRODUCTION_DIRECT_URL }}
-          DIRECT_URL: ${{ secrets.PRODUCTION_DIRECT_URL }}
       - run: pnpm --filter s-database prisma:deploy
         env:
           DATABASE_URL: ${{ secrets.PRODUCTION_DIRECT_URL }}
-          DIRECT_URL: ${{ secrets.PRODUCTION_DIRECT_URL }}

@@ -5,8 +5,7 @@
 ```bash
 mise install         # Node.js, pnpm, Doppler CLI 等をインストール
 pnpm install
-vercel link          # 初回のみ: Vercel プロジェクトをリンク（prisma/docker用）
-pnpm docker:up       # Docker Compose 起動（環境変数は Vercel dev から注入）
+vercel link          # 初回のみ: Vercel プロジェクトをリンク（prisma スクリプト用）
 pnpm dev             # 開発サーバー起動（環境変数は Doppler から注入）
 ```
 
@@ -44,12 +43,12 @@ DOPPLER_TOKEN=dp.st.dev.xxxxxxxxxxxx
 
 Mise が `.env.local` を自動読み込みし（`.mise.toml` の `_.file = ".env.local"`）、`doppler run` が `DOPPLER_TOKEN` を検出して環境変数を取得します。
 
-以降、`pnpm dev` 等の app スクリプトは Doppler から、`pnpm prisma:*` / `pnpm docker:up` 等のルートスクリプトは Vercel dev 環境から環境変数を取得します。
+以降、`pnpm dev` 等の app スクリプトは Doppler から、`pnpm prisma:*` 等のルートスクリプトは Vercel dev 環境から環境変数を取得します。
 
 任意のコマンドに環境変数を注入したい場合:
 ```bash
 doppler run -- <command>                     # dev/preview 環境変数
-vercel env run -e development -- <command>   # Vercel dev 環境変数（DB/Docker用）
+vercel env run -e development -- <command>   # Vercel dev 環境変数（prisma スクリプト用）
 ```
 
 ### 変数一覧
@@ -57,34 +56,38 @@ vercel env run -e development -- <command>   # Vercel dev 環境変数（DB/Dock
 環境変数のスキーマと型定義は `app/src/env.ts`（`@t3-oss/env-nextjs` + Zod）を参照してください。
 Docker Compose 用の変数（VPS デプロイ時）は [docs/vps-deployment.md Step 7](vps-deployment.md) を参照してください。
 
-## Database (Supabase Postgres)
+## Database (CockroachDB)
 
-DB ホスティングは Supabase Postgres を使用します。Prisma ORM 経由で接続し、`@prisma/adapter-pg` (node-postgres) で直接 Postgres に話します。
+DB ホスティングは **CockroachDB Cloud Basic (Serverless)** を使用します。Prisma ORM (`provider = "cockroachdb"`) 経由で接続し、`@prisma/adapter-pg` (node-postgres) で pgwire プロトコルで話します（CockroachDB は PostgreSQL ワイヤ互換）。
 
 ### 接続URLの構成
 
-`DATABASE_URL` と `DIRECT_URL` の2系統を Doppler に登録します:
+CockroachDB Cloud Basic は接続プーリングが内蔵で、pooled / direct の二重エンドポイントを持ちません。よってアプリ実行も `prisma deploy` も `DATABASE_URL` 1本で足ります:
 
-| 変数 | 用途 | ポート | モード |
-|---|---|---|---|
-| `DATABASE_URL` | アプリ実行用 (Server Actions, API) | 6543 | Transaction Pooler (Supavisor) |
-| `DIRECT_URL` | `prisma migrate` 専用 | 5432 | Direct or Session Pooler |
+| 変数 | 用途 | 備考 |
+|---|---|---|
+| `DATABASE_URL` | アプリ実行 + `prisma deploy` | `postgresql://<user>:<password>@<host>:26257/<db>?sslmode=verify-full` |
 
-`prisma migrate` は advisory lock を取るため transaction mode では動かず、必ず Direct/Session を使います。アプリ実行時は serverless 向けに Transaction Pooler を使います。
+- TLS は `sslmode=verify-full`。CockroachDB Cloud のサーバ証明書はパブリック CA のため Node.js の `rootCertificates` で検証できます。
 
-### 個人 dev 環境 (Free tier)
+### CockroachDB v26.1+ の `schema_locked` とマイグレーション
 
-開発者ごとに個人 Supabase プロジェクトを作るのを推奨します。共有 dev プロジェクトを使うと並列作業時に壊れやすいためです。
+> ⚠️ **重要**: CockroachDB v26.1 以降は `sql.defaults.create_table_with_schema_locked = true` がデフォルトで、新規テーブルがロック状態で作られます。Prisma はマイグレーションファイル全体を **1トランザクション** で流すため、`CREATE TABLE` 直後の `CREATE INDEX` / `ALTER TABLE ADD FOREIGN KEY` が「table is locked」(`P3018` / SQLSTATE `57000`) で失敗します。
 
-1. [Supabase Dashboard](https://supabase.com/dashboard) で `s-private-dev-<name>` プロジェクトを作成。
-2. プロジェクトの **Connect** から `Transaction pooler` (6543) と `Session pooler` または `Direct connection` (5432) の URL を取得。
-3. Doppler の personal config (`dev_<name>`) に以下を設定:
-   ```
-   DATABASE_URL=<Transaction Pooler URL :6543>
-   DIRECT_URL=<Direct or Session URL :5432>
-   ```
-4. 初回だけ migrate を流す:
+対応: **マイグレーション SQL の各 `CREATE TABLE` に `WITH (schema_locked = false)` を付与**する（設定権限に依存せず確実）。初期 baseline (`0_init`) は対応済み。後述の diff フローで新規テーブルを追加するときも必ず付与してください（既存テーブルへの `ALTER` は、そのテーブルが unlocked で作られていれば不要）。
+
+### マイグレーションの運用（重要: `migrate dev` は封印）
+
+> ⚠️ **クラウド（dev-db / staging / prod）には `prisma migrate deploy` のみを使い、`prisma migrate dev` は使いません。**
+> CockroachDB Cloud は単一リージョンでも multi-region メタデータ enum `crdb_internal_region` を保持し、`migrate dev` / `migrate status` がこれを schema drift と誤検出して `DROP TYPE` を試み、`P3018` / `2BP01` で失敗します（[prisma#25696](https://github.com/prisma/prisma/issues/25696)）。`migrate deploy` は drift を見ないため影響を受けません。このためローカル DB は持たず、`migrate dev` 系のスクリプトも用意していません。
+
+**ローカル開発はクラウドの dev-db クラスタに直結**します（ローカル DB は不要）。新しい migration は **DB 不要の diff フロー**で生成します:
+
+1. `packages/database/prisma/schema.prisma` を編集
+2. 差分 SQL を生成（`prisma migrate diff` は DB 接続不要）:
    ```bash
-   pnpm --filter s-database prisma:deploy
+   mkdir -p "prisma/migrations/$(date +%Y%m%d%H%M%S)_<name>"
+   pnpm --filter s-database prisma:migrate:diff -o "prisma/migrations/<dir>/migration.sql"
    ```
-5. Free tier は7日間無アクセスで pause されるので、定期的に Studio を開くか、軽量 ping で起動状態を保ちます。
+3. 生成 SQL の**新規 `CREATE TABLE` に `WITH (schema_locked = false)` を付与**
+4. コミット → クラウドへ `pnpm --filter s-database prisma:deploy`

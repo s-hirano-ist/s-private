@@ -16,7 +16,7 @@
 ## なぜ必要か
 
 - 既存リポジトリ層の `userId` 渡しはレビュー済みだが、新コード追加時のレビュー漏れリスクは残る
-- Auth0 を使っているため Supabase の RLS（`auth.uid()`）が使えない → DB 層フェイルセーフは Prisma Extension で代替するのが現実解
+- Auth0 を使っているため DB ネイティブの RLS（`auth.uid()` 相当）は採用していない → DB 層フェイルセーフは Prisma Extension で代替するのが現実解（DB ベンダ非依存）
 - 既存リポジトリの `userId` 渡しは残したまま二重防御にできる（コード書き換え不要）
 
 ## 実装方針
@@ -89,5 +89,4 @@ tenantContext.run({ userId }, () => action(...));
 
 ## 関連
 
-- 計画ファイル: `/Users/s-hirano-ist/.claude/plans/prisma-orm-supabase-velvet-cat.md` Phase C-1
 - Prisma Client Extensions: https://www.prisma.io/docs/orm/prisma-client/client-extensions

@@ -10,7 +10,6 @@
 			"types": "./src/index.ts",
 			"default": "./src/index.ts"
 		},
-		"./resolve-db-env": "./src/resolve-db-env.ts",
 		"./generated": "./src/generated/index.js",
 		"./generated/*": "./src/generated/*"
 	},
@@ -21,7 +20,6 @@
 				"types": "./src/index.ts",
 				"default": "./src/index.ts"
 			},
-			"./resolve-db-env": "./src/resolve-db-env.ts",
 			"./generated": "./src/generated/index.js",
 			"./generated/*": "./src/generated/*"
 		},
@@ -36,7 +34,7 @@
 	],
 	"scripts": {
 		"prisma:generate": "mkdir -p erd && prisma generate",
-		"prisma:migrate": "prisma migrate dev",
+		"prisma:migrate:diff": "prisma migrate diff --from-migrations prisma/migrations --to-schema prisma/schema.prisma --script",
 		"prisma:deploy": "prisma migrate deploy",
 		"prisma:studio": "prisma studio",
 		"docs:build": "bash scripts/generate-db-docs.sh",

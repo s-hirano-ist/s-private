@@ -12,7 +12,6 @@
  * @module
  */
 
-import "./src/resolve-db-env";
 import { defineConfig } from "prisma/config";
 
 /**
@@ -29,8 +28,11 @@ import { defineConfig } from "prisma/config";
  * # Generate Prisma client
  * pnpm prisma:generate
  *
- * # Run database migrations
- * pnpm prisma:migrate
+ * # Generate a new migration SQL (no local DB needed)
+ * pnpm prisma:migrate:diff
+ *
+ * # Apply migrations to the cloud
+ * pnpm prisma:deploy
  *
  * # Open Prisma Studio
  * pnpm prisma:studio
@@ -42,6 +44,6 @@ export default defineConfig({
 		path: "prisma/migrations",
 	},
 	datasource: {
-		url: process.env.DIRECT_URL ?? "",
+		url: process.env.DATABASE_URL ?? "",
 	},
 });
