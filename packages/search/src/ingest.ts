@@ -11,7 +11,9 @@ const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 2000;
 
 async function sleep(ms: number): Promise<void> {
-	return new Promise((resolve) => setTimeout(resolve, ms));
+	return new Promise((resolve) => {
+		setTimeout(resolve, ms);
+	});
 }
 
 async function withRetry<T>(

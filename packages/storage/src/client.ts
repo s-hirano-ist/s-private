@@ -10,9 +10,9 @@ export function createMinioClient(
 		endPoint: process.env.MINIO_HOST ?? "",
 		port: Number(process.env.MINIO_PORT),
 		useSSL:
-			process.env.MINIO_USE_SSL !== undefined
-				? process.env.MINIO_USE_SSL === "true"
-				: !["localhost", "127.0.0.1"].includes(process.env.MINIO_HOST ?? ""),
+			process.env.MINIO_USE_SSL === undefined
+				? !["localhost", "127.0.0.1"].includes(process.env.MINIO_HOST ?? "")
+				: process.env.MINIO_USE_SSL === "true",
 		accessKey: process.env.MINIO_ACCESS_KEY ?? "",
 		secretKey: process.env.MINIO_SECRET_KEY ?? "",
 	};

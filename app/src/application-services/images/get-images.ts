@@ -37,7 +37,7 @@ const API_THUMBNAIL_PATH = "/api/images/thumbnail";
  *
  * @internal
  */
-const _getImagesCount = async (
+const getImagesCountCached = async (
 	userId: UserId,
 	status: Status,
 ): Promise<number> => {
@@ -51,7 +51,7 @@ const _getImagesCount = async (
  *
  * @internal
  */
-const _getImages = async (
+const getImagesCached = async (
 	page: number,
 	userId: UserId,
 	status: Status,
@@ -86,7 +86,7 @@ const _getImages = async (
  */
 export const getImagesCount = async (status: Status): Promise<number> => {
 	const userId = await getSelfId();
-	return await _getImagesCount(userId, status);
+	return await getImagesCountCached(userId, status);
 };
 
 /**
@@ -98,7 +98,7 @@ export const getImagesCount = async (status: Status): Promise<number> => {
 export const getExportedImages = cache(
 	async (page: number): Promise<ImageData[]> => {
 		const userId = await getSelfId();
-		return _getImages(page, userId, makeExportedStatus().status);
+		return getImagesCached(page, userId, makeExportedStatus().status);
 	},
 );
 
@@ -111,7 +111,7 @@ export const getExportedImages = cache(
 export const getUnexportedImages = cache(
 	async (page: number): Promise<ImageData[]> => {
 		const userId = await getSelfId();
-		return _getImages(page, userId, makeUnexportedStatus());
+		return getImagesCached(page, userId, makeUnexportedStatus());
 	},
 );
 

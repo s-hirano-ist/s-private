@@ -47,8 +47,8 @@ async function findByPath(
 		path: makePath(data.path, false),
 		contentType: makeContentType(data.contentType),
 		fileSize: makeFileSize(data.fileSize ?? 0),
-		width: data.width !== null ? makePixel(data.width) : undefined,
-		height: data.height !== null ? makePixel(data.height) : undefined,
+		width: data.width === null ? undefined : makePixel(data.width),
+		height: data.height === null ? undefined : makePixel(data.height),
 		createdAt: makeCreatedAt(data.createdAt),
 	};
 
@@ -80,8 +80,8 @@ async function findMany(
 	return data.map((d) => ({
 		id: makeId(d.id),
 		path: makePath(d.path, false),
-		width: d.width !== null ? makePixel(d.width) : undefined,
-		height: d.height !== null ? makePixel(d.height) : undefined,
+		width: d.width === null ? undefined : makePixel(d.width),
+		height: d.height === null ? undefined : makePixel(d.height),
 	}));
 }
 

@@ -79,7 +79,7 @@ export async function ImagesStack({
 
 	return (
 		<>
-			{deleteAction !== undefined ? (
+			{deleteAction ? (
 				<EditableImageStack data={data} deleteAction={deleteAction} />
 			) : (
 				<ImageStack data={data} />

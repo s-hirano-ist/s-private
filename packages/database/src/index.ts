@@ -130,7 +130,9 @@ export async function withTransactionRetry<T>(
 				throw error;
 			}
 			const delay = baseDelayMs * 2 ** attempt;
-			await new Promise((resolve) => setTimeout(resolve, delay));
+			await new Promise((resolve) => {
+				setTimeout(resolve, delay);
+			});
 			attempt += 1;
 		}
 	}

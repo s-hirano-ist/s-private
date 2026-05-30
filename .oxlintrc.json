@@ -15,7 +15,7 @@
 //   react/no-danger, no-array-index-key→react/no-array-index-key. set-state-in-effect kept via
 //   eslint-plugin-react-hooks (aliased "react-hooks-js"; bare name is reserved by oxlint).
 //
-// Newly enabled (were commented-out / Biome-delegated): jsx-a11y (native, warn).
+// Newly enabled (were commented-out / Biome-delegated): jsx-a11y (native; promoted warn→error 2026-05).
 //
 // Absorbed from Biome (when Biome was removed): categories.correctness="error" replaces Biome's
 //   recommended base lint; noParameterAssign→no-param-reassign, useDefaultParameterLast→
@@ -98,7 +98,7 @@
 		"vitest/expect-expect": "error",
 		"vitest/no-commented-out-tests": "error",
 		"vitest/no-conditional-expect": "error",
-		"vitest/no-disabled-tests": "warn",
+		"vitest/no-disabled-tests": "error",
 		"vitest/no-focused-tests": "error",
 		"vitest/no-identical-title": "error",
 		"vitest/no-import-node-test": "error",
@@ -125,14 +125,14 @@
 		"no-misleading-character-class": "error",
 		"no-regex-spaces": "error",
 		"prefer-regex-literals": "error",
-		"regexp/confusing-quantifier": "warn",
+		"regexp/confusing-quantifier": "error",
 		"regexp/control-character-escape": "error",
 		"regexp/match-any": "error",
 		"regexp/negation": "error",
 		"regexp/no-contradiction-with-assertion": "error",
 		"regexp/no-dupe-characters-character-class": "error",
 		"regexp/no-dupe-disjunctions": "error",
-		"regexp/no-empty-alternative": "warn",
+		"regexp/no-empty-alternative": "error",
 		"regexp/no-empty-capturing-group": "error",
 		"regexp/no-empty-character-class": "error",
 		"regexp/no-empty-group": "error",
@@ -142,7 +142,7 @@
 		"regexp/no-extra-lookaround-assertions": "error",
 		"regexp/no-invalid-regexp": "error",
 		"regexp/no-invisible-character": "error",
-		"regexp/no-lazy-ends": "warn",
+		"regexp/no-lazy-ends": "error",
 		"regexp/no-legacy-features": "error",
 		"regexp/no-misleading-capturing-group": "error",
 		"regexp/no-misleading-unicode-character": "error",
@@ -150,7 +150,7 @@
 		"regexp/no-non-standard-flag": "error",
 		"regexp/no-obscure-range": "error",
 		"regexp/no-optional-assertion": "error",
-		"regexp/no-potentially-useless-backreference": "warn",
+		"regexp/no-potentially-useless-backreference": "error",
 		"regexp/no-super-linear-backtracking": "error",
 		"regexp/no-trivially-nested-assertion": "error",
 		"regexp/no-trivially-nested-quantifier": "error",
@@ -160,7 +160,7 @@
 		"regexp/no-useless-character-class": "error",
 		"regexp/no-useless-dollar-replacements": "error",
 		"regexp/no-useless-escape": "error",
-		"regexp/no-useless-flag": "warn",
+		"regexp/no-useless-flag": "error",
 		"regexp/no-useless-lazy": "error",
 		"regexp/no-useless-non-capturing-group": "error",
 		"regexp/no-useless-quantifier": "error",
@@ -169,7 +169,7 @@
 		"regexp/no-useless-string-literal": "error",
 		"regexp/no-useless-two-nums-quantifier": "error",
 		"regexp/no-zero-quantifier": "error",
-		"regexp/optimal-lookaround-quantifier": "warn",
+		"regexp/optimal-lookaround-quantifier": "error",
 		"regexp/optimal-quantifier-concatenation": "error",
 		"regexp/prefer-character-class": "error",
 		"regexp/prefer-d": "error",
@@ -185,21 +185,21 @@
 		"regexp/sort-flags": "error",
 		"regexp/strict": "error",
 		"regexp/use-ignore-case": "error",
-		"nextjs/google-font-display": "warn",
-		"nextjs/google-font-preconnect": "warn",
-		"nextjs/next-script-for-ga": "warn",
-		"nextjs/no-async-client-component": "warn",
-		"nextjs/no-before-interactive-script-outside-document": "warn",
-		"nextjs/no-css-tags": "warn",
-		"nextjs/no-head-element": "warn",
+		"nextjs/google-font-display": "error",
+		"nextjs/google-font-preconnect": "error",
+		"nextjs/next-script-for-ga": "error",
+		"nextjs/no-async-client-component": "error",
+		"nextjs/no-before-interactive-script-outside-document": "error",
+		"nextjs/no-css-tags": "error",
+		"nextjs/no-head-element": "error",
 		"nextjs/no-html-link-for-pages": "error",
-		"nextjs/no-img-element": "warn",
-		"nextjs/no-page-custom-font": "warn",
-		"nextjs/no-styled-jsx-in-document": "warn",
+		"nextjs/no-img-element": "error",
+		"nextjs/no-page-custom-font": "error",
+		"nextjs/no-styled-jsx-in-document": "error",
 		"nextjs/no-sync-scripts": "error",
-		"nextjs/no-title-in-document-head": "warn",
-		"nextjs/no-typos": "warn",
-		"nextjs/no-unwanted-polyfillio": "warn",
+		"nextjs/no-title-in-document-head": "error",
+		"nextjs/no-typos": "error",
+		"nextjs/no-unwanted-polyfillio": "error",
 		"nextjs/inline-script-id": "error",
 		"nextjs/no-assign-module-variable": "error",
 		"nextjs/no-document-import-in-page": "error",
@@ -208,46 +208,46 @@
 		"nextjs/no-script-component-in-head": "error",
 		"react/rules-of-hooks": "error",
 		"react/exhaustive-deps": "error",
-		"jsx-a11y/alt-text": "warn",
-		// correctness default = error; demoted to warn to match the other jsx-a11y rules here
-		// (Biome's analog useSemanticElements was off). Non-blocking nudge toward semantic tags.
-		"jsx-a11y/prefer-tag-over-role": "warn",
-		"jsx-a11y/anchor-ambiguous-text": "warn",
-		"jsx-a11y/anchor-has-content": "warn",
-		"jsx-a11y/anchor-is-valid": "warn",
-		"jsx-a11y/aria-activedescendant-has-tabindex": "warn",
-		"jsx-a11y/aria-props": "warn",
-		"jsx-a11y/aria-proptypes": "warn",
-		"jsx-a11y/aria-role": "warn",
-		"jsx-a11y/aria-unsupported-elements": "warn",
-		"jsx-a11y/autocomplete-valid": "warn",
-		"jsx-a11y/click-events-have-key-events": "warn",
-		"jsx-a11y/control-has-associated-label": "warn",
-		"jsx-a11y/heading-has-content": "warn",
-		"jsx-a11y/html-has-lang": "warn",
-		"jsx-a11y/iframe-has-title": "warn",
-		"jsx-a11y/img-redundant-alt": "warn",
-		"jsx-a11y/interactive-supports-focus": "warn",
-		"jsx-a11y/label-has-associated-control": "warn",
-		"jsx-a11y/media-has-caption": "warn",
-		"jsx-a11y/mouse-events-have-key-events": "warn",
-		"jsx-a11y/no-access-key": "warn",
-		"jsx-a11y/no-autofocus": "warn",
-		"jsx-a11y/no-distracting-elements": "warn",
-		"jsx-a11y/no-interactive-element-to-noninteractive-role": "warn",
-		"jsx-a11y/no-noninteractive-element-interactions": "warn",
-		"jsx-a11y/no-noninteractive-element-to-interactive-role": "warn",
-		"jsx-a11y/no-noninteractive-tabindex": "warn",
-		"jsx-a11y/no-redundant-roles": "warn",
-		"jsx-a11y/no-static-element-interactions": "warn",
-		"jsx-a11y/role-has-required-aria-props": "warn",
-		"jsx-a11y/role-supports-aria-props": "warn",
-		"jsx-a11y/scope": "warn",
-		"jsx-a11y/tabindex-no-positive": "warn",
+		"jsx-a11y/alt-text": "error",
+		// a11y is enforced as error (was a non-blocking warn nudge until 2026-05; 0 violations at promotion).
+		// Legit exceptions use inline oxlint-disable (e.g. rating.tsx role="img", card.tsx heading-has-content).
+		"jsx-a11y/prefer-tag-over-role": "error",
+		"jsx-a11y/anchor-ambiguous-text": "error",
+		"jsx-a11y/anchor-has-content": "error",
+		"jsx-a11y/anchor-is-valid": "error",
+		"jsx-a11y/aria-activedescendant-has-tabindex": "error",
+		"jsx-a11y/aria-props": "error",
+		"jsx-a11y/aria-proptypes": "error",
+		"jsx-a11y/aria-role": "error",
+		"jsx-a11y/aria-unsupported-elements": "error",
+		"jsx-a11y/autocomplete-valid": "error",
+		"jsx-a11y/click-events-have-key-events": "error",
+		"jsx-a11y/control-has-associated-label": "error",
+		"jsx-a11y/heading-has-content": "error",
+		"jsx-a11y/html-has-lang": "error",
+		"jsx-a11y/iframe-has-title": "error",
+		"jsx-a11y/img-redundant-alt": "error",
+		"jsx-a11y/interactive-supports-focus": "error",
+		"jsx-a11y/label-has-associated-control": "error",
+		"jsx-a11y/media-has-caption": "error",
+		"jsx-a11y/mouse-events-have-key-events": "error",
+		"jsx-a11y/no-access-key": "error",
+		"jsx-a11y/no-autofocus": "error",
+		"jsx-a11y/no-distracting-elements": "error",
+		"jsx-a11y/no-interactive-element-to-noninteractive-role": "error",
+		"jsx-a11y/no-noninteractive-element-interactions": "error",
+		"jsx-a11y/no-noninteractive-element-to-interactive-role": "error",
+		"jsx-a11y/no-noninteractive-tabindex": "error",
+		"jsx-a11y/no-redundant-roles": "error",
+		"jsx-a11y/no-static-element-interactions": "error",
+		"jsx-a11y/role-has-required-aria-props": "error",
+		"jsx-a11y/role-supports-aria-props": "error",
+		"jsx-a11y/scope": "error",
+		"jsx-a11y/tabindex-no-positive": "error",
 		"react/hook-use-state": "error",
 		"react/jsx-no-useless-fragment": "error",
 		"react/no-danger": "error",
-		"react/no-array-index-key": "warn",
+		"react/no-array-index-key": "error",
 		"react-hooks-js/set-state-in-effect": "error",
 		"react/self-closing-comp": "error",
 		"no-param-reassign": "error",
@@ -258,19 +258,22 @@
 		// ── Muted category members (noise within the wholesale-enabled categories) ──
 		// suspicious:
 		"react/react-in-jsx-scope": "off", // React 17+ automatic JSX runtime — 710 false positives
-		"import/no-unassigned-import": "off", // side-effect CSS/polyfill imports are intentional
-		"no-underscore-dangle": "off", // private-ish naming is used deliberately
-		// pedantic (size/style heuristics + opinionated negations that oxfmt/readability handle):
-		"max-lines-per-function": "off",
-		"max-lines": "off",
-		"max-classes-per-file": "off",
-		"no-inline-comments": "off",
-		"no-warning-comments": "off",
-		"no-negated-condition": "off",
-		"unicorn/no-negated-condition": "off",
-		"unicorn/prefer-top-level-await": "off", // bundled/SSR entrypoints can't always use TLA
-		"no-promise-executor-return": "off",
-		"import/max-dependencies": "off",
+		"import/no-unassigned-import": "off", // 42 hits; side-effect CSS/polyfill imports are required (cannot remove)
+		// _-prefixed @internal cached primitives were renamed to *Cached; __dirname/__filename are Node globals (allowed).
+		"no-underscore-dangle": ["error", { "allow": ["__dirname", "__filename"] }],
+		// pedantic (size heuristics + style that oxfmt/readability own) — kept off:
+		"max-lines-per-function": "off", // 177 hits; size heuristic, refactor churn outweighs value
+		"max-lines": "off", // 16 hits; file-size heuristic
+		"max-classes-per-file": "off", // error-classes.ts is a cohesive exception module; splitting hurts locality
+		"no-inline-comments": "off", // 24 hits; pure formatting (oxfmt's domain), no bug-catching value
+		"no-warning-comments": "off", // intentional FIXME/TODO tracking markers (promoting would force deleting them)
+		// no-negated-condition: promoted to error (if-else / ternary negations flipped). unicorn's twin reports the
+		// same thing, so it stays off to avoid duplicate diagnostics.
+		"no-negated-condition": "error",
+		"unicorn/no-negated-condition": "off", // redundant with no-negated-condition (above)
+		"unicorn/prefer-top-level-await": "off", // 27 hits; bundled/SSR entrypoints can't always use TLA
+		"no-promise-executor-return": "error", // setTimeout-sleep executors brace-wrapped to drop the implicit return
+		"import/max-dependencies": "off", // 7 hits; arbitrary cap, DI factories legitimately aggregate many deps
 		"require-await": "off", // delegated to typescript/require-await (type-aware, fewer FPs)
 		// perf:
 		"no-await-in-loop": "off", // sequential awaits are frequently intentional here
@@ -289,7 +292,7 @@
 
 		// ── Hand-picked restriction rules (NOT enabled by category; aligned with CLAUDE.md) ──
 		"no-console": "error", // logging goes through Pushover/Sentry; scripts/tests opt out via overrides
-		"node/no-process-env": "warn", // funnel env access through app/src/env.ts (typed); staged as warn
+		"node/no-process-env": "error", // funnel env access through app/src/env.ts (typed); scripts/config/env.ts opt out via overrides
 		"import/no-relative-parent-imports": "error", // CLAUDE.md: 絶対パス import 必須 (../../* 禁止)
 		"no-use-before-define": [
 			"error",
@@ -522,18 +525,22 @@
 						}
 					}
 				],
-				"typescript/no-unsafe-assignment": "warn",
-				"typescript/no-unsafe-member-access": "warn",
-				"typescript/no-unsafe-argument": "warn",
-				"typescript/no-unsafe-call": "warn",
-				"typescript/no-unsafe-return": "warn",
-				"typescript/no-non-null-assertion": "warn",
-				"typescript/no-base-to-string": "warn",
-				"typescript/no-deprecated": "warn",
+				// The unsafe-* family + no-non-null-assertion / no-base-to-string / no-deprecated /
+				// no-unnecessary-condition were promoted warn→error (2026-05). Runtime-boundary cases the type
+				// system can't see (Prisma rows, Qdrant/sharp/gray-matter payloads, next-auth tokens) use inline
+				// oxlint-disable with a reason — see the existing disables. (These are off in tests, below.)
+				"typescript/no-unsafe-assignment": "error",
+				"typescript/no-unsafe-member-access": "error",
+				"typescript/no-unsafe-argument": "error",
+				"typescript/no-unsafe-call": "error",
+				"typescript/no-unsafe-return": "error",
+				"typescript/no-non-null-assertion": "error",
+				"typescript/no-base-to-string": "error",
+				"typescript/no-deprecated": "error",
 				"typescript/consistent-type-definitions": "off",
 				"typescript/consistent-indexed-object-style": "off",
 				"typescript/consistent-type-assertions": "off",
-				"typescript/no-unnecessary-condition": "warn",
+				"typescript/no-unnecessary-condition": "error",
 				// type-aware pedantic purity rules (enabled by category=pedantic): demoted here, where
 				// the typescript plugin is active, so top-level mutes actually take effect.
 				"typescript/prefer-readonly-parameter-types": "off",
@@ -588,10 +595,10 @@
 				"storybook/await-interactions": "error",
 				"storybook/context-in-play-function": "error",
 				"storybook/default-exports": "error",
-				"storybook/hierarchy-separator": "warn",
-				"storybook/no-redundant-story-name": "warn",
+				"storybook/hierarchy-separator": "error",
+				"storybook/no-redundant-story-name": "error",
 				"storybook/no-renderer-packages": "error",
-				"storybook/prefer-pascal-case": "warn",
+				"storybook/prefer-pascal-case": "error",
 				"storybook/story-exports": "error",
 				"storybook/use-storybook-expect": "error",
 				"storybook/use-storybook-testing-library": "error",
