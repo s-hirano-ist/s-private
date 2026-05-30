@@ -10,6 +10,20 @@ import { createMinioClient } from "@s-hirano-ist/s-storage";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 
+async function withRetry<T>(fn: () => Promise<T>, retries = 3): Promise<T> {
+	for (let attempt = 0; attempt < retries; attempt++) {
+		try {
+			return await fn();
+		} catch (error) {
+			if (attempt === retries - 1) throw error;
+			const delay = 1000 * 2 ** attempt;
+			console.warn(`⚠️ リトライ ${attempt + 1}/${retries} (${delay}ms後)...`);
+			await new Promise((r) => setTimeout(r, delay));
+		}
+	}
+	throw new Error("unreachable");
+}
+
 async function main() {
 	const env = {
 		DATABASE_URL: process.env.DATABASE_URL,
@@ -24,15 +38,13 @@ async function main() {
 		throw new Error("Required environment variables are not set.");
 	}
 
-	if (process.env.MINIO_USE_SSL === "true") {
-		if (
-			!process.env.CF_ACCESS_CLIENT_ID ||
-			!process.env.CF_ACCESS_CLIENT_SECRET
-		) {
-			throw new Error(
-				"CF_ACCESS_CLIENT_ID and CF_ACCESS_CLIENT_SECRET are required when MINIO_USE_SSL is true.",
-			);
-		}
+	if (
+		process.env.MINIO_USE_SSL === "true" &&
+		(!process.env.CF_ACCESS_CLIENT_ID || !process.env.CF_ACCESS_CLIENT_SECRET)
+	) {
+		throw new Error(
+			"CF_ACCESS_CLIENT_ID and CF_ACCESS_CLIENT_SECRET are required when MINIO_USE_SSL is true.",
+		);
 	}
 
 	// Dynamic import for Prisma ESM compatibility
@@ -49,20 +61,6 @@ async function main() {
 
 	const userId: UserId = makeUserId(env.USERNAME_TO_EXPORT ?? "");
 	const UNEXPORTED: Status = makeUnexportedStatus();
-
-	async function withRetry<T>(fn: () => Promise<T>, retries = 3): Promise<T> {
-		for (let attempt = 0; attempt < retries; attempt++) {
-			try {
-				return await fn();
-			} catch (error) {
-				if (attempt === retries - 1) throw error;
-				const delay = 1000 * 2 ** attempt;
-				console.warn(`⚠️ リトライ ${attempt + 1}/${retries} (${delay}ms後)...`);
-				await new Promise((r) => setTimeout(r, delay));
-			}
-		}
-		throw new Error("unreachable");
-	}
 
 	async function fetchImages() {
 		const images = await prisma.image.findMany({

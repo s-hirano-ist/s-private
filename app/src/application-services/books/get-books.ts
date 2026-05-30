@@ -32,6 +32,20 @@ import { cache } from "react";
 const API_BOOK_THUMBNAIL_PATH = "/api/books/images/thumbnail";
 
 /**
+ * Gets total count of books for a user and status.
+ *
+ * @internal
+ */
+const _getBooksCount = async (
+	userId: UserId,
+	status: Status,
+): Promise<number> => {
+	"use cache";
+	cacheTag(buildCountCacheTag("books", status, userId));
+	return await booksQueryRepository.count(userId, status);
+};
+
+/**
  * Fetches paginated books with cache support.
  *
  * @internal
@@ -71,20 +85,6 @@ const _getBooks = async (
 		})),
 		totalCount,
 	};
-};
-
-/**
- * Gets total count of books for a user and status.
- *
- * @internal
- */
-const _getBooksCount = async (
-	userId: UserId,
-	status: Status,
-): Promise<number> => {
-	"use cache";
-	cacheTag(buildCountCacheTag("books", status, userId));
-	return await booksQueryRepository.count(userId, status);
 };
 
 /**

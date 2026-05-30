@@ -68,9 +68,9 @@ async function main() {
 
 	function categorizeArticles(articles: Article[]): OutputType {
 		return articles.reduce<OutputType>((acc, d) => {
-			if (!acc[d.categoryName]) acc[d.categoryName] = [];
-			const { title, quote, url } = d;
-			acc[d.categoryName].push({ title, quote: quote ?? "", url });
+			const { title, quote, url, categoryName } = d;
+			if (!acc[categoryName]) acc[categoryName] = [];
+			acc[categoryName].push({ title, quote: quote ?? "", url });
 			return acc;
 		}, {});
 	}

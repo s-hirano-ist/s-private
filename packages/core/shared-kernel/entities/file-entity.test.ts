@@ -22,7 +22,7 @@ describe("file-entity", () => {
 			expect(path).toContain("myimage.jpg");
 			// UUID v7 format: xxxxxxxx-xxxx-7xxx-xxxx-xxxxxxxxxxxx
 			expect(path).toMatch(
-				/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}-myimage\.jpg$/,
+				/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}-myimage\.jpg$/u,
 			);
 		});
 

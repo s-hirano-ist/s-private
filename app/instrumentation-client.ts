@@ -3,9 +3,7 @@
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 import { env } from "@/env";
-import { captureRouterTransitionStart, init } from "@sentry/nextjs";
-
-export const onRouterTransitionStart = captureRouterTransitionStart;
+import { init } from "@sentry/nextjs";
 
 init({
 	dsn: env.NEXT_PUBLIC_SENTRY_DSN,
@@ -13,3 +11,5 @@ init({
 	tracesSampleRate: 0.2,
 	debug: false,
 });
+
+export { captureRouterTransitionStart as onRouterTransitionStart } from "@sentry/nextjs";

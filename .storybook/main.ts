@@ -21,14 +21,14 @@ const config: StorybookConfig = {
 	},
 	features: { experimentalRSC: true },
 	staticDirs: ["../app/public"],
-	viteFinal: async (config) => {
-		config.css = {
-			...config.css,
+	viteFinal: async (viteConfig) => {
+		viteConfig.css = {
+			...viteConfig.css,
 			postcss: {
 				plugins: [tailwindcss()],
 			},
 		};
-		return config;
+		return viteConfig;
 	},
 };
 export default config;

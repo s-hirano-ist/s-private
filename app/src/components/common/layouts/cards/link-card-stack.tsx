@@ -23,7 +23,13 @@ export function LinkCardStack({
 			initial={initial}
 			loadMoreAction={loadMoreAction}
 		>
-			{({ item, isLast, lastElementRef, deleteAction, itemKey }) => (
+			{({
+				item,
+				isLast,
+				lastElementRef,
+				deleteAction: itemDeleteAction,
+				itemKey,
+			}) => (
 				<div
 					className="h-full"
 					key={itemKey}
@@ -31,9 +37,9 @@ export function LinkCardStack({
 				>
 					<LinkCard
 						actions={
-							deleteAction !== undefined ? (
+							itemDeleteAction !== undefined ? (
 								<DeleteButtonWithModal
-									deleteAction={deleteAction}
+									deleteAction={itemDeleteAction}
 									id={item.id}
 									title={item.title}
 								/>

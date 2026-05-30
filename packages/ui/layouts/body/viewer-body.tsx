@@ -5,8 +5,8 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import remarkGfm from "remark-gfm";
 
-const LANGUAGE_REGEX = /language-(\w+)/;
-const SLUG_REGEX = /\W+/g;
+const LANGUAGE_REGEX = /language-(\w+)/u;
+const SLUG_REGEX = /\W+/gu;
 
 function generateHeadingId(children: ReactNode): string {
 	return children?.toString().toLowerCase().replace(SLUG_REGEX, "-") ?? "";
@@ -52,7 +52,7 @@ export async function markdownToReact(markdown: string) {
 				<code className={className}>{children}</code>
 			) : (
 				<SyntaxHighlighter PreTag="div" language={match[1]} style={vscDarkPlus}>
-					{String(children).replace(/\n$/, "")}
+					{String(children).replace(/\n$/u, "")}
 				</SyntaxHighlighter>
 			);
 		},

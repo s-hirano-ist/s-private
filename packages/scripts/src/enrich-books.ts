@@ -2,7 +2,7 @@
 import { books as googleBooksApis } from "@googleapis/books";
 import { glob } from "glob";
 import matter from "gray-matter";
-import yaml from "js-yaml";
+import { dump } from "js-yaml";
 /**
  * markdown/book/*.md の frontmatter について、毎回 Google Books API を呼び出して
  * google* および title を最新状態に更新するスクリプト。
@@ -19,7 +19,7 @@ const NOT_FOUND_HREF = "https://s-hirano.com/404";
 const API_INTERVAL_MS = 600;
 
 function dumpFrontmatter(data: Record<string, unknown>): string {
-	return yaml.dump(data, {
+	return dump(data, {
 		lineWidth: -1,
 		forceQuotes: false,
 		noRefs: true,
@@ -49,7 +49,7 @@ async function main(): Promise<void> {
 	let enrichedCount = 0;
 	let errorCount = 0;
 
-	for (const filePath of files.sort()) {
+	for (const filePath of files.toSorted()) {
 		const fileName = basename(filePath);
 		const isbn = basename(filePath, ".md");
 
@@ -91,7 +91,7 @@ async function main(): Promise<void> {
 				next.title = volume.title;
 			}
 
-			const body = parsed.content.replace(/^\n+/, "");
+			const body = parsed.content.replace(/^\n+/u, "");
 			const newContent = `---\n${dumpFrontmatter(next)}---\n\n${body}`;
 
 			if (dryRun) {

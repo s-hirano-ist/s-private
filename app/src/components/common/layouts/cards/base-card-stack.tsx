@@ -57,8 +57,8 @@ export function BaseCardStackWrapper<T extends SearchableItem>({
 		startTransition(async () => {
 			const result = await loadMoreAction(allData.length);
 			if (result.success && result.data) {
-				const { data: newData, totalCount } = result.data;
-				setTotalCount(totalCount);
+				const { data: newData, totalCount: newTotalCount } = result.data;
+				setTotalCount(newTotalCount);
 				setAllData((prev) => {
 					const existingKeys = new Set(
 						prev.map((item) => ("key" in item ? item.key : item.id)),

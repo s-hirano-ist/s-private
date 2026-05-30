@@ -29,6 +29,20 @@ import { cacheTag } from "next/cache";
 import { cache } from "react";
 
 /**
+ * Gets total count of notes for a user and status.
+ *
+ * @internal
+ */
+const _getNotesCount = async (
+	userId: UserId,
+	status: Status,
+): Promise<number> => {
+	"use cache";
+	cacheTag(buildCountCacheTag("notes", status, userId));
+	return await notesQueryRepository.count(userId, status);
+};
+
+/**
  * Fetches paginated notes with cache support.
  *
  * @param currentCount - Number of items to skip (offset)
@@ -60,11 +74,11 @@ const _getNotes = async (
 	return {
 		data: notes.map((d) => {
 			const plainText = String(d.markdown)
-				.replace(/^#{1,6}\s+/gm, "")
-				.replace(/[*_~`]/g, "")
-				.replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
-				.replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1")
-				.replace(/\n+/g, " ")
+				.replaceAll(/^#{1,6}\s+/gmu, "")
+				.replaceAll(/[*_~`]/gu, "")
+				.replaceAll(/\[([^\]]*)\]\([^)]*\)/gu, "$1")
+				.replaceAll(/!\[([^\]]*)\]\([^)]*\)/gu, "$1")
+				.replaceAll(/\n+/gu, " ")
 				.trim();
 			const description =
 				plainText.length > 150 ? `${plainText.slice(0, 150)}...` : plainText;
@@ -80,20 +94,6 @@ const _getNotes = async (
 		}),
 		totalCount,
 	};
-};
-
-/**
- * Gets total count of notes for a user and status.
- *
- * @internal
- */
-const _getNotesCount = async (
-	userId: UserId,
-	status: Status,
-): Promise<number> => {
-	"use cache";
-	cacheTag(buildCountCacheTag("notes", status, userId));
-	return await notesQueryRepository.count(userId, status);
 };
 
 /**

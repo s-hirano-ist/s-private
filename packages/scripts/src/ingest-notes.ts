@@ -54,7 +54,7 @@ function parseNoteFile(
 	const titleLine = `# ${title}`;
 	let markdown = body;
 	if (markdown.startsWith(titleLine)) {
-		markdown = markdown.slice(titleLine.length).replace(/^\n+/, "");
+		markdown = markdown.slice(titleLine.length).replace(/^\n+/u, "");
 	}
 	return { title, markdown };
 }
@@ -106,6 +106,50 @@ async function main() {
 		);
 		console.log(`📊 DB に ${existingNotesMap.size} 件の既存ノートがあります。`);
 
+		async function upsertNote(parsed: {
+			title: string;
+			markdown: string;
+		}): Promise<"inserted" | "updated" | "skipped"> {
+			fileTitles.add(parsed.title);
+
+			const existing = existingNotesMap.get(parsed.title);
+			if (existing) {
+				if (existing.markdown === parsed.markdown) {
+					// console.log(`⏭️  スキップ（変更なし）: ${parsed.title}`);
+					return "skipped";
+				}
+				if (dryRun) {
+					console.log(`🔄 [dry-run] 更新予定: ${parsed.title}`);
+				} else {
+					await prisma.note.update({
+						where: { id: existing.id },
+						data: { markdown: parsed.markdown },
+					});
+					console.log(`🔄 更新: ${parsed.title}`);
+				}
+				return "updated";
+			}
+
+			if (dryRun) {
+				console.log(`🔍 [dry-run] 挿入予定: ${parsed.title}`);
+				return "inserted";
+			}
+
+			await prisma.note.create({
+				data: {
+					id: String(makeId()),
+					title: parsed.title,
+					markdown: parsed.markdown,
+					status: exported.status,
+					exportedAt: exported.exportedAt,
+					userId,
+					createdAt: new Date(),
+				},
+			});
+			console.log(`✅ 挿入: ${parsed.title}`);
+			return "inserted";
+		}
+
 		let insertedCount = 0;
 		let updatedCount = 0;
 		let skippedCount = 0;
@@ -123,47 +167,10 @@ async function main() {
 					continue;
 				}
 
-				fileTitles.add(parsed.title);
-
-				const existing = existingNotesMap.get(parsed.title);
-				if (existing) {
-					if (existing.markdown === parsed.markdown) {
-						// console.log(`⏭️  スキップ（変更なし）: ${parsed.title}`);
-						skippedCount++;
-						continue;
-					}
-					if (dryRun) {
-						console.log(`🔄 [dry-run] 更新予定: ${parsed.title}`);
-					} else {
-						await prisma.note.update({
-							where: { id: existing.id },
-							data: { markdown: parsed.markdown },
-						});
-						console.log(`🔄 更新: ${parsed.title}`);
-					}
-					updatedCount++;
-					continue;
-				}
-
-				if (dryRun) {
-					console.log(`🔍 [dry-run] 挿入予定: ${parsed.title}`);
-					insertedCount++;
-					continue;
-				}
-
-				await prisma.note.create({
-					data: {
-						id: String(makeId()),
-						title: parsed.title,
-						markdown: parsed.markdown,
-						status: exported.status,
-						exportedAt: exported.exportedAt,
-						userId,
-						createdAt: new Date(),
-					},
-				});
-				insertedCount++;
-				console.log(`✅ 挿入: ${parsed.title}`);
+				const result = await upsertNote(parsed);
+				if (result === "inserted") insertedCount++;
+				else if (result === "updated") updatedCount++;
+				else skippedCount++;
 			} catch (error) {
 				console.error(
 					`❌ エラー（${basename(filePath)}）:`,

@@ -45,26 +45,13 @@ function formDataToRecord(
 }
 
 /**
- * Wraps server-side errors for safe client response.
+ * Handles NotificationError and S3Error (system errors with notification).
  *
- * @remarks
- * Handles multiple error types:
- * - NotificationError: External notification service failures
- * - UnexpectedError, InvalidFormatError, FileNotAllowedError: Domain errors
- * - DuplicateError: Business rule violations
- * - AuthError: Authentication failures
- * - Prisma errors: Database errors
- *
- * All errors dispatch domain events for logging and optional notification.
- *
- * @param error - The caught error to process
- * @param formData - Optional form data to preserve for retry
- * @returns Client-safe ServerAction response
+ * @internal
  */
-export async function wrapServerSideErrorForClient(
+async function handleNotificationOrS3Error(
 	error: unknown,
-	formData?: FormData,
-): Promise<ServerAction> {
+): Promise<ServerAction | undefined> {
 	if (error instanceof NotificationError) {
 		await eventDispatcher.dispatch(
 			new SystemErrorEvent({
@@ -88,6 +75,19 @@ export async function wrapServerSideErrorForClient(
 		);
 		return { success: false, message: "storageError" };
 	}
+	return undefined;
+}
+
+/**
+ * Handles domain warning errors (UnexpectedError, InvalidFormatError,
+ * FileNotAllowedError, DuplicateError, AuthError).
+ *
+ * @internal
+ */
+async function handleDomainWarningError(
+	error: unknown,
+	formData?: FormData,
+): Promise<ServerAction | undefined> {
 	if (
 		error instanceof UnexpectedError ||
 		error instanceof InvalidFormatError ||
@@ -136,7 +136,18 @@ export async function wrapServerSideErrorForClient(
 			message: "signInUnknown",
 		};
 	}
+	return undefined;
+}
 
+/**
+ * Handles Prisma database errors and Zod validation errors.
+ *
+ * @internal
+ */
+async function handlePrismaOrZodError(
+	error: unknown,
+	formData?: FormData,
+): Promise<ServerAction | undefined> {
 	if (
 		error instanceof Prisma.PrismaClientValidationError ||
 		error instanceof Prisma.PrismaClientUnknownRequestError ||
@@ -171,7 +182,15 @@ export async function wrapServerSideErrorForClient(
 			formData: formDataToRecord(formData),
 		};
 	}
+	return undefined;
+}
 
+/**
+ * Handles any remaining errors as unexpected system errors.
+ *
+ * @internal
+ */
+async function handleUnexpectedError(error: unknown): Promise<ServerAction> {
 	if (error instanceof Error) {
 		await eventDispatcher.dispatch(
 			new SystemErrorEvent({
@@ -193,4 +212,37 @@ export async function wrapServerSideErrorForClient(
 		);
 	}
 	return { success: false, message: "unexpected" };
+}
+
+/**
+ * Wraps server-side errors for safe client response.
+ *
+ * @remarks
+ * Handles multiple error types:
+ * - NotificationError: External notification service failures
+ * - UnexpectedError, InvalidFormatError, FileNotAllowedError: Domain errors
+ * - DuplicateError: Business rule violations
+ * - AuthError: Authentication failures
+ * - Prisma errors: Database errors
+ *
+ * All errors dispatch domain events for logging and optional notification.
+ *
+ * @param error - The caught error to process
+ * @param formData - Optional form data to preserve for retry
+ * @returns Client-safe ServerAction response
+ */
+export async function wrapServerSideErrorForClient(
+	error: unknown,
+	formData?: FormData,
+): Promise<ServerAction> {
+	const notificationOrS3 = await handleNotificationOrS3Error(error);
+	if (notificationOrS3) return notificationOrS3;
+
+	const domainWarning = await handleDomainWarningError(error, formData);
+	if (domainWarning) return domainWarning;
+
+	const prismaOrZod = await handlePrismaOrZodError(error, formData);
+	if (prismaOrZod) return prismaOrZod;
+
+	return handleUnexpectedError(error);
 }

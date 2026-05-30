@@ -36,6 +36,24 @@ import { cacheTag } from "next/cache";
 import { cache } from "react";
 
 /**
+ * Gets total count of articles for a user and status.
+ *
+ * @param userId - User ID for data isolation
+ * @param status - Article status filter
+ * @returns Total count of matching articles
+ *
+ * @internal
+ */
+const _getArticlesCount = async (
+	userId: UserId,
+	status: Status,
+): Promise<number> => {
+	"use cache";
+	cacheTag(buildCountCacheTag("articles", status, userId));
+	return await articlesQueryRepository.count(userId, status);
+};
+
+/**
  * Fetches paginated articles with cache support.
  *
  * @param currentCount - Number of items to skip (offset)
@@ -82,24 +100,6 @@ const _getArticles = async (
 		}),
 		totalCount,
 	};
-};
-
-/**
- * Gets total count of articles for a user and status.
- *
- * @param userId - User ID for data isolation
- * @param status - Article status filter
- * @returns Total count of matching articles
- *
- * @internal
- */
-const _getArticlesCount = async (
-	userId: UserId,
-	status: Status,
-): Promise<number> => {
-	"use cache";
-	cacheTag(buildCountCacheTag("articles", status, userId));
-	return await articlesQueryRepository.count(userId, status);
 };
 
 /**

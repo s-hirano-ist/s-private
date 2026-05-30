@@ -8,10 +8,7 @@ const require = createRequire(import.meta.url);
 const dprintPkgPath = require.resolve("dprint/package.json");
 const dprintBin = path.join(path.dirname(dprintPkgPath), "bin.cjs");
 
-const packageRoot = path.resolve(
-	path.dirname(fileURLToPath(import.meta.url)),
-	"..",
-);
+const packageRoot = path.resolve(import.meta.dirname, "..");
 const configPath = path.join(packageRoot, "configs", "dprint.json");
 
 const DEFAULT_EXCLUDES = [

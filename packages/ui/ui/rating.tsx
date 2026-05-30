@@ -59,7 +59,7 @@ function Rating({
 			role="img"
 			{...props}
 		>
-			{[...Array(maxRating).keys()].map((i) => (
+			{Array.from({ length: maxRating }, (_, i) => i).map((i) => (
 				<svg
 					aria-hidden="true"
 					className={cn(

@@ -22,7 +22,7 @@ vi.mock("@/infrastructures/events/event-setup", () => ({
 
 // Mock S3Error from storage package
 vi.mock("@s-hirano-ist/s-storage", () => ({
-	S3Error: class S3Error extends Error {
+	S3Error: class MockS3Error extends Error {
 		code?: string;
 		constructor(message: string) {
 			super(message);

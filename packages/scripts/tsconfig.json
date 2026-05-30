@@ -2,6 +2,7 @@
 	"compilerOptions": {
 		"types": ["node"],
 		"target": "ES2022",
+		"lib": ["ES2023", "DOM", "DOM.Iterable"],
 		"declaration": true,
 		"declarationMap": true,
 		"sourceMap": true,

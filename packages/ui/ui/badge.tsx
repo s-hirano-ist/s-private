@@ -36,7 +36,7 @@ const badgeVariants = tv({
  * @see {@link Badge} for the component
  * @see {@link badgeVariants} for available variants
  */
-export type BadgeProps = {} & React.HTMLAttributes<HTMLDivElement> &
+export type BadgeProps = React.HTMLAttributes<HTMLDivElement> &
 	VariantProps<typeof badgeVariants>;
 
 /**

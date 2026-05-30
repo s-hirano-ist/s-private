@@ -22,7 +22,7 @@ type ArticlesJson = {
 };
 
 function normalizeCharset(charset: string): string {
-	const normalized = charset.toLowerCase().replace(/[^a-z0-9]/g, "");
+	const normalized = charset.toLowerCase().replaceAll(/[^a-z0-9]/gu, "");
 	const mapping: Record<string, string> = {
 		shiftjis: "Shift_JIS",
 		sjis: "Shift_JIS",
@@ -36,7 +36,7 @@ function normalizeCharset(charset: string): string {
 function detectCharset(headers: Headers, buffer: Buffer): string {
 	// 1. Content-Type ヘッダーから検出
 	const contentType = headers.get("content-type") || "";
-	const headerMatch = /charset=([^\s;]+)/i.exec(contentType);
+	const headerMatch = /charset=([^\s;]+)/iu.exec(contentType);
 	if (headerMatch) return normalizeCharset(headerMatch[1]);
 
 	// 2. HTML meta タグから検出（ASCII範囲で仮デコード）
@@ -45,12 +45,12 @@ function detectCharset(headers: Headers, buffer: Buffer): string {
 		.toString("ascii");
 
 	// <meta charset="...">
-	const metaCharset = /<meta\s{1,200}charset=["']?([^"'\s>]+)/i.exec(preview);
+	const metaCharset = /<meta\s{1,200}charset=["']?([^"'\s>]+)/iu.exec(preview);
 	if (metaCharset) return normalizeCharset(metaCharset[1]);
 
 	// <meta http-equiv="Content-Type" content="...; charset=...">
 	const metaHttpEquiv =
-		/<meta[^>]{1,500}http-equiv=["']?Content-Type["']?[^>]{1,500}content=["'][^"']{0,500}charset=([^"'\s;]+)/i.exec(
+		/<meta[^>]{1,500}http-equiv=["']?Content-Type["']?[^>]{1,500}content=["'][^"']{0,500}charset=([^"'\s;]+)/iu.exec(
 			preview,
 		);
 	if (metaHttpEquiv) return normalizeCharset(metaHttpEquiv[1]);
@@ -92,8 +92,8 @@ async function getOgTags(
 		const ogDescription = ogTags["og:description"];
 
 		return { ogImageUrl, ogTitle, ogDescription };
-	} catch (_error) {
-		console.error(`Error fetching OG tags for ${url}:`);
+	} catch (error) {
+		console.error(`Error fetching OG tags for ${url}:`, error);
 		return {};
 	}
 }

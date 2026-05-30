@@ -37,16 +37,18 @@ import {
 import {
 	ContentType,
 	FileSize,
-	makeContentType,
-	makeFileSize,
-	makePath,
 	Path,
 } from "../../shared-kernel/entities/file-entity.ts";
 import { createEntityWithErrorHandling } from "../../shared-kernel/services/entity-factory.ts";
 import { ImageCreatedEvent } from "../events/image-created-event.ts";
 
 // Re-export file-related value objects from common for backwards compatibility
-export { ContentType, FileSize, makeContentType, makeFileSize, makePath, Path };
+// oxlint-disable-next-line unicorn-js/prefer-export-from -- used-locally
+export { ContentType, FileSize, Path };
+export {
+	makeFileSize,
+	makePath,
+} from "../../shared-kernel/entities/file-entity.ts";
 
 /**
  * Zod schema for validating pixel dimensions.
@@ -270,3 +272,5 @@ export type ImageListItemDTO = Readonly<{
 	width: Pixel | undefined;
 	height: Pixel | undefined;
 }>;
+
+export { makeContentType } from "../../shared-kernel/entities/file-entity.ts";

@@ -24,6 +24,43 @@ type ArticleJson = {
 	}[];
 };
 
+type ExistingArticle = {
+	id: string;
+	url: string;
+	title: string;
+	quote: string | null;
+	ogImageUrl: string | null;
+	ogTitle: string | null;
+	ogDescription: string | null;
+};
+
+type ItemOutcome = "inserted" | "updated" | "skipped";
+
+function isUnchanged(
+	existing: ExistingArticle,
+	item: ArticleJson["body"][number],
+	fileQuote: string | null,
+	fileOgImageUrl: string | null,
+	fileOgTitle: string | null,
+	fileOgDescription: string | null,
+): boolean {
+	return (
+		existing.title === item.title &&
+		existing.quote === fileQuote &&
+		existing.ogImageUrl === fileOgImageUrl &&
+		existing.ogTitle === fileOgTitle &&
+		existing.ogDescription === fileOgDescription
+	);
+}
+
+function outcomeKey(
+	outcome: ItemOutcome,
+): "insertedCount" | "updatedCount" | "skippedCount" {
+	if (outcome === "inserted") return "insertedCount";
+	if (outcome === "updated") return "updatedCount";
+	return "skippedCount";
+}
+
 async function main() {
 	const dryRun = process.argv.includes("--dry-run");
 
@@ -56,19 +93,145 @@ async function main() {
 
 	const fileUrls = new Set<string>();
 
+	async function processExisting(
+		existing: ExistingArticle,
+		item: ArticleJson["body"][number],
+	): Promise<ItemOutcome> {
+		const fileQuote = item.quote ?? null;
+		const fileOgImageUrl = item.ogImageUrl ?? null;
+		const fileOgTitle = item.ogTitle ?? null;
+		const fileOgDescription = item.ogDescription ?? null;
+
+		if (
+			isUnchanged(
+				existing,
+				item,
+				fileQuote,
+				fileOgImageUrl,
+				fileOgTitle,
+				fileOgDescription,
+			)
+		) {
+			// console.log(
+			// 	`⏭️  スキップ（変更なし）: ${item.title} (${item.url})`,
+			// );
+			return "skipped";
+		}
+
+		if (dryRun) {
+			console.log(`🔄 [dry-run] 更新予定: ${item.title} (${item.url})`);
+		} else {
+			await prisma.article.update({
+				where: { id: existing.id },
+				data: {
+					title: item.title,
+					quote: fileQuote,
+					ogImageUrl: fileOgImageUrl,
+					ogTitle: fileOgTitle,
+					ogDescription: fileOgDescription,
+				},
+			});
+			console.log(`🔄 更新: ${item.title}`);
+		}
+		return "updated";
+	}
+
+	async function processNew(
+		item: ArticleJson["body"][number],
+		categoryId: string,
+		existingArticlesMap: Map<string, ExistingArticle>,
+	): Promise<ItemOutcome> {
+		if (dryRun) {
+			console.log(`🔍 [dry-run] 挿入予定: ${item.title} (${item.url})`);
+			existingArticlesMap.set(item.url, {
+				id: "",
+				url: item.url,
+				title: item.title,
+				quote: item.quote ?? null,
+				ogImageUrl: item.ogImageUrl ?? null,
+				ogTitle: item.ogTitle ?? null,
+				ogDescription: item.ogDescription ?? null,
+			});
+			return "inserted";
+		}
+
+		await prisma.article.create({
+			data: {
+				id: String(makeId()),
+				title: item.title,
+				url: item.url,
+				quote: item.quote ?? null,
+				ogImageUrl: item.ogImageUrl ?? null,
+				ogTitle: item.ogTitle ?? null,
+				ogDescription: item.ogDescription ?? null,
+				categoryId,
+				status: exported.status,
+				exportedAt: exported.exportedAt,
+				userId,
+				createdAt: new Date(),
+			},
+		});
+		existingArticlesMap.set(item.url, {
+			id: "",
+			url: item.url,
+			title: item.title,
+			quote: item.quote ?? null,
+			ogImageUrl: item.ogImageUrl ?? null,
+			ogTitle: item.ogTitle ?? null,
+			ogDescription: item.ogDescription ?? null,
+		});
+		console.log(`✅ 挿入: ${item.title}`);
+		return "inserted";
+	}
+
+	async function processItem(
+		item: ArticleJson["body"][number],
+		categoryId: string,
+		existingArticlesMap: Map<string, ExistingArticle>,
+	): Promise<ItemOutcome> {
+		fileUrls.add(item.url);
+
+		const existing = existingArticlesMap.get(item.url);
+		if (existing) {
+			return processExisting(existing, item);
+		}
+
+		return processNew(item, categoryId, existingArticlesMap);
+	}
+
+	async function resolveCategoryId(
+		categoryName: string,
+		categoryMap: Map<string, string>,
+	): Promise<{ categoryId: string; created: boolean }> {
+		const existingId = categoryMap.get(categoryName);
+		if (existingId) {
+			return { categoryId: existingId, created: false };
+		}
+
+		let categoryId: string;
+		if (dryRun) {
+			console.log(`🔍 [dry-run] カテゴリ作成予定: ${categoryName}`);
+			categoryId = `dry-run-${categoryName}`;
+		} else {
+			const category = await prisma.category.create({
+				data: {
+					id: String(makeId()),
+					name: categoryName,
+					userId,
+					createdAt: new Date(),
+				},
+			});
+			categoryId = category.id;
+			console.log(`📂 カテゴリ作成: ${categoryName}`);
+		}
+		categoryMap.set(categoryName, categoryId);
+		return { categoryId, created: true };
+	}
+
 	async function ingestArticles() {
 		const files = await glob(`${contentsPath}/json/article/*.json`);
 		console.log(`📁 ${files.length} 件のJSONファイルを検出しました。`);
 
-		type ExistingArticle = {
-			id: string;
-			url: string;
-			title: string;
-			quote: string | null;
-			ogImageUrl: string | null;
-			ogTitle: string | null;
-			ogDescription: string | null;
-		};
 		const existingArticles = await prisma.article.findMany({
 			where: { userId },
 			select: {
@@ -97,9 +260,7 @@ async function main() {
 			),
 		);
 
-		let insertedCount = 0;
-		let updatedCount = 0;
-		let skippedCount = 0;
+		const counts = { insertedCount: 0, updatedCount: 0, skippedCount: 0 };
 		let errorCount = 0;
 		let categoryCreatedCount = 0;
 
@@ -109,116 +270,22 @@ async function main() {
 				const json = JSON.parse(content) as ArticleJson;
 
 				const categoryName = json.heading;
-				let categoryId = categoryMap.get(categoryName);
-
-				if (!categoryId) {
-					if (dryRun) {
-						console.log(`🔍 [dry-run] カテゴリ作成予定: ${categoryName}`);
-						categoryId = `dry-run-${categoryName}`;
-					} else {
-						const category = await prisma.category.create({
-							data: {
-								id: String(makeId()),
-								name: categoryName,
-								userId,
-								createdAt: new Date(),
-							},
-						});
-						categoryId = category.id;
-						console.log(`📂 カテゴリ作成: ${categoryName}`);
-					}
-					categoryMap.set(categoryName, categoryId);
+				const { categoryId, created } = await resolveCategoryId(
+					categoryName,
+					categoryMap,
+				);
+				if (created) {
 					categoryCreatedCount++;
 				}
 
 				for (const item of json.body) {
 					try {
-						fileUrls.add(item.url);
-
-						const existing = existingArticlesMap.get(item.url);
-						if (existing) {
-							const fileQuote = item.quote ?? null;
-							const fileOgImageUrl = item.ogImageUrl ?? null;
-							const fileOgTitle = item.ogTitle ?? null;
-							const fileOgDescription = item.ogDescription ?? null;
-
-							if (
-								existing.title === item.title &&
-								existing.quote === fileQuote &&
-								existing.ogImageUrl === fileOgImageUrl &&
-								existing.ogTitle === fileOgTitle &&
-								existing.ogDescription === fileOgDescription
-							) {
-								// console.log(
-								// 	`⏭️  スキップ（変更なし）: ${item.title} (${item.url})`,
-								// );
-								skippedCount++;
-								continue;
-							}
-
-							if (dryRun) {
-								console.log(
-									`🔄 [dry-run] 更新予定: ${item.title} (${item.url})`,
-								);
-							} else {
-								await prisma.article.update({
-									where: { id: existing.id },
-									data: {
-										title: item.title,
-										quote: fileQuote,
-										ogImageUrl: fileOgImageUrl,
-										ogTitle: fileOgTitle,
-										ogDescription: fileOgDescription,
-									},
-								});
-								console.log(`🔄 更新: ${item.title}`);
-							}
-							updatedCount++;
-							continue;
-						}
-
-						if (dryRun) {
-							console.log(`🔍 [dry-run] 挿入予定: ${item.title} (${item.url})`);
-							insertedCount++;
-							existingArticlesMap.set(item.url, {
-								id: "",
-								url: item.url,
-								title: item.title,
-								quote: item.quote ?? null,
-								ogImageUrl: item.ogImageUrl ?? null,
-								ogTitle: item.ogTitle ?? null,
-								ogDescription: item.ogDescription ?? null,
-							});
-							continue;
-						}
-
-						await prisma.article.create({
-							data: {
-								id: String(makeId()),
-								title: item.title,
-								url: item.url,
-								quote: item.quote ?? null,
-								ogImageUrl: item.ogImageUrl ?? null,
-								ogTitle: item.ogTitle ?? null,
-								ogDescription: item.ogDescription ?? null,
-								categoryId,
-								status: exported.status,
-								exportedAt: exported.exportedAt,
-								userId,
-								createdAt: new Date(),
-							},
-						});
-						insertedCount++;
-						existingArticlesMap.set(item.url, {
-							id: "",
-							url: item.url,
-							title: item.title,
-							quote: item.quote ?? null,
-							ogImageUrl: item.ogImageUrl ?? null,
-							ogTitle: item.ogTitle ?? null,
-							ogDescription: item.ogDescription ?? null,
-						});
-						console.log(`✅ 挿入: ${item.title}`);
+						const outcome = await processItem(
+							item,
+							categoryId,
+							existingArticlesMap,
+						);
+						counts[outcomeKey(outcome)]++;
 					} catch (itemError) {
 						console.error(
 							`❌ エラー（${basename(filePath)} > ${item.title}）:`,
@@ -240,9 +307,9 @@ async function main() {
 		}
 
 		return {
-			insertedCount,
-			updatedCount,
-			skippedCount,
+			insertedCount: counts.insertedCount,
+			updatedCount: counts.updatedCount,
+			skippedCount: counts.skippedCount,
 			errorCount,
 			categoryCreatedCount,
 		};

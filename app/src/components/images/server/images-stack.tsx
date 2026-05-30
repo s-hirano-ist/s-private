@@ -38,10 +38,8 @@ function generatePaginationItems(
 	currentPage: number,
 	totalPages: number,
 ): PaginationItemType[] {
-	const items: PaginationItemType[] = [];
-
 	// Always show first page
-	items.push({ type: "page", page: 1 });
+	const items: PaginationItemType[] = [{ type: "page", page: 1 }];
 
 	if (currentPage > 3) {
 		items.push({ type: "ellipsis", position: "start" });

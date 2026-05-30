@@ -29,7 +29,7 @@ async function processDirectory(
 	dryRun: boolean,
 ): Promise<{ converted: number; skipped: number; errors: number }> {
 	const files = await glob(`${directory}/*`);
-	const convertible = files.filter(isConvertibleImage);
+	const convertible = files.filter((filePath) => isConvertibleImage(filePath));
 
 	console.log(
 		`\n📁 ${label}: ${convertible.length} 件の変換対象を検出（全 ${files.length} ファイル中）`,

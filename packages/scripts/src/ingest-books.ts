@@ -49,6 +49,14 @@ function getContentType(filePath: string): string | null {
 	}
 }
 
+function arrayEquals(a: string[], b: string[]): boolean {
+	if (a.length !== b.length) return false;
+	for (const [i, element] of a.entries()) {
+		if (element !== b[i]) return false;
+	}
+	return true;
+}
+
 type ParsedBook = {
 	title: string;
 	markdown: string | null;
@@ -68,7 +76,7 @@ function parseBookFile(content: string): ParsedBook {
 	// title: frontmatter.title を優先、無ければ本文の H1 からフォールバック
 	let title = data.title?.trim() ?? "";
 	if (!title) {
-		const h1Match = /^# (.+)$/m.exec(parsed.content);
+		const h1Match = /^# (.+)$/mu.exec(parsed.content);
 		title = h1Match ? h1Match[1].trim() : "";
 	}
 
@@ -93,6 +101,38 @@ function parseBookFile(content: string): ParsedBook {
 	};
 }
 
+type StoredBook = {
+	title: string;
+	markdown: string | null;
+	imagePath: string | null;
+	rating: number;
+	tags: string[];
+	googleSubTitle: string | null;
+	googleAuthors: string[];
+	googleDescription: string | null;
+	googleImgSrc: string | null;
+	googleHref: string | null;
+};
+
+function bookMatchesExisting(
+	existing: StoredBook,
+	parsed: ParsedBook,
+	expectedImagePath: string | null,
+): boolean {
+	return (
+		existing.title === parsed.title &&
+		existing.markdown === parsed.markdown &&
+		existing.imagePath === expectedImagePath &&
+		existing.rating === parsed.rating &&
+		arrayEquals(existing.tags, parsed.tags) &&
+		existing.googleSubTitle === parsed.googleSubTitle &&
+		arrayEquals(existing.googleAuthors, parsed.googleAuthors) &&
+		existing.googleDescription === parsed.googleDescription &&
+		existing.googleImgSrc === parsed.googleImgSrc &&
+		existing.googleHref === parsed.googleHref
+	);
+}
+
 async function main() {
 	const dryRun = process.argv.includes("--dry-run");
 
@@ -109,15 +149,13 @@ async function main() {
 		throw new Error("Required environment variables are not set.");
 	}
 
-	if (process.env.MINIO_USE_SSL === "true") {
-		if (
-			!process.env.CF_ACCESS_CLIENT_ID ||
-			!process.env.CF_ACCESS_CLIENT_SECRET
-		) {
-			throw new Error(
-				"CF_ACCESS_CLIENT_ID and CF_ACCESS_CLIENT_SECRET are required when MINIO_USE_SSL is true.",
-			);
-		}
+	if (
+		process.env.MINIO_USE_SSL === "true" &&
+		(!process.env.CF_ACCESS_CLIENT_ID || !process.env.CF_ACCESS_CLIENT_SECRET)
+	) {
+		throw new Error(
+			"CF_ACCESS_CLIENT_ID and CF_ACCESS_CLIENT_SECRET are required when MINIO_USE_SSL is true.",
+		);
 	}
 
 	const contentsPath = process.env.S_CONTENTS_PATH ?? process.cwd();
@@ -202,13 +240,6 @@ async function main() {
 			existingBooks.map((b: ExistingBook) => [b.isbn, b]),
 		);
 
-		function arrayEquals(a: string[], b: string[]): boolean {
-			if (a.length !== b.length) return false;
-			for (let i = 0; i < a.length; i++) {
-				if (a[i] !== b[i]) return false;
-			}
-			return true;
-		}
 		console.log(`📊 DB に ${existingBooksMap.size} 件の既存書籍があります。`);
 
 		let insertedCount = 0;
@@ -216,7 +247,91 @@ async function main() {
 		let skippedCount = 0;
 		let errorCount = 0;
 
-		for (const filePath of files) {
+		async function resolveNewImagePath(
+			localImagePath: string | undefined,
+			fallback: string | null,
+		): Promise<string | null> {
+			if (!localImagePath) return fallback;
+			if (dryRun) return basename(localImagePath);
+			return uploadBookImage(localImagePath);
+		}
+
+		async function updateExistingBook(
+			existing: ExistingBook,
+			parsed: ParsedBook,
+			localImagePath: string | undefined,
+			isbn: string,
+			title: string,
+			markdown: string | null,
+		): Promise<void> {
+			const newImagePath = await resolveNewImagePath(
+				localImagePath,
+				existing.imagePath,
+			);
+
+			if (dryRun) {
+				console.log(`🔄 [dry-run] 更新予定: ${isbn} (${title})`);
+				return;
+			}
+
+			await prisma.book.update({
+				where: { id: existing.id },
+				data: {
+					title,
+					markdown,
+					imagePath: newImagePath,
+					rating: parsed.rating,
+					tags: parsed.tags,
+					googleSubTitle: parsed.googleSubTitle,
+					googleAuthors: parsed.googleAuthors,
+					googleDescription: parsed.googleDescription,
+					googleImgSrc: parsed.googleImgSrc,
+					googleHref: parsed.googleHref,
+				},
+			});
+			console.log(`🔄 更新: ${isbn} (${title})`);
+		}
+
+		async function createNewBook(
+			parsed: ParsedBook,
+			localImagePath: string | undefined,
+			isbn: string,
+			title: string,
+			markdown: string | null,
+		): Promise<void> {
+			const newImagePath = await resolveNewImagePath(localImagePath, null);
+
+			if (dryRun) {
+				console.log(`🔍 [dry-run] 挿入予定: ${isbn} (${title})`);
+				return;
+			}
+
+			await prisma.book.create({
+				data: {
+					id: String(makeId()),
+					isbn,
+					title,
+					markdown,
+					imagePath: newImagePath,
+					status: exported.status,
+					exportedAt: exported.exportedAt,
+					userId,
+					createdAt: new Date(),
+					rating: parsed.rating,
+					tags: parsed.tags,
+					googleSubTitle: parsed.googleSubTitle,
+					googleAuthors: parsed.googleAuthors,
+					googleDescription: parsed.googleDescription,
+					googleImgSrc: parsed.googleImgSrc,
+					googleHref: parsed.googleHref,
+				},
+			});
+			console.log(`✅ 挿入: ${isbn} (${title})`);
+		}
+
+		type ProcessResult = "inserted" | "updated" | "skipped" | "error";
+
+		async function processBookFile(filePath: string): Promise<ProcessResult> {
 			const rawIsbn = basename(filePath, ".md");
 			let isbn = rawIsbn;
 			let title = "";
@@ -232,8 +347,7 @@ async function main() {
 
 				if (!title) {
 					console.error(`⚠️  タイトルなし: ${basename(filePath)}`);
-					errorCount++;
-					continue;
+					return "error";
 				}
 
 				const localImagePath = bookImageMap.get(isbn);
@@ -244,92 +358,23 @@ async function main() {
 						? basename(localImagePath)
 						: existing.imagePath;
 
-					if (
-						existing.title === title &&
-						existing.markdown === markdown &&
-						existing.imagePath === expectedImagePath &&
-						existing.rating === parsed.rating &&
-						arrayEquals(existing.tags, parsed.tags) &&
-						existing.googleSubTitle === parsed.googleSubTitle &&
-						arrayEquals(existing.googleAuthors, parsed.googleAuthors) &&
-						existing.googleDescription === parsed.googleDescription &&
-						existing.googleImgSrc === parsed.googleImgSrc &&
-						existing.googleHref === parsed.googleHref
-					) {
-						skippedCount++;
-						continue;
+					if (bookMatchesExisting(existing, parsed, expectedImagePath)) {
+						return "skipped";
 					}
 
-					let newImagePath: string | null = existing.imagePath;
-					if (localImagePath) {
-						if (dryRun) {
-							newImagePath = basename(localImagePath);
-						} else {
-							newImagePath = await uploadBookImage(localImagePath);
-						}
-					}
-
-					if (dryRun) {
-						console.log(`🔄 [dry-run] 更新予定: ${isbn} (${title})`);
-					} else {
-						await prisma.book.update({
-							where: { id: existing.id },
-							data: {
-								title,
-								markdown,
-								imagePath: newImagePath,
-								rating: parsed.rating,
-								tags: parsed.tags,
-								googleSubTitle: parsed.googleSubTitle,
-								googleAuthors: parsed.googleAuthors,
-								googleDescription: parsed.googleDescription,
-								googleImgSrc: parsed.googleImgSrc,
-								googleHref: parsed.googleHref,
-							},
-						});
-						console.log(`🔄 更新: ${isbn} (${title})`);
-					}
-					updatedCount++;
-					continue;
-				}
-
-				let newImagePath: string | null = null;
-				if (localImagePath) {
-					if (dryRun) {
-						newImagePath = basename(localImagePath);
-					} else {
-						newImagePath = await uploadBookImage(localImagePath);
-					}
-				}
-
-				if (dryRun) {
-					console.log(`🔍 [dry-run] 挿入予定: ${isbn} (${title})`);
-					insertedCount++;
-					continue;
-				}
-
-				await prisma.book.create({
-					data: {
-						id: String(makeId()),
+					await updateExistingBook(
+						existing,
+						parsed,
+						localImagePath,
 						isbn,
 						title,
 						markdown,
-						imagePath: newImagePath,
-						status: exported.status,
-						exportedAt: exported.exportedAt,
-						userId,
-						createdAt: new Date(),
-						rating: parsed.rating,
-						tags: parsed.tags,
-						googleSubTitle: parsed.googleSubTitle,
-						googleAuthors: parsed.googleAuthors,
-						googleDescription: parsed.googleDescription,
-						googleImgSrc: parsed.googleImgSrc,
-						googleHref: parsed.googleHref,
-					},
-				});
-				insertedCount++;
-				console.log(`✅ 挿入: ${isbn} (${title})`);
+					);
+					return "updated";
+				}
+
+				await createNewBook(parsed, localImagePath, isbn, title, markdown);
+				return "inserted";
 			} catch (error) {
 				console.error(
 					`❌ エラー（${basename(filePath)}）:`,
@@ -338,7 +383,25 @@ async function main() {
 					`markdown(${(markdown ?? "").length}文字)`,
 					error,
 				);
-				errorCount++;
+				return "error";
+			}
+		}
+
+		for (const filePath of files) {
+			const result = await processBookFile(filePath);
+			switch (result) {
+				case "inserted":
+					insertedCount++;
+					break;
+				case "updated":
+					updatedCount++;
+					break;
+				case "skipped":
+					skippedCount++;
+					break;
+				case "error":
+					errorCount++;
+					break;
 			}
 		}
 

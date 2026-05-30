@@ -68,7 +68,7 @@ describe("articleEntity", () => {
 		});
 
 		test("should accept undefined", () => {
-			const quote = makeQuote(undefined);
+			const quote = makeQuote();
 			expect(quote).toBeUndefined();
 		});
 
@@ -113,7 +113,7 @@ describe("articleEntity", () => {
 		});
 
 		test("should accept undefined", () => {
-			const title = makeOgTitle(undefined);
+			const title = makeOgTitle();
 			expect(title).toBeUndefined();
 		});
 	});
@@ -130,7 +130,7 @@ describe("articleEntity", () => {
 		});
 
 		test("should accept undefined", () => {
-			const desc = makeOgDescription(undefined);
+			const desc = makeOgDescription();
 			expect(desc).toBeUndefined();
 		});
 	});
@@ -152,7 +152,7 @@ describe("articleEntity", () => {
 		});
 
 		test("should accept undefined", () => {
-			const url = makeOgImageUrl(undefined);
+			const url = makeOgImageUrl();
 			expect(url).toBeUndefined();
 		});
 

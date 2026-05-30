@@ -29,7 +29,7 @@ function DevProfilerWrapper({
 	children,
 }: ProfilerWrapperProps) {
 	const onRender: ProfilerOnRenderCallback = (
-		id,
+		renderedId,
 		phase,
 		actualDuration,
 		baseDuration,
@@ -37,7 +37,7 @@ function DevProfilerWrapper({
 		commitTime,
 	) => {
 		const result: ProfilerResult = {
-			id,
+			id: renderedId,
 			phase,
 			actualDuration,
 			baseDuration,
@@ -51,11 +51,11 @@ function DevProfilerWrapper({
 
 		if (actualDuration > threshold) {
 			console.warn(
-				`[Profiler] ${id} ${phase}: ${actualDuration.toFixed(1)}ms (threshold: ${threshold}ms)`,
+				`[Profiler] ${renderedId} ${phase}: ${actualDuration.toFixed(1)}ms (threshold: ${threshold}ms)`,
 			);
 		} else {
 			console.debug(
-				`[Profiler] ${id} ${phase}: ${actualDuration.toFixed(1)}ms`,
+				`[Profiler] ${renderedId} ${phase}: ${actualDuration.toFixed(1)}ms`,
 			);
 		}
 	};

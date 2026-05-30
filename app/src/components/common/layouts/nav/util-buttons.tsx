@@ -10,7 +10,7 @@ import { usePathname } from "next/navigation";
 type Props = { handleReload: () => void; onSignOutSubmit: () => Promise<void> };
 
 const removeLangPrefix = (pathname: string): string => {
-	return pathname.replace(/^\/(?:en|ja)(?:\/|$)/, "/");
+	return pathname.replace(/^\/(?:en|ja)(?:\/|$)/u, "/");
 };
 
 export function UtilButtons({ handleReload, onSignOutSubmit }: Props) {

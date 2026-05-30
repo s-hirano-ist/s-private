@@ -155,7 +155,7 @@ function displayResults(duplicates: DuplicateUrl[]): void {
 
 	console.log("\nカテゴリ別重複統計:");
 	Array.from(categoryStats.entries())
-		.sort((a, b) => b[1] - a[1])
+		.toSorted((a, b) => b[1] - a[1])
 		.forEach(([category, count]) => {
 			console.log(`  ${category}: ${count}個の重複エントリ`);
 		});

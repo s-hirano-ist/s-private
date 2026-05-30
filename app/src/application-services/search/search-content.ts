@@ -30,7 +30,7 @@ import { searchVectors } from "@/infrastructures/search/search-service";
  */
 function truncateText(text: string, maxLength = 150): string {
 	if (text.length <= maxLength) return text;
-	return `${text.substring(0, maxLength)}...`;
+	return `${text.slice(0, maxLength)}...`;
 }
 
 /**
@@ -40,7 +40,7 @@ function truncateText(text: string, maxLength = 150): string {
  * @internal
  */
 function extractBookISBN(docId: string): string | undefined {
-	const match = /\/book\/([^/]+)\.md$/.exec(docId);
+	const match = /\/book\/([^/]+)\.md$/u.exec(docId);
 	return match?.[1];
 }
 
