@@ -100,6 +100,7 @@ export const LongContents: Story = {
 				</DialogHeader>
 				<div style={{ maxHeight: "200px", overflowY: "auto" }}>
 					{Array.from({ length: 20 }).map((_, index) => (
+						// oxlint-disable-next-line react/no-array-index-key -- static fixed-length placeholder list with no stable id
 						<p key={String(index)}>
 							This is some long content. Line {index + 1}
 						</p>

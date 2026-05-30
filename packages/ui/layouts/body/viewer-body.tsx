@@ -9,6 +9,8 @@ const LANGUAGE_REGEX = /language-(\w+)/u;
 const SLUG_REGEX = /\W+/gu;
 
 function generateHeadingId(children: ReactNode): string {
+	// react-markdown heading children are text at runtime; toString coercion must be preserved exactly
+	// oxlint-disable-next-line typescript/no-base-to-string -- ReactNode is a runtime-text boundary; preserving existing coercion
 	return children?.toString().toLowerCase().replace(SLUG_REGEX, "-") ?? "";
 }
 
@@ -52,6 +54,8 @@ export async function markdownToReact(markdown: string) {
 				<code className={className}>{children}</code>
 			) : (
 				<SyntaxHighlighter PreTag="div" language={match[1]} style={vscDarkPlus}>
+					{/* react-markdown code children are raw code text at runtime; String coercion must be preserved exactly */}
+					{/* oxlint-disable-next-line typescript/no-base-to-string -- ReactNode is a runtime-text boundary; preserving existing coercion */}
 					{String(children).replace(/\n$/u, "")}
 				</SyntaxHighlighter>
 			);

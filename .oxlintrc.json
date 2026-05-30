@@ -279,12 +279,13 @@
 		// strict-boolean-expressions, no-unsafe-type-assertion, strict-void-return) are demoted inside
 		// the typescript override below — they only take effect where the typescript plugin is active.
 
-		// ── perf (react-perf): inline-prop identity rules. Wrapping every inline fn/obj/array in
-		// useCallback/useMemo adds complexity and is not a clear stability win → surfaced as warn. ──
-		"react-perf/jsx-no-new-function-as-prop": "warn",
-		"react-perf/jsx-no-jsx-as-prop": "warn",
-		"react-perf/jsx-no-new-object-as-prop": "warn",
-		"react-perf/jsx-no-new-array-as-prop": "warn",
+		// ── perf (react-perf): OFF. The app enables the React Compiler (next.config.mjs
+		// reactCompiler:true), which auto-memoizes — manual useCallback/useMemo is discouraged and
+		// these inline-prop rules are counterproductive under it. ──
+		"react-perf/jsx-no-new-function-as-prop": "off",
+		"react-perf/jsx-no-jsx-as-prop": "off",
+		"react-perf/jsx-no-new-object-as-prop": "off",
+		"react-perf/jsx-no-new-array-as-prop": "off",
 
 		// ── Hand-picked restriction rules (NOT enabled by category; aligned with CLAUDE.md) ──
 		"no-console": "error", // logging goes through Pushover/Sentry; scripts/tests opt out via overrides
@@ -537,8 +538,12 @@
 				// the typescript plugin is active, so top-level mutes actually take effect.
 				"typescript/prefer-readonly-parameter-types": "off",
 				"typescript/strict-boolean-expressions": "off",
-				"typescript/no-unsafe-type-assertion": "warn",
-				"typescript/strict-void-return": "warn"
+				// off: the codebase deliberately uses assertions (`as Route`, `as Mock`, Zod-validated
+				// DTOs, narrowing repo mocks) — flagging every `as` is impractical purity, not bug-catching.
+				"typescript/no-unsafe-type-assertion": "off",
+				// off: fires on React event handlers like onClick={() => doAsync()} (return ignored by
+				// React) — noisy false-positive pattern; no-misused-promises already guards real cases.
+				"typescript/strict-void-return": "off"
 			},
 			"plugins": ["typescript"]
 		},
@@ -563,7 +568,14 @@
 				"unicorn/consistent-function-scoping": "off",
 				"unicorn/no-useless-undefined": "off",
 				"sonarjs/no-duplicate-string": "off",
-				"sonarjs/cognitive-complexity": "off"
+				"sonarjs/cognitive-complexity": "off",
+				// tests legitimately use `any` for mocks/fixtures/cast-to-Mock — the unsafe-any family
+				// is noise here (kept strict in production code).
+				"typescript/no-unsafe-assignment": "off",
+				"typescript/no-unsafe-member-access": "off",
+				"typescript/no-unsafe-call": "off",
+				"typescript/no-unsafe-return": "off",
+				"typescript/no-unsafe-argument": "off"
 			},
 			"plugins": ["typescript"]
 		},
@@ -630,8 +642,16 @@
 			}
 		},
 		{
-			// app/src/env.ts is the single typed boundary that is allowed to read process.env.
-			"files": ["app/src/env.ts", "**/env.{ts,mjs}", "next.config.{ts,mjs}"],
+			// app/src/env.ts is the typed env boundary for the app. Workspace packages are separate
+			// (cannot import the app's env.ts) so each owns its own env boundary in its config/client.
+			"files": [
+				"app/src/env.ts",
+				"**/env.{ts,mjs}",
+				"next.config.{ts,mjs}",
+				"packages/storage/src/client.ts",
+				"packages/search/src/config.ts",
+				"packages/search/src/qdrant-client.ts"
+			],
 			"rules": {
 				"node/no-process-env": "off"
 			}

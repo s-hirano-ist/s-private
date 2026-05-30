@@ -81,7 +81,7 @@ export function SearchCard({ search }: Props) {
 				/>
 			</div>
 		);
-	} else if (searchResults?.length === 0 && searchQuery && !isPending) {
+	} else if (searchResults.length === 0 && searchQuery && !isPending) {
 		content = (
 			<div className="flex items-center justify-center">
 				<StatusCodeView
@@ -97,10 +97,10 @@ export function SearchCard({ search }: Props) {
 			</div>
 		);
 	} else {
-		content = nonArticles.map((item, index) => (
+		content = nonArticles.map((item) => (
 			<button
 				className="w-full cursor-pointer rounded-sm px-2 py-3 text-left text-sm hover:bg-muted"
-				key={String(index)}
+				key={item.href}
 				onClick={() => handleSelect(item)}
 				type="button"
 			>
@@ -142,7 +142,7 @@ export function SearchCard({ search }: Props) {
 								primaryBadgeText: item.category,
 								href: item.url ?? item.href,
 							}}
-							key={String(index)}
+							key={item.url ?? item.href}
 						/>
 					))}
 				</div>

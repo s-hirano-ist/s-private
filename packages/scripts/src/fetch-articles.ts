@@ -69,6 +69,7 @@ async function main() {
 	function categorizeArticles(articles: Article[]): OutputType {
 		return articles.reduce<OutputType>((acc, d) => {
 			const { title, quote, url, categoryName } = d;
+			// oxlint-disable-next-line typescript/no-unnecessary-condition -- Record index access is undefined at runtime for new keys; initializes the bucket
 			if (!acc[categoryName]) acc[categoryName] = [];
 			acc[categoryName].push({ title, quote: quote ?? "", url });
 			return acc;
@@ -121,6 +122,7 @@ async function main() {
 				title: d.title,
 				url: d.url,
 				quote: d.quote,
+				// oxlint-disable-next-line typescript/no-unnecessary-condition -- Prisma row is an external runtime boundary; relation/name may differ from declared non-null type
 				categoryName: d.Category?.name ?? "",
 			}),
 		);

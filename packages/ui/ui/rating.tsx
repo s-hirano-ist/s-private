@@ -56,6 +56,7 @@ function Rating({
 			aria-label={`Rating: ${rating} out of ${maxRating}`}
 			className={cn(ratingVariants({ size }), className)}
 			ref={ref}
+			// oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- composite graphic of multiple inline SVG stars; native <img> cannot wrap child elements, so role="img" + aria-label is the correct pattern
 			role="img"
 			{...props}
 		>

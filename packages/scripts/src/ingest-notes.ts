@@ -32,8 +32,8 @@ function parseFrontmatter(content: string): {
 	for (const line of frontmatter.split("\n")) {
 		const [key, ...rest] = line.split(":");
 		const value = rest.join(":").trim();
-		if (key?.trim() === "heading") heading = value;
-		if (key?.trim() === "draft" && value === "true") draft = true;
+		if (key.trim() === "heading") heading = value;
+		if (key.trim() === "draft" && value === "true") draft = true;
 	}
 	return { heading, draft, body };
 }

@@ -151,7 +151,9 @@ async function main() {
 						path: imagePath,
 						contentType,
 						fileSize: fileStat.size,
+						// oxlint-disable-next-line typescript/no-unnecessary-condition -- sharp's Metadata types width/height as non-nullable but they can be undefined at runtime for some inputs
 						width: metadata.width ?? null,
+						// oxlint-disable-next-line typescript/no-unnecessary-condition -- sharp's Metadata types width/height as non-nullable but they can be undefined at runtime for some inputs
 						height: metadata.height ?? null,
 						status: exported.status,
 						exportedAt: exported.exportedAt,

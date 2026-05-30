@@ -82,6 +82,7 @@ function parseBookFile(content: string): ParsedBook {
 
 	const body = parsed.content.trim();
 
+	// oxlint-disable-next-line typescript/no-unnecessary-condition -- gray-matter parses arbitrary YAML; rating can be null at runtime despite the declared type
 	if (data.rating === undefined || data.rating === null) {
 		throw new Error(
 			"rating は必須です (frontmatter に rating フィールドがありません)",

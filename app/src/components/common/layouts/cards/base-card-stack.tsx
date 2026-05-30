@@ -83,6 +83,7 @@ export function BaseCardStackWrapper<T extends SearchableItem>({
 
 	return (
 		<ProfilerWrapper
+			// oxlint-disable-next-line node/no-process-env -- NODE_ENV is a server-scoped var in @/env; accessing it from this "use client" component would throw. Next.js statically inlines process.env.NODE_ENV in client bundles.
 			enabled={process.env.NODE_ENV === "development"}
 			id="BaseCardStack"
 		>

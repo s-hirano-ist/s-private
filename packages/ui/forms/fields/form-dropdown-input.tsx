@@ -1,7 +1,7 @@
 "use client";
 
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
-import { type RefObject, useState } from "react";
+import { type RefObject, useId, useState } from "react";
 import { Button } from "../../ui/button";
 import {
 	Command,
@@ -111,6 +111,7 @@ export function FormDropdownInput({
 }: Props) {
 	const [open, setOpen] = useState(false);
 	const [searchValue, setSearchValue] = useState("");
+	const listboxId = useId();
 
 	const formValues = useFormValues();
 	const fieldName = name || htmlFor;
@@ -118,6 +119,9 @@ export function FormDropdownInput({
 
 	// Local state is necessary because FormValuesContext is read-only.
 	// The context only provides values for restoration after form submission errors.
+	// `formValues` is a Record<string, string> whose keys are runtime-driven; an absent
+	// `fieldName` yields `undefined` at runtime despite the declared `string` type.
+	// oxlint-disable-next-line typescript/no-unnecessary-condition -- runtime key may be absent
 	const [value, setValue] = useState(() => preservedValue ?? "");
 	const [prevPreservedValue, setPrevPreservedValue] = useState(preservedValue);
 
@@ -125,6 +129,8 @@ export function FormDropdownInput({
 	// This follows React's pattern for adjusting state when props change.
 	if (preservedValue !== prevPreservedValue) {
 		setPrevPreservedValue(preservedValue);
+		// `preservedValue` can be `undefined` at runtime when the form key is absent.
+		// oxlint-disable-next-line typescript/no-unnecessary-condition -- runtime value may be undefined
 		if (preservedValue !== undefined) {
 			setValue(preservedValue);
 		}
@@ -150,7 +156,12 @@ export function FormDropdownInput({
 			<Label htmlFor={htmlFor}>{label}</Label>
 			<Popover onOpenChange={setOpen} open={open}>
 				<PopoverTrigger asChild>
+					{/* This is a Popover/Command combobox trigger rendered via Radix
+					    `asChild`; an <input>/<select> element cannot preserve the
+					    popover listbox interaction, so the Button keeps role="combobox". */}
+					{/* oxlint-disable jsx-a11y/prefer-tag-over-role -- combobox trigger requires Button for popover behavior */}
 					<Button
+						aria-controls={listboxId}
 						aria-expanded={open}
 						aria-label={label}
 						className="w-full justify-between"
@@ -158,6 +169,7 @@ export function FormDropdownInput({
 						role="combobox"
 						variant="outline"
 					>
+						{/* oxlint-enable jsx-a11y/prefer-tag-over-role */}
 						{value || placeholder}
 						<ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 					</Button>
@@ -169,7 +181,7 @@ export function FormDropdownInput({
 							placeholder={searchPlaceholder}
 							value={searchValue}
 						/>
-						<CommandList>
+						<CommandList id={listboxId}>
 							<CommandEmpty>
 								{searchValue ? (
 									<button

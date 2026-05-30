@@ -35,17 +35,11 @@ type ImageClickableProps = {
 
 function ImageClickable({ image, onImageClick }: ImageClickableProps) {
 	return (
-		<div
+		<button
 			aria-label={`Open image ${image.originalPath} in lightbox`}
 			className="cursor-pointer"
 			onClick={onImageClick}
-			onKeyDown={(e) => {
-				if (e.key === "Enter" || e.key === " ") {
-					onImageClick();
-				}
-			}}
-			role="button"
-			tabIndex={0}
+			type="button"
 		>
 			<Image
 				alt={`Image ${image.originalPath}`}
@@ -54,7 +48,7 @@ function ImageClickable({ image, onImageClick }: ImageClickableProps) {
 				unoptimized
 				width={300}
 			/>
-		</div>
+		</button>
 	);
 }
 

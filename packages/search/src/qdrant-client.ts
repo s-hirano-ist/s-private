@@ -129,6 +129,7 @@ export async function getExistingHashes(
 
 		for (const point of result) {
 			const payload = point.payload as QdrantPayload;
+			// oxlint-disable-next-line typescript/no-unnecessary-condition -- Qdrant retrieve() returns an untyped runtime payload that can be null/undefined or missing fields despite the cast
 			if (payload?.chunk_id && payload?.content_hash) {
 				hashMap.set(payload.chunk_id, payload.content_hash);
 			}

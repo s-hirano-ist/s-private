@@ -135,8 +135,9 @@ type ArticlesData = {
 
 async function jsonToMarkdown(jsonFile: string): Promise<void> {
 	const rawData = await readFile(jsonFile, "utf-8");
-	const data: ArticlesData = JSON.parse(rawData);
+	const data = JSON.parse(rawData) as ArticlesData;
 
+	// oxlint-disable-next-line typescript/no-unnecessary-condition -- data comes from an external JSON file; the runtime value may not match ArticlesData
 	const bodyList = data.body || [];
 
 	if (!existsSync(OUTPUT_DIR)) {

@@ -19,7 +19,7 @@ export async function ViewerBody({ slug, getBookByISBN }: Props) {
 	const data = await getBookByISBN(slug);
 	if (!data) notFound();
 
-	const altText = data.title ?? "";
+	const altText = data.title;
 	const tags = data.tags as unknown as string[] | undefined;
 	const authors = data.googleAuthors as unknown as string[] | null | undefined;
 

@@ -101,7 +101,7 @@ async function getOgTags(
 async function processArticleFile(filePath: string): Promise<void> {
 	try {
 		const jsonContent = readFileSync(filePath, "utf-8");
-		const articleData: ArticlesJson = JSON.parse(jsonContent);
+		const articleData = JSON.parse(jsonContent) as ArticlesJson;
 
 		console.log(`Processing ${filePath}...`);
 
