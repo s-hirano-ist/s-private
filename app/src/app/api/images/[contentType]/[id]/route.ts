@@ -1,4 +1,5 @@
 import { getImagesFromStorage } from "@/application-services/images/get-images";
+import { hasViewerAdminPermission } from "@/common/auth/session";
 import { getContentTypeFromPath } from "@/common/utils/content-type-utils";
 import { auth } from "@/infrastructures/auth/auth-provider";
 import { forbidden } from "next/navigation";
@@ -15,7 +16,7 @@ export const GET = auth(
 		if (!request.auth)
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-		if (!request.auth.user.roles.includes("viewer")) forbidden();
+		if (!(await hasViewerAdminPermission())) forbidden();
 
 		const isThumbnail = contentType === "thumbnail";
 		const nodeStream = await getImagesFromStorage(id, isThumbnail);

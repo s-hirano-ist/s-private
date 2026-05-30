@@ -5,6 +5,10 @@ vi.mock("@/infrastructures/auth/auth-provider", () => ({
 	auth: vi.fn((handler) => handler),
 }));
 
+vi.mock("@/common/auth/session", () => ({
+	hasViewerAdminPermission: vi.fn(),
+}));
+
 vi.mock("@/application-services/images/get-images", () => ({
 	getImagesFromStorage: vi.fn(),
 }));
@@ -12,10 +16,16 @@ vi.mock("@/application-services/images/get-images", () => ({
 const { GET } = await import("./route");
 const { getImagesFromStorage } =
 	await import("@/application-services/images/get-images");
+const { hasViewerAdminPermission } = await import("@/common/auth/session");
+
+const authedRequest = {
+	auth: { user: { id: "test-user" } },
+} as unknown as Parameters<typeof GET>[0];
 
 describe("Images API Route", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
+		vi.mocked(hasViewerAdminPermission).mockResolvedValue(true);
 	});
 
 	test("should return 401 when user is not authenticated", async () => {
@@ -37,31 +47,26 @@ describe("Images API Route", () => {
 		expect(getImagesFromStorage).not.toHaveBeenCalled();
 	});
 
-	test("should call forbidden when user doesn't have viewer role", async () => {
-		const request = {
-			auth: { user: { roles: ["dumper"] } },
-		} as unknown as Parameters<typeof GET>[0];
+	test("should call forbidden when user doesn't have viewer permission", async () => {
+		vi.mocked(hasViewerAdminPermission).mockResolvedValue(false);
 		const params = Promise.resolve({
 			contentType: "thumbnail",
 			id: "image-123",
 		});
 
-		await expect(GET(request, { params })).rejects.toThrow("FORBIDDEN");
+		await expect(GET(authedRequest, { params })).rejects.toThrow("FORBIDDEN");
 	});
 
-	test("should return image stream for thumbnail when user has viewer role", async () => {
+	test("should return image stream for thumbnail when user has viewer permission", async () => {
 		const mockStream = new Readable({ read() {} });
 		vi.mocked(getImagesFromStorage).mockResolvedValue(mockStream);
 
-		const request = {
-			auth: { user: { roles: ["viewer"] } },
-		} as unknown as Parameters<typeof GET>[0];
 		const params = Promise.resolve({
 			contentType: "thumbnail",
 			id: "image-123",
 		});
 
-		const response = (await GET(request, { params })) as Response;
+		const response = (await GET(authedRequest, { params })) as Response;
 
 		expect(getImagesFromStorage).toHaveBeenCalledWith("image-123", true);
 		expect(response.headers.get("Content-Type")).toBe("image/jpeg");
@@ -74,12 +79,9 @@ describe("Images API Route", () => {
 		const mockStream = new Readable({ read() {} });
 		vi.mocked(getImagesFromStorage).mockResolvedValue(mockStream);
 
-		const request = {
-			auth: { user: { roles: ["viewer"] } },
-		} as unknown as Parameters<typeof GET>[0];
 		const params = Promise.resolve({ contentType: "full", id: "image-123" });
 
-		const response = (await GET(request, { params })) as Response;
+		const response = (await GET(authedRequest, { params })) as Response;
 
 		expect(getImagesFromStorage).toHaveBeenCalledWith("image-123", false);
 		expect(response.headers.get("Content-Type")).toBe("image/jpeg");
@@ -92,15 +94,12 @@ describe("Images API Route", () => {
 		const mockStream = new Readable({ read() {} });
 		vi.mocked(getImagesFromStorage).mockResolvedValue(mockStream);
 
-		const request = {
-			auth: { user: { roles: ["viewer"] } },
-		} as unknown as Parameters<typeof GET>[0];
 		const params = Promise.resolve({
 			contentType: "thumbnail",
 			id: "image-123.webp",
 		});
 
-		const response = (await GET(request, { params })) as Response;
+		const response = (await GET(authedRequest, { params })) as Response;
 
 		expect(getImagesFromStorage).toHaveBeenCalledWith("image-123.webp", true);
 		expect(response.headers.get("Content-Type")).toBe("image/webp");
@@ -110,35 +109,14 @@ describe("Images API Route", () => {
 		const mockStream = new Readable({ read() {} });
 		vi.mocked(getImagesFromStorage).mockResolvedValue(mockStream);
 
-		const request = {
-			auth: { user: { roles: ["viewer"] } },
-		} as unknown as Parameters<typeof GET>[0];
 		const params = Promise.resolve({
 			contentType: "original",
 			id: "image-123.png",
 		});
 
-		const response = (await GET(request, { params })) as Response;
+		const response = (await GET(authedRequest, { params })) as Response;
 
 		expect(getImagesFromStorage).toHaveBeenCalledWith("image-123.png", false);
 		expect(response.headers.get("Content-Type")).toBe("image/png");
-	});
-
-	test("should handle user with multiple roles including viewer", async () => {
-		const mockStream = new Readable({ read() {} });
-		vi.mocked(getImagesFromStorage).mockResolvedValue(mockStream);
-
-		const request = {
-			auth: { user: { roles: ["dumper", "viewer"] } },
-		} as unknown as Parameters<typeof GET>[0];
-		const params = Promise.resolve({
-			contentType: "thumbnail",
-			id: "image-123",
-		});
-
-		const response = (await GET(request, { params })) as Response;
-
-		expect(getImagesFromStorage).toHaveBeenCalledWith("image-123", true);
-		expect(response.status).toBe(200);
 	});
 });

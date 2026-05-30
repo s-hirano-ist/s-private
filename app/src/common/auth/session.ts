@@ -12,12 +12,15 @@ import "server-only";
 import { auth } from "@/infrastructures/auth/auth-provider";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
+import { usersQueryRepository } from "@/infrastructures/users/repositories/users-query-repository";
 import {
 	makeUserId,
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { SystemWarningEvent } from "@s-hirano-ist/s-core/shared-kernel/events/system-warning-event";
+import { makeRole } from "@s-hirano-ist/s-core/users/entities/user-entity";
 import { unauthorized } from "next/navigation";
+import { cache } from "react";
 
 /**
  * Verifies the current session is authenticated.
@@ -55,31 +58,36 @@ export async function getSelfId(): Promise<UserId> {
 }
 
 /**
- * Gets the current user's roles.
+ * Gets the current user's roles from the database.
+ *
+ * @remarks
+ * Roles are the authorization source of truth, stored in the database
+ * (`User.roles`). The session only carries the Auth0 identity. Wrapped in
+ * React `cache()` to dedupe the lookup within a single request.
  *
  * @internal
  */
-async function getSelfRoles() {
+const getSelfRoles = cache(async () => {
 	const { user } = await checkSelfAuth();
-	return user.roles;
-}
+	return usersQueryRepository.findRolesById(makeUserId(user.id));
+});
 
 /**
  * Checks if the current user has viewer admin permission.
  *
- * @returns True if user has the "viewer" role
+ * @returns True if user has the "VIEWER" role
  */
 export async function hasViewerAdminPermission() {
 	const roles = await getSelfRoles();
-	return roles.includes("viewer");
+	return roles.includes(makeRole("VIEWER"));
 }
 
 /**
  * Checks if the current user has dumper post permission.
  *
- * @returns True if user has the "dumper" role
+ * @returns True if user has the "DUMPER" role
  */
 export async function hasDumperPostPermission() {
 	const roles = await getSelfRoles();
-	return roles.includes("dumper");
+	return roles.includes(makeRole("DUMPER"));
 }

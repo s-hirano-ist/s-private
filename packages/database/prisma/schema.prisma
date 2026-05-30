@@ -19,6 +19,22 @@ enum Status {
   EXPORTED
 }
 
+enum Role {
+  VIEWER
+  DUMPER
+}
+
+model User {
+  id String @id @db.String(128) // Auth0 sub (same string as user_id on content tables)
+
+  roles Role[]
+
+  createdAt DateTime @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
 model Category {
   id String @id @db.String(36)
 
