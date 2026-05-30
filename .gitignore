@@ -10,6 +10,9 @@ dist/
 node_modules
 debug.log
 
+# Editor
+.vscode/
+
 # Storybook
 .storybook-static
 *storybook.log
@@ -36,6 +39,10 @@ packages/database/src/generated/
 
 # Code duplication reports
 jscpd-report/
+
+# dependency-cruiser graph (generated on demand)
+/dependency-graph.md
+/dependency-graph.svg
 
 # Documentation
 docs/api/

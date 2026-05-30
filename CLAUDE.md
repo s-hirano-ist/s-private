@@ -21,7 +21,9 @@ docs/** にはより詳細な設計等のルールが記載されています。
 - `pnpm dev` - 開発サーバー
 - `pnpm build` - ビルド
 - `pnpm test` - テスト実行
-- `pnpm lint:fix` - ESLint修正
+- `pnpm lint` - oxlint（type-aware。ESLintから移行済み）
+- `pnpm lint:fix` - oxlint自動修正
+- `pnpm deps:check` - dependency-cruiser（Clean Architecture層境界の強制を含む）
 - `pnpm check:fix` - Biomeフォーマット
 - `pnpm prisma:migrate:diff` - 新規マイグレーションSQL生成（DB不要のdiffフロー。ローカルDBは持たず `migrate dev` は不使用。`crdb_internal_region` drift でクラウドに対して失敗するため）
 - `pnpm prisma:deploy` - マイグレーション適用（クラウドはこちらを使う）

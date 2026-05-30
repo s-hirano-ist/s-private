@@ -69,13 +69,13 @@ jobs:
       - uses: ./.github/actions/setup-pnpm
       - run: pnpm check:ci
 
-  eslint:
+  oxlint:
     runs-on: ubuntu-24.04
     permissions:
       pull-requests: write
     timeout-minutes: 10
     concurrency:
-      group: ${{ github.workflow }}-eslint-${{ github.ref }}
+      group: ${{ github.workflow }}-oxlint-${{ github.ref }}
     steps:
       - name: Checkout files
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
