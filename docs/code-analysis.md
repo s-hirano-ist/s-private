@@ -108,6 +108,11 @@ pnpm deps:graph      # 依存関係グラフをmermaidとして出力（dependen
 
 `deps:graph`はmermaid形式で出力するためGraphviz不要。生成物（`dependency-graph.md`）はコミットせず、必要時にローカル生成してVS Code・GitHub上でネイティブ描画する。
 
+グラフは「Clean Architectureの層境界・cross-domain禁止が守られているか」を一目で確認する用途のため、**層×ドメイン単位**まで粗く集約している:
+
+- `--collapse '<regex>'`で集約。`core`/`application-services`/`infrastructures`はドメイン（`articles`/`books`/`images`/`notes`等）ごとのノードを残し（cross-domain依存の可視化）、`app`/`common`/`components`/`loaders`や各パッケージ（`ui`/`database`等）は1ノードに集約する。ドメイン内部のファイル詳細は描画しない。
+- `--include-only '^(app/src|packages)/...'`でグラフ出力のみを絞り込み（ルール検査には不適用）、`node_modules`等の外部依存と`vitest`設定・`*.stories.*`などのノイズノードを除外する。
+
 ### CI連携
 
 - **PR時**: [`depcruise.yaml`](../.github/workflows/depcruise.yaml) — [dependency-cruiser-report-action](https://github.com/MH4GF/dependency-cruiser-report-action)を使用し、依存関係分析レポートをPRコメントとして投稿

@@ -35,7 +35,7 @@
 		"storybook:build": "storybook build -o .storybook-static",
 		"deps:check": "depcruise app/src packages/ui packages/core packages/notification --config .dependency-cruiser.cjs",
 		"deps:circular": "depcruise app/src packages/ui packages/core packages/notification --config .dependency-cruiser.cjs --output-type text --focus-depth 0",
-		"deps:graph": "{ echo '```mermaid'; depcruise app/src packages/ui packages/core packages/notification --config .dependency-cruiser.cjs --output-type mermaid --collapse 3; echo '```'; } > dependency-graph.md",
+		"deps:graph": "{ echo '```mermaid'; depcruise app/src packages/ui packages/core packages/notification --config .dependency-cruiser.cjs --output-type mermaid --collapse 'app/src/(application-services|infrastructures)/[^/]+/|app/src/(app|common|components|loaders)/|packages/core/[^/]+/|packages/(ui|database|notification|search|storage)/' --include-only '^(app/src|packages)/(?!.*(vitest|\\.stories\\.))'; echo '```'; } > dependency-graph.md",
 		"prisma:deploy": "vercel env run -e development -- pnpm --filter s-database prisma:deploy",
 		"prisma:studio": "vercel env run -e development -- pnpm --filter s-database prisma:studio",
 		"docs:build": "typedoc && pnpm --filter @s-hirano-ist/s-database docs:build",
