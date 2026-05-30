@@ -89,5 +89,4 @@ tenantContext.run({ userId }, () => action(...));
 
 ## 関連
 
-- 計画ファイル: `/Users/s-hirano-ist/.claude/plans/prisma-orm-supabase-velvet-cat.md` Phase C-1
 - Prisma Client Extensions: https://www.prisma.io/docs/orm/prisma-client/client-extensions

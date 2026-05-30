@@ -51,5 +51,4 @@ CockroachDB Cloud は単一リージョンのクラスタでも、内部に mult
 
 ## 関連
 
-- 移行計画: `/Users/s-hirano-ist/.claude/plans/postgresql-supabase-cockroach-db-iterative-toucan.md`
 - schema_locked 制約: [docs/setup.md](../docs/setup.md)「CockroachDB v26.1+ の schema_locked」
