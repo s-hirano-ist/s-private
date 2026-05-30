@@ -2,13 +2,8 @@
 	"$schema": "https://unpkg.com/knip@5/schema.json",
 	"ignoreExportsUsedInFile": true,
 	"ignore": ["memlab/**/*", "e2e/**/*"],
-	"ignoreDependencies": [
-		"@eslint/config-inspector",
-		"babel-plugin-react-compiler",
-		"eslint-plugin-jsx-a11y",
-		"eslint-plugin-tailwindcss"
-	],
-	"ignoreBinaries": ["dot", "config-inspector", "serve", "only-allow"],
+	"ignoreDependencies": ["babel-plugin-react-compiler"],
+	"ignoreBinaries": ["dot", "serve", "only-allow"],
 	"workspaces": {
 		"app": {
 			"ignore": [

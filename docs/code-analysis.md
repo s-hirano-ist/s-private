@@ -111,3 +111,19 @@ pnpm deps:graph      # 依存関係グラフをSVGとして出力（dependency-g
 ### CI連携
 
 - **PR時**: [`depcruise.yaml`](../.github/workflows/depcruise.yaml) — [dependency-cruiser-report-action](https://github.com/MH4GF/dependency-cruiser-report-action)を使用し、依存関係分析レポートをPRコメントとして投稿
+
+
+## Lint: ESLint → oxlint 移行（2026-05）
+
+ESLint を全廃し oxlint に一本化（Biome は format + 基本 lint を継続）。設定は `.oxlintrc.json`（JSONC: コメント可。`oxlint.config.ts` は experimental でバイナリが読めないため不採用）。型認識ルールは `oxlint-tsgolint`（`pnpm lint` = `oxlint --type-aware`）。
+
+役割分担:
+- **oxlint**: 旧 ESLint の全ルール。typescript-eslint strict+stylistic type-checked（type-aware, tsgolint）、`@next/*`→native `nextjs`、`@vitest/*`→native `vitest`、`eslint-plugin-regexp`/`eslint-plugin-storybook`（JS plugin）、Prisma raw-SQL ガード（`eslint-js/no-restricted-syntax` via `oxlint-plugin-eslint`）。`@eslint-react` の明示ルールは native へ: use-state→`react/hook-use-state`、jsx-no-useless-fragment→`react/jsx-no-useless-fragment`、dom-no-dangerously-set-innerhtml→`react/no-danger`、no-array-index-key→`react/no-array-index-key`。set-state-in-effect は `eslint-plugin-react-hooks`（alias `react-hooks-js`）。
+- **dependency-cruiser**: Clean Architecture 層境界（`eslint-plugin-boundaries` から移植。oxlint の JS plugin は `settings` の boundaries/* キーを受け付けず動作不可のため）。`.dependency-cruiser.cjs` の `boundary-*` ルール（allow-list を deny-list に翻訳、29 本）。
+- **Biome**: format 全般 + recommended lint。class 並べ替えは useSortedClasses。
+
+新規有効化（旧コメントアウト分）: `jsx-a11y`（oxlint native, warn）。
+
+移行できなかったもの（oxlint に等価なし）:
+- `@eslint-react` の react-x 固有ルール（type-aware で JS plugin 不可）: no-unused-props, naming-convention-ref-name, no-context-provider, ほか strict-type-checked 群。本コードベースでは warning 8 件相当の損失（error 損失は 0）。
+- `eslint-plugin-tailwindcss`: Tailwind v4（`tailwind.config.js` 無し）と非互換のため不採用（class 並べ替えは Biome 継続）。

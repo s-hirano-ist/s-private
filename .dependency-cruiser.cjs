@@ -19,6 +19,522 @@ const EXCLUDE_PATHS = [
 const COLLAPSE_PATTERN =
 	"app/src/app|app/src/common/error|app/src/common/utils|app/src/common/auth|app/src/generated|app/src/components/common|app/src/components/notes|app/src/components/books|app/src/components/articles|app/src/components/images|app/src/infrastructures/observability|app/src/infrastructures/i18n|app/src/infrastructures/auth|app/src/infrastructures/books|app/src/infrastructures/articles|app/src/infrastructures/events|app/src/infrastructures/notes|app/src/infrastructures/images|packages/ui|packages/core/books|packages/core/articles|packages/core/images|packages/core/notes|packages/core/common|packages/core/errors|node_modules/(?:@[^/]+/[^/]+|[^/]+)";
 
+/* Clean Architecture layer boundaries — migrated from eslint-plugin-boundaries
+   (it cannot run under oxlint: the JS-plugin `settings` schema rejects boundaries/* keys).
+   Allow-list semantics (boundaries) are translated to deny-list: from each layer, importing
+   into the tracked first-party universe is forbidden unless the target is in `to.pathNot`.
+   Verified: 0 false positives on the current tree; fires on deliberate violations. */
+const boundaryRules = [
+	{
+		name: "boundary-core-shared-kernel",
+		severity: "error",
+		comment: "core/shared-kernel は自身のみ import 可",
+		from: {
+			path: "^packages/core/shared-kernel/",
+		},
+		to: {
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			pathNot: ["^packages/core/shared-kernel/"],
+		},
+	},
+	{
+		name: "boundary-core-articles",
+		severity: "error",
+		comment:
+			"core/articles は shared-kernel と自domainのみ（cross-domain 禁止）",
+		from: {
+			path: "^packages/core/articles/",
+		},
+		to: {
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			pathNot: ["^packages/core/shared-kernel/", "^packages/core/articles/"],
+		},
+	},
+	{
+		name: "boundary-core-books",
+		severity: "error",
+		comment: "core/books は shared-kernel と自domainのみ（cross-domain 禁止）",
+		from: {
+			path: "^packages/core/books/",
+		},
+		to: {
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			pathNot: ["^packages/core/shared-kernel/", "^packages/core/books/"],
+		},
+	},
+	{
+		name: "boundary-core-images",
+		severity: "error",
+		comment: "core/images は shared-kernel と自domainのみ（cross-domain 禁止）",
+		from: {
+			path: "^packages/core/images/",
+		},
+		to: {
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			pathNot: ["^packages/core/shared-kernel/", "^packages/core/images/"],
+		},
+	},
+	{
+		name: "boundary-core-notes",
+		severity: "error",
+		comment: "core/notes は shared-kernel と自domainのみ（cross-domain 禁止）",
+		from: {
+			path: "^packages/core/notes/",
+		},
+		to: {
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			pathNot: ["^packages/core/shared-kernel/", "^packages/core/notes/"],
+		},
+	},
+	{
+		name: "boundary-appsvc-articles",
+		severity: "error",
+		comment: "application-services/articles の依存許可先を制限",
+		from: {
+			path: "^app/src/application-services/articles/",
+		},
+		to: {
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			pathNot: [
+				"^packages/core/shared-kernel/",
+				"^app/src/application-services/common/",
+				"^app/src/infrastructures/(articles|books|images|notes|search)/",
+				"^app/src/infrastructures/(auth|events|factories|i18n|observability|shared)/",
+				"^app/src/common/",
+				"^app/src/application-services/articles/",
+				"^packages/core/articles/",
+			],
+		},
+	},
+	{
+		name: "boundary-appsvc-auth",
+		severity: "error",
+		comment: "application-services/auth の依存許可先を制限",
+		from: {
+			path: "^app/src/application-services/auth/",
+		},
+		to: {
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			pathNot: [
+				"^packages/core/shared-kernel/",
+				"^app/src/application-services/common/",
+				"^app/src/infrastructures/(articles|books|images|notes|search)/",
+				"^app/src/infrastructures/(auth|events|factories|i18n|observability|shared)/",
+				"^app/src/common/",
+				"^app/src/application-services/auth/",
+			],
+		},
+	},
+	{
+		name: "boundary-appsvc-books",
+		severity: "error",
+		comment: "application-services/books の依存許可先を制限",
+		from: {
+			path: "^app/src/application-services/books/",
+		},
+		to: {
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			pathNot: [
+				"^packages/core/shared-kernel/",
+				"^app/src/application-services/common/",
+				"^app/src/infrastructures/(articles|books|images|notes|search)/",
+				"^app/src/infrastructures/(auth|events|factories|i18n|observability|shared)/",
+				"^app/src/common/",
+				"^app/src/application-services/books/",
+				"^packages/core/books/",
+			],
+		},
+	},
+	{
+		name: "boundary-appsvc-events",
+		severity: "error",
+		comment: "application-services/events の依存許可先を制限",
+		from: {
+			path: "^app/src/application-services/events/",
+		},
+		to: {
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			pathNot: [
+				"^packages/core/shared-kernel/",
+				"^app/src/application-services/common/",
+				"^app/src/infrastructures/(articles|books|images|notes|search)/",
+				"^app/src/infrastructures/(auth|events|factories|i18n|observability|shared)/",
+				"^app/src/common/",
+				"^app/src/application-services/events/",
+			],
+		},
+	},
+	{
+		name: "boundary-appsvc-images",
+		severity: "error",
+		comment: "application-services/images の依存許可先を制限",
+		from: {
+			path: "^app/src/application-services/images/",
+		},
+		to: {
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			pathNot: [
+				"^packages/core/shared-kernel/",
+				"^app/src/application-services/common/",
+				"^app/src/infrastructures/(articles|books|images|notes|search)/",
+				"^app/src/infrastructures/(auth|events|factories|i18n|observability|shared)/",
+				"^app/src/common/",
+				"^app/src/application-services/images/",
+				"^packages/core/images/",
+			],
+		},
+	},
+	{
+		name: "boundary-appsvc-notes",
+		severity: "error",
+		comment: "application-services/notes の依存許可先を制限",
+		from: {
+			path: "^app/src/application-services/notes/",
+		},
+		to: {
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			pathNot: [
+				"^packages/core/shared-kernel/",
+				"^app/src/application-services/common/",
+				"^app/src/infrastructures/(articles|books|images|notes|search)/",
+				"^app/src/infrastructures/(auth|events|factories|i18n|observability|shared)/",
+				"^app/src/common/",
+				"^app/src/application-services/notes/",
+				"^packages/core/notes/",
+			],
+		},
+	},
+	{
+		name: "boundary-appsvc-search",
+		severity: "error",
+		comment: "application-services/search の依存許可先を制限",
+		from: {
+			path: "^app/src/application-services/search/",
+		},
+		to: {
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			pathNot: [
+				"^packages/core/shared-kernel/",
+				"^app/src/application-services/common/",
+				"^app/src/infrastructures/(articles|books|images|notes|search)/",
+				"^app/src/infrastructures/(auth|events|factories|i18n|observability|shared)/",
+				"^app/src/common/",
+				"^app/src/application-services/search/",
+			],
+		},
+	},
+	{
+		name: "boundary-appsvc-users",
+		severity: "error",
+		comment: "application-services/users の依存許可先を制限",
+		from: {
+			path: "^app/src/application-services/users/",
+		},
+		to: {
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			pathNot: [
+				"^packages/core/shared-kernel/",
+				"^app/src/application-services/common/",
+				"^app/src/infrastructures/(articles|books|images|notes|search)/",
+				"^app/src/infrastructures/(auth|events|factories|i18n|observability|shared)/",
+				"^app/src/common/",
+				"^app/src/application-services/users/",
+			],
+		},
+	},
+	{
+		name: "boundary-appsvc-common",
+		severity: "error",
+		comment: "application-services/common の依存許可先を制限",
+		from: {
+			path: "^app/src/application-services/common/",
+		},
+		to: {
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			pathNot: [
+				"^packages/core/shared-kernel/",
+				"^packages/core/(articles|books|images|notes)/",
+				"^app/src/application-services/common/",
+				"^app/src/infrastructures/(articles|books|images|notes|search)/",
+				"^app/src/infrastructures/(auth|events|factories|i18n|observability|shared)/",
+				"^app/src/common/",
+			],
+		},
+	},
+	{
+		name: "boundary-appinfra-articles",
+		severity: "error",
+		comment: "infrastructures/articles の依存許可先を制限",
+		from: {
+			path: "^app/src/infrastructures/articles/",
+		},
+		to: {
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			pathNot: [
+				"^packages/core/shared-kernel/",
+				"^app/src/infrastructures/(articles|books|images|notes|search)/",
+				"^app/src/infrastructures/(auth|events|factories|i18n|observability|shared)/",
+				"^app/src/common/",
+				"^packages/database/",
+				"^packages/search/",
+				"^packages/storage/",
+				"^packages/notification/",
+				"^packages/core/articles/",
+			],
+		},
+	},
+	{
+		name: "boundary-appinfra-books",
+		severity: "error",
+		comment: "infrastructures/books の依存許可先を制限",
+		from: {
+			path: "^app/src/infrastructures/books/",
+		},
+		to: {
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			pathNot: [
+				"^packages/core/shared-kernel/",
+				"^app/src/infrastructures/(articles|books|images|notes|search)/",
+				"^app/src/infrastructures/(auth|events|factories|i18n|observability|shared)/",
+				"^app/src/common/",
+				"^packages/database/",
+				"^packages/search/",
+				"^packages/storage/",
+				"^packages/notification/",
+				"^packages/core/books/",
+			],
+		},
+	},
+	{
+		name: "boundary-appinfra-images",
+		severity: "error",
+		comment: "infrastructures/images の依存許可先を制限",
+		from: {
+			path: "^app/src/infrastructures/images/",
+		},
+		to: {
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			pathNot: [
+				"^packages/core/shared-kernel/",
+				"^app/src/infrastructures/(articles|books|images|notes|search)/",
+				"^app/src/infrastructures/(auth|events|factories|i18n|observability|shared)/",
+				"^app/src/common/",
+				"^packages/database/",
+				"^packages/search/",
+				"^packages/storage/",
+				"^packages/notification/",
+				"^packages/core/images/",
+			],
+		},
+	},
+	{
+		name: "boundary-appinfra-notes",
+		severity: "error",
+		comment: "infrastructures/notes の依存許可先を制限",
+		from: {
+			path: "^app/src/infrastructures/notes/",
+		},
+		to: {
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			pathNot: [
+				"^packages/core/shared-kernel/",
+				"^app/src/infrastructures/(articles|books|images|notes|search)/",
+				"^app/src/infrastructures/(auth|events|factories|i18n|observability|shared)/",
+				"^app/src/common/",
+				"^packages/database/",
+				"^packages/search/",
+				"^packages/storage/",
+				"^packages/notification/",
+				"^packages/core/notes/",
+			],
+		},
+	},
+	{
+		name: "boundary-appinfra-search",
+		severity: "error",
+		comment: "infrastructures/search の依存許可先を制限",
+		from: {
+			path: "^app/src/infrastructures/search/",
+		},
+		to: {
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			pathNot: [
+				"^packages/core/shared-kernel/",
+				"^app/src/infrastructures/(articles|books|images|notes|search)/",
+				"^app/src/infrastructures/(auth|events|factories|i18n|observability|shared)/",
+				"^app/src/common/",
+				"^packages/database/",
+				"^packages/search/",
+				"^packages/storage/",
+				"^packages/notification/",
+			],
+		},
+	},
+	{
+		name: "boundary-appinfra-shared",
+		severity: "error",
+		comment: "infrastructures/<shared系> の依存許可先を制限",
+		from: {
+			path: "^app/src/infrastructures/(auth|events|factories|i18n|observability|shared)/",
+		},
+		to: {
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			pathNot: [
+				"^packages/core/shared-kernel/",
+				"^packages/core/(articles|books|images|notes)/",
+				"^app/src/infrastructures/(articles|books|images|notes|search)/",
+				"^app/src/infrastructures/(auth|events|factories|i18n|observability|shared)/",
+				"^app/src/common/",
+				"^packages/database/",
+				"^packages/search/",
+				"^packages/storage/",
+				"^packages/notification/",
+			],
+		},
+	},
+	{
+		name: "boundary-app-loader",
+		severity: "error",
+		comment: "loaders の依存許可先を制限",
+		from: {
+			path: "^app/src/loaders/",
+		},
+		to: {
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			pathNot: [
+				"^packages/core/shared-kernel/",
+				"^packages/core/(articles|books|images|notes)/",
+				"^app/src/application-services/",
+				"^app/src/loaders/",
+				"^app/src/components/",
+				"^app/src/common/",
+				"^app/src/infrastructures/(auth|events|factories|i18n|observability|shared)/",
+			],
+		},
+	},
+	{
+		name: "boundary-app-component",
+		severity: "error",
+		comment: "components の依存許可先を制限（pkg は ui のみ）",
+		from: {
+			path: "^app/src/components/",
+		},
+		to: {
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			pathNot: [
+				"^packages/core/shared-kernel/",
+				"^app/src/application-services/",
+				"^app/src/loaders/",
+				"^app/src/components/",
+				"^app/src/common/",
+				"^app/src/infrastructures/(auth|events|factories|i18n|observability|shared)/",
+				"^packages/ui/",
+			],
+		},
+	},
+	{
+		name: "boundary-app-route",
+		severity: "error",
+		comment: "app(route) の依存許可先を制限",
+		from: {
+			path: "^app/src/app/",
+		},
+		to: {
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			pathNot: [
+				"^packages/core/shared-kernel/",
+				"^app/src/application-services/",
+				"^app/src/infrastructures/(articles|books|images|notes|search)/",
+				"^app/src/infrastructures/(auth|events|factories|i18n|observability|shared)/",
+				"^app/src/loaders/",
+				"^app/src/components/",
+				"^app/src/common/",
+				"^app/src/app/",
+				"^packages/ui/",
+			],
+		},
+	},
+	{
+		name: "boundary-app-common",
+		severity: "error",
+		comment: "common の依存許可先を制限",
+		from: {
+			path: "^app/src/common/",
+		},
+		to: {
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			pathNot: [
+				"^packages/core/shared-kernel/",
+				"^app/src/common/",
+				"^app/src/infrastructures/(auth|events|factories|i18n|observability|shared)/",
+				"^packages/database/",
+				"^packages/notification/",
+				"^packages/storage/",
+			],
+		},
+	},
+	{
+		name: "boundary-pkg-ui",
+		severity: "error",
+		comment: "packages/ui は自身のみ import 可",
+		from: {
+			path: "^packages/ui/",
+		},
+		to: {
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			pathNot: ["^packages/ui/"],
+		},
+	},
+	{
+		name: "boundary-pkg-database",
+		severity: "error",
+		comment: "packages/database は自身のみ import 可",
+		from: {
+			path: "^packages/database/",
+		},
+		to: {
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			pathNot: ["^packages/database/"],
+		},
+	},
+	{
+		name: "boundary-pkg-notification",
+		severity: "error",
+		comment: "packages/notification は自身のみ import 可",
+		from: {
+			path: "^packages/notification/",
+		},
+		to: {
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			pathNot: ["^packages/notification/"],
+		},
+	},
+	{
+		name: "boundary-pkg-search",
+		severity: "error",
+		comment: "packages/search は search/database のみ import 可",
+		from: {
+			path: "^packages/search/",
+		},
+		to: {
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			pathNot: ["^packages/search/", "^packages/database/"],
+		},
+	},
+	{
+		name: "boundary-pkg-storage",
+		severity: "error",
+		comment: "packages/storage は自身のみ import 可",
+		from: {
+			path: "^packages/storage/",
+		},
+		to: {
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			pathNot: ["^packages/storage/"],
+		},
+	},
+];
+
 module.exports = {
 	forbidden: [
 		{
@@ -222,39 +738,7 @@ module.exports = {
 			},
 		},
 
-		/* Cross-domain import rules for packages/core */
-		{
-			name: "no-cross-domain-import-from-articles",
-			severity: "error",
-			comment:
-				"articlesドメインは他ドメインをimportしてはならない（shared-kernelは許可）",
-			from: { path: "^packages/core/articles/" },
-			to: { path: "^packages/core/(books|notes|images)/" },
-		},
-		{
-			name: "no-cross-domain-import-from-books",
-			severity: "error",
-			comment:
-				"booksドメインは他ドメインをimportしてはならない（shared-kernelは許可）",
-			from: { path: "^packages/core/books/" },
-			to: { path: "^packages/core/(articles|notes|images)/" },
-		},
-		{
-			name: "no-cross-domain-import-from-notes",
-			severity: "error",
-			comment:
-				"notesドメインは他ドメインをimportしてはならない（shared-kernelは許可）",
-			from: { path: "^packages/core/notes/" },
-			to: { path: "^packages/core/(articles|books|images)/" },
-		},
-		{
-			name: "no-cross-domain-import-from-images",
-			severity: "error",
-			comment:
-				"imagesドメインは他ドメインをimportしてはならない（shared-kernelは許可）",
-			from: { path: "^packages/core/images/" },
-			to: { path: "^packages/core/(articles|books|notes)/" },
-		},
+		...boundaryRules,
 	],
 	options: {
 		/* Which modules not to follow further when encountered */
