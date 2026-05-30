@@ -56,27 +56,16 @@ CockroachDB Cloud Basic への移行を完了するために**ユーザーが手
 > 2. 生成 SQL の新規 `CREATE TABLE` に `WITH (schema_locked = false)` を付与
 > 3. コミット → `prisma:deploy`（理由は [docs/setup.md](setup.md) の schema_locked / migrate dev 封印の節）。
 
-## 5. データ移行（ETL）
+> ℹ️ Supabase からのデータ移行は行いません（**新規スタート**）。
 
-旧 Supabase がまだ稼働している状態で実行する:
-
-```bash
-SOURCE_DATABASE_URL="<旧 Supabase 接続文字列>" \
-TARGET_DATABASE_URL="<新 CockroachDB 接続文字列>" \
-pnpm --filter s-scripts migrate-supabase-to-cockroach
-```
-
-出力の各テーブル count が `✅ source=N target=N` で一致することを確認する。
-
-## 6. アプリ動作確認
+## 5. アプリ動作確認
 
 1. preview / 本番デプロイ後、各ドメイン（articles / notes / images / books）の CRUD を確認。
 2. Sentry に DB 接続エラー（`P1011` / `SELF_SIGNED_CERT_IN_CHAIN` / `P2034`）が出ないこと。
 
-## 7. 後始末・フォローアップ
+## 6. 後始末・フォローアップ
 
 - 動作確認が済んだら Supabase プロジェクトを解約する。
-  **解約前に**最終データの整合を再確認（→ [issues/security-006-cockroachdb-backup-dr.md](../issues/security-006-cockroachdb-backup-dr.md)）。
 - Doppler / Vercel の旧 Supabase 環境変数を削除。
 - 以下の issue に着手:
   - [security-005](../issues/security-005-cockroachdb-hardening.md): SQL ユーザーの最小権限化（**最優先**）・監査・ネットワーク
@@ -96,7 +85,6 @@ pnpm --filter s-scripts migrate-supabase-to-cockroach
 - [ ] GitHub Secrets `PRODUCTION_DIRECT_URL` を prod 接続文字列に更新
 - [ ] PR #2335 マージ → 本番 migrate deploy 確認
 - [ ] staging へ手動 migrate deploy
-- [ ] ETL 実行 + count 一致確認（Supabase 稼働中に）
 - [ ] アプリ動作確認（preview / 本番）
 - [ ] Supabase 解約 + 旧環境変数削除
 - [ ] フォローアップ issue 着手（予算アラート / ロール最小化）
