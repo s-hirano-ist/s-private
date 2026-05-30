@@ -1,6 +1,6 @@
 import type { AddArticleDeps } from "./add-article.deps";
 import type { IArticlesCommandRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-command-repository.interface";
-import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
+import { getSelfId, requireAuth } from "@/common/auth/session";
 import {
 	articleEntity,
 	makeArticleTitle,
@@ -24,7 +24,7 @@ import { parseAddArticleFormData } from "./helpers/form-data-parser";
 // Minimal mocks - only for auth and form parsing
 vi.mock("@/common/auth/session", () => ({
 	getSelfId: vi.fn(),
-	hasDumperPostPermission: vi.fn(),
+	requireAuth: vi.fn(),
 }));
 
 vi.mock("./helpers/form-data-parser", () => ({
@@ -210,14 +210,8 @@ describe("addArticle (Server Action)", () => {
 		vi.clearAllMocks();
 	});
 
-	test("should return forbidden when user doesn't have permission", async () => {
-		vi.mocked(hasDumperPostPermission).mockResolvedValue(false);
-
-		await expect(addArticle(mockFormData)).rejects.toThrow("FORBIDDEN");
-	});
-
-	test("should call addArticleCore with default deps when permitted", async () => {
-		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+	test("should call addArticleCore with default deps when authenticated", async () => {
+		vi.mocked(requireAuth).mockResolvedValue(undefined);
 		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
 		vi.mocked(parseAddArticleFormData).mockReturnValue({
 			title: makeArticleTitle("Test Article"),
@@ -230,7 +224,7 @@ describe("addArticle (Server Action)", () => {
 		// This will fail at getSelfId, but it proves the flow works
 		const result = await addArticle(mockFormData);
 
-		expect(hasDumperPostPermission).toHaveBeenCalled();
+		expect(requireAuth).toHaveBeenCalled();
 		expect(result.success).toBe(false);
 	});
 });

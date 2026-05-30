@@ -5,10 +5,6 @@ vi.mock("@/infrastructures/auth/auth-provider", () => ({
 	auth: vi.fn((handler) => handler),
 }));
 
-vi.mock("@/common/auth/session", () => ({
-	hasViewerAdminPermission: vi.fn(),
-}));
-
 vi.mock("@/application-services/images/get-images", () => ({
 	getImagesFromStorage: vi.fn(),
 }));
@@ -16,7 +12,6 @@ vi.mock("@/application-services/images/get-images", () => ({
 const { GET } = await import("./route");
 const { getImagesFromStorage } =
 	await import("@/application-services/images/get-images");
-const { hasViewerAdminPermission } = await import("@/common/auth/session");
 
 const authedRequest = {
 	auth: { user: { id: "test-user" } },
@@ -25,7 +20,6 @@ const authedRequest = {
 describe("Images API Route", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
-		vi.mocked(hasViewerAdminPermission).mockResolvedValue(true);
 	});
 
 	test("should return 401 when user is not authenticated", async () => {
@@ -46,18 +40,7 @@ describe("Images API Route", () => {
 		expect(data.error).toBe("Unauthorized");
 		expect(getImagesFromStorage).not.toHaveBeenCalled();
 	});
-
-	test("should call forbidden when user doesn't have viewer permission", async () => {
-		vi.mocked(hasViewerAdminPermission).mockResolvedValue(false);
-		const params = Promise.resolve({
-			contentType: "thumbnail",
-			id: "image-123",
-		});
-
-		await expect(GET(authedRequest, { params })).rejects.toThrow("FORBIDDEN");
-	});
-
-	test("should return image stream for thumbnail when user has viewer permission", async () => {
+	test("should return image stream for thumbnail when authenticated", async () => {
 		const mockStream = new Readable({ read() {} });
 		vi.mocked(getImagesFromStorage).mockResolvedValue(mockStream);
 

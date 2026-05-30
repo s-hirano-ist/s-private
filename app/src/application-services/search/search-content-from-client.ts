@@ -2,17 +2,15 @@
 import "server-only";
 import type { ServerActionWithData } from "@/common/types";
 import type { UnifiedSearchResults } from "@s-hirano-ist/s-core/shared-kernel/types/search-types";
-import { getSelfId, hasViewerAdminPermission } from "@/common/auth/session";
+import { getSelfId, requireAuth } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import { searchQuerySchema } from "@s-hirano-ist/s-core/shared-kernel/types/search-types";
-import { forbidden } from "next/navigation";
 import { searchContent } from "./search-content";
 
 export async function searchContentFromClient(
 	rawSearchQuery: unknown,
 ): Promise<ServerActionWithData<UnifiedSearchResults>> {
-	const hasPermission = await hasViewerAdminPermission();
-	if (!hasPermission) forbidden();
+	await requireAuth();
 
 	try {
 		const searchQuery = searchQuerySchema.parse(rawSearchQuery);

@@ -1,6 +1,6 @@
 import type { AddNoteDeps } from "./add-note.deps";
 import type { INotesCommandRepository } from "@s-hirano-ist/s-core/notes/repositories/notes-command-repository.interface";
-import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
+import { getSelfId, requireAuth } from "@/common/auth/session";
 import {
 	makeMarkdown,
 	makeNoteTitle,
@@ -20,7 +20,7 @@ import { parseAddNoteFormData } from "./helpers/form-data-parser";
 
 vi.mock("@/common/auth/session", () => ({
 	getSelfId: vi.fn(),
-	hasDumperPostPermission: vi.fn(),
+	requireAuth: vi.fn(),
 }));
 
 vi.mock("./helpers/form-data-parser", () => ({
@@ -180,14 +180,8 @@ describe("addNote (Server Action)", () => {
 		vi.clearAllMocks();
 	});
 
-	test("should return forbidden when user doesn't have permission", async () => {
-		vi.mocked(hasDumperPostPermission).mockResolvedValue(false);
-
-		await expect(addNote(mockFormData)).rejects.toThrow("FORBIDDEN");
-	});
-
-	test("should call addNoteCore with default deps when permitted", async () => {
-		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+	test("should call addNoteCore with default deps when authenticated", async () => {
+		vi.mocked(requireAuth).mockResolvedValue(undefined);
 		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
 		vi.mocked(parseAddNoteFormData).mockReturnValue({
 			title: makeNoteTitle("Example Note"),
@@ -197,7 +191,7 @@ describe("addNote (Server Action)", () => {
 
 		const result = await addNote(mockFormData);
 
-		expect(hasDumperPostPermission).toHaveBeenCalled();
+		expect(requireAuth).toHaveBeenCalled();
 		expect(result.success).toBe(false);
 	});
 });

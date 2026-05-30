@@ -29,9 +29,7 @@
 		"./notes/events/*": "./notes/events/*.ts",
 		"./notes/repositories/*": "./notes/repositories/*.ts",
 		"./notes/services/*": "./notes/services/*.ts",
-		"./notes/types/*": "./notes/types/*.ts",
-		"./users/entities/*": "./users/entities/*.ts",
-		"./users/repositories/*": "./users/repositories/*.ts"
+		"./notes/types/*": "./notes/types/*.ts"
 	},
 	"publishConfig": {
 		"access": "public",
@@ -61,9 +59,7 @@
 			"./notes/events/*": "./dist/notes/events/*.js",
 			"./notes/repositories/*": "./dist/notes/repositories/*.js",
 			"./notes/services/*": "./dist/notes/services/*.js",
-			"./notes/types/*": "./dist/notes/types/*.js",
-			"./users/entities/*": "./dist/users/entities/*.js",
-			"./users/repositories/*": "./dist/users/repositories/*.js"
+			"./notes/types/*": "./dist/notes/types/*.js"
 		}
 	},
 	"files": [

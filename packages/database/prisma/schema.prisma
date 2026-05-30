@@ -19,22 +19,6 @@ enum Status {
   EXPORTED
 }
 
-model User {
-  id String @id @db.String(128) // Auth0 sub (same string as user_id on content tables)
-
-  // Authorization source of truth. Stored as String[] (not a DB enum) because
-  // CockroachDB + @prisma/adapter-pg cannot parameterize casts to enum arrays
-  // (`cast($1 as "Role"[])` → "placeholder $1 already has type string"). Values
-  // are validated at the domain boundary by the Zod `Role` schema in
-  // packages/core/users/entities/user-entity.ts.
-  roles String[]
-
-  createdAt DateTime @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@map("users")
-}
-
 model Category {
   id String @id @db.String(36)
 

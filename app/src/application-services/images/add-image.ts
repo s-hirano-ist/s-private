@@ -7,8 +7,7 @@
 "use server";
 import "server-only";
 import type { ServerAction } from "@/common/types";
-import { hasDumperPostPermission } from "@/common/auth/session";
-import { forbidden } from "next/navigation";
+import { requireAuth } from "@/common/auth/session";
 import { addImageCore } from "./add-image.core";
 import { defaultAddImageDeps } from "./add-image.deps";
 
@@ -30,8 +29,7 @@ import { defaultAddImageDeps } from "./add-image.deps";
  * @returns Server action result with success/failure status
  */
 export async function addImage(formData: FormData): Promise<ServerAction> {
-	const hasPermission = await hasDumperPostPermission();
-	if (!hasPermission) forbidden();
+	await requireAuth();
 
 	return addImageCore(formData, defaultAddImageDeps);
 }

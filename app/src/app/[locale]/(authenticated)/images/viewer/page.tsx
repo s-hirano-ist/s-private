@@ -1,5 +1,4 @@
-import { hasViewerAdminPermission } from "@/common/auth/session";
-import { ErrorPermissionBoundary } from "@/components/common/layouts/error-permission-boundary";
+import { ErrorBoundary } from "@/components/common/layouts/error-boundary";
 import { ImagesCounterLoader } from "@/loaders/images/images-counter-loader";
 import { ImagesStackLoader } from "@/loaders/images/images-stack-loader";
 import Loading from "@s-hirano-ist/s-ui/display/loading";
@@ -14,17 +13,15 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 
 	return (
 		<>
-			<ErrorPermissionBoundary
+			<ErrorBoundary
 				errorCaller="ImagesCounter"
 				fallback={<div />}
-				permissionCheck={hasViewerAdminPermission}
 				render={() => ImagesCounterLoader({})}
 			/>
 
 			<Suspense fallback={<Loading />} key={currentPage}>
-				<ErrorPermissionBoundary
+				<ErrorBoundary
 					errorCaller="ImagesStack"
-					permissionCheck={hasViewerAdminPermission}
 					render={() =>
 						ImagesStackLoader({
 							currentPage,

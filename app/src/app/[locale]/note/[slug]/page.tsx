@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { getNoteByTitle } from "@/application-services/notes/get-notes";
-import { hasViewerAdminPermission } from "@/common/auth/session";
+import { requireAuth } from "@/common/auth/session";
 import { PAGE_NAME } from "@/common/constants";
-import { ErrorPermissionBoundary } from "@/components/common/layouts/error-permission-boundary";
+import { ErrorBoundary } from "@/components/common/layouts/error-boundary";
 import { ViewerBody } from "@/components/notes/server/viewer-body";
 import Loading from "@s-hirano-ist/s-ui/display/loading";
 import { Suspense } from "react";
@@ -23,13 +23,14 @@ export async function generateMetadata({
 }
 
 export default async function Page({ params }: { params: Params }) {
+	await requireAuth();
+
 	const { slug } = await params;
 
 	return (
 		<Suspense fallback={<Loading />}>
-			<ErrorPermissionBoundary
+			<ErrorBoundary
 				errorCaller="NotesViewerBody"
-				permissionCheck={hasViewerAdminPermission}
 				render={() => ViewerBody({ getNoteByTitle, slug })}
 			/>
 		</Suspense>

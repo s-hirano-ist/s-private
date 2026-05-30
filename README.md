@@ -185,14 +185,14 @@ This project follows clean architecture principles with domain-driven design, en
     │
     └── app/                        # Next.js App Router
         └── [locale]/               # Internationalized routes (en/ja)
-            ├── (dumper)/           # Dumper role pages
-            │   ├── articles/       # Articles management page
-            │   ├── books/          # Books management page
-            │   ├── images/         # Images management page
-            │   └── notes/          # Notes management page
+            ├── (authenticated)/    # Authenticated (owner-only) pages
+            │   ├── articles/       # Articles management page (viewer/ = エクスポート済み閲覧ビュー)
+            │   ├── books/          # Books management page (viewer/, [slug]/)
+            │   ├── images/         # Images management page (viewer/)
+            │   ├── notes/          # Notes management page (viewer/, [slug]/)
+            │   └── error/          # Error page
             ├── book/[slug]/        # Book detail page
-            ├── note/[slug]/        # Note detail page
-            └── error/              # Error page
+            └── note/[slug]/        # Note detail page
 ```
 
 #### Domain Boundaries
@@ -206,7 +206,7 @@ Each domain is completely isolated with its own:
 #### Next.js App Router Features
 
 - **Internationalization**: All routes support `[locale]` pattern for English/Japanese
-- **Route Groups**: `(dumper)` route group for content management pages
+- **Route Groups**: `(authenticated)` route group for owner-only content management pages
 - **Server Actions**: All mutations use Next.js server actions with error boundary wrapping
 
 ### RAG & Search Architecture
@@ -264,7 +264,7 @@ Schema location: `packages/database/prisma/schema.prisma`
 ### Key Architectural Patterns
 
 - **Server Actions**: All mutations wrapped with `wrapServerSideErrorForClient`
-- **Role-based Authorization**: `viewer`/`dumper` roles via Auth0 + NextAuth.js
+- **Authentication-only Authorization**: ログイン＝オーナー本人＝全操作可（ロールによる権限区別は廃止）。Auth0 + NextAuth.js で認証し、Server Actionは冒頭で `requireAuth()` を呼ぶ
 - **Error Handling**: Custom error classes with Pushover notifications and Sentry monitoring
 - **Input Validation**: Zod schemas for all form and API input validation
 - **Type Safety**: End-to-end TypeScript with runtime validation

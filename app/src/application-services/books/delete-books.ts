@@ -7,9 +7,8 @@
 "use server";
 import "server-only";
 import type { ServerAction } from "@/common/types";
-import { hasDumperPostPermission } from "@/common/auth/session";
+import { requireAuth } from "@/common/auth/session";
 import { makeId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { forbidden } from "next/navigation";
 import { deleteBooksCore } from "./delete-books.core";
 import { defaultDeleteBooksDeps } from "./delete-books.deps";
 
@@ -26,8 +25,7 @@ import { defaultDeleteBooksDeps } from "./delete-books.deps";
  * @returns Server action result with success/failure status
  */
 export async function deleteBooks(rawId: string): Promise<ServerAction> {
-	const hasPermission = await hasDumperPostPermission();
-	if (!hasPermission) forbidden();
+	await requireAuth();
 
 	const id = makeId(rawId);
 
