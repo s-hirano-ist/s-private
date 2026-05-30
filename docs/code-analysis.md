@@ -106,7 +106,7 @@ pnpm deps:circular   # 循環依存の検出（テキスト出力）
 pnpm deps:graph      # 依存関係グラフをmermaidとして出力（dependency-graph.md）
 ```
 
-`deps:graph`はmermaid形式で出力するためGraphviz不要。生成物（`dependency-graph.md`）はコミットせず、必要時にローカル生成してVS Code・GitHub上でネイティブ描画する。
+`deps:graph`はmermaid形式で出力するためGraphviz不要。生成物（`dependency-graph.md`）は**アーキテクチャ図としてコミット管理**し、GitHub・VS Code上でネイティブ描画する。月次で自動再生成されるため（CI連携を参照）、ローカルでは構成変更時に`pnpm deps:graph`で更新する。
 
 グラフは「Clean Architectureの層境界・cross-domain禁止が守られているか」を一目で確認する用途のため、**層×ドメイン単位**まで粗く集約している:
 
@@ -116,6 +116,7 @@ pnpm deps:graph      # 依存関係グラフをmermaidとして出力（dependen
 ### CI連携
 
 - **PR時**: [`depcruise.yaml`](../.github/workflows/depcruise.yaml) — [dependency-cruiser-report-action](https://github.com/MH4GF/dependency-cruiser-report-action)を使用し、依存関係分析レポートをPRコメントとして投稿
+- **月次レポート**: [`update-reports.yaml`](../.github/workflows/update-reports.yaml) — 毎月1日に`dependency-graph.md`を再生成し、自動更新PRを作成
 
 
 ## Lint/Format: ESLint → oxlint、Biome → oxfmt 移行（2026-05）
