@@ -5,6 +5,8 @@
  * Implements the singleton pattern to prevent multiple Prisma instances
  * in development hot-reload. Includes:
  * - Query timing logs for performance monitoring
+ * - Production error events routed to Sentry
+ * - Minimal error format in production to avoid leaking query bodies / params
  *
  * @see {@link https://www.prisma.io/docs/orm/more/help-and-troubleshooting/help-articles/nextjs-prisma-client-dev-practices | Prisma Next.js Best Practices}
  *
@@ -12,14 +14,20 @@
  */
 
 import { PrismaClient, PrismaPg } from "@s-hirano-ist/s-database";
+import * as Sentry from "@sentry/nextjs";
 import { env } from "@/env";
+
+const isProduction = env.NODE_ENV === "production";
 
 /**
  * Creates a configured Prisma client instance.
  *
  * @remarks
- * Extends the base client with:
- * - Query timing middleware for all operations
+ * - `errorFormat: "minimal"` in production prevents query bodies and parameters
+ *   from being included in error stack traces (which would otherwise be indexed
+ *   by Sentry / Vercel logs).
+ * - `log: [{ emit: "event", level: "error" }]` routes Prisma errors to Sentry
+ *   without writing them to stdout.
  *
  * @internal
  */
@@ -31,6 +39,22 @@ const prismaClientSingleton = () => {
 			idleTimeoutMillis: 30_000,
 			connectionTimeoutMillis: 10_000,
 		}),
+		errorFormat: isProduction ? "minimal" : "pretty",
+		log: [{ emit: "event", level: "error" }],
+	});
+
+	client.$on("error", (event) => {
+		if (isProduction) {
+			Sentry.captureException(new Error(event.message), {
+				tags: { source: "prisma" },
+				extra: { target: event.target, timestamp: event.timestamp },
+			});
+		} else {
+			console.error(
+				`[prisma error] ${event.target}: ${event.message}`,
+				event.timestamp,
+			);
+		}
 	});
 
 	return client.$extends({
@@ -39,7 +63,9 @@ const prismaClientSingleton = () => {
 				const start = Date.now();
 				const result = await query(args);
 				const duration = Date.now() - start;
-				console.log(`[${model}.${operation}] took ${duration}ms`);
+				if (!isProduction) {
+					console.log(`[${model}.${operation}] took ${duration}ms`);
+				}
 				return result;
 			},
 		},
