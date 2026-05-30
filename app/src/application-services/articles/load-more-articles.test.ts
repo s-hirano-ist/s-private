@@ -1,6 +1,5 @@
-import { hasViewerAdminPermission } from "@/common/auth/session";
+import { requireAuth } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
-import { forbidden } from "next/navigation";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getExportedArticles, getUnexportedArticles } from "./get-articles";
 import {
@@ -8,13 +7,11 @@ import {
 	loadMoreUnexportedArticles,
 } from "./load-more-articles";
 
-vi.mock("next/navigation");
 vi.mock("@/common/auth/session");
 vi.mock("@/common/error/error-wrapper");
 vi.mock("./get-articles");
 
-const mockHasViewerAdminPermission = vi.mocked(hasViewerAdminPermission);
-const mockForbidden = vi.mocked(forbidden);
+const mockRequireAuth = vi.mocked(requireAuth);
 const mockWrapServerSideErrorForClient = vi.mocked(
 	wrapServerSideErrorForClient,
 );
@@ -27,16 +24,16 @@ describe("load-more-articles", () => {
 	});
 
 	describe("loadMoreExportedArticles", () => {
-		test("should return success result when user has permission", async () => {
+		test("should return success result when authenticated", async () => {
 			const mockData = { data: [], totalCount: 10 };
 			const currentCount = 5;
 
-			mockHasViewerAdminPermission.mockResolvedValue(true);
+			mockRequireAuth.mockResolvedValue(undefined);
 			mockGetExportedArticles.mockResolvedValue(mockData);
 
 			const result = await loadMoreExportedArticles(currentCount);
 
-			expect(mockHasViewerAdminPermission).toHaveBeenCalledOnce();
+			expect(mockRequireAuth).toHaveBeenCalledOnce();
 			expect(mockGetExportedArticles).toHaveBeenCalledWith(currentCount);
 			expect(result).toEqual({
 				success: true,
@@ -44,25 +41,11 @@ describe("load-more-articles", () => {
 				data: mockData,
 			});
 		});
-
-		test("should call forbidden when user has no permission", async () => {
-			mockHasViewerAdminPermission.mockResolvedValue(false);
-			mockForbidden.mockImplementation(() => {
-				throw new Error("FORBIDDEN");
-			});
-
-			await expect(loadMoreExportedArticles(5)).rejects.toThrow("FORBIDDEN");
-
-			expect(mockHasViewerAdminPermission).toHaveBeenCalledOnce();
-			expect(mockForbidden).toHaveBeenCalledOnce();
-			expect(mockGetExportedArticles).not.toHaveBeenCalled();
-		});
-
 		test("should handle error and wrap it", async () => {
 			const error = new Error("Database error");
 			const wrappedError = { success: false, message: "error" };
 
-			mockHasViewerAdminPermission.mockResolvedValue(true);
+			mockRequireAuth.mockResolvedValue(undefined);
 			mockGetExportedArticles.mockRejectedValue(error);
 			mockWrapServerSideErrorForClient.mockResolvedValue(wrappedError);
 
@@ -74,16 +57,16 @@ describe("load-more-articles", () => {
 	});
 
 	describe("loadMoreUnexportedArticles", () => {
-		test("should return success result when user has permission", async () => {
+		test("should return success result when authenticated", async () => {
 			const mockData = { data: [], totalCount: 8 };
 			const currentCount = 3;
 
-			mockHasViewerAdminPermission.mockResolvedValue(true);
+			mockRequireAuth.mockResolvedValue(undefined);
 			mockGetUnexportedArticles.mockResolvedValue(mockData);
 
 			const result = await loadMoreUnexportedArticles(currentCount);
 
-			expect(mockHasViewerAdminPermission).toHaveBeenCalledOnce();
+			expect(mockRequireAuth).toHaveBeenCalledOnce();
 			expect(mockGetUnexportedArticles).toHaveBeenCalledWith(currentCount);
 			expect(result).toEqual({
 				success: true,
@@ -91,25 +74,11 @@ describe("load-more-articles", () => {
 				data: mockData,
 			});
 		});
-
-		test("should call forbidden when user has no permission", async () => {
-			mockHasViewerAdminPermission.mockResolvedValue(false);
-			mockForbidden.mockImplementation(() => {
-				throw new Error("FORBIDDEN");
-			});
-
-			await expect(loadMoreUnexportedArticles(3)).rejects.toThrow("FORBIDDEN");
-
-			expect(mockHasViewerAdminPermission).toHaveBeenCalledOnce();
-			expect(mockForbidden).toHaveBeenCalledOnce();
-			expect(mockGetUnexportedArticles).not.toHaveBeenCalled();
-		});
-
 		test("should handle error and wrap it", async () => {
 			const error = new Error("Network error");
 			const wrappedError = { success: false, message: "networkError" };
 
-			mockHasViewerAdminPermission.mockResolvedValue(true);
+			mockRequireAuth.mockResolvedValue(undefined);
 			mockGetUnexportedArticles.mockRejectedValue(error);
 			mockWrapServerSideErrorForClient.mockResolvedValue(wrappedError);
 

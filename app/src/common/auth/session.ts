@@ -2,8 +2,9 @@
  * Session and authentication utilities.
  *
  * @remarks
- * Provides server-side authentication checks and role-based permissions.
- * All functions throw unauthorized() if session is invalid.
+ * Provides server-side authentication checks. Authentication is the only
+ * authorization gate: a signed-in user is the owner and may perform any
+ * operation. All functions throw unauthorized() if the session is invalid.
  *
  * @module
  */
@@ -55,31 +56,15 @@ export async function getSelfId(): Promise<UserId> {
 }
 
 /**
- * Gets the current user's roles.
+ * Ensures the current request is authenticated.
  *
- * @internal
- */
-async function getSelfRoles() {
-	const { user } = await checkSelfAuth();
-	return user.roles;
-}
-
-/**
- * Checks if the current user has viewer admin permission.
+ * @remarks
+ * The only authorization gate in the app: a signed-in user is the owner and
+ * may perform any operation. Use this at server-action / page boundaries that
+ * do not otherwise need the user ID.
  *
- * @returns True if user has the "viewer" role
+ * @throws Redirects to unauthorized page if not authenticated
  */
-export async function hasViewerAdminPermission() {
-	const roles = await getSelfRoles();
-	return roles.includes("viewer");
-}
-
-/**
- * Checks if the current user has dumper post permission.
- *
- * @returns True if user has the "dumper" role
- */
-export async function hasDumperPostPermission() {
-	const roles = await getSelfRoles();
-	return roles.includes("dumper");
+export async function requireAuth(): Promise<void> {
+	await checkSelfAuth();
 }

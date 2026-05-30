@@ -7,8 +7,7 @@
 "use server";
 import "server-only";
 import type { ServerAction } from "@/common/types";
-import { hasDumperPostPermission } from "@/common/auth/session";
-import { forbidden } from "next/navigation";
+import { requireAuth } from "@/common/auth/session";
 import { addArticleCore } from "./add-article.core";
 import { defaultAddArticleDeps } from "./add-article.deps";
 
@@ -23,8 +22,7 @@ import { defaultAddArticleDeps } from "./add-article.deps";
  * @returns Server action result with success/failure status
  */
 export async function addArticle(formData: FormData): Promise<ServerAction> {
-	const hasPermission = await hasDumperPostPermission();
-	if (!hasPermission) forbidden();
+	await requireAuth();
 
 	return addArticleCore(formData, defaultAddArticleDeps);
 }

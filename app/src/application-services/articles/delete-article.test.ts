@@ -1,6 +1,6 @@
 import type { DeleteArticleDeps } from "./delete-article.deps";
 import type { IArticlesCommandRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-command-repository.interface";
-import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
+import { getSelfId, requireAuth } from "@/common/auth/session";
 import { makeArticleTitle } from "@s-hirano-ist/s-core/articles/entities/article-entity";
 import {
 	makeId,
@@ -14,7 +14,7 @@ import { deleteArticleCore } from "./delete-article.core";
 // Minimal mocks - only for auth
 vi.mock("@/common/auth/session", () => ({
 	getSelfId: vi.fn(),
-	hasDumperPostPermission: vi.fn(),
+	requireAuth: vi.fn(),
 }));
 
 /**
@@ -109,21 +109,14 @@ describe("deleteArticle (Server Action)", () => {
 		vi.clearAllMocks();
 	});
 
-	test("should call forbidden when user lacks permission", async () => {
-		vi.mocked(hasDumperPostPermission).mockResolvedValue(false);
-
-		const testId = "01234567-89ab-7def-8123-456789abcde1";
-		await expect(deleteArticle(testId)).rejects.toThrow("FORBIDDEN");
-	});
-
-	test("should call deleteArticleCore with default deps when permitted", async () => {
-		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+	test("should call deleteArticleCore with default deps when authenticated", async () => {
+		vi.mocked(requireAuth).mockResolvedValue(undefined);
 		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
 
 		const testId = "01234567-89ab-7def-8123-456789abcdef";
 		const result = await deleteArticle(testId);
 
-		expect(hasDumperPostPermission).toHaveBeenCalled();
+		expect(requireAuth).toHaveBeenCalled();
 		expect(result.success).toBe(false);
 	});
 });

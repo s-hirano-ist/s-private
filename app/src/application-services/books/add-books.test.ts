@@ -1,7 +1,7 @@
 import type { AddBooksDeps } from "./add-books.deps";
 import type { IBooksCommandRepository } from "@s-hirano-ist/s-core/books/repositories/books-command-repository.interface";
 import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/services/storage-service.interface";
-import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
+import { getSelfId, requireAuth } from "@/common/auth/session";
 import {
 	bookEntity,
 	makeBookTitle,
@@ -28,7 +28,7 @@ import { parseAddBooksFormData } from "./helpers/form-data-parser";
 
 vi.mock("@/common/auth/session", () => ({
 	getSelfId: vi.fn(),
-	hasDumperPostPermission: vi.fn(),
+	requireAuth: vi.fn(),
 }));
 
 vi.mock("./helpers/form-data-parser", () => ({
@@ -215,14 +215,8 @@ describe("addBooks (Server Action)", () => {
 		vi.clearAllMocks();
 	});
 
-	test("should return forbidden when user doesn't have permission", async () => {
-		vi.mocked(hasDumperPostPermission).mockResolvedValue(false);
-
-		await expect(addBooks(mockFormData)).rejects.toThrow("FORBIDDEN");
-	});
-
-	test("should call addBooksCore with default deps when permitted", async () => {
-		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+	test("should call addBooksCore with default deps when authenticated", async () => {
+		vi.mocked(requireAuth).mockResolvedValue(undefined);
 		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
 		vi.mocked(parseAddBooksFormData).mockResolvedValue({
 			isbn: makeISBN("978-4-06-519981-0"),
@@ -240,7 +234,7 @@ describe("addBooks (Server Action)", () => {
 
 		const result = await addBooks(mockFormData);
 
-		expect(hasDumperPostPermission).toHaveBeenCalled();
+		expect(requireAuth).toHaveBeenCalled();
 		expect(result.success).toBe(false);
 	});
 });

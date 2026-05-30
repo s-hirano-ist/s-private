@@ -7,8 +7,7 @@
 "use server";
 import "server-only";
 import type { ServerAction } from "@/common/types";
-import { hasDumperPostPermission } from "@/common/auth/session";
-import { forbidden } from "next/navigation";
+import { requireAuth } from "@/common/auth/session";
 import { addBooksCore } from "./add-books.core";
 import { defaultAddBooksDeps } from "./add-books.deps";
 
@@ -26,8 +25,7 @@ import { defaultAddBooksDeps } from "./add-books.deps";
  * @returns Server action result with success/failure status
  */
 export async function addBooks(formData: FormData): Promise<ServerAction> {
-	const hasPermission = await hasDumperPostPermission();
-	if (!hasPermission) forbidden();
+	await requireAuth();
 
 	return addBooksCore(formData, defaultAddBooksDeps);
 }

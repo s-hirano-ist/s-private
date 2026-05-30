@@ -1,6 +1,6 @@
 import type { DeleteNoteDeps } from "./delete-note.deps";
 import type { INotesCommandRepository } from "@s-hirano-ist/s-core/notes/repositories/notes-command-repository.interface";
-import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
+import { getSelfId, requireAuth } from "@/common/auth/session";
 import { makeNoteTitle } from "@s-hirano-ist/s-core/notes/entities/note-entity";
 import {
 	makeId,
@@ -13,7 +13,7 @@ import { deleteNoteCore } from "./delete-note.core";
 
 vi.mock("@/common/auth/session", () => ({
 	getSelfId: vi.fn(),
-	hasDumperPostPermission: vi.fn(),
+	requireAuth: vi.fn(),
 }));
 
 function createMockDeps(): {
@@ -104,22 +104,14 @@ describe("deleteNote (Server Action)", () => {
 		vi.clearAllMocks();
 	});
 
-	test("should call forbidden when user lacks permission", async () => {
-		vi.mocked(hasDumperPostPermission).mockResolvedValue(false);
-
-		const testId = "01234567-89ab-7def-8123-456789abcde1";
-
-		await expect(deleteNote(testId)).rejects.toThrow("FORBIDDEN");
-	});
-
-	test("should call deleteNoteCore with default deps when permitted", async () => {
-		vi.mocked(hasDumperPostPermission).mockResolvedValue(true);
+	test("should call deleteNoteCore with default deps when authenticated", async () => {
+		vi.mocked(requireAuth).mockResolvedValue(undefined);
 		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
 
 		const testId = "01234567-89ab-7def-8123-456789abcdef";
 		const result = await deleteNote(testId);
 
-		expect(hasDumperPostPermission).toHaveBeenCalled();
+		expect(requireAuth).toHaveBeenCalled();
 		expect(result.success).toBe(false);
 	});
 });

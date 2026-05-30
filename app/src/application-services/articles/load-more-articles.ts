@@ -2,17 +2,15 @@
 import "server-only";
 import type { ServerActionWithData } from "@/common/types";
 import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
-import { hasViewerAdminPermission } from "@/common/auth/session";
+import { requireAuth } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import { paginationCountSchema } from "@s-hirano-ist/s-core/shared-kernel/types/query-options";
-import { forbidden } from "next/navigation";
 import { getExportedArticles, getUnexportedArticles } from "./get-articles";
 
 export async function loadMoreExportedArticles(
 	rawCurrentCount: unknown,
 ): Promise<ServerActionWithData<LinkCardStackInitialData>> {
-	const hasPermission = await hasViewerAdminPermission();
-	if (!hasPermission) forbidden();
+	await requireAuth();
 
 	try {
 		const currentCount = paginationCountSchema.parse(rawCurrentCount);
@@ -31,8 +29,7 @@ export async function loadMoreExportedArticles(
 export async function loadMoreUnexportedArticles(
 	rawCurrentCount: unknown,
 ): Promise<ServerActionWithData<LinkCardStackInitialData>> {
-	const hasPermission = await hasViewerAdminPermission();
-	if (!hasPermission) forbidden();
+	await requireAuth();
 
 	try {
 		const currentCount = paginationCountSchema.parse(rawCurrentCount);

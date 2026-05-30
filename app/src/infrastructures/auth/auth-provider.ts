@@ -3,18 +3,13 @@ import { UnexpectedError } from "@s-hirano-ist/s-core/shared-kernel/errors/error
 import NextAuth, { type DefaultSession } from "next-auth";
 import authConfig from "./auth-config";
 
-type Role = "viewer" | "dumper";
 type Id = string;
 
 declare module "next-auth" {
 	interface Session extends DefaultSession {
 		user: {
 			id: Id;
-			roles: Role[];
 		} & DefaultSession["user"];
-	}
-	interface User {
-		roles: Role[];
 	}
 }
 
@@ -31,8 +26,6 @@ export const {
 	callbacks: {
 		jwt({ account, token, profile }) {
 			if (account && profile) {
-				const namespace = "https://private.s-hirano.com/";
-				token.roles = profile[`${namespace}roles`] || [];
 				token.id = profile.sub;
 			}
 			return token;
@@ -42,7 +35,6 @@ export const {
 			if (token) {
 				if (!token.id) throw new UnexpectedError();
 				session.user.id = token.id as Id;
-				session.user.roles = token.roles as Role[];
 			}
 			return session;
 		},

@@ -4,24 +4,15 @@ import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
 import { SystemErrorEvent } from "@s-hirano-ist/s-core/shared-kernel/events/system-error-event";
 import { StatusCodeView } from "@s-hirano-ist/s-ui/display/status/status-code-view";
 import { getTranslations } from "next-intl/server";
-import { forbidden, unstable_rethrow } from "next/navigation";
+import { unstable_rethrow } from "next/navigation";
 
 type Props = {
 	render: () => Promise<ReactNode>;
-	permissionCheck: () => Promise<boolean>;
 	errorCaller: string;
 	fallback?: ReactNode;
 };
 
-export async function ErrorPermissionBoundary({
-	render,
-	permissionCheck,
-	errorCaller,
-	fallback,
-}: Props) {
-	const hasPermission = await permissionCheck();
-	if (!hasPermission) forbidden();
-
+export async function ErrorBoundary({ render, errorCaller, fallback }: Props) {
 	const t = await getTranslations("statusCode");
 
 	try {

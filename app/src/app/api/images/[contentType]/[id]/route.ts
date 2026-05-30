@@ -1,7 +1,6 @@
 import { getImagesFromStorage } from "@/application-services/images/get-images";
 import { getContentTypeFromPath } from "@/common/utils/content-type-utils";
 import { auth } from "@/infrastructures/auth/auth-provider";
-import { forbidden } from "next/navigation";
 import { NextResponse } from "next/server";
 import { Readable } from "node:stream";
 
@@ -14,8 +13,6 @@ export const GET = auth(
 
 		if (!request.auth)
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-		if (!request.auth.user.roles.includes("viewer")) forbidden();
 
 		const isThumbnail = contentType === "thumbnail";
 		const nodeStream = await getImagesFromStorage(id, isThumbnail);

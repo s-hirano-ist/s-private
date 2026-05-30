@@ -2,17 +2,15 @@
 import "server-only";
 import type { ServerActionWithData } from "@/common/types";
 import type { ImageCardStackInitialData } from "@/components/common/layouts/cards/types";
-import { hasViewerAdminPermission } from "@/common/auth/session";
+import { requireAuth } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import { paginationCountSchema } from "@s-hirano-ist/s-core/shared-kernel/types/query-options";
-import { forbidden } from "next/navigation";
 import { getExportedBooks, getUnexportedBooks } from "./get-books";
 
 export async function loadMoreExportedBooks(
 	rawCurrentCount: unknown,
 ): Promise<ServerActionWithData<ImageCardStackInitialData>> {
-	const hasPermission = await hasViewerAdminPermission();
-	if (!hasPermission) forbidden();
+	await requireAuth();
 
 	try {
 		const currentCount = paginationCountSchema.parse(rawCurrentCount);
@@ -31,8 +29,7 @@ export async function loadMoreExportedBooks(
 export async function loadMoreUnexportedBooks(
 	rawCurrentCount: unknown,
 ): Promise<ServerActionWithData<ImageCardStackInitialData>> {
-	const hasPermission = await hasViewerAdminPermission();
-	if (!hasPermission) forbidden();
+	await requireAuth();
 
 	try {
 		const currentCount = paginationCountSchema.parse(rawCurrentCount);

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { getBookByISBN } from "@/application-services/books/get-books";
-import { hasViewerAdminPermission } from "@/common/auth/session";
+import { requireAuth } from "@/common/auth/session";
 import { PAGE_NAME } from "@/common/constants";
 import { ViewerBody } from "@/components/books/server/viewer-body";
-import { ErrorPermissionBoundary } from "@/components/common/layouts/error-permission-boundary";
+import { ErrorBoundary } from "@/components/common/layouts/error-boundary";
 import Loading from "@s-hirano-ist/s-ui/display/loading";
 import { Suspense } from "react";
 
@@ -23,13 +23,14 @@ export async function generateMetadata({
 }
 
 export default async function Page({ params }: { params: Params }) {
+	await requireAuth();
+
 	const { slug } = await params;
 
 	return (
 		<Suspense fallback={<Loading />}>
-			<ErrorPermissionBoundary
+			<ErrorBoundary
 				errorCaller="BooksViewerBody"
-				permissionCheck={hasViewerAdminPermission}
 				render={() => ViewerBody({ getBookByISBN, slug })}
 			/>
 		</Suspense>
