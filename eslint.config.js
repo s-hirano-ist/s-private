@@ -166,6 +166,19 @@ export default defineConfig(
 			"@typescript-eslint/consistent-type-definitions": "off",
 			"@typescript-eslint/consistent-indexed-object-style": "off",
 			"@typescript-eslint/consistent-type-assertions": "off",
+
+			// Prisma の Raw SQL Unsafe バリアントを恒久禁止。
+			// SQL injection 面積をゼロに保つため、生 SQL は Prisma.sql タグ付きテンプレート
+			// 経由の $queryRaw / $executeRaw のみを許可する。
+			"no-restricted-syntax": [
+				"error",
+				{
+					selector:
+						"MemberExpression[property.name=/^\\$(query|execute)RawUnsafe$/]",
+					message:
+						"Use Prisma.sql tagged templates with $queryRaw/$executeRaw, or model methods. Raw SQL via *Unsafe variants is forbidden.",
+				},
+			],
 		},
 	},
 
