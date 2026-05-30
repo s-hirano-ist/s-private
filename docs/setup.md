@@ -75,21 +75,24 @@ CockroachDB Cloud Basic は接続プーリングが内蔵で、Supabase の Supa
 
 > ⚠️ **重要**: CockroachDB v26.1 以降は `sql.defaults.create_table_with_schema_locked = true` がデフォルトで、新規テーブルがロック状態で作られます。Prisma はマイグレーションファイル全体を **1トランザクション** で流すため、`CREATE TABLE` 直後の `CREATE INDEX` / `ALTER TABLE ADD FOREIGN KEY` が「table is locked」(`P3018` / SQLSTATE `57000`) で失敗します。
 
-対応（いずれか。本リポジトリは方法1を採用）:
+対応: **マイグレーション SQL の各 `CREATE TABLE` に `WITH (schema_locked = false)` を付与**する（設定権限に依存せず確実）。初期 baseline (`0_init`) は対応済み。後述の diff フローで新規テーブルを追加するときも必ず付与してください（既存テーブルへの `ALTER` は、そのテーブルが unlocked で作られていれば不要）。
 
-1. **マイグレーション SQL の各 `CREATE TABLE` に `WITH (schema_locked = false)` を付与**（設定権限に依存せず確実）。`prisma migrate diff` 生成後に手動で付与します。初期 baseline (`0_init`) は対応済み。
-2. migrate 用ロールに `ALTER ROLE <user> SET create_table_with_schema_locked = false;` を一度設定（権限があれば、以後 `prisma migrate dev` は無加工で動く）。
+### マイグレーションの運用（重要: `migrate dev` は封印）
 
-**新しいマイグレーションを追加するとき** (`pnpm --filter s-database prisma:migrate`)、生成された `migration.sql` の新規 `CREATE TABLE` に `WITH (schema_locked = false)` を必ず追記してください（既存テーブルへの `ALTER` は、そのテーブルが unlocked で作られていれば追記不要）。
+> ⚠️ **クラウド（dev-db / staging / prod）には `prisma migrate deploy` のみを使い、`prisma migrate dev` は使いません。**
+> CockroachDB Cloud は単一リージョンでも multi-region メタデータ enum `crdb_internal_region` を保持し、`migrate dev` / `migrate status` がこれを schema drift と誤検出して `DROP TYPE` を試み、`P3018` / `2BP01` で失敗します（[prisma#25696](https://github.com/prisma/prisma/issues/25696)）。`migrate deploy` は drift を見ないため影響を受けません。`prisma:migrate` には `DATABASE_URL` が localhost 以外なら停止するガードを設定済みです。
 
-### ローカル dev 環境
+**ローカル開発はクラウドの dev-db クラスタに直結**します（ローカル DB は不要）。新しい migration は **DB 不要の diff フロー**で生成します:
 
-ローカルは `compose.yaml` の単一ノード CockroachDB (insecure) を使います:
+1. `packages/database/prisma/schema.prisma` を編集
+2. 差分 SQL を生成（`prisma migrate diff` は DB 接続不要）:
+   ```bash
+   mkdir -p "prisma/migrations/$(date +%Y%m%d%H%M%S)_<name>"
+   pnpm --filter s-database prisma:migrate:diff -o "prisma/migrations/<dir>/migration.sql"
+   ```
+3. 生成 SQL の**新規 `CREATE TABLE` に `WITH (schema_locked = false)` を付与**
+4. コミット → クラウドへ `pnpm --filter s-database prisma:deploy`
 
-```bash
-docker compose up -d --wait cockroachdb
-# DATABASE_URL=postgresql://root@localhost:26257/defaultdb?sslmode=disable
-pnpm --filter s-database prisma:deploy   # マイグレーション適用
-```
-
-個人ごとにクラウド環境が欲しい場合は [CockroachDB Cloud](https://cockroachlabs.cloud/) で Basic クラスタを作成し、接続文字列を Doppler の personal config に設定します。
+> `compose.yaml` の単一ノード CockroachDB (insecure) は **任意の migration 検証用**に残してあります。
+> 使う場合は `DATABASE_URL=postgresql://root@localhost:26257/defaultdb?sslmode=disable` を向けて
+> `prisma:deploy` で適用します（localhost なら `migrate dev` も可）。

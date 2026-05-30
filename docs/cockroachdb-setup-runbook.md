@@ -36,18 +36,25 @@ CockroachDB Cloud Basic への移行を完了するために**ユーザーが手
 - **GitHub Secrets**: `PRODUCTION_DIRECT_URL`（[.github/workflows/prisma-deploy.yaml](../.github/workflows/prisma-deploy.yaml) が使用）を **prod クラスタ**の接続文字列に設定。
   - secret 名はそのまま流用可。`PRODUCTION_DATABASE_URL` 等にリネームしたい場合は prisma-deploy.yaml も合わせて修正する。
 
-## 4. スキーマ適用（migrate deploy）
+## 4. スキーマ適用（migrate deploy のみ）
+
+> 🚫 **クラウドに対して `pnpm prisma:migrate`（= `migrate dev`）を実行しないでください。**
+> CockroachDB Cloud の multi-region メタデータ `crdb_internal_region` を drift と誤検出し
+> `P3018` / `2BP01` で失敗します。`prisma:migrate` には localhost 以外を弾くガードを設定済みです。
+> クラウドへの適用は必ず **`prisma:deploy`** を使います。
 
 - **本番**: PR #2335 をマージすると、`packages/database/prisma/migrations/**` の変更を検知して
   [prisma-deploy.yaml](../.github/workflows/prisma-deploy.yaml) が自動で `migrate deploy` を実行する。
-- **staging**（手動）:
+- **dev-db / staging**（手動）:
   ```bash
-  DATABASE_URL="<staging 接続文字列>" pnpm --filter s-database prisma:deploy
+  # env 注入経路（vercel env run -e development / doppler run）で DATABASE_URL を向ける
+  <env注入> -- pnpm --filter s-database prisma:deploy
   ```
 
-> ⚠️ 将来 `prisma migrate dev` で**新しいテーブルを追加**する際は、生成された `migration.sql` の
-> `CREATE TABLE` に必ず `WITH (schema_locked = false)` を付与すること（理由は
-> [docs/setup.md](setup.md) の「CockroachDB v26.1+ の schema_locked」）。
+> ⚠️ 将来テーブルを追加する際は、**DB 不要の diff フロー**で生成する:
+> 1. `schema.prisma` 編集 → `pnpm --filter s-database prisma:migrate:diff -o prisma/migrations/<dir>/migration.sql`
+> 2. 生成 SQL の新規 `CREATE TABLE` に `WITH (schema_locked = false)` を付与
+> 3. コミット → `prisma:deploy`（理由は [docs/setup.md](setup.md) の schema_locked / migrate dev 封印の節）。
 
 ## 5. データ移行（ETL）
 

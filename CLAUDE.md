@@ -23,7 +23,9 @@ docs/** にはより詳細な設計等のルールが記載されています。
 - `pnpm test` - テスト実行
 - `pnpm lint:fix` - ESLint修正
 - `pnpm check:fix` - Biomeフォーマット
-- `pnpm prisma:migrate` - DBマイグレーション
+- `pnpm prisma:migrate` - DBマイグレーション（**ローカルDB専用**。クラウドへの `migrate dev` は `crdb_internal_region` drift で失敗するためガードで停止する）
+- `pnpm prisma:migrate:diff` - 新規マイグレーションSQL生成（DB不要のdiffフロー）
+- `pnpm prisma:deploy` - マイグレーション適用（クラウドはこちらを使う）
 - `pnpm storybook` - Storybook起動
 
 ## ディレクトリ構造
