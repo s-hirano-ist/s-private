@@ -1,8 +1,7 @@
 import "server-only";
-
+import type { CounterLoaderProps } from "@/loaders/types";
 import { getExportedBooksCount } from "@/application-services/books/get-books";
 import { BooksCounter } from "@/components/books/server/books-counter";
-import type { CounterLoaderProps } from "@/loaders/types";
 
 export type BooksCounterLoaderProps = CounterLoaderProps;
 

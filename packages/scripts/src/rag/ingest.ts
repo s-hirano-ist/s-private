@@ -1,16 +1,16 @@
 #!/usr/bin/env node
-import { readFileSync } from "node:fs";
+import type { ContentType, QdrantPayload } from "@s-hirano-ist/s-search/config";
 import {
 	parseJsonArticle,
 	parseMarkdown,
 } from "@s-hirano-ist/s-search/chunker";
-import type { ContentType, QdrantPayload } from "@s-hirano-ist/s-search/config";
 import { ingestChunks, pruneOrphans } from "@s-hirano-ist/s-search/ingest";
 import {
 	ensureCollection,
 	getCollectionStats,
 } from "@s-hirano-ist/s-search/qdrant-client";
 import { glob } from "glob";
+import { readFileSync } from "node:fs";
 import { INGEST_CONFIG } from "./ingest-config.ts";
 
 type FileInfo = {

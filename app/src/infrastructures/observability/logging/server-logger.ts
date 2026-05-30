@@ -1,8 +1,8 @@
 import "server-only";
+import type { LogContext, Logger, LogOptions } from "./logger.interface";
 import type { NotificationService } from "@s-hirano-ist/s-notification";
 import pino from "pino";
 import { mapStatusToLogLevel } from "./log-level";
-import type { LogContext, Logger, LogOptions } from "./logger.interface";
 
 const pinoConfig = {
 	browser: { asObject: true },

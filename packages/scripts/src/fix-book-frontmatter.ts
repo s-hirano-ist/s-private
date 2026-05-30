@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-import { readFile, writeFile } from "node:fs/promises";
-import { basename, join } from "node:path";
 import { glob } from "glob";
 import matter from "gray-matter";
 import yaml from "js-yaml";
+import { readFile, writeFile } from "node:fs/promises";
+import { basename, join } from "node:path";
 
 const REQUIRED_KEYS = [
 	"heading",

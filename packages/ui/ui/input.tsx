@@ -1,5 +1,4 @@
 import type * as React from "react";
-
 import { cn } from "../utils/cn";
 
 /**
@@ -38,7 +37,7 @@ function Input({ className, type, ref, ...props }: InputProps) {
 	return (
 		<input
 			className={cn(
-				"flex h-9 w-full rounded-md border border-muted bg-transparent px-3 py-1 text-base shadow-xs transition-colors file:border-0 file:bg-transparent file:font-medium file:text-base placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50",
+				"flex h-9 w-full rounded-md border border-muted bg-transparent px-3 py-1 text-base shadow-xs transition-colors file:border-0 file:bg-transparent file:text-base file:font-medium placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-primary focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50",
 				className,
 			)}
 			ref={ref}

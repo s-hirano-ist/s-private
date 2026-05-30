@@ -8,15 +8,15 @@
  */
 
 import "server-only";
+import type { DeleteImageDeps } from "./delete-image.deps";
+import type { ServerAction } from "@/common/types";
+import { getSelfId } from "@/common/auth/session";
+import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import { ImageDeletedEvent } from "@s-hirano-ist/s-core/images/events/image-deleted-event";
 import {
 	type Id,
 	makeUnexportedStatus,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { getSelfId } from "@/common/auth/session";
-import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
-import type { ServerAction } from "@/common/types";
-import type { DeleteImageDeps } from "./delete-image.deps";
 
 /**
  * Core business logic for deleting an image.

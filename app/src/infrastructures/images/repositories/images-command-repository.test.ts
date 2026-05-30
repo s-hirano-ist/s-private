@@ -1,10 +1,11 @@
+import type { Status } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import prisma from "@/prisma";
 import {
 	makeContentType,
 	makeFileSize,
 	makePixel,
 	Path,
 } from "@s-hirano-ist/s-core/images/entities/image-entity";
-import type { Status } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import {
 	makeCreatedAt,
 	makeId,
@@ -12,7 +13,6 @@ import {
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import prisma from "@/prisma";
 import { imagesCommandRepository } from "./images-command-repository";
 
 // Simple path parser for testing (the original makePath generates UUIDs)

@@ -1,9 +1,9 @@
-import Loading from "@s-hirano-ist/s-ui/display/loading";
-import { Suspense } from "react";
 import { hasViewerAdminPermission } from "@/common/auth/session";
 import { ErrorPermissionBoundary } from "@/components/common/layouts/error-permission-boundary";
 import { ImagesCounterLoader } from "@/loaders/images/images-counter-loader";
 import { ImagesStackLoader } from "@/loaders/images/images-stack-loader";
+import Loading from "@s-hirano-ist/s-ui/display/loading";
+import { Suspense } from "react";
 
 type Params = Promise<{ page?: string }>;
 

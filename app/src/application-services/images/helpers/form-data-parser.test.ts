@@ -1,3 +1,5 @@
+import { getFormDataFile } from "@/common/utils/form-data-utils";
+import { sharpImageProcessor } from "@/infrastructures/images/services/sharp-image-processor";
 import {
 	type ContentType,
 	type FileSize,
@@ -8,8 +10,6 @@ import {
 } from "@s-hirano-ist/s-core/images/entities/image-entity";
 import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { getFormDataFile } from "@/common/utils/form-data-utils";
-import { sharpImageProcessor } from "@/infrastructures/images/services/sharp-image-processor";
 import { parseAddImageFormData } from "./form-data-parser";
 
 vi.mock("@/common/utils/form-data-utils");

@@ -1,7 +1,7 @@
-import { ViewerBodyClient } from "@s-hirano-ist/s-ui/layouts/body/viewer-body";
-import { notFound } from "next/navigation";
 import type { getNoteByTitle } from "@/application-services/notes/get-notes";
 import { BackButton } from "@/components/common/back-button";
+import { ViewerBodyClient } from "@s-hirano-ist/s-ui/layouts/body/viewer-body";
+import { notFound } from "next/navigation";
 
 export type Props = {
 	slug: string;

@@ -1,7 +1,7 @@
 "use client";
+import { Link } from "@/infrastructures/i18n/routing";
 import { cn } from "@s-hirano-ist/s-ui/utils/cn";
 import { useSelectedLayoutSegments } from "next/navigation";
-import { Link } from "@/infrastructures/i18n/routing";
 
 const TABS = {
 	articles: "ARTICLES",
@@ -16,7 +16,7 @@ export function TabNav() {
 	const isViewer = segments.includes("viewer");
 
 	return (
-		<nav className="inline-flex h-10 w-full items-center justify-center border-muted border-b p-1 text-muted-foreground">
+		<nav className="inline-flex h-10 w-full items-center justify-center border-b border-muted p-1 text-muted-foreground">
 			{Object.entries(TABS).map(([key, label]) => {
 				const isActive = activeTab === key;
 				const href = isViewer
@@ -26,7 +26,7 @@ export function TabNav() {
 				return (
 					<Link
 						className={cn(
-							"inline-flex w-full items-center justify-center whitespace-nowrap border-transparent border-b-2 px-3 py-2 font-medium text-muted-foreground text-sm transition-all duration-200 hover:text-primary/80",
+							"inline-flex w-full items-center justify-center border-b-2 border-transparent px-3 py-2 text-sm font-medium whitespace-nowrap text-muted-foreground transition-all duration-200 hover:text-primary/80",
 							isActive && "border-primary font-bold text-primary",
 						)}
 						href={href}

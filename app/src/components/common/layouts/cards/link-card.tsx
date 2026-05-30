@@ -1,4 +1,8 @@
 "use client";
+import type { LinkCardData } from "./types";
+import type { ReactNode } from "react";
+import { validateAndNormalizeUrl } from "@/components/common/utils/validate-url";
+import { Link } from "@/infrastructures/i18n/routing";
 import { Badge } from "@s-hirano-ist/s-ui/ui/badge";
 import {
 	Card,
@@ -7,10 +11,6 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@s-hirano-ist/s-ui/ui/card";
-import type { ReactNode } from "react";
-import { validateAndNormalizeUrl } from "@/components/common/utils/validate-url";
-import { Link } from "@/infrastructures/i18n/routing";
-import type { LinkCardData } from "./types";
 
 type Props = {
 	data: LinkCardData;

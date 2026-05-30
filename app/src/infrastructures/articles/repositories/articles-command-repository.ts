@@ -1,7 +1,3 @@
-import {
-	makeArticleTitle,
-	type UnexportedArticle,
-} from "@s-hirano-ist/s-core/articles/entities/article-entity";
 import type {
 	DeleteArticleResult,
 	IArticlesCommandRepository,
@@ -11,12 +7,16 @@ import type {
 	Status,
 	UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { updateTag } from "next/cache";
 import {
 	buildContentCacheTag,
 	buildCountCacheTag,
 } from "@/infrastructures/shared/cache/cache-tag-builder";
 import prisma from "@/prisma";
+import {
+	makeArticleTitle,
+	type UnexportedArticle,
+} from "@s-hirano-ist/s-core/articles/entities/article-entity";
+import { updateTag } from "next/cache";
 
 async function create(data: UnexportedArticle): Promise<void> {
 	await prisma.article.create({

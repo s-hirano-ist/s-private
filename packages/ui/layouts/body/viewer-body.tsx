@@ -59,12 +59,13 @@ export async function markdownToReact(markdown: string) {
 		img({ src, alt, ...props }) {
 			if (!alt) {
 				return (
-					// biome-ignore lint/performance/noImgElement: Markdown images have dynamic external URLs
-					// biome-ignore lint/a11y/noRedundantRoles: Explicit presentation role for screenreaders
+					// Markdown images have dynamic external URLs; explicit presentation role for screenreaders
+					// oxlint-disable-next-line nextjs/no-img-element, jsx-a11y/no-redundant-roles
 					<img alt="" role="presentation" src={src} {...props} />
 				);
 			}
-			// biome-ignore lint/performance/noImgElement: Markdown images have dynamic external URLs
+			// Markdown images have dynamic external URLs
+			// oxlint-disable-next-line nextjs/no-img-element
 			return <img alt={alt} src={src} {...props} />;
 		},
 		a({ href, children }) {
@@ -129,7 +130,7 @@ export async function ViewerBodyClient({
 	const content = await markdownToReact(markdown);
 
 	return (
-		<div className="prose prose-sm dark:prose-invert mx-auto max-w-5xl space-y-8 px-4 py-2">
+		<div className="mx-auto prose prose-sm max-w-5xl space-y-8 px-4 py-2 dark:prose-invert">
 			{children}
 			{content}
 		</div>

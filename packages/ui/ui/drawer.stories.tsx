@@ -75,7 +75,7 @@ export const WithContent: Story = {
 					<DrawerDescription>Adjust your preferences below.</DrawerDescription>
 				</DrawerHeader>
 				<div className="p-4">
-					<p className="text-muted-foreground text-sm">
+					<p className="text-sm text-muted-foreground">
 						This is the main content area of the drawer. You can place any
 						content here, including forms, lists, or other UI elements.
 					</p>

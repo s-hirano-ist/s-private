@@ -1,7 +1,3 @@
-import {
-	makeBookTitle,
-	type UnexportedBook,
-} from "@s-hirano-ist/s-core/books/entities/book-entity";
 import type {
 	DeleteBookResult,
 	IBooksCommandRepository,
@@ -11,12 +7,16 @@ import type {
 	Status,
 	UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { updateTag } from "next/cache";
 import {
 	buildContentCacheTag,
 	buildCountCacheTag,
 } from "@/infrastructures/shared/cache/cache-tag-builder";
 import prisma from "@/prisma";
+import {
+	makeBookTitle,
+	type UnexportedBook,
+} from "@s-hirano-ist/s-core/books/entities/book-entity";
+import { updateTag } from "next/cache";
 
 async function create(data: UnexportedBook): Promise<void> {
 	await prisma.book.create({ data });

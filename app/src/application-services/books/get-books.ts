@@ -8,6 +8,17 @@
  * @module
  */
 
+import type { GetCount, GetPaginatedData } from "@/common/types";
+import type { ImageCardStackInitialData } from "@/components/common/layouts/cards/types";
+import { getSelfId } from "@/common/auth/session";
+import { PAGE_SIZE } from "@/common/constants";
+import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
+import {
+	buildContentCacheTag,
+	buildCountCacheTag,
+	buildPaginatedContentCacheTag,
+} from "@/infrastructures/shared/cache/cache-tag-builder";
+import { booksStorageService } from "@/infrastructures/shared/storage/books-storage-service";
 import { makeISBN } from "@s-hirano-ist/s-core/books/entities/book-entity";
 import {
 	makeExportedStatus,
@@ -17,17 +28,6 @@ import {
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { cacheTag } from "next/cache";
 import { cache } from "react";
-import { getSelfId } from "@/common/auth/session";
-import { PAGE_SIZE } from "@/common/constants";
-import type { GetCount, GetPaginatedData } from "@/common/types";
-import type { ImageCardStackInitialData } from "@/components/common/layouts/cards/types";
-import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
-import {
-	buildContentCacheTag,
-	buildCountCacheTag,
-	buildPaginatedContentCacheTag,
-} from "@/infrastructures/shared/cache/cache-tag-builder";
-import { booksStorageService } from "@/infrastructures/shared/storage/books-storage-service";
 
 const API_BOOK_THUMBNAIL_PATH = "/api/books/images/thumbnail";
 

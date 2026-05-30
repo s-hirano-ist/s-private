@@ -2,7 +2,6 @@
 
 import { Drawer as DrawerPrimitive } from "@base-ui/react/drawer";
 import * as React from "react";
-
 import { cn } from "../utils/cn";
 
 /**
@@ -238,7 +237,7 @@ function DrawerDescription({
 }: React.ComponentProps<typeof DrawerPrimitive.Description>) {
 	return (
 		<DrawerPrimitive.Description
-			className={cn("text-muted-foreground text-sm", className)}
+			className={cn("text-sm text-muted-foreground", className)}
 			data-slot="drawer-description"
 			{...props}
 		/>

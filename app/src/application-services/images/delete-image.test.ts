@@ -1,14 +1,14 @@
+import type { DeleteImageDeps } from "./delete-image.deps";
 import type { IImagesCommandRepository } from "@s-hirano-ist/s-core/images/repositories/images-command-repository.interface";
+import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import {
 	makeId,
 	makeUnexportedStatus,
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { deleteImage } from "./delete-image";
 import { deleteImageCore } from "./delete-image.core";
-import type { DeleteImageDeps } from "./delete-image.deps";
 
 vi.mock("@/common/auth/session", () => ({
 	getSelfId: vi.fn(),

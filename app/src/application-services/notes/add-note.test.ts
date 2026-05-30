@@ -1,10 +1,12 @@
+import type { AddNoteDeps } from "./add-note.deps";
+import type { INotesCommandRepository } from "@s-hirano-ist/s-core/notes/repositories/notes-command-repository.interface";
+import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import {
 	makeMarkdown,
 	makeNoteTitle,
 	noteEntity,
 } from "@s-hirano-ist/s-core/notes/entities/note-entity";
 import { NoteCreatedEvent } from "@s-hirano-ist/s-core/notes/events/note-created-event";
-import type { INotesCommandRepository } from "@s-hirano-ist/s-core/notes/repositories/notes-command-repository.interface";
 import {
 	makeCreatedAt,
 	makeId,
@@ -12,10 +14,8 @@ import {
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { addNote } from "./add-note";
 import { addNoteCore } from "./add-note.core";
-import type { AddNoteDeps } from "./add-note.deps";
 import { parseAddNoteFormData } from "./helpers/form-data-parser";
 
 vi.mock("@/common/auth/session", () => ({

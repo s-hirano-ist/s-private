@@ -1,6 +1,4 @@
 #!/usr/bin/env node
-import { readFile } from "node:fs/promises";
-import { basename } from "node:path";
 import {
 	makeExportedStatus,
 	makeId,
@@ -9,6 +7,8 @@ import {
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
 import { glob } from "glob";
+import { readFile } from "node:fs/promises";
+import { basename } from "node:path";
 
 const SCRIPT_NAME = "ingest-notes";
 

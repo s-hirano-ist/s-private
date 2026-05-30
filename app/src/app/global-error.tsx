@@ -1,8 +1,9 @@
 "use client"; // Error components must be Client Components
+// Next.js global-error requires this import pattern - Error type shadows built-in but is necessary for the error boundary interface
+// oxlint-disable-next-line no-shadow-restricted-names
+import type Error from "next/error";
 import { Button } from "@s-hirano-ist/s-ui/ui/button";
 import { captureException } from "@sentry/nextjs";
-// biome-ignore lint/suspicious/noShadowRestrictedNames: Next.js global-error requires this import pattern - Error type shadows built-in but is necessary for the error boundary interface
-import type Error from "next/error";
 import { useEffect } from "react";
 
 export default function Page({

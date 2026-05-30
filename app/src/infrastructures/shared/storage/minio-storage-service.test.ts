@@ -1,6 +1,6 @@
+import { minioClient } from "@/minio";
 import { Readable } from "node:stream";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { minioClient } from "@/minio";
 import { minioStorageService } from "./minio-storage-service";
 
 describe("MinioStorageService", () => {

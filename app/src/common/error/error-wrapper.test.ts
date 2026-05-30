@@ -1,11 +1,11 @@
+import type { ZodError } from "zod";
+import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { UnexpectedError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import { Prisma } from "@s-hirano-ist/s-database";
 import { NotificationError } from "@s-hirano-ist/s-notification";
 import { S3Error } from "@s-hirano-ist/s-storage";
 import { AuthError } from "next-auth";
 import { describe, expect, test, vi } from "vitest";
-import type { ZodError } from "zod";
-import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { wrapServerSideErrorForClient } from "./error-wrapper";
 
 // Mock the event dispatcher

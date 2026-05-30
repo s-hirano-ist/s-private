@@ -1,5 +1,4 @@
 import type * as React from "react";
-
 import { cn } from "../utils/cn";
 
 /**
@@ -51,7 +50,7 @@ export type StatTitleProps = {
 function StatTitle({ className, ref, ...props }: StatTitleProps) {
 	return (
 		<span
-			className={cn("text-muted-foreground text-sm", className)}
+			className={cn("text-sm text-muted-foreground", className)}
 			ref={ref}
 			{...props}
 		/>
@@ -72,7 +71,7 @@ export type StatValueProps = {
 function StatValue({ className, ref, ...props }: StatValueProps) {
 	return (
 		<span
-			className={cn("font-bold text-2xl text-primary", className)}
+			className={cn("text-2xl font-bold text-primary", className)}
 			ref={ref}
 			{...props}
 		/>
@@ -93,7 +92,7 @@ export type StatDescriptionProps = {
 function StatDescription({ className, ref, ...props }: StatDescriptionProps) {
 	return (
 		<span
-			className={cn("text-muted-foreground text-xs", className)}
+			className={cn("text-xs text-muted-foreground", className)}
 			ref={ref}
 			{...props}
 		/>

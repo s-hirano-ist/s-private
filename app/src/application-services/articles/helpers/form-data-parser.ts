@@ -7,14 +7,14 @@
  * @module
  */
 
+import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { getFormDataString } from "@/common/utils/form-data-utils";
 import {
 	makeArticleTitle,
 	makeCategoryName,
 	makeQuote,
 	makeUrl,
 } from "@s-hirano-ist/s-core/articles/entities/article-entity";
-import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { getFormDataString } from "@/common/utils/form-data-utils";
 
 /**
  * Parses article creation form data into domain value objects.

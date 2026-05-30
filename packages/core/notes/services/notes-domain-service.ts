@@ -1,7 +1,7 @@
 import type { UserId } from "../../shared-kernel/entities/common-entity.ts";
-import { DuplicateError } from "../../shared-kernel/errors/error-classes.ts";
 import type { NoteTitle } from "../entities/note-entity.ts";
 import type { INotesQueryRepository } from "../repositories/notes-query-repository.interface.ts";
+import { DuplicateError } from "../../shared-kernel/errors/error-classes.ts";
 
 /**
  * Domain service for Note business logic.

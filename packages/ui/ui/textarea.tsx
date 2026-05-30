@@ -1,5 +1,4 @@
 import type * as React from "react";
-
 import { cn } from "../utils/cn";
 
 /**
@@ -35,7 +34,7 @@ function Textarea({ className, ref, ...props }: TextareaProps) {
 	return (
 		<textarea
 			className={cn(
-				"flex min-h-[60px] w-full rounded-md border border-muted bg-transparent px-3 py-2 text-base shadow-xs placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50",
+				"flex min-h-[60px] w-full rounded-md border border-muted bg-transparent px-3 py-2 text-base shadow-xs placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-primary focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50",
 				className,
 			)}
 			ref={ref}

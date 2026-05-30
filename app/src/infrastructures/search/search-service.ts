@@ -1,6 +1,6 @@
 import type { ContentType, SearchResult } from "@s-hirano-ist/s-search/config";
-import { getQdrantClient, search } from "@s-hirano-ist/s-search/qdrant-client";
 import { env } from "@/env";
+import { getQdrantClient, search } from "@s-hirano-ist/s-search/qdrant-client";
 
 // Initialize Qdrant client with env config
 getQdrantClient({ url: env.QDRANT_URL, apiKey: env.QDRANT_API_KEY });

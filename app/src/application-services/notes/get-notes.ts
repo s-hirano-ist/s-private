@@ -8,6 +8,16 @@
  * @module
  */
 
+import type { GetCount, GetPaginatedData } from "@/common/types";
+import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
+import { getSelfId } from "@/common/auth/session";
+import { PAGE_SIZE } from "@/common/constants";
+import { notesQueryRepository } from "@/infrastructures/notes/repositories/notes-query-repository";
+import {
+	buildContentCacheTag,
+	buildCountCacheTag,
+	buildPaginatedContentCacheTag,
+} from "@/infrastructures/shared/cache/cache-tag-builder";
 import { makeNoteTitle } from "@s-hirano-ist/s-core/notes/entities/note-entity";
 import {
 	makeExportedStatus,
@@ -17,16 +27,6 @@ import {
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { cacheTag } from "next/cache";
 import { cache } from "react";
-import { getSelfId } from "@/common/auth/session";
-import { PAGE_SIZE } from "@/common/constants";
-import type { GetCount, GetPaginatedData } from "@/common/types";
-import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
-import { notesQueryRepository } from "@/infrastructures/notes/repositories/notes-query-repository";
-import {
-	buildContentCacheTag,
-	buildCountCacheTag,
-	buildPaginatedContentCacheTag,
-} from "@/infrastructures/shared/cache/cache-tag-builder";
 
 /**
  * Fetches paginated notes with cache support.

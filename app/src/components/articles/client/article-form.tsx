@@ -1,4 +1,5 @@
 "use client";
+import type { ServerAction } from "@/common/types";
 import { FormDropdownInput } from "@s-hirano-ist/s-ui/forms/fields/form-dropdown-input";
 import { FormInput } from "@s-hirano-ist/s-ui/forms/fields/form-input";
 import { FormInputWithButton } from "@s-hirano-ist/s-ui/forms/fields/form-input-with-button";
@@ -8,7 +9,6 @@ import { ClipboardPasteIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRef } from "react";
 import { toast } from "sonner";
-import type { ServerAction } from "@/common/types";
 
 export type ArticleFormData = { id: string; name: string }[];
 

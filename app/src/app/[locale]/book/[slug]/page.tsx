@@ -1,11 +1,11 @@
-import Loading from "@s-hirano-ist/s-ui/display/loading";
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { getBookByISBN } from "@/application-services/books/get-books";
 import { hasViewerAdminPermission } from "@/common/auth/session";
 import { PAGE_NAME } from "@/common/constants";
 import { ViewerBody } from "@/components/books/server/viewer-body";
 import { ErrorPermissionBoundary } from "@/components/common/layouts/error-permission-boundary";
+import Loading from "@s-hirano-ist/s-ui/display/loading";
+import { Suspense } from "react";
 
 type Params = Promise<{ slug: string }>;
 

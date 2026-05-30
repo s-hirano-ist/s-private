@@ -1,11 +1,11 @@
 "use server";
 import "server-only";
+import type { ServerActionWithData } from "@/common/types";
 import type { UnifiedSearchResults } from "@s-hirano-ist/s-core/shared-kernel/types/search-types";
-import { searchQuerySchema } from "@s-hirano-ist/s-core/shared-kernel/types/search-types";
-import { forbidden } from "next/navigation";
 import { getSelfId, hasViewerAdminPermission } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
-import type { ServerActionWithData } from "@/common/types";
+import { searchQuerySchema } from "@s-hirano-ist/s-core/shared-kernel/types/search-types";
+import { forbidden } from "next/navigation";
 import { searchContent } from "./search-content";
 
 export async function searchContentFromClient(

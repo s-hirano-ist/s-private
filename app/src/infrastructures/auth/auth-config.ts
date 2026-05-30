@@ -8,8 +8,8 @@
  */
 
 import type { NextAuthConfig } from "next-auth";
-import Auth0 from "next-auth/providers/auth0";
 import { env } from "@/env";
+import Auth0 from "next-auth/providers/auth0";
 
 /**
  * NextAuth configuration object.

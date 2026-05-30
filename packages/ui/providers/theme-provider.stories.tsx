@@ -20,7 +20,7 @@ function ThemeProviderWrapper({
 		>
 			{children || (
 				<div className="space-y-4 p-6">
-					<h1 className="font-bold text-2xl">Theme Provider Test</h1>
+					<h1 className="text-2xl font-bold">Theme Provider Test</h1>
 					<p className="text-muted-foreground">
 						This content is wrapped in a ThemeProvider.
 					</p>
@@ -92,11 +92,11 @@ export const WithCustomContent: Story = {
 		enableSystem: true,
 		children: (
 			<div className="space-y-6 p-8">
-				<h2 className="font-bold text-3xl tracking-tight">Custom Content</h2>
+				<h2 className="text-3xl font-bold tracking-tight">Custom Content</h2>
 				<div className="grid grid-cols-2 gap-4">
 					<div className="rounded-lg border p-4 text-primary">
 						<h3 className="mb-2 font-semibold">Card Component</h3>
-						<p className="text-muted-foreground text-sm">
+						<p className="text-sm text-muted-foreground">
 							This card adapts to the theme.
 						</p>
 					</div>

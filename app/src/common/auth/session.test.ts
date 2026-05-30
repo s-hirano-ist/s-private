@@ -1,6 +1,6 @@
 import type { Session } from "next-auth";
-import { describe, expect, type Mock, test, vi } from "vitest";
 import { auth } from "@/infrastructures/auth/auth-provider";
+import { describe, expect, type Mock, test, vi } from "vitest";
 
 vi.mock("@/infrastructures/auth/auth-provider", () => ({
 	auth: vi.fn(),

@@ -2,8 +2,8 @@
 // The config you add here will be used whenever a users loads a page in their browser.
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
-import { captureRouterTransitionStart, init } from "@sentry/nextjs";
 import { env } from "@/env";
+import { captureRouterTransitionStart, init } from "@sentry/nextjs";
 
 export const onRouterTransitionStart = captureRouterTransitionStart;
 

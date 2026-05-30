@@ -1,6 +1,6 @@
-import { BaseDomainEvent } from "../../shared-kernel/events/base-domain-event.ts";
 import type { NoteDeletedPayload } from "../../shared-kernel/events/payload-types.ts";
 import type { NoteCreatedEvent } from "./note-created-event.ts";
+import { BaseDomainEvent } from "../../shared-kernel/events/base-domain-event.ts";
 
 /**
  * Domain event emitted when a note is deleted.
@@ -33,11 +33,7 @@ export class NoteDeletedEvent extends BaseDomainEvent<NoteDeletedPayload> {
 	 * @param data.userId - The user who deleted the note
 	 * @param data.caller - The function/method that triggered the event
 	 */
-	constructor(data: {
-		title: string;
-		userId: string;
-		caller: string;
-	}) {
+	constructor(data: { title: string; userId: string; caller: string }) {
 		super(
 			"note.deleted",
 			{

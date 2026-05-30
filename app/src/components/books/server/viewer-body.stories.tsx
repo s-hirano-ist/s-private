@@ -1,3 +1,5 @@
+import type { Props as ViewerBodyProps } from "./viewer-body";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import {
 	makeBookMarkdown,
 	makeBookTitle,
@@ -15,9 +17,7 @@ import {
 	makeId,
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Suspense } from "react";
-import type { Props as ViewerBodyProps } from "./viewer-body";
 import { ViewerBody } from "./viewer-body";
 
 function ViewerBodyWrapper({ slug, getBookByISBN }: ViewerBodyProps) {

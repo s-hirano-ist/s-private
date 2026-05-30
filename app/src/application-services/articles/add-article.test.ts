@@ -1,3 +1,6 @@
+import type { AddArticleDeps } from "./add-article.deps";
+import type { IArticlesCommandRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-command-repository.interface";
+import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import {
 	articleEntity,
 	makeArticleTitle,
@@ -6,7 +9,6 @@ import {
 	makeUrl,
 } from "@s-hirano-ist/s-core/articles/entities/article-entity";
 import { ArticleCreatedEvent } from "@s-hirano-ist/s-core/articles/events/article-created-event";
-import type { IArticlesCommandRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-command-repository.interface";
 import {
 	makeCreatedAt,
 	makeId,
@@ -15,10 +17,8 @@ import {
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { addArticle } from "./add-article";
 import { addArticleCore } from "./add-article.core";
-import type { AddArticleDeps } from "./add-article.deps";
 import { parseAddArticleFormData } from "./helpers/form-data-parser";
 
 // Minimal mocks - only for auth and form parsing

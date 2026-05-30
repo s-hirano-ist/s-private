@@ -1,8 +1,8 @@
-import { forbidden } from "next/navigation";
-import { NextResponse } from "next/server";
 import { getBooksImageFromStorage } from "@/application-services/books/get-books";
 import { getContentTypeFromPath } from "@/common/utils/content-type-utils";
 import { auth } from "@/infrastructures/auth/auth-provider";
+import { forbidden } from "next/navigation";
+import { NextResponse } from "next/server";
 
 export const GET = auth(
 	async (

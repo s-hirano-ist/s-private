@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import type { Props as NotesCounterProps } from "./notes-counter";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { NotesCounter } from "./notes-counter";
 
 function NotesCounterWrapper({ count }: NotesCounterProps) {

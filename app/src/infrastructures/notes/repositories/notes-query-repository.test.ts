@@ -1,3 +1,4 @@
+import prisma from "@/prisma";
 import {
 	makeMarkdown,
 	makeNoteTitle,
@@ -9,7 +10,6 @@ import {
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import prisma from "@/prisma";
 import { notesQueryRepository } from "./notes-query-repository";
 
 describe("NotesQueryRepository", () => {

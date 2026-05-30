@@ -1,11 +1,11 @@
 "use client";
+import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 import {
 	Drawer,
 	DrawerContent,
 	DrawerHeader,
 	DrawerTitle,
 } from "@s-hirano-ist/s-ui/ui/drawer";
-import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 import { SearchCard } from "../../features/search/search-card";
 
 type Props = {

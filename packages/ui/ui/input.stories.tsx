@@ -98,7 +98,7 @@ export const WithHelperText: Story = {
 				aria-label="Input with helper text"
 				placeholder="Input with helper text"
 			/>
-			<p className="mt-2 text-gray-500 text-sm">
+			<p className="mt-2 text-sm text-gray-500">
 				This is some helper text to assist the user.
 			</p>
 		</div>

@@ -8,15 +8,15 @@
  */
 
 import "server-only";
+import type { DeleteBooksDeps } from "./delete-books.deps";
+import type { ServerAction } from "@/common/types";
+import { getSelfId } from "@/common/auth/session";
+import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import { BookDeletedEvent } from "@s-hirano-ist/s-core/books/events/book-deleted-event";
 import {
 	type Id,
 	makeUnexportedStatus,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { getSelfId } from "@/common/auth/session";
-import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
-import type { ServerAction } from "@/common/types";
-import type { DeleteBooksDeps } from "./delete-books.deps";
 
 /**
  * Core business logic for deleting a book.

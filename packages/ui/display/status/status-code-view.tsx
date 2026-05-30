@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import {
 	AlertTriangleIcon,
 	ClockIcon,
@@ -7,7 +8,6 @@ import {
 	SearchXIcon,
 	ShieldXIcon,
 } from "lucide-react";
-import type { ReactNode } from "react";
 
 /**
  * HTTP status codes supported by StatusCodeView.
@@ -61,7 +61,7 @@ export function StatusCodeView({
 			<div className="rounded-full bg-primary/10 p-4">
 				{STATUS_ICON_MAP[statusCode]}
 			</div>
-			<div className="bg-linear-to-r from-primary to-primary-grad bg-clip-text font-black text-8xl text-transparent tracking-tighter">
+			<div className="bg-linear-to-r from-primary to-primary-grad bg-clip-text text-8xl font-black tracking-tighter text-transparent">
 				{statusCode}
 			</div>
 			<div className="text-base text-muted-foreground">{statusCodeString}</div>

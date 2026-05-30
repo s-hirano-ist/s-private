@@ -1,7 +1,7 @@
+import type { CardStackInitialData, LinkCardData } from "./types";
 import { cleanup, render } from "@testing-library/react";
 import { afterEach, bench, describe, vi } from "vitest";
 import { BaseCardStackWrapper } from "./base-card-stack";
-import type { CardStackInitialData, LinkCardData } from "./types";
 
 vi.mock("next-intl", () => ({
 	useTranslations: () => (key: string) => key,

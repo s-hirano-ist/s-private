@@ -1,5 +1,4 @@
 import { tv, type VariantProps } from "tailwind-variants";
-
 import { cn } from "../utils/cn";
 
 /**
@@ -14,7 +13,7 @@ import { cn } from "../utils/cn";
  * ```
  */
 const badgeVariants = tv({
-	base: "inline-flex items-center rounded-full border px-3 py-0.5 text-xs font-medium transition-colors focus:outline-hidden focus:ring-2 focus:ring-primary focus:ring-offset-2",
+	base: "inline-flex items-center rounded-full border px-3 py-0.5 text-xs font-medium transition-colors focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:outline-hidden",
 	variants: {
 		variant: {
 			default:

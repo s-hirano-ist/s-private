@@ -1,0 +1,44 @@
+{
+	"$schema": "./node_modules/oxfmt/configuration_schema.json",
+	"useTabs": true,
+	"tabWidth": 2,
+	"printWidth": 80,
+	"semi": true,
+	"singleQuote": false,
+	"jsxSingleQuote": false,
+	"trailingComma": "all",
+	"arrowParens": "always",
+	"bracketSpacing": true,
+	"endOfLine": "lf",
+	"sortImports": {
+		"internalPattern": ["^@/", "^@s-hirano-ist/"],
+		"groups": [
+			"type-import",
+			["value-builtin", "value-external"],
+			"value-internal",
+			["value-parent", "value-sibling", "value-index"],
+			"unknown"
+		],
+		"newlinesBetween": false
+	},
+	"sortTailwindcss": {
+		"functions": ["cn", "clsx", "tv"],
+		"stylesheet": "./app/src/app/globals.css"
+	},
+	"sortPackageJson": false,
+	"ignorePatterns": [
+		"packages/database/src/generated/**",
+		"**/.next/**",
+		"**/dist/**",
+		"**/.storybook-static/**",
+		"**/.vitest-coverage/**",
+		"**/next-env.d.ts",
+		"security-audit.json",
+		"pnpm-lock.yaml",
+		".claude/**",
+		"**/*.md",
+		"**/*.mdx",
+		"**/*.yaml",
+		"**/*.yml"
+	]
+}

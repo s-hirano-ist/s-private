@@ -1,3 +1,11 @@
+import type { ServerAction } from "@/common/types";
+import type { Route } from "next";
+import { PAGE_SIZE } from "@/common/constants";
+import {
+	EditableImageStack,
+	type ImageData,
+	ImageStack,
+} from "@/components/common/display/image/image-stack";
 import {
 	Pagination,
 	PaginationContent,
@@ -7,15 +15,7 @@ import {
 	PaginationNext,
 	PaginationPrevious,
 } from "@s-hirano-ist/s-ui/ui/pagination";
-import type { Route } from "next";
 import { getTranslations } from "next-intl/server";
-import { PAGE_SIZE } from "@/common/constants";
-import type { ServerAction } from "@/common/types";
-import {
-	EditableImageStack,
-	type ImageData,
-	ImageStack,
-} from "@/components/common/display/image/image-stack";
 
 type Props = {
 	currentPage: number;

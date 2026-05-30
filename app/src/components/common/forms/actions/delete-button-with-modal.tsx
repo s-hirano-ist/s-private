@@ -1,4 +1,5 @@
 "use client";
+import type { DeleteAction } from "@/common/types";
 import { Button } from "@s-hirano-ist/s-ui/ui/button";
 import {
 	Dialog,
@@ -13,7 +14,6 @@ import { TrashIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useReducer, useTransition } from "react";
 import { toast } from "sonner";
-import type { DeleteAction } from "@/common/types";
 
 type Props = {
 	deleteAction: DeleteAction;

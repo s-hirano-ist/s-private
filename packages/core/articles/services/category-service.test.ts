@@ -1,11 +1,11 @@
+import type { ICategoryCommandRepository } from "../repositories/category-command-repository.interface.ts";
+import type { ICategoryQueryRepository } from "../repositories/category-query-repository.interface.ts";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import {
 	makeId,
 	makeUserId,
 } from "../../shared-kernel/entities/common-entity.ts";
 import { makeCategoryName } from "../entities/article-entity.ts";
-import type { ICategoryCommandRepository } from "../repositories/category-command-repository.interface.ts";
-import type { ICategoryQueryRepository } from "../repositories/category-query-repository.interface.ts";
 import { CategoryService } from "./category-service.ts";
 
 describe("CategoryService", () => {

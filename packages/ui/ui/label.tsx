@@ -1,9 +1,8 @@
 "use client";
 
-import * as LabelPrimitive from "@radix-ui/react-label";
 import type * as React from "react";
+import * as LabelPrimitive from "@radix-ui/react-label";
 import { tv, type VariantProps } from "tailwind-variants";
-
 import { cn } from "../utils/cn";
 
 /**
@@ -11,7 +10,7 @@ import { cn } from "../utils/cn";
  * @internal
  */
 const labelVariants = tv({
-	base: "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
+	base: "text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
 });
 
 /**

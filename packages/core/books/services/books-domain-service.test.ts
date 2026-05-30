@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, test, vi } from "vitest";
 import type { IBooksQueryRepository } from "../../books/repositories/books-query-repository.interface.ts";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 import { makeUserId } from "../../shared-kernel/entities/common-entity.ts";
 import { DuplicateError } from "../../shared-kernel/errors/error-classes.ts";
 import { makeISBN, makeRating } from "../entities/book-entity.ts";

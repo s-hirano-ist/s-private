@@ -8,10 +8,10 @@
  * @module
  */
 
+import type { IEventDispatcher } from "../common/event-dispatcher.interface";
 import type { IBooksCommandRepository } from "@s-hirano-ist/s-core/books/repositories/books-command-repository.interface";
 import { booksCommandRepository } from "@/infrastructures/books/repositories/books-command-repository";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
-import type { IEventDispatcher } from "../common/event-dispatcher.interface";
 
 /**
  * Dependencies for the deleteBooksCore function.

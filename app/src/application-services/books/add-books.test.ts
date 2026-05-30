@@ -1,3 +1,7 @@
+import type { AddBooksDeps } from "./add-books.deps";
+import type { IBooksCommandRepository } from "@s-hirano-ist/s-core/books/repositories/books-command-repository.interface";
+import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/services/storage-service.interface";
+import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import {
 	bookEntity,
 	makeBookTitle,
@@ -6,7 +10,6 @@ import {
 	makeTags,
 } from "@s-hirano-ist/s-core/books/entities/book-entity";
 import { BookCreatedEvent } from "@s-hirano-ist/s-core/books/events/book-created-event";
-import type { IBooksCommandRepository } from "@s-hirano-ist/s-core/books/repositories/books-command-repository.interface";
 import {
 	makeCreatedAt,
 	makeId,
@@ -18,12 +21,9 @@ import {
 	makePath,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
 import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
-import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/services/storage-service.interface";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { addBooks } from "./add-books";
 import { addBooksCore } from "./add-books.core";
-import type { AddBooksDeps } from "./add-books.deps";
 import { parseAddBooksFormData } from "./helpers/form-data-parser";
 
 vi.mock("@/common/auth/session", () => ({

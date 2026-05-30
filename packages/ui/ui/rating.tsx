@@ -1,6 +1,5 @@
 import type * as React from "react";
 import { tv, type VariantProps } from "tailwind-variants";
-
 import { cn } from "../utils/cn";
 
 const ratingVariants = tv({

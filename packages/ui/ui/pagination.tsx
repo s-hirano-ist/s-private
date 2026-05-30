@@ -1,3 +1,4 @@
+import type * as React from "react";
 /**
  * Pagination component for navigating through multiple pages.
  *
@@ -32,8 +33,6 @@
  */
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 import Link from "next/link";
-import type * as React from "react";
-
 import { cn } from "../utils/cn";
 import { type ButtonProps, buttonVariants } from "./button";
 

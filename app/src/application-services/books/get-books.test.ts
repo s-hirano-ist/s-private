@@ -1,3 +1,4 @@
+import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
 import {
 	makeBookMarkdown,
 	makeBookTitle,
@@ -14,7 +15,6 @@ import {
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
 import {
 	getBookByISBN,
 	getExportedBooks,

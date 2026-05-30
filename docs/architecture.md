@@ -91,13 +91,13 @@ const articlesDomainService = domainServiceFactory.createArticlesDomainService()
 ## コードスタイルとアーキテクチャルール
 
 ### フォーマッターとリンター
-- **主要フォーマッター**: Biome（Prettierではない）- `pnpm check:fix`を使用
-  - インポート整理、コードスタイル強制、TypeScript固有のルールを含む
-  - 厳格なスタイルルールとアクセシビリティチェックを設定
+- **フォーマッター**: oxfmt（Prettier互換）- `pnpm format` / `pnpm format:check`を使用
+  - インポート整理（sortImports）、Tailwindクラス並べ替え（sortTailwindcss）を含む
+  - Biomeから移行済み（タブ・行幅80を踏襲）。設定は`.oxfmtrc.json`
   - **コンポーネントa11yテスト**: Storybookの全ストーリーに対して`@storybook/addon-a11y`（axe-core）で自動チェック（詳細は[testing.md](testing.md)を参照）
-- **補助リンター**: React/Next.js固有ルール用のESLint
-  - Reactフックの強制を含むTypeScript厳格設定
-  - フレームワーク固有のベストプラクティス用Next.jsプラグイン統合
+- **リンター**: oxlint（type-aware、Rust製）- `pnpm lint`を使用
+  - ESLintから全面移行済み。旧Biomeのbase lint（correctness）も吸収
+  - Reactフック強制を含むTypeScript厳格設定、Next.js/jsx-a11yプラグイン統合
 
 ### アーキテクチャルール
 - **パッケージマネージャー**: pnpm（必須）
@@ -129,8 +129,8 @@ import { ArticlesStackLoader } from "@/loaders/articles";
 ```
 
 ### 設定ファイル
-- `biome.json` - 主要フォーマッター/リンター設定
-- `eslint.config.ts` - React/Next.js用補助ESLint設定
+- `.oxfmtrc.json` - フォーマッター設定（oxfmt: format + import/Tailwind並べ替え）
+- `.oxlintrc.json` - リンター設定（oxlint, type-aware）
 - `.dependency-cruiser.cjs` - アーキテクチャ境界の強制（詳細は[code-analysis.md](code-analysis.md)を参照）
 
 ## セキュリティ

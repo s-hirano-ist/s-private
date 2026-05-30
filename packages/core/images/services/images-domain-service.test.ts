@@ -1,8 +1,8 @@
+import type { IImagesQueryRepository } from "../repositories/images-query-repository.interface.ts";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { makeUserId } from "../../shared-kernel/entities/common-entity.ts";
 import { DuplicateError } from "../../shared-kernel/errors/error-classes.ts";
 import { makePath } from "../entities/image-entity.ts";
-import type { IImagesQueryRepository } from "../repositories/images-query-repository.interface.ts";
 import { ImagesDomainService } from "./images-domain-service.ts";
 
 describe("ImagesDomainService", () => {

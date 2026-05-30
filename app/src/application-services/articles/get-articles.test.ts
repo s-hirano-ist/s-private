@@ -1,4 +1,8 @@
 import {
+	articlesQueryRepository,
+	categoryQueryRepository,
+} from "@/infrastructures/articles/repositories/articles-query-repository";
+import {
 	makeArticleTitle,
 	makeCategoryName,
 	makeOgDescription,
@@ -8,10 +12,6 @@ import {
 } from "@s-hirano-ist/s-core/articles/entities/article-entity";
 import { makeId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import {
-	articlesQueryRepository,
-	categoryQueryRepository,
-} from "@/infrastructures/articles/repositories/articles-query-repository";
 import {
 	getCategories,
 	getExportedArticles,

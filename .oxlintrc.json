@@ -3,8 +3,9 @@
 //
 // Format: oxlint's TS config (oxlint.config.ts) is experimental and fails to load with
 //   the standalone binary, so we use .oxlintrc.json. JSONC comments ARE supported here.
-// Layers: Biome = format + base lint; oxlint = everything ESLint did; dependency-cruiser =
-//   Clean Architecture layer boundaries (.dependency-cruiser.cjs — see boundary-* rules).
+// Layers: oxfmt = format + import/Tailwind class sorting (.oxfmtrc.json); oxlint = all linting
+//   (everything ESLint did + the former Biome base lint); dependency-cruiser = Clean Architecture
+//   layer boundaries (.dependency-cruiser.cjs — see boundary-* rules). Biome was fully removed.
 //
 // Migrated 1:1: typescript-eslint strict+stylistic type-checked (oxlint-tsgolint, type-aware),
 //   @next/* → nextjs, @vitest/* → vitest, eslint-plugin-regexp (JS plugin), eslint-plugin-storybook
@@ -16,9 +17,18 @@
 //
 // Newly enabled (were commented-out / Biome-delegated): jsx-a11y (native, warn).
 //
+// Absorbed from Biome (when Biome was removed): categories.correctness="error" replaces Biome's
+//   recommended base lint; noParameterAssign→no-param-reassign, useDefaultParameterLast→
+//   default-param-last, useEnumInitializers→typescript/prefer-enum-initializers, useSelfClosingElements
+//   →react/self-closing-comp, useNumberNamespace→unicorn/prefer-number-properties, noUselessElse→
+//   no-else-return, noExplicitAny→typescript/no-explicit-any ("error" everywhere; was off for src).
+//   useAsConstAssertion/noInferrableTypes were already covered. Biome-only noUnusedTemplateLiteral and
+//   useSingleVarDeclarator (no oxlint/one-var equivalent) were dropped — cosmetic, no bug-catching value.
+//   Class ordering + organizeImports moved to oxfmt (sortTailwindcss / sortImports, Tailwind v4 native).
+//
 // Tried but NOT enabled:
 //   • eslint-plugin-tailwindcss — incompatible with Tailwind v4 (no tailwind.config.js): floods
-//     "cannot resolve config" errors and skips files. Class ordering stays on Biome useSortedClasses.
+//     "cannot resolve config" errors and skips files. Class ordering handled by oxfmt sortTailwindcss.
 //   • eslint-plugin-boundaries — cannot run under oxlint (the JS-plugin "settings" schema rejects
 //     boundaries/* keys → silent no-op). Moved to dependency-cruiser (.dependency-cruiser.cjs).
 //
@@ -30,7 +40,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 {
 	"$schema": "./node_modules/oxlint/configuration_schema.json",
-	"plugins": ["nextjs", "react", "vitest", "jsx-a11y", "import"],
+	"plugins": ["nextjs", "react", "vitest", "jsx-a11y", "import", "unicorn"],
 	"jsPlugins": [
 		"eslint-plugin-regexp",
 		{
@@ -40,7 +50,7 @@
 		"oxlint-plugin-eslint"
 	],
 	"categories": {
-		"correctness": "off"
+		"correctness": "error"
 	},
 	"options": {
 		"typeAware": true
@@ -84,6 +94,9 @@
 				"fn": "test"
 			}
 		],
+		// correctness category default would error on every bare vi.fn(); the codebase
+		// uses untyped mocks throughout and Biome never enforced this — kept off (net-new, out of scope).
+		"vitest/require-mock-type-parameters": "off",
 		"no-control-regex": "error",
 		"no-misleading-character-class": "error",
 		"no-regex-spaces": "error",
@@ -172,6 +185,9 @@
 		"react/rules-of-hooks": "error",
 		"react/exhaustive-deps": "error",
 		"jsx-a11y/alt-text": "warn",
+		// correctness default = error; demoted to warn to match the other jsx-a11y rules here
+		// (Biome's analog useSemanticElements was off). Non-blocking nudge toward semantic tags.
+		"jsx-a11y/prefer-tag-over-role": "warn",
 		"jsx-a11y/anchor-ambiguous-text": "warn",
 		"jsx-a11y/anchor-has-content": "warn",
 		"jsx-a11y/anchor-is-valid": "warn",
@@ -208,7 +224,12 @@
 		"react/jsx-no-useless-fragment": "error",
 		"react/no-danger": "error",
 		"react/no-array-index-key": "warn",
-		"react-hooks-js/set-state-in-effect": "error"
+		"react-hooks-js/set-state-in-effect": "error",
+		"react/self-closing-comp": "error",
+		"no-param-reassign": "error",
+		"default-param-last": "error",
+		"no-else-return": "error",
+		"unicorn/prefer-number-properties": "error"
 	},
 	"overrides": [
 		{
@@ -276,6 +297,7 @@
 				"typescript/no-wrapper-object-types": "error",
 				"typescript/only-throw-error": "error",
 				"typescript/prefer-as-const": "error",
+				"typescript/prefer-enum-initializers": "error",
 				"typescript/prefer-literal-enum-member": "error",
 				"typescript/prefer-namespace-keyword": "error",
 				"typescript/prefer-promise-reject-errors": "error",
@@ -344,7 +366,6 @@
 			"rules": {
 				"no-unused-vars": "off",
 				"typescript/no-empty-object-type": "off",
-				"typescript/no-explicit-any": "off",
 				"typescript/no-misused-promises": [
 					"error",
 					{

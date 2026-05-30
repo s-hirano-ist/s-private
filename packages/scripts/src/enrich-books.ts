@@ -1,4 +1,8 @@
 #!/usr/bin/env node
+import { books as googleBooksApis } from "@googleapis/books";
+import { glob } from "glob";
+import matter from "gray-matter";
+import yaml from "js-yaml";
 /**
  * markdown/book/*.md の frontmatter について、毎回 Google Books API を呼び出して
  * google* および title を最新状態に更新するスクリプト。
@@ -9,10 +13,6 @@
  */
 import { readFile, writeFile } from "node:fs/promises";
 import { basename, join } from "node:path";
-import { books as googleBooksApis } from "@googleapis/books";
-import { glob } from "glob";
-import matter from "gray-matter";
-import yaml from "js-yaml";
 
 const NO_IMG_SRC = "https://s-hirano.com/notFound.png";
 const NOT_FOUND_HREF = "https://s-hirano.com/404";

@@ -26,9 +26,9 @@ import type { DomainEvent } from "./domain-event.interface.ts";
  *
  * @see {@link DomainEvent} for the interface
  */
-export abstract class BaseDomainEvent<TPayload extends Record<string, unknown>>
-	implements DomainEvent<TPayload>
-{
+export abstract class BaseDomainEvent<
+	TPayload extends Record<string, unknown>,
+> implements DomainEvent<TPayload> {
 	/** The type of event (e.g., "article.created") */
 	public readonly eventType: string;
 

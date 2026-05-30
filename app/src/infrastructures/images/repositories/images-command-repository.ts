@@ -8,12 +8,12 @@ import type {
 	Status,
 	UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { updateTag } from "next/cache";
 import {
 	buildContentCacheTag,
 	buildCountCacheTag,
 } from "@/infrastructures/shared/cache/cache-tag-builder";
 import prisma from "@/prisma";
+import { updateTag } from "next/cache";
 
 async function create(data: UnexportedImage): Promise<void> {
 	await prisma.image.create({

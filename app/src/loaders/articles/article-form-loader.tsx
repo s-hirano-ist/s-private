@@ -1,9 +1,8 @@
 import "server-only";
-
-import { getCategories } from "@/application-services/articles/get-articles";
 import type { ServerAction } from "@/common/types";
-import { ArticleForm } from "@/components/articles/client/article-form";
 import type { BaseLoaderProps } from "@/loaders/types";
+import { getCategories } from "@/application-services/articles/get-articles";
+import { ArticleForm } from "@/components/articles/client/article-form";
 
 export type ArticleFormLoaderProps = BaseLoaderProps & {
 	addArticle: (formData: FormData) => Promise<ServerAction>;

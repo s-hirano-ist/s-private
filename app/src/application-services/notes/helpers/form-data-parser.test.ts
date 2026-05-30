@@ -1,12 +1,12 @@
+import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { getFormDataString } from "@/common/utils/form-data-utils";
 import {
 	type Markdown,
 	makeMarkdown,
 	makeNoteTitle,
 	type NoteTitle,
 } from "@s-hirano-ist/s-core/notes/entities/note-entity";
-import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { getFormDataString } from "@/common/utils/form-data-utils";
 import { parseAddNoteFormData } from "./form-data-parser";
 
 vi.mock("@/common/utils/form-data-utils");

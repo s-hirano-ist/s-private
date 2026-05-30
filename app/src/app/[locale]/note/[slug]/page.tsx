@@ -1,11 +1,11 @@
-import Loading from "@s-hirano-ist/s-ui/display/loading";
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { getNoteByTitle } from "@/application-services/notes/get-notes";
 import { hasViewerAdminPermission } from "@/common/auth/session";
 import { PAGE_NAME } from "@/common/constants";
 import { ErrorPermissionBoundary } from "@/components/common/layouts/error-permission-boundary";
 import { ViewerBody } from "@/components/notes/server/viewer-body";
+import Loading from "@s-hirano-ist/s-ui/display/loading";
+import { Suspense } from "react";
 
 type Params = Promise<{ slug: string }>;
 

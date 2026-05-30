@@ -8,10 +8,10 @@
  * @module
  */
 
+import type { IEventDispatcher } from "../common/event-dispatcher.interface";
 import type { INotesCommandRepository } from "@s-hirano-ist/s-core/notes/repositories/notes-command-repository.interface";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { notesCommandRepository } from "@/infrastructures/notes/repositories/notes-command-repository";
-import type { IEventDispatcher } from "../common/event-dispatcher.interface";
 
 /**
  * Dependencies for the deleteNoteCore function.

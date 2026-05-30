@@ -6,10 +6,10 @@
 
 "use server";
 import "server-only";
+import type { ServerAction } from "@/common/types";
+import { hasDumperPostPermission } from "@/common/auth/session";
 import { makeId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { forbidden } from "next/navigation";
-import { hasDumperPostPermission } from "@/common/auth/session";
-import type { ServerAction } from "@/common/types";
 import { deleteImageCore } from "./delete-image.core";
 import { defaultDeleteImageDeps } from "./delete-image.deps";
 
