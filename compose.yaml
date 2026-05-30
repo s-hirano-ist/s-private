@@ -1,23 +1,4 @@
 services:
-  # Local / CI database. CockroachDB single-node in insecure mode.
-  # Connect with: postgresql://root@localhost:26257/defaultdb?sslmode=disable
-  # NOTE: pin to a digest once verified (parity with the other services).
-  cockroachdb:
-    image: cockroachdb/cockroach:latest
-    container_name: cockroachdb
-    restart: unless-stopped
-    command: start-single-node --insecure
-    ports:
-      - "26257:26257"
-      - "8080:8080"
-    volumes:
-      - cockroach-data:/cockroach/cockroach-data
-    healthcheck:
-      test: ["CMD", "cockroach", "sql", "--insecure", "-e", "SELECT 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   minio:
     image: pgsty/minio:RELEASE.2026-02-14T12-00-00Z-amd64@sha256:e6238b30c37e1143d80b71a6bea91446587009df5d7839f14659b11087d651fb
     container_name: minio
@@ -73,7 +54,6 @@ services:
 
 volumes:
   minio-data:
-  cockroach-data:
 
 networks:
   tunnel-net:

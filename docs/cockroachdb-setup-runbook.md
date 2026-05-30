@@ -38,10 +38,10 @@ CockroachDB Cloud Basic への移行を完了するために**ユーザーが手
 
 ## 4. スキーマ適用（migrate deploy のみ）
 
-> 🚫 **クラウドに対して `pnpm prisma:migrate`（= `migrate dev`）を実行しないでください。**
-> CockroachDB Cloud の multi-region メタデータ `crdb_internal_region` を drift と誤検出し
-> `P3018` / `2BP01` で失敗します。`prisma:migrate` には localhost 以外を弾くガードを設定済みです。
-> クラウドへの適用は必ず **`prisma:deploy`** を使います。
+> 🚫 **クラウドへのスキーマ適用は必ず `prisma:deploy`（= `migrate deploy`）を使います。**
+> CockroachDB Cloud の multi-region メタデータ `crdb_internal_region` を `migrate dev` が drift と
+> 誤検出し `P3018` / `2BP01` で失敗するため、本リポジトリは `migrate dev` 系のスクリプトを提供しません
+> （ローカル DB も持ちません）。新規 migration は DB 不要の diff フローで生成します（後述）。
 
 - **本番**: PR #2335 をマージすると、`packages/database/prisma/migrations/**` の変更を検知して
   [prisma-deploy.yaml](../.github/workflows/prisma-deploy.yaml) が自動で `migrate deploy` を実行する。
