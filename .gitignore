@@ -10,6 +10,9 @@ dist/
 node_modules
 debug.log
 
+# Editor
+.vscode/
+
 # Storybook
 .storybook-static
 *storybook.log
