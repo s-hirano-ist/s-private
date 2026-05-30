@@ -28,8 +28,11 @@ import { defineConfig } from "prisma/config";
  * # Generate Prisma client
  * pnpm prisma:generate
  *
- * # Run database migrations
- * pnpm prisma:migrate
+ * # Generate a new migration SQL (no local DB needed)
+ * pnpm prisma:migrate:diff
+ *
+ * # Apply migrations to the cloud
+ * pnpm prisma:deploy
  *
  * # Open Prisma Studio
  * pnpm prisma:studio
