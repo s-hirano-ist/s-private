@@ -51,15 +51,13 @@ async function main() {
 		throw new Error("Required environment variables are not set.");
 	}
 
-	if (process.env.MINIO_USE_SSL === "true") {
-		if (
-			!process.env.CF_ACCESS_CLIENT_ID ||
-			!process.env.CF_ACCESS_CLIENT_SECRET
-		) {
-			throw new Error(
-				"CF_ACCESS_CLIENT_ID and CF_ACCESS_CLIENT_SECRET are required when MINIO_USE_SSL is true.",
-			);
-		}
+	if (
+		process.env.MINIO_USE_SSL === "true" &&
+		(!process.env.CF_ACCESS_CLIENT_ID || !process.env.CF_ACCESS_CLIENT_SECRET)
+	) {
+		throw new Error(
+			"CF_ACCESS_CLIENT_ID and CF_ACCESS_CLIENT_SECRET are required when MINIO_USE_SSL is true.",
+		);
 	}
 
 	const contentsPath = process.env.S_CONTENTS_PATH ?? process.cwd();
@@ -153,7 +151,9 @@ async function main() {
 						path: imagePath,
 						contentType,
 						fileSize: fileStat.size,
+						// oxlint-disable-next-line typescript/no-unnecessary-condition -- sharp's Metadata types width/height as non-nullable but they can be undefined at runtime for some inputs
 						width: metadata.width ?? null,
+						// oxlint-disable-next-line typescript/no-unnecessary-condition -- sharp's Metadata types width/height as non-nullable but they can be undefined at runtime for some inputs
 						height: metadata.height ?? null,
 						status: exported.status,
 						exportedAt: exported.exportedAt,

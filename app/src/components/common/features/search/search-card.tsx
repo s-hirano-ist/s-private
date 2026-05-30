@@ -1,6 +1,8 @@
 "use client";
 import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 import { useSearch } from "@/components/common/hooks/use-search";
+import { LinkCard } from "@/components/common/layouts/cards/link-card";
+import { UtilButtons } from "@/components/common/layouts/nav/util-buttons";
 import Loading from "@s-hirano-ist/s-ui/display/loading";
 import { StatusCodeView } from "@s-hirano-ist/s-ui/display/status/status-code-view";
 import { Button } from "@s-hirano-ist/s-ui/ui/button";
@@ -10,10 +12,16 @@ import { SearchIcon } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { LinkCard } from "../../layouts/cards/link-card";
-import { UtilButtons } from "../../layouts/nav/util-buttons";
 
 type Props = { search: typeof searchContentFromClient };
+
+const handleReload = () => {
+	window.location.reload();
+};
+
+const onSignOutSubmit = async () => {
+	await signOut();
+};
 
 export function SearchCard({ search }: Props) {
 	const t = useTranslations("label");
@@ -55,13 +63,51 @@ export function SearchCard({ search }: Props) {
 			void executeSearch();
 		}
 	};
-	const handleReload = () => {
-		window.location.reload();
-	};
 
-	const onSignOutSubmit = async () => {
-		await signOut();
-	};
+	let content: React.ReactNode;
+	if (searchResults === undefined) {
+		content = (
+			<UtilButtons
+				handleReload={handleReload}
+				onSignOutSubmit={onSignOutSubmit}
+			/>
+		);
+	} else if (isError) {
+		content = (
+			<div className="flex items-center justify-center">
+				<StatusCodeView
+					statusCode="500"
+					statusCodeString={statusCodes("500")}
+				/>
+			</div>
+		);
+	} else if (searchResults.length === 0 && searchQuery && !isPending) {
+		content = (
+			<div className="flex items-center justify-center">
+				<StatusCodeView
+					statusCode="204"
+					statusCodeString={statusCodes("204")}
+				/>
+			</div>
+		);
+	} else if (isPending) {
+		content = (
+			<div className="p-4">
+				<Loading />
+			</div>
+		);
+	} else {
+		content = nonArticles.map((item) => (
+			<button
+				className="w-full cursor-pointer rounded-sm px-2 py-3 text-left text-sm hover:bg-muted"
+				key={item.href}
+				onClick={() => handleSelect(item)}
+				type="button"
+			>
+				{item.title}
+			</button>
+		));
+	}
 
 	return (
 		<>
@@ -83,43 +129,7 @@ export function SearchCard({ search }: Props) {
 					<SearchIcon className="size-4" />
 				</Button>
 			</div>
-			<div className="h-[300px] overflow-y-auto">
-				{searchResults === undefined ? (
-					<UtilButtons
-						handleReload={handleReload}
-						onSignOutSubmit={onSignOutSubmit}
-					/>
-				) : isError ? (
-					<div className="flex items-center justify-center">
-						<StatusCodeView
-							statusCode="500"
-							statusCodeString={statusCodes("500")}
-						/>
-					</div>
-				) : searchResults?.length === 0 && searchQuery && !isPending ? (
-					<div className="flex items-center justify-center">
-						<StatusCodeView
-							statusCode="204"
-							statusCodeString={statusCodes("204")}
-						/>
-					</div>
-				) : isPending ? (
-					<div className="p-4">
-						<Loading />
-					</div>
-				) : (
-					nonArticles.map((item, index) => (
-						<button
-							className="w-full cursor-pointer rounded-sm px-2 py-3 text-left text-sm hover:bg-muted"
-							key={String(index)}
-							onClick={() => handleSelect(item)}
-							type="button"
-						>
-							{item.title}
-						</button>
-					))
-				)}
-			</div>
+			<div className="h-[300px] overflow-y-auto">{content}</div>
 			{articles.length > 0 && (
 				<div className="grid grid-cols-1 gap-2 p-2 sm:grid-cols-2">
 					{articles.map((item, index) => (
@@ -132,7 +142,7 @@ export function SearchCard({ search }: Props) {
 								primaryBadgeText: item.category,
 								href: item.url ?? item.href,
 							}}
-							key={String(index)}
+							key={item.url ?? item.href}
 						/>
 					))}
 				</div>

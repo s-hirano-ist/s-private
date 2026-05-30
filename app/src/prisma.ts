@@ -61,7 +61,7 @@ const prismaClientSingleton = () => {
 		query: {
 			async $allOperations({ args, query, operation, model }) {
 				const start = Date.now();
-				const result = await query(args);
+				const result: unknown = await query(args);
 				const duration = Date.now() - start;
 				if (!isProduction) {
 					console.log(`[${model}.${operation}] took ${duration}ms`);
@@ -85,6 +85,7 @@ declare const globalThis: {
  * Uses singleton pattern to reuse client across hot-reloads in development.
  * In production, a new instance is created per serverless function invocation.
  */
+// oxlint-disable-next-line typescript/no-unnecessary-condition -- prismaGlobal is undefined at runtime until assigned (dev-only, see below); the ?? fallback is load-bearing
 const prisma = globalThis.prismaGlobal ?? prismaClientSingleton();
 
 export default prisma;

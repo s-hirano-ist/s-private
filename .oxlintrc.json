@@ -40,17 +40,41 @@
 // ─────────────────────────────────────────────────────────────────────────────
 {
 	"$schema": "./node_modules/oxlint/configuration_schema.json",
-	"plugins": ["nextjs", "react", "vitest", "jsx-a11y", "import", "unicorn"],
+	"plugins": [
+		"nextjs",
+		"react",
+		"react-perf",
+		"vitest",
+		"jsx-a11y",
+		"import",
+		"unicorn",
+		"oxc",
+		"promise",
+		"node"
+	],
 	"jsPlugins": [
 		"eslint-plugin-regexp",
 		{
 			"name": "react-hooks-js",
 			"specifier": "eslint-plugin-react-hooks"
 		},
-		"oxlint-plugin-eslint"
+		"oxlint-plugin-eslint",
+		"eslint-plugin-sonarjs",
+		{
+			"name": "unicorn-js",
+			"specifier": "eslint-plugin-unicorn"
+		}
 	],
+	// Maximum strictness: enable correctness/suspicious/pedantic/perf as "error" wholesale, then
+	// mute only the category members that are noise here (false positives, opinionated, or oxfmt's
+	// job). `style` is NOT enabled wholesale (formatting-adjacent → oxfmt owns it; the few non-format
+	// style rules we want are listed individually). `restriction` is NOT enabled wholesale (most of it
+	// is unsuitable, e.g. oxc/no-async-await on a Server-Actions codebase) — only hand-picked rules.
 	"categories": {
-		"correctness": "error"
+		"correctness": "error",
+		"suspicious": "error",
+		"pedantic": "error",
+		"perf": "error"
 	},
 	"options": {
 		"typeAware": true
@@ -229,7 +253,104 @@
 		"no-param-reassign": "error",
 		"default-param-last": "error",
 		"no-else-return": "error",
-		"unicorn/prefer-number-properties": "error"
+		"unicorn/prefer-number-properties": "error",
+
+		// ── Muted category members (noise within the wholesale-enabled categories) ──
+		// suspicious:
+		"react/react-in-jsx-scope": "off", // React 17+ automatic JSX runtime — 710 false positives
+		"import/no-unassigned-import": "off", // side-effect CSS/polyfill imports are intentional
+		"no-underscore-dangle": "off", // private-ish naming is used deliberately
+		// pedantic (size/style heuristics + opinionated negations that oxfmt/readability handle):
+		"max-lines-per-function": "off",
+		"max-lines": "off",
+		"max-classes-per-file": "off",
+		"no-inline-comments": "off",
+		"no-warning-comments": "off",
+		"no-negated-condition": "off",
+		"unicorn/no-negated-condition": "off",
+		"unicorn/prefer-top-level-await": "off", // bundled/SSR entrypoints can't always use TLA
+		"no-promise-executor-return": "off",
+		"import/max-dependencies": "off",
+		"require-await": "off", // delegated to typescript/require-await (type-aware, fewer FPs)
+		// perf:
+		"no-await-in-loop": "off", // sequential awaits are frequently intentional here
+
+		// NOTE: type-aware pedantic purity rules (prefer-readonly-parameter-types,
+		// strict-boolean-expressions, no-unsafe-type-assertion, strict-void-return) are demoted inside
+		// the typescript override below — they only take effect where the typescript plugin is active.
+
+		// ── perf (react-perf): OFF. The app enables the React Compiler (next.config.mjs
+		// reactCompiler:true), which auto-memoizes — manual useCallback/useMemo is discouraged and
+		// these inline-prop rules are counterproductive under it. ──
+		"react-perf/jsx-no-new-function-as-prop": "off",
+		"react-perf/jsx-no-jsx-as-prop": "off",
+		"react-perf/jsx-no-new-object-as-prop": "off",
+		"react-perf/jsx-no-new-array-as-prop": "off",
+
+		// ── Hand-picked restriction rules (NOT enabled by category; aligned with CLAUDE.md) ──
+		"no-console": "error", // logging goes through Pushover/Sentry; scripts/tests opt out via overrides
+		"node/no-process-env": "warn", // funnel env access through app/src/env.ts (typed); staged as warn
+		"import/no-relative-parent-imports": "error", // CLAUDE.md: 絶対パス import 必須 (../../* 禁止)
+		"no-use-before-define": [
+			"error",
+			{ "functions": false, "classes": true, "variables": true }
+		],
+		"complexity": ["error", 15],
+
+		// ── eslint-plugin-sonarjs (JS plugin): bug detection + maintainability. ──
+		// Only NON-type-aware rules are listed (type-aware sonarjs rules crash under oxlint's JS-plugin
+		// host, like @eslint-react did). Type-aware sonarjs rules (null-dereference, no-ignored-return,
+		// arguments-order, etc.) are intentionally omitted.
+		// bug detection (low false-positive, must-fix):
+		"sonarjs/no-all-duplicated-branches": "error",
+		"sonarjs/no-element-overwrite": "error",
+		"sonarjs/no-empty-collection": "error",
+		"sonarjs/no-extra-arguments": "error",
+		"sonarjs/no-identical-conditions": "error",
+		"sonarjs/no-identical-expressions": "error",
+		"sonarjs/no-use-of-empty-return-value": "error",
+		"sonarjs/no-unused-collection": "error",
+		"sonarjs/non-existent-operator": "error",
+		"sonarjs/no-same-argument-assert": "error",
+		"sonarjs/no-redundant-jump": "error",
+		"sonarjs/no-gratuitous-expressions": "error",
+		"sonarjs/no-invariant-returns": "error",
+		"sonarjs/no-nested-assignment": "error",
+		"sonarjs/no-same-line-conditional": "error",
+		"sonarjs/no-literal-call": "error",
+		"sonarjs/no-unthrown-error": "error",
+		"sonarjs/no-case-label-in-switch": "error",
+		"sonarjs/updated-loop-counter": "error",
+		"sonarjs/no-ignored-exceptions": "error",
+		"sonarjs/no-dead-store": "error",
+		// maintainability / code smell:
+		"sonarjs/cognitive-complexity": ["error", 15],
+		"sonarjs/no-identical-functions": "error",
+		"sonarjs/no-collapsible-if": "error",
+		"sonarjs/no-nested-conditional": "error",
+		"sonarjs/no-small-switch": "error",
+		"sonarjs/prefer-single-boolean-return": "error",
+		"sonarjs/prefer-object-literal": "error",
+		"sonarjs/prefer-while": "error",
+		"sonarjs/no-redundant-boolean": "error",
+		"sonarjs/no-inverted-boolean-check": "error",
+		"sonarjs/max-switch-cases": "error",
+		// security hardening (clear wins):
+		"sonarjs/no-hardcoded-passwords": "error",
+		"sonarjs/no-hardcoded-secrets": "error",
+		"sonarjs/code-eval": "error",
+		"sonarjs/no-os-command-from-path": "error",
+
+		// ── eslint-plugin-unicorn (JS plugin, aliased "unicorn-js"): only the 7 useful rules NOT
+		// ported to native oxlint unicorn. `prevent-abbreviations`, `string-content`, `template-indent`,
+		// `expiring-todo-comments` etc. are intentionally excluded (noise / formatting / oxfmt's job). ──
+		"unicorn-js/consistent-destructuring": "error",
+		"unicorn-js/no-array-push-push": "error",
+		"unicorn-js/no-for-loop": "error",
+		"unicorn-js/no-named-default": "error",
+		"unicorn-js/no-unnecessary-polyfills": "error",
+		"unicorn-js/prefer-export-from": "error",
+		"unicorn-js/prefer-single-call": "error"
 	},
 	"overrides": [
 		{
@@ -412,7 +533,17 @@
 				"typescript/consistent-type-definitions": "off",
 				"typescript/consistent-indexed-object-style": "off",
 				"typescript/consistent-type-assertions": "off",
-				"typescript/no-unnecessary-condition": "warn"
+				"typescript/no-unnecessary-condition": "warn",
+				// type-aware pedantic purity rules (enabled by category=pedantic): demoted here, where
+				// the typescript plugin is active, so top-level mutes actually take effect.
+				"typescript/prefer-readonly-parameter-types": "off",
+				"typescript/strict-boolean-expressions": "off",
+				// off: the codebase deliberately uses assertions (`as Route`, `as Mock`, Zod-validated
+				// DTOs, narrowing repo mocks) — flagging every `as` is impractical purity, not bug-catching.
+				"typescript/no-unsafe-type-assertion": "off",
+				// off: fires on React event handlers like onClick={() => doAsync()} (return ignored by
+				// React) — noisy false-positive pattern; no-misused-promises already guards real cases.
+				"typescript/strict-void-return": "off"
 			},
 			"plugins": ["typescript"]
 		},
@@ -430,7 +561,21 @@
 				"typescript/no-confusing-void-expression": "off",
 				"typescript/require-await": "off",
 				"typescript/no-non-null-assertion": "off",
-				"typescript/no-floating-promises": "off"
+				"typescript/no-floating-promises": "off",
+				"no-console": "off",
+				"complexity": "off",
+				"node/no-process-env": "off",
+				"unicorn/consistent-function-scoping": "off",
+				"unicorn/no-useless-undefined": "off",
+				"sonarjs/no-duplicate-string": "off",
+				"sonarjs/cognitive-complexity": "off",
+				// tests legitimately use `any` for mocks/fixtures/cast-to-Mock — the unsafe-any family
+				// is noise here (kept strict in production code).
+				"typescript/no-unsafe-assignment": "off",
+				"typescript/no-unsafe-member-access": "off",
+				"typescript/no-unsafe-call": "off",
+				"typescript/no-unsafe-return": "off",
+				"typescript/no-unsafe-argument": "off"
 			},
 			"plugins": ["typescript"]
 		},
@@ -473,6 +618,67 @@
 						"message": "Use Prisma.sql tagged templates with $queryRaw/$executeRaw, or model methods. Raw SQL via *Unsafe variants is forbidden."
 					}
 				]
+			}
+		},
+		{
+			// CLI scripts, build/config files, instrumentation: console output + raw process.env
+			// are legitimate here (this is where the typed env boundary is defined/consumed).
+			"files": [
+				"packages/scripts/**/*.{ts,tsx,mjs,cjs,js}",
+				"scripts/**/*.{ts,mjs,cjs,js}",
+				"**/*.config.{ts,js,mjs,cjs}",
+				"*.{mjs,cjs}",
+				".storybook/**/*.{ts,tsx,js,mjs,cjs}",
+				"**/instrumentation.ts",
+				"**/instrumentation-client.ts",
+				"**/sentry.*.config.ts"
+			],
+			"rules": {
+				"no-console": "off",
+				"node/no-process-env": "off",
+				"require-await": "off",
+				"import/no-relative-parent-imports": "off",
+				"complexity": "off"
+			}
+		},
+		{
+			// app/src/env.ts is the typed env boundary for the app. Workspace packages are separate
+			// (cannot import the app's env.ts) so each owns its own env boundary in its config/client.
+			"files": [
+				"app/src/env.ts",
+				"**/env.{ts,mjs}",
+				"next.config.{ts,mjs}",
+				"packages/storage/src/client.ts",
+				"packages/search/src/config.ts",
+				"packages/search/src/qdrant-client.ts"
+			],
+			"rules": {
+				"node/no-process-env": "off"
+			}
+		},
+		{
+			// Workspace packages have NO internal path alias (tsconfig paths: {}); they expose an
+			// `exports` map for external consumers and use relative imports internally by design.
+			// So parent-relative imports are idiomatic here — the "絶対パス必須" convention applies to
+			// app/src (which has the @/* alias). Cross-package layering is enforced by dependency-cruiser.
+			"files": ["packages/**/*.{ts,tsx}"],
+			"rules": {
+				"import/no-relative-parent-imports": "off"
+			}
+		},
+		{
+			// Legitimate console boundaries: the logger implementation itself, low-level infra/notification
+			// clients (last-resort fallback), the RAG CLI/ingest library, and dev-only tooling. The rule
+			// stays "error" everywhere else (UI/business logic must log via the server logger / Pushover).
+			"files": [
+				"app/src/infrastructures/observability/**/*.{ts,tsx}",
+				"app/src/prisma.ts",
+				"packages/search/**/*.{ts,tsx}",
+				"packages/notification/**/*.{ts,tsx}",
+				"packages/ui/dev/**/*.{ts,tsx}"
+			],
+			"rules": {
+				"no-console": "off"
 			}
 		}
 	]

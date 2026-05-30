@@ -36,10 +36,10 @@ export function useSearch({
 	const [isPending, startTransition] = useTransition();
 	const abortControllerRef = useRef<AbortController | null>(null);
 
-	const fetchSearchResults = async (searchQuery: string) => {
+	const fetchSearchResults = async (queryText: string) => {
 		abortControllerRef.current?.abort();
 
-		if (searchQuery === "") {
+		if (queryText === "") {
 			setSearchResults(undefined);
 			setIsError(false);
 			return;
@@ -52,12 +52,10 @@ export function useSearch({
 			try {
 				setIsError(false);
 				const query: SearchQuery = {
-					query: searchQuery.trim(),
+					query: queryText.trim(),
 					limit: 50,
 				};
-				console.log("[Search] query:", query);
 				const result = await search(query);
-				console.log("[Search] result:", result);
 
 				if (controller.signal.aborted) return;
 

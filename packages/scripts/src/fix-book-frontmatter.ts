@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { glob } from "glob";
 import matter from "gray-matter";
-import yaml from "js-yaml";
+import { dump } from "js-yaml";
 import { readFile, writeFile } from "node:fs/promises";
 import { basename, join } from "node:path";
 
@@ -21,7 +21,7 @@ const REQUIRED_KEYS = [
 const LEGACY_KEYS = ["googleTitle"] as const;
 
 function dumpFrontmatter(data: Record<string, unknown>): string {
-	return yaml.dump(data, {
+	return dump(data, {
 		lineWidth: -1,
 		forceQuotes: false,
 		noRefs: true,
@@ -29,8 +29,93 @@ function dumpFrontmatter(data: Record<string, unknown>): string {
 }
 
 function extractTitleFromContent(content: string): string | null {
-	const match = /^# (.+)$/m.exec(content);
+	const match = /^# (.+)$/mu.exec(content);
 	return match ? match[1].trim() : null;
+}
+
+type FileResult = "fixed" | "skipped" | "error";
+
+function buildFrontmatter(
+	existing: Record<string, unknown>,
+	isbn: string,
+	title: string,
+): Record<string, unknown> {
+	return {
+		heading: existing.heading ?? isbn,
+		title,
+		draft: existing.draft ?? false,
+		rating: "rating" in existing ? existing.rating : null,
+		tags: Array.isArray(existing.tags) ? existing.tags : [],
+		googleSubtitle:
+			"googleSubtitle" in existing ? existing.googleSubtitle : null,
+		googleAuthors: Array.isArray(existing.googleAuthors)
+			? existing.googleAuthors
+			: [],
+		googleDescription:
+			"googleDescription" in existing ? existing.googleDescription : null,
+		googleImgSrc: "googleImgSrc" in existing ? existing.googleImgSrc : null,
+		googleHref: "googleHref" in existing ? existing.googleHref : null,
+	};
+}
+
+function resolveTitle(
+	existing: Record<string, unknown>,
+	content: string,
+	fileName: string,
+): string | null {
+	const title = typeof existing.title === "string" ? existing.title : "";
+	if (title) {
+		return title;
+	}
+	const h1 = extractTitleFromContent(content);
+	if (!h1) {
+		console.error(
+			`⚠️ ${fileName}: title も H1 も見つかりません。スキップします。`,
+		);
+		return null;
+	}
+	return h1;
+}
+
+async function processFile(
+	filePath: string,
+	dryRun: boolean,
+): Promise<FileResult> {
+	const fileName = basename(filePath);
+	const isbn = basename(filePath, ".md");
+
+	try {
+		const raw = await readFile(filePath, "utf8");
+		const parsed = matter(raw);
+		const existing = parsed.data;
+
+		const hasAllKeys = REQUIRED_KEYS.every((k) => Object.hasOwn(existing, k));
+		const hasLegacyKeys = LEGACY_KEYS.some((k) => Object.hasOwn(existing, k));
+		if (hasAllKeys && !hasLegacyKeys) {
+			return "skipped";
+		}
+
+		// title: frontmatter.title を優先、無ければ本文 H1 にフォールバック
+		const title = resolveTitle(existing, parsed.content, fileName);
+		if (title === null) {
+			return "error";
+		}
+
+		const next = buildFrontmatter(existing, isbn, title);
+		const body = parsed.content.replace(/^\n+/u, "");
+		const newContent = `---\n${dumpFrontmatter(next)}---\n\n${body}`;
+
+		if (dryRun) {
+			console.log(`🔍 [dry-run] 修正予定: ${fileName}`);
+		} else {
+			await writeFile(filePath, newContent, "utf8");
+			console.log(`✅ 修正完了: ${fileName} (${title})`);
+		}
+		return "fixed";
+	} catch (error) {
+		console.error(`❌ ${fileName}: ${String(error)}`);
+		return "error";
+	}
 }
 
 async function main(): Promise<void> {
@@ -50,64 +135,12 @@ async function main(): Promise<void> {
 	let errorCount = 0;
 
 	for (const filePath of files) {
-		const fileName = basename(filePath);
-		const isbn = basename(filePath, ".md");
-
-		try {
-			const raw = await readFile(filePath, "utf8");
-			const parsed = matter(raw);
-			const existing = parsed.data;
-
-			const hasAllKeys = REQUIRED_KEYS.every((k) => Object.hasOwn(existing, k));
-			const hasLegacyKeys = LEGACY_KEYS.some((k) => Object.hasOwn(existing, k));
-			if (hasAllKeys && !hasLegacyKeys) {
-				skippedCount++;
-				continue;
-			}
-
-			// title: frontmatter.title を優先、無ければ本文 H1 にフォールバック
-			let title = typeof existing.title === "string" ? existing.title : "";
-			if (!title) {
-				const h1 = extractTitleFromContent(parsed.content);
-				if (!h1) {
-					console.error(
-						`⚠️ ${fileName}: title も H1 も見つかりません。スキップします。`,
-					);
-					errorCount++;
-					continue;
-				}
-				title = h1;
-			}
-
-			const next: Record<string, unknown> = {
-				heading: existing.heading ?? isbn,
-				title,
-				draft: existing.draft ?? false,
-				rating: "rating" in existing ? existing.rating : null,
-				tags: Array.isArray(existing.tags) ? existing.tags : [],
-				googleSubtitle:
-					"googleSubtitle" in existing ? existing.googleSubtitle : null,
-				googleAuthors: Array.isArray(existing.googleAuthors)
-					? existing.googleAuthors
-					: [],
-				googleDescription:
-					"googleDescription" in existing ? existing.googleDescription : null,
-				googleImgSrc: "googleImgSrc" in existing ? existing.googleImgSrc : null,
-				googleHref: "googleHref" in existing ? existing.googleHref : null,
-			};
-
-			const body = parsed.content.replace(/^\n+/, "");
-			const newContent = `---\n${dumpFrontmatter(next)}---\n\n${body}`;
-
-			if (dryRun) {
-				console.log(`🔍 [dry-run] 修正予定: ${fileName}`);
-			} else {
-				await writeFile(filePath, newContent, "utf8");
-				console.log(`✅ 修正完了: ${fileName} (${title})`);
-			}
+		const result = await processFile(filePath, dryRun);
+		if (result === "fixed") {
 			fixedCount++;
-		} catch (error) {
-			console.error(`❌ ${fileName}: ${String(error)}`);
+		} else if (result === "skipped") {
+			skippedCount++;
+		} else {
 			errorCount++;
 		}
 	}

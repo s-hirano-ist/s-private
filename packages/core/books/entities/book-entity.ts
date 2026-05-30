@@ -60,11 +60,11 @@ import { BookCreatedEvent } from "../events/book-created-event.ts";
 export const ISBN = z
 	.string({ message: "required" })
 	.min(1, { message: "required" })
-	.transform((v) => v.replace(/-/g, ""))
+	.transform((v) => v.replaceAll("-", ""))
 	.pipe(
 		z
 			.string()
-			.regex(/^\d{13}$/, { message: "invalidFormat" })
+			.regex(/^\d{13}$/u, { message: "invalidFormat" })
 			.brand<"ISBN">(),
 	);
 

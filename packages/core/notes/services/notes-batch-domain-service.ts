@@ -39,7 +39,7 @@ export class NotesBatchDomainService {
 	 * Delegates to repository's resetStatus which performs two operations
 	 * atomically within a single transaction.
 	 */
-	public async resetNotes(userId: UserId): Promise<ResetResult> {
+	public async resetNotes(userId: UserId): Promise<ResetStatusResult> {
 		return this.commandRepository.resetStatus(userId, makeExportedAt());
 	}
 

@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
 
-const FORBIDDEN = ["GPL", "GPL-2.0", "GPL-3.0", "LGPL", "LGPL-3.0"];
+const FORBIDDEN = new Set(["GPL", "GPL-2.0", "GPL-3.0", "LGPL", "LGPL-3.0"]);
 
+// oxlint-disable-next-line sonarjs/no-os-command-from-path -- trusted local tool
 const result = spawnSync("pnpm", ["licenses", "list", "--json"], {
 	encoding: "utf8",
 	maxBuffer: 64 * 1024 * 1024,
@@ -18,10 +19,10 @@ const data = JSON.parse(result.stdout);
 const violations = [];
 for (const [licenseKey, packages] of Object.entries(data)) {
 	const tokens = licenseKey
-		.split(/\s+(?:AND|OR)\s+|[(),]/i)
-		.map((s) => s.trim().replace(/^\++|\++$/g, ""))
+		.split(/\s+(?:AND|OR)\s+|[(),]/iu)
+		.map((s) => s.trim().replaceAll(/^\++|\++$/gu, ""))
 		.filter(Boolean);
-	const hit = tokens.some((token) => FORBIDDEN.includes(token));
+	const hit = tokens.some((token) => FORBIDDEN.has(token));
 	if (!hit) continue;
 	for (const pkg of packages) {
 		violations.push({

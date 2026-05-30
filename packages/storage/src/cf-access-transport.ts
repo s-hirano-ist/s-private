@@ -5,10 +5,19 @@ import * as https from "node:https";
 
 type Transport = NonNullable<ClientOptions["transport"]>;
 
+type TransportRequest = Transport["request"];
+
+// https.request has complex overloads incompatible with the spread call below,
+// so model the exact invocation as a precise call signature instead of `any`.
+type RequestCall = (
+	options: string | URL | RequestOptions,
+	...rest: unknown[]
+) => ReturnType<TransportRequest>;
+
 export function createCfAccessTransport(
 	config?: CfAccessConfig,
 ): Transport | undefined {
-	if (!config?.clientId || !config?.clientSecret) {
+	if (!config?.clientId || !config.clientSecret) {
 		return undefined;
 	}
 
@@ -21,9 +30,8 @@ export function createCfAccessTransport(
 				options.headers = headers;
 			}
 
-			// https.request has complex overloads incompatible with Transport type
-			// oxlint-disable-next-line typescript/no-explicit-any
-			return (https.request as any)(options, ...rest);
+			const request = https.request as unknown as RequestCall;
+			return request(options, ...rest);
 		},
 	};
 }

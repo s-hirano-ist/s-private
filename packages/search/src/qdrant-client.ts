@@ -129,6 +129,7 @@ export async function getExistingHashes(
 
 		for (const point of result) {
 			const payload = point.payload as QdrantPayload;
+			// oxlint-disable-next-line typescript/no-unnecessary-condition -- Qdrant retrieve() returns an untyped runtime payload that can be null/undefined or missing fields despite the cast
 			if (payload?.chunk_id && payload?.content_hash) {
 				hashMap.set(payload.chunk_id, payload.content_hash);
 			}
@@ -303,7 +304,7 @@ export async function getCollectionStats(): Promise<{
 function hashToUint(str: string): number {
 	let hash = 0;
 	for (let i = 0; i < str.length; i++) {
-		const char = str.charCodeAt(i);
+		const char = str.codePointAt(i) ?? 0;
 		hash = (hash << 5) - hash + char;
 		hash = hash & hash; // Convert to 32bit integer
 	}

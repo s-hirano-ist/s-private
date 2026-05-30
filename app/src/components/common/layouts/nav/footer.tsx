@@ -55,7 +55,7 @@ export function Footer({ search }: Props) {
 
 	useEffect(() => {
 		if (pathname.endsWith("/viewer")) {
-			router.prefetch(pathname.replace(/\/viewer$/, "") as Route);
+			router.prefetch(pathname.replace(/\/viewer$/u, "") as Route);
 		} else {
 			router.prefetch(`${pathname}/viewer` as Route);
 		}
@@ -67,7 +67,7 @@ export function Footer({ search }: Props) {
 			setOptimisticLayout(value);
 
 			if (pathname.includes("/book/") || pathname.includes("/note/")) {
-				const localeMatch = /^\/([^/]+)/.exec(pathname);
+				const localeMatch = /^\/([^/]+)/u.exec(pathname);
 				const locale = localeMatch ? localeMatch[1] : "";
 				const target =
 					value === "viewer"
@@ -75,9 +75,9 @@ export function Footer({ search }: Props) {
 						: `/${locale}/articles`;
 				router.replace(target as Route);
 			} else if (value === "viewer") {
-				router.replace(`${pathname.replace(/\/viewer$/, "")}/viewer` as Route);
+				router.replace(`${pathname.replace(/\/viewer$/u, "")}/viewer` as Route);
 			} else {
-				router.replace(pathname.replace(/\/viewer$/, "") as Route);
+				router.replace(pathname.replace(/\/viewer$/u, "") as Route);
 			}
 		});
 	};

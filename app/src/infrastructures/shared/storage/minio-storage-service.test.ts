@@ -150,7 +150,7 @@ describe("MinioStorageService", () => {
 		test("should delete original image from storage", async () => {
 			const path = "image-123.png";
 
-			vi.mocked(minioClient.removeObject).mockResolvedValue();
+			vi.mocked(minioClient.removeObject).mockResolvedValue(undefined);
 
 			await minioStorageService.deleteImage(path, false);
 
@@ -163,7 +163,7 @@ describe("MinioStorageService", () => {
 		test("should delete thumbnail image from storage", async () => {
 			const path = "image-123.png";
 
-			vi.mocked(minioClient.removeObject).mockResolvedValue();
+			vi.mocked(minioClient.removeObject).mockResolvedValue(undefined);
 
 			await minioStorageService.deleteImage(path, true);
 

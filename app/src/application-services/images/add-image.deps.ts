@@ -8,7 +8,7 @@
  * @module
  */
 
-import type { IEventDispatcher } from "../common/event-dispatcher.interface";
+import type { IEventDispatcher } from "@/application-services/common/event-dispatcher.interface";
 import type { IImagesCommandRepository } from "@s-hirano-ist/s-core/images/repositories/images-command-repository.interface";
 import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/services/storage-service.interface";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";

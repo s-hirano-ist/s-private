@@ -8,7 +8,7 @@
  * @module
  */
 
-import type { IEventDispatcher } from "../common/event-dispatcher.interface";
+import type { IEventDispatcher } from "@/application-services/common/event-dispatcher.interface";
 import type { INotesCommandRepository } from "@s-hirano-ist/s-core/notes/repositories/notes-command-repository.interface";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import {

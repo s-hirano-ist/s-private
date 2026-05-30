@@ -89,6 +89,7 @@ type CardTitleProps = {
  */
 function CardTitle({ className, ref, ...props }: CardTitleProps) {
 	return (
+		// oxlint-disable-next-line jsx-a11y/heading-has-content -- content is provided by the consumer via {...props} children
 		<h3
 			className={cn(
 				"bg-clip-text leading-normal font-bold tracking-tight",

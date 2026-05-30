@@ -10,7 +10,7 @@ const JSON_DIR = "json/article";
 const OUTPUT_DIR = "raw/article";
 
 function normalizeCharset(charset: string): string {
-	const normalized = charset.toLowerCase().replace(/[^a-z0-9]/g, "");
+	const normalized = charset.toLowerCase().replaceAll(/[^a-z0-9]/gu, "");
 	const mapping: Record<string, string> = {
 		shiftjis: "Shift_JIS",
 		sjis: "Shift_JIS",
@@ -24,7 +24,7 @@ function normalizeCharset(charset: string): string {
 function detectCharset(headers: Headers, buffer: Buffer): string {
 	// 1. Content-Type ヘッダーから検出
 	const contentType = headers.get("content-type") || "";
-	const headerMatch = /charset=([^\s;]+)/i.exec(contentType);
+	const headerMatch = /charset=([^\s;]+)/iu.exec(contentType);
 	if (headerMatch) return normalizeCharset(headerMatch[1]);
 
 	// 2. HTML meta タグから検出（ASCII範囲で仮デコード）
@@ -33,12 +33,12 @@ function detectCharset(headers: Headers, buffer: Buffer): string {
 		.toString("ascii");
 
 	// <meta charset="...">
-	const metaCharset = /<meta\s{1,200}charset=["']?([^"'\s>]+)/i.exec(preview);
+	const metaCharset = /<meta\s{1,200}charset=["']?([^"'\s>]+)/iu.exec(preview);
 	if (metaCharset) return normalizeCharset(metaCharset[1]);
 
 	// <meta http-equiv="Content-Type" content="...; charset=...">
 	const metaHttpEquiv =
-		/<meta[^>]{1,500}http-equiv=["']?Content-Type["']?[^>]{1,500}content=["'][^"']{0,500}charset=([^"'\s;]+)/i.exec(
+		/<meta[^>]{1,500}http-equiv=["']?Content-Type["']?[^>]{1,500}content=["'][^"']{0,500}charset=([^"'\s;]+)/iu.exec(
 			preview,
 		);
 	if (metaHttpEquiv) return normalizeCharset(metaHttpEquiv[1]);
@@ -135,8 +135,9 @@ type ArticlesData = {
 
 async function jsonToMarkdown(jsonFile: string): Promise<void> {
 	const rawData = await readFile(jsonFile, "utf-8");
-	const data: ArticlesData = JSON.parse(rawData);
+	const data = JSON.parse(rawData) as ArticlesData;
 
+	// oxlint-disable-next-line typescript/no-unnecessary-condition -- data comes from an external JSON file; the runtime value may not match ArticlesData
 	const bodyList = data.body || [];
 
 	if (!existsSync(OUTPUT_DIR)) {
@@ -146,7 +147,7 @@ async function jsonToMarkdown(jsonFile: string): Promise<void> {
 	for (const item of bodyList) {
 		const { title, quote, url, skip } = item;
 		try {
-			const strippedUrl = url.replace(/^https?:\/\//, "");
+			const strippedUrl = url.replace(/^https?:\/\//u, "");
 			const safeUrl = encodeURIComponent(strippedUrl);
 			const outputFilename = `${safeUrl}.md`;
 			const outputPath = path.join(OUTPUT_DIR, outputFilename);
@@ -176,7 +177,7 @@ ${websiteText}
 
 			await writeFile(outputPath, markdownContent, "utf-8");
 			console.log(`Exported: ${outputPath}`);
-		} catch (_error) {
+		} catch {
 			console.error("Error on file:", url);
 		}
 	}

@@ -4,6 +4,7 @@ import {
 	type ReactNode,
 	use,
 	useActionState,
+	useMemo,
 	useState,
 } from "react";
 import Loading from "../display/loading";
@@ -112,7 +113,10 @@ export function GenericFormWrapper<
 	> | null>(null);
 
 	// Derive form values: server response takes precedence, then preserved values
-	const formValues = serverFormData ?? preservedValues ?? {};
+	const formValues = useMemo(
+		() => serverFormData ?? preservedValues ?? {},
+		[serverFormData, preservedValues],
+	);
 
 	const submitForm = async (
 		_previousState: T | null,
@@ -139,6 +143,15 @@ export function GenericFormWrapper<
 
 	const [_, submitAction, isPending] = useActionState(submitForm, null);
 
+	let buttonLabel: string;
+	if (isPending && loadingLabel) {
+		buttonLabel = loadingLabel;
+	} else if (submitLabel) {
+		buttonLabel = submitLabel;
+	} else {
+		buttonLabel = saveLabel;
+	}
+
 	return (
 		<FormValuesContext.Provider value={formValues}>
 			<form action={submitAction} className="space-y-4 px-2 py-4">
@@ -149,11 +162,7 @@ export function GenericFormWrapper<
 					onClick={() => haptic()}
 					type="submit"
 				>
-					{isPending && loadingLabel
-						? loadingLabel
-						: submitLabel
-							? submitLabel
-							: saveLabel}
+					{buttonLabel}
 				</Button>
 			</form>
 		</FormValuesContext.Provider>

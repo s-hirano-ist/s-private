@@ -70,7 +70,7 @@ export class ArticlesBatchDomainService {
 	 * 1. Finalize: LAST_UPDATED -> EXPORTED (complete previous batch)
 	 * 2. Mark: UNEXPORTED -> LAST_UPDATED (prepare current batch)
 	 */
-	public async resetArticles(userId: UserId): Promise<ResetResult> {
+	public async resetArticles(userId: UserId): Promise<ResetStatusResult> {
 		return this.commandRepository.resetStatus(userId, makeExportedAt());
 	}
 

@@ -1,12 +1,12 @@
 "use client";
 import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
+import { SearchCard } from "@/components/common/features/search/search-card";
 import {
 	Drawer,
 	DrawerContent,
 	DrawerHeader,
 	DrawerTitle,
 } from "@s-hirano-ist/s-ui/ui/drawer";
-import { SearchCard } from "../../features/search/search-card";
 
 type Props = {
 	open: boolean;

@@ -57,8 +57,8 @@ export function BaseCardStackWrapper<T extends SearchableItem>({
 		startTransition(async () => {
 			const result = await loadMoreAction(allData.length);
 			if (result.success && result.data) {
-				const { data: newData, totalCount } = result.data;
-				setTotalCount(totalCount);
+				const { data: newData, totalCount: newTotalCount } = result.data;
+				setTotalCount(newTotalCount);
 				setAllData((prev) => {
 					const existingKeys = new Set(
 						prev.map((item) => ("key" in item ? item.key : item.id)),
@@ -83,6 +83,7 @@ export function BaseCardStackWrapper<T extends SearchableItem>({
 
 	return (
 		<ProfilerWrapper
+			// oxlint-disable-next-line node/no-process-env -- NODE_ENV is a server-scoped var in @/env; accessing it from this "use client" component would throw. Next.js statically inlines process.env.NODE_ENV in client bundles.
 			enabled={process.env.NODE_ENV === "development"}
 			id="BaseCardStack"
 		>

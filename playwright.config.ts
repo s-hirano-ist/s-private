@@ -15,7 +15,7 @@ export default defineConfig({
 	projects: [
 		{
 			name: "auth-setup",
-			testMatch: /auth\.setup\.ts/,
+			testMatch: /auth\.setup\.ts/u,
 			use: {
 				...devices["Desktop Chrome"],
 				storageState: undefined,

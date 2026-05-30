@@ -39,7 +39,7 @@ export class ImagesBatchDomainService {
 	 * Delegates to repository's resetStatus which performs two operations
 	 * atomically within a single transaction.
 	 */
-	public async resetImages(userId: UserId): Promise<ResetResult> {
+	public async resetImages(userId: UserId): Promise<ResetStatusResult> {
 		return this.commandRepository.resetStatus(userId, makeExportedAt());
 	}
 

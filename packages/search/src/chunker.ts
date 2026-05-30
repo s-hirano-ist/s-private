@@ -91,7 +91,7 @@ function parseFrontmatter(content: string): {
 	frontmatter: MarkdownFrontmatter;
 	body: string;
 } {
-	const frontmatterMatch = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/.exec(content);
+	const frontmatterMatch = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/u.exec(content);
 
 	if (!frontmatterMatch) {
 		return {
@@ -129,93 +129,102 @@ type MarkdownSection = {
 	level: number;
 };
 
+type HeadingSplitState = {
+	sections: MarkdownSection[];
+	currentSection: MarkdownSection | null;
+	headingStack: { level: number; title: string }[];
+	preambleContent: string;
+	preambleDone: boolean;
+};
+
+function pushPreambleSection(state: HeadingSplitState): void {
+	if (state.preambleContent.trim()) {
+		state.sections.push({
+			headingPath: [],
+			title: "",
+			content: state.preambleContent,
+			level: 0,
+		});
+	}
+}
+
+function handleHeadingLine(
+	state: HeadingSplitState,
+	headingMatch: RegExpExecArray,
+): void {
+	// Finalize preamble on first H2/H3
+	if (!state.preambleDone) {
+		state.preambleDone = true;
+		pushPreambleSection(state);
+	}
+
+	// Save previous section
+	if (state.currentSection?.content.trim()) {
+		state.sections.push(state.currentSection);
+	}
+
+	const level = headingMatch[1].length;
+	const title = headingMatch[2];
+
+	// Update heading stack
+	const headingStack = state.headingStack;
+	let top = headingStack.at(-1);
+	while (top && top.level >= level) {
+		headingStack.pop();
+		top = headingStack.at(-1);
+	}
+	headingStack.push({ level, title });
+
+	state.currentSection = {
+		headingPath: headingStack.map((h) => h.title),
+		title,
+		content: "",
+		level,
+	};
+}
+
 /**
  * Split markdown into sections by headings
  */
 function splitMarkdownByHeadings(content: string): MarkdownSection[] {
-	const lines = content.split("\n");
-	const sections: MarkdownSection[] = [];
+	const state: HeadingSplitState = {
+		sections: [],
+		currentSection: null,
+		headingStack: [],
+		// Preamble buffer (content before first H2/H3)
+		preambleContent: "",
+		preambleDone: false,
+	};
 
-	let currentHeadingPath: string[] = [];
-	let currentSection: MarkdownSection | null = null;
-	const headingStack: { level: number; title: string }[] = [];
-
-	// Preamble buffer (content before first H2/H3)
-	let preambleContent = "";
-	let preambleDone = false;
-
-	for (const line of lines) {
+	for (const line of content.split("\n")) {
 		// Skip H1 lines (redundant with frontmatter description)
-		if (/^#\s+\S/.test(line)) {
+		if (/^#\s+\S/u.test(line)) {
 			continue;
 		}
 
-		const headingMatch = /^(#{2,3})\s+(\S.*)$/.exec(line);
+		const headingMatch = /^(#{2,3})\s+(\S.*)$/u.exec(line);
 
 		if (headingMatch) {
-			// Finalize preamble on first H2/H3
-			if (!preambleDone) {
-				preambleDone = true;
-				if (preambleContent.trim()) {
-					sections.push({
-						headingPath: [],
-						title: "",
-						content: preambleContent,
-						level: 0,
-					});
-				}
-			}
-
-			// Save previous section
-			if (currentSection?.content.trim()) {
-				sections.push(currentSection);
-			}
-
-			const level = headingMatch[1].length;
-			const title = headingMatch[2];
-
-			// Update heading stack
-			while (
-				headingStack.length > 0 &&
-				headingStack[headingStack.length - 1].level >= level
-			) {
-				headingStack.pop();
-			}
-			headingStack.push({ level, title });
-
-			// Update heading path
-			currentHeadingPath = headingStack.map((h) => h.title);
-
-			currentSection = {
-				headingPath: [...currentHeadingPath],
-				title,
-				content: "",
-				level,
-			};
-		} else if (!preambleDone) {
+			handleHeadingLine(state, headingMatch);
+		} else if (!state.preambleDone) {
 			// Content before first H2/H3 goes to preamble
-			preambleContent += `${line}\n`;
-		} else if (currentSection) {
-			currentSection.content += `${line}\n`;
+			state.preambleContent += `${line}\n`;
+		} else if (state.currentSection) {
+			state.currentSection.content += `${line}\n`;
 		}
 	}
 
 	// If no H2/H3 found, all content is preamble
-	if (!preambleDone && preambleContent.trim()) {
-		sections.push({
-			headingPath: [],
-			title: "",
-			content: preambleContent,
-			level: 0,
-		});
+	if (!state.preambleDone) {
+		pushPreambleSection(state);
 	}
 
 	// Save last section
-	if (currentSection?.content.trim()) {
-		sections.push(currentSection);
+	if (state.currentSection?.content.trim()) {
+		state.sections.push(state.currentSection);
 	}
 
-	return sections;
+	return state.sections;
 }
 
 /**
@@ -226,7 +235,7 @@ function splitByParagraphs(text: string, maxLength: number): string[] {
 		return [text];
 	}
 
-	const paragraphs = text.split(/\n{2,}/);
+	const paragraphs = text.split(/\n{2,}/u);
 	const chunks: string[] = [];
 	let currentChunk = "";
 

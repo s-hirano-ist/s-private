@@ -38,6 +38,7 @@ export const {
 			return token;
 		},
 		session({ session, token }) {
+			// oxlint-disable-next-line typescript/no-unnecessary-condition -- token is from next-auth callback (external runtime boundary); declared non-nullable but may be absent at runtime
 			if (token) {
 				if (!token.id) throw new UnexpectedError();
 				session.user.id = token.id as Id;
