@@ -1,10 +1,7 @@
--- CreateEnum
-CREATE TYPE "Role" AS ENUM ('VIEWER', 'DUMPER');
-
 -- CreateTable
 CREATE TABLE "users" (
     "id" STRING(128) NOT NULL,
-    "roles" "Role"[],
+    "roles" STRING[],
     "created_at" TIMESTAMP(3) NOT NULL,
     "updated_at" TIMESTAMP(3) NOT NULL,
 

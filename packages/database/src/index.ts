@@ -52,7 +52,7 @@ export { PrismaPg } from "@prisma/adapter-pg";
 export type { Article, Book, Category, Image, Note, User } from "./generated";
 // Re-export everything from generated Prisma client
 // Note: We use separate exports to maintain proper ESM compatibility
-export { $Enums, Prisma, PrismaClient, Role, Status } from "./generated";
+export { $Enums, Prisma, PrismaClient, Status } from "./generated";
 
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "./generated";
