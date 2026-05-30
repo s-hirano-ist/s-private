@@ -17,6 +17,7 @@ Supabase 前提だった旧 issue（security-005 db-role / 006 pgaudit / 009 tls
 
 ### 1. SQL ユーザーのロール最小化（最優先・最高ROI）
 
+- ⚠️ **CockroachDB Cloud の Console / `ccloud` で作成した SQL ユーザーはデフォルトで `admin` ロールが付与される**。作成直後に `REVOKE admin FROM <user>` し、最小権限ロールに置き換えること（PoLP）。これを怠ると runtime ユーザーがクラスタ全体の管理者権限を持つ
 - 現状 migrate / runtime とも管理者ユーザーで接続していると、SQL injection で全テーブルが読める
 - `app_runtime`（対象 DB の `SELECT/INSERT/UPDATE/DELETE` のみ）と `app_migrator`（DDL 権限）を分離
   ```sql
