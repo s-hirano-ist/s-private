@@ -10,7 +10,7 @@ generator erd {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "cockroachdb"
 }
 
 enum Status {
@@ -20,38 +20,38 @@ enum Status {
 }
 
 model Category {
-  id String @id @db.VarChar(36)
+  id String @id @db.String(36)
 
-  name String @db.VarChar(16)
+  name String @db.String(16)
 
   Articles Article[]
 
   createdAt DateTime @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  userId String @map("user_id") @db.VarChar(128)
+  userId String @map("user_id") @db.String(128)
 
   @@unique([name, userId])
   @@map("categories")
 }
 
 model Article {
-  id String @id @db.VarChar(36)
+  id String @id @db.String(36)
 
-  title String  @db.VarChar(128)
-  url   String  @db.VarChar(2048)
-  quote String? @db.VarChar(512)
+  title String  @db.String(128)
+  url   String  @db.String(2048)
+  quote String? @db.String(512)
 
-  ogImageUrl    String? @map("og_image_url") @db.VarChar(4096)
-  ogTitle       String? @map("og_title") @db.VarChar(512)
-  ogDescription String? @map("og_description") @db.VarChar(1024)
+  ogImageUrl    String? @map("og_image_url") @db.String(4096)
+  ogTitle       String? @map("og_title") @db.String(512)
+  ogDescription String? @map("og_description") @db.String(1024)
 
   Category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  categoryId String   @map("category_id") @db.VarChar(36)
+  categoryId String   @map("category_id") @db.String(36)
 
   status Status
 
-  userId String @map("user_id") @db.VarChar(128)
+  userId String @map("user_id") @db.String(128)
 
   createdAt  DateTime  @map("created_at")
   updatedAt  DateTime  @updatedAt @map("updated_at")
@@ -62,14 +62,14 @@ model Article {
 }
 
 model Note {
-  id String @id @db.VarChar(36)
+  id String @id @db.String(36)
 
-  title    String @db.VarChar(64)
-  markdown String @db.Text
+  title    String @db.String(64)
+  markdown String @db.String
 
   status Status
 
-  userId String @map("user_id") @db.VarChar(128)
+  userId String @map("user_id") @db.String(128)
 
   createdAt  DateTime  @map("created_at")
   updatedAt  DateTime  @updatedAt @map("updated_at")
@@ -80,17 +80,17 @@ model Note {
 }
 
 model Image {
-  id String @id @db.VarChar(36)
+  id String @id @db.String(36)
 
-  path        String @db.VarChar(512)
-  contentType String @map("content_type") @db.VarChar(32) // e.g.: image/jpeg, image/png
+  path        String @db.String(512)
+  contentType String @map("content_type") @db.String(32) // e.g.: image/jpeg, image/png
   fileSize    Int?   @map("file_size") // byte
   width       Int? // pixel
   height      Int? // pixel
 
   status Status
 
-  userId String @map("user_id") @db.VarChar(128)
+  userId String @map("user_id") @db.String(128)
 
   createdAt  DateTime  @map("created_at")
   updatedAt  DateTime  @updatedAt @map("updated_at")
@@ -101,26 +101,26 @@ model Image {
 }
 
 model Book {
-  id    String @id @db.VarChar(36)
-  isbn  String @db.VarChar(17)
-  title String @db.VarChar(512)
+  id    String @id @db.String(36)
+  isbn  String @db.String(17)
+  title String @db.String(512)
 
-  googleSubTitle    String?  @map("google_subtitle") @db.VarChar(512)
+  googleSubTitle    String?  @map("google_subtitle") @db.String(512)
   googleAuthors     String[] @map("google_authors")
-  googleDescription String?  @map("google_description") @db.Text
-  googleImgSrc      String?  @map("google_img_src") @db.VarChar(2048)
-  googleHref        String?  @map("google_href") @db.VarChar(2048)
+  googleDescription String?  @map("google_description") @db.String
+  googleImgSrc      String?  @map("google_img_src") @db.String(2048)
+  googleHref        String?  @map("google_href") @db.String(2048)
 
-  imagePath String? @map("image_path") @db.VarChar(512)
+  imagePath String? @map("image_path") @db.String(512)
 
-  markdown String? @db.Text
+  markdown String? @db.String
 
   rating Int // 1-5
   tags   String[]
 
   status Status
 
-  userId String @map("user_id") @db.VarChar(128)
+  userId String @map("user_id") @db.String(128)
 
   createdAt  DateTime  @map("created_at")
   updatedAt  DateTime  @updatedAt @map("updated_at")

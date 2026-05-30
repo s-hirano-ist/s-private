@@ -8,7 +8,7 @@ import type {
 	ResetStatusResult,
 	StatusTransitionParams,
 } from "@s-hirano-ist/s-core/shared-kernel/repositories/batch-command-repository.interface";
-import type { Status } from "@s-hirano-ist/s-database";
+import { type Status, withTransactionRetry } from "@s-hirano-ist/s-database";
 
 /**
  * Prisma client type for transaction support.
@@ -78,27 +78,29 @@ export function createArticlesCommandRepository(
 			userId: UserId,
 			exportedAt: ExportedAt,
 		): Promise<ResetStatusResult> {
-			const [finalized, marked] = await prisma.$transaction([
-				prisma.article.updateMany({
-					where: {
-						userId: userId,
-						status: "LAST_UPDATED",
-					},
-					data: {
-						status: "EXPORTED",
-						exportedAt: exportedAt,
-					},
-				}),
-				prisma.article.updateMany({
-					where: {
-						userId: userId,
-						status: "UNEXPORTED",
-					},
-					data: {
-						status: "LAST_UPDATED",
-					},
-				}),
-			]);
+			const [finalized, marked] = await withTransactionRetry(() =>
+				prisma.$transaction([
+					prisma.article.updateMany({
+						where: {
+							userId: userId,
+							status: "LAST_UPDATED",
+						},
+						data: {
+							status: "EXPORTED",
+							exportedAt: exportedAt,
+						},
+					}),
+					prisma.article.updateMany({
+						where: {
+							userId: userId,
+							status: "UNEXPORTED",
+						},
+						data: {
+							status: "LAST_UPDATED",
+						},
+					}),
+				]),
+			);
 
 			return {
 				finalized: { count: finalized.count },

@@ -29,9 +29,9 @@ export const env = createEnv({
 		NODE_ENV: z
 			.enum(["development", "test", "production"])
 			.default("development"),
-		/** @example "postgresql://USERNAME:PASSWORD@IP_ADDRESS:PORT/DB_NAME?schema=SCHEMA_NAME" */
+		/** CockroachDB connection string. @example "postgresql://USERNAME:PASSWORD@HOST:26257/DB_NAME?sslmode=verify-full" */
 		DATABASE_URL: z.string(),
-		/** Direct (non-pooled) connection URL used by Prisma migrations. */
+		/** Connection URL used by Prisma migrations. Falls back to DATABASE_URL (CockroachDB has built-in pooling, so no separate direct endpoint is required). */
 		DIRECT_URL: z.string(),
 		PUSHOVER_URL: z
 			.string()

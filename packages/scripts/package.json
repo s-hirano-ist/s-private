@@ -65,7 +65,8 @@
 		"fix-image-formats": "tsx src/fix-image-formats.ts",
 		"fix-book-frontmatter": "tsx src/fix-book-frontmatter.ts",
 		"validate-json-articles": "tsx src/validate-json-articles.ts",
-		"enrich-books": "tsx src/enrich-books.ts"
+		"enrich-books": "tsx src/enrich-books.ts",
+		"migrate-supabase-to-cockroach": "tsx src/migrate-supabase-to-cockroach.ts"
 	},
 	"files": [
 		"dist",

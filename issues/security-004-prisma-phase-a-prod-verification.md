@@ -11,7 +11,7 @@
 
 ## 概要
 
-Prisma + Supabase セキュリティ強化計画 Phase A（軽量3点セット）はコード実装・lint・typecheck まで完了済み。本番デプロイ後の挙動確認のみ残っている。
+Prisma + CockroachDB セキュリティ強化計画 Phase A（軽量3点セット）はコード実装・lint・typecheck まで完了済み。本番デプロイ後の挙動確認のみ残っている。内容は DB ベンダ非依存（errorFormat / lint / TLS fail-close）のため CockroachDB 移行後もそのまま有効。
 
 ## 完了済み内容
 

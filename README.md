@@ -35,7 +35,7 @@
 - **Theming** - [next-themes](https://github.com/pacocoursey/next-themes)
 
 ### Database & Storage
-- **Database** - [PostgreSQL](https://www.postgresql.org/) with [Prisma](https://www.prisma.io/) ORM
+- **Database** - [CockroachDB](https://www.cockroachlabs.com/) (PostgreSQL-compatible, distributed) with [Prisma](https://www.prisma.io/) ORM
 - **Object Storage** - [MinIO](https://min.io/) (configurable for local/cloud deployment)
 ### AI & Search
 - **Embedding Model** - [intfloat/multilingual-e5-small](https://huggingface.co/intfloat/multilingual-e5-small) via [HuggingFace TEI](https://github.com/huggingface/text-embeddings-inference) (Docker)
@@ -284,7 +284,7 @@ Schema location: `packages/database/prisma/schema.prisma`
 - [Node.js](https://nodejs.org/) — version pinned in [.nvmrc](.nvmrc), installed via [Mise](https://mise.jdx.dev/)
 - [pnpm](https://pnpm.io/) v11.0.8 (managed via Mise)
 - [Doppler CLI](https://docs.doppler.com/docs/install-cli) v3.75.3 (managed via Mise)
-- [Docker](https://www.docker.com/) (for PostgreSQL database)
+- [Docker](https://www.docker.com/) (for local CockroachDB database)
 
 ### Initial Setup
 
@@ -318,13 +318,14 @@ Mise が `.env.local` を自動読み込みし、`doppler run` が `DOPPLER_TOKE
 
 ### Database Setup
 
-Start PostgreSQL database and run migrations:
+Start the local CockroachDB database and run migrations:
 
 ```bash
-# Start PostgreSQL with Docker
-docker compose up --build -d
+# Start local CockroachDB (single-node, insecure) with Docker
+docker compose up -d --wait cockroachdb
 
 # Run database migrations (Prisma client は pnpm install 時に自動生成)
+# DATABASE_URL=postgresql://root@localhost:26257/defaultdb?sslmode=disable
 pnpm prisma:migrate
 
 # (Optional) Open Prisma Studio for database inspection
