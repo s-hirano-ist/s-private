@@ -788,6 +788,12 @@ module.exports = {
 		skipAnalysisNotInRules: true,
 
 		reporterOptions: {
+			mermaid: {
+				/* 既定の minify:true はノードIDを16進ハッシュ化（0, 1A, 1E ...）し、
+           数字始まりIDで mermaid(GitHub等)のパースが壊れる。false で
+           読みやすいパスベースの英字始まりIDにし、レンダリング可能にする。 */
+				minify: false,
+			},
 			dot: {
 				/* pattern of modules that can be consolidated in the detailed
            graphical dependency graph.
