@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-import { readdirSync, readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
 import * as cheerio from "cheerio";
 import iconv from "iconv-lite";
+import { readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 
 type ArticleItem = {
 	title: string;

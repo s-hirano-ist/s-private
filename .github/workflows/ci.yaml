@@ -43,13 +43,13 @@ jobs:
           QDRANT_COLLECTION_NAME: ${{ secrets.QDRANT_COLLECTION_NAME }}
           NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
 
-  biome:
+  oxfmt:
     runs-on: ubuntu-24.04
     permissions:
       pull-requests: write
     timeout-minutes: 10
     concurrency:
-      group: ${{ github.workflow }}-biome-${{ github.ref }}
+      group: ${{ github.workflow }}-oxfmt-${{ github.ref }}
     steps:
       - name: Checkout files
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -67,7 +67,7 @@ jobs:
           fi
 
       - uses: ./.github/actions/setup-pnpm
-      - run: pnpm check:ci
+      - run: pnpm format:check
 
   oxlint:
     runs-on: ubuntu-24.04

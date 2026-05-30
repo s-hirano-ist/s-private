@@ -1,13 +1,13 @@
-import Loading from "@s-hirano-ist/s-ui/display/loading";
-import { ThemeProvider } from "@s-hirano-ist/s-ui/providers/theme-provider";
-import { Toaster } from "@s-hirano-ist/s-ui/ui/sonner";
-import { notFound } from "next/navigation";
-import { NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server";
-import { type ReactNode, Suspense } from "react";
 import { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 import { Footer } from "@/components/common/layouts/nav/footer";
 import { routing } from "@/infrastructures/i18n/routing";
+import Loading from "@s-hirano-ist/s-ui/display/loading";
+import { ThemeProvider } from "@s-hirano-ist/s-ui/providers/theme-provider";
+import { Toaster } from "@s-hirano-ist/s-ui/ui/sonner";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
+import { notFound } from "next/navigation";
+import { type ReactNode, Suspense } from "react";
 
 const VALID_LOCALES = new Set(routing.locales);
 

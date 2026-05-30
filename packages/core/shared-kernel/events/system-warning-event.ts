@@ -1,6 +1,6 @@
-import { BaseDomainEvent } from "./base-domain-event.ts";
 import type { SystemWarningPayload } from "./payload-types.ts";
 import type { SystemErrorEvent } from "./system-error-event.ts";
+import { BaseDomainEvent } from "./base-domain-event.ts";
 
 /**
  * Domain event for system warnings.

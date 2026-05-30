@@ -12,7 +12,7 @@ const mockClient = {
 };
 
 vi.mock("@qdrant/js-client-rest", () => ({
-	// biome-ignore lint/complexity/useArrowFunction: must be a regular function for `new` to work
+	// must be a regular function (not arrow) for `new` to work
 	QdrantClient: vi.fn().mockImplementation(function () {
 		return mockClient;
 	}),

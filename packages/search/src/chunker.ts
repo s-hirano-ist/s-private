@@ -1,5 +1,5 @@
-import { createHash } from "node:crypto";
 import type { ContentType, QdrantPayload } from "./config.ts";
+import { createHash } from "node:crypto";
 import { RAG_CONFIG } from "./config.ts";
 
 // JSON article structure

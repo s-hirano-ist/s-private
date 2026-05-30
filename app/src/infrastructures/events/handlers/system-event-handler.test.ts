@@ -1,6 +1,6 @@
 import type { DomainEvent } from "@s-hirano-ist/s-core/shared-kernel/events/domain-event.interface";
-import { describe, expect, test } from "vitest";
 import { serverLogger } from "@/infrastructures/observability/server";
+import { describe, expect, test } from "vitest";
 import { SystemEventHandler } from "./system-event-handler";
 
 describe("SystemEventHandler", () => {

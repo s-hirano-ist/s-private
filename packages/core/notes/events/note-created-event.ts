@@ -1,6 +1,6 @@
-import { BaseDomainEvent } from "../../shared-kernel/events/base-domain-event.ts";
 import type { NoteCreatedPayload } from "../../shared-kernel/events/payload-types.ts";
 import type { NoteDeletedEvent } from "./note-deleted-event.ts";
+import { BaseDomainEvent } from "../../shared-kernel/events/base-domain-event.ts";
 
 /**
  * Domain event emitted when a note is created.

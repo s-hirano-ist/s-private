@@ -13,9 +13,9 @@
  * @module
  */
 
+import { env } from "@/env";
 import { PrismaClient, PrismaPg } from "@s-hirano-ist/s-database";
 import * as Sentry from "@sentry/nextjs";
-import { env } from "@/env";
 
 const isProduction = env.NODE_ENV === "production";
 
@@ -72,7 +72,8 @@ const prismaClientSingleton = () => {
 	});
 };
 
-// biome-ignore lint/suspicious/noShadowRestrictedNames: Required to extend globalThis for Prisma singleton pattern - caches client across hot-reloads in development
+// Required to extend globalThis for Prisma singleton pattern - caches client across hot-reloads in development
+// oxlint-disable-next-line no-shadow-restricted-names
 declare const globalThis: {
 	prismaGlobal: ReturnType<typeof prismaClientSingleton>;
 } & typeof global;

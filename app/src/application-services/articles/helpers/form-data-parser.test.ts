@@ -1,3 +1,5 @@
+import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { getFormDataString } from "@/common/utils/form-data-utils";
 import {
 	type ArticleTitle,
 	type CategoryName,
@@ -8,9 +10,7 @@ import {
 	type Quote,
 	type Url,
 } from "@s-hirano-ist/s-core/articles/entities/article-entity";
-import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { getFormDataString } from "@/common/utils/form-data-utils";
 import { parseAddArticleFormData } from "./form-data-parser";
 
 vi.mock("@/common/utils/form-data-utils");

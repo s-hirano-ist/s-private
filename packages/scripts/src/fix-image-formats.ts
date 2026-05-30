@@ -1,7 +1,7 @@
 #!/usr/bin/env node
+import { glob } from "glob";
 import { stat, unlink } from "node:fs/promises";
 import { basename, extname, join } from "node:path";
-import { glob } from "glob";
 import sharp from "sharp";
 
 const WEBP_QUALITY = 80;

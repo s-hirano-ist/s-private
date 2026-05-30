@@ -1,7 +1,7 @@
+import type { ViewerBodyProps } from "./viewer-body";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Suspense } from "react";
 import { expect, within } from "storybook/test";
-import type { ViewerBodyProps } from "./viewer-body";
 import { ViewerBodyClient } from "./viewer-body";
 
 function ViewerBodyWrapper(props: ViewerBodyProps) {

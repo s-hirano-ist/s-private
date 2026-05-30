@@ -1,6 +1,6 @@
-import { BaseDomainEvent } from "../../shared-kernel/events/base-domain-event.ts";
 import type { ImageDeletedPayload } from "../../shared-kernel/events/payload-types.ts";
 import type { ImageCreatedEvent } from "./image-created-event.ts";
+import { BaseDomainEvent } from "../../shared-kernel/events/base-domain-event.ts";
 
 /**
  * Domain event emitted when an image is deleted.
@@ -33,11 +33,7 @@ export class ImageDeletedEvent extends BaseDomainEvent<ImageDeletedPayload> {
 	 * @param data.userId - The user who deleted the image
 	 * @param data.caller - The function/method that triggered the event
 	 */
-	constructor(data: {
-		path: string;
-		userId: string;
-		caller: string;
-	}) {
+	constructor(data: { path: string; userId: string; caller: string }) {
 		super(
 			"image.deleted",
 			{

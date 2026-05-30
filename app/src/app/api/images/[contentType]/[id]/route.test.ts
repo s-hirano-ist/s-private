@@ -10,9 +10,8 @@ vi.mock("@/application-services/images/get-images", () => ({
 }));
 
 const { GET } = await import("./route");
-const { getImagesFromStorage } = await import(
-	"@/application-services/images/get-images"
-);
+const { getImagesFromStorage } =
+	await import("@/application-services/images/get-images");
 
 describe("Images API Route", () => {
 	beforeEach(() => {

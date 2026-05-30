@@ -4,23 +4,23 @@
  * @module
  */
 
+import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import {
+	getFormDataFile,
+	getFormDataString,
+} from "@/common/utils/form-data-utils";
+import { sharpImageProcessor } from "@/infrastructures/images/services/sharp-image-processor";
 import {
 	makeBookTitle,
 	makeISBN,
 	makeRating,
 	makeTags,
 } from "@s-hirano-ist/s-core/books/entities/book-entity";
-import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import {
 	makeContentType,
 	makeFileSize,
 	makePath,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
-import {
-	getFormDataFile,
-	getFormDataString,
-} from "@/common/utils/form-data-utils";
-import { sharpImageProcessor } from "@/infrastructures/images/services/sharp-image-processor";
 
 /**
  * Parses book creation form data into domain value objects.

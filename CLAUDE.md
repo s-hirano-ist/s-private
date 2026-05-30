@@ -9,6 +9,7 @@ docs/** にはより詳細な設計等のルールが記載されています。
 - 計画時、後方互換性は基本的に捨てること。
 
 ## 技術スタック
+
 - Next.js 16 (App Router, Server Actions)
 - TypeScript + Zod
 - Prisma + CockroachDB
@@ -18,18 +19,21 @@ docs/** にはより詳細な設計等のルールが記載されています。
 - Qdrant (Vector Database) + HuggingFace TEI (Text Embeddings Inference)
 
 ## コマンド
+
 - `pnpm dev` - 開発サーバー
 - `pnpm build` - ビルド
 - `pnpm test` - テスト実行
-- `pnpm lint` - oxlint（type-aware。ESLintから移行済み）
+- `pnpm lint` - oxlint（type-aware。ESLintから移行済み。旧Biomeのbase lintも吸収）
 - `pnpm lint:fix` - oxlint自動修正
 - `pnpm deps:check` - dependency-cruiser（Clean Architecture層境界の強制を含む）
-- `pnpm check:fix` - Biomeフォーマット
+- `pnpm format` - oxfmt（Prettier互換。フォーマット + import並べ替え + Tailwindクラス並べ替え。Biomeから移行済み）
+- `pnpm format:check` - oxfmtフォーマットチェック（書き込みなし）
 - `pnpm prisma:migrate:diff` - 新規マイグレーションSQL生成（DB不要のdiffフロー。ローカルDBは持たず `migrate dev` は不使用。`crdb_internal_region` drift でクラウドに対して失敗するため）
 - `pnpm prisma:deploy` - マイグレーション適用（クラウドはこちらを使う）
 - `pnpm storybook` - Storybook起動
 
 ## ディレクトリ構造
+
 - `packages/core/` - ドメイン層（entities, repositories, services, shared-kernel）
 - `packages/ui/` - 共有UIコンポーネント（shadcn/ui, forms, hooks等）
 - `packages/database/` - データベース層（Prisma ORM・マイグレーション）
@@ -43,9 +47,11 @@ docs/** にはより詳細な設計等のルールが記載されています。
 - `app/src/app/[locale]/` - Next.js App Router（i18n対応: en/ja）
 
 ## 主要ドメイン
+
 `articles`, `notes`, `images`, `books` - 各コンテンツのCRUDと状態管理（UNEXPORTED → LAST_UPDATED → EXPORTED）
 
 ## 設計方針
+
 - Clean Architecture + ドメイン駆動設計
 - Server Actionsで全mutation（`wrapServerSideErrorForClient`使用）
 - 各ドメインは独立（cross-domain import禁止）
@@ -53,6 +59,7 @@ docs/** にはより詳細な設計等のルールが記載されています。
 - 絶対パスimport必須（`../../*`禁止）
 
 ## 外部サービス
+
 - CockroachDB Cloud + Prisma ORM
 - MinIO（オブジェクトストレージ）
 - Sentry（エラー監視）+ Pushover（通知）
@@ -62,9 +69,11 @@ docs/** にはより詳細な設計等のルールが記載されています。
 - Qdrant（ベクトルデータベース）
 
 ## 環境設定
-環境変数はdev/preview環境はDoppler、本番環境はVercel Dashboardで管理。ローカル開発では`.env.local`にDopplerサービストークン（`DOPPLER_TOKEN`）を設定し、Miseが自動読み込み→`doppler run`で環境変数を注入。一部ルートスクリプト（prisma:*）は`vercel env run -e development`を使用。型定義は`app/src/env.ts`。初回セットアップ: `mise install` → `.env.local`にトークン設定 → `pnpm install` → `vercel link`。
+
+環境変数はdev/preview環境はDoppler、本番環境はVercel Dashboardで管理。ローカル開発では`.env.local`にDopplerサービストークン（`DOPPLER_TOKEN`）を設定し、Miseが自動読み込み→`doppler run`で環境変数を注入。一部ルートスクリプト（prisma:\*）は`vercel env run -e development`を使用。型定義は`app/src/env.ts`。初回セットアップ: `mise install` → `.env.local`にトークン設定 → `pnpm install` → `vercel link`。
 
 ## 詳細資料
+
 - セットアップ: [docs/setup.md](docs/setup.md)
 - テスト: [docs/testing.md](docs/testing.md)
 - アーキテクチャ: [docs/architecture.md](docs/architecture.md)

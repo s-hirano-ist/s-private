@@ -8,20 +8,11 @@
  * @module
  */
 
-import {
-	makeExportedStatus,
-	makeUnexportedStatus,
-	type Status,
-	type UserId,
-} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { SystemErrorEvent } from "@s-hirano-ist/s-core/shared-kernel/events/system-error-event";
-import { cacheTag } from "next/cache";
-import { cache } from "react";
-import { getSelfId } from "@/common/auth/session";
-import { PAGE_SIZE } from "@/common/constants";
 import type { GetCount, GetPaginatedData } from "@/common/types";
 import type { ArticleFormData } from "@/components/articles/client/article-form";
 import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
+import { getSelfId } from "@/common/auth/session";
+import { PAGE_SIZE } from "@/common/constants";
 import {
 	articlesQueryRepository,
 	categoryQueryRepository,
@@ -34,6 +25,15 @@ import {
 	buildCountCacheTag,
 	buildPaginatedContentCacheTag,
 } from "@/infrastructures/shared/cache/cache-tag-builder";
+import {
+	makeExportedStatus,
+	makeUnexportedStatus,
+	type Status,
+	type UserId,
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { SystemErrorEvent } from "@s-hirano-ist/s-core/shared-kernel/events/system-error-event";
+import { cacheTag } from "next/cache";
+import { cache } from "react";
 
 /**
  * Fetches paginated articles with cache support.

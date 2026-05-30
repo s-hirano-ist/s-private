@@ -1,6 +1,6 @@
-import { type NextRequest, NextResponse } from "next/server";
-import createMiddleware from "next-intl/middleware";
 import { auth } from "@/infrastructures/auth/auth-provider";
+import createMiddleware from "next-intl/middleware";
+import { type NextRequest, NextResponse } from "next/server";
 import { routing } from "./infrastructures/i18n/routing";
 
 const handleI18nRouting = createMiddleware(routing);

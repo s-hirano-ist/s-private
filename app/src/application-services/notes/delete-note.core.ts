@@ -8,15 +8,15 @@
  */
 
 import "server-only";
+import type { DeleteNoteDeps } from "./delete-note.deps";
+import type { ServerAction } from "@/common/types";
+import { getSelfId } from "@/common/auth/session";
+import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import { NoteDeletedEvent } from "@s-hirano-ist/s-core/notes/events/note-deleted-event";
 import {
 	type Id,
 	makeUnexportedStatus,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { getSelfId } from "@/common/auth/session";
-import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
-import type { ServerAction } from "@/common/types";
-import type { DeleteNoteDeps } from "./delete-note.deps";
 
 /**
  * Core business logic for deleting a note.

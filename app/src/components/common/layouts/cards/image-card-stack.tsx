@@ -1,9 +1,9 @@
 "use client";
+import type { ImageCardStackInitialData } from "./types";
 import type { DeleteAction, LoadMoreAction } from "@/common/types";
 import { DeleteButtonWithModal } from "@/components/common/forms/actions/delete-button-with-modal";
 import { BaseCardStackWrapper } from "@/components/common/layouts/cards/base-card-stack";
 import { ImageCard } from "@/components/common/layouts/cards/image-card";
-import type { ImageCardStackInitialData } from "./types";
 
 type Props = {
 	initial: ImageCardStackInitialData;

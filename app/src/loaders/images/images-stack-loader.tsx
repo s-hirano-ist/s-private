@@ -1,13 +1,12 @@
 import "server-only";
-
+import type { ServerAction } from "@/common/types";
+import type { BaseLoaderProps } from "@/loaders/types";
 import {
 	getExportedImages,
 	getImagesCount,
 	getUnexportedImages,
 } from "@/application-services/images/get-images";
-import type { ServerAction } from "@/common/types";
 import { ImagesStack } from "@/components/images/server/images-stack";
-import type { BaseLoaderProps } from "@/loaders/types";
 
 export type ImagesStackLoaderProps = BaseLoaderProps & {
 	variant: "exported" | "unexported";

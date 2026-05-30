@@ -1,3 +1,12 @@
+import type {
+	ArticlesFindManyParams,
+	IArticlesQueryRepository,
+} from "@s-hirano-ist/s-core/articles/repositories/articles-query-repository.interface";
+import type {
+	CategoryFindManyParams,
+	ICategoryQueryRepository,
+} from "@s-hirano-ist/s-core/articles/repositories/category-query-repository.interface";
+import prisma from "@/prisma";
 import {
 	type ArticleListItemDTO,
 	type ExportedArticle,
@@ -10,14 +19,6 @@ import {
 	makeUrl,
 	type UnexportedArticle,
 } from "@s-hirano-ist/s-core/articles/entities/article-entity";
-import type {
-	ArticlesFindManyParams,
-	IArticlesQueryRepository,
-} from "@s-hirano-ist/s-core/articles/repositories/articles-query-repository.interface";
-import type {
-	CategoryFindManyParams,
-	ICategoryQueryRepository,
-} from "@s-hirano-ist/s-core/articles/repositories/category-query-repository.interface";
 import {
 	type Id,
 	makeCreatedAt,
@@ -26,7 +27,6 @@ import {
 	makeUserId,
 	type Status,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import prisma from "@/prisma";
 
 async function findByUrl(
 	url: string,

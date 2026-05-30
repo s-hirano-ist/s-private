@@ -1,7 +1,7 @@
+import type { CfAccessConfig } from "./types.ts";
+import type { ClientOptions } from "minio";
 import type { RequestOptions } from "node:http";
 import * as https from "node:https";
-import type { ClientOptions } from "minio";
-import type { CfAccessConfig } from "./types.ts";
 
 type Transport = NonNullable<ClientOptions["transport"]>;
 
@@ -21,7 +21,8 @@ export function createCfAccessTransport(
 				options.headers = headers;
 			}
 
-			// biome-ignore lint/suspicious/noExplicitAny: https.request has complex overloads incompatible with Transport type
+			// https.request has complex overloads incompatible with Transport type
+			// oxlint-disable-next-line typescript/no-explicit-any
 			return (https.request as any)(options, ...rest);
 		},
 	};

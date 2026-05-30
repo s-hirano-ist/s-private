@@ -1,9 +1,9 @@
-import Loading from "@s-hirano-ist/s-ui/display/loading";
-import { cookies, headers } from "next/headers";
-import { getTranslations } from "next-intl/server";
-import { Suspense } from "react";
 import { NotFound } from "@/components/common/display/status/not-found";
 import { routing } from "@/infrastructures/i18n/routing";
+import Loading from "@s-hirano-ist/s-ui/display/loading";
+import { getTranslations } from "next-intl/server";
+import { cookies, headers } from "next/headers";
+import { Suspense } from "react";
 
 async function getLocale() {
 	// Try to get locale from cookie first

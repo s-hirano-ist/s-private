@@ -1,9 +1,8 @@
 "use client";
 
-import * as DialogPrimitive from "@radix-ui/react-dialog";
 import type * as React from "react";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { tv, type VariantProps } from "tailwind-variants";
-
 import { cn } from "../utils/cn";
 
 /**
@@ -65,7 +64,7 @@ function DialogOverlay({ className, ref, ...props }: DialogOverlayProps) {
 	return (
 		<DialogPrimitive.Overlay
 			className={cn(
-				"data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80 data-[state=closed]:animate-out data-[state=open]:animate-in",
+				"data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=open]:animate-in fixed inset-0 z-50 bg-black/80",
 				className,
 			)}
 			ref={ref}
@@ -76,7 +75,7 @@ function DialogOverlay({ className, ref, ...props }: DialogOverlayProps) {
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
 const dialogContentVariants = tv({
-	base: "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] fixed top-[50%] left-[50%] z-50 grid w-full translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=closed]:animate-out data-[state=open]:animate-in sm:rounded-lg",
+	base: "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] data-[state=closed]:animate-out data-[state=open]:animate-in fixed top-[50%] left-[50%] z-50 grid w-full translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 sm:rounded-lg",
 	variants: {
 		size: {
 			default: "max-w-lg",
@@ -191,7 +190,7 @@ function DialogTitle({ className, ref, ...props }: DialogTitleProps) {
 	return (
 		<DialogPrimitive.Title
 			className={cn(
-				"font-semibold text-lg leading-none tracking-tight",
+				"text-lg leading-none font-semibold tracking-tight",
 				className,
 			)}
 			ref={ref}
@@ -220,7 +219,7 @@ function DialogDescription({
 }: DialogDescriptionProps) {
 	return (
 		<DialogPrimitive.Description
-			className={cn("text-muted-foreground text-sm", className)}
+			className={cn("text-sm text-muted-foreground", className)}
 			ref={ref}
 			{...props}
 		/>

@@ -1,6 +1,6 @@
 import type { DeleteAction, LoadMoreAction } from "@/common/types";
-import { LinkCardStack } from "@/components/common/layouts/cards/link-card-stack";
 import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
+import { LinkCardStack } from "@/components/common/layouts/cards/link-card-stack";
 
 export type Props = {
 	initialData: LinkCardStackInitialData;

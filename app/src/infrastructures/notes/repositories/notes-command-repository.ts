@@ -1,7 +1,3 @@
-import {
-	makeNoteTitle,
-	type UnexportedNote,
-} from "@s-hirano-ist/s-core/notes/entities/note-entity";
 import type {
 	DeleteNoteResult,
 	INotesCommandRepository,
@@ -11,12 +7,16 @@ import type {
 	Status,
 	UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { updateTag } from "next/cache";
 import {
 	buildContentCacheTag,
 	buildCountCacheTag,
 } from "@/infrastructures/shared/cache/cache-tag-builder";
 import prisma from "@/prisma";
+import {
+	makeNoteTitle,
+	type UnexportedNote,
+} from "@s-hirano-ist/s-core/notes/entities/note-entity";
+import { updateTag } from "next/cache";
 
 async function create(data: UnexportedNote): Promise<void> {
 	await prisma.note.create({ data });

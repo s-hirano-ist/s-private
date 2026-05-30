@@ -1,15 +1,15 @@
-import { makeArticleTitle } from "@s-hirano-ist/s-core/articles/entities/article-entity";
+import type { DeleteArticleDeps } from "./delete-article.deps";
 import type { IArticlesCommandRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-command-repository.interface";
+import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
+import { makeArticleTitle } from "@s-hirano-ist/s-core/articles/entities/article-entity";
 import {
 	makeId,
 	makeUnexportedStatus,
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { deleteArticle } from "./delete-article";
 import { deleteArticleCore } from "./delete-article.core";
-import type { DeleteArticleDeps } from "./delete-article.deps";
 
 // Minimal mocks - only for auth
 vi.mock("@/common/auth/session", () => ({

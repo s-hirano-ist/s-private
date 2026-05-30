@@ -1,3 +1,6 @@
+import type { getBookByISBN } from "@/application-services/books/get-books";
+import { BackButton } from "@/components/common/back-button";
+import { ImageWithFallback } from "@/components/common/display/image/image-with-fallback";
 import { ViewerBodyClient } from "@s-hirano-ist/s-ui/layouts/body/viewer-body";
 import { Badge } from "@s-hirano-ist/s-ui/ui/badge";
 import {
@@ -9,9 +12,6 @@ import {
 } from "@s-hirano-ist/s-ui/ui/card";
 import { Rating } from "@s-hirano-ist/s-ui/ui/rating";
 import { notFound } from "next/navigation";
-import type { getBookByISBN } from "@/application-services/books/get-books";
-import { BackButton } from "@/components/common/back-button";
-import { ImageWithFallback } from "@/components/common/display/image/image-with-fallback";
 
 export type Props = { slug: string; getBookByISBN: typeof getBookByISBN };
 
@@ -44,7 +44,7 @@ export async function ViewerBody({ slug, getBookByISBN }: Props) {
 							<CardTitle className="flex flex-col gap-1">
 								<span>{data.title}</span>
 								{data.googleSubTitle && (
-									<span className="font-normal text-muted-foreground text-sm">
+									<span className="text-sm font-normal text-muted-foreground">
 										{data.googleSubTitle}
 									</span>
 								)}
@@ -58,13 +58,13 @@ export async function ViewerBody({ slug, getBookByISBN }: Props) {
 						<CardContent className="space-y-3">
 							<div className="flex items-center gap-2">
 								<Rating rating={data.rating} />
-								<span className="text-muted-foreground text-sm">
+								<span className="text-sm text-muted-foreground">
 									({data.rating}/5)
 								</span>
 							</div>
 
 							{authors && authors.length > 0 && (
-								<p className="text-muted-foreground text-sm">
+								<p className="text-sm text-muted-foreground">
 									<span className="font-medium">Authors:</span>{" "}
 									{authors.join(", ")}
 								</p>
@@ -80,7 +80,7 @@ export async function ViewerBody({ slug, getBookByISBN }: Props) {
 								</div>
 							)}
 
-							<p className="text-muted-foreground text-sm">
+							<p className="text-sm text-muted-foreground">
 								<span className="font-medium">ISBN:</span> {data.isbn}
 							</p>
 

@@ -1,9 +1,9 @@
 "use client";
+import type { LinkCardStackInitialData } from "./types";
 import type { DeleteAction, LoadMoreAction } from "@/common/types";
 import { DeleteButtonWithModal } from "@/components/common/forms/actions/delete-button-with-modal";
 import { BaseCardStackWrapper } from "@/components/common/layouts/cards/base-card-stack";
 import { LinkCard } from "@/components/common/layouts/cards/link-card";
-import type { LinkCardStackInitialData } from "./types";
 
 type Props = {
 	initial: LinkCardStackInitialData;

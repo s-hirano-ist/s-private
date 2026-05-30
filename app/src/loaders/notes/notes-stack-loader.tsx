@@ -1,11 +1,10 @@
 import "server-only";
-
+import type { PaginatedLinkCardLoaderProps } from "@/loaders/types";
 import {
 	getExportedNotes,
 	getUnexportedNotes,
 } from "@/application-services/notes/get-notes";
 import { NotesStack } from "@/components/notes/server/notes-stack";
-import type { PaginatedLinkCardLoaderProps } from "@/loaders/types";
 
 export type NotesStackLoaderProps = PaginatedLinkCardLoaderProps & {
 	variant: "exported" | "unexported";

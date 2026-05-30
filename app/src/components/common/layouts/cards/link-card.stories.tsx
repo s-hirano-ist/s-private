@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
 import { DeleteButtonWithModal } from "@/components/common/forms/actions/delete-button-with-modal";
+import { fn } from "storybook/test";
 import { LinkCard } from "./link-card";
 
 const meta = {

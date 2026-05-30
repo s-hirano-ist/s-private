@@ -1,12 +1,12 @@
-import {
-	makeExportedAt,
-	type UserId,
-} from "../../shared-kernel/entities/common-entity.ts";
 import type {
 	BulkUpdateResult,
 	IBatchCommandRepository,
 	ResetStatusResult,
 } from "../../shared-kernel/repositories/batch-command-repository.interface.ts";
+import {
+	makeExportedAt,
+	type UserId,
+} from "../../shared-kernel/entities/common-entity.ts";
 
 /**
  * Result of the reset operation.

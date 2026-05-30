@@ -1,3 +1,4 @@
+import prisma from "@/prisma";
 import {
 	makeBookMarkdown,
 	makeBookTitle,
@@ -17,7 +18,6 @@ import {
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import prisma from "@/prisma";
 import { booksQueryRepository } from "./books-query-repository";
 
 describe("BooksQueryRepository", () => {

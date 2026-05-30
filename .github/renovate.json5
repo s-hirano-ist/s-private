@@ -1,78 +1,55 @@
 {
-  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
-  timezone: 'Asia/Tokyo',
-  baseBranchPatterns: [
-    'main',
-  ],
-  extends: [
-    'config:recommended',
-    'config:best-practices',
-    ':semanticCommitTypeAll(chore)',
-    'customManagers:biomeVersions',
-    ':enableVulnerabilityAlertsWithLabel(security)',
-  ],
-  reviewers: [
-    's-hirano-ist',
-  ],
-  // Dependabot がサポートしない範囲のみ Renovate で扱う:
-  //   - mise / nvm: ツールバージョン管理
-  //   - biome customManager: extends の customManagers:biomeVersions が拾う
-  //   - lockFileMaintenance: 四半期に pnpm-lock 全リフレッシュ
-  // npm / github-actions / docker-compose は .github/dependabot.yml に移行済み。
-  enabledManagers: [
-    'mise',
-    'nvm',
-  ],
-  // Mend Cloud / self-host いずれでも pnpm install の lifecycle scripts (sharp /
-  // @prisma/engines / @sentry/cli / esbuild) によるメモリ消費を抑える保険。
-  // CI (--frozen-lockfile) と本番 deploy 側の install では通常通りバイナリを取得する。
-  ignoreScripts: true,
-  dependencyDashboard: true,
-  branchConcurrentLimit: 2,
-  prConcurrentLimit: 2,
-  separateMultipleMajor: false,
-  schedule: [
-    'before 11am on monday',
-  ],
-  labels: [
-    'dependencies',
-  ],
-  rangeStrategy: 'bump',
-  platformAutomerge: true,
-  automergeStrategy: 'squash',
-  lockFileMaintenance: {
-    enabled: true,
-    automerge: false,
-    schedule: ['before 5am on the first day of january,april,july,october'],
-  },
-  vulnerabilityAlerts: {
-    labels: [
-      'security',
-    ],
-  },
-  packageRules: [
-    {
-      matchManagers: [
-        'mise',
-      ],
-      groupName: 'mise',
-      groupSlug: 'mise',
-      minimumReleaseAge: '2 days',
-      automerge: true,
-    },
-    {
-      matchDepNames: [
-        'node',
-        'pnpm',
-      ],
-      matchManagers: [
-        'mise',
-        'nvm',
-      ],
-      groupName: 'node and pnpm',
-      groupSlug: 'node-pnpm',
-      minimumReleaseAge: '2 days',
-      automerge: false,
-    },
-  ],
+	$schema: "https://docs.renovatebot.com/renovate-schema.json",
+	timezone: "Asia/Tokyo",
+	baseBranchPatterns: ["main"],
+	extends: [
+		"config:recommended",
+		"config:best-practices",
+		":semanticCommitTypeAll(chore)",
+		":enableVulnerabilityAlertsWithLabel(security)",
+	],
+	reviewers: ["s-hirano-ist"],
+	// Dependabot がサポートしない範囲のみ Renovate で扱う:
+	//   - mise / nvm: ツールバージョン管理
+	//   - lockFileMaintenance: 四半期に pnpm-lock 全リフレッシュ
+	// npm / github-actions / docker-compose は .github/dependabot.yml に移行済み。
+	enabledManagers: ["mise", "nvm"],
+	// Mend Cloud / self-host いずれでも pnpm install の lifecycle scripts (sharp /
+	// @prisma/engines / @sentry/cli / esbuild) によるメモリ消費を抑える保険。
+	// CI (--frozen-lockfile) と本番 deploy 側の install では通常通りバイナリを取得する。
+	ignoreScripts: true,
+	dependencyDashboard: true,
+	branchConcurrentLimit: 2,
+	prConcurrentLimit: 2,
+	separateMultipleMajor: false,
+	schedule: ["before 11am on monday"],
+	labels: ["dependencies"],
+	rangeStrategy: "bump",
+	platformAutomerge: true,
+	automergeStrategy: "squash",
+	lockFileMaintenance: {
+		enabled: true,
+		automerge: false,
+		schedule: ["before 5am on the first day of january,april,july,october"],
+	},
+	vulnerabilityAlerts: {
+		labels: ["security"],
+	},
+	packageRules: [
+		{
+			matchManagers: ["mise"],
+			groupName: "mise",
+			groupSlug: "mise",
+			minimumReleaseAge: "2 days",
+			automerge: true,
+		},
+		{
+			matchDepNames: ["node", "pnpm"],
+			matchManagers: ["mise", "nvm"],
+			groupName: "node and pnpm",
+			groupSlug: "node-pnpm",
+			minimumReleaseAge: "2 days",
+			automerge: false,
+		},
+	],
 }

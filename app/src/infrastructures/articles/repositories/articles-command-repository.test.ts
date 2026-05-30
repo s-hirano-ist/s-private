@@ -1,9 +1,10 @@
+import type { Status } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import prisma from "@/prisma";
 import {
 	makeArticleTitle,
 	makeQuote,
 	makeUrl,
 } from "@s-hirano-ist/s-core/articles/entities/article-entity";
-import type { Status } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import {
 	makeCreatedAt,
 	makeId,
@@ -11,7 +12,6 @@ import {
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import prisma from "@/prisma";
 import { articlesCommandRepository } from "./articles-command-repository";
 
 describe("ArticlesCommandRepository", () => {

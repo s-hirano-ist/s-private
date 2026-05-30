@@ -1,8 +1,9 @@
+import type { Status } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import prisma from "@/prisma";
 import {
 	makeMarkdown,
 	makeNoteTitle,
 } from "@s-hirano-ist/s-core/notes/entities/note-entity";
-import type { Status } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import {
 	makeCreatedAt,
 	makeId,
@@ -10,7 +11,6 @@ import {
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import prisma from "@/prisma";
 import { notesCommandRepository } from "./notes-command-repository";
 
 describe("NotesCommandRepository", () => {

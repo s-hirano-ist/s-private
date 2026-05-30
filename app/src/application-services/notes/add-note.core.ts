@@ -8,11 +8,11 @@
  */
 
 import "server-only";
-import { noteEntity } from "@s-hirano-ist/s-core/notes/entities/note-entity";
+import type { AddNoteDeps } from "./add-note.deps";
+import type { ServerAction } from "@/common/types";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
-import type { ServerAction } from "@/common/types";
-import type { AddNoteDeps } from "./add-note.deps";
+import { noteEntity } from "@s-hirano-ist/s-core/notes/entities/note-entity";
 import { parseAddNoteFormData } from "./helpers/form-data-parser";
 
 /**

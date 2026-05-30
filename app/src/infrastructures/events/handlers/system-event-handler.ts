@@ -1,8 +1,8 @@
+import type { LogContext } from "@/infrastructures/observability/logging/logger.interface";
 import type {
 	DomainEvent,
 	DomainEventHandler,
 } from "@s-hirano-ist/s-core/shared-kernel/events/domain-event.interface";
-import type { LogContext } from "@/infrastructures/observability/logging/logger.interface";
 import { serverLogger } from "@/infrastructures/observability/server";
 
 export class SystemEventHandler implements DomainEventHandler {

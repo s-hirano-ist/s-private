@@ -47,8 +47,8 @@
 - **Internationalization** - [next-intl](https://next-intl-docs.vercel.app/) (Japanese/English support)
 
 ### Code Quality & Development Tools
-- **Primary Formatter/Linter** - [Biome](https://biomejs.dev/)
-- **Secondary Linter** - [ESLint](https://eslint.org/) for React/Next.js specific rules
+- **Formatter** - [oxfmt](https://oxc.rs/docs/guide/usage/formatter) (Prettier-compatible; formatting + import & Tailwind class sorting)
+- **Linter** - [oxlint](https://oxc.rs/docs/guide/usage/linter) (type-aware, Rust-based)
 - **Testing Framework** - [Vitest](https://vitest.dev/) with [Testing Library](https://testing-library.com/)
 - **Component Development** - [Storybook](https://storybook.js.org/)
 
@@ -345,10 +345,11 @@ pnpm build                  # Build production application
 pnpm start                  # Start production server
 
 # Code Quality
-pnpm check:fix             # Primary formatting and linting (Biome)
-pnpm lint                  # ESLint checking
-pnpm lint:fix              # ESLint with auto-fixing
-pnpm lint:inspector        # ESLint configuration inspector
+pnpm format                # Format + import/Tailwind class sorting (oxfmt)
+pnpm format:check          # Check formatting without writing (oxfmt)
+pnpm lint                  # Lint (oxlint, type-aware)
+pnpm lint:fix              # Lint with auto-fixing (oxlint)
+pnpm deps:check            # Clean Architecture boundary check (dependency-cruiser)
 
 # Testing
 pnpm test                  # Run Vitest unit tests (storybook含む全プロジェクト)
@@ -484,8 +485,8 @@ VPS 上の Docker Compose サービス用の環境変数は `~/s-private/.env` �
 ## Code Standards & Architecture Rules
 
 ### Formatting & Linting
-- **Primary**: Biome for comprehensive formatting, linting, and import organization
-- **Secondary**: ESLint for React/Next.js specific rules and accessibility checks
+- **Formatting**: oxfmt for formatting, import organization, and Tailwind class sorting
+- **Linting**: oxlint (type-aware) for correctness, React/Next.js, and accessibility rules
 - **Strict TypeScript**: Full type safety with runtime validation
 
 ### Architectural Constraints

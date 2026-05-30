@@ -1,15 +1,15 @@
-import { makeNoteTitle } from "@s-hirano-ist/s-core/notes/entities/note-entity";
+import type { DeleteNoteDeps } from "./delete-note.deps";
 import type { INotesCommandRepository } from "@s-hirano-ist/s-core/notes/repositories/notes-command-repository.interface";
+import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
+import { makeNoteTitle } from "@s-hirano-ist/s-core/notes/entities/note-entity";
 import {
 	makeId,
 	makeUnexportedStatus,
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { deleteNote } from "./delete-note";
 import { deleteNoteCore } from "./delete-note.core";
-import type { DeleteNoteDeps } from "./delete-note.deps";
 
 vi.mock("@/common/auth/session", () => ({
 	getSelfId: vi.fn(),

@@ -1,6 +1,6 @@
+import type { Route } from "next";
 import { StatusCodeView } from "@s-hirano-ist/s-ui/display/status/status-code-view";
 import { Button } from "@s-hirano-ist/s-ui/ui/button";
-import type { Route } from "next";
 import Link from "next/link";
 
 type NotFoundProps = {

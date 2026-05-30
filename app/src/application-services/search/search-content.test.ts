@@ -13,9 +13,8 @@ describe("search-content", () => {
 		vi.resetModules();
 		const mod = await import("./search-content");
 		searchContent = mod.searchContent;
-		const searchServiceMod = await import(
-			"@/infrastructures/search/search-service"
-		);
+		const searchServiceMod =
+			await import("@/infrastructures/search/search-service");
 		searchVectors = searchServiceMod.searchVectors as ReturnType<typeof vi.fn>;
 	});
 

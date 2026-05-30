@@ -1,15 +1,15 @@
-import { makeBookTitle } from "@s-hirano-ist/s-core/books/entities/book-entity";
+import type { DeleteBooksDeps } from "./delete-books.deps";
 import type { IBooksCommandRepository } from "@s-hirano-ist/s-core/books/repositories/books-command-repository.interface";
+import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
+import { makeBookTitle } from "@s-hirano-ist/s-core/books/entities/book-entity";
 import {
 	makeId,
 	makeUnexportedStatus,
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { getSelfId, hasDumperPostPermission } from "@/common/auth/session";
 import { deleteBooks } from "./delete-books";
 import { deleteBooksCore } from "./delete-books.core";
-import type { DeleteBooksDeps } from "./delete-books.deps";
 
 vi.mock("@/common/auth/session", () => ({
 	getSelfId: vi.fn(),

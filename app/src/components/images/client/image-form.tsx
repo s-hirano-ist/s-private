@@ -1,9 +1,9 @@
 "use client";
+import type { ServerAction } from "@/common/types";
 import { FormFileInput } from "@s-hirano-ist/s-ui/forms/fields/form-file-input";
 import { GenericFormWrapper } from "@s-hirano-ist/s-ui/forms/generic-form-wrapper";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import type { ServerAction } from "@/common/types";
 
 type Props = {
 	addImage: (formData: FormData) => Promise<ServerAction>;

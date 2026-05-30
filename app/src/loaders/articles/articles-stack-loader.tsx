@@ -1,11 +1,10 @@
 import "server-only";
-
+import type { PaginatedLinkCardLoaderProps } from "@/loaders/types";
 import {
 	getExportedArticles,
 	getUnexportedArticles,
 } from "@/application-services/articles/get-articles";
 import { ArticlesStack } from "@/components/articles/server/articles-stack";
-import type { PaginatedLinkCardLoaderProps } from "@/loaders/types";
 
 export type ArticlesStackLoaderProps = PaginatedLinkCardLoaderProps & {
 	variant: "exported" | "unexported";

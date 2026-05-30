@@ -1,6 +1,4 @@
 #!/usr/bin/env node
-import { mkdir, writeFile } from "node:fs/promises";
-import { dirname } from "node:path";
 import {
 	makeUnexportedStatus,
 	makeUserId,
@@ -8,6 +6,8 @@ import {
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
+import { mkdir, writeFile } from "node:fs/promises";
+import { dirname } from "node:path";
 
 type Note = {
 	id: string;

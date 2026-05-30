@@ -1,9 +1,9 @@
+import type { Route } from "next";
+import { Link } from "@/infrastructures/i18n/routing";
 import { StatusCodeView } from "@s-hirano-ist/s-ui/display/status/status-code-view";
 import { Button } from "@s-hirano-ist/s-ui/ui/button";
-import type { Route } from "next";
-import { connection } from "next/server";
 import { getTranslations } from "next-intl/server";
-import { Link } from "@/infrastructures/i18n/routing";
+import { connection } from "next/server";
 
 // Auth0 Error page
 export default async function Page() {

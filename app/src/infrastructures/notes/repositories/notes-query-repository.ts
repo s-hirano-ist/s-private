@@ -1,3 +1,8 @@
+import type {
+	INotesQueryRepository,
+	NotesFindManyParams,
+} from "@s-hirano-ist/s-core/notes/repositories/notes-query-repository.interface";
+import prisma from "@/prisma";
 import {
 	type ExportedNote,
 	makeMarkdown,
@@ -6,10 +11,6 @@ import {
 	type NoteTitle,
 	type UnexportedNote,
 } from "@s-hirano-ist/s-core/notes/entities/note-entity";
-import type {
-	INotesQueryRepository,
-	NotesFindManyParams,
-} from "@s-hirano-ist/s-core/notes/repositories/notes-query-repository.interface";
 import {
 	makeCreatedAt,
 	makeExportedAt,
@@ -18,7 +19,6 @@ import {
 	type Status,
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import prisma from "@/prisma";
 
 async function findByTitle(
 	title: NoteTitle,

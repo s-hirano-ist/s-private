@@ -1,6 +1,4 @@
 #!/usr/bin/env node
-import { readFile, stat } from "node:fs/promises";
-import { basename, extname } from "node:path";
 import {
 	makeExportedStatus,
 	makeId,
@@ -10,6 +8,8 @@ import {
 import { createPushoverService } from "@s-hirano-ist/s-notification";
 import { createMinioClient } from "@s-hirano-ist/s-storage";
 import { glob } from "glob";
+import { readFile, stat } from "node:fs/promises";
+import { basename, extname } from "node:path";
 import sharp from "sharp";
 
 const SCRIPT_NAME = "ingest-images";

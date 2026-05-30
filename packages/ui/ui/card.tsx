@@ -1,5 +1,4 @@
 import type * as React from "react";
-
 import { cn } from "../utils/cn";
 
 type CardProps = {
@@ -92,7 +91,7 @@ function CardTitle({ className, ref, ...props }: CardTitleProps) {
 	return (
 		<h3
 			className={cn(
-				"bg-clip-text font-bold leading-normal tracking-tight",
+				"bg-clip-text leading-normal font-bold tracking-tight",
 				className,
 			)}
 			ref={ref}
@@ -117,7 +116,7 @@ type CardDescriptionProps = {
 function CardDescription({ className, ref, ...props }: CardDescriptionProps) {
 	return (
 		<div
-			className={cn("text-muted-foreground text-sm", className)}
+			className={cn("text-sm text-muted-foreground", className)}
 			ref={ref}
 			{...props}
 		/>

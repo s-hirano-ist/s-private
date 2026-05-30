@@ -1,3 +1,4 @@
+import prisma from "@/prisma";
 import {
 	makeArticleTitle,
 	makeCategoryName,
@@ -11,7 +12,6 @@ import {
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import prisma from "@/prisma";
 import {
 	articlesQueryRepository,
 	categoryQueryRepository,

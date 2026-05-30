@@ -1,8 +1,7 @@
 import "server-only";
-
 import type { ServerAction } from "@/common/types";
-import { ImageForm } from "@/components/images/client/image-form";
 import type { BaseLoaderProps } from "@/loaders/types";
+import { ImageForm } from "@/components/images/client/image-form";
 
 export type ImageFormLoaderProps = BaseLoaderProps & {
 	addImage: (formData: FormData) => Promise<ServerAction>;

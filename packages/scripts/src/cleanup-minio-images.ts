@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-import { basename, extname } from "node:path";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
 import { createMinioClient, type MinioClient } from "@s-hirano-ist/s-storage";
 import { glob } from "glob";
+import { basename, extname } from "node:path";
 
 const SCRIPT_NAME = "cleanup-minio-images";
 

@@ -1,3 +1,4 @@
+import { notesQueryRepository } from "@/infrastructures/notes/repositories/notes-query-repository";
 import {
 	makeMarkdown,
 	makeNoteTitle,
@@ -9,7 +10,6 @@ import {
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { notesQueryRepository } from "@/infrastructures/notes/repositories/notes-query-repository";
 import {
 	getExportedNotes,
 	getExportedNotesCount,

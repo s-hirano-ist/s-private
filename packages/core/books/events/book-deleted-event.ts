@@ -1,6 +1,6 @@
-import { BaseDomainEvent } from "../../shared-kernel/events/base-domain-event.ts";
 import type { BookDeletedPayload } from "../../shared-kernel/events/payload-types.ts";
 import type { BookCreatedEvent } from "./book-created-event.ts";
+import { BaseDomainEvent } from "../../shared-kernel/events/base-domain-event.ts";
 
 /**
  * Domain event emitted when a book is deleted.
@@ -33,11 +33,7 @@ export class BookDeletedEvent extends BaseDomainEvent<BookDeletedPayload> {
 	 * @param data.userId - The user who deleted the book
 	 * @param data.caller - The function/method that triggered the event
 	 */
-	constructor(data: {
-		title: string;
-		userId: string;
-		caller: string;
-	}) {
+	constructor(data: { title: string; userId: string; caller: string }) {
 		super(
 			"book.deleted",
 			{

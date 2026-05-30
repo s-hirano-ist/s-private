@@ -2,8 +2,8 @@ import type {
 	CategoryCreateData,
 	ICategoryCommandRepository,
 } from "@s-hirano-ist/s-core/articles/repositories/category-command-repository.interface";
-import { updateTag } from "next/cache";
 import prisma from "@/prisma";
+import { updateTag } from "next/cache";
 
 async function create(data: CategoryCreateData): Promise<void> {
 	await prisma.category.create({
