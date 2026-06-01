@@ -112,11 +112,11 @@ subgraph packages["packages"]
 end
 app_src_app_-->packages_ui_
 app_src_app_-->app_src_application_services_articles_
-app_src_app_-->app_src_common_
 app_src_app_-->app_src_components_
 app_src_app_-->app_src_loaders_
 app_src_app_-->app_src_application_services_books_
 app_src_app_-->app_src_application_services_images_
+app_src_app_-->app_src_common_
 app_src_app_-->app_src_application_services_notes_
 app_src_app_-->app_src_infrastructures_i18n_
 app_src_app_-->app_src_application_services_search_
