@@ -4,7 +4,7 @@ issue 棚卸し結果（2026-05-30 時点）の作業分担。
 
 - **対応**: security-005（①ロール分離・④TLS verify-full）/ security-004（本番動作確認）
 - **見送り推奨**: security-005 の ②監査ログ・③ネットワーク制限（Vercel + Cloud Basic では実効性低 / 対応不可）
-- **保留**: security-007（パスワードローテーション手順書）/ security-008（Prisma tenant extension）— ファイルは据え置き
+- **保留**: security-008（Prisma tenant extension）— ファイルは据え置き
 
 ---
 
@@ -79,12 +79,10 @@ issue 棚卸し結果（2026-05-30 時点）の作業分担。
 
 ## ⏸ 保留（今回アクションなし・ファイル据え置き）
 
-- [ ] security-007 — DBパスワードローテーション手順書（005のロール分離完了後に再判断）
 - [ ] security-008 — Prisma Extension + AsyncLocalStorage による userId のDB層強制（中規模リファクタ。価値は用途次第）
 
 ---
 
 ## 対象外（CockroachDB 関連だが「セキュリティ対策」ではない）
 
-- perf-010 — 接続プール最適化 / RU・コスト監視
 - refactor-006 — `prisma migrate dev` の CockroachDB Cloud 制約（恒久回避済み）
