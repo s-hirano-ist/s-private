@@ -21,6 +21,16 @@ jobs:
           persist-credentials: false
           submodules: true
 
+      # Defense-in-depth: NODE_TLS_REJECT_UNAUTHORIZED=0 はプロセス全体の TLS 検証を
+      # 無効化する。CI/Secrets への混入を防ぐためビルド前にガードする（本番ランタイムの
+      # fail-close は app/src/instrumentation.ts が別途担保）。
+      - name: Guard against NODE_TLS_REJECT_UNAUTHORIZED
+        run: |
+          if [ "${NODE_TLS_REJECT_UNAUTHORIZED:-}" = "0" ]; then
+            echo "::error::NODE_TLS_REJECT_UNAUTHORIZED=0 must never be set in CI"
+            exit 1
+          fi
+
       - uses: ./.github/actions/setup-pnpm
       - run: pnpm build
         env: &build_env
@@ -172,3 +182,22 @@ jobs:
       - uses: ./.github/actions/setup-pnpm
       - name: Build TypeDoc
         run: pnpm docs:build
+
+  schema-locked:
+    runs-on: ubuntu-24.04
+    permissions: {}
+    timeout-minutes: 10
+    concurrency:
+      group: ${{ github.workflow }}-schema-locked-${{ github.ref }}
+    steps:
+      - name: Checkout files
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+          submodules: true
+
+      - uses: ./.github/actions/setup-pnpm
+      # CockroachDB v26.1+ では新規 CREATE TABLE に `WITH (schema_locked = false)`
+      # が無いと `prisma migrate deploy` が P3018 で失敗する。マイグレーション SQL の
+      # 付与漏れをマージ前に検知する。
+      - run: pnpm check:schema-locked

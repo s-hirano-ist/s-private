@@ -25,6 +25,7 @@
 		"typecheck": "pnpm --recursive typecheck",
 		"license:summary": "pnpm licenses list > library-license.txt",
 		"license:check": "node scripts/check-licenses.mjs",
+		"check:schema-locked": "node scripts/check-schema-locked.mjs",
 		"security": "pnpm audit --audit-level=moderate",
 		"security:fix": "pnpm audit --fix",
 		"security:report": "pnpm audit --json > security-audit.json",

@@ -20,6 +20,7 @@ CockroachDB Cloud Basic への移行を完了するために**ユーザーが手
 
 1. 各クラスタで SQL ユーザーを作成し、パスワードを控える。
 2. ⚠️ **Console / `ccloud` で作成したユーザーはデフォルトで `admin` ロール**が付く。移行作業中はこのまま進めてよいが、**移行完了後に必ず最小権限化**する（→ [issues/security-005-cockroachdb-hardening.md](../issues/security-005-cockroachdb-hardening.md)）。
+   - 実装済みの構成（1クラスタ / `dev-db`・`prod-db`、`s-prod-runtime`=DMLのみ・`s-prod`/`s-dev`=owner+DDL・`public` ロール剥奪済み）と各手順の期待結果は同 issue の「① ロール最小化」を参照。残: `s-prod` の admin 剥奪（任意）。
 3. 接続文字列を取得（**`sslmode=verify-full` を含む形**）:
    ```
    postgresql://<user>:<password>@<host>:26257/<db>?sslmode=verify-full
