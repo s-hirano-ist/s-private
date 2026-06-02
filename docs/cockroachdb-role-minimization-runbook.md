@@ -1,7 +1,7 @@
 # CockroachDB ロール最小化 実行手順書（security-005 ①）
 
 CockroachDB Cloud の SQL ユーザーを **最小権限化（PoLP）** した作業の記録。コマンドと期待結果を込みでまとめた再現可能な手順。CockroachDB ハードニング（security-005）の single source。
-ステータス: ① ロール最小化 = 完了 ／ ② 監査・③ ネットワーク = 見送り ／ ④ TLS verify-full = 確認済み。
+ステータス: ① ロール最小化 = 完了 ／ ② 監査・③ ネットワーク = 見送り。
 
 ## 背景・目的
 
@@ -83,7 +83,7 @@ TO "s-prod-runtime";
 
 ### Step 3. 本番アプリを runtime ユーザーへ切替
 
-- **Vercel Dashboard → Settings → Environment Variables → Production** の `DATABASE_URL` を差し替え（HOST は既存値から流用、DBは `prod-db`、`verify-full` 維持）:
+- **Vercel Dashboard → Settings → Environment Variables → Production** の `DATABASE_URL` を差し替え（HOST は既存値から流用、DBは `prod-db`）:
   ```
   postgresql://s-prod-runtime:<PROD_PW>@<HOST>:26257/prod-db?sslmode=verify-full
   ```
@@ -142,8 +142,6 @@ REVOKE admin FROM "s-prod";
 | Doppler（dev config） | `DATABASE_URL` | `s-dev` | ローカルアプリ（`pnpm dev`）+ preview + `packages/scripts/*` |
 | GitHub Actions Secrets | `PRODUCTION_DIRECT_URL` | `s-prod` | 本番 migrate（`.github/workflows/prisma-deploy.yaml`） |
 
-すべて末尾 `?sslmode=verify-full`（security-005 ④）。
-
 ## ロールバック早見表
 
 | 操作 | 戻し方 |
@@ -152,16 +150,6 @@ REVOKE admin FROM "s-prod";
 | `REVOKE admin FROM "s-prod"` | `GRANT admin TO "s-prod";` |
 | `REVOKE admin FROM "s-dev"` | `GRANT admin TO "s-dev";` |
 | `public` 剥奪 | `GRANT USAGE, CREATE ON SCHEMA "<db>".public TO public;`（基本戻さない） |
-
-## ④ TLS verify-full（確認済み）
-
-全接続文字列（Doppler dev / Vercel production / Vercel development / GitHub `PRODUCTION_DIRECT_URL`）が `?sslmode=verify-full`。CockroachDB Cloud はパブリック CA のため CA pin 不要。
-
-コードでの強制（fail-close）:
-
-- `app/src/env.ts` — production では `DATABASE_URL` に `sslmode=verify-full` が含まれることを Zod `refine` で必須化。
-- `app/src/instrumentation.ts` — production で `NODE_TLS_REJECT_UNAUTHORIZED=0` が設定されていれば `process.exit(1)` で起動を中断（TLS 検証の握り潰し防止）。
-- `.github/workflows/ci.yaml` — CI で `NODE_TLS_REJECT_UNAUTHORIZED=0` を検知してジョブを失敗させる（多層防御）。
 
 ## 補足: schema_locked マイグレーション運用
 
@@ -173,4 +161,4 @@ CockroachDB v26.1+ では新規 `CREATE TABLE` に `WITH (schema_locked = false)
 ## 補足: 見送り項目
 
 - **② 監査ログ**: Cloud Basic はログエクスポート非対応。Advanced/Dedicated 移行時に再検討。
-- **③ ネットワーク制限**: Vercel runtime / GitHub Actions とも固定IPなし → IP Allowlist の実効性低。`verify-full` + 強パスワードで担保。
+- **③ ネットワーク制限**: Vercel runtime / GitHub Actions とも固定IPなし → IP Allowlist の実効性低。TLS + 強パスワードで担保。
