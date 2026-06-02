@@ -58,13 +58,6 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "./generated";
 
 export function createPrismaClient(databaseUrl: string) {
-	const isAccelerate =
-		databaseUrl.startsWith("prisma://") ||
-		databaseUrl.startsWith("prisma+postgres://");
-
-	if (isAccelerate) {
-		return new PrismaClient({ accelerateUrl: databaseUrl });
-	}
 	return new PrismaClient({
 		adapter: new PrismaPg({
 			connectionString: databaseUrl,

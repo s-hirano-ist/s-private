@@ -29,7 +29,14 @@ export const env = createEnv({
 			.enum(["development", "test", "production"])
 			.default("development"),
 		/** CockroachDB connection string (used for both runtime and migrations; built-in pooling means no separate direct endpoint). @example "postgresql://USERNAME:PASSWORD@HOST:26257/DB_NAME?sslmode=verify-full" */
-		DATABASE_URL: z.string(),
+		DATABASE_URL: z
+			.string()
+			.refine(
+				(v) =>
+					process.env.NODE_ENV !== "production" ||
+					v.includes("sslmode=verify-full"),
+				"production では sslmode=verify-full 必須",
+			),
 		PUSHOVER_URL: z
 			.string()
 			.default("https://api.pushover.net/1/messages.json"),
