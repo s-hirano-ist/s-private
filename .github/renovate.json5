@@ -9,18 +9,21 @@
 		":enableVulnerabilityAlertsWithLabel(security)",
 	],
 	reviewers: ["s-hirano-ist"],
-	// Dependabot がサポートしない範囲のみ Renovate で扱う:
+	// Dependabot が苦手な範囲を Renovate で扱う:
+	//   - npm: Dependabot のサポート上限は pnpm v10 で、packageManager (pnpm@11) では
+	//     npm ジョブが "does not support your pnpm version" で失敗するため Renovate に戻した
+	//     (dependabot/dependabot-core#14794)。
 	//   - mise / nvm: ツールバージョン管理
 	//   - lockFileMaintenance: 四半期に pnpm-lock 全リフレッシュ
-	// npm / github-actions / docker-compose は .github/dependabot.yml に移行済み。
-	enabledManagers: ["mise", "nvm"],
+	// github-actions / docker-compose は pnpm 非依存のため .github/dependabot.yml が担当。
+	enabledManagers: ["npm", "mise", "nvm"],
 	// Mend Cloud / self-host いずれでも pnpm install の lifecycle scripts (sharp /
 	// @prisma/engines / @sentry/cli / esbuild) によるメモリ消費を抑える保険。
 	// CI (--frozen-lockfile) と本番 deploy 側の install では通常通りバイナリを取得する。
 	ignoreScripts: true,
 	dependencyDashboard: true,
-	branchConcurrentLimit: 2,
-	prConcurrentLimit: 2,
+	branchConcurrentLimit: 3,
+	prConcurrentLimit: 5,
 	separateMultipleMajor: false,
 	schedule: ["before 11am on monday"],
 	labels: ["dependencies"],
@@ -37,6 +40,24 @@
 	},
 	packageRules: [
 		{
+			matchManagers: ["npm"],
+			matchUpdateTypes: ["patch", "minor"],
+			matchPackageNames: ["*"],
+			matchDepTypes: ["dependencies", "peerDependencies"],
+			groupName: "non-major",
+			minimumReleaseAge: "2 days",
+		},
+		{
+			matchManagers: ["npm"],
+			matchUpdateTypes: ["patch", "minor"],
+			matchPackageNames: ["*"],
+			matchDepTypes: ["devDependencies"],
+			groupName: "non-major (devDependencies)",
+			groupSlug: "non-major-dev",
+			minimumReleaseAge: "2 days",
+			automerge: true,
+		},
+		{
 			matchManagers: ["mise"],
 			groupName: "mise",
 			groupSlug: "mise",
@@ -45,7 +66,7 @@
 		},
 		{
 			matchDepNames: ["node", "pnpm"],
-			matchManagers: ["mise", "nvm"],
+			matchManagers: ["mise", "nvm", "npm"],
 			groupName: "node and pnpm",
 			groupSlug: "node-pnpm",
 			minimumReleaseAge: "2 days",

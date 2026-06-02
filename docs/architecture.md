@@ -135,11 +135,14 @@ import { ArticlesStackLoader } from "@/loaders/articles";
 
 ## セキュリティ
 
-### 自動依存関係管理（Renovate）
-- **スケジュール**: 週次更新（月曜日11時（JST）前）
-- **脆弱性アラート**: セキュリティ問題の自動PR（`security`ラベル付き）
-- **サプライチェーン保護**: パッチ/マイナーの最小リリース経過時間3日（72時間）、グローバル最小24時間
-- **設定**: [.github/renovate.json5](../.github/renovate.json5)を参照
+### 自動依存関係管理（Renovate + Dependabot）
+- **役割分担**:
+  - **Renovate**: npm（pnpm）/ mise / nvm / 四半期の lockFileMaintenance。npm を Renovate が担当するのは、Dependabot のサポート上限が pnpm v10 で、本リポジトリの `packageManager`（pnpm@11）では npm ジョブが `does not support your pnpm version` で失敗するため（pnpm v11 サポートは未対応: dependabot/dependabot-core#14794）。
+  - **Dependabot**: pnpm 非依存の github-actions / docker-compose。低リスク更新は `dependabot-auto-merge.yaml` で auto-merge。
+- **スケジュール**: Renovate は週次（月曜日11時（JST）前）、Dependabot は日次（09:00 JST）。
+- **脆弱性アラート**: セキュリティ問題の自動PR（`security`ラベル付き、Renovate）
+- **サプライチェーン保護**: パッチ/マイナーの最小リリース経過時間（cooldown）2日、グローバル最小24時間
+- **設定**: [.github/renovate.json5](../.github/renovate.json5) / [.github/dependabot.yml](../.github/dependabot.yml) を参照
 
 ### npm/pnpmセキュリティ設定
 - **バージョン固定**: pnpm-workspace.yamlの`savePrefix: ''`
