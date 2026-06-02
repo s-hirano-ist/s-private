@@ -1,209 +1,197 @@
 Clone found (typescript):
- - /home/runner/work/s-private/s-private/packages/core/shared-kernel/events/system-error-event.ts [51:15 - 64:2] (13 lines, 87 tokens)
-   /home/runner/work/s-private/s-private/packages/core/shared-kernel/events/system-warning-event.ts [50:17 - 63:2]
+ - /home/runner/work/s-private/s-private/packages/core/shared-kernel/events/system-error-event.ts [51:18 - 64:2] (13 lines, 85 tokens)
+   /home/runner/work/s-private/s-private/packages/core/shared-kernel/events/system-warning-event.ts [50:20 - 63:2]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/packages/ui/forms/fields/form-input.stories.tsx [5:10 - 14:5] (9 lines, 149 tokens)
-   /home/runner/work/s-private/s-private/packages/ui/forms/fields/form-textarea.stories.tsx [5:13 - 14:5]
+ - /home/runner/work/s-private/s-private/packages/ui/forms/fields/form-input.stories.tsx [5:22 - 14:7] (9 lines, 149 tokens)
+   /home/runner/work/s-private/s-private/packages/ui/forms/fields/form-textarea.stories.tsx [5:25 - 14:7]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/packages/ui/forms/fields/form-input-with-button.stories.tsx [13:20 - 20:5] (7 lines, 107 tokens)
-   /home/runner/work/s-private/s-private/packages/ui/forms/fields/form-textarea.stories.tsx [5:13 - 12:9]
+ - /home/runner/work/s-private/s-private/packages/ui/forms/fields/form-input-with-button.stories.tsx [13:32 - 20:7] (7 lines, 107 tokens)
+   /home/runner/work/s-private/s-private/packages/ui/forms/fields/form-textarea.stories.tsx [5:25 - 12:11]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/packages/ui/forms/fields/form-dropdown-input.stories.tsx [6:18 - 15:13] (9 lines, 149 tokens)
-   /home/runner/work/s-private/s-private/packages/ui/forms/fields/form-textarea.stories.tsx [5:13 - 14:5]
+ - /home/runner/work/s-private/s-private/packages/ui/forms/fields/form-dropdown-input.stories.tsx [6:30 - 15:15] (9 lines, 149 tokens)
+   /home/runner/work/s-private/s-private/packages/ui/forms/fields/form-textarea.stories.tsx [5:25 - 14:7]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/packages/ui/forms/fields/form-dropdown-input.stories.tsx [197:18 - 208:6] (11 lines, 95 tokens)
-   /home/runner/work/s-private/s-private/packages/ui/forms/fields/form-dropdown-input.stories.tsx [168:18 - 179:6]
+ - /home/runner/work/s-private/s-private/packages/ui/forms/fields/form-dropdown-input.stories.tsx [197:26 - 208:8] (11 lines, 95 tokens)
+   /home/runner/work/s-private/s-private/packages/ui/forms/fields/form-dropdown-input.stories.tsx [168:26 - 179:8]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/packages/ui/forms/fields/form-dropdown-input.stories.tsx [230:18 - 245:8] (15 lines, 134 tokens)
-   /home/runner/work/s-private/s-private/packages/ui/forms/fields/form-dropdown-input.stories.tsx [168:18 - 212:7]
+ - /home/runner/work/s-private/s-private/packages/ui/forms/fields/form-dropdown-input.stories.tsx [230:26 - 245:44] (15 lines, 134 tokens)
+   /home/runner/work/s-private/s-private/packages/ui/forms/fields/form-dropdown-input.stories.tsx [168:26 - 212:43]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/packages/ui/ui/pagination.stories.tsx [45:16 - 56:2] (11 lines, 90 tokens)
-   /home/runner/work/s-private/s-private/packages/ui/ui/pagination.stories.tsx [21:8 - 32:2]
+ - /home/runner/work/s-private/s-private/packages/ui/ui/pagination.stories.tsx [45:29 - 56:31] (11 lines, 90 tokens)
+   /home/runner/work/s-private/s-private/packages/ui/ui/pagination.stories.tsx [21:21 - 32:31]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/packages/ui/ui/pagination.stories.tsx [56:9 - 71:13] (15 lines, 84 tokens)
-   /home/runner/work/s-private/s-private/packages/ui/ui/pagination.stories.tsx [32:2 - 45:16]
+ - /home/runner/work/s-private/s-private/packages/ui/ui/pagination.stories.tsx [56:39 - 71:26] (15 lines, 84 tokens)
+   /home/runner/work/s-private/s-private/packages/ui/ui/pagination.stories.tsx [32:30 - 45:29]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/packages/ui/ui/pagination.stories.tsx [71:13 - 90:19] (19 lines, 139 tokens)
-   /home/runner/work/s-private/s-private/packages/ui/ui/pagination.stories.tsx [21:8 - 64:15]
+ - /home/runner/work/s-private/s-private/packages/ui/ui/pagination.stories.tsx [71:26 - 90:25] (19 lines, 139 tokens)
+   /home/runner/work/s-private/s-private/packages/ui/ui/pagination.stories.tsx [21:21 - 64:21]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/packages/ui/ui/pagination.stories.tsx [108:5 - 119:19] (11 lines, 72 tokens)
-   /home/runner/work/s-private/s-private/packages/ui/ui/pagination.stories.tsx [50:2 - 61:15]
+ - /home/runner/work/s-private/s-private/packages/ui/ui/pagination.stories.tsx [108:46 - 119:25] (11 lines, 72 tokens)
+   /home/runner/work/s-private/s-private/packages/ui/ui/pagination.stories.tsx [50:33 - 61:21]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/packages/ui/ui/dropdown-menu.stories.tsx [37:16 - 51:5] (14 lines, 106 tokens)
-   /home/runner/work/s-private/s-private/packages/ui/ui/dropdown-menu.stories.tsx [21:8 - 35:2]
+ - /home/runner/work/s-private/s-private/packages/ui/ui/dropdown-menu.stories.tsx [37:29 - 51:6] (14 lines, 106 tokens)
+   /home/runner/work/s-private/s-private/packages/ui/ui/dropdown-menu.stories.tsx [21:21 - 35:2]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/packages/ui/ui/drawer.stories.tsx [92:6 - 104:11] (12 lines, 123 tokens)
-   /home/runner/work/s-private/s-private/packages/ui/ui/drawer.stories.tsx [38:6 - 51:15]
+ - /home/runner/work/s-private/s-private/packages/ui/ui/drawer.stories.tsx [92:6 - 104:55] (12 lines, 123 tokens)
+   /home/runner/work/s-private/s-private/packages/ui/ui/drawer.stories.tsx [38:62 - 51:40]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/packages/ui/ui/dialog.stories.tsx [67:14 - 82:3] (15 lines, 138 tokens)
-   /home/runner/work/s-private/s-private/packages/ui/ui/dialog.stories.tsx [23:8 - 38:2]
+ - /home/runner/work/s-private/s-private/packages/ui/ui/dialog.stories.tsx [67:27 - 82:6] (15 lines, 138 tokens)
+   /home/runner/work/s-private/s-private/packages/ui/ui/dialog.stories.tsx [23:21 - 38:6]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/packages/ui/ui/command.stories.tsx [89:2 - 108:14] (19 lines, 133 tokens)
-   /home/runner/work/s-private/s-private/packages/ui/ui/command.stories.tsx [27:2 - 46:8]
+ - /home/runner/work/s-private/s-private/packages/ui/ui/command.stories.tsx [89:54 - 108:20] (19 lines, 133 tokens)
+   /home/runner/work/s-private/s-private/packages/ui/ui/command.stories.tsx [27:60 - 46:12]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/packages/ui/ui/card.stories.tsx [39:14 - 49:3] (10 lines, 89 tokens)
-   /home/runner/work/s-private/s-private/packages/ui/ui/card.stories.tsx [19:8 - 29:2]
+ - /home/runner/work/s-private/s-private/packages/ui/ui/card.stories.tsx [39:27 - 49:5] (10 lines, 89 tokens)
+   /home/runner/work/s-private/s-private/packages/ui/ui/card.stories.tsx [19:21 - 29:5]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/packages/ui/forms/generic-form-wrapper.stories.tsx [31:19 - 41:2] (10 lines, 86 tokens)
-   /home/runner/work/s-private/s-private/packages/ui/forms/fields/form-dropdown-input.stories.tsx [26:18 - 36:2]
+ - /home/runner/work/s-private/s-private/packages/ui/forms/generic-form-wrapper.stories.tsx [293:25 - 306:18] (13 lines, 78 tokens)
+   /home/runner/work/s-private/s-private/packages/ui/forms/generic-form-wrapper.stories.tsx [259:27 - 272:17]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/packages/ui/forms/generic-form-wrapper.stories.tsx [293:12 - 306:6] (13 lines, 78 tokens)
-   /home/runner/work/s-private/s-private/packages/ui/forms/generic-form-wrapper.stories.tsx [259:14 - 272:5]
+ - /home/runner/work/s-private/s-private/packages/ui/forms/generic-form-wrapper.stories.tsx [308:30 - 326:3] (18 lines, 164 tokens)
+   /home/runner/work/s-private/s-private/packages/ui/forms/generic-form-wrapper.stories.tsx [273:22 - 291:3]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/packages/ui/forms/generic-form-wrapper.stories.tsx [308:2 - 326:2] (18 lines, 164 tokens)
-   /home/runner/work/s-private/s-private/packages/ui/forms/generic-form-wrapper.stories.tsx [273:10 - 291:2]
-
-Clone found (typescript):
- - /home/runner/work/s-private/s-private/app/src/app/api/images/[contentType]/[id]/route.ts [13:2 - 21:11] (8 lines, 91 tokens)
-   /home/runner/work/s-private/s-private/app/src/app/api/books/images/[contentType]/[path]/route.ts [12:2 - 20:7]
-
-Clone found (tsx):
- - /home/runner/work/s-private/s-private/app/src/components/common/layouts/nav/footer.stories.tsx [126:17 - 140:13] (14 lines, 118 tokens)
-   /home/runner/work/s-private/s-private/app/src/components/common/layouts/nav/footer.stories.tsx [102:15 - 116:11]
+ - /home/runner/work/s-private/s-private/app/src/components/common/layouts/nav/footer.stories.tsx [126:30 - 140:21] (14 lines, 118 tokens)
+   /home/runner/work/s-private/s-private/app/src/components/common/layouts/nav/footer.stories.tsx [102:28 - 116:19]
 
 Clone found (javascript):
- - /home/runner/work/s-private/s-private/app/src/components/common/layouts/cards/image-card-stack.tsx [23:13 - 44:9] (21 lines, 130 tokens)
-   /home/runner/work/s-private/s-private/app/src/components/common/layouts/cards/link-card-stack.tsx [21:13 - 42:5]
+ - /home/runner/work/s-private/s-private/app/src/components/common/layouts/cards/image-card-stack.tsx [23:16 - 50:25] (27 lines, 149 tokens)
+   /home/runner/work/s-private/s-private/app/src/components/common/layouts/cards/link-card-stack.tsx [21:16 - 48:17]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/app/src/components/common/forms/actions/delete-button-with-modal.stories.tsx [95:16 - 107:7] (12 lines, 125 tokens)
-   /home/runner/work/s-private/s-private/app/src/components/common/forms/actions/delete-button-with-modal.stories.tsx [75:2 - 87:8]
+ - /home/runner/work/s-private/s-private/app/src/components/common/forms/actions/delete-button-with-modal.stories.tsx [95:65 - 107:15] (12 lines, 125 tokens)
+   /home/runner/work/s-private/s-private/app/src/components/common/forms/actions/delete-button-with-modal.stories.tsx [75:4 - 87:16]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/app/src/components/common/features/search/search-card.stories.tsx [99:22 - 104:15] (5 lines, 82 tokens)
-   /home/runner/work/s-private/s-private/app/src/components/common/features/search/search-card.stories.tsx [89:19 - 94:20]
+ - /home/runner/work/s-private/s-private/app/src/components/common/features/search/search-card.stories.tsx [99:62 - 104:45] (5 lines, 82 tokens)
+   /home/runner/work/s-private/s-private/app/src/components/common/features/search/search-card.stories.tsx [89:59 - 94:50]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/app/src/components/common/features/search/search-card.stories.tsx [109:17 - 114:17] (5 lines, 82 tokens)
-   /home/runner/work/s-private/s-private/app/src/components/common/features/search/search-card.stories.tsx [89:19 - 94:20]
+ - /home/runner/work/s-private/s-private/app/src/components/common/features/search/search-card.stories.tsx [109:57 - 114:47] (5 lines, 82 tokens)
+   /home/runner/work/s-private/s-private/app/src/components/common/features/search/search-card.stories.tsx [89:59 - 94:50]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/app/src/components/common/features/search/search-card.stories.tsx [119:16 - 124:15] (5 lines, 82 tokens)
-   /home/runner/work/s-private/s-private/app/src/components/common/features/search/search-card.stories.tsx [89:19 - 94:20]
+ - /home/runner/work/s-private/s-private/app/src/components/common/features/search/search-card.stories.tsx [119:56 - 124:45] (5 lines, 82 tokens)
+   /home/runner/work/s-private/s-private/app/src/components/common/features/search/search-card.stories.tsx [89:59 - 94:50]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/app/src/components/common/display/image/image-stack.tsx [139:24 - 154:7] (15 lines, 173 tokens)
-   /home/runner/work/s-private/s-private/app/src/components/common/display/image/image-stack.tsx [95:16 - 110:6]
+ - /home/runner/work/s-private/s-private/app/src/components/common/display/image/image-stack.tsx [133:27 - 148:8] (15 lines, 174 tokens)
+   /home/runner/work/s-private/s-private/app/src/components/common/display/image/image-stack.tsx [89:53 - 104:7]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/app/src/app/[locale]/book/[slug]/page.tsx [8:56 - 21:25] (13 lines, 101 tokens)
-   /home/runner/work/s-private/s-private/app/src/app/[locale]/note/[slug]/page.tsx [8:40 - 21:19]
+ - /home/runner/work/s-private/s-private/app/src/app/[locale]/book/[slug]/page.tsx [6:75 - 21:40] (15 lines, 124 tokens)
+   /home/runner/work/s-private/s-private/app/src/app/[locale]/note/[slug]/page.tsx [6:67 - 21:34]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/app/src/app/[locale]/(dumper)/images/page.tsx [10:37 - 23:10] (13 lines, 117 tokens)
-   /home/runner/work/s-private/s-private/app/src/app/[locale]/(dumper)/images/viewer/page.tsx [5:41 - 18:14]
+ - /home/runner/work/s-private/s-private/app/src/app/[locale]/book/[slug]/page.tsx [21:40 - 33:33] (12 lines, 94 tokens)
+   /home/runner/work/s-private/s-private/app/src/app/[locale]/note/[slug]/page.tsx [21:34 - 33:33]
+
+Clone found (tsx):
+ - /home/runner/work/s-private/s-private/app/src/app/[locale]/(authenticated)/images/page.tsx [4:69 - 19:27] (15 lines, 139 tokens)
+   /home/runner/work/s-private/s-private/app/src/app/[locale]/(authenticated)/images/viewer/page.tsx [2:77 - 17:31]
 
 Clone found (typescript):
- - /home/runner/work/s-private/s-private/app/src/infrastructures/images/repositories/images-query-repository.ts [36:7 - 47:5] (11 lines, 83 tokens)
-   /home/runner/work/s-private/s-private/app/src/infrastructures/notes/repositories/notes-query-repository.ts [33:9 - 44:6]
+ - /home/runner/work/s-private/s-private/app/src/infrastructures/images/repositories/images-query-repository.ts [36:10 - 47:7] (11 lines, 83 tokens)
+   /home/runner/work/s-private/s-private/app/src/infrastructures/notes/repositories/notes-query-repository.ts [33:12 - 44:8]
 
 Clone found (typescript):
- - /home/runner/work/s-private/s-private/app/src/infrastructures/images/repositories/images-query-repository.ts [51:10 - 66:7] (15 lines, 125 tokens)
-   /home/runner/work/s-private/s-private/app/src/infrastructures/notes/repositories/notes-query-repository.ts [45:2 - 60:7]
+ - /home/runner/work/s-private/s-private/app/src/infrastructures/images/repositories/images-query-repository.ts [51:67 - 66:16] (15 lines, 126 tokens)
+   /home/runner/work/s-private/s-private/app/src/infrastructures/notes/repositories/notes-query-repository.ts [45:39 - 60:16]
 
 Clone found (typescript):
- - /home/runner/work/s-private/s-private/app/src/infrastructures/books/repositories/books-query-repository.ts [50:10 - 62:5] (12 lines, 90 tokens)
-   /home/runner/work/s-private/s-private/app/src/infrastructures/notes/repositories/notes-query-repository.ts [32:6 - 44:6]
+ - /home/runner/work/s-private/s-private/app/src/infrastructures/books/repositories/books-query-repository.ts [50:13 - 62:7] (12 lines, 90 tokens)
+   /home/runner/work/s-private/s-private/app/src/infrastructures/notes/repositories/notes-query-repository.ts [32:9 - 44:8]
 
 Clone found (typescript):
- - /home/runner/work/s-private/s-private/app/src/infrastructures/books/repositories/books-query-repository.ts [81:9 - 98:2] (17 lines, 142 tokens)
-   /home/runner/work/s-private/s-private/app/src/infrastructures/images/repositories/images-query-repository.ts [51:7 - 62:2]
+ - /home/runner/work/s-private/s-private/app/src/infrastructures/books/repositories/books-query-repository.ts [81:72 - 98:9] (17 lines, 137 tokens)
+   /home/runner/work/s-private/s-private/app/src/infrastructures/notes/repositories/notes-query-repository.ts [45:40 - 62:9]
 
 Clone found (typescript):
- - /home/runner/work/s-private/s-private/app/src/infrastructures/articles/repositories/articles-query-repository.ts [47:6 - 58:11] (11 lines, 83 tokens)
-   /home/runner/work/s-private/s-private/app/src/infrastructures/notes/repositories/notes-query-repository.ts [33:9 - 44:6]
+ - /home/runner/work/s-private/s-private/app/src/infrastructures/articles/repositories/articles-query-repository.ts [47:9 - 58:13] (11 lines, 83 tokens)
+   /home/runner/work/s-private/s-private/app/src/infrastructures/notes/repositories/notes-query-repository.ts [33:12 - 44:8]
 
 Clone found (typescript):
- - /home/runner/work/s-private/s-private/app/src/infrastructures/articles/repositories/articles-query-repository.ts [66:11 - 82:2] (16 lines, 126 tokens)
-   /home/runner/work/s-private/s-private/app/src/infrastructures/notes/repositories/notes-query-repository.ts [46:10 - 68:2]
+ - /home/runner/work/s-private/s-private/app/src/infrastructures/articles/repositories/articles-query-repository.ts [66:45 - 82:9] (16 lines, 126 tokens)
+   /home/runner/work/s-private/s-private/app/src/infrastructures/notes/repositories/notes-query-repository.ts [46:42 - 68:9]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/app/src/components/images/server/images-counter.stories.tsx [17:21 - 37:2] (20 lines, 124 tokens)
-   /home/runner/work/s-private/s-private/app/src/components/notes/server/notes-counter.stories.tsx [15:20 - 36:2]
+ - /home/runner/work/s-private/s-private/app/src/components/images/server/images-counter.stories.tsx [17:45 - 37:3] (20 lines, 124 tokens)
+   /home/runner/work/s-private/s-private/app/src/components/notes/server/notes-counter.stories.tsx [15:44 - 36:3]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/app/src/components/books/server/viewer-body.stories.tsx [11:50 - 23:14] (12 lines, 102 tokens)
-   /home/runner/work/s-private/s-private/app/src/components/notes/server/viewer-body.stories.tsx [4:50 - 16:15]
+ - /home/runner/work/s-private/s-private/app/src/components/books/server/books-stack.stories.tsx [47:47 - 65:17] (18 lines, 108 tokens)
+   /home/runner/work/s-private/s-private/app/src/components/notes/server/notes-stack.stories.tsx [68:37 - 86:15]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/app/src/components/books/server/books-stack.stories.tsx [47:37 - 65:15] (18 lines, 108 tokens)
-   /home/runner/work/s-private/s-private/app/src/components/notes/server/notes-stack.stories.tsx [68:28 - 86:13]
+ - /home/runner/work/s-private/s-private/app/src/components/books/server/books-stack.stories.tsx [69:5 - 86:17] (17 lines, 96 tokens)
+   /home/runner/work/s-private/s-private/app/src/components/notes/server/notes-stack.stories.tsx [90:37 - 107:15]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/app/src/components/books/server/books-stack.stories.tsx [69:2 - 86:15] (17 lines, 96 tokens)
-   /home/runner/work/s-private/s-private/app/src/components/notes/server/notes-stack.stories.tsx [90:19 - 107:13]
+ - /home/runner/work/s-private/s-private/app/src/components/books/server/books-counter.stories.tsx [15:44 - 36:3] (21 lines, 125 tokens)
+   /home/runner/work/s-private/s-private/app/src/components/notes/server/notes-counter.stories.tsx [15:44 - 36:3]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/app/src/components/books/server/books-counter.stories.tsx [15:20 - 36:2] (21 lines, 125 tokens)
-   /home/runner/work/s-private/s-private/app/src/components/notes/server/notes-counter.stories.tsx [15:20 - 36:2]
+ - /home/runner/work/s-private/s-private/app/src/components/books/client/books-form.tsx [13:38 - 23:20] (10 lines, 84 tokens)
+   /home/runner/work/s-private/s-private/app/src/components/notes/client/note-form.tsx [13:36 - 23:19]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/app/src/components/books/client/books-form.tsx [13:2 - 23:9] (10 lines, 84 tokens)
-   /home/runner/work/s-private/s-private/app/src/components/notes/client/note-form.tsx [13:2 - 23:8]
+ - /home/runner/work/s-private/s-private/app/src/components/articles/server/articles-stack.tsx [1:1 - 11:30] (10 lines, 90 tokens)
+   /home/runner/work/s-private/s-private/app/src/components/notes/server/notes-stack.tsx [1:1 - 11:27]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/app/src/components/articles/server/articles-stack.tsx [1:1 - 11:14] (10 lines, 90 tokens)
-   /home/runner/work/s-private/s-private/app/src/components/notes/server/notes-stack.tsx [1:1 - 11:11]
+ - /home/runner/work/s-private/s-private/app/src/components/articles/server/articles-stack.stories.tsx [85:33 - 120:15] (35 lines, 205 tokens)
+   /home/runner/work/s-private/s-private/app/src/components/articles/server/articles-stack.stories.tsx [42:21 - 77:15]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/app/src/components/articles/server/articles-stack.stories.tsx [85:20 - 120:10] (35 lines, 208 tokens)
-   /home/runner/work/s-private/s-private/app/src/components/articles/server/articles-stack.stories.tsx [42:8 - 77:6]
-
-Clone found (tsx):
- - /home/runner/work/s-private/s-private/app/src/components/articles/server/articles-counter.stories.tsx [15:23 - 36:2] (21 lines, 125 tokens)
-   /home/runner/work/s-private/s-private/app/src/components/notes/server/notes-counter.stories.tsx [15:20 - 36:2]
+ - /home/runner/work/s-private/s-private/app/src/components/articles/server/articles-counter.stories.tsx [15:47 - 36:3] (21 lines, 125 tokens)
+   /home/runner/work/s-private/s-private/app/src/components/notes/server/notes-counter.stories.tsx [15:44 - 36:3]
 
 Clone found (typescript):
- - /home/runner/work/s-private/s-private/app/src/application-services/books/get-books.ts [11:50 - 23:26] (12 lines, 109 tokens)
-   /home/runner/work/s-private/s-private/app/src/application-services/notes/get-notes.ts [11:50 - 23:25]
+ - /home/runner/work/s-private/s-private/app/src/application-services/books/delete-books.core.ts [36:23 - 49:24] (13 lines, 107 tokens)
+   /home/runner/work/s-private/s-private/app/src/application-services/notes/delete-note.core.ts [36:22 - 49:24]
 
 Clone found (typescript):
- - /home/runner/work/s-private/s-private/app/src/application-services/books/delete-books.core.ts [36:16 - 49:17] (13 lines, 107 tokens)
-   /home/runner/work/s-private/s-private/app/src/application-services/notes/delete-note.core.ts [36:15 - 49:17]
-
-Clone found (typescript):
- - /home/runner/work/s-private/s-private/app/src/application-services/articles/load-more-articles.ts [1:1 - 9:20] (8 lines, 94 tokens)
-   /home/runner/work/s-private/s-private/app/src/application-services/notes/load-more-notes.ts [1:1 - 9:17]
-
-Clone found (typescript):
- - /home/runner/work/s-private/s-private/app/src/application-services/articles/delete-article.core.ts [36:18 - 49:20] (13 lines, 107 tokens)
-   /home/runner/work/s-private/s-private/app/src/application-services/notes/delete-note.core.ts [36:15 - 49:17]
+ - /home/runner/work/s-private/s-private/app/src/application-services/articles/delete-article.core.ts [36:25 - 49:27] (13 lines, 107 tokens)
+   /home/runner/work/s-private/s-private/app/src/application-services/notes/delete-note.core.ts [36:22 - 49:24]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/app/src/app/error.tsx [3:17 - 18:5] (15 lines, 110 tokens)
-   /home/runner/work/s-private/s-private/app/src/app/global-error.tsx [5:13 - 20:5]
+ - /home/runner/work/s-private/s-private/app/src/app/error.tsx [2:1 - 18:8] (16 lines, 134 tokens)
+   /home/runner/work/s-private/s-private/app/src/app/global-error.tsx [5:1 - 21:8]
 
 Clone found (tsx):
- - /home/runner/work/s-private/s-private/app/src/app/error.tsx [23:5 - 36:2] (13 lines, 126 tokens)
-   /home/runner/work/s-private/s-private/app/src/app/global-error.tsx [27:7 - 40:3]
+ - /home/runner/work/s-private/s-private/app/src/app/error.tsx [23:5 - 36:3] (13 lines, 126 tokens)
+   /home/runner/work/s-private/s-private/app/src/app/global-error.tsx [28:7 - 41:6]
 
 ┌────────────┬────────────────┬─────────────┬──────────────┬──────────────┬──────────────────┬───────────────────┐
 │ Format     │ Files analyzed │ Total lines │ Total tokens │ Clones found │ Duplicated lines │ Duplicated tokens │
 ├────────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤
-│ typescript │ 151            │ 10285       │ 46296        │ 12           │ 149 (1.45%)      │ 1244 (2.69%)      │
+│ typescript │ 151            │ 10309       │ 46121        │ 9            │ 121 (1.17%)      │ 944 (2.05%)       │
 ├────────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤
-│ tsx        │ 153            │ 11174       │ 73963        │ 36           │ 492 (4.4%)       │ 4114 (5.56%)      │
+│ tsx        │ 153            │ 11149       │ 74342        │ 35           │ 487 (4.37%)      │ 4087 (5.5%)       │
 ├────────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤
-│ javascript │ 102            │ 2223        │ 13129        │ 1            │ 21 (0.94%)       │ 130 (0.99%)       │
+│ javascript │ 103            │ 2303        │ 14198        │ 1            │ 27 (1.17%)       │ 149 (1.05%)       │
 ├────────────┼────────────────┼─────────────┼──────────────┼──────────────┼──────────────────┼───────────────────┤
-│ Total:     │ 406            │ 23682       │ 133388       │ 49           │ 662 (2.8%)       │ 5488 (4.11%)      │
+│ Total:     │ 407            │ 23761       │ 134661       │ 45           │ 635 (2.67%)      │ 5180 (3.85%)      │
 └────────────┴────────────────┴─────────────┴──────────────┴──────────────┴──────────────────┴───────────────────┘
-Found 49 clones.
-time: 897.569ms
+Found 45 clones.
+time: 860.164ms
+
+💡 Auto-refactor with AI: npx skills add kucherenko/jscpd
+🎩 New: Gangsta Agents — discipline your AI coding → gangsta.page
+💖 Sponsor jscpd → https://opencollective.com/jscpd
