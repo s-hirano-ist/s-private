@@ -20,15 +20,13 @@ jobs:
         uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
 
       - name: Enable auto-merge for low-risk updates
-        # Renovate 旧設定相当:
-        #   - devDependencies (npm) の patch/minor: automerge
+        # Dependabot が扱うのは github-actions / docker-compose のみ
+        # (npm/pnpm は Renovate 管轄。理由は .github/dependabot.yml 冒頭コメント参照)。
         #   - github-actions の patch/minor: automerge
         #   - docker-compose の patch/minor: automerge
-        # production deps と major は手動レビュー (auto-merge しない)。
+        # major は手動レビュー (auto-merge しない)。
         if: |
           steps.meta.outputs.update-type != 'version-update:semver-major' && (
-            (steps.meta.outputs.package-ecosystem == 'npm' &&
-              steps.meta.outputs.dependency-type == 'direct:development') ||
             steps.meta.outputs.package-ecosystem == 'github_actions' ||
             steps.meta.outputs.package-ecosystem == 'docker_compose'
           )

@@ -1,32 +1,11 @@
 version: 2
+# npm (pnpm) は Dependabot では扱わない。Dependabot のサポート上限は pnpm v10 で、
+# 本リポジトリの packageManager (pnpm@11) では npm ジョブが
+# "does not support your pnpm version" で失敗し PR が生成されないため。
+# pnpm v11 サポートは未対応 (dependabot/dependabot-core#14794)。
+# npm は Renovate (.github/renovate.json5) に任せ、Dependabot は pnpm 非依存の
+# github-actions / docker-compose のみを担当する。
 updates:
-  - package-ecosystem: npm
-    directory: /
-    schedule:
-      interval: daily
-      time: "09:00"
-      timezone: Asia/Tokyo
-    open-pull-requests-limit: 5
-    labels:
-      - dependencies
-    versioning-strategy: increase
-    commit-message:
-      prefix: chore
-      include: scope
-    cooldown:
-      default-days: 2
-    groups:
-      production-non-major:
-        dependency-type: production
-        update-types:
-          - patch
-          - minor
-      development-non-major:
-        dependency-type: development
-        update-types:
-          - patch
-          - minor
-
   - package-ecosystem: github-actions
     directory: /
     schedule:
