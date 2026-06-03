@@ -46,6 +46,13 @@ jobs:
         with:
           app-id: ${{ secrets.RENOVATE_APP_ID }}
           private-key: ${{ secrets.RENOVATE_APP_PRIVATE_KEY }}
+          # 生成トークンを最小権限に限定（metadata:read は常時付与）。
+          #   contents       : ブランチ・コミット・lockfile 更新
+          #   pull-requests  : PR 作成・automerge 有効化
+          #   issues         : Dependency Dashboard issue の維持
+          permission-contents: write
+          permission-pull-requests: write
+          permission-issues: write
 
       # self-host 実行。repo 設定 .github/renovate.json5 は Renovate が自動検出する
       # （configurationFile はグローバル設定用なので渡さない）。
