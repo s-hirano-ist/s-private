@@ -9,6 +9,7 @@ This document outlines the security practices and policies for this project.
 - [npm/pnpm Security Configuration](#npmpnpm-security-configuration)
 - [CI/CD Security](#cicd-security)
 - [Security Auditing](#security-auditing)
+- [Application Security Scanning (Aikido)](#application-security-scanning-aikido)
 - [Supply Chain Attack Prevention](#supply-chain-attack-prevention)
 
 ## Reporting a Vulnerability
@@ -211,6 +212,63 @@ pnpm i --frozen-lockfile
 2. **Before release**: Run `pnpm security` manually
 3. **After security announcements**: Run `pnpm security:fix` and `pnpm security:report`
 
+## Application Security Scanning (Aikido)
+
+This project uses [Aikido Security](https://www.aikido.dev/) (Forever Free plan) for
+application-level security scanning, complementing the dependency- and supply-chain-focused
+controls above.
+
+### Integration: GitHub App (Zero Code Integration)
+
+Aikido is connected via its **GitHub App**, not a CI workflow:
+
+- **Read-only** access through the GitHub App system — no tokens are stored and the source
+  code is wiped after each analysis
+- **No GitHub Actions minutes** are consumed and **no `AIKIDO_SECRET_KEY`** is stored in
+  repository secrets
+- Scans run automatically and re-scan every 3 days
+
+### Scope (free plan)
+
+ダッシュボードで以下を可視化（無料枠でフル機能）:
+
+| スキャン | 役割 |
+|---------|------|
+| SAST | oxlint の sonarjs ルールでは拾えないアプリ脆弱性パターン |
+| Secrets | ハードコードされたシークレット/クレデンシャル検出 |
+| IaC | `compose.yaml` / Dockerfile 等の設定不備検出 |
+| SCA (dependencies) | 依存 CVE（既存 Renovate / `pnpm audit` と重複するため副次的） |
+
+### PR Gating
+
+- Aikido GitHub App が PR に**ステータスチェックを直接投稿**する
+- `main` の branch protection で当該チェックを **required** に指定してマージを制御する
+- **無料枠で実際にマージをブロックできるのは依存 CVE のみ。** SAST / IaC / ライセンスの
+  ブロックは有償プラン限定のため、本プロジェクトではこれらは**可視化（検知・レポート）**に
+  留める
+
+### Why a GitHub App instead of a CI workflow
+
+無料枠でブロックできる対象（依存 CVE のみ）はどちらの方式でも同じ。GitHub App 方式は CI 分を
+消費せず、`AIKIDO_SECRET_KEY` の保存も不要で、read-only のため採用した。
+
+### Why Zen is not used
+
+Aikido の in-app firewall [Zen](https://www.aikido.dev/zen)（`@aikidosec/firewall`）は不採用。
+Next.js では `output: "standalone"` ＋ `node -r @aikidosec/firewall/instrument server.js` での
+カスタム起動が必須で、起動コマンドを制御できない **Vercel サーバーレスでは動作しない**
+（`middleware` / `instrumentation` への組み込みも Next.js のビルド都合で不可）。VPS 側は
+Node.js アプリではない（TEI / MinIO）ため適用先もない。
+
+### Setup (one-time, dashboard / GitHub settings)
+
+1. [aikido.dev](https://www.aikido.dev/) に GitHub アカウントでサインアップ（Forever Free プラン）
+2. GitHub App を本リポジトリに接続（対象リポジトリのみ許可可）
+3. ダッシュボードの GitHub CI ページで対象リポジトリを選び **Setup PR Scans**（severity・実行スキャンを設定）
+4. GitHub の `main` branch protection で Aikido のステータスチェックを required に指定
+
+> 無料枠制約: 2 ユーザー / 10 リポジトリ / 1 ドメイン / 1 クラウド接続 / 再スキャン 3 日ごと。
+
 ## Supply Chain Attack Prevention
 
 ### Multi-layered Defense Strategy
@@ -295,6 +353,7 @@ pnpm security
 - [Renovate Documentation](https://docs.renovatebot.com/)
 - [OWASP Dependency Check](https://owasp.org/www-project-dependency-check/)
 - [Snyk Advisor](https://snyk.io/advisor/)
+- [Aikido Security](https://www.aikido.dev/) - Application security scanning (SAST / secrets / IaC)
 
 ### Internal Documentation
 
@@ -305,6 +364,6 @@ pnpm security
 
 ---
 
-**Last Updated**: 2026-05-09
+**Last Updated**: 2026-06-03
 
 For questions about this security policy, contact s-hirano-ist@outlook.com.
