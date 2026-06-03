@@ -7,7 +7,7 @@
 "use server";
 import "server-only";
 import type { ServerAction } from "@/common/types";
-import { requireAuth } from "@/common/auth/session";
+import { withSelfTenant } from "@/common/tenant/with-tenant";
 import { addArticleCore } from "./add-article.core";
 import { defaultAddArticleDeps } from "./add-article.deps";
 
@@ -22,7 +22,5 @@ import { defaultAddArticleDeps } from "./add-article.deps";
  * @returns Server action result with success/failure status
  */
 export async function addArticle(formData: FormData): Promise<ServerAction> {
-	await requireAuth();
-
-	return addArticleCore(formData, defaultAddArticleDeps);
+	return withSelfTenant(() => addArticleCore(formData, defaultAddArticleDeps));
 }

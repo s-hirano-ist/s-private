@@ -12,6 +12,7 @@ import type { GetCount, GetPaginatedData } from "@/common/types";
 import type { ImageCardStackInitialData } from "@/components/common/layouts/cards/types";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
+import { tenantContext } from "@/common/tenant/tenant-context";
 import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
 import {
 	buildContentCacheTag,
@@ -93,7 +94,9 @@ const getBooksCached = async (
 export const getUnexportedBooks: GetPaginatedData<ImageCardStackInitialData> =
 	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
-		return getBooksCached(currentCount, userId, makeUnexportedStatus());
+		return tenantContext.run({ userId }, () =>
+			getBooksCached(currentCount, userId, makeUnexportedStatus()),
+		);
 	});
 
 /**
@@ -102,7 +105,9 @@ export const getUnexportedBooks: GetPaginatedData<ImageCardStackInitialData> =
 export const getExportedBooks: GetPaginatedData<ImageCardStackInitialData> =
 	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
-		return getBooksCached(currentCount, userId, makeExportedStatus().status);
+		return tenantContext.run({ userId }, () =>
+			getBooksCached(currentCount, userId, makeExportedStatus().status),
+		);
 	});
 
 /**
@@ -111,7 +116,9 @@ export const getExportedBooks: GetPaginatedData<ImageCardStackInitialData> =
 export const getExportedBooksCount: GetCount = cache(
 	async (): Promise<number> => {
 		const userId = await getSelfId();
-		return await getBooksCountCached(userId, makeExportedStatus().status);
+		return tenantContext.run({ userId }, () =>
+			getBooksCountCached(userId, makeExportedStatus().status),
+		);
 	},
 );
 
@@ -123,7 +130,9 @@ export const getExportedBooksCount: GetCount = cache(
  */
 export const getBookByISBN = cache(async (isbn: string) => {
 	const userId = await getSelfId();
-	return await booksQueryRepository.findByISBN(makeISBN(isbn), userId);
+	return tenantContext.run({ userId }, () =>
+		booksQueryRepository.findByISBN(makeISBN(isbn), userId),
+	);
 });
 
 /**

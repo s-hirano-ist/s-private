@@ -28,7 +28,6 @@ import { parseAddBooksFormData } from "./helpers/form-data-parser";
 
 vi.mock("@/common/auth/session", () => ({
 	getSelfId: vi.fn(),
-	requireAuth: vi.fn(),
 }));
 
 vi.mock("./helpers/form-data-parser", () => ({
@@ -215,26 +214,9 @@ describe("addBooks (Server Action)", () => {
 		vi.clearAllMocks();
 	});
 
-	test("should call addBooksCore with default deps when authenticated", async () => {
-		vi.mocked(requireAuth).mockResolvedValue(undefined);
+	test("should reject when the request is not authenticated", async () => {
 		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
-		vi.mocked(parseAddBooksFormData).mockResolvedValue({
-			isbn: makeISBN("978-4-06-519981-0"),
-			title: makeBookTitle("Test Book"),
-			rating: makeRating(4),
-			tags: makeTags(["test"]),
-			userId: makeUserId("user-123"),
-			imagePath: makePath("cover.jpg", true),
-			path: makePath("cover.jpg", true),
-			contentType: makeContentType("image/jpeg"),
-			fileSize: makeFileSize(1024),
-			originalBuffer: Buffer.from([]),
-			thumbnailBuffer: Buffer.from([]),
-		});
 
-		const result = await addBooks(mockFormData);
-
-		expect(requireAuth).toHaveBeenCalled();
-		expect(result.success).toBe(false);
+		await expect(addBooks(mockFormData)).rejects.toThrow("UNAUTHORIZED");
 	});
 });

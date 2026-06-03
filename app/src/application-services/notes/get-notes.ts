@@ -12,6 +12,7 @@ import type { GetCount, GetPaginatedData } from "@/common/types";
 import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
+import { tenantContext } from "@/common/tenant/tenant-context";
 import { notesQueryRepository } from "@/infrastructures/notes/repositories/notes-query-repository";
 import {
 	buildContentCacheTag,
@@ -102,7 +103,9 @@ const getNotesCached = async (
 export const getExportedNotesCount: GetCount = cache(
 	async (): Promise<number> => {
 		const userId = await getSelfId();
-		return await getNotesCountCached(userId, makeExportedStatus().status);
+		return tenantContext.run({ userId }, () =>
+			getNotesCountCached(userId, makeExportedStatus().status),
+		);
 	},
 );
 
@@ -112,7 +115,9 @@ export const getExportedNotesCount: GetCount = cache(
 export const getUnexportedNotes: GetPaginatedData<LinkCardStackInitialData> =
 	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
-		return getNotesCached(currentCount, userId, makeUnexportedStatus());
+		return tenantContext.run({ userId }, () =>
+			getNotesCached(currentCount, userId, makeUnexportedStatus()),
+		);
 	});
 
 /**
@@ -121,7 +126,9 @@ export const getUnexportedNotes: GetPaginatedData<LinkCardStackInitialData> =
 export const getExportedNotes: GetPaginatedData<LinkCardStackInitialData> =
 	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
-		return getNotesCached(currentCount, userId, makeExportedStatus().status);
+		return tenantContext.run({ userId }, () =>
+			getNotesCached(currentCount, userId, makeExportedStatus().status),
+		);
 	});
 
 /**
@@ -132,5 +139,7 @@ export const getExportedNotes: GetPaginatedData<LinkCardStackInitialData> =
  */
 export const getNoteByTitle = cache(async (title: string) => {
 	const userId = await getSelfId();
-	return await notesQueryRepository.findByTitle(makeNoteTitle(title), userId);
+	return tenantContext.run({ userId }, () =>
+		notesQueryRepository.findByTitle(makeNoteTitle(title), userId),
+	);
 });

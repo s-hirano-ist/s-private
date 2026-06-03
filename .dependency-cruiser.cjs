@@ -612,7 +612,8 @@ module.exports = {
 					"^node-inspect/lib/_inspect$",
 					"^node-inspect/lib/internal/inspect_client$",
 					"^node-inspect/lib/internal/inspect_repl$",
-					"^async_hooks$",
+					// async_hooks is intentionally used via the stable AsyncLocalStorage
+					// API for tenant isolation (see app/src/common/tenant/tenant-context.ts).
 					"^punycode$",
 					"^domain$",
 					"^constants$",

@@ -20,7 +20,6 @@ import { parseAddNoteFormData } from "./helpers/form-data-parser";
 
 vi.mock("@/common/auth/session", () => ({
 	getSelfId: vi.fn(),
-	requireAuth: vi.fn(),
 }));
 
 vi.mock("./helpers/form-data-parser", () => ({
@@ -180,18 +179,9 @@ describe("addNote (Server Action)", () => {
 		vi.clearAllMocks();
 	});
 
-	test("should call addNoteCore with default deps when authenticated", async () => {
-		vi.mocked(requireAuth).mockResolvedValue(undefined);
+	test("should reject when the request is not authenticated", async () => {
 		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
-		vi.mocked(parseAddNoteFormData).mockReturnValue({
-			title: makeNoteTitle("Example Note"),
-			markdown: makeMarkdown("sample markdown"),
-			userId: makeUserId("user-123"),
-		});
 
-		const result = await addNote(mockFormData);
-
-		expect(requireAuth).toHaveBeenCalled();
-		expect(result.success).toBe(false);
+		await expect(addNote(mockFormData)).rejects.toThrow("UNAUTHORIZED");
 	});
 });

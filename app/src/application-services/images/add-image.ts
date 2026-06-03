@@ -7,7 +7,7 @@
 "use server";
 import "server-only";
 import type { ServerAction } from "@/common/types";
-import { requireAuth } from "@/common/auth/session";
+import { withSelfTenant } from "@/common/tenant/with-tenant";
 import { addImageCore } from "./add-image.core";
 import { defaultAddImageDeps } from "./add-image.deps";
 
@@ -29,7 +29,5 @@ import { defaultAddImageDeps } from "./add-image.deps";
  * @returns Server action result with success/failure status
  */
 export async function addImage(formData: FormData): Promise<ServerAction> {
-	await requireAuth();
-
-	return addImageCore(formData, defaultAddImageDeps);
+	return withSelfTenant(() => addImageCore(formData, defaultAddImageDeps));
 }
