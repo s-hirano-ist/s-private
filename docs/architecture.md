@@ -2,7 +2,7 @@
 
 ## バージョン要件
 
-本ドキュメントは **Next.js 16+** を前提としています（プロジェクト使用バージョン: 16.2.3）。
+本ドキュメントは **Next.js 16+** を前提としています（プロジェクト使用バージョン: 16.2.6）。
 
 | API | 導入バージョン | 備考 |
 |-----|--------------|------|
@@ -41,10 +41,13 @@
 本コードベースはドメイン駆動設計に基づくクリーンアーキテクチャを採用しています。
 
 ### ドメイン層 (`packages/core/`)
+ドメイン（`articles` / `books` / `images` / `notes`）ごとにサブパッケージを持ち、各ドメインは以下の構成を取る。横断的な要素は `shared-kernel/` に集約:
 - `entities/` - コアビジネスロジックとドメインエンティティ
+- `events/` - ドメインイベント（作成・削除等）
 - `repositories/` - リポジトリインターフェース（依存性の逆転）
 - `services/` - 複雑なビジネスロジックのためのドメインサービス
 - `types/` - ドメイン固有の型と定数
+- `shared-kernel/` - 全ドメイン共通の entities / errors / events / repositories / services / types
 
 ### アプリケーションサービス層 (`app/src/application-services/`)
 - ドメイン操作とユースケースのオーケストレーション
@@ -225,7 +228,7 @@ app/src/infrastructures/i18n/
 ├── routing.ts          # ルーティング設定（Link, redirect, useRouter等）
 └── request.ts          # リクエストスコープ設定
 
-messages/
+app/messages/
 ├── ja.json             # 日本語翻訳
 └── en.json             # 英語翻訳
 ```
@@ -233,7 +236,7 @@ messages/
 ### 翻訳ファイル構造
 
 ```json
-// messages/ja.json
+// app/messages/ja.json
 {
   "label": {
     "save": "保存",
@@ -421,10 +424,10 @@ Suspense (Loading状態を処理)
 
 1. **Loader層**: エラーをcatchせずに上位に伝播
 2. **ErrorBoundary層**: エラーを捕捉してフォールバックを表示、想定外のものは再throw
-3. **`/app/[locale]/error.tsx`**: 未処理エラーをキャッチしSentryに報告
+3. **`/app/src/app/error.tsx`**: 未処理エラーをキャッチしSentryに報告
 
 ```typescript
-// app/[locale]/error.tsx の役割
+// app/src/app/error.tsx の役割
 "use client";
 import * as Sentry from "@sentry/nextjs";
 import { useEffect } from "react";
@@ -448,7 +451,7 @@ export default function Error({ error, reset }: ErrorPageProps) {
 | ファイル | 内容 |
 |---------|------|
 | `/app/src/components/common/layouts/error-boundary.tsx` | ErrorBoundaryコンポーネント |
-| `/app/[locale]/error.tsx` | ルートレベルのエラーハンドラー |
+| `/app/src/app/error.tsx` | ルートレベルのエラーハンドラー |
 
 ### 注意事項
 
@@ -470,11 +473,10 @@ PPRは以下の特性を持つ:
 ### 有効化
 
 ```typescript
-// next.config.ts
-const nextConfig: NextConfig = {
-  experimental: {
-    ppr: true,
-  },
+// app/next.config.mjs
+const nextConfig = {
+  cacheComponents: true, // v16: 静的シェル + 動的ストリーミング
+  reactCompiler: true,
 };
 ```
 
@@ -525,20 +527,18 @@ Next.js 15での動的レンダリングの制御方法。
 | `searchParams` | クエリパラメータ |
 | `connection()` | 明示的な動的オプトイン |
 
-### `dynamicIO` フラグ
+### `cacheComponents` フラグ
 
-Next.js 15.1+では`dynamicIO`フラグにより、IO操作の動的/静的な振る舞いを制御:
+Next.js 16では`cacheComponents`フラグにより、IO操作の動的/静的な振る舞いを制御:
 
 ```typescript
-// next.config.ts
-const nextConfig: NextConfig = {
-  experimental: {
-    dynamicIO: true,
-  },
+// app/next.config.mjs
+const nextConfig = {
+  cacheComponents: true,
 };
 ```
 
-`dynamicIO`有効時:
+`cacheComponents`有効時:
 - `fetch`、データベースクエリ等のIO操作はデフォルトで動的
 - `"use cache"`ディレクティブでキャッシュを明示的にオプトイン
 - 動的IOを行わないルートは自動的に静的プリレンダリング
@@ -641,8 +641,8 @@ export async function addArticleCore(
 
 ```typescript
 // app/src/application-services/articles/add-article.deps.ts
-import type { IArticlesCommandRepository } from "@s-hirano-ist/s-core/articles";
-import { articlesCommandRepository } from "@/infrastructures/articles/repositories";
+import type { IArticlesCommandRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-command-repository.interface";
+import { articlesCommandRepository } from "@/infrastructures/articles/repositories/articles-command-repository";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import {
   type createDomainServiceFactory,
@@ -890,9 +890,9 @@ export async function wrapServerSideErrorForClient(
 ```
 
 ```typescript
-// packages/core/errors/error-classes.ts
+// packages/core/shared-kernel/errors/error-classes.ts
 // エラークラスはドメイン層に配置され、app層からは以下のようにインポート:
-// import { DuplicateError } from "@s-hirano-ist/s-core/errors/error-classes";
+// import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 
 export class UnexpectedError extends Error {
   constructor() { super("unexpected"); this.name = "UnexpectedError"; }
@@ -1037,8 +1037,9 @@ export async function addArticleCore(formData: FormData, deps: AddArticleDeps) {
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { addArticle } from "@/application-services/articles/add-article";
-import { GenericFormWrapper } from "@s-hirano-ist/ui/forms/generic-form-wrapper";
-import { FormInput, FormTextarea } from "@s-hirano-ist/ui/forms";
+import { GenericFormWrapper } from "@s-hirano-ist/s-ui/forms/generic-form-wrapper";
+import { FormInput } from "@s-hirano-ist/s-ui/forms/fields/form-input";
+import { FormTextarea } from "@s-hirano-ist/s-ui/forms/fields/form-textarea";
 
 export function ArticleForm() {
   const label = useTranslations("label");
@@ -1060,65 +1061,87 @@ export function ArticleForm() {
 
 ### 内部実装の仕組み
 
-`GenericFormWrapper`は以下のReact Hooksを活用:
+`GenericFormWrapper`はServer Action統合・ローディング状態・エラー時のフォーム値保存をまとめて提供する:
 
 ```typescript
 // packages/ui/forms/generic-form-wrapper.tsx
 "use client";
-import { useActionState } from "react";
-import { useFormValues } from "./hooks/use-form-values";
+import { createContext, use, useActionState, useMemo, useState } from "react";
 
-export function GenericFormWrapper<T extends ServerAction>({
+// 子フィールドへフォーム値を共有するContext
+const FormValuesContext = createContext<Record<string, string>>({});
+
+export function GenericFormWrapper<
+  T extends { message: string; success: boolean },
+>({
   action,
-  afterSubmit,
-  saveLabel,
   children,
+  saveLabel,
+  submitLabel,
+  loadingLabel,
+  onSubmit,
+  preservedValues,
+  afterSubmit,
 }: GenericFormWrapperProps<T>) {
-  const [state, formAction, isPending] = useActionState(action, null);
-  const { formRef, savedValues } = useFormValues<T>(state);
+  // エラー時のみセットされ、成功時にクリアされるサーバー応答のフォームデータ
+  const [serverFormData, setServerFormData] =
+    useState<Record<string, string> | null>(null);
 
-  useEffect(() => {
-    if (state?.success) {
-      afterSubmit(state.message);
-      formRef.current?.reset();
+  // 値の優先順位: サーバー応答 → preservedValues → 空
+  const formValues = useMemo(
+    () => serverFormData ?? preservedValues ?? {},
+    [serverFormData, preservedValues],
+  );
+
+  const submitForm = async (_prev: T | null, formData: FormData) => {
+    if (onSubmit) {
+      await onSubmit(formData);
+      return null;
     }
-  }, [state, afterSubmit]);
+    const response = await action(formData);
+    afterSubmit(response.message);
+    if (response.success) {
+      setServerFormData(null); // 成功時はクリア
+      return response;
+    }
+    // エラー時はformDataを保存して入力を復元できるようにする
+    if ("formData" in response && response.formData) {
+      setServerFormData(response.formData as Record<string, string>);
+    }
+    return response;
+  };
+
+  const [_, submitAction, isPending] = useActionState(submitForm, null);
 
   return (
-    <form ref={formRef} action={formAction}>
-      {children}
-      <Button type="submit" disabled={isPending}>
-        {isPending ? <Spinner /> : saveLabel}
-      </Button>
-      {state?.success === false && (
-        <ErrorMessage>{state.message}</ErrorMessage>
-      )}
-    </form>
+    <FormValuesContext.Provider value={formValues}>
+      <form action={submitAction} className="space-y-4 px-2 py-4">
+        {isPending ? <Loading /> : children}
+        <Button className="w-full" disabled={isPending} type="submit">
+          {isPending && loadingLabel ? loadingLabel : (submitLabel ?? saveLabel)}
+        </Button>
+      </form>
+    </FormValuesContext.Provider>
   );
 }
 ```
 
 ### useFormValues Hook
 
-エラー時にフォーム値を保存し、ユーザー入力を失わないようにする:
+エラー時に保存されたフォーム値へ子フィールドからアクセスするためのContext consumer。引数は取らず、保存済みの値（`Record<string, string>`）を返す。`GenericFormWrapper`と同一ファイルで定義・exportされる:
 
 ```typescript
-// packages/ui/forms/hooks/use-form-values.ts
-export function useFormValues<T extends ServerAction>(state: T | null) {
-  const formRef = useRef<HTMLFormElement>(null);
-  const [savedValues, setSavedValues] = useState<Record<string, string>>({});
+// packages/ui/forms/generic-form-wrapper.tsx
+export const useFormValues = () => use(FormValuesContext);
 
-  useEffect(() => {
-    // エラー時にformDataから値を復元
-    if (state?.success === false && state.formData) {
-      const restored = Object.fromEntries(state.formData.entries());
-      setSavedValues(restored);
-    }
-  }, [state]);
-
-  return { formRef, savedValues };
+// 利用例（フィールドコンポーネント側）
+function MyFormField({ name }: { name: string }) {
+  const formValues = useFormValues();
+  return <input name={name} defaultValue={formValues[name]} />;
 }
 ```
+
+`GenericFormWrapper`がエラー応答の`formData`を`FormValuesContext`へ流し込み、各フィールドは`defaultValue`として値を復元する。`formRef`やフォームの明示的なresetは使わず、ローディング中は`children`の代わりに`<Loading />`を表示する。
 
 ### Toast連携
 
@@ -1134,8 +1157,8 @@ afterSubmit={(msg) => toast(message(msg))}
 
 | ファイル | 内容 |
 |---------|------|
-| `/packages/ui/forms/generic-form-wrapper.tsx` | GenericFormWrapperコンポーネント |
-| `/packages/ui/forms/hooks/use-form-values.ts` | フォーム値保存Hook |
+| `/packages/ui/forms/generic-form-wrapper.tsx` | `GenericFormWrapper`コンポーネント + `useFormValues`フック（同一ファイルで定義・export） |
+| `/packages/ui/forms/fields/` | `useFormValues`で復元値を読む各フィールド（form-input / form-textarea 等） |
 
 ## Cache Invalidation Pattern
 
@@ -1527,7 +1550,7 @@ export type IArticlesQueryRepository = {
 
 ```typescript
 // app/src/application-services/articles/get-articles.ts
-import type { LinkCardData } from "@s-hirano-ist/ui/cards/types";
+import type { LinkCardData } from "@/components/common/layouts/cards/types";
 
 function transformToLinkCard(dto: ArticleListItemDTO): LinkCardData {
   return {
@@ -1599,7 +1622,7 @@ const noteCard: LinkCardData = transformNoteToLinkCard(noteDTO);
 |---------|------|
 | `/app/src/application-services/articles/get-articles.ts` | 記事のDTO→UI型変換 |
 | `/app/src/application-services/books/get-books.ts` | 書籍のDTO→UI型変換 |
-| `/packages/ui/cards/types.ts` | UI型定義（`LinkCardData`等） |
+| `/app/src/components/common/layouts/cards/types.ts` | UI型定義（`LinkCardData`等） |
 
 ## Event-Driven Architecture Pattern
 
@@ -1762,7 +1785,7 @@ export type IArticlesQueryRepository = {
 
 ```typescript
 // app/src/infrastructures/articles/repositories/articles-command-repository.ts
-import type { IArticlesCommandRepository } from "@s-hirano-ist/s-core/articles";
+import type { IArticlesCommandRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-command-repository.interface";
 import prisma from "@/prisma";
 
 async function create(data: UnexportedArticle): Promise<void> {

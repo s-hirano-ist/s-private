@@ -18,7 +18,7 @@
 
 モノレポの各ワークスペースごとにエントリーポイントと除外設定を定義:
 
-- **app**: Next.jsの規約ファイル（`page.tsx`, `layout.tsx`, `route.ts`等）をエントリーポイントとして自動認識。`instrumentation.ts`や`i18n/request.ts`等のNext.js内部ファイルはignore対象
+- **app**: Next.jsの規約ファイル（`page.tsx`, `layout.tsx`, `route.ts`, `instrumentation.ts`等）をエントリーポイントとして自動認識。`i18n/request.ts`等の内部ファイルはignore対象
 - **packages/ui**: `ui/`, `forms/`, `display/`, `layouts/`, `providers/`, `hooks/`, `utils/`配下のファイルがエントリーポイント。Storybookファイル・テストファイルは除外
 - **packages/core**: 全`.ts`ファイルがエントリーポイント（テストファイルは除外）
 - **packages/database**: Prisma関連の依存関係をignore
@@ -77,10 +77,10 @@ pnpm jscpd:summary  # サマリーを jscpd-summary.txt に出力
 
 | ルール名 | from | to（禁止） |
 |----------|------|-----------|
-| `no-cross-domain-import-from-articles` | `packages/core/articles/` | `books`, `notes`, `images` |
-| `no-cross-domain-import-from-books` | `packages/core/books/` | `articles`, `notes`, `images` |
-| `no-cross-domain-import-from-notes` | `packages/core/notes/` | `articles`, `books`, `images` |
-| `no-cross-domain-import-from-images` | `packages/core/images/` | `articles`, `books`, `notes` |
+| `boundary-core-articles` | `packages/core/articles/` | `books`, `notes`, `images` |
+| `boundary-core-books` | `packages/core/books/` | `articles`, `notes`, `images` |
+| `boundary-core-notes` | `packages/core/notes/` | `articles`, `books`, `images` |
+| `boundary-core-images` | `packages/core/images/` | `articles`, `books`, `notes` |
 
 各ドメインは`shared-kernel`経由でのみ共通機能を利用できる。
 
@@ -129,7 +129,7 @@ ESLint を全廃し oxlint に一本化、続けて Biome も全廃し oxfmt に
 - **oxfmt**: format 全般（Prettier互換、タブ・行幅80）+ import 整理（sortImports）+ Tailwind class 並べ替え（sortTailwindcss、`cn`/`clsx`/`tv`）。旧 Biome の format + organizeImports + useSortedClasses を置換。
 - 旧 Biome の base lint は oxlint へ吸収（`categories.correctness="error"` + style ルール移植: noParameterAssign→`no-param-reassign`、useSelfClosingElements→`react/self-closing-comp`、useNumberNamespace→`unicorn/prefer-number-properties`、noUselessElse→`no-else-return` ほか）。`noExplicitAny` は `typescript/no-explicit-any="error"` に統一。
 
-新規有効化（旧コメントアウト分）: `jsx-a11y`（oxlint native, warn）。
+新規有効化（旧コメントアウト分）: `jsx-a11y`（oxlint native, error。当初 warn で導入し 2026-05 に error へ昇格）。
 
 移行できなかったもの（oxlint に等価なし）:
 - `@eslint-react` の react-x 固有ルール（type-aware で JS plugin 不可）: no-unused-props, naming-convention-ref-name, no-context-provider, ほか strict-type-checked 群。本コードベースでは warning 8 件相当の損失（error 損失は 0）。

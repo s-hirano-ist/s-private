@@ -31,7 +31,7 @@
 ### UI & Styling
 - **UI Components** - [Shadcn/ui](https://ui.shadcn.com/) with [Radix UI](https://www.radix-ui.com/)
 - **Styling** - [Tailwind CSS](https://tailwindcss.com/)
-- **Icons** - [Lucide React](https://lucide.dev/) & [Radix Icons](https://icons.radix-ui.com/)
+- **Icons** - [Lucide React](https://lucide.dev/)
 - **Theming** - [next-themes](https://github.com/pacocoursey/next-themes)
 
 ### Database & Storage
@@ -56,26 +56,25 @@
 - **Dead Code Detection** - [Knip](https://knip.dev/)
 - **Code Duplication Analysis** - [jscpd](https://github.com/kucherenko/jscpd)
 - **Dependency Analysis** - [dependency-cruiser](https://github.com/sverweij/dependency-cruiser)
-- **Bundle Analysis** - [@next/bundle-analyzer](https://www.npmjs.com/package/@next/bundle-analyzer)
+- **Bundle Analysis** - [`next experimental-analyze`](https://nextjs.org/docs) (built-in Next.js bundle analyzer)
 - **Security Auditing** - [pnpm audit](https://pnpm.io/cli/audit)
 
 ### Documentation
 - **API Documentation** - [TypeDoc](https://typedoc.org/) with packages strategy
-- **Database Schema Visualization** - [DBML](https://dbml.dbdiagram.io/) with [prisma-dbml-generator](https://github.com/notiz-dev/prisma-dbml-generator)
+- **Database Schema Visualization** - Mermaid ER diagram via [prisma-erd-generator](https://github.com/keonik/prisma-erd-generator), rendered to an HTML page
 
 ### Dependency Management & Security
 - **Automated Updates** - [Renovate](https://docs.renovatebot.com/)
   - Weekly scheduled updates (Mondays before 11am JST)
   - Automatic vulnerability alerts with `security` label
-  - Minimum release age: 3 days for patches/minors, preventing supply chain attacks
-  - Grouped updates: patches, minors, and GitHub Actions
+  - Minimum release age: 2 days for patches/minors, preventing supply chain attacks
+  - Grouped updates: non-major dependencies & devDependencies (GitHub Actions and docker-compose are handled by Dependabot)
   - Lock file maintenance enabled
 - **Manual Security Audits** - `pnpm audit` (moderate+ severity threshold)
 - **Supply Chain Protection**
   - Package version pinning (`savePrefix: ''` in pnpm-workspace.yaml)
   - Lifecycle script protection (`allowBuilds` + `strictDepBuilds: true`)
   - Exotic subdep blocking (`blockExoticSubdeps: true`)
-  - Minimum release age: 24 hours (pnpm-workspace.yaml)
   - Frozen lockfiles in CI/CD
 
 ### Monitoring & Observability
@@ -237,7 +236,7 @@ Each domain is completely isolated with its own:
 #### Key Components
 
 - **`packages/search/`** - RAG 検索ライブラリ（Qdrant クライアント、Embedding API クライアント、検索ロジック）
-- **HuggingFace TEI** - Embedding API サービス（`compose.yaml` で定義、ConoHa VPS にデプロイ）
+- **HuggingFace TEI** - Embedding API サービス（ConoHa VPS 上で Docker 稼働、Cloudflare Tunnel 経由でアクセス。本リポジトリの `compose.yaml` には含まれず別管理）
 
 ### Database Architecture
 
@@ -251,7 +250,6 @@ Content management system with clean domain separation:
 
 #### Supporting Models
 - **Category** - Hierarchical organization for Article items
-- **User** - Multi-tenant user isolation across all content types
 
 #### Common Patterns
 - **Status Lifecycle**: `UNEXPORTED` → `LAST_UPDATED` → `EXPORTED` (all content types)
@@ -282,9 +280,9 @@ Schema location: `packages/database/prisma/schema.prisma`
 
 ### Prerequisites
 - [Node.js](https://nodejs.org/) — version pinned in [.nvmrc](.nvmrc), installed via [Mise](https://mise.jdx.dev/)
-- [pnpm](https://pnpm.io/) v11.0.8 (managed via Mise)
-- [Doppler CLI](https://docs.doppler.com/docs/install-cli) v3.75.3 (managed via Mise)
-- [Docker](https://www.docker.com/) (for local CockroachDB database)
+- [pnpm](https://pnpm.io/) v11.0.9 (managed via Mise)
+- [Doppler CLI](https://docs.doppler.com/docs/install-cli) v3.76.0 (managed via Mise)
+- [Docker](https://www.docker.com/) (optional; for the VPS/embedding stack — MinIO, Cloudflare Tunnel)
 
 ### Initial Setup
 
@@ -375,7 +373,7 @@ pnpm deps:graph            # Generate visual dependency graph (SVG)
 pnpm deps:circular         # Find circular dependencies
 
 # Bundle Analysis
-pnpm analyze               # Analyze Next.js bundle size with webpack-bundle-analyzer
+pnpm --filter s-private-app analyze  # Analyze Next.js bundle size (next experimental-analyze; app workspace only)
 
 # Security & Licenses
 pnpm security              # Check for security vulnerabilities (moderate+)
@@ -416,7 +414,7 @@ pnpm docs:clean            # Remove generated documentation
 
 - Root `typedoc.json` uses packages strategy (`packages/core`, `packages/ui`, `packages/notification`)
 - Each package has its own `typedoc.json` for granular control
-- `prisma-dbml-generator` auto-generates DBML from Prisma schema → `dbml-renderer` converts to SVG
+- `prisma-erd-generator` auto-generates a Mermaid ER diagram from the Prisma schema → a custom script (`packages/database/scripts/generate-db-docs.sh`) renders it into an HTML page
 - `docs:build` generates all documentation at once (TypeDoc + DB schema HTML)
 
 ## Testing Strategy
@@ -468,11 +466,11 @@ pnpm docs:clean            # Remove generated documentation
 
 必要な GitHub Secrets:
 - アプリ環境変数: `DATABASE_URL`, `AUTH_SECRET`, `AUTH0_CLIENT_ID`, `AUTH0_CLIENT_SECRET`, `AUTH0_ISSUER_BASE_URL`, `SENTRY_AUTH_TOKEN`, `SENTRY_REPORT_URL`, `MINIO_HOST`, `MINIO_BUCKET_NAME`, `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY`, `PUSHOVER_USER_KEY`, `PUSHOVER_APP_TOKEN`, `QDRANT_URL`, `QDRANT_COLLECTION_NAME`, `NEXT_PUBLIC_SENTRY_DSN`
-- 本番 DB: `PRODUCTION_DATABASE_URL` — Prisma マイグレーションデプロイ用
+- 本番 DB: `PRODUCTION_DIRECT_URL` — Prisma マイグレーションデプロイ用（`.github/workflows/prisma-deploy.yaml`）
 - `NPM_TOKEN` — パッケージ公開（release-please のみ）
 - `ACTIONS_GITHUB_TOKEN` — リリース PR 作成
 
-環境変数が不要なジョブ（eslint, storybook）では `SKIP_ENV_VALIDATION: "true"` を設定。
+環境変数が不要なジョブ（oxlint, storybook）では `SKIP_ENV_VALIDATION: "true"` を設定。
 
 #### VPS (Docker Compose)
 

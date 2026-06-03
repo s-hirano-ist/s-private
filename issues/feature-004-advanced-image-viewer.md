@@ -12,9 +12,9 @@
 
 - [ ] 無限スクロール
 - [ ] ソート機能（sortable）
-- [ ] next/image 対応
+- [x] next/image 対応（実装済み。ただし `unoptimized` で描画中のため最適化は下記参照）
 - [ ] 画像選択機能（selectable）
-- [ ] 画像削除機能（deletable）
+- [x] 画像削除機能（deletable）（実装済み。バッチ削除には selectable が必要）
 - [ ] 画像最適化（Vercel or Cloudflare optimize）
 - [ ] images dump tag 機能
 

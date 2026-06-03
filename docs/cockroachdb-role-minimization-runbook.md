@@ -90,7 +90,7 @@ TO "s-prod-runtime";
   ⚠️ Preview / Development スコープは触らない。
 - GitHub Secret `PRODUCTION_DIRECT_URL` は `s-prod` のまま（migrate用、変更しない）。
 - 本番を **Redeploy** し、CRUD が成功することを確認。
-**期待結果:** 本番アプリが `s-prod-runtime`（DMLのみ）で正常動作。Vercel の build は `prisma generate`+`tsc` のみなので runtime 資格情報でも壊れない。
+**期待結果:** 本番アプリが `s-prod-runtime`（DMLのみ）で正常動作。Vercel の build は `prisma generate`+`next build` のみ（DB書込なし）なので runtime 資格情報でも壊れない。
 
 ### Step 4. dev を `s-dev` 単一に統一
 

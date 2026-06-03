@@ -7,7 +7,7 @@
 | **Category** | Security |
 | **Priority** | MEDIUM |
 | **Status** | 未着手 / 中規模リファクタ（100〜200行 + Server Action 入口ラッパ追加 + テストヘルパ） |
-| **Affected File** | [app/src/prisma.ts](app/src/prisma.ts), `app/src/lib/tenant-context.ts`（新規）, Server Actions のエントリ全般 |
+| **Affected File** | [app/src/prisma.ts](app/src/prisma.ts), `app/src/common/tenant/tenant-context.ts`（新規）, Server Actions のエントリ全般 |
 
 ## 概要
 
@@ -24,7 +24,7 @@
 ### 1. AsyncLocalStorage によるテナントコンテキスト
 
 ```ts
-// app/src/lib/tenant-context.ts
+// app/src/common/tenant/tenant-context.ts
 import { AsyncLocalStorage } from "node:async_hooks";
 export const tenantContext = new AsyncLocalStorage<{
   userId: string;
@@ -33,6 +33,8 @@ export const tenantContext = new AsyncLocalStorage<{
 ```
 
 ### 2. Prisma Extension で対象モデルに userId 強制注入
+
+> 注: `app/src/prisma.ts` には既にクエリ計測用の `$extends({ query: { $allOperations } })`（`duration` を計測し非本番で `console.log` するのみ。`where`/`userId` 注入は無し）が存在する。新しい `tenantExtension` はこの既存拡張を**置き換えず**、チェーン（例: `client.$extends({...timing...}).$extends(tenantExtension)`）またはマージして追加すること。
 
 ```ts
 // app/src/prisma.ts に追加
@@ -70,11 +72,11 @@ tenantContext.run({ userId }, () => action(...));
 
 ## タスク
 
-- [ ] `app/src/lib/tenant-context.ts` を作成し `AsyncLocalStorage` を export
+- [ ] `app/src/common/tenant/tenant-context.ts` を作成し `AsyncLocalStorage` を export
 - [ ] [app/src/prisma.ts](app/src/prisma.ts) に `tenantExtension` を実装し `client.$extends(tenantExtension)` でチェーン
 - [ ] 対象モデル（Article / Note / Image / Book / Category）すべてに対応
 - [ ] Server Action 入口（`app/src/application-services/**/*.core.ts`）で `tenantContext.run({ userId }, ...)` を仕込むラッパを実装
-- [ ] テストヘルパ（`tests/test-utils/with-tenant.ts` 等）を追加して全 unit test で context をセット
+- [ ] テストヘルパ（`app/src/common/tenant/with-tenant.ts` 等。テストは vitest でソース横に colocate された `*.test.ts`）を追加して全 unit test で context をセット
 - [ ] 単体テスト: context 未セットで対象モデルにアクセスすると例外
 - [ ] 統合テスト: ユーザーAのコンテキストでユーザーBの `articleId` を `update` しようとすると行が見つからずエラー
 - [ ] 既存テストスイート全件 pass
