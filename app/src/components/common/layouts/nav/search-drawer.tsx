@@ -17,7 +17,7 @@ type Props = {
 export function SearchDrawer({ open, onOpenChange, search }: Props) {
 	return (
 		<Drawer onOpenChange={onOpenChange} open={open}>
-			<DrawerContent className="max-h-[80vh]">
+			<DrawerContent className="overflow-hidden">
 				<DrawerHeader className="sr-only">
 					<DrawerTitle>Search</DrawerTitle>
 				</DrawerHeader>

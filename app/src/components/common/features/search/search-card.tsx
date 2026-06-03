@@ -111,7 +111,7 @@ export function SearchCard({ search }: Props) {
 
 	return (
 		<>
-			<div className="flex h-12 items-center gap-2 border-b px-4">
+			<div className="flex h-12 shrink-0 items-center gap-2 border-b px-4">
 				<Input
 					className="border-none shadow-none focus-visible:ring-0"
 					onChange={handleSearchChange}
@@ -129,24 +129,26 @@ export function SearchCard({ search }: Props) {
 					<SearchIcon className="size-4" />
 				</Button>
 			</div>
-			<div className="h-[300px] overflow-y-auto">{content}</div>
-			{articles.length > 0 && (
-				<div className="grid grid-cols-1 gap-2 p-2 sm:grid-cols-2">
-					{articles.map((item, index) => (
-						<LinkCard
-							data={{
-								id: String(index),
-								key: item.url ?? item.href,
-								title: item.title,
-								description: item.snippet,
-								primaryBadgeText: item.category,
-								href: item.url ?? item.href,
-							}}
-							key={item.url ?? item.href}
-						/>
-					))}
-				</div>
-			)}
+			<div className="min-h-0 flex-1 overflow-y-auto">
+				{content}
+				{articles.length > 0 && (
+					<div className="grid grid-cols-1 gap-2 p-2 sm:grid-cols-2">
+						{articles.map((item, index) => (
+							<LinkCard
+								data={{
+									id: String(index),
+									key: item.url ?? item.href,
+									title: item.title,
+									description: item.snippet,
+									primaryBadgeText: item.category,
+									href: item.url ?? item.href,
+								}}
+								key={item.url ?? item.href}
+							/>
+						))}
+					</div>
+				)}
+			</div>
 		</>
 	);
 }
