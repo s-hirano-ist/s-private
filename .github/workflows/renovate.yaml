@@ -56,12 +56,16 @@ jobs:
           app-id: ${{ secrets.RENOVATE_APP_ID }}
           private-key: ${{ secrets.RENOVATE_APP_PRIVATE_KEY }}
           # 生成トークンを最小権限に限定（metadata:read は常時付与）。
-          #   contents       : ブランチ・コミット・lockfile 更新
-          #   pull-requests  : PR 作成・automerge 有効化
-          #   issues         : Dependency Dashboard issue の維持
+          #   contents            : ブランチ・コミット・lockfile 更新
+          #   pull-requests       : PR 作成・automerge 有効化
+          #   issues              : Dependency Dashboard issue の維持
+          #   vulnerability-alerts: Dependabot alerts を読み security ラベル付き脆弱性 PR を作る
+          #     （renovate.json5 の vulnerabilityAlerts / :enableVulnerabilityAlertsWithLabel の前提。
+          #      App 側にも "Dependabot alerts: Read" の付与が必要。無いとトークン発行が 422）。
           permission-contents: write
           permission-pull-requests: write
           permission-issues: write
+          permission-vulnerability-alerts: read
 
       # self-host 実行。repo 設定 .github/renovate.json5 は Renovate が自動検出する
       # （configurationFile はグローバル設定用なので渡さない）。
