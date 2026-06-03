@@ -140,34 +140,6 @@ GitHub Actionsの `mutation-test.yaml` ワークフローで、PRにて `package
 - テストランナー: `@stryker-mutator/vitest-runner`
 - 型チェッカー: `@stryker-mutator/typescript-checker`
 
-## memlab メモリリーク検知
-
-[memlab](https://facebook.github.io/memlab/) によるPuppeteerベースのヒープスナップショット比較でメモリリークを自動検知する。
-
-### 前提条件
-
-- アプリケーションが `http://localhost:3000` で起動済みであること
-- 認証壁があるため、ログイン済みのセッションが必要
-
-### コマンド
-
-```bash
-pnpm memlab:article   # 記事タブ間ナビゲーションシナリオ
-pnpm memlab:drawer    # SearchDrawer開閉シナリオ
-pnpm memlab:all       # 全シナリオ実行
-```
-
-### シナリオ
-
-| シナリオ | ファイル | 検知対象 |
-|---------|---------|---------|
-| 記事ナビゲーション | `memlab/scenarios/article-list-navigation.cjs` | IntersectionObserverリーク |
-| Drawer開閉 | `memlab/scenarios/drawer-open-close.cjs` | DOM参照リーク |
-
-### CI統合
-
-GitHub Actionsの `memlab.yaml` ワークフローで `workflow_dispatch` トリガーにより手動実行可能。結果はartifactとしてアップロードされる。
-
 ## Chaos レジリエンステスト（Playwright CDP）
 
 Playwright の CDP (Chrome DevTools Protocol) を使ったネットワークシミュレーションにより、UIレジリエンスを検証する。

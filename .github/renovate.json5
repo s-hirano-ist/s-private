@@ -21,6 +21,13 @@
 	// @prisma/engines / @sentry/cli / esbuild) によるメモリ消費を抑える保険。
 	// CI (--frozen-lockfile) と本番 deploy 側の install では通常通りバイナリを取得する。
 	ignoreScripts: true,
+	// Mend-hosted の kernel-out-of-memory 対策 (公式 FAQ 推奨)。pnpm の Node プロセスに
+	// --max-old-space-size=2048(MB) を渡し、V8 ヒープを Mend のコンテナ上限より下で
+	// 頭打ちにして積極 GC させ、OOM Killer による kill を回避する。
+	// まだ落ちるなら値を下げる (1536) / JS heap OOM に変われば 1 回の作業量を削る。
+	toolSettings: {
+		nodeMaxMemory: 2048,
+	},
 	dependencyDashboard: true,
 	branchConcurrentLimit: 3,
 	prConcurrentLimit: 5,

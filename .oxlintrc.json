@@ -91,7 +91,6 @@
 		"**/dist/**/*",
 		"**/next-env.d.ts",
 		"docs/**/*",
-		"memlab/**/*",
 		"e2e/**/*"
 	],
 	"rules": {

@@ -102,14 +102,12 @@ This ensures all dependencies are installed with exact versions (e.g., `1.2.3` i
 **Configuration** ([pnpm-workspace.yaml](pnpm-workspace.yaml)):
 ```yaml
 allowBuilds:
-  '@memlab/cli': true
   '@parcel/watcher': true
   '@prisma/engines': true
   '@sentry/cli': true
   '@swc/core': true
   dprint: true
   esbuild: true
-  memlab: true
   prisma: true
   puppeteer: true
   sharp: true

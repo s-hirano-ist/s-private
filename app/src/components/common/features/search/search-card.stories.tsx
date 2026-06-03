@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn, userEvent, within } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { SearchCard } from "./search-card";
 
 const mockArticleResults = {
@@ -26,6 +26,24 @@ const mockArticleResults = {
 		],
 		groups: [],
 		totalCount: 2,
+		query: "typescript",
+	},
+};
+
+const mockManyArticleResults = {
+	success: true as const,
+	message: "success",
+	data: {
+		results: Array.from({ length: 20 }, (_, index) => ({
+			href: `https://example.com/article-${index + 1}`,
+			contentType: "articles" as const,
+			title: `TypeScript Article #${index + 1}`,
+			snippet: `Snippet describing the contents of article number ${index + 1}...`,
+			url: `https://example.com/article-${index + 1}`,
+			category: { id: "tech", name: "Technology" },
+		})),
+		groups: [],
+		totalCount: 20,
 		query: "typescript",
 	},
 };
@@ -92,6 +110,50 @@ export const WithArticleResults: Story = {
 		const canvas = within(canvasElement);
 		const input = canvas.getByRole("textbox");
 		await userEvent.type(input, "typescript{Enter}");
+	},
+};
+
+// Wraps SearchCard in a bounded flex column to emulate the drawer popup
+// (flex flex-col + max-height + overflow-hidden), so the single scrollable
+// results region can be verified outside of an actual Drawer. Guards against
+// the regression where article results rendered outside the scrollable region
+// and could not be scrolled to inside the mobile drawer.
+export const WithManyArticleResultsScrollable: Story = {
+	args: { search: fn() },
+	parameters: { a11y: { disable: true } },
+	decorators: [
+		(Story) => (
+			<div className="flex h-[400px] w-80 flex-col overflow-hidden rounded-lg border">
+				<Story />
+			</div>
+		),
+	],
+	play: async ({ args, canvasElement }) => {
+		// Set the resolved value inside play: Storybook resets `fn()` spies before
+		// each story, which would otherwise clear an args-level mockResolvedValue.
+		(args.search as ReturnType<typeof fn>).mockResolvedValue(
+			mockManyArticleResults,
+		);
+
+		const canvas = within(canvasElement);
+		const input = canvas.getByRole("textbox");
+		await userEvent.type(input, "typescript{Enter}");
+
+		// The last article must be rendered inside the single scroll container,
+		// and that container must actually overflow (scrollHeight > clientHeight)
+		// so the results can be scrolled.
+		const lastArticle = await canvas.findByText("TypeScript Article #20");
+		let scrollContainer: HTMLElement | null = lastArticle;
+		while (
+			scrollContainer &&
+			getComputedStyle(scrollContainer).overflowY !== "auto"
+		) {
+			scrollContainer = scrollContainer.parentElement;
+		}
+		expect(scrollContainer).not.toBeNull();
+		expect(scrollContainer?.scrollHeight ?? 0).toBeGreaterThan(
+			scrollContainer?.clientHeight ?? 0,
+		);
 	},
 };
 
