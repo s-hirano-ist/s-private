@@ -10,6 +10,7 @@ vi.mock("@/env", () => ({
 		PUSHOVER_USER_KEY: "test-key",
 		PUSHOVER_APP_TOKEN: "test-token",
 		AUTH_SECRET: "test-secret",
+		BETTER_AUTH_URL: "http://localhost:3000",
 		AUTH0_CLIENT_ID: "test-client-id",
 		AUTH0_CLIENT_SECRET: "test-client-secret",
 		AUTH0_ISSUER_BASE_URL: "https://test.auth0.com",
@@ -24,8 +25,14 @@ vi.mock("@/env", () => ({
 	},
 }));
 
-vi.mock("@/common/auth/auth", () => ({
-	auth: vi.fn((handler) => handler),
+vi.mock("next/headers", () => ({
+	headers: vi.fn(async () => new Headers()),
+	cookies: vi.fn(async () => ({
+		get: vi.fn(),
+		getAll: vi.fn(() => []),
+		set: vi.fn(),
+		delete: vi.fn(),
+	})),
 }));
 
 vi.mock("@/infrastructures/observability/server", () => ({

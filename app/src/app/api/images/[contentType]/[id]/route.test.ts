@@ -1,8 +1,9 @@
+import { auth } from "@/infrastructures/auth/auth";
 import { Readable } from "node:stream";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, type Mock, test, vi } from "vitest";
 
-vi.mock("@/infrastructures/auth/auth-provider", () => ({
-	auth: vi.fn((handler) => handler),
+vi.mock("@/infrastructures/auth/auth", () => ({
+	auth: { api: { getSession: vi.fn() } },
 }));
 
 vi.mock("@/application-services/images/get-images", () => ({
@@ -13,13 +14,16 @@ const { GET } = await import("./route");
 const { getImagesFromStorage } =
 	await import("@/application-services/images/get-images");
 
+const getSession = auth.api.getSession as unknown as Mock;
+
 const authedRequest = {
-	auth: { user: { id: "test-user" } },
+	headers: new Headers(),
 } as unknown as Parameters<typeof GET>[0];
 
 describe("Images API Route", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
+		getSession.mockResolvedValue({ session: {}, user: { id: "test-user" } });
 	});
 
 	test("should return 401 when user is not authenticated", async () => {
@@ -27,13 +31,16 @@ describe("Images API Route", () => {
 		vi.mocked(getImagesFromStorage).mockRejectedValue(
 			new Error("Should not be called"),
 		);
-		const request = { auth: null } as unknown as Parameters<typeof GET>[0];
+		getSession.mockResolvedValue(null);
+		const request = {
+			headers: new Headers(),
+		} as unknown as Parameters<typeof GET>[0];
 		const params = Promise.resolve({
 			contentType: "thumbnail",
 			id: "image-123",
 		});
 
-		const response = (await GET(request, { params })) as Response;
+		const response = await GET(request, { params });
 		const data = await response.json();
 
 		expect(response.status).toBe(401);
@@ -49,7 +56,7 @@ describe("Images API Route", () => {
 			id: "image-123",
 		});
 
-		const response = (await GET(authedRequest, { params })) as Response;
+		const response = await GET(authedRequest, { params });
 
 		expect(getImagesFromStorage).toHaveBeenCalledWith("image-123", true);
 		expect(response.headers.get("Content-Type")).toBe("image/jpeg");
@@ -64,7 +71,7 @@ describe("Images API Route", () => {
 
 		const params = Promise.resolve({ contentType: "full", id: "image-123" });
 
-		const response = (await GET(authedRequest, { params })) as Response;
+		const response = await GET(authedRequest, { params });
 
 		expect(getImagesFromStorage).toHaveBeenCalledWith("image-123", false);
 		expect(response.headers.get("Content-Type")).toBe("image/jpeg");
@@ -82,7 +89,7 @@ describe("Images API Route", () => {
 			id: "image-123.webp",
 		});
 
-		const response = (await GET(authedRequest, { params })) as Response;
+		const response = await GET(authedRequest, { params });
 
 		expect(getImagesFromStorage).toHaveBeenCalledWith("image-123.webp", true);
 		expect(response.headers.get("Content-Type")).toBe("image/webp");
@@ -97,7 +104,7 @@ describe("Images API Route", () => {
 			id: "image-123.png",
 		});
 
-		const response = (await GET(authedRequest, { params })) as Response;
+		const response = await GET(authedRequest, { params });
 
 		expect(getImagesFromStorage).toHaveBeenCalledWith("image-123.png", false);
 		expect(response.headers.get("Content-Type")).toBe("image/png");

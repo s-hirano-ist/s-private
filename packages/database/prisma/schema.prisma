@@ -129,3 +129,84 @@ model Book {
   @@unique([isbn, userId])
   @@map("books")
 }
+
+// ---------------------------------------------------------------------------
+// Better Auth tables (user / session / account / verification).
+//
+// Managed entirely by Better Auth via @better-auth/prisma-adapter. These are
+// intentionally NOT registered in the Prisma tenant extension whitelist
+// (app/src/prisma.ts), so tenant filtering never touches them. createdAt has a
+// DB default and emailVerified defaults to false as a safety net for the
+// library-managed write paths (unlike the domain models, which set timestamps
+// explicitly in domain logic).
+// ---------------------------------------------------------------------------
+
+model User {
+  id String @id @db.String(64)
+
+  name          String  @db.String
+  email         String  @unique @db.String
+  emailVerified Boolean @default(false) @map("email_verified")
+  image         String? @db.String
+
+  Sessions Session[]
+  Accounts Account[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("user")
+}
+
+model Session {
+  id String @id @db.String(64)
+
+  expiresAt DateTime @map("expires_at")
+  token     String   @unique @db.String
+  ipAddress String?  @map("ip_address") @db.String
+  userAgent String?  @map("user_agent") @db.String
+
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String @map("user_id") @db.String(64)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("session")
+}
+
+model Account {
+  id String @id @db.String(64)
+
+  accountId  String @map("account_id") @db.String(128)
+  providerId String @map("provider_id") @db.String(64)
+
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String @map("user_id") @db.String(64)
+
+  accessToken           String?   @map("access_token") @db.String
+  refreshToken          String?   @map("refresh_token") @db.String
+  idToken               String?   @map("id_token") @db.String
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at")
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
+  scope                 String?   @db.String
+  password              String?   @db.String
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("account")
+}
+
+model Verification {
+  id String @id @db.String(64)
+
+  identifier String   @db.String
+  value      String   @db.String
+  expiresAt  DateTime @map("expires_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("verification")
+}

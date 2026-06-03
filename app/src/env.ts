@@ -42,13 +42,16 @@ export const env = createEnv({
 			.default("https://api.pushover.net/1/messages.json"),
 		PUSHOVER_USER_KEY: z.string(),
 		PUSHOVER_APP_TOKEN: z.string(),
-		/** Generate by `openssl rand -base64 32`. Required in production. */
+		/** Generate by `openssl rand -base64 32`. Required in production. Shared secret for Better Auth. */
 		AUTH_SECRET:
 			process.env.NODE_ENV === "production"
 				? z.string()
 				: z.string().optional(),
+		/** Better Auth base URL (deployment origin, e.g. "https://example.com"). Used for baseURL / trustedOrigins. */
+		BETTER_AUTH_URL: z.string().default("http://localhost:3000"),
 		AUTH0_CLIENT_ID: z.string(),
 		AUTH0_CLIENT_SECRET: z.string(),
+		/** Auth0 tenant issuer URL (e.g. "https://your-tenant.auth0.com"). The host is used as the Better Auth genericOAuth `domain`. */
 		AUTH0_ISSUER_BASE_URL: z.string(),
 		SENTRY_AUTH_TOKEN: z.string(),
 		SENTRY_REPORT_URL: z.string(),
@@ -84,6 +87,7 @@ export const env = createEnv({
 		PUSHOVER_USER_KEY: process.env.PUSHOVER_USER_KEY,
 		PUSHOVER_APP_TOKEN: process.env.PUSHOVER_APP_TOKEN,
 		AUTH_SECRET: process.env.AUTH_SECRET,
+		BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
 		AUTH0_CLIENT_ID: process.env.AUTH0_CLIENT_ID,
 		AUTH0_CLIENT_SECRET: process.env.AUTH0_CLIENT_SECRET,
 		AUTH0_ISSUER_BASE_URL: process.env.AUTH0_ISSUER_BASE_URL,

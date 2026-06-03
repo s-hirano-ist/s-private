@@ -4,7 +4,7 @@ import { UnexpectedError } from "@s-hirano-ist/s-core/shared-kernel/errors/error
 import { Prisma } from "@s-hirano-ist/s-database";
 import { NotificationError } from "@s-hirano-ist/s-notification";
 import { S3Error } from "@s-hirano-ist/s-storage";
-import { AuthError } from "next-auth";
+import { APIError } from "better-auth/api";
 import { describe, expect, test, vi } from "vitest";
 import { wrapServerSideErrorForClient } from "./error-wrapper";
 
@@ -82,8 +82,8 @@ describe("wrapServerSideErrorForClient", () => {
 		});
 	});
 
-	test("should handle AuthError with unknown auth type", async () => {
-		const error = new AuthError();
+	test("should handle APIError with unknown auth type", async () => {
+		const error = new APIError("UNAUTHORIZED");
 
 		const result = await wrapServerSideErrorForClient(error);
 

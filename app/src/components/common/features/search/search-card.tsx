@@ -3,13 +3,13 @@ import type { searchContentFromClient } from "@/application-services/search/sear
 import { useSearch } from "@/components/common/hooks/use-search";
 import { LinkCard } from "@/components/common/layouts/cards/link-card";
 import { UtilButtons } from "@/components/common/layouts/nav/util-buttons";
+import { authClient } from "@/infrastructures/auth/auth-client";
 import Loading from "@s-hirano-ist/s-ui/display/loading";
 import { StatusCodeView } from "@s-hirano-ist/s-ui/display/status/status-code-view";
 import { Button } from "@s-hirano-ist/s-ui/ui/button";
 import { Input } from "@s-hirano-ist/s-ui/ui/input";
 import { haptic } from "@s-hirano-ist/s-ui/utils/haptic";
 import { SearchIcon } from "lucide-react";
-import { signOut } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 
@@ -20,7 +20,10 @@ const handleReload = () => {
 };
 
 const onSignOutSubmit = async () => {
-	await signOut();
+	await authClient.signOut();
+	// Better Auth signOut does not redirect; force a navigation so the proxy
+	// bounces the now-unauthenticated request back to the Auth0 login screen.
+	window.location.href = "/";
 };
 
 export function SearchCard({ search }: Props) {
