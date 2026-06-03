@@ -6,8 +6,7 @@ VPS 上では全ポートを firewall で閉じ、Cloudflare Tunnel の outbound
 ## アーキテクチャ
 
 ```
-Internet → Cloudflare Tunnel → cloudflared (VPS内) ─┬→ embedding-api:3001
-                                                    ├→ minio:9000 / minio:9001
+Internet → Cloudflare Tunnel → cloudflared (VPS内) ──→ minio:9000 / minio:9001
                                                     ↑ Docker内部ネットワーク
 ```
 
@@ -134,9 +133,9 @@ ssh -p 22 conoha-vps
 
 1. Zero Trust → Access → Applications → **Add an application**
 2. Type: **Self-hosted**
-3. Application name: サービス名（例: `embedding-api`）
+3. Application name: サービス名（例: `minio`）
 4. Session Duration: 任意（デフォルト 24h）
-5. Application domain: Tunnel で設定したホスト名（例: `embedding-api.<domain>`）
+5. Application domain: Tunnel で設定したホスト名（例: `minio.<domain>`）
 6. ウィザード内の Policy 設定ステップで以下を追加:
    - Policy name: `Service Token Policy`
    - Action: **Service Auth**
@@ -148,9 +147,9 @@ ssh -p 22 conoha-vps
 
 1. Zero Trust → Networks → Tunnels → `conoha-vps` → Public Hostname タブ
 2. **Add a public hostname**:
-   - Subdomain: サービス識別名（例: `embedding-api`, `minio`）
+   - Subdomain: サービス識別名（例: `minio`）
    - Domain: 所有ドメイン
-   - Service: `http://<コンテナ名>:<ポート>`（例: `http://embedding-api:3001`）
+   - Service: `http://<コンテナ名>:<ポート>`（例: `http://minio:9000`）
 3. 必要に応じて 5.3 と同様に Access アプリケーション + ポリシーを作成
 
 #### 5.5 アクセス方法
@@ -204,13 +203,6 @@ docker login -u <DOCKERHUB_USERNAME>
 VPS 上の `~/s-private/.env` に配置:
 
 ```bash
-# Embedding API (TEI) — すべて必須
-EMBEDDING_MODEL=intfloat/multilingual-e5-small  # ※ TEI の --model-id に渡される
-EMBEDDING_VECTOR_SIZE=384                        # ※ モデルに合わせて変更
-
-# Qdrant — 必須
-QDRANT_COLLECTION_NAME=knowledge_v1
-
 # Cloudflare Tunnel
 CLOUDFLARE_TUNNEL_TOKEN=your-tunnel-token
 
@@ -248,8 +240,8 @@ chmod 600 ~/s-private/.env
 リポジトリルートの `compose.yaml` に全サービスを定義している。
 
 ```
-compose.yaml          ← 全サービス定義（embedding-api, minio, cloudflared）
-.env                  ← VPS 用環境変数（EMBEDDING_MODEL, CLOUDFLARE_TUNNEL_TOKEN 等）
+compose.yaml          ← 全サービス定義（minio, minio-init, cloudflared）
+.env                  ← VPS 用環境変数（CLOUDFLARE_TUNNEL_TOKEN, MINIO_ROOT_USER 等）
 ```
 
 全サービスは Docker Hub の image を `docker compose pull` で取得する。サービスを追加する場合は `compose.yaml` にサービス定義（`image:` 指定）を追加する。
@@ -259,12 +251,11 @@ compose.yaml          ← 全サービス定義（embedding-api, minio, cloudfla
 `minio`, `minio-init`, `cloudflared` は `profiles: [vps]` が設定されており、明示的に `--profile vps` を指定しない限り起動しない。
 
 ```bash
-# embedding-api のみ起動（ローカル開発用）
-docker compose up
-
 # 全サービス起動（VPS 用）
 docker compose --profile vps up -d
 ```
+
+> **注意:** 現在の `compose.yaml` は全サービスが `profiles: [vps]` 配下にあるため、`--profile vps` を付けない `docker compose up` ではどのサービスも起動しない。
 
 `deploy.sh` は自動的に `--profile vps` を付与するため、VPS デプロイ時は意識する必要はない。
 
@@ -272,19 +263,9 @@ docker compose --profile vps up -d
 
 ## Appendix A: サービス別設定
 
-### A.1 Embedding API (TEI)
+> **注:** HuggingFace TEI（Embedding API）はこのリポジトリの `compose.yaml` では定義していない（別途ホスト・管理されている）。
 
-- **イメージ**: `ghcr.io/huggingface/text-embeddings-inference:cpu-1.9`
-- **コンテナ名**: `embedding-api`
-- **ポート**: 3001
-- **ヘルスチェック**: `http://localhost:3001/health`
-- **環境変数**: `EMBEDDING_MODEL`（必須）
-- **ボリューム**: `hf-cache` → `/data` — HuggingFace モデルキャッシュ（初回ダウンロード ~600MB）
-- **メモリ使用量**: 約 1.1GB（multilingual-e5-large）
-- **Cloudflare Public Hostname**: `embedding-api.<domain>` → `http://embedding-api:3001`
-- **認証**: Cloudflare Access のみ（TEI側のAPI key不要）
-
-### A.2 MinIO
+### A.1 MinIO
 
 - **コンテナ名**: `minio`
 - **ポート**: 9000 (S3 API) / 9001 (Console)

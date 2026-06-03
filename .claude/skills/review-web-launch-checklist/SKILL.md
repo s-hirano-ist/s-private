@@ -14,7 +14,7 @@ Zenn記事「[Webサービス公開前のチェックリスト](https://zenn.dev
 
 ### 1. プロジェクト確認
 - プロジェクトの構成を把握
-- 使用している技術スタック（Auth0、NextAuth.js、Prisma等）を確認
+- 使用している技術スタック（Auth0、Auth.js、Prisma等）を確認
 - 既存の`issues/`ディレクトリを確認し重複を避ける
 
 ### 2. チェック実行
@@ -155,7 +155,7 @@ Zenn記事「[Webサービス公開前のチェックリスト](https://zenn.dev
 #### 認証Cookie設定
 ```typescript
 // 確認ポイント: next-auth設定
-// app/src/app/api/auth/[...nextauth]/route.ts
+// app/src/infrastructures/auth/auth-provider.ts (NextAuth設定)
 cookies: {
   sessionToken: {
     httpOnly: true,
@@ -178,7 +178,7 @@ await db.insert(validated);
 
 #### レスポンスヘッダ
 ```typescript
-// next.config.js での設定確認
+// app/next.config.mjs での設定確認
 headers: async () => [
   {
     source: '/:path*',
@@ -238,6 +238,6 @@ export const metadata: Metadata = {
 ## 注意事項
 - 既存の`issues/`ファイルと重複しないよう確認する
 - CRITICALとHIGHの問題を優先的に検出する
-- プロジェクト固有の設計（Auth0、NextAuth.js等）を考慮する
-- Next.js 15のベストプラクティスに従う
+- プロジェクト固有の設計（Auth0、Auth.js等）を考慮する
+- Next.js 16のベストプラクティスに従う
 - 過度な指摘を避け、実用的な改善を提案する

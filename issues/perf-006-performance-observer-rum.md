@@ -7,11 +7,11 @@
 | **Category** | Performance |
 | **Priority** | MEDIUM |
 | **Check Item** | Core Web Vitals のカスタム計測・監視 |
-| **Affected File** | `app/src/app/[locale]/layout.tsx`, `app/src/instrumentation-client.ts` |
+| **Affected File** | `app/src/app/layout.tsx`, `app/instrumentation-client.ts` |
 
 ## Problem Description
 
-Vercel Analytics（`@vercel/analytics@1.6.1`）と Speed Insights（`@vercel/speed-insights@1.3.1`）が導入済みだが、以下の課題がある:
+Vercel Analytics（`@vercel/analytics@2.0.1`）と Speed Insights（`@vercel/speed-insights@2.0.0`）が導入済みだが、以下の課題がある:
 
 1. Vercel Analytics はVercelダッシュボードに閉じており、Sentryのエラー監視と統合されていない
 2. パフォーマンス劣化とエラー発生の相関分析ができない
@@ -21,13 +21,18 @@ Vercel Analytics（`@vercel/analytics@1.6.1`）と Speed Insights（`@vercel/spe
 ### Current Configuration
 
 ```typescript
-// app/src/instrumentation-client.ts
-Sentry.init({
+// app/instrumentation-client.ts
+import { env } from "@/env";
+import { init } from "@sentry/nextjs";
+
+init({
   dsn: env.NEXT_PUBLIC_SENTRY_DSN,
-  enabled: process.env.NODE_ENV === "production",
+  integrations: [],
   tracesSampleRate: 0.2,
-  _experiments: { enableLogs: true },
+  debug: false,
 });
+
+export { captureRouterTransitionStart as onRouterTransitionStart } from "@sentry/nextjs";
 ```
 
 Sentry のトレーシング（`tracesSampleRate: 0.2`）は有効だが、Web Vitals のカスタム計測は未実装。
@@ -46,13 +51,10 @@ import { type Metric, onCLS, onINP, onLCP, onFCP, onTTFB } from "web-vitals";
 import * as Sentry from "@sentry/nextjs";
 
 function sendToSentry(metric: Metric) {
-  Sentry.metrics.distribution(metric.name, metric.value, {
-    unit: "millisecond",
-    tags: {
-      rating: metric.rating, // "good" | "needs-improvement" | "poor"
-      navigationType: metric.navigationType,
-    },
-  });
+  // 注: @sentry/nextjs 10.x では Metrics Beta（`Sentry.metrics.distribution`）が
+  // 削除されているため、アクティブな span への measurement 付与で代替する。
+  // 実装前に @sentry/nextjs 10.x のAPI（setMeasurement / span attributes）を確認すること。
+  Sentry.setMeasurement(metric.name, metric.value, "millisecond");
 
   // "poor" 評価の場合はSentryにイベントとして送信
   if (metric.rating === "poor") {
@@ -76,16 +78,18 @@ export function initWebVitals() {
 #### 2. instrumentation-client.ts への統合
 
 ```typescript
-// app/src/instrumentation-client.ts
-import * as Sentry from "@sentry/nextjs";
+// app/instrumentation-client.ts
 import { env } from "@/env";
+import { init } from "@sentry/nextjs";
 
-Sentry.init({
+init({
   dsn: env.NEXT_PUBLIC_SENTRY_DSN,
-  enabled: process.env.NODE_ENV === "production",
+  integrations: [],
   tracesSampleRate: 0.2,
-  _experiments: { enableLogs: true },
+  debug: false,
 });
+
+export { captureRouterTransitionStart as onRouterTransitionStart } from "@sentry/nextjs";
 
 // Web Vitals の計測開始
 if (typeof window !== "undefined") {

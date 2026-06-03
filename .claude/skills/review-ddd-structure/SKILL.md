@@ -21,10 +21,10 @@ globs:
 以下の観点でディレクトリ構成をレビュー:
 
 #### レイヤー分離
-- **ドメイン層** (`packages/core/`): entities, repositories, services, shared-kernel
+- **ドメイン層** (`packages/core/`): entities, events, repositories, services, types, shared-kernel
 - **アプリケーション層** (`app/src/application-services/`): ユースケース
 - **インフラ層** (`app/src/infrastructures/`): 技術的実装
-- **プレゼンテーション層** (`app/src/app/`): UIコンポーネント
+- **プレゼンテーション層** (`app/src/app/` = Next.js App Router のルート/ページ、`app/src/components/` および `packages/ui/` = UIコンポーネント)
 
 #### チェック項目（優先度順）
 

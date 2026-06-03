@@ -13,11 +13,11 @@
 
 ## Problem Description
 
-`@chromatic-com/storybook@5.0.1` がインストール済みでStorybook addonとして登録されているが、Chromatic のCI連携が未設定のため、ビジュアルリグレッションテストが自動実行されていない。
+`@chromatic-com/storybook@5.1.2` がインストール済みでStorybook addonとして登録されているが、Chromatic のCI連携が未設定のため、ビジュアルリグレッションテストが自動実行されていない。
 
 現状の課題:
 1. UIコンポーネント変更時にビジュアルリグレッションが検知されない
-2. Storybookの49ファイルのストーリーがビジュアルテストのベースラインとして活用されていない
+2. Storybookの51ファイルのストーリーがビジュアルテストのベースラインとして活用されていない
 3. テーマ（light/dark）やビューポート切り替え時の見た目の不整合が見落とされる
 4. PRレビュー時にUIの変更差分を視覚的に確認する手段がない
 
@@ -54,7 +54,7 @@ on:
   pull_request:
     paths:
       - "app/src/components/**"
-      - "packages/ui/src/**"
+      - "packages/ui/**"
       - ".storybook/**"
       - "**/*.stories.tsx"
 
@@ -68,7 +68,7 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version-file: ".nvmrc"
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - uses: chromaui/action@latest
@@ -78,7 +78,7 @@ jobs:
           exitZeroOnChanges: true # 変更がある場合もCIは成功（レビューで承認）
           onlyChanged: true # 変更されたストーリーのみテスト
           externals: |
-            - "packages/ui/src/**/*.css"
+            - "packages/ui/**/*.css"
             - "app/src/**/*.css"
 ```
 
@@ -101,20 +101,20 @@ parameters: {
 
 ```tsx
 // 特定ストーリーでスナップショット対象外にする例
-export const AnimatedComponent = meta.story({
+export const AnimatedComponent: Story = {
   args: { ... },
   parameters: {
     chromatic: { disableSnapshot: true }, // アニメーション系は除外
   },
-});
+};
 
 // 遅延読み込みコンポーネントの待機設定
-export const LazyLoadedComponent = meta.story({
+export const LazyLoadedComponent: Story = {
   args: { ... },
   parameters: {
     chromatic: { delay: 500 }, // 500ms待機してからスナップショット
   },
-});
+};
 ```
 
 #### 5. npm script の追加

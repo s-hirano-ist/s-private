@@ -7,11 +7,11 @@
 | **Category** | DX / Testing |
 | **Priority** | MEDIUM |
 | **Check Item** | Storybook 10 新機能活用・設定最適化 |
-| **Affected File** | `.storybook/main.ts`, `.storybook/preview.tsx`, `.storybook/vitest.setup.ts`, `package.json`, `vitest.config.ts`, `*.stories.tsx` (49ファイル) |
+| **Affected File** | `.storybook/main.ts`, `.storybook/preview.tsx`, `.storybook/vitest.setup.ts`, `package.json`, `vitest.config.ts`, `*.stories.tsx` (51ファイル) |
 
 ## Problem Description
 
-現在Storybook 10.2.1で基本設定は整っているが、SB10の新機能（CSF Factories, sb.mock()）が未活用など改善余地がある。SB10の推奨パターンに合わせた設定最適化と、開発体験・テスト品質の向上を目的とする。
+現在Storybook 10.3.6で基本設定は整っているが、SB10の新機能（CSF Factories, sb.mock()）が未活用など改善余地がある。SB10の推奨パターンに合わせた設定最適化と、開発体験・テスト品質の向上を目的とする。
 
 ### Issues
 
@@ -46,7 +46,7 @@ import { definePreview } from "@storybook/nextjs-vite";
 export default definePreview({ ... });
 ```
 
-### 3. CSF Factories ストーリー移行（49ファイル）
+### 3. CSF Factories ストーリー移行（51ファイル）
 
 `package.json` に subpath imports を追加:
 ```json
@@ -104,7 +104,7 @@ storybookTest({
 1. [ ] `.storybook/main.ts` を `defineMain` に更新
 2. [ ] `.storybook/preview.tsx` を `definePreview` に更新
 3. [ ] `package.json` に subpath imports 追加
-4. [ ] CSF Factories 自動マイグレーション実行（49ファイル）
+4. [ ] CSF Factories 自動マイグレーション実行（51ファイル）
 5. [ ] Tags フィルタリング設定
 6. [ ] Storybook起動・テスト実行・ビルド確認
 
@@ -115,7 +115,7 @@ storybookTest({
 | 1 | main.ts 更新 | 低 |
 | 2 | preview.tsx 更新 | 低 |
 | 3 | subpath imports 追加 | 低 |
-| 4 | CSF Factories 自動マイグレーション | 中（49ファイル対象） |
+| 4 | CSF Factories 自動マイグレーション | 中（51ファイル対象） |
 | 5 | Tags 適用 | 低 |
 
 ## References

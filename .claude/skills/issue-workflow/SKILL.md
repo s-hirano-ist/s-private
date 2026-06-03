@@ -1,5 +1,5 @@
 ---
-name: work-issue
+name: issue-workflow
 description: issues/ディレクトリのタスクを1つ実装し、ブランチ作成・コミット・PR作成を行なうワークフロー
 globs:
   - "issues/**/*.md"

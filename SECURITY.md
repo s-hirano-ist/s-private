@@ -33,30 +33,41 @@ This project uses [Renovate](https://docs.renovatebot.com/) for automated depend
 **Key Features**:
 - **Weekly Schedule**: Updates run every Monday before 11am JST
 - **Vulnerability Alerts**: Immediate PRs for security issues (labeled `security`)
-- **Minimum Release Age**: 3-day delay for patches/minors to avoid newly published malicious packages
+- **Minimum Release Age**: 2-day delay for patches/minors to avoid newly published malicious packages
+- **Managed Scope**: Renovate handles `npm` / `mise` / `nvm` only. GitHub Actions and docker-compose are handled by Dependabot ([.github/dependabot.yml](.github/dependabot.yml))
 - **Grouped Updates**:
-  - Patch updates grouped together
-  - Minor updates grouped together
-  - GitHub Actions updates grouped separately
+  - 非メジャー更新（patch + minor）を依存種別ごとに集約: `non-major`（dependencies / peerDependencies）と `non-major (devDependencies)`
+  - `mise` ツール群、および Node.js + pnpm はそれぞれ専用グループ（`mise` / `node and pnpm`）
 - **Lock File Maintenance**: Automatic lock file updates to keep dependencies fresh
 
 **Renovate Settings**:
 ```json5
 {
+  timezone: 'Asia/Tokyo',
+  baseBranchPatterns: ['main'],
   extends: [
     'config:recommended',
     'config:best-practices',
+    ':semanticCommitTypeAll(chore)',
     ':enableVulnerabilityAlertsWithLabel(security)',
   ],
+  // github-actions / docker-compose are handled by Dependabot, not Renovate.
+  enabledManagers: ['npm', 'mise', 'nvm'],
+  // Suppress lifecycle scripts (sharp / @prisma/engines / etc.) during Renovate installs.
+  ignoreScripts: true,
   schedule: ['before 11am on monday'],
   vulnerabilityAlerts: {
     labels: ['security'],
   },
+  lockFileMaintenance: { enabled: true },
   packageRules: [
+    // Four rules (npm deps, npm devDeps, mise, node/pnpm) all use:
     {
+      matchManagers: ['npm'],
       matchUpdateTypes: ['patch', 'minor'],
-      minimumReleaseAge: '3 days',
+      minimumReleaseAge: '2 days',
     },
+    // ...
   ],
 }
 ```
@@ -125,15 +136,16 @@ blockExoticSubdeps: true
 | `strictDepBuilds: true` | `allowBuilds` 未登録のパッケージがライフサイクルスクリプトを持つ場合、インストールをハードエラー化（pnpm 10 までは警告のみ） |
 | `blockExoticSubdeps: true` | 推移的依存が npm レジストリ以外のソース（Git URL / tarball URL）から取得されることをブロック。直接依存は対象外 |
 
-> Note: `trustPolicy: no-downgrade` は Renovate / Dependabot 側が `ERR_PNPM_TRUST_DOWNGRADE` を握りつぶして lockfile 更新ジョブごと落ちるため一時撤去中（[pnpm-workspace.yaml](pnpm-workspace.yaml) の TODO コメント参照）。代替として下記の Minimum Release Age + 手動レビューで provenance 低下監視を担保。
+> Note: `trustPolicy: no-downgrade` は現在未設定。Renovate / Dependabot 側が `ERR_PNPM_TRUST_DOWNGRADE` を握りつぶして lockfile 更新ジョブごと落ちるため撤去済み。代替として下記の Minimum Release Age + 手動レビューで provenance 低下監視を担保。
 
 ### Minimum Release Age
 
 **Renovate Setting** ([.github/renovate.json5](.github/renovate.json5)):
 ```json5
-minimumReleaseAge: '2 days'  // npm patches, minors, GitHub Actions
-minimumReleaseAge: '3 days'  // Dockerfile (Node.js)
+minimumReleaseAge: '2 days'  // npm, mise, nvm (Renovate-managed)
 ```
+
+GitHub Actions / docker-compose use an equivalent cooldown (`cooldown.default-days: 2`) configured in [.github/dependabot.yml](.github/dependabot.yml).
 
 > Note: pnpm-workspace.yaml の `minimumReleaseAge` はRenovateとの競合により無効化中。Renovate側の設定で代替。
 
@@ -144,7 +156,7 @@ minimumReleaseAge: '3 days'  // Dockerfile (Node.js)
 
 ### Frozen Lockfiles in CI/CD
 
-**All CI workflows** ([.github/workflows/ci.yaml](.github/workflows/ci.yaml)) use:
+**All CI workflows** install via the shared composite action ([.github/actions/setup-pnpm](.github/actions/setup-pnpm/action.yaml)), which runs:
 ```bash
 pnpm i --frozen-lockfile
 ```
@@ -160,11 +172,11 @@ pnpm i --frozen-lockfile
 ### GitHub Actions
 
 **Security Best Practices**:
-- ✅ Pinned action versions with commit SHA (e.g., `actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8`)
+- ✅ Pinned action versions with commit SHA (e.g., `actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6`)
 - ✅ Minimal permissions (`permissions: {}` by default)
 - ✅ `persist-credentials: false` for checkout actions
 - ✅ Frozen lockfiles (`--frozen-lockfile`)
-- ✅ Timeout limits (20 minutes)
+- ✅ Timeout limits (10 minutes)
 - ✅ Concurrency controls to prevent resource exhaustion
 
 ### Secret Management
@@ -209,7 +221,7 @@ pnpm i --frozen-lockfile
 2. **Lifecycle Script Protection**: `allowBuilds` で承認済みパッケージのみスクリプト実行可能
 3. **Strict Build Enforcement**: `strictDepBuilds: true` で未登録パッケージの build script をハードエラー化
 4. **Exotic Subdep Blocking**: `blockExoticSubdeps: true` で npm レジストリ以外由来の推移的依存を遮断
-5. **Minimum Release Age**: 2-3日の Renovate delay
+5. **Minimum Release Age**: 2日の Renovate delay（GitHub Actions / docker-compose は Dependabot の cooldown で同等の遅延）
 6. **Frozen Lockfiles**: Reproducible builds in CI/CD
 7. **Automated Monitoring**: Renovate tracks vulnerabilities
 8. **Manual Auditing**: `pnpm audit` for on-demand checks

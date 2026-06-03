@@ -28,7 +28,7 @@ docs/** にはより詳細な設計等のルールが記載されています。
 - `pnpm deps:check` - dependency-cruiser（Clean Architecture層境界の強制を含む）
 - `pnpm format` - oxfmt（Prettier互換。フォーマット + import並べ替え + Tailwindクラス並べ替え。Biomeから移行済み）
 - `pnpm format:check` - oxfmtフォーマットチェック（書き込みなし）
-- `pnpm prisma:migrate:diff` - 新規マイグレーションSQL生成（DB不要のdiffフロー。ローカルDBは持たず `migrate dev` は不使用。`crdb_internal_region` drift でクラウドに対して失敗するため）
+- `pnpm --filter s-database prisma:migrate:diff` - 新規マイグレーションSQL生成（既存マイグレーション群とschema.prismaのdiff。ルートにスクリプトは無く packages/database にのみ存在。`--from-migrations` はシャドウDBを必要とする。`migrate dev` はクラウドの `crdb_internal_region` drift で失敗するため不使用）
 - `pnpm prisma:deploy` - マイグレーション適用（クラウドはこちらを使う）
 - `pnpm storybook` - Storybook起動
 

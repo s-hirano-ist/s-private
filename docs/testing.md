@@ -2,14 +2,14 @@
 
 ## Commands
 
-- `pnpm test` - Run all Vitest unit tests (workspace-wide)
-- `pnpm test:typecheck` - Run TypeScript type checking on test files only
-- `pnpm test:all` - Run all unit tests and type checking
+- `pnpm test` - Run all Vitest test projects (app, components, core, notification, search, storybook)
+- `pnpm test:watch` - Run Vitest in watch mode
+- `pnpm typecheck` - Run TypeScript type checking across all workspaces (`tsc --noEmit`)
 
 ## Vitest Workspace Configuration
 
 The project uses Vitest workspace to manage tests across multiple packages:
-- **Workspace Root**: `vitest.config.ts` defines three test projects (app, ui, core)
+- **Workspace Root**: `vitest.config.ts` defines test projects via `test.projects`: `app`, `components` (packages/ui), `core`, `notification`, `search`, `storybook` (browser mode), plus benchmark projects `bench` and `app-bench`
 - **Individual Configs**: Each package has its own `vitest.config.ts` with specific settings
 - **Unified Execution**: Run all tests from the root with `pnpm test`
 
@@ -21,7 +21,7 @@ The project uses Vitest workspace to manage tests across multiple packages:
 - **Setup**: [app/vitest-setup.tsx](../app/vitest-setup.tsx)
 - **Features**: Includes Storybook integration with browser testing
 
-### packages/ui
+### packages/ui (project: components)
 - **Environment**: happy-dom for React component testing
 - **Config**: [packages/ui/vitest.config.ts](../packages/ui/vitest.config.ts)
 - **Setup**: [packages/ui/vitest-setup.tsx](../packages/ui/vitest-setup.tsx)
@@ -30,6 +30,17 @@ The project uses Vitest workspace to manage tests across multiple packages:
 - **Environment**: Node for domain logic testing
 - **Config**: [packages/core/vitest.config.ts](../packages/core/vitest.config.ts)
 - **Setup**: [packages/core/vitest-setup.tsx](../packages/core/vitest-setup.tsx)
+
+### packages/notification
+- **Environment**: Node
+- **Config**: [packages/notification/vitest.config.ts](../packages/notification/vitest.config.ts)
+
+### packages/search
+- **Environment**: Node（root `vitest.config.ts` 内にインライン定義、専用ファイルなし）
+
+### storybook
+- **Environment**: Browser mode（Chromium via `@vitest/browser` + `@vitest/browser-playwright`）
+- **Setup**: [.storybook/vitest.setup.ts](../.storybook/vitest.setup.ts)
 
 ## Technologies
 
@@ -43,6 +54,7 @@ The project uses Vitest workspace to manage tests across multiple packages:
 Vitest bench によるコンポーネントレンダリングのベンチマーク。
 
 ```bash
+pnpm bench              # パッケージベンチマークのみ（bench project）
 pnpm bench:components   # コンポーネントベンチマークのみ
 pnpm bench:all          # 全ベンチマーク（packages + components）
 ```
@@ -57,7 +69,7 @@ Storybookの全ストーリーに対して axe-core ベースのa11yテストを
 
 - `@storybook/addon-a11y` がインストール済み
 - `.storybook/preview.tsx` で `a11y: { test: "error" }` を設定 → a11y違反時にテスト失敗
-- `.storybook/vitest.setup.ts` で `@storybook/addon-a11y/preview` の annotations を適用
+- a11yのannotationsは `@storybook/addon-vitest` の `storybookTest()` プラグイン（`vitest.config.ts`）が `.storybook/preview.tsx` 経由で自動適用。`.storybook/vitest.setup.ts` は `next/navigation` / `next-intl/server` のモック専用
 - `pnpm test` の `--project storybook` で自動実行（CI含む）
 
 ### axe-core ルール設定
@@ -102,6 +114,7 @@ pnpm test
 ### コマンド
 
 ```bash
+pnpm test:mutation        # ミューテーションテスト実行（デフォルト設定）
 pnpm test:mutation:core   # packages/core対象のミューテーションテスト実行
 ```
 
