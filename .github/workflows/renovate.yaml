@@ -1,0 +1,78 @@
+name: renovate
+
+permissions: {}
+
+on:
+  schedule:
+    # 毎日 16:00 UTC = 翌 01:00 JST に起動。実際の PR 生成は .github/renovate.json5 の
+    # schedule / timezone(Asia/Tokyo) が gate する。この時刻なら
+    #   - "before 11am on monday"            → 月曜 01:00 JST でヒット
+    #   - 四半期 "before 5am on the 1st"      → 1日 01:00 JST でヒット
+    # の両方の窓を取りこぼさない（窓外の日は Renovate 側で no-op になるだけ）。
+    - cron: "0 16 * * *"
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: ログレベル
+        type: choice
+        default: info
+        options: [info, debug]
+      dryRun:
+        description: dry-run（書き込みなしでログ出力のみ）
+        type: boolean
+        default: false
+  # NOTE: `issues: edited` / `pull_request` トリガーは意図的に外している。Renovate 自身が
+  # Dependency Dashboard issue の body を毎回更新するため、これらを残すと
+  # 「run が dashboard を更新 → issues:edited が発火 → 別の run が起動」の自走ループになり
+  # 大量の `repository-changed` abort を生む。Dashboard checkbox を toggle しても次の
+  # scheduled / workflow_dispatch run で読み取られるので機能は失われない（即時反応しなくなるだけ）。
+
+concurrency:
+  group: renovate
+  cancel-in-progress: false
+
+jobs:
+  renovate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    # 実際の repo write 権限は GitHub App トークンが持つため job の GITHUB_TOKEN は不要。
+    permissions: {}
+    steps:
+      # 専用 GitHub App の短命トークンを発行。GITHUB_TOKEN と異なり App トークンで
+      # 作成した PR は ci.yaml 等のワークフローを発火できる（automerge 前提のため必須）。
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          app-id: ${{ secrets.RENOVATE_APP_ID }}
+          private-key: ${{ secrets.RENOVATE_APP_PRIVATE_KEY }}
+          # 生成トークンを最小権限に限定（metadata:read は常時付与）。
+          #   contents       : ブランチ・コミット・lockfile 更新
+          #   pull-requests  : PR 作成・automerge 有効化
+          #   issues         : Dependency Dashboard issue の維持
+          permission-contents: write
+          permission-pull-requests: write
+          permission-issues: write
+
+      # self-host 実行。repo 設定 .github/renovate.json5 は Renovate が自動検出する
+      # （configurationFile はグローバル設定用なので渡さない）。
+      - name: Self-hosted Renovate
+        uses: renovatebot/github-action@693b9ef15eec82123529a37c782242f091365961 # v46.1.14
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+        env:
+          RENOVATE_REPOSITORIES: ${{ github.repository }}
+          RENOVATE_PLATFORM: github
+          # App トークンで GitHub Contents API 経由の commit を行う。commit は App bot に
+          # 自動帰属し "Verified" バッジが付くため、PAT 運用で必要だった gitAuthor 固定は不要。
+          RENOVATE_PLATFORM_COMMIT: enabled
+          # Mend Cloud 無料枠は 3GB cap で OOM kill されていた。ubuntu-24.04 runner は
+          # 十分なメモリ(16GB)を持つので Renovate プロセス自身のヒープに 6GB 割り当てる。
+          # pnpm 子プロセス側の上限は renovate.json5 の toolSettings.nodeMaxMemory(4096) が担保。
+          NODE_OPTIONS: --max-old-space-size=6144
+          LOG_LEVEL: ${{ inputs.logLevel || 'info' }}
+          # dryRun=true のとき 'full'、それ以外（schedule 実行含む）は空＝通常実行。
+          RENOVATE_DRY_RUN: ${{ inputs.dryRun && 'full' || '' }}
+          # schedule trigger 以外（workflow_dispatch）はユーザの能動的なアクションなので、
+          # renovate.json5 の schedule を無視して即時実行する（force で schedule を空に上書き）。
+          RENOVATE_FORCE: ${{ github.event_name != 'schedule' && '{"schedule":[]}' || '' }}

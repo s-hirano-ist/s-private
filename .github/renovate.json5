@@ -17,16 +17,17 @@
 	//   - lockFileMaintenance: 四半期に pnpm-lock 全リフレッシュ
 	// github-actions / docker-compose は pnpm 非依存のため .github/dependabot.yml が担当。
 	enabledManagers: ["npm", "mise", "nvm"],
-	// Mend Cloud / self-host いずれでも pnpm install の lifecycle scripts (sharp /
+	// self-host runner での pnpm install の lifecycle scripts (sharp /
 	// @prisma/engines / @sentry/cli / esbuild) によるメモリ消費を抑える保険。
 	// CI (--frozen-lockfile) と本番 deploy 側の install では通常通りバイナリを取得する。
 	ignoreScripts: true,
-	// Mend-hosted の kernel-out-of-memory 対策 (公式 FAQ 推奨)。pnpm の Node プロセスに
-	// --max-old-space-size=2048(MB) を渡し、V8 ヒープを Mend のコンテナ上限より下で
-	// 頭打ちにして積極 GC させ、OOM Killer による kill を回避する。
-	// まだ落ちるなら値を下げる (1536) / JS heap OOM に変われば 1 回の作業量を削る。
+	// self-host runner (GitHub Actions / ubuntu-24.04, 7GB RAM) での pnpm メモリ上限。
+	// pnpm の Node プロセスに --max-old-space-size=4096(MB) を渡し、V8 ヒープを runner の
+	// 物理メモリより十分下で頭打ちにして OOM を回避する (.github/workflows/renovate.yaml)。
+	// Mend Cloud 無料枠の 3GB コンテナでは OOM Killer に殺されていたため self-host へ移行済み。
+	// モノレポ規模が増えて落ちるようなら branchConcurrentLimit を下げるか値を調整する。
 	toolSettings: {
-		nodeMaxMemory: 2048,
+		nodeMaxMemory: 4096,
 	},
 	dependencyDashboard: true,
 	branchConcurrentLimit: 3,
