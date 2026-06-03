@@ -7,7 +7,7 @@
 "use server";
 import "server-only";
 import type { ServerAction } from "@/common/types";
-import { requireAuth } from "@/common/auth/session";
+import { withSelfTenant } from "@/common/tenant/with-tenant";
 import { makeId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { deleteNoteCore } from "./delete-note.core";
 import { defaultDeleteNoteDeps } from "./delete-note.deps";
@@ -25,9 +25,7 @@ import { defaultDeleteNoteDeps } from "./delete-note.deps";
  * @returns Server action result with success/failure status
  */
 export async function deleteNote(rawId: string): Promise<ServerAction> {
-	await requireAuth();
-
-	const id = makeId(rawId);
-
-	return deleteNoteCore(id, defaultDeleteNoteDeps);
+	return withSelfTenant(() =>
+		deleteNoteCore(makeId(rawId), defaultDeleteNoteDeps),
+	);
 }

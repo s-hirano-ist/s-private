@@ -7,7 +7,7 @@
 "use server";
 import "server-only";
 import type { ServerAction } from "@/common/types";
-import { requireAuth } from "@/common/auth/session";
+import { withSelfTenant } from "@/common/tenant/with-tenant";
 import { makeId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { deleteImageCore } from "./delete-image.core";
 import { defaultDeleteImageDeps } from "./delete-image.deps";
@@ -25,9 +25,7 @@ import { defaultDeleteImageDeps } from "./delete-image.deps";
  * @returns Server action result with success/failure status
  */
 export async function deleteImage(rawId: string): Promise<ServerAction> {
-	await requireAuth();
-
-	const id = makeId(rawId);
-
-	return deleteImageCore(id, defaultDeleteImageDeps);
+	return withSelfTenant(() =>
+		deleteImageCore(makeId(rawId), defaultDeleteImageDeps),
+	);
 }

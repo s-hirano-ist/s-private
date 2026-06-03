@@ -13,7 +13,6 @@ import { deleteBooksCore } from "./delete-books.core";
 
 vi.mock("@/common/auth/session", () => ({
 	getSelfId: vi.fn(),
-	requireAuth: vi.fn(),
 }));
 
 function createMockDeps(): {
@@ -104,14 +103,11 @@ describe("deleteBooks (Server Action)", () => {
 		vi.clearAllMocks();
 	});
 
-	test("should call deleteBooksCore with default deps when authenticated", async () => {
-		vi.mocked(requireAuth).mockResolvedValue(undefined);
+	test("should reject when the request is not authenticated", async () => {
 		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
 
 		const testId = "01933f5c-9df0-7001-9123-456789abcdef";
-		const result = await deleteBooks(testId);
 
-		expect(requireAuth).toHaveBeenCalled();
-		expect(result.success).toBe(false);
+		await expect(deleteBooks(testId)).rejects.toThrow("UNAUTHORIZED");
 	});
 });

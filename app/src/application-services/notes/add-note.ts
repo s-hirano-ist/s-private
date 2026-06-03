@@ -7,7 +7,7 @@
 "use server";
 import "server-only";
 import type { ServerAction } from "@/common/types";
-import { requireAuth } from "@/common/auth/session";
+import { withSelfTenant } from "@/common/tenant/with-tenant";
 import { addNoteCore } from "./add-note.core";
 import { defaultAddNoteDeps } from "./add-note.deps";
 
@@ -24,7 +24,5 @@ import { defaultAddNoteDeps } from "./add-note.deps";
  * @returns Server action result with success/failure status
  */
 export async function addNote(formData: FormData): Promise<ServerAction> {
-	await requireAuth();
-
-	return addNoteCore(formData, defaultAddNoteDeps);
+	return withSelfTenant(() => addNoteCore(formData, defaultAddNoteDeps));
 }

@@ -7,7 +7,7 @@
 "use server";
 import "server-only";
 import type { ServerAction } from "@/common/types";
-import { requireAuth } from "@/common/auth/session";
+import { withSelfTenant } from "@/common/tenant/with-tenant";
 import { makeId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { deleteBooksCore } from "./delete-books.core";
 import { defaultDeleteBooksDeps } from "./delete-books.deps";
@@ -25,9 +25,7 @@ import { defaultDeleteBooksDeps } from "./delete-books.deps";
  * @returns Server action result with success/failure status
  */
 export async function deleteBooks(rawId: string): Promise<ServerAction> {
-	await requireAuth();
-
-	const id = makeId(rawId);
-
-	return deleteBooksCore(id, defaultDeleteBooksDeps);
+	return withSelfTenant(() =>
+		deleteBooksCore(makeId(rawId), defaultDeleteBooksDeps),
+	);
 }

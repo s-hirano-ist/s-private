@@ -166,31 +166,48 @@ import { ArticlesStackLoader } from "@/loaders/articles";
 |------|------|
 | `requireAuth(): Promise<void>` | 認証チェック。未認証なら `unauthorized()` にリダイレクト |
 | `getSelfId(): Promise<UserId>` | 認証済みユーザーIDの取得（未認証なら `unauthorized()`） |
+| `withSelfTenant(fn): Promise<T>` | `getSelfId()` で認証し、テナントスコープ（`tenantContext`）を確立して `fn` を実行 |
 
 ### Server Actionでの認可
 
-全mutation系Server Actionは冒頭で `await requireAuth();` を呼び、未認証なら `unauthorized()` にリダイレクトされます。ログイン済みのオーナーは全操作が可能で、ロールによる区別はありません。
+mutation系Server Action（`add-*.ts` / `delete-*.ts`）は `withSelfTenant()` でラップします。`withSelfTenant` は内部で `getSelfId()` を呼んで認証し（未認証なら `unauthorized()` にリダイレクト）、`AsyncLocalStorage` のテナントスコープを確立した上で Core 処理を実行します。ログイン済みのオーナーは全操作が可能で、ロールによる区別はありません。
 
 ```typescript
 // app/src/application-services/articles/add-article.ts
 "use server";
 import "server-only";
-import { requireAuth } from "@/common/auth/session";
+import { withSelfTenant } from "@/common/tenant/with-tenant";
 import type { ServerAction } from "@/common/types";
 import { addArticleCore } from "./add-article.core";
 import { defaultAddArticleDeps } from "./add-article.deps";
 
 export async function addArticle(formData: FormData): Promise<ServerAction> {
-  await requireAuth();
-
-  return addArticleCore(formData, defaultAddArticleDeps);
+  return withSelfTenant(() => addArticleCore(formData, defaultAddArticleDeps));
 }
 ```
 
 **ポイント:**
-- `requireAuth()`は未認証時に`unauthorized()`（401）にリダイレクトする
-- 認証チェックはServer Action層（`add-*.ts`）の冒頭で実行し、Core層には渡さない
-- `requireAuth` / `getSelfId` は`@/common/auth/session.ts`に配置
+- `withSelfTenant()`は未認証時に`unauthorized()`（401）にリダイレクトする（`getSelfId()`経由）
+- 認証＋テナントスコープ確立はServer Action層（`add-*.ts` / `delete-*.ts`）で実行し、Core層には認証を渡さない
+- 読み取り系（`get-*.ts`）は既に `getSelfId()` で取得した `userId` を使って `tenantContext.run({ userId }, ...)` でスコープを張る
+- ページ境界や読み取り委譲Server Action（`load-more-*.ts`）は従来どおり `requireAuth()` を使う
+- `requireAuth` / `getSelfId` は`@/common/auth/session.ts`、`withSelfTenant` は`@/common/tenant/with-tenant.ts`に配置
+
+### テナント隔離（DB層の多重防御）
+
+リポジトリは全クエリで `where: { userId }` を明示指定していますが、これは**コードレビュー依存**でフェイルセーフがありません。これを補強するため、Prisma Client Extensions と `AsyncLocalStorage` で対象モデル（Article / Note / Image / Book / Category）の操作に `userId` をDB層で強制します（[app/src/prisma.ts](../app/src/prisma.ts) の `tenantExtension`、注入ロジックは [app/src/common/tenant/tenant-filter.ts](../app/src/common/tenant/tenant-filter.ts)）。
+
+| 操作 | 挙動（`tenantContext` が無い場合） |
+|------|------------------------------------|
+| `findMany` / `findFirst` / `count` / `aggregate` / `groupBy` | **fail-open**: 無変換でパススルー（既存の `where: { userId }` が防御）。スコープがあれば `where` に `AND { userId }` を注入 |
+| `create` / `update` / `delete` / `*Many` / `upsert` | **fail-closed**: スコープが無ければ例外。`create` は `data.userId` を上書き、`update`/`delete` は `where` に `userId` をマージ |
+| `findUnique` / `findUniqueOrThrow` | 常に無変換。Prisma が unique セレクタしか許さないため、複合ユニークキー規約（`url_userId` 等）で `userId` を担保する |
+
+**規約:**
+- 対象モデルを `findUnique` する場合は必ず複合ユニークキー（`x_userId`）を使い、素の `id` だけで引かない
+- 読み取りは `"use cache"` 境界を跨ぐと `AsyncLocalStorage` が伝播しない可能性があるため fail-open。書き込みは use cache を跨がず確実にスコープが立つため fail-closed
+- cron / migration 等のシステム操作が将来必要になれば `tenantContext.run({ userId, system: true }, ...)` で明示バイパスする
+- 既存リポジトリの `userId` 明示渡しは**残す**（冗長だが二重防御）
 
 ### ページ・コンポーネントでの認証
 
@@ -214,6 +231,10 @@ export async function addArticle(formData: FormData): Promise<ServerAction> {
 | ファイル | 内容 |
 |---------|------|
 | `/app/src/common/auth/session.ts` | 認証関数（`requireAuth` / `getSelfId`）の定義 |
+| `/app/src/common/tenant/tenant-context.ts` | `AsyncLocalStorage` テナントスコープの定義 |
+| `/app/src/common/tenant/tenant-filter.ts` | テナント注入の純粋ロジック（`applyTenantFilter`） |
+| `/app/src/common/tenant/with-tenant.ts` | 認証＋スコープ確立ヘルパ（`withSelfTenant`） |
+| `/app/src/prisma.ts` | Prisma Client Extension（`tenantExtension`）でDB層に強制 |
 | `/app/src/components/common/layouts/error-boundary.tsx` | エラー境界コンポーネント |
 | `/app/src/app/[locale]/(authenticated)/layout.tsx` | 認証ゲート（`requireAuth()`） |
 

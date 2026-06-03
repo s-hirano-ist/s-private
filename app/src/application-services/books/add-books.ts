@@ -7,7 +7,7 @@
 "use server";
 import "server-only";
 import type { ServerAction } from "@/common/types";
-import { requireAuth } from "@/common/auth/session";
+import { withSelfTenant } from "@/common/tenant/with-tenant";
 import { addBooksCore } from "./add-books.core";
 import { defaultAddBooksDeps } from "./add-books.deps";
 
@@ -25,7 +25,5 @@ import { defaultAddBooksDeps } from "./add-books.deps";
  * @returns Server action result with success/failure status
  */
 export async function addBooks(formData: FormData): Promise<ServerAction> {
-	await requireAuth();
-
-	return addBooksCore(formData, defaultAddBooksDeps);
+	return withSelfTenant(() => addBooksCore(formData, defaultAddBooksDeps));
 }

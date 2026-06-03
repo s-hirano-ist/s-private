@@ -15,7 +15,6 @@ import { parseAddImageFormData } from "./helpers/form-data-parser";
 
 vi.mock("@/common/auth/session", () => ({
 	getSelfId: vi.fn(),
-	requireAuth: vi.fn(),
 }));
 
 vi.mock("./helpers/form-data-parser", () => ({
@@ -203,13 +202,9 @@ describe("addImage (Server Action)", () => {
 		vi.clearAllMocks();
 	});
 
-	test("should call addImageCore with default deps when authenticated", async () => {
-		vi.mocked(requireAuth).mockResolvedValue(undefined);
+	test("should reject when the request is not authenticated", async () => {
 		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
 
-		const result = await addImage(new FormData());
-
-		expect(requireAuth).toHaveBeenCalled();
-		expect(result.success).toBe(false);
+		await expect(addImage(new FormData())).rejects.toThrow("UNAUTHORIZED");
 	});
 });

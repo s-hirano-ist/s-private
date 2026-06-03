@@ -13,6 +13,7 @@ import type { ArticleFormData } from "@/components/articles/client/article-form"
 import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
+import { tenantContext } from "@/common/tenant/tenant-context";
 import {
 	articlesQueryRepository,
 	categoryQueryRepository,
@@ -142,7 +143,9 @@ const getCategoriesCached = async (
  */
 export const getExportedArticlesCount: GetCount = cache(async () => {
 	const userId = await getSelfId();
-	return getArticlesCountCached(userId, makeExportedStatus().status);
+	return tenantContext.run({ userId }, () =>
+		getArticlesCountCached(userId, makeExportedStatus().status),
+	);
 });
 
 /**
@@ -154,7 +157,9 @@ export const getExportedArticlesCount: GetCount = cache(async () => {
 export const getUnexportedArticles: GetPaginatedData<LinkCardStackInitialData> =
 	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
-		return getArticlesCached(currentCount, userId, makeUnexportedStatus());
+		return tenantContext.run({ userId }, () =>
+			getArticlesCached(currentCount, userId, makeUnexportedStatus()),
+		);
 	});
 
 /**
@@ -166,7 +171,9 @@ export const getUnexportedArticles: GetPaginatedData<LinkCardStackInitialData> =
 export const getExportedArticles: GetPaginatedData<LinkCardStackInitialData> =
 	cache(async (currentCount: number) => {
 		const userId = await getSelfId();
-		return getArticlesCached(currentCount, userId, makeExportedStatus().status);
+		return tenantContext.run({ userId }, () =>
+			getArticlesCached(currentCount, userId, makeExportedStatus().status),
+		);
 	});
 
 /**
@@ -176,5 +183,5 @@ export const getExportedArticles: GetPaginatedData<LinkCardStackInitialData> =
  */
 export const getCategories = cache(async (): Promise<ArticleFormData> => {
 	const userId = await getSelfId();
-	return getCategoriesCached(userId);
+	return tenantContext.run({ userId }, () => getCategoriesCached(userId));
 });

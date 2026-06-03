@@ -1,6 +1,6 @@
 import type { AddArticleDeps } from "./add-article.deps";
 import type { IArticlesCommandRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-command-repository.interface";
-import { getSelfId, requireAuth } from "@/common/auth/session";
+import { getSelfId } from "@/common/auth/session";
 import {
 	articleEntity,
 	makeArticleTitle,
@@ -24,7 +24,6 @@ import { parseAddArticleFormData } from "./helpers/form-data-parser";
 // Minimal mocks - only for auth and form parsing
 vi.mock("@/common/auth/session", () => ({
 	getSelfId: vi.fn(),
-	requireAuth: vi.fn(),
 }));
 
 vi.mock("./helpers/form-data-parser", () => ({
@@ -210,21 +209,11 @@ describe("addArticle (Server Action)", () => {
 		vi.clearAllMocks();
 	});
 
-	test("should call addArticleCore with default deps when authenticated", async () => {
-		vi.mocked(requireAuth).mockResolvedValue(undefined);
+	test("should reject when the request is not authenticated", async () => {
+		// withSelfTenant resolves the user (and establishes the tenant scope)
+		// before delegating, so an auth failure short-circuits the action.
 		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
-		vi.mocked(parseAddArticleFormData).mockReturnValue({
-			title: makeArticleTitle("Test Article"),
-			url: makeUrl("https://example.com/article"),
-			quote: makeQuote("Test quote"),
-			categoryName: makeCategoryName("tech"),
-			userId: makeUserId("user-123"),
-		});
 
-		// This will fail at getSelfId, but it proves the flow works
-		const result = await addArticle(mockFormData);
-
-		expect(requireAuth).toHaveBeenCalled();
-		expect(result.success).toBe(false);
+		await expect(addArticle(mockFormData)).rejects.toThrow("UNAUTHORIZED");
 	});
 });

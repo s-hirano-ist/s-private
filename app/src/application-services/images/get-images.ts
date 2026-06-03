@@ -11,6 +11,7 @@
 import type { ImageData } from "@/components/common/display/image/image-stack";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
+import { tenantContext } from "@/common/tenant/tenant-context";
 import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
 import {
 	buildContentCacheTag,
@@ -86,7 +87,9 @@ const getImagesCached = async (
  */
 export const getImagesCount = async (status: Status): Promise<number> => {
 	const userId = await getSelfId();
-	return await getImagesCountCached(userId, status);
+	return tenantContext.run({ userId }, () =>
+		getImagesCountCached(userId, status),
+	);
 };
 
 /**
@@ -98,7 +101,9 @@ export const getImagesCount = async (status: Status): Promise<number> => {
 export const getExportedImages = cache(
 	async (page: number): Promise<ImageData[]> => {
 		const userId = await getSelfId();
-		return getImagesCached(page, userId, makeExportedStatus().status);
+		return tenantContext.run({ userId }, () =>
+			getImagesCached(page, userId, makeExportedStatus().status),
+		);
 	},
 );
 
@@ -111,7 +116,9 @@ export const getExportedImages = cache(
 export const getUnexportedImages = cache(
 	async (page: number): Promise<ImageData[]> => {
 		const userId = await getSelfId();
-		return getImagesCached(page, userId, makeUnexportedStatus());
+		return tenantContext.run({ userId }, () =>
+			getImagesCached(page, userId, makeUnexportedStatus()),
+		);
 	},
 );
 

@@ -1,6 +1,6 @@
 import type { DeleteArticleDeps } from "./delete-article.deps";
 import type { IArticlesCommandRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-command-repository.interface";
-import { getSelfId, requireAuth } from "@/common/auth/session";
+import { getSelfId } from "@/common/auth/session";
 import { makeArticleTitle } from "@s-hirano-ist/s-core/articles/entities/article-entity";
 import {
 	makeId,
@@ -14,7 +14,6 @@ import { deleteArticleCore } from "./delete-article.core";
 // Minimal mocks - only for auth
 vi.mock("@/common/auth/session", () => ({
 	getSelfId: vi.fn(),
-	requireAuth: vi.fn(),
 }));
 
 /**
@@ -109,14 +108,11 @@ describe("deleteArticle (Server Action)", () => {
 		vi.clearAllMocks();
 	});
 
-	test("should call deleteArticleCore with default deps when authenticated", async () => {
-		vi.mocked(requireAuth).mockResolvedValue(undefined);
+	test("should reject when the request is not authenticated", async () => {
 		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
 
 		const testId = "01234567-89ab-7def-8123-456789abcdef";
-		const result = await deleteArticle(testId);
 
-		expect(requireAuth).toHaveBeenCalled();
-		expect(result.success).toBe(false);
+		await expect(deleteArticle(testId)).rejects.toThrow("UNAUTHORIZED");
 	});
 });
