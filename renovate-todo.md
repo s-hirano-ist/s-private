@@ -60,6 +60,10 @@ gh secret set RENOVATE_APP_PRIVATE_KEY < ~/Downloads/<your-app>.private-key.pem
 - [ ] **automerge**: devDependencies / mise の patch・minor PR が CI 通過後に自動マージされ、
       main の branch protection と矛盾しないことを確認
 - [ ] **Dashboard**: Dependency Dashboard issue が self-host により更新されることを確認
+- [ ] **checkbox 即時トリガー**: Dependency Dashboard のチェックボックスを on にすると
+      `renovate` run が即時起動し、該当 PR が作られることを確認
+- [ ] **自走ループ無し**: 上記 run が dashboard body を更新した際の `issues:edited`(sender=bot)
+      run と、無関係な issue 編集の run が `if: false` で skip されることを確認
 - [ ] **重複なし**: Mend 撤去後、Mend 由来の PR が新規に出ないことを数日観察
 
 ---
