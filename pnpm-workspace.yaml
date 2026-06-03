@@ -23,16 +23,13 @@ overrides:
   'ws@>=8.0.0 <8.20.1': '^8.20.1'
 
 allowBuilds:
-  '@memlab/cli': true
   '@parcel/watcher': true
   '@prisma/engines': true
   '@sentry/cli': true
   '@swc/core': true
   dprint: true
   esbuild: true
-  memlab: true
   prisma: true
-  puppeteer: true
   sharp: true
   sleep: true
   unrs-resolver: true

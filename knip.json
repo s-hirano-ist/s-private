@@ -1,7 +1,7 @@
 {
 	"$schema": "https://unpkg.com/knip@5/schema.json",
 	"ignoreExportsUsedInFile": true,
-	"ignore": ["memlab/**/*", "e2e/**/*"],
+	"ignore": ["e2e/**/*"],
 	"ignoreDependencies": ["babel-plugin-react-compiler"],
 	"ignoreBinaries": ["dot", "serve", "only-allow"],
 	"workspaces": {
