@@ -9,7 +9,7 @@ CREATE TABLE "user" (
     "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "user_pkey" PRIMARY KEY ("id")
-);
+) WITH (schema_locked = false);
 
 -- CreateTable
 CREATE TABLE "session" (
@@ -23,7 +23,7 @@ CREATE TABLE "session" (
     "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "session_pkey" PRIMARY KEY ("id")
-);
+) WITH (schema_locked = false);
 
 -- CreateTable
 CREATE TABLE "account" (
@@ -42,7 +42,7 @@ CREATE TABLE "account" (
     "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "account_pkey" PRIMARY KEY ("id")
-);
+) WITH (schema_locked = false);
 
 -- CreateTable
 CREATE TABLE "verification" (
@@ -54,7 +54,7 @@ CREATE TABLE "verification" (
     "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "verification_pkey" PRIMARY KEY ("id")
-);
+) WITH (schema_locked = false);
 
 -- CreateIndex
 CREATE UNIQUE INDEX "user_email_key" ON "user"("email");

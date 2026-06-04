@@ -17,8 +17,12 @@
 import "server-only";
 import { env } from "@/env";
 import prisma from "@/prisma";
-import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+// `better-auth/minimal` skips the built-in Kysely default adapter (and its
+// transitive `kysely` import, which fails to build against the kysely version
+// resolved in this monorepo). We always supply the Prisma adapter, so the
+// Kysely fallback is never needed.
+import { betterAuth } from "better-auth/minimal";
 import { auth0, genericOAuth } from "better-auth/plugins/generic-oauth";
 
 /** Auth0 tenant host (e.g. "your-tenant.auth0.com"), derived from the issuer URL. */
