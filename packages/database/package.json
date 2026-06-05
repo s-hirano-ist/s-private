@@ -56,7 +56,7 @@
 		"prisma": "7.8.0"
 	},
 	"devDependencies": {
-		"prisma-erd-generator": "2.4.2",
+		"prisma-erd-generator": "2.4.3",
 		"typescript": "6.0.3"
 	}
 }
