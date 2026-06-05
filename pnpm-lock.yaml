@@ -16,7 +16,7 @@ overrides:
   postcss@<8.5.10: ^8.5.15
   qs@>=6.11.1 <=6.15.1: ^6.15.2
   smol-toml@<1.6.1: ^1.6.1
-  srvx@<0.11.13: ^0.11.15
+  srvx@<0.11.13: ^0.11.16
   tar@<7.5.8: ^7.5.15
   undici@<6.24.0: ^6.26.0
   ws@>=8.0.0 <8.20.1: ^8.20.1
@@ -8045,8 +8045,8 @@ packages:
     resolution: {integrity: sha512-qC9iz2FlN7DQl3+wjwn3802RTyjCx7sDvfQEXchwa6CWOx07/WVfh91gBmQ9fahw8snwGEWU3xGzOt4tFyHLxg==}
     engines: {node: '>= 0.6'}
 
-  srvx@0.11.15:
-    resolution: {integrity: sha512-iXsux0UcOjdvs0LCMa2Ws3WwcDUozA3JN3BquNXkaFPP7TpRqgunKdEgoZ/uwb1J6xaYHfxtz9Twlh6yzwM6Tg==}
+  srvx@0.11.16:
+    resolution: {integrity: sha512-bp07zRuycfTY43IjAvvTFnmnJi8ikW0VFiHwOhhYcVW/L4xQ1XY4PAd4Nuum1rsA17C39zL7x+CDhrn5AL32Rw==}
     engines: {node: '>=20.16.0'}
     hasBin: true
 
@@ -12264,7 +12264,7 @@ snapshots:
       path-to-regexp: 8.4.2
       resolve.exports: 2.0.3
       rolldown: 1.0.0-rc.1(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)
-      srvx: 0.11.15
+      srvx: 0.11.16
       tsx: 4.21.0
       zod: 3.22.4
     transitivePeerDependencies:
@@ -16829,7 +16829,7 @@ snapshots:
 
   sqlstring@2.3.3: {}
 
-  srvx@0.11.15: {}
+  srvx@0.11.16: {}
 
   stackback@0.0.2: {}
 
