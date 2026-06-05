@@ -67,7 +67,7 @@
 		"prepublishOnly": "pnpm run build"
 	},
 	"dependencies": {
-		"@qdrant/js-client-rest": "1.17.0"
+		"@qdrant/js-client-rest": "1.18.0"
 	},
 	"devDependencies": {
 		"@types/node": "24.12.4",
