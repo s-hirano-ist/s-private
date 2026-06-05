@@ -1,30 +1,29 @@
 import { getImagesFromStorage } from "@/application-services/images/get-images";
 import { getContentTypeFromPath } from "@/common/utils/content-type-utils";
-import { auth } from "@/infrastructures/auth/auth-provider";
+import { auth } from "@/infrastructures/auth/auth";
 import { NextResponse } from "next/server";
 import { Readable } from "node:stream";
 
-export const GET = auth(
-	async (
-		request,
-		{ params }: { params: Promise<{ contentType: string; id: string }> },
-	) => {
-		const { contentType, id } = await params;
+export async function GET(
+	request: Request,
+	{ params }: { params: Promise<{ contentType: string; id: string }> },
+) {
+	const session = await auth.api.getSession({ headers: request.headers });
+	if (!session)
+		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-		if (!request.auth)
-			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+	const { contentType, id } = await params;
 
-		const isThumbnail = contentType === "thumbnail";
-		const nodeStream = await getImagesFromStorage(id, isThumbnail);
-		const webStream = Readable.toWeb(
-			nodeStream as Readable,
-		) as unknown as ReadableStream;
+	const isThumbnail = contentType === "thumbnail";
+	const nodeStream = await getImagesFromStorage(id, isThumbnail);
+	const webStream = Readable.toWeb(
+		nodeStream as Readable,
+	) as unknown as ReadableStream;
 
-		return new Response(webStream, {
-			headers: {
-				"Content-Type": getContentTypeFromPath(id),
-				"Cache-Control": "public, max-age=31536000, immutable",
-			},
-		});
-	},
-);
+	return new Response(webStream, {
+		headers: {
+			"Content-Type": getContentTypeFromPath(id),
+			"Cache-Control": "public, max-age=31536000, immutable",
+		},
+	});
+}

@@ -10,7 +10,7 @@
  */
 
 import "server-only";
-import { auth } from "@/infrastructures/auth/auth-provider";
+import { auth } from "@/infrastructures/auth/auth";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
 import {
@@ -18,6 +18,7 @@ import {
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { SystemWarningEvent } from "@s-hirano-ist/s-core/shared-kernel/events/system-warning-event";
+import { headers } from "next/headers";
 import { unauthorized } from "next/navigation";
 
 /**
@@ -29,7 +30,7 @@ import { unauthorized } from "next/navigation";
  * @internal
  */
 async function checkSelfAuth() {
-	const session = await auth();
+	const session = await auth.api.getSession({ headers: await headers() });
 	if (!session) {
 		initializeEventHandlers();
 		await eventDispatcher.dispatch(

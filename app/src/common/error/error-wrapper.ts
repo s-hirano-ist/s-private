@@ -23,7 +23,7 @@ import { SystemWarningEvent } from "@s-hirano-ist/s-core/shared-kernel/events/sy
 import { Prisma } from "@s-hirano-ist/s-database";
 import { NotificationError } from "@s-hirano-ist/s-notification";
 import { S3Error } from "@s-hirano-ist/s-storage";
-import { AuthError } from "next-auth";
+import { APIError } from "better-auth/api";
 import { ZodError } from "zod";
 
 /**
@@ -80,7 +80,7 @@ async function handleNotificationOrS3Error(
 
 /**
  * Handles domain warning errors (UnexpectedError, InvalidFormatError,
- * FileNotAllowedError, DuplicateError, AuthError).
+ * FileNotAllowedError, DuplicateError, APIError).
  *
  * @internal
  */
@@ -122,7 +122,7 @@ async function handleDomainWarningError(
 			formData: formDataToRecord(formData),
 		};
 	}
-	if (error instanceof AuthError) {
+	if (error instanceof APIError) {
 		await eventDispatcher.dispatch(
 			new SystemWarningEvent({
 				message: error.message,
@@ -222,7 +222,7 @@ async function handleUnexpectedError(error: unknown): Promise<ServerAction> {
  * - NotificationError: External notification service failures
  * - UnexpectedError, InvalidFormatError, FileNotAllowedError: Domain errors
  * - DuplicateError: Business rule violations
- * - AuthError: Authentication failures
+ * - APIError: Better Auth authentication failures
  * - Prisma errors: Database errors
  *
  * All errors dispatch domain events for logging and optional notification.

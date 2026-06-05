@@ -1,17 +1,17 @@
-import { auth } from "@/infrastructures/auth/auth-provider";
+import { getSessionCookie } from "better-auth/cookies";
 import createMiddleware from "next-intl/middleware";
 import { type NextRequest, NextResponse } from "next/server";
 import { routing } from "./infrastructures/i18n/routing";
 
 const handleI18nRouting = createMiddleware(routing);
 
-// Note: Using direct auth() call in proxy is the recommended approach
-// for next-intl + NextAuth.js v5 integration.
-// See: https://github.com/amannn/next-intl/issues/596
-
-export default async function proxy(request: NextRequest) {
-	const session = await auth();
-	if (!session) {
+// Middleware gate: a lightweight session-cookie presence check (no DB hit, so it
+// stays edge-friendly and avoids importing the Better Auth server instance).
+// True session validation happens per-page via requireAuth()/getSelfId(), which
+// call auth.api.getSession() and redirect to the unauthorized page on failure.
+export default function proxy(request: NextRequest) {
+	const sessionCookie = getSessionCookie(request);
+	if (!sessionCookie) {
 		return NextResponse.redirect(new URL("/api/sign-in", request.url));
 	}
 

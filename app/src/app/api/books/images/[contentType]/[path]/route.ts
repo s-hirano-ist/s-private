@@ -1,26 +1,25 @@
 import { getBooksImageFromStorage } from "@/application-services/books/get-books";
 import { getContentTypeFromPath } from "@/common/utils/content-type-utils";
-import { auth } from "@/infrastructures/auth/auth-provider";
+import { auth } from "@/infrastructures/auth/auth";
 import { NextResponse } from "next/server";
 
-export const GET = auth(
-	async (
-		request,
-		{ params }: { params: Promise<{ contentType: string; path: string }> },
-	) => {
-		const { contentType, path } = await params;
+export async function GET(
+	request: Request,
+	{ params }: { params: Promise<{ contentType: string; path: string }> },
+) {
+	const session = await auth.api.getSession({ headers: request.headers });
+	if (!session)
+		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-		if (!request.auth)
-			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+	const { contentType, path } = await params;
 
-		const isThumbnail = contentType === "thumbnail";
-		const stream = await getBooksImageFromStorage(path, isThumbnail);
+	const isThumbnail = contentType === "thumbnail";
+	const stream = await getBooksImageFromStorage(path, isThumbnail);
 
-		return new Response(stream as unknown as BodyInit, {
-			headers: {
-				"Content-Type": getContentTypeFromPath(path),
-				"Cache-Control": "public, max-age=31536000, immutable",
-			},
-		});
-	},
-);
+	return new Response(stream as unknown as BodyInit, {
+		headers: {
+			"Content-Type": getContentTypeFromPath(path),
+			"Cache-Control": "public, max-age=31536000, immutable",
+		},
+	});
+}
