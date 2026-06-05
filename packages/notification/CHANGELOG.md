@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.5](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-notification-v1.18.4...@s-hirano-ist/s-notification-v1.18.5) (2026-06-05)
+
+
+### Maintenance
+
+* migrate Biome to oxfmt + fold base lint into oxlint ([1fea812](https://github.com/s-hirano-ist/s-private/commit/1fea812900fa4d7ab3361b30247ed738270e2a83))
+
 ## [1.18.4](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-notification-v1.18.3...@s-hirano-ist/s-notification-v1.18.4) (2026-04-19)
 
 

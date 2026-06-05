@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.18.7](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-storage-v1.18.6...@s-hirano-ist/s-storage-v1.18.7) (2026-06-05)
+
+
+### Maintenance
+
+* **deps:** update non-major (devdependencies) ([e157ccc](https://github.com/s-hirano-ist/s-private/commit/e157cccffd8f113777063041ef93ce4739511520))
+* **deps:** update non-major (devdependencies) ([0935f50](https://github.com/s-hirano-ist/s-private/commit/0935f5033c4fde96546d251f4b676bc86eb27a5c))
+* **deps:** update non-major (devdependencies) ([#2372](https://github.com/s-hirano-ist/s-private/issues/2372)) ([e157ccc](https://github.com/s-hirano-ist/s-private/commit/e157cccffd8f113777063041ef93ce4739511520))
+* **lint:** maximize oxlint strictness with sonarjs + unicorn plugins ([7dd255d](https://github.com/s-hirano-ist/s-private/commit/7dd255d68dd82447002657f1deba272f20767d3c))
+* **lint:** promote all oxlint warn rules to error + enable 3 off rules ([ada340a](https://github.com/s-hirano-ist/s-private/commit/ada340ab8d5784ba6c145f9a8dfaf24b6706bc30))
+* **lint:** resolve all oxlint warnings (0 errors / 0 warnings) ([ce1d4bd](https://github.com/s-hirano-ist/s-private/commit/ce1d4bd019a23ddff4678caf22c974fedb6ce3ba))
+* migrate Biome to oxfmt + fold base lint into oxlint ([1fea812](https://github.com/s-hirano-ist/s-private/commit/1fea812900fa4d7ab3361b30247ed738270e2a83))
+* oxlint settings ([cd69292](https://github.com/s-hirano-ist/s-private/commit/cd692922f3417e36de210326e56ef5467821e1e0))
+
 ## [1.18.6](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-storage-v1.18.5...@s-hirano-ist/s-storage-v1.18.6) (2026-05-10)
 
 

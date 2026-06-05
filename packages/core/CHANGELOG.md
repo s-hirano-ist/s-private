@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.21.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.20.3...@s-hirano-ist/s-core-v1.21.0) (2026-06-05)
+
+
+### Features
+
+* add role to db ([4d43e94](https://github.com/s-hirano-ist/s-private/commit/4d43e94a1ce01415cfab883978a7a4d1875c4f06))
+
+
+### Maintenance
+
+* **deps:** update non-major (devdependencies) ([e157ccc](https://github.com/s-hirano-ist/s-private/commit/e157cccffd8f113777063041ef93ce4739511520))
+* **deps:** update non-major (devdependencies) ([0935f50](https://github.com/s-hirano-ist/s-private/commit/0935f5033c4fde96546d251f4b676bc86eb27a5c))
+* **deps:** update non-major (devdependencies) ([#2372](https://github.com/s-hirano-ist/s-private/issues/2372)) ([e157ccc](https://github.com/s-hirano-ist/s-private/commit/e157cccffd8f113777063041ef93ce4739511520))
+* **lint:** maximize oxlint strictness with sonarjs + unicorn plugins ([7dd255d](https://github.com/s-hirano-ist/s-private/commit/7dd255d68dd82447002657f1deba272f20767d3c))
+* **lint:** maximize oxlint strictness with sonarjs + unicorn plugins ([bc04668](https://github.com/s-hirano-ist/s-private/commit/bc04668dbc75a5f6c657a6ed855bf1791aae77e6))
+* **lint:** resolve all oxlint warnings (0 errors / 0 warnings) ([ce1d4bd](https://github.com/s-hirano-ist/s-private/commit/ce1d4bd019a23ddff4678caf22c974fedb6ce3ba))
+* migrate Biome to oxfmt + fold base lint into oxlint ([1fea812](https://github.com/s-hirano-ist/s-private/commit/1fea812900fa4d7ab3361b30247ed738270e2a83))
+* remove role/permission, authn-only authorization ([0429feb](https://github.com/s-hirano-ist/s-private/commit/0429feb58e6d2bc045d25ffc374594b1afc59541))
+
 ## [1.20.3](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.20.2...@s-hirano-ist/s-core-v1.20.3) (2026-05-10)
 
 
