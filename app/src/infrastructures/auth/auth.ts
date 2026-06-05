@@ -11,17 +11,19 @@
  * absent from the tenant extension whitelist, so tenant filtering never touches
  * them. The adapter accepts the extended client as-is.
  *
+ * Imported from `better-auth/minimal` (not `better-auth`) to skip the built-in
+ * Kysely default adapter, whose transitive `kysely` import fails to build
+ * against the version resolved in this monorepo; the Prisma adapter is always
+ * supplied, so the Kysely fallback is unused.
+ *
  * @module
  */
 
 import "server-only";
+import type { BaseURLConfig } from "better-auth";
 import { env } from "@/env";
 import prisma from "@/prisma";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-// `better-auth/minimal` skips the built-in Kysely default adapter (and its
-// transitive `kysely` import, which fails to build against the kysely version
-// resolved in this monorepo). We always supply the Prisma adapter, so the
-// Kysely fallback is never needed.
 import { betterAuth } from "better-auth/minimal";
 import { auth0, genericOAuth } from "better-auth/plugins/generic-oauth";
 
@@ -29,6 +31,23 @@ import { auth0, genericOAuth } from "better-auth/plugins/generic-oauth";
 const auth0Domain = new URL(env.AUTH0_ISSUER_BASE_URL).host;
 
 const THIRTY_DAYS_IN_SECONDS = 60 * 60 * 24 * 30;
+
+/** Vercel preview/deployment URL pattern for this project (branch & hash forms). */
+const VERCEL_PREVIEW_HOST = "s-private-*-s-hirano-ist-team.vercel.app";
+
+/**
+ * On Vercel, derive the base URL from the incoming request host so every preview
+ * deployment authenticates against its own (dynamic) origin — `allowedHosts` are
+ * also added to `trustedOrigins` automatically. Locally we keep the static URL,
+ * otherwise the `https` protocol below would break `http://localhost`.
+ */
+const baseURL: BaseURLConfig = env.VERCEL
+	? {
+			allowedHosts: [new URL(env.BETTER_AUTH_URL).host, VERCEL_PREVIEW_HOST],
+			fallback: env.BETTER_AUTH_URL,
+			protocol: "https",
+		}
+	: env.BETTER_AUTH_URL;
 
 /**
  * The Better Auth instance.
@@ -42,9 +61,9 @@ const THIRTY_DAYS_IN_SECONDS = 60 * 60 * 24 * 30;
  * - `session.expiresIn`: 30-day parity with the former NextAuth config.
  */
 export const auth = betterAuth({
-	baseURL: env.BETTER_AUTH_URL,
+	baseURL,
 	secret: env.AUTH_SECRET,
-	trustedOrigins: [env.BETTER_AUTH_URL],
+	trustedOrigins: [env.BETTER_AUTH_URL, `https://${VERCEL_PREVIEW_HOST}`],
 	database: prismaAdapter(prisma, { provider: "cockroachdb" }),
 	session: { expiresIn: THIRTY_DAYS_IN_SECONDS },
 	plugins: [

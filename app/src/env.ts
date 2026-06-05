@@ -49,6 +49,8 @@ export const env = createEnv({
 				: z.string().optional(),
 		/** Better Auth base URL (deployment origin, e.g. "https://example.com"). Used for baseURL / trustedOrigins. */
 		BETTER_AUTH_URL: z.string().default("http://localhost:3000"),
+		/** Set to "1" by Vercel on every deployment (prod & preview); absent locally. Gates dynamic baseURL resolution. */
+		VERCEL: z.string().optional(),
 		AUTH0_CLIENT_ID: z.string(),
 		AUTH0_CLIENT_SECRET: z.string(),
 		/** Auth0 tenant issuer URL (e.g. "https://your-tenant.auth0.com"). The host is used as the Better Auth genericOAuth `domain`. */
@@ -88,6 +90,7 @@ export const env = createEnv({
 		PUSHOVER_APP_TOKEN: process.env.PUSHOVER_APP_TOKEN,
 		AUTH_SECRET: process.env.AUTH_SECRET,
 		BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
+		VERCEL: process.env.VERCEL,
 		AUTH0_CLIENT_ID: process.env.AUTH0_CLIENT_ID,
 		AUTH0_CLIENT_SECRET: process.env.AUTH0_CLIENT_SECRET,
 		AUTH0_ISSUER_BASE_URL: process.env.AUTH0_ISSUER_BASE_URL,

@@ -11,7 +11,13 @@
 -- Prerequisites (run IN ORDER, before this script)
 -- ------------------------------------------------
 --   1. `pnpm prisma:deploy` (creates user/session/account/verification tables).
---   2. Log in ONCE through Better Auth (Auth0) so the user + account rows exist.
+--   2. PROD ONLY: grant DML on the 4 new tables to the runtime user
+--      `s-prod-runtime`, or the first sign-in fails with
+--      `42501 user s-prod-runtime does not have INSERT privilege on relation verification`.
+--      Run the GRANT (+ ALTER DEFAULT PRIVILEGES) from
+--      docs/cockroachdb-role-minimization-runbook.md Step 2 in the Cloud Console.
+--      (dev uses the all-privilege `s-dev` user, so this step is prod-only.)
+--   3. Log in ONCE through Better Auth (Auth0) so the user + account rows exist.
 --
 -- How to run — CockroachDB Cloud Console (no psql needed)
 -- ------------------------------------------------------
