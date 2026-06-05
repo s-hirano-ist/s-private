@@ -7,14 +7,22 @@ import { NextResponse } from "next/server";
  * the proxy redirects unauthenticated requests here, and this route bounces the
  * browser to the Auth0 universal login screen.
  *
- * Better Auth stores the OAuth state / PKCE verifier in the `verification`
- * table (not a cookie), so a plain server-side redirect to the authorization
- * URL is sufficient — no Set-Cookie forwarding is required.
+ * Better Auth's OAuth state is double-checked: a verification row in the DB AND
+ * a signed `state` cookie set during sign-in. Because we initiate the flow
+ * server-side via `auth.api`, we must forward the Set-Cookie headers Better Auth
+ * produced onto our redirect response — otherwise the state cookie never reaches
+ * the browser and the callback fails with `state_mismatch`.
  */
 export async function GET() {
-	const { url } = await auth.api.signInWithOAuth2({
+	const { response, headers: authHeaders } = await auth.api.signInWithOAuth2({
 		body: { providerId: "auth0", callbackURL: "/" },
 		headers: await headers(),
+		returnHeaders: true,
 	});
-	return NextResponse.redirect(url);
+
+	const redirectResponse = NextResponse.redirect(response.url);
+	for (const cookie of authHeaders.getSetCookie()) {
+		redirectResponse.headers.append("set-cookie", cookie);
+	}
+	return redirectResponse;
 }
