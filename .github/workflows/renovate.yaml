@@ -60,12 +60,18 @@ jobs:
           #   contents            : ブランチ・コミット・lockfile 更新
           #   pull-requests       : PR 作成・automerge 有効化
           #   issues              : Dependency Dashboard issue の維持
+          #   statuses            : minimumReleaseAge の内部チェックを renovate/stability-days という
+          #     commit status として branch に書き込む。無いと POST /statuses が 403
+          #     "Resource not accessible by integration" → Renovate が integration-unauthorized を
+          #     repository-changed に変換し run 全体を中断、以降の PR が一切作られない。
+          #     （App 側にも "Commit statuses: Read and write" の付与が必要。無いとトークン発行が 422）。
           #   vulnerability-alerts: Dependabot alerts を読み security ラベル付き脆弱性 PR を作る
           #     （renovate.json5 の vulnerabilityAlerts / :enableVulnerabilityAlertsWithLabel の前提。
           #      App 側にも "Dependabot alerts: Read" の付与が必要。無いとトークン発行が 422）。
           permission-contents: write
           permission-pull-requests: write
           permission-issues: write
+          permission-statuses: write
           permission-vulnerability-alerts: read
 
       # self-host 実行。repo 設定 .github/renovate.json5 は Renovate が自動検出する
