@@ -1,5 +1,41 @@
 # Changelog
 
+## [1.24.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.23.5...@s-hirano-ist/s-scripts-v1.24.0) (2026-06-05)
+
+
+### Features
+
+* **database:** migrate from Supabase PostgreSQL to CockroachDB ([dfd1243](https://github.com/s-hirano-ist/s-private/commit/dfd12433ce6973d3d8849eff1a2ad95042a55b77))
+* **database:** Supabase PostgreSQL から CockroachDB へ移行 ([a24c07e](https://github.com/s-hirano-ist/s-private/commit/a24c07e7b1da8d1c1e5cca43b5c4cb227b410af6))
+
+
+### Maintenance
+
+* **deps:** update non-major ([9afd68c](https://github.com/s-hirano-ist/s-private/commit/9afd68ce5d7a08a16efe93a632654745a4d71946))
+* **deps:** update non-major (devdependencies) ([e157ccc](https://github.com/s-hirano-ist/s-private/commit/e157cccffd8f113777063041ef93ce4739511520))
+* **deps:** update non-major (devdependencies) ([0935f50](https://github.com/s-hirano-ist/s-private/commit/0935f5033c4fde96546d251f4b676bc86eb27a5c))
+* **deps:** update non-major (devdependencies) ([#2372](https://github.com/s-hirano-ist/s-private/issues/2372)) ([e157ccc](https://github.com/s-hirano-ist/s-private/commit/e157cccffd8f113777063041ef93ce4739511520))
+* **lint:** maximize oxlint strictness with sonarjs + unicorn plugins ([7dd255d](https://github.com/s-hirano-ist/s-private/commit/7dd255d68dd82447002657f1deba272f20767d3c))
+* **lint:** maximize oxlint strictness with sonarjs + unicorn plugins ([bc04668](https://github.com/s-hirano-ist/s-private/commit/bc04668dbc75a5f6c657a6ed855bf1791aae77e6))
+* **lint:** promote all oxlint warn rules to error + enable 3 off rules ([ada340a](https://github.com/s-hirano-ist/s-private/commit/ada340ab8d5784ba6c145f9a8dfaf24b6706bc30))
+* **lint:** resolve all oxlint warnings (0 errors / 0 warnings) ([ce1d4bd](https://github.com/s-hirano-ist/s-private/commit/ce1d4bd019a23ddff4678caf22c974fedb6ce3ba))
+* migrate Biome to oxfmt + fold base lint into oxlint ([1fea812](https://github.com/s-hirano-ist/s-private/commit/1fea812900fa4d7ab3361b30247ed738270e2a83))
+* migration of role ([791e604](https://github.com/s-hirano-ist/s-private/commit/791e604ac6130bafc0c8438a6e7a66080180b747))
+* oxlint settings ([cd69292](https://github.com/s-hirano-ist/s-private/commit/cd692922f3417e36de210326e56ef5467821e1e0))
+* remove role/permission, authn-only authorization ([0429feb](https://github.com/s-hirano-ist/s-private/commit/0429feb58e6d2bc045d25ffc374594b1afc59541))
+* **scripts:** remove Supabase-&gt;CockroachDB ETL script ([904a833](https://github.com/s-hirano-ist/s-private/commit/904a833deb14606e6c68c4daa7a76b1f93173a8c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.21.0
+    * @s-hirano-ist/s-database bumped to 1.21.0
+    * @s-hirano-ist/s-notification bumped to 1.18.5
+    * @s-hirano-ist/s-search bumped to 1.18.11
+    * @s-hirano-ist/s-storage bumped to 1.18.7
+
 ## [1.23.5](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.23.4...@s-hirano-ist/s-scripts-v1.23.5) (2026-05-10)
 
 

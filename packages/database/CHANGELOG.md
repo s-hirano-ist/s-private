@@ -1,5 +1,45 @@
 # Changelog
 
+## [1.21.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.20.0...@s-hirano-ist/s-database-v1.21.0) (2026-06-05)
+
+
+### Features
+
+* add role to db ([4d43e94](https://github.com/s-hirano-ist/s-private/commit/4d43e94a1ce01415cfab883978a7a4d1875c4f06))
+* **auth:** dynamic baseURL for Vercel preview deployments ([5c25fd7](https://github.com/s-hirano-ist/s-private/commit/5c25fd79bda8d624e9b14cc747598f8bc494fff5))
+* **auth:** migrate from NextAuth (Auth0) to Better Auth ([71de4dd](https://github.com/s-hirano-ist/s-private/commit/71de4dddce64332a2b38490e5575d4e5658e2c9e))
+* **auth:** migrate from NextAuth (Auth0) to Better Auth ([288e618](https://github.com/s-hirano-ist/s-private/commit/288e618d6ec5d8c0dc2ae1857cc9bd8cfdda042b))
+* **database:** migrate from Supabase PostgreSQL to CockroachDB ([dfd1243](https://github.com/s-hirano-ist/s-private/commit/dfd12433ce6973d3d8849eff1a2ad95042a55b77))
+* **database:** Supabase PostgreSQL から CockroachDB へ移行 ([a24c07e](https://github.com/s-hirano-ist/s-private/commit/a24c07e7b1da8d1c1e5cca43b5c4cb227b410af6))
+
+
+### Bug Fixes
+
+* **auth:** use better-auth/minimal and lock new tables for CockroachDB ([f4e86ab](https://github.com/s-hirano-ist/s-private/commit/f4e86abefb3abfffb6f37fd5d7ae4ffe9ed2fc00))
+* **database:** guard migrate dev against cloud, add diff-based migration flow ([a5d4668](https://github.com/s-hirano-ist/s-private/commit/a5d4668a35d8f5c2f3070ff616707cbd09e67d40))
+* migration drop db ([a3a0f3d](https://github.com/s-hirano-ist/s-private/commit/a3a0f3d4a1e1999b7529d9f8aaa22073f32e1d3c))
+* remap sql ([b816d47](https://github.com/s-hirano-ist/s-private/commit/b816d47ff8143df611eef43853e1769ffe01e388))
+
+
+### Documentation
+
+* **database:** fix prisma.config JSDoc to reference diff-based migration scripts ([894eaf0](https://github.com/s-hirano-ist/s-private/commit/894eaf0224736e9bb31f74379459c25ef5ac8423))
+* **db:** make userId remap SQL CockroachDB Cloud Console friendly ([348c4e8](https://github.com/s-hirano-ist/s-private/commit/348c4e863af90739c3777f2901eeca3f4225f424))
+
+
+### Maintenance
+
+* **database:** drop Supabase-specific DIRECT_URL and resolve-db-env ([b5383ef](https://github.com/s-hirano-ist/s-private/commit/b5383efe2d76d2957634c1889c385340c220bc9c))
+* **database:** remove local Docker CockroachDB, drop migrate dev flow ([a491e00](https://github.com/s-hirano-ist/s-private/commit/a491e00f4cf840648bc8d67a8b3158f26fa61296))
+* delete database prisma ([fa4553a](https://github.com/s-hirano-ist/s-private/commit/fa4553a4944a2e47a3c0af82012fb9020ec8804d))
+* **deps:** update non-major (devdependencies) ([e157ccc](https://github.com/s-hirano-ist/s-private/commit/e157cccffd8f113777063041ef93ce4739511520))
+* **deps:** update non-major (devdependencies) ([0935f50](https://github.com/s-hirano-ist/s-private/commit/0935f5033c4fde96546d251f4b676bc86eb27a5c))
+* **deps:** update non-major (devdependencies) ([#2372](https://github.com/s-hirano-ist/s-private/issues/2372)) ([e157ccc](https://github.com/s-hirano-ist/s-private/commit/e157cccffd8f113777063041ef93ce4739511520))
+* **lint:** promote all oxlint warn rules to error + enable 3 off rules ([ada340a](https://github.com/s-hirano-ist/s-private/commit/ada340ab8d5784ba6c145f9a8dfaf24b6706bc30))
+* migration of role ([791e604](https://github.com/s-hirano-ist/s-private/commit/791e604ac6130bafc0c8438a6e7a66080180b747))
+* oxlint settings ([cd69292](https://github.com/s-hirano-ist/s-private/commit/cd692922f3417e36de210326e56ef5467821e1e0))
+* remove role/permission, authn-only authorization ([0429feb](https://github.com/s-hirano-ist/s-private/commit/0429feb58e6d2bc045d25ffc374594b1afc59541))
+
 ## [1.20.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.19.1...@s-hirano-ist/s-database-v1.20.0) (2026-05-10)
 
 
