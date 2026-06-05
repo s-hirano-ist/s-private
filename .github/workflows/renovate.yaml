@@ -84,9 +84,16 @@ jobs:
           # 十分なメモリ(16GB)を持つので Renovate プロセス自身のヒープに 6GB 割り当てる。
           # pnpm 子プロセス側の上限は renovate.json5 の toolSettings.nodeMaxMemory(4096) が担保。
           NODE_OPTIONS: --max-old-space-size=6144
-          LOG_LEVEL: ${{ inputs.logLevel || 'info' }}
-          # dryRun=true のとき 'full'、それ以外（schedule 実行含む）は空＝通常実行。
+          # issues(Dependency Dashboard のチェックボックス)起動時は per-branch のスキップ理由
+          # (unschedule-branch= / minimumReleaseAge / internalChecksFilter 等)を可視化するため
+          # debug に上げる。checkbox を toggle しても PR が作られない事象の切り分けに必須。
+          # workflow_dispatch では入力の logLevel を尊重、それ以外(schedule)は info。
+          LOG_LEVEL: ${{ inputs.logLevel || (github.event_name == 'issues' && 'debug' || 'info') }}
+          # dryRun=true のとき 'full'、それ以外は空＝通常実行。
           RENOVATE_DRY_RUN: ${{ inputs.dryRun && 'full' || '' }}
-          # schedule trigger 以外（workflow_dispatch）はユーザの能動的なアクションなので、
-          # renovate.json5 の schedule を無視して即時実行する（force で schedule を空に上書き）。
-          RENOVATE_FORCE: ${{ github.event_name != 'schedule' && '{"schedule":[]}' || '' }}
+          # workflow_dispatch だけ schedule を無視して即時実行する（force で schedule を空に上書き）。
+          # issues 起動では force を付けない: force で schedule を全体平坦化すると run が「schedule
+          # 無視の full run」になり、checkbox 由来の per-branch 判断(unschedule override が schedule を
+          # 解除できているか)が観測できなくなるため。checkbox の unschedule/unlimit セマンティクスに委ねる。
+          # 注: checkbox(unschedule)は schedule のみ bypass し minimumReleaseAge は解除しない。
+          RENOVATE_FORCE: ${{ github.event_name == 'workflow_dispatch' && '{"schedule":[]}' || '' }}
