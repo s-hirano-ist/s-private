@@ -18,7 +18,7 @@ overrides:
   smol-toml@<1.6.1: ^1.6.1
   srvx@<0.11.13: ^0.11.15
   tar@<7.5.8: ^7.5.15
-  undici@<6.24.0: ^6.25.0
+  undici@<6.24.0: ^6.26.0
   ws@>=8.0.0 <8.20.1: ^8.20.1
 
 importers:
@@ -8466,8 +8466,8 @@ packages:
   undici-types@7.16.0:
     resolution: {integrity: sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==}
 
-  undici@6.25.0:
-    resolution: {integrity: sha512-ZgpWDC5gmNiuY9CnLVXEH8rl50xhRCuLNA97fAUnKi8RRuV4E6KG31pDTsLVUKnohJE0I3XDrTeEydAXRw47xg==}
+  undici@6.26.0:
+    resolution: {integrity: sha512-4yqz8a3n5HmGTlsbADNtr/dJlhkh/55Rq798G6ibiULcXbDtaLpTl1pvdqcbFfeoj3iSi52lePFM7h9H21cw/A==}
     engines: {node: '>=18.17'}
 
   undici@7.25.0:
@@ -10720,7 +10720,7 @@ snapshots:
     dependencies:
       '@qdrant/openapi-typescript-fetch': 1.2.6
       typescript: 6.0.3
-      undici: 6.25.0
+      undici: 6.26.0
 
   '@qdrant/openapi-typescript-fetch@1.2.6': {}
 
@@ -12276,7 +12276,7 @@ snapshots:
       is-buffer: 2.0.5
       is-node-process: 1.2.0
       throttleit: 2.1.0
-      undici: 6.25.0
+      undici: 6.26.0
 
   '@vercel/build-utils@13.22.0':
     dependencies:
@@ -12472,7 +12472,7 @@ snapshots:
       ts-morph: 12.0.0
       tsx: 4.21.0
       typescript: 5.9.3
-      undici: 6.25.0
+      undici: 6.26.0
     transitivePeerDependencies:
       - encoding
       - rollup
@@ -17260,7 +17260,7 @@ snapshots:
 
   undici-types@7.16.0: {}
 
-  undici@6.25.0: {}
+  undici@6.26.0: {}
 
   undici@7.25.0: {}
 
