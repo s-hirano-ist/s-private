@@ -36,7 +36,7 @@ concurrency:
 jobs:
   renovate:
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 30
     # 実際の repo write 権限は GitHub App トークンが持つため job の GITHUB_TOKEN は不要。
     permissions: {}
     # issues イベントは「人間が Dependency Dashboard issue を編集したとき」だけ通す。
