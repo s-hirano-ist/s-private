@@ -11,6 +11,7 @@ import { env } from "@/env";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Noto_Sans_JP } from "next/font/google";
+import { headers } from "next/headers";
 
 const notoSansJp = Noto_Sans_JP({ subsets: ["latin"], display: "swap" });
 
@@ -26,9 +27,11 @@ export const metadata: Metadata = {
 	},
 };
 
-export default function RootLayout({
+export default async function RootLayout({
 	children,
 }: Readonly<{ children: ReactNode }>) {
+	const nonce = (await headers()).get("x-nonce") ?? undefined;
+
 	return (
 		<html lang="ja" suppressHydrationWarning>
 			{/*https://github.com/pacocoursey/next-themes*/}
@@ -37,6 +40,7 @@ export default function RootLayout({
 				{env.NODE_ENV === "development" && (
 					<script
 						async
+						nonce={nonce}
 						src="https://unpkg.com/react-scan/dist/auto.global.js"
 					/>
 				)}

@@ -33,7 +33,7 @@ import {
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { SystemErrorEvent } from "@s-hirano-ist/s-core/shared-kernel/events/system-error-event";
-import { cacheTag } from "next/cache";
+import { unstable_cache } from "next/cache";
 import { cache } from "react";
 
 /**
@@ -49,9 +49,11 @@ const getArticlesCountCached = async (
 	userId: UserId,
 	status: Status,
 ): Promise<number> => {
-	"use cache";
-	cacheTag(buildCountCacheTag("articles", status, userId));
-	return await articlesQueryRepository.count(userId, status);
+	return unstable_cache(
+		() => articlesQueryRepository.count(userId, status),
+		["articles", "count", userId, status],
+		{ tags: [buildCountCacheTag("articles", status, userId)] },
+	)();
 };
 
 /**
@@ -69,38 +71,44 @@ const getArticlesCached = async (
 	userId: UserId,
 	status: Status,
 ): Promise<LinkCardStackInitialData> => {
-	"use cache";
-	cacheTag(
-		buildContentCacheTag("articles", status, userId),
-		buildPaginatedContentCacheTag("articles", status, userId, currentCount),
-	);
-	const [articles, totalCount] = await Promise.all([
-		articlesQueryRepository.findMany(userId, status, {
-			skip: currentCount,
-			take: PAGE_SIZE,
-			orderBy: { createdAt: "desc" },
-		}),
-		getArticlesCountCached(userId, status),
-	]);
+	return unstable_cache(
+		async () => {
+			const [articles, totalCount] = await Promise.all([
+				articlesQueryRepository.findMany(userId, status, {
+					skip: currentCount,
+					take: PAGE_SIZE,
+					orderBy: { createdAt: "desc" },
+				}),
+				getArticlesCountCached(userId, status),
+			]);
 
-	return {
-		data: articles.map((d) => {
-			const description = `${d.quote ? `${d.quote}\n` : ""}${d.ogTitle ? `${d.ogTitle}\n` : ""}${d.ogDescription ? d.ogDescription : ""}`;
 			return {
-				id: d.id,
-				primaryBadgeText: d.categoryName,
-				secondaryBadgeText: new URL(d.url).hostname,
-				key: d.id,
-				title: d.title,
-				description:
-					description.length > 200
-						? `${description.slice(0, 200)}...`
-						: description,
-				href: d.url,
+				data: articles.map((d) => {
+					const description = `${d.quote ? `${d.quote}\n` : ""}${d.ogTitle ? `${d.ogTitle}\n` : ""}${d.ogDescription ? d.ogDescription : ""}`;
+					return {
+						id: d.id,
+						primaryBadgeText: d.categoryName,
+						secondaryBadgeText: new URL(d.url).hostname,
+						key: d.id,
+						title: d.title,
+						description:
+							description.length > 200
+								? `${description.slice(0, 200)}...`
+								: description,
+						href: d.url,
+					};
+				}),
+				totalCount,
 			};
-		}),
-		totalCount,
-	};
+		},
+		["articles", "list", userId, status, String(currentCount)],
+		{
+			tags: [
+				buildContentCacheTag("articles", status, userId),
+				buildPaginatedContentCacheTag("articles", status, userId, currentCount),
+			],
+		},
+	)();
 };
 
 /**
@@ -114,26 +122,30 @@ const getArticlesCached = async (
 const getCategoriesCached = async (
 	userId: UserId,
 ): Promise<ArticleFormData> => {
-	"use cache";
-	cacheTag("categories", buildCategoriesCacheTag(userId));
-	try {
-		const response = await categoryQueryRepository.findMany(userId, {
-			orderBy: { name: "asc" },
-		});
-		return response;
-	} catch (error) {
-		initializeEventHandlers();
-		await eventDispatcher.dispatch(
-			new SystemErrorEvent({
-				message: "unexpected",
-				status: 500,
-				caller: "AddArticleFormCategory",
-				extraData: error,
-			}),
-		);
-		// not critical for viewer nor dumper
-		return [];
-	}
+	return unstable_cache(
+		async () => {
+			try {
+				const response = await categoryQueryRepository.findMany(userId, {
+					orderBy: { name: "asc" },
+				});
+				return response;
+			} catch (error) {
+				initializeEventHandlers();
+				await eventDispatcher.dispatch(
+					new SystemErrorEvent({
+						message: "unexpected",
+						status: 500,
+						caller: "AddArticleFormCategory",
+						extraData: error,
+					}),
+				);
+				// not critical for viewer nor dumper
+				return [];
+			}
+		},
+		["articles", "categories", userId],
+		{ tags: ["categories", buildCategoriesCacheTag(userId)] },
+	)();
 };
 
 /**

@@ -6,6 +6,7 @@ import { ThemeProvider } from "@s-hirano-ist/s-ui/providers/theme-provider";
 import { Toaster } from "@s-hirano-ist/s-ui/ui/sonner";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { type ReactNode, Suspense } from "react";
 
@@ -24,6 +25,7 @@ async function LocaleLayoutContent({ children, params }: Params) {
 	}
 
 	const messages = await getMessages();
+	const nonce = (await headers()).get("x-nonce") ?? undefined;
 
 	return (
 		<NextIntlClientProvider messages={messages}>
@@ -32,6 +34,7 @@ async function LocaleLayoutContent({ children, params }: Params) {
 				defaultTheme="system"
 				disableTransitionOnChange
 				enableSystem
+				nonce={nonce}
 			>
 				<main className="min-h-screen">
 					<div className="pb-24">{children}</div>
