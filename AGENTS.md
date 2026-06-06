@@ -1,0 +1,84 @@
+# AGENTS.md
+
+Next.js 16 + TypeScript + Clean Architectureベースのコンテンツ管理システム。
+docs/** にはより詳細な設計等のルールが記載されています。必要に応じて参照してください。
+また、新たな設計パターンを追加する場合は、docs/** の設計該当箇所に適宜内容を追加してください。
+
+- Before doing any UI, frontend or React development, ALWAYS call the storybook MCP server to get further instructions.
+- 課題管理はローカルの `issues/` ディレクトリで行う（GitHub Issuesではなく）。issueに取り組むように指示があり、完了したらissueファイルは削除すること。
+- 計画時、後方互換性は基本的に捨てること。
+
+## 技術スタック
+
+- Next.js 16 (App Router, Server Actions)
+- TypeScript + Zod
+- Prisma + CockroachDB
+- Shadcn/ui + Tailwind CSS
+- Auth0 + Auth.js
+- MinIO (Object Storage)
+- Qdrant (Vector Database) + HuggingFace TEI (Text Embeddings Inference)
+
+## コマンド
+
+- `pnpm dev` - 開発サーバー
+- `pnpm build` - ビルド
+- `pnpm test` - テスト実行
+- `pnpm lint` - oxlint（type-aware。ESLintから移行済み。旧Biomeのbase lintも吸収）
+- `pnpm lint:fix` - oxlint自動修正
+- `pnpm deps:check` - dependency-cruiser（Clean Architecture層境界の強制を含む）
+- `pnpm format` - oxfmt（Prettier互換。フォーマット + import並べ替え + Tailwindクラス並べ替え。Biomeから移行済み）
+- `pnpm format:check` - oxfmtフォーマットチェック（書き込みなし）
+- `pnpm --filter s-database prisma:migrate:diff` - 新規マイグレーションSQL生成（既存マイグレーション群とschema.prismaのdiff。ルートにスクリプトは無く packages/database にのみ存在。`--from-migrations` はシャドウDBを必要とする。`migrate dev` はクラウドの `crdb_internal_region` drift で失敗するため不使用）
+- `pnpm prisma:deploy` - マイグレーション適用（クラウドはこちらを使う）
+- `pnpm storybook` - Storybook起動
+
+## ディレクトリ構造
+
+- `packages/core/` - ドメイン層（entities, repositories, services, shared-kernel）
+- `packages/ui/` - 共有UIコンポーネント（shadcn/ui, forms, hooks等）
+- `packages/database/` - データベース層（Prisma ORM・マイグレーション）
+- `packages/notification/` - 通知サービス（Pushover）
+- `packages/storage/` - MinIOストレージクライアント
+- `packages/scripts/` - ビルド・ユーティリティスクリプト
+- `app/src/application-services/` - アプリケーション層
+- `app/src/infrastructures/` - インフラ層（Prisma実装、DI factories）
+- `app/src/loaders/` - データローダー層
+- `packages/search/` - RAG検索ライブラリ（Qdrant・Embedding APIクライアント）
+- `app/src/app/[locale]/` - Next.js App Router（i18n対応: en/ja）
+
+## 主要ドメイン
+
+`articles`, `notes`, `images`, `books` - 各コンテンツのCRUDと状態管理（UNEXPORTED → LAST_UPDATED → EXPORTED）
+
+## 設計方針
+
+- Clean Architecture + ドメイン駆動設計
+- Server Actionsで全mutation（`wrapServerSideErrorForClient`使用）
+- 各ドメインは独立（cross-domain import禁止）
+- Zod schemaで入力バリデーション
+- 絶対パスimport必須（`../../*`禁止）
+
+## 外部サービス
+
+- CockroachDB Cloud + Prisma ORM
+- MinIO（オブジェクトストレージ）
+- Sentry（エラー監視）+ Pushover（通知）
+- Auth0 + Auth.js（認証）
+- next-intl（i18n）
+- HuggingFace TEI（Docker / ConoHa VPS + Cloudflare Tunnel）
+- Qdrant（ベクトルデータベース）
+
+## 環境設定
+
+環境変数はdev/preview環境はDoppler、本番環境はVercel Dashboardで管理。ローカル開発では`.env.local`にDopplerサービストークン（`DOPPLER_TOKEN`）を設定し、Miseが自動読み込み→`doppler run`で環境変数を注入。一部ルートスクリプト（prisma:\*）は`vercel env run -e development`を使用。型定義は`app/src/env.ts`。初回セットアップ: `mise install` → `.env.local`にトークン設定 → `pnpm install` → `vercel link`。
+
+## 詳細資料
+
+- セットアップ: [docs/setup.md](docs/setup.md)
+- テスト: [docs/testing.md](docs/testing.md)
+- アーキテクチャ: [docs/architecture.md](docs/architecture.md)
+- ドメインモデル: [docs/domain-model.md](docs/domain-model.md)
+- セキュリティ: [SECURITY.md](SECURITY.md)
+- VPSデプロイ: [docs/vps-deployment.md](docs/vps-deployment.md)
+- コード分析: [docs/code-analysis.md](docs/code-analysis.md)
+- スキーマ: [packages/database/prisma/schema.prisma](packages/database/prisma/schema.prisma)
