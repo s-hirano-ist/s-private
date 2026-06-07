@@ -78,9 +78,9 @@
 		"eslint-plugin-sonarjs": "4.0.3",
 		"eslint-plugin-storybook": "10.4.2",
 		"eslint-plugin-unicorn": "64.0.0",
-		"happy-dom": "20.9.0",
+		"happy-dom": "20.10.1",
 		"jscpd": "4.2.4",
-		"knip": "6.15.0",
+		"knip": "6.16.0",
 		"oxfmt": "0.53.0",
 		"oxlint": "1.68.0",
 		"oxlint-plugin-eslint": "1.68.0",
@@ -92,7 +92,7 @@
 		"typedoc": "0.28.19",
 		"typedoc-plugin-mdn-links": "5.1.1",
 		"typescript": "6.0.3",
-		"vercel": "54.7.1",
+		"vercel": "54.9.1",
 		"vitest": "4.1.8"
 	}
 }
