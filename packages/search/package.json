@@ -70,7 +70,7 @@
 		"@qdrant/js-client-rest": "1.18.0"
 	},
 	"devDependencies": {
-		"@types/node": "24.12.4",
+		"@types/node": "24.13.0",
 		"typescript": "6.0.3"
 	}
 }
