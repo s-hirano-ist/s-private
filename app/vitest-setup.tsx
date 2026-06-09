@@ -54,6 +54,9 @@ vi.mock("server-only", () => {
 
 vi.mock("next/cache", () => ({
 	cacheTag: vi.fn(),
+	unstable_cache: vi.fn(
+		(callback: (...args: unknown[]) => unknown) => callback,
+	),
 	updateTag: vi.fn(),
 }));
 

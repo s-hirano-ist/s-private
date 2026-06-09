@@ -9,7 +9,7 @@
 | `unauthorized()` | Next.js 15.1 | 未認証エラー用（401） |
 | `cacheTag()` | Next.js 15.1 | キャッシュタグによる無効化制御 |
 | `cacheLife()` | Next.js 15.1 | 15.0では`unstable_cacheLife`として提供 |
-| `"use cache"` | Next.js 15.0 | v16では`cacheComponents: true`で有効化 |
+| `unstable_cache` | Next.js 14.0 | nonce CSPと両立するデータキャッシュに使用 |
 | `connection()` | Next.js 15.0 | 動的レンダリングのオプトイン |
 
 ## 目次
@@ -21,7 +21,7 @@
 - [i18n Pattern](#i18n-pattern)
 - [Loader Pattern](#loader-pattern)
 - [Error Boundary Pattern](#error-boundary-pattern)
-- [Partial Prerendering (PPR)](#partial-prerendering-ppr)
+- [Nonce CSP とレンダリング](#nonce-csp-とレンダリング)
 - [Dynamic Rendering](#dynamic-rendering)
 - [Server Actions Architecture Pattern](#server-actions-architecture-pattern)
 - [Value Object Pattern with Zod Branding](#value-object-pattern-with-zod-branding)
@@ -480,62 +480,31 @@ export default function Error({ error, reset }: ErrorPageProps) {
 - `errorCaller`は問題追跡に使用されるため、コンポーネントを特定できる名前を付ける
 - Sentry連携によりプロダクションエラーを自動監視
 
-## Partial Prerendering (PPR)
+## Nonce CSP とレンダリング
 
-Next.js 15で導入されたPartial Prerenderingは、静的シェルと動的コンテンツを組み合わせるレンダリング戦略。
+本コードベースはスクリプトのインライン実行をnonceで制限する。Proxyがリクエストごとにnonceを生成し、Next.jsはリクエストの`Content-Security-Policy`からnonceを取得してframework scriptへ付与する。
 
-### 概要
+nonceはリクエストごとに異なるため、静的HTMLシェルを再利用するCache Components / PPRとは両立しない。そのため`cacheComponents`は有効化せず、ページはリクエスト時に動的レンダリングする。
 
-PPRは以下の特性を持つ:
-- **静的シェル**: ページの静的部分をビルド時にプリレンダリング
-- **動的ホール**: Suspense境界内の動的コンテンツを遅延読み込み
-- **ストリーミング**: 静的部分を即座に配信し、動的部分をストリーミング
+### データキャッシュ
 
-### 有効化
+動的レンダリングとデータキャッシュは分離する。Prismaを使うquery serviceは`unstable_cache`でキャッシュし、次の値をcache keyへ必ず含める:
 
-```typescript
-// app/next.config.mjs
-const nextConfig = {
-  cacheComponents: true, // v16: 静的シェル + 動的ストリーミング
-  reactCompiler: true,
-};
-```
+- ドメイン名
+- query種別
+- `userId`
+- status
+- pagination offset / page
 
-### Loader Pattern との組み合わせ
+既存のtenant別cache tagは維持し、Server Action内の`updateTag`でread-your-own-writesを保証する。公開query serviceはReactの`cache`も併用し、同一レンダリング内の重複呼び出しを抑止する。
 
-本コードベースのLoader Patternは、PPRと自然に統合できる:
+### Loader Pattern
 
-```typescript
-// 静的シェル（即座に配信）
-export default function ArticlesPage() {
-  return (
-    <div>
-      <Header /> {/* 静的 */}
-      <Sidebar /> {/* 静的 */}
-
-      {/* 動的ホール（Suspense境界内でストリーミング） */}
-      <Suspense fallback={<ArticlesSkeleton />}>
-        <ArticlesStackLoader variant="exported" />
-      </Suspense>
-    </div>
-  );
-}
-```
-
-**ポイント:**
-- 認証情報を必要としないUIコンポーネントは静的シェルとして即座に配信
-- データフェッチを伴うLoaderはSuspense境界内に配置し、動的ホールとして扱う
-- Skeleton/Loading UIを適切に設計し、ユーザー体験を最適化
-
-### 注意事項
-
-- PPRは現在experimental機能
-- `cookies()`, `headers()`, `searchParams`を使用するコンポーネントは自動的に動的になる
-- 静的/動的の境界を意識した設計が重要
+LoaderとSuspense境界は、PPRではなくリクエスト時ストリーミングとloading UIのために維持する。認証確認とnonce適用は静的シェルへ逃がさず、常に同じリクエストコンテキストで処理する。
 
 ## Dynamic Rendering
 
-Next.js 15での動的レンダリングの制御方法。
+Next.js 16での動的レンダリングの制御方法。
 
 ### 動的レンダリングのトリガー
 
@@ -547,22 +516,6 @@ Next.js 15での動的レンダリングの制御方法。
 | `headers()` | リクエストヘッダー読み取り |
 | `searchParams` | クエリパラメータ |
 | `connection()` | 明示的な動的オプトイン |
-
-### `cacheComponents` フラグ
-
-Next.js 16では`cacheComponents`フラグにより、IO操作の動的/静的な振る舞いを制御:
-
-```typescript
-// app/next.config.mjs
-const nextConfig = {
-  cacheComponents: true,
-};
-```
-
-`cacheComponents`有効時:
-- `fetch`、データベースクエリ等のIO操作はデフォルトで動的
-- `"use cache"`ディレクティブでキャッシュを明示的にオプトイン
-- 動的IOを行わないルートは自動的に静的プリレンダリング
 
 ### `connection()` API
 
@@ -586,9 +539,10 @@ async function DynamicComponent() {
 
 ### 本コードベースでの方針
 
-1. **デフォルト**: `"use cache"`でキャッシュし、`updateTag`で無効化（Server Action内）
-2. **認証が必要なページ**: 認証チェックにより自動的に動的
-3. **リアルタイム要件**: `connection()` APIで明示的にオプトイン
+1. **ページ**: nonce CSPのためリクエストごとに動的レンダリング
+2. **データ**: `unstable_cache`でtenant別にキャッシュし、`updateTag`で無効化
+3. **認証**: `headers()`を使ったsession検証をページ・Server Actionごとに実施
+4. **リアルタイム要件**: `connection()` APIで明示的にオプトイン
 
 ## Server Actions Architecture Pattern
 

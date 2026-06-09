@@ -26,7 +26,7 @@ import {
 	type Status,
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { cacheTag } from "next/cache";
+import { unstable_cache } from "next/cache";
 import { cache } from "react";
 
 /**
@@ -38,9 +38,11 @@ const getNotesCountCached = async (
 	userId: UserId,
 	status: Status,
 ): Promise<number> => {
-	"use cache";
-	cacheTag(buildCountCacheTag("notes", status, userId));
-	return await notesQueryRepository.count(userId, status);
+	return unstable_cache(
+		() => notesQueryRepository.count(userId, status),
+		["notes", "count", userId, status],
+		{ tags: [buildCountCacheTag("notes", status, userId)] },
+	)();
 };
 
 /**
@@ -58,43 +60,51 @@ const getNotesCached = async (
 	userId: UserId,
 	status: Status,
 ): Promise<LinkCardStackInitialData> => {
-	"use cache";
-	cacheTag(
-		buildContentCacheTag("notes", status, userId),
-		buildPaginatedContentCacheTag("notes", status, userId, currentCount),
-	);
-	const [notes, totalCount] = await Promise.all([
-		notesQueryRepository.findMany(userId, status, {
-			skip: currentCount,
-			take: PAGE_SIZE,
-			orderBy: { createdAt: "desc" },
-		}),
-		getNotesCountCached(userId, status),
-	]);
-
-	return {
-		data: notes.map((d) => {
-			const plainText = String(d.markdown)
-				.replaceAll(/^#{1,6}\s+/gmu, "")
-				.replaceAll(/[*_~`]/gu, "")
-				.replaceAll(/\[([^\]]*)\]\([^)]*\)/gu, "$1")
-				.replaceAll(/!\[([^\]]*)\]\([^)]*\)/gu, "$1")
-				.replaceAll(/\n+/gu, " ")
-				.trim();
-			const description =
-				plainText.length > 150 ? `${plainText.slice(0, 150)}...` : plainText;
+	return unstable_cache(
+		async () => {
+			const [notes, totalCount] = await Promise.all([
+				notesQueryRepository.findMany(userId, status, {
+					skip: currentCount,
+					take: PAGE_SIZE,
+					orderBy: { createdAt: "desc" },
+				}),
+				getNotesCountCached(userId, status),
+			]);
 
 			return {
-				id: d.id,
-				key: d.id,
-				title: d.title,
-				description,
-				primaryBadgeText: new Date(d.createdAt).toLocaleDateString("ja-JP"),
-				href: `/note/${encodeURIComponent(d.title)}`,
+				data: notes.map((d) => {
+					const plainText = String(d.markdown)
+						.replaceAll(/^#{1,6}\s+/gmu, "")
+						.replaceAll(/[*_~`]/gu, "")
+						.replaceAll(/\[([^\]]*)\]\([^)]*\)/gu, "$1")
+						.replaceAll(/!\[([^\]]*)\]\([^)]*\)/gu, "$1")
+						.replaceAll(/\n+/gu, " ")
+						.trim();
+					const description =
+						plainText.length > 150
+							? `${plainText.slice(0, 150)}...`
+							: plainText;
+
+					return {
+						id: d.id,
+						key: d.id,
+						title: d.title,
+						description,
+						primaryBadgeText: new Date(d.createdAt).toLocaleDateString("ja-JP"),
+						href: `/note/${encodeURIComponent(d.title)}`,
+					};
+				}),
+				totalCount,
 			};
-		}),
-		totalCount,
-	};
+		},
+		["notes", "list", userId, status, String(currentCount)],
+		{
+			tags: [
+				buildContentCacheTag("notes", status, userId),
+				buildPaginatedContentCacheTag("notes", status, userId, currentCount),
+			],
+		},
+	)();
 };
 
 /**
