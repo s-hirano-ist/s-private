@@ -13,9 +13,9 @@
  * - **Reads** (`findMany` / `findFirst` / `count` / `aggregate` / `groupBy`):
  *   fail-open. When a scope is present `userId` is AND-ed into `where`; when it
  *   is absent the query passes through unchanged (the repositories' explicit
- *   `where: { userId }` still isolates tenants). Reads can run inside the Next.js
- *   `"use cache"` boundary where AsyncLocalStorage may not propagate, so failing
- *   closed here would break cached reads.
+ *   `where: { userId }` still isolates tenants). Reads can run inside a Next.js
+ *   `unstable_cache` callback where AsyncLocalStorage may not propagate, so
+ *   failing closed here would break cached reads.
  * - **Mutations** (`create` / `update` / `delete` / `*Many` / `upsert`):
  *   fail-closed. A missing scope throws, refusing to run a write with no tenant
  *   isolation. Mutations always run on the (non-cached) server-action path where

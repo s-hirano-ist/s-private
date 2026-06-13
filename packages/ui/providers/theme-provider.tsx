@@ -1,7 +1,9 @@
 "use client";
 
 import type * as React from "react";
+import { setNonce } from "get-nonce";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { useInsertionEffect } from "react";
 
 /**
  * Theme provider component for dark/light mode support.
@@ -28,7 +30,16 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
  */
 export function ThemeProvider({
 	children,
+	nonce,
 	...props
 }: React.ComponentProps<typeof NextThemesProvider>) {
-	return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
+	useInsertionEffect(() => {
+		setNonce(nonce ?? "");
+	}, [nonce]);
+
+	return (
+		<NextThemesProvider nonce={nonce} {...props}>
+			{children}
+		</NextThemesProvider>
+	);
 }

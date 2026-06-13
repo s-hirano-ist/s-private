@@ -212,6 +212,38 @@ pnpm i --frozen-lockfile
 2. **Before release**: Run `pnpm security` manually
 3. **After security announcements**: Run `pnpm security:fix` and `pnpm security:report`
 
+## Content Security Policy
+
+The application uses a request-scoped nonce generated in `app/src/proxy.ts`.
+The nonce is forwarded to server rendering through the internal `x-nonce`
+header and an upstream `Content-Security-Policy` request header. Browser
+responses currently receive `Content-Security-Policy-Report-Only` while the
+policy is being validated.
+
+### Policy
+
+- `script-src` permits self, the request nonce, Vercel Analytics, development-only React Scan, and Preview-only Vercel Toolbar.
+- Production does not allow `unsafe-inline` or `unsafe-eval` for scripts.
+- Production `style-src-elem` requires self or the request nonce.
+- `style-src-attr 'unsafe-inline'` remains enabled because UI positioning and syntax highlighting use dynamic style attributes.
+- The shared `ThemeProvider` initializes `get-nonce` during React's insertion phase so client-side styles created by `next-themes`, Radix UI, and `react-remove-scroll` receive the request nonce.
+- Preview deployments allow the additional script, connection, image, frame, style, and font sources documented for Vercel Toolbar.
+- CSP violations are reported to the configured Sentry reporting endpoint through `report-uri` and `Report-To`.
+
+### Enforcement rollout
+
+Before replacing `Content-Security-Policy-Report-Only` with
+`Content-Security-Policy`:
+
+1. Exercise authentication, locale navigation, theme switching, Toast, Dialog, Drawer, Lightbox, and Markdown code rendering in Preview.
+2. Confirm that Sentry contains no unexplained violations from supported browsers.
+3. Verify production Report-Only telemetry separately because Preview intentionally has a broader Toolbar policy.
+4. Change only the response header name in Proxy; keep the upstream request header enforced so Next.js continues to attach nonces during SSR.
+
+Cache Components / PPR are intentionally disabled because their reusable static
+HTML shell cannot carry a fresh nonce for every request. Database query results
+remain cached with tenant-scoped cache keys and tags.
+
 ## Application Security Scanning (Aikido)
 
 This project uses [Aikido Security](https://www.aikido.dev/) (Forever Free plan) for

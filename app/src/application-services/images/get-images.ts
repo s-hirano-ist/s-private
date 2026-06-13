@@ -25,7 +25,7 @@ import {
 	type Status,
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { cacheTag } from "next/cache";
+import { unstable_cache } from "next/cache";
 import { cache } from "react";
 
 /** API path for original images */
@@ -42,9 +42,11 @@ const getImagesCountCached = async (
 	userId: UserId,
 	status: Status,
 ): Promise<number> => {
-	"use cache";
-	cacheTag(buildCountCacheTag("images", status, userId));
-	return await imagesQueryRepository.count(userId, status);
+	return unstable_cache(
+		() => imagesQueryRepository.count(userId, status),
+		["images", "count", userId, status],
+		{ tags: [buildCountCacheTag("images", status, userId)] },
+	)();
 };
 
 /**
@@ -57,26 +59,32 @@ const getImagesCached = async (
 	userId: UserId,
 	status: Status,
 ): Promise<ImageData[]> => {
-	"use cache";
-	cacheTag(
-		buildContentCacheTag("images", status, userId),
-		buildPaginatedContentCacheTag("images", status, userId, page),
-	);
-	const data = await imagesQueryRepository.findMany(userId, status, {
-		skip: (page - 1) * PAGE_SIZE,
-		take: PAGE_SIZE,
-		orderBy: { createdAt: "desc" },
-	});
+	return unstable_cache(
+		async () => {
+			const data = await imagesQueryRepository.findMany(userId, status, {
+				skip: (page - 1) * PAGE_SIZE,
+				take: PAGE_SIZE,
+				orderBy: { createdAt: "desc" },
+			});
 
-	return data.map((d) => {
-		return {
-			id: d.id,
-			originalPath: `${API_ORIGINAL_PATH}/${d.path}`,
-			thumbnailPath: `${API_THUMBNAIL_PATH}/${d.path}`,
-			height: d.height,
-			width: d.width,
-		};
-	});
+			return data.map((d) => {
+				return {
+					id: d.id,
+					originalPath: `${API_ORIGINAL_PATH}/${d.path}`,
+					thumbnailPath: `${API_THUMBNAIL_PATH}/${d.path}`,
+					height: d.height,
+					width: d.width,
+				};
+			});
+		},
+		["images", "list", userId, status, String(page)],
+		{
+			tags: [
+				buildContentCacheTag("images", status, userId),
+				buildPaginatedContentCacheTag("images", status, userId, page),
+			],
+		},
+	)();
 };
 
 /**

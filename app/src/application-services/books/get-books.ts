@@ -27,7 +27,7 @@ import {
 	type Status,
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { cacheTag } from "next/cache";
+import { unstable_cache } from "next/cache";
 import { cache } from "react";
 
 const API_BOOK_THUMBNAIL_PATH = "/api/books/images/thumbnail";
@@ -41,9 +41,11 @@ const getBooksCountCached = async (
 	userId: UserId,
 	status: Status,
 ): Promise<number> => {
-	"use cache";
-	cacheTag(buildCountCacheTag("books", status, userId));
-	return await booksQueryRepository.count(userId, status);
+	return unstable_cache(
+		() => booksQueryRepository.count(userId, status),
+		["books", "count", userId, status],
+		{ tags: [buildCountCacheTag("books", status, userId)] },
+	)();
 };
 
 /**
@@ -56,36 +58,41 @@ const getBooksCached = async (
 	userId: UserId,
 	status: Status,
 ): Promise<ImageCardStackInitialData> => {
-	"use cache";
-	cacheTag(
-		buildContentCacheTag("books", status, userId),
-		buildPaginatedContentCacheTag("books", status, userId, currentCount),
-	);
+	return unstable_cache(
+		async () => {
+			const [books, totalCount] = await Promise.all([
+				booksQueryRepository.findMany(userId, status, {
+					skip: currentCount,
+					take: PAGE_SIZE,
+					orderBy: { createdAt: "desc" },
+				}),
+				getBooksCountCached(userId, status),
+			]);
 
-	const [books, totalCount] = await Promise.all([
-		booksQueryRepository.findMany(userId, status, {
-			skip: currentCount,
-			take: PAGE_SIZE,
-			orderBy: { createdAt: "desc" },
-		}),
-		getBooksCountCached(userId, status),
-	]);
-
-	return {
-		data: books.map((d) => ({
-			id: d.id,
-			title: d.title,
-			href: d.isbn,
-			image: d.imagePath
-				? `${API_BOOK_THUMBNAIL_PATH}/${d.imagePath}`
-				: (d.googleImgSrc ?? null),
-			subtitle: d.googleSubTitle ? String(d.googleSubTitle) : undefined,
-			authors: d.googleAuthors
-				? (d.googleAuthors as unknown as string[]).join(", ")
-				: undefined,
-		})),
-		totalCount,
-	};
+			return {
+				data: books.map((d) => ({
+					id: d.id,
+					title: d.title,
+					href: d.isbn,
+					image: d.imagePath
+						? `${API_BOOK_THUMBNAIL_PATH}/${d.imagePath}`
+						: (d.googleImgSrc ?? null),
+					subtitle: d.googleSubTitle ? String(d.googleSubTitle) : undefined,
+					authors: d.googleAuthors
+						? (d.googleAuthors as unknown as string[]).join(", ")
+						: undefined,
+				})),
+				totalCount,
+			};
+		},
+		["books", "list", userId, status, String(currentCount)],
+		{
+			tags: [
+				buildContentCacheTag("books", status, userId),
+				buildPaginatedContentCacheTag("books", status, userId, currentCount),
+			],
+		},
+	)();
 };
 
 /**

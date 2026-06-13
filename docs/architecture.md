@@ -9,7 +9,7 @@
 | `unauthorized()` | Next.js 15.1 | 未認証エラー用（401） |
 | `cacheTag()` | Next.js 15.1 | キャッシュタグによる無効化制御 |
 | `cacheLife()` | Next.js 15.1 | 15.0では`unstable_cacheLife`として提供 |
-| `"use cache"` | Next.js 15.0 | v16では`cacheComponents: true`で有効化 |
+| `unstable_cache` | Next.js 14.0 | nonce CSPと両立するデータキャッシュに使用 |
 | `connection()` | Next.js 15.0 | 動的レンダリングのオプトイン |
 
 ## 目次
@@ -21,7 +21,7 @@
 - [i18n Pattern](#i18n-pattern)
 - [Loader Pattern](#loader-pattern)
 - [Error Boundary Pattern](#error-boundary-pattern)
-- [Partial Prerendering (PPR)](#partial-prerendering-ppr)
+- [Nonce CSP とレンダリング](#nonce-csp-とレンダリング)
 - [Dynamic Rendering](#dynamic-rendering)
 - [Server Actions Architecture Pattern](#server-actions-architecture-pattern)
 - [Value Object Pattern with Zod Branding](#value-object-pattern-with-zod-branding)
@@ -480,62 +480,31 @@ export default function Error({ error, reset }: ErrorPageProps) {
 - `errorCaller`は問題追跡に使用されるため、コンポーネントを特定できる名前を付ける
 - Sentry連携によりプロダクションエラーを自動監視
 
-## Partial Prerendering (PPR)
+## Nonce CSP とレンダリング
 
-Next.js 15で導入されたPartial Prerenderingは、静的シェルと動的コンテンツを組み合わせるレンダリング戦略。
+本コードベースはスクリプトのインライン実行をnonceで制限する。Proxyがリクエストごとにnonceを生成し、Next.jsはリクエストの`Content-Security-Policy`からnonceを取得してframework scriptへ付与する。
 
-### 概要
+nonceはリクエストごとに異なるため、静的HTMLシェルを再利用するCache Components / PPRとは両立しない。そのため`cacheComponents`は有効化せず、ページはリクエスト時に動的レンダリングする。
 
-PPRは以下の特性を持つ:
-- **静的シェル**: ページの静的部分をビルド時にプリレンダリング
-- **動的ホール**: Suspense境界内の動的コンテンツを遅延読み込み
-- **ストリーミング**: 静的部分を即座に配信し、動的部分をストリーミング
+### データキャッシュ
 
-### 有効化
+動的レンダリングとデータキャッシュは分離する。Prismaを使うquery serviceは`unstable_cache`でキャッシュし、次の値をcache keyへ必ず含める:
 
-```typescript
-// app/next.config.mjs
-const nextConfig = {
-  cacheComponents: true, // v16: 静的シェル + 動的ストリーミング
-  reactCompiler: true,
-};
-```
+- ドメイン名
+- query種別
+- `userId`
+- status
+- pagination offset / page
 
-### Loader Pattern との組み合わせ
+既存のtenant別cache tagは維持し、Server Action内の`updateTag`でread-your-own-writesを保証する。公開query serviceはReactの`cache`も併用し、同一レンダリング内の重複呼び出しを抑止する。
 
-本コードベースのLoader Patternは、PPRと自然に統合できる:
+### Loader Pattern
 
-```typescript
-// 静的シェル（即座に配信）
-export default function ArticlesPage() {
-  return (
-    <div>
-      <Header /> {/* 静的 */}
-      <Sidebar /> {/* 静的 */}
-
-      {/* 動的ホール（Suspense境界内でストリーミング） */}
-      <Suspense fallback={<ArticlesSkeleton />}>
-        <ArticlesStackLoader variant="exported" />
-      </Suspense>
-    </div>
-  );
-}
-```
-
-**ポイント:**
-- 認証情報を必要としないUIコンポーネントは静的シェルとして即座に配信
-- データフェッチを伴うLoaderはSuspense境界内に配置し、動的ホールとして扱う
-- Skeleton/Loading UIを適切に設計し、ユーザー体験を最適化
-
-### 注意事項
-
-- PPRは現在experimental機能
-- `cookies()`, `headers()`, `searchParams`を使用するコンポーネントは自動的に動的になる
-- 静的/動的の境界を意識した設計が重要
+LoaderとSuspense境界は、PPRではなくリクエスト時ストリーミングとloading UIのために維持する。認証確認とnonce適用は静的シェルへ逃がさず、常に同じリクエストコンテキストで処理する。
 
 ## Dynamic Rendering
 
-Next.js 15での動的レンダリングの制御方法。
+Next.js 16での動的レンダリングの制御方法。
 
 ### 動的レンダリングのトリガー
 
@@ -547,22 +516,6 @@ Next.js 15での動的レンダリングの制御方法。
 | `headers()` | リクエストヘッダー読み取り |
 | `searchParams` | クエリパラメータ |
 | `connection()` | 明示的な動的オプトイン |
-
-### `cacheComponents` フラグ
-
-Next.js 16では`cacheComponents`フラグにより、IO操作の動的/静的な振る舞いを制御:
-
-```typescript
-// app/next.config.mjs
-const nextConfig = {
-  cacheComponents: true,
-};
-```
-
-`cacheComponents`有効時:
-- `fetch`、データベースクエリ等のIO操作はデフォルトで動的
-- `"use cache"`ディレクティブでキャッシュを明示的にオプトイン
-- 動的IOを行わないルートは自動的に静的プリレンダリング
 
 ### `connection()` API
 
@@ -586,9 +539,10 @@ async function DynamicComponent() {
 
 ### 本コードベースでの方針
 
-1. **デフォルト**: `"use cache"`でキャッシュし、`updateTag`で無効化（Server Action内）
-2. **認証が必要なページ**: 認証チェックにより自動的に動的
-3. **リアルタイム要件**: `connection()` APIで明示的にオプトイン
+1. **ページ**: nonce CSPのためリクエストごとに動的レンダリング
+2. **データ**: `unstable_cache`でtenant別にキャッシュし、`updateTag`で無効化
+3. **認証**: `headers()`を使ったsession検証をページ・Server Actionごとに実施
+4. **リアルタイム要件**: `connection()` APIで明示的にオプトイン
 
 ## Server Actions Architecture Pattern
 
@@ -1253,38 +1207,48 @@ updateTag("categories"); // グローバルカテゴリ一覧
 updateTag(buildCategoriesCacheTag(userId)); // ユーザー固有カテゴリ一覧
 ```
 
-### 使用例（cacheTag）
+### 使用例（unstable_cache）
 
 ```typescript
 // get-articles.ts
-import { cacheTag } from "next/cache";
+import { unstable_cache } from "next/cache";
 import {
   buildContentCacheTag,
-  buildCountCacheTag,
   buildPaginatedContentCacheTag,
   buildCategoriesCacheTag,
 } from "@/infrastructures/shared/cache/cache-tag-builder";
 
-// データフェッチ時にキャッシュタグを設定
-export const _getArticles = async (currentCount: number, userId: UserId, status: Status) => {
-  "use cache";
-  cacheTag(
-    buildContentCacheTag("articles", status, userId),
-    buildPaginatedContentCacheTag("articles", status, userId, currentCount),
-  );
-  // ...
-};
+const getArticlesCached = async (
+  currentCount: number,
+  userId: UserId,
+  status: Status,
+) =>
+  unstable_cache(
+    async () => {
+      // ...
+    },
+    ["articles", "list", userId, status, String(currentCount)],
+    {
+      tags: [
+        buildContentCacheTag("articles", status, userId),
+        buildPaginatedContentCacheTag("articles", status, userId, currentCount),
+      ],
+    },
+  )();
 
-const _getCategories = async (userId: UserId) => {
-  "use cache";
-  cacheTag("categories", buildCategoriesCacheTag(userId));
-  // ...
-};
+const getCategoriesCached = async (userId: UserId) =>
+  unstable_cache(
+    async () => {
+      // ...
+    },
+    ["articles", "categories", userId],
+    { tags: ["categories", buildCategoriesCacheTag(userId)] },
+  )();
 ```
 
 ### 注意事項
 
-- **必ずビルダー関数を使用**: `cacheTag()`と`updateTag()`で同じビルダー関数を使用し、タグの一貫性を保証
+- **必ずビルダー関数を使用**: `unstable_cache()`の`tags`と`updateTag()`で同じビルダー関数を使用し、タグの一貫性を保証
 - タグはユーザーIDを含めてマルチテナント分離を維持
 - ステータス変更時は両方のステータスのキャッシュを無効化
 - カテゴリ等の関連データも忘れずに無効化
@@ -1442,13 +1406,13 @@ export async function batchResetCore(deps: BatchResetDeps): Promise<ServerAction
 
 ## Data Fetching Pattern
 
-`"use cache"`ディレクティブとReact `cache()`を使用したデータフェッチパターン。
+`unstable_cache()`とReact `cache()`を使用したデータフェッチパターン。
 
 ### 実装例
 
 ```typescript
 // app/src/application-services/articles/get-articles.ts
-import { cacheTag } from "next/cache";
+import { unstable_cache } from "next/cache";
 import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
 import {
@@ -1456,34 +1420,37 @@ import {
   buildPaginatedContentCacheTag,
 } from "@/infrastructures/shared/cache/cache-tag-builder";
 
-// 内部実装: "use cache"でキャッシュ
-export const _getArticles = async (
+// 内部実装: unstable_cacheでリクエスト間キャッシュ
+const getArticlesCached = async (
   currentCount: number,
   userId: UserId,
   status: Status,
-): Promise<LinkCardStackInitialData> => {
-  "use cache";
-  cacheTag(
-    buildContentCacheTag("articles", status, userId),
-    buildPaginatedContentCacheTag("articles", status, userId, currentCount),
-  );
+) =>
+  unstable_cache(
+    async (): Promise<LinkCardStackInitialData> => {
+      const articles = await articlesQueryRepository.findMany(userId, status, {
+        skip: currentCount,
+        take: PAGE_SIZE,
+        orderBy: { createdAt: "desc" },
+      });
 
-  const articles = await articlesQueryRepository.findMany(userId, status, {
-    skip: currentCount,
-    take: PAGE_SIZE,
-    orderBy: { createdAt: "desc" },
-  });
-
-  const totalCount = await _getArticlesCount(userId, status);
-
-  return { data: articles.map(transformToDTO), totalCount };
-};
+      const totalCount = await getArticlesCountCached(userId, status);
+      return { data: articles.map(transformToDTO), totalCount };
+    },
+    ["articles", "list", userId, status, String(currentCount)],
+    {
+      tags: [
+        buildContentCacheTag("articles", status, userId),
+        buildPaginatedContentCacheTag("articles", status, userId, currentCount),
+      ],
+    },
+  )();
 
 // 公開関数: cache()でリクエストレベル重複排除
 export const getExportedArticles: GetPaginatedData<LinkCardStackInitialData> =
   cache(async (currentCount: number) => {
     const userId = await getSelfId();
-    return _getArticles(currentCount, userId, makeExportedStatus().status);
+    return getArticlesCached(currentCount, userId, makeExportedStatus().status);
   });
 ```
 
@@ -1491,36 +1458,38 @@ export const getExportedArticles: GetPaginatedData<LinkCardStackInitialData> =
 
 | 層 | 技術 | 役割 |
 |---|------|------|
-| Next.js | `"use cache"` + `cacheTag()` | ビルド/リクエスト間キャッシュ |
+| Next.js | `unstable_cache()` + tags | リクエスト間キャッシュ |
 | React | `cache()` | リクエスト内重複排除（同一リクエストで複数回呼ばれても1回のみ実行） |
 
-### `cache()` と `"use cache"` の使い分け
+### `cache()` と `unstable_cache()` の使い分け
 
-| 観点 | `cache()` (React) | `"use cache"` (Next.js) |
+| 観点 | `cache()` (React) | `unstable_cache()` (Next.js) |
 |------|-------------------|-------------------------|
 | **スコープ** | 単一リクエスト内 | リクエスト間（永続的） |
-| **用途** | 同一レンダリングツリー内での重複排除 | ビルド時/ISR/動的キャッシュ |
+| **用途** | 同一レンダリングツリー内での重複排除 | DBクエリ結果などの動的キャッシュ |
 | **無効化** | リクエスト終了で自動消滅 | `updateTag()` (Server Action) / `revalidateTag()` (Route Handler) |
-| **認証データ** | 適切（リクエストスコープ） | 注意が必要（`cacheTag`でユーザー分離） |
+| **認証データ** | 適切（リクエストスコープ） | キーとタグの両方でユーザー分離が必要 |
 
 **判断基準:**
 1. **同一リクエスト内で複数回呼ばれる可能性がある** → `cache()` でラップ
-2. **リクエスト間でキャッシュしたい** → `"use cache"` ディレクティブ
-3. **両方の恩恵を受けたい** → 内部関数に `"use cache"`、公開関数を `cache()` でラップ（本コードベースの標準パターン）
+2. **リクエスト間でキャッシュしたい** → `unstable_cache()` で明示的なキーとタグを設定
+3. **両方の恩恵を受けたい** → 内部関数で`unstable_cache()`を呼び、公開関数を`cache()`でラップ（本コードベースの標準パターン）
 
 ```typescript
 // 推奨パターン: 両方を組み合わせ + ビルダー関数使用
 import { buildContentCacheTag } from "@/infrastructures/shared/cache/cache-tag-builder";
+import { unstable_cache } from "next/cache";
 
-const _getData = async (userId: UserId, status: Status) => {
-  "use cache";
-  cacheTag(buildContentCacheTag("articles", status, userId));
-  return await repository.findMany(userId, status);
-};
+const getDataCached = async (userId: UserId, status: Status) =>
+  unstable_cache(
+    () => repository.findMany(userId, status),
+    ["articles", "list", userId, status],
+    { tags: [buildContentCacheTag("articles", status, userId)] },
+  )();
 
 export const getData = cache(async () => {
   const userId = await getSelfId();
-  return _getData(userId, makeUnexportedStatus());
+  return getDataCached(userId, makeUnexportedStatus());
 });
 ```
 
@@ -1528,13 +1497,14 @@ export const getData = cache(async () => {
 
 | パターン | 例 |
 |---------|-----|
-| 内部関数 | `_getArticles`（アンダースコアプレフィックス） |
+| 内部関数 | `getArticlesCached`（`Cached`サフィックス） |
 | 公開関数 | `getExportedArticles`, `getUnexportedArticles` |
 
 ### 注意事項
 
-- 内部関数は`"use cache"`でキャッシュ、公開関数は`cache()`でラップ
-- `cacheTag()`で複数タグを設定し、柔軟な無効化を可能に
+- 内部関数は`unstable_cache()`でキャッシュ、公開関数は`cache()`でラップ
+- `unstable_cache()`のキーにはドメイン、操作、ユーザーID、ステータス、ページ位置を含める
+- `tags`で複数タグを設定し、柔軟な無効化を可能に
 
 ## DTO Transform Pattern
 

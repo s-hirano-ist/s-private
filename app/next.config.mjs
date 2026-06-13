@@ -4,31 +4,8 @@ import { withSentryConfig } from "@sentry/nextjs";
 // await import("./src/env.ts");
 import createNextIntlPlugin from "next-intl/plugin";
 
-// MEMO: scriptタグを利用する必要が出たときはnonceの利用推奨
-// https://nextjs.org/docs/app/building-your-application/configuring/content-security-policy#reading-the-nonce
-
 // MEMO: その他のheadersについては下記参照
 // https://nextjs.org/docs/pages/api-reference/next-config-js/headers
-
-// MEMO: worker-src 'self' blob:; for Sentry
-
-const cspHeader = `
-    default-src 'self' https://vercel.live;
-	connect-src 'self';
-	script-src 'self' 'unsafe-eval' 'unsafe-inline' https://unpkg.com https://va.vercel-scripts.com https://vercel.live;
-    style-src 'self' 'unsafe-inline';
-	img-src 'self' blob: data: https://${process.env.MINIO_HOST}:${process.env.MINIO_PORT ?? "443"};
-    font-src 'self';
-    object-src 'none';
-    base-uri 'self';
-    form-action 'self';
-    frame-ancestors 'none';
-	worker-src 'self' blob:;
-	manifest-src 'self' ${process.env.AUTH0_ISSUER_BASE_URL};
-    upgrade-insecure-requests;
-	report-uri ${process.env.SENTRY_REPORT_URL};
-    report-to csp-endpoint;
-	`;
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -41,14 +18,12 @@ const nextConfig = {
 	serverExternalPackages: ["sharp", "@prisma/client"],
 	typedRoutes: true,
 	reactCompiler: true,
-	cacheComponents: true, // v16: moved from experimental.useCache
 	experimental: {
 		authInterrupts: true,
 		staleTimes: {
 			dynamic: 0,
 			static: 180,
 		},
-		viewTransition: true,
 		serverActions: {
 			bodySizeLimit: "10mb",
 			allowedOrigins: ["s-hirano.com", "*.vercel.app", "localhost:3000"],
@@ -95,10 +70,6 @@ const nextConfig = {
 					// 	key: "Cache-Control",
 					// 	value: "private, no-store, must-revalidate",
 					// },
-					{
-						key: "Content-Security-Policy",
-						value: cspHeader.replaceAll("\n", ""),
-					},
 					{
 						key: "Report-To",
 						value: `{"group":"csp-endpoint","max_age":10886400,"endpoints":[{"url":"${process.env.SENTRY_REPORT_URL}"}],"include_subdomains":true}`,

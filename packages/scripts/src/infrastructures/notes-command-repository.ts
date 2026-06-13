@@ -69,7 +69,7 @@ export function createNotesCommandRepository(
 					}),
 					prisma.note.updateMany({
 						where: {
-							userId: { equals: userId },
+							userId: userId,
 							status: "UNEXPORTED",
 						},
 						data: {
