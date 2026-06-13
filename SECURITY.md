@@ -9,6 +9,7 @@ This document outlines the security practices and policies for this project.
 - [npm/pnpm Security Configuration](#npmpnpm-security-configuration)
 - [CI/CD Security](#cicd-security)
 - [Security Auditing](#security-auditing)
+- [Content Security Policy](#content-security-policy)
 - [Application Security Scanning (Aikido)](#application-security-scanning-aikido)
 - [Supply Chain Attack Prevention](#supply-chain-attack-prevention)
 
@@ -242,7 +243,7 @@ Before replacing `Content-Security-Policy-Report-Only` with
 
 Cache Components / PPR are intentionally disabled because their reusable static
 HTML shell cannot carry a fresh nonce for every request. Database query results
-remain cached with tenant-scoped cache keys and tags.
+remain cached with tenant-scoped `unstable_cache` keys and tags.
 
 ## Application Security Scanning (Aikido)
 
@@ -396,6 +397,6 @@ pnpm security
 
 ---
 
-**Last Updated**: 2026-06-03
+**Last Updated**: 2026-06-06
 
 For questions about this security policy, contact s-hirano-ist@outlook.com.
