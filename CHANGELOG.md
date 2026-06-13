@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.10.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.9.0...s-private-v3.10.0) (2026-06-13)
+
+
+### Features
+
+* add nonce-based content security policy ([ffc99d6](https://github.com/s-hirano-ist/s-private/commit/ffc99d659acc1a0367399954017bd54e3d714634))
+* add skills for codex ([e63a932](https://github.com/s-hirano-ist/s-private/commit/e63a9324a027eeaa6e8ab6af94284f9751e4d348))
+* add skills for codex ([105f86c](https://github.com/s-hirano-ist/s-private/commit/105f86ca02b10b58bb4c14fc7a8806ed169f5016))
+* introduce nonce-based Content Security Policy ([b1732be](https://github.com/s-hirano-ist/s-private/commit/b1732bef3888c293b0854c7b108eb8be09515c8c))
+
+
+### Bug Fixes
+
+* format ([eaf7a58](https://github.com/s-hirano-ist/s-private/commit/eaf7a58ceb9fd78043447c726bcada8310045414))
+* **security:** autofix NoSQL injection attack possible ([425c51a](https://github.com/s-hirano-ist/s-private/commit/425c51a42772fea0a8c6b73d11d8b9283e96fdcb))
+
+
+### Documentation
+
+* restore theme after nonce story ([55f73a7](https://github.com/s-hirano-ist/s-private/commit/55f73a7bcc104fd55fd0f729ae16d4aec2deefe6))
+* update ([2070a7f](https://github.com/s-hirano-ist/s-private/commit/2070a7f8cf6a1f53f533114f92d99f5ec84d3a64))
+* update ([c467689](https://github.com/s-hirano-ist/s-private/commit/c467689eb53177895e324ff2c64e5081f899f502))
+
+
+### Maintenance
+
+* **deps:** update node and pnpm to v11.5.2 ([6a0d549](https://github.com/s-hirano-ist/s-private/commit/6a0d54976fb7f371f351c3b43735bbd6d8229cda))
+* **deps:** update non-major (devdependencies) ([3086687](https://github.com/s-hirano-ist/s-private/commit/3086687bac415921001fe19087649604467b6ec8))
+* **deps:** update non-major (devdependencies) ([4124946](https://github.com/s-hirano-ist/s-private/commit/4124946c8173965866d88aa1079446d7d2ff16aa))
+* **deps:** update non-major (devdependencies) ([#2385](https://github.com/s-hirano-ist/s-private/issues/2385)) ([3086687](https://github.com/s-hirano-ist/s-private/commit/3086687bac415921001fe19087649604467b6ec8))
+
 ## [3.9.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.8.1...s-private-v3.9.0) (2026-06-05)
 
 

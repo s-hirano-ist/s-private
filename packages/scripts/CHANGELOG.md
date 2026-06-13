@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.24.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.24.0...@s-hirano-ist/s-scripts-v1.24.1) (2026-06-13)
+
+
+### Bug Fixes
+
+* **security:** autofix NoSQL injection attack possible ([425c51a](https://github.com/s-hirano-ist/s-private/commit/425c51a42772fea0a8c6b73d11d8b9283e96fdcb))
+
+
+### Maintenance
+
+* **deps:** update non-major (devdependencies) ([3086687](https://github.com/s-hirano-ist/s-private/commit/3086687bac415921001fe19087649604467b6ec8))
+* **deps:** update non-major (devdependencies) ([4124946](https://github.com/s-hirano-ist/s-private/commit/4124946c8173965866d88aa1079446d7d2ff16aa))
+* **deps:** update non-major (devdependencies) ([#2385](https://github.com/s-hirano-ist/s-private/issues/2385)) ([3086687](https://github.com/s-hirano-ist/s-private/commit/3086687bac415921001fe19087649604467b6ec8))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.21.1
+    * @s-hirano-ist/s-search bumped to 1.18.12
+    * @s-hirano-ist/s-storage bumped to 1.18.8
+
 ## [1.24.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.23.5...@s-hirano-ist/s-scripts-v1.24.0) (2026-06-05)
 
 
