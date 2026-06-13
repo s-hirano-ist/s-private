@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.18.12](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-search-v1.18.11...@s-hirano-ist/s-search-v1.18.12) (2026-06-13)
+
+
+### Maintenance
+
+* **deps:** update non-major (devdependencies) ([3086687](https://github.com/s-hirano-ist/s-private/commit/3086687bac415921001fe19087649604467b6ec8))
+* **deps:** update non-major (devdependencies) ([4124946](https://github.com/s-hirano-ist/s-private/commit/4124946c8173965866d88aa1079446d7d2ff16aa))
+* **deps:** update non-major (devdependencies) ([#2385](https://github.com/s-hirano-ist/s-private/issues/2385)) ([3086687](https://github.com/s-hirano-ist/s-private/commit/3086687bac415921001fe19087649604467b6ec8))
+
 ## [1.18.11](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-search-v1.18.10...@s-hirano-ist/s-search-v1.18.11) (2026-06-05)
 
 

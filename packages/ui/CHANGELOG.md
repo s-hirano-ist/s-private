@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.11](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.19.10...@s-hirano-ist/s-ui-v1.19.11) (2026-06-13)
+
+
+### Documentation
+
+* restore theme after nonce story ([55f73a7](https://github.com/s-hirano-ist/s-private/commit/55f73a7bcc104fd55fd0f729ae16d4aec2deefe6))
+
 ## [1.19.10](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.19.9...@s-hirano-ist/s-ui-v1.19.10) (2026-06-05)
 
 
