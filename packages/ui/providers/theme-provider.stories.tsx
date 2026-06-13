@@ -100,17 +100,26 @@ export const Default: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const styleObserver = observeAddedStyleElements();
+		const toggle = canvas.getByRole("button", { name: "Toggle theme" });
+		const initialThemeClassName = document.documentElement.className;
 
-		await userEvent.click(canvas.getByRole("button", { name: "Toggle theme" }));
+		try {
+			await userEvent.click(toggle);
 
-		await waitFor(() =>
-			expect(
-				styleObserver.styles.some(
-					(style) => style.nonce === STORYBOOK_CSP_NONCE,
-				),
-			).toBe(true),
-		);
-		styleObserver.disconnect();
+			await waitFor(() =>
+				expect(
+					styleObserver.styles.some(
+						(style) => style.nonce === STORYBOOK_CSP_NONCE,
+					),
+				).toBe(true),
+			);
+		} finally {
+			styleObserver.disconnect();
+			await userEvent.click(toggle);
+			await waitFor(() =>
+				expect(document.documentElement.className).toBe(initialThemeClassName),
+			);
+		}
 	},
 };
 
