@@ -140,7 +140,7 @@ import { ArticlesStackLoader } from "@/loaders/articles";
 
 ### 自動依存関係管理（Renovate + Dependabot）
 - **役割分担**:
-  - **Renovate**: npm（pnpm）/ mise / nvm / 四半期の lockFileMaintenance。npm を Renovate が担当するのは、Dependabot のサポート上限が pnpm v10 で、本リポジトリの `packageManager`（pnpm@11）では npm ジョブが `does not support your pnpm version` で失敗するため（pnpm v11 サポートは未対応: dependabot/dependabot-core#14794）。
+  - **Renovate**: npm（pnpm）/ mise / nvm。npm を Renovate が担当するのは、Dependabot のサポート上限が pnpm v10 で、本リポジトリの `packageManager`（pnpm@11）では npm ジョブが `does not support your pnpm version` で失敗するため（pnpm v11 サポートは未対応: dependabot/dependabot-core#14794）。依存バージョンは完全固定され、通常の更新PRでlockfileも更新されるため、推移依存だけを一括再解決する `lockFileMaintenance` は無効。
   - **Dependabot**: pnpm 非依存の github-actions / docker-compose。低リスク更新は `dependabot-auto-merge.yaml` で auto-merge。
 - **スケジュール**: Renovate は週次（月曜日11時（JST）前）、Dependabot は日次（09:00 JST）。
 - **脆弱性アラート**: セキュリティ問題の自動PR（`security`ラベル付き、Renovate）
