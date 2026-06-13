@@ -1207,38 +1207,48 @@ updateTag("categories"); // グローバルカテゴリ一覧
 updateTag(buildCategoriesCacheTag(userId)); // ユーザー固有カテゴリ一覧
 ```
 
-### 使用例（cacheTag）
+### 使用例（unstable_cache）
 
 ```typescript
 // get-articles.ts
-import { cacheTag } from "next/cache";
+import { unstable_cache } from "next/cache";
 import {
   buildContentCacheTag,
-  buildCountCacheTag,
   buildPaginatedContentCacheTag,
   buildCategoriesCacheTag,
 } from "@/infrastructures/shared/cache/cache-tag-builder";
 
-// データフェッチ時にキャッシュタグを設定
-export const _getArticles = async (currentCount: number, userId: UserId, status: Status) => {
-  "use cache";
-  cacheTag(
-    buildContentCacheTag("articles", status, userId),
-    buildPaginatedContentCacheTag("articles", status, userId, currentCount),
-  );
-  // ...
-};
+const getArticlesCached = async (
+  currentCount: number,
+  userId: UserId,
+  status: Status,
+) =>
+  unstable_cache(
+    async () => {
+      // ...
+    },
+    ["articles", "list", userId, status, String(currentCount)],
+    {
+      tags: [
+        buildContentCacheTag("articles", status, userId),
+        buildPaginatedContentCacheTag("articles", status, userId, currentCount),
+      ],
+    },
+  )();
 
-const _getCategories = async (userId: UserId) => {
-  "use cache";
-  cacheTag("categories", buildCategoriesCacheTag(userId));
-  // ...
-};
+const getCategoriesCached = async (userId: UserId) =>
+  unstable_cache(
+    async () => {
+      // ...
+    },
+    ["articles", "categories", userId],
+    { tags: ["categories", buildCategoriesCacheTag(userId)] },
+  )();
 ```
 
 ### 注意事項
 
-- **必ずビルダー関数を使用**: `cacheTag()`と`updateTag()`で同じビルダー関数を使用し、タグの一貫性を保証
+- **必ずビルダー関数を使用**: `unstable_cache()`の`tags`と`updateTag()`で同じビルダー関数を使用し、タグの一貫性を保証
 - タグはユーザーIDを含めてマルチテナント分離を維持
 - ステータス変更時は両方のステータスのキャッシュを無効化
 - カテゴリ等の関連データも忘れずに無効化
@@ -1396,13 +1406,13 @@ export async function batchResetCore(deps: BatchResetDeps): Promise<ServerAction
 
 ## Data Fetching Pattern
 
-`"use cache"`ディレクティブとReact `cache()`を使用したデータフェッチパターン。
+`unstable_cache()`とReact `cache()`を使用したデータフェッチパターン。
 
 ### 実装例
 
 ```typescript
 // app/src/application-services/articles/get-articles.ts
-import { cacheTag } from "next/cache";
+import { unstable_cache } from "next/cache";
 import { cache } from "react";
 import { getSelfId } from "@/common/auth/session";
 import {
@@ -1410,34 +1420,37 @@ import {
   buildPaginatedContentCacheTag,
 } from "@/infrastructures/shared/cache/cache-tag-builder";
 
-// 内部実装: "use cache"でキャッシュ
-export const _getArticles = async (
+// 内部実装: unstable_cacheでリクエスト間キャッシュ
+const getArticlesCached = async (
   currentCount: number,
   userId: UserId,
   status: Status,
-): Promise<LinkCardStackInitialData> => {
-  "use cache";
-  cacheTag(
-    buildContentCacheTag("articles", status, userId),
-    buildPaginatedContentCacheTag("articles", status, userId, currentCount),
-  );
+) =>
+  unstable_cache(
+    async (): Promise<LinkCardStackInitialData> => {
+      const articles = await articlesQueryRepository.findMany(userId, status, {
+        skip: currentCount,
+        take: PAGE_SIZE,
+        orderBy: { createdAt: "desc" },
+      });
 
-  const articles = await articlesQueryRepository.findMany(userId, status, {
-    skip: currentCount,
-    take: PAGE_SIZE,
-    orderBy: { createdAt: "desc" },
-  });
-
-  const totalCount = await _getArticlesCount(userId, status);
-
-  return { data: articles.map(transformToDTO), totalCount };
-};
+      const totalCount = await getArticlesCountCached(userId, status);
+      return { data: articles.map(transformToDTO), totalCount };
+    },
+    ["articles", "list", userId, status, String(currentCount)],
+    {
+      tags: [
+        buildContentCacheTag("articles", status, userId),
+        buildPaginatedContentCacheTag("articles", status, userId, currentCount),
+      ],
+    },
+  )();
 
 // 公開関数: cache()でリクエストレベル重複排除
 export const getExportedArticles: GetPaginatedData<LinkCardStackInitialData> =
   cache(async (currentCount: number) => {
     const userId = await getSelfId();
-    return _getArticles(currentCount, userId, makeExportedStatus().status);
+    return getArticlesCached(currentCount, userId, makeExportedStatus().status);
   });
 ```
 
@@ -1445,36 +1458,38 @@ export const getExportedArticles: GetPaginatedData<LinkCardStackInitialData> =
 
 | 層 | 技術 | 役割 |
 |---|------|------|
-| Next.js | `"use cache"` + `cacheTag()` | ビルド/リクエスト間キャッシュ |
+| Next.js | `unstable_cache()` + tags | リクエスト間キャッシュ |
 | React | `cache()` | リクエスト内重複排除（同一リクエストで複数回呼ばれても1回のみ実行） |
 
-### `cache()` と `"use cache"` の使い分け
+### `cache()` と `unstable_cache()` の使い分け
 
-| 観点 | `cache()` (React) | `"use cache"` (Next.js) |
+| 観点 | `cache()` (React) | `unstable_cache()` (Next.js) |
 |------|-------------------|-------------------------|
 | **スコープ** | 単一リクエスト内 | リクエスト間（永続的） |
-| **用途** | 同一レンダリングツリー内での重複排除 | ビルド時/ISR/動的キャッシュ |
+| **用途** | 同一レンダリングツリー内での重複排除 | DBクエリ結果などの動的キャッシュ |
 | **無効化** | リクエスト終了で自動消滅 | `updateTag()` (Server Action) / `revalidateTag()` (Route Handler) |
-| **認証データ** | 適切（リクエストスコープ） | 注意が必要（`cacheTag`でユーザー分離） |
+| **認証データ** | 適切（リクエストスコープ） | キーとタグの両方でユーザー分離が必要 |
 
 **判断基準:**
 1. **同一リクエスト内で複数回呼ばれる可能性がある** → `cache()` でラップ
-2. **リクエスト間でキャッシュしたい** → `"use cache"` ディレクティブ
-3. **両方の恩恵を受けたい** → 内部関数に `"use cache"`、公開関数を `cache()` でラップ（本コードベースの標準パターン）
+2. **リクエスト間でキャッシュしたい** → `unstable_cache()` で明示的なキーとタグを設定
+3. **両方の恩恵を受けたい** → 内部関数で`unstable_cache()`を呼び、公開関数を`cache()`でラップ（本コードベースの標準パターン）
 
 ```typescript
 // 推奨パターン: 両方を組み合わせ + ビルダー関数使用
 import { buildContentCacheTag } from "@/infrastructures/shared/cache/cache-tag-builder";
+import { unstable_cache } from "next/cache";
 
-const _getData = async (userId: UserId, status: Status) => {
-  "use cache";
-  cacheTag(buildContentCacheTag("articles", status, userId));
-  return await repository.findMany(userId, status);
-};
+const getDataCached = async (userId: UserId, status: Status) =>
+  unstable_cache(
+    () => repository.findMany(userId, status),
+    ["articles", "list", userId, status],
+    { tags: [buildContentCacheTag("articles", status, userId)] },
+  )();
 
 export const getData = cache(async () => {
   const userId = await getSelfId();
-  return _getData(userId, makeUnexportedStatus());
+  return getDataCached(userId, makeUnexportedStatus());
 });
 ```
 
@@ -1482,13 +1497,14 @@ export const getData = cache(async () => {
 
 | パターン | 例 |
 |---------|-----|
-| 内部関数 | `_getArticles`（アンダースコアプレフィックス） |
+| 内部関数 | `getArticlesCached`（`Cached`サフィックス） |
 | 公開関数 | `getExportedArticles`, `getUnexportedArticles` |
 
 ### 注意事項
 
-- 内部関数は`"use cache"`でキャッシュ、公開関数は`cache()`でラップ
-- `cacheTag()`で複数タグを設定し、柔軟な無効化を可能に
+- 内部関数は`unstable_cache()`でキャッシュ、公開関数は`cache()`でラップ
+- `unstable_cache()`のキーにはドメイン、操作、ユーザーID、ステータス、ページ位置を含める
+- `tags`で複数タグを設定し、柔軟な無効化を可能に
 
 ## DTO Transform Pattern
 

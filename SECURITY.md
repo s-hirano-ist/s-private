@@ -227,6 +227,7 @@ policy is being validated.
 - Production does not allow `unsafe-inline` or `unsafe-eval` for scripts.
 - Production `style-src-elem` requires self or the request nonce.
 - `style-src-attr 'unsafe-inline'` remains enabled because UI positioning and syntax highlighting use dynamic style attributes.
+- The shared `ThemeProvider` initializes `get-nonce` during React's insertion phase so client-side styles created by `next-themes`, Radix UI, and `react-remove-scroll` receive the request nonce.
 - Preview deployments allow the additional script, connection, image, frame, style, and font sources documented for Vercel Toolbar.
 - CSP violations are reported to the configured Sentry reporting endpoint through `report-uri` and `Report-To`.
 

@@ -1,5 +1,7 @@
 import { searchContentFromClient } from "@/application-services/search/search-content-from-client";
+import { resolveContentSecurityPolicyNonce } from "@/common/security/content-security-policy-nonce";
 import { Footer } from "@/components/common/layouts/nav/footer";
+import { env } from "@/env";
 import { routing } from "@/infrastructures/i18n/routing";
 import Loading from "@s-hirano-ist/s-ui/display/loading";
 import { ThemeProvider } from "@s-hirano-ist/s-ui/providers/theme-provider";
@@ -25,7 +27,10 @@ async function LocaleLayoutContent({ children, params }: Params) {
 	}
 
 	const messages = await getMessages();
-	const nonce = (await headers()).get("x-nonce") ?? undefined;
+	const nonce = resolveContentSecurityPolicyNonce(
+		(await headers()).get("x-nonce"),
+		env.NODE_ENV === "production",
+	);
 
 	return (
 		<NextIntlClientProvider messages={messages}>

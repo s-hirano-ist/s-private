@@ -8,6 +8,7 @@ import { ThemeProvider } from "../packages/ui/providers/theme-provider";
 import { Toaster } from "../packages/ui/ui/sonner";
 
 const messages = { en: enMessages, ja: jaMessages };
+const STORYBOOK_CSP_NONCE = "storybook-csp-nonce";
 
 const preview = {
 	tags: ["autodocs", "a11y-test"],
@@ -27,7 +28,9 @@ const preview = {
 				<ThemeProvider
 					attribute="class"
 					defaultTheme="light"
+					disableTransitionOnChange
 					enableSystem={false}
+					nonce={STORYBOOK_CSP_NONCE}
 				>
 					<Toaster />
 					<div className="w-96">

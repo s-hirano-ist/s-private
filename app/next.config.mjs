@@ -24,7 +24,6 @@ const nextConfig = {
 			dynamic: 0,
 			static: 180,
 		},
-		viewTransition: true,
 		serverActions: {
 			bodySizeLimit: "10mb",
 			allowedOrigins: ["s-hirano.com", "*.vercel.app", "localhost:3000"],

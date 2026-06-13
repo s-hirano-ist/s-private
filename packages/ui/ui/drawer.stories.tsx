@@ -12,6 +12,25 @@ import {
 	DrawerTrigger,
 } from "./drawer";
 
+const STORYBOOK_CSP_NONCE = "storybook-csp-nonce";
+
+function observeAddedStyleElements(): {
+	disconnect: () => void;
+	styles: HTMLStyleElement[];
+} {
+	const styles: HTMLStyleElement[] = [];
+	const observer = new MutationObserver((records) => {
+		for (const record of records) {
+			for (const node of record.addedNodes) {
+				if (node instanceof HTMLStyleElement) styles.push(node);
+			}
+		}
+	});
+	observer.observe(document.head, { childList: true });
+
+	return { disconnect: () => observer.disconnect(), styles };
+}
+
 const meta = {
 	component: Drawer,
 	parameters: { layout: "centered" },
@@ -43,6 +62,7 @@ export const Default: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const body = within(document.body);
+		const styleObserver = observeAddedStyleElements();
 
 		const trigger = canvas.getByRole("button", { name: "Open Drawer" });
 		await userEvent.click(trigger);
@@ -53,6 +73,17 @@ export const Default: Story = {
 		await expect(
 			body.getByText("This is the drawer description providing more context."),
 		).toBeInTheDocument();
+		await new Promise<void>((resolve) => {
+			requestAnimationFrame(() => {
+				requestAnimationFrame(() => resolve());
+			});
+		});
+		expect(
+			styleObserver.styles.every(
+				(style) => style.nonce === STORYBOOK_CSP_NONCE,
+			),
+		).toBe(true);
+		styleObserver.disconnect();
 
 		const closeButton = body.getByRole("button", { name: "Close" });
 		await userEvent.click(closeButton);

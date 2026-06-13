@@ -1,11 +1,45 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { useTheme } from "next-themes";
+import { expect, userEvent, waitFor, within } from "storybook/test";
 import { ThemeProvider } from "./theme-provider";
+
+const STORYBOOK_CSP_NONCE = "storybook-csp-nonce";
+
+function observeAddedStyleElements(): {
+	disconnect: () => void;
+	styles: HTMLStyleElement[];
+} {
+	const styles: HTMLStyleElement[] = [];
+	const observer = new MutationObserver((records) => {
+		for (const record of records) {
+			for (const node of record.addedNodes) {
+				if (node instanceof HTMLStyleElement) styles.push(node);
+			}
+		}
+	});
+	observer.observe(document.head, { childList: true });
+
+	return { disconnect: () => observer.disconnect(), styles };
+}
 
 type ThemeProviderWrapperProps = {
 	theme?: string;
 	enableSystem?: boolean;
 	children?: React.ReactNode;
 };
+
+function ThemeToggle() {
+	const { resolvedTheme, setTheme } = useTheme();
+
+	return (
+		<button
+			onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+			type="button"
+		>
+			Toggle theme
+		</button>
+	);
+}
 
 function ThemeProviderWrapper({
 	theme = "light",
@@ -16,7 +50,9 @@ function ThemeProviderWrapper({
 		<ThemeProvider
 			attribute="class"
 			defaultTheme={theme}
+			disableTransitionOnChange
 			enableSystem={enableSystem}
+			nonce={STORYBOOK_CSP_NONCE}
 		>
 			{children || (
 				<div className="space-y-4 p-6">
@@ -35,6 +71,7 @@ function ThemeProviderWrapper({
 							Secondary Color
 						</div>
 					</div>
+					<ThemeToggle />
 				</div>
 			)}
 		</ThemeProvider>
@@ -59,6 +96,30 @@ export const Default: Story = {
 	args: {
 		theme: "light",
 		enableSystem: true,
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const styleObserver = observeAddedStyleElements();
+		const toggle = canvas.getByRole("button", { name: "Toggle theme" });
+		const initialThemeClassName = document.documentElement.className;
+
+		try {
+			await userEvent.click(toggle);
+
+			await waitFor(() =>
+				expect(
+					styleObserver.styles.some(
+						(style) => style.nonce === STORYBOOK_CSP_NONCE,
+					),
+				).toBe(true),
+			);
+		} finally {
+			styleObserver.disconnect();
+			await userEvent.click(toggle);
+			await waitFor(() =>
+				expect(document.documentElement.className).toBe(initialThemeClassName),
+			);
+		}
 	},
 };
 
