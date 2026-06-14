@@ -1,6 +1,4 @@
 @import "tailwindcss";
-/* Keep Sonner styles in the static stylesheet so nonce CSP never sees its runtime <style>. */
-@import "sonner/dist/styles.css";
 @import "./theme.css";
 
 @config "./tailwind.config.ts";

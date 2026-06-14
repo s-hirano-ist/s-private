@@ -9,11 +9,11 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@s-hirano-ist/s-ui/ui/dialog";
+import { toast } from "@s-hirano-ist/s-ui/ui/toast";
 import { haptic } from "@s-hirano-ist/s-ui/utils/haptic";
 import { TrashIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useReducer, useTransition } from "react";
-import { toast } from "sonner";
 
 type Props = {
 	deleteAction: DeleteAction;

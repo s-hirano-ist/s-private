@@ -3,8 +3,8 @@ import type { ServerAction } from "@/common/types";
 import { FormInput } from "@s-hirano-ist/s-ui/forms/fields/form-input";
 import { FormTextarea } from "@s-hirano-ist/s-ui/forms/fields/form-textarea";
 import { GenericFormWrapper } from "@s-hirano-ist/s-ui/forms/generic-form-wrapper";
+import { toast } from "@s-hirano-ist/s-ui/ui/toast";
 import { useTranslations } from "next-intl";
-import { toast } from "sonner";
 
 type Props = {
 	addNote: (formData: FormData) => Promise<ServerAction>;

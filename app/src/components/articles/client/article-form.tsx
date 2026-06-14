@@ -5,10 +5,10 @@ import { FormInput } from "@s-hirano-ist/s-ui/forms/fields/form-input";
 import { FormInputWithButton } from "@s-hirano-ist/s-ui/forms/fields/form-input-with-button";
 import { FormTextarea } from "@s-hirano-ist/s-ui/forms/fields/form-textarea";
 import { GenericFormWrapper } from "@s-hirano-ist/s-ui/forms/generic-form-wrapper";
+import { toast } from "@s-hirano-ist/s-ui/ui/toast";
 import { ClipboardPasteIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRef } from "react";
-import { toast } from "sonner";
 
 export type ArticleFormData = { id: string; name: string }[];
 
