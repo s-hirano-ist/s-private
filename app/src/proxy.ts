@@ -6,13 +6,12 @@ import { buildContentSecurityPolicy } from "./infrastructures/security/content-s
 
 const handleI18nRouting = createMiddleware(routing);
 const CSP_HEADER = "Content-Security-Policy";
-const CSP_REPORT_ONLY_HEADER = "Content-Security-Policy-Report-Only";
 
 function addCspResponseHeader(
 	response: NextResponse,
 	contentSecurityPolicy: string,
 ): NextResponse {
-	response.headers.set(CSP_REPORT_ONLY_HEADER, contentSecurityPolicy);
+	response.headers.set(CSP_HEADER, contentSecurityPolicy);
 	return response;
 }
 
@@ -44,7 +43,6 @@ export default function proxy(request: NextRequest) {
 	const requestHeaders = new Headers(request.headers);
 	requestHeaders.set("x-nonce", nonce);
 	// Next.js reads the enforced request header to apply the nonce during SSR.
-	// Only the Report-Only variant is exposed to the browser during rollout.
 	requestHeaders.set(CSP_HEADER, contentSecurityPolicy);
 	const requestWithCsp = new NextRequest(request, {
 		headers: requestHeaders,

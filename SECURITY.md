@@ -218,8 +218,7 @@ pnpm i --frozen-lockfile
 The application uses a request-scoped nonce generated in `app/src/proxy.ts`.
 The nonce is forwarded to server rendering through the internal `x-nonce`
 header and an upstream `Content-Security-Policy` request header. Browser
-responses currently receive `Content-Security-Policy-Report-Only` while the
-policy is being validated.
+responses receive the enforced `Content-Security-Policy` header.
 
 ### Policy
 
@@ -231,15 +230,12 @@ policy is being validated.
 - Preview deployments allow the additional script, connection, image, frame, style, and font sources documented for Vercel Toolbar.
 - CSP violations are reported to the configured Sentry reporting endpoint through `report-uri` and `Report-To`.
 
-### Enforcement rollout
+### Enforcement verification
 
-Before replacing `Content-Security-Policy-Report-Only` with
-`Content-Security-Policy`:
-
-1. Exercise authentication, locale navigation, theme switching, Toast, Dialog, Drawer, Lightbox, and Markdown code rendering in Preview.
-2. Confirm that Sentry contains no unexplained violations from supported browsers.
-3. Verify production Report-Only telemetry separately because Preview intentionally has a broader Toolbar policy.
-4. Change only the response header name in Proxy; keep the upstream request header enforced so Next.js continues to attach nonces during SSR.
+Exercise authentication, locale navigation, theme switching, Toast, Dialog,
+Drawer, Lightbox, and Markdown code rendering in Preview after policy changes.
+Confirm that Sentry contains no unexplained violations from supported browsers.
+Preview intentionally has a broader Vercel Toolbar policy than Production.
 
 Cache Components / PPR are intentionally disabled because their reusable static
 HTML shell cannot carry a fresh nonce for every request. Database query results
