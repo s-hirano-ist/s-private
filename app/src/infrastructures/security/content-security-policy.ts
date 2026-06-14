@@ -1,4 +1,8 @@
 const CSP_REPORTING_GROUP = "csp-endpoint";
+// react-remove-scroll injects this deterministic zero-width scrollbar rule when
+// Radix dialogs open on platforms with overlay scrollbars.
+const RADIX_DIALOG_SCROLL_LOCK_STYLE_HASH =
+	"'sha256-nzTgYzXYDNe6BAHiiI7NNlfK8n/auuOAhh2t92YvuXo='";
 
 type ContentSecurityPolicyOptions = {
 	isDevelopment: boolean;
@@ -45,7 +49,7 @@ export function buildContentSecurityPolicy({
 				"'unsafe-inline'",
 				...(allowsVercelToolbar ? ["https://vercel.live"] : []),
 			]
-		: ["'self'", `'nonce-${nonce}'`];
+		: ["'self'", `'nonce-${nonce}'`, RADIX_DIALOG_SCROLL_LOCK_STYLE_HASH];
 	const imageSources = [
 		"'self'",
 		"blob:",
