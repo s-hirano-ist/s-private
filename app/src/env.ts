@@ -42,6 +42,8 @@ export const env = createEnv({
 			.default("https://api.pushover.net/1/messages.json"),
 		PUSHOVER_USER_KEY: z.string(),
 		PUSHOVER_APP_TOKEN: z.string(),
+		/** Shared bearer token used only by trusted batch scripts to invalidate Next.js caches. */
+		CACHE_INVALIDATION_SECRET: z.string().optional(),
 		/** Generate by `openssl rand -base64 32`. Required in production. Shared secret for Better Auth. */
 		AUTH_SECRET:
 			process.env.NODE_ENV === "production"
@@ -88,6 +90,7 @@ export const env = createEnv({
 		PUSHOVER_URL: process.env.PUSHOVER_URL,
 		PUSHOVER_USER_KEY: process.env.PUSHOVER_USER_KEY,
 		PUSHOVER_APP_TOKEN: process.env.PUSHOVER_APP_TOKEN,
+		CACHE_INVALIDATION_SECRET: process.env.CACHE_INVALIDATION_SECRET,
 		AUTH_SECRET: process.env.AUTH_SECRET,
 		BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
 		VERCEL: process.env.VERCEL,

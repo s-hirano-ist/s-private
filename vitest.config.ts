@@ -77,6 +77,14 @@ export default defineConfig({
 					},
 				},
 			},
+			// External batch scripts and their infrastructure clients
+			{
+				test: {
+					name: "scripts",
+					root: "./packages/scripts",
+					include: ["./src/**/*.test.?(c|m)[jt]s?(x)"],
+				},
+			},
 			// Benchmarks (Node environment, used by `vitest bench --project bench`)
 			{
 				test: {

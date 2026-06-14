@@ -6,9 +6,12 @@ import {
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
 import { createArticlesCommandRepository } from "./infrastructures/articles-command-repository.ts";
+import { invalidateContentCache } from "./infrastructures/cache-invalidation-client.ts";
 
 async function main() {
 	const env = {
+		CACHE_INVALIDATION_SECRET: process.env.CACHE_INVALIDATION_SECRET,
+		CACHE_INVALIDATION_URL: process.env.CACHE_INVALIDATION_URL,
 		DATABASE_URL: process.env.DATABASE_URL,
 		PUSHOVER_URL: process.env.PUSHOVER_URL,
 		PUSHOVER_USER_KEY: process.env.PUSHOVER_USER_KEY,
@@ -40,6 +43,17 @@ async function main() {
 
 		// Execute batch reset through domain service
 		const result = await batchService.resetArticles(userId);
+
+		// The database transaction has committed at this point. A cache failure is
+		// treated as a failed batch run so it is logged and sent to Pushover.
+		await invalidateContentCache(
+			{
+				url: env.CACHE_INVALIDATION_URL ?? "",
+				secret: env.CACHE_INVALIDATION_SECRET ?? "",
+			},
+			"articles",
+			userId,
+		);
 
 		console.log(
 			`💾 LAST_UPDATEDの記事をEXPORTEDに変更しました（${result.finalized.count}件）`,
