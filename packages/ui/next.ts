@@ -16,4 +16,4 @@ export * from "./providers/theme-provider";
 
 // UI Components (Next.js dependent)
 export * from "./ui/pagination";
-export * from "./ui/sonner";
+export * from "./ui/toast";

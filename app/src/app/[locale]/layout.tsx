@@ -5,7 +5,7 @@ import { env } from "@/env";
 import { routing } from "@/infrastructures/i18n/routing";
 import Loading from "@s-hirano-ist/s-ui/display/loading";
 import { ThemeProvider } from "@s-hirano-ist/s-ui/providers/theme-provider";
-import { Toaster } from "@s-hirano-ist/s-ui/ui/sonner";
+import { Toaster } from "@s-hirano-ist/s-ui/ui/toast";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { headers } from "next/headers";

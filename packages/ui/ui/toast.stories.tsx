@@ -1,17 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { toast } from "sonner";
 import { Button } from "./button";
-import { Toaster as Sonner } from "./sonner";
+import { toast, Toaster } from "./toast";
 
 const meta = {
-	component: Sonner,
-} satisfies Meta<typeof Sonner>;
+	component: Toaster,
+} satisfies Meta<typeof Toaster>;
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-function SonnerExample() {
+function ToastExample() {
 	const handleToast = () => {
 		toast("sample description");
 	};
@@ -20,5 +19,5 @@ function SonnerExample() {
 }
 
 export const Default: Story = {
-	render: () => <SonnerExample />,
+	render: () => <ToastExample />,
 };
