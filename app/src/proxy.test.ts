@@ -58,16 +58,18 @@ describe("proxy CSP", () => {
 		expect(secondNonce).toBeTruthy();
 		expect(firstNonce).not.toBe(secondNonce);
 		expect(upstreamPolicy).toContain(`'nonce-${firstNonce}'`);
-		expect(firstResponse.headers.get("content-security-policy")).toBeNull();
+		expect(firstResponse.headers.get("content-security-policy")).toBe(
+			upstreamPolicy,
+		);
+		expect(secondResponse.headers.get("content-security-policy")).toContain(
+			`'nonce-${secondNonce}'`,
+		);
 		expect(
 			firstResponse.headers.get("content-security-policy-report-only"),
-		).toBe(upstreamPolicy);
-		expect(
-			secondResponse.headers.get("content-security-policy-report-only"),
-		).toContain(`'nonce-${secondNonce}'`);
+		).toBeNull();
 	});
 
-	test("adds Report-Only CSP to unauthenticated redirects", () => {
+	test("adds enforced CSP to unauthenticated redirects", () => {
 		vi.mocked(getSessionCookie).mockReturnValue(null);
 
 		const response = proxy(new NextRequest("https://example.com/ja/articles"));
@@ -76,9 +78,12 @@ describe("proxy CSP", () => {
 		expect(response.headers.get("location")).toBe(
 			"https://example.com/api/sign-in",
 		);
+		expect(response.headers.get("content-security-policy")).toContain(
+			"'nonce-",
+		);
 		expect(
 			response.headers.get("content-security-policy-report-only"),
-		).toContain("'nonce-");
+		).toBeNull();
 	});
 
 	test("excludes API and static asset routes from Proxy", () => {
