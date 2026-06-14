@@ -1,0 +1,36 @@
+diff --git a/dist/index.js b/dist/index.js
+index bd21e898f431298b70e941833c78819a1eb53a36..48ac8ab5555b80ce15a28b45f7defdebac4a38e9 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -1,12 +1,5 @@
+ 'use client';
+-function __insertCSS(code) {
+-  if (!code || typeof document == 'undefined') return
+-  let head = document.head || document.getElementsByTagName('head')[0]
+-  let style = document.createElement('style')
+-  style.type = 'text/css'
+-  head.appendChild(style)
+-  ;style.styleSheet ? (style.styleSheet.cssText = code) : style.appendChild(document.createTextNode(code))
+-}
++function __insertCSS() {}
+ 
+ Object.defineProperty(exports, '__esModule', { value: true });
+ 
+diff --git a/dist/index.mjs b/dist/index.mjs
+index d0c7a5a1fa1ed8b19c27bea968bb404f2437a07e..8ee3a6df12d878b69b71ff38e649a4f616bc984a 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -1,12 +1,5 @@
+ 'use client';
+-function __insertCSS(code) {
+-  if (!code || typeof document == 'undefined') return
+-  let head = document.head || document.getElementsByTagName('head')[0]
+-  let style = document.createElement('style')
+-  style.type = 'text/css'
+-  head.appendChild(style)
+-  ;style.styleSheet ? (style.styleSheet.cssText = code) : style.appendChild(document.createTextNode(code))
+-}
++function __insertCSS() {}
+ 
+ import React from 'react';
+ import ReactDOM from 'react-dom';
