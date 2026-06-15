@@ -1,17 +1,25 @@
 "use client";
 import type { DeleteAction } from "@/common/types";
+import type { LightboxExternalProps } from "yet-another-react-lightbox";
 import { DeleteButtonWithModal } from "@/components/common/forms/actions/delete-button-with-modal";
 import { StatusCodeView } from "@s-hirano-ist/s-ui/display/status/status-code-view";
 import { haptic } from "@s-hirano-ist/s-ui/utils/haptic";
 import { useTranslations } from "next-intl";
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import "yet-another-react-lightbox/styles.css";
 import { useState } from "react";
 
-const Lightbox = dynamic(() => import("yet-another-react-lightbox"), {
-	ssr: false,
-});
+type LightboxComponent = React.ComponentType<LightboxExternalProps>;
+
+let lightboxPromise: Promise<LightboxComponent> | undefined;
+
+function loadLightbox(): Promise<LightboxComponent> {
+	lightboxPromise ??= import("yet-another-react-lightbox").then(
+		(module) => module.default,
+	);
+
+	return lightboxPromise;
+}
 
 export type ImageData = {
 	id?: string;
@@ -89,6 +97,8 @@ type ImageStackProps = {
 export function ImageStack({ data }: ImageStackProps) {
 	const [open, setOpen] = useState(false);
 	const [index, setIndex] = useState(0);
+	const [lightboxComponent, setLightboxComponent] =
+		useState<LightboxComponent>();
 	const t = useTranslations("statusCode");
 
 	if (data.length === 0)
@@ -101,23 +111,29 @@ export function ImageStack({ data }: ImageStackProps) {
 		alt: `Image ${image.originalPath}`,
 	}));
 
+	const Lightbox = lightboxComponent;
+
 	const handleImageClick = (imageIndex: number) => {
 		haptic();
 		setIndex(imageIndex);
-		setOpen(true);
+		void loadLightbox().then((component) => {
+			setLightboxComponent(() => component);
+			setOpen(true);
+			return null;
+		});
 	};
 
 	return (
 		<>
 			<ImageStackGrid data={data} onImageClick={handleImageClick} />
-			{open && (
+			{open && Lightbox ? (
 				<Lightbox
 					close={() => setOpen(false)}
 					index={index}
 					open={open}
 					slides={slides}
 				/>
-			)}
+			) : null}
 		</>
 	);
 }
@@ -133,6 +149,8 @@ export function EditableImageStack({
 }: EditableImageStackProps) {
 	const [open, setOpen] = useState(false);
 	const [index, setIndex] = useState(0);
+	const [lightboxComponent, setLightboxComponent] =
+		useState<LightboxComponent>();
 	const t = useTranslations("statusCode");
 
 	if (data.length === 0)
@@ -145,6 +163,8 @@ export function EditableImageStack({
 		alt: `Image ${image.originalPath}`,
 	}));
 
+	const Lightbox = lightboxComponent;
+
 	return (
 		<>
 			<ImageStackGrid
@@ -152,7 +172,11 @@ export function EditableImageStack({
 				onImageClick={(i) => {
 					setIndex(i);
 					haptic();
-					setOpen(true);
+					void loadLightbox().then((component) => {
+						setLightboxComponent(() => component);
+						setOpen(true);
+						return null;
+					});
 				}}
 				renderOverlay={(image) =>
 					image.id ? (
@@ -164,14 +188,14 @@ export function EditableImageStack({
 					) : null
 				}
 			/>
-			{open && (
+			{open && Lightbox ? (
 				<Lightbox
 					close={() => setOpen(false)}
 					index={index}
 					open={open}
 					slides={slides}
 				/>
-			)}
+			) : null}
 		</>
 	);
 }
