@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.25.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.24.1...@s-hirano-ist/s-scripts-v1.25.0) (2026-06-15)
+
+
+### Features
+
+* invalidate content caches after batch status updates ([c18b57a](https://github.com/s-hirano-ist/s-private/commit/c18b57a3c999ea9efa35a8b8db916ef1713f553c))
+* invalidate content caches after batch status updates ([81c80e0](https://github.com/s-hirano-ist/s-private/commit/81c80e077623c51a6202d9c15176250bf4c72e2b))
+
+
+### Maintenance
+
+* **deps:** update non-major ([97dcf5d](https://github.com/s-hirano-ist/s-private/commit/97dcf5d3c321e642cfe60101332652c46b8728d5))
+* **deps:** update non-major ([809f566](https://github.com/s-hirano-ist/s-private/commit/809f566800e6332470dee8ebc8c45410a4a4c2c0))
+
 ## [1.24.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.24.0...@s-hirano-ist/s-scripts-v1.24.1) (2026-06-13)
 
 
