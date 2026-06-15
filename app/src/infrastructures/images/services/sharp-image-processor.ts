@@ -12,7 +12,17 @@ import type {
 	IImageProcessor,
 	ImageMetadata,
 } from "@s-hirano-ist/s-core/images/services/image-processor.interface";
-import sharp from "sharp";
+import type sharp from "sharp";
+
+type SharpFactory = typeof sharp;
+
+let sharpFactoryPromise: Promise<SharpFactory> | undefined;
+
+async function loadSharp(): Promise<SharpFactory> {
+	sharpFactoryPromise ??= import("sharp").then((module) => module.default);
+
+	return sharpFactoryPromise;
+}
 
 /**
  * Default thumbnail width in pixels.
@@ -31,10 +41,12 @@ async function createThumbnail(
 	width: number = THUMBNAIL_WIDTH,
 	height: number = THUMBNAIL_HEIGHT,
 ): Promise<Buffer> {
+	const sharp = await loadSharp();
 	return await sharp(buffer).resize(width, height).toBuffer();
 }
 
 async function getMetadata(buffer: Buffer): Promise<ImageMetadata> {
+	const sharp = await loadSharp();
 	const metadata = await sharp(buffer).metadata();
 	return {
 		width: metadata.width,
