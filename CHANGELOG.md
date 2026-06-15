@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.11.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.10.0...s-private-v3.11.0) (2026-06-15)
+
+
+### Features
+
+* invalidate content caches after batch status updates ([c18b57a](https://github.com/s-hirano-ist/s-private/commit/c18b57a3c999ea9efa35a8b8db916ef1713f553c))
+* invalidate content caches after batch status updates ([81c80e0](https://github.com/s-hirano-ist/s-private/commit/81c80e077623c51a6202d9c15176250bf4c72e2b))
+
+
+### Bug Fixes
+
+* allow Radix dialog scroll lock style ([1f4640f](https://github.com/s-hirano-ist/s-private/commit/1f4640fc9d10d3e459288da19bee29596039eb11))
+* allow Radix dialog scroll lock style in CSP ([c6c04bc](https://github.com/s-hirano-ist/s-private/commit/c6c04bcd1893989df930c1269697ea7d57a90222))
+* avoid sonner inline style CSP violation ([edb5b81](https://github.com/s-hirano-ist/s-private/commit/edb5b8166b9fd8f89f874bcb99fc8b807e9a55b2))
+* avoid Sonner inline style CSP violation ([2eb2866](https://github.com/s-hirano-ist/s-private/commit/2eb286657c14681f1bc8d6ecb2b2c160c5859c22))
+* enforce content security policy ([9fd8d8d](https://github.com/s-hirano-ist/s-private/commit/9fd8d8d50696eed3721f18ebb55a6dc31f4bfa01))
+* enforce Content Security Policy (use enforced header) ([95e8476](https://github.com/s-hirano-ist/s-private/commit/95e8476ff6d0e2ec05998d73f03b3251a00ada94))
+* update Storybook toast import ([e936738](https://github.com/s-hirano-ist/s-private/commit/e9367382bff238a2c86cabb6d362a7078e6089d2))
+
+
+### Maintenance
+
+* **deps:** update mise to v0.27.2 ([29efa94](https://github.com/s-hirano-ist/s-private/commit/29efa9422e8f851d3188f141fc30112ca249f424))
+* **deps:** update mise to v0.27.2 ([2d84d28](https://github.com/s-hirano-ist/s-private/commit/2d84d283f72e61cc4a871458c81eac7e2a247018))
+* **deps:** update non-major ([97dcf5d](https://github.com/s-hirano-ist/s-private/commit/97dcf5d3c321e642cfe60101332652c46b8728d5))
+* **deps:** update non-major ([809f566](https://github.com/s-hirano-ist/s-private/commit/809f566800e6332470dee8ebc8c45410a4a4c2c0))
+* replace sonner with CSP-safe toast ([e54c1b8](https://github.com/s-hirano-ist/s-private/commit/e54c1b8c78b29209c1ec79310dfddca27aba4824))
+
 ## [3.10.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.9.0...s-private-v3.10.0) (2026-06-13)
 
 

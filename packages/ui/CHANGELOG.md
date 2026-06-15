@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.19.12](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.19.11...@s-hirano-ist/s-ui-v1.19.12) (2026-06-15)
+
+
+### Bug Fixes
+
+* avoid sonner inline style CSP violation ([edb5b81](https://github.com/s-hirano-ist/s-private/commit/edb5b8166b9fd8f89f874bcb99fc8b807e9a55b2))
+* avoid Sonner inline style CSP violation ([2eb2866](https://github.com/s-hirano-ist/s-private/commit/2eb286657c14681f1bc8d6ecb2b2c160c5859c22))
+
+
+### Maintenance
+
+* **deps:** update non-major ([97dcf5d](https://github.com/s-hirano-ist/s-private/commit/97dcf5d3c321e642cfe60101332652c46b8728d5))
+* **deps:** update non-major ([809f566](https://github.com/s-hirano-ist/s-private/commit/809f566800e6332470dee8ebc8c45410a4a4c2c0))
+* replace sonner with CSP-safe toast ([e54c1b8](https://github.com/s-hirano-ist/s-private/commit/e54c1b8c78b29209c1ec79310dfddca27aba4824))
+
 ## [1.19.11](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.19.10...@s-hirano-ist/s-ui-v1.19.11) (2026-06-13)
 
 
