@@ -39,6 +39,7 @@ export function buildContentSecurityPolicy({
 	const scriptSources = [
 		"'self'",
 		`'nonce-${nonce}'`,
+		"'strict-dynamic'",
 		...(isDevelopment ? ["'unsafe-eval'", "https://unpkg.com"] : []),
 		"https://va.vercel-scripts.com",
 		...(allowsVercelToolbar ? ["https://vercel.live"] : []),
