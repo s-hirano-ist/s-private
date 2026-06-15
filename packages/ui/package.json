@@ -129,8 +129,8 @@
 		"tailwind-variants": "3.2.2"
 	},
 	"devDependencies": {
-		"@storybook/nextjs-vite": "10.4.2",
-		"@types/react": "19.2.16",
+		"@storybook/nextjs-vite": "10.4.4",
+		"@types/react": "19.2.17",
 		"@types/react-dom": "19.2.3",
 		"@types/react-syntax-highlighter": "15.5.13",
 		"postcss": "8.5.15",
