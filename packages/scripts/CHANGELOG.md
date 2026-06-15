@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.25.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.25.0...@s-hirano-ist/s-scripts-v1.25.1) (2026-06-15)
+
+
+### Maintenance
+
+* **deps:** update non-major (devdependencies) ([5986e47](https://github.com/s-hirano-ist/s-private/commit/5986e478db2bacb571a440346659b342509cf633))
+* **deps:** update non-major (devdependencies) ([ee419ad](https://github.com/s-hirano-ist/s-private/commit/ee419ad2b10d0567e2fd908caa1a3982c5e4c8aa))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.21.2
+    * @s-hirano-ist/s-search bumped to 1.18.13
+    * @s-hirano-ist/s-storage bumped to 1.18.9
+
 ## [1.25.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.24.1...@s-hirano-ist/s-scripts-v1.25.0) (2026-06-15)
 
 
