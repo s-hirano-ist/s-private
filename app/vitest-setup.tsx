@@ -57,6 +57,7 @@ vi.mock("next/cache", () => ({
 	unstable_cache: vi.fn(
 		(callback: (...args: unknown[]) => unknown) => callback,
 	),
+	revalidateTag: vi.fn(),
 	updateTag: vi.fn(),
 }));
 

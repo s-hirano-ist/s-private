@@ -1,4 +1,4 @@
-import { updateTag } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { invalidateContentStatusCache } from "./invalidate-content-status-cache";
 
@@ -20,27 +20,47 @@ describe("invalidateContentStatusCache", () => {
 				`${domain}_EXPORTED_user`,
 				`${domain}_count_EXPORTED_user`,
 			]);
-			expect(updateTag).toHaveBeenCalledTimes(6);
-			expect(vi.mocked(updateTag).mock.calls.flat()).toEqual(tags);
+			expect(revalidateTag).toHaveBeenCalledTimes(tags.length);
+			expect(vi.mocked(revalidateTag).mock.calls).toEqual(
+				tags.map((tag) => [tag, { expire: 0 }]),
+			);
 		},
 	);
 
 	test("invalidates both sides of UNEXPORTED → LAST_UPDATED so the item disappears from Dumper", () => {
 		invalidateContentStatusCache("books", "user");
 
-		expect(updateTag).toHaveBeenCalledWith("books_UNEXPORTED_user");
-		expect(updateTag).toHaveBeenCalledWith("books_count_UNEXPORTED_user");
-		expect(updateTag).toHaveBeenCalledWith("books_LAST_UPDATED_user");
-		expect(updateTag).toHaveBeenCalledWith("books_count_LAST_UPDATED_user");
+		expect(revalidateTag).toHaveBeenCalledWith("books_UNEXPORTED_user", {
+			expire: 0,
+		});
+		expect(revalidateTag).toHaveBeenCalledWith("books_count_UNEXPORTED_user", {
+			expire: 0,
+		});
+		expect(revalidateTag).toHaveBeenCalledWith("books_LAST_UPDATED_user", {
+			expire: 0,
+		});
+		expect(revalidateTag).toHaveBeenCalledWith(
+			"books_count_LAST_UPDATED_user",
+			{ expire: 0 },
+		);
 	});
 
 	test("invalidates both sides of LAST_UPDATED → UNEXPORTED so the item reappears in Dumper", () => {
 		invalidateContentStatusCache("books", "user");
 
-		expect(updateTag).toHaveBeenCalledWith("books_LAST_UPDATED_user");
-		expect(updateTag).toHaveBeenCalledWith("books_count_LAST_UPDATED_user");
-		expect(updateTag).toHaveBeenCalledWith("books_UNEXPORTED_user");
-		expect(updateTag).toHaveBeenCalledWith("books_count_UNEXPORTED_user");
+		expect(revalidateTag).toHaveBeenCalledWith("books_LAST_UPDATED_user", {
+			expire: 0,
+		});
+		expect(revalidateTag).toHaveBeenCalledWith(
+			"books_count_LAST_UPDATED_user",
+			{ expire: 0 },
+		);
+		expect(revalidateTag).toHaveBeenCalledWith("books_UNEXPORTED_user", {
+			expire: 0,
+		});
+		expect(revalidateTag).toHaveBeenCalledWith("books_count_UNEXPORTED_user", {
+			expire: 0,
+		});
 	});
 
 	test("uses shared list tags instead of enumerating paginated tags", () => {
