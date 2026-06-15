@@ -482,7 +482,7 @@ export default function Error({ error, reset }: ErrorPageProps) {
 
 ## Nonce CSP とレンダリング
 
-本コードベースはスクリプトのインライン実行をnonceで制限する。Proxyがリクエストごとにnonceを生成し、Next.jsはリクエストの`Content-Security-Policy`からnonceを取得してframework scriptへ付与する。
+本コードベースはスクリプトのインライン実行をnonceで制限する。Proxyがリクエストごとにnonceを生成し、Next.jsはリクエストの`Content-Security-Policy`からnonceを取得してframework scriptへ付与する。i18n middlewareなど別middlewareの`NextResponse`を返す場合も、`NextResponse.next({ request: { headers } })`相当の`x-middleware-request-*` override headersを最終レスポンスへ引き継ぎ、SSR側へnonce付きCSP request headerが届く状態を維持する。
 
 nonceはリクエストごとに異なるため、静的HTMLシェルを再利用するCache Components / PPRとは両立しない。そのため`cacheComponents`は有効化せず、ページはリクエスト時に動的レンダリングする。
 

@@ -15,6 +15,23 @@ function addCspResponseHeader(
 	return response;
 }
 
+function addUpstreamRequestHeaders(
+	response: NextResponse,
+	requestHeaders: Headers,
+): NextResponse {
+	const upstreamResponse = NextResponse.next({
+		request: { headers: requestHeaders },
+	});
+
+	for (const [key, value] of upstreamResponse.headers) {
+		if (key !== "x-middleware-next" && key.startsWith("x-middleware-")) {
+			response.headers.set(key, value);
+		}
+	}
+
+	return response;
+}
+
 // Middleware gate: a lightweight session-cookie presence check (no DB hit, so it
 // stays edge-friendly and avoids importing the Better Auth server instance).
 // True session validation happens per-page via requireAuth()/getSelfId(), which
@@ -57,7 +74,10 @@ export default function proxy(request: NextRequest) {
 	}
 
 	return addCspResponseHeader(
-		handleI18nRouting(requestWithCsp),
+		addUpstreamRequestHeaders(
+			handleI18nRouting(requestWithCsp),
+			requestHeaders,
+		),
 		contentSecurityPolicy,
 	);
 }
