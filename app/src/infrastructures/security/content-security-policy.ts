@@ -3,6 +3,10 @@ const CSP_REPORTING_GROUP = "csp-endpoint";
 // Radix dialogs open on platforms with overlay scrollbars.
 const RADIX_DIALOG_SCROLL_LOCK_STYLE_HASH =
 	"'sha256-nzTgYzXYDNe6BAHiiI7NNlfK8n/auuOAhh2t92YvuXo='";
+// Next.js can emit this deterministic inline style before client nonce
+// propagation is available on error/streaming responses.
+const NEXT_INLINE_STYLE_HASH =
+	"'sha256-Wwucq8eX2r0YFymkQhDXm5hN0+FfSvI3s4JSSaqa4iw='";
 
 type ContentSecurityPolicyOptions = {
 	isDevelopment: boolean;
@@ -39,8 +43,16 @@ export function buildContentSecurityPolicy({
 	const scriptSources = [
 		"'self'",
 		`'nonce-${nonce}'`,
-		"'strict-dynamic'",
-		...(isDevelopment ? ["'unsafe-eval'", "https://unpkg.com"] : []),
+		...(isDevelopment ? ["'unsafe-eval'"] : []),
+	];
+	const scriptElementSources = [
+		"'self'",
+		// Next.js 16/Vercel can emit parser-inserted framework scripts without
+		// a nonce during streamed/error responses. Keep script-src itself nonce
+		// scoped, but allow script elements so the app can recover instead of
+		// failing closed with a 500 page that cannot hydrate.
+		"'unsafe-inline'",
+		...(isDevelopment ? ["https://unpkg.com"] : []),
 		"https://va.vercel-scripts.com",
 		...(allowsVercelToolbar ? ["https://vercel.live"] : []),
 	];
@@ -50,7 +62,12 @@ export function buildContentSecurityPolicy({
 				"'unsafe-inline'",
 				...(allowsVercelToolbar ? ["https://vercel.live"] : []),
 			]
-		: ["'self'", `'nonce-${nonce}'`, RADIX_DIALOG_SCROLL_LOCK_STYLE_HASH];
+		: [
+				"'self'",
+				`'nonce-${nonce}'`,
+				RADIX_DIALOG_SCROLL_LOCK_STYLE_HASH,
+				NEXT_INLINE_STYLE_HASH,
+			];
 	const imageSources = [
 		"'self'",
 		"blob:",
@@ -79,6 +96,7 @@ export function buildContentSecurityPolicy({
 	return compactDirectives([
 		"default-src 'self'",
 		`script-src ${scriptSources.join(" ")}`,
+		`script-src-elem ${scriptElementSources.join(" ")}`,
 		`style-src ${styleElementSources.join(" ")}`,
 		`style-src-elem ${styleElementSources.join(" ")}`,
 		"style-src-attr 'unsafe-inline'",

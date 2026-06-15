@@ -61,6 +61,12 @@ describe("proxy CSP", () => {
 		expect(firstResponse.headers.get("content-security-policy")).toBe(
 			upstreamPolicy,
 		);
+		expect(
+			firstResponse.headers.get("x-middleware-request-content-security-policy"),
+		).toBe(upstreamPolicy);
+		expect(firstResponse.headers.get("x-middleware-request-x-nonce")).toBe(
+			firstNonce,
+		);
 		expect(secondResponse.headers.get("content-security-policy")).toContain(
 			`'nonce-${secondNonce}'`,
 		);

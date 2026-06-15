@@ -9,21 +9,23 @@ const BASE_OPTIONS = {
 };
 
 describe("buildContentSecurityPolicy", () => {
-	test("builds a strict production policy", () => {
+	test("builds a production policy that keeps script-src nonce-scoped", () => {
 		const policy = buildContentSecurityPolicy({
 			...BASE_OPTIONS,
 			isDevelopment: false,
 			isPreview: false,
 		});
 
+		expect(policy).toContain("script-src 'self' 'nonce-test-nonce'");
 		expect(policy).toContain(
-			"script-src 'self' 'nonce-test-nonce' 'strict-dynamic'",
+			"script-src-elem 'self' 'unsafe-inline' https://va.vercel-scripts.com",
 		);
-		expect(policy).not.toMatch(/script-src[^;]*'sha256-/u);
-		expect(policy).not.toMatch(/script-src[^;]*'unsafe-inline'/u);
-		expect(policy).not.toMatch(/script-src[^;]*'unsafe-eval'/u);
+		expect(policy).not.toMatch(/script-src\s[^;]*'sha256-/u);
+		expect(policy).not.toMatch(/script-src\s[^;]*'unsafe-inline'/u);
+		expect(policy).not.toMatch(/script-src\s[^;]*'strict-dynamic'/u);
+		expect(policy).not.toMatch(/script-src\s[^;]*'unsafe-eval'/u);
 		expect(policy).toContain(
-			"style-src-elem 'self' 'nonce-test-nonce' 'sha256-nzTgYzXYDNe6BAHiiI7NNlfK8n/auuOAhh2t92YvuXo='",
+			"style-src-elem 'self' 'nonce-test-nonce' 'sha256-nzTgYzXYDNe6BAHiiI7NNlfK8n/auuOAhh2t92YvuXo=' 'sha256-Wwucq8eX2r0YFymkQhDXm5hN0+FfSvI3s4JSSaqa4iw='",
 		);
 		expect(policy).not.toMatch(/style-src-elem[^;]*'unsafe-inline'/u);
 		expect(policy).toContain("style-src-attr 'unsafe-inline'");
@@ -41,7 +43,7 @@ describe("buildContentSecurityPolicy", () => {
 			isPreview: true,
 		});
 
-		expect(policy).toMatch(/script-src[^;]*https:\/\/vercel\.live/u);
+		expect(policy).toMatch(/script-src-elem[^;]*https:\/\/vercel\.live/u);
 		expect(policy).toMatch(
 			/connect-src[^;]*https:\/\/vercel\.live[^;]*wss:\/\/ws-us3\.pusher\.com/u,
 		);
@@ -58,8 +60,8 @@ describe("buildContentSecurityPolicy", () => {
 			isPreview: false,
 		});
 
-		expect(policy).toMatch(/script-src[^;]*'unsafe-eval'/u);
-		expect(policy).toMatch(/script-src[^;]*https:\/\/unpkg\.com/u);
+		expect(policy).toMatch(/script-src\s[^;]*'unsafe-eval'/u);
+		expect(policy).toMatch(/script-src-elem[^;]*https:\/\/unpkg\.com/u);
 		expect(policy).toMatch(/style-src-elem[^;]*'unsafe-inline'/u);
 		expect(policy).toMatch(/connect-src[^;]*ws:/u);
 		expect(policy).not.toContain("upgrade-insecure-requests");
