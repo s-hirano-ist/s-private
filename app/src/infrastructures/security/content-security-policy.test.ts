@@ -16,10 +16,11 @@ describe("buildContentSecurityPolicy", () => {
 			isPreview: false,
 		});
 
+		expect(policy).toContain("script-src 'self' 'nonce-test-nonce'");
 		expect(policy).toContain(
-			"script-src 'self' 'nonce-test-nonce' 'strict-dynamic'",
+			"'sha256-yC26i5HOTs5Y8b0pJJYwrKSJdGVBgseV2IRWZZkuY0w='",
 		);
-		expect(policy).not.toMatch(/script-src[^;]*'sha256-/u);
+		expect(policy).not.toMatch(/script-src[^;]*'strict-dynamic'/u);
 		expect(policy).not.toMatch(/script-src[^;]*'unsafe-inline'/u);
 		expect(policy).not.toMatch(/script-src[^;]*'unsafe-eval'/u);
 		expect(policy).toContain(

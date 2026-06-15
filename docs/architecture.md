@@ -484,6 +484,8 @@ export default function Error({ error, reset }: ErrorPageProps) {
 
 本コードベースはスクリプトのインライン実行をnonceで制限する。Proxyがリクエストごとにnonceを生成し、Next.jsはリクエストの`Content-Security-Policy`からnonceを取得してframework scriptへ付与する。
 
+`script-src`では`'strict-dynamic'`を使用しない。同一オリジンのNext.js framework/chunk scriptは`'self'`で許可し、インラインscriptはリクエストnonceで許可する。Image dumperのLightboxは`ssr: false`のdynamic componentであり、Suspense配下でNext.jsが生成するnonceなしの決定的なbootstrap scriptだけは、production HTMLで内容を確認した固定hashで明示的に許可する。Next.js更新時はproduction buildの`/ja/images` HTMLでscript内容とhashを再検証し、生成内容がビルドごとに変化する場合はhashを追加せず、該当componentをサーバー側でレンダリング可能な構造へ変更する。
+
 nonceはリクエストごとに異なるため、静的HTMLシェルを再利用するCache Components / PPRとは両立しない。そのため`cacheComponents`は有効化せず、ページはリクエスト時に動的レンダリングする。
 
 ### データキャッシュ

@@ -58,6 +58,8 @@ describe("proxy CSP", () => {
 		expect(secondNonce).toBeTruthy();
 		expect(firstNonce).not.toBe(secondNonce);
 		expect(upstreamPolicy).toContain(`'nonce-${firstNonce}'`);
+		expect(upstreamPolicy).toMatch(/script-src[^;]*'self'/u);
+		expect(upstreamPolicy).not.toMatch(/script-src[^;]*'strict-dynamic'/u);
 		expect(firstResponse.headers.get("content-security-policy")).toBe(
 			upstreamPolicy,
 		);

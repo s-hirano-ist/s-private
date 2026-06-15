@@ -222,7 +222,8 @@ responses receive the enforced `Content-Security-Policy` header.
 
 ### Policy
 
-- `script-src` permits self, the request nonce, Vercel Analytics, development-only React Scan, and Preview-only Vercel Toolbar.
+- `script-src` permits self, the request nonce, the deterministic Next.js client-only dynamic-component bootstrap hash, Vercel Analytics, development-only React Scan, and Preview-only Vercel Toolbar.
+- The policy intentionally omits `strict-dynamic`: same-origin Next.js framework and chunk scripts are authorized by `self`, while inline scripts still require the request nonce or the documented bootstrap hash.
 - Production does not allow `unsafe-inline` or `unsafe-eval` for scripts.
 - Production `style-src-elem` requires self or the request nonce.
 - `style-src-attr 'unsafe-inline'` remains enabled because UI positioning and syntax highlighting use dynamic style attributes.
@@ -232,10 +233,13 @@ responses receive the enforced `Content-Security-Policy` header.
 
 ### Enforcement verification
 
-Exercise authentication, locale navigation, theme switching, Toast, Dialog,
-Drawer, Lightbox, and Markdown code rendering in Preview after policy changes.
-Confirm that Sentry contains no unexplained violations from supported browsers.
-Preview intentionally has a broader Vercel Toolbar policy than Production.
+After a Production deployment, inspect `/ja/images` and confirm every
+`/_next/static/chunks/*.js` request succeeds. Exercise the image dumper and
+Lightbox, locale navigation, theme switching, and Vercel Analytics, and confirm
+that the browser console and Sentry contain no unexplained CSP violations.
+Also exercise authentication, Toast, Dialog, Drawer, and Markdown code
+rendering in Preview. Preview intentionally has a broader Vercel Toolbar policy
+than Production.
 
 Cache Components / PPR are intentionally disabled because their reusable static
 HTML shell cannot carry a fresh nonce for every request. Database query results
