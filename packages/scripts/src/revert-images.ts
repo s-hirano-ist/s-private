@@ -5,10 +5,13 @@ import {
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
+import { invalidateContentCache } from "./infrastructures/cache-invalidation-client.ts";
 import { createImagesCommandRepository } from "./infrastructures/images-command-repository.ts";
 
 async function main() {
 	const env = {
+		CACHE_INVALIDATION_SECRET: process.env.CACHE_INVALIDATION_SECRET,
+		CACHE_INVALIDATION_URL: process.env.CACHE_INVALIDATION_URL,
 		DATABASE_URL: process.env.DATABASE_URL,
 		PUSHOVER_URL: process.env.PUSHOVER_URL,
 		PUSHOVER_USER_KEY: process.env.PUSHOVER_USER_KEY,
@@ -36,6 +39,17 @@ async function main() {
 		const batchService = new ImagesBatchDomainService(commandRepository);
 
 		const result = await batchService.revertImages(userId);
+
+		// The database transaction has committed at this point. A cache failure is
+		// treated as a failed batch run so it is logged and sent to Pushover.
+		await invalidateContentCache(
+			{
+				url: env.CACHE_INVALIDATION_URL ?? "",
+				secret: env.CACHE_INVALIDATION_SECRET ?? "",
+			},
+			"images",
+			userId,
+		);
 
 		console.log(
 			`💾 LAST_UPDATEDの画像をUNEXPORTEDに変更しました（${result.count}件）`,
