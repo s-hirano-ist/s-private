@@ -3,6 +3,10 @@ const CSP_REPORTING_GROUP = "csp-endpoint";
 // Radix dialogs open on platforms with overlay scrollbars.
 const RADIX_DIALOG_SCROLL_LOCK_STYLE_HASH =
 	"'sha256-nzTgYzXYDNe6BAHiiI7NNlfK8n/auuOAhh2t92YvuXo='";
+// Next.js emits this deterministic inline bootstrap when a client-only dynamic
+// component (the image lightbox) is rendered beneath a Suspense boundary.
+const NEXT_DYNAMIC_COMPONENT_BOOTSTRAP_SCRIPT_HASH =
+	"'sha256-yC26i5HOTs5Y8b0pJJYwrKSJdGVBgseV2IRWZZkuY0w='";
 
 type ContentSecurityPolicyOptions = {
 	isDevelopment: boolean;
@@ -39,6 +43,7 @@ export function buildContentSecurityPolicy({
 	const scriptSources = [
 		"'self'",
 		`'nonce-${nonce}'`,
+		NEXT_DYNAMIC_COMPONENT_BOOTSTRAP_SCRIPT_HASH,
 		...(isDevelopment ? ["'unsafe-eval'", "https://unpkg.com"] : []),
 		"https://va.vercel-scripts.com",
 		...(allowsVercelToolbar ? ["https://vercel.live"] : []),
