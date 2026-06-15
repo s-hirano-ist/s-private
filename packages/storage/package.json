@@ -1,6 +1,6 @@
 {
 	"name": "@s-hirano-ist/s-storage",
-	"version": "1.18.8",
+	"version": "1.18.9",
 	"description": "MinIO storage client for s-private application",
 	"type": "module",
 	"main": "./dist/index.js",

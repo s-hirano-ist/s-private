@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.11.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.11.0...s-private-v3.11.1) (2026-06-15)
+
+
+### Bug Fixes
+
+* allow image dumper bootstrap script in CSP ([ec43cab](https://github.com/s-hirano-ist/s-private/commit/ec43cabb4b4032954d8ecebeabdd314cfe0ff94d))
+* allow image dumper bootstrap script in CSP ([b639d48](https://github.com/s-hirano-ist/s-private/commit/b639d4832c083f7e3a5a52331cc966b9b2cb6bf5))
+* use revalidateTag in cache invalidation route ([fa0698c](https://github.com/s-hirano-ist/s-private/commit/fa0698c1423f21426350073e1ad857978913f215))
+* use revalidateTag in cache invalidation route ([cbda52b](https://github.com/s-hirano-ist/s-private/commit/cbda52b19c2cc4b9ddb6e41057128cfc92c199e2))
+* use strict dynamic for CSP scripts ([2af147a](https://github.com/s-hirano-ist/s-private/commit/2af147afa598444c00428776764df533064d6971))
+
+
+### Maintenance
+
+* **deps:** update dependency eslint-plugin-unicorn to v65 ([84bb9eb](https://github.com/s-hirano-ist/s-private/commit/84bb9ebcdd07495220f4f9f8a5bcc36348cc4a99))
+* **deps:** update dependency eslint-plugin-unicorn to v65 ([ee98dc1](https://github.com/s-hirano-ist/s-private/commit/ee98dc1df803dff85c32be8f46b3b021ced0986a))
+* **deps:** update dependency jscpd to v5 ([d60b800](https://github.com/s-hirano-ist/s-private/commit/d60b8003064e93954dfb386f3398ce3f4fdf9b88))
+* **deps:** update dependency jscpd to v5 ([d8f9e96](https://github.com/s-hirano-ist/s-private/commit/d8f9e96cfee47695f95a376938e7d9bedfad4fa5))
+* **deps:** update dependency undici@&lt;6.24.0 to ^8.4.1 ([e1e2de8](https://github.com/s-hirano-ist/s-private/commit/e1e2de87f297795ac532b283656962f12e9ead81))
+* **deps:** update dependency undici@&lt;6.24.0 to ^8.4.1 ([8f97bc9](https://github.com/s-hirano-ist/s-private/commit/8f97bc924ba11a2a75c088d9f538dec0e1ada3b0))
+* **deps:** update node and pnpm to v11.6.0 ([d7c768d](https://github.com/s-hirano-ist/s-private/commit/d7c768dd4ecd09b6f7091d0a5707ebb511bfda8b))
+* **deps:** update node and pnpm to v11.6.0 ([254e8c6](https://github.com/s-hirano-ist/s-private/commit/254e8c670dafb82e249d7fb4272260393f505b46))
+* **deps:** update non-major (devdependencies) ([5986e47](https://github.com/s-hirano-ist/s-private/commit/5986e478db2bacb571a440346659b342509cf633))
+* **deps:** update non-major (devdependencies) ([ee419ad](https://github.com/s-hirano-ist/s-private/commit/ee419ad2b10d0567e2fd908caa1a3982c5e4c8aa))
+
 ## [3.11.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.10.0...s-private-v3.11.0) (2026-06-15)
 
 
