@@ -482,7 +482,9 @@ export default function Error({ error, reset }: ErrorPageProps) {
 
 ## Nonce CSP とレンダリング
 
-本コードベースはスクリプトのインライン実行をnonceで制限する。Proxyがリクエストごとにnonceを生成し、Next.jsはリクエストの`Content-Security-Policy`からnonceを取得してframework scriptへ付与する。i18n middlewareなど別middlewareの`NextResponse`を返す場合も、`NextResponse.next({ request: { headers } })`相当の`x-middleware-request-*` override headersを最終レスポンスへ引き継ぎ、SSR側へnonce付きCSP request headerが届く状態を維持する。
+本コードベースはスクリプトのインライン実行を原則nonceで制限する。Proxyがリクエストごとにnonceを生成し、Next.jsはリクエストの`Content-Security-Policy`からnonceを取得してframework scriptへ付与する。i18n middlewareなど別middlewareの`NextResponse`を返す場合も、`NextResponse.next({ request: { headers } })`相当の`x-middleware-request-*` override headersを最終レスポンスへ引き継ぎ、SSR側へnonce付きCSP request headerが届く状態を維持する。
+
+Next.js/Vercelのstreamed responseやerror responseでは、nonceが付与されないparser-inserted script elementが生成されるケースがある。そのため`script-src`自体はnonce scopedのまま維持し、`script-src-elem`のみ`unsafe-inline`を互換fallbackとして分離する。`strict-dynamic`はhost allowlistを無効化し、nonceなしscript elementが混在したときにNext.js/Vercelのchunkやanalytics scriptまで連鎖的にブロックするため使用しない。
 
 nonceはリクエストごとに異なるため、静的HTMLシェルを再利用するCache Components / PPRとは両立しない。そのため`cacheComponents`は有効化せず、ページはリクエスト時に動的レンダリングする。
 

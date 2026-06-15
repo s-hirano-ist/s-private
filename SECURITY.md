@@ -222,9 +222,9 @@ responses receive the enforced `Content-Security-Policy` header.
 
 ### Policy
 
-- `script-src` permits self, the request nonce, Vercel Analytics, development-only React Scan, and Preview-only Vercel Toolbar.
-- Production does not allow `unsafe-inline` or `unsafe-eval` for scripts.
-- Production `style-src-elem` requires self or the request nonce.
+- `script-src` permits self and the request nonce; development also allows `unsafe-eval`.
+- `script-src-elem` permits self, Vercel Analytics, development-only React Scan, Preview-only Vercel Toolbar, and `unsafe-inline` as a compatibility fallback for Next.js/Vercel streamed or error responses that can emit parser-inserted scripts without a nonce.
+- Production `style-src-elem` requires self, the request nonce, or documented deterministic framework/library hashes.
 - `style-src-attr 'unsafe-inline'` remains enabled because UI positioning and syntax highlighting use dynamic style attributes.
 - The shared `ThemeProvider` initializes `get-nonce` during React's insertion phase so client-side styles created by `next-themes`, Radix UI, and `react-remove-scroll` receive the request nonce.
 - Preview deployments allow the additional script, connection, image, frame, style, and font sources documented for Vercel Toolbar.
