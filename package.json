@@ -79,7 +79,7 @@
 		"eslint-plugin-storybook": "10.4.4",
 		"eslint-plugin-unicorn": "64.0.0",
 		"happy-dom": "20.10.3",
-		"jscpd": "4.2.5",
+		"jscpd": "5.0.8",
 		"knip": "6.16.1",
 		"oxfmt": "0.54.0",
 		"oxlint": "1.69.0",
