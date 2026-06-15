@@ -39,7 +39,7 @@
 	platformAutomerge: true,
 	automergeStrategy: "squash",
 	lockFileMaintenance: {
-		enabled: true,
+		enabled: false,
 		automerge: false,
 		schedule: ["before 5am on the first day of january,april,july,october"],
 	},
