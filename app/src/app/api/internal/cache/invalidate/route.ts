@@ -1,4 +1,5 @@
 import { env } from "@/env";
+import { serverLogger } from "@/infrastructures/observability/server";
 import {
 	CACHE_INVALIDATION_DOMAINS,
 	invalidateContentStatusCache,
@@ -45,10 +46,30 @@ export async function POST(request: Request): Promise<Response> {
 		return Response.json({ error: "Invalid request" }, { status: 400 });
 	}
 
-	const tags = invalidateContentStatusCache(
-		parsed.data.domain,
-		parsed.data.userId,
-	);
+	try {
+		const tags = invalidateContentStatusCache(
+			parsed.data.domain,
+			parsed.data.userId,
+		);
 
-	return Response.json({ invalidated: tags.length });
+		return Response.json({ invalidated: tags.length });
+	} catch (error) {
+		serverLogger.error(
+			"Failed to invalidate content cache",
+			{
+				caller: "POST /api/internal/cache/invalidate",
+				status: 500,
+				userId: parsed.data.userId,
+				additionalContext: {
+					domain: parsed.data.domain,
+				},
+			},
+			error,
+		);
+
+		return Response.json(
+			{ error: "Failed to invalidate content cache" },
+			{ status: 500 },
+		);
+	}
 }

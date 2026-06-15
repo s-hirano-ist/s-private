@@ -3,7 +3,7 @@ import {
 	buildContentCacheTag,
 	buildCountCacheTag,
 } from "@/infrastructures/shared/cache/cache-tag-builder";
-import { updateTag } from "next/cache";
+import { revalidateTag } from "next/cache";
 
 export const CACHE_INVALIDATION_DOMAINS = [
 	"articles",
@@ -37,7 +37,7 @@ export function invalidateContentStatusCache(
 	]);
 
 	for (const tag of tags) {
-		updateTag(tag);
+		revalidateTag(tag, { expire: 0 });
 	}
 
 	return tags;
