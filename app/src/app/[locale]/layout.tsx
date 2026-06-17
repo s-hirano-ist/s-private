@@ -2,11 +2,11 @@ import { searchContentFromClient } from "@/application-services/search/search-co
 import { resolveContentSecurityPolicyNonce } from "@/common/security/content-security-policy-nonce";
 import { Footer } from "@/components/common/layouts/nav/footer";
 import { env } from "@/env";
+import { IntlClientProvider } from "@/infrastructures/i18n/client-provider";
 import { routing } from "@/infrastructures/i18n/routing";
 import Loading from "@s-hirano-ist/s-ui/display/loading";
 import { ThemeProvider } from "@s-hirano-ist/s-ui/providers/theme-provider";
 import { Toaster } from "@s-hirano-ist/s-ui/ui/toast";
-import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
@@ -33,7 +33,7 @@ async function LocaleLayoutContent({ children, params }: Params) {
 	);
 
 	return (
-		<NextIntlClientProvider messages={messages}>
+		<IntlClientProvider locale={locale} messages={messages}>
 			<ThemeProvider
 				attribute="class"
 				defaultTheme="system"
@@ -47,7 +47,7 @@ async function LocaleLayoutContent({ children, params }: Params) {
 				</main>
 				<Toaster />
 			</ThemeProvider>
-		</NextIntlClientProvider>
+		</IntlClientProvider>
 	);
 }
 

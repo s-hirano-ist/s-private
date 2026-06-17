@@ -54,6 +54,7 @@
 		"updated": "Updated successfully.",
 		"unexpected": "Unexpected error occurred.",
 		"pushoverSend": "Failed to send logs.",
+		"storageError": "Failed to upload to storage.",
 		"duplicated": "Duplicated record.",
 		"prismaUnexpected": "Failed to write to database.",
 		"unauthorized": "Unauthorized error.",
