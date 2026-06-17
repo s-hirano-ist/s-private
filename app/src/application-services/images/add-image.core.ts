@@ -12,6 +12,7 @@ import type { AddImageDeps } from "./add-image.deps";
 import type { ServerAction } from "@/common/types";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
+import { withStoragePhase } from "@/common/error/storage-phase-error";
 import { imageEntity } from "@s-hirano-ist/s-core/images/entities/image-entity";
 import { parseAddImageFormData } from "./helpers/form-data-parser";
 
@@ -60,10 +61,31 @@ export async function addImageCore(
 			caller: "addImage",
 		});
 
-		await Promise.all([
-			storageService.uploadImage(image.path, originalBuffer, false),
-			storageService.uploadImage(image.path, thumbnailBuffer, true),
-		]);
+		const storageContext = {
+			action: "addImage",
+			path,
+			fileSize,
+			contentType,
+		};
+
+		await withStoragePhase(
+			{
+				phase: "upload-original",
+				path: image.path,
+				isThumbnail: false,
+				additionalContext: storageContext,
+			},
+			() => storageService.uploadImage(image.path, originalBuffer, false),
+		);
+		await withStoragePhase(
+			{
+				phase: "upload-thumbnail",
+				path: image.path,
+				isThumbnail: true,
+				additionalContext: storageContext,
+			},
+			() => storageService.uploadImage(image.path, thumbnailBuffer, true),
+		);
 		// Cache invalidation is handled in repository
 		await commandRepository.create(image);
 

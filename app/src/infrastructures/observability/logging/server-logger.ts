@@ -17,21 +17,29 @@ export class ServerLogger implements Logger {
 		this.notificationService = notificationService;
 	}
 
-	info(message: string, context: LogContext, options?: LogOptions): void {
-		void this.logWithLevel("info", message, context, undefined, options);
+	async info(
+		message: string,
+		context: LogContext,
+		options?: LogOptions,
+	): Promise<void> {
+		await this.logWithLevel("info", message, context, undefined, options);
 	}
 
-	warn(message: string, context: LogContext, options?: LogOptions): void {
-		void this.logWithLevel("warn", message, context, undefined, options);
+	async warn(
+		message: string,
+		context: LogContext,
+		options?: LogOptions,
+	): Promise<void> {
+		await this.logWithLevel("warn", message, context, undefined, options);
 	}
 
-	error(
+	async error(
 		message: string,
 		context: LogContext,
 		error?: unknown,
 		options?: LogOptions,
-	): void {
-		void this.logWithLevel("error", message, context, error, options);
+	): Promise<void> {
+		await this.logWithLevel("error", message, context, error, options);
 	}
 
 	private async logWithLevel(

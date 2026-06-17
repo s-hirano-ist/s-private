@@ -137,6 +137,39 @@ describe("addImageCore", () => {
 		});
 	});
 
+	test("should return storageError when storage upload fails", async () => {
+		const validFileType = "image/jpeg";
+		const validFileSize = 1_700_000;
+		const file = createMockFile("myImage.jpeg", validFileType, validFileSize);
+		mockFormData = new FormData();
+		mockFormData.append("file", file);
+
+		vi.mocked(getSelfId).mockResolvedValue(makeUserId("user-id"));
+		vi.mocked(parseAddImageFormData).mockResolvedValue({
+			userId: makeUserId("user-id"),
+			path: "myImage.jpeg" as Path,
+			contentType: "image/jpeg" as ContentType,
+			fileSize: validFileSize as FileSize,
+			originalBuffer: Buffer.from([]),
+			thumbnailBuffer: Buffer.from([]),
+		});
+
+		const { deps, mockCommandRepository, mockStorageService } =
+			createMockDeps();
+		vi.mocked(mockStorageService.uploadImage).mockRejectedValueOnce(
+			new Error("Cloudflare Access denied"),
+		);
+
+		const result = await addImageCore(mockFormData, deps);
+
+		expect(mockStorageService.uploadImage).toHaveBeenCalledTimes(1);
+		expect(mockCommandRepository.create).not.toHaveBeenCalled();
+		expect(result).toEqual({
+			success: false,
+			message: "storageError",
+		});
+	});
+
 	test("should return success false on invalid file type", async () => {
 		const validFileType = "invalid";
 		const validFileSize = 1024 * 1024;

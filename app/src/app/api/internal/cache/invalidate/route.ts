@@ -54,7 +54,7 @@ export async function POST(request: Request): Promise<Response> {
 
 		return Response.json({ invalidated: tags.length });
 	} catch (error) {
-		serverLogger.error(
+		await serverLogger.error(
 			"Failed to invalidate content cache",
 			{
 				caller: "POST /api/internal/cache/invalidate",

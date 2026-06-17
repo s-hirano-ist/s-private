@@ -22,7 +22,7 @@ import { SystemErrorEvent } from "@s-hirano-ist/s-core/shared-kernel/events/syst
 import { SystemWarningEvent } from "@s-hirano-ist/s-core/shared-kernel/events/system-warning-event";
 import { Prisma } from "@s-hirano-ist/s-database";
 import { NotificationError } from "@s-hirano-ist/s-notification";
-import { S3Error } from "@s-hirano-ist/s-storage";
+import { S3Error, StorageOperationError } from "@s-hirano-ist/s-storage";
 import { APIError } from "better-auth/api";
 import { ZodError } from "zod";
 
@@ -63,6 +63,21 @@ async function handleNotificationOrS3Error(
 		);
 		return { success: false, message: error.message };
 	}
+	if (error instanceof StorageOperationError) {
+		await eventDispatcher.dispatch(
+			new SystemErrorEvent({
+				message: error.message,
+				status: 500,
+				caller: "wrapServerSideError",
+				extraData: {
+					storage: error.context,
+					cause: error.cause,
+				},
+				shouldNotify: true,
+			}),
+		);
+		return { success: false, message: "storageError" };
+	}
 	// MinIO S3 server errors
 	if (error instanceof S3Error) {
 		await eventDispatcher.dispatch(
@@ -70,6 +85,7 @@ async function handleNotificationOrS3Error(
 				message: `MinIO S3 Error: ${error.code} - ${error.message}`,
 				status: 500,
 				caller: "wrapServerSideError",
+				extraData: error,
 				shouldNotify: true,
 			}),
 		);
@@ -197,6 +213,7 @@ async function handleUnexpectedError(error: unknown): Promise<ServerAction> {
 				message: error.message,
 				status: 500,
 				caller: "wrapServerSideError",
+				extraData: error,
 				shouldNotify: true,
 			}),
 		);

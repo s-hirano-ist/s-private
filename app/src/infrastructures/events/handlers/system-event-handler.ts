@@ -21,10 +21,14 @@ export class SystemEventHandler implements DomainEventHandler {
 
 		switch (eventType) {
 			case "system.warning":
-				serverLogger.warn(payload.message as string, context, notifyOptions);
+				await serverLogger.warn(
+					payload.message as string,
+					context,
+					notifyOptions,
+				);
 				break;
 			case "system.error":
-				serverLogger.error(
+				await serverLogger.error(
 					payload.message as string,
 					context,
 					payload.extraData,

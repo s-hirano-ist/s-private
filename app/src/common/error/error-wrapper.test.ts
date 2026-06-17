@@ -29,6 +29,19 @@ vi.mock("@s-hirano-ist/s-storage", () => ({
 			this.name = "S3Error";
 		}
 	},
+	StorageOperationError: class MockStorageOperationError extends Error {
+		context: Record<string, unknown>;
+		constructor(context: Record<string, unknown>, cause: unknown) {
+			super(
+				`Storage ${String(context.operation)} failed for ${String(context.objectKey)}`,
+				{
+					cause,
+				},
+			);
+			this.name = "StorageOperationError";
+			this.context = context;
+		}
+	},
 }));
 
 describe("wrapServerSideErrorForClient", () => {
@@ -283,6 +296,46 @@ describe("wrapServerSideErrorForClient", () => {
 				metadata: expect.objectContaining({
 					caller: "wrapServerSideError",
 					userId: "system",
+				}),
+			}),
+		);
+		expect(result).toEqual({
+			success: false,
+			message: "storageError",
+		});
+	});
+
+	test("should handle StorageOperationError", async () => {
+		const { StorageOperationError } = await import("@s-hirano-ist/s-storage");
+		const cause = new Error("Cloudflare Access denied");
+		const error = new StorageOperationError(
+			{
+				operation: "uploadImage",
+				objectKey: "images/original/image.jpg",
+				bucketName: "bucket",
+				isThumbnail: false,
+				phase: "upload-original",
+				additionalContext: { action: "addImage", fileSize: 1_700_000 },
+			},
+			cause,
+		);
+
+		const result = await wrapServerSideErrorForClient(error);
+
+		expect(eventDispatcher.dispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				eventType: "system.error",
+				payload: expect.objectContaining({
+					message: "Storage uploadImage failed for images/original/image.jpg",
+					status: 500,
+					extraData: expect.objectContaining({
+						storage: expect.objectContaining({
+							phase: "upload-original",
+							objectKey: "images/original/image.jpg",
+						}),
+						cause,
+					}),
+					shouldNotify: true,
 				}),
 			}),
 		);
