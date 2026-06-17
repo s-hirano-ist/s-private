@@ -1,4 +1,5 @@
 import { minioClient } from "@/minio";
+import { StorageOperationError } from "@s-hirano-ist/s-storage";
 import { Readable } from "node:stream";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { minioStorageService } from "./minio-storage-service";
@@ -53,9 +54,17 @@ describe("MinioStorageService", () => {
 				new Error("Storage upload failed"),
 			);
 
-			await expect(
-				minioStorageService.uploadImage(path, buffer, false),
-			).rejects.toThrow("Storage upload failed");
+			const upload = minioStorageService.uploadImage(path, buffer, false);
+
+			await expect(upload).rejects.toThrow(StorageOperationError);
+			await expect(upload).rejects.toMatchObject({
+				context: {
+					operation: "uploadImage",
+					bucketName: "test-bucket",
+					objectKey: `images/original/${path}`,
+					isThumbnail: false,
+				},
+			});
 
 			expect(minioClient.putObject).toHaveBeenCalledWith(
 				"test-bucket",
@@ -104,7 +113,7 @@ describe("MinioStorageService", () => {
 			);
 
 			await expect(minioStorageService.getImage(path, false)).rejects.toThrow(
-				"Object not found",
+				StorageOperationError,
 			);
 
 			expect(minioClient.getObject).toHaveBeenCalledWith(
@@ -142,7 +151,7 @@ describe("MinioStorageService", () => {
 
 			await expect(
 				minioStorageService.getImageOrThrow(path, false),
-			).rejects.toThrow("Object not found");
+			).rejects.toThrow(StorageOperationError);
 		});
 	});
 
@@ -182,7 +191,7 @@ describe("MinioStorageService", () => {
 
 			await expect(
 				minioStorageService.deleteImage(path, false),
-			).rejects.toThrow("Delete failed");
+			).rejects.toThrow(StorageOperationError);
 		});
 	});
 });

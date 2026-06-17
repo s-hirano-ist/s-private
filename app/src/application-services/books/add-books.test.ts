@@ -196,6 +196,22 @@ describe("addBooksCore", () => {
 		});
 	});
 
+	test("should return storageError when book cover upload fails", async () => {
+		vi.mocked(getSelfId).mockResolvedValue(makeUserId("user-123"));
+
+		const { deps, mockCommandRepository, mockStorageService } =
+			createMockDeps();
+		vi.mocked(mockStorageService.uploadImage).mockRejectedValueOnce(
+			new Error("Cloudflare Access denied"),
+		);
+
+		const result = await addBooksCore(mockFormData, deps);
+
+		expect(mockStorageService.uploadImage).toHaveBeenCalledTimes(1);
+		expect(mockCommandRepository.create).not.toHaveBeenCalled();
+		expect(result).toEqual({ success: false, message: "storageError" });
+	});
+
 	test("should handle unexpected errors", async () => {
 		vi.mocked(getSelfId).mockResolvedValue(makeUserId("user-123"));
 

@@ -43,7 +43,7 @@ export class LoggingEventHandler implements DomainEventHandler {
 
 		const status = eventType.includes("created") ? 201 : 200;
 
-		serverLogger.info(
+		await serverLogger.info(
 			message,
 			{
 				caller: metadata.caller,

@@ -12,6 +12,7 @@ import type { AddBooksDeps } from "./add-books.deps";
 import type { ServerAction } from "@/common/types";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
+import { withStoragePhase } from "@/common/error/storage-phase-error";
 import { bookEntity } from "@s-hirano-ist/s-core/books/entities/book-entity";
 import { parseAddBooksFormData } from "./helpers/form-data-parser";
 
@@ -47,19 +48,43 @@ export async function addBooksCore(
 			parsedData.userId,
 		);
 
+		const storageContext = {
+			action: "addBooks",
+			path: parsedData.path,
+			fileSize: parsedData.fileSize,
+			contentType: parsedData.contentType,
+			isbn: parsedData.isbn,
+		};
+
 		// Upload image to MinIO (original + thumbnail)
-		await Promise.all([
-			storageService.uploadImage(
-				parsedData.path,
-				parsedData.originalBuffer,
-				false,
-			),
-			storageService.uploadImage(
-				parsedData.path,
-				parsedData.thumbnailBuffer,
-				true,
-			),
-		]);
+		await withStoragePhase(
+			{
+				phase: "upload-original",
+				path: parsedData.path,
+				isThumbnail: false,
+				additionalContext: storageContext,
+			},
+			() =>
+				storageService.uploadImage(
+					parsedData.path,
+					parsedData.originalBuffer,
+					false,
+				),
+		);
+		await withStoragePhase(
+			{
+				phase: "upload-thumbnail",
+				path: parsedData.path,
+				isThumbnail: true,
+				additionalContext: storageContext,
+			},
+			() =>
+				storageService.uploadImage(
+					parsedData.path,
+					parsedData.thumbnailBuffer,
+					true,
+				),
+		);
 
 		// Create entity with value objects and domain event
 		const [book, event] = bookEntity.create({

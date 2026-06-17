@@ -12,12 +12,20 @@ export type LogOptions = {
 };
 
 export type Logger = {
-	info(message: string, context: LogContext, options?: LogOptions): void;
-	warn(message: string, context: LogContext, options?: LogOptions): void;
+	info(
+		message: string,
+		context: LogContext,
+		options?: LogOptions,
+	): Promise<void>;
+	warn(
+		message: string,
+		context: LogContext,
+		options?: LogOptions,
+	): Promise<void>;
 	error(
 		message: string,
 		context: LogContext,
 		error?: unknown,
 		options?: LogOptions,
-	): void;
+	): Promise<void>;
 };
