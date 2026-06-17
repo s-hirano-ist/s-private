@@ -68,7 +68,10 @@ export default function proxy(request: NextRequest) {
 	const sessionCookie = getSessionCookie(requestWithCsp);
 	if (!sessionCookie) {
 		return addCspResponseHeader(
-			NextResponse.redirect(new URL("/api/sign-in", request.url)),
+			addUpstreamRequestHeaders(
+				NextResponse.redirect(new URL("/api/sign-in", request.url)),
+				requestHeaders,
+			),
 			contentSecurityPolicy,
 		);
 	}

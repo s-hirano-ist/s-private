@@ -84,9 +84,18 @@ describe("proxy CSP", () => {
 		expect(response.headers.get("location")).toBe(
 			"https://example.com/api/sign-in",
 		);
-		expect(response.headers.get("content-security-policy")).toContain(
-			"'nonce-",
+		const contentSecurityPolicy = response.headers.get(
+			"content-security-policy",
 		);
+		const upstreamContentSecurityPolicy = response.headers.get(
+			"x-middleware-request-content-security-policy",
+		);
+		const upstreamNonce = response.headers.get("x-middleware-request-x-nonce");
+
+		expect(contentSecurityPolicy).toContain("'nonce-");
+		expect(upstreamNonce).toBeTruthy();
+		expect(upstreamContentSecurityPolicy).toBe(contentSecurityPolicy);
+		expect(upstreamContentSecurityPolicy).toContain(`'nonce-${upstreamNonce}'`);
 		expect(
 			response.headers.get("content-security-policy-report-only"),
 		).toBeNull();
