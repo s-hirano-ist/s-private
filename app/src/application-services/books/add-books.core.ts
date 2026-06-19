@@ -12,6 +12,7 @@ import type { AddBooksDeps } from "./add-books.deps";
 import type { ServerAction } from "@/common/types";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
+import { withOperationPhase } from "@/common/error/operation-phase-error";
 import { withStoragePhase } from "@/common/error/storage-phase-error";
 import { bookEntity } from "@s-hirano-ist/s-core/books/entities/book-entity";
 import { parseAddBooksFormData } from "./helpers/form-data-parser";
@@ -40,12 +41,30 @@ export async function addBooksCore(
 	const booksDomainService = domainServiceFactory.createBooksDomainService();
 
 	try {
-		const parsedData = await parseAddBooksFormData(formData, await getSelfId());
+		const uploadFile = formData.get("image");
+		const phaseContext =
+			uploadFile instanceof File
+				? {
+						action: "addBooks",
+						fileName: uploadFile.name,
+						fileSize: uploadFile.size,
+						contentType: uploadFile.type,
+					}
+				: { action: "addBooks" };
+
+		const parsedData = await withOperationPhase(
+			{ ...phaseContext, phase: "parse-form-data" },
+			async () => parseAddBooksFormData(formData, await getSelfId()),
+		);
 
 		// Domain business rule validation
-		await booksDomainService.ensureNoDuplicate(
-			parsedData.isbn,
-			parsedData.userId,
+		await withOperationPhase(
+			{ ...phaseContext, phase: "validate-domain" },
+			() =>
+				booksDomainService.ensureNoDuplicate(
+					parsedData.isbn,
+					parsedData.userId,
+				),
 		);
 
 		const storageContext = {
@@ -87,21 +106,29 @@ export async function addBooksCore(
 		);
 
 		// Create entity with value objects and domain event
-		const [book, event] = bookEntity.create({
-			isbn: parsedData.isbn,
-			title: parsedData.title,
-			rating: parsedData.rating,
-			tags: parsedData.tags,
-			userId: parsedData.userId,
-			imagePath: parsedData.imagePath,
-			caller: "addBooks",
-		});
+		const [book, event] = await withOperationPhase(
+			{ ...phaseContext, phase: "create-entity" },
+			async () =>
+				bookEntity.create({
+					isbn: parsedData.isbn,
+					title: parsedData.title,
+					rating: parsedData.rating,
+					tags: parsedData.tags,
+					userId: parsedData.userId,
+					imagePath: parsedData.imagePath,
+					caller: "addBooks",
+				}),
+		);
 
 		// Persist (cache invalidation is handled in repository)
-		await commandRepository.create(book);
+		await withOperationPhase({ ...phaseContext, phase: "create-record" }, () =>
+			commandRepository.create(book),
+		);
 
 		// Dispatch domain event
-		await eventDispatcher.dispatch(event);
+		await withOperationPhase({ ...phaseContext, phase: "dispatch-event" }, () =>
+			eventDispatcher.dispatch(event),
+		);
 
 		return { success: true, message: "inserted" };
 	} catch (error) {

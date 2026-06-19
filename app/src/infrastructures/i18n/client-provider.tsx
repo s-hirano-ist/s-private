@@ -41,6 +41,7 @@ export function IntlClientProvider({ children, locale, messages }: Props) {
 			}}
 			locale={locale}
 			messages={messages}
+			timeZone="Asia/Tokyo"
 		>
 			{children}
 		</NextIntlClientProvider>

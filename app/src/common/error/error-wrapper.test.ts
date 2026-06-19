@@ -7,6 +7,7 @@ import { S3Error } from "@s-hirano-ist/s-storage";
 import { APIError } from "better-auth/api";
 import { describe, expect, test, vi } from "vitest";
 import { wrapServerSideErrorForClient } from "./error-wrapper";
+import { OperationPhaseError } from "./operation-phase-error";
 
 // Mock the event dispatcher
 vi.mock("@/infrastructures/events/event-dispatcher", () => ({
@@ -191,6 +192,47 @@ describe("wrapServerSideErrorForClient", () => {
 				metadata: expect.objectContaining({
 					caller: "wrapServerSideError",
 					userId: "system",
+				}),
+			}),
+		);
+		expect(result).toEqual({
+			success: false,
+			message: "unexpected",
+		});
+	});
+
+	test("should log operation phase context for unexpected phase errors", async () => {
+		const cause = new Error("repository write failed");
+		const error = new OperationPhaseError(
+			{
+				action: "addImage",
+				phase: "create-record",
+				fileName: "photo.jpeg",
+				fileSize: 1_700_000,
+				contentType: "image/jpeg",
+			},
+			cause,
+		);
+
+		const result = await wrapServerSideErrorForClient(error);
+
+		expect(eventDispatcher.dispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				eventType: "system.error",
+				payload: expect.objectContaining({
+					message: "addImage.create-record: repository write failed",
+					status: 500,
+					extraData: {
+						phase: {
+							action: "addImage",
+							phase: "create-record",
+							fileName: "photo.jpeg",
+							fileSize: 1_700_000,
+							contentType: "image/jpeg",
+						},
+						cause,
+					},
+					shouldNotify: true,
 				}),
 			}),
 		);
