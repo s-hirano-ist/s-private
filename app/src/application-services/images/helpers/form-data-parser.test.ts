@@ -9,6 +9,7 @@ import {
 	type Path,
 } from "@s-hirano-ist/s-core/images/entities/image-entity";
 import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { FileNotAllowedError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { parseAddImageFormData } from "./form-data-parser";
 
@@ -231,5 +232,46 @@ describe("parseAddImageFormData", () => {
 		const result = await parseAddImageFormData(formData, userId);
 
 		expect(result.userId).toBe("different-user-789");
+	});
+
+	test("should reject unsupported image content type before reading file", async () => {
+		const formData = new FormData();
+		const userId = makeUserId("test-user-id");
+		const mockFile = {
+			name: "photo.avif",
+			type: "image/avif",
+			size: 1024,
+		} as File;
+
+		mockGetFormDataFile.mockReturnValue(mockFile);
+
+		await expect(parseAddImageFormData(formData, userId)).rejects.toThrow(
+			FileNotAllowedError,
+		);
+		expect(mockFileToBuffer).not.toHaveBeenCalled();
+		expect(mockCreateThumbnail).not.toHaveBeenCalled();
+	});
+
+	test("should reject images sharp cannot decode as invalid file format", async () => {
+		const formData = new FormData();
+		const userId = makeUserId("test-user-id");
+		const mockFile = {
+			name: "photo.jpeg",
+			type: "image/jpeg",
+			size: 1024,
+		} as File;
+
+		mockGetFormDataFile.mockReturnValue(mockFile);
+		mockMakePath.mockReturnValue("photo.jpeg" as Path);
+		mockMakeContentType.mockReturnValue("image/jpeg" as ContentType);
+		mockMakeFileSize.mockReturnValue(1024 as FileSize);
+		mockFileToBuffer.mockResolvedValue(Buffer.from("not-an-image"));
+		mockCreateThumbnail.mockRejectedValue(
+			new Error("Input buffer has corrupt header"),
+		);
+
+		await expect(parseAddImageFormData(formData, userId)).rejects.toThrow(
+			FileNotAllowedError,
+		);
 	});
 });

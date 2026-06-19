@@ -25,6 +25,7 @@ import { NotificationError } from "@s-hirano-ist/s-notification";
 import { S3Error, StorageOperationError } from "@s-hirano-ist/s-storage";
 import { APIError } from "better-auth/api";
 import { ZodError } from "zod";
+import { OperationPhaseError } from "./operation-phase-error";
 
 /**
  * Converts FormData to a plain record for error responses.
@@ -207,6 +208,22 @@ async function handlePrismaOrZodError(
  * @internal
  */
 async function handleUnexpectedError(error: unknown): Promise<ServerAction> {
+	if (error instanceof OperationPhaseError) {
+		await eventDispatcher.dispatch(
+			new SystemErrorEvent({
+				message: error.message,
+				status: 500,
+				caller: "wrapServerSideError",
+				extraData: {
+					phase: error.context,
+					cause: error.cause,
+				},
+				shouldNotify: true,
+			}),
+		);
+		return { success: false, message: "unexpected" };
+	}
+
 	if (error instanceof Error) {
 		await eventDispatcher.dispatch(
 			new SystemErrorEvent({

@@ -21,6 +21,30 @@ import {
 	makeFileSize,
 	makePath,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
+import { FileNotAllowedError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
+
+const SUPPORTED_IMAGE_TYPES = new Set([
+	"image/jpeg",
+	"image/png",
+	"image/gif",
+	"image/webp",
+]);
+
+function assertSupportedImageType(contentType: string): void {
+	if (!SUPPORTED_IMAGE_TYPES.has(contentType)) {
+		throw new FileNotAllowedError();
+	}
+}
+
+async function createThumbnailOrThrowInvalidFile(
+	buffer: Buffer,
+): Promise<Buffer> {
+	try {
+		return await sharpImageProcessor.createThumbnail(buffer, 192, 192);
+	} catch {
+		throw new FileNotAllowedError();
+	}
+}
 
 /**
  * Parses book creation form data into domain value objects.
@@ -44,13 +68,13 @@ export const parseAddBooksFormData = async (
 		.map((t) => t.trim())
 		.filter((t) => t.length > 0);
 
+	assertSupportedImageType(file.type);
 	const path = makePath(file.name, true);
+	const contentType = makeContentType(file.type);
+	const fileSize = makeFileSize(file.size);
 	const originalBuffer = await sharpImageProcessor.fileToBuffer(file);
-	const thumbnailBuffer = await sharpImageProcessor.createThumbnail(
-		originalBuffer,
-		192,
-		192,
-	);
+	const thumbnailBuffer =
+		await createThumbnailOrThrowInvalidFile(originalBuffer);
 
 	return {
 		isbn: makeISBN(isbnInput),
@@ -60,8 +84,8 @@ export const parseAddBooksFormData = async (
 		userId,
 		imagePath: path,
 		path,
-		contentType: makeContentType(file.type),
-		fileSize: makeFileSize(file.size),
+		contentType,
+		fileSize,
 		originalBuffer,
 		thumbnailBuffer,
 	};

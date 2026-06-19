@@ -22,6 +22,7 @@ import {
 	makePath,
 	type Path,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
+import { FileNotAllowedError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { parseAddBooksFormData } from "./form-data-parser";
 
@@ -269,5 +270,49 @@ describe("parseAddBooksFormData", () => {
 		const result = await parseAddBooksFormData(formData, userId);
 
 		expect(result.userId).toBe("different-user-123");
+	});
+
+	test("should reject unsupported cover image content type before reading file", async () => {
+		const formData = new FormData();
+		const userId = "test-user-id" as UserId;
+
+		mockGetFormDataString
+			.mockReturnValueOnce("9784123456789")
+			.mockReturnValueOnce("Clean Code")
+			.mockReturnValueOnce("5")
+			.mockReturnValueOnce("programming");
+		mockGetFormDataFile.mockReturnValueOnce(
+			buildMockFile("cover.avif", "image/avif"),
+		);
+
+		await expect(parseAddBooksFormData(formData, userId)).rejects.toThrow(
+			FileNotAllowedError,
+		);
+		expect(mockFileToBuffer).not.toHaveBeenCalled();
+		expect(mockCreateThumbnail).not.toHaveBeenCalled();
+	});
+
+	test("should reject cover images sharp cannot decode as invalid file format", async () => {
+		const formData = new FormData();
+		const userId = "test-user-id" as UserId;
+
+		mockGetFormDataString
+			.mockReturnValueOnce("9784123456789")
+			.mockReturnValueOnce("Clean Code")
+			.mockReturnValueOnce("5")
+			.mockReturnValueOnce("programming");
+		mockGetFormDataFile.mockReturnValueOnce(
+			buildMockFile("cover.jpg", "image/jpeg"),
+		);
+		mockMakeISBN.mockReturnValue("9784123456789" as ISBN);
+		mockMakeBookTitle.mockReturnValue("Clean Code" as BookTitle);
+		mockFileToBuffer.mockResolvedValue(Buffer.from("not-an-image"));
+		mockCreateThumbnail.mockRejectedValue(
+			new Error("Input buffer has corrupt header"),
+		);
+
+		await expect(parseAddBooksFormData(formData, userId)).rejects.toThrow(
+			FileNotAllowedError,
+		);
 	});
 });
