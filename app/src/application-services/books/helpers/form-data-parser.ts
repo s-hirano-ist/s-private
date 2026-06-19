@@ -5,6 +5,7 @@
  */
 
 import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { parseSupportedImageFile } from "@/application-services/common/image-upload-parser";
 import {
 	getFormDataFile,
 	getFormDataString,
@@ -22,19 +23,6 @@ import {
 	makePath,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
 import { FileNotAllowedError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
-
-const SUPPORTED_IMAGE_TYPES = new Set([
-	"image/jpeg",
-	"image/png",
-	"image/gif",
-	"image/webp",
-]);
-
-function assertSupportedImageType(contentType: string): void {
-	if (!SUPPORTED_IMAGE_TYPES.has(contentType)) {
-		throw new FileNotAllowedError();
-	}
-}
 
 async function createThumbnailOrThrowInvalidFile(
 	buffer: Buffer,
@@ -68,11 +56,11 @@ export const parseAddBooksFormData = async (
 		.map((t) => t.trim())
 		.filter((t) => t.length > 0);
 
-	assertSupportedImageType(file.type);
+	const { contentType: detectedContentType, originalBuffer } =
+		await parseSupportedImageFile(file);
 	const path = makePath(file.name, true);
-	const contentType = makeContentType(file.type);
+	const contentType = makeContentType(detectedContentType);
 	const fileSize = makeFileSize(file.size);
-	const originalBuffer = await sharpImageProcessor.fileToBuffer(file);
 	const thumbnailBuffer =
 		await createThumbnailOrThrowInvalidFile(originalBuffer);
 

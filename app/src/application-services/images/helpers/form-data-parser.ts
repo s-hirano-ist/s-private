@@ -9,6 +9,7 @@
  */
 
 import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { parseSupportedImageFile } from "@/application-services/common/image-upload-parser";
 import { getFormDataFile } from "@/common/utils/form-data-utils";
 import { sharpImageProcessor } from "@/infrastructures/images/services/sharp-image-processor";
 import {
@@ -17,19 +18,6 @@ import {
 	makePath,
 } from "@s-hirano-ist/s-core/images/entities/image-entity";
 import { FileNotAllowedError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
-
-const SUPPORTED_IMAGE_TYPES = new Set([
-	"image/jpeg",
-	"image/png",
-	"image/gif",
-	"image/webp",
-]);
-
-function assertSupportedImageType(contentType: string): void {
-	if (!SUPPORTED_IMAGE_TYPES.has(contentType)) {
-		throw new FileNotAllowedError();
-	}
-}
 
 async function createThumbnailOrThrowInvalidFile(
 	buffer: Buffer,
@@ -56,11 +44,11 @@ export const parseAddImageFormData = async (
 	userId: UserId,
 ) => {
 	const file = getFormDataFile(formData, "file");
-	assertSupportedImageType(file.type);
+	const { contentType: detectedContentType, originalBuffer } =
+		await parseSupportedImageFile(file);
 	const path = makePath(file.name, true);
-	const contentType = makeContentType(file.type);
+	const contentType = makeContentType(detectedContentType);
 	const fileSize = makeFileSize(file.size);
-	const originalBuffer = await sharpImageProcessor.fileToBuffer(file);
 	const thumbnailBuffer =
 		await createThumbnailOrThrowInvalidFile(originalBuffer);
 
