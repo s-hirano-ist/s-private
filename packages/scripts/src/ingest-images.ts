@@ -5,12 +5,15 @@ import {
 	makeUserId,
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import {
+	createWebpThumbnail,
+	readImageMetadata,
+} from "@s-hirano-ist/s-image-processing/node";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
 import { createMinioClient } from "@s-hirano-ist/s-storage";
 import { glob } from "glob";
 import { readFile, stat } from "node:fs/promises";
 import { basename, extname } from "node:path";
-import sharp from "sharp";
 
 const SCRIPT_NAME = "ingest-images";
 
@@ -26,8 +29,6 @@ function getContentType(filePath: string): string | null {
 			return "image/jpeg";
 		case ".png":
 			return "image/png";
-		case ".gif":
-			return "image/gif";
 		case ".webp":
 			return "image/webp";
 		default:
@@ -111,7 +112,7 @@ async function main() {
 
 				const buffer = await readFile(filePath);
 				const fileStat = await stat(filePath);
-				const metadata = await sharp(buffer).metadata();
+				const metadata = await readImageMetadata(buffer);
 				const contentType = getContentType(filePath);
 
 				if (!contentType) {
@@ -137,11 +138,16 @@ async function main() {
 				}
 
 				// Generate and upload thumbnail
-				const thumbnailBuffer = await sharp(buffer)
-					.resize(THUMBNAIL_SIZE, THUMBNAIL_SIZE, { fit: "cover" })
-					.toBuffer();
+				const thumbnailBuffer = await createWebpThumbnail(buffer, {
+					width: THUMBNAIL_SIZE,
+					height: THUMBNAIL_SIZE,
+				});
 				const thumbnailKey = `${THUMBNAIL_IMAGE_PATH}/${imagePath}`;
-				await minioClient.putObject(bucketName, thumbnailKey, thumbnailBuffer);
+				await minioClient.putObject(
+					bucketName,
+					thumbnailKey,
+					Buffer.from(thumbnailBuffer),
+				);
 				console.log(`📤 MinIO アップロード（thumbnail）: ${imagePath}`);
 
 				// Create DB record
@@ -151,10 +157,8 @@ async function main() {
 						path: imagePath,
 						contentType,
 						fileSize: fileStat.size,
-						// oxlint-disable-next-line typescript/no-unnecessary-condition -- sharp's Metadata types width/height as non-nullable but they can be undefined at runtime for some inputs
-						width: metadata.width ?? null,
-						// oxlint-disable-next-line typescript/no-unnecessary-condition -- sharp's Metadata types width/height as non-nullable but they can be undefined at runtime for some inputs
-						height: metadata.height ?? null,
+						width: metadata.width,
+						height: metadata.height,
 						status: exported.status,
 						exportedAt: exported.exportedAt,
 						userId,

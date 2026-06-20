@@ -55,7 +55,7 @@ This project uses [Renovate](https://docs.renovatebot.com/) for automated depend
   ],
   // github-actions / docker-compose are handled by Dependabot, not Renovate.
   enabledManagers: ['npm', 'mise', 'nvm'],
-  // Suppress lifecycle scripts (sharp / @prisma/engines / etc.) during Renovate installs.
+  // Suppress dependency lifecycle scripts during Renovate installs.
   ignoreScripts: true,
   schedule: ['before 11am on monday'],
   vulnerabilityAlerts: {
@@ -112,7 +112,7 @@ allowBuilds:
   esbuild: true
   prisma: true
   puppeteer: true
-  sharp: true
+  sharp: false
   sleep: true
   unrs-resolver: true
 ```
@@ -120,6 +120,7 @@ allowBuilds:
 **Why this matters**:
 - `allowBuilds` のキーに `true` が設定されたパッケージのみがライフサイクルスクリプト（`postinstall`、`preinstall`等）を実行可能
 - 値を `false` にすれば明示的な deny も表現可能（pnpm 11 で `onlyBuiltDependencies` / `ignoredBuiltDependencies` から統合）
+- `sharp: false` は Next.js の optional dependency として解決される画像処理パッケージの build script を明示的に拒否するための設定
 - 未登録パッケージのスクリプトはブロックされ、サプライチェーン攻撃を防止
 - 新しい依存追加時は `pnpm approve-builds` で対話的にレビュー・承認
 

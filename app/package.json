@@ -14,6 +14,7 @@
 	"dependencies": {
 		"@s-hirano-ist/s-core": "workspace:*",
 		"@s-hirano-ist/s-database": "workspace:*",
+		"@s-hirano-ist/s-image-processing": "workspace:*",
 		"@s-hirano-ist/s-notification": "workspace:*",
 		"@s-hirano-ist/s-search": "workspace:*",
 		"@s-hirano-ist/s-storage": "workspace:*",
@@ -32,13 +33,8 @@
 		"react": "19.2.7",
 		"react-dom": "19.2.7",
 		"server-only": "0.0.1",
-		"sharp": "0.35.1",
 		"yet-another-react-lightbox": "3.32.0",
 		"zod": "4.4.3"
-	},
-	"optionalDependencies": {
-		"@img/sharp-libvips-linux-x64": "1.3.0",
-		"@img/sharp-linux-x64": "0.35.1"
 	},
 	"browserslist": [
 		"last 2 Chrome versions",

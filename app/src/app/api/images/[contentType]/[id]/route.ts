@@ -19,10 +19,13 @@ export async function GET(
 	const webStream = Readable.toWeb(
 		nodeStream as Readable,
 	) as unknown as ReadableStream;
+	const responseContentType = isThumbnail
+		? "image/webp"
+		: getContentTypeFromPath(id);
 
 	return new Response(webStream, {
 		headers: {
-			"Content-Type": getContentTypeFromPath(id),
+			"Content-Type": responseContentType,
 			"Cache-Control": "public, max-age=31536000, immutable",
 		},
 	});

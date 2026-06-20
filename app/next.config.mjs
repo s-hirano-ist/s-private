@@ -12,20 +12,16 @@ import path from "node:path";
 const nextConfig = {
 	transpilePackages: [
 		"@s-hirano-ist/s-core",
+		"@s-hirano-ist/s-image-processing",
 		"@s-hirano-ist/s-notification",
 		"@s-hirano-ist/s-search",
 		"@s-hirano-ist/s-ui",
 	],
-	serverExternalPackages: ["sharp", "@prisma/client"],
+	serverExternalPackages: ["@prisma/client"],
 	outputFileTracingRoot: path.join(import.meta.dirname, ".."),
 	outputFileTracingIncludes: {
 		"/*": [
-			"node_modules/sharp/**/*",
-			"../node_modules/.pnpm/sharp@*/node_modules/sharp/**/*",
-			"../node_modules/.pnpm/@img+sharp-linux-x64@*/node_modules/@img/sharp-linux-x64/**/*",
-			"../node_modules/.pnpm/@img+sharp-linuxmusl-x64@*/node_modules/@img/sharp-linuxmusl-x64/**/*",
-			"../node_modules/.pnpm/@img+sharp-libvips-linux-x64@*/node_modules/@img/sharp-libvips-linux-x64/**/*",
-			"../node_modules/.pnpm/@img+sharp-libvips-linuxmusl-x64@*/node_modules/@img/sharp-libvips-linuxmusl-x64/**/*",
+			"../node_modules/.pnpm/@silvia-odwyer+photon@*/node_modules/@silvia-odwyer/photon/photon_rs_bg.wasm",
 		],
 	},
 	typedRoutes: true,

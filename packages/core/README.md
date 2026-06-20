@@ -100,7 +100,7 @@ This package follows Clean Architecture principles:
 
 - `zod` - Runtime validation
 - `uuid` - ID generation
-- `sharp` - Image processing types
+- Photon-backed image processing interfaces
 
 ## Development
 

@@ -12,9 +12,9 @@
  * ```typescript
  * // Infrastructure implementation
  * class MinioStorageService implements IStorageService {
- *   async uploadImage(path: string, buffer: Buffer, isThumbnail: boolean) {
+ *   async uploadImage(path: string, bytes: Uint8Array, isThumbnail: boolean) {
  *     const bucketPath = isThumbnail ? `thumbnails/${path}` : `originals/${path}`;
- *     await minio.putObject(bucket, bucketPath, buffer);
+ *     await minio.putObject(bucket, bucketPath, Buffer.from(bytes));
  *   }
  * }
  * ```
@@ -24,12 +24,12 @@ export type IStorageService = {
 	 * Uploads an image to object storage.
 	 *
 	 * @param path - The storage path for the image
-	 * @param buffer - The image data buffer
+	 * @param bytes - The image data bytes
 	 * @param isThumbnail - Whether this is a thumbnail upload
 	 */
 	uploadImage(
 		path: string,
-		buffer: Buffer,
+		bytes: Uint8Array,
 		isThumbnail: boolean,
 	): Promise<void>;
 

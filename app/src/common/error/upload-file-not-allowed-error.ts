@@ -15,7 +15,7 @@ export type UploadFileNotAllowedDiagnostics = Readonly<{
 	fileSize: number;
 	declaredContentType: string;
 	detectedContentType?: string;
-	sharpFormat?: string;
+	decodedFormat?: string;
 	causeMessage?: string;
 }>;
 

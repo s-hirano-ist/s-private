@@ -31,7 +31,7 @@ allowBuilds:
   esbuild: true
   prisma: true
   puppeteer: true
-  sharp: true
+  sharp: false
   sleep: true
   unrs-resolver: true
 

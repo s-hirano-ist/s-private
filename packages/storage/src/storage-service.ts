@@ -29,12 +29,12 @@ export function createStorageService(
 	return {
 		async uploadImage(
 			path: string,
-			buffer: Buffer,
+			bytes: Uint8Array,
 			isThumbnail: boolean,
 		): Promise<void> {
 			const objKey = buildObjectKey(path, isThumbnail);
 			try {
-				await client.putObject(bucketName, objKey, buffer);
+				await client.putObject(bucketName, objKey, Buffer.from(bytes));
 			} catch (error) {
 				wrapStorageError("uploadImage", objKey, isThumbnail, error);
 			}

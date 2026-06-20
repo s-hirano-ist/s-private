@@ -67,10 +67,10 @@
 |-----------|---------|-----------|------------|
 | `shared-kernel/services/` | `minioStorageService` | `IStorageService` | MinIOクライアント |
 | `books/services/` | `booksStorageService` | `IStorageService` | MinIO（booksパス） |
-| `images/services/` | `sharpImageProcessor` | `IImageProcessor` | Sharpライブラリ |
+| `images/services/` | `photonImageProcessor` | `IImageProcessor` | Photon WebAssembly画像処理 |
 
 **命名規則:**
-- 実装が特定の技術に固有の場合は技術ベースの命名を使用（例：`minio-*`、`sharp-*`）
+- 実装が特定の技術に固有の場合は技術ベースの命名を使用（例：`minio-*`、`photon-*`）
 - アダプターがドメイン固有の設定を持つ場合はドメインベースの命名を使用（例：`books-storage-service`はbook固有のパスを使用）
 
 #### ドメインサービスファクトリ
