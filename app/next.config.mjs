@@ -17,7 +17,7 @@ const nextConfig = {
 		"@s-hirano-ist/s-search",
 		"@s-hirano-ist/s-ui",
 	],
-	serverExternalPackages: ["@prisma/client"],
+	serverExternalPackages: ["@prisma/client", "@silvia-odwyer/photon"],
 	outputFileTracingRoot: path.join(import.meta.dirname, ".."),
 	outputFileTracingIncludes: {
 		"/*": [
