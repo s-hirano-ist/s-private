@@ -4,6 +4,12 @@ import sharp from "sharp";
 import { describe, expect, test } from "vitest";
 import { parseSupportedImageFile } from "./image-upload-parser";
 
+function toArrayBuffer(buffer: Buffer): ArrayBuffer {
+	const arrayBuffer = new ArrayBuffer(buffer.byteLength);
+	new Uint8Array(arrayBuffer).set(buffer);
+	return arrayBuffer;
+}
+
 describe("parseSupportedImageFile", () => {
 	test("should parse a JPEG file with no browser-provided content type", async () => {
 		const jpegBuffer = await sharp({
@@ -16,7 +22,9 @@ describe("parseSupportedImageFile", () => {
 		})
 			.jpeg()
 			.toBuffer();
-		const file = new File([jpegBuffer], "generated.jpg", { type: "" });
+		const file = new File([toArrayBuffer(jpegBuffer)], "generated.jpg", {
+			type: "",
+		});
 
 		const result = await parseSupportedImageFile(file);
 
@@ -48,7 +56,7 @@ describe("parseSupportedImageFile", () => {
 			.toBuffer();
 
 		await expect(
-			sharpImageProcessor.createThumbnail(jpegBuffer),
+			sharpImageProcessor.createThumbnail(jpegBuffer, 192, 192),
 		).resolves.toBeInstanceOf(Buffer);
 	});
 });

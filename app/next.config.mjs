@@ -3,6 +3,7 @@ import { withSentryConfig } from "@sentry/nextjs";
 // import { env } from "./src/env.ts";
 // await import("./src/env.ts");
 import createNextIntlPlugin from "next-intl/plugin";
+import path from "node:path";
 
 // MEMO: その他のheadersについては下記参照
 // https://nextjs.org/docs/pages/api-reference/next-config-js/headers
@@ -16,6 +17,17 @@ const nextConfig = {
 		"@s-hirano-ist/s-ui",
 	],
 	serverExternalPackages: ["sharp", "@prisma/client"],
+	outputFileTracingRoot: path.join(import.meta.dirname, ".."),
+	outputFileTracingIncludes: {
+		"/*": [
+			"node_modules/sharp/**/*",
+			"../node_modules/.pnpm/sharp@*/node_modules/sharp/**/*",
+			"../node_modules/.pnpm/@img+sharp-linux-x64@*/node_modules/@img/sharp-linux-x64/**/*",
+			"../node_modules/.pnpm/@img+sharp-linuxmusl-x64@*/node_modules/@img/sharp-linuxmusl-x64/**/*",
+			"../node_modules/.pnpm/@img+sharp-libvips-linux-x64@*/node_modules/@img/sharp-libvips-linux-x64/**/*",
+			"../node_modules/.pnpm/@img+sharp-libvips-linuxmusl-x64@*/node_modules/@img/sharp-libvips-linuxmusl-x64/**/*",
+		],
+	},
 	typedRoutes: true,
 	reactCompiler: true,
 	experimental: {
