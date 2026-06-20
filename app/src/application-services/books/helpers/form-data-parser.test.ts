@@ -79,6 +79,8 @@ const mockFileToBuffer = vi.mocked(sharpImageProcessor.fileToBuffer);
 const mockGetMetadata = vi.mocked(sharpImageProcessor.getMetadata);
 const mockCreateThumbnail = vi.mocked(sharpImageProcessor.createThumbnail);
 
+const JPEG_BUFFER = Buffer.from([0xff, 0xd8, 0xff, 0xdb]);
+
 const buildMockFile = (
 	name = "cover.jpg",
 	type = "image/jpeg",
@@ -96,7 +98,7 @@ describe("parseAddBooksFormData", () => {
 		mockMakePath.mockImplementation((v) => v as Path);
 		mockMakeContentType.mockImplementation((v) => v as ContentType);
 		mockMakeFileSize.mockImplementation((v) => v as FileSize);
-		mockFileToBuffer.mockResolvedValue(Buffer.from([1, 2, 3]));
+		mockFileToBuffer.mockResolvedValue(JPEG_BUFFER);
 		mockGetMetadata.mockResolvedValue({ format: "jpeg" });
 		mockCreateThumbnail.mockResolvedValue(Buffer.from([4, 5, 6]));
 	});
@@ -295,7 +297,7 @@ describe("parseAddBooksFormData", () => {
 		expect(result.contentType).toBe("image/jpeg");
 	});
 
-	test("should reject unsupported cover image format after reading metadata", async () => {
+	test("should reject unsupported cover image signature before reading metadata", async () => {
 		const formData = new FormData();
 		const userId = "test-user-id" as UserId;
 
@@ -307,12 +309,32 @@ describe("parseAddBooksFormData", () => {
 		mockGetFormDataFile.mockReturnValueOnce(
 			buildMockFile("cover.avif", "image/avif"),
 		);
+		mockFileToBuffer.mockResolvedValue(Buffer.from("ftypavif"));
 		mockGetMetadata.mockResolvedValue({ format: "avif" });
 
 		await expect(parseAddBooksFormData(formData, userId)).rejects.toThrow(
 			FileNotAllowedError,
 		);
 		expect(mockFileToBuffer).toHaveBeenCalled();
+		expect(mockGetMetadata).not.toHaveBeenCalled();
+		expect(mockCreateThumbnail).not.toHaveBeenCalled();
+	});
+
+	test("should reject cover image when magic bytes and sharp metadata do not match", async () => {
+		const formData = new FormData();
+		const userId = "test-user-id" as UserId;
+
+		mockGetFormDataString
+			.mockReturnValueOnce("9784123456789")
+			.mockReturnValueOnce("Clean Code")
+			.mockReturnValueOnce("5")
+			.mockReturnValueOnce("programming");
+		mockGetFormDataFile.mockReturnValueOnce(buildMockFile("cover.jpg", ""));
+		mockGetMetadata.mockResolvedValue({ format: "png" });
+
+		await expect(parseAddBooksFormData(formData, userId)).rejects.toThrow(
+			FileNotAllowedError,
+		);
 		expect(mockCreateThumbnail).not.toHaveBeenCalled();
 	});
 
