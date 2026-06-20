@@ -1,4 +1,7 @@
-import { UploadFileNotAllowedError } from "@/common/error/upload-file-not-allowed-error";
+import {
+	UploadFileNotAllowedError,
+	type UploadFileNotAllowedReason,
+} from "@/common/error/upload-file-not-allowed-error";
 import { sharpImageProcessor } from "@/infrastructures/images/services/sharp-image-processor";
 
 const SUPPORTED_IMAGE_FORMAT_TO_CONTENT_TYPE = new Map<string, string>([
@@ -49,7 +52,7 @@ const IMAGE_SIGNATURE_MATCHERS: readonly ImageSignatureMatcher[] = [
 
 function createUploadFileNotAllowedError(
 	file: File,
-	reason: ConstructorParameters<typeof UploadFileNotAllowedError>[0]["reason"],
+	reason: UploadFileNotAllowedReason,
 	options?: Readonly<{
 		detectedContentType?: string;
 		sharpFormat?: string;
