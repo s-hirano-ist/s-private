@@ -61,6 +61,7 @@ vi.mock(
 vi.mock("@/infrastructures/images/services/sharp-image-processor", () => ({
 	sharpImageProcessor: {
 		fileToBuffer: vi.fn(),
+		getMetadata: vi.fn(),
 		createThumbnail: vi.fn(),
 	},
 }));
@@ -75,6 +76,7 @@ const mockMakePath = vi.mocked(makePath);
 const mockMakeContentType = vi.mocked(makeContentType);
 const mockMakeFileSize = vi.mocked(makeFileSize);
 const mockFileToBuffer = vi.mocked(sharpImageProcessor.fileToBuffer);
+const mockGetMetadata = vi.mocked(sharpImageProcessor.getMetadata);
 const mockCreateThumbnail = vi.mocked(sharpImageProcessor.createThumbnail);
 
 const buildMockFile = (
@@ -95,6 +97,7 @@ describe("parseAddBooksFormData", () => {
 		mockMakeContentType.mockImplementation((v) => v as ContentType);
 		mockMakeFileSize.mockImplementation((v) => v as FileSize);
 		mockFileToBuffer.mockResolvedValue(Buffer.from([1, 2, 3]));
+		mockGetMetadata.mockResolvedValue({ format: "jpeg" });
 		mockCreateThumbnail.mockResolvedValue(Buffer.from([4, 5, 6]));
 	});
 
@@ -272,7 +275,27 @@ describe("parseAddBooksFormData", () => {
 		expect(result.userId).toBe("different-user-123");
 	});
 
-	test("should reject unsupported cover image content type before reading file", async () => {
+	test("should accept cover image when browser does not provide content type", async () => {
+		const formData = new FormData();
+		const userId = "test-user-id" as UserId;
+
+		mockGetFormDataString
+			.mockReturnValueOnce("9784123456789")
+			.mockReturnValueOnce("Clean Code")
+			.mockReturnValueOnce("5")
+			.mockReturnValueOnce("programming");
+		mockGetFormDataFile.mockReturnValueOnce(buildMockFile("cover.jpg", ""));
+		mockMakeISBN.mockReturnValue("9784123456789" as ISBN);
+		mockMakeBookTitle.mockReturnValue("Clean Code" as BookTitle);
+		mockGetMetadata.mockResolvedValue({ format: "jpeg" });
+
+		const result = await parseAddBooksFormData(formData, userId);
+
+		expect(mockMakeContentType).toHaveBeenCalledWith("image/jpeg");
+		expect(result.contentType).toBe("image/jpeg");
+	});
+
+	test("should reject unsupported cover image format after reading metadata", async () => {
 		const formData = new FormData();
 		const userId = "test-user-id" as UserId;
 
@@ -284,11 +307,52 @@ describe("parseAddBooksFormData", () => {
 		mockGetFormDataFile.mockReturnValueOnce(
 			buildMockFile("cover.avif", "image/avif"),
 		);
+		mockGetMetadata.mockResolvedValue({ format: "avif" });
 
 		await expect(parseAddBooksFormData(formData, userId)).rejects.toThrow(
 			FileNotAllowedError,
 		);
-		expect(mockFileToBuffer).not.toHaveBeenCalled();
+		expect(mockFileToBuffer).toHaveBeenCalled();
+		expect(mockCreateThumbnail).not.toHaveBeenCalled();
+	});
+
+	test("should reject cover image when metadata format is missing", async () => {
+		const formData = new FormData();
+		const userId = "test-user-id" as UserId;
+
+		mockGetFormDataString
+			.mockReturnValueOnce("9784123456789")
+			.mockReturnValueOnce("Clean Code")
+			.mockReturnValueOnce("5")
+			.mockReturnValueOnce("programming");
+		mockGetFormDataFile.mockReturnValueOnce(buildMockFile("cover.jpg", ""));
+		mockGetMetadata.mockResolvedValue({});
+
+		await expect(parseAddBooksFormData(formData, userId)).rejects.toThrow(
+			FileNotAllowedError,
+		);
+		expect(mockCreateThumbnail).not.toHaveBeenCalled();
+	});
+
+	test("should reject cover images sharp cannot read metadata from", async () => {
+		const formData = new FormData();
+		const userId = "test-user-id" as UserId;
+
+		mockGetFormDataString
+			.mockReturnValueOnce("9784123456789")
+			.mockReturnValueOnce("Clean Code")
+			.mockReturnValueOnce("5")
+			.mockReturnValueOnce("programming");
+		mockGetFormDataFile.mockReturnValueOnce(
+			buildMockFile("cover.jpg", "image/jpeg"),
+		);
+		mockGetMetadata.mockRejectedValue(
+			new Error("Input buffer has corrupt header"),
+		);
+
+		await expect(parseAddBooksFormData(formData, userId)).rejects.toThrow(
+			FileNotAllowedError,
+		);
 		expect(mockCreateThumbnail).not.toHaveBeenCalled();
 	});
 
