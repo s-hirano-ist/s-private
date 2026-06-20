@@ -86,6 +86,7 @@
 		"@googleapis/books": "8.0.1",
 		"@s-hirano-ist/s-core": "workspace:*",
 		"@s-hirano-ist/s-database": "workspace:*",
+		"@s-hirano-ist/s-image-processing": "workspace:*",
 		"@s-hirano-ist/s-notification": "workspace:*",
 		"@s-hirano-ist/s-search": "workspace:*",
 		"@s-hirano-ist/s-storage": "workspace:*",
@@ -95,7 +96,6 @@
 		"gray-matter": "4.0.3",
 		"iconv-lite": "0.7.2",
 		"js-yaml": "4.2.0",
-		"sharp": "0.35.1",
 		"turndown": "7.2.4"
 	},
 	"devDependencies": {

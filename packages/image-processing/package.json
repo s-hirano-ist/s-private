@@ -1,0 +1,53 @@
+{
+	"name": "@s-hirano-ist/s-image-processing",
+	"version": "1.0.0",
+	"description": "Shared Photon-based image processing utilities for s-private",
+	"type": "module",
+	"main": "./dist/web.js",
+	"types": "./dist/web.d.ts",
+	"exports": {
+		".": {
+			"types": "./src/web.ts",
+			"default": "./src/web.ts"
+		},
+		"./node": {
+			"types": "./src/node.ts",
+			"default": "./src/node.ts"
+		}
+	},
+	"publishConfig": {
+		"access": "public",
+		"exports": {
+			".": {
+				"types": "./dist/web.d.ts",
+				"default": "./dist/web.js"
+			},
+			"./node": {
+				"types": "./dist/node.d.ts",
+				"default": "./dist/node.js"
+			}
+		},
+		"main": "./dist/web.js",
+		"types": "./dist/web.d.ts"
+	},
+	"files": [
+		"dist",
+		"README.md",
+		"LICENSE"
+	],
+	"scripts": {
+		"build": "tsc",
+		"prepublishOnly": "pnpm run build",
+		"clean": "rm -rf dist",
+		"typecheck": "tsc --noEmit"
+	},
+	"license": "AGPL-3.0",
+	"dependencies": {
+		"@silvia-odwyer/photon": "0.3.3",
+		"@silvia-odwyer/photon-node": "0.3.4"
+	},
+	"devDependencies": {
+		"@types/node": "24.13.2",
+		"typescript": "6.0.3"
+	}
+}

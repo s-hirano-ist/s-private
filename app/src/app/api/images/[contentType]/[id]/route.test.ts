@@ -59,7 +59,7 @@ describe("Images API Route", () => {
 		const response = await GET(authedRequest, { params });
 
 		expect(getImagesFromStorage).toHaveBeenCalledWith("image-123", true);
-		expect(response.headers.get("Content-Type")).toBe("image/jpeg");
+		expect(response.headers.get("Content-Type")).toBe("image/webp");
 		expect(response.headers.get("Cache-Control")).toBe(
 			"public, max-age=31536000, immutable",
 		);
@@ -80,7 +80,7 @@ describe("Images API Route", () => {
 		);
 	});
 
-	test("should return correct Content-Type for webp images", async () => {
+	test("should return WebP Content-Type for thumbnails regardless of path", async () => {
 		const mockStream = new Readable({ read() {} });
 		vi.mocked(getImagesFromStorage).mockResolvedValue(mockStream);
 

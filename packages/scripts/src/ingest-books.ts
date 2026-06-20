@@ -6,13 +6,13 @@ import {
 	makeUserId,
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { createWebpThumbnail } from "@s-hirano-ist/s-image-processing/node";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
 import { createMinioClient } from "@s-hirano-ist/s-storage";
 import { glob } from "glob";
 import matter from "gray-matter";
 import { readFile } from "node:fs/promises";
 import { basename, extname } from "node:path";
-import sharp from "sharp";
 
 type BookFrontmatter = {
 	heading?: string | number;
@@ -40,8 +40,6 @@ function getContentType(filePath: string): string | null {
 			return "image/jpeg";
 		case ".png":
 			return "image/png";
-		case ".gif":
-			return "image/gif";
 		case ".webp":
 			return "image/webp";
 		default:
@@ -192,11 +190,16 @@ async function main() {
 			console.log(`📤 MinIO アップロード（original）: ${fileName}`);
 		}
 
-		const thumbnailBuffer = await sharp(buffer)
-			.resize(THUMBNAIL_SIZE, THUMBNAIL_SIZE, { fit: "cover" })
-			.toBuffer();
+		const thumbnailBuffer = await createWebpThumbnail(buffer, {
+			width: THUMBNAIL_SIZE,
+			height: THUMBNAIL_SIZE,
+		});
 		const thumbnailKey = `${THUMBNAIL_BOOK_IMAGE_PATH}/${fileName}`;
-		await minioClient.putObject(bucketName, thumbnailKey, thumbnailBuffer);
+		await minioClient.putObject(
+			bucketName,
+			thumbnailKey,
+			Buffer.from(thumbnailBuffer),
+		);
 
 		return fileName;
 	}

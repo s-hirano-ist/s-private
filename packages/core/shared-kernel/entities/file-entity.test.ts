@@ -51,10 +51,6 @@ describe("file-entity", () => {
 			expect(makeContentType("image/png")).toBe("image/png");
 		});
 
-		test("should accept image/gif", () => {
-			expect(makeContentType("image/gif")).toBe("image/gif");
-		});
-
 		test("should accept jpeg", () => {
 			expect(makeContentType("jpeg")).toBe("jpeg");
 		});
@@ -77,6 +73,10 @@ describe("file-entity", () => {
 
 		test("should throw error for arbitrary string", () => {
 			expect(() => makeContentType("text/plain")).toThrow(ZodError);
+		});
+
+		test("should throw error for image/gif", () => {
+			expect(() => makeContentType("image/gif")).toThrow(ZodError);
 		});
 	});
 

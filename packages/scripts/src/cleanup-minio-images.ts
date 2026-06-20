@@ -11,7 +11,7 @@ const THUMBNAIL_IMAGE_PATH = "images/thumbnail";
 
 function isImageFile(filePath: string): boolean {
 	const ext = extname(filePath).toLowerCase();
-	return [".jpg", ".jpeg", ".png", ".gif", ".webp"].includes(ext);
+	return [".jpg", ".jpeg", ".png", ".webp"].includes(ext);
 }
 
 function listObjects(

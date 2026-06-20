@@ -21,7 +21,7 @@ export type StoragePathConfig = {
 export type StorageServiceOperations = {
 	uploadImage(
 		path: string,
-		buffer: Buffer,
+		bytes: Uint8Array,
 		isThumbnail: boolean,
 	): Promise<void>;
 	getImage(path: string, isThumbnail: boolean): Promise<NodeJS.ReadableStream>;

@@ -1,5 +1,5 @@
 import { getFormDataFile } from "@/common/utils/form-data-utils";
-import { sharpImageProcessor } from "@/infrastructures/images/services/sharp-image-processor";
+import { photonImageProcessor } from "@/infrastructures/images/services/photon-image-processor";
 import {
 	type ContentType,
 	type FileSize,
@@ -15,15 +15,15 @@ import { parseAddImageFormData } from "./form-data-parser";
 
 vi.mock("@/common/utils/form-data-utils");
 vi.mock("@s-hirano-ist/s-core/images/entities/image-entity");
-vi.mock("@/infrastructures/images/services/sharp-image-processor");
+vi.mock("@/infrastructures/images/services/photon-image-processor");
 
 const mockGetFormDataFile = vi.mocked(getFormDataFile);
 const mockMakePath = vi.mocked(makePath);
 const mockMakeContentType = vi.mocked(makeContentType);
 const mockMakeFileSize = vi.mocked(makeFileSize);
-const mockFileToBuffer = vi.mocked(sharpImageProcessor.fileToBuffer);
-const mockGetMetadata = vi.mocked(sharpImageProcessor.getMetadata);
-const mockCreateThumbnail = vi.mocked(sharpImageProcessor.createThumbnail);
+const mockFileToBytes = vi.mocked(photonImageProcessor.fileToBytes);
+const mockGetMetadata = vi.mocked(photonImageProcessor.getMetadata);
+const mockCreateThumbnail = vi.mocked(photonImageProcessor.createThumbnail);
 
 const JPEG_BUFFER = Buffer.from([0xff, 0xd8, 0xff, 0xdb]);
 const PNG_BUFFER = Buffer.from([
@@ -57,7 +57,7 @@ describe("parseAddImageFormData", () => {
 		mockMakePath.mockReturnValue("test-image.png" as Path);
 		mockMakeContentType.mockReturnValue("image/png" as ContentType);
 		mockMakeFileSize.mockReturnValue(1024 as FileSize);
-		mockFileToBuffer.mockResolvedValue(mockOriginalBuffer);
+		mockFileToBytes.mockResolvedValue(mockOriginalBuffer);
 		mockCreateThumbnail.mockResolvedValue(mockThumbnailBuffer);
 
 		const result = await parseAddImageFormData(formData, userId);
@@ -67,7 +67,7 @@ describe("parseAddImageFormData", () => {
 		expect(mockMakePath).toHaveBeenCalledWith("test-image.png", true);
 		expect(mockMakeContentType).toHaveBeenCalledWith("image/png");
 		expect(mockMakeFileSize).toHaveBeenCalledWith(1024);
-		expect(mockFileToBuffer).toHaveBeenCalledWith(mockFile);
+		expect(mockFileToBytes).toHaveBeenCalledWith(mockFile);
 		expect(mockCreateThumbnail).toHaveBeenCalledWith(
 			mockOriginalBuffer,
 			192,
@@ -104,7 +104,7 @@ describe("parseAddImageFormData", () => {
 		mockMakePath.mockReturnValue("photo.jpg" as Path);
 		mockMakeContentType.mockReturnValue("image/jpeg" as ContentType);
 		mockMakeFileSize.mockReturnValue(1024 as FileSize);
-		mockFileToBuffer.mockResolvedValue(mockOriginalBuffer);
+		mockFileToBytes.mockResolvedValue(mockOriginalBuffer);
 		mockGetMetadata.mockResolvedValue({ format: "jpeg" });
 		mockCreateThumbnail.mockResolvedValue(mockThumbnailBuffer);
 
@@ -139,7 +139,7 @@ describe("parseAddImageFormData", () => {
 		mockMakePath.mockReturnValue("photo.jpg" as Path);
 		mockMakeContentType.mockReturnValue("image/jpeg" as ContentType);
 		mockMakeFileSize.mockReturnValue(1024 as FileSize);
-		mockFileToBuffer.mockResolvedValue(mockOriginalBuffer);
+		mockFileToBytes.mockResolvedValue(mockOriginalBuffer);
 		mockGetMetadata.mockResolvedValue({ format: "jpeg" });
 		mockCreateThumbnail.mockResolvedValue(mockThumbnailBuffer);
 
@@ -169,7 +169,7 @@ describe("parseAddImageFormData", () => {
 		mockMakePath.mockReturnValue("photo.jpg" as Path);
 		mockMakeContentType.mockReturnValue("image/jpeg" as ContentType);
 		mockMakeFileSize.mockReturnValue(1024 as FileSize);
-		mockFileToBuffer.mockResolvedValue(mockOriginalBuffer);
+		mockFileToBytes.mockResolvedValue(mockOriginalBuffer);
 		mockGetMetadata.mockResolvedValue({ format: "jpeg" });
 		mockCreateThumbnail.mockResolvedValue(mockThumbnailBuffer);
 
@@ -199,7 +199,7 @@ describe("parseAddImageFormData", () => {
 		mockMakePath.mockReturnValue("テスト画像.png" as Path);
 		mockMakeContentType.mockReturnValue("image/png" as ContentType);
 		mockMakeFileSize.mockReturnValue(1536 as FileSize);
-		mockFileToBuffer.mockResolvedValue(mockOriginalBuffer);
+		mockFileToBytes.mockResolvedValue(mockOriginalBuffer);
 		mockCreateThumbnail.mockResolvedValue(mockThumbnailBuffer);
 
 		const result = await parseAddImageFormData(formData, userId);
@@ -229,7 +229,7 @@ describe("parseAddImageFormData", () => {
 		mockMakePath.mockReturnValue("large-image.png" as Path);
 		mockMakeContentType.mockReturnValue("image/png" as ContentType);
 		mockMakeFileSize.mockReturnValue(5242880 as FileSize);
-		mockFileToBuffer.mockResolvedValue(mockOriginalBuffer);
+		mockFileToBytes.mockResolvedValue(mockOriginalBuffer);
 		mockCreateThumbnail.mockResolvedValue(mockThumbnailBuffer);
 
 		const result = await parseAddImageFormData(formData, userId);
@@ -258,7 +258,7 @@ describe("parseAddImageFormData", () => {
 		mockMakePath.mockReturnValue("image with spaces & symbols (1).png" as Path);
 		mockMakeContentType.mockReturnValue("image/png" as ContentType);
 		mockMakeFileSize.mockReturnValue(1024 as FileSize);
-		mockFileToBuffer.mockResolvedValue(mockOriginalBuffer);
+		mockFileToBytes.mockResolvedValue(mockOriginalBuffer);
 		mockCreateThumbnail.mockResolvedValue(mockThumbnailBuffer);
 
 		const result = await parseAddImageFormData(formData, userId);
@@ -290,7 +290,7 @@ describe("parseAddImageFormData", () => {
 		mockMakePath.mockReturnValue("user-image.jpg" as Path);
 		mockMakeContentType.mockReturnValue("image/jpeg" as ContentType);
 		mockMakeFileSize.mockReturnValue(1024 as FileSize);
-		mockFileToBuffer.mockResolvedValue(mockOriginalBuffer);
+		mockFileToBytes.mockResolvedValue(mockOriginalBuffer);
 		mockGetMetadata.mockResolvedValue({ format: "jpeg" });
 		mockCreateThumbnail.mockResolvedValue(mockThumbnailBuffer);
 
@@ -309,18 +309,18 @@ describe("parseAddImageFormData", () => {
 		} as File;
 
 		mockGetFormDataFile.mockReturnValue(mockFile);
-		mockFileToBuffer.mockResolvedValue(Buffer.from("ftypavif"));
+		mockFileToBytes.mockResolvedValue(Buffer.from("ftypavif"));
 		mockGetMetadata.mockResolvedValue({ format: "avif" });
 
 		await expect(parseAddImageFormData(formData, userId)).rejects.toThrow(
 			FileNotAllowedError,
 		);
-		expect(mockFileToBuffer).toHaveBeenCalledWith(mockFile);
+		expect(mockFileToBytes).toHaveBeenCalledWith(mockFile);
 		expect(mockGetMetadata).not.toHaveBeenCalled();
 		expect(mockCreateThumbnail).not.toHaveBeenCalled();
 	});
 
-	test("should reject when magic bytes and sharp metadata do not match", async () => {
+	test("should reject when magic bytes and decoded metadata do not match", async () => {
 		const formData = new FormData();
 		const userId = makeUserId("test-user-id");
 		const mockFile = {
@@ -330,7 +330,7 @@ describe("parseAddImageFormData", () => {
 		} as File;
 
 		mockGetFormDataFile.mockReturnValue(mockFile);
-		mockFileToBuffer.mockResolvedValue(JPEG_BUFFER);
+		mockFileToBytes.mockResolvedValue(JPEG_BUFFER);
 		mockGetMetadata.mockResolvedValue({ format: "png" });
 
 		await expect(parseAddImageFormData(formData, userId)).rejects.toThrow(
@@ -349,7 +349,7 @@ describe("parseAddImageFormData", () => {
 		} as File;
 
 		mockGetFormDataFile.mockReturnValue(mockFile);
-		mockFileToBuffer.mockResolvedValue(JPEG_BUFFER);
+		mockFileToBytes.mockResolvedValue(JPEG_BUFFER);
 		mockGetMetadata.mockResolvedValue({});
 
 		await expect(parseAddImageFormData(formData, userId)).rejects.toThrow(
@@ -358,7 +358,7 @@ describe("parseAddImageFormData", () => {
 		expect(mockCreateThumbnail).not.toHaveBeenCalled();
 	});
 
-	test("should reject images sharp cannot read metadata from", async () => {
+	test("should reject images image processor cannot read metadata from", async () => {
 		const formData = new FormData();
 		const userId = makeUserId("test-user-id");
 		const mockFile = {
@@ -368,7 +368,7 @@ describe("parseAddImageFormData", () => {
 		} as File;
 
 		mockGetFormDataFile.mockReturnValue(mockFile);
-		mockFileToBuffer.mockResolvedValue(JPEG_BUFFER);
+		mockFileToBytes.mockResolvedValue(JPEG_BUFFER);
 		mockGetMetadata.mockRejectedValue(
 			new Error("Input buffer has corrupt header"),
 		);
@@ -379,7 +379,7 @@ describe("parseAddImageFormData", () => {
 		expect(mockCreateThumbnail).not.toHaveBeenCalled();
 	});
 
-	test("should reject images sharp cannot decode as invalid file format", async () => {
+	test("should reject images image processor cannot decode as invalid file format", async () => {
 		const formData = new FormData();
 		const userId = makeUserId("test-user-id");
 		const mockFile = {
@@ -392,7 +392,7 @@ describe("parseAddImageFormData", () => {
 		mockMakePath.mockReturnValue("photo.jpeg" as Path);
 		mockMakeContentType.mockReturnValue("image/jpeg" as ContentType);
 		mockMakeFileSize.mockReturnValue(1024 as FileSize);
-		mockFileToBuffer.mockResolvedValue(JPEG_BUFFER);
+		mockFileToBytes.mockResolvedValue(JPEG_BUFFER);
 		mockGetMetadata.mockResolvedValue({ format: "jpeg" });
 		mockCreateThumbnail.mockRejectedValue(
 			new Error("Input buffer has corrupt header"),

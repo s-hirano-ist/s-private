@@ -3,7 +3,7 @@ import {
 	getFormDataFile,
 	getFormDataString,
 } from "@/common/utils/form-data-utils";
-import { sharpImageProcessor } from "@/infrastructures/images/services/sharp-image-processor";
+import { photonImageProcessor } from "@/infrastructures/images/services/photon-image-processor";
 import {
 	type BookTitle,
 	type ISBN,
@@ -58,9 +58,9 @@ vi.mock(
 		};
 	},
 );
-vi.mock("@/infrastructures/images/services/sharp-image-processor", () => ({
-	sharpImageProcessor: {
-		fileToBuffer: vi.fn(),
+vi.mock("@/infrastructures/images/services/photon-image-processor", () => ({
+	photonImageProcessor: {
+		fileToBytes: vi.fn(),
 		getMetadata: vi.fn(),
 		createThumbnail: vi.fn(),
 	},
@@ -75,9 +75,9 @@ const mockMakeTags = vi.mocked(makeTags);
 const mockMakePath = vi.mocked(makePath);
 const mockMakeContentType = vi.mocked(makeContentType);
 const mockMakeFileSize = vi.mocked(makeFileSize);
-const mockFileToBuffer = vi.mocked(sharpImageProcessor.fileToBuffer);
-const mockGetMetadata = vi.mocked(sharpImageProcessor.getMetadata);
-const mockCreateThumbnail = vi.mocked(sharpImageProcessor.createThumbnail);
+const mockFileToBytes = vi.mocked(photonImageProcessor.fileToBytes);
+const mockGetMetadata = vi.mocked(photonImageProcessor.getMetadata);
+const mockCreateThumbnail = vi.mocked(photonImageProcessor.createThumbnail);
 
 const JPEG_BUFFER = Buffer.from([0xff, 0xd8, 0xff, 0xdb]);
 
@@ -98,7 +98,7 @@ describe("parseAddBooksFormData", () => {
 		mockMakePath.mockImplementation((v) => v as Path);
 		mockMakeContentType.mockImplementation((v) => v as ContentType);
 		mockMakeFileSize.mockImplementation((v) => v as FileSize);
-		mockFileToBuffer.mockResolvedValue(JPEG_BUFFER);
+		mockFileToBytes.mockResolvedValue(JPEG_BUFFER);
 		mockGetMetadata.mockResolvedValue({ format: "jpeg" });
 		mockCreateThumbnail.mockResolvedValue(Buffer.from([4, 5, 6]));
 	});
@@ -309,18 +309,18 @@ describe("parseAddBooksFormData", () => {
 		mockGetFormDataFile.mockReturnValueOnce(
 			buildMockFile("cover.avif", "image/avif"),
 		);
-		mockFileToBuffer.mockResolvedValue(Buffer.from("ftypavif"));
+		mockFileToBytes.mockResolvedValue(Buffer.from("ftypavif"));
 		mockGetMetadata.mockResolvedValue({ format: "avif" });
 
 		await expect(parseAddBooksFormData(formData, userId)).rejects.toThrow(
 			FileNotAllowedError,
 		);
-		expect(mockFileToBuffer).toHaveBeenCalled();
+		expect(mockFileToBytes).toHaveBeenCalled();
 		expect(mockGetMetadata).not.toHaveBeenCalled();
 		expect(mockCreateThumbnail).not.toHaveBeenCalled();
 	});
 
-	test("should reject cover image when magic bytes and sharp metadata do not match", async () => {
+	test("should reject cover image when magic bytes and decoded metadata do not match", async () => {
 		const formData = new FormData();
 		const userId = "test-user-id" as UserId;
 
@@ -356,7 +356,7 @@ describe("parseAddBooksFormData", () => {
 		expect(mockCreateThumbnail).not.toHaveBeenCalled();
 	});
 
-	test("should reject cover images sharp cannot read metadata from", async () => {
+	test("should reject cover images image processor cannot read metadata from", async () => {
 		const formData = new FormData();
 		const userId = "test-user-id" as UserId;
 
@@ -378,7 +378,7 @@ describe("parseAddBooksFormData", () => {
 		expect(mockCreateThumbnail).not.toHaveBeenCalled();
 	});
 
-	test("should reject cover images sharp cannot decode as invalid file format", async () => {
+	test("should reject cover images image processor cannot decode as invalid file format", async () => {
 		const formData = new FormData();
 		const userId = "test-user-id" as UserId;
 
@@ -392,7 +392,7 @@ describe("parseAddBooksFormData", () => {
 		);
 		mockMakeISBN.mockReturnValue("9784123456789" as ISBN);
 		mockMakeBookTitle.mockReturnValue("Clean Code" as BookTitle);
-		mockFileToBuffer.mockResolvedValue(Buffer.from("not-an-image"));
+		mockFileToBytes.mockResolvedValue(Buffer.from("not-an-image"));
 		mockCreateThumbnail.mockRejectedValue(
 			new Error("Input buffer has corrupt header"),
 		);

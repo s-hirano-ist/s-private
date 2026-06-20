@@ -15,10 +15,13 @@ export async function GET(
 
 	const isThumbnail = contentType === "thumbnail";
 	const stream = await getBooksImageFromStorage(path, isThumbnail);
+	const responseContentType = isThumbnail
+		? "image/webp"
+		: getContentTypeFromPath(path);
 
 	return new Response(stream as unknown as BodyInit, {
 		headers: {
-			"Content-Type": getContentTypeFromPath(path),
+			"Content-Type": responseContentType,
 			"Cache-Control": "public, max-age=31536000, immutable",
 		},
 	});

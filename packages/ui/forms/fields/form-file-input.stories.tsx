@@ -81,6 +81,6 @@ export const Avatar: Story = {
 		label: "プロフィール画像",
 		htmlFor: "avatar",
 		name: "avatar",
-		accept: "image/jpeg,image/png,image/gif",
+		accept: "image/jpeg,image/png,image/webp",
 	},
 };

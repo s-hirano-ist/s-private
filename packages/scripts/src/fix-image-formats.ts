@@ -1,8 +1,8 @@
 #!/usr/bin/env node
+import { convertToWebp as convertImageToWebp } from "@s-hirano-ist/s-image-processing/node";
 import { glob } from "glob";
-import { stat, unlink } from "node:fs/promises";
+import { readFile, stat, unlink, writeFile } from "node:fs/promises";
 import { basename, extname, join } from "node:path";
-import sharp from "sharp";
 
 const WEBP_QUALITY = 80;
 
@@ -20,7 +20,11 @@ async function convertToWebp(
 	inputPath: string,
 	outputPath: string,
 ): Promise<void> {
-	await sharp(inputPath).webp({ quality: WEBP_QUALITY }).toFile(outputPath);
+	const inputBytes = await readFile(inputPath);
+	const outputBytes = await convertImageToWebp(inputBytes, {
+		quality: WEBP_QUALITY,
+	});
+	await writeFile(outputPath, outputBytes);
 }
 
 async function processDirectory(

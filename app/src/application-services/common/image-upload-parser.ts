@@ -2,28 +2,31 @@ import {
 	UploadFileNotAllowedError,
 	type UploadFileNotAllowedReason,
 } from "@/common/error/upload-file-not-allowed-error";
-import { sharpImageProcessor } from "@/infrastructures/images/services/sharp-image-processor";
+import { photonImageProcessor } from "@/infrastructures/images/services/photon-image-processor";
 
 const SUPPORTED_IMAGE_FORMAT_TO_CONTENT_TYPE = new Map<string, string>([
 	["jpeg", "image/jpeg"],
 	["png", "image/png"],
-	["gif", "image/gif"],
 	["webp", "image/webp"],
 ]);
 
 type ImageSignatureMatcher = Readonly<{
 	contentType: string;
-	matches: (buffer: Buffer) => boolean;
+	matches: (bytes: Uint8Array) => boolean;
 }>;
 
-function startsWithBytes(buffer: Buffer, bytes: readonly number[]): boolean {
+function startsWithBytes(
+	bytes: Uint8Array,
+	signature: readonly number[],
+): boolean {
 	return (
-		buffer.length >= bytes.length && bytes.every((b, i) => buffer[i] === b)
+		bytes.length >= signature.length &&
+		signature.every((b, i) => bytes[i] === b)
 	);
 }
 
-function startsWithAscii(buffer: Buffer, value: string): boolean {
-	return buffer.subarray(0, value.length).equals(Buffer.from(value, "ascii"));
+function startsWithAscii(bytes: Uint8Array, value: string): boolean {
+	return value.split("").every((char, i) => bytes[i] === char.codePointAt(0));
 }
 
 const IMAGE_SIGNATURE_MATCHERS: readonly ImageSignatureMatcher[] = [
@@ -37,16 +40,11 @@ const IMAGE_SIGNATURE_MATCHERS: readonly ImageSignatureMatcher[] = [
 			startsWithBytes(buffer, [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
 	},
 	{
-		contentType: "image/gif",
-		matches: (buffer) =>
-			startsWithAscii(buffer, "GIF87a") || startsWithAscii(buffer, "GIF89a"),
-	},
-	{
 		contentType: "image/webp",
-		matches: (buffer) =>
-			buffer.length >= 12 &&
-			startsWithAscii(buffer, "RIFF") &&
-			buffer.subarray(8, 12).equals(Buffer.from("WEBP", "ascii")),
+		matches: (bytes) =>
+			bytes.length >= 12 &&
+			startsWithAscii(bytes, "RIFF") &&
+			startsWithAscii(bytes.subarray(8, 12), "WEBP"),
 	},
 ];
 
@@ -55,7 +53,7 @@ function createUploadFileNotAllowedError(
 	reason: UploadFileNotAllowedReason,
 	options?: Readonly<{
 		detectedContentType?: string;
-		sharpFormat?: string;
+		decodedFormat?: string;
 		cause?: unknown;
 	}>,
 ): UploadFileNotAllowedError {
@@ -68,17 +66,19 @@ function createUploadFileNotAllowedError(
 		fileSize: file.size,
 		declaredContentType: file.type,
 		detectedContentType: options?.detectedContentType,
-		sharpFormat: options?.sharpFormat,
+		decodedFormat: options?.decodedFormat,
 		causeMessage,
 	});
 }
 
-function detectContentTypeFromMagicBytes(buffer: Buffer): string | undefined {
-	if (buffer.length === 0) {
+function detectContentTypeFromMagicBytes(
+	bytes: Uint8Array,
+): string | undefined {
+	if (bytes.length === 0) {
 		return undefined;
 	}
 
-	return IMAGE_SIGNATURE_MATCHERS.find((matcher) => matcher.matches(buffer))
+	return IMAGE_SIGNATURE_MATCHERS.find((matcher) => matcher.matches(bytes))
 		?.contentType;
 }
 
@@ -98,14 +98,14 @@ function toSupportedImageContentType(
 	if (contentType === undefined) {
 		throw createUploadFileNotAllowedError(file, "metadata-format-unsupported", {
 			detectedContentType,
-			sharpFormat: format,
+			decodedFormat: format,
 		});
 	}
 
 	if (contentType !== detectedContentType) {
 		throw createUploadFileNotAllowedError(file, "detected-format-mismatch", {
 			detectedContentType,
-			sharpFormat: format,
+			decodedFormat: format,
 		});
 	}
 
@@ -114,10 +114,10 @@ function toSupportedImageContentType(
 
 export async function parseSupportedImageFile(file: File): Promise<{
 	contentType: string;
-	originalBuffer: Buffer;
-	thumbnailBuffer: Buffer;
+	originalBuffer: Uint8Array;
+	thumbnailBuffer: Uint8Array;
 }> {
-	const originalBuffer = await sharpImageProcessor.fileToBuffer(file);
+	const originalBuffer = await photonImageProcessor.fileToBytes(file);
 
 	if (originalBuffer.length === 0) {
 		throw createUploadFileNotAllowedError(file, "empty-buffer");
@@ -128,10 +128,10 @@ export async function parseSupportedImageFile(file: File): Promise<{
 		throw createUploadFileNotAllowedError(file, "unsupported-signature");
 	}
 
-	let sharpFormat: string | undefined;
+	let decodedFormat: string | undefined;
 	try {
-		const metadata = await sharpImageProcessor.getMetadata(originalBuffer);
-		sharpFormat = metadata.format;
+		const metadata = await photonImageProcessor.getMetadata(originalBuffer);
+		decodedFormat = metadata.format;
 	} catch (error) {
 		throw createUploadFileNotAllowedError(file, "metadata-read-failed", {
 			detectedContentType,
@@ -141,12 +141,12 @@ export async function parseSupportedImageFile(file: File): Promise<{
 
 	const contentType = toSupportedImageContentType(
 		file,
-		sharpFormat,
+		decodedFormat,
 		detectedContentType,
 	);
 
 	try {
-		const thumbnailBuffer = await sharpImageProcessor.createThumbnail(
+		const thumbnailBuffer = await photonImageProcessor.createThumbnail(
 			originalBuffer,
 			192,
 			192,
@@ -156,7 +156,7 @@ export async function parseSupportedImageFile(file: File): Promise<{
 	} catch (error) {
 		throw createUploadFileNotAllowedError(file, "thumbnail-creation-failed", {
 			detectedContentType,
-			sharpFormat,
+			decodedFormat,
 			cause: error,
 		});
 	}

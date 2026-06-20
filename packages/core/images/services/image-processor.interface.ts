@@ -6,7 +6,7 @@ export type ImageMetadata = {
 	width?: number;
 	/** Height in pixels */
 	height?: number;
-	/** Image format (e.g., "jpeg", "png", "gif") */
+	/** Image format (e.g., "jpeg", "png", "webp") */
 	format?: string;
 };
 
@@ -16,7 +16,7 @@ export type ImageMetadata = {
  * @remarks
  * Abstracts image manipulation operations from the domain layer.
  * Implementations should be provided by the infrastructure layer
- * (e.g., using sharp, jimp, or other image libraries).
+ * (e.g., using Photon, Jimp, or other image libraries).
  *
  * This follows the dependency inversion principle - the domain layer
  * defines what operations are needed, while the infrastructure layer
@@ -25,13 +25,13 @@ export type ImageMetadata = {
  * @example
  * ```typescript
  * // Infrastructure implementation
- * class SharpImageProcessor implements IImageProcessor {
- *   async createThumbnail(buffer: Buffer, width: number, height: number) {
- *     return await sharp(buffer).resize(width, height).toBuffer();
+ * class PhotonImageProcessor implements IImageProcessor {
+ *   async createThumbnail(bytes: Uint8Array, width: number, height: number) {
+ *     return await createWebpThumbnail(bytes, { width, height });
  *   }
  *
- *   async getMetadata(buffer: Buffer) {
- *     const metadata = await sharp(buffer).metadata();
+ *   async getMetadata(bytes: Uint8Array) {
+ *     const metadata = await readImageMetadata(bytes);
  *     return {
  *       width: metadata.width,
  *       height: metadata.height,
@@ -45,30 +45,30 @@ export type IImageProcessor = {
 	/**
 	 * Creates a thumbnail from an image buffer.
 	 *
-	 * @param buffer - The original image buffer
+	 * @param bytes - The original image bytes
 	 * @param width - Target thumbnail width in pixels
 	 * @param height - Target thumbnail height in pixels
-	 * @returns A buffer containing the resized image
+	 * @returns The resized WebP thumbnail bytes
 	 */
 	createThumbnail(
-		buffer: Buffer,
+		bytes: Uint8Array,
 		width: number,
 		height: number,
-	): Promise<Buffer>;
+	): Promise<Uint8Array>;
 
 	/**
 	 * Extracts metadata from an image buffer.
 	 *
-	 * @param buffer - The image buffer to analyze
+	 * @param bytes - The image bytes to analyze
 	 * @returns Extracted metadata including dimensions and format
 	 */
-	getMetadata(buffer: Buffer): Promise<ImageMetadata>;
+	getMetadata(bytes: Uint8Array): Promise<ImageMetadata>;
 
 	/**
-	 * Converts a File object to a Buffer.
+	 * Converts a File object to bytes.
 	 *
 	 * @param file - The File object to convert
-	 * @returns A buffer containing the file data
+	 * @returns The file data bytes
 	 */
-	fileToBuffer(file: File): Promise<Buffer>;
+	fileToBytes(file: File): Promise<Uint8Array>;
 };
