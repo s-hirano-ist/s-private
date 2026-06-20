@@ -15,8 +15,8 @@ const WEBP_BYTES = Buffer.from(
 	"base64",
 );
 
-function buildFile(bytes: Uint8Array, name: string, type = ""): File {
-	return new File([bytes], name, { type });
+function buildFile(bytes: Buffer, name: string, type = ""): File {
+	return new File([new Uint8Array(bytes)], name, { type });
 }
 
 function isWebp(bytes: Uint8Array): boolean {
