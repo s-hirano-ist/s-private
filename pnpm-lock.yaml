@@ -18,7 +18,7 @@ overrides:
   smol-toml@<1.6.1: ^1.6.1
   srvx@<0.11.13: ^0.11.16
   tar@<7.5.8: ^7.5.16
-  undici@<6.24.0: ^8.4.1
+  undici@<6.24.0: ^8.5.0
   ws@>=8.0.0 <8.20.1: ^8.21.0
 
 importers:
@@ -246,6 +246,13 @@ importers:
       tailwindcss:
         specifier: 4.3.1
         version: 4.3.1
+    optionalDependencies:
+      '@img/sharp-libvips-linux-x64':
+        specifier: 1.3.0
+        version: 1.3.0
+      '@img/sharp-linux-x64':
+        specifier: 0.35.1
+        version: 0.35.1
 
   packages/core:
     dependencies:
@@ -8943,8 +8950,8 @@ packages:
     resolution: {integrity: sha512-uZsKNuzQxDMUY6M3pIMvy5tvlGmtq8XJ2oLAkfRKGNu+1VQAIvLy2xIVG5ATZl5wDXl/tddByAWCizRbOme+TA==}
     engines: {node: '>=20.18.1'}
 
-  undici@8.4.1:
-    resolution: {integrity: sha512-RNHlB4fxZK0IrkhBsxhlbx7s8kFWwr7rzzOqj5nvZugw3ig3RsB7KW3zVlV0eu8POl+rx5d1hmL7rRg0z1owow==}
+  undici@8.5.0:
+    resolution: {integrity: sha512-xamtWoB1EshgjpmlXd7GGm2VfdDtw1+rD8uhry8pSNW3If6S8E0m2T2+orSKeZXEn/aPJMviCpDBA65WJt8zhg==}
     engines: {node: '>=22.19.0'}
 
   unicorn-magic@0.3.0:
@@ -12879,7 +12886,7 @@ snapshots:
       is-buffer: 2.0.5
       is-node-process: 1.2.0
       throttleit: 2.1.0
-      undici: 8.4.1
+      undici: 8.5.0
 
   '@vercel/build-utils@13.30.0':
     dependencies:
@@ -13083,7 +13090,7 @@ snapshots:
       ts-morph: 12.0.0
       tsx: 4.21.0
       typescript: 5.9.3
-      undici: 8.4.1
+      undici: 8.5.0
     transitivePeerDependencies:
       - encoding
       - rollup
@@ -17795,7 +17802,7 @@ snapshots:
 
   undici@7.27.2: {}
 
-  undici@8.4.1: {}
+  undici@8.5.0: {}
 
   unicorn-magic@0.3.0: {}
 
