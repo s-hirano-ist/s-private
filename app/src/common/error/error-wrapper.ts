@@ -26,6 +26,7 @@ import { S3Error, StorageOperationError } from "@s-hirano-ist/s-storage";
 import { APIError } from "better-auth/api";
 import { ZodError } from "zod";
 import { OperationPhaseError } from "./operation-phase-error";
+import { getUploadFileNotAllowedDiagnostics } from "./upload-file-not-allowed-error";
 
 /**
  * Converts FormData to a plain record for error responses.
@@ -110,11 +111,13 @@ async function handleDomainWarningError(
 		error instanceof InvalidFormatError ||
 		error instanceof FileNotAllowedError
 	) {
+		const extraData = getUploadFileNotAllowedDiagnostics(error);
 		await eventDispatcher.dispatch(
 			new SystemWarningEvent({
 				message: error.message,
 				status: 500,
 				caller: "wrapServerSideError",
+				extraData,
 				shouldNotify: true,
 			}),
 		);

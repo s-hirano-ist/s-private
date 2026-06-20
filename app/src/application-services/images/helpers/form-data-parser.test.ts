@@ -25,6 +25,12 @@ const mockFileToBuffer = vi.mocked(sharpImageProcessor.fileToBuffer);
 const mockGetMetadata = vi.mocked(sharpImageProcessor.getMetadata);
 const mockCreateThumbnail = vi.mocked(sharpImageProcessor.createThumbnail);
 
+const JPEG_BUFFER = Buffer.from([0xff, 0xd8, 0xff, 0xdb]);
+const PNG_BUFFER = Buffer.from([
+	0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
+]);
+const UNKNOWN_BUFFER = Buffer.from("not-an-image");
+
 describe("parseAddImageFormData", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
@@ -41,7 +47,7 @@ describe("parseAddImageFormData", () => {
 			size: 1024,
 		} as File;
 
-		const mockOriginalBuffer = Buffer.from("original-image-data");
+		const mockOriginalBuffer = PNG_BUFFER;
 		const mockThumbnailBuffer = Buffer.from("thumbnail-image-data");
 
 		// Mock form data extraction
@@ -88,7 +94,7 @@ describe("parseAddImageFormData", () => {
 			size: 1024,
 		} as File;
 
-		const mockOriginalBuffer = Buffer.from("jpeg-original-data");
+		const mockOriginalBuffer = JPEG_BUFFER;
 		const mockThumbnailBuffer = Buffer.from("jpeg-thumbnail-data");
 
 		// Mock form data extraction
@@ -126,7 +132,7 @@ describe("parseAddImageFormData", () => {
 			type: "",
 			size: 1024,
 		} as File;
-		const mockOriginalBuffer = Buffer.from("jpeg-original-data");
+		const mockOriginalBuffer = JPEG_BUFFER;
 		const mockThumbnailBuffer = Buffer.from("jpeg-thumbnail-data");
 
 		mockGetFormDataFile.mockReturnValue(mockFile);
@@ -156,7 +162,7 @@ describe("parseAddImageFormData", () => {
 			type: "application/octet-stream",
 			size: 1024,
 		} as File;
-		const mockOriginalBuffer = Buffer.from("octet-original-data");
+		const mockOriginalBuffer = JPEG_BUFFER;
 		const mockThumbnailBuffer = Buffer.from("octet-thumbnail-data");
 
 		mockGetFormDataFile.mockReturnValue(mockFile);
@@ -183,7 +189,7 @@ describe("parseAddImageFormData", () => {
 			size: 1536,
 		} as File;
 
-		const mockOriginalBuffer = Buffer.from("japanese-original-data");
+		const mockOriginalBuffer = PNG_BUFFER;
 		const mockThumbnailBuffer = Buffer.from("japanese-thumbnail-data");
 
 		// Mock form data extraction
@@ -213,7 +219,7 @@ describe("parseAddImageFormData", () => {
 			size: 5242880, // 5MB
 		} as File;
 
-		const mockOriginalBuffer = Buffer.from("large-original-data");
+		const mockOriginalBuffer = PNG_BUFFER;
 		const mockThumbnailBuffer = Buffer.from("large-thumbnail-data");
 
 		// Mock form data extraction
@@ -242,7 +248,7 @@ describe("parseAddImageFormData", () => {
 			size: 1024,
 		} as File;
 
-		const mockOriginalBuffer = Buffer.from("special-original-data");
+		const mockOriginalBuffer = PNG_BUFFER;
 		const mockThumbnailBuffer = Buffer.from("special-thumbnail-data");
 
 		// Mock form data extraction
@@ -274,7 +280,7 @@ describe("parseAddImageFormData", () => {
 			size: 1024,
 		} as File;
 
-		const mockOriginalBuffer = Buffer.from("user-original-data");
+		const mockOriginalBuffer = JPEG_BUFFER;
 		const mockThumbnailBuffer = Buffer.from("user-thumbnail-data");
 
 		// Mock form data extraction
@@ -293,7 +299,7 @@ describe("parseAddImageFormData", () => {
 		expect(result.userId).toBe("different-user-789");
 	});
 
-	test("should reject unsupported image format after reading metadata", async () => {
+	test("should reject unsupported image signature before reading metadata", async () => {
 		const formData = new FormData();
 		const userId = makeUserId("test-user-id");
 		const mockFile = {
@@ -303,13 +309,33 @@ describe("parseAddImageFormData", () => {
 		} as File;
 
 		mockGetFormDataFile.mockReturnValue(mockFile);
-		mockFileToBuffer.mockResolvedValue(Buffer.from("avif-image-data"));
+		mockFileToBuffer.mockResolvedValue(Buffer.from("ftypavif"));
 		mockGetMetadata.mockResolvedValue({ format: "avif" });
 
 		await expect(parseAddImageFormData(formData, userId)).rejects.toThrow(
 			FileNotAllowedError,
 		);
 		expect(mockFileToBuffer).toHaveBeenCalledWith(mockFile);
+		expect(mockGetMetadata).not.toHaveBeenCalled();
+		expect(mockCreateThumbnail).not.toHaveBeenCalled();
+	});
+
+	test("should reject when magic bytes and sharp metadata do not match", async () => {
+		const formData = new FormData();
+		const userId = makeUserId("test-user-id");
+		const mockFile = {
+			name: "photo.jpg",
+			type: "",
+			size: 1024,
+		} as File;
+
+		mockGetFormDataFile.mockReturnValue(mockFile);
+		mockFileToBuffer.mockResolvedValue(JPEG_BUFFER);
+		mockGetMetadata.mockResolvedValue({ format: "png" });
+
+		await expect(parseAddImageFormData(formData, userId)).rejects.toThrow(
+			FileNotAllowedError,
+		);
 		expect(mockCreateThumbnail).not.toHaveBeenCalled();
 	});
 
@@ -323,7 +349,7 @@ describe("parseAddImageFormData", () => {
 		} as File;
 
 		mockGetFormDataFile.mockReturnValue(mockFile);
-		mockFileToBuffer.mockResolvedValue(Buffer.from("image-data"));
+		mockFileToBuffer.mockResolvedValue(JPEG_BUFFER);
 		mockGetMetadata.mockResolvedValue({});
 
 		await expect(parseAddImageFormData(formData, userId)).rejects.toThrow(
@@ -342,7 +368,7 @@ describe("parseAddImageFormData", () => {
 		} as File;
 
 		mockGetFormDataFile.mockReturnValue(mockFile);
-		mockFileToBuffer.mockResolvedValue(Buffer.from("not-an-image"));
+		mockFileToBuffer.mockResolvedValue(JPEG_BUFFER);
 		mockGetMetadata.mockRejectedValue(
 			new Error("Input buffer has corrupt header"),
 		);
@@ -366,7 +392,7 @@ describe("parseAddImageFormData", () => {
 		mockMakePath.mockReturnValue("photo.jpeg" as Path);
 		mockMakeContentType.mockReturnValue("image/jpeg" as ContentType);
 		mockMakeFileSize.mockReturnValue(1024 as FileSize);
-		mockFileToBuffer.mockResolvedValue(Buffer.from("not-an-image"));
+		mockFileToBuffer.mockResolvedValue(JPEG_BUFFER);
 		mockGetMetadata.mockResolvedValue({ format: "jpeg" });
 		mockCreateThumbnail.mockRejectedValue(
 			new Error("Input buffer has corrupt header"),

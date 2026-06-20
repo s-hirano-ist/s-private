@@ -10,7 +10,6 @@ import {
 	getFormDataFile,
 	getFormDataString,
 } from "@/common/utils/form-data-utils";
-import { sharpImageProcessor } from "@/infrastructures/images/services/sharp-image-processor";
 import {
 	makeBookTitle,
 	makeISBN,
@@ -22,17 +21,6 @@ import {
 	makeFileSize,
 	makePath,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
-import { FileNotAllowedError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
-
-async function createThumbnailOrThrowInvalidFile(
-	buffer: Buffer,
-): Promise<Buffer> {
-	try {
-		return await sharpImageProcessor.createThumbnail(buffer, 192, 192);
-	} catch {
-		throw new FileNotAllowedError();
-	}
-}
 
 /**
  * Parses book creation form data into domain value objects.
@@ -56,13 +44,14 @@ export const parseAddBooksFormData = async (
 		.map((t) => t.trim())
 		.filter((t) => t.length > 0);
 
-	const { contentType: detectedContentType, originalBuffer } =
-		await parseSupportedImageFile(file);
+	const {
+		contentType: detectedContentType,
+		originalBuffer,
+		thumbnailBuffer,
+	} = await parseSupportedImageFile(file);
 	const path = makePath(file.name, true);
 	const contentType = makeContentType(detectedContentType);
 	const fileSize = makeFileSize(file.size);
-	const thumbnailBuffer =
-		await createThumbnailOrThrowInvalidFile(originalBuffer);
 
 	return {
 		isbn: makeISBN(isbnInput),

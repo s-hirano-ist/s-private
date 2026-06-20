@@ -13,6 +13,9 @@ export class SystemEventHandler implements DomainEventHandler {
 			caller: metadata.caller,
 			status: payload.status as LogContext["status"],
 			userId: metadata.userId,
+			...(eventType !== "system.warning" || payload.extraData === undefined
+				? {}
+				: { additionalContext: { extraData: payload.extraData } }),
 		};
 
 		const notifyOptions = payload.shouldNotify

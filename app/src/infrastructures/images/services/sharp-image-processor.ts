@@ -42,12 +42,17 @@ async function createThumbnail(
 	height: number = THUMBNAIL_HEIGHT,
 ): Promise<Buffer> {
 	const sharp = await loadSharp();
-	return await sharp(buffer).resize(width, height).toBuffer();
+	return await sharp(buffer, { autoOrient: true, failOn: "none" })
+		.resize(width, height)
+		.toBuffer();
 }
 
 async function getMetadata(buffer: Buffer): Promise<ImageMetadata> {
 	const sharp = await loadSharp();
-	const metadata = await sharp(buffer).metadata();
+	const metadata = await sharp(buffer, {
+		autoOrient: true,
+		failOn: "none",
+	}).metadata();
 	return {
 		width: metadata.width,
 		height: metadata.height,

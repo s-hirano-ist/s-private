@@ -1,4 +1,5 @@
 import type { ZodError } from "zod";
+import { UploadFileNotAllowedError } from "@/common/error/upload-file-not-allowed-error";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { UnexpectedError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import { Prisma } from "@s-hirano-ist/s-database";
@@ -93,6 +94,42 @@ describe("wrapServerSideErrorForClient", () => {
 		expect(result).toEqual({
 			success: false,
 			message: error.message,
+		});
+	});
+
+	test("should log upload file rejection diagnostics without changing client message", async () => {
+		const error = new UploadFileNotAllowedError({
+			reason: "metadata-read-failed",
+			fileName: "IMG_9521.jpg",
+			fileSize: 2_000_000,
+			declaredContentType: "",
+			detectedContentType: "image/jpeg",
+			causeMessage: "Input buffer has corrupt header",
+		});
+
+		const result = await wrapServerSideErrorForClient(error);
+
+		expect(eventDispatcher.dispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				eventType: "system.warning",
+				payload: expect.objectContaining({
+					message: "invalidFileFormat",
+					status: 500,
+					extraData: {
+						reason: "metadata-read-failed",
+						fileName: "IMG_9521.jpg",
+						fileSize: 2_000_000,
+						declaredContentType: "",
+						detectedContentType: "image/jpeg",
+						causeMessage: "Input buffer has corrupt header",
+					},
+					shouldNotify: true,
+				}),
+			}),
+		);
+		expect(result).toEqual({
+			success: false,
+			message: "invalidFileFormat",
 		});
 	});
 

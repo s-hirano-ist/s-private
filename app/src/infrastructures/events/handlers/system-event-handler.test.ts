@@ -69,6 +69,30 @@ describe("SystemEventHandler", () => {
 		);
 	});
 
+	test("should include warning extra data in log context", async () => {
+		const event = createEvent("system.warning", {
+			message: "Upload file rejected",
+			status: 500,
+			shouldNotify: true,
+			extraData: { reason: "metadata-read-failed" },
+		});
+
+		await handler.handle(event);
+
+		expect(serverLogger.warn).toHaveBeenCalledWith(
+			"Upload file rejected",
+			{
+				caller: "testCaller",
+				status: 500,
+				userId: "user-123",
+				additionalContext: {
+					extraData: { reason: "metadata-read-failed" },
+				},
+			},
+			{ notify: true },
+		);
+	});
+
 	test("should pass notify option when shouldNotify is true for error", async () => {
 		const event = createEvent("system.error", {
 			message: "Error with notify",
