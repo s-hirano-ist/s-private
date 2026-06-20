@@ -1,6 +1,7 @@
 import type { ZodError } from "zod";
 import { UploadFileNotAllowedError } from "@/common/error/upload-file-not-allowed-error";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
+import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
 import { UnexpectedError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import { Prisma } from "@s-hirano-ist/s-database";
 import { NotificationError } from "@s-hirano-ist/s-notification";
@@ -47,6 +48,15 @@ vi.mock("@s-hirano-ist/s-storage", () => ({
 }));
 
 describe("wrapServerSideErrorForClient", () => {
+	test("should initialize event handlers before dispatching", async () => {
+		const error = new UnexpectedError();
+
+		await wrapServerSideErrorForClient(error);
+
+		expect(initializeEventHandlers).toHaveBeenCalledOnce();
+		expect(eventDispatcher.dispatch).toHaveBeenCalled();
+	});
+
 	test("should handle NotificationError", async () => {
 		const error = new NotificationError();
 

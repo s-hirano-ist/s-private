@@ -12,6 +12,7 @@
 import "server-only";
 import type { ServerAction } from "@/common/types";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
+import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
 import {
 	DuplicateError,
 	FileNotAllowedError,
@@ -272,6 +273,8 @@ export async function wrapServerSideErrorForClient(
 	error: unknown,
 	formData?: FormData,
 ): Promise<ServerAction> {
+	initializeEventHandlers();
+
 	const notificationOrS3 = await handleNotificationOrS3Error(error);
 	if (notificationOrS3) return notificationOrS3;
 
