@@ -16,7 +16,7 @@ import {
 	createWebpThumbnail,
 	fileToBytes,
 	readImageMetadata,
-} from "@s-hirano-ist/s-image-processing";
+} from "@s-hirano-ist/s-image-processing/node";
 
 const THUMBNAIL_WIDTH = 192;
 const THUMBNAIL_HEIGHT = 192;

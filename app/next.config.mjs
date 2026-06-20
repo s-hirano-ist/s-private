@@ -17,13 +17,8 @@ const nextConfig = {
 		"@s-hirano-ist/s-search",
 		"@s-hirano-ist/s-ui",
 	],
-	serverExternalPackages: ["@prisma/client", "@silvia-odwyer/photon"],
+	serverExternalPackages: ["@prisma/client", "@silvia-odwyer/photon-node"],
 	outputFileTracingRoot: path.join(import.meta.dirname, ".."),
-	outputFileTracingIncludes: {
-		"/*": [
-			"../node_modules/.pnpm/@silvia-odwyer+photon@*/node_modules/@silvia-odwyer/photon/photon_rs_bg.wasm",
-		],
-	},
 	typedRoutes: true,
 	reactCompiler: true,
 	experimental: {
