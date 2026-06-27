@@ -58,7 +58,10 @@
 			"name": "react-hooks-js",
 			"specifier": "eslint-plugin-react-hooks"
 		},
-		"oxlint-plugin-eslint",
+		{
+			"name": "eslint-js",
+			"specifier": "oxlint-plugin-eslint"
+		},
 		"eslint-plugin-sonarjs",
 		{
 			"name": "unicorn-js",
