@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.11.2](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.11.1...s-private-v3.11.2) (2026-06-29)
+
+
+### Bug Fixes
+
+* defer sharp loading for image pages ([414ed2a](https://github.com/s-hirano-ist/s-private/commit/414ed2a6d5721309229425b816cc3d9d9eadf4e4))
+* include photon package in server bundle ([c3cfc42](https://github.com/s-hirano-ist/s-private/commit/c3cfc42a3e0c35005226420e7de2a037462515b6))
+* include photon package in server bundle ([d9a6926](https://github.com/s-hirano-ist/s-private/commit/d9a6926e804017fd15853f1363f33e6fb2ddefff))
+
+
+### Maintenance
+
+* delete storybook mcp ([4fd04eb](https://github.com/s-hirano-ist/s-private/commit/4fd04eb5e72b72e631e8efd3a96f88f736707e6d))
+* disable lockfile maintenance ([681a992](https://github.com/s-hirano-ist/s-private/commit/681a99219f0871a321d64cfd851bdd87edc1d1ef))
+* disable lockfile maintenance ([4a5f563](https://github.com/s-hirano-ist/s-private/commit/4a5f563daab8e9cef4f3db663f3b134a00430241))
+
 ## [3.11.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.11.0...s-private-v3.11.1) (2026-06-15)
 
 
