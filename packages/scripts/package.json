@@ -91,11 +91,11 @@
 		"@s-hirano-ist/s-search": "workspace:*",
 		"@s-hirano-ist/s-storage": "workspace:*",
 		"cheerio": "1.2.0",
-		"dprint": "0.54.0",
+		"dprint": "0.55.1",
 		"glob": "13.0.6",
 		"gray-matter": "4.0.3",
 		"iconv-lite": "0.7.2",
-		"js-yaml": "4.2.0",
+		"js-yaml": "4.3.0",
 		"turndown": "7.2.4"
 	},
 	"devDependencies": {
