@@ -346,8 +346,8 @@ importers:
         specifier: 0.7.2
         version: 0.7.2
       js-yaml:
-        specifier: 4.2.0
-        version: 4.2.0
+        specifier: 5.2.0
+        version: 5.2.0
       turndown:
         specifier: 7.2.4
         version: 7.2.4
@@ -7046,6 +7046,10 @@ packages:
 
   js-yaml@4.2.0:
     resolution: {integrity: sha512-ePWsvanv0DWuDRsW8dnt+R4jQ31SCRCQ7hhNcPXZPsoBZiemuZNYGf7adZdqX2D86j6rvKp3RpCxVTSb8WQlOw==}
+    hasBin: true
+
+  js-yaml@5.2.0:
+    resolution: {integrity: sha512-YeLUMlvR4Ou1B119LIaM0r65JvbOBooJDc9yEu0dClb/uSC5P4FrLU8OCCz/HXWvtPoIrR0dRzABTjo1sTN9Bw==}
     hasBin: true
 
   jscpd@5.0.11:
@@ -15574,6 +15578,10 @@ snapshots:
       argparse: 2.0.1
 
   js-yaml@4.2.0:
+    dependencies:
+      argparse: 2.0.1
+
+  js-yaml@5.2.0:
     dependencies:
       argparse: 2.0.1
 
