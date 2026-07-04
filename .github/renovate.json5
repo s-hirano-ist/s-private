@@ -66,6 +66,14 @@
 			automerge: true,
 		},
 		{
+			matchManagers: ["npm"],
+			matchDepTypes: ["pnpm.overrides"],
+			groupName: "pnpm overrides",
+			groupSlug: "pnpm-overrides",
+			minimumReleaseAge: "2 days",
+			automerge: false,
+		},
+		{
 			matchManagers: ["mise"],
 			groupName: "mise",
 			groupSlug: "mise",
