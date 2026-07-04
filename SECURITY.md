@@ -39,7 +39,7 @@ This project uses [Renovate](https://docs.renovatebot.com/) for automated depend
 - **Grouped Updates**:
   - 非メジャー更新（patch + minor）を依存種別ごとに集約: `non-major`（dependencies / peerDependencies）と `non-major (devDependencies)`
   - `mise` ツール群、および Node.js + pnpm はそれぞれ専用グループ（`mise` / `node and pnpm`）
-- **Lock File Maintenance**: Automatic lock file updates to keep dependencies fresh
+- **Lock File Maintenance**: Disabled. Dependencies are version-pinned, and regular Renovate PRs update the lockfile together with their manifests; standalone full lockfile refreshes obscure which direct update caused transitive changes.
 
 **Renovate Settings**:
 ```json5
@@ -60,7 +60,8 @@ This project uses [Renovate](https://docs.renovatebot.com/) for automated depend
   vulnerabilityAlerts: {
     labels: ['security'],
   },
-  lockFileMaintenance: { enabled: true },
+  // Avoid standalone full re-resolution of transitive dependencies.
+  lockFileMaintenance: { enabled: false },
   packageRules: [
     // Four rules (npm deps, npm devDeps, mise, node/pnpm) all use:
     {

@@ -14,7 +14,6 @@
 	//     npm ジョブが "does not support your pnpm version" で失敗するため Renovate に戻した
 	//     (dependabot/dependabot-core#14794)。
 	//   - mise / nvm: ツールバージョン管理
-	//   - lockFileMaintenance: 四半期に pnpm-lock 全リフレッシュ
 	// github-actions / docker-compose は pnpm 非依存のため .github/dependabot.yml が担当。
 	enabledManagers: ["npm", "mise", "nvm"],
 	// self-host runner での pnpm install の lifecycle scripts (sharp /
@@ -38,11 +37,10 @@
 	rangeStrategy: "bump",
 	platformAutomerge: true,
 	automergeStrategy: "squash",
-	lockFileMaintenance: {
-		enabled: true,
-		automerge: false,
-		schedule: ["before 5am on the first day of january,april,july,october"],
-	},
+	// package.json の依存は完全固定され、通常の更新 PR でも pnpm-lock.yaml が更新される。
+	// 全推移依存だけを一括再解決する maintenance PR は、更新元が不明瞭な巨大差分や
+	// 推移依存の意図しないメジャー更新を生むため無効化する。
+	lockFileMaintenance: { enabled: false },
 	vulnerabilityAlerts: {
 		labels: ["security"],
 	},
