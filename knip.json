@@ -2,8 +2,8 @@
 	"$schema": "https://unpkg.com/knip@5/schema.json",
 	"ignoreExportsUsedInFile": true,
 	"ignore": ["e2e/**/*"],
-	"ignoreDependencies": ["babel-plugin-react-compiler"],
-	"ignoreBinaries": ["dot", "serve", "only-allow"],
+	"ignoreDependencies": [],
+	"ignoreBinaries": [],
 	"workspaces": {
 		"app": {
 			"ignore": [
@@ -55,11 +55,7 @@
 			"project": ["**/*.ts"]
 		},
 		"packages/database": {
-			"ignoreDependencies": [
-				"@prisma/client",
-				"@prisma/client-runtime-utils",
-				"prisma-erd-generator"
-			]
+			"ignoreDependencies": ["@prisma/client-runtime-utils"]
 		}
 	}
 }
