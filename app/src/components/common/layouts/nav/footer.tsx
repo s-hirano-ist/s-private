@@ -1,6 +1,5 @@
 "use client";
 import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
-import type { Route } from "next";
 import { Button } from "@s-hirano-ist/s-ui/ui/button";
 import { cn } from "@s-hirano-ist/s-ui/utils/cn";
 import { haptic } from "@s-hirano-ist/s-ui/utils/haptic";
@@ -55,9 +54,9 @@ export function Footer({ search }: Props) {
 
 	useEffect(() => {
 		if (pathname.endsWith("/viewer")) {
-			router.prefetch(pathname.replace(/\/viewer$/u, "") as Route);
+			router.prefetch(pathname.replace(/\/viewer$/u, ""));
 		} else {
-			router.prefetch(`${pathname}/viewer` as Route);
+			router.prefetch(`${pathname}/viewer`);
 		}
 	}, [router, pathname]);
 
@@ -73,11 +72,11 @@ export function Footer({ search }: Props) {
 					value === "viewer"
 						? `/${locale}/articles/viewer`
 						: `/${locale}/articles`;
-				router.replace(target as Route);
+				router.replace(target);
 			} else if (value === "viewer") {
-				router.replace(`${pathname.replace(/\/viewer$/u, "")}/viewer` as Route);
+				router.replace(`${pathname.replace(/\/viewer$/u, "")}/viewer`);
 			} else {
-				router.replace(pathname.replace(/\/viewer$/u, "") as Route);
+				router.replace(pathname.replace(/\/viewer$/u, ""));
 			}
 		});
 	};
