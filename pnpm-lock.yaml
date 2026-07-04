@@ -10,7 +10,7 @@ overrides:
   ajv@>=7.0.0-alpha.0 <8.18.0: ^8.20.0
   brace-expansion@>=5.0.0 <5.0.6: ^5.0.7
   minimatch@>=10.0.0 <10.2.3: ^10.2.5
-  mermaid@>=11.0.0-alpha.1 <=11.14.0: ^11.14.1
+  mermaid@>=11.0.0-alpha.1 <=11.14.0: ^11.16.0
   path-to-regexp@<6.3.0: ^8.4.2
   path-to-regexp@>=8.0.0 <8.4.0: ^8.4.2
   postcss@<8.5.10: ^8.5.16
@@ -1875,7 +1875,7 @@ packages:
   '@mermaid-js/layout-elk@0.2.1':
     resolution: {integrity: sha512-MX9jwhMyd5zDcFsYcl3duDUkKhjVRUCGEQrdCeNV5hCIR6+3FuDDbRbFmvVbAu15K1+juzsYGG+K8MDvCY1Amg==}
     peerDependencies:
-      mermaid: ^11.14.1
+      mermaid: ^11.16.0
 
   '@mermaid-js/mermaid-cli@11.14.0':
     resolution: {integrity: sha512-8tURXUFVSc1x4i0fmgJOUleT8w3KyW3Jixt9YLJ2zQVfaVArViIXD7DuJLRlYds1tdExsnvSK/qf6pCNdyU+Vw==}
@@ -1887,10 +1887,10 @@ packages:
   '@mermaid-js/mermaid-zenuml@0.2.2':
     resolution: {integrity: sha512-sUjwk4NWUpy9uaHypYSIGJDks10ZaZo5CHH9lx9xcmyqv9w7yvd4vecUmlUQxmlHStYO+aqSkYKX5/gFjDfypw==}
     peerDependencies:
-      mermaid: ^11.14.1
+      mermaid: ^11.16.0
 
-  '@mermaid-js/parser@1.1.1':
-    resolution: {integrity: sha512-VuHdsYMK1bT6X2JbcAaWAhugTRvRBRyuZgd+c22swUeI9g/ntaxF7CY7dYarhZovofCbUNO0G7JesfmNtjYOCw==}
+  '@mermaid-js/parser@1.2.0':
+    resolution: {integrity: sha512-oYPyv8A4As1yH5Bx+04iQEQxXuIQDe0GKCNSRgao6z8AM9jixXIfP0vsppRLvGf+nKIOb9/LdpWA4YuJiVvESA==}
 
   '@mixmark-io/domino@2.2.0':
     resolution: {integrity: sha512-Y28PR25bHXUg88kCV7nivXrP2Nj2RueZ3/l/jdx6J9f8J4nsEGcgX0Qe6lt7Pa+J79+kPiJU3LguR6O/6zrLOw==}
@@ -7375,8 +7375,8 @@ packages:
     resolution: {integrity: sha512-Sz8FzjzI0kN13GK/6MVEsVzMZEPvOhnmmI1lU5+/1cGOiK3QUahntrNNtdVeihrO7t9JpoH75iMNXg6R6uWflQ==}
     engines: {node: '>=18.0.0'}
 
-  mermaid@11.15.0:
-    resolution: {integrity: sha512-pTMbcf3rWdtLiYGpmoTjHEpeY8seiy6sR+9nD7LOs8KfUbHE4lOUAprTRqRAcWSQ6MQpdX+YEsxShtGsINtPtw==}
+  mermaid@11.16.0:
+    resolution: {integrity: sha512-Zvm3kbstgdpvIJPPItlL7fppIZ3kibvc1oZIGxdvk9t6UFz6flv+Jw7FtRGKwfcI8OckmH04LqG6LlS6X4B1pA==}
 
   micro@9.3.5-canary.3:
     resolution: {integrity: sha512-viYIo9PefV+w9dvoIBh1gI44Mvx1BOk67B4BpC2QK77qdY0xZF0Q+vWLt/BII6cLkIc8rLmSIcJaB/OrXXKe1g==}
@@ -9161,10 +9161,6 @@ packages:
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
-  uuid@14.0.0:
-    resolution: {integrity: sha512-Qo+uWgilfSmAhXCMav1uYFynlQO7fMFiMVZsQqZRMIXp0O7rR7qjkj+cPvBHLgBqi960QCoo/PH2/6ZtVqKvrg==}
-    hasBin: true
-
   uuid@14.0.1:
     resolution: {integrity: sha512-6ZxzVpzDXDa3bJWaHilVayA+BH/1zmxCJoVgvmqJnid/gPoKHxUrS/aC/T6LGQtNHT+XHG9fXPJB4d+IrU30Ew==}
     hasBin: true
@@ -10629,20 +10625,20 @@ snapshots:
       '@types/react': 19.2.17
       react: 19.2.7
 
-  '@mermaid-js/layout-elk@0.2.1(mermaid@11.15.0)':
+  '@mermaid-js/layout-elk@0.2.1(mermaid@11.16.0)':
     dependencies:
       d3: 7.9.0
       elkjs: 0.9.3
-      mermaid: 11.15.0
+      mermaid: 11.16.0
 
   '@mermaid-js/mermaid-cli@11.14.0(@babel/core@7.29.0)(@babel/template@7.28.6)(@types/react@19.2.17)(puppeteer@24.43.0(typescript@6.0.3))(tsx@4.22.4)(yaml@2.9.0)':
     dependencies:
-      '@mermaid-js/layout-elk': 0.2.1(mermaid@11.15.0)
-      '@mermaid-js/mermaid-zenuml': 0.2.2(@babel/core@7.29.0)(@babel/template@7.28.6)(@types/react@19.2.17)(mermaid@11.15.0)(tsx@4.22.4)(yaml@2.9.0)
+      '@mermaid-js/layout-elk': 0.2.1(mermaid@11.16.0)
+      '@mermaid-js/mermaid-zenuml': 0.2.2(@babel/core@7.29.0)(@babel/template@7.28.6)(@types/react@19.2.17)(mermaid@11.16.0)(tsx@4.22.4)(yaml@2.9.0)
       chalk: 5.6.2
       commander: 13.1.0
       import-meta-resolve: 4.2.0
-      mermaid: 11.15.0
+      mermaid: 11.16.0
       puppeteer: 24.43.0(typescript@6.0.3)
     transitivePeerDependencies:
       - '@babel/core'
@@ -10651,10 +10647,10 @@ snapshots:
       - tsx
       - yaml
 
-  '@mermaid-js/mermaid-zenuml@0.2.2(@babel/core@7.29.0)(@babel/template@7.28.6)(@types/react@19.2.17)(mermaid@11.15.0)(tsx@4.22.4)(yaml@2.9.0)':
+  '@mermaid-js/mermaid-zenuml@0.2.2(@babel/core@7.29.0)(@babel/template@7.28.6)(@types/react@19.2.17)(mermaid@11.16.0)(tsx@4.22.4)(yaml@2.9.0)':
     dependencies:
       '@zenuml/core': 3.47.8(@babel/core@7.29.0)(@babel/template@7.28.6)(@types/react@19.2.17)(tsx@4.22.4)(yaml@2.9.0)
-      mermaid: 11.15.0
+      mermaid: 11.16.0
     transitivePeerDependencies:
       - '@babel/core'
       - '@babel/template'
@@ -10662,7 +10658,7 @@ snapshots:
       - tsx
       - yaml
 
-  '@mermaid-js/parser@1.1.1':
+  '@mermaid-js/parser@1.2.0':
     dependencies:
       '@chevrotain/types': 11.1.2
 
@@ -15983,11 +15979,11 @@ snapshots:
 
   meriyah@6.1.4: {}
 
-  mermaid@11.15.0:
+  mermaid@11.16.0:
     dependencies:
       '@braintree/sanitize-url': 7.1.2
       '@iconify/utils': 3.1.3
-      '@mermaid-js/parser': 1.1.1
+      '@mermaid-js/parser': 1.2.0
       '@types/d3': 7.4.3
       '@upsetjs/venn.js': 2.0.0
       cytoscape: 3.33.3
@@ -16005,7 +16001,7 @@ snapshots:
       roughjs: 4.6.6
       stylis: 4.4.0
       ts-dedent: 2.2.0
-      uuid: 14.0.0
+      uuid: 14.0.1
 
   micro@9.3.5-canary.3:
     dependencies:
@@ -18165,8 +18161,6 @@ snapshots:
       react: 19.2.7
 
   util-deprecate@1.0.2: {}
-
-  uuid@14.0.0: {}
 
   uuid@14.0.1: {}
 
