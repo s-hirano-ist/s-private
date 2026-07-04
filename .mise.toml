@@ -8,4 +8,4 @@ _.file = ".env.local"
 [tools]
 pnpm = "11.9.0"
 doppler = { version = "3.76.0", exe = "doppler" }
-"npm:agent-browser" = "0.29.1"
+"npm:agent-browser" = "0.31.1"
