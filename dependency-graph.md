@@ -63,6 +63,9 @@ subgraph app["app"]
       subgraph app_src_infrastructures_search["search"]
         app_src_infrastructures_search_[" "]
       end
+      subgraph app_src_infrastructures_security["security"]
+        app_src_infrastructures_security_[" "]
+      end
       subgraph app_src_infrastructures_shared["shared"]
         app_src_infrastructures_shared_[" "]
       end
@@ -97,6 +100,12 @@ subgraph packages["packages"]
   subgraph packages_database["database"]
     packages_database_[" "]
   end
+  subgraph packages_image_processing["image-processing"]
+    subgraph packages_image_processing_src["src"]
+      packages_image_processing_src_node_ts["node.ts"]
+      packages_image_processing_src_shared_ts["shared.ts"]
+    end
+  end
   subgraph packages_notification["notification"]
     packages_notification_[" "]
   end
@@ -121,6 +130,8 @@ app_src_app_-->app_src_application_services_notes_
 app_src_app_-->app_src_infrastructures_i18n_
 app_src_app_-->app_src_application_services_search_
 app_src_app_-->app_src_infrastructures_auth_
+app_src_app_-->app_src_infrastructures_observability_
+app_src_app_-->app_src_infrastructures_shared_
 app_src_application_services_articles_-->app_src_common_
 app_src_application_services_articles_-->packages_core_articles_
 app_src_application_services_articles_-->app_src_infrastructures_articles_
@@ -130,17 +141,20 @@ app_src_application_services_articles_-->packages_core_shared_kernel_
 app_src_application_services_articles_-->app_src_infrastructures_shared_
 app_src_application_services_books_-->app_src_common_
 app_src_application_services_books_-->packages_core_books_
-app_src_application_services_books_-->app_src_infrastructures_images_
+app_src_application_services_books_-->app_src_application_services_common_
 app_src_application_services_books_-->packages_core_shared_kernel_
 app_src_application_services_books_-->app_src_infrastructures_books_
 app_src_application_services_books_-->app_src_infrastructures_events_
 app_src_application_services_books_-->app_src_infrastructures_factories_
 app_src_application_services_books_-->app_src_infrastructures_shared_
+app_src_application_services_common_-->app_src_common_
+app_src_application_services_common_-->app_src_infrastructures_images_
 app_src_application_services_images_-->app_src_common_
 app_src_application_services_images_-->packages_core_images_
-app_src_application_services_images_-->app_src_infrastructures_images_
+app_src_application_services_images_-->app_src_application_services_common_
 app_src_application_services_images_-->app_src_infrastructures_events_
 app_src_application_services_images_-->app_src_infrastructures_factories_
+app_src_application_services_images_-->app_src_infrastructures_images_
 app_src_application_services_images_-->app_src_infrastructures_shared_
 app_src_application_services_images_-->packages_core_shared_kernel_
 app_src_application_services_notes_-->app_src_common_
@@ -164,11 +178,12 @@ app_src_components_-->packages_core_shared_kernel_
 app_src_components_-->packages_ui_
 app_src_components_-->app_src_infrastructures_i18n_
 app_src_components_-->app_src_common_
+app_src_components_-->app_src_infrastructures_auth_
 app_src_infrastructures_articles_-->app_src_infrastructures_shared_
 app_src_infrastructures_articles_-->app_src_prisma_ts
 app_src_infrastructures_articles_-->packages_core_articles_
 app_src_infrastructures_articles_-->packages_core_shared_kernel_
-app_src_infrastructures_auth_-->packages_core_shared_kernel_
+app_src_infrastructures_auth_-->app_src_prisma_ts
 app_src_infrastructures_books_-->app_src_prisma_ts
 app_src_infrastructures_books_-->packages_core_books_
 app_src_infrastructures_books_-->packages_core_shared_kernel_
@@ -185,6 +200,7 @@ app_src_infrastructures_factories_-->packages_core_notes_
 app_src_infrastructures_images_-->app_src_prisma_ts
 app_src_infrastructures_images_-->packages_core_images_
 app_src_infrastructures_images_-->packages_core_shared_kernel_
+app_src_infrastructures_images_-->packages_image_processing_src_node_ts
 app_src_infrastructures_images_-->app_src_infrastructures_shared_
 app_src_infrastructures_notes_-->app_src_prisma_ts
 app_src_infrastructures_notes_-->packages_core_notes_
@@ -203,11 +219,13 @@ app_src_loaders_-->app_src_application_services_images_
 app_src_loaders_-->packages_core_shared_kernel_
 app_src_loaders_-->app_src_application_services_notes_
 app_src_minio_ts-->packages_storage_
+app_src_prisma_ts-->app_src_common_
 app_src_prisma_ts-->packages_database_
 app_src_proxy_ts-->app_src_infrastructures_i18n_
-app_src_proxy_ts-->app_src_infrastructures_auth_
+app_src_proxy_ts-->app_src_infrastructures_security_
 packages_core_articles_-->packages_core_shared_kernel_
 packages_core_books_-->packages_core_shared_kernel_
 packages_core_images_-->packages_core_shared_kernel_
 packages_core_notes_-->packages_core_shared_kernel_
+packages_image_processing_src_node_ts-->packages_image_processing_src_shared_ts
 ```
