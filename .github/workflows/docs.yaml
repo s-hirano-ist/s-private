@@ -9,7 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-24.04
-    permissions: {}
+    permissions:
+      contents: read
+      pages: write
     timeout-minutes: 10
     concurrency:
       group: ${{ github.workflow }}-build-${{ github.ref }}
@@ -26,6 +28,9 @@ jobs:
         run: pnpm pages:build
         env:
           SKIP_ENV_VALIDATION: "true"
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
