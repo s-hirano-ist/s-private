@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.25.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.25.1...@s-hirano-ist/s-scripts-v1.25.2) (2026-07-05)
+
+
+### Maintenance
+
+* update js-yaml to v5 ([f9dd67e](https://github.com/s-hirano-ist/s-private/commit/f9dd67ec70477ccc911f24e1229d11a41f4b63cc))
+* update js-yaml to v5 ([a61d09f](https://github.com/s-hirano-ist/s-private/commit/a61d09f3bf8bdd725d0ae34ec2f93cada721b10f))
+
 ## [1.25.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.25.0...@s-hirano-ist/s-scripts-v1.25.1) (2026-06-15)
 
 
