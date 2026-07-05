@@ -21,7 +21,7 @@ overrides:
   undici@<6.27.0: ^6.27.0
   undici@>=7.0.0 <7.28.0: ^7.28.0
   ws@>=8.0.0 <8.20.1: ^8.21.0
-  hono@<4.12.25: ^4.12.25
+  hono@<4.12.25: ^4.12.27
   dompurify@<=3.4.10: ^3.4.11
   esbuild@>=0.27.3 <0.28.1: ^0.28.1
   markdown-it@<=14.1.1: ^14.1.2
@@ -1387,7 +1387,7 @@ packages:
     resolution: {integrity: sha512-GuCWzLxwg218fy1JaHculFsdcuY12hxit83V+algozTPnwhNjLrRL/Alg9OYjLZLoUZ1rw/S4CdTMsnkSKCmFA==}
     engines: {node: '>=20'}
     peerDependencies:
-      hono: ^4.12.25
+      hono: ^4.12.27
 
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
