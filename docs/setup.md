@@ -9,6 +9,20 @@ vercel link          # 初回のみ: Vercel プロジェクトをリンク（pri
 pnpm dev             # 開発サーバー起動（環境変数は Doppler から注入）
 ```
 
+## Static Documentation And UI Gallery
+
+GitHub Pages 用の静的成果物は `.pages/` に生成します。
+
+```bash
+pnpm pages:build
+```
+
+出力構成:
+
+- `.pages/api/` - TypeDoc + DB schema documentation
+- `.pages/ui/` - Storybook iframe を横スクロールで一覧する UI gallery
+- `.pages/ui/storybook/` - gallery が埋め込む static Storybook
+
 ## Mise Configuration
 
 This project uses [Mise](https://mise.jdx.dev/) for tool version management.

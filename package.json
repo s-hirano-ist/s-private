@@ -35,6 +35,8 @@
 		"knip": "knip",
 		"storybook": "storybook dev -p 6006",
 		"storybook:build": "storybook build -o .storybook-static",
+		"ui-gallery:build": "node scripts/build-ui-gallery.mjs",
+		"pages:build": "pnpm docs:build && pnpm storybook:build && pnpm ui-gallery:build",
 		"deps:check": "depcruise app/src packages/ui packages/core packages/notification --config .dependency-cruiser.cjs",
 		"deps:circular": "depcruise app/src packages/ui packages/core packages/notification --config .dependency-cruiser.cjs --output-type text --focus-depth 0",
 		"deps:graph": "{ echo '```mermaid'; depcruise app/src packages/ui packages/core packages/notification --config .dependency-cruiser.cjs --output-type mermaid --collapse 'app/src/(application-services|infrastructures)/[^/]+/|app/src/(app|common|components|loaders)/|packages/core/[^/]+/|packages/(ui|database|notification|search|storage)/' --include-only '^(app/src|packages)/(?!.*(vitest|\\.stories\\.))'; echo '```'; } > dependency-graph.md",
