@@ -322,6 +322,7 @@ async function main() {
 	await mkdir(uiDir, { recursive: true });
 	await cp(storybookDir, storybookTargetDir, { recursive: true });
 	await cp(docsDir, path.join(pagesDir, "api"), { recursive: true });
+	await writeFile(path.join(pagesDir, ".nojekyll"), "");
 	await writeFile(path.join(pagesDir, "index.html"), renderRootIndex());
 	await writeFile(path.join(uiDir, "index.html"), renderGallery(stories));
 
