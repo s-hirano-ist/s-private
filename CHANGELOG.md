@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.11.2](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.11.1...s-private-v3.11.2) (2026-07-05)
+
+
+### Bug Fixes
+
+* defer sharp loading for image pages ([414ed2a](https://github.com/s-hirano-ist/s-private/commit/414ed2a6d5721309229425b816cc3d9d9eadf4e4))
+* include photon package in server bundle ([c3cfc42](https://github.com/s-hirano-ist/s-private/commit/c3cfc42a3e0c35005226420e7de2a037462515b6))
+* include photon package in server bundle ([d9a6926](https://github.com/s-hirano-ist/s-private/commit/d9a6926e804017fd15853f1363f33e6fb2ddefff))
+* patch vulnerable transitive dependencies ([29d9bfb](https://github.com/s-hirano-ist/s-private/commit/29d9bfb615848106f60ab9c6dfab4778044c2fde))
+* restore typed routes for build ([18562f1](https://github.com/s-hirano-ist/s-private/commit/18562f19f90ef64b3c3d4d1e578c369cb6aad42a))
+
+
+### Maintenance
+
+* delete storybook mcp ([4fd04eb](https://github.com/s-hirano-ist/s-private/commit/4fd04eb5e72b72e631e8efd3a96f88f736707e6d))
+* disable lockfile maintenance ([681a992](https://github.com/s-hirano-ist/s-private/commit/681a99219f0871a321d64cfd851bdd87edc1d1ef))
+* disable lockfile maintenance ([4a5f563](https://github.com/s-hirano-ist/s-private/commit/4a5f563daab8e9cef4f3db663f3b134a00430241))
+* **renovate:** group pnpm overrides updates ([a97d225](https://github.com/s-hirano-ist/s-private/commit/a97d225c9c283d393032efa4eb21b1a9a34c95f9))
+* update eslint-plugin-unicorn to v69 ([8361676](https://github.com/s-hirano-ist/s-private/commit/8361676b5430a061b3e71c98887bd866bef6d221))
+* update eslint-plugin-unicorn to v69 and fix lint regressions ([90cd4d2](https://github.com/s-hirano-ist/s-private/commit/90cd4d262b326b126456487d583781cdf61ba4a4))
+* update eslint-plugin-unicorn to v70 ([15e4ab3](https://github.com/s-hirano-ist/s-private/commit/15e4ab36b7e851eeda13de919bf902ad145331b7))
+* update js-yaml to v5 ([f9dd67e](https://github.com/s-hirano-ist/s-private/commit/f9dd67ec70477ccc911f24e1229d11a41f4b63cc))
+* update js-yaml to v5 ([a61d09f](https://github.com/s-hirano-ist/s-private/commit/a61d09f3bf8bdd725d0ae34ec2f93cada721b10f))
+
 ## [3.11.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.11.0...s-private-v3.11.1) (2026-06-15)
 
 
