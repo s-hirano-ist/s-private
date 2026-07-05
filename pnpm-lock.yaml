@@ -28,7 +28,7 @@ overrides:
   '@opentelemetry/core@<2.8.0': ^2.8.0
   linkify-it@<=5.0.0: ^5.0.2
   js-yaml@<3.15.0: ^3.15.0
-  js-yaml@>=4.0.0 <=4.1.1: ^4.1.2
+  js-yaml@>=4.0.0 <=4.1.1: ^4.3.0
 
 patchedDependencies:
   eslint-plugin-unicorn@70.0.0: 336fcc3ae447038bffcb51a24da8501e820a92406085e61e3de9cbade91f9fc9
