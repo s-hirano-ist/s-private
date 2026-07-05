@@ -94,7 +94,7 @@
 		"dprint": "0.55.1",
 		"glob": "13.0.6",
 		"gray-matter": "4.0.3",
-		"iconv-lite": "0.7.2",
+		"iconv-lite": "0.7.3",
 		"js-yaml": "5.2.1",
 		"turndown": "7.2.4"
 	},
