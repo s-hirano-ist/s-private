@@ -19,6 +19,7 @@ type Props = {
 	search: typeof searchContentFromClient;
 };
 
+// oxlint-disable-next-line typescript/no-unnecessary-type-assertion -- Next typed router methods require Route even for runtime pathname-derived values.
 const toRoute = (path: string): Route => path as Route;
 
 function NavIcon(name: string, icon: ReactNode, isActive?: boolean) {

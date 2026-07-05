@@ -1,5 +1,5 @@
 diff --git a/rules/logical-assignment-operators.js b/rules/logical-assignment-operators.js
-index da7f8ad3efc1ca5e3081f60955e4ef69c83fb4f8..b1f109a1a6276ad750af038fcf469bbcebe05bea 100644
+index da7f8ad3efc1ca5e3081f60955e4ef69c83fb4f8..4ecca428397aa7583981d412a083b411642492dc 100644
 --- a/rules/logical-assignment-operators.js
 +++ b/rules/logical-assignment-operators.js
 @@ -112,9 +112,7 @@ const config = {
@@ -9,7 +9,7 @@ index da7f8ad3efc1ca5e3081f60955e4ef69c83fb4f8..b1f109a1a6276ad750af038fcf469bbc
 -		defaultOptions: [
 -			baseRule.meta.defaultOptions?.[0],
 -		],
-+		defaultOptions: baseRule.meta.defaultOptions,
++		defaultOptions: baseRule.meta.defaultOptions ?? [],
  		messages,
  		languages: [
  			'js/js',

@@ -39,4 +39,4 @@ allowBuilds:
 strictDepBuilds: true
 blockExoticSubdeps: true
 patchedDependencies:
-  eslint-plugin-unicorn@69.0.0: patches/eslint-plugin-unicorn@69.0.0.patch
+  eslint-plugin-unicorn@70.0.0: patches/eslint-plugin-unicorn@70.0.0.patch

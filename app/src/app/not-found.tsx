@@ -41,6 +41,7 @@ async function NotFoundContent() {
 
 	return (
 		<NotFound
+			// oxlint-disable-next-line typescript/no-unnecessary-type-assertion -- Next typed routes require a Route for this locale-prefixed href during build.
 			returnHomeHref={`/${locale}` as Route}
 			returnHomeText={label("returnHome")}
 			title={statusCode("404")}
