@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import type { Route } from "next";
 import { NotFound } from "./not-found";
 
 const meta = {
@@ -14,5 +15,6 @@ export const Default: Story = {
 	args: {
 		title: "コンテンツが見つかりません",
 		returnHomeText: "ホームに戻る",
+		returnHomeHref: "/ja" as Route,
 	},
 };

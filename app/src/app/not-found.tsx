@@ -1,3 +1,4 @@
+import type { Route } from "next";
 import { NotFound } from "@/components/common/display/status/not-found";
 import { routing } from "@/infrastructures/i18n/routing";
 import Loading from "@s-hirano-ist/s-ui/display/loading";
@@ -39,7 +40,11 @@ async function NotFoundContent() {
 	const statusCode = await getTranslations({ locale, namespace: "statusCode" });
 
 	return (
-		<NotFound returnHomeText={label("returnHome")} title={statusCode("404")} />
+		<NotFound
+			returnHomeHref={`/${locale}` as Route}
+			returnHomeText={label("returnHome")}
+			title={statusCode("404")}
+		/>
 	);
 }
 
