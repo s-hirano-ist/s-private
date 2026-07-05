@@ -19,6 +19,9 @@ type Props = {
 	search: typeof searchContentFromClient;
 };
 
+// oxlint-disable-next-line typescript/no-unnecessary-type-assertion -- Next typed router methods require Route even for runtime pathname-derived values.
+const toRoute = (path: string): Route => path as Route;
+
 function NavIcon(name: string, icon: ReactNode, isActive?: boolean) {
 	return (
 		<div
@@ -55,9 +58,9 @@ export function Footer({ search }: Props) {
 
 	useEffect(() => {
 		if (pathname.endsWith("/viewer")) {
-			router.prefetch(pathname.replace(/\/viewer$/u, "") as Route);
+			router.prefetch(toRoute(pathname.replace(/\/viewer$/u, "")));
 		} else {
-			router.prefetch(`${pathname}/viewer` as Route);
+			router.prefetch(toRoute(`${pathname}/viewer`));
 		}
 	}, [router, pathname]);
 
@@ -73,11 +76,11 @@ export function Footer({ search }: Props) {
 					value === "viewer"
 						? `/${locale}/articles/viewer`
 						: `/${locale}/articles`;
-				router.replace(target as Route);
+				router.replace(toRoute(target));
 			} else if (value === "viewer") {
-				router.replace(`${pathname.replace(/\/viewer$/u, "")}/viewer` as Route);
+				router.replace(toRoute(`${pathname.replace(/\/viewer$/u, "")}/viewer`));
 			} else {
-				router.replace(pathname.replace(/\/viewer$/u, "") as Route);
+				router.replace(toRoute(pathname.replace(/\/viewer$/u, "")));
 			}
 		});
 	};

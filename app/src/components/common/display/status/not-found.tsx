@@ -6,14 +6,19 @@ import Link from "next/link";
 type NotFoundProps = {
 	title: string;
 	returnHomeText: string;
+	returnHomeHref: Route;
 };
 
-export function NotFound({ title, returnHomeText }: NotFoundProps) {
+export function NotFound({
+	title,
+	returnHomeText,
+	returnHomeHref,
+}: NotFoundProps) {
 	return (
 		<div className="flex flex-col items-center gap-6 py-8">
 			<StatusCodeView statusCode="404" statusCodeString={title} />
 			<Button asChild variant="outline">
-				<Link href={"/" as Route}>{returnHomeText}</Link>
+				<Link href={returnHomeHref}>{returnHomeText}</Link>
 			</Button>
 		</div>
 	);
