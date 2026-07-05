@@ -356,6 +356,7 @@ pnpm typecheck             # TypeScript type checking (全パッケージ)
 # Component Development
 pnpm storybook             # Start Storybook (http://localhost:6006)
 pnpm storybook:build       # Build static Storybook
+pnpm ui-gallery:build      # Build the embedded Storybook UI gallery from an existing static Storybook build
 ```
 
 ### Code Quality & Analysis Tools
@@ -402,11 +403,13 @@ pnpm prisma:studio         # Open Prisma Studio database browser
 ```bash
 # API Documentation (TypeDoc)
 pnpm docs:build            # Generate API docs (TypeDoc + DB schema)
+pnpm pages:build           # Generate GitHub Pages output (API docs + UI gallery)
 pnpm docs:serve            # Serve generated docs locally
 pnpm docs:watch            # Watch mode for TypeDoc
 pnpm docs:clean            # Remove generated documentation
 
 # Output: docs/api/ (gitignored)
+# Pages output: .pages/ (gitignored)
 # Live: https://docs.s-hirano.com
 ```
 
@@ -416,6 +419,7 @@ pnpm docs:clean            # Remove generated documentation
 - Each package has its own `typedoc.json` for granular control
 - `prisma-erd-generator` auto-generates a Mermaid ER diagram from the Prisma schema → a custom script (`packages/database/scripts/generate-db-docs.sh`) renders it into an HTML page
 - `docs:build` generates all documentation at once (TypeDoc + DB schema HTML)
+- `pages:build` publishes API docs at `/api/` and a Figma-style embedded Storybook gallery at `/ui/`
 
 ## Testing Strategy
 
@@ -526,4 +530,3 @@ To run code duplication analysis locally:
 ```bash
 pnpm jscpd
 ```
-

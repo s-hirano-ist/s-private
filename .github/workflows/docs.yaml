@@ -22,13 +22,15 @@ jobs:
 
       - uses: ./.github/actions/setup-pnpm
 
-      - name: Build docs (TypeDoc + DB schema)
-        run: pnpm docs:build
+      - name: Build Pages (docs + UI gallery)
+        run: pnpm pages:build
+        env:
+          SKIP_ENV_VALIDATION: "true"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
         with:
-          path: docs/api
+          path: .pages
 
   deploy:
     runs-on: ubuntu-24.04

@@ -45,6 +45,7 @@ jscpd-report/
 
 # Documentation
 docs/api/
+.pages/
 packages/database/erd/
 
 # claude
