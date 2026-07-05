@@ -44,6 +44,11 @@
 		schedule: ["before 5am on the first day of january,april,july,october"],
 	},
 	vulnerabilityAlerts: {
+		// GitHub/OSV vulnerability remediation can otherwise create one PR per advisory
+		// and bypass normal concurrency/schedule limits. Keep urgent security handling,
+		// but collect the currently rate-limited advisory fixes into a single PR.
+		groupName: "security updates",
+		branchTopic: "security-updates",
 		labels: ["security"],
 	},
 	packageRules: [
