@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.11.3](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.11.2...s-private-v3.11.3) (2026-07-19)
+
+
+### Maintenance
+
+* group Renovate security updates ([08b21f0](https://github.com/s-hirano-ist/s-private/commit/08b21f0bcd2bc231b1853eeb6239d0ebfd38baaa))
+* group security renovate updates ([4969b39](https://github.com/s-hirano-ist/s-private/commit/4969b39074e1402e5b6c533cadf5da49d44dbb68))
+* remove obsolete pnpm overrides ([37fc556](https://github.com/s-hirano-ist/s-private/commit/37fc556a3bef941183653ac0a1ed357631051271))
+
 ## [3.11.2](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.11.1...s-private-v3.11.2) (2026-07-05)
 
 
