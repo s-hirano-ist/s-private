@@ -102,6 +102,6 @@
 		"@types/node": "24.13.3",
 		"@types/turndown": "5.0.6",
 		"tsx": "4.23.1",
-		"typescript": "6.0.3"
+		"typescript": "7.0.2"
 	}
 }

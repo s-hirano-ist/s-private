@@ -93,7 +93,7 @@
 		"tailwindcss": "4.3.3",
 		"typedoc": "0.28.20",
 		"typedoc-plugin-mdn-links": "5.1.1",
-		"typescript": "6.0.3",
+		"typescript": "7.0.2",
 		"vercel": "54.21.1",
 		"vite": "7.3.6",
 		"vitest": "4.1.10"
