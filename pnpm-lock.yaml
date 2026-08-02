@@ -21,7 +21,7 @@ overrides:
   undici@<6.27.0: ^8.5.0
   undici@>=7.0.0 <7.28.0: ^8.7.0
   ws@>=8.0.0 <8.20.1: ^8.21.0
-  hono@<4.12.25: ^4.12.29
+  hono@<4.12.25: ^4.12.32
   dompurify@<=3.4.10: ^3.4.12
   esbuild@>=0.27.3 <0.28.1: ^0.28.1
   markdown-it@<=14.1.1: ^14.3.0
@@ -1380,7 +1380,7 @@ packages:
     resolution: {integrity: sha512-eWpQYr67tqJLeaSUl0Q+TquuYfUdTibpOJlUMV2FfUP7+KqCC5TufnwnlXL6mobZBJbGAYRd7ZvEBDCbLInjhg==}
     engines: {node: '>=20'}
     peerDependencies:
-      hono: ^4.12.29
+      hono: ^4.12.32
 
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
@@ -6488,8 +6488,8 @@ packages:
   highlightjs-vue@1.0.0:
     resolution: {integrity: sha512-PDEfEF102G23vHmPhLyPboFCD+BkMGu+GuJe2d9/eH4FsCwvgBpnc9n0pGE+ffKdph38s6foEZiEjdgHdzp+IA==}
 
-  hono@4.12.29:
-    resolution: {integrity: sha512-1hNiRjawYrLq/4m3DQQjPGFg0VZkk4RjQJDff/excI6Dm9BiL75qxGrd7/c6YOxPdq6AscP3LiXhQ6fKFC1Waw==}
+  hono@4.12.33:
+    resolution: {integrity: sha512-+SwvkaiJtxsiPjhy9LivY/1m7UsNqCJetM1BrZl9A5DkQhlbHQDU730mMiDPWjnoCYOM8Chf3WrCJw27kNTPFQ==}
     engines: {node: '>=16.9.0'}
 
   html-escaper@2.0.2:
@@ -10051,9 +10051,9 @@ snapshots:
     dependencies:
       tailwindcss: 3.4.19(tsx@4.23.1)(yaml@2.9.0)
 
-  '@hono/node-server@2.0.12(hono@4.12.29)':
+  '@hono/node-server@2.0.12(hono@4.12.33)':
     dependencies:
-      hono: 4.12.29
+      hono: 4.12.33
 
   '@humanfs/core@0.19.2':
     dependencies:
@@ -11125,13 +11125,13 @@ snapshots:
       '@electric-sql/pglite': 0.4.1
       '@electric-sql/pglite-socket': 0.1.1(@electric-sql/pglite@0.4.1)
       '@electric-sql/pglite-tools': 0.3.1(@electric-sql/pglite@0.4.1)
-      '@hono/node-server': 2.0.12(hono@4.12.29)
+      '@hono/node-server': 2.0.12(hono@4.12.33)
       '@prisma/get-platform': 7.2.0
       '@prisma/query-plan-executor': 7.2.0
       '@prisma/streams-local': 0.1.2
       foreground-child: 3.3.1
       get-port-please: 3.2.0
-      hono: 4.12.29
+      hono: 4.12.33
       http-status-codes: 2.3.0
       pathe: 2.0.3
       proper-lockfile: 4.1.2
@@ -15061,7 +15061,7 @@ snapshots:
 
   highlightjs-vue@1.0.0: {}
 
-  hono@4.12.29: {}
+  hono@4.12.33: {}
 
   html-escaper@2.0.2: {}
 
@@ -16775,7 +16775,7 @@ snapshots:
       devtools-protocol: 0.0.1608973
       typed-query-selector: 2.12.2
       webdriver-bidi-protocol: 0.4.1
-      ws: 8.21.0
+      ws: 8.21.1
     transitivePeerDependencies:
       - bare-abort-controller
       - bare-buffer
