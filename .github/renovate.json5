@@ -72,9 +72,10 @@
 		},
 		{
 			matchManagers: ["npm"],
-			matchDepTypes: ["pnpm.overrides"],
+			matchDepTypes: ["pnpm-workspace.overrides"],
 			groupName: "pnpm overrides",
 			groupSlug: "pnpm-overrides",
+			separateMajorMinor: false,
 			minimumReleaseAge: "2 days",
 			automerge: false,
 		},
