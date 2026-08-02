@@ -6,6 +6,6 @@ idiomatic_version_file_enable_tools = ["node"]
 _.file = ".env.local"
 
 [tools]
-pnpm = "11.13.1"
+pnpm = "11.18.0"
 doppler = { version = "3.76.1", exe = "doppler" }
 "npm:agent-browser" = "0.33.1"
