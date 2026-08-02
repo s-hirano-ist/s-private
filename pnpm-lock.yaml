@@ -18,7 +18,7 @@ overrides:
   smol-toml@<1.6.1: ^1.7.0
   srvx@<0.11.13: ^0.11.21
   tar@<7.5.8: ^7.5.19
-  undici@<6.27.0: ^8.5.0
+  undici@<6.27.0: ^8.9.0
   undici@>=7.0.0 <7.28.0: ^8.7.0
   ws@>=8.0.0 <8.20.1: ^8.21.0
   hono@<4.12.25: ^4.12.29
@@ -8875,6 +8875,10 @@ packages:
     resolution: {integrity: sha512-N7iQtfyLhIMOFgQubvmLV26svHpO0bqKnAiWotTQCVKCmWrcGbBotPuW1x+xwYZ2VHdSTVUfPQQnlEt1/LouTQ==}
     engines: {node: '>=22.19.0'}
 
+  undici@8.9.0:
+    resolution: {integrity: sha512-aWZpUj7XoGonMClx4gdDRfgBjqeA+F473aDmROQQbM9n6PRfK/u1q/a0X4wMTgcHfT8H6fpbt98PFuDUwFg2YA==}
+    engines: {node: '>=22.19.0'}
+
   unicorn-magic@0.3.0:
     resolution: {integrity: sha512-+QBBXBCvifc56fsbuxZQ6Sic3wqqc3WWaqxs58gvJrcOuN83HGTCwz3oS5phzU9LthRNE9VrJCFCLUgHeeFnfA==}
     engines: {node: '>=18'}
@@ -11217,7 +11221,7 @@ snapshots:
     dependencies:
       '@qdrant/openapi-typescript-fetch': 1.2.6
       typescript: 6.0.3
-      undici: 8.7.0
+      undici: 8.9.0
 
   '@qdrant/openapi-typescript-fetch@1.2.6': {}
 
@@ -12872,7 +12876,7 @@ snapshots:
       is-buffer: 2.0.5
       is-node-process: 1.2.0
       throttleit: 2.1.0
-      undici: 8.7.0
+      undici: 8.9.0
 
   '@vercel/build-utils@13.32.2':
     dependencies:
@@ -13078,7 +13082,7 @@ snapshots:
       ts-morph: 12.0.0
       tsx: 4.21.0
       typescript: 5.9.3
-      undici: 8.7.0
+      undici: 8.9.0
     transitivePeerDependencies:
       - encoding
       - rollup
@@ -16775,7 +16779,7 @@ snapshots:
       devtools-protocol: 0.0.1608973
       typed-query-selector: 2.12.2
       webdriver-bidi-protocol: 0.4.1
-      ws: 8.21.0
+      ws: 8.21.1
     transitivePeerDependencies:
       - bare-abort-controller
       - bare-buffer
@@ -17814,6 +17818,8 @@ snapshots:
 
   undici@8.7.0: {}
 
+  undici@8.9.0: {}
+
   unicorn-magic@0.3.0: {}
 
   unified@11.0.5:
@@ -17944,7 +17950,7 @@ snapshots:
       proxy-agent: 6.4.0
       sandbox: 3.4.0
       smol-toml: 1.7.0
-      undici: 8.7.0
+      undici: 8.9.0
       zod: 4.1.11
     transitivePeerDependencies:
       - '@emnapi/core'
