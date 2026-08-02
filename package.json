@@ -82,7 +82,7 @@
 		"eslint-plugin-unicorn": "70.0.0",
 		"happy-dom": "20.11.1",
 		"jscpd": "5.0.14",
-		"knip": "6.29.0",
+		"knip": "6.31.0",
 		"oxfmt": "0.61.0",
 		"oxlint": "1.76.0",
 		"oxlint-plugin-eslint": "1.76.0",
