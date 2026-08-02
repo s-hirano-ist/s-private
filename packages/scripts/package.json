@@ -91,7 +91,7 @@
 		"@s-hirano-ist/s-search": "workspace:*",
 		"@s-hirano-ist/s-storage": "workspace:*",
 		"cheerio": "1.2.0",
-		"dprint": "0.55.1",
+		"dprint": "0.55.2",
 		"glob": "13.0.6",
 		"gray-matter": "4.0.3",
 		"iconv-lite": "0.7.3",
