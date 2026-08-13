@@ -1,5 +1,5 @@
 {
-	".": "3.11.2",
+	".": "3.11.3",
 	"packages/core": "1.21.2",
 	"packages/ui": "1.19.13",
 	"packages/database": "1.21.0",
