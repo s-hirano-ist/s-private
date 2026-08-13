@@ -101,7 +101,7 @@
 	"devDependencies": {
 		"@types/node": "24.13.3",
 		"@types/turndown": "5.0.6",
-		"tsx": "4.23.1",
+		"tsx": "4.23.12",
 		"typescript": "6.0.3"
 	}
 }
