@@ -8,12 +8,12 @@ import { useCallback, useEffect, useRef } from "react";
  * @see {@link useInfiniteScroll} for the hook
  */
 export type UseInfiniteScrollOptions = {
+	/** Function to fetch the next page */
+	fetchNextPage: () => Promise<void>;
 	/** Whether there are more pages to load */
 	hasNextPage: boolean;
 	/** Whether a page is currently being fetched */
 	isFetchingNextPage: boolean;
-	/** Function to fetch the next page */
-	fetchNextPage: () => Promise<void>;
 	/** Margin around the root for intersection detection */
 	rootMargin?: string;
 	/** Visibility threshold for triggering intersection */

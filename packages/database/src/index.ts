@@ -111,7 +111,7 @@ function isRetryableTransactionError(error: unknown): boolean {
  */
 export async function withTransactionRetry<T>(
 	fn: () => Promise<T>,
-	options: { maxRetries?: number; baseDelayMs?: number } = {},
+	options: { baseDelayMs?: number; maxRetries?: number } = {},
 ): Promise<T> {
 	const { maxRetries = 5, baseDelayMs = 50 } = options;
 	let attempt = 0;

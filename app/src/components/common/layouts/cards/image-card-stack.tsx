@@ -6,9 +6,9 @@ import { BaseCardStackWrapper } from "@/components/common/layouts/cards/base-car
 import { ImageCard } from "@/components/common/layouts/cards/image-card";
 
 type Props = {
-	initial: ImageCardStackInitialData;
 	basePath: string;
 	deleteAction?: DeleteAction;
+	initial: ImageCardStackInitialData;
 	loadMoreAction: LoadMoreAction<ImageCardStackInitialData>;
 };
 

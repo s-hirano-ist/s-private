@@ -12,8 +12,8 @@ let client: QdrantClient | null = null;
  * Get or create Qdrant client
  */
 export function getQdrantClient(config?: {
-	url?: string;
 	apiKey?: string;
+	url?: string;
 }): QdrantClient {
 	if (!client) {
 		const url = config?.url ?? process.env.QDRANT_URL;
@@ -87,7 +87,7 @@ export async function ensureCollection(): Promise<void> {
  * Upsert points to Qdrant (uses Qdrant Inference for server-side embedding)
  */
 export async function upsertPoints(
-	points: { id: string; text: string; payload: QdrantPayload }[],
+	points: { id: string; payload: QdrantPayload; text: string }[],
 ): Promise<void> {
 	const qdrant = getQdrantClient();
 	const { collectionName } = RAG_CONFIG.qdrant;
@@ -147,12 +147,12 @@ export async function getExistingHashes(
 export async function search(
 	queryText: string,
 	options: {
-		topK?: number;
 		filter?: {
-			type?: "markdown_note" | "bookmark_json";
-			top_heading?: string;
 			content_type?: ContentType | ContentType[];
+			top_heading?: string;
+			type?: "markdown_note" | "bookmark_json";
 		};
+		topK?: number;
 	} = {},
 ): Promise<SearchResult[]> {
 	const qdrant = getQdrantClient();

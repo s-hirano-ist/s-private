@@ -4,9 +4,9 @@ import { Button } from "@s-hirano-ist/s-ui/ui/button";
 import Link from "next/link";
 
 type NotFoundProps = {
-	title: string;
-	returnHomeText: string;
 	returnHomeHref: Route;
+	returnHomeText: string;
+	title: string;
 };
 
 export function NotFound({

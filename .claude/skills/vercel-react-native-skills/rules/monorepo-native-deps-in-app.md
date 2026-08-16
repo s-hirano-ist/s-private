@@ -13,7 +13,7 @@ find native dependencies installed in other packages.
 
 **Incorrect (native dep in shared package only):**
 
-```
+```text
 packages/
   ui/
     package.json  # has react-native-reanimated
@@ -25,7 +25,7 @@ Autolinking fails—native code not linked.
 
 **Correct (native dep in app directory):**
 
-```
+```text
 packages/
   ui/
     package.json  # has react-native-reanimated

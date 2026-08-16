@@ -22,17 +22,17 @@ function loadLightbox(): Promise<LightboxComponent> {
 }
 
 export type ImageData = {
+	height?: number | null;
 	id?: string;
 	originalPath: string;
 	thumbnailPath: string;
-	height?: number | null;
 	width?: number | null;
 };
 
 type SlideImage = {
-	src: string;
 	alt: string;
 	height?: number;
+	src: string;
 	width?: number;
 };
 

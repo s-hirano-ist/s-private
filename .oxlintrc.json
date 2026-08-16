@@ -1,9 +1,9 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// oxlint configuration — migrated from eslint.config.js (ESLint fully removed).
+// oxlint configuration — primary JS/TS linter. ESLint is limited to YAML/JSON/Markdown.
 //
 // Format: oxlint's TS config (oxlint.config.ts) is experimental and fails to load with
 //   the standalone binary, so we use .oxlintrc.json. JSONC comments ARE supported here.
-// Layers: oxfmt = format + import/Tailwind class sorting (.oxfmtrc.json); oxlint = all linting
+// Layers: oxfmt = format + import/Tailwind class sorting (.oxfmtrc.json); oxlint = JS/TS linting
 //   (everything ESLint did + the former Biome base lint); dependency-cruiser = Clean Architecture
 //   layer boundaries (.dependency-cruiser.cjs — see boundary-* rules). Biome was fully removed.
 //
@@ -63,6 +63,7 @@
 			"specifier": "oxlint-plugin-eslint"
 		},
 		"eslint-plugin-sonarjs",
+		"eslint-plugin-perfectionist",
 		{
 			"name": "unicorn-js",
 			"specifier": "eslint-plugin-unicorn"
@@ -154,6 +155,7 @@
 		"regexp/no-optional-assertion": "error",
 		"regexp/no-potentially-useless-backreference": "error",
 		"regexp/no-super-linear-backtracking": "error",
+		"regexp/no-super-linear-move": "error",
 		"regexp/no-trivially-nested-assertion": "error",
 		"regexp/no-trivially-nested-quantifier": "error",
 		"regexp/no-unused-capturing-group": "error",
@@ -355,7 +357,16 @@
 		"unicorn-js/no-named-default": "error",
 		"unicorn-js/no-unnecessary-polyfills": "error",
 		"unicorn-js/prefer-export-from": "error",
-		"unicorn-js/prefer-single-call": "error"
+		"unicorn-js/prefer-single-call": "error",
+		// s-public's Unicorn recommended rules not covered by oxlint's native Unicorn plugin.
+		// template-indent remains excluded because template formatting belongs to oxfmt.
+		"unicorn-js/expiring-todo-comments": "error",
+		"unicorn-js/isolated-functions": "error",
+		"unicorn-js/prefer-simple-condition-first": "error",
+		"unicorn-js/prefer-switch": "error",
+		// Keep s-public's advisory severity for alphabetical type-member ordering.
+		"perfectionist/sort-interfaces": "warn",
+		"perfectionist/sort-object-types": "warn"
 	},
 	"overrides": [
 		{
@@ -465,7 +476,14 @@
 				"typescript/consistent-generic-constructors": "error",
 				"typescript/consistent-indexed-object-style": "error",
 				"typescript/consistent-type-assertions": "error",
-				"typescript/consistent-type-definitions": "error",
+				"typescript/consistent-type-definitions": ["error", "type"],
+				"typescript/consistent-type-imports": [
+					"error",
+					{
+						"prefer": "type-imports",
+						"disallowTypeAnnotations": false
+					}
+				],
 				"typescript/dot-notation": "error",
 				"typescript/no-confusing-non-null-assertion": "error",
 				"typescript/no-inferrable-types": "error",
@@ -539,7 +557,7 @@
 				"typescript/no-non-null-assertion": "error",
 				"typescript/no-base-to-string": "error",
 				"typescript/no-deprecated": "error",
-				"typescript/consistent-type-definitions": "off",
+				"typescript/consistent-type-definitions": ["error", "type"],
 				"typescript/consistent-indexed-object-style": "off",
 				"typescript/consistent-type-assertions": "off",
 				"typescript/no-unnecessary-condition": "error",

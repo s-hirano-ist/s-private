@@ -58,6 +58,15 @@ export type ArticlesFindManyParams = {
  */
 export type IArticlesQueryRepository = {
 	/**
+	 * Counts articles matching the given criteria.
+	 *
+	 * @param userId - The user ID for tenant isolation
+	 * @param status - Filter by status
+	 * @returns The count of matching articles
+	 */
+	count(userId: UserId, status: Status): Promise<number>;
+
+	/**
 	 * Finds an article by its URL for a specific user.
 	 *
 	 * @param url - The validated URL to search for
@@ -92,13 +101,4 @@ export type IArticlesQueryRepository = {
 		status: Status,
 		params: ArticlesFindManyParams,
 	): Promise<ArticleListItemDTO[]>;
-
-	/**
-	 * Counts articles matching the given criteria.
-	 *
-	 * @param userId - The user ID for tenant isolation
-	 * @param status - Filter by status
-	 * @returns The count of matching articles
-	 */
-	count(userId: UserId, status: Status): Promise<number>;
 };

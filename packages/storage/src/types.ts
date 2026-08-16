@@ -1,11 +1,11 @@
 import type { Client } from "minio";
 
 export type StorageClientConfig = {
+	accessKey: string;
 	endPoint: string;
 	port: number;
-	useSSL: boolean;
-	accessKey: string;
 	secretKey: string;
+	useSSL: boolean;
 };
 
 export type CfAccessConfig = {
@@ -19,14 +19,14 @@ export type StoragePathConfig = {
 };
 
 export type StorageServiceOperations = {
+	deleteImage(path: string, isThumbnail: boolean): Promise<void>;
+	getImage(path: string, isThumbnail: boolean): Promise<NodeJS.ReadableStream>;
+	getImageOrThrow(path: string, isThumbnail: boolean): Promise<void>;
 	uploadImage(
 		path: string,
 		bytes: Uint8Array,
 		isThumbnail: boolean,
 	): Promise<void>;
-	getImage(path: string, isThumbnail: boolean): Promise<NodeJS.ReadableStream>;
-	getImageOrThrow(path: string, isThumbnail: boolean): Promise<void>;
-	deleteImage(path: string, isThumbnail: boolean): Promise<void>;
 };
 
 export type MinioClient = Client;

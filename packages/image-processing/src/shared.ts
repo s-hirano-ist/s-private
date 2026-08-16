@@ -1,14 +1,14 @@
 export type SupportedImageFormat = "jpeg" | "png" | "webp";
 
 export type ImageMetadata = {
-	width: number;
-	height: number;
 	format: SupportedImageFormat;
+	height: number;
+	width: number;
 };
 
 export type ThumbnailOptions = {
-	width: number;
 	height: number;
+	width: number;
 };
 
 export type ConvertToWebpOptions = {
@@ -19,9 +19,9 @@ export type SamplingFilter = number;
 
 export type PhotonImageLike = {
 	free(): void;
-	get_width(): number;
-	get_height(): number;
 	get_bytes_webp(): Uint8Array;
+	get_height(): number;
+	get_width(): number;
 };
 
 export type PhotonImageConstructor = {
@@ -29,8 +29,6 @@ export type PhotonImageConstructor = {
 };
 
 export type PhotonModule = {
-	PhotonImage: PhotonImageConstructor;
-	SamplingFilter: { Lanczos3: SamplingFilter };
 	crop(
 		image: PhotonImageLike,
 		x1: number,
@@ -38,12 +36,14 @@ export type PhotonModule = {
 		x2: number,
 		y2: number,
 	): PhotonImageLike;
+	PhotonImage: PhotonImageConstructor;
 	resize(
 		image: PhotonImageLike,
 		width: number,
 		height: number,
 		samplingFilter: SamplingFilter,
 	): PhotonImageLike;
+	SamplingFilter: { Lanczos3: SamplingFilter };
 };
 
 const WEBP_HEADER_OFFSET = 8;
@@ -134,7 +134,7 @@ function getCoverCropBounds(
 	sourceHeight: number,
 	targetWidth: number,
 	targetHeight: number,
-): { x1: number; y1: number; x2: number; y2: number } {
+): { x1: number; x2: number; y1: number; y2: number } {
 	const sourceRatio = sourceWidth / sourceHeight;
 	const targetRatio = targetWidth / targetHeight;
 

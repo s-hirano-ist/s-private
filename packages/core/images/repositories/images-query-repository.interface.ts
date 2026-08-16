@@ -63,6 +63,15 @@ export type ImagesFindManyParams = {
  */
 export type IImagesQueryRepository = {
 	/**
+	 * Counts images matching the given criteria.
+	 *
+	 * @param userId - The user ID for tenant isolation
+	 * @param status - Filter by status
+	 * @returns The count of matching images
+	 */
+	count(userId: UserId, status: Status): Promise<number>;
+
+	/**
 	 * Finds an image by its path for a specific user.
 	 *
 	 * @param path - The validated path to search for
@@ -93,13 +102,4 @@ export type IImagesQueryRepository = {
 		status: Status,
 		params?: ImagesFindManyParams,
 	): Promise<ImageListItemDTO[]>;
-
-	/**
-	 * Counts images matching the given criteria.
-	 *
-	 * @param userId - The user ID for tenant isolation
-	 * @param status - Filter by status
-	 * @returns The count of matching images
-	 */
-	count(userId: UserId, status: Status): Promise<number>;
 };

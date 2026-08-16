@@ -12,11 +12,11 @@ import { ZodError } from "zod";
 
 export type OperationPhaseContext = Readonly<{
 	action: string;
-	phase: string;
+	additionalContext?: Record<string, unknown>;
+	contentType?: string;
 	fileName?: string;
 	fileSize?: number;
-	contentType?: string;
-	additionalContext?: Record<string, unknown>;
+	phase: string;
 }>;
 
 export class OperationPhaseError extends Error {

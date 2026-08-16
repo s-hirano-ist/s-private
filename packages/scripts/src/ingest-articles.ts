@@ -13,25 +13,25 @@ import { basename } from "node:path";
 const SCRIPT_NAME = "ingest-articles";
 
 type ArticleJson = {
-	heading: string;
 	body: {
-		title: string;
-		url: string;
-		quote?: string;
+		ogDescription?: string;
 		ogImageUrl?: string;
 		ogTitle?: string;
-		ogDescription?: string;
+		quote?: string;
+		title: string;
+		url: string;
 	}[];
+	heading: string;
 };
 
 type ExistingArticle = {
 	id: string;
-	url: string;
-	title: string;
-	quote: string | null;
+	ogDescription: string | null;
 	ogImageUrl: string | null;
 	ogTitle: string | null;
-	ogDescription: string | null;
+	quote: string | null;
+	title: string;
+	url: string;
 };
 
 type ItemOutcome = "inserted" | "updated" | "skipped";
@@ -256,7 +256,7 @@ async function main() {
 		});
 		const categoryMap = new Map<string, string>(
 			existingCategories.map(
-				(c: { name: string; id: string }) => [c.name, c.id] as const,
+				(c: { id: string; name: string }) => [c.name, c.id] as const,
 			),
 		);
 

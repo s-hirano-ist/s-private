@@ -27,28 +27,28 @@ import { useFormValues } from "../generic-form-wrapper";
  * @see {@link FormDropdownInput} for the component
  */
 export type Props = {
-	/** The label text displayed above the dropdown */
-	label: string;
-	/** The HTML id for the input element */
-	htmlFor: string;
-	/** Array of options with id and display name */
-	options: { id: string; name: string }[];
-	/** Optional ref to access the hidden input element */
-	inputRef?: RefObject<HTMLInputElement | null>;
-	/** Placeholder text when no value is selected */
-	placeholder: string;
-	/** The form field name (defaults to htmlFor if not provided) */
-	name?: string;
-	/** Whether the field is required */
-	required?: boolean;
+	/** Function to generate the label for custom values */
+	customValueLabel?: (value: string) => string;
 	/** Whether the field is disabled */
 	disabled?: boolean;
 	/** Message shown when no options match the search */
 	emptyMessage?: string;
+	/** The HTML id for the input element */
+	htmlFor: string;
+	/** Optional ref to access the hidden input element */
+	inputRef?: RefObject<HTMLInputElement | null>;
+	/** The label text displayed above the dropdown */
+	label: string;
+	/** The form field name (defaults to htmlFor if not provided) */
+	name?: string;
+	/** Array of options with id and display name */
+	options: { id: string; name: string }[];
+	/** Placeholder text when no value is selected */
+	placeholder: string;
+	/** Whether the field is required */
+	required?: boolean;
 	/** Placeholder text for the search input */
 	searchPlaceholder?: string;
-	/** Function to generate the label for custom values */
-	customValueLabel?: (value: string) => string;
 };
 
 // Default values extracted as constants for stable reference

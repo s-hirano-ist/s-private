@@ -3,30 +3,30 @@ import fs from "node:fs";
 import { join } from "node:path";
 
 type ArticleItem = {
-	title: string;
-	url: string;
-	quote?: string;
+	ogDescription?: string;
 	ogImageUrl?: string;
 	ogTitle?: string;
-	ogDescription?: string;
+	quote?: string;
+	title: string;
+	url: string;
 };
 
 type ArticleFile = {
-	heading: string;
-	description: string;
 	body: ArticleItem[];
+	description: string;
+	heading: string;
 };
 
 type UrlOccurrence = {
-	url: string;
-	title: string;
-	fileName: string;
 	category: string;
+	fileName: string;
+	title: string;
+	url: string;
 };
 
 type DuplicateUrl = {
-	url: string;
 	occurrences: UrlOccurrence[];
+	url: string;
 };
 
 function getAllJsonFiles(directory: string): string[] {

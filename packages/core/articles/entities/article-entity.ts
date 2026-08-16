@@ -395,20 +395,20 @@ export type ExportedArticle = Readonly<z.infer<typeof ExportedArticle>>;
  * ```
  */
 export type CreateArticleArgs = Readonly<{
-	/** The user who owns the article */
-	userId: UserId;
+	/** The caller identifier for event tracking */
+	caller: string;
 	/** The resolved category ID (FK to Category table) */
 	categoryId: Id;
 	/** イベント用のカテゴリ名（エンティティには含まれない、ログ・監査用スナップショット） */
 	categoryName: CategoryName;
-	/** The article title */
-	title: ArticleTitle;
 	/** Optional quote/excerpt from the article */
 	quote?: Quote;
+	/** The article title */
+	title: ArticleTitle;
 	/** The article URL */
 	url: Url;
-	/** The caller identifier for event tracking */
-	caller: string;
+	/** The user who owns the article */
+	userId: UserId;
 }>;
 
 /**
@@ -496,11 +496,11 @@ export const articleEntity = {
  * Uses `categoryName` instead of nested `Category.name` for cleaner access.
  */
 export type ArticleListItemDTO = Readonly<{
+	categoryName: CategoryName;
 	id: Id;
+	ogDescription: OgDescription;
+	ogTitle: OgTitle;
+	quote: Quote;
 	title: ArticleTitle;
 	url: Url;
-	quote: Quote;
-	ogTitle: OgTitle;
-	ogDescription: OgDescription;
-	categoryName: CategoryName;
 }>;

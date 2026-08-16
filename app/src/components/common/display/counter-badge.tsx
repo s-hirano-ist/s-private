@@ -1,7 +1,7 @@
 import { Badge } from "@s-hirano-ist/s-ui/ui/badge";
 import { useTranslations } from "next-intl";
 
-type Props = { totalItems: number; label: string };
+type Props = { label: string; totalItems: number };
 
 export function CounterBadge({ totalItems, label }: Props) {
 	const t = useTranslations("label");

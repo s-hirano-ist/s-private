@@ -4,24 +4,24 @@ import { RAG_CONFIG } from "./config.ts";
 
 // JSON article structure
 type ArticleBody = {
+	ogDescription?: string;
+	ogTitle?: string;
+	quote?: string;
 	title: string;
 	url: string;
-	ogTitle?: string;
-	ogDescription?: string;
-	quote?: string;
 };
 
 type ArticleJson = {
-	heading: string;
-	description?: string;
 	body: ArticleBody[];
+	description?: string;
+	heading: string;
 };
 
 // Markdown frontmatter
 type MarkdownFrontmatter = {
-	heading: string;
 	description?: string;
 	draft?: boolean;
+	heading: string;
 };
 
 /**
@@ -88,8 +88,8 @@ export function parseJsonArticle(
  * Parse Markdown frontmatter
  */
 function parseFrontmatter(content: string): {
-	frontmatter: MarkdownFrontmatter;
 	body: string;
+	frontmatter: MarkdownFrontmatter;
 } {
 	const frontmatterMatch = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/u.exec(content);
 
@@ -110,12 +110,16 @@ function parseFrontmatter(content: string): {
 		const [key, ...valueParts] = line.split(":");
 		const value = valueParts.join(":").trim();
 
-		if (key === "heading") {
-			frontmatter.heading = value;
-		} else if (key === "description") {
-			frontmatter.description = value;
-		} else if (key === "draft") {
-			frontmatter.draft = value === "true";
+		switch (key) {
+			case "description":
+				frontmatter.description = value;
+				break;
+			case "draft":
+				frontmatter.draft = value === "true";
+				break;
+			case "heading":
+				frontmatter.heading = value;
+				break;
 		}
 	}
 
@@ -123,18 +127,18 @@ function parseFrontmatter(content: string): {
 }
 
 type MarkdownSection = {
-	headingPath: string[];
-	title: string;
 	content: string;
+	headingPath: string[];
 	level: number;
+	title: string;
 };
 
 type HeadingSplitState = {
-	sections: MarkdownSection[];
 	currentSection: MarkdownSection | null;
 	headingStack: { level: number; title: string }[];
 	preambleContent: string;
 	preambleDone: boolean;
+	sections: MarkdownSection[];
 };
 
 function pushPreambleSection(state: HeadingSplitState): void {
@@ -341,13 +345,13 @@ export function parseDbNote(
  * Parse a DB article into chunks for Qdrant ingestion
  */
 export function parseDbArticle(article: {
+	categoryName: string;
 	id: string;
+	ogDescription?: string | null;
+	ogTitle?: string | null;
+	quote?: string | null;
 	title: string;
 	url: string;
-	ogTitle?: string | null;
-	ogDescription?: string | null;
-	quote?: string | null;
-	categoryName: string;
 }): QdrantPayload[] {
 	const docId = `db:article:${article.id}`;
 	const textParts: string[] = [];

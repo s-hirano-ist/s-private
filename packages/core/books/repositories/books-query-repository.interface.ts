@@ -58,6 +58,15 @@ export type BooksFindManyParams = {
  */
 export type IBooksQueryRepository = {
 	/**
+	 * Counts books matching the given criteria.
+	 *
+	 * @param userId - The user ID for tenant isolation
+	 * @param status - Filter by status
+	 * @returns The count of matching books
+	 */
+	count(userId: UserId, status: Status): Promise<number>;
+
+	/**
 	 * Finds a book by its ISBN for a specific user.
 	 *
 	 * @param isbn - The validated ISBN to search for
@@ -88,13 +97,4 @@ export type IBooksQueryRepository = {
 		status: Status,
 		params?: BooksFindManyParams,
 	): Promise<BookListItemDTO[]>;
-
-	/**
-	 * Counts books matching the given criteria.
-	 *
-	 * @param userId - The user ID for tenant isolation
-	 * @param status - Filter by status
-	 * @returns The count of matching books
-	 */
-	count(userId: UserId, status: Status): Promise<number>;
 };

@@ -33,7 +33,7 @@ export class ImageDeletedEvent extends BaseDomainEvent<ImageDeletedPayload> {
 	 * @param data.userId - The user who deleted the image
 	 * @param data.caller - The function/method that triggered the event
 	 */
-	constructor(data: { path: string; userId: string; caller: string }) {
+	constructor(data: { caller: string; path: string; userId: string }) {
 		super(
 			"image.deleted",
 			{

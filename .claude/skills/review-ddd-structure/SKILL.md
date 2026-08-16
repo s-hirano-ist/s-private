@@ -53,7 +53,7 @@ globs:
 
 ## 出力形式
 
-```markdown
+````markdown
 # Issue: {問題のタイトル}
 
 ## Metadata
@@ -103,12 +103,12 @@ globs:
 
 - docs/architecture.md
 - DDD原則: {該当する原則名}
-```
+````
 
 ## DDDチェックポイント詳細
 
 ### 依存方向の原則
-```
+```text
 Presentation → Application → Domain ← Infrastructure
                     ↓
                Domain (中心)

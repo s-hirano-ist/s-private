@@ -33,7 +33,7 @@ export class NoteDeletedEvent extends BaseDomainEvent<NoteDeletedPayload> {
 	 * @param data.userId - The user who deleted the note
 	 * @param data.caller - The function/method that triggered the event
 	 */
-	constructor(data: { title: string; userId: string; caller: string }) {
+	constructor(data: { caller: string; title: string; userId: string }) {
 		super(
 			"note.deleted",
 			{

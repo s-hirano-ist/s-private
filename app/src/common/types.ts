@@ -11,12 +11,12 @@
  * Used for all server action return values with success/failure status.
  */
 export type ServerAction = {
+	/** Preserved form data for retry on failure */
+	formData?: Record<string, string>;
 	/** Translated message key for toast notifications */
 	message: string;
 	/** Whether the action completed successfully */
 	success: boolean;
-	/** Preserved form data for retry on failure */
-	formData?: Record<string, string>;
 };
 
 /**

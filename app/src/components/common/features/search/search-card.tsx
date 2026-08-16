@@ -50,8 +50,8 @@ export function SearchCard({ search }: Props) {
 		: [];
 
 	const handleSelect = (item: {
-		href: string;
 		contentType: "articles" | "books" | "notes";
+		href: string;
 	}) => {
 		haptic();
 		if (item.contentType === "books") {

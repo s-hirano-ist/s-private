@@ -6,8 +6,8 @@ import { BaseCardStackWrapper } from "@/components/common/layouts/cards/base-car
 import { LinkCard } from "@/components/common/layouts/cards/link-card";
 
 type Props = {
-	initial: LinkCardStackInitialData;
 	deleteAction?: DeleteAction;
+	initial: LinkCardStackInitialData;
 	loadMoreAction: LoadMoreAction<LinkCardStackInitialData>;
 };
 

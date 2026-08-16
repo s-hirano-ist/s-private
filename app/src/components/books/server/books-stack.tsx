@@ -3,8 +3,8 @@ import type { ImageCardStackInitialData } from "@/components/common/layouts/card
 import { ImageCardStack } from "@/components/common/layouts/cards/image-card-stack";
 
 export type Props = {
-	initialData: ImageCardStackInitialData;
 	deleteAction?: DeleteAction;
+	initialData: ImageCardStackInitialData;
 	loadMoreAction: LoadMoreAction<ImageCardStackInitialData>;
 };
 

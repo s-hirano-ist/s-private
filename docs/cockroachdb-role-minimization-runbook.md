@@ -96,10 +96,9 @@ DEFAULT PRIVILEGES は「以後に作られる」オブジェクトにのみ効�
 ### Step 3. 本番アプリを runtime ユーザーへ切替
 
 - **Vercel Dashboard → Settings → Environment Variables → Production** の `DATABASE_URL` を差し替え（HOST は既存値から流用、DBは `prod-db`）:
-
   <!-- secretlint-disable -- documented placeholder, not a credential -->
 
-  ```
+  ```text
   postgresql://s-prod-runtime:<PROD_PW>@<HOST>:26257/prod-db?sslmode=verify-full
   ```
 

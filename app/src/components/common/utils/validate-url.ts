@@ -32,9 +32,9 @@ export const validateUrl = (url: string): string => {
 export const validateAndNormalizeUrl = (
 	url: string,
 ): {
-	url: string;
 	isExternal: boolean;
 	isValid: boolean;
+	url: string;
 } => {
 	if (!url) return { url: "/", isExternal: false, isValid: false };
 

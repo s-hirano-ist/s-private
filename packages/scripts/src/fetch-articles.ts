@@ -10,30 +10,30 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 
 type Article = {
+	categoryName: string;
 	id: string;
+	quote: string | null;
 	title: string;
 	url: string;
-	quote: string | null;
-	categoryName: string;
 };
 
 type Template = {
-	heading: string;
-	description: string;
 	body: BodyItem[];
+	description: string;
+	heading: string;
 };
 
 type BodyItem = {
-	title: string;
 	quote: string;
+	title: string;
 	url: string;
 };
 
 type OutputType = Record<
 	string,
 	{
-		title: string;
 		quote: string;
+		title: string;
 		url: string;
 	}[]
 >;

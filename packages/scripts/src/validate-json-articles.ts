@@ -3,19 +3,19 @@ import fs from "node:fs";
 import { join } from "node:path";
 
 type ArticleItem = {
-	title: string;
-	url: string;
-	quote?: string;
+	ogDescription?: string;
 	ogImageUrl?: string;
 	ogTitle?: string;
-	ogDescription?: string;
+	quote?: string;
 	skip?: boolean;
+	title: string;
+	url: string;
 };
 
 type ArticlesJson = {
-	heading: string;
-	description: string;
 	body: ArticleItem[];
+	description: string;
+	heading: string;
 };
 
 type ValidationIssue = {

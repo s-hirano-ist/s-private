@@ -1,10 +1,10 @@
 import { StorageOperationError } from "@s-hirano-ist/s-storage";
 
 type StoragePhaseContext = {
-	phase: string;
-	path: string;
-	isThumbnail: boolean;
 	additionalContext?: Record<string, unknown>;
+	isThumbnail: boolean;
+	path: string;
+	phase: string;
 };
 
 export async function withStoragePhase<T>(

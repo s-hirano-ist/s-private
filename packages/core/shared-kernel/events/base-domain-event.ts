@@ -37,8 +37,8 @@ export abstract class BaseDomainEvent<
 
 	/** Contextual information about the event */
 	public readonly metadata: {
-		timestamp: Date;
 		caller: string;
+		timestamp: Date;
 		userId: string;
 	};
 

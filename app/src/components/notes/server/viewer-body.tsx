@@ -4,8 +4,8 @@ import { ViewerBodyClient } from "@s-hirano-ist/s-ui/layouts/body/viewer-body";
 import { notFound } from "next/navigation";
 
 export type Props = {
-	slug: string;
 	getNoteByTitle: typeof getNoteByTitle;
+	slug: string;
 };
 
 export async function ViewerBody({ slug, getNoteByTitle }: Props) {

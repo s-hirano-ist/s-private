@@ -172,20 +172,20 @@ export type ExportedImage = Readonly<z.infer<typeof ExportedImage>>;
  * ```
  */
 export type CreateImageArgs = Readonly<{
-	/** The user who owns the image */
-	userId: UserId;
-	/** The storage path for the image */
-	path: Path;
+	/** The caller identifier for event tracking */
+	caller: string;
 	/** The MIME type of the image */
 	contentType: ContentType;
 	/** The file size in bytes */
 	fileSize: FileSize;
-	/** Optional width in pixels */
-	width?: Pixel;
 	/** Optional height in pixels */
 	height?: Pixel;
-	/** The caller identifier for event tracking */
-	caller: string;
+	/** The storage path for the image */
+	path: Path;
+	/** The user who owns the image */
+	userId: UserId;
+	/** Optional width in pixels */
+	width?: Pixel;
 }>;
 
 /**
@@ -267,10 +267,10 @@ export const imageEntity = {
  * Contains only the fields needed for list views, with branded types.
  */
 export type ImageListItemDTO = Readonly<{
+	height: Pixel | undefined;
 	id: Id;
 	path: Path;
 	width: Pixel | undefined;
-	height: Pixel | undefined;
 }>;
 
 export { makeContentType } from "../../shared-kernel/entities/file-entity.ts";

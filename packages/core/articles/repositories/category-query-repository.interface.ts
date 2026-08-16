@@ -66,18 +66,6 @@ export type CategoryListItemDTO = Readonly<{
  */
 export type ICategoryQueryRepository = {
 	/**
-	 * Retrieves multiple categories with optional pagination and sorting.
-	 *
-	 * @param userId - The user ID for tenant isolation
-	 * @param params - Optional pagination and sorting parameters
-	 * @returns Array of category DTOs with branded types
-	 */
-	findMany(
-		userId: UserId,
-		params?: CategoryFindManyParams,
-	): Promise<CategoryListItemDTO[]>;
-
-	/**
 	 * Finds a category by name and user ID.
 	 *
 	 * @param name - The category name to search for
@@ -88,4 +76,16 @@ export type ICategoryQueryRepository = {
 		name: CategoryName,
 		userId: UserId,
 	): Promise<{ id: Id } | null>;
+
+	/**
+	 * Retrieves multiple categories with optional pagination and sorting.
+	 *
+	 * @param userId - The user ID for tenant isolation
+	 * @param params - Optional pagination and sorting parameters
+	 * @returns Array of category DTOs with branded types
+	 */
+	findMany(
+		userId: UserId,
+		params?: CategoryFindManyParams,
+	): Promise<CategoryListItemDTO[]>;
 };

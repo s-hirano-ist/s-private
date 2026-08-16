@@ -36,10 +36,10 @@ export class ImageCreatedEvent extends BaseDomainEvent<ImageCreatedPayload> {
 	 * @param data.caller - The function/method that triggered the event
 	 */
 	constructor(data: {
+		caller: string;
 		id: string;
 		path: string;
 		userId: string;
-		caller: string;
 	}) {
 		super(
 			"image.created",

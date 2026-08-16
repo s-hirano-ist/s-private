@@ -1,10 +1,10 @@
 type HttpStatusCode = 200 | 201 | 400 | 401 | 403 | 404 | 500;
 
 export type LogContext = {
+	additionalContext?: Record<string, unknown>;
 	caller: string;
 	status: HttpStatusCode;
 	userId?: string;
-	additionalContext?: Record<string, unknown>;
 };
 
 export type LogOptions = {
@@ -12,6 +12,12 @@ export type LogOptions = {
 };
 
 export type Logger = {
+	error(
+		message: string,
+		context: LogContext,
+		error?: unknown,
+		options?: LogOptions,
+	): Promise<void>;
 	info(
 		message: string,
 		context: LogContext,
@@ -20,12 +26,6 @@ export type Logger = {
 	warn(
 		message: string,
 		context: LogContext,
-		options?: LogOptions,
-	): Promise<void>;
-	error(
-		message: string,
-		context: LogContext,
-		error?: unknown,
 		options?: LogOptions,
 	): Promise<void>;
 };

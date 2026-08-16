@@ -24,9 +24,9 @@ import { booksStorageService } from "@/infrastructures/shared/storage/books-stor
  */
 export type AddBooksDeps = {
 	commandRepository: IBooksCommandRepository;
-	storageService: IStorageService;
 	domainServiceFactory: ReturnType<typeof createDomainServiceFactory>;
 	eventDispatcher: IEventDispatcher;
+	storageService: IStorageService;
 };
 
 /**

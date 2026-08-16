@@ -19,9 +19,15 @@ const data = JSON.parse(result.stdout);
 const violations = [];
 for (const [licenseKey, packages] of Object.entries(data)) {
 	const tokens = licenseKey
-		.split(/\s+(?:AND|OR)\s+|[(),]/iu)
-		.map((s) => s.trim().replaceAll(/^\++|\++$/gu, ""))
-		.filter(Boolean);
+		.split(/[(),\s]+/u)
+		.map((token) => {
+			let start = 0;
+			let end = token.length;
+			while (token[start] === "+") start += 1;
+			while (token[end - 1] === "+") end -= 1;
+			return token.slice(start, end);
+		})
+		.filter((token) => token && token !== "AND" && token !== "OR");
 	const hit = tokens.some((token) => FORBIDDEN.has(token));
 	if (!hit) continue;
 	for (const pkg of packages) {

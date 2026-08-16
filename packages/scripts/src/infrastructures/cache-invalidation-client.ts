@@ -9,8 +9,8 @@ export type CacheInvalidationDomain =
 	(typeof CACHE_INVALIDATION_DOMAINS)[number];
 
 type CacheInvalidationConfig = Readonly<{
-	url: string;
 	secret: string;
+	url: string;
 }>;
 
 export async function invalidateContentCache(

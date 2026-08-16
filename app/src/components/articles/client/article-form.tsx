@@ -13,8 +13,8 @@ import { useRef } from "react";
 export type ArticleFormData = { id: string; name: string }[];
 
 type Props = {
-	categories: ArticleFormData;
 	addArticle: (formData: FormData) => Promise<ServerAction>;
+	categories: ArticleFormData;
 };
 
 export function ArticleForm({ categories, addArticle }: Props) {

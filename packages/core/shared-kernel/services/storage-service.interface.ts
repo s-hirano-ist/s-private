@@ -21,17 +21,12 @@
  */
 export type IStorageService = {
 	/**
-	 * Uploads an image to object storage.
+	 * Deletes an image from object storage.
 	 *
-	 * @param path - The storage path for the image
-	 * @param bytes - The image data bytes
-	 * @param isThumbnail - Whether this is a thumbnail upload
+	 * @param path - The storage path of the image
+	 * @param isThumbnail - Whether this is a thumbnail deletion
 	 */
-	uploadImage(
-		path: string,
-		bytes: Uint8Array,
-		isThumbnail: boolean,
-	): Promise<void>;
+	deleteImage(path: string, isThumbnail: boolean): Promise<void>;
 
 	/**
 	 * Retrieves an image from object storage.
@@ -52,10 +47,15 @@ export type IStorageService = {
 	getImageOrThrow(path: string, isThumbnail: boolean): Promise<void>;
 
 	/**
-	 * Deletes an image from object storage.
+	 * Uploads an image to object storage.
 	 *
-	 * @param path - The storage path of the image
-	 * @param isThumbnail - Whether this is a thumbnail deletion
+	 * @param path - The storage path for the image
+	 * @param bytes - The image data bytes
+	 * @param isThumbnail - Whether this is a thumbnail upload
 	 */
-	deleteImage(path: string, isThumbnail: boolean): Promise<void>;
+	uploadImage(
+		path: string,
+		bytes: Uint8Array,
+		isThumbnail: boolean,
+	): Promise<void>;
 };

@@ -28,17 +28,17 @@ export type DomainEvent<
 > = {
 	/** The type of event (e.g., "article.created", "book.deleted") */
 	eventType: string;
-	/** Event-specific data */
-	payload: TPayload;
 	/** Contextual information about the event */
 	metadata: {
-		/** When the event occurred */
-		timestamp: Date;
 		/** The function/method that triggered the event */
 		caller: string;
+		/** When the event occurred */
+		timestamp: Date;
 		/** The user who triggered the event */
 		userId: string;
 	};
+	/** Event-specific data */
+	payload: TPayload;
 };
 
 /**

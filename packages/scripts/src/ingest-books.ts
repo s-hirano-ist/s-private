@@ -15,15 +15,15 @@ import { readFile } from "node:fs/promises";
 import { basename, extname } from "node:path";
 
 type BookFrontmatter = {
-	heading?: string | number;
-	title?: string;
-	rating?: number;
-	tags?: string[];
-	googleSubtitle?: string | null;
 	googleAuthors?: string[];
 	googleDescription?: string | null;
-	googleImgSrc?: string | null;
 	googleHref?: string | null;
+	googleImgSrc?: string | null;
+	googleSubtitle?: string | null;
+	heading?: string | number;
+	rating?: number;
+	tags?: string[];
+	title?: string;
 };
 
 const SCRIPT_NAME = "ingest-books";
@@ -56,15 +56,15 @@ function arrayEquals(a: string[], b: string[]): boolean {
 }
 
 type ParsedBook = {
-	title: string;
+	googleAuthors: string[];
+	googleDescription: string | null;
+	googleHref: string | null;
+	googleImgSrc: string | null;
+	googleSubTitle: string | null;
 	markdown: string | null;
 	rating: number;
 	tags: string[];
-	googleSubTitle: string | null;
-	googleAuthors: string[];
-	googleDescription: string | null;
-	googleImgSrc: string | null;
-	googleHref: string | null;
+	title: string;
 };
 
 function parseBookFile(content: string): ParsedBook {
@@ -101,16 +101,16 @@ function parseBookFile(content: string): ParsedBook {
 }
 
 type StoredBook = {
-	title: string;
-	markdown: string | null;
-	imagePath: string | null;
-	rating: number;
-	tags: string[];
-	googleSubTitle: string | null;
 	googleAuthors: string[];
 	googleDescription: string | null;
-	googleImgSrc: string | null;
 	googleHref: string | null;
+	googleImgSrc: string | null;
+	googleSubTitle: string | null;
+	imagePath: string | null;
+	markdown: string | null;
+	rating: number;
+	tags: string[];
+	title: string;
 };
 
 function bookMatchesExisting(

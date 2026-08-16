@@ -5,12 +5,12 @@ import type { SearchQuery } from "@s-hirano-ist/s-core/shared-kernel/types/searc
 import { useRef, useState, useTransition } from "react";
 
 type SearchableItem = {
-	href: string;
+	category?: string;
 	contentType: "articles" | "books" | "notes";
+	href: string;
+	snippet?: string;
 	title: string;
 	url?: string;
-	snippet?: string;
-	category?: string;
 };
 
 type UseSearchableListOptions = {
@@ -18,12 +18,12 @@ type UseSearchableListOptions = {
 };
 
 type UseSearchableListReturn = {
+	executeSearch: () => Promise<void>;
+	handleSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+	isError: boolean;
+	isPending: boolean;
 	searchQuery: string;
 	searchResults: SearchableItem[] | undefined;
-	handleSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-	executeSearch: () => Promise<void>;
-	isPending: boolean;
-	isError: boolean;
 };
 
 export function useSearch({

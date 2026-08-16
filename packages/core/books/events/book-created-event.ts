@@ -36,10 +36,10 @@ export class BookCreatedEvent extends BaseDomainEvent<BookCreatedPayload> {
 	 * @param data.caller - The function/method that triggered the event
 	 */
 	constructor(data: {
+		caller: string;
 		isbn: string;
 		title: string;
 		userId: string;
-		caller: string;
 	}) {
 		super(
 			"book.created",

@@ -43,9 +43,9 @@ function createMockDeps(
 ): {
 	deps: AddBooksDeps;
 	mockCommandRepository: IBooksCommandRepository;
-	mockStorageService: IStorageService;
 	mockEnsureNoDuplicate: ReturnType<typeof vi.fn>;
 	mockEventDispatcher: { dispatch: ReturnType<typeof vi.fn> };
+	mockStorageService: IStorageService;
 } {
 	const mockCommandRepository: IBooksCommandRepository = {
 		create: vi.fn(),

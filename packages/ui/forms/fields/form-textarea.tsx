@@ -9,10 +9,10 @@ import { useFormValues } from "../generic-form-wrapper";
  * @see {@link FormTextarea} for the component
  */
 export type FormTextareaProps = {
-	/** The label text displayed above the textarea */
-	label: string;
 	/** The HTML id for the textarea element */
 	htmlFor: string;
+	/** The label text displayed above the textarea */
+	label: string;
 } & ComponentProps<typeof Textarea>;
 
 /**

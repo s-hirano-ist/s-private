@@ -8,12 +8,12 @@
  * @see {@link createPushoverService} for creating a notification service instance
  */
 export type NotificationConfig = {
+	/** The application token for authentication */
+	appToken: string;
 	/** The Pushover API endpoint URL */
 	url: string;
 	/** The user key for authentication */
 	userKey: string;
-	/** The application token for authentication */
-	appToken: string;
 };
 
 /**
@@ -66,17 +66,17 @@ export type NotificationService = {
 	 */
 	notifyError(message: string, context: NotificationContext): Promise<void>;
 	/**
-	 * Sends a normal-priority warning notification.
-	 *
-	 * @param message - The warning message to send
-	 * @param context - Context information about the notification source
-	 */
-	notifyWarning(message: string, context: NotificationContext): Promise<void>;
-	/**
 	 * Sends a low-priority informational notification.
 	 *
 	 * @param message - The info message to send
 	 * @param context - Context information about the notification source
 	 */
 	notifyInfo(message: string, context: NotificationContext): Promise<void>;
+	/**
+	 * Sends a normal-priority warning notification.
+	 *
+	 * @param message - The warning message to send
+	 * @param context - Context information about the notification source
+	 */
+	notifyWarning(message: string, context: NotificationContext): Promise<void>;
 };

@@ -11,20 +11,20 @@ import { useFormValues } from "../generic-form-wrapper";
  * @see {@link FormInputWithButton} for the component
  */
 export type FormInputWithButtonProps = {
-	/** The label text displayed above the input */
-	label: string;
-	/** The HTML id for the input element */
-	htmlFor: string;
-	/** Icon or content for the action button */
-	buttonIcon: React.ReactNode;
-	/** Callback when the button is clicked */
-	onButtonClick: () => void;
-	/** Optional ref to access the input element */
-	inputRef?: RefObject<HTMLInputElement | null>;
-	/** Test id for the button element */
-	buttonTestId?: string;
 	/** Accessible label for the button (defaults to label) */
 	buttonAriaLabel?: string;
+	/** Icon or content for the action button */
+	buttonIcon: React.ReactNode;
+	/** Test id for the button element */
+	buttonTestId?: string;
+	/** The HTML id for the input element */
+	htmlFor: string;
+	/** Optional ref to access the input element */
+	inputRef?: RefObject<HTMLInputElement | null>;
+	/** The label text displayed above the input */
+	label: string;
+	/** Callback when the button is clicked */
+	onButtonClick: () => void;
 } & Omit<ComponentProps<typeof Input>, "ref">;
 
 /**

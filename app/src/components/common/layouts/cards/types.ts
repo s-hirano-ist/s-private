@@ -4,22 +4,22 @@ export type CardStackInitialData<T> = {
 };
 
 export type ImageCardData = {
-	id: string;
+	authors?: string;
 	href: string;
-	title: string;
+	id: string;
 	image: string | null;
 	subtitle?: string;
-	authors?: string;
+	title: string;
 };
 
 export type LinkCardData = {
+	description?: string;
+	href: string;
 	id: string;
 	key: string;
-	title: string;
-	description?: string;
 	primaryBadgeText?: string;
 	secondaryBadgeText?: string;
-	href: string;
+	title: string;
 };
 
 export type ImageCardStackInitialData = CardStackInitialData<ImageCardData>;

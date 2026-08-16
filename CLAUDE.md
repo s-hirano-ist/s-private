@@ -1,8 +1,8 @@
 # CLAUDE.md
 
 Next.js 16 + TypeScript + Clean Architectureベースのコンテンツ管理システム。
-docs/** にはより詳細な設計等のルールが記載されています。必要に応じて参照してください。
-また、新たな設計パターンを追加する場合は、docs/** の設計該当箇所に適宜内容を追加してください。
+`docs/**` にはより詳細な設計等のルールが記載されています。必要に応じて参照してください。
+また、新たな設計パターンを追加する場合は、`docs/**` の設計該当箇所に適宜内容を追加してください。
 
 - Before doing any UI, frontend or React development, ALWAYS call the storybook MCP server to get further instructions.
 - 課題管理はローカルの `issues/` ディレクトリで行う（GitHub Issuesではなく）。issueに取り組むように指示があり、完了したらissueファイルは削除すること。
@@ -23,8 +23,8 @@ docs/** にはより詳細な設計等のルールが記載されています。
 - `pnpm dev` - 開発サーバー
 - `pnpm build` - ビルド
 - `pnpm test` - テスト実行
-- `pnpm lint` - oxlint（type-aware。ESLintから移行済み。旧Biomeのbase lintも吸収）
-- `pnpm lint:fix` - oxlint自動修正
+- `pnpm lint` - oxlint（TypeScript/JavaScript、type-aware）+ ESLint（YAML/JSON/Markdown）
+- `pnpm lint:fix` - oxlint + ESLint自動修正
 - `pnpm deps:check` - dependency-cruiser（Clean Architecture層境界の強制を含む）
 - `pnpm format` - oxfmt（Prettier互換。フォーマット + import並べ替え + Tailwindクラス並べ替え。Biomeから移行済み）
 - `pnpm format:check` - oxfmtフォーマットチェック（書き込みなし）

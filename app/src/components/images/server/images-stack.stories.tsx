@@ -3,18 +3,18 @@ import { Suspense } from "react";
 import { ImagesStack } from "./images-stack";
 
 type ImageData = {
+	height?: number | null;
 	id?: string;
 	originalPath: string;
 	thumbnailPath: string;
-	height?: number | null;
 	width?: number | null;
 };
 
 type ImagesStackWrapperProps = {
 	currentPage: number;
-	totalCount: number;
 	data: ImageData[];
-	deleteAction?: (id: string) => Promise<{ success: boolean; message: string }>;
+	deleteAction?: (id: string) => Promise<{ message: string; success: boolean }>;
+	totalCount: number;
 };
 
 function ImagesStackWrapper({

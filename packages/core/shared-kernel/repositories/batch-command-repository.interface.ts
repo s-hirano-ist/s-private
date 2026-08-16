@@ -58,14 +58,14 @@ export type ResetStatusResult = {
  * ```
  */
 export type StatusTransitionParams = {
-	/** The user ID for tenant isolation */
-	userId: UserId;
+	/** Timestamp for EXPORTED transitions (required when toStatus is "EXPORTED") */
+	exportedAt?: ExportedAt;
 	/** The current status of entities to update */
 	fromStatus: Status;
 	/** The target status to transition to */
 	toStatus: Status;
-	/** Timestamp for EXPORTED transitions (required when toStatus is "EXPORTED") */
-	exportedAt?: ExportedAt;
+	/** The user ID for tenant isolation */
+	userId: UserId;
 };
 
 /**

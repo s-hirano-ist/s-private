@@ -19,9 +19,9 @@ import { getTranslations } from "next-intl/server";
 
 type Props = {
 	currentPage: number;
-	totalCount: number;
 	data: ImageData[];
 	deleteAction?: (id: string) => Promise<ServerAction>;
+	totalCount: number;
 };
 
 function generatePageLink(page: number): Route {
@@ -31,8 +31,8 @@ function generatePageLink(page: number): Route {
 }
 
 type PaginationItemType =
-	| { type: "page"; page: number }
-	| { type: "ellipsis"; position: "start" | "end" };
+	| { page: number; type: "page" }
+	| { position: "start" | "end"; type: "ellipsis" };
 
 function generatePaginationItems(
 	currentPage: number,

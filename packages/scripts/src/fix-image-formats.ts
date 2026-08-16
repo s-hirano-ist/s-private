@@ -31,7 +31,7 @@ async function processDirectory(
 	directory: string,
 	label: string,
 	dryRun: boolean,
-): Promise<{ converted: number; skipped: number; errors: number }> {
+): Promise<{ converted: number; errors: number; skipped: number }> {
 	const files = await glob(`${directory}/*`);
 	const convertible = files.filter((filePath) => isConvertibleImage(filePath));
 

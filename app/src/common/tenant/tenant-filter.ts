@@ -32,9 +32,9 @@ import type { TenantStore } from "./tenant-context";
 
 /** Loose view of a Prisma operation's args, covering the fields we rewrite. */
 type TenantQueryArgs = {
-	where?: Record<string, unknown>;
-	data?: Record<string, unknown> | Record<string, unknown>[];
 	create?: Record<string, unknown>;
+	data?: Record<string, unknown> | Record<string, unknown>[];
+	where?: Record<string, unknown>;
 };
 
 /** Operations whose generic `where` filter accepts an AND-wrapped userId. */

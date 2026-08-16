@@ -92,11 +92,11 @@ function CommandDialog({
 	size,
 	...props
 }: React.ComponentProps<typeof Dialog> & {
-	title?: string;
-	description?: string;
 	className?: string;
+	description?: string;
 	showCloseButton?: boolean;
 	size?: "default" | "md" | "lg";
+	title?: string;
 }) {
 	return (
 		<Dialog {...props}>
