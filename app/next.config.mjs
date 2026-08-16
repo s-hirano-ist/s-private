@@ -5,6 +5,11 @@ import { withSentryConfig } from "@sentry/nextjs";
 import createNextIntlPlugin from "next-intl/plugin";
 import path from "node:path";
 
+// Vercel injects a deployment adapter that consumes Next.js build outputs
+// directly. `output: "standalone"` is only for self-hosted deployments and,
+// with Next.js 16.3 adapters, would read an intentionally omitted server trace.
+const isVercelBuild = process.env.VERCEL === "1";
+
 // MEMO: その他のheadersについては下記参照
 // https://nextjs.org/docs/pages/api-reference/next-config-js/headers
 
@@ -23,6 +28,8 @@ const nextConfig = {
 	reactCompiler: true,
 	experimental: {
 		authInterrupts: true,
+		globalNotFound: true,
+		turbopackRustReactCompiler: true,
 		staleTimes: {
 			dynamic: 0,
 			static: 180,
@@ -33,7 +40,7 @@ const nextConfig = {
 		},
 	},
 	pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
-	output: "standalone",
+	...(isVercelBuild ? {} : { output: "standalone" }),
 	images: {
 		remotePatterns: [
 			{ hostname: process.env.MINIO_HOST ?? "" },

@@ -1,7 +1,7 @@
 import { getSessionCookie } from "better-auth/cookies";
 import createMiddleware from "next-intl/middleware";
 import { NextRequest, NextResponse } from "next/server";
-import { routing } from "./infrastructures/i18n/routing";
+import { routing } from "./infrastructures/i18n/routing-config";
 import { buildContentSecurityPolicy } from "./infrastructures/security/content-security-policy";
 
 const handleI18nRouting = createMiddleware(routing);

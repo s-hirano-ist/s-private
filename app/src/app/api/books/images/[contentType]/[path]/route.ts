@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 
 export async function GET(
 	request: Request,
-	{ params }: { params: Promise<{ contentType: string; path: string }> },
+	{ params }: RouteContext<"/api/books/images/[contentType]/[path]">,
 ) {
 	const session = await auth.api.getSession({ headers: request.headers });
 	if (!session)

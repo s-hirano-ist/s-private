@@ -6,10 +6,7 @@
 	"ignoreBinaries": [],
 	"workspaces": {
 		"app": {
-			"ignore": [
-				"src/infrastructures/i18n/request.ts",
-				"src/components/common/layouts/cards/base-card-stack.bench.tsx"
-			],
+			"ignore": ["src/infrastructures/i18n/request.ts"],
 			"ignoreDependencies": ["@types/react-syntax-highlighter"],
 			"ignoreBinaries": ["doppler"],
 			"next": {
@@ -54,9 +51,6 @@
 		"packages/core": {
 			"entry": ["**/*.ts", "!**/*.test.ts", "!**/*.spec.ts"],
 			"project": ["**/*.ts"]
-		},
-		"packages/database": {
-			"ignoreDependencies": ["@prisma/client-runtime-utils"]
 		}
 	}
 }

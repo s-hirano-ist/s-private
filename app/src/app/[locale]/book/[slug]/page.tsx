@@ -7,13 +7,9 @@ import { ErrorBoundary } from "@/components/common/layouts/error-boundary";
 import Loading from "@s-hirano-ist/s-ui/display/loading";
 import { Suspense } from "react";
 
-type Params = Promise<{ slug: string }>;
-
 export async function generateMetadata({
 	params,
-}: {
-	params: Params;
-}): Promise<Metadata> {
+}: PageProps<"/[locale]/book/[slug]">): Promise<Metadata> {
 	const { slug } = await params;
 
 	return {
@@ -22,7 +18,9 @@ export async function generateMetadata({
 	};
 }
 
-export default async function Page({ params }: { params: Params }) {
+export default async function Page({
+	params,
+}: PageProps<"/[locale]/book/[slug]">) {
 	await requireAuth();
 
 	const { slug } = await params;

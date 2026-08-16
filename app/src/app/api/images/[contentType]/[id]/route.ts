@@ -6,7 +6,7 @@ import { Readable } from "node:stream";
 
 export async function GET(
 	request: Request,
-	{ params }: { params: Promise<{ contentType: string; id: string }> },
+	{ params }: RouteContext<"/api/images/[contentType]/[id]">,
 ) {
 	const session = await auth.api.getSession({ headers: request.headers });
 	if (!session)
