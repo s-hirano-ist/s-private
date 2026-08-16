@@ -3,23 +3,23 @@
 import { Profiler, type ProfilerOnRenderCallback } from "react";
 
 export type ProfilerResult = {
-	id: string;
-	phase: "mount" | "update" | "nested-update";
 	actualDuration: number;
 	baseDuration: number;
-	startTime: number;
 	commitTime: number;
+	id: string;
+	phase: "mount" | "update" | "nested-update";
+	startTime: number;
 };
 
 type ProfilerWrapperProps = {
-	id: string;
+	children: React.ReactNode;
 	/** Whether profiling is enabled. Defaults to true. Set to false in production. */
 	enabled?: boolean;
-	/** Warning threshold in ms. Defaults to 16 (one frame at 60fps). */
-	threshold?: number;
+	id: string;
 	/** Programmatic data collection callback. */
 	onCollect?: (result: ProfilerResult) => void;
-	children: React.ReactNode;
+	/** Warning threshold in ms. Defaults to 16 (one frame at 60fps). */
+	threshold?: number;
 };
 
 function DevProfilerWrapper({

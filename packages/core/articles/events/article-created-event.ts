@@ -40,12 +40,12 @@ export class ArticleCreatedEvent extends BaseDomainEvent<ArticleCreatedPayload> 
 	 * @param data.caller - The function/method that triggered the event
 	 */
 	constructor(data: {
+		caller: string;
+		categoryName: string;
+		quote: string;
 		title: string;
 		url: string;
-		quote: string;
-		categoryName: string;
 		userId: string;
-		caller: string;
 	}) {
 		super(
 			"article.created",

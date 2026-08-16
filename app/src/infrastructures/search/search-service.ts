@@ -6,16 +6,16 @@ import { getQdrantClient, search } from "@s-hirano-ist/s-search/qdrant-client";
 getQdrantClient({ url: env.QDRANT_URL, apiKey: env.QDRANT_API_KEY });
 
 export type SearchOptions = {
+	contentType?: ContentType | ContentType[];
+	heading?: string;
 	topK?: number;
 	type?: "markdown_note" | "bookmark_json";
-	heading?: string;
-	contentType?: ContentType | ContentType[];
 };
 
 export async function searchVectors(
 	query: string,
 	options: SearchOptions = {},
-): Promise<{ results: SearchResult[]; query: string; totalResults: number }> {
+): Promise<{ query: string; results: SearchResult[]; totalResults: number }> {
 	const results = await search(query, {
 		topK: options.topK,
 		filter: {

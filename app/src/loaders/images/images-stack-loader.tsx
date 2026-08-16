@@ -9,9 +9,9 @@ import {
 import { ImagesStack } from "@/components/images/server/images-stack";
 
 export type ImagesStackLoaderProps = BaseLoaderProps & {
-	variant: "exported" | "unexported";
 	currentPage: number;
 	deleteAction?: (id: string) => Promise<ServerAction>;
+	variant: "exported" | "unexported";
 };
 
 export async function ImagesStackLoader({

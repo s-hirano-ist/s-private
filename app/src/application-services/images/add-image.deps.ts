@@ -24,9 +24,9 @@ import { minioStorageService } from "@/infrastructures/shared/storage/minio-stor
  */
 export type AddImageDeps = {
 	commandRepository: IImagesCommandRepository;
-	storageService: IStorageService;
 	domainServiceFactory: ReturnType<typeof createDomainServiceFactory>;
 	eventDispatcher: IEventDispatcher;
+	storageService: IStorageService;
 };
 
 /**

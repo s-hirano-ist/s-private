@@ -58,6 +58,15 @@ export type NotesFindManyParams = {
  */
 export type INotesQueryRepository = {
 	/**
+	 * Counts notes matching the given criteria.
+	 *
+	 * @param userId - The user ID for tenant isolation
+	 * @param status - Filter by status
+	 * @returns The count of matching notes
+	 */
+	count(userId: UserId, status: Status): Promise<number>;
+
+	/**
 	 * Finds a note by its title for a specific user.
 	 *
 	 * @param title - The validated title to search for
@@ -88,13 +97,4 @@ export type INotesQueryRepository = {
 		status: Status,
 		params: NotesFindManyParams,
 	): Promise<NoteListItemDTO[]>;
-
-	/**
-	 * Counts notes matching the given criteria.
-	 *
-	 * @param userId - The user ID for tenant isolation
-	 * @param status - Filter by status
-	 * @returns The count of matching notes
-	 */
-	count(userId: UserId, status: Status): Promise<number>;
 };

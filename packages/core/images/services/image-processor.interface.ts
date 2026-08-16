@@ -2,12 +2,12 @@
  * Image metadata extracted from image buffers.
  */
 export type ImageMetadata = {
-	/** Width in pixels */
-	width?: number;
-	/** Height in pixels */
-	height?: number;
 	/** Image format (e.g., "jpeg", "png", "webp") */
 	format?: string;
+	/** Height in pixels */
+	height?: number;
+	/** Width in pixels */
+	width?: number;
 };
 
 /**
@@ -57,18 +57,18 @@ export type IImageProcessor = {
 	): Promise<Uint8Array>;
 
 	/**
-	 * Extracts metadata from an image buffer.
-	 *
-	 * @param bytes - The image bytes to analyze
-	 * @returns Extracted metadata including dimensions and format
-	 */
-	getMetadata(bytes: Uint8Array): Promise<ImageMetadata>;
-
-	/**
 	 * Converts a File object to bytes.
 	 *
 	 * @param file - The File object to convert
 	 * @returns The file data bytes
 	 */
 	fileToBytes(file: File): Promise<Uint8Array>;
+
+	/**
+	 * Extracts metadata from an image buffer.
+	 *
+	 * @param bytes - The image bytes to analyze
+	 * @returns Extracted metadata including dimensions and format
+	 */
+	getMetadata(bytes: Uint8Array): Promise<ImageMetadata>;
 };

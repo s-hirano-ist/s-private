@@ -33,9 +33,9 @@ async function withRetry<T>(
 }
 
 export type IngestResult = {
-	totalChunks: number;
 	changedChunks: number;
 	skippedChunks: number;
+	totalChunks: number;
 };
 
 export type IngestOptions = {

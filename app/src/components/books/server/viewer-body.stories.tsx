@@ -120,10 +120,10 @@ let color: string = "blue";
 Interfaces define the shape of objects:
 
 \`\`\`typescript
-interface Person {
+type Person = {
   name: string;
   age: number;
-}
+};
 \`\`\``),
 		}),
 	},

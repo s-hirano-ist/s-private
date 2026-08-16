@@ -4,7 +4,7 @@ import { BaseDomainEvent } from "./base-domain-event.ts";
 type TestPayload = { message: string };
 
 class TestEvent extends BaseDomainEvent<TestPayload> {
-	constructor(data: { message: string; caller: string; userId: string }) {
+	constructor(data: { caller: string; message: string; userId: string }) {
 		super(
 			"test.event",
 			{ message: data.message },

@@ -13,9 +13,9 @@ import { basename } from "node:path";
 const SCRIPT_NAME = "ingest-notes";
 
 function parseFrontmatter(content: string): {
-	heading?: string;
-	draft?: boolean;
 	body: string;
+	draft?: boolean;
+	heading?: string;
 } {
 	if (!content.startsWith("---")) {
 		return { body: content };
@@ -41,7 +41,7 @@ function parseFrontmatter(content: string): {
 function parseNoteFile(
 	filePath: string,
 	content: string,
-): { title: string; markdown: string } | null {
+): { markdown: string; title: string } | null {
 	const { heading, draft, body } = parseFrontmatter(content);
 
 	if (draft) return null;
@@ -101,14 +101,14 @@ async function main() {
 		});
 		const existingNotesMap = new Map(
 			existingNotes.map(
-				(n: { id: string; title: string; markdown: string }) => [n.title, n],
+				(n: { id: string; markdown: string; title: string }) => [n.title, n],
 			),
 		);
 		console.log(`📊 DB に ${existingNotesMap.size} 件の既存ノートがあります。`);
 
 		async function upsertNote(parsed: {
-			title: string;
 			markdown: string;
+			title: string;
 		}): Promise<"inserted" | "updated" | "skipped"> {
 			fileTitles.add(parsed.title);
 
@@ -156,7 +156,7 @@ async function main() {
 		let errorCount = 0;
 
 		for (const filePath of files) {
-			let parsed: { title: string; markdown: string } | null = null;
+			let parsed: { markdown: string; title: string } | null = null;
 			try {
 				const content = await readFile(filePath, "utf-8");
 				parsed = parseNoteFile(filePath, content);

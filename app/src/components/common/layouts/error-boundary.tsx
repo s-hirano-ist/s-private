@@ -7,9 +7,9 @@ import { getTranslations } from "next-intl/server";
 import { unstable_rethrow } from "next/navigation";
 
 type Props = {
-	render: () => Promise<ReactNode>;
 	errorCaller: string;
 	fallback?: ReactNode;
+	render: () => Promise<ReactNode>;
 };
 
 export async function ErrorBoundary({ render, errorCaller, fallback }: Props) {

@@ -49,20 +49,20 @@ export const useFormValues = () => use(FormValuesContext);
 export type GenericFormWrapperProps<T> = {
 	/** Server action to handle form submission */
 	action: (formData: FormData) => Promise<T>;
+	/** Callback after form submission with response message */
+	afterSubmit: (responseMessage: string) => void;
 	/** Form field components */
 	children: ReactNode;
-	/** Label for the save button (fallback) */
-	saveLabel: string;
-	/** Label for the submit button */
-	submitLabel?: string;
 	/** Label shown during loading state */
 	loadingLabel?: string;
 	/** Optional custom submit handler */
 	onSubmit?: (formData: FormData) => Promise<void>;
 	/** Pre-filled form values */
 	preservedValues?: Record<string, string>;
-	/** Callback after form submission with response message */
-	afterSubmit: (responseMessage: string) => void;
+	/** Label for the save button (fallback) */
+	saveLabel: string;
+	/** Label for the submit button */
+	submitLabel?: string;
 };
 
 /**

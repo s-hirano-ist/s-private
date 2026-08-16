@@ -35,9 +35,9 @@ function createMockDeps(
 ): {
 	deps: AddImageDeps;
 	mockCommandRepository: IImagesCommandRepository;
-	mockStorageService: IStorageService;
 	mockEnsureNoDuplicate: ReturnType<typeof vi.fn>;
 	mockEventDispatcher: { dispatch: ReturnType<typeof vi.fn> };
+	mockStorageService: IStorageService;
 } {
 	const mockCommandRepository: IImagesCommandRepository = {
 		create: vi.fn(),

@@ -14,9 +14,9 @@ import { readFileSync } from "node:fs";
 import { INGEST_CONFIG } from "./ingest-config.ts";
 
 type FileInfo = {
+	contentType: ContentType;
 	path: string;
 	type: "json" | "markdown";
-	contentType: ContentType;
 };
 
 /**
@@ -59,8 +59,8 @@ function parseFile(file: FileInfo): QdrantPayload[] {
 }
 
 type IngestFlags = {
-	force: boolean;
 	dryRun: boolean;
+	force: boolean;
 };
 
 /**

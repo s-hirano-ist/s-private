@@ -235,7 +235,7 @@ Application Service層は、ドメインロジックとインフラストラク�
 
 ### ファイル構成パターン
 
-```
+```text
 app/src/application-services/{domain}/
 ├── {action}.deps.ts    ← 依存の型定義とデフォルト値
 ├── {action}.core.ts    ← Core関数（ビジネスロジック、"use server"なし）
@@ -315,7 +315,7 @@ graph TB
 
 ### ドメイン間関係図
 
-```
+```text
 ┌─────────────────────────────────────────────────────┐
 │                   Shared-Kernel                      │
 │  (Id, UserId, Status, CreatedAt, ExportedAt, etc.)  │

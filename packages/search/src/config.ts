@@ -27,26 +27,26 @@ export type ContentType = "articles" | "books" | "notes";
 
 // Payload type for Qdrant
 export type QdrantPayload = {
-	type: "markdown_note" | "bookmark_json";
-	content_type: ContentType;
-	top_heading: string;
-	doc_id: string;
 	chunk_id: string;
-	title: string;
-	url?: string;
+	content_hash: string;
+	content_type: ContentType;
+	doc_id: string;
 	heading_path: string[];
 	text: string;
-	content_hash: string;
+	title: string;
+	top_heading: string;
+	type: "markdown_note" | "bookmark_json";
+	url?: string;
 };
 
 // Search result type
 export type SearchResult = {
+	content_type: ContentType;
+	doc_id: string;
+	heading_path: string[];
 	score: number;
 	text: string;
 	title: string;
-	url?: string;
-	heading_path: string[];
 	type: "markdown_note" | "bookmark_json";
-	content_type: ContentType;
-	doc_id: string;
+	url?: string;
 };

@@ -10,13 +10,13 @@ export type UploadFileNotAllowedReason =
 	| "thumbnail-creation-failed";
 
 export type UploadFileNotAllowedDiagnostics = Readonly<{
-	reason: UploadFileNotAllowedReason;
+	causeMessage?: string;
+	declaredContentType: string;
+	decodedFormat?: string;
+	detectedContentType?: string;
 	fileName: string;
 	fileSize: number;
-	declaredContentType: string;
-	detectedContentType?: string;
-	decodedFormat?: string;
-	causeMessage?: string;
+	reason: UploadFileNotAllowedReason;
 }>;
 
 export class UploadFileNotAllowedError extends FileNotAllowedError {

@@ -22,10 +22,10 @@ const ratingVariants = tv({
  * @see {@link Rating} for the component
  */
 export type RatingProps = {
-	/** Current rating value (1 to maxRating) */
-	rating: number;
 	/** Maximum rating value */
 	maxRating?: number;
+	/** Current rating value (1 to maxRating) */
+	rating: number;
 	/** Forwarded ref */
 	ref?: React.Ref<HTMLDivElement>;
 } & Omit<React.HTMLAttributes<HTMLDivElement>, "children"> &

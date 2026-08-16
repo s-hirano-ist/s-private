@@ -24,8 +24,8 @@ import { AsyncLocalStorage } from "node:async_hooks";
  *   future cron / migration / batch operations that legitimately span tenants).
  */
 export type TenantStore = {
-	userId: string;
 	system?: boolean;
+	userId: string;
 };
 
 /**

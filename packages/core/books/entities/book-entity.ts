@@ -457,20 +457,20 @@ export type ExportedBook = Readonly<z.infer<typeof ExportedBook>>;
  * ```
  */
 export type CreateBookArgs = Readonly<{
-	/** The user who owns the book */
-	userId: UserId;
+	/** The caller identifier for event tracking */
+	caller: string;
+	/** Path to user-uploaded book cover image (required) */
+	imagePath: Path;
 	/** The book's ISBN identifier */
 	isbn: ISBN;
-	/** The book title */
-	title: BookTitle;
 	/** User rating, 1-5 inclusive */
 	rating: Rating;
 	/** Free-form categorization tags (may be empty) */
 	tags: Tags;
-	/** Path to user-uploaded book cover image (required) */
-	imagePath: Path;
-	/** The caller identifier for event tracking */
-	caller: string;
+	/** The book title */
+	title: BookTitle;
+	/** The user who owns the book */
+	userId: UserId;
 }>;
 
 /**
@@ -551,11 +551,11 @@ export const bookEntity = {
  * Contains fields needed for list views, with branded types.
  */
 export type BookListItemDTO = Readonly<{
+	googleAuthors: GoogleAuthors | undefined;
+	googleImgSrc: GoogleImgSrc | undefined;
+	googleSubTitle: GoogleSubtitle | undefined;
 	id: Id;
+	imagePath: Path | undefined;
 	isbn: ISBN;
 	title: BookTitle;
-	googleImgSrc: GoogleImgSrc | undefined;
-	imagePath: Path | undefined;
-	googleAuthors: GoogleAuthors | undefined;
-	googleSubTitle: GoogleSubtitle | undefined;
 }>;

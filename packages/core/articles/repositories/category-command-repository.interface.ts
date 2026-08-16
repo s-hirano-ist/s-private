@@ -29,10 +29,10 @@ import type { CategoryName } from "../entities/article-entity.ts";
  * Data required to create a new category.
  */
 export type CategoryCreateData = {
+	createdAt: CreatedAt;
 	id: Id;
 	name: CategoryName;
 	userId: UserId;
-	createdAt: CreatedAt;
 };
 
 export type ICategoryCommandRepository = {

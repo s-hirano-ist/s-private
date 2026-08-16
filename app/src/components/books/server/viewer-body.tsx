@@ -13,7 +13,7 @@ import {
 import { Rating } from "@s-hirano-ist/s-ui/ui/rating";
 import { notFound } from "next/navigation";
 
-export type Props = { slug: string; getBookByISBN: typeof getBookByISBN };
+export type Props = { getBookByISBN: typeof getBookByISBN; slug: string };
 
 export async function ViewerBody({ slug, getBookByISBN }: Props) {
 	const data = await getBookByISBN(slug);

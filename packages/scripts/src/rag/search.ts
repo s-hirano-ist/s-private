@@ -6,13 +6,13 @@ import {
 } from "@s-hirano-ist/s-search/qdrant-client";
 
 type SearchOptions = {
+	contentType?: ContentType | ContentType[];
+	heading?: string;
 	topK?: number;
 	type?: "markdown_note" | "bookmark_json";
-	heading?: string;
-	contentType?: ContentType | ContentType[];
 };
 
-function parseArgs(): { query: string; options: SearchOptions } {
+function parseArgs(): { options: SearchOptions; query: string } {
 	const args = process.argv.slice(2);
 	const options: SearchOptions = {};
 	const positional: string[] = [];
@@ -48,7 +48,7 @@ function parseArgs(): { query: string; options: SearchOptions } {
 async function searchContent(
 	query: string,
 	options: SearchOptions = {},
-): Promise<{ results: SearchResult[]; query: string; totalResults: number }> {
+): Promise<{ query: string; results: SearchResult[]; totalResults: number }> {
 	const results = await qdrantSearch(query, {
 		topK: options.topK,
 		filter: {

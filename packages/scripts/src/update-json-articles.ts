@@ -6,19 +6,19 @@ import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 type ArticleItem = {
-	title: string;
-	url: string;
-	quote?: string;
+	ogDescription?: string;
 	ogImageUrl?: string;
 	ogTitle?: string;
-	ogDescription?: string;
+	quote?: string;
 	skip?: boolean;
+	title: string;
+	url: string;
 };
 
 type ArticlesJson = {
-	heading: string;
-	description: string;
 	body: ArticleItem[];
+	description: string;
+	heading: string;
 };
 
 function normalizeCharset(charset: string): string {
@@ -60,7 +60,7 @@ function detectCharset(headers: Headers, buffer: Buffer): string {
 
 async function getOgTags(
 	url: string,
-): Promise<{ ogImageUrl?: string; ogTitle?: string; ogDescription?: string }> {
+): Promise<{ ogDescription?: string; ogImageUrl?: string; ogTitle?: string }> {
 	try {
 		console.log(`Fetching OG tags for: ${url}`);
 

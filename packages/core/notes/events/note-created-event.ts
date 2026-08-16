@@ -36,10 +36,10 @@ export class NoteCreatedEvent extends BaseDomainEvent<NoteCreatedPayload> {
 	 * @param data.caller - The function/method that triggered the event
 	 */
 	constructor(data: {
-		title: string;
-		markdown: string;
-		userId: string;
 		caller: string;
+		markdown: string;
+		title: string;
+		userId: string;
 	}) {
 		super(
 			"note.created",

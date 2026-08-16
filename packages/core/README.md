@@ -71,7 +71,7 @@ const entity = new Articles.ArticleEntity(...);
 
 ## Package Structure
 
-```
+```text
 @s-hirano-ist/s-core/
 ├── articles/       # Article domain (news/link management)
 ├── books/          # Book domain (ISBN-based tracking)

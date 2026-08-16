@@ -11,8 +11,8 @@ import { dirname } from "node:path";
 
 type Note = {
 	id: string;
-	title: string;
 	markdown: string;
+	title: string;
 };
 
 const OUTPUT_DIR = "markdown/note/";

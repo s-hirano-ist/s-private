@@ -98,9 +98,9 @@ const articlesDomainService = domainServiceFactory.createArticlesDomainService()
   - インポート整理（sortImports）、Tailwindクラス並べ替え（sortTailwindcss）を含む
   - Biomeから移行済み（タブ・行幅80を踏襲）。設定は`.oxfmtrc.json`
   - **コンポーネントa11yテスト**: Storybookの全ストーリーに対して`@storybook/addon-a11y`（axe-core）で自動チェック（詳細は[testing.md](testing.md)を参照）
-- **リンター**: oxlint（type-aware、Rust製）- `pnpm lint`を使用
-  - ESLintから全面移行済み。旧Biomeのbase lint（correctness）も吸収
-  - Reactフック強制を含むTypeScript厳格設定、Next.js/jsx-a11yプラグイン統合
+- **リンター**: oxlint + ESLint - `pnpm lint`を使用
+  - oxlint: TypeScript/JavaScriptのtype-aware検査、React/Next.js/jsx-a11y、旧Biome base lint
+  - ESLint: YAML/JSON/Markdownのコンテンツ検査に限定
 
 ### アーキテクチャルール
 - **パッケージマネージャー**: pnpm（必須）
@@ -134,6 +134,7 @@ import { ArticlesStackLoader } from "@/loaders/articles";
 ### 設定ファイル
 - `.oxfmtrc.json` - フォーマッター設定（oxfmt: format + import/Tailwind並べ替え）
 - `.oxlintrc.json` - リンター設定（oxlint, type-aware）
+- `eslint.config.js` - YAML/JSON/Markdown用ESLint設定
 - `.dependency-cruiser.cjs` - アーキテクチャ境界の強制（詳細は[code-analysis.md](code-analysis.md)を参照）
 
 ## セキュリティ
@@ -244,7 +245,7 @@ next-intlを使用した国際化パターン。
 
 ### ディレクトリ構成
 
-```
+```text
 app/src/infrastructures/i18n/
 ├── routing.ts          # ルーティング設定（Link, redirect, useRouter等）
 └── request.ts          # リクエストスコープ設定
@@ -335,7 +336,7 @@ Suspense境界内でデータフェッチを実行し、取得データをプレ
 
 ### ディレクトリ構成
 
-```
+```text
 app/src/loaders/
 ├── types.ts                # 共通型定義
 └── [domain]/
@@ -434,7 +435,7 @@ export async function ArticlesStackLoader({
 
 ### コンポーネント階層
 
-```
+```text
 Suspense (Loading状態を処理)
 └── ErrorBoundary (エラーを処理)
     └── Loader (データフェッチ)
@@ -552,7 +553,7 @@ Server Actionsを3層分離構造（action/core/deps）で実装し、テスタ�
 
 ### ディレクトリ構成
 
-```
+```text
 app/src/application-services/
 └── [domain]/
     ├── add-{domain}.ts         # Server Action（認証）
@@ -929,7 +930,7 @@ FormDataをドメイン値オブジェクトに変換するパターン。
 
 ### ディレクトリ構成
 
-```
+```text
 app/src/application-services/
 └── [domain]/
     └── helpers/
@@ -1321,7 +1322,7 @@ revalidatePath("/dashboard", "layout");
 
 #### ステータス遷移図と無効化ルール
 
-```
+```text
 UNEXPORTED ──────────────→ LAST_UPDATED ──────────────→ EXPORTED
     ↑                           │
     └───────── (revert) ────────┘
@@ -1579,7 +1580,7 @@ export const getExportedArticles = cache(async (currentCount: number) => {
 
 ### 変換の配置場所
 
-```
+```text
 Repository (DTO)
     ↓ そのまま返す
 Application Service
@@ -1623,7 +1624,7 @@ const noteCard: LinkCardData = transformNoteToLinkCard(noteDTO);
 
 ### ディレクトリ構成
 
-```
+```text
 packages/core/
 ├── shared-kernel/
 │   └── events/
@@ -1735,7 +1736,7 @@ Command/Query責務分離のリポジトリパターン。
 
 ### ディレクトリ構成
 
-```
+```text
 packages/core/[domain]/repositories/
 ├── {domain}-command-repository.interface.ts   # Commandインターフェース
 └── {domain}-query-repository.interface.ts     # Queryインターフェース

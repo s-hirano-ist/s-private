@@ -104,7 +104,7 @@ Reference these guidelines when:
 
 Read individual rule files for detailed explanations and code examples:
 
-```
+```text
 rules/list-performance-virtualize.md
 rules/animation-gpu-properties.md
 ```

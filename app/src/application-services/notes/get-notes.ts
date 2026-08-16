@@ -29,6 +29,40 @@ import {
 import { unstable_cache } from "next/cache";
 import { cache } from "react";
 
+const stripMarkdownLinks = (value: string): string => {
+	let output = "";
+	let cursor = 0;
+
+	while (cursor < value.length) {
+		const imageStart = value.indexOf("![", cursor);
+		const linkStart = value.indexOf("[", cursor);
+		const start =
+			imageStart !== -1 && (linkStart === -1 || imageStart < linkStart)
+				? imageStart
+				: linkStart;
+
+		if (start === -1) {
+			return output + value.slice(cursor);
+		}
+
+		const labelStart = start === imageStart ? start + 2 : start + 1;
+		const separator = value.indexOf("](", labelStart);
+		if (separator === -1) {
+			return output + value.slice(cursor);
+		}
+
+		const end = value.indexOf(")", separator + 2);
+		if (end === -1) {
+			return output + value.slice(cursor);
+		}
+
+		output += value.slice(cursor, start) + value.slice(labelStart, separator);
+		cursor = end + 1;
+	}
+
+	return output;
+};
+
 /**
  * Gets total count of notes for a user and status.
  *
@@ -73,11 +107,9 @@ const getNotesCached = async (
 
 			return {
 				data: notes.map((d) => {
-					const plainText = String(d.markdown)
+					const plainText = stripMarkdownLinks(String(d.markdown))
 						.replaceAll(/^#{1,6}\s+/gmu, "")
 						.replaceAll(/[*_~`]/gu, "")
-						.replaceAll(/\[([^\]]*)\]\([^)]*\)/gu, "$1")
-						.replaceAll(/!\[([^\]]*)\]\([^)]*\)/gu, "$1")
 						.replaceAll(/\n+/gu, " ")
 						.trim();
 					const description =

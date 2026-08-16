@@ -12,9 +12,9 @@ import {
 } from "@s-hirano-ist/s-ui/ui/card";
 
 type Props = {
-	data: ImageCardData;
-	basePath: string;
 	actions?: ReactNode;
+	basePath: string;
+	data: ImageCardData;
 };
 
 export function ImageCard({

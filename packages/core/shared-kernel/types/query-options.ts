@@ -35,10 +35,10 @@ export const paginationCountSchema = z
  * Pagination parameters for repository queries.
  */
 export type PaginationOptions = {
-	/** Maximum number of results to return */
-	take?: number;
 	/** Number of results to skip (for pagination) */
 	skip?: number;
+	/** Maximum number of results to return */
+	take?: number;
 };
 
 /**

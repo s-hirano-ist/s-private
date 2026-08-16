@@ -9,10 +9,10 @@ import { useFormValues } from "../generic-form-wrapper";
  * @see {@link FormInput} for the component
  */
 export type FormInputProps = {
-	/** The label text displayed above the input */
-	label: string;
 	/** The HTML id for the input element */
 	htmlFor: string;
+	/** The label text displayed above the input */
+	label: string;
 } & ComponentProps<typeof Input>;
 
 /**

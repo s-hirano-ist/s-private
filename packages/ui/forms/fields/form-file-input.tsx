@@ -8,10 +8,10 @@ import { Label } from "../../ui/label";
  * @see {@link FormFileInput} for the component
  */
 export type FormFileInputProps = {
-	/** The label text displayed above the file input */
-	label: string;
 	/** The HTML id for the input element */
 	htmlFor: string;
+	/** The label text displayed above the file input */
+	label: string;
 } & ComponentProps<typeof Input>;
 
 /**

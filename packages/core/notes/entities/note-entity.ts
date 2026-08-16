@@ -204,14 +204,14 @@ export type ExportedNote = Readonly<z.infer<typeof ExportedNote>>;
  * ```
  */
 export type CreateNoteArgs = Readonly<{
-	/** The user who owns the note */
-	userId: UserId;
-	/** The note title */
-	title: NoteTitle;
-	/** The markdown content */
-	markdown: Markdown;
 	/** The caller identifier for event tracking */
 	caller: string;
+	/** The markdown content */
+	markdown: Markdown;
+	/** The note title */
+	title: NoteTitle;
+	/** The user who owns the note */
+	userId: UserId;
 }>;
 
 /**
@@ -289,8 +289,8 @@ export const noteEntity = {
  * DTO for note list display.
  */
 export type NoteListItemDTO = Readonly<{
-	id: Id;
-	title: NoteTitle;
-	markdown: Markdown;
 	createdAt: CreatedAt;
+	id: Id;
+	markdown: Markdown;
+	title: NoteTitle;
 }>;

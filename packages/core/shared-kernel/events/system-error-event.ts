@@ -40,12 +40,12 @@ export class SystemErrorEvent extends BaseDomainEvent<SystemErrorPayload> {
 	 * @param data.shouldNotify - Whether to send external notifications (defaults to false)
 	 */
 	constructor(data: {
-		message: string;
-		status: number;
 		caller: string;
-		userId?: string;
 		extraData?: unknown;
+		message: string;
 		shouldNotify?: boolean;
+		status: number;
+		userId?: string;
 	}) {
 		super(
 			"system.error",

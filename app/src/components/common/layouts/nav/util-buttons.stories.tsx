@@ -4,9 +4,9 @@ import { UtilButtons } from "./util-buttons";
 
 type UtilButtonsWrapperProps = {
 	handleReload: () => void;
+	locale?: string;
 	onSignOutSubmit: () => Promise<void>;
 	pathname?: string;
-	locale?: string;
 	theme?: string;
 };
 

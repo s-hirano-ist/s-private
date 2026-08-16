@@ -121,16 +121,16 @@ async function fetchWebsiteMarkdown(url: string): Promise<string> {
 }
 
 type ArticleItem = {
-	title: string;
 	quote: string;
-	url: string;
 	skip?: boolean;
+	title: string;
+	url: string;
 };
 
 type ArticlesData = {
-	heading: string;
-	description: string;
 	body: ArticleItem[];
+	description: string;
+	heading: string;
 };
 
 async function jsonToMarkdown(jsonFile: string): Promise<void> {

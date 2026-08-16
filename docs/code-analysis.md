@@ -119,12 +119,13 @@ pnpm deps:graph      # 依存関係グラフをmermaidとして出力（dependen
 - **月次レポート**: [`update-reports.yaml`](../.github/workflows/update-reports.yaml) — 毎月1日に`dependency-graph.md`を再生成し、自動更新PRを作成
 
 
-## Lint/Format: ESLint → oxlint、Biome → oxfmt 移行（2026-05）
+## Lint/Format: oxlint主体 + コンテンツESLint、oxfmt（2026-08）
 
-ESLint を全廃し oxlint に一本化、続けて Biome も全廃し oxfmt に移行。設定は `.oxlintrc.json`（JSONC: コメント可。`oxlint.config.ts` は experimental でバイナリが読めないため不採用）。型認識ルールは `oxlint-tsgolint`（`pnpm lint` = `oxlint --type-aware`）。フォーマットは `.oxfmtrc.json`（`pnpm format` / `pnpm format:check`）。
+TypeScript/JavaScript は oxlint に一本化した状態を維持し、oxlint が扱わない YAML/JSON/Markdown のみ ESLint で検査する。oxlint 設定は `.oxlintrc.json`（JSONC）、コンテンツ lint は `eslint.config.js`、フォーマットは `.oxfmtrc.json`。`pnpm lint` / `pnpm lint:fix` は両リンターを順に実行する。
 
 役割分担:
 - **oxlint**: 旧 ESLint の全ルール。typescript-eslint strict+stylistic type-checked（type-aware, tsgolint）、`@next/*`→native `nextjs`、`@vitest/*`→native `vitest`、`eslint-plugin-regexp`/`eslint-plugin-storybook`（JS plugin）、Prisma raw-SQL ガード（`eslint-js/no-restricted-syntax` via `oxlint-plugin-eslint`）。`@eslint-react` の明示ルールは native へ: use-state→`react/hook-use-state`、jsx-no-useless-fragment→`react/jsx-no-useless-fragment`、dom-no-dangerously-set-innerhtml→`react/no-danger`、no-array-index-key→`react/no-array-index-key`。set-state-in-effect は `eslint-plugin-react-hooks`（alias `react-hooks-js`）。
+- **ESLint**: `eslint-plugin-yml`、`eslint-plugin-jsonc`、`@eslint/markdown` で YAML/JSON/JSONC/JSON5/Markdown を検査。ロックファイルと生成物は除外。
 - **dependency-cruiser**: Clean Architecture 層境界（`eslint-plugin-boundaries` から移植。oxlint の JS plugin は `settings` の boundaries/* キーを受け付けず動作不可のため）。`.dependency-cruiser.cjs` の `boundary-*` ルール（allow-list を deny-list に翻訳、29 本）。
 - **oxfmt**: format 全般（Prettier互換、タブ・行幅80）+ import 整理（sortImports）+ Tailwind class 並べ替え（sortTailwindcss、`cn`/`clsx`/`tv`）。旧 Biome の format + organizeImports + useSortedClasses を置換。
 - **Stylelint**: CSS 構文、無効な宣言の組み合わせ、対象ブラウザで未対応の機能、最低限のプロパティ順を検査する。Tailwind CSS v4 のディレクティブと関数は明示的に許可する。

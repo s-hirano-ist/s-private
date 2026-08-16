@@ -5,7 +5,7 @@ VPS 上では全ポートを firewall で閉じ、Cloudflare Tunnel の outbound
 
 ## アーキテクチャ
 
-```
+```text
 Internet → Cloudflare Tunnel → cloudflared (VPS内) ──→ minio:9000 / minio:9001
                                                     ↑ Docker内部ネットワーク
 ```
@@ -39,7 +39,7 @@ ssh-copy-id -i ~/.ssh/conoha_vps.pub root@<VPS_IP>
 
 #### ~/.ssh/config に追記
 
-```
+```text
 Host conoha-vps
     HostName <VPS_IP>
     User deploy
@@ -239,7 +239,7 @@ chmod 600 ~/s-private/.env
 
 リポジトリルートの `compose.yaml` に全サービスを定義している。
 
-```
+```text
 compose.yaml          ← 全サービス定義（minio, minio-init, cloudflared）
 .env                  ← VPS 用環境変数（CLOUDFLARE_TUNNEL_TOKEN, MINIO_ROOT_USER 等）
 ```

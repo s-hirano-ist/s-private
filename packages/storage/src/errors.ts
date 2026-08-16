@@ -1,10 +1,10 @@
 export type StorageOperationContext = {
-	operation: "uploadImage" | "getImage" | "getImageOrThrow" | "deleteImage";
-	objectKey: string;
+	additionalContext?: Record<string, unknown>;
 	bucketName: string;
 	isThumbnail?: boolean;
+	objectKey: string;
+	operation: "uploadImage" | "getImage" | "getImageOrThrow" | "deleteImage";
 	phase?: string;
-	additionalContext?: Record<string, unknown>;
 };
 
 export class StorageOperationError extends Error {

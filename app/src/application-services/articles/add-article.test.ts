@@ -47,8 +47,8 @@ function createMockDeps(
 	deps: AddArticleDeps;
 	mockCommandRepository: IArticlesCommandRepository;
 	mockEnsureNoDuplicate: ReturnType<typeof vi.fn>;
-	mockResolveOrCreate: ReturnType<typeof vi.fn>;
 	mockEventDispatcher: { dispatch: ReturnType<typeof vi.fn> };
+	mockResolveOrCreate: ReturnType<typeof vi.fn>;
 } {
 	const mockCommandRepository: IArticlesCommandRepository = {
 		create: vi.fn(),

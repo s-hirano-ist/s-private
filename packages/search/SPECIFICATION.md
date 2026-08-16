@@ -19,7 +19,7 @@ ingest設定: `packages/scripts/src/rag/ingest-config.ts`
 
 ### 3.1 Markdown Note (`markdown/note/**/*.md`)
 
-```
+```markdown
 ---
 heading: architecture
 description: 建築とは?
@@ -36,7 +36,7 @@ draft: false
 
 ### 3.2 Markdown Book (`markdown/book/**/*.md`)
 
-```
+```markdown
 ---
 heading: 書籍タイトル
 description: 書籍の説明
@@ -179,7 +179,7 @@ type EmbeddingClientConfig = {
 
 ソース: `packages/search/src/ingest.ts`, `packages/scripts/src/rag/ingest.ts`
 
-```
+```text
 ファイル一覧(glob) → パース(chunker) → 変更検出(hash比較) → バッチEmbed(20件) → Qdrant Upsert
 ```
 
@@ -203,7 +203,7 @@ type IngestResult = {
 
 ## 9. 検索フロー
 
-```
+```text
 クエリ → "query: " プレフィックス付きEmbed → Qdrant vector search → フィルタ適用 → SearchResult[]
 ```
 

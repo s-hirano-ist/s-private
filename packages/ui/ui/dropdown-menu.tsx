@@ -128,8 +128,8 @@ function DropdownMenuContent({
 DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName;
 
 type DropdownMenuItemProps = {
-	ref?: React.Ref<React.ComponentRef<typeof DropdownMenuPrimitive.Item>>;
 	inset?: boolean;
+	ref?: React.Ref<React.ComponentRef<typeof DropdownMenuPrimitive.Item>>;
 } & React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item>;
 
 /**
@@ -161,8 +161,8 @@ function DropdownMenuItem({
 DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName;
 
 type DropdownMenuLabelProps = {
-	ref?: React.Ref<React.ComponentRef<typeof DropdownMenuPrimitive.Label>>;
 	inset?: boolean;
+	ref?: React.Ref<React.ComponentRef<typeof DropdownMenuPrimitive.Label>>;
 } & React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Label>;
 
 /**

@@ -12,17 +12,17 @@ import { access, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 type Book = {
-	id: string;
-	isbn: string;
-	title: string;
-	rating: number;
-	tags: string[];
-	googleSubTitle: string | null;
 	googleAuthors: string[];
 	googleDescription: string | null;
-	googleImgSrc: string | null;
 	googleHref: string | null;
+	googleImgSrc: string | null;
+	googleSubTitle: string | null;
+	id: string;
 	imagePath: string | null;
+	isbn: string;
+	rating: number;
+	tags: string[];
+	title: string;
 };
 
 const OUTPUT_DIR = "markdown/book/";

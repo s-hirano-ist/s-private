@@ -18,10 +18,10 @@ export type ContentType = "articles" | "books" | "notes";
 export type BaseSearchResult = Readonly<{
 	/** The URL path to the content item */
 	href: string;
-	/** The title of the content item */
-	title: string;
 	/** A text snippet from the content for preview */
 	snippet: string;
+	/** The title of the content item */
+	title: string;
 }>;
 
 /**
@@ -41,12 +41,12 @@ export type BaseSearchResult = Readonly<{
  */
 export type ArticleSearchResult = BaseSearchResult &
 	Readonly<{
+		/** The category information */
+		category: { id: string; name: string };
 		/** Discriminant for articles */
 		contentType: "articles";
 		/** The external URL */
 		url: string;
-		/** The category information */
-		category: { id: string; name: string };
 	}>;
 
 /**
@@ -211,12 +211,12 @@ export type SearchResultGroup = {
  * ```
  */
 export type UnifiedSearchResults = {
-	/** Flat list of all search results */
-	results: SearchResult[];
 	/** Results grouped by content type */
 	groups: SearchResultGroup[];
-	/** Total number of results across all types */
-	totalCount: number;
 	/** The original search query */
 	query: string;
+	/** Flat list of all search results */
+	results: SearchResult[];
+	/** Total number of results across all types */
+	totalCount: number;
 };

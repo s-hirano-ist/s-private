@@ -134,10 +134,10 @@ This is a paragraph with **bold** and *italic* text.
 Here's some code:
 
 \`\`\`typescript
-interface User {
+type User = {
   name: string;
   age: number;
-}
+};
 \`\`\`
 
 ### Links

@@ -23,9 +23,9 @@ function observeAddedStyleElements(): {
 }
 
 type ThemeProviderWrapperProps = {
-	theme?: string;
-	enableSystem?: boolean;
 	children?: React.ReactNode;
+	enableSystem?: boolean;
+	theme?: string;
 };
 
 function ThemeToggle() {

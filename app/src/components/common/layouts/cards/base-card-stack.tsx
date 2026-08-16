@@ -16,20 +16,20 @@ type SearchableItem = {
  * Props passed to the children function.
  */
 export type RenderCardProps<T> = {
-	item: T;
+	deleteAction?: DeleteAction;
 	index: number;
 	isLast: boolean;
-	lastElementRef: (node: HTMLElement | null) => void;
-	deleteAction?: DeleteAction;
+	item: T;
 	itemKey: string;
+	lastElementRef: (node: HTMLElement | null) => void;
 };
 
 type BaseCardStackProps<T extends SearchableItem> = {
-	initial: CardStackInitialData<T>;
-	deleteAction?: DeleteAction;
-	loadMoreAction: LoadMoreAction<CardStackInitialData<T>>;
 	children: (props: RenderCardProps<T>) => React.ReactNode;
+	deleteAction?: DeleteAction;
 	gridClassName: string;
+	initial: CardStackInitialData<T>;
+	loadMoreAction: LoadMoreAction<CardStackInitialData<T>>;
 };
 
 export function BaseCardStackWrapper<T extends SearchableItem>({

@@ -11,15 +11,15 @@ import type {
 import { type Status, withTransactionRetry } from "@s-hirano-ist/s-database";
 
 type PrismaClientLike = {
-	book: {
-		updateMany: (args: {
-			where: { userId: string; status: Status };
-			data: { status: Status; exportedAt?: Date };
-		}) => Promise<{ count: number }>;
-	};
 	$transaction: <T extends Promise<{ count: number }>[]>(
 		queries: [...T],
 	) => Promise<{ [K in keyof T]: { count: number } }>;
+	book: {
+		updateMany: (args: {
+			data: { exportedAt?: Date; status: Status };
+			where: { status: Status; userId: string };
+		}) => Promise<{ count: number }>;
+	};
 };
 
 /**

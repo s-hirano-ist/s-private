@@ -9,8 +9,8 @@ import {
 } from "@s-hirano-ist/s-ui/ui/drawer";
 
 type Props = {
-	open: boolean;
 	onOpenChange: (open: boolean) => void;
+	open: boolean;
 	search: typeof searchContentFromClient;
 };
 

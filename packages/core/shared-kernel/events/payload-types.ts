@@ -17,20 +17,20 @@
  * Payload for system error events.
  */
 export type SystemErrorPayload = {
-	message: string;
-	status: number;
 	extraData?: unknown;
+	message: string;
 	shouldNotify: boolean;
+	status: number;
 };
 
 /**
  * Payload for system warning events.
  */
 export type SystemWarningPayload = {
-	message: string;
-	status: number;
 	extraData?: unknown;
+	message: string;
 	shouldNotify: boolean;
+	status: number;
 };
 
 // ============================================================================
@@ -41,10 +41,10 @@ export type SystemWarningPayload = {
  * Payload for article created events.
  */
 export type ArticleCreatedPayload = {
+	categoryName: string;
+	quote: string;
 	title: string;
 	url: string;
-	quote: string;
-	categoryName: string;
 };
 
 /**
@@ -62,8 +62,8 @@ export type ArticleDeletedPayload = {
  * Payload for note created events.
  */
 export type NoteCreatedPayload = {
-	title: string;
 	markdown: string;
+	title: string;
 };
 
 /**

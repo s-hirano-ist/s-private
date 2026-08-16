@@ -52,9 +52,9 @@ function createUploadFileNotAllowedError(
 	file: File,
 	reason: UploadFileNotAllowedReason,
 	options?: Readonly<{
-		detectedContentType?: string;
-		decodedFormat?: string;
 		cause?: unknown;
+		decodedFormat?: string;
+		detectedContentType?: string;
 	}>,
 ): UploadFileNotAllowedError {
 	const causeMessage =

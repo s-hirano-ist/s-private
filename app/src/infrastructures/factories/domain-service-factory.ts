@@ -37,9 +37,9 @@ import { NotesDomainService } from "@s-hirano-ist/s-core/notes/services/notes-do
  */
 export type DomainServiceFactoryConfig = {
 	articlesQueryRepository?: IArticlesQueryRepository;
-	categoryQueryRepository?: ICategoryQueryRepository;
-	categoryCommandRepository?: ICategoryCommandRepository;
 	booksQueryRepository?: IBooksQueryRepository;
+	categoryCommandRepository?: ICategoryCommandRepository;
+	categoryQueryRepository?: ICategoryQueryRepository;
 	imagesQueryRepository?: IImagesQueryRepository;
 	notesQueryRepository?: INotesQueryRepository;
 };

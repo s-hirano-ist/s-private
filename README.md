@@ -48,7 +48,7 @@
 
 ### Code Quality & Development Tools
 - **Formatter** - [oxfmt](https://oxc.rs/docs/guide/usage/formatter) (Prettier-compatible; formatting + import & Tailwind class sorting)
-- **Linter** - [oxlint](https://oxc.rs/docs/guide/usage/linter) (type-aware, Rust-based)
+- **Linters** - [oxlint](https://oxc.rs/docs/guide/usage/linter) for type-aware code linting + ESLint for YAML/JSON/Markdown
 - **Testing Framework** - [Vitest](https://vitest.dev/) with [Testing Library](https://testing-library.com/)
 - **Component Development** - [Storybook](https://storybook.js.org/)
 
@@ -108,7 +108,7 @@ This project follows clean architecture principles with domain-driven design, en
 
 #### Directory Structure
 
-```
+```text
 ├── packages/                       # Monorepo packages
 │   ├── core/                       # Domain Layer (Core Business Logic)
 │   │   ├── articles/               # News/link management domain
@@ -210,7 +210,7 @@ Each domain is completely isolated with its own:
 
 ### RAG & Search Architecture
 
-```
+```text
 ┌──────────────┐     ┌─────────────────────────────────────────┐
 │  Next.js App │     │  ConoHa VPS (Docker)                    │
 │  (Vercel)    │     │                                         │
@@ -345,8 +345,8 @@ pnpm start                  # Start production server
 # Code Quality
 pnpm format                # Format + import/Tailwind class sorting (oxfmt)
 pnpm format:check          # Check formatting without writing (oxfmt)
-pnpm lint                  # Lint (oxlint, type-aware)
-pnpm lint:fix              # Lint with auto-fixing (oxlint)
+pnpm lint                  # Lint code and content (oxlint + ESLint)
+pnpm lint:fix              # Lint with auto-fixing (oxlint + ESLint)
 pnpm deps:check            # Clean Architecture boundary check (dependency-cruiser)
 
 # Testing
@@ -474,7 +474,7 @@ pnpm docs:clean            # Remove generated documentation
 - `NPM_TOKEN` — パッケージ公開（release-please のみ）
 - `ACTIONS_GITHUB_TOKEN` — リリース PR 作成
 
-環境変数が不要なジョブ（oxlint, storybook）では `SKIP_ENV_VALIDATION: "true"` を設定。
+環境変数が不要なジョブ（lint, storybook）では `SKIP_ENV_VALIDATION: "true"` を設定。
 
 #### VPS (Docker Compose)
 
@@ -488,7 +488,7 @@ VPS 上の Docker Compose サービス用の環境変数は `~/s-private/.env` �
 
 ### Formatting & Linting
 - **Formatting**: oxfmt for formatting, import organization, and Tailwind class sorting
-- **Linting**: oxlint (type-aware) for correctness, React/Next.js, and accessibility rules
+- **Linting**: oxlint (type-aware) for TypeScript/JavaScript; ESLint for YAML/JSON/Markdown
 - **Strict TypeScript**: Full type safety with runtime validation
 
 ### Architectural Constraints

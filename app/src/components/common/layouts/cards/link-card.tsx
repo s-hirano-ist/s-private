@@ -13,8 +13,8 @@ import {
 } from "@s-hirano-ist/s-ui/ui/card";
 
 type Props = {
-	data: LinkCardData;
 	actions?: ReactNode;
+	data: LinkCardData;
 };
 
 export function LinkCard({
