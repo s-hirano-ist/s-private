@@ -105,6 +105,24 @@ jobs:
         env:
           SKIP_ENV_VALIDATION: "true"
 
+  supplemental-lint:
+    runs-on: ubuntu-24.04
+    permissions: {}
+    timeout-minutes: 10
+    concurrency:
+      group: ${{ github.workflow }}-supplemental-lint-${{ github.ref }}
+    steps:
+      - name: Checkout files
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+          submodules: true
+
+      - uses: ./.github/actions/setup-pnpm
+      - run: pnpm lint:css
+      - run: pnpm lint:md
+      - run: pnpm lint:secret
+
   knip:
     runs-on: ubuntu-24.04
     permissions:
