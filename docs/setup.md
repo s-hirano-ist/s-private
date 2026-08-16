@@ -87,9 +87,13 @@ DB ホスティングは **CockroachDB Cloud Basic**（region `gcp-asia-southeas
 
 CockroachDB Cloud Basic は接続プーリングが内蔵で、pooled / direct の二重エンドポイントを持ちません。よってアプリ実行も `prisma deploy` も `DATABASE_URL` 1本で足ります:
 
+<!-- secretlint-disable -- documented placeholder, not a credential -->
+
 | 変数 | 用途 | 備考 |
 |---|---|---|
 | `DATABASE_URL` | アプリ実行 + `prisma deploy` | `postgresql://<user>:<password>@<host>:26257/<db>?sslmode=verify-full` |
+
+<!-- secretlint-enable -->
 
 - TLS は `sslmode=verify-full`。CockroachDB Cloud のサーバ証明書はパブリック CA のため Node.js の `rootCertificates` で検証できます。
 

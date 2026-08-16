@@ -16,7 +16,12 @@
 		"format:check": "oxfmt --check .",
 		"lint": "oxlint --type-aware",
 		"lint:fix": "oxlint --type-aware --fix",
-		"check:fix": "pnpm format && pnpm lint:fix",
+		"lint:css": "stylelint \"**/*.css\"",
+		"lint:css:fix": "stylelint \"**/*.css\" --fix",
+		"lint:md": "markdownlint-cli2 \"**/*.md\"",
+		"lint:md:fix": "markdownlint-cli2 \"**/*.md\" --fix",
+		"lint:secret": "secretlint --maskSecrets \"**/*\"",
+		"check:fix": "pnpm format && pnpm lint:fix && pnpm lint:css:fix && pnpm lint:md:fix",
 		"bench": "vitest bench --project bench",
 		"bench:components": "vitest bench --project app-bench",
 		"bench:all": "vitest bench --project bench --project app-bench",
@@ -49,7 +54,8 @@
 		"test:chaos": "playwright test",
 		"test:mutation": "stryker run",
 		"test:mutation:core": "stryker run stryker.config.json",
-		"preinstall": "npx only-allow pnpm"
+		"preinstall": "npx only-allow pnpm",
+		"prepare": "husky"
 	},
 	"dependencies": {
 		"next": "16.2.11",
@@ -67,6 +73,7 @@
 		"@stryker-mutator/core": "9.6.1",
 		"@stryker-mutator/typescript-checker": "9.6.1",
 		"@stryker-mutator/vitest-runner": "9.6.1",
+		"@secretlint/secretlint-rule-preset-recommend": "13.0.4",
 		"@tailwindcss/postcss": "4.3.3",
 		"@testing-library/jest-dom": "7.0.1",
 		"@testing-library/react": "16.3.2",
@@ -81,15 +88,24 @@
 		"eslint-plugin-storybook": "10.5.7",
 		"eslint-plugin-unicorn": "70.0.0",
 		"happy-dom": "20.11.2",
+		"husky": "9.1.7",
 		"jscpd": "5.0.14",
 		"knip": "6.32.1",
+		"lint-staged": "17.3.0",
+		"markdownlint-cli2": "0.23.2",
 		"oxfmt": "0.63.0",
 		"oxlint": "1.78.0",
 		"oxlint-plugin-eslint": "1.78.0",
 		"oxlint-tsgolint": "7.0.2001",
 		"playwright": "1.62.1",
+		"secretlint": "13.0.4",
 		"storybook": "10.5.7",
 		"storybook-next-intl": "10.1.3",
+		"stylelint": "17.14.1",
+		"stylelint-config-standard": "40.0.0",
+		"stylelint-declaration-block-no-ignored-properties": "3.0.0",
+		"stylelint-no-unsupported-browser-features": "8.1.1",
+		"stylelint-order": "8.1.1",
 		"tailwindcss": "4.3.3",
 		"typedoc": "0.28.20",
 		"typedoc-plugin-mdn-links": "5.1.1",
@@ -97,5 +113,17 @@
 		"vercel": "58.9.1",
 		"vite": "7.3.6",
 		"vitest": "4.1.10"
+	},
+	"lint-staged": {
+		"*.{js,jsx,mjs,cjs,ts,tsx}": [
+			"oxfmt",
+			"oxlint --fix"
+		],
+		"*.css": [
+			"oxfmt",
+			"stylelint --fix"
+		],
+		"*.md": "markdownlint-cli2 --fix",
+		"*": "secretlint --maskSecrets"
 	}
 }

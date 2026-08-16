@@ -1,0 +1,7 @@
+node_modules
+dist
+.next
+.storybook-static
+.vitest-coverage
+docs/api
+packages/database/src/generated

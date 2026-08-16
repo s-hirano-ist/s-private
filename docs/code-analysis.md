@@ -127,6 +127,21 @@ ESLint を全廃し oxlint に一本化、続けて Biome も全廃し oxfmt に
 - **oxlint**: 旧 ESLint の全ルール。typescript-eslint strict+stylistic type-checked（type-aware, tsgolint）、`@next/*`→native `nextjs`、`@vitest/*`→native `vitest`、`eslint-plugin-regexp`/`eslint-plugin-storybook`（JS plugin）、Prisma raw-SQL ガード（`eslint-js/no-restricted-syntax` via `oxlint-plugin-eslint`）。`@eslint-react` の明示ルールは native へ: use-state→`react/hook-use-state`、jsx-no-useless-fragment→`react/jsx-no-useless-fragment`、dom-no-dangerously-set-innerhtml→`react/no-danger`、no-array-index-key→`react/no-array-index-key`。set-state-in-effect は `eslint-plugin-react-hooks`（alias `react-hooks-js`）。
 - **dependency-cruiser**: Clean Architecture 層境界（`eslint-plugin-boundaries` から移植。oxlint の JS plugin は `settings` の boundaries/* キーを受け付けず動作不可のため）。`.dependency-cruiser.cjs` の `boundary-*` ルール（allow-list を deny-list に翻訳、29 本）。
 - **oxfmt**: format 全般（Prettier互換、タブ・行幅80）+ import 整理（sortImports）+ Tailwind class 並べ替え（sortTailwindcss、`cn`/`clsx`/`tv`）。旧 Biome の format + organizeImports + useSortedClasses を置換。
+- **Stylelint**: CSS 構文、無効な宣言の組み合わせ、対象ブラウザで未対応の機能、最低限のプロパティ順を検査する。Tailwind CSS v4 のディレクティブと関数は明示的に許可する。
+- **Markdownlint**: 手書き Markdown の構造を検査する。既存違反ファイルは `.markdownlint-cli2.jsonc` の baseline に列挙し、修正完了時に該当 entry を削除する。生成 docs、CHANGELOG、agent skills は対象外。
+- **Secretlint**: recommended preset でコミット済みファイルの credential、token、秘密鍵、接続文字列を検査する。ドキュメント上のダミー値は理由付きの局所 disable のみ許可する。
+
+補助 lint のコマンド:
+
+```bash
+pnpm lint:css          # CSS 検査
+pnpm lint:css:fix      # CSS の安全な自動修正
+pnpm lint:md           # Markdown 検査（baseline を除く）
+pnpm lint:md:fix       # Markdown の安全な自動修正
+pnpm lint:secret       # secret 検査（出力は mask）
+```
+
+CI の `supplemental-lint` job で3種すべてを検査する。ローカルでは Husky + lint-staged が staged file に対して formatter と安全な fix を直列実行し、最後に Secretlint を実行する。pre-commit の oxlint は高速化と Next.js type generation への非依存化のため非 type-aware とし、完全な `oxlint --type-aware` は CI で担保する。
 - 旧 Biome の base lint は oxlint へ吸収（`categories.correctness="error"` + style ルール移植: noParameterAssign→`no-param-reassign`、useSelfClosingElements→`react/self-closing-comp`、useNumberNamespace→`unicorn/prefer-number-properties`、noUselessElse→`no-else-return` ほか）。`noExplicitAny` は `typescript/no-explicit-any="error"` に統一。
 
 新規有効化（旧コメントアウト分）: `jsx-a11y`（oxlint native, error。当初 warn で導入し 2026-05 に error へ昇格）。
