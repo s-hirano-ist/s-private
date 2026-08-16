@@ -351,6 +351,8 @@ routeファイルのprops型は手書きせず、次のNext.js生成型を唯一
 
 React Compilerは`reactCompiler: true`と`experimental.turbopackRustReactCompiler: true`でTurbopack内蔵のRust実装を使用する。WebpackなどTurbopack以外のビルド経路を追加する場合は、この設定とBabel版compilerの再導入を合わせて評価する。
 
+`output: "standalone"`はDocker等の自己ホストbuildでのみ有効化する。Vercel buildでは`VERCEL=1`を判定して無効化し、Next.js 16.3のdeployment adapterが直接生成するbuild outputsを使用する。adapter利用時は`next-server.js.nft.json`が意図的に生成されないため、standalone outputと併用しない。
+
 ## Loader Pattern
 
 Suspense境界内でデータフェッチを実行し、取得データをプレゼンテーションコンポーネントに渡すパターン。
