@@ -12,7 +12,7 @@ vi.mock("better-auth/cookies", () => ({
 	getSessionCookie: vi.fn(),
 }));
 
-vi.mock("./infrastructures/i18n/routing", () => ({
+vi.mock("./infrastructures/i18n/routing-config", () => ({
 	routing: {
 		defaultLocale: "ja",
 		locales: ["en", "ja"],

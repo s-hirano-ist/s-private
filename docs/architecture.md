@@ -2,7 +2,7 @@
 
 ## バージョン要件
 
-本ドキュメントは **Next.js 16+** を前提としています（プロジェクト使用バージョン: 16.2.6）。
+本ドキュメントは **Next.js 16+** を前提としています（プロジェクト使用バージョン: 16.3.0）。
 
 | API | 導入バージョン | 備考 |
 |-----|--------------|------|
@@ -11,6 +11,8 @@
 | `cacheLife()` | Next.js 15.1 | 15.0では`unstable_cacheLife`として提供 |
 | `unstable_cache` | Next.js 14.0 | nonce CSPと両立するデータキャッシュに使用 |
 | `connection()` | Next.js 15.0 | 動的レンダリングのオプトイン |
+| `next/root-params` | Next.js 16.3 | ルートレイアウト以前の動的segmentを型付きgetterとして取得 |
+| `PageProps` / `LayoutProps` / `RouteContext` | Next.js 15.5+ | `next typegen`で生成するroute props型 |
 
 ## 目次
 - [クリーンアーキテクチャの構成](#クリーンアーキテクチャの構成)
@@ -247,7 +249,8 @@ next-intlを使用した国際化パターン。
 
 ```text
 app/src/infrastructures/i18n/
-├── routing.ts          # ルーティング設定（Link, redirect, useRouter等）
+├── routing-config.ts   # Proxyでも利用する副作用のないlocale設定
+├── routing.ts          # Server/Client用ナビゲーション（Link, redirect, useRouter等）
 └── request.ts          # リクエストスコープ設定
 
 app/messages/
@@ -329,6 +332,24 @@ import { Link, redirect, useRouter } from "@/infrastructures/i18n/routing";
 | Server Component | `getTranslations()` |
 | Client Component | `useTranslations()` |
 | Navigation | `@/infrastructures/i18n/routing` |
+
+### 動的ルートレイアウトと生成型
+
+`app/[locale]/layout.tsx`をルートレイアウトとし、`app/layout.tsx`は置かない。これによりNext.js 16.3が生成する`next/root-params`の`locale()`をServer Componentとserver-side utilityから利用できる。Client Component、Server Action、Route Handlerではroot params getterを使用せず、それぞれの公開インターフェースからlocaleを受け取る。
+
+localeの妥当性検証と翻訳メッセージの読み込みは`infrastructures/i18n/request.ts`に集約し、next-intlから明示されたlocale、middlewareのrequest locale、`next/root-params`の順で解決する。不正localeはdefault localeへ暗黙変換せず`notFound()`とする。ProxyはServer Component用navigationをmiddleware bundleへ混入させないよう`routing-config.ts`だけを参照する。locale配下の404は`app/[locale]/not-found.tsx`、どのlocaleルートにも一致しないURLは完全なHTML文書を返す`app/global-not-found.tsx`が担当する。global 404のlocaleは`NEXT_LOCALE` cookie、`Accept-Language`、`ja`の順で決定する。
+
+routeファイルのprops型は手書きせず、次のNext.js生成型を唯一の定義元とする。
+
+| 対象 | 生成型 |
+|------|--------|
+| page / `generateMetadata` | `PageProps<"/route">` |
+| layout | `LayoutProps<"/route">` |
+| 動的Route Handler | `RouteContext<"/route">` |
+
+`pnpm --filter s-private-app typegen`で`.next/types`を生成する。appの`typecheck`はtypegenを先に実行し、CIのlintも同じscriptを使用するため、クリーン環境でもroute literalと`next/root-params`のexportが検証される。
+
+React Compilerは`reactCompiler: true`と`experimental.turbopackRustReactCompiler: true`でTurbopack内蔵のRust実装を使用する。WebpackなどTurbopack以外のビルド経路を追加する場合は、この設定とBabel版compilerの再導入を合わせて評価する。
 
 ## Loader Pattern
 
@@ -473,7 +494,8 @@ export default function Error({ error, reset }: ErrorPageProps) {
 | ファイル | 内容 |
 |---------|------|
 | `/app/src/components/common/layouts/error-boundary.tsx` | ErrorBoundaryコンポーネント |
-| `/app/src/app/error.tsx` | ルートレベルのエラーハンドラー |
+| `/app/src/app/[locale]/error.tsx` | localeルート配下のエラーハンドラー |
+| `/app/src/app/global-error.tsx` | ルートレイアウト自体のエラーハンドラー |
 
 ### 注意事項
 
@@ -489,9 +511,11 @@ Next.js/Vercelのstreamed responseやerror responseでは、nonceが付与され
 
 nonceはリクエストごとに異なるため、静的HTMLシェルを再利用するCache Components / PPRとは両立しない。そのため`cacheComponents`は有効化せず、ページはリクエスト時に動的レンダリングする。
 
+Next.jsのexperimental SRIはbuild時の外部script assetを対象とし、inline Flight scriptや`next-themes`のinline scriptを保護できない。このためSRIをnonce CSPの代替にはせず、Partial Prefetchingを含むCache Componentsは厳格CSPとの公式な両立手段が提供されるまで導入しない。
+
 ### データキャッシュ
 
-動的レンダリングとデータキャッシュは分離する。Prismaを使うquery serviceは`unstable_cache`でキャッシュし、次の値をcache keyへ必ず含める:
+動的レンダリングとデータキャッシュは分離する。Prismaを使うquery serviceはVercel上でリクエスト間に永続化されるtenant別データキャッシュとして`unstable_cache`を維持し、`use cache`へ機械的に移行しない。cache keyには次の値を必ず含める:
 
 - ドメイン名
 - query種別

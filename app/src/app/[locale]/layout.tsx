@@ -1,60 +1,77 @@
+import type { Metadata } from "next";
+import "@/app/globals.css";
 import { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 import { resolveContentSecurityPolicyNonce } from "@/common/security/content-security-policy-nonce";
 import { Footer } from "@/components/common/layouts/nav/footer";
 import { env } from "@/env";
 import { IntlClientProvider } from "@/infrastructures/i18n/client-provider";
-import { routing } from "@/infrastructures/i18n/routing";
-import Loading from "@s-hirano-ist/s-ui/display/loading";
 import { ThemeProvider } from "@s-hirano-ist/s-ui/providers/theme-provider";
 import { Toaster } from "@s-hirano-ist/s-ui/ui/toast";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { getMessages } from "next-intl/server";
+import { Noto_Sans_JP } from "next/font/google";
 import { headers } from "next/headers";
-import { notFound } from "next/navigation";
-import { type ReactNode, Suspense } from "react";
+import { locale } from "next/root-params";
 
-const VALID_LOCALES = new Set(routing.locales);
+const notoSansJp = Noto_Sans_JP({ subsets: ["latin"], display: "swap" });
 
-type Params = {
-	children: ReactNode;
-	params: Promise<{ locale: string }>;
+export const metadata: Metadata = {
+	title: {
+		default: "s-private",
+		template: "%s | s-private",
+	},
+	description: "Dumper and Viewer of s-hirano-ist's memories.",
+	robots: {
+		index: false,
+		follow: false,
+	},
 };
 
-async function LocaleLayoutContent({ children, params }: Params) {
-	const { locale } = await params;
-	// Ensure that the incoming `locale` is valid
-	if (!VALID_LOCALES.has(locale as "en" | "ja")) {
-		notFound();
-	}
-
-	const messages = await getMessages();
+export default async function RootLayout({
+	children,
+}: LayoutProps<"/[locale]">) {
+	const headerStorePromise = headers();
+	const localeValue = await locale();
+	const [messages, headerStore] = await Promise.all([
+		getMessages({ locale: localeValue }),
+		headerStorePromise,
+	]);
 	const nonce = resolveContentSecurityPolicyNonce(
-		(await headers()).get("x-nonce"),
+		headerStore.get("x-nonce"),
 		env.NODE_ENV === "production",
 	);
 
 	return (
-		<IntlClientProvider locale={locale} messages={messages}>
-			<ThemeProvider
-				attribute="class"
-				defaultTheme="system"
-				disableTransitionOnChange
-				enableSystem
-				nonce={nonce}
-			>
-				<main className="min-h-screen">
-					<div className="pb-24">{children}</div>
-					<Footer search={searchContentFromClient} />
-				</main>
-				<Toaster />
-			</ThemeProvider>
-		</IntlClientProvider>
-	);
-}
-
-export default function LocaleLayout({ children, params }: Params) {
-	return (
-		<Suspense fallback={<Loading />}>
-			<LocaleLayoutContent params={params}>{children}</LocaleLayoutContent>
-		</Suspense>
+		<html lang={localeValue} suppressHydrationWarning>
+			<head>
+				{env.NODE_ENV === "development" && (
+					<script
+						async
+						nonce={nonce}
+						src="https://unpkg.com/react-scan/dist/auto.global.js"
+					/>
+				)}
+			</head>
+			<body className={notoSansJp.className}>
+				<IntlClientProvider locale={localeValue} messages={messages}>
+					<ThemeProvider
+						attribute="class"
+						defaultTheme="system"
+						disableTransitionOnChange
+						enableSystem
+						nonce={nonce}
+					>
+						<main className="min-h-screen">
+							<div className="pb-24">{children}</div>
+							<Footer search={searchContentFromClient} />
+						</main>
+						<Toaster />
+					</ThemeProvider>
+				</IntlClientProvider>
+				<Analytics />
+				<SpeedInsights />
+			</body>
+		</html>
 	);
 }

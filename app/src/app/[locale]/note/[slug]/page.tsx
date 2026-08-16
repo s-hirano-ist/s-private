@@ -7,13 +7,9 @@ import { ViewerBody } from "@/components/notes/server/viewer-body";
 import Loading from "@s-hirano-ist/s-ui/display/loading";
 import { Suspense } from "react";
 
-type Params = Promise<{ slug: string }>;
-
 export async function generateMetadata({
 	params,
-}: {
-	params: Params;
-}): Promise<Metadata> {
+}: PageProps<"/[locale]/note/[slug]">): Promise<Metadata> {
 	const { slug } = await params;
 
 	return {
@@ -22,7 +18,9 @@ export async function generateMetadata({
 	};
 }
 
-export default async function Page({ params }: { params: Params }) {
+export default async function Page({
+	params,
+}: PageProps<"/[locale]/note/[slug]">) {
 	await requireAuth();
 
 	const { slug } = await params;

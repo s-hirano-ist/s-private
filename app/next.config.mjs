@@ -23,6 +23,8 @@ const nextConfig = {
 	reactCompiler: true,
 	experimental: {
 		authInterrupts: true,
+		globalNotFound: true,
+		turbopackRustReactCompiler: true,
 		staleTimes: {
 			dynamic: 0,
 			static: 180,

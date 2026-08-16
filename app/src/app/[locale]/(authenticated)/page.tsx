@@ -1,10 +1,6 @@
 import { redirect } from "next/navigation";
+import { locale } from "next/root-params";
 
-type Props = {
-	params: Promise<{ locale: string }>;
-};
-
-export default async function Page({ params }: Props) {
-	const { locale } = await params;
-	redirect(`/${locale}/articles`);
+export default async function Page() {
+	redirect(`/${await locale()}/articles`);
 }
