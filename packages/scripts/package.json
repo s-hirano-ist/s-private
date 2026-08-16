@@ -83,7 +83,7 @@
 		"access": "public"
 	},
 	"dependencies": {
-		"@googleapis/books": "8.0.1",
+		"@googleapis/books": "9.0.0",
 		"@s-hirano-ist/s-core": "workspace:*",
 		"@s-hirano-ist/s-database": "workspace:*",
 		"@s-hirano-ist/s-image-processing": "workspace:*",
