@@ -1,6 +1,6 @@
 "use client";
 import type { DeleteAction } from "@/common/types";
-import { Button } from "@s-hirano-ist/s-ui/ui/button";
+import { Button } from "@s-hirano-ist/s-ui/button";
 import {
 	Dialog,
 	DialogContent,
@@ -8,8 +8,8 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-} from "@s-hirano-ist/s-ui/ui/dialog";
-import { toast } from "@s-hirano-ist/s-ui/ui/toast";
+} from "@s-hirano-ist/s-ui/dialog";
+import { useToast } from "@s-hirano-ist/s-ui/toast";
 import { haptic } from "@s-hirano-ist/s-ui/utils/haptic";
 import { TrashIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -53,6 +53,7 @@ function modalReducer(state: ModalState, action: ModalAction): ModalState {
 }
 
 export function DeleteButtonWithModal({ id, title, deleteAction }: Props) {
+	const toast = useToast();
 	const [state, dispatch] = useReducer(modalReducer, { status: "closed" });
 	const [isPending, startTransition] = useTransition();
 
@@ -67,7 +68,7 @@ export function DeleteButtonWithModal({ id, title, deleteAction }: Props) {
 		startTransition(async () => {
 			try {
 				const response = await deleteAction(id);
-				toast(message(response.message));
+				toast.show(message(response.message));
 				dispatch({ type: "DELETE_COMPLETE" });
 			} catch {
 				toast.error(message("error"));

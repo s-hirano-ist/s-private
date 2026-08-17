@@ -1,6 +1,6 @@
 "use client";
-import { StatusCodeView } from "@s-hirano-ist/s-ui/display/status/status-code-view";
-import { Button } from "@s-hirano-ist/s-ui/ui/button";
+import { StatusCodeView } from "@/components/common/display/status/status-code-view";
+import { Button } from "@s-hirano-ist/s-ui/button";
 import { useTranslations } from "next-intl";
 
 export function Forbidden() {

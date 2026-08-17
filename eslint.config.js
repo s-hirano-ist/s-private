@@ -9,6 +9,7 @@ export default [
 			".pnpm-store/**",
 			"**/.next/**",
 			"**/.storybook-static/**",
+			".storybook-ui-static/**",
 			"**/.vitest-coverage/**",
 			"**/dist/**",
 			"docs/api/**",

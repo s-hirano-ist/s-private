@@ -1,0 +1,42 @@
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { Input } from "./input";
+import { Label } from "./label";
+
+const meta = {
+	component: Label,
+	parameters: { layout: "centered" },
+} satisfies Meta<typeof Label>;
+
+export default meta;
+
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {
+	render: () => <Label htmlFor="input-id">Default Label</Label>,
+};
+
+export const WithCustomClass: Story = {
+	render: () => (
+		<Label className="text-destructive" htmlFor="input-id">
+			Label with Custom Class
+		</Label>
+	),
+};
+
+export const WithInput: Story = {
+	render: () => (
+		<div>
+			<Label htmlFor="input-id">Label with Input</Label>
+			<Input id="input-id" type="text" />
+		</div>
+	),
+};
+
+export const WithLongText: Story = {
+	render: () => (
+		<Label htmlFor="input-id">
+			This is a label with a very long text to demonstrate how it handles
+			overflow and responsiveness in various scenarios.
+		</Label>
+	),
+};

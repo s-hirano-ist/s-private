@@ -6,7 +6,6 @@ const config = {
 		"./components/**/*.{ts,tsx}",
 		"./app/**/*.{ts,tsx}",
 		"./src/**/*.{ts,tsx}",
-		"../packages/ui/**/*.{ts,tsx}",
 	],
 	prefix: "",
 	theme: {
@@ -24,25 +23,25 @@ const config = {
 				},
 			}),
 			colors: {
-				background: "rgb(var(--background))",
-				foreground: "rgb(var(--foreground))",
+				background: "rgb(var(--sui-background))",
+				foreground: "rgb(var(--sui-foreground))",
 				primary: {
-					DEFAULT: "rgb(var(--primary))",
-					grad: "rgb(var(--primary) / 0.8)",
-					foreground: "rgb(var(--primary-foreground))",
+					DEFAULT: "rgb(var(--sui-primary))",
+					grad: "rgb(var(--sui-primary) / 0.8)",
+					foreground: "rgb(var(--sui-primary-foreground))",
 				},
 				destructive: {
-					DEFAULT: "rgb(var(--destructive))",
+					DEFAULT: "rgb(var(--sui-destructive))",
 				},
 				muted: {
-					DEFAULT: "rgb(var(--muted))",
-					foreground: "rgb(var(--muted-foreground))",
+					DEFAULT: "rgb(var(--sui-muted))",
+					foreground: "rgb(var(--sui-muted-foreground))",
 				},
 			},
 			borderRadius: {
-				lg: "var(--radius)",
-				md: "calc(var(--radius) - 2px)",
-				sm: "calc(var(--radius) - 4px)",
+				lg: "var(--sui-radius)",
+				md: "calc(var(--sui-radius) - 2px)",
+				sm: "calc(var(--sui-radius) - 4px)",
 			},
 			keyframes: {
 				"bg-position": {

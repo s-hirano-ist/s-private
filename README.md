@@ -120,14 +120,10 @@ This project follows clean architecture principles with domain-driven design, en
 │   ├── database/                   # Database Layer
 │   │   └── prisma/                 # Prisma ORM & migrations
 │   │
-│   ├── ui/                         # Shared UI Components
-│   │   ├── ui/                     # shadcn/ui base components
-│   │   ├── display/                # Display components (status, etc.)
-│   │   ├── forms/                  # Form components & fields
-│   │   ├── layouts/                # Layout components (body, etc.)
-│   │   ├── hooks/                  # Shared React hooks
-│   │   ├── providers/              # Context providers
-│   │   └── utils/                  # UI utilities
+│   ├── ui/                         # React 19 design system (framework-agnostic)
+│   │   ├── src/                    # Components and explicit public entries
+│   │   ├── fixtures/vite/          # Non-Next.js consumer build fixture
+│   │   └── .storybook/             # React Vite Storybook
 │   │
 │   ├── notification/               # Notification services
 │   │

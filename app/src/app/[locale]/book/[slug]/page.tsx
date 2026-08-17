@@ -4,7 +4,7 @@ import { requireAuth } from "@/common/auth/session";
 import { PAGE_NAME } from "@/common/constants";
 import { ViewerBody } from "@/components/books/server/viewer-body";
 import { ErrorBoundary } from "@/components/common/layouts/error-boundary";
-import Loading from "@s-hirano-ist/s-ui/display/loading";
+import { LoadingIndicator as Loading } from "@s-hirano-ist/s-ui/loading-indicator";
 import { Suspense } from "react";
 
 export async function generateMetadata({

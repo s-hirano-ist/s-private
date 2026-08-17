@@ -1,11 +1,11 @@
 "use client";
 import type { ServerAction } from "@/common/types";
-import { FormDropdownInput } from "@s-hirano-ist/s-ui/forms/fields/form-dropdown-input";
-import { FormInput } from "@s-hirano-ist/s-ui/forms/fields/form-input";
-import { FormInputWithButton } from "@s-hirano-ist/s-ui/forms/fields/form-input-with-button";
-import { FormTextarea } from "@s-hirano-ist/s-ui/forms/fields/form-textarea";
-import { GenericFormWrapper } from "@s-hirano-ist/s-ui/forms/generic-form-wrapper";
-import { toast } from "@s-hirano-ist/s-ui/ui/toast";
+import { FormDropdownInput } from "@/components/common/forms/fields/form-dropdown-input";
+import { FormInput } from "@/components/common/forms/fields/form-input";
+import { FormInputWithButton } from "@/components/common/forms/fields/form-input-with-button";
+import { FormTextarea } from "@/components/common/forms/fields/form-textarea";
+import { GenericFormWrapper } from "@/components/common/forms/generic-form-wrapper";
+import { useToast } from "@s-hirano-ist/s-ui/toast";
 import { ClipboardPasteIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRef } from "react";
@@ -18,6 +18,7 @@ type Props = {
 };
 
 export function ArticleForm({ categories, addArticle }: Props) {
+	const toast = useToast();
 	const urlInputReference = useRef<HTMLInputElement>(null);
 	const categoryInputReference = useRef<HTMLInputElement>(null);
 
@@ -31,7 +32,7 @@ export function ArticleForm({ categories, addArticle }: Props) {
 	};
 
 	const afterSubmit = (responseMessage: string) => {
-		toast(message(responseMessage));
+		toast.show(message(responseMessage));
 	};
 
 	return (

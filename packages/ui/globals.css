@@ -1,8 +1,0 @@
-@import "tailwindcss";
-@import "./theme.css";
-
-@config "./tailwind.config.ts";
-
-@plugin "@tailwindcss/typography";
-
-@custom-variant dark (&:where(.dark, .dark *));

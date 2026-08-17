@@ -2,10 +2,7 @@ import type { StorybookConfig } from "@storybook/nextjs-vite";
 import tailwindcss from "@tailwindcss/postcss";
 
 const config: StorybookConfig = {
-	stories: [
-		"../app/src/**/*.stories.@(js|jsx|mjs|ts|tsx)",
-		"../packages/ui/!(node_modules)/**/*.stories.@(js|jsx|mjs|ts|tsx)",
-	],
+	stories: ["../app/src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
 	addons: [
 		"@chromatic-com/storybook",
 		"@storybook/addon-a11y",

@@ -6,7 +6,7 @@ import { Footer } from "@/components/common/layouts/nav/footer";
 import { env } from "@/env";
 import { IntlClientProvider } from "@/infrastructures/i18n/client-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
-import { Toaster } from "@s-hirano-ist/s-ui/ui/toast";
+import { ToastProvider } from "@s-hirano-ist/s-ui/toast";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { getMessages } from "next-intl/server";
@@ -62,11 +62,12 @@ export default async function RootLayout({
 						enableSystem
 						nonce={nonce}
 					>
-						<main className="min-h-screen">
-							<div className="pb-24">{children}</div>
-							<Footer search={searchContentFromClient} />
-						</main>
-						<Toaster />
+						<ToastProvider dismissLabel="通知を閉じる">
+							<main className="min-h-screen">
+								<div className="pb-24">{children}</div>
+								<Footer search={searchContentFromClient} />
+							</main>
+						</ToastProvider>
 					</ThemeProvider>
 				</IntlClientProvider>
 				<Analytics />

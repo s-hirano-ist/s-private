@@ -1,8 +1,8 @@
 "use client";
 import type { DeleteAction } from "@/common/types";
 import type { LightboxExternalProps } from "yet-another-react-lightbox";
+import { StatusCodeView } from "@/components/common/display/status/status-code-view";
 import { DeleteButtonWithModal } from "@/components/common/forms/actions/delete-button-with-modal";
-import { StatusCodeView } from "@s-hirano-ist/s-ui/display/status/status-code-view";
 import { haptic } from "@s-hirano-ist/s-ui/utils/haptic";
 import { useTranslations } from "next-intl";
 import Image from "next/image";

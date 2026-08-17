@@ -14,7 +14,7 @@ import {
 	PaginationLink,
 	PaginationNext,
 	PaginationPrevious,
-} from "@s-hirano-ist/s-ui/ui/pagination";
+} from "@s-hirano-ist/s-ui/pagination";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 

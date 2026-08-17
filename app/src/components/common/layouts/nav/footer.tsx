@@ -1,7 +1,7 @@
 "use client";
 import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 import type { Route } from "next";
-import { Button } from "@s-hirano-ist/s-ui/ui/button";
+import { Button } from "@s-hirano-ist/s-ui/button";
 import { cn } from "@s-hirano-ist/s-ui/utils/cn";
 import { haptic } from "@s-hirano-ist/s-ui/utils/haptic";
 import { DownloadIcon, SearchIcon, UploadIcon } from "lucide-react";
@@ -92,27 +92,28 @@ export function Footer({ search }: Props) {
 		<div className="mx-auto grid h-14 max-w-lg grid-cols-3 items-center rounded-full text-foreground">
 			<Button
 				className={cn(
+					"size-full rounded-full transition-all duration-200 hover:bg-primary/10",
 					isDumperActive && "bg-primary/15",
 					isPending && !isDumperActive && "opacity-50",
 				)}
 				disabled={isPending}
 				onClick={() => handleLayoutChange("dumper")}
-				size="navSide"
-				variant="navSide"
+				size="icon"
+				variant="ghost"
 			>
 				{NavIcon("DUMPER", <UploadIcon className="size-5" />, isDumperActive)}
 			</Button>
 			<div className="flex items-center justify-center">
 				<Button
-					className="-mt-5"
+					className="-mt-5 size-14 rounded-full bg-linear-to-br from-primary to-primary-grad text-white shadow-[0_4px_20px_rgb(var(--sui-primary)/0.4)] ring-4 ring-background transition-all duration-200 hover:scale-110 hover:shadow-[0_6px_28px_rgb(var(--sui-primary)/0.5)] active:scale-95"
 					data-testid="search-button"
 					onClick={() => {
 						haptic();
 						setOpen(true);
 					}}
-					size="navCenter"
+					size="icon"
 					type="button"
-					variant="navCenter"
+					variant="default"
 				>
 					<SearchIcon className="size-5 text-white" />
 					<span className="sr-only">Action</span>
@@ -120,13 +121,14 @@ export function Footer({ search }: Props) {
 			</div>
 			<Button
 				className={cn(
+					"size-full rounded-full transition-all duration-200 hover:bg-primary/10",
 					isViewerActive && "bg-primary/15",
 					isPending && !isViewerActive && "opacity-50",
 				)}
 				disabled={isPending}
 				onClick={() => handleLayoutChange("viewer")}
-				size="navSide"
-				variant="navSide"
+				size="icon"
+				variant="ghost"
 			>
 				{NavIcon("VIEWER", <DownloadIcon className="size-5" />, isViewerActive)}
 			</Button>

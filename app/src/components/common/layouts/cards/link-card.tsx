@@ -3,14 +3,14 @@ import type { LinkCardData } from "./types";
 import type { ReactNode } from "react";
 import { validateAndNormalizeUrl } from "@/components/common/utils/validate-url";
 import { Link } from "@/infrastructures/i18n/routing";
-import { Badge } from "@s-hirano-ist/s-ui/ui/badge";
+import { Badge } from "@s-hirano-ist/s-ui/badge";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@s-hirano-ist/s-ui/ui/card";
+} from "@s-hirano-ist/s-ui/card";
 
 type Props = {
 	actions?: ReactNode;

@@ -1,31 +1,22 @@
 {
 	"compilerOptions": {
-		"lib": ["dom", "esnext"],
+		"lib": ["DOM", "DOM.Iterable", "ES2022"],
 		"target": "ES2022",
-		"allowJs": true,
-		"skipLibCheck": true,
-		"strict": true,
-		"noEmit": false,
-		"declaration": true,
-		"declarationMap": true,
-		"sourceMap": true,
-		"outDir": "./dist",
-		"rootDir": "./",
-		"resolveJsonModule": true,
-		"verbatimModuleSyntax": true,
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
 		"jsx": "react-jsx",
-		"incremental": true,
-		"plugins": [{ "name": "next" }]
+		"strict": true,
+		"noEmit": true,
+		"skipLibCheck": true,
+		"verbatimModuleSyntax": true,
+		"resolveJsonModule": true,
+		"ignoreDeprecations": "6.0"
 	},
-	"include": ["**/*.ts", "**/*.tsx"],
-	"exclude": [
-		"node_modules",
-		"dist",
-		"**/*.stories.tsx",
-		"**/*.test.tsx",
-		"**/*.test.ts",
-		"**/*.bench.tsx",
-		"vitest-setup.tsx",
-		"vitest.config.ts"
-	]
+	"include": [
+		"src/**/*.ts",
+		"src/**/*.tsx",
+		".storybook/**/*.ts",
+		".storybook/**/*.tsx"
+	],
+	"exclude": ["dist", "node_modules"]
 }

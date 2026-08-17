@@ -35,15 +35,8 @@
 			}
 		},
 		"packages/ui": {
-			"entry": [
-				"ui/**/*.tsx",
-				"forms/**/*.tsx",
-				"display/**/*.tsx",
-				"layouts/**/*.tsx",
-				"hooks/**/*.ts",
-				"utils/**/*.ts"
-			],
-			"project": ["**/*.{ts,tsx}"],
+			"entry": ["src/*.tsx", "src/hooks/**/*.ts", "src/utils/**/*.ts"],
+			"project": ["src/**/*.{ts,tsx}"],
 			"ignoreDependencies": ["postcss"]
 		},
 		"packages/core": {

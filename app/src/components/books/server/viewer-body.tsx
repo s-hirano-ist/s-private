@@ -1,16 +1,16 @@
 import type { getBookByISBN } from "@/application-services/books/get-books";
 import { BackButton } from "@/components/common/back-button";
 import { ImageWithFallback } from "@/components/common/display/image/image-with-fallback";
-import { ViewerBodyClient } from "@s-hirano-ist/s-ui/layouts/body/viewer-body";
-import { Badge } from "@s-hirano-ist/s-ui/ui/badge";
+import { MarkdownViewer as ViewerBodyClient } from "@/components/common/display/markdown-viewer";
+import { Badge } from "@s-hirano-ist/s-ui/badge";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@s-hirano-ist/s-ui/ui/card";
-import { Rating } from "@s-hirano-ist/s-ui/ui/rating";
+} from "@s-hirano-ist/s-ui/card";
+import { Rating } from "@s-hirano-ist/s-ui/rating";
 import { notFound } from "next/navigation";
 
 export type Props = { getBookByISBN: typeof getBookByISBN; slug: string };

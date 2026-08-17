@@ -1,6 +1,6 @@
 "use client";
 import { redirect } from "@/infrastructures/i18n/routing";
-import { Button } from "@s-hirano-ist/s-ui/ui/button";
+import { Button } from "@s-hirano-ist/s-ui/button";
 import { haptic } from "@s-hirano-ist/s-ui/utils/haptic";
 import { Globe, LogOut, Moon, RefreshCw, Sun } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";

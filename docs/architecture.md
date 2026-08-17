@@ -1027,20 +1027,21 @@ export async function addArticleCore(formData: FormData, deps: AddArticleDeps) {
 ```typescript
 "use client";
 import { useTranslations } from "next-intl";
-import { toast } from "sonner";
+import { useToast } from "@s-hirano-ist/s-ui/toast";
 import { addArticle } from "@/application-services/articles/add-article";
-import { GenericFormWrapper } from "@s-hirano-ist/s-ui/forms/generic-form-wrapper";
-import { FormInput } from "@s-hirano-ist/s-ui/forms/fields/form-input";
-import { FormTextarea } from "@s-hirano-ist/s-ui/forms/fields/form-textarea";
+import { GenericFormWrapper } from "@/components/common/forms/generic-form-wrapper";
+import { FormInput } from "@/components/common/forms/fields/form-input";
+import { FormTextarea } from "@/components/common/forms/fields/form-textarea";
 
 export function ArticleForm() {
+	const toast = useToast();
   const label = useTranslations("label");
   const message = useTranslations("message");
 
   return (
     <GenericFormWrapper<ServerAction>
       action={addArticle}
-      afterSubmit={(msg) => toast(message(msg))}
+      afterSubmit={(msg) => toast.show(message(msg))}
       saveLabel={label("save")}
     >
       <FormInput name="title" label={label("title")} required />
@@ -1056,7 +1057,7 @@ export function ArticleForm() {
 `GenericFormWrapper`はServer Action統合・ローディング状態・エラー時のフォーム値保存をまとめて提供する:
 
 ```typescript
-// packages/ui/forms/generic-form-wrapper.tsx
+// app/src/components/common/forms/generic-form-wrapper.tsx
 "use client";
 import { createContext, use, useActionState, useMemo, useState } from "react";
 
@@ -1123,7 +1124,7 @@ export function GenericFormWrapper<
 エラー時に保存されたフォーム値へ子フィールドからアクセスするためのContext consumer。引数は取らず、保存済みの値（`Record<string, string>`）を返す。`GenericFormWrapper`と同一ファイルで定義・exportされる:
 
 ```typescript
-// packages/ui/forms/generic-form-wrapper.tsx
+// app/src/components/common/forms/generic-form-wrapper.tsx
 export const useFormValues = () => use(FormValuesContext);
 
 // 利用例（フィールドコンポーネント側）
@@ -1133,13 +1134,13 @@ function MyFormField({ name }: { name: string }) {
 }
 ```
 
-`GenericFormWrapper`がエラー応答の`formData`を`FormValuesContext`へ流し込み、各フィールドは`defaultValue`として値を復元する。`formRef`やフォームの明示的なresetは使わず、ローディング中は`children`の代わりに`<Loading />`を表示する。
+`GenericFormWrapper`がエラー応答の`formData`を`FormValuesContext`へ流し込み、各フィールドは`defaultValue`として値を復元する。`formRef`やフォームの明示的なresetは使わず、ローディング中は`children`の代わりに`<LoadingIndicator />`を表示する。
 
 ### Toast連携
 
 ```typescript
 // afterSubmit コールバックでの toast 表示
-afterSubmit={(msg) => toast(message(msg))}
+afterSubmit={(msg) => toast.show(message(msg))}
 
 // message(msg) は i18n キーを解決
 // 例: msg = "inserted" → "追加しました"
@@ -1149,8 +1150,9 @@ afterSubmit={(msg) => toast(message(msg))}
 
 | ファイル | 内容 |
 |---------|------|
-| `/packages/ui/forms/generic-form-wrapper.tsx` | `GenericFormWrapper`コンポーネント + `useFormValues`フック（同一ファイルで定義・export） |
-| `/packages/ui/forms/fields/` | `useFormValues`で復元値を読む各フィールド（form-input / form-textarea 等） |
+| `/app/src/components/common/forms/generic-form-wrapper.tsx` | Next.js Server Action用`GenericFormWrapper` + `useFormValues`（アプリ固有） |
+| `/app/src/components/common/forms/fields/` | 値復元とi18nを扱うアプリ用フィールド |
+| `/packages/ui/src/field.tsx` | 状態管理を持たない汎用Field compound components |
 
 ## Cache Invalidation Pattern
 

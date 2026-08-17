@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@s-hirano-ist/s-ui/ui/button";
+import { Button } from "@s-hirano-ist/s-ui/button";
 import { haptic } from "@s-hirano-ist/s-ui/utils/haptic";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";

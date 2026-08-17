@@ -4,7 +4,7 @@ React Compiler (`reactCompiler: true`) が有効な環境で、コンポーネ�
 
 ## ProfilerWrapper
 
-`@s-hirano-ist/s-ui/dev/profiler-wrapper` が提供する開発専用の `<Profiler>` ラッパー。
+`@/components/common/dev/profiler-wrapper` が提供する開発専用の `<Profiler>` ラッパー。
 
 ### Props
 
@@ -23,7 +23,7 @@ React Compiler (`reactCompiler: true`) が有効な環境で、コンポーネ�
 ### 使用例
 
 ```tsx
-import { ProfilerWrapper } from "@s-hirano-ist/s-ui/dev/profiler-wrapper";
+import { ProfilerWrapper } from "@/components/common/dev/profiler-wrapper";
 
 <ProfilerWrapper id="MyComponent" threshold={10}>
   <MyComponent />
