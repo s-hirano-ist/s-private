@@ -1,5 +1,63 @@
 # Changelog
 
+## [2.0.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v2.0.0...@s-hirano-ist/s-ui-v2.0.1) (2026-08-17)
+
+
+### Bug Fixes
+
+* avoid sonner inline style CSP violation ([edb5b81](https://github.com/s-hirano-ist/s-private/commit/edb5b8166b9fd8f89f874bcb99fc8b807e9a55b2))
+* avoid Sonner inline style CSP violation ([2eb2866](https://github.com/s-hirano-ist/s-private/commit/2eb286657c14681f1bc8d6ecb2b2c160c5859c22))
+* knip ([d690d44](https://github.com/s-hirano-ist/s-private/commit/d690d44f68686b5b7ed77ab420c0d3a98285721a))
+* lint ([01d681c](https://github.com/s-hirano-ist/s-private/commit/01d681cf2b825d828ea2c0f25b1ae9beb080adcc))
+* nextjs deps ([715df9e](https://github.com/s-hirano-ist/s-private/commit/715df9ed15ee014a98b74629df43d13288032ca9))
+* theme generator ([147e27e](https://github.com/s-hirano-ist/s-private/commit/147e27e1223271aa1596f5530dc8df2b25555165))
+
+
+### Documentation
+
+* restore theme after nonce story ([55f73a7](https://github.com/s-hirano-ist/s-private/commit/55f73a7bcc104fd55fd0f729ae16d4aec2deefe6))
+
+
+### Maintenance
+
+* delete nextjs deps ([3c5b547](https://github.com/s-hirano-ist/s-private/commit/3c5b547438f0fec7804cb99879894f2324469093))
+* **deps:** update non-major ([97dcf5d](https://github.com/s-hirano-ist/s-private/commit/97dcf5d3c321e642cfe60101332652c46b8728d5))
+* **deps:** update non-major ([809f566](https://github.com/s-hirano-ist/s-private/commit/809f566800e6332470dee8ebc8c45410a4a4c2c0))
+* **deps:** update non-major ([9afd68c](https://github.com/s-hirano-ist/s-private/commit/9afd68ce5d7a08a16efe93a632654745a4d71946))
+* **deps:** update non-major ([688b6f6](https://github.com/s-hirano-ist/s-private/commit/688b6f6a8b7d1244f52f0ac19ada67d578c4c0be))
+* **deps:** update non-major (devdependencies) ([5986e47](https://github.com/s-hirano-ist/s-private/commit/5986e478db2bacb571a440346659b342509cf633))
+* **deps:** update non-major (devdependencies) ([ee419ad](https://github.com/s-hirano-ist/s-private/commit/ee419ad2b10d0567e2fd908caa1a3982c5e4c8aa))
+* **deps:** update non-major (devdependencies) ([e157ccc](https://github.com/s-hirano-ist/s-private/commit/e157cccffd8f113777063041ef93ce4739511520))
+* **deps:** update non-major (devdependencies) ([0935f50](https://github.com/s-hirano-ist/s-private/commit/0935f5033c4fde96546d251f4b676bc86eb27a5c))
+* **deps:** update non-major (devdependencies) ([f8f89ed](https://github.com/s-hirano-ist/s-private/commit/f8f89edda6b2ea04233581fa2c7b8e25d667f0c9))
+* **deps:** update non-major (devdependencies) ([f457360](https://github.com/s-hirano-ist/s-private/commit/f4573603be4764585fc06f9d5a49b87429f2c702))
+* **deps:** update non-major (devdependencies) ([#2372](https://github.com/s-hirano-ist/s-private/issues/2372)) ([e157ccc](https://github.com/s-hirano-ist/s-private/commit/e157cccffd8f113777063041ef93ce4739511520))
+* **lint:** adopt strictTypeChecked ESLint config and fix violations ([0855808](https://github.com/s-hirano-ist/s-private/commit/08558082ff09f7fec5be897400233adefdbecd72))
+* **lint:** adopt strictTypeChecked ESLint config and fix violations ([3741fff](https://github.com/s-hirano-ist/s-private/commit/3741fff05bd88a40d69c459006fb24bd4a6b222e))
+* **lint:** maximize oxlint strictness with sonarjs + unicorn plugins ([7dd255d](https://github.com/s-hirano-ist/s-private/commit/7dd255d68dd82447002657f1deba272f20767d3c))
+* **lint:** maximize oxlint strictness with sonarjs + unicorn plugins ([bc04668](https://github.com/s-hirano-ist/s-private/commit/bc04668dbc75a5f6c657a6ed855bf1791aae77e6))
+* **lint:** migrate from eslint-plugin-react to [@eslint-react](https://github.com/eslint-react) ([7aa51da](https://github.com/s-hirano-ist/s-private/commit/7aa51da6eea4872b09baf7add456f10eb0ffff9d))
+* **lint:** migrate from eslint-plugin-react to [@eslint-react](https://github.com/eslint-react) ([90b4557](https://github.com/s-hirano-ist/s-private/commit/90b45572c0ee203354babcffca94af4c744afb40))
+* **lint:** promote all oxlint warn rules to error + enable 3 off rules ([ada340a](https://github.com/s-hirano-ist/s-private/commit/ada340ab8d5784ba6c145f9a8dfaf24b6706bc30))
+* **lint:** resolve all oxlint warnings (0 errors / 0 warnings) ([ce1d4bd](https://github.com/s-hirano-ist/s-private/commit/ce1d4bd019a23ddff4678caf22c974fedb6ce3ba))
+* migrate Biome to oxfmt + fold base lint into oxlint ([1fea812](https://github.com/s-hirano-ist/s-private/commit/1fea812900fa4d7ab3361b30247ed738270e2a83))
+* nextjs deps for UI ([fcbaa12](https://github.com/s-hirano-ist/s-private/commit/fcbaa12017aec26050120594803a1e6e6d86058e))
+* oxlint settings ([cd69292](https://github.com/s-hirano-ist/s-private/commit/cd692922f3417e36de210326e56ef5467821e1e0))
+* release main ([f8b231b](https://github.com/s-hirano-ist/s-private/commit/f8b231b895a3b081123153b88a8480be73d49ec9))
+* release main ([5447edb](https://github.com/s-hirano-ist/s-private/commit/5447edb27a0ace001b91950251b5523a5f6c2b6b))
+* release main ([87b87b2](https://github.com/s-hirano-ist/s-private/commit/87b87b2c6d7bb17cb547ebcdbc35b815f4229875))
+* release main ([8f22edf](https://github.com/s-hirano-ist/s-private/commit/8f22edf55a36933182bfa5197608d962cfe44a45))
+* release main ([100cb27](https://github.com/s-hirano-ist/s-private/commit/100cb27cf688cf6b51ea11c159478e57caaeb823))
+* release main ([5ac02a5](https://github.com/s-hirano-ist/s-private/commit/5ac02a5030246591a5e13d1923487a2cd675e4b3))
+* release main ([7665c8e](https://github.com/s-hirano-ist/s-private/commit/7665c8e47bdb6a4d581b44318f955c314e5c195c))
+* release main ([518cdb3](https://github.com/s-hirano-ist/s-private/commit/518cdb362b63602372da89249f5b5ca4dad5cdcd))
+* release main ([2d40594](https://github.com/s-hirano-ist/s-private/commit/2d4059460f97bdc8dc5ca62ec5704aa8d47a9582))
+* release main ([8274f73](https://github.com/s-hirano-ist/s-private/commit/8274f739bf8e681a4125d2255257f53ca7e8b621))
+* release main ([c8a7fc0](https://github.com/s-hirano-ist/s-private/commit/c8a7fc03a21c66b3ce4796842e12384c1be8565a))
+* replace sonner with CSP-safe toast ([e54c1b8](https://github.com/s-hirano-ist/s-private/commit/e54c1b8c78b29209c1ec79310dfddca27aba4824))
+* **ui:** migrate class-variance-authority to tailwind-variants ([3bb82b5](https://github.com/s-hirano-ist/s-private/commit/3bb82b5a92ce065db88dced05f510e8e118fd9c0))
+* **ui:** migrate class-variance-authority to tailwind-variants ([39bd9d6](https://github.com/s-hirano-ist/s-private/commit/39bd9d6da7c19c7ca13b96353129e9de85fad921))
+
 ## [1.19.14](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v1.19.13...@s-hirano-ist/s-ui-v1.19.14) (2026-08-17)
 
 

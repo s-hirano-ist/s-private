@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.11.5](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.11.4...s-private-v3.11.5) (2026-08-17)
+
+
+### Bug Fixes
+
+* audit ([e1faf3e](https://github.com/s-hirano-ist/s-private/commit/e1faf3e2cb756a14c9a8de888319d818ab8f3df6))
+* knip ([d690d44](https://github.com/s-hirano-ist/s-private/commit/d690d44f68686b5b7ed77ab420c0d3a98285721a))
+* request locale ([d640a5d](https://github.com/s-hirano-ist/s-private/commit/d640a5d2e949c597eedd5a89549a7aae43b2dc67))
+* unicorn ([e73e5b5](https://github.com/s-hirano-ist/s-private/commit/e73e5b56a8a4ec1d1f37c325b21dedd1f1d8f1c5))
+
+
+### Maintenance
+
+* delete vercel ([2a8d680](https://github.com/s-hirano-ist/s-private/commit/2a8d680647542520b0c0b07593b93eb3b2ad241e))
+* delete vite deps ([0051944](https://github.com/s-hirano-ist/s-private/commit/0051944e4571d1a6454d7728ca4b115c1c76c459))
+* delete vite deps ([fed08bd](https://github.com/s-hirano-ist/s-private/commit/fed08bda222595b253bba3d9921eacabff99ca62))
+* **deps:** update stryker-js monorepo to v10 ([e64fbd4](https://github.com/s-hirano-ist/s-private/commit/e64fbd401d6323ca2422e48cc49e83314e30a6b9))
+* **deps:** update stryker-js monorepo to v10 ([a889beb](https://github.com/s-hirano-ist/s-private/commit/a889beb0b3aef600c7507d44c5e9c14889bd0ce4))
+* update vercel lib ([3a228df](https://github.com/s-hirano-ist/s-private/commit/3a228df3cff46ae2d2bd6acd54107396c472b21e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @s-hirano-ist/s-ui bumped to 2.0.1
+
 ## [3.11.4](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.11.3...s-private-v3.11.4) (2026-08-17)
 
 

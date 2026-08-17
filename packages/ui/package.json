@@ -1,6 +1,6 @@
 {
 	"name": "@s-hirano-ist/s-ui",
-	"version": "2.0.0",
+	"version": "2.0.1",
 	"description": "Framework-agnostic React 19 design system",
 	"type": "module",
 	"exports": {
