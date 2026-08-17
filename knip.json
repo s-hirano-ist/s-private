@@ -10,13 +10,12 @@
 		},
 		"app": {
 			"ignore": ["src/infrastructures/i18n/request.ts"],
-			"ignoreDependencies": ["@types/react-syntax-highlighter"],
 			"ignoreBinaries": ["doppler"],
 			"next": {
 				"config": ["next.config.{js,ts,cjs,mjs}"],
 				"entry": [
 					"{instrumentation,instrumentation-client,middleware}.{js,ts}",
-					"app/global-error.{js,jsx,ts,tsx}",
+					"app/global-error.{js,jsx,txs,tsx}",
 					"app/**/{error,layout,loading,not-found,page,template,default}.{js,jsx,ts,tsx}",
 					"app/**/route.{js,jsx,ts,tsx}",
 					"app/{manifest,sitemap,robots}.{js,ts}",
@@ -39,8 +38,7 @@
 		},
 		"packages/ui": {
 			"entry": ["src/*.tsx", "src/hooks/**/*.ts", "src/utils/**/*.ts"],
-			"project": ["src/**/*.{ts,tsx}"],
-			"ignoreDependencies": ["postcss"]
+			"project": ["src/**/*.{ts,tsx}"]
 		},
 		"packages/core": {
 			"entry": ["**/*.ts", "!**/*.test.ts", "!**/*.spec.ts"],
