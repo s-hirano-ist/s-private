@@ -9,6 +9,7 @@
 		"node_modules",
 		".agents/**",
 		".claude/**",
+		".harness/**",
 		"docs/api/**",
 		"**/CHANGELOG.md",
 		"dependency-graph.md",
