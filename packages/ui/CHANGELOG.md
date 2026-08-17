@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v2.0.1...@s-hirano-ist/s-ui-v2.0.2) (2026-08-17)
+
+
+### Bug Fixes
+
+* small issues ([7d25516](https://github.com/s-hirano-ist/s-private/commit/7d255169f08a3a5823baf71808e895e0a69744c5))
+* style issue ([994863f](https://github.com/s-hirano-ist/s-private/commit/994863f303edcbad830c1f2b612419222feaf163))
+
 ## [2.0.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v2.0.0...@s-hirano-ist/s-ui-v2.0.1) (2026-08-17)
 
 

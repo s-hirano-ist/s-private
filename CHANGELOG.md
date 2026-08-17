@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.12.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.12.0...s-private-v3.12.1) (2026-08-17)
+
+
+### Bug Fixes
+
+* pnpm workspace library overrides ([ffb252d](https://github.com/s-hirano-ist/s-private/commit/ffb252d8e591f02c2e784ad7bc76f5acbbbc43ee))
+* small issues ([7d25516](https://github.com/s-hirano-ist/s-private/commit/7d255169f08a3a5823baf71808e895e0a69744c5))
+* style issue ([994863f](https://github.com/s-hirano-ist/s-private/commit/994863f303edcbad830c1f2b612419222feaf163))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @s-hirano-ist/s-ui bumped to 2.0.2
+
 ## [3.12.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.11.6...s-private-v3.12.0) (2026-08-17)
 
 
