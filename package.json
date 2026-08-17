@@ -9,9 +9,13 @@
 	},
 	"type": "module",
 	"scripts": {
+		"ui:build": "pnpm --filter @s-hirano-ist/s-ui build",
+		"predev": "pnpm ui:build",
 		"dev": "pnpm --recursive --parallel --stream dev",
 		"build": "pnpm --recursive build",
 		"clean": "rm -rf app/node_modules app/.next packages/*/node_modules packages/*/dist",
+		"preformat": "pnpm ui:build",
+		"preformat:check": "pnpm ui:build",
 		"format": "oxfmt",
 		"format:check": "oxfmt --check .",
 		"harness:sync": "node scripts/harness.mjs sync",
@@ -61,7 +65,7 @@
 		"test:mutation": "stryker run",
 		"test:mutation:core": "stryker run stryker.config.json",
 		"preinstall": "npx only-allow pnpm",
-		"prepare": "pnpm --filter @s-hirano-ist/s-ui build && husky"
+		"prepare": "pnpm ui:build && husky"
 	},
 	"dependencies": {
 		"next": "16.3.1",
