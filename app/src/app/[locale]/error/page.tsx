@@ -1,7 +1,7 @@
 import type { Route } from "next";
 import { Link } from "@/infrastructures/i18n/routing";
 import { StatusCodeView } from "@s-hirano-ist/s-ui/display/status/status-code-view";
-import { Button } from "@s-hirano-ist/s-ui/ui/button";
+import { buttonVariants } from "@s-hirano-ist/s-ui/ui/button";
 import { getTranslations } from "next-intl/server";
 import { connection } from "next/server";
 
@@ -15,9 +15,9 @@ export default async function Page() {
 		<main>
 			<div className="flex h-screen w-screen flex-col items-center justify-center space-y-4 text-center">
 				<StatusCodeView statusCode="500" statusCodeString={t("500")} />
-				<Button asChild variant="outline">
-					<Link href={"/"}>Go back to Home</Link>
-				</Button>
+				<Link className={buttonVariants({ variant: "outline" })} href={"/"}>
+					Go back to Home
+				</Link>
 			</div>
 		</main>
 	);

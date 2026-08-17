@@ -5,7 +5,7 @@
  *
  * @remarks
  * This package provides reusable React components built with:
- * - Radix UI primitives for accessibility
+ * - Base UI primitives for accessibility
  * - Tailwind CSS for styling
  * - tailwind-variants for variant management
  *
@@ -52,7 +52,6 @@ export * from "./hooks/use-infinite-scroll";
 export * from "./ui/badge";
 export * from "./ui/button";
 export * from "./ui/card";
-export * from "./ui/command";
 export * from "./ui/dialog";
 export * from "./ui/drawer";
 export * from "./ui/dropdown-menu";

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { expect, userEvent, waitFor, within } from "storybook/test";
 import { Button } from "./button";
 import { Input } from "./input";
 import { Label } from "./label";
@@ -16,21 +17,40 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
 	render: () => (
 		<Popover>
-			<PopoverTrigger asChild>
-				<Button variant="outline">Open Popover</Button>
+			<PopoverTrigger render={<Button variant="outline" />}>
+				Open Popover
 			</PopoverTrigger>
 			<PopoverContent>
 				<p>This is the popover content.</p>
 			</PopoverContent>
 		</Popover>
 	),
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const body = within(document.body);
+		const trigger = canvas.getByRole("button", { name: "Open Popover" });
+
+		await userEvent.click(trigger);
+		await waitFor(() =>
+			expect(
+				body.getByText("This is the popover content."),
+			).toBeInTheDocument(),
+		);
+		await userEvent.keyboard("{Escape}");
+		await waitFor(() =>
+			expect(
+				body.queryByText("This is the popover content."),
+			).not.toBeInTheDocument(),
+		);
+		await expect(trigger).toHaveFocus();
+	},
 };
 
 export const WithForm: Story = {
 	render: () => (
 		<Popover>
-			<PopoverTrigger asChild>
-				<Button variant="outline">Edit Settings</Button>
+			<PopoverTrigger render={<Button variant="outline" />}>
+				Edit Settings
 			</PopoverTrigger>
 			<PopoverContent className="w-80">
 				<div className="grid gap-4">

@@ -11,25 +11,6 @@ import {
 	DialogTrigger,
 } from "./dialog";
 
-const STORYBOOK_CSP_NONCE = "storybook-csp-nonce";
-
-function observeAddedStyleElements(): {
-	disconnect: () => void;
-	styles: HTMLStyleElement[];
-} {
-	const styles: HTMLStyleElement[] = [];
-	const observer = new MutationObserver((records) => {
-		for (const record of records) {
-			for (const node of record.addedNodes) {
-				if (node instanceof HTMLStyleElement) styles.push(node);
-			}
-		}
-	});
-	observer.observe(document.head, { childList: true });
-
-	return { disconnect: () => observer.disconnect(), styles };
-}
-
 const meta = {
 	component: Dialog,
 	parameters: { layout: "centered" },
@@ -42,9 +23,7 @@ type Story = StoryObj<typeof meta>;
 export const Primary: Story = {
 	render: () => (
 		<Dialog>
-			<DialogTrigger asChild>
-				<Button>Open Dialog</Button>
-			</DialogTrigger>
+			<DialogTrigger render={<Button />}>Open Dialog</DialogTrigger>
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>Dialog Title</DialogTitle>
@@ -64,7 +43,6 @@ export const Primary: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const body = within(document.body);
-		const styleObserver = observeAddedStyleElements();
 
 		const trigger = canvas.getByRole("button", { name: "Open Dialog" });
 		await userEvent.click(trigger);
@@ -81,23 +59,18 @@ export const Primary: Story = {
 		await expect(
 			body.getByRole("button", { name: "Confirm" }),
 		).toBeInTheDocument();
+		await userEvent.keyboard("{Escape}");
 		await waitFor(() =>
-			expect(
-				styleObserver.styles.some(
-					(style) => style.nonce === STORYBOOK_CSP_NONCE,
-				),
-			).toBe(true),
+			expect(body.queryByText("Dialog Title")).not.toBeInTheDocument(),
 		);
-		styleObserver.disconnect();
+		await expect(trigger).toHaveFocus();
 	},
 };
 
 export const WithoutFooter: Story = {
 	render: () => (
 		<Dialog>
-			<DialogTrigger asChild>
-				<Button>Open Dialog</Button>
-			</DialogTrigger>
+			<DialogTrigger render={<Button />}>Open Dialog</DialogTrigger>
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>Dialog Title</DialogTitle>
@@ -115,9 +88,7 @@ export const WithoutFooter: Story = {
 export const LongContents: Story = {
 	render: () => (
 		<Dialog>
-			<DialogTrigger asChild>
-				<Button>Open Dialog</Button>
-			</DialogTrigger>
+			<DialogTrigger render={<Button />}>Open Dialog</DialogTrigger>
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>Long Content</DialogTitle>
@@ -146,9 +117,7 @@ export const LongContents: Story = {
 export const CustomStyled: Story = {
 	render: () => (
 		<Dialog>
-			<DialogTrigger asChild>
-				<Button>Open Dialog</Button>
-			</DialogTrigger>
+			<DialogTrigger render={<Button />}>Open Dialog</DialogTrigger>
 			<DialogContent className="bg-primary-grad text-white">
 				<DialogHeader>
 					<DialogTitle>Custom Styled Dialog</DialogTitle>

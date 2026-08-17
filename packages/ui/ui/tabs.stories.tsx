@@ -47,5 +47,15 @@ export const Default: Story = {
 				canvas.getByText("Make changes to your account here."),
 			).toBeInTheDocument(),
 		);
+
+		accountTab.focus();
+		await userEvent.keyboard("{ArrowRight}");
+		await expect(passwordTab).toHaveFocus();
+		await userEvent.keyboard("{Enter}");
+		await waitFor(() =>
+			expect(
+				canvas.getByText("Change your password here."),
+			).toBeInTheDocument(),
+		);
 	},
 };

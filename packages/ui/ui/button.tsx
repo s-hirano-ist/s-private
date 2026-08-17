@@ -1,5 +1,5 @@
 import type * as React from "react";
-import { Slot } from "@radix-ui/react-slot";
+import { Button as ButtonPrimitive } from "@base-ui/react/button";
 import { tv, type VariantProps } from "tailwind-variants";
 import { cn } from "../utils/cn";
 
@@ -64,11 +64,8 @@ const buttonVariants = tv({
  * @see {@link buttonVariants} for available variants
  */
 export type ButtonProps = {
-	/** Render as child element using Radix Slot */
-	asChild?: boolean;
-	/** Forwarded ref */
-	ref?: React.Ref<HTMLButtonElement>;
-} & React.ButtonHTMLAttributes<HTMLButtonElement> &
+	className?: string;
+} & Omit<React.ComponentProps<typeof ButtonPrimitive>, "className"> &
 	VariantProps<typeof buttonVariants>;
 
 /**
@@ -76,7 +73,7 @@ export type ButtonProps = {
  *
  * @remarks
  * The Button component is built on top of tailwind-variants for
- * consistent styling and supports the Radix UI Slot pattern for composition.
+ * consistent styling and supports Base UI's render prop for composition.
  *
  * @param props - Button props including variant, size, and standard button attributes
  * @returns A styled button element
@@ -92,31 +89,19 @@ export type ButtonProps = {
  * // Large outline button
  * <Button variant="outline" size="lg">Learn More</Button>
  *
- * // As child (renders as anchor)
- * <Button asChild>
- *   <a href="/page">Link Button</a>
- * </Button>
+ * // Compose with another button component
+ * <Button render={<CustomButton />}>Click me</Button>
  * ```
  *
  * @see {@link buttonVariants} for available style variants
  */
-function Button({
-	className,
-	variant,
-	size,
-	asChild = false,
-	ref,
-	...props
-}: ButtonProps) {
-	const Comp = asChild ? Slot : "button";
+function Button({ className, variant, size, ...props }: ButtonProps) {
 	return (
-		<Comp
+		<ButtonPrimitive
 			className={cn(buttonVariants({ variant, size, className }))}
-			ref={ref}
 			{...props}
 		/>
 	);
 }
-Button.displayName = "Button";
 
 export { Button, buttonVariants };

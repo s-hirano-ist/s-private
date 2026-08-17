@@ -1,101 +1,37 @@
 "use client";
 
-import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
-import { type RefObject, useId, useState } from "react";
-import { Button } from "../../ui/button";
-import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList,
-} from "../../ui/command";
-import { Label } from "../../ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
+import { Combobox } from "@base-ui/react/combobox";
+import { CheckIcon, ChevronsUpDownIcon, PlusIcon } from "lucide-react";
+import { type RefObject, useState } from "react";
+import { buttonVariants } from "../../ui/button";
 import { cn } from "../../utils/cn";
 import { haptic } from "../../utils/haptic";
 import { useFormValues } from "../generic-form-wrapper";
 
-/**
- * Props for the FormDropdownInput component.
- *
- * @remarks
- * This component provides a searchable dropdown with support for custom values.
- * It integrates with the generic form wrapper for form state management.
- *
- * @see {@link FormDropdownInput} for the component
- */
 export type Props = {
-	/** Function to generate the label for custom values */
 	customValueLabel?: (value: string) => string;
-	/** Whether the field is disabled */
 	disabled?: boolean;
-	/** Message shown when no options match the search */
 	emptyMessage?: string;
-	/** The HTML id for the input element */
 	htmlFor: string;
-	/** Optional ref to access the hidden input element */
 	inputRef?: RefObject<HTMLInputElement | null>;
-	/** The label text displayed above the dropdown */
 	label: string;
-	/** The form field name (defaults to htmlFor if not provided) */
 	name?: string;
-	/** Array of options with id and display name */
 	options: { id: string; name: string }[];
-	/** Placeholder text when no value is selected */
 	placeholder: string;
-	/** Whether the field is required */
 	required?: boolean;
-	/** Placeholder text for the search input */
 	searchPlaceholder?: string;
 };
 
-// Default values extracted as constants for stable reference
+type DropdownItem = {
+	creatable?: boolean;
+	id: string;
+	name: string;
+};
+
 const DEFAULT_EMPTY_MESSAGE = "No results found";
 const DEFAULT_SEARCH_PLACEHOLDER = "Search...";
-const DEFAULT_CUSTOM_VALUE_LABEL = (v: string) => `Use "${v}"`;
+const DEFAULT_CUSTOM_VALUE_LABEL = (value: string) => `Use "${value}"`;
 
-/**
- * A searchable dropdown input component for forms.
- *
- * @remarks
- * Combines Popover and Command components for a combobox experience.
- * Supports:
- * - Searchable options
- * - Custom value entry
- * - Form state preservation via GenericFormWrapper
- * - Keyboard navigation
- *
- * **State Management Note:**
- * This component uses local state for the selected value because:
- * 1. The FormValuesContext is read-only (used for restoring values after form errors)
- * 2. User selections need immediate UI feedback
- * 3. The hidden input submits the current value to the form
- *
- * The prevPreservedValue pattern syncs context changes (e.g., after form error)
- * to local state during render, following React's recommended approach for
- * "adjusting state when props change".
- *
- * @param props - Dropdown configuration including options and labels
- * @returns A searchable dropdown field with hidden input for form submission
- *
- * @example
- * ```tsx
- * <FormDropdownInput
- *   label="Category"
- *   htmlFor="category"
- *   name="category"
- *   options={[
- *     { id: "1", name: "Technology" },
- *     { id: "2", name: "Business" },
- *   ]}
- *   placeholder="Select a category"
- * />
- * ```
- *
- * @see {@link GenericFormWrapper} for form integration
- */
 export function FormDropdownInput({
 	label,
 	htmlFor,
@@ -111,111 +47,116 @@ export function FormDropdownInput({
 }: Props) {
 	const [open, setOpen] = useState(false);
 	const [searchValue, setSearchValue] = useState("");
-	const listboxId = useId();
 
 	const formValues = useFormValues();
 	const fieldName = name || htmlFor;
-	const preservedValue = formValues[fieldName];
-
-	// Local state is necessary because FormValuesContext is read-only.
-	// The context only provides values for restoration after form submission errors.
-	// `formValues` is a Record<string, string> whose keys are runtime-driven; an absent
-	// `fieldName` yields `undefined` at runtime despite the declared `string` type.
-	// oxlint-disable-next-line typescript/no-unnecessary-condition -- runtime key may be absent
+	// Runtime-driven keys may be absent even though the context's index signature
+	// declares string values.
+	const preservedValue = formValues[fieldName] as string | undefined;
 	const [value, setValue] = useState(() => preservedValue ?? "");
 	const [prevPreservedValue, setPrevPreservedValue] = useState(preservedValue);
 
-	// Sync context value to local state when context changes (e.g., after form error).
-	// This follows React's pattern for adjusting state when props change.
 	if (preservedValue !== prevPreservedValue) {
 		setPrevPreservedValue(preservedValue);
-		// `preservedValue` can be `undefined` at runtime when the form key is absent.
-		// oxlint-disable-next-line typescript/no-unnecessary-condition -- runtime value may be undefined
-		if (preservedValue !== undefined) {
-			setValue(preservedValue);
-		}
+		if (preservedValue !== undefined) setValue(preservedValue);
 	}
 
-	const handleSelect = (selectedValue: string) => {
+	const trimmedSearchValue = searchValue.trim();
+	const hasExactMatch = options.some(
+		(option) =>
+			option.name.trim().toLocaleLowerCase() ===
+			trimmedSearchValue.toLocaleLowerCase(),
+	);
+	const items: DropdownItem[] =
+		trimmedSearchValue && !hasExactMatch
+			? [
+					...options,
+					{
+						creatable: true,
+						id: `create:${trimmedSearchValue.toLocaleLowerCase()}`,
+						name: trimmedSearchValue,
+					},
+				]
+			: options;
+	const selectedItem = value
+		? (options.find((option) => option.name === value) ?? {
+				id: `selected:${value}`,
+				name: value,
+			})
+		: null;
+
+	const handleValueChange = (item: DropdownItem | null) => {
+		if (!item) return;
 		haptic();
-		setValue(selectedValue);
+		setValue(item.name);
 		setSearchValue("");
 		setOpen(false);
 	};
 
-	const handleCustomValue = () => {
-		if (searchValue) {
-			setValue(searchValue);
-			setSearchValue("");
-			setOpen(false);
-		}
-	};
-
 	return (
 		<div className="space-y-1">
-			<Label htmlFor={htmlFor}>{label}</Label>
-			<Popover onOpenChange={setOpen} open={open}>
-				<PopoverTrigger asChild>
-					{/* This is a Popover/Command combobox trigger rendered via Radix
-					    `asChild`; an <input>/<select> element cannot preserve the
-					    popover listbox interaction, so the Button keeps role="combobox". */}
-					{/* oxlint-disable jsx-a11y/prefer-tag-over-role -- combobox trigger requires Button for popover behavior */}
-					<Button
-						aria-controls={listboxId}
-						aria-expanded={open}
-						aria-label={label}
-						className="w-full justify-between"
-						disabled={disabled}
-						role="combobox"
-						variant="outline"
-					>
-						{/* oxlint-enable jsx-a11y/prefer-tag-over-role */}
-						{value || placeholder}
-						<ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-					</Button>
-				</PopoverTrigger>
-				<PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-					<Command shouldFilter>
-						<CommandInput
-							onValueChange={setSearchValue}
-							placeholder={searchPlaceholder}
-							value={searchValue}
-						/>
-						<CommandList id={listboxId}>
-							<CommandEmpty>
-								{searchValue ? (
-									<button
-										className="w-full text-left hover:underline"
-										onClick={handleCustomValue}
-										type="button"
+			<Combobox.Root
+				disabled={disabled}
+				inputValue={searchValue}
+				isItemEqualToValue={(item, selected) => item.name === selected.name}
+				itemToStringLabel={(item) => item.name}
+				items={items}
+				onInputValueChange={setSearchValue}
+				onOpenChange={setOpen}
+				onValueChange={handleValueChange}
+				open={open}
+				value={selectedItem}
+			>
+				<Combobox.Label className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+					{label}
+				</Combobox.Label>
+				<Combobox.Trigger
+					aria-label={label}
+					className={cn(
+						buttonVariants({ variant: "outline" }),
+						"w-full justify-between",
+					)}
+				>
+					<Combobox.Value placeholder={placeholder} />
+					<Combobox.Icon>
+						<ChevronsUpDownIcon className="ml-2 size-4 shrink-0 opacity-50" />
+					</Combobox.Icon>
+				</Combobox.Trigger>
+				<Combobox.Portal>
+					<Combobox.Positioner align="start" sideOffset={4}>
+						<Combobox.Popup
+							aria-label={label}
+							className="z-50 w-[var(--anchor-width)] rounded-md border border-muted bg-background text-foreground shadow-md transition-[opacity,transform] duration-200 data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0"
+						>
+							<Combobox.Input
+								className="flex h-10 w-full rounded-md bg-transparent px-4 py-3 text-base outline-hidden placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
+								placeholder={searchPlaceholder}
+							/>
+							<Combobox.Empty className="py-6 text-center text-sm">
+								{emptyMessage}
+							</Combobox.Empty>
+							<Combobox.List className="max-h-75 scroll-py-1 overflow-x-hidden overflow-y-auto p-1">
+								{(item: DropdownItem) => (
+									<Combobox.Item
+										className="relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-muted data-highlighted:text-foreground"
+										key={item.id}
+										value={item}
 									>
-										{customValueLabel(searchValue)}
-									</button>
-								) : (
-									emptyMessage
+										{item.creatable ? (
+											<PlusIcon className="size-4 shrink-0" />
+										) : (
+											<Combobox.ItemIndicator>
+												<CheckIcon className="size-4 shrink-0" />
+											</Combobox.ItemIndicator>
+										)}
+										{item.creatable ? customValueLabel(item.name) : item.name}
+									</Combobox.Item>
 								)}
-							</CommandEmpty>
-							<CommandGroup>
-								{options.map((option) => (
-									<CommandItem
-										key={option.id}
-										onSelect={() => handleSelect(option.name)}
-										value={option.name}
-									>
-										<CheckIcon
-											className={cn(
-												"mr-2 h-4 w-4",
-												value === option.name ? "opacity-100" : "opacity-0",
-											)}
-										/>
-										{option.name}
-									</CommandItem>
-								))}
-							</CommandGroup>
-						</CommandList>
-					</Command>
-				</PopoverContent>
-			</Popover>
+							</Combobox.List>
+						</Combobox.Popup>
+					</Combobox.Positioner>
+				</Combobox.Portal>
+			</Combobox.Root>
 			<input
 				id={htmlFor}
 				name={fieldName}

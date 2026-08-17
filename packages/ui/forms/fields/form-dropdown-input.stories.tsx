@@ -104,6 +104,10 @@ export const Disabled: Story = {
 		options: mockCategories,
 		disabled: true,
 	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvas.getByRole("combobox")).toBeDisabled();
+	},
 };
 
 export const LongOptionNames: Story = {
@@ -187,6 +191,9 @@ export const SelectOption: Story = {
 		await waitFor(() =>
 			expect(canvas.getByRole("combobox")).toHaveTextContent("テクノロジー"),
 		);
+		await expect(
+			canvasElement.querySelector<HTMLInputElement>("#category-select"),
+		).toHaveValue("テクノロジー");
 	},
 };
 
@@ -253,5 +260,8 @@ export const CustomValueEntry: Story = {
 		await waitFor(() =>
 			expect(canvas.getByRole("combobox")).toHaveTextContent("カスタム値"),
 		);
+		await expect(
+			canvasElement.querySelector<HTMLInputElement>("#category-custom"),
+		).toHaveValue("カスタム値");
 	},
 };
