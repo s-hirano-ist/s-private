@@ -97,7 +97,7 @@ savePrefix: ''
 ```
 
 This ensures all dependencies are installed with exact versions (e.g., `1.2.3` instead of `^1.2.3`).
-`.npmrc` is reserved for auth/registry settings only since pnpm 11 — non-auth pnpm options live in `pnpm-workspace.yaml`.
+`.npmrc` is reserved for auth/registry settings; non-auth pnpm options live in `pnpm-workspace.yaml`.
 
 ### Lifecycle Script Protection
 
@@ -119,12 +119,12 @@ allowBuilds:
 
 **Why this matters**:
 - `allowBuilds` のキーに `true` が設定されたパッケージのみがライフサイクルスクリプト（`postinstall`、`preinstall`等）を実行可能
-- 値を `false` にすれば明示的な deny も表現可能（pnpm 11 で `onlyBuiltDependencies` / `ignoredBuiltDependencies` から統合）
+- 値を `false` にすれば明示的な deny も表現可能
 - `sharp: false` は Next.js の optional dependency として解決される画像処理パッケージの build script を明示的に拒否するための設定
 - 未登録パッケージのスクリプトはブロックされ、サプライチェーン攻撃を防止
 - 新しい依存追加時は `pnpm approve-builds` で対話的にレビュー・承認
 
-### pnpm 11 Hardening
+### pnpm Hardening
 
 **Configuration** ([pnpm-workspace.yaml](pnpm-workspace.yaml)):
 ```yaml
@@ -134,7 +134,7 @@ blockExoticSubdeps: true
 
 | 設定 | 役割 |
 |------|------|
-| `strictDepBuilds: true` | `allowBuilds` 未登録のパッケージがライフサイクルスクリプトを持つ場合、インストールをハードエラー化（pnpm 10 までは警告のみ） |
+| `strictDepBuilds: true` | `allowBuilds` 未登録のパッケージがライフサイクルスクリプトを持つ場合、インストールをハードエラー化 |
 | `blockExoticSubdeps: true` | 推移的依存が npm レジストリ以外のソース（Git URL / tarball URL）から取得されることをブロック。直接依存は対象外 |
 
 > Note: `trustPolicy: no-downgrade` は現在未設定。Renovate / Dependabot 側が `ERR_PNPM_TRUST_DOWNGRADE` を握りつぶして lockfile 更新ジョブごと落ちるため撤去済み。代替として下記の Minimum Release Age + 手動レビューで provenance 低下監視を担保。
@@ -173,7 +173,7 @@ pnpm i --frozen-lockfile
 ### GitHub Actions
 
 **Security Best Practices**:
-- ✅ Pinned action versions with commit SHA (e.g., `actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6`)
+- ✅ Pinned action versions with commit SHA (e.g., `actions/checkout@<full-commit-sha>`)
 - ✅ Minimal permissions (`permissions: {}` by default)
 - ✅ `persist-credentials: false` for checkout actions
 - ✅ Frozen lockfiles (`--frozen-lockfile`)
@@ -394,6 +394,5 @@ pnpm security
 
 ---
 
-**Last Updated**: 2026-06-06
 
 For questions about this security policy, contact s-hirano-ist@outlook.com.

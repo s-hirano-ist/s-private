@@ -32,7 +32,6 @@
 		"issues/perf-009-edge-runtime-cloudflare.md",
 		"issues/refactor-005-server-actions-middleware.md",
 		"issues/refactor-006-cockroachdb-migrate-dev-limitation.md",
-		"issues/storybook-001-sb10-recommended-setup.md",
 		"issues/storybook-002-visual-regression-testing.md",
 		"packages/core/README.md",
 		"packages/search/SPECIFICATION.md",

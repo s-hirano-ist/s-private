@@ -39,7 +39,7 @@ CockroachDB Cloud は単一リージョンのクラスタでも、内部に mult
    DB 接続なしで差分を生成する場合は git HEAD のスキーマと現スキーマを `--from-schema` で比較する
    （詳細は [docs/setup.md](../docs/setup.md) の diff フロー参照）。
 4. **適用は常に `prisma:deploy`**（`migrate deploy`。クラウドは drift を見ないため安全）。
-5. 新規 `CREATE TABLE` には `WITH (schema_locked = false)` を手動付与（別件: v26.1+ schema_locked）。
+5. `schema_locked`がデフォルトで有効な環境では、新規`CREATE TABLE`に`WITH (schema_locked = false)`を手動付与。
 
 詳細は [docs/setup.md](../docs/setup.md) の「マイグレーションの運用」節。
 
@@ -57,4 +57,4 @@ CockroachDB Cloud は単一リージョンのクラスタでも、内部に mult
 
 ## 関連
 
-- schema_locked 制約: [docs/setup.md](../docs/setup.md)「CockroachDB v26.1+ の schema_locked」
+- schema_locked 制約: [docs/setup.md](../docs/setup.md)「CockroachDB の schema_locked」
