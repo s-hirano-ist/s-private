@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.11.6](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.11.5...s-private-v3.11.6) (2026-08-17)
+
+
+### Bug Fixes
+
+* knip ([030d997](https://github.com/s-hirano-ist/s-private/commit/030d997e1ceaaca74ecba88a59fdde90dce80a55))
+
 ## [3.11.5](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.11.4...s-private-v3.11.5) (2026-08-17)
 
 
