@@ -91,7 +91,6 @@ export function Footer({ search }: Props) {
 	const navigationButtons = (
 		<div className="mx-auto grid h-14 max-w-lg grid-cols-3 items-center rounded-full text-foreground">
 			<Button
-				asChild
 				className={cn(
 					isDumperActive && "bg-primary/15",
 					isPending && !isDumperActive && "opacity-50",
@@ -120,7 +119,6 @@ export function Footer({ search }: Props) {
 				</Button>
 			</div>
 			<Button
-				asChild
 				className={cn(
 					isViewerActive && "bg-primary/15",
 					isPending && !isViewerActive && "opacity-50",

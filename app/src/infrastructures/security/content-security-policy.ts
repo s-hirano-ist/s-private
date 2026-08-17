@@ -1,8 +1,4 @@
 const CSP_REPORTING_GROUP = "csp-endpoint";
-// react-remove-scroll injects this deterministic zero-width scrollbar rule when
-// Radix dialogs open on platforms with overlay scrollbars.
-const RADIX_DIALOG_SCROLL_LOCK_STYLE_HASH =
-	"'sha256-nzTgYzXYDNe6BAHiiI7NNlfK8n/auuOAhh2t92YvuXo='";
 // Next.js can emit this deterministic inline style before client nonce
 // propagation is available on error/streaming responses.
 const NEXT_INLINE_STYLE_HASH =
@@ -62,12 +58,7 @@ export function buildContentSecurityPolicy({
 				"'unsafe-inline'",
 				...(allowsVercelToolbar ? ["https://vercel.live"] : []),
 			]
-		: [
-				"'self'",
-				`'nonce-${nonce}'`,
-				RADIX_DIALOG_SCROLL_LOCK_STYLE_HASH,
-				NEXT_INLINE_STYLE_HASH,
-			];
+		: ["'self'", `'nonce-${nonce}'`, NEXT_INLINE_STYLE_HASH];
 	const imageSources = [
 		"'self'",
 		"blob:",

@@ -1,7 +1,4 @@
-"use client";
-
 import type * as React from "react";
-import * as LabelPrimitive from "@radix-ui/react-label";
 import { tv, type VariantProps } from "tailwind-variants";
 import { cn } from "../utils/cn";
 
@@ -19,19 +16,17 @@ const labelVariants = tv({
  * @see {@link Label} for the component
  */
 type LabelProps = {
-	/** Forwarded ref */
-	ref?: React.Ref<React.ComponentRef<typeof LabelPrimitive.Root>>;
-} & React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> &
+	ref?: React.Ref<HTMLLabelElement>;
+} & React.ComponentPropsWithoutRef<"label"> &
 	VariantProps<typeof labelVariants>;
 
 /**
  * A label component for form inputs.
  *
  * @remarks
- * Built on Radix UI Label primitive. Provides accessible labeling
- * for form controls with proper styling and disabled state handling.
+ * Uses the native label element for accessible form-control association.
  *
- * @param props - Radix Label props including htmlFor
+ * @param props - Native label props including htmlFor
  * @returns A styled label element
  *
  * @example
@@ -42,13 +37,10 @@ type LabelProps = {
  */
 function Label({ className, ref, ...props }: LabelProps) {
 	return (
-		<LabelPrimitive.Root
-			className={cn(labelVariants(), className)}
-			ref={ref}
-			{...props}
-		/>
+		// The associated control is supplied by consumers through htmlFor or children.
+		// oxlint-disable-next-line jsx-a11y/label-has-associated-control
+		<label className={cn(labelVariants(), className)} ref={ref} {...props} />
 	);
 }
-Label.displayName = LabelPrimitive.Root.displayName;
 
 export { Label };

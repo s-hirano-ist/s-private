@@ -3,6 +3,7 @@ import { expect, userEvent, waitFor, within } from "storybook/test";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
+	DropdownMenuGroup,
 	DropdownMenuItem,
 	DropdownMenuLabel,
 	DropdownMenuSeparator,
@@ -23,12 +24,14 @@ export const Default: Story = {
 		<DropdownMenu>
 			<DropdownMenuTrigger>Open</DropdownMenuTrigger>
 			<DropdownMenuContent>
-				<DropdownMenuLabel>My Account</DropdownMenuLabel>
-				<DropdownMenuSeparator />
-				<DropdownMenuItem>Profile</DropdownMenuItem>
-				<DropdownMenuItem>Billing</DropdownMenuItem>
-				<DropdownMenuItem>Team</DropdownMenuItem>
-				<DropdownMenuItem>Subscription</DropdownMenuItem>
+				<DropdownMenuGroup>
+					<DropdownMenuLabel>My Account</DropdownMenuLabel>
+					<DropdownMenuSeparator />
+					<DropdownMenuItem>Profile</DropdownMenuItem>
+					<DropdownMenuItem>Billing</DropdownMenuItem>
+					<DropdownMenuItem>Team</DropdownMenuItem>
+					<DropdownMenuItem>Subscription</DropdownMenuItem>
+				</DropdownMenuGroup>
 			</DropdownMenuContent>
 		</DropdownMenu>
 	),
@@ -39,12 +42,14 @@ export const OpenAndInteract: Story = {
 		<DropdownMenu>
 			<DropdownMenuTrigger>Open</DropdownMenuTrigger>
 			<DropdownMenuContent>
-				<DropdownMenuLabel>My Account</DropdownMenuLabel>
-				<DropdownMenuSeparator />
-				<DropdownMenuItem>Profile</DropdownMenuItem>
-				<DropdownMenuItem>Billing</DropdownMenuItem>
-				<DropdownMenuItem>Team</DropdownMenuItem>
-				<DropdownMenuItem>Subscription</DropdownMenuItem>
+				<DropdownMenuGroup>
+					<DropdownMenuLabel>My Account</DropdownMenuLabel>
+					<DropdownMenuSeparator />
+					<DropdownMenuItem>Profile</DropdownMenuItem>
+					<DropdownMenuItem>Billing</DropdownMenuItem>
+					<DropdownMenuItem>Team</DropdownMenuItem>
+					<DropdownMenuItem>Subscription</DropdownMenuItem>
+				</DropdownMenuGroup>
 			</DropdownMenuContent>
 		</DropdownMenu>
 	),
@@ -65,6 +70,14 @@ export const OpenAndInteract: Story = {
 
 		await userEvent.click(body.getByText("Profile"));
 
+		await waitFor(() =>
+			expect(body.queryByText("My Account")).not.toBeInTheDocument(),
+		);
+
+		trigger.focus();
+		await userEvent.keyboard("{ArrowDown}");
+		await waitFor(() => expect(body.getByText("Profile")).toBeInTheDocument());
+		await userEvent.keyboard("{Enter}");
 		await waitFor(() =>
 			expect(body.queryByText("My Account")).not.toBeInTheDocument(),
 		);

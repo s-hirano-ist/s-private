@@ -1,113 +1,57 @@
 "use client";
 
 import type * as React from "react";
-import * as TabsPrimitive from "@radix-ui/react-tabs";
+import { Tabs as TabsPrimitive } from "@base-ui/react/tabs";
 import { cn } from "../utils/cn";
 
-/**
- * Root tabs container component.
- *
- * @remarks
- * Built on Radix UI Tabs primitive. Provides accessible tabbed interface.
- * Use with TabsList, TabsTrigger, and TabsContent for complete tab UI.
- *
- * @example
- * ```tsx
- * <Tabs defaultValue="tab1">
- *   <TabsList>
- *     <TabsTrigger value="tab1">Tab 1</TabsTrigger>
- *     <TabsTrigger value="tab2">Tab 2</TabsTrigger>
- *   </TabsList>
- *   <TabsContent value="tab1">Content 1</TabsContent>
- *   <TabsContent value="tab2">Content 2</TabsContent>
- * </Tabs>
- * ```
- *
- * @see {@link TabsList} for the tab button container
- * @see {@link TabsTrigger} for individual tab buttons
- * @see {@link TabsContent} for tab panel content
- */
 const Tabs = TabsPrimitive.Root;
 
-type TabsListProps = {
-	ref?: React.Ref<React.ComponentRef<typeof TabsPrimitive.List>>;
-} & React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>;
-
-/**
- * Container for tab trigger buttons.
- *
- * @remarks
- * Groups TabsTrigger components together with proper styling.
- *
- * @see {@link Tabs} for the parent container
- * @see {@link TabsTrigger} for individual tab buttons
- */
-function TabsList({ className, ref, ...props }: TabsListProps) {
+function TabsList({
+	className,
+	...props
+}: React.ComponentProps<typeof TabsPrimitive.List>) {
 	return (
 		<TabsPrimitive.List
 			className={cn(
 				"inline-flex h-10 items-center justify-center border-b border-muted p-1 text-muted-foreground",
 				className,
 			)}
-			ref={ref}
+			data-slot="tabs-list"
 			{...props}
 		/>
 	);
 }
-TabsList.displayName = TabsPrimitive.List.displayName;
 
-type TabsTriggerProps = {
-	ref?: React.Ref<React.ComponentRef<typeof TabsPrimitive.Trigger>>;
-} & React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>;
-
-/**
- * A tab button that activates a corresponding TabsContent panel.
- *
- * @remarks
- * Shows active state with gradient background.
- *
- * @see {@link TabsList} for the parent container
- * @see {@link TabsContent} for the associated content panel
- */
-function TabsTrigger({ className, ref, ...props }: TabsTriggerProps) {
+function TabsTrigger({
+	className,
+	...props
+}: React.ComponentProps<typeof TabsPrimitive.Tab>) {
 	return (
-		<TabsPrimitive.Trigger
+		<TabsPrimitive.Tab
 			className={cn(
-				"inline-flex items-center justify-center border-b-2 border-transparent px-3 py-2 text-sm font-medium whitespace-nowrap text-muted-foreground ring-offset-background transition-all duration-200 hover:text-primary/80 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50 data-[state=active]:border-primary data-[state=active]:font-bold data-[state=active]:text-primary",
+				"inline-flex items-center justify-center border-b-2 border-transparent px-3 py-2 text-sm font-medium whitespace-nowrap text-muted-foreground ring-offset-background transition-all duration-200 hover:text-primary/80 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50 data-active:border-primary data-active:font-bold data-active:text-primary",
 				className,
 			)}
-			ref={ref}
+			data-slot="tabs-trigger"
 			{...props}
 		/>
 	);
 }
-TabsTrigger.displayName = TabsPrimitive.Trigger.displayName;
 
-type TabsContentProps = {
-	ref?: React.Ref<React.ComponentRef<typeof TabsPrimitive.Content>>;
-} & React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>;
-
-/**
- * Content panel for a tab.
- *
- * @remarks
- * Only visible when its corresponding TabsTrigger is active.
- *
- * @see {@link Tabs} for the parent container
- * @see {@link TabsTrigger} for the associated trigger button
- */
-function TabsContent({ className, ref, ...props }: TabsContentProps) {
+function TabsContent({
+	className,
+	...props
+}: React.ComponentProps<typeof TabsPrimitive.Panel>) {
 	return (
-		<TabsPrimitive.Content
+		<TabsPrimitive.Panel
 			className={cn(
 				"mt-2 ring-offset-background focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:outline-hidden",
 				className,
 			)}
-			ref={ref}
+			data-slot="tabs-content"
 			{...props}
 		/>
 	);
 }
-TabsContent.displayName = TabsPrimitive.Content.displayName;
 
 export { Tabs, TabsContent, TabsList, TabsTrigger };

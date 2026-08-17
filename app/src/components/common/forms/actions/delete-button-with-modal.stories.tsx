@@ -61,7 +61,9 @@ export const OpenAndCloseDialog: Story = {
 		const cancelButton = body.getByRole("button", { name: "キャンセル" });
 		await userEvent.click(cancelButton);
 
-		await expect(body.queryByText("削除の確認")).not.toBeInTheDocument();
+		await waitFor(() =>
+			expect(body.queryByText("削除の確認")).not.toBeInTheDocument(),
+		);
 	},
 };
 

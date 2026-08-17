@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { Button } from "./button";
 
 const meta = {
@@ -40,6 +40,49 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
 	args: {
 		children: "ボタン",
+	},
+	play: async ({ args, canvasElement }) => {
+		const canvas = within(canvasElement);
+		await userEvent.click(canvas.getByRole("button", { name: "ボタン" }));
+		await expect(args.onClick).toHaveBeenCalledOnce();
+	},
+};
+
+export const Disabled: Story = {
+	args: {
+		children: "無効なボタン",
+		disabled: true,
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(
+			canvas.getByRole("button", { name: "無効なボタン" }),
+		).toBeDisabled();
+	},
+};
+
+export const Composed: Story = {
+	render: () => (
+		<Button
+			ref={(element) => {
+				if (element) element.dataset.refAttached = "true";
+			}}
+			render={
+				<button
+					aria-label="Composed button"
+					data-testid="composed-button"
+					type="button"
+				/>
+			}
+		>
+			Composed button
+		</Button>
+	),
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const button = canvas.getByTestId("composed-button");
+		await expect(button.tagName).toBe("BUTTON");
+		await expect(button).toHaveAttribute("data-ref-attached", "true");
 	},
 };
 export const Destructive: Story = {

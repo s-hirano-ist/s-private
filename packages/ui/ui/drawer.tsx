@@ -43,32 +43,14 @@ function Drawer({
  * Button or element that opens the drawer.
  *
  * @remarks
- * Supports `render` prop (Base UI native) to render as a custom element.
- * Also supports legacy `asChild` prop for backward compatibility.
+ * Supports Base UI's `render` prop to compose a custom element.
  *
  * @see {@link Drawer} for parent component
  */
-function DrawerTrigger({
-	asChild,
-	children,
-	...props
-}: React.ComponentProps<typeof DrawerPrimitive.Trigger> & {
-	asChild?: boolean;
-}) {
-	if (asChild && React.isValidElement(children)) {
-		return (
-			<DrawerPrimitive.Trigger
-				data-slot="drawer-trigger"
-				render={children as React.ReactElement}
-				{...props}
-			/>
-		);
-	}
-	return (
-		<DrawerPrimitive.Trigger data-slot="drawer-trigger" {...props}>
-			{children}
-		</DrawerPrimitive.Trigger>
-	);
+function DrawerTrigger(
+	props: React.ComponentProps<typeof DrawerPrimitive.Trigger>,
+) {
+	return <DrawerPrimitive.Trigger data-slot="drawer-trigger" {...props} />;
 }
 
 /**
@@ -85,32 +67,14 @@ function DrawerPortal({
  * Button that closes the drawer.
  *
  * @remarks
- * Supports `render` prop (Base UI native) to render as a custom element.
- * Also supports legacy `asChild` prop for backward compatibility.
+ * Supports Base UI's `render` prop to compose a custom element.
  *
  * @see {@link DrawerFooter} for typical placement
  */
-function DrawerClose({
-	asChild,
-	children,
-	...props
-}: React.ComponentProps<typeof DrawerPrimitive.Close> & {
-	asChild?: boolean;
-}) {
-	if (asChild && React.isValidElement(children)) {
-		return (
-			<DrawerPrimitive.Close
-				data-slot="drawer-close"
-				render={children as React.ReactElement}
-				{...props}
-			/>
-		);
-	}
-	return (
-		<DrawerPrimitive.Close data-slot="drawer-close" {...props}>
-			{children}
-		</DrawerPrimitive.Close>
-	);
+function DrawerClose(
+	props: React.ComponentProps<typeof DrawerPrimitive.Close>,
+) {
+	return <DrawerPrimitive.Close data-slot="drawer-close" {...props} />;
 }
 
 /**

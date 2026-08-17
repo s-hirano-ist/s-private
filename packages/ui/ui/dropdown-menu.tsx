@@ -1,240 +1,143 @@
 "use client";
 
 import type * as React from "react";
-import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
+import { Menu as MenuPrimitive } from "@base-ui/react/menu";
 import { cn } from "../utils/cn";
 
-/**
- * Root dropdown menu component.
- *
- * @remarks
- * Built on Radix UI DropdownMenu primitive. Provides accessible
- * dropdown menus with keyboard navigation.
- *
- * @example
- * ```tsx
- * <DropdownMenu>
- *   <DropdownMenuTrigger asChild>
- *     <Button>Open Menu</Button>
- *   </DropdownMenuTrigger>
- *   <DropdownMenuContent>
- *     <DropdownMenuLabel>My Account</DropdownMenuLabel>
- *     <DropdownMenuSeparator />
- *     <DropdownMenuItem>Profile</DropdownMenuItem>
- *     <DropdownMenuItem>Settings</DropdownMenuItem>
- *   </DropdownMenuContent>
- * </DropdownMenu>
- * ```
- *
- * @see {@link DropdownMenuContent} for the menu body
- * @see {@link DropdownMenuTrigger} for the trigger button
- */
-const DropdownMenu = DropdownMenuPrimitive.Root;
+const DropdownMenu = MenuPrimitive.Root;
+const DropdownMenuTrigger = MenuPrimitive.Trigger;
+const DropdownMenuGroup = MenuPrimitive.Group;
+const DropdownMenuPortal = MenuPrimitive.Portal;
+const DropdownMenuSub = MenuPrimitive.SubmenuRoot;
+const DropdownMenuRadioGroup = MenuPrimitive.RadioGroup;
 
-/**
- * Button or element that opens the dropdown menu.
- *
- * @see {@link DropdownMenu} for parent component
- */
-const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
-
-/**
- * Group container for related menu items.
- *
- * @see {@link DropdownMenuItem} for items within the group
- */
-const DropdownMenuGroup = DropdownMenuPrimitive.Group;
-
-/**
- * Portal for rendering menu outside the DOM hierarchy.
- * @internal
- */
-const DropdownMenuPortal = DropdownMenuPrimitive.Portal;
-
-/**
- * Root for nested submenu.
- *
- * @see {@link DropdownMenuSubContent} for submenu content
- */
-const DropdownMenuSub = DropdownMenuPrimitive.Sub;
-
-/**
- * Group for radio-style menu items.
- */
-const DropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup;
+type PositionerProps = React.ComponentProps<typeof MenuPrimitive.Positioner>;
 
 type DropdownMenuSubContentProps = {
-	ref?: React.Ref<React.ComponentRef<typeof DropdownMenuPrimitive.SubContent>>;
-} & React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubContent>;
+	positionerProps?: PositionerProps;
+} & React.ComponentProps<typeof MenuPrimitive.Popup>;
 
-/**
- * Content container for nested submenu.
- *
- * @see {@link DropdownMenuSub} for parent component
- */
 function DropdownMenuSubContent({
 	className,
-	ref,
+	positionerProps,
 	...props
 }: DropdownMenuSubContentProps) {
 	return (
-		<DropdownMenuPrimitive.SubContent
-			className={cn(
-				"data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=open]:animate-in z-50 min-w-[8rem] overflow-hidden rounded-md border bg-primary p-1 text-primary-foreground shadow-lg",
-				className,
-			)}
-			ref={ref}
-			{...props}
-		/>
+		<MenuPrimitive.Portal>
+			<MenuPrimitive.Positioner
+				align="start"
+				alignOffset={-4}
+				side="right"
+				sideOffset={-4}
+				{...positionerProps}
+			>
+				<MenuPrimitive.Popup
+					className={cn(
+						"z-50 min-w-32 overflow-hidden rounded-md border bg-primary p-1 text-primary-foreground shadow-lg transition-[opacity,transform] duration-200 data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0",
+						className,
+					)}
+					data-slot="dropdown-menu-sub-content"
+					{...props}
+				/>
+			</MenuPrimitive.Positioner>
+		</MenuPrimitive.Portal>
 	);
 }
-DropdownMenuSubContent.displayName =
-	DropdownMenuPrimitive.SubContent.displayName;
 
 type DropdownMenuContentProps = {
-	ref?: React.Ref<React.ComponentRef<typeof DropdownMenuPrimitive.Content>>;
-} & React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>;
+	positionerProps?: PositionerProps;
+} & React.ComponentProps<typeof MenuPrimitive.Popup>;
 
-/**
- * Main content container for the dropdown menu.
- *
- * @remarks
- * Contains menu items with proper animations and positioning.
- *
- * @see {@link DropdownMenu} for parent component
- * @see {@link DropdownMenuItem} for menu items
- */
 function DropdownMenuContent({
 	className,
-	sideOffset = 4,
-	ref,
+	positionerProps,
 	...props
 }: DropdownMenuContentProps) {
 	return (
-		<DropdownMenuPrimitive.Portal>
-			<DropdownMenuPrimitive.Content
-				className={cn(
-					"z-50 max-h-[300px] min-w-[8rem] scroll-py-1 overflow-auto rounded-md border border-muted bg-background p-1 text-foreground shadow-md",
-					"data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=open]:animate-in",
-					className,
-				)}
-				ref={ref}
-				sideOffset={sideOffset}
-				{...props}
-			/>
-		</DropdownMenuPrimitive.Portal>
+		<MenuPrimitive.Portal>
+			<MenuPrimitive.Positioner sideOffset={4} {...positionerProps}>
+				<MenuPrimitive.Popup
+					className={cn(
+						"z-50 max-h-75 min-w-32 scroll-py-1 overflow-auto rounded-md border border-muted bg-background p-1 text-foreground shadow-md transition-[opacity,transform] duration-200 data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0",
+						className,
+					)}
+					data-slot="dropdown-menu-content"
+					{...props}
+				/>
+			</MenuPrimitive.Positioner>
+		</MenuPrimitive.Portal>
 	);
 }
-DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName;
 
 type DropdownMenuItemProps = {
 	inset?: boolean;
-	ref?: React.Ref<React.ComponentRef<typeof DropdownMenuPrimitive.Item>>;
-} & React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item>;
+} & React.ComponentProps<typeof MenuPrimitive.Item>;
 
-/**
- * Individual selectable item in the dropdown menu.
- *
- * @remarks
- * Supports keyboard navigation and focus states.
- *
- * @see {@link DropdownMenuContent} for parent component
- */
 function DropdownMenuItem({
 	className,
 	inset,
-	ref,
 	...props
 }: DropdownMenuItemProps) {
 	return (
-		<DropdownMenuPrimitive.Item
+		<MenuPrimitive.Item
 			className={cn(
-				"relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden transition-colors select-none focus:bg-primary focus:text-primary-foreground data-disabled:pointer-events-none data-disabled:opacity-50 [&>svg]:size-4 [&>svg]:shrink-0",
+				"relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden transition-colors select-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-primary data-highlighted:text-primary-foreground [&>svg]:size-4 [&>svg]:shrink-0",
 				inset && "pl-8",
 				className,
 			)}
-			ref={ref}
+			data-slot="dropdown-menu-item"
 			{...props}
 		/>
 	);
 }
-DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName;
 
 type DropdownMenuLabelProps = {
 	inset?: boolean;
-	ref?: React.Ref<React.ComponentRef<typeof DropdownMenuPrimitive.Label>>;
-} & React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Label>;
+} & React.ComponentProps<typeof MenuPrimitive.GroupLabel>;
 
-/**
- * Non-interactive label for a menu section.
- *
- * @see {@link DropdownMenuContent} for parent component
- */
 function DropdownMenuLabel({
 	className,
 	inset,
-	ref,
 	...props
 }: DropdownMenuLabelProps) {
 	return (
-		<DropdownMenuPrimitive.Label
+		<MenuPrimitive.GroupLabel
 			className={cn(
 				"px-2 py-1.5 text-sm font-semibold",
 				inset && "pl-8",
 				className,
 			)}
-			ref={ref}
+			data-slot="dropdown-menu-label"
 			{...props}
 		/>
 	);
 }
-DropdownMenuLabel.displayName = DropdownMenuPrimitive.Label.displayName;
 
-type DropdownMenuSeparatorProps = {
-	ref?: React.Ref<React.ComponentRef<typeof DropdownMenuPrimitive.Separator>>;
-} & React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Separator>;
-
-/**
- * Visual separator between menu sections.
- */
 function DropdownMenuSeparator({
 	className,
-	ref,
 	...props
-}: DropdownMenuSeparatorProps) {
+}: React.ComponentProps<typeof MenuPrimitive.Separator>) {
 	return (
-		<DropdownMenuPrimitive.Separator
+		<MenuPrimitive.Separator
 			className={cn("-mx-1 my-1 h-px bg-muted", className)}
-			ref={ref}
+			data-slot="dropdown-menu-separator"
 			{...props}
 		/>
 	);
 }
-DropdownMenuSeparator.displayName = DropdownMenuPrimitive.Separator.displayName;
 
-/**
- * Keyboard shortcut hint for a menu item.
- *
- * @example
- * ```tsx
- * <DropdownMenuItem>
- *   Save
- *   <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
- * </DropdownMenuItem>
- * ```
- */
 function DropdownMenuShortcut({
 	className,
 	...props
-}: React.HTMLAttributes<HTMLSpanElement>) {
+}: React.ComponentProps<"span">) {
 	return (
 		<span
 			className={cn("ml-auto text-xs tracking-widest opacity-60", className)}
+			data-slot="dropdown-menu-shortcut"
 			{...props}
 		/>
 	);
 }
-DropdownMenuShortcut.displayName = "DropdownMenuShortcut";
 
 export {
 	DropdownMenu,
