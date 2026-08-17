@@ -367,8 +367,8 @@ importers:
   packages/scripts:
     dependencies:
       '@googleapis/books':
-        specifier: 8.0.1
-        version: 8.0.1(supports-color@10.2.2)
+        specifier: 9.0.0
+        version: 9.0.0(supports-color@10.2.2)
       '@s-hirano-ist/s-core':
         specifier: workspace:*
         version: link:../core
@@ -1446,8 +1446,8 @@ packages:
   '@gerrit0/mini-shiki@3.23.0':
     resolution: {integrity: sha512-bEMORlG0cqdjVyCEuU0cDQbORWX+kYCeo0kV1lbxF5bt4r7SID2l9bqsxJEM0zndaxpOUT7riCyIVEuqq/Ynxg==}
 
-  '@googleapis/books@8.0.1':
-    resolution: {integrity: sha512-Vd/qFRRa9wY42YagTXKplWzxIvmGU9+gvIcqGTL7QMawa+5Ypia3A+QmphzKfQMNa0lrxFjY60qSNOLFG6JMPQ==}
+  '@googleapis/books@9.0.0':
+    resolution: {integrity: sha512-JFNI/zP+YdLjoAQ+XanReD4mjoTdRrJI4EfT9D5jKZ50rP7aEK7nDn0ei1pCtllRFyVcleuosKZYS0Z6u8bYiw==}
     engines: {node: '>=12.0.0'}
 
   '@headlessui/react@2.2.10':
@@ -10741,7 +10741,7 @@ snapshots:
       '@shikijs/types': 3.23.0
       '@shikijs/vscode-textmate': 10.0.2
 
-  '@googleapis/books@8.0.1(supports-color@10.2.2)':
+  '@googleapis/books@9.0.0(supports-color@10.2.2)':
     dependencies:
       googleapis-common: 8.0.1(supports-color@10.2.2)
     transitivePeerDependencies:
