@@ -1,9 +1,9 @@
 /**
- * Photon-based image processor implementation.
+ * Sharp-based image processor implementation.
  *
  * @remarks
- * Provides image processing operations using the shared Photon WebAssembly
- * wrapper. Implements the IImageProcessor interface from the domain layer.
+ * Provides Node-compatible image processing operations through the shared
+ * Sharp wrapper. Implements the domain-owned image processor interface.
  *
  * @module
  */
@@ -33,7 +33,7 @@ async function getMetadata(bytes: Uint8Array): Promise<ImageMetadata> {
 	return await readImageMetadata(bytes);
 }
 
-export const photonImageProcessor: IImageProcessor = {
+export const sharpImageProcessor: IImageProcessor = {
 	createThumbnail,
 	getMetadata,
 	fileToBytes,

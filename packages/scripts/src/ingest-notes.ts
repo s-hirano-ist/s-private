@@ -6,6 +6,7 @@ import {
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
+import { parseMarkdownFrontmatter } from "@s-hirano-ist/s-search/frontmatter";
 import { glob } from "glob";
 import { readFile } from "node:fs/promises";
 import { basename } from "node:path";
@@ -17,25 +18,14 @@ function parseFrontmatter(content: string): {
 	draft?: boolean;
 	heading?: string;
 } {
-	if (!content.startsWith("---")) {
-		return { body: content };
-	}
-	const endIndex = content.indexOf("---", 3);
-	if (endIndex === -1) {
-		return { body: content };
-	}
-	const frontmatter = content.slice(3, endIndex).trim();
-	const body = content.slice(endIndex + 3).trim();
-
-	let heading: string | undefined;
-	let draft = false;
-	for (const line of frontmatter.split("\n")) {
-		const [key, ...rest] = line.split(":");
-		const value = rest.join(":").trim();
-		if (key.trim() === "heading") heading = value;
-		if (key.trim() === "draft" && value === "true") draft = true;
-	}
-	return { heading, draft, body };
+	const parsed = parseMarkdownFrontmatter(content);
+	return {
+		body: parsed.content.trim(),
+		draft:
+			typeof parsed.data.draft === "boolean" ? parsed.data.draft : undefined,
+		heading:
+			typeof parsed.data.heading === "string" ? parsed.data.heading : undefined,
+	};
 }
 
 function parseNoteFile(

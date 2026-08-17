@@ -8,9 +8,9 @@ import {
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { createWebpThumbnail } from "@s-hirano-ist/s-image-processing/node";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
+import { parseMarkdownFrontmatter } from "@s-hirano-ist/s-search/frontmatter";
 import { createMinioClient } from "@s-hirano-ist/s-storage";
 import { glob } from "glob";
-import matter from "gray-matter";
 import { readFile } from "node:fs/promises";
 import { basename, extname } from "node:path";
 
@@ -68,8 +68,8 @@ type ParsedBook = {
 };
 
 function parseBookFile(content: string): ParsedBook {
-	const parsed = matter(content);
-	const data = parsed.data as BookFrontmatter;
+	const parsed = parseMarkdownFrontmatter<BookFrontmatter>(content);
+	const data = parsed.data;
 
 	// title: frontmatter.title を優先、無ければ本文の H1 からフォールバック
 	let title = data.title?.trim() ?? "";
@@ -80,7 +80,7 @@ function parseBookFile(content: string): ParsedBook {
 
 	const body = parsed.content.trim();
 
-	// oxlint-disable-next-line typescript/no-unnecessary-condition -- gray-matter parses arbitrary YAML; rating can be null at runtime despite the declared type
+	// oxlint-disable-next-line typescript/no-unnecessary-condition -- frontmatter is untrusted YAML; rating can be null at runtime despite the declared type
 	if (data.rating === undefined || data.rating === null) {
 		throw new Error(
 			"rating は必須です (frontmatter に rating フィールドがありません)",

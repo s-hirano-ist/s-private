@@ -1,6 +1,7 @@
 import type { ContentType, QdrantPayload } from "./config.ts";
 import { createHash } from "node:crypto";
 import { RAG_CONFIG } from "./config.ts";
+import { parseMarkdownFrontmatter } from "./frontmatter.ts";
 
 // JSON article structure
 type ArticleBody = {
@@ -91,39 +92,20 @@ function parseFrontmatter(content: string): {
 	body: string;
 	frontmatter: MarkdownFrontmatter;
 } {
-	const frontmatterMatch = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/u.exec(content);
+	const parsed = parseMarkdownFrontmatter(content);
+	const frontmatter: MarkdownFrontmatter = {
+		heading:
+			typeof parsed.data.heading === "string" ? parsed.data.heading : "unknown",
+	};
 
-	if (!frontmatterMatch) {
-		return {
-			frontmatter: { heading: "unknown" },
-			body: content,
-		};
+	if (typeof parsed.data.description === "string") {
+		frontmatter.description = parsed.data.description;
+	}
+	if (typeof parsed.data.draft === "boolean") {
+		frontmatter.draft = parsed.data.draft;
 	}
 
-	const frontmatterStr = frontmatterMatch[1];
-	const body = frontmatterMatch[2];
-
-	// Simple YAML parsing for our needs
-	const frontmatter: MarkdownFrontmatter = { heading: "unknown" };
-
-	for (const line of frontmatterStr.split("\n")) {
-		const [key, ...valueParts] = line.split(":");
-		const value = valueParts.join(":").trim();
-
-		switch (key) {
-			case "description":
-				frontmatter.description = value;
-				break;
-			case "draft":
-				frontmatter.draft = value === "true";
-				break;
-			case "heading":
-				frontmatter.heading = value;
-				break;
-		}
-	}
-
-	return { frontmatter, body };
+	return { frontmatter, body: parsed.content };
 }
 
 type MarkdownSection = {

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { books as googleBooksApis } from "@googleapis/books";
+import { parseMarkdownFrontmatter } from "@s-hirano-ist/s-search/frontmatter";
 import { glob } from "glob";
-import matter from "gray-matter";
 import { dump } from "js-yaml";
 /**
  * markdown/book/*.md の frontmatter について、毎回 Google Books API を呼び出して
@@ -57,7 +57,7 @@ async function main(): Promise<void> {
 
 		try {
 			const raw = await readFile(filePath, "utf8");
-			const parsed = matter(raw);
+			const parsed = parseMarkdownFrontmatter(raw);
 			const data = parsed.data;
 
 			console.log(`🔍 ${fileName}: Google Books API 問い合わせ中...`);

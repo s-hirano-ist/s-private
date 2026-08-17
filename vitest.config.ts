@@ -77,6 +77,14 @@ export default defineConfig({
 					},
 				},
 			},
+			// Shared image processing package
+			{
+				test: {
+					name: "image-processing",
+					root: "./packages/image-processing",
+					include: ["./src/**/*.test.?(c|m)[jt]s?(x)"],
+				},
+			},
 			// External batch scripts and their infrastructure clients
 			{
 				test: {

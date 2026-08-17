@@ -1,5 +1,5 @@
 import { getFormDataFile } from "@/common/utils/form-data-utils";
-import { photonImageProcessor } from "@/infrastructures/images/services/photon-image-processor";
+import { sharpImageProcessor } from "@/infrastructures/images/services/sharp-image-processor";
 import {
 	type ContentType,
 	type FileSize,
@@ -15,15 +15,15 @@ import { parseAddImageFormData } from "./form-data-parser";
 
 vi.mock("@/common/utils/form-data-utils");
 vi.mock("@s-hirano-ist/s-core/images/entities/image-entity");
-vi.mock("@/infrastructures/images/services/photon-image-processor");
+vi.mock("@/infrastructures/images/services/sharp-image-processor");
 
 const mockGetFormDataFile = vi.mocked(getFormDataFile);
 const mockMakePath = vi.mocked(makePath);
 const mockMakeContentType = vi.mocked(makeContentType);
 const mockMakeFileSize = vi.mocked(makeFileSize);
-const mockFileToBytes = vi.mocked(photonImageProcessor.fileToBytes);
-const mockGetMetadata = vi.mocked(photonImageProcessor.getMetadata);
-const mockCreateThumbnail = vi.mocked(photonImageProcessor.createThumbnail);
+const mockFileToBytes = vi.mocked(sharpImageProcessor.fileToBytes);
+const mockGetMetadata = vi.mocked(sharpImageProcessor.getMetadata);
+const mockCreateThumbnail = vi.mocked(sharpImageProcessor.createThumbnail);
 
 const JPEG_BUFFER = Buffer.from([0xff, 0xd8, 0xff, 0xdb]);
 const PNG_BUFFER = Buffer.from([

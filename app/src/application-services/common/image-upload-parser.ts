@@ -2,7 +2,7 @@ import {
 	UploadFileNotAllowedError,
 	type UploadFileNotAllowedReason,
 } from "@/common/error/upload-file-not-allowed-error";
-import { photonImageProcessor } from "@/infrastructures/images/services/photon-image-processor";
+import { sharpImageProcessor } from "@/infrastructures/images/services/sharp-image-processor";
 
 const SUPPORTED_IMAGE_FORMAT_TO_CONTENT_TYPE = new Map<string, string>([
 	["jpeg", "image/jpeg"],
@@ -117,7 +117,7 @@ export async function parseSupportedImageFile(file: File): Promise<{
 	originalBuffer: Uint8Array;
 	thumbnailBuffer: Uint8Array;
 }> {
-	const originalBuffer = await photonImageProcessor.fileToBytes(file);
+	const originalBuffer = await sharpImageProcessor.fileToBytes(file);
 
 	if (originalBuffer.length === 0) {
 		throw createUploadFileNotAllowedError(file, "empty-buffer");
@@ -130,7 +130,7 @@ export async function parseSupportedImageFile(file: File): Promise<{
 
 	let decodedFormat: string | undefined;
 	try {
-		const metadata = await photonImageProcessor.getMetadata(originalBuffer);
+		const metadata = await sharpImageProcessor.getMetadata(originalBuffer);
 		decodedFormat = metadata.format;
 	} catch (error) {
 		throw createUploadFileNotAllowedError(file, "metadata-read-failed", {
@@ -146,7 +146,7 @@ export async function parseSupportedImageFile(file: File): Promise<{
 	);
 
 	try {
-		const thumbnailBuffer = await photonImageProcessor.createThumbnail(
+		const thumbnailBuffer = await sharpImageProcessor.createThumbnail(
 			originalBuffer,
 			192,
 			192,
