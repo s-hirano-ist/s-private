@@ -362,8 +362,9 @@
 		// template-indent remains excluded because template formatting belongs to oxfmt.
 		"unicorn-js/expiring-todo-comments": "error",
 		"unicorn-js/isolated-functions": "error",
-		"unicorn-js/prefer-simple-condition-first": "error",
+		"unicorn-js/prefer-simple-condition-first": "off",
 		"unicorn-js/prefer-switch": "error",
+
 		// Keep s-public's advisory severity for alphabetical type-member ordering.
 		"perfectionist/sort-interfaces": "warn",
 		"perfectionist/sort-object-types": "warn"
