@@ -14,6 +14,8 @@
 		"clean": "rm -rf app/node_modules app/.next packages/*/node_modules packages/*/dist",
 		"format": "oxfmt",
 		"format:check": "oxfmt --check .",
+		"harness:sync": "node scripts/harness.mjs sync",
+		"harness:check": "node scripts/harness.mjs check",
 		"lint": "oxlint && eslint \"**/*.{yml,yaml,json,jsonc,json5}\"",
 		"lint:fix": "oxlint --fix && eslint --fix \"**/*.{yml,yaml,json,jsonc,json5}\"",
 		"lint:css": "stylelint \"**/*.css\"",

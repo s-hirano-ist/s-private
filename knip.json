@@ -5,6 +5,9 @@
 	"ignoreDependencies": ["@secretlint/secretlint-rule-preset-recommend"],
 	"ignoreBinaries": ["vercel"],
 	"workspaces": {
+		".": {
+			"entry": [".harness/hooks/check-fix.mjs"]
+		},
 		"app": {
 			"ignore": ["src/infrastructures/i18n/request.ts"],
 			"ignoreDependencies": ["@types/react-syntax-highlighter"],

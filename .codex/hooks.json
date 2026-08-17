@@ -1,6 +1,5 @@
 {
-	"$schema": "https://json.schemastore.org/claude-code-settings.json",
-	"enableAllProjectMcpServers": true,
+	"description": "Shared repository validation hook for Codex.",
 	"hooks": {
 		"Stop": [
 			{
@@ -14,9 +13,5 @@
 				]
 			}
 		]
-	},
-	"statusLine": {
-		"type": "command",
-		"command": "cat | bash ./.claude/statusline.sh"
 	}
 }
