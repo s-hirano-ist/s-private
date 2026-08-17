@@ -11,7 +11,7 @@
 
 ## Problem Description
 
-Vercel Analytics（`@vercel/analytics@2.0.1`）と Speed Insights（`@vercel/speed-insights@2.0.0`）が導入済みだが、以下の課題がある:
+Vercel Analytics（`@vercel/analytics`）と Speed Insights（`@vercel/speed-insights`）が導入済みだが、以下の課題がある。導入バージョンは各`package.json`を参照する:
 
 1. Vercel Analytics はVercelダッシュボードに閉じており、Sentryのエラー監視と統合されていない
 2. パフォーマンス劣化とエラー発生の相関分析ができない

@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Next.js 16 + TypeScript + Clean Architectureベースのコンテンツ管理システム。
+Next.js + TypeScript + Clean Architectureベースのコンテンツ管理システム。
 `docs/**` にはより詳細な設計等のルールが記載されています。必要に応じて参照してください。
 また、新たな設計パターンを追加する場合は、`docs/**` の設計該当箇所に適宜内容を追加してください。
 
@@ -10,7 +10,7 @@ Next.js 16 + TypeScript + Clean Architectureベースのコンテンツ管理シ
 
 ## 技術スタック
 
-- Next.js 16 (App Router, Server Actions)
+- Next.js (App Router, Server Actions)
 - TypeScript + Zod
 - Prisma + CockroachDB
 - Shadcn/ui + Tailwind CSS

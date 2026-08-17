@@ -13,11 +13,11 @@
 
 ## Problem Description
 
-`@chromatic-com/storybook@5.1.2` がインストール済みでStorybook addonとして登録されているが、Chromatic のCI連携が未設定のため、ビジュアルリグレッションテストが自動実行されていない。
+`@chromatic-com/storybook`がインストール済みでStorybook addonとして登録されているが、ChromaticのCI連携が未設定のため、ビジュアルリグレッションテストが自動実行されていない。導入バージョンは`package.json`を参照する。
 
 現状の課題:
 1. UIコンポーネント変更時にビジュアルリグレッションが検知されない
-2. Storybookの51ファイルのストーリーがビジュアルテストのベースラインとして活用されていない
+2. Storybookのストーリーがビジュアルテストのベースラインとして活用されていない
 3. テーマ（light/dark）やビューポート切り替え時の見た目の不整合が見落とされる
 4. PRレビュー時にUIの変更差分を視覚的に確認する手段がない
 
@@ -49,6 +49,7 @@ npx chromatic --project-token=<CHROMATIC_PROJECT_TOKEN>
 
 ```yaml
 # .github/workflows/chromatic.yml
+# <pinned-sha>には既存workflowと同じ、現在のcommit SHAを使用する
 name: Chromatic Visual Tests
 on:
   pull_request:
@@ -62,16 +63,16 @@ jobs:
   chromatic:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@<pinned-sha>
         with:
           fetch-depth: 0 # Chromaticはgit履歴が必要
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@<pinned-sha>
+      - uses: actions/setup-node@<pinned-sha>
         with:
           node-version-file: ".nvmrc"
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - uses: chromaui/action@latest
+      - uses: chromaui/action@<pinned-sha>
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           buildScriptName: storybook:build

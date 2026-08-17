@@ -6,7 +6,7 @@ Server Actionsに共通のmiddleware層を導入し、認証(`requireAuth`)・�
 
 ## 背景
 
-- Next.jsのServer Actions middleware対応: https://github.com/vercel/next.js/pull/70961 の動向を確認（外部トラッキング。Next.js 16.2.6に対して最新状況を再確認すること）
+- Next.jsのServer Actions middleware対応: https://github.com/vercel/next.js/pull/70961 の動向を、リポジトリで使用中のNext.jsに対して再確認する（外部トラッキング）
 - authn-onlyモデルのため、各Server Actionが手動で`await requireAuth()`を呼んでから`.core`に委譲しており（例: `app/src/application-services/articles/add-article.ts`）、この重複を中央化したい
 
 ## タスク

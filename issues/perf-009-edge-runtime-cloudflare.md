@@ -7,11 +7,11 @@ https://tech.hello.ai/entry/vercel-cloudflare-migration 等の実装を参考に
 ## 課題
 
 - 画像処理は Photon WebAssembly へ移行済み。現在は `app/src/infrastructures/images/services/photon-image-processor.ts` が共通API経由で処理する。
-- Prismaのedge対応状況の確認が必要（現状は Prisma 7.8 + `@prisma/adapter-pg`（`PrismaPg`、node の TCP pg プール）を CockroachDB Cloud に対して使用。`app/src/prisma.ts` で `connectionString`/`max`/`idleTimeoutMillis` を指定。論点は汎用的な「Prisma の edge 対応」ではなく、adapter-pg の TCP プールを Cloudflare Workers 上で動かせるか）
+- Prismaのedge対応状況の確認が必要（現状は`@prisma/adapter-pg`の`PrismaPg`（Node.jsのTCP pgプール）をCockroachDB Cloudに対して使用。`app/src/prisma.ts`で`connectionString`/`max`/`idleTimeoutMillis`を指定。論点は汎用的な「Prismaのedge対応」ではなく、adapter-pgのTCPプールをCloudflare Workers上で動かせるか）
 
 ## 現状の制約
 
-- Next.js 16 移行時に、唯一の edge runtime ルートだった `app/src/app/api/health/route.ts` から edge runtime を**削除**した。理由はプロジェクト全体で有効化している `cacheComponents`（`app/next.config.mjs`）との非互換。
+- Next.js移行時に、唯一のedge runtimeルートだった`app/src/app/api/health/route.ts`からedge runtimeを**削除**した。理由はプロジェクト全体で有効化している`cacheComponents`（`app/next.config.mjs`）との非互換。
 - そのため Cloudflare/Edge への移行は、この cacheComponents と Edge Runtime の非互換を先に解消する必要がある。
 
 ## 参考

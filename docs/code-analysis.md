@@ -119,7 +119,7 @@ pnpm deps:graph      # 依存関係グラフをmermaidとして出力（dependen
 - **月次レポート**: [`update-reports.yaml`](../.github/workflows/update-reports.yaml) — 毎月1日に`dependency-graph.md`を再生成し、自動更新PRを作成
 
 
-## Lint/Format: oxlint主体 + コンテンツESLint、oxfmt（2026-08）
+## Lint/Format: oxlint主体 + コンテンツESLint、oxfmt
 
 TypeScript/JavaScript は oxlint に一本化した状態を維持し、oxlint が扱わない YAML/JSON/Markdown のみ ESLint で検査する。oxlint 設定は `.oxlintrc.json`（JSONC）、コンテンツ lint は `eslint.config.js`、フォーマットは `.oxfmtrc.json`。`pnpm lint` / `pnpm lint:fix` は両リンターを順に実行する。
 
@@ -128,7 +128,7 @@ TypeScript/JavaScript は oxlint に一本化した状態を維持し、oxlint �
 - **ESLint**: `eslint-plugin-yml`、`eslint-plugin-jsonc`、`@eslint/markdown` で YAML/JSON/JSONC/JSON5/Markdown を検査。ロックファイルと生成物は除外。
 - **dependency-cruiser**: Clean Architecture 層境界（`eslint-plugin-boundaries` から移植。oxlint の JS plugin は `settings` の boundaries/* キーを受け付けず動作不可のため）。`.dependency-cruiser.cjs` の `boundary-*` ルール（allow-list を deny-list に翻訳、29 本）。
 - **oxfmt**: format 全般（Prettier互換、タブ・行幅80）+ import 整理（sortImports）+ Tailwind class 並べ替え（sortTailwindcss、`cn`/`clsx`/`tv`）。旧 Biome の format + organizeImports + useSortedClasses を置換。
-- **Stylelint**: CSS 構文、無効な宣言の組み合わせ、対象ブラウザで未対応の機能、最低限のプロパティ順を検査する。Tailwind CSS v4 のディレクティブと関数は明示的に許可する。
+- **Stylelint**: CSS 構文、無効な宣言の組み合わせ、対象ブラウザで未対応の機能、最低限のプロパティ順を検査する。プロジェクトで使用するTailwind CSSのディレクティブと関数は明示的に許可する。
 - **Markdownlint**: 手書き Markdown の構造を検査する。既存違反ファイルは `.markdownlint-cli2.jsonc` の baseline に列挙し、修正完了時に該当 entry を削除する。生成 docs、CHANGELOG、agent skills は対象外。
 - **Secretlint**: recommended preset でコミット済みファイルの credential、token、秘密鍵、接続文字列を検査する。ドキュメント上のダミー値は理由付きの局所 disable のみ許可する。
 
@@ -145,9 +145,9 @@ pnpm lint:secret       # secret 検査（出力は mask）
 CI の `supplemental-lint` job で3種すべてを検査する。ローカルでは Husky + lint-staged が staged file に対して formatter と安全な fix を直列実行し、最後に Secretlint を実行する。pre-commit の oxlint は高速化と Next.js type generation への非依存化のため非 type-aware とし、完全な `oxlint --type-aware` は CI で担保する。
 - 旧 Biome の base lint は oxlint へ吸収（`categories.correctness="error"` + style ルール移植: noParameterAssign→`no-param-reassign`、useSelfClosingElements→`react/self-closing-comp`、useNumberNamespace→`unicorn/prefer-number-properties`、noUselessElse→`no-else-return` ほか）。`noExplicitAny` は `typescript/no-explicit-any="error"` に統一。
 
-新規有効化（旧コメントアウト分）: `jsx-a11y`（oxlint native, error。当初 warn で導入し 2026-05 に error へ昇格）。
+新規有効化（旧コメントアウト分）: `jsx-a11y`（oxlint native, error）。
 
 移行できなかったもの（oxlint に等価なし）:
 - `@eslint-react` の react-x 固有ルール（type-aware で JS plugin 不可）: no-unused-props, naming-convention-ref-name, no-context-provider, ほか strict-type-checked 群。本コードベースでは warning 8 件相当の損失（error 損失は 0）。
-- `eslint-plugin-tailwindcss`: Tailwind v4（`tailwind.config.js` 無し）と非互換のため不採用。class 並べ替えは oxfmt `sortTailwindcss`（Tailwind v4 native）が担当。
+- `eslint-plugin-tailwindcss`: このプロジェクトのCSS-first設定（`tailwind.config.js` 無し）と非互換のため不採用。class 並べ替えは oxfmt `sortTailwindcss`が担当。
 - Biome 専用ルール `noUnusedTemplateLiteral` と `useSingleVarDeclarator`（oxlint に `one-var` 無し）は等価がなく削除（軽微なスタイル系のみ）。

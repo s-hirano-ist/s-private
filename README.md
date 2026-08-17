@@ -280,8 +280,8 @@ Schema location: `packages/database/prisma/schema.prisma`
 
 ### Prerequisites
 - [Node.js](https://nodejs.org/) — version pinned in [.nvmrc](.nvmrc), installed via [Mise](https://mise.jdx.dev/)
-- [pnpm](https://pnpm.io/) v11.0.9 (managed via Mise)
-- [Doppler CLI](https://docs.doppler.com/docs/install-cli) v3.76.0 (managed via Mise)
+- [pnpm](https://pnpm.io/) — version pinned in [.mise.toml](.mise.toml)
+- [Doppler CLI](https://docs.doppler.com/docs/install-cli) — version pinned in [.mise.toml](.mise.toml)
 - [Docker](https://www.docker.com/) (optional; for the VPS/embedding stack — MinIO, Cloudflare Tunnel)
 
 ### Initial Setup

@@ -27,7 +27,7 @@ pnpm pages:build
 
 This project uses [Mise](https://mise.jdx.dev/) for tool version management.
 
-- **Node.js** のバージョンは `.nvmrc` を Single Source of Truth とし、Mise は `.mise.toml` の `idiomatic_version_file_enable_tools = ["node"]` 設定によりこれを読み込みます。`package.json#engines.node` は Vercel と pnpm 用のミラーで、CI で `.nvmrc` との一致が検証されます。Vercel ダッシュボードの Node.js Version 設定も同じメジャー (24.x) に揃えてください。
+- **Node.js** のバージョンは `.nvmrc` を Single Source of Truth とし、Mise は `.mise.toml` の `idiomatic_version_file_enable_tools = ["node"]` 設定によりこれを読み込みます。`package.json#engines.node` は Vercel と pnpm 用のミラーで、CI で `.nvmrc` との一致が検証されます。Vercel ダッシュボードの Node.js Version 設定も `.nvmrc` と同じメジャーに揃えてください。
 - **pnpm / Doppler CLI** など他ツールのバージョンは `.mise.toml` の `[tools]` で定義されています。
 
 1. [Mise](https://mise.jdx.dev/getting-started.html) をインストール
@@ -97,9 +97,9 @@ CockroachDB Cloud Basic は接続プーリングが内蔵で、pooled / direct �
 
 - TLS は `sslmode=verify-full`。CockroachDB Cloud のサーバ証明書はパブリック CA のため Node.js の `rootCertificates` で検証できます。
 
-### CockroachDB v26.1+ の `schema_locked` とマイグレーション
+### CockroachDB の `schema_locked` とマイグレーション
 
-> ⚠️ **重要**: CockroachDB v26.1 以降は `sql.defaults.create_table_with_schema_locked = true` がデフォルトで、新規テーブルがロック状態で作られます。Prisma はマイグレーションファイル全体を **1トランザクション** で流すため、`CREATE TABLE` 直後の `CREATE INDEX` / `ALTER TABLE ADD FOREIGN KEY` が「table is locked」(`P3018` / SQLSTATE `57000`) で失敗します。
+> ⚠️ **重要**: `sql.defaults.create_table_with_schema_locked = true` の環境では、新規テーブルがロック状態で作られます。Prisma はマイグレーションファイル全体を **1トランザクション** で流すため、`CREATE TABLE` 直後の `CREATE INDEX` / `ALTER TABLE ADD FOREIGN KEY` が「table is locked」(`P3018` / SQLSTATE `57000`) で失敗します。
 
 対応: **マイグレーション SQL の各 `CREATE TABLE` に `WITH (schema_locked = false)` を付与**する（設定権限に依存せず確実）。初期 baseline (`0_init`) は対応済み。後述の diff フローで新規テーブルを追加するときも必ず付与してください（既存テーブルへの `ALTER` は、そのテーブルが unlocked で作られていれば不要）。
 
@@ -110,7 +110,7 @@ CockroachDB Cloud Basic は接続プーリングが内蔵で、pooled / direct �
 
 **ローカル開発はクラウドの dev-db クラスタに直結**します（ローカル DB は不要）。新しい migration は既存スキーマとの **diff フロー**で生成します:
 
-> ⚠️ **注意**: `prisma:migrate:diff` スクリプト（`prisma migrate diff --from-migrations ...`）は Prisma 7.8 ではマイグレーションを replay するために shadow database (`datasource.shadowDatabaseUrl`) を要求するため、そのままでは DB 接続なしには動きません。DB 接続なしで差分を生成するには、下記のように git HEAD のスキーマと現スキーマを `--from-schema` で直接比較してください。
+> ⚠️ **注意**: `prisma:migrate:diff` スクリプト（`prisma migrate diff --from-migrations ...`）はマイグレーションを replay するために shadow database (`datasource.shadowDatabaseUrl`) を要求するため、そのままでは DB 接続なしには動きません。DB 接続なしで差分を生成するには、下記のように git HEAD のスキーマと現スキーマを `--from-schema` で直接比較してください。
 
 1. `packages/database/prisma/schema.prisma` を編集
 2. 差分 SQL を生成（git HEAD のスキーマと現スキーマを比較。DB 接続不要）:

@@ -1,19 +1,5 @@
 # アーキテクチャ
 
-## バージョン要件
-
-本ドキュメントは **Next.js 16+** を前提としています（プロジェクト使用バージョン: 16.3.0）。
-
-| API | 導入バージョン | 備考 |
-|-----|--------------|------|
-| `unauthorized()` | Next.js 15.1 | 未認証エラー用（401） |
-| `cacheTag()` | Next.js 15.1 | キャッシュタグによる無効化制御 |
-| `cacheLife()` | Next.js 15.1 | 15.0では`unstable_cacheLife`として提供 |
-| `unstable_cache` | Next.js 14.0 | nonce CSPと両立するデータキャッシュに使用 |
-| `connection()` | Next.js 15.0 | 動的レンダリングのオプトイン |
-| `next/root-params` | Next.js 16.3 | ルートレイアウト以前の動的segmentを型付きgetterとして取得 |
-| `PageProps` / `LayoutProps` / `RouteContext` | Next.js 15.5+ | `next typegen`で生成するroute props型 |
-
 ## 目次
 - [クリーンアーキテクチャの構成](#クリーンアーキテクチャの構成)
 - [ドメインモデル](#ドメインモデル)
@@ -143,11 +129,10 @@ import { ArticlesStackLoader } from "@/loaders/articles";
 
 ### 自動依存関係管理（Renovate + Dependabot）
 - **役割分担**:
-  - **Renovate**: npm（pnpm）/ mise / nvm / 四半期の lockFileMaintenance。npm を Renovate が担当するのは、Dependabot のサポート上限が pnpm v10 で、本リポジトリの `packageManager`（pnpm@11）では npm ジョブが `does not support your pnpm version` で失敗するため（pnpm v11 サポートは未対応: dependabot/dependabot-core#14794）。
+  - **Renovate**: npm（pnpm）/ mise / nvm / lockFileMaintenance。
   - **Dependabot**: pnpm 非依存の github-actions / docker-compose。低リスク更新は `dependabot-auto-merge.yaml` で auto-merge。
-- **スケジュール**: Renovate は週次（月曜日11時（JST）前）、Dependabot は日次（09:00 JST）。
 - **脆弱性アラート**: セキュリティ問題の自動PR（`security`ラベル付き、Renovate）
-- **サプライチェーン保護**: パッチ/マイナーの最小リリース経過時間（cooldown）2日、グローバル最小24時間
+- **サプライチェーン保護**: 最小リリース経過時間（cooldown）を設定
 - **設定**: [.github/renovate.json5](../.github/renovate.json5) / [.github/dependabot.yml](../.github/dependabot.yml) を参照
 
 ### npm/pnpmセキュリティ設定
@@ -335,7 +320,7 @@ import { Link, redirect, useRouter } from "@/infrastructures/i18n/routing";
 
 ### 動的ルートレイアウトと生成型
 
-`app/[locale]/layout.tsx`をルートレイアウトとし、`app/layout.tsx`は置かない。これによりNext.js 16.3が生成する`next/root-params`の`locale()`をServer Componentとserver-side utilityから利用できる。Client Component、Server Action、Route Handlerではroot params getterを使用せず、それぞれの公開インターフェースからlocaleを受け取る。
+`app/[locale]/layout.tsx`をルートレイアウトとし、`app/layout.tsx`は置かない。これによりNext.jsが生成する`next/root-params`の`locale()`をServer Componentとserver-side utilityから利用できる。Client Component、Server Action、Route Handlerではroot params getterを使用せず、それぞれの公開インターフェースからlocaleを受け取る。
 
 localeの妥当性検証と翻訳メッセージの読み込みは`infrastructures/i18n/request.ts`に集約し、next-intlから明示されたlocale、middlewareのrequest locale、`next/root-params`の順で解決する。不正localeはdefault localeへ暗黙変換せず`notFound()`とする。ProxyはServer Component用navigationをmiddleware bundleへ混入させないよう`routing-config.ts`だけを参照する。locale配下の404は`app/[locale]/not-found.tsx`、どのlocaleルートにも一致しないURLは完全なHTML文書を返す`app/global-not-found.tsx`が担当する。global 404のlocaleは`NEXT_LOCALE` cookie、`Accept-Language`、`ja`の順で決定する。
 
@@ -351,7 +336,7 @@ routeファイルのprops型は手書きせず、次のNext.js生成型を唯一
 
 React Compilerは`reactCompiler: true`と`experimental.turbopackRustReactCompiler: true`でTurbopack内蔵のRust実装を使用する。WebpackなどTurbopack以外のビルド経路を追加する場合は、この設定とBabel版compilerの再導入を合わせて評価する。
 
-`output: "standalone"`はDocker等の自己ホストbuildでのみ有効化する。Vercel buildでは`VERCEL=1`を判定して無効化し、Next.js 16.3のdeployment adapterが直接生成するbuild outputsを使用する。adapter利用時は`next-server.js.nft.json`が意図的に生成されないため、standalone outputと併用しない。
+`output: "standalone"`はDocker等の自己ホストbuildでのみ有効化する。Vercel buildでは`VERCEL=1`を判定して無効化し、Next.jsのdeployment adapterが直接生成するbuild outputsを使用する。adapter利用時は`next-server.js.nft.json`が意図的に生成されないため、standalone outputと併用しない。
 
 ## Loader Pattern
 
@@ -533,7 +518,7 @@ LoaderとSuspense境界は、PPRではなくリクエスト時ストリーミン
 
 ## Dynamic Rendering
 
-Next.js 16での動的レンダリングの制御方法。
+Next.jsでの動的レンダリングの制御方法。
 
 ### 動的レンダリングのトリガー
 

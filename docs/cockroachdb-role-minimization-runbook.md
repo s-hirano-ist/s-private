@@ -171,10 +171,10 @@ REVOKE admin FROM "s-prod";
 
 ## 補足: schema_locked マイグレーション運用
 
-CockroachDB v26.1+ では新規 `CREATE TABLE` に `WITH (schema_locked = false)` を付与しないと `prisma migrate deploy` が `P3018` で失敗する。
+`schema_locked` がデフォルトで有効な環境では、新規 `CREATE TABLE` に `WITH (schema_locked = false)` を付与しないと `prisma migrate deploy` が `P3018` で失敗する。
 
 - `scripts/check-schema-locked.mjs`（`pnpm check:schema-locked`）がマイグレーション SQL の付与漏れを検査し、CI の `schema-locked` ジョブで実行。
-- 詳細は [docs/setup.md](setup.md) の「CockroachDB v26.1+ の schema_locked」。関連する `migrate dev` 制約は [issues/refactor-006-cockroachdb-migrate-dev-limitation.md](../issues/refactor-006-cockroachdb-migrate-dev-limitation.md)。
+- 詳細は [docs/setup.md](setup.md) の「CockroachDB の schema_locked」。関連する `migrate dev` 制約は [issues/refactor-006-cockroachdb-migrate-dev-limitation.md](../issues/refactor-006-cockroachdb-migrate-dev-limitation.md)。
 
 ## 補足: 見送り項目
 

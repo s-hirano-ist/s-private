@@ -1,6 +1,6 @@
 # VPS デプロイ手順
 
-ConoHa VPS (Ubuntu 24.04) + Docker + Cloudflare Tunnel の汎用デプロイ手順書。
+ConoHa VPS (Ubuntu) + Docker + Cloudflare Tunnel の汎用デプロイ手順書。
 VPS 上では全ポートを firewall で閉じ、Cloudflare Tunnel の outbound 接続のみで外部からアクセス可能にする。
 
 ## アーキテクチャ
