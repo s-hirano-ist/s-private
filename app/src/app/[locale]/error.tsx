@@ -1,5 +1,5 @@
 "use client"; // Error components must be Client Components
-import { Button } from "@s-hirano-ist/s-ui/ui/button";
+import { Button } from "@s-hirano-ist/s-ui/button";
 import { captureException } from "@sentry/nextjs";
 import { useEffect } from "react";
 

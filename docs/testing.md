@@ -3,13 +3,16 @@
 ## Commands
 
 - `pnpm test` - Run all Vitest test projects (app, components, core, image-processing, notification, scripts, search, storybook)
+- `pnpm storybook:ui:build` - Build the framework-agnostic React Vite Storybook
+- `pnpm storybook:ui:test` - Run every s-ui story interaction and a11y check in Chromium
+- `pnpm --filter @s-hirano-ist/s-ui test:consumer` - Build the published s-ui entries in a Vite React fixture
 - `pnpm test:watch` - Run Vitest in watch mode
 - `pnpm typecheck` - Run TypeScript type checking across all workspaces (`tsc --noEmit`)
 
 ## Vitest Workspace Configuration
 
 The project uses Vitest workspace to manage tests across multiple packages:
-- **Workspace Root**: `vitest.config.ts` defines test projects via `test.projects`: `app`, `components` (packages/ui), `core`, `image-processing`, `notification`, `scripts`, `search`, `storybook` (browser mode), plus benchmark projects `bench` and `app-bench`
+- **Workspace Root**: `vitest.config.ts` defines test projects via `test.projects`: `app`, `components` (packages/ui), `core`, `notification`, `search`, `storybook` (browser mode), plus benchmark projects `bench` and `app-bench`
 - **Individual Configs**: Each package has its own `vitest.config.ts` with specific settings
 - **Unified Execution**: Run all tests from the root with `pnpm test`
 
@@ -25,6 +28,8 @@ The project uses Vitest workspace to manage tests across multiple packages:
 - **Environment**: happy-dom for React component testing
 - **Config**: [packages/ui/vitest.config.ts](../packages/ui/vitest.config.ts)
 - **Setup**: [packages/ui/vitest-setup.tsx](../packages/ui/vitest-setup.tsx)
+- **Storybook**: `packages/ui/.storybook` uses `@storybook/react-vite` and has no Next.js mocks or providers
+- **Distribution checks**: tsup build, compiled CSS, Vite fixture, publint, and Are The Types Wrong
 
 ### packages/core
 - **Environment**: Node for domain logic testing
@@ -38,12 +43,10 @@ The project uses Vitest workspace to manage tests across multiple packages:
 ### packages/search
 - **Environment**: Node（root `vitest.config.ts` 内にインライン定義、専用ファイルなし）
 
-### packages/image-processing
-- **Environment**: Node（root `vitest.config.ts` 内にインライン定義、専用ファイルなし）
-
 ### storybook
 - **Environment**: Browser mode（Chromium via `@vitest/browser` + `@vitest/browser-playwright`）
 - **Setup**: [.storybook/vitest.setup.ts](../.storybook/vitest.setup.ts)
+- The root Storybook covers the Next.js application. The s-ui catalog is built separately with `pnpm storybook:ui:build`.
 
 ## Technologies
 

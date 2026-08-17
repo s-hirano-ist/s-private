@@ -1,7 +1,7 @@
 import type { Route } from "next";
+import { StatusCodeView } from "@/components/common/display/status/status-code-view";
 import { Link } from "@/infrastructures/i18n/routing";
-import { StatusCodeView } from "@s-hirano-ist/s-ui/display/status/status-code-view";
-import { buttonVariants } from "@s-hirano-ist/s-ui/ui/button";
+import { buttonVariants } from "@s-hirano-ist/s-ui/button";
 import { getTranslations } from "next-intl/server";
 import { connection } from "next/server";
 

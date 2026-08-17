@@ -2,7 +2,7 @@ import { loadMoreExportedBooks } from "@/application-services/books/load-more-bo
 import { ErrorBoundary } from "@/components/common/layouts/error-boundary";
 import { BooksCounterLoader } from "@/loaders/books/books-counter-loader";
 import { BooksStackLoader } from "@/loaders/books/books-stack-loader";
-import Loading from "@s-hirano-ist/s-ui/display/loading";
+import { LoadingIndicator as Loading } from "@s-hirano-ist/s-ui/loading-indicator";
 import { Suspense } from "react";
 
 export default async function Page() {

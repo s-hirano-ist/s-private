@@ -2,7 +2,7 @@
 // Next.js global-error requires this import pattern - Error type shadows built-in but is necessary for the error boundary interface
 // oxlint-disable-next-line no-shadow-restricted-names
 import type Error from "next/error";
-import { Button } from "@s-hirano-ist/s-ui/ui/button";
+import { Button } from "@s-hirano-ist/s-ui/button";
 import { captureException } from "@sentry/nextjs";
 import { useEffect } from "react";
 

@@ -1,13 +1,13 @@
 "use client";
 import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
+import { StatusCodeView } from "@/components/common/display/status/status-code-view";
 import { useSearch } from "@/components/common/hooks/use-search";
 import { LinkCard } from "@/components/common/layouts/cards/link-card";
 import { UtilButtons } from "@/components/common/layouts/nav/util-buttons";
 import { authClient } from "@/infrastructures/auth/auth-client";
-import Loading from "@s-hirano-ist/s-ui/display/loading";
-import { StatusCodeView } from "@s-hirano-ist/s-ui/display/status/status-code-view";
-import { Button } from "@s-hirano-ist/s-ui/ui/button";
-import { Input } from "@s-hirano-ist/s-ui/ui/input";
+import { Button } from "@s-hirano-ist/s-ui/button";
+import { Input } from "@s-hirano-ist/s-ui/input";
+import { LoadingIndicator as Loading } from "@s-hirano-ist/s-ui/loading-indicator";
 import { haptic } from "@s-hirano-ist/s-ui/utils/haptic";
 import { SearchIcon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";

@@ -1,115 +1,165 @@
 {
 	"name": "@s-hirano-ist/s-ui",
-	"version": "1.19.14",
-	"description": "UI component library for s-private application",
+	"version": "2.0.0",
+	"description": "Framework-agnostic React 19 design system",
 	"type": "module",
-	"main": "./dist/index.js",
-	"types": "./dist/index.d.ts",
 	"exports": {
-		".": {
-			"types": "./index.ts",
-			"default": "./index.ts"
+		"./badge": {
+			"types": "./dist/badge.d.ts",
+			"import": "./dist/badge.js"
 		},
-		"./ui/*": "./ui/*.tsx",
-		"./forms/*": "./forms/**/*.tsx",
-		"./display/*": "./display/**/*.tsx",
-		"./layouts/*": "./layouts/**/*.tsx",
-		"./hooks/*": "./hooks/*.ts",
-		"./utils/*": "./utils/*.ts",
-		"./dev/*": "./dev/*.tsx",
-		"./globals.css": {
-			"style": "./globals.css",
-			"default": "./globals.css"
+		"./button": {
+			"types": "./dist/button.d.ts",
+			"import": "./dist/button.js"
 		},
-		"./theme.css": {
-			"style": "./theme.css",
-			"default": "./theme.css"
-		}
-	},
-	"publishConfig": {
-		"access": "public",
-		"exports": {
-			".": {
-				"types": "./dist/index.d.ts",
-				"default": "./dist/index.js"
-			},
-			"./ui/*": {
-				"types": "./dist/ui/*.d.ts",
-				"default": "./dist/ui/*.js"
-			},
-			"./forms/*": {
-				"types": "./dist/forms/*.d.ts",
-				"default": "./dist/forms/*.js"
-			},
-			"./display/*": {
-				"types": "./dist/display/*.d.ts",
-				"default": "./dist/display/*.js"
-			},
-			"./layouts/*": {
-				"types": "./dist/layouts/*.d.ts",
-				"default": "./dist/layouts/*.js"
-			},
-			"./hooks/*": {
-				"types": "./dist/hooks/*.d.ts",
-				"default": "./dist/hooks/*.js"
-			},
-			"./utils/*": {
-				"types": "./dist/utils/*.d.ts",
-				"default": "./dist/utils/*.js"
-			},
-			"./dev/*": {
-				"types": "./dist/dev/*.d.ts",
-				"default": "./dist/dev/*.js"
-			},
-			"./globals.css": {
-				"style": "./globals.css",
-				"default": "./globals.css"
-			},
-			"./theme.css": {
-				"style": "./theme.css",
-				"default": "./theme.css"
-			}
+		"./card": {
+			"types": "./dist/card.d.ts",
+			"import": "./dist/card.js"
 		},
-		"main": "./dist/index.js",
-		"types": "./dist/index.d.ts"
+		"./combobox-field": {
+			"types": "./dist/combobox-field.d.ts",
+			"import": "./dist/combobox-field.js"
+		},
+		"./dialog": {
+			"types": "./dist/dialog.d.ts",
+			"import": "./dist/dialog.js"
+		},
+		"./drawer": {
+			"types": "./dist/drawer.d.ts",
+			"import": "./dist/drawer.js"
+		},
+		"./dropdown-menu": {
+			"types": "./dist/dropdown-menu.d.ts",
+			"import": "./dist/dropdown-menu.js"
+		},
+		"./empty-state": {
+			"types": "./dist/empty-state.d.ts",
+			"import": "./dist/empty-state.js"
+		},
+		"./field": {
+			"types": "./dist/field.d.ts",
+			"import": "./dist/field.js"
+		},
+		"./input": {
+			"types": "./dist/input.d.ts",
+			"import": "./dist/input.js"
+		},
+		"./label": {
+			"types": "./dist/label.d.ts",
+			"import": "./dist/label.js"
+		},
+		"./loading-indicator": {
+			"types": "./dist/loading-indicator.d.ts",
+			"import": "./dist/loading-indicator.js"
+		},
+		"./pagination": {
+			"types": "./dist/pagination.d.ts",
+			"import": "./dist/pagination.js"
+		},
+		"./popover": {
+			"types": "./dist/popover.d.ts",
+			"import": "./dist/popover.js"
+		},
+		"./rating": {
+			"types": "./dist/rating.d.ts",
+			"import": "./dist/rating.js"
+		},
+		"./slider": {
+			"types": "./dist/slider.d.ts",
+			"import": "./dist/slider.js"
+		},
+		"./stat": {
+			"types": "./dist/stat.d.ts",
+			"import": "./dist/stat.js"
+		},
+		"./tabs": {
+			"types": "./dist/tabs.d.ts",
+			"import": "./dist/tabs.js"
+		},
+		"./textarea": {
+			"types": "./dist/textarea.d.ts",
+			"import": "./dist/textarea.js"
+		},
+		"./toast": {
+			"types": "./dist/toast.d.ts",
+			"import": "./dist/toast.js"
+		},
+		"./hooks/use-infinite-scroll": {
+			"types": "./dist/hooks/use-infinite-scroll.d.ts",
+			"import": "./dist/hooks/use-infinite-scroll.js"
+		},
+		"./utils/cn": {
+			"types": "./dist/utils/cn.d.ts",
+			"import": "./dist/utils/cn.js"
+		},
+		"./utils/haptic": {
+			"types": "./dist/utils/haptic.d.ts",
+			"import": "./dist/utils/haptic.js"
+		},
+		"./styles.css": "./dist/styles.css",
+		"./package.json": "./package.json"
 	},
 	"files": [
-		"dist",
-		"globals.css",
-		"theme.css",
+		"dist/**/*.js",
+		"dist/**/*.d.ts",
+		"dist/styles.css",
 		"README.md",
 		"LICENSE"
 	],
+	"sideEffects": [
+		"./dist/styles.css"
+	],
 	"scripts": {
-		"build": "tsc",
-		"prepublishOnly": "pnpm run build",
+		"build": "pnpm run build:js && pnpm run build:css",
+		"build:js": "tsup",
+		"build:css": "tailwindcss -i src/styles.css -o dist/styles.css --minify",
+		"dev": "pnpm run build:css && tsup --watch",
 		"clean": "rm -rf dist",
-		"typecheck": "tsc --noEmit"
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run",
+		"test:consumer": "tsc -p fixtures/vite/tsconfig.json --noEmit && vite build fixtures/vite",
+		"validate:package": "publint && npm_config_cache=/tmp/s-ui-npm-cache attw --pack . --profile esm-only --exclude-entrypoints ./styles.css ./package.json"
 	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/s-hirano-ist/s-private.git",
-		"directory": "packages/ui"
+	"peerDependencies": {
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0"
 	},
-	"license": "MIT",
 	"dependencies": {
-		"@tailwindcss/typography": "0.5.20",
-		"lucide-react": "1.31.0",
-		"react": "19.2.8",
-		"react-dom": "19.2.8",
-		"react-markdown": "10.1.0",
-		"react-syntax-highlighter": "16.1.1",
-		"remark-gfm": "4.0.1",
 		"@base-ui/react": "1.7.0",
+		"clsx": "2.1.1",
+		"lucide-react": "1.31.0",
 		"tailwind-merge": "3.6.0",
 		"tailwind-variants": "3.3.1"
 	},
 	"devDependencies": {
-		"@storybook/nextjs-vite": "10.5.8",
+		"@arethetypeswrong/cli": "0.18.2",
+		"@storybook/react-vite": "10.5.8",
+		"@tailwindcss/cli": "4.3.3",
+		"@tailwindcss/postcss": "4.3.3",
 		"@types/react": "19.2.18",
 		"@types/react-dom": "19.2.4",
-		"@types/react-syntax-highlighter": "15.5.13",
+		"publint": "0.3.18",
 		"postcss": "8.5.26",
-		"typescript": "6.0.3"
+		"react": "19.2.8",
+		"react-dom": "19.2.8",
+		"tsup": "8.5.0",
+		"typescript": "6.0.3",
+		"vite": "7.3.6"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/s-hirano-ist/s-private.git",
+		"directory": "packages/ui"
+	},
+	"keywords": [
+		"react",
+		"design-system",
+		"components",
+		"ui"
+	],
+	"author": "s-hirano-ist",
+	"license": "MIT",
+	"publishConfig": {
+		"access": "public"
 	}
 }

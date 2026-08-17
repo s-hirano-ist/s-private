@@ -2,7 +2,6 @@
 	"compilerOptions": {
 		"paths": {
 			"@/*": ["./app/src/*"],
-			"@s-hirano-ist/s-ui/*": ["./packages/ui/*"],
 			"@s-hirano-ist/s-core/*": ["./packages/core/*"]
 		},
 		"skipLibCheck": true,

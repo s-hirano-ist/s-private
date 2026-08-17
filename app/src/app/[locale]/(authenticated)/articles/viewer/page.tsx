@@ -2,7 +2,7 @@ import { loadMoreExportedArticles } from "@/application-services/articles/load-m
 import { ErrorBoundary } from "@/components/common/layouts/error-boundary";
 import { ArticlesCounterLoader } from "@/loaders/articles/articles-counter-loader";
 import { ArticlesStackLoader } from "@/loaders/articles/articles-stack-loader";
-import Loading from "@s-hirano-ist/s-ui/display/loading";
+import { LoadingIndicator as Loading } from "@s-hirano-ist/s-ui/loading-indicator";
 import { Suspense } from "react";
 
 export default async function Page() {

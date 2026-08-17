@@ -6,7 +6,7 @@ import {
 	DrawerContent,
 	DrawerHeader,
 	DrawerTitle,
-} from "@s-hirano-ist/s-ui/ui/drawer";
+} from "@s-hirano-ist/s-ui/drawer";
 
 type Props = {
 	onOpenChange: (open: boolean) => void;

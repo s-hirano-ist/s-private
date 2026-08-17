@@ -1,57 +1,5 @@
 import type { Config } from "tailwindcss";
 
-const config = {
-	content: [
-		"./pages/**/*.{ts,tsx}",
-		"./components/**/*.{ts,tsx}",
-		"./app/**/*.{ts,tsx}",
-		"./src/**/*.{ts,tsx}",
-		"../packages/ui/**/*.{ts,tsx}",
-	],
-	prefix: "",
-	theme: {
-		container: {
-			center: true,
-			padding: "2rem",
-			screens: {
-				"2xl": "1400px",
-			},
-		},
-		extend: {
-			typography: () => ({
-				DEFAULT: {
-					css: { a: { wordBreak: "break-all", overflowWrap: "break-word" } },
-				},
-			}),
-			colors: {
-				background: "rgb(var(--background))",
-				foreground: "rgb(var(--foreground))",
-				primary: {
-					DEFAULT: "rgb(var(--primary))",
-					grad: "rgb(var(--primary) / 0.8)",
-					foreground: "rgb(var(--primary-foreground))",
-				},
-				destructive: {
-					DEFAULT: "rgb(var(--destructive))",
-				},
-				muted: {
-					DEFAULT: "rgb(var(--muted))",
-					foreground: "rgb(var(--muted-foreground))",
-				},
-			},
-			borderRadius: {
-				lg: "var(--radius)",
-				md: "calc(var(--radius) - 2px)",
-				sm: "calc(var(--radius) - 4px)",
-			},
-			keyframes: {
-				"bg-position": {
-					"0%": { backgroundPosition: "0% 50%" },
-					"100%": { backgroundPosition: "100% 50%" },
-				},
-			},
-		},
-	},
+export default {
+	content: ["./src/**/*.{ts,tsx}"],
 } satisfies Config;
-
-export default config;

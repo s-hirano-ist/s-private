@@ -34,6 +34,9 @@
 		"pino": "10.3.1",
 		"react": "19.2.8",
 		"react-dom": "19.2.8",
+		"react-markdown": "10.1.0",
+		"react-syntax-highlighter": "16.1.1",
+		"remark-gfm": "4.0.1",
 		"server-only": "0.0.1",
 		"yet-another-react-lightbox": "3.32.2",
 		"zod": "4.4.3"

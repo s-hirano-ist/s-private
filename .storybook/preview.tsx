@@ -1,11 +1,11 @@
 import type { Preview } from "@storybook/nextjs-vite";
+import { ToastProvider } from "@s-hirano-ist/s-ui/toast";
+import "../app/src/app/globals.css";
 import { withThemeByClassName } from "@storybook/addon-themes";
-import "../packages/ui/globals.css";
 import { MINIMAL_VIEWPORTS } from "storybook/viewport";
 import enMessages from "../app/messages/en.json";
 import jaMessages from "../app/messages/ja.json";
 import { ThemeProvider } from "../app/src/providers/theme-provider";
-import { Toaster } from "../packages/ui/ui/toast";
 
 const messages = { en: enMessages, ja: jaMessages };
 const STORYBOOK_CSP_NONCE = "storybook-csp-nonce";
@@ -32,10 +32,11 @@ const preview = {
 					enableSystem={false}
 					nonce={STORYBOOK_CSP_NONCE}
 				>
-					<Toaster />
-					<div className="w-96">
-						<Story />
-					</div>
+					<ToastProvider>
+						<div className="w-96">
+							<Story />
+						</div>
+					</ToastProvider>
 				</ThemeProvider>
 			);
 		},

@@ -3,7 +3,7 @@ import { deleteImage } from "@/application-services/images/delete-image";
 import { ErrorBoundary } from "@/components/common/layouts/error-boundary";
 import { ImageFormLoader } from "@/loaders/images/image-form-loader";
 import { ImagesStackLoader } from "@/loaders/images/images-stack-loader";
-import Loading from "@s-hirano-ist/s-ui/display/loading";
+import { LoadingIndicator as Loading } from "@s-hirano-ist/s-ui/loading-indicator";
 import { Suspense } from "react";
 
 export default async function Page({

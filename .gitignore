@@ -15,6 +15,8 @@ debug.log
 
 # Storybook
 .storybook-static
+.storybook-ui-static
+packages/ui/*.tgz
 *storybook.log
 
 # Testing

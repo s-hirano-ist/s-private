@@ -9,7 +9,7 @@ import {
 	CardContent,
 	CardDescription,
 	CardTitle,
-} from "@s-hirano-ist/s-ui/ui/card";
+} from "@s-hirano-ist/s-ui/card";
 
 type Props = {
 	actions?: ReactNode;

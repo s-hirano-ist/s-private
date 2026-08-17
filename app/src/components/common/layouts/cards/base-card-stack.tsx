@@ -1,10 +1,10 @@
 "use client";
 import type { CardStackInitialData } from "./types";
 import type { DeleteAction, LoadMoreAction } from "@/common/types";
-import { ProfilerWrapper } from "@s-hirano-ist/s-ui/dev/profiler-wrapper";
-import Loading from "@s-hirano-ist/s-ui/display/loading";
-import { StatusCodeView } from "@s-hirano-ist/s-ui/display/status/status-code-view";
+import { ProfilerWrapper } from "@/components/common/dev/profiler-wrapper";
+import { StatusCodeView } from "@/components/common/display/status/status-code-view";
 import { useInfiniteScroll } from "@s-hirano-ist/s-ui/hooks/use-infinite-scroll";
+import { LoadingIndicator as Loading } from "@s-hirano-ist/s-ui/loading-indicator";
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 

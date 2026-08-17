@@ -40,6 +40,9 @@
 		"knip": "knip",
 		"storybook": "storybook dev -p 6006",
 		"storybook:build": "storybook build -o .storybook-static",
+		"storybook:ui": "storybook dev -c packages/ui/.storybook -p 6007",
+		"storybook:ui:build": "storybook build -c packages/ui/.storybook -o .storybook-ui-static",
+		"storybook:ui:test": "vitest run --config vitest.ui-storybook.config.ts",
 		"ui-gallery:build": "node scripts/build-ui-gallery.mjs",
 		"pages:build": "pnpm docs:build && pnpm storybook:build && pnpm ui-gallery:build",
 		"deps:check": "depcruise app/src packages/ui packages/core packages/notification --config .dependency-cruiser.cjs",
@@ -62,6 +65,7 @@
 		"next-intl": "4.13.6"
 	},
 	"devDependencies": {
+		"@s-hirano-ist/s-ui": "workspace:*",
 		"@chromatic-com/storybook": "5.3.0",
 		"@playwright/test": "1.62.1",
 		"@storybook/addon-a11y": "10.5.8",

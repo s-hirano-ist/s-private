@@ -1,9 +1,9 @@
 "use client";
 import type { ServerAction } from "@/common/types";
-import { FormFileInput } from "@s-hirano-ist/s-ui/forms/fields/form-file-input";
-import { FormInput } from "@s-hirano-ist/s-ui/forms/fields/form-input";
-import { GenericFormWrapper } from "@s-hirano-ist/s-ui/forms/generic-form-wrapper";
-import { toast } from "@s-hirano-ist/s-ui/ui/toast";
+import { FormFileInput } from "@/components/common/forms/fields/form-file-input";
+import { FormInput } from "@/components/common/forms/fields/form-input";
+import { GenericFormWrapper } from "@/components/common/forms/generic-form-wrapper";
+import { useToast } from "@s-hirano-ist/s-ui/toast";
 import { useTranslations } from "next-intl";
 
 type Props = {
@@ -11,11 +11,12 @@ type Props = {
 };
 
 export function BooksForm({ addBooks }: Props) {
+	const toast = useToast();
 	const label = useTranslations("label");
 	const message = useTranslations("message");
 
 	const afterSubmit = (responseMessage: string) => {
-		toast(message(responseMessage));
+		toast.show(message(responseMessage));
 	};
 
 	return (

@@ -19,7 +19,7 @@
 モノレポの各ワークスペースごとにエントリーポイントと除外設定を定義:
 
 - **app**: Next.jsの規約ファイル（`page.tsx`, `layout.tsx`, `route.ts`, `instrumentation.ts`等）をエントリーポイントとして自動認識。`i18n/request.ts`等の内部ファイルはignore対象
-- **packages/ui**: `ui/`, `forms/`, `display/`, `layouts/`, `providers/`, `hooks/`, `utils/`配下のファイルがエントリーポイント。Storybookファイル・テストファイルは除外
+- **packages/ui**: `src/`配下の明示的な公開エントリーが対象。Storybook・テスト・Vite consumer fixtureは解析対象を分離する
 - **packages/core**: 全`.ts`ファイルがエントリーポイント（テストファイルは除外）
 - **packages/database**: Prisma関連の依存関係をignore
 

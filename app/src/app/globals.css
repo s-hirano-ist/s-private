@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "../../../packages/ui/theme.css";
+@import "@s-hirano-ist/s-ui/styles.css";
 
 @config "../../tailwind.config.ts";
 

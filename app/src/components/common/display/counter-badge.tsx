@@ -1,4 +1,4 @@
-import { Badge } from "@s-hirano-ist/s-ui/ui/badge";
+import { Badge } from "@s-hirano-ist/s-ui/badge";
 import { useTranslations } from "next-intl";
 
 type Props = { label: string; totalItems: number };

@@ -18,7 +18,6 @@
 		],
 		"paths": {
 			"@/*": ["./src/*"],
-			"@s-hirano-ist/s-ui/*": ["../packages/ui/*"],
 			"@s-hirano-ist/s-core/*": ["../packages/core/*"]
 		},
 		"module": "esnext",

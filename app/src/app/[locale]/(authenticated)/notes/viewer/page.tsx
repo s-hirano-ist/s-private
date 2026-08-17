@@ -2,7 +2,7 @@ import { loadMoreExportedNotes } from "@/application-services/notes/load-more-no
 import { ErrorBoundary } from "@/components/common/layouts/error-boundary";
 import { NotesCounterLoader } from "@/loaders/notes/notes-counter-loader";
 import { NotesStackLoader } from "@/loaders/notes/notes-stack-loader";
-import Loading from "@s-hirano-ist/s-ui/display/loading";
+import { LoadingIndicator as Loading } from "@s-hirano-ist/s-ui/loading-indicator";
 import { Suspense } from "react";
 
 export default async function Page() {

@@ -93,8 +93,10 @@
 		"**/node_modules/**/*",
 		"**/.next/**/*",
 		"**/.storybook-static/**/*",
+		".storybook-ui-static/**/*",
 		"**/.vitest-coverage/**/*",
 		"**/dist/**/*",
+		"**/*.d.ts",
 		"**/next-env.d.ts",
 		"docs/**/*",
 		"e2e/**/*"

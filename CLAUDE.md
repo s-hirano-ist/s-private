@@ -36,7 +36,7 @@ Next.js + TypeScript + Clean Architectureベースのコンテンツ管理シス
 ## ディレクトリ構造
 
 - `packages/core/` - ドメイン層（entities, repositories, services, shared-kernel）
-- `packages/ui/` - 共有UIコンポーネント（shadcn/ui, forms, hooks等）
+- `packages/ui/` - React 19汎用デザインシステム（Next.js・アプリ固有ロジック禁止、明示的subpath exports）
 - `packages/database/` - データベース層（Prisma ORM・マイグレーション）
 - `packages/notification/` - 通知サービス（Pushover）
 - `packages/storage/` - MinIOストレージクライアント

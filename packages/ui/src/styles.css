@@ -1,0 +1,70 @@
+@import "tailwindcss/theme.css" layer(sui-theme) prefix(sui);
+@import "tailwindcss/utilities.css" layer(sui-utilities) prefix(sui);
+
+@source "./**/*.{ts,tsx}";
+
+@custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
+
+@theme inline {
+	--color-background: rgb(var(--sui-background));
+	--color-foreground: rgb(var(--sui-foreground));
+	--color-primary: rgb(var(--sui-primary));
+	--color-primary-grad: rgb(var(--sui-primary) / 0.8);
+	--color-primary-foreground: rgb(var(--sui-primary-foreground));
+	--color-muted: rgb(var(--sui-muted));
+	--color-muted-foreground: rgb(var(--sui-muted-foreground));
+	--color-destructive: rgb(var(--sui-destructive));
+	--radius-lg: var(--sui-radius);
+	--radius-md: calc(var(--sui-radius) - 2px);
+	--radius-sm: calc(var(--sui-radius) - 4px);
+}
+
+@layer sui-theme {
+	:root {
+		--sui-background: 255 255 255;
+		--sui-foreground: 27 27 27;
+		--sui-primary: 64 118 162;
+		--sui-primary-foreground: 255 255 255;
+		--sui-muted: 233 233 233;
+		--sui-muted-foreground: 93 93 93;
+		--sui-destructive: 178 45 53;
+		--sui-radius: 0.5rem;
+	}
+
+	.dark,
+	[data-theme="dark"] {
+		--sui-background: 27 27 27;
+		--sui-foreground: 255 255 255;
+		--sui-primary: 114 165 211;
+		--sui-primary-foreground: 27 27 27;
+		--sui-muted: 43 43 43;
+		--sui-muted-foreground: 155 155 155;
+		--sui-destructive: 234 96 95;
+	}
+}
+
+@keyframes sui-loading-dot {
+	0%,
+	80%,
+	100% {
+		opacity: 0.3;
+		transform: scale(0.8);
+	}
+
+	40% {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+@keyframes sui-enter {
+	from {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
