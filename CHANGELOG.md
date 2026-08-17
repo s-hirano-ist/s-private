@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.12.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.11.6...s-private-v3.12.0) (2026-08-17)
+
+
+### Features
+
+* **scripts:** replace dprint with oxfmt content formatter ([ba328cf](https://github.com/s-hirano-ist/s-private/commit/ba328cf134a9a143ffde0a25cf3c54b8b84848cf))
+* **scripts:** replace dprint with oxfmt content formatter ([524a490](https://github.com/s-hirano-ist/s-private/commit/524a490debf6a93aa021fa967700d578fb83a808))
+
 ## [3.11.6](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.11.5...s-private-v3.11.6) (2026-08-17)
 
 
