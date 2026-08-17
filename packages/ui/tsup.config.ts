@@ -1,6 +1,6 @@
 import { defineConfig } from "tsup";
 
-export default defineConfig({
+export default defineConfig((options) => ({
 	entry: [
 		"src/*.tsx",
 		"src/hooks/*.ts",
@@ -13,7 +13,10 @@ export default defineConfig({
 	target: "es2022",
 	dts: true,
 	sourcemap: true,
-	clean: true,
+
+	// watch 起動時は dist を消さない
+	clean: !options.watch,
+
 	splitting: true,
 	external: ["react", "react-dom", /^lucide-react\//u, /^@base-ui\/react\//u],
-});
+}));

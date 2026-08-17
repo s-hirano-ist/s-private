@@ -5,9 +5,6 @@ packages:
 
 savePrefix: ''
 
-overrides:
-  '@arethetypeswrong/core>fflate': 0.8.3
-
 allowBuilds:
   '@parcel/watcher': true
   '@prisma/engines': true
