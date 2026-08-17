@@ -10,15 +10,10 @@
 			"types": "./index.ts",
 			"default": "./index.ts"
 		},
-		"./next": {
-			"types": "./next.ts",
-			"default": "./next.ts"
-		},
 		"./ui/*": "./ui/*.tsx",
 		"./forms/*": "./forms/**/*.tsx",
 		"./display/*": "./display/**/*.tsx",
 		"./layouts/*": "./layouts/**/*.tsx",
-		"./providers/*": "./providers/*.tsx",
 		"./hooks/*": "./hooks/*.ts",
 		"./utils/*": "./utils/*.ts",
 		"./dev/*": "./dev/*.tsx",
@@ -38,10 +33,6 @@
 				"types": "./dist/index.d.ts",
 				"default": "./dist/index.js"
 			},
-			"./next": {
-				"types": "./dist/next.d.ts",
-				"default": "./dist/next.js"
-			},
 			"./ui/*": {
 				"types": "./dist/ui/*.d.ts",
 				"default": "./dist/ui/*.js"
@@ -57,10 +48,6 @@
 			"./layouts/*": {
 				"types": "./dist/layouts/*.d.ts",
 				"default": "./dist/layouts/*.js"
-			},
-			"./providers/*": {
-				"types": "./dist/providers/*.d.ts",
-				"default": "./dist/providers/*.js"
 			},
 			"./hooks/*": {
 				"types": "./dist/hooks/*.d.ts",

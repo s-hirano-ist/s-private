@@ -3,7 +3,7 @@
 	"ignoreExportsUsedInFile": true,
 	"ignore": ["e2e/**/*"],
 	"ignoreDependencies": ["@secretlint/secretlint-rule-preset-recommend"],
-	"ignoreBinaries": [],
+	"ignoreBinaries": ["vercel"],
 	"workspaces": {
 		"app": {
 			"ignore": ["src/infrastructures/i18n/request.ts"],
@@ -35,13 +35,11 @@
 			}
 		},
 		"packages/ui": {
-			"ignore": ["dist/**"],
 			"entry": [
 				"ui/**/*.tsx",
 				"forms/**/*.tsx",
 				"display/**/*.tsx",
 				"layouts/**/*.tsx",
-				"providers/**/*.tsx",
 				"hooks/**/*.ts",
 				"utils/**/*.ts"
 			],
