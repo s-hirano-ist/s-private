@@ -5,9 +5,8 @@ import { notFound } from "next/navigation";
 import { locale as rootLocale } from "next/root-params";
 import { routing } from "./routing-config";
 
-export default getRequestConfig(async ({ locale, requestLocale }) => {
-	const resolvedLocale =
-		locale ?? (await requestLocale) ?? (await rootLocale());
+export default getRequestConfig(async ({ locale }) => {
+	const resolvedLocale = locale ?? (await rootLocale());
 
 	// Ensure that a valid locale is used
 	if (!resolvedLocale || !hasLocale(routing.locales, resolvedLocale)) {
