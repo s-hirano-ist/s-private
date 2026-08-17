@@ -58,7 +58,7 @@
 		"test:mutation": "stryker run",
 		"test:mutation:core": "stryker run stryker.config.json",
 		"preinstall": "npx only-allow pnpm",
-		"prepare": "husky"
+		"prepare": "pnpm --filter @s-hirano-ist/s-ui build && husky"
 	},
 	"dependencies": {
 		"next": "16.3.1",
