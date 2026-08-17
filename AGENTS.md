@@ -22,6 +22,7 @@ Next.js + TypeScript + Clean Architectureベースのコンテンツ管理シス
 
 - `pnpm dev` - 開発サーバー
 - `pnpm build` - ビルド
+- `pnpm check:agent` - AIエージェント向けの標準完了検証（format、typecheck、lint、依存境界、packages build、test）
 - `pnpm test` - テスト実行
 - `pnpm lint` - oxlint（TypeScript/JavaScript、type-aware）+ ESLint（YAML/JSON）
 - `pnpm lint:fix` - oxlint + ESLint自動修正
@@ -32,6 +33,13 @@ Next.js + TypeScript + Clean Architectureベースのコンテンツ管理シス
 - `pnpm --filter s-database prisma:migrate:diff` - 新規マイグレーションSQL生成（既存マイグレーション群とschema.prismaのdiff。ルートにスクリプトは無く packages/database にのみ存在。`--from-migrations` はシャドウDBを必要とする。`migrate dev` はクラウドの `crdb_internal_region` drift で失敗するため不使用）
 - `pnpm prisma:deploy` - マイグレーション適用（クラウドはこちらを使う）
 - `pnpm storybook` - Storybook起動
+
+## AIエージェントの完了検証
+
+- コードを変更したタスクでは、完了を報告する前に `pnpm check:agent` を成功させること。
+- アプリのビルド、環境設定、データベース、E2Eに関係する変更では、`pnpm check:agent` に加えて変更内容に対応する `pnpm build`、Prisma、Playwright等の検証も実行すること。
+- 長時間タスクで自動的に実装・検証・修正を反復する場合だけ Codex の `/goal` を使い、目的、変更範囲、検証コマンド、停止条件を明記すること。
+- 外部承認や外部サービス障害で検証できない場合は無限に再試行せず、実行済みの検証とブロッカーを報告すること。
 
 ## ディレクトリ構造
 

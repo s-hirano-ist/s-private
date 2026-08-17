@@ -2,12 +2,36 @@
 
 ## Commands
 
+- `pnpm check:agent` - Run the standard completion checks for AI-authored changes
 - `pnpm test` - Run all Vitest test projects (app, components, core, image-processing, notification, scripts, search, storybook)
 - `pnpm storybook:ui:build` - Build the framework-agnostic React Vite Storybook
 - `pnpm storybook:ui:test` - Run every s-ui story interaction and a11y check in Chromium
 - `pnpm --filter @s-hirano-ist/s-ui test:consumer` - Build the published s-ui entries in a Vite React fixture
 - `pnpm test:watch` - Run Vitest in watch mode
 - `pnpm typecheck` - Run TypeScript type checking across all workspaces (`tsc --noEmit`)
+
+## AI Agent Completion Checks
+
+`pnpm check:agent` is the standard completion gate for code changes made by an AI agent. It fails fast and runs the following checks in order:
+
+1. Formatting check
+2. Type checking with environment validation skipped
+3. Type-aware linting with environment validation skipped
+4. Clean Architecture dependency checks
+5. Workspace package builds required by the test suite
+6. All Vitest projects, including Storybook browser tests
+
+Install dependencies with `pnpm install --frozen-lockfile` before running the command. Add checks that are specific to the change when necessary. For example, run `pnpm build` for application build or environment configuration changes, Prisma checks for database changes, and Playwright tests for E2E behavior.
+
+### Long-running Codex tasks
+
+Use Codex Goal mode only for work that benefits from repeated implementation, verification, and repair. A goal must state the outcome, constraints, verification commands, and a verifiable stopping condition. See the official [Follow a goal](https://learn.chatgpt.com/use-cases/follow-goals) and [Long-running work](https://learn.chatgpt.com/docs/long-running-work) guidance.
+
+```text
+/goal Complete <objective> within <allowed scope>. Read AGENTS.md and the relevant docs first. After making changes, run pnpm check:agent and fix every failure. Run <additional checks> when required by the changed subsystem. Stop only when all required checks pass, the final diff has been reviewed, and no requested work remains. If progress requires external approval or an unavailable external service, stop retrying and report the completed checks and exact blocker.
+```
+
+Normal investigations, planning tasks, and small one-turn changes do not need Goal mode.
 
 ## Vitest Workspace Configuration
 

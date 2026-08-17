@@ -22,6 +22,7 @@
 		"lint:md:fix": "markdownlint-cli2 \"**/*.md\" --fix",
 		"lint:secret": "secretlint --maskSecrets \"**/*\"",
 		"check:fix": "pnpm format && pnpm lint:fix && pnpm lint:css:fix && pnpm lint:md:fix",
+		"check:agent": "pnpm format:check && SKIP_ENV_VALIDATION=true pnpm typecheck && SKIP_ENV_VALIDATION=true pnpm lint && pnpm deps:check && pnpm --filter \"./packages/*\" build && pnpm test",
 		"bench": "vitest bench --project bench",
 		"bench:components": "vitest bench --project app-bench",
 		"bench:all": "vitest bench --project bench --project app-bench",
