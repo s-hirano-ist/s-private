@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.26.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.25.2...@s-hirano-ist/s-scripts-v1.26.0) (2026-08-17)
+
+
+### Features
+
+* **scripts:** replace dprint with oxfmt content formatter ([ba328cf](https://github.com/s-hirano-ist/s-private/commit/ba328cf134a9a143ffde0a25cf3c54b8b84848cf))
+* **scripts:** replace dprint with oxfmt content formatter ([524a490](https://github.com/s-hirano-ist/s-private/commit/524a490debf6a93aa021fa967700d578fb83a808))
+
 ## [1.25.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.25.1...@s-hirano-ist/s-scripts-v1.25.2) (2026-07-05)
 
 
