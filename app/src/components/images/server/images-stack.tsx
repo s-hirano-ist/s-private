@@ -16,6 +16,7 @@ import {
 	PaginationPrevious,
 } from "@s-hirano-ist/s-ui/ui/pagination";
 import { getTranslations } from "next-intl/server";
+import Link from "next/link";
 
 type Props = {
 	currentPage: number;
@@ -103,6 +104,7 @@ export async function ImagesStack({
 							) : (
 								<PaginationItem key={item.page}>
 									<PaginationLink
+										as={Link}
 										href={generatePageLink(item.page)}
 										isActive={item.page === currentPage}
 									>
