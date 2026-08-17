@@ -227,7 +227,7 @@ function PaginationLink<C extends React.ElementType = "a">({
 	size = "icon",
 	...props
 }: PaginationLinkProps<C>) {
-	const Component = (as ?? "a");
+	const Component = as ?? "a";
 
 	return (
 		<Component
@@ -279,10 +279,8 @@ export type PaginationPreviousProps<C extends React.ElementType = "a"> =
  * @remarks
  * Displays a left chevron icon with customizable text.
  *
- * Unlike an implementation that internally renders `PaginationLink<C>`,
- * this component renders the polymorphic element directly. This avoids
- * TypeScript assignability issues when composing generic polymorphic
- * components.
+ * This component renders the polymorphic element directly rather than
+ * composing another generic polymorphic component.
  *
  * @example Standard anchor
  * ```tsx
@@ -307,7 +305,7 @@ function PaginationPrevious<C extends React.ElementType = "a">({
 	size = "default",
 	...props
 }: PaginationPreviousProps<C>) {
-	const Component = (as ?? "a");
+	const Component = as ?? "a";
 
 	return (
 		<Component
@@ -389,7 +387,7 @@ function PaginationNext<C extends React.ElementType = "a">({
 	size = "default",
 	...props
 }: PaginationNextProps<C>) {
-	const Component = (as ?? "a");
+	const Component = as ?? "a";
 
 	return (
 		<Component
