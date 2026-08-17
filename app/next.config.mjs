@@ -22,7 +22,7 @@ const nextConfig = {
 		"@s-hirano-ist/s-search",
 		"@s-hirano-ist/s-ui",
 	],
-	serverExternalPackages: ["@prisma/client", "@silvia-odwyer/photon-node"],
+	serverExternalPackages: ["@prisma/client"],
 	outputFileTracingRoot: path.join(import.meta.dirname, ".."),
 	typedRoutes: true,
 	reactCompiler: true,

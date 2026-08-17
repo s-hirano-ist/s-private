@@ -6,7 +6,7 @@ Cloudflare Workers/Edge Runtimeへの対応を検討し、レスポンス速度�
 https://tech.hello.ai/entry/vercel-cloudflare-migration 等の実装を参考にする。
 ## 課題
 
-- 画像処理は Photon WebAssembly へ移行済み。現在は `app/src/infrastructures/images/services/photon-image-processor.ts` が共通API経由で処理する。
+- 画像処理はNode Runtime向けのSharpへ移行済み。現在は `app/src/infrastructures/images/services/sharp-image-processor.ts` が共通API経由で処理する。Edge Runtimeへ移行する場合は`IImageProcessor`の別アダプターが必要。
 - Prismaのedge対応状況の確認が必要（現状は`@prisma/adapter-pg`の`PrismaPg`（Node.jsのTCP pgプール）をCockroachDB Cloudに対して使用。`app/src/prisma.ts`で`connectionString`/`max`/`idleTimeoutMillis`を指定。論点は汎用的な「Prismaのedge対応」ではなく、adapter-pgのTCPプールをCloudflare Workers上で動かせるか）
 
 ## 現状の制約

@@ -2,7 +2,7 @@
 
 import type * as React from "react";
 import { Menu as MenuPrimitive } from "@base-ui/react/menu";
-import { cn } from "../utils/cn";
+import { cn, cnWithState } from "../utils/cn";
 
 const DropdownMenu = MenuPrimitive.Root;
 const DropdownMenuTrigger = MenuPrimitive.Trigger;
@@ -32,9 +32,9 @@ function DropdownMenuSubContent({
 				{...positionerProps}
 			>
 				<MenuPrimitive.Popup
-					className={cn(
-						"z-50 min-w-32 overflow-hidden rounded-md border bg-primary p-1 text-primary-foreground shadow-lg transition-[opacity,transform] duration-200 data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0",
+					className={cnWithState(
 						className,
+						"z-50 min-w-32 overflow-hidden rounded-md border bg-primary p-1 text-primary-foreground shadow-lg transition-[opacity,transform] duration-200 data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0",
 					)}
 					data-slot="dropdown-menu-sub-content"
 					{...props}
@@ -57,9 +57,9 @@ function DropdownMenuContent({
 		<MenuPrimitive.Portal>
 			<MenuPrimitive.Positioner sideOffset={4} {...positionerProps}>
 				<MenuPrimitive.Popup
-					className={cn(
-						"z-50 max-h-75 min-w-32 scroll-py-1 overflow-auto rounded-md border border-muted bg-background p-1 text-foreground shadow-md transition-[opacity,transform] duration-200 data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0",
+					className={cnWithState(
 						className,
+						"z-50 max-h-75 min-w-32 scroll-py-1 overflow-auto rounded-md border border-muted bg-background p-1 text-foreground shadow-md transition-[opacity,transform] duration-200 data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0",
 					)}
 					data-slot="dropdown-menu-content"
 					{...props}
@@ -80,10 +80,10 @@ function DropdownMenuItem({
 }: DropdownMenuItemProps) {
 	return (
 		<MenuPrimitive.Item
-			className={cn(
+			className={cnWithState(
+				className,
 				"relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden transition-colors select-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-primary data-highlighted:text-primary-foreground [&>svg]:size-4 [&>svg]:shrink-0",
 				inset && "pl-8",
-				className,
 			)}
 			data-slot="dropdown-menu-item"
 			{...props}
@@ -102,10 +102,10 @@ function DropdownMenuLabel({
 }: DropdownMenuLabelProps) {
 	return (
 		<MenuPrimitive.GroupLabel
-			className={cn(
+			className={cnWithState(
+				className,
 				"px-2 py-1.5 text-sm font-semibold",
 				inset && "pl-8",
-				className,
 			)}
 			data-slot="dropdown-menu-label"
 			{...props}
@@ -119,7 +119,7 @@ function DropdownMenuSeparator({
 }: React.ComponentProps<typeof MenuPrimitive.Separator>) {
 	return (
 		<MenuPrimitive.Separator
-			className={cn("-mx-1 my-1 h-px bg-muted", className)}
+			className={cnWithState(className, "-mx-1 my-1 h-px bg-muted")}
 			data-slot="dropdown-menu-separator"
 			{...props}
 		/>

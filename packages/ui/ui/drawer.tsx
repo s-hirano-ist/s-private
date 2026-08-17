@@ -2,7 +2,7 @@
 
 import { Drawer as DrawerPrimitive } from "@base-ui/react/drawer";
 import * as React from "react";
-import { cn } from "../utils/cn";
+import { cn, cnWithState } from "../utils/cn";
 
 /**
  * Root drawer component for slide-in panels.
@@ -89,9 +89,9 @@ function DrawerOverlay({
 }: React.ComponentProps<typeof DrawerPrimitive.Backdrop>) {
 	return (
 		<DrawerPrimitive.Backdrop
-			className={cn(
-				"fixed inset-0 z-50 bg-black/50 transition-opacity duration-300 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0",
+			className={cnWithState(
 				className,
+				"fixed inset-0 z-50 bg-black/50 transition-opacity duration-300 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0",
 			)}
 			data-slot="drawer-overlay"
 			{...props}
@@ -120,10 +120,10 @@ function DrawerContent({
 			<DrawerOverlay />
 			<DrawerPrimitive.Viewport data-slot="drawer-viewport">
 				<DrawerPrimitive.Popup
-					className={cn(
+					className={cnWithState(
+						className,
 						"group/drawer-content fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto max-h-[80vh] flex-col rounded-t-lg border-t bg-background",
 						"transition-transform duration-300 data-[ending-style]:translate-y-full data-[starting-style]:translate-y-full",
-						className,
 					)}
 					data-slot="drawer-content"
 					{...props}
@@ -183,7 +183,7 @@ function DrawerTitle({
 }: React.ComponentProps<typeof DrawerPrimitive.Title>) {
 	return (
 		<DrawerPrimitive.Title
-			className={cn("font-semibold text-foreground", className)}
+			className={cnWithState(className, "font-semibold text-foreground")}
 			data-slot="drawer-title"
 			{...props}
 		/>
@@ -201,7 +201,7 @@ function DrawerDescription({
 }: React.ComponentProps<typeof DrawerPrimitive.Description>) {
 	return (
 		<DrawerPrimitive.Description
-			className={cn("text-sm text-muted-foreground", className)}
+			className={cnWithState(className, "text-sm text-muted-foreground")}
 			data-slot="drawer-description"
 			{...props}
 		/>

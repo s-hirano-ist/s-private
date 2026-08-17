@@ -3,7 +3,7 @@
 import type * as React from "react";
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { tv, type VariantProps } from "tailwind-variants";
-import { cn } from "../utils/cn";
+import { cn, cnWithState } from "../utils/cn";
 
 const Dialog = DialogPrimitive.Root;
 const DialogTrigger = DialogPrimitive.Trigger;
@@ -15,9 +15,9 @@ function DialogOverlay({
 }: React.ComponentProps<typeof DialogPrimitive.Backdrop>) {
 	return (
 		<DialogPrimitive.Backdrop
-			className={cn(
-				"fixed inset-0 z-50 bg-black/80 transition-opacity duration-200 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0",
+			className={cnWithState(
 				className,
+				"fixed inset-0 z-50 bg-black/80 transition-opacity duration-200 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0",
 			)}
 			data-slot="dialog-overlay"
 			{...props}
@@ -96,9 +96,9 @@ function DialogTitle({
 }: React.ComponentProps<typeof DialogPrimitive.Title>) {
 	return (
 		<DialogPrimitive.Title
-			className={cn(
-				"text-lg leading-none font-semibold tracking-tight",
+			className={cnWithState(
 				className,
+				"text-lg leading-none font-semibold tracking-tight",
 			)}
 			data-slot="dialog-title"
 			{...props}
@@ -112,7 +112,7 @@ function DialogDescription({
 }: React.ComponentProps<typeof DialogPrimitive.Description>) {
 	return (
 		<DialogPrimitive.Description
-			className={cn("text-sm text-muted-foreground", className)}
+			className={cnWithState(className, "text-sm text-muted-foreground")}
 			data-slot="dialog-description"
 			{...props}
 		/>

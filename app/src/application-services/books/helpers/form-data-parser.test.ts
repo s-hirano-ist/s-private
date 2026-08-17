@@ -3,7 +3,7 @@ import {
 	getFormDataFile,
 	getFormDataString,
 } from "@/common/utils/form-data-utils";
-import { photonImageProcessor } from "@/infrastructures/images/services/photon-image-processor";
+import { sharpImageProcessor } from "@/infrastructures/images/services/sharp-image-processor";
 import {
 	type BookTitle,
 	type ISBN,
@@ -58,8 +58,8 @@ vi.mock(
 		};
 	},
 );
-vi.mock("@/infrastructures/images/services/photon-image-processor", () => ({
-	photonImageProcessor: {
+vi.mock("@/infrastructures/images/services/sharp-image-processor", () => ({
+	sharpImageProcessor: {
 		fileToBytes: vi.fn(),
 		getMetadata: vi.fn(),
 		createThumbnail: vi.fn(),
@@ -75,9 +75,9 @@ const mockMakeTags = vi.mocked(makeTags);
 const mockMakePath = vi.mocked(makePath);
 const mockMakeContentType = vi.mocked(makeContentType);
 const mockMakeFileSize = vi.mocked(makeFileSize);
-const mockFileToBytes = vi.mocked(photonImageProcessor.fileToBytes);
-const mockGetMetadata = vi.mocked(photonImageProcessor.getMetadata);
-const mockCreateThumbnail = vi.mocked(photonImageProcessor.createThumbnail);
+const mockFileToBytes = vi.mocked(sharpImageProcessor.fileToBytes);
+const mockGetMetadata = vi.mocked(sharpImageProcessor.getMetadata);
+const mockCreateThumbnail = vi.mocked(sharpImageProcessor.createThumbnail);
 
 const JPEG_BUFFER = Buffer.from([0xff, 0xd8, 0xff, 0xdb]);
 

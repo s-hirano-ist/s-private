@@ -16,7 +16,7 @@ export type ImageMetadata = {
  * @remarks
  * Abstracts image manipulation operations from the domain layer.
  * Implementations should be provided by the infrastructure layer
- * (e.g., using Photon, Jimp, or other image libraries).
+ * (e.g., using Sharp or another image library).
  *
  * This follows the dependency inversion principle - the domain layer
  * defines what operations are needed, while the infrastructure layer
@@ -25,7 +25,7 @@ export type ImageMetadata = {
  * @example
  * ```typescript
  * // Infrastructure implementation
- * class PhotonImageProcessor implements IImageProcessor {
+ * class SharpImageProcessor implements IImageProcessor {
  *   async createThumbnail(bytes: Uint8Array, width: number, height: number) {
  *     return await createWebpThumbnail(bytes, { width, height });
  *   }

@@ -2,14 +2,14 @@
 
 ## Commands
 
-- `pnpm test` - Run all Vitest test projects (app, components, core, notification, search, storybook)
+- `pnpm test` - Run all Vitest test projects (app, components, core, image-processing, notification, scripts, search, storybook)
 - `pnpm test:watch` - Run Vitest in watch mode
 - `pnpm typecheck` - Run TypeScript type checking across all workspaces (`tsc --noEmit`)
 
 ## Vitest Workspace Configuration
 
 The project uses Vitest workspace to manage tests across multiple packages:
-- **Workspace Root**: `vitest.config.ts` defines test projects via `test.projects`: `app`, `components` (packages/ui), `core`, `notification`, `search`, `storybook` (browser mode), plus benchmark projects `bench` and `app-bench`
+- **Workspace Root**: `vitest.config.ts` defines test projects via `test.projects`: `app`, `components` (packages/ui), `core`, `image-processing`, `notification`, `scripts`, `search`, `storybook` (browser mode), plus benchmark projects `bench` and `app-bench`
 - **Individual Configs**: Each package has its own `vitest.config.ts` with specific settings
 - **Unified Execution**: Run all tests from the root with `pnpm test`
 
@@ -36,6 +36,9 @@ The project uses Vitest workspace to manage tests across multiple packages:
 - **Config**: [packages/notification/vitest.config.ts](../packages/notification/vitest.config.ts)
 
 ### packages/search
+- **Environment**: Node（root `vitest.config.ts` 内にインライン定義、専用ファイルなし）
+
+### packages/image-processing
 - **Environment**: Node（root `vitest.config.ts` 内にインライン定義、専用ファイルなし）
 
 ### storybook

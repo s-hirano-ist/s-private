@@ -1,6 +1,6 @@
 #!/usr/bin/env node
+import { parseMarkdownFrontmatter } from "@s-hirano-ist/s-search/frontmatter";
 import { glob } from "glob";
-import matter from "gray-matter";
 import { dump } from "js-yaml";
 import { readFile, writeFile } from "node:fs/promises";
 import { basename, join } from "node:path";
@@ -86,7 +86,7 @@ async function processFile(
 
 	try {
 		const raw = await readFile(filePath, "utf8");
-		const parsed = matter(raw);
+		const parsed = parseMarkdownFrontmatter(raw);
 		const existing = parsed.data;
 
 		const hasAllKeys = REQUIRED_KEYS.every((k) => Object.hasOwn(existing, k));

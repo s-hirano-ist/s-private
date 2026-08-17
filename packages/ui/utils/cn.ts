@@ -1,14 +1,12 @@
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { type ClassNameValue, twMerge } from "tailwind-merge";
 
 /**
  * Merges class names with Tailwind CSS conflict resolution.
  *
  * @remarks
- * Combines clsx for conditional classes with tailwind-merge
- * to properly handle Tailwind CSS class conflicts.
+ * Joins conditional classes and resolves Tailwind CSS class conflicts.
  *
- * @param inputs - Class values to merge (strings, arrays, objects)
+ * @param inputs - Class values to merge (strings, arrays, and falsy values)
  * @returns A merged class string with conflicts resolved
  *
  * @example
@@ -20,6 +18,19 @@ import { twMerge } from "tailwind-merge";
  * // Conditionally applies classes
  * ```
  */
-export function cn(...inputs: ClassValue[]) {
-	return twMerge(clsx(inputs));
+export function cn(...inputs: ClassNameValue[]) {
+	return twMerge(...inputs);
+}
+
+/**
+ * Merges static classes with Base UI's state-aware className callback.
+ */
+export function cnWithState<State>(
+	className: string | ((state: State) => string | undefined) | undefined,
+	...inputs: ClassNameValue[]
+): string | ((state: State) => string) {
+	if (typeof className === "function") {
+		return (state) => cn(...inputs, className(state));
+	}
+	return cn(...inputs, className);
 }

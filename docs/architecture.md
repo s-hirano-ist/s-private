@@ -55,11 +55,13 @@
 |-----------|---------|-----------|------------|
 | `shared-kernel/services/` | `minioStorageService` | `IStorageService` | MinIOクライアント |
 | `books/services/` | `booksStorageService` | `IStorageService` | MinIO（booksパス） |
-| `images/services/` | `photonImageProcessor` | `IImageProcessor` | Photon WebAssembly画像処理 |
+| `images/services/` | `sharpImageProcessor` | `IImageProcessor` | Sharp画像処理（Node-API） |
 
 **命名規則:**
-- 実装が特定の技術に固有の場合は技術ベースの命名を使用（例：`minio-*`、`photon-*`）
+- 実装が特定の技術に固有の場合は技術ベースの命名を使用（例：`minio-*`、`sharp-*`）
 - アダプターがドメイン固有の設定を持つ場合はドメインベースの命名を使用（例：`books-storage-service`はbook固有のパスを使用）
+
+MarkdownのYAML frontmatter解析は`@s-hirano-ist/s-search/frontmatter`に集約する。検索チャンク生成とバッチスクリプトは同じパーサーを利用し、delimiter・BOM・改行コード・YAML構文の解釈を一致させる。
 
 #### ドメインサービスファクトリ
 
