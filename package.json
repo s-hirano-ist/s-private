@@ -14,8 +14,8 @@
 		"clean": "rm -rf app/node_modules app/.next packages/*/node_modules packages/*/dist",
 		"format": "oxfmt",
 		"format:check": "oxfmt --check .",
-		"lint": "oxlint --type-aware && eslint .",
-		"lint:fix": "oxlint --type-aware --fix && eslint --fix .",
+		"lint": "oxlint && eslint \"**/*.{yml,yaml,json,jsonc,json5}\"",
+		"lint:fix": "oxlint --fix && eslint --fix \"**/*.{yml,yaml,json,jsonc,json5}\"",
 		"lint:css": "stylelint \"**/*.css\"",
 		"lint:css:fix": "stylelint \"**/*.css\" --fix",
 		"lint:md": "markdownlint-cli2 \"**/*.md\"",
@@ -63,7 +63,6 @@
 	},
 	"devDependencies": {
 		"@chromatic-com/storybook": "5.3.0",
-		"@eslint/markdown": "8.0.3",
 		"@playwright/test": "1.62.1",
 		"@storybook/addon-a11y": "10.5.8",
 		"@storybook/addon-docs": "10.5.8",

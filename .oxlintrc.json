@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// oxlint configuration — primary JS/TS linter. ESLint is limited to YAML/JSON/Markdown.
+// oxlint configuration — primary JS/TS linter. ESLint is limited to YAML/JSON.
 //
 // Format: oxlint's TS config (oxlint.config.ts) is experimental and fails to load with
 //   the standalone binary, so we use .oxlintrc.json. JSONC comments ARE supported here.
@@ -14,6 +14,8 @@
 //   jsx-no-useless-fragment→react/jsx-no-useless-fragment, dom-no-dangerously-set-innerhtml→
 //   react/no-danger, no-array-index-key→react/no-array-index-key. set-state-in-effect kept via
 //   eslint-plugin-react-hooks (aliased "react-hooks-js"; bare name is reserved by oxlint).
+//   As oxlint's native coverage expands, prefer-export-from and prefer-single-call were moved from
+//   the Unicorn JS plugin to native Rust rules; deprecated no-array-push-push is subsumed by the latter.
 //
 // Newly enabled (were commented-out / Biome-delegated): jsx-a11y (native; promoted warn→error 2026-05).
 //
@@ -348,16 +350,15 @@
 		"sonarjs/code-eval": "error",
 		"sonarjs/no-os-command-from-path": "error",
 
-		// ── eslint-plugin-unicorn (JS plugin, aliased "unicorn-js"): only the 7 useful rules NOT
+		// ── eslint-plugin-unicorn (JS plugin, aliased "unicorn-js"): only useful rules NOT
 		// ported to native oxlint unicorn. `prevent-abbreviations`, `string-content`, `template-indent`,
-		// `expiring-todo-comments` etc. are intentionally excluded (noise / formatting / oxfmt's job). ──
+		// etc. are intentionally excluded (noise / formatting / oxfmt's job). ──
 		"unicorn-js/consistent-destructuring": "error",
-		"unicorn-js/no-array-push-push": "error",
 		"unicorn-js/no-for-loop": "error",
 		"unicorn-js/no-named-default": "error",
 		"unicorn-js/no-unnecessary-polyfills": "error",
-		"unicorn-js/prefer-export-from": "error",
-		"unicorn-js/prefer-single-call": "error",
+		"unicorn/prefer-export-from": "error",
+		"unicorn/prefer-single-call": "error",
 		// s-public's Unicorn recommended rules not covered by oxlint's native Unicorn plugin.
 		// template-indent remains excluded because template formatting belongs to oxfmt.
 		"unicorn-js/expiring-todo-comments": "error",

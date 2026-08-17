@@ -48,7 +48,7 @@
 
 ### Code Quality & Development Tools
 - **Formatter** - [oxfmt](https://oxc.rs/docs/guide/usage/formatter) (Prettier-compatible; formatting + import & Tailwind class sorting)
-- **Linters** - [oxlint](https://oxc.rs/docs/guide/usage/linter) for type-aware code linting + ESLint for YAML/JSON/Markdown
+- **Linters** - [oxlint](https://oxc.rs/docs/guide/usage/linter) for type-aware code linting + ESLint for YAML/JSON + Markdownlint for Markdown
 - **Testing Framework** - [Vitest](https://vitest.dev/) with [Testing Library](https://testing-library.com/)
 - **Component Development** - [Storybook](https://storybook.js.org/)
 
@@ -345,8 +345,9 @@ pnpm start                  # Start production server
 # Code Quality
 pnpm format                # Format + import/Tailwind class sorting (oxfmt)
 pnpm format:check          # Check formatting without writing (oxfmt)
-pnpm lint                  # Lint code and content (oxlint + ESLint)
+pnpm lint                  # Lint code and structured config (oxlint + ESLint)
 pnpm lint:fix              # Lint with auto-fixing (oxlint + ESLint)
+pnpm lint:md               # Lint Markdown (Markdownlint)
 pnpm deps:check            # Clean Architecture boundary check (dependency-cruiser)
 
 # Testing
@@ -488,7 +489,7 @@ VPS 上の Docker Compose サービス用の環境変数は `~/s-private/.env` �
 
 ### Formatting & Linting
 - **Formatting**: oxfmt for formatting, import organization, and Tailwind class sorting
-- **Linting**: oxlint (type-aware) for TypeScript/JavaScript; ESLint for YAML/JSON/Markdown
+- **Linting**: oxlint (type-aware) for TypeScript/JavaScript; ESLint for YAML/JSON; Markdownlint for Markdown
 - **Strict TypeScript**: Full type safety with runtime validation
 
 ### Architectural Constraints

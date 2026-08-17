@@ -34,6 +34,7 @@ import {
 	UnexportedStatus,
 	UserId,
 } from "../../shared-kernel/entities/common-entity.ts";
+// oxlint-disable-next-line unicorn/prefer-export-from -- imported values are also used locally
 import {
 	ContentType,
 	FileSize,
@@ -43,7 +44,6 @@ import { createEntityWithErrorHandling } from "../../shared-kernel/services/enti
 import { ImageCreatedEvent } from "../events/image-created-event.ts";
 
 // Re-export file-related value objects from common for backwards compatibility
-// oxlint-disable-next-line unicorn-js/prefer-export-from -- used-locally
 export { ContentType, FileSize, Path };
 export {
 	makeFileSize,
