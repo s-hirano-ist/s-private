@@ -213,7 +213,7 @@ export const SearchAndFilter: Story = {
 		await userEvent.click(trigger);
 
 		const searchInput = await waitFor(() =>
-			body.getByPlaceholderText("Search..."),
+			body.getByPlaceholderText("Search…"),
 		);
 
 		await userEvent.type(searchInput, "プログラ");
@@ -246,16 +246,16 @@ export const CustomValueEntry: Story = {
 		await userEvent.click(trigger);
 
 		const searchInput = await waitFor(() =>
-			body.getByPlaceholderText("Search..."),
+			body.getByPlaceholderText("Search…"),
 		);
 
 		await userEvent.type(searchInput, "カスタム値");
 
 		await waitFor(() =>
-			expect(body.getByText('Use "カスタム値"')).toBeInTheDocument(),
+			expect(body.getByText("Use “カスタム値”")).toBeInTheDocument(),
 		);
 
-		await userEvent.click(body.getByText('Use "カスタム値"'));
+		await userEvent.click(body.getByText("Use “カスタム値”"));
 
 		await waitFor(() =>
 			expect(canvas.getByRole("combobox")).toHaveTextContent("カスタム値"),
