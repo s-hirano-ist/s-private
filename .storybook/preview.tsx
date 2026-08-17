@@ -4,7 +4,7 @@ import "../packages/ui/globals.css";
 import { MINIMAL_VIEWPORTS } from "storybook/viewport";
 import enMessages from "../app/messages/en.json";
 import jaMessages from "../app/messages/ja.json";
-import { ThemeProvider } from "../packages/ui/providers/theme-provider";
+import { ThemeProvider } from "../app/src/providers/theme-provider";
 import { Toaster } from "../packages/ui/ui/toast";
 
 const messages = { en: enMessages, ja: jaMessages };

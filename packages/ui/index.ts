@@ -18,9 +18,6 @@
  * - **Hooks** - Custom React hooks (useInfiniteScroll)
  * - **Utilities** - cn() class merging utility
  *
- * Note: Next.js-dependent components (ThemeProvider, Pagination, Toaster) are
- * available via `@s-hirano-ist/s-ui/next`.
- *
  * @example
  * ```tsx
  * import { Button, Card, Input } from "@s-hirano-ist/s-ui";
@@ -66,6 +63,8 @@ export * from "./ui/slider";
 export * from "./ui/stat";
 export * from "./ui/tabs";
 export * from "./ui/textarea";
+export * from "./ui/pagination";
+export * from "./ui/toast";
 
 // Utilities
 export * from "./utils/cn";
