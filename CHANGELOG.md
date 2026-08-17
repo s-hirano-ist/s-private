@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.11.4](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.11.3...s-private-v3.11.4) (2026-08-17)
+
+
+### Bug Fixes
+
+* lint ([01d681c](https://github.com/s-hirano-ist/s-private/commit/01d681cf2b825d828ea2c0f25b1ae9beb080adcc))
+* nextjs deps ([715df9e](https://github.com/s-hirano-ist/s-private/commit/715df9ed15ee014a98b74629df43d13288032ca9))
+* theme generator ([147e27e](https://github.com/s-hirano-ist/s-private/commit/147e27e1223271aa1596f5530dc8df2b25555165))
+
+
+### Maintenance
+
+* delete nextjs deps ([3c5b547](https://github.com/s-hirano-ist/s-private/commit/3c5b547438f0fec7804cb99879894f2324469093))
+* nextjs deps for UI ([fcbaa12](https://github.com/s-hirano-ist/s-private/commit/fcbaa12017aec26050120594803a1e6e6d86058e))
+
 ## [3.11.3](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.11.2...s-private-v3.11.3) (2026-08-13)
 
 
