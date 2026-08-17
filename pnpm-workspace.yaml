@@ -13,7 +13,6 @@ allowBuilds:
   '@prisma/engines': true
   '@sentry/cli': true
   '@swc/core': true
-  dprint: true
   esbuild: true
   prisma: true
   puppeteer: true
