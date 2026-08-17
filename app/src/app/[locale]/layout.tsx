@@ -5,7 +5,7 @@ import { resolveContentSecurityPolicyNonce } from "@/common/security/content-sec
 import { Footer } from "@/components/common/layouts/nav/footer";
 import { env } from "@/env";
 import { IntlClientProvider } from "@/infrastructures/i18n/client-provider";
-import { ThemeProvider } from "@s-hirano-ist/s-ui/providers/theme-provider";
+import { ThemeProvider } from "@/providers/theme-provider";
 import { Toaster } from "@s-hirano-ist/s-ui/ui/toast";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
