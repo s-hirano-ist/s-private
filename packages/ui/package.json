@@ -131,17 +131,17 @@
 		"tailwind-variants": "3.3.1"
 	},
 	"devDependencies": {
-		"@arethetypeswrong/cli": "0.18.2",
+		"@arethetypeswrong/cli": "0.18.5",
 		"@storybook/react-vite": "10.5.8",
 		"@tailwindcss/cli": "4.3.3",
 		"@tailwindcss/postcss": "4.3.3",
 		"@types/react": "19.2.18",
 		"@types/react-dom": "19.2.4",
-		"publint": "0.3.18",
+		"publint": "0.3.23",
 		"postcss": "8.5.26",
 		"react": "19.2.8",
 		"react-dom": "19.2.8",
-		"tsup": "8.5.0",
+		"tsup": "8.5.1",
 		"typescript": "6.0.3",
 		"vite": "7.3.6"
 	},
