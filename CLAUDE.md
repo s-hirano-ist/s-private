@@ -23,8 +23,9 @@ Next.js + TypeScript + Clean Architectureベースのコンテンツ管理シス
 - `pnpm dev` - 開発サーバー
 - `pnpm build` - ビルド
 - `pnpm test` - テスト実行
-- `pnpm lint` - oxlint（TypeScript/JavaScript、type-aware）+ ESLint（YAML/JSON/Markdown）
+- `pnpm lint` - oxlint（TypeScript/JavaScript、type-aware）+ ESLint（YAML/JSON）
 - `pnpm lint:fix` - oxlint + ESLint自動修正
+- `pnpm lint:md` - markdownlint-cli2（Markdown）
 - `pnpm deps:check` - dependency-cruiser（Clean Architecture層境界の強制を含む）
 - `pnpm format` - oxfmt（Prettier互換。フォーマット + import並べ替え + Tailwindクラス並べ替え。Biomeから移行済み）
 - `pnpm format:check` - oxfmtフォーマットチェック（書き込みなし）

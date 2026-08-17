@@ -88,7 +88,8 @@ const articlesDomainService = domainServiceFactory.createArticlesDomainService()
   - **コンポーネントa11yテスト**: Storybookの全ストーリーに対して`@storybook/addon-a11y`（axe-core）で自動チェック（詳細は[testing.md](testing.md)を参照）
 - **リンター**: oxlint + ESLint - `pnpm lint`を使用
   - oxlint: TypeScript/JavaScriptのtype-aware検査、React/Next.js/jsx-a11y、旧Biome base lint
-  - ESLint: YAML/JSON/Markdownのコンテンツ検査に限定
+  - ESLint: YAML/JSONの検査に限定
+  - Markdownlint: Markdownの構造検査（`pnpm lint:md`）
 
 ### アーキテクチャルール
 - **パッケージマネージャー**: pnpm（必須）
@@ -122,7 +123,7 @@ import { ArticlesStackLoader } from "@/loaders/articles";
 ### 設定ファイル
 - `.oxfmtrc.json` - フォーマッター設定（oxfmt: format + import/Tailwind並べ替え）
 - `.oxlintrc.json` - リンター設定（oxlint, type-aware）
-- `eslint.config.js` - YAML/JSON/Markdown用ESLint設定
+- `eslint.config.js` - YAML/JSON用ESLint設定
 - `.dependency-cruiser.cjs` - アーキテクチャ境界の強制（詳細は[code-analysis.md](code-analysis.md)を参照）
 
 ## セキュリティ

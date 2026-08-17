@@ -1,4 +1,3 @@
-import eslintMarkdown from "@eslint/markdown";
 import { configs as jsoncConfigs } from "eslint-plugin-jsonc";
 import { configs as ymlConfigs } from "eslint-plugin-yml";
 
@@ -45,16 +44,6 @@ export default [
 		files: ["**/*.json5"],
 		rules: {
 			"jsonc/quote-props": "off",
-		},
-	},
-
-	// Markdown
-	...eslintMarkdown.configs.recommended,
-	{
-		files: ["**/*.md"],
-		rules: {
-			// GitHub admonitions and footnote references are valid project conventions.
-			"markdown/no-missing-label-refs": "off",
 		},
 	},
 ];
