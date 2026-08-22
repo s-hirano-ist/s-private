@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.12.2](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.12.1...s-private-v3.12.2) (2026-08-22)
+
+
+### Bug Fixes
+
+* exclude harness links from mutation sandbox ([43d11d5](https://github.com/s-hirano-ist/s-private/commit/43d11d51d8e3e22cf93d71d76f5d96301a396f6a))
+* exclude harness symlinks from mutation sandbox ([6e684a4](https://github.com/s-hirano-ist/s-private/commit/6e684a45ea52e07dd45b81cc552ab9a133356fa1))
+* exclude shared harness from markdown lint ([8676219](https://github.com/s-hirano-ist/s-private/commit/8676219dadb106ce29f041f3780e9145f5154895))
+* resolve oxlint CI failures ([d535909](https://github.com/s-hirano-ist/s-private/commit/d53590996d766bdb2aaddb39fb93ad6341cc86c3))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @s-hirano-ist/s-ui bumped to 2.0.3
+
 ## [3.12.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.12.0...s-private-v3.12.1) (2026-08-17)
 
 
