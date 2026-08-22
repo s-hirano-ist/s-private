@@ -1,3 +1,5 @@
+@layer theme, sui-theme, base, components, sui-utilities, utilities;
+
 @import "@s-hirano-ist/s-ui/styles.css";
 @import "tailwindcss";
 
