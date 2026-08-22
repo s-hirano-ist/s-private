@@ -22,7 +22,13 @@ type Props = {
 // oxlint-disable-next-line typescript/no-unnecessary-type-assertion -- Next typed router methods require Route even for runtime pathname-derived values.
 const toRoute = (path: string): Route => path as Route;
 
-function NavIcon(name: string, icon: ReactNode, isActive?: boolean) {
+type NavIconProps = {
+	icon: ReactNode;
+	isActive: boolean;
+	name: string;
+};
+
+function NavIcon({ icon, isActive, name }: NavIconProps) {
 	return (
 		<div
 			className={cn(
@@ -101,7 +107,11 @@ export function Footer({ search }: Props) {
 				size="icon"
 				variant="ghost"
 			>
-				{NavIcon("DUMPER", <UploadIcon className="size-5" />, isDumperActive)}
+				<NavIcon
+					icon={<UploadIcon className="size-5" />}
+					isActive={isDumperActive}
+					name="DUMPER"
+				/>
 			</Button>
 			<div className="flex items-center justify-center">
 				<Button
@@ -130,7 +140,11 @@ export function Footer({ search }: Props) {
 				size="icon"
 				variant="ghost"
 			>
-				{NavIcon("VIEWER", <DownloadIcon className="size-5" />, isViewerActive)}
+				<NavIcon
+					icon={<DownloadIcon className="size-5" />}
+					isActive={isViewerActive}
+					name="VIEWER"
+				/>
 			</Button>
 		</div>
 	);
