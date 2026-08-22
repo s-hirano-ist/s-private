@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.21.3](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.21.2...@s-hirano-ist/s-core-v1.21.3) (2026-08-22)
+
+
+### Bug Fixes
+
+* resolve oxlint CI failures ([d535909](https://github.com/s-hirano-ist/s-private/commit/d53590996d766bdb2aaddb39fb93ad6341cc86c3))
+
 ## [1.21.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.21.1...@s-hirano-ist/s-core-v1.21.2) (2026-06-15)
 
 
