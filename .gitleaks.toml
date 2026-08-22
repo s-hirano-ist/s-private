@@ -1,0 +1,36 @@
+[extend]
+useDefault = true
+
+[[rules]]
+id = "project-database-url"
+description = "Database URL with embedded credentials"
+regex = '''(?i)(?:DATABASE_URL|DIRECT_URL)\s*[:=]\s*["'][a-z][a-z0-9+.-]*://[^\s"']+:[^\s"']+@'''
+keywords = ["DATABASE_URL", "DIRECT_URL"]
+
+[rules.allowlist]
+paths = ['''^app/vitest-setup\.tsx$''']
+
+[[rules]]
+id = "project-secret-assignment"
+description = "Project secret environment variable assigned a literal value"
+regex = '''(?i)(?:AUTH_SECRET|AUTH0_CLIENT_SECRET|PUSHOVER_APP_TOKEN|MINIO_SECRET_KEY|CF_ACCESS_CLIENT_SECRET)\s*[:=]\s*["'][A-Za-z0-9_+/.=-]{16,}'''
+keywords = [
+	"AUTH_SECRET",
+	"AUTH0_CLIENT_SECRET",
+	"PUSHOVER_APP_TOKEN",
+	"MINIO_SECRET_KEY",
+	"CF_ACCESS_CLIENT_SECRET",
+]
+
+[rules.allowlist]
+paths = ['''^app/vitest-setup\.tsx$''', '''^docs/vps-deployment\.md$''']
+
+[allowlist]
+description = "Generated files and dependency metadata"
+paths = [
+	'''(^|/)node_modules/''',
+	'''(^|/)docs/api/''',
+	'''(^|/)pnpm-lock\.yaml$''',
+	'''^packages/database/src/generated/''',
+]
+regexes = ['''[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}''']

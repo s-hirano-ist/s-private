@@ -91,7 +91,8 @@ const articlesDomainService = domainServiceFactory.createArticlesDomainService()
 - **リンター**: oxlint + ESLint - `pnpm lint`を使用
   - oxlint: TypeScript/JavaScriptのtype-aware検査、React/Next.js/jsx-a11y、旧Biome base lint
   - ESLint: YAML/JSONの検査に限定
-  - Markdownlint: Markdownの構造検査（`pnpm lint:md`）
+  - rumdl: Rust製Markdown構造検査（`pnpm lint:md`）
+  - Gitleaks: credential・token・接続文字列の検査（`pnpm lint:secret`）
 
 ### アーキテクチャルール
 - **パッケージマネージャー**: pnpm（必須）

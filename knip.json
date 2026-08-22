@@ -1,9 +1,8 @@
 {
 	"$schema": "https://unpkg.com/knip@5/schema.json",
 	"ignoreExportsUsedInFile": true,
-	"ignore": ["e2e/**/*"],
-	"ignoreDependencies": ["@secretlint/secretlint-rule-preset-recommend"],
-	"ignoreBinaries": ["vercel"],
+	"ignore": ["e2e/**/*", "scripts/check-secrets.mjs"],
+	"ignoreBinaries": ["mise", "vercel"],
 	"workspaces": {
 		".": {
 			"entry": [".harness/hooks/check-fix.mjs"]
@@ -45,6 +44,9 @@
 		"packages/core": {
 			"entry": ["**/*.ts", "!**/*.test.ts", "!**/*.spec.ts"],
 			"project": ["**/*.ts"]
+		},
+		"packages/database": {
+			"ignoreDependencies": ["@prisma/client"]
 		}
 	}
 }

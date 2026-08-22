@@ -9,8 +9,8 @@ import {
 	ensureCollection,
 	getCollectionStats,
 } from "@s-hirano-ist/s-search/qdrant-client";
-import { glob } from "glob";
 import { readFileSync } from "node:fs";
+import { globPaths } from "../lib/glob-paths.ts";
 import { INGEST_CONFIG } from "./ingest-config.ts";
 
 type FileInfo = {
@@ -26,19 +26,19 @@ async function listFiles(): Promise<FileInfo[]> {
 	const files: FileInfo[] = [];
 
 	// Articles (JSON)
-	const articleFiles = await glob(INGEST_CONFIG.paths.articles);
+	const articleFiles = await globPaths(INGEST_CONFIG.paths.articles);
 	for (const path of articleFiles) {
 		files.push({ path, type: "json", contentType: "articles" });
 	}
 
 	// Notes (Markdown)
-	const noteFiles = await glob(INGEST_CONFIG.paths.notes);
+	const noteFiles = await globPaths(INGEST_CONFIG.paths.notes);
 	for (const path of noteFiles) {
 		files.push({ path, type: "markdown", contentType: "notes" });
 	}
 
 	// Books (Markdown)
-	const bookFiles = await glob(INGEST_CONFIG.paths.books);
+	const bookFiles = await globPaths(INGEST_CONFIG.paths.books);
 	for (const path of bookFiles) {
 		files.push({ path, type: "markdown", contentType: "books" });
 	}

@@ -33,11 +33,11 @@
 		"LICENSE"
 	],
 	"scripts": {
-		"prisma:generate": "mkdir -p erd && prisma generate",
+		"prisma:generate": "prisma generate",
 		"prisma:migrate:diff": "prisma migrate diff --from-migrations prisma/migrations --to-schema prisma/schema.prisma --script",
 		"prisma:deploy": "prisma migrate deploy",
 		"prisma:studio": "prisma studio",
-		"docs:build": "bash scripts/generate-db-docs.sh",
+		"docs:build": "node scripts/generate-db-docs.mjs",
 		"build": "prisma generate && tsc --noEmit",
 		"postinstall": "pnpm prisma:generate",
 		"prepublishOnly": "pnpm prisma:generate",
@@ -56,7 +56,6 @@
 		"prisma": "7.9.1"
 	},
 	"devDependencies": {
-		"prisma-erd-generator": "2.4.4",
 		"typescript": "6.0.3"
 	}
 }

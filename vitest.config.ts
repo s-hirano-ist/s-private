@@ -55,6 +55,14 @@ export default defineConfig({
 					include: ["./**/*.test.?(c|m)[jt]s?(x)"],
 				},
 			},
+			// Database documentation generator (pure Prisma schema transformation)
+			{
+				test: {
+					name: "database",
+					root: "./packages/database",
+					include: ["./scripts/**/*.test.?(c|m)[jt]s"],
+				},
+			},
 			// Notification package
 			{
 				extends: "./packages/notification/vitest.config.ts",

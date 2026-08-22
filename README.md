@@ -48,7 +48,7 @@
 
 ### Code Quality & Development Tools
 - **Formatter** - [oxfmt](https://oxc.rs/docs/guide/usage/formatter) (Prettier-compatible; formatting + import & Tailwind class sorting)
-- **Linters** - [oxlint](https://oxc.rs/docs/guide/usage/linter) for type-aware code linting + ESLint for YAML/JSON + Markdownlint for Markdown
+- **Linters** - [oxlint](https://oxc.rs/docs/guide/usage/linter) for type-aware code linting + ESLint for YAML/JSON + Rust-native [rumdl](https://github.com/rvben/rumdl) for Markdown
 - **Testing Framework** - [Vitest](https://vitest.dev/) with [Testing Library](https://testing-library.com/)
 - **Component Development** - [Storybook](https://storybook.js.org/)
 
@@ -61,7 +61,7 @@
 
 ### Documentation
 - **API Documentation** - [TypeDoc](https://typedoc.org/) with packages strategy
-- **Database Schema Visualization** - Mermaid ER diagram via [prisma-erd-generator](https://github.com/keonik/prisma-erd-generator), rendered to an HTML page
+- **Database Schema Visualization** - Dependency-free Node.js generator renders the Prisma schema as a Mermaid ER diagram and HTML page
 
 ### Dependency Management & Security
 - **Automated Updates** - [Renovate](https://docs.renovatebot.com/)
@@ -343,7 +343,8 @@ pnpm format                # Format + import/Tailwind class sorting (oxfmt)
 pnpm format:check          # Check formatting without writing (oxfmt)
 pnpm lint                  # Lint code and structured config (oxlint + ESLint)
 pnpm lint:fix              # Lint with auto-fixing (oxlint + ESLint)
-pnpm lint:md               # Lint Markdown (Markdownlint)
+pnpm lint:md               # Lint Markdown (rumdl)
+pnpm lint:secret           # Scan secrets (Gitleaks)
 pnpm deps:check            # Clean Architecture boundary check (dependency-cruiser)
 
 # Testing
@@ -414,7 +415,7 @@ pnpm docs:clean            # Remove generated documentation
 
 - Root `typedoc.json` uses packages strategy (`packages/core`, `packages/ui`, `packages/notification`)
 - Each package has its own `typedoc.json` for granular control
-- `prisma-erd-generator` auto-generates a Mermaid ER diagram from the Prisma schema → a custom script (`packages/database/scripts/generate-db-docs.sh`) renders it into an HTML page
+- `packages/database/scripts/generate-db-docs.mjs` parses `schema.prisma` and deterministically renders Mermaid Markdown and HTML without a generator plugin
 - `docs:build` generates all documentation at once (TypeDoc + DB schema HTML)
 - `pages:build` publishes API docs at `/api/` and a Figma-style embedded Storybook gallery at `/ui/`
 
@@ -485,7 +486,7 @@ VPS 上の Docker Compose サービス用の環境変数は `~/s-private/.env` �
 
 ### Formatting & Linting
 - **Formatting**: oxfmt for formatting, import organization, and Tailwind class sorting
-- **Linting**: oxlint (type-aware) for TypeScript/JavaScript; ESLint for YAML/JSON; Markdownlint for Markdown
+- **Linting**: oxlint (type-aware) for TypeScript/JavaScript; ESLint for YAML/JSON; rumdl for Markdown; Gitleaks for secrets
 - **Strict TypeScript**: Full type safety with runtime validation
 
 ### Architectural Constraints

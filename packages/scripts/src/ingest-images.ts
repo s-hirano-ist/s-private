@@ -11,9 +11,9 @@ import {
 } from "@s-hirano-ist/s-image-processing/node";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
 import { createMinioClient } from "@s-hirano-ist/s-storage";
-import { glob } from "glob";
 import { readFile, stat } from "node:fs/promises";
 import { basename, extname } from "node:path";
+import { globPaths } from "./lib/glob-paths.ts";
 
 const SCRIPT_NAME = "ingest-images";
 
@@ -83,7 +83,7 @@ async function main() {
 	const filePaths = new Set<string>();
 
 	async function ingestImages() {
-		const files = await glob(`${contentsPath}/image/dump/*`);
+		const files = await globPaths(`${contentsPath}/image/dump/*`);
 		const imageFiles = files.filter((f) => getContentType(f) !== null);
 		console.log(`📁 ${imageFiles.length} 件の画像ファイルを検出しました。`);
 

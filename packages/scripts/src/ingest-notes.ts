@@ -7,9 +7,9 @@ import {
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
 import { parseMarkdownFrontmatter } from "@s-hirano-ist/s-search/frontmatter";
-import { glob } from "glob";
 import { readFile } from "node:fs/promises";
 import { basename } from "node:path";
+import { globPaths } from "./lib/glob-paths.ts";
 
 const SCRIPT_NAME = "ingest-notes";
 
@@ -82,7 +82,7 @@ async function main() {
 	const fileTitles = new Set<string>();
 
 	async function ingestNotes() {
-		const files = await glob(`${contentsPath}/markdown/note/*.md`);
+		const files = await globPaths(`${contentsPath}/markdown/note/*.md`);
 		console.log(`📁 ${files.length} 件のファイルを検出しました。`);
 
 		const existingNotes = await prisma.note.findMany({

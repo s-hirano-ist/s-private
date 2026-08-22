@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import { parseMarkdownFrontmatter } from "@s-hirano-ist/s-search/frontmatter";
-import { glob } from "glob";
 import { dump } from "js-yaml";
 import { readFile, writeFile } from "node:fs/promises";
 import { basename, join } from "node:path";
+import { globPaths } from "./lib/glob-paths.ts";
 
 const REQUIRED_KEYS = [
 	"heading",
@@ -127,7 +127,7 @@ async function main(): Promise<void> {
 		`markdown/book ディレクトリのfrontmatterを検証中...${dryRun ? " (dry-run)" : ""}\n`,
 	);
 
-	const files = await glob(`${bookDir}/*.md`);
+	const files = await globPaths(`${bookDir}/*.md`);
 	console.log(`検出ファイル数: ${files.length}\n`);
 
 	let fixedCount = 0;

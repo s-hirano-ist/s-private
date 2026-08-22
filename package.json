@@ -24,15 +24,15 @@
 		"lint:fix": "oxlint --fix && eslint --fix \"**/*.{yml,yaml,json,jsonc,json5}\"",
 		"lint:css": "stylelint \"**/*.css\"",
 		"lint:css:fix": "stylelint \"**/*.css\" --fix",
-		"lint:md": "markdownlint-cli2 \"**/*.md\"",
-		"lint:md:fix": "markdownlint-cli2 \"**/*.md\" --fix",
-		"lint:secret": "secretlint --maskSecrets \"**/*\"",
+		"lint:md": "mise exec -- rumdl check .",
+		"lint:md:fix": "mise exec -- rumdl check --fix .",
+		"lint:secret": "mise exec -- node scripts/check-secrets.mjs",
 		"check:fix": "pnpm format && pnpm lint:fix && pnpm lint:css:fix && pnpm lint:md:fix",
 		"check:agent": "pnpm format:check && SKIP_ENV_VALIDATION=true pnpm typecheck && SKIP_ENV_VALIDATION=true pnpm lint && pnpm deps:check && pnpm --filter \"./packages/*\" build && pnpm test",
 		"bench": "vitest bench --project bench",
 		"bench:components": "vitest bench --project app-bench",
 		"bench:all": "vitest bench --project bench --project app-bench",
-		"test": "STORYBOOK_DISABLE_TELEMETRY=true vitest run --project app --project components --project core --project image-processing --project notification --project scripts --project search --project storybook",
+		"test": "STORYBOOK_DISABLE_TELEMETRY=true vitest run --project app --project components --project core --project database --project image-processing --project notification --project scripts --project search --project storybook",
 		"test:watch": "vitest",
 		"typecheck": "pnpm --recursive typecheck",
 		"license:summary": "pnpm licenses list > library-license.txt",
@@ -84,7 +84,6 @@
 		"@stryker-mutator/core": "10.0.0",
 		"@stryker-mutator/typescript-checker": "10.0.0",
 		"@stryker-mutator/vitest-runner": "10.0.0",
-		"@secretlint/secretlint-rule-preset-recommend": "13.0.4",
 		"@tailwindcss/postcss": "4.3.3",
 		"@testing-library/jest-dom": "7.0.1",
 		"@testing-library/react": "16.3.2",
@@ -106,13 +105,11 @@
 		"jscpd": "5.0.16",
 		"knip": "6.32.2",
 		"lint-staged": "17.3.0",
-		"markdownlint-cli2": "0.23.2",
 		"oxfmt": "0.64.0",
 		"oxlint": "1.79.0",
 		"oxlint-plugin-eslint": "1.79.0",
 		"oxlint-tsgolint": "7.0.2001",
 		"playwright": "1.62.1",
-		"secretlint": "13.0.4",
 		"storybook": "10.5.9",
 		"storybook-next-intl": "10.1.3",
 		"stylelint": "17.14.1",
@@ -125,17 +122,5 @@
 		"typedoc-plugin-mdn-links": "5.1.1",
 		"typescript": "6.0.3",
 		"vitest": "4.1.11"
-	},
-	"lint-staged": {
-		"*.{js,jsx,mjs,cjs,ts,tsx}": [
-			"oxfmt",
-			"oxlint --fix"
-		],
-		"*.css": [
-			"oxfmt",
-			"stylelint --fix"
-		],
-		"*.md": "markdownlint-cli2 --fix",
-		"*": "secretlint --maskSecrets"
 	}
 }

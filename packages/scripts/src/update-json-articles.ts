@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import { createPushoverService } from "@s-hirano-ist/s-notification";
 import * as cheerio from "cheerio";
-import iconv from "iconv-lite";
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { decodeHtml } from "./lib/html-charset.ts";
 
 type ArticleItem = {
 	ogDescription?: string;
@@ -21,43 +21,6 @@ type ArticlesJson = {
 	heading: string;
 };
 
-function normalizeCharset(charset: string): string {
-	const normalized = charset.toLowerCase().replaceAll(/[^a-z0-9]/gu, "");
-	const mapping: Record<string, string> = {
-		shiftjis: "Shift_JIS",
-		sjis: "Shift_JIS",
-		xsjis: "Shift_JIS",
-		eucjp: "EUC-JP",
-		xeucjp: "EUC-JP",
-	};
-	return mapping[normalized] || charset;
-}
-
-function detectCharset(headers: Headers, buffer: Buffer): string {
-	// 1. Content-Type ヘッダーから検出
-	const contentType = headers.get("content-type") || "";
-	const headerMatch = /charset=([^\s;]+)/iu.exec(contentType);
-	if (headerMatch) return normalizeCharset(headerMatch[1]);
-
-	// 2. HTML meta タグから検出（ASCII範囲で仮デコード）
-	const preview = buffer
-		.subarray(0, Math.min(4096, buffer.length))
-		.toString("ascii");
-
-	// <meta charset="...">
-	const metaCharset = /<meta\s{1,200}charset=["']?([^"'\s>]+)/iu.exec(preview);
-	if (metaCharset) return normalizeCharset(metaCharset[1]);
-
-	// <meta http-equiv="Content-Type" content="...; charset=...">
-	const metaHttpEquiv =
-		/<meta[^>]{1,500}http-equiv=["']?Content-Type["']?[^>]{1,500}content=["'][^"']{0,500}charset=([^"'\s;]+)/iu.exec(
-			preview,
-		);
-	if (metaHttpEquiv) return normalizeCharset(metaHttpEquiv[1]);
-
-	return "utf-8";
-}
-
 async function getOgTags(
 	url: string,
 ): Promise<{ ogDescription?: string; ogImageUrl?: string; ogTitle?: string }> {
@@ -74,8 +37,7 @@ async function getOgTags(
 			throw new Error(`HTTP error! status: ${response.status}`);
 		}
 		const buffer = Buffer.from(await response.arrayBuffer());
-		const charset = detectCharset(response.headers, buffer);
-		const html = iconv.decode(buffer, charset);
+		const html = decodeHtml(response.headers, buffer);
 
 		const $ = cheerio.load(html);
 		const ogTags: Record<string, string> = {};
