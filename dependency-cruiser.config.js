@@ -535,7 +535,7 @@ const boundaryRules = [
 	},
 ];
 
-module.exports = {
+export default {
 	forbidden: [
 		{
 			name: "no-circular",

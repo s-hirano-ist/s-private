@@ -69,7 +69,7 @@ pnpm jscpd:summary  # サマリーを jscpd-summary.txt に出力
 
 ### 設定
 
-設定ファイル: [`.dependency-cruiser.cjs`](../.dependency-cruiser.cjs)
+設定ファイル: [`dependency-cruiser.config.js`](../dependency-cruiser.config.js)
 
 ### ドメイン境界ルール（severity: error）
 
@@ -126,7 +126,7 @@ TypeScript/JavaScript は oxlint に一本化した状態を維持し、oxlint �
 役割分担:
 - **oxlint**: 旧 ESLint の全ルール。typescript-eslint strict+stylistic type-checked（`options.typeAware`, tsgolint）、`@next/*`→native `nextjs`、`@vitest/*`→native `vitest`、`eslint-plugin-regexp`/`eslint-plugin-storybook`（JS plugin）、Prisma raw-SQL ガード（`eslint-js/no-restricted-syntax` via `oxlint-plugin-eslint`）。`@eslint-react` の明示ルールは native へ: use-state→`react/hook-use-state`、jsx-no-useless-fragment→`react/jsx-no-useless-fragment`、dom-no-dangerously-set-innerhtml→`react/no-danger`、no-array-index-key→`react/no-array-index-key`。set-state-in-effect は `eslint-plugin-react-hooks`（alias `react-hooks-js`）。Unicorn の `prefer-export-from` / `prefer-single-call` は native Rust ルールを使用し、非推奨の `no-array-push-push` は `prefer-single-call` に統合。
 - **ESLint**: `eslint-plugin-yml`、`eslint-plugin-jsonc` で YAML/JSON/JSONC/JSON5 を検査。コマンドの glob で対象形式を限定し、ロックファイルと生成物は除外。
-- **dependency-cruiser**: Clean Architecture 層境界（`eslint-plugin-boundaries` から移植。oxlint の JS plugin は `settings` の boundaries/* キーを受け付けず動作不可のため）。`.dependency-cruiser.cjs` の `boundary-*` ルール（allow-list を deny-list に翻訳、29 本）。
+- **dependency-cruiser**: Clean Architecture 層境界（`eslint-plugin-boundaries` から移植。oxlint の JS plugin は `settings` の boundaries/* キーを受け付けず動作不可のため）。`dependency-cruiser.config.js` の `boundary-*` ルール（allow-list を deny-list に翻訳、29 本）。
 - **oxfmt**: format 全般（Prettier互換、タブ・行幅80）+ import 整理（sortImports）+ Tailwind class 並べ替え（sortTailwindcss、`cn`/`clsx`/`tv`）。旧 Biome の format + organizeImports + useSortedClasses を置換。
 - **Stylelint**: CSS 構文、無効な宣言の組み合わせ、対象ブラウザで未対応の機能、最低限のプロパティ順を検査する。プロジェクトで使用するTailwind CSSのディレクティブと関数は明示的に許可する。
 - **rumdl**: Rust ネイティブ実装で手書き Markdown の構造を検査する。既存違反ファイルは `.rumdl.toml` の baseline に列挙し、修正完了時に該当 entry を削除する。生成 docs、CHANGELOG、agent skills は対象外。

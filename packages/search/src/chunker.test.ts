@@ -4,7 +4,7 @@ import {
 	parseDbNote,
 	parseJsonArticle,
 	parseMarkdown,
-} from "./chunker.ts";
+} from "./chunker.js";
 
 describe("parseJsonArticle", () => {
 	test("parses JSON article with all fields", () => {

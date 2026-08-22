@@ -1,12 +1,12 @@
+import type { UnexportedImage } from "@s-hirano-ist/s-core/images/entities/image-entity";
+import type { IImagesQueryRepository } from "@s-hirano-ist/s-core/images/repositories/images-query-repository.interface";
 import type {
 	Id,
 	Status,
 	UserId,
-} from "../../shared-kernel/entities/common-entity.ts";
-import type { IBatchCommandRepository } from "../../shared-kernel/repositories/batch-command-repository.interface.ts";
-import type { IStorageService } from "../../shared-kernel/services/storage-service.interface.ts";
-import type { UnexportedImage } from "../entities/image-entity.ts";
-import type { IImagesQueryRepository } from "./images-query-repository.interface.ts";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import type { IBatchCommandRepository } from "@s-hirano-ist/s-core/shared-kernel/repositories/batch-command-repository.interface";
+import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/services/storage-service.interface";
 
 /**
  * Command repository interface for the Image domain.

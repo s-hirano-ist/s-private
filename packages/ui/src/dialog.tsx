@@ -3,7 +3,7 @@
 import type * as React from "react";
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { tv, type VariantProps } from "tailwind-variants";
-import { cn, cnWithState } from "./utils/cn";
+import { cn, cnWithState } from "./utils/cn.js";
 
 const Dialog = DialogPrimitive.Root;
 const DialogTrigger = DialogPrimitive.Trigger;

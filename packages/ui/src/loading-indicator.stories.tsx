@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect } from "storybook/test";
-import { LoadingIndicator } from "./loading-indicator";
+import { LoadingIndicator } from "./loading-indicator.js";
 
 const meta = {
 	component: LoadingIndicator,

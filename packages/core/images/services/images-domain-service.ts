@@ -1,7 +1,7 @@
-import type { UserId } from "../../shared-kernel/entities/common-entity.ts";
-import type { Path } from "../entities/image-entity.ts";
-import type { IImagesQueryRepository } from "../repositories/images-query-repository.interface.ts";
-import { DuplicateError } from "../../shared-kernel/errors/error-classes.ts";
+import type { IImagesQueryRepository } from "@s-hirano-ist/s-core/images/repositories/images-query-repository.interface";
+import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import type { Path } from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
+import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 
 /**
  * Domain service for Image business logic.

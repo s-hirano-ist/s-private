@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { ComboboxField } from "./combobox-field";
+import { ComboboxField } from "./combobox-field.js";
 
 const meta = { component: ComboboxField } satisfies Meta<typeof ComboboxField>;
 export default meta;

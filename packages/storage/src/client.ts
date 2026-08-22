@@ -1,6 +1,6 @@
-import type { CfAccessConfig, StorageClientConfig } from "./types.ts";
+import type { CfAccessConfig, StorageClientConfig } from "./types.js";
 import { Client } from "minio";
-import { createCfAccessTransport } from "./cf-access-transport.ts";
+import { createCfAccessTransport } from "./cf-access-transport.js";
 
 export function createMinioClient(
 	config?: StorageClientConfig,

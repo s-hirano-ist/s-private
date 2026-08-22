@@ -2,17 +2,17 @@ import type {
 	ConvertToWebpOptions,
 	ImageMetadata,
 	ThumbnailOptions,
-} from "./shared.ts";
+} from "./shared.js";
 import sharp from "sharp";
-import { detectSupportedImageFormat, fileToBytes } from "./shared.ts";
+import { detectSupportedImageFormat, fileToBytes } from "./shared.js";
 
-export { detectSupportedImageFormat, fileToBytes } from "./shared.ts";
+export { detectSupportedImageFormat, fileToBytes } from "./shared.js";
 export type {
 	ConvertToWebpOptions,
 	ImageMetadata,
 	SupportedImageFormat,
 	ThumbnailOptions,
-} from "./shared.ts";
+} from "./shared.js";
 
 const DEFAULT_WEBP_QUALITY = 80;
 

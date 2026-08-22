@@ -2,7 +2,7 @@
 
 import { Drawer as DrawerPrimitive } from "@base-ui/react/drawer";
 import * as React from "react";
-import { cn, cnWithState } from "./utils/cn";
+import { cn, cnWithState } from "./utils/cn.js";
 
 /**
  * Root drawer component for slide-in panels.

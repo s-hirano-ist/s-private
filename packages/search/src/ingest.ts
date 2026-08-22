@@ -1,20 +1,15 @@
-import type { QdrantPayload } from "./config.ts";
+import type { QdrantPayload } from "./config.js";
+import { setTimeout } from "node:timers/promises";
 import {
 	deletePointsByChunkIds,
 	getExistingHashes,
 	listAllChunkIds,
 	upsertPoints,
-} from "./qdrant-client.ts";
+} from "./qdrant-client.js";
 
 const BATCH_SIZE = 20;
 const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 2000;
-
-async function sleep(ms: number): Promise<void> {
-	return new Promise((resolve) => {
-		setTimeout(resolve, ms);
-	});
-}
 
 async function withRetry<T>(
 	fn: () => Promise<T>,
@@ -26,7 +21,7 @@ async function withRetry<T>(
 		} catch (error) {
 			if (i === retries - 1) throw error;
 			console.log(`  Retry ${i + 1}/${retries} after error...`);
-			await sleep(RETRY_DELAY_MS);
+			await setTimeout(RETRY_DELAY_MS);
 		}
 	}
 	throw new Error("Unreachable");
@@ -106,7 +101,7 @@ export async function ingestChunks(
 		console.log(`  Progress: ${processed}/${changedChunks.length}`);
 
 		// Small delay between batches to avoid overwhelming Qdrant
-		await sleep(100);
+		await setTimeout(100);
 	}
 
 	return {
@@ -144,7 +139,7 @@ export async function pruneOrphans(
 		await withRetry(() => deletePointsByChunkIds(batch));
 		deleted += batch.length;
 		console.log(`  Prune progress: ${deleted}/${orphanIds.length}`);
-		await sleep(100);
+		await setTimeout(100);
 	}
 
 	return { deletedCount: deleted };

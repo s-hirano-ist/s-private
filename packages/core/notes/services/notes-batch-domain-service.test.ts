@@ -1,7 +1,7 @@
-import type { IBatchCommandRepository } from "../../shared-kernel/repositories/batch-command-repository.interface.ts";
+import type { IBatchCommandRepository } from "@s-hirano-ist/s-core/shared-kernel/repositories/batch-command-repository.interface";
+import { NotesBatchDomainService } from "@s-hirano-ist/s-core/notes/services/notes-batch-domain-service";
+import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { makeUserId } from "../../shared-kernel/entities/common-entity.ts";
-import { NotesBatchDomainService } from "./notes-batch-domain-service.ts";
 
 describe("NotesBatchDomainService", () => {
 	let batchCommandRepository: IBatchCommandRepository;

@@ -1,14 +1,3 @@
-import { describe, expect, test, vi } from "vitest";
-import { ZodError } from "zod";
-import {
-	makeId,
-	makeUserId,
-} from "../../shared-kernel/entities/common-entity.ts";
-import {
-	InvalidFormatError,
-	UnexpectedError,
-} from "../../shared-kernel/errors/error-classes.ts";
-import * as entityFactory from "../../shared-kernel/services/entity-factory.ts";
 import {
 	articleEntity,
 	makeArticleTitle,
@@ -18,7 +7,18 @@ import {
 	makeOgTitle,
 	makeQuote,
 	makeUrl,
-} from "../entities/article-entity.ts";
+} from "@s-hirano-ist/s-core/articles/entities/article-entity";
+import {
+	makeId,
+	makeUserId,
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import {
+	InvalidFormatError,
+	UnexpectedError,
+} from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
+import * as entityFactory from "@s-hirano-ist/s-core/shared-kernel/services/entity-factory";
+import { describe, expect, test, vi } from "vitest";
+import { ZodError } from "zod";
 
 describe("articleEntity", () => {
 	describe("makeCategoryName", () => {

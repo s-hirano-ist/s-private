@@ -1,16 +1,16 @@
 import type {
-	Status,
-	UserId,
-} from "../../shared-kernel/entities/common-entity.ts";
-import type { InfraQueryOptions } from "../../shared-kernel/types/query-options.ts";
-import type {
 	BookListItemDTO,
 	ExportedBook,
 	ISBN,
 	UnexportedBook,
-} from "../entities/book-entity.ts";
-import type { BooksOrderBy } from "../types/query-params.ts";
-import type { IBooksCommandRepository } from "./books-command-repository.interface.ts";
+} from "@s-hirano-ist/s-core/books/entities/book-entity";
+import type { IBooksCommandRepository } from "@s-hirano-ist/s-core/books/repositories/books-command-repository.interface";
+import type { BooksOrderBy } from "@s-hirano-ist/s-core/books/types/query-params";
+import type {
+	Status,
+	UserId,
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import type { InfraQueryOptions } from "@s-hirano-ist/s-core/shared-kernel/types/query-options";
 
 /**
  * Parameters for paginated book queries.

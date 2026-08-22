@@ -4,7 +4,7 @@ import {
 	EmptyState,
 	EmptyStateDescription,
 	EmptyStateTitle,
-} from "./empty-state";
+} from "./empty-state.js";
 
 describe("EmptyState", () => {
 	test("renders composable content", () => {

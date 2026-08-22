@@ -67,14 +67,17 @@ jobs:
           persist-credentials: false
           submodules: true
 
-      - name: Verify .nvmrc matches package.json#engines.node
+      - name: Verify .nvmrc satisfies package.json#engines.node
         run: |
-          nvmrc=$(tr -d '[:space:]' < .nvmrc)
-          engines=$(jq -r '.engines.node' package.json)
-          if [ "$nvmrc" != "$engines" ]; then
-            echo "::error::.nvmrc ($nvmrc) and package.json engines.node ($engines) differ — SSOT is .nvmrc"
-            exit 1
-          fi
+          node --input-type=module -e '
+            import packageJson from "./package.json" with { type: "json" };
+            import { readFile } from "node:fs/promises";
+            const version = (await readFile(".nvmrc", "utf8")).trim();
+            const match = /^>=(\d+)$/.exec(packageJson.engines.node);
+            if (!match || Number(version.split(".")[0]) < Number(match[1])) {
+              throw new Error(`.nvmrc (${version}) does not satisfy engines.node (${packageJson.engines.node})`);
+            }
+          '
 
       - uses: ./.github/actions/setup-pnpm
       - run: pnpm format:check

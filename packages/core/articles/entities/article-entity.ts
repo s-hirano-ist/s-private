@@ -24,7 +24,7 @@
  * @module
  */
 
-import { z } from "zod";
+import { ArticleCreatedEvent } from "@s-hirano-ist/s-core/articles/events/article-created-event";
 import {
 	CreatedAt,
 	ExportedStatus,
@@ -34,10 +34,10 @@ import {
 	makeId,
 	UnexportedStatus,
 	UserId,
-} from "../../shared-kernel/entities/common-entity.ts";
-import { createEntityWithErrorHandling } from "../../shared-kernel/services/entity-factory.ts";
-import { isValidHttpUrl } from "../../shared-kernel/services/url-validation.ts";
-import { ArticleCreatedEvent } from "../events/article-created-event.ts";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { createEntityWithErrorHandling } from "@s-hirano-ist/s-core/shared-kernel/services/entity-factory";
+import { isValidHttpUrl } from "@s-hirano-ist/s-core/shared-kernel/services/url-validation";
+import { z } from "zod";
 
 // Value objects
 

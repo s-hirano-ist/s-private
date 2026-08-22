@@ -2,7 +2,7 @@
 import { convertToWebp as convertImageToWebp } from "@s-hirano-ist/s-image-processing/node";
 import { readFile, stat, unlink, writeFile } from "node:fs/promises";
 import { basename, extname, join } from "node:path";
-import { globPaths } from "./lib/glob-paths.ts";
+import { globPaths } from "./lib/glob-paths.js";
 
 const WEBP_QUALITY = 80;
 

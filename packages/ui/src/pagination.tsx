@@ -2,8 +2,8 @@ import type * as React from "react";
 import ChevronLeft from "lucide-react/dist/esm/icons/chevron-left.mjs";
 import ChevronRight from "lucide-react/dist/esm/icons/chevron-right.mjs";
 import MoreHorizontal from "lucide-react/dist/esm/icons/ellipsis.mjs";
-import { type ButtonProps, buttonVariants } from "./button";
-import { cn } from "./utils/cn";
+import { type ButtonProps, buttonVariants } from "./button.js";
+import { cn } from "./utils/cn.js";
 
 /**
  * Pagination component for navigating through multiple pages.

@@ -1,11 +1,11 @@
-import { describe, expect, test } from "vitest";
-import { ZodError } from "zod";
-import { makeUserId } from "../../shared-kernel/entities/common-entity.ts";
 import {
 	makeMarkdown,
 	makeNoteTitle,
 	noteEntity,
-} from "../entities/note-entity.ts";
+} from "@s-hirano-ist/s-core/notes/entities/note-entity";
+import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { describe, expect, test } from "vitest";
+import { ZodError } from "zod";
 
 describe("noteEntity", () => {
 	describe("makeNoteTitle", () => {

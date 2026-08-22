@@ -1,9 +1,9 @@
-import { describe, expect, test } from "vitest";
 import {
 	makeCreatedAt,
 	makeExportedAt,
 	makeUpdatedAt,
-} from "./common-entity.ts";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { describe, expect, test } from "vitest";
 
 describe("common-entity", () => {
 	describe("makeCreatedAt", () => {

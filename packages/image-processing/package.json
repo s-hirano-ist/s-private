@@ -2,11 +2,14 @@
 	"name": "@s-hirano-ist/s-image-processing",
 	"version": "1.0.0",
 	"description": "Shared Sharp-based image processing utilities for s-private",
+	"engines": {
+		"node": ">=24"
+	},
 	"type": "module",
 	"exports": {
 		"./node": {
-			"types": "./src/node.ts",
-			"default": "./src/node.ts"
+			"types": "./dist/node.d.ts",
+			"import": "./dist/node.js"
 		}
 	},
 	"publishConfig": {
@@ -14,7 +17,7 @@
 		"exports": {
 			"./node": {
 				"types": "./dist/node.d.ts",
-				"default": "./dist/node.js"
+				"import": "./dist/node.js"
 			}
 		}
 	},

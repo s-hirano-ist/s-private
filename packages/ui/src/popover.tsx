@@ -2,7 +2,7 @@
 
 import type * as React from "react";
 import { Popover as PopoverPrimitive } from "@base-ui/react/popover";
-import { cnWithState } from "./utils/cn";
+import { cnWithState } from "./utils/cn.js";
 
 const Popover = PopoverPrimitive.Root;
 const PopoverTrigger = PopoverPrimitive.Trigger;

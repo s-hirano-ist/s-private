@@ -3,7 +3,7 @@ import { parseMarkdownFrontmatter } from "@s-hirano-ist/s-search/frontmatter";
 import { dump } from "js-yaml";
 import { readFile, writeFile } from "node:fs/promises";
 import { basename, join } from "node:path";
-import { globPaths } from "./lib/glob-paths.ts";
+import { globPaths } from "./lib/glob-paths.js";
 
 const REQUIRED_KEYS = [
 	"heading",

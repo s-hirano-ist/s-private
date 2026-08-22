@@ -21,7 +21,7 @@
  * @module
  */
 
-import { z } from "zod";
+import { NoteCreatedEvent } from "@s-hirano-ist/s-core/notes/events/note-created-event";
 import {
 	CreatedAt,
 	ExportedStatus,
@@ -31,9 +31,9 @@ import {
 	makeId,
 	UnexportedStatus,
 	UserId,
-} from "../../shared-kernel/entities/common-entity.ts";
-import { createEntityWithErrorHandling } from "../../shared-kernel/services/entity-factory.ts";
-import { NoteCreatedEvent } from "../events/note-created-event.ts";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { createEntityWithErrorHandling } from "@s-hirano-ist/s-core/shared-kernel/services/entity-factory";
+import { z } from "zod";
 
 // Value objects
 

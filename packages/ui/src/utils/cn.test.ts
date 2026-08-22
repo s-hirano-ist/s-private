@@ -1,6 +1,6 @@
 import type { ClassNameValue } from "tailwind-merge";
 import { describe, expect, test } from "vitest";
-import { cn, cnWithState } from "./cn";
+import { cn, cnWithState } from "./cn.js";
 
 describe("cn", () => {
 	test("should merge class names correctly", () => {

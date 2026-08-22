@@ -6,9 +6,6 @@ import prisma from "@/prisma";
 import {
 	type ExportedImage,
 	type ImageListItemDTO,
-	makeContentType,
-	makeFileSize,
-	makePath,
 	makePixel,
 	type UnexportedImage,
 } from "@s-hirano-ist/s-core/images/entities/image-entity";
@@ -19,6 +16,11 @@ import {
 	makeUserId,
 	type Status,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import {
+	makeContentType,
+	makeFileSize,
+	makePath,
+} from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
 
 async function findByPath(
 	path: string,

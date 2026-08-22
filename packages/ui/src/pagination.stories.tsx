@@ -7,7 +7,7 @@ import {
 	PaginationLink,
 	PaginationNext,
 	PaginationPrevious,
-} from "./pagination";
+} from "./pagination.js";
 
 const meta = {
 	component: Pagination,

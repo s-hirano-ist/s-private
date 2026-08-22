@@ -1,17 +1,20 @@
-import { describe, expect, test, vi } from "vitest";
-import { ZodError } from "zod";
-import { makeUserId } from "../../shared-kernel/entities/common-entity.ts";
+import {
+	imageEntity,
+	makePixel,
+} from "@s-hirano-ist/s-core/images/entities/image-entity";
+import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import {
 	makeContentType,
 	makeFileSize,
 	makePath,
-} from "../../shared-kernel/entities/file-entity.ts";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
 import {
 	InvalidFormatError,
 	UnexpectedError,
-} from "../../shared-kernel/errors/error-classes.ts";
-import * as entityFactory from "../../shared-kernel/services/entity-factory.ts";
-import { imageEntity, makePixel } from "./image-entity.ts";
+} from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
+import * as entityFactory from "@s-hirano-ist/s-core/shared-kernel/services/entity-factory";
+import { describe, expect, test, vi } from "vitest";
+import { ZodError } from "zod";
 
 describe("imageEntity", () => {
 	describe("makePixel", () => {

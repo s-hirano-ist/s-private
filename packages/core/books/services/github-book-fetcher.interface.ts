@@ -1,4 +1,4 @@
-import type { UnexportedBook } from "../entities/book-entity.ts";
+import type { UnexportedBook } from "@s-hirano-ist/s-core/books/entities/book-entity";
 
 /**
  * Interface for fetching books from external GitHub repository.

@@ -5,8 +5,8 @@ import CheckIcon from "lucide-react/dist/esm/icons/check.mjs";
 import ChevronsUpDownIcon from "lucide-react/dist/esm/icons/chevrons-up-down.mjs";
 import PlusIcon from "lucide-react/dist/esm/icons/plus.mjs";
 import { type Ref, useState } from "react";
-import { buttonVariants } from "./button";
-import { cn } from "./utils/cn";
+import { buttonVariants } from "./button.js";
+import { cn } from "./utils/cn.js";
 
 export type ComboboxFieldOption = {
 	label: string;

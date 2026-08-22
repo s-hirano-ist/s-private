@@ -1,5 +1,5 @@
 import { describe, expect, test, vi } from "vitest";
-import { invalidateContentCache } from "./cache-invalidation-client.ts";
+import { invalidateContentCache } from "./cache-invalidation-client.js";
 
 describe("invalidateContentCache", () => {
 	test("calls the authenticated internal endpoint for the user and domain", async () => {

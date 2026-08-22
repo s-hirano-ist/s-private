@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { AxeIcon } from "lucide-react";
-import { Input } from "./input";
-import { Label } from "./label";
+import { Input } from "./input.js";
+import { Label } from "./label.js";
 
 const meta = {
 	component: Input,

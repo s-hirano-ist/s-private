@@ -1,12 +1,12 @@
 import type {
+	ArticleTitle,
+	UnexportedArticle,
+} from "@s-hirano-ist/s-core/articles/entities/article-entity";
+import type {
 	Id,
 	Status,
 	UserId,
-} from "../../shared-kernel/entities/common-entity.ts";
-import type {
-	ArticleTitle,
-	UnexportedArticle,
-} from "../entities/article-entity.ts";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 
 /**
  * Command repository interface for the Article domain.

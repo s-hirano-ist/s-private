@@ -1,8 +1,8 @@
-import { ZodError } from "zod";
 import {
 	InvalidFormatError,
 	UnexpectedError,
-} from "../errors/error-classes.ts";
+} from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
+import { ZodError } from "zod";
 
 /**
  * Wraps entity creation with standardized error handling.

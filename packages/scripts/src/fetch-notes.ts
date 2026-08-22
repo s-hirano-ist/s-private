@@ -5,6 +5,7 @@ import {
 	type Status,
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { createPrismaClient } from "@s-hirano-ist/s-database";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
@@ -30,8 +31,6 @@ async function main() {
 		throw new Error("Required environment variables are not set.");
 	}
 
-	// Dynamic import for Prisma ESM compatibility
-	const { createPrismaClient } = await import("@s-hirano-ist/s-database");
 	const prisma = createPrismaClient(env.DATABASE_URL ?? "");
 
 	const notificationService = createPushoverService({

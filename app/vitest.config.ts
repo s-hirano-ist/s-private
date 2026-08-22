@@ -1,8 +1,5 @@
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitest/config";
-
-const __dirname = import.meta.dirname;
 
 export default defineConfig({
 	esbuild: {
@@ -13,13 +10,15 @@ export default defineConfig({
 		setupFiles: ["./vitest-setup.tsx"],
 		include: ["./src/**/*.test.?(c|m)[jt]s?(x)"],
 		exclude: ["./e2e/**/*"],
-		server: { deps: { inline: [/better-auth/u] } }, // FIXME: https://github.com/vitest-dev/vitest/issues/4554
 	},
 	resolve: {
 		alias: {
-			"@": path.resolve(__dirname, "./src"),
-			"@s-hirano-ist/s-ui": path.resolve(__dirname, "../packages/ui"),
-			"@s-hirano-ist/s-core": path.resolve(__dirname, "../packages/core"),
+			"@": path.resolve(import.meta.dirname, "./src"),
+			"@s-hirano-ist/s-ui": path.resolve(import.meta.dirname, "../packages/ui"),
+			"@s-hirano-ist/s-core": path.resolve(
+				import.meta.dirname,
+				"../packages/core",
+			),
 		},
 	},
 });

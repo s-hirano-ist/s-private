@@ -1,6 +1,6 @@
+import { ImageCreatedEvent } from "@s-hirano-ist/s-core/images/events/image-created-event";
+import { ImageDeletedEvent } from "@s-hirano-ist/s-core/images/events/image-deleted-event";
 import { describe, expect, test } from "vitest";
-import { ImageCreatedEvent } from "./image-created-event.ts";
-import { ImageDeletedEvent } from "./image-deleted-event.ts";
 
 describe("ImageCreatedEvent", () => {
 	test("should have eventType 'image.created'", () => {

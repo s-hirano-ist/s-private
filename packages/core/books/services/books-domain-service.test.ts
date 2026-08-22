@@ -1,9 +1,12 @@
-import type { IBooksQueryRepository } from "../../books/repositories/books-query-repository.interface.ts";
+import type { IBooksQueryRepository } from "@s-hirano-ist/s-core/books/repositories/books-query-repository.interface";
+import {
+	makeISBN,
+	makeRating,
+} from "@s-hirano-ist/s-core/books/entities/book-entity";
+import { BooksDomainService } from "@s-hirano-ist/s-core/books/services/books-domain-service";
+import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { makeUserId } from "../../shared-kernel/entities/common-entity.ts";
-import { DuplicateError } from "../../shared-kernel/errors/error-classes.ts";
-import { makeISBN, makeRating } from "../entities/book-entity.ts";
-import { BooksDomainService } from "../services/books-domain-service.ts";
 
 describe("BooksDomainService", () => {
 	let booksQueryRepository: IBooksQueryRepository;

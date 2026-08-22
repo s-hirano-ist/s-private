@@ -2,7 +2,7 @@
 
 import type * as React from "react";
 import { Tabs as TabsPrimitive } from "@base-ui/react/tabs";
-import { cnWithState } from "./utils/cn";
+import { cnWithState } from "./utils/cn.js";
 
 const Tabs = TabsPrimitive.Root;
 

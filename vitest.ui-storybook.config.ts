@@ -1,12 +1,10 @@
 import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
 import { playwright } from "@vitest/browser-playwright";
-import { fileURLToPath } from "node:url";
+import path from "node:path";
 import { defineConfig } from "vitest/config";
 
-const configDirectory = fileURLToPath(
-	new URL("./packages/ui/.storybook", import.meta.url),
-);
-const packageRoot = fileURLToPath(new URL("./packages/ui", import.meta.url));
+const packageRoot = path.resolve(import.meta.dirname, "packages/ui");
+const configDirectory = path.join(packageRoot, ".storybook");
 
 export default defineConfig({
 	plugins: [storybookTest({ configDir: configDirectory })],

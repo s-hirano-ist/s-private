@@ -12,7 +12,8 @@ import { dump } from "js-yaml";
  */
 import { readFile, writeFile } from "node:fs/promises";
 import { basename, join } from "node:path";
-import { globPaths } from "./lib/glob-paths.ts";
+import { setTimeout } from "node:timers/promises";
+import { globPaths } from "./lib/glob-paths.js";
 
 const NO_IMG_SRC = "https://s-hirano.com/notFound.png";
 const NOT_FOUND_HREF = "https://s-hirano.com/404";
@@ -25,11 +26,6 @@ function dumpFrontmatter(data: Record<string, unknown>): string {
 		noRefs: true,
 	});
 }
-
-const sleep = (ms: number): Promise<void> =>
-	new Promise((resolve) => {
-		setTimeout(resolve, ms);
-	});
 
 async function main(): Promise<void> {
 	const dryRun = process.argv.includes("--dry-run");
@@ -62,7 +58,7 @@ async function main(): Promise<void> {
 
 			console.log(`🔍 ${fileName}: Google Books API 問い合わせ中...`);
 			const book = await api.volumes.list({ q: `isbn:${isbn}` });
-			await sleep(API_INTERVAL_MS);
+			await setTimeout(API_INTERVAL_MS);
 
 			if (book.status !== 200) {
 				throw new Error(`Google Books API status ${book.status}`);

@@ -1,7 +1,7 @@
-import type { ContentType, QdrantPayload } from "./config.ts";
+import type { ContentType, QdrantPayload } from "./config.js";
 import { createHash } from "node:crypto";
-import { RAG_CONFIG } from "./config.ts";
-import { parseMarkdownFrontmatter } from "./frontmatter.ts";
+import { RAG_CONFIG } from "./config.js";
+import { parseMarkdownFrontmatter } from "./frontmatter.js";
 
 // JSON article structure
 type ArticleBody = {

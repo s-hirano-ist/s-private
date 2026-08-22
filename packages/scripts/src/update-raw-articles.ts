@@ -4,7 +4,7 @@ import { existsSync } from "node:fs";
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import TurndownService from "turndown";
-import { decodeHtml } from "./lib/html-charset.ts";
+import { decodeHtml } from "./lib/html-charset.js";
 
 const JSON_DIR = "json/article";
 const OUTPUT_DIR = "raw/article";

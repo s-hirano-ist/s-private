@@ -1,4 +1,4 @@
-import type { SortOrder } from "./sort-order.ts";
+import type { SortOrder } from "@s-hirano-ist/s-core/notes/types/sort-order";
 
 /**
  * Available fields for sorting note queries.

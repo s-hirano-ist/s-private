@@ -1,9 +1,12 @@
 import type {
+	NoteTitle,
+	UnexportedNote,
+} from "@s-hirano-ist/s-core/notes/entities/note-entity";
+import type {
 	Id,
 	Status,
 	UserId,
-} from "../../shared-kernel/entities/common-entity.ts";
-import type { NoteTitle, UnexportedNote } from "../entities/note-entity.ts";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 
 /**
  * Command repository interface for the Note domain.

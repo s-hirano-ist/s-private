@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, test } from "vitest";
-import { buildOxfmtArgs, runContentFormat } from "./s-content-format-runner.ts";
+import { buildOxfmtArgs, runContentFormat } from "./s-content-format-runner.js";
 
 const temporaryDirectories: string[] = [];
 

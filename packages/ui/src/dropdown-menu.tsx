@@ -2,7 +2,7 @@
 
 import type * as React from "react";
 import { Menu as MenuPrimitive } from "@base-ui/react/menu";
-import { cn, cnWithState } from "./utils/cn";
+import { cn, cnWithState } from "./utils/cn.js";
 
 const DropdownMenu = MenuPrimitive.Root;
 const DropdownMenuTrigger = MenuPrimitive.Trigger;

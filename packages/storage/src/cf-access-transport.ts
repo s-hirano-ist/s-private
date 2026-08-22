@@ -1,4 +1,4 @@
-import type { CfAccessConfig } from "./types.ts";
+import type { CfAccessConfig } from "./types.js";
 import type { ClientOptions } from "minio";
 import type { RequestOptions } from "node:http";
 import * as https from "node:https";
