@@ -10,7 +10,7 @@
 	},
 	"checkers": ["typescript"],
 	"tsconfigFile": "packages/core/tsconfig.json",
-	"ignorePatterns": ["/.agents/**", "/.claude/**"],
+	"ignorePatterns": ["/.agents/**", "/.claude/**", "/.harness/**"],
 	"mutate": [
 		"packages/core/**/entities/*.ts",
 		"packages/core/**/events/*.ts",
