@@ -1,11 +1,13 @@
 {
 	"$schema": "https://unpkg.com/knip@5/schema.json",
 	"ignoreExportsUsedInFile": true,
-	"ignore": ["e2e/**/*", "scripts/check-secrets.mjs"],
+	"ignore": ["e2e/**/*", "scripts/check-secrets.mjs", "app/oxfmt-tailwind.css"],
+	"ignoreDependencies": ["@secretlint/secretlint-rule-preset-recommend"],
 	"ignoreBinaries": ["mise", "vercel"],
 	"workspaces": {
 		".": {
-			"entry": [".harness/hooks/check-fix.mjs"]
+			"entry": [".harness/hooks/check-fix.mjs"],
+			"ignoreDependencies": ["@tailwindcss/typography"]
 		},
 		"app": {
 			"ignore": ["src/infrastructures/i18n/request.ts"],
