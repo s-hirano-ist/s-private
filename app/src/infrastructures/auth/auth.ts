@@ -57,7 +57,7 @@ const baseURL: BaseURLConfig = env.VERCEL
  *   create/findFirst/update/deleteMany (no `upsert`), so it is unaffected by the
  *   CockroachDB + adapter-pg `upsert` incompatibility.
  * - `genericOAuth` + `auth0`: Auth0 as the sole identity provider. The default
- *   callback is `/api/auth/oauth2/callback/auth0`.
+ *   callback is `/api/auth/callback/auth0`.
  * - `session.expiresIn`: 30-day parity with the former NextAuth config.
  */
 export const auth = betterAuth({
