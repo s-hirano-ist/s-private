@@ -117,6 +117,7 @@
 		"dev:js": "tsup --watch",
 		"dev:css": "tailwindcss -i src/styles.css -o dist/styles.css --watch",
 		"clean": "rm -rf dist",
+		"prepublishOnly": "pnpm run build",
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run",
 		"test:consumer": "tsc -p fixtures/vite/tsconfig.json --noEmit && vite build fixtures/vite",

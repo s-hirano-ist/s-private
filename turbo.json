@@ -34,6 +34,18 @@
 		"VERCEL_ENV"
 	],
 	"tasks": {
+		"//#storybook:build:raw": {
+			"dependsOn": ["@s-hirano-ist/s-ui#build"],
+			"outputs": [".storybook-static/**"]
+		},
+		"//#docs:build:raw": {
+			"dependsOn": ["@s-hirano-ist/s-database#build"],
+			"outputs": ["docs/api/**", "packages/database/erd/**"]
+		},
+		"//#ui-gallery:build:raw": {
+			"dependsOn": ["//#storybook:build:raw", "//#docs:build:raw"],
+			"outputs": [".pages/**"]
+		},
 		"build": {
 			"dependsOn": ["^build"],
 			"outputs": ["dist/**", ".next/**", "!.next/cache/**", "src/generated/**"]
