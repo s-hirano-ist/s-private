@@ -10,13 +10,11 @@
  * @module
  */
 
-import { genericOAuthClient } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
 /**
- * The Better Auth client. Exposes `signIn.oauth2(...)`, `signOut()`, session
- * hooks, etc. The genericOAuth client plugin enables the Auth0 (OIDC) flow.
+ * The Better Auth client. Exposes `signIn.social(...)`, `signOut()`, session
+ * hooks, etc. Generic OAuth providers are registered as standard social
+ * providers by the server plugin.
  */
-export const authClient = createAuthClient({
-	plugins: [genericOAuthClient()],
-});
+export const authClient = createAuthClient();
