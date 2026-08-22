@@ -34,7 +34,7 @@ function ToastList({ dismissLabel }: { dismissLabel: string }) {
 	const { toasts } = Toast.useToastManager();
 	return toasts.map((toastItem) => (
 		<Toast.Root
-			className="sui:pointer-events-auto sui:absolute sui:right-0 sui:bottom-0 sui:flex sui:w-full sui:origin-bottom sui:items-start sui:gap-3 sui:rounded-md sui:border sui:bg-background sui:p-4 sui:text-primary sui:shadow-lg sui:transition-[transform,opacity] sui:duration-200 sui:[transform:translateY(calc(var(--toast-offset-y)*-1))] sui:data-[ending-style]:opacity-0 sui:data-[starting-style]:translate-y-2 sui:data-[starting-style]:opacity-0 sui:sm:w-96"
+			className="sui:pointer-events-auto sui:absolute sui:right-0 sui:bottom-0 sui:flex sui:w-full sui:origin-bottom sui:[transform:translateY(calc(var(--toast-offset-y)*-1))] sui:items-start sui:gap-3 sui:rounded-md sui:border sui:bg-background sui:p-4 sui:text-primary sui:shadow-lg sui:transition-[transform,opacity] sui:duration-200 sui:data-[ending-style]:opacity-0 sui:data-[starting-style]:translate-y-2 sui:data-[starting-style]:opacity-0 sui:sm:w-96"
 			key={toastItem.id}
 			swipeDirection={["left", "right"]}
 			toast={toastItem}
