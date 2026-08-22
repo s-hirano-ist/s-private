@@ -32,7 +32,7 @@
 		"bench": "vitest bench --project bench",
 		"bench:components": "vitest bench --project app-bench",
 		"bench:all": "vitest bench --project bench --project app-bench",
-		"test": "vitest run --project app --project components --project core --project image-processing --project notification --project scripts --project search --project storybook",
+		"test": "STORYBOOK_DISABLE_TELEMETRY=true vitest run --project app --project components --project core --project image-processing --project notification --project scripts --project search --project storybook",
 		"test:watch": "vitest",
 		"typecheck": "pnpm --recursive typecheck",
 		"license:summary": "pnpm licenses list > library-license.txt",

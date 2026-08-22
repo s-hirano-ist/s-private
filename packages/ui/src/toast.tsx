@@ -4,7 +4,7 @@ import { Toast } from "@base-ui/react/toast";
 import CircleCheckIcon from "lucide-react/dist/esm/icons/circle-check.mjs";
 import CircleXIcon from "lucide-react/dist/esm/icons/circle-x.mjs";
 import XIcon from "lucide-react/dist/esm/icons/x.mjs";
-import { createContext, type ReactNode, use, useMemo, useRef } from "react";
+import { createContext, type ReactNode, use, useMemo, useState } from "react";
 
 export type ToastType = "default" | "error" | "success";
 
@@ -66,11 +66,8 @@ export function ToastProvider({
 	limit = 3,
 	timeout = 2000,
 }: ToastProviderProps) {
-	const managerRef = useRef<ReturnType<typeof Toast.createToastManager> | null>(
-		null,
-	);
-	managerRef.current ??= Toast.createToastManager();
-	const manager = managerRef.current;
+	// oxlint-disable-next-line react/hook-use-state -- the manager is an immutable provider singleton; no setter is needed.
+	const [manager] = useState(() => Toast.createToastManager());
 	const api = useMemo<ToastApi>(
 		() => ({
 			show: (title) => manager.add({ title, type: "default" }),

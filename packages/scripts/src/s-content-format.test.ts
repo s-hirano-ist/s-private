@@ -56,7 +56,7 @@ describe("runContentFormat", () => {
 			writeFile(typescriptPath, "const   value=1\n"),
 		]);
 
-		const result = await runContentFormat([], directory);
+		const result = await runContentFormat([], directory, { stdio: "ignore" });
 
 		expect(result).toEqual({ code: 0, signal: null });
 		expect(await readFile(markdownPath, "utf8")).not.toContain("-   item");
@@ -71,13 +71,23 @@ describe("runContentFormat", () => {
 		const original = '{"name":"example","enabled":true}\n';
 		await writeFile(jsonPath, original);
 
-		const unformattedResult = await runContentFormat(["--check"], directory);
+		const unformattedResult = await runContentFormat(["--check"], directory, {
+			stdio: "ignore",
+		});
 
 		expect(unformattedResult.code).not.toBe(0);
 		expect(await readFile(jsonPath, "utf8")).toBe(original);
 
-		expect((await runContentFormat([], directory)).code).toBe(0);
-		expect((await runContentFormat(["--check"], directory)).code).toBe(0);
+		expect(
+			(await runContentFormat([], directory, { stdio: "ignore" })).code,
+		).toBe(0);
+		expect(
+			(
+				await runContentFormat(["--check"], directory, {
+					stdio: "ignore",
+				})
+			).code,
+		).toBe(0);
 	});
 
 	test("keeps default exclusions and explicit directory boundaries", async () => {
@@ -101,7 +111,9 @@ describe("runContentFormat", () => {
 			writeFile(rawPath, unformattedMarkdown),
 		]);
 
-		const result = await runContentFormat(["selected"], directory);
+		const result = await runContentFormat(["selected"], directory, {
+			stdio: "ignore",
+		});
 
 		expect(result.code).toBe(0);
 		expect(await readFile(selectedPath, "utf8")).not.toBe(unformattedJson);

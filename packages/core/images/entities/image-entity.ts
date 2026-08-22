@@ -23,7 +23,7 @@
  * @module
  */
 
-import z from "zod";
+import { z } from "zod";
 import {
 	CreatedAt,
 	ExportedStatus,

@@ -507,6 +507,11 @@
 			"env": {
 				"browser": true,
 				"node": true
+			},
+			"rules": {
+				// TypeScript allows a value and its inferred type alias to share a name. The compiler
+				// still reports actual duplicate declarations during typecheck.
+				"no-redeclare": "off"
 			}
 		},
 		{

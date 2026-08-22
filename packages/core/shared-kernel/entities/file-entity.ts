@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod";
 import { idGenerator } from "../services/id-generator.ts";
 
 // Value objects

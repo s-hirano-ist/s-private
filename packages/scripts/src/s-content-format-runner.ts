@@ -37,6 +37,10 @@ export type ContentFormatResult = {
 	signal: NodeJS.Signals | null;
 };
 
+export type ContentFormatOptions = {
+	stdio?: "ignore" | "inherit";
+};
+
 function resolveOxfmtBin(): string {
 	const packageJsonPath = require.resolve("oxfmt/package.json");
 	const manifest = JSON.parse(
@@ -98,11 +102,12 @@ export function buildOxfmtArgs(rawArgs: readonly string[]): string[] {
 export function runContentFormat(
 	rawArgs: readonly string[],
 	cwd = process.cwd(),
+	options: ContentFormatOptions = {},
 ): Promise<ContentFormatResult> {
 	const child = spawn(
 		process.execPath,
 		[resolveOxfmtBin(), ...buildOxfmtArgs(rawArgs)],
-		{ cwd, stdio: "inherit" },
+		{ cwd, stdio: options.stdio ?? "inherit" },
 	);
 
 	return new Promise((resolve, reject) => {
