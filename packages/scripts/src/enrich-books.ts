@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import { books as googleBooksApis } from "@googleapis/books";
 import { parseMarkdownFrontmatter } from "@s-hirano-ist/s-search/frontmatter";
-import { glob } from "glob";
 import { dump } from "js-yaml";
 /**
  * markdown/book/*.md の frontmatter について、毎回 Google Books API を呼び出して
@@ -13,6 +12,7 @@ import { dump } from "js-yaml";
  */
 import { readFile, writeFile } from "node:fs/promises";
 import { basename, join } from "node:path";
+import { globPaths } from "./lib/glob-paths.ts";
 
 const NO_IMG_SRC = "https://s-hirano.com/notFound.png";
 const NOT_FOUND_HREF = "https://s-hirano.com/404";
@@ -43,7 +43,7 @@ async function main(): Promise<void> {
 
 	const api = googleBooksApis({ version: "v1", auth: apiKey });
 
-	const files = await glob(`${bookDir}/*.md`);
+	const files = await globPaths(`${bookDir}/*.md`);
 	console.log(
 		`📁 ${files.length} 件の markdown を検出しました。${dryRun ? " (dry-run)" : ""}`,
 	);

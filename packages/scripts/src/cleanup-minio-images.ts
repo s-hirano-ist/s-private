@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import { createPushoverService } from "@s-hirano-ist/s-notification";
 import { createMinioClient, type MinioClient } from "@s-hirano-ist/s-storage";
-import { glob } from "glob";
 import { basename, extname } from "node:path";
+import { globPaths } from "./lib/glob-paths.ts";
 
 const SCRIPT_NAME = "cleanup-minio-images";
 
@@ -67,7 +67,7 @@ async function main() {
 
 	try {
 		// 1. ローカルファイル一覧取得
-		const localFiles = await glob(`${contentsPath}/image/dump/*`);
+		const localFiles = await globPaths(`${contentsPath}/image/dump/*`);
 		const localFileNames = new Set(
 			localFiles.filter((f) => isImageFile(f)).map((f) => basename(f)),
 		);

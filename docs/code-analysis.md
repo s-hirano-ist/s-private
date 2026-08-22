@@ -121,7 +121,7 @@ pnpm deps:graph      # 依存関係グラフをmermaidとして出力（dependen
 
 ## Lint/Format: oxlint主体 + コンテンツESLint、oxfmt
 
-TypeScript/JavaScript は oxlint に一本化した状態を維持し、oxlint が扱わない YAML/JSON のみ ESLint で検査する。Markdown は Markdownlint で検査する。oxlint 設定は `.oxlintrc.json`（JSONC）、構造化設定 lint は `eslint.config.js`、フォーマットは `.oxfmtrc.json`。`pnpm lint` / `pnpm lint:fix` は oxlint と対象を YAML/JSON 系に限定した ESLint を順に実行する。
+TypeScript/JavaScript は oxlint に一本化した状態を維持し、oxlint が扱わない YAML/JSON のみ ESLint で検査する。Markdown は Rust 製の rumdl、秘密情報は Go 製の Gitleaks で検査する。ネイティブツールのバージョンと配布物チェックサムは `.mise.toml` と `mise.lock` に固定する。oxlint 設定は `.oxlintrc.json`（JSONC）、構造化設定 lint は `eslint.config.js`、フォーマットは `.oxfmtrc.json`。`pnpm lint` / `pnpm lint:fix` は oxlint と対象を YAML/JSON 系に限定した ESLint を順に実行する。
 
 役割分担:
 - **oxlint**: 旧 ESLint の全ルール。typescript-eslint strict+stylistic type-checked（`options.typeAware`, tsgolint）、`@next/*`→native `nextjs`、`@vitest/*`→native `vitest`、`eslint-plugin-regexp`/`eslint-plugin-storybook`（JS plugin）、Prisma raw-SQL ガード（`eslint-js/no-restricted-syntax` via `oxlint-plugin-eslint`）。`@eslint-react` の明示ルールは native へ: use-state→`react/hook-use-state`、jsx-no-useless-fragment→`react/jsx-no-useless-fragment`、dom-no-dangerously-set-innerhtml→`react/no-danger`、no-array-index-key→`react/no-array-index-key`。set-state-in-effect は `eslint-plugin-react-hooks`（alias `react-hooks-js`）。Unicorn の `prefer-export-from` / `prefer-single-call` は native Rust ルールを使用し、非推奨の `no-array-push-push` は `prefer-single-call` に統合。
@@ -129,8 +129,8 @@ TypeScript/JavaScript は oxlint に一本化した状態を維持し、oxlint �
 - **dependency-cruiser**: Clean Architecture 層境界（`eslint-plugin-boundaries` から移植。oxlint の JS plugin は `settings` の boundaries/* キーを受け付けず動作不可のため）。`.dependency-cruiser.cjs` の `boundary-*` ルール（allow-list を deny-list に翻訳、29 本）。
 - **oxfmt**: format 全般（Prettier互換、タブ・行幅80）+ import 整理（sortImports）+ Tailwind class 並べ替え（sortTailwindcss、`cn`/`clsx`/`tv`）。旧 Biome の format + organizeImports + useSortedClasses を置換。
 - **Stylelint**: CSS 構文、無効な宣言の組み合わせ、対象ブラウザで未対応の機能、最低限のプロパティ順を検査する。プロジェクトで使用するTailwind CSSのディレクティブと関数は明示的に許可する。
-- **Markdownlint**: 手書き Markdown の構造を検査する。既存違反ファイルは `.markdownlint-cli2.jsonc` の baseline に列挙し、修正完了時に該当 entry を削除する。生成 docs、CHANGELOG、agent skills は対象外。
-- **Secretlint**: recommended preset でコミット済みファイルの credential、token、秘密鍵、接続文字列を検査する。ドキュメント上のダミー値は理由付きの局所 disable のみ許可する。
+- **rumdl**: Rust ネイティブ実装で手書き Markdown の構造を検査する。既存違反ファイルは `.rumdl.toml` の baseline に列挙し、修正完了時に該当 entry を削除する。生成 docs、CHANGELOG、agent skills は対象外。
+- **Gitleaks**: デフォルトルールと `.gitleaks.toml` のプロジェクト固有ルールで credential、token、秘密鍵、接続文字列を検査する。`scripts/check-secrets.mjs` は合成secretを標準入力で先に検知させ、ルールやバイナリが機能しない状態を fail-close する。検知値は常に完全マスクする。
 
 補助 lint のコマンド:
 
@@ -139,10 +139,10 @@ pnpm lint:css          # CSS 検査
 pnpm lint:css:fix      # CSS の安全な自動修正
 pnpm lint:md           # Markdown 検査（baseline を除く）
 pnpm lint:md:fix       # Markdown の安全な自動修正
-pnpm lint:secret       # secret 検査（出力は mask）
+pnpm lint:secret       # secret 検査（自己診断付き、出力は完全 mask）
 ```
 
-CI の `supplemental-lint` job で3種すべてを検査する。ローカルでは Husky + lint-staged が staged file に対して formatter と安全な fix を直列実行し、最後に Secretlint を実行する。pre-commit の oxlint は高速化と Next.js type generation への非依存化のため非 type-aware とし、完全な type-aware 検査（`.oxlintrc.json` の `options.typeAware: true`）は `pnpm lint` と CI で担保する。
+CI の `supplemental-lint` job で3種すべてを検査する。CI の mise action はコミット SHA 固定で、`mise.lock` の checksum を使って rumdl と Gitleaks だけを導入する。ローカルでは Husky + lint-staged が staged file に対して formatter と安全な fix を直列実行し、最後にリポジトリ全体へ Gitleaks を1回だけ実行する。pre-commit の oxlint は高速化と Next.js type generation への非依存化のため非 type-aware とし、完全な type-aware 検査（`.oxlintrc.json` の `options.typeAware: true`）は `pnpm lint` と CI で担保する。
 - 旧 Biome の base lint は oxlint へ吸収（`categories.correctness="error"` + style ルール移植: noParameterAssign→`no-param-reassign`、useSelfClosingElements→`react/self-closing-comp`、useNumberNamespace→`unicorn/prefer-number-properties`、noUselessElse→`no-else-return` ほか）。`noExplicitAny` は `typescript/no-explicit-any="error"` に統一。
 
 新規有効化（旧コメントアウト分）: `jsx-a11y`（oxlint native, error）。

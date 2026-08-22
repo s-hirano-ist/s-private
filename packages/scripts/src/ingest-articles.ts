@@ -6,9 +6,9 @@ import {
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
-import { glob } from "glob";
 import { readFile } from "node:fs/promises";
 import { basename } from "node:path";
+import { globPaths } from "./lib/glob-paths.ts";
 
 const SCRIPT_NAME = "ingest-articles";
 
@@ -229,7 +229,7 @@ async function main() {
 	}
 
 	async function ingestArticles() {
-		const files = await glob(`${contentsPath}/json/article/*.json`);
+		const files = await globPaths(`${contentsPath}/json/article/*.json`);
 		console.log(`📁 ${files.length} 件のJSONファイルを検出しました。`);
 
 		const existingArticles = await prisma.article.findMany({

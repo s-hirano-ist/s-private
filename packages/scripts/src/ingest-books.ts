@@ -10,9 +10,9 @@ import { createWebpThumbnail } from "@s-hirano-ist/s-image-processing/node";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
 import { parseMarkdownFrontmatter } from "@s-hirano-ist/s-search/frontmatter";
 import { createMinioClient } from "@s-hirano-ist/s-storage";
-import { glob } from "glob";
 import { readFile } from "node:fs/promises";
 import { basename, extname } from "node:path";
+import { globPaths } from "./lib/glob-paths.ts";
 
 type BookFrontmatter = {
 	googleAuthors?: string[];
@@ -205,10 +205,10 @@ async function main() {
 	}
 
 	async function ingestBooks() {
-		const files = await glob(`${contentsPath}/markdown/book/*.md`);
+		const files = await globPaths(`${contentsPath}/markdown/book/*.md`);
 		console.log(`📁 ${files.length} 件のファイルを検出しました。`);
 
-		const imageFiles = await glob(`${contentsPath}/image/book/*`);
+		const imageFiles = await globPaths(`${contentsPath}/image/book/*`);
 		const bookImageMap = new Map<string, string>();
 		for (const f of imageFiles) {
 			if (getContentType(f) === null) continue;

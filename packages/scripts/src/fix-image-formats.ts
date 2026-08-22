@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import { convertToWebp as convertImageToWebp } from "@s-hirano-ist/s-image-processing/node";
-import { glob } from "glob";
 import { readFile, stat, unlink, writeFile } from "node:fs/promises";
 import { basename, extname, join } from "node:path";
+import { globPaths } from "./lib/glob-paths.ts";
 
 const WEBP_QUALITY = 80;
 
@@ -32,7 +32,7 @@ async function processDirectory(
 	label: string,
 	dryRun: boolean,
 ): Promise<{ converted: number; errors: number; skipped: number }> {
-	const files = await glob(`${directory}/*`);
+	const files = await globPaths(`${directory}/*`);
 	const convertible = files.filter((filePath) => isConvertibleImage(filePath));
 
 	console.log(

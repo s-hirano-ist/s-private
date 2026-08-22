@@ -1,0 +1,37 @@
+[global]
+respect-gitignore = true
+flavor = "gfm"
+disable = ["MD013", "MD033"]
+exclude = [
+	".git/**",
+	"node_modules/**",
+	".agents/**",
+	".claude/**",
+	".harness/**",
+	"docs/api/**",
+	"**/CHANGELOG.md",
+	"dependency-graph.md",
+	"CLAUDE.md",
+
+	# Baseline: remove an entry after fixing all violations in that file.
+	"AGENTS.md",
+	"README.md",
+	"SECURITY.md",
+	"docs/architecture.md",
+	"docs/cockroachdb-role-minimization-runbook.md",
+	"docs/code-analysis.md",
+	"docs/domain-model.md",
+	"docs/performance-profiling.md",
+	"docs/setup.md",
+	"docs/testing.md",
+	"docs/vps-deployment.md",
+	"issues/feature-004-advanced-image-viewer.md",
+	"issues/feature-008-push-notification.md",
+	"issues/perf-006-performance-observer-rum.md",
+	"issues/perf-009-edge-runtime-cloudflare.md",
+	"issues/refactor-005-server-actions-middleware.md",
+	"issues/refactor-006-cockroachdb-migrate-dev-limitation.md",
+	"issues/storybook-002-visual-regression-testing.md",
+	"packages/core/README.md",
+	"packages/search/SPECIFICATION.md",
+]
