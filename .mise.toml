@@ -9,5 +9,5 @@ _.file = ".env.local"
 pnpm = "11.22.0"
 doppler = { version = "3.76.5", exe = "doppler" }
 "npm:agent-browser" = "0.34.0"
-rumdl = "0.2.49"
-gitleaks = "8.29.1"
+rumdl = "v0.2.58"
+gitleaks = "8.30.1"
