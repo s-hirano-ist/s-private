@@ -23,6 +23,7 @@
 - [Event-Driven Architecture Pattern](#event-driven-architecture-pattern)
 - [Repository CQRS Pattern](#repository-cqrs-pattern)
 - [Dependency Injection Factory Pattern](#dependency-injection-factory-pattern)
+- [Workspace task graph](#workspace-task-graph)
 
 ## クリーンアーキテクチャの構成
 
@@ -1922,3 +1923,9 @@ const result = await addArticleCore(formData, testDeps);
 - ファクトリ関数でデフォルト依存をマージし、テスト時のモック注入を容易に
 - デフォルトシングルトン（`domainServiceFactory`）は本番で使用
 - `createDomainServiceFactory`はテストでカスタム依存を注入する際に使用
+
+## Workspace task graph
+
+Workspace package 間の依存関係は各 `package.json` の `workspace:*` dependency を正本とし、task 間の依存関係と成果物はルートの `turbo.json` を正本とする。`build`、`dev`、`typecheck` に加え、Storybook や Pages など build 成果物を読むルート task も Turborepo 経由で実行し、consumer 側の script から依存 package の build を手動で呼び出さない。依存順を補うための `prebuild`、`predev`、`pretypecheck` などの lifecycle script も追加しない。公開 package は別 repository から単独利用されるため、配布対象の `dist` や generated code を package 自身の publish lifecycle で生成し、root task の事前実行に依存させない。
+
+Turborepo はローカルキャッシュのみを利用する。remote cache や Vercel 連携は構成しない。

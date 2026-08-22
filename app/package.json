@@ -6,7 +6,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "doppler run -- next dev",
-		"build": "pnpm --filter @s-hirano-ist/s-ui build && pnpm --filter @s-hirano-ist/s-database prisma:generate && if [ -n \"$CI\" ] || ! command -v doppler >/dev/null 2>&1; then next build; else doppler run -- next build; fi",
+		"build": "if [ -n \"$CI\" ] || ! command -v doppler >/dev/null 2>&1; then next build; else doppler run -- next build; fi",
 		"analyze": "doppler run -- next experimental-analyze",
 		"start": "if [ -n \"$CI\" ]; then next start; else doppler run -- next start; fi",
 		"typegen": "next typegen",

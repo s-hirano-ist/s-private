@@ -1,0 +1,82 @@
+{
+	"$schema": "https://turborepo.com/schema.json",
+	"cacheDir": ".turbo/cache",
+	"globalPassThroughEnv": [
+		"AUTH0_CLIENT_ID",
+		"AUTH0_CLIENT_SECRET",
+		"AUTH0_ISSUER_BASE_URL",
+		"AUTH_SECRET",
+		"BETTER_AUTH_URL",
+		"CACHE_INVALIDATION_SECRET",
+		"CF_ACCESS_CLIENT_ID",
+		"CF_ACCESS_CLIENT_SECRET",
+		"CI",
+		"DATABASE_URL",
+		"DOPPLER_TOKEN",
+		"MINIO_ACCESS_KEY",
+		"MINIO_BUCKET_NAME",
+		"MINIO_HOST",
+		"MINIO_PORT",
+		"MINIO_SECRET_KEY",
+		"MINIO_USE_SSL",
+		"NEXT_PUBLIC_SENTRY_DSN",
+		"NODE_TLS_REJECT_UNAUTHORIZED",
+		"PUSHOVER_APP_TOKEN",
+		"PUSHOVER_URL",
+		"PUSHOVER_USER_KEY",
+		"QDRANT_API_KEY",
+		"QDRANT_COLLECTION_NAME",
+		"QDRANT_URL",
+		"SENTRY_AUTH_TOKEN",
+		"SENTRY_REPORT_URL",
+		"SKIP_ENV_VALIDATION",
+		"VERCEL",
+		"VERCEL_ENV"
+	],
+	"tasks": {
+		"//#lint:raw": {
+			"dependsOn": ["@s-hirano-ist/s-ui#build"]
+		},
+		"//#lint:fix:raw": {
+			"dependsOn": ["@s-hirano-ist/s-ui#build"],
+			"cache": false
+		},
+		"//#storybook:build:raw": {
+			"dependsOn": ["@s-hirano-ist/s-ui#build"],
+			"outputs": [".storybook-static/**"]
+		},
+		"//#docs:build:raw": {
+			"dependsOn": ["@s-hirano-ist/s-database#build"],
+			"outputs": ["docs/api/**", "packages/database/erd/**"]
+		},
+		"//#ui-gallery:build:raw": {
+			"dependsOn": ["//#storybook:build:raw", "//#docs:build:raw"],
+			"outputs": [".pages/**"]
+		},
+		"build": {
+			"dependsOn": ["^build"],
+			"outputs": ["dist/**", ".next/**", "!.next/cache/**", "src/generated/**"]
+		},
+		"typecheck": {
+			"dependsOn": ["^build"]
+		},
+		"dev": {
+			"cache": false,
+			"persistent": true
+		},
+		"@s-hirano-ist/s-ui#dev": {
+			"dependsOn": ["build"],
+			"cache": false,
+			"persistent": true
+		},
+		"s-private-app#dev": {
+			"dependsOn": ["^build"],
+			"cache": false,
+			"persistent": true
+		},
+		"s-private-app#typecheck": {
+			"dependsOn": ["^build"],
+			"outputs": [".next/types/**"]
+		}
+	}
+}
