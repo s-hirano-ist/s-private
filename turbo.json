@@ -35,10 +35,28 @@
 	],
 	"tasks": {
 		"//#lint:raw": {
-			"dependsOn": ["@s-hirano-ist/s-ui#build"]
+			"dependsOn": [
+				"@s-hirano-ist/s-core#build",
+				"@s-hirano-ist/s-database#build",
+				"@s-hirano-ist/s-image-processing#build",
+				"@s-hirano-ist/s-notification#build",
+				"@s-hirano-ist/s-scripts#build",
+				"@s-hirano-ist/s-search#build",
+				"@s-hirano-ist/s-storage#build",
+				"@s-hirano-ist/s-ui#build"
+			]
 		},
 		"//#lint:fix:raw": {
-			"dependsOn": ["@s-hirano-ist/s-ui#build"],
+			"dependsOn": [
+				"@s-hirano-ist/s-core#build",
+				"@s-hirano-ist/s-database#build",
+				"@s-hirano-ist/s-image-processing#build",
+				"@s-hirano-ist/s-notification#build",
+				"@s-hirano-ist/s-scripts#build",
+				"@s-hirano-ist/s-search#build",
+				"@s-hirano-ist/s-storage#build",
+				"@s-hirano-ist/s-ui#build"
+			],
 			"cache": false
 		},
 		"//#storybook:build:raw": {
