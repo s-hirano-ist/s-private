@@ -18,18 +18,18 @@ provenance = "github-attestations"
 provenance_verified = true
 
 [[tools.gitleaks]]
-version = "8.29.1"
+version = "8.30.1"
 backend = "aqua:gitleaks/gitleaks"
 
 [tools.gitleaks."platforms.linux-x64"]
-checksum = "sha256:e4eb209d04e20339d77122a3bdf9cd41351255cfb27ebcb75e85325e04f88924"
-url = "https://github.com/gitleaks/gitleaks/releases/download/v8.29.1/gitleaks_8.29.1_linux_x64.tar.gz"
-url_api = "https://api.github.com/repos/gitleaks/gitleaks/releases/assets/318515604"
+checksum = "sha256:551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb"
+url = "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz"
+url_api = "https://api.github.com/repos/gitleaks/gitleaks/releases/assets/378332058"
 
 [tools.gitleaks."platforms.macos-arm64"]
-checksum = "sha256:69836c841d7e648fb30ff4846f8c3587855c5754ed02b8510caaf6008f65d177"
-url = "https://github.com/gitleaks/gitleaks/releases/download/v8.29.1/gitleaks_8.29.1_darwin_arm64.tar.gz"
-url_api = "https://api.github.com/repos/gitleaks/gitleaks/releases/assets/318515314"
+checksum = "sha256:b40ab0ae55c505963e365f271a8d3846efbc170aa17f2607f13df610a9aeb6a5"
+url = "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_darwin_arm64.tar.gz"
+url_api = "https://api.github.com/repos/gitleaks/gitleaks/releases/assets/378332059"
 
 [[tools.node]]
 version = "24.19.0"
@@ -64,17 +64,17 @@ url_api = "https://api.github.com/repos/pnpm/pnpm/releases/assets/515895947"
 provenance = "github-attestations"
 
 [[tools.rumdl]]
-version = "0.2.49"
+version = "v0.2.58"
 backend = "aqua:rvben/rumdl"
 
 [tools.rumdl."platforms.linux-x64"]
-checksum = "sha256:7af6d85b0682777d2f03c7fadb6c43a603b2e5385efe9dacbc81558aeceb1399"
-url = "https://github.com/rvben/rumdl/releases/download/v0.2.49/rumdl-v0.2.49-x86_64-unknown-linux-musl.tar.gz"
-url_api = "https://api.github.com/repos/rvben/rumdl/releases/assets/499242525"
+checksum = "sha256:00409350e66a44b7cec80834d58584056f21c14310a129eb43256e3c8a399156"
+url = "https://github.com/rvben/rumdl/releases/download/v0.2.58/rumdl-v0.2.58-x86_64-unknown-linux-gnu.tar.gz"
+url_api = "https://api.github.com/repos/rvben/rumdl/releases/assets/521255422"
 provenance = "github-attestations"
 
 [tools.rumdl."platforms.macos-arm64"]
-checksum = "sha256:73a5646aad1bd86f9e2c5cc3fd996e083b5412f47d452af1da0a255727af29b3"
-url = "https://github.com/rvben/rumdl/releases/download/v0.2.49/rumdl-v0.2.49-aarch64-apple-darwin.tar.gz"
-url_api = "https://api.github.com/repos/rvben/rumdl/releases/assets/499242521"
+checksum = "sha256:d443a981997e522f53094b1f3799777be8d712e47aa6f83986935912f1adf5b0"
+url = "https://github.com/rvben/rumdl/releases/download/v0.2.58/rumdl-v0.2.58-aarch64-apple-darwin.tar.gz"
+url_api = "https://api.github.com/repos/rvben/rumdl/releases/assets/521255433"
 provenance = "github-attestations"
