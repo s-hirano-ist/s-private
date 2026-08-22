@@ -73,9 +73,10 @@ jobs:
             import packageJson from "./package.json" with { type: "json" };
             import { readFile } from "node:fs/promises";
             const version = (await readFile(".nvmrc", "utf8")).trim();
-            const match = /^>=(\d+)$/.exec(packageJson.engines.node);
-            if (!match || Number(version.split(".")[0]) < Number(match[1])) {
-              throw new Error(`.nvmrc (${version}) does not satisfy engines.node (${packageJson.engines.node})`);
+            const range = packageJson.engines.node;
+            const minimumMajor = Number(range.replace(/^>=/, ""));
+            if (!range.startsWith(">=") || !Number.isInteger(minimumMajor) || Number(version.split(".")[0]) < minimumMajor) {
+              throw new Error(".nvmrc (" + version + ") does not satisfy engines.node (" + range + ")");
             }
           '
 
