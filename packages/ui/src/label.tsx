@@ -1,6 +1,6 @@
 import type * as React from "react";
 import { tv, type VariantProps } from "tailwind-variants";
-import { cn } from "./utils/cn";
+import { cn } from "./utils/cn.js";
 
 /**
  * Label style variants using tailwind-variants.

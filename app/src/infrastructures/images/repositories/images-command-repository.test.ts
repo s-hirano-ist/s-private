@@ -1,17 +1,17 @@
 import type { Status } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import prisma from "@/prisma";
-import {
-	makeContentType,
-	makeFileSize,
-	makePixel,
-	Path,
-} from "@s-hirano-ist/s-core/images/entities/image-entity";
+import { makePixel } from "@s-hirano-ist/s-core/images/entities/image-entity";
 import {
 	makeCreatedAt,
 	makeId,
 	makeUnexportedStatus,
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import {
+	makeContentType,
+	makeFileSize,
+	Path,
+} from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { imagesCommandRepository } from "./images-command-repository";
 

@@ -1,6 +1,3 @@
-import { describe, expect, test } from "vitest";
-import { ZodError } from "zod";
-import { makeUserId } from "../../shared-kernel/entities/common-entity.ts";
 import {
 	bookEntity,
 	makeBookMarkdown,
@@ -13,7 +10,10 @@ import {
 	makeISBN,
 	makeRating,
 	makeTags,
-} from "../entities/book-entity.ts";
+} from "@s-hirano-ist/s-core/books/entities/book-entity";
+import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { describe, expect, test } from "vitest";
+import { ZodError } from "zod";
 
 describe("booksEntity", () => {
 	describe("makeISBN", () => {

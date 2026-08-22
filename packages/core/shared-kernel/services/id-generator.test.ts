@@ -1,5 +1,8 @@
+import {
+	idGenerator,
+	uuidv7,
+} from "@s-hirano-ist/s-core/shared-kernel/services/id-generator";
 import { describe, expect, test } from "vitest";
-import { idGenerator, uuidv7 } from "./id-generator.ts";
 
 describe("IdGenerator", () => {
 	test("should generate valid UUIDv7 using function", () => {

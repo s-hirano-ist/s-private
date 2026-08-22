@@ -10,8 +10,8 @@ import {
 	getCollectionStats,
 } from "@s-hirano-ist/s-search/qdrant-client";
 import { readFileSync } from "node:fs";
-import { globPaths } from "../lib/glob-paths.ts";
-import { INGEST_CONFIG } from "./ingest-config.ts";
+import { globPaths } from "../lib/glob-paths.js";
+import { INGEST_CONFIG } from "./ingest-config.js";
 
 type FileInfo = {
 	contentType: ContentType;

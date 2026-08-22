@@ -15,7 +15,7 @@ import {
 	makeContentType,
 	makeFileSize,
 	makePath,
-} from "@s-hirano-ist/s-core/images/entities/image-entity";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
 
 /**
  * Parses image upload form data into domain value objects.

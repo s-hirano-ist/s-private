@@ -8,7 +8,7 @@ import {
 	DropdownMenuLabel,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
-} from "./dropdown-menu";
+} from "./dropdown-menu.js";
 
 const meta = {
 	component: DropdownMenu,

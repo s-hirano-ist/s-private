@@ -5,11 +5,13 @@ import {
 	type Status,
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { createPrismaClient } from "@s-hirano-ist/s-database";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
 import { createMinioClient } from "@s-hirano-ist/s-storage";
 import { dump } from "js-yaml";
 import { access, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { setTimeout } from "node:timers/promises";
 
 type Book = {
 	googleAuthors: string[];
@@ -43,9 +45,7 @@ async function withRetry<T>(fn: () => Promise<T>, retries = 3): Promise<T> {
 			if (attempt === retries - 1) throw error;
 			const delay = 1000 * 2 ** attempt;
 			console.warn(`⚠️ リトライ ${attempt + 1}/${retries} (${delay}ms後)...`);
-			await new Promise((r) => {
-				setTimeout(r, delay);
-			});
+			await setTimeout(delay);
 		}
 	}
 	throw new Error("unreachable");
@@ -74,8 +74,6 @@ async function main() {
 		);
 	}
 
-	// Dynamic import for Prisma ESM compatibility
-	const { createPrismaClient } = await import("@s-hirano-ist/s-database");
 	const prisma = createPrismaClient(env.DATABASE_URL ?? "");
 
 	const notificationService = createPushoverService({

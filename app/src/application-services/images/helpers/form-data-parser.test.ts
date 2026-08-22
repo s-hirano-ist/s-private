@@ -1,5 +1,6 @@
 import { getFormDataFile } from "@/common/utils/form-data-utils";
 import { sharpImageProcessor } from "@/infrastructures/images/services/sharp-image-processor";
+import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import {
 	type ContentType,
 	type FileSize,
@@ -7,14 +8,13 @@ import {
 	makeFileSize,
 	makePath,
 	type Path,
-} from "@s-hirano-ist/s-core/images/entities/image-entity";
-import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
 import { FileNotAllowedError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { parseAddImageFormData } from "./form-data-parser";
 
 vi.mock("@/common/utils/form-data-utils");
-vi.mock("@s-hirano-ist/s-core/images/entities/image-entity");
+vi.mock("@s-hirano-ist/s-core/shared-kernel/entities/file-entity");
 vi.mock("@/infrastructures/images/services/sharp-image-processor");
 
 const mockGetFormDataFile = vi.mocked(getFormDataFile);

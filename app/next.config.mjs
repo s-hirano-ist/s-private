@@ -1,7 +1,4 @@
 import { withSentryConfig } from "@sentry/nextjs";
-// FIXME: env.tsの読み込み（Node v23じゃないと動かない... process.envの排除
-// import { env } from "./src/env.ts";
-// await import("./src/env.ts");
 import createNextIntlPlugin from "next-intl/plugin";
 import path from "node:path";
 

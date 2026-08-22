@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, waitFor, within } from "storybook/test";
-import { Button } from "./button";
+import { Button } from "./button.js";
 import {
 	Drawer,
 	DrawerClose,
@@ -10,7 +10,7 @@ import {
 	DrawerHeader,
 	DrawerTitle,
 	DrawerTrigger,
-} from "./drawer";
+} from "./drawer.js";
 
 const STORYBOOK_CSP_NONCE = "storybook-csp-nonce";
 

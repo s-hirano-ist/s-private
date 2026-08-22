@@ -1,4 +1,8 @@
-import type { ExportedAt, Status, UserId } from "../entities/common-entity.ts";
+import type {
+	ExportedAt,
+	Status,
+	UserId,
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 
 /**
  * Result of a bulk update operation.

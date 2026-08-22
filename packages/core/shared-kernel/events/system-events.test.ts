@@ -1,6 +1,6 @@
+import { SystemErrorEvent } from "@s-hirano-ist/s-core/shared-kernel/events/system-error-event";
+import { SystemWarningEvent } from "@s-hirano-ist/s-core/shared-kernel/events/system-warning-event";
 import { describe, expect, test } from "vitest";
-import { SystemErrorEvent } from "./system-error-event.ts";
-import { SystemWarningEvent } from "./system-warning-event.ts";
 
 describe("SystemErrorEvent", () => {
 	test("should have eventType 'system.error'", () => {

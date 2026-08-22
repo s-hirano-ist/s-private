@@ -1,7 +1,7 @@
-import type { UserId } from "../../shared-kernel/entities/common-entity.ts";
-import type { ISBN } from "../entities/book-entity.ts";
-import type { IBooksQueryRepository } from "../repositories/books-query-repository.interface.ts";
-import { DuplicateError } from "../../shared-kernel/errors/error-classes.ts";
+import type { ISBN } from "@s-hirano-ist/s-core/books/entities/book-entity";
+import type { IBooksQueryRepository } from "@s-hirano-ist/s-core/books/repositories/books-query-repository.interface";
+import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 
 /**
  * Domain service for Book business logic.

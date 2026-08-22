@@ -1,5 +1,5 @@
+import { idGenerator } from "@s-hirano-ist/s-core/shared-kernel/services/id-generator";
 import { z } from "zod";
-import { idGenerator } from "../services/id-generator.ts";
 
 /**
  * Zod schema for validating UUIDv7 identifiers.

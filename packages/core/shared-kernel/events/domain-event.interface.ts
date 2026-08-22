@@ -1,4 +1,4 @@
-import type { BaseDomainEvent } from "./base-domain-event.ts";
+import type { BaseDomainEvent } from "@s-hirano-ist/s-core/shared-kernel/events/base-domain-event";
 
 /**
  * Base interface for all domain events.

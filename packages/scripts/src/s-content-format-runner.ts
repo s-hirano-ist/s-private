@@ -1,9 +1,7 @@
 import { spawn } from "node:child_process";
 import { readFileSync } from "node:fs";
-import { createRequire } from "node:module";
 import path from "node:path";
-
-const require = createRequire(import.meta.url);
+import { fileURLToPath } from "node:url";
 
 const CONTENT_EXTENSIONS = [
 	".md",
@@ -42,7 +40,9 @@ export type ContentFormatOptions = {
 };
 
 function resolveOxfmtBin(): string {
-	const packageJsonPath = require.resolve("oxfmt/package.json");
+	const packageJsonPath = fileURLToPath(
+		import.meta.resolve("oxfmt/package.json"),
+	);
 	const manifest = JSON.parse(
 		readFileSync(packageJsonPath, "utf8"),
 	) as OxfmtPackageManifest;
@@ -110,8 +110,9 @@ export function runContentFormat(
 		{ cwd, stdio: options.stdio ?? "inherit" },
 	);
 
-	return new Promise((resolve, reject) => {
-		child.once("error", reject);
-		child.once("exit", (code, signal) => resolve({ code, signal }));
-	});
+	const { promise, resolve, reject } =
+		Promise.withResolvers<ContentFormatResult>();
+	child.once("error", reject);
+	child.once("exit", (code, signal) => resolve({ code, signal }));
+	return promise;
 }

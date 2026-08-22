@@ -1,9 +1,9 @@
-import type { INotesQueryRepository } from "../repositories/notes-query-repository.interface.ts";
+import type { INotesQueryRepository } from "@s-hirano-ist/s-core/notes/repositories/notes-query-repository.interface";
+import { makeNoteTitle } from "@s-hirano-ist/s-core/notes/entities/note-entity";
+import { NotesDomainService } from "@s-hirano-ist/s-core/notes/services/notes-domain-service";
+import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { makeUserId } from "../../shared-kernel/entities/common-entity.ts";
-import { DuplicateError } from "../../shared-kernel/errors/error-classes.ts";
-import { makeNoteTitle } from "../entities/note-entity.ts";
-import { NotesDomainService } from "../services/notes-domain-service.ts";
 
 describe("NotesDomainService", () => {
 	let notesQueryRepository: INotesQueryRepository;

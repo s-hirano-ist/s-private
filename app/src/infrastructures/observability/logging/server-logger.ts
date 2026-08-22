@@ -117,5 +117,3 @@ export class ServerLogger implements Logger {
 }
 
 // Note: The serverLogger instance will be created in server.ts with proper dependency injection
-
-// Legacy compatibility exports for gradual migration - removed to avoid Next.js server action conflicts

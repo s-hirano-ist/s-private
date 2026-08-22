@@ -1,6 +1,6 @@
+import { BookCreatedEvent } from "@s-hirano-ist/s-core/books/events/book-created-event";
+import { BookDeletedEvent } from "@s-hirano-ist/s-core/books/events/book-deleted-event";
 import { describe, expect, test } from "vitest";
-import { BookCreatedEvent } from "./book-created-event.ts";
-import { BookDeletedEvent } from "./book-deleted-event.ts";
 
 describe("BookCreatedEvent", () => {
 	test("should have eventType 'book.created'", () => {

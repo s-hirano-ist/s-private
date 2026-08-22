@@ -5,7 +5,7 @@
 //   the standalone binary, so we use .oxlintrc.json. JSONC comments ARE supported here.
 // Layers: oxfmt = format + import/Tailwind class sorting (.oxfmtrc.json); oxlint = JS/TS linting
 //   (everything ESLint did + the former Biome base lint); dependency-cruiser = Clean Architecture
-//   layer boundaries (.dependency-cruiser.cjs — see boundary-* rules). Biome was fully removed.
+//   layer boundaries (dependency-cruiser.config.js — see boundary-* rules). Biome was fully removed.
 //
 // Migrated 1:1: typescript-eslint strict+stylistic type-checked (oxlint-tsgolint, type-aware),
 //   @next/* → nextjs, @vitest/* → vitest, eslint-plugin-regexp (JS plugin), eslint-plugin-storybook
@@ -32,7 +32,7 @@
 //   • eslint-plugin-tailwindcss — incompatible with Tailwind v4 (no tailwind.config.js): floods
 //     "cannot resolve config" errors and skips files. Class ordering handled by oxfmt sortTailwindcss.
 //   • eslint-plugin-boundaries — cannot run under oxlint (the JS-plugin "settings" schema rejects
-//     boundaries/* keys → silent no-op). Moved to dependency-cruiser (.dependency-cruiser.cjs).
+//     boundaries/* keys → silent no-op). Moved to dependency-cruiser (dependency-cruiser.config.js).
 //
 // NOT migratable (no oxlint equivalent) — @eslint-react react-x-only rules that are type-aware
 //   and therefore cannot run as a JS plugin: @eslint-react/no-unused-props,

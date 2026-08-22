@@ -3,7 +3,7 @@ import {
 	decodeHtml,
 	detectHtmlCharset,
 	normalizeCharset,
-} from "./html-charset.ts";
+} from "./html-charset.js";
 
 describe("HTML charset handling", () => {
 	test("normalizes legacy aliases", () => {

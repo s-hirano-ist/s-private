@@ -5,11 +5,12 @@ import {
 	makeUserId,
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { createPrismaClient } from "@s-hirano-ist/s-database";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
 import { parseMarkdownFrontmatter } from "@s-hirano-ist/s-search/frontmatter";
 import { readFile } from "node:fs/promises";
 import { basename } from "node:path";
-import { globPaths } from "./lib/glob-paths.ts";
+import { globPaths } from "./lib/glob-paths.js";
 
 const SCRIPT_NAME = "ingest-notes";
 
@@ -66,8 +67,6 @@ async function main() {
 
 	const contentsPath = process.env.S_CONTENTS_PATH ?? process.cwd();
 
-	// Dynamic import for Prisma ESM compatibility
-	const { createPrismaClient } = await import("@s-hirano-ist/s-database");
 	const prisma = createPrismaClient(env.DATABASE_URL ?? "");
 
 	const notificationService = createPushoverService({

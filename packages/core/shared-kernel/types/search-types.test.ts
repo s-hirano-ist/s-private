@@ -1,5 +1,3 @@
-import { describe, expect, test } from "vitest";
-import { ZodError } from "zod";
 import {
 	type ArticleSearchResult,
 	type BookSearchResult,
@@ -9,7 +7,9 @@ import {
 	type NoteSearchResult,
 	type SearchResult,
 	searchQuerySchema,
-} from "./search-types.ts";
+} from "@s-hirano-ist/s-core/shared-kernel/types/search-types";
+import { describe, expect, test } from "vitest";
+import { ZodError } from "zod";
 
 const articleResult: ArticleSearchResult = {
 	href: "/articles/123",

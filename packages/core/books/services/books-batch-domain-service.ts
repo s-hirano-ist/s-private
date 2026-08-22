@@ -2,18 +2,11 @@ import type {
 	BulkUpdateResult,
 	IBatchCommandRepository,
 	ResetStatusResult,
-} from "../../shared-kernel/repositories/batch-command-repository.interface.ts";
+} from "@s-hirano-ist/s-core/shared-kernel/repositories/batch-command-repository.interface";
 import {
 	makeExportedAt,
 	type UserId,
-} from "../../shared-kernel/entities/common-entity.ts";
-
-/**
- * Result of the reset operation.
- *
- * @deprecated Use {@link ResetStatusResult} from batch-command-repository.interface instead
- */
-export type ResetResult = ResetStatusResult;
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 
 /**
  * Domain service for batch operations on Books.

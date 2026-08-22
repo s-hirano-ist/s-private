@@ -1,14 +1,8 @@
 {
+	"extends": "../tsconfig.base.json",
 	"compilerOptions": {
-		"lib": ["dom", "esnext"],
-		"target": "ES2022",
-		"allowJs": true,
-		"skipLibCheck": true,
-		"strict": true,
+		"lib": ["DOM", "ES2025"],
 		"noEmit": true,
-		"allowImportingTsExtensions": true,
-		"resolveJsonModule": true,
-		"verbatimModuleSyntax": true,
 		"jsx": "react-jsx",
 		"incremental": true,
 		"plugins": [
@@ -21,8 +15,7 @@
 			"@s-hirano-ist/s-core/*": ["../packages/core/*"]
 		},
 		"module": "esnext",
-		"moduleResolution": "bundler",
-		"esModuleInterop": true
+		"moduleResolution": "Bundler"
 	},
 	"include": [
 		"next-env.d.ts",

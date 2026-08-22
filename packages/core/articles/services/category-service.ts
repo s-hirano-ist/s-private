@@ -1,12 +1,12 @@
-import type { CategoryName } from "../entities/article-entity.ts";
-import type { ICategoryCommandRepository } from "../repositories/category-command-repository.interface.ts";
-import type { ICategoryQueryRepository } from "../repositories/category-query-repository.interface.ts";
+import type { CategoryName } from "@s-hirano-ist/s-core/articles/entities/article-entity";
+import type { ICategoryCommandRepository } from "@s-hirano-ist/s-core/articles/repositories/category-command-repository.interface";
+import type { ICategoryQueryRepository } from "@s-hirano-ist/s-core/articles/repositories/category-query-repository.interface";
 import {
 	type Id,
 	makeCreatedAt,
 	makeId,
 	type UserId,
-} from "../../shared-kernel/entities/common-entity.ts";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 
 /**
  * Domain service for Category resolution.

@@ -1,5 +1,5 @@
 import { tv, type VariantProps } from "tailwind-variants";
-import { cn } from "./utils/cn";
+import { cn } from "./utils/cn.js";
 
 /**
  * Badge style variants using tailwind-variants.

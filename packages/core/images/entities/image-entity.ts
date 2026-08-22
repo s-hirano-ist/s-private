@@ -15,7 +15,7 @@
  * **Value Objects defined here**:
  * - {@link Pixel} - Image dimension (positive integer)
  *
- * **Re-exported from shared-kernel**:
+ * **Defined in shared-kernel**:
  * - {@link Path}, {@link ContentType}, {@link FileSize} - File-related value objects
  *
  * @see `ImagesDomainService` for domain business rules
@@ -23,7 +23,7 @@
  * @module
  */
 
-import { z } from "zod";
+import { ImageCreatedEvent } from "@s-hirano-ist/s-core/images/events/image-created-event";
 import {
 	CreatedAt,
 	ExportedStatus,
@@ -33,22 +33,14 @@ import {
 	makeId,
 	UnexportedStatus,
 	UserId,
-} from "../../shared-kernel/entities/common-entity.ts";
-// oxlint-disable-next-line unicorn/prefer-export-from -- imported values are also used locally
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import {
 	ContentType,
 	FileSize,
 	Path,
-} from "../../shared-kernel/entities/file-entity.ts";
-import { createEntityWithErrorHandling } from "../../shared-kernel/services/entity-factory.ts";
-import { ImageCreatedEvent } from "../events/image-created-event.ts";
-
-// Re-export file-related value objects from common for backwards compatibility
-export { ContentType, FileSize, Path };
-export {
-	makeFileSize,
-	makePath,
-} from "../../shared-kernel/entities/file-entity.ts";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
+import { createEntityWithErrorHandling } from "@s-hirano-ist/s-core/shared-kernel/services/entity-factory";
+import { z } from "zod";
 
 /**
  * Zod schema for validating pixel dimensions.
@@ -272,5 +264,3 @@ export type ImageListItemDTO = Readonly<{
 	path: Path;
 	width: Pixel | undefined;
 }>;
-
-export { makeContentType } from "../../shared-kernel/entities/file-entity.ts";

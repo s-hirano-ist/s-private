@@ -3,7 +3,8 @@ import { createPushoverService } from "@s-hirano-ist/s-notification";
 import * as cheerio from "cheerio";
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { decodeHtml } from "./lib/html-charset.ts";
+import { setTimeout } from "node:timers/promises";
+import { decodeHtml } from "./lib/html-charset.js";
 
 type ArticleItem = {
 	ogDescription?: string;
@@ -86,9 +87,7 @@ async function processArticleFile(filePath: string): Promise<void> {
 			else console.warn(`No OG description found for ${item.url}`);
 
 			// Add a small delay to avoid overwhelming servers
-			await new Promise((resolve) => {
-				setTimeout(resolve, 1000);
-			});
+			await setTimeout(1000);
 		}
 
 		// Write back to file

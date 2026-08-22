@@ -1,22 +1,17 @@
 {
+	"extends": "../../tsconfig.base.json",
 	"compilerOptions": {
-		"lib": ["dom", "esnext"],
+		"lib": ["DOM", "ES2025"],
 		"types": ["node"],
-		"target": "ES2022",
-		"allowJs": true,
-		"skipLibCheck": true,
-		"strict": true,
+		"module": "NodeNext",
 		"noEmit": false,
 		"declaration": true,
 		"declarationMap": true,
 		"sourceMap": true,
 		"outDir": "./dist",
 		"rootDir": "./",
-		"resolveJsonModule": true,
-		"verbatimModuleSyntax": true,
 		"jsx": "preserve",
-		"incremental": true,
-		"rewriteRelativeImportExtensions": true
+		"incremental": true
 	},
 	"include": ["**/*.ts"],
 	"exclude": [

@@ -1,20 +1,16 @@
 {
+	"extends": "../../tsconfig.base.json",
 	"compilerOptions": {
 		"types": ["node"],
-		"target": "ES2022",
-		"lib": ["ES2023", "DOM", "DOM.Iterable"],
+		"lib": ["ES2025", "DOM"],
+		"module": "NodeNext",
 		"declaration": true,
 		"declarationMap": true,
 		"sourceMap": true,
 		"outDir": "./dist",
 		"rootDir": "./src",
 		"noEmit": false,
-		"incremental": true,
-		"strict": true,
-		"skipLibCheck": true,
-		"resolveJsonModule": true,
-		"verbatimModuleSyntax": true,
-		"rewriteRelativeImportExtensions": true
+		"incremental": true
 	},
 	"include": ["src/**/*.ts"],
 	"exclude": ["node_modules", "dist"]

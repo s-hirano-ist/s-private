@@ -1,0 +1,10 @@
+{
+	"compilerOptions": {
+		"target": "ES2025",
+		"strict": true,
+		"skipLibCheck": true,
+		"verbatimModuleSyntax": true,
+		"resolveJsonModule": true,
+		"moduleDetection": "force"
+	}
+}

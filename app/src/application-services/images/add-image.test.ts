@@ -1,10 +1,10 @@
 import type { AddImageDeps } from "./add-image.deps";
+import type { IImagesCommandRepository } from "@s-hirano-ist/s-core/images/repositories/images-command-repository.interface";
 import type {
 	ContentType,
 	FileSize,
 	Path,
-} from "@s-hirano-ist/s-core/images/entities/image-entity";
-import type { IImagesCommandRepository } from "@s-hirano-ist/s-core/images/repositories/images-command-repository.interface";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
 import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/services/storage-service.interface";
 import { getSelfId, requireAuth } from "@/common/auth/session";
 import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";

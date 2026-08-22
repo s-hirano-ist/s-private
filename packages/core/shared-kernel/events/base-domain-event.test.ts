@@ -1,5 +1,5 @@
+import { BaseDomainEvent } from "@s-hirano-ist/s-core/shared-kernel/events/base-domain-event";
 import { describe, expect, test } from "vitest";
-import { BaseDomainEvent } from "./base-domain-event.ts";
 
 type TestPayload = { message: string };
 

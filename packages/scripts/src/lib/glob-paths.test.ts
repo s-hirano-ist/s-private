@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, test } from "vitest";
-import { globPaths } from "./glob-paths.ts";
+import { globPaths } from "./glob-paths.js";
 
 const temporaryDirectories: string[] = [];
 

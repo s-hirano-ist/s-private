@@ -2,6 +2,9 @@
 	"name": "@s-hirano-ist/s-scripts",
 	"version": "1.26.0",
 	"description": "CLI scripts for s-private data operations",
+	"engines": {
+		"node": ">=24"
+	},
 	"type": "module",
 	"bin": {
 		"s-content-format": "./dist/s-content-format.js",

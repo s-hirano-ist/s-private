@@ -1,6 +1,6 @@
-import type { SystemErrorPayload } from "./payload-types.ts";
-import type { SystemWarningEvent } from "./system-warning-event.ts";
-import { BaseDomainEvent } from "./base-domain-event.ts";
+import type { SystemErrorPayload } from "@s-hirano-ist/s-core/shared-kernel/events/payload-types";
+import type { SystemWarningEvent } from "@s-hirano-ist/s-core/shared-kernel/events/system-warning-event";
+import { BaseDomainEvent } from "@s-hirano-ist/s-core/shared-kernel/events/base-domain-event";
 
 /**
  * Domain event for system errors.

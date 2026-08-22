@@ -10,8 +10,7 @@ export default defineConfig((options) => ({
 		"!src/**/*.test.tsx",
 	],
 	format: ["esm"],
-	target: "es2022",
-	dts: true,
+	target: "es2025",
 	sourcemap: true,
 
 	// watch 起動時は dist を消さない

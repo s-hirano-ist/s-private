@@ -1,16 +1,16 @@
 import type {
-	Status,
-	UserId,
-} from "../../shared-kernel/entities/common-entity.ts";
-import type { InfraQueryOptions } from "../../shared-kernel/types/query-options.ts";
-import type {
 	ArticleListItemDTO,
 	ExportedArticle,
 	UnexportedArticle,
 	Url,
-} from "../entities/article-entity.ts";
-import type { ArticleOrderBy } from "../types/query-params.ts";
-import type { IArticlesCommandRepository } from "./articles-command-repository.interface.ts";
+} from "@s-hirano-ist/s-core/articles/entities/article-entity";
+import type { IArticlesCommandRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-command-repository.interface";
+import type { ArticleOrderBy } from "@s-hirano-ist/s-core/articles/types/query-params";
+import type {
+	Status,
+	UserId,
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import type { InfraQueryOptions } from "@s-hirano-ist/s-core/shared-kernel/types/query-options";
 
 /**
  * Parameters for paginated article queries.

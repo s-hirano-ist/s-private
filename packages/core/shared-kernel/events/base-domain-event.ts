@@ -1,4 +1,4 @@
-import type { DomainEvent } from "./domain-event.interface.ts";
+import type { DomainEvent } from "@s-hirano-ist/s-core/shared-kernel/events/domain-event.interface";
 
 /**
  * Abstract base class for all domain events.

@@ -49,13 +49,18 @@
  */
 
 export { PrismaPg } from "@prisma/adapter-pg";
-export type { Article, Book, Category, Image, Note } from "./generated";
-// Re-export everything from generated Prisma client
-// Note: We use separate exports to maintain proper ESM compatibility
-export { $Enums, Prisma, PrismaClient, Status } from "./generated";
+export type {
+	Article,
+	Book,
+	Category,
+	Image,
+	Note,
+} from "./generated/index.js";
+export { $Enums, Prisma, PrismaClient, Status } from "./generated/index.js";
 
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "./generated";
+import { setTimeout } from "node:timers/promises";
+import { PrismaClient } from "./generated/index.js";
 
 export function createPrismaClient(databaseUrl: string) {
 	return new PrismaClient({
@@ -123,9 +128,7 @@ export async function withTransactionRetry<T>(
 				throw error;
 			}
 			const delay = baseDelayMs * 2 ** attempt;
-			await new Promise((resolve) => {
-				setTimeout(resolve, delay);
-			});
+			await setTimeout(delay);
 			attempt += 1;
 		}
 	}

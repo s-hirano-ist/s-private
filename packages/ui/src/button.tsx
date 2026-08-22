@@ -1,7 +1,7 @@
 import type * as React from "react";
 import { Button as ButtonPrimitive } from "@base-ui/react/button";
 import { tv, type VariantProps } from "tailwind-variants";
-import { cn } from "./utils/cn";
+import { cn } from "./utils/cn.js";
 
 /**
  * Button style variants using tailwind-variants.

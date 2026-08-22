@@ -22,4 +22,5 @@ jobs:
 
       - uses: MH4GF/dependency-cruiser-report-action@885013e37581e3472385ffa93c821b3505336bc1 # v2.5.3
         with:
+          config-file: dependency-cruiser.config.js
           package-manager: pnpm

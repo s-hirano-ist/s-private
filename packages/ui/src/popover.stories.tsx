@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, waitFor, within } from "storybook/test";
-import { Button } from "./button";
-import { Input } from "./input";
-import { Label } from "./label";
-import { Popover, PopoverContent, PopoverTrigger } from "./popover";
+import { Button } from "./button.js";
+import { Input } from "./input.js";
+import { Label } from "./label.js";
+import { Popover, PopoverContent, PopoverTrigger } from "./popover.js";
 
 const meta = {
 	component: Popover,

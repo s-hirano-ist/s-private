@@ -2,7 +2,7 @@
 import { createPushoverService } from "@s-hirano-ist/s-notification";
 import { createMinioClient, type MinioClient } from "@s-hirano-ist/s-storage";
 import { basename, extname } from "node:path";
-import { globPaths } from "./lib/glob-paths.ts";
+import { globPaths } from "./lib/glob-paths.js";
 
 const SCRIPT_NAME = "cleanup-minio-images";
 
@@ -19,15 +19,15 @@ function listObjects(
 	bucket: string,
 	prefix: string,
 ): Promise<string[]> {
-	return new Promise((resolve, reject) => {
-		const keys: string[] = [];
-		const stream = client.listObjectsV2(bucket, prefix, true);
-		stream.on("data", (obj) => {
-			if (obj.name) keys.push(obj.name);
-		});
-		stream.on("end", () => resolve(keys));
-		stream.on("error", reject);
+	const { promise, resolve, reject } = Promise.withResolvers<string[]>();
+	const keys: string[] = [];
+	const stream = client.listObjectsV2(bucket, prefix, true);
+	stream.on("data", (obj) => {
+		if (obj.name) keys.push(obj.name);
 	});
+	stream.on("end", () => resolve(keys));
+	stream.on("error", reject);
+	return promise;
 }
 
 async function main() {

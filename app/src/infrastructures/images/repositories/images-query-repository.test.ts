@@ -1,12 +1,10 @@
 import prisma from "@/prisma";
-import {
-	makePath,
-	makePixel,
-} from "@s-hirano-ist/s-core/images/entities/image-entity";
+import { makePixel } from "@s-hirano-ist/s-core/images/entities/image-entity";
 import {
 	makeId,
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { makePath } from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { imagesQueryRepository } from "./images-query-repository";
 

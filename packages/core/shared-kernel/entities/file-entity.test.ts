@@ -1,6 +1,10 @@
+import {
+	makeContentType,
+	makeFileSize,
+	makePath,
+} from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
 import { describe, expect, test } from "vitest";
 import { ZodError } from "zod";
-import { makeContentType, makeFileSize, makePath } from "./file-entity.ts";
 
 describe("file-entity", () => {
 	describe("makePath", () => {

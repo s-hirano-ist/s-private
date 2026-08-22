@@ -1,6 +1,6 @@
+import { NoteCreatedEvent } from "@s-hirano-ist/s-core/notes/events/note-created-event";
+import { NoteDeletedEvent } from "@s-hirano-ist/s-core/notes/events/note-deleted-event";
 import { describe, expect, test } from "vitest";
-import { NoteCreatedEvent } from "./note-created-event.ts";
-import { NoteDeletedEvent } from "./note-deleted-event.ts";
 
 describe("NoteCreatedEvent", () => {
 	test("should have eventType 'note.created'", () => {

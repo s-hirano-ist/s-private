@@ -1,10 +1,10 @@
-import { describe, expect, test } from "vitest";
-import { z } from "zod";
 import {
 	InvalidFormatError,
 	UnexpectedError,
-} from "../errors/error-classes.ts";
-import { createEntityWithErrorHandling } from "./entity-factory.ts";
+} from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
+import { createEntityWithErrorHandling } from "@s-hirano-ist/s-core/shared-kernel/services/entity-factory";
+import { describe, expect, test } from "vitest";
+import { z } from "zod";
 
 describe("createEntityWithErrorHandling", () => {
 	test("should return result when factory succeeds", () => {

@@ -1,5 +1,5 @@
 import type * as React from "react";
-import { cn } from "./utils/cn";
+import { cn } from "./utils/cn.js";
 
 function EmptyState({ className, ...props }: React.ComponentProps<"section">) {
 	return (

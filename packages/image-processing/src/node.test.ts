@@ -4,7 +4,7 @@ import {
 	convertToWebp,
 	createWebpThumbnail,
 	readImageMetadata,
-} from "./node.ts";
+} from "./node.js";
 
 const PNG_BYTES = Buffer.from(
 	"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAEElEQVR4AQEFAPr/AP8AAP8FAAH/+lyI0QAAAABJRU5ErkJggg==",

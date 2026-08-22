@@ -39,11 +39,11 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const fs = require('fs');
+            const { readFile } = await import('node:fs/promises');
 
             // Read jscpd report
-            const report = JSON.parse(fs.readFileSync('jscpd-report/jscpd-report.json', 'utf8'));
-            const consoleOutput = fs.readFileSync('jscpd-console.txt', 'utf8');
+            const report = JSON.parse(await readFile('jscpd-report/jscpd-report.json', 'utf8'));
+            const consoleOutput = await readFile('jscpd-console.txt', 'utf8');
 
             // Extract statistics
             const statistics = report.statistics || {};

@@ -1,9 +1,12 @@
 import type {
+	BookTitle,
+	UnexportedBook,
+} from "@s-hirano-ist/s-core/books/entities/book-entity";
+import type {
 	Id,
 	Status,
 	UserId,
-} from "../../shared-kernel/entities/common-entity.ts";
-import type { BookTitle, UnexportedBook } from "../entities/book-entity.ts";
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 
 /**
  * Command repository interface for the Book domain.

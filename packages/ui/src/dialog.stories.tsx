@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, waitFor, within } from "storybook/test";
-import { Button } from "./button";
+import { Button } from "./button.js";
 import {
 	Dialog,
 	DialogContent,
@@ -9,7 +9,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 	DialogTrigger,
-} from "./dialog";
+} from "./dialog.js";
 
 const meta = {
 	component: Dialog,

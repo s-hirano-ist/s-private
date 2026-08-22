@@ -6,13 +6,14 @@ import {
 	makeUserId,
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { createPrismaClient } from "@s-hirano-ist/s-database";
 import { createWebpThumbnail } from "@s-hirano-ist/s-image-processing/node";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
 import { parseMarkdownFrontmatter } from "@s-hirano-ist/s-search/frontmatter";
 import { createMinioClient } from "@s-hirano-ist/s-storage";
 import { readFile } from "node:fs/promises";
 import { basename, extname } from "node:path";
-import { globPaths } from "./lib/glob-paths.ts";
+import { globPaths } from "./lib/glob-paths.js";
 
 type BookFrontmatter = {
 	googleAuthors?: string[];
@@ -159,8 +160,6 @@ async function main() {
 
 	const contentsPath = process.env.S_CONTENTS_PATH ?? process.cwd();
 
-	// Dynamic import for Prisma ESM compatibility
-	const { createPrismaClient } = await import("@s-hirano-ist/s-database");
 	const prisma = createPrismaClient(env.DATABASE_URL ?? "");
 
 	const notificationService = createPushoverService({

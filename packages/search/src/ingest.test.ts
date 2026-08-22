@@ -1,9 +1,9 @@
-import type { QdrantPayload } from "./config.ts";
+import type { QdrantPayload } from "./config.js";
 import { beforeEach, describe, expect, type Mock, test, vi } from "vitest";
-import { ingestChunks } from "./ingest.ts";
-import { getExistingHashes, upsertPoints } from "./qdrant-client.ts";
+import { ingestChunks } from "./ingest.js";
+import { getExistingHashes, upsertPoints } from "./qdrant-client.js";
 
-vi.mock("./qdrant-client.ts", () => ({
+vi.mock("./qdrant-client.js", () => ({
 	getExistingHashes: vi.fn(),
 	upsertPoints: vi.fn(),
 }));

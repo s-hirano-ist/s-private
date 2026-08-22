@@ -1,9 +1,9 @@
-import type { IImagesQueryRepository } from "../repositories/images-query-repository.interface.ts";
+import type { IImagesQueryRepository } from "@s-hirano-ist/s-core/images/repositories/images-query-repository.interface";
+import { ImagesDomainService } from "@s-hirano-ist/s-core/images/services/images-domain-service";
+import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { makePath } from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
+import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { makeUserId } from "../../shared-kernel/entities/common-entity.ts";
-import { DuplicateError } from "../../shared-kernel/errors/error-classes.ts";
-import { makePath } from "../entities/image-entity.ts";
-import { ImagesDomainService } from "./images-domain-service.ts";
 
 describe("ImagesDomainService", () => {
 	let imagesQueryRepository: IImagesQueryRepository;

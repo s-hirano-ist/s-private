@@ -1,12 +1,9 @@
 {
+	"extends": "../../tsconfig.base.json",
 	"compilerOptions": {
-		"target": "ES2022",
-		"allowJs": true,
-		"skipLibCheck": true,
-		"strict": true,
+		"module": "NodeNext",
 		"noEmit": true,
-		"resolveJsonModule": true,
-		"verbatimModuleSyntax": true
+		"types": ["node"]
 	},
 	"include": ["src/index.ts"],
 	"exclude": ["node_modules", "dist", "src/generated"]

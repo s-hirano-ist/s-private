@@ -2,27 +2,30 @@
 	"name": "@s-hirano-ist/s-search",
 	"version": "1.18.13",
 	"description": "RAG search library with Qdrant and embedding API client",
+	"engines": {
+		"node": ">=24"
+	},
 	"type": "module",
 	"exports": {
 		"./config": {
-			"types": "./src/config.ts",
-			"import": "./src/config.ts"
+			"types": "./dist/config.d.ts",
+			"import": "./dist/config.js"
 		},
 		"./qdrant-client": {
-			"types": "./src/qdrant-client.ts",
-			"import": "./src/qdrant-client.ts"
+			"types": "./dist/qdrant-client.d.ts",
+			"import": "./dist/qdrant-client.js"
 		},
 		"./chunker": {
-			"types": "./src/chunker.ts",
-			"import": "./src/chunker.ts"
+			"types": "./dist/chunker.d.ts",
+			"import": "./dist/chunker.js"
 		},
 		"./ingest": {
-			"types": "./src/ingest.ts",
-			"import": "./src/ingest.ts"
+			"types": "./dist/ingest.d.ts",
+			"import": "./dist/ingest.js"
 		},
 		"./frontmatter": {
-			"types": "./src/frontmatter.ts",
-			"import": "./src/frontmatter.ts"
+			"types": "./dist/frontmatter.d.ts",
+			"import": "./dist/frontmatter.js"
 		}
 	},
 	"files": [

@@ -2,6 +2,9 @@
 	"name": "@s-hirano-ist/s-ui",
 	"version": "2.0.2",
 	"description": "Framework-agnostic React 19 design system",
+	"engines": {
+		"node": ">=24"
+	},
 	"type": "module",
 	"exports": {
 		"./badge": {
@@ -111,7 +114,7 @@
 	],
 	"scripts": {
 		"build": "pnpm run build:js && pnpm run build:css",
-		"build:js": "tsup",
+		"build:js": "tsup && tsc -p tsconfig.build.json",
 		"build:css": "tailwindcss -i src/styles.css -o dist/styles.css --minify",
 		"dev": "pnpm run \"/^dev:.*/\"",
 		"dev:js": "tsup --watch",

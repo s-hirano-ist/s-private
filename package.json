@@ -5,7 +5,7 @@
 	"description": "Private pages and admin tools for s-hirano-ist.",
 	"packageManager": "pnpm@11.22.0",
 	"engines": {
-		"node": "24.19.0"
+		"node": ">=24"
 	},
 	"type": "module",
 	"scripts": {
@@ -53,9 +53,9 @@
 		"ui-gallery:build": "turbo run \"//#ui-gallery:build:raw\"",
 		"ui-gallery:build:raw": "node scripts/build-ui-gallery.mjs",
 		"pages:build": "turbo run \"//#ui-gallery:build:raw\"",
-		"deps:check": "depcruise app/src packages/ui packages/core packages/notification --config .dependency-cruiser.cjs",
-		"deps:circular": "depcruise app/src packages/ui packages/core packages/notification --config .dependency-cruiser.cjs --output-type text --focus-depth 0",
-		"deps:graph": "{ echo '```mermaid'; depcruise app/src packages/ui packages/core packages/notification --config .dependency-cruiser.cjs --output-type mermaid --collapse 'app/src/(application-services|infrastructures)/[^/]+/|app/src/(app|common|components|loaders)/|packages/core/[^/]+/|packages/(ui|database|notification|search|storage)/' --include-only '^(app/src|packages)/(?!.*(vitest|\\.stories\\.))'; echo '```'; } > dependency-graph.md",
+		"deps:check": "depcruise app/src packages/ui packages/core packages/notification --config dependency-cruiser.config.js",
+		"deps:circular": "depcruise app/src packages/ui packages/core packages/notification --config dependency-cruiser.config.js --output-type text --focus-depth 0",
+		"deps:graph": "{ echo '```mermaid'; depcruise app/src packages/ui packages/core packages/notification --config dependency-cruiser.config.js --output-type mermaid --collapse 'app/src/(application-services|infrastructures)/[^/]+/|app/src/(app|common|components|loaders)/|packages/core/[^/]+/|packages/(ui|database|notification|search|storage)/' --include-only '^(app/src|packages)/(?!.*(vitest|\\.stories\\.))'; echo '```'; } > dependency-graph.md",
 		"prisma:deploy": "vercel env run -e development -- pnpm --filter s-database prisma:deploy",
 		"prisma:studio": "vercel env run -e development -- pnpm --filter s-database prisma:studio",
 		"docs:build": "turbo run \"//#docs:build:raw\"",

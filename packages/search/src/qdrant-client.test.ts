@@ -25,7 +25,7 @@ describe("qdrant-client", () => {
 	});
 
 	async function loadModule() {
-		return await import("./qdrant-client.ts");
+		return await import("./qdrant-client.js");
 	}
 
 	describe("getQdrantClient", () => {

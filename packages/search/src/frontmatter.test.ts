@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { parseMarkdownFrontmatter } from "./frontmatter.ts";
+import { parseMarkdownFrontmatter } from "./frontmatter.js";
 
 describe("parseMarkdownFrontmatter", () => {
 	test("parses BOM, CRLF, collections, quoted colons, and block scalars", () => {

@@ -128,7 +128,7 @@ import { ArticlesStackLoader } from "@/loaders/articles";
 - `.oxfmtrc.json` - フォーマッター設定（oxfmt: format + import/Tailwind並べ替え）
 - `.oxlintrc.json` - リンター設定（oxlint, type-aware）
 - `eslint.config.js` - YAML/JSON用ESLint設定
-- `.dependency-cruiser.cjs` - アーキテクチャ境界の強制（詳細は[code-analysis.md](code-analysis.md)を参照）
+- `dependency-cruiser.config.js` - アーキテクチャ境界の強制（詳細は[code-analysis.md](code-analysis.md)を参照）
 
 ## セキュリティ
 

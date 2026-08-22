@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { runContentFormat } from "./s-content-format-runner.ts";
+import { runContentFormat } from "./s-content-format-runner.js";
 
 async function main(): Promise<void> {
 	try {

@@ -1,6 +1,6 @@
 import { act, render, screen } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
-import { ToastProvider, useToast } from "./toast";
+import { ToastProvider, useToast } from "./toast.js";
 
 function Trigger() {
 	const toast = useToast();

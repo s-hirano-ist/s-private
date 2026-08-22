@@ -1,9 +1,9 @@
-import type { IArticlesQueryRepository } from "../repositories/articles-query-repository.interface.ts";
+import type { IArticlesQueryRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-query-repository.interface";
+import { makeUrl } from "@s-hirano-ist/s-core/articles/entities/article-entity";
+import { ArticlesDomainService } from "@s-hirano-ist/s-core/articles/services/articles-domain-service";
+import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { makeUserId } from "../../shared-kernel/entities/common-entity.ts";
-import { DuplicateError } from "../../shared-kernel/errors/error-classes.ts";
-import { makeUrl } from "../entities/article-entity.ts";
-import { ArticlesDomainService } from "../services/articles-domain-service.ts";
 
 describe("ArticlesDomainService", () => {
 	let articlesQueryRepository: IArticlesQueryRepository;

@@ -1,10 +1,10 @@
-import { describe, expect, test } from "vitest";
 import {
 	DuplicateError,
 	FileNotAllowedError,
 	InvalidFormatError,
 	UnexpectedError,
-} from "./error-classes.ts";
+} from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
+import { describe, expect, test } from "vitest";
 
 describe("error-classes", () => {
 	describe("UnexpectedError", () => {

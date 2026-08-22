@@ -4,9 +4,10 @@ import {
 	makeUserId,
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { createPrismaClient } from "@s-hirano-ist/s-database";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
-import { createArticlesCommandRepository } from "./infrastructures/articles-command-repository.ts";
-import { invalidateContentCache } from "./infrastructures/cache-invalidation-client.ts";
+import { createArticlesCommandRepository } from "./infrastructures/articles-command-repository.js";
+import { invalidateContentCache } from "./infrastructures/cache-invalidation-client.js";
 
 async function main() {
 	const env = {
@@ -23,8 +24,6 @@ async function main() {
 		throw new Error("Required environment variables are not set.");
 	}
 
-	// Dynamic import for Prisma ESM compatibility
-	const { createPrismaClient } = await import("@s-hirano-ist/s-database");
 	const prisma = createPrismaClient(env.DATABASE_URL ?? "");
 
 	const notificationService = createPushoverService({
