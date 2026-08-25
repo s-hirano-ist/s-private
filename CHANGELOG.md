@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.12.3](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.12.2...s-private-v3.12.3) (2026-08-25)
+
+
+### Bug Fixes
+
+* **auth:** resolve conflicts and migrate Better Auth 1.7 ([3c9db85](https://github.com/s-hirano-ist/s-private/commit/3c9db85960a45bd36963965523534e1fe1fa98c9))
+
+
+### Maintenance
+
+* **deps:** defer eslint 10.9.1 update ([7df1259](https://github.com/s-hirano-ist/s-private/commit/7df1259b1965343e91c7d3c6e8e55b2d6ef8d18b))
+
 ## [3.12.2](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.12.1...s-private-v3.12.2) (2026-08-22)
 
 

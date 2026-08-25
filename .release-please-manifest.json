@@ -1,10 +1,10 @@
 {
-	".": "3.12.2",
+	".": "3.12.3",
 	"packages/core": "1.21.3",
 	"packages/ui": "2.0.3",
-	"packages/database": "1.21.0",
+	"packages/database": "1.21.1",
 	"packages/notification": "1.18.5",
-	"packages/scripts": "1.26.1",
+	"packages/scripts": "1.26.2",
 	"packages/search": "1.18.13",
 	"packages/storage": "1.18.9"
 }

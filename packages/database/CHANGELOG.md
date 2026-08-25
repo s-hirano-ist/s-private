@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.21.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.21.0...@s-hirano-ist/s-database-v1.21.1) (2026-08-25)
+
+
+### Bug Fixes
+
+* **auth:** resolve conflicts and migrate Better Auth 1.7 ([3c9db85](https://github.com/s-hirano-ist/s-private/commit/3c9db85960a45bd36963965523534e1fe1fa98c9))
+
 ## [1.21.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.20.0...@s-hirano-ist/s-database-v1.21.0) (2026-06-05)
 
 
