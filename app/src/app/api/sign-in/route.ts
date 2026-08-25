@@ -14,11 +14,14 @@ import { NextResponse } from "next/server";
  * the browser and the callback fails with `state_mismatch`.
  */
 export async function GET() {
-	const { response, headers: authHeaders } = await auth.api.signInWithOAuth2({
-		body: { providerId: "auth0", callbackURL: "/" },
+	const { response, headers: authHeaders } = await auth.api.signInSocial({
+		body: { provider: "auth0", callbackURL: "/" },
 		headers: await headers(),
 		returnHeaders: true,
 	});
+	if (!response.url) {
+		throw new Error("Auth0 sign-in did not return a redirect URL");
+	}
 
 	const redirectResponse = NextResponse.redirect(response.url);
 	for (const cookie of authHeaders.getSetCookie()) {

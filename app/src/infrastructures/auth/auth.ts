@@ -30,6 +30,21 @@ import { auth0, genericOAuth } from "better-auth/plugins/generic-oauth";
 /** Auth0 tenant host (e.g. "your-tenant.auth0.com"), derived from the issuer URL. */
 const auth0Domain = new URL(env.AUTH0_ISSUER_BASE_URL).host;
 
+/**
+ * Better Auth 1.7 resolves Generic OAuth discovery while initializing the
+ * provider. Tests use fixed endpoints so importing the auth instance remains
+ * hermetic; production and development continue to use Auth0 OIDC discovery.
+ */
+const auth0TestEndpoints =
+	env.NODE_ENV === "test"
+		? {
+				authorizationUrl: `https://${auth0Domain}/authorize`,
+				discoveryUrl: undefined,
+				tokenUrl: `https://${auth0Domain}/oauth/token`,
+				userInfoUrl: `https://${auth0Domain}/userinfo`,
+			}
+		: {};
+
 const THIRTY_DAYS_IN_SECONDS = 60 * 60 * 24 * 30;
 
 /** Vercel preview/deployment URL pattern for this project (branch & hash forms). */
@@ -57,7 +72,7 @@ const baseURL: BaseURLConfig = env.VERCEL
  *   create/findFirst/update/deleteMany (no `upsert`), so it is unaffected by the
  *   CockroachDB + adapter-pg `upsert` incompatibility.
  * - `genericOAuth` + `auth0`: Auth0 as the sole identity provider. The default
- *   callback is `/api/auth/oauth2/callback/auth0`.
+ *   callback is `/api/auth/callback/auth0`.
  * - `session.expiresIn`: 30-day parity with the former NextAuth config.
  */
 export const auth = betterAuth({
@@ -75,6 +90,7 @@ export const auth = betterAuth({
 						clientSecret: env.AUTH0_CLIENT_SECRET,
 						domain: auth0Domain,
 					}),
+					...auth0TestEndpoints,
 					// Always show the Auth0 login screen (parity with the former
 					// NextAuth `signIn("auth0", ..., { prompt: "login" })`).
 					prompt: "login",

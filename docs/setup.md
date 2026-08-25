@@ -70,6 +70,17 @@ vercel env run -e development -- <command>   # Vercel dev 環境変数（prisma 
 環境変数のスキーマと型定義は `app/src/env.ts`（`@t3-oss/env-nextjs` + Zod）を参照してください。
 Docker Compose 用の変数（VPS デプロイ時）は [docs/vps-deployment.md Step 7](vps-deployment.md) を参照してください。
 
+### Auth0 callback URL
+
+Auth0 Dashboard の Application Settings で、各環境の公開URLに対応する次のURLを **Allowed Callback URLs** に登録します。
+
+```text
+https://<application-origin>/api/auth/callback/auth0
+```
+
+Better Auth 1.7ではGeneric OAuthも標準のsocial provider callbackを使用します。旧URLの
+`/api/auth/oauth2/callback/auth0`は使用しません。
+
 外部の `reset-*` / `revert-*` バッチから Next.js のキャッシュを無効化する場合は、次の変数も設定します。
 
 | 変数 | 用途 |
