@@ -5,8 +5,13 @@ import { routing } from "@/infrastructures/i18n/routing-config";
 import { getTranslations } from "next-intl/server";
 import { Noto_Sans_JP } from "next/font/google";
 import { cookies, headers } from "next/headers";
+import { Suspense } from "react";
 
 const notoSansJp = Noto_Sans_JP({ subsets: ["latin"], display: "swap" });
+const defaultNotFoundLabels = {
+	returnHome: "ホームに戻る",
+	title: "コンテンツが見つかりません",
+} as const;
 
 async function getPreferredLocale() {
 	const [cookieStore, headerStore] = await Promise.all([cookies(), headers()]);
@@ -34,7 +39,7 @@ async function getPreferredLocale() {
 	return routing.defaultLocale;
 }
 
-export default async function GlobalNotFound() {
+async function PreferredLocaleNotFound() {
 	const localeValue = await getPreferredLocale();
 	const [label, statusCode] = await Promise.all([
 		getTranslations({ locale: localeValue, namespace: "label" }),
@@ -42,15 +47,35 @@ export default async function GlobalNotFound() {
 	]);
 
 	return (
-		<html lang={localeValue}>
+		<main className="min-h-screen" lang={localeValue}>
+			<NotFound
+				returnHomeHref={`/${localeValue}`}
+				returnHomeText={label("returnHome")}
+				title={statusCode("404")}
+			/>
+		</main>
+	);
+}
+
+function GlobalNotFoundFallback() {
+	return (
+		<main className="min-h-screen" lang={routing.defaultLocale}>
+			<NotFound
+				returnHomeHref={`/${routing.defaultLocale}`}
+				returnHomeText={defaultNotFoundLabels.returnHome}
+				title={defaultNotFoundLabels.title}
+			/>
+		</main>
+	);
+}
+
+export default function GlobalNotFound() {
+	return (
+		<html lang={routing.defaultLocale}>
 			<body className={notoSansJp.className}>
-				<main className="min-h-screen">
-					<NotFound
-						returnHomeHref={`/${localeValue}` as Route}
-						returnHomeText={label("returnHome")}
-						title={statusCode("404")}
-					/>
-				</main>
+				<Suspense fallback={<GlobalNotFoundFallback />}>
+					<PreferredLocaleNotFound />
+				</Suspense>
 			</body>
 		</html>
 	);
