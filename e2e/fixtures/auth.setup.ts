@@ -17,7 +17,7 @@ setup("authenticate", async ({ page }) => {
 	await page.getByLabel("Password").fill(password);
 	await page.getByRole("button", { name: "Continue" }).click();
 
-	await page.waitForURL("**/main/**", { timeout: 30_000 });
+	await page.waitForURL("**/articles", { timeout: 30_000 });
 
 	await page.context().storageState({ path: ".auth/user.json" });
 });

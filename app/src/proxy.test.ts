@@ -40,7 +40,7 @@ describe("proxy CSP", () => {
 		vi.mocked(getSessionCookie).mockReturnValue("session");
 	});
 
-	test("passes a unique nonce and enforced CSP upstream", () => {
+	test("returns the same browser CSP for equivalent requests", () => {
 		const firstResponse = proxy(
 			new NextRequest("https://example.com/ja/articles"),
 		);
@@ -48,28 +48,21 @@ describe("proxy CSP", () => {
 			new NextRequest("https://example.com/ja/articles"),
 		);
 
-		const firstNonce = capturedRequests[0].headers.get("x-nonce");
-		const secondNonce = capturedRequests[1].headers.get("x-nonce");
-		const upstreamPolicy = capturedRequests[0].headers.get(
-			"content-security-policy",
-		);
+		const firstPolicy = firstResponse.headers.get("content-security-policy");
+		const secondPolicy = secondResponse.headers.get("content-security-policy");
 
-		expect(firstNonce).toBeTruthy();
-		expect(secondNonce).toBeTruthy();
-		expect(firstNonce).not.toBe(secondNonce);
-		expect(upstreamPolicy).toContain(`'nonce-${firstNonce}'`);
-		expect(firstResponse.headers.get("content-security-policy")).toBe(
-			upstreamPolicy,
-		);
+		expect(firstPolicy).toBe(secondPolicy);
+		expect(firstPolicy).not.toContain("nonce-");
+		expect(capturedRequests[0].headers.get("x-nonce")).toBeNull();
+		expect(
+			capturedRequests[0].headers.get("content-security-policy"),
+		).toBeNull();
 		expect(
 			firstResponse.headers.get("x-middleware-request-content-security-policy"),
-		).toBe(upstreamPolicy);
-		expect(firstResponse.headers.get("x-middleware-request-x-nonce")).toBe(
-			firstNonce,
-		);
-		expect(secondResponse.headers.get("content-security-policy")).toContain(
-			`'nonce-${secondNonce}'`,
-		);
+		).toBeNull();
+		expect(
+			firstResponse.headers.get("x-middleware-request-x-nonce"),
+		).toBeNull();
 		expect(
 			firstResponse.headers.get("content-security-policy-report-only"),
 		).toBeNull();
@@ -87,15 +80,13 @@ describe("proxy CSP", () => {
 		const contentSecurityPolicy = response.headers.get(
 			"content-security-policy",
 		);
-		const upstreamContentSecurityPolicy = response.headers.get(
-			"x-middleware-request-content-security-policy",
-		);
-		const upstreamNonce = response.headers.get("x-middleware-request-x-nonce");
 
-		expect(contentSecurityPolicy).toContain("'nonce-");
-		expect(upstreamNonce).toBeTruthy();
-		expect(upstreamContentSecurityPolicy).toBe(contentSecurityPolicy);
-		expect(upstreamContentSecurityPolicy).toContain(`'nonce-${upstreamNonce}'`);
+		expect(contentSecurityPolicy).toContain("script-src 'self'");
+		expect(contentSecurityPolicy).not.toContain("nonce-");
+		expect(
+			response.headers.get("x-middleware-request-content-security-policy"),
+		).toBeNull();
+		expect(response.headers.get("x-middleware-request-x-nonce")).toBeNull();
 		expect(
 			response.headers.get("content-security-policy-report-only"),
 		).toBeNull();

@@ -9,7 +9,7 @@
 - [i18n Pattern](#i18n-pattern)
 - [Loader Pattern](#loader-pattern)
 - [Error Boundary Pattern](#error-boundary-pattern)
-- [Nonce CSP とレンダリング](#nonce-csp-とレンダリング)
+- [静的 CSP と Instant Navigation](#静的-csp-と-instant-navigation)
 - [Dynamic Rendering](#dynamic-rendering)
 - [Server Actions Architecture Pattern](#server-actions-architecture-pattern)
 - [Value Object Pattern with Zod Branding](#value-object-pattern-with-zod-branding)
@@ -495,15 +495,15 @@ export default function Error({ error, reset }: ErrorPageProps) {
 - `errorCaller`は問題追跡に使用されるため、コンポーネントを特定できる名前を付ける
 - Sentry連携によりプロダクションエラーを自動監視
 
-## Nonce CSP とレンダリング
+## 静的 CSP と Instant Navigation
 
-本コードベースはスクリプトのインライン実行を原則nonceで制限する。Proxyがリクエストごとにnonceを生成し、Next.jsはリクエストの`Content-Security-Policy`からnonceを取得してframework scriptへ付与する。i18n middlewareなど別middlewareの`NextResponse`を返す場合も、`NextResponse.next({ request: { headers } })`相当の`x-middleware-request-*` override headersを最終レスポンスへ引き継ぎ、SSR側へnonce付きCSP request headerが届く状態を維持する。
+本コードベースは、同じdeployment環境では常に同じ値になる決定的なCSPを使用する。Proxyはbrowser responseだけへ`Content-Security-Policy`を付与し、上流requestへCSPや`x-nonce`を注入しない。認証失敗redirectにも同じCSPを付与する。
 
-Next.js/Vercelのstreamed responseやerror responseでは、nonceが付与されないparser-inserted script elementが生成されるケースがある。そのため`script-src`自体はnonce scopedのまま維持し、`script-src-elem`のみ`unsafe-inline`を互換fallbackとして分離する。`strict-dynamic`はhost allowlistを無効化し、nonceなしscript elementが混在したときにNext.js/Vercelのchunkやanalytics scriptまで連鎖的にブロックするため使用しない。
+Next.js/Vercelのstreamed responseやerror responseで生成されるparser-inserted framework scriptとの互換性のため、既存の`script-src-elem 'unsafe-inline'`は維持する。Productionのstyle elementは`self`と確認済みの個別hashだけを許可し、新しい違反には対象を検証してhashを追加する。PreviewのVercel ToolbarとDevelopmentのReact Scanだけは環境別allowlistを使用する。experimental SRIはinline Flight scriptや`next-themes`のinline scriptを保護しないため導入しない。
 
-nonceはリクエストごとに異なるため、静的HTMLシェルを再利用するCache Components / PPRとは両立しない。そのため`cacheComponents`は有効化せず、ページはリクエスト時に動的レンダリングする。
+`cacheComponents: true`と`partialPrefetching: true`により、ナビゲーション時は静的なApp Shellを即時commitし、認証、DB、`params`、`searchParams`に依存する部分をSuspenseのholeとして後からstreamする。静的locale JSONはlocaleをkeyにした`use cache`関数からShellへ読み込む。`headers()`、`cookies()`、tenantデータ、認証結果を共有Shellへ直接含めない。
 
-Next.jsのexperimental SRIはbuild時の外部script assetを対象とし、inline Flight scriptや`next-themes`のinline scriptを保護できない。このためSRIをnonce CSPの代替にはせず、Partial Prefetchingを含むCache Componentsは厳格CSPとの公式な両立手段が提供されるまで導入しない。
+nonce廃止により、inline elementをリクエスト単位で認可する性質は失われる。一方、CSPが静的になりShell再利用が可能になる。Productionで`unsafe-inline`の許可範囲を追加で広げず、既存のcompatibility許可、既知style hash、Sentry reportingを継続して差分を抑える。
 
 ### データキャッシュ
 
@@ -519,7 +519,7 @@ Next.jsのexperimental SRIはbuild時の外部script assetを対象とし、inli
 
 ### Loader Pattern
 
-LoaderとSuspense境界は、PPRではなくリクエスト時ストリーミングとloading UIのために維持する。認証確認とnonce適用は静的シェルへ逃がさず、常に同じリクエストコンテキストで処理する。
+LoaderとSuspense境界はInstant Navigationの動的holeとして使用する。認証確認とtenant別データ取得は静的Shellへ移さず、常にリクエストコンテキスト内で処理する。form、counter、stack、動的詳細、paginationはそれぞれ最寄りの境界からstreamする。
 
 ## Dynamic Rendering
 
@@ -558,7 +558,7 @@ async function DynamicComponent() {
 
 ### 本コードベースでの方針
 
-1. **ページ**: nonce CSPのためリクエストごとに動的レンダリング
+1. **ページ**: 同期的にApp Shellを返し、request依存箇所だけをSuspense配下で動的レンダリング
 2. **データ**: `unstable_cache`でtenant別にキャッシュし、`updateTag`で無効化
 3. **認証**: `headers()`を使ったsession検証をページ・Server Actionごとに実施
 4. **リアルタイム要件**: `connection()` APIで明示的にオプトイン
