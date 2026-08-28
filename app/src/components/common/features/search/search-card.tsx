@@ -5,13 +5,13 @@ import { useSearch } from "@/components/common/hooks/use-search";
 import { LinkCard } from "@/components/common/layouts/cards/link-card";
 import { UtilButtons } from "@/components/common/layouts/nav/util-buttons";
 import { authClient } from "@/infrastructures/auth/auth-client";
+import { Link } from "@/infrastructures/i18n/routing";
 import { Button } from "@s-hirano-ist/s-ui/button";
 import { Input } from "@s-hirano-ist/s-ui/input";
 import { LoadingIndicator as Loading } from "@s-hirano-ist/s-ui/loading-indicator";
 import { haptic } from "@s-hirano-ist/s-ui/utils/haptic";
 import { SearchIcon } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 type Props = { search: typeof searchContentFromClient };
 
@@ -30,9 +30,6 @@ export function SearchCard({ search }: Props) {
 	const t = useTranslations("label");
 	const statusCodes = useTranslations("statusCode");
 
-	const router = useRouter();
-	const locale = useLocale();
-
 	const {
 		searchQuery,
 		searchResults,
@@ -48,18 +45,6 @@ export function SearchCard({ search }: Props) {
 	const nonArticles = searchResults
 		? searchResults.filter((r) => r.contentType !== "articles")
 		: [];
-
-	const handleSelect = (item: {
-		contentType: "articles" | "books" | "notes";
-		href: string;
-	}) => {
-		haptic();
-		if (item.contentType === "books") {
-			router.push(`/${locale}/book/${item.href}`);
-		} else if (item.contentType === "notes") {
-			router.push(`/${locale}/note/${item.href}`);
-		}
-	};
 
 	const handleKeyDown = (e: React.KeyboardEvent) => {
 		if (e.key === "Enter" && !isPending) {
@@ -101,14 +86,18 @@ export function SearchCard({ search }: Props) {
 		);
 	} else {
 		content = nonArticles.map((item) => (
-			<button
+			<Link
 				className="w-full cursor-pointer rounded-sm px-2 py-3 text-left text-sm hover:bg-muted"
+				href={
+					item.contentType === "books"
+						? `/book/${item.href}`
+						: `/note/${item.href}`
+				}
 				key={item.href}
-				onClick={() => handleSelect(item)}
-				type="button"
+				onClick={() => haptic()}
 			>
 				{item.title}
-			</button>
+			</Link>
 		));
 	}
 

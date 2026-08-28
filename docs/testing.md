@@ -201,3 +201,30 @@ pnpm test:chaos --headed  # ブラウザ表示付きで実行
 - `e2e/fixtures/auth.setup.ts` - Auth0認証セットアップ
 - `e2e/helpers/cdp-network.ts` - CDPネットワーク条件プリセット（slow3G, offline, fast）
 - `e2e/helpers/selectors.ts` - 共有セレクタ・ルート定数
+
+## Instant Navigation E2E
+
+Next.jsと同じ`16.3.3`へ固定した実験的`@next/playwright`の`instant()`を使い、動的データのstreamを一時停止した状態でApp Shellが即時commitされることを検証する。
+
+### 前提条件
+
+- `E2E_AUTH0_USERNAME` / `E2E_AUTH0_PASSWORD`をDopplerまたは実行環境へ設定
+- Auth0テストユーザーが既存アプリへログイン可能
+- Playwright Chromiumをインストール済み
+- `.auth/user.json`は既存の`e2e/fixtures/auth.setup.ts`が生成し、各テストが再利用
+
+### コマンド
+
+```bash
+pnpm test:instant-navigation
+pnpm test:instant-navigation --headed
+```
+
+### 検証範囲
+
+- `/ja/articles`のhard navigationでShellとloading UIが動的データより先に表示される
+- ARTICLESからNOTESへのLink遷移とDUMPERからVIEWERへのprogrammatic navigationが即時commitする
+- note/bookの動的slugとimagesの`?page=`がURL依存データを待たずShellを返す
+- storage stateを持たないrequestは従来どおりAuth0へredirectする
+
+Production buildではInstant testing APIを公開しない。Vercel PreviewではNavigation Inspectorも併用し、hard/soft navigation、CSP違反、テーマ、Toast、Dialog、Drawer、Lightbox、error/streaming responseを手動確認する。

@@ -216,18 +216,17 @@ pnpm i --frozen-lockfile
 
 ## Content Security Policy
 
-The application uses a request-scoped nonce generated in `app/src/proxy.ts`.
-The nonce is forwarded to server rendering through the internal `x-nonce`
-header and an upstream `Content-Security-Policy` request header. Browser
-responses receive the enforced `Content-Security-Policy` header.
+The application uses a deterministic Content Security Policy generated from
+the deployment environment. `app/src/proxy.ts` adds the enforced policy only
+to browser responses, including unauthenticated redirects. It does not inject
+CSP or private headers into the upstream server-rendering request.
 
 ### Policy
 
-- `script-src` permits self and the request nonce; development also allows `unsafe-eval`.
+- `script-src` permits self; development also allows `unsafe-eval`.
 - `script-src-elem` permits self, Vercel Analytics, development-only React Scan, Preview-only Vercel Toolbar, and `unsafe-inline` as a compatibility fallback for Next.js/Vercel streamed or error responses that can emit parser-inserted scripts without a nonce.
-- Production `style-src-elem` requires self, the request nonce, or documented deterministic framework/library hashes.
+- Production `style-src-elem` requires self or documented deterministic framework/library hashes. Add a specific hash for a verified new inline style instead of broadening Production with `unsafe-inline`.
 - `style-src-attr 'unsafe-inline'` remains enabled because UI positioning and syntax highlighting use dynamic style attributes.
-- The shared `ThemeProvider` initializes `get-nonce` during React's insertion phase so client-side styles created by `next-themes`, Radix UI, and `react-remove-scroll` receive the request nonce.
 - Preview deployments allow the additional script, connection, image, frame, style, and font sources documented for Vercel Toolbar.
 - CSP violations are reported to the configured Sentry reporting endpoint through `report-uri` and `Report-To`.
 
@@ -238,9 +237,18 @@ Drawer, Lightbox, and Markdown code rendering in Preview after policy changes.
 Confirm that Sentry contains no unexplained violations from supported browsers.
 Preview intentionally has a broader Vercel Toolbar policy than Production.
 
-Cache Components / PPR are intentionally disabled because their reusable static
-HTML shell cannot carry a fresh nonce for every request. Database query results
-remain cached with tenant-scoped `unstable_cache` keys and tags.
+Cache Components and Partial Prefetching are enabled because the policy no
+longer depends on a request nonce. The reusable App Shell contains only static
+locale messages and navigation/loading UI. Authentication, request URL data,
+and tenant-specific database results stream through Suspense boundaries and are
+not stored in the shared shell. Database query results remain cached with
+tenant-scoped `unstable_cache` keys and tags containing the authenticated user
+ID.
+
+Removing nonces trades per-request authorization of inline elements for a
+deterministic allowlist. Production keeps the existing narrow style hash and
+the framework compatibility allowance in `script-src-elem`; experimental SRI
+is not treated as protection for inline Flight or theme scripts.
 
 ## Application Security Scanning (Aikido)
 

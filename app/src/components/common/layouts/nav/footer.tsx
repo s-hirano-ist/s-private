@@ -51,6 +51,50 @@ function NavIcon({ icon, isActive, name }: NavIconProps) {
 	);
 }
 
+export function FooterFallback() {
+	return (
+		<footer className="fixed bottom-3 left-1/2 z-50 w-[calc(100%-1.5rem)] max-w-md -translate-x-1/2 rounded-full border border-white/20 bg-white/70 shadow-lg backdrop-blur-xl dark:border-white/10 dark:bg-gray-900/70">
+			<div className="mx-auto grid h-14 max-w-lg grid-cols-3 items-center rounded-full text-foreground">
+				<Button
+					className="size-full rounded-full"
+					disabled
+					size="icon"
+					variant="ghost"
+				>
+					<NavIcon
+						icon={<UploadIcon className="size-5" />}
+						isActive={false}
+						name="DUMPER"
+					/>
+				</Button>
+				<div className="flex items-center justify-center">
+					<Button
+						className="-mt-5 size-14 rounded-full bg-linear-to-br from-primary to-primary-grad text-white shadow-[0_4px_20px_rgb(var(--sui-primary)/0.4)] ring-4 ring-background"
+						disabled
+						size="icon"
+						variant="default"
+					>
+						<SearchIcon className="size-5 text-white" />
+						<span className="sr-only">Action</span>
+					</Button>
+				</div>
+				<Button
+					className="size-full rounded-full"
+					disabled
+					size="icon"
+					variant="ghost"
+				>
+					<NavIcon
+						icon={<DownloadIcon className="size-5" />}
+						isActive={false}
+						name="VIEWER"
+					/>
+				</Button>
+			</div>
+		</footer>
+	);
+}
+
 export function Footer({ search }: Props) {
 	const [open, setOpen] = useState(false);
 

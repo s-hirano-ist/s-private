@@ -91,6 +91,7 @@ export async function ImagesStack({
 						{currentPage > 1 && (
 							<PaginationItem>
 								<PaginationPrevious
+									as={Link}
 									href={generatePageLink(currentPage - 1)}
 									label={t("previous")}
 								/>
@@ -116,6 +117,7 @@ export async function ImagesStack({
 						{currentPage < totalPages && (
 							<PaginationItem>
 								<PaginationNext
+									as={Link}
 									href={generatePageLink(currentPage + 1)}
 									label={t("next")}
 								/>

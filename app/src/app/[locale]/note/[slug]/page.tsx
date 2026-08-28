@@ -18,19 +18,25 @@ export async function generateMetadata({
 	};
 }
 
-export default async function Page({
-	params,
-}: PageProps<"/[locale]/note/[slug]">) {
+type NoteContentProps = Pick<PageProps<"/[locale]/note/[slug]">, "params">;
+
+async function NoteContent({ params }: NoteContentProps) {
 	await requireAuth();
 
 	const { slug } = await params;
 
 	return (
+		<ErrorBoundary
+			errorCaller="NotesViewerBody"
+			render={() => ViewerBody({ getNoteByTitle, slug })}
+		/>
+	);
+}
+
+export default function Page({ params }: PageProps<"/[locale]/note/[slug]">) {
+	return (
 		<Suspense fallback={<Loading />}>
-			<ErrorBoundary
-				errorCaller="NotesViewerBody"
-				render={() => ViewerBody({ getNoteByTitle, slug })}
-			/>
+			<NoteContent params={params} />
 		</Suspense>
 	);
 }

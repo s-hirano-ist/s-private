@@ -18,19 +18,25 @@ export async function generateMetadata({
 	};
 }
 
-export default async function Page({
-	params,
-}: PageProps<"/[locale]/book/[slug]">) {
+type BookContentProps = Pick<PageProps<"/[locale]/book/[slug]">, "params">;
+
+async function BookContent({ params }: BookContentProps) {
 	await requireAuth();
 
 	const { slug } = await params;
 
 	return (
+		<ErrorBoundary
+			errorCaller="BooksViewerBody"
+			render={() => ViewerBody({ getBookByISBN, slug })}
+		/>
+	);
+}
+
+export default function Page({ params }: PageProps<"/[locale]/book/[slug]">) {
+	return (
 		<Suspense fallback={<Loading />}>
-			<ErrorBoundary
-				errorCaller="BooksViewerBody"
-				render={() => ViewerBody({ getBookByISBN, slug })}
-			/>
+			<BookContent params={params} />
 		</Suspense>
 	);
 }
