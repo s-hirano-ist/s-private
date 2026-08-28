@@ -2,6 +2,7 @@ import type { Route } from "next";
 import "./globals.css";
 import { NotFound } from "@/components/common/display/status/not-found";
 import { routing } from "@/infrastructures/i18n/routing-config";
+import { hasLocale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { Noto_Sans_JP } from "next/font/google";
 import { cookies, headers } from "next/headers";
@@ -17,10 +18,7 @@ async function getPreferredLocale() {
 	const [cookieStore, headerStore] = await Promise.all([cookies(), headers()]);
 	const cookieLocale = cookieStore.get("NEXT_LOCALE")?.value;
 
-	if (
-		cookieLocale &&
-		(routing.locales as readonly string[]).includes(cookieLocale)
-	) {
+	if (cookieLocale && hasLocale(routing.locales, cookieLocale)) {
 		return cookieLocale;
 	}
 
@@ -29,10 +27,7 @@ async function getPreferredLocale() {
 		?.split(",")[0]
 		.split("-")[0];
 
-	if (
-		preferredLocale &&
-		(routing.locales as readonly string[]).includes(preferredLocale)
-	) {
+	if (preferredLocale && hasLocale(routing.locales, preferredLocale)) {
 		return preferredLocale;
 	}
 
