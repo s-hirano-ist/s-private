@@ -6,6 +6,10 @@ import { buildContentSecurityPolicy } from "./infrastructures/security/content-s
 
 const handleI18nRouting = createMiddleware(routing);
 const CSP_HEADER = "Content-Security-Policy";
+const PUBLIC_AUTH_ERROR_PATHS = new Set<string>([
+	"/error",
+	...routing.locales.map((locale) => `/${locale}/error`),
+]);
 
 function addCspResponseHeader(
 	response: NextResponse,
@@ -65,15 +69,17 @@ export default function proxy(request: NextRequest) {
 		headers: requestHeaders,
 	});
 
-	const sessionCookie = getSessionCookie(requestWithCsp);
-	if (!sessionCookie) {
-		return addCspResponseHeader(
-			addUpstreamRequestHeaders(
-				NextResponse.redirect(new URL("/api/sign-in", request.url)),
-				requestHeaders,
-			),
-			contentSecurityPolicy,
-		);
+	if (!PUBLIC_AUTH_ERROR_PATHS.has(request.nextUrl.pathname)) {
+		const sessionCookie = getSessionCookie(requestWithCsp);
+		if (!sessionCookie) {
+			return addCspResponseHeader(
+				addUpstreamRequestHeaders(
+					NextResponse.redirect(new URL("/api/sign-in", request.url)),
+					requestHeaders,
+				),
+				contentSecurityPolicy,
+			);
+		}
 	}
 
 	return addCspResponseHeader(

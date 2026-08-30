@@ -27,6 +27,7 @@
 		"delete": "Delete",
 		"cancel": "Cancel",
 		"confirmDelete": "Confirm Delete",
+		"authErrorCode": "Authentication error code",
 		"resignIn": "Sign in again",
 		"returnHome": "Return to Home",
 		"useCustomValue": "Use \"{value}\"",
