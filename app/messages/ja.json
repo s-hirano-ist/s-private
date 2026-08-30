@@ -27,6 +27,7 @@
 		"delete": "削除",
 		"cancel": "キャンセル",
 		"confirmDelete": "削除の確認",
+		"authErrorCode": "認証エラーコード",
 		"resignIn": "再サインイン",
 		"returnHome": "ホームに戻る",
 		"useCustomValue": "「{value}」を使用",
