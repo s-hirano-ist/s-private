@@ -8,6 +8,6 @@ _.file = ".env.local"
 [tools]
 pnpm = "11.22.0"
 doppler = { version = "3.76.5", exe = "doppler" }
-"npm:agent-browser" = "0.34.0"
-rumdl = "v0.2.60"
+"npm:agent-browser" = "0.35.1"
+rumdl = "v0.2.62"
 gitleaks = "8.30.1"
