@@ -3,7 +3,7 @@
 	"version": "2.0.3",
 	"description": "Framework-agnostic React 19 design system",
 	"engines": {
-		"node": ">=24"
+		"node": ">=24.20.0"
 	},
 	"type": "module",
 	"exports": {

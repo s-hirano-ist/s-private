@@ -3,7 +3,7 @@
 	"version": "1.18.13",
 	"description": "RAG search library with Qdrant and embedding API client",
 	"engines": {
-		"node": ">=24"
+		"node": ">=24.20.0"
 	},
 	"type": "module",
 	"exports": {
