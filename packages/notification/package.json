@@ -3,7 +3,7 @@
 	"version": "1.18.5",
 	"description": "Notification service for s-private application - Pushover integration",
 	"engines": {
-		"node": ">=24"
+		"node": ">=24.20.0"
 	},
 	"type": "module",
 	"exports": {

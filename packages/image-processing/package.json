@@ -3,7 +3,7 @@
 	"version": "1.0.0",
 	"description": "Shared Sharp-based image processing utilities for s-private",
 	"engines": {
-		"node": ">=24"
+		"node": ">=24.20.0"
 	},
 	"type": "module",
 	"exports": {

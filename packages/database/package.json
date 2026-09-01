@@ -3,7 +3,7 @@
 	"version": "1.21.1",
 	"description": "Prisma database schema and client for s-private project",
 	"engines": {
-		"node": ">=24"
+		"node": ">=24.20.0"
 	},
 	"type": "module",
 	"exports": {
