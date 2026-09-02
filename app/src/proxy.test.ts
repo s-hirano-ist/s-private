@@ -92,6 +92,46 @@ describe("proxy CSP", () => {
 		).toBeNull();
 	});
 
+	test.each(["/error", "/ja/error", "/en/error"])(
+		"allows unauthenticated access to the exact auth error path %s",
+		(pathname) => {
+			vi.mocked(getSessionCookie).mockReturnValue(null);
+
+			const response = proxy(
+				new NextRequest(`https://example.com${pathname}?error=state_mismatch`),
+			);
+
+			expect(response.status).toBe(200);
+			expect(response.headers.get("location")).toBeNull();
+			expect(getSessionCookie).not.toHaveBeenCalled();
+			expect(capturedRequests).toHaveLength(1);
+			expect(capturedRequests[0].nextUrl.pathname).toBe(pathname);
+			expect(capturedRequests[0].nextUrl.searchParams.get("error")).toBe(
+				"state_mismatch",
+			);
+			expect(response.headers.get("content-security-policy")).toContain(
+				"script-src 'self'",
+			);
+			expect(response.headers.get("content-security-policy")).not.toContain(
+				"nonce-",
+			);
+		},
+	);
+
+	test("keeps non-exact error subpaths protected", () => {
+		vi.mocked(getSessionCookie).mockReturnValue(null);
+
+		const response = proxy(
+			new NextRequest("https://example.com/ja/error/details"),
+		);
+
+		expect(response.status).toBe(307);
+		expect(response.headers.get("location")).toBe(
+			"https://example.com/api/sign-in",
+		);
+		expect(getSessionCookie).toHaveBeenCalledOnce();
+	});
+
 	test("excludes API and static asset routes from Proxy", () => {
 		expect(
 			unstable_doesMiddlewareMatch({
