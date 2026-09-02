@@ -79,6 +79,7 @@ export const auth = betterAuth({
 	baseURL,
 	secret: env.AUTH_SECRET,
 	trustedOrigins: [env.BETTER_AUTH_URL, `https://${VERCEL_PREVIEW_HOST}`],
+	onAPIError: { errorURL: "/error" },
 	database: prismaAdapter(prisma, { provider: "cockroachdb" }),
 	session: { expiresIn: THIRTY_DAYS_IN_SECONDS },
 	plugins: [

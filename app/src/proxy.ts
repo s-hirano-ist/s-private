@@ -7,6 +7,10 @@ import { buildContentSecurityPolicy } from "./infrastructures/security/content-s
 
 const handleI18nRouting = createMiddleware(routing);
 const CSP_HEADER = "Content-Security-Policy";
+const PUBLIC_AUTH_ERROR_PATHS = new Set<string>([
+	"/error",
+	...routing.locales.map((locale) => `/${locale}/error`),
+]);
 
 function addCspResponseHeader(
 	response: NextResponse,
@@ -39,12 +43,15 @@ export default function proxy(request: NextRequest) {
 		minioPort,
 		reportUrl,
 	});
-	const sessionCookie = getSessionCookie(request);
-	if (!sessionCookie) {
-		return addCspResponseHeader(
-			NextResponse.redirect(new URL("/api/sign-in", request.url)),
-			contentSecurityPolicy,
-		);
+
+	if (!PUBLIC_AUTH_ERROR_PATHS.has(request.nextUrl.pathname)) {
+		const sessionCookie = getSessionCookie(request);
+		if (!sessionCookie) {
+			return addCspResponseHeader(
+				NextResponse.redirect(new URL("/api/sign-in", request.url)),
+				contentSecurityPolicy,
+			);
+		}
 	}
 
 	return addCspResponseHeader(
