@@ -7,13 +7,15 @@ import { BooksStackLoader } from "@/loaders/books/books-stack-loader";
 import { LoadingIndicator as Loading } from "@s-hirano-ist/s-ui/loading-indicator";
 import { Suspense } from "react";
 
-export default async function Page() {
+export default function Page() {
 	return (
 		<>
-			<ErrorBoundary
-				errorCaller="BooksForm"
-				render={() => BooksFormLoader({ addBooks })}
-			/>
+			<Suspense fallback={<Loading />}>
+				<ErrorBoundary
+					errorCaller="BooksForm"
+					render={() => BooksFormLoader({ addBooks })}
+				/>
+			</Suspense>
 
 			<Suspense fallback={<Loading />}>
 				<ErrorBoundary

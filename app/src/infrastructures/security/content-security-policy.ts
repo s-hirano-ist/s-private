@@ -1,6 +1,5 @@
 const CSP_REPORTING_GROUP = "csp-endpoint";
-// Next.js can emit this deterministic inline style before client nonce
-// propagation is available on error/streaming responses.
+// Next.js can emit this deterministic inline style on error/streaming responses.
 const NEXT_INLINE_STYLE_HASH =
 	"'sha256-Wwucq8eX2r0YFymkQhDXm5hN0+FfSvI3s4JSSaqa4iw='";
 
@@ -9,7 +8,6 @@ type ContentSecurityPolicyOptions = {
 	isPreview: boolean;
 	minioHost?: string;
 	minioPort?: string;
-	nonce: string;
 	reportUrl?: string;
 };
 
@@ -29,24 +27,17 @@ export function buildContentSecurityPolicy({
 	isPreview,
 	minioHost,
 	minioPort,
-	nonce,
 	reportUrl,
 }: ContentSecurityPolicyOptions): string {
 	const allowsVercelToolbar = isPreview;
 	const allowsInlineStyleElements = isDevelopment || allowsVercelToolbar;
 	const minioOrigin = getMinioOrigin(minioHost, minioPort);
 
-	const scriptSources = [
-		"'self'",
-		`'nonce-${nonce}'`,
-		...(isDevelopment ? ["'unsafe-eval'"] : []),
-	];
+	const scriptSources = ["'self'", ...(isDevelopment ? ["'unsafe-eval'"] : [])];
 	const scriptElementSources = [
 		"'self'",
-		// Next.js 16/Vercel can emit parser-inserted framework scripts without
-		// a nonce during streamed/error responses. Keep script-src itself nonce
-		// scoped, but allow script elements so the app can recover instead of
-		// failing closed with a 500 page that cannot hydrate.
+		// Next.js 16/Vercel can emit parser-inserted framework scripts during
+		// streamed/error responses. Preserve the existing compatibility fallback.
 		"'unsafe-inline'",
 		...(isDevelopment ? ["https://unpkg.com"] : []),
 		"https://va.vercel-scripts.com",
@@ -58,7 +49,7 @@ export function buildContentSecurityPolicy({
 				"'unsafe-inline'",
 				...(allowsVercelToolbar ? ["https://vercel.live"] : []),
 			]
-		: ["'self'", `'nonce-${nonce}'`, NEXT_INLINE_STYLE_HASH];
+		: ["'self'", NEXT_INLINE_STYLE_HASH];
 	const imageSources = [
 		"'self'",
 		"blob:",

@@ -7,13 +7,15 @@ import { ArticlesStackLoader } from "@/loaders/articles/articles-stack-loader";
 import { LoadingIndicator as Loading } from "@s-hirano-ist/s-ui/loading-indicator";
 import { Suspense } from "react";
 
-export default async function Page() {
+export default function Page() {
 	return (
 		<>
-			<ErrorBoundary
-				errorCaller="ArticleForm"
-				render={() => ArticleFormLoader({ addArticle })}
-			/>
+			<Suspense fallback={<Loading />}>
+				<ErrorBoundary
+					errorCaller="ArticleForm"
+					render={() => ArticleFormLoader({ addArticle })}
+				/>
+			</Suspense>
 
 			<Suspense fallback={<Loading />}>
 				<ErrorBoundary

@@ -18,7 +18,7 @@ export default defineConfig({
 			testMatch: /auth\.setup\.ts/u,
 			use: {
 				...devices["Desktop Chrome"],
-				storageState: undefined,
+				storageState: { cookies: [], origins: [] },
 			},
 		},
 		{

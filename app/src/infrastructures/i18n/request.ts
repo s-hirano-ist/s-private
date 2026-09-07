@@ -5,6 +5,16 @@ import { notFound } from "next/navigation";
 import { locale as rootLocale } from "next/root-params";
 import { routing } from "./routing-config";
 
+export async function loadMessages(resolvedLocale: string): Promise<Messages> {
+	"use cache";
+
+	return (
+		(await import(`../../../messages/${resolvedLocale}.json`)) as {
+			default: Messages;
+		}
+	).default;
+}
+
 export default getRequestConfig(async ({ locale }) => {
 	const resolvedLocale = locale ?? (await rootLocale());
 
@@ -15,10 +25,6 @@ export default getRequestConfig(async ({ locale }) => {
 
 	return {
 		locale: resolvedLocale,
-		messages: (
-			(await import(`../../../messages/${resolvedLocale}.json`)) as {
-				default: Messages;
-			}
-		).default,
+		messages: await loadMessages(resolvedLocale),
 	};
 });

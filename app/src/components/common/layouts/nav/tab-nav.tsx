@@ -14,7 +14,20 @@ export function TabNav() {
 	const segments = useSelectedLayoutSegments();
 	const activeTab = segments[0];
 	const isViewer = segments.includes("viewer");
+	return <TabNavLinks activeTab={activeTab} isViewer={isViewer} />;
+}
 
+export function TabNavFallback() {
+	return <TabNavLinks />;
+}
+
+function TabNavLinks({
+	activeTab,
+	isViewer = false,
+}: {
+	activeTab?: string;
+	isViewer?: boolean;
+}) {
 	return (
 		<nav className="inline-flex h-10 w-full items-center justify-center border-b border-muted p-1 text-muted-foreground">
 			{Object.entries(TABS).map(([key, label]) => {
