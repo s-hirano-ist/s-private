@@ -44,7 +44,7 @@ checksum = "sha256:8294b7aa9b03997481c06babf1e8b270c859358f27da57a11509afe537ac3
 url = "https://nodejs.org/dist/v24.19.0/node-v24.19.0-darwin-arm64.tar.gz"
 
 [[tools."npm:agent-browser"]]
-version = "0.35.1"
+version = "0.36.0"
 backend = "npm:agent-browser"
 
 [[tools.pnpm]]
@@ -64,17 +64,17 @@ url_api = "https://api.github.com/repos/pnpm/pnpm/releases/assets/515895947"
 provenance = "github-attestations"
 
 [[tools.rumdl]]
-version = "v0.2.62"
+version = "v0.2.67"
 backend = "aqua:rvben/rumdl"
 
 [tools.rumdl."platforms.linux-x64"]
-checksum = "sha256:12058de9ab5e0078a468d11bd1a8c5b79f69768a15c06832cebde715075ed893"
-url = "https://github.com/rvben/rumdl/releases/download/v0.2.62/rumdl-v0.2.62-x86_64-unknown-linux-gnu.tar.gz"
-url_api = "https://api.github.com/repos/rvben/rumdl/releases/assets/532322356"
+checksum = "sha256:6c496e22b078de6357b8acf5fff3e53f9e3ac684372792a71c6a805f1d561b05"
+url = "https://github.com/rvben/rumdl/releases/download/v0.2.67/rumdl-v0.2.67-x86_64-unknown-linux-gnu.tar.gz"
+url_api = "https://api.github.com/repos/rvben/rumdl/releases/assets/547491371"
 provenance = "github-attestations"
 
 [tools.rumdl."platforms.macos-arm64"]
-checksum = "sha256:3fd051ccb75e790635a7eb19585b4060c4c78bd3e7362daa98fa55dc46626b41"
-url = "https://github.com/rvben/rumdl/releases/download/v0.2.62/rumdl-v0.2.62-aarch64-apple-darwin.tar.gz"
-url_api = "https://api.github.com/repos/rvben/rumdl/releases/assets/532322359"
+checksum = "sha256:48506c69468d14eac5a26765b2442beb557b167e7d014f96fb7b6559d30e0890"
+url = "https://github.com/rvben/rumdl/releases/download/v0.2.67/rumdl-v0.2.67-aarch64-apple-darwin.tar.gz"
+url_api = "https://api.github.com/repos/rvben/rumdl/releases/assets/547491369"
 provenance = "github-attestations"
