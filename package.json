@@ -3,7 +3,7 @@
 	"version": "3.12.3",
 	"author": "s-hirano-ist",
 	"description": "Private pages and admin tools for s-hirano-ist.",
-	"packageManager": "pnpm@11.22.0",
+	"packageManager": "pnpm@12.3.4",
 	"engines": {
 		"node": ">=24"
 	},
