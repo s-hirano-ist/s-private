@@ -1,15 +1,13 @@
-import type { ReactNode } from "react";
-import type { Components } from "react-markdown";
-import ReactMarkdown from "react-markdown";
+import type { ComponentProps, ReactNode } from "react";
+import { compiler, type MarkdownToJSX } from "markdown-to-jsx/react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
-import remarkGfm from "remark-gfm";
 
 const LANGUAGE_REGEX = /language-(\w+)/u;
 const SLUG_REGEX = /\W+/gu;
 
 function generateHeadingId(children: ReactNode): string {
-	// react-markdown heading children are text at runtime; toString coercion must be preserved exactly
+	// Heading children are text at runtime; toString coercion must be preserved exactly.
 	// oxlint-disable-next-line typescript/no-base-to-string -- ReactNode is a runtime-text boundary; preserving existing coercion
 	return children?.toString().toLowerCase().replace(SLUG_REGEX, "-") ?? "";
 }
@@ -45,8 +43,8 @@ export type MarkdownViewerProps = {
  * ```
  */
 export async function markdownToReact(markdown: string) {
-	const components: Components = {
-		code({ className, children }) {
+	const overrides: MarkdownToJSX.Overrides = {
+		code({ className, children }: ComponentProps<"code">) {
 			const match = LANGUAGE_REGEX.exec(className || "");
 			const isInline = !match;
 
@@ -54,13 +52,13 @@ export async function markdownToReact(markdown: string) {
 				<code className={className}>{children}</code>
 			) : (
 				<SyntaxHighlighter PreTag="div" language={match[1]} style={vscDarkPlus}>
-					{/* react-markdown code children are raw code text at runtime; String coercion must be preserved exactly */}
+					{/* Markdown code children are raw code text at runtime; String coercion must be preserved exactly. */}
 					{/* oxlint-disable-next-line typescript/no-base-to-string -- ReactNode is a runtime-text boundary; preserving existing coercion */}
 					{String(children).replace(/\n$/u, "")}
 				</SyntaxHighlighter>
 			);
 		},
-		img({ src, alt, ...props }) {
+		img({ src, alt, ...props }: ComponentProps<"img">) {
 			if (!alt) {
 				return (
 					// Markdown images have dynamic external URLs; explicit presentation role for screenreaders
@@ -72,7 +70,7 @@ export async function markdownToReact(markdown: string) {
 			// oxlint-disable-next-line nextjs/no-img-element
 			return <img alt={alt} src={src} {...props} />;
 		},
-		a({ href, children }) {
+		a({ href, children }: ComponentProps<"a">) {
 			const isExternal = href?.startsWith("http");
 			return (
 				<a
@@ -84,25 +82,21 @@ export async function markdownToReact(markdown: string) {
 				</a>
 			);
 		},
-		h1: ({ children }) => {
+		h1: ({ children }: ComponentProps<"h1">) => {
 			const id = generateHeadingId(children);
 			return <h1 id={id}>{children}</h1>;
 		},
-		h2: ({ children }) => {
+		h2: ({ children }: ComponentProps<"h2">) => {
 			const id = generateHeadingId(children);
 			return <h2 id={id}>{children}</h2>;
 		},
-		h3: ({ children }) => {
+		h3: ({ children }: ComponentProps<"h3">) => {
 			const id = generateHeadingId(children);
 			return <h3 id={id}>{children}</h3>;
 		},
 	};
 
-	return (
-		<ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
-			{markdown}
-		</ReactMarkdown>
-	);
+	return compiler(markdown, { disableParsingRawHTML: true, overrides });
 }
 
 /**
