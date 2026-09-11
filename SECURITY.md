@@ -35,7 +35,6 @@ This project uses [Renovate](https://docs.renovatebot.com/) for automated depend
 **Key Features**:
 - **Weekly Schedule**: Updates run every Monday before 11am JST
 - **Vulnerability Alerts**: Immediate PRs for security issues (labeled `security`)
-- **Minimum Release Age**: 2-day delay for patches/minors to avoid newly published malicious packages
 - **Managed Scope**: Renovate handles `npm` / `mise` / `nvm` only. GitHub Actions and docker-compose are handled by Dependabot ([.github/dependabot.yml](.github/dependabot.yml))
 - **Grouped Updates**:
   - 非メジャー更新（patch + minor）を依存種別ごとに集約: `non-major`（dependencies / peerDependencies）と `non-major (devDependencies)`
@@ -63,11 +62,10 @@ This project uses [Renovate](https://docs.renovatebot.com/) for automated depend
   },
   lockFileMaintenance: { enabled: true },
   packageRules: [
-    // Four rules (npm deps, npm devDeps, mise, node/pnpm) all use:
+    // Non-major npm dependencies are grouped by dependency type.
     {
       matchManagers: ['npm'],
       matchUpdateTypes: ['patch', 'minor'],
-      minimumReleaseAge: '2 days',
     },
     // ...
   ],
@@ -137,23 +135,7 @@ blockExoticSubdeps: true
 | `strictDepBuilds: true` | `allowBuilds` 未登録のパッケージがライフサイクルスクリプトを持つ場合、インストールをハードエラー化 |
 | `blockExoticSubdeps: true` | 推移的依存が npm レジストリ以外のソース（Git URL / tarball URL）から取得されることをブロック。直接依存は対象外 |
 
-> Note: `trustPolicy: no-downgrade` は現在未設定。Renovate / Dependabot 側が `ERR_PNPM_TRUST_DOWNGRADE` を握りつぶして lockfile 更新ジョブごと落ちるため撤去済み。代替として下記の Minimum Release Age + 手動レビューで provenance 低下監視を担保。
-
-### Minimum Release Age
-
-**Renovate Setting** ([.github/renovate.json5](.github/renovate.json5)):
-```json5
-minimumReleaseAge: '2 days'  // npm, mise, nvm (Renovate-managed)
-```
-
-GitHub Actions / docker-compose use an equivalent cooldown (`cooldown.default-days: 2`) configured in [.github/dependabot.yml](.github/dependabot.yml).
-
-> Note: pnpm-workspace.yaml の `minimumReleaseAge` はRenovateとの競合により無効化中。Renovate側の設定で代替。
-
-**Why this matters**:
-- Delays installation of newly published packages
-- Gives the community time to identify and report malicious packages
-- Reduces exposure to supply chain attacks via package hijacking
+> Note: `trustPolicy: no-downgrade` は現在未設定。Renovate / Dependabot 側が `ERR_PNPM_TRUST_DOWNGRADE` を握りつぶして lockfile 更新ジョブごと落ちるため撤去済み。provenance の低下は依存更新時の手動レビューで確認する。
 
 ### Frozen Lockfiles in CI/CD
 
@@ -315,10 +297,9 @@ Node.js アプリではない（TEI / MinIO）ため適用先もない。
 2. **Lifecycle Script Protection**: `allowBuilds` で承認済みパッケージのみスクリプト実行可能
 3. **Strict Build Enforcement**: `strictDepBuilds: true` で未登録パッケージの build script をハードエラー化
 4. **Exotic Subdep Blocking**: `blockExoticSubdeps: true` で npm レジストリ以外由来の推移的依存を遮断
-5. **Minimum Release Age**: 2日の Renovate delay（GitHub Actions / docker-compose は Dependabot の cooldown で同等の遅延）
-6. **Frozen Lockfiles**: Reproducible builds in CI/CD
-7. **Automated Monitoring**: Renovate tracks vulnerabilities
-8. **Manual Auditing**: `pnpm audit` for on-demand checks
+5. **Frozen Lockfiles**: Reproducible builds in CI/CD
+6. **Automated Monitoring**: Renovate tracks vulnerabilities
+7. **Manual Auditing**: `pnpm audit` for on-demand checks
 
 ### Package Installation Safety
 
