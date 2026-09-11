@@ -58,7 +58,6 @@
 			matchPackageNames: ["*"],
 			matchDepTypes: ["dependencies", "peerDependencies"],
 			groupName: "non-major",
-			minimumReleaseAge: "2 days",
 		},
 		{
 			matchManagers: ["npm"],
@@ -67,7 +66,6 @@
 			matchDepTypes: ["devDependencies"],
 			groupName: "non-major (devDependencies)",
 			groupSlug: "non-major-dev",
-			minimumReleaseAge: "2 days",
 			automerge: true,
 		},
 		{
@@ -76,14 +74,12 @@
 			groupName: "pnpm overrides",
 			groupSlug: "pnpm-overrides",
 			separateMajorMinor: false,
-			minimumReleaseAge: "2 days",
 			automerge: false,
 		},
 		{
 			matchManagers: ["mise"],
 			groupName: "mise",
 			groupSlug: "mise",
-			minimumReleaseAge: "2 days",
 			automerge: true,
 		},
 		{
@@ -91,7 +87,6 @@
 			matchManagers: ["mise", "nvm", "npm"],
 			groupName: "node and pnpm",
 			groupSlug: "node-pnpm",
-			minimumReleaseAge: "2 days",
 			automerge: false,
 		},
 	],

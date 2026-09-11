@@ -137,7 +137,6 @@ import { ArticlesStackLoader } from "@/loaders/articles";
   - **Renovate**: npm（pnpm）/ mise / nvm / lockFileMaintenance。
   - **Dependabot**: pnpm 非依存の github-actions / docker-compose。低リスク更新は `dependabot-auto-merge.yaml` で auto-merge。
 - **脆弱性アラート**: セキュリティ問題の自動PR（`security`ラベル付き、Renovate）
-- **サプライチェーン保護**: 最小リリース経過時間（cooldown）を設定
 - **設定**: [.github/renovate.json5](../.github/renovate.json5) / [.github/dependabot.yml](../.github/dependabot.yml) を参照
 
 ### npm/pnpmセキュリティ設定
