@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.26.3](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.26.2...@s-hirano-ist/s-scripts-v1.26.3) (2026-09-13)
+
+
+### Maintenance
+
+* harden pnpm dependency management ([d9d33a4](https://github.com/s-hirano-ist/s-private/commit/d9d33a4b6d88bfffb9441347686c62050047f4dc))
+* harden pnpm dependency management ([7bcaf77](https://github.com/s-hirano-ist/s-private/commit/7bcaf77df84eb63e202640601fef750ff5ddfc2b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.21.4
+    * @s-hirano-ist/s-database bumped to 1.21.2
+    * @s-hirano-ist/s-notification bumped to 1.18.6
+    * @s-hirano-ist/s-search bumped to 1.18.14
+    * @s-hirano-ist/s-storage bumped to 1.18.10
+
 ## [1.26.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.26.1...@s-hirano-ist/s-scripts-v1.26.2) (2026-08-25)
 
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.21.4](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.21.3...@s-hirano-ist/s-core-v1.21.4) (2026-09-13)
+
+
+### Maintenance
+
+* harden pnpm dependency management ([d9d33a4](https://github.com/s-hirano-ist/s-private/commit/d9d33a4b6d88bfffb9441347686c62050047f4dc))
+* harden pnpm dependency management ([7bcaf77](https://github.com/s-hirano-ist/s-private/commit/7bcaf77df84eb63e202640601fef750ff5ddfc2b))
+* update dependencies ([5abb59b](https://github.com/s-hirano-ist/s-private/commit/5abb59bb505bdb8eaa12b1a7a2fd49b25f96c3bc))
+
 ## [1.21.3](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.21.2...@s-hirano-ist/s-core-v1.21.3) (2026-08-22)
 
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.18.10](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-storage-v1.18.9...@s-hirano-ist/s-storage-v1.18.10) (2026-09-13)
+
+
+### Maintenance
+
+* harden pnpm dependency management ([d9d33a4](https://github.com/s-hirano-ist/s-private/commit/d9d33a4b6d88bfffb9441347686c62050047f4dc))
+* harden pnpm dependency management ([7bcaf77](https://github.com/s-hirano-ist/s-private/commit/7bcaf77df84eb63e202640601fef750ff5ddfc2b))
+
 ## [1.18.9](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-storage-v1.18.8...@s-hirano-ist/s-storage-v1.18.9) (2026-06-15)
 
 
