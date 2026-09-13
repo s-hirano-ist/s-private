@@ -95,13 +95,13 @@
 		"@s-hirano-ist/s-storage": "workspace:*",
 		"cheerio": "1.2.0",
 		"js-yaml": "5.4.1",
-		"oxfmt": "0.65.0",
+		"oxfmt": "0.67.0",
 		"turndown": "7.2.4"
 	},
 	"devDependencies": {
 		"@types/node": "24.13.3",
 		"@types/turndown": "5.0.6",
-		"tsx": "4.23.12",
+		"tsx": "4.23.13",
 		"typescript": "6.0.3"
 	}
 }
