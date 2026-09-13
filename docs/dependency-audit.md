@@ -3,7 +3,7 @@
 ## 結論
 
 **保守終了が明示された `tsup` の移行と、既知の脆弱性を含む推移依存の更新を優先する。**
-次に、単一APIのために導入しているGoogle Books SDKを標準`fetch`へ置き換える。
+Google Books APIは今回の対応対象外とし、SDKと実装を維持する。
 構文ハイライトとストレージSDKは比較検証を経て判断する。
 認証、ORM、i18n、UI基盤の全面交換を勧める根拠は今回の調査では得られなかった。
 
@@ -11,7 +11,7 @@
 | --- | --- | --- |
 | P1 | 更新 | [既知の脆弱性19件を導入元ごとに解消・評価](../issues/security-001-transitive-dependencies.md) |
 | P1 | 移行推奨 | [tsupからtsdownへ](../issues/refactor-007-tsup-to-tsdown.md) |
-| P2 | 移行推奨 | [Google Books SDKをfetchへ](../issues/refactor-008-google-books-fetch.md) |
+| P2 | 対象外 | ユーザー指定によりGoogle Books SDKとAPI実装を維持 |
 | P2 | 追加検証 | [MinIO SDKの推移依存対策とAWS SDK比較](../issues/refactor-009-storage-sdk-evaluation.md) |
 | P2 | 更新 | [Next.js等のパッチ更新](../issues/chore-001-dependency-patch-updates.md) |
 | P2 | 追加検証 | [Storybook・TypeScript・Vitest・Viteの互換性整理](../issues/chore-002-toolchain-compatibility.md) |
@@ -134,7 +134,11 @@ tsdownのNode要件は`^22.18.0 || ^24.11.0 || >=26.0.0`で、
 現在の24.19.0は満たすものの、repoが宣言する`>=24`の下限24.0では満たさない。
 開発・CIの最小Node要件を明示する。ライセンスは双方MIT、追加SaaS不要。工数: 中。
 
-### Google Books SDK → fetch: 移行推奨
+### Google Books SDK → fetch: 対象外
+
+2026-09-13のユーザー指定により、Google APIは今回の実装対象から除外した。
+コード、直接依存、APIキー、利用方法は変更せず、移行issueを完了扱いとする。
+将来あらためてGoogle APIの変更が明示的に依頼された場合のみ、以下の比較結果を再利用する。
 
 `packages/scripts/src/enrich-books.ts`はAPIキーによる`volumes.list({ q: isbn })`だけを使用する。
 OAuth更新や多数のAPI操作を提供するSDKの範囲に比べ用途が狭い。
