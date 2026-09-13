@@ -3,7 +3,7 @@ import { compiler, type MarkdownToJSX } from "markdown-to-jsx/react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 
-const LANGUAGE_REGEX = /language-(\w+)/u;
+const LANGUAGE_REGEX = /(?:^|\s)language-(\S+)/u;
 const SLUG_REGEX = /\W+/gu;
 
 function generateHeadingId(children: ReactNode): string {
