@@ -142,7 +142,7 @@ pnpm lint:md:fix       # Markdown の安全な自動修正
 pnpm lint:secret       # secret 検査（自己診断付き、出力は完全 mask）
 ```
 
-CI の `supplemental-lint` job で3種すべてを検査する。CI の mise action はコミット SHA 固定で、`mise.lock` の checksum を使って rumdl と Gitleaks だけを導入する。ローカルでは Husky + lint-staged が staged file に対して formatter と安全な fix を直列実行し、最後にリポジトリ全体へ Gitleaks を1回だけ実行する。pre-commit の oxlint は高速化と Next.js type generation への非依存化のため非 type-aware とし、完全な type-aware 検査（`.oxlintrc.json` の `options.typeAware: true`）は `pnpm lint` と CI で担保する。
+CI の `supplemental-lint` job で3種すべてを検査する。CI の mise action はコミット SHA 固定で、`mise.lock` の checksum を使って rumdl と Gitleaks だけを導入する。ローカルでは Lefthook が pre-commit で lint-staged を起動し、staged file に対して formatter と安全な fix を直列実行し、最後にリポジトリ全体へ Gitleaks を1回だけ実行する。pre-commit の oxlint は高速化と Next.js type generation への非依存化のため非 type-aware とし、完全な type-aware 検査（`.oxlintrc.json` の `options.typeAware: true`）は `pnpm lint` と CI で担保する。
 - 旧 Biome の base lint は oxlint へ吸収（`categories.correctness="error"` + style ルール移植: noParameterAssign→`no-param-reassign`、useSelfClosingElements→`react/self-closing-comp`、useNumberNamespace→`unicorn/prefer-number-properties`、noUselessElse→`no-else-return` ほか）。`noExplicitAny` は `typescript/no-explicit-any="error"` に統一。
 
 新規有効化（旧コメントアウト分）: `jsx-a11y`（oxlint native, error）。
