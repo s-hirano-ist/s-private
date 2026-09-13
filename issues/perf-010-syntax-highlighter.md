@@ -33,4 +33,4 @@ react-syntax-highlighter 16.1.1は非推奨指定もarchiveも確認されてい
 - [ ] 既存GFM・見出し・raw HTML・外部リンクに加え、危険URL、未知言語、言語なし、alias、長文を確認。
 - [ ] コード中のHTMLが実行されず、テーマ・改行・アクセシビリティが適切であることを検証。
 - [ ] 変更した場合は`pnpm check:agent`、`pnpm build`、該当Storybookを検証。
-- [ ] 計測条件と結果、採否を[報告書](../docs/dependency-audit.md)へ記録し、完了後に本issueを削除。
+- [ ] 計測条件と結果、採否をPR本文へ記録し、完了後に本issueを削除。
