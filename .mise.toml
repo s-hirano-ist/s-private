@@ -9,6 +9,6 @@ _.file = ".env.local"
 pnpm = "12.3.4"
 doppler = { version = "3.76.5", exe = "doppler" }
 "npm:agent-browser" = "0.37.1"
-rumdl = "v0.2.69"
+rumdl = "v0.2.73"
 gitleaks = "8.30.1"
 "npm:vercel" = "latest"
