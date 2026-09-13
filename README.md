@@ -72,6 +72,8 @@
 - **Manual Security Audits** - `pnpm audit` (moderate+ severity threshold)
 - **Supply Chain Protection**
   - Package version pinning (`savePrefix: ''` in pnpm-workspace.yaml)
+  - Shared dependency versions through the pnpm workspace catalog
+  - Strict 24-hour minimum release age and trust-downgrade checks for recent releases
   - Lifecycle script protection (`allowBuilds` + `strictDepBuilds: true`)
   - Exotic subdep blocking (`blockExoticSubdeps: true`)
   - Frozen lockfiles in CI/CD

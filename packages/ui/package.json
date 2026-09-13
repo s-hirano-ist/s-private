@@ -132,7 +132,7 @@
 	},
 	"dependencies": {
 		"@base-ui/react": "1.8.0",
-		"lucide-react": "1.44.0",
+		"lucide-react": "catalog:",
 		"tailwind-merge": "3.6.0",
 		"tailwind-variants": "3.3.1"
 	},
@@ -140,15 +140,15 @@
 		"@arethetypeswrong/cli": "0.18.5",
 		"@storybook/react-vite": "10.6.0",
 		"@tailwindcss/cli": "4.3.3",
-		"@tailwindcss/postcss": "4.3.3",
-		"@types/react": "19.2.18",
-		"@types/react-dom": "19.2.7",
-		"postcss": "8.5.28",
+		"@tailwindcss/postcss": "catalog:",
+		"@types/react": "catalog:",
+		"@types/react-dom": "catalog:",
+		"postcss": "catalog:",
 		"publint": "0.3.24",
-		"react": "19.2.8",
-		"react-dom": "19.2.8",
+		"react": "catalog:",
+		"react-dom": "catalog:",
 		"tsdown": "0.23.0",
-		"typescript": "6.0.3",
+		"typescript": "catalog:",
 		"vite": "7.3.6"
 	},
 	"repository": {

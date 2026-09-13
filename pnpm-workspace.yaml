@@ -3,6 +3,26 @@ packages:
   - services/*
   - packages/*
 
+catalog:
+  '@tailwindcss/postcss': 4.3.3
+  '@tailwindcss/typography': 0.5.20
+  '@types/node': 24.13.3
+  '@types/react': 19.2.18
+  '@types/react-dom': 19.2.7
+  js-yaml: 5.4.1
+  lucide-react: 1.44.0
+  next: 16.3.5
+  next-intl: 4.14.4
+  oxfmt: 0.67.0
+  postcss: 8.5.28
+  react: 19.2.8
+  react-dom: 19.2.8
+  tailwindcss: 4.3.3
+  typescript: 6.0.3
+  zod: 4.6.1
+
+catalogMode: prefer
+catalogPrune: true
 savePrefix: ''
 
 allowBuilds:
@@ -17,6 +37,12 @@ allowBuilds:
   sleep: true
   unrs-resolver: true
 
-# pnpm 11 supply-chain security hardening
+# pnpm supply-chain security hardening
+minimumReleaseAge: 1440
+minimumReleaseAgeStrict: true
+minimumReleaseAgeIgnoreMissingTime: false
+trustPolicy: no-downgrade
+trustPolicyIgnoreAfter: 10080
+trustLockfile: false
 strictDepBuilds: true
 blockExoticSubdeps: true
