@@ -30,4 +30,4 @@
   修正のrelease noteだけで現在のVercel分岐を削除しない。
 - [ ] 本番deployは含めない。完了後に本issueを削除。
 
-推移依存の脆弱性は[専用issue](security-001-transitive-dependencies.md)でも残存経路を管理する。
+推移依存の脆弱性は専用issueでも残存経路を管理する。
