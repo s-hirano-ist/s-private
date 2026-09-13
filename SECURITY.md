@@ -38,8 +38,10 @@ This project uses [Renovate](https://docs.renovatebot.com/) for automated depend
 - **Managed Scope**: Renovate handles `npm` / `mise` / `nvm` only. GitHub Actions and docker-compose are handled by Dependabot ([.github/dependabot.yml](.github/dependabot.yml))
 - **Grouped Updates**:
   - 非メジャー更新（patch + minor）を依存種別ごとに集約: `non-major`（dependencies / peerDependencies）と `non-major (devDependencies)`
+  - default catalogの非メジャー更新は`pnpm catalog`に集約し、runtime依存を含むため手動レビュー
   - `mise` ツール群、および Node.js + pnpm はそれぞれ専用グループ（`mise` / `node and pnpm`）
-- **Lock File Maintenance**: Automatic lock file updates to keep dependencies fresh
+- **Minimum Release Age**: npmパッケージはRenovate側でも1日待機し、pnpmのstrict policyに達するまでブランチを作成しない
+- **Lock File Maintenance**: 現在は無効。必要時にDependency Dashboardまたは設定変更で実行
 
 **Renovate Settings**:
 ```json5
@@ -57,18 +59,23 @@ This project uses [Renovate](https://docs.renovatebot.com/) for automated depend
   // Suppress dependency lifecycle scripts during Renovate installs.
   ignoreScripts: true,
   schedule: ['before 11am on monday'],
+	packageRules: [
+		{
+			matchDatasources: ['npm'],
+			minimumReleaseAge: '1 day',
+			internalChecksFilter: 'strict',
+		},
+		{
+			matchDepTypes: ['pnpm.catalog.default'],
+			matchUpdateTypes: ['patch', 'minor'],
+			groupName: 'pnpm catalog',
+			automerge: false,
+		},
+	],
   vulnerabilityAlerts: {
     labels: ['security'],
   },
-  lockFileMaintenance: { enabled: true },
-  packageRules: [
-    // Non-major npm dependencies are grouped by dependency type.
-    {
-      matchManagers: ['npm'],
-      matchUpdateTypes: ['patch', 'minor'],
-    },
-    // ...
-  ],
+	lockFileMaintenance: { enabled: false },
 }
 ```
 
@@ -106,7 +113,6 @@ allowBuilds:
   '@prisma/engines': true
   '@sentry/cli': true
   '@swc/core': true
-  dprint: true
   esbuild: true
   prisma: true
   puppeteer: true
@@ -126,16 +132,31 @@ allowBuilds:
 
 **Configuration** ([pnpm-workspace.yaml](pnpm-workspace.yaml)):
 ```yaml
+minimumReleaseAge: 1440
+minimumReleaseAgeStrict: true
+minimumReleaseAgeIgnoreMissingTime: false
+trustPolicy: no-downgrade
+trustPolicyIgnoreAfter: 10080
+trustLockfile: false
 strictDepBuilds: true
 blockExoticSubdeps: true
 ```
 
 | 設定 | 役割 |
 |------|------|
+| `minimumReleaseAge: 1440` | 公開から24時間未満の直接・推移依存を解決対象から除外 |
+| `minimumReleaseAgeStrict: true` | 24時間を経過した候補がない場合に新しいバージョンへフォールバックせず、解決を失敗させる |
+| `minimumReleaseAgeIgnoreMissingTime: false` | レジストリが公開時刻を返さないパッケージを安全側で拒否 |
+| `trustPolicy: no-downgrade` | 公開後7日以内のリリースで署名・provenanceの信頼レベルが過去より下がった場合に拒否 |
+| `trustLockfile: false` | frozen lockfileのエントリにも供給網ポリシーを再検証 |
 | `strictDepBuilds: true` | `allowBuilds` 未登録のパッケージがライフサイクルスクリプトを持つ場合、インストールをハードエラー化 |
 | `blockExoticSubdeps: true` | 推移的依存が npm レジストリ以外のソース（Git URL / tarball URL）から取得されることをブロック。直接依存は対象外 |
 
-> Note: `trustPolicy: no-downgrade` は現在未設定。Renovate / Dependabot 側が `ERR_PNPM_TRUST_DOWNGRADE` を握りつぶして lockfile 更新ジョブごと落ちるため撤去済み。provenance の低下は依存更新時の手動レビューで確認する。
+緊急更新で24時間待てない場合や、正当な公開方法変更でtrust policyに抵触する場合は、パッケージ名全体ではなく確認済みの正確な`package@version`だけを一時的に除外する。
+
+### Workspace Catalog
+
+複数workspaceで同じバージョンを使う外部依存は、`pnpm-workspace.yaml`のdefault catalogを正本とし、各`package.json`から`catalog:`で参照する。`catalogMode: prefer`は既存catalogと互換な追加・更新で再利用を優先し、`catalogPrune: true`は未使用エントリを削除する。公開APIを表すpeer dependencyの範囲と、ローカル依存を表す`workspace:*`はcatalogへ移さない。
 
 ### Frozen Lockfiles in CI/CD
 

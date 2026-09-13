@@ -141,10 +141,12 @@ import { ArticlesStackLoader } from "@/loaders/articles";
 
 ### npm/pnpmセキュリティ設定
 - **バージョン固定**: pnpm-workspace.yamlの`savePrefix: ''`
+- **Catalog**: 複数workspaceで共有する外部依存のバージョンを`catalog`に集約し、`catalogMode: prefer`で追加・更新時の再利用を優先
 - **ライフサイクルスクリプト保護**: `allowBuilds`（明示許可制）+ `strictDepBuilds: true`で未登録パッケージのスクリプト実行をハードエラー化
 - **推移的依存の制限**: `blockExoticSubdeps: true`でnpmレジストリ以外（Git/tarball URL）由来の間接依存をブロック
+- **信頼レベル低下の拒否**: 公開後7日以内のパッケージは`trustPolicy: no-downgrade`で過去リリースより署名・provenanceが弱い場合に拒否
 - **CI/CD**: 全CIワークフローで`--frozen-lockfile`を強制
-- **最小リリース経過時間**: 新規公開された悪意のあるパッケージを避けるための24時間グローバル設定
+- **最小リリース経過時間**: `minimumReleaseAge: 1440`とstrict modeを明示し、公開から24時間未満の直接・推移依存を拒否
 
 完全なセキュリティベストプラクティスについては[SECURITY.md](../SECURITY.md)を参照してください。
 

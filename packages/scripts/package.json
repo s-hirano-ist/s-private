@@ -94,14 +94,14 @@
 		"@s-hirano-ist/s-search": "workspace:*",
 		"@s-hirano-ist/s-storage": "workspace:*",
 		"cheerio": "1.2.0",
-		"js-yaml": "5.4.1",
-		"oxfmt": "0.67.0",
+		"js-yaml": "catalog:",
+		"oxfmt": "catalog:",
 		"turndown": "7.2.4"
 	},
 	"devDependencies": {
-		"@types/node": "24.13.3",
+		"@types/node": "catalog:",
 		"@types/turndown": "5.0.6",
 		"tsx": "4.23.13",
-		"typescript": "6.0.3"
+		"typescript": "catalog:"
 	}
 }

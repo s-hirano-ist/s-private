@@ -79,10 +79,10 @@
 	},
 	"dependencies": {
 		"@qdrant/js-client-rest": "1.19.0",
-		"js-yaml": "5.4.1"
+		"js-yaml": "catalog:"
 	},
 	"devDependencies": {
-		"@types/node": "24.13.3",
-		"typescript": "6.0.3"
+		"@types/node": "catalog:",
+		"typescript": "catalog:"
 	}
 }
