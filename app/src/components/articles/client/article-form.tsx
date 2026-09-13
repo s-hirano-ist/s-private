@@ -8,19 +8,22 @@ import { GenericFormWrapper } from "@/components/common/forms/generic-form-wrapp
 import { useToast } from "@s-hirano-ist/s-ui/toast";
 import { ClipboardPasteIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useRef } from "react";
+import { useRef, useState, useTransition } from "react";
 
 export type ArticleFormData = { id: string; name: string }[];
 
 type Props = {
 	addArticle: (formData: FormData) => Promise<ServerAction>;
-	categories: ArticleFormData;
+	getCategories: () => Promise<ArticleFormData>;
 };
 
-export function ArticleForm({ categories, addArticle }: Props) {
+export function ArticleForm({ addArticle, getCategories }: Props) {
 	const toast = useToast();
 	const urlInputReference = useRef<HTMLInputElement>(null);
 	const categoryInputReference = useRef<HTMLInputElement>(null);
+	const hasRequestedCategories = useRef(false);
+	const [categories, setCategories] = useState<ArticleFormData>([]);
+	const [isLoadingCategories, startCategoryTransition] = useTransition();
 
 	const label = useTranslations("label");
 	const message = useTranslations("message");
@@ -35,6 +38,15 @@ export function ArticleForm({ categories, addArticle }: Props) {
 		toast.show(message(responseMessage));
 	};
 
+	const handleCategoryOpenChange = (open: boolean) => {
+		if (!open || hasRequestedCategories.current) return;
+
+		hasRequestedCategories.current = true;
+		startCategoryTransition(async () => {
+			setCategories(await getCategories());
+		});
+	};
+
 	return (
 		<GenericFormWrapper<ServerAction>
 			action={addArticle}
@@ -43,11 +55,14 @@ export function ArticleForm({ categories, addArticle }: Props) {
 		>
 			<FormDropdownInput
 				customValueLabel={(v) => label("useCustomValue", { value: v })}
-				emptyMessage={label("noResults")}
+				emptyMessage={
+					isLoadingCategories ? label("loading") : label("noResults")
+				}
 				htmlFor="category"
 				inputRef={categoryInputReference}
 				label={label("category")}
 				name="category"
+				onOpenChange={handleCategoryOpenChange}
 				options={categories}
 				placeholder={label("select")}
 				required
