@@ -3,7 +3,7 @@
 	"version": "2.0.3",
 	"description": "Framework-agnostic React 19 design system",
 	"engines": {
-		"node": ">=24"
+		"node": ">=24.11"
 	},
 	"type": "module",
 	"exports": {
@@ -114,10 +114,10 @@
 	],
 	"scripts": {
 		"build": "pnpm run build:js && pnpm run build:css",
-		"build:js": "tsup && tsc -p tsconfig.build.json",
+		"build:js": "tsdown && tsc -p tsconfig.build.json",
 		"build:css": "tailwindcss -i src/styles.css -o dist/styles.css --minify",
 		"dev": "pnpm run \"/^dev:.*/\"",
-		"dev:js": "tsup --watch",
+		"dev:js": "tsdown --watch",
 		"dev:css": "tailwindcss -i src/styles.css -o dist/styles.css --watch",
 		"clean": "rm -rf dist",
 		"prepublishOnly": "pnpm run build",
@@ -147,7 +147,7 @@
 		"publint": "0.3.24",
 		"react": "19.2.8",
 		"react-dom": "19.2.8",
-		"tsup": "8.5.1",
+		"tsdown": "0.23.0",
 		"typescript": "6.0.3",
 		"vite": "7.3.6"
 	},

@@ -13,7 +13,7 @@
 MinIO JS SDK 8.0.7はlatestでarchiveされていないが、decode-uri-componentとstream-jsonの監査検出がある。
 実装調査ではquery-stringはstringify、stream-jsonはnotificationのJSONL Parserを使用。
 対象decode/filterへの到達は未確認で、存在だけを理由に悪用可能と断定しない。
-[調査報告・GHSA](../docs/dependency-audit.md)、[SDK公式](https://github.com/minio/minio-js)
+調査報告・GHSA、[SDK公式](https://github.com/minio/minio-js)
 
 ## 比較範囲
 

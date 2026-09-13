@@ -10,7 +10,7 @@
 
 ## 確認済みの制約
 
-2026-09-12の[npmメタデータとpeer検査](../docs/dependency-audit.md)で確認。
+2026-09-12のnpmメタデータとpeer検査で確認。
 
 - 現行でもStorybook 10.6.0 → vite-plugin-storybook-nextjs → vite-tsconfig-paths 5.1.4 →
   tsconfck 3.1.6に、TypeScript `^5.0.0`に対する6.0.3のoptional peer不一致がある。
