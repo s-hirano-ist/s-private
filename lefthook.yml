@@ -1,0 +1,4 @@
+pre-commit:
+  jobs:
+    - name: lint staged files
+      run: pnpm exec lint-staged --concurrent false

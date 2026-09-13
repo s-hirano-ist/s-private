@@ -10,6 +10,7 @@ catalog:
   '@types/react': 19.2.18
   '@types/react-dom': 19.2.7
   js-yaml: 5.4.1
+  lefthook: 2.1.12
   lucide-react: 1.44.0
   next: 16.3.5
   next-intl: 4.14.4
@@ -31,6 +32,7 @@ allowBuilds:
   '@sentry/cli': true
   '@swc/core': true
   esbuild: true
+  lefthook: true
   prisma: true
   puppeteer: true
   sharp: false
