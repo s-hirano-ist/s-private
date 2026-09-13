@@ -2,6 +2,44 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.12.4](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.12.3...s-private-v3.12.4) (2026-09-13)
+
+
+### Bug Fixes
+
+* preserve typed not-found routes ([6f1e838](https://github.com/s-hirano-ist/s-private/commit/6f1e838e8cfd5502a0186d4a0079554eb27131cf))
+* unblock instant navigation prerender ([fccde1f](https://github.com/s-hirano-ist/s-private/commit/fccde1f7680a66fa92b1686a15867c0894c87cd4))
+
+
+### Documentation
+
+* audit dependencies and propose migrations ([c7f326f](https://github.com/s-hirano-ist/s-private/commit/c7f326fea3a1724efd4ad71013d9997faf674694))
+* exclude Google Books migration ([a9375f3](https://github.com/s-hirano-ist/s-private/commit/a9375f317b0e72d514ef3f300d34cba5020c44f4))
+* exclude Google Books migration ([ad7d838](https://github.com/s-hirano-ist/s-private/commit/ad7d83845f72b2a7fe76e5141505cbecfcfa87d9))
+
+
+### Maintenance
+
+* add Vercel CLI ([5c2c30d](https://github.com/s-hirano-ist/s-private/commit/5c2c30d825fce2f0ba78d8ca6f8ab323a4c44053))
+* add Vercel CLI ([61cade5](https://github.com/s-hirano-ist/s-private/commit/61cade578b3b22e6cc46f239bce4021db04dfa8f))
+* align Renovate with pnpm policies ([bf53d48](https://github.com/s-hirano-ist/s-private/commit/bf53d48e94ac0813026b559de78094b279e6240f))
+* consolidate dependency follow-ups ([68935a6](https://github.com/s-hirano-ist/s-private/commit/68935a60b36596c1d06ce9b8cb35afac69b3906e))
+* consolidate dependency follow-ups ([b6eb990](https://github.com/s-hirano-ist/s-private/commit/b6eb990b3a12c392cfc24833971fce9b9213a7b7))
+* harden pnpm dependency management ([d9d33a4](https://github.com/s-hirano-ist/s-private/commit/d9d33a4b6d88bfffb9441347686c62050047f4dc))
+* harden pnpm dependency management ([7bcaf77](https://github.com/s-hirano-ist/s-private/commit/7bcaf77df84eb63e202640601fef750ff5ddfc2b))
+* migrate UI build to tsdown ([b226bbe](https://github.com/s-hirano-ist/s-private/commit/b226bbe0d38b7cd52aa0660c6d41d498c09b22ac))
+* migrate UI build to tsdown ([99ddac9](https://github.com/s-hirano-ist/s-private/commit/99ddac9a1c915e72cfb5359a74a5731017a3951c))
+* remove dependency release age delays ([1138cb9](https://github.com/s-hirano-ist/s-private/commit/1138cb9edb7616040ff2674c82bbbd2f03427fd2))
+* replace remark markdown renderer ([a10eba0](https://github.com/s-hirano-ist/s-private/commit/a10eba04f8a5582ecfbb792ecfc804b9d30bec1f))
+* update dependencies ([5abb59b](https://github.com/s-hirano-ist/s-private/commit/5abb59bb505bdb8eaa12b1a7a2fd49b25f96c3bc))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @s-hirano-ist/s-ui bumped to 2.0.4
+
 ## [3.12.3](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.12.2...s-private-v3.12.3) (2026-08-25)
 
 
