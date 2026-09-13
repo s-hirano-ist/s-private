@@ -53,6 +53,13 @@
 	},
 	packageRules: [
 		{
+			// Match pnpm's strict minimumReleaseAge so Renovate does not select a release
+			// that pnpm will reject while regenerating the lockfile.
+			matchDatasources: ["npm"],
+			minimumReleaseAge: "1 day",
+			internalChecksFilter: "strict",
+		},
+		{
 			matchManagers: ["npm"],
 			matchUpdateTypes: ["patch", "minor"],
 			matchPackageNames: ["*"],
@@ -67,6 +74,14 @@
 			groupName: "non-major (devDependencies)",
 			groupSlug: "non-major-dev",
 			automerge: true,
+		},
+		{
+			matchManagers: ["npm"],
+			matchDepTypes: ["pnpm.catalog.default"],
+			matchUpdateTypes: ["patch", "minor"],
+			groupName: "pnpm catalog",
+			groupSlug: "pnpm-catalog",
+			automerge: false,
 		},
 		{
 			matchManagers: ["npm"],

@@ -38,8 +38,10 @@ This project uses [Renovate](https://docs.renovatebot.com/) for automated depend
 - **Managed Scope**: Renovate handles `npm` / `mise` / `nvm` only. GitHub Actions and docker-compose are handled by Dependabot ([.github/dependabot.yml](.github/dependabot.yml))
 - **Grouped Updates**:
   - 非メジャー更新（patch + minor）を依存種別ごとに集約: `non-major`（dependencies / peerDependencies）と `non-major (devDependencies)`
+  - default catalogの非メジャー更新は`pnpm catalog`に集約し、runtime依存を含むため手動レビュー
   - `mise` ツール群、および Node.js + pnpm はそれぞれ専用グループ（`mise` / `node and pnpm`）
-- **Lock File Maintenance**: Automatic lock file updates to keep dependencies fresh
+- **Minimum Release Age**: npmパッケージはRenovate側でも1日待機し、pnpmのstrict policyに達するまでブランチを作成しない
+- **Lock File Maintenance**: 現在は無効。必要時にDependency Dashboardまたは設定変更で実行
 
 **Renovate Settings**:
 ```json5
@@ -57,18 +59,23 @@ This project uses [Renovate](https://docs.renovatebot.com/) for automated depend
   // Suppress dependency lifecycle scripts during Renovate installs.
   ignoreScripts: true,
   schedule: ['before 11am on monday'],
+	packageRules: [
+		{
+			matchDatasources: ['npm'],
+			minimumReleaseAge: '1 day',
+			internalChecksFilter: 'strict',
+		},
+		{
+			matchDepTypes: ['pnpm.catalog.default'],
+			matchUpdateTypes: ['patch', 'minor'],
+			groupName: 'pnpm catalog',
+			automerge: false,
+		},
+	],
   vulnerabilityAlerts: {
     labels: ['security'],
   },
-  lockFileMaintenance: { enabled: true },
-  packageRules: [
-    // Non-major npm dependencies are grouped by dependency type.
-    {
-      matchManagers: ['npm'],
-      matchUpdateTypes: ['patch', 'minor'],
-    },
-    // ...
-  ],
+	lockFileMaintenance: { enabled: false },
 }
 ```
 
