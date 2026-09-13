@@ -149,7 +149,7 @@
 		"react-dom": "catalog:",
 		"tsdown": "0.23.0",
 		"typescript": "catalog:",
-		"vite": "7.3.6"
+		"vite": "catalog:"
 	},
 	"repository": {
 		"type": "git",
