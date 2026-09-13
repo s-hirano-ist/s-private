@@ -24,4 +24,19 @@ describe("markdownToReact", () => {
 		expect(html).not.toContain("<script>");
 		expect(html).toContain("&lt;script&gt;");
 	});
+
+	test("highlights fenced code language names containing punctuation", async () => {
+		const content = await markdownToReact("```c++\nint main() {}\n```");
+		const html = renderToStaticMarkup(content);
+
+		expect(html).toContain('class="language-c++"');
+		expect(html).toContain("int main()");
+	});
+
+	test("renders code without a language as plain code", async () => {
+		const content = await markdownToReact("```\nplain text\n```");
+		const html = renderToStaticMarkup(content);
+
+		expect(html).toContain("<code>plain text");
+	});
 });
