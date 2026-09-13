@@ -1,7 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { PAGE_NAME } from "@/common/constants";
-import { TabNav } from "@/components/common/layouts/nav/tab-nav";
+import {
+	TabNav,
+	TabNavFallback,
+} from "@/components/common/layouts/nav/tab-nav";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
 	title: PAGE_NAME,
@@ -18,7 +22,9 @@ export const viewport: Viewport = {
 export default function Layout({ children }: { children: ReactNode }) {
 	return (
 		<div className="mx-auto max-w-5xl sm:px-2">
-			<TabNav />
+			<Suspense fallback={<TabNavFallback />}>
+				<TabNav />
+			</Suspense>
 			{children}
 		</div>
 	);

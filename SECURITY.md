@@ -35,7 +35,6 @@ This project uses [Renovate](https://docs.renovatebot.com/) for automated depend
 **Key Features**:
 - **Weekly Schedule**: Updates run every Monday before 11am JST
 - **Vulnerability Alerts**: Immediate PRs for security issues (labeled `security`)
-- **Minimum Release Age**: 2-day delay for patches/minors to avoid newly published malicious packages
 - **Managed Scope**: Renovate handles `npm` / `mise` / `nvm` only. GitHub Actions and docker-compose are handled by Dependabot ([.github/dependabot.yml](.github/dependabot.yml))
 - **Grouped Updates**:
   - 非メジャー更新（patch + minor）を依存種別ごとに集約: `non-major`（dependencies / peerDependencies）と `non-major (devDependencies)`
@@ -63,11 +62,10 @@ This project uses [Renovate](https://docs.renovatebot.com/) for automated depend
   },
   lockFileMaintenance: { enabled: true },
   packageRules: [
-    // Four rules (npm deps, npm devDeps, mise, node/pnpm) all use:
+    // Non-major npm dependencies are grouped by dependency type.
     {
       matchManagers: ['npm'],
       matchUpdateTypes: ['patch', 'minor'],
-      minimumReleaseAge: '2 days',
     },
     // ...
   ],
@@ -137,23 +135,7 @@ blockExoticSubdeps: true
 | `strictDepBuilds: true` | `allowBuilds` 未登録のパッケージがライフサイクルスクリプトを持つ場合、インストールをハードエラー化 |
 | `blockExoticSubdeps: true` | 推移的依存が npm レジストリ以外のソース（Git URL / tarball URL）から取得されることをブロック。直接依存は対象外 |
 
-> Note: `trustPolicy: no-downgrade` は現在未設定。Renovate / Dependabot 側が `ERR_PNPM_TRUST_DOWNGRADE` を握りつぶして lockfile 更新ジョブごと落ちるため撤去済み。代替として下記の Minimum Release Age + 手動レビューで provenance 低下監視を担保。
-
-### Minimum Release Age
-
-**Renovate Setting** ([.github/renovate.json5](.github/renovate.json5)):
-```json5
-minimumReleaseAge: '2 days'  // npm, mise, nvm (Renovate-managed)
-```
-
-GitHub Actions / docker-compose use an equivalent cooldown (`cooldown.default-days: 2`) configured in [.github/dependabot.yml](.github/dependabot.yml).
-
-> Note: pnpm-workspace.yaml の `minimumReleaseAge` はRenovateとの競合により無効化中。Renovate側の設定で代替。
-
-**Why this matters**:
-- Delays installation of newly published packages
-- Gives the community time to identify and report malicious packages
-- Reduces exposure to supply chain attacks via package hijacking
+> Note: `trustPolicy: no-downgrade` は現在未設定。Renovate / Dependabot 側が `ERR_PNPM_TRUST_DOWNGRADE` を握りつぶして lockfile 更新ジョブごと落ちるため撤去済み。provenance の低下は依存更新時の手動レビューで確認する。
 
 ### Frozen Lockfiles in CI/CD
 
@@ -216,18 +198,17 @@ pnpm i --frozen-lockfile
 
 ## Content Security Policy
 
-The application uses a request-scoped nonce generated in `app/src/proxy.ts`.
-The nonce is forwarded to server rendering through the internal `x-nonce`
-header and an upstream `Content-Security-Policy` request header. Browser
-responses receive the enforced `Content-Security-Policy` header.
+The application uses a deterministic Content Security Policy generated from
+the deployment environment. `app/src/proxy.ts` adds the enforced policy only
+to browser responses, including unauthenticated redirects. It does not inject
+CSP or private headers into the upstream server-rendering request.
 
 ### Policy
 
-- `script-src` permits self and the request nonce; development also allows `unsafe-eval`.
+- `script-src` permits self; development also allows `unsafe-eval`.
 - `script-src-elem` permits self, Vercel Analytics, development-only React Scan, Preview-only Vercel Toolbar, and `unsafe-inline` as a compatibility fallback for Next.js/Vercel streamed or error responses that can emit parser-inserted scripts without a nonce.
-- Production `style-src-elem` requires self, the request nonce, or documented deterministic framework/library hashes.
+- Production `style-src-elem` requires self or documented deterministic framework/library hashes. Add a specific hash for a verified new inline style instead of broadening Production with `unsafe-inline`.
 - `style-src-attr 'unsafe-inline'` remains enabled because UI positioning and syntax highlighting use dynamic style attributes.
-- The shared `ThemeProvider` initializes `get-nonce` during React's insertion phase so client-side styles created by `next-themes`, Radix UI, and `react-remove-scroll` receive the request nonce.
 - Preview deployments allow the additional script, connection, image, frame, style, and font sources documented for Vercel Toolbar.
 - CSP violations are reported to the configured Sentry reporting endpoint through `report-uri` and `Report-To`.
 
@@ -238,9 +219,18 @@ Drawer, Lightbox, and Markdown code rendering in Preview after policy changes.
 Confirm that Sentry contains no unexplained violations from supported browsers.
 Preview intentionally has a broader Vercel Toolbar policy than Production.
 
-Cache Components / PPR are intentionally disabled because their reusable static
-HTML shell cannot carry a fresh nonce for every request. Database query results
-remain cached with tenant-scoped `unstable_cache` keys and tags.
+Cache Components and Partial Prefetching are enabled because the policy no
+longer depends on a request nonce. The reusable App Shell contains only static
+locale messages and navigation/loading UI. Authentication, request URL data,
+and tenant-specific database results stream through Suspense boundaries and are
+not stored in the shared shell. Database query results remain cached with
+tenant-scoped `unstable_cache` keys and tags containing the authenticated user
+ID.
+
+Removing nonces trades per-request authorization of inline elements for a
+deterministic allowlist. Production keeps the existing narrow style hash and
+the framework compatibility allowance in `script-src-elem`; experimental SRI
+is not treated as protection for inline Flight or theme scripts.
 
 ## Application Security Scanning (Aikido)
 
@@ -307,10 +297,9 @@ Node.js アプリではない（TEI / MinIO）ため適用先もない。
 2. **Lifecycle Script Protection**: `allowBuilds` で承認済みパッケージのみスクリプト実行可能
 3. **Strict Build Enforcement**: `strictDepBuilds: true` で未登録パッケージの build script をハードエラー化
 4. **Exotic Subdep Blocking**: `blockExoticSubdeps: true` で npm レジストリ以外由来の推移的依存を遮断
-5. **Minimum Release Age**: 2日の Renovate delay（GitHub Actions / docker-compose は Dependabot の cooldown で同等の遅延）
-6. **Frozen Lockfiles**: Reproducible builds in CI/CD
-7. **Automated Monitoring**: Renovate tracks vulnerabilities
-8. **Manual Auditing**: `pnpm audit` for on-demand checks
+5. **Frozen Lockfiles**: Reproducible builds in CI/CD
+6. **Automated Monitoring**: Renovate tracks vulnerabilities
+7. **Manual Auditing**: `pnpm audit` for on-demand checks
 
 ### Package Installation Safety
 

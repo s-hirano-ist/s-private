@@ -5,14 +5,16 @@ import { ArticlesStackLoader } from "@/loaders/articles/articles-stack-loader";
 import { LoadingIndicator as Loading } from "@s-hirano-ist/s-ui/loading-indicator";
 import { Suspense } from "react";
 
-export default async function Page() {
+export default function Page() {
 	return (
 		<>
-			<ErrorBoundary
-				errorCaller="ArticlesCounter"
-				fallback={<div />}
-				render={() => ArticlesCounterLoader({})}
-			/>
+			<Suspense fallback={<Loading />}>
+				<ErrorBoundary
+					errorCaller="ArticlesCounter"
+					fallback={<div />}
+					render={() => ArticlesCounterLoader({})}
+				/>
+			</Suspense>
 
 			<Suspense fallback={<Loading />}>
 				<ErrorBoundary

@@ -67,7 +67,6 @@
 - **Automated Updates** - [Renovate](https://docs.renovatebot.com/)
   - Weekly scheduled updates (Mondays before 11am JST)
   - Automatic vulnerability alerts with `security` label
-  - Minimum release age: 2 days for patches/minors, preventing supply chain attacks
   - Grouped updates: non-major dependencies & devDependencies (GitHub Actions and docker-compose are handled by Dependabot)
   - Lock file maintenance enabled
 - **Manual Security Audits** - `pnpm audit` (moderate+ severity threshold)

@@ -23,6 +23,8 @@ const nextConfig = {
 	outputFileTracingRoot: path.join(import.meta.dirname, ".."),
 	typedRoutes: true,
 	reactCompiler: true,
+	cacheComponents: true,
+	partialPrefetching: true,
 	experimental: {
 		authInterrupts: true,
 		globalNotFound: true,
@@ -30,6 +32,9 @@ const nextConfig = {
 		staleTimes: {
 			dynamic: 0,
 			static: 180,
+		},
+		instantInsights: {
+			validationLevel: "warning",
 		},
 		serverActions: {
 			bodySizeLimit: "10mb",

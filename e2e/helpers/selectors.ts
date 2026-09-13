@@ -1,8 +1,8 @@
 export const ROUTES = {
-	articles: "/ja/main/articles",
-	notes: "/ja/main/notes",
-	images: "/ja/main/images",
-	books: "/ja/main/books",
+	articles: "/ja/articles",
+	notes: "/ja/notes",
+	images: "/ja/images",
+	books: "/ja/books",
 } as const;
 
 export const SELECTORS = {
