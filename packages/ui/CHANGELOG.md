@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.4](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v2.0.3...@s-hirano-ist/s-ui-v2.0.4) (2026-09-13)
+
+
+### Maintenance
+
+* update dependencies ([5abb59b](https://github.com/s-hirano-ist/s-private/commit/5abb59bb505bdb8eaa12b1a7a2fd49b25f96c3bc))
+
 ## [2.0.3](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v2.0.2...@s-hirano-ist/s-ui-v2.0.3) (2026-08-22)
 
 

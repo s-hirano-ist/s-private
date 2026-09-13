@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.12.4](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.12.3...s-private-v3.12.4) (2026-09-13)
+
+
+### Documentation
+
+* audit dependencies and propose migrations ([c7f326f](https://github.com/s-hirano-ist/s-private/commit/c7f326fea3a1724efd4ad71013d9997faf674694))
+* exclude Google Books migration ([a9375f3](https://github.com/s-hirano-ist/s-private/commit/a9375f317b0e72d514ef3f300d34cba5020c44f4))
+* exclude Google Books migration ([ad7d838](https://github.com/s-hirano-ist/s-private/commit/ad7d83845f72b2a7fe76e5141505cbecfcfa87d9))
+
+
+### Maintenance
+
+* replace remark markdown renderer ([a10eba0](https://github.com/s-hirano-ist/s-private/commit/a10eba04f8a5582ecfbb792ecfc804b9d30bec1f))
+* update dependencies ([5abb59b](https://github.com/s-hirano-ist/s-private/commit/5abb59bb505bdb8eaa12b1a7a2fd49b25f96c3bc))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @s-hirano-ist/s-ui bumped to 2.0.4
+
 ## [3.12.3](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.12.2...s-private-v3.12.3) (2026-08-25)
 
 
