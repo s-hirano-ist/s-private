@@ -127,13 +127,13 @@
 		"validate:package": "publint && npm_config_cache=/tmp/s-ui-npm-cache attw --pack . --profile esm-only --exclude-entrypoints ./styles.css ./package.json"
 	},
 	"peerDependencies": {
-		"react": "^19.2.8",
-		"react-dom": "^19.2.8"
+		"react": "^19.3.0",
+		"react-dom": "^19.3.0"
 	},
 	"dependencies": {
 		"@base-ui/react": "1.8.0",
 		"lucide-react": "catalog:",
-		"tailwind-merge": "3.6.0",
+		"tailwind-merge": "3.7.0",
 		"tailwind-variants": "3.3.1"
 	},
 	"devDependencies": {
