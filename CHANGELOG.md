@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.12.5](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.12.4...s-private-v3.12.5) (2026-09-14)
+
+
+### Maintenance
+
+* **deps:** update dependency happy-dom to v20.14.5 ([ccbbd7f](https://github.com/s-hirano-ist/s-private/commit/ccbbd7f627eaeae64926fa1f700fa945f6cd17af))
+* **deps:** update dependency rumdl to v0.2.73 ([348318d](https://github.com/s-hirano-ist/s-private/commit/348318d0a5db142079ba0d812f791f2db9c754ef))
+* **deps:** update dependency rumdl to v0.2.73 ([3d7f403](https://github.com/s-hirano-ist/s-private/commit/3d7f403432e4179ef4d7b0ede6b5ebdb70558d29))
+* **deps:** update dependency rumdl to v0.2.73 ([#2621](https://github.com/s-hirano-ist/s-private/issues/2621)) ([348318d](https://github.com/s-hirano-ist/s-private/commit/348318d0a5db142079ba0d812f791f2db9c754ef))
+* **deps:** update non-major ([183f4ae](https://github.com/s-hirano-ist/s-private/commit/183f4ae4edec68c867261613c1e5046a981aaa73))
+* finalize conflict resolution ([e9a4522](https://github.com/s-hirano-ist/s-private/commit/e9a4522496045de6e261f4d78cec633bb03b08e3))
+* finalize conflict resolution ([9ce58c8](https://github.com/s-hirano-ist/s-private/commit/9ce58c87c0bef7c258a7d07d2c1de35d9bf9903f))
+* finalize conflict resolution ([87ac1fe](https://github.com/s-hirano-ist/s-private/commit/87ac1fe4e88c04c6920926c84626dc737514300c))
+* load article categories on demand ([42f2436](https://github.com/s-hirano-ist/s-private/commit/42f2436a34124e8354f89e74339f7acc192139c2))
+* release main ([8355ed0](https://github.com/s-hirano-ist/s-private/commit/8355ed0e86e7766535886a8ae5fd10ed1e72c84d))
+* **renovate:** restore commit status permission ([9d86eed](https://github.com/s-hirano-ist/s-private/commit/9d86eede237de9629bc365c5f29c8c8bd67ec468))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @s-hirano-ist/s-ui bumped to 2.0.5
+
 ## [3.12.4](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.12.3...s-private-v3.12.4) (2026-09-13)
 
 
