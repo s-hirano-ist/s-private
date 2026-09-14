@@ -20,36 +20,53 @@ const mockCategories = [
 
 export const Default: Story = {
 	args: {
-		categories: mockCategories,
 		addArticle: fn(),
+		getCategories: fn(async () => mockCategories),
+	},
+	play: async ({ args, canvasElement }) => {
+		const canvas = within(canvasElement);
+		const categoryTrigger = canvas.getByRole("combobox", {
+			name: "カテゴリー",
+		});
+
+		expect(args.getCategories).not.toHaveBeenCalled();
+		await userEvent.click(categoryTrigger);
+
+		const body = within(canvasElement.ownerDocument.body);
+		await expect(body.findByText("Technology")).resolves.toBeVisible();
+		expect(args.getCategories).toHaveBeenCalledTimes(1);
+
+		await userEvent.click(categoryTrigger);
+		await userEvent.click(categoryTrigger);
+		expect(args.getCategories).toHaveBeenCalledTimes(1);
 	},
 };
 
 export const WithManyCategories: Story = {
 	args: {
-		categories: [
+		getCategories: fn(async () => [
 			...mockCategories,
 			{ id: "6", name: "Entertainment" },
 			{ id: "7", name: "Politics" },
 			{ id: "8", name: "World" },
 			{ id: "9", name: "Local" },
 			{ id: "10", name: "Opinion" },
-		],
+		]),
 		addArticle: fn(),
 	},
 };
 
 export const EmptyCategories: Story = {
 	args: {
-		categories: [],
 		addArticle: fn(),
+		getCategories: fn(async () => []),
 	},
 };
 
 export const PasteUrl: Story = {
 	args: {
-		categories: [],
 		addArticle: fn(),
+		getCategories: fn(async () => []),
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
@@ -82,8 +99,8 @@ export const PasteUrl: Story = {
 
 export const FillForm: Story = {
 	args: {
-		categories: mockCategories,
 		addArticle: fn(),
+		getCategories: fn(async () => mockCategories),
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);

@@ -1,21 +1,5 @@
 import { vi } from "vitest";
 
-// Mock Next.js navigation functions for Storybook testing
-vi.mock("next/navigation", () => ({
-	notFound: vi.fn(),
-	redirect: vi.fn(),
-	useRouter: vi.fn(() => ({
-		push: vi.fn(),
-		replace: vi.fn(),
-		back: vi.fn(),
-		forward: vi.fn(),
-		refresh: vi.fn(),
-		prefetch: vi.fn(),
-	})),
-	usePathname: vi.fn(() => "/"),
-	useSearchParams: vi.fn(() => new URLSearchParams()),
-}));
-
 // Mock next-intl/server for RSC components in Storybook testing
 vi.mock("next-intl/server", () => ({
 	getTranslations: vi.fn(async () => (key: string) => key),
