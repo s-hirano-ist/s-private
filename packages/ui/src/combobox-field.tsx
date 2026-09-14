@@ -27,6 +27,7 @@ export type ComboboxFieldProps = {
 	inputRef?: Ref<HTMLInputElement>;
 	label: string;
 	name?: string;
+	onOpenChange?: (open: boolean) => void;
 	onValueChange?: (value: string) => void;
 	options: ComboboxFieldOption[];
 	placeholder?: string;
@@ -45,6 +46,7 @@ export function ComboboxField({
 	inputRef,
 	label,
 	name = id,
+	onOpenChange,
 	onValueChange,
 	options,
 	placeholder = "Select an option",
@@ -87,6 +89,10 @@ export function ComboboxField({
 		setSearchValue("");
 		setOpen(false);
 	};
+	const handleOpenChange = (nextOpen: boolean) => {
+		setOpen(nextOpen);
+		onOpenChange?.(nextOpen);
+	};
 
 	return (
 		<div className="sui:space-y-1.5" data-slot="combobox-field">
@@ -97,7 +103,7 @@ export function ComboboxField({
 				itemToStringLabel={(item) => item.label}
 				items={items}
 				onInputValueChange={setSearchValue}
-				onOpenChange={setOpen}
+				onOpenChange={handleOpenChange}
 				onValueChange={handleValueChange}
 				open={open}
 				value={selectedItem}
@@ -122,7 +128,10 @@ export function ComboboxField({
 				</Combobox.Trigger>
 				<Combobox.Portal>
 					<Combobox.Positioner align="start" sideOffset={4}>
-						<Combobox.Popup className="sui:z-50 sui:w-[var(--anchor-width)] sui:rounded-md sui:border sui:border-muted sui:bg-background sui:text-foreground sui:shadow-md">
+						<Combobox.Popup
+							aria-label={label}
+							className="sui:z-50 sui:w-[var(--anchor-width)] sui:rounded-md sui:border sui:border-muted sui:bg-background sui:text-foreground sui:shadow-md"
+						>
 							<Combobox.Input
 								className="sui:flex sui:h-10 sui:w-full sui:bg-transparent sui:px-4 sui:py-3 sui:outline-hidden sui:placeholder:text-muted-foreground"
 								placeholder={searchPlaceholder}
