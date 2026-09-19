@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { CounterBadge } from "./counter-badge";
+import { CounterBadge, CounterBadgeSkeleton } from "./counter-badge";
 
 const meta = {
 	component: CounterBadge,
@@ -28,4 +28,12 @@ export const LastPage: Story = {
 		totalItems: 750,
 		label: "totalImages",
 	},
+};
+
+export const Skeleton: Story = {
+	args: {
+		totalItems: 0,
+		label: "totalImages",
+	},
+	render: () => <CounterBadgeSkeleton />,
 };

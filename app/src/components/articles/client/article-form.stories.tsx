@@ -42,6 +42,38 @@ export const Default: Story = {
 	},
 };
 
+const getSlowCategories = fn(async () => mockCategories);
+
+export const LoadsCategoriesOnFirstOpen: Story = {
+	args: {
+		addArticle: fn(),
+		getCategories: getSlowCategories,
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const body = within(canvasElement.ownerDocument.body);
+		let resolveCategories:
+			| ((categories: typeof mockCategories) => void)
+			| undefined;
+
+		getSlowCategories.mockImplementationOnce(
+			() =>
+				new Promise((resolve) => {
+					resolveCategories = resolve;
+				}),
+		);
+
+		expect(getSlowCategories).not.toHaveBeenCalled();
+		await userEvent.click(canvas.getByRole("combobox", { name: "カテゴリー" }));
+
+		await expect(body.findByText("読み込み中...")).resolves.toBeVisible();
+		expect(getSlowCategories).toHaveBeenCalledTimes(1);
+
+		resolveCategories?.(mockCategories);
+		await expect(body.findByText("Technology")).resolves.toBeVisible();
+	},
+};
+
 export const WithManyCategories: Story = {
 	args: {
 		getCategories: fn(async () => [

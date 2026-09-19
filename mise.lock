@@ -15,16 +15,16 @@ url = "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8
 url_api = "https://api.github.com/repos/gitleaks/gitleaks/releases/assets/378332059"
 
 [[tools.node]]
-version = "24.19.0"
+version = "24.21.0"
 backend = "core:node"
 
 [tools.node."platforms.linux-x64"]
-checksum = "sha256:f625d97cd707df4ff96254916fbc5ff014f09c09effe5a1e0ca8f6d41a8789d4"
-url = "https://nodejs.org/dist/v24.19.0/node-v24.19.0-linux-x64.tar.gz"
+checksum = "sha256:6e1db87ef58b8819e5d5402eff1536491b18edd8eb7bee5ef7897876e88dc5ff"
+url = "https://nodejs.org/dist/v24.21.0/node-v24.21.0-linux-x64.tar.gz"
 
 [tools.node."platforms.macos-arm64"]
-checksum = "sha256:8294b7aa9b03997481c06babf1e8b270c859358f27da57a11509afe537ac381d"
-url = "https://nodejs.org/dist/v24.19.0/node-v24.19.0-darwin-arm64.tar.gz"
+checksum = "sha256:bed7eea5325e1108f32ce5228ddd6a5f0f08a499ee42aa7442aea583702f6057"
+url = "https://nodejs.org/dist/v24.21.0/node-v24.21.0-darwin-arm64.tar.gz"
 
 [[tools."npm:agent-browser"]]
 version = "0.38.1"
@@ -35,19 +35,19 @@ version = "59.16.0"
 backend = "npm:vercel"
 
 [[tools.pnpm]]
-version = "12.3.4"
+version = "12.4.2"
 backend = "aqua:pnpm/pnpm"
 
 [tools.pnpm."platforms.linux-x64"]
-checksum = "sha256:9705e5704b4679fb503c963a18d1ac4f105e39aafafca8a2ed346facdf820cd0"
-url = "https://github.com/pnpm/pnpm/releases/download/v12.3.4/pnpm-linux-x64.tar.gz"
-url_api = "https://api.github.com/repos/pnpm/pnpm/releases/assets/544431952"
+checksum = "sha256:ce1ed690fe9c2f091d7267e1afbe9380abb08bb577e95348fda194a41147d2ec"
+url = "https://github.com/pnpm/pnpm/releases/download/v12.4.2/pnpm-linux-x64.tar.gz"
+url_api = "https://api.github.com/repos/pnpm/pnpm/releases/assets/565468079"
 provenance = "github-attestations"
 
 [tools.pnpm."platforms.macos-arm64"]
-checksum = "sha256:9560243d4e92780c4466bac2ee6aac4166c8bb601ad3c63f070cdd701b28f360"
-url = "https://github.com/pnpm/pnpm/releases/download/v12.3.4/pnpm-darwin-arm64.tar.gz"
-url_api = "https://api.github.com/repos/pnpm/pnpm/releases/assets/544431956"
+checksum = "sha256:5aae95a95f0a98f9372dee7d1797386011fa6571b06b82554c7c7847d201308e"
+url = "https://github.com/pnpm/pnpm/releases/download/v12.4.2/pnpm-darwin-arm64.tar.gz"
+url_api = "https://api.github.com/repos/pnpm/pnpm/releases/assets/565468070"
 provenance = "github-attestations"
 
 [[tools.rumdl]]

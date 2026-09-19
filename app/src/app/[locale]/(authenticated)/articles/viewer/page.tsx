@@ -1,4 +1,5 @@
 import { loadMoreExportedArticles } from "@/application-services/articles/load-more-articles";
+import { CounterBadgeSkeleton } from "@/components/common/display/counter-badge";
 import { ErrorBoundary } from "@/components/common/layouts/error-boundary";
 import { ArticlesCounterLoader } from "@/loaders/articles/articles-counter-loader";
 import { ArticlesStackLoader } from "@/loaders/articles/articles-stack-loader";
@@ -8,7 +9,7 @@ import { Suspense } from "react";
 export default function Page() {
 	return (
 		<>
-			<Suspense fallback={<Loading />}>
+			<Suspense fallback={<CounterBadgeSkeleton />}>
 				<ErrorBoundary
 					errorCaller="ArticlesCounter"
 					fallback={<div />}

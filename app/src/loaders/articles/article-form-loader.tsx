@@ -8,8 +8,6 @@ export type ArticleFormLoaderProps = BaseLoaderProps & {
 	addArticle: (formData: FormData) => Promise<ServerAction>;
 };
 
-export async function ArticleFormLoader({
-	addArticle,
-}: ArticleFormLoaderProps) {
+export function ArticleFormLoader({ addArticle }: ArticleFormLoaderProps) {
 	return <ArticleForm addArticle={addArticle} getCategories={loadCategories} />;
 }

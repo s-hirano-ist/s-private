@@ -7,6 +7,6 @@ export type ImageFormLoaderProps = BaseLoaderProps & {
 	addImage: (formData: FormData) => Promise<ServerAction>;
 };
 
-export async function ImageFormLoader({ addImage }: ImageFormLoaderProps) {
+export function ImageFormLoader({ addImage }: ImageFormLoaderProps) {
 	return <ImageForm addImage={addImage} />;
 }

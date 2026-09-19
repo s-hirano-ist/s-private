@@ -10,12 +10,7 @@ import { Suspense } from "react";
 export default function Page() {
 	return (
 		<>
-			<Suspense fallback={<Loading />}>
-				<ErrorBoundary
-					errorCaller="NoteForm"
-					render={() => NoteFormLoader({ addNote })}
-				/>
-			</Suspense>
+			<NoteFormLoader addNote={addNote} />
 
 			<Suspense fallback={<Loading />}>
 				<ErrorBoundary
