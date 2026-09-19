@@ -44,24 +44,6 @@ allowBuilds:
 minimumReleaseAge: 1440
 minimumReleaseAgeStrict: true
 minimumReleaseAgeIgnoreMissingTime: false
-minimumReleaseAgeExclude:
-  - '@turbo/darwin-64@2.11.2'
-  - '@turbo/darwin-arm64@2.11.2'
-  - '@turbo/linux-64@2.11.2'
-  - '@turbo/linux-arm64@2.11.2'
-  - '@turbo/windows-64@2.11.2'
-  - '@turbo/windows-arm64@2.11.2'
-  - 'eslint@10.11.0'
-  - 'jscpd-darwin-arm64@5.3.0'
-  - 'jscpd-darwin-x64@5.3.0'
-  - 'jscpd-linux-arm64-gnu@5.3.0'
-  - 'jscpd-linux-arm64-musl@5.3.0'
-  - 'jscpd-linux-x64-gnu@5.3.0'
-  - 'jscpd-linux-x64-musl@5.3.0'
-  - 'jscpd-windows-arm64-msvc@5.3.0'
-  - 'jscpd-windows-x64-msvc@5.3.0'
-  - 'jscpd@5.3.0'
-  - 'turbo@2.11.2'
 trustPolicy: no-downgrade
 trustPolicyIgnoreAfter: 10080
 trustLockfile: false
