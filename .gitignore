@@ -5,7 +5,6 @@ dist/
 *.tsbuildinfo
 .env
 .env.production
-.env.local
 .DS_Store
 node_modules
 .turbo

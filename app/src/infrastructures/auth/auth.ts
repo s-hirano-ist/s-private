@@ -27,8 +27,17 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { betterAuth } from "better-auth/minimal";
 import { auth0, genericOAuth } from "better-auth/plugins/generic-oauth";
 
+/** Local authentication is never allowed on a Vercel deployment. */
+const localDevAuthEnabled = env.LOCAL_DEV_MODE === "true" && env.VERCEL !== "1";
+
+export function isLocalDevAuthEnabled(): boolean {
+	return localDevAuthEnabled;
+}
+
 /** Auth0 tenant host (e.g. "your-tenant.auth0.com"), derived from the issuer URL. */
-const auth0Domain = new URL(env.AUTH0_ISSUER_BASE_URL).host;
+const auth0Domain = localDevAuthEnabled
+	? undefined
+	: new URL(env.AUTH0_ISSUER_BASE_URL ?? "").host;
 
 /**
  * Better Auth 1.7 resolves Generic OAuth discovery while initializing the
@@ -36,7 +45,7 @@ const auth0Domain = new URL(env.AUTH0_ISSUER_BASE_URL).host;
  * hermetic; production and development continue to use Auth0 OIDC discovery.
  */
 const auth0TestEndpoints =
-	env.NODE_ENV === "test"
+	env.NODE_ENV === "test" && auth0Domain
 		? {
 				authorizationUrl: `https://${auth0Domain}/authorize`,
 				discoveryUrl: undefined,
@@ -81,22 +90,32 @@ export const auth = betterAuth({
 	trustedOrigins: [env.BETTER_AUTH_URL, `https://${VERCEL_PREVIEW_HOST}`],
 	onAPIError: { errorURL: "/error" },
 	database: prismaAdapter(prisma, { provider: "cockroachdb" }),
+	account: {
+		additionalFields: {
+			issuer: {
+				type: "string",
+				input: false,
+				defaultValue: env.BETTER_AUTH_URL,
+			},
+		},
+	},
+	emailAndPassword: { enabled: localDevAuthEnabled },
 	session: { expiresIn: THIRTY_DAYS_IN_SECONDS },
-	plugins: [
-		genericOAuth({
-			config: [
-				{
-					...auth0({
-						clientId: env.AUTH0_CLIENT_ID,
-						clientSecret: env.AUTH0_CLIENT_SECRET,
-						domain: auth0Domain,
-					}),
-					...auth0TestEndpoints,
-					// Always show the Auth0 login screen (parity with the former
-					// NextAuth `signIn("auth0", ..., { prompt: "login" })`).
-					prompt: "login",
-				},
+	plugins: localDevAuthEnabled
+		? []
+		: [
+				genericOAuth({
+					config: [
+						{
+							...auth0({
+								clientId: env.AUTH0_CLIENT_ID ?? "",
+								clientSecret: env.AUTH0_CLIENT_SECRET ?? "",
+								domain: auth0Domain ?? "",
+							}),
+							...auth0TestEndpoints,
+							prompt: "login",
+						},
+					],
+				}),
 			],
-		}),
-	],
 });

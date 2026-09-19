@@ -208,7 +208,7 @@ Next.jsと同じ`16.3.3`へ固定した実験的`@next/playwright`の`instant()`
 
 ### 前提条件
 
-- `E2E_AUTH0_USERNAME` / `E2E_AUTH0_PASSWORD`をDopplerまたは実行環境へ設定
+- `E2E_AUTH0_USERNAME` / `E2E_AUTH0_PASSWORD`をVercelまたは実行環境へ設定
 - Auth0テストユーザーが既存アプリへログイン可能
 - Playwright Chromiumをインストール済み
 - `.auth/user.json`は既存の`e2e/fixtures/auth.setup.ts`が生成し、各テストが再利用

@@ -12,7 +12,6 @@
 		"app": {
 			"ignore": ["src/infrastructures/i18n/request.ts"],
 			"ignoreDependencies": ["@types/react-syntax-highlighter"],
-			"ignoreBinaries": ["doppler"],
 			"next": {
 				"config": ["next.config.{js,ts,cjs,mjs}"],
 				"entry": [

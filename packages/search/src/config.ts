@@ -17,6 +17,7 @@ export const RAG_CONFIG = {
 		distance: "Cosine" as const,
 	},
 	embedding: {
+		url: process.env.EMBEDDING_URL,
 		model: envWithDefault("EMBEDDING_MODEL", "intfloat/multilingual-e5-small"),
 	},
 	chunking: { maxChunkLength: 2000, headingLevels: [2, 3] },

@@ -1,8 +1,17 @@
-import { auth } from "@/infrastructures/auth/auth";
+import { env } from "@/env";
+import { auth, isLocalDevAuthEnabled } from "@/infrastructures/auth/auth";
+import prisma from "@/prisma";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 vi.mock("@/infrastructures/auth/auth", () => ({
-	auth: { api: { signInSocial: vi.fn() } },
+	auth: {
+		api: {
+			signInEmail: vi.fn(),
+			signInSocial: vi.fn(),
+			signUpEmail: vi.fn(),
+		},
+	},
+	isLocalDevAuthEnabled: vi.fn(() => false),
 }));
 
 vi.mock("next/headers", () => ({
@@ -26,6 +35,63 @@ const { GET } = await import("./route");
 describe("/api/sign-in route", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
+		vi.mocked(isLocalDevAuthEnabled).mockReturnValue(false);
+	});
+
+	test("signs in an existing local user without contacting Auth0", async () => {
+		vi.mocked(isLocalDevAuthEnabled).mockReturnValue(true);
+		vi.mocked(prisma.user.findUnique).mockResolvedValue({
+			id: "local-user",
+			email: "developer@local.test",
+			emailVerified: false,
+			name: "Local Developer",
+			image: null,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		});
+		const authHeaders = new Headers({
+			"set-cookie": "better-auth.session_token=local; Path=/; HttpOnly",
+		});
+		vi.mocked(auth.api.signInEmail).mockResolvedValue({
+			response: {},
+			headers: authHeaders,
+		} as unknown as Awaited<ReturnType<typeof auth.api.signInEmail>>);
+
+		const response = await GET();
+
+		expect(auth.api.signInEmail).toHaveBeenCalledWith({
+			body: {
+				email: env.LOCAL_AUTH_EMAIL,
+				password: env.LOCAL_AUTH_PASSWORD,
+			},
+			headers: expect.any(Headers),
+			returnHeaders: true,
+		});
+		expect(auth.api.signInSocial).not.toHaveBeenCalled();
+		expect(response.headers.get("location")).toBe("http://localhost:3000/");
+		expect(response.headers.get("set-cookie")).toContain("session_token");
+	});
+
+	test("creates the local user on first sign-in", async () => {
+		vi.mocked(isLocalDevAuthEnabled).mockReturnValue(true);
+		vi.mocked(prisma.user.findUnique).mockResolvedValue(null);
+		vi.mocked(auth.api.signUpEmail).mockResolvedValue({
+			response: {},
+			headers: new Headers({ "set-cookie": "local=session" }),
+		} as unknown as Awaited<ReturnType<typeof auth.api.signUpEmail>>);
+
+		await GET();
+
+		expect(auth.api.signUpEmail).toHaveBeenCalledWith({
+			body: {
+				email: env.LOCAL_AUTH_EMAIL,
+				name: env.LOCAL_AUTH_NAME,
+				password: env.LOCAL_AUTH_PASSWORD,
+			},
+			headers: expect.any(Headers),
+			returnHeaders: true,
+		});
+		expect(auth.api.signInEmail).not.toHaveBeenCalled();
 	});
 
 	test("starts the Auth0 social flow and forwards state cookies", async () => {

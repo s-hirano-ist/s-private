@@ -57,6 +57,14 @@ const nextConfig = {
 		],
 	},
 	async headers() {
+		const reportToHeader = process.env.SENTRY_REPORT_URL
+			? [
+					{
+						key: "Report-To",
+						value: `{"group":"csp-endpoint","max_age":10886400,"endpoints":[{"url":"${process.env.SENTRY_REPORT_URL}"}],"include_subdomains":true}`,
+					},
+				]
+			: [];
 		return [
 			{
 				source: "/(.*)",
@@ -82,10 +90,7 @@ const nextConfig = {
 					// 	key: "Cache-Control",
 					// 	value: "private, no-store, must-revalidate",
 					// },
-					{
-						key: "Report-To",
-						value: `{"group":"csp-endpoint","max_age":10886400,"endpoints":[{"url":"${process.env.SENTRY_REPORT_URL}"}],"include_subdomains":true}`,
-					},
+					...reportToHeader,
 				],
 			},
 			// TODO: 必要?
