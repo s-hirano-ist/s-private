@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.19.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-search-v1.18.14...@s-hirano-ist/s-search-v1.19.0) (2026-09-19)
+
+
+### Features
+
+* make local development self-contained ([ce3b88a](https://github.com/s-hirano-ist/s-private/commit/ce3b88aee2e3e6ab77fcf03947b7cedb0f6fa984))
+* make local development self-contained ([d91b687](https://github.com/s-hirano-ist/s-private/commit/d91b687a325a4660b54f095bd1d22bee2db6da77))
+
+
+### Maintenance
+
+* **deps:** update node and pnpm ([770e22a](https://github.com/s-hirano-ist/s-private/commit/770e22a86aa3be52364ef7f11809c87ae042e3ef))
+* **deps:** update node and pnpm ([cf2de4a](https://github.com/s-hirano-ist/s-private/commit/cf2de4a8ae2cf6de3ae4d70f64e41dcb39fc2ff7))
+
 ## [1.18.14](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-search-v1.18.13...@s-hirano-ist/s-search-v1.18.14) (2026-09-13)
 
 

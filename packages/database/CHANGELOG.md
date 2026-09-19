@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.21.3](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.21.2...@s-hirano-ist/s-database-v1.21.3) (2026-09-19)
+
+
+### Maintenance
+
+* **deps:** update node and pnpm ([770e22a](https://github.com/s-hirano-ist/s-private/commit/770e22a86aa3be52364ef7f11809c87ae042e3ef))
+* **deps:** update node and pnpm ([cf2de4a](https://github.com/s-hirano-ist/s-private/commit/cf2de4a8ae2cf6de3ae4d70f64e41dcb39fc2ff7))
+
 ## [1.21.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.21.1...@s-hirano-ist/s-database-v1.21.2) (2026-09-13)
 
 

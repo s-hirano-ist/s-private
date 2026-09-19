@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.26.4](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.26.3...@s-hirano-ist/s-scripts-v1.26.4) (2026-09-19)
+
+
+### Maintenance
+
+* **deps:** update dependency @googleapis/books to v13 ([55862c6](https://github.com/s-hirano-ist/s-private/commit/55862c6109d45912299b73942e031952189a96e0))
+* **deps:** update dependency @googleapis/books to v13 ([674497d](https://github.com/s-hirano-ist/s-private/commit/674497d2e3ee111d486826909b1dd9e91ba3d1cf))
+* **deps:** update node and pnpm ([770e22a](https://github.com/s-hirano-ist/s-private/commit/770e22a86aa3be52364ef7f11809c87ae042e3ef))
+* **deps:** update node and pnpm ([cf2de4a](https://github.com/s-hirano-ist/s-private/commit/cf2de4a8ae2cf6de3ae4d70f64e41dcb39fc2ff7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.21.5
+    * @s-hirano-ist/s-database bumped to 1.21.3
+    * @s-hirano-ist/s-notification bumped to 1.18.7
+    * @s-hirano-ist/s-search bumped to 1.19.0
+    * @s-hirano-ist/s-storage bumped to 1.18.11
+
 ## [1.26.3](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.26.2...@s-hirano-ist/s-scripts-v1.26.3) (2026-09-13)
 
 

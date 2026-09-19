@@ -2,6 +2,67 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.13.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.12.4...s-private-v3.13.0) (2026-09-19)
+
+
+### Features
+
+* make local development self-contained ([ce3b88a](https://github.com/s-hirano-ist/s-private/commit/ce3b88aee2e3e6ab77fcf03947b7cedb0f6fa984))
+* make local development self-contained ([d91b687](https://github.com/s-hirano-ist/s-private/commit/d91b687a325a4660b54f095bd1d22bee2db6da77))
+
+
+### Bug Fixes
+
+* allow freshly updated development tools ([0540adf](https://github.com/s-hirano-ist/s-private/commit/0540adff4881d997aefbd8c761d3ee37b5c54c2b))
+* register local search initializer ([27629c9](https://github.com/s-hirano-ist/s-private/commit/27629c9b8bc41e49110b51300212649e96027004))
+* revert premature tool upgrades ([2c9deb2](https://github.com/s-hirano-ist/s-private/commit/2c9deb27016ad23d5f15064d549889848fe1d3b9))
+
+
+### Documentation
+
+* verify categories load on first open ([d0f4aba](https://github.com/s-hirano-ist/s-private/commit/d0f4aba2a3fb747aafa2bdf3807e86e4eff52ff2))
+
+
+### Maintenance
+
+* **deps:** update dependency @googleapis/books to v13 ([55862c6](https://github.com/s-hirano-ist/s-private/commit/55862c6109d45912299b73942e031952189a96e0))
+* **deps:** update dependency @googleapis/books to v13 ([674497d](https://github.com/s-hirano-ist/s-private/commit/674497d2e3ee111d486826909b1dd9e91ba3d1cf))
+* **deps:** update dependency eslint-plugin-unicorn to v75 ([9705dcf](https://github.com/s-hirano-ist/s-private/commit/9705dcfa15228262ce182415b48f351f1ce1537f))
+* **deps:** update dependency eslint-plugin-unicorn to v75 ([1bc8c33](https://github.com/s-hirano-ist/s-private/commit/1bc8c33a74c35309ba1c2b7dc692f89d7a5f3f12))
+* **deps:** update dependency happy-dom to v20.14.5 ([ccbbd7f](https://github.com/s-hirano-ist/s-private/commit/ccbbd7f627eaeae64926fa1f700fa945f6cd17af))
+* **deps:** update dependency rumdl to v0.2.73 ([348318d](https://github.com/s-hirano-ist/s-private/commit/348318d0a5db142079ba0d812f791f2db9c754ef))
+* **deps:** update dependency rumdl to v0.2.73 ([3d7f403](https://github.com/s-hirano-ist/s-private/commit/3d7f403432e4179ef4d7b0ede6b5ebdb70558d29))
+* **deps:** update dependency rumdl to v0.2.73 ([#2621](https://github.com/s-hirano-ist/s-private/issues/2621)) ([348318d](https://github.com/s-hirano-ist/s-private/commit/348318d0a5db142079ba0d812f791f2db9c754ef))
+* **deps:** update mise ([c86602a](https://github.com/s-hirano-ist/s-private/commit/c86602a22496edc5c089fb475837061de8d2a256))
+* **deps:** update mise ([4c89ec2](https://github.com/s-hirano-ist/s-private/commit/4c89ec25b3556cb73d37b0f40901ca4f94256205))
+* **deps:** update mise ([#2632](https://github.com/s-hirano-ist/s-private/issues/2632)) ([c86602a](https://github.com/s-hirano-ist/s-private/commit/c86602a22496edc5c089fb475837061de8d2a256))
+* **deps:** update node and pnpm ([770e22a](https://github.com/s-hirano-ist/s-private/commit/770e22a86aa3be52364ef7f11809c87ae042e3ef))
+* **deps:** update node and pnpm ([cf2de4a](https://github.com/s-hirano-ist/s-private/commit/cf2de4a8ae2cf6de3ae4d70f64e41dcb39fc2ff7))
+* **deps:** update non-major ([7d2fc86](https://github.com/s-hirano-ist/s-private/commit/7d2fc863cb1dd46a05130bbf6decfffbde39249c))
+* **deps:** update non-major ([5209860](https://github.com/s-hirano-ist/s-private/commit/52098600eabe8e693d0a48b97f272a9155566fa0))
+* **deps:** update non-major ([183f4ae](https://github.com/s-hirano-ist/s-private/commit/183f4ae4edec68c867261613c1e5046a981aaa73))
+* **deps:** update non-major (devdependencies) ([6129e88](https://github.com/s-hirano-ist/s-private/commit/6129e88bf05ec9b29a211ab624006e5790f98dce))
+* **deps:** update non-major (devdependencies) ([146e113](https://github.com/s-hirano-ist/s-private/commit/146e1132b150c683ff14d5b07e9c1367ca91a423))
+* **deps:** update non-major (devdependencies) ([b69a7b2](https://github.com/s-hirano-ist/s-private/commit/b69a7b241ac23ad6b47999903a80b9804e046c69))
+* **deps:** update non-major (devdependencies) ([c4c06dd](https://github.com/s-hirano-ist/s-private/commit/c4c06dde8f911b3c8e81d06366655cb6e79572b1))
+* **deps:** update non-major (devdependencies) ([#2634](https://github.com/s-hirano-ist/s-private/issues/2634)) ([b69a7b2](https://github.com/s-hirano-ist/s-private/commit/b69a7b241ac23ad6b47999903a80b9804e046c69))
+* **deps:** update non-major (devdependencies) ([#2643](https://github.com/s-hirano-ist/s-private/issues/2643)) ([6129e88](https://github.com/s-hirano-ist/s-private/commit/6129e88bf05ec9b29a211ab624006e5790f98dce))
+* **deps:** update pnpm catalog ([3e7ede6](https://github.com/s-hirano-ist/s-private/commit/3e7ede653ab00b1a7abe90f139ab61a9ef97c6b2))
+* **deps:** update pnpm catalog ([3f07475](https://github.com/s-hirano-ist/s-private/commit/3f074751a2d414c0519c1c86d531857dd8655f01))
+* finalize conflict resolution ([e9a4522](https://github.com/s-hirano-ist/s-private/commit/e9a4522496045de6e261f4d78cec633bb03b08e3))
+* finalize conflict resolution ([9ce58c8](https://github.com/s-hirano-ist/s-private/commit/9ce58c87c0bef7c258a7d07d2c1de35d9bf9903f))
+* finalize conflict resolution ([87ac1fe](https://github.com/s-hirano-ist/s-private/commit/87ac1fe4e88c04c6920926c84626dc737514300c))
+* load article categories on demand ([42f2436](https://github.com/s-hirano-ist/s-private/commit/42f2436a34124e8354f89e74339f7acc192139c2))
+* release main ([8355ed0](https://github.com/s-hirano-ist/s-private/commit/8355ed0e86e7766535886a8ae5fd10ed1e72c84d))
+* **renovate:** restore commit status permission ([9d86eed](https://github.com/s-hirano-ist/s-private/commit/9d86eede237de9629bc365c5f29c8c8bd67ec468))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @s-hirano-ist/s-ui bumped to 2.0.5
+
 ## [3.12.4](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.12.3...s-private-v3.12.4) (2026-09-13)
 
 
