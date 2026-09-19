@@ -1,3 +1,4 @@
+import { CounterBadgeSkeleton } from "@/components/common/display/counter-badge";
 import { ErrorBoundary } from "@/components/common/layouts/error-boundary";
 import { ImagesCounterLoader } from "@/loaders/images/images-counter-loader";
 import { ImagesStackLoader } from "@/loaders/images/images-stack-loader";
@@ -31,7 +32,7 @@ export default function Page({
 }: PageProps<"/[locale]/images/viewer">) {
 	return (
 		<>
-			<Suspense fallback={<Loading />}>
+			<Suspense fallback={<CounterBadgeSkeleton />}>
 				<ErrorBoundary
 					errorCaller="ImagesCounter"
 					fallback={<div />}

@@ -1,4 +1,5 @@
 import { loadMoreExportedBooks } from "@/application-services/books/load-more-books";
+import { CounterBadgeSkeleton } from "@/components/common/display/counter-badge";
 import { ErrorBoundary } from "@/components/common/layouts/error-boundary";
 import { BooksCounterLoader } from "@/loaders/books/books-counter-loader";
 import { BooksStackLoader } from "@/loaders/books/books-stack-loader";
@@ -8,7 +9,7 @@ import { Suspense } from "react";
 export default function Page() {
 	return (
 		<>
-			<Suspense fallback={<Loading />}>
+			<Suspense fallback={<CounterBadgeSkeleton />}>
 				<ErrorBoundary
 					errorCaller="BooksCounter"
 					fallback={<div />}

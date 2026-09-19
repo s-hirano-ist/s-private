@@ -14,3 +14,16 @@ export function CounterBadge({ totalItems, label }: Props) {
 		</div>
 	);
 }
+
+export function CounterBadgeSkeleton() {
+	return (
+		<div className="px-1">
+			<Badge
+				aria-hidden="true"
+				className="flex w-full animate-pulse justify-center border-transparent bg-muted hover:bg-muted"
+			>
+				<span className="invisible">loading</span>
+			</Badge>
+		</div>
+	);
+}
