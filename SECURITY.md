@@ -59,6 +59,7 @@ This project uses [Renovate](https://docs.renovatebot.com/) for automated depend
   // Suppress dependency lifecycle scripts during Renovate installs.
   ignoreScripts: true,
   schedule: ['before 11am on monday'],
+	automerge: false,
 	packageRules: [
 		{
 			matchDatasources: ['npm'],
@@ -66,10 +67,23 @@ This project uses [Renovate](https://docs.renovatebot.com/) for automated depend
 			internalChecksFilter: 'strict',
 		},
 		{
-			matchDepTypes: ['pnpm.catalog.default'],
+			matchManagers: ['npm'],
 			matchUpdateTypes: ['patch', 'minor'],
-			groupName: 'pnpm catalog',
-			automerge: false,
+			matchDepTypes: [
+				'dependencies',
+				'devDependencies',
+				'peerDependencies',
+				'pnpm.catalog.default',
+			],
+			groupName: 'non-major',
+			groupSlug: 'non-major',
+		},
+		{
+			matchManagers: ['npm'],
+			matchUpdateTypes: ['major'],
+			matchPackageNames: ['eslint-plugin-unicorn', '@googleapis/books'],
+			groupName: 'non-major',
+			groupSlug: 'non-major',
 		},
 	],
   vulnerabilityAlerts: {

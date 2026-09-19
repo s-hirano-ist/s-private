@@ -48,7 +48,7 @@ jobs:
       github.event.issue.title == 'Dependency Dashboard')
     steps:
       # 専用 GitHub App の短命トークンを発行。GITHUB_TOKEN と異なり App トークンで
-      # 作成した PR は ci.yaml 等のワークフローを発火できる（automerge 前提のため必須）。
+      # 作成した PR は ci.yaml 等のワークフローを発火できる。
       - name: Generate GitHub App token
         id: app-token
         uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
@@ -58,7 +58,7 @@ jobs:
           private-key: ${{ secrets.RENOVATE_APP_PRIVATE_KEY }}
           # 生成トークンを最小権限に限定（metadata:read は常時付与）。
           #   contents            : ブランチ・コミット・lockfile 更新
-          #   pull-requests       : PR 作成・automerge 有効化
+          #   pull-requests       : PR 作成・更新
           #   issues              : Dependency Dashboard issue の維持
           #   statuses            : minimumReleaseAge の内部チェックを renovate/stability-days という
           #     commit status として branch に書き込む。無いと POST /statuses が 403
