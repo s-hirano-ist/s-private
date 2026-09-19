@@ -7,6 +7,6 @@ export type BooksFormLoaderProps = BaseLoaderProps & {
 	addBooks: (formData: FormData) => Promise<ServerAction>;
 };
 
-export async function BooksFormLoader({ addBooks }: BooksFormLoaderProps) {
+export function BooksFormLoader({ addBooks }: BooksFormLoaderProps) {
 	return <BooksForm addBooks={addBooks} />;
 }

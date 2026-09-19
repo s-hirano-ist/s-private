@@ -6,10 +6,19 @@ const BASE_URL = "http://localhost:3000";
 const ROUTES = {
 	articles: "/ja/articles",
 	notes: "/ja/notes",
+	books: "/ja/books",
+	images: "/ja/images",
 	imagesPageTwo: "/ja/images?page=2",
 	bookDetail: "/ja/book/9780000000000",
 	noteDetail: "/ja/note/instant-navigation-test",
 } as const;
+
+const DUMPER_FORM_FIELDS = [
+	{ route: ROUTES.articles, fieldName: "カテゴリー" },
+	{ route: ROUTES.notes, fieldName: "タイトル" },
+	{ route: ROUTES.books, fieldName: "ISBN" },
+	{ route: ROUTES.images, fieldName: "画像" },
+] as const;
 
 async function expectShell(page: Page) {
 	await expect(page.locator("main")).toBeVisible();
@@ -30,6 +39,22 @@ test.describe("Instant Navigation", () => {
 			{ baseURL: BASE_URL },
 		);
 	});
+
+	for (const { route, fieldName } of DUMPER_FORM_FIELDS) {
+		test(`renders the ${fieldName} dumper input outside the dynamic stream`, async ({
+			page,
+		}) => {
+			await instant(
+				page,
+				async () => {
+					await page.goto(route, { waitUntil: "commit" });
+					await expect(page.getByLabel(fieldName)).toBeVisible();
+					await expect(page.getByLabel("Loading").first()).toBeVisible();
+				},
+				{ baseURL: BASE_URL },
+			);
+		});
+	}
 
 	test("commits tab and programmatic layout navigations immediately", async ({
 		page,
