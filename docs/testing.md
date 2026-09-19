@@ -223,6 +223,7 @@ pnpm test:instant-navigation --headed
 ### 検証範囲
 
 - `/ja/articles`のhard navigationでShellとloading UIが動的データより先に表示される
+- articles、notes、books、imagesのDumper入力フォームが、一覧の動的streamを待たずに表示される
 - ARTICLESからNOTESへのLink遷移とDUMPERからVIEWERへのprogrammatic navigationが即時commitする
 - note/bookの動的slugとimagesの`?page=`がURL依存データを待たずShellを返す
 - storage stateを持たないrequestは従来どおりAuth0へredirectする

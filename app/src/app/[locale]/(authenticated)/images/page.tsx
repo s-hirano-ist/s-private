@@ -29,12 +29,7 @@ async function ImagesContent({ searchParams }: ImagesContentProps) {
 export default function Page({ searchParams }: PageProps<"/[locale]/images">) {
 	return (
 		<>
-			<Suspense fallback={<Loading />}>
-				<ErrorBoundary
-					errorCaller="ImageForm"
-					render={() => ImageFormLoader({ addImage })}
-				/>
-			</Suspense>
+			<ImageFormLoader addImage={addImage} />
 
 			<Suspense fallback={<Loading />}>
 				<ImagesContent searchParams={searchParams} />

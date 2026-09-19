@@ -10,12 +10,7 @@ import { Suspense } from "react";
 export default function Page() {
 	return (
 		<>
-			<Suspense fallback={<Loading />}>
-				<ErrorBoundary
-					errorCaller="ArticleForm"
-					render={() => ArticleFormLoader({ addArticle })}
-				/>
-			</Suspense>
+			<ArticleFormLoader addArticle={addArticle} />
 
 			<Suspense fallback={<Loading />}>
 				<ErrorBoundary

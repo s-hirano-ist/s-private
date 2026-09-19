@@ -7,6 +7,6 @@ export type NoteFormLoaderProps = BaseLoaderProps & {
 	addNote: (formData: FormData) => Promise<ServerAction>;
 };
 
-export async function NoteFormLoader({ addNote }: NoteFormLoaderProps) {
+export function NoteFormLoader({ addNote }: NoteFormLoaderProps) {
 	return <NoteForm addNote={addNote} />;
 }
