@@ -1,0 +1,94 @@
+name: e2e
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  main-flows:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      LOCAL_DEV_MODE: "true"
+      LOCAL_AUTH_EMAIL: developer@local.test
+      LOCAL_AUTH_PASSWORD: local-development-password
+      LOCAL_AUTH_NAME: Local Developer
+      AUTH_SECRET: local-only-auth-secret-change-is-not-required
+      BETTER_AUTH_URL: http://localhost:3000
+      DATABASE_URL: postgresql://root@localhost:26257/defaultdb?sslmode=disable
+      MINIO_HOST: localhost
+      MINIO_PORT: "9000"
+      MINIO_BUCKET_NAME: s-private-local
+      MINIO_ACCESS_KEY: local-minio-user
+      MINIO_SECRET_KEY: local-minio-password
+      MINIO_ROOT_USER: local-minio-user
+      MINIO_ROOT_PASSWORD: local-minio-password
+      MINIO_USE_SSL: "false"
+      QDRANT_URL: http://localhost:6333
+      QDRANT_COLLECTION_NAME: knowledge_local
+      EMBEDDING_URL: http://localhost:3001
+      EMBEDDING_MODEL: intfloat/multilingual-e5-small
+      EMBEDDING_VECTOR_SIZE: "384"
+
+    steps:
+      - name: Checkout files
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+          submodules: true
+
+      - uses: ./.github/actions/setup-pnpm
+
+      - name: Start local infrastructure
+        run: docker compose --profile local up -d --wait
+
+      - name: Prepare database and search
+        run: |
+          pnpm prisma:deploy
+          node scripts/init-local-search.mjs
+
+      - name: Install Playwright browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Start application and create local user
+        run: |
+          pnpm --filter s-private-app dev > "$RUNNER_TEMP/s-private-app.log" 2>&1 &
+          echo $! > "$RUNNER_TEMP/s-private-app.pid"
+          for attempt in {1..60}; do
+            if curl --silent --output /dev/null http://localhost:3000/api/sign-in; then
+              exit 0
+            fi
+            sleep 2
+          done
+          cat "$RUNNER_TEMP/s-private-app.log"
+          exit 1
+
+      - name: Seed deterministic fixtures
+        run: pnpm seed:e2e
+
+      - name: Run main-flow Playwright tests
+        run: pnpm test:e2e:main
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: playwright-report
+          path: playwright-report/
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Show diagnostics
+        if: failure()
+        run: |
+          cat "$RUNNER_TEMP/s-private-app.log" || true
+          docker compose --profile local ps
+          docker compose --profile local logs --no-color --tail=200

@@ -229,3 +229,9 @@ pnpm test:instant-navigation --headed
 - storage stateを持たないrequestは従来どおりAuth0へredirectする
 
 Production buildではInstant testing APIを公開しない。Vercel PreviewではNavigation Inspectorも併用し、hard/soft navigation、CSP違反、テーマ、Toast、Dialog、Drawer、Lightbox、error/streaming responseを手動確認する。
+
+## Hermetic main-flow E2E
+
+`.github/workflows/e2e.yaml` は PR と `main` への push でローカル用 Docker stack を起動し、migration、検索初期化、固定 seed の順に準備してから Playwright を実行する。外部 Auth0 やクラウド DB は使用しない。
+
+`e2e/main-flows.spec.ts` は articles、notes、books、images の Dumper 入力と、Viewer に seed 済みコンテンツが表示されることを検証する。ローカルで同じテストを実行する場合は、`pnpm dev` で stack とアプリを起動してローカルユーザーを作成した後、別ターミナルで `pnpm seed:e2e && pnpm test:e2e:main` を実行する。

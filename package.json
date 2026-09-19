@@ -67,6 +67,8 @@
 		"docs:clean": "rm -rf docs/api",
 		"test:chaos": "playwright test",
 		"test:instant-navigation": "playwright test e2e/instant-navigation.spec.ts",
+		"test:e2e:main": "playwright test e2e/main-flows.spec.ts",
+		"seed:e2e": "pnpm --filter @s-hirano-ist/s-database seed:e2e",
 		"test:mutation": "stryker run",
 		"test:mutation:core": "stryker run stryker.config.json",
 		"preinstall": "npx only-allow pnpm",
