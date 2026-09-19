@@ -6,7 +6,10 @@
 	"ignoreBinaries": ["mise", "vercel"],
 	"workspaces": {
 		".": {
-			"entry": [".harness/hooks/check-fix.mjs"],
+			"entry": [
+				".harness/hooks/check-fix.mjs",
+				"scripts/init-local-search.mjs"
+			],
 			"ignoreDependencies": ["@tailwindcss/typography"]
 		},
 		"app": {
