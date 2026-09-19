@@ -259,14 +259,14 @@ Schema location: `packages/database/prisma/schema.prisma`
 ### Key Architectural Patterns
 
 - **Server Actions**: All mutations wrapped with `wrapServerSideErrorForClient`
-- **Authentication-only Authorization**: ログイン＝オーナー本人＝全操作可（ロールによる権限区別は廃止）。Auth0 + NextAuth.js で認証し、Server Actionは冒頭で `requireAuth()` を呼ぶ
+- **Authentication-only Authorization**: ログイン＝オーナー本人＝全操作可（ロールによる権限区別は廃止）。Better Auth + Auth0（ローカルは固定開発ユーザー）で認証し、Server Actionは冒頭で `requireAuth()` を呼ぶ
 - **Error Handling**: Custom error classes with Pushover notifications and Sentry monitoring
 - **Input Validation**: Zod schemas for all form and API input validation
 - **Type Safety**: End-to-end TypeScript with runtime validation
 
 ### External Service Integrations
 
-- **Authentication**: Auth0 with NextAuth.js for session management
+- **Authentication**: Better Auth + Auth0（Preview/Production）、固定開発ユーザー（local）
 - **File Storage**: MinIO for object storage (configurable for local/cloud)
 - **Monitoring**: Sentry for error tracking, Pushover for notifications
 - **APIs**: Google Books API for ISBN-based book metadata enrichment
@@ -278,34 +278,20 @@ Schema location: `packages/database/prisma/schema.prisma`
 ### Prerequisites
 - [Node.js](https://nodejs.org/) — version pinned in [.nvmrc](.nvmrc), installed via [Mise](https://mise.jdx.dev/)
 - [pnpm](https://pnpm.io/) — version pinned in [.mise.toml](.mise.toml)
-- [Doppler CLI](https://docs.doppler.com/docs/install-cli) — version pinned in [.mise.toml](.mise.toml)
-- [Docker](https://www.docker.com/) (optional; for the VPS/embedding stack — MinIO, Cloudflare Tunnel)
+- [Docker](https://www.docker.com/) — local CockroachDB、MinIO、Qdrant、TEIで使用
 
 ### Initial Setup
 
 ```bash
 git clone https://github.com/s-hirano-ist/s-private.git
 cd s-private
-mise install          # Node.js, pnpm, Doppler CLI 等をインストール
+mise install          # Node.js、pnpm等をインストール
 pnpm install
 ```
 
 ### Environment Configuration
 
-環境変数は **dev/preview 環境は [Doppler](https://www.doppler.com/)**、**本番環境は [Vercel Dashboard](https://vercel.com)** で管理します。
-
-> Vercel CLI に一本化しない理由: `vercel env run` は dev 環境から本番環境の変数にもアクセスできてしまうため、セキュリティ上 dev/preview は Doppler で分離しています。
-
-```bash
-# .env.local にDopplerサービストークンを設定（Doppler Dashboard から発行）
-echo "DOPPLER_TOKEN=dp.st.dev.xxxxxxxxxxxx" > .env.local
-
-vercel link          # 初回のみ: Vercel プロジェクトをリンク（prisma スクリプト用）
-```
-
-Mise が `.env.local` を自動読み込みし、`doppler run` が `DOPPLER_TOKEN` を検出して環境変数を取得します。`doppler login` / `doppler setup` は不要です。
-
-`pnpm dev` / `pnpm build` / `pnpm start` 等の app スクリプトは `doppler run` 経由で環境変数を取得します。`pnpm prisma:*` 等のルートスクリプトは `vercel env run -e development` を使用します。
+ローカル用の非機密設定はコミット済みの `.env.local`、Preview/Productionの秘密値は [Vercel Dashboard](https://vercel.com/) で管理します。`pnpm dev` はDockerサービス、migration、MinIO bucket、Qdrant collectionを初期化してからNext.jsを起動します。
 
 型定義とバリデーション: [`app/src/env.ts`](app/src/env.ts)（`@t3-oss/env-nextjs` + Zod）
 
@@ -313,10 +299,10 @@ Mise が `.env.local` を自動読み込みし、`doppler run` が `DOPPLER_TOKE
 
 ### Database Setup
 
-ローカル開発は **CockroachDB Cloud の dev-db クラスタに直結**します（ローカル DB は不要）。マイグレーション運用（`migrate dev` 不使用・DB 不要の diff フロー・`schema_locked`）の詳細は [docs/setup.md](docs/setup.md) を参照。
+ローカル開発はDocker上のCockroachDBを使用します。Preview/ProductionのみCockroachDB Cloudへ接続します。マイグレーション運用の詳細は [docs/setup.md](docs/setup.md) を参照してください。
 
 ```bash
-# (Optional) Open Prisma Studio for database inspection (クラウド dev-db に接続)
+# (Optional) Open Prisma Studio for local database inspection
 pnpm prisma:studio
 ```
 
@@ -439,7 +425,7 @@ pnpm docs:clean            # Remove generated documentation
 - **Production**: Auto-deployment to Vercel when PRs are merged to `main`
 
 ### Environments
-- **Development**: CockroachDB Cloud dev-db に直結（ローカル DB 不要）
+- **Development**: Docker（CockroachDB、MinIO、Qdrant、TEI）
 - **Preview**: Vercel branch deployments
 - **Production**: Vercel production deployment
 - **Storybook**: Deployed to Cloudflare Pages
@@ -447,23 +433,22 @@ pnpm docs:clean            # Remove generated documentation
 
 ### 環境変数管理
 
-環境変数は dev/preview 環境は Doppler、本番環境は Vercel Dashboard で管理する。Vercel CLI に一本化しない理由は、`vercel env run` が dev 環境から本番環境の変数にもアクセスできてしまうため。
+ローカル環境変数はコミット済みの `.env.local`、Preview/ProductionはVercel Dashboardで管理する。`.env.local`の値はローカル専用であり、外部環境では使用しない。
 
 | 環境 | 管理方法 | 注入方法 |
 |---|---|---|
-| **ローカル開発（app）** | Doppler | `doppler run -- <command>`（app/package.json スクリプトに組み込み済み） |
-| **ローカル開発（prisma）** | Vercel Dashboard (dev) | `vercel env run -e development -- <command>`（root package.json スクリプトに組み込み済み） |
+| **ローカル開発** | `.env.local` | Miseまたは`pnpm dev`の`--env-file`で注入 |
+| **Preview** | Vercel Dashboard | ビルド・ランタイムに自動注入 |
 | **CI (GitHub Actions)** | GitHub Secrets | ワークフローの `env:` で `${{ secrets.XXX }}` として注入 |
 | **本番 (Vercel)** | Vercel Dashboard | ビルド・ランタイムに自動注入 |
 | **VPS (Docker Compose)** | `~/s-private/.env` | Docker Compose が `.env` を自動読み込み |
 
 #### ローカル開発
 
-1. `mise install` でツール一式をインストール（Node.js, pnpm, Doppler CLI 等）
-2. `.env.local` に Doppler サービストークンを設定（[Doppler Dashboard](https://dashboard.doppler.com/) > dev 環境 > Access > Service Tokens から発行）
-3. `vercel link` で Vercel プロジェクトをリンク（初回のみ、prisma 用）
-4. `pnpm dev` / `pnpm build` / `pnpm start` 等の app スクリプトは Doppler から環境変数を取得
-5. `pnpm prisma:*` 等のルートスクリプトは Vercel dev 環境から環境変数を取得
+1. `mise install` と `pnpm install` を実行
+2. Dockerを起動
+3. `pnpm dev`を実行
+4. 終了後にコンテナも停止する場合は`pnpm local:down`を実行（volumeは保持）
 
 #### CI (GitHub Actions)
 

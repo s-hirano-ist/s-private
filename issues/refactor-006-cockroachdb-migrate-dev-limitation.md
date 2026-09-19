@@ -5,8 +5,8 @@
 | Field | Value |
 |-------|-------|
 | **Category** | Refactor / DX |
-| **Priority** | LOW（ローカル DB 撤去により恒久回避済み・上流修正待ち） |
-| **Status** | 既知の制約として記録（恒久対応を採用。上流が直れば `migrate dev` 復活を再検討） |
+| **Priority** | LOW（ローカル DB と diff フローにより回避済み・上流修正待ち） |
+| **Status** | 既知のクラウド制約として記録（上流が直ればクラウド向け運用を再検討） |
 | **Affected File** | [packages/database/package.json](../packages/database/package.json), [docs/setup.md](../docs/setup.md) |
 
 ## 問題
@@ -26,19 +26,18 @@ CockroachDB Cloud は単一リージョンのクラスタでも、内部に mult
 
 ## 採用した恒久対応（実装済み）
 
-ローカル開発はクラウドの dev-db クラスタに **Doppler 経由で直結**する運用に切り替えたため、
-ローカル DB を前提とした `migrate dev` 系は完全に撤去した。
+ローカル開発にはDockerの単一ノードCockroachDBを使用し、クラウド固有のdriftから分離した。
+migration生成は環境差に依存しないschema diff、適用は全環境で`migrate deploy`に統一している。
 
-1. **ローカル Docker CockroachDB を撤去**（`compose.yaml` の `cockroachdb` サービス + `cockroach-data` volume を削除）。
-2. **`prisma:migrate`（= `migrate dev`）スクリプトと localhost 限定ガード（`guard-local-migrate.mjs`）を削除**。
-   ローカル DB が無くなり `migrate dev` の有効な実行先が存在しないため。
-3. **migration 生成は `prisma:migrate:diff`**（`packages/database` 配下の
+1. **ローカル Docker CockroachDBを使用**（`pnpm dev`が起動してmigrationを適用）。
+2. **`prisma:migrate`（= `migrate dev`）はクラウドに対して使用しない**。
+3. **migration生成は `prisma:migrate:diff`**（`packages/database` 配下の
    `prisma migrate diff --from-migrations prisma/migrations --to-schema prisma/schema.prisma --script`。
    ルートには存在しないため `pnpm --filter s-database prisma:migrate:diff` で実行する）で行う。
    なお `--from-migrations` 版は migration を replay するため shadow database を要求し、完全に DB 不要ではない。
    DB 接続なしで差分を生成する場合は git HEAD のスキーマと現スキーマを `--from-schema` で比較する
    （詳細は [docs/setup.md](../docs/setup.md) の diff フロー参照）。
-4. **適用は常に `prisma:deploy`**（`migrate deploy`。クラウドは drift を見ないため安全）。
+4. **適用は常に `prisma:deploy`**（`migrate deploy`。クラウドはdriftを見ないため安全）。
 5. `schema_locked`がデフォルトで有効な環境では、新規`CREATE TABLE`に`WITH (schema_locked = false)`を手動付与。
 
 詳細は [docs/setup.md](../docs/setup.md) の「マイグレーションの運用」節。

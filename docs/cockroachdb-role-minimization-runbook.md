@@ -16,12 +16,12 @@ CockroachDB Cloud の SQL ユーザーを **最小権限化（PoLP）** した�
 | `root` | クラスタ | ALL（Cloud管理） | ✅（唯一） | Cloud Console 管理用 |
 | `s-prod-runtime` | prod-db | 全テーブル DML（既存は列挙 GRANT、以後は `s-prod` の default privileges で自動）+ schema・`Status`型 USAGE + CONNECT のみ | ❌ | Vercel **Production** `DATABASE_URL` — 本番アプリ実行 |
 | `s-prod` | prod-db | 全オブジェクト owner + DB/schema ALL（DDL） | ❌ | GitHub Secret `PRODUCTION_DIRECT_URL` — 本番 migrate（CI） |
-| `s-dev` | dev-db | 全オブジェクト owner + DB/schema ALL（DML+DDL+migrate） | ❌ | Doppler dev `DATABASE_URL`（local app + preview + scripts）／ Vercel **Development** `DATABASE_URL`（local migrate） |
+| `s-dev` | dev-db | 全オブジェクト owner + DB/schema ALL（DML+DDL+migrate） | ❌ | Vercel **Preview** `DATABASE_URL`（preview app） |
 
 設計判断:
 - **prod は厳格分離**（runtime=DMLのみ / migrate=DDL、互いに別資格情報）。
 - **dev は利便性優先で単一フル権限ユーザー**（dev-db は破棄可能）。ただし `s-dev` は**クラスタadminではない**ため、dev資格情報が漏れても prod-db / system へは到達不可。
-- `MIGRATE_DATABASE_URL` は**導入しない**。runtime と migrate は「接続ソースの違い」（Vercel Production env / Vercel Development env / Doppler / GitHub Secret）で分離。
+- `MIGRATE_DATABASE_URL` は**導入しない**。runtime と migrate は接続元の環境（local Docker / Vercel Preview / Vercel Production / GitHub Actions）で分離。
 
 ## 接続方法・注意
 
@@ -116,7 +116,7 @@ GRANT ALL ON DATABASE "dev-db" TO "s-dev";
 GRANT ALL ON SCHEMA "dev-db".public TO "s-dev";
 REVOKE admin FROM "s-dev";
 ```
-- **Doppler の dev `DATABASE_URL`** を `s-dev` の接続文字列へ（= Vercel Development env と同値）。
+- **Vercel Previewの`DATABASE_URL`** を`s-dev`の接続文字列へ設定。
 - 動作確認（`pnpm dev` / `pnpm prisma:deploy` / `reset-*`・`ingest-*` スクリプト）。
 **確認:** `SHOW GRANTS ON ROLE admin;`（`s-dev` が消える）。
 **期待結果:** dev のアプリ・スクリプト・migrate が全て `s-dev` で成功。`SHOW GRANTS ON DATABASE "prod-db" FOR "s-dev";` は **空**（dev→prod 隔離）。
@@ -154,14 +154,14 @@ REVOKE admin FROM "s-prod";
 |----------|------|----------|------|
 | Vercel Dashboard（Production） | `DATABASE_URL` | `s-prod-runtime` | 本番アプリ実行 |
 | Vercel Dashboard（Development） | `DATABASE_URL` | `s-dev` | ローカル migrate（`pnpm prisma:deploy` / `prisma:studio` = `vercel env run -e development`） |
-| Doppler（dev config） | `DATABASE_URL` | `s-dev` | ローカルアプリ（`pnpm dev`）+ preview + `packages/scripts/*` |
+| Vercel Dashboard（Preview） | `DATABASE_URL` | `s-dev` | Previewアプリ |
 | GitHub Actions Secrets | `PRODUCTION_DIRECT_URL` | `s-prod` | 本番 migrate（`.github/workflows/prisma-deploy.yaml`） |
 
 ## ロールバック早見表
 
 | 操作 | 戻し方 |
 |------|--------|
-| アプリ runtime 切替（Vercel/Doppler） | `DATABASE_URL` を元の値に戻して再デプロイ |
+| アプリ runtime 切替（Vercel） | `DATABASE_URL` を元の値に戻して再デプロイ |
 | `REVOKE admin FROM "s-prod"` | `GRANT admin TO "s-prod";` |
 | `REVOKE admin FROM "s-dev"` | `GRANT admin TO "s-dev";` |
 | `public` 剥奪 | `GRANT USAGE, CREATE ON SCHEMA "<db>".public TO public;`（基本戻さない） |

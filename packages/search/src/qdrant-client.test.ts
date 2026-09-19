@@ -22,6 +22,7 @@ describe("qdrant-client", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 		vi.resetModules();
+		delete process.env.EMBEDDING_URL;
 	});
 
 	async function loadModule() {
@@ -196,6 +197,48 @@ describe("qdrant-client", () => {
 				model: "intfloat/multilingual-e5-small",
 			});
 		});
+
+		test("uses local TEI vectors when EMBEDDING_URL is configured", async () => {
+			process.env.EMBEDDING_URL = "http://localhost:3001";
+			mockClient.upsert.mockResolvedValue({});
+			vi.stubGlobal(
+				"fetch",
+				vi
+					.fn()
+					.mockResolvedValue(
+						new Response(JSON.stringify([[0.1, 0.2, 0.3]]), { status: 200 }),
+					),
+			);
+			const { upsertPoints, getQdrantClient } = await loadModule();
+			getQdrantClient({ url: "http://localhost:6333" });
+
+			await upsertPoints([
+				{
+					id: "chunk-1",
+					text: "hello",
+					payload: {
+						type: "markdown_note",
+						content_type: "notes",
+						top_heading: "Test",
+						doc_id: "doc1",
+						chunk_id: "chunk-1",
+						title: "Test",
+						heading_path: [],
+						text: "hello",
+						content_hash: "abc",
+					},
+				},
+			]);
+
+			expect(fetch).toHaveBeenCalledWith(
+				"http://localhost:3001/embed",
+				expect.objectContaining({ method: "POST" }),
+			);
+			expect(mockClient.upsert.mock.calls[0][1].points[0].vector).toEqual([
+				0.1, 0.2, 0.3,
+			]);
+			vi.unstubAllGlobals();
+		});
 	});
 
 	describe("getExistingHashes", () => {
@@ -293,6 +336,29 @@ describe("qdrant-client", () => {
 					},
 				}),
 			);
+		});
+
+		test("queries with a local TEI vector when configured", async () => {
+			process.env.EMBEDDING_URL = "http://localhost:3001";
+			mockClient.query.mockResolvedValue({ points: [] });
+			vi.stubGlobal(
+				"fetch",
+				vi
+					.fn()
+					.mockResolvedValue(
+						new Response(JSON.stringify([[0.4, 0.5]]), { status: 200 }),
+					),
+			);
+			const { search, getQdrantClient } = await loadModule();
+			getQdrantClient({ url: "http://localhost:6333" });
+
+			await search("local query");
+
+			expect(mockClient.query).toHaveBeenCalledWith(
+				expect.any(String),
+				expect.objectContaining({ query: [0.4, 0.5] }),
+			);
+			vi.unstubAllGlobals();
 		});
 
 		test("builds filter with type condition", async () => {

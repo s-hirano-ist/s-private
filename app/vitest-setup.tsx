@@ -11,6 +11,11 @@ vi.mock("@/env", () => ({
 		PUSHOVER_APP_TOKEN: "test-token",
 		AUTH_SECRET: "test-secret",
 		BETTER_AUTH_URL: "http://localhost:3000",
+		LOCAL_DEV_MODE: "false",
+		LOCAL_AUTH_EMAIL: "developer@local.test",
+		// oxlint-disable-next-line sonarjs/no-hardcoded-passwords -- non-secret test fixture
+		LOCAL_AUTH_PASSWORD: "local-development-password",
+		LOCAL_AUTH_NAME: "Local Developer",
 		AUTH0_CLIENT_ID: "test-client-id",
 		AUTH0_CLIENT_SECRET: "test-client-secret",
 		AUTH0_ISSUER_BASE_URL: "https://test.auth0.com",
@@ -132,6 +137,9 @@ vi.mock("@/prisma", () => ({
 			create: vi.fn(),
 			update: vi.fn(),
 			delete: vi.fn(),
+		},
+		user: {
+			findUnique: vi.fn(),
 		},
 	},
 }));

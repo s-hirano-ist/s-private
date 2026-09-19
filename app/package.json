@@ -8,10 +8,10 @@
 	},
 	"type": "module",
 	"scripts": {
-		"dev": "doppler run -- next dev",
-		"build": "if [ -n \"$CI\" ] || ! command -v doppler >/dev/null 2>&1; then next build; else doppler run -- next build; fi",
-		"analyze": "doppler run -- next experimental-analyze",
-		"start": "if [ -n \"$CI\" ]; then next start; else doppler run -- next start; fi",
+		"dev": "next dev",
+		"build": "next build",
+		"analyze": "next experimental-analyze",
+		"start": "next start",
 		"typegen": "next typegen",
 		"typecheck": "pnpm typegen && tsc --noEmit"
 	},

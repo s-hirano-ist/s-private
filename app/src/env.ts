@@ -13,6 +13,9 @@
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
+const isVercelRuntime = process.env.VERCEL === "1";
+const vercelSecret = isVercelRuntime ? z.string() : z.string().optional();
+
 /**
  * Validated environment variables.
  *
@@ -40,8 +43,8 @@ export const env = createEnv({
 		PUSHOVER_URL: z
 			.string()
 			.default("https://api.pushover.net/1/messages.json"),
-		PUSHOVER_USER_KEY: z.string(),
-		PUSHOVER_APP_TOKEN: z.string(),
+		PUSHOVER_USER_KEY: vercelSecret,
+		PUSHOVER_APP_TOKEN: vercelSecret,
 		/** Shared bearer token used only by trusted batch scripts to invalidate Next.js caches. */
 		CACHE_INVALIDATION_SECRET: z.string().optional(),
 		/** Generate by `openssl rand -base64 32`. Required in production. Shared secret for Better Auth. */
@@ -53,12 +56,17 @@ export const env = createEnv({
 		BETTER_AUTH_URL: z.string().default("http://localhost:3000"),
 		/** Set to "1" by Vercel on every deployment (prod & preview); absent locally. Gates dynamic baseURL resolution. */
 		VERCEL: z.string().optional(),
-		AUTH0_CLIENT_ID: z.string(),
-		AUTH0_CLIENT_SECRET: z.string(),
+		/** Enables the hermetic local authentication and infrastructure path. Ignored on Vercel. */
+		LOCAL_DEV_MODE: z.enum(["true", "false"]).default("false"),
+		LOCAL_AUTH_EMAIL: z.email().optional(),
+		LOCAL_AUTH_PASSWORD: z.string().min(8).optional(),
+		LOCAL_AUTH_NAME: z.string().optional(),
+		AUTH0_CLIENT_ID: vercelSecret,
+		AUTH0_CLIENT_SECRET: vercelSecret,
 		/** Auth0 tenant issuer URL (e.g. "https://your-tenant.auth0.com"). The host is used as the Better Auth genericOAuth `domain`. */
-		AUTH0_ISSUER_BASE_URL: z.string(),
-		SENTRY_AUTH_TOKEN: z.string(),
-		SENTRY_REPORT_URL: z.string(),
+		AUTH0_ISSUER_BASE_URL: vercelSecret,
+		SENTRY_AUTH_TOKEN: vercelSecret,
+		SENTRY_REPORT_URL: vercelSecret,
 		MINIO_HOST: z.string(),
 		MINIO_PORT: z.number().default(443),
 		MINIO_BUCKET_NAME: z.string(),
@@ -72,13 +80,16 @@ export const env = createEnv({
 		/** @example "http://localhost:6333" */
 		QDRANT_URL: z.string(),
 		QDRANT_API_KEY: z.string().optional(),
+		EMBEDDING_URL: z.url().optional(),
 	},
 
 	/**
 	 * Specify your client-side environment variables schema here. This way you can ensure the app isn't built with invalid env vars. To expose them to the client, prefix them with `NEXT_PUBLIC_`.
 	 */
 	client: {
-		NEXT_PUBLIC_SENTRY_DSN: z.string(),
+		NEXT_PUBLIC_SENTRY_DSN: isVercelRuntime
+			? z.string()
+			: z.string().optional(),
 	},
 
 	/**
@@ -94,6 +105,10 @@ export const env = createEnv({
 		AUTH_SECRET: process.env.AUTH_SECRET,
 		BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
 		VERCEL: process.env.VERCEL,
+		LOCAL_DEV_MODE: process.env.LOCAL_DEV_MODE,
+		LOCAL_AUTH_EMAIL: process.env.LOCAL_AUTH_EMAIL,
+		LOCAL_AUTH_PASSWORD: process.env.LOCAL_AUTH_PASSWORD,
+		LOCAL_AUTH_NAME: process.env.LOCAL_AUTH_NAME,
 		AUTH0_CLIENT_ID: process.env.AUTH0_CLIENT_ID,
 		AUTH0_CLIENT_SECRET: process.env.AUTH0_CLIENT_SECRET,
 		AUTH0_ISSUER_BASE_URL: process.env.AUTH0_ISSUER_BASE_URL,
@@ -109,6 +124,7 @@ export const env = createEnv({
 		CF_ACCESS_CLIENT_SECRET: process.env.CF_ACCESS_CLIENT_SECRET,
 		QDRANT_URL: process.env.QDRANT_URL,
 		QDRANT_API_KEY: process.env.QDRANT_API_KEY,
+		EMBEDDING_URL: process.env.EMBEDDING_URL,
 		NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN, // MEMO: ok to leak
 	},
 	/**

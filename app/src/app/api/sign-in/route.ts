@@ -1,6 +1,16 @@
-import { auth } from "@/infrastructures/auth/auth";
+import { env } from "@/env";
+import { auth, isLocalDevAuthEnabled } from "@/infrastructures/auth/auth";
+import prisma from "@/prisma";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
+
+function redirectWithCookies(url: string | URL, authHeaders: Headers) {
+	const redirectResponse = NextResponse.redirect(url);
+	for (const cookie of authHeaders.getSetCookie()) {
+		redirectResponse.headers.append("set-cookie", cookie);
+	}
+	return redirectResponse;
+}
 
 /**
  * Server-initiated sign-in. Mirrors the previous NextAuth `/api/sign-in` flow:
@@ -14,18 +24,43 @@ import { NextResponse } from "next/server";
  * the browser and the callback fails with `state_mismatch`.
  */
 export async function GET() {
+	const requestHeaders = await headers();
+
+	if (isLocalDevAuthEnabled()) {
+		const email = env.LOCAL_AUTH_EMAIL;
+		const password = env.LOCAL_AUTH_PASSWORD;
+		const name = env.LOCAL_AUTH_NAME;
+		if (!email || !password || !name) {
+			throw new Error("Local authentication configuration is incomplete");
+		}
+
+		const existingUser = await prisma.user.findUnique({ where: { email } });
+		const result = existingUser
+			? await auth.api.signInEmail({
+					body: { email, password },
+					headers: requestHeaders,
+					returnHeaders: true,
+				})
+			: await auth.api.signUpEmail({
+					body: { email, name, password },
+					headers: requestHeaders,
+					returnHeaders: true,
+				});
+
+		return redirectWithCookies(
+			new URL("/", env.BETTER_AUTH_URL),
+			result.headers,
+		);
+	}
+
 	const { response, headers: authHeaders } = await auth.api.signInSocial({
 		body: { provider: "auth0", callbackURL: "/" },
-		headers: await headers(),
+		headers: requestHeaders,
 		returnHeaders: true,
 	});
 	if (!response.url) {
 		throw new Error("Auth0 sign-in did not return a redirect URL");
 	}
 
-	const redirectResponse = NextResponse.redirect(response.url);
-	for (const cookie of authHeaders.getSetCookie()) {
-		redirectResponse.headers.append("set-cookie", cookie);
-	}
-	return redirectResponse;
+	return redirectWithCookies(response.url, authHeaders);
 }

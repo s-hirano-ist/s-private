@@ -8,6 +8,36 @@ import {
 
 let client: QdrantClient | null = null;
 
+async function embedLocally(texts: string[]): Promise<number[][]> {
+	const { url } = RAG_CONFIG.embedding;
+	if (!url) throw new Error("EMBEDDING_URL environment variable is required");
+
+	const response = await fetch(`${url.replace(/\/$/u, "")}/embed`, {
+		method: "POST",
+		headers: { "content-type": "application/json" },
+		body: JSON.stringify({ inputs: texts, normalize: true, truncate: true }),
+	});
+	if (!response.ok) {
+		throw new Error(
+			`Embedding request failed (${response.status}): ${await response.text()}`,
+		);
+	}
+
+	const embeddings: unknown = await response.json();
+	if (
+		!Array.isArray(embeddings) ||
+		embeddings.length !== texts.length ||
+		embeddings.some(
+			(embedding) =>
+				!Array.isArray(embedding) ||
+				embedding.some((value) => typeof value !== "number"),
+		)
+	) {
+		throw new TypeError("Embedding API returned an invalid response");
+	}
+	return embeddings as number[][];
+}
+
 /**
  * Get or create Qdrant client
  */
@@ -91,11 +121,17 @@ export async function upsertPoints(
 ): Promise<void> {
 	const qdrant = getQdrantClient();
 	const { collectionName } = RAG_CONFIG.qdrant;
+	const localEmbeddings = RAG_CONFIG.embedding.url
+		? await embedLocally(points.map((point) => point.text))
+		: undefined;
 
 	// Qdrant requires numeric or UUID IDs, so we hash the chunk_id
-	const qdrantPoints = points.map((p) => ({
+	const qdrantPoints = points.map((p, index) => ({
 		id: hashToUint(p.id),
-		vector: { text: p.text, model: RAG_CONFIG.embedding.model },
+		vector: localEmbeddings?.[index] ?? {
+			text: p.text,
+			model: RAG_CONFIG.embedding.model,
+		},
 		payload: p.payload,
 	}));
 
@@ -193,8 +229,11 @@ export async function search(
 		}
 	}
 
+	const query = RAG_CONFIG.embedding.url
+		? (await embedLocally([queryText]))[0]
+		: { text: queryText, model: RAG_CONFIG.embedding.model };
 	const result = await qdrant.query(collectionName, {
-		query: { text: queryText, model: RAG_CONFIG.embedding.model },
+		query,
 		limit: topK,
 		with_payload: true,
 		filter:

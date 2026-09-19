@@ -3,10 +3,9 @@
 ## Quick Start
 
 ```bash
-mise install         # Node.js, pnpm, Doppler CLI 等をインストール
+mise install         # Node.js、pnpm等をインストール
 pnpm install
-vercel link          # 初回のみ: Vercel プロジェクトをリンク（prisma スクリプト用）
-pnpm dev             # 開発サーバー起動（環境変数は Doppler から注入）
+pnpm dev             # Docker依存サービス初期化 + 開発サーバー起動
 ```
 
 ## Static Documentation And UI Gallery
@@ -28,7 +27,7 @@ pnpm pages:build
 This project uses [Mise](https://mise.jdx.dev/) for tool version management.
 
 - **Node.js** は v24.11 以上が必須です。`.nvmrc` は開発・CIで使う推奨パッチ版を固定し、Mise は `.mise.toml` の `idiomatic_version_file_enable_tools = ["node"]` 設定によりこれを読み込みます。`package.json#engines.node` は最低バージョンを表し、CI で `.nvmrc` がその範囲を満たすことを検証します。Vercel ダッシュボードの Node.js Version 設定も `.nvmrc` と同じメジャーに揃えてください。
-- **pnpm / Doppler CLI** など他ツールのバージョンは `.mise.toml` の `[tools]` で定義されています。
+- **pnpm** など他ツールのバージョンは `.mise.toml` の `[tools]` で定義されています。
 
 1. [Mise](https://mise.jdx.dev/getting-started.html) をインストール
 2. プロジェクトルートで以下を実行:
@@ -40,30 +39,13 @@ This project uses [Mise](https://mise.jdx.dev/) for tool version management.
 
 ## Environment Variables
 
-環境変数は **dev/preview 環境は Doppler**、**本番環境は Vercel Dashboard** で管理します。ローカルに `.env` ファイルを置く必要はありません。
-
-> Vercel CLI に一本化しない理由: `vercel env run` は dev 環境から本番環境の変数にもアクセスできてしまうため、セキュリティ上 dev/preview は Doppler で分離しています。
+ローカル環境はコミット済みの `.env.local`、Preview/ProductionはVercel Dashboardで管理します。ローカルファイルには外部環境で通用する秘密値を置きません。
 
 ### セットアップ
 
-`.env.local` に Doppler サービストークンを設定します。サービストークンにはプロジェクト・環境情報が含まれるため、`doppler login` / `doppler setup` は不要です。
+Miseはプロジェクトルートの`.env.local`を読み込みます。`pnpm dev`はMiseの有無にかかわらず同ファイルを明示的に読み込み、Docker Compose起動、migration、検索初期化、Next.js起動を順番に実行します。
 
-```bash
-# .env.local（プロジェクトルート）
-DOPPLER_TOKEN=dp.st.dev.xxxxxxxxxxxx
-```
-
-サービストークンは [Doppler Dashboard](https://dashboard.doppler.com/) > プロジェクト > dev 環境 > Access > Service Tokens から発行できます。
-
-Mise が `.env.local` を自動読み込みし（`.mise.toml` の `_.file = ".env.local"`）、`doppler run` が `DOPPLER_TOKEN` を検出して環境変数を取得します。
-
-以降、`pnpm dev` 等の app スクリプトは Doppler から、`pnpm prisma:*` 等のルートスクリプトは Vercel dev 環境から環境変数を取得します。
-
-任意のコマンドに環境変数を注入したい場合:
-```bash
-doppler run -- <command>                     # dev/preview 環境変数
-vercel env run -e development -- <command>   # Vercel dev 環境変数（prisma スクリプト用）
-```
+ローカルでは固定開発ユーザーを初回アクセス時に作成して自動ログインします。Vercelでは`LOCAL_DEV_MODE`を無視し、Auth0のみを使用します。
 
 ### 変数一覧
 
@@ -115,9 +97,9 @@ CockroachDB Cloud Basic は接続プーリングが内蔵で、pooled / direct �
 ### マイグレーションの運用（重要: `migrate dev` は封印）
 
 > ⚠️ **クラウド（dev-db / staging / prod）には `prisma migrate deploy` のみを使い、`prisma migrate dev` は使いません。**
-> CockroachDB Cloud は単一リージョンでも multi-region メタデータ enum `crdb_internal_region` を保持し、`migrate dev` / `migrate status` がこれを schema drift と誤検出して `DROP TYPE` を試み、`P3018` / `2BP01` で失敗します（[prisma#25696](https://github.com/prisma/prisma/issues/25696)）。`migrate deploy` は drift を見ないため影響を受けません。このためローカル DB は持たず、`migrate dev` 系のスクリプトも用意していません。
+> CockroachDB Cloud は単一リージョンでも multi-region メタデータ enum `crdb_internal_region` を保持し、`migrate dev` / `migrate status` がこれを schema drift と誤検出して `DROP TYPE` を試み、`P3018` / `2BP01` で失敗します（[prisma#25696](https://github.com/prisma/prisma/issues/25696)）。クラウド環境への適用は引き続き`migrate deploy`のみを使います。
 
-**ローカル開発はクラウドの dev-db クラスタに直結**します（ローカル DB は不要）。新しい migration は既存スキーマとの **diff フロー**で生成します:
+**ローカル開発はDocker上の単一ノードCockroachDB**を使用し、`pnpm dev`が`migrate deploy`を適用します。新しいmigrationは既存スキーマとの **diffフロー**で生成します:
 
 > ⚠️ **注意**: `prisma:migrate:diff` スクリプト（`prisma migrate diff --from-migrations ...`）はマイグレーションを replay するために shadow database (`datasource.shadowDatabaseUrl`) を要求するため、そのままでは DB 接続なしには動きません。DB 接続なしで差分を生成するには、下記のように git HEAD のスキーマと現スキーマを `--from-schema` で直接比較してください。
 
