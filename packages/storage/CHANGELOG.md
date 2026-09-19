@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.18.11](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-storage-v1.18.10...@s-hirano-ist/s-storage-v1.18.11) (2026-09-19)
+
+
+### Maintenance
+
+* **deps:** update node and pnpm ([770e22a](https://github.com/s-hirano-ist/s-private/commit/770e22a86aa3be52364ef7f11809c87ae042e3ef))
+* **deps:** update node and pnpm ([cf2de4a](https://github.com/s-hirano-ist/s-private/commit/cf2de4a8ae2cf6de3ae4d70f64e41dcb39fc2ff7))
+
 ## [1.18.10](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-storage-v1.18.9...@s-hirano-ist/s-storage-v1.18.10) (2026-09-13)
 
 

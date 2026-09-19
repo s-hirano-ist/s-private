@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.0.5](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v2.0.4...@s-hirano-ist/s-ui-v2.0.5) (2026-09-19)
+
+
+### Maintenance
+
+* **deps:** update node and pnpm ([770e22a](https://github.com/s-hirano-ist/s-private/commit/770e22a86aa3be52364ef7f11809c87ae042e3ef))
+* **deps:** update node and pnpm ([cf2de4a](https://github.com/s-hirano-ist/s-private/commit/cf2de4a8ae2cf6de3ae4d70f64e41dcb39fc2ff7))
+* **deps:** update non-major ([183f4ae](https://github.com/s-hirano-ist/s-private/commit/183f4ae4edec68c867261613c1e5046a981aaa73))
+* finalize conflict resolution ([e9a4522](https://github.com/s-hirano-ist/s-private/commit/e9a4522496045de6e261f4d78cec633bb03b08e3))
+* finalize conflict resolution ([9ce58c8](https://github.com/s-hirano-ist/s-private/commit/9ce58c87c0bef7c258a7d07d2c1de35d9bf9903f))
+* finalize conflict resolution ([87ac1fe](https://github.com/s-hirano-ist/s-private/commit/87ac1fe4e88c04c6920926c84626dc737514300c))
+* load article categories on demand ([42f2436](https://github.com/s-hirano-ist/s-private/commit/42f2436a34124e8354f89e74339f7acc192139c2))
+
 ## [2.0.4](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v2.0.3...@s-hirano-ist/s-ui-v2.0.4) (2026-09-13)
 
 
