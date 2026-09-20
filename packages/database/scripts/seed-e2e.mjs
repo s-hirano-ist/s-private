@@ -22,7 +22,7 @@ try {
 		where: { name_userId: { name: "E2E", userId: user.id } },
 		update: {},
 		create: {
-			id: "00000000-0000-4000-8000-000000000001",
+			id: "00000000-0000-7000-8000-000000000001",
 			name: "E2E",
 			userId: user.id,
 			createdAt: now,
@@ -40,7 +40,7 @@ try {
 			},
 			update: { status: Status.EXPORTED },
 			create: {
-				id: "00000000-0000-4000-8000-000000000002",
+				id: "00000000-0000-7000-8000-000000000002",
 				title: "E2E seeded article",
 				url: "https://example.com/e2e-article",
 				quote: "Seeded by the hermetic E2E workflow",
@@ -58,7 +58,7 @@ try {
 			},
 			update: { status: Status.EXPORTED },
 			create: {
-				id: "00000000-0000-4000-8000-000000000003",
+				id: "00000000-0000-7000-8000-000000000003",
 				title: "E2E seeded note",
 				markdown: "# E2E seeded note\n\nHermetic viewer fixture.",
 				status: Status.EXPORTED,
@@ -74,7 +74,7 @@ try {
 			},
 			update: { status: Status.EXPORTED },
 			create: {
-				id: "00000000-0000-4000-8000-000000000004",
+				id: "00000000-0000-7000-8000-000000000004",
 				path: "e2e/seeded-image.png",
 				contentType: "image/png",
 				fileSize: 68,
@@ -91,7 +91,7 @@ try {
 			where: { isbn_userId: { isbn: "978-0000000002", userId: user.id } },
 			update: { status: Status.EXPORTED },
 			create: {
-				id: "00000000-0000-4000-8000-000000000005",
+				id: "00000000-0000-7000-8000-000000000005",
 				isbn: "978-0000000002",
 				title: "E2E seeded book",
 				googleAuthors: ["E2E Author"],
