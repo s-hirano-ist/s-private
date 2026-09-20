@@ -82,7 +82,7 @@ Next.js + TypeScript + Clean Architectureベースのコンテンツ管理シス
 
 ## 環境設定
 
-環境変数はdev/preview環境はDoppler、本番環境はVercel Dashboardで管理。ローカル開発では`.env.local`にDopplerサービストークン（`DOPPLER_TOKEN`）を設定し、Miseが自動読み込み→`doppler run`で環境変数を注入。一部ルートスクリプト（prisma:\*）は`vercel env run -e development`を使用。型定義は`app/src/env.ts`。初回セットアップ: `mise install` → `.env.local`にトークン設定 → `pnpm install` → `vercel link`。
+環境変数はローカル環境では`.env.local`、Preview/Production環境ではVercel Dashboardで管理します。Miseがプロジェクトルートの`.env.local`を読み込み、`pnpm dev`がDocker依存サービスの起動、migration、検索初期化、Next.js起動を順番に実行します。型定義は`app/src/env.ts`を参照してください。初回セットアップ: `mise install` → `pnpm install` → `pnpm dev`。
 
 ## 詳細資料
 
