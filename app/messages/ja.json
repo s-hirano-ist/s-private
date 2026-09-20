@@ -15,6 +15,9 @@
 		"pushSubscribed": "通知を有効にしました。",
 		"pushUnsubscribed": "通知を解除しました。",
 		"pushTestSent": "テスト通知を送信しました。",
+		"pushRegistrationError": "通知の準備に失敗しました。ページを再読み込みして、もう一度お試しください。",
+		"pushSubscriptionError": "このブラウザで通知を登録できませんでした。ブラウザの通知設定を確認してください。",
+		"pushSaveError": "通知設定を保存できませんでした。しばらくしてからもう一度お試しください。",
 		"pushError": "通知設定の更新に失敗しました。"
 	},
 	"label": {

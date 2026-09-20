@@ -15,6 +15,9 @@
 		"pushSubscribed": "Notifications enabled.",
 		"pushUnsubscribed": "Notifications disabled.",
 		"pushTestSent": "Test notification sent.",
+		"pushRegistrationError": "Failed to prepare notifications. Reload the page and try again.",
+		"pushSubscriptionError": "This browser could not register notifications. Check your browser notification settings.",
+		"pushSaveError": "Could not save notification settings. Try again in a moment.",
 		"pushError": "Failed to update notification settings."
 	},
 	"label": {
