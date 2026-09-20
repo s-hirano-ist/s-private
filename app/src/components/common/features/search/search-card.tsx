@@ -1,4 +1,9 @@
 "use client";
+import type {
+	sendTestPush,
+	subscribeToPush,
+	unsubscribeFromPush,
+} from "@/application-services/push-notifications/actions";
 import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 import { StatusCodeView } from "@/components/common/display/status/status-code-view";
 import { useSearch } from "@/components/common/hooks/use-search";
@@ -13,7 +18,13 @@ import { haptic } from "@s-hirano-ist/s-ui/utils/haptic";
 import { SearchIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-type Props = { search: typeof searchContentFromClient };
+type Props = {
+	publicKey: string;
+	search: typeof searchContentFromClient;
+	sendTestPush: typeof sendTestPush;
+	subscribeToPush: typeof subscribeToPush;
+	unsubscribeFromPush: typeof unsubscribeFromPush;
+};
 
 const handleReload = () => {
 	window.location.reload();
@@ -26,7 +37,13 @@ const onSignOutSubmit = async () => {
 	window.location.href = "/";
 };
 
-export function SearchCard({ search }: Props) {
+export function SearchCard({
+	publicKey,
+	search,
+	sendTestPush,
+	subscribeToPush,
+	unsubscribeFromPush,
+}: Props) {
 	const t = useTranslations("label");
 	const statusCodes = useTranslations("statusCode");
 
@@ -58,6 +75,10 @@ export function SearchCard({ search }: Props) {
 			<UtilButtons
 				handleReload={handleReload}
 				onSignOutSubmit={onSignOutSubmit}
+				publicKey={publicKey}
+				sendTestPush={sendTestPush}
+				subscribeToPush={subscribeToPush}
+				unsubscribeFromPush={unsubscribeFromPush}
 			/>
 		);
 	} else if (isError) {

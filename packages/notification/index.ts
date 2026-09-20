@@ -44,3 +44,4 @@
 export * from "./errors.js";
 export { createPushoverService } from "./pushover.js";
 export * from "./types.js";
+export * from "./web-push.js";

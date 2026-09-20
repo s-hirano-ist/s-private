@@ -72,6 +72,21 @@ Better Auth 1.7ではGeneric OAuthも標準のsocial provider callbackを使用�
 
 バッチの DB トランザクション成功後に内部 API を呼び出します。呼び出しに失敗した場合、DB 更新はロールバックされませんが、バッチ自体は失敗終了し、標準エラーと Pushover 通知に失敗を残します。
 
+### Web Push と Vercel Cron
+
+Production の Vercel Environment Variables に次を設定します。秘密鍵と Cron secret はリポジトリや Preview 環境へ保存しません。
+
+| 変数 | 用途 |
+|---|---|
+| `CRON_SECRET` | Vercel Cron Route の Bearer token（16文字以上のランダム値） |
+| `NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY` | ブラウザへ公開する VAPID 公開鍵 |
+| `WEB_PUSH_PRIVATE_KEY` | Web Push 署名用 VAPID 秘密鍵 |
+| `WEB_PUSH_SUBJECT` | VAPID の連絡先（例: `mailto:admin@example.com`） |
+
+VAPID 鍵は `pnpm --filter @s-hirano-ist/s-notification exec web-push generate-vapid-keys` で生成します。公開鍵と秘密鍵は必ず同じ組を登録してください。鍵を更新すると既存購読は利用できなくなるため、利用端末で通知を解除してから再度有効化します。
+
+Production へデプロイすると `/api/cron/gigazine-headline` が毎日 `00:00 UTC`（09:00 JST）に呼ばれます。Hobby プランでは指定した1時間内で実行時刻が変動します。手動確認時も `Authorization: Bearer <CRON_SECRET>` が必要です。
+
 ## Database (CockroachDB)
 
 DB ホスティングは **CockroachDB Cloud Basic**（region `gcp-asia-southeast1`）を使用します。Prisma ORM (`provider = "cockroachdb"`) 経由で接続し、`@prisma/adapter-pg` (node-postgres) で pgwire プロトコルで話します（CockroachDB は PostgreSQL ワイヤ互換）。

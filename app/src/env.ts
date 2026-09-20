@@ -45,6 +45,12 @@ export const env = createEnv({
 			.default("https://api.pushover.net/1/messages.json"),
 		PUSHOVER_USER_KEY: vercelSecret,
 		PUSHOVER_APP_TOKEN: vercelSecret,
+		/** Bearer token automatically attached by Vercel Cron. */
+		CRON_SECRET: z.string().min(16).optional(),
+		/** VAPID private key used only by the server-side Web Push adapter. */
+		WEB_PUSH_PRIVATE_KEY: z.string().optional(),
+		/** VAPID contact URI, normally a mailto: address or HTTPS URL. */
+		WEB_PUSH_SUBJECT: z.string().optional(),
 		/** Shared bearer token used only by trusted batch scripts to invalidate Next.js caches. */
 		CACHE_INVALIDATION_SECRET: z.string().optional(),
 		/** Generate by `openssl rand -base64 32`. Required in production. Shared secret for Better Auth. */
@@ -87,6 +93,7 @@ export const env = createEnv({
 	 * Specify your client-side environment variables schema here. This way you can ensure the app isn't built with invalid env vars. To expose them to the client, prefix them with `NEXT_PUBLIC_`.
 	 */
 	client: {
+		NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY: z.string().optional(),
 		NEXT_PUBLIC_SENTRY_DSN: isVercelRuntime
 			? z.string()
 			: z.string().optional(),
@@ -101,6 +108,9 @@ export const env = createEnv({
 		PUSHOVER_URL: process.env.PUSHOVER_URL,
 		PUSHOVER_USER_KEY: process.env.PUSHOVER_USER_KEY,
 		PUSHOVER_APP_TOKEN: process.env.PUSHOVER_APP_TOKEN,
+		CRON_SECRET: process.env.CRON_SECRET,
+		WEB_PUSH_PRIVATE_KEY: process.env.WEB_PUSH_PRIVATE_KEY,
+		WEB_PUSH_SUBJECT: process.env.WEB_PUSH_SUBJECT,
 		CACHE_INVALIDATION_SECRET: process.env.CACHE_INVALIDATION_SECRET,
 		AUTH_SECRET: process.env.AUTH_SECRET,
 		BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
@@ -125,6 +135,8 @@ export const env = createEnv({
 		QDRANT_URL: process.env.QDRANT_URL,
 		QDRANT_API_KEY: process.env.QDRANT_API_KEY,
 		EMBEDDING_URL: process.env.EMBEDDING_URL,
+		NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY:
+			process.env.NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY,
 		NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN, // MEMO: ok to leak
 	},
 	/**

@@ -1,0 +1,9 @@
+{
+	"$schema": "https://openapi.vercel.sh/vercel.json",
+	"crons": [
+		{
+			"path": "/api/cron/gigazine-headline",
+			"schedule": "0 0 * * *"
+		}
+	]
+}

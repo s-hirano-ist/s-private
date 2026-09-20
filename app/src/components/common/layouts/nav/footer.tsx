@@ -1,4 +1,9 @@
 "use client";
+import type {
+	sendTestPush,
+	subscribeToPush,
+	unsubscribeFromPush,
+} from "@/application-services/push-notifications/actions";
 import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 import type { Route } from "next";
 import { Button } from "@s-hirano-ist/s-ui/button";
@@ -16,7 +21,11 @@ import {
 import { SearchDrawer } from "./search-drawer";
 
 type Props = {
+	publicKey: string;
 	search: typeof searchContentFromClient;
+	sendTestPush: typeof sendTestPush;
+	subscribeToPush: typeof subscribeToPush;
+	unsubscribeFromPush: typeof unsubscribeFromPush;
 };
 
 // oxlint-disable-next-line typescript/no-unnecessary-type-assertion -- Next typed router methods require Route even for runtime pathname-derived values.
@@ -95,7 +104,7 @@ export function FooterFallback() {
 	);
 }
 
-export function Footer({ search }: Props) {
+export function Footer({ search, ...pushNotificationProps }: Props) {
 	const [open, setOpen] = useState(false);
 
 	const router = useRouter();
@@ -199,7 +208,12 @@ export function Footer({ search }: Props) {
 				{navigationButtons}
 			</footer>
 			{open && (
-				<SearchDrawer onOpenChange={setOpen} open={open} search={search} />
+				<SearchDrawer
+					onOpenChange={setOpen}
+					open={open}
+					search={search}
+					{...pushNotificationProps}
+				/>
 			)}
 		</>
 	);

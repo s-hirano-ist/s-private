@@ -1,7 +1,21 @@
 {
 	"utils": {
 		"signOut": "サインアウト",
-		"reload": "再読み込み"
+		"reload": "再読み込み",
+		"pushNotifications": "Web Push通知",
+		"pushChecking": "通知の状態を確認しています。",
+		"pushDenied": "通知が拒否されています。ブラウザの設定からこのサイトの通知を許可してください。",
+		"pushIosInstall": "iPhoneまたはiPadでは、共有メニューから「ホーム画面に追加」し、そのWeb Appから開いてください。",
+		"pushEnabled": "この端末では毎日GIGAZINEの通知を受け取ります。",
+		"pushDisabled": "この端末では通知が無効です。",
+		"pushUnsupported": "このブラウザまたは環境ではWeb Push通知を利用できません。",
+		"pushEnable": "通知を有効にする",
+		"pushDisable": "通知を解除",
+		"pushTest": "テスト通知",
+		"pushSubscribed": "通知を有効にしました。",
+		"pushUnsubscribed": "通知を解除しました。",
+		"pushTestSent": "テスト通知を送信しました。",
+		"pushError": "通知設定の更新に失敗しました。"
 	},
 	"label": {
 		"category": "カテゴリー",

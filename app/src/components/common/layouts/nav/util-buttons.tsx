@@ -6,14 +6,25 @@ import { Globe, LogOut, Moon, RefreshCw, Sun } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { usePathname } from "next/navigation";
+import {
+	PushNotificationButton,
+	type PushNotificationButtonProps,
+} from "./push-notification-button";
 
-type Props = { handleReload: () => void; onSignOutSubmit: () => Promise<void> };
+type Props = PushNotificationButtonProps & {
+	handleReload: () => void;
+	onSignOutSubmit: () => Promise<void>;
+};
 
 const removeLangPrefix = (pathname: string): string => {
 	return pathname.replace(/^\/(?:en|ja)(?:\/|$)/u, "/");
 };
 
-export function UtilButtons({ handleReload, onSignOutSubmit }: Props) {
+export function UtilButtons({
+	handleReload,
+	onSignOutSubmit,
+	...pushNotificationProps
+}: Props) {
 	const pathname = usePathname();
 	const { setTheme, theme } = useTheme();
 	const locale = useLocale();
@@ -36,7 +47,7 @@ export function UtilButtons({ handleReload, onSignOutSubmit }: Props) {
 	const shouldShowSignOut = pathname !== "/auth";
 
 	return (
-		<div className="grid grid-cols-4 gap-3 px-4 py-2">
+		<div className="grid grid-cols-5 gap-2 px-4 py-2">
 			<Button
 				className="flex h-16 flex-col items-center gap-1"
 				onClick={() => {
@@ -71,6 +82,7 @@ export function UtilButtons({ handleReload, onSignOutSubmit }: Props) {
 				<span className="text-xs">{locale === "en" ? "JA" : "EN"}</span>
 				<span className="sr-only">language</span>
 			</Button>
+			<PushNotificationButton {...pushNotificationProps} />
 			{shouldShowSignOut && (
 				<Button
 					className="flex h-16 flex-col items-center gap-1"
