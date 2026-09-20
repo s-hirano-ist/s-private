@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.13.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.13.0...s-private-v3.13.1) (2026-09-20)
+
+
+### Bug Fixes
+
+* build workspace packages before e2e app startup ([13dbe3d](https://github.com/s-hirano-ist/s-private/commit/13dbe3d3372a340f237fd9ca4455042f1d8f8763))
+* establish local e2e session ([fc1e348](https://github.com/s-hirano-ist/s-private/commit/fc1e3484504a6bafcc8a92e3688dc5e229308cda))
+* reuse running app in e2e ([f7a0325](https://github.com/s-hirano-ist/s-private/commit/f7a0325986ccd85e70d150b799d676bc9389e46e))
+* satisfy workflow shell lint ([1331faa](https://github.com/s-hirano-ist/s-private/commit/1331faa7acc5381e4a146143310fc7542e06668c))
+* seed valid domain identifiers ([501796a](https://github.com/s-hirano-ist/s-private/commit/501796acfbed5397c6a437bcde1e8feed61c1132))
+* skip local auth navigation in e2e ([9de5e32](https://github.com/s-hirano-ist/s-private/commit/9de5e32165f97bd409596757f67734c38893316c))
+* skip Playwright web server in e2e CI ([36387a0](https://github.com/s-hirano-ist/s-private/commit/36387a0c3fea506461b8cf459f45c1e183a7d503))
+
+
+### Documentation
+
+* add hermetic main-flow e2e workflow ([21333d3](https://github.com/s-hirano-ist/s-private/commit/21333d3e240dbc9f4a67c2af9efc68b774738307))
+* add hermetic main-flow E2E workflow ([5217816](https://github.com/s-hirano-ist/s-private/commit/5217816363fcc219cf1573f6933f2e212fbe4e5a))
+* remove stale Doppler instructions ([8edd26c](https://github.com/s-hirano-ist/s-private/commit/8edd26c731da4e85ab9ccc0f6890d4ba236a65a2))
+* remove stale Doppler instructions ([767bc7b](https://github.com/s-hirano-ist/s-private/commit/767bc7b0d70f3dcb4bcc37e213b56f81c0e8cc02))
+
+
+### Maintenance
+
+* bound e2e test diagnostics ([f55c77c](https://github.com/s-hirano-ist/s-private/commit/f55c77c3b0c2c43e5ed80de86cdd649f99eba280))
+* fix ([7999913](https://github.com/s-hirano-ist/s-private/commit/7999913d0ffb414120acaec19bc95f581784eb56))
+* surface e2e failures without retries ([5f7d308](https://github.com/s-hirano-ist/s-private/commit/5f7d308f524deeffabbfccedd26e00471daeef93))
+
 ## [3.13.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.12.4...s-private-v3.13.0) (2026-09-19)
 
 

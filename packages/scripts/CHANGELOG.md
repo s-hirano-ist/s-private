@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.26.5](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.26.4...@s-hirano-ist/s-scripts-v1.26.5) (2026-09-20)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-database bumped to 1.21.4
+
 ## [1.26.4](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.26.3...@s-hirano-ist/s-scripts-v1.26.4) (2026-09-19)
 
 
