@@ -16,6 +16,8 @@ import { Suspense } from "react";
 
 const notoSansJp = Noto_Sans_JP({ subsets: ["latin"], display: "swap" });
 
+export const instant = false;
+
 export const metadata: Metadata = {
 	title: {
 		default: "s-private",
