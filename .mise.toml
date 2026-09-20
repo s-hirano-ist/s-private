@@ -7,7 +7,7 @@ _.file = ".env.local"
 DEVELOPER_DIR = "/Applications/Xcode.app/Contents/Developer"
 
 [tools]
-pnpm = "12.4.2"
+pnpm = "12.5.1"
 "npm:agent-browser" = "0.38.1"
 rumdl = "v0.2.74"
 gitleaks = "8.30.1"
