@@ -1,3 +1,4 @@
+import type { NextRequest } from "next/server";
 import { env } from "@/env";
 import { auth, isLocalDevAuthEnabled } from "@/infrastructures/auth/auth";
 import prisma from "@/prisma";
@@ -32,6 +33,10 @@ vi.mock("next/server", () => ({
 
 const { GET } = await import("./route");
 
+function createSignInRequest() {
+	return new Request("http://localhost:3000/api/sign-in") as NextRequest;
+}
+
 describe("/api/sign-in route", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
@@ -57,7 +62,7 @@ describe("/api/sign-in route", () => {
 			headers: authHeaders,
 		} as unknown as Awaited<ReturnType<typeof auth.api.signInEmail>>);
 
-		const response = await GET();
+		const response = await GET(createSignInRequest());
 
 		expect(auth.api.signInEmail).toHaveBeenCalledWith({
 			body: {
@@ -80,7 +85,7 @@ describe("/api/sign-in route", () => {
 			headers: new Headers({ "set-cookie": "local=session" }),
 		} as unknown as Awaited<ReturnType<typeof auth.api.signUpEmail>>);
 
-		await GET();
+		await GET(createSignInRequest());
 
 		expect(auth.api.signUpEmail).toHaveBeenCalledWith({
 			body: {
@@ -108,7 +113,7 @@ describe("/api/sign-in route", () => {
 			headers: authHeaders,
 		} as unknown as Awaited<ReturnType<typeof auth.api.signInSocial>>);
 
-		const response = await GET();
+		const response = await GET(createSignInRequest());
 
 		expect(auth.api.signInSocial).toHaveBeenCalledWith({
 			body: { provider: "auth0", callbackURL: "/" },

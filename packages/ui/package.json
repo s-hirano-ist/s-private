@@ -117,7 +117,7 @@
 		"build:js": "tsdown && tsc -p tsconfig.build.json",
 		"build:css": "tailwindcss -i src/styles.css -o dist/styles.css --minify",
 		"dev": "pnpm run \"/^dev:.*/\"",
-		"dev:js": "tsdown --watch",
+		"dev:js": "tsdown --watch --no-clean",
 		"dev:css": "tailwindcss -i src/styles.css -o dist/styles.css --watch",
 		"clean": "rm -rf dist",
 		"prepublishOnly": "pnpm run build",
