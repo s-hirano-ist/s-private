@@ -1,0 +1,45 @@
+name: ios
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/ios.yaml"
+      - ".mise.toml"
+      - "ios/**"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/ios.yaml"
+      - ".mise.toml"
+      - "ios/**"
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: xcode-27
+    timeout-minutes: 20
+    steps:
+      - name: Checkout files
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+
+      - name: Install XcodeGen
+        uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14 # v4.2.3
+        with:
+          version: 2026.8.6
+          install_args: aqua:yonaskolb/XcodeGen
+
+      - name: Generate Xcode project
+        run: mise run ios:generate
+
+      - name: Build app
+        run: mise run ios:build
+
+      - name: Run tests
+        run: mise run ios:test

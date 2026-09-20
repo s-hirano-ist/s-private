@@ -4,9 +4,30 @@ idiomatic_version_file_enable_tools = ["node"]
 
 [env]
 _.file = ".env.local"
+DEVELOPER_DIR = "/Applications/Xcode.app/Contents/Developer"
 
 [tools]
 pnpm = "12.4.2"
 "npm:agent-browser" = "0.38.1"
 rumdl = "v0.2.74"
 gitleaks = "8.30.1"
+"aqua:yonaskolb/XcodeGen" = { version = "2.46.0", os = ["macos"] }
+
+[tasks."ios:generate"]
+description = "Generate the iOS Xcode project"
+run = "xcodegen generate --spec ios/project.yml --project ios"
+
+[tasks."ios:build"]
+description = "Build the iOS app for an iOS 27 Simulator"
+depends = ["ios:generate"]
+run = "xcodebuild -project ios/SPrivate.xcodeproj -scheme SPrivate -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath ios/.derivedData CODE_SIGNING_ALLOWED=NO build"
+
+[tasks."ios:test"]
+description = "Run the iOS unit and UI tests"
+depends = ["ios:generate"]
+run = "xcodebuild -project ios/SPrivate.xcodeproj -scheme SPrivate -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest' -derivedDataPath ios/.derivedData CODE_SIGNING_ALLOWED=NO test"
+
+[tasks."ios:run"]
+description = "Build and launch the app in an iPhone 17 iOS 27 Simulator"
+depends = ["ios:generate"]
+run = "ios/scripts/run-simulator.sh"
