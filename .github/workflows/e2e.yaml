@@ -75,7 +75,12 @@ jobs:
         run: pnpm seed:e2e
 
       - name: Run main-flow Playwright tests
-        run: pnpm test:e2e:main --retries=0 --reporter=list,html
+        run: >-
+          pnpm test:e2e:main
+          --retries=0
+          --timeout=15000
+          --global-timeout=180000
+          --reporter=list,html
 
       - name: Upload Playwright report
         if: always()
