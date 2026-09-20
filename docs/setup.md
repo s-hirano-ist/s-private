@@ -37,6 +37,28 @@ This project uses [Mise](https://mise.jdx.dev/) for tool version management.
 
 **Note**: Mise はプロジェクトディレクトリに入ると `.mise.toml` で指定されたツールバージョンを自動的に使用します。また、`.env.local` の環境変数も自動的に読み込みます（`_.file = ".env.local"`）。
 
+## iOS 27 Development
+
+iOSアプリの開発には、Apple silicon Mac、Xcode 27、iOS 27 Simulator runtimeが必要です。Command Line ToolsだけではiOSアプリをビルドできません。Xcode 27をMac App Storeからインストールした後、次を実行します。
+
+```bash
+sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
+sudo xcodebuild -runFirstLaunch
+xcodebuild -downloadPlatform iOS -buildVersion 27.0
+mise install
+```
+
+Xcodeプロジェクトは`ios/project.yml`から生成し、生成物自体はGit管理しません。
+
+```bash
+mise run ios:generate # Xcodeプロジェクトを生成
+mise run ios:build    # Simulator向けビルド
+mise run ios:test     # 単体テストとUIテスト
+mise run ios:run      # iPhone 17 Simulatorへインストールして起動
+```
+
+詳細とトラブルシュートは[`ios/README.md`](../ios/README.md)を参照してください。
+
 ## Environment Variables
 
 ローカル環境はコミット済みの `.env.local`、Preview/ProductionはVercel Dashboardで管理します。ローカルファイルには外部環境で通用する秘密値を置きません。

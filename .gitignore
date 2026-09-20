@@ -55,3 +55,10 @@ packages/database/erd/
 
 # docker sandbox
 .pnpm-store/
+
+# Xcode / iOS
+ios/*.xcodeproj/
+ios/.derivedData/
+ios/DerivedData/
+*.xcuserstate
+xcuserdata/

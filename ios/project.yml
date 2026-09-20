@@ -1,0 +1,70 @@
+name: SPrivate
+
+options:
+  bundleIdPrefix: ist.s-hirano
+  deploymentTarget:
+    iOS: "27.0"
+  xcodeVersion: "27.0"
+
+settings:
+  base:
+    DEVELOPMENT_TEAM: ""
+    GENERATE_INFOPLIST_FILE: YES
+    IPHONEOS_DEPLOYMENT_TARGET: "27.0"
+    SWIFT_VERSION: "6.0"
+    TARGETED_DEVICE_FAMILY: "1"
+
+targets:
+  SPrivate:
+    type: application
+    platform: iOS
+    sources:
+      - path: SPrivate
+    settings:
+      base:
+        CODE_SIGNING_ALLOWED: NO
+        INFOPLIST_KEY_CFBundleDisplayName: SPrivate
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        PRODUCT_BUNDLE_IDENTIFIER: ist.s-hirano.s-private
+        PRODUCT_NAME: SPrivate
+  SPrivateTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: SPrivateTests
+    dependencies:
+      - target: SPrivate
+    settings:
+      base:
+        CODE_SIGNING_ALLOWED: NO
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: ist.s-hirano.s-private.tests
+
+  SPrivateUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: SPrivateUITests
+    dependencies:
+      - target: SPrivate
+    settings:
+      base:
+        CODE_SIGNING_ALLOWED: NO
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: ist.s-hirano.s-private.ui-tests
+        TEST_TARGET_NAME: SPrivate
+
+schemes:
+  SPrivate:
+    shared: true
+    build:
+      targets:
+        SPrivate: all
+        SPrivateTests: [test]
+        SPrivateUITests: [test]
+    test:
+      gatherCoverageData: true
+      targets:
+        - name: SPrivateTests
+        - name: SPrivateUITests
