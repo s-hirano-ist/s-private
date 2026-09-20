@@ -101,20 +101,28 @@ export default defineConfig({
 					include: ["./src/**/*.test.?(c|m)[jt]s?(x)"],
 				},
 			},
-			// Benchmarks (Node environment, used by `vitest bench --project bench`)
+			// Benchmarks (Node environment, used by `pnpm bench`)
 			{
 				test: {
 					name: "bench",
-					include: ["packages/**/*.bench.?(c|m)[jt]s?(x)"],
+					include: [],
+					benchmark: {
+						enabled: true,
+						include: ["packages/*/src/**/*.bench.?(c|m)[jt]s?(x)"],
+					},
 				},
 			},
-			// Component benchmarks (happy-dom environment, used by `vitest bench --project app-bench`)
+			// Component benchmarks (happy-dom environment, used by `pnpm bench:components`)
 			{
 				extends: "./app/vitest.config.ts",
 				test: {
 					name: "app-bench",
 					root: "./app",
-					include: ["./src/**/*.bench.?(c|m)[jt]s?(x)"],
+					include: [],
+					benchmark: {
+						enabled: true,
+						include: ["./src/**/*.bench.?(c|m)[jt]s?(x)"],
+					},
 				},
 			},
 		],

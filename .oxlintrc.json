@@ -586,12 +586,14 @@
 		{
 			"files": [
 				"**/*.{test,spec}.{ts,tsx}",
+				"**/*.bench.{ts,tsx}",
 				"**/__tests__/**/*.{ts,tsx}",
 				"**/*.stories.{ts,tsx}",
 				"**/vitest-setup.tsx",
 				"**/vitest.setup.ts"
 			],
 			"rules": {
+				"vitest/expect-expect": "off",
 				"no-empty-function": "off",
 				"typescript/unbound-method": "off",
 				"typescript/no-confusing-void-expression": "off",

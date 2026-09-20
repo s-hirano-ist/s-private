@@ -11,7 +11,10 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			"@": path.resolve(import.meta.dirname, "./src"),
-			"@s-hirano-ist/s-ui": path.resolve(import.meta.dirname, "../packages/ui"),
+			"@s-hirano-ist/s-ui": path.resolve(
+				import.meta.dirname,
+				"../packages/ui/dist",
+			),
 			"@s-hirano-ist/s-core": path.resolve(
 				import.meta.dirname,
 				"../packages/core",
