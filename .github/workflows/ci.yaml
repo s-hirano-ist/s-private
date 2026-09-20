@@ -36,6 +36,7 @@ jobs:
         env: &build_env
           # CI は外部サービスに接続しない。env schema と build-time imports が要求する
           # 非機密のローカル向けプレースホルダーだけを与える。
+          LOCAL_DEV_MODE: "true"
           DATABASE_URL: "postgresql://ci:ci@localhost:26257/s_private?sslmode=verify-full"
           AUTH_SECRET: "ci-local-only-auth-secret"
           MINIO_HOST: "localhost"
