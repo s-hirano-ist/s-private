@@ -30,10 +30,6 @@ url = "https://nodejs.org/dist/v24.21.0/node-v24.21.0-darwin-arm64.tar.gz"
 version = "0.38.1"
 backend = "npm:agent-browser"
 
-[[tools."npm:vercel"]]
-version = "59.16.0"
-backend = "npm:vercel"
-
 [[tools.pnpm]]
 version = "12.4.2"
 backend = "aqua:pnpm/pnpm"
