@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.6](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v2.0.5...@s-hirano-ist/s-ui-v2.0.6) (2026-09-20)
+
+
+### Bug Fixes
+
+* tailwind css error ([b89c754](https://github.com/s-hirano-ist/s-private/commit/b89c754c69d3ea5f3122f99430b563f69a1f67d4))
+
 ## [2.0.5](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v2.0.4...@s-hirano-ist/s-ui-v2.0.5) (2026-09-19)
 
 
