@@ -29,7 +29,7 @@ export default defineConfig({
 	],
 	webServer: {
 		command: "pnpm --filter s-private-app dev",
-		url: "http://localhost:3000",
+		url: "http://localhost:3000/api/sign-in",
 		reuseExistingServer: true,
 		timeout: 120_000,
 	},
