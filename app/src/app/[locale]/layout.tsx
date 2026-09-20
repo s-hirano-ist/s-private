@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "@/app/globals.css";
 import { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 import { Footer, FooterFallback } from "@/components/common/layouts/nav/footer";
-import { env } from "@/env";
 import { IntlClientProvider } from "@/infrastructures/i18n/client-provider";
 import { loadMessages } from "@/infrastructures/i18n/request";
 import { routing } from "@/infrastructures/i18n/routing-config";
@@ -42,14 +41,6 @@ export default async function RootLayout({
 
 	return (
 		<html lang={localeValue} suppressHydrationWarning>
-			<head>
-				{env.NODE_ENV === "development" && (
-					<script
-						async
-						src="https://unpkg.com/react-scan/dist/auto.global.js"
-					/>
-				)}
-			</head>
 			<body className={notoSansJp.className}>
 				<IntlClientProvider locale={localeValue} messages={messages}>
 					<ThemeProvider

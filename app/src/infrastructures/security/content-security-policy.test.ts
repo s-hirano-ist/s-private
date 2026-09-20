@@ -61,7 +61,7 @@ describe("buildContentSecurityPolicy", () => {
 		});
 
 		expect(policy).toMatch(/script-src\s[^;]*'unsafe-eval'/u);
-		expect(policy).toMatch(/script-src-elem[^;]*https:\/\/unpkg\.com/u);
+		expect(policy).not.toMatch(/script-src-elem[^;]*https:\/\/unpkg\.com/u);
 		expect(policy).toMatch(/style-src-elem[^;]*'unsafe-inline'/u);
 		expect(policy).toMatch(/connect-src[^;]*ws:/u);
 		expect(policy).not.toContain("upgrade-insecure-requests");
