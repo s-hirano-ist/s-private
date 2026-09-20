@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.13.2](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.13.1...s-private-v3.13.2) (2026-09-20)
+
+
+### Bug Fixes
+
+* 401 ([fc577e8](https://github.com/s-hirano-ist/s-private/commit/fc577e88990b31bf6bdacd703bb963b1e9240261))
+* instant navigation ([cf6c489](https://github.com/s-hirano-ist/s-private/commit/cf6c4895f0232b01dcaf0e29c725c02b05e41475))
+* pass request URL to sign-in route ([6b1db7f](https://github.com/s-hirano-ist/s-private/commit/6b1db7ffe44ae4efab64c742990435006112ced7))
+* tailwind css error ([b89c754](https://github.com/s-hirano-ist/s-private/commit/b89c754c69d3ea5f3122f99430b563f69a1f67d4))
+
+
+### Maintenance
+
+* Move React Scan to the local CLI ([e7dfdae](https://github.com/s-hirano-ist/s-private/commit/e7dfdae4737e714cfe6add9ed74e3fb7fde08163))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @s-hirano-ist/s-ui bumped to 2.0.6
+
 ## [3.13.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.13.0...s-private-v3.13.1) (2026-09-20)
 
 
