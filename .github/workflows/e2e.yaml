@@ -37,6 +37,7 @@ jobs:
       EMBEDDING_URL: http://localhost:3001
       EMBEDDING_MODEL: intfloat/multilingual-e5-small
       EMBEDDING_VECTOR_SIZE: "384"
+      PLAYWRIGHT_SKIP_WEBSERVER: "true"
 
     steps:
       - name: Checkout files

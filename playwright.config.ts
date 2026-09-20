@@ -27,10 +27,13 @@ export default defineConfig({
 			dependencies: ["auth-setup"],
 		},
 	],
-	webServer: {
-		command: "pnpm --filter s-private-app dev",
-		url: "http://localhost:3000/api/sign-in",
-		reuseExistingServer: true,
-		timeout: 120_000,
-	},
+	webServer:
+		process.env.PLAYWRIGHT_SKIP_WEBSERVER === "true"
+			? undefined
+			: {
+					command: "pnpm --filter s-private-app dev",
+					url: "http://localhost:3000/api/sign-in",
+					reuseExistingServer: true,
+					timeout: 120_000,
+				},
 });
