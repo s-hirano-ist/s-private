@@ -1,4 +1,4 @@
-import { bench, describe } from "vitest";
+import { describe, test } from "vitest";
 import {
 	parseDbArticle,
 	parseDbNote,
@@ -119,64 +119,83 @@ const jsonLarge = generateJsonLarge();
 // ---------------------------------------------------------------------------
 
 describe("parseMarkdown", () => {
-	bench("small (~500 chars)", () => {
-		parseMarkdown("test/small.md", mdSmall);
+	test("small (~500 chars)", async ({ bench }) => {
+		await bench("small (~500 chars)", () => {
+			parseMarkdown("test/small.md", mdSmall);
+		}).run();
 	});
 
-	bench("medium (~5KB)", () => {
-		parseMarkdown("test/medium.md", mdMedium);
+	test("medium (~5KB)", async ({ bench }) => {
+		await bench("medium (~5KB)", () => {
+			parseMarkdown("test/medium.md", mdMedium);
+		}).run();
 	});
 
-	bench("large (~50KB, chunk splitting)", () => {
-		parseMarkdown("test/large.md", mdLarge);
+	test("large (~50KB, chunk splitting)", async ({ bench }) => {
+		await bench("large (~50KB, chunk splitting)", () => {
+			parseMarkdown("test/large.md", mdLarge);
+		}).run();
 	});
 });
 
 describe("parseJsonArticle", () => {
-	bench("small (5 items)", () => {
-		parseJsonArticle("test/small.json", jsonSmall);
+	test("small (5 items)", async ({ bench }) => {
+		await bench("small (5 items)", () => {
+			parseJsonArticle("test/small.json", jsonSmall);
+		}).run();
 	});
 
-	bench("large (200 items)", () => {
-		parseJsonArticle("test/large.json", jsonLarge);
+	test("large (200 items)", async ({ bench }) => {
+		await bench("large (200 items)", () => {
+			parseJsonArticle("test/large.json", jsonLarge);
+		}).run();
 	});
 });
 
 describe("parseDbNote", () => {
-	bench("short note", () => {
-		parseDbNote("note-1", "Quick Note", "A brief note with minimal content.");
+	test("short note", async ({ bench }) => {
+		await bench("short note", () => {
+			parseDbNote("note-1", "Quick Note", "A brief note with minimal content.");
+		}).run();
 	});
 
-	bench("long note", () => {
+	test("long note", async ({ bench }) => {
 		const longBody = Array.from(
 			{ length: 20 },
 			(_, i) =>
 				`## Section ${i + 1}\n\n${"Detailed content for this section. ".repeat(10)}`,
 		).join("\n\n");
-		parseDbNote("note-2", "Comprehensive Note", longBody);
+		await bench("long note", () => {
+			parseDbNote("note-2", "Comprehensive Note", longBody);
+		}).run();
 	});
 });
 
 describe("parseDbArticle", () => {
-	bench("minimal fields", () => {
-		parseDbArticle({
-			id: "art-1",
-			title: "Sample Article",
-			url: "https://example.com/1",
-			categoryName: "Tech",
-		});
+	test("minimal fields", async ({ bench }) => {
+		await bench("minimal fields", () => {
+			parseDbArticle({
+				id: "art-1",
+				title: "Sample Article",
+				url: "https://example.com/1",
+				categoryName: "Tech",
+			});
+		}).run();
 	});
 
-	bench("all fields populated", () => {
-		parseDbArticle({
-			id: "art-2",
-			title: "Full Article",
-			url: "https://example.com/2",
-			ogTitle: "OG Title for Full Article",
-			ogDescription:
-				"A comprehensive open graph description that provides context.",
-			quote: "An insightful quote from the article that captures the key idea.",
-			categoryName: "Engineering",
-		});
+	test("all fields populated", async ({ bench }) => {
+		await bench("all fields populated", () => {
+			parseDbArticle({
+				id: "art-2",
+				title: "Full Article",
+				url: "https://example.com/2",
+				ogTitle: "OG Title for Full Article",
+				ogDescription:
+					"A comprehensive open graph description that provides context.",
+				quote:
+					"An insightful quote from the article that captures the key idea.",
+				categoryName: "Engineering",
+			});
+		}).run();
 	});
 });

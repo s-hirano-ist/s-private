@@ -30,9 +30,9 @@
 		"lint:secret": "mise exec -- node scripts/check-secrets.mjs",
 		"check:fix": "pnpm format && pnpm lint:fix && pnpm lint:css:fix && pnpm lint:md:fix",
 		"check:agent": "pnpm format:check && SKIP_ENV_VALIDATION=true pnpm typecheck && SKIP_ENV_VALIDATION=true pnpm lint && pnpm deps:check && pnpm packages:build && pnpm test",
-		"bench": "vitest bench --project bench",
-		"bench:components": "vitest bench --project app-bench",
-		"bench:all": "vitest bench --project bench --project app-bench",
+		"bench": "vitest run --project 'bench (bench)'",
+		"bench:components": "vitest run --project 'app-bench (bench)'",
+		"bench:all": "vitest run --project 'bench (bench)' --project 'app-bench (bench)'",
 		"test": "STORYBOOK_DISABLE_TELEMETRY=true vitest run --project app --project components --project core --project database --project image-processing --project notification --project scripts --project search --project storybook",
 		"test:watch": "vitest",
 		"typecheck": "turbo run typecheck",
@@ -95,9 +95,9 @@
 		"@tailwindcss/typography": "catalog:",
 		"@testing-library/jest-dom": "7.0.1",
 		"@testing-library/react": "16.3.3",
-		"@vitest/browser": "4.1.11",
-		"@vitest/browser-playwright": "4.1.11",
-		"@vitest/coverage-v8": "4.1.11",
+		"@vitest/browser": "5.0.1",
+		"@vitest/browser-playwright": "5.0.1",
+		"@vitest/coverage-v8": "5.0.1",
 		"dependency-cruiser": "18.3.1",
 		"eslint": "10.10.0",
 		"eslint-plugin-jsonc": "3.4.2",
@@ -131,6 +131,6 @@
 		"typedoc-plugin-mdn-links": "5.1.1",
 		"typescript": "catalog:",
 		"vite": "catalog:",
-		"vitest": "4.1.11"
+		"vitest": "5.0.1"
 	}
 }

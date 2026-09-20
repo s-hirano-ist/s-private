@@ -1,6 +1,6 @@
 import type { CardStackInitialData, LinkCardData } from "./types";
 import { cleanup, render } from "@testing-library/react";
-import { afterEach, bench, describe, vi } from "vitest";
+import { afterEach, describe, test, vi } from "vitest";
 import { BaseCardStackWrapper } from "./base-card-stack";
 
 vi.mock("next-intl", () => ({
@@ -52,25 +52,31 @@ afterEach(() => {
 });
 
 describe("BaseCardStack render benchmarks", () => {
-	bench("initial render - 10 items", () => {
-		const { unmount } = render(
-			<TestCardStack initial={makeInitial(items10)} />,
-		);
-		unmount();
+	test("initial render - 10 items", async ({ bench }) => {
+		await bench("initial render - 10 items", () => {
+			const { unmount } = render(
+				<TestCardStack initial={makeInitial(items10)} />,
+			);
+			unmount();
+		}).run();
 	});
 
-	bench("initial render - 100 items", () => {
-		const { unmount } = render(
-			<TestCardStack initial={makeInitial(items100)} />,
-		);
-		unmount();
+	test("initial render - 100 items", async ({ bench }) => {
+		await bench("initial render - 100 items", () => {
+			const { unmount } = render(
+				<TestCardStack initial={makeInitial(items100)} />,
+			);
+			unmount();
+		}).run();
 	});
 
-	bench("re-render - 100 items", () => {
-		const { rerender, unmount } = render(
-			<TestCardStack initial={makeInitial(items100)} />,
-		);
-		rerender(<TestCardStack initial={makeInitial(items100)} />);
-		unmount();
+	test("re-render - 100 items", async ({ bench }) => {
+		await bench("re-render - 100 items", () => {
+			const { rerender, unmount } = render(
+				<TestCardStack initial={makeInitial(items100)} />,
+			);
+			rerender(<TestCardStack initial={makeInitial(items100)} />);
+			unmount();
+		}).run();
 	});
 });
