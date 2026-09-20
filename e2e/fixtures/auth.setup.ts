@@ -1,6 +1,12 @@
 import { test as setup } from "@playwright/test";
 
 setup("authenticate", async ({ page }) => {
+	if (process.env.LOCAL_DEV_MODE === "true") {
+		await page.request.get("/api/sign-in", { maxRedirects: 0 });
+		await page.context().storageState({ path: ".auth/user.json" });
+		return;
+	}
+
 	const username = process.env.E2E_AUTH0_USERNAME;
 	const password = process.env.E2E_AUTH0_PASSWORD;
 
