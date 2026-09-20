@@ -60,7 +60,7 @@ jobs:
 
       - name: Start application and create local user
         run: |
-          pnpm --filter s-private-app dev > "$RUNNER_TEMP/s-private-app.log" 2>&1 &
+          pnpm dev:app > "$RUNNER_TEMP/s-private-app.log" 2>&1 &
           echo $! > "$RUNNER_TEMP/s-private-app.pid"
           for _ in {1..60}; do
             if curl --silent --output /dev/null http://localhost:3000/api/sign-in; then
