@@ -13,6 +13,7 @@
 			"ignoreDependencies": ["@tailwindcss/typography"]
 		},
 		"app": {
+			"entry": ["public/push-service-worker.js"],
 			"ignore": ["src/infrastructures/i18n/request.ts"],
 			"ignoreDependencies": ["@types/react-syntax-highlighter"],
 			"next": {
