@@ -8,7 +8,7 @@
 	},
 	"type": "module",
 	"scripts": {
-		"dev": "next dev",
+		"dev": "next dev & react-scan http://localhost:3000",
 		"build": "next build",
 		"analyze": "next experimental-analyze",
 		"start": "next start",
@@ -55,6 +55,7 @@
 		"@types/react-dom": "catalog:",
 		"@types/react-syntax-highlighter": "15.5.13",
 		"postcss": "catalog:",
+		"react-scan": "0.4.3",
 		"tailwindcss": "catalog:"
 	}
 }

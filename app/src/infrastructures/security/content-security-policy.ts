@@ -39,7 +39,6 @@ export function buildContentSecurityPolicy({
 		// Next.js 16/Vercel can emit parser-inserted framework scripts during
 		// streamed/error responses. Preserve the existing compatibility fallback.
 		"'unsafe-inline'",
-		...(isDevelopment ? ["https://unpkg.com"] : []),
 		"https://va.vercel-scripts.com",
 		...(allowsVercelToolbar ? ["https://vercel.live"] : []),
 	];

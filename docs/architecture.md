@@ -500,7 +500,7 @@ export default function Error({ error, reset }: ErrorPageProps) {
 
 本コードベースは、同じdeployment環境では常に同じ値になる決定的なCSPを使用する。Proxyはbrowser responseだけへ`Content-Security-Policy`を付与し、上流requestへCSPや`x-nonce`を注入しない。認証失敗redirectにも同じCSPを付与する。
 
-Next.js/Vercelのstreamed responseやerror responseで生成されるparser-inserted framework scriptとの互換性のため、既存の`script-src-elem 'unsafe-inline'`は維持する。Productionのstyle elementは`self`と確認済みの個別hashだけを許可し、新しい違反には対象を検証してhashを追加する。PreviewのVercel ToolbarとDevelopmentのReact Scanだけは環境別allowlistを使用する。experimental SRIはinline Flight scriptや`next-themes`のinline scriptを保護しないため導入しない。
+Next.js/Vercelのstreamed responseやerror responseで生成されるparser-inserted framework scriptとの互換性のため、既存の`script-src-elem 'unsafe-inline'`は維持する。Productionのstyle elementは`self`と確認済みの個別hashだけを許可し、新しい違反には対象を検証してhashを追加する。PreviewのVercel Toolbarだけは環境別allowlistを使用する。DevelopmentのReact Scanはアプリへscriptを注入せず、`pnpm dev` からローカルCLIとして起動する。experimental SRIはinline Flight scriptや`next-themes`のinline scriptを保護しないため導入しない。
 
 `cacheComponents: true`と`partialPrefetching: true`により、ナビゲーション時は静的なApp Shellを即時commitし、認証、DB、`params`、`searchParams`に依存する部分をSuspenseのholeとして後からstreamする。静的locale JSONはlocaleをkeyにした`use cache`関数からShellへ読み込む。`headers()`、`cookies()`、tenantデータ、認証結果を共有Shellへ直接含めない。
 

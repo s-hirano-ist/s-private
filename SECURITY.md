@@ -240,7 +240,7 @@ CSP or private headers into the upstream server-rendering request.
 ### Policy
 
 - `script-src` permits self; development also allows `unsafe-eval`.
-- `script-src-elem` permits self, Vercel Analytics, development-only React Scan, Preview-only Vercel Toolbar, and `unsafe-inline` as a compatibility fallback for Next.js/Vercel streamed or error responses that can emit parser-inserted scripts without a nonce.
+- `script-src-elem` permits self, Vercel Analytics, Preview-only Vercel Toolbar, and `unsafe-inline` as a compatibility fallback for Next.js/Vercel streamed or error responses that can emit parser-inserted scripts without a nonce. Development-only React Scan runs through its local CLI rather than an application script.
 - Production `style-src-elem` requires self or documented deterministic framework/library hashes. Add a specific hash for a verified new inline style instead of broadening Production with `unsafe-inline`.
 - `style-src-attr 'unsafe-inline'` remains enabled because UI positioning and syntax highlighting use dynamic style attributes.
 - Preview deployments allow the additional script, connection, image, frame, style, and font sources documented for Vercel Toolbar.
