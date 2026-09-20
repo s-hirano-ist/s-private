@@ -439,7 +439,7 @@ pnpm docs:clean            # Remove generated documentation
 |---|---|---|
 | **ローカル開発** | `.env.local` | Miseまたは`pnpm dev`の`--env-file`で注入 |
 | **Preview** | Vercel Dashboard | ビルド・ランタイムに自動注入 |
-| **CI (GitHub Actions)** | GitHub Secrets | ワークフローの `env:` で `${{ secrets.XXX }}` として注入 |
+| **CI (GitHub Actions)** | ワークフロー内の固定ローカル値 | build/test は外部サービスへ接続しない |
 | **本番 (Vercel)** | Vercel Dashboard | ビルド・ランタイムに自動注入 |
 | **VPS (Docker Compose)** | `~/s-private/.env` | Docker Compose が `.env` を自動読み込み |
 
@@ -452,11 +452,13 @@ pnpm docs:clean            # Remove generated documentation
 
 #### CI (GitHub Actions)
 
-必要な GitHub Secrets:
-- アプリ環境変数: `DATABASE_URL`, `AUTH_SECRET`, `AUTH0_CLIENT_ID`, `AUTH0_CLIENT_SECRET`, `AUTH0_ISSUER_BASE_URL`, `SENTRY_AUTH_TOKEN`, `SENTRY_REPORT_URL`, `MINIO_HOST`, `MINIO_BUCKET_NAME`, `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY`, `PUSHOVER_USER_KEY`, `PUSHOVER_APP_TOKEN`, `QDRANT_URL`, `QDRANT_COLLECTION_NAME`, `NEXT_PUBLIC_SENTRY_DSN`
-- 本番 DB: `PRODUCTION_DIRECT_URL` — Prisma マイグレーションデプロイ用（`.github/workflows/prisma-deploy.yaml`）
-- `NPM_TOKEN` — パッケージ公開（release-please のみ）
-- `ACTIONS_GITHUB_TOKEN` — リリース PR 作成
+CI の build/test はワークフロー内の localhost 向け固定値を使い、アプリ環境変数の GitHub Secrets は不要です。必要な GitHub 設定は次だけです:
+
+- Secret: `PRODUCTION_DIRECT_URL` — 本番 Prisma migration 適用用（`.github/workflows/prisma-deploy.yaml`）
+- Secret: `RENOVATE_APP_PRIVATE_KEY` — Renovate、release-please、月次レポート PR に使う GitHub App 秘密鍵
+- Actions Variable: `RENOVATE_CLIENT_ID` — 上記 GitHub App の Client ID
+
+npm 公開は OIDC trusted publishing を使用します。`@s-hirano-ist/s-core`、`@s-hirano-ist/s-ui`、`@s-hirano-ist/s-database`、`@s-hirano-ist/s-notification`、`@s-hirano-ist/s-scripts`、`@s-hirano-ist/s-search`、`@s-hirano-ist/s-storage` の各 npm package で、repository を `s-hirano-ist/s-private`、workflow を `.github/workflows/release-please.yaml` として trusted publisher を設定してください。`NPM_TOKEN` は不要です。
 
 環境変数が不要なジョブ（lint, storybook）では `SKIP_ENV_VALIDATION: "true"` を設定。
 

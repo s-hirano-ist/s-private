@@ -37,7 +37,7 @@ jobs:
         if: steps.jscpd.outputs.has_report == 'true'
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ github.token }}
           script: |
             const { readFile } = await import('node:fs/promises');
 
@@ -147,7 +147,7 @@ jobs:
         if: steps.jscpd.outputs.has_report == 'false'
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ github.token }}
           script: |
             const comment = `## ✅ Code Duplication Report\n\nNo code duplications detected. Great job! 🎉\n\n---\n\n📦 **Full Report**: Download the complete jscpd report from [GitHub Actions Artifacts](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`;
 

@@ -8,7 +8,7 @@ regex = '''(?i)(?:DATABASE_URL|DIRECT_URL)\s*[:=]\s*["'][a-z][a-z0-9+.-]*://[^\s
 keywords = ["DATABASE_URL", "DIRECT_URL"]
 
 [rules.allowlist]
-paths = ['''^app/vitest-setup\.tsx$''']
+paths = ['''^app/vitest-setup\.tsx$''', '''^\.github/workflows/ci\.yaml$''']
 
 [[rules]]
 id = "project-secret-assignment"
@@ -23,7 +23,11 @@ keywords = [
 ]
 
 [rules.allowlist]
-paths = ['''^app/vitest-setup\.tsx$''', '''^docs/vps-deployment\.md$''']
+paths = [
+	'''^app/vitest-setup\.tsx$''',
+	'''^docs/vps-deployment\.md$''',
+	'''^\.github/workflows/ci\.yaml$''',
+]
 
 [[allowlists]]
 description = "Generated files and dependency metadata"

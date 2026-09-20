@@ -11,9 +11,7 @@ jobs:
   release-please:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
-    permissions:
-      contents: write
-      pull-requests: write
+    permissions: {}
     outputs:
       releases_created: ${{ steps.release.outputs.releases_created }}
       paths_released: ${{ steps.release.outputs.paths_released }}
@@ -25,10 +23,19 @@ jobs:
       search_release_created: ${{ steps.release.outputs['packages/search--release_created'] }}
       storage_release_created: ${{ steps.release.outputs['packages/storage--release_created'] }}
     steps:
+      # App token 起点の PR は後続 CI を発火できる。GITHUB_TOKEN は使用しない。
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.RENOVATE_CLIENT_ID }}
+          private-key: ${{ secrets.RENOVATE_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
       - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5
         id: release
         with:
-          token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
+          token: ${{ steps.app-token.outputs.token }}
           config-file: .release-please-config.json
           manifest-file: .release-please-manifest.json
 
@@ -55,47 +62,33 @@ jobs:
       - name: Publish @s-hirano-ist/s-core
         if: ${{ needs.release-please.outputs.core_release_created == 'true' }}
         working-directory: packages/core
-        run: pnpm publish --no-git-checks --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: pnpm publish --no-git-checks --access public --provenance
       - name: Publish @s-hirano-ist/s-ui
         if: ${{ needs.release-please.outputs.ui_release_created == 'true' }}
         working-directory: packages/ui
-        run: pnpm publish --no-git-checks --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: pnpm publish --no-git-checks --access public --provenance
 
       - name: Publish @s-hirano-ist/s-database
         if: ${{ needs.release-please.outputs.database_release_created == 'true' }}
         working-directory: packages/database
-        run: pnpm publish --no-git-checks --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: pnpm publish --no-git-checks --access public --provenance
 
       - name: Publish @s-hirano-ist/s-notification
         if: ${{ needs.release-please.outputs.notification_release_created == 'true' }}
         working-directory: packages/notification
-        run: pnpm publish --no-git-checks --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: pnpm publish --no-git-checks --access public --provenance
 
       - name: Publish @s-hirano-ist/s-scripts
         if: ${{ needs.release-please.outputs.scripts_release_created == 'true' }}
         working-directory: packages/scripts
-        run: pnpm publish --no-git-checks --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: pnpm publish --no-git-checks --access public --provenance
 
       - name: Publish @s-hirano-ist/s-search
         if: ${{ needs.release-please.outputs.search_release_created == 'true' }}
         working-directory: packages/search
-        run: pnpm publish --no-git-checks --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: pnpm publish --no-git-checks --access public --provenance
 
       - name: Publish @s-hirano-ist/s-storage
         if: ${{ needs.release-please.outputs.storage_release_created == 'true' }}
         working-directory: packages/storage
-        run: pnpm publish --no-git-checks --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: pnpm publish --no-git-checks --access public --provenance
