@@ -1,6 +1,6 @@
 {
 	"name": "@s-hirano-ist/s-database",
-	"version": "1.21.3",
+	"version": "1.21.4",
 	"description": "Prisma database schema and client for s-private project",
 	"engines": {
 		"node": ">=24.21.0"

@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.21.4](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.21.3...@s-hirano-ist/s-database-v1.21.4) (2026-09-20)
+
+
+### Bug Fixes
+
+* seed valid domain identifiers ([501796a](https://github.com/s-hirano-ist/s-private/commit/501796acfbed5397c6a437bcde1e8feed61c1132))
+
+
+### Documentation
+
+* add hermetic main-flow e2e workflow ([21333d3](https://github.com/s-hirano-ist/s-private/commit/21333d3e240dbc9f4a67c2af9efc68b774738307))
+* add hermetic main-flow E2E workflow ([5217816](https://github.com/s-hirano-ist/s-private/commit/5217816363fcc219cf1573f6933f2e212fbe4e5a))
+
 ## [1.21.3](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.21.2...@s-hirano-ist/s-database-v1.21.3) (2026-09-19)
 
 
