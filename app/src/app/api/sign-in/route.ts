@@ -1,3 +1,4 @@
+import type { NextRequest } from "next/server";
 import { env } from "@/env";
 import { auth, isLocalDevAuthEnabled } from "@/infrastructures/auth/auth";
 import prisma from "@/prisma";
@@ -23,7 +24,7 @@ function redirectWithCookies(url: string | URL, authHeaders: Headers) {
  * produced onto our redirect response — otherwise the state cookie never reaches
  * the browser and the callback fails with `state_mismatch`.
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
 	const requestHeaders = await headers();
 
 	if (isLocalDevAuthEnabled()) {
@@ -47,10 +48,7 @@ export async function GET() {
 					returnHeaders: true,
 				});
 
-		return redirectWithCookies(
-			new URL("/", env.BETTER_AUTH_URL),
-			result.headers,
-		);
+		return redirectWithCookies(new URL("/", request.url), result.headers);
 	}
 
 	const { response, headers: authHeaders } = await auth.api.signInSocial({
