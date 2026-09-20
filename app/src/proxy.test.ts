@@ -151,6 +151,13 @@ describe("proxy CSP", () => {
 			unstable_doesMiddlewareMatch({
 				config,
 				nextConfig: {},
+				url: "/push-service-worker.js",
+			}),
+		).toBe(false);
+		expect(
+			unstable_doesMiddlewareMatch({
+				config,
+				nextConfig: {},
 				url: "/ja/articles",
 			}),
 		).toBe(true);

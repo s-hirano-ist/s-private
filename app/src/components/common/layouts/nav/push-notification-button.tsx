@@ -11,6 +11,7 @@ import {
 	DialogTitle,
 } from "@s-hirano-ist/s-ui/dialog";
 import { haptic } from "@s-hirano-ist/s-ui/utils/haptic";
+import { captureException } from "@sentry/nextjs";
 import { Bell, BellOff } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState, useTransition } from "react";
@@ -33,6 +34,16 @@ type PushState =
 	| "subscribed"
 	| "unsubscribed"
 	| "unsupported";
+
+type PushFailureStage = "register" | "save" | "subscribe";
+
+export function feedbackKeyForFailure(
+	stage: PushFailureStage,
+): "pushRegistrationError" | "pushSaveError" | "pushSubscriptionError" {
+	if (stage === "register") return "pushRegistrationError";
+	if (stage === "subscribe") return "pushSubscriptionError";
+	return "pushSaveError";
+}
 
 function base64UrlToUint8Array(value: string): Uint8Array<ArrayBuffer> {
 	const padding = "=".repeat((4 - (value.length % 4)) % 4);
@@ -106,6 +117,7 @@ export function PushNotificationButton({
 		haptic();
 		setFeedback("");
 		startTransition(async () => {
+			let failureStage: PushFailureStage = "register";
 			try {
 				const permission = await Notification.requestPermission();
 				if (permission !== "granted") {
@@ -117,10 +129,12 @@ export function PushNotificationButton({
 					{ scope: "/" },
 				);
 				await navigator.serviceWorker.ready;
+				failureStage = "subscribe";
 				const nextSubscription = await registration.pushManager.subscribe({
 					applicationServerKey: base64UrlToUint8Array(publicKey),
 					userVisibleOnly: true,
 				});
+				failureStage = "save";
 				const result = await subscribeToPush(
 					nextSubscription.toJSON() as BrowserPushSubscription,
 				);
@@ -128,8 +142,16 @@ export function PushNotificationButton({
 				setSubscription(nextSubscription);
 				setState("subscribed");
 				setFeedback(t("pushSubscribed"));
-			} catch {
-				setFeedback(t("pushError"));
+			} catch (error) {
+				captureException(error, {
+					extra: { notificationPermission: Notification.permission },
+					tags: {
+						feature: "web-push",
+						operation: "subscribe",
+						stage: failureStage,
+					},
+				});
+				setFeedback(t(feedbackKeyForFailure(failureStage)));
 			}
 		});
 	};
