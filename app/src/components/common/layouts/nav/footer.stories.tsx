@@ -4,6 +4,19 @@ import { Footer } from "./footer";
 
 const meta = {
 	component: Footer,
+	args: {
+		publicKey: "test-public-key",
+		search: fn(),
+		sendTestPush: fn().mockResolvedValue({ message: "success", success: true }),
+		subscribeToPush: fn().mockResolvedValue({
+			message: "success",
+			success: true,
+		}),
+		unsubscribeFromPush: fn().mockResolvedValue({
+			message: "success",
+			success: true,
+		}),
+	},
 	parameters: {
 		layout: "fullscreen",
 		nextjs: {

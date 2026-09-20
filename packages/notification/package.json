@@ -1,7 +1,7 @@
 {
 	"name": "@s-hirano-ist/s-notification",
 	"version": "1.18.7",
-	"description": "Notification service for s-private application - Pushover integration",
+	"description": "Notification service adapters for s-private application",
 	"engines": {
 		"node": ">=24.21.0"
 	},
@@ -35,6 +35,7 @@
 	"keywords": [
 		"notification",
 		"pushover",
+		"web-push",
 		"typescript"
 	],
 	"author": "",
@@ -44,7 +45,11 @@
 		"url": "https://github.com/s-hirano-ist/s-private.git",
 		"directory": "packages/notification"
 	},
+	"dependencies": {
+		"web-push": "3.6.7"
+	},
 	"devDependencies": {
+		"@types/web-push": "3.6.4",
 		"typescript": "catalog:"
 	}
 }

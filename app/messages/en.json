@@ -1,7 +1,21 @@
 {
 	"utils": {
 		"signOut": "SIGN OUT",
-		"reload": "RELOAD"
+		"reload": "RELOAD",
+		"pushNotifications": "Web Push notifications",
+		"pushChecking": "Checking notification status.",
+		"pushDenied": "Notifications are blocked. Allow notifications for this site in your browser settings.",
+		"pushIosInstall": "On iPhone or iPad, choose Add to Home Screen from the Share menu, then open the installed web app.",
+		"pushEnabled": "This device will receive the daily GIGAZINE notification.",
+		"pushDisabled": "Notifications are disabled on this device.",
+		"pushUnsupported": "Web Push notifications are not available in this browser or environment.",
+		"pushEnable": "Enable notifications",
+		"pushDisable": "Disable notifications",
+		"pushTest": "Send test",
+		"pushSubscribed": "Notifications enabled.",
+		"pushUnsubscribed": "Notifications disabled.",
+		"pushTestSent": "Test notification sent.",
+		"pushError": "Failed to update notification settings."
 	},
 	"label": {
 		"category": "Category",

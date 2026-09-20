@@ -55,6 +55,7 @@ export type {
 	Category,
 	Image,
 	Note,
+	PushSubscription,
 } from "./generated/index.js";
 export { $Enums, Prisma, PrismaClient, Status } from "./generated/index.js";
 

@@ -145,11 +145,28 @@ model User {
 
   Sessions Session[]
   Accounts Account[]
+  PushSubscriptions PushSubscription[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("user")
+}
+
+model PushSubscription {
+  id       String @id @db.String(36)
+  endpoint String @unique @db.String
+  p256dh   String @db.String
+  auth     String @db.String
+
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String @map("user_id") @db.String(64)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@map("push_subscriptions")
 }
 
 model Session {

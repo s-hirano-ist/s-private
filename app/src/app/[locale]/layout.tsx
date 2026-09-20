@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import "@/app/globals.css";
+import {
+	sendTestPush,
+	subscribeToPush,
+	unsubscribeFromPush,
+} from "@/application-services/push-notifications/actions";
 import { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 import { Footer, FooterFallback } from "@/components/common/layouts/nav/footer";
+import { env } from "@/env";
 import { IntlClientProvider } from "@/infrastructures/i18n/client-provider";
 import { loadMessages } from "@/infrastructures/i18n/request";
 import { routing } from "@/infrastructures/i18n/routing-config";
@@ -53,7 +59,13 @@ export default async function RootLayout({
 							<main className="min-h-screen">
 								<div className="pb-24">{children}</div>
 								<Suspense fallback={<FooterFallback />}>
-									<Footer search={searchContentFromClient} />
+									<Footer
+										publicKey={env.NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY ?? ""}
+										search={searchContentFromClient}
+										sendTestPush={sendTestPush}
+										subscribeToPush={subscribeToPush}
+										unsubscribeFromPush={unsubscribeFromPush}
+									/>
 								</Suspense>
 							</main>
 						</ToastProvider>
