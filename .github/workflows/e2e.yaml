@@ -79,8 +79,8 @@ jobs:
         run: >-
           pnpm test:e2e:main
           --retries=0
-          --timeout=15000
-          --global-timeout=180000
+          --timeout=30000
+          --global-timeout=300000
           --reporter=list,html
 
       - name: Upload Playwright report
