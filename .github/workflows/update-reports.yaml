@@ -25,10 +25,20 @@ jobs:
       - run: pnpm format
       - run: pnpm deps:graph
 
+      # App token 起点の PR は後続 CI を発火できる。GITHUB_TOKEN は使用しない。
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.RENOVATE_CLIENT_ID }}
+          private-key: ${{ secrets.RENOVATE_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8
         with:
-          token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
+          token: ${{ steps.app-token.outputs.token }}
           commit-message: "contents: update reports (license + jscpd + deps graph)"
           title: "contents: update reports (license + jscpd + deps graph)"
           body: |

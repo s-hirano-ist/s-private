@@ -200,16 +200,15 @@ pnpm i --frozen-lockfile
 ### Secret Management
 
 **Environment Variables**:
-- All secrets stored in GitHub Secrets
-- Never committed to repository
-- Validated at build time using `@t3-oss/env-nextjs`
+- CI build/test uses committed localhost-only placeholder values and never connects to external services.
+- Preview/Production application secrets are managed in Vercel, never in repository files.
+- Values are validated at build time using `@t3-oss/env-nextjs`.
 
-**Required Secrets** (configured in GitHub repository settings):
-- `AUTH_SECRET`, `AUTH0_*` - Authentication
-- `DATABASE_URL` - Database connection
-- `MINIO_*` - Object storage
-- `PUSHOVER_*` - Notifications
-- `SENTRY_*` - Error monitoring
+**Required GitHub configuration**:
+- Secret: `PRODUCTION_DIRECT_URL` - Production Prisma migration connection
+- Secret: `RENOVATE_APP_PRIVATE_KEY` - Private key for the GitHub App used by Renovate and PR/release automation
+- Actions Variable: `RENOVATE_CLIENT_ID` - Client ID for that GitHub App
+- npm publishing uses trusted publishing (OIDC); no npm access token is stored in GitHub.
 
 ## Security Auditing
 
