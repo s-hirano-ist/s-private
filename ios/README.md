@@ -119,3 +119,11 @@ imported area so the same operation is not imported twice.
 
 The mobile server API, SwiftData queue, background synchronization, and domain
 features remain later milestones.
+
+## Device smoke-test result
+
+The repository owner confirmed on a physical iPhone that the Personal Team
+build installs, Auth0 login returns to the app, and shared items reach the
+main app through the Share Extension and App Group. This confirms the minimal
+device integration only; server synchronization and full domain flows remain
+unimplemented.
