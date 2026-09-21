@@ -6,10 +6,11 @@ options:
     iOS: "27.0"
   xcodeVersion: "27.0"
 
+configFiles:
+  Debug: Config/Shared.xcconfig
+  Release: Config/Shared.xcconfig
+
 settings:
-  configFiles:
-    Debug: Config/Shared.xcconfig
-    Release: Config/Shared.xcconfig
   base:
     CODE_SIGN_STYLE: Automatic
     CURRENT_PROJECT_VERSION: 1

@@ -6,13 +6,14 @@ final class SPrivateUITests: XCTestCase {
     }
 
     @MainActor
-    func testUnconfiguredAuth0AndEmptyInboxAreVisible() throws {
+    func testAuth0StatusAndEmptyInboxAreVisible() throws {
         let app = XCUIApplication()
         app.launch()
 
-        XCTAssertTrue(
-            app.staticTexts["auth0-unconfigured-message"].waitForExistence(timeout: 5)
-        )
+        let unconfiguredMessage = app.staticTexts["auth0-unconfigured-message"]
+        if !unconfiguredMessage.waitForExistence(timeout: 1) {
+            XCTAssertTrue(app.buttons["Auth0でログイン"].waitForExistence(timeout: 5))
+        }
         XCTAssertTrue(
             app.staticTexts["共有項目はありません"].waitForExistence(timeout: 5)
         )
