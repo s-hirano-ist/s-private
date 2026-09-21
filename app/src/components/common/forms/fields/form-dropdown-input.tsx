@@ -36,18 +36,20 @@ export function FormDropdownInput({
 }: FormDropdownInputProps) {
 	const formValues = useFormValues();
 	return (
-		<ComboboxField
-			customValueLabel={customValueLabel}
-			defaultValue={formValues[name]}
-			id={htmlFor}
-			inputRef={inputRef}
-			label={label}
-			name={name}
-			options={options.map((option) => ({
-				label: option.name,
-				value: option.name,
-			}))}
-			{...props}
-		/>
+		<div className="pt-1">
+			<ComboboxField
+				customValueLabel={customValueLabel}
+				defaultValue={formValues[name]}
+				id={htmlFor}
+				inputRef={inputRef}
+				label={label}
+				name={name}
+				options={options.map((option) => ({
+					label: option.name,
+					value: option.name,
+				}))}
+				{...props}
+			/>
+		</div>
 	);
 }
