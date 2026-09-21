@@ -1,0 +1,9 @@
+// Safe defaults for simulator and CI builds. Local.xcconfig is intentionally
+// excluded from Git and overrides these values for device builds.
+IOS_DEVELOPMENT_TEAM =
+AUTH0_CLIENT_ID =
+AUTH0_DOMAIN =
+AUTH0_AUDIENCE =
+MOBILE_API_BASE_URL =
+
+#include? "Local.xcconfig"

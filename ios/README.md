@@ -41,8 +41,66 @@ mise run ios:run
 the application without code signing, installs it, and launches it. Simulator
 UUIDs are never stored in the repository.
 
-The bundle identifier `ist.s-hirano.s-private` and disabled code signing are
-temporary simulator-only settings. Personal Team signing is a later milestone.
+The script intentionally does not shut down Simulator. Run `mise run ios:run`
+again whenever Simulator is closed; it boots the matching device, rebuilds,
+installs, and launches the app.
+
+## Personal Team device signing
+
+1. In Xcode > Settings > Accounts, add the Apple ID used by the Personal Team.
+2. Copy `ios/Config/Local.xcconfig.example` to
+   `ios/Config/Local.xcconfig` and set `IOS_DEVELOPMENT_TEAM` to the Team ID.
+   `Local.xcconfig` is ignored by Git.
+3. Run `mise run ios:generate`, open `ios/SPrivate.xcodeproj`, select the
+   physical iPhone, and run the `SPrivate` scheme. To verify compilation from
+   the command line, run `mise run ios:device-build`.
+4. Confirm that Signing & Capabilities lists the App Group
+   `group.ist.s-hirano.s-private` for both `SPrivate` and
+   `SPrivateShareExtension`.
+
+Free provisioning profiles expire after seven days. Re-run the app from Xcode
+with the same bundle identifiers to re-sign it without intentionally deleting
+the App Group container. Back up any unsent shared items before removing the
+app, because uninstalling can remove its local containers.
+
+If the Personal Team cannot provision the App Group or Share Extension, do not
+change identifiers or remove the capability. Record the Xcode signing error so
+the project can explicitly decide whether to use a paid team or reduce scope.
+
+## Auth0 native application
+
+The app uses Auth0.swift with Authorization Code + PKCE and stores credentials
+in Keychain. No client secret is used. Create a separate **Native** application
+and API in Auth0, then set these local values:
+
+```xcconfig
+AUTH0_CLIENT_ID = <Native Application client ID>
+AUTH0_DOMAIN = <tenant>.auth0.com
+AUTH0_AUDIENCE = https:/$()/<API identifier>
+MOBILE_API_BASE_URL = https:/$()/<origin>/api/mobile/v1
+```
+
+Xcconfig treats `//` as a comment, so URL values use `https:/$()/...`; the
+expanded Info.plist contains the normal `https://...` value.
+
+For the current bundle identifier and custom URL scheme, add this value to both
+**Allowed Callback URLs** and **Allowed Logout URLs** in the Native Application:
+
+```text
+ist.s-hirano.s-private://<AUTH0_DOMAIN>/ios/ist.s-hirano.s-private/callback
+```
+
+Enable Refresh Token and Authorization Code grant types for the Native
+Application, and enable offline access for the API. Universal Links are not
+used because Auth0 requires a paid Apple Developer account for that setup.
+
+## Share Extension smoke test
+
+After installing the signed app, share a URL from Safari, text from an app, or
+one or more images from Photos to SPrivate. Confirm the extension, then open the
+main app. The items should appear under **共有された項目**. The extension writes
+an operation directory atomically to the App Group; the app moves it to the
+imported area so the same operation is not imported twice.
 
 ## Troubleshooting
 
@@ -54,6 +112,8 @@ temporary simulator-only settings. Personal Team signing is a later milestone.
   rerun `sudo xcodebuild -runFirstLaunch`.
 - The GitHub Actions `xcode-27` image is currently a public preview. Local CLI
   verification remains the reference while the hosted image is in preview.
+- An **Auth0が未設定です** message is expected when `Local.xcconfig` does not
+  contain all three Auth0 values.
 
-This initial sample intentionally contains no server API, authentication,
-SwiftData, Share Extension, or physical-device signing integration.
+The mobile server API, SwiftData queue, background synchronization, and domain
+features remain later milestones.

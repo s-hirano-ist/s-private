@@ -27,6 +27,11 @@ description = "Run the iOS unit and UI tests"
 depends = ["ios:generate"]
 run = "xcodebuild -project ios/SPrivate.xcodeproj -scheme SPrivate -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest' -derivedDataPath ios/.derivedData CODE_SIGNING_ALLOWED=NO test"
 
+[tasks."ios:device-build"]
+description = "Build the iOS app and Share Extension with local Personal Team signing"
+depends = ["ios:generate"]
+run = "xcodebuild -project ios/SPrivate.xcodeproj -scheme SPrivate -destination 'generic/platform=iOS' -derivedDataPath ios/.derivedData build"
+
 [tasks."ios:run"]
 description = "Build and launch the app in an iPhone 17 iOS 27 Simulator"
 depends = ["ios:generate"]

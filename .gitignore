@@ -60,5 +60,6 @@ packages/database/erd/
 ios/*.xcodeproj/
 ios/.derivedData/
 ios/DerivedData/
+ios/Config/Local.xcconfig
 *.xcuserstate
 xcuserdata/

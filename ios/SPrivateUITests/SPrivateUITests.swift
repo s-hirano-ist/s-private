@@ -6,12 +6,15 @@ final class SPrivateUITests: XCTestCase {
     }
 
     @MainActor
-    func testEnvironmentReadyMessageIsVisible() throws {
+    func testUnconfiguredAuth0AndEmptyInboxAreVisible() throws {
         let app = XCUIApplication()
         app.launch()
 
         XCTAssertTrue(
-            app.staticTexts["environment-ready-message"].waitForExistence(timeout: 5)
+            app.staticTexts["auth0-unconfigured-message"].waitForExistence(timeout: 5)
+        )
+        XCTAssertTrue(
+            app.staticTexts["共有項目はありません"].waitForExistence(timeout: 5)
         )
     }
 }
