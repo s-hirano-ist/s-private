@@ -33,7 +33,7 @@ export function ImageCard({
 							{hasImage ? (
 								<ImageWithFallback
 									alt={title}
-									className="h-auto max-h-48 w-auto rounded bg-white object-contain p-1"
+									className="h-auto max-h-48 w-auto rounded bg-white object-contain py-2"
 									height={192}
 									src={image}
 									unoptimized

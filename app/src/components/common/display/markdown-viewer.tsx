@@ -128,7 +128,7 @@ export async function MarkdownViewer({
 	const content = await markdownToReact(markdown);
 
 	return (
-		<div className="mx-auto prose prose-sm max-w-5xl space-y-8 px-4 py-2 dark:prose-invert">
+		<div className="mx-auto prose prose-sm max-w-5xl space-y-2 px-4 py-2 dark:prose-invert">
 			{children}
 			{content}
 		</div>

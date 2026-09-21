@@ -26,13 +26,13 @@ export async function ViewerBody({ slug, getBookByISBN }: Props) {
 	return (
 		<ViewerBodyClient markdown={data.markdown ?? ""}>
 			<BackButton />
-			<Card className="p-4">
+			<Card className="px-4">
 				<div className="grid grid-cols-1 gap-4 md:grid-cols-4">
 					<div className="flex flex-col items-center justify-center gap-2">
 						{data.imagePath && (
 							<ImageWithFallback
 								alt={`${altText} (uploaded)`}
-								className="rounded bg-white p-1"
+								className="rounded bg-white"
 								height={192}
 								src={`/api/books/images/original/${data.imagePath}`}
 								width={192}
