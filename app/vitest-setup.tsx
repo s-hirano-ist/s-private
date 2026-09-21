@@ -110,6 +110,7 @@ vi.mock("@/prisma", () => ({
 			update: vi.fn(),
 			delete: vi.fn(),
 			count: vi.fn(),
+			upsert: vi.fn(),
 		},
 		note: {
 			findMany: vi.fn(),
@@ -118,6 +119,7 @@ vi.mock("@/prisma", () => ({
 			update: vi.fn(),
 			delete: vi.fn(),
 			count: vi.fn(),
+			upsert: vi.fn(),
 		},
 		image: {
 			findMany: vi.fn(),
@@ -126,6 +128,7 @@ vi.mock("@/prisma", () => ({
 			update: vi.fn(),
 			delete: vi.fn(),
 			count: vi.fn(),
+			upsert: vi.fn(),
 		},
 		pushSubscription: {
 			findMany: vi.fn(),
@@ -141,6 +144,7 @@ vi.mock("@/prisma", () => ({
 			update: vi.fn(),
 			delete: vi.fn(),
 			count: vi.fn(),
+			upsert: vi.fn(),
 		},
 		category: {
 			findMany: vi.fn(),
@@ -148,6 +152,7 @@ vi.mock("@/prisma", () => ({
 			create: vi.fn(),
 			update: vi.fn(),
 			delete: vi.fn(),
+			upsert: vi.fn(),
 		},
 		user: {
 			findUnique: vi.fn(),

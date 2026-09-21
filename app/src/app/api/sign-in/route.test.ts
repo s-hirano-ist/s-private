@@ -4,6 +4,10 @@ import { auth, isLocalDevAuthEnabled } from "@/infrastructures/auth/auth";
 import prisma from "@/prisma";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
+vi.mock("@/application-services/local-development/seed-sample-data", () => ({
+	seedLocalDevelopmentSampleData: vi.fn(),
+}));
+
 vi.mock("@/infrastructures/auth/auth", () => ({
 	auth: {
 		api: {
@@ -32,6 +36,8 @@ vi.mock("next/server", () => ({
 }));
 
 const { GET } = await import("./route");
+const { seedLocalDevelopmentSampleData } =
+	await import("@/application-services/local-development/seed-sample-data");
 
 function createSignInRequest() {
 	return new Request("http://localhost:3000/api/sign-in") as NextRequest;
@@ -79,7 +85,17 @@ describe("/api/sign-in route", () => {
 
 	test("creates the local user on first sign-in", async () => {
 		vi.mocked(isLocalDevAuthEnabled).mockReturnValue(true);
-		vi.mocked(prisma.user.findUnique).mockResolvedValue(null);
+		vi.mocked(prisma.user.findUnique)
+			.mockResolvedValueOnce(null)
+			.mockResolvedValueOnce({
+				id: "local-user",
+				email: "developer@local.test",
+				emailVerified: false,
+				name: "Local Developer",
+				image: null,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			});
 		vi.mocked(auth.api.signUpEmail).mockResolvedValue({
 			response: {},
 			headers: new Headers({ "set-cookie": "local=session" }),
@@ -97,6 +113,54 @@ describe("/api/sign-in route", () => {
 			returnHeaders: true,
 		});
 		expect(auth.api.signInEmail).not.toHaveBeenCalled();
+		expect(seedLocalDevelopmentSampleData).toHaveBeenCalledWith("local-user");
+	});
+
+	test("does not seed for an existing local user", async () => {
+		vi.mocked(isLocalDevAuthEnabled).mockReturnValue(true);
+		vi.mocked(prisma.user.findUnique).mockResolvedValue({
+			id: "local-user",
+			email: "developer@local.test",
+			emailVerified: false,
+			name: "Local Developer",
+			image: null,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		});
+		vi.mocked(auth.api.signInEmail).mockResolvedValue({
+			response: {},
+			headers: new Headers(),
+		} as unknown as Awaited<ReturnType<typeof auth.api.signInEmail>>);
+
+		await GET(createSignInRequest());
+
+		expect(seedLocalDevelopmentSampleData).not.toHaveBeenCalled();
+	});
+
+	test("fails the first sign-in when sample data seeding fails", async () => {
+		vi.mocked(isLocalDevAuthEnabled).mockReturnValue(true);
+		vi.mocked(prisma.user.findUnique)
+			.mockResolvedValueOnce(null)
+			.mockResolvedValueOnce({
+				id: "local-user",
+				email: "developer@local.test",
+				emailVerified: false,
+				name: "Local Developer",
+				image: null,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			});
+		vi.mocked(auth.api.signUpEmail).mockResolvedValue({
+			response: {},
+			headers: new Headers({ "set-cookie": "local=session" }),
+		} as unknown as Awaited<ReturnType<typeof auth.api.signUpEmail>>);
+		vi.mocked(seedLocalDevelopmentSampleData).mockRejectedValue(
+			new Error("MinIO is unavailable"),
+		);
+
+		await expect(GET(createSignInRequest())).rejects.toThrow(
+			"MinIO is unavailable",
+		);
 	});
 
 	test("starts the Auth0 social flow and forwards state cookies", async () => {
@@ -127,5 +191,6 @@ describe("/api/sign-in route", () => {
 		expect(response.headers.get("set-cookie")).toContain(
 			"better-auth.state=test-state",
 		);
+		expect(seedLocalDevelopmentSampleData).not.toHaveBeenCalled();
 	});
 });
