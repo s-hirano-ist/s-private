@@ -260,7 +260,7 @@ Schema location: `packages/database/prisma/schema.prisma`
 
 - **Server Actions**: All mutations wrapped with `wrapServerSideErrorForClient`
 - **Authentication-only Authorization**: ログイン＝オーナー本人＝全操作可（ロールによる権限区別は廃止）。Better Auth + Auth0（ローカルは固定開発ユーザー）で認証し、Server Actionは冒頭で `requireAuth()` を呼ぶ
-- **Error Handling**: Custom error classes with Pushover notifications and Sentry monitoring
+- **Error Handling**: Custom error classes with Sentry monitoring and critical-only Pushover notifications
 - **Input Validation**: Zod schemas for all form and API input validation
 - **Type Safety**: End-to-end TypeScript with runtime validation
 
@@ -268,7 +268,7 @@ Schema location: `packages/database/prisma/schema.prisma`
 
 - **Authentication**: Better Auth + Auth0（Preview/Production）、固定開発ユーザー（local）
 - **File Storage**: MinIO for object storage (configurable for local/cloud)
-- **Monitoring**: Sentry for error tracking, Pushover for notifications
+- **Monitoring**: Sentry as the error-tracking source of truth; Pushover for critical and batch notifications
 - **APIs**: Google Books API for ISBN-based book metadata enrichment
 - **VPS Services**: ConoHa VPS (Docker) + Cloudflare Tunnel ([deployment guide](docs/vps-deployment.md))
 - **Vector Database**: Qdrant for semantic vector search

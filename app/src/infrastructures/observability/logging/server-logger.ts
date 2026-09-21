@@ -1,6 +1,7 @@
 import "server-only";
 import type { LogContext, Logger, LogOptions } from "./logger.interface";
 import type { NotificationService } from "@s-hirano-ist/s-notification";
+import * as Sentry from "@sentry/nextjs";
 import pino from "pino";
 import { mapStatusToLogLevel } from "./log-level";
 
@@ -61,6 +62,10 @@ export class ServerLogger implements Logger {
 			...context.additionalContext,
 		};
 
+		if (level === "error") {
+			this.captureError(message, context, error);
+		}
+
 		// Handle additional error logging for console compatibility
 		if (error !== undefined) {
 			console.error("Additional error details:", error);
@@ -111,8 +116,55 @@ export class ServerLogger implements Logger {
 					{ error: notificationError },
 					"Failed to send notification",
 				);
+				Sentry.captureException(notificationError, {
+					tags: {
+						caller: context.caller,
+						error_type: "notification_delivery",
+						status: String(context.status),
+					},
+					user: context.userId ? { id: context.userId } : undefined,
+				});
 			}
 		}
+	}
+
+	private captureError(
+		message: string,
+		context: LogContext,
+		error?: unknown,
+	): void {
+		const capturedError = this.findError(error);
+		const options = {
+			extra: {
+				additionalContext: context.additionalContext,
+				originalError: capturedError ? undefined : error,
+			},
+			tags: {
+				caller: context.caller,
+				error_type: capturedError?.name ?? "message",
+				status: String(context.status),
+			},
+			user: context.userId ? { id: context.userId } : undefined,
+		};
+
+		if (capturedError) {
+			Sentry.captureException(capturedError, options);
+			return;
+		}
+		Sentry.captureMessage(message, { ...options, level: "error" });
+	}
+
+	private findError(value: unknown): Error | undefined {
+		if (value instanceof Error) return value;
+		if (
+			typeof value === "object" &&
+			value !== null &&
+			"cause" in value &&
+			value.cause instanceof Error
+		) {
+			return value.cause;
+		}
+		return undefined;
 	}
 }
 

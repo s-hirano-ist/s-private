@@ -61,7 +61,7 @@ async function handleNotificationOrS3Error(
 				message: error.message,
 				status: 500,
 				caller: "wrapServerSideError",
-				shouldNotify: true,
+				shouldNotify: false,
 			}),
 		);
 		return { success: false, message: error.message };
@@ -119,7 +119,7 @@ async function handleDomainWarningError(
 				status: 500,
 				caller: "wrapServerSideError",
 				extraData,
-				shouldNotify: true,
+				shouldNotify: false,
 			}),
 		);
 		return {
@@ -134,7 +134,7 @@ async function handleDomainWarningError(
 				message: error.message,
 				status: 400, // Bad request for duplicate resources
 				caller: "wrapServerSideError",
-				shouldNotify: true,
+				shouldNotify: false,
 			}),
 		);
 		return {
@@ -149,7 +149,7 @@ async function handleDomainWarningError(
 				message: error.message,
 				status: 401, // More appropriate status for auth errors
 				caller: "wrapServerSideError",
-				shouldNotify: true,
+				shouldNotify: false,
 			}),
 		);
 		return {
