@@ -25,5 +25,7 @@ import { defaultAddBooksDeps } from "./add-books.deps";
  * @returns Server action result with success/failure status
  */
 export async function addBooks(formData: FormData): Promise<ServerAction> {
-	return withSelfTenant(() => addBooksCore(formData, defaultAddBooksDeps));
+	return withSelfTenant((principalId) =>
+		addBooksCore(formData, defaultAddBooksDeps, principalId),
+	);
 }

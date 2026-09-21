@@ -29,5 +29,7 @@ import { defaultAddImageDeps } from "./add-image.deps";
  * @returns Server action result with success/failure status
  */
 export async function addImage(formData: FormData): Promise<ServerAction> {
-	return withSelfTenant(() => addImageCore(formData, defaultAddImageDeps));
+	return withSelfTenant((principalId) =>
+		addImageCore(formData, defaultAddImageDeps, principalId),
+	);
 }

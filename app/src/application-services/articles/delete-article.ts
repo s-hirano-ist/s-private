@@ -26,7 +26,7 @@ import { defaultDeleteArticleDeps } from "./delete-article.deps";
  * @returns Server action result with success/failure status
  */
 export async function deleteArticle(rawId: string): Promise<ServerAction> {
-	return withSelfTenant(() =>
-		deleteArticleCore(makeId(rawId), defaultDeleteArticleDeps),
+	return withSelfTenant((principalId) =>
+		deleteArticleCore(makeId(rawId), defaultDeleteArticleDeps, principalId),
 	);
 }

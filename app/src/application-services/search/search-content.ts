@@ -8,7 +8,6 @@
  * @module
  */
 
-"use server";
 import "server-only";
 import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import type {

@@ -10,6 +10,7 @@
 import "server-only";
 import type { DeleteNoteDeps } from "./delete-note.deps";
 import type { ServerAction } from "@/common/types";
+import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import { NoteDeletedEvent } from "@s-hirano-ist/s-core/notes/events/note-deleted-event";
@@ -34,11 +35,12 @@ import {
 export async function deleteNoteCore(
 	id: Id,
 	deps: DeleteNoteDeps,
+	principalId?: UserId,
 ): Promise<ServerAction> {
 	const { commandRepository, eventDispatcher } = deps;
 
 	try {
-		const userId = await getSelfId();
+		const userId = principalId ?? (await getSelfId());
 
 		const status = makeUnexportedStatus();
 		// Cache invalidation is handled in repository

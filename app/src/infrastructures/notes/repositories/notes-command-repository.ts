@@ -16,13 +16,17 @@ import {
 	makeNoteTitle,
 	type UnexportedNote,
 } from "@s-hirano-ist/s-core/notes/entities/note-entity";
-import { updateTag } from "next/cache";
+import { revalidateTag } from "next/cache";
 
 async function create(data: UnexportedNote): Promise<void> {
 	await prisma.note.create({ data });
 
-	updateTag(buildContentCacheTag("notes", data.status, data.userId));
-	updateTag(buildCountCacheTag("notes", data.status, data.userId));
+	revalidateTag(buildContentCacheTag("notes", data.status, data.userId), {
+		expire: 0,
+	});
+	revalidateTag(buildCountCacheTag("notes", data.status, data.userId), {
+		expire: 0,
+	});
 }
 
 async function deleteById(
@@ -35,8 +39,8 @@ async function deleteById(
 		select: { title: true },
 	});
 
-	updateTag(buildContentCacheTag("notes", status, userId));
-	updateTag(buildCountCacheTag("notes", status, userId));
+	revalidateTag(buildContentCacheTag("notes", status, userId), { expire: 0 });
+	revalidateTag(buildCountCacheTag("notes", status, userId), { expire: 0 });
 
 	return { title: makeNoteTitle(data.title) };
 }

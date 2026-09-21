@@ -1,0 +1,381 @@
+openapi: 3.1.0
+info:
+  title: SPrivate Mobile API
+  version: 1.0.0
+  description: >-
+    Authenticated iPhone API scoped to the linked Better Auth user. Mutations require an operationId UUID. The ID is
+    validated but durable idempotency is deferred to milestone 4; clients must
+    not automatically retry a creation after an ambiguous response yet.
+servers:
+  - url: /api/mobile/v1
+security:
+  - bearerAuth: []
+paths:
+  /{domain}:
+    parameters:
+      - $ref: '#/components/parameters/domain'
+    get:
+      operationId: listContent
+      parameters:
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/Status'
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 30
+      responses:
+        '200':
+          description: Paginated domain records
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, totalCount, offset, limit]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Content'
+                  totalCount:
+                    type: integer
+                  offset:
+                    type: integer
+                  limit:
+                    type: integer
+        default:
+          $ref: '#/components/responses/Error'
+    post:
+      operationId: createContent
+      description: >-
+        Articles and notes accept JSON; images and books accept multipart/form-data
+        with a file or image field respectively. Direct uploads are limited to
+        1 MiB until the chunked upload flow is implemented in milestone 4.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/ArticleCreate'
+                - $ref: '#/components/schemas/NoteCreate'
+          multipart/form-data:
+            schema:
+              type: object
+              required: [operationId]
+              properties:
+                operationId:
+                  type: string
+                  format: uuid
+                file:
+                  type: string
+                  format: binary
+                image:
+                  type: string
+                  format: binary
+                isbn:
+                  type: string
+                title:
+                  type: string
+                rating:
+                  type: string
+                tags:
+                  type: string
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [accepted]
+                properties:
+                  accepted:
+                    type: boolean
+                    const: true
+        default:
+          $ref: '#/components/responses/Error'
+  /{domain}/{id}:
+    parameters:
+      - $ref: '#/components/parameters/domain'
+      - $ref: '#/components/parameters/id'
+    get:
+      operationId: getContent
+      responses:
+        '200':
+          description: Owner-scoped content record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Content'
+        default:
+          $ref: '#/components/responses/Error'
+    delete:
+      operationId: deleteContent
+      description: Only UNEXPORTED records can be deleted.
+      responses:
+        '204':
+          description: Deleted
+        default:
+          $ref: '#/components/responses/Error'
+  /categories:
+    get:
+      operationId: listCategories
+      responses:
+        '200':
+          description: Article categories owned by the user
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, name]
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+        default:
+          $ref: '#/components/responses/Error'
+  /search:
+    get:
+      operationId: searchContent
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 20
+      responses:
+        '200':
+          description: Owner-matched search references
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, query]
+                properties:
+                  query:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, type, title, snippet]
+                      properties:
+                        id:
+                          type: string
+                        type:
+                          type: string
+                          enum: [articles, notes, books]
+                        title:
+                          type: string
+                        snippet:
+                          type: string
+        default:
+          $ref: '#/components/responses/Error'
+  /media/{domain}/{id}/{variant}:
+    parameters:
+      - name: domain
+        in: path
+        required: true
+        schema:
+          type: string
+          enum: [images, books]
+      - $ref: '#/components/parameters/id'
+      - name: variant
+        in: path
+        required: true
+        schema:
+          type: string
+          enum: [original, thumbnail]
+    get:
+      operationId: getMedia
+      responses:
+        '200':
+          description: Owner-scoped image bytes
+          content:
+            image/jpeg: {}
+            image/png: {}
+            image/webp: {}
+        default:
+          $ref: '#/components/responses/Error'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    domain:
+      name: domain
+      in: path
+      required: true
+      schema:
+        type: string
+        enum: [articles, notes, images, books]
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  schemas:
+    Status:
+      type: string
+      enum: [UNEXPORTED, LAST_UPDATED, EXPORTED]
+    Content:
+      oneOf:
+        - $ref: '#/components/schemas/Article'
+        - $ref: '#/components/schemas/Note'
+        - $ref: '#/components/schemas/Image'
+        - $ref: '#/components/schemas/Book'
+    ContentBase:
+      type: object
+      required: [id, status, createdAt, updatedAt]
+      properties:
+        id:
+          type: string
+        status:
+          $ref: '#/components/schemas/Status'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        exportedAt:
+          type: [string, 'null']
+          format: date-time
+      additionalProperties: true
+    Article:
+      allOf:
+        - $ref: '#/components/schemas/ContentBase'
+        - type: object
+          required: [title, url, categoryId, categoryName]
+          properties:
+            title:
+              type: string
+            url:
+              type: string
+              format: uri
+            quote:
+              type: [string, 'null']
+            categoryId:
+              type: string
+            categoryName:
+              type: string
+    Note:
+      allOf:
+        - $ref: '#/components/schemas/ContentBase'
+        - type: object
+          required: [title, markdown]
+          properties:
+            title:
+              type: string
+            markdown:
+              type: string
+    Image:
+      allOf:
+        - $ref: '#/components/schemas/ContentBase'
+        - type: object
+          required: [path, contentType]
+          properties:
+            path:
+              type: string
+            contentType:
+              type: string
+            fileSize:
+              type: [integer, 'null']
+            width:
+              type: [integer, 'null']
+            height:
+              type: [integer, 'null']
+    Book:
+      allOf:
+        - $ref: '#/components/schemas/ContentBase'
+        - type: object
+          required: [isbn, title, rating, tags]
+          properties:
+            isbn:
+              type: string
+            title:
+              type: string
+            markdown:
+              type: [string, 'null']
+            imagePath:
+              type: [string, 'null']
+            rating:
+              type: integer
+            tags:
+              type: array
+              items:
+                type: string
+    ArticleCreate:
+      type: object
+      required: [operationId, title, url, category]
+      properties:
+        operationId:
+          type: string
+          format: uuid
+        title:
+          type: string
+        url:
+          type: string
+          format: uri
+        category:
+          type: string
+        quote:
+          type: string
+    NoteCreate:
+      type: object
+      required: [operationId, title, markdown]
+      properties:
+        operationId:
+          type: string
+          format: uuid
+        title:
+          type: string
+        markdown:
+          type: string
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code]
+          properties:
+            code:
+              type: string
+              enum: [UNAUTHORIZED, FORBIDDEN, NOT_FOUND, VALIDATION_ERROR, DUPLICATE, NOT_DELETABLE, UPLOAD_TOO_LARGE, MOBILE_API_UNAVAILABLE, INTERNAL_ERROR]
+  responses:
+    Error:
+      description: Stable error code; never a login redirect.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'

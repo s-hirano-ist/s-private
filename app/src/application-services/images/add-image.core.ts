@@ -10,6 +10,7 @@
 import "server-only";
 import type { AddImageDeps } from "./add-image.deps";
 import type { ServerAction } from "@/common/types";
+import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import { withOperationPhase } from "@/common/error/operation-phase-error";
@@ -31,6 +32,7 @@ import { parseAddImageFormData } from "./helpers/form-data-parser";
 export async function addImageCore(
 	formData: FormData,
 	deps: AddImageDeps,
+	principalId?: UserId,
 ): Promise<ServerAction> {
 	const {
 		commandRepository,
@@ -61,7 +63,8 @@ export async function addImageCore(
 			originalBuffer,
 		} = await withOperationPhase(
 			{ ...phaseContext, phase: "parse-form-data" },
-			async () => parseAddImageFormData(formData, await getSelfId()),
+			async () =>
+				parseAddImageFormData(formData, principalId ?? (await getSelfId())),
 		);
 
 		// Domain business rule validation

@@ -5,6 +5,7 @@
  */
 
 import "server-only";
+import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { getSelfId } from "@/common/auth/session";
 import { tenantContext } from "./tenant-context";
 
@@ -21,7 +22,9 @@ import { tenantContext } from "./tenant-context";
  * @param fn - The work to run within the tenant scope.
  * @returns The result of `fn`.
  */
-export async function withSelfTenant<T>(fn: () => Promise<T>): Promise<T> {
+export async function withSelfTenant<T>(
+	fn: (userId: UserId) => Promise<T>,
+): Promise<T> {
 	const userId = await getSelfId();
-	return tenantContext.run({ userId }, fn);
+	return tenantContext.run({ userId }, () => fn(userId));
 }

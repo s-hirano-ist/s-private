@@ -16,7 +16,7 @@ import {
 	makeArticleTitle,
 	type UnexportedArticle,
 } from "@s-hirano-ist/s-core/articles/entities/article-entity";
-import { updateTag } from "next/cache";
+import { revalidateTag } from "next/cache";
 
 async function create(data: UnexportedArticle): Promise<void> {
 	await prisma.article.create({
@@ -32,9 +32,13 @@ async function create(data: UnexportedArticle): Promise<void> {
 		},
 	});
 
-	updateTag(buildContentCacheTag("articles", data.status, data.userId));
-	updateTag(buildCountCacheTag("articles", data.status, data.userId));
-	updateTag("categories");
+	revalidateTag(buildContentCacheTag("articles", data.status, data.userId), {
+		expire: 0,
+	});
+	revalidateTag(buildCountCacheTag("articles", data.status, data.userId), {
+		expire: 0,
+	});
+	revalidateTag("categories", { expire: 0 });
 }
 
 async function deleteById(
@@ -47,8 +51,10 @@ async function deleteById(
 		select: { title: true },
 	});
 
-	updateTag(buildContentCacheTag("articles", status, userId));
-	updateTag(buildCountCacheTag("articles", status, userId));
+	revalidateTag(buildContentCacheTag("articles", status, userId), {
+		expire: 0,
+	});
+	revalidateTag(buildCountCacheTag("articles", status, userId), { expire: 0 });
 
 	return { title: makeArticleTitle(data.title) };
 }

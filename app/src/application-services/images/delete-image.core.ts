@@ -10,6 +10,7 @@
 import "server-only";
 import type { DeleteImageDeps } from "./delete-image.deps";
 import type { ServerAction } from "@/common/types";
+import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import { ImageDeletedEvent } from "@s-hirano-ist/s-core/images/events/image-deleted-event";
@@ -34,11 +35,12 @@ import {
 export async function deleteImageCore(
 	id: Id,
 	deps: DeleteImageDeps,
+	principalId?: UserId,
 ): Promise<ServerAction> {
 	const { commandRepository, eventDispatcher } = deps;
 
 	try {
-		const userId = await getSelfId();
+		const userId = principalId ?? (await getSelfId());
 
 		const status = makeUnexportedStatus();
 		// Cache invalidation is handled in repository

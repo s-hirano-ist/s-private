@@ -22,5 +22,7 @@ import { defaultAddArticleDeps } from "./add-article.deps";
  * @returns Server action result with success/failure status
  */
 export async function addArticle(formData: FormData): Promise<ServerAction> {
-	return withSelfTenant(() => addArticleCore(formData, defaultAddArticleDeps));
+	return withSelfTenant((principalId) =>
+		addArticleCore(formData, defaultAddArticleDeps, principalId),
+	);
 }

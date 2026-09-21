@@ -117,8 +117,23 @@ imported area so the same operation is not imported twice.
 - An **Auth0が未設定です** message is expected when `Local.xcconfig` does not
   contain all three Auth0 values.
 
-The mobile server API, SwiftData queue, background synchronization, and domain
-features remain later milestones.
+The native domain screens, SwiftData queue, background synchronization, and
+Share Extension registration flow remain later milestones.
+
+## Mobile API server configuration
+
+The server exposes `/api/mobile/v1` for the existing Auth0 native client. Set
+`MOBILE_API_AUDIENCE` to the Auth0 API identifier used by `AUTH0_AUDIENCE` in
+`Local.xcconfig`. Keep this value in `.env.local` locally and Vercel Dashboard
+for Preview/Production. The API refuses requests when it is missing. Each
+Auth0 `sub` must already be linked to a Better Auth `Account` with
+`providerId=auth0`; the API resolves that account's user ID and isolates data
+by that user. The API never creates or merges users.
+
+The HTTP contract is [mobile-v1.openapi.yaml](../docs/openapi/mobile-v1.yaml).
+The current whole-request upload limit is 1 MiB per image or cover; resumable
+chunked uploads and durable operation-ID deduplication are later milestones.
+Until those exist, do not automatically retry an ambiguous create response.
 
 ## Device smoke-test result
 

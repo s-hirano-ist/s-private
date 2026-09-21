@@ -25,7 +25,7 @@ import { defaultDeleteBooksDeps } from "./delete-books.deps";
  * @returns Server action result with success/failure status
  */
 export async function deleteBooks(rawId: string): Promise<ServerAction> {
-	return withSelfTenant(() =>
-		deleteBooksCore(makeId(rawId), defaultDeleteBooksDeps),
+	return withSelfTenant((principalId) =>
+		deleteBooksCore(makeId(rawId), defaultDeleteBooksDeps, principalId),
 	);
 }

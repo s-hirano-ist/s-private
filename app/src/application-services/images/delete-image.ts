@@ -25,7 +25,7 @@ import { defaultDeleteImageDeps } from "./delete-image.deps";
  * @returns Server action result with success/failure status
  */
 export async function deleteImage(rawId: string): Promise<ServerAction> {
-	return withSelfTenant(() =>
-		deleteImageCore(makeId(rawId), defaultDeleteImageDeps),
+	return withSelfTenant((principalId) =>
+		deleteImageCore(makeId(rawId), defaultDeleteImageDeps, principalId),
 	);
 }
