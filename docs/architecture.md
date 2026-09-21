@@ -1934,3 +1934,9 @@ const result = await addArticleCore(formData, testDeps);
 Workspace package 間の依存関係は各 `package.json` の `workspace:*` dependency を正本とし、task 間の依存関係と成果物はルートの `turbo.json` を正本とする。`build`、`dev`、`typecheck` に加え、Storybook や Pages など build 成果物を読むルート task も Turborepo 経由で実行し、consumer 側の script から依存 package の build を手動で呼び出さない。依存順を補うための `prebuild`、`predev`、`pretypecheck` などの lifecycle script も追加しない。公開 package は別 repository から単独利用されるため、配布対象の `dist` や generated code を package 自身の publish lifecycle で生成し、root task の事前実行に依存させない。
 
 Turborepo はローカルキャッシュのみを利用する。remote cache や Vercel 連携は構成しない。
+
+## iOSの共有受け渡しと認証境界
+
+iOS本体とShare Extensionは`group.ist.s-hirano.s-private`のApp Groupだけを共有する。Extensionは認証情報を保持せず、サーバー通信もしない。共有されたURL、テキスト、画像はschema version、operation ID、種別、本文または添付相対パス、作成日時を持つJSONとして、一時ディレクトリからoperation IDディレクトリへのrenameで原子的に確定する。本体は未処理ディレクトリを取り込み済み領域へ移動し、同じoperation IDの二重取り込みを防ぐ。
+
+Auth0のNative Application設定はWeb用Applicationと分離する。iOSはAuth0.swiftのAuthorization Code + PKCEを使用し、資格情報をKeychainへ保存する。無料Personal Teamを前提とする段階ではUniversal Linksを使わず、`ist.s-hirano.s-private` URL schemeでコールバックを受ける。Team ID、Auth0 client ID、domain、audience、API接続先はGit管理外の`ios/Config/Local.xcconfig`から生成済みInfo.plistへ注入し、クライアントシークレットは使用しない。

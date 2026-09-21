@@ -3,7 +3,8 @@
 ## 実装進捗
 
 - [x] 第1段階: Xcode 27／iOS 27 Simulator向けの開発環境、XcodeGenによるプロジェクト生成、SwiftUIサンプルアプリ、単体／UIテスト、GitHub Actionsを整備する。
-- [ ] 第2段階以降: 実機署名、Share Extension、App Group、Auth0コールバック、モバイルAPI、各ドメイン機能、オフライン同期を実装する。
+- [x] 第2段階の成立性検証: Personal Teamでの実機インストール、Auth0 PKCEログインとコールバック、Share ExtensionからApp Group経由の本体取り込みを利用者が実機で確認した。
+- [ ] 第2段階以降: モバイルAPI、各ドメイン機能、永続キューとオフライン同期、Share Extensionの本格的な登録フローを実装する。
 
 第1段階ではWeb／React UIを変更せず、Apple標準のSwiftUI部品だけを使用する。リポジトリ規約が要求するStorybook MCPは作業セッションで利用できなかったため、追加指示は取得していない。
 

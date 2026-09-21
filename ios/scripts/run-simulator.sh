@@ -39,9 +39,9 @@ if [[ -z "${device_id}" ]]; then
 fi
 
 xcrun simctl boot "${device_id}" 2>/dev/null || true
-simulator_app="${DEVELOPER_DIR}/Applications/Simulator.app"
-if [[ -d "${simulator_app}" ]]; then
-  open "${simulator_app}"
+device_hub_app="${DEVELOPER_DIR}/../Applications/DeviceHub.app"
+if [[ -d "${device_hub_app}" ]]; then
+  open "${device_hub_app}"
 fi
 xcrun simctl bootstatus "${device_id}" -b
 
