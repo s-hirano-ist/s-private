@@ -7,6 +7,7 @@ import { init } from "@sentry/nextjs";
 
 init({
 	dsn: env.NEXT_PUBLIC_SENTRY_DSN,
+	environment: process.env.NODE_ENV,
 	integrations: [],
 	tracesSampleRate: 0.2,
 	debug: false,

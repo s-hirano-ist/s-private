@@ -2,7 +2,10 @@ import type { ZodError } from "zod";
 import { UploadFileNotAllowedError } from "@/common/error/upload-file-not-allowed-error";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
-import { UnexpectedError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
+import {
+	DuplicateError,
+	UnexpectedError,
+} from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import { Prisma } from "@s-hirano-ist/s-database";
 import { NotificationError } from "@s-hirano-ist/s-notification";
 import { S3Error } from "@s-hirano-ist/s-storage";
@@ -68,7 +71,7 @@ describe("wrapServerSideErrorForClient", () => {
 				payload: expect.objectContaining({
 					message: error.message,
 					status: 500,
-					shouldNotify: true,
+					shouldNotify: false,
 				}),
 				metadata: expect.objectContaining({
 					caller: "wrapServerSideError",
@@ -93,7 +96,7 @@ describe("wrapServerSideErrorForClient", () => {
 				payload: expect.objectContaining({
 					message: error.message,
 					status: 500,
-					shouldNotify: true,
+					shouldNotify: false,
 				}),
 				metadata: expect.objectContaining({
 					caller: "wrapServerSideError",
@@ -133,7 +136,7 @@ describe("wrapServerSideErrorForClient", () => {
 						detectedContentType: "image/jpeg",
 						causeMessage: "Input buffer has corrupt header",
 					},
-					shouldNotify: true,
+					shouldNotify: false,
 				}),
 			}),
 		);
@@ -154,7 +157,7 @@ describe("wrapServerSideErrorForClient", () => {
 				payload: expect.objectContaining({
 					message: error.message,
 					status: 401, // Updated to more appropriate auth error status
-					shouldNotify: true,
+					shouldNotify: false,
 				}),
 				metadata: expect.objectContaining({
 					caller: "wrapServerSideError",
@@ -165,6 +168,28 @@ describe("wrapServerSideErrorForClient", () => {
 		expect(result).toEqual({
 			success: false,
 			message: "signInUnknown",
+		});
+	});
+
+	test("should handle duplicate errors without immediate notification", async () => {
+		const error = new DuplicateError();
+
+		const result = await wrapServerSideErrorForClient(error);
+
+		expect(eventDispatcher.dispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				eventType: "system.warning",
+				payload: expect.objectContaining({
+					message: error.message,
+					status: 400,
+					shouldNotify: false,
+				}),
+			}),
+		);
+		expect(result).toEqual({
+			success: false,
+			message: "duplicated",
+			formData: undefined,
 		});
 	});
 

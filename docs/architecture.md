@@ -494,7 +494,11 @@ export default function Error({ error, reset }: ErrorPageProps) {
 
 - Loader内でエラーをtry-catchで握りつぶさない
 - `errorCaller`は問題追跡に使用されるため、コンポーネントを特定できる名前を付ける
-- Sentry連携によりプロダクションエラーを自動監視
+- 未処理エラーはNext.jsのError Boundaryと`onRequestError`からSentryへ送信する
+- Server Actionで安全なレスポンスへ変換した処理済み例外は、`serverLogger.error()`からSentryへ明示送信する
+- 想定内のwarning（入力不備、重複、認証失敗）はSentry Issueを作成しない
+- PushoverはDB・Storage・未知の500系などの致命障害と、バッチ処理の成否通知に限定する
+- Sentryのイベント収集と通知は別設定であり、ProductionではIssue Alertの通知先も設定する
 
 ## 静的 CSP と Instant Navigation
 
