@@ -124,11 +124,11 @@ Share Extension registration flow remain later milestones.
 
 The server exposes `/api/mobile/v1` for the existing Auth0 native client. Set
 `MOBILE_API_AUDIENCE` to the Auth0 API identifier used by `AUTH0_AUDIENCE` in
-`Local.xcconfig`, and `MOBILE_OWNER_USER_ID` to the existing Better Auth User ID
-of the personal account. Keep these values in `.env.local` locally and Vercel
-Dashboard for Preview/Production. The API refuses requests when either value is
-missing. The Auth0 `sub` must already be linked to that user through a Better
-Auth `Account` with `providerId=auth0`; the API never creates or merges users.
+`Local.xcconfig`. Keep this value in `.env.local` locally and Vercel Dashboard
+for Preview/Production. The API refuses requests when it is missing. Each
+Auth0 `sub` must already be linked to a Better Auth `Account` with
+`providerId=auth0`; the API resolves that account's user ID and isolates data
+by that user. The API never creates or merges users.
 
 The HTTP contract is [mobile-v1.openapi.yaml](../docs/openapi/mobile-v1.yaml).
 The current whole-request upload limit is 1 MiB per image or cover; resumable

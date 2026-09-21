@@ -3,7 +3,7 @@ info:
   title: SPrivate Mobile API
   version: 1.0.0
   description: >-
-    Personal iPhone API. Mutations require an operationId UUID. The ID is
+    Authenticated iPhone API scoped to the linked Better Auth user. Mutations require an operationId UUID. The ID is
     validated but durable idempotency is deferred to milestone 4; clients must
     not automatically retry a creation after an ambiguous response yet.
 servers:

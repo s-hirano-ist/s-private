@@ -107,8 +107,7 @@ export async function authenticateMobileRequest(
 ): Promise<string> {
 	const issuer = env.AUTH0_ISSUER_BASE_URL;
 	const audience = env.MOBILE_API_AUDIENCE;
-	const ownerId = env.MOBILE_OWNER_USER_ID;
-	if (!issuer || !audience || !ownerId) {
+	if (!issuer || !audience) {
 		throw new MobileApiError("MOBILE_API_UNAVAILABLE", 503);
 	}
 	const authorization = request.headers.get("authorization");
@@ -120,10 +119,10 @@ export async function authenticateMobileRequest(
 		select: { userId: true },
 		take: 2,
 	});
-	if (accounts.length !== 1 || accounts[0]?.userId !== ownerId) {
+	if (accounts.length !== 1 || !accounts[0]?.userId) {
 		throw new MobileApiError("FORBIDDEN", 403);
 	}
-	return ownerId;
+	return accounts[0].userId;
 }
 
 export async function withMobileTenant<T>(

@@ -4,7 +4,6 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 const mockedEnv = vi.hoisted(() => ({
 	AUTH0_ISSUER_BASE_URL: "https://example.auth0.com/",
 	MOBILE_API_AUDIENCE: "https://api.example.test",
-	MOBILE_OWNER_USER_ID: "owner-1",
 }));
 vi.mock("@/env", () => ({ env: mockedEnv }));
 const accountFindMany = vi.hoisted(() => vi.fn());
@@ -62,7 +61,7 @@ describe("mobile bearer authentication", () => {
 	});
 	afterEach(() => vi.unstubAllGlobals());
 
-	test("accepts a valid Auth0 access token linked to the configured owner", async () => {
+	test("uses the user linked to the Auth0 subject", async () => {
 		accountFindMany.mockResolvedValue([{ userId: "owner-1" }]);
 		await expect(authenticateMobileRequest(request(token()))).resolves.toBe(
 			"owner-1",
@@ -87,11 +86,14 @@ describe("mobile bearer authentication", () => {
 		expect(accountFindMany).not.toHaveBeenCalled();
 	});
 
-	test("rejects an unlinked or different owner's account", async () => {
+	test("allows another linked user to access their own tenant", async () => {
 		accountFindMany.mockResolvedValue([{ userId: "someone-else" }]);
-		await expect(
-			authenticateMobileRequest(request(token())),
-		).rejects.toMatchObject({ code: "FORBIDDEN", status: 403 });
+		await expect(authenticateMobileRequest(request(token()))).resolves.toBe(
+			"someone-else",
+		);
+	});
+
+	test("rejects an unlinked account", async () => {
 		accountFindMany.mockResolvedValue([]);
 		await expect(
 			authenticateMobileRequest(request(token())),
