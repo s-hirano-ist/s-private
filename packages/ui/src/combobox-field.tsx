@@ -136,8 +136,10 @@ export function ComboboxField({
 								className="sui:flex sui:h-10 sui:w-full sui:bg-transparent sui:px-4 sui:py-3 sui:outline-hidden sui:placeholder:text-muted-foreground"
 								placeholder={searchPlaceholder}
 							/>
-							<Combobox.Empty className="sui:py-6 sui:text-center sui:text-sm">
-								{emptyMessage}
+							<Combobox.Empty>
+								<div className="sui:py-6 sui:text-center sui:text-sm">
+									{emptyMessage}
+								</div>
 							</Combobox.Empty>
 							<Combobox.List className="sui:max-h-75 sui:overflow-y-auto sui:p-1">
 								{(item: ComboboxItem) => (
