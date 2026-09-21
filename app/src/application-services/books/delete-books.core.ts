@@ -10,6 +10,7 @@
 import "server-only";
 import type { DeleteBooksDeps } from "./delete-books.deps";
 import type { ServerAction } from "@/common/types";
+import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import { BookDeletedEvent } from "@s-hirano-ist/s-core/books/events/book-deleted-event";
@@ -34,11 +35,12 @@ import {
 export async function deleteBooksCore(
 	id: Id,
 	deps: DeleteBooksDeps,
+	principalId?: UserId,
 ): Promise<ServerAction> {
 	const { commandRepository, eventDispatcher } = deps;
 
 	try {
-		const userId = await getSelfId();
+		const userId = principalId ?? (await getSelfId());
 
 		const status = makeUnexportedStatus();
 		// Cache invalidation is handled in repository

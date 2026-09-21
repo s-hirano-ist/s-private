@@ -71,6 +71,10 @@ export const env = createEnv({
 		AUTH0_CLIENT_SECRET: vercelSecret,
 		/** Auth0 tenant issuer URL (e.g. "https://your-tenant.auth0.com"). The host is used as the Better Auth genericOAuth `domain`. */
 		AUTH0_ISSUER_BASE_URL: vercelSecret,
+		/** Auth0 API identifier configured for the native app. */
+		MOBILE_API_AUDIENCE: z.string().optional(),
+		/** Existing Better Auth user ID allowed to use the personal native API. */
+		MOBILE_OWNER_USER_ID: z.string().optional(),
 		SENTRY_AUTH_TOKEN: vercelSecret,
 		SENTRY_REPORT_URL: vercelSecret,
 		MINIO_HOST: z.string(),
@@ -122,6 +126,8 @@ export const env = createEnv({
 		AUTH0_CLIENT_ID: process.env.AUTH0_CLIENT_ID,
 		AUTH0_CLIENT_SECRET: process.env.AUTH0_CLIENT_SECRET,
 		AUTH0_ISSUER_BASE_URL: process.env.AUTH0_ISSUER_BASE_URL,
+		MOBILE_API_AUDIENCE: process.env.MOBILE_API_AUDIENCE,
+		MOBILE_OWNER_USER_ID: process.env.MOBILE_OWNER_USER_ID,
 		SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
 		SENTRY_REPORT_URL: process.env.SENTRY_REPORT_URL,
 		MINIO_HOST: process.env.MINIO_HOST,

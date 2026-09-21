@@ -10,6 +10,7 @@
 import "server-only";
 import type { AddArticleDeps } from "./add-article.deps";
 import type { ServerAction } from "@/common/types";
+import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import { articleEntity } from "@s-hirano-ist/s-core/articles/entities/article-entity";
@@ -36,6 +37,7 @@ import { parseAddArticleFormData } from "./helpers/form-data-parser";
 export async function addArticleCore(
 	formData: FormData,
 	deps: AddArticleDeps,
+	principalId?: UserId,
 ): Promise<ServerAction> {
 	const { commandRepository, domainServiceFactory, eventDispatcher } = deps;
 	const articlesDomainService =
@@ -45,7 +47,7 @@ export async function addArticleCore(
 	try {
 		const { title, quote, url, categoryName, userId } = parseAddArticleFormData(
 			formData,
-			await getSelfId(),
+			principalId ?? (await getSelfId()),
 		);
 
 		// Domain business rule validation

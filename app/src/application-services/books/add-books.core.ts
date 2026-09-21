@@ -10,6 +10,7 @@
 import "server-only";
 import type { AddBooksDeps } from "./add-books.deps";
 import type { ServerAction } from "@/common/types";
+import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import { withOperationPhase } from "@/common/error/operation-phase-error";
@@ -31,6 +32,7 @@ import { parseAddBooksFormData } from "./helpers/form-data-parser";
 export async function addBooksCore(
 	formData: FormData,
 	deps: AddBooksDeps,
+	principalId?: UserId,
 ): Promise<ServerAction> {
 	const {
 		commandRepository,
@@ -54,7 +56,8 @@ export async function addBooksCore(
 
 		const parsedData = await withOperationPhase(
 			{ ...phaseContext, phase: "parse-form-data" },
-			async () => parseAddBooksFormData(formData, await getSelfId()),
+			async () =>
+				parseAddBooksFormData(formData, principalId ?? (await getSelfId())),
 		);
 
 		// Domain business rule validation

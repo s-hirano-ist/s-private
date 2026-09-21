@@ -10,6 +10,7 @@
 import "server-only";
 import type { AddNoteDeps } from "./add-note.deps";
 import type { ServerAction } from "@/common/types";
+import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import { noteEntity } from "@s-hirano-ist/s-core/notes/entities/note-entity";
@@ -29,6 +30,7 @@ import { parseAddNoteFormData } from "./helpers/form-data-parser";
 export async function addNoteCore(
 	formData: FormData,
 	deps: AddNoteDeps,
+	principalId?: UserId,
 ): Promise<ServerAction> {
 	const { commandRepository, domainServiceFactory, eventDispatcher } = deps;
 	const notesDomainService = domainServiceFactory.createNotesDomainService();
@@ -36,7 +38,7 @@ export async function addNoteCore(
 	try {
 		const { title, markdown, userId } = parseAddNoteFormData(
 			formData,
-			await getSelfId(),
+			principalId ?? (await getSelfId()),
 		);
 
 		// Domain business rule validation

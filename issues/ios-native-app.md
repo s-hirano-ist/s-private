@@ -4,7 +4,10 @@
 
 - [x] 第1段階: Xcode 27／iOS 27 Simulator向けの開発環境、XcodeGenによるプロジェクト生成、SwiftUIサンプルアプリ、単体／UIテスト、GitHub Actionsを整備する。
 - [x] 第2段階の成立性検証: Personal Teamでの実機インストール、Auth0 PKCEログインとコールバック、Share ExtensionからApp Group経由の本体取り込みを利用者が実機で確認した。
-- [ ] 第2段階以降: モバイルAPI、各ドメイン機能、永続キューとオフライン同期、Share Extensionの本格的な登録フローを実装する。
+- [x] 第2段階のAPI基盤: Auth0 Bearer認証、既存Accountと所有者の対応、4ドメインの一覧・詳細・登録・削除、カテゴリ、検索、認証済みメディア取得のHTTP入口を追加した。
+- [ ] 第3段階以降: iOSの各ドメイン画面、永続キューとオフライン同期、分割アップロードと再送保証、Share Extensionの本格的な登録フローを実装する。
+
+モバイルAPIの契約は `docs/openapi/mobile-v1.yaml` に保存する。現時点の直接アップロードは1 MiBまでで、`operationId` は形式だけを検証する。応答欠落時の再送保証と1 MiB分割アップロードは実装順序4で行うため、現段階のiOSクライアントは曖昧な登録応答を自動再送しない。
 
 第1段階ではWeb／React UIを変更せず、Apple標準のSwiftUI部品だけを使用する。リポジトリ規約が要求するStorybook MCPは作業セッションで利用できなかったため、追加指示は取得していない。
 

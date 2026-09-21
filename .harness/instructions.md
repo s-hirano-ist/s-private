@@ -66,6 +66,7 @@ Next.js + TypeScript + Clean Architectureベースのコンテンツ管理シス
 
 - Clean Architecture + ドメイン駆動設計
 - Server Actionsで全mutation（`wrapServerSideErrorForClient`使用）
+- 認証済みiOSクライアント向けの `/api/mobile/v1` のmutationはRoute Handlerを例外とする。Bearer認証・所有者検証・tenant contextを入口で確立し、既存ユースケースとドメインルールを共有する。
 - 各ドメインは独立（cross-domain import禁止）
 - Zod schemaで入力バリデーション
 - 絶対パスimport必須（`../../*`禁止）

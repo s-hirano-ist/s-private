@@ -25,7 +25,7 @@ import { defaultDeleteNoteDeps } from "./delete-note.deps";
  * @returns Server action result with success/failure status
  */
 export async function deleteNote(rawId: string): Promise<ServerAction> {
-	return withSelfTenant(() =>
-		deleteNoteCore(makeId(rawId), defaultDeleteNoteDeps),
+	return withSelfTenant((principalId) =>
+		deleteNoteCore(makeId(rawId), defaultDeleteNoteDeps, principalId),
 	);
 }

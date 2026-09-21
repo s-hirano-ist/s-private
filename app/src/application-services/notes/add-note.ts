@@ -24,5 +24,7 @@ import { defaultAddNoteDeps } from "./add-note.deps";
  * @returns Server action result with success/failure status
  */
 export async function addNote(formData: FormData): Promise<ServerAction> {
-	return withSelfTenant(() => addNoteCore(formData, defaultAddNoteDeps));
+	return withSelfTenant((principalId) =>
+		addNoteCore(formData, defaultAddNoteDeps, principalId),
+	);
 }

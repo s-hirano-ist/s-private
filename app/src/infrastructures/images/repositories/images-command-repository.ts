@@ -13,15 +13,19 @@ import {
 	buildCountCacheTag,
 } from "@/infrastructures/shared/cache/cache-tag-builder";
 import prisma from "@/prisma";
-import { updateTag } from "next/cache";
+import { revalidateTag } from "next/cache";
 
 async function create(data: UnexportedImage): Promise<void> {
 	await prisma.image.create({
 		data,
 	});
 
-	updateTag(buildContentCacheTag("images", data.status, data.userId));
-	updateTag(buildCountCacheTag("images", data.status, data.userId));
+	revalidateTag(buildContentCacheTag("images", data.status, data.userId), {
+		expire: 0,
+	});
+	revalidateTag(buildCountCacheTag("images", data.status, data.userId), {
+		expire: 0,
+	});
 }
 
 async function deleteById(
@@ -34,8 +38,8 @@ async function deleteById(
 		select: { path: true },
 	});
 
-	updateTag(buildContentCacheTag("images", status, userId));
-	updateTag(buildCountCacheTag("images", status, userId));
+	revalidateTag(buildContentCacheTag("images", status, userId), { expire: 0 });
+	revalidateTag(buildCountCacheTag("images", status, userId), { expire: 0 });
 
 	return { path: data.path };
 }
