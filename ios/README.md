@@ -37,13 +37,15 @@ mise run ios:test
 mise run ios:run
 ```
 
-`ios:run` locates an available iPhone 17 in an iOS 27 runtime, boots it, builds
-the application without code signing, installs it, and launches it. Simulator
-UUIDs are never stored in the repository.
+`ios:run` locates an available iPhone 17 in an iOS 27 runtime, boots it, opens
+Xcode 27 Device Hub, builds the application without code signing, installs it,
+and launches it. Simulator UUIDs are never stored in the repository.
 
-The script intentionally does not shut down Simulator. Run `mise run ios:run`
-again whenever Simulator is closed; it boots the matching device, rebuilds,
-installs, and launches the app.
+The script intentionally does not shut down the simulated device. Xcode 27
+replaced the standalone Simulator app with Device Hub. Open it from Xcode >
+Open Developer Tool > Device Hub, or run `mise run ios:run` again; the command
+opens Device Hub, boots the matching device, rebuilds, installs, and launches
+the app.
 
 ## Personal Team device signing
 
