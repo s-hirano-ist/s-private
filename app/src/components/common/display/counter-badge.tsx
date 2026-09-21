@@ -7,7 +7,7 @@ export function CounterBadge({ totalItems, label }: Props) {
 	const t = useTranslations("label");
 
 	return (
-		<div className="px-1">
+		<div className="p-2">
 			<Badge className="flex w-full justify-center">
 				{t(label)}: {totalItems}
 			</Badge>
@@ -17,7 +17,7 @@ export function CounterBadge({ totalItems, label }: Props) {
 
 export function CounterBadgeSkeleton() {
 	return (
-		<div className="px-1">
+		<div className="p-2">
 			<Badge
 				aria-hidden="true"
 				className="flex w-full animate-pulse justify-center border-transparent bg-muted hover:bg-muted"

@@ -44,6 +44,8 @@ paths = [
 	'''(^|/)test-results/''',
 	'''(^|/)reports/mutation/''',
 	'''(^|/)\.stryker-tmp/''',
+	'''(^|/)ios/.derivedData/''',
+	'''^ios/Config/Local\.xcconfig$''',
 ]
 
 [[allowlists]]
