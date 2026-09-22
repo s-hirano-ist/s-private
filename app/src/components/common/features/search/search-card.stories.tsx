@@ -89,6 +89,17 @@ const mockErrorResult = {
 	message: "Search failed",
 };
 
+const searchWithArticleResults: typeof searchContentFromClient = async () =>
+	mockArticleResults;
+const searchWithManyArticleResults: typeof searchContentFromClient = async () =>
+	mockManyArticleResults;
+const searchWithNonArticleResults: typeof searchContentFromClient = async () =>
+	mockNonArticleResults;
+const searchWithEmptyResults: typeof searchContentFromClient = async () =>
+	mockEmptyResults;
+const searchWithError: typeof searchContentFromClient = async () =>
+	mockErrorResult;
+
 const meta = {
 	component: SearchCard,
 	args: {
@@ -120,12 +131,9 @@ export const Default: Story = {
 };
 
 export const WithArticleResults: Story = {
-	args: { search: fn().mockResolvedValue(mockArticleResults) },
+	args: { search: searchWithArticleResults },
 	parameters: { a11y: { disable: true } },
-	play: async ({ args, canvasElement }) => {
-		(args.search as ReturnType<typeof fn>).mockResolvedValue(
-			mockArticleResults,
-		);
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const input = canvas.getByRole("textbox");
 		await userEvent.type(input, "typescript");
@@ -133,6 +141,13 @@ export const WithArticleResults: Story = {
 		await expect(
 			await canvas.findByText("TypeScript Best Practices"),
 		).toBeVisible();
+		await expect(
+			canvas.getByText("Learn about TypeScript best practices..."),
+		).toBeVisible();
+		await expect(
+			canvas.getByRole("link", { name: /TypeScript Best Practices/u }),
+		).toHaveAttribute("href", "https://example.com/article-1");
+		await expect(canvas.queryByText("500")).not.toBeInTheDocument();
 	},
 };
 
@@ -142,7 +157,7 @@ export const WithArticleResults: Story = {
 // the regression where article results rendered outside the scrollable region
 // and could not be scrolled to inside the mobile drawer.
 export const WithManyArticleResultsScrollable: Story = {
-	args: { search: fn() },
+	args: { search: searchWithManyArticleResults },
 	parameters: { a11y: { disable: true } },
 	decorators: [
 		(Story) => (
@@ -151,13 +166,7 @@ export const WithManyArticleResultsScrollable: Story = {
 			</div>
 		),
 	],
-	play: async ({ args, canvasElement }) => {
-		// Set the resolved value inside play: Storybook resets `fn()` spies before
-		// each story, which would otherwise clear an args-level mockResolvedValue.
-		(args.search as ReturnType<typeof fn>).mockResolvedValue(
-			mockManyArticleResults,
-		);
-
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const input = canvas.getByRole("textbox");
 		await userEvent.type(input, "typescript{Enter}");
@@ -181,24 +190,26 @@ export const WithManyArticleResultsScrollable: Story = {
 };
 
 export const WithNonArticleResults: Story = {
-	args: { search: fn().mockResolvedValue(mockNonArticleResults) },
+	args: { search: searchWithNonArticleResults },
 	parameters: { a11y: { disable: true } },
-	play: async ({ args, canvasElement }) => {
-		(args.search as ReturnType<typeof fn>).mockResolvedValue(
-			mockNonArticleResults,
-		);
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const input = canvas.getByRole("textbox");
 		await userEvent.type(input, "clean{Enter}");
 		await expect(await canvas.findByText("Clean Code")).toBeVisible();
+		await expect(
+			canvas.getByRole("link", { name: /Clean Code/u }),
+		).toHaveAttribute("href", "/ja/book/book-123");
+		await expect(
+			canvas.getByRole("link", { name: /Meeting Notes/u }),
+		).toHaveAttribute("href", "/ja/note/note-456");
 	},
 };
 
 export const EmptyResults: Story = {
-	args: { search: fn().mockResolvedValue(mockEmptyResults) },
+	args: { search: searchWithEmptyResults },
 	parameters: { a11y: { disable: true } },
-	play: async ({ args, canvasElement }) => {
-		(args.search as ReturnType<typeof fn>).mockResolvedValue(mockEmptyResults);
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const input = canvas.getByRole("textbox");
 		await userEvent.type(input, "nothing{Enter}");
@@ -207,10 +218,9 @@ export const EmptyResults: Story = {
 };
 
 export const ErrorState: Story = {
-	args: { search: fn().mockResolvedValue(mockErrorResult) },
+	args: { search: searchWithError },
 	parameters: { a11y: { disable: true } },
-	play: async ({ args, canvasElement }) => {
-		(args.search as ReturnType<typeof fn>).mockResolvedValue(mockErrorResult);
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const input = canvas.getByRole("textbox");
 		await userEvent.type(input, "error{Enter}");
