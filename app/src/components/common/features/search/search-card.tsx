@@ -10,7 +10,6 @@ import { useSearch } from "@/components/common/hooks/use-search";
 import { LinkCard } from "@/components/common/layouts/cards/link-card";
 import { UtilButtons } from "@/components/common/layouts/nav/util-buttons";
 import { authClient } from "@/infrastructures/auth/auth-client";
-import { Link } from "@/infrastructures/i18n/routing";
 import { Button } from "@s-hirano-ist/s-ui/button";
 import { Input } from "@s-hirano-ist/s-ui/input";
 import { LoadingIndicator as Loading } from "@s-hirano-ist/s-ui/loading-indicator";
@@ -24,6 +23,16 @@ type Props = {
 	sendTestPush: typeof sendTestPush;
 	subscribeToPush: typeof subscribeToPush;
 	unsubscribeFromPush: typeof unsubscribeFromPush;
+};
+
+type SearchResultCardData = {
+	description: string;
+	href: string;
+	id: string;
+	key: string;
+	primaryBadgeText: string;
+	secondaryBadgeText?: string;
+	title: string;
 };
 
 const handleReload = () => {
@@ -56,12 +65,42 @@ export function SearchCard({
 		isError,
 	} = useSearch({ search });
 
-	const articles = searchResults
-		? searchResults.filter((r) => r.contentType === "articles")
-		: [];
-	const nonArticles = searchResults
-		? searchResults.filter((r) => r.contentType !== "articles")
-		: [];
+	const getCardData = (
+		item: NonNullable<typeof searchResults>[number],
+	): SearchResultCardData => {
+		switch (item.contentType) {
+			case "articles":
+				return {
+					description: item.snippet,
+					href: item.url || item.href,
+					id: item.href,
+					key: item.href,
+					primaryBadgeText: t("article"),
+					secondaryBadgeText: item.category,
+					title: item.title,
+				};
+			case "books":
+				return {
+					description: item.snippet,
+					href: `/book/${item.href}`,
+					id: item.href,
+					key: item.href,
+					primaryBadgeText: t("book"),
+					title: item.title,
+				};
+			case "notes":
+				return {
+					description: item.snippet,
+					href: `/note/${item.href}`,
+					id: item.href,
+					key: item.href,
+					primaryBadgeText: t("note"),
+					title: item.title,
+				};
+			default:
+				throw new Error("Unsupported search result type");
+		}
+	};
 
 	const handleKeyDown = (e: React.KeyboardEvent) => {
 		if (e.key === "Enter" && !isPending) {
@@ -106,20 +145,14 @@ export function SearchCard({
 			</div>
 		);
 	} else {
-		content = nonArticles.map((item) => (
-			<Link
-				className="w-full cursor-pointer rounded-sm px-2 py-3 text-left text-sm hover:bg-muted"
-				href={
-					item.contentType === "books"
-						? `/book/${item.href}`
-						: `/note/${item.href}`
-				}
-				key={item.href}
-				onClick={() => haptic()}
-			>
-				{item.title}
-			</Link>
-		));
+		content = (
+			<div className="flex flex-col gap-2 p-2">
+				{searchResults.map((item) => {
+					const data = getCardData(item);
+					return <LinkCard data={data} key={data.key} onClick={haptic} />;
+				})}
+			</div>
+		);
 	}
 
 	return (
@@ -142,26 +175,7 @@ export function SearchCard({
 					<SearchIcon className="size-4" />
 				</Button>
 			</div>
-			<div className="min-h-0 flex-1 overflow-y-auto">
-				{content}
-				{articles.length > 0 && (
-					<div className="grid grid-cols-1 gap-2 p-2 sm:grid-cols-2">
-						{articles.map((item, index) => (
-							<LinkCard
-								data={{
-									id: String(index),
-									key: item.url ?? item.href,
-									title: item.title,
-									description: item.snippet,
-									primaryBadgeText: item.category,
-									href: item.url ?? item.href,
-								}}
-								key={item.url ?? item.href}
-							/>
-						))}
-					</div>
-				)}
-			</div>
+			<div className="min-h-0 flex-1 overflow-y-auto">{content}</div>
 		</>
 	);
 }

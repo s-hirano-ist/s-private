@@ -15,11 +15,13 @@ import {
 type Props = {
 	actions?: ReactNode;
 	data: LinkCardData;
+	onClick?: () => void;
 };
 
 export function LinkCard({
 	data: { title, description, primaryBadgeText, secondaryBadgeText, href },
 	actions,
+	onClick,
 }: Props) {
 	const { url: validatedHref, isExternal } = validateAndNormalizeUrl(href);
 
@@ -30,7 +32,7 @@ export function LinkCard({
 
 	return (
 		<div className="relative h-full">
-			<CardComponent {...linkProps} className="block h-full">
+			<CardComponent {...linkProps} className="block h-full" onClick={onClick}>
 				<Card className="flex h-full flex-col border-l-3 border-l-primary/40 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md">
 					<CardHeader>
 						<div className="flex gap-4">

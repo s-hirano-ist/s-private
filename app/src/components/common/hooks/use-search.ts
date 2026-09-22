@@ -4,14 +4,30 @@ import type { searchContentFromClient } from "@/application-services/search/sear
 import type { SearchQuery } from "@s-hirano-ist/s-core/shared-kernel/types/search-types";
 import { useRef, useState, useTransition } from "react";
 
-type SearchableItem = {
-	category?: string;
-	contentType: "articles" | "books" | "notes";
+type SearchableArticle = {
+	category: string;
+	contentType: "articles";
 	href: string;
-	snippet?: string;
+	snippet: string;
 	title: string;
-	url?: string;
+	url: string;
 };
+
+type SearchableBook = {
+	contentType: "books";
+	href: string;
+	snippet: string;
+	title: string;
+};
+
+type SearchableNote = {
+	contentType: "notes";
+	href: string;
+	snippet: string;
+	title: string;
+};
+
+type SearchableItem = SearchableArticle | SearchableBook | SearchableNote;
 
 type UseSearchableListOptions = {
 	search: typeof searchContentFromClient;
@@ -60,15 +76,37 @@ export function useSearch({
 				if (controller.signal.aborted) return;
 
 				if (result.success && result.data) {
-					const newData = result.data.results.map((d) => ({
-						href: d.href,
-						contentType: d.contentType,
-						title: d.title,
-						url: d.contentType === "articles" ? d.url : undefined,
-						snippet: d.snippet,
-						category:
-							d.contentType === "articles" ? d.category.name : undefined,
-					}));
+					const newData: SearchableItem[] = result.data.results.map(
+						(searchResult) => {
+							switch (searchResult.contentType) {
+								case "articles":
+									return {
+										category: searchResult.category.name,
+										contentType: searchResult.contentType,
+										href: searchResult.href,
+										snippet: searchResult.snippet,
+										title: searchResult.title,
+										url: searchResult.url,
+									};
+								case "books":
+									return {
+										contentType: "books",
+										href: searchResult.href,
+										snippet: searchResult.snippet,
+										title: searchResult.title,
+									};
+								case "notes":
+									return {
+										contentType: "notes",
+										href: searchResult.href,
+										snippet: searchResult.snippet,
+										title: searchResult.title,
+									};
+								default:
+									throw new Error("Unsupported search result type");
+							}
+						},
+					);
 					setSearchResults(newData);
 				} else {
 					setSearchResults([]);
