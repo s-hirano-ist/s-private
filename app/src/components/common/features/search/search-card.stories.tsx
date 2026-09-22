@@ -1,6 +1,10 @@
+import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, fn, userEvent, within } from "storybook/test";
 import { SearchCard } from "./search-card";
+
+const pendingSearch: typeof searchContentFromClient = () =>
+	new Promise<never>(() => {});
 
 const mockArticleResults = {
 	success: true as const,
@@ -118,10 +122,17 @@ export const Default: Story = {
 export const WithArticleResults: Story = {
 	args: { search: fn().mockResolvedValue(mockArticleResults) },
 	parameters: { a11y: { disable: true } },
-	play: async ({ canvasElement }) => {
+	play: async ({ args, canvasElement }) => {
+		(args.search as ReturnType<typeof fn>).mockResolvedValue(
+			mockArticleResults,
+		);
 		const canvas = within(canvasElement);
 		const input = canvas.getByRole("textbox");
-		await userEvent.type(input, "typescript{Enter}");
+		await userEvent.type(input, "typescript");
+		await userEvent.click(canvas.getByRole("button", { name: "検索" }));
+		await expect(
+			await canvas.findByText("TypeScript Best Practices"),
+		).toBeVisible();
 	},
 };
 
@@ -172,29 +183,48 @@ export const WithManyArticleResultsScrollable: Story = {
 export const WithNonArticleResults: Story = {
 	args: { search: fn().mockResolvedValue(mockNonArticleResults) },
 	parameters: { a11y: { disable: true } },
-	play: async ({ canvasElement }) => {
+	play: async ({ args, canvasElement }) => {
+		(args.search as ReturnType<typeof fn>).mockResolvedValue(
+			mockNonArticleResults,
+		);
 		const canvas = within(canvasElement);
 		const input = canvas.getByRole("textbox");
 		await userEvent.type(input, "clean{Enter}");
+		await expect(await canvas.findByText("Clean Code")).toBeVisible();
 	},
 };
 
 export const EmptyResults: Story = {
 	args: { search: fn().mockResolvedValue(mockEmptyResults) },
 	parameters: { a11y: { disable: true } },
-	play: async ({ canvasElement }) => {
+	play: async ({ args, canvasElement }) => {
+		(args.search as ReturnType<typeof fn>).mockResolvedValue(mockEmptyResults);
 		const canvas = within(canvasElement);
 		const input = canvas.getByRole("textbox");
 		await userEvent.type(input, "nothing{Enter}");
+		await expect(await canvas.findByText("204")).toBeInTheDocument();
 	},
 };
 
 export const ErrorState: Story = {
 	args: { search: fn().mockResolvedValue(mockErrorResult) },
 	parameters: { a11y: { disable: true } },
-	play: async ({ canvasElement }) => {
+	play: async ({ args, canvasElement }) => {
+		(args.search as ReturnType<typeof fn>).mockResolvedValue(mockErrorResult);
 		const canvas = within(canvasElement);
 		const input = canvas.getByRole("textbox");
 		await userEvent.type(input, "error{Enter}");
+		await expect(await canvas.findByText("500")).toBeInTheDocument();
+	},
+};
+
+export const Loading: Story = {
+	args: { search: fn(pendingSearch) },
+	parameters: { a11y: { disable: true } },
+	play: async ({ args, canvasElement }) => {
+		(args.search as ReturnType<typeof fn>).mockImplementation(pendingSearch);
+		const canvas = within(canvasElement);
+		await userEvent.type(canvas.getByRole("textbox"), "loading{Enter}");
+		await expect(await canvas.findByRole("status")).toBeVisible();
 	},
 };
