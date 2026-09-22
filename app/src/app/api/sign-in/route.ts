@@ -1,4 +1,5 @@
 import type { NextRequest } from "next/server";
+import { seedLocalDevelopmentSampleData } from "@/application-services/local-development/seed-sample-data";
 import { env } from "@/env";
 import { auth, isLocalDevAuthEnabled } from "@/infrastructures/auth/auth";
 import prisma from "@/prisma";
@@ -36,17 +37,27 @@ export async function GET(request: NextRequest) {
 		}
 
 		const existingUser = await prisma.user.findUnique({ where: { email } });
-		const result = existingUser
-			? await auth.api.signInEmail({
-					body: { email, password },
-					headers: requestHeaders,
-					returnHeaders: true,
-				})
-			: await auth.api.signUpEmail({
-					body: { email, name, password },
-					headers: requestHeaders,
-					returnHeaders: true,
-				});
+		if (existingUser) {
+			const result = await auth.api.signInEmail({
+				body: { email, password },
+				headers: requestHeaders,
+				returnHeaders: true,
+			});
+			return redirectWithCookies(new URL("/", request.url), result.headers);
+		}
+
+		const result = await auth.api.signUpEmail({
+			body: { email, name, password },
+			headers: requestHeaders,
+			returnHeaders: true,
+		});
+		const createdUser = await prisma.user.findUnique({ where: { email } });
+		if (!createdUser) {
+			throw new Error(
+				"Local user creation completed but the user could not be loaded for sample data seeding",
+			);
+		}
+		await seedLocalDevelopmentSampleData(createdUser.id);
 
 		return redirectWithCookies(new URL("/", request.url), result.headers);
 	}
