@@ -70,7 +70,13 @@ export function SearchCard({
 	};
 
 	let content: React.ReactNode;
-	if (searchResults === undefined) {
+	if (isPending) {
+		content = (
+			<div className="p-4">
+				<Loading />
+			</div>
+		);
+	} else if (searchResults === undefined) {
 		content = (
 			<UtilButtons
 				handleReload={handleReload}
@@ -90,19 +96,13 @@ export function SearchCard({
 				/>
 			</div>
 		);
-	} else if (searchResults.length === 0 && searchQuery && !isPending) {
+	} else if (searchResults.length === 0 && searchQuery) {
 		content = (
 			<div className="flex items-center justify-center">
 				<StatusCodeView
 					statusCode="204"
 					statusCodeString={statusCodes("204")}
 				/>
-			</div>
-		);
-	} else if (isPending) {
-		content = (
-			<div className="p-4">
-				<Loading />
 			</div>
 		);
 	} else {
