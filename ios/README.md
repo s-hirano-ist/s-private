@@ -38,7 +38,7 @@ mise run ios:run
 ```
 
 `ios:run` locates an available iPhone 17 in an iOS 27 runtime, boots it, opens
-Xcode 27 Device Hub, builds the application without code signing, installs it,
+Xcode 27 Device Hub, builds the application with ad hoc Simulator signing, installs it,
 and launches it. Simulator UUIDs are never stored in the repository.
 
 The script intentionally does not shut down the simulated device. Xcode 27
@@ -46,6 +46,12 @@ replaced the standalone Simulator app with Device Hub. Open it from Xcode >
 Open Developer Tool > Device Hub, or run `mise run ios:run` again; the command
 opens Device Hub, boots the matching device, rebuilds, installs, and launches
 the app.
+
+Simulator builds and tests use ad hoc signing so the app can access its App Group
+and default Keychain. Running `xcodebuild` with `CODE_SIGNING_ALLOWED=NO` can
+produce `errSecMissingEntitlement` during credential storage and prevent App
+Group access. The iOS tests check both capabilities. Device builds continue to
+use the Personal Team configuration below.
 
 ## Personal Team device signing
 

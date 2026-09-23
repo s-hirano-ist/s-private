@@ -1,4 +1,5 @@
 import Foundation
+import Security
 import Testing
 @testable import SPrivate
 
@@ -168,5 +169,25 @@ struct NativeMarkdownParserTests {
         #expect(blocks.count == 5)
         if case let .table(rows) = blocks[2].kind { #expect(rows.count == 2) }
         else { Issue.record("Expected table") }
+    }
+}
+
+struct SimulatorEntitlementTests {
+    @Test("App Group and default Keychain are available to the installed app")
+    func appCapabilities() throws {
+        #expect(FileManager.default.containerURL(
+            forSecurityApplicationGroupIdentifier: "group.ist.s-hirano.s-private"
+        ) != nil)
+
+        let account = UUID().uuidString
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: "ist.s-hirano.s-private.entitlement-test",
+            kSecAttrAccount as String: account,
+            kSecValueData as String: Data("test".utf8),
+        ]
+        let status = SecItemAdd(query as CFDictionary, nil)
+        defer { SecItemDelete(query as CFDictionary) }
+        #expect(status == errSecSuccess)
     }
 }

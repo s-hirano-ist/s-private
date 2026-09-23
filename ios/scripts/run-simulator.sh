@@ -50,7 +50,9 @@ xcodebuild \
   -scheme "${scheme}" \
   -destination "platform=iOS Simulator,id=${device_id}" \
   -derivedDataPath "${derived_data_path}" \
-  CODE_SIGNING_ALLOWED=NO \
+  CODE_SIGNING_ALLOWED=YES \
+  CODE_SIGN_IDENTITY=- \
+  CODE_SIGN_STYLE=Manual \
   build
 
 readonly app_path="${derived_data_path}/Build/Products/Debug-iphonesimulator/SPrivate.app"

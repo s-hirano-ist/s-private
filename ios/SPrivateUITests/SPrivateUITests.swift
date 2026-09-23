@@ -12,7 +12,7 @@ final class SPrivateUITests: XCTestCase {
 
         let unconfiguredMessage = app.staticTexts["auth0-unconfigured-message"]
         if !unconfiguredMessage.waitForExistence(timeout: 1) {
-            XCTAssertTrue(app.buttons["Auth0でログイン"].waitForExistence(timeout: 5))
+            XCTAssertTrue(app.buttons["auth0-login-button"].waitForExistence(timeout: 5))
         }
         XCTAssertTrue(app.navigationBars["SPrivate"].waitForExistence(timeout: 5))
     }
