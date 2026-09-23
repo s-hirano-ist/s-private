@@ -1,15 +1,8 @@
 "use client";
-import type {
-	sendTestPush,
-	subscribeToPush,
-	unsubscribeFromPush,
-} from "@/application-services/push-notifications/actions";
 import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 import { StatusCodeView } from "@/components/common/display/status/status-code-view";
 import { useSearch } from "@/components/common/hooks/use-search";
 import { LinkCard } from "@/components/common/layouts/cards/link-card";
-import { UtilButtons } from "@/components/common/layouts/nav/util-buttons";
-import { authClient } from "@/infrastructures/auth/auth-client";
 import { Button } from "@s-hirano-ist/s-ui/button";
 import { Input } from "@s-hirano-ist/s-ui/input";
 import { LoadingIndicator as Loading } from "@s-hirano-ist/s-ui/loading-indicator";
@@ -18,11 +11,7 @@ import { SearchIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 type Props = {
-	publicKey: string;
 	search: typeof searchContentFromClient;
-	sendTestPush: typeof sendTestPush;
-	subscribeToPush: typeof subscribeToPush;
-	unsubscribeFromPush: typeof unsubscribeFromPush;
 };
 
 type SearchResultCardData = {
@@ -35,24 +24,7 @@ type SearchResultCardData = {
 	title: string;
 };
 
-const handleReload = () => {
-	window.location.reload();
-};
-
-const onSignOutSubmit = async () => {
-	await authClient.signOut();
-	// Better Auth signOut does not redirect; force a navigation so the proxy
-	// bounces the now-unauthenticated request back to the Auth0 login screen.
-	window.location.href = "/";
-};
-
-export function SearchCard({
-	publicKey,
-	search,
-	sendTestPush,
-	subscribeToPush,
-	unsubscribeFromPush,
-}: Props) {
+export function SearchCard({ search }: Props) {
 	const t = useTranslations("label");
 	const statusCodes = useTranslations("statusCode");
 
@@ -117,14 +89,9 @@ export function SearchCard({
 		);
 	} else if (searchResults === undefined) {
 		content = (
-			<UtilButtons
-				handleReload={handleReload}
-				onSignOutSubmit={onSignOutSubmit}
-				publicKey={publicKey}
-				sendTestPush={sendTestPush}
-				subscribeToPush={subscribeToPush}
-				unsubscribeFromPush={unsubscribeFromPush}
-			/>
+			<p className="p-4 text-sm text-muted-foreground">
+				{t("searchPlaceholder")}
+			</p>
 		);
 	} else if (isError) {
 		content = (

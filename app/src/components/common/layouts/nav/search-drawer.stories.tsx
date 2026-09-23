@@ -8,11 +8,7 @@ const meta = {
 	args: {
 		onOpenChange: fn(),
 		open: true,
-		publicKey: "",
 		search: fn(),
-		sendTestPush: fn(),
-		subscribeToPush: fn(),
-		unsubscribeFromPush: fn(),
 	},
 } satisfies Meta<typeof SearchDrawer>;
 

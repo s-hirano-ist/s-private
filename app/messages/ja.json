@@ -1,4 +1,17 @@
 {
+	"navigation": {
+		"articles": "記事",
+		"notes": "ノート",
+		"images": "画像",
+		"books": "書籍",
+		"status": "公開状態",
+		"unexported": "未公開",
+		"exported": "公開済み",
+		"create": "新規作成",
+		"search": "検索",
+		"settings": "設定",
+		"contentTypes": "コンテンツの種類"
+	},
 	"utils": {
 		"signOut": "サインアウト",
 		"reload": "再読み込み",

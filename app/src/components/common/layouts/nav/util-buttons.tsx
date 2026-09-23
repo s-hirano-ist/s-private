@@ -47,7 +47,7 @@ export function UtilButtons({
 	const shouldShowSignOut = pathname !== "/auth";
 
 	return (
-		<div className="grid grid-cols-5 gap-2 px-4 py-2">
+		<div className="grid grid-cols-2 gap-2 py-2 sm:grid-cols-3">
 			<Button
 				className="flex h-16 flex-col items-center gap-1"
 				onClick={() => {

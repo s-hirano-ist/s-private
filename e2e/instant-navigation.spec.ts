@@ -48,6 +48,7 @@ test.describe("Instant Navigation", () => {
 				page,
 				async () => {
 					await page.goto(route, { waitUntil: "commit" });
+					await page.getByRole("button", { name: "新規作成" }).click();
 					await expect(page.getByLabel(fieldName)).toBeVisible();
 					await expect(page.getByLabel("Loading").first()).toBeVisible();
 				},
@@ -63,7 +64,10 @@ test.describe("Instant Navigation", () => {
 		await expect(page.getByLabel("Loading")).toHaveCount(0);
 
 		await instant(page, async () => {
-			await page.getByRole("link", { name: "NOTES" }).click();
+			await page
+				.getByRole("navigation", { name: "コンテンツの種類" })
+				.getByRole("link", { name: "ノート" })
+				.click();
 			await expect(page).toHaveURL(new RegExp(`${ROUTES.notes}$`, "u"));
 			await expectShell(page);
 		});
@@ -71,7 +75,7 @@ test.describe("Instant Navigation", () => {
 		await expect(page.getByLabel("Loading")).toHaveCount(0);
 
 		await instant(page, async () => {
-			await page.getByRole("button", { name: "VIEWER" }).click();
+			await page.getByRole("link", { name: "公開済み" }).click();
 			await expect(page).toHaveURL(/\/ja\/notes\/viewer$/u);
 			await expectShell(page);
 		});
