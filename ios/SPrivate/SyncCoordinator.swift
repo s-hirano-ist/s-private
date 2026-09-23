@@ -147,6 +147,7 @@ final class SyncCoordinator: ObservableObject {
         (try? context.fetch(FetchDescriptor<CachedMobileRecord>()))?.forEach(context.delete)
         try? context.save()
         if let directory = try? mediaDirectory() { try? FileManager.default.removeItem(at: directory) }
+        Task { await ThumbnailStore.shared.clear() }
     }
 
     func discardPending() {
