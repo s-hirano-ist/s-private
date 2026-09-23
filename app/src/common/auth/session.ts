@@ -10,7 +10,7 @@
  */
 
 import "server-only";
-import { auth } from "@/infrastructures/auth/auth";
+import { auth, isLocalDevAuthEnabled } from "@/infrastructures/auth/auth";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
 import {
@@ -19,7 +19,7 @@ import {
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { SystemWarningEvent } from "@s-hirano-ist/s-core/shared-kernel/events/system-warning-event";
 import { headers } from "next/headers";
-import { unauthorized } from "next/navigation";
+import { redirect, unauthorized } from "next/navigation";
 
 /**
  * Verifies the current session is authenticated.
@@ -32,6 +32,13 @@ import { unauthorized } from "next/navigation";
 async function checkSelfAuth() {
 	const session = await auth.api.getSession({ headers: await headers() });
 	if (!session) {
+		// The edge proxy can only check that a session cookie exists. In local
+		// development, transparently replace a stale cookie once server-side
+		// validation has established that it no longer maps to a session.
+		if (isLocalDevAuthEnabled()) {
+			redirect("/api/sign-in");
+		}
+
 		initializeEventHandlers();
 		await eventDispatcher.dispatch(
 			new SystemWarningEvent({

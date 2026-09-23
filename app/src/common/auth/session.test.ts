@@ -1,8 +1,10 @@
-import { auth } from "@/infrastructures/auth/auth";
+import { auth, isLocalDevAuthEnabled } from "@/infrastructures/auth/auth";
+import { redirect } from "next/navigation";
 import { beforeEach, describe, expect, type Mock, test, vi } from "vitest";
 
 vi.mock("@/infrastructures/auth/auth", () => ({
 	auth: { api: { getSession: vi.fn() } },
+	isLocalDevAuthEnabled: vi.fn(() => false),
 }));
 
 import { getSelfId, requireAuth } from "@/common/auth/session";
@@ -31,6 +33,7 @@ const mockSession = (id: string) => ({
 describe("session utilities", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
+		vi.mocked(isLocalDevAuthEnabled).mockReturnValue(false);
 	});
 
 	describe("getSelfId", () => {
@@ -48,6 +51,17 @@ describe("session utilities", () => {
 
 			await expect(getSelfId()).rejects.toThrow("UNAUTHORIZED");
 			expect(getSession).toHaveBeenCalledTimes(1);
+		});
+
+		test("redirects stale local sessions to local sign-in", async () => {
+			vi.mocked(isLocalDevAuthEnabled).mockReturnValue(true);
+			getSession.mockResolvedValue(null);
+			vi.mocked(redirect).mockImplementation(() => {
+				throw new Error("NEXT_REDIRECT");
+			});
+
+			await expect(getSelfId()).rejects.toThrow("NEXT_REDIRECT");
+			expect(redirect).toHaveBeenCalledWith("/api/sign-in");
 		});
 	});
 

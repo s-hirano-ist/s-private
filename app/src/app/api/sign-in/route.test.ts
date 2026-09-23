@@ -116,7 +116,7 @@ describe("/api/sign-in route", () => {
 		expect(seedLocalDevelopmentSampleData).toHaveBeenCalledWith("local-user");
 	});
 
-	test("does not seed for an existing local user", async () => {
+	test("repairs sample data for an existing local user", async () => {
 		vi.mocked(isLocalDevAuthEnabled).mockReturnValue(true);
 		vi.mocked(prisma.user.findUnique).mockResolvedValue({
 			id: "local-user",
@@ -134,7 +134,7 @@ describe("/api/sign-in route", () => {
 
 		await GET(createSignInRequest());
 
-		expect(seedLocalDevelopmentSampleData).not.toHaveBeenCalled();
+		expect(seedLocalDevelopmentSampleData).toHaveBeenCalledWith("local-user");
 	});
 
 	test("fails the first sign-in when sample data seeding fails", async () => {
