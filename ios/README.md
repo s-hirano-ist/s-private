@@ -29,6 +29,35 @@ mise install
 mise run ios:generate
 ```
 
+## Codex skills and Simulator automation
+
+The repository provides the `develop-ios-app` skill for changes under `ios/`.
+Its canonical source is `.harness/skills/develop-ios-app`; the checked-in
+adapter links make it available after cloning and in every Git worktree.
+
+The repo-local `s-private` plugin marketplace installs and enables OpenAI's
+`Build iOS Apps` plugin. The plugin supplies focused SwiftUI skills and
+XcodeBuildMCP for scheme discovery, Simulator control, logs, screenshots, and
+UI automation. On first use, trust the project, allow the pinned plugin source
+to download, and start a new Codex conversation (or restart the ChatGPT desktop
+app). Network access is also required when the plugin first obtains its
+XcodeBuildMCP npm package.
+
+The marketplace pins the OpenAI plugin repository by commit SHA. To upgrade,
+review the upstream `build-ios-apps` plugin, update the SHA in
+`.agents/plugins/marketplace.json`, and verify the plugin from a new
+conversation. Do not replace the repo marketplace with a developer-specific
+home-directory configuration. The project configuration disables a separately
+installed universal-directory copy while this repository is open so the same
+skills and MCP server are not loaded twice.
+
+All commands and XcodeBuildMCP project paths must resolve from the current
+worktree. Each worktree keeps its generated project and `ios/.derivedData`
+locally. Do not reuse an absolute path from the primary checkout. Multiple
+worktrees using the same Simulator and bundle identifier overwrite the same
+installed app, so use separate Simulators or serialize runs and rebuild from
+the intended worktree immediately before launch.
+
 ## Build, test, and run
 
 ```bash
