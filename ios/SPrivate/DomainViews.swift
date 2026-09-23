@@ -11,6 +11,7 @@ struct DomainListView: View {
     @State private var errorMessage: String?
     @State private var showingCreate = false
     @State private var requestID = UUID()
+    @State private var showingSearch = false
 
     private var isGrid: Bool { domain == .images || domain == .books }
 
@@ -49,9 +50,14 @@ struct DomainListView: View {
                         }
                     } label: { Label(status?.localizedTitle ?? String(localized: "すべて"), systemImage: "line.3.horizontal.decrease") }
                 }
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItemGroup(placement: .topBarTrailing) {
+                    Button(String(localized: "検索"), systemImage: "magnifyingglass") { showingSearch = true }
+                        .accessibilityIdentifier("search-button")
                     Button(String(localized: "登録"), systemImage: "plus") { showingCreate = true }
                 }
+            }
+            .sheet(isPresented: $showingSearch) {
+                SearchView()
             }
             .sheet(isPresented: $showingCreate, onDismiss: { Task { await load(reset: true) } }) {
                 CreateView(domain: domain)
