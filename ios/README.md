@@ -38,7 +38,7 @@ mise run ios:run
 ```
 
 `ios:run` locates an available iPhone 17 in an iOS 27 runtime, boots it, opens
-Xcode 27 Device Hub, builds the application without code signing, installs it,
+Xcode 27 Device Hub, builds the application with ad hoc Simulator signing, installs it,
 and launches it. Simulator UUIDs are never stored in the repository.
 
 The script intentionally does not shut down the simulated device. Xcode 27
@@ -47,12 +47,20 @@ Open Developer Tool > Device Hub, or run `mise run ios:run` again; the command
 opens Device Hub, boots the matching device, rebuilds, installs, and launches
 the app.
 
+Simulator builds and tests use ad hoc signing so the app can access its App Group
+and default Keychain. Running `xcodebuild` with `CODE_SIGNING_ALLOWED=NO` can
+produce `errSecMissingEntitlement` during credential storage and prevent App
+Group access. The iOS tests check both capabilities. Device builds continue to
+use the Personal Team configuration below.
+
 ## Personal Team device signing
 
 1. In Xcode > Settings > Accounts, add the Apple ID used by the Personal Team.
-2. Copy `ios/Config/Local.xcconfig.example` to
-   `ios/Config/Local.xcconfig` and set `IOS_DEVELOPMENT_TEAM` to the Team ID.
-   `Local.xcconfig` is ignored by Git.
+2. The shared Auth0, API, and Personal Team values are already in
+   `ios/Config/Shared.xcconfig`, so no per-worktree setup is needed. To use a
+   different Apple team or API environment, copy
+   `ios/Config/Local.xcconfig.example` to `ios/Config/Local.xcconfig` and
+   override only the values you need. `Local.xcconfig` is ignored by Git.
 3. Run `mise run ios:generate`, open `ios/SPrivate.xcodeproj`, select the
    physical iPhone, and run the `SPrivate` scheme. To verify compilation from
    the command line, run `mise run ios:device-build`.
@@ -72,8 +80,9 @@ the project can explicitly decide whether to use a paid team or reduce scope.
 ## Auth0 native application
 
 The app uses Auth0.swift with Authorization Code + PKCE and stores credentials
-in Keychain. No client secret is used. Create a separate **Native** application
-and API in Auth0, then set these local values:
+in Keychain. No client secret is used. The repository already supplies its
+Native application and API identifiers in `Shared.xcconfig`. For another Auth0
+environment, override these values in `Local.xcconfig`:
 
 ```xcconfig
 AUTH0_CLIENT_ID = <Native Application client ID>
@@ -84,6 +93,11 @@ MOBILE_API_BASE_URL = https:/$()/<origin>/api/mobile/v1
 
 Xcconfig treats `//` as a comment, so URL values use `https:/$()/...`; the
 expanded Info.plist contains the normal `https://...` value.
+`AUTH0_AUDIENCE` is the Auth0 API identifier and must match the server's
+`MOBILE_API_AUDIENCE`; it does not need to be the API host. For the current
+production deployment, set `MOBILE_API_BASE_URL` to
+`https:/$()/private.s-hirano.com/api/mobile/v1`. The `s-hirano.com` host serves
+a separate site and returns an HTML 404 for mobile API routes.
 
 For the current bundle identifier and custom URL scheme, add this value to both
 **Allowed Callback URLs** and **Allowed Logout URLs** in the Native Application:
@@ -117,8 +131,21 @@ imported area so the same operation is not imported twice.
 - An **Auth0が未設定です** message is expected when `Local.xcconfig` does not
   contain all three Auth0 values.
 
-The native domain screens, SwiftData queue, background synchronization, and
-Share Extension registration flow remain later milestones.
+The native online screens now cover articles, notes, images, books, and search.
+Sign in and configure `MOBILE_API_BASE_URL` before using them. Lists support
+status filtering and pagination; new records use the existing mobile API.
+Settings is available from the Search toolbar and still shows shared inbox
+items from the feasibility test.
+Markdown is rendered with native SwiftUI views and no WebView.
+
+The SwiftData queue, offline synchronization, chunked uploads, durable create
+deduplication, and Share Extension registration flow remain later milestones.
+Direct image and cover uploads are limited to 1 MiB. An ambiguous create
+response is never retried automatically; refresh the corresponding list and
+check whether the item was created before submitting again.
+
+Repository instructions require Storybook MCP before UI work, but that MCP
+server was not exposed to this implementation session. No React UI was changed.
 
 ## Mobile API server configuration
 

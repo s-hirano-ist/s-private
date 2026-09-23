@@ -20,12 +20,12 @@ run = "xcodegen generate --spec ios/project.yml --project ios"
 [tasks."ios:build"]
 description = "Build the iOS app for an iOS 27 Simulator"
 depends = ["ios:generate"]
-run = "xcodebuild -project ios/SPrivate.xcodeproj -scheme SPrivate -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath ios/.derivedData CODE_SIGNING_ALLOWED=NO build"
+run = "xcodebuild -project ios/SPrivate.xcodeproj -scheme SPrivate -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath ios/.derivedData CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual build"
 
 [tasks."ios:test"]
 description = "Run the iOS unit and UI tests"
 depends = ["ios:generate"]
-run = "xcodebuild -project ios/SPrivate.xcodeproj -scheme SPrivate -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest' -derivedDataPath ios/.derivedData CODE_SIGNING_ALLOWED=NO test"
+run = "xcodebuild -project ios/SPrivate.xcodeproj -scheme SPrivate -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest' -derivedDataPath ios/.derivedData CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual test"
 
 [tasks."ios:device-build"]
 description = "Build the iOS app and Share Extension with local Personal Team signing"

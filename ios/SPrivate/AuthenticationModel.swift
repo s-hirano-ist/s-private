@@ -19,6 +19,14 @@ final class AuthenticationModel: ObservableObject {
     init(configuration: Auth0Configuration = Auth0Configuration()) {
         self.configuration = configuration
 
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("-ui-testing-authenticated") {
+            credentialsManager = nil
+            status = .authenticated
+            return
+        }
+        #endif
+
         guard configuration.isConfigured else {
             credentialsManager = nil
             status = .unavailable
@@ -71,4 +79,22 @@ final class AuthenticationModel: ObservableObject {
             status = .error(error.localizedDescription)
         }
     }
+
+    func accessToken() async throws -> String {
+        guard let credentialsManager else { throw MobileClientError.authenticationRequired }
+        do {
+            let credentials = try await withCheckedThrowingContinuation { continuation in
+                credentialsManager.credentials { result in
+                    continuation.resume(with: result)
+                }
+            }
+            status = .authenticated
+            return credentials.accessToken
+        } catch {
+            status = .signedOut
+            throw MobileClientError.authenticationRequired
+        }
+    }
+
+    func requireLogin() { status = .signedOut }
 }

@@ -1,4 +1,5 @@
 import Foundation
+import Security
 import Testing
 @testable import SPrivate
 
@@ -119,5 +120,74 @@ struct MobileAPIContractTests {
         let payload = Data(#"{"error":{"code":"UNAUTHORIZED"}}"#.utf8)
         let envelope = try MobileAPICoding.decoder().decode(MobileAPIErrorEnvelope.self, from: payload)
         #expect(envelope.error.code == "UNAUTHORIZED")
+    }
+
+    @Test("All four domain records decode from the mobile API")
+    func decodesDomainRecords() throws {
+        let base = #""id":"one","status":"UNEXPORTED","createdAt":"2026-09-21T01:02:03Z","updatedAt":"2026-09-21T01:02:03Z""#
+        let fixtures = [
+            "{\(base),\"title\":\"Article\",\"url\":\"https://example.com\",\"categoryId\":\"c\",\"categoryName\":\"News\"}",
+            "{\(base),\"title\":\"Note\",\"markdown\":\"# Heading\"}",
+            "{\(base),\"path\":\"image.jpg\",\"contentType\":\"image/jpeg\"}",
+            "{\(base),\"title\":\"Book\",\"isbn\":\"123\",\"rating\":3,\"tags\":[\"swift\"]}",
+        ]
+        for fixture in fixtures {
+            let record = try MobileAPICoding.decoder().decode(MobileRecord.self, from: Data(fixture.utf8))
+            #expect(record.id == "one")
+        }
+    }
+
+    @Test("Create JSON omits fields for other domains")
+    func createPayloadIsDomainSpecific() throws {
+        let input = MobileCreate(operationId: UUID(), title: "Note", url: nil, category: nil, quote: nil, markdown: "text")
+        let object = try #require(JSONSerialization.jsonObject(with: JSONEncoder().encode(input)) as? [String: Any])
+        #expect(object["markdown"] as? String == "text")
+        #expect(object["url"] == nil)
+        #expect(object["category"] == nil)
+    }
+
+    @Test("A direct upload rejects images over one MiB before authentication")
+    @MainActor
+    func rejectsLargeUpload() async {
+        let client = MobileClient(authentication: AuthenticationModel())
+        do {
+            try await client.upload(.images, image: Data(count: MobileClient.imageLimit + 1), fields: [:])
+            Issue.record("Expected upload size rejection")
+        } catch MobileClientError.uploadTooLarge {
+            // Expected.
+        } catch {
+            Issue.record("Unexpected error: \(error)")
+        }
+    }
+}
+
+struct NativeMarkdownParserTests {
+    @Test("Markdown blocks render with native headings, lists, tables, code and images")
+    func parsesNativeBlocks() {
+        let source = "# Heading\n- one\n- two\n| A | B |\n| --- | --- |\n| 1 | 2 |\n```swift\nlet n = 1\n```\n![alt](https://example.com/image.png)"
+        let blocks = NativeMarkdownParser.parse(source)
+        #expect(blocks.count == 5)
+        if case let .table(rows) = blocks[2].kind { #expect(rows.count == 2) }
+        else { Issue.record("Expected table") }
+    }
+}
+
+struct SimulatorEntitlementTests {
+    @Test("App Group and default Keychain are available to the installed app")
+    func appCapabilities() throws {
+        #expect(FileManager.default.containerURL(
+            forSecurityApplicationGroupIdentifier: "group.ist.s-hirano.s-private"
+        ) != nil)
+
+        let account = UUID().uuidString
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: "ist.s-hirano.s-private.entitlement-test",
+            kSecAttrAccount as String: account,
+            kSecValueData as String: Data("test".utf8),
+        ]
+        let status = SecItemAdd(query as CFDictionary, nil)
+        defer { SecItemDelete(query as CFDictionary) }
+        #expect(status == errSecSuccess)
     }
 }
