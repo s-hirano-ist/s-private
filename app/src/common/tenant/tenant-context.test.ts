@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import { tenantContext } from "./tenant-context";
 
 describe("tenantContext", () => {
@@ -27,5 +27,13 @@ describe("tenantContext", () => {
 		tenantContext.run({ userId: "user-a" }, () => undefined);
 
 		expect(tenantContext.getStore()).toBeUndefined();
+	});
+
+	test("reuses its instance when the module is re-evaluated", async () => {
+		vi.resetModules();
+		const { tenantContext: reloadedTenantContext } =
+			await import("./tenant-context");
+
+		expect(reloadedTenantContext).toBe(tenantContext);
 	});
 });

@@ -43,6 +43,7 @@ export async function GET(request: NextRequest) {
 				headers: requestHeaders,
 				returnHeaders: true,
 			});
+			await seedLocalDevelopmentSampleData(existingUser.id);
 			return redirectWithCookies(new URL("/", request.url), result.headers);
 		}
 

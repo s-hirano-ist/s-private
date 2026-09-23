@@ -33,4 +33,16 @@ export type TenantStore = {
  * tree. Read by the Prisma tenant extension; written via
  * {@link file://./with-tenant.ts | withSelfTenant} at server-action entrypoints.
  */
-export const tenantContext = new AsyncLocalStorage<TenantStore>();
+/**
+ * Kept on `globalThis` so the Prisma client retained by Next.js development
+ * hot reload and newly evaluated route modules always share one context.
+ */
+const globalForTenantContext = globalThis as typeof globalThis & {
+	tenantContextGlobal?: AsyncLocalStorage<TenantStore>;
+};
+
+export const tenantContext =
+	globalForTenantContext.tenantContextGlobal ??
+	new AsyncLocalStorage<TenantStore>();
+
+globalForTenantContext.tenantContextGlobal = tenantContext;
