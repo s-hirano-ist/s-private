@@ -10,9 +10,9 @@ test.describe("content navigation", () => {
 	for (const domain of domains) {
 		test(`${domain.name} opens its create form`, async ({ page }) => {
 			await page.goto(`/ja/${domain.name}`);
+			await expect(page.getByRole("link", { name: "公開済み" })).toBeVisible();
 			await page.getByRole("button", { name: "新規作成" }).click();
 			await expect(page.getByLabel(domain.formLabel)).toBeVisible();
-			await expect(page.getByRole("link", { name: "公開済み" })).toBeVisible();
 		});
 
 		test(`${domain.name} viewer renders seeded content`, async ({ page }) => {
@@ -24,9 +24,9 @@ test.describe("content navigation", () => {
 
 	test("images opens its create form", async ({ page }) => {
 		await page.goto("/ja/images");
+		await expect(page.getByRole("link", { name: "公開済み" })).toBeVisible();
 		await page.getByRole("button", { name: "新規作成" }).click();
 		await expect(page.getByLabel("画像")).toBeVisible();
-		await expect(page.getByRole("link", { name: "公開済み" })).toBeVisible();
 	});
 
 	test("images viewer renders the seeded image", async ({ page }) => {
