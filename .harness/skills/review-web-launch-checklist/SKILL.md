@@ -1,6 +1,6 @@
 ---
 name: review-web-launch-checklist
-description: app/srcとpackagesをWebサービス公開前チェックリストでレビューし、セキュリティ、SEO、アクセシビリティ、運用上の改善候補をissues/へ記録する。公開前監査を依頼されたときに使用する。
+description: app/srcとpackagesをWebサービス公開前チェックリストでレビューし、セキュリティ、SEO、アクセシビリティ、運用上の改善候補をGitHub Issuesへ記録する。公開前監査を依頼されたときに使用する。
 ---
 
 # Review Web Launch Checklist Skill
@@ -12,7 +12,7 @@ Zenn記事「[Webサービス公開前のチェックリスト](https://zenn.dev
 ### 1. プロジェクト確認
 - プロジェクトの構成を把握
 - 使用している技術スタック（Auth0、Auth.js、Prisma等）を確認
-- 既存の`issues/`ディレクトリを確認し重複を避ける
+- GitHub Issuesの既存課題を確認し重複を避ける
 
 ### 2. チェック実行
 以下のカテゴリについて順にチェック:
@@ -84,15 +84,14 @@ Zenn記事「[Webサービス公開前のチェックリスト](https://zenn.dev
 | LOW | ローカライズ | html lang属性の設定 |
 
 ### 3. Issue作成
-- 検出した各問題を`issues/`ディレクトリにmarkdownファイルとして作成
-- ファイル名: `web-launch-{番号}-{短い説明}.md`
-- `web-launch-001`から採番
+- 検出した各問題をGitHub Issuesに登録
+- タイトルには公開前の問題を具体的に示す
 
 ## 制約
-- **1問題 = 1issueファイル**: 複数の問題を1つのファイルにまとめない
+- **1問題 = 1 Issue**: 複数の問題を1つのIssueにまとめない
 - **具体的なコード参照**: 抽象的な指摘ではなく、具体的なファイル・行を示す
 - **実装は行わない**: このスキルはレビューとissue作成のみ
-- **既存issueと重複しない**: `issues/`の既存ファイルを確認
+- **既存issueと重複しない**: GitHub Issuesの既存課題を確認
 - **該当しない項目はスキップ**: 決済機能がなければ決済チェックは不要
 
 ## 出力形式
@@ -233,7 +232,7 @@ export const metadata: Metadata = {
 ```
 
 ## 注意事項
-- 既存の`issues/`ファイルと重複しないよう確認する
+- GitHub Issuesの既存課題と重複しないよう確認する
 - CRITICALとHIGHの問題を優先的に検出する
 - プロジェクト固有の設計（Auth0、Auth.js等）を考慮する
 - Next.js 16のベストプラクティスに従う

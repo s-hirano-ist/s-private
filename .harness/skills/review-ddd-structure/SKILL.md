@@ -1,6 +1,6 @@
 ---
 name: review-ddd-structure
-description: packages/coreとapp/srcのディレクトリ構造や依存方向をDDDとClean Architectureの観点でレビューし、改善候補をissues/へ記録する。レイヤー境界や構成の監査を依頼されたときに使用する。
+description: packages/coreとapp/srcのディレクトリ構造や依存方向をDDDとClean Architectureの観点でレビューし、改善候補をGitHub Issuesへ記録する。レイヤー境界や構成の監査を依頼されたときに使用する。
 ---
 
 # Review DDD Structure Skill
@@ -38,15 +38,14 @@ description: packages/coreとapp/srcのディレクトリ構造や依存方向�
 | LOW | ファイル配置 | 各ファイルが適切なディレクトリに配置されているか |
 
 ### 3. Issue作成
-- 検出した各問題を`issues/`ディレクトリにmarkdownファイルとして作成
-- ファイル名: `ddd-{番号}-{短い説明}.md`
-- `ddd-001`から採番
+- 検出した各問題をGitHub Issuesに登録
+- タイトルには構造上の問題を具体的に示す
 
 ## 制約
-- **1問題 = 1issueファイル**: 複数の問題を1つのファイルにまとめない
+- **1問題 = 1 Issue**: 複数の問題を1つのIssueにまとめない
 - **具体的なパス参照**: 抽象的な指摘ではなく、具体的なディレクトリ・ファイルを示す
 - **実装は行わない**: このスキルはレビューとissue作成のみ
-- **既存issueと重複しない**: `issues/`の既存ファイルを確認
+- **既存issueと重複しない**: GitHub Issuesの既存課題を確認
 
 ## 出力形式
 
@@ -122,6 +121,6 @@ Presentation → Application → Domain ← Infrastructure
 - 集約内のエンティティは集約ルート経由でのみ操作
 
 ## 注意事項
-- 既存の`issues/`ファイルと重複しないよう確認する
+- GitHub Issuesの既存課題と重複しないよう確認する
 - CRITICALとHIGHの問題を優先的に検出する
 - プロジェクト固有の設計判断は尊重する（docs/を参照）

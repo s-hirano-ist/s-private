@@ -6,7 +6,7 @@ Next.js + TypeScript + Clean Architectureベースのコンテンツ管理シス
 
 - UI、frontend、Reactの開発前に、必ず現在のworktreeで`pnpm exec storybook skills stories`を実行し、その指示に従うこと。コンポーネントまたはstoryを作成・編集する前には`pnpm exec storybook skills write-story`も実行すること。
 - Storybookの調査、変更検出、テスト、レビューには`pnpm exec storybook tools ...`を使用する。直接Storybook MCPツールが公開されていることを前提にしない。`[requires running Storybook]`と表示される操作でのみ`pnpm storybook:agent`を起動し、ポートを固定せず、現在のworktreeからCLIに対象instanceを解決させること。
-- 課題管理はローカルの `issues/` ディレクトリで行う（GitHub Issuesではなく）。issueに取り組むように指示があり、完了したらissueファイルは削除すること。
+- 課題管理は GitHub Issues で行う。新しい課題を登録する前に既存 Issue との重複を確認し、対応が完了したら Issue をクローズすること。
 - 計画時、後方互換性は基本的に捨てること。
 - ハーネス共通資産の正本は `.harness/` に置く。`AGENTS.md`、`CLAUDE.md`、`.agents/skills/`、`.claude/skills/` のリンク先を直接編集しないこと。
 - Skillを追加・削除したら `pnpm harness:sync` でリンクを同期し、`pnpm harness:check` で検証すること。

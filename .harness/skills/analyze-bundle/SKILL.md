@@ -1,6 +1,6 @@
 ---
 name: analyze-bundle
-description: Next.jsアプリをビルドしてapp/.next/static/chunksのクライアントbundleを分析し、削減候補をissues/へ記録する。bundleサイズ調査やフロントエンド性能最適化を依頼されたときに使用する。
+description: Next.jsアプリをビルドしてapp/.next/static/chunksのクライアントbundleを分析し、削減候補をGitHub Issuesへ記録する。bundleサイズ調査やフロントエンド性能最適化を依頼されたときに使用する。
 ---
 
 # Analyze Bundle Skill
@@ -98,10 +98,9 @@ node /tmp/identify-chunks.js app/.next/static/chunks/
 
 ### 5. Issue作成（新規最適化ポイントの場合）
 
-既存の `issues/perf-*.md` と重複しない新規の最適化ポイントが見つかった場合、issueファイルを作成する。
+GitHub Issuesの既存課題と重複しない新規の最適化ポイントが見つかった場合、Issueを作成する。
 
-- ファイル名: `perf-{番号}-{短い説明}.md`
-- 既存の最大番号+1 から採番
+- タイトルには最適化対象と削減見込みを含める
 
 ```markdown
 # Issue: {タイトル}（~{削減見込み}KB 削減）
@@ -156,4 +155,4 @@ node /tmp/identify-chunks.js app/.next/static/chunks/
 - `next-intl` は i18n基盤のため削減困難（報告のみ）
 - サーバーコンポーネントのインポートはクライアントバンドルに影響しない
 - `"use client"` コンポーネントのインポートのみが対象
-- 既存の `issues/perf-*.md` を必ず確認し、重複issue作成を避ける
+- GitHub Issuesの既存課題を必ず確認し、重複Issue作成を避ける
