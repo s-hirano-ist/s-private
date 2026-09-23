@@ -58,3 +58,10 @@ paths = [
 	'''^app/src/application-services/articles/get-articles\.test\.ts$''',
 	'''^app/src/application-services/notes/get-notes\.test\.ts$''',
 ]
+
+[[allowlists]]
+description = "Auth0 Native Application client ID is a public identifier"
+condition = "AND"
+regexTarget = "secret"
+regexes = ['''^Yw1XrV8ERzChXuDXM7dYenvgeUcQfELS$''']
+paths = ['''^ios/Config/Shared\.xcconfig$''']

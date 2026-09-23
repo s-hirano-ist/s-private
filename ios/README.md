@@ -56,9 +56,11 @@ use the Personal Team configuration below.
 ## Personal Team device signing
 
 1. In Xcode > Settings > Accounts, add the Apple ID used by the Personal Team.
-2. Copy `ios/Config/Local.xcconfig.example` to
-   `ios/Config/Local.xcconfig` and set `IOS_DEVELOPMENT_TEAM` to the Team ID.
-   `Local.xcconfig` is ignored by Git.
+2. The shared Auth0, API, and Personal Team values are already in
+   `ios/Config/Shared.xcconfig`, so no per-worktree setup is needed. To use a
+   different Apple team or API environment, copy
+   `ios/Config/Local.xcconfig.example` to `ios/Config/Local.xcconfig` and
+   override only the values you need. `Local.xcconfig` is ignored by Git.
 3. Run `mise run ios:generate`, open `ios/SPrivate.xcodeproj`, select the
    physical iPhone, and run the `SPrivate` scheme. To verify compilation from
    the command line, run `mise run ios:device-build`.
@@ -78,8 +80,9 @@ the project can explicitly decide whether to use a paid team or reduce scope.
 ## Auth0 native application
 
 The app uses Auth0.swift with Authorization Code + PKCE and stores credentials
-in Keychain. No client secret is used. Create a separate **Native** application
-and API in Auth0, then set these local values:
+in Keychain. No client secret is used. The repository already supplies its
+Native application and API identifiers in `Shared.xcconfig`. For another Auth0
+environment, override these values in `Local.xcconfig`:
 
 ```xcconfig
 AUTH0_CLIENT_ID = <Native Application client ID>

@@ -1,9 +1,9 @@
-// Safe defaults for simulator and CI builds. Local.xcconfig is intentionally
-// excluded from Git and overrides these values for device builds.
-IOS_DEVELOPMENT_TEAM =
-AUTH0_CLIENT_ID =
-AUTH0_DOMAIN =
-AUTH0_AUDIENCE =
-MOBILE_API_BASE_URL =
+// Shared, non-secret development settings. Local.xcconfig may override these
+// values for another Apple team or API environment and is excluded from Git.
+IOS_DEVELOPMENT_TEAM = FQ8A96X7UY
+AUTH0_CLIENT_ID = Yw1XrV8ERzChXuDXM7dYenvgeUcQfELS
+AUTH0_DOMAIN = s-hirano.jp.auth0.com
+AUTH0_AUDIENCE = https:/$()/s-hirano.com/api/mobile/v1
+MOBILE_API_BASE_URL = https:/$()/private.s-hirano.com/api/mobile/v1
 
 #include? "Local.xcconfig"
