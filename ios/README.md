@@ -117,8 +117,21 @@ imported area so the same operation is not imported twice.
 - An **Auth0が未設定です** message is expected when `Local.xcconfig` does not
   contain all three Auth0 values.
 
-The native domain screens, SwiftData queue, background synchronization, and
-Share Extension registration flow remain later milestones.
+The native online screens now cover articles, notes, images, books, and search.
+Sign in and configure `MOBILE_API_BASE_URL` before using them. Lists support
+status filtering and pagination; new records use the existing mobile API.
+Settings is available from the Search toolbar and still shows shared inbox
+items from the feasibility test.
+Markdown is rendered with native SwiftUI views and no WebView.
+
+The SwiftData queue, offline synchronization, chunked uploads, durable create
+deduplication, and Share Extension registration flow remain later milestones.
+Direct image and cover uploads are limited to 1 MiB. An ambiguous create
+response is never retried automatically; refresh the corresponding list and
+check whether the item was created before submitting again.
+
+Repository instructions require Storybook MCP before UI work, but that MCP
+server was not exposed to this implementation session. No React UI was changed.
 
 ## Mobile API server configuration
 

@@ -5,36 +5,22 @@ struct ContentView: View {
     @EnvironmentObject private var sharedInbox: SharedInboxModel
 
     var body: some View {
-        NavigationStack {
-            List {
-                Section("認証") {
-                    authenticationContent
-                }
-
-                Section("共有された項目") {
-                    if sharedInbox.items.isEmpty {
-                        ContentUnavailableView(
-                            "共有項目はありません",
-                            systemImage: "square.and.arrow.down"
-                        )
-                        .accessibilityIdentifier("empty-shared-inbox")
-                    } else {
-                        ForEach(sharedInbox.items) { item in
-                            SharedInboxRow(item: item)
-                        }
+        Group {
+            if authentication.status == .authenticated {
+                TabView {
+                    ForEach(MobileDomain.allCases) { domain in
+                        DomainListView(domain: domain)
+                            .tabItem { Label(domain.title, systemImage: domain.symbol) }
                     }
-
-                    if let errorMessage = sharedInbox.errorMessage {
-                        Text(errorMessage)
-                            .foregroundStyle(.secondary)
-                            .accessibilityIdentifier("shared-inbox-error")
-                    }
+                    SearchView()
+                        .tabItem { Label(String(localized: "検索"), systemImage: "magnifyingglass") }
                 }
-            }
-            .navigationTitle("SPrivate")
-            .toolbar {
-                Button("再読み込み", systemImage: "arrow.clockwise") {
-                    sharedInbox.reload()
+            } else {
+                NavigationStack {
+                    List {
+                        authenticationContent
+                    }
+                    .navigationTitle("SPrivate")
                 }
             }
         }
@@ -44,29 +30,54 @@ struct ContentView: View {
     private var authenticationContent: some View {
         switch authentication.status {
         case .unavailable:
-            Label("Auth0が未設定です", systemImage: "exclamationmark.triangle")
+            ContentUnavailableView(String(localized: "Auth0が未設定です"), systemImage: "exclamationmark.triangle")
                 .accessibilityIdentifier("auth0-unconfigured-message")
-            Text("ios/Config/Local.xcconfig に接続情報を設定してください。")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
         case .signedOut:
-            Button("Auth0でログイン") {
+            Button(String(localized: "Auth0でログイン")) {
                 Task { await authentication.logIn() }
             }
             .accessibilityIdentifier("auth0-login-button")
         case .working:
-            ProgressView("処理中")
+            ProgressView(String(localized: "処理中"))
         case .authenticated:
-            Label("ログイン済み", systemImage: "checkmark.circle")
-            Button("ログアウト", role: .destructive) {
-                Task { await authentication.logOut() }
-            }
+            EmptyView()
         case let .error(message):
-            Label("認証に失敗しました", systemImage: "xmark.circle")
-            Text(message)
-                .font(.footnote)
-                .foregroundStyle(.secondary)
+            Label(String(localized: "認証に失敗しました"), systemImage: "xmark.circle")
+            Text(message).foregroundStyle(.secondary)
+            Button(String(localized: "再試行")) { Task { await authentication.logIn() } }
         }
+    }
+}
+
+struct SettingsView: View {
+    @EnvironmentObject private var authentication: AuthenticationModel
+    @EnvironmentObject private var sharedInbox: SharedInboxModel
+
+    var body: some View {
+        List {
+            Section(String(localized: "認証")) {
+                Label(String(localized: "ログイン済み"), systemImage: "checkmark.circle")
+                Button(String(localized: "ログアウト"), role: .destructive) {
+                    Task { await authentication.logOut() }
+                }
+            }
+            Section(String(localized: "共有された項目")) {
+                if sharedInbox.items.isEmpty {
+                    Text(String(localized: "共有項目はありません"))
+                } else {
+                    ForEach(sharedInbox.items) { item in
+                        Label(item.text ?? item.kind.rawValue, systemImage: "square.and.arrow.down")
+                    }
+                }
+                if let error = sharedInbox.errorMessage { Text(error).foregroundStyle(.red) }
+                Button(String(localized: "再読み込み")) { sharedInbox.reload() }
+            }
+            Section(String(localized: "接続先")) {
+                Text(Bundle.main.object(forInfoDictionaryKey: "MobileAPIBaseURL") as? String ?? "")
+                    .textSelection(.enabled)
+            }
+        }
+        .navigationTitle(String(localized: "設定"))
     }
 }
 
@@ -74,41 +85,4 @@ struct ContentView: View {
     ContentView()
         .environmentObject(AuthenticationModel())
         .environmentObject(SharedInboxModel())
-}
-
-private struct SharedInboxRow: View {
-    let item: SharedInboxItem
-
-    var body: some View {
-        Label {
-            VStack(alignment: .leading) {
-                Text(item.text ?? item.kind.localizedName)
-                    .lineLimit(2)
-                Text(item.createdAt, format: .dateTime)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-        } icon: {
-            Image(systemName: item.kind.systemImage)
-        }
-        .accessibilityIdentifier("shared-inbox-item")
-    }
-}
-
-private extension SharedInboxItemKind {
-    var localizedName: String {
-        switch self {
-        case .image: "画像"
-        case .text: "テキスト"
-        case .url: "URL"
-        }
-    }
-
-    var systemImage: String {
-        switch self {
-        case .image: "photo"
-        case .text: "text.alignleft"
-        case .url: "link"
-        }
-    }
 }

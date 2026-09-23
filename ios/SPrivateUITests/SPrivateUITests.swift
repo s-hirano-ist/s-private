@@ -6,7 +6,7 @@ final class SPrivateUITests: XCTestCase {
     }
 
     @MainActor
-    func testAuth0StatusAndEmptyInboxAreVisible() throws {
+    func testAuthenticationEntryIsVisible() throws {
         let app = XCUIApplication()
         app.launch()
 
@@ -14,8 +14,21 @@ final class SPrivateUITests: XCTestCase {
         if !unconfiguredMessage.waitForExistence(timeout: 1) {
             XCTAssertTrue(app.buttons["Auth0でログイン"].waitForExistence(timeout: 5))
         }
-        XCTAssertTrue(
-            app.staticTexts["共有項目はありません"].waitForExistence(timeout: 5)
-        )
+        XCTAssertTrue(app.navigationBars["SPrivate"].waitForExistence(timeout: 5))
+    }
+
+    @MainActor
+    func testDomainAndSearchTabsAreVisible() throws {
+        let app = XCUIApplication()
+        app.launchArguments.append("-ui-testing-authenticated")
+        app.launch()
+
+        let tabBar = app.tabBars.firstMatch
+        XCTAssertTrue(tabBar.waitForExistence(timeout: 5))
+        XCTAssertEqual(tabBar.buttons.count, 5)
+        tabBar.buttons.element(boundBy: 4).tap()
+        XCTAssertTrue(app.searchFields.firstMatch.waitForExistence(timeout: 5))
+        app.buttons["settings-link"].tap()
+        XCTAssertTrue(app.navigationBars.firstMatch.waitForExistence(timeout: 5))
     }
 }
