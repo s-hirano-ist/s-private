@@ -90,6 +90,11 @@ MOBILE_API_BASE_URL = https:/$()/<origin>/api/mobile/v1
 
 Xcconfig treats `//` as a comment, so URL values use `https:/$()/...`; the
 expanded Info.plist contains the normal `https://...` value.
+`AUTH0_AUDIENCE` is the Auth0 API identifier and must match the server's
+`MOBILE_API_AUDIENCE`; it does not need to be the API host. For the current
+production deployment, set `MOBILE_API_BASE_URL` to
+`https:/$()/private.s-hirano.com/api/mobile/v1`. The `s-hirano.com` host serves
+a separate site and returns an HTML 404 for mobile API routes.
 
 For the current bundle identifier and custom URL scheme, add this value to both
 **Allowed Callback URLs** and **Allowed Logout URLs** in the Native Application:
