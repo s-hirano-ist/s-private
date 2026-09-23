@@ -10,6 +10,27 @@
 - `pnpm test:watch` - Run Vitest in watch mode
 - `pnpm typecheck` - Run TypeScript type checking across all workspaces (`tsc --noEmit`)
 
+## AI-assisted Storybook Workflow
+
+AIエージェントは、固定URLのStorybook MCPへ直接接続せず、リポジトリにインストールされたStorybook CLIを現在のworktreeから実行する。
+
+```bash
+# UI作業全体の必須手順を取得
+pnpm exec storybook skills stories
+
+# コンポーネントまたはstoryを編集する前に規約を取得
+pnpm exec storybook skills write-story
+
+# Storybookを起動せずに利用できる調査・テストの例
+pnpm exec storybook tools docs list
+pnpm exec storybook tools stories changed
+pnpm exec storybook tools test run
+```
+
+`pnpm exec storybook tools --help`で`[local]`と表示される操作には、起動中のStorybookは不要。`[requires running Storybook]`と表示されるpreview／review操作の場合だけ、同じworktreeで`pnpm storybook:agent`を起動する。このスクリプトはCIモードで対話確認を無効化するため、複数worktreeが同時に既定ポートを要求しても空きポートを選択して起動する。ポートをハードコードせず、`storybook tools`に現在のworktreeを基準として対応するinstanceを解決させる。
+
+`@storybook/addon-mcp`はStorybook runtimeとCLIの機能提供に使用するが、エージェントに直接MCPツールが公開されることは前提にしない。これにより、CodexセッションにStorybook MCPが登録されていない場合でも、UI作業の開始、ドキュメント参照、変更検出、テストを継続できる。
+
 ## AI Agent Completion Checks
 
 `pnpm check:agent` is the standard completion gate for code changes made by an AI agent. It fails fast and runs the following checks in order:

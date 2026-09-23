@@ -4,7 +4,8 @@ Next.js + TypeScript + Clean Architectureベースのコンテンツ管理シス
 `docs/**` にはより詳細な設計等のルールが記載されています。必要に応じて参照してください。
 また、新たな設計パターンを追加する場合は、`docs/**` の設計該当箇所に適宜内容を追加してください。
 
-- Before doing any UI, frontend or React development, ALWAYS call the storybook MCP server to get further instructions.
+- UI、frontend、Reactの開発前に、必ず現在のworktreeで`pnpm exec storybook skills stories`を実行し、その指示に従うこと。コンポーネントまたはstoryを作成・編集する前には`pnpm exec storybook skills write-story`も実行すること。
+- Storybookの調査、変更検出、テスト、レビューには`pnpm exec storybook tools ...`を使用する。直接Storybook MCPツールが公開されていることを前提にしない。`[requires running Storybook]`と表示される操作でのみ`pnpm storybook:agent`を起動し、ポートを固定せず、現在のworktreeからCLIに対象instanceを解決させること。
 - 課題管理はローカルの `issues/` ディレクトリで行う（GitHub Issuesではなく）。issueに取り組むように指示があり、完了したらissueファイルは削除すること。
 - 計画時、後方互換性は基本的に捨てること。
 - ハーネス共通資産の正本は `.harness/` に置く。`AGENTS.md`、`CLAUDE.md`、`.agents/skills/`、`.claude/skills/` のリンク先を直接編集しないこと。
@@ -37,6 +38,7 @@ Next.js + TypeScript + Clean Architectureベースのコンテンツ管理シス
 - `pnpm --filter s-database prisma:migrate:diff` - 新規マイグレーションSQL生成（既存マイグレーション群とschema.prismaのdiff。ルートにスクリプトは無く packages/database にのみ存在。`--from-migrations` はシャドウDBを必要とする。`migrate dev` はクラウドの `crdb_internal_region` drift で失敗するため不使用）
 - `pnpm prisma:deploy` - マイグレーション適用（クラウドはこちらを使う）
 - `pnpm storybook` - Storybook起動
+- `pnpm storybook:agent` - AIエージェント向けにStorybookを非対話で空きポートに起動
 - `mise run ios:generate` - 現在のworktree内にXcodeプロジェクトを生成
 - `mise run ios:build` - iOS 27 Simulator向けビルド
 - `mise run ios:test` - iOS単体テストとUIテスト
