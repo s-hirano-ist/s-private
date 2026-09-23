@@ -35,7 +35,7 @@ private struct UploadSession: Decodable {
 }
 
 enum MobileDomain: String, Codable, CaseIterable, Identifiable {
-    case articles, notes, images, books
+    case articles, notes, books, images
     var id: String { rawValue }
     var title: String {
         switch self {

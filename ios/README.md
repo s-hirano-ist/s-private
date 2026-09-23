@@ -179,10 +179,12 @@ does not create a second record.
 - An **Auth0が未設定です** message is expected when `Local.xcconfig` does not
   contain all three Auth0 values.
 
-The native online screens now cover articles, notes, images, books, and search.
+The native online screens now cover articles, notes, books, images, and search.
 Sign in and configure `MOBILE_API_BASE_URL` before using them. Lists support
 status filtering and pagination; new records use the existing mobile API.
-Settings is available from the Search toolbar and still shows shared inbox
+The bottom tab bar contains articles, notes, books, and images in that order.
+Each list opens cross-domain search from its top toolbar. Settings is available
+from the Search toolbar and still shows shared inbox
 items from the feasibility test.
 Markdown is rendered with native SwiftUI views and no WebView.
 
