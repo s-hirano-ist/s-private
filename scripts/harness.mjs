@@ -41,6 +41,7 @@ if (mode === "sync") {
 }
 
 validateInstructionLinks();
+validateStorybookAgentWorkflow();
 validateSkills();
 validateHookConfiguration();
 
@@ -112,6 +113,31 @@ function validateInstructionLinks() {
 		validateLink(
 			path.join(repoRoot, name),
 			path.join(harnessDir, "instructions.md"),
+		);
+	}
+}
+
+function validateStorybookAgentWorkflow() {
+	const instructionPath = path.join(harnessDir, "instructions.md");
+	const instructions = fs.readFileSync(instructionPath, "utf8");
+	const requiredCommands = [
+		"pnpm exec storybook skills stories",
+		"pnpm exec storybook skills write-story",
+		"pnpm exec storybook tools",
+		"pnpm storybook:agent",
+	];
+
+	for (const command of requiredCommands) {
+		if (!instructions.includes(command)) {
+			errors.push(
+				`Missing Storybook agent workflow command in ${relative(instructionPath)}: ${command}`,
+			);
+		}
+	}
+
+	if (/call the storybook MCP server/iu.test(instructions)) {
+		errors.push(
+			`Direct Storybook MCP usage must not be required in ${relative(instructionPath)}.`,
 		);
 	}
 }
