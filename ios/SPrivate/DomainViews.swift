@@ -10,10 +10,60 @@ struct DomainListView: View {
     @State private var loading = false
     @State private var errorMessage: String?
     @State private var showingCreate = false
+    @State private var requestID = UUID()
+
+    private var isGrid: Bool { domain == .images || domain == .books }
 
     var body: some View {
         NavigationStack {
-            List {
+            Group {
+                if isGrid {
+                    ScrollView {
+                        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 3), count: domain == .images ? 3 : 2), spacing: domain == .images ? 3 : 16) {
+                            ForEach(Array(records.enumerated()), id: \.element.id) { index, record in
+                                NavigationLink(value: record.id) {
+                                    MediaGridCell(domain: domain, record: record)
+                                }
+                                .buttonStyle(.plain)
+                                .onAppear { loadNextPageIfNeeded(at: index) }
+                            }
+                        }
+                        .padding(.horizontal, domain == .images ? 3 : 12)
+                        gridFooter
+                    }
+                    .accessibilityIdentifier("domain-grid-\(domain.rawValue)")
+                } else {
+                    listContent
+                }
+            }
+            .navigationTitle(domain.title)
+            .navigationDestination(for: String.self) { id in
+                RecordDetailView(domain: domain, id: id) { Task { await load(reset: true) } }
+            }
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Menu {
+                        Button(String(localized: "すべて")) { status = nil }
+                        ForEach(MobileContentStatus.allCases, id: \.self) { value in
+                            Button(value.localizedTitle) { status = value }
+                        }
+                    } label: { Label(status?.localizedTitle ?? String(localized: "すべて"), systemImage: "line.3.horizontal.decrease") }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(String(localized: "登録"), systemImage: "plus") { showingCreate = true }
+                }
+            }
+            .sheet(isPresented: $showingCreate, onDismiss: { Task { await load(reset: true) } }) {
+                CreateView(domain: domain)
+                    .environmentObject(authentication)
+            }
+            .refreshable { await load(reset: true) }
+            .task(id: status) { await load(reset: true) }
+        }
+    }
+
+    private var listContent: some View {
+        List {
                 if let errorMessage {
                     Text(errorMessage).foregroundStyle(.red)
                         .accessibilityIdentifier("domain-error")
@@ -47,47 +97,56 @@ struct DomainListView: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
-            }
-            .accessibilityIdentifier("domain-list-\(domain.rawValue)")
-            .navigationTitle(domain.title)
-            .navigationDestination(for: String.self) { id in
-                RecordDetailView(domain: domain, id: id) { Task { await load(reset: true) } }
-            }
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Menu {
-                        Button(String(localized: "すべて")) { status = nil }
-                        ForEach(MobileContentStatus.allCases, id: \.self) { value in
-                            Button(value.localizedTitle) { status = value }
-                        }
-                    } label: { Label(status?.localizedTitle ?? String(localized: "すべて"), systemImage: "line.3.horizontal.decrease") }
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(String(localized: "登録"), systemImage: "plus") { showingCreate = true }
-                }
-            }
-            .sheet(isPresented: $showingCreate, onDismiss: { Task { await load(reset: true) } }) {
-                CreateView(domain: domain)
-                    .environmentObject(authentication)
-            }
-            .refreshable { await load(reset: true) }
-            .task(id: status) { await load(reset: true) }
         }
+        .accessibilityIdentifier("domain-list-\(domain.rawValue)")
+    }
+
+    private var gridFooter: some View {
+        VStack {
+            if let errorMessage { Text(errorMessage).foregroundStyle(.red).accessibilityIdentifier("domain-error") }
+            if errorMessage != nil && !records.isEmpty && records.count < totalCount {
+                Button(String(localized: "再読み込み")) { Task { await load(reset: false) } }
+            }
+            if records.isEmpty && !loading && errorMessage == nil {
+                ContentUnavailableView(String(localized: "項目がありません"), systemImage: domain.symbol)
+            }
+            if loading { ProgressView().padding() }
+            if let fetchedAt = sync.lastSyncAt {
+                Text(String(localized: "最終取得: \(fetchedAt.formatted(date: .abbreviated, time: .shortened))"))
+                    .font(.caption).foregroundStyle(.secondary).padding()
+            }
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private func loadNextPageIfNeeded(at index: Int) {
+        guard !loading, records.count < totalCount, index >= records.count - 6 else { return }
+        Task { await load(reset: false) }
     }
 
     private func load(reset: Bool) async {
-        guard !loading else { return }
+        if !reset && loading { return }
+        let id = reset ? UUID() : requestID
+        if reset {
+            requestID = id
+            records = []
+            totalCount = 0
+            errorMessage = nil
+        }
+        let requestedStatus = status
         loading = true
-        defer { loading = false }
+        defer { if requestID == id { loading = false } }
         do {
-            let page = try await MobileClient(authentication: authentication).list(domain, status: status, offset: reset ? 0 : records.count)
+            let page = try await MobileClient(authentication: authentication).list(domain, status: requestedStatus, offset: reset ? 0 : records.count)
+            guard requestID == id, status == requestedStatus, !Task.isCancelled else { return }
             records = reset ? page.data : records + page.data
             totalCount = page.totalCount
-            if reset { try? sync.cache(domain: domain, records: records) }
+            if reset && requestedStatus == nil { try? sync.cache(domain: domain, records: records) }
             errorMessage = nil
         } catch {
+            guard requestID == id, status == requestedStatus, !Task.isCancelled else { return }
             if reset {
-                let cached = sync.cached(domain: domain)
+                let cached = sync.cached(domain: domain).filter { requestedStatus == nil || $0.status == requestedStatus }
                 if !cached.isEmpty { records = cached; totalCount = cached.count; errorMessage = String(localized: "オフラインの保存データを表示しています") }
                 else { errorMessage = error.localizedDescription }
             } else { errorMessage = error.localizedDescription }
@@ -95,11 +154,35 @@ struct DomainListView: View {
     }
 }
 
+private struct MediaGridCell: View {
+    let domain: MobileDomain
+    let record: MobileRecord
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            GeometryReader { geometry in
+                MediaThumbnailView(domain: domain, id: record.id, hasImage: domain == .images || record.imagePath != nil, pixelSize: domain == .images ? 400 : 600)
+                    .frame(width: geometry.size.width, height: geometry.size.height)
+            }
+            .aspectRatio(domain == .images ? 1 : 2.0 / 3.0, contentMode: .fit)
+            .clipped()
+            if domain == .books {
+                Text(record.displayTitle).font(.caption).lineLimit(2)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(record.displayTitle)
+        .accessibilityIdentifier("media-cell-\(record.id)")
+    }
+}
+
 struct MediaThumbnailView: View {
     let domain: MobileDomain
     let id: String
+    var hasImage = true
+    var pixelSize = 160
     @EnvironmentObject private var authentication: AuthenticationModel
-    @EnvironmentObject private var sync: SyncCoordinator
     @State private var image: UIImage?
 
     var body: some View {
@@ -110,15 +193,23 @@ struct MediaThumbnailView: View {
                 Image(systemName: domain.symbol).resizable().scaledToFit().padding(12)
             }
         }
-        .frame(width: 56, height: 56)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .clipped()
         .accessibilityHidden(true)
         .task(id: id) {
-            if let data = try? await MobileClient(authentication: authentication).media(domain, id: id, variant: "thumbnail") {
-                try? sync.cacheMedia(data, domain: domain, id: id, variant: "thumbnail")
-                image = UIImage(data: data)
-            } else if let data = sync.cachedMedia(domain: domain, id: id, variant: "thumbnail") {
-                image = UIImage(data: data)
+            guard hasImage else { return }
+            let owner = authentication.ownerKey
+            if let cached = await ThumbnailStore.shared.image(owner: owner, domain: domain, id: id, pixelSize: pixelSize) {
+                guard !Task.isCancelled else { return }
+                image = cached
+                return
+            }
+            do {
+                let data = try await MobileClient(authentication: authentication).media(domain, id: id, variant: "thumbnail")
+                guard !Task.isCancelled else { return }
+                image = await ThumbnailStore.shared.saveAndDecode(data, owner: owner, domain: domain, id: id, pixelSize: pixelSize)
+            } catch {
+                // Keep the placeholder when a thumbnail cannot be fetched.
             }
         }
     }

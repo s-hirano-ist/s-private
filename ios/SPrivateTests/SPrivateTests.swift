@@ -2,7 +2,25 @@ import Foundation
 import Security
 import SwiftData
 import Testing
+import UIKit
 @testable import SPrivate
+
+struct ThumbnailStoreTests {
+    @Test("Thumbnails are decoded within the requested pixel size")
+    @MainActor
+    func downsamplesThumbnail() async throws {
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: 1200, height: 800))
+        let data = renderer.jpegData(withCompressionQuality: 0.8) { context in
+            UIColor.red.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: 1200, height: 800))
+        }
+        let owner = UUID().uuidString
+        let image = await ThumbnailStore.shared.saveAndDecode(data, owner: owner, domain: .images, id: "image", pixelSize: 160)
+        let decoded = try #require(image)
+        #expect(max(decoded.cgImage?.width ?? 0, decoded.cgImage?.height ?? 0) <= 160)
+        #expect(await ThumbnailStore.shared.image(owner: owner, domain: .images, id: "image", pixelSize: 160) != nil)
+    }
+}
 
 struct SharedInboxStoreTests {
     @Test("Shared items are saved atomically and imported once")

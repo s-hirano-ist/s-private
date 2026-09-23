@@ -34,4 +34,21 @@ final class SPrivateUITests: XCTestCase {
         app.buttons["sync-management-link"].tap()
         XCTAssertTrue(app.descendants(matching: .any)["sync-management-view"].waitForExistence(timeout: 5))
     }
+
+    @MainActor
+    func testMediaTabsUseGridsAndTextTabsUseLists() throws {
+        let app = XCUIApplication()
+        app.launchArguments.append("-ui-testing-authenticated")
+        app.launch()
+
+        let tabs = app.tabBars.firstMatch.buttons
+        XCTAssertTrue(tabs.element(boundBy: 0).waitForExistence(timeout: 5))
+        XCTAssertTrue(app.descendants(matching: .any)["domain-list-articles"].exists)
+        tabs.element(boundBy: 1).tap()
+        XCTAssertTrue(app.descendants(matching: .any)["domain-list-notes"].exists)
+        tabs.element(boundBy: 2).tap()
+        XCTAssertTrue(app.descendants(matching: .any)["domain-grid-images"].exists)
+        tabs.element(boundBy: 3).tap()
+        XCTAssertTrue(app.descendants(matching: .any)["domain-grid-books"].exists)
+    }
 }
