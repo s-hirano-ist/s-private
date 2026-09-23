@@ -29,6 +29,35 @@ mise install
 mise run ios:generate
 ```
 
+## Codex skills and Simulator automation
+
+The repository provides the `develop-ios-app` skill for changes under `ios/`.
+Its canonical source is `.harness/skills/develop-ios-app`; the checked-in
+adapter links make it available after cloning and in every Git worktree.
+
+The repo-local `s-private` plugin marketplace installs and enables OpenAI's
+`Build iOS Apps` plugin. The plugin supplies focused SwiftUI skills and
+XcodeBuildMCP for scheme discovery, Simulator control, logs, screenshots, and
+UI automation. On first use, trust the project, allow the pinned plugin source
+to download, and start a new Codex conversation (or restart the ChatGPT desktop
+app). Network access is also required when the plugin first obtains its
+XcodeBuildMCP npm package.
+
+The marketplace pins the OpenAI plugin repository by commit SHA. To upgrade,
+review the upstream `build-ios-apps` plugin, update the SHA in
+`.agents/plugins/marketplace.json`, and verify the plugin from a new
+conversation. Do not replace the repo marketplace with a developer-specific
+home-directory configuration. The project configuration disables a separately
+installed universal-directory copy while this repository is open so the same
+skills and MCP server are not loaded twice.
+
+All commands and XcodeBuildMCP project paths must resolve from the current
+worktree. Each worktree keeps its generated project and `ios/.derivedData`
+locally. Do not reuse an absolute path from the primary checkout. Multiple
+worktrees using the same Simulator and bundle identifier overwrite the same
+installed app, so use separate Simulators or serialize runs and rebuild from
+the intended worktree immediately before launch.
+
 ## Build, test, and run
 
 ```bash
@@ -113,10 +142,29 @@ used because Auth0 requires a paid Apple Developer account for that setup.
 ## Share Extension smoke test
 
 After installing the signed app, share a URL from Safari, text from an app, or
-one or more images from Photos to SPrivate. Confirm the extension, then open the
-main app. The items should appear under **共有された項目**. The extension writes
-an operation directory atomically to the App Group; the app moves it to the
-imported area so the same operation is not imported twice.
+one or more images from Photos to SPrivate. Enter the title/category requested
+by the confirmation sheet and save it. The extension only writes an operation
+directory atomically to the App Group; it never reads credentials or contacts
+the server. Opening the main app imports each operation exactly once into the
+persistent sync queue and sends it when a connection and valid login exist.
+
+## Offline data and synchronization
+
+All new records are written to SwiftData before transmission. **設定 > 同期管理**
+shows items that are waiting, sending, need correction, or need authentication.
+Use **再送** after correcting connectivity/authentication, or **取り消す** to
+remove an unsent item. Network failures are retried at most three times per
+manual/foreground sync pass. A server validation or operation conflict always
+requires user action.
+
+Lists fall back to their most recently fetched SwiftData cache while offline.
+**キャッシュを削除** removes downloaded records but never removes pending
+operations or their attachments. Server search and deletion remain online-only.
+
+Images and book covers are normalized to JPEG and uploaded in resumable 1 MiB
+chunks, up to the existing 10 MiB limit. The server records each operation ID
+and returns the original resource for an identical retry, so losing a response
+does not create a second record.
 
 ## Troubleshooting
 
@@ -138,11 +186,11 @@ Settings is available from the Search toolbar and still shows shared inbox
 items from the feasibility test.
 Markdown is rendered with native SwiftUI views and no WebView.
 
-The SwiftData queue, offline synchronization, chunked uploads, durable create
-deduplication, and Share Extension registration flow remain later milestones.
-Direct image and cover uploads are limited to 1 MiB. An ambiguous create
-response is never retried automatically; refresh the corresponding list and
-check whether the item was created before submitting again.
+The native screens support a SwiftData-backed offline cache and registration
+queue, resumable uploads, durable create deduplication, and Share Extension
+registration. Background execution while the app is terminated is not
+guaranteed; synchronization runs at launch, foreground activation, and on
+manual request.
 
 Repository instructions require Storybook MCP before UI work, but that MCP
 server was not exposed to this implementation session. No React UI was changed.
@@ -158,14 +206,14 @@ Auth0 `sub` must already be linked to a Better Auth `Account` with
 by that user. The API never creates or merges users.
 
 The HTTP contract is [mobile-v1.openapi.yaml](../docs/openapi/mobile-v1.yaml).
-The current whole-request upload limit is 1 MiB per image or cover; resumable
-chunked uploads and durable operation-ID deduplication are later milestones.
-Until those exist, do not automatically retry an ambiguous create response.
+Images and covers use `/uploads` sessions with 1 MiB chunks and a 10 MiB total
+limit. Upload sessions expire after 24 hours. Reusing an operation ID with
+different input is rejected with `OPERATION_CONFLICT`.
 
 ## Device smoke-test result
 
 The repository owner confirmed on a physical iPhone that the Personal Team
 build installs, Auth0 login returns to the app, and shared items reach the
 main app through the Share Extension and App Group. This confirms the minimal
-device integration only; server synchronization and full domain flows remain
-unimplemented.
+device integration. The current offline/sync flow must still be smoke-tested on
+the owner's physical device after each Personal Team re-signing.

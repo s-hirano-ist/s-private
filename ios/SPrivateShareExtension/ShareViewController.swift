@@ -2,6 +2,7 @@ import Social
 import UniformTypeIdentifiers
 
 final class ShareViewController: SLComposeServiceViewController {
+    private var category = String(localized: "共有")
     override func isContentValid() -> Bool {
         !contentText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || hasSupportedAttachment
     }
@@ -21,7 +22,7 @@ final class ShareViewController: SLComposeServiceViewController {
                            let url = try await loadURL(from: provider)
                         {
                             try store.save(
-                                SharedInboxItem(kind: .url, text: url.absoluteString)
+                                SharedInboxItem(kind: .url, text: url.absoluteString, title: enteredText.isEmpty ? url.host : enteredText, category: category)
                             )
                             savedAttachment = true
                         } else if provider.hasItemConformingToTypeIdentifier(UTType.image.identifier),
@@ -33,6 +34,7 @@ final class ShareViewController: SLComposeServiceViewController {
                                     operationID: operationID,
                                     kind: .image,
                                     text: enteredText.isEmpty ? nil : enteredText,
+                                    title: enteredText.isEmpty ? String(localized: "共有画像") : enteredText,
                                     attachmentRelativePath: "attachments/shared-image"
                                 ),
                                 attachmentData: data
@@ -43,7 +45,7 @@ final class ShareViewController: SLComposeServiceViewController {
                 }
 
                 if !enteredText.isEmpty, !savedAttachment {
-                    try store.save(SharedInboxItem(kind: .text, text: enteredText))
+                    try store.save(SharedInboxItem(kind: .text, text: enteredText, title: String(enteredText.prefix(64))))
                 }
 
                 await MainActor.run {
@@ -64,7 +66,22 @@ final class ShareViewController: SLComposeServiceViewController {
     }
 
     override func configurationItems() -> [Any]! {
-        []
+        let item = SLComposeSheetConfigurationItem()!
+        item.title = String(localized: "カテゴリ")
+        item.value = category
+        item.tapHandler = { [weak self] in self?.chooseCategory() }
+        return [item]
+    }
+
+    private func chooseCategory() {
+        let alert = UIAlertController(title: String(localized: "カテゴリ"), message: nil, preferredStyle: .alert)
+        alert.addTextField { $0.text = self.category }
+        alert.addAction(UIAlertAction(title: String(localized: "保存"), style: .default) { [weak self, weak alert] _ in
+            self?.category = alert?.textFields?.first?.text?.trimmingCharacters(in: .whitespacesAndNewlines).nonEmpty ?? String(localized: "共有")
+            self?.reloadConfigurationItems()
+        })
+        alert.addAction(UIAlertAction(title: String(localized: "キャンセル"), style: .cancel))
+        present(alert, animated: true)
     }
 
     private var hasSupportedAttachment: Bool {
@@ -102,4 +119,8 @@ final class ShareViewController: SLComposeServiceViewController {
             }
         }
     }
+}
+
+private extension String {
+    var nonEmpty: String? { isEmpty ? nil : self }
 }

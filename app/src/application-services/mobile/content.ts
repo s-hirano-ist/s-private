@@ -1,5 +1,5 @@
 import "server-only";
-import type { ServerAction } from "@/common/types";
+import type { ServerAction, ServerActionWithData } from "@/common/types";
 import { addArticleCore } from "@/application-services/articles/add-article.core";
 import { defaultAddArticleDeps } from "@/application-services/articles/add-article.deps";
 import { deleteArticleCore } from "@/application-services/articles/delete-article.core";
@@ -13,6 +13,10 @@ import { defaultAddImageDeps } from "@/application-services/images/add-image.dep
 import { deleteImageCore } from "@/application-services/images/delete-image.core";
 import { defaultDeleteImageDeps } from "@/application-services/images/delete-image.deps";
 import { MobileApiError } from "@/application-services/mobile/auth";
+import {
+	runMobileOperation,
+	type MobileCreateResult,
+} from "@/application-services/mobile/operations";
 import { addNoteCore } from "@/application-services/notes/add-note.core";
 import { defaultAddNoteDeps } from "@/application-services/notes/add-note.deps";
 import { deleteNoteCore } from "@/application-services/notes/delete-note.core";
@@ -22,6 +26,7 @@ import {
 	makeId,
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { createHash } from "node:crypto";
 import { z } from "zod";
 
 export const domains = ["articles", "notes", "images", "books"] as const;
@@ -33,8 +38,6 @@ export const listSchema = z.object({
 	offset: z.coerce.number().int().min(0).default(0),
 	status: statusSchema.optional(),
 });
-/** Temporary whole-request limit until the milestone-4 chunked upload flow. */
-export const MOBILE_MULTIPART_LIMIT = 1_200_000;
 const operationIdSchema = z.uuid();
 const articleSchema = z.strictObject({
 	operationId: operationIdSchema,
@@ -165,58 +168,134 @@ export async function createMobileContent(
 	domain: MobileDomain,
 	userId: string,
 	body: unknown,
-): Promise<void> {
+): Promise<MobileCreateResult> {
 	const form = new FormData();
-	let result: ServerAction;
+	let result: ServerActionWithData<{ id: string }>;
+	let operationId: string;
+	let hashInput: unknown;
+	let resourceLookup: () => Promise<{ id: string } | null>;
 	switch (domain) {
 		case "articles": {
 			const input = articleSchema.parse(body);
+			operationId = input.operationId;
+			hashInput = input;
 			for (const key of ["title", "quote", "url", "category"] as const)
 				form.set(key, input[key]);
-			result = await addArticleCore(
-				form,
-				defaultAddArticleDeps,
-				makeUserId(userId),
-			);
+			resourceLookup = () =>
+				prisma.article.findFirst({
+					where: { userId, url: input.url },
+					select: { id: true },
+				});
 			break;
 		}
 		case "notes": {
 			const input = noteSchema.parse(body);
+			operationId = input.operationId;
+			hashInput = input;
 			form.set("title", input.title);
 			form.set("markdown", input.markdown);
-			result = await addNoteCore(form, defaultAddNoteDeps, makeUserId(userId));
+			resourceLookup = () =>
+				prisma.note.findFirst({
+					where: { userId, title: input.title },
+					select: { id: true },
+				});
 			break;
 		}
 		case "images": {
 			if (!(body instanceof FormData))
 				throw new MobileApiError("VALIDATION_ERROR", 422);
-			operationIdSchema.parse(body.get("operationId"));
+			operationId = operationIdSchema.parse(body.get("operationId"));
 			const file = body.get("file");
-			if (!(file instanceof File) || file.size > 1024 * 1024)
+			if (!(file instanceof File) || file.size > 10 * 1024 * 1024)
 				throw new MobileApiError("UPLOAD_TOO_LARGE", 413);
-			result = await addImageCore(
-				body,
-				defaultAddImageDeps,
-				makeUserId(userId),
-			);
+			hashInput = {
+				operationId,
+				fileHash: createHash("sha256")
+					.update(Buffer.from(await file.arrayBuffer()))
+					.digest("hex"),
+				contentType: file.type,
+			};
+			resourceLookup = () =>
+				prisma.image.findFirst({
+					where: { userId },
+					orderBy: { createdAt: "desc" },
+					select: { id: true },
+				});
 			break;
 		}
 		case "books": {
 			if (!(body instanceof FormData))
 				throw new MobileApiError("VALIDATION_ERROR", 422);
-			operationIdSchema.parse(body.get("operationId"));
+			operationId = operationIdSchema.parse(body.get("operationId"));
 			const file = body.get("image");
-			if (!(file instanceof File) || file.size > 1024 * 1024)
+			if (!(file instanceof File) || file.size > 10 * 1024 * 1024)
 				throw new MobileApiError("UPLOAD_TOO_LARGE", 413);
-			result = await addBooksCore(
-				body,
-				defaultAddBooksDeps,
-				makeUserId(userId),
-			);
+			const isbn = body.get("isbn");
+			if (typeof isbn !== "string")
+				throw new MobileApiError("VALIDATION_ERROR", 422);
+			hashInput = {
+				...Object.fromEntries(
+					[...body.entries()].filter(([, value]) => typeof value === "string"),
+				),
+				fileHash: createHash("sha256")
+					.update(Buffer.from(await file.arrayBuffer()))
+					.digest("hex"),
+			};
+			resourceLookup = () =>
+				prisma.book.findFirst({
+					where: { userId, isbn },
+					select: { id: true },
+				});
 			break;
 		}
 	}
-	resultOrThrow(result);
+	return runMobileOperation(
+		userId,
+		domain,
+		operationId,
+		hashInput,
+		async () => {
+			switch (domain) {
+				case "articles":
+					result = await addArticleCore(
+						form,
+						defaultAddArticleDeps,
+						makeUserId(userId),
+					);
+					break;
+				case "notes":
+					result = await addNoteCore(
+						form,
+						defaultAddNoteDeps,
+						makeUserId(userId),
+					);
+					break;
+				case "images":
+					result = await addImageCore(
+						body as FormData,
+						defaultAddImageDeps,
+						makeUserId(userId),
+					);
+					break;
+				case "books":
+					result = await addBooksCore(
+						body as FormData,
+						defaultAddBooksDeps,
+						makeUserId(userId),
+					);
+					break;
+			}
+			if (!result.success && result.message === "duplicated") {
+				const duplicate = await resourceLookup();
+				if (duplicate) return duplicate.id;
+			}
+			resultOrThrow(result);
+			if (result.data?.id) return result.data.id;
+			const resource = await resourceLookup();
+			if (!resource) throw new MobileApiError("INTERNAL_ERROR", 500);
+			return resource.id;
+		},
+	);
 }
 
 export async function deleteMobileContent(

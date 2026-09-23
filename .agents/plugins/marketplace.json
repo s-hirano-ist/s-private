@@ -1,0 +1,22 @@
+{
+	"name": "s-private",
+	"interface": {
+		"displayName": "s-private"
+	},
+	"plugins": [
+		{
+			"name": "build-ios-apps",
+			"source": {
+				"source": "git-subdir",
+				"url": "https://github.com/openai/plugins.git",
+				"path": "./plugins/build-ios-apps",
+				"sha": "1dc195897af4161d039b80d8471ec0a10c9bbc89"
+			},
+			"policy": {
+				"installation": "INSTALLED_BY_DEFAULT",
+				"authentication": "ON_INSTALL"
+			},
+			"category": "Developer Tools"
+		}
+	]
+}

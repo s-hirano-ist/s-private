@@ -1,5 +1,6 @@
 import Foundation
 import Security
+import SwiftData
 import Testing
 @testable import SPrivate
 
@@ -146,12 +147,12 @@ struct MobileAPIContractTests {
         #expect(object["category"] == nil)
     }
 
-    @Test("A direct upload rejects images over one MiB before authentication")
+    @Test("An upload rejects images over ten MiB before authentication")
     @MainActor
     func rejectsLargeUpload() async {
         let client = MobileClient(authentication: AuthenticationModel())
         do {
-            try await client.upload(.images, image: Data(count: MobileClient.imageLimit + 1), fields: [:])
+            try await client.chunkedUpload(.images, operationId: UUID(), image: Data(count: MobileClient.imageLimit + 1), fields: [:])
             Issue.record("Expected upload size rejection")
         } catch MobileClientError.uploadTooLarge {
             // Expected.
@@ -169,6 +170,47 @@ struct NativeMarkdownParserTests {
         #expect(blocks.count == 5)
         if case let .table(rows) = blocks[2].kind { #expect(rows.count == 2) }
         else { Issue.record("Expected table") }
+    }
+}
+
+@MainActor
+struct OfflineQueueTests {
+    @Test("Pending operations survive a new coordinator and cache deletion")
+    func persistsPendingOperations() throws {
+        let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
+        let container = try ModelContainer(
+            for: CachedMobileRecord.self,
+            PendingMobileOperation.self,
+            configurations: configuration
+        )
+        let authentication = AuthenticationModel()
+        let first = SyncCoordinator(container: container, authentication: authentication)
+        let operationID = UUID()
+        try first.enqueue(
+            domain: .notes,
+            input: MobileCreate(operationId: operationID, title: "Offline", markdown: "Body")
+        )
+        first.clearCache()
+
+        let restored = SyncCoordinator(container: container, authentication: authentication)
+        #expect(restored.pendingOperations().map(\.operationID) == [operationID])
+    }
+
+    @Test("Cancelling a pending operation removes it")
+    func cancelsPendingOperation() throws {
+        let container = try ModelContainer(
+            for: CachedMobileRecord.self,
+            PendingMobileOperation.self,
+            configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+        )
+        let coordinator = SyncCoordinator(container: container, authentication: AuthenticationModel())
+        try coordinator.enqueue(
+            domain: .articles,
+            input: MobileCreate(operationId: UUID(), title: "Link", url: "https://example.com", category: "Shared")
+        )
+        let pending = try #require(coordinator.pendingOperations().first)
+        coordinator.cancel(pending)
+        #expect(coordinator.pendingOperations().isEmpty)
     }
 }
 

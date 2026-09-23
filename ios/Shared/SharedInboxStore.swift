@@ -105,6 +105,11 @@ struct SharedInboxStore {
             .sorted { $0.createdAt > $1.createdAt }
     }
 
+    func attachmentData(for item: SharedInboxItem) throws -> Data? {
+        guard let path = item.attachmentRelativePath else { return nil }
+        return try Data(contentsOf: importedURL.appending(path: item.operationID.uuidString).appending(path: path))
+    }
+
     private var pendingURL: URL {
         rootURL.appending(path: "Pending", directoryHint: .isDirectory)
     }

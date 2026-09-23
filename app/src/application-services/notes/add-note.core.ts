@@ -9,7 +9,7 @@
 
 import "server-only";
 import type { AddNoteDeps } from "./add-note.deps";
-import type { ServerAction } from "@/common/types";
+import type { ServerActionWithData } from "@/common/types";
 import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
@@ -31,7 +31,7 @@ export async function addNoteCore(
 	formData: FormData,
 	deps: AddNoteDeps,
 	principalId?: UserId,
-): Promise<ServerAction> {
+): Promise<ServerActionWithData<{ id: string }>> {
 	const { commandRepository, domainServiceFactory, eventDispatcher } = deps;
 	const notesDomainService = domainServiceFactory.createNotesDomainService();
 
@@ -58,7 +58,7 @@ export async function addNoteCore(
 		// Dispatch domain event
 		await eventDispatcher.dispatch(event);
 
-		return { success: true, message: "inserted" };
+		return { success: true, message: "inserted", data: { id: note.id } };
 	} catch (error) {
 		return await wrapServerSideErrorForClient(error, formData);
 	}

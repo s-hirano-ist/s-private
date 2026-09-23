@@ -3,6 +3,7 @@ import SwiftUI
 struct DomainListView: View {
     let domain: MobileDomain
     @EnvironmentObject private var authentication: AuthenticationModel
+    @EnvironmentObject private var sync: SyncCoordinator
     @State private var records: [MobileRecord] = []
     @State private var status: MobileContentStatus?
     @State private var totalCount = 0
@@ -41,6 +42,11 @@ struct DomainListView: View {
                         .disabled(loading)
                 }
                 if loading { ProgressView() }
+                if let fetchedAt = sync.lastSyncAt {
+                    Text(String(localized: "最終取得: \(fetchedAt.formatted(date: .abbreviated, time: .shortened))"))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
             }
             .accessibilityIdentifier("domain-list-\(domain.rawValue)")
             .navigationTitle(domain.title)
@@ -77,8 +83,15 @@ struct DomainListView: View {
             let page = try await MobileClient(authentication: authentication).list(domain, status: status, offset: reset ? 0 : records.count)
             records = reset ? page.data : records + page.data
             totalCount = page.totalCount
+            if reset { try? sync.cache(domain: domain, records: records) }
             errorMessage = nil
-        } catch { errorMessage = error.localizedDescription }
+        } catch {
+            if reset {
+                let cached = sync.cached(domain: domain)
+                if !cached.isEmpty { records = cached; totalCount = cached.count; errorMessage = String(localized: "オフラインの保存データを表示しています") }
+                else { errorMessage = error.localizedDescription }
+            } else { errorMessage = error.localizedDescription }
+        }
     }
 }
 
@@ -86,6 +99,7 @@ struct MediaThumbnailView: View {
     let domain: MobileDomain
     let id: String
     @EnvironmentObject private var authentication: AuthenticationModel
+    @EnvironmentObject private var sync: SyncCoordinator
     @State private var image: UIImage?
 
     var body: some View {
@@ -100,8 +114,12 @@ struct MediaThumbnailView: View {
         .clipped()
         .accessibilityHidden(true)
         .task(id: id) {
-            guard let data = try? await MobileClient(authentication: authentication).media(domain, id: id, variant: "thumbnail") else { return }
-            image = UIImage(data: data)
+            if let data = try? await MobileClient(authentication: authentication).media(domain, id: id, variant: "thumbnail") {
+                try? sync.cacheMedia(data, domain: domain, id: id, variant: "thumbnail")
+                image = UIImage(data: data)
+            } else if let data = sync.cachedMedia(domain: domain, id: id, variant: "thumbnail") {
+                image = UIImage(data: data)
+            }
         }
     }
 }
@@ -193,6 +211,7 @@ struct AuthenticatedImageView: View {
     let domain: MobileDomain
     let id: String
     @EnvironmentObject private var authentication: AuthenticationModel
+    @EnvironmentObject private var sync: SyncCoordinator
     @State private var image: UIImage?
     @State private var errorMessage: String?
     @State private var enlarged = false
@@ -220,9 +239,13 @@ struct AuthenticatedImageView: View {
         .task(id: id) {
             do {
                 let data = try await MobileClient(authentication: authentication).media(domain, id: id, variant: "original")
+                try? sync.cacheMedia(data, domain: domain, id: id, variant: "original")
                 image = UIImage(data: data)
                 if image == nil { errorMessage = MobileClientError.invalidResponse.localizedDescription }
-            } catch { errorMessage = error.localizedDescription }
+            } catch {
+                if let data = sync.cachedMedia(domain: domain, id: id, variant: "original") { image = UIImage(data: data) }
+                else { errorMessage = error.localizedDescription }
+            }
         }
     }
 }

@@ -9,7 +9,7 @@
 
 import "server-only";
 import type { AddBooksDeps } from "./add-books.deps";
-import type { ServerAction } from "@/common/types";
+import type { ServerActionWithData } from "@/common/types";
 import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
@@ -33,7 +33,7 @@ export async function addBooksCore(
 	formData: FormData,
 	deps: AddBooksDeps,
 	principalId?: UserId,
-): Promise<ServerAction> {
+): Promise<ServerActionWithData<{ id: string }>> {
 	const {
 		commandRepository,
 		storageService,
@@ -133,7 +133,7 @@ export async function addBooksCore(
 			eventDispatcher.dispatch(event),
 		);
 
-		return { success: true, message: "inserted" };
+		return { success: true, message: "inserted", data: { id: book.id } };
 	} catch (error) {
 		return await wrapServerSideErrorForClient(error, formData);
 	}

@@ -1,2 +1,10 @@
 [features]
 goals = true
+
+[plugins."build-ios-apps@s-private"]
+enabled = true
+
+# Prefer the repository-pinned plugin when a developer has also installed the
+# universal-directory copy in their personal Codex configuration.
+[plugins."build-ios-apps@openai-curated-remote"]
+enabled = false
