@@ -9,7 +9,7 @@ enum MobileClientError: LocalizedError {
         case .authenticationRequired: String(localized: "ログインが必要です")
         case .configurationMissing: String(localized: "接続先が設定されていません")
         case .invalidResponse: String(localized: "サーバーの応答を読み取れません")
-        case .uploadTooLarge: String(localized: "画像は1 MiB以下にしてください")
+        case .uploadTooLarge: String(localized: "画像は10 MiB以下にしてください")
         case let .http(status, code): "\(code ?? "HTTP_ERROR") (HTTP \(status))"
         }
     }
@@ -21,6 +21,18 @@ struct MobileCategory: Decodable, Identifiable {
 }
 struct MobileCategories: Decodable { let data: [MobileCategory] }
 struct MobileAccepted: Decodable { let accepted: Bool }
+private struct UploadStart: Encodable {
+    let operationId: UUID
+    let domain: MobileDomain
+    let contentType: String
+    let fileSize: Int
+    let metadata: [String: String]
+}
+private struct UploadSession: Decodable {
+    let uploadId: String
+    let chunkSize: Int
+    let receivedParts: [Int]
+}
 
 enum MobileDomain: String, Codable, CaseIterable, Identifiable {
     case articles, notes, images, books
@@ -54,7 +66,7 @@ struct MobileSearchResponse: Decodable {
     let query: String
 }
 
-struct MobileRecord: Decodable, Identifiable {
+struct MobileRecord: Codable, Identifiable {
     let id: String
     let status: MobileContentStatus
     let createdAt: Date
@@ -76,18 +88,33 @@ struct MobileRecord: Decodable, Identifiable {
     var displayTitle: String { title ?? String(localized: "画像") }
 }
 
-struct MobileCreate: Encodable {
+struct MobileCreate: Codable {
     let operationId: UUID
     let title: String
     let url: String?
     let category: String?
     let quote: String?
     let markdown: String?
+    let isbn: String?
+    let rating: Int?
+    let tags: String?
+
+    init(operationId: UUID, title: String, url: String? = nil, category: String? = nil, quote: String? = nil, markdown: String? = nil, isbn: String? = nil, rating: Int? = nil, tags: String? = nil) {
+        self.operationId = operationId; self.title = title; self.url = url; self.category = category
+        self.quote = quote; self.markdown = markdown; self.isbn = isbn; self.rating = rating; self.tags = tags
+    }
+
+    var uploadFields: [String: String] {
+        var fields: [String: String] = [:]
+        if let isbn { fields["isbn"] = isbn }; if let rating { fields["rating"] = String(rating) }
+        if let tags { fields["tags"] = tags }; if !title.isEmpty { fields["title"] = title }
+        return fields
+    }
 }
 
 @MainActor
 final class MobileClient {
-    static let imageLimit = 1_048_576
+    static let imageLimit = 10 * 1_048_576
     let authentication: AuthenticationModel
     let baseURL: URL?
     let session: URLSession
@@ -132,24 +159,24 @@ final class MobileClient {
         }
     }
 
-    func upload(_ domain: MobileDomain, image: Data, fields: [String: String]) async throws {
+    func chunkedUpload(_ domain: MobileDomain, operationId: UUID, image: Data, fields: [String: String]) async throws {
         guard image.count <= Self.imageLimit else { throw MobileClientError.uploadTooLarge }
-        let boundary = "SPrivate-\(UUID().uuidString)"
-        var body = Data()
-        for (key, value) in fields.sorted(by: { $0.key < $1.key }) {
-            body.append(Data("--\(boundary)\r\nContent-Disposition: form-data; name=\"\(key)\"\r\n\r\n\(value)\r\n".utf8))
+        let start = UploadStart(operationId: operationId, domain: domain, contentType: "image/jpeg", fileSize: image.count, metadata: fields)
+        var request = try await makeRequest("uploads", method: "POST")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try JSONEncoder().encode(start)
+        let upload = try MobileAPICoding.decoder().decode(UploadSession.self, from: await perform(request))
+        let received = Set(upload.receivedParts)
+        for part in 0..<Int(ceil(Double(image.count) / Double(upload.chunkSize))) where !received.contains(part) {
+            let lower = part * upload.chunkSize
+            let upper = min(lower + upload.chunkSize, image.count)
+            var chunkRequest = try await makeRequest("uploads/\(upload.uploadId)/chunks/\(part)", method: "PUT")
+            chunkRequest.setValue("application/octet-stream", forHTTPHeaderField: "Content-Type")
+            chunkRequest.httpBody = image.subdata(in: lower..<upper)
+            _ = try await perform(chunkRequest)
         }
-        let field = domain == .images ? "file" : "image"
-        body.append(Data("--\(boundary)\r\nContent-Disposition: form-data; name=\"\(field)\"; filename=\"image.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n".utf8))
-        body.append(image)
-        body.append(Data("\r\n--\(boundary)--\r\n".utf8))
-        var request = try await makeRequest(domain.rawValue, method: "POST")
-        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-        request.httpBody = body
-        let data = try await perform(request)
-        guard try MobileAPICoding.decoder().decode(MobileAccepted.self, from: data).accepted else {
-            throw MobileClientError.invalidResponse
-        }
+        let complete = try await makeRequest("uploads/\(upload.uploadId)/complete", method: "POST")
+        _ = try await perform(complete)
     }
 
     func delete(_ domain: MobileDomain, id: String) async throws {

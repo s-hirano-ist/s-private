@@ -5,6 +5,7 @@ import UniformTypeIdentifiers
 struct CreateView: View {
     let domain: MobileDomain
     @EnvironmentObject private var authentication: AuthenticationModel
+    @EnvironmentObject private var sync: SyncCoordinator
     @Environment(\.dismiss) private var dismiss
     @State private var title = ""
     @State private var url = ""
@@ -59,7 +60,7 @@ struct CreateView: View {
                     imagePicker
                 }
                 if let errorMessage { Text(errorMessage).foregroundStyle(.red) }
-                Text(String(localized: "登録結果が不明な場合は自動再送されません。登録一覧を確認してください。"))
+                Text(String(localized: "端末に保存してから同期します。通信が切れても同じ操作として再送されます。"))
                     .font(.footnote).foregroundStyle(.secondary)
             }
             .navigationTitle(domain.title)
@@ -126,28 +127,25 @@ struct CreateView: View {
         saving = true
         defer { saving = false }
         do {
-            let client = MobileClient(authentication: authentication)
             let operationID = UUID()
+            let input = MobileCreate(
+                operationId: operationID, title: title,
+                url: domain == .articles ? url : nil,
+                category: domain == .articles ? category : nil,
+                quote: domain == .articles ? quote : nil,
+                markdown: domain == .notes ? markdown : nil,
+                isbn: domain == .books ? isbn : nil,
+                rating: domain == .books ? rating : nil,
+                tags: domain == .books ? tags : nil
+            )
             switch domain {
             case .articles, .notes:
-                try await client.create(domain, input: MobileCreate(
-                    operationId: operationID, title: title,
-                    url: domain == .articles ? url : nil,
-                    category: domain == .articles ? category : nil,
-                    quote: domain == .articles ? quote : nil,
-                    markdown: domain == .notes ? markdown : nil
-                ))
+                try sync.enqueue(domain: domain, input: input)
             case .images, .books:
                 guard let imageData else { return }
-                var fields = ["operationId": operationID.uuidString]
-                if domain == .books {
-                    fields["isbn"] = isbn
-                    fields["title"] = title
-                    fields["rating"] = String(rating)
-                    fields["tags"] = tags
-                }
-                try await client.upload(domain, image: imageData, fields: fields)
+                try sync.enqueue(domain: domain, input: input, attachment: imageData)
             }
+            await sync.synchronize()
             dismiss()
         } catch {
             errorMessage = error.localizedDescription

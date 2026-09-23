@@ -8,6 +8,7 @@ final class SPrivateUITests: XCTestCase {
     @MainActor
     func testAuthenticationEntryIsVisible() throws {
         let app = XCUIApplication()
+        app.launchArguments.append("-ui-testing-signed-out")
         app.launch()
 
         let unconfiguredMessage = app.staticTexts["auth0-unconfigured-message"]
@@ -30,5 +31,7 @@ final class SPrivateUITests: XCTestCase {
         XCTAssertTrue(app.searchFields.firstMatch.waitForExistence(timeout: 5))
         app.buttons["settings-link"].tap()
         XCTAssertTrue(app.navigationBars.firstMatch.waitForExistence(timeout: 5))
+        app.buttons["sync-management-link"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["sync-management-view"].waitForExistence(timeout: 5))
     }
 }

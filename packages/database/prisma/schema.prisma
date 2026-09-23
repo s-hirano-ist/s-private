@@ -124,6 +124,46 @@ model Book {
   @@map("books")
 }
 
+enum MobileOperationStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+}
+
+model MobileOperation {
+  id         String                @id @db.String(36)
+  userId     String                @map("user_id") @db.String(128)
+  domain     String                @db.String(16)
+  inputHash  String                @map("input_hash") @db.String(64)
+  status     MobileOperationStatus @default(PENDING)
+  resourceId String?               @map("resource_id") @db.String(36)
+  errorCode  String?               @map("error_code") @db.String(64)
+  createdAt  DateTime              @default(now()) @map("created_at")
+  updatedAt  DateTime              @updatedAt @map("updated_at")
+
+  @@unique([userId, id])
+  @@index([userId, status])
+  @@map("mobile_operations")
+}
+
+model MobileUpload {
+  id            String   @id @db.String(36)
+  operationId   String   @map("operation_id") @db.String(36)
+  userId        String   @map("user_id") @db.String(128)
+  domain        String   @db.String(16)
+  contentType   String   @map("content_type") @db.String(64)
+  fileSize      Int      @map("file_size")
+  metadata      Json
+  receivedParts Int[]    @default([]) @map("received_parts")
+  expiresAt     DateTime @map("expires_at")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@unique([userId, operationId])
+  @@index([expiresAt])
+  @@map("mobile_uploads")
+}
+
 // ---------------------------------------------------------------------------
 // Better Auth tables (user / session / account / verification).
 //
@@ -143,8 +183,8 @@ model User {
   emailVerified Boolean @default(false) @map("email_verified")
   image         String? @db.String
 
-  Sessions Session[]
-  Accounts Account[]
+  Sessions          Session[]
+  Accounts          Account[]
   PushSubscriptions PushSubscription[]
 
   createdAt DateTime @default(now()) @map("created_at")
