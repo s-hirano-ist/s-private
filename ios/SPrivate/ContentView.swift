@@ -13,8 +13,6 @@ struct ContentView: View {
                         DomainListView(domain: domain)
                             .tabItem { Label(domain.title, systemImage: domain.symbol) }
                     }
-                    SearchView()
-                        .tabItem { Label(String(localized: "検索"), systemImage: "magnifyingglass") }
                 }
             } else {
                 NavigationStack {
@@ -91,6 +89,7 @@ struct SettingsView: View {
                     .textSelection(.enabled)
             }
         }
+        .accessibilityIdentifier("settings-view")
         .navigationTitle(String(localized: "設定"))
         .confirmationDialog(
             String(localized: "未送信データがあります"),

@@ -155,6 +155,7 @@ struct CreateView: View {
 
 struct SearchView: View {
     @EnvironmentObject private var authentication: AuthenticationModel
+    @Environment(\.dismiss) private var dismiss
     @State private var query = ""
     @State private var results: [MobileSearchResult] = []
     @State private var errorMessage: String?
@@ -180,12 +181,18 @@ struct SearchView: View {
             }
             .navigationTitle(String(localized: "検索"))
             .toolbar {
-                NavigationLink {
-                    SettingsView()
-                } label: {
-                    Label(String(localized: "設定"), systemImage: "gearshape")
+                ToolbarItem(placement: .topBarLeading) {
+                    Button(String(localized: "閉じる")) { dismiss() }
+                        .accessibilityIdentifier("search-close-button")
                 }
-                .accessibilityIdentifier("settings-link")
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink {
+                        SettingsView()
+                    } label: {
+                        Label(String(localized: "設定"), systemImage: "gearshape")
+                    }
+                    .accessibilityIdentifier("settings-link")
+                }
             }
             .searchable(text: $query)
             .onSubmit(of: .search) { Task { await search() } }
