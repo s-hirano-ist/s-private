@@ -1,4 +1,12 @@
+import type { Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
+
+async function openCreateDialog(page: Page) {
+	await expect(async () => {
+		await page.getByRole("button", { name: "新規作成" }).click();
+		await expect(page.getByRole("dialog", { name: "新規作成" })).toBeVisible();
+	}).toPass({ timeout: 15_000 });
+}
 
 const domains = [
 	{ name: "articles", formLabel: "カテゴリー", fixture: "E2E seeded article" },
@@ -11,7 +19,7 @@ test.describe("content navigation", () => {
 		test(`${domain.name} opens its create form`, async ({ page }) => {
 			await page.goto(`/ja/${domain.name}`);
 			await expect(page.getByRole("link", { name: "公開済み" })).toBeVisible();
-			await page.getByRole("button", { name: "新規作成" }).click();
+			await openCreateDialog(page);
 			await expect(page.getByLabel(domain.formLabel)).toBeVisible();
 		});
 
@@ -25,7 +33,7 @@ test.describe("content navigation", () => {
 	test("images opens its create form", async ({ page }) => {
 		await page.goto("/ja/images");
 		await expect(page.getByRole("link", { name: "公開済み" })).toBeVisible();
-		await page.getByRole("button", { name: "新規作成" }).click();
+		await openCreateDialog(page);
 		await expect(page.getByLabel("画像")).toBeVisible();
 	});
 
