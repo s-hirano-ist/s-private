@@ -9,6 +9,7 @@ Next.js + TypeScript + Clean Architectureベースのコンテンツ管理シス
 - 計画時、後方互換性は基本的に捨てること。
 - ハーネス共通資産の正本は `.harness/` に置く。`AGENTS.md`、`CLAUDE.md`、`.agents/skills/`、`.claude/skills/` のリンク先を直接編集しないこと。
 - Skillを追加・削除したら `pnpm harness:sync` でリンクを同期し、`pnpm harness:check` で検証すること。
+- `ios/`配下のSwiftUIアプリを変更、ビルド、テスト、Simulatorデバッグするときは`develop-ios-app` Skillを使用する。現在のworktree内のXcode projectとDerivedDataだけを使い、主checkoutや別worktreeの生成物を参照しないこと。
 
 ## 技術スタック
 
@@ -36,6 +37,10 @@ Next.js + TypeScript + Clean Architectureベースのコンテンツ管理シス
 - `pnpm --filter s-database prisma:migrate:diff` - 新規マイグレーションSQL生成（既存マイグレーション群とschema.prismaのdiff。ルートにスクリプトは無く packages/database にのみ存在。`--from-migrations` はシャドウDBを必要とする。`migrate dev` はクラウドの `crdb_internal_region` drift で失敗するため不使用）
 - `pnpm prisma:deploy` - マイグレーション適用（クラウドはこちらを使う）
 - `pnpm storybook` - Storybook起動
+- `mise run ios:generate` - 現在のworktree内にXcodeプロジェクトを生成
+- `mise run ios:build` - iOS 27 Simulator向けビルド
+- `mise run ios:test` - iOS単体テストとUIテスト
+- `mise run ios:run` - iPhone 17 Simulatorへインストールして起動
 
 ## AIエージェントの完了検証
 
