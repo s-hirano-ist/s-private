@@ -1,11 +1,10 @@
 openapi: 3.1.0
 info:
   title: SPrivate Mobile API
-  version: 1.0.0
+  version: 1.1.0
   description: >-
-    Authenticated iPhone API scoped to the linked Better Auth user. Mutations require an operationId UUID. The ID is
-    validated but durable idempotency is deferred to milestone 4; clients must
-    not automatically retry a creation after an ambiguous response yet.
+    Authenticated iPhone API scoped to the linked Better Auth user. Mutations require an operationId UUID.
+    Successful operations are durable and safe to retry with the same canonical input.
 servers:
   - url: /api/mobile/v1
 security:
@@ -58,9 +57,7 @@ paths:
     post:
       operationId: createContent
       description: >-
-        Articles and notes accept JSON; images and books accept multipart/form-data
-        with a file or image field respectively. Direct uploads are limited to
-        1 MiB until the chunked upload flow is implemented in milestone 4.
+        Articles and notes accept JSON. Images and books use the resumable upload endpoints.
       requestBody:
         required: true
         content:
@@ -69,28 +66,6 @@ paths:
               oneOf:
                 - $ref: '#/components/schemas/ArticleCreate'
                 - $ref: '#/components/schemas/NoteCreate'
-          multipart/form-data:
-            schema:
-              type: object
-              required: [operationId]
-              properties:
-                operationId:
-                  type: string
-                  format: uuid
-                file:
-                  type: string
-                  format: binary
-                image:
-                  type: string
-                  format: binary
-                isbn:
-                  type: string
-                title:
-                  type: string
-                rating:
-                  type: string
-                tags:
-                  type: string
       responses:
         '201':
           description: Created
@@ -98,11 +73,16 @@ paths:
             application/json:
               schema:
                 type: object
-                required: [accepted]
+                required: [accepted, operationId, resource]
                 properties:
                   accepted:
                     type: boolean
                     const: true
+                  operationId:
+                    type: string
+                    format: uuid
+                  resource:
+                    $ref: '#/components/schemas/ResourceReference'
         default:
           $ref: '#/components/responses/Error'
   /{domain}/{id}:
@@ -221,6 +201,83 @@ paths:
             image/jpeg: {}
             image/png: {}
             image/webp: {}
+        default:
+          $ref: '#/components/responses/Error'
+  /uploads:
+    post:
+      operationId: startUpload
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadStart'
+      responses:
+        '201':
+          description: Created or resumed upload session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadSession'
+        default:
+          $ref: '#/components/responses/Error'
+  /uploads/{id}:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    get:
+      operationId: getUpload
+      responses:
+        '200':
+          description: Owner-scoped upload state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadSession'
+        default:
+          $ref: '#/components/responses/Error'
+    delete:
+      operationId: cancelUpload
+      responses:
+        '204':
+          description: Upload cancelled and temporary chunks removed
+        default:
+          $ref: '#/components/responses/Error'
+  /uploads/{id}/chunks/{part}:
+    parameters:
+      - $ref: '#/components/parameters/id'
+      - name: part
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 0
+    put:
+      operationId: putUploadChunk
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+              maxLength: 1048576
+      responses:
+        '200':
+          description: Chunk accepted; sending the same part again replaces it
+        default:
+          $ref: '#/components/responses/Error'
+  /uploads/{id}/complete:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    post:
+      operationId: completeUpload
+      responses:
+        '201':
+          description: Content created or previous result returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateResult'
         default:
           $ref: '#/components/responses/Error'
 components:
@@ -361,6 +418,67 @@ components:
           type: string
         markdown:
           type: string
+    ResourceReference:
+      type: object
+      required: [id, type]
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [articles, notes, images, books]
+    CreateResult:
+      type: object
+      required: [accepted, operationId, resource]
+      properties:
+        accepted:
+          type: boolean
+          const: true
+        operationId:
+          type: string
+          format: uuid
+        resource:
+          $ref: '#/components/schemas/ResourceReference'
+    UploadStart:
+      type: object
+      required: [operationId, domain, contentType, fileSize, metadata]
+      properties:
+        operationId:
+          type: string
+          format: uuid
+        domain:
+          type: string
+          enum: [images, books]
+        contentType:
+          type: string
+          enum: [image/jpeg, image/png, image/webp]
+        fileSize:
+          type: integer
+          minimum: 1
+          maximum: 10485760
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+    UploadSession:
+      type: object
+      required: [uploadId, operationId, chunkSize, receivedParts, expiresAt]
+      properties:
+        uploadId:
+          type: string
+        operationId:
+          type: string
+          format: uuid
+        chunkSize:
+          type: integer
+          const: 1048576
+        receivedParts:
+          type: array
+          items:
+            type: integer
+        expiresAt:
+          type: string
+          format: date-time
     Error:
       type: object
       required: [error]
@@ -371,7 +489,7 @@ components:
           properties:
             code:
               type: string
-              enum: [UNAUTHORIZED, FORBIDDEN, NOT_FOUND, VALIDATION_ERROR, DUPLICATE, NOT_DELETABLE, UPLOAD_TOO_LARGE, MOBILE_API_UNAVAILABLE, INTERNAL_ERROR]
+              enum: [UNAUTHORIZED, FORBIDDEN, NOT_FOUND, VALIDATION_ERROR, DUPLICATE, NOT_DELETABLE, UPLOAD_TOO_LARGE, OPERATION_CONFLICT, OPERATION_IN_PROGRESS, INVALID_CHUNK_SIZE, UPLOAD_INCOMPLETE, UPLOAD_EXPIRED, MOBILE_API_UNAVAILABLE, INTERNAL_ERROR]
   responses:
     Error:
       description: Stable error code; never a login redirect.

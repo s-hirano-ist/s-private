@@ -134,6 +134,7 @@ describe("addImageCore", () => {
 		expect(result).toEqual({
 			success: true,
 			message: "inserted",
+			data: { id: expect.any(String) as string },
 		});
 	});
 

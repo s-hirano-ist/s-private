@@ -9,7 +9,7 @@
 
 import "server-only";
 import type { AddArticleDeps } from "./add-article.deps";
-import type { ServerAction } from "@/common/types";
+import type { ServerActionWithData } from "@/common/types";
 import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
@@ -38,7 +38,7 @@ export async function addArticleCore(
 	formData: FormData,
 	deps: AddArticleDeps,
 	principalId?: UserId,
-): Promise<ServerAction> {
+): Promise<ServerActionWithData<{ id: string }>> {
 	const { commandRepository, domainServiceFactory, eventDispatcher } = deps;
 	const articlesDomainService =
 		domainServiceFactory.createArticlesDomainService();
@@ -76,7 +76,7 @@ export async function addArticleCore(
 		// Dispatch domain event
 		await eventDispatcher.dispatch(event);
 
-		return { success: true, message: "inserted" };
+		return { success: true, message: "inserted", data: { id: article.id } };
 	} catch (error) {
 		return await wrapServerSideErrorForClient(error, formData);
 	}
