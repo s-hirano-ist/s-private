@@ -1,6 +1,6 @@
 ---
 name: review-ddd-modeling
-description: packages/coreとapp/src/application-servicesのドメインモデリングをDDDの観点でレビューし、改善候補をissues/へ記録する。ドメインモデル、集約、不変条件、値オブジェクトの監査を依頼されたときに使用する。
+description: packages/coreとapp/src/application-servicesのドメインモデリングをDDDの観点でレビューし、改善候補をGitHub Issuesへ記録する。ドメインモデル、集約、不変条件、値オブジェクトの監査を依頼されたときに使用する。
 ---
 
 # Review DDD Modeling Skill
@@ -33,15 +33,14 @@ description: packages/coreとapp/src/application-servicesのドメインモデ�
 | LOW | ユビキタス言語 | コード内の命名がドメイン用語と一致しているか |
 
 ### 3. Issue作成
-- 検出した各問題を`issues/`ディレクトリにmarkdownファイルとして作成
-- ファイル名: `ddd-model-{番号}-{短い説明}.md`
-- `ddd-model-001`から採番
+- 検出した各問題をGitHub Issuesに登録
+- タイトルにはドメインモデルの問題を具体的に示す
 
 ## 制約
-- **1問題 = 1issueファイル**: 複数の問題を1つのファイルにまとめない
+- **1問題 = 1 Issue**: 複数の問題を1つのIssueにまとめない
 - **具体的なコード参照**: 抽象的な指摘ではなく、具体的なファイル・行を示す
 - **実装は行わない**: このスキルはレビューとissue作成のみ
-- **既存issueと重複しない**: `issues/`の既存ファイルを確認
+- **既存issueと重複しない**: GitHub Issuesの既存課題を確認
 
 ## 出力形式
 
@@ -153,7 +152,7 @@ article.publish(); // 内部で状態遷移ルールを検証
 ```
 
 ## 注意事項
-- 既存の`issues/`ファイルと重複しないよう確認する
+- GitHub Issuesの既存課題と重複しないよう確認する
 - CRITICALとHIGHの問題を優先的に検出する
 - プロジェクト固有の設計判断は尊重する（docs/domain-model.mdを参照）
 - 過度な抽象化を避け、実用的な改善を提案する

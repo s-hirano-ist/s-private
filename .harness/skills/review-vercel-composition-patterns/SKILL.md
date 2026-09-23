@@ -1,6 +1,6 @@
 ---
 name: review-vercel-composition-patterns
-description: TypeScriptとReactコードをvercel-composition-patternsに照らしてレビューし、改善候補をissues/へ記録する。コンポーネント構成、compound components、boolean propsの監査を依頼されたときに使用する。
+description: TypeScriptとReactコードをvercel-composition-patternsに照らしてレビューし、改善候補をGitHub Issuesへ記録する。コンポーネント構成、compound components、boolean propsの監査を依頼されたときに使用する。
 ---
 
 # Review Vercel Composition Patterns Skill
@@ -22,8 +22,8 @@ description: TypeScriptとReactコードをvercel-composition-patternsに照ら�
   - State management issues（状態管理の問題）
 
 ### 3. Issue作成
-- 検出した各問題を`issues/`ディレクトリにmarkdownファイルとして作成
-- ファイル名: `composition-{番号}-{短い説明}.md`
+- 検出した各問題をGitHub Issuesに登録
+- タイトルにはコンポーネント構成上の問題を具体的に示す
 - 内容に含めるもの:
   - 問題の説明
   - 該当ファイルパス
@@ -31,7 +31,7 @@ description: TypeScriptとReactコードをvercel-composition-patternsに照ら�
   - 参照パターン
 
 ## 制約
-- **1問題 = 1issueファイル**: 複数の問題を1つのファイルにまとめない
+- **1問題 = 1 Issue**: 複数の問題を1つのIssueにまとめない
 - **具体的なコード参照**: 抽象的な指摘ではなく、具体的なファイル・行を示す
 - **実装は行わない**: このスキルはレビューとissue作成のみ
 
@@ -54,5 +54,4 @@ description: TypeScriptとReactコードをvercel-composition-patternsに照ら�
 ```
 
 ## 注意事項
-- 既存の`issues/`ファイルと重複しないよう確認する
-- 番号は既存issueの続きから採番する
+- GitHub Issuesの既存課題と重複しないよう確認する

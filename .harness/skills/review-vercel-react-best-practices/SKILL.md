@@ -1,6 +1,6 @@
 ---
 name: review-vercel-react-best-practices
-description: TypeScript、React、Next.jsコードをvercel-react-best-practicesに照らして性能レビューし、改善候補をissues/へ記録する。データ取得、bundle、rendering、re-renderの監査を依頼されたときに使用する。
+description: TypeScript、React、Next.jsコードをvercel-react-best-practicesに照らして性能レビューし、改善候補をGitHub Issuesへ記録する。データ取得、bundle、rendering、re-renderの監査を依頼されたときに使用する。
 ---
 
 # Review Vercel React Best Practices Skill
@@ -24,15 +24,14 @@ description: TypeScript、React、Next.jsコードをvercel-react-best-practices
   - **LOW**: Advanced Patterns (advanced-*)
 
 ### 3. Issue作成
-- 検出した各問題を`issues/`ディレクトリにmarkdownファイルとして作成
-- ファイル名: `perf-{番号}-{短い説明}.md`
-- compositionとは別の`perf-`シリーズで採番（シリーズは`perf-001`が基点。新規issueは既存の最大番号の続きから）
+- 検出した各問題をGitHub Issuesに登録
+- タイトルには性能上の問題を具体的に示す
 
 ## 制約
-- **1問題 = 1issueファイル**: 複数の問題を1つのファイルにまとめない
+- **1問題 = 1 Issue**: 複数の問題を1つのIssueにまとめない
 - **具体的なコード参照**: 抽象的な指摘ではなく、具体的なファイル・行を示す
 - **実装は行わない**: このスキルはレビューとissue作成のみ
-- **既存issueと重複しない**: `issues/`の既存ファイルを確認
+- **既存issueと重複しない**: GitHub Issuesの既存課題を確認
 
 ## 出力形式
 
@@ -84,6 +83,5 @@ description: TypeScript、React、Next.jsコードをvercel-react-best-practices
 ```
 
 ## 注意事項
-- 既存の`issues/`ファイルと重複しないよう確認する
-- 番号は`perf-`シリーズで採番（compositionとは別シリーズ。シリーズは`perf-001`が基点で、新規issueは既存の最大番号の続きから）
+- GitHub Issuesの既存課題と重複しないよう確認する
 - CRITICALとHIGHの問題を優先的に検出する
