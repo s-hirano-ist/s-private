@@ -64,3 +64,23 @@ export const Settings: Story = {
 		).not.toBeInTheDocument();
 	},
 };
+
+export const DarkUnexportedArticles: Story = {
+	globals: {
+		backgrounds: { value: "black" },
+		theme: "dark",
+	},
+	parameters: {
+		nextjs: { navigation: { pathname: "/ja/articles" } },
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(
+			canvas.getByRole("navigation", { name: "コンテンツの種類" }),
+		).toBeVisible();
+		await expect(canvas.getByRole("link", { name: "未公開" })).toHaveAttribute(
+			"aria-current",
+			"page",
+		);
+	},
+};

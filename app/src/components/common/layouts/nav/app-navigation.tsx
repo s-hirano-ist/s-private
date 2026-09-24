@@ -85,21 +85,22 @@ export function AppNavigation({ forms, search }: Props) {
 
 	return (
 		<>
-			<header className="sticky top-0 z-40 flex min-h-14 flex-wrap items-center gap-1 border-b bg-background/95 px-3 py-1 backdrop-blur-sm sm:flex-nowrap sm:gap-2">
+			<header className="sticky top-3 z-40 mx-auto flex min-h-14 w-[calc(100%-1.5rem)] max-w-3xl flex-wrap items-center gap-1 rounded-2xl border border-white/20 bg-white/70 px-3 py-1 text-foreground shadow-lg backdrop-blur-xl sm:flex-nowrap sm:gap-2 sm:rounded-full dark:border-white/10 dark:bg-gray-900/70">
 				{activeDomain ? (
 					<>
-						<h1 className="mr-auto text-base font-semibold">
+						<h1 className="mr-auto text-base font-semibold text-foreground">
 							{t(activeDomain.key)}
 						</h1>
 						<nav
 							aria-label={t("status")}
-							className="order-last grid w-full grid-cols-2 rounded-lg border p-0.5 text-center text-xs sm:order-none sm:flex sm:w-auto sm:text-sm"
+							className="order-last grid w-full grid-cols-2 rounded-full bg-primary/5 p-0.5 text-center text-xs sm:order-none sm:flex sm:w-auto sm:text-sm dark:bg-white/5"
 						>
 							<Link
 								aria-current={isViewer ? undefined : "page"}
 								className={cn(
-									"rounded-md px-2 py-1.5",
-									!isViewer && "bg-primary text-primary-foreground",
+									"rounded-full px-3 py-1.5 text-muted-foreground transition-all duration-200 hover:text-primary dark:text-foreground",
+									!isViewer &&
+										"bg-primary/15 font-semibold text-foreground shadow-sm",
 								)}
 								href={activeDomain.href}
 								onClick={() => setCreateOpen(false)}
@@ -109,8 +110,9 @@ export function AppNavigation({ forms, search }: Props) {
 							<Link
 								aria-current={isViewer ? "page" : undefined}
 								className={cn(
-									"rounded-md px-2 py-1.5",
-									isViewer && "bg-primary text-primary-foreground",
+									"rounded-full px-3 py-1.5 text-muted-foreground transition-all duration-200 hover:text-primary dark:text-foreground",
+									isViewer &&
+										"bg-primary/15 font-semibold text-foreground shadow-sm",
 								)}
 								href={activeDomain.viewerHref}
 								onClick={() => setCreateOpen(false)}
@@ -120,19 +122,23 @@ export function AppNavigation({ forms, search }: Props) {
 						</nav>
 						<Button
 							aria-label={t("create")}
+							className="size-9 shrink-0 rounded-full bg-linear-to-br from-primary to-primary-grad text-white shadow-[0_4px_20px_rgb(var(--sui-primary)/0.4)] ring-2 ring-background transition-all duration-200 hover:scale-105 hover:text-white hover:shadow-[0_6px_28px_rgb(var(--sui-primary)/0.5)] active:scale-95"
 							onClick={() => setCreateOpen(true)}
 							size="icon"
 							type="button"
-							variant="ghost"
+							variant="default"
 						>
 							<PlusIcon />
 						</Button>
 					</>
 				) : (
-					<h1 className="mr-auto text-base font-semibold">{t("settings")}</h1>
+					<h1 className="mr-auto text-base font-semibold text-foreground">
+						{t("settings")}
+					</h1>
 				)}
 				<Button
 					aria-label={t("search")}
+					className="rounded-full text-foreground transition-colors duration-200 hover:bg-primary/10"
 					onClick={() => setSearchOpen(true)}
 					size="icon"
 					type="button"
@@ -143,17 +149,17 @@ export function AppNavigation({ forms, search }: Props) {
 				{route !== "settings" && (
 					<Link
 						aria-label={t("settings")}
-						className="inline-flex size-9 items-center justify-center rounded-md hover:bg-accent"
+						className="inline-flex size-9 items-center justify-center rounded-full text-foreground transition-colors duration-200 hover:bg-primary/10"
 						href="/settings"
 					>
 						<SettingsIcon aria-hidden="true" className="size-5" />
 					</Link>
 				)}
 			</header>
-			<footer className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-sm">
+			<footer className="fixed bottom-[calc(0.75rem+env(safe-area-inset-bottom))] left-1/2 z-40 w-[calc(100%-1.5rem)] max-w-md -translate-x-1/2 rounded-full border border-white/20 bg-white/70 shadow-lg backdrop-blur-xl dark:border-white/10 dark:bg-gray-900/70">
 				<nav
 					aria-label={t("contentTypes")}
-					className="mx-auto grid h-16 max-w-5xl grid-cols-4"
+					className="grid h-14 grid-cols-4 gap-0.5 p-1"
 				>
 					{domains.map((item) => {
 						const Icon = item.icon;
@@ -161,14 +167,21 @@ export function AppNavigation({ forms, search }: Props) {
 							<Link
 								aria-current={domain === item.key ? "page" : undefined}
 								className={cn(
-									"flex min-w-0 flex-col items-center justify-center gap-0.5 text-xs text-muted-foreground",
-									domain === item.key && "font-semibold text-primary",
+									"flex min-w-0 flex-col items-center justify-center gap-0.5 rounded-full text-[10px] text-muted-foreground transition-all duration-200 hover:bg-primary/10 hover:text-primary dark:text-foreground",
+									domain === item.key &&
+										"bg-primary/15 font-medium text-foreground shadow-sm",
 								)}
 								href={isViewer ? item.viewerHref : item.href}
 								key={item.key}
 								onClick={() => setCreateOpen(false)}
 							>
-								<Icon aria-hidden="true" className="size-5" />
+								<Icon
+									aria-hidden="true"
+									className={cn(
+										"size-5",
+										domain === item.key && "text-primary",
+									)}
+								/>
 								<span>{t(item.key)}</span>
 							</Link>
 						);
