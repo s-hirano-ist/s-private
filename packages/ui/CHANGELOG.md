@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.1.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v2.0.6...@s-hirano-ist/s-ui-v2.1.0) (2026-09-24)
+
+
+### Features
+
+* align web content navigation with iOS ([29f6e40](https://github.com/s-hirano-ist/s-private/commit/29f6e403d7f2295c2418e4d60354da6ab6b37428))
+* restrict Tailwind colors to semantic tokens ([c969750](https://github.com/s-hirano-ist/s-private/commit/c969750257537848b88eb4ecbd90dfb61ff92de5))
+* **storybook:** add missing component stories ([26929f8](https://github.com/s-hirano-ist/s-private/commit/26929f843c758931d63de8b1eb155aad4adc74ca))
+* **storybook:** 未収録コンポーネントのストーリーを追加 ([be12b75](https://github.com/s-hirano-ist/s-private/commit/be12b75ca0ca4a43da7b56b31b0def725eb7a503))
+
+
+### Bug Fixes
+
+* **ui:** adjust combobox empty state spacing ([8626019](https://github.com/s-hirano-ist/s-private/commit/8626019e533268a41cd8851bfaf45e38e48b1523))
+
 ## [2.0.6](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v2.0.5...@s-hirano-ist/s-ui-v2.0.6) (2026-09-20)
 
 

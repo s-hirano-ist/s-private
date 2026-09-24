@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.22.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.21.4...@s-hirano-ist/s-database-v1.22.0) (2026-09-24)
+
+
+### Features
+
+* add daily Web Push notifications ([f905560](https://github.com/s-hirano-ist/s-private/commit/f9055604bfdfac91995be1d415c385863ce20539))
+* **ios:** add durable offline sync ([502392d](https://github.com/s-hirano-ist/s-private/commit/502392d7273ab051a00357db387857b87c69ad66))
+
+
+### Maintenance
+
+* resolve Storybook workflow merge conflict ([9105dee](https://github.com/s-hirano-ist/s-private/commit/9105dee0db92257cb78868a618dcbd4aa7f10c54))
+
 ## [1.21.4](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.21.3...@s-hirano-ist/s-database-v1.21.4) (2026-09-20)
 
 
