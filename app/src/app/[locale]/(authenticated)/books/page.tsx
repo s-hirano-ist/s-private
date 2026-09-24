@@ -1,29 +1,23 @@
-import { addBooks } from "@/application-services/books/add-books";
 import { deleteBooks } from "@/application-services/books/delete-books";
 import { loadMoreUnexportedBooks } from "@/application-services/books/load-more-books";
 import { ErrorBoundary } from "@/components/common/layouts/error-boundary";
-import { BooksFormLoader } from "@/loaders/books/books-form-loader";
 import { BooksStackLoader } from "@/loaders/books/books-stack-loader";
 import { LoadingIndicator as Loading } from "@s-hirano-ist/s-ui/loading-indicator";
 import { Suspense } from "react";
 
 export default function Page() {
 	return (
-		<>
-			<BooksFormLoader addBooks={addBooks} />
-
-			<Suspense fallback={<Loading />}>
-				<ErrorBoundary
-					errorCaller="BooksStack"
-					render={() =>
-						BooksStackLoader({
-							deleteAction: deleteBooks,
-							loadMoreAction: loadMoreUnexportedBooks,
-							variant: "unexported",
-						})
-					}
-				/>
-			</Suspense>
-		</>
+		<Suspense fallback={<Loading />}>
+			<ErrorBoundary
+				errorCaller="BooksStack"
+				render={() =>
+					BooksStackLoader({
+						deleteAction: deleteBooks,
+						loadMoreAction: loadMoreUnexportedBooks,
+						variant: "unexported",
+					})
+				}
+			/>
+		</Suspense>
 	);
 }

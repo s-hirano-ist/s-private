@@ -1,4 +1,18 @@
 {
+	"navigation": {
+		"articles": "Articles",
+		"notes": "Notes",
+		"images": "Images",
+		"books": "Books",
+		"status": "Export status",
+		"switchStatus": "Export status: {current}. Switch to {next}",
+		"unexported": "Unexported",
+		"exported": "Exported",
+		"create": "Create new",
+		"search": "Search",
+		"settings": "Settings",
+		"contentTypes": "Content types"
+	},
 	"utils": {
 		"signOut": "SIGN OUT",
 		"reload": "RELOAD",

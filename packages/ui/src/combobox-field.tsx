@@ -141,7 +141,10 @@ export function ComboboxField({
 									{emptyMessage}
 								</div>
 							</Combobox.Empty>
-							<Combobox.List className="sui:max-h-75 sui:overflow-y-auto sui:p-1">
+							<Combobox.List
+								aria-label={label}
+								className="sui:max-h-75 sui:overflow-y-auto sui:p-1"
+							>
 								{(item: ComboboxItem) => (
 									<Combobox.Item
 										className="sui:relative sui:flex sui:items-center sui:gap-2 sui:rounded-sm sui:px-2 sui:py-1.5 sui:text-sm sui:data-highlighted:bg-muted"

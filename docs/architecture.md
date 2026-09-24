@@ -330,6 +330,8 @@ import { Link, redirect, useRouter } from "@/infrastructures/i18n/routing";
 
 localeの妥当性検証と翻訳メッセージの読み込みは`infrastructures/i18n/request.ts`に集約し、next-intlから明示されたlocale、middlewareのrequest locale、`next/root-params`の順で解決する。不正localeはdefault localeへ暗黙変換せず`notFound()`とする。ProxyはServer Component用navigationをmiddleware bundleへ混入させないよう`routing-config.ts`だけを参照する。locale配下の404は`app/[locale]/not-found.tsx`、どのlocaleルートにも一致しないURLは完全なHTML文書を返す`app/global-not-found.tsx`が担当する。global 404は既定localeの静的な404を即時表示し、`NEXT_LOCALE` cookie、`Accept-Language`、`ja`の順で決定する表示を局所`Suspense`からストリームする。
 
+認証済みWeb画面の共通ナビゲーションは`app/[locale]/(authenticated)/layout.tsx`に置く。下タブはコンテンツ種別、上バーは公開状態と作成・検索・設定を担当する。公開状態は既存の`/{domain}`（未公開）と`/{domain}/viewer`（公開済み）で表し、種別を切り替えるときもURL上の状態を維持する。作成フォームは共通レイアウトからダイアログへ渡し、各ページは一覧データの描画を担当する。検索はドロワー、設定は`/settings`画面で表示する。
+
 routeファイルのprops型は手書きせず、次のNext.js生成型を唯一の定義元とする。
 
 | 対象 | 生成型 |

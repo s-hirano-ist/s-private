@@ -1,13 +1,5 @@
 import type { Metadata } from "next";
 import "@/app/globals.css";
-import {
-	sendTestPush,
-	subscribeToPush,
-	unsubscribeFromPush,
-} from "@/application-services/push-notifications/actions";
-import { searchContentFromClient } from "@/application-services/search/search-content-from-client";
-import { Footer, FooterFallback } from "@/components/common/layouts/nav/footer";
-import { env } from "@/env";
 import { IntlClientProvider } from "@/infrastructures/i18n/client-provider";
 import { loadMessages } from "@/infrastructures/i18n/request";
 import { routing } from "@/infrastructures/i18n/routing-config";
@@ -17,7 +9,6 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Noto_Sans_JP } from "next/font/google";
 import { locale } from "next/root-params";
-import { Suspense } from "react";
 
 const notoSansJp = Noto_Sans_JP({ subsets: ["latin"], display: "swap" });
 
@@ -56,18 +47,7 @@ export default async function RootLayout({
 						enableSystem
 					>
 						<ToastProvider dismissLabel="通知を閉じる">
-							<main className="min-h-screen">
-								<div className="pb-24">{children}</div>
-								<Suspense fallback={<FooterFallback />}>
-									<Footer
-										publicKey={env.NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY ?? ""}
-										search={searchContentFromClient}
-										sendTestPush={sendTestPush}
-										subscribeToPush={subscribeToPush}
-										unsubscribeFromPush={unsubscribeFromPush}
-									/>
-								</Suspense>
-							</main>
+							<main className="min-h-screen">{children}</main>
 						</ToastProvider>
 					</ThemeProvider>
 				</IntlClientProvider>

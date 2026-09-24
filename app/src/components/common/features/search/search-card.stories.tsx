@@ -102,18 +102,6 @@ const searchWithError: typeof searchContentFromClient = async () =>
 
 const meta = {
 	component: SearchCard,
-	args: {
-		publicKey: "test-public-key",
-		sendTestPush: fn().mockResolvedValue({ message: "success", success: true }),
-		subscribeToPush: fn().mockResolvedValue({
-			message: "success",
-			success: true,
-		}),
-		unsubscribeFromPush: fn().mockResolvedValue({
-			message: "success",
-			success: true,
-		}),
-	},
 	parameters: {
 		layout: "centered",
 		nextjs: {

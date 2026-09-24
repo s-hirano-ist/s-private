@@ -1,7 +1,5 @@
-import { addImage } from "@/application-services/images/add-image";
 import { deleteImage } from "@/application-services/images/delete-image";
 import { ErrorBoundary } from "@/components/common/layouts/error-boundary";
-import { ImageFormLoader } from "@/loaders/images/image-form-loader";
 import { ImagesStackLoader } from "@/loaders/images/images-stack-loader";
 import { LoadingIndicator as Loading } from "@s-hirano-ist/s-ui/loading-indicator";
 import { Suspense } from "react";
@@ -28,12 +26,8 @@ async function ImagesContent({ searchParams }: ImagesContentProps) {
 
 export default function Page({ searchParams }: PageProps<"/[locale]/images">) {
 	return (
-		<>
-			<ImageFormLoader addImage={addImage} />
-
-			<Suspense fallback={<Loading />}>
-				<ImagesContent searchParams={searchParams} />
-			</Suspense>
-		</>
+		<Suspense fallback={<Loading />}>
+			<ImagesContent searchParams={searchParams} />
+		</Suspense>
 	);
 }
