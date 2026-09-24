@@ -65,7 +65,7 @@ function Rating({
 					aria-hidden="true"
 					className={cn(
 						i < rating
-							? "sui:fill-yellow-400 sui:text-yellow-400"
+							? "sui:fill-rating sui:text-rating"
 							: "sui:fill-muted sui:text-muted",
 					)}
 					key={i}

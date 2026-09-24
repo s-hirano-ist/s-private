@@ -32,7 +32,7 @@ export async function ViewerBody({ slug, getBookByISBN }: Props) {
 						{data.imagePath && (
 							<ImageWithFallback
 								alt={`${altText} (uploaded)`}
-								className="rounded bg-white"
+								className="rounded bg-media-surface"
 								height={192}
 								src={`/api/books/images/original/${data.imagePath}`}
 								width={192}

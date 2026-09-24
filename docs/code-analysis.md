@@ -129,6 +129,7 @@ TypeScript/JavaScript は oxlint に一本化した状態を維持し、oxlint �
 - **dependency-cruiser**: Clean Architecture 層境界（`eslint-plugin-boundaries` から移植。oxlint の JS plugin は `settings` の boundaries/* キーを受け付けず動作不可のため）。`dependency-cruiser.config.js` の `boundary-*` ルール（allow-list を deny-list に翻訳、29 本）。
 - **oxfmt**: format 全般（Prettier互換、タブ・行幅80）+ import 整理（sortImports）+ Tailwind class 並べ替え（sortTailwindcss、`cn`/`clsx`/`tv`）。旧 Biome の format + organizeImports + useSortedClasses を置換。
 - **Stylelint**: CSS 構文、無効な宣言の組み合わせ、対象ブラウザで未対応の機能、最低限のプロパティ順を検査する。プロジェクトで使用するTailwind CSSのディレクティブと関数は明示的に許可する。
+- **色チェック**: `scripts/check-semantic-colors.mjs` が app と共通 UI の Tailwind クラスから既定パレット色と任意の色指定を検出する。`pnpm lint:colors` はチェック自身のテストも実行し、`pnpm lint` に含まれる。
 - **rumdl**: Rust ネイティブ実装で手書き Markdown の構造を検査する。既存違反ファイルは `.rumdl.toml` の baseline に列挙し、修正完了時に該当 entry を削除する。生成 docs、CHANGELOG、agent skills は対象外。
 - **Gitleaks**: デフォルトルールと `.gitleaks.toml` のプロジェクト固有ルールで credential、token、秘密鍵、接続文字列を検査する。`scripts/check-secrets.mjs` は合成secretを標準入力で先に検知させ、ルールやバイナリが機能しない状態を fail-close する。検知値は常に完全マスクする。
 
@@ -136,6 +137,7 @@ TypeScript/JavaScript は oxlint に一本化した状態を維持し、oxlint �
 
 ```bash
 pnpm lint:css          # CSS 検査
+pnpm lint:colors       # Tailwind の用途別色トークン検査
 pnpm lint:css:fix      # CSS の安全な自動修正
 pnpm lint:md           # Markdown 検査（baseline を除く）
 pnpm lint:md:fix       # Markdown の安全な自動修正

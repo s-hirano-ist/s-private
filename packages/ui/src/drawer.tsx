@@ -91,7 +91,7 @@ function DrawerOverlay({
 		<DrawerPrimitive.Backdrop
 			className={cnWithState(
 				className,
-				"sui:fixed sui:inset-0 sui:z-50 sui:bg-black/50 sui:transition-opacity sui:duration-300 sui:data-[ending-style]:opacity-0 sui:data-[starting-style]:opacity-0",
+				"sui:fixed sui:inset-0 sui:z-50 sui:bg-overlay/50 sui:transition-opacity sui:duration-300 sui:data-[ending-style]:opacity-0 sui:data-[starting-style]:opacity-0",
 			)}
 			data-slot="drawer-overlay"
 			{...props}

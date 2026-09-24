@@ -22,7 +22,7 @@ export const WithCustomClass: Story = {
 	render: () => (
 		<Input
 			aria-label="Input with custom class"
-			className="border-red-500"
+			className="border-destructive"
 			placeholder="Input with custom class"
 		/>
 	),
@@ -48,7 +48,7 @@ export const WithError: Story = {
 	render: () => (
 		<Input
 			aria-label="Input with error"
-			className="border-red-500"
+			className="border-destructive"
 			placeholder="Input with error"
 		/>
 	),
@@ -98,7 +98,7 @@ export const WithHelperText: Story = {
 				aria-label="Input with helper text"
 				placeholder="Input with helper text"
 			/>
-			<p className="mt-2 text-sm text-gray-500">
+			<p className="mt-2 text-sm text-muted-foreground">
 				This is some helper text to assist the user.
 			</p>
 		</div>

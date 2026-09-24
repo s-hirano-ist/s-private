@@ -17,7 +17,7 @@ function DialogOverlay({
 		<DialogPrimitive.Backdrop
 			className={cnWithState(
 				className,
-				"sui:fixed sui:inset-0 sui:z-50 sui:bg-black/80 sui:transition-opacity sui:duration-200 sui:data-[ending-style]:opacity-0 sui:data-[starting-style]:opacity-0",
+				"sui:fixed sui:inset-0 sui:z-50 sui:bg-overlay/80 sui:transition-opacity sui:duration-200 sui:data-[ending-style]:opacity-0 sui:data-[starting-style]:opacity-0",
 			)}
 			data-slot="dialog-overlay"
 			{...props}

@@ -86,7 +86,7 @@ export function AppNavigation({ forms, search }: Props) {
 
 	return (
 		<>
-			<header className="sticky top-3 z-40 mx-auto flex min-h-14 w-[calc(100%-1.5rem)] max-w-3xl flex-nowrap items-center gap-1 rounded-full border border-white/20 bg-white/70 px-2 py-1 text-foreground shadow-lg backdrop-blur-xl sm:gap-2 sm:px-3 dark:border-white/10 dark:bg-gray-900/70">
+			<header className="sticky top-3 z-40 mx-auto flex min-h-14 w-[calc(100%-1.5rem)] max-w-3xl flex-nowrap items-center gap-1 rounded-full border border-nav-border/10 bg-nav-surface/70 px-2 py-1 text-foreground shadow-lg backdrop-blur-xl sm:gap-2 sm:px-3">
 				{activeDomain ? (
 					<>
 						<nav aria-label={t("status")} className="mr-auto min-w-0">
@@ -95,7 +95,7 @@ export function AppNavigation({ forms, search }: Props) {
 									current: t(isViewer ? "exported" : "unexported"),
 									next: t(isViewer ? "unexported" : "exported"),
 								})}
-								className="inline-flex h-9 items-center gap-1.5 rounded-full bg-primary/10 px-3 text-xs font-medium whitespace-nowrap text-foreground transition-colors duration-200 hover:bg-primary/20 dark:bg-white/10 dark:hover:bg-white/15"
+								className="inline-flex h-9 items-center gap-1.5 rounded-full bg-primary/10 px-3 text-xs font-medium whitespace-nowrap text-foreground transition-colors duration-200 hover:bg-primary/20"
 								href={isViewer ? activeDomain.href : activeDomain.viewerHref}
 								onClick={() => setCreateOpen(false)}
 							>
@@ -105,7 +105,7 @@ export function AppNavigation({ forms, search }: Props) {
 						</nav>
 						<Button
 							aria-label={t("create")}
-							className="size-9 shrink-0 rounded-full bg-linear-to-br from-primary to-primary-grad text-white shadow-[0_4px_20px_rgb(var(--sui-primary)/0.4)] ring-2 ring-background transition-all duration-200 hover:scale-105 hover:text-white hover:shadow-[0_6px_28px_rgb(var(--sui-primary)/0.5)] active:scale-95"
+							className="size-9 shrink-0 rounded-full bg-linear-to-br from-primary to-primary-grad text-primary-foreground shadow-[0_4px_20px_rgb(var(--sui-primary)/0.4)] ring-2 ring-background transition-all duration-200 hover:scale-105 hover:text-primary-foreground hover:shadow-[0_6px_28px_rgb(var(--sui-primary)/0.5)] active:scale-95"
 							onClick={() => setCreateOpen(true)}
 							size="icon"
 							type="button"
@@ -139,7 +139,7 @@ export function AppNavigation({ forms, search }: Props) {
 					</Link>
 				)}
 			</header>
-			<footer className="fixed bottom-[calc(0.75rem+env(safe-area-inset-bottom))] left-1/2 z-40 w-[calc(100%-1.5rem)] max-w-md -translate-x-1/2 rounded-full border border-white/20 bg-white/70 shadow-lg backdrop-blur-xl dark:border-white/10 dark:bg-gray-900/70">
+			<footer className="fixed bottom-[calc(0.75rem+env(safe-area-inset-bottom))] left-1/2 z-40 w-[calc(100%-1.5rem)] max-w-md -translate-x-1/2 rounded-full border border-nav-border/10 bg-nav-surface/70 shadow-lg backdrop-blur-xl">
 				<nav
 					aria-label={t("contentTypes")}
 					className="grid h-14 grid-cols-4 gap-0.5 p-1"
