@@ -2,6 +2,87 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.14.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.13.2...s-private-v3.14.0) (2026-09-24)
+
+
+### Features
+
+* add daily Web Push notifications ([f905560](https://github.com/s-hirano-ist/s-private/commit/f9055604bfdfac91995be1d415c385863ce20539))
+* add worktree-safe iOS Codex workflow ([a215645](https://github.com/s-hirano-ist/s-private/commit/a21564560fd956125cdf1d82fb0f293cf07ae932))
+* align web content navigation with iOS ([29f6e40](https://github.com/s-hirano-ist/s-private/commit/29f6e403d7f2295c2418e4d60354da6ab6b37428))
+* **ios:** add authenticated mobile API foundation ([f90f5e5](https://github.com/s-hirano-ist/s-private/commit/f90f5e57a3ba4cf553e1158311daf60e4cd3c152))
+* **ios:** add device integration foundation ([7126496](https://github.com/s-hirano-ist/s-private/commit/71264963a185e42d13847a3b7da4b2410c8c3d0b))
+* **ios:** add durable offline sync ([502392d](https://github.com/s-hirano-ist/s-private/commit/502392d7273ab051a00357db387857b87c69ad66))
+* **ios:** add iOS 27 development environment ([5305598](https://github.com/s-hirano-ist/s-private/commit/53055986d1e6a88db5f806d4a2ebf0d03922854f))
+* **ios:** add media grids and thumbnail caching ([b253247](https://github.com/s-hirano-ist/s-private/commit/b25324709a4d668339f55d79a800a79678b243a2))
+* **ios:** add native online content screens ([16b76cc](https://github.com/s-hirano-ist/s-private/commit/16b76ccb7d6ec964a73ed14037bd9b3529f1c347))
+* **ios:** iOS 27開発環境とサンプルアプリを追加 ([79d0f91](https://github.com/s-hirano-ist/s-private/commit/79d0f917d64bb6ade543863f42bd2d05247971d7))
+* **ios:** move search to top toolbar and use four tabs ([f710bfd](https://github.com/s-hirano-ist/s-private/commit/f710bfd0830830ee2b426620b911c79e62f9a85b))
+* **ios:** オンライン版のコンテンツ画面を追加 ([6c16adb](https://github.com/s-hirano-ist/s-private/commit/6c16adbcbde431d8e5aea95f7883d18026a220df))
+* **ios:** モバイルAPI基盤を追加 ([009c520](https://github.com/s-hirano-ist/s-private/commit/009c5209677d8fbf7f50d54cac9a5cb00317a444))
+* **ios:** 実機連携の基盤を追加 ([245237f](https://github.com/s-hirano-ist/s-private/commit/245237ffb0b19a7c479c6477e52826d4c91f1e2e))
+* **observability:** route errors to Sentry and limit notifications ([5c6fd5c](https://github.com/s-hirano-ist/s-private/commit/5c6fd5c8b2dd96a6aadad6250dad0d7ddd754d6c))
+* restrict Tailwind colors to semantic tokens ([c969750](https://github.com/s-hirano-ist/s-private/commit/c969750257537848b88eb4ecbd90dfb61ff92de5))
+* seed local development sample data on first sign-in ([8ea2966](https://github.com/s-hirano-ist/s-private/commit/8ea296619107fd4ccbd0ec391b0b465f36fbf270))
+* **storybook:** add missing component stories ([26929f8](https://github.com/s-hirano-ist/s-private/commit/26929f843c758931d63de8b1eb155aad4adc74ca))
+* **storybook:** 未収録コンポーネントのストーリーを追加 ([be12b75](https://github.com/s-hirano-ist/s-private/commit/be12b75ca0ca4a43da7b56b31b0def725eb7a503))
+
+
+### Bug Fixes
+
+* **auth:** repair local sessions and tenant context across reloads ([f448f84](https://github.com/s-hirano-ist/s-private/commit/f448f84bbef859e3682c8768293bf4b8ad053394))
+* **build:** skip Sentry transforms without auth token ([74b70c2](https://github.com/s-hirano-ist/s-private/commit/74b70c268f7dcca1b52789ce639cfe53a7e68c6d))
+* **ci:** register push service worker with knip ([bc3ba79](https://github.com/s-hirano-ist/s-private/commit/bc3ba7950b42de19594c1401baa866f0bdd0ffeb))
+* format ([e42ef63](https://github.com/s-hirano-ist/s-private/commit/e42ef6337968137ccca0ba7b6c1c2dec1c0929c2))
+* improve web push error feedback and routing ([8f7f298](https://github.com/s-hirano-ist/s-private/commit/8f7f298d3ce79c47173a4661fae71cfa639012bd))
+* **ios:** apply local xcconfig to generated project ([641e424](https://github.com/s-hirano-ist/s-private/commit/641e4242d844d8b274fe4d5b60eebbf89b6ef932))
+* **ios:** open Xcode 27 Device Hub ([d09014a](https://github.com/s-hirano-ist/s-private/commit/d09014adbcd7f2f537f90831573afa73c3fdb9d8))
+* **ios:** pass mobile API config through turbo ([4ea7e7b](https://github.com/s-hirano-ist/s-private/commit/4ea7e7b8d0ddd6995ae0e2502a6abd0a0800e294))
+* **ios:** scope mobile API to each linked user ([4dc1487](https://github.com/s-hirano-ist/s-private/commit/4dc14874088350f3f669477071c506dde5432c09))
+* **ios:** sign simulator builds for app capabilities ([bfe0bd2](https://github.com/s-hirano-ist/s-private/commit/bfe0bd26c6e392dd78b0d972181bb91509c07b7a))
+* more designs ([8ea517d](https://github.com/s-hirano-ist/s-private/commit/8ea517db81c79dc36ab5100af602568b47745b82))
+* move Vercel cron configuration under app root ([bb2dbc4](https://github.com/s-hirano-ist/s-private/commit/bb2dbc4a578ab3d9d54225756781bb7b4f04a476))
+* padding of counter badge ([2f3e4c9](https://github.com/s-hirano-ist/s-private/commit/2f3e4c96a6acd9b5c276162982c6d35b548bc9dc))
+* small padding issue ([6cd6c4f](https://github.com/s-hirano-ist/s-private/commit/6cd6c4f14b0eb6a2e38c6e8a5f576b786983baed))
+* small padding issues ([21ce67e](https://github.com/s-hirano-ist/s-private/commit/21ce67e9a5a8c81c258f364dee3727c4a5471d20))
+* small padding issues ([092a139](https://github.com/s-hirano-ist/s-private/commit/092a139902005c570856c594e42b257e9d8dc196))
+* **ui:** adjust combobox empty state spacing ([8626019](https://github.com/s-hirano-ist/s-private/commit/8626019e533268a41cd8851bfaf45e38e48b1523))
+* unify search result cards ([db66610](https://github.com/s-hirano-ist/s-private/commit/db666102ec8b7f273a6ac2cac1dcddee4c38ef79))
+* 検索結果カード表示を統一 ([be4d195](https://github.com/s-hirano-ist/s-private/commit/be4d195f472b09ab4bb1f56ff3a02d52df5fcb7b))
+
+
+### Documentation
+
+* add iOS native app implementation plan ([2e8d858](https://github.com/s-hirano-ist/s-private/commit/2e8d858ef03ac8107db714772eabb8de465bc00f))
+* check export link before opening create dialog ([4cd018a](https://github.com/s-hirano-ist/s-private/commit/4cd018a0ae6dee8ea030500e5660cea6dfca9a09))
+* delete issue ([88b1cb3](https://github.com/s-hirano-ist/s-private/commit/88b1cb3e5dd257c9b12337f2eaa379d55112d2c3))
+* delete issue ([948ab11](https://github.com/s-hirano-ist/s-private/commit/948ab119c1ef8fec9583a48dc03450881e633ddb))
+* **ios:** clarify production mobile API endpoint ([d9e0905](https://github.com/s-hirano-ist/s-private/commit/d9e0905696575ab519a510d887497093e7ef3f0d))
+* **ios:** record successful device smoke test ([e0b5d34](https://github.com/s-hirano-ist/s-private/commit/e0b5d3454534eeb856ddefa51f03f3373e0e3003))
+* retry create dialog until hydrated ([64920cb](https://github.com/s-hirano-ist/s-private/commit/64920cb197a18d7b7cc2e694ba76762fa467cf44))
+
+
+### Maintenance
+
+* compact top navigation for mobile ([bedd46b](https://github.com/s-hirano-ist/s-private/commit/bedd46b50f67544810c997356faaefaa0225d20a))
+* **deps:** update pnpm to v12.5.1 ([10f97e9](https://github.com/s-hirano-ist/s-private/commit/10f97e9f4447dca180270174e72b72f7761cbe0a))
+* **deps:** update pnpm to v12.5.1 ([ab9d822](https://github.com/s-hirano-ist/s-private/commit/ab9d8225f90feeea5f1ba1c0de598e7a7fe3922b))
+* **ios:** merge main and resolve grid search conflict ([26e7c41](https://github.com/s-hirano-ist/s-private/commit/26e7c41c9a17d7bdbbc9bbb4c693b2e3027c51ad))
+* **ios:** share non-secret config across worktrees ([24c87a8](https://github.com/s-hirano-ist/s-private/commit/24c87a85c55e354c81fd771f761087bc57b92cbd))
+* make Storybook agent workflow worktree-safe ([ab1ae39](https://github.com/s-hirano-ist/s-private/commit/ab1ae392a63cda0a0627ea05b9d9763da5cff558))
+* make Storybook agent workflow worktree-safe ([45a0435](https://github.com/s-hirano-ist/s-private/commit/45a0435f81576a37e018b7bee9ee0172bb91b9c3))
+* migrate local issues to GitHub Issues ([83dd25e](https://github.com/s-hirano-ist/s-private/commit/83dd25ed53b1b70865e6b1ecb99ba1f21262a340))
+* remove obsolete issue workflow skill ([8a33446](https://github.com/s-hirano-ist/s-private/commit/8a3344673ebfb453cd03806c796ea4785f385f7f))
+* resolve Storybook workflow merge conflict ([9105dee](https://github.com/s-hirano-ist/s-private/commit/9105dee0db92257cb78868a618dcbd4aa7f10c54))
+* restore floating glass navigation ([ded1568](https://github.com/s-hirano-ist/s-private/commit/ded156894ddb78101a7985517100619504deb855))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @s-hirano-ist/s-ui bumped to 2.1.0
+
 ## [3.13.2](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.13.1...s-private-v3.13.2) (2026-09-20)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-notification-v1.18.7...@s-hirano-ist/s-notification-v1.19.0) (2026-09-24)
+
+
+### Features
+
+* add daily Web Push notifications ([f905560](https://github.com/s-hirano-ist/s-private/commit/f9055604bfdfac91995be1d415c385863ce20539))
+
 ## [1.18.7](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-notification-v1.18.6...@s-hirano-ist/s-notification-v1.18.7) (2026-09-19)
 
 
