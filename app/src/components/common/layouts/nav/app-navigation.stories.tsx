@@ -26,10 +26,14 @@ export const UnexportedArticles: Story = {
 		await expect(
 			canvas.getByRole("navigation", { name: "コンテンツの種類" }),
 		).toBeVisible();
-		await expect(canvas.getByRole("link", { name: "未公開" })).toHaveAttribute(
-			"aria-current",
-			"page",
-		);
+		await expect(
+			canvas.getByRole("link", {
+				name: "公開状態: 未公開。公開済みに切り替え",
+			}),
+		).toHaveAttribute("href", "/ja/articles/viewer");
+		await expect(
+			canvas.queryByRole("heading", { name: "記事" }),
+		).not.toBeInTheDocument();
 		await userEvent.click(canvas.getByRole("button", { name: "新規作成" }));
 		const dialog = await within(document.body).findByRole("dialog");
 		const form = within(dialog).getByText("Article form");
@@ -42,8 +46,10 @@ export const ExportedBooks: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await expect(
-			canvas.getByRole("link", { name: "公開済み" }),
-		).toHaveAttribute("aria-current", "page");
+			canvas.getByRole("link", {
+				name: "公開状態: 公開済み。未公開に切り替え",
+			}),
+		).toHaveAttribute("href", "/ja/books");
 		const tabs = within(
 			canvas.getByRole("navigation", { name: "コンテンツの種類" }),
 		);
@@ -78,9 +84,38 @@ export const DarkUnexportedArticles: Story = {
 		await expect(
 			canvas.getByRole("navigation", { name: "コンテンツの種類" }),
 		).toBeVisible();
-		await expect(canvas.getByRole("link", { name: "未公開" })).toHaveAttribute(
-			"aria-current",
-			"page",
-		);
+		await expect(
+			canvas.getByRole("link", {
+				name: "公開状態: 未公開。公開済みに切り替え",
+			}),
+		).toHaveAttribute("href", "/ja/articles/viewer");
+	},
+};
+
+export const CompactMobileArticles: Story = {
+	globals: { viewport: { value: "mobile1" } },
+	decorators: [
+		(Story) => (
+			<div className="w-[280px] max-w-full">
+				<Story />
+			</div>
+		),
+	],
+	parameters: { nextjs: { navigation: { pathname: "/ja/articles" } } },
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const header = canvas.getByRole("banner");
+		await expect(header.scrollWidth).toBeLessThanOrEqual(header.clientWidth);
+		await expect(header.getBoundingClientRect().height).toBeLessThanOrEqual(56);
+		await expect(
+			canvas.getByRole("link", {
+				name: "公開状態: 未公開。公開済みに切り替え",
+			}),
+		).toBeVisible();
+		await expect(
+			canvas.getByRole("button", { name: "新規作成" }),
+		).toBeVisible();
+		await expect(canvas.getByRole("button", { name: "検索" })).toBeVisible();
+		await expect(canvas.getByRole("link", { name: "設定" })).toBeVisible();
 	},
 };

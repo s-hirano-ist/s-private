@@ -5,6 +5,7 @@
 		"images": "Images",
 		"books": "Books",
 		"status": "Export status",
+		"switchStatus": "Export status: {current}. Switch to {next}",
 		"unexported": "Unexported",
 		"exported": "Exported",
 		"create": "Create new",

@@ -5,6 +5,7 @@
 		"images": "画像",
 		"books": "書籍",
 		"status": "公開状態",
+		"switchStatus": "公開状態: {current}。{next}に切り替え",
 		"unexported": "未公開",
 		"exported": "公開済み",
 		"create": "新規作成",

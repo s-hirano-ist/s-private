@@ -12,6 +12,7 @@ import {
 } from "@s-hirano-ist/s-ui/dialog";
 import { cn } from "@s-hirano-ist/s-ui/utils/cn";
 import {
+	ArrowLeftRightIcon,
 	BookOpenIcon,
 	FileTextIcon,
 	ImageIcon,
@@ -85,39 +86,21 @@ export function AppNavigation({ forms, search }: Props) {
 
 	return (
 		<>
-			<header className="sticky top-3 z-40 mx-auto flex min-h-14 w-[calc(100%-1.5rem)] max-w-3xl flex-wrap items-center gap-1 rounded-2xl border border-white/20 bg-white/70 px-3 py-1 text-foreground shadow-lg backdrop-blur-xl sm:flex-nowrap sm:gap-2 sm:rounded-full dark:border-white/10 dark:bg-gray-900/70">
+			<header className="sticky top-3 z-40 mx-auto flex min-h-14 w-[calc(100%-1.5rem)] max-w-3xl flex-nowrap items-center gap-1 rounded-full border border-white/20 bg-white/70 px-2 py-1 text-foreground shadow-lg backdrop-blur-xl sm:gap-2 sm:px-3 dark:border-white/10 dark:bg-gray-900/70">
 				{activeDomain ? (
 					<>
-						<h1 className="mr-auto text-base font-semibold text-foreground">
-							{t(activeDomain.key)}
-						</h1>
-						<nav
-							aria-label={t("status")}
-							className="order-last grid w-full grid-cols-2 rounded-full bg-primary/5 p-0.5 text-center text-xs sm:order-none sm:flex sm:w-auto sm:text-sm dark:bg-white/5"
-						>
+						<nav aria-label={t("status")} className="mr-auto min-w-0">
 							<Link
-								aria-current={isViewer ? undefined : "page"}
-								className={cn(
-									"rounded-full px-3 py-1.5 text-muted-foreground transition-all duration-200 hover:text-primary dark:text-foreground",
-									!isViewer &&
-										"bg-primary/15 font-semibold text-foreground shadow-sm",
-								)}
-								href={activeDomain.href}
+								aria-label={t("switchStatus", {
+									current: t(isViewer ? "exported" : "unexported"),
+									next: t(isViewer ? "unexported" : "exported"),
+								})}
+								className="inline-flex h-9 items-center gap-1.5 rounded-full bg-primary/10 px-3 text-xs font-medium whitespace-nowrap text-foreground transition-colors duration-200 hover:bg-primary/20 dark:bg-white/10 dark:hover:bg-white/15"
+								href={isViewer ? activeDomain.href : activeDomain.viewerHref}
 								onClick={() => setCreateOpen(false)}
 							>
-								{t("unexported")}
-							</Link>
-							<Link
-								aria-current={isViewer ? "page" : undefined}
-								className={cn(
-									"rounded-full px-3 py-1.5 text-muted-foreground transition-all duration-200 hover:text-primary dark:text-foreground",
-									isViewer &&
-										"bg-primary/15 font-semibold text-foreground shadow-sm",
-								)}
-								href={activeDomain.viewerHref}
-								onClick={() => setCreateOpen(false)}
-							>
-								{t("exported")}
+								{t(isViewer ? "exported" : "unexported")}
+								<ArrowLeftRightIcon aria-hidden="true" className="size-3.5" />
 							</Link>
 						</nav>
 						<Button
@@ -138,7 +121,7 @@ export function AppNavigation({ forms, search }: Props) {
 				)}
 				<Button
 					aria-label={t("search")}
-					className="rounded-full text-foreground transition-colors duration-200 hover:bg-primary/10"
+					className="shrink-0 rounded-full text-foreground transition-colors duration-200 hover:bg-primary/10"
 					onClick={() => setSearchOpen(true)}
 					size="icon"
 					type="button"
@@ -149,7 +132,7 @@ export function AppNavigation({ forms, search }: Props) {
 				{route !== "settings" && (
 					<Link
 						aria-label={t("settings")}
-						className="inline-flex size-9 items-center justify-center rounded-full text-foreground transition-colors duration-200 hover:bg-primary/10"
+						className="inline-flex size-9 shrink-0 items-center justify-center rounded-full text-foreground transition-colors duration-200 hover:bg-primary/10"
 						href="/settings"
 					>
 						<SettingsIcon aria-hidden="true" className="size-5" />

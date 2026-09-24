@@ -33,7 +33,7 @@ const preview = {
 					nonce={STORYBOOK_CSP_NONCE}
 				>
 					<ToastProvider>
-						<div className="w-96">
+						<div className="w-full max-w-96">
 							<Story />
 						</div>
 					</ToastProvider>
