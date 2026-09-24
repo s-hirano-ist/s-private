@@ -102,6 +102,10 @@ const articlesDomainService = domainServiceFactory.createArticlesDomainService()
 - **コンポーネント規則**: TypeScriptインターフェースは`type`として定義（`interface`ではない）、Reactフックルールを強制
 - **依存関係管理**: 循環依存検出用にdependency cruiserを設定（詳細は[code-analysis.md](code-analysis.md)を参照）
 
+### UIの色
+
+`packages/ui/src/styles.css` の `--sui-*` をライト・ダーク両モードの色の定義元とする。`app/src/app/globals.css` と共通 UI の Tailwind CSS ビルドは既定の色パレットを無効にし、用途別の `--color-*` のみを公開する。コンポーネントでは `bg-background`、`text-destructive` などの用途別クラスを使用し、固定用途の色も新しいトークンとして定義する。`pnpm lint:colors` はパレット色と任意の色指定の再混入を検出し、通常の `pnpm lint` に含まれる。
+
 ### インポートルール
 
 **バレルインポート禁止**

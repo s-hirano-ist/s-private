@@ -27,9 +27,9 @@ const buttonVariants = tv({
 	variants: {
 		variant: {
 			default:
-				"sui:bg-linear-to-r sui:from-primary sui:to-primary-grad sui:text-white sui:shadow-[0_2px_16px_rgb(var(--sui-primary)/0.3)] sui:hover:shadow-[0_4px_24px_rgb(var(--sui-primary)/0.45)] sui:hover:brightness-110",
+				"sui:bg-linear-to-r sui:from-primary sui:to-primary-grad sui:text-primary-foreground sui:shadow-[0_2px_16px_rgb(var(--sui-primary)/0.3)] sui:hover:shadow-[0_4px_24px_rgb(var(--sui-primary)/0.45)] sui:hover:brightness-110",
 			destructive:
-				"sui:bg-destructive sui:text-white sui:shadow-[0_2px_16px_rgb(var(--sui-destructive)/0.3)] sui:hover:shadow-[0_4px_24px_rgb(var(--sui-destructive)/0.45)] sui:hover:brightness-110",
+				"sui:bg-destructive sui:text-destructive-foreground sui:shadow-[0_2px_16px_rgb(var(--sui-destructive)/0.3)] sui:hover:shadow-[0_4px_24px_rgb(var(--sui-destructive)/0.45)] sui:hover:brightness-110",
 			outline:
 				"sui:border sui:border-foreground/10 sui:bg-background/60 sui:shadow-xs sui:backdrop-blur-sm sui:hover:border-primary/30 sui:hover:bg-background/90 sui:hover:shadow-md",
 			secondary:

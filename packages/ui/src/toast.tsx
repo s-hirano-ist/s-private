@@ -24,7 +24,7 @@ function ToastIcon({ type }: { type?: string }) {
 	}
 	if (type === "success") {
 		return (
-			<CircleCheckIcon className="sui:size-5 sui:shrink-0 sui:text-green-600" />
+			<CircleCheckIcon className="sui:size-5 sui:shrink-0 sui:text-success" />
 		);
 	}
 	return null;

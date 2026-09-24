@@ -40,7 +40,7 @@ export const WithError: Story = {
 	render: () => (
 		<Textarea
 			aria-label="Textarea with error"
-			className="border-red-500"
+			className="border-destructive"
 			placeholder="Textarea with error"
 		/>
 	),
@@ -60,7 +60,7 @@ export const WithLabel: Story = {
 	render: () => (
 		<div>
 			<label
-				className="mb-2 block text-sm font-medium text-gray-700"
+				className="mb-2 block text-sm font-medium text-foreground"
 				htmlFor="textarea-with-label"
 			>
 				Label for Textarea

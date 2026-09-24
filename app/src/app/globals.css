@@ -8,3 +8,26 @@
 @plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+	/* stylelint-disable-next-line custom-property-pattern */
+	--color-*: initial;
+}
+
+@theme inline {
+	--color-background: rgb(var(--sui-background));
+	--color-foreground: rgb(var(--sui-foreground));
+	--color-primary: rgb(var(--sui-primary));
+	--color-primary-grad: rgb(var(--sui-primary) / 0.8);
+	--color-primary-foreground: rgb(var(--sui-primary-foreground));
+	--color-muted: rgb(var(--sui-muted));
+	--color-muted-foreground: rgb(var(--sui-muted-foreground));
+	--color-destructive: rgb(var(--sui-destructive));
+	--color-destructive-foreground: rgb(var(--sui-destructive-foreground));
+	--color-success: rgb(var(--sui-success));
+	--color-rating: rgb(var(--sui-rating));
+	--color-overlay: rgb(var(--sui-overlay));
+	--color-nav-surface: rgb(var(--sui-nav-surface));
+	--color-nav-border: rgb(var(--sui-nav-border));
+	--color-media-surface: rgb(var(--sui-media-surface));
+}

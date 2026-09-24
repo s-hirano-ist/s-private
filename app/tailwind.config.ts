@@ -22,22 +22,6 @@ const config = {
 					css: { a: { wordBreak: "break-all", overflowWrap: "break-word" } },
 				},
 			}),
-			colors: {
-				background: "rgb(var(--sui-background))",
-				foreground: "rgb(var(--sui-foreground))",
-				primary: {
-					DEFAULT: "rgb(var(--sui-primary))",
-					grad: "rgb(var(--sui-primary) / 0.8)",
-					foreground: "rgb(var(--sui-primary-foreground))",
-				},
-				destructive: {
-					DEFAULT: "rgb(var(--sui-destructive))",
-				},
-				muted: {
-					DEFAULT: "rgb(var(--sui-muted))",
-					foreground: "rgb(var(--sui-muted-foreground))",
-				},
-			},
 			borderRadius: {
 				lg: "var(--sui-radius)",
 				md: "calc(var(--sui-radius) - 2px)",

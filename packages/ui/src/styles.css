@@ -5,6 +5,11 @@
 
 @custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
 
+@theme {
+	/* stylelint-disable-next-line custom-property-pattern */
+	--color-*: initial;
+}
+
 @theme inline {
 	--color-background: rgb(var(--sui-background));
 	--color-foreground: rgb(var(--sui-foreground));
@@ -14,6 +19,13 @@
 	--color-muted: rgb(var(--sui-muted));
 	--color-muted-foreground: rgb(var(--sui-muted-foreground));
 	--color-destructive: rgb(var(--sui-destructive));
+	--color-destructive-foreground: rgb(var(--sui-destructive-foreground));
+	--color-success: rgb(var(--sui-success));
+	--color-rating: rgb(var(--sui-rating));
+	--color-overlay: rgb(var(--sui-overlay));
+	--color-nav-surface: rgb(var(--sui-nav-surface));
+	--color-nav-border: rgb(var(--sui-nav-border));
+	--color-media-surface: rgb(var(--sui-media-surface));
 	--radius-lg: var(--sui-radius);
 	--radius-md: calc(var(--sui-radius) - 2px);
 	--radius-sm: calc(var(--sui-radius) - 4px);
@@ -28,6 +40,13 @@
 		--sui-muted: 233 233 233;
 		--sui-muted-foreground: 93 93 93;
 		--sui-destructive: 178 45 53;
+		--sui-destructive-foreground: 255 255 255;
+		--sui-success: 22 125 67;
+		--sui-rating: 180 105 0;
+		--sui-overlay: 0 0 0;
+		--sui-nav-surface: 255 255 255;
+		--sui-nav-border: 27 27 27;
+		--sui-media-surface: 255 255 255;
 		--sui-radius: 0.5rem;
 	}
 
@@ -40,6 +59,13 @@
 		--sui-muted: 43 43 43;
 		--sui-muted-foreground: 155 155 155;
 		--sui-destructive: 234 96 95;
+		--sui-destructive-foreground: 27 27 27;
+		--sui-success: 89 205 139;
+		--sui-rating: 250 191 73;
+		--sui-overlay: 0 0 0;
+		--sui-nav-surface: 43 43 43;
+		--sui-nav-border: 255 255 255;
+		--sui-media-surface: 43 43 43;
 	}
 }
 
