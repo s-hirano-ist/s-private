@@ -111,6 +111,24 @@ export async function listMobileContent(
 	throw new MobileApiError("NOT_FOUND", 404);
 }
 
+/** Small owner-scoped manifest used to reconcile the complete on-device copy. */
+export async function listMobileManifest(userId: string) {
+	const select = { id: true, updatedAt: true } as const;
+	const where = { userId };
+	const [articles, notes, books, images, categories] = await Promise.all([
+		prisma.article.findMany({ where, select, orderBy: { id: "asc" } }),
+		prisma.note.findMany({ where, select, orderBy: { id: "asc" } }),
+		prisma.book.findMany({ where, select, orderBy: { id: "asc" } }),
+		prisma.image.findMany({ where, select, orderBy: { id: "asc" } }),
+		prisma.category.findMany({
+			where,
+			select: { id: true, name: true },
+			orderBy: { id: "asc" },
+		}),
+	]);
+	return { articles, notes, books, images, categories };
+}
+
 export async function getMobileContent(
 	domain: MobileDomain,
 	userId: string,

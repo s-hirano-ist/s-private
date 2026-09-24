@@ -2,13 +2,22 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 const articleFindMany = vi.hoisted(() => vi.fn());
 const articleCount = vi.hoisted(() => vi.fn());
 const noteFindFirst = vi.hoisted(() => vi.fn());
+const manifestFindMany = vi.hoisted(() => vi.fn().mockResolvedValue([]));
 vi.mock("@/prisma", () => ({
 	default: {
 		article: { findMany: articleFindMany, count: articleCount },
-		note: { findFirst: noteFindFirst },
+		note: { findFirst: noteFindFirst, findMany: manifestFindMany },
+		book: { findMany: manifestFindMany },
+		image: { findMany: manifestFindMany },
+		category: { findMany: manifestFindMany },
 	},
 }));
-import { getMobileContent, listMobileContent, listSchema } from "./content";
+import {
+	getMobileContent,
+	listMobileContent,
+	listMobileManifest,
+	listSchema,
+} from "./content";
 
 describe("mobile content owner scope", () => {
 	beforeEach(() => vi.clearAllMocks());
@@ -48,5 +57,20 @@ describe("mobile content owner scope", () => {
 
 	test("limits page size", () => {
 		expect(() => listSchema.parse({ limit: "101" })).toThrow(/too_big/u);
+	});
+
+	test("manifest reads every domain and category within the owner scope", async () => {
+		articleFindMany.mockResolvedValue([]);
+		await listMobileManifest("owner-1");
+		expect(articleFindMany).toHaveBeenCalledWith(
+			expect.objectContaining({
+				where: { userId: "owner-1" },
+				select: { id: true, updatedAt: true },
+			}),
+		);
+		expect(manifestFindMany).toHaveBeenCalledTimes(4);
+		for (const call of manifestFindMany.mock.calls) {
+			expect(call[0].where).toEqual({ userId: "owner-1" });
+		}
 	});
 });

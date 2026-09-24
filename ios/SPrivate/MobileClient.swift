@@ -20,6 +20,26 @@ struct MobileCategory: Decodable, Identifiable {
     let name: String
 }
 struct MobileCategories: Decodable { let data: [MobileCategory] }
+struct MobileManifestItem: Decodable {
+    let id: String
+    let updatedAt: Date
+}
+struct MobileManifest: Decodable {
+    let articles: [MobileManifestItem]
+    let notes: [MobileManifestItem]
+    let books: [MobileManifestItem]
+    let images: [MobileManifestItem]
+    let categories: [MobileCategory]
+
+    func items(for domain: MobileDomain) -> [MobileManifestItem] {
+        switch domain {
+        case .articles: articles
+        case .notes: notes
+        case .books: books
+        case .images: images
+        }
+    }
+}
 struct MobileAccepted: Decodable { let accepted: Bool }
 private struct UploadStart: Encodable {
     let operationId: UUID
@@ -138,6 +158,10 @@ final class MobileClient {
     func categories() async throws -> [MobileCategory] {
         let result: MobileCategories = try await decode("categories")
         return result.data
+    }
+
+    func manifest() async throws -> MobileManifest {
+        try await decode("manifest")
     }
 
     func search(_ query: String) async throws -> [MobileSearchResult] {

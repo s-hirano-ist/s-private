@@ -11,7 +11,7 @@ struct SPrivateApp: App {
 
     init() {
         let authentication = AuthenticationModel()
-        let container = try! ModelContainer(for: CachedMobileRecord.self, PendingMobileOperation.self)
+        let container = try! ModelContainer(for: CachedMobileRecord.self, CachedMobileCategory.self, PendingMobileOperation.self)
         _authentication = StateObject(wrappedValue: authentication)
         _sync = StateObject(wrappedValue: SyncCoordinator(container: container, authentication: authentication))
         modelContainer = container
@@ -27,13 +27,24 @@ struct SPrivateApp: App {
                 .task {
                     sharedInbox.reload()
                     sync.importSharedInbox()
-                    await sync.synchronize()
+                    if authentication.status == .authenticated { await sync.synchronize() }
                 }
                 .onChange(of: scenePhase) { _, phase in
                     if phase == .active {
                         sharedInbox.reload()
                         sync.importSharedInbox()
-                        Task { await sync.synchronize() }
+                        if authentication.status == .authenticated { Task { await sync.synchronize() } }
+                    }
+                }
+                .onChange(of: authentication.status) { _, status in
+                    if status == .authenticated { Task { await sync.synchronize(force: true) } }
+                }
+                .task(id: scenePhase) {
+                    guard scenePhase == .active else { return }
+                    while !Task.isCancelled {
+                        try? await Task.sleep(for: .seconds(300))
+                        guard !Task.isCancelled else { return }
+                        if authentication.status == .authenticated { await sync.synchronize() }
                     }
                 }
         }

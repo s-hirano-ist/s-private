@@ -75,8 +75,7 @@ struct CreateView: View {
             }
             .task {
                 if domain == .articles {
-                    do { categories = try await MobileClient(authentication: authentication).categories() }
-                    catch { errorMessage = error.localizedDescription }
+                    categories = sync.cachedCategories()
                 }
             }
             .onChange(of: photoSelection) { _, value in
@@ -154,18 +153,16 @@ struct CreateView: View {
 }
 
 struct SearchView: View {
-    @EnvironmentObject private var authentication: AuthenticationModel
+    @EnvironmentObject private var sync: SyncCoordinator
     @Environment(\.dismiss) private var dismiss
     @State private var query = ""
     @State private var results: [MobileSearchResult] = []
     @State private var errorMessage: String?
-    @State private var searching = false
 
     var body: some View {
         NavigationStack {
             List {
                 if let errorMessage { Text(errorMessage).foregroundStyle(.red) }
-                if searching { ProgressView() }
                 ForEach(results) { result in
                     NavigationLink {
                         RecordDetailView(domain: result.type, id: result.id)
@@ -197,7 +194,7 @@ struct SearchView: View {
             .searchable(text: $query)
             .onSubmit(of: .search) { Task { await search() } }
             .overlay {
-                if results.isEmpty && !searching && errorMessage == nil {
+                if results.isEmpty && errorMessage == nil {
                     ContentUnavailableView.search(text: query)
                 }
             }
@@ -207,11 +204,7 @@ struct SearchView: View {
     private func search() async {
         let submitted = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !submitted.isEmpty else { results = []; return }
-        searching = true
-        defer { searching = false }
-        do {
-            results = try await MobileClient(authentication: authentication).search(submitted)
-            errorMessage = nil
-        } catch { errorMessage = error.localizedDescription }
+        results = sync.localSearch(submitted)
+        errorMessage = nil
     }
 }
