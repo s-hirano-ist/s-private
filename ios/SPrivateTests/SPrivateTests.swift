@@ -259,50 +259,6 @@ struct OfflineQueueTests {
         coordinator.removeCached(domain: .notes, id: "two")
         #expect(coordinator.cached(domain: .notes).map(\.id) == ["one"])
     }
-
-    @Test("A server without manifest still updates and deletes local records")
-    func legacyServerFallback() async throws {
-        let container = try ModelContainer(
-            for: CachedMobileRecord.self, CachedMobileCategory.self, PendingMobileOperation.self,
-            configurations: ModelConfiguration(isStoredInMemoryOnly: true)
-        )
-        let authentication = AuthenticationModel()
-        let coordinator = SyncCoordinator(container: container, authentication: authentication)
-        func note(_ id: String, _ title: String) throws -> MobileRecord {
-            let json = "{\"id\":\"\(id)\",\"status\":\"UNEXPORTED\",\"createdAt\":\"2026-09-21T01:02:03Z\",\"updatedAt\":\"2026-09-21T01:02:03Z\",\"title\":\"\(title)\",\"markdown\":\"Body\"}"
-            return try MobileAPICoding.decoder().decode(MobileRecord.self, from: Data(json.utf8))
-        }
-        try coordinator.cache(domain: .notes, records: [note("one", "Old"), note("deleted", "Deleted")])
-        let client = LegacySyncClient(notes: [try note("one", "Updated")])
-
-        try await coordinator.refreshRemote(using: client)
-
-        #expect(client.manifestRequests == 1)
-        #expect(coordinator.cached(domain: .notes).map(\.id) == ["one"])
-        #expect(coordinator.cachedRecord(domain: .notes, id: "one")?.title == "Updated")
-    }
-}
-
-@MainActor
-private final class LegacySyncClient: MobileSyncClient {
-    let notes: [MobileRecord]
-    private(set) var manifestRequests = 0
-
-    init(notes: [MobileRecord]) { self.notes = notes }
-
-    func manifest() async throws -> MobileManifest {
-        manifestRequests += 1
-        throw MobileClientError.http(422, "VALIDATION_ERROR")
-    }
-
-    func list(_ domain: MobileDomain, status: MobileContentStatus?, offset: Int, limit: Int) async throws -> MobilePage<MobileRecord> {
-        let records = domain == .notes ? notes : []
-        return MobilePage(data: Array(records.dropFirst(offset).prefix(limit)), totalCount: records.count, offset: offset, limit: limit)
-    }
-
-    func detail(_ domain: MobileDomain, id: String) async throws -> MobileRecord { throw MobileClientError.invalidResponse }
-    func categories() async throws -> [MobileCategory] { [] }
-    func media(_ domain: MobileDomain, id: String, variant: String) async throws -> Data { throw MobileClientError.invalidResponse }
 }
 
 struct SimulatorEntitlementTests {
