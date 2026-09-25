@@ -166,6 +166,8 @@ to five minutes; manual sync always checks. Images and book covers are saved as
 thumbnails for offline display. Originals are fetched on demand. **キャッシュを削除**
 removes downloaded records and media but never pending operations or attachments.
 Deletion remains online-only.
+Until the manifest endpoint reaches the configured server, the app reconciles
+the full local copy through the existing paginated list and categories APIs.
 
 Images and book covers are normalized to JPEG and uploaded in resumable 1 MiB
 chunks, up to the existing 10 MiB limit. The server records each operation ID

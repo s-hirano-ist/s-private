@@ -133,7 +133,16 @@ struct MobileCreate: Codable {
 }
 
 @MainActor
-final class MobileClient {
+protocol MobileSyncClient {
+    func manifest() async throws -> MobileManifest
+    func list(_ domain: MobileDomain, status: MobileContentStatus?, offset: Int, limit: Int) async throws -> MobilePage<MobileRecord>
+    func detail(_ domain: MobileDomain, id: String) async throws -> MobileRecord
+    func categories() async throws -> [MobileCategory]
+    func media(_ domain: MobileDomain, id: String, variant: String) async throws -> Data
+}
+
+@MainActor
+final class MobileClient: MobileSyncClient {
     static let imageLimit = 10 * 1_048_576
     let authentication: AuthenticationModel
     let baseURL: URL?

@@ -183,9 +183,16 @@ final class SyncCoordinator: ObservableObject {
         }
     }
 
-    private func refreshRemote(using client: MobileClient) async throws {
+    func refreshRemote(using client: any MobileSyncClient) async throws {
         let owner = authentication.ownerKey
-        let manifest = try await client.manifest()
+        let manifest: MobileManifest
+        do {
+            manifest = try await client.manifest()
+        } catch MobileClientError.http(422, "VALIDATION_ERROR") {
+            // An older server treats /manifest as an invalid domain.
+            try await refreshFromLegacyAPI(using: client, owner: owner)
+            return
+        }
         let categoryNames = Dictionary(uniqueKeysWithValues: manifest.categories.map { ($0.id, $0.name) })
         guard authentication.ownerKey == owner else { return }
         for domain in MobileDomain.allCases {
@@ -215,9 +222,50 @@ final class SyncCoordinator: ObservableObject {
             }
             if !changed.isEmpty { try cache(domain: domain, records: changed) }
         }
+        let idsByDomain = Dictionary(uniqueKeysWithValues: MobileDomain.allCases.map { domain in
+            (domain, Set(manifest.items(for: domain).map(\.id)))
+        })
+        try await finishRefresh(using: client, owner: owner, idsByDomain: idsByDomain, categories: manifest.categories)
+    }
+
+    private func refreshFromLegacyAPI(using client: any MobileSyncClient, owner: String) async throws {
+        var idsByDomain: [MobileDomain: Set<String>] = [:]
+        for domain in MobileDomain.allCases {
+            var ids: Set<String> = []
+            var offset = 0
+            repeat {
+                let page = try await client.list(domain, status: nil, offset: offset, limit: 100)
+                guard authentication.ownerKey == owner else { return }
+                guard !page.data.isEmpty || offset >= page.totalCount else { throw MobileClientError.invalidResponse }
+                ids.formUnion(page.data.map(\.id))
+                if !page.data.isEmpty {
+                    if domain == .books || domain == .images {
+                        let local = Dictionary(uniqueKeysWithValues: cached(domain: domain).map { ($0.id, $0.updatedAt) })
+                        for record in page.data where local[record.id] != nil && local[record.id] != record.updatedAt {
+                            await ThumbnailStore.shared.remove(owner: owner, domain: domain, id: record.id)
+                            removeCachedMedia(domain: domain, id: record.id)
+                        }
+                    }
+                    try cache(domain: domain, records: page.data)
+                }
+                offset += page.data.count
+                if offset >= page.totalCount { break }
+            } while true
+            idsByDomain[domain] = ids
+        }
+        let categories = try await client.categories()
+        try await finishRefresh(using: client, owner: owner, idsByDomain: idsByDomain, categories: categories)
+    }
+
+    private func finishRefresh(
+        using client: any MobileSyncClient,
+        owner: String,
+        idsByDomain: [MobileDomain: Set<String>],
+        categories: [MobileCategory]
+    ) async throws {
         guard authentication.ownerKey == owner else { return }
         for domain in MobileDomain.allCases {
-            let ids = Set(manifest.items(for: domain).map(\.id))
+            let ids = idsByDomain[domain] ?? []
             for record in cached(domain: domain) where !ids.contains(record.id) {
                 removeCached(domain: domain, id: record.id)
                 await ThumbnailStore.shared.remove(owner: owner, domain: domain, id: record.id)
@@ -226,16 +274,16 @@ final class SyncCoordinator: ObservableObject {
         }
         let old = try context.fetch(FetchDescriptor<CachedMobileCategory>(predicate: #Predicate { $0.ownerKey == owner }))
         old.forEach(context.delete)
-        manifest.categories.forEach { context.insert(CachedMobileCategory(ownerKey: owner, category: $0)) }
+        categories.forEach { context.insert(CachedMobileCategory(ownerKey: owner, category: $0)) }
         try context.save()
         dataRevision += 1
         for domain in [MobileDomain.books, .images] {
-            for item in manifest.items(for: domain) {
+            for id in idsByDomain[domain] ?? [] {
                 guard authentication.ownerKey == owner else { return }
-                if await ThumbnailStore.shared.contains(owner: owner, domain: domain, id: item.id) { continue }
+                if await ThumbnailStore.shared.contains(owner: owner, domain: domain, id: id) { continue }
                 do {
-                    let data = try await client.media(domain, id: item.id, variant: "thumbnail")
-                    _ = await ThumbnailStore.shared.saveAndDecode(data, owner: owner, domain: domain, id: item.id, pixelSize: 600)
+                    let data = try await client.media(domain, id: id, variant: "thumbnail")
+                    _ = await ThumbnailStore.shared.saveAndDecode(data, owner: owner, domain: domain, id: id, pixelSize: 600)
                 } catch {
                     // A missing image does not invalidate the completed metadata sync.
                 }
