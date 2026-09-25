@@ -156,6 +156,14 @@ struct MobileAPIContractTests {
         }
     }
 
+    @Test("Cached record preserves server update time including milliseconds")
+    func cacheDateRoundTrip() throws {
+        let payload = Data(#"{"id":"one","status":"UNEXPORTED","createdAt":"2026-09-21T01:02:03.123Z","updatedAt":"2026-09-21T01:02:03.456Z","title":"Note","markdown":"Body"}"#.utf8)
+        let record = try MobileAPICoding.decoder().decode(MobileRecord.self, from: payload)
+        let restored = try MobileAPICoding.decoder().decode(MobileRecord.self, from: JSONEncoder.mobile.encode(record))
+        #expect(restored.updatedAt == record.updatedAt)
+    }
+
     @Test("Create JSON omits fields for other domains")
     func createPayloadIsDomainSpecific() throws {
         let input = MobileCreate(operationId: UUID(), title: "Note", url: nil, category: nil, quote: nil, markdown: "text")
@@ -198,6 +206,7 @@ struct OfflineQueueTests {
         let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
         let container = try ModelContainer(
             for: CachedMobileRecord.self,
+            CachedMobileCategory.self,
             PendingMobileOperation.self,
             configurations: configuration
         )
@@ -218,6 +227,7 @@ struct OfflineQueueTests {
     func cancelsPendingOperation() throws {
         let container = try ModelContainer(
             for: CachedMobileRecord.self,
+            CachedMobileCategory.self,
             PendingMobileOperation.self,
             configurations: ModelConfiguration(isStoredInMemoryOnly: true)
         )
@@ -229,6 +239,25 @@ struct OfflineQueueTests {
         let pending = try #require(coordinator.pendingOperations().first)
         coordinator.cancel(pending)
         #expect(coordinator.pendingOperations().isEmpty)
+    }
+
+    @Test("Local upserts retain other records and support offline search")
+    func upsertsAndSearches() throws {
+        let container = try ModelContainer(
+            for: CachedMobileRecord.self, CachedMobileCategory.self, PendingMobileOperation.self,
+            configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+        )
+        let coordinator = SyncCoordinator(container: container, authentication: AuthenticationModel())
+        func record(_ id: String, _ title: String, _ markdown: String) throws -> MobileRecord {
+            let json = "{\"id\":\"\(id)\",\"status\":\"UNEXPORTED\",\"createdAt\":\"2026-09-21T01:02:03Z\",\"updatedAt\":\"2026-09-21T01:02:03Z\",\"title\":\"\(title)\",\"markdown\":\"\(markdown)\"}"
+            return try MobileAPICoding.decoder().decode(MobileRecord.self, from: Data(json.utf8))
+        }
+        try coordinator.cache(domain: .notes, records: [record("one", "First", "alpha"), record("two", "Second", "beta")])
+        try coordinator.cache(domain: .notes, records: [record("one", "Updated", "gamma")])
+        #expect(coordinator.cached(domain: .notes).count == 2)
+        #expect(coordinator.localSearch("gamma").map(\.id) == ["one"])
+        coordinator.removeCached(domain: .notes, id: "two")
+        #expect(coordinator.cached(domain: .notes).map(\.id) == ["one"])
     }
 }
 

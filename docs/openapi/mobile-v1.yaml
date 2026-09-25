@@ -10,6 +10,33 @@ servers:
 security:
   - bearerAuth: []
 paths:
+  /manifest:
+    get:
+      operationId: listMobileManifest
+      description: Owner-scoped IDs and update times for complete local reconciliation. Fetch changed records through the detail endpoint. A successful full response also identifies remote deletions.
+      responses:
+        '200':
+          description: Complete manifest and categories
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [articles, notes, books, images, categories]
+                properties:
+                  articles: { $ref: '#/components/schemas/ManifestItems' }
+                  notes: { $ref: '#/components/schemas/ManifestItems' }
+                  books: { $ref: '#/components/schemas/ManifestItems' }
+                  images: { $ref: '#/components/schemas/ManifestItems' }
+                  categories:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, name]
+                      properties:
+                        id: { type: string }
+                        name: { type: string }
+        default:
+          $ref: '#/components/responses/Error'
   /{domain}:
     parameters:
       - $ref: '#/components/parameters/domain'
@@ -301,6 +328,14 @@ components:
       schema:
         type: string
   schemas:
+    ManifestItems:
+      type: array
+      items:
+        type: object
+        required: [id, updatedAt]
+        properties:
+          id: { type: string }
+          updatedAt: { type: string, format: date-time }
     Status:
       type: string
       enum: [UNEXPORTED, LAST_UPDATED, EXPORTED]

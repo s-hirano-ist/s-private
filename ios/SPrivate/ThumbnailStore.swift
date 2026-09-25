@@ -14,6 +14,22 @@ actor ThumbnailStore {
 
     func clear() { images.removeAllObjects() }
 
+    func clearDisk() {
+        images.removeAllObjects()
+        if let directory = try? thumbnailDirectory() { try? FileManager.default.removeItem(at: directory) }
+    }
+
+    func contains(owner: String, domain: MobileDomain, id: String) -> Bool {
+        (try? fileURL(for: cacheKey(owner: owner, domain: domain, id: id)))
+            .map { FileManager.default.fileExists(atPath: $0.path) } ?? false
+    }
+
+    func remove(owner: String, domain: MobileDomain, id: String) {
+        let key = cacheKey(owner: owner, domain: domain, id: id)
+        if let url = try? fileURL(for: key) { try? FileManager.default.removeItem(at: url) }
+        images.removeAllObjects()
+    }
+
     func image(owner: String, domain: MobileDomain, id: String, pixelSize: Int) -> UIImage? {
         let key = cacheKey(owner: owner, domain: domain, id: id)
         if let image = images.object(forKey: "\(key)-\(pixelSize)" as NSString) { return image }
@@ -45,9 +61,13 @@ actor ThumbnailStore {
     }
 
     private func fileURL(for key: String) throws -> URL {
-        let root = try FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+        try thumbnailDirectory().appending(path: key)
+    }
+
+    private func thumbnailDirectory() throws -> URL {
+        let root = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
             .appending(path: "MobileMedia/Thumbnails", directoryHint: .isDirectory)
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
-        return root.appending(path: key)
+        return root
     }
 }

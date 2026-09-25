@@ -6,11 +6,8 @@ struct DomainListView: View {
     @EnvironmentObject private var sync: SyncCoordinator
     @State private var records: [MobileRecord] = []
     @State private var status: MobileContentStatus?
-    @State private var totalCount = 0
-    @State private var loading = false
     @State private var errorMessage: String?
     @State private var showingCreate = false
-    @State private var requestID = UUID()
     @State private var showingSearch = false
 
     private var isGrid: Bool { domain == .images || domain == .books }
@@ -21,12 +18,11 @@ struct DomainListView: View {
                 if isGrid {
                     ScrollView {
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 3), count: domain == .images ? 3 : 2), spacing: domain == .images ? 3 : 16) {
-                            ForEach(Array(records.enumerated()), id: \.element.id) { index, record in
+                            ForEach(records) { record in
                                 NavigationLink(value: record.id) {
                                     MediaGridCell(domain: domain, record: record)
                                 }
                                 .buttonStyle(.plain)
-                                .onAppear { loadNextPageIfNeeded(at: index) }
                             }
                         }
                         .padding(.horizontal, domain == .images ? 3 : 12)
@@ -39,7 +35,7 @@ struct DomainListView: View {
             }
             .navigationTitle(domain.title)
             .navigationDestination(for: String.self) { id in
-                RecordDetailView(domain: domain, id: id) { Task { await load(reset: true) } }
+                RecordDetailView(domain: domain, id: id) { loadLocal() }
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -59,12 +55,14 @@ struct DomainListView: View {
             .sheet(isPresented: $showingSearch) {
                 SearchView()
             }
-            .sheet(isPresented: $showingCreate, onDismiss: { Task { await load(reset: true) } }) {
+            .sheet(isPresented: $showingCreate, onDismiss: { loadLocal() }) {
                 CreateView(domain: domain)
                     .environmentObject(authentication)
             }
-            .refreshable { await load(reset: true) }
-            .task(id: status) { await load(reset: true) }
+            .refreshable { await sync.synchronize(force: true); loadLocal() }
+            .task(id: status) { loadLocal() }
+            .onChange(of: sync.dataRevision) { _, _ in loadLocal() }
+            .onChange(of: sync.syncError) { _, _ in loadLocal() }
         }
     }
 
@@ -74,7 +72,7 @@ struct DomainListView: View {
                     Text(errorMessage).foregroundStyle(.red)
                         .accessibilityIdentifier("domain-error")
                 }
-                if records.isEmpty && !loading && errorMessage == nil {
+                if records.isEmpty && errorMessage == nil {
                     ContentUnavailableView(String(localized: "項目がありません"), systemImage: domain.symbol)
                 }
                 ForEach(records) { record in
@@ -93,11 +91,6 @@ struct DomainListView: View {
                         }
                     }
                 }
-                if records.count < totalCount {
-                    Button(String(localized: "さらに読み込む")) { Task { await load(reset: false) } }
-                        .disabled(loading)
-                }
-                if loading { ProgressView() }
                 if let fetchedAt = sync.lastSyncAt {
                     Text(String(localized: "最終取得: \(fetchedAt.formatted(date: .abbreviated, time: .shortened))"))
                         .font(.caption)
@@ -110,13 +103,9 @@ struct DomainListView: View {
     private var gridFooter: some View {
         VStack {
             if let errorMessage { Text(errorMessage).foregroundStyle(.red).accessibilityIdentifier("domain-error") }
-            if errorMessage != nil && !records.isEmpty && records.count < totalCount {
-                Button(String(localized: "再読み込み")) { Task { await load(reset: false) } }
-            }
-            if records.isEmpty && !loading && errorMessage == nil {
+            if records.isEmpty && errorMessage == nil {
                 ContentUnavailableView(String(localized: "項目がありません"), systemImage: domain.symbol)
             }
-            if loading { ProgressView().padding() }
             if let fetchedAt = sync.lastSyncAt {
                 Text(String(localized: "最終取得: \(fetchedAt.formatted(date: .abbreviated, time: .shortened))"))
                     .font(.caption).foregroundStyle(.secondary).padding()
@@ -125,38 +114,9 @@ struct DomainListView: View {
         .frame(maxWidth: .infinity)
     }
 
-    private func loadNextPageIfNeeded(at index: Int) {
-        guard !loading, records.count < totalCount, index >= records.count - 6 else { return }
-        Task { await load(reset: false) }
-    }
-
-    private func load(reset: Bool) async {
-        if !reset && loading { return }
-        let id = reset ? UUID() : requestID
-        if reset {
-            requestID = id
-            records = []
-            totalCount = 0
-            errorMessage = nil
-        }
-        let requestedStatus = status
-        loading = true
-        defer { if requestID == id { loading = false } }
-        do {
-            let page = try await MobileClient(authentication: authentication).list(domain, status: requestedStatus, offset: reset ? 0 : records.count)
-            guard requestID == id, status == requestedStatus, !Task.isCancelled else { return }
-            records = reset ? page.data : records + page.data
-            totalCount = page.totalCount
-            if reset && requestedStatus == nil { try? sync.cache(domain: domain, records: records) }
-            errorMessage = nil
-        } catch {
-            guard requestID == id, status == requestedStatus, !Task.isCancelled else { return }
-            if reset {
-                let cached = sync.cached(domain: domain).filter { requestedStatus == nil || $0.status == requestedStatus }
-                if !cached.isEmpty { records = cached; totalCount = cached.count; errorMessage = String(localized: "オフラインの保存データを表示しています") }
-                else { errorMessage = error.localizedDescription }
-            } else { errorMessage = error.localizedDescription }
-        }
+    private func loadLocal() {
+        records = sync.cached(domain: domain).filter { status == nil || $0.status == status }
+        errorMessage = sync.syncError
     }
 }
 
@@ -189,6 +149,7 @@ struct MediaThumbnailView: View {
     var hasImage = true
     var pixelSize = 160
     @EnvironmentObject private var authentication: AuthenticationModel
+    @EnvironmentObject private var sync: SyncCoordinator
     @State private var image: UIImage?
 
     var body: some View {
@@ -202,7 +163,7 @@ struct MediaThumbnailView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .clipped()
         .accessibilityHidden(true)
-        .task(id: id) {
+        .task(id: sync.dataRevision) {
             guard hasImage else { return }
             let owner = authentication.ownerKey
             if let cached = await ThumbnailStore.shared.image(owner: owner, domain: domain, id: id, pixelSize: pixelSize) {
@@ -237,11 +198,12 @@ struct RecordDetailView: View {
     let id: String
     var onDeleted: () -> Void = {}
     @EnvironmentObject private var authentication: AuthenticationModel
+    @EnvironmentObject private var sync: SyncCoordinator
     @Environment(\.dismiss) private var dismiss
     @State private var record: MobileRecord?
     @State private var errorMessage: String?
     @State private var showingDelete = false
-    @State private var loading = true
+    @State private var loading = false
 
     var body: some View {
         ScrollView {
@@ -283,21 +245,19 @@ struct RecordDetailView: View {
         .confirmationDialog(String(localized: "この項目を削除しますか？"), isPresented: $showingDelete) {
             Button(String(localized: "削除"), role: .destructive) { Task { await delete() } }
         }
-        .task(id: id) { await reload() }
+        .task(id: id) { reload() }
+        .onChange(of: sync.dataRevision) { _, _ in reload() }
     }
 
-    private func reload() async {
-        loading = true
-        defer { loading = false }
-        do {
-            record = try await MobileClient(authentication: authentication).detail(domain, id: id)
-            errorMessage = nil
-        } catch { errorMessage = error.localizedDescription }
+    private func reload() {
+        record = sync.cachedRecord(domain: domain, id: id)
+        errorMessage = record == nil ? String(localized: "保存データがありません") : nil
     }
 
     private func delete() async {
         do {
             try await MobileClient(authentication: authentication).delete(domain, id: id)
+            sync.removeCached(domain: domain, id: id)
             onDeleted()
             dismiss()
         } catch { errorMessage = error.localizedDescription }
@@ -333,7 +293,11 @@ struct AuthenticatedImageView: View {
                 ProgressView()
             }
         }
-        .task(id: id) {
+        .task(id: sync.dataRevision) {
+            if let data = sync.cachedMedia(domain: domain, id: id, variant: "original") {
+                image = UIImage(data: data)
+                return
+            }
             do {
                 let data = try await MobileClient(authentication: authentication).media(domain, id: id, variant: "original")
                 try? sync.cacheMedia(data, domain: domain, id: id, variant: "original")

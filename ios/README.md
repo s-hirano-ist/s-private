@@ -157,9 +157,15 @@ remove an unsent item. Network failures are retried at most three times per
 manual/foreground sync pass. A server validation or operation conflict always
 requires user action.
 
-Lists fall back to their most recently fetched SwiftData cache while offline.
-**キャッシュを削除** removes downloaded records but never removes pending
-operations or their attachments. Server search and deletion remain online-only.
+All records and categories are retained in SwiftData. Lists, details, filters and
+search read the local copy immediately, including offline. At launch, login and
+foreground activation, and periodically while active, the app compares the complete owner-scoped manifest and
+fetches only new or changed records. It removes remote deletions only after all
+changed details have been fetched successfully. Foreground checks are throttled
+to five minutes; manual sync always checks. Images and book covers are saved as
+thumbnails for offline display. Originals are fetched on demand. **キャッシュを削除**
+removes downloaded records and media but never pending operations or attachments.
+Deletion remains online-only.
 
 Images and book covers are normalized to JPEG and uploaded in resumable 1 MiB
 chunks, up to the existing 10 MiB limit. The server records each operation ID
@@ -188,11 +194,9 @@ from the Search toolbar and still shows shared inbox
 items from the feasibility test.
 Markdown is rendered with native SwiftUI views and no WebView.
 
-The native screens support a SwiftData-backed offline cache and registration
-queue, resumable uploads, durable create deduplication, and Share Extension
-registration. Background execution while the app is terminated is not
-guaranteed; synchronization runs at launch, foreground activation, and on
-manual request.
+The native screens support a full local SwiftData copy and registration queue,
+resumable uploads, durable create deduplication, and Share Extension registration.
+Background execution while the app is terminated is not guaranteed.
 
 Repository instructions require Storybook MCP before UI work, but that MCP
 server was not exposed to this implementation session. No React UI was changed.

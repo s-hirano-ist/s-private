@@ -32,6 +32,21 @@ final class CachedMobileRecord {
 }
 
 @Model
+final class CachedMobileCategory {
+    @Attribute(.unique) var cacheKey: String
+    var ownerKey: String
+    var id: String
+    var name: String
+
+    init(ownerKey: String, category: MobileCategory) {
+        self.ownerKey = ownerKey
+        id = category.id
+        name = category.name
+        cacheKey = "\(ownerKey):category:\(category.id)"
+    }
+}
+
+@Model
 final class PendingMobileOperation {
     @Attribute(.unique) var operationID: UUID
     var ownerKey: String
@@ -64,7 +79,12 @@ final class PendingMobileOperation {
 extension JSONEncoder {
     static var mobile: JSONEncoder {
         let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
+        encoder.dateEncodingStrategy = .custom { date, encoder in
+            let formatter = ISO8601DateFormatter()
+            formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            var container = encoder.singleValueContainer()
+            try container.encode(formatter.string(from: date))
+        }
         return encoder
     }
 }

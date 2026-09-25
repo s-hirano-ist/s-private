@@ -1,7 +1,6 @@
 import Foundation
 
-// Codable payloads for docs/openapi/mobile-v1.yaml. The native domain screens
-// will consume these in the next milestone.
+// Codable payloads for docs/openapi/mobile-v1.yaml.
 struct MobilePage<Item: Decodable>: Decodable {
     let data: [Item]
     let totalCount: Int
