@@ -55,10 +55,6 @@
 			"types": "./dist/loading-indicator.d.ts",
 			"import": "./dist/loading-indicator.js"
 		},
-		"./pagination": {
-			"types": "./dist/pagination.d.ts",
-			"import": "./dist/pagination.js"
-		},
 		"./popover": {
 			"types": "./dist/popover.d.ts",
 			"import": "./dist/popover.js"

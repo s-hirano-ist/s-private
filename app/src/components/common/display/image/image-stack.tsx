@@ -1,13 +1,16 @@
 "use client";
-import type { DeleteAction } from "@/common/types";
+import type { DeleteAction, LoadMoreAction } from "@/common/types";
+import type { CardStackInitialData } from "@/components/common/layouts/cards/types";
 import type { LightboxExternalProps } from "yet-another-react-lightbox";
 import { StatusCodeView } from "@/components/common/display/status/status-code-view";
 import { DeleteButtonWithModal } from "@/components/common/forms/actions/delete-button-with-modal";
+import { useInfiniteScroll } from "@s-hirano-ist/s-ui/hooks/use-infinite-scroll";
+import { LoadingIndicator } from "@s-hirano-ist/s-ui/loading-indicator";
 import { haptic } from "@s-hirano-ist/s-ui/utils/haptic";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import "yet-another-react-lightbox/styles.css";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 
 type LightboxComponent = React.ComponentType<LightboxExternalProps>;
 
@@ -62,12 +65,14 @@ function ImageClickable({ image, onImageClick }: ImageClickableProps) {
 
 type ImageStackGridProps = {
 	data: ImageData[];
+	lastElementRef?: (node: HTMLElement | null) => void;
 	onImageClick: (index: number) => void;
 	renderOverlay?: (image: ImageData) => React.ReactNode;
 };
 
 function ImageStackGrid({
 	data,
+	lastElementRef,
 	onImageClick,
 	renderOverlay,
 }: ImageStackGridProps) {
@@ -77,6 +82,7 @@ function ImageStackGrid({
 				<div
 					className="relative"
 					key={image.id || image.originalPath}
+					ref={i === data.length - 1 ? lastElementRef : undefined}
 					style={{
 						contentVisibility: "auto",
 						containIntrinsicSize: "auto 96px",
@@ -92,9 +98,10 @@ function ImageStackGrid({
 
 type ImageStackProps = {
 	data: ImageData[];
+	lastElementRef?: (node: HTMLElement | null) => void;
 };
 
-export function ImageStack({ data }: ImageStackProps) {
+export function ImageStack({ data, lastElementRef }: ImageStackProps) {
 	const [open, setOpen] = useState(false);
 	const [index, setIndex] = useState(0);
 	const [lightboxComponent, setLightboxComponent] =
@@ -125,7 +132,11 @@ export function ImageStack({ data }: ImageStackProps) {
 
 	return (
 		<>
-			<ImageStackGrid data={data} onImageClick={handleImageClick} />
+			<ImageStackGrid
+				data={data}
+				lastElementRef={lastElementRef}
+				onImageClick={handleImageClick}
+			/>
 			{open && Lightbox ? (
 				<Lightbox
 					close={() => setOpen(false)}
@@ -141,11 +152,13 @@ export function ImageStack({ data }: ImageStackProps) {
 type EditableImageStackProps = {
 	data: ImageData[];
 	deleteAction: DeleteAction;
+	lastElementRef?: (node: HTMLElement | null) => void;
 };
 
 export function EditableImageStack({
 	data,
 	deleteAction,
+	lastElementRef,
 }: EditableImageStackProps) {
 	const [open, setOpen] = useState(false);
 	const [index, setIndex] = useState(0);
@@ -169,6 +182,7 @@ export function EditableImageStack({
 		<>
 			<ImageStackGrid
 				data={data}
+				lastElementRef={lastElementRef}
 				onImageClick={(i) => {
 					setIndex(i);
 					haptic();
@@ -196,6 +210,69 @@ export function EditableImageStack({
 					slides={slides}
 				/>
 			) : null}
+		</>
+	);
+}
+
+type InfiniteImageStackProps = {
+	deleteAction?: DeleteAction;
+	initial: CardStackInitialData<ImageData>;
+	loadMoreAction: LoadMoreAction<CardStackInitialData<ImageData>>;
+};
+
+export function InfiniteImageStack({
+	deleteAction,
+	initial,
+	loadMoreAction,
+}: InfiniteImageStackProps) {
+	const [allData, setAllData] = useState(initial.data);
+	const [totalCount, setTotalCount] = useState(initial.totalCount);
+	const [previousInitial, setPreviousInitial] = useState(initial);
+	const [isPending, startTransition] = useTransition();
+	if (previousInitial !== initial) {
+		setPreviousInitial(initial);
+		setAllData(initial.data);
+		setTotalCount(initial.totalCount);
+	}
+	const hasNextPage = allData.length < totalCount;
+	const handleLoadMore = async () => {
+		if (!hasNextPage) return;
+		startTransition(async () => {
+			const result = await loadMoreAction(allData.length);
+			if (result.success && result.data) {
+				const nextBatch = result.data;
+				setTotalCount(nextBatch.totalCount);
+				setAllData((current) => {
+					const ids = new Set(
+						current.map((image) => image.id ?? image.originalPath),
+					);
+					return [
+						...current,
+						...nextBatch.data.filter(
+							(image) => !ids.has(image.id ?? image.originalPath),
+						),
+					];
+				});
+			}
+		});
+	};
+	const { lastElementRef } = useInfiniteScroll({
+		hasNextPage,
+		isFetchingNextPage: isPending,
+		fetchNextPage: handleLoadMore,
+	});
+	return (
+		<>
+			{deleteAction ? (
+				<EditableImageStack
+					data={allData}
+					deleteAction={deleteAction}
+					lastElementRef={lastElementRef}
+				/>
+			) : (
+				<ImageStack data={allData} lastElementRef={lastElementRef} />
+			)}
+			{isPending && <LoadingIndicator />}
 		</>
 	);
 }

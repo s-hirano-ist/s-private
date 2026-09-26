@@ -54,7 +54,7 @@ describe("query cache configuration", () => {
 	test("keys list caches by domain, tenant, status, and page", async () => {
 		await getExportedArticles(48);
 		await getUnexportedBooks(24);
-		await getExportedImages(3);
+		await getExportedImages(48);
 		await getUnexportedNotes(72);
 
 		const keyParts = vi
@@ -80,7 +80,7 @@ describe("query cache configuration", () => {
 			"list",
 			"tenant-a",
 			"EXPORTED",
-			"3",
+			"48",
 		]);
 		expect(keyParts).toContainEqual([
 			"notes",

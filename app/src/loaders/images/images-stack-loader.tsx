@@ -1,39 +1,33 @@
 import "server-only";
-import type { ServerAction } from "@/common/types";
+import type { DeleteAction, LoadMoreAction } from "@/common/types";
+import type { ImageData } from "@/components/common/display/image/image-stack";
+import type { CardStackInitialData } from "@/components/common/layouts/cards/types";
 import type { BaseLoaderProps } from "@/loaders/types";
 import {
 	getExportedImages,
-	getImagesCount,
 	getUnexportedImages,
 } from "@/application-services/images/get-images";
 import { ImagesStack } from "@/components/images/server/images-stack";
 
 export type ImagesStackLoaderProps = BaseLoaderProps & {
-	currentPage: number;
-	deleteAction?: (id: string) => Promise<ServerAction>;
+	deleteAction?: DeleteAction;
+	loadMoreAction: LoadMoreAction<CardStackInitialData<ImageData>>;
 	variant: "exported" | "unexported";
 };
 
 export async function ImagesStackLoader({
 	variant,
-	currentPage,
 	deleteAction,
+	loadMoreAction,
 }: ImagesStackLoaderProps) {
-	const status = variant === "exported" ? "EXPORTED" : "UNEXPORTED";
 	const getImages =
 		variant === "exported" ? getExportedImages : getUnexportedImages;
-
-	const [images, totalCount] = await Promise.all([
-		getImages(currentPage),
-		getImagesCount(status),
-	]);
-
+	const initialData = await getImages(0);
 	return (
 		<ImagesStack
-			currentPage={currentPage}
-			data={images}
 			deleteAction={deleteAction}
-			totalCount={totalCount}
+			initialData={initialData}
+			loadMoreAction={loadMoreAction}
 		/>
 	);
 }

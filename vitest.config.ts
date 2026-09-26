@@ -11,6 +11,15 @@ export default defineConfig({
 		projects: [
 			{
 				extends: true,
+				// Prebundle browser-story dependencies before tests start to avoid Vite reloads.
+				optimizeDeps: {
+					include: [
+						"next-intl/server",
+						"next-intl/navigation",
+						"next-intl/routing",
+						"@base-ui/react/dialog",
+					],
+				},
 				plugins: [
 					// The plugin will run tests for the stories defined in your Storybook config
 					// See options at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon#storybooktest

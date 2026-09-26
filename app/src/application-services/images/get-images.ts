@@ -2,13 +2,14 @@
  * Image query application services.
  *
  * @remarks
- * Provides cached data access for images with pagination and storage retrieval.
+ * Provides cached data access for image batches and storage retrieval.
  * Images are served via API routes for original and thumbnail versions.
  *
  * @module
  */
 
 import type { ImageData } from "@/components/common/display/image/image-stack";
+import type { CardStackInitialData } from "@/components/common/layouts/cards/types";
 import { getSelfId } from "@/common/auth/session";
 import { PAGE_SIZE } from "@/common/constants";
 import { tenantContext } from "@/common/tenant/tenant-context";
@@ -50,38 +51,42 @@ const getImagesCountCached = async (
 };
 
 /**
- * Fetches paginated images with API paths for display.
+ * Fetches a batch of images with API paths for display.
  *
  * @internal
  */
 const getImagesCached = async (
-	page: number,
+	currentCount: number,
 	userId: UserId,
 	status: Status,
-): Promise<ImageData[]> => {
+): Promise<CardStackInitialData<ImageData>> => {
 	return unstable_cache(
 		async () => {
-			const data = await imagesQueryRepository.findMany(userId, status, {
-				skip: (page - 1) * PAGE_SIZE,
-				take: PAGE_SIZE,
-				orderBy: { createdAt: "desc" },
-			});
+			const [data, totalCount] = await Promise.all([
+				imagesQueryRepository.findMany(userId, status, {
+					skip: currentCount,
+					take: PAGE_SIZE,
+					orderBy: { createdAt: "desc" },
+				}),
+				getImagesCountCached(userId, status),
+			]);
 
-			return data.map((d) => {
-				return {
+			return {
+				data: data.map((d) => ({
 					id: d.id,
 					originalPath: `${API_ORIGINAL_PATH}/${d.path}`,
 					thumbnailPath: `${API_THUMBNAIL_PATH}/${d.path}`,
 					height: d.height,
 					width: d.width,
-				};
-			});
+				})),
+				totalCount,
+			};
 		},
-		["images", "list", userId, status, String(page)],
+		["images", "list", userId, status, String(currentCount)],
 		{
 			tags: [
 				buildContentCacheTag("images", status, userId),
-				buildPaginatedContentCacheTag("images", status, userId, page),
+				buildPaginatedContentCacheTag("images", status, userId, currentCount),
 			],
 		},
 	)();
@@ -103,14 +108,14 @@ export const getImagesCount = async (status: Status): Promise<number> => {
 /**
  * Fetches paginated exported images for the current user.
  *
- * @param page - Page number (1-based)
- * @returns Array of image data with API paths
+ * @param currentCount - Number of images already loaded
+ * @returns Image data and total count
  */
 export const getExportedImages = cache(
-	async (page: number): Promise<ImageData[]> => {
+	async (currentCount: number): Promise<CardStackInitialData<ImageData>> => {
 		const userId = await getSelfId();
 		return tenantContext.run({ userId }, () =>
-			getImagesCached(page, userId, makeExportedStatus().status),
+			getImagesCached(currentCount, userId, makeExportedStatus().status),
 		);
 	},
 );
@@ -118,14 +123,14 @@ export const getExportedImages = cache(
 /**
  * Fetches paginated unexported images for the current user.
  *
- * @param page - Page number (1-based)
- * @returns Array of image data with API paths
+ * @param currentCount - Number of images already loaded
+ * @returns Image data and total count
  */
 export const getUnexportedImages = cache(
-	async (page: number): Promise<ImageData[]> => {
+	async (currentCount: number): Promise<CardStackInitialData<ImageData>> => {
 		const userId = await getSelfId();
 		return tenantContext.run({ userId }, () =>
-			getImagesCached(page, userId, makeUnexportedStatus()),
+			getImagesCached(currentCount, userId, makeUnexportedStatus()),
 		);
 	},
 );

@@ -1,24 +1,17 @@
+import { loadMoreExportedImages } from "@/application-services/images/load-more-images";
 import { ErrorBoundary } from "@/components/common/layouts/error-boundary";
 import { ImagesCounterLoader } from "@/loaders/images/images-counter-loader";
 import { ImagesStackLoader } from "@/loaders/images/images-stack-loader";
 import { LoadingIndicator as Loading } from "@s-hirano-ist/s-ui/loading-indicator";
 import { Suspense } from "react";
 
-type ImagesContentProps = Pick<
-	PageProps<"/[locale]/images/viewer">,
-	"searchParams"
->;
-
-async function ImagesContent({ searchParams }: ImagesContentProps) {
-	const { page } = await searchParams;
-	const currentPage = Number(page) || 1;
-
+function ImagesContent() {
 	return (
 		<ErrorBoundary
 			errorCaller="ImagesStack"
 			render={() =>
 				ImagesStackLoader({
-					currentPage,
+					loadMoreAction: loadMoreExportedImages,
 					variant: "exported",
 				})
 			}
@@ -26,9 +19,7 @@ async function ImagesContent({ searchParams }: ImagesContentProps) {
 	);
 }
 
-export default function Page({
-	searchParams,
-}: PageProps<"/[locale]/images/viewer">) {
+export default function Page() {
 	return (
 		<>
 			<Suspense fallback={null}>
@@ -40,7 +31,7 @@ export default function Page({
 			</Suspense>
 
 			<Suspense fallback={<Loading />}>
-				<ImagesContent searchParams={searchParams} />
+				<ImagesContent />
 			</Suspense>
 		</>
 	);
