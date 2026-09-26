@@ -23,12 +23,12 @@
 		"@s-hirano-ist/s-search": "workspace:*",
 		"@s-hirano-ist/s-storage": "workspace:*",
 		"@s-hirano-ist/s-ui": "workspace:*",
-		"@sentry/nextjs": "10.75.0",
+		"@sentry/nextjs": "10.75.3",
 		"@t3-oss/env-nextjs": "0.13.11",
 		"@tailwindcss/typography": "catalog:",
 		"@vercel/analytics": "2.0.1",
 		"@vercel/speed-insights": "2.0.0",
-		"better-auth": "1.7.5",
+		"better-auth": "1.7.6",
 		"lucide-react": "catalog:",
 		"markdown-to-jsx": "9.10.3",
 		"next": "catalog:",
@@ -55,7 +55,7 @@
 		"@types/react-dom": "catalog:",
 		"@types/react-syntax-highlighter": "15.5.13",
 		"postcss": "catalog:",
-		"react-scan": "0.4.3",
+		"react-scan": "0.5.7",
 		"tailwindcss": "catalog:"
 	}
 }
