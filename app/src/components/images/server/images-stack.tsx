@@ -1,131 +1,26 @@
-import type { ServerAction } from "@/common/types";
-import type { Route } from "next";
-import { PAGE_SIZE } from "@/common/constants";
-import {
-	EditableImageStack,
-	type ImageData,
-	ImageStack,
-} from "@/components/common/display/image/image-stack";
-import {
-	Pagination,
-	PaginationContent,
-	PaginationEllipsis,
-	PaginationItem,
-	PaginationLink,
-	PaginationNext,
-	PaginationPrevious,
-} from "@s-hirano-ist/s-ui/pagination";
-import { getTranslations } from "next-intl/server";
-import Link from "next/link";
+import type { DeleteAction, LoadMoreAction } from "@/common/types";
+import type { ImageData } from "@/components/common/display/image/image-stack";
+import type { CardStackInitialData } from "@/components/common/layouts/cards/types";
+import { InfiniteImageStack } from "@/components/common/display/image/image-stack";
 
-type Props = {
-	currentPage: number;
-	data: ImageData[];
-	deleteAction?: (id: string) => Promise<ServerAction>;
-	totalCount: number;
+type ImagesInitialData = CardStackInitialData<ImageData>;
+
+export type ImagesStackProps = {
+	deleteAction?: DeleteAction;
+	initialData: ImagesInitialData;
+	loadMoreAction: LoadMoreAction<ImagesInitialData>;
 };
 
-function generatePageLink(page: number): Route {
-	const params = new URLSearchParams();
-	params.set("page", String(page));
-	return `?${params.toString()}`;
-}
-
-type PaginationItemType =
-	| { page: number; type: "page" }
-	| { position: "start" | "end"; type: "ellipsis" };
-
-function generatePaginationItems(
-	currentPage: number,
-	totalPages: number,
-): PaginationItemType[] {
-	// Always show first page
-	const items: PaginationItemType[] = [{ type: "page", page: 1 }];
-
-	if (currentPage > 3) {
-		items.push({ type: "ellipsis", position: "start" });
-	}
-
-	// Pages around current
-	for (
-		let i = Math.max(2, currentPage - 1);
-		i <= Math.min(totalPages - 1, currentPage + 1);
-		i++
-	) {
-		items.push({ type: "page", page: i });
-	}
-
-	if (currentPage < totalPages - 2) {
-		items.push({ type: "ellipsis", position: "end" });
-	}
-
-	// Always show last page if more than 1 page
-	if (totalPages > 1) {
-		items.push({ type: "page", page: totalPages });
-	}
-
-	return items;
-}
-
-export async function ImagesStack({
-	currentPage,
-	totalCount,
-	data,
+export function ImagesStack({
 	deleteAction,
-}: Props) {
-	const totalPages = Math.ceil(totalCount / PAGE_SIZE);
-	const t = await getTranslations("label");
-
-	const showPagination = totalPages > 1;
-
+	initialData,
+	loadMoreAction,
+}: ImagesStackProps) {
 	return (
-		<>
-			{deleteAction ? (
-				<EditableImageStack data={data} deleteAction={deleteAction} />
-			) : (
-				<ImageStack data={data} />
-			)}
-			{showPagination && (
-				<Pagination className="mt-4">
-					<PaginationContent>
-						{currentPage > 1 && (
-							<PaginationItem>
-								<PaginationPrevious
-									as={Link}
-									href={generatePageLink(currentPage - 1)}
-									label={t("previous")}
-								/>
-							</PaginationItem>
-						)}
-						{generatePaginationItems(currentPage, totalPages).map((item) =>
-							item.type === "ellipsis" ? (
-								<PaginationItem key={`ellipsis-${item.position}`}>
-									<PaginationEllipsis srLabel={t("morePages")} />
-								</PaginationItem>
-							) : (
-								<PaginationItem key={item.page}>
-									<PaginationLink
-										as={Link}
-										href={generatePageLink(item.page)}
-										isActive={item.page === currentPage}
-									>
-										{item.page}
-									</PaginationLink>
-								</PaginationItem>
-							),
-						)}
-						{currentPage < totalPages && (
-							<PaginationItem>
-								<PaginationNext
-									as={Link}
-									href={generatePageLink(currentPage + 1)}
-									label={t("next")}
-								/>
-							</PaginationItem>
-						)}
-					</PaginationContent>
-				</Pagination>
-			)}
-		</>
+		<InfiniteImageStack
+			deleteAction={deleteAction}
+			initial={initialData}
+			loadMoreAction={loadMoreAction}
+		/>
 	);
 }

@@ -32,6 +32,7 @@ vi.mock("@/common/auth/session", () => ({
 describe("get-images", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
+		vi.mocked(imagesQueryRepository.count).mockResolvedValue(0);
 	});
 
 	describe("getExportedImages", () => {
@@ -52,8 +53,11 @@ describe("get-images", () => {
 			];
 
 			vi.mocked(imagesQueryRepository.findMany).mockResolvedValue(mockImages);
+			vi.mocked(imagesQueryRepository.count).mockResolvedValue(
+				mockImages.length,
+			);
 
-			const result = await getExportedImages(1);
+			const result = await getExportedImages(0);
 
 			expect(imagesQueryRepository.findMany).toHaveBeenCalledWith(
 				"test-user-id",
@@ -65,28 +69,31 @@ describe("get-images", () => {
 				},
 			);
 
-			expect(result).toEqual([
-				{
-					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b",
-					originalPath: "/api/images/original/image1.jpg",
-					thumbnailPath: "/api/images/thumbnail/image1.jpg",
-					height: 100,
-					width: 200,
-				},
-				{
-					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c",
-					originalPath: "/api/images/original/image2.jpg",
-					thumbnailPath: "/api/images/thumbnail/image2.jpg",
-					height: 150,
-					width: 250,
-				},
-			]);
+			expect(result).toEqual({
+				data: [
+					{
+						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b",
+						originalPath: "/api/images/original/image1.jpg",
+						thumbnailPath: "/api/images/thumbnail/image1.jpg",
+						height: 100,
+						width: 200,
+					},
+					{
+						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c",
+						originalPath: "/api/images/original/image2.jpg",
+						thumbnailPath: "/api/images/thumbnail/image2.jpg",
+						height: 150,
+						width: 250,
+					},
+				],
+				totalCount: 2,
+			});
 		});
 
-		test("should handle pagination correctly", async () => {
+		test("should offset by the loaded image count", async () => {
 			vi.mocked(imagesQueryRepository.findMany).mockResolvedValue([]);
 
-			await getExportedImages(3);
+			await getExportedImages(48);
 
 			expect(imagesQueryRepository.findMany).toHaveBeenCalledWith(
 				"test-user-id",
@@ -102,9 +109,9 @@ describe("get-images", () => {
 		test("should handle empty results", async () => {
 			vi.mocked(imagesQueryRepository.findMany).mockResolvedValue([]);
 
-			const result = await getExportedImages(1);
+			const result = await getExportedImages(0);
 
-			expect(result).toEqual([]);
+			expect(result).toEqual({ data: [], totalCount: 0 });
 		});
 
 		test("should handle database errors", async () => {
@@ -112,7 +119,7 @@ describe("get-images", () => {
 				new Error("Database error"),
 			);
 
-			await expect(getExportedImages(1)).rejects.toThrow("Database error");
+			await expect(getExportedImages(0)).rejects.toThrow("Database error");
 		});
 	});
 
@@ -134,8 +141,11 @@ describe("get-images", () => {
 			];
 
 			vi.mocked(imagesQueryRepository.findMany).mockResolvedValue(mockImages);
+			vi.mocked(imagesQueryRepository.count).mockResolvedValue(
+				mockImages.length,
+			);
 
-			const result = await getUnexportedImages(1);
+			const result = await getUnexportedImages(0);
 
 			expect(imagesQueryRepository.findMany).toHaveBeenCalledWith(
 				"test-user-id",
@@ -149,30 +159,33 @@ describe("get-images", () => {
 				},
 			);
 
-			expect(result).toEqual([
-				{
-					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d",
-					originalPath: "/api/images/original/unexported1.jpg",
-					thumbnailPath: "/api/images/thumbnail/unexported1.jpg",
-					height: 300,
-					width: 400,
-				},
-				{
-					id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e",
-					originalPath: "/api/images/original/unexported2.jpg",
-					thumbnailPath: "/api/images/thumbnail/unexported2.jpg",
-					height: 350,
-					width: 450,
-				},
-			]);
+			expect(result).toEqual({
+				data: [
+					{
+						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d",
+						originalPath: "/api/images/original/unexported1.jpg",
+						thumbnailPath: "/api/images/thumbnail/unexported1.jpg",
+						height: 300,
+						width: 400,
+					},
+					{
+						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e",
+						originalPath: "/api/images/original/unexported2.jpg",
+						thumbnailPath: "/api/images/thumbnail/unexported2.jpg",
+						height: 350,
+						width: 450,
+					},
+				],
+				totalCount: 2,
+			});
 		});
 
 		test("should handle empty results", async () => {
 			vi.mocked(imagesQueryRepository.findMany).mockResolvedValue([]);
 
-			const result = await getUnexportedImages(1);
+			const result = await getUnexportedImages(0);
 
-			expect(result).toEqual([]);
+			expect(result).toEqual({ data: [], totalCount: 0 });
 		});
 
 		test("should handle database errors", async () => {
@@ -180,7 +193,7 @@ describe("get-images", () => {
 				new Error("Database error"),
 			);
 
-			await expect(getUnexportedImages(1)).rejects.toThrow("Database error");
+			await expect(getUnexportedImages(0)).rejects.toThrow("Database error");
 		});
 	});
 
