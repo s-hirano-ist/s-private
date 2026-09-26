@@ -127,7 +127,11 @@ export function ComboboxField({
 					</Combobox.Icon>
 				</Combobox.Trigger>
 				<Combobox.Portal>
-					<Combobox.Positioner align="start" sideOffset={4}>
+					<Combobox.Positioner
+						align="start"
+						className="sui:z-60"
+						sideOffset={4}
+					>
 						<Combobox.Popup
 							aria-label={label}
 							className="sui:z-50 sui:w-[var(--anchor-width)] sui:rounded-md sui:border sui:border-muted sui:bg-background sui:text-foreground sui:shadow-md"
