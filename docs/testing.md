@@ -44,12 +44,14 @@ pnpm exec storybook tools test run
 
 Install dependencies with `pnpm install --frozen-lockfile` before running the command. Add checks that are specific to the change when necessary. For example, run `pnpm build` for application build or environment configuration changes, Prisma checks for database changes, and Playwright tests for E2E behavior.
 
+For tasks that change code, configuration, or documentation, verify the affected behavior and review the final diff. Fix failed checks and rerun them. Then commit and push the change, create a ready-for-review GitHub PR from Codex, and report its URL. Write the PR body concisely in Japanese, including checks performed and any remaining issues. Link an existing issue when the work addresses one. Investigation and planning tasks without changes do not require a PR. If an external approval or service outage prevents verification or PR creation, report completed checks and the blocker instead of retrying indefinitely.
+
 ### Long-running Codex tasks
 
 Use Codex Goal mode only for work that benefits from repeated implementation, verification, and repair. A goal must state the outcome, constraints, verification commands, and a verifiable stopping condition. See the official [Follow a goal](https://learn.chatgpt.com/use-cases/follow-goals) and [Long-running work](https://learn.chatgpt.com/docs/long-running-work) guidance.
 
 ```text
-/goal Complete <objective> within <allowed scope>. Read AGENTS.md and the relevant docs first. After making changes, run pnpm check:agent and fix every failure. Run <additional checks> when required by the changed subsystem. Stop only when all required checks pass, the final diff has been reviewed, and no requested work remains. If progress requires external approval or an unavailable external service, stop retrying and report the completed checks and exact blocker.
+/goal Complete <objective> within <allowed scope>. Read AGENTS.md and the relevant docs first. After making changes, run pnpm check:agent and fix every failure. Run <additional checks> when required by the changed subsystem. Review the final diff, commit and push, create a ready-for-review GitHub PR, and report its URL. Stop only when the required checks pass, the PR is created, and no requested work remains. If external approval or an unavailable service blocks verification or PR creation, stop retrying and report the completed checks and exact blocker.
 ```
 
 Normal investigations, planning tasks, and small one-turn changes do not need Goal mode.
