@@ -8,6 +8,7 @@
 		"switchStatus": "Export status: {current}. Switch to {next}",
 		"unexported": "Unexported",
 		"exported": "Exported",
+		"contentCount": " ({count})",
 		"create": "Create new",
 		"search": "Search",
 		"settings": "Settings",

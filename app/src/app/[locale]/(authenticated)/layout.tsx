@@ -7,6 +7,7 @@ import { addNote } from "@/application-services/notes/add-note";
 import { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 import { PAGE_NAME } from "@/common/constants";
 import { AppNavigation } from "@/components/common/layouts/nav/app-navigation";
+import { ViewerCountProvider } from "@/components/common/layouts/nav/viewer-count-context";
 import { ArticleFormLoader } from "@/loaders/articles/article-form-loader";
 import { BooksFormLoader } from "@/loaders/books/books-form-loader";
 import { ImageFormLoader } from "@/loaders/images/image-form-loader";
@@ -27,16 +28,18 @@ export const viewport: Viewport = {
 export default function Layout({ children }: { children: ReactNode }) {
 	return (
 		<div className="mx-auto max-w-5xl pb-24 sm:px-2">
-			<AppNavigation
-				forms={{
-					articles: <ArticleFormLoader addArticle={addArticle} />,
-					books: <BooksFormLoader addBooks={addBooks} />,
-					images: <ImageFormLoader addImage={addImage} />,
-					notes: <NoteFormLoader addNote={addNote} />,
-				}}
-				search={searchContentFromClient}
-			/>
-			{children}
+			<ViewerCountProvider>
+				<AppNavigation
+					forms={{
+						articles: <ArticleFormLoader addArticle={addArticle} />,
+						books: <BooksFormLoader addBooks={addBooks} />,
+						images: <ImageFormLoader addImage={addImage} />,
+						notes: <NoteFormLoader addNote={addNote} />,
+					}}
+					search={searchContentFromClient}
+				/>
+				{children}
+			</ViewerCountProvider>
 		</div>
 	);
 }

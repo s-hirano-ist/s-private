@@ -1,7 +1,7 @@
 import "server-only";
 import type { CounterLoaderProps } from "@/loaders/types";
 import { getExportedArticlesCount } from "@/application-services/articles/get-articles";
-import { ArticlesCounter } from "@/components/articles/server/articles-counter";
+import { ViewerCountSync } from "@/components/common/layouts/nav/viewer-count-context";
 
 export type ArticlesCounterLoaderProps = CounterLoaderProps;
 
@@ -10,5 +10,5 @@ export async function ArticlesCounterLoader(
 ) {
 	const count = await getExportedArticlesCount();
 
-	return <ArticlesCounter count={count} />;
+	return <ViewerCountSync count={count} domain="articles" />;
 }

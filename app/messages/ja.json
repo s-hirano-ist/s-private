@@ -8,6 +8,7 @@
 		"switchStatus": "公開状態: {current}。{next}に切り替え",
 		"unexported": "未公開",
 		"exported": "公開済み",
+		"contentCount": "（{count}件）",
 		"create": "新規作成",
 		"search": "検索",
 		"settings": "設定",

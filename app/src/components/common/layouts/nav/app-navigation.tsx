@@ -25,6 +25,7 @@ import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { SearchDrawer } from "./search-drawer";
+import { useViewerCount } from "./viewer-count-context";
 
 const domains = [
 	{
@@ -83,6 +84,11 @@ export function AppNavigation({ forms, search }: Props) {
 	const [searchOpen, setSearchOpen] = useState(false);
 	const { route, domain, isViewer } = getNavigationState(pathname);
 	const activeDomain = domains.find((item) => item.key === domain);
+	const viewerCount = useViewerCount();
+	const count =
+		isViewer && viewerCount !== null && viewerCount.domain === domain
+			? viewerCount.count
+			: null;
 
 	return (
 		<>
@@ -91,15 +97,16 @@ export function AppNavigation({ forms, search }: Props) {
 					<>
 						<nav aria-label={t("status")} className="mr-auto min-w-0">
 							<Link
-								aria-label={t("switchStatus", {
+								aria-label={`${t("switchStatus", {
 									current: t(isViewer ? "exported" : "unexported"),
 									next: t(isViewer ? "unexported" : "exported"),
-								})}
+								})}${count === null ? "" : t("contentCount", { count })}`}
 								className="inline-flex h-9 items-center gap-1.5 rounded-full bg-primary/10 px-3 text-xs font-medium whitespace-nowrap text-foreground transition-colors duration-200 hover:bg-primary/20"
 								href={isViewer ? activeDomain.href : activeDomain.viewerHref}
 								onClick={() => setCreateOpen(false)}
 							>
 								{t(isViewer ? "exported" : "unexported")}
+								{count !== null && t("contentCount", { count })}
 								<ArrowLeftRightIcon aria-hidden="true" className="size-3.5" />
 							</Link>
 						</nav>
