@@ -89,9 +89,12 @@ export function SearchCard({ search }: Props) {
 		);
 	} else if (searchResults === undefined) {
 		content = (
-			<p className="p-4 text-sm text-muted-foreground">
-				{t("searchPlaceholder")}
-			</p>
+			<div className="flex items-center justify-center">
+				<StatusCodeView
+					statusCode="204"
+					statusCodeString={statusCodes("204")}
+				/>
+			</div>
 		);
 	} else if (isError) {
 		content = (
