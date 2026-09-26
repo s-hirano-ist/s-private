@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.22.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.22.0...@s-hirano-ist/s-database-v1.22.1) (2026-09-26)
+
+
+### Bug Fixes
+
+* avoid image sync timeout on iOS ([88e193f](https://github.com/s-hirano-ist/s-private/commit/88e193f55f199a502efab5d26a75f36919982e48))
+* iOSの画像同期タイムアウトを解消 ([c63bac3](https://github.com/s-hirano-ist/s-private/commit/c63bac38ee189778e8ef0d2c8b9676c0e9b96e62))
+
 ## [1.22.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.21.4...@s-hirano-ist/s-database-v1.22.0) (2026-09-24)
 
 
