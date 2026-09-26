@@ -160,10 +160,12 @@ requires user action.
 All records and categories are retained in SwiftData. Lists, details, filters and
 search read the local copy immediately, including offline. At launch, login and
 foreground activation, and periodically while active, the app compares the complete owner-scoped manifest and
-fetches only new or changed records. It removes remote deletions only after all
-changed details have been fetched successfully. Foreground checks are throttled
+fetches only new or changed records. The image manifest includes complete image
+metadata, so the image grid does not wait for a separate paginated list or one
+detail request per image. It removes remote deletions only after all changed
+details have been fetched successfully. Foreground checks are throttled
 to five minutes; manual sync always checks. Images and book covers are saved as
-thumbnails for offline display. Originals are fetched on demand. **キャッシュを削除**
+thumbnails for offline display after record sync finishes. Originals are fetched on demand. **キャッシュを削除**
 removes downloaded records and media but never pending operations or attachments.
 Deletion remains online-only.
 

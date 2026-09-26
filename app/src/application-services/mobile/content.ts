@@ -119,7 +119,22 @@ export async function listMobileManifest(userId: string) {
 		prisma.article.findMany({ where, select, orderBy: { id: "asc" } }),
 		prisma.note.findMany({ where, select, orderBy: { id: "asc" } }),
 		prisma.book.findMany({ where, select, orderBy: { id: "asc" } }),
-		prisma.image.findMany({ where, select, orderBy: { id: "asc" } }),
+		prisma.image.findMany({
+			where,
+			select: {
+				id: true,
+				status: true,
+				createdAt: true,
+				updatedAt: true,
+				exportedAt: true,
+				path: true,
+				contentType: true,
+				fileSize: true,
+				width: true,
+				height: true,
+			},
+			orderBy: { id: "asc" },
+		}),
 		prisma.category.findMany({
 			where,
 			select: { id: true, name: true },

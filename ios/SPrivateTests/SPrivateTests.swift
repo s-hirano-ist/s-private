@@ -156,6 +156,14 @@ struct MobileAPIContractTests {
         }
     }
 
+    @Test("Image manifest carries records ready for the local grid")
+    func decodesImageManifest() throws {
+        let payload = Data(#"{"articles":[],"notes":[],"books":[],"images":[{"id":"image-1","status":"UNEXPORTED","createdAt":"2026-09-21T01:02:03Z","updatedAt":"2026-09-21T01:02:03Z","path":"image.jpg","contentType":"image/jpeg"}],"categories":[]}"#.utf8)
+        let manifest = try MobileAPICoding.decoder().decode(MobileManifest.self, from: payload)
+        #expect(manifest.images.first?.path == "image.jpg")
+        #expect(manifest.items(for: .images).map(\.id) == ["image-1"])
+    }
+
     @Test("Cached record preserves server update time including milliseconds")
     func cacheDateRoundTrip() throws {
         let payload = Data(#"{"id":"one","status":"UNEXPORTED","createdAt":"2026-09-21T01:02:03.123Z","updatedAt":"2026-09-21T01:02:03.456Z","title":"Note","markdown":"Body"}"#.utf8)
