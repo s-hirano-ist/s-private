@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { Dialog, DialogContent, DialogTitle } from "@s-hirano-ist/s-ui/dialog";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import { ArticleForm } from "./article-form";
 
@@ -38,6 +39,32 @@ export const Default: Story = {
 
 		await userEvent.click(categoryTrigger);
 		await userEvent.click(categoryTrigger);
+		expect(args.getCategories).toHaveBeenCalledTimes(1);
+	},
+};
+
+export const InMobileCreateDialog: Story = {
+	args: {
+		addArticle: fn(),
+		getCategories: fn(async () => mockCategories),
+	},
+	globals: { viewport: { value: "mobile1" } },
+	render: (args) => (
+		<Dialog defaultOpen>
+			<DialogContent className="max-h-[85dvh] overflow-y-auto">
+				<DialogTitle>Create article</DialogTitle>
+				<ArticleForm {...args} />
+			</DialogContent>
+		</Dialog>
+	),
+	play: async ({ args, canvasElement }) => {
+		const body = within(canvasElement.ownerDocument.body);
+		await userEvent.click(body.getByRole("combobox", { name: "カテゴリー" }));
+		await expect(body.findByText("Technology")).resolves.toBeVisible();
+		await userEvent.click(body.getByText("Technology"));
+		await expect(
+			body.getByRole("combobox", { name: "カテゴリー" }),
+		).toHaveTextContent("Technology");
 		expect(args.getCategories).toHaveBeenCalledTimes(1);
 	},
 };
