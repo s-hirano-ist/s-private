@@ -28,7 +28,7 @@ struct MobileManifest: Decodable {
     let articles: [MobileManifestItem]
     let notes: [MobileManifestItem]
     let books: [MobileManifestItem]
-    let images: [MobileManifestItem]
+    let images: [MobileRecord]
     let categories: [MobileCategory]
 
     func items(for domain: MobileDomain) -> [MobileManifestItem] {
@@ -36,7 +36,7 @@ struct MobileManifest: Decodable {
         case .articles: articles
         case .notes: notes
         case .books: books
-        case .images: images
+        case .images: images.map { MobileManifestItem(id: $0.id, updatedAt: $0.updatedAt) }
         }
     }
 }

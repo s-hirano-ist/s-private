@@ -1943,7 +1943,7 @@ Turborepo はローカルキャッシュのみを利用する。remote cache や
 
 ## iOSの共有受け渡しと認証境界
 
-iOSの閲覧はSwiftDataの所有者別ローカルコピーを正本とする。`/api/mobile/v1/manifest` は全ドメインのIDと更新日時、およびカテゴリを所有者スコープで返す。端末は差分の詳細のみ取得し、取得が全件成功した後にmanifestから消えた項目を削除する。本文と縮小画像は端末に保存し、原本は必要時に取得する。削除はオンラインでのみ行う。終了中のバックグラウンド同期は保証しない。
+iOSの閲覧はSwiftDataの所有者別ローカルコピーを正本とする。`/api/mobile/v1/manifest` は各ドメインのIDと更新日時、画像の全メタデータ、およびカテゴリを所有者スコープで返す。画像はmanifestだけでローカル一覧を更新し、他ドメインの差分詳細を取得した後にmanifestから消えた項目を削除する。本文と縮小画像は端末に保存し、縮小画像の取得はレコード同期の完了後に進める。原本は必要時に取得する。削除はオンラインでのみ行う。終了中のバックグラウンド同期は保証しない。
 
 モバイルAPIは `/api/mobile/v1` のNode.js Route Handlerで公開する。Auth0 API audience向けのRS256アクセストークンをJWKSで検証し、`providerId=auth0` と `accountId=sub` の既存Better Auth AccountからユーザーIDを取得する。ユーザーごとにtenant contextを設定してからデータアクセスする。Web用Server Actionと異なり、この認証済みネイティブAPIではRoute Handlerによるmutationを許可する。登録は所有者・操作ID・正規化入力ハッシュ・結果を永続化し、同一入力の再送へ同じリソースを返す。画像と書影は所有者検証済みの一時領域へ1 MiB単位で分割アップロードし、完了時だけ既存ユースケースへ渡す。契約は `docs/openapi/mobile-v1.yaml` を参照する。
 

@@ -12,6 +12,7 @@ final class SyncCoordinator: ObservableObject {
     private let authentication: AuthenticationModel
     private var syncing = false
     private var lastRefreshAttempt: Date?
+    private var thumbnailTask: Task<Void, Never>?
 
     init(container: ModelContainer, authentication: AuthenticationModel) {
         context = ModelContext(container)
@@ -190,6 +191,16 @@ final class SyncCoordinator: ObservableObject {
         guard authentication.ownerKey == owner else { return }
         for domain in MobileDomain.allCases {
             let remote = manifest.items(for: domain)
+            if domain == .images {
+                let local = Dictionary(uniqueKeysWithValues: cached(domain: domain).map { ($0.id, $0.updatedAt) })
+                let changed = manifest.images.filter { local[$0.id] != $0.updatedAt }
+                for record in changed where local[record.id] != nil {
+                    await ThumbnailStore.shared.remove(owner: owner, domain: domain, id: record.id)
+                    removeCachedMedia(domain: domain, id: record.id)
+                }
+                if !changed.isEmpty { try cache(domain: domain, records: changed) }
+                continue
+            }
             if cached(domain: domain).isEmpty && !remote.isEmpty {
                 var offset = 0
                 repeat {
@@ -229,12 +240,18 @@ final class SyncCoordinator: ObservableObject {
         manifest.categories.forEach { context.insert(CachedMobileCategory(ownerKey: owner, category: $0)) }
         try context.save()
         dataRevision += 1
+        thumbnailTask?.cancel()
+        thumbnailTask = Task { await warmThumbnails(using: client, owner: owner, manifest: manifest) }
+    }
+
+    private func warmThumbnails(using client: MobileClient, owner: String, manifest: MobileManifest) async {
         for domain in [MobileDomain.books, .images] {
             for item in manifest.items(for: domain) {
-                guard authentication.ownerKey == owner else { return }
+                guard !Task.isCancelled, authentication.ownerKey == owner else { return }
                 if await ThumbnailStore.shared.contains(owner: owner, domain: domain, id: item.id) { continue }
                 do {
                     let data = try await client.media(domain, id: item.id, variant: "thumbnail")
+                    guard !Task.isCancelled, authentication.ownerKey == owner else { return }
                     _ = await ThumbnailStore.shared.saveAndDecode(data, owner: owner, domain: domain, id: item.id, pixelSize: 600)
                 } catch {
                     // A missing image does not invalidate the completed metadata sync.
@@ -268,6 +285,8 @@ final class SyncCoordinator: ObservableObject {
     }
 
     func clearCache() {
+        thumbnailTask?.cancel()
+        thumbnailTask = nil
         (try? context.fetch(FetchDescriptor<CachedMobileRecord>()))?.forEach(context.delete)
         (try? context.fetch(FetchDescriptor<CachedMobileCategory>()))?.forEach(context.delete)
         try? context.save()

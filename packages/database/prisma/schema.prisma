@@ -91,6 +91,7 @@ model Image {
   exportedAt DateTime? @map("exported_at")
 
   @@unique([path, userId])
+  @@index([userId, id])
   @@map("images")
 }
 

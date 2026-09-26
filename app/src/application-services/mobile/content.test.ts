@@ -3,12 +3,13 @@ const articleFindMany = vi.hoisted(() => vi.fn());
 const articleCount = vi.hoisted(() => vi.fn());
 const noteFindFirst = vi.hoisted(() => vi.fn());
 const manifestFindMany = vi.hoisted(() => vi.fn().mockResolvedValue([]));
+const imageFindMany = vi.hoisted(() => vi.fn().mockResolvedValue([]));
 vi.mock("@/prisma", () => ({
 	default: {
 		article: { findMany: articleFindMany, count: articleCount },
 		note: { findFirst: noteFindFirst, findMany: manifestFindMany },
 		book: { findMany: manifestFindMany },
-		image: { findMany: manifestFindMany },
+		image: { findMany: imageFindMany },
 		category: { findMany: manifestFindMany },
 	},
 }));
@@ -68,9 +69,20 @@ describe("mobile content owner scope", () => {
 				select: { id: true, updatedAt: true },
 			}),
 		);
-		expect(manifestFindMany).toHaveBeenCalledTimes(4);
+		expect(manifestFindMany).toHaveBeenCalledTimes(3);
 		for (const call of manifestFindMany.mock.calls) {
 			expect(call[0].where).toEqual({ userId: "owner-1" });
 		}
+		expect(imageFindMany).toHaveBeenCalledWith(
+			expect.objectContaining({
+				where: { userId: "owner-1" },
+				select: expect.objectContaining({
+					id: true,
+					status: true,
+					path: true,
+					updatedAt: true,
+				}),
+			}),
+		);
 	});
 });

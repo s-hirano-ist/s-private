@@ -13,7 +13,7 @@ paths:
   /manifest:
     get:
       operationId: listMobileManifest
-      description: Owner-scoped IDs and update times for complete local reconciliation. Fetch changed records through the detail endpoint. A successful full response also identifies remote deletions.
+      description: Owner-scoped IDs and update times for complete local reconciliation. Image entries include their metadata so the client can display them without additional list or detail requests. Fetch changed records in other domains through the detail endpoint. A successful full response also identifies remote deletions.
       responses:
         '200':
           description: Complete manifest and categories
@@ -26,7 +26,10 @@ paths:
                   articles: { $ref: '#/components/schemas/ManifestItems' }
                   notes: { $ref: '#/components/schemas/ManifestItems' }
                   books: { $ref: '#/components/schemas/ManifestItems' }
-                  images: { $ref: '#/components/schemas/ManifestItems' }
+                  images:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Image'
                   categories:
                     type: array
                     items:
