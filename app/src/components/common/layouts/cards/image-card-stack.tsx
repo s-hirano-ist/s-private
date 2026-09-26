@@ -21,7 +21,7 @@ export function ImageCardStack({
 	return (
 		<BaseCardStackWrapper
 			deleteAction={deleteAction}
-			gridClassName="grid grid-cols-2 items-stretch gap-4 sm:grid-cols-3 lg:grid-cols-4"
+			gridClassName="grid grid-cols-2 items-stretch gap-4 sm:grid-cols-3 lg:grid-cols-4 pt-2"
 			initial={initial}
 			loadMoreAction={loadMoreAction}
 		>

@@ -19,7 +19,7 @@ export function LinkCardStack({
 	return (
 		<BaseCardStackWrapper
 			deleteAction={deleteAction}
-			gridClassName="grid grid-cols-1 items-stretch gap-2 sm:grid-cols-2 sm:gap-4"
+			gridClassName="grid grid-cols-1 items-stretch gap-2 sm:grid-cols-2 sm:gap-4 pt-2"
 			initial={initial}
 			loadMoreAction={loadMoreAction}
 		>
