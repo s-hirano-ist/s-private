@@ -2,6 +2,42 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.15.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.14.0...s-private-v3.15.0) (2026-09-26)
+
+
+### Features
+
+* **images:** add infinite scrolling to image lists ([1b3d44b](https://github.com/s-hirano-ist/s-private/commit/1b3d44bb51e871df9ee69b39a88c7e11fd07b6c9))
+* **images:** 画像一覧を無限スクロールに変更 ([ccba869](https://github.com/s-hirano-ist/s-private/commit/ccba869ab8af107e8233df9bd89d05293b1ff360))
+* iOS のローカル優先同期に切り替える ([97f43fd](https://github.com/s-hirano-ist/s-private/commit/97f43fdfb4337897d6c9c8aaf174f4864cd08922))
+* make iOS content local-first with manifest sync ([f7e3f23](https://github.com/s-hirano-ist/s-private/commit/f7e3f23332dcdb840187e910e500ab43a8bb1675))
+* show viewer counts in status navigation ([e00c462](https://github.com/s-hirano-ist/s-private/commit/e00c462b3c8c804edc5cb8e8e720e176b295c191))
+
+
+### Bug Fixes
+
+* avoid image sync timeout on iOS ([88e193f](https://github.com/s-hirano-ist/s-private/commit/88e193f55f199a502efab5d26a75f36919982e48))
+* iOSの画像同期タイムアウトを解消 ([c63bac3](https://github.com/s-hirano-ist/s-private/commit/c63bac38ee189778e8ef0d2c8b9676c0e9b96e62))
+* padding format ([1df03cd](https://github.com/s-hirano-ist/s-private/commit/1df03cd5712b024806de4e40183375e38620be56))
+* remove legacy iOS sync fallback ([35ade1a](https://github.com/s-hirano-ist/s-private/commit/35ade1ad702ae903b853328e0de954275b57be07))
+* search card bug ([26e3c6c](https://github.com/s-hirano-ist/s-private/commit/26e3c6cd203c9e5f31f7804c06679978b04ee34e))
+* show article category options above mobile dialog ([9c6ea7c](https://github.com/s-hirano-ist/s-private/commit/9c6ea7c8e5a492656f884fedfd67c958e9530290))
+* sync iOS content with servers lacking manifest API ([59f537e](https://github.com/s-hirano-ist/s-private/commit/59f537e3506d84e06a0a64552c7b984b2d215452))
+* **test:** prebundle Storybook browser dependencies ([b7b1c12](https://github.com/s-hirano-ist/s-private/commit/b7b1c12ddcfda3d88835186b46e9df2b9f7ba320))
+
+
+### Documentation
+
+* Codexの完了条件に動作確認とPR作成を追加 ([162f0f0](https://github.com/s-hirano-ist/s-private/commit/162f0f083b50e6ea668457539dbbb41af8549884))
+* require verification and PR creation for Codex tasks ([6e7a3ec](https://github.com/s-hirano-ist/s-private/commit/6e7a3ec42deea1210ae818b29af1824803e253bc))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @s-hirano-ist/s-ui bumped to 2.2.0
+
 ## [3.14.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.13.2...s-private-v3.14.0) (2026-09-24)
 
 

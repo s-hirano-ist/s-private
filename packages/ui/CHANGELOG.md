@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.2.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v2.1.0...@s-hirano-ist/s-ui-v2.2.0) (2026-09-26)
+
+
+### Features
+
+* **images:** add infinite scrolling to image lists ([1b3d44b](https://github.com/s-hirano-ist/s-private/commit/1b3d44bb51e871df9ee69b39a88c7e11fd07b6c9))
+* **images:** 画像一覧を無限スクロールに変更 ([ccba869](https://github.com/s-hirano-ist/s-private/commit/ccba869ab8af107e8233df9bd89d05293b1ff360))
+
+
+### Bug Fixes
+
+* show article category options above mobile dialog ([9c6ea7c](https://github.com/s-hirano-ist/s-private/commit/9c6ea7c8e5a492656f884fedfd67c958e9530290))
+
 ## [2.1.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v2.0.6...@s-hirano-ist/s-ui-v2.1.0) (2026-09-24)
 
 
