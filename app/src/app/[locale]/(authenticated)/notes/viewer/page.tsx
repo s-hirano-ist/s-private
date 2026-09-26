@@ -1,5 +1,4 @@
 import { loadMoreExportedNotes } from "@/application-services/notes/load-more-notes";
-import { CounterBadgeSkeleton } from "@/components/common/display/counter-badge";
 import { ErrorBoundary } from "@/components/common/layouts/error-boundary";
 import { NotesCounterLoader } from "@/loaders/notes/notes-counter-loader";
 import { NotesStackLoader } from "@/loaders/notes/notes-stack-loader";
@@ -9,7 +8,7 @@ import { Suspense } from "react";
 export default function Page() {
 	return (
 		<>
-			<Suspense fallback={<CounterBadgeSkeleton />}>
+			<Suspense fallback={null}>
 				<ErrorBoundary
 					errorCaller="NotesCounter"
 					fallback={<div />}

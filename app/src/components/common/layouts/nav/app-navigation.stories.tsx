@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import { AppNavigation } from "./app-navigation";
+import { ViewerCountProvider, ViewerCountSync } from "./viewer-count-context";
 
 const meta = {
 	component: AppNavigation,
@@ -14,6 +15,13 @@ const meta = {
 		search: fn(),
 	},
 	parameters: { layout: "fullscreen", nextjs: { appDirectory: true } },
+	decorators: [
+		(Story) => (
+			<ViewerCountProvider>
+				<Story />
+			</ViewerCountProvider>
+		),
+	],
 } satisfies Meta<typeof AppNavigation>;
 
 export default meta;
@@ -43,13 +51,21 @@ export const UnexportedArticles: Story = {
 
 export const ExportedBooks: Story = {
 	parameters: { nextjs: { navigation: { pathname: "/ja/books/viewer" } } },
+	render: (args) => (
+		<>
+			<AppNavigation {...args} />
+			<ViewerCountSync count={42} domain="books" />
+		</>
+	),
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		await expect(
-			canvas.getByRole("link", {
-				name: "公開状態: 公開済み。未公開に切り替え",
-			}),
-		).toHaveAttribute("href", "/ja/books");
+		await waitFor(() =>
+			expect(
+				canvas.getByRole("link", {
+					name: "公開状態: 公開済み。未公開に切り替え（42件）",
+				}),
+			).toHaveAttribute("href", "/ja/books"),
+		);
 		const tabs = within(
 			canvas.getByRole("navigation", { name: "コンテンツの種類" }),
 		);
