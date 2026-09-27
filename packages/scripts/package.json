@@ -86,7 +86,7 @@
 		"access": "public"
 	},
 	"dependencies": {
-		"@googleapis/books": "13.0.0",
+		"@googleapis/books": "13.0.1",
 		"@s-hirano-ist/s-core": "workspace:*",
 		"@s-hirano-ist/s-database": "workspace:*",
 		"@s-hirano-ist/s-image-processing": "workspace:*",
@@ -101,7 +101,7 @@
 	"devDependencies": {
 		"@types/node": "catalog:",
 		"@types/turndown": "5.0.6",
-		"tsx": "4.23.13",
+		"tsx": "4.23.15",
 		"typescript": "catalog:"
 	}
 }
