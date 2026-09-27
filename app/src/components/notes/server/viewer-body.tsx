@@ -1,5 +1,4 @@
 import type { getNoteByTitle } from "@/application-services/notes/get-notes";
-import { BackButton } from "@/components/common/back-button";
 import { MarkdownViewer as ViewerBodyClient } from "@/components/common/display/markdown-viewer";
 import { notFound } from "next/navigation";
 
@@ -14,9 +13,5 @@ export async function ViewerBody({ slug, getNoteByTitle }: Props) {
 
 	if (!data) notFound();
 
-	return (
-		<ViewerBodyClient markdown={data.markdown}>
-			<BackButton />
-		</ViewerBodyClient>
-	);
+	return <ViewerBodyClient markdown={data.markdown} />;
 }
