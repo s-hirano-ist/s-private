@@ -2,6 +2,7 @@
 
 import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 import type { ReactNode } from "react";
+import { BackButton } from "@/components/common/back-button";
 import { Link } from "@/infrastructures/i18n/routing";
 import { Button } from "@s-hirano-ist/s-ui/button";
 import {
@@ -74,7 +75,9 @@ function getNavigationState(pathname: string) {
 		segments.includes("viewer") ||
 		bookDetailDomain !== undefined ||
 		noteDetailDomain !== undefined;
-	return { route, domain, isViewer };
+
+	const isContent = route === "book" || route === "note";
+	return { route, domain, isViewer, isContent };
 }
 
 export function AppNavigation({ forms, search }: Props) {
@@ -82,7 +85,7 @@ export function AppNavigation({ forms, search }: Props) {
 	const pathname = usePathname();
 	const [createOpen, setCreateOpen] = useState(false);
 	const [searchOpen, setSearchOpen] = useState(false);
-	const { route, domain, isViewer } = getNavigationState(pathname);
+	const { route, domain, isViewer, isContent } = getNavigationState(pathname);
 	const activeDomain = domains.find((item) => item.key === domain);
 	const viewerCount = useViewerCount();
 	const count =
@@ -96,19 +99,23 @@ export function AppNavigation({ forms, search }: Props) {
 				{activeDomain ? (
 					<>
 						<nav aria-label={t("status")} className="mr-auto min-w-0">
-							<Link
-								aria-label={`${t("switchStatus", {
-									current: t(isViewer ? "exported" : "unexported"),
-									next: t(isViewer ? "unexported" : "exported"),
-								})}${count === null ? "" : t("contentCount", { count })}`}
-								className="inline-flex h-9 items-center gap-1.5 rounded-full bg-primary/10 px-3 text-xs font-medium whitespace-nowrap text-foreground transition-colors duration-200 hover:bg-primary/20"
-								href={isViewer ? activeDomain.href : activeDomain.viewerHref}
-								onClick={() => setCreateOpen(false)}
-							>
-								{t(isViewer ? "exported" : "unexported")}
-								{count !== null && t("contentCount", { count })}
-								<ArrowLeftRightIcon aria-hidden="true" className="size-3.5" />
-							</Link>
+							{isContent ? (
+								<BackButton />
+							) : (
+								<Link
+									aria-label={`${t("switchStatus", {
+										current: t(isViewer ? "exported" : "unexported"),
+										next: t(isViewer ? "unexported" : "exported"),
+									})}${count === null ? "" : t("contentCount", { count })}`}
+									className="inline-flex h-8 items-center gap-1.5 rounded-full bg-primary/10 px-3 text-xs font-medium whitespace-nowrap text-foreground transition-colors duration-200 hover:bg-primary/20"
+									href={isViewer ? activeDomain.href : activeDomain.viewerHref}
+									onClick={() => setCreateOpen(false)}
+								>
+									{t(isViewer ? "exported" : "unexported")}
+									{count !== null && t("contentCount", { count })}
+									<ArrowLeftRightIcon aria-hidden="true" className="size-3.5" />
+								</Link>
+							)}
 						</nav>
 						<Button
 							aria-label={t("create")}

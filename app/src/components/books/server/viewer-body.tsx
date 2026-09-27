@@ -1,5 +1,4 @@
 import type { getBookByISBN } from "@/application-services/books/get-books";
-import { BackButton } from "@/components/common/back-button";
 import { ImageWithFallback } from "@/components/common/display/image/image-with-fallback";
 import { MarkdownViewer as ViewerBodyClient } from "@/components/common/display/markdown-viewer";
 import { Badge } from "@s-hirano-ist/s-ui/badge";
@@ -25,7 +24,6 @@ export async function ViewerBody({ slug, getBookByISBN }: Props) {
 
 	return (
 		<ViewerBodyClient markdown={data.markdown ?? ""}>
-			<BackButton />
 			<Card className="px-4">
 				<div className="grid grid-cols-1 gap-4 md:grid-cols-4">
 					<div className="flex flex-col items-center justify-center gap-2">

@@ -116,11 +116,11 @@ export async function seedLocalDevelopmentSampleData(
 				},
 			}),
 			prisma.book.upsert({
-				where: { isbn_userId: { isbn: "978-0000000101", userId } },
+				where: { isbn_userId: { isbn: "9780000000101", userId } },
 				update: {},
 				create: {
 					id: "00000000-0000-7000-8000-000000000105",
-					isbn: "978-0000000101",
+					isbn: "9780000000101",
 					title: "Sample dumper book",
 					googleAuthors: ["Local Developer"],
 					rating: 4,
@@ -133,11 +133,11 @@ export async function seedLocalDevelopmentSampleData(
 				},
 			}),
 			prisma.book.upsert({
-				where: { isbn_userId: { isbn: "978-0000000102", userId } },
+				where: { isbn_userId: { isbn: "9780000000102", userId } },
 				update: {},
 				create: {
 					id: "00000000-0000-7000-8000-000000000109",
-					isbn: "978-0000000102",
+					isbn: "9780000000102",
 					title: "Sample viewer book",
 					googleAuthors: ["Local Developer"],
 					rating: 5,

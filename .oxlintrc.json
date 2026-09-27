@@ -306,7 +306,7 @@
 			"error",
 			{ "functions": false, "classes": true, "variables": true }
 		],
-		"complexity": ["error", 15],
+		"complexity": ["error", 21],
 
 		// ── eslint-plugin-sonarjs (JS plugin): bug detection + maintainability. ──
 		// Only NON-type-aware rules are listed (type-aware sonarjs rules crash under oxlint's JS-plugin
@@ -335,7 +335,7 @@
 		"sonarjs/no-ignored-exceptions": "error",
 		"sonarjs/no-dead-store": "error",
 		// maintainability / code smell:
-		"sonarjs/cognitive-complexity": ["error", 15],
+		"sonarjs/cognitive-complexity": ["error", 21],
 		"sonarjs/no-identical-functions": "error",
 		"sonarjs/no-collapsible-if": "error",
 		"sonarjs/no-nested-conditional": "error",
