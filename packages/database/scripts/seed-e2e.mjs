@@ -88,11 +88,11 @@ try {
 			},
 		}),
 		prisma.book.upsert({
-			where: { isbn_userId: { isbn: "978-0000000002", userId: user.id } },
+			where: { isbn_userId: { isbn: "9780000000002", userId: user.id } },
 			update: { status: Status.EXPORTED },
 			create: {
 				id: "00000000-0000-7000-8000-000000000005",
-				isbn: "978-0000000002",
+				isbn: "9780000000002",
 				title: "E2E seeded book",
 				googleAuthors: ["E2E Author"],
 				rating: 5,
