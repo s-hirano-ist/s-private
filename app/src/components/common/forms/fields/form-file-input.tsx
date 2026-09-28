@@ -1,4 +1,5 @@
 import type { ComponentProps } from "react";
+import { useFormFiles } from "@/components/common/forms/generic-form-wrapper";
 import { Input } from "@s-hirano-ist/s-ui/input";
 import { Label } from "@s-hirano-ist/s-ui/label";
 
@@ -19,7 +20,7 @@ export type FormFileInputProps = {
  *
  * @remarks
  * Provides a styled file upload field.
- * Note: File inputs don't preserve values on form errors due to browser security.
+ * A create flow shows retained file names and resubmits the retained File objects.
  *
  * @param props - File input props including label and standard input attributes
  * @returns A labeled file input field
@@ -40,10 +41,27 @@ export function FormFileInput({
 	htmlFor,
 	...inputProps
 }: FormFileInputProps) {
+	const retainedData = useFormFiles();
+	const retainedFiles =
+		retainedData
+			?.getAll(inputProps.name ?? htmlFor)
+			.filter(
+				(value): value is File => value instanceof File && value.size > 0,
+			) ?? [];
 	return (
 		<div className="space-y-1">
 			<Label htmlFor={htmlFor}>{label}</Label>
-			<Input id={htmlFor} type="file" {...inputProps} />
+			<Input
+				id={htmlFor}
+				type="file"
+				{...inputProps}
+				required={inputProps.required && retainedFiles.length === 0}
+			/>
+			{retainedFiles.length > 0 && (
+				<p aria-live="polite" className="text-sm text-muted-foreground">
+					{retainedFiles.map((file) => file.name).join(", ")}
+				</p>
+			)}
 		</div>
 	);
 }
