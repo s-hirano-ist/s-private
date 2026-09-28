@@ -1,21 +1,25 @@
 "use client";
+import type { ServerAction } from "@/common/types";
 import { Button } from "@s-hirano-ist/s-ui/button";
 import { LoadingIndicator } from "@s-hirano-ist/s-ui/loading-indicator";
 import { haptic } from "@s-hirano-ist/s-ui/utils/haptic";
 import {
 	createContext,
 	type ReactNode,
+	type SubmitEvent,
 	use,
-	useActionState,
 	useMemo,
+	useRef,
 	useState,
 } from "react";
+import { type CreateOutcome, useCreateFlow } from "./create-flow-context";
 
 /**
  * Context for sharing form values across form fields.
  * @internal
  */
 const FormValuesContext = createContext<Record<string, string>>({});
+const FormFilesContext = createContext<FormData | null>(null);
 
 /**
  * Hook to access form values from the GenericFormWrapper context.
@@ -38,6 +42,54 @@ const FormValuesContext = createContext<Record<string, string>>({});
  * @see {@link GenericFormWrapper} for the provider component
  */
 export const useFormValues = () => use(FormValuesContext);
+export const useFormFiles = () => use(FormFilesContext);
+
+function stringValues(formData: FormData | null | undefined) {
+	const values: Record<string, string> = {};
+	if (formData) {
+		for (const [key, value] of formData.entries()) {
+			if (typeof value === "string") values[key] = value;
+		}
+	}
+	return values;
+}
+
+function addRetainedFiles(formData: FormData, draft?: FormData) {
+	if (!draft) return;
+	const names = new Set<string>();
+	for (const [name, value] of draft.entries()) {
+		if (value instanceof File && value.size > 0) names.add(name);
+	}
+	for (const name of names) {
+		const currentFiles = formData
+			.getAll(name)
+			.filter(
+				(value): value is File => value instanceof File && value.size > 0,
+			);
+		if (currentFiles.length > 0) continue;
+		formData.delete(name);
+		for (const value of draft.getAll(name)) {
+			if (value instanceof File && value.size > 0) formData.append(name, value);
+		}
+	}
+}
+
+function formDataWithFiles(form: HTMLFormElement, draft?: FormData) {
+	const formData = new FormData(form);
+	for (const element of form.elements) {
+		if (
+			!(element instanceof HTMLInputElement) ||
+			element.type !== "file" ||
+			!element.name ||
+			!element.files?.length
+		)
+			continue;
+		formData.delete(element.name);
+		for (const file of element.files) formData.append(element.name, file);
+	}
+	addRetainedFiles(formData, draft);
+	return formData;
+}
 
 /**
  * Props for the GenericFormWrapper component.
@@ -46,17 +98,17 @@ export const useFormValues = () => use(FormValuesContext);
  *
  * @see {@link GenericFormWrapper} for the component
  */
-export type GenericFormWrapperProps<T> = {
+export type GenericFormWrapperProps<T extends ServerAction> = {
 	/** Server action to handle form submission */
 	action: (formData: FormData) => Promise<T>;
-	/** Callback after form submission with response message */
-	afterSubmit: (responseMessage: string) => void;
+	/** Callback after form submission with its result */
+	afterSubmit: (response: ServerAction) => void;
 	/** Form field components */
 	children: ReactNode;
 	/** Label shown during loading state */
 	loadingLabel?: string;
 	/** Optional custom submit handler */
-	onSubmit?: (formData: FormData) => Promise<void>;
+	onSubmit?: (formData: FormData) => Promise<CreateOutcome>;
 	/** Pre-filled form values */
 	preservedValues?: Record<string, string>;
 	/** Label for the save button (fallback) */
@@ -70,7 +122,7 @@ export type GenericFormWrapperProps<T> = {
  *
  * @remarks
  * Provides a consistent form experience with:
- * - Server action integration via useActionState
+ * - Server action integration with a persistent create flow when available
  * - Loading state with spinner
  * - Form value preservation on error
  * - Context-based form state sharing
@@ -85,7 +137,7 @@ export type GenericFormWrapperProps<T> = {
  *   action={createArticle}
  *   saveLabel="Save"
  *   submitLabel="Create Article"
- *   afterSubmit={(msg) => toast(msg)}
+ *   afterSubmit={(response) => toast(response.message)}
  * >
  *   <FormInput label="Title" htmlFor="title" name="title" />
  *   <FormTextarea label="Content" htmlFor="content" name="content" />
@@ -94,9 +146,7 @@ export type GenericFormWrapperProps<T> = {
  *
  * @see {@link useFormValues} for accessing form state in child components
  */
-export function GenericFormWrapper<
-	T extends { message: string; success: boolean },
->({
+export function GenericFormWrapper<T extends ServerAction>({
 	action,
 	children,
 	saveLabel,
@@ -106,6 +156,9 @@ export function GenericFormWrapper<
 	preservedValues,
 	afterSubmit,
 }: GenericFormWrapperProps<T>) {
+	const createFlow = useCreateFlow();
+	const submitting = useRef(false);
+	const [isPending, setIsPending] = useState(false);
 	// Server response form data (only set on error, cleared on success)
 	const [serverFormData, setServerFormData] = useState<Record<
 		string,
@@ -114,34 +167,48 @@ export function GenericFormWrapper<
 
 	// Derive form values: server response takes precedence, then preserved values
 	const formValues = useMemo(
-		() => serverFormData ?? preservedValues ?? {},
-		[serverFormData, preservedValues],
+		() =>
+			serverFormData ??
+			(createFlow?.draft
+				? stringValues(createFlow.draft)
+				: (preservedValues ?? {})),
+		[serverFormData, createFlow, preservedValues],
 	);
 
-	const submitForm = async (
-		_previousState: T | null,
-		formData: FormData,
-	): Promise<T | null> => {
-		if (onSubmit) {
-			await onSubmit(formData);
-			return null;
-		}
-		const response = await action(formData);
-		afterSubmit(response.message);
-
-		if (response.success) {
-			// Clear server form data on success
-			setServerFormData(null);
-			return response;
-		}
-		// Preserve form data on error
-		if ("formData" in response && response.formData) {
-			setServerFormData(response.formData as Record<string, string>);
-		}
-		return response;
+	const execute = async (formData: FormData): Promise<CreateOutcome> => {
+		if (onSubmit) return onSubmit(formData);
+		return { response: await action(formData) };
 	};
 
-	const [_, submitAction, isPending] = useActionState(submitForm, null);
+	const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		if (submitting.current || createFlow?.pending) return;
+		submitting.current = true;
+		const formData = formDataWithFiles(event.currentTarget, createFlow?.draft);
+		if (createFlow) {
+			createFlow.submit(formData, execute, afterSubmit);
+			submitting.current = false;
+			return;
+		}
+		setIsPending(true);
+		void (async () => {
+			try {
+				const { response } = await execute(formData);
+				afterSubmit(response);
+				setServerFormData(
+					response.success
+						? null
+						: (response.formData ?? stringValues(formData)),
+				);
+			} catch {
+				afterSubmit({ success: false, message: "error" });
+				setServerFormData(stringValues(formData));
+			} finally {
+				submitting.current = false;
+				setIsPending(false);
+			}
+		})();
+	};
 
 	let buttonLabel: string;
 	if (isPending && loadingLabel) {
@@ -154,17 +221,23 @@ export function GenericFormWrapper<
 
 	return (
 		<FormValuesContext.Provider value={formValues}>
-			<form action={submitAction} className="space-y-4 px-2 py-4">
-				{isPending ? <LoadingIndicator label={loadingLabel} /> : children}
-				<Button
-					className="w-full"
-					disabled={isPending}
-					onClick={() => haptic()}
-					type="submit"
+			<FormFilesContext.Provider value={createFlow?.draft ?? null}>
+				<form
+					className="space-y-4 px-2 py-4"
+					key={createFlow?.draftVersion}
+					onSubmit={handleSubmit}
 				>
-					{buttonLabel}
-				</Button>
-			</form>
+					{isPending ? <LoadingIndicator label={loadingLabel} /> : children}
+					<Button
+						className="w-full"
+						disabled={isPending}
+						onClick={() => haptic()}
+						type="submit"
+					>
+						{buttonLabel}
+					</Button>
+				</form>
+			</FormFilesContext.Provider>
 		</FormValuesContext.Provider>
 	);
 }
