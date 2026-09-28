@@ -6,7 +6,8 @@ Next.js + TypeScript + Clean Architectureベースのコンテンツ管理シス
 
 - UI、frontend、Reactの開発前に、必ず現在のworktreeで`pnpm exec storybook skills stories`を実行し、その指示に従うこと。コンポーネントまたはstoryを作成・編集する前には`pnpm exec storybook skills write-story`も実行すること。
 - Storybookの調査、変更検出、テスト、レビューには`pnpm exec storybook tools ...`を使用する。直接Storybook MCPツールが公開されていることを前提にしない。`[requires running Storybook]`と表示される操作でのみ`pnpm storybook:agent`を起動し、ポートを固定せず、現在のworktreeからCLIに対象instanceを解決させること。
-- 課題管理は GitHub Issues で行う。新しい課題を登録する前に既存 Issue との重複を確認し、対応が完了したら Issue をクローズすること。
+- 課題管理は GitHub Issues で行う。新しい課題を登録する前に既存 Issue との重複を確認すること。Issue は Production 環境へのデプロイ後にユーザーがクローズするため、PR作成時やマージ時に自動・手動でクローズしないこと。
+- プロンプトが `#123` のような Issue 番号のみの場合は、このリポジトリの GitHub Issue 対応依頼として扱う。対象 Issue の本文と関連コメントを読み、コードや既存設計と照合する。実装に影響する要件が不足している場合のみユーザーに確認し、明確になったら実装、検証、DraftではないPRの作成まで進めること。
 - 計画時、後方互換性は基本的に捨てること。
 - ハーネス共通資産の正本は `.harness/` に置く。`AGENTS.md`、`CLAUDE.md`、`.agents/skills/`、`.claude/skills/` のリンク先を直接編集しないこと。
 - Skillを追加・削除したら `pnpm harness:sync` でリンクを同期し、`pnpm harness:check` で検証すること。
@@ -49,7 +50,7 @@ Next.js + TypeScript + Clean Architectureベースのコンテンツ管理シス
 - コードを変更したタスクでは、完了を報告する前に `pnpm check:agent` を成功させること。
 - アプリのビルド、環境設定、データベース、E2Eに関係する変更では、`pnpm check:agent` に加えて変更内容に対応する `pnpm build`、Prisma、Playwright等の検証も実行すること。
 - コード・設定・文書を変更したタスクでは、変更内容に応じた動作確認と差分レビューを行い、検証に失敗した場合は修正して再実行すること。その後、変更をコミット・pushし、DraftではないGitHub PRをCodexから作成してPR URLを報告すること。調査・計画のみのタスクにはPRを作成しない。
-- PR本文は日本語で簡潔に書き、実施した確認と残課題を記載すること。Issue対応時は既存のIssue管理ルールに従い、PRと対象Issueを関連付けること。PRのマージは作業完了条件に含めない。
+- PR本文は日本語で簡潔に書き、実施した確認と残課題を記載すること。Issue対応時は対象 Issue 番号を本文に記載して関連付け、Issue を自動クローズするキーワードは使わないこと。PRのマージは作業完了条件に含めない。
 - 長時間タスクで自動的に実装・検証・修正を反復する場合だけ Codex の `/goal` を使い、目的、変更範囲、検証コマンド、停止条件を明記すること。
 - 外部承認や外部サービス障害で検証またはPR作成ができない場合は無限に再試行せず、実行済みの検証とブロッカーを報告すること。
 
