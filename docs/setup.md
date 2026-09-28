@@ -153,3 +153,5 @@ CockroachDB Cloud Basic は接続プーリングが内蔵で、pooled / direct �
    ```
 3. 生成 SQL の**新規 `CREATE TABLE` に `WITH (schema_locked = false)` を付与**
 4. コミット → クラウドへ `pnpm --filter s-database prisma:deploy`
+
+モバイル差分同期の `CREATE TRIGGER` は CockroachDB の制約により Prisma のマイグレーショントランザクション内で実行できません。`prisma:deploy` スクリプトはマイグレーション適用後に各トリガーを独立した SQL 文で作成します。再実行しても既存トリガーは重複作成しません。トリガーを含むデプロイでは `prisma migrate deploy` を直接実行せず、上記の `prisma:deploy` スクリプトを使用してください。

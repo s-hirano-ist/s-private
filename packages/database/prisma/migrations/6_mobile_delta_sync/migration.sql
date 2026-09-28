@@ -44,14 +44,3 @@ BEGIN
   RETURN NEW;
 END;
 $$;
-
-CREATE TRIGGER mobile_articles_change AFTER INSERT OR UPDATE OR DELETE ON articles
-  FOR EACH ROW EXECUTE FUNCTION record_mobile_sync_change();
-CREATE TRIGGER mobile_notes_change AFTER INSERT OR UPDATE OR DELETE ON notes
-  FOR EACH ROW EXECUTE FUNCTION record_mobile_sync_change();
-CREATE TRIGGER mobile_books_change AFTER INSERT OR UPDATE OR DELETE ON books
-  FOR EACH ROW EXECUTE FUNCTION record_mobile_sync_change();
-CREATE TRIGGER mobile_images_change AFTER INSERT OR UPDATE OR DELETE ON images
-  FOR EACH ROW EXECUTE FUNCTION record_mobile_sync_change();
-CREATE TRIGGER mobile_categories_change AFTER INSERT OR UPDATE OR DELETE ON categories
-  FOR EACH ROW EXECUTE FUNCTION record_mobile_sync_change();
