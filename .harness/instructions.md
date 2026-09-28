@@ -6,6 +6,7 @@ Next.js + TypeScript + Clean Architectureベースのコンテンツ管理シス
 
 - UI、frontend、Reactの開発前に、必ず現在のworktreeで`pnpm exec storybook skills stories`を実行し、その指示に従うこと。コンポーネントまたはstoryを作成・編集する前には`pnpm exec storybook skills write-story`も実行すること。
 - Storybookの調査、変更検出、テスト、レビューには`pnpm exec storybook tools ...`を使用する。直接Storybook MCPツールが公開されていることを前提にしない。`[requires running Storybook]`と表示される操作でのみ`pnpm storybook:agent`を起動し、ポートを固定せず、現在のworktreeからCLIに対象instanceを解決させること。
+- 新しい worktree で実装を始める前に `git fetch origin main` を実行し、作業起点が最新の `origin/main` を含むことを確認する。含まない場合は、既存の変更を保護したうえで `origin/main` を取り込んでから編集する。worktree 作成時の自動更新を前提にしないこと。
 - 課題管理は GitHub Issues で行う。新しい課題を登録する前に既存 Issue との重複を確認すること。Issue の open/closed 状態は、ユーザーからその Issue について明示的な依頼があった場合に限り変更すること。通常は Production 環境へのデプロイ後にユーザーがクローズするため、PR作成時やマージ時に自動・手動でクローズしないこと。
 - プロンプトが `#123` のような Issue 番号のみの場合は、このリポジトリの GitHub Issue 対応依頼として扱う。対象 Issue の本文と関連コメントを読み、コードや既存設計と照合する。実装に影響する要件が不足している場合のみユーザーに確認し、明確になったら実装、検証、DraftではないPRの作成まで進めること。
 - 計画時、後方互換性は基本的に捨てること。
