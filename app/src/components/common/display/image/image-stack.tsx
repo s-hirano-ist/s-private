@@ -77,7 +77,7 @@ function ImageStackGrid({
 	renderOverlay,
 }: ImageStackGridProps) {
 	return (
-		<div className="grid grid-cols-2 gap-2 p-4 sm:grid-cols-4">
+		<div className="grid grid-cols-2 gap-2 px-4 pt-6 pb-4 sm:grid-cols-4">
 			{data.map((image, i) => (
 				<div
 					className="relative"
