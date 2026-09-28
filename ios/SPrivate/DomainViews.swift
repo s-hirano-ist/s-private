@@ -5,7 +5,7 @@ struct DomainListView: View {
     @EnvironmentObject private var authentication: AuthenticationModel
     @EnvironmentObject private var sync: SyncCoordinator
     @State private var records: [MobileRecord] = []
-    @State private var status: MobileContentStatus?
+    @State private var status: MobileContentStatus = .unexported
     @State private var errorMessage: String?
     @State private var showingCreate = false
     @State private var showingSearch = false
@@ -40,11 +40,11 @@ struct DomainListView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Menu {
-                        Button(String(localized: "すべて")) { status = nil }
-                        ForEach(MobileContentStatus.allCases, id: \.self) { value in
+                        ForEach([MobileContentStatus.unexported, .exported], id: \.self) { value in
                             Button(value.localizedTitle) { status = value }
                         }
-                    } label: { Label(status?.localizedTitle ?? String(localized: "すべて"), systemImage: "line.3.horizontal.decrease") }
+                    } label: { Label(status.localizedTitle, systemImage: "line.3.horizontal.decrease") }
+                    .accessibilityIdentifier("status-filter")
                 }
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     Button(String(localized: "検索"), systemImage: "magnifyingglass") { showingSearch = true }
@@ -115,7 +115,7 @@ struct DomainListView: View {
     }
 
     private func loadLocal() {
-        records = sync.cached(domain: domain).filter { status == nil || $0.status == status }
+        records = sync.cached(domain: domain).filter { $0.status == status }
         errorMessage = sync.syncError
     }
 }
