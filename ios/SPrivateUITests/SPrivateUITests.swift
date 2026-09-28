@@ -59,4 +59,29 @@ final class SPrivateUITests: XCTestCase {
         tabs.element(boundBy: 3).tap()
         XCTAssertTrue(app.descendants(matching: .any)["domain-grid-images"].exists)
     }
+
+    @MainActor
+    func testFourDomainTabsOfferOnlyUnexportedAndExportedFilters() throws {
+        let app = XCUIApplication()
+        app.launchArguments.append("-ui-testing-authenticated")
+        app.launch()
+
+        let tabs = app.tabBars.firstMatch.buttons
+        XCTAssertTrue(tabs.element(boundBy: 0).waitForExistence(timeout: 5))
+        for index in 0..<4 {
+            tabs.element(boundBy: index).tap()
+            let filter = app.buttons["status-filter"]
+            XCTAssertTrue(filter.waitForExistence(timeout: 5))
+            XCTAssertTrue(filter.label.contains("未公開") || filter.label.contains("Unexported"))
+            filter.tap()
+            XCTAssertEqual(app.buttons.matching(identifier: "公開済み").count + app.buttons.matching(identifier: "Exported").count, 1)
+            XCTAssertFalse(app.buttons["すべて"].exists)
+            XCTAssertFalse(app.buttons["All"].exists)
+            XCTAssertFalse(app.buttons["更新済み"].exists)
+            XCTAssertFalse(app.buttons["Updated"].exists)
+            let exported = app.buttons["公開済み"].exists ? app.buttons["公開済み"] : app.buttons["Exported"]
+            exported.tap()
+            XCTAssertTrue(filter.label.contains("公開済み") || filter.label.contains("Exported"))
+        }
+    }
 }
