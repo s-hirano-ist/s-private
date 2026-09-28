@@ -15,8 +15,8 @@ export function BooksForm({ addBooks }: Props) {
 	const label = useTranslations("label");
 	const message = useTranslations("message");
 
-	const afterSubmit = (responseMessage: string) => {
-		toast.show(message(responseMessage));
+	const afterSubmit = (response: ServerAction) => {
+		toast[response.success ? "success" : "error"](message(response.message));
 	};
 
 	return (

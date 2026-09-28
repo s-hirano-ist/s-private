@@ -34,8 +34,8 @@ export function ArticleForm({ addArticle, getCategories }: Props) {
 			urlInputReference.current.value = clipboardText;
 	};
 
-	const afterSubmit = (responseMessage: string) => {
-		toast.show(message(responseMessage));
+	const afterSubmit = (response: ServerAction) => {
+		toast[response.success ? "success" : "error"](message(response.message));
 	};
 
 	const handleCategoryOpenChange = (open: boolean) => {
