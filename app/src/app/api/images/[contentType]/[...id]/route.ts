@@ -6,22 +6,23 @@ import { Readable } from "node:stream";
 
 export async function GET(
 	request: Request,
-	{ params }: RouteContext<"/api/images/[contentType]/[id]">,
+	{ params }: RouteContext<"/api/images/[contentType]/[...id]">,
 ) {
 	const session = await auth.api.getSession({ headers: request.headers });
 	if (!session)
 		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
 	const { contentType, id } = await params;
+	const path = id.join("/");
 
 	const isThumbnail = contentType === "thumbnail";
-	const nodeStream = await getImagesFromStorage(id, isThumbnail);
+	const nodeStream = await getImagesFromStorage(path, isThumbnail);
 	const webStream = Readable.toWeb(
 		nodeStream as Readable,
 	) as unknown as ReadableStream;
 	const responseContentType = isThumbnail
 		? "image/webp"
-		: getContentTypeFromPath(id);
+		: getContentTypeFromPath(path);
 
 	return new Response(webStream, {
 		headers: {
