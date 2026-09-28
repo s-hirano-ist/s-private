@@ -8,6 +8,7 @@ final class SyncCoordinator: ObservableObject {
     @Published private(set) var lastSyncAt: Date?
     @Published private(set) var dataRevision = 0
     @Published private(set) var syncError: String?
+    @Published private(set) var isRefreshing = false
     private let context: ModelContext
     private let authentication: AuthenticationModel
     private var syncing = false
@@ -18,6 +19,7 @@ final class SyncCoordinator: ObservableObject {
         context = ModelContext(container)
         self.authentication = authentication
         refreshCount()
+        Task { await migrateLegacyMetadata() }
     }
 
     func enqueue(domain: MobileDomain, input: MobileCreate, attachment: Data? = nil) throws {
@@ -53,24 +55,27 @@ final class SyncCoordinator: ObservableObject {
         } catch { /* The settings screen reports App Group failures. */ }
     }
 
-    func cache(domain: MobileDomain, records: [MobileRecord]) throws {
+    func cache(domain: MobileDomain, records: [MobileRecord], generation: String? = nil, publishRevision: Bool = true) throws {
+        guard !records.isEmpty else { return }
         let owner = authentication.ownerKey
         let domainValue = domain.rawValue
-        let old = try context.fetch(FetchDescriptor<CachedMobileRecord>(predicate: #Predicate { $0.ownerKey == owner && $0.domainValue == domainValue }))
-        let byID = Dictionary(uniqueKeysWithValues: old.compactMap { item -> (String, CachedMobileRecord)? in
-            guard let id = try? MobileAPICoding.decoder().decode(MobileRecord.self, from: item.recordData).id else { return nil }
-            return (id, item)
-        })
+        let keys = records.map { "\(owner):\(domainValue):\($0.id)" }
+        let old = try context.fetch(FetchDescriptor<CachedMobileRecord>(predicate: #Predicate {
+            $0.ownerKey == owner && $0.domainValue == domainValue && keys.contains($0.cacheKey)
+        }))
+        let byKey = Dictionary(uniqueKeysWithValues: old.map { ($0.cacheKey, $0) })
         for record in records {
-            if let item = byID[record.id] {
-                item.recordData = try JSONEncoder.mobile.encode(record)
-                item.fetchedAt = Date()
+            let key = "\(owner):\(domain.rawValue):\(record.id)"
+            if let item = byKey[key] {
+                try item.update(record, generation: generation)
             } else {
-                context.insert(try CachedMobileRecord(ownerKey: owner, domain: domain, record: record))
+                let item = try CachedMobileRecord(ownerKey: owner, domain: domain, record: record)
+                item.syncGeneration = generation
+                context.insert(item)
             }
         }
         try context.save()
-        dataRevision += 1
+        if publishRevision { dataRevision += 1 }
     }
 
     func cached(domain: MobileDomain) -> [MobileRecord] {
@@ -81,8 +86,52 @@ final class SyncCoordinator: ObservableObject {
             .sorted { $0.createdAt == $1.createdAt ? $0.id > $1.id : $0.createdAt > $1.createdAt }
     }
 
+    func cachedPage(domain: MobileDomain, status: MobileContentStatus?, offset: Int, limit: Int = 30) -> (records: [MobileRecord], hasMore: Bool) {
+        let owner = authentication.ownerKey
+        let domainValue = domain.rawValue
+        let statusValue = status?.rawValue
+        var descriptor = FetchDescriptor<CachedMobileRecord>(
+            predicate: #Predicate { $0.ownerKey == owner && $0.domainValue == domainValue && (statusValue == nil || $0.statusValue == statusValue) },
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse), SortDescriptor(\.recordID, order: .reverse)]
+        )
+        descriptor.fetchOffset = offset
+        descriptor.fetchLimit = limit + 1
+        let rows = (try? context.fetch(descriptor)) ?? []
+        let categories = Dictionary(uniqueKeysWithValues: cachedCategories().map { ($0.id, $0.name) })
+        let records = rows.prefix(limit).compactMap { item -> MobileRecord? in
+            guard var record = try? MobileAPICoding.decoder().decode(MobileRecord.self, from: item.recordData) else { return nil }
+            if let categoryId = record.categoryId { record.categoryName = categories[categoryId] }
+            return record
+        }
+        return (records, rows.count > limit)
+    }
+
     func cachedRecord(domain: MobileDomain, id: String) -> MobileRecord? {
-        cached(domain: domain).first { $0.id == id }
+        let key = "\(authentication.ownerKey):\(domain.rawValue):\(id)"
+        guard let item = try? context.fetch(FetchDescriptor<CachedMobileRecord>(predicate: #Predicate { $0.cacheKey == key })).first,
+              var record = try? MobileAPICoding.decoder().decode(MobileRecord.self, from: item.recordData) else { return nil }
+        if let categoryId = record.categoryId {
+            record.categoryName = cachedCategories().first { $0.id == categoryId }?.name
+        }
+        return record
+    }
+
+    private func migrateLegacyMetadata() async {
+        while !Task.isCancelled {
+            var descriptor = FetchDescriptor<CachedMobileRecord>(predicate: #Predicate { $0.recordID == nil || $0.searchText == nil })
+            descriptor.fetchLimit = 100
+            guard let rows = try? context.fetch(descriptor), !rows.isEmpty else { return }
+            for item in rows {
+                if let record = try? MobileAPICoding.decoder().decode(MobileRecord.self, from: item.recordData) {
+                    try? item.update(record)
+                } else {
+                    context.delete(item)
+                }
+            }
+            try? context.save()
+            dataRevision += 1
+            await Task.yield()
+        }
     }
 
     func cachedCategories() -> [MobileCategory] {
@@ -93,22 +142,29 @@ final class SyncCoordinator: ObservableObject {
     }
 
     func localSearch(_ query: String) -> [MobileSearchResult] {
-        let text = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        let text = query.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         guard !text.isEmpty else { return [] }
-        return MobileDomain.allCases.flatMap { domain in
-            cached(domain: domain).filter { record in
-                [record.title, record.url, record.quote, record.markdown, record.isbn, record.categoryName,
-                 record.tags?.joined(separator: " ")].compactMap { $0 }.contains { $0.localizedStandardContains(text) }
-            }.map { MobileSearchResult(id: $0.id, type: domain, title: $0.displayTitle, snippet: $0.markdown ?? $0.quote ?? $0.url ?? "") }
+        let owner = authentication.ownerKey
+        return MobileDomain.allCases.flatMap { domain -> [MobileSearchResult] in
+            let domainValue = domain.rawValue
+            var descriptor = FetchDescriptor<CachedMobileRecord>(predicate: #Predicate {
+                $0.ownerKey == owner && $0.domainValue == domainValue && ($0.searchText?.contains(text) == true)
+            })
+            descriptor.fetchLimit = 100
+            let rows: [CachedMobileRecord] = (try? context.fetch(descriptor)) ?? []
+            return rows.compactMap { item -> MobileSearchResult? in
+                guard let record = try? MobileAPICoding.decoder().decode(MobileRecord.self, from: item.recordData) else { return nil }
+                return MobileSearchResult(id: record.id, type: domain, title: record.displayTitle, snippet: record.markdown ?? record.quote ?? record.url ?? "")
+            }
         }
     }
 
-    func removeCached(domain: MobileDomain, id: String) {
+    func removeCached(domain: MobileDomain, id: String, publishRevision: Bool = true) {
         let key = "\(authentication.ownerKey):\(domain.rawValue):\(id)"
         if let item = try? context.fetch(FetchDescriptor<CachedMobileRecord>(predicate: #Predicate { $0.cacheKey == key })).first {
             context.delete(item)
             try? context.save()
-            dataRevision += 1
+            if publishRevision { dataRevision += 1 }
         }
     }
 
@@ -177,6 +233,9 @@ final class SyncCoordinator: ObservableObject {
                 try await refreshRemote(using: client)
                 syncError = nil
                 lastSyncAt = Date()
+                thumbnailTask?.cancel()
+                let owner = authentication.ownerKey
+                thumbnailTask = Task { await warmThumbnails(using: client, owner: owner) }
             } catch {
                 syncError = error.localizedDescription
                 lastRefreshAttempt = nil
@@ -184,80 +243,158 @@ final class SyncCoordinator: ObservableObject {
         }
     }
 
-    private func refreshRemote(using client: MobileClient) async throws {
-        let owner = authentication.ownerKey
-        let manifest = try await client.manifest()
-        let categoryNames = Dictionary(uniqueKeysWithValues: manifest.categories.map { ($0.id, $0.name) })
-        guard authentication.ownerKey == owner else { return }
-        for domain in MobileDomain.allCases {
-            let remote = manifest.items(for: domain)
-            if domain == .images {
-                let local = Dictionary(uniqueKeysWithValues: cached(domain: domain).map { ($0.id, $0.updatedAt) })
-                let changed = manifest.images.filter { local[$0.id] != $0.updatedAt }
-                for record in changed where local[record.id] != nil {
-                    await ThumbnailStore.shared.remove(owner: owner, domain: domain, id: record.id)
-                    removeCachedMedia(domain: domain, id: record.id)
+    private func warmThumbnails(using client: MobileClient, owner: String) async {
+        for domain in [MobileDomain.books, .images] {
+            var offset = 0
+            let domainValue = domain.rawValue
+            while !Task.isCancelled && authentication.ownerKey == owner {
+                var descriptor = FetchDescriptor<CachedMobileRecord>(
+                    predicate: #Predicate { $0.ownerKey == owner && $0.domainValue == domainValue },
+                    sortBy: [SortDescriptor(\.cacheKey)]
+                )
+                descriptor.fetchOffset = offset
+                descriptor.fetchLimit = 30
+                guard let rows = try? context.fetch(descriptor), !rows.isEmpty else { break }
+                for item in rows {
+                    guard !Task.isCancelled, authentication.ownerKey == owner else { return }
+                    guard let id = item.recordID, !(await ThumbnailStore.shared.contains(owner: owner, domain: domain, id: id)) else { continue }
+                    do {
+                        let data = try await client.media(domain, id: id, variant: "thumbnail")
+                        guard !Task.isCancelled, authentication.ownerKey == owner else { return }
+                        await ThumbnailStore.shared.save(data, owner: owner, domain: domain, id: id)
+                    } catch {
+                        // Failed media fetches retry during a later sync.
+                    }
                 }
-                if !changed.isEmpty { try cache(domain: domain, records: changed) }
-                continue
-            }
-            if cached(domain: domain).isEmpty && !remote.isEmpty {
-                var offset = 0
-                repeat {
-                    let page = try await client.list(domain, status: nil, offset: offset, limit: 100)
-                    guard authentication.ownerKey == owner else { return }
-                    if page.data.isEmpty { break }
-                    try cache(domain: domain, records: page.data)
-                    offset += page.data.count
-                    if offset >= page.totalCount { break }
-                } while true
-            }
-            let local = Dictionary(uniqueKeysWithValues: cached(domain: domain).map { ($0.id, $0) })
-            var changed: [MobileRecord] = []
-            for item in remote where local[item.id]?.updatedAt != item.updatedAt ||
-                (domain == .articles && local[item.id]?.categoryName != categoryNames[local[item.id]?.categoryId ?? ""]) {
-                let record = try await client.detail(domain, id: item.id)
-                guard authentication.ownerKey == owner else { return }
-                if local[item.id] != nil && (domain == .books || domain == .images) {
-                    await ThumbnailStore.shared.remove(owner: owner, domain: domain, id: item.id)
-                    removeCachedMedia(domain: domain, id: item.id)
-                }
-                changed.append(record)
-            }
-            if !changed.isEmpty { try cache(domain: domain, records: changed) }
-        }
-        guard authentication.ownerKey == owner else { return }
-        for domain in MobileDomain.allCases {
-            let ids = Set(manifest.items(for: domain).map(\.id))
-            for record in cached(domain: domain) where !ids.contains(record.id) {
-                removeCached(domain: domain, id: record.id)
-                await ThumbnailStore.shared.remove(owner: owner, domain: domain, id: record.id)
-                removeCachedMedia(domain: domain, id: record.id)
+                offset += rows.count
+                await Task.yield()
             }
         }
-        let old = try context.fetch(FetchDescriptor<CachedMobileCategory>(predicate: #Predicate { $0.ownerKey == owner }))
-        old.forEach(context.delete)
-        manifest.categories.forEach { context.insert(CachedMobileCategory(ownerKey: owner, category: $0)) }
-        try context.save()
-        dataRevision += 1
-        thumbnailTask?.cancel()
-        thumbnailTask = Task { await warmThumbnails(using: client, owner: owner, manifest: manifest) }
     }
 
-    private func warmThumbnails(using client: MobileClient, owner: String, manifest: MobileManifest) async {
-        for domain in [MobileDomain.books, .images] {
-            for item in manifest.items(for: domain) {
-                guard !Task.isCancelled, authentication.ownerKey == owner else { return }
-                if await ThumbnailStore.shared.contains(owner: owner, domain: domain, id: item.id) { continue }
-                do {
-                    let data = try await client.media(domain, id: item.id, variant: "thumbnail")
-                    guard !Task.isCancelled, authentication.ownerKey == owner else { return }
-                    _ = await ThumbnailStore.shared.saveAndDecode(data, owner: owner, domain: domain, id: item.id, pixelSize: 600)
-                } catch {
-                    // A missing image does not invalidate the completed metadata sync.
-                }
+    private func refreshRemote(using client: MobileClient) async throws {
+        let owner = authentication.ownerKey
+        isRefreshing = true
+        defer { isRefreshing = false }
+        let state = try syncState(for: owner)
+        if state.cursor == nil {
+            let head = try await client.syncHead()
+            let generation = UUID().uuidString
+            for domain in MobileDomain.allCases {
+                var after = ""
+                repeat {
+                    let page = try await client.snapshot(domain.rawValue, after: after)
+                    guard authentication.ownerKey == owner else { return }
+                    try cache(domain: domain, records: page.data, generation: generation, publishRevision: false)
+                    guard let next = page.nextAfter else { break }
+                    after = next
+                } while true
             }
+            var after = ""
+            repeat {
+                let page = try await client.categorySnapshot(after: after)
+                guard authentication.ownerKey == owner else { return }
+                for category in page.data { try upsertCategory(category, owner: owner, generation: generation) }
+                try context.save()
+                guard let next = page.nextAfter else { break }
+                after = next
+            } while true
+            try await pruneSnapshot(owner: owner, generation: generation)
+            state.cursor = head
+            try context.save()
+            dataRevision += 1
         }
+        guard var cursor = state.cursor else { return }
+        repeat {
+            let page = try await client.changes(cursor: cursor)
+            guard authentication.ownerKey == owner else { return }
+            try await applyChanges(page.data, owner: owner)
+            state.cursor = page.nextCursor
+            try context.save()
+            cursor = page.nextCursor
+            if !page.hasMore { break }
+        } while true
+    }
+
+    private func syncState(for owner: String) throws -> MobileSyncState {
+        if let state = try context.fetch(FetchDescriptor<MobileSyncState>(predicate: #Predicate { $0.ownerKey == owner })).first {
+            return state
+        }
+        let state = MobileSyncState(ownerKey: owner)
+        context.insert(state)
+        try context.save()
+        return state
+    }
+
+    private func upsertCategory(_ category: MobileCategory, owner: String, generation: String? = nil) throws {
+        let key = "\(owner):category:\(category.id)"
+        if let item = try context.fetch(FetchDescriptor<CachedMobileCategory>(predicate: #Predicate { $0.cacheKey == key })).first {
+            item.name = category.name
+            if let generation { item.syncGeneration = generation }
+        } else {
+            let item = CachedMobileCategory(ownerKey: owner, category: category)
+            item.syncGeneration = generation
+            context.insert(item)
+        }
+    }
+
+    private func pruneSnapshot(owner: String, generation: String) async throws {
+        while true {
+            var descriptor = FetchDescriptor<CachedMobileRecord>(predicate: #Predicate {
+                $0.ownerKey == owner && $0.syncGeneration != generation
+            })
+            descriptor.fetchLimit = 100
+            let stale = try context.fetch(descriptor)
+            if stale.isEmpty { break }
+            for item in stale {
+                if let domain = MobileDomain(rawValue: item.domainValue), let id = item.recordID {
+                    await ThumbnailStore.shared.remove(owner: owner, domain: domain, id: id)
+                    removeCachedMedia(domain: domain, id: id)
+                }
+                context.delete(item)
+            }
+            try context.save()
+            await Task.yield()
+        }
+        while true {
+            var descriptor = FetchDescriptor<CachedMobileCategory>(predicate: #Predicate {
+                $0.ownerKey == owner && $0.syncGeneration != generation
+            })
+            descriptor.fetchLimit = 100
+            let stale = try context.fetch(descriptor)
+            if stale.isEmpty { break }
+            stale.forEach(context.delete)
+            try context.save()
+        }
+    }
+
+    func applyChanges(_ changes: [MobileSyncChange], owner: String) async throws {
+        for change in changes {
+            if change.domain == "categories" {
+                if change.action == "delete" {
+                    let key = "\(owner):category:\(change.id)"
+                    if let item = try context.fetch(FetchDescriptor<CachedMobileCategory>(predicate: #Predicate { $0.cacheKey == key })).first {
+                        context.delete(item)
+                    }
+                } else if let category = change.category {
+                    try upsertCategory(category, owner: owner)
+                } else { throw MobileClientError.invalidResponse }
+                continue
+            }
+            guard let domain = MobileDomain(rawValue: change.domain) else { throw MobileClientError.invalidResponse }
+            if change.action == "delete" {
+                removeCached(domain: domain, id: change.id, publishRevision: false)
+                await ThumbnailStore.shared.remove(owner: owner, domain: domain, id: change.id)
+                removeCachedMedia(domain: domain, id: change.id)
+            } else if let record = change.record {
+                if domain == .images || domain == .books {
+                    await ThumbnailStore.shared.remove(owner: owner, domain: domain, id: change.id)
+                    removeCachedMedia(domain: domain, id: change.id)
+                }
+                try cache(domain: domain, records: [record], publishRevision: false)
+            } else { throw MobileClientError.invalidResponse }
+        }
+        if !changes.isEmpty { dataRevision += 1 }
     }
 
     func retry(_ operation: PendingMobileOperation) async {
@@ -289,6 +426,7 @@ final class SyncCoordinator: ObservableObject {
         thumbnailTask = nil
         (try? context.fetch(FetchDescriptor<CachedMobileRecord>()))?.forEach(context.delete)
         (try? context.fetch(FetchDescriptor<CachedMobileCategory>()))?.forEach(context.delete)
+        (try? context.fetch(FetchDescriptor<MobileSyncState>()))?.forEach(context.delete)
         try? context.save()
         dataRevision += 1
         if let directory = try? mediaDirectory() { try? FileManager.default.removeItem(at: directory) }
