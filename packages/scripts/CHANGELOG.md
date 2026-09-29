@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.26.7](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.26.6...@s-hirano-ist/s-scripts-v1.26.7) (2026-09-29)
+
+
+### Bug Fixes
+
+* **ci:** restore lint and e2e after dependency updates ([d91e126](https://github.com/s-hirano-ist/s-private/commit/d91e12636dc898e7f8fc857ab15f1352be5bf0ab))
+
+
+### Maintenance
+
+* **deps:** update non-major ([935915d](https://github.com/s-hirano-ist/s-private/commit/935915d9671a5f5145f1345e1a41c6b54fba993d))
+* **deps:** update non-major ([817144a](https://github.com/s-hirano-ist/s-private/commit/817144ad934470193257cd78b0427bd6dd1cb46a))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-database bumped to 1.23.0
+
 ## [1.26.6](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.26.5...@s-hirano-ist/s-scripts-v1.26.6) (2026-09-24)
 
 
