@@ -45,6 +45,7 @@ targets:
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         PRODUCT_BUNDLE_IDENTIFIER: ist.s-hirano.s-private
         PRODUCT_NAME: SPrivate
+        ASSETCATALOG_COMPILER_APPICON_NAME: ""
     info:
       path: SPrivate/Info.plist
       properties:
