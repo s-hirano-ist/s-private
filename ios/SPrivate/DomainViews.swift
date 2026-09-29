@@ -51,9 +51,16 @@ struct DomainListView: View {
                     .accessibilityIdentifier("status-filter")
                 }
                 ToolbarItemGroup(placement: .topBarTrailing) {
+                    Button(String(localized: "登録"), systemImage: "plus") { showingCreate = true }
+                        .accessibilityIdentifier("create-button")
                     Button(String(localized: "検索"), systemImage: "magnifyingglass") { showingSearch = true }
                         .accessibilityIdentifier("search-button")
-                    Button(String(localized: "登録"), systemImage: "plus") { showingCreate = true }
+                    NavigationLink {
+                        SettingsView()
+                    } label: {
+                        Label(String(localized: "設定"), systemImage: "gearshape")
+                    }
+                    .accessibilityIdentifier("settings-link")
                 }
             }
             .sheet(isPresented: $showingSearch) {

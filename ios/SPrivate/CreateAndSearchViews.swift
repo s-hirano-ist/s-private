@@ -191,14 +191,6 @@ struct SearchView: View {
                     Button(String(localized: "閉じる")) { dismiss() }
                         .accessibilityIdentifier("search-close-button")
                 }
-                ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink {
-                        SettingsView()
-                    } label: {
-                        Label(String(localized: "設定"), systemImage: "gearshape")
-                    }
-                    .accessibilityIdentifier("settings-link")
-                }
             }
             .searchable(text: $query)
             .onSubmit(of: .search) { Task { await search() } }
