@@ -255,41 +255,61 @@ struct RecordDetailView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                if loading { ProgressView() }
-                if let errorMessage { Text(errorMessage).foregroundStyle(AppColors.destructive) }
-                if let record {
-                    Text(record.displayTitle).font(.title2.bold())
-                    Text(record.status.localizedTitle).foregroundStyle(AppColors.mutedForeground)
-                    switch domain {
-                    case .articles:
-                        if let categoryName = record.categoryName { Text(categoryName) }
-                        if let quote = record.quote, !quote.isEmpty { Text(quote) }
-                        if let urlString = record.url, let url = URL(string: urlString) {
-                            Link(String(localized: "Safariで開く"), destination: url)
+            if domain == .images {
+                if let errorMessage {
+                    Text(errorMessage).foregroundStyle(AppColors.destructive).padding()
+                } else if record != nil {
+                    AuthenticatedImageView(domain: .images, id: id)
+                        .frame(maxWidth: .infinity)
+                } else {
+                    ProgressView().frame(maxWidth: .infinity).padding()
+                }
+            } else {
+                VStack(alignment: .leading, spacing: 16) {
+                    if loading { ProgressView() }
+                    if let errorMessage { Text(errorMessage).foregroundStyle(AppColors.destructive) }
+                    if let record {
+                        Text(record.displayTitle).font(.title2.bold())
+                        Text(record.status.localizedTitle).foregroundStyle(AppColors.mutedForeground)
+                        switch domain {
+                        case .articles:
+                            if let categoryName = record.categoryName { Text(categoryName) }
+                            if let quote = record.quote, !quote.isEmpty { Text(quote) }
+                            if let urlString = record.url, let url = URL(string: urlString) {
+                                Link(String(localized: "Safariで開く"), destination: url)
+                            }
+                        case .notes:
+                            NativeMarkdownView(source: record.markdown ?? "")
+                        case .images:
+                            EmptyView()
+                        case .books:
+                            AuthenticatedImageView(domain: .books, id: id)
+                            if let isbn = record.isbn { LabeledContent("ISBN", value: isbn) }
+                            if let rating = record.rating { LabeledContent(String(localized: "評価"), value: String(rating)) }
+                            if let tags = record.tags { Text(tags.joined(separator: ", ")) }
+                            NativeMarkdownView(source: record.markdown ?? "")
                         }
-                    case .notes:
-                        NativeMarkdownView(source: record.markdown ?? "")
-                    case .images:
-                        AuthenticatedImageView(domain: .images, id: id)
-                    case .books:
-                        AuthenticatedImageView(domain: .books, id: id)
-                        if let isbn = record.isbn { LabeledContent("ISBN", value: isbn) }
-                        if let rating = record.rating { LabeledContent(String(localized: "評価"), value: String(rating)) }
-                        if let tags = record.tags { Text(tags.joined(separator: ", ")) }
-                        NativeMarkdownView(source: record.markdown ?? "")
                     }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding()
         }
         .background(AppColors.background)
         .foregroundStyle(AppColors.foreground)
-        .navigationTitle(domain.title)
+        .navigationTitle(domain == .images ? "" : domain.title)
         .toolbar {
             if record?.status == .unexported {
-                Button(String(localized: "削除"), systemImage: "trash", role: .destructive) { showingDelete = true }
+                if domain == .images {
+                    Menu {
+                        Button(String(localized: "削除"), systemImage: "trash", role: .destructive) { showingDelete = true }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                            .accessibilityLabel(String(localized: "その他"))
+                    }
+                } else {
+                    Button(String(localized: "削除"), systemImage: "trash", role: .destructive) { showingDelete = true }
+                }
             }
         }
         .confirmationDialog(String(localized: "この項目を削除しますか？"), isPresented: $showingDelete) {
