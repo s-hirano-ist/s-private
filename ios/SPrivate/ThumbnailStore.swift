@@ -43,6 +43,11 @@ actor ThumbnailStore {
         return decoded(data, key: key, pixelSize: pixelSize)
     }
 
+    func save(_ data: Data, owner: String, domain: MobileDomain, id: String) {
+        let key = cacheKey(owner: owner, domain: domain, id: id)
+        if let url = try? fileURL(for: key) { try? data.write(to: url, options: .atomic) }
+    }
+
     private func decoded(_ data: Data, key: String, pixelSize: Int) -> UIImage? {
         guard let source = CGImageSourceCreateWithData(data as CFData, nil),
               let image = CGImageSourceCreateThumbnailAtIndex(source, 0, [

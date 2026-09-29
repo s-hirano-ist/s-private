@@ -12,7 +12,7 @@ Sentry.init({
 	release: process.env.SENTRY_RELEASE ?? process.env.VERCEL_GIT_COMMIT_SHA,
 
 	// Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
-	tracesSampleRate: 0.2,
+	tracesSampleRate: 1.0,
 
 	// Enable logs to be sent to Sentry
 	enableLogs: true,

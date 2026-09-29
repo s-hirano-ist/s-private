@@ -1,7 +1,13 @@
 "use client";
 
 import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
+import type { ServerAction } from "@/common/types";
 import type { ReactNode } from "react";
+import { BackButton } from "@/components/common/back-button";
+import {
+	CreateFlowContext,
+	type CreateOutcome,
+} from "@/components/common/forms/create-flow-context";
 import { Link } from "@/infrastructures/i18n/routing";
 import { Button } from "@s-hirano-ist/s-ui/button";
 import {
@@ -23,7 +29,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { SearchDrawer } from "./search-drawer";
 import { useViewerCount } from "./viewer-count-context";
 
@@ -74,15 +80,22 @@ function getNavigationState(pathname: string) {
 		segments.includes("viewer") ||
 		bookDetailDomain !== undefined ||
 		noteDetailDomain !== undefined;
-	return { route, domain, isViewer };
+
+	const isContent = route === "book" || route === "note";
+	return { route, domain, isViewer, isContent };
 }
 
 export function AppNavigation({ forms, search }: Props) {
 	const t = useTranslations("navigation");
 	const pathname = usePathname();
 	const [createOpen, setCreateOpen] = useState(false);
+	const [createDomain, setCreateDomain] = useState<Domain | null>(null);
+	const [drafts, setDrafts] = useState<Partial<Record<Domain, FormData>>>({});
+	const [draftVersion, setDraftVersion] = useState(0);
+	const [createPending, setCreatePending] = useState(false);
+	const createPendingRef = useRef(false);
 	const [searchOpen, setSearchOpen] = useState(false);
-	const { route, domain, isViewer } = getNavigationState(pathname);
+	const { route, domain, isViewer, isContent } = getNavigationState(pathname);
 	const activeDomain = domains.find((item) => item.key === domain);
 	const viewerCount = useViewerCount();
 	const count =
@@ -90,30 +103,80 @@ export function AppNavigation({ forms, search }: Props) {
 			? viewerCount.count
 			: null;
 
+	const submitCreate = (
+		formData: FormData,
+		execute: (data: FormData) => Promise<CreateOutcome>,
+		afterSubmit: (response: ServerAction) => void,
+	) => {
+		if (createPendingRef.current || createDomain === null) return;
+		const submittedDomain = createDomain;
+		createPendingRef.current = true;
+		setCreatePending(true);
+		setCreateOpen(false);
+		void (async () => {
+			try {
+				const { response, retryData } = await execute(formData);
+				afterSubmit(response);
+				if (response.success) {
+					setDrafts((current) => ({
+						...current,
+						[submittedDomain]: undefined,
+					}));
+					setDraftVersion((current) => current + 1);
+				} else {
+					setDrafts((current) => ({
+						...current,
+						[submittedDomain]: retryData ?? formData,
+					}));
+					setCreateDomain(submittedDomain);
+					setDraftVersion((current) => current + 1);
+					setCreateOpen(true);
+				}
+			} catch {
+				afterSubmit({ success: false, message: "error" });
+				setDrafts((current) => ({ ...current, [submittedDomain]: formData }));
+				setCreateDomain(submittedDomain);
+				setDraftVersion((current) => current + 1);
+				setCreateOpen(true);
+			} finally {
+				createPendingRef.current = false;
+				setCreatePending(false);
+			}
+		})();
+	};
+
 	return (
 		<>
 			<header className="sticky top-3 z-40 mx-auto flex min-h-14 w-[calc(100%-1.5rem)] max-w-3xl flex-nowrap items-center gap-1 rounded-full border border-nav-border/10 bg-nav-surface/70 px-2 py-1 text-foreground shadow-lg backdrop-blur-xl sm:gap-2 sm:px-3">
 				{activeDomain ? (
 					<>
 						<nav aria-label={t("status")} className="mr-auto min-w-0">
-							<Link
-								aria-label={`${t("switchStatus", {
-									current: t(isViewer ? "exported" : "unexported"),
-									next: t(isViewer ? "unexported" : "exported"),
-								})}${count === null ? "" : t("contentCount", { count })}`}
-								className="inline-flex h-9 items-center gap-1.5 rounded-full bg-primary/10 px-3 text-xs font-medium whitespace-nowrap text-foreground transition-colors duration-200 hover:bg-primary/20"
-								href={isViewer ? activeDomain.href : activeDomain.viewerHref}
-								onClick={() => setCreateOpen(false)}
-							>
-								{t(isViewer ? "exported" : "unexported")}
-								{count !== null && t("contentCount", { count })}
-								<ArrowLeftRightIcon aria-hidden="true" className="size-3.5" />
-							</Link>
+							{isContent ? (
+								<BackButton />
+							) : (
+								<Link
+									aria-label={`${t("switchStatus", {
+										current: t(isViewer ? "exported" : "unexported"),
+										next: t(isViewer ? "unexported" : "exported"),
+									})}${count === null ? "" : t("contentCount", { count })}`}
+									className="inline-flex h-8 items-center gap-1.5 rounded-full bg-primary/10 px-3 text-xs font-medium whitespace-nowrap text-foreground transition-colors duration-200 hover:bg-primary/20"
+									href={isViewer ? activeDomain.href : activeDomain.viewerHref}
+									onClick={() => setCreateOpen(false)}
+								>
+									{t(isViewer ? "exported" : "unexported")}
+									{count !== null && t("contentCount", { count })}
+									<ArrowLeftRightIcon aria-hidden="true" className="size-3.5" />
+								</Link>
+							)}
 						</nav>
 						<Button
 							aria-label={t("create")}
 							className="size-9 shrink-0 rounded-full bg-linear-to-br from-primary to-primary-grad text-primary-foreground shadow-[0_4px_20px_rgb(var(--sui-primary)/0.4)] ring-2 ring-background transition-all duration-200 hover:scale-105 hover:text-primary-foreground hover:shadow-[0_6px_28px_rgb(var(--sui-primary)/0.5)] active:scale-95"
-							onClick={() => setCreateOpen(true)}
+							disabled={createPending}
+							onClick={() => {
+								setCreateDomain(domain ?? null);
+								setCreateOpen(true);
+							}}
 							size="icon"
 							type="button"
 							variant="default"
@@ -178,17 +241,26 @@ export function AppNavigation({ forms, search }: Props) {
 					})}
 				</nav>
 			</footer>
-			<Dialog
-				onOpenChange={setCreateOpen}
-				open={createOpen && domain !== undefined}
-			>
-				<DialogContent className="max-h-[85dvh] overflow-y-auto">
-					<DialogHeader>
-						<DialogTitle>{t("create")}</DialogTitle>
-					</DialogHeader>
-					{domain ? forms[domain] : null}
-				</DialogContent>
-			</Dialog>
+			{createDomain && (
+				<CreateFlowContext
+					value={{
+						domain: createDomain,
+						draft: drafts[createDomain],
+						draftVersion,
+						pending: createPending,
+						submit: submitCreate,
+					}}
+				>
+					<Dialog onOpenChange={setCreateOpen} open={createOpen}>
+						<DialogContent className="max-h-[85dvh] overflow-y-auto">
+							<DialogHeader>
+								<DialogTitle>{t("create")}</DialogTitle>
+							</DialogHeader>
+							{forms[createDomain]}
+						</DialogContent>
+					</Dialog>
+				</CreateFlowContext>
+			)}
 			{searchOpen && (
 				<SearchDrawer
 					onOpenChange={setSearchOpen}

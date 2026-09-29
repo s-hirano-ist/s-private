@@ -67,7 +67,7 @@ mise run ios:run      # iPhone 17 Simulatorへインストールして起動
 
 Miseはプロジェクトルートの`.env.local`を読み込みます。`pnpm dev`はMiseの有無にかかわらず同ファイルを明示的に読み込み、Docker Compose起動、migration、検索初期化、Next.js起動を順番に実行します。
 
-ローカルでは固定開発ユーザーを初回アクセス時に作成して自動ログインします。同時に、articles・notes・images・booksそれぞれへDumper用の未エクスポートデータとViewer用のエクスポート済みサンプルデータを投入します。以後の起動・ログインではサンプルを変更しません。サンプルを含むローカルデータを作り直すには、`docker compose --env-file .env.local --profile local down -v`でCockroachDBとMinIOのvolumeを削除してから`pnpm dev`を実行してください。Vercelでは`LOCAL_DEV_MODE`を無視し、Auth0のみを使用します。
+ローカルでは固定開発ユーザーを初回アクセス時に作成して自動ログインします。同時に、articles・notes・images・booksそれぞれへDumper用の未エクスポートデータとViewer用のエクスポート済みサンプルデータを投入します。以後のログインでは不足したサンプルを補い、画像サンプルを最新の枠付き画像へ更新します。以前の1×1ピクセルの画像サンプルも、次のログイン時に置き換わります。サンプルを含むローカルデータを作り直すには、`docker compose --env-file .env.local --profile local down -v`でCockroachDBとMinIOのvolumeを削除してから`pnpm dev`を実行してください。Vercelでは`LOCAL_DEV_MODE`を無視し、Auth0のみを使用します。
 
 ### 変数一覧
 
@@ -153,3 +153,5 @@ CockroachDB Cloud Basic は接続プーリングが内蔵で、pooled / direct �
    ```
 3. 生成 SQL の**新規 `CREATE TABLE` に `WITH (schema_locked = false)` を付与**
 4. コミット → クラウドへ `pnpm --filter s-database prisma:deploy`
+
+モバイル差分同期の `CREATE TRIGGER` は CockroachDB の制約により Prisma のマイグレーショントランザクション内で実行できません。`prisma:deploy` スクリプトはマイグレーション適用後に各トリガーを独立した SQL 文で作成します。再実行しても既存トリガーは重複作成しません。トリガーを含むデプロイでは `prisma migrate deploy` を直接実行せず、上記の `prisma:deploy` スクリプトを使用してください。

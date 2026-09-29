@@ -5,30 +5,33 @@
  */
 
 import { tenantContext } from "@/common/tenant/tenant-context";
+import { sharpImageProcessor } from "@/infrastructures/images/services/sharp-image-processor";
 import { minioStorageService } from "@/infrastructures/shared/storage/minio-storage-service";
 import prisma from "@/prisma";
 import { Status } from "@s-hirano-ist/s-database";
+import { existsSync } from "node:fs";
+import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
 
 const SAMPLE_CREATED_AT = new Date("2026-01-01T00:00:00.000Z");
 const SAMPLE_CATEGORY_ID = "00000000-0000-7000-8000-000000000101";
-const SAMPLE_IMAGE_BYTES = Buffer.from(
-	"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAEElEQVR4AQEFAPr/AP8AAP8FAAH/+lyI0QAAAABJRU5ErkJggg==",
-	"base64",
-);
-const SAMPLE_THUMBNAIL_BYTES = Buffer.from(
-	"UklGRiIAAABXRUJQVlA4IBYAAAAwAQCdASoBAAEAAUAmJaQAA3AA/vuUAAA=",
-	"base64",
-);
+const SAMPLE_IMAGE_PATH = existsSync(
+	resolve("public/local-sample-landscape.png"),
+)
+	? resolve("public/local-sample-landscape.png")
+	: resolve("app/public/local-sample-landscape.png");
 
 const sampleContent = [
 	{
 		id: "00000000-0000-7000-8000-000000000102",
-		path: "sample/dumper-image.png",
+		path: "sample-dumper-image-v2.png",
+		previousPath: "sample/dumper-image.png",
 		status: Status.UNEXPORTED,
 	},
 	{
 		id: "00000000-0000-7000-8000-000000000106",
-		path: "sample/viewer-image.png",
+		path: "sample-viewer-image-v2.png",
+		previousPath: "sample/viewer-image.png",
 		status: Status.EXPORTED,
 	},
 ] as const;
@@ -38,6 +41,34 @@ export async function seedLocalDevelopmentSampleData(
 	userId: string,
 ): Promise<void> {
 	await tenantContext.run({ userId }, async () => {
+		const imageBytes = await readFile(SAMPLE_IMAGE_PATH);
+		const [{ width, height }, thumbnailBytes] = await Promise.all([
+			sharpImageProcessor.getMetadata(imageBytes),
+			sharpImageProcessor.createThumbnail(imageBytes, 192, 192),
+		]);
+
+		await Promise.all(
+			sampleContent.flatMap((image) => [
+				minioStorageService.uploadImage(image.path, imageBytes, false),
+				minioStorageService.uploadImage(image.path, thumbnailBytes, true),
+			]),
+		);
+
+		const removedLegacyImages = await prisma.image.deleteMany({
+			where: {
+				userId,
+				path: { in: sampleContent.map((image) => image.previousPath) },
+			},
+		});
+		if (removedLegacyImages.count > 0) {
+			await Promise.all(
+				sampleContent.flatMap((image) => [
+					minioStorageService.deleteImage(image.previousPath, false),
+					minioStorageService.deleteImage(image.previousPath, true),
+				]),
+			);
+		}
+
 		const category = await prisma.category.upsert({
 			where: { name_userId: { name: "Sample", userId } },
 			update: {},
@@ -116,11 +147,11 @@ export async function seedLocalDevelopmentSampleData(
 				},
 			}),
 			prisma.book.upsert({
-				where: { isbn_userId: { isbn: "978-0000000101", userId } },
+				where: { id: "00000000-0000-7000-8000-000000000105" },
 				update: {},
 				create: {
 					id: "00000000-0000-7000-8000-000000000105",
-					isbn: "978-0000000101",
+					isbn: "9780000000101",
 					title: "Sample dumper book",
 					googleAuthors: ["Local Developer"],
 					rating: 4,
@@ -133,11 +164,11 @@ export async function seedLocalDevelopmentSampleData(
 				},
 			}),
 			prisma.book.upsert({
-				where: { isbn_userId: { isbn: "978-0000000102", userId } },
+				where: { id: "00000000-0000-7000-8000-000000000109" },
 				update: {},
 				create: {
 					id: "00000000-0000-7000-8000-000000000109",
-					isbn: "978-0000000102",
+					isbn: "9780000000102",
 					title: "Sample viewer book",
 					googleAuthors: ["Local Developer"],
 					rating: 5,
@@ -153,14 +184,14 @@ export async function seedLocalDevelopmentSampleData(
 			...sampleContent.map((image) =>
 				prisma.image.upsert({
 					where: { path_userId: { path: image.path, userId } },
-					update: {},
+					update: { fileSize: imageBytes.length, width, height },
 					create: {
 						id: image.id,
 						path: image.path,
 						contentType: "image/png",
-						fileSize: SAMPLE_IMAGE_BYTES.length,
-						width: 1,
-						height: 1,
+						fileSize: imageBytes.length,
+						width,
+						height,
 						status: image.status,
 						userId,
 						createdAt: SAMPLE_CREATED_AT,
@@ -172,16 +203,5 @@ export async function seedLocalDevelopmentSampleData(
 				}),
 			),
 		]);
-
-		await Promise.all(
-			sampleContent.flatMap((image) => [
-				minioStorageService.uploadImage(image.path, SAMPLE_IMAGE_BYTES, false),
-				minioStorageService.uploadImage(
-					image.path,
-					SAMPLE_THUMBNAIL_BYTES,
-					true,
-				),
-			]),
-		);
 	});
 }

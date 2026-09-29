@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { spawnSync } from "node:child_process";
+import { existsSync } from "node:fs";
 import path from "node:path";
 
 const repoRoot = path.resolve(import.meta.dirname, "../..");
@@ -17,6 +18,36 @@ try {
 	process.exit(0);
 }
 
+if (input.permission_mode === "plan") {
+	writeResult({});
+	process.exit(0);
+}
+
+const changes = spawnSync(
+	// oxlint-disable-next-line sonarjs/no-os-command-from-path -- git is supplied by the trusted developer environment.
+	"git",
+	["status", "--porcelain=v1", "--untracked-files=all"],
+	{
+		cwd: repoRoot,
+		encoding: "utf8",
+		stdio: ["ignore", "pipe", "pipe"],
+	},
+);
+
+if (changes.status !== 0 || changes.error !== undefined) {
+	writeFailure("git status", changes);
+	process.exit(0);
+}
+
+if (
+	changes.stdout.trim() === "" ||
+	!existsSync(path.join(repoRoot, "node_modules")) ||
+	!existsSync(path.join(repoRoot, "app/.next/types"))
+) {
+	writeResult({});
+	process.exit(0);
+}
+
 // oxlint-disable-next-line sonarjs/no-os-command-from-path -- pnpm is supplied by the trusted developer environment.
 const result = spawnSync("pnpm", ["check:fix"], {
 	cwd: repoRoot,
@@ -30,19 +61,23 @@ if (result.status === 0 && result.error === undefined) {
 	process.exit(0);
 }
 
-const details = formatFailure(result);
-const reason = `pnpm check:fix failed. Fix the remaining errors before finishing.\n\n${details}`;
+writeFailure("pnpm check:fix", result);
 
-if (input.stop_hook_active === true) {
-	writeResult({
-		continue: false,
-		stopReason: reason,
-	});
-} else {
-	writeResult({
-		decision: "block",
-		reason,
-	});
+function writeFailure(command, commandResult) {
+	const details = formatFailure(commandResult);
+	const reason = `${command} failed. Fix the remaining errors before finishing.\n\n${details}`;
+
+	if (input.stop_hook_active === true) {
+		writeResult({
+			continue: false,
+			stopReason: reason,
+		});
+	} else {
+		writeResult({
+			decision: "block",
+			reason,
+		});
+	}
 }
 
 function formatFailure(commandResult) {

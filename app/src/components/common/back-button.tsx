@@ -15,10 +15,9 @@ export function BackButton() {
 				haptic();
 				router.back();
 			}}
-			size="sm"
 			variant="ghost"
 		>
-			<ArrowLeft className="size-4" />
+			<ArrowLeft className="size-3.5" />
 		</Button>
 	);
 }
