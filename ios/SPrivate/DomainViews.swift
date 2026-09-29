@@ -30,6 +30,8 @@ struct DomainListView: View {
                         .padding(.horizontal, domain == .images ? 3 : 12)
                         gridFooter
                     }
+                    .background(AppColors.background)
+                    .foregroundStyle(AppColors.foreground)
                     .accessibilityIdentifier("domain-grid-\(domain.rawValue)")
                 } else {
                     listContent
@@ -72,7 +74,7 @@ struct DomainListView: View {
         List {
                 syncBanner
                 if let errorMessage {
-                    Text(errorMessage).foregroundStyle(.red)
+                    Text(errorMessage).foregroundStyle(AppColors.destructive)
                         .accessibilityIdentifier("domain-error")
                 }
                 if records.isEmpty && errorMessage == nil {
@@ -83,7 +85,7 @@ struct DomainListView: View {
                         Label {
                             VStack(alignment: .leading) {
                                 Text(record.displayTitle).lineLimit(2)
-                                Text(record.status.localizedTitle).font(.caption).foregroundStyle(.secondary)
+                                Text(record.status.localizedTitle).font(.caption).foregroundStyle(AppColors.mutedForeground)
                             }
                         } icon: {
                             if domain == .images || domain == .books {
@@ -96,13 +98,17 @@ struct DomainListView: View {
                 }
                 if hasMore {
                     Button(String(localized: "さらに読み込む")) { loadNextPage() }
+                        .foregroundStyle(AppColors.primary)
                 }
                 if let fetchedAt = sync.lastSyncAt {
                     Text(String(localized: "最終取得: \(fetchedAt.formatted(date: .abbreviated, time: .shortened))"))
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(AppColors.mutedForeground)
                 }
         }
+        .scrollContentBackground(.hidden)
+        .background(AppColors.background)
+        .foregroundStyle(AppColors.foreground)
         .accessibilityIdentifier("domain-list-\(domain.rawValue)")
     }
 
@@ -110,15 +116,16 @@ struct DomainListView: View {
         VStack {
             if hasMore {
                 Button(String(localized: "さらに読み込む")) { loadNextPage() }
+                    .foregroundStyle(AppColors.primary)
                     .padding()
             }
-            if let errorMessage { Text(errorMessage).foregroundStyle(.red).accessibilityIdentifier("domain-error") }
+            if let errorMessage { Text(errorMessage).foregroundStyle(AppColors.destructive).accessibilityIdentifier("domain-error") }
             if records.isEmpty && errorMessage == nil {
                 ContentUnavailableView(String(localized: "項目がありません"), systemImage: domain.symbol)
             }
             if let fetchedAt = sync.lastSyncAt {
                 Text(String(localized: "最終取得: \(fetchedAt.formatted(date: .abbreviated, time: .shortened))"))
-                    .font(.caption).foregroundStyle(.secondary).padding()
+                    .font(.caption).foregroundStyle(AppColors.mutedForeground).padding()
             }
         }
         .frame(maxWidth: .infinity)
@@ -190,9 +197,11 @@ struct MediaThumbnailView: View {
                 Image(uiImage: image).resizable().scaledToFill()
             } else {
                 Image(systemName: domain.symbol).resizable().scaledToFit().padding(12)
+                    .foregroundStyle(AppColors.mutedForeground)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(AppColors.muted)
         .clipped()
         .accessibilityHidden(true)
         .task(id: sync.dataRevision) {
@@ -241,10 +250,10 @@ struct RecordDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 if loading { ProgressView() }
-                if let errorMessage { Text(errorMessage).foregroundStyle(.red) }
+                if let errorMessage { Text(errorMessage).foregroundStyle(AppColors.destructive) }
                 if let record {
                     Text(record.displayTitle).font(.title2.bold())
-                    Text(record.status.localizedTitle).foregroundStyle(.secondary)
+                    Text(record.status.localizedTitle).foregroundStyle(AppColors.mutedForeground)
                     switch domain {
                     case .articles:
                         if let categoryName = record.categoryName { Text(categoryName) }
@@ -268,6 +277,8 @@ struct RecordDetailView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding()
         }
+        .background(AppColors.background)
+        .foregroundStyle(AppColors.foreground)
         .navigationTitle(domain.title)
         .toolbar {
             if record?.status == .unexported {
@@ -320,7 +331,7 @@ struct AuthenticatedImageView: View {
                         }
                     }
             } else if let errorMessage {
-                Text(errorMessage).foregroundStyle(.red)
+                Text(errorMessage).foregroundStyle(AppColors.destructive)
             } else {
                 ProgressView()
             }

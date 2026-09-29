@@ -20,6 +20,7 @@ struct SPrivateApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .tint(AppColors.primary)
                 .environmentObject(authentication)
                 .environmentObject(sharedInbox)
                 .environmentObject(sync)
