@@ -13,6 +13,7 @@ paths:
   /manifest:
     get:
       operationId: listMobileManifest
+      deprecated: true
       description: Owner-scoped IDs and update times for complete local reconciliation. Image entries include their metadata so the client can display them without additional list or detail requests. Fetch changed records in other domains through the detail endpoint. A successful full response also identifies remote deletions.
       responses:
         '200':
@@ -38,6 +39,85 @@ paths:
                       properties:
                         id: { type: string }
                         name: { type: string }
+        default:
+          $ref: '#/components/responses/Error'
+  /sync/head:
+    get:
+      operationId: getMobileSyncHead
+      description: Capture the owner-scoped change version before an initial snapshot. Changes after this version are replayed after the snapshot completes.
+      responses:
+        '200':
+          description: Current owner change version
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [cursor]
+                properties:
+                  cursor: { type: string, description: Opaque owner-bound cursor }
+        default:
+          $ref: '#/components/responses/Error'
+  /sync/snapshot:
+    get:
+      operationId: listMobileSyncSnapshot
+      description: Keyset page for the initial local copy. Read every domain, including categories, then replay changes after the captured head. Repeating a page is safe.
+      parameters:
+        - name: domain
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [articles, notes, books, images, categories]
+        - name: after
+          in: query
+          schema: { type: string, default: '' }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 100 }
+      responses:
+        '200':
+          description: Owner-scoped snapshot page
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, nextAfter]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      oneOf:
+                        - $ref: '#/components/schemas/Content'
+                        - $ref: '#/components/schemas/MobileCategory'
+                  nextAfter: { type: [string, 'null'] }
+        default:
+          $ref: '#/components/responses/Error'
+  /sync/changes:
+    get:
+      operationId: listMobileSyncChanges
+      description: Owner-scoped ordered changes after cursor. Persist each page and its nextCursor together. A missing record is returned as a delete, including when a later deletion supersedes an earlier update.
+      parameters:
+        - name: cursor
+          in: query
+          required: true
+          schema: { type: string, description: Cursor issued for the authenticated owner }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 100 }
+      responses:
+        '200':
+          description: Ordered changes and continuation cursor
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, nextCursor, hasMore]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/SyncChange' }
+                  nextCursor: { type: string, description: Opaque owner-bound cursor }
+                  hasMore: { type: boolean }
         default:
           $ref: '#/components/responses/Error'
   /{domain}:
@@ -331,6 +411,26 @@ components:
       schema:
         type: string
   schemas:
+    MobileCategory:
+      type: object
+      required: [id, name]
+      properties:
+        id: { type: string }
+        name: { type: string }
+    SyncChange:
+      type: object
+      required: [version, domain, id, action]
+      properties:
+        version: { type: string, pattern: '^[0-9]+$' }
+        domain:
+          type: string
+          enum: [articles, notes, books, images, categories]
+        id: { type: string }
+        action:
+          type: string
+          enum: [upsert, delete]
+        record: { $ref: '#/components/schemas/Content' }
+        category: { $ref: '#/components/schemas/MobileCategory' }
     ManifestItems:
       type: array
       items:

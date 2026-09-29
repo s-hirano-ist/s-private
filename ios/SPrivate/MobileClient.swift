@@ -40,6 +40,24 @@ struct MobileManifest: Decodable {
         }
     }
 }
+struct MobileSyncHead: Decodable { let cursor: String }
+struct MobileSnapshotPage<Item: Decodable>: Decodable {
+    let data: [Item]
+    let nextAfter: String?
+}
+struct MobileSyncChange: Decodable {
+    let version: String
+    let domain: String
+    let id: String
+    let action: String
+    let record: MobileRecord?
+    let category: MobileCategory?
+}
+struct MobileSyncChanges: Decodable {
+    let data: [MobileSyncChange]
+    let nextCursor: String
+    let hasMore: Bool
+}
 struct MobileAccepted: Decodable { let accepted: Bool }
 private struct UploadStart: Encodable {
     let operationId: UUID
@@ -96,7 +114,7 @@ struct MobileRecord: Codable, Identifiable {
     let url: String?
     let quote: String?
     let categoryId: String?
-    let categoryName: String?
+    var categoryName: String?
     let markdown: String?
     let isbn: String?
     let rating: Int?
@@ -162,6 +180,29 @@ final class MobileClient {
 
     func manifest() async throws -> MobileManifest {
         try await decode("manifest")
+    }
+
+    func syncHead() async throws -> String {
+        let result: MobileSyncHead = try await decode("sync/head")
+        return result.cursor
+    }
+
+    func snapshot(_ domain: String, after: String = "") async throws -> MobileSnapshotPage<MobileRecord> {
+        try await decode("sync/snapshot", query: [
+            URLQueryItem(name: "domain", value: domain),
+            URLQueryItem(name: "after", value: after),
+        ])
+    }
+
+    func categorySnapshot(after: String = "") async throws -> MobileSnapshotPage<MobileCategory> {
+        try await decode("sync/snapshot", query: [
+            URLQueryItem(name: "domain", value: "categories"),
+            URLQueryItem(name: "after", value: after),
+        ])
+    }
+
+    func changes(cursor: String) async throws -> MobileSyncChanges {
+        try await decode("sync/changes", query: [URLQueryItem(name: "cursor", value: cursor)])
     }
 
     func search(_ query: String) async throws -> [MobileSearchResult] {

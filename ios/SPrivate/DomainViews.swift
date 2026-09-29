@@ -5,6 +5,7 @@ struct DomainListView: View {
     @EnvironmentObject private var authentication: AuthenticationModel
     @EnvironmentObject private var sync: SyncCoordinator
     @State private var records: [MobileRecord] = []
+    @State private var hasMore = false
     @State private var status: MobileContentStatus = .unexported
     @State private var errorMessage: String?
     @State private var showingCreate = false
@@ -17,6 +18,7 @@ struct DomainListView: View {
             Group {
                 if isGrid {
                     ScrollView {
+                        syncBanner
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 3), count: domain == .images ? 3 : 2), spacing: domain == .images ? 3 : 16) {
                             ForEach(records) { record in
                                 NavigationLink(value: record.id) {
@@ -60,7 +62,7 @@ struct DomainListView: View {
                     .environmentObject(authentication)
             }
             .refreshable { await sync.synchronize(force: true); loadLocal() }
-            .task(id: status) { loadLocal() }
+            .task(id: status) { loadLocal(reset: true) }
             .onChange(of: sync.dataRevision) { _, _ in loadLocal() }
             .onChange(of: sync.syncError) { _, _ in loadLocal() }
         }
@@ -68,6 +70,7 @@ struct DomainListView: View {
 
     private var listContent: some View {
         List {
+                syncBanner
                 if let errorMessage {
                     Text(errorMessage).foregroundStyle(.red)
                         .accessibilityIdentifier("domain-error")
@@ -91,6 +94,9 @@ struct DomainListView: View {
                         }
                     }
                 }
+                if hasMore {
+                    Button(String(localized: "さらに読み込む")) { loadNextPage() }
+                }
                 if let fetchedAt = sync.lastSyncAt {
                     Text(String(localized: "最終取得: \(fetchedAt.formatted(date: .abbreviated, time: .shortened))"))
                         .font(.caption)
@@ -102,6 +108,10 @@ struct DomainListView: View {
 
     private var gridFooter: some View {
         VStack {
+            if hasMore {
+                Button(String(localized: "さらに読み込む")) { loadNextPage() }
+                    .padding()
+            }
             if let errorMessage { Text(errorMessage).foregroundStyle(.red).accessibilityIdentifier("domain-error") }
             if records.isEmpty && errorMessage == nil {
                 ContentUnavailableView(String(localized: "項目がありません"), systemImage: domain.symbol)
@@ -114,9 +124,31 @@ struct DomainListView: View {
         .frame(maxWidth: .infinity)
     }
 
-    private func loadLocal() {
-        records = sync.cached(domain: domain).filter { $0.status == status }
+    @ViewBuilder
+    private var syncBanner: some View {
+        if sync.isRefreshing {
+            HStack(spacing: 8) {
+                ProgressView()
+                Text(String(localized: "更新を確認中です。完了まで操作が遅くなる可能性があります。"))
+                    .font(.caption)
+            }
+            .padding()
+            .accessibilityIdentifier("sync-progress")
+        }
+    }
+
+    private func loadLocal(reset: Bool = false) {
+        let count = reset ? 30 : max(records.count, 30)
+        let page = sync.cachedPage(domain: domain, status: status, offset: 0, limit: count)
+        records = page.records
+        hasMore = page.hasMore
         errorMessage = sync.syncError
+    }
+
+    private func loadNextPage() {
+        let page = sync.cachedPage(domain: domain, status: status, offset: records.count, limit: 30)
+        records.append(contentsOf: page.records)
+        hasMore = page.hasMore
     }
 }
 

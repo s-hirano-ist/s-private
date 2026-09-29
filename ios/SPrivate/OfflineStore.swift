@@ -21,6 +21,12 @@ final class CachedMobileRecord {
     var domainValue: String
     var recordData: Data
     var fetchedAt: Date
+    var recordID: String?
+    var statusValue: String?
+    var createdAt: Date?
+    var displayTitle: String?
+    var searchText: String?
+    var syncGeneration: String?
 
     init(ownerKey: String, domain: MobileDomain, record: MobileRecord, fetchedAt: Date = Date()) throws {
         cacheKey = "\(ownerKey):\(domain.rawValue):\(record.id)"
@@ -28,6 +34,28 @@ final class CachedMobileRecord {
         domainValue = domain.rawValue
         recordData = try JSONEncoder.mobile.encode(record)
         self.fetchedAt = fetchedAt
+        recordID = record.id
+        statusValue = record.status.rawValue
+        createdAt = record.createdAt
+        displayTitle = record.displayTitle
+        searchText = Self.searchableText(for: record)
+    }
+
+    func update(_ record: MobileRecord, generation: String? = nil) throws {
+        recordData = try JSONEncoder.mobile.encode(record)
+        recordID = record.id
+        statusValue = record.status.rawValue
+        createdAt = record.createdAt
+        displayTitle = record.displayTitle
+        searchText = Self.searchableText(for: record)
+        fetchedAt = Date()
+        if let generation { syncGeneration = generation }
+    }
+
+    private static func searchableText(for record: MobileRecord) -> String {
+        [record.title, record.url, record.quote, record.markdown, record.isbn,
+         record.categoryName, record.tags?.joined(separator: " ")]
+            .compactMap { $0 }.joined(separator: " ").lowercased()
     }
 }
 
@@ -37,12 +65,23 @@ final class CachedMobileCategory {
     var ownerKey: String
     var id: String
     var name: String
+    var syncGeneration: String?
 
     init(ownerKey: String, category: MobileCategory) {
         self.ownerKey = ownerKey
         id = category.id
         name = category.name
         cacheKey = "\(ownerKey):category:\(category.id)"
+    }
+}
+
+@Model
+final class MobileSyncState {
+    @Attribute(.unique) var ownerKey: String
+    var cursor: String?
+
+    init(ownerKey: String) {
+        self.ownerKey = ownerKey
     }
 }
 
