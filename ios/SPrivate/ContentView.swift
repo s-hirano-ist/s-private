@@ -19,6 +19,9 @@ struct ContentView: View {
                     List {
                         authenticationContent
                     }
+                    .scrollContentBackground(.hidden)
+                    .background(AppColors.background)
+                    .foregroundStyle(AppColors.foreground)
                     .navigationTitle("SPrivate")
                 }
             }
@@ -35,6 +38,7 @@ struct ContentView: View {
             Button(String(localized: "Auth0でログイン")) {
                 Task { await authentication.logIn() }
             }
+            .foregroundStyle(AppColors.primary)
             .accessibilityIdentifier("auth0-login-button")
         case .working:
             ProgressView(String(localized: "処理中"))
@@ -42,8 +46,9 @@ struct ContentView: View {
             EmptyView()
         case let .error(message):
             Label(String(localized: "認証に失敗しました"), systemImage: "xmark.circle")
-            Text(message).foregroundStyle(.secondary)
+            Text(message).foregroundStyle(AppColors.mutedForeground)
             Button(String(localized: "再試行")) { Task { await authentication.logIn() } }
+                .foregroundStyle(AppColors.primary)
         }
     }
 }
@@ -62,6 +67,7 @@ struct SettingsView: View {
                     if sync.pendingCount == 0 { Task { await authentication.logOut() } }
                     else { confirmingLogout = true }
                 }
+                .foregroundStyle(AppColors.destructive)
             }
             Section(String(localized: "同期")) {
                 NavigationLink {
@@ -71,7 +77,9 @@ struct SettingsView: View {
                 }
                 .accessibilityIdentifier("sync-management-link")
                 Button(String(localized: "今すぐ同期")) { Task { await sync.synchronize() } }
+                    .foregroundStyle(AppColors.primary)
                 Button(String(localized: "キャッシュを削除"), role: .destructive) { sync.clearCache() }
+                    .foregroundStyle(AppColors.destructive)
             }
             Section(String(localized: "共有された項目")) {
                 if sharedInbox.items.isEmpty {
@@ -81,14 +89,18 @@ struct SettingsView: View {
                         Label(item.text ?? item.kind.rawValue, systemImage: "square.and.arrow.down")
                     }
                 }
-                if let error = sharedInbox.errorMessage { Text(error).foregroundStyle(.red) }
+                if let error = sharedInbox.errorMessage { Text(error).foregroundStyle(AppColors.destructive) }
                 Button(String(localized: "再読み込み")) { sharedInbox.reload() }
+                    .foregroundStyle(AppColors.primary)
             }
             Section(String(localized: "接続先")) {
                 Text(Bundle.main.object(forInfoDictionaryKey: "MobileAPIBaseURL") as? String ?? "")
                     .textSelection(.enabled)
             }
         }
+        .scrollContentBackground(.hidden)
+        .background(AppColors.background)
+        .foregroundStyle(AppColors.foreground)
         .accessibilityIdentifier("settings-view")
         .navigationTitle(String(localized: "設定"))
         .confirmationDialog(
@@ -125,11 +137,13 @@ struct SyncManagementView: View {
                 Section {
                     VStack(alignment: .leading, spacing: 6) {
                         Label(operation.domain.title, systemImage: operation.domain.symbol)
-                        Text(operation.state.title).font(.caption).foregroundStyle(.secondary)
-                        if let error = operation.lastError { Text(error).font(.caption).foregroundStyle(.red) }
+                        Text(operation.state.title).font(.caption).foregroundStyle(AppColors.mutedForeground)
+                        if let error = operation.lastError { Text(error).font(.caption).foregroundStyle(AppColors.destructive) }
                         HStack {
                             Button(String(localized: "再送")) { Task { await sync.retry(operation) } }
+                                .foregroundStyle(AppColors.primary)
                             Button(String(localized: "取り消す"), role: .destructive) { sync.cancel(operation) }
+                                .foregroundStyle(AppColors.destructive)
                         }
                     }
                     if operation.state == .needsAttention {
@@ -141,6 +155,9 @@ struct SyncManagementView: View {
                 ContentUnavailableView(String(localized: "未送信データはありません"), systemImage: "checkmark.circle")
             }
         }
+        .scrollContentBackground(.hidden)
+        .background(AppColors.background)
+        .foregroundStyle(AppColors.foreground)
         .navigationTitle(String(localized: "同期管理"))
         .accessibilityIdentifier("sync-management-view")
         .toolbar { Button(String(localized: "今すぐ同期")) { Task { await sync.synchronize() } } }
@@ -191,6 +208,9 @@ struct PendingOperationEditor: View {
                 TextField(String(localized: "タグ（カンマ区切り）"), text: $tags)
             }
         }
+        .scrollContentBackground(.hidden)
+        .background(AppColors.background)
+        .foregroundStyle(AppColors.foreground)
         .navigationTitle(String(localized: "内容を修正"))
         .toolbar {
             Button(String(localized: "保存")) {

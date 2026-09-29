@@ -19,7 +19,7 @@ final class SPrivateUITests: XCTestCase {
     }
 
     @MainActor
-    func testFourDomainTabsOpenSearchFromTopBar() throws {
+    func testFourDomainTabsOfferHeaderActionsInWebOrder() throws {
         let app = XCUIApplication()
         app.launchArguments.append("-ui-testing-authenticated")
         app.launch()
@@ -31,12 +31,24 @@ final class SPrivateUITests: XCTestCase {
             tabBar.buttons.element(boundBy: index).tap()
             let identifier = index < 2 ? "domain-list-\(domain)" : "domain-grid-\(domain)"
             XCTAssertTrue(app.descendants(matching: .any)[identifier].waitForExistence(timeout: 5))
+            let createButton = app.buttons["create-button"]
+            let searchButton = app.buttons["search-button"]
+            let settingsLink = app.buttons["settings-link"]
+            XCTAssertTrue(createButton.exists)
+            XCTAssertTrue(searchButton.exists)
+            XCTAssertTrue(settingsLink.exists)
+            XCTAssertLessThan(createButton.frame.midX, searchButton.frame.midX)
+            XCTAssertLessThan(searchButton.frame.midX, settingsLink.frame.midX)
             app.buttons["search-button"].tap()
             XCTAssertTrue(app.searchFields.firstMatch.waitForExistence(timeout: 5))
+            XCTAssertFalse(app.buttons["settings-link"].isHittable)
             app.buttons["search-close-button"].tap()
             XCTAssertTrue(app.descendants(matching: .any)[identifier].waitForExistence(timeout: 5))
+            settingsLink.tap()
+            XCTAssertTrue(app.descendants(matching: .any)["settings-view"].waitForExistence(timeout: 5))
+            app.navigationBars.buttons.firstMatch.tap()
+            XCTAssertTrue(app.descendants(matching: .any)[identifier].waitForExistence(timeout: 5))
         }
-        app.buttons["search-button"].tap()
         app.buttons["settings-link"].tap()
         XCTAssertTrue(app.descendants(matching: .any)["settings-view"].waitForExistence(timeout: 5))
         app.buttons["sync-management-link"].tap()
