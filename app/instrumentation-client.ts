@@ -4,6 +4,11 @@
 
 import { env } from "@/env";
 import { init } from "@sentry/nextjs";
+import { scan } from "react-scan";
+
+if (process.env.NODE_ENV === "development") {
+	scan({ enabled: true });
+}
 
 init({
 	dsn: env.NEXT_PUBLIC_SENTRY_DSN,
