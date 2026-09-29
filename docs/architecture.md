@@ -405,18 +405,22 @@ export async function ArticlesStackLoader({
 ### ページでの使用
 
 ```typescript
-<Suspense fallback={<Loading />}>
-  <ErrorBoundary
-    errorCaller="ArticlesStack"
-    render={() => (
-      <ArticlesStackLoader
-        variant="exported"
-        loadMoreAction={loadMoreExportedArticles}
-      />
-    )}
-  />
-</Suspense>
+return renderContentListPage({
+  counter: {
+    errorCaller: "ArticlesCounter",
+    render: () => ArticlesCounterLoader({}),
+  },
+  stack: {
+    errorCaller: "ArticlesStack",
+    render: () => ArticlesStackLoader({
+      variant: "exported",
+      loadMoreAction: loadMoreExportedArticles,
+    }),
+  },
+});
 ```
+
+articles・notes・books・images の一覧ページは `renderContentListPage` で共通の Suspense と ErrorBoundary を構成する。viewer は `counter` と `stack` を渡し、dumper は `stack` のみを渡す。データ取得と Server Action は各ドメインの loader とページに残す。
 
 ### 責務の分離
 
