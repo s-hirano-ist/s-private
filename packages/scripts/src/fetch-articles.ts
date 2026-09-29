@@ -41,6 +41,45 @@ type OutputType = Record<
 
 const OUTPUT_PATH = "json/article";
 
+function categorizeArticles(articles: Article[]): OutputType {
+	return articles.reduce<OutputType>((acc, d) => {
+		const { title, quote, url, categoryName } = d;
+		// oxlint-disable-next-line typescript/no-unnecessary-condition -- Record index access is undefined at runtime for new keys; initializes the bucket
+		if (!acc[categoryName]) acc[categoryName] = [];
+		acc[categoryName].push({ title, quote: quote ?? "", url });
+		return acc;
+	}, {});
+}
+
+async function readFileOrCreate(key: string): Promise<Template> {
+	const filePath = `${OUTPUT_PATH}/${key}.json`;
+
+	try {
+		const data = await readFile(filePath, "utf8");
+		return JSON.parse(data) as Template;
+	} catch {
+		// File does not exist, create it
+		await mkdir(dirname(filePath), { recursive: true });
+		const data: Template = { heading: key, description: "FIXME", body: [] };
+		const jsonData = JSON.stringify(data, null, 2);
+		await writeFile(filePath, jsonData);
+		return data;
+	}
+}
+
+async function exportData(data: OutputType) {
+	for (const [key, value] of Object.entries(data)) {
+		console.log(`Key: ${key}`);
+		const originalData = await readFileOrCreate(key);
+
+		originalData.body.push(...value);
+		await writeFile(
+			`${OUTPUT_PATH}/${key}.json`,
+			`${JSON.stringify(originalData, null, 2)}\n`,
+		);
+	}
+}
+
 async function main() {
 	const env = {
 		DATABASE_URL: process.env.DATABASE_URL,
@@ -64,45 +103,6 @@ async function main() {
 
 	const userId: UserId = makeUserId(env.USERNAME_TO_EXPORT ?? "");
 	const UNEXPORTED: Status = makeUnexportedStatus();
-
-	function categorizeArticles(articles: Article[]): OutputType {
-		return articles.reduce<OutputType>((acc, d) => {
-			const { title, quote, url, categoryName } = d;
-			// oxlint-disable-next-line typescript/no-unnecessary-condition -- Record index access is undefined at runtime for new keys; initializes the bucket
-			if (!acc[categoryName]) acc[categoryName] = [];
-			acc[categoryName].push({ title, quote: quote ?? "", url });
-			return acc;
-		}, {});
-	}
-
-	async function readFileOrCreate(key: string): Promise<Template> {
-		const filePath = `${OUTPUT_PATH}/${key}.json`;
-
-		try {
-			const data = await readFile(filePath, "utf8");
-			return JSON.parse(data) as Template;
-		} catch {
-			// File does not exist, create it
-			await mkdir(dirname(filePath), { recursive: true });
-			const data: Template = { heading: key, description: "FIXME", body: [] };
-			const jsonData = JSON.stringify(data, null, 2);
-			await writeFile(filePath, jsonData);
-			return data;
-		}
-	}
-
-	async function exportData(data: OutputType) {
-		for (const [key, value] of Object.entries(data)) {
-			console.log(`Key: ${key}`);
-			const originalData = await readFileOrCreate(key);
-
-			originalData.body.push(...value);
-			await writeFile(
-				`${OUTPUT_PATH}/${key}.json`,
-				`${JSON.stringify(originalData, null, 2)}\n`,
-			);
-		}
-	}
 
 	async function fetchArticles() {
 		const rawArticles = await prisma.article.findMany({

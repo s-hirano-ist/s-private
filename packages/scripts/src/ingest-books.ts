@@ -203,6 +203,15 @@ async function main() {
 		return fileName;
 	}
 
+	async function resolveNewImagePath(
+		localImagePath: string | undefined,
+		fallback: string | null,
+	): Promise<string | null> {
+		if (!localImagePath) return fallback;
+		if (dryRun) return basename(localImagePath);
+		return uploadBookImage(localImagePath);
+	}
+
 	async function ingestBooks() {
 		const files = await globPaths(`${contentsPath}/markdown/book/*.md`);
 		console.log(`📁 ${files.length} 件のファイルを検出しました。`);
@@ -249,15 +258,6 @@ async function main() {
 		let updatedCount = 0;
 		let skippedCount = 0;
 		let errorCount = 0;
-
-		async function resolveNewImagePath(
-			localImagePath: string | undefined,
-			fallback: string | null,
-		): Promise<string | null> {
-			if (!localImagePath) return fallback;
-			if (dryRun) return basename(localImagePath);
-			return uploadBookImage(localImagePath);
-		}
 
 		async function updateExistingBook(
 			existing: ExistingBook,
