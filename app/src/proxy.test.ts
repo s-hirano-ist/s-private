@@ -133,27 +133,20 @@ describe("proxy CSP", () => {
 	});
 
 	test("excludes API and static asset routes from Proxy", () => {
-		expect(
-			unstable_doesMiddlewareMatch({
-				config,
-				nextConfig: {},
-				url: "/api/health",
-			}),
-		).toBe(false);
-		expect(
-			unstable_doesMiddlewareMatch({
-				config,
-				nextConfig: {},
-				url: "/_next/static/chunk.js",
-			}),
-		).toBe(false);
-		expect(
-			unstable_doesMiddlewareMatch({
-				config,
-				nextConfig: {},
-				url: "/push-service-worker.js",
-			}),
-		).toBe(false);
+		for (const url of [
+			"/api/health",
+			"/_next/static/chunk.js",
+			"/favicon.ico",
+			"/icon.png",
+			"/apple-icon.png",
+			"/icons/icon-192.png",
+			"/icons/icon-512.png",
+			"/push-service-worker.js",
+		]) {
+			expect(
+				unstable_doesMiddlewareMatch({ config, nextConfig: {}, url }),
+			).toBe(false);
+		}
 		expect(
 			unstable_doesMiddlewareMatch({
 				config,
