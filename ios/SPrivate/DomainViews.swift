@@ -176,7 +176,7 @@ private struct MediaGridCell: View {
                 MediaThumbnailView(domain: domain, id: record.id, hasImage: domain == .images || record.imagePath != nil, pixelSize: domain == .images ? 400 : 600)
                     .frame(width: geometry.size.width, height: geometry.size.height)
             }
-            .aspectRatio(domain == .images ? 1 : 2.0 / 3.0, contentMode: .fit)
+            .aspectRatio(1, contentMode: .fit)
             .clipped()
             if domain == .books {
                 Text(record.displayTitle).font(.caption).lineLimit(2)
