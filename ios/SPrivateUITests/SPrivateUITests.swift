@@ -96,4 +96,28 @@ final class SPrivateUITests: XCTestCase {
             XCTAssertTrue(filter.label.contains("公開済み") || filter.label.contains("Exported"))
         }
     }
+
+    @MainActor
+    func testArticleAndNoteRowsShowLongTitlesAndOpenDetails() throws {
+        let app = XCUIApplication()
+        app.launchArguments += ["-ui-testing-authenticated", "-ui-testing-list-fixtures"]
+        app.launch()
+
+        let tabs = app.tabBars.firstMatch.buttons
+        for (index, domain) in ["article", "note"].enumerated() {
+            tabs.element(boundBy: index).tap()
+            let shortRow = app.descendants(matching: .any)["domain-record-\(domain)-short"]
+            let longRow = app.descendants(matching: .any)["domain-record-\(domain)-long"]
+            XCTAssertTrue(shortRow.waitForExistence(timeout: 5))
+            XCTAssertTrue(longRow.waitForExistence(timeout: 5))
+            XCTAssertGreaterThan(longRow.frame.height, shortRow.frame.height)
+            let screenshot = XCTAttachment(screenshot: app.screenshot())
+            screenshot.name = "\(domain)-list"
+            screenshot.lifetime = .keepAlways
+            add(screenshot)
+            longRow.tap()
+            XCTAssertTrue(app.descendants(matching: .any)["record-detail-\(domain)s"].waitForExistence(timeout: 5))
+            app.navigationBars.buttons.firstMatch.tap()
+        }
+    }
 }

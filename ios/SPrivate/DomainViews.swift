@@ -79,40 +79,52 @@ struct DomainListView: View {
 
     private var listContent: some View {
         List {
-                syncProgress
-                if let errorMessage {
-                    Text(errorMessage).foregroundStyle(AppColors.destructive)
-                        .accessibilityIdentifier("domain-error")
-                }
-                if records.isEmpty && errorMessage == nil {
-                    ContentUnavailableView(String(localized: "項目がありません"), systemImage: domain.symbol)
-                }
-                ForEach(records) { record in
-                    NavigationLink(value: record.id) {
-                        Label {
-                            VStack(alignment: .leading) {
-                                Text(record.displayTitle).lineLimit(2)
-                                Text(record.status.localizedTitle).font(.caption).foregroundStyle(AppColors.mutedForeground)
-                            }
-                        } icon: {
-                            if domain == .images || domain == .books {
-                                MediaThumbnailView(domain: domain, id: record.id)
-                            } else {
-                                Image(systemName: domain.symbol)
-                            }
+            syncProgress
+                .listRowBackground(AppColors.background)
+            if let errorMessage {
+                Text(errorMessage).foregroundStyle(AppColors.destructive)
+                    .accessibilityIdentifier("domain-error")
+                    .listRowBackground(AppColors.background)
+            }
+            if records.isEmpty && errorMessage == nil {
+                ContentUnavailableView(String(localized: "項目がありません"), systemImage: domain.symbol)
+                    .listRowBackground(AppColors.background)
+            }
+            ForEach(records) { record in
+                NavigationLink(value: record.id) {
+                    HStack(spacing: 16) {
+                        Image(systemName: domain.symbol)
+                            .font(.system(size: 22))
+                            .frame(width: 28)
+                            .foregroundStyle(AppColors.primary)
+                            .accessibilityHidden(true)
+                        VStack(alignment: .leading) {
+                            Text(record.displayTitle).lineLimit(2)
+                            Text(record.status.localizedTitle).font(.caption).foregroundStyle(AppColors.mutedForeground)
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
-                if hasMore {
-                    Button(String(localized: "さらに読み込む")) { loadNextPage() }
-                        .foregroundStyle(AppColors.primary)
-                }
-                if let fetchedAt = sync.lastSyncAt {
-                    Text(String(localized: "最終取得: \(fetchedAt.formatted(date: .abbreviated, time: .shortened))"))
-                        .font(.caption)
-                        .foregroundStyle(AppColors.mutedForeground)
-                }
+                .accessibilityIdentifier("domain-record-\(record.id)")
+                .listRowInsets(.horizontal, 16)
+                .listRowBackground(AppColors.background)
+                .alignmentGuide(.listRowSeparatorLeading) { $0[.leading] }
+                .alignmentGuide(.listRowSeparatorTrailing) { $0[.trailing] }
+            }
+            if hasMore {
+                Button(String(localized: "さらに読み込む")) { loadNextPage() }
+                    .foregroundStyle(AppColors.primary)
+                    .listRowBackground(AppColors.background)
+            }
+            if let fetchedAt = sync.lastSyncAt {
+                Text(String(localized: "最終取得: \(fetchedAt.formatted(date: .abbreviated, time: .shortened))"))
+                    .font(.caption)
+                    .foregroundStyle(AppColors.mutedForeground)
+                    .listRowBackground(AppColors.background)
+            }
         }
+        .listStyle(.plain)
+        .contentMargins(.horizontal, 0, for: .scrollContent)
         .scrollContentBackground(.hidden)
         .background(AppColors.background)
         .foregroundStyle(AppColors.foreground)
@@ -291,6 +303,7 @@ struct RecordDetailView: View {
                 .padding()
             }
         }
+        .accessibilityIdentifier("record-detail-\(domain.rawValue)")
         .background(AppColors.background)
         .foregroundStyle(AppColors.foreground)
         .navigationTitle(domain == .images ? "" : domain.title)
