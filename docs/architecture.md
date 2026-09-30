@@ -106,6 +106,8 @@ const articlesDomainService = domainServiceFactory.createArticlesDomainService()
 
 `packages/ui/src/styles.css` の `--sui-*` をライト・ダーク両モードの色の定義元とする。`app/src/app/globals.css` と共通 UI の Tailwind CSS ビルドは既定の色パレットを無効にし、用途別の `--color-*` のみを公開する。コンポーネントでは `bg-background`、`text-destructive` などの用途別クラスを使用し、固定用途の色も新しいトークンとして定義する。`pnpm lint:colors` はパレット色と任意の色指定の再混入を検出し、通常の `pnpm lint` に含まれる。
 
+iOS のコンテンツ色は `ios/SPrivate/Assets.xcassets` の動的 Color Set で定義し、通常のライト・ダーク値を Web の `background`、`foreground`、`muted`、`muted-foreground`、`primary`、`destructive`、`success` と一致させる。各 Color Set にはコントラスト強調時の値も設定する。`AppColors` を SwiftUI 側の用途別入口とし、背景・本文・補助文字・エラー表示へ適用する。タブバー、ツールバー、標準ボタン、共有拡張のシステムシートは iOS の描画に任せ、アプリの primary 色を操作要素の tint に使う。通常値の一致は `pnpm lint:colors` で検証する。
+
 ### インポートルール
 
 **バレルインポート禁止**
@@ -405,18 +407,22 @@ export async function ArticlesStackLoader({
 ### ページでの使用
 
 ```typescript
-<Suspense fallback={<Loading />}>
-  <ErrorBoundary
-    errorCaller="ArticlesStack"
-    render={() => (
-      <ArticlesStackLoader
-        variant="exported"
-        loadMoreAction={loadMoreExportedArticles}
-      />
-    )}
-  />
-</Suspense>
+return renderContentListPage({
+  counter: {
+    errorCaller: "ArticlesCounter",
+    render: () => ArticlesCounterLoader({}),
+  },
+  stack: {
+    errorCaller: "ArticlesStack",
+    render: () => ArticlesStackLoader({
+      variant: "exported",
+      loadMoreAction: loadMoreExportedArticles,
+    }),
+  },
+});
 ```
+
+articles・notes・books・images の一覧ページは `renderContentListPage` で共通の Suspense と ErrorBoundary を構成する。viewer は `counter` と `stack` を渡し、dumper は `stack` のみを渡す。データ取得と Server Action は各ドメインの loader とページに残す。
 
 ### 責務の分離
 
@@ -510,7 +516,7 @@ export default function Error({ error, reset }: ErrorPageProps) {
 
 本コードベースは、同じdeployment環境では常に同じ値になる決定的なCSPを使用する。Proxyはbrowser responseだけへ`Content-Security-Policy`を付与し、上流requestへCSPや`x-nonce`を注入しない。認証失敗redirectにも同じCSPを付与する。
 
-Next.js/Vercelのstreamed responseやerror responseで生成されるparser-inserted framework scriptとの互換性のため、既存の`script-src-elem 'unsafe-inline'`は維持する。Productionのstyle elementは`self`と確認済みの個別hashだけを許可し、新しい違反には対象を検証してhashを追加する。PreviewのVercel Toolbarだけは環境別allowlistを使用する。DevelopmentのReact Scanはアプリへscriptを注入せず、`pnpm dev` からローカルCLIとして起動する。experimental SRIはinline Flight scriptや`next-themes`のinline scriptを保護しないため導入しない。
+Next.js/Vercelのstreamed responseやerror responseで生成されるparser-inserted framework scriptとの互換性のため、既存の`script-src-elem 'unsafe-inline'`は維持する。Productionのstyle elementは`self`と確認済みの個別hashだけを許可し、新しい違反には対象を検証してhashを追加する。PreviewのVercel Toolbarだけは環境別allowlistを使用する。DevelopmentのReact Scanは`instrumentation-client.ts`で初期化し、Productionでは起動しない。experimental SRIはinline Flight scriptや`next-themes`のinline scriptを保護しないため導入しない。
 
 `cacheComponents: true`と`partialPrefetching: true`により、ナビゲーション時は静的なApp Shellを即時commitし、認証、DB、`params`、`searchParams`に依存する部分をSuspenseのholeとして後からstreamする。静的locale JSONはlocaleをkeyにした`use cache`関数からShellへ読み込む。`headers()`、`cookies()`、tenantデータ、認証結果を共有Shellへ直接含めない。
 
@@ -719,6 +725,8 @@ function ArticleForm() {
 - JavaScriptが有効な場合は`useActionState`で楽観的UI更新を提供
 - JavaScriptが無効でもフォームは正常に送信され、ページがリロードされる
 - `disabled={isPending}`で二重送信を防止
+
+認証済み画面の新規作成フォームは例外として、送信直後にダイアログを閉じるため `GenericFormWrapper` の `onSubmit` から Server Action を呼ぶ。失敗時の再表示とファイル保持にはクライアント側の状態が必要であり、このフローは JavaScript を前提とする。
 
 ## Value Object Pattern with Zod Branding
 
@@ -1031,7 +1039,8 @@ export async function addArticleCore(formData: FormData, deps: AddArticleDeps) {
 | Props | 型 | 説明 |
 |-------|---|------|
 | `action` | `(formData: FormData) => Promise<T>` | Server Action |
-| `afterSubmit` | `(message: string) => void` | 送信後のコールバック（toast表示等） |
+| `afterSubmit` | `(response: ServerAction) => void` | 成功・失敗に応じたtoast表示 |
+| `onSubmit` | `(formData: FormData) => Promise<CreateOutcome>` | 複数画像などのカスタム送信処理 |
 | `saveLabel` | `string` | 保存ボタンのラベル |
 | `children` | `ReactNode` | フォームフィールド |
 
@@ -1054,7 +1063,7 @@ export function ArticleForm() {
   return (
     <GenericFormWrapper<ServerAction>
       action={addArticle}
-      afterSubmit={(msg) => toast.show(message(msg))}
+      afterSubmit={(response) => toast[response.success ? "success" : "error"](message(response.message))}
       saveLabel={label("save")}
     >
       <FormInput name="title" label={label("title")} required />
@@ -1067,70 +1076,7 @@ export function ArticleForm() {
 
 ### 内部実装の仕組み
 
-`GenericFormWrapper`はServer Action統合・ローディング状態・エラー時のフォーム値保存をまとめて提供する:
-
-```typescript
-// app/src/components/common/forms/generic-form-wrapper.tsx
-"use client";
-import { createContext, use, useActionState, useMemo, useState } from "react";
-
-// 子フィールドへフォーム値を共有するContext
-const FormValuesContext = createContext<Record<string, string>>({});
-
-export function GenericFormWrapper<
-  T extends { message: string; success: boolean },
->({
-  action,
-  children,
-  saveLabel,
-  submitLabel,
-  loadingLabel,
-  onSubmit,
-  preservedValues,
-  afterSubmit,
-}: GenericFormWrapperProps<T>) {
-  // エラー時のみセットされ、成功時にクリアされるサーバー応答のフォームデータ
-  const [serverFormData, setServerFormData] =
-    useState<Record<string, string> | null>(null);
-
-  // 値の優先順位: サーバー応答 → preservedValues → 空
-  const formValues = useMemo(
-    () => serverFormData ?? preservedValues ?? {},
-    [serverFormData, preservedValues],
-  );
-
-  const submitForm = async (_prev: T | null, formData: FormData) => {
-    if (onSubmit) {
-      await onSubmit(formData);
-      return null;
-    }
-    const response = await action(formData);
-    afterSubmit(response.message);
-    if (response.success) {
-      setServerFormData(null); // 成功時はクリア
-      return response;
-    }
-    // エラー時はformDataを保存して入力を復元できるようにする
-    if ("formData" in response && response.formData) {
-      setServerFormData(response.formData as Record<string, string>);
-    }
-    return response;
-  };
-
-  const [_, submitAction, isPending] = useActionState(submitForm, null);
-
-  return (
-    <FormValuesContext.Provider value={formValues}>
-      <form action={submitAction} className="space-y-4 px-2 py-4">
-        {isPending ? <Loading /> : children}
-        <Button className="w-full" disabled={isPending} type="submit">
-          {isPending && loadingLabel ? loadingLabel : (submitLabel ?? saveLabel)}
-        </Button>
-      </form>
-    </FormValuesContext.Provider>
-  );
-}
-```
+`GenericFormWrapper` は送信データを収集し、`ServerAction` の結果を `afterSubmit` に渡す。作成ダイアログ内では `CreateFlowContext` に処理を委譲する。共通ナビゲーションがダイアログの外で処理状態と `FormData` を保持するため、送信中にダイアログを閉じても結果を受け取り、失敗時に再表示できる。文字列は `FormValuesContext`、ファイルは `FormFilesContext` から復元する。画像の複数ファイル送信では `CreateOutcome.retryData` に失敗したファイルだけを入れる。
 
 ### useFormValues Hook
 
@@ -1147,13 +1093,13 @@ function MyFormField({ name }: { name: string }) {
 }
 ```
 
-`GenericFormWrapper`がエラー応答の`formData`を`FormValuesContext`へ流し込み、各フィールドは`defaultValue`として値を復元する。`formRef`やフォームの明示的なresetは使わず、ローディング中は`children`の代わりに`<LoadingIndicator />`を表示する。
+`GenericFormWrapper`が失敗時のフォーム値を`FormValuesContext`へ流し込み、各フィールドは`defaultValue`として値を復元する。ファイル入力は保持したファイル名を表示し、再送時に保持済みファイルを`FormData`へ追加する。
 
 ### Toast連携
 
 ```typescript
 // afterSubmit コールバックでの toast 表示
-afterSubmit={(msg) => toast.show(message(msg))}
+afterSubmit={(response) => toast[response.success ? "success" : "error"](message(response.message))}
 
 // message(msg) は i18n キーを解決
 // 例: msg = "inserted" → "追加しました"
@@ -1943,7 +1889,7 @@ Turborepo はローカルキャッシュのみを利用する。remote cache や
 
 ## iOSの共有受け渡しと認証境界
 
-iOSの閲覧はSwiftDataの所有者別ローカルコピーを正本とする。`/api/mobile/v1/manifest` は各ドメインのIDと更新日時、画像の全メタデータ、およびカテゴリを所有者スコープで返す。画像はmanifestだけでローカル一覧を更新し、他ドメインの差分詳細を取得した後にmanifestから消えた項目を削除する。本文と縮小画像は端末に保存し、縮小画像の取得はレコード同期の完了後に進める。原本は必要時に取得する。削除はオンラインでのみ行う。終了中のバックグラウンド同期は保証しない。
+iOSの閲覧はSwiftDataの所有者別ローカルコピーを正本とする。初回同期は`/api/mobile/v1/sync/head`で所有者の変更版を記録し、`/sync/snapshot`をIDのkeysetで全ドメインとカテゴリについてページ取得する。以後は`/sync/changes`で版以降の追加・更新・削除のみ取得し、端末へ適用したページのカーソルだけを保存する。変更履歴は各コンテンツとカテゴリのDB行トリガーが同一トランザクションで記録するため、Webと取り込みスクリプトの更新を含む。カテゴリ名はローカルカテゴリから表示時に解決する。一覧はSwiftDataから30件ずつ取得し、詳細はIDで1件取得する。縮小画像は同期後に少量ずつディスクへ保存し、原本は必要時に取得する。削除はオンラインでのみ行う。終了中のバックグラウンド同期は保証しない。旧`/manifest`は移行期間中のみ残す。
 
 モバイルAPIは `/api/mobile/v1` のNode.js Route Handlerで公開する。Auth0 API audience向けのRS256アクセストークンをJWKSで検証し、`providerId=auth0` と `accountId=sub` の既存Better Auth AccountからユーザーIDを取得する。ユーザーごとにtenant contextを設定してからデータアクセスする。Web用Server Actionと異なり、この認証済みネイティブAPIではRoute Handlerによるmutationを許可する。登録は所有者・操作ID・正規化入力ハッシュ・結果を永続化し、同一入力の再送へ同じリソースを返す。画像と書影は所有者検証済みの一時領域へ1 MiB単位で分割アップロードし、完了時だけ既存ユースケースへ渡す。契約は `docs/openapi/mobile-v1.yaml` を参照する。
 

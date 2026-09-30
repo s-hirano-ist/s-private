@@ -37,7 +37,7 @@ describe("Images API Route", () => {
 		} as unknown as Parameters<typeof GET>[0];
 		const params = Promise.resolve({
 			contentType: "thumbnail",
-			id: "image-123",
+			id: ["image-123"],
 		});
 
 		const response = await GET(request, { params });
@@ -53,7 +53,7 @@ describe("Images API Route", () => {
 
 		const params = Promise.resolve({
 			contentType: "thumbnail",
-			id: "image-123",
+			id: ["image-123"],
 		});
 
 		const response = await GET(authedRequest, { params });
@@ -69,7 +69,7 @@ describe("Images API Route", () => {
 		const mockStream = new Readable({ read() {} });
 		vi.mocked(getImagesFromStorage).mockResolvedValue(mockStream);
 
-		const params = Promise.resolve({ contentType: "full", id: "image-123" });
+		const params = Promise.resolve({ contentType: "full", id: ["image-123"] });
 
 		const response = await GET(authedRequest, { params });
 
@@ -86,7 +86,7 @@ describe("Images API Route", () => {
 
 		const params = Promise.resolve({
 			contentType: "thumbnail",
-			id: "image-123.webp",
+			id: ["image-123.webp"],
 		});
 
 		const response = await GET(authedRequest, { params });
@@ -95,13 +95,36 @@ describe("Images API Route", () => {
 		expect(response.headers.get("Content-Type")).toBe("image/webp");
 	});
 
+	test.each([
+		["thumbnail", true, "image/webp"],
+		["original", false, "image/png"],
+	] as const)(
+		"serves a nested sample path as %s",
+		async (contentType, isThumbnail, expectedContentType) => {
+			const mockStream = new Readable({ read() {} });
+			vi.mocked(getImagesFromStorage).mockResolvedValue(mockStream);
+			const params = Promise.resolve({
+				contentType,
+				id: ["sample", "dumper-image.png"],
+			});
+
+			const response = await GET(authedRequest, { params });
+
+			expect(getImagesFromStorage).toHaveBeenCalledWith(
+				"sample/dumper-image.png",
+				isThumbnail,
+			);
+			expect(response.headers.get("Content-Type")).toBe(expectedContentType);
+		},
+	);
+
 	test("should return correct Content-Type for png images", async () => {
 		const mockStream = new Readable({ read() {} });
 		vi.mocked(getImagesFromStorage).mockResolvedValue(mockStream);
 
 		const params = Promise.resolve({
 			contentType: "original",
-			id: "image-123.png",
+			id: ["image-123.png"],
 		});
 
 		const response = await GET(authedRequest, { params });

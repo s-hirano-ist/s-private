@@ -45,6 +45,7 @@ struct CreateView: View {
                                 Button(value.name) { category = value.name }
                             }
                         }
+                        .foregroundStyle(AppColors.primary)
                     }
                     TextField(String(localized: "引用"), text: $quote, axis: .vertical)
                 case .notes:
@@ -59,10 +60,13 @@ struct CreateView: View {
                     TextField(String(localized: "タグ（カンマ区切り）"), text: $tags)
                     imagePicker
                 }
-                if let errorMessage { Text(errorMessage).foregroundStyle(.red) }
+                if let errorMessage { Text(errorMessage).foregroundStyle(AppColors.destructive) }
                 Text(String(localized: "端末に保存してから同期します。通信が切れても同じ操作として再送されます。"))
-                    .font(.footnote).foregroundStyle(.secondary)
+                    .font(.footnote).foregroundStyle(AppColors.mutedForeground)
             }
+            .scrollContentBackground(.hidden)
+            .background(AppColors.background)
+            .foregroundStyle(AppColors.foreground)
             .navigationTitle(domain.title)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -104,7 +108,9 @@ struct CreateView: View {
             PhotosPicker(selection: $photoSelection, matching: .images) {
                 Label(String(localized: "写真から選択"), systemImage: "photo.on.rectangle")
             }
+            .foregroundStyle(AppColors.primary)
             Button(String(localized: "ファイルから選択"), systemImage: "folder") { importingFile = true }
+                .foregroundStyle(AppColors.primary)
             if let imageData, let image = UIImage(data: imageData) {
                 Image(uiImage: image).resizable().scaledToFit().frame(maxHeight: 220)
                 Text(ByteCountFormatter.string(fromByteCount: Int64(imageData.count), countStyle: .file))
@@ -162,7 +168,7 @@ struct SearchView: View {
     var body: some View {
         NavigationStack {
             List {
-                if let errorMessage { Text(errorMessage).foregroundStyle(.red) }
+                if let errorMessage { Text(errorMessage).foregroundStyle(AppColors.destructive) }
                 ForEach(results) { result in
                     NavigationLink {
                         RecordDetailView(domain: result.type, id: result.id)
@@ -170,25 +176,20 @@ struct SearchView: View {
                         Label {
                             VStack(alignment: .leading) {
                                 Text(result.title)
-                                Text(result.snippet).font(.caption).foregroundStyle(.secondary).lineLimit(2)
+                                Text(result.snippet).font(.caption).foregroundStyle(AppColors.mutedForeground).lineLimit(2)
                             }
                         } icon: { Image(systemName: result.type.symbol) }
                     }
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(AppColors.background)
+            .foregroundStyle(AppColors.foreground)
             .navigationTitle(String(localized: "検索"))
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button(String(localized: "閉じる")) { dismiss() }
                         .accessibilityIdentifier("search-close-button")
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink {
-                        SettingsView()
-                    } label: {
-                        Label(String(localized: "設定"), systemImage: "gearshape")
-                    }
-                    .accessibilityIdentifier("settings-link")
                 }
             }
             .searchable(text: $query)

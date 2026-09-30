@@ -4,12 +4,17 @@
 
 import { env } from "@/env";
 import { init } from "@sentry/nextjs";
+import { scan } from "react-scan";
+
+if (process.env.NODE_ENV === "development") {
+	scan({ enabled: true });
+}
 
 init({
 	dsn: env.NEXT_PUBLIC_SENTRY_DSN,
 	environment: process.env.NODE_ENV,
 	integrations: [],
-	tracesSampleRate: 0.2,
+	tracesSampleRate: 1.0,
 	debug: false,
 });
 

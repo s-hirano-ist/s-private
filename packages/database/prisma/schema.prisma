@@ -13,6 +13,26 @@ enum Status {
   EXPORTED
 }
 
+// The counter is updated in the same transaction as each content mutation.
+// Its row lock gives each owner's change stream commit-order versions.
+model MobileSyncVersion {
+  userId  String @id @map("user_id") @db.String(128)
+  version BigInt @default(0)
+
+  @@map("mobile_sync_versions")
+}
+
+model MobileSyncChange {
+  userId   String @map("user_id") @db.String(128)
+  version  BigInt
+  domain   String @db.String(16)
+  recordId String @map("record_id") @db.String(36)
+  action   String @db.String(8)
+
+  @@id([userId, version])
+  @@map("mobile_sync_changes")
+}
+
 model Category {
   id String @id @db.String(36)
 

@@ -90,7 +90,7 @@ struct NativeMarkdownView: View {
                         Text(code).font(.system(.body, design: .monospaced)).textSelection(.enabled)
                             .padding(8).frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    .background(.quaternary, in: RoundedRectangle(cornerRadius: 8))
+                    .background(AppColors.muted, in: RoundedRectangle(cornerRadius: 8))
                 case let .table(rows):
                     ScrollView(.horizontal) {
                         Grid(alignment: .leading) {

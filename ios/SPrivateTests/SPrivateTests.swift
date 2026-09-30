@@ -216,6 +216,7 @@ struct OfflineQueueTests {
             for: CachedMobileRecord.self,
             CachedMobileCategory.self,
             PendingMobileOperation.self,
+            MobileSyncState.self,
             configurations: configuration
         )
         let authentication = AuthenticationModel()
@@ -237,6 +238,7 @@ struct OfflineQueueTests {
             for: CachedMobileRecord.self,
             CachedMobileCategory.self,
             PendingMobileOperation.self,
+            MobileSyncState.self,
             configurations: ModelConfiguration(isStoredInMemoryOnly: true)
         )
         let coordinator = SyncCoordinator(container: container, authentication: AuthenticationModel())
@@ -252,7 +254,7 @@ struct OfflineQueueTests {
     @Test("Local upserts retain other records and support offline search")
     func upsertsAndSearches() throws {
         let container = try ModelContainer(
-            for: CachedMobileRecord.self, CachedMobileCategory.self, PendingMobileOperation.self,
+            for: CachedMobileRecord.self, CachedMobileCategory.self, PendingMobileOperation.self, MobileSyncState.self,
             configurations: ModelConfiguration(isStoredInMemoryOnly: true)
         )
         let coordinator = SyncCoordinator(container: container, authentication: AuthenticationModel())
@@ -266,6 +268,48 @@ struct OfflineQueueTests {
         #expect(coordinator.localSearch("gamma").map(\.id) == ["one"])
         coordinator.removeCached(domain: .notes, id: "two")
         #expect(coordinator.cached(domain: .notes).map(\.id) == ["one"])
+    }
+
+    @Test("The local list fetches one page and filters before decoding")
+    func paginatesCachedRecords() throws {
+        let container = try ModelContainer(
+            for: CachedMobileRecord.self, CachedMobileCategory.self, PendingMobileOperation.self, MobileSyncState.self,
+            configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+        )
+        let coordinator = SyncCoordinator(container: container, authentication: AuthenticationModel())
+        let records = try (0..<65).map { index -> MobileRecord in
+            let status = index.isMultiple(of: 2) ? "UNEXPORTED" : "EXPORTED"
+            let json = "{\"id\":\"\(index)\",\"status\":\"\(status)\",\"createdAt\":\"2026-09-21T01:02:03Z\",\"updatedAt\":\"2026-09-21T01:02:03Z\",\"title\":\"Note \(index)\"}"
+            return try MobileAPICoding.decoder().decode(MobileRecord.self, from: Data(json.utf8))
+        }
+        try coordinator.cache(domain: .notes, records: records)
+        let first = coordinator.cachedPage(domain: .notes, status: nil, offset: 0)
+        let second = coordinator.cachedPage(domain: .notes, status: nil, offset: 30)
+        #expect(first.records.count == 30 && first.hasMore)
+        #expect(second.records.count == 30 && second.hasMore)
+        #expect(Set(first.records.map(\.id)).isDisjoint(with: Set(second.records.map(\.id))))
+        let filtered = coordinator.cachedPage(domain: .notes, status: .unexported, offset: 0)
+        #expect(filtered.records.count == 30 && filtered.hasMore)
+        #expect(filtered.records.allSatisfy { $0.status == .unexported })
+        #expect(coordinator.cachedRecord(domain: .notes, id: "64")?.id == "64")
+    }
+
+    @Test("A repeated change page is safe to apply and deletion removes the record")
+    func replaysChangePages() async throws {
+        let container = try ModelContainer(
+            for: CachedMobileRecord.self, CachedMobileCategory.self, PendingMobileOperation.self, MobileSyncState.self,
+            configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+        )
+        let authentication = AuthenticationModel()
+        let coordinator = SyncCoordinator(container: container, authentication: authentication)
+        let upsert = Data(#"[{"version":"1","domain":"notes","id":"one","action":"upsert","record":{"id":"one","status":"UNEXPORTED","createdAt":"2026-09-21T01:02:03Z","updatedAt":"2026-09-21T01:02:03Z","title":"Offline"}}]"#.utf8)
+        let changes = try MobileAPICoding.decoder().decode([MobileSyncChange].self, from: upsert)
+        try await coordinator.applyChanges(changes, owner: authentication.ownerKey)
+        try await coordinator.applyChanges(changes, owner: authentication.ownerKey)
+        #expect(coordinator.cachedPage(domain: .notes, status: nil, offset: 0).records.map(\.id) == ["one"])
+        let deleted = Data(#"[{"version":"2","domain":"notes","id":"one","action":"delete"}]"#.utf8)
+        try await coordinator.applyChanges(MobileAPICoding.decoder().decode([MobileSyncChange].self, from: deleted), owner: authentication.ownerKey)
+        #expect(coordinator.cachedRecord(domain: .notes, id: "one") == nil)
     }
 }
 

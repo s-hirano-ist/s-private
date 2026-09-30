@@ -18,6 +18,14 @@ type Note = {
 
 const OUTPUT_DIR = "markdown/note/";
 
+async function exportData(data: Note[]) {
+	for (const item of data) {
+		const filePath = `${OUTPUT_DIR}${item.title}.md`;
+		await mkdir(dirname(filePath), { recursive: true });
+		await writeFile(filePath, `# ${item.title}\n\n${item.markdown}\n`);
+	}
+}
+
 async function main() {
 	const env = {
 		DATABASE_URL: process.env.DATABASE_URL,
@@ -41,14 +49,6 @@ async function main() {
 
 	const userId: UserId = makeUserId(env.USERNAME_TO_EXPORT ?? "");
 	const UNEXPORTED: Status = makeUnexportedStatus();
-
-	async function exportData(data: Note[]) {
-		for (const item of data) {
-			const filePath = `${OUTPUT_DIR}${item.title}.md`;
-			await mkdir(dirname(filePath), { recursive: true });
-			await writeFile(filePath, `# ${item.title}\n\n${item.markdown}\n`);
-		}
-	}
 
 	async function fetchNotes() {
 		const notes = await prisma.note.findMany({

@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.23.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.22.0...@s-hirano-ist/s-database-v1.23.0) (2026-09-29)
+
+
+### Features
+
+* **mobile:** add owner-scoped delta sync and paged offline views ([243082e](https://github.com/s-hirano-ist/s-private/commit/243082e81c4fea4f89888b447c109be1209c6fe2))
+
+
+### Bug Fixes
+
+* avoid image sync timeout on iOS ([88e193f](https://github.com/s-hirano-ist/s-private/commit/88e193f55f199a502efab5d26a75f36919982e48))
+* **database:** create mobile sync triggers after migrations ([bfea2f4](https://github.com/s-hirano-ist/s-private/commit/bfea2f457d8ad6da73e25fc802ae3e56156c39a1))
+* iOSの画像同期タイムアウトを解消 ([c63bac3](https://github.com/s-hirano-ist/s-private/commit/c63bac38ee189778e8ef0d2c8b9676c0e9b96e62))
+* seed data to use isbn ([250b9c3](https://github.com/s-hirano-ist/s-private/commit/250b9c34efaa500bf17057b12cad4d6156f2d95f))
+
 ## [1.22.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.21.4...@s-hirano-ist/s-database-v1.22.0) (2026-09-24)
 
 

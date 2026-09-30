@@ -5,7 +5,8 @@ struct DomainListView: View {
     @EnvironmentObject private var authentication: AuthenticationModel
     @EnvironmentObject private var sync: SyncCoordinator
     @State private var records: [MobileRecord] = []
-    @State private var status: MobileContentStatus?
+    @State private var hasMore = false
+    @State private var status: MobileContentStatus = .unexported
     @State private var errorMessage: String?
     @State private var showingCreate = false
     @State private var showingSearch = false
@@ -17,6 +18,7 @@ struct DomainListView: View {
             Group {
                 if isGrid {
                     ScrollView {
+                        syncProgress
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 3), count: domain == .images ? 3 : 2), spacing: domain == .images ? 3 : 16) {
                             ForEach(records) { record in
                                 NavigationLink(value: record.id) {
@@ -28,6 +30,8 @@ struct DomainListView: View {
                         .padding(.horizontal, domain == .images ? 3 : 12)
                         gridFooter
                     }
+                    .background(AppColors.background)
+                    .foregroundStyle(AppColors.foreground)
                     .accessibilityIdentifier("domain-grid-\(domain.rawValue)")
                 } else {
                     listContent
@@ -40,16 +44,23 @@ struct DomainListView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Menu {
-                        Button(String(localized: "すべて")) { status = nil }
-                        ForEach(MobileContentStatus.allCases, id: \.self) { value in
+                        ForEach([MobileContentStatus.unexported, .exported], id: \.self) { value in
                             Button(value.localizedTitle) { status = value }
                         }
-                    } label: { Label(status?.localizedTitle ?? String(localized: "すべて"), systemImage: "line.3.horizontal.decrease") }
+                    } label: { Label(status.localizedTitle, systemImage: "line.3.horizontal.decrease") }
+                    .accessibilityIdentifier("status-filter")
                 }
                 ToolbarItemGroup(placement: .topBarTrailing) {
+                    Button(String(localized: "登録"), systemImage: "plus") { showingCreate = true }
+                        .accessibilityIdentifier("create-button")
                     Button(String(localized: "検索"), systemImage: "magnifyingglass") { showingSearch = true }
                         .accessibilityIdentifier("search-button")
-                    Button(String(localized: "登録"), systemImage: "plus") { showingCreate = true }
+                    NavigationLink {
+                        SettingsView()
+                    } label: {
+                        Label(String(localized: "設定"), systemImage: "gearshape")
+                    }
+                    .accessibilityIdentifier("settings-link")
                 }
             }
             .sheet(isPresented: $showingSearch) {
@@ -60,7 +71,7 @@ struct DomainListView: View {
                     .environmentObject(authentication)
             }
             .refreshable { await sync.synchronize(force: true); loadLocal() }
-            .task(id: status) { loadLocal() }
+            .task(id: status) { loadLocal(reset: true) }
             .onChange(of: sync.dataRevision) { _, _ in loadLocal() }
             .onChange(of: sync.syncError) { _, _ in loadLocal() }
         }
@@ -68,8 +79,9 @@ struct DomainListView: View {
 
     private var listContent: some View {
         List {
+                syncProgress
                 if let errorMessage {
-                    Text(errorMessage).foregroundStyle(.red)
+                    Text(errorMessage).foregroundStyle(AppColors.destructive)
                         .accessibilityIdentifier("domain-error")
                 }
                 if records.isEmpty && errorMessage == nil {
@@ -80,7 +92,7 @@ struct DomainListView: View {
                         Label {
                             VStack(alignment: .leading) {
                                 Text(record.displayTitle).lineLimit(2)
-                                Text(record.status.localizedTitle).font(.caption).foregroundStyle(.secondary)
+                                Text(record.status.localizedTitle).font(.caption).foregroundStyle(AppColors.mutedForeground)
                             }
                         } icon: {
                             if domain == .images || domain == .books {
@@ -91,32 +103,62 @@ struct DomainListView: View {
                         }
                     }
                 }
+                if hasMore {
+                    Button(String(localized: "さらに読み込む")) { loadNextPage() }
+                        .foregroundStyle(AppColors.primary)
+                }
                 if let fetchedAt = sync.lastSyncAt {
                     Text(String(localized: "最終取得: \(fetchedAt.formatted(date: .abbreviated, time: .shortened))"))
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(AppColors.mutedForeground)
                 }
         }
+        .scrollContentBackground(.hidden)
+        .background(AppColors.background)
+        .foregroundStyle(AppColors.foreground)
         .accessibilityIdentifier("domain-list-\(domain.rawValue)")
     }
 
     private var gridFooter: some View {
         VStack {
-            if let errorMessage { Text(errorMessage).foregroundStyle(.red).accessibilityIdentifier("domain-error") }
+            if hasMore {
+                Button(String(localized: "さらに読み込む")) { loadNextPage() }
+                    .foregroundStyle(AppColors.primary)
+                    .padding()
+            }
+            if let errorMessage { Text(errorMessage).foregroundStyle(AppColors.destructive).accessibilityIdentifier("domain-error") }
             if records.isEmpty && errorMessage == nil {
                 ContentUnavailableView(String(localized: "項目がありません"), systemImage: domain.symbol)
             }
             if let fetchedAt = sync.lastSyncAt {
                 Text(String(localized: "最終取得: \(fetchedAt.formatted(date: .abbreviated, time: .shortened))"))
-                    .font(.caption).foregroundStyle(.secondary).padding()
+                    .font(.caption).foregroundStyle(AppColors.mutedForeground).padding()
             }
         }
         .frame(maxWidth: .infinity)
     }
 
-    private func loadLocal() {
-        records = sync.cached(domain: domain).filter { status == nil || $0.status == status }
+    @ViewBuilder
+    private var syncProgress: some View {
+        if sync.isRefreshing {
+            ProgressView()
+                .padding()
+                .accessibilityIdentifier("sync-progress")
+        }
+    }
+
+    private func loadLocal(reset: Bool = false) {
+        let count = reset ? 30 : max(records.count, 30)
+        let page = sync.cachedPage(domain: domain, status: status, offset: 0, limit: count)
+        records = page.records
+        hasMore = page.hasMore
         errorMessage = sync.syncError
+    }
+
+    private func loadNextPage() {
+        let page = sync.cachedPage(domain: domain, status: status, offset: records.count, limit: 30)
+        records.append(contentsOf: page.records)
+        hasMore = page.hasMore
     }
 }
 
@@ -130,7 +172,7 @@ private struct MediaGridCell: View {
                 MediaThumbnailView(domain: domain, id: record.id, hasImage: domain == .images || record.imagePath != nil, pixelSize: domain == .images ? 400 : 600)
                     .frame(width: geometry.size.width, height: geometry.size.height)
             }
-            .aspectRatio(domain == .images ? 1 : 2.0 / 3.0, contentMode: .fit)
+            .aspectRatio(1, contentMode: .fit)
             .clipped()
             if domain == .books {
                 Text(record.displayTitle).font(.caption).lineLimit(2)
@@ -158,9 +200,11 @@ struct MediaThumbnailView: View {
                 Image(uiImage: image).resizable().scaledToFill()
             } else {
                 Image(systemName: domain.symbol).resizable().scaledToFit().padding(12)
+                    .foregroundStyle(AppColors.mutedForeground)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(AppColors.muted)
         .clipped()
         .accessibilityHidden(true)
         .task(id: sync.dataRevision) {
@@ -207,39 +251,61 @@ struct RecordDetailView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                if loading { ProgressView() }
-                if let errorMessage { Text(errorMessage).foregroundStyle(.red) }
-                if let record {
-                    Text(record.displayTitle).font(.title2.bold())
-                    Text(record.status.localizedTitle).foregroundStyle(.secondary)
-                    switch domain {
-                    case .articles:
-                        if let categoryName = record.categoryName { Text(categoryName) }
-                        if let quote = record.quote, !quote.isEmpty { Text(quote) }
-                        if let urlString = record.url, let url = URL(string: urlString) {
-                            Link(String(localized: "Safariで開く"), destination: url)
+            if domain == .images {
+                if let errorMessage {
+                    Text(errorMessage).foregroundStyle(AppColors.destructive).padding()
+                } else if record != nil {
+                    AuthenticatedImageView(domain: .images, id: id)
+                        .frame(maxWidth: .infinity)
+                } else {
+                    ProgressView().frame(maxWidth: .infinity).padding()
+                }
+            } else {
+                VStack(alignment: .leading, spacing: 16) {
+                    if loading { ProgressView() }
+                    if let errorMessage { Text(errorMessage).foregroundStyle(AppColors.destructive) }
+                    if let record {
+                        Text(record.displayTitle).font(.title2.bold())
+                        Text(record.status.localizedTitle).foregroundStyle(AppColors.mutedForeground)
+                        switch domain {
+                        case .articles:
+                            if let categoryName = record.categoryName { Text(categoryName) }
+                            if let quote = record.quote, !quote.isEmpty { Text(quote) }
+                            if let urlString = record.url, let url = URL(string: urlString) {
+                                Link(String(localized: "Safariで開く"), destination: url)
+                            }
+                        case .notes:
+                            NativeMarkdownView(source: record.markdown ?? "")
+                        case .images:
+                            EmptyView()
+                        case .books:
+                            AuthenticatedImageView(domain: .books, id: id)
+                            if let isbn = record.isbn { LabeledContent("ISBN", value: isbn) }
+                            if let rating = record.rating { LabeledContent(String(localized: "評価"), value: String(rating)) }
+                            if let tags = record.tags { Text(tags.joined(separator: ", ")) }
+                            NativeMarkdownView(source: record.markdown ?? "")
                         }
-                    case .notes:
-                        NativeMarkdownView(source: record.markdown ?? "")
-                    case .images:
-                        AuthenticatedImageView(domain: .images, id: id)
-                    case .books:
-                        AuthenticatedImageView(domain: .books, id: id)
-                        if let isbn = record.isbn { LabeledContent("ISBN", value: isbn) }
-                        if let rating = record.rating { LabeledContent(String(localized: "評価"), value: String(rating)) }
-                        if let tags = record.tags { Text(tags.joined(separator: ", ")) }
-                        NativeMarkdownView(source: record.markdown ?? "")
                     }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding()
         }
-        .navigationTitle(domain.title)
+        .background(AppColors.background)
+        .foregroundStyle(AppColors.foreground)
+        .navigationTitle(domain == .images ? "" : domain.title)
         .toolbar {
             if record?.status == .unexported {
-                Button(String(localized: "削除"), systemImage: "trash", role: .destructive) { showingDelete = true }
+                if domain == .images {
+                    Menu {
+                        Button(String(localized: "削除"), systemImage: "trash", role: .destructive) { showingDelete = true }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                            .accessibilityLabel(String(localized: "その他"))
+                    }
+                } else {
+                    Button(String(localized: "削除"), systemImage: "trash", role: .destructive) { showingDelete = true }
+                }
             }
         }
         .confirmationDialog(String(localized: "この項目を削除しますか？"), isPresented: $showingDelete) {
@@ -288,7 +354,7 @@ struct AuthenticatedImageView: View {
                         }
                     }
             } else if let errorMessage {
-                Text(errorMessage).foregroundStyle(.red)
+                Text(errorMessage).foregroundStyle(AppColors.destructive)
             } else {
                 ProgressView()
             }

@@ -11,7 +11,7 @@ struct SPrivateApp: App {
 
     init() {
         let authentication = AuthenticationModel()
-        let container = try! ModelContainer(for: CachedMobileRecord.self, CachedMobileCategory.self, PendingMobileOperation.self)
+        let container = try! ModelContainer(for: CachedMobileRecord.self, CachedMobileCategory.self, PendingMobileOperation.self, MobileSyncState.self)
         _authentication = StateObject(wrappedValue: authentication)
         _sync = StateObject(wrappedValue: SyncCoordinator(container: container, authentication: authentication))
         modelContainer = container
@@ -20,6 +20,7 @@ struct SPrivateApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .tint(AppColors.primary)
                 .environmentObject(authentication)
                 .environmentObject(sharedInbox)
                 .environmentObject(sync)

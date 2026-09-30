@@ -51,6 +51,45 @@ async function withRetry<T>(fn: () => Promise<T>, retries = 3): Promise<T> {
 	throw new Error("unreachable");
 }
 
+async function exportData(data: Book[]) {
+	let skippedCount = 0;
+	let exportedCount = 0;
+
+	await mkdir(OUTPUT_DIR, { recursive: true });
+
+	for (const item of data) {
+		const filePath = `${OUTPUT_DIR}${item.isbn}.md`;
+
+		// ファイルが既に存在する場合はスキップ
+		try {
+			await access(filePath);
+			skippedCount++;
+			continue;
+		} catch {
+			// ファイルが存在しない場合は書き出し
+		}
+
+		const frontmatter = dumpFrontmatter({
+			heading: item.isbn,
+			title: item.title,
+			draft: false,
+			rating: item.rating,
+			tags: item.tags,
+			googleSubtitle: item.googleSubTitle,
+			googleAuthors: item.googleAuthors,
+			googleDescription: item.googleDescription,
+			googleImgSrc: item.googleImgSrc,
+			googleHref: item.googleHref,
+		});
+		await writeFile(filePath, `---\n${frontmatter}---\n\n# ${item.title}\n`);
+		exportedCount++;
+	}
+
+	console.log(
+		`💾 Markdown: ${exportedCount} 件書き出し, ${skippedCount} 件スキップ`,
+	);
+}
+
 async function main() {
 	const env = {
 		DATABASE_URL: process.env.DATABASE_URL,
@@ -86,45 +125,6 @@ async function main() {
 
 	const userId: UserId = makeUserId(env.USERNAME_TO_EXPORT ?? "");
 	const UNEXPORTED: Status = makeUnexportedStatus();
-
-	async function exportData(data: Book[]) {
-		let skippedCount = 0;
-		let exportedCount = 0;
-
-		await mkdir(OUTPUT_DIR, { recursive: true });
-
-		for (const item of data) {
-			const filePath = `${OUTPUT_DIR}${item.isbn}.md`;
-
-			// ファイルが既に存在する場合はスキップ
-			try {
-				await access(filePath);
-				skippedCount++;
-				continue;
-			} catch {
-				// ファイルが存在しない場合は書き出し
-			}
-
-			const frontmatter = dumpFrontmatter({
-				heading: item.isbn,
-				title: item.title,
-				draft: false,
-				rating: item.rating,
-				tags: item.tags,
-				googleSubtitle: item.googleSubTitle,
-				googleAuthors: item.googleAuthors,
-				googleDescription: item.googleDescription,
-				googleImgSrc: item.googleImgSrc,
-				googleHref: item.googleHref,
-			});
-			await writeFile(filePath, `---\n${frontmatter}---\n\n# ${item.title}\n`);
-			exportedCount++;
-		}
-
-		console.log(
-			`💾 Markdown: ${exportedCount} 件書き出し, ${skippedCount} 件スキップ`,
-		);
-	}
 
 	async function downloadBookImages(books: Book[]) {
 		const outputDir = path.join(process.cwd(), "image/book");
