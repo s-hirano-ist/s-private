@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "@/app/globals.css";
+import { PAGE_NAME } from "@/common/constants";
 import { IntlClientProvider } from "@/infrastructures/i18n/client-provider";
 import { loadMessages } from "@/infrastructures/i18n/request";
 import { routing } from "@/infrastructures/i18n/routing-config";
@@ -16,8 +17,8 @@ export const instant = false;
 
 export const metadata: Metadata = {
 	title: {
-		default: "s-private",
-		template: "%s | s-private",
+		default: PAGE_NAME,
+		template: `%s | ${PAGE_NAME}`,
 	},
 	description: "Dumper and Viewer of s-hirano-ist's memories.",
 	robots: {

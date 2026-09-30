@@ -14,7 +14,7 @@ import { ImageFormLoader } from "@/loaders/images/image-form-loader";
 import { NoteFormLoader } from "@/loaders/notes/note-form-loader";
 
 export const metadata: Metadata = {
-	title: PAGE_NAME,
+	title: { absolute: PAGE_NAME },
 	description: "Knowledge dumper and viewer.",
 };
 

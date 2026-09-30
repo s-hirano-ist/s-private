@@ -5,7 +5,7 @@
  */
 
 /** Application name used in metadata and titles */
-export const PAGE_NAME = "s-private";
+export const PAGE_NAME = "Memdex";
 
 /** Default page size for pagination across all domains */
 export const PAGE_SIZE = 24;

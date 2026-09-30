@@ -16,7 +16,7 @@ export const IconSizes: Story = {
 			{[180, 48, 32].map((size) => (
 				<figure className="flex flex-col items-center gap-2" key={size}>
 					<Image
-						alt={`SPrivate app icon at ${size} pixels`}
+						alt={`Memdex app icon at ${size} pixels`}
 						height={size}
 						src="/icons/icon-512.png"
 						width={size}

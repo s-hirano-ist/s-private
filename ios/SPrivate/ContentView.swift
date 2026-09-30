@@ -22,7 +22,7 @@ struct ContentView: View {
                     .scrollContentBackground(.hidden)
                     .background(AppColors.background)
                     .foregroundStyle(AppColors.foreground)
-                    .navigationTitle("SPrivate")
+                    .navigationTitle("Memdex")
                 }
             }
         }

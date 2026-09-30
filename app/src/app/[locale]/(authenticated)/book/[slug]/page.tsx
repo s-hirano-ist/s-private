@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { getBookByISBN } from "@/application-services/books/get-books";
 import { requireAuth } from "@/common/auth/session";
-import { PAGE_NAME } from "@/common/constants";
 import { ViewerBody } from "@/components/books/server/viewer-body";
 import { ErrorBoundary } from "@/components/common/layouts/error-boundary";
 import { LoadingIndicator as Loading } from "@s-hirano-ist/s-ui/loading-indicator";
@@ -13,7 +12,7 @@ export async function generateMetadata({
 	const { slug } = await params;
 
 	return {
-		title: `${slug} | ${PAGE_NAME}`,
+		title: slug,
 		description: `Private book review of ${slug}`,
 	};
 }
