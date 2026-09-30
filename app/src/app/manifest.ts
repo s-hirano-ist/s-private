@@ -1,9 +1,10 @@
 import type { MetadataRoute } from "next";
+import { PAGE_NAME } from "@/common/constants";
 
 export default function manifest(): MetadataRoute.Manifest {
 	return {
-		name: "s-private",
-		short_name: "s-private",
+		name: PAGE_NAME,
+		short_name: PAGE_NAME,
 		description: "Dumper and Viewer of s-hirano-ist's memories.",
 		lang: "ja",
 		start_url: "/",

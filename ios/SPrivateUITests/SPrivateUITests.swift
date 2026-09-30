@@ -15,7 +15,7 @@ final class SPrivateUITests: XCTestCase {
         if !unconfiguredMessage.waitForExistence(timeout: 1) {
             XCTAssertTrue(app.buttons["auth0-login-button"].waitForExistence(timeout: 5))
         }
-        XCTAssertTrue(app.navigationBars["SPrivate"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.navigationBars["Memdex"].waitForExistence(timeout: 5))
     }
 
     @MainActor
