@@ -18,7 +18,7 @@ struct DomainListView: View {
             Group {
                 if isGrid {
                     ScrollView {
-                        syncBanner
+                        syncProgress
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 3), count: domain == .images ? 3 : 2), spacing: domain == .images ? 3 : 16) {
                             ForEach(records) { record in
                                 NavigationLink(value: record.id) {
@@ -79,7 +79,7 @@ struct DomainListView: View {
 
     private var listContent: some View {
         List {
-                syncBanner
+                syncProgress
                 if let errorMessage {
                     Text(errorMessage).foregroundStyle(AppColors.destructive)
                         .accessibilityIdentifier("domain-error")
@@ -139,15 +139,11 @@ struct DomainListView: View {
     }
 
     @ViewBuilder
-    private var syncBanner: some View {
+    private var syncProgress: some View {
         if sync.isRefreshing {
-            HStack(spacing: 8) {
-                ProgressView()
-                Text(String(localized: "更新を確認中です。完了まで操作が遅くなる可能性があります。"))
-                    .font(.caption)
-            }
-            .padding()
-            .accessibilityIdentifier("sync-progress")
+            ProgressView()
+                .padding()
+                .accessibilityIdentifier("sync-progress")
         }
     }
 
