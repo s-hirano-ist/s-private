@@ -36,6 +36,10 @@ struct SPrivateApp: App {
                 Self.fixtureRecord(id: "note-short", title: "Short note"),
                 Self.fixtureRecord(id: "note-long", title: "長いノートのタイトルでも、文字と遷移アイコンが重ならず二行で表示される"),
             ])
+            try! coordinator.cache(domain: .books, records: [
+                Self.fixtureRecord(id: "book-short", title: "Short book"),
+                Self.fixtureRecord(id: "book-long", title: "A long book title that wraps across two lines"),
+            ])
         }
         #endif
     }
