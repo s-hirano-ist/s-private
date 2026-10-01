@@ -9,7 +9,7 @@ struct ContentView: View {
         Group {
             if authentication.status == .authenticated {
                 TabView {
-                    ForEach(MobileDomain.allCases) { domain in
+                    ForEach([MobileDomain.articles, .notes, .images, .books]) { domain in
                         DomainListView(domain: domain)
                             .tabItem { Label(domain.title, systemImage: domain.symbol) }
                     }

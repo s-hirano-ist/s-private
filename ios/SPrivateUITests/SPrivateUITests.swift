@@ -27,10 +27,20 @@ final class SPrivateUITests: XCTestCase {
         let tabBar = app.tabBars.firstMatch
         XCTAssertTrue(tabBar.waitForExistence(timeout: 5))
         XCTAssertEqual(tabBar.buttons.count, 4)
-        for (index, domain) in ["articles", "notes", "books", "images"].enumerated() {
-            tabBar.buttons.element(boundBy: index).tap()
-            let identifier = index < 2 ? "domain-list-\(domain)" : "domain-grid-\(domain)"
+        let domains = [
+            (id: "articles", japanese: "記事", english: "Articles"),
+            (id: "notes", japanese: "ノート", english: "Notes"),
+            (id: "images", japanese: "画像", english: "Images"),
+            (id: "books", japanese: "書籍", english: "Books"),
+        ]
+        for (index, domain) in domains.enumerated() {
+            let tab = tabBar.buttons.element(boundBy: index)
+            XCTAssertTrue(tab.label.contains(domain.japanese) || tab.label.contains(domain.english))
+            tab.tap()
+            let identifier = index < 2 ? "domain-list-\(domain.id)" : "domain-grid-\(domain.id)"
             XCTAssertTrue(app.descendants(matching: .any)[identifier].waitForExistence(timeout: 5))
+            XCTAssertFalse(app.navigationBars.firstMatch.staticTexts[domain.japanese].exists)
+            XCTAssertFalse(app.navigationBars.firstMatch.staticTexts[domain.english].exists)
             let createButton = app.buttons["create-button"]
             let searchButton = app.buttons["search-button"]
             let settingsLink = app.buttons["settings-link"]
@@ -67,9 +77,9 @@ final class SPrivateUITests: XCTestCase {
         tabs.element(boundBy: 1).tap()
         XCTAssertTrue(app.descendants(matching: .any)["domain-list-notes"].exists)
         tabs.element(boundBy: 2).tap()
-        XCTAssertTrue(app.descendants(matching: .any)["domain-grid-books"].exists)
-        tabs.element(boundBy: 3).tap()
         XCTAssertTrue(app.descendants(matching: .any)["domain-grid-images"].exists)
+        tabs.element(boundBy: 3).tap()
+        XCTAssertTrue(app.descendants(matching: .any)["domain-grid-books"].exists)
     }
 
     @MainActor

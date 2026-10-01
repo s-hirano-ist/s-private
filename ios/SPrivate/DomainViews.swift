@@ -37,7 +37,8 @@ struct DomainListView: View {
                     listContent
                 }
             }
-            .navigationTitle(domain.title)
+            .navigationTitle("")
+            .navigationBarTitleDisplayMode(.inline)
             .navigationDestination(for: String.self) { id in
                 RecordDetailView(domain: domain, id: id) { loadLocal() }
             }
