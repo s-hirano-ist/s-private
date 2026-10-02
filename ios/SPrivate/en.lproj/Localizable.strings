@@ -43,6 +43,9 @@
 "キャンセル" = "Cancel";
 "保存" = "Save";
 "同期" = "Sync";
+"ログインしてから再試行してください" = "Sign in, then try again.";
+"通信環境を確認し、下に引いて再試行してください" = "Check your connection, then pull down to try again.";
+"同期できませんでした。しばらくしてから下に引いて再試行してください" = "Could not sync. Wait a moment, then pull down to try again.";
 "同期管理" = "Sync status";
 "今すぐ同期" = "Sync now";
 "キャッシュを削除" = "Clear cache";

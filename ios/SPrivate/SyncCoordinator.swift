@@ -229,18 +229,37 @@ final class SyncCoordinator: ObservableObject {
         }
         if force || createdRecords || lastRefreshAttempt.map({ Date().timeIntervalSince($0) >= 300 }) != false {
             lastRefreshAttempt = Date()
+            syncError = nil
             do {
                 try await refreshRemote(using: client)
-                syncError = nil
                 lastSyncAt = Date()
                 thumbnailTask?.cancel()
                 let owner = authentication.ownerKey
                 thumbnailTask = Task { await warmThumbnails(using: client, owner: owner) }
             } catch {
-                syncError = error.localizedDescription
+                syncError = Self.syncErrorMessage(for: error, taskIsCancelled: Task.isCancelled)
                 lastRefreshAttempt = nil
             }
         }
+    }
+
+    static func syncErrorMessage(for error: Error, taskIsCancelled: Bool = false) -> String? {
+        let nsError = error as NSError
+        if taskIsCancelled || error is CancellationError ||
+            (nsError.domain == NSURLErrorDomain && nsError.code == URLError.cancelled.rawValue) {
+            return nil
+        }
+        if case MobileClientError.authenticationRequired = error {
+            return String(localized: "ログインしてから再試行してください")
+        }
+        if case let MobileClientError.http(status, _) = error, status == 401 {
+            return String(localized: "ログインしてから再試行してください")
+        }
+        if let urlError = error as? URLError,
+            [.notConnectedToInternet, .networkConnectionLost, .timedOut, .cannotConnectToHost, .cannotFindHost].contains(urlError.code) {
+            return String(localized: "通信環境を確認し、下に引いて再試行してください")
+        }
+        return String(localized: "同期できませんでした。しばらくしてから下に引いて再試行してください")
     }
 
     private func warmThumbnails(using client: MobileClient, owner: String) async {

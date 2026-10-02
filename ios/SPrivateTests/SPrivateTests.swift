@@ -22,6 +22,28 @@ struct ThumbnailStoreTests {
     }
 }
 
+@MainActor
+struct SyncErrorMessageTests {
+    @Test("Cancelled synchronization has no user-facing error")
+    func hidesCancellation() {
+        #expect(SyncCoordinator.syncErrorMessage(for: CancellationError()) == nil)
+        #expect(SyncCoordinator.syncErrorMessage(for: URLError(.cancelled)) == nil)
+        #expect(SyncCoordinator.syncErrorMessage(for: URLError(.timedOut), taskIsCancelled: true) == nil)
+    }
+
+    @Test("Authentication and connection failures explain how to retry")
+    func explainsFailures() {
+        let authentication = SyncCoordinator.syncErrorMessage(for: MobileClientError.authenticationRequired)
+        let connection = SyncCoordinator.syncErrorMessage(for: URLError(.notConnectedToInternet))
+        let other = SyncCoordinator.syncErrorMessage(for: MobileClientError.invalidResponse)
+        #expect(authentication != nil)
+        #expect(authentication == SyncCoordinator.syncErrorMessage(for: MobileClientError.http(401, nil)))
+        #expect(connection != nil && connection != URLError(.notConnectedToInternet).localizedDescription)
+        #expect(other != nil && other != MobileClientError.invalidResponse.localizedDescription)
+        #expect(authentication != connection && connection != other)
+    }
+}
+
 struct SharedInboxStoreTests {
     @Test("Shared items are saved atomically and imported once")
     func savesAndImportsOnce() throws {

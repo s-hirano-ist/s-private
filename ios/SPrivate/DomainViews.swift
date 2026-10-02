@@ -80,8 +80,6 @@ struct DomainListView: View {
 
     private var listContent: some View {
         List {
-            syncProgress
-                .listRowBackground(AppColors.background)
             if let errorMessage {
                 Text(errorMessage).foregroundStyle(AppColors.destructive)
                     .accessibilityIdentifier("domain-error")
