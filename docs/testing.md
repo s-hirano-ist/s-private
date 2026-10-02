@@ -258,3 +258,7 @@ Production buildではInstant testing APIを公開しない。Vercel Previewで�
 `.github/workflows/e2e.yaml` は PR と `main` への push でローカル用 Docker stack を起動し、migration、検索初期化、固定 seed の順に準備してから Playwright を実行する。外部 Auth0 やクラウド DB は使用しない。
 
 `e2e/main-flows.spec.ts` は articles、notes、books、images の Dumper 入力と、Viewer に seed 済みコンテンツが表示されることを検証する。ローカルで同じテストを実行する場合は、`pnpm dev` で stack とアプリを起動してローカルユーザーを作成した後、別ターミナルで `pnpm seed:e2e && pnpm test:e2e:main` を実行する。
+
+## iOS 実機での API 通信確認
+
+iOS 用 `/api/mobile/v1` の変更は、対応する API を Production にデプロイしてから実機で確認する。PR 作成時点で未デプロイなら、実機での API 通信確認は「未実施」と記録し、Production デプロイ後に実施する。実機では Production の API 接続先を設定し、ログイン、一覧取得、レコード作成、保留中の項目の同期を確認する。署名と実機での操作手順は [`ios/README.md`](../ios/README.md) を参照する。
