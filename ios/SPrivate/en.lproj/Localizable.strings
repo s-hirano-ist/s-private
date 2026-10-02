@@ -62,3 +62,7 @@
 "共有項目" = "Shared item";
 "共有画像" = "Shared image";
 "内容を修正" = "Edit item";
+"その他" = "More options";
+"保存データがありません" = "Saved data is unavailable";
+"App Groupを利用できません。署名設定を確認してください。" = "The App Group is unavailable. Check the signing settings.";
+"最終取得: %@" = "Last fetched: %@";

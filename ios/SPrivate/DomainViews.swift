@@ -122,7 +122,7 @@ struct DomainListView: View {
                     .listRowBackground(AppColors.background)
             }
             if let fetchedAt = sync.lastSyncAt {
-                Text(String(localized: "最終取得: \(fetchedAt.formatted(date: .abbreviated, time: .shortened))"))
+                Text(lastFetchedText(fetchedAt))
                     .font(.caption)
                     .foregroundStyle(AppColors.mutedForeground)
                     .listRowBackground(AppColors.background)
@@ -148,7 +148,7 @@ struct DomainListView: View {
                 ContentUnavailableView(String(localized: "項目がありません"), systemImage: domain.symbol)
             }
             if let fetchedAt = sync.lastSyncAt {
-                Text(String(localized: "最終取得: \(fetchedAt.formatted(date: .abbreviated, time: .shortened))"))
+                Text(lastFetchedText(fetchedAt))
                     .font(.caption).foregroundStyle(AppColors.mutedForeground).padding()
             }
         }
@@ -176,6 +176,14 @@ struct DomainListView: View {
         let page = sync.cachedPage(domain: domain, status: status, offset: records.count, limit: 30)
         records.append(contentsOf: page.records)
         hasMore = page.hasMore
+    }
+
+    private func lastFetchedText(_ date: Date) -> String {
+        String(
+            format: String(localized: "最終取得: %@"),
+            locale: .current,
+            date.formatted(date: .abbreviated, time: .shortened)
+        )
     }
 }
 
