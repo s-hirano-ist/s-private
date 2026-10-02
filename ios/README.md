@@ -128,6 +128,9 @@ production deployment, set `MOBILE_API_BASE_URL` to
 `https:/$()/private.s-hirano.com/api/mobile/v1`. The `s-hirano.com` host serves
 a separate site and returns an HTML 404 for mobile API routes.
 
+To verify API communication on a physical iPhone, deploy the corresponding
+`/api/mobile/v1` changes to Production before running the app against this URL.
+
 For the current bundle identifier and custom URL scheme, add this value to both
 **Allowed Callback URLs** and **Allowed Logout URLs** in the Native Application:
 
@@ -225,5 +228,9 @@ different input is rejected with `OPERATION_CONFLICT`.
 The repository owner confirmed on a physical iPhone that the Personal Team
 build installs, Auth0 login returns to the app, and shared items reach the
 main app through the Share Extension and App Group. This confirms the minimal
-device integration. The current offline/sync flow must still be smoke-tested on
-the owner's physical device after each Personal Team re-signing.
+device integration; it does not confirm that the app exchanges data with the
+mobile API. After the corresponding API is deployed to Production, run the
+signed app with the Production `MOBILE_API_BASE_URL` on the owner's physical
+iPhone. Confirm login, list retrieval, record creation, and synchronization of
+queued items, including Share Extension items. Repeat the offline/sync smoke
+test after each Personal Team re-signing.
