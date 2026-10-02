@@ -44,6 +44,8 @@ pnpm exec storybook tools test run
 
 Install dependencies with `pnpm install --frozen-lockfile` before running the command. Add checks that are specific to the change when necessary. For example, run `pnpm build` for application build or environment configuration changes, Prisma checks for database changes, and Playwright tests for E2E behavior.
 
+DB migrationを含むPRでは、Preview環境のDBにそのmigrationが適用されていないため、新しいスキーマを必要とする操作をPreviewで動作確認できない。`pnpm dev`でローカルDBにmigrationを適用し、影響する操作をローカルで確認する。PR本文にはローカルで確認した操作と結果を記載し、未確認の操作があればその旨も記載する。
+
 For tasks that change code, configuration, or documentation, verify the affected behavior and review the final diff. Fix failed checks and rerun them. Then commit and push the change, create a ready-for-review GitHub PR from Codex, and report its URL. Write the PR body concisely in Japanese, including checks performed and any remaining issues. Link an existing issue when the work addresses one. Investigation and planning tasks without changes do not require a PR. If an external approval or service outage prevents verification or PR creation, report completed checks and the blocker instead of retrying indefinitely.
 
 ### Long-running Codex tasks
