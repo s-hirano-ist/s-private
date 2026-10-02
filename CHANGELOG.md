@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.16.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.15.0...s-private-v3.16.0) (2026-10-02)
+
+
+### Features
+
+* add shared iOS and web app icons ([1a27ef9](https://github.com/s-hirano-ist/s-private/commit/1a27ef9382e2ea71587345fff90ccc7c99421592))
+* rename app display name to Memdex ([ea727e8](https://github.com/s-hirano-ist/s-private/commit/ea727e81f170806dd3102dcca9978740097b4b7e))
+
+
+### Bug Fixes
+
+* **ios:** align notes empty state and book grid ([013901d](https://github.com/s-hirano-ist/s-private/commit/013901db39e014a8769399312d8d7e709ed8670f))
+* **ios:** Articles・Notes 一覧の余白と区切り線を調整 ([35fd058](https://github.com/s-hirano-ist/s-private/commit/35fd058847937b2df548558a90fe427edc4521b3))
+* **ios:** display book covers as square thumbnails ([8dca2ab](https://github.com/s-hirano-ist/s-private/commit/8dca2ab92d99af584ca35dcf720df29536176103))
+* **ios:** refine article and note list spacing ([dd177a4](https://github.com/s-hirano-ist/s-private/commit/dd177a4e683a7c9676aece997de3c0bb3d159206))
+* **ios:** remove duplicate domain titles and align tab order ([c224a27](https://github.com/s-hirano-ist/s-private/commit/c224a27dde2a3363e98a57187cf249abd4ab6706))
+* **ios:** simplify list refresh and hide sync cancellation ([8d20f1d](https://github.com/s-hirano-ist/s-private/commit/8d20f1d9a32f2eeff364101fb7da4e71d77cd003))
+* **ios:** simplify sync progress indicator ([47c2caf](https://github.com/s-hirano-ist/s-private/commit/47c2caf9d1cabf3ba03adfe9ef0c9e1f49d5fd05))
+* **ios:** 一覧見出しの重複をなくしタブ順を Web に合わせる ([429d5bf](https://github.com/s-hirano-ist/s-private/commit/429d5bfc32f51b95382884a331a9120fe087538a))
+
+
+### Documentation
+
+* clarify production API prerequisite for iOS device tests ([526d70b](https://github.com/s-hirano-ist/s-private/commit/526d70b24cdac8923d3eb940f5e71e9f459eab51))
+* require local verification for preview migration changes ([d3f005a](https://github.com/s-hirano-ist/s-private/commit/d3f005a8e1e3ec5a6179f95b12143f56bad0193f))
+
 ## [3.15.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.14.0...s-private-v3.15.0) (2026-09-29)
 
 
