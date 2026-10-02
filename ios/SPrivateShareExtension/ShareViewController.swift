@@ -54,11 +54,11 @@ final class ShareViewController: SLComposeServiceViewController {
             } catch {
                 await MainActor.run {
                     let alert = UIAlertController(
-                        title: "保存できませんでした",
+                        title: String(localized: "保存できませんでした"),
                         message: error.localizedDescription,
                         preferredStyle: .alert
                     )
-                    alert.addAction(UIAlertAction(title: "閉じる", style: .default))
+                    alert.addAction(UIAlertAction(title: String(localized: "閉じる"), style: .default))
                     present(alert, animated: true)
                 }
             }
