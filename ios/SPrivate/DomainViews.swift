@@ -89,7 +89,11 @@ struct DomainListView: View {
             }
             if records.isEmpty && errorMessage == nil {
                 ContentUnavailableView(String(localized: "項目がありません"), systemImage: domain.symbol)
+                    .frame(maxWidth: .infinity)
+                    .listRowInsets(EdgeInsets())
                     .listRowBackground(AppColors.background)
+                    .alignmentGuide(.listRowSeparatorLeading) { $0[.leading] }
+                    .alignmentGuide(.listRowSeparatorTrailing) { $0[.trailing] }
             }
             ForEach(records) { record in
                 NavigationLink(value: record.id) {
@@ -188,7 +192,7 @@ private struct MediaGridCell: View {
             .aspectRatio(1, contentMode: .fit)
             .clipped()
             if domain == .books {
-                Text(record.displayTitle).font(.caption).lineLimit(2)
+                Text(record.displayTitle).font(.caption).lineLimit(2, reservesSpace: true)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
         }

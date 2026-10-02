@@ -130,4 +130,48 @@ final class SPrivateUITests: XCTestCase {
             app.navigationBars.buttons.firstMatch.tap()
         }
     }
+
+    @MainActor
+    func testArticleAndNoteEmptyRowsFillListWidth() throws {
+        let app = XCUIApplication()
+        app.launchArguments += ["-ui-testing-authenticated", "-ui-testing-list-fixtures"]
+        app.launch()
+
+        let tabs = app.tabBars.firstMatch.buttons
+        for (index, domain) in ["articles", "notes"].enumerated() {
+            tabs.element(boundBy: index).tap()
+            app.buttons["status-filter"].tap()
+            let exported = app.buttons["公開済み"].exists ? app.buttons["公開済み"] : app.buttons["Exported"]
+            exported.tap()
+            let list = app.descendants(matching: .any)["domain-list-\(domain)"]
+            let empty = list.cells.firstMatch
+            XCTAssertTrue(empty.waitForExistence(timeout: 5))
+            XCTAssertTrue(app.staticTexts["No items"].exists || app.staticTexts["項目がありません"].exists)
+            XCTAssertEqual(empty.frame.minX, list.frame.minX, accuracy: 1)
+            XCTAssertEqual(empty.frame.maxX, list.frame.maxX, accuracy: 1)
+            let screenshot = XCTAttachment(screenshot: app.screenshot())
+            screenshot.name = "\(domain)-empty"
+            screenshot.lifetime = .keepAlways
+            add(screenshot)
+        }
+    }
+
+    @MainActor
+    func testBookCoversAlignAcrossColumnsWithDifferentTitleLengths() throws {
+        let app = XCUIApplication()
+        app.launchArguments += ["-ui-testing-authenticated", "-ui-testing-list-fixtures"]
+        app.launch()
+
+        app.tabBars.firstMatch.buttons.element(boundBy: 3).tap()
+        let short = app.descendants(matching: .any)["media-cell-book-short"]
+        let long = app.descendants(matching: .any)["media-cell-book-long"]
+        XCTAssertTrue(short.waitForExistence(timeout: 5))
+        XCTAssertTrue(long.waitForExistence(timeout: 5))
+        XCTAssertEqual(short.frame.minY, long.frame.minY, accuracy: 1)
+        XCTAssertEqual(short.frame.height, long.frame.height, accuracy: 1)
+        let screenshot = XCTAttachment(screenshot: app.screenshot())
+        screenshot.name = "books-aligned-grid"
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+    }
 }
