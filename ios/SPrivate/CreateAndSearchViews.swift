@@ -36,7 +36,10 @@ struct CreateView: View {
     var body: some View {
         NavigationStack {
             Form {
-                if domain != .images { TextField(String(localized: "タイトル"), text: $title) }
+                if domain != .images {
+                    TextField(String(localized: "タイトル"), text: $title)
+                        .accessibilityIdentifier("create-title-field")
+                }
                 switch domain {
                 case .articles:
                     TextField("URL", text: $url).textInputAutocapitalization(.never).keyboardType(.URL)

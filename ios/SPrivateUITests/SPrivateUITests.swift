@@ -174,7 +174,7 @@ final class SPrivateUITests: XCTestCase {
 
         app.tabBars.buttons.element(boundBy: 1).tap()
         app.buttons["create-button"].tap()
-        let title = app.textFields["タイトル"]
+        let title = app.textFields["create-title-field"]
         XCTAssertTrue(title.waitForExistence(timeout: 5))
         title.tap()
         title.typeText("Saved offline")
