@@ -1884,9 +1884,9 @@ const result = await addArticleCore(formData, testDeps);
 
 ## Workspace task graph
 
-Workspace package 間の依存関係は各 `package.json` の `workspace:*` dependency を正本とし、task 間の依存関係と成果物はルートの `turbo.json` を正本とする。`build`、`dev`、`typecheck` に加え、Storybook や Pages など build 成果物を読むルート task も Turborepo 経由で実行し、consumer 側の script から依存 package の build を手動で呼び出さない。依存順を補うための `prebuild`、`predev`、`pretypecheck` などの lifecycle script も追加しない。公開 package は別 repository から単独利用されるため、配布対象の `dist` や generated code を package 自身の publish lifecycle で生成し、root task の事前実行に依存させない。
+Workspace package 間の依存関係は各 `package.json` の `workspace:*` dependency を正本とし、タスクの依存順と build 成果物は `pnpm-workspace.yaml` の `tasks` で定義する。`pnpm build` は `pnpm pipeline build --full` を実行し、全 workspace の build を依存順に実行してローカルキャッシュを利用する。`packages:build` と `typecheck` は pnpm の再帰実行を使う。開発起動や Storybook・Pages など成果物を読むルート task は、必要な package をビルドしてから実行する。公開 package は別 repository から単独利用されるため、配布対象の `dist` や generated code を package 自身の publish lifecycle で生成する。
 
-Turborepo はローカルキャッシュのみを利用する。remote cache や Vercel 連携は構成しない。
+pnpm pipeline は実験的機能で、キャッシュは全体ビルドにだけ利用する。個別の lint・生成コマンドは毎回実行する。
 
 ## iOSの共有受け渡しと認証境界
 
