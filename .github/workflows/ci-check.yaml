@@ -7,18 +7,14 @@ on:
         description: Check to run
         required: true
         type: string
-      pr_write:
-        description: Allow PR comments for reporting checks
-        required: false
-        default: false
-        type: boolean
 
 jobs:
   run:
     name: ${{ inputs.check }}
     runs-on: ubuntu-24.04
     permissions:
-      pull-requests: ${{ inputs.pr_write && 'write' || 'none' }}
+      # The caller caps this at none for checks that do not post PR comments.
+      pull-requests: write
     timeout-minutes: 10
     concurrency:
       group: ${{ github.workflow }}-${{ inputs.check }}-${{ github.ref }}

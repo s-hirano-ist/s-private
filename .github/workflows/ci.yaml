@@ -28,4 +28,3 @@ jobs:
     uses: ./.github/workflows/ci-check.yaml
     with:
       check: ${{ matrix.check }}
-      pr_write: true
