@@ -1,0 +1,140 @@
+name: CI check
+
+on:
+  workflow_call:
+    inputs:
+      check:
+        description: Check to run
+        required: true
+        type: string
+
+jobs:
+  run:
+    name: ${{ inputs.check }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    concurrency:
+      group: ${{ github.workflow }}-${{ inputs.check }}-${{ github.ref }}
+    steps:
+      - name: Checkout files
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+          submodules: true
+
+      - name: Guard against NODE_TLS_REJECT_UNAUTHORIZED
+        if: ${{ inputs.check == 'build' }}
+        run: |
+          if [ "${NODE_TLS_REJECT_UNAUTHORIZED:-}" = "0" ]; then
+            echo "::error::NODE_TLS_REJECT_UNAUTHORIZED=0 must never be set in CI"
+            exit 1
+          fi
+
+      - name: Verify .nvmrc satisfies package.json#engines.node
+        if: ${{ inputs.check == 'oxfmt' }}
+        run: |
+          node --input-type=module -e '
+            import packageJson from "./package.json" with { type: "json" };
+            import { readFile } from "node:fs/promises";
+            const version = (await readFile(".nvmrc", "utf8")).trim();
+            const range = packageJson.engines.node;
+            const minimum = range.match(/^>=(\d+)(?:\.(\d+))?(?:\.(\d+))?$/)?.slice(1).map((part) => Number(part ?? 0));
+            const current = version.split(".").slice(0, 3).map(Number);
+            const differenceIndex = minimum && current.findIndex((part, index) => part !== minimum[index]);
+            const satisfies = minimum && current.length === 3 && current.every(Number.isInteger) &&
+              (differenceIndex === -1 || current[differenceIndex] > minimum[differenceIndex]);
+            if (!satisfies) {
+              throw new Error(".nvmrc (" + version + ") does not satisfy engines.node (" + range + ")");
+            }
+          '
+
+      - uses: ./.github/actions/setup-pnpm
+
+      - name: Build application
+        if: ${{ inputs.check == 'build' }}
+        run: pnpm build
+        env: &build_env
+          LOCAL_DEV_MODE: "true"
+          DATABASE_URL: "postgresql://ci:ci@localhost:26257/s_private?sslmode=verify-full"
+          AUTH_SECRET: "ci-local-only-auth-secret"
+          MINIO_HOST: "localhost"
+          MINIO_PORT: "9000"
+          MINIO_BUCKET_NAME: "s-private"
+          MINIO_ACCESS_KEY: "local-access-key"
+          MINIO_SECRET_KEY: "local-secret-key"
+          MINIO_USE_SSL: "false"
+          QDRANT_URL: "http://localhost:6333"
+          QDRANT_COLLECTION_NAME: "knowledge_v1"
+          EMBEDDING_URL: "http://localhost:3001"
+
+      - name: Check formatting
+        if: ${{ inputs.check == 'oxfmt' }}
+        run: pnpm format:check
+
+      - name: Generate Next.js route types
+        if: ${{ inputs.check == 'lint' }}
+        run: pnpm --filter s-private-app typegen
+        env:
+          SKIP_ENV_VALIDATION: "true"
+
+      - name: Lint
+        if: ${{ inputs.check == 'lint' }}
+        run: pnpm lint
+        env:
+          SKIP_ENV_VALIDATION: "true"
+
+      - name: Check harness
+        if: ${{ inputs.check == 'supplemental-lint' }}
+        run: pnpm harness:check
+
+      - name: Install native lint tools
+        if: ${{ inputs.check == 'supplemental-lint' }}
+        uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14 # v4.2.3
+        with:
+          version: 2026.8.6
+          install_args: rumdl gitleaks
+
+      - name: Lint CSS, Markdown and secrets
+        if: ${{ inputs.check == 'supplemental-lint' }}
+        run: |
+          pnpm lint:css
+          pnpm lint:md
+          pnpm lint:secret
+
+      - name: Check unused code
+        if: ${{ inputs.check == 'knip' }}
+        run: pnpm knip
+
+      - name: Build packages for tests
+        if: ${{ inputs.check == 'test' }}
+        run: pnpm packages:build
+
+      - name: Install Playwright browsers
+        if: ${{ inputs.check == 'test' }}
+        run: pnpm exec playwright install
+
+      - name: Test
+        if: ${{ inputs.check == 'test' }}
+        run: pnpm test
+        env: *build_env
+
+      - name: Show coverage
+        if: ${{ always() && inputs.check == 'test' }}
+        uses: davelosert/vitest-coverage-report-action@3c50566c523e04813df28de8f7c48dd97d663f1c # v2
+        with:
+          json-summary-path: ./.vitest-coverage/coverage-summary.json
+          json-final-path: ./.vitest-coverage/coverage-final.json
+
+      - name: Build Storybook
+        if: ${{ inputs.check == 'storybook' }}
+        run: pnpm storybook:build
+        env:
+          SKIP_ENV_VALIDATION: "true"
+
+      - name: Build TypeDoc
+        if: ${{ inputs.check == 'docs' }}
+        run: pnpm docs:build
+
+      - name: Check schema locking
+        if: ${{ inputs.check == 'schema-locked' }}
+        run: pnpm check:schema-locked
