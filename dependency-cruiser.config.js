@@ -26,6 +26,24 @@ const COLLAPSE_PATTERN =
    Verified: 0 false positives on the current tree; fires on deliberate violations. */
 const boundaryRules = [
 	{
+		name: "boundary-appsvc-persistence-adapters",
+		severity: "error",
+		comment:
+			"application service は Prisma・MinIO と database package を直接参照しない",
+		from: { path: "^app/src/application-services/" },
+		to: { path: "^(app/src/(prisma|minio)\\.ts|packages/database/)" },
+	},
+	{
+		name: "boundary-mobile-push-composition",
+		severity: "error",
+		comment: "mobile / push の adapter は deps ファイルからのみ参照する",
+		from: {
+			path: "^app/src/application-services/(mobile|push-notifications)/",
+			pathNot: "/deps\\.ts$",
+		},
+		to: { path: "^app/src/infrastructures/(mobile|push-notifications)/" },
+	},
+	{
 		name: "boundary-core-shared-kernel",
 		severity: "error",
 		comment: "core/shared-kernel は自身のみ import 可",

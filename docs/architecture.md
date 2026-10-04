@@ -42,6 +42,7 @@
 - ドメイン操作とユースケースのオーケストレーション
 - フォームデータのパースとバリデーション処理
 - 各ドメインに専用のアプリケーションサービスを配置
+- mobile API と push 通知の永続化・一時ファイル保存は application port を通じて行う。`*.deps.ts` で infrastructure の実装を結び、ユースケースから Prisma・MinIO を直接呼ばない
 
 ### インフラストラクチャ層 (`app/src/infrastructures/`)
 - リポジトリ実装（Prisma ORM）

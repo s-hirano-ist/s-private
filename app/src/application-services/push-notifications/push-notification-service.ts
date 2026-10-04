@@ -1,6 +1,6 @@
 import "server-only";
+import { pushSubscriptionRepository } from "@/application-services/push-notifications/deps";
 import { env } from "@/env";
-import prisma from "@/prisma";
 import {
 	createWebPushService,
 	WebPushSendError,
@@ -38,7 +38,7 @@ function requireWebPushService(): WebPushService {
 export async function sendPushToAll(
 	payload: WebPushPayload,
 ): Promise<PushDeliverySummary> {
-	const subscriptions = await prisma.pushSubscription.findMany();
+	const subscriptions = await pushSubscriptionRepository.listAll();
 	if (subscriptions.length === 0) return { expired: 0, failed: 0, sent: 0 };
 
 	const service = requireWebPushService();
@@ -66,9 +66,7 @@ export async function sendPushToAll(
 	);
 
 	if (expiredIds.length > 0) {
-		await prisma.pushSubscription.deleteMany({
-			where: { id: { in: expiredIds } },
-		});
+		await pushSubscriptionRepository.deleteByIds(expiredIds);
 	}
 
 	return { expired: expiredIds.length, failed, sent };

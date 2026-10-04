@@ -1,6 +1,9 @@
 import "server-only";
 import { MobileApiError } from "@/application-services/mobile/auth";
-import prisma from "@/prisma";
+import {
+	defaultMobileDeps,
+	type MobileDeps,
+} from "@/application-services/mobile/deps";
 import { z } from "zod";
 
 export const syncDomainSchema = z.enum([
@@ -42,69 +45,25 @@ function decodeCursor(userId: string, cursor: string): bigint {
 	throw new MobileApiError("INVALID_SYNC_CURSOR", 422);
 }
 
-async function getSyncVersion(userId: string): Promise<bigint> {
-	const head = await prisma.mobileSyncVersion.findUnique({
-		where: { userId },
-		select: { version: true },
-	});
-	return head?.version ?? 0n;
-}
-
-export async function getSyncHead(userId: string): Promise<string> {
-	return encodeCursor(userId, await getSyncVersion(userId));
+export async function getSyncHead(
+	userId: string,
+	deps: Pick<MobileDeps, "sync"> = defaultMobileDeps,
+): Promise<string> {
+	return encodeCursor(userId, await deps.sync.getSyncVersion(userId));
 }
 
 /** Keyset pagination is stable when earlier rows are deleted during bootstrap. */
 export async function listSyncSnapshot(
 	userId: string,
 	query: z.infer<typeof snapshotQuerySchema>,
+	deps: Pick<MobileDeps, "sync"> = defaultMobileDeps,
 ) {
-	const where = { userId, id: { gt: query.after } };
-	const take = query.limit + 1;
-	let rows: { id: string }[];
-	switch (query.domain) {
-		case "articles":
-			rows = (
-				await prisma.article.findMany({
-					where,
-					include: { Category: { select: { name: true } } },
-					orderBy: { id: "asc" },
-					take,
-				})
-			).map(({ Category, ...record }) =>
-				Object.assign(record, { categoryName: Category.name }),
-			);
-			break;
-		case "notes":
-			rows = await prisma.note.findMany({
-				where,
-				orderBy: { id: "asc" },
-				take,
-			});
-			break;
-		case "books":
-			rows = await prisma.book.findMany({
-				where,
-				orderBy: { id: "asc" },
-				take,
-			});
-			break;
-		case "images":
-			rows = await prisma.image.findMany({
-				where,
-				orderBy: { id: "asc" },
-				take,
-			});
-			break;
-		case "categories":
-			rows = await prisma.category.findMany({
-				where,
-				select: { id: true, name: true },
-				orderBy: { id: "asc" },
-				take,
-			});
-			break;
-	}
+	const rows = await deps.sync.snapshot(
+		query.domain,
+		userId,
+		query.after,
+		query.limit + 1,
+	);
 	const hasMore = rows.length > query.limit;
 	const data = rows.slice(0, query.limit);
 	return { data, nextAfter: hasMore ? data.at(-1)?.id : null };
@@ -114,47 +73,14 @@ export async function listSyncSnapshot(
 export async function listSyncChanges(
 	userId: string,
 	query: z.infer<typeof changesQuerySchema>,
+	deps: Pick<MobileDeps, "sync"> = defaultMobileDeps,
 ) {
 	const cursor = decodeCursor(userId, query.cursor);
-	const head = await getSyncVersion(userId);
+	const head = await deps.sync.getSyncVersion(userId);
 	if (cursor > head) throw new MobileApiError("INVALID_SYNC_CURSOR", 422);
-	const events = await prisma.mobileSyncChange.findMany({
-		where: { userId, version: { gt: cursor } },
-		orderBy: { version: "asc" },
-		take: query.limit + 1,
-	});
+	const events = await deps.sync.changes(userId, cursor, query.limit + 1);
 	const page = events.slice(0, query.limit);
-	const ids = (domain: SyncDomain) =>
-		page
-			.filter((event) => event.domain === domain)
-			.map((event) => event.recordId);
-	const [articles, notes, books, images, categories] = await Promise.all([
-		prisma.article.findMany({
-			where: { userId, id: { in: ids("articles") } },
-			include: { Category: { select: { name: true } } },
-		}),
-		prisma.note.findMany({ where: { userId, id: { in: ids("notes") } } }),
-		prisma.book.findMany({ where: { userId, id: { in: ids("books") } } }),
-		prisma.image.findMany({ where: { userId, id: { in: ids("images") } } }),
-		prisma.category.findMany({
-			where: { userId, id: { in: ids("categories") } },
-			select: { id: true, name: true },
-		}),
-	]);
-	const byKey = new Map<string, unknown>();
-	for (const { Category, ...article } of articles)
-		byKey.set(`articles:${article.id}`, {
-			...article,
-			categoryName: Category.name,
-		});
-	for (const [domain, records] of [
-		["notes", notes],
-		["books", books],
-		["images", images],
-		["categories", categories],
-	] as const) {
-		for (const record of records) byKey.set(`${domain}:${record.id}`, record);
-	}
+	const byKey = await deps.sync.changeRecords(userId, page);
 	const data = page.map((event) => {
 		const record = byKey.get(`${event.domain}:${event.recordId}`);
 		const deleted = event.action === "delete" || !record;
