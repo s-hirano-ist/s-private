@@ -16,7 +16,7 @@ final class SharedInboxModel: ObservableObject {
             errorMessage = String(localized: "App Groupを利用できません。署名設定を確認してください。")
         } catch {
             items = []
-            errorMessage = error.localizedDescription
+            errorMessage = MobileOperationError.message(error)
         }
     }
 }

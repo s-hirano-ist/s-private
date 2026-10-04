@@ -1892,6 +1892,8 @@ Turborepo はローカルキャッシュのみを利用する。remote cache や
 
 iOSの閲覧はSwiftDataの所有者別ローカルコピーを正本とする。初回同期は`/api/mobile/v1/sync/head`で所有者の変更版を記録し、`/sync/snapshot`をIDのkeysetで全ドメインとカテゴリについてページ取得する。以後は`/sync/changes`で版以降の追加・更新・削除のみ取得し、端末へ適用したページのカーソルだけを保存する。変更履歴は各コンテンツとカテゴリのDB行トリガーが同一トランザクションで記録するため、Webと取り込みスクリプトの更新を含む。カテゴリ名はローカルカテゴリから表示時に解決する。一覧はSwiftDataから30件ずつ取得し、詳細はIDで1件取得する。縮小画像は同期後に少量ずつディスクへ保存し、原本は必要時に取得する。削除はオンラインでのみ行う。終了中のバックグラウンド同期は保証しない。旧`/manifest`は移行期間中のみ残す。
 
+iOSの同期要求は`SyncCoordinator`で単一のタスクにまとめる。手動の強制更新は進行中の同期が終わった後にも実行し、呼び出し元は完了を待てる。端末への登録が確定した後の通信は画面の表示期間に依存させない。タスクの取消はユーザー向けエラーや送信失敗として保存しない。一覧はローカルデータを表示しながら更新し、初回取得中・空・失敗の表示を重ねない。
+
 モバイルAPIは `/api/mobile/v1` のNode.js Route Handlerで公開する。Auth0 API audience向けのRS256アクセストークンをJWKSで検証し、`providerId=auth0` と `accountId=sub` の既存Better Auth AccountからユーザーIDを取得する。ユーザーごとにtenant contextを設定してからデータアクセスする。Web用Server Actionと異なり、この認証済みネイティブAPIではRoute Handlerによるmutationを許可する。登録は所有者・操作ID・正規化入力ハッシュ・結果を永続化し、同一入力の再送へ同じリソースを返す。画像と書影は所有者検証済みの一時領域へ1 MiB単位で分割アップロードし、完了時だけ既存ユースケースへ渡す。契約は `docs/openapi/mobile-v1.yaml` を参照する。
 
 iOS本体とShare Extensionは`group.ist.s-hirano.s-private`のApp Groupだけを共有する。Extensionは認証情報を保持せず、サーバー通信もしない。共有されたURL、テキスト、画像はschema version、operation ID、種別、本文または添付相対パス、作成日時を持つJSONとして、一時ディレクトリからoperation IDディレクトリへのrenameで原子的に確定する。本体は未処理ディレクトリを取り込み済み領域へ移動し、同じoperation IDの二重取り込みを防ぐ。

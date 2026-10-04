@@ -20,6 +20,8 @@ struct CreateView: View {
     @State private var photoSelection: PhotosPickerItem?
     @State private var importingFile = false
     @State private var saving = false
+    @State private var selectingPhoto = false
+    @State private var photoLoadTask: Task<Void, Never>?
     @State private var errorMessage: String?
 
     private var canSave: Bool {
@@ -71,10 +73,16 @@ struct CreateView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(String(localized: "キャンセル")) { dismiss() }
+                        .disabled(saving)
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(String(localized: "保存")) { Task { await save() } }
-                        .disabled(!canSave || saving)
+                    Button {
+                        save()
+                    } label: {
+                        if saving { ProgressView() } else { Text(String(localized: "保存")) }
+                    }
+                    .disabled(!canSave || saving || selectingPhoto)
+                    .accessibilityIdentifier("save-button")
                 }
             }
             .task {
@@ -83,12 +91,17 @@ struct CreateView: View {
                 }
             }
             .onChange(of: photoSelection) { _, value in
-                Task {
+                photoLoadTask?.cancel()
+                selectingPhoto = value != nil
+                photoLoadTask = Task {
+                    defer { if !Task.isCancelled { selectingPhoto = false } }
                     do {
                         guard let data = try await value?.loadTransferable(type: Data.self) else { return }
-                        imageData = try normalizedJPEG(data)
+                        let normalized = try normalizedJPEG(data)
+                        guard !Task.isCancelled else { return }
+                        imageData = normalized
                         errorMessage = nil
-                    } catch { errorMessage = error.localizedDescription }
+                    } catch { errorMessage = MobileOperationError.message(error, taskIsCancelled: Task.isCancelled) }
                 }
             }
             .fileImporter(isPresented: $importingFile, allowedContentTypes: [.image]) { result in
@@ -98,7 +111,7 @@ struct CreateView: View {
                     defer { if scoped { url.stopAccessingSecurityScopedResource() } }
                     imageData = try normalizedJPEG(Data(contentsOf: url))
                     errorMessage = nil
-                } catch { errorMessage = error.localizedDescription }
+                } catch { errorMessage = MobileOperationError.message(error) }
             }
         }
     }
@@ -109,8 +122,11 @@ struct CreateView: View {
                 Label(String(localized: "写真から選択"), systemImage: "photo.on.rectangle")
             }
             .foregroundStyle(AppColors.primary)
+            .disabled(saving || selectingPhoto)
             Button(String(localized: "ファイルから選択"), systemImage: "folder") { importingFile = true }
                 .foregroundStyle(AppColors.primary)
+                .disabled(saving || selectingPhoto)
+            if selectingPhoto { ProgressView(String(localized: "写真を読み込み中")) }
             if let imageData, let image = UIImage(data: imageData) {
                 Image(uiImage: image).resizable().scaledToFit().frame(maxHeight: 220)
                 Text(ByteCountFormatter.string(fromByteCount: Int64(imageData.count), countStyle: .file))
@@ -128,9 +144,15 @@ struct CreateView: View {
         return jpeg
     }
 
-    private func save() async {
+    private func save() {
+        guard canSave && !saving && !selectingPhoto else { return }
         saving = true
+        Task { await enqueueAndDismiss() }
+    }
+
+    private func enqueueAndDismiss() async {
         defer { saving = false }
+        await Task.yield()
         do {
             let operationID = UUID()
             let input = MobileCreate(
@@ -150,10 +172,10 @@ struct CreateView: View {
                 guard let imageData else { return }
                 try sync.enqueue(domain: domain, input: input, attachment: imageData)
             }
-            await sync.synchronize()
             dismiss()
+            Task { await sync.synchronize(force: true) }
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = MobileOperationError.message(error)
         }
     }
 }
@@ -193,7 +215,7 @@ struct SearchView: View {
                 }
             }
             .searchable(text: $query)
-            .onSubmit(of: .search) { Task { await search() } }
+            .onSubmit(of: .search) { search() }
             .overlay {
                 if results.isEmpty && errorMessage == nil {
                     ContentUnavailableView.search(text: query)
@@ -202,7 +224,7 @@ struct SearchView: View {
         }
     }
 
-    private func search() async {
+    private func search() {
         let submitted = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !submitted.isEmpty else { results = []; return }
         results = sync.localSearch(submitted)

@@ -151,7 +151,18 @@ struct MobileCreate: Codable {
 }
 
 @MainActor
-final class MobileClient {
+protocol MobileSyncClient {
+    func create(_ domain: MobileDomain, input: MobileCreate) async throws
+    func chunkedUpload(_ domain: MobileDomain, operationId: UUID, image: Data, fields: [String: String]) async throws
+    func syncHead() async throws -> String
+    func snapshot(_ domain: String, after: String) async throws -> MobileSnapshotPage<MobileRecord>
+    func categorySnapshot(after: String) async throws -> MobileSnapshotPage<MobileCategory>
+    func changes(cursor: String) async throws -> MobileSyncChanges
+    func media(_ domain: MobileDomain, id: String, variant: String) async throws -> Data
+}
+
+@MainActor
+final class MobileClient: MobileSyncClient {
     static let imageLimit = 10 * 1_048_576
     let authentication: AuthenticationModel
     let baseURL: URL?

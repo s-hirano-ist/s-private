@@ -105,9 +105,19 @@ struct NativeMarkdownView: View {
                         }
                     }
                 case let .image(label, url):
-                    AsyncImage(url: url) { image in
-                        image.resizable().scaledToFit().accessibilityLabel(label)
-                    } placeholder: { ProgressView() }
+                    AsyncImage(url: url) { phase in
+                        switch phase {
+                        case let .success(image):
+                            image.resizable().scaledToFit().accessibilityLabel(label)
+                        case .empty, .failure:
+                            Image(systemName: "photo")
+                                .frame(maxWidth: .infinity, minHeight: 80)
+                                .foregroundStyle(AppColors.mutedForeground)
+                                .accessibilityLabel(label)
+                        @unknown default:
+                            EmptyView()
+                        }
+                    }
                 }
             }
         }
