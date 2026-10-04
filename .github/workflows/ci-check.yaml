@@ -7,14 +7,18 @@ on:
         description: Check to run
         required: true
         type: string
+      reporting:
+        description: Whether this check needs permission to comment on a PR
+        required: false
+        default: false
+        type: boolean
 
 jobs:
-  run:
+  readonly:
+    if: ${{ !inputs.reporting }}
     name: ${{ inputs.check }}
     runs-on: ubuntu-24.04
-    permissions:
-      # The caller caps this at none for checks that do not post PR comments.
-      pull-requests: write
+    permissions: {}
     timeout-minutes: 10
     concurrency:
       group: ${{ github.workflow }}-${{ inputs.check }}-${{ github.ref }}
@@ -32,6 +36,73 @@ jobs:
             echo "::error::NODE_TLS_REJECT_UNAUTHORIZED=0 must never be set in CI"
             exit 1
           fi
+
+      - uses: ./.github/actions/setup-pnpm
+
+      - name: Build application
+        if: ${{ inputs.check == 'build' }}
+        run: pnpm build
+        env:
+          LOCAL_DEV_MODE: "true"
+          DATABASE_URL: "postgresql://ci:ci@localhost:26257/s_private?sslmode=verify-full"
+          AUTH_SECRET: "ci-local-only-auth-secret"
+          MINIO_HOST: "localhost"
+          MINIO_PORT: "9000"
+          MINIO_BUCKET_NAME: "s-private"
+          MINIO_ACCESS_KEY: "local-access-key"
+          MINIO_SECRET_KEY: "local-secret-key"
+          MINIO_USE_SSL: "false"
+          QDRANT_URL: "http://localhost:6333"
+          QDRANT_COLLECTION_NAME: "knowledge_v1"
+          EMBEDDING_URL: "http://localhost:3001"
+
+      - name: Check harness
+        if: ${{ inputs.check == 'supplemental-lint' }}
+        run: pnpm harness:check
+
+      - name: Install native lint tools
+        if: ${{ inputs.check == 'supplemental-lint' }}
+        uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14 # v4.2.3
+        with:
+          version: 2026.8.6
+          install_args: rumdl gitleaks
+
+      - name: Lint CSS, Markdown and secrets
+        if: ${{ inputs.check == 'supplemental-lint' }}
+        run: |
+          pnpm lint:css
+          pnpm lint:md
+          pnpm lint:secret
+
+      - name: Build Storybook
+        if: ${{ inputs.check == 'storybook' }}
+        run: pnpm storybook:build
+        env:
+          SKIP_ENV_VALIDATION: "true"
+
+      - name: Build TypeDoc
+        if: ${{ inputs.check == 'docs' }}
+        run: pnpm docs:build
+
+      - name: Check schema locking
+        if: ${{ inputs.check == 'schema-locked' }}
+        run: pnpm check:schema-locked
+
+  reporting:
+    if: ${{ inputs.reporting }}
+    name: ${{ inputs.check }}
+    runs-on: ubuntu-24.04
+    permissions:
+      pull-requests: write
+    timeout-minutes: 10
+    concurrency:
+      group: ${{ github.workflow }}-${{ inputs.check }}-${{ github.ref }}
+    steps:
+      - name: Checkout files
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+          submodules: true
 
       - name: Verify .nvmrc satisfies package.json#engines.node
         if: ${{ inputs.check == 'oxfmt' }}
@@ -53,23 +124,6 @@ jobs:
 
       - uses: ./.github/actions/setup-pnpm
 
-      - name: Build application
-        if: ${{ inputs.check == 'build' }}
-        run: pnpm build
-        env: &build_env
-          LOCAL_DEV_MODE: "true"
-          DATABASE_URL: "postgresql://ci:ci@localhost:26257/s_private?sslmode=verify-full"
-          AUTH_SECRET: "ci-local-only-auth-secret"
-          MINIO_HOST: "localhost"
-          MINIO_PORT: "9000"
-          MINIO_BUCKET_NAME: "s-private"
-          MINIO_ACCESS_KEY: "local-access-key"
-          MINIO_SECRET_KEY: "local-secret-key"
-          MINIO_USE_SSL: "false"
-          QDRANT_URL: "http://localhost:6333"
-          QDRANT_COLLECTION_NAME: "knowledge_v1"
-          EMBEDDING_URL: "http://localhost:3001"
-
       - name: Check formatting
         if: ${{ inputs.check == 'oxfmt' }}
         run: pnpm format:check
@@ -86,24 +140,6 @@ jobs:
         env:
           SKIP_ENV_VALIDATION: "true"
 
-      - name: Check harness
-        if: ${{ inputs.check == 'supplemental-lint' }}
-        run: pnpm harness:check
-
-      - name: Install native lint tools
-        if: ${{ inputs.check == 'supplemental-lint' }}
-        uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14 # v4.2.3
-        with:
-          version: 2026.8.6
-          install_args: rumdl gitleaks
-
-      - name: Lint CSS, Markdown and secrets
-        if: ${{ inputs.check == 'supplemental-lint' }}
-        run: |
-          pnpm lint:css
-          pnpm lint:md
-          pnpm lint:secret
-
       - name: Check unused code
         if: ${{ inputs.check == 'knip' }}
         run: pnpm knip
@@ -119,7 +155,19 @@ jobs:
       - name: Test
         if: ${{ inputs.check == 'test' }}
         run: pnpm test
-        env: *build_env
+        env:
+          LOCAL_DEV_MODE: "true"
+          DATABASE_URL: "postgresql://ci:ci@localhost:26257/s_private?sslmode=verify-full"
+          AUTH_SECRET: "ci-local-only-auth-secret"
+          MINIO_HOST: "localhost"
+          MINIO_PORT: "9000"
+          MINIO_BUCKET_NAME: "s-private"
+          MINIO_ACCESS_KEY: "local-access-key"
+          MINIO_SECRET_KEY: "local-secret-key"
+          MINIO_USE_SSL: "false"
+          QDRANT_URL: "http://localhost:6333"
+          QDRANT_COLLECTION_NAME: "knowledge_v1"
+          EMBEDDING_URL: "http://localhost:3001"
 
       - name: Show coverage
         if: ${{ always() && inputs.check == 'test' }}
@@ -127,17 +175,3 @@ jobs:
         with:
           json-summary-path: ./.vitest-coverage/coverage-summary.json
           json-final-path: ./.vitest-coverage/coverage-final.json
-
-      - name: Build Storybook
-        if: ${{ inputs.check == 'storybook' }}
-        run: pnpm storybook:build
-        env:
-          SKIP_ENV_VALIDATION: "true"
-
-      - name: Build TypeDoc
-        if: ${{ inputs.check == 'docs' }}
-        run: pnpm docs:build
-
-      - name: Check schema locking
-        if: ${{ inputs.check == 'schema-locked' }}
-        run: pnpm check:schema-locked
