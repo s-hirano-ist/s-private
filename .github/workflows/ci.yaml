@@ -25,7 +25,6 @@ jobs:
         check: [oxfmt, lint, knip, test]
     permissions:
       pull-requests: write
-    uses: ./.github/workflows/ci-check.yaml
+    uses: ./.github/workflows/ci-reporting-check.yaml
     with:
       check: ${{ matrix.check }}
-      reporting: true

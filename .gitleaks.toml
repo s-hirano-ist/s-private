@@ -11,6 +11,7 @@ keywords = ["DATABASE_URL", "DIRECT_URL"]
 paths = [
 	'''^app/vitest-setup\.tsx$''',
 	'''^\.github/workflows/ci-check\.yaml$''',
+	'''^\.github/workflows/ci-reporting-check\.yaml$''',
 ]
 
 [[rules]]
@@ -30,6 +31,7 @@ paths = [
 	'''^app/vitest-setup\.tsx$''',
 	'''^docs/vps-deployment\.md$''',
 	'''^\.github/workflows/ci-check\.yaml$''',
+	'''^\.github/workflows/ci-reporting-check\.yaml$''',
 ]
 
 [[allowlists]]
