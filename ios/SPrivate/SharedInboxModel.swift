@@ -13,7 +13,7 @@ final class SharedInboxModel: ObservableObject {
             errorMessage = nil
         } catch SharedInboxStoreError.appGroupUnavailable {
             items = []
-            errorMessage = "App Groupを利用できません。署名設定を確認してください。"
+            errorMessage = String(localized: "App Groupを利用できません。署名設定を確認してください。")
         } catch {
             items = []
             errorMessage = error.localizedDescription

@@ -6,6 +6,17 @@ final class SPrivateUITests: XCTestCase {
     }
 
     @MainActor
+    func testDomainTabsFollowSystemLanguage() throws {
+        for (language, expectedTab) in [("ja", "記事"), ("en", "Articles")] {
+            let app = XCUIApplication()
+            app.launchArguments += ["-ui-testing-authenticated", "-ui-testing-list-fixtures", "-AppleLanguages", "(\(language))"]
+            app.launch()
+            XCTAssertTrue(app.tabBars.buttons[expectedTab].waitForExistence(timeout: 5))
+            app.terminate()
+        }
+    }
+
+    @MainActor
     func testAuthenticationEntryIsVisible() throws {
         let app = XCUIApplication()
         app.launchArguments.append("-ui-testing-signed-out")
