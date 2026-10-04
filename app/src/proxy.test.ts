@@ -1,7 +1,7 @@
 import { getSessionCookie } from "better-auth/cookies";
 import { unstable_doesMiddlewareMatch } from "next/experimental/testing/server";
 import { NextRequest } from "next/server";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import proxy, { config } from "./proxy";
 
 const capturedRequests = vi.hoisted(() => [] as NextRequest[]);

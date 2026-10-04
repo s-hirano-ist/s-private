@@ -3,7 +3,7 @@ import { ImagesDomainService } from "@s-hirano-ist/s-core/images/services/images
 import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { makePath } from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
 import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 
 describe("ImagesDomainService", () => {
 	let imagesQueryRepository: IImagesQueryRepository;

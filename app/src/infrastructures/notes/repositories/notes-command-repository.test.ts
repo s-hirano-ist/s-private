@@ -10,7 +10,7 @@ import {
 	makeUnexportedStatus,
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import { notesCommandRepository } from "./notes-command-repository";
 
 describe("NotesCommandRepository", () => {

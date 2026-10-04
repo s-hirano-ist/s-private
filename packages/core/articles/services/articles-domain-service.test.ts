@@ -3,7 +3,7 @@ import { makeUrl } from "@s-hirano-ist/s-core/articles/entities/article-entity";
 import { ArticlesDomainService } from "@s-hirano-ist/s-core/articles/services/articles-domain-service";
 import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 
 describe("ArticlesDomainService", () => {
 	let articlesQueryRepository: IArticlesQueryRepository;

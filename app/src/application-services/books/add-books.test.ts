@@ -21,7 +21,7 @@ import {
 	makePath,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
 import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import { addBooks } from "./add-books";
 import { addBooksCore } from "./add-books.core";
 import { parseAddBooksFormData } from "./helpers/form-data-parser";

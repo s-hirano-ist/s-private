@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { render } from "@testing-library/react";
-import { describe, expect, test, vi } from "vitest";
+import { describe, expect, test, vi } from "vite-plus/test";
 import { ThemeProvider } from "./theme-provider";
 
 vi.mock("next-themes", () => ({

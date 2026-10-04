@@ -3,7 +3,7 @@ import {
 	makeFileSize,
 	makePath,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test } from "vite-plus/test";
 import { ZodError } from "zod";
 
 describe("file-entity", () => {

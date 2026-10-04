@@ -1,5 +1,12 @@
 import type { QdrantPayload } from "./config.js";
-import { beforeEach, describe, expect, type Mock, test, vi } from "vitest";
+import {
+	beforeEach,
+	describe,
+	expect,
+	type Mock,
+	test,
+	vi,
+} from "vite-plus/test";
 import { ingestChunks } from "./ingest.js";
 import { getExistingHashes, upsertPoints } from "./qdrant-client.js";
 

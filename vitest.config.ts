@@ -1,6 +1,6 @@
 import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
 import { playwright } from "@vitest/browser-playwright";
-import { defineConfig } from "vitest/config";
+import { defineConfig } from "vite-plus/test/config";
 
 /**
  * Vitest Workspace Configuration

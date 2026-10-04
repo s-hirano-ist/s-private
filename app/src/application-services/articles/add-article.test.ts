@@ -16,7 +16,7 @@ import {
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import { addArticle } from "./add-article";
 import { addArticleCore } from "./add-article.core";
 import { parseAddArticleFormData } from "./helpers/form-data-parser";

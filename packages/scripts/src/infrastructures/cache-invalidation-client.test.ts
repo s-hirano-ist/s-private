@@ -1,4 +1,4 @@
-import { describe, expect, test, vi } from "vitest";
+import { describe, expect, test, vi } from "vite-plus/test";
 import { invalidateContentCache } from "./cache-invalidation-client.js";
 
 describe("invalidateContentCache", () => {

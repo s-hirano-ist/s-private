@@ -1,6 +1,6 @@
 import type { LogContext } from "./logger.interface";
 import type { NotificationService } from "@s-hirano-ist/s-notification";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import { ServerLogger } from "./server-logger";
 
 const { captureException, captureMessage } = vi.hoisted(() => ({

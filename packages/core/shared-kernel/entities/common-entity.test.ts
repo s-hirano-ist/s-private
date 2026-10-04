@@ -3,7 +3,7 @@ import {
 	makeExportedAt,
 	makeUpdatedAt,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test } from "vite-plus/test";
 
 describe("common-entity", () => {
 	describe("makeCreatedAt", () => {

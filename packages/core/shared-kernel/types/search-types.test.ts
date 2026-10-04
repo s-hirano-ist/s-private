@@ -8,7 +8,7 @@ import {
 	type SearchResult,
 	searchQuerySchema,
 } from "@s-hirano-ist/s-core/shared-kernel/types/search-types";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test } from "vite-plus/test";
 import { ZodError } from "zod";
 
 const articleResult: ArticleSearchResult = {

@@ -3,12 +3,17 @@
 ## Commands
 
 - `pnpm check:agent` - Run the standard completion checks for AI-authored changes
-- `pnpm test` - Run all Vitest test projects (app, components, core, image-processing, notification, scripts, search, storybook)
+- `pnpm test` - Run Storybook browser tests with Vitest, then the remaining projects with Vite+ (`vp test`)
 - `pnpm storybook:ui:build` - Build the framework-agnostic React Vite Storybook
 - `pnpm storybook:ui:test` - Run every s-ui story interaction and a11y check in Chromium
 - `pnpm --filter @s-hirano-ist/s-ui test:consumer` - Build the published s-ui entries in a Vite React fixture
 - `pnpm test:watch` - Run Vitest in watch mode
 - `pnpm typecheck` - Run TypeScript type checking across all workspaces (`tsc --noEmit`)
+
+Vite+ 1.0 runs the Node and component suites. Storybook 10.6 still needs the
+standalone Vitest runner for its browser addon. The two coverage reports are
+merged into the existing CI coverage files. The test setups register jest-dom
+matchers on the active Vite+ `expect` instance.
 
 ## AI-assisted Storybook Workflow
 

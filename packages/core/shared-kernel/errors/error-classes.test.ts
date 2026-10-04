@@ -4,7 +4,7 @@ import {
 	InvalidFormatError,
 	UnexpectedError,
 } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test } from "vite-plus/test";
 
 describe("error-classes", () => {
 	describe("UnexpectedError", () => {

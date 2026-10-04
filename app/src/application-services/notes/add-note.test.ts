@@ -13,7 +13,7 @@ import {
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import { addNote } from "./add-note";
 import { addNoteCore } from "./add-note.core";
 import { parseAddNoteFormData } from "./helpers/form-data-parser";

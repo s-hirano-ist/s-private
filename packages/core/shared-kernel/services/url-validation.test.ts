@@ -1,5 +1,5 @@
 import { isValidHttpUrl } from "@s-hirano-ist/s-core/shared-kernel/services/url-validation";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test } from "vite-plus/test";
 
 describe("isValidHttpUrl", () => {
 	describe("valid HTTP/HTTPS URLs", () => {

@@ -2,7 +2,7 @@ import { sharpImageProcessor } from "@/infrastructures/images/services/sharp-ima
 import { minioStorageService } from "@/infrastructures/shared/storage/minio-storage-service";
 import prisma from "@/prisma";
 import { Status } from "@s-hirano-ist/s-database";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 
 vi.mock("@/infrastructures/shared/storage/minio-storage-service", () => ({
 	minioStorageService: { uploadImage: vi.fn(), deleteImage: vi.fn() },

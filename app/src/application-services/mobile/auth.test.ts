@@ -1,5 +1,12 @@
 import { generateKeyPairSync, sign } from "node:crypto";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import {
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	test,
+	vi,
+} from "vite-plus/test";
 
 const mockedEnv = vi.hoisted(() => ({
 	AUTH0_ISSUER_BASE_URL: "https://example.auth0.com/",

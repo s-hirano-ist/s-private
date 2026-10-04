@@ -1,6 +1,6 @@
 import { ArticleCreatedEvent } from "@s-hirano-ist/s-core/articles/events/article-created-event";
 import { ArticleDeletedEvent } from "@s-hirano-ist/s-core/articles/events/article-deleted-event";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test } from "vite-plus/test";
 
 describe("ArticleCreatedEvent", () => {
 	test("should have eventType 'article.created'", () => {

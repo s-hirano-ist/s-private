@@ -3,7 +3,7 @@ import {
 	UnexpectedError,
 } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import { createEntityWithErrorHandling } from "@s-hirano-ist/s-core/shared-kernel/services/entity-factory";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test } from "vite-plus/test";
 import { z } from "zod";
 
 describe("createEntityWithErrorHandling", () => {

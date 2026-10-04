@@ -1,5 +1,5 @@
 import type { NotificationConfig, NotificationContext } from "./types.js";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import { createPushoverService } from "./pushover.js";
 
 // Mock fetch

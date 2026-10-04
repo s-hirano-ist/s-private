@@ -2,7 +2,7 @@ import type { NextRequest } from "next/server";
 import { env } from "@/env";
 import { auth, isLocalDevAuthEnabled } from "@/infrastructures/auth/auth";
 import prisma from "@/prisma";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 
 vi.mock("@/application-services/local-development/seed-sample-data", () => ({
 	seedLocalDevelopmentSampleData: vi.fn(),

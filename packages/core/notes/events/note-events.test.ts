@@ -1,6 +1,6 @@
 import { NoteCreatedEvent } from "@s-hirano-ist/s-core/notes/events/note-created-event";
 import { NoteDeletedEvent } from "@s-hirano-ist/s-core/notes/events/note-deleted-event";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test } from "vite-plus/test";
 
 describe("NoteCreatedEvent", () => {
 	test("should have eventType 'note.created'", () => {

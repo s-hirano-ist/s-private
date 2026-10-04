@@ -1,6 +1,6 @@
 import { requireAuth } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import { getExportedNotes, getUnexportedNotes } from "./get-notes";
 import {
 	loadMoreExportedNotes,

@@ -4,7 +4,7 @@ import {
 	noteEntity,
 } from "@s-hirano-ist/s-core/notes/entities/note-entity";
 import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test } from "vite-plus/test";
 import { ZodError } from "zod";
 
 describe("noteEntity", () => {
