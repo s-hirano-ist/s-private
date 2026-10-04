@@ -8,8 +8,8 @@ DEVELOPER_DIR = "/Applications/Xcode.app/Contents/Developer"
 
 [tools]
 pnpm = "12.6.0"
-"npm:agent-browser" = "0.38.1"
-rumdl = "v0.2.77"
+"npm:agent-browser" = "0.38.2"
+rumdl = "v0.2.78"
 gitleaks = "8.30.1"
 "aqua:yonaskolb/XcodeGen" = { version = "2.46.0", os = ["macos"] }
 
