@@ -5,12 +5,13 @@ import {
 	domainSchema,
 } from "@/application-services/mobile/content";
 import {
+	defaultMobileDeps,
+	type MobileDeps,
+} from "@/application-services/mobile/deps";
+import {
 	type MobileCreateResult,
 	mobileInputHash,
 } from "@/application-services/mobile/operations";
-import { env } from "@/env";
-import { minioClient } from "@/minio";
-import prisma from "@/prisma";
 import { z } from "zod";
 
 export const MOBILE_CHUNK_SIZE = 1024 * 1024;
@@ -24,16 +25,20 @@ const startSchema = z.strictObject({
 	metadata: z.record(z.string(), z.string()).default({}),
 });
 
-function objectKey(uploadId: string, part: number): string {
-	return `mobile-uploads/${uploadId}/${part}`;
-}
-
-export async function startMobileUpload(userId: string, body: unknown) {
-	await cleanupExpiredMobileUploads();
+export async function startMobileUpload(
+	userId: string,
+	body: unknown,
+	deps: Pick<
+		MobileDeps,
+		"uploads" | "chunks" | "content" | "operations"
+	> = defaultMobileDeps,
+) {
+	await cleanupExpiredMobileUploads(new Date(), deps);
 	const input = startSchema.parse(body);
-	const existing = await prisma.mobileUpload.findFirst({
-		where: { userId, operationId: input.operationId },
-	});
+	const existing = await deps.uploads.findUploadByOperation(
+		userId,
+		input.operationId,
+	);
 	if (existing) {
 		if (
 			existing.domain !== input.domain ||
@@ -44,19 +49,24 @@ export async function startMobileUpload(userId: string, body: unknown) {
 			throw new MobileApiError("OPERATION_CONFLICT", 409);
 		return serializeUpload(existing);
 	}
-	const upload = await prisma.mobileUpload.create({
-		data: {
-			id: crypto.randomUUID(),
-			userId,
-			...input,
-			expiresAt: new Date(Date.now() + uploadTTL),
-		},
+	const upload = await deps.uploads.createUpload({
+		id: crypto.randomUUID(),
+		userId,
+		...input,
+		expiresAt: new Date(Date.now() + uploadTTL),
 	});
 	return serializeUpload(upload);
 }
 
-export async function getMobileUpload(userId: string, id: string) {
-	return serializeUpload(await ownedUpload(userId, id));
+export async function getMobileUpload(
+	userId: string,
+	id: string,
+	deps: Pick<
+		MobileDeps,
+		"uploads" | "chunks" | "content" | "operations"
+	> = defaultMobileDeps,
+) {
+	return serializeUpload(await ownedUpload(userId, id, deps));
 }
 
 export async function putMobileChunk(
@@ -64,8 +74,12 @@ export async function putMobileChunk(
 	id: string,
 	part: number,
 	bytes: Uint8Array,
+	deps: Pick<
+		MobileDeps,
+		"uploads" | "chunks" | "content" | "operations"
+	> = defaultMobileDeps,
 ) {
-	const upload = await ownedUpload(userId, id);
+	const upload = await ownedUpload(userId, id, deps);
 	const parts = Math.ceil(upload.fileSize / MOBILE_CHUNK_SIZE);
 	if (!Number.isInteger(part) || part < 0 || part >= parts)
 		throw new MobileApiError("VALIDATION_ERROR", 422);
@@ -75,20 +89,12 @@ export async function putMobileChunk(
 			: MOBILE_CHUNK_SIZE;
 	if (bytes.byteLength !== expected)
 		throw new MobileApiError("INVALID_CHUNK_SIZE", 422);
-	await minioClient.putObject(
-		env.MINIO_BUCKET_NAME,
-		objectKey(id, part),
-		Buffer.from(bytes),
-	);
+	await deps.chunks.put(id, part, bytes);
 	if (!upload.receivedParts.includes(part)) {
-		await prisma.mobileUpload.update({
-			where: { id },
-			data: {
-				receivedParts: [...upload.receivedParts, part].toSorted(
-					(a, b) => a - b,
-				),
-			},
-		});
+		await deps.uploads.updateUploadParts(
+			id,
+			[...upload.receivedParts, part].toSorted((a, b) => a - b),
+		);
 	}
 	return { accepted: true, part };
 }
@@ -96,24 +102,23 @@ export async function putMobileChunk(
 export async function completeMobileUpload(
 	userId: string,
 	id: string,
+	deps: Pick<
+		MobileDeps,
+		"uploads" | "chunks" | "content" | "operations"
+	> = defaultMobileDeps,
 ): Promise<MobileCreateResult> {
-	const upload = await ownedUpload(userId, id);
+	const upload = await ownedUpload(userId, id, deps);
 	const count = Math.ceil(upload.fileSize / MOBILE_CHUNK_SIZE);
 	if (
 		upload.receivedParts.length !== count ||
 		upload.receivedParts.some((part, index) => part !== index)
 	)
 		throw new MobileApiError("UPLOAD_INCOMPLETE", 409);
-	const buffers: Buffer[] = [];
+	const chunks: Buffer[] = [];
 	for (let part = 0; part < count; part += 1) {
-		const stream = await minioClient.getObject(
-			env.MINIO_BUCKET_NAME,
-			objectKey(id, part),
-		);
-		for await (const chunk of stream)
-			buffers.push(Buffer.from(chunk as Uint8Array));
+		chunks.push(await deps.chunks.get(id, part));
 	}
-	const bytes = Buffer.concat(buffers);
+	const bytes = Buffer.concat(chunks);
 	if (bytes.byteLength !== upload.fileSize)
 		throw new MobileApiError("UPLOAD_INCOMPLETE", 409);
 	const form = new FormData();
@@ -130,46 +135,50 @@ export async function completeMobileUpload(
 		domainSchema.parse(upload.domain),
 		userId,
 		form,
+		deps,
 	);
-	await cancelMobileUpload(userId, id);
+	await cancelMobileUpload(userId, id, deps);
 	return result;
 }
 
 export async function cancelMobileUpload(
 	userId: string,
 	id: string,
+	deps: Pick<
+		MobileDeps,
+		"uploads" | "chunks" | "content" | "operations"
+	> = defaultMobileDeps,
 ): Promise<void> {
-	const upload = await ownedUpload(userId, id);
+	const upload = await ownedUpload(userId, id, deps);
 	await Promise.allSettled(
-		upload.receivedParts.map((part) =>
-			minioClient.removeObject(env.MINIO_BUCKET_NAME, objectKey(id, part)),
-		),
+		upload.receivedParts.map((part) => deps.chunks.remove(id, part)),
 	);
-	await prisma.mobileUpload.delete({ where: { id } });
+	await deps.uploads.deleteUpload(id);
 }
 
 export async function cleanupExpiredMobileUploads(
 	now = new Date(),
+	deps: Pick<
+		MobileDeps,
+		"uploads" | "chunks" | "content" | "operations"
+	> = defaultMobileDeps,
 ): Promise<number> {
-	const uploads = await prisma.mobileUpload.findMany({
-		where: { expiresAt: { lt: now } },
-	});
+	const uploads = await deps.uploads.findExpiredUploads(now);
 	for (const upload of uploads) {
 		await Promise.allSettled(
-			upload.receivedParts.map((part) =>
-				minioClient.removeObject(
-					env.MINIO_BUCKET_NAME,
-					objectKey(upload.id, part),
-				),
-			),
+			upload.receivedParts.map((part) => deps.chunks.remove(upload.id, part)),
 		);
-		await prisma.mobileUpload.delete({ where: { id: upload.id } });
+		await deps.uploads.deleteUpload(upload.id);
 	}
 	return uploads.length;
 }
 
-async function ownedUpload(userId: string, id: string) {
-	const upload = await prisma.mobileUpload.findFirst({ where: { id, userId } });
+async function ownedUpload(
+	userId: string,
+	id: string,
+	deps: Pick<MobileDeps, "uploads" | "chunks">,
+) {
+	const upload = await deps.uploads.findUpload(userId, id);
 	if (!upload) throw new MobileApiError("NOT_FOUND", 404);
 	if (upload.expiresAt <= new Date())
 		throw new MobileApiError("UPLOAD_EXPIRED", 410);

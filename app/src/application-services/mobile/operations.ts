@@ -1,6 +1,9 @@
 import "server-only";
 import { MobileApiError } from "@/application-services/mobile/auth";
-import prisma from "@/prisma";
+import {
+	defaultMobileDeps,
+	type MobileDeps,
+} from "@/application-services/mobile/deps";
 import { createHash } from "node:crypto";
 
 export type MobileCreateResult = {
@@ -32,11 +35,10 @@ export async function runMobileOperation(
 	operationId: string,
 	input: unknown,
 	work: () => Promise<string>,
+	deps: Pick<MobileDeps, "operations"> = defaultMobileDeps,
 ): Promise<MobileCreateResult> {
 	const inputHash = mobileInputHash(input);
-	const existing = await prisma.mobileOperation.findUnique({
-		where: { id: operationId },
-	});
+	const existing = await deps.operations.findOperation(operationId);
 	if (existing) {
 		if (existing.userId !== userId) throw new MobileApiError("NOT_FOUND", 404);
 		if (existing.inputHash !== inputHash || existing.domain !== domain)
@@ -53,36 +55,29 @@ export async function runMobileOperation(
 	}
 
 	if (existing) {
-		await prisma.mobileOperation.update({
-			where: { id: operationId },
-			data: { status: "PENDING", errorCode: null },
-		});
+		await deps.operations.markOperationPending(operationId);
 	} else {
-		await prisma.mobileOperation.create({
-			data: { id: operationId, userId, domain, inputHash },
-		});
+		await deps.operations.createOperation(
+			operationId,
+			userId,
+			domain,
+			inputHash,
+		);
 	}
 
 	try {
 		const resourceId = await work();
-		await prisma.mobileOperation.update({
-			where: { id: operationId },
-			data: { status: "SUCCEEDED", resourceId },
-		});
+		await deps.operations.markOperationSucceeded(operationId, resourceId);
 		return {
 			accepted: true,
 			operationId,
 			resource: { id: resourceId, type: domain },
 		};
 	} catch (error) {
-		await prisma.mobileOperation.update({
-			where: { id: operationId },
-			data: {
-				status: "FAILED",
-				errorCode:
-					error instanceof MobileApiError ? error.code : "INTERNAL_ERROR",
-			},
-		});
+		await deps.operations.markOperationFailed(
+			operationId,
+			error instanceof MobileApiError ? error.code : "INTERNAL_ERROR",
+		);
 		throw error;
 	}
 }
