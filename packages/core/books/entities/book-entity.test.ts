@@ -12,7 +12,7 @@ import {
 	makeTags,
 } from "@s-hirano-ist/s-core/books/entities/book-entity";
 import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { describe, expect, test } from "vite-plus/test";
+import { describe, expect, test } from "vitest";
 import { ZodError } from "zod";
 
 describe("booksEntity", () => {

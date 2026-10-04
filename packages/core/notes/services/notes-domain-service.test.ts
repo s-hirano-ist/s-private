@@ -3,7 +3,7 @@ import { makeNoteTitle } from "@s-hirano-ist/s-core/notes/entities/note-entity";
 import { NotesDomainService } from "@s-hirano-ist/s-core/notes/services/notes-domain-service";
 import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
-import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 
 describe("NotesDomainService", () => {
 	let notesQueryRepository: INotesQueryRepository;

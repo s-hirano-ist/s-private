@@ -17,7 +17,7 @@ import {
 	UnexpectedError,
 } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import * as entityFactory from "@s-hirano-ist/s-core/shared-kernel/services/entity-factory";
-import { describe, expect, test, vi } from "vite-plus/test";
+import { describe, expect, test, vi } from "vitest";
 import { ZodError } from "zod";
 
 describe("articleEntity", () => {

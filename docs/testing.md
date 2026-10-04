@@ -10,6 +10,12 @@
 - `pnpm test:watch` - Run Vitest in watch mode
 - `pnpm typecheck` - Run TypeScript type checking across all workspaces (`tsc --noEmit`)
 
+The mutation-test CI job installs Vitest 4.1.11 in its disposable checkout
+before running Stryker 10. To reproduce its result locally, make the same
+temporary install in a separate checkout; the regular test toolchain uses
+Vite+ and Vitest 5. The core test files keep direct `vitest` imports so Stryker
+can find them.
+
 Vite+ 1.0 runs the Node and component suites. Storybook 10.6 still needs the
 standalone Vitest runner for its browser addon. The two coverage reports are
 merged into the existing CI coverage files. The test setups register jest-dom

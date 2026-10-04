@@ -1,7 +1,7 @@
 import type { IBatchCommandRepository } from "@s-hirano-ist/s-core/shared-kernel/repositories/batch-command-repository.interface";
 import { ImagesBatchDomainService } from "@s-hirano-ist/s-core/images/services/images-batch-domain-service";
 import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 
 describe("ImagesBatchDomainService", () => {
 	let batchCommandRepository: IBatchCommandRepository;

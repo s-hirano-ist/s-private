@@ -6,7 +6,7 @@ import {
 	makeId,
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 
 describe("CategoryService", () => {
 	let categoryQueryRepository: ICategoryQueryRepository;

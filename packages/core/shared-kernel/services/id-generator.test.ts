@@ -2,7 +2,7 @@ import {
 	idGenerator,
 	uuidv7,
 } from "@s-hirano-ist/s-core/shared-kernel/services/id-generator";
-import { describe, expect, test } from "vite-plus/test";
+import { describe, expect, test } from "vitest";
 
 describe("IdGenerator", () => {
 	test("should generate valid UUIDv7 using function", () => {
