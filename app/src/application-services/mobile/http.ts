@@ -1,5 +1,5 @@
 import { MobileApiError } from "@/application-services/mobile/auth";
-import { Prisma } from "@s-hirano-ist/s-database";
+import { defaultMobileDeps } from "@/application-services/mobile/deps";
 import { ZodError } from "zod";
 
 export function mobileJson(data: unknown, status = 200): Response {
@@ -16,10 +16,7 @@ export function mobileErrorResponse(error: unknown): Response {
 	if (error instanceof ZodError || error instanceof SyntaxError) {
 		return mobileJson({ error: { code: "VALIDATION_ERROR" } }, 422);
 	}
-	if (
-		error instanceof Prisma.PrismaClientKnownRequestError &&
-		error.code === "P2025"
-	) {
+	if (defaultMobileDeps.errors.isRecordNotFoundError(error)) {
 		return mobileJson({ error: { code: "NOT_FOUND" } }, 404);
 	}
 	return mobileJson({ error: { code: "INTERNAL_ERROR" } }, 500);

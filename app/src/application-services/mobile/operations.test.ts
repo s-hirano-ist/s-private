@@ -7,6 +7,7 @@ vi.mock("@/prisma", () => ({
 	default: { mobileOperation: { findUnique, create, update } },
 }));
 
+import { MobileApiError } from "./auth";
 import { mobileInputHash, runMobileOperation } from "./operations";
 
 describe("durable mobile operations", () => {
@@ -65,5 +66,32 @@ describe("durable mobile operations", () => {
 				vi.fn(),
 			),
 		).rejects.toMatchObject({ code: "NOT_FOUND", status: 404 });
+	});
+
+	test("records a failed operation through the injected repository", async () => {
+		const operations = {
+			findOperation: vi.fn().mockResolvedValue(null),
+			createOperation: vi.fn().mockResolvedValue(undefined),
+			markOperationPending: vi.fn(),
+			markOperationSucceeded: vi.fn(),
+			markOperationFailed: vi.fn().mockResolvedValue(undefined),
+		};
+		await expect(
+			runMobileOperation(
+				"owner-1",
+				"notes",
+				"operation-1",
+				{ title: "Note" },
+				async () => {
+					throw new MobileApiError("VALIDATION_ERROR", 422);
+				},
+				{ operations },
+			),
+		).rejects.toMatchObject({ code: "VALIDATION_ERROR", status: 422 });
+		expect(operations.createOperation).toHaveBeenCalledOnce();
+		expect(operations.markOperationFailed).toHaveBeenCalledWith(
+			"operation-1",
+			"VALIDATION_ERROR",
+		);
 	});
 });

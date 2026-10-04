@@ -1,7 +1,8 @@
 import "server-only";
+import type { MobileDeps } from "@/application-services/mobile/deps";
+import { defaultMobileDeps } from "@/application-services/mobile/deps";
 import { tenantContext } from "@/common/tenant/tenant-context";
 import { env } from "@/env";
-import prisma from "@/prisma";
 import { createPublicKey, verify, type JsonWebKey } from "node:crypto";
 
 export class MobileApiError extends Error {
@@ -104,6 +105,7 @@ export async function verifyMobileToken(
 /** Maps a native Auth0 subject to the already linked Better Auth account. */
 export async function authenticateMobileRequest(
 	request: Request,
+	deps: Pick<MobileDeps, "accounts"> = defaultMobileDeps,
 ): Promise<string> {
 	const issuer = env.AUTH0_ISSUER_BASE_URL;
 	const audience = env.MOBILE_API_AUDIENCE;
@@ -114,15 +116,11 @@ export async function authenticateMobileRequest(
 	const match = /^Bearer (\S+)$/u.exec(authorization ?? "");
 	if (!match) throw new MobileApiError("UNAUTHORIZED", 401);
 	const subject = await verifyMobileToken(match[1], issuer, audience);
-	const accounts = await prisma.account.findMany({
-		where: { providerId: "auth0", accountId: subject },
-		select: { userId: true },
-		take: 2,
-	});
-	if (accounts.length !== 1 || !accounts[0]?.userId) {
+	const userId = await deps.accounts.findLinkedUser(subject);
+	if (!userId) {
 		throw new MobileApiError("FORBIDDEN", 403);
 	}
-	return accounts[0].userId;
+	return userId;
 }
 
 export async function withMobileTenant<T>(

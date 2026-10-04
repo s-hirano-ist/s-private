@@ -14,6 +14,10 @@ import { deleteImageCore } from "@/application-services/images/delete-image.core
 import { defaultDeleteImageDeps } from "@/application-services/images/delete-image.deps";
 import { MobileApiError } from "@/application-services/mobile/auth";
 import {
+	defaultMobileDeps,
+	type MobileDeps,
+} from "@/application-services/mobile/deps";
+import {
 	runMobileOperation,
 	type MobileCreateResult,
 } from "@/application-services/mobile/operations";
@@ -21,7 +25,6 @@ import { addNoteCore } from "@/application-services/notes/add-note.core";
 import { defaultAddNoteDeps } from "@/application-services/notes/add-note.deps";
 import { deleteNoteCore } from "@/application-services/notes/delete-note.core";
 import { defaultDeleteNoteDeps } from "@/application-services/notes/delete-note.deps";
-import prisma from "@/prisma";
 import {
 	makeId,
 	makeUserId,
@@ -60,128 +63,35 @@ export async function listMobileContent(
 	domain: MobileDomain,
 	userId: string,
 	query: z.infer<typeof listSchema>,
+	deps: Pick<MobileDeps, "content"> = defaultMobileDeps,
 ) {
-	const where = { userId, ...(query.status ? { status: query.status } : {}) };
-	const args = {
-		where,
-		orderBy: { createdAt: "desc" as const },
-		skip: query.offset,
-		take: query.limit,
-	};
-	switch (domain) {
-		case "articles": {
-			const [data, totalCount] = await Promise.all([
-				prisma.article.findMany({
-					...args,
-					include: { Category: { select: { name: true } } },
-				}),
-				prisma.article.count({ where }),
-			]);
-			return {
-				data: serialize(
-					data.map(({ Category, ...article }) =>
-						Object.assign(article, { categoryName: Category.name }),
-					),
-				),
-				totalCount,
-			};
-		}
-		case "notes": {
-			const [data, totalCount] = await Promise.all([
-				prisma.note.findMany(args),
-				prisma.note.count({ where }),
-			]);
-			return { data: serialize(data), totalCount };
-		}
-		case "images": {
-			const [data, totalCount] = await Promise.all([
-				prisma.image.findMany(args),
-				prisma.image.count({ where }),
-			]);
-			return { data: serialize(data), totalCount };
-		}
-		case "books": {
-			const [data, totalCount] = await Promise.all([
-				prisma.book.findMany(args),
-				prisma.book.count({ where }),
-			]);
-			return { data: serialize(data), totalCount };
-		}
-	}
-	throw new MobileApiError("NOT_FOUND", 404);
+	const result = await deps.content.listContent(domain, userId, query);
+	return { data: serialize(result.data), totalCount: result.totalCount };
 }
 
-/** Small owner-scoped manifest used to reconcile the complete on-device copy. */
-export async function listMobileManifest(userId: string) {
-	const select = { id: true, updatedAt: true } as const;
-	const where = { userId };
-	const [articles, notes, books, images, categories] = await Promise.all([
-		prisma.article.findMany({ where, select, orderBy: { id: "asc" } }),
-		prisma.note.findMany({ where, select, orderBy: { id: "asc" } }),
-		prisma.book.findMany({ where, select, orderBy: { id: "asc" } }),
-		prisma.image.findMany({
-			where,
-			select: {
-				id: true,
-				status: true,
-				createdAt: true,
-				updatedAt: true,
-				exportedAt: true,
-				path: true,
-				contentType: true,
-				fileSize: true,
-				width: true,
-				height: true,
-			},
-			orderBy: { id: "asc" },
-		}),
-		prisma.category.findMany({
-			where,
-			select: { id: true, name: true },
-			orderBy: { id: "asc" },
-		}),
-	]);
-	return { articles, notes, books, images, categories };
+export async function listMobileManifest(
+	userId: string,
+	deps: Pick<MobileDeps, "content"> = defaultMobileDeps,
+) {
+	return deps.content.manifest(userId);
 }
 
 export async function getMobileContent(
 	domain: MobileDomain,
 	userId: string,
 	id: string,
+	deps: Pick<MobileDeps, "content"> = defaultMobileDeps,
 ) {
-	let data: unknown;
-	switch (domain) {
-		case "articles": {
-			const article = await prisma.article.findFirst({
-				where: { id, userId },
-				include: { Category: { select: { name: true } } },
-			});
-			if (article) {
-				const { Category, ...item } = article;
-				data = { ...item, categoryName: Category.name };
-			}
-			break;
-		}
-		case "notes":
-			data = await prisma.note.findFirst({ where: { id, userId } });
-			break;
-		case "images":
-			data = await prisma.image.findFirst({ where: { id, userId } });
-			break;
-		case "books":
-			data = await prisma.book.findFirst({ where: { id, userId } });
-			break;
-	}
+	const data = await deps.content.getContent(domain, userId, id);
 	if (!data) throw new MobileApiError("NOT_FOUND", 404);
 	return serialize(data);
 }
 
-export async function listMobileCategories(userId: string) {
-	return prisma.category.findMany({
-		where: { userId },
-		select: { id: true, name: true },
-		orderBy: { name: "asc" },
-	});
+export async function listMobileCategories(
+	userId: string,
+	deps: Pick<MobileDeps, "content"> = defaultMobileDeps,
+) {
+	return deps.content.listCategories(userId);
 }
 
 function resultOrThrow(result: ServerAction): void {
@@ -201,12 +111,13 @@ export async function createMobileContent(
 	domain: MobileDomain,
 	userId: string,
 	body: unknown,
+	deps: Pick<MobileDeps, "content" | "operations"> = defaultMobileDeps,
 ): Promise<MobileCreateResult> {
 	const form = new FormData();
 	let result: ServerActionWithData<{ id: string }>;
 	let operationId: string;
 	let hashInput: unknown;
-	let resourceLookup: () => Promise<{ id: string } | null>;
+	let resourceLookup: () => Promise<string | null>;
 	switch (domain) {
 		case "articles": {
 			const input = articleSchema.parse(body);
@@ -215,10 +126,7 @@ export async function createMobileContent(
 			for (const key of ["title", "quote", "url", "category"] as const)
 				form.set(key, input[key]);
 			resourceLookup = () =>
-				prisma.article.findFirst({
-					where: { userId, url: input.url },
-					select: { id: true },
-				});
+				deps.content.lookupContentId("articles", userId, input.url);
 			break;
 		}
 		case "notes": {
@@ -228,10 +136,7 @@ export async function createMobileContent(
 			form.set("title", input.title);
 			form.set("markdown", input.markdown);
 			resourceLookup = () =>
-				prisma.note.findFirst({
-					where: { userId, title: input.title },
-					select: { id: true },
-				});
+				deps.content.lookupContentId("notes", userId, input.title);
 			break;
 		}
 		case "images": {
@@ -248,12 +153,7 @@ export async function createMobileContent(
 					.digest("hex"),
 				contentType: file.type,
 			};
-			resourceLookup = () =>
-				prisma.image.findFirst({
-					where: { userId },
-					orderBy: { createdAt: "desc" },
-					select: { id: true },
-				});
+			resourceLookup = () => deps.content.lookupContentId("images", userId);
 			break;
 		}
 		case "books": {
@@ -275,10 +175,7 @@ export async function createMobileContent(
 					.digest("hex"),
 			};
 			resourceLookup = () =>
-				prisma.book.findFirst({
-					where: { userId, isbn },
-					select: { id: true },
-				});
+				deps.content.lookupContentId("books", userId, isbn);
 			break;
 		}
 	}
@@ -320,14 +217,15 @@ export async function createMobileContent(
 			}
 			if (!result.success && result.message === "duplicated") {
 				const duplicate = await resourceLookup();
-				if (duplicate) return duplicate.id;
+				if (duplicate) return duplicate;
 			}
 			resultOrThrow(result);
 			if (result.data?.id) return result.data.id;
 			const resource = await resourceLookup();
 			if (!resource) throw new MobileApiError("INTERNAL_ERROR", 500);
-			return resource.id;
+			return resource;
 		},
+		deps,
 	);
 }
 
@@ -335,8 +233,9 @@ export async function deleteMobileContent(
 	domain: MobileDomain,
 	userId: string,
 	id: string,
+	deps: Pick<MobileDeps, "content"> = defaultMobileDeps,
 ): Promise<void> {
-	const item = (await getMobileContent(domain, userId, id)) as {
+	const item = (await getMobileContent(domain, userId, id, deps)) as {
 		status: string;
 	};
 	if (item.status !== "UNEXPORTED")
