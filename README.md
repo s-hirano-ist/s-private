@@ -20,6 +20,12 @@
 > [!NOTE]
 > このプロジェクトでは、学習・検証を目的としてあえて幅広い技術スタックを採用しています。単一の最適解を追求するのではなく、様々な技術の実践的な知見を得ることを重視しています。
 
+## iOS版
+
+`ios/` にはSwiftUI製のiOSアプリがあります。記事・ノート・画像・書籍の閲覧と登録、コンテンツの検索に対応しています。SwiftDataに保存したデータをオフラインで閲覧でき、再接続後の同期やShare Extensionからの登録にも対応しています。認証とデータの同期にはWebアプリが提供するモバイルAPIを使用します。
+
+開発環境の準備、Auth0の設定、実機での署名手順は [iOS開発ガイド](ios/README.md) を参照してください。
+
 ## Technology Stack
 
 ### Core Framework
@@ -27,6 +33,7 @@
 - **Language** - [TypeScript](https://www.typescriptlang.org/)
 - **Package Manager** - [pnpm](https://pnpm.io/)
 - **Runtime** - [React](https://react.dev/)
+- **iOS** - SwiftUI + SwiftData（XcodeGenでXcodeプロジェクトを生成）
 
 ### UI & Styling
 - **UI Components** - [Shadcn/ui](https://ui.shadcn.com/) with [Radix UI](https://www.radix-ui.com/)
@@ -138,6 +145,8 @@ This project follows clean architecture principles with domain-driven design, en
 │       └── src/
 │           ├── infrastructures/
 │           └── rag/
+│
+├── ios/                            # SwiftUI app, Share Extension, XcodeGen configuration
 │
 └── app/src/                        # Next.js Application
     ├── application-services/       # Application Layer (Use Cases)
@@ -288,6 +297,18 @@ cd s-private
 mise install          # Node.js、pnpm等をインストール
 pnpm install
 ```
+
+### iOS開発
+
+iOS版のビルドにはApple silicon Mac、macOS 27以降、Xcode 27、iOS 27 Simulator runtimeが必要です。Xcodeの準備後、次のコマンドでプロジェクトを生成し、ビルド・テストできます。
+
+```bash
+mise run ios:generate
+mise run ios:build
+mise run ios:test
+```
+
+実機での実行や認証・API接続の設定は [iOS開発ガイド](ios/README.md) を参照してください。
 
 ### Environment Configuration
 
