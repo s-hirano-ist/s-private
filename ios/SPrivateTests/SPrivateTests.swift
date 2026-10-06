@@ -46,6 +46,15 @@ struct SyncErrorMessageTests {
         #expect(other != nil && other != MobileClientError.invalidResponse.localizedDescription)
         #expect(authentication != connection && connection != other)
     }
+
+    @Test("Stable HTTP error codes are not shown to the user")
+    func localizesHTTPFailures() {
+        for status in [401, 409, 422, 500] {
+            let message = MobileOperationError.message(MobileClientError.http(status, "VALIDATION_ERROR"))
+            #expect(message != nil)
+            #expect(!(message?.contains("VALIDATION_ERROR") ?? true))
+        }
+    }
 }
 
 @MainActor
@@ -178,6 +187,34 @@ struct SharedInboxStoreTests {
             .appending(path: UUID().uuidString, directoryHint: .isDirectory)
         try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
         return url
+    }
+}
+
+struct ArticleCategoryTests {
+    @Test("Article categories follow the server's trimmed 1–16 UTF-16 unit rule")
+    func validatesCategoryNames() {
+        #expect(ArticleCategoryName.normalized("  Tech  ") == "Tech")
+        #expect(ArticleCategoryName.isValid("  Tech  "))
+        #expect(!ArticleCategoryName.isValid(" \n "))
+        #expect(ArticleCategoryName.isValid(String(repeating: "a", count: 16)))
+        #expect(!ArticleCategoryName.isValid(String(repeating: "a", count: 17)))
+        #expect(!ArticleCategoryName.isValid(String(repeating: "😀", count: 9)))
+    }
+
+    @Test("The share extension reads only the latest category snapshot")
+    func sharesAndClearsCategoryChoices() throws {
+        let directory = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString, directoryHint: .isDirectory)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let store = try SharedCategoryStore(containerURL: directory)
+
+        #expect(try store.load().isEmpty)
+        try store.replace(with: [" News ", "News", "Tech", " ", String(repeating: "x", count: 17)])
+        #expect(try store.load() == ["News", "Tech"])
+        try store.replace(with: ["Books"])
+        #expect(try store.load() == ["Books"])
+        try store.clear()
+        #expect(try store.load().isEmpty)
     }
 }
 

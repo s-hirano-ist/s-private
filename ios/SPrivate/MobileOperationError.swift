@@ -14,8 +14,12 @@ enum MobileOperationError {
             switch clientError {
             case .http(401, _), .authenticationRequired:
                 return String(localized: "ログインしてから再試行してください")
+            case .http(409, _):
+                return String(localized: "既に登録されています。内容を確認してください")
+            case .http(422, _):
+                return String(localized: "入力内容を確認して修正してください")
             case .http:
-                return String(localized: "サーバーに接続できませんでした。再試行してください")
+                return String(localized: "サーバーの処理に失敗しました。再試行してください")
             default:
                 return clientError.localizedDescription
             }

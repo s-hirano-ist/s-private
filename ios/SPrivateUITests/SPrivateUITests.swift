@@ -17,6 +17,45 @@ final class SPrivateUITests: XCTestCase {
     }
 
     @MainActor
+    func testArticleCategoryRequiresAValidName() throws {
+        let app = XCUIApplication()
+        app.launchArguments += ["-ui-testing-authenticated", "-ui-testing-list-fixtures", "-AppleLanguages", "(ja)"]
+        app.launch()
+        app.buttons["create-button"].tap()
+
+        let title = app.textFields["create-title-field"]
+        XCTAssertTrue(title.waitForExistence(timeout: 5))
+        title.tap()
+        title.typeText("Example")
+        let url = app.textFields["URL"]
+        url.tap()
+        url.typeText("https://example.com")
+
+        let category = app.textFields["category-name-field"]
+        XCTAssertTrue(category.exists)
+        category.tap()
+        category.typeText(String(repeating: "a", count: 17))
+        XCTAssertFalse(app.buttons["save-button"].isEnabled)
+        XCTAssertTrue(app.staticTexts["カテゴリ名は1〜16文字で入力してください"].exists)
+        category.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 17) + "Tech")
+        XCTAssertTrue(app.buttons["save-button"].isEnabled)
+    }
+
+    @MainActor
+    func testCacheClearRequiresConfirmation() throws {
+        let app = XCUIApplication()
+        app.launchArguments += ["-ui-testing-authenticated", "-ui-testing-list-fixtures", "-AppleLanguages", "(ja)"]
+        app.launch()
+        app.buttons["settings-link"].tap()
+        let clear = app.buttons["キャッシュを削除"]
+        XCTAssertTrue(clear.waitForExistence(timeout: 5))
+        clear.tap()
+        XCTAssertTrue(app.staticTexts["キャッシュを削除しますか？"].waitForExistence(timeout: 5))
+        app.buttons["キャンセル"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["settings-view"].exists)
+    }
+
+    @MainActor
     func testAuthenticationEntryIsVisible() throws {
         let app = XCUIApplication()
         app.launchArguments.append("-ui-testing-signed-out")

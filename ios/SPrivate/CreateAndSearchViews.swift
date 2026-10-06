@@ -26,7 +26,7 @@ struct CreateView: View {
 
     private var canSave: Bool {
         switch domain {
-        case .articles: !title.isEmpty && URL(string: url)?.scheme.map { ["https", "http"].contains($0) } == true && !category.isEmpty
+        case .articles: !title.isEmpty && URL(string: url)?.scheme.map { ["https", "http"].contains($0) } == true && ArticleCategoryName.isValid(category)
         case .notes: !title.isEmpty
         case .images: imageData != nil
         case .books: !title.isEmpty && !isbn.isEmpty && imageData != nil
@@ -43,15 +43,7 @@ struct CreateView: View {
                 switch domain {
                 case .articles:
                     TextField("URL", text: $url).textInputAutocapitalization(.never).keyboardType(.URL)
-                    TextField(String(localized: "カテゴリ"), text: $category)
-                    if !categories.isEmpty {
-                        Menu(String(localized: "既存カテゴリから選択")) {
-                            ForEach(categories) { value in
-                                Button(value.name) { category = value.name }
-                            }
-                        }
-                        .foregroundStyle(AppColors.primary)
-                    }
+                    ArticleCategoryField(name: $category, categories: categories)
                     TextField(String(localized: "引用"), text: $quote, axis: .vertical)
                 case .notes:
                     TextField("Markdown", text: $markdown, axis: .vertical).lineLimit(6...20)
@@ -161,7 +153,7 @@ struct CreateView: View {
             let input = MobileCreate(
                 operationId: operationID, title: title,
                 url: domain == .articles ? url : nil,
-                category: domain == .articles ? category : nil,
+                category: domain == .articles ? ArticleCategoryName.normalized(category) : nil,
                 quote: domain == .articles ? quote : nil,
                 markdown: domain == .notes ? markdown : nil,
                 isbn: domain == .books ? isbn : nil,

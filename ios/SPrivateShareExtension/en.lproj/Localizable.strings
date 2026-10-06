@@ -5,3 +5,8 @@
 "キャンセル" = "Cancel";
 "保存できませんでした" = "Could not save";
 "閉じる" = "Close";
+"新しいカテゴリ" = "New category";
+"カテゴリ名" = "Category name";
+"カテゴリ名は1〜16文字で入力してください" = "Enter a category name of 1–16 characters";
+"この名前を使用" = "Use this name";
+"既存カテゴリ" = "Existing categories";

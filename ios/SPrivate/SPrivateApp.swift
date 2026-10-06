@@ -54,6 +54,9 @@ struct SPrivateApp: App {
                 .modelContainer(modelContainer)
                 .task {
                     guard !useListFixtures else { return }
+                    if authentication.status != .authenticated {
+                        try? SharedCategoryStore().clear()
+                    }
                     sharedInbox.reload()
                     sync.importSharedInbox()
                     if authentication.status == .authenticated { await sync.synchronize() }
@@ -66,7 +69,16 @@ struct SPrivateApp: App {
                     }
                 }
                 .onChange(of: authentication.status) { _, status in
+                    if status == .signedOut || status == .unavailable {
+                        try? SharedCategoryStore().clear()
+                    }
                     if status == .authenticated && !useListFixtures { Task { await sync.synchronize(force: true) } }
+                }
+                .onChange(of: authentication.ownerKey) { _, _ in
+                    try? SharedCategoryStore().clear()
+                    if authentication.status == .authenticated && !useListFixtures {
+                        Task { await sync.synchronize(force: true) }
+                    }
                 }
                 .task(id: scenePhase) {
                     guard scenePhase == .active && !useListFixtures else { return }

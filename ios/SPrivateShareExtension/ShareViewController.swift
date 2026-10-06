@@ -1,4 +1,5 @@
 import Social
+import SwiftUI
 import UniformTypeIdentifiers
 
 final class ShareViewController: SLComposeServiceViewController {
@@ -74,14 +75,12 @@ final class ShareViewController: SLComposeServiceViewController {
     }
 
     private func chooseCategory() {
-        let alert = UIAlertController(title: String(localized: "カテゴリ"), message: nil, preferredStyle: .alert)
-        alert.addTextField { $0.text = self.category }
-        alert.addAction(UIAlertAction(title: String(localized: "保存"), style: .default) { [weak self, weak alert] _ in
-            self?.category = alert?.textFields?.first?.text?.trimmingCharacters(in: .whitespacesAndNewlines).nonEmpty ?? String(localized: "共有")
+        let categories = (try? SharedCategoryStore().load()) ?? []
+        let picker = ShareCategoryPickerView(categories: categories, selected: category) { [weak self] name in
+            self?.category = name
             self?.reloadConfigurationItems()
-        })
-        alert.addAction(UIAlertAction(title: String(localized: "キャンセル"), style: .cancel))
-        present(alert, animated: true)
+        }
+        present(UIHostingController(rootView: picker), animated: true)
     }
 
     private var hasSupportedAttachment: Bool {
@@ -119,8 +118,4 @@ final class ShareViewController: SLComposeServiceViewController {
             }
         }
     }
-}
-
-private extension String {
-    var nonEmpty: String? { isEmpty ? nil : self }
 }
