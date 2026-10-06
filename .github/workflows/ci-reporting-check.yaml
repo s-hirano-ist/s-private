@@ -1,0 +1,96 @@
+name: CI reporting check
+
+on:
+  workflow_call:
+    inputs:
+      check:
+        description: Check to run
+        required: true
+        type: string
+jobs:
+  run:
+    name: ${{ inputs.check }}
+    runs-on: ubuntu-24.04
+    permissions:
+      pull-requests: write
+    timeout-minutes: 10
+    concurrency:
+      group: ${{ github.workflow }}-${{ inputs.check }}-${{ github.ref }}
+    steps:
+      - name: Checkout files
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+          submodules: true
+
+      - name: Verify .nvmrc satisfies package.json#engines.node
+        if: ${{ inputs.check == 'oxfmt' }}
+        run: |
+          node --input-type=module -e '
+            import packageJson from "./package.json" with { type: "json" };
+            import { readFile } from "node:fs/promises";
+            const version = (await readFile(".nvmrc", "utf8")).trim();
+            const range = packageJson.engines.node;
+            const minimum = range.match(/^>=(\d+)(?:\.(\d+))?(?:\.(\d+))?$/)?.slice(1).map((part) => Number(part ?? 0));
+            const current = version.split(".").slice(0, 3).map(Number);
+            const differenceIndex = minimum && current.findIndex((part, index) => part !== minimum[index]);
+            const satisfies = minimum && current.length === 3 && current.every(Number.isInteger) &&
+              (differenceIndex === -1 || current[differenceIndex] > minimum[differenceIndex]);
+            if (!satisfies) {
+              throw new Error(".nvmrc (" + version + ") does not satisfy engines.node (" + range + ")");
+            }
+          '
+
+      - uses: ./.github/actions/setup-pnpm
+
+      - name: Check formatting
+        if: ${{ inputs.check == 'oxfmt' }}
+        run: pnpm format:check
+
+      - name: Generate Next.js route types
+        if: ${{ inputs.check == 'lint' }}
+        run: pnpm --filter s-private-app typegen
+        env:
+          SKIP_ENV_VALIDATION: "true"
+
+      - name: Lint
+        if: ${{ inputs.check == 'lint' }}
+        run: pnpm lint
+        env:
+          SKIP_ENV_VALIDATION: "true"
+
+      - name: Check unused code
+        if: ${{ inputs.check == 'knip' }}
+        run: pnpm knip
+
+      - name: Build packages for tests
+        if: ${{ inputs.check == 'test' }}
+        run: pnpm packages:build
+
+      - name: Install Playwright browsers
+        if: ${{ inputs.check == 'test' }}
+        run: pnpm exec playwright install
+
+      - name: Test
+        if: ${{ inputs.check == 'test' }}
+        run: pnpm test
+        env:
+          LOCAL_DEV_MODE: "true"
+          DATABASE_URL: "postgresql://ci:ci@localhost:26257/s_private?sslmode=verify-full"
+          AUTH_SECRET: "ci-local-only-auth-secret"
+          MINIO_HOST: "localhost"
+          MINIO_PORT: "9000"
+          MINIO_BUCKET_NAME: "s-private"
+          MINIO_ACCESS_KEY: "local-access-key"
+          MINIO_SECRET_KEY: "local-secret-key"
+          MINIO_USE_SSL: "false"
+          QDRANT_URL: "http://localhost:6333"
+          QDRANT_COLLECTION_NAME: "knowledge_v1"
+          EMBEDDING_URL: "http://localhost:3001"
+
+      - name: Show coverage
+        if: ${{ always() && inputs.check == 'test' }}
+        uses: davelosert/vitest-coverage-report-action@3c50566c523e04813df28de8f7c48dd97d663f1c # v2
+        with:
+          json-summary-path: ./.vitest-coverage/coverage-summary.json
+          json-final-path: ./.vitest-coverage/coverage-final.json
