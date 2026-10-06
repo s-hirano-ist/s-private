@@ -6,7 +6,7 @@ import {
 	makeNoteTitle,
 	type NoteTitle,
 } from "@s-hirano-ist/s-core/notes/entities/note-entity";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import { parseAddNoteFormData } from "./form-data-parser";
 
 vi.mock("@/common/utils/form-data-utils");

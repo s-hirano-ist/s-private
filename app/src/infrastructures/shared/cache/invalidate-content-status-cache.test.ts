@@ -1,5 +1,5 @@
 import { revalidateTag } from "next/cache";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import { invalidateContentStatusCache } from "./invalidate-content-status-cache";
 
 describe("invalidateContentStatusCache", () => {

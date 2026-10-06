@@ -12,7 +12,7 @@ import {
 	makeFileSize,
 	Path,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import { imagesCommandRepository } from "./images-command-repository";
 
 // Simple path parser for testing (the original makePath generates UUIDs)

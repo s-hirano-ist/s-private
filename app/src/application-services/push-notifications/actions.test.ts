@@ -1,6 +1,6 @@
-import type { Mock } from "vitest";
+import type { Mock } from "vite-plus/test";
 import prisma from "@/prisma";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 
 const { getSelfId, sendPushToSubscription, wrapServerSideErrorForClient } =
 	vi.hoisted(() => ({

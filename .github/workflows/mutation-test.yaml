@@ -5,6 +5,9 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
+      - "package.json"
+      - "pnpm-workspace.yaml"
+      - "pnpm-lock.yaml"
       - "packages/core/**/*.ts"
       - "stryker.config.json"
 jobs:
@@ -22,6 +25,9 @@ jobs:
           submodules: true
 
       - uses: ./.github/actions/setup-pnpm
+      # Stryker 10 reports a lower mutation score with Vitest 5. Keep the
+      # compatibility version isolated to this disposable CI checkout.
+      - run: pnpm add -Dw --ignore-scripts vitest@4.1.11
       - run: pnpm test:mutation:core
 
       - name: Upload mutation report

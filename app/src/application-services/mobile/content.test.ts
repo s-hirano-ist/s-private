@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 const articleFindMany = vi.hoisted(() => vi.fn());
 const articleCount = vi.hoisted(() => vi.fn());
 const noteFindFirst = vi.hoisted(() => vi.fn());

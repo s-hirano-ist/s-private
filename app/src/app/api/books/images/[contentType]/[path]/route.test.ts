@@ -1,7 +1,14 @@
 import { getBooksImageFromStorage } from "@/application-services/books/get-books";
 import { auth } from "@/infrastructures/auth/auth";
 import { Readable } from "node:stream";
-import { beforeEach, describe, expect, type Mock, test, vi } from "vitest";
+import {
+	beforeEach,
+	describe,
+	expect,
+	type Mock,
+	test,
+	vi,
+} from "vite-plus/test";
 
 vi.mock("@/infrastructures/auth/auth", () => ({
 	auth: { api: { getSession: vi.fn() } },

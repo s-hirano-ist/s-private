@@ -10,7 +10,7 @@ import {
 	type Quote,
 	type Url,
 } from "@s-hirano-ist/s-core/articles/entities/article-entity";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import { parseAddArticleFormData } from "./form-data-parser";
 
 vi.mock("@/common/utils/form-data-utils");

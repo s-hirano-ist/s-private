@@ -3,7 +3,7 @@ import { minioStorageService } from "@/infrastructures/shared/storage/minio-stor
 import { makePixel } from "@s-hirano-ist/s-core/images/entities/image-entity";
 import { makeId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { makePath } from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import {
 	getExportedImages,
 	getImagesCount,

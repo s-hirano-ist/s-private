@@ -1,5 +1,5 @@
 import { FileNotAllowedError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test } from "vite-plus/test";
 import { parseSupportedImageFile } from "./image-upload-parser";
 
 const JPEG_BYTES = Buffer.from(

@@ -1,10 +1,10 @@
-import type { Mock } from "vitest";
+import type { Mock } from "vite-plus/test";
 import prisma from "@/prisma";
 import {
 	WebPushSendError,
 	type WebPushPayload,
 } from "@s-hirano-ist/s-notification";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 
 const { captureException, send } = vi.hoisted(() => ({
 	captureException: vi.fn(),

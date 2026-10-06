@@ -1,5 +1,5 @@
 import type { TenantStore } from "./tenant-context";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test } from "vite-plus/test";
 import { applyTenantFilter } from "./tenant-filter";
 
 const STORE: TenantStore = { userId: "user-a" };

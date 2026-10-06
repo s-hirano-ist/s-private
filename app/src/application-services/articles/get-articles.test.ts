@@ -11,7 +11,7 @@ import {
 	makeUrl,
 } from "@s-hirano-ist/s-core/articles/entities/article-entity";
 import { makeId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import {
 	getCategories,
 	getExportedArticles,
