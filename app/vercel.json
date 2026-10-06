@@ -1,5 +1,6 @@
 {
 	"$schema": "https://openapi.vercel.sh/vercel.json",
+	"buildCommand": "pnpm --filter s-private-app... -r run build",
 	"crons": [
 		{
 			"path": "/api/cron/gigazine-headline",

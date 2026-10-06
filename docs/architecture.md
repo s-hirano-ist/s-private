@@ -1886,7 +1886,7 @@ const result = await addArticleCore(formData, testDeps);
 
 Workspace package 間の依存関係は各 `package.json` の `workspace:*` dependency を正本とし、タスクの依存順と build 成果物は `pnpm-workspace.yaml` の `tasks` で定義する。`pnpm build` は `pnpm pipeline build --full` を実行し、全 workspace の build を依存順に実行してローカルキャッシュを利用する。`packages:build` と `typecheck` は pnpm の再帰実行を使う。開発起動や Storybook・Pages など成果物を読むルート task は、必要な package をビルドしてから実行する。公開 package は別 repository から単独利用されるため、配布対象の `dist` や generated code を package 自身の publish lifecycle で生成する。
 
-pnpm pipeline は実験的機能で、キャッシュは全体ビルドにだけ利用する。個別の lint・生成コマンドは毎回実行する。
+pnpm pipeline は実験的機能で、キャッシュは全体ビルドにだけ利用する。Vercel は Root Directory が `app` のため、`app/vercel.json` の buildCommand でアプリとその workspace 依存 package を pnpm の再帰タスクとしてビルドする。個別の lint・生成コマンドは毎回実行する。
 
 ## iOSの共有受け渡しと認証境界
 
