@@ -2,6 +2,67 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.16.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.15.0...s-private-v3.16.0) (2026-10-06)
+
+
+### Features
+
+* add shared iOS and web app icons ([1a27ef9](https://github.com/s-hirano-ist/s-private/commit/1a27ef9382e2ea71587345fff90ccc7c99421592))
+* **ios:** complete Japanese and English localization ([36b65f2](https://github.com/s-hirano-ist/s-private/commit/36b65f28b84cfba35899ab43d2acb8dc450fa84c))
+* rename app display name to Memdex ([ea727e8](https://github.com/s-hirano-ist/s-private/commit/ea727e81f170806dd3102dcca9978740097b4b7e))
+
+
+### Bug Fixes
+
+* build workspace dependencies on Vercel ([0231671](https://github.com/s-hirano-ist/s-private/commit/0231671f9d043784d2412fd18d31d244e62daf46))
+* ignore pnpm pipeline in knip ([8d01a45](https://github.com/s-hirano-ist/s-private/commit/8d01a45c034a5e3a34399beda4fe25c7b072d6e6))
+* **ios:** align notes empty state and book grid ([013901d](https://github.com/s-hirano-ist/s-private/commit/013901db39e014a8769399312d8d7e709ed8670f))
+* **ios:** Articles・Notes 一覧の余白と区切り線を調整 ([35fd058](https://github.com/s-hirano-ist/s-private/commit/35fd058847937b2df548558a90fe427edc4521b3))
+* **ios:** display book covers as square thumbnails ([8dca2ab](https://github.com/s-hirano-ist/s-private/commit/8dca2ab92d99af584ca35dcf720df29536176103))
+* **ios:** refine article and note list spacing ([dd177a4](https://github.com/s-hirano-ist/s-private/commit/dd177a4e683a7c9676aece997de3c0bb3d159206))
+* **ios:** remove duplicate domain titles and align tab order ([c224a27](https://github.com/s-hirano-ist/s-private/commit/c224a27dde2a3363e98a57187cf249abd4ab6706))
+* **ios:** simplify list refresh and hide sync cancellation ([8d20f1d](https://github.com/s-hirano-ist/s-private/commit/8d20f1d9a32f2eeff364101fb7da4e71d77cd003))
+* **ios:** simplify sync progress indicator ([47c2caf](https://github.com/s-hirano-ist/s-private/commit/47c2caf9d1cabf3ba03adfe9ef0c9e1f49d5fd05))
+* **ios:** stabilize interactions and loading states ([15bfd25](https://github.com/s-hirano-ist/s-private/commit/15bfd253003bbbf37cac50097efa922b7427dd6c))
+* **ios:** use stable title field identifier in UI test ([0c5d099](https://github.com/s-hirano-ist/s-private/commit/0c5d0992f25532b0c9d04ca7c3a3850debcc6940))
+* **ios:** 一覧見出しの重複をなくしタブ順を Web に合わせる ([429d5bf](https://github.com/s-hirano-ist/s-private/commit/429d5bfc32f51b95382884a331a9120fe087538a))
+
+
+### Documentation
+
+* clarify production API prerequisite for iOS device tests ([526d70b](https://github.com/s-hirano-ist/s-private/commit/526d70b24cdac8923d3eb940f5e71e9f459eab51))
+* describe iOS app in root README ([0df9cc5](https://github.com/s-hirano-ist/s-private/commit/0df9cc54b3787a2adeb811ea82205d82cd89939d))
+* explain intentional absence of IaC ([a51f575](https://github.com/s-hirano-ist/s-private/commit/a51f575e153255efffe59e5183201935dcd26ca4))
+* require local verification for preview migration changes ([d3f005a](https://github.com/s-hirano-ist/s-private/commit/d3f005a8e1e3ec5a6179f95b12143f56bad0193f))
+
+
+### Maintenance
+
+* adopt Vite+ for tests and code checks ([a4e46ce](https://github.com/s-hirano-ist/s-private/commit/a4e46cebc0dfd60f01735e2231704cf710906879))
+* declare permissions in reusable check job ([071c2b3](https://github.com/s-hirano-ist/s-private/commit/071c2b36ee652fda56427af639cce78a76fd074d))
+* **deps:** update dependency eslint-plugin-unicorn to v77 ([05764de](https://github.com/s-hirano-ist/s-private/commit/05764deafb3ae3ac189314229e7badb75efea597))
+* **deps:** update mise ([c31d0ea](https://github.com/s-hirano-ist/s-private/commit/c31d0ea4125f050e3c919f539376ea1ae7ecb5ae))
+* **deps:** update non-major ([1864d30](https://github.com/s-hirano-ist/s-private/commit/1864d30bd274d75e506a8c139f1cc89b3953bfc0))
+* **deps:** update non-major ([86569c0](https://github.com/s-hirano-ist/s-private/commit/86569c0b982d5dc35529e00b3b580e5094bed88d))
+* **deps:** update pnpm to v12.9.1 ([1977c5d](https://github.com/s-hirano-ist/s-private/commit/1977c5dcde4bd5c3f9796cb3e4795142759ccd73))
+* fix timeout mins ([3bddba9](https://github.com/s-hirano-ist/s-private/commit/3bddba9cc2fbbb0ad12efcaee3b33ae4cda14a66))
+* fix timeout mins ([88eeeed](https://github.com/s-hirano-ist/s-private/commit/88eeeedca670cdfb8d750c6285c7a10946e0280b))
+* isolate mobile and push persistence adapters ([b4cb239](https://github.com/s-hirano-ist/s-private/commit/b4cb239a3b26f28221e9a12fbc601834c84067d4))
+* merge main and restore mutation CI compatibility ([4971ae7](https://github.com/s-hirano-ist/s-private/commit/4971ae77044fce1c1aa50be860705f329a9fc3fd))
+* mobile・push 通知の永続化依存を分離 ([#2788](https://github.com/s-hirano-ist/s-private/issues/2788)) ([794a14a](https://github.com/s-hirano-ist/s-private/commit/794a14aedbaa1f5e74b89d843a4b1528c506a02f))
+* replace turbo tasks with pnpm workspace ([029e82b](https://github.com/s-hirano-ist/s-private/commit/029e82b7901abaa81d96b49d6b2eefa8799f3459))
+* reuse GitHub Actions checks workflow ([334a54f](https://github.com/s-hirano-ist/s-private/commit/334a54f98f373886c373b91178e26d5f5e3b4c2e))
+* separate reusable checks by token permissions ([5a405b0](https://github.com/s-hirano-ist/s-private/commit/5a405b0dcb92e055854e74a9e5e4f99d4a70e70b))
+* split reusable workflows by permission scope ([a874067](https://github.com/s-hirano-ist/s-private/commit/a8740673f136c60b0aade933fadeacfef1d693b8))
+* use caller cap for reusable workflow permissions ([7b65b3f](https://github.com/s-hirano-ist/s-private/commit/7b65b3fe276339e0c6512049f154ff4ca537cc01))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @s-hirano-ist/s-ui bumped to 2.2.1
+
 ## [3.15.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.14.0...s-private-v3.15.0) (2026-09-29)
 
 

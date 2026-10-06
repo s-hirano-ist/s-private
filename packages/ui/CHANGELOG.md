@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.2.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v2.2.0...@s-hirano-ist/s-ui-v2.2.1) (2026-10-06)
+
+
+### Maintenance
+
+* adopt Vite+ for tests and code checks ([a4e46ce](https://github.com/s-hirano-ist/s-private/commit/a4e46cebc0dfd60f01735e2231704cf710906879))
+* **deps:** update non-major ([86569c0](https://github.com/s-hirano-ist/s-private/commit/86569c0b982d5dc35529e00b3b580e5094bed88d))
+* merge main and restore mutation CI compatibility ([4971ae7](https://github.com/s-hirano-ist/s-private/commit/4971ae77044fce1c1aa50be860705f329a9fc3fd))
+
 ## [2.2.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v2.1.0...@s-hirano-ist/s-ui-v2.2.0) (2026-09-29)
 
 

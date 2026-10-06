@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-search-v1.19.0...@s-hirano-ist/s-search-v1.19.1) (2026-10-06)
+
+
+### Maintenance
+
+* adopt Vite+ for tests and code checks ([a4e46ce](https://github.com/s-hirano-ist/s-private/commit/a4e46cebc0dfd60f01735e2231704cf710906879))
+
 ## [1.19.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-search-v1.18.14...@s-hirano-ist/s-search-v1.19.0) (2026-09-19)
 
 

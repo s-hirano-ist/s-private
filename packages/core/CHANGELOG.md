@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.21.6](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.21.5...@s-hirano-ist/s-core-v1.21.6) (2026-10-06)
+
+
+### Maintenance
+
+* adopt Vite+ for tests and code checks ([a4e46ce](https://github.com/s-hirano-ist/s-private/commit/a4e46cebc0dfd60f01735e2231704cf710906879))
+* merge main and restore mutation CI compatibility ([4971ae7](https://github.com/s-hirano-ist/s-private/commit/4971ae77044fce1c1aa50be860705f329a9fc3fd))
+
 ## [1.21.5](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.21.4...@s-hirano-ist/s-core-v1.21.5) (2026-09-19)
 
 

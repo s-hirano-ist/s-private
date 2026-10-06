@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.26.8](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.26.7...@s-hirano-ist/s-scripts-v1.26.8) (2026-10-06)
+
+
+### Maintenance
+
+* adopt Vite+ for tests and code checks ([a4e46ce](https://github.com/s-hirano-ist/s-private/commit/a4e46cebc0dfd60f01735e2231704cf710906879))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.21.6
+    * @s-hirano-ist/s-notification bumped to 1.19.1
+    * @s-hirano-ist/s-search bumped to 1.19.1
+
 ## [1.26.7](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.26.6...@s-hirano-ist/s-scripts-v1.26.7) (2026-09-29)
 
 
