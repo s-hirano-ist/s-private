@@ -63,11 +63,18 @@ struct SettingsView: View {
         List {
             Section(String(localized: "認証")) {
                 Label(String(localized: "ログイン済み"), systemImage: "checkmark.circle")
-                Button(String(localized: "ログアウト"), role: .destructive) {
+                if let error = authentication.logoutError {
+                    Text(error).foregroundStyle(AppColors.destructive)
+                }
+                Button(role: .destructive) {
                     if sync.pendingCount == 0 { Task { await authentication.logOut() } }
                     else { confirmingLogout = true }
+                } label: {
+                    if authentication.isLoggingOut { ProgressView() }
+                    else { Text(String(localized: "ログアウト")) }
                 }
                 .foregroundStyle(AppColors.destructive)
+                .disabled(authentication.isLoggingOut || sync.isSynchronizing)
             }
             Section(String(localized: "同期")) {
                 NavigationLink {
@@ -76,10 +83,17 @@ struct SettingsView: View {
                     LabeledContent(String(localized: "同期管理"), value: String(sync.pendingCount))
                 }
                 .accessibilityIdentifier("sync-management-link")
-                Button(String(localized: "今すぐ同期")) { Task { await sync.synchronize() } }
+                Button {
+                    Task { await sync.synchronize(force: true) }
+                } label: {
+                    if sync.isSynchronizing { ProgressView() }
+                    else { Text(String(localized: "今すぐ同期")) }
+                }
                     .foregroundStyle(AppColors.primary)
+                    .disabled(sync.isSynchronizing)
                 Button(String(localized: "キャッシュを削除"), role: .destructive) { sync.clearCache() }
                     .foregroundStyle(AppColors.destructive)
+                    .disabled(sync.isSynchronizing)
             }
             Section(String(localized: "共有された項目")) {
                 if sharedInbox.items.isEmpty {
@@ -109,7 +123,7 @@ struct SettingsView: View {
             titleVisibility: .visible
         ) {
             Button(String(localized: "同期してログアウト")) {
-                Task { await sync.synchronize(); if sync.pendingCount == 0 { await authentication.logOut() } }
+                Task { await sync.synchronize(force: true); if sync.pendingCount == 0 { await authentication.logOut() } }
             }
             Button(String(localized: "破棄してログアウト"), role: .destructive) {
                 sync.discardPending()
@@ -142,12 +156,15 @@ struct SyncManagementView: View {
                         HStack {
                             Button(String(localized: "再送")) { Task { await sync.retry(operation) } }
                                 .foregroundStyle(AppColors.primary)
+                                .disabled(sync.isSynchronizing)
                             Button(String(localized: "取り消す"), role: .destructive) { sync.cancel(operation) }
                                 .foregroundStyle(AppColors.destructive)
+                                .disabled(sync.isSynchronizing)
                         }
                     }
                     if operation.state == .needsAttention {
                         NavigationLink(String(localized: "内容を修正")) { PendingOperationEditor(operation: operation) }
+                            .disabled(sync.isSynchronizing)
                     }
                 }
             }
@@ -160,7 +177,10 @@ struct SyncManagementView: View {
         .foregroundStyle(AppColors.foreground)
         .navigationTitle(String(localized: "同期管理"))
         .accessibilityIdentifier("sync-management-view")
-        .toolbar { Button(String(localized: "今すぐ同期")) { Task { await sync.synchronize() } } }
+        .toolbar {
+            Button(String(localized: "今すぐ同期")) { Task { await sync.synchronize(force: true) } }
+                .disabled(sync.isSynchronizing)
+        }
     }
 }
 
@@ -176,6 +196,7 @@ struct PendingOperationEditor: View {
     @State private var isbn: String
     @State private var rating: Int
     @State private var tags: String
+    @State private var errorMessage: String?
 
     init(operation: PendingMobileOperation) {
         self.operation = operation
@@ -193,6 +214,7 @@ struct PendingOperationEditor: View {
 
     var body: some View {
         Form {
+            if let errorMessage { Text(errorMessage).foregroundStyle(AppColors.destructive) }
             if operation.domain != .images { TextField(String(localized: "タイトル"), text: $title) }
             if operation.domain == .articles {
                 TextField("URL", text: $url).keyboardType(.URL)
@@ -224,8 +246,12 @@ struct PendingOperationEditor: View {
                     rating: operation.domain == .books ? rating : nil,
                     tags: operation.domain == .books ? tags : nil
                 )
-                try? sync.revise(operation, input: revised)
-                dismiss()
+                do {
+                    try sync.revise(operation, input: revised)
+                    dismiss()
+                } catch {
+                    errorMessage = MobileOperationError.message(error)
+                }
             }
         }
     }

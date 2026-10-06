@@ -9,15 +9,19 @@ final class SyncCoordinator: ObservableObject {
     @Published private(set) var dataRevision = 0
     @Published private(set) var syncError: String?
     @Published private(set) var isRefreshing = false
+    @Published private(set) var isSynchronizing = false
     private let context: ModelContext
     private let authentication: AuthenticationModel
-    private var syncing = false
+    private let makeClient: @MainActor () -> any MobileSyncClient
+    private var synchronizationTask: Task<Void, Never>?
+    private var forceAfterCurrentSync = false
     private var lastRefreshAttempt: Date?
     private var thumbnailTask: Task<Void, Never>?
 
-    init(container: ModelContainer, authentication: AuthenticationModel) {
+    init(container: ModelContainer, authentication: AuthenticationModel, clientFactory: (@MainActor () -> any MobileSyncClient)? = nil) {
         context = ModelContext(container)
         self.authentication = authentication
+        makeClient = clientFactory ?? { MobileClient(authentication: authentication) }
         refreshCount()
         Task { await migrateLegacyMetadata() }
     }
@@ -193,13 +197,32 @@ final class SyncCoordinator: ObservableObject {
     }
 
     func synchronize(force: Bool = false) async {
-        guard !syncing else { return }
-        syncing = true
-        defer { syncing = false; refreshCount() }
-        let client = MobileClient(authentication: authentication)
+        if let synchronizationTask {
+            if force { forceAfterCurrentSync = true }
+            await synchronizationTask.value
+            return
+        }
+        let task = Task { @MainActor in
+            isSynchronizing = true
+            await performSynchronization(force: force)
+            while forceAfterCurrentSync {
+                forceAfterCurrentSync = false
+                await performSynchronization(force: true)
+            }
+            isSynchronizing = false
+            synchronizationTask = nil
+            refreshCount()
+        }
+        synchronizationTask = task
+        await task.value
+    }
+
+    private func performSynchronization(force: Bool) async {
+        let client = makeClient()
         var createdRecords = false
         for operation in pendingOperations() where operation.ownerKey == authentication.ownerKey && operation.state != .needsAttention {
             operation.state = .sending
+            operation.lastError = nil
             try? context.save()
             do {
                 let input = try JSONDecoder().decode(MobileCreate.self, from: operation.payload)
@@ -221,9 +244,14 @@ final class SyncCoordinator: ObservableObject {
                 operation.state = .needsAttention
                 operation.lastError = code
             } catch {
-                operation.retryCount += 1
-                operation.state = operation.retryCount >= 3 ? .needsAttention : .pending
-                operation.lastError = error.localizedDescription
+                if MobileOperationError.isCancellation(error, taskIsCancelled: Task.isCancelled) {
+                    operation.state = .pending
+                    operation.lastError = nil
+                } else {
+                    operation.retryCount += 1
+                    operation.state = operation.retryCount >= 3 ? .needsAttention : .pending
+                    operation.lastError = MobileOperationError.message(error)
+                }
             }
             try? context.save()
         }
@@ -244,9 +272,7 @@ final class SyncCoordinator: ObservableObject {
     }
 
     static func syncErrorMessage(for error: Error, taskIsCancelled: Bool = false) -> String? {
-        let nsError = error as NSError
-        if taskIsCancelled || error is CancellationError ||
-            (nsError.domain == NSURLErrorDomain && nsError.code == URLError.cancelled.rawValue) {
+        if MobileOperationError.isCancellation(error, taskIsCancelled: taskIsCancelled) {
             return nil
         }
         if case MobileClientError.authenticationRequired = error {
@@ -262,7 +288,7 @@ final class SyncCoordinator: ObservableObject {
         return String(localized: "同期できませんでした。しばらくしてから下に引いて再試行してください")
     }
 
-    private func warmThumbnails(using client: MobileClient, owner: String) async {
+    private func warmThumbnails(using client: any MobileSyncClient, owner: String) async {
         for domain in [MobileDomain.books, .images] {
             var offset = 0
             let domainValue = domain.rawValue
@@ -291,7 +317,7 @@ final class SyncCoordinator: ObservableObject {
         }
     }
 
-    private func refreshRemote(using client: MobileClient) async throws {
+    private func refreshRemote(using client: any MobileSyncClient) async throws {
         let owner = authentication.ownerKey
         isRefreshing = true
         defer { isRefreshing = false }

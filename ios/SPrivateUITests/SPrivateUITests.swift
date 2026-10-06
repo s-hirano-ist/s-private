@@ -143,7 +143,7 @@ final class SPrivateUITests: XCTestCase {
     }
 
     @MainActor
-    func testArticleAndNoteEmptyRowsFillListWidth() throws {
+    func testArticleAndNoteEmptyStatesDoNotCreateBlankRows() throws {
         let app = XCUIApplication()
         app.launchArguments += ["-ui-testing-authenticated", "-ui-testing-list-fixtures"]
         app.launch()
@@ -155,16 +155,33 @@ final class SPrivateUITests: XCTestCase {
             let exported = app.buttons["公開済み"].exists ? app.buttons["公開済み"] : app.buttons["Exported"]
             exported.tap()
             let list = app.descendants(matching: .any)["domain-list-\(domain)"]
-            let empty = list.cells.firstMatch
+            let empty = app.staticTexts["domain-empty-\(domain)"]
             XCTAssertTrue(empty.waitForExistence(timeout: 5))
-            XCTAssertTrue(app.staticTexts["No items"].exists || app.staticTexts["項目がありません"].exists)
-            XCTAssertEqual(empty.frame.minX, list.frame.minX, accuracy: 1)
-            XCTAssertEqual(empty.frame.maxX, list.frame.maxX, accuracy: 1)
+            XCTAssertEqual(list.cells.count, 0)
+            XCTAssertFalse(app.descendants(matching: .any)["initial-loading"].exists)
             let screenshot = XCTAttachment(screenshot: app.screenshot())
             screenshot.name = "\(domain)-empty"
             screenshot.lifetime = .keepAlways
             add(screenshot)
         }
+    }
+
+    @MainActor
+    func testNoteSaveClosesAfterLocalEnqueue() throws {
+        let app = XCUIApplication()
+        app.launchArguments += ["-ui-testing-authenticated", "-ui-testing-list-fixtures"]
+        app.launch()
+
+        app.tabBars.buttons.element(boundBy: 1).tap()
+        app.buttons["create-button"].tap()
+        let title = app.textFields["create-title-field"]
+        XCTAssertTrue(title.waitForExistence(timeout: 5))
+        title.tap()
+        title.typeText("Saved offline")
+        let save = app.buttons["save-button"]
+        XCTAssertTrue(save.isEnabled)
+        save.tap()
+        XCTAssertFalse(title.waitForExistence(timeout: 2))
     }
 
     @MainActor

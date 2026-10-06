@@ -10,15 +10,18 @@ struct DomainListView: View {
     @State private var errorMessage: String?
     @State private var showingCreate = false
     @State private var showingSearch = false
+    @State private var isPullRefreshing = false
 
     private var isGrid: Bool { domain == .images || domain == .books }
+    private var isInitialLoading: Bool {
+        records.isEmpty && errorMessage == nil && sync.isSynchronizing && !isPullRefreshing
+    }
 
     var body: some View {
         NavigationStack {
             Group {
                 if isGrid {
                     ScrollView {
-                        syncProgress
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 3), count: domain == .images ? 3 : 2), spacing: domain == .images ? 3 : 16) {
                             ForEach(records) { record in
                                 NavigationLink(value: record.id) {
@@ -33,8 +36,10 @@ struct DomainListView: View {
                     .background(AppColors.background)
                     .foregroundStyle(AppColors.foreground)
                     .accessibilityIdentifier("domain-grid-\(domain.rawValue)")
+                    .overlay { emptyOrLoadingOverlay }
                 } else {
                     listContent
+                        .overlay { emptyOrLoadingOverlay }
                 }
             }
             .navigationTitle("")
@@ -71,7 +76,12 @@ struct DomainListView: View {
                 CreateView(domain: domain)
                     .environmentObject(authentication)
             }
-            .refreshable { await sync.synchronize(force: true); loadLocal() }
+            .refreshable {
+                isPullRefreshing = true
+                defer { isPullRefreshing = false }
+                await sync.synchronize(force: true)
+                loadLocal()
+            }
             .task(id: status) { loadLocal(reset: true) }
             .onChange(of: sync.dataRevision) { _, _ in loadLocal() }
             .onChange(of: sync.syncError) { _, _ in loadLocal() }
@@ -84,14 +94,6 @@ struct DomainListView: View {
                 Text(errorMessage).foregroundStyle(AppColors.destructive)
                     .accessibilityIdentifier("domain-error")
                     .listRowBackground(AppColors.background)
-            }
-            if records.isEmpty && errorMessage == nil {
-                ContentUnavailableView(String(localized: "項目がありません"), systemImage: domain.symbol)
-                    .frame(maxWidth: .infinity)
-                    .listRowInsets(EdgeInsets())
-                    .listRowBackground(AppColors.background)
-                    .alignmentGuide(.listRowSeparatorLeading) { $0[.leading] }
-                    .alignmentGuide(.listRowSeparatorTrailing) { $0[.trailing] }
             }
             ForEach(records) { record in
                 NavigationLink(value: record.id) {
@@ -142,9 +144,6 @@ struct DomainListView: View {
                     .padding()
             }
             if let errorMessage { Text(errorMessage).foregroundStyle(AppColors.destructive).accessibilityIdentifier("domain-error") }
-            if records.isEmpty && errorMessage == nil {
-                ContentUnavailableView(String(localized: "項目がありません"), systemImage: domain.symbol)
-            }
             if let fetchedAt = sync.lastSyncAt {
                 Text(lastFetchedText(fetchedAt))
                     .font(.caption).foregroundStyle(AppColors.mutedForeground).padding()
@@ -154,11 +153,14 @@ struct DomainListView: View {
     }
 
     @ViewBuilder
-    private var syncProgress: some View {
-        if sync.isRefreshing {
-            ProgressView()
-                .padding()
-                .accessibilityIdentifier("sync-progress")
+    private var emptyOrLoadingOverlay: some View {
+        if isInitialLoading {
+            ProgressView(String(localized: "読み込み中"))
+                .accessibilityIdentifier("initial-loading")
+        } else if records.isEmpty && errorMessage == nil && !isPullRefreshing {
+            ContentUnavailableView(String(localized: "項目がありません"), systemImage: domain.symbol)
+                .accessibilityIdentifier("domain-empty-\(domain.rawValue)")
+                .allowsHitTesting(false)
         }
     }
 
@@ -270,7 +272,7 @@ struct RecordDetailView: View {
     @State private var record: MobileRecord?
     @State private var errorMessage: String?
     @State private var showingDelete = false
-    @State private var loading = false
+    @State private var deleting = false
 
     var body: some View {
         ScrollView {
@@ -280,12 +282,12 @@ struct RecordDetailView: View {
                 } else if record != nil {
                     AuthenticatedImageView(domain: .images, id: id)
                         .frame(maxWidth: .infinity)
-                } else {
+                } else if sync.isSynchronizing {
                     ProgressView().frame(maxWidth: .infinity).padding()
                 }
             } else {
                 VStack(alignment: .leading, spacing: 16) {
-                    if loading { ProgressView() }
+                    if record == nil && errorMessage == nil { ProgressView() }
                     if let errorMessage { Text(errorMessage).foregroundStyle(AppColors.destructive) }
                     if let record {
                         Text(record.displayTitle).font(.title2.bold())
@@ -319,7 +321,9 @@ struct RecordDetailView: View {
         .foregroundStyle(AppColors.foreground)
         .navigationTitle(domain == .images ? "" : domain.title)
         .toolbar {
-            if record?.status == .unexported {
+            if deleting {
+                ProgressView(String(localized: "削除中"))
+            } else if record?.status == .unexported {
                 if domain == .images {
                     Menu {
                         Button(String(localized: "削除"), systemImage: "trash", role: .destructive) { showingDelete = true }
@@ -334,23 +338,28 @@ struct RecordDetailView: View {
         }
         .confirmationDialog(String(localized: "この項目を削除しますか？"), isPresented: $showingDelete) {
             Button(String(localized: "削除"), role: .destructive) { Task { await delete() } }
+                .disabled(deleting)
         }
         .task(id: id) { reload() }
         .onChange(of: sync.dataRevision) { _, _ in reload() }
+        .onChange(of: sync.isSynchronizing) { _, _ in reload() }
     }
 
     private func reload() {
         record = sync.cachedRecord(domain: domain, id: id)
-        errorMessage = record == nil ? String(localized: "保存データがありません") : nil
+        errorMessage = record == nil && !sync.isSynchronizing ? String(localized: "保存データがありません") : nil
     }
 
     private func delete() async {
+        guard !deleting else { return }
+        deleting = true
+        defer { deleting = false }
         do {
             try await MobileClient(authentication: authentication).delete(domain, id: id)
             sync.removeCached(domain: domain, id: id)
             onDeleted()
             dismiss()
-        } catch { errorMessage = error.localizedDescription }
+        } catch { errorMessage = MobileOperationError.message(error, taskIsCancelled: Task.isCancelled) }
     }
 }
 
@@ -362,6 +371,8 @@ struct AuthenticatedImageView: View {
     @State private var image: UIImage?
     @State private var errorMessage: String?
     @State private var enlarged = false
+    @State private var retryID = 0
+    @State private var loading = true
 
     var body: some View {
         Group {
@@ -378,24 +389,39 @@ struct AuthenticatedImageView: View {
                         }
                     }
             } else if let errorMessage {
-                Text(errorMessage).foregroundStyle(AppColors.destructive)
-            } else {
+                VStack(spacing: 12) {
+                    Text(errorMessage).foregroundStyle(AppColors.destructive)
+                    Button(String(localized: "再試行")) { retryID += 1 }
+                }
+            } else if loading {
                 ProgressView()
+            } else {
+                Button(String(localized: "再試行")) { retryID += 1 }
             }
         }
-        .task(id: sync.dataRevision) {
-            if let data = sync.cachedMedia(domain: domain, id: id, variant: "original") {
-                image = UIImage(data: data)
+        .task(id: "\(id):\(sync.dataRevision):\(retryID)") {
+            let requestKey = "\(id):\(sync.dataRevision):\(retryID)"
+            errorMessage = nil
+            loading = true
+            defer {
+                if requestKey == "\(id):\(sync.dataRevision):\(retryID)" { loading = false }
+            }
+            if let data = sync.cachedMedia(domain: domain, id: id, variant: "original"), let cached = UIImage(data: data) {
+                image = cached
                 return
             }
             do {
                 let data = try await MobileClient(authentication: authentication).media(domain, id: id, variant: "original")
+                guard !Task.isCancelled else { return }
                 try? sync.cacheMedia(data, domain: domain, id: id, variant: "original")
                 image = UIImage(data: data)
                 if image == nil { errorMessage = MobileClientError.invalidResponse.localizedDescription }
             } catch {
-                if let data = sync.cachedMedia(domain: domain, id: id, variant: "original") { image = UIImage(data: data) }
-                else { errorMessage = error.localizedDescription }
+                if let data = sync.cachedMedia(domain: domain, id: id, variant: "original"), let cached = UIImage(data: data) {
+                    image = cached
+                } else {
+                    errorMessage = MobileOperationError.message(error, taskIsCancelled: Task.isCancelled)
+                }
             }
         }
     }

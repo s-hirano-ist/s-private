@@ -29,6 +29,10 @@ struct SyncErrorMessageTests {
         #expect(SyncCoordinator.syncErrorMessage(for: CancellationError()) == nil)
         #expect(SyncCoordinator.syncErrorMessage(for: URLError(.cancelled)) == nil)
         #expect(SyncCoordinator.syncErrorMessage(for: URLError(.timedOut), taskIsCancelled: true) == nil)
+        #expect(MobileOperationError.message(CancellationError()) == nil)
+        #expect(MobileOperationError.message(URLError(.cancelled)) == nil)
+        #expect(MobileOperationError.message(NSError(domain: NSCocoaErrorDomain, code: NSUserCancelledError)) == nil)
+        #expect(MobileOperationError.message(URLError(.timedOut)) != nil)
     }
 
     @Test("Authentication and connection failures explain how to retry")
@@ -41,6 +45,71 @@ struct SyncErrorMessageTests {
         #expect(connection != nil && connection != URLError(.notConnectedToInternet).localizedDescription)
         #expect(other != nil && other != MobileClientError.invalidResponse.localizedDescription)
         #expect(authentication != connection && connection != other)
+    }
+}
+
+@MainActor
+struct SyncRequestTests {
+    @Test("A manual refresh requested during synchronization runs before both callers finish", arguments: [false, true])
+    func preservesManualRefresh(initialForce: Bool) async throws {
+        let container = try ModelContainer(
+            for: CachedMobileRecord.self, CachedMobileCategory.self, PendingMobileOperation.self, MobileSyncState.self,
+            configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+        )
+        let client = PausedSyncClient()
+        let coordinator = SyncCoordinator(
+            container: container,
+            authentication: AuthenticationModel(),
+            clientFactory: { client }
+        )
+
+        let initial = Task { await coordinator.synchronize(force: initialForce) }
+        while !client.isWaitingForHead { await Task.yield() }
+        let manual = Task { await coordinator.synchronize(force: true) }
+        try await Task.sleep(for: .milliseconds(20))
+        client.resumeHead()
+        await initial.value
+        await manual.value
+
+        #expect(client.headRequests == 1)
+        #expect(client.changeRequests == 2)
+        #expect(!coordinator.isSynchronizing)
+    }
+}
+
+@MainActor
+private final class PausedSyncClient: MobileSyncClient {
+    private var headContinuation: CheckedContinuation<Void, Never>?
+    private(set) var headRequests = 0
+    private(set) var changeRequests = 0
+    var isWaitingForHead: Bool { headContinuation != nil }
+
+    func resumeHead() {
+        headContinuation?.resume()
+        headContinuation = nil
+    }
+
+    func create(_ domain: MobileDomain, input: MobileCreate) async throws {}
+    func chunkedUpload(_ domain: MobileDomain, operationId: UUID, image: Data, fields: [String: String]) async throws {}
+    func media(_ domain: MobileDomain, id: String, variant: String) async throws -> Data { Data() }
+
+    func syncHead() async throws -> String {
+        headRequests += 1
+        await withCheckedContinuation { headContinuation = $0 }
+        return "cursor-0"
+    }
+
+    func snapshot(_ domain: String, after: String) async throws -> MobileSnapshotPage<MobileRecord> {
+        MobileSnapshotPage(data: [], nextAfter: nil)
+    }
+
+    func categorySnapshot(after: String) async throws -> MobileSnapshotPage<MobileCategory> {
+        MobileSnapshotPage(data: [], nextAfter: nil)
+    }
+
+    func changes(cursor: String) async throws -> MobileSyncChanges {
+        changeRequests += 1
+        return MobileSyncChanges(data: [], nextCursor: "cursor-\(changeRequests)", hasMore: false)
     }
 }
 

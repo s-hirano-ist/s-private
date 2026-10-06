@@ -14,6 +14,8 @@ final class AuthenticationModel: ObservableObject {
 
     @Published private(set) var status: Status
     @Published private(set) var ownerKey: String
+    @Published private(set) var logoutError: String?
+    @Published private(set) var isLoggingOut = false
 
     let configuration: Auth0Configuration
     private let credentialsManager: CredentialsManager?
@@ -52,6 +54,7 @@ final class AuthenticationModel: ObservableObject {
     }
 
     func logIn() async {
+        guard status != .working else { return }
         guard let credentialsManager else {
             status = .unavailable
             return
@@ -68,17 +71,27 @@ final class AuthenticationModel: ObservableObject {
             rememberOwner(from: credentials.idToken)
             status = .authenticated
         } catch {
-            status = .error(error.localizedDescription)
+            if MobileOperationError.isCancellation(error, taskIsCancelled: Task.isCancelled) {
+                status = .signedOut
+            } else if let webError = error as? WebAuthError, case .userCancelled = webError {
+                status = .signedOut
+            } else {
+                status = .error(MobileOperationError.message(error, taskIsCancelled: Task.isCancelled)
+                    ?? String(localized: "認証に失敗しました。再試行してください"))
+            }
         }
     }
 
     func logOut() async {
+        guard status == .authenticated && !isLoggingOut else { return }
         guard let credentialsManager else {
             status = .unavailable
             return
         }
 
-        status = .working
+        logoutError = nil
+        isLoggingOut = true
+        defer { isLoggingOut = false }
         do {
             try await Auth0
                 .webAuth(clientId: configuration.clientID, domain: configuration.domain)
@@ -86,7 +99,9 @@ final class AuthenticationModel: ObservableObject {
             try credentialsManager.clear()
             status = .signedOut
         } catch {
-            status = .error(error.localizedDescription)
+            if MobileOperationError.isCancellation(error, taskIsCancelled: Task.isCancelled) { return }
+            if let webError = error as? WebAuthError, case .userCancelled = webError { return }
+            logoutError = MobileOperationError.message(error, taskIsCancelled: Task.isCancelled)
         }
     }
 
@@ -102,6 +117,9 @@ final class AuthenticationModel: ObservableObject {
             status = .authenticated
             return credentials.accessToken
         } catch {
+            if MobileOperationError.isCancellation(error, taskIsCancelled: Task.isCancelled) {
+                throw CancellationError()
+            }
             status = .signedOut
             throw MobileClientError.authenticationRequired
         }
