@@ -5,6 +5,7 @@ on:
     paths:
       - .github/workflows/*.yaml
       - .github/workflows/*.yml
+      - .github/actions/**
   workflow_dispatch:
 
 jobs:
