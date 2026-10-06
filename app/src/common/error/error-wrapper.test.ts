@@ -10,7 +10,7 @@ import { Prisma } from "@s-hirano-ist/s-database";
 import { NotificationError } from "@s-hirano-ist/s-notification";
 import { S3Error } from "@s-hirano-ist/s-storage";
 import { APIError } from "better-auth/api";
-import { describe, expect, test, vi } from "vitest";
+import { describe, expect, test, vi } from "vite-plus/test";
 import { wrapServerSideErrorForClient } from "./error-wrapper";
 import { OperationPhaseError } from "./operation-phase-error";
 

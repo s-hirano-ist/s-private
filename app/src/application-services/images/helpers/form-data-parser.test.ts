@@ -10,7 +10,7 @@ import {
 	type Path,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
 import { FileNotAllowedError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import { parseAddImageFormData } from "./form-data-parser";
 
 vi.mock("@/common/utils/form-data-utils");

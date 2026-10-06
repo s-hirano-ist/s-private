@@ -1,6 +1,13 @@
 import { auth, isLocalDevAuthEnabled } from "@/infrastructures/auth/auth";
 import { redirect } from "next/navigation";
-import { beforeEach, describe, expect, type Mock, test, vi } from "vitest";
+import {
+	beforeEach,
+	describe,
+	expect,
+	type Mock,
+	test,
+	vi,
+} from "vite-plus/test";
 
 vi.mock("@/infrastructures/auth/auth", () => ({
 	auth: { api: { getSession: vi.fn() } },

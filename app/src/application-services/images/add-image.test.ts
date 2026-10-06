@@ -8,7 +8,7 @@ import type {
 import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/services/storage-service.interface";
 import { getSelfId, requireAuth } from "@/common/auth/session";
 import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import { addImage } from "./add-image";
 import { addImageCore } from "./add-image.core";
 import { parseAddImageFormData } from "./helpers/form-data-parser";

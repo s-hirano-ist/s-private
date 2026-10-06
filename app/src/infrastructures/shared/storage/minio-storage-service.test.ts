@@ -1,7 +1,7 @@
 import { minioClient } from "@/minio";
 import { StorageOperationError } from "@s-hirano-ist/s-storage";
 import { Readable } from "node:stream";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import { minioStorageService } from "./minio-storage-service";
 
 describe("MinioStorageService", () => {

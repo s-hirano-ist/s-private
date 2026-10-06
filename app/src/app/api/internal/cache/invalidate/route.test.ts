@@ -1,6 +1,6 @@
 import { serverLogger } from "@/infrastructures/observability/server";
 import { revalidateTag } from "next/cache";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 
 const mockedEnv = {
 	CACHE_INVALIDATION_SECRET: "test-secret" as string | undefined,

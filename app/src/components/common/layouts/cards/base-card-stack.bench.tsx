@@ -1,6 +1,6 @@
 import type { CardStackInitialData, LinkCardData } from "./types";
 import { cleanup, render } from "@testing-library/react";
-import { afterEach, describe, test, vi } from "vitest";
+import { afterEach, describe, test, vi } from "vite-plus/test";
 import { BaseCardStackWrapper } from "./base-card-stack";
 
 vi.mock("next-intl", () => ({

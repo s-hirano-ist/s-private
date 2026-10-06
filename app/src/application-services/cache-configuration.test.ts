@@ -1,5 +1,5 @@
 import { unstable_cache } from "next/cache";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import { getExportedArticles } from "./articles/get-articles";
 import { getUnexportedBooks } from "./books/get-books";
 import { getExportedImages } from "./images/get-images";

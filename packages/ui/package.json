@@ -118,7 +118,7 @@
 		"clean": "rm -rf dist",
 		"prepublishOnly": "pnpm run build",
 		"typecheck": "tsc --noEmit",
-		"test": "vitest run",
+		"test": "vp test run",
 		"test:consumer": "tsc -p fixtures/vite/tsconfig.json --noEmit && vite build fixtures/vite",
 		"validate:package": "publint && npm_config_cache=/tmp/s-ui-npm-cache attw --pack . --profile esm-only --exclude-entrypoints ./styles.css ./package.json"
 	},
