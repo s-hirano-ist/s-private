@@ -7,7 +7,6 @@ dist/
 .env.production
 .DS_Store
 node_modules
-.turbo
 debug.log
 
 # Editor

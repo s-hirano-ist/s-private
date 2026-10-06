@@ -3,6 +3,59 @@ packages:
   - services/*
   - packages/*
 
+tasks:
+  build:
+    dependsOn:
+      - ^build
+    outputs:
+      - dist*/**
+      - .next*/**
+      - '*/generated*/**'
+      - erd*/**
+    env:
+      - AUTH0_CLIENT_ID
+      - AUTH0_CLIENT_SECRET
+      - AUTH0_ISSUER_BASE_URL
+      - AUTH_SECRET
+      - BETTER_AUTH_URL
+      - CACHE_INVALIDATION_SECRET
+      - CF_ACCESS_CLIENT_ID
+      - CF_ACCESS_CLIENT_SECRET
+      - CI
+      - DATABASE_URL
+      - EMBEDDING_URL
+      - EMBEDDING_MODEL
+      - EMBEDDING_VECTOR_SIZE
+      - LOCAL_AUTH_EMAIL
+      - LOCAL_AUTH_NAME
+      - LOCAL_AUTH_PASSWORD
+      - LOCAL_DEV_MODE
+      - MOBILE_API_AUDIENCE
+      - MINIO_ACCESS_KEY
+      - MINIO_BUCKET_NAME
+      - MINIO_HOST
+      - MINIO_PORT
+      - MINIO_SECRET_KEY
+      - MINIO_USE_SSL
+      - NEXT_PUBLIC_SENTRY_DSN
+      - NODE_EXTRA_CA_CERTS
+      - NODE_TLS_REJECT_UNAUTHORIZED
+      - PUSHOVER_APP_TOKEN
+      - PUSHOVER_URL
+      - PUSHOVER_USER_KEY
+      - QDRANT_API_KEY
+      - QDRANT_COLLECTION_NAME
+      - QDRANT_URL
+      - SENTRY_AUTH_TOKEN
+      - SENTRY_REPORT_URL
+      - SKIP_ENV_VALIDATION
+      - VERCEL
+      - VERCEL_ENV
+
+pipelines:
+  build:
+    - build
+
 catalog:
   '@tailwindcss/postcss': 4.3.3
   '@tailwindcss/typography': 0.5.20
