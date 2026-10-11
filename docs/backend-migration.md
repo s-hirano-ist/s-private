@@ -14,7 +14,13 @@ backendは認証・tenant・ユースケース・永続化・検索・同期・�
 `docs/openapi/backend-v1.json` はレビュー用の生成スナップショットであり手編集しない。
 Swiftもこの1ファイルを入力にし、コピーは保持しない。
 DB接続、環境変数、Next.js、coreを読み込まずに生成できる。
-`/api/v1` の実処理は後続PRで追加する。
+`/api/v1` の読み取り処理は共有backendのHono routerへ接続し、Next.jsではfetchだけを委譲する。
+CookieまたはAuth0 Bearerから所有者を確定し、tenant contextを確立してからDBへアクセスする。
+Authorizationがある場合はCookieへfallbackしない。Cookie mutationには信頼するWeb originを必須とする。
+DBの日時をISO文字列にし、公開Zod DTOで内部のuserId等を除去してから応答する。
+検索indexのpayloadは公開せず、所有者のDBレコードで照合した本文・metadataだけを返す。
+読み取り応答とエラーはprivate/no-storeとし、Web sessionの更新Cookieは入口から転送する。
+mutationとuploadの接続は次段のPRで行う。
 既存の `/api/mobile/v1` はNext.jsのcatch-all Route HandlerからHonoへ委譲する。
 `app/src/backend/http/mobile` にHTTP処理を集約し、Next.jsのparams型を持たないcontrollerへ分離する。
 Bearer認証・tenant・操作ID・upload・同期の既存ユースケースとwire形式を共有する。
@@ -83,7 +89,9 @@ Better AuthのOAuthプロトコルと内部Cronは、一般クライアント契
 | 4 | images／books・Sharp・MinIOを抽出 |
 | 5 | 検索・同期・operation管理を抽出 |
 | 6 | 認証・tenant・通知・Cron・観測処理を抽出 |
-| 7 | Webを生成クライアントへ切替、永続データキャッシュを撤去 |
+| 7a | 共通APIの認証・tenant境界と読み取りHTTP処理を接続 |
+| 7b | mutation・分割uploadを共通APIへ接続 |
+| 7c | Webを生成クライアントへ切替、永続データキャッシュを撤去 |
 | 8 | iOSを生成クライアント・共通APIへ切替 |
 | 9 | 独立Hono backendの起動・Vercel配置準備 |
 | 10 | 手動デプロイ確認後に接続先切替、暫定実装の撤去 |

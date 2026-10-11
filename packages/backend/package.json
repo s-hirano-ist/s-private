@@ -47,6 +47,10 @@
 		"./notifications/*": {
 			"types": "./src/notifications/*.ts",
 			"import": "./src/notifications/*.ts"
+		},
+		"./api/*": {
+			"types": "./src/api/*.ts",
+			"import": "./src/api/*.ts"
 		}
 	},
 	"scripts": {
@@ -63,7 +67,10 @@
 		"zod": "catalog:",
 		"@s-hirano-ist/s-search": "workspace:*",
 		"jose": "6.2.12",
-		"pino": "10.4.0"
+		"pino": "10.4.0",
+		"@hono/zod-openapi": "1.6.3",
+		"hono": "catalog:",
+		"@s-hirano-ist/s-api-contracts": "workspace:*"
 	},
 	"devDependencies": {
 		"@types/node": "catalog:",

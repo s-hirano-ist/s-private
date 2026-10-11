@@ -571,6 +571,7 @@ const boundaryRules = [
 				"^app/src/common/",
 				"^app/src/app/",
 				"^app/src/backend/http/mobile/",
+				"^app/src/backend/api\\.ts$",
 				"^packages/ui/",
 			],
 		},
