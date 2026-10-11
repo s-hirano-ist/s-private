@@ -1,282 +1,84 @@
-import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
-import {
-	makeBookMarkdown,
-	makeBookTitle,
-	makeGoogleAuthors,
-	makeGoogleImgSrc,
-	makeGoogleSubTitle,
-	makeISBN,
-	makeRating,
-} from "@s-hirano-ist/s-core/books/entities/book-entity";
-import {
-	makeCreatedAt,
-	makeExportedAt,
-	makeId,
-	makeUserId,
-} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import {
 	getBookByISBN,
 	getExportedBooks,
 	getExportedBooksCount,
 	getUnexportedBooks,
-} from "./get-books";
-
-vi.mock("@/infrastructures/books/repositories/books-query-repository", () => ({
-	booksQueryRepository: {
-		findMany: vi.fn(),
-		count: vi.fn(),
-		findByISBN: vi.fn(),
-	},
+} from "@/application-services/books/get-books";
+import { getBackendClient } from "@/common/backend/server-client";
+import { createBackendClient, ApiHttpError } from "@s-hirano-ist/s-api-client";
+import { beforeEach, expect, test, vi } from "vite-plus/test";
+vi.mock("@/common/backend/server-client", () => ({
+	getBackendClient: vi.fn(),
 }));
-
-vi.mock("@/common/auth/session", () => ({
-	getSelfId: vi.fn().mockResolvedValue("test-user-id"),
-}));
-
-describe("get-books", () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
+const book = {
+	id: "book-id",
+	isbn: "9780306406157",
+	title: "Book",
+	markdown: null,
+	imagePath: "cover.png",
+	googleAuthors: ["Author"],
+	googleSubTitle: "Subtitle",
+	googleImgSrc: "https://books.google.com/cover",
+	rating: 3,
+	tags: ["a,b", "c"],
+	status: "EXPORTED",
+	createdAt: "2026-10-11T00:00:00Z",
+	updatedAt: "2026-10-11T00:00:00Z",
+	exportedAt: null,
+};
+beforeEach(() => vi.clearAllMocks());
+function fixture(payload: unknown) {
+	const fetch = vi
+		.fn<typeof globalThis.fetch>()
+		.mockResolvedValue(Response.json(payload));
+	vi.mocked(getBackendClient).mockResolvedValue(
+		createBackendClient({ baseURL: "https://backend.example/api/v1", fetch }),
+	);
+	return fetch;
+}
+test("uses ID media URLs for uploaded covers and preserves external cover fallback", async () => {
+	const fetch = fixture({ data: [book], totalCount: 1, offset: 0, limit: 24 });
+	expect(await getExportedBooks(0)).toEqual({
+		data: [
+			{
+				id: book.id,
+				title: book.title,
+				href: book.isbn,
+				image: "/api/v1/media/books/book-id/thumbnail",
+				subtitle: "Subtitle",
+				authors: "Author",
+			},
+		],
+		totalCount: 1,
 	});
-
-	describe("getExportedBooks", () => {
-		test("should fetch and transform books correctly", async () => {
-			vi.mocked(booksQueryRepository.findMany).mockResolvedValue([
-				{
-					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b"),
-					title: makeBookTitle("Test Book 1"),
-					isbn: makeISBN("978-0123456789"),
-					googleImgSrc: makeGoogleImgSrc("https://example.com/image-1.jpg"),
-					imagePath: undefined,
-					googleAuthors: makeGoogleAuthors(["Author A"]),
-					googleSubTitle: makeGoogleSubTitle("Subtitle 1"),
-				},
-				{
-					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c"),
-					title: makeBookTitle("Test Book 2"),
-					isbn: makeISBN("978-0987654321"),
-					googleImgSrc: makeGoogleImgSrc("https://example.com/image-2.jpg"),
-					imagePath: undefined,
-					googleAuthors: undefined,
-					googleSubTitle: undefined,
-				},
-			]);
-			vi.mocked(booksQueryRepository.count).mockResolvedValue(5);
-
-			const result = await getExportedBooks(0);
-
-			expect(booksQueryRepository.findMany).toHaveBeenCalledWith(
-				"test-user-id",
-				"EXPORTED",
-				expect.objectContaining({
-					skip: 0,
-					take: 24,
-					orderBy: { createdAt: "desc" },
-				}),
-			);
-
-			expect(result).toEqual({
-				data: [
-					{
-						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b",
-						title: "Test Book 1",
-						href: "9780123456789",
-						image: "https://example.com/image-1.jpg",
-						authors: "Author A",
-						subtitle: "Subtitle 1",
-					},
-					{
-						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c",
-						title: "Test Book 2",
-						href: "9780987654321",
-						image: "https://example.com/image-2.jpg",
-						authors: undefined,
-						subtitle: undefined,
-					},
-				],
-				totalCount: 5,
-			});
-		});
-
-		test("should handle empty results", async () => {
-			vi.mocked(booksQueryRepository.findMany).mockResolvedValue([]);
-			vi.mocked(booksQueryRepository.count).mockResolvedValue(0);
-
-			const result = await getExportedBooks(0);
-
-			expect(result).toEqual({
-				data: [],
-				totalCount: 0,
-			});
-		});
-
-		test("should handle database errors", async () => {
-			vi.mocked(booksQueryRepository.findMany).mockRejectedValue(
-				new Error("Database error"),
-			);
-
-			await expect(getExportedBooks(0)).rejects.toThrow("Database error");
-		});
-	});
-
-	describe("getExportedBooksCount", () => {
-		test("should return count of exported books", async () => {
-			vi.mocked(booksQueryRepository.count).mockResolvedValue(42);
-
-			const result = await getExportedBooksCount();
-
-			expect(booksQueryRepository.count).toHaveBeenCalledWith(
-				"test-user-id",
-				"EXPORTED",
-			);
-			expect(result).toEqual(42);
-		});
-
-		test("should return 0 for empty collection", async () => {
-			vi.mocked(booksQueryRepository.count).mockResolvedValue(0);
-
-			const result = await getExportedBooksCount();
-
-			expect(result).toEqual(0);
-		});
-
-		test("should handle database errors", async () => {
-			vi.mocked(booksQueryRepository.count).mockRejectedValue(
-				new Error("Database error"),
-			);
-
-			await expect(getExportedBooksCount()).rejects.toThrow("Database error");
-		});
-	});
-
-	describe("getUnexportedBooks", () => {
-		test("should fetch and transform unexported books correctly", async () => {
-			vi.mocked(booksQueryRepository.findMany).mockResolvedValue([
-				{
-					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d"),
-					title: makeBookTitle("Unexported Book 1"),
-					isbn: makeISBN("978-1111111111"),
-					googleImgSrc: makeGoogleImgSrc(
-						"https://example.com/unexported-1.jpg",
-					),
-					imagePath: undefined,
-					googleAuthors: makeGoogleAuthors(["Author B", "Author C"]),
-					googleSubTitle: undefined,
-				},
-				{
-					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e"),
-					title: makeBookTitle("Unexported Book 2"),
-					isbn: makeISBN("978-2222222222"),
-					googleImgSrc: undefined,
-					imagePath: undefined,
-					googleAuthors: undefined,
-					googleSubTitle: undefined,
-				},
-			]);
-			vi.mocked(booksQueryRepository.count).mockResolvedValue(2);
-
-			const result = await getUnexportedBooks(0);
-
-			expect(booksQueryRepository.findMany).toHaveBeenCalledWith(
-				"test-user-id",
-				"UNEXPORTED",
-				expect.objectContaining({
-					skip: 0,
-					take: 24,
-					orderBy: { createdAt: "desc" },
-				}),
-			);
-
-			expect(result).toEqual({
-				data: [
-					{
-						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d",
-						title: "Unexported Book 1",
-						href: "9781111111111",
-						image: "https://example.com/unexported-1.jpg",
-						authors: "Author B, Author C",
-						subtitle: undefined,
-					},
-					{
-						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e",
-						title: "Unexported Book 2",
-						href: "9782222222222",
-						image: null,
-						authors: undefined,
-						subtitle: undefined,
-					},
-				],
-				totalCount: 2,
-			});
-		});
-
-		test("should handle empty unexported results", async () => {
-			vi.mocked(booksQueryRepository.findMany).mockResolvedValue([]);
-			vi.mocked(booksQueryRepository.count).mockResolvedValue(0);
-
-			const result = await getUnexportedBooks(0);
-
-			expect(result).toEqual({
-				data: [],
-				totalCount: 0,
-			});
-		});
-
-		test("should handle database errors for unexported books", async () => {
-			vi.mocked(booksQueryRepository.findMany).mockRejectedValue(
-				new Error("Database error"),
-			);
-
-			await expect(getUnexportedBooks(0)).rejects.toThrow("Database error");
-		});
-	});
-
-	describe("getBookByISBN", () => {
-		test("should fetch book by ISBN successfully", async () => {
-			const mockBook = {
-				id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7f"),
-				userId: makeUserId("test-user-id"),
-				isbn: makeISBN("978-0123456789"),
-				title: makeBookTitle("Test Book"),
-				status: "EXPORTED" as const,
-				createdAt: makeCreatedAt(new Date("2024-01-01")),
-				exportedAt: makeExportedAt(new Date("2024-01-02")),
-				googleImgSrc: makeGoogleImgSrc("https://example.com/book.jpg"),
-				markdown: makeBookMarkdown("# Book Content"),
-				rating: makeRating(4),
-			};
-
-			vi.mocked(booksQueryRepository.findByISBN).mockResolvedValue(mockBook);
-
-			const result = await getBookByISBN("978-0123456789");
-
-			expect(booksQueryRepository.findByISBN).toHaveBeenCalledWith(
-				"9780123456789",
-				"test-user-id",
-			);
-			expect(result).toEqual(mockBook);
-		});
-
-		test("should return null when book not found", async () => {
-			vi.mocked(booksQueryRepository.findByISBN).mockResolvedValue(null);
-
-			const result = await getBookByISBN("978-9999999999");
-
-			expect(booksQueryRepository.findByISBN).toHaveBeenCalledWith(
-				"9789999999999",
-				"test-user-id",
-			);
-			expect(result).toBeNull();
-		});
-
-		test("should handle database errors for book lookup", async () => {
-			vi.mocked(booksQueryRepository.findByISBN).mockRejectedValue(
-				new Error("Database error"),
-			);
-
-			await expect(getBookByISBN("978-0123456789")).rejects.toThrow(
-				"Database error",
-			);
-		});
-	});
+	fetch.mockResolvedValue(
+		Response.json({
+			data: [{ ...book, imagePath: null }],
+			totalCount: 1,
+			offset: 0,
+			limit: 24,
+		}),
+	);
+	expect((await getUnexportedBooks(0)).data[0].image).toBe(book.googleImgSrc);
+});
+test("gets counts and viewer arrays without domain casts", async () => {
+	const fetch = fixture({ count: 6 });
+	expect(await getExportedBooksCount()).toBe(6);
+	fetch.mockResolvedValue(Response.json(book));
+	const detail = await getBookByISBN(book.isbn);
+	expect(detail?.tags).toEqual(["a,b", "c"]);
+	expect(detail?.googleAuthors).toEqual(["Author"]);
+});
+test("returns null only for missing books and propagates backend failures", async () => {
+	const fetch = fixture(book);
+	fetch.mockResolvedValue(
+		Response.json({ error: { code: "NOT_FOUND" } }, { status: 404 }),
+	);
+	expect(await getBookByISBN("9780306406157")).toBeNull();
+	fetch.mockResolvedValue(
+		Response.json({ error: { code: "API_UNAVAILABLE" } }, { status: 503 }),
+	);
+	await expect(getBookByISBN("9780306406157")).rejects.toBeInstanceOf(
+		ApiHttpError,
+	);
 });

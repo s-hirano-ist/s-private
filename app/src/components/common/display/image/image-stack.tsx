@@ -25,6 +25,7 @@ function loadLightbox(): Promise<LightboxComponent> {
 }
 
 export type ImageData = {
+	alt?: string;
 	height?: number | null;
 	id?: string;
 	originalPath: string;
@@ -47,13 +48,13 @@ type ImageClickableProps = {
 function ImageClickable({ image, onImageClick }: ImageClickableProps) {
 	return (
 		<button
-			aria-label={`Open image ${image.originalPath} in lightbox`}
+			aria-label={`Open ${image.alt ?? `image ${image.originalPath}`} in lightbox`}
 			className="cursor-pointer"
 			onClick={onImageClick}
 			type="button"
 		>
 			<Image
-				alt={`Image ${image.originalPath}`}
+				alt={image.alt ?? `Image ${image.originalPath}`}
 				height={96}
 				src={image.thumbnailPath}
 				unoptimized
@@ -115,7 +116,7 @@ export function ImageStack({ data, lastElementRef }: ImageStackProps) {
 		src: image.originalPath,
 		width: image.width || undefined,
 		height: image.height || undefined,
-		alt: `Image ${image.originalPath}`,
+		alt: image.alt ?? `Image ${image.originalPath}`,
 	}));
 
 	const Lightbox = lightboxComponent;
@@ -173,7 +174,7 @@ export function EditableImageStack({
 		src: image.originalPath,
 		width: image.width || undefined,
 		height: image.height || undefined,
-		alt: `Image ${image.originalPath}`,
+		alt: image.alt ?? `Image ${image.originalPath}`,
 	}));
 
 	const Lightbox = lightboxComponent;
@@ -197,7 +198,7 @@ export function EditableImageStack({
 						<DeleteButtonWithModal
 							deleteAction={deleteAction}
 							id={image.id}
-							title={image.originalPath}
+							title={image.alt ?? image.originalPath}
 						/>
 					) : null
 				}

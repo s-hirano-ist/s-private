@@ -11,6 +11,7 @@ import {
 	listSyncSnapshot,
 	listSyncChanges,
 } from "@s-hirano-ist/s-backend/mobile/sync";
+import { ISBN } from "@s-hirano-ist/s-core/books/entities/book-entity";
 import { Readable } from "node:stream";
 
 // DB Dates become ISO strings, then the public DTO schema strips internal fields.
@@ -69,7 +70,14 @@ export function createReadService(deps: ReadServiceDeps) {
 		page,
 		count,
 		async lookup(domain: "books" | "notes", owner: string, key: string) {
-			const id = await mobile.content.lookupContentId(domain, owner, key);
+			const normalized = domain === "books" ? ISBN.safeParse(key) : null;
+			if (normalized && !normalized.success)
+				throw new MobileApiError("VALIDATION_ERROR", 422);
+			const id = await mobile.content.lookupContentId(
+				domain,
+				owner,
+				normalized?.success ? normalized.data : key,
+			);
 			if (!id) throw new MobileApiError("NOT_FOUND", 404);
 			return detail(domain, owner, id);
 		},

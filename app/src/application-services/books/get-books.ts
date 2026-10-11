@@ -1,157 +1,61 @@
-/**
- * Book query application services.
- *
- * @remarks
- * Provides cached data access for books with pagination support.
- * Books are identified by ISBN and include Google Books metadata.
- *
- * @module
- */
-
-import type { GetCount, GetPaginatedData } from "@/common/types";
 import type { ImageCardStackInitialData } from "@/components/common/layouts/cards/types";
-import { getSelfId } from "@/common/auth/session";
+import type { Book, ContentStatus } from "@s-hirano-ist/s-api-client/models";
+import { getBackendClient } from "@/common/backend/server-client";
 import { PAGE_SIZE } from "@/common/constants";
-import { tenantContext } from "@/common/tenant/tenant-context";
-import { booksQueryRepository } from "@/infrastructures/books/repositories/books-query-repository";
-import {
-	buildContentCacheTag,
-	buildCountCacheTag,
-	buildPaginatedContentCacheTag,
-} from "@/infrastructures/shared/cache/cache-tag-builder";
-import { booksStorageService } from "@/infrastructures/shared/storage/books-storage-service";
-import { makeISBN } from "@s-hirano-ist/s-core/books/entities/book-entity";
-import {
-	makeExportedStatus,
-	makeUnexportedStatus,
-	type Status,
-	type UserId,
-} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { unstable_cache } from "next/cache";
+import { ApiHttpError } from "@s-hirano-ist/s-api-client";
 import { cache } from "react";
 
-const API_BOOK_THUMBNAIL_PATH = "/api/books/images/thumbnail";
-
-/**
- * Gets total count of books for a user and status.
- *
- * @internal
- */
-const getBooksCountCached = async (
-	userId: UserId,
-	status: Status,
-): Promise<number> => {
-	return unstable_cache(
-		() => booksQueryRepository.count(userId, status),
-		["books", "count", userId, status],
-		{ tags: [buildCountCacheTag("books", status, userId)] },
-	)();
-};
-
-/**
- * Fetches paginated books with cache support.
- *
- * @internal
- */
-const getBooksCached = async (
-	currentCount: number,
-	userId: UserId,
-	status: Status,
-): Promise<ImageCardStackInitialData> => {
-	return unstable_cache(
-		async () => {
-			const [books, totalCount] = await Promise.all([
-				booksQueryRepository.findMany(userId, status, {
-					skip: currentCount,
-					take: PAGE_SIZE,
-					orderBy: { createdAt: "desc" },
-				}),
-				getBooksCountCached(userId, status),
-			]);
-
-			return {
-				data: books.map((d) => ({
-					id: d.id,
-					title: d.title,
-					href: d.isbn,
-					image: d.imagePath
-						? `${API_BOOK_THUMBNAIL_PATH}/${d.imagePath}`
-						: (d.googleImgSrc ?? null),
-					subtitle: d.googleSubTitle ? String(d.googleSubTitle) : undefined,
-					authors: d.googleAuthors
-						? (d.googleAuthors as unknown as string[]).join(", ")
-						: undefined,
-				})),
-				totalCount,
-			};
-		},
-		["books", "list", userId, status, String(currentCount)],
-		{
-			tags: [
-				buildContentCacheTag("books", status, userId),
-				buildPaginatedContentCacheTag("books", status, userId, currentCount),
-			],
-		},
-	)();
-};
-
-/**
- * Fetches paginated unexported books for the current user.
- */
-export const getUnexportedBooks: GetPaginatedData<ImageCardStackInitialData> =
-	cache(async (currentCount: number) => {
-		const userId = await getSelfId();
-		return tenantContext.run({ userId }, () =>
-			getBooksCached(currentCount, userId, makeUnexportedStatus()),
-		);
-	});
-
-/**
- * Fetches paginated exported books for the current user.
- */
-export const getExportedBooks: GetPaginatedData<ImageCardStackInitialData> =
-	cache(async (currentCount: number) => {
-		const userId = await getSelfId();
-		return tenantContext.run({ userId }, () =>
-			getBooksCached(currentCount, userId, makeExportedStatus().status),
-		);
-	});
-
-/**
- * Gets the total count of exported books for the current user.
- */
-export const getExportedBooksCount: GetCount = cache(
-	async (): Promise<number> => {
-		const userId = await getSelfId();
-		return tenantContext.run({ userId }, () =>
-			getBooksCountCached(userId, makeExportedStatus().status),
-		);
+export type BookViewerData = Pick<Book, "id" | "isbn" | "title" | "rating"> &
+	Partial<
+		Pick<
+			Book,
+			| "markdown"
+			| "tags"
+			| "imagePath"
+			| "googleSubTitle"
+			| "googleDescription"
+			| "googleHref"
+			| "googleImgSrc"
+		>
+	> & { googleAuthors?: readonly string[] | null };
+const page = cache(
+	async (
+		offset: number,
+		status: ContentStatus,
+	): Promise<ImageCardStackInitialData> => {
+		const { data } = await (
+			await getBackendClient()
+		).listBooks({ offset, limit: PAGE_SIZE, status });
+		return {
+			data: data.data.map((book) => ({
+				id: book.id,
+				title: book.title,
+				href: book.isbn,
+				image: book.imagePath
+					? `/api/v1/media/books/${encodeURIComponent(book.id)}/thumbnail`
+					: (book.googleImgSrc ?? null),
+				subtitle: book.googleSubTitle ?? undefined,
+				authors: book.googleAuthors?.join(", "),
+			})),
+			totalCount: data.totalCount,
+		};
 	},
 );
-
-/**
- * Fetches a single book by its ISBN.
- *
- * @param isbn - ISBN to search for
- * @returns Book data or null if not found
- */
-export const getBookByISBN = cache(async (isbn: string) => {
-	const userId = await getSelfId();
-	return tenantContext.run({ userId }, () =>
-		booksQueryRepository.findByISBN(makeISBN(isbn), userId),
-	);
-});
-
-/**
- * Retrieves book cover image from MinIO storage.
- *
- * @param path - The storage path for the image
- * @param isThumbnail - Whether to retrieve the thumbnail or original image
- * @returns A readable stream of the image data
- */
-export const getBooksImageFromStorage = async (
-	path: string,
-	isThumbnail: boolean,
-) => {
-	return await booksStorageService.getImage(path, isThumbnail);
-};
+export const getUnexportedBooks = (offset: number) =>
+	page(offset, "UNEXPORTED");
+export const getExportedBooks = (offset: number) => page(offset, "EXPORTED");
+export const getExportedBooksCount = cache(
+	async () =>
+		(await (await getBackendClient()).countBooks({ status: "EXPORTED" })).data
+			.count,
+);
+export const getBookByISBN = cache(
+	async (isbn: string): Promise<BookViewerData | null> => {
+		try {
+			return (await (await getBackendClient()).getBookByIsbn(isbn)).data;
+		} catch (error) {
+			if (error instanceof ApiHttpError && error.status === 404) return null;
+			throw error;
+		}
+	},
+);
