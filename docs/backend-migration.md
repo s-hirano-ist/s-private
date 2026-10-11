@@ -14,8 +14,12 @@ backendは認証・tenant・ユースケース・永続化・検索・同期・�
 `docs/openapi/backend-v1.json` はレビュー用の生成スナップショットであり手編集しない。
 Swiftもこの1ファイルを入力にし、コピーは保持しない。
 DB接続、環境変数、Next.js、coreを読み込まずに生成できる。
-現在は契約生成基盤のみで、`/api/v1` の実処理は後続PRで追加する。
-既存の `/api/mobile/v1`、手書きiOSクライアント、Webの通信経路は引き続き有効。
+`/api/v1` の実処理は後続PRで追加する。
+既存の `/api/mobile/v1` はNext.jsのcatch-all Route HandlerからHonoへ委譲する。
+`app/src/backend/http/mobile` にHTTP処理を集約し、Next.jsのparams型を持たないcontrollerへ分離する。
+Bearer認証・tenant・操作ID・upload・同期の既存ユースケースとwire形式を共有する。
+一時的な配置であり、後続PRで独立backendのpackageへ移す。
+手書きiOSクライアントとWebの通信経路は引き続き有効。
 
 ```bash
 pnpm api:generate

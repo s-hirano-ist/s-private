@@ -13,14 +13,11 @@ import {
 	mobileJson,
 } from "@/application-services/mobile/http";
 
-type Context = { params: Promise<{ domain: string }> };
+type Params = { domain: string };
 
-export async function GET(
-	request: Request,
-	{ params }: Context,
-): Promise<Response> {
+export async function GET(request: Request, params: Params): Promise<Response> {
 	try {
-		const { domain } = await params;
+		const { domain } = params;
 		const parsedDomain = domainSchema.parse(domain);
 		const url = new URL(request.url);
 		const query = listSchema.parse(Object.fromEntries(url.searchParams));
@@ -38,10 +35,10 @@ export async function GET(
 
 export async function POST(
 	request: Request,
-	{ params }: Context,
+	params: Params,
 ): Promise<Response> {
 	try {
-		const { domain } = await params;
+		const { domain } = params;
 		const parsedDomain = domainSchema.parse(domain);
 		if (parsedDomain === "images" || parsedDomain === "books")
 			throw new MobileApiError("VALIDATION_ERROR", 422);

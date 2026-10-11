@@ -7,13 +7,10 @@ import {
 	cancelMobileUpload,
 	getMobileUpload,
 } from "@/application-services/mobile/uploads";
-type Context = { params: Promise<{ id: string }> };
-export async function GET(
-	request: Request,
-	{ params }: Context,
-): Promise<Response> {
+type Params = { id: string };
+export async function GET(request: Request, params: Params): Promise<Response> {
 	try {
-		const { id } = await params;
+		const { id } = params;
 		return await withMobileTenant(request, async (userId) =>
 			mobileJson(await getMobileUpload(userId, id)),
 		);
@@ -23,10 +20,10 @@ export async function GET(
 }
 export async function DELETE(
 	request: Request,
-	{ params }: Context,
+	params: Params,
 ): Promise<Response> {
 	try {
-		const { id } = await params;
+		const { id } = params;
 		return await withMobileTenant(request, async (userId) => {
 			await cancelMobileUpload(userId, id);
 			return new Response(null, { status: 204 });
