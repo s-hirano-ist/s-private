@@ -1,32 +1,9 @@
-/**
- * Note query application services.
- *
- * @remarks
- * Provides cached data access for notes with pagination support.
- * Uses Next.js cache tags for efficient cache invalidation.
- *
- * @module
- */
-
 import type { GetCount, GetPaginatedData } from "@/common/types";
 import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
-import { getSelfId } from "@/common/auth/session";
+import type { ContentStatus } from "@s-hirano-ist/s-api-client/models";
+import { getBackendClient } from "@/common/backend/server-client";
 import { PAGE_SIZE } from "@/common/constants";
-import { tenantContext } from "@/common/tenant/tenant-context";
-import { notesQueryRepository } from "@/infrastructures/notes/repositories/notes-query-repository";
-import {
-	buildContentCacheTag,
-	buildCountCacheTag,
-	buildPaginatedContentCacheTag,
-} from "@/infrastructures/shared/cache/cache-tag-builder";
-import { makeNoteTitle } from "@s-hirano-ist/s-core/notes/entities/note-entity";
-import {
-	makeExportedStatus,
-	makeUnexportedStatus,
-	type Status,
-	type UserId,
-} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { unstable_cache } from "next/cache";
+import { ApiHttpError } from "@s-hirano-ist/s-api-client";
 import { cache } from "react";
 
 const stripMarkdownLinks = (value: string): string => {
@@ -63,125 +40,56 @@ const stripMarkdownLinks = (value: string): string => {
 	return output;
 };
 
-/**
- * Gets total count of notes for a user and status.
- *
- * @internal
- */
-const getNotesCountCached = async (
-	userId: UserId,
-	status: Status,
-): Promise<number> => {
-	return unstable_cache(
-		() => notesQueryRepository.count(userId, status),
-		["notes", "count", userId, status],
-		{ tags: [buildCountCacheTag("notes", status, userId)] },
-	)();
-};
-
-/**
- * Fetches paginated notes with cache support.
- *
- * @param currentCount - Number of items to skip (offset)
- * @param userId - User ID for data isolation
- * @param status - Note status filter (UNEXPORTED/EXPORTED)
- * @returns Paginated note data with total count
- *
- * @internal
- */
-const getNotesCached = async (
-	currentCount: number,
-	userId: UserId,
-	status: Status,
-): Promise<LinkCardStackInitialData> => {
-	return unstable_cache(
-		async () => {
-			const [notes, totalCount] = await Promise.all([
-				notesQueryRepository.findMany(userId, status, {
-					skip: currentCount,
-					take: PAGE_SIZE,
-					orderBy: { createdAt: "desc" },
-				}),
-				getNotesCountCached(userId, status),
-			]);
-
-			return {
-				data: notes.map((d) => {
-					const plainText = stripMarkdownLinks(String(d.markdown))
-						.replaceAll(/^#{1,6}\s+/gmu, "")
-						.replaceAll(/[*_~`]/gu, "")
-						.replaceAll(/\n+/gu, " ")
-						.trim();
-					const description =
+const page = cache(
+	async (
+		offset: number,
+		status: ContentStatus,
+	): Promise<LinkCardStackInitialData> => {
+		const response = await (
+			await getBackendClient()
+		).listNotes({ offset, limit: PAGE_SIZE, status });
+		return {
+			data: response.data.data.map((note) => {
+				const plainText = stripMarkdownLinks(note.markdown)
+					.replaceAll(/^#{1,6}\s+/gmu, "")
+					.replaceAll(/[*_~`]/gu, "")
+					.replaceAll(/\n+/gu, " ")
+					.trim();
+				return {
+					id: note.id,
+					key: note.id,
+					title: note.title,
+					description:
 						plainText.length > 150
 							? `${plainText.slice(0, 150)}...`
-							: plainText;
-
-					return {
-						id: d.id,
-						key: d.id,
-						title: d.title,
-						description,
-						primaryBadgeText: new Date(d.createdAt).toLocaleDateString("ja-JP"),
-						href: `/note/${encodeURIComponent(d.title)}`,
-					};
-				}),
-				totalCount,
-			};
-		},
-		["notes", "list", userId, status, String(currentCount)],
-		{
-			tags: [
-				buildContentCacheTag("notes", status, userId),
-				buildPaginatedContentCacheTag("notes", status, userId, currentCount),
-			],
-		},
-	)();
-};
-
-/**
- * Gets the total count of exported notes for the current user.
- */
-export const getExportedNotesCount: GetCount = cache(
-	async (): Promise<number> => {
-		const userId = await getSelfId();
-		return tenantContext.run({ userId }, () =>
-			getNotesCountCached(userId, makeExportedStatus().status),
-		);
+							: plainText,
+					primaryBadgeText: new Date(note.createdAt).toLocaleDateString(
+						"ja-JP",
+					),
+					href: `/note/${encodeURIComponent(note.title)}`,
+				};
+			}),
+			totalCount: response.data.totalCount,
+		};
 	},
 );
-
-/**
- * Fetches paginated unexported notes for the current user.
- */
-export const getUnexportedNotes: GetPaginatedData<LinkCardStackInitialData> =
-	cache(async (currentCount: number) => {
-		const userId = await getSelfId();
-		return tenantContext.run({ userId }, () =>
-			getNotesCached(currentCount, userId, makeUnexportedStatus()),
-		);
-	});
-
-/**
- * Fetches paginated exported notes for the current user.
- */
-export const getExportedNotes: GetPaginatedData<LinkCardStackInitialData> =
-	cache(async (currentCount: number) => {
-		const userId = await getSelfId();
-		return tenantContext.run({ userId }, () =>
-			getNotesCached(currentCount, userId, makeExportedStatus().status),
-		);
-	});
-
-/**
- * Fetches a single note by its title.
- *
- * @param title - Note title to search for
- * @returns Note data or null if not found
- */
+export const getExportedNotesCount: GetCount = cache(
+	async () =>
+		(await (await getBackendClient()).countNotes({ status: "EXPORTED" })).data
+			.count,
+);
+export const getUnexportedNotes: GetPaginatedData<LinkCardStackInitialData> = (
+	offset,
+) => page(offset, "UNEXPORTED");
+export const getExportedNotes: GetPaginatedData<LinkCardStackInitialData> = (
+	offset,
+) => page(offset, "EXPORTED");
 export const getNoteByTitle = cache(async (title: string) => {
-	const userId = await getSelfId();
-	return tenantContext.run({ userId }, () =>
-		notesQueryRepository.findByTitle(makeNoteTitle(title), userId),
-	);
+	try {
+		const { data } = await (await getBackendClient()).getNoteByTitle(title);
+		return { title: data.title, markdown: data.markdown };
+	} catch (error) {
+		if (error instanceof ApiHttpError && error.status === 404) return null;
+		throw error;
+	}
 });

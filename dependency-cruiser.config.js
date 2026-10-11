@@ -586,6 +586,8 @@ const boundaryRules = [
 		to: {
 			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: [
+				// Temporary in-process API host until manual backend deployment.
+				"^app/src/backend/api\\.ts$",
 				"^packages/backend/src/notifications/",
 				"^packages/backend/src/auth/",
 				"^packages/backend/src/mobile/",
