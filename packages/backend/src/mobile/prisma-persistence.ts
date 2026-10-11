@@ -157,7 +157,7 @@ export function createMobilePersistence(
 					return (
 						(
 							await prisma.image.findFirst({
-								where: { userId },
+								where: { userId, ...(key ? { path: key } : {}) },
 								orderBy: { createdAt: "desc" },
 								select: { id: true },
 							})

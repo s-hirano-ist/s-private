@@ -1,4 +1,6 @@
 import type { ReadService } from "@s-hirano-ist/s-backend/api/read-service";
+import type { UploadService } from "@s-hirano-ist/s-backend/api/upload-service";
+import type { WriteService } from "@s-hirano-ist/s-backend/api/write-service";
 import { createApiApp, type ApiAuth } from "@s-hirano-ist/s-backend/api/app";
 import { MobileApiError } from "@s-hirano-ist/s-backend/mobile/error";
 import { tenantContext } from "@s-hirano-ist/s-backend/shared/tenant-context";
@@ -43,7 +45,26 @@ function fixture() {
 		media: vi.fn<ReadService["media"]>(),
 		search: vi.fn<ReadService["search"]>(),
 	};
-	return { auth, reads, app: createApiApp(auth, reads) };
+	const writes = {
+		article: vi.fn<WriteService["article"]>(),
+		note: vi.fn<WriteService["note"]>(),
+		media: vi.fn<WriteService["media"]>(),
+		remove: vi.fn<WriteService["remove"]>(),
+	};
+	const uploads = {
+		start: vi.fn<UploadService["start"]>(),
+		get: vi.fn<UploadService["get"]>(),
+		put: vi.fn<UploadService["put"]>(),
+		complete: vi.fn<UploadService["complete"]>(),
+		cancel: vi.fn<UploadService["cancel"]>(),
+	};
+	return {
+		auth,
+		reads,
+		writes,
+		uploads,
+		app: createApiApp(auth, reads, { writes, uploads }),
+	};
 }
 describe("Shared Hono API boundary", () => {
 	test("establishes the cookie owner and tenant, strips internal fields, forwards refreshed cookies", async () => {
@@ -142,5 +163,50 @@ describe("Shared Hono API boundary", () => {
 			200,
 		);
 		expect(reads.lookup).toHaveBeenCalledWith("notes", "owner", "My note");
+	});
+	test("returns 422 for malformed JSON without executing a mutation", async () => {
+		const { app, writes } = fixture();
+		const response = await app.request("/api/v1/notes", {
+			method: "POST",
+			headers: {
+				authorization: "Bearer valid",
+				"content-type": "application/json",
+			},
+			body: "{",
+		});
+		expect(response.status).toBe(422);
+		expect(writes.note).not.toHaveBeenCalled();
+	});
+	test("rejects chunks above the contract limit before persistence", async () => {
+		const { app, uploads } = fixture();
+		const response = await app.request("/api/v1/uploads/upload/chunks/0", {
+			method: "PUT",
+			headers: {
+				authorization: "Bearer valid",
+				"content-type": "application/octet-stream",
+			},
+			body: new Uint8Array(1024 * 1024 + 1),
+		});
+		expect(response.status).toBe(413);
+		expect(uploads.put).not.toHaveBeenCalled();
+	});
+	test("passes binary bytes and the Bearer owner to the chunk service", async () => {
+		const { app, uploads } = fixture();
+		uploads.put.mockResolvedValue({ accepted: true, part: 0 });
+		const response = await app.request("/api/v1/uploads/upload/chunks/0", {
+			method: "PUT",
+			headers: {
+				authorization: "Bearer valid",
+				"content-type": "application/octet-stream",
+			},
+			body: new Uint8Array([1, 2, 3]),
+		});
+		expect(response.status).toBe(200);
+		expect(uploads.put).toHaveBeenCalledWith(
+			"bearer-owner",
+			"upload",
+			0,
+			new Uint8Array([1, 2, 3]),
+		);
 	});
 });

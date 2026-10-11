@@ -233,6 +233,7 @@ const bookUploadSchema = z
 		...uploadBase,
 		domain: z.literal("books"),
 		metadata: z.strictObject({
+			filename: z.string().min(1).optional(),
 			isbn: z.string().min(1),
 			title: z.string().min(1),
 			rating: z.number().int(),

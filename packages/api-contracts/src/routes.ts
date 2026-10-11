@@ -296,6 +296,15 @@ export const getUploadRoute = createRoute({
 		...errorResponses,
 	},
 });
+export const cancelUploadRoute = createRoute({
+	method: "delete",
+	path: "/uploads/{id}",
+	operationId: "cancelUpload",
+	tags: ["uploads"],
+	security,
+	request: { params: idParams },
+	responses: { 204: { description: "Cancelled" }, ...errorResponses },
+});
 export const putChunkRoute = createRoute({
 	method: "put",
 	path: "/uploads/{id}/chunks/{part}",
@@ -434,6 +443,7 @@ export const apiRoutes = [
 	searchRoute,
 	startUploadRoute,
 	getUploadRoute,
+	cancelUploadRoute,
 	putChunkRoute,
 	completeUploadRoute,
 	mediaRoute,
