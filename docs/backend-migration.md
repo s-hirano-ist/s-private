@@ -85,6 +85,9 @@ Web向けクライアントはOrvalのfetch実装とZodモデルを利用する�
 日時はISO 8601、ID・cursor・同期versionは文字列とする。
 画像・書籍のupload metadataもドメイン別の型にし、書籍のratingは数値、tagsは配列とする。
 入力の検証とJSON出力の検証はbackendでも実施する。
+Web Pushの登録・解除・テスト送信も共通APIに接続する。
+endpointの事前所有者チェックに加え、upsertの条件にもuserIdを含めて競合時の他ユーザー更新を防ぐ。
+所有権違反は403、未登録へのテスト送信は404、VAPID設定不足は503として公開する。
 Better AuthのOAuthプロトコルと内部Cronは、一般クライアント契約から分離する。
 
 ## 段階移行

@@ -17,7 +17,7 @@ export function createPushSubscriptionRepository(
 		},
 		async save(userId, endpoint, auth, p256dh) {
 			await prisma.pushSubscription.upsert({
-				where: { endpoint },
+				where: { endpoint, userId },
 				create: { id: randomUUID(), userId, endpoint, auth, p256dh },
 				update: { auth, p256dh },
 			});
