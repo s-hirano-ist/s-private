@@ -4,13 +4,13 @@ import {
 	mobileJson,
 } from "@/application-services/mobile/http";
 import { completeMobileUpload } from "@/application-services/mobile/uploads";
-type Context = { params: Promise<{ id: string }> };
+type Params = { id: string };
 export async function POST(
 	request: Request,
-	{ params }: Context,
+	params: Params,
 ): Promise<Response> {
 	try {
-		const { id } = await params;
+		const { id } = params;
 		return await withMobileTenant(request, async (userId) =>
 			mobileJson(await completeMobileUpload(userId, id), 201),
 		);

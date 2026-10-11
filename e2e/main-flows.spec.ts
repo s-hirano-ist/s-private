@@ -52,8 +52,12 @@ test.describe("content navigation", () => {
 			.getByRole("link", { name: "書籍" })
 			.click();
 		await expect(page).toHaveURL(/\/ja\/books\/viewer$/u);
-		await page.getByRole("button", { name: "検索" }).click();
-		await expect(page.getByRole("textbox")).toBeVisible();
+		// Navigation can expose the server-rendered button before hydration finishes.
+		// Opening is idempotent, so retry the interaction until its result is visible.
+		await expect(async () => {
+			await page.getByRole("button", { name: "検索" }).click();
+			await expect(page.getByRole("textbox")).toBeVisible();
+		}).toPass({ timeout: 15_000 });
 	});
 
 	test("opens settings from the top bar", async ({ page }) => {
