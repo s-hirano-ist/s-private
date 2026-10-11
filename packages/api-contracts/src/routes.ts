@@ -152,6 +152,36 @@ function createContentRoute<const D extends string, T extends ZodType>(
 		},
 	});
 }
+export const bookByIsbnRoute = createRoute({
+	method: "get",
+	path: "/books/isbn/{isbn}",
+	operationId: "getBookByIsbn",
+	tags: ["books"],
+	security,
+	request: { params: z.object({ isbn: idSchema }) },
+	responses: {
+		200: {
+			description: "Owner-scoped book by ISBN",
+			content: jsonContent(bookSchema),
+		},
+		...errorResponses,
+	},
+});
+export const noteByTitleRoute = createRoute({
+	method: "get",
+	path: "/notes/title/{title}",
+	operationId: "getNoteByTitle",
+	tags: ["notes"],
+	security,
+	request: { params: z.object({ title: idSchema }) },
+	responses: {
+		200: {
+			description: "Owner-scoped note by title",
+			content: jsonContent(noteSchema),
+		},
+		...errorResponses,
+	},
+});
 export const createArticleRoute = createContentRoute(
 	"articles",
 	articleCreateSchema,
@@ -389,6 +419,8 @@ export const testPushRoute = createRoute({
 	responses: { 204: { description: "Sent" }, ...errorResponses },
 });
 export const apiRoutes = [
+	bookByIsbnRoute,
+	noteByTitleRoute,
 	...Object.values(articlesRoutes),
 	...Object.values(notesRoutes),
 	...Object.values(imagesRoutes),

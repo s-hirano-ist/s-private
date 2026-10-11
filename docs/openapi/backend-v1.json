@@ -24,6 +24,159 @@
 			}
 		},
 		"schemas": {
+			"Book": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 512
+					},
+					"status": {
+						"$ref": "#/components/schemas/ContentStatus"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"exportedAt": {
+						"type": ["string", "null"],
+						"format": "date-time"
+					},
+					"isbn": {
+						"type": "string"
+					},
+					"title": {
+						"type": "string"
+					},
+					"markdown": {
+						"type": ["string", "null"]
+					},
+					"imagePath": {
+						"type": ["string", "null"]
+					},
+					"googleSubTitle": {
+						"type": ["string", "null"]
+					},
+					"googleAuthors": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
+					"googleDescription": {
+						"type": ["string", "null"]
+					},
+					"googleImgSrc": {
+						"type": ["string", "null"]
+					},
+					"googleHref": {
+						"type": ["string", "null"]
+					},
+					"rating": {
+						"type": "integer"
+					},
+					"tags": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					}
+				},
+				"required": [
+					"id",
+					"status",
+					"createdAt",
+					"updatedAt",
+					"exportedAt",
+					"isbn",
+					"title",
+					"markdown",
+					"imagePath",
+					"rating",
+					"tags"
+				]
+			},
+			"ContentStatus": {
+				"type": "string",
+				"enum": ["UNEXPORTED", "LAST_UPDATED", "EXPORTED"]
+			},
+			"ApiError": {
+				"type": "object",
+				"properties": {
+					"error": {
+						"type": "object",
+						"properties": {
+							"code": {
+								"type": "string",
+								"enum": [
+									"UNAUTHORIZED",
+									"FORBIDDEN",
+									"NOT_FOUND",
+									"VALIDATION_ERROR",
+									"DUPLICATE",
+									"NOT_DELETABLE",
+									"UPLOAD_TOO_LARGE",
+									"OPERATION_CONFLICT",
+									"OPERATION_IN_PROGRESS",
+									"INVALID_CHUNK_SIZE",
+									"UPLOAD_INCOMPLETE",
+									"UPLOAD_EXPIRED",
+									"INVALID_SYNC_CURSOR",
+									"API_UNAVAILABLE",
+									"INTERNAL_ERROR"
+								]
+							}
+						},
+						"required": ["code"]
+					}
+				},
+				"required": ["error"]
+			},
+			"Note": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 512
+					},
+					"status": {
+						"$ref": "#/components/schemas/ContentStatus"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"exportedAt": {
+						"type": ["string", "null"],
+						"format": "date-time"
+					},
+					"title": {
+						"type": "string"
+					},
+					"markdown": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"status",
+					"createdAt",
+					"updatedAt",
+					"exportedAt",
+					"title",
+					"markdown"
+				]
+			},
 			"ArticlesPage": {
 				"type": "object",
 				"properties": {
@@ -88,6 +241,15 @@
 					},
 					"categoryName": {
 						"type": "string"
+					},
+					"ogImageUrl": {
+						"type": ["string", "null"]
+					},
+					"ogTitle": {
+						"type": ["string", "null"]
+					},
+					"ogDescription": {
+						"type": ["string", "null"]
 					}
 				},
 				"required": [
@@ -102,42 +264,6 @@
 					"categoryId",
 					"categoryName"
 				]
-			},
-			"ContentStatus": {
-				"type": "string",
-				"enum": ["UNEXPORTED", "LAST_UPDATED", "EXPORTED"]
-			},
-			"ApiError": {
-				"type": "object",
-				"properties": {
-					"error": {
-						"type": "object",
-						"properties": {
-							"code": {
-								"type": "string",
-								"enum": [
-									"UNAUTHORIZED",
-									"FORBIDDEN",
-									"NOT_FOUND",
-									"VALIDATION_ERROR",
-									"DUPLICATE",
-									"NOT_DELETABLE",
-									"UPLOAD_TOO_LARGE",
-									"OPERATION_CONFLICT",
-									"OPERATION_IN_PROGRESS",
-									"INVALID_CHUNK_SIZE",
-									"UPLOAD_INCOMPLETE",
-									"UPLOAD_EXPIRED",
-									"INVALID_SYNC_CURSOR",
-									"API_UNAVAILABLE",
-									"INTERNAL_ERROR"
-								]
-							}
-						},
-						"required": ["code"]
-					}
-				},
-				"required": ["error"]
 			},
 			"ArticlesCount": {
 				"type": "object",
@@ -172,46 +298,6 @@
 					}
 				},
 				"required": ["data", "totalCount", "offset", "limit"]
-			},
-			"Note": {
-				"type": "object",
-				"properties": {
-					"id": {
-						"type": "string",
-						"minLength": 1,
-						"maxLength": 512
-					},
-					"status": {
-						"$ref": "#/components/schemas/ContentStatus"
-					},
-					"createdAt": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedAt": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"exportedAt": {
-						"type": ["string", "null"],
-						"format": "date-time"
-					},
-					"title": {
-						"type": "string"
-					},
-					"markdown": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"id",
-					"status",
-					"createdAt",
-					"updatedAt",
-					"exportedAt",
-					"title",
-					"markdown"
-				]
 			},
 			"NotesCount": {
 				"type": "object",
@@ -336,65 +422,6 @@
 					}
 				},
 				"required": ["data", "totalCount", "offset", "limit"]
-			},
-			"Book": {
-				"type": "object",
-				"properties": {
-					"id": {
-						"type": "string",
-						"minLength": 1,
-						"maxLength": 512
-					},
-					"status": {
-						"$ref": "#/components/schemas/ContentStatus"
-					},
-					"createdAt": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedAt": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"exportedAt": {
-						"type": ["string", "null"],
-						"format": "date-time"
-					},
-					"isbn": {
-						"type": "string"
-					},
-					"title": {
-						"type": "string"
-					},
-					"markdown": {
-						"type": ["string", "null"]
-					},
-					"imagePath": {
-						"type": ["string", "null"]
-					},
-					"rating": {
-						"type": "integer"
-					},
-					"tags": {
-						"type": "array",
-						"items": {
-							"type": "string"
-						}
-					}
-				},
-				"required": [
-					"id",
-					"status",
-					"createdAt",
-					"updatedAt",
-					"exportedAt",
-					"isbn",
-					"title",
-					"markdown",
-					"imagePath",
-					"rating",
-					"tags"
-				]
 			},
 			"BooksCount": {
 				"type": "object",
@@ -721,29 +748,114 @@
 					"data": {
 						"type": "array",
 						"items": {
-							"type": "object",
-							"properties": {
-								"id": {
-									"type": "string",
-									"minLength": 1,
-									"maxLength": 512
-								},
-								"type": {
-									"type": "string",
-									"enum": ["articles", "notes", "books"]
-								},
-								"title": {
-									"type": "string"
-								},
-								"snippet": {
-									"type": "string"
-								}
-							},
-							"required": ["id", "type", "title", "snippet"]
+							"$ref": "#/components/schemas/SearchHit"
 						}
 					}
 				},
 				"required": ["query", "data"]
+			},
+			"SearchHit": {
+				"oneOf": [
+					{
+						"$ref": "#/components/schemas/ArticleSearchHit"
+					},
+					{
+						"$ref": "#/components/schemas/NoteSearchHit"
+					},
+					{
+						"$ref": "#/components/schemas/BookSearchHit"
+					}
+				],
+				"discriminator": {
+					"propertyName": "type",
+					"mapping": {
+						"articles": "#/components/schemas/ArticleSearchHit",
+						"notes": "#/components/schemas/NoteSearchHit",
+						"books": "#/components/schemas/BookSearchHit"
+					}
+				}
+			},
+			"ArticleSearchHit": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 512
+					},
+					"title": {
+						"type": "string"
+					},
+					"snippet": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string",
+						"enum": ["articles"]
+					},
+					"url": {
+						"type": "string",
+						"format": "uri"
+					},
+					"category": {
+						"$ref": "#/components/schemas/Category"
+					}
+				},
+				"required": ["id", "title", "snippet", "type", "url", "category"]
+			},
+			"NoteSearchHit": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 512
+					},
+					"title": {
+						"type": "string"
+					},
+					"snippet": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string",
+						"enum": ["notes"]
+					}
+				},
+				"required": ["id", "title", "snippet", "type"]
+			},
+			"BookSearchHit": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 512
+					},
+					"title": {
+						"type": "string"
+					},
+					"snippet": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string",
+						"enum": ["books"]
+					},
+					"isbn": {
+						"type": "string"
+					},
+					"rating": {
+						"type": "integer"
+					},
+					"tags": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					}
+				},
+				"required": ["id", "title", "snippet", "type", "isbn", "rating", "tags"]
 			},
 			"UploadSession": {
 				"type": "object",
@@ -980,6 +1092,262 @@
 		"parameters": {}
 	},
 	"paths": {
+		"/books/isbn/{isbn}": {
+			"get": {
+				"operationId": "getBookByIsbn",
+				"tags": ["books"],
+				"security": [
+					{
+						"bearerAuth": []
+					},
+					{
+						"sessionCookie": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1,
+							"maxLength": 512
+						},
+						"required": true,
+						"name": "isbn",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Owner-scoped book by ISBN",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Book"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Authentication required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "Conflict",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					},
+					"410": {
+						"description": "Upload expired",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					},
+					"413": {
+						"description": "Payload too large",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation failed",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					},
+					"503": {
+						"description": "Service unavailable",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/notes/title/{title}": {
+			"get": {
+				"operationId": "getNoteByTitle",
+				"tags": ["notes"],
+				"security": [
+					{
+						"bearerAuth": []
+					},
+					{
+						"sessionCookie": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1,
+							"maxLength": 512
+						},
+						"required": true,
+						"name": "title",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Owner-scoped note by title",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Note"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Authentication required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "Conflict",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					},
+					"410": {
+						"description": "Upload expired",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					},
+					"413": {
+						"description": "Payload too large",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation failed",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					},
+					"503": {
+						"description": "Service unavailable",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/articles": {
 			"get": {
 				"operationId": "listArticles",
