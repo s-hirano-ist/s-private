@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.16.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.16.0...s-private-v3.16.1) (2026-10-11)
+
+
+### Bug Fixes
+
+* remove obsolete Sentry logging option ([be9bc3f](https://github.com/s-hirano-ist/s-private/commit/be9bc3f906d3c81e5a84a85a31df6ec7d164dc60))
+
+
+### Maintenance
+
+* **deps:** update dependency @sentry/nextjs to v11 ([3839520](https://github.com/s-hirano-ist/s-private/commit/38395203efec73c2fbd769a2de63f5a6d141b9f3))
+
 ## [3.16.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.15.0...s-private-v3.16.0) (2026-10-06)
 
 
