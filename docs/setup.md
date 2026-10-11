@@ -22,6 +22,27 @@ pnpm pages:build
 - `.pages/ui/` - Storybook iframe を横スクロールで一覧する UI gallery
 - `.pages/ui/storybook/` - gallery が埋め込む static Storybook
 
+### Search Engine Indexing
+
+GitHub Pages は URL から閲覧できる状態を保ち、検索結果には掲載しない方針です。
+公開 URL は <https://docs.s-hirano.com/> です。
+Pages 生成の最終処理で、トップページ、API・DB 資料、UI Gallery、Storybook の
+iframe を含む全 HTML の `<head>` に `<meta name="robots" content="noindex, nofollow">` を追加します。
+`noindex` を検索エンジンが読み取れるよう、`robots.txt` によるクロール拒否は追加しません。
+これはアクセス制限ではなく、クロール自体を完全に停止する設定でもありません。
+Next.js アプリ側の検索設定には影響しません。
+
+デプロイ後は Google Search Console で次を確認します。
+
+1. 「URL 検査」→「公開 URL をテスト」で代表ページを検査し、`noindex` によりインデックス登録不可であることを確認します。
+2. 早く検索結果から消したい場合は、「削除」→「新しいリクエスト」→「URL を一時的に削除」で `https://docs.s-hirano.com/` を入力し、「このプレフィックスで始まる URL をすべて削除」を選びます。公開 URL が変わった場合は、他サイトを含めないよう、このプロジェクトの公開ベース URL を指定します。一時削除は約 6 か月のため、恒久対策として `noindex` を維持します。
+3. この Pages 専用のサイトマップを登録していれば、Search Console からその登録を削除します。
+4. 「noindex タグによって除外されました」は期待どおりの状態です。検索掲載を目的としないページの未登録理由をすべて解消する必要はありません。
+5. プロパティ削除自体には検索除外の効果がありません。除外確認後、監視が不要になった場合だけ一覧から外します。
+
+詳細は Google の [noindex の説明](https://developers.google.com/search/docs/crawling-indexing/block-indexing?hl=ja)と
+[一時削除の手順](https://support.google.com/webmasters/answer/9689846?hl=ja)を参照してください。
+
 ## Mise Configuration
 
 This project uses [Mise](https://mise.jdx.dev/) for tool version management.
