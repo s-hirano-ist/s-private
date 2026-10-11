@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { expect } from "storybook/test";
 import { EditableImageStack, ImageStack } from "./image-stack";
 
 const mockData = [
@@ -56,5 +57,19 @@ export const WithDeleteButton: EditableImageStackStory = {
 	args: {
 		data: mockData,
 		deleteAction: async () => ({ success: true, message: "deleted" }),
+	},
+};
+
+export const NamedImage: ImageStackStory = {
+	args: { data: [{ ...mockData[0], alt: "Image seeded-image.png" }] },
+	play: async ({ canvas }) => {
+		await expect(
+			canvas.getByRole("img", { name: "Image seeded-image.png" }),
+		).toBeVisible();
+		await expect(
+			canvas.getByRole("button", {
+				name: "Open Image seeded-image.png in lightbox",
+			}),
+		).toBeVisible();
 	},
 };

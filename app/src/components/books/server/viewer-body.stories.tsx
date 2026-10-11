@@ -18,6 +18,7 @@ import {
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { Suspense } from "react";
+import { expect } from "storybook/test";
 import { ViewerBody } from "./viewer-body";
 
 function ViewerBodyWrapper({ slug, getBookByISBN }: ViewerBodyProps) {
@@ -167,3 +168,20 @@ export const WithoutImage: Story = {
 
 // Note: NotFound story removed to avoid timeout issues in Storybook
 // The component calls notFound() which causes navigation issues in the isolated Storybook environment
+
+export const UploadedCover: Story = {
+	args: {
+		slug: mockBookData.isbn,
+		getBookByISBN: async () => ({
+			...mockBookData,
+			imagePath: "uploaded-cover.png",
+		}),
+	},
+	play: async ({ canvas }) => {
+		await expect(
+			await canvas.findByRole("img", {
+				name: `${mockBookData.title} (uploaded)`,
+			}),
+		).toBeVisible();
+	},
+};
