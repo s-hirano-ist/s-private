@@ -1,10 +1,14 @@
 import type { ReadService } from "@s-hirano-ist/s-backend/api/read-service";
+import type { UploadService } from "@s-hirano-ist/s-backend/api/upload-service";
+import type { WriteService } from "@s-hirano-ist/s-backend/api/write-service";
 import type { z } from "zod";
 import { OpenAPIHono } from "@hono/zod-openapi";
 import * as routes from "@s-hirano-ist/s-api-contracts/routes";
 import * as schemas from "@s-hirano-ist/s-api-contracts/schemas";
 import { MobileApiError } from "@s-hirano-ist/s-backend/mobile/error";
 import { tenantContext } from "@s-hirano-ist/s-backend/shared/tenant-context";
+import { bodyLimit } from "hono/body-limit";
+import { HTTPException } from "hono/http-exception";
 
 export type ApiSession = z.output<typeof schemas.sessionSchema>;
 export type ApiAuth = {
@@ -18,7 +22,11 @@ export type ApiAuth = {
 export type ApiEnvironment = {
 	Variables: { owner: string; session: ApiSession | null };
 };
-export function createApiApp(auth: ApiAuth, reads: ReadService) {
+export function createApiApp(
+	auth: ApiAuth,
+	reads: ReadService,
+	mutations: { uploads: UploadService; writes: WriteService; },
+) {
 	const app = new OpenAPIHono<ApiEnvironment>({
 		defaultHook: (result, c) =>
 			result.success
@@ -51,7 +59,29 @@ export function createApiApp(auth: ApiAuth, reads: ReadService) {
 		for (const cookie of responseHeaders?.getSetCookie() ?? [])
 			c.header("set-cookie", cookie, { append: true });
 	});
-	app.onError((error) => {
+
+	const jsonLimit = bodyLimit({
+		maxSize: 4 * 1024 * 1024,
+		onError: () => {
+			throw new MobileApiError("UPLOAD_TOO_LARGE", 413);
+		},
+	});
+	app.on("POST", ["/articles", "/notes", "/uploads"], jsonLimit);
+	app.on(
+		"PUT",
+		"/uploads/:id/chunks/:part",
+		bodyLimit({
+			maxSize: schemas.uploadChunkSize,
+			onError: () => {
+				throw new MobileApiError("UPLOAD_TOO_LARGE", 413);
+			},
+		}),
+	);
+	app.onError((original) => {
+		const error =
+			original instanceof HTTPException && original.status === 400
+				? new MobileApiError("VALIDATION_ERROR", 422)
+				: original;
 		let code = "INTERNAL_ERROR";
 		if (error instanceof MobileApiError) code = error.code;
 		if (code === "MOBILE_API_UNAVAILABLE") code = "API_UNAVAILABLE";
@@ -206,6 +236,86 @@ export function createApiApp(auth: ApiAuth, reads: ReadService) {
 		const session = c.get("session");
 		if (!session) throw new MobileApiError("UNAUTHORIZED", 401);
 		return c.json(session, 200);
+	});
+
+	app.openapi(routes.createArticleRoute, async (c) =>
+		c.json(
+			await mutations.writes.article(c.get("owner"), c.req.valid("json")),
+			201,
+		),
+	);
+	app.openapi(routes.createNoteRoute, async (c) =>
+		c.json(
+			await mutations.writes.note(c.get("owner"), c.req.valid("json")),
+			201,
+		),
+	);
+	app.openapi(routes.articlesRoutes.delete, async (c) => {
+		await mutations.writes.remove(
+			c.get("owner"),
+			"articles",
+			c.req.valid("param").id,
+		);
+		return c.body(null, 204);
+	});
+	app.openapi(routes.notesRoutes.delete, async (c) => {
+		await mutations.writes.remove(
+			c.get("owner"),
+			"notes",
+			c.req.valid("param").id,
+		);
+		return c.body(null, 204);
+	});
+	app.openapi(routes.imagesRoutes.delete, async (c) => {
+		await mutations.writes.remove(
+			c.get("owner"),
+			"images",
+			c.req.valid("param").id,
+		);
+		return c.body(null, 204);
+	});
+	app.openapi(routes.booksRoutes.delete, async (c) => {
+		await mutations.writes.remove(
+			c.get("owner"),
+			"books",
+			c.req.valid("param").id,
+		);
+		return c.body(null, 204);
+	});
+
+	app.openapi(routes.startUploadRoute, async (c) =>
+		c.json(
+			await mutations.uploads.start(c.get("owner"), c.req.valid("json")),
+			200,
+		),
+	);
+	app.openapi(routes.getUploadRoute, async (c) =>
+		c.json(
+			await mutations.uploads.get(c.get("owner"), c.req.valid("param").id),
+			200,
+		),
+	);
+	app.openapi(routes.putChunkRoute, async (c) => {
+		const { id, part } = c.req.valid("param");
+		return c.json(
+			await mutations.uploads.put(
+				c.get("owner"),
+				id,
+				part,
+				new Uint8Array(await c.req.arrayBuffer()),
+			),
+			200,
+		);
+	});
+	app.openapi(routes.completeUploadRoute, async (c) =>
+		c.json(
+			await mutations.uploads.complete(c.get("owner"), c.req.valid("param").id),
+			201,
+		),
+	);
+	app.openapi(routes.cancelUploadRoute, async (c) => {
+		await mutations.uploads.cancel(c.get("owner"), c.req.valid("param").id);
+		return c.body(null, 204);
 	});
 	return app;
 }

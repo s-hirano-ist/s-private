@@ -20,7 +20,15 @@ Authorizationがある場合はCookieへfallbackしない。Cookie mutationに�
 DBの日時をISO文字列にし、公開Zod DTOで内部のuserId等を除去してから応答する。
 検索indexのpayloadは公開せず、所有者のDBレコードで照合した本文・metadataだけを返す。
 読み取り応答とエラーはprivate/no-storeとし、Web sessionの更新Cookieは入口から転送する。
-mutationとuploadの接続は次段のPRで行う。
+作成・削除と分割uploadも同じrouterへ接続する。JSONは4MiB、chunkは1MiBまでとし、
+Vercelのrequest上限を超える画像は直接Server Actionへ送らない。
+operation IDと入力hashの一致を確認し、成功済みの作成は保存済みresource IDを返す。
+新しい画像の保存pathはoperation IDと検出した画像形式から確定し、失敗後の再送でも変えない。
+書籍metadataはJSONで保存し、tags内のカンマも保持する。旧uploadの文字列metadataも読み取れる。
+uploadの完了は全partと合計byte数を確認し、作成成功後だけchunkを削除する。
+旧画像operationのFAILED状態はpathとの対応を確定できないため409とし、最新画像を推測して返さない。
+切替前にFAILED/PENDING操作を調査し、DB保存後に失敗した自然キー付き操作は手動で照合する。
+既存レコードと同じURL・title・ISBNであるだけでは、別operationの成功として扱わない。
 既存の `/api/mobile/v1` はNext.jsのcatch-all Route HandlerからHonoへ委譲する。
 `app/src/backend/http/mobile` にHTTP処理を集約し、Next.jsのparams型を持たないcontrollerへ分離する。
 Bearer認証・tenant・操作ID・upload・同期の既存ユースケースとwire形式を共有する。
@@ -91,7 +99,8 @@ Better AuthのOAuthプロトコルと内部Cronは、一般クライアント契
 | 6 | 認証・tenant・通知・Cron・観測処理を抽出 |
 | 7a | 共通APIの認証・tenant境界と読み取りHTTP処理を接続 |
 | 7b | mutation・分割uploadを共通APIへ接続 |
-| 7c | Webを生成クライアントへ切替、永続データキャッシュを撤去 |
+| 7c | Web Push APIの接続 |
+| 7d | Webを生成クライアントへ切替、永続データキャッシュを撤去 |
 | 8 | iOSを生成クライアント・共通APIへ切替 |
 | 9 | 独立Hono backendの起動・Vercel配置準備 |
 | 10 | 手動デプロイ確認後に接続先切替、暫定実装の撤去 |
