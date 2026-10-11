@@ -1,5 +1,5 @@
 import { getFormDataFile } from "@/common/utils/form-data-utils";
-import { sharpImageProcessor } from "@/infrastructures/images/services/sharp-image-processor";
+import { sharpImageProcessor } from "@s-hirano-ist/s-backend/shared/sharp-image-processor";
 import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import {
 	type ContentType,
@@ -15,7 +15,7 @@ import { parseAddImageFormData } from "./form-data-parser";
 
 vi.mock("@/common/utils/form-data-utils");
 vi.mock("@s-hirano-ist/s-core/shared-kernel/entities/file-entity");
-vi.mock("@/infrastructures/images/services/sharp-image-processor");
+vi.mock("@s-hirano-ist/s-backend/shared/sharp-image-processor");
 
 const mockGetFormDataFile = vi.mocked(getFormDataFile);
 const mockMakePath = vi.mocked(makePath);

@@ -8,15 +8,14 @@
  */
 
 import "server-only";
-import type { AddBooksDeps } from "./add-books.deps";
+import type { AddBooksDeps } from "@/application-services/books/add-books.deps";
 import type { ServerActionWithData } from "@/common/types";
 import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { parseAddBooksFormData } from "@/application-services/books/helpers/form-data-parser";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import { withOperationPhase } from "@/common/error/operation-phase-error";
-import { withStoragePhase } from "@/common/error/storage-phase-error";
-import { bookEntity } from "@s-hirano-ist/s-core/books/entities/book-entity";
-import { parseAddBooksFormData } from "./helpers/form-data-parser";
+import { createBook } from "@s-hirano-ist/s-backend/books/use-cases";
 
 /**
  * Core business logic for creating a book.
@@ -34,14 +33,6 @@ export async function addBooksCore(
 	deps: AddBooksDeps,
 	principalId?: UserId,
 ): Promise<ServerActionWithData<{ id: string }>> {
-	const {
-		commandRepository,
-		storageService,
-		domainServiceFactory,
-		eventDispatcher,
-	} = deps;
-	const booksDomainService = domainServiceFactory.createBooksDomainService();
-
 	try {
 		const uploadFile = formData.get("image");
 		const phaseContext =
@@ -60,80 +51,8 @@ export async function addBooksCore(
 				parseAddBooksFormData(formData, principalId ?? (await getSelfId())),
 		);
 
-		// Domain business rule validation
-		await withOperationPhase(
-			{ ...phaseContext, phase: "validate-domain" },
-			() =>
-				booksDomainService.ensureNoDuplicate(
-					parsedData.isbn,
-					parsedData.userId,
-				),
-		);
-
-		const storageContext = {
-			action: "addBooks",
-			path: parsedData.path,
-			fileSize: parsedData.fileSize,
-			contentType: parsedData.contentType,
-			isbn: parsedData.isbn,
-		};
-
-		// Upload image to MinIO (original + thumbnail)
-		await withStoragePhase(
-			{
-				phase: "upload-original",
-				path: parsedData.path,
-				isThumbnail: false,
-				additionalContext: storageContext,
-			},
-			() =>
-				storageService.uploadImage(
-					parsedData.path,
-					parsedData.originalBuffer,
-					false,
-				),
-		);
-		await withStoragePhase(
-			{
-				phase: "upload-thumbnail",
-				path: parsedData.path,
-				isThumbnail: true,
-				additionalContext: storageContext,
-			},
-			() =>
-				storageService.uploadImage(
-					parsedData.path,
-					parsedData.thumbnailBuffer,
-					true,
-				),
-		);
-
-		// Create entity with value objects and domain event
-		const [book, event] = await withOperationPhase(
-			{ ...phaseContext, phase: "create-entity" },
-			async () =>
-				bookEntity.create({
-					isbn: parsedData.isbn,
-					title: parsedData.title,
-					rating: parsedData.rating,
-					tags: parsedData.tags,
-					userId: parsedData.userId,
-					imagePath: parsedData.imagePath,
-					caller: "addBooks",
-				}),
-		);
-
-		// Persist (cache invalidation is handled in repository)
-		await withOperationPhase({ ...phaseContext, phase: "create-record" }, () =>
-			commandRepository.create(book),
-		);
-
-		// Dispatch domain event
-		await withOperationPhase({ ...phaseContext, phase: "dispatch-event" }, () =>
-			eventDispatcher.dispatch(event),
-		);
-
-		return { success: true, message: "inserted", data: { id: book.id } };
+		const result = await createBook(parsedData, deps, phaseContext);
+		return { success: true, message: "inserted", data: result };
 	} catch (error) {
 		return await wrapServerSideErrorForClient(error, formData);
 	}
