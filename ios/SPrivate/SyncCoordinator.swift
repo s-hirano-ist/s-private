@@ -237,12 +237,12 @@ final class SyncCoordinator: ObservableObject {
             } catch MobileClientError.authenticationRequired {
                 operation.state = .authenticationRequired
                 operation.lastError = String(localized: "ログインが必要です")
-            } catch let MobileClientError.http(status, code) where status == 401 {
+            } catch let MobileClientError.http(status, _) where status == 401 {
                 operation.state = .authenticationRequired
-                operation.lastError = code
-            } catch let MobileClientError.http(status, code) where status == 409 || status == 422 {
+                operation.lastError = MobileOperationError.message(MobileClientError.http(status, nil))
+            } catch let MobileClientError.http(status, _) where status == 409 || status == 422 {
                 operation.state = .needsAttention
-                operation.lastError = code
+                operation.lastError = MobileOperationError.message(MobileClientError.http(status, nil))
             } catch {
                 if MobileOperationError.isCancellation(error, taskIsCancelled: Task.isCancelled) {
                     operation.state = .pending
@@ -259,10 +259,13 @@ final class SyncCoordinator: ObservableObject {
             lastRefreshAttempt = Date()
             syncError = nil
             do {
+                let owner = authentication.ownerKey
                 try await refreshRemote(using: client)
+                if authentication.status == .authenticated && authentication.ownerKey == owner {
+                    try? SharedCategoryStore().replace(with: cachedCategories().map(\.name))
+                }
                 lastSyncAt = Date()
                 thumbnailTask?.cancel()
-                let owner = authentication.ownerKey
                 thumbnailTask = Task { await warmThumbnails(using: client, owner: owner) }
             } catch {
                 syncError = Self.syncErrorMessage(for: error, taskIsCancelled: Task.isCancelled)
@@ -467,6 +470,7 @@ final class SyncCoordinator: ObservableObject {
     }
 
     func clearCache() {
+        try? SharedCategoryStore().clear()
         thumbnailTask?.cancel()
         thumbnailTask = nil
         (try? context.fetch(FetchDescriptor<CachedMobileRecord>()))?.forEach(context.delete)

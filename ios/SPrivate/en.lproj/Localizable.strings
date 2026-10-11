@@ -76,3 +76,10 @@
 "通信環境を確認して再試行してください" = "Check your connection and try again.";
 "操作を完了できませんでした。再試行してください" = "Could not complete the action. Try again.";
 "サーバーに接続できませんでした。再試行してください" = "Could not reach the server. Try again.";
+"新しいカテゴリ名" = "New category name";
+"カテゴリ名は1〜16文字で入力してください" = "Enter a category name of 1–16 characters";
+"キャッシュを削除しますか？" = "Clear cached data?";
+"保存待ちの項目は削除されません。" = "Unsent items will be kept.";
+"既に登録されています。内容を確認してください" = "This item is already saved. Check its details.";
+"入力内容を確認して修正してください" = "Check and correct the entered details.";
+"サーバーの処理に失敗しました。再試行してください" = "The server could not complete the action. Try again.";

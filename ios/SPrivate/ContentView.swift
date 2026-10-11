@@ -58,6 +58,7 @@ struct SettingsView: View {
     @EnvironmentObject private var sharedInbox: SharedInboxModel
     @EnvironmentObject private var sync: SyncCoordinator
     @State private var confirmingLogout = false
+    @State private var confirmingCacheClear = false
 
     var body: some View {
         List {
@@ -91,7 +92,7 @@ struct SettingsView: View {
                 }
                     .foregroundStyle(AppColors.primary)
                     .disabled(sync.isSynchronizing)
-                Button(String(localized: "キャッシュを削除"), role: .destructive) { sync.clearCache() }
+                Button(String(localized: "キャッシュを削除"), role: .destructive) { confirmingCacheClear = true }
                     .foregroundStyle(AppColors.destructive)
                     .disabled(sync.isSynchronizing)
             }
@@ -132,6 +133,15 @@ struct SettingsView: View {
             Button(String(localized: "キャンセル"), role: .cancel) {}
         } message: {
             Text(String(localized: "未送信データを同期するか破棄してください。"))
+        }
+        .alert(
+            String(localized: "キャッシュを削除しますか？"),
+            isPresented: $confirmingCacheClear
+        ) {
+            Button(String(localized: "キャッシュを削除"), role: .destructive) { sync.clearCache() }
+            Button(String(localized: "キャンセル"), role: .cancel) {}
+        } message: {
+            Text(String(localized: "保存待ちの項目は削除されません。"))
         }
     }
 }
@@ -218,7 +228,7 @@ struct PendingOperationEditor: View {
             if operation.domain != .images { TextField(String(localized: "タイトル"), text: $title) }
             if operation.domain == .articles {
                 TextField("URL", text: $url).keyboardType(.URL)
-                TextField(String(localized: "カテゴリ"), text: $category)
+                ArticleCategoryField(name: $category, categories: sync.cachedCategories())
                 TextField(String(localized: "引用"), text: $quote)
             } else if operation.domain == .notes {
                 TextField("Markdown", text: $markdown, axis: .vertical)
@@ -239,7 +249,7 @@ struct PendingOperationEditor: View {
                 let revised = MobileCreate(
                     operationId: UUID(), title: title,
                     url: operation.domain == .articles ? url : nil,
-                    category: operation.domain == .articles ? category : nil,
+                    category: operation.domain == .articles ? ArticleCategoryName.normalized(category) : nil,
                     quote: operation.domain == .articles ? quote : nil,
                     markdown: operation.domain == .notes ? markdown : nil,
                     isbn: operation.domain == .books ? isbn : nil,
@@ -253,6 +263,7 @@ struct PendingOperationEditor: View {
                     errorMessage = MobileOperationError.message(error)
                 }
             }
+            .disabled(operation.domain == .articles && !ArticleCategoryName.isValid(category))
         }
     }
 }
