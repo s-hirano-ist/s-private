@@ -25,7 +25,7 @@ export type ApiEnvironment = {
 export function createApiApp(
 	auth: ApiAuth,
 	reads: ReadService,
-	mutations: { uploads: UploadService; writes: WriteService; },
+	mutations: { uploads: UploadService; writes: WriteService },
 ) {
 	const app = new OpenAPIHono<ApiEnvironment>({
 		defaultHook: (result, c) =>
