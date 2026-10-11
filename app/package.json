@@ -16,6 +16,7 @@
 		"typecheck": "pnpm typegen && tsc --noEmit"
 	},
 	"dependencies": {
+		"@s-hirano-ist/s-backend": "catalog:",
 		"@s-hirano-ist/s-core": "workspace:*",
 		"@s-hirano-ist/s-database": "workspace:*",
 		"@s-hirano-ist/s-image-processing": "workspace:*",

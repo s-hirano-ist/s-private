@@ -1,3 +1,4 @@
+import type { DeleteArticleDeps as BackendDeleteArticleDeps } from "@s-hirano-ist/s-backend/articles/use-cases";
 /**
  * Dependency types and defaults for article deletion.
  *
@@ -7,19 +8,13 @@
  *
  * @module
  */
-
-import type { IEventDispatcher } from "@/application-services/common/event-dispatcher.interface";
-import type { IArticlesCommandRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-command-repository.interface";
 import { articlesCommandRepository } from "@/infrastructures/articles/repositories/articles-command-repository";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 
 /**
  * Dependencies for the deleteArticleCore function.
  */
-export type DeleteArticleDeps = {
-	commandRepository: IArticlesCommandRepository;
-	eventDispatcher: IEventDispatcher;
-};
+export type DeleteArticleDeps = BackendDeleteArticleDeps;
 
 /**
  * Default dependencies for production use.

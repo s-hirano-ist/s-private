@@ -1,0 +1,32 @@
+{
+	"name": "@s-hirano-ist/s-backend",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		"./articles/*": {
+			"types": "./src/articles/*.ts",
+			"import": "./src/articles/*.ts"
+		},
+		"./notes/*": {
+			"types": "./src/notes/*.ts",
+			"import": "./src/notes/*.ts"
+		},
+		"./shared/*": {
+			"types": "./src/shared/*.ts",
+			"import": "./src/shared/*.ts"
+		}
+	},
+	"scripts": {
+		"build": "tsc --noEmit",
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@s-hirano-ist/s-core": "workspace:*",
+		"@s-hirano-ist/s-database": "workspace:*"
+	},
+	"devDependencies": {
+		"@types/node": "catalog:",
+		"typescript": "catalog:"
+	}
+}

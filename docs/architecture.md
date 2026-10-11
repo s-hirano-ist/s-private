@@ -38,6 +38,14 @@
 - `types/` - ドメイン固有の型と定数
 - `shared-kernel/` - 全ドメイン共通の entities / errors / events / repositories / services / types
 
+### 共通backend (`packages/backend/`)
+
+WebとiOSで共有するユースケースと永続化adapterをドメインごとのsubpathで公開する。
+articles／notesの作成・削除、入力検証、Prismaリポジトリから段階的に移管している。
+認証済み所有者、イベントdispatcher、DBのtenant・観測hookを明示的に注入し、Next.jsには依存しない。
+Prisma拡張済みclient型はこのpackageで定義し、Webとbackendの型境界で型assertionを加えない。
+移行の順序と暫定adapterの役割は[共通backend移行](backend-migration.md)を参照。
+
 ### アプリケーションサービス層 (`app/src/application-services/`)
 - ドメイン操作とユースケースのオーケストレーション
 - フォームデータのパースとバリデーション処理

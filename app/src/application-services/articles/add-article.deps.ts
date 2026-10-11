@@ -1,3 +1,4 @@
+import type { CreateArticleDeps } from "@s-hirano-ist/s-backend/articles/use-cases";
 /**
  * Dependency types and defaults for article creation.
  *
@@ -7,24 +8,14 @@
  *
  * @module
  */
-
-import type { IEventDispatcher } from "@/application-services/common/event-dispatcher.interface";
-import type { IArticlesCommandRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-command-repository.interface";
 import { articlesCommandRepository } from "@/infrastructures/articles/repositories/articles-command-repository";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
-import {
-	type createDomainServiceFactory,
-	domainServiceFactory,
-} from "@/infrastructures/factories/domain-service-factory";
+import { domainServiceFactory } from "@/infrastructures/factories/domain-service-factory";
 
 /**
  * Dependencies for the addArticleCore function.
  */
-export type AddArticleDeps = {
-	commandRepository: IArticlesCommandRepository;
-	domainServiceFactory: ReturnType<typeof createDomainServiceFactory>;
-	eventDispatcher: IEventDispatcher;
-};
+export type AddArticleDeps = CreateArticleDeps;
 
 /**
  * Default dependencies for production use.

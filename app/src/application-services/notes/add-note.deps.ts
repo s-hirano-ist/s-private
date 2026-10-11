@@ -1,3 +1,4 @@
+import type { CreateNoteDeps } from "@s-hirano-ist/s-backend/notes/use-cases";
 /**
  * Dependency types and defaults for note creation.
  *
@@ -7,24 +8,14 @@
  *
  * @module
  */
-
-import type { IEventDispatcher } from "@/application-services/common/event-dispatcher.interface";
-import type { INotesCommandRepository } from "@s-hirano-ist/s-core/notes/repositories/notes-command-repository.interface";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
-import {
-	type createDomainServiceFactory,
-	domainServiceFactory,
-} from "@/infrastructures/factories/domain-service-factory";
+import { domainServiceFactory } from "@/infrastructures/factories/domain-service-factory";
 import { notesCommandRepository } from "@/infrastructures/notes/repositories/notes-command-repository";
 
 /**
  * Dependencies for the addNoteCore function.
  */
-export type AddNoteDeps = {
-	commandRepository: INotesCommandRepository;
-	domainServiceFactory: ReturnType<typeof createDomainServiceFactory>;
-	eventDispatcher: IEventDispatcher;
-};
+export type AddNoteDeps = CreateNoteDeps;
 
 /**
  * Default dependencies for production use.
