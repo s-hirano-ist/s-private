@@ -1,5 +1,6 @@
 import type { PushSubscriptionRepository } from "@s-hirano-ist/s-backend/notifications/ports";
 import type { ErrorReporter } from "@s-hirano-ist/s-backend/observability/reporter";
+import { PushSubscriptionError } from "@s-hirano-ist/s-backend/notifications/error";
 import {
 	createWebPushService,
 	WebPushSendError,
@@ -34,7 +35,10 @@ export function createPushDeliveryService(
 			!WEB_PUSH_PRIVATE_KEY ||
 			!WEB_PUSH_SUBJECT
 		) {
-			throw new Error("Web Push VAPID configuration is missing");
+			throw new PushSubscriptionError(
+				"UNAVAILABLE",
+				"Web Push VAPID configuration is missing",
+			);
 		}
 		return createWebPushService({
 			privateKey: WEB_PUSH_PRIVATE_KEY,

@@ -3,14 +3,17 @@ import { defaultAddBooksDeps } from "@/application-services/books/add-books.deps
 import { defaultAddImageDeps } from "@/application-services/images/add-image.deps";
 import { defaultMobileDeps } from "@/application-services/mobile/deps";
 import { defaultAddNoteDeps } from "@/application-services/notes/add-note.deps";
+import { pushSubscriptionRepository } from "@/application-services/push-notifications/deps";
+import { sendPushToSubscription } from "@/application-services/push-notifications/push-notification-service";
 import { env } from "@/env";
-import "server-only";
 import { auth } from "@/infrastructures/auth/auth";
+import "server-only";
 import { searchVectors } from "@/infrastructures/search/search-service";
 import { booksStorageService } from "@/infrastructures/shared/storage/books-storage-service";
 import { minioStorageService } from "@/infrastructures/shared/storage/minio-storage-service";
 import prisma from "@/prisma";
 import { createApiApp } from "@s-hirano-ist/s-backend/api/app";
+import { createPushService } from "@s-hirano-ist/s-backend/api/push-service";
 import { createReadService } from "@s-hirano-ist/s-backend/api/read-service";
 import { createUploadService } from "@s-hirano-ist/s-backend/api/upload-service";
 import { createWriteService } from "@s-hirano-ist/s-backend/api/write-service";
@@ -76,5 +79,13 @@ export const backendApi = createApiApp(
 		storage: { images: minioStorageService, books: booksStorageService },
 		searchVectors,
 	}),
-	{ writes, uploads },
+	{
+		writes,
+		uploads,
+		push: createPushService(
+			pushSubscriptionRepository,
+			env.NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY,
+			sendPushToSubscription,
+		),
+	},
 );

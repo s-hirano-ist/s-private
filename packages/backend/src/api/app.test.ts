@@ -1,3 +1,4 @@
+import type { PushService } from "@s-hirano-ist/s-backend/api/push-service";
 import type { ReadService } from "@s-hirano-ist/s-backend/api/read-service";
 import type { UploadService } from "@s-hirano-ist/s-backend/api/upload-service";
 import type { WriteService } from "@s-hirano-ist/s-backend/api/write-service";
@@ -58,12 +59,18 @@ function fixture() {
 		complete: vi.fn<UploadService["complete"]>(),
 		cancel: vi.fn<UploadService["cancel"]>(),
 	};
+	const push = {
+		subscribe: vi.fn<PushService["subscribe"]>(),
+		unsubscribe: vi.fn<PushService["unsubscribe"]>(),
+		test: vi.fn<PushService["test"]>(),
+	};
 	return {
+		push,
 		auth,
 		reads,
 		writes,
 		uploads,
-		app: createApiApp(auth, reads, { writes, uploads }),
+		app: createApiApp(auth, reads, { writes, uploads, push }),
 	};
 }
 describe("Shared Hono API boundary", () => {
@@ -208,5 +215,68 @@ describe("Shared Hono API boundary", () => {
 			0,
 			new Uint8Array([1, 2, 3]),
 		);
+	});
+	test("routes cookie push registration and deletion through the same owner", async () => {
+		const { app, push } = fixture();
+		const endpoint = "https://push.example/subscription";
+		const headers = {
+			origin: "https://web.example",
+			"content-type": "application/json",
+		};
+		expect(
+			(
+				await app.request("/api/v1/push/subscriptions", {
+					method: "POST",
+					headers,
+					body: JSON.stringify({
+						endpoint,
+						keys: { auth: "auth", p256dh: "key" },
+					}),
+				})
+			).status,
+		).toBe(204);
+		expect(push.subscribe).toHaveBeenCalledWith("owner", {
+			endpoint,
+			keys: { auth: "auth", p256dh: "key" },
+		});
+		expect(
+			(
+				await app.request("/api/v1/push/subscriptions", {
+					method: "DELETE",
+					headers,
+					body: JSON.stringify({ endpoint }),
+				})
+			).status,
+		).toBe(204);
+		expect(push.unsubscribe).toHaveBeenCalledWith("owner", endpoint);
+	});
+	test("keeps push CSRF validation and missing-subscription errors at the API boundary", async () => {
+		const { app, push } = fixture();
+		const body = JSON.stringify({
+			endpoint: "https://push.example/subscription",
+		});
+		expect(
+			(
+				await app.request("/api/v1/push/test", {
+					method: "POST",
+					headers: { "content-type": "application/json" },
+					body,
+				})
+			).status,
+		).toBe(403);
+		expect(push.test).not.toHaveBeenCalled();
+		push.test.mockRejectedValue(new MobileApiError("NOT_FOUND", 404));
+		expect(
+			(
+				await app.request("/api/v1/push/test", {
+					method: "POST",
+					headers: {
+						"content-type": "application/json",
+						authorization: "Bearer valid",
+					},
+					body,
+				})
+			).status,
+		).toBe(404);
 	});
 });

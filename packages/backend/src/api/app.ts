@@ -1,3 +1,4 @@
+import type { PushService } from "@s-hirano-ist/s-backend/api/push-service";
 import type { ReadService } from "@s-hirano-ist/s-backend/api/read-service";
 import type { UploadService } from "@s-hirano-ist/s-backend/api/upload-service";
 import type { WriteService } from "@s-hirano-ist/s-backend/api/write-service";
@@ -25,7 +26,11 @@ export type ApiEnvironment = {
 export function createApiApp(
 	auth: ApiAuth,
 	reads: ReadService,
-	mutations: { uploads: UploadService; writes: WriteService },
+	mutations: {
+		push: PushService;
+		uploads: UploadService;
+		writes: WriteService;
+	},
 ) {
 	const app = new OpenAPIHono<ApiEnvironment>({
 		defaultHook: (result, c) =>
@@ -66,7 +71,12 @@ export function createApiApp(
 			throw new MobileApiError("UPLOAD_TOO_LARGE", 413);
 		},
 	});
-	app.on("POST", ["/articles", "/notes", "/uploads"], jsonLimit);
+	app.on(
+		"POST",
+		["/articles", "/notes", "/uploads", "/push/subscriptions", "/push/test"],
+		jsonLimit,
+	);
+	app.on("DELETE", "/push/subscriptions", jsonLimit);
 	app.on(
 		"PUT",
 		"/uploads/:id/chunks/:part",
@@ -315,6 +325,22 @@ export function createApiApp(
 	);
 	app.openapi(routes.cancelUploadRoute, async (c) => {
 		await mutations.uploads.cancel(c.get("owner"), c.req.valid("param").id);
+		return c.body(null, 204);
+	});
+
+	app.openapi(routes.subscribeRoute, async (c) => {
+		await mutations.push.subscribe(c.get("owner"), c.req.valid("json"));
+		return c.body(null, 204);
+	});
+	app.openapi(routes.unsubscribeRoute, async (c) => {
+		await mutations.push.unsubscribe(
+			c.get("owner"),
+			c.req.valid("json").endpoint,
+		);
+		return c.body(null, 204);
+	});
+	app.openapi(routes.testPushRoute, async (c) => {
+		await mutations.push.test(c.get("owner"), c.req.valid("json").endpoint);
 		return c.body(null, 204);
 	});
 	return app;
