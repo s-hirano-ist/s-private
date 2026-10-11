@@ -164,6 +164,9 @@ settings:
 
 catalogs:
   default:
+    '@s-hirano-ist/s-api-client':
+      specifier: workspace:*
+      version: workspace:*
     '@s-hirano-ist/s-backend':
       specifier: workspace:*
       version: workspace:*
@@ -437,6 +440,9 @@ importers:
 
   app:
     dependencies:
+      '@s-hirano-ist/s-api-client':
+        specifier: 'catalog:'
+        version: link:../packages/api-client
       '@s-hirano-ist/s-backend':
         specifier: 'catalog:'
         version: link:../packages/backend
