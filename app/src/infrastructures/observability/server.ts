@@ -1,27 +1,7 @@
-// Server-side infrastructure exports
 export * from "./logging/logger.interface";
-
 import { env } from "@/env";
-// Create serverLogger instance with dependency injection
-import {
-	createPushoverService,
-	type NotificationService,
-} from "@s-hirano-ist/s-notification";
+import { createBackendNotificationService } from "@s-hirano-ist/s-backend/notifications/pushover-service";
 import { ServerLogger } from "./logging/server-logger";
-
-const noOpNotificationService: NotificationService = {
-	notifyError: () => Promise.resolve(),
-	notifyInfo: () => Promise.resolve(),
-	notifyWarning: () => Promise.resolve(),
-};
-
-const notificationService =
-	env.LOCAL_DEV_MODE === "true" && env.VERCEL !== "1"
-		? noOpNotificationService
-		: createPushoverService({
-				url: env.PUSHOVER_URL,
-				userKey: env.PUSHOVER_USER_KEY ?? "",
-				appToken: env.PUSHOVER_APP_TOKEN ?? "",
-			});
-
-export const serverLogger = new ServerLogger(notificationService);
+export const serverLogger = new ServerLogger(
+	createBackendNotificationService(env),
+);

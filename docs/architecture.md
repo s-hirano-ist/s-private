@@ -44,7 +44,9 @@ WebとiOSで共有するユースケースと永続化adapterをドメインご�
 articles／notes／images／booksの作成・削除、入力検証、Prismaリポジトリを移管している。
 Sharp画像処理とMinIO保存prefixも共通化し、アップロードのFormData変換はWeb入口に残す。
 認証済み所有者、イベントdispatcher、DBのtenant・観測hookを明示的に注入し、Next.jsには依存しない。
-Prisma拡張済みclient型はこのpackageで定義し、Webとbackendの型境界で型assertionを加えない。
+Prisma拡張済みclient型、tenant context／filterもこのpackageで定義する。
+認証provider設定・Bearer検証・ログ・イベント・通知・Cronの実装は設定とportを受け取る。
+Webとbackendの型境界で型assertionを加えず、Next.js用SentryはWeb側のadapterから注入する。
 移行の順序と暫定adapterの役割は[共通backend移行](backend-migration.md)を参照。
 
 ### アプリケーションサービス層 (`app/src/application-services/`)
