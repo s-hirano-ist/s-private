@@ -1,82 +1,25 @@
-/**
- * Core business logic for article creation.
- *
- * @remarks
- * NOT a Server Action - for internal use and testing only.
- *
- * @module
- */
-
 import "server-only";
-import type { AddArticleDeps } from "./add-article.deps";
+import type { AddArticleDeps } from "@/application-services/articles/add-article.deps";
 import type { ServerActionWithData } from "@/common/types";
 import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { parseAddArticleFormData } from "@/application-services/articles/helpers/form-data-parser";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
-import { articleEntity } from "@s-hirano-ist/s-core/articles/entities/article-entity";
-import { parseAddArticleFormData } from "./helpers/form-data-parser";
+import { createArticle } from "@s-hirano-ist/s-backend/articles/use-cases";
 
-/**
- * Core business logic for creating an article.
- *
- * @remarks
- * This function contains the pure business logic without authentication/authorization.
- * It is designed to be easily testable by accepting dependencies as parameters.
- *
- * Performs the following steps:
- * 1. Form data parsing and validation
- * 2. Domain duplicate check
- * 3. Category resolution (find existing or create new)
- * 4. Entity creation with value objects and domain event
- * 5. Persistence, event dispatch, and cache invalidation
- *
- * @param formData - Form data containing title, quote, url, category
- * @param deps - Dependencies (repository, domain service factory, event dispatcher)
- * @returns Server action result with success/failure status
- */
+/** Web error/session adapter; the domain use case lives in the shared backend. */
 export async function addArticleCore(
 	formData: FormData,
 	deps: AddArticleDeps,
 	principalId?: UserId,
 ): Promise<ServerActionWithData<{ id: string }>> {
-	const { commandRepository, domainServiceFactory, eventDispatcher } = deps;
-	const articlesDomainService =
-		domainServiceFactory.createArticlesDomainService();
-	const categoryService = domainServiceFactory.createCategoryService();
-
 	try {
-		const { title, quote, url, categoryName, userId } = parseAddArticleFormData(
+		const data = parseAddArticleFormData(
 			formData,
 			principalId ?? (await getSelfId()),
 		);
-
-		// Domain business rule validation
-		await articlesDomainService.ensureNoDuplicate(url, userId);
-
-		// Resolve category (find existing or create new)
-		const categoryId = await categoryService.resolveOrCreate(
-			categoryName,
-			userId,
-		);
-
-		// Create entity with value objects and domain event
-		const [article, event] = articleEntity.create({
-			title,
-			quote,
-			url,
-			categoryId,
-			categoryName,
-			userId,
-			caller: "addArticle",
-		});
-
-		// Persist (cache invalidation is handled in repository)
-		await commandRepository.create(article);
-
-		// Dispatch domain event
-		await eventDispatcher.dispatch(event);
-
-		return { success: true, message: "inserted", data: { id: article.id } };
+		const result = await createArticle(data, deps);
+		return { success: true, message: "inserted", data: result };
 	} catch (error) {
 		return await wrapServerSideErrorForClient(error, formData);
 	}

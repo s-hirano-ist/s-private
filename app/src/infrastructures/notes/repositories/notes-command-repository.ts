@@ -1,51 +1,28 @@
-import type {
-	DeleteNoteResult,
-	INotesCommandRepository,
-} from "@s-hirano-ist/s-core/notes/repositories/notes-command-repository.interface";
-import type {
-	Id,
-	Status,
-	UserId,
-} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import type { INotesCommandRepository } from "@s-hirano-ist/s-core/notes/repositories/notes-command-repository.interface";
 import {
 	buildContentCacheTag,
 	buildCountCacheTag,
 } from "@/infrastructures/shared/cache/cache-tag-builder";
 import prisma from "@/prisma";
-import {
-	makeNoteTitle,
-	type UnexportedNote,
-} from "@s-hirano-ist/s-core/notes/entities/note-entity";
+import { createNotesCommandRepository } from "@s-hirano-ist/s-backend/notes/command-repository";
 import { revalidateTag } from "next/cache";
 
-async function create(data: UnexportedNote): Promise<void> {
-	await prisma.note.create({ data });
-
-	revalidateTag(buildContentCacheTag("notes", data.status, data.userId), {
-		expire: 0,
-	});
-	revalidateTag(buildCountCacheTag("notes", data.status, data.userId), {
-		expire: 0,
-	});
-}
-
-async function deleteById(
-	id: Id,
-	userId: UserId,
-	status: Status,
-): Promise<DeleteNoteResult> {
-	const data = await prisma.note.delete({
-		where: { id, userId, status },
-		select: { title: true },
-	});
-
-	revalidateTag(buildContentCacheTag("notes", status, userId), { expire: 0 });
-	revalidateTag(buildCountCacheTag("notes", status, userId), { expire: 0 });
-
-	return { title: makeNoteTitle(data.title) };
-}
-
+const repository = createNotesCommandRepository(prisma);
+/** Temporary Web cache adapter; persistence belongs to the backend. */
 export const notesCommandRepository: INotesCommandRepository = {
-	create,
-	deleteById,
+	async create(data) {
+		await repository.create(data);
+		revalidateTag(buildContentCacheTag("notes", data.status, data.userId), {
+			expire: 0,
+		});
+		revalidateTag(buildCountCacheTag("notes", data.status, data.userId), {
+			expire: 0,
+		});
+	},
+	async deleteById(id, userId, status) {
+		const result = await repository.deleteById(id, userId, status);
+		revalidateTag(buildContentCacheTag("notes", status, userId), { expire: 0 });
+		revalidateTag(buildCountCacheTag("notes", status, userId), { expire: 0 });
+		return result;
+	},
 };

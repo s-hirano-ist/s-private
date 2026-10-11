@@ -1,60 +1,22 @@
-/**
- * Core business logic for article deletion.
- *
- * @remarks
- * NOT a Server Action - for internal use and testing only.
- *
- * @module
- */
-
 import "server-only";
-import type { DeleteArticleDeps } from "./delete-article.deps";
+import type { DeleteArticleDeps } from "@/application-services/articles/delete-article.deps";
 import type { ServerAction } from "@/common/types";
-import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import type {
+	UserId,
+	Id,
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
-import { ArticleDeletedEvent } from "@s-hirano-ist/s-core/articles/events/article-deleted-event";
-import {
-	type Id,
-	makeUnexportedStatus,
-} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { deleteArticle } from "@s-hirano-ist/s-backend/articles/use-cases";
 
-/**
- * Core business logic for deleting an article.
- *
- * @remarks
- * This function contains the pure business logic without authentication/authorization.
- * It is designed to be easily testable by accepting dependencies as parameters.
- *
- * Only unexported articles can be deleted.
- *
- * @param id - Validated Article ID to delete
- * @param deps - Dependencies (repository, event dispatcher)
- * @returns Server action result with success/failure status
- */
+/** Web error/session adapter; the domain use case lives in the shared backend. */
 export async function deleteArticleCore(
 	id: Id,
 	deps: DeleteArticleDeps,
 	principalId?: UserId,
 ): Promise<ServerAction> {
-	const { commandRepository, eventDispatcher } = deps;
-
 	try {
-		const userId = principalId ?? (await getSelfId());
-
-		const status = makeUnexportedStatus();
-		// Cache invalidation is handled in repository
-		const { title } = await commandRepository.deleteById(id, userId, status);
-
-		// Dispatch domain event
-		await eventDispatcher.dispatch(
-			new ArticleDeletedEvent({
-				title,
-				userId: userId,
-				caller: "deleteArticle",
-			}),
-		);
-
+		await deleteArticle(id, principalId ?? (await getSelfId()), deps);
 		return { success: true, message: "deleted" };
 	} catch (error) {
 		return await wrapServerSideErrorForClient(error);

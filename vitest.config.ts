@@ -11,6 +11,13 @@ export default defineConfig({
 		projects: [
 			{
 				test: {
+					name: "backend",
+					include: ["packages/backend/src/**/*.test.ts"],
+				},
+			},
+
+			{
+				test: {
 					name: "api",
 					include: [
 						"packages/api-contracts/src/**/*.test.ts",

@@ -164,6 +164,9 @@ settings:
 
 catalogs:
   default:
+    '@s-hirano-ist/s-backend':
+      specifier: workspace:*
+      version: workspace:*
     '@tailwindcss/postcss':
       specifier: 4.3.3
       version: 4.3.3
@@ -434,6 +437,9 @@ importers:
 
   app:
     dependencies:
+      '@s-hirano-ist/s-backend':
+        specifier: 'catalog:'
+        version: link:../packages/backend
       '@s-hirano-ist/s-core':
         specifier: workspace:*
         version: link:../packages/core
@@ -565,6 +571,22 @@ importers:
       zod:
         specifier: 'catalog:'
         version: 4.6.5
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 24.19.1
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
+
+  packages/backend:
+    dependencies:
+      '@s-hirano-ist/s-core':
+        specifier: workspace:*
+        version: link:../core
+      '@s-hirano-ist/s-database':
+        specifier: workspace:*
+        version: link:../database
     devDependencies:
       '@types/node':
         specifier: 'catalog:'

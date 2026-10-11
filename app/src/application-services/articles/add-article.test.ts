@@ -81,8 +81,7 @@ function createMockDeps(
 
 	const deps: AddArticleDeps = {
 		commandRepository: mockCommandRepository,
-		domainServiceFactory:
-			mockDomainServiceFactory as unknown as AddArticleDeps["domainServiceFactory"],
+		domainServiceFactory: mockDomainServiceFactory,
 		eventDispatcher: mockEventDispatcher,
 	};
 

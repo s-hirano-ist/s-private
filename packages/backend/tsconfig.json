@@ -1,0 +1,11 @@
+{
+	"extends": "../../tsconfig.base.json",
+	"compilerOptions": {
+		"types": ["node"],
+		"module": "NodeNext",
+		"lib": ["ES2025", "DOM", "DOM.Iterable"],
+		"noEmit": true
+	},
+	"include": ["src/**/*.ts"],
+	"exclude": ["src/**/*.test.ts"]
+}

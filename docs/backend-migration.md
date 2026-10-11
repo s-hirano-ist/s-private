@@ -21,6 +21,14 @@ Bearer認証・tenant・操作ID・upload・同期の既存ユースケースと
 一時的な配置であり、後続PRで独立backendのpackageへ移す。
 手書きiOSクライアントとWebの通信経路は引き続き有効。
 
+`packages/backend` はNext.jsに依存しない実装packageとし、ドメイン別の公開subpathを持つ。
+articles／notesの入力検証、作成・削除ユースケース、Prismaリポジトリを配置する。
+所有者IDとイベントdispatchは明示的な依存として渡し、backend内でWeb sessionを取得しない。
+Next.js側はFormData、認証、エラー変換、既存キャッシュの無効化を担う暫定adapterとなる。
+Prismaのquery hook構成と拡張済みclient型もbackendで共有し、tenant contextと監視の値は入口から注入する。
+既存のtenant policy、SQL、イベント、書き込み回数は維持する。
+HTTP入口とクライアントを切り替える前に処理を移管するため、この段階では新しい通信は発生しない。
+
 ```bash
 pnpm api:generate
 pnpm api:check
