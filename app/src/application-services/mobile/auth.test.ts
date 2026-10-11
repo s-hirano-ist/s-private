@@ -83,6 +83,10 @@ describe("mobile bearer authentication", () => {
 	test.each([
 		["missing token", undefined],
 		["expired token", token({ exp: 1 })],
+		["missing expiry", token({ exp: undefined })],
+		["missing subject", token({ sub: undefined })],
+		["empty subject", token({ sub: "" })],
+		["not yet valid", token({ nbf: Math.floor(Date.now() / 1000) + 300 })],
 		["wrong audience", token({ aud: "wrong" })],
 		["wrong issuer", token({ iss: "https://other.auth0.com/" })],
 		["tampered signature", `${token().slice(0, -4)}aaaa`],

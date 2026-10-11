@@ -31,6 +31,22 @@
 		"./search/*": {
 			"types": "./src/search/*.ts",
 			"import": "./src/search/*.ts"
+		},
+		"./auth/*": {
+			"types": "./src/auth/*.ts",
+			"import": "./src/auth/*.ts"
+		},
+		"./observability/*": {
+			"types": "./src/observability/*.ts",
+			"import": "./src/observability/*.ts"
+		},
+		"./events/*": {
+			"types": "./src/events/*.ts",
+			"import": "./src/events/*.ts"
+		},
+		"./notifications/*": {
+			"types": "./src/notifications/*.ts",
+			"import": "./src/notifications/*.ts"
 		}
 	},
 	"scripts": {
@@ -45,7 +61,9 @@
 		"@s-hirano-ist/s-storage": "workspace:*",
 		"better-auth": "1.7.7",
 		"zod": "catalog:",
-		"@s-hirano-ist/s-search": "workspace:*"
+		"@s-hirano-ist/s-search": "workspace:*",
+		"jose": "6.2.12",
+		"pino": "10.4.0"
 	},
 	"devDependencies": {
 		"@types/node": "catalog:",

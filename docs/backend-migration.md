@@ -39,6 +39,12 @@ DBの状態と保存形式を維持し、Webでは既存の依存を注入する
 共有Prisma persistenceとMinIO chunk storeも設定を受け取るfactoryとする。
 Qdrant検索と結果整形は `packages/backend/src/search` に置き、Webから設定・検索portを渡す。
 
+Better Authのprovider・session設定、Auth0 Bearer検証、tenant context／filterもbackendで共有する。
+Bearer検証はjoseのRS256・issuer・audience・必須claims検証とRemote JWKS resolverを使用する。
+[JWKS resolver](https://github.com/panva/jose/blob/main/docs/jwks/remote/functions/createRemoteJWKSet.md)は公開鍵だけを短時間保持する。
+ログ・イベント・Pushover／Web Push・Cron処理は監視port、設定、リポジトリを受け取る。
+Next.js用Sentry adapterはWeb側に置き、独立backendでも同じ処理を利用できる構成にする。
+
 ```bash
 pnpm api:generate
 pnpm api:check
