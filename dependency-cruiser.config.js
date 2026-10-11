@@ -26,6 +26,26 @@ const COLLAPSE_PATTERN =
    Verified: 0 false positives on the current tree; fires on deliberate violations. */
 const boundaryRules = [
 	{
+		name: "boundary-backend-books",
+		severity: "error",
+		from: { path: "^packages/backend/src/books/" },
+		to: {
+			path: "^packages/(backend/src|core)/(articles|notes|books|images)/",
+			pathNot: "^packages/(backend/src|core)/books/",
+		},
+	},
+
+	{
+		name: "boundary-backend-images",
+		severity: "error",
+		from: { path: "^packages/backend/src/images/" },
+		to: {
+			path: "^packages/(backend/src|core)/(articles|notes|books|images)/",
+			pathNot: "^packages/(backend/src|core)/images/",
+		},
+	},
+
+	{
 		name: "boundary-backend-runtime",
 		severity: "error",
 		comment: "Shared backend cannot depend on Next.js or Web implementation",
@@ -212,6 +232,8 @@ const boundaryRules = [
 		to: {
 			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: [
+				"^packages/backend/src/books/",
+				"^packages/backend/src/shared/",
 				"^packages/core/shared-kernel/",
 				"^app/src/application-services/common/",
 				"^app/src/infrastructures/(articles|books|images|notes|search)/",
@@ -251,6 +273,8 @@ const boundaryRules = [
 		to: {
 			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: [
+				"^packages/backend/src/images/",
+				"^packages/backend/src/shared/",
 				"^packages/core/shared-kernel/",
 				"^app/src/application-services/common/",
 				"^app/src/infrastructures/(articles|books|images|notes|search)/",
@@ -375,6 +399,8 @@ const boundaryRules = [
 		to: {
 			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: [
+				"^packages/backend/src/books/",
+				"^packages/backend/src/shared/",
 				"^packages/core/shared-kernel/",
 				"^app/src/infrastructures/(articles|books|images|notes|search)/",
 				"^app/src/infrastructures/(auth|events|factories|i18n|observability|shared)/",
@@ -397,6 +423,8 @@ const boundaryRules = [
 		to: {
 			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: [
+				"^packages/backend/src/images/",
+				"^packages/backend/src/shared/",
 				"^packages/core/shared-kernel/",
 				"^app/src/infrastructures/(articles|books|images|notes|search)/",
 				"^app/src/infrastructures/(auth|events|factories|i18n|observability|shared)/",
@@ -464,6 +492,7 @@ const boundaryRules = [
 		to: {
 			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: [
+				"^packages/backend/src/shared/",
 				"^packages/core/shared-kernel/",
 				"^packages/core/(articles|books|images|notes)/",
 				"^app/src/infrastructures/(articles|books|images|notes|search)/",
@@ -549,6 +578,7 @@ const boundaryRules = [
 		to: {
 			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: [
+				"^packages/backend/src/shared/",
 				"^packages/core/shared-kernel/",
 				"^app/src/common/",
 				"^app/src/infrastructures/(auth|events|factories|i18n|observability|shared)/",

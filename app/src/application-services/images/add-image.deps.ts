@@ -1,3 +1,4 @@
+import type { CreateImageDeps as BackendDeps } from "@s-hirano-ist/s-backend/images/use-cases";
 /**
  * Dependency types and defaults for image upload.
  *
@@ -7,27 +8,15 @@
  *
  * @module
  */
-
-import type { IEventDispatcher } from "@/application-services/common/event-dispatcher.interface";
-import type { IImagesCommandRepository } from "@s-hirano-ist/s-core/images/repositories/images-command-repository.interface";
-import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/services/storage-service.interface";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
-import {
-	type createDomainServiceFactory,
-	domainServiceFactory,
-} from "@/infrastructures/factories/domain-service-factory";
+import { domainServiceFactory } from "@/infrastructures/factories/domain-service-factory";
 import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
 import { minioStorageService } from "@/infrastructures/shared/storage/minio-storage-service";
 
 /**
  * Dependencies for the addImageCore function.
  */
-export type AddImageDeps = {
-	commandRepository: IImagesCommandRepository;
-	domainServiceFactory: ReturnType<typeof createDomainServiceFactory>;
-	eventDispatcher: IEventDispatcher;
-	storageService: IStorageService;
-};
+export type AddImageDeps = BackendDeps;
 
 /**
  * Default dependencies for production use.

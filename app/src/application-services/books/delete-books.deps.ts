@@ -1,3 +1,4 @@
+import type { DeleteBookDeps as BackendDeps } from "@s-hirano-ist/s-backend/books/use-cases";
 /**
  * Dependency types and defaults for book deletion.
  *
@@ -7,19 +8,13 @@
  *
  * @module
  */
-
-import type { IEventDispatcher } from "@/application-services/common/event-dispatcher.interface";
-import type { IBooksCommandRepository } from "@s-hirano-ist/s-core/books/repositories/books-command-repository.interface";
 import { booksCommandRepository } from "@/infrastructures/books/repositories/books-command-repository";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 
 /**
  * Dependencies for the deleteBooksCore function.
  */
-export type DeleteBooksDeps = {
-	commandRepository: IBooksCommandRepository;
-	eventDispatcher: IEventDispatcher;
-};
+export type DeleteBooksDeps = BackendDeps;
 
 /**
  * Default dependencies for production use.

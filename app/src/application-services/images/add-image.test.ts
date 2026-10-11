@@ -72,8 +72,7 @@ function createMockDeps(
 	const deps: AddImageDeps = {
 		commandRepository: mockCommandRepository,
 		storageService: mockStorageService,
-		domainServiceFactory:
-			mockDomainServiceFactory as unknown as AddImageDeps["domainServiceFactory"],
+		domainServiceFactory: mockDomainServiceFactory,
 		eventDispatcher: mockEventDispatcher,
 	};
 
