@@ -9,6 +9,7 @@ export default [
 			".pnpm-store/**",
 			"**/.next/**",
 			"**/.derivedData/**",
+			"**/.build/**",
 			"**/.storybook-static/**",
 			"ios/*.xcodeproj/**",
 			".storybook-ui-static/**",

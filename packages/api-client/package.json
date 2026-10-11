@@ -1,0 +1,40 @@
+{
+	"name": "@s-hirano-ist/s-api-client",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		},
+		"./models": {
+			"types": "./dist/generated/models/index.d.ts",
+			"import": "./dist/generated/models/index.js"
+		},
+		"./operations": {
+			"types": "./dist/generated/backend.d.ts",
+			"import": "./dist/generated/backend.js"
+		},
+		"./transport": {
+			"types": "./dist/transport.d.ts",
+			"import": "./dist/transport.js"
+		},
+		"./response-contracts": {
+			"types": "./dist/generated/response-contracts.d.ts",
+			"import": "./dist/generated/response-contracts.js"
+		}
+	},
+	"scripts": {
+		"build": "pnpm --workspace-root api:generate && tsc",
+		"typecheck": "pnpm run build && tsc -p tsconfig.type-tests.json"
+	},
+	"dependencies": {
+		"zod": "catalog:"
+	},
+	"devDependencies": {
+		"@types/node": "catalog:",
+		"typescript": "catalog:",
+		"@s-hirano-ist/s-api-contracts": "workspace:*"
+	}
+}

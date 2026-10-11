@@ -90,6 +90,7 @@
 	},
 	"ignorePatterns": [
 		"packages/database/src/generated/**/*",
+		"packages/api-client/src/generated/**/*",
 		"**/node_modules/**/*",
 		"**/.next/**/*",
 		"**/.storybook-static/**/*",

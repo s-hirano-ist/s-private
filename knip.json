@@ -50,6 +50,10 @@
 			"entry": ["**/*.ts", "!**/*.test.ts", "!**/*.spec.ts"],
 			"project": ["**/*.ts"]
 		},
+		"packages/api-client": {
+			"entry": ["type-tests/client.ts"],
+			"ignoreDependencies": ["zod", "@s-hirano-ist/s-api-contracts"]
+		},
 		"packages/database": {
 			"ignoreDependencies": ["@prisma/client"]
 		}

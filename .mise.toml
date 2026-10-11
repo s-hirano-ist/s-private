@@ -15,7 +15,10 @@ gitleaks = "8.30.1"
 
 [tasks."ios:generate"]
 description = "Generate the iOS Xcode project"
-run = "xcodegen generate --spec ios/project.yml --project ios"
+run = [
+	"bash ios/scripts/generate-api.sh",
+	"xcodegen generate --spec ios/project.yml --project ios",
+]
 
 [tasks."ios:build"]
 description = "Build the iOS app for an iOS 27 Simulator"

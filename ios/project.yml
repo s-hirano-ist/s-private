@@ -23,6 +23,8 @@ settings:
     TARGETED_DEVICE_FAMILY: "1"
 
 packages:
+  SPrivateAPI:
+    path: Packages/SPrivateAPI
   Auth0:
     url: https://github.com/auth0/Auth0.swift.git
     from: 3.1.0
@@ -36,6 +38,7 @@ targets:
       - path: Shared
     dependencies:
       - package: Auth0
+      - package: SPrivateAPI
       - target: SPrivateShareExtension
         embed: true
     settings:

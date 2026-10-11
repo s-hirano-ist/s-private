@@ -10,6 +10,15 @@ export default defineConfig({
 	test: {
 		projects: [
 			{
+				test: {
+					name: "api",
+					include: [
+						"packages/api-contracts/src/**/*.test.ts",
+						"packages/api-client/src/**/*.test.ts",
+					],
+				},
+			},
+			{
 				extends: true,
 				// Prebundle browser-story dependencies before tests start to avoid Vite reloads.
 				optimizeDeps: {

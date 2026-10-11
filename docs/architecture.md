@@ -1901,3 +1901,13 @@ iOS本体とShare Extensionは`group.ist.s-hirano.s-private`のApp Groupだけ�
 記事カテゴリは本体が同期済みの所有者別ローカルコピーから候補名だけをApp Groupの`ArticleCategories.json`へ原子的に書き出し、Share Extensionが選択肢として読む。Extensionは候補がなくても新規名を入力できる。同期完了時に候補を更新し、ログアウト、所有者切替、キャッシュ削除時に共有コピーを消去する。カテゴリ名は記事作成時に既存名の選択または新規入力で指定し、前後の空白を除いた1〜16 UTF-16コード単位を端末側でも検証する。
 
 Auth0のNative Application設定はWeb用Applicationと分離する。iOSはAuth0.swiftのAuthorization Code + PKCEを使用し、資格情報をKeychainへ保存する。無料Personal Teamを前提とする段階ではUniversal Linksを使わず、`ist.s-hirano.s-private` URL schemeでコールバックを受ける。Team ID、Auth0 client ID、domain、audience、API接続先はGit管理外の`ios/Config/Local.xcconfig`から生成済みInfo.plistへ注入し、クライアントシークレットは使用しない。
+
+## Hono共通backendへの段階移行
+
+WebとiOSの共通APIは `packages/api-contracts` のHonoルート・Zodスキーマから
+OpenAPI 3.1を出力し、OrvalとSwift OpenAPI Generatorでクライアントを生成する。
+契約はcore、Prisma、Next.js、実行時adapterから独立させる。
+`packages/api-client` は生成したDTOとリクエスト単位の検証付きtransportを提供する。
+現段階では契約生成基盤のみを追加し、既存の通信経路は維持する。
+移管順序、認証・キャッシュ・デプロイの境界は
+[共通backendへの移行](backend-migration.md) を参照する。
