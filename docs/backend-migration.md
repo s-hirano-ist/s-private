@@ -124,6 +124,9 @@ Webの記事・ノート一覧、件数、カテゴリ、ノート詳細はOrval
 認証付き書影はNext.js image optimizerを経由せずブラウザから取得し、Cookieを維持する。
 画像の代替テキストはURLと分離する。旧path指定の画像Route HandlerとWebのストレージ直接参照は撤去する。
 ISBNのハイフン除去と検証はbackendに置く。
+Web検索もOrvalクライアントを使い、検索queryと結果の型を共通契約から取得する。
+所有者のDBと照合済みの結果だけを表示し、ノートのtitleと書籍のISBNを詳細リンクへ変換する。
+Webの検索経路はQdrant・ドメイン型・独自の検索スキーマに依存しない。
 本文の表示用変換はWeb側で行い、ノート詳細はviewerが必要とするtitle・markdownだけを公開する。
 401はWebの認証境界へ、ノートの404だけはnullへ変換する。
 Webのユーザーデータ取得はno-storeとリクエスト内の重複排除へ移行する。

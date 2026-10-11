@@ -3,8 +3,9 @@ import {
 	mobileErrorResponse,
 	mobileJson,
 } from "@/application-services/mobile/http";
-import { searchContent } from "@/application-services/search/search-content";
+import { searchVectors } from "@/infrastructures/search/search-service";
 import prisma from "@/prisma";
+import { searchContent } from "@s-hirano-ist/s-backend/search/search-content";
 import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { z } from "zod";
 
@@ -22,6 +23,7 @@ export async function GET(request: Request): Promise<Response> {
 			const found = await searchContent(
 				{ query: query.query, limit: query.limit },
 				makeUserId(userId),
+				searchVectors,
 			);
 			const data = [];
 			for (const item of found.results) {
