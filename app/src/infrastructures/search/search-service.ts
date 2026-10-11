@@ -1,28 +1,6 @@
-import type { ContentType, SearchResult } from "@s-hirano-ist/s-search/config";
 import { env } from "@/env";
-import { getQdrantClient, search } from "@s-hirano-ist/s-search/qdrant-client";
-
-// Initialize Qdrant client with env config
-getQdrantClient({ url: env.QDRANT_URL, apiKey: env.QDRANT_API_KEY });
-
-export type SearchOptions = {
-	contentType?: ContentType | ContentType[];
-	heading?: string;
-	topK?: number;
-	type?: "markdown_note" | "bookmark_json";
-};
-
-export async function searchVectors(
-	query: string,
-	options: SearchOptions = {},
-): Promise<{ query: string; results: SearchResult[]; totalResults: number }> {
-	const results = await search(query, {
-		topK: options.topK,
-		filter: {
-			type: options.type,
-			top_heading: options.heading,
-			content_type: options.contentType,
-		},
-	});
-	return { results, query, totalResults: results.length };
-}
+import { createVectorSearch } from "@s-hirano-ist/s-backend/search/vector-search";
+export const searchVectors = createVectorSearch({
+	url: env.QDRANT_URL,
+	apiKey: env.QDRANT_API_KEY,
+});
