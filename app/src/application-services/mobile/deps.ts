@@ -1,24 +1,7 @@
-import type {
-	MobileAccountRepository,
-	MobileChunkStore,
-	MobileContentRepository,
-	MobileErrorClassifier,
-	MobileOperationRepository,
-	MobileSyncRepository,
-	MobileUploadRepository,
-} from "@/application-services/mobile/ports";
+import type { MobileDeps } from "@s-hirano-ist/s-backend/mobile/deps";
+export type { MobileDeps } from "@s-hirano-ist/s-backend/mobile/deps";
 import { minioMobileChunkStore } from "@/infrastructures/mobile/minio-mobile-chunk-store";
 import { prismaMobilePersistence } from "@/infrastructures/mobile/prisma-mobile-persistence";
-
-export type MobileDeps = {
-	accounts: MobileAccountRepository;
-	chunks: MobileChunkStore;
-	content: MobileContentRepository;
-	errors: MobileErrorClassifier;
-	operations: MobileOperationRepository;
-	sync: MobileSyncRepository;
-	uploads: MobileUploadRepository;
-};
 
 export const defaultMobileDeps: MobileDeps = {
 	accounts: prismaMobilePersistence,

@@ -1,5 +1,5 @@
-import type { MobileDomain } from "@/application-services/mobile/content";
-import type { SyncDomain } from "@/application-services/mobile/sync";
+import type { MobileDomain } from "@s-hirano-ist/s-backend/mobile/models";
+import type { SyncDomain } from "@s-hirano-ist/s-backend/mobile/models";
 
 export type MobileUpload = {
 	contentType: string;

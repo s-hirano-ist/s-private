@@ -23,6 +23,14 @@
 		"./books/*": {
 			"types": "./src/books/*.ts",
 			"import": "./src/books/*.ts"
+		},
+		"./mobile/*": {
+			"types": "./src/mobile/*.ts",
+			"import": "./src/mobile/*.ts"
+		},
+		"./search/*": {
+			"types": "./src/search/*.ts",
+			"import": "./src/search/*.ts"
 		}
 	},
 	"scripts": {
@@ -36,7 +44,8 @@
 		"@s-hirano-ist/s-notification": "workspace:*",
 		"@s-hirano-ist/s-storage": "workspace:*",
 		"better-auth": "1.7.7",
-		"zod": "catalog:"
+		"zod": "catalog:",
+		"@s-hirano-ist/s-search": "workspace:*"
 	},
 	"devDependencies": {
 		"@types/node": "catalog:",

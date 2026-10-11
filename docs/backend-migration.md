@@ -34,6 +34,11 @@ HTTP入口とクライアントを切り替える前に処理を移管するた�
 original→thumbnail→DB→イベントの順序と既存の失敗時動作を維持する。
 operation／storage phaseと不正画像の診断エラーもbackendで定義し、Webのエラー変換から再利用する。
 
+同期cursor・snapshot・差分取得とoperationの冪等性管理は `packages/backend/src/mobile` に置く。
+DBの状態と保存形式を維持し、Webでは既存の依存を注入するadapterだけを残す。
+共有Prisma persistenceとMinIO chunk storeも設定を受け取るfactoryとする。
+Qdrant検索と結果整形は `packages/backend/src/search` に置き、Webから設定・検索portを渡す。
+
 ```bash
 pnpm api:generate
 pnpm api:check
