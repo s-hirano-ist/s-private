@@ -1,29 +1,22 @@
 "use server";
 import "server-only";
 import type { ServerActionWithData } from "@/common/types";
-import type { UnifiedSearchResults } from "@s-hirano-ist/s-core/shared-kernel/types/search-types";
-import { getSelfId, requireAuth } from "@/common/auth/session";
-import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
-import { searchQuerySchema } from "@s-hirano-ist/s-core/shared-kernel/types/search-types";
-import { searchContent } from "./search-content";
+import { searchContent } from "@/application-services/search/search-content";
+import { SearchContentParams } from "@s-hirano-ist/s-api-client/models";
+import { captureException } from "@sentry/nextjs";
+import { unstable_rethrow } from "next/navigation";
 
 export async function searchContentFromClient(
 	rawSearchQuery: unknown,
-): Promise<ServerActionWithData<UnifiedSearchResults>> {
-	await requireAuth();
-
+): Promise<ServerActionWithData<Awaited<ReturnType<typeof searchContent>>>> {
 	try {
-		const searchQuery = searchQuerySchema.parse(rawSearchQuery);
-		const userId = await getSelfId();
-
-		const data = await searchContent(searchQuery, userId);
-
-		return {
-			success: true,
-			message: "Search completed successfully",
-			data,
-		};
+		const query = SearchContentParams.safeParse(rawSearchQuery);
+		if (!query.success) return { success: false, message: "invalidFormat" };
+		const data = await searchContent(query.data);
+		return { success: true, message: "Search completed successfully", data };
 	} catch (error) {
-		return await wrapServerSideErrorForClient(error);
+		unstable_rethrow(error);
+		captureException(error);
+		return { success: false, message: "unexpected" };
 	}
 }
