@@ -6,13 +6,10 @@ import {
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { createPrismaClient } from "@s-hirano-ist/s-database";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
-import { invalidateContentCache } from "./infrastructures/cache-invalidation-client.js";
 import { createNotesCommandRepository } from "./infrastructures/notes-command-repository.js";
 
 async function main() {
 	const env = {
-		CACHE_INVALIDATION_SECRET: process.env.CACHE_INVALIDATION_SECRET,
-		CACHE_INVALIDATION_URL: process.env.CACHE_INVALIDATION_URL,
 		DATABASE_URL: process.env.DATABASE_URL,
 		PUSHOVER_URL: process.env.PUSHOVER_URL,
 		PUSHOVER_USER_KEY: process.env.PUSHOVER_USER_KEY,
@@ -41,17 +38,6 @@ async function main() {
 		const batchService = new NotesBatchDomainService(commandRepository);
 
 		const result = await batchService.resetNotes(userId);
-
-		// The database transaction has committed at this point. A cache failure is
-		// treated as a failed batch run so it is logged and sent to Pushover.
-		await invalidateContentCache(
-			{
-				url: env.CACHE_INVALIDATION_URL ?? "",
-				secret: env.CACHE_INVALIDATION_SECRET ?? "",
-			},
-			"notes",
-			userId,
-		);
 
 		console.log(
 			`💾 LAST_UPDATEDのノートをEXPORTEDに変更しました（${result.finalized.count}件）`,
