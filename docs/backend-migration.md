@@ -93,8 +93,10 @@ Web Pushの登録・解除・テスト送信も共通APIに接続する。
 endpointの事前所有者チェックに加え、upsertの条件にもuserIdを含めて競合時の他ユーザー更新を防ぐ。
 所有権違反は403、未登録へのテスト送信は404、VAPID設定不足は503として公開する。
 WebのPush Server Actionも生成clientへ委譲し、DB・VAPID設定・配信処理はbackendだけで扱う。
+Swift runtimeの日時変換はミリ秒あり・なしのISO 8601を受け付け、APIの日時精度を保持する。
 Swift生成clientは呼び出しごとのBearer tokenを使い、Web Cookie・URLキャッシュを共有しない。
 ネイティブのHTTP redirectを追従せず、失敗応答も生成したエラー契約で読む。
+メディア契約は実際のJPEG・PNG・WebPとoctet-streamを列挙し、Swiftも対応するbinary bodyを受信する。HTMLの成功応答は拒否する。
 エラー本文は16KiBに制限し、HTTP statusと公開codeだけを取り出す。通信・mutationの自動再試行は追加しない。
 Better AuthのOAuthプロトコルと内部Cronは、一般クライアント契約から分離する。
 
@@ -121,7 +123,8 @@ Better AuthのOAuthプロトコルと内部Cronは、一般クライアント契
 | 7k | 残る依存と永続キャッシュを撤去 |
 | 8a | Swift生成clientのBearer認証・HTTP失敗境界を準備 |
 | 8b | 旧書籍uploadのCSVタグ・操作hashの再開境界を補強 |
-| 8c | iOSを生成クライアント・共通APIへ切替 |
+| 8c | SwiftのMIME・日時・固定整数の契約を検証 |
+| 8d | iOSを生成クライアント・共通APIへ切替 |
 | 9 | 独立Hono backendの起動・Vercel配置準備 |
 | 10 | 手動デプロイ確認後に接続先切替、暫定実装の撤去 |
 

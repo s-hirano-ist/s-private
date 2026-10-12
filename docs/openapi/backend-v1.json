@@ -870,7 +870,7 @@
 						"format": "uuid"
 					},
 					"chunkSize": {
-						"type": "number",
+						"type": "integer",
 						"enum": [1048576]
 					},
 					"receivedParts": {
@@ -5003,6 +5003,24 @@
 						"description": "Owner-scoped image stream",
 						"content": {
 							"application/octet-stream": {
+								"schema": {
+									"type": "string",
+									"format": "binary"
+								}
+							},
+							"image/jpeg": {
+								"schema": {
+									"type": "string",
+									"format": "binary"
+								}
+							},
+							"image/png": {
+								"schema": {
+									"type": "string",
+									"format": "binary"
+								}
+							},
+							"image/webp": {
 								"schema": {
 									"type": "string",
 									"format": "binary"

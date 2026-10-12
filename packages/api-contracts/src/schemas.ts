@@ -248,7 +248,9 @@ export const uploadSessionSchema = z
 	.object({
 		uploadId: idSchema,
 		operationId: operationIdSchema,
-		chunkSize: z.literal(uploadChunkSize),
+		chunkSize: z
+			.literal(uploadChunkSize)
+			.openapi({ type: "integer", enum: [uploadChunkSize] }),
 		receivedParts: z.array(z.number().int().nonnegative()),
 		expiresAt: timestamp,
 	})

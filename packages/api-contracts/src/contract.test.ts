@@ -5,6 +5,7 @@ import {
 	uploadStartSchema,
 } from "@s-hirano-ist/s-api-contracts/schemas";
 import { describe, expect, test } from "vitest";
+import { z } from "zod";
 
 describe("Shared API contract", () => {
 	test("emits required path parameters and non-null numeric queries", () => {
@@ -92,5 +93,30 @@ describe("Shared API contract", () => {
 				metadata: { filename: "test.jpg" },
 			}).success,
 		).toBe(false);
+	});
+});
+
+test("media contract declares the image MIME types served by the backend", () => {
+	const content = z
+		.object({ content: z.record(z.string(), z.unknown()) })
+		.parse(
+			createApiDocument().paths?.["/media/{domain}/{id}/{variant}"]?.get
+				?.responses["200"],
+		).content;
+	expect(Object.keys(content).toSorted()).toEqual([
+		"application/octet-stream",
+		"image/jpeg",
+		"image/png",
+		"image/webp",
+	]);
+});
+
+test("chunk size keeps its integer type and fixed value in OpenAPI", () => {
+	const schema = z
+		.object({ properties: z.record(z.string(), z.unknown()) })
+		.parse(createApiDocument().components?.schemas?.UploadSession);
+	expect(schema.properties.chunkSize).toEqual({
+		type: "integer",
+		enum: [1048576],
 	});
 });
