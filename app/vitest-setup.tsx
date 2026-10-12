@@ -7,31 +7,10 @@ expect.extend(matchers);
 vi.mock("@/env", () => ({
 	env: {
 		NODE_ENV: "test",
-		DATABASE_URL: "postgresql://test:test@localhost:5432/test",
-		PUSHOVER_URL: "https://example.com",
-		PUSHOVER_USER_KEY: "test-key",
-		PUSHOVER_APP_TOKEN: "test-token",
-		CRON_SECRET: "test-cron-secret-value",
-		WEB_PUSH_PRIVATE_KEY: "test-private-key",
-		WEB_PUSH_SUBJECT: "mailto:test@example.com",
-		NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY: "test-public-key",
-		AUTH_SECRET: "test-secret",
+		BACKEND_URL: "https://backend.example",
 		BETTER_AUTH_URL: "http://localhost:3000",
 		LOCAL_DEV_MODE: "false",
-		LOCAL_AUTH_EMAIL: "developer@local.test",
-		// oxlint-disable-next-line sonarjs/no-hardcoded-passwords -- non-secret test fixture
-		LOCAL_AUTH_PASSWORD: "local-development-password",
-		LOCAL_AUTH_NAME: "Local Developer",
-		AUTH0_CLIENT_ID: "test-client-id",
-		AUTH0_CLIENT_SECRET: "test-client-secret",
-		AUTH0_ISSUER_BASE_URL: "https://test.auth0.com",
-		SENTRY_AUTH_TOKEN: "test-sentry-token",
-		SENTRY_REPORT_URL: "https://example.com/sentry",
-		MINIO_HOST: "localhost",
-		MINIO_PORT: 9000,
-		MINIO_BUCKET_NAME: "test-bucket",
-		MINIO_ACCESS_KEY: "test-access-key",
-		MINIO_SECRET_KEY: "test-secret-key",
+		NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY: "test-public-key",
 		NEXT_PUBLIC_SENTRY_DSN: "https://example.com/sentry-dsn",
 	},
 }));
@@ -44,19 +23,6 @@ vi.mock("next/headers", () => ({
 		set: vi.fn(),
 		delete: vi.fn(),
 	})),
-}));
-
-vi.mock("@/infrastructures/observability/server", () => ({
-	serverLogger: {
-		info: vi.fn(),
-		warn: vi.fn(),
-		error: vi.fn(),
-	},
-	pushoverMonitoringService: {
-		notifyInfo: vi.fn(),
-		notifyWarning: vi.fn(),
-		notifyError: vi.fn(),
-	},
 }));
 
 vi.mock("server-only", () => {
@@ -90,76 +56,6 @@ vi.mock("next/server", () => ({
 			status: options.status || 200,
 			headers: new Headers(),
 		})),
-	},
-}));
-
-vi.mock("@/minio", () => ({
-	minioClient: {
-		putObject: vi.fn(),
-		getObject: vi.fn(),
-		statObject: vi.fn(),
-		removeObject: vi.fn(),
-	},
-}));
-
-vi.mock("@/prisma", () => ({
-	default: {
-		$extends: vi.fn().mockReturnThis(),
-		article: {
-			findMany: vi.fn(),
-			findUnique: vi.fn(),
-			create: vi.fn(),
-			update: vi.fn(),
-			delete: vi.fn(),
-			count: vi.fn(),
-			upsert: vi.fn(),
-		},
-		note: {
-			findMany: vi.fn(),
-			findUnique: vi.fn(),
-			create: vi.fn(),
-			update: vi.fn(),
-			delete: vi.fn(),
-			count: vi.fn(),
-			upsert: vi.fn(),
-		},
-		image: {
-			findMany: vi.fn(),
-			findUnique: vi.fn(),
-			create: vi.fn(),
-			update: vi.fn(),
-			delete: vi.fn(),
-			deleteMany: vi.fn(),
-			count: vi.fn(),
-			upsert: vi.fn(),
-		},
-		pushSubscription: {
-			findMany: vi.fn(),
-			findFirst: vi.fn(),
-			findUnique: vi.fn(),
-			upsert: vi.fn(),
-			deleteMany: vi.fn(),
-		},
-		book: {
-			findMany: vi.fn(),
-			findUnique: vi.fn(),
-			create: vi.fn(),
-			update: vi.fn(),
-			delete: vi.fn(),
-			count: vi.fn(),
-			upsert: vi.fn(),
-		},
-		category: {
-			findMany: vi.fn(),
-			findUnique: vi.fn(),
-			create: vi.fn(),
-			update: vi.fn(),
-			delete: vi.fn(),
-			upsert: vi.fn(),
-		},
-		user: {
-			findUnique: vi.fn(),
-		},
 	},
 }));
 

@@ -36,18 +36,7 @@ jobs:
         if: ${{ inputs.check == 'build' }}
         run: pnpm build
         env:
-          LOCAL_DEV_MODE: "true"
-          DATABASE_URL: "postgresql://ci:ci@localhost:26257/s_private?sslmode=verify-full"
-          AUTH_SECRET: "ci-local-only-auth-secret"
-          MINIO_HOST: "localhost"
-          MINIO_PORT: "9000"
-          MINIO_BUCKET_NAME: "s-private"
-          MINIO_ACCESS_KEY: "local-access-key"
-          MINIO_SECRET_KEY: "local-secret-key"
-          MINIO_USE_SSL: "false"
-          QDRANT_URL: "http://localhost:6333"
-          QDRANT_COLLECTION_NAME: "knowledge_v1"
-          EMBEDDING_URL: "http://localhost:3001"
+          BACKEND_URL: "https://backend.example.com"
 
       - name: Check harness
         if: ${{ inputs.check == 'supplemental-lint' }}

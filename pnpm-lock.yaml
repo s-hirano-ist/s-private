@@ -167,9 +167,6 @@ catalogs:
     '@s-hirano-ist/s-api-client':
       specifier: workspace:*
       version: workspace:*
-    '@s-hirano-ist/s-backend':
-      specifier: workspace:*
-      version: workspace:*
     '@tailwindcss/postcss':
       specifier: 4.3.3
       version: 4.3.3
@@ -443,21 +440,6 @@ importers:
       '@s-hirano-ist/s-api-client':
         specifier: 'catalog:'
         version: link:../packages/api-client
-      '@s-hirano-ist/s-backend':
-        specifier: 'catalog:'
-        version: link:../packages/backend
-      '@s-hirano-ist/s-core':
-        specifier: workspace:*
-        version: link:../packages/core
-      '@s-hirano-ist/s-database':
-        specifier: workspace:*
-        version: link:../packages/database
-      '@s-hirano-ist/s-notification':
-        specifier: workspace:*
-        version: link:../packages/notification
-      '@s-hirano-ist/s-storage':
-        specifier: workspace:*
-        version: link:../packages/storage
       '@s-hirano-ist/s-ui':
         specifier: workspace:*
         version: link:../packages/ui
