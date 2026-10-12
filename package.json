@@ -10,7 +10,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "node --env-file=.env.local scripts/local-dev.mjs",
-		"dev:app": "pnpm packages:build && pnpm --parallel --filter s-private-app --filter @s-hirano-ist/s-ui run dev",
+		"dev:app": "pnpm packages:build && node scripts/start-development.mjs",
 		"local:down": "docker compose --env-file .env.local --profile local down",
 		"build": "pnpm pipeline build --full",
 		"packages:build": "pnpm --filter './packages/*' -r run build",

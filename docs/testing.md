@@ -212,7 +212,7 @@ Playwright の CDP (Chrome DevTools Protocol) を使ったネットワークシ�
 
 ### 前提条件
 
-- アプリケーションが `http://localhost:3000` で起動済み、または `webServer` 設定で自動起動
+- Webが `http://localhost:3000`、共通backendが `http://127.0.0.1:3002` で起動済み、または `webServer` 設定で両方を自動起動
 - `E2E_AUTH0_USERNAME` / `E2E_AUTH0_PASSWORD` 環境変数の設定
 - Chromium ブラウザ（CDP はChromiumのみ対応）
 

@@ -65,7 +65,9 @@ mise run ios:run      # iPhone 17 Simulatorへインストールして起動
 
 ### セットアップ
 
-Miseはプロジェクトルートの`.env.local`を読み込みます。`pnpm dev`はMiseの有無にかかわらず同ファイルを明示的に読み込み、Docker Compose起動、migration、検索初期化、Next.js起動を順番に実行します。
+Miseはプロジェクトルートの`.env.local`を読み込みます。`pnpm dev`はMiseの有無にかかわらず同ファイルを明示的に読み込み、Docker Compose起動、migration、検索初期化を実行した後、Next.jsと独立Hono backend、UI build watcherをまとめて起動します。
+`pnpm dev:app` は依存サービスの準備を省略して同じアプリ構成を起動します。
+Webの接続先は既定で `http://127.0.0.1:3002`。`BACKEND_PORT` でbackendのlisten portを変更でき、明示した `BACKEND_URL` は優先します。
 
 ローカルでは固定開発ユーザーを初回アクセス時に作成して自動ログインします。同時に、articles・notes・images・booksそれぞれへDumper用の未エクスポートデータとViewer用のエクスポート済みサンプルデータを投入します。以後のログインでは不足したサンプルを補い、画像サンプルを最新の枠付き画像へ更新します。以前の1×1ピクセルの画像サンプルも、次のログイン時に置き換わります。サンプルを含むローカルデータを作り直すには、`docker compose --env-file .env.local --profile local down -v`でCockroachDBとMinIOのvolumeを削除してから`pnpm dev`を実行してください。Vercelでは`LOCAL_DEV_MODE`を無視し、Auth0のみを使用します。
 
