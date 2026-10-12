@@ -39,6 +39,7 @@ description = "Generated files and dependency metadata"
 paths = [
 	'''(^|/)node_modules/''',
 	'''^ios/\.derivedData/''',
+	'''^ios/Packages/[^/]+/\.build/''',
 	'''(^|/)docs/api/''',
 	'''(^|/)pnpm-lock\.yaml$''',
 	'''^packages/database/src/generated/''',

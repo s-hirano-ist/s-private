@@ -35,6 +35,9 @@ next-env.d.ts
 .vercel
 .env.sentry-build-plugin
 
+# Generated API clients
+packages/api-client/src/generated/
+
 # Database
 packages/database/src/generated/
 
@@ -62,3 +65,8 @@ ios/DerivedData/
 ios/Config/Local.xcconfig
 *.xcuserstate
 xcuserdata/
+
+# Swift Package build artifacts
+.build/
+.swiftpm/
+ios/Packages/SPrivateAPI/Sources/SPrivateAPI/Generated/

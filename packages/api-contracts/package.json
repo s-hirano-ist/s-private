@@ -1,0 +1,37 @@
+{
+	"name": "@s-hirano-ist/s-api-contracts",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		},
+		"./schemas": {
+			"types": "./dist/schemas.d.ts",
+			"import": "./dist/schemas.js"
+		},
+		"./routes": {
+			"types": "./dist/routes.d.ts",
+			"import": "./dist/routes.js"
+		},
+		"./document": {
+			"types": "./dist/document.d.ts",
+			"import": "./dist/document.js"
+		}
+	},
+	"scripts": {
+		"build": "tsc",
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@hono/zod-openapi": "1.6.3",
+		"hono": "4.13.13",
+		"zod": "catalog:"
+	},
+	"devDependencies": {
+		"@types/node": "catalog:",
+		"typescript": "catalog:"
+	}
+}
