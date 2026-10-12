@@ -22,6 +22,20 @@ pnpm pages:build
 - `.pages/ui/` - Storybook iframe を横スクロールで一覧する UI gallery
 - `.pages/ui/storybook/` - gallery が埋め込む static Storybook
 
+### Pages Deployment
+
+`docs` workflow は `main` への push と、`main` を指定した手動実行で Pages を公開します。
+ビルドからデプロイまでを workflow 単位の concurrency で制御し、同じ ref の新しい実行が来たら
+古い実行を `cancel-in-progress: true` でキャンセルします。これにより、古い queued 実行が
+後続のデプロイを待たせ続けることや、古い成果物が後から公開されることを防ぎます。
+job の `timeout-minutes` はランナー上の実行時間に対する制限であり、待機時間の上限にはなりません。
+
+公開が更新されない場合は、Actions の `docs` workflow で最新の build / deploy と、
+過去の queued / pending 実行を確認します。古い実行が残っていればキャンセルし、最新の実行を
+再実行します。通常のキャンセルが効かない場合は `gh api --method POST repos/s-hirano-ist/s-private/actions/runs/<run-id>/force-cancel`
+で対象の古い実行を停止できます。それでも進まなければ GitHub 側の障害やキューの問題を確認します。
+デプロイ成功後は公開 HTML の更新も確認してください。
+
 ### Search Engine Indexing
 
 GitHub Pages は URL から閲覧できる状態を保ち、検索結果には掲載しない方針です。
