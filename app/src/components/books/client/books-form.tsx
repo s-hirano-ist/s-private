@@ -1,21 +1,25 @@
 "use client";
 import type { ServerAction } from "@/common/types";
+import { uploadBook } from "@/common/backend/upload";
 import { FormFileInput } from "@/components/common/forms/fields/form-file-input";
 import { FormInput } from "@/components/common/forms/fields/form-input";
 import { GenericFormWrapper } from "@/components/common/forms/generic-form-wrapper";
 import { useToast } from "@s-hirano-ist/s-ui/toast";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 
 type Props = {
-	addBooks: (formData: FormData) => Promise<ServerAction>;
+	addBooks?: (formData: FormData) => Promise<ServerAction>;
 };
 
-export function BooksForm({ addBooks }: Props) {
+export function BooksForm({ addBooks = uploadBook }: Props) {
 	const toast = useToast();
+	const router = useRouter();
 	const label = useTranslations("label");
 	const message = useTranslations("message");
 
 	const afterSubmit = (response: ServerAction) => {
+		router.refresh();
 		toast[response.success ? "success" : "error"](message(response.message));
 	};
 
