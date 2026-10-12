@@ -23,7 +23,7 @@ function addCspResponseHeader(
 // Middleware gate: a lightweight session-cookie presence check (no DB hit, so it
 // stays edge-friendly and avoids importing the Better Auth server instance).
 // True session validation happens per-page via requireAuth()/getSelfId(), which
-// call auth.api.getSession() and redirect to the unauthorized page on failure.
+// validate through the shared backend API and reject invalid sessions.
 export default function proxy(request: NextRequest) {
 	// Proxy needs deployment metadata before the application env module is loaded.
 	// oxlint-disable-next-line node/no-process-env
