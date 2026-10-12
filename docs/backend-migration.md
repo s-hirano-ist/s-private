@@ -182,3 +182,7 @@ fixture画像の正本もbackendに置き、独立サービスのローカル認
 HonoのHTTP hostはAPI・認証・サインイン・Cronを型付きhandlerとして受け取る。
 OAuthの公開originを検証してrequest URLを復元し、複数Cookieと本文を保持する。
 転送元のhost関連headerは除去し、すべての応答をprivate/no-storeにする。
+
+独立Nodeサービスは `services/backend` に置き、共有factoryだけでAPI・認証・イベント・通知を組み立てる。
+[手動配置・切替手順](backend-deployment.md)に環境変数とCronの単独稼働手順を記載する。
+この段階ではWebの接続先を変更しない。

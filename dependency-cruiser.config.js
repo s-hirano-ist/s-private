@@ -26,6 +26,14 @@ const COLLAPSE_PATTERN =
    Verified: 0 false positives on the current tree; fires on deliberate violations. */
 const boundaryRules = [
 	{
+		name: "boundary-standalone-backend",
+		severity: "error",
+		from: { path: "^services/backend/" },
+		to: {
+			path: "^app/|^packages/(ui|api-client)/|(^|/)node_modules/(next|react|react-dom)(/|$)",
+		},
+	},
+	{
 		name: "boundary-common-api-composition",
 		severity: "error",
 		comment: "Common API composition must not use Web application services",
