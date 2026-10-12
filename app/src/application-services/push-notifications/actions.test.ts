@@ -1,94 +1,87 @@
-import type { Mock } from "vite-plus/test";
-import prisma from "@/prisma";
-import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
-
-const { getSelfId, sendPushToSubscription, wrapServerSideErrorForClient } =
-	vi.hoisted(() => ({
-		getSelfId: vi.fn(),
-		sendPushToSubscription: vi.fn(),
-		wrapServerSideErrorForClient: vi.fn(),
-	}));
-
-vi.mock("@/common/auth/session", () => ({ getSelfId }));
-vi.mock("@/common/error/error-wrapper", () => ({
-	wrapServerSideErrorForClient,
+import {
+	subscribeToPush,
+	unsubscribeFromPush,
+	sendTestPush,
+} from "@/application-services/push-notifications/actions";
+import { getBackendClient } from "@/common/backend/server-client";
+import { createBackendClient } from "@s-hirano-ist/s-api-client";
+import { beforeEach, expect, test, vi } from "vite-plus/test";
+vi.mock("@/common/backend/server-client", () => ({
+	getBackendClient: vi.fn(),
 }));
-vi.mock("./push-notification-service", () => ({ sendPushToSubscription }));
-
-import { sendTestPush, subscribeToPush, unsubscribeFromPush } from "./actions";
-
+vi.mock("next/navigation", () => ({ unstable_rethrow: vi.fn() }));
+vi.mock("@sentry/nextjs", () => ({ captureException: vi.fn() }));
 const input = {
-	endpoint: "https://push.example.com/subscription",
-	keys: { auth: "auth", p256dh: "p256dh" },
+	endpoint: "https://push.example/subscription",
+	keys: { auth: "auth", p256dh: "key" },
 };
-
-describe("push notification actions", () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-		getSelfId.mockResolvedValue("user-1");
-		wrapServerSideErrorForClient.mockResolvedValue({
-			message: "unexpected",
-			success: false,
-		});
-		(prisma.pushSubscription.findUnique as Mock).mockResolvedValue(null);
-		(prisma.pushSubscription.upsert as Mock).mockResolvedValue({});
-		(prisma.pushSubscription.deleteMany as Mock).mockResolvedValue({
-			count: 1,
-		});
+beforeEach(() => vi.clearAllMocks());
+function fixture(response: Response) {
+	const fetch = vi.fn<typeof globalThis.fetch>().mockResolvedValue(response);
+	vi.mocked(getBackendClient).mockResolvedValue(
+		createBackendClient({ baseURL: "https://backend.example/api/v1", fetch }),
+	);
+	return fetch;
+}
+test("registers using the generated subscription DTO and 204 contract", async () => {
+	const fetch = fixture(new Response(null, { status: 204 }));
+	expect(await subscribeToPush(input)).toEqual({
+		success: true,
+		message: "pushSubscribed",
 	});
-
-	test("upserts a subscription for the authenticated user", async () => {
-		await expect(subscribeToPush(input)).resolves.toEqual({
-			message: "pushSubscribed",
-			success: true,
-		});
-		expect(prisma.pushSubscription.upsert).toHaveBeenCalledWith(
-			expect.objectContaining({
-				create: expect.objectContaining({
-					auth: "auth",
-					endpoint: input.endpoint,
-					p256dh: "p256dh",
-					userId: "user-1",
-				}),
-			}),
-		);
+	expect(fetch.mock.calls[0][1]).toMatchObject({
+		method: "POST",
+		body: JSON.stringify(input),
 	});
-
-	test("does not let another user take over an endpoint", async () => {
-		(prisma.pushSubscription.findUnique as Mock).mockResolvedValue({
-			userId: "user-2",
-		});
-		await expect(subscribeToPush(input)).resolves.toEqual({
-			message: "unexpected",
-			success: false,
-		});
-		expect(prisma.pushSubscription.upsert).not.toHaveBeenCalled();
+});
+test("unregisters and requests test delivery using endpoint DTOs", async () => {
+	const fetch = fixture(new Response(null, { status: 204 }));
+	expect(await unsubscribeFromPush(input.endpoint)).toEqual({
+		success: true,
+		message: "pushUnsubscribed",
 	});
-
-	test("scopes unsubscribe to the current user", async () => {
-		await unsubscribeFromPush(input.endpoint);
-		expect(prisma.pushSubscription.deleteMany).toHaveBeenCalledWith({
-			where: { endpoint: input.endpoint, userId: "user-1" },
-		});
+	expect(await sendTestPush(input.endpoint)).toEqual({
+		success: true,
+		message: "pushTestSent",
 	});
-
-	test("sends a test notification only to the current user's subscription", async () => {
-		const stored = {
-			...input.keys,
-			endpoint: input.endpoint,
-			userId: "user-1",
-		};
-		(prisma.pushSubscription.findFirst as Mock).mockResolvedValue(stored);
-		await expect(sendTestPush(input.endpoint)).resolves.toEqual({
-			message: "pushTestSent",
-			success: true,
-		});
-		expect(prisma.pushSubscription.findFirst).toHaveBeenCalledWith({
-			where: { endpoint: input.endpoint, userId: "user-1" },
-		});
-		expect(sendPushToSubscription).toHaveBeenCalledWith(
-			stored,
-			expect.objectContaining({ title: "Web Push test" }),
-		);
+	expect(
+		fetch.mock.calls.map(([, init]) => ({
+			method: init?.method,
+			body: init?.body,
+		})),
+	).toEqual([
+		{ method: "DELETE", body: JSON.stringify({ endpoint: input.endpoint }) },
+		{ method: "POST", body: JSON.stringify({ endpoint: input.endpoint }) },
+	]);
+});
+test("preserves backend ownership errors and unavailable configuration", async () => {
+	const fetch = fixture(
+		Response.json({ error: { code: "FORBIDDEN" } }, { status: 403 }),
+	);
+	expect(await subscribeToPush(input)).toEqual({
+		success: false,
+		message: "notAllowed",
 	});
+	fetch.mockResolvedValue(
+		Response.json({ error: { code: "API_UNAVAILABLE" } }, { status: 503 }),
+	);
+	expect(await subscribeToPush(input)).toEqual({
+		success: false,
+		message: "unexpected",
+	});
+});
+test("does not treat malformed delivery responses as success", async () => {
+	fixture(Response.json({}, { status: 200 }));
+	expect(await sendTestPush(input.endpoint)).toEqual({
+		success: false,
+		message: "unexpected",
+	});
+});
+
+test("validates browser subscription JSON before sending it", async () => {
+	const fetch = fixture(new Response(null, { status: 204 }));
+	expect(
+		await subscribeToPush({ ...input, keys: { auth: "", p256dh: "key" } }),
+	).toEqual({ success: false, message: "invalidFormat" });
+	expect(fetch).not.toHaveBeenCalled();
 });
