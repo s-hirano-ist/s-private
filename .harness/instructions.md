@@ -16,11 +16,11 @@ Next.js + TypeScript + Clean Architectureベースのコンテンツ管理シス
 
 ## 技術スタック
 
-- Next.js (App Router, Server Actions)
+- Next.js (App Router, Server Actions) + Hono (共通backend)
 - TypeScript + Zod
 - Prisma + CockroachDB
 - Shadcn/ui + Tailwind CSS
-- Auth0 + Auth.js
+- Auth0 + Better Auth
 - MinIO (Object Storage)
 - Qdrant (Vector Database) + HuggingFace TEI (Text Embeddings Inference)
 
@@ -64,8 +64,12 @@ Next.js + TypeScript + Clean Architectureベースのコンテンツ管理シス
 - `packages/notification/` - 通知サービス（Pushover）
 - `packages/storage/` - MinIOストレージクライアント
 - `packages/scripts/` - ビルド・ユーティリティスクリプト
-- `app/src/application-services/` - アプリケーション層
-- `app/src/infrastructures/` - インフラ層（Prisma実装、DI factories）
+- `packages/backend/` - 共有ユースケース・認証・tenant・永続化adapter・検索・通知
+- `services/backend/` - 独立Hono HTTP hostと環境設定・DI
+- `packages/api-contracts/` - Hono + Zodの共通HTTP契約
+- `packages/api-client/` - Orval生成client・DTO・検証schema
+- `app/src/application-services/` - WebのServer Action API adapter
+- `app/src/infrastructures/` - Webのi18n・ブラウザ認証・セキュリティ
 - `app/src/loaders/` - データローダー層
 - `packages/search/` - RAG検索ライブラリ（Qdrant・Embedding APIクライアント）
 - `app/src/app/[locale]/` - Next.js App Router（i18n対応: en/ja）
@@ -77,8 +81,9 @@ Next.js + TypeScript + Clean Architectureベースのコンテンツ管理シス
 ## 設計方針
 
 - Clean Architecture + ドメイン駆動設計
-- Server Actionsで全mutation（`wrapServerSideErrorForClient`使用）
-- 認証済みiOSクライアント向けの `/api/mobile/v1` のmutationはRoute Handlerを例外とする。Bearer認証・所有者検証・tenant contextを入口で確立し、既存ユースケースとドメインルールを共有する。
+- 共通Hono backendが `/api/v1` の認証・所有者検証・tenant context・ドメインルール・mutationを担う。WebのServer Actionは生成client呼び出しと表示結果変換を行う。
+- Webは薄いSSR/BFFとし、backend・core・DB・storageへの直接依存を禁止する。`BACKEND_URL` は必須で、埋め込みbackendへのfallbackは行わない。
+- OpenAPIはGit管理し、OrvalとSwiftの生成ソースはGit管理せずbuild・typecheck前に再生成する。
 - 各ドメインは独立（cross-domain import禁止）
 - Zod schemaで入力バリデーション
 - 絶対パスimport必須（`../../*`禁止）
@@ -88,14 +93,14 @@ Next.js + TypeScript + Clean Architectureベースのコンテンツ管理シス
 - CockroachDB Cloud + Prisma ORM
 - MinIO（オブジェクトストレージ）
 - Sentry（エラー監視）+ Pushover（通知）
-- Auth0 + Auth.js（認証）
+- Auth0 + Better Auth（認証）
 - next-intl（i18n）
 - HuggingFace TEI（Docker / ConoHa VPS + Cloudflare Tunnel）
 - Qdrant（ベクトルデータベース）
 
 ## 環境設定
 
-環境変数はローカル環境では`.env.local`、Preview/Production環境ではVercel Dashboardで管理します。Miseがプロジェクトルートの`.env.local`を読み込み、`pnpm dev`がDocker依存サービスの起動、migration、検索初期化、Next.js起動を順番に実行します。型定義は`app/src/env.ts`を参照してください。初回セットアップ: `mise install` → `pnpm install` → `pnpm dev`。
+環境変数はローカル環境では`.env.local`、Preview/Production環境ではVercel Dashboardで管理します。Miseがプロジェクトルートの`.env.local`を読み込み、`pnpm dev`がDocker依存サービスの起動、migration、検索初期化、独立backendとNext.js起動を順番に実行します。環境変数定義はWebの`app/src/env.ts`とbackendの`services/backend/src/env.ts`を参照してください。初回セットアップ: `mise install` → `pnpm install` → `pnpm dev`。
 
 ## 詳細資料
 

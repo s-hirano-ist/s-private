@@ -274,4 +274,4 @@ Production buildではInstant testing APIを公開しない。Vercel Previewで�
 
 ## iOS 実機での API 通信確認
 
-iOS 用 `/api/mobile/v1` の変更は、対応する API を Production にデプロイしてから実機で確認する。PR 作成時点で未デプロイなら、実機での API 通信確認は「未実施」と記録し、Production デプロイ後に実施する。実機では Production の API 接続先を設定し、ログイン、一覧取得、レコード作成、保留中の項目の同期を確認する。署名と実機での操作手順は [`ios/README.md`](../ios/README.md) を参照する。
+iOS も利用する共通backendの `/api/v1` の変更は、対応する API を Production にデプロイしてから実機で確認する。PR 作成時点で未デプロイなら、実機での API 通信確認は「未実施」と記録し、Production デプロイ後に実施する。実機では Production の API 接続先を設定し、ログイン、一覧取得、レコード作成、保留中の項目の同期を確認する。署名と実機での操作手順は [`ios/README.md`](../ios/README.md) を参照する。

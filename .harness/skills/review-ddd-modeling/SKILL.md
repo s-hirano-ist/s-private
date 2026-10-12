@@ -1,6 +1,6 @@
 ---
 name: review-ddd-modeling
-description: packages/coreとapp/src/application-servicesのドメインモデリングをDDDの観点でレビューし、改善候補をGitHub Issuesへ記録する。ドメインモデル、集約、不変条件、値オブジェクトの監査を依頼されたときに使用する。
+description: packages/coreとpackages/backendのドメインモデリングをDDDの観点でレビューし、改善候補をGitHub Issuesへ記録する。ドメインモデル、集約、不変条件、値オブジェクトの監査を依頼されたときに使用する。
 ---
 
 # Review DDD Modeling Skill
