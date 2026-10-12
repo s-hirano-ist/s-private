@@ -19,7 +19,6 @@ tasks:
       - AUTH_SECRET
       - BACKEND_URL
       - BETTER_AUTH_URL
-      - CACHE_INVALIDATION_SECRET
       - CF_ACCESS_CLIENT_ID
       - CF_ACCESS_CLIENT_SECRET
       - CI
@@ -39,6 +38,7 @@ tasks:
       - MINIO_SECRET_KEY
       - MINIO_USE_SSL
       - NEXT_PUBLIC_SENTRY_DSN
+      - NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY
       - NODE_EXTRA_CA_CERTS
       - NODE_TLS_REJECT_UNAUTHORIZED
       - PUSHOVER_APP_TOKEN
@@ -59,7 +59,6 @@ pipelines:
 
 catalog:
   '@s-hirano-ist/s-api-client': workspace:*
-  '@s-hirano-ist/s-backend': workspace:*
   '@tailwindcss/postcss': 4.3.3
   '@tailwindcss/typography': 0.5.20
   '@types/node': 24.19.1

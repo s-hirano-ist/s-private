@@ -26,6 +26,16 @@ const COLLAPSE_PATTERN =
    Verified: 0 false positives on the current tree; fires on deliberate violations. */
 const boundaryRules = [
 	{
+		name: "boundary-web-frontend-only",
+		severity: "error",
+		comment:
+			"Web may use generated contracts, never backend/domain/persistence implementations",
+		from: { path: "^app/" },
+		to: {
+			path: "^services/|^packages/(backend|core|database|storage|search|notification|image-processing)/",
+		},
+	},
+	{
 		name: "boundary-standalone-backend",
 		severity: "error",
 		from: { path: "^services/backend/" },

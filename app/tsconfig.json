@@ -11,8 +11,7 @@
 			}
 		],
 		"paths": {
-			"@/*": ["./src/*"],
-			"@s-hirano-ist/s-core/*": ["../packages/core/*"]
+			"@/*": ["./src/*"]
 		},
 		"module": "esnext",
 		"moduleResolution": "Bundler"

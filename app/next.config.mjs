@@ -12,14 +12,7 @@ const isVercelBuild = process.env.VERCEL === "1";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-	transpilePackages: [
-		"@s-hirano-ist/s-core",
-		"@s-hirano-ist/s-image-processing",
-		"@s-hirano-ist/s-notification",
-		"@s-hirano-ist/s-search",
-		"@s-hirano-ist/s-ui",
-	],
-	serverExternalPackages: ["@prisma/client"],
+	transpilePackages: ["@s-hirano-ist/s-api-client", "@s-hirano-ist/s-ui"],
 	outputFileTracingRoot: path.join(import.meta.dirname, ".."),
 	typedRoutes: true,
 	reactCompiler: true,
@@ -45,7 +38,6 @@ const nextConfig = {
 	...(isVercelBuild ? {} : { output: "standalone" }),
 	images: {
 		remotePatterns: [
-			{ hostname: process.env.MINIO_HOST ?? "" },
 			{
 				protocol: "https",
 				hostname: "books.google.com",
