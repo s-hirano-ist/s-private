@@ -2,10 +2,13 @@ import type { Preview } from "@storybook/nextjs-vite";
 import { ToastProvider } from "@s-hirano-ist/s-ui/toast";
 import "../app/src/app/globals.css";
 import { withThemeByClassName } from "@storybook/addon-themes";
+import { sb } from "storybook/test";
 import { MINIMAL_VIEWPORTS } from "storybook/viewport";
 import enMessages from "../app/messages/en.json";
 import jaMessages from "../app/messages/ja.json";
 import { ThemeProvider } from "../app/src/providers/theme-provider";
+
+sb.mock(import("../app/src/common/backend/browser-client.ts"), { spy: true });
 
 const messages = { en: enMessages, ja: jaMessages };
 const STORYBOOK_CSP_NONCE = "storybook-csp-nonce";

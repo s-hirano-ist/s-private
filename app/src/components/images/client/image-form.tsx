@@ -1,17 +1,20 @@
 "use client";
 import type { ServerAction } from "@/common/types";
 import type { CreateOutcome } from "@/components/common/forms/create-flow-context";
+import { uploadImage } from "@/common/backend/upload";
 import { FormFileInput } from "@/components/common/forms/fields/form-file-input";
 import { GenericFormWrapper } from "@/components/common/forms/generic-form-wrapper";
 import { useToast } from "@s-hirano-ist/s-ui/toast";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 
 type Props = {
-	addImage: (formData: FormData) => Promise<ServerAction>;
+	addImage?: (formData: FormData) => Promise<ServerAction>;
 };
 
-export function ImageForm({ addImage }: Props) {
+export function ImageForm({ addImage = uploadImage }: Props) {
 	const toast = useToast();
+	const router = useRouter();
 	const label = useTranslations("label");
 	const message = useTranslations("message");
 
@@ -45,6 +48,7 @@ export function ImageForm({ addImage }: Props) {
 			: { response: { success: true, message: "inserted" } };
 	};
 	const afterSubmit = (response: ServerAction) => {
+		router.refresh();
 		toast[response.success ? "success" : "error"](message(response.message));
 	};
 
