@@ -17,7 +17,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Unsupported: Story = {
-	play: async ({ canvasElement }) => {
+	play: async ({ args, canvasElement }) => {
 		const canvas = within(canvasElement);
 		await userEvent.click(canvas.getByRole("button", { name: /Web Push/u }));
 		await expect(
@@ -25,5 +25,7 @@ export const Unsupported: Story = {
 				"このブラウザまたは環境ではWeb Push通知を利用できません。",
 			),
 		).toBeInTheDocument();
+		await expect(args.subscribeToPush).not.toHaveBeenCalled();
+		await expect(args.sendTestPush).not.toHaveBeenCalled();
 	},
 };

@@ -88,6 +88,7 @@ Web向けクライアントはOrvalのfetch実装とZodモデルを利用する�
 Web Pushの登録・解除・テスト送信も共通APIに接続する。
 endpointの事前所有者チェックに加え、upsertの条件にもuserIdを含めて競合時の他ユーザー更新を防ぐ。
 所有権違反は403、未登録へのテスト送信は404、VAPID設定不足は503として公開する。
+WebのPush Server Actionも生成clientへ委譲し、DB・VAPID設定・配信処理はbackendだけで扱う。
 Better AuthのOAuthプロトコルと内部Cronは、一般クライアント契約から分離する。
 
 ## 段階移行
@@ -107,7 +108,8 @@ Better AuthのOAuthプロトコルと内部Cronは、一般クライアント契
 | 7e | Webの画像・書籍読み取りを切替 |
 | 7f | Web検索を生成クライアントへ切替 |
 | 7g | Webの記事・ノート作成と全ドメイン削除を生成クライアントへ切替 |
-| 7h | Web Push・分割upload・認証を切替、依存と永続キャッシュを撤去 |
+| 7h | Web Pushを生成クライアントへ切替 |
+| 7i | 分割upload・認証を切替、依存と永続キャッシュを撤去 |
 | 8 | iOSを生成クライアント・共通APIへ切替 |
 | 9 | 独立Hono backendの起動・Vercel配置準備 |
 | 10 | 手動デプロイ確認後に接続先切替、暫定実装の撤去 |

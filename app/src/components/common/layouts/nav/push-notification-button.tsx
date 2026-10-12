@@ -1,6 +1,6 @@
 "use client";
-import type { BrowserPushSubscription } from "@/application-services/push-notifications/actions";
 import type { ServerAction } from "@/common/types";
+import { PushSubscription as PushSubscriptionDto } from "@s-hirano-ist/s-api-client/models";
 import { Button } from "@s-hirano-ist/s-ui/button";
 import {
 	Dialog,
@@ -21,9 +21,7 @@ type PushAction = (endpoint: string) => Promise<ServerAction>;
 export type PushNotificationButtonProps = {
 	publicKey: string;
 	sendTestPush: PushAction;
-	subscribeToPush: (
-		subscription: BrowserPushSubscription,
-	) => Promise<ServerAction>;
+	subscribeToPush: (subscription: PushSubscriptionDto) => Promise<ServerAction>;
 	unsubscribeFromPush: PushAction;
 };
 
@@ -136,7 +134,7 @@ export function PushNotificationButton({
 				});
 				failureStage = "save";
 				const result = await subscribeToPush(
-					nextSubscription.toJSON() as BrowserPushSubscription,
+					PushSubscriptionDto.parse(nextSubscription.toJSON()),
 				);
 				if (!result.success) throw new Error(result.message);
 				setSubscription(nextSubscription);
