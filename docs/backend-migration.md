@@ -128,7 +128,8 @@ Better AuthのOAuthプロトコルと内部Cronは、一般クライアント契
 | 9a | APIの依存組み立てを共有し、Next.jsのキャッシュadapterを外す |
 | 9b | サインイン・OAuth・API認証 adapter の共有化 |
 | 9c | ローカル fixture の共有化 |
-| 9d | 独立Hono backendの起動・Vercel配置準備 |
+| 9d | HonoのHTTP host・公開Origin境界 |
+| 9e | 独立Hono backendの起動・Vercel配置準備 |
 | 10 | 手動デプロイ確認後に接続先切替、暫定実装の撤去 |
 
 各PRは直前のPRをbaseにし、順番にマージ・デプロイできる状態を維持する。
@@ -177,3 +178,7 @@ APIのCookieセッション・Bearer検証・信頼Origin判定も共有factory�
 ローカル開発のfixture作成はbackendのfactoryへ移し、DB・storage・画像ファイル読み込みを注入する。
 fixture画像の正本もbackendに置き、独立サービスのローカル認証で同じ初期データを利用する。
 本番の認証入口はfixtureを実行しない。
+
+HonoのHTTP hostはAPI・認証・サインイン・Cronを型付きhandlerとして受け取る。
+OAuthの公開originを検証してrequest URLを復元し、複数Cookieと本文を保持する。
+転送元のhost関連headerは除去し、すべての応答をprivate/no-storeにする。
