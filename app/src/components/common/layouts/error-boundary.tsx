@@ -1,8 +1,6 @@
 import type { ReactNode } from "react";
+import { reportRenderError } from "@/common/observability/report-render-error";
 import { StatusCodeView } from "@/components/common/display/status/status-code-view";
-import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
-import { initializeEventHandlers } from "@/infrastructures/events/event-setup";
-import { SystemErrorEvent } from "@s-hirano-ist/s-core/shared-kernel/events/system-error-event";
 import { getTranslations } from "next-intl/server";
 import { unstable_rethrow } from "next/navigation";
 
@@ -20,15 +18,7 @@ export async function ErrorBoundary({ render, errorCaller, fallback }: Props) {
 	} catch (error) {
 		unstable_rethrow(error);
 
-		initializeEventHandlers();
-		await eventDispatcher.dispatch(
-			new SystemErrorEvent({
-				message: "unexpected",
-				status: 500,
-				caller: errorCaller,
-				extraData: error,
-			}),
-		);
+		reportRenderError(error, errorCaller);
 
 		if (fallback) return fallback;
 

@@ -198,3 +198,6 @@ redirectは追従せず、複数Set-Cookieとmedia streamを保持する。
 
 Webのload-moreは生成したドメイン別queryモデルでoffsetを検証し、ドメイン型を参照しない。
 load-moreと検索Server Actionのエラーは共通のAPIエラー変換で処理する。
+
+WebのSSR表示エラーはWeb用Sentryへ記録する。
+表示のfallbackとNext.jsのredirect／not-found再throwを維持し、ドメインイベントやPushoverをWebから呼び出さない。
