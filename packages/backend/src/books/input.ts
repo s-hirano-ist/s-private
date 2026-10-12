@@ -47,7 +47,7 @@ export const parseBookInput = async (input: BookInput, userId: UserId) => {
 		isbn: makeISBN(isbnInput),
 		title: makeBookTitle(title),
 		rating: makeRating(ratingInput),
-		tags: makeTags(parsedTags),
+		tags: makeTags(parsedTags.map((tag) => tag.trim()).filter(Boolean)),
 		userId,
 		imagePath: path,
 		path,

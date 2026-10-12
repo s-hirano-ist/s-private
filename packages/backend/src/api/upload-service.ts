@@ -94,7 +94,10 @@ export function createUploadService(
 					right.domain === "books"
 				) {
 					const { filename: _filename, ...metadata } = right.metadata;
-					right.metadata = metadata;
+					right.metadata = {
+						...metadata,
+						tags: metadata.tags.map((tag) => tag.trim()).filter(Boolean),
+					};
 				}
 				// Old clients did not send an image filename. Resuming their bytes is safe.
 				if (
