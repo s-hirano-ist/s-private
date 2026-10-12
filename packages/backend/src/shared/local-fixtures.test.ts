@@ -1,17 +1,40 @@
-import { sharpImageProcessor } from "@/infrastructures/images/services/sharp-image-processor";
-import { minioStorageService } from "@/infrastructures/shared/storage/minio-storage-service";
-import prisma from "@/prisma";
+import { extendDatabase } from "@s-hirano-ist/s-backend/shared/database";
+import { createLocalSampleSeeder } from "@s-hirano-ist/s-backend/shared/local-fixtures";
+import { sharpImageProcessor } from "@s-hirano-ist/s-backend/shared/sharp-image-processor";
 import { Status } from "@s-hirano-ist/s-database";
+import { createPrismaClient } from "@s-hirano-ist/s-database";
+import { readFile } from "node:fs/promises";
 import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
-
-vi.mock("@/infrastructures/shared/storage/minio-storage-service", () => ({
-	minioStorageService: { uploadImage: vi.fn(), deleteImage: vi.fn() },
-}));
-
-const { seedLocalDevelopmentSampleData } = await import("./seed-sample-data");
+const prisma = extendDatabase(
+	createPrismaClient("postgresql://root@localhost:26257/test?sslmode=disable"),
+	(_model, _operation, args) => args,
+	() => {},
+);
+for (const delegate of [
+	prisma.article,
+	prisma.note,
+	prisma.image,
+	prisma.book,
+	prisma.category,
+])
+	vi.spyOn(delegate, "upsert").mockResolvedValue({} as never);
+vi.spyOn(prisma.image, "deleteMany").mockResolvedValue({ count: 0 });
+const minioStorageService = {
+	uploadImage: vi.fn(),
+	deleteImage: vi.fn(),
+	getImage: vi.fn(),
+	getImageOrThrow: vi.fn(),
+};
+const seedLocalDevelopmentSampleData = createLocalSampleSeeder({
+	database: prisma,
+	storage: minioStorageService,
+	loadImage: () =>
+		readFile("packages/backend/fixtures/local-sample-landscape.png"),
+});
 
 describe("seedLocalDevelopmentSampleData", () => {
 	beforeEach(() => {
+		vi.clearAllMocks();
 		vi.mocked(prisma.category.upsert).mockResolvedValue({
 			id: "sample-category",
 		} as never);
@@ -65,12 +88,12 @@ describe("seedLocalDevelopmentSampleData", () => {
 		const thumbnail = uploads.find(([, , isThumbnail]) => isThumbnail)?.[1];
 		expect(original).toBeDefined();
 		expect(thumbnail).toBeDefined();
-		expect(await sharpImageProcessor.getMetadata(original!)).toEqual({
+		expect(await sharpImageProcessor.getMetadata(original)).toEqual({
 			format: "png",
 			width: 512,
 			height: 512,
 		});
-		expect(await sharpImageProcessor.getMetadata(thumbnail!)).toEqual({
+		expect(await sharpImageProcessor.getMetadata(thumbnail)).toEqual({
 			format: "webp",
 			width: 192,
 			height: 192,

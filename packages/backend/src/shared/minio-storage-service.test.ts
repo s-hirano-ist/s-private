@@ -1,8 +1,28 @@
-import { minioClient } from "@/minio";
+import { createImagesStorageService } from "@s-hirano-ist/s-backend/shared/minio-storage-service";
+import { createMinioClient } from "@s-hirano-ist/s-storage";
 import { StorageOperationError } from "@s-hirano-ist/s-storage";
 import { Readable } from "node:stream";
 import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
-import { minioStorageService } from "./minio-storage-service";
+const minioClient = createMinioClient({
+	endPoint: "localhost",
+	port: 9000,
+	useSSL: false,
+	accessKey: "local-access-key",
+	secretKey: "local-secret-key",
+});
+for (const method of [
+	"putObject",
+	"getObject",
+	"statObject",
+	"removeObject",
+] as const)
+	vi.spyOn(minioClient, method).mockRejectedValue(
+		new Error("unconfigured storage mock"),
+	);
+const minioStorageService = createImagesStorageService(
+	minioClient,
+	"test-bucket",
+);
 
 describe("MinioStorageService", () => {
 	beforeEach(() => {

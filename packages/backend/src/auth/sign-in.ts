@@ -6,7 +6,12 @@ export type SignInConfig = {
 	LOCAL_AUTH_PASSWORD?: string;
 };
 export type SignInDeps = {
-	auth: Pick<ReturnType<typeof createBackendAuth>["auth"], "api">;
+	auth: {
+		api: Pick<
+			ReturnType<typeof createBackendAuth>["auth"]["api"],
+			"signInEmail" | "signUpEmail" | "signInSocial"
+		>;
+	};
 	findUser(email: string): Promise<{ id: string } | null>;
 	isLocalDevAuthEnabled(): boolean;
 	seedLocalUser(userId: string): Promise<void>;
