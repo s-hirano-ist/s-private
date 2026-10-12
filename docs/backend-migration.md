@@ -127,7 +127,8 @@ Better AuthのOAuthプロトコルと内部Cronは、一般クライアント契
 | 8d | iOSを生成クライアント・共通APIへ切替 |
 | 9a | APIの依存組み立てを共有し、Next.jsのキャッシュadapterを外す |
 | 9b | サインイン・OAuth・API認証 adapter の共有化 |
-| 9c | 独立Hono backendの起動・Vercel配置準備 |
+| 9c | ローカル fixture の共有化 |
+| 9d | 独立Hono backendの起動・Vercel配置準備 |
 | 10 | 手動デプロイ確認後に接続先切替、暫定実装の撤去 |
 
 各PRは直前のPRをbaseにし、順番にマージ・デプロイできる状態を維持する。
@@ -172,3 +173,7 @@ Next.jsのcommand cache adapterを使わず、同じ構成を独立backendで再
 サインインは標準Request／Responseの共有handlerを使用し、OAuthのstate Cookieを複数とも転送する。
 ローカルユーザーの検索・fixture seedは注入し、Vercel上のローカル認証禁止を維持する。
 APIのCookieセッション・Bearer検証・信頼Origin判定も共有factoryで組み立てる。
+
+ローカル開発のfixture作成はbackendのfactoryへ移し、DB・storage・画像ファイル読み込みを注入する。
+fixture画像の正本もbackendに置き、独立サービスのローカル認証で同じ初期データを利用する。
+本番の認証入口はfixtureを実行しない。
