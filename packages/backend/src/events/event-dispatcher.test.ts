@@ -2,9 +2,10 @@ import type {
 	DomainEvent,
 	DomainEventHandler,
 } from "@s-hirano-ist/s-core/shared-kernel/events/domain-event.interface";
+import { EventDispatcher } from "@s-hirano-ist/s-backend/events/event-dispatcher";
 import { describe, expect, test, vi } from "vite-plus/test";
-import { eventDispatcher } from "./event-dispatcher";
 
+const eventDispatcher = new EventDispatcher();
 describe("EventDispatcher", () => {
 	const createMockHandler = (): DomainEventHandler => ({
 		handle: vi.fn().mockResolvedValue(undefined),

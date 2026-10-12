@@ -1,27 +1,30 @@
+import {
+	createSignInHandler,
+	type SignInDeps,
+} from "@s-hirano-ist/s-backend/auth/sign-in";
 // @vitest-environment node
-import { env } from "@/env";
-import { auth, isLocalDevAuthEnabled } from "@/infrastructures/auth/auth";
-import prisma from "@/prisma";
 import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
-
-vi.mock("@/application-services/local-development/seed-sample-data", () => ({
-	seedLocalDevelopmentSampleData: vi.fn(),
-}));
-
-vi.mock("@/infrastructures/auth/auth", () => ({
-	auth: {
-		api: {
-			signInEmail: vi.fn(),
-			signInSocial: vi.fn(),
-			signUpEmail: vi.fn(),
-		},
+const env = {
+	LOCAL_AUTH_EMAIL: "developer@local.test",
+	LOCAL_AUTH_NAME: "Local Developer",
+	LOCAL_AUTH_PASSWORD: "local-development-password",
+};
+const auth = {
+	api: {
+		signInEmail: vi.fn<SignInDeps["auth"]["api"]["signInEmail"]>(),
+		signUpEmail: vi.fn<SignInDeps["auth"]["api"]["signUpEmail"]>(),
+		signInSocial: vi.fn<SignInDeps["auth"]["api"]["signInSocial"]>(),
 	},
-	isLocalDevAuthEnabled: vi.fn(() => false),
-}));
-
-const { signIn: GET } = await import("@/backend/embedded-auth");
-const { seedLocalDevelopmentSampleData } =
-	await import("@/application-services/local-development/seed-sample-data");
+};
+const isLocalDevAuthEnabled = vi.fn(() => false);
+const findUser = vi.fn<SignInDeps["findUser"]>();
+const seedLocalDevelopmentSampleData = vi.fn<SignInDeps["seedLocalUser"]>();
+const GET = createSignInHandler(env, {
+	auth,
+	isLocalDevAuthEnabled,
+	findUser,
+	seedLocalUser: seedLocalDevelopmentSampleData,
+});
 
 function createSignInRequest() {
 	return new Request("http://localhost:3000/api/sign-in");
@@ -35,7 +38,7 @@ describe("/api/sign-in route", () => {
 
 	test("signs in an existing local user without contacting Auth0", async () => {
 		vi.mocked(isLocalDevAuthEnabled).mockReturnValue(true);
-		vi.mocked(prisma.user.findUnique).mockResolvedValue({
+		vi.mocked(findUser).mockResolvedValue({
 			id: "local-user",
 			email: "developer@local.test",
 			emailVerified: false,
@@ -69,17 +72,15 @@ describe("/api/sign-in route", () => {
 
 	test("creates the local user on first sign-in", async () => {
 		vi.mocked(isLocalDevAuthEnabled).mockReturnValue(true);
-		vi.mocked(prisma.user.findUnique)
-			.mockResolvedValueOnce(null)
-			.mockResolvedValueOnce({
-				id: "local-user",
-				email: "developer@local.test",
-				emailVerified: false,
-				name: "Local Developer",
-				image: null,
-				createdAt: new Date(),
-				updatedAt: new Date(),
-			});
+		vi.mocked(findUser).mockResolvedValueOnce(null).mockResolvedValueOnce({
+			id: "local-user",
+			email: "developer@local.test",
+			emailVerified: false,
+			name: "Local Developer",
+			image: null,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		});
 		vi.mocked(auth.api.signUpEmail).mockResolvedValue({
 			response: {},
 			headers: new Headers({ "set-cookie": "local=session" }),
@@ -102,7 +103,7 @@ describe("/api/sign-in route", () => {
 
 	test("repairs sample data for an existing local user", async () => {
 		vi.mocked(isLocalDevAuthEnabled).mockReturnValue(true);
-		vi.mocked(prisma.user.findUnique).mockResolvedValue({
+		vi.mocked(findUser).mockResolvedValue({
 			id: "local-user",
 			email: "developer@local.test",
 			emailVerified: false,
@@ -123,17 +124,15 @@ describe("/api/sign-in route", () => {
 
 	test("fails the first sign-in when sample data seeding fails", async () => {
 		vi.mocked(isLocalDevAuthEnabled).mockReturnValue(true);
-		vi.mocked(prisma.user.findUnique)
-			.mockResolvedValueOnce(null)
-			.mockResolvedValueOnce({
-				id: "local-user",
-				email: "developer@local.test",
-				emailVerified: false,
-				name: "Local Developer",
-				image: null,
-				createdAt: new Date(),
-				updatedAt: new Date(),
-			});
+		vi.mocked(findUser).mockResolvedValueOnce(null).mockResolvedValueOnce({
+			id: "local-user",
+			email: "developer@local.test",
+			emailVerified: false,
+			name: "Local Developer",
+			image: null,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		});
 		vi.mocked(auth.api.signUpEmail).mockResolvedValue({
 			response: {},
 			headers: new Headers({ "set-cookie": "local=session" }),

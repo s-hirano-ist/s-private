@@ -1,29 +1,19 @@
+import { createEventInitializer } from "@s-hirano-ist/s-backend/events/event-setup";
 import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
-
-vi.mock("./event-dispatcher", () => ({
-	eventDispatcher: {
-		register: vi.fn(),
-	},
-}));
-
-vi.mock("./handlers/logging-event-handler", () => ({
-	LoggingEventHandler: vi.fn(),
-}));
-
-vi.mock("./handlers/system-event-handler", () => ({
-	SystemEventHandler: vi.fn(),
-}));
+let eventDispatcher: { register: ReturnType<typeof vi.fn> };
+let initializeEventHandlers: () => void;
 
 describe("event-setup", () => {
 	beforeEach(() => {
-		vi.resetModules();
+		eventDispatcher = { register: vi.fn() };
+		initializeEventHandlers = createEventInitializer(eventDispatcher, {
+			logging: { handle: vi.fn() },
+			system: { handle: vi.fn() },
+		});
 		vi.clearAllMocks();
 	});
 
 	test("should register 10 event handlers on first call", async () => {
-		const { eventDispatcher } = await import("./event-dispatcher");
-		const { initializeEventHandlers } = await import("./event-setup");
-
 		initializeEventHandlers();
 
 		expect(eventDispatcher.register).toHaveBeenCalledTimes(10);
@@ -74,9 +64,6 @@ describe("event-setup", () => {
 	});
 
 	test("should not register handlers on second call (isInitialized guard)", async () => {
-		const { eventDispatcher } = await import("./event-dispatcher");
-		const { initializeEventHandlers } = await import("./event-setup");
-
 		initializeEventHandlers();
 
 		expect(eventDispatcher.register).toHaveBeenCalledTimes(10);
