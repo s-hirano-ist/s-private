@@ -1,5 +1,6 @@
-// @vitest-environment node
 import { forwardBackendRequest } from "@/common/backend/forward-request";
+// @vitest-environment node
+import { Buffer } from "node:buffer";
 import { describe, expect, test, vi } from "vite-plus/test";
 
 describe("Web backend forwarding", () => {
@@ -98,9 +99,10 @@ describe("Web backend forwarding", () => {
 			"https://backend.example",
 			fetcher,
 		);
-		expect(
-			new Uint8Array(fetcher.mock.calls[0][1]?.body as ArrayBuffer),
-		).toEqual(bytes);
+		const forwarded = Buffer.from(
+			fetcher.mock.calls[0][1]?.body as ArrayBuffer,
+		);
+		expect(forwarded.equals(Buffer.from(bytes))).toBe(true);
 		expect(fetcher).toHaveBeenCalledOnce();
 		for (const [method, path] of [
 			["DELETE", "notes/id"],
