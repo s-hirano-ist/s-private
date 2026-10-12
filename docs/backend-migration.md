@@ -126,7 +126,8 @@ Better AuthのOAuthプロトコルと内部Cronは、一般クライアント契
 | 8c | SwiftのMIME・日時・固定整数の契約を検証 |
 | 8d | iOSを生成クライアント・共通APIへ切替 |
 | 9a | APIの依存組み立てを共有し、Next.jsのキャッシュadapterを外す |
-| 9b | 独立Hono backendの起動・Vercel配置準備 |
+| 9b | サインイン・OAuth・API認証 adapter の共有化 |
+| 9c | 独立Hono backendの起動・Vercel配置準備 |
 | 10 | 手動デプロイ確認後に接続先切替、暫定実装の撤去 |
 
 各PRは直前のPRをbaseにし、順番にマージ・デプロイできる状態を維持する。
@@ -167,3 +168,7 @@ Cronは旧・新で同時に有効化しない。
 DB・chunk store・storage・event dispatcher・search・通知設定を型付きで受け取り、
 raw repositoryとdomain service、読み取り・mutation・upload・Pushの各serviceを組み立てる。
 Next.jsのcommand cache adapterを使わず、同じ構成を独立backendで再利用する。
+
+サインインは標準Request／Responseの共有handlerを使用し、OAuthのstate Cookieを複数とも転送する。
+ローカルユーザーの検索・fixture seedは注入し、Vercel上のローカル認証禁止を維持する。
+APIのCookieセッション・Bearer検証・信頼Origin判定も共有factoryで組み立てる。

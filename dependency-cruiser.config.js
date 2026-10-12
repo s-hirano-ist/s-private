@@ -569,6 +569,7 @@ const boundaryRules = [
 			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: [
 				"^packages/backend/src/notifications/",
+				"^packages/backend/src/auth/sign-in\\.ts$",
 				"^packages/core/shared-kernel/",
 				"^app/src/application-services/",
 				"^app/src/infrastructures/(articles|books|images|notes|search)/",
