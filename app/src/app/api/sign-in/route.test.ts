@@ -1,4 +1,4 @@
-import type { NextRequest } from "next/server";
+// @vitest-environment node
 import { env } from "@/env";
 import { auth, isLocalDevAuthEnabled } from "@/infrastructures/auth/auth";
 import prisma from "@/prisma";
@@ -19,28 +19,12 @@ vi.mock("@/infrastructures/auth/auth", () => ({
 	isLocalDevAuthEnabled: vi.fn(() => false),
 }));
 
-vi.mock("next/headers", () => ({
-	headers: vi.fn().mockResolvedValue(new Headers({ host: "example.com" })),
-}));
-
-vi.mock("next/server", () => ({
-	NextResponse: {
-		redirect: vi.fn(
-			(url: string | URL) =>
-				new Response(null, {
-					headers: { location: url.toString() },
-					status: 307,
-				}),
-		),
-	},
-}));
-
 const { GET } = await import("./route");
 const { seedLocalDevelopmentSampleData } =
 	await import("@/application-services/local-development/seed-sample-data");
 
 function createSignInRequest() {
-	return new Request("http://localhost:3000/api/sign-in") as NextRequest;
+	return new Request("http://localhost:3000/api/sign-in");
 }
 
 describe("/api/sign-in route", () => {
@@ -169,6 +153,10 @@ describe("/api/sign-in route", () => {
 			"set-cookie",
 			"better-auth.state=test-state; Path=/; HttpOnly; SameSite=Lax",
 		);
+		authHeaders.append(
+			"set-cookie",
+			"better-auth.state_aux=second; Path=/; HttpOnly",
+		);
 		vi.mocked(auth.api.signInSocial).mockResolvedValue({
 			response: {
 				redirect: true,
@@ -185,6 +173,8 @@ describe("/api/sign-in route", () => {
 			returnHeaders: true,
 		});
 		expect(response.status).toBe(307);
+		expect(response.headers.getSetCookie()).toHaveLength(2);
+		expect(response.headers.get("cache-control")).toBe("private, no-store");
 		expect(response.headers.get("location")).toBe(
 			"https://example.auth0.com/authorize",
 		);
