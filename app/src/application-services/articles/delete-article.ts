@@ -1,32 +1,15 @@
-/**
- * Article deletion server action.
- *
- * @module
- */
-
 "use server";
 import "server-only";
 import type { ServerAction } from "@/common/types";
-import { withSelfTenant } from "@/common/tenant/with-tenant";
-import { makeId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { deleteArticleCore } from "./delete-article.core";
-import { defaultDeleteArticleDeps } from "./delete-article.deps";
-
-/**
- * Server action to delete an article.
- *
- * @remarks
- * This is the public-facing Server Action that handles authentication and authorization,
- * then delegates to deleteArticleCore for business logic.
- *
- * Only unexported articles can be deleted.
- * Requires dumper role permission.
- *
- * @param rawId - Article ID to delete
- * @returns Server action result with success/failure status
- */
-export async function deleteArticle(rawId: string): Promise<ServerAction> {
-	return withSelfTenant((principalId) =>
-		deleteArticleCore(makeId(rawId), defaultDeleteArticleDeps, principalId),
-	);
+import { backendActionError } from "@/common/backend/action-error";
+import { getBackendClient } from "@/common/backend/server-client";
+import { refresh } from "next/cache";
+export async function deleteArticle(id: string): Promise<ServerAction> {
+	try {
+		await (await getBackendClient()).deleteArticles(id);
+		refresh();
+		return { success: true, message: "deleted" };
+	} catch (error) {
+		return backendActionError(error);
+	}
 }

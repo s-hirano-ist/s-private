@@ -1,5 +1,6 @@
 "use client";
 import type { ServerAction } from "@/common/types";
+import { assignCreateOperation } from "@/common/backend/create-operation";
 import { Button } from "@s-hirano-ist/s-ui/button";
 import { LoadingIndicator } from "@s-hirano-ist/s-ui/loading-indicator";
 import { haptic } from "@s-hirano-ist/s-ui/utils/haptic";
@@ -158,6 +159,7 @@ export function GenericFormWrapper<T extends ServerAction>({
 }: GenericFormWrapperProps<T>) {
 	const createFlow = useCreateFlow();
 	const submitting = useRef(false);
+	const lastSubmission = useRef<FormData | null>(null);
 	const [isPending, setIsPending] = useState(false);
 	// Server response form data (only set on error, cleared on success)
 	const [serverFormData, setServerFormData] = useState<Record<
@@ -185,16 +187,21 @@ export function GenericFormWrapper<T extends ServerAction>({
 		if (submitting.current || createFlow?.pending) return;
 		submitting.current = true;
 		const formData = formDataWithFiles(event.currentTarget, createFlow?.draft);
-		if (createFlow) {
-			createFlow.submit(formData, execute, afterSubmit);
-			submitting.current = false;
-			return;
-		}
 		setIsPending(true);
 		void (async () => {
 			try {
+				await assignCreateOperation(
+					formData,
+					createFlow?.draft ?? lastSubmission.current,
+				);
+				lastSubmission.current = formData;
+				if (createFlow) {
+					createFlow.submit(formData, execute, afterSubmit);
+					return;
+				}
 				const { response } = await execute(formData);
 				afterSubmit(response);
+				if (response.success) lastSubmission.current = null;
 				setServerFormData(
 					response.success
 						? null

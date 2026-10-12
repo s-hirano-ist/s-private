@@ -1,28 +1,23 @@
-/**
- * Article creation server action.
- *
- * @module
- */
-
 "use server";
 import "server-only";
 import type { ServerAction } from "@/common/types";
-import { withSelfTenant } from "@/common/tenant/with-tenant";
-import { addArticleCore } from "./add-article.core";
-import { defaultAddArticleDeps } from "./add-article.deps";
-
-/**
- * Server action to create a new article.
- *
- * @remarks
- * This is the public-facing Server Action that handles authentication and authorization,
- * then delegates to addArticleCore for business logic.
- *
- * @param formData - Form data containing title, quote, url, category
- * @returns Server action result with success/failure status
- */
+import { backendActionError } from "@/common/backend/action-error";
+import { getBackendClient } from "@/common/backend/server-client";
+import { ArticleCreate } from "@s-hirano-ist/s-api-client/models";
+import { refresh } from "next/cache";
 export async function addArticle(formData: FormData): Promise<ServerAction> {
-	return withSelfTenant((principalId) =>
-		addArticleCore(formData, defaultAddArticleDeps, principalId),
-	);
+	try {
+		const input = ArticleCreate.parse({
+			operationId: formData.get("operationId"),
+			title: formData.get("title"),
+			url: formData.get("url"),
+			category: formData.get("category"),
+			quote: formData.get("quote") ?? undefined,
+		});
+		await (await getBackendClient()).createArticles(input);
+		refresh();
+		return { success: true, message: "inserted" };
+	} catch (error) {
+		return backendActionError(error, formData);
+	}
 }

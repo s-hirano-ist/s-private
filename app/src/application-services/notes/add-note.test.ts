@@ -14,7 +14,6 @@ import {
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
-import { addNote } from "./add-note";
 import { addNoteCore } from "./add-note.core";
 import { parseAddNoteFormData } from "./helpers/form-data-parser";
 
@@ -170,17 +169,5 @@ describe("addNoteCore", () => {
 		const result = await addNoteCore(mockFormData, deps);
 
 		expect(result).toEqual({ success: false, message: "unexpected" });
-	});
-});
-
-describe("addNote (Server Action)", () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
-
-	test("should reject when the request is not authenticated", async () => {
-		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
-
-		await expect(addNote(mockFormData)).rejects.toThrow("UNAUTHORIZED");
 	});
 });

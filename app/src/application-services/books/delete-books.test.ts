@@ -8,7 +8,6 @@ import {
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
-import { deleteBooks } from "./delete-books";
 import { deleteBooksCore } from "./delete-books.core";
 
 vi.mock("@/common/auth/session", () => ({
@@ -95,19 +94,5 @@ describe("deleteBooksCore", () => {
 		const result = await deleteBooksCore(testId, deps);
 
 		expect(result.success).toBe(false);
-	});
-});
-
-describe("deleteBooks (Server Action)", () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
-
-	test("should reject when the request is not authenticated", async () => {
-		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
-
-		const testId = "01933f5c-9df0-7001-9123-456789abcdef";
-
-		await expect(deleteBooks(testId)).rejects.toThrow("UNAUTHORIZED");
 	});
 });

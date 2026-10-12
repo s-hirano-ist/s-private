@@ -17,7 +17,6 @@ import {
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
-import { addArticle } from "./add-article";
 import { addArticleCore } from "./add-article.core";
 import { parseAddArticleFormData } from "./helpers/form-data-parser";
 
@@ -200,19 +199,5 @@ describe("addArticleCore", () => {
 		const result = await addArticleCore(mockFormData, deps);
 
 		expect(result).toEqual({ success: false, message: "unexpected" });
-	});
-});
-
-describe("addArticle (Server Action)", () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
-
-	test("should reject when the request is not authenticated", async () => {
-		// withSelfTenant resolves the user (and establishes the tenant scope)
-		// before delegating, so an auth failure short-circuits the action.
-		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
-
-		await expect(addArticle(mockFormData)).rejects.toThrow("UNAUTHORIZED");
 	});
 });
