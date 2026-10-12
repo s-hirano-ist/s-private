@@ -1,4 +1,6 @@
 import Foundation
+import OpenAPIRuntime
+import SPrivateAPI
 
 enum MobileClientError: LocalizedError {
     case authenticationRequired, configurationMissing, invalidResponse, uploadTooLarge
@@ -19,28 +21,6 @@ struct MobileCategory: Decodable, Identifiable {
     let id: String
     let name: String
 }
-struct MobileCategories: Decodable { let data: [MobileCategory] }
-struct MobileManifestItem: Decodable {
-    let id: String
-    let updatedAt: Date
-}
-struct MobileManifest: Decodable {
-    let articles: [MobileManifestItem]
-    let notes: [MobileManifestItem]
-    let books: [MobileManifestItem]
-    let images: [MobileRecord]
-    let categories: [MobileCategory]
-
-    func items(for domain: MobileDomain) -> [MobileManifestItem] {
-        switch domain {
-        case .articles: articles
-        case .notes: notes
-        case .books: books
-        case .images: images.map { MobileManifestItem(id: $0.id, updatedAt: $0.updatedAt) }
-        }
-    }
-}
-struct MobileSyncHead: Decodable { let cursor: String }
 struct MobileSnapshotPage<Item: Decodable>: Decodable {
     let data: [Item]
     let nextAfter: String?
@@ -58,20 +38,6 @@ struct MobileSyncChanges: Decodable {
     let nextCursor: String
     let hasMore: Bool
 }
-struct MobileAccepted: Decodable { let accepted: Bool }
-private struct UploadStart: Encodable {
-    let operationId: UUID
-    let domain: MobileDomain
-    let contentType: String
-    let fileSize: Int
-    let metadata: [String: String]
-}
-private struct UploadSession: Decodable {
-    let uploadId: String
-    let chunkSize: Int
-    let receivedParts: [Int]
-}
-
 enum MobileDomain: String, Codable, CaseIterable, Identifiable {
     case articles, notes, books, images
     var id: String { rawValue }
@@ -99,11 +65,6 @@ struct MobileSearchResult: Decodable, Identifiable {
     let title: String
     let snippet: String
 }
-struct MobileSearchResponse: Decodable {
-    let data: [MobileSearchResult]
-    let query: String
-}
-
 struct MobileRecord: Codable, Identifiable {
     let id: String
     let status: MobileContentStatus
@@ -166,134 +127,137 @@ final class MobileClient: MobileSyncClient {
     static let imageLimit = 10 * 1_048_576
     let authentication: AuthenticationModel
     let baseURL: URL?
-    let session: URLSession
+    private let injectedClient: Client?
 
-    init(authentication: AuthenticationModel, bundle: Bundle = .main, session: URLSession = .shared) {
+    init(authentication: AuthenticationModel, bundle: Bundle = .main, client: Client? = nil) {
         self.authentication = authentication
         self.baseURL = URL(string: bundle.object(forInfoDictionaryKey: "MobileAPIBaseURL") as? String ?? "")
-        self.session = session
-    }
-
-    func list(_ domain: MobileDomain, status: MobileContentStatus?, offset: Int, limit: Int = 30) async throws -> MobilePage<MobileRecord> {
-        var query = [URLQueryItem(name: "offset", value: String(offset)), URLQueryItem(name: "limit", value: String(limit))]
-        if let status { query.append(URLQueryItem(name: "status", value: status.rawValue)) }
-        return try await decode(domain.rawValue, query: query)
-    }
-
-    func detail(_ domain: MobileDomain, id: String) async throws -> MobileRecord {
-        try await decode("\(domain.rawValue)/\(encoded(id))")
-    }
-
-    func categories() async throws -> [MobileCategory] {
-        let result: MobileCategories = try await decode("categories")
-        return result.data
-    }
-
-    func manifest() async throws -> MobileManifest {
-        try await decode("manifest")
+        self.injectedClient = client
     }
 
     func syncHead() async throws -> String {
-        let result: MobileSyncHead = try await decode("sync/head")
-        return result.cursor
+        try await perform { try await $0.getSyncHead(.init()).ok.body.json.cursor }
     }
 
     func snapshot(_ domain: String, after: String = "") async throws -> MobileSnapshotPage<MobileRecord> {
-        try await decode("sync/snapshot", query: [
-            URLQueryItem(name: "domain", value: domain),
-            URLQueryItem(name: "after", value: after),
-        ])
+        guard let domain = MobileDomain(rawValue: domain),
+              let apiDomain = Components.Schemas.SyncDomain(rawValue: domain.rawValue) else {
+            throw MobileClientError.invalidResponse
+        }
+        return try await perform { client in
+            let page = try await client.listSyncSnapshot(.init(query: .init(domain: apiDomain, after: after))).ok.body.json
+            return MobileSnapshotPage(data: try page.data.map { try MobileRecord(snapshot: $0, expected: domain) }, nextAfter: page.nextAfter)
+        }
     }
 
     func categorySnapshot(after: String = "") async throws -> MobileSnapshotPage<MobileCategory> {
-        try await decode("sync/snapshot", query: [
-            URLQueryItem(name: "domain", value: "categories"),
-            URLQueryItem(name: "after", value: after),
-        ])
+        try await perform { client in
+            let page = try await client.listSyncSnapshot(.init(query: .init(domain: .categories, after: after))).ok.body.json
+            let categories = try page.data.map { value in
+                guard case .categories(let value) = value else { throw MobileClientError.invalidResponse }
+                return MobileCategory(id: value.record.id, name: value.record.name)
+            }
+            return MobileSnapshotPage(data: categories, nextAfter: page.nextAfter)
+        }
     }
 
     func changes(cursor: String) async throws -> MobileSyncChanges {
-        try await decode("sync/changes", query: [URLQueryItem(name: "cursor", value: cursor)])
+        try await perform { client in
+            let page = try await client.listSyncChanges(.init(query: .init(cursor: cursor))).ok.body.json
+            return MobileSyncChanges(data: page.data.map(MobileSyncChange.init), nextCursor: page.nextCursor, hasMore: page.hasMore)
+        }
     }
 
     func search(_ query: String) async throws -> [MobileSearchResult] {
-        let result: MobileSearchResponse = try await decode("search", query: [URLQueryItem(name: "query", value: query)])
-        return result.data
+        try await perform { client in
+            let page = try await client.searchContent(.init(query: .init(query: query))).ok.body.json
+            return page.data.map(MobileSearchResult.init)
+        }
     }
 
     func media(_ domain: MobileDomain, id: String, variant: String) async throws -> Data {
-        try await send("media/\(domain.rawValue)/\(encoded(id))/\(variant)")
+        guard let apiDomain = Operations.getMedia.Input.Path.domainPayload(rawValue: domain.rawValue),
+              let variant = Operations.getMedia.Input.Path.variantPayload(rawValue: variant) else {
+            throw MobileClientError.invalidResponse
+        }
+        return try await perform { client in
+            let response = try await client.getMedia(.init(path: .init(domain: apiDomain, id: id, variant: variant))).ok.body
+            let body: HTTPBody
+            switch response {
+            case .binary(let value), .jpeg(let value), .png(let value), .image_webp(let value): body = value
+            }
+            return try await Data(collecting: body, upTo: 32 * 1_048_576)
+        }
     }
 
     func create(_ domain: MobileDomain, input: MobileCreate) async throws {
-        var request = try await makeRequest(domain.rawValue, method: "POST")
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try JSONEncoder().encode(input)
-        let data = try await perform(request)
-        guard try MobileAPICoding.decoder().decode(MobileAccepted.self, from: data).accepted else {
-            throw MobileClientError.invalidResponse
+        try await perform { client in
+            switch domain {
+            case .articles:
+                try MobileCreate.validate(try await client.createArticles(.init(body: .json(try input.articleBody()))).created.body.json, operationId: input.operationId, domain: domain)
+            case .notes:
+                try MobileCreate.validate(try await client.createNotes(.init(body: .json(try input.noteBody()))).created.body.json, operationId: input.operationId, domain: domain)
+            case .images, .books:
+                throw MobileClientError.invalidResponse
+            }
         }
     }
 
     func chunkedUpload(_ domain: MobileDomain, operationId: UUID, image: Data, fields: [String: String]) async throws {
         guard image.count <= Self.imageLimit else { throw MobileClientError.uploadTooLarge }
-        let start = UploadStart(operationId: operationId, domain: domain, contentType: "image/jpeg", fileSize: image.count, metadata: fields)
-        var request = try await makeRequest("uploads", method: "POST")
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try JSONEncoder().encode(start)
-        let upload = try MobileAPICoding.decoder().decode(UploadSession.self, from: await perform(request))
-        let received = Set(upload.receivedParts)
-        for part in 0..<Int(ceil(Double(image.count) / Double(upload.chunkSize))) where !received.contains(part) {
-            let lower = part * upload.chunkSize
-            let upper = min(lower + upload.chunkSize, image.count)
-            var chunkRequest = try await makeRequest("uploads/\(upload.uploadId)/chunks/\(part)", method: "PUT")
-            chunkRequest.setValue("application/octet-stream", forHTTPHeaderField: "Content-Type")
-            chunkRequest.httpBody = image.subdata(in: lower..<upper)
-            _ = try await perform(chunkRequest)
+        guard !image.isEmpty else { throw MobileClientError.invalidResponse }
+        let start = try MobileCreate.uploadBody(domain, operationId: operationId, fileSize: image.count, fields: fields)
+        try await perform { client in
+            // Start on every explicit attempt: the backend resumes chunks, including legacy sessions.
+            // A removed/expired session starts again with the same operation ID, never a new operation.
+            let upload = try await client.startUpload(.init(body: .json(start))).ok.body.json
+            let chunkSize = upload.chunkSize.rawValue
+            guard chunkSize == 1_048_576, upload.operationId == operationId.uuidString else {
+                throw MobileClientError.invalidResponse
+            }
+            let count = (image.count + chunkSize - 1) / chunkSize
+            guard upload.receivedParts.allSatisfy({ (0..<count).contains($0) }) else { throw MobileClientError.invalidResponse }
+            let received = Set(upload.receivedParts)
+            for part in 0..<count where !received.contains(part) {
+                let lower = part * chunkSize
+                let upper = min(lower + chunkSize, image.count)
+                let accepted = try await client.putUploadChunk(.init(path: .init(id: upload.uploadId, part: part), body: .binary(HTTPBody(image.subdata(in: lower..<upper))))).ok.body.json
+                guard accepted.accepted, accepted.part == part else { throw MobileClientError.invalidResponse }
+            }
+            try MobileCreate.validate(try await client.completeUpload(.init(path: .init(id: upload.uploadId))).created.body.json, operationId: operationId, domain: domain)
         }
-        let complete = try await makeRequest("uploads/\(upload.uploadId)/complete", method: "POST")
-        _ = try await perform(complete)
     }
 
     func delete(_ domain: MobileDomain, id: String) async throws {
-        let request = try await makeRequest("\(domain.rawValue)/\(encoded(id))", method: "DELETE")
-        _ = try await perform(request)
-    }
-
-    private func decode<T: Decodable>(_ path: String, query: [URLQueryItem] = []) async throws -> T {
-        let data = try await send(path, query: query)
-        return try MobileAPICoding.decoder().decode(T.self, from: data)
-    }
-
-    private func send(_ path: String, query: [URLQueryItem] = []) async throws -> Data {
-        try await perform(makeRequest(path, query: query))
-    }
-
-    private func makeRequest(_ path: String, query: [URLQueryItem] = [], method: String = "GET") async throws -> URLRequest {
-        guard let baseURL, ["https", "http"].contains(baseURL.scheme?.lowercased() ?? ""), baseURL.host != nil else {
-            throw MobileClientError.configurationMissing
+        try await perform { client in
+            switch domain {
+            case .articles: _ = try await client.deleteArticles(.init(path: .init(id: id))).noContent
+            case .notes: _ = try await client.deleteNotes(.init(path: .init(id: id))).noContent
+            case .images: _ = try await client.deleteImages(.init(path: .init(id: id))).noContent
+            case .books: _ = try await client.deleteBooks(.init(path: .init(id: id))).noContent
+            }
         }
-        var components = URLComponents(url: baseURL.appending(path: path), resolvingAgainstBaseURL: false)
-        components?.queryItems = query.isEmpty ? nil : query
-        guard let url = components?.url else { throw MobileClientError.configurationMissing }
-        var request = URLRequest(url: url)
-        request.httpMethod = method
-        request.setValue("Bearer \(try await authentication.accessToken())", forHTTPHeaderField: "Authorization")
-        return request
     }
 
-    private func perform(_ request: URLRequest) async throws -> Data {
-        let (data, response) = try await session.data(for: request)
-        guard let response = response as? HTTPURLResponse else { throw MobileClientError.invalidResponse }
-        guard (200..<300).contains(response.statusCode) else {
-            let code = try? MobileAPICoding.decoder().decode(MobileAPIErrorEnvelope.self, from: data).error.code
-            if response.statusCode == 401 { authentication.requireLogin() }
-            throw MobileClientError.http(response.statusCode, code)
+    private func perform<T>(_ operation: @MainActor (Client) async throws -> T) async throws -> T {
+        do {
+            let client: Client
+            if let injectedClient { client = injectedClient }
+            else {
+                guard let baseURL, ["https", "http"].contains(baseURL.scheme?.lowercased() ?? ""), baseURL.host != nil else {
+                    throw MobileClientError.configurationMissing
+                }
+                client = BackendAPI.authenticatedClient(serverURL: baseURL, accessToken: try await authentication.accessToken())
+            }
+            return try await operation(client)
+        } catch {
+            if let failure = BackendHTTPError.from(error) {
+                if failure.status == 401 { authentication.requireLogin() }
+                throw MobileClientError.http(failure.status, failure.code?.rawValue)
+            }
+            // Preserve cancellation/network errors without exposing the generated request (including token).
+            if let error = error as? ClientError { throw error.underlyingError }
+            throw error
         }
-        return data
-    }
-
-    private func encoded(_ value: String) -> String {
-        value.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed.subtracting(CharacterSet(charactersIn: "/?%#"))) ?? value
     }
 }
