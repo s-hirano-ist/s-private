@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { backendApi } from "@/backend/api";
+import { dispatchBackendRequest } from "@/common/backend/dispatch";
 import { getBackendClient } from "@/common/backend/server-client";
 import { beforeEach, expect, test, vi } from "vite-plus/test";
 const state = vi.hoisted(() => ({
@@ -7,7 +7,9 @@ const state = vi.hoisted(() => ({
 	localDevMode: "false",
 	vercel: undefined as string | undefined,
 }));
-vi.mock("@/backend/api", () => ({ backendApi: { fetch: vi.fn() } }));
+vi.mock("@/common/backend/dispatch", () => ({
+	dispatchBackendRequest: vi.fn(),
+}));
 vi.mock("@/env", () => ({
 	env: {
 		BETTER_AUTH_URL: "https://web.example",
@@ -41,7 +43,7 @@ beforeEach(() => {
 	state.vercel = undefined;
 });
 test("keeps cookies scoped to each server request and supplies a canonical trusted Origin", async () => {
-	vi.mocked(backendApi.fetch).mockImplementation(async (request) => {
+	vi.mocked(dispatchBackendRequest).mockImplementation(async (request) => {
 		expect(request.headers.get("origin")).toBe("https://web.example");
 		expect(request.headers.has("authorization")).toBe(false);
 		return Response.json({ count: 1 });
@@ -54,12 +56,12 @@ test("keeps cookies scoped to each server request and supplies a canonical trust
 	expect((await first.countNotes()).data.count).toBe(1);
 	expect(
 		vi
-			.mocked(backendApi.fetch)
+			.mocked(dispatchBackendRequest)
 			.mock.calls.map(([request]) => request.headers.get("cookie")),
 	).toEqual(["session=first", "session=second", "session=first"]);
 });
 test("maps an expired backend session to the Web authentication boundary", async () => {
-	vi.mocked(backendApi.fetch).mockResolvedValue(
+	vi.mocked(dispatchBackendRequest).mockResolvedValue(
 		Response.json({ error: { code: "UNAUTHORIZED" } }, { status: 401 }),
 	);
 	await expect((await getBackendClient()).countNotes()).rejects.toThrow(
@@ -69,7 +71,7 @@ test("maps an expired backend session to the Web authentication boundary", async
 
 test("replaces expired local sessions through local sign-in", async () => {
 	state.localDevMode = "true";
-	vi.mocked(backendApi.fetch).mockResolvedValue(
+	vi.mocked(dispatchBackendRequest).mockResolvedValue(
 		Response.json({ error: { code: "UNAUTHORIZED" } }, { status: 401 }),
 	);
 	await expect((await getBackendClient()).getSession()).rejects.toThrow(
@@ -79,7 +81,7 @@ test("replaces expired local sessions through local sign-in", async () => {
 test("never enables local authentication bypass on Vercel", async () => {
 	state.localDevMode = "true";
 	state.vercel = "1";
-	vi.mocked(backendApi.fetch).mockResolvedValue(
+	vi.mocked(dispatchBackendRequest).mockResolvedValue(
 		Response.json({ error: { code: "UNAUTHORIZED" } }, { status: 401 }),
 	);
 	await expect((await getBackendClient()).getSession()).rejects.toThrow(

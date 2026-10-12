@@ -54,7 +54,18 @@ mise exec -- pnpm --filter s-private-backend dev
 
 既定のlisten先は `127.0.0.1:3002`。`BACKEND_PORT` で変更できる。
 `.env.local` の既存local認証設定を使用する。
-Webとbackendを接続したE2Eと切替用環境変数は後続PRで追加する。
+Web側の `BACKEND_URL=http://localhost:3002` を設定すると独立サービスへ接続する。
+設定しなければNext.js内の暫定handlerを利用する。通常の `pnpm dev` はこの段階では従来構成で起動する。
+独立接続の検証は別terminalでbackendを起動し、Webを以下で起動する。
+
+```bash
+mise exec -- env BACKEND_URL=http://localhost:3002 pnpm --filter s-private-app dev
+```
+
+`BACKEND_URL` は末尾slash・path・query・credentialsのないoriginを指定する。
+HTTPはlocalhost／127.0.0.1だけ許可し、VercelではHTTPSのbackend originを設定する。
+ブラウザは公開Webの同一originのAPIを使い、SSRも同じBFF transportを使う。
+backend障害時に別ホストへmutationを再送しない。自動retryも追加しない。
 
 ## Cronと切替時の確認
 
@@ -67,3 +78,12 @@ Webとbackendを接続したE2Eと切替用環境変数は後続PRで追加す�
 切替前に既存Cookie、Auth0 callback、所有者の分離、全CRUD、検索、同期cursor、
 旧operationの再送と未完了uploadの再開、5MiB超の分割upload、認証付きmediaを確認する。
 実Auth0・外部サービス・Vercel上の制限はローカル検証だけでは確認済みとしない。
+
+## 公開Webの接続先切替
+
+backendの単体検証後に、Webの `BACKEND_URL` をbackendのHTTPS originへ設定して再デプロイする。
+WebのAuth0 callback URLとCookieのoriginは維持する。backendの `BETTER_AUTH_URL` は公開Webを指定する。
+Vercel Deployment Protectionを使う場合、Webからbackendへの通信が拒否されない構成を担当者が設定する。
+公開URLの確認だけで切替済みと判断せず、認証・所有者・実CRUD・同期・uploadを確認する。
+接続先を戻す場合は書き込みを停止して状態を確認し、手動で `BACKEND_URL` を戻す。
+接続済み通信を障害時に暗黙に旧handlerへfallbackしない。

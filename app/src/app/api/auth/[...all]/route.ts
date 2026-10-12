@@ -1,4 +1,3 @@
-import { auth } from "@/infrastructures/auth/auth";
-
-export const GET = (request: Request) => auth.handler(request);
+import { dispatchBackendRequest } from "@/common/backend/dispatch";
+export const GET = dispatchBackendRequest;
 export const POST = GET;

@@ -130,7 +130,8 @@ Better AuthのOAuthプロトコルと内部Cronは、一般クライアント契
 | 9c | ローカル fixture の共有化 |
 | 9d | HonoのHTTP host・公開Origin境界 |
 | 9e | 独立Hono backendの起動・Vercel配置準備 |
-| 10 | 手動デプロイ確認後に接続先切替、暫定実装の撤去 |
+| 10a | 同一origin BFF・設定による独立backend接続 |
+| 10b | 暫定実装の撤去と手動切替gate |
 
 各PRは直前のPRをbaseにし、順番にマージ・デプロイできる状態を維持する。
 同一機能の二重書き込みは行わず、旧APIと新APIは同じユースケースへ委譲する。
@@ -186,3 +187,8 @@ OAuthの公開originを検証してrequest URLを復元し、複数Cookieと本�
 独立Nodeサービスは `services/backend` に置き、共有factoryだけでAPI・認証・イベント・通知を組み立てる。
 [手動配置・切替手順](backend-deployment.md)に環境変数とCronの単独稼働手順を記載する。
 この段階ではWebの接続先を変更しない。
+
+Webの `BACKEND_URL` 設定後は、API・認証protocol・サインインを固定upstreamへ中継する。
+Cookie・Bearer・Origin・Content-Typeを明示的に転送し、SSRから受信Authorizationは転送しない。
+redirectは追従せず、複数Set-Cookieとmedia streamを保持する。
+未設定の暫定handlerはlazy importし、独立backendの障害時にはfallback・retryしない。
