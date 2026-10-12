@@ -71,7 +71,8 @@ backend障害時に別ホストへmutationを再送しない。自動retryも追
 ## Cronと切替時の確認
 
 独立サービスの `vercel.json` にはscheduleを登録しない。
-旧Next.jsのCronを止め、独立サービスの動作確認後に担当者がscheduleを追加する。
+このスタックのWeb Cron撤去PRで旧Next.jsのscheduleと入口を削除する。
+旧Productionの停止を確認し、独立サービスの動作確認後に担当者がscheduleを追加する。
 パスは `/api/cron/gigazine-headline`、既存scheduleは `0 0 * * *`。
 `BACKEND_CRON_ENABLED=true` と `CRON_SECRET` を設定する。同時実行しない。
 未認証の入口が401を返すことを先に確認し、実通知の検証は担当者が行う。

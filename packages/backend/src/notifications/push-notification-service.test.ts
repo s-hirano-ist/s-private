@@ -1,5 +1,3 @@
-import type { Mock } from "vite-plus/test";
-import prisma from "@/prisma";
 import {
 	WebPushSendError,
 	type WebPushPayload,
@@ -15,9 +13,28 @@ vi.mock("@s-hirano-ist/s-notification", async (importOriginal) => ({
 	...(await importOriginal<typeof import("@s-hirano-ist/s-notification")>()),
 	createWebPushService: vi.fn(() => ({ send })),
 }));
-vi.mock("@sentry/nextjs", () => ({ captureException }));
 
-import { sendPushToAll } from "./push-notification-service";
+import type { PushSubscriptionRepository } from "@s-hirano-ist/s-backend/notifications/ports";
+import { createPushDeliveryService } from "@s-hirano-ist/s-backend/notifications/push-notification-service";
+const listAll = vi.fn<PushSubscriptionRepository["listAll"]>();
+const deleteByIds = vi.fn<PushSubscriptionRepository["deleteByIds"]>();
+const repository: PushSubscriptionRepository = {
+	listAll,
+	deleteByIds,
+	deleteOwned: vi.fn(),
+	findByEndpoint: vi.fn(),
+	findOwned: vi.fn(),
+	save: vi.fn(),
+};
+const { sendPushToAll } = createPushDeliveryService(
+	{
+		NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY: "public",
+		WEB_PUSH_PRIVATE_KEY: "private",
+		WEB_PUSH_SUBJECT: "mailto:test@example.com",
+	},
+	repository,
+	{ captureException },
+);
 
 const payload: WebPushPayload = {
 	body: "body",
@@ -27,17 +44,27 @@ const payload: WebPushPayload = {
 	url: "https://gigazine.net/news/20260918-headline",
 };
 const subscriptions = [
-	{ auth: "a1", endpoint: "https://push.example.com/1", id: "1", p256dh: "p1" },
-	{ auth: "a2", endpoint: "https://push.example.com/2", id: "2", p256dh: "p2" },
+	{
+		auth: "a1",
+		endpoint: "https://push.example.com/1",
+		id: "1",
+		userId: "owner",
+		p256dh: "p1",
+	},
+	{
+		auth: "a2",
+		endpoint: "https://push.example.com/2",
+		id: "2",
+		userId: "owner",
+		p256dh: "p2",
+	},
 ];
 
 describe("sendPushToAll", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
-		(prisma.pushSubscription.findMany as Mock).mockResolvedValue(subscriptions);
-		(prisma.pushSubscription.deleteMany as Mock).mockResolvedValue({
-			count: 1,
-		});
+		listAll.mockResolvedValue(subscriptions);
+		deleteByIds.mockResolvedValue(undefined);
 		send.mockResolvedValue(undefined);
 	});
 
@@ -57,9 +84,7 @@ describe("sendPushToAll", () => {
 			failed: 0,
 			sent: 1,
 		});
-		expect(prisma.pushSubscription.deleteMany).toHaveBeenCalledWith({
-			where: { id: { in: ["1"] } },
-		});
+		expect(deleteByIds).toHaveBeenCalledWith(["1"]);
 	});
 
 	test("reports transient failures without deleting the subscription", async () => {
@@ -70,12 +95,12 @@ describe("sendPushToAll", () => {
 			failed: 1,
 			sent: 1,
 		});
-		expect(prisma.pushSubscription.deleteMany).not.toHaveBeenCalled();
+		expect(deleteByIds).not.toHaveBeenCalled();
 		expect(captureException).toHaveBeenCalledWith(error, expect.any(Object));
 	});
 
 	test("does not require VAPID configuration when there are no subscribers", async () => {
-		(prisma.pushSubscription.findMany as Mock).mockResolvedValue([]);
+		listAll.mockResolvedValue([]);
 		await expect(sendPushToAll(payload)).resolves.toEqual({
 			expired: 0,
 			failed: 0,
