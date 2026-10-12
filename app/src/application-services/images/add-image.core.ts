@@ -10,12 +10,15 @@
 import "server-only";
 import type { AddImageDeps } from "@/application-services/images/add-image.deps";
 import type { ServerActionWithData } from "@/common/types";
-import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { parseAddImageFormData } from "@/application-services/images/helpers/form-data-parser";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import { withOperationPhase } from "@/common/error/operation-phase-error";
 import { createImage } from "@s-hirano-ist/s-backend/images/use-cases";
+import {
+	makeUserId,
+	type UserId,
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 
 /**
  * Core business logic for uploading an image.
@@ -48,7 +51,10 @@ export async function addImageCore(
 		const parsedData = await withOperationPhase(
 			{ ...phaseContext, phase: "parse-form-data" },
 			async () =>
-				parseAddImageFormData(formData, principalId ?? (await getSelfId())),
+				parseAddImageFormData(
+					formData,
+					principalId ?? makeUserId(await getSelfId()),
+				),
 		);
 
 		const result = await createImage(parsedData, deps, phaseContext);

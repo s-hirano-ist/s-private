@@ -1,90 +1,51 @@
-import { auth, isLocalDevAuthEnabled } from "@/infrastructures/auth/auth";
-import { redirect } from "next/navigation";
-import {
-	beforeEach,
-	describe,
-	expect,
-	type Mock,
-	test,
-	vi,
-} from "vite-plus/test";
+import { getSelfId, requireAuth } from "@/common/auth/session";
+import { createBackendClient } from "@s-hirano-ist/s-api-client";
+import { beforeEach, expect, test, vi } from "vite-plus/test";
 
-vi.mock("@/infrastructures/auth/auth", () => ({
-	auth: { api: { getSession: vi.fn() } },
-	isLocalDevAuthEnabled: vi.fn(() => false),
+const state = vi.hoisted(() => ({ fetch: vi.fn<typeof fetch>() }));
+vi.mock("@/common/backend/server-client", () => ({
+	getBackendClient: async () =>
+		createBackendClient({
+			baseURL: "https://web.example/api/v1",
+			fetch: state.fetch,
+		}),
 }));
 
-import { getSelfId, requireAuth } from "@/common/auth/session";
-
-const getSession = auth.api.getSession as unknown as Mock;
-
-const mockSession = (id: string) => ({
-	session: {
-		id: "session-id",
-		token: "token",
-		userId: id,
-		expiresAt: new Date("2099-01-01"),
-		createdAt: new Date("2025-01-01"),
-		updatedAt: new Date("2025-01-01"),
-	},
-	user: {
-		id,
-		name: "Test User",
-		email: "test@example.com",
-		emailVerified: true,
-		createdAt: new Date("2025-01-01"),
-		updatedAt: new Date("2025-01-01"),
-	},
+beforeEach(() => {
+	state.fetch.mockReset();
+	state.fetch.mockResolvedValue(
+		Response.json({
+			user: {
+				id: "owner",
+				name: "Owner",
+				email: "owner@example.com",
+				image: null,
+			},
+			expiresAt: "2099-01-01T00:00:00.000Z",
+		}),
+	);
 });
 
-describe("session utilities", () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-		vi.mocked(isLocalDevAuthEnabled).mockReturnValue(false);
-	});
-
-	describe("getSelfId", () => {
-		test("should return the user ID from the session", async () => {
-			getSession.mockResolvedValue(mockSession("2"));
-
-			const result = await getSelfId();
-
-			expect(getSession).toHaveBeenCalledTimes(1);
-			expect(result).toBe("2");
-		});
-
-		test("should throw Unauthorized if not authenticated", async () => {
-			getSession.mockResolvedValue(null);
-
-			await expect(getSelfId()).rejects.toThrow("UNAUTHORIZED");
-			expect(getSession).toHaveBeenCalledTimes(1);
-		});
-
-		test("redirects stale local sessions to local sign-in", async () => {
-			vi.mocked(isLocalDevAuthEnabled).mockReturnValue(true);
-			getSession.mockResolvedValue(null);
-			vi.mocked(redirect).mockImplementation(() => {
-				throw new Error("NEXT_REDIRECT");
-			});
-
-			await expect(getSelfId()).rejects.toThrow("NEXT_REDIRECT");
-			expect(redirect).toHaveBeenCalledWith("/api/sign-in");
-		});
-	});
-
-	describe("requireAuth", () => {
-		test("should resolve when authenticated", async () => {
-			getSession.mockResolvedValue(mockSession("1"));
-
-			await expect(requireAuth()).resolves.toBeUndefined();
-			expect(getSession).toHaveBeenCalledTimes(1);
-		});
-
-		test("should throw Unauthorized if not authenticated", async () => {
-			getSession.mockResolvedValue(null);
-
-			await expect(requireAuth()).rejects.toThrow("UNAUTHORIZED");
-			expect(getSession).toHaveBeenCalledTimes(1);
-		});
-	});
+test("resolves the owner through the generated session contract", async () => {
+	await expect(getSelfId()).resolves.toBe("owner");
+	expect(state.fetch.mock.calls[0]?.[0]).toEqual(
+		new URL("https://web.example/api/v1/session"),
+	);
+	expect(state.fetch.mock.calls[0]?.[1]?.cache).toBe("no-store");
+});
+test("authenticates page boundaries through the same API", async () => {
+	await expect(requireAuth()).resolves.toBeUndefined();
+	expect(state.fetch).toHaveBeenCalledTimes(1);
+});
+test("rejects malformed successful session responses", async () => {
+	state.fetch.mockResolvedValue(Response.json({ user: { id: "owner" } }));
+	await expect(requireAuth()).rejects.toThrow(
+		"API response does not match its contract",
+	);
+});
+test("does not accept a failed backend authentication response", async () => {
+	state.fetch.mockResolvedValue(
+		Response.json({ error: { code: "UNAUTHORIZED" } }, { status: 401 }),
+	);
+	await expect(getSelfId()).rejects.toThrow("UNAUTHORIZED");
 });
