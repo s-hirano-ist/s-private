@@ -1,29 +1,3 @@
-import type { CreateBookDeps as BackendDeps } from "@s-hirano-ist/s-backend/books/use-cases";
-/**
- * Dependency types and defaults for book creation.
- *
- * @remarks
- * Separated from add-books.ts to avoid "use server" export restrictions.
- * Only async functions can be exported from server action files.
- *
- * @module
- */
-import { booksCommandRepository } from "@/infrastructures/books/repositories/books-command-repository";
-import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
-import { domainServiceFactory } from "@/infrastructures/factories/domain-service-factory";
-import { booksStorageService } from "@/infrastructures/shared/storage/books-storage-service";
+import type { CreateBookDeps } from "@s-hirano-ist/s-backend/books/use-cases";
 
-/**
- * Dependencies for the addBooksCore function.
- */
-export type AddBooksDeps = BackendDeps;
-
-/**
- * Default dependencies for production use.
- */
-export const defaultAddBooksDeps: AddBooksDeps = {
-	commandRepository: booksCommandRepository,
-	storageService: booksStorageService,
-	domainServiceFactory: domainServiceFactory,
-	eventDispatcher: eventDispatcher,
-};
+export type AddBooksDeps = CreateBookDeps;

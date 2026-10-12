@@ -33,11 +33,10 @@ uploadの完了は全partと合計byte数を確認し、作成成功後だけchu
 旧画像operationのFAILED状態はpathとの対応を確定できないため409とし、最新画像を推測して返さない。
 切替前にFAILED/PENDING操作を調査し、DB保存後に失敗した自然キー付き操作は手動で照合する。
 既存レコードと同じURL・title・ISBNであるだけでは、別operationの成功として扱わない。
-既存の `/api/mobile/v1` はNext.jsのcatch-all Route HandlerからHonoへ委譲する。
-`app/src/backend/http/mobile` にHTTP処理を集約し、Next.jsのparams型を持たないcontrollerへ分離する。
-Bearer認証・tenant・操作ID・upload・同期の既存ユースケースとwire形式を共有する。
-一時的な配置であり、後続PRで独立backendのpackageへ移す。
-手書きiOSクライアントとWebの通信経路は引き続き有効。
+移行初期は `/api/mobile/v1` をNext.js内のHonoでホストした。
+iOSのSwift生成clientへの切替後、この旧HTTP入口とcontrollerを撤去する。
+旧URLへの通信は404となるため、撤去PRの本番適用は対応iOSクライアントの配布・切替確認後に行う。
+DBのoperation・同期cursor・未完了uploadは削除せず、共通APIで引き継ぐ。
 
 `packages/backend` はNext.jsに依存しない実装packageとし、ドメイン別の公開subpathを持つ。
 articles／notes／images／booksの入力検証、作成・削除ユースケース、Prismaリポジトリを配置する。
