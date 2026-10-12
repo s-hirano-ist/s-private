@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.16.2](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.16.1...s-private-v3.16.2) (2026-10-12)
+
+
+### Bug Fixes
+
+* **ci:** replace stale Pages deployments with latest run ([8c9b89a](https://github.com/s-hirano-ist/s-private/commit/8c9b89a894be3d525d770eaf0f2bb100db71dedb))
+* **pages:** exclude generated documentation from search ([b3f603b](https://github.com/s-hirano-ist/s-private/commit/b3f603b5741e841c2d318ec3b6471c74073dc7d1))
+* **pages:** GitHub Pagesの全HTMLを検索対象から除外 ([1cd7cf8](https://github.com/s-hirano-ist/s-private/commit/1cd7cf82f95b0ab0a7618ba2eecaaa94f5b43bcd))
+
 ## [3.16.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.16.0...s-private-v3.16.1) (2026-10-11)
 
 
