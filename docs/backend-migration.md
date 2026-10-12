@@ -41,7 +41,7 @@ DBのoperation・同期cursor・未完了uploadは削除せず、共通APIで引
 `packages/backend` はNext.jsに依存しない実装packageとし、ドメイン別の公開subpathを持つ。
 articles／notes／images／booksの入力検証、作成・削除ユースケース、Prismaリポジトリを配置する。
 所有者IDとイベントdispatchは明示的な依存として渡し、backend内でWeb sessionを取得しない。
-Next.js側はFormData、認証、エラー変換、既存キャッシュの無効化を担う暫定adapterとなる。
+移行初期のNext.jsはFormData、認証、エラー変換、キャッシュ無効化の暫定adapterだった。最終構成では生成clientを呼ぶSSR/BFFだけを残し、永続cacheとドメインadapterを撤去した。
 Prismaのquery hook構成と拡張済みclient型もbackendで共有し、tenant contextと監視の値は入口から注入する。
 既存のtenant policy、SQL、イベント、書き込み回数は維持する。
 HTTP入口とクライアントを切り替える前に処理を移管するため、この段階では新しい通信は発生しない。
@@ -52,9 +52,9 @@ original→thumbnail→DB→イベントの順序と既存の失敗時動作を�
 operation／storage phaseと不正画像の診断エラーもbackendで定義し、Webのエラー変換から再利用する。
 
 同期cursor・snapshot・差分取得とoperationの冪等性管理は `packages/backend/src/mobile` に置く。
-DBの状態と保存形式を維持し、Webでは既存の依存を注入するadapterだけを残す。
+DBの状態と保存形式を維持し、依存の構成は独立backendのhostで行う。
 共有Prisma persistenceとMinIO chunk storeも設定を受け取るfactoryとする。
-Qdrant検索と結果整形は `packages/backend/src/search` に置き、Webから設定・検索portを渡す。
+Qdrant検索と結果整形は `packages/backend/src/search` に置き、hostから設定・検索portを渡す。
 
 Better Authのprovider・session設定、Auth0 Bearer検証、tenant context／filterもbackendで共有する。
 Bearer検証はjoseのRS256・issuer・audience・必須claims検証とRemote JWKS resolverを使用する。
@@ -190,7 +190,7 @@ OAuthの公開originを検証してrequest URLを復元し、複数Cookieと本�
 Webの `BACKEND_URL` 設定後は、API・認証protocol・サインインを固定upstreamへ中継する。
 Cookie・Bearer・Origin・Content-Typeを明示的に転送し、SSRから受信Authorizationは転送しない。
 redirectは追従せず、複数Set-Cookieとmedia streamを保持する。
-未設定の暫定handlerはlazy importし、独立backendの障害時にはfallback・retryしない。
+最終構成では `BACKEND_URL` を必須にし、暫定handlerを撤去した。独立backendの障害時にはfallback・retryしない。
 
 数値queryの型overrideでは上限・下限・既定値も同じ定数からOpenAPIへ明示する。
 一覧offsetは既存Web入力の上限10000をAPIにも適用し、生成clientにも制約を保持する。
@@ -200,3 +200,19 @@ load-moreと検索Server Actionのエラーは共通のAPIエラー変換で処�
 
 WebのSSR表示エラーはWeb用Sentryへ記録する。
 表示のfallbackとNext.jsのredirect／not-found再throwを維持し、ドメインイベントやPushoverをWebから呼び出さない。
+
+## 最終分離と本番適用gate
+
+| PR | 完了した責務 |
+|----|--------------|
+| #2911 | 旧mobile HTTP入口の撤去 |
+| #2912–#2915 | 各ドメインの旧Web adapter撤去と共有回帰テスト |
+| #2916 | 旧フォーム・エラーadapterの撤去 |
+| #2917 | 永続cache・無効化HTTPの撤去 |
+| #2918 | CronとPush配信のbackend集約 |
+| #2919 | tenant・イベント・認証・storage等の回帰テスト移管 |
+| #2920 | Webの埋め込みbackend・依存・秘密情報を撤去し境界を強制 |
+| #2921 | Vercelの手動セットアップ・切替・rollback手順 |
+
+各PRは直前PRをbaseにする。独立backendを配置し、Web接続先と対応iOSの配布を確認してから旧入口撤去を本番適用する。DB・operation・upload・端末draft・同期cursorをresetしない。Cronは旧schedule停止後にbackendだけを有効化する。
+[Vercelセットアップ](backend-vercel-setup.md)のgateに従う。デプロイ、実Auth0、実機、実通知の確認は手動作業として残る。

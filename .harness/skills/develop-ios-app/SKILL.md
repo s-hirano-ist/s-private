@@ -10,7 +10,7 @@ OpenAIの「[Build for iOS](https://learn.chatgpt.com/use-cases/native-ios-apps)
 ## 作業前の確認
 
 1. `git rev-parse --show-toplevel`で現在のworktreeルートを取得し、以後はそのルート内だけを対象にする。主checkoutや別worktreeの絶対パスを流用しない。
-2. `ios/README.md`、`ios/project.yml`、`.mise.toml`を確認する。認証、共有、Mobile APIを変更するときだけ、`docs/architecture.md`のiOS節と`docs/openapi/mobile-v1.yaml`も読む。
+2. `ios/README.md`、`ios/project.yml`、`.mise.toml`を確認する。認証、共有、共通APIを変更するときだけ、`docs/architecture.md`のiOS節と`docs/openapi/backend-v1.json`も読む。
 3. UIを変更する場合は、現在のworktreeで`pnpm exec storybook skills stories`を実行し、コンポーネントやstoryを編集する場合は`pnpm exec storybook skills write-story`も実行する。SwiftUI固有の設計・性能・デバッグには`Build iOS Apps` pluginのskillを併用する。
 
 ## プロジェクトの不変条件
@@ -22,7 +22,7 @@ OpenAIの「[Build for iOS](https://learn.chatgpt.com/use-cases/native-ios-apps)
 - Simulator buildでもApp GroupとKeychainを使うため、既存のad hoc signing設定を保つ。`CODE_SIGNING_ALLOWED=NO`へ変更しない。
 - Auth0はNative ApplicationのAuthorization Code + PKCEを使い、client secretをアプリへ置かない。
 - Share Extensionは資格情報や通信を持たず、App Groupへ原子的に書き込む。main appによるoperation ID単位の重複防止を壊さない。
-- `/api/mobile/v1`ではBearer認証、所有者検証、tenant context、既存ユースケースとドメインルールを共有する。
+- 共通backendの`/api/v1`ではBearer認証、所有者検証、tenant context、既存ユースケースとドメインルールを共有する。
 - createの応答が曖昧な場合は自動再試行しない。対象一覧を更新し、作成済みか確認してから再送する。
 
 ## CLI-firstの進め方

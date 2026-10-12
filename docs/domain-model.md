@@ -231,68 +231,9 @@ graph TB
 
 ## Application Service層
 
-Application Service層は、ドメインロジックとインフラストラクチャ層をつなぐ役割を担います。
+共通ユースケースは `packages/backend/src/{domain}/use-cases.ts` に置く。入力のドメイン値への変換、不変条件検証、永続化、イベント発行を型付き依存で実行する。同じディレクトリのテストからmockを注入し、Next.jsや実DBなしで順序・失敗時動作を検証する。
 
-### ファイル構成パターン
-
-```text
-app/src/application-services/{domain}/
-├── {action}.deps.ts    ← 依存の型定義とデフォルト値
-├── {action}.core.ts    ← Core関数（ビジネスロジック、"use server"なし）
-├── {action}.ts         ← Server Action wrapper（認証のみ）
-└── {action}.test.ts    ← テスト（Core関数を直接テスト）
-```
-
-| ファイル | 責務 | "use server" |
-|---------|------|-------------|
-| `*.deps.ts` | 依存の型定義（Repository, Domain Service Factory）とデフォルト値 | なし |
-| `*.core.ts` | ビジネスロジック（フォームパース、ドメイン検証、永続化、キャッシュ無効化） | なし |
-| `*.ts` | Server Action（認証チェック後にCoreを呼び出し） | あり |
-| `*.test.ts` | Core関数のユニットテスト（モック依存注入） | なし |
-
-### 設計原則
-
-- **セキュリティ**: Core関数は`"use server"`の外に配置し、`import "server-only"`でクライアント側インポートを防止
-- **テスタビリティ**: Core関数は依存性注入（DI）で設計。テスト時にモック依存を注入可能
-
-### アーキテクチャ図
-
-```mermaid
-graph TB
-    subgraph "Client"
-        ClientComponent[React Component]
-    end
-
-    subgraph "Server Action Layer"
-        SA["Server Action<br/>(認証)"]
-    end
-
-    subgraph "Core Layer"
-        Core["Core Function<br/>(ビジネスロジック)"]
-    end
-
-    subgraph "Dependencies"
-        Repo[Command Repository]
-        DSF[Domain Service Factory]
-    end
-
-    subgraph "Domain Layer"
-        DS[Domain Service]
-        Entity[Entity Factory]
-    end
-
-    ClientComponent -->|"呼び出し可能"| SA
-    ClientComponent -.->|"呼び出し不可<br/>(server-only)"| Core
-    SA -->|"認証チェック後"| Core
-    Core --> Repo
-    Core --> DSF
-    Core --> DS
-    Core --> Entity
-
-    style SA fill:#e3f2fd
-    style Core fill:#fff3e0
-    style ClientComponent fill:#e8f5e9
-```
+`services/backend` がPrisma・storage・監視を構成し、`packages/backend/src/api/composition.ts` でユースケースへ注入する。Webの `app/src/application-services/` は生成API clientの呼び出し、フォーム・表示エラー変換、画面更新に限定する。詳細は[アーキテクチャ](architecture.md)を参照する。
 
 ## 設計の特徴
 
@@ -341,7 +282,7 @@ graph TB
 | GitHub Books | Books | ACL (Anti-Corruption Layer) | `IGitHubBookFetcher` |
 | MinIO | Images, Books | Infrastructure Adapter | `IStorageService` |
 | Image Processor | Images | Infrastructure Adapter | `IImageProcessor` |
-| Auth0 | All | Separate Context | NextAuth.js統合 |
+| Auth0 | All | Separate Context | Better Auth / Bearer統合 |
 
 ## DDDからの意図的な逸脱
 
@@ -390,8 +331,7 @@ graph TB
 **理由**: 単一ユーザー・単一サーバーの現規模では、Outbox PatternやSaga Pattern導入による複雑性増加がメリットを上回る。TypeScriptでの補償トランザクションの型安全な表現も困難。
 
 **対象ファイル**:
-- `app/src/application-services/*/add-*.core.ts`
-- `app/src/application-services/*/delete-*.core.ts`
+- `packages/backend/src/*/use-cases.ts`
 
 ### 006: 不変条件検証とエンティティ生成の分離
 
@@ -409,8 +349,8 @@ graph TB
 **理由**: Prisma型の使用はインフラ層内に限定されており、Domain層・Application層への漏洩はない。ORM変更の可能性が現実的に低く、Prisma型による型安全性の恩恵（タイポ検知、補完、リファクタリング支援）が大きい。
 
 **対象ファイル**:
-- `app/src/infrastructures/*/repositories/*-query-repository.ts`
-- `app/src/infrastructures/*/repositories/*-command-repository.ts`
+- `packages/backend/src/*/query-repository.ts`
+- `packages/backend/src/*/command-repository.ts`
 
 ### 008: 外部サービス連携のACL明示の省略
 
@@ -421,14 +361,9 @@ graph TB
 **対象ファイル**:
 - `packages/core/books/services/github-book-fetcher.interface.ts`
 
-### 009: キャッシュ無効化のRepository内配置
+### 009: キャッシュ無効化のRepository内配置（撤去済み）
 
-**概要**: Repositoryにキャッシュ無効化（`revalidateTag`）が含まれ、データ永続化とキャッシュ戦略が混在。
-
-**理由**: `revalidateTag`呼び出しはインフラ層内に限定。Next.jsの`revalidateTag`はインフラ関心事として妥当な配置であり、各Repositoryが同一パターンに従い予測可能な動作を維持。Application Serviceへの移動は責務の二重化を招く。
-
-**対象ファイル**:
-- `app/src/infrastructures/*/repositories/*-command-repository.ts`
+旧Web repositoryの `revalidateTag` と永続cacheは共通backend移行で撤去した。現在は `no-store` のAPI取得とServer Action成功後の画面更新を使い、repositoryはNext.jsへ依存しない。
 
 ### 010: Anemic Domain Model（データの入れ物としてのEntity）
 
@@ -446,7 +381,7 @@ graph TB
 **理由**: Anemic Domain Model（010）を意図的に採用しているため、更新メソッドもEntity外に配置する方が一貫性がある。現在の更新操作は主にOGメタデータ更新・Google Books情報更新・ステータス更新の3種類のみで単純。ステータス更新はバッチ処理で一括実行される（001参照）。
 
 **対象ファイル**:
-- `app/src/infrastructures/*/repositories/*-command-repository.ts`
+- `packages/backend/src/*/command-repository.ts`
 
 ### 012: DIコンテナ・CQRS等の高度な設計パターンの不採用
 
@@ -455,7 +390,7 @@ graph TB
 **理由**: 単一ユーザー向けの個人コンテンツ管理システムであり、これらのパターンは過度な複雑性をもたらす。手動DI（ファクトリ関数）で十分であり、読み取り/書き込みのスケーリング要件もない。Next.js App RouterのServer Actions + 関数型スタイルでは、関数とファクトリによる依存注入の方が自然。
 
 **対象ファイル**:
-- `app/src/application-services/*/*.deps.ts`
+- `packages/backend/src/api/composition.ts`
 
 ### 013: ドメインイベントのバージョニング省略
 
