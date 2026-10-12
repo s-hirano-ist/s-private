@@ -30,10 +30,20 @@ export default defineConfig({
 	webServer:
 		process.env.PLAYWRIGHT_SKIP_WEBSERVER === "true"
 			? undefined
-			: {
-					command: "pnpm --filter s-private-app dev",
-					url: "http://localhost:3000/api/sign-in",
-					reuseExistingServer: true,
-					timeout: 120_000,
-				},
+			: [
+					{
+						command: "pnpm --filter s-private-backend dev",
+						url: "http://127.0.0.1:3002/health",
+						env: { BACKEND_PORT: "3002" },
+						reuseExistingServer: !process.env.CI,
+						timeout: 120_000,
+					},
+					{
+						command: "pnpm --filter s-private-app dev",
+						url: "http://localhost:3000/logo.png",
+						env: { BACKEND_URL: "http://127.0.0.1:3002" },
+						reuseExistingServer: !process.env.CI,
+						timeout: 120_000,
+					},
+				],
 });

@@ -55,8 +55,9 @@ mise exec -- pnpm --filter s-private-backend dev
 既定のlisten先は `127.0.0.1:3002`。`BACKEND_PORT` で変更できる。
 `.env.local` の既存local認証設定を使用する。
 Web側の `BACKEND_URL=http://localhost:3002` を設定すると独立サービスへ接続する。
-設定しなければNext.js内の暫定handlerを利用する。通常の `pnpm dev` はこの段階では従来構成で起動する。
-独立接続の検証は別terminalでbackendを起動し、Webを以下で起動する。
+通常の `pnpm dev` ／ `pnpm dev:app` はbackendも起動し、Webの接続先を既定で `http://127.0.0.1:3002` に設定する。
+個別起動するWebで `BACKEND_URL` を省略した場合だけNext.js内の暫定handlerを利用する。
+別terminalでbackendを起動済みの場合は、Webを以下で起動する。
 
 ```bash
 mise exec -- env BACKEND_URL=http://localhost:3002 pnpm --filter s-private-app dev
