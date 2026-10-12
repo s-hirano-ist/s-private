@@ -3,8 +3,8 @@ import "server-only";
 import type { ServerActionWithData } from "@/common/types";
 import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
 import { requireAuth } from "@/common/auth/session";
-import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
-import { paginationCountSchema } from "@s-hirano-ist/s-core/shared-kernel/types/query-options";
+import { backendActionError } from "@/common/backend/action-error";
+import { ListArticlesParams } from "@s-hirano-ist/s-api-client/models";
 import { getExportedArticles, getUnexportedArticles } from "./get-articles";
 
 export async function loadMoreExportedArticles(
@@ -13,7 +13,7 @@ export async function loadMoreExportedArticles(
 	await requireAuth();
 
 	try {
-		const currentCount = paginationCountSchema.parse(rawCurrentCount);
+		const currentCount = ListArticlesParams.shape.offset.parse(rawCurrentCount);
 		const data = await getExportedArticles(currentCount);
 
 		return {
@@ -22,7 +22,7 @@ export async function loadMoreExportedArticles(
 			data,
 		};
 	} catch (error) {
-		return await wrapServerSideErrorForClient(error);
+		return backendActionError(error);
 	}
 }
 
@@ -32,7 +32,7 @@ export async function loadMoreUnexportedArticles(
 	await requireAuth();
 
 	try {
-		const currentCount = paginationCountSchema.parse(rawCurrentCount);
+		const currentCount = ListArticlesParams.shape.offset.parse(rawCurrentCount);
 		const data = await getUnexportedArticles(currentCount);
 
 		return {
@@ -41,6 +41,6 @@ export async function loadMoreUnexportedArticles(
 			data,
 		};
 	} catch (error) {
-		return await wrapServerSideErrorForClient(error);
+		return backendActionError(error);
 	}
 }

@@ -3,8 +3,8 @@ import "server-only";
 import type { ServerActionWithData } from "@/common/types";
 import type { ImageCardStackInitialData } from "@/components/common/layouts/cards/types";
 import { requireAuth } from "@/common/auth/session";
-import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
-import { paginationCountSchema } from "@s-hirano-ist/s-core/shared-kernel/types/query-options";
+import { backendActionError } from "@/common/backend/action-error";
+import { ListBooksParams } from "@s-hirano-ist/s-api-client/models";
 import { getExportedBooks, getUnexportedBooks } from "./get-books";
 
 export async function loadMoreExportedBooks(
@@ -13,7 +13,7 @@ export async function loadMoreExportedBooks(
 	await requireAuth();
 
 	try {
-		const currentCount = paginationCountSchema.parse(rawCurrentCount);
+		const currentCount = ListBooksParams.shape.offset.parse(rawCurrentCount);
 		const data = await getExportedBooks(currentCount);
 
 		return {
@@ -22,7 +22,7 @@ export async function loadMoreExportedBooks(
 			data,
 		};
 	} catch (error) {
-		return await wrapServerSideErrorForClient(error);
+		return backendActionError(error);
 	}
 }
 
@@ -32,7 +32,7 @@ export async function loadMoreUnexportedBooks(
 	await requireAuth();
 
 	try {
-		const currentCount = paginationCountSchema.parse(rawCurrentCount);
+		const currentCount = ListBooksParams.shape.offset.parse(rawCurrentCount);
 		const data = await getUnexportedBooks(currentCount);
 
 		return {
@@ -41,6 +41,6 @@ export async function loadMoreUnexportedBooks(
 			data,
 		};
 	} catch (error) {
-		return await wrapServerSideErrorForClient(error);
+		return backendActionError(error);
 	}
 }
