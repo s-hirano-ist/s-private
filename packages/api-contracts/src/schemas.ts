@@ -103,21 +103,20 @@ export const noteCreateSchema = z
 		markdown: z.string(),
 	})
 	.openapi("NoteCreate");
+// Zod coercion needs an explicit OpenAPI type; retain bounds/default from the same values.
+function integerQuery(minimum: number, maximum: number, defaultValue: number) {
+	return z.coerce
+		.number()
+		.int()
+		.min(minimum)
+		.max(maximum)
+		.default(defaultValue)
+		.openapi({ type: "integer", minimum, maximum, default: defaultValue });
+}
 export const listQuerySchema = z.object({
 	status: statusSchema.optional(),
-	offset: z.coerce
-		.number()
-		.int()
-		.min(0)
-		.default(0)
-		.openapi({ type: "integer" }),
-	limit: z.coerce
-		.number()
-		.int()
-		.min(1)
-		.max(100)
-		.default(30)
-		.openapi({ type: "integer" }),
+	offset: integerQuery(0, 10000, 0),
+	limit: integerQuery(1, 100, 30),
 });
 export const countQuerySchema = z.object({ status: statusSchema.optional() });
 export const resourceSchema = z
@@ -179,13 +178,7 @@ export const syncChangeSchema = z
 export const snapshotQuerySchema = z.object({
 	domain: syncDomainSchema,
 	after: z.string().max(512).default(""),
-	limit: z.coerce
-		.number()
-		.int()
-		.min(1)
-		.max(100)
-		.default(100)
-		.openapi({ type: "integer" }),
+	limit: integerQuery(1, 100, 100),
 });
 export const snapshotPageSchema = z
 	.object({
@@ -195,13 +188,7 @@ export const snapshotPageSchema = z
 	.openapi("SnapshotPage");
 export const changesQuerySchema = z.object({
 	cursor: z.string().min(1).max(512),
-	limit: z.coerce
-		.number()
-		.int()
-		.min(1)
-		.max(100)
-		.default(100)
-		.openapi({ type: "integer" }),
+	limit: integerQuery(1, 100, 100),
 });
 export const changesPageSchema = z
 	.object({
@@ -260,13 +247,7 @@ export const chunkResultSchema = z
 	.openapi("ChunkResult");
 export const searchQuerySchema = z.object({
 	query: z.string().trim().min(1).max(500),
-	limit: z.coerce
-		.number()
-		.int()
-		.min(1)
-		.max(50)
-		.default(20)
-		.openapi({ type: "integer" }),
+	limit: integerQuery(1, 50, 20),
 });
 const searchHitBase = { id: idSchema, title: z.string(), snippet: z.string() };
 export const searchHitSchema = z
