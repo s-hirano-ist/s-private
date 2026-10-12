@@ -151,3 +151,7 @@ CockroachDB Cloud Basic は接続プーリングが内蔵で、pooled / direct �
 4. コミット → クラウドへ `pnpm --filter s-database prisma:deploy`
 
 モバイル差分同期の `CREATE TRIGGER` は CockroachDB の制約により Prisma のマイグレーショントランザクション内で実行できません。`prisma:deploy` スクリプトはマイグレーション適用後に各トリガーを独立した SQL 文で作成します。再実行しても既存トリガーは重複作成しません。トリガーを含むデプロイでは `prisma migrate deploy` を直接実行せず、上記の `prisma:deploy` スクリプトを使用してください。
+
+## Web・共通backendのVercel配置
+
+Webと共通Hono backendは別projectに配置します。Root Directory、workspaceビルド、環境変数の分担、Auth0 callback、Deployment Protection、段階切替、Cron、rollbackは [Vercelセットアップ手順](backend-vercel-setup.md) を参照してください。デプロイは担当者が手動で行います。

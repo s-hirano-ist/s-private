@@ -3,6 +3,8 @@
 この手順はstacked PRを順番に取り込んだ後、担当者が手動で実施する。
 Codexはデプロイ・マージを実施しない。最終Web分離PRの適用前に独立backendを配置し、Webの `BACKEND_URL` を設定する。
 
+Vercel Dashboardでの具体的な設定手順は [Vercelセットアップ](backend-vercel-setup.md) を参照。
+
 ## 独立サービス
 
 `services/backend/src/index.ts` はHono appをdefault exportする。
@@ -88,7 +90,8 @@ backend障害時に別ホストへmutationを再送しない。自動retryも追
 
 backendの単体検証後に、Webの `BACKEND_URL` をbackendのHTTPS originへ設定して再デプロイする。
 WebのAuth0 callback URLとCookieのoriginは維持する。backendの `BETTER_AUTH_URL` は公開Webを指定する。
-Vercel Deployment Protectionを使う場合、Webからbackendへの通信が拒否されない構成を担当者が設定する。
+この実装はVercelのbypass secretを送らない。対象backendはWebとiOSから到達可能にし、Deployment Protectionで拒否されない設定を担当者が確認する。
 公開URLの確認だけで切替済みと判断せず、認証・所有者・実CRUD・同期・uploadを確認する。
-接続先を戻す場合は書き込みを停止して状態を確認し、手動で `BACKEND_URL` を戻す。
+接続先を戻す場合は書き込みを停止して状態を確認し、互換性のあるbackend deploymentへ手動で `BACKEND_URL` を戻す。
+最終Webには組み込みhandlerがないため、URLを削除しても旧構成へ戻らない。
 接続済み通信を障害時に暗黙に旧handlerへfallbackしない。
