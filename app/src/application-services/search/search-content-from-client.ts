@@ -2,9 +2,8 @@
 import "server-only";
 import type { ServerActionWithData } from "@/common/types";
 import { searchContent } from "@/application-services/search/search-content";
+import { backendActionError } from "@/common/backend/action-error";
 import { SearchContentParams } from "@s-hirano-ist/s-api-client/models";
-import { captureException } from "@sentry/nextjs";
-import { unstable_rethrow } from "next/navigation";
 
 export async function searchContentFromClient(
 	rawSearchQuery: unknown,
@@ -15,8 +14,6 @@ export async function searchContentFromClient(
 		const data = await searchContent(query.data);
 		return { success: true, message: "Search completed successfully", data };
 	} catch (error) {
-		unstable_rethrow(error);
-		captureException(error);
-		return { success: false, message: "unexpected" };
+		return backendActionError(error);
 	}
 }

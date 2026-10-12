@@ -3,8 +3,8 @@ import "server-only";
 import type { ServerActionWithData } from "@/common/types";
 import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
 import { requireAuth } from "@/common/auth/session";
-import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
-import { paginationCountSchema } from "@s-hirano-ist/s-core/shared-kernel/types/query-options";
+import { backendActionError } from "@/common/backend/action-error";
+import { ListNotesParams } from "@s-hirano-ist/s-api-client/models";
 import { getExportedNotes, getUnexportedNotes } from "./get-notes";
 
 export async function loadMoreExportedNotes(
@@ -13,7 +13,7 @@ export async function loadMoreExportedNotes(
 	await requireAuth();
 
 	try {
-		const currentCount = paginationCountSchema.parse(rawCurrentCount);
+		const currentCount = ListNotesParams.shape.offset.parse(rawCurrentCount);
 		const data = await getExportedNotes(currentCount);
 
 		return {
@@ -22,7 +22,7 @@ export async function loadMoreExportedNotes(
 			data,
 		};
 	} catch (error) {
-		return await wrapServerSideErrorForClient(error);
+		return backendActionError(error);
 	}
 }
 
@@ -32,7 +32,7 @@ export async function loadMoreUnexportedNotes(
 	await requireAuth();
 
 	try {
-		const currentCount = paginationCountSchema.parse(rawCurrentCount);
+		const currentCount = ListNotesParams.shape.offset.parse(rawCurrentCount);
 		const data = await getUnexportedNotes(currentCount);
 
 		return {
@@ -41,6 +41,6 @@ export async function loadMoreUnexportedNotes(
 			data,
 		};
 	} catch (error) {
-		return await wrapServerSideErrorForClient(error);
+		return backendActionError(error);
 	}
 }

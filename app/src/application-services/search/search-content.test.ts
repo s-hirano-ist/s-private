@@ -123,3 +123,12 @@ test("server action validates with the generated schema and returns safe errors"
 function urlOf(input: RequestInfo | URL) {
 	return new URL(input instanceof Request ? input.url : input.toString());
 }
+
+test("maps backend query validation failures through the shared API error boundary", async () => {
+	fixture({ error: { code: "VALIDATION_ERROR" } }, 422);
+	expect(await searchContentFromClient({ query: "valid" })).toEqual({
+		success: false,
+		message: "invalidFormat",
+	});
+	expect(captureException).not.toHaveBeenCalled();
+});
