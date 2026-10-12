@@ -103,7 +103,7 @@ Production の Vercel Environment Variables に次を設定します。秘密鍵
 
 VAPID 鍵は `pnpm --filter @s-hirano-ist/s-notification exec web-push generate-vapid-keys` で生成します。公開鍵と秘密鍵は必ず同じ組を登録してください。鍵を更新すると既存購読は利用できなくなるため、利用端末で通知を解除してから再度有効化します。
 
-Vercel Project の Root Directory は `app` のため、Cron 設定は `app/vercel.json` にあります。Production へデプロイすると `/api/cron/gigazine-headline` が毎日 `00:00 UTC`（09:00 JST）に呼ばれます。Hobby プランでは指定した1時間内で実行時刻が変動します。手動確認時も `Authorization: Bearer <CRON_SECRET>` が必要です。
+Cronは共通backendだけが担当します。旧Webのscheduleを停止した後、担当者がbackendにscheduleと `BACKEND_CRON_ENABLED=true` を設定してください。具体的な順序・環境変数・確認方法は [共通backendの配置と手動切替](backend-deployment.md) を参照してください。
 
 ## Database (CockroachDB)
 

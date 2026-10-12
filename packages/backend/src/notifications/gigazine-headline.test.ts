@@ -1,5 +1,5 @@
+import { buildGigazineHeadline } from "@s-hirano-ist/s-backend/notifications/gigazine-headline";
 import { describe, expect, test } from "vite-plus/test";
-import { buildGigazineHeadline } from "./gigazine-headline";
 
 describe("buildGigazineHeadline", () => {
 	test.each([
