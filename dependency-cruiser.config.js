@@ -26,6 +26,13 @@ const COLLAPSE_PATTERN =
    Verified: 0 false positives on the current tree; fires on deliberate violations. */
 const boundaryRules = [
 	{
+		name: "boundary-common-api-composition",
+		severity: "error",
+		comment: "Common API composition must not use Web application services",
+		from: { path: "^app/src/backend/api\\.ts$" },
+		to: { path: "^app/src/application-services/" },
+	},
+	{
 		name: "boundary-backend-books",
 		severity: "error",
 		from: { path: "^packages/backend/src/books/" },

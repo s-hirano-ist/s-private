@@ -1919,6 +1919,7 @@ WebとiOSの共通APIは `packages/api-contracts` のHonoルート・Zodスキ�
 OpenAPI 3.1を出力し、OrvalとSwift OpenAPI Generatorでクライアントを生成する。
 契約はcore、Prisma、Next.js、実行時adapterから独立させる。
 `packages/api-client` は生成したDTOとリクエスト単位の検証付きtransportを提供する。
+`packages/backend/src/api/composition` はプラットフォームadapterを型付きで受け取り、raw repository・domain service・API serviceを組み立てる。共有APIからWebのapplication-servicesやNext.js cache adapterへ依存させない。
 既存mobile APIはNext.js内のHonoでホストし、認証・tenant・レスポンス形式を維持する。
 `app/src/backend/http/mobile` は移行期間のHTTP層で、UIとNext.js APIへの直接依存を禁止する。
 移管順序、認証・キャッシュ・デプロイの境界は
