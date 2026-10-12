@@ -1,30 +1,21 @@
-/**
- * Note creation server action.
- *
- * @module
- */
-
 "use server";
 import "server-only";
 import type { ServerAction } from "@/common/types";
-import { withSelfTenant } from "@/common/tenant/with-tenant";
-import { addNoteCore } from "./add-note.core";
-import { defaultAddNoteDeps } from "./add-note.deps";
-
-/**
- * Server action to create a new note.
- *
- * @remarks
- * This is the public-facing Server Action that requires authentication,
- * then delegates to addNoteCore for business logic.
- *
- * Validates title uniqueness and creates markdown-based notes.
- *
- * @param formData - Form data containing title and markdown content
- * @returns Server action result with success/failure status
- */
+import { backendActionError } from "@/common/backend/action-error";
+import { getBackendClient } from "@/common/backend/server-client";
+import { NoteCreate } from "@s-hirano-ist/s-api-client/models";
+import { refresh } from "next/cache";
 export async function addNote(formData: FormData): Promise<ServerAction> {
-	return withSelfTenant((principalId) =>
-		addNoteCore(formData, defaultAddNoteDeps, principalId),
-	);
+	try {
+		const input = NoteCreate.parse({
+			operationId: formData.get("operationId"),
+			title: formData.get("title"),
+			markdown: formData.get("markdown"),
+		});
+		await (await getBackendClient()).createNotes(input);
+		refresh();
+		return { success: true, message: "inserted" };
+	} catch (error) {
+		return backendActionError(error, formData);
+	}
 }
