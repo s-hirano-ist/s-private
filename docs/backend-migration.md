@@ -131,6 +131,8 @@ Better AuthのOAuthプロトコルと内部Cronは、一般クライアント契
 各PRは直前のPRをbaseにし、順番にマージ・デプロイできる状態を維持する。
 同一機能の二重書き込みは行わず、旧APIと新APIは同じユースケースへ委譲する。
 DB・認証・同期cursor・operation・未完了uploadの状態を保持する。
+iOSは `/api/v1` のSwift生成clientへ切り替える。Auth0 audienceはAPIのURLと独立しているため変更しない。
+端末のSwiftData、共有キュー、draftのCodable形式、operation ID・同期cursorは保持し、生成DTOから明示的に変換する。
 旧iOS書籍draftのCSVタグは、生成clientへ渡す段階では空白・空要素を保持して配列に分ける。
 再送判定は元のCSVを復元して照合し、domain入力を作る段階でtrim・空要素除去を行う。
 未完了の旧uploadとの照合では同じ正規化を使い、受信済みchunkを維持する。

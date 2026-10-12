@@ -1,75 +1,10 @@
 import Foundation
 
-// Codable payloads for docs/openapi/mobile-v1.yaml.
-struct MobilePage<Item: Decodable>: Decodable {
-    let data: [Item]
-    let totalCount: Int
-    let offset: Int
-    let limit: Int
-}
-
+// Device cache status and coding preserve existing SwiftData payloads. HTTP DTOs are generated.
 enum MobileContentStatus: String, Codable {
     case unexported = "UNEXPORTED"
     case lastUpdated = "LAST_UPDATED"
     case exported = "EXPORTED"
-}
-
-struct MobileArticle: Decodable {
-    let id: String
-    let title: String
-    let url: String
-    let quote: String?
-    let categoryId: String
-    let categoryName: String
-    let status: MobileContentStatus
-    let createdAt: Date
-    let updatedAt: Date
-    let exportedAt: Date?
-}
-
-struct MobileNote: Decodable {
-    let id: String
-    let title: String
-    let markdown: String
-    let status: MobileContentStatus
-    let createdAt: Date
-    let updatedAt: Date
-    let exportedAt: Date?
-}
-
-struct MobileImage: Decodable {
-    let id: String
-    let path: String
-    let contentType: String
-    let fileSize: Int?
-    let width: Int?
-    let height: Int?
-    let status: MobileContentStatus
-    let createdAt: Date
-    let updatedAt: Date
-    let exportedAt: Date?
-}
-
-struct MobileBook: Decodable {
-    let id: String
-    let isbn: String
-    let title: String
-    let markdown: String?
-    let imagePath: String?
-    let rating: Int
-    let tags: [String]
-    let status: MobileContentStatus
-    let createdAt: Date
-    let updatedAt: Date
-    let exportedAt: Date?
-}
-
-struct MobileAPIErrorEnvelope: Decodable {
-    let error: MobileAPIError
-}
-
-struct MobileAPIError: Decodable {
-    let code: String
 }
 
 enum MobileAPICoding {

@@ -117,7 +117,7 @@ environment, override these values in `Local.xcconfig`:
 AUTH0_CLIENT_ID = <Native Application client ID>
 AUTH0_DOMAIN = <tenant>.auth0.com
 AUTH0_AUDIENCE = https:/$()/<API identifier>
-MOBILE_API_BASE_URL = https:/$()/<origin>/api/mobile/v1
+MOBILE_API_BASE_URL = https:/$()/<origin>/api/v1
 ```
 
 Xcconfig treats `//` as a comment, so URL values use `https:/$()/...`; the
@@ -125,11 +125,11 @@ expanded Info.plist contains the normal `https://...` value.
 `AUTH0_AUDIENCE` is the Auth0 API identifier and must match the server's
 `MOBILE_API_AUDIENCE`; it does not need to be the API host. For the current
 production deployment, set `MOBILE_API_BASE_URL` to
-`https:/$()/private.s-hirano.com/api/mobile/v1`. The `s-hirano.com` host serves
+`https:/$()/private.s-hirano.com/api/v1`. The `s-hirano.com` host serves
 a separate site and returns an HTML 404 for mobile API routes.
 
 To verify API communication on a physical iPhone, deploy the corresponding
-`/api/mobile/v1` changes to Production before running the app against this URL.
+`/api/v1` changes to Production before running the app against this URL.
 
 For the current bundle identifier and custom URL scheme, add this value to both
 **Allowed Callback URLs** and **Allowed Logout URLs** in the Native Application:
@@ -192,7 +192,7 @@ does not create a second record.
 
 The native online screens now cover articles, notes, books, images, and search.
 Sign in and configure `MOBILE_API_BASE_URL` before using them. Lists support
-status filtering and pagination; new records use the existing mobile API.
+status filtering and pagination; new records use the generated shared-backend API.
 The bottom tab bar contains articles, notes, images, and books in that order.
 The domain name appears in the tab bar, so list screens have no duplicate title
 in the top navigation bar.
@@ -210,7 +210,7 @@ server was not exposed to this implementation session. No React UI was changed.
 
 ## Mobile API server configuration
 
-The server exposes `/api/mobile/v1` for the existing Auth0 native client. Set
+The server exposes `/api/v1` for the Auth0 native client. Set
 `MOBILE_API_AUDIENCE` to the Auth0 API identifier used by `AUTH0_AUDIENCE` in
 `Local.xcconfig`. Keep this value in `.env.local` locally and Vercel Dashboard
 for Preview/Production. The API refuses requests when it is missing. Each
@@ -218,7 +218,7 @@ Auth0 `sub` must already be linked to a Better Auth `Account` with
 `providerId=auth0`; the API resolves that account's user ID and isolates data
 by that user. The API never creates or merges users.
 
-The HTTP contract is [mobile-v1.openapi.yaml](../docs/openapi/mobile-v1.yaml).
+The HTTP contract is [backend-v1.json](../docs/openapi/backend-v1.json).
 Images and covers use `/uploads` sessions with 1 MiB chunks and a 10 MiB total
 limit. Upload sessions expire after 24 hours. Reusing an operation ID with
 different input is rejected with `OPERATION_CONFLICT`.
@@ -239,8 +239,13 @@ test after each Personal Team re-signing.
 
 `Packages/SPrivateAPI` compiles a client and models from the shared OpenAPI 3.1
 contract using pinned Swift OpenAPI Generator, Runtime, and URLSession packages.
-The current app still uses `MobileClient` and `/api/mobile/v1`; switching the
-networking implementation is a later migration step.
+`MobileClient` now uses the generated client for every HTTP operation at `/api/v1`.
+Device cache/draft models are mapped explicitly and keep their stored format.
+The Auth0 audience identifier remains unchanged; it is independent of the API URL.
+Update any ignored `Local.xcconfig` override that still points to `/api/mobile/v1`.
+Deploy the preceding API PRs before installing this client against Production.
+Operation IDs, sync cursors and queued drafts are retained. Legacy CSV tags keep their
+original segments for replay; normalization happens in the backend.
 
 Run `pnpm api:generate` from the repository root after changing the Hono/Zod
 contract. The Swift generator reads `docs/openapi/backend-v1.json` directly; no copy is
