@@ -1,56 +1,7 @@
-import type {
-	DomainEvent,
-	DomainEventHandler,
-} from "@s-hirano-ist/s-core/shared-kernel/events/domain-event.interface";
 import { serverLogger } from "@/infrastructures/observability/server";
-
-export class LoggingEventHandler implements DomainEventHandler {
-	async handle(event: DomainEvent): Promise<void> {
-		const { eventType, payload, metadata } = event;
-
-		let message: string;
-
-		const p = (key: string): string => String(payload[key]);
-
-		switch (eventType) {
-			case "article.created":
-				message = `【ARTICLE】\n\nコンテンツ\ntitle: ${p("title")} \nquote: ${p("quote")} \nurl: ${p("url")}\ncategory: ${p("categoryName")}\nの登録ができました`;
-				break;
-			case "article.deleted":
-				message = `【ARTICLE】\n\n削除\ntitle: ${p("title")}`;
-				break;
-			case "note.created":
-				message = `【NOTES】\n\nノート\ntitle: ${p("title")} \nquote: ${p("markdown")}\nの登録ができました`;
-				break;
-			case "note.deleted":
-				message = `【NOTES】\n\n削除\ntitle: ${p("title")}`;
-				break;
-			case "image.created":
-				message = `【IMAGE】\n\nコンテンツ\nid: ${p("id")}\npath: ${p("path")}\nの登録ができました`;
-				break;
-			case "image.deleted":
-				message = `【IMAGE】\n\n削除\npath: ${p("path")}`;
-				break;
-			case "book.created":
-				message = `【BOOKS】\n\nコンテンツ\nISBN: ${p("isbn")} \ntitle: ${p("title")}\nの登録ができました`;
-				break;
-			case "book.deleted":
-				message = `【BOOKS】\n\n削除\ntitle: ${p("title")}`;
-				break;
-			default:
-				message = `Unknown event: ${eventType}`;
-		}
-
-		const status = eventType.includes("created") ? 201 : 200;
-
-		await serverLogger.info(
-			message,
-			{
-				caller: metadata.caller,
-				status,
-				userId: metadata.userId,
-			},
-			{ notify: true },
-		);
+import { LoggingEventHandler as BackendHandler } from "@s-hirano-ist/s-backend/events/logging-event-handler";
+export class LoggingEventHandler extends BackendHandler {
+	constructor() {
+		super(serverLogger);
 	}
 }

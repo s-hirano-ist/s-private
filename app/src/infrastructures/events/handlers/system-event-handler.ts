@@ -1,46 +1,7 @@
-import type { LogContext } from "@/infrastructures/observability/logging/logger.interface";
-import type {
-	DomainEvent,
-	DomainEventHandler,
-} from "@s-hirano-ist/s-core/shared-kernel/events/domain-event.interface";
 import { serverLogger } from "@/infrastructures/observability/server";
-
-export class SystemEventHandler implements DomainEventHandler {
-	async handle(event: DomainEvent): Promise<void> {
-		const { eventType, payload, metadata } = event;
-
-		const context: LogContext = {
-			caller: metadata.caller,
-			status: payload.status as LogContext["status"],
-			userId: metadata.userId,
-			...(eventType !== "system.warning" || payload.extraData === undefined
-				? {}
-				: { additionalContext: { extraData: payload.extraData } }),
-		};
-
-		const notifyOptions = payload.shouldNotify
-			? { notify: payload.shouldNotify as boolean }
-			: undefined;
-
-		switch (eventType) {
-			case "system.warning":
-				await serverLogger.warn(
-					payload.message as string,
-					context,
-					notifyOptions,
-				);
-				break;
-			case "system.error":
-				await serverLogger.error(
-					payload.message as string,
-					context,
-					payload.extraData,
-					notifyOptions,
-				);
-				break;
-			default:
-				// This handler only processes system warning and error events
-				break;
-		}
+import { SystemEventHandler as BackendHandler } from "@s-hirano-ist/s-backend/events/system-event-handler";
+export class SystemEventHandler extends BackendHandler {
+	constructor() {
+		super(serverLogger);
 	}
 }
