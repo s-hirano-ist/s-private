@@ -15,10 +15,6 @@ export default defineConfig({
 				import.meta.dirname,
 				"../packages/ui/dist",
 			),
-			"@s-hirano-ist/s-core": path.resolve(
-				import.meta.dirname,
-				"../packages/core",
-			),
 		},
 	},
 });

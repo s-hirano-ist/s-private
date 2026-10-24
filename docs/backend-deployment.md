@@ -1,7 +1,7 @@
 # 共通backendの配置と手動切替
 
 この手順はstacked PRを順番に取り込んだ後、担当者が手動で実施する。
-Codexはデプロイ・マージを実施しない。接続先を変えるまではNext.js内の共通APIを使用する。
+Codexはデプロイ・マージを実施しない。最終Web分離PRの適用前に独立backendを配置し、Webの `BACKEND_URL` を設定する。
 
 ## 独立サービス
 
@@ -56,7 +56,7 @@ mise exec -- pnpm --filter s-private-backend dev
 `.env.local` の既存local認証設定を使用する。
 Web側の `BACKEND_URL=http://localhost:3002` を設定すると独立サービスへ接続する。
 通常の `pnpm dev` ／ `pnpm dev:app` はbackendも起動し、Webの接続先を既定で `http://127.0.0.1:3002` に設定する。
-個別起動するWebで `BACKEND_URL` を省略した場合だけNext.js内の暫定handlerを利用する。
+Webは `BACKEND_URL` を必須とし、Next.js内の暫定handlerは撤去済み。
 別terminalでbackendを起動済みの場合は、Webを以下で起動する。
 
 ```bash
@@ -65,6 +65,11 @@ mise exec -- env BACKEND_URL=http://localhost:3002 pnpm --filter s-private-app d
 
 `BACKEND_URL` は末尾slash・path・query・credentialsのないoriginを指定する。
 HTTPはlocalhost／127.0.0.1だけ許可し、VercelではHTTPSのbackend originを設定する。
+Vercel Previewでは `app/vercel.json` の `relatedProjects` でbackend projectを関連付け、
+`VERCEL_RELATED_PROJECTS` から同じブランチのbackend originを自動解決する。
+PRごとの `BACKEND_URL` 登録は不要。Productionとローカルでは明示した `BACKEND_URL` を使う。
+関連情報のないPreviewでは明示した `BACKEND_URL` が必要で、backend Productionへ自動接続しない。
+backend projectを作り直した場合は `relatedProjects` のproject IDを更新する。
 ブラウザは公開Webの同一originのAPIを使い、SSRも同じBFF transportを使う。
 backend障害時に別ホストへmutationを再送しない。自動retryも追加しない。
 

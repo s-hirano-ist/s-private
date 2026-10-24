@@ -1,4 +1,5 @@
 {
 	"$schema": "https://openapi.vercel.sh/vercel.json",
+	"relatedProjects": ["prj_uhauUSWfLiREdOqfv4ERKXHLxXQB"],
 	"buildCommand": "pnpm --filter s-private-app... -r run build"
 }

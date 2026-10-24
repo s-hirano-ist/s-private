@@ -10,6 +10,7 @@
  * @module
  */
 
+import { resolveBackendUrl } from "@/common/backend/resolve-backend-url";
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
@@ -31,75 +32,24 @@ export const env = createEnv({
 		NODE_ENV: z
 			.enum(["development", "test", "production"])
 			.default("development"),
-		/** CockroachDB connection string (used for both runtime and migrations; built-in pooling means no separate direct endpoint). @example "postgresql://USERNAME:PASSWORD@HOST:26257/DB_NAME?sslmode=verify-full" */
-		DATABASE_URL: z
-			.string()
-			.refine(
-				(v) =>
-					process.env.NODE_ENV !== "production" ||
-					v.includes("sslmode=verify-full"),
-				"production では sslmode=verify-full 必須",
-			),
-		PUSHOVER_URL: z
-			.string()
-			.default("https://api.pushover.net/1/messages.json"),
-		PUSHOVER_USER_KEY: vercelSecret,
-		PUSHOVER_APP_TOKEN: vercelSecret,
-		/** Bearer token automatically attached by Vercel Cron. */
-		CRON_SECRET: z.string().min(16).optional(),
-		/** VAPID private key used only by the server-side Web Push adapter. */
-		WEB_PUSH_PRIVATE_KEY: z.string().optional(),
-		/** VAPID contact URI, normally a mailto: address or HTTPS URL. */
-		WEB_PUSH_SUBJECT: z.string().optional(),
-		/** Generate by `openssl rand -base64 32`. Required in production. Shared secret for Better Auth. */
-		AUTH_SECRET:
-			process.env.NODE_ENV === "production"
-				? z.string()
-				: z.string().optional(),
 		/** Better Auth base URL (deployment origin, e.g. "https://example.com"). Used for baseURL / trustedOrigins. */
 		BETTER_AUTH_URL: z.string().default("http://localhost:3000"),
-		/** Independent backend origin. Unset during the embedded transition. */
-		BACKEND_URL: z
-			.url()
-			.refine((value) => {
-				const url = new URL(value);
-				return (
-					url.origin === value &&
-					(url.protocol === "https:" ||
-						(url.protocol === "http:" &&
-							["localhost", "127.0.0.1"].includes(url.hostname)))
-				);
-			}, "backend must be an HTTPS origin (HTTP localhost allowed)")
-			.optional(),
+		/** Required independent backend origin. Web never hosts domain services. */
+		BACKEND_URL: z.url().refine((value) => {
+			const url = new URL(value);
+			return (
+				url.origin === value &&
+				(url.protocol === "https:" ||
+					(url.protocol === "http:" &&
+						["localhost", "127.0.0.1"].includes(url.hostname)))
+			);
+		}, "backend must be an HTTPS origin (HTTP localhost allowed)"),
 		/** Set to "1" by Vercel on every deployment (prod & preview); absent locally. Gates dynamic baseURL resolution. */
 		VERCEL: z.string().optional(),
 		/** Enables the hermetic local authentication and infrastructure path. Ignored on Vercel. */
 		LOCAL_DEV_MODE: z.enum(["true", "false"]).default("false"),
-		LOCAL_AUTH_EMAIL: z.email().optional(),
-		LOCAL_AUTH_PASSWORD: z.string().min(8).optional(),
-		LOCAL_AUTH_NAME: z.string().optional(),
-		AUTH0_CLIENT_ID: vercelSecret,
-		AUTH0_CLIENT_SECRET: vercelSecret,
-		/** Auth0 tenant issuer URL (e.g. "https://your-tenant.auth0.com"). The host is used as the Better Auth genericOAuth `domain`. */
-		AUTH0_ISSUER_BASE_URL: vercelSecret,
-		/** Auth0 API identifier configured for the native app. */
-		MOBILE_API_AUDIENCE: z.string().optional(),
 		SENTRY_AUTH_TOKEN: vercelSecret,
 		SENTRY_REPORT_URL: vercelSecret,
-		MINIO_HOST: z.string(),
-		MINIO_PORT: z.number().default(443),
-		MINIO_BUCKET_NAME: z.string(),
-		MINIO_ACCESS_KEY: z.string(),
-		MINIO_SECRET_KEY: z.string(),
-		MINIO_USE_SSL: z.boolean().default(true),
-		/** Cloudflare Access Service Token (MinIO等のCF Tunnel経由アクセスに必要) */
-		CF_ACCESS_CLIENT_ID: z.string().optional(),
-		/** Cloudflare Access Service Token (MinIO等のCF Tunnel経由アクセスに必要) */
-		CF_ACCESS_CLIENT_SECRET: z.string().optional(),
-		/** @example "http://localhost:6333" */
-		QDRANT_URL: z.string(),
-		QDRANT_API_KEY: z.string().optional(),
-		EMBEDDING_URL: z.url().optional(),
 	},
 
 	/**
@@ -117,41 +67,19 @@ export const env = createEnv({
 	 */
 	runtimeEnv: {
 		NODE_ENV: process.env.NODE_ENV,
-		DATABASE_URL: process.env.DATABASE_URL,
-		PUSHOVER_URL: process.env.PUSHOVER_URL,
-		PUSHOVER_USER_KEY: process.env.PUSHOVER_USER_KEY,
-		PUSHOVER_APP_TOKEN: process.env.PUSHOVER_APP_TOKEN,
-		CRON_SECRET: process.env.CRON_SECRET,
-		WEB_PUSH_PRIVATE_KEY: process.env.WEB_PUSH_PRIVATE_KEY,
-		WEB_PUSH_SUBJECT: process.env.WEB_PUSH_SUBJECT,
-		AUTH_SECRET: process.env.AUTH_SECRET,
 		BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
-		BACKEND_URL: process.env.BACKEND_URL,
+		BACKEND_URL: resolveBackendUrl({
+			vercel: process.env.VERCEL,
+			vercelEnv: process.env.VERCEL_ENV,
+			backendUrl: process.env.BACKEND_URL,
+		}),
 		VERCEL: process.env.VERCEL,
 		LOCAL_DEV_MODE: process.env.LOCAL_DEV_MODE,
-		LOCAL_AUTH_EMAIL: process.env.LOCAL_AUTH_EMAIL,
-		LOCAL_AUTH_PASSWORD: process.env.LOCAL_AUTH_PASSWORD,
-		LOCAL_AUTH_NAME: process.env.LOCAL_AUTH_NAME,
-		AUTH0_CLIENT_ID: process.env.AUTH0_CLIENT_ID,
-		AUTH0_CLIENT_SECRET: process.env.AUTH0_CLIENT_SECRET,
-		AUTH0_ISSUER_BASE_URL: process.env.AUTH0_ISSUER_BASE_URL,
-		MOBILE_API_AUDIENCE: process.env.MOBILE_API_AUDIENCE,
 		SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
 		SENTRY_REPORT_URL: process.env.SENTRY_REPORT_URL,
-		MINIO_HOST: process.env.MINIO_HOST,
-		MINIO_PORT: Number(process.env.MINIO_PORT ?? "443"),
-		MINIO_BUCKET_NAME: process.env.MINIO_BUCKET_NAME,
-		MINIO_ACCESS_KEY: process.env.MINIO_ACCESS_KEY,
-		MINIO_SECRET_KEY: process.env.MINIO_SECRET_KEY,
-		MINIO_USE_SSL: process.env.MINIO_USE_SSL === "true",
-		CF_ACCESS_CLIENT_ID: process.env.CF_ACCESS_CLIENT_ID,
-		CF_ACCESS_CLIENT_SECRET: process.env.CF_ACCESS_CLIENT_SECRET,
-		QDRANT_URL: process.env.QDRANT_URL,
-		QDRANT_API_KEY: process.env.QDRANT_API_KEY,
-		EMBEDDING_URL: process.env.EMBEDDING_URL,
 		NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY:
 			process.env.NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY,
-		NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN, // MEMO: ok to leak
+		NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
 	},
 	/**
 	 * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful for Docker builds.
