@@ -50,6 +50,9 @@ export const articleSchema = z
 		quote: z.string().nullable(),
 		categoryId: idSchema,
 		categoryName: z.string(),
+		ogImageUrl: z.string().nullable().optional(),
+		ogTitle: z.string().nullable().optional(),
+		ogDescription: z.string().nullable().optional(),
 	})
 	.openapi("Article");
 export const noteSchema = z
@@ -72,6 +75,11 @@ export const bookSchema = z
 		title: z.string(),
 		markdown: z.string().nullable(),
 		imagePath: z.string().nullable(),
+		googleSubTitle: z.string().nullable().optional(),
+		googleAuthors: z.array(z.string()).optional(),
+		googleDescription: z.string().nullable().optional(),
+		googleImgSrc: z.string().nullable().optional(),
+		googleHref: z.string().nullable().optional(),
 		rating: z.number().int(),
 		tags: z.array(z.string()),
 	})
@@ -257,18 +265,33 @@ export const searchQuerySchema = z.object({
 		.default(20)
 		.openapi({ type: "integer" }),
 });
+const searchHitBase = { id: idSchema, title: z.string(), snippet: z.string() };
+export const searchHitSchema = z
+	.discriminatedUnion("type", [
+		z
+			.object({
+				...searchHitBase,
+				type: z.literal("articles"),
+				url: z.url(),
+				category: categorySchema,
+			})
+			.openapi("ArticleSearchHit"),
+		z
+			.object({ ...searchHitBase, type: z.literal("notes") })
+			.openapi("NoteSearchHit"),
+		z
+			.object({
+				...searchHitBase,
+				type: z.literal("books"),
+				isbn: z.string(),
+				rating: z.number().int(),
+				tags: z.array(z.string()),
+			})
+			.openapi("BookSearchHit"),
+	])
+	.openapi("SearchHit");
 export const searchResponseSchema = z
-	.object({
-		query: z.string(),
-		data: z.array(
-			z.object({
-				id: idSchema,
-				type: z.enum(["articles", "notes", "books"]),
-				title: z.string(),
-				snippet: z.string(),
-			}),
-		),
-	})
+	.object({ query: z.string(), data: z.array(searchHitSchema) })
 	.openapi("SearchResponse");
 export const subscriptionSchema = z
 	.strictObject({
