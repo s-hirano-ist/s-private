@@ -2,14 +2,11 @@ import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 
 const { sendPushToAll } = vi.hoisted(() => ({ sendPushToAll: vi.fn() }));
 
-vi.mock(
-	"@/application-services/push-notifications/push-notification-service",
-	() => ({
-		sendPushToAll,
-	}),
+import { createGigazineCronHandler } from "@s-hirano-ist/s-backend/notifications/cron";
+const GET = createGigazineCronHandler(
+	{ CRON_SECRET: "test-cron-secret-value" },
+	sendPushToAll,
 );
-
-import { GET } from "./route";
 
 const createRequest = (secret?: string) =>
 	new Request("https://example.com/api/cron/gigazine-headline", {
