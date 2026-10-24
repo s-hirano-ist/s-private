@@ -8,81 +8,107 @@
 	"type": "module",
 	"exports": {
 		"./articles/entities/*": {
+			"types": "./articles/entities/*.ts",
 			"import": "./articles/entities/*.ts"
 		},
 		"./articles/events/*": {
+			"types": "./articles/events/*.ts",
 			"import": "./articles/events/*.ts"
 		},
 		"./articles/repositories/*": {
+			"types": "./articles/repositories/*.ts",
 			"import": "./articles/repositories/*.ts"
 		},
 		"./articles/services/*": {
+			"types": "./articles/services/*.ts",
 			"import": "./articles/services/*.ts"
 		},
 		"./articles/types/*": {
+			"types": "./articles/types/*.ts",
 			"import": "./articles/types/*.ts"
 		},
 		"./books/entities/*": {
+			"types": "./books/entities/*.ts",
 			"import": "./books/entities/*.ts"
 		},
 		"./books/events/*": {
+			"types": "./books/events/*.ts",
 			"import": "./books/events/*.ts"
 		},
 		"./books/repositories/*": {
+			"types": "./books/repositories/*.ts",
 			"import": "./books/repositories/*.ts"
 		},
 		"./books/services/*": {
+			"types": "./books/services/*.ts",
 			"import": "./books/services/*.ts"
 		},
 		"./books/types/*": {
+			"types": "./books/types/*.ts",
 			"import": "./books/types/*.ts"
 		},
 		"./shared-kernel/entities/*": {
+			"types": "./shared-kernel/entities/*.ts",
 			"import": "./shared-kernel/entities/*.ts"
 		},
 		"./shared-kernel/events/*": {
+			"types": "./shared-kernel/events/*.ts",
 			"import": "./shared-kernel/events/*.ts"
 		},
 		"./shared-kernel/repositories/*": {
+			"types": "./shared-kernel/repositories/*.ts",
 			"import": "./shared-kernel/repositories/*.ts"
 		},
 		"./shared-kernel/services/*": {
+			"types": "./shared-kernel/services/*.ts",
 			"import": "./shared-kernel/services/*.ts"
 		},
 		"./shared-kernel/types/*": {
+			"types": "./shared-kernel/types/*.ts",
 			"import": "./shared-kernel/types/*.ts"
 		},
 		"./shared-kernel/errors/*": {
+			"types": "./shared-kernel/errors/*.ts",
 			"import": "./shared-kernel/errors/*.ts"
 		},
 		"./images/entities/*": {
+			"types": "./images/entities/*.ts",
 			"import": "./images/entities/*.ts"
 		},
 		"./images/events/*": {
+			"types": "./images/events/*.ts",
 			"import": "./images/events/*.ts"
 		},
 		"./images/repositories/*": {
+			"types": "./images/repositories/*.ts",
 			"import": "./images/repositories/*.ts"
 		},
 		"./images/services/*": {
+			"types": "./images/services/*.ts",
 			"import": "./images/services/*.ts"
 		},
 		"./images/types/*": {
+			"types": "./images/types/*.ts",
 			"import": "./images/types/*.ts"
 		},
 		"./notes/entities/*": {
+			"types": "./notes/entities/*.ts",
 			"import": "./notes/entities/*.ts"
 		},
 		"./notes/events/*": {
+			"types": "./notes/events/*.ts",
 			"import": "./notes/events/*.ts"
 		},
 		"./notes/repositories/*": {
+			"types": "./notes/repositories/*.ts",
 			"import": "./notes/repositories/*.ts"
 		},
 		"./notes/services/*": {
+			"types": "./notes/services/*.ts",
 			"import": "./notes/services/*.ts"
 		},
 		"./notes/types/*": {
+			"types": "./notes/types/*.ts",
 			"import": "./notes/types/*.ts"
 		}
 	},

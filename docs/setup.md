@@ -22,6 +22,41 @@ pnpm pages:build
 - `.pages/ui/` - Storybook iframe を横スクロールで一覧する UI gallery
 - `.pages/ui/storybook/` - gallery が埋め込む static Storybook
 
+### Pages Deployment
+
+`docs` workflow は `main` への push と、`main` を指定した手動実行で Pages を公開します。
+ビルドからデプロイまでを workflow 単位の concurrency で制御し、同じ ref の新しい実行が来たら
+古い実行を `cancel-in-progress: true` でキャンセルします。これにより、古い queued 実行が
+後続のデプロイを待たせ続けることや、古い成果物が後から公開されることを防ぎます。
+job の `timeout-minutes` はランナー上の実行時間に対する制限であり、待機時間の上限にはなりません。
+
+公開が更新されない場合は、Actions の `docs` workflow で最新の build / deploy と、
+過去の queued / pending 実行を確認します。古い実行が残っていればキャンセルし、最新の実行を
+再実行します。通常のキャンセルが効かない場合は `gh api --method POST repos/s-hirano-ist/s-private/actions/runs/<run-id>/force-cancel`
+で対象の古い実行を停止できます。それでも進まなければ GitHub 側の障害やキューの問題を確認します。
+デプロイ成功後は公開 HTML の更新も確認してください。
+
+### Search Engine Indexing
+
+GitHub Pages は URL から閲覧できる状態を保ち、検索結果には掲載しない方針です。
+公開 URL は <https://docs.s-hirano.com/> です。
+Pages 生成の最終処理で、トップページ、API・DB 資料、UI Gallery、Storybook の
+iframe を含む全 HTML の `<head>` に `<meta name="robots" content="noindex, nofollow">` を追加します。
+`noindex` を検索エンジンが読み取れるよう、`robots.txt` によるクロール拒否は追加しません。
+これはアクセス制限ではなく、クロール自体を完全に停止する設定でもありません。
+Next.js アプリ側の検索設定には影響しません。
+
+デプロイ後は Google Search Console で次を確認します。
+
+1. 「URL 検査」→「公開 URL をテスト」で代表ページを検査し、`noindex` によりインデックス登録不可であることを確認します。
+2. 早く検索結果から消したい場合は、「削除」→「新しいリクエスト」→「URL を一時的に削除」で `https://docs.s-hirano.com/` を入力し、「このプレフィックスで始まる URL をすべて削除」を選びます。公開 URL が変わった場合は、他サイトを含めないよう、このプロジェクトの公開ベース URL を指定します。一時削除は約 6 か月のため、恒久対策として `noindex` を維持します。
+3. この Pages 専用のサイトマップを登録していれば、Search Console からその登録を削除します。
+4. 「noindex タグによって除外されました」は期待どおりの状態です。検索掲載を目的としないページの未登録理由をすべて解消する必要はありません。
+5. プロパティ削除自体には検索除外の効果がありません。除外確認後、監視が不要になった場合だけ一覧から外します。
+
+詳細は Google の [noindex の説明](https://developers.google.com/search/docs/crawling-indexing/block-indexing?hl=ja)と
+[一時削除の手順](https://support.google.com/webmasters/answer/9689846?hl=ja)を参照してください。
+
 ## Mise Configuration
 
 This project uses [Mise](https://mise.jdx.dev/) for tool version management.
