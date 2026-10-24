@@ -26,6 +26,34 @@ const COLLAPSE_PATTERN =
    Verified: 0 false positives on the current tree; fires on deliberate violations. */
 const boundaryRules = [
 	{
+		name: "boundary-backend-runtime",
+		severity: "error",
+		comment: "Shared backend cannot depend on Next.js or Web implementation",
+		from: { path: "^packages/backend/" },
+		to: {
+			path: "^app/|^packages/(ui|api-client)/|(^|/)node_modules/(next|react|react-dom|server-only)(/|$)",
+		},
+	},
+	{
+		name: "boundary-backend-articles",
+		severity: "error",
+		from: { path: "^packages/backend/src/articles/" },
+		to: {
+			path: "^packages/(backend/src|core)/(articles|notes|books|images)/",
+			pathNot: "^packages/(backend/src|core)/articles/",
+		},
+	},
+	{
+		name: "boundary-backend-notes",
+		severity: "error",
+		from: { path: "^packages/backend/src/notes/" },
+		to: {
+			path: "^packages/(backend/src|core)/(articles|notes|books|images)/",
+			pathNot: "^packages/(backend/src|core)/notes/",
+		},
+	},
+
+	{
 		name: "boundary-backend-http",
 		severity: "error",
 		comment: "backend HTTP adapters must not depend on UI or Next.js APIs",
@@ -80,7 +108,7 @@ const boundaryRules = [
 			path: "^packages/core/shared-kernel/",
 		},
 		to: {
-			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: ["^packages/core/shared-kernel/"],
 		},
 	},
@@ -93,7 +121,7 @@ const boundaryRules = [
 			path: "^packages/core/articles/",
 		},
 		to: {
-			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: ["^packages/core/shared-kernel/", "^packages/core/articles/"],
 		},
 	},
@@ -105,7 +133,7 @@ const boundaryRules = [
 			path: "^packages/core/books/",
 		},
 		to: {
-			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: ["^packages/core/shared-kernel/", "^packages/core/books/"],
 		},
 	},
@@ -117,7 +145,7 @@ const boundaryRules = [
 			path: "^packages/core/images/",
 		},
 		to: {
-			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: ["^packages/core/shared-kernel/", "^packages/core/images/"],
 		},
 	},
@@ -129,7 +157,7 @@ const boundaryRules = [
 			path: "^packages/core/notes/",
 		},
 		to: {
-			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: ["^packages/core/shared-kernel/", "^packages/core/notes/"],
 		},
 	},
@@ -141,8 +169,10 @@ const boundaryRules = [
 			path: "^app/src/application-services/articles/",
 		},
 		to: {
-			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: [
+				"^packages/backend/src/articles/",
+				"^packages/backend/src/shared/",
 				"^packages/core/shared-kernel/",
 				"^app/src/application-services/common/",
 				"^app/src/infrastructures/(articles|books|images|notes|search)/",
@@ -161,7 +191,7 @@ const boundaryRules = [
 			path: "^app/src/application-services/auth/",
 		},
 		to: {
-			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: [
 				"^packages/core/shared-kernel/",
 				"^app/src/application-services/common/",
@@ -180,7 +210,7 @@ const boundaryRules = [
 			path: "^app/src/application-services/books/",
 		},
 		to: {
-			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: [
 				"^packages/core/shared-kernel/",
 				"^app/src/application-services/common/",
@@ -200,7 +230,7 @@ const boundaryRules = [
 			path: "^app/src/application-services/events/",
 		},
 		to: {
-			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: [
 				"^packages/core/shared-kernel/",
 				"^app/src/application-services/common/",
@@ -219,7 +249,7 @@ const boundaryRules = [
 			path: "^app/src/application-services/images/",
 		},
 		to: {
-			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: [
 				"^packages/core/shared-kernel/",
 				"^app/src/application-services/common/",
@@ -239,8 +269,10 @@ const boundaryRules = [
 			path: "^app/src/application-services/notes/",
 		},
 		to: {
-			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: [
+				"^packages/backend/src/notes/",
+				"^packages/backend/src/shared/",
 				"^packages/core/shared-kernel/",
 				"^app/src/application-services/common/",
 				"^app/src/infrastructures/(articles|books|images|notes|search)/",
@@ -259,7 +291,7 @@ const boundaryRules = [
 			path: "^app/src/application-services/search/",
 		},
 		to: {
-			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: [
 				"^packages/core/shared-kernel/",
 				"^app/src/application-services/common/",
@@ -278,7 +310,7 @@ const boundaryRules = [
 			path: "^app/src/application-services/users/",
 		},
 		to: {
-			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: [
 				"^packages/core/shared-kernel/",
 				"^app/src/application-services/common/",
@@ -297,8 +329,9 @@ const boundaryRules = [
 			path: "^app/src/application-services/common/",
 		},
 		to: {
-			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: [
+				"^packages/backend/src/shared/",
 				"^packages/core/shared-kernel/",
 				"^packages/core/(articles|books|images|notes)/",
 				"^app/src/application-services/common/",
@@ -316,8 +349,10 @@ const boundaryRules = [
 			path: "^app/src/infrastructures/articles/",
 		},
 		to: {
-			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: [
+				"^packages/backend/src/articles/",
+				"^packages/backend/src/shared/",
 				"^packages/core/shared-kernel/",
 				"^app/src/infrastructures/(articles|books|images|notes|search)/",
 				"^app/src/infrastructures/(auth|events|factories|i18n|observability|shared)/",
@@ -338,7 +373,7 @@ const boundaryRules = [
 			path: "^app/src/infrastructures/books/",
 		},
 		to: {
-			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: [
 				"^packages/core/shared-kernel/",
 				"^app/src/infrastructures/(articles|books|images|notes|search)/",
@@ -360,7 +395,7 @@ const boundaryRules = [
 			path: "^app/src/infrastructures/images/",
 		},
 		to: {
-			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: [
 				"^packages/core/shared-kernel/",
 				"^app/src/infrastructures/(articles|books|images|notes|search)/",
@@ -382,8 +417,10 @@ const boundaryRules = [
 			path: "^app/src/infrastructures/notes/",
 		},
 		to: {
-			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: [
+				"^packages/backend/src/notes/",
+				"^packages/backend/src/shared/",
 				"^packages/core/shared-kernel/",
 				"^app/src/infrastructures/(articles|books|images|notes|search)/",
 				"^app/src/infrastructures/(auth|events|factories|i18n|observability|shared)/",
@@ -404,7 +441,7 @@ const boundaryRules = [
 			path: "^app/src/infrastructures/search/",
 		},
 		to: {
-			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: [
 				"^packages/core/shared-kernel/",
 				"^app/src/infrastructures/(articles|books|images|notes|search)/",
@@ -425,7 +462,7 @@ const boundaryRules = [
 			path: "^app/src/infrastructures/(auth|events|factories|i18n|observability|shared)/",
 		},
 		to: {
-			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: [
 				"^packages/core/shared-kernel/",
 				"^packages/core/(articles|books|images|notes)/",
@@ -447,7 +484,7 @@ const boundaryRules = [
 			path: "^app/src/loaders/",
 		},
 		to: {
-			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: [
 				"^packages/core/shared-kernel/",
 				"^packages/core/(articles|books|images|notes)/",
@@ -467,7 +504,7 @@ const boundaryRules = [
 			path: "^app/src/components/",
 		},
 		to: {
-			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: [
 				"^packages/core/shared-kernel/",
 				"^app/src/application-services/",
@@ -487,7 +524,7 @@ const boundaryRules = [
 			path: "^app/src/app/",
 		},
 		to: {
-			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: [
 				"^packages/core/shared-kernel/",
 				"^app/src/application-services/",
@@ -510,7 +547,7 @@ const boundaryRules = [
 			path: "^app/src/common/",
 		},
 		to: {
-			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: [
 				"^packages/core/shared-kernel/",
 				"^app/src/common/",
@@ -529,7 +566,7 @@ const boundaryRules = [
 			path: "^packages/ui/",
 		},
 		to: {
-			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: ["^packages/ui/"],
 		},
 	},
@@ -541,7 +578,7 @@ const boundaryRules = [
 			path: "^packages/database/",
 		},
 		to: {
-			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: ["^packages/database/"],
 		},
 	},
@@ -553,7 +590,7 @@ const boundaryRules = [
 			path: "^packages/notification/",
 		},
 		to: {
-			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: ["^packages/notification/"],
 		},
 	},
@@ -565,7 +602,7 @@ const boundaryRules = [
 			path: "^packages/search/",
 		},
 		to: {
-			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: ["^packages/search/", "^packages/database/"],
 		},
 	},
@@ -577,7 +614,7 @@ const boundaryRules = [
 			path: "^packages/storage/",
 		},
 		to: {
-			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage)/)",
+			path: "^(app/src/(application-services|infrastructures|loaders|components|app|common|backend)/|packages/core/(shared-kernel|articles|books|images|notes)/|packages/(ui|database|notification|search|storage|backend)/)",
 			pathNot: ["^packages/storage/"],
 		},
 	},
