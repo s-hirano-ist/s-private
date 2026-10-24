@@ -1,4 +1,10 @@
 {
+	"unauthorized": {
+		"description": "Your session could not be verified. Sign out and sign in again.",
+		"retry": "Sign out and sign in again",
+		"pending": "Signing out…",
+		"failed": "Could not sign out. Please try again."
+	},
 	"navigation": {
 		"articles": "Articles",
 		"notes": "Notes",

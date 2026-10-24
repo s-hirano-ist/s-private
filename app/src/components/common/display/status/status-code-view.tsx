@@ -21,15 +21,17 @@ import {
  * @remarks
  * - `000` - Custom status (e.g., coming soon)
  * - `204` - No Content
+ * - `401` - Unauthorized
  * - `403` - Forbidden
  * - `404` - Not Found
  * - `500` - Internal Server Error
  */
-export type StatusCode = "000" | "204" | "403" | "404" | "500";
+export type StatusCode = "000" | "204" | "401" | "403" | "404" | "500";
 
 const STATUS_ICON_MAP: Record<StatusCode, ReactNode> = {
 	"000": <ClockIcon className="size-8 text-primary" />,
 	"204": <InboxIcon className="size-8 text-primary" />,
+	"401": <ShieldXIcon className="size-8 text-primary" />,
 	"403": <ShieldXIcon className="size-8 text-primary" />,
 	"404": <SearchXIcon className="size-8 text-primary" />,
 	"500": <AlertTriangleIcon className="size-8 text-primary" />,
