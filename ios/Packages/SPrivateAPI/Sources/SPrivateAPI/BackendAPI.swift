@@ -18,14 +18,14 @@ public struct BackendHTTPError: Error, Sendable {
 public enum BackendAPI {
     /// The caller supplies request-scoped authentication through client middleware.
     public static func client(serverURL: URL, middlewares: [any ClientMiddleware]) -> Client {
-        Client(serverURL: serverURL, transport: transport(), middlewares: middlewares)
+        Client(serverURL: serverURL, configuration: .init(dateTranscoder: BackendDateTranscoder()), transport: transport(), middlewares: middlewares)
     }
 
     /// The native app obtains a fresh access token before each operation. No retries are added here.
     public static func authenticatedClient(
         serverURL: URL, accessToken: String, transport: (any ClientTransport)? = nil
     ) -> Client {
-        Client(serverURL: serverURL, transport: transport ?? self.transport(), middlewares: [
+        Client(serverURL: serverURL, configuration: .init(dateTranscoder: BackendDateTranscoder()), transport: transport ?? self.transport(), middlewares: [
             BearerMiddleware(accessToken: accessToken)
         ])
     }
@@ -76,5 +76,15 @@ private final class RejectRedirects: NSObject, URLSessionTaskDelegate {
         completionHandler: @escaping @Sendable (URLRequest?) -> Void
     ) {
         completionHandler(nil)
+    }
+}
+
+private struct BackendDateTranscoder: DateTranscoder {
+    private let fractional = ISO8601DateTranscoder.iso8601WithFractionalSeconds
+    private let whole = ISO8601DateTranscoder.iso8601
+    func encode(_ date: Date) throws -> String { try fractional.encode(date) }
+    func decode(_ value: String) throws -> Date {
+        if let date = try? fractional.decode(value) { return date }
+        return try whole.decode(value)
     }
 }

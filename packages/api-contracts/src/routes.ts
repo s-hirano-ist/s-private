@@ -375,6 +375,15 @@ export const mediaRoute = createRoute({
 				"application/octet-stream": {
 					schema: z.string().openapi({ type: "string", format: "binary" }),
 				},
+				"image/jpeg": {
+					schema: z.string().openapi({ type: "string", format: "binary" }),
+				},
+				"image/png": {
+					schema: z.string().openapi({ type: "string", format: "binary" }),
+				},
+				"image/webp": {
+					schema: z.string().openapi({ type: "string", format: "binary" }),
+				},
 			},
 		},
 		...errorResponses,
