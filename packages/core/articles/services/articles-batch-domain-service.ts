@@ -40,12 +40,16 @@ import {
  * @see {@link ResetStatusResult} for reset operation result
  */
 export class ArticlesBatchDomainService {
+	private readonly commandRepository: IBatchCommandRepository;
+
 	/**
 	 * Creates a new ArticlesBatchDomainService instance.
 	 *
 	 * @param commandRepository - The command repository for batch updates
 	 */
-	constructor(private readonly commandRepository: IBatchCommandRepository) {}
+	constructor(commandRepository: IBatchCommandRepository) {
+		this.commandRepository = commandRepository;
+	}
 
 	/**
 	 * Resets articles for a new batch export.

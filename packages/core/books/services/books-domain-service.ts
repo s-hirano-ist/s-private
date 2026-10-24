@@ -29,12 +29,16 @@ import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-
  * @see {@link DuplicateError} for duplicate handling
  */
 export class BooksDomainService {
+	private readonly booksQueryRepository: IBooksQueryRepository;
+
 	/**
 	 * Creates a new BooksDomainService instance.
 	 *
 	 * @param booksQueryRepository - The query repository for checking duplicates
 	 */
-	constructor(private readonly booksQueryRepository: IBooksQueryRepository) {}
+	constructor(booksQueryRepository: IBooksQueryRepository) {
+		this.booksQueryRepository = booksQueryRepository;
+	}
 
 	/**
 	 * Validates that no book with the same ISBN exists for the user.

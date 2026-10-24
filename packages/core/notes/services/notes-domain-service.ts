@@ -29,12 +29,16 @@ import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-
  * @see {@link DuplicateError} for duplicate handling
  */
 export class NotesDomainService {
+	private readonly notesQueryRepository: INotesQueryRepository;
+
 	/**
 	 * Creates a new NotesDomainService instance.
 	 *
 	 * @param notesQueryRepository - The query repository for checking duplicates
 	 */
-	constructor(private readonly notesQueryRepository: INotesQueryRepository) {}
+	constructor(notesQueryRepository: INotesQueryRepository) {
+		this.notesQueryRepository = notesQueryRepository;
+	}
 
 	/**
 	 * Validates that no note with the same title exists for the user.

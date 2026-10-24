@@ -1,6 +1,7 @@
 {
 	"extends": "../../tsconfig.base.json",
 	"compilerOptions": {
+		"erasableSyntaxOnly": true,
 		"types": ["node"],
 		"module": "NodeNext",
 		"noEmit": false,
