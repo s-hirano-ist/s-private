@@ -36,7 +36,7 @@ Webの `BETTER_AUTH_URL` も公開Web originを指定する。
 
 WebへDB・MinIO・Auth0 client secret・VAPID秘密鍵・Pushover・Qdrantの資格情報を渡す必要はなくなる。backendの確認と切替後にWeb projectから不要な変数を削除する。共有secret自体は変更しない。
 
-Previewには既存のPreview用DB・bucket・Auth0設定を使い、ProductionのDBや通知先と混在させない。Preview backendとPreview Webを対応させ、WebのPreview用 `BACKEND_URL` をそのbackendへ向ける。必要なら固定のPreview domainを使用する。現在の認証設定は公開Web originと既存teamの `s-private-*-s-hirano-ist-team.vercel.app` を許可する。別名のWeb project/domainへ変える場合は、認証の許可hostとAuth0の許可URLを合わせて変更・確認する。
+Previewには既存のPreview用DB・bucket・Auth0設定を使い、ProductionのDBや通知先と混在させない。Preview backendとPreview Webを対応させ、WebのPreview用 `BACKEND_URL` をそのbackendへ向ける。必要なら固定のPreview domainを使用する。現在の認証設定は公開Web originと既存teamの `s-private-*-s-hirano-ist-team.vercel.app` および `memdex-web-*-s-hirano-ist-team.vercel.app` を許可する。別名のWeb project/domainへ変える場合は、認証の許可hostとAuth0の許可URLを合わせて変更・確認する。
 
 `LOCAL_DEV_MODE=false`、`BACKEND_CRON_ENABLED=false` を配置先で明示する。`LOCAL_AUTH_*` は登録しない。`VERCEL=1` ではlocal認証を利用できない。
 ProductionのDBは `sslmode=verify-full` を使い、`NODE_TLS_REJECT_UNAUTHORIZED=0` を設定しない。ローカルファイルへの証明書pathをそのままコピーしない。
