@@ -1,14 +1,14 @@
-import type { LogContext } from "./logger.interface";
+import type { LogContext } from "@s-hirano-ist/s-backend/observability/logger.interface";
 import type { NotificationService } from "@s-hirano-ist/s-notification";
+import { ServerLogger } from "@s-hirano-ist/s-backend/observability/server-logger";
 import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
-import { ServerLogger } from "./server-logger";
 
 const { captureException, captureMessage } = vi.hoisted(() => ({
 	captureException: vi.fn(),
 	captureMessage: vi.fn(),
 }));
 
-vi.mock("@sentry/nextjs", () => ({ captureException, captureMessage }));
+const reporter = { captureException, captureMessage };
 
 describe("ServerLogger", () => {
 	const notificationService: NotificationService = {
@@ -28,7 +28,7 @@ describe("ServerLogger", () => {
 
 	test("captures Error instances with diagnostic context", async () => {
 		const error = new TypeError("database failed");
-		const logger = new ServerLogger(notificationService);
+		const logger = new ServerLogger(notificationService, reporter);
 
 		await logger.error("Database connection failed", context, error);
 
@@ -45,7 +45,7 @@ describe("ServerLogger", () => {
 	});
 
 	test("captures an error message when no Error object is available", async () => {
-		const logger = new ServerLogger(notificationService);
+		const logger = new ServerLogger(notificationService, reporter);
 
 		await logger.error("Unknown failure", context, { requestId: "request-1" });
 
@@ -65,7 +65,7 @@ describe("ServerLogger", () => {
 	});
 
 	test("does not create a Sentry issue for warnings", async () => {
-		const logger = new ServerLogger(notificationService);
+		const logger = new ServerLogger(notificationService, reporter);
 
 		await logger.warn("Expected validation warning", context);
 
@@ -80,7 +80,7 @@ describe("ServerLogger", () => {
 			notifyInfo: vi.fn().mockResolvedValue(undefined),
 			notifyWarning: vi.fn().mockResolvedValue(undefined),
 		};
-		const logger = new ServerLogger(failingNotificationService);
+		const logger = new ServerLogger(failingNotificationService, reporter);
 
 		await expect(
 			logger.error("Critical failure", context, undefined, { notify: true }),

@@ -1,5 +1,5 @@
+import { tenantContext } from "@s-hirano-ist/s-backend/shared/tenant-context";
 import { describe, expect, test, vi } from "vite-plus/test";
-import { tenantContext } from "./tenant-context";
 
 describe("tenantContext", () => {
 	test("returns undefined when no scope is active", () => {
@@ -32,7 +32,7 @@ describe("tenantContext", () => {
 	test("reuses its instance when the module is re-evaluated", async () => {
 		vi.resetModules();
 		const { tenantContext: reloadedTenantContext } =
-			await import("./tenant-context");
+			await import("@s-hirano-ist/s-backend/shared/tenant-context");
 
 		expect(reloadedTenantContext).toBe(tenantContext);
 	});
