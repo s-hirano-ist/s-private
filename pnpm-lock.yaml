@@ -449,9 +449,6 @@ importers:
       '@s-hirano-ist/s-notification':
         specifier: workspace:*
         version: link:../packages/notification
-      '@s-hirano-ist/s-search':
-        specifier: workspace:*
-        version: link:../packages/search
       '@s-hirano-ist/s-storage':
         specifier: workspace:*
         version: link:../packages/storage
@@ -590,6 +587,9 @@ importers:
       '@s-hirano-ist/s-notification':
         specifier: workspace:*
         version: link:../notification
+      '@s-hirano-ist/s-search':
+        specifier: workspace:*
+        version: link:../search
       '@s-hirano-ist/s-storage':
         specifier: workspace:*
         version: link:../storage

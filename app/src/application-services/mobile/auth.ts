@@ -3,16 +3,9 @@ import type { MobileDeps } from "@/application-services/mobile/deps";
 import { defaultMobileDeps } from "@/application-services/mobile/deps";
 import { tenantContext } from "@/common/tenant/tenant-context";
 import { env } from "@/env";
+import { MobileApiError } from "@s-hirano-ist/s-backend/mobile/error";
 import { createPublicKey, verify, type JsonWebKey } from "node:crypto";
-
-export class MobileApiError extends Error {
-	constructor(
-		public readonly code: string,
-		public readonly status: number,
-	) {
-		super(code);
-	}
-}
+export { MobileApiError } from "@s-hirano-ist/s-backend/mobile/error";
 
 type JwtHeader = { alg?: string; kid?: string; typ?: string };
 type JwtClaims = {
