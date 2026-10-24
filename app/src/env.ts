@@ -10,6 +10,7 @@
  * @module
  */
 
+import { resolveBackendUrl } from "@/common/backend/resolve-backend-url";
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
@@ -67,7 +68,11 @@ export const env = createEnv({
 	runtimeEnv: {
 		NODE_ENV: process.env.NODE_ENV,
 		BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
-		BACKEND_URL: process.env.BACKEND_URL,
+		BACKEND_URL: resolveBackendUrl({
+			vercel: process.env.VERCEL,
+			vercelEnv: process.env.VERCEL_ENV,
+			backendUrl: process.env.BACKEND_URL,
+		}),
 		VERCEL: process.env.VERCEL,
 		LOCAL_DEV_MODE: process.env.LOCAL_DEV_MODE,
 		SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
