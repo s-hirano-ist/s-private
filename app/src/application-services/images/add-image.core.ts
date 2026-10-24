@@ -8,15 +8,14 @@
  */
 
 import "server-only";
-import type { AddImageDeps } from "./add-image.deps";
+import type { AddImageDeps } from "@/application-services/images/add-image.deps";
 import type { ServerActionWithData } from "@/common/types";
 import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { parseAddImageFormData } from "@/application-services/images/helpers/form-data-parser";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import { withOperationPhase } from "@/common/error/operation-phase-error";
-import { withStoragePhase } from "@/common/error/storage-phase-error";
-import { imageEntity } from "@s-hirano-ist/s-core/images/entities/image-entity";
-import { parseAddImageFormData } from "./helpers/form-data-parser";
+import { createImage } from "@s-hirano-ist/s-backend/images/use-cases";
 
 /**
  * Core business logic for uploading an image.
@@ -34,14 +33,6 @@ export async function addImageCore(
 	deps: AddImageDeps,
 	principalId?: UserId,
 ): Promise<ServerActionWithData<{ id: string }>> {
-	const {
-		commandRepository,
-		storageService,
-		domainServiceFactory,
-		eventDispatcher,
-	} = deps;
-	const imagesDomainService = domainServiceFactory.createImagesDomainService();
-
 	try {
 		const uploadFile = formData.get("file");
 		const phaseContext =
@@ -54,74 +45,14 @@ export async function addImageCore(
 					}
 				: { action: "addImage" };
 
-		const {
-			userId,
-			path,
-			contentType,
-			fileSize,
-			thumbnailBuffer,
-			originalBuffer,
-		} = await withOperationPhase(
+		const parsedData = await withOperationPhase(
 			{ ...phaseContext, phase: "parse-form-data" },
 			async () =>
 				parseAddImageFormData(formData, principalId ?? (await getSelfId())),
 		);
 
-		// Domain business rule validation
-		await withOperationPhase(
-			{ ...phaseContext, phase: "validate-domain" },
-			() => imagesDomainService.ensureNoDuplicate(path, userId),
-		);
-
-		// Create entity with value objects and domain event
-		const [image, event] = await withOperationPhase(
-			{ ...phaseContext, phase: "create-entity" },
-			async () =>
-				imageEntity.create({
-					userId,
-					path,
-					contentType,
-					fileSize,
-					caller: "addImage",
-				}),
-		);
-
-		const storageContext = {
-			action: "addImage",
-			path,
-			fileSize,
-			contentType,
-		};
-
-		await withStoragePhase(
-			{
-				phase: "upload-original",
-				path: image.path,
-				isThumbnail: false,
-				additionalContext: storageContext,
-			},
-			() => storageService.uploadImage(image.path, originalBuffer, false),
-		);
-		await withStoragePhase(
-			{
-				phase: "upload-thumbnail",
-				path: image.path,
-				isThumbnail: true,
-				additionalContext: storageContext,
-			},
-			() => storageService.uploadImage(image.path, thumbnailBuffer, true),
-		);
-		// Cache invalidation is handled in repository
-		await withOperationPhase({ ...phaseContext, phase: "create-record" }, () =>
-			commandRepository.create(image),
-		);
-
-		// Dispatch domain event
-		await withOperationPhase({ ...phaseContext, phase: "dispatch-event" }, () =>
-			eventDispatcher.dispatch(event),
-		);
-
-		return { success: true, message: "inserted", data: { id: image.id } };
+		const result = await createImage(parsedData, deps, phaseContext);
+		return { success: true, message: "inserted", data: result };
 	} catch (error) {
 		return await wrapServerSideErrorForClient(error, formData);
 	}

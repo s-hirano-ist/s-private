@@ -1,3 +1,4 @@
+import type { CreateBookDeps as BackendDeps } from "@s-hirano-ist/s-backend/books/use-cases";
 /**
  * Dependency types and defaults for book creation.
  *
@@ -7,27 +8,15 @@
  *
  * @module
  */
-
-import type { IEventDispatcher } from "@/application-services/common/event-dispatcher.interface";
-import type { IBooksCommandRepository } from "@s-hirano-ist/s-core/books/repositories/books-command-repository.interface";
-import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/services/storage-service.interface";
 import { booksCommandRepository } from "@/infrastructures/books/repositories/books-command-repository";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
-import {
-	type createDomainServiceFactory,
-	domainServiceFactory,
-} from "@/infrastructures/factories/domain-service-factory";
+import { domainServiceFactory } from "@/infrastructures/factories/domain-service-factory";
 import { booksStorageService } from "@/infrastructures/shared/storage/books-storage-service";
 
 /**
  * Dependencies for the addBooksCore function.
  */
-export type AddBooksDeps = {
-	commandRepository: IBooksCommandRepository;
-	domainServiceFactory: ReturnType<typeof createDomainServiceFactory>;
-	eventDispatcher: IEventDispatcher;
-	storageService: IStorageService;
-};
+export type AddBooksDeps = BackendDeps;
 
 /**
  * Default dependencies for production use.

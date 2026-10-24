@@ -1,3 +1,4 @@
+import type { DeleteImageDeps as BackendDeps } from "@s-hirano-ist/s-backend/images/use-cases";
 /**
  * Dependency types and defaults for image deletion.
  *
@@ -7,19 +8,13 @@
  *
  * @module
  */
-
-import type { IEventDispatcher } from "@/application-services/common/event-dispatcher.interface";
-import type { IImagesCommandRepository } from "@s-hirano-ist/s-core/images/repositories/images-command-repository.interface";
 import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
 import { imagesCommandRepository } from "@/infrastructures/images/repositories/images-command-repository";
 
 /**
  * Dependencies for the deleteImageCore function.
  */
-export type DeleteImageDeps = {
-	commandRepository: IImagesCommandRepository;
-	eventDispatcher: IEventDispatcher;
-};
+export type DeleteImageDeps = BackendDeps;
 
 /**
  * Default dependencies for production use.

@@ -3,7 +3,7 @@ import {
 	getFormDataFile,
 	getFormDataString,
 } from "@/common/utils/form-data-utils";
-import { sharpImageProcessor } from "@/infrastructures/images/services/sharp-image-processor";
+import { sharpImageProcessor } from "@s-hirano-ist/s-backend/shared/sharp-image-processor";
 import {
 	type BookTitle,
 	type ISBN,
@@ -58,7 +58,7 @@ vi.mock(
 		};
 	},
 );
-vi.mock("@/infrastructures/images/services/sharp-image-processor", () => ({
+vi.mock("@s-hirano-ist/s-backend/shared/sharp-image-processor", () => ({
 	sharpImageProcessor: {
 		fileToBytes: vi.fn(),
 		getMetadata: vi.fn(),

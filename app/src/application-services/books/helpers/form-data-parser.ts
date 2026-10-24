@@ -1,69 +1,20 @@
-/**
- * Book form data parsing utilities.
- *
- * @module
- */
-
 import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { parseSupportedImageFile } from "@/application-services/common/image-upload-parser";
 import {
 	getFormDataFile,
 	getFormDataString,
 } from "@/common/utils/form-data-utils";
-import {
-	makeBookTitle,
-	makeISBN,
-	makeRating,
-	makeTags,
-} from "@s-hirano-ist/s-core/books/entities/book-entity";
-import {
-	makeContentType,
-	makeFileSize,
-	makePath,
-} from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
-
-/**
- * Parses book creation form data into domain value objects.
- *
- * @param formData - Raw form data from book creation form
- * @param userId - Current user's ID
- * @returns Validated book data with domain value objects
- */
+import { parseBookInput } from "@s-hirano-ist/s-backend/books/input";
 export const parseAddBooksFormData = async (
 	formData: FormData,
 	userId: UserId,
 ) => {
-	const isbnInput = getFormDataString(formData, "isbn");
+	const isbn = getFormDataString(formData, "isbn");
 	const title = getFormDataString(formData, "title");
-	const ratingInput = getFormDataString(formData, "rating");
-	const tagsInput = getFormDataString(formData, "tags");
-	const file = getFormDataFile(formData, "image");
-
-	const parsedTags = tagsInput
+	const rating = Number(getFormDataString(formData, "rating"));
+	const tags = getFormDataString(formData, "tags")
 		.split(",")
 		.map((t) => t.trim())
 		.filter((t) => t.length > 0);
-
-	const {
-		contentType: detectedContentType,
-		originalBuffer,
-		thumbnailBuffer,
-	} = await parseSupportedImageFile(file);
-	const path = makePath(file.name, true);
-	const contentType = makeContentType(detectedContentType);
-	const fileSize = makeFileSize(file.size);
-
-	return {
-		isbn: makeISBN(isbnInput),
-		title: makeBookTitle(title),
-		rating: makeRating(Number(ratingInput)),
-		tags: makeTags(parsedTags),
-		userId,
-		imagePath: path,
-		path,
-		contentType,
-		fileSize,
-		originalBuffer,
-		thumbnailBuffer,
-	};
+	const image = getFormDataFile(formData, "image");
+	return await parseBookInput({ isbn, title, rating, tags, image }, userId);
 };
