@@ -16,10 +16,10 @@ Object.assign(process.env, {
 	BETTER_AUTH_URL: "https://private.s-hirano.com",
 	QDRANT_URL: "http://127.0.0.1:1",
 	QDRANT_COLLECTION_NAME: "test",
-	EMBEDDING_URL: "http://127.0.0.1:1",
 	BACKEND_CRON_ENABLED: "false",
 });
 delete process.env.NEXT_PUBLIC_SENTRY_DSN;
+delete process.env.EMBEDDING_URL;
 for (const key of Object.keys(process.env)) {
 	if (key.startsWith("MINIO_") || key.startsWith("CF_ACCESS_"))
 		delete process.env[key];

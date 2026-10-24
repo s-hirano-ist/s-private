@@ -34,7 +34,7 @@ iOSのAuth0 audienceはURLと独立した既存値を維持する。
 ## 環境変数
 
 サービス側は `services/backend/src/env.ts` で起動時に検証する。
-既存Webの値をコピーし、DB・MinIO・Qdrant・embedding・Auth0・Better Authを同じ状態へ接続する。
+既存Webの値をコピーし、DB・Qdrant・Auth0・Better Authを同じ状態へ接続する。
 新しいDBや認証アカウントへ切り替えない。
 
 | 設定 | 内容 |
@@ -45,12 +45,18 @@ iOSのAuth0 audienceはURLと独立した既存値を維持する。
 | `AUTH0_CLIENT_ID` / `AUTH0_CLIENT_SECRET` / `AUTH0_ISSUER_BASE_URL` | 既存WebのAuth0 provider |
 | `MOBILE_API_AUDIENCE` | 既存iOS API identifier |
 | `MINIO_*` / `CF_ACCESS_*` | 既存bucketとCloudflare Access credentials |
-| `QDRANT_URL` / `QDRANT_API_KEY` / `QDRANT_COLLECTION_NAME` / `EMBEDDING_URL` | 既存検索サービス |
+| `QDRANT_URL` / `QDRANT_API_KEY` / `QDRANT_COLLECTION_NAME` | 既存のQdrant Cloud cluster・API key・collection |
 | `PUSHOVER_*` | 既存通知設定 |
 | `NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY` / `WEB_PUSH_PRIVATE_KEY` / `WEB_PUSH_SUBJECT` | 同じVAPID鍵 |
 | `NEXT_PUBLIC_SENTRY_DSN` | backendのエラー監視先 |
 | `CRON_SECRET` | Cron入口のBearer secret |
 | `BACKEND_CRON_ENABLED` | 既定false。旧Cron停止後だけtrue |
+
+本番・Previewと通常の取り込みは、ベクトル保存と文章のembedding生成の両方にQdrant Cloudを使う。
+`EMBEDDING_URL` はVercelでは不要で、既存値が残っていても使用しない。
+Cloud clusterのInferenceを有効にし、既存collectionと同じモデル・次元数を維持する。
+既定モデルは `intfloat/multilingual-e5-small`、384次元。変更する場合は既存データとの整合性を確認する。
+TEIは `LOCAL_DEV_MODE=true` かつVercel外・非productionのローカル開発でのみ、`EMBEDDING_URL` により指定できる。
 
 `LOCAL_DEV_MODE=true` はローカル専用で、Vercel上では認証を迂回しない。
 productionでのTLS検証無効化は起動時に拒否する。

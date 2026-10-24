@@ -19,6 +19,22 @@ const local = {
 	EMBEDDING_URL: "http://localhost:3001",
 };
 describe("standalone backend configuration", () => {
+	test("starts in production with Qdrant Cloud and no separate embedding URL", () => {
+		const env = parseBackendEnv({
+			...local,
+			NODE_ENV: "production",
+			VERCEL: "1",
+			LOCAL_DEV_MODE: "false",
+			DATABASE_URL: "postgresql://db/test?sslmode=verify-full",
+			AUTH0_CLIENT_ID: "test-client",
+			AUTH0_CLIENT_SECRET: "test",
+			AUTH0_ISSUER_BASE_URL: "https://auth.example.com",
+			MOBILE_API_AUDIENCE: "https://api.example.com",
+			EMBEDDING_URL: undefined,
+		});
+		expect(env.EMBEDDING_URL).toBeUndefined();
+		expect(env.QDRANT_URL).toBe(local.QDRANT_URL);
+	});
 	test("starts without object storage credentials during the temporary outage", () => {
 		const env = parseBackendEnv({
 			...local,
