@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.21.7](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.21.6...@s-hirano-ist/s-core-v1.21.7) (2026-10-24)
+
+
+### Bug Fixes
+
+* **backend:** expose core types for Vercel resolution ([26139a7](https://github.com/s-hirano-ist/s-private/commit/26139a7d32b56629e564cb0d633520f67fdae39e))
+* **backend:** preserve TypeScript package exports in Vercel functions ([669ba65](https://github.com/s-hirano-ist/s-private/commit/669ba65fc06d326699ff144165091b01a76bcf44))
+* **backend:** Vercelでcoreの型を解決できるよう修正 ([e7235d7](https://github.com/s-hirano-ist/s-private/commit/e7235d72d27a8031926eabb15270f43991f8fdc1))
+* **backend:** Vercelの起動エラーとPreview接続先を修正 ([8d6f1b2](https://github.com/s-hirano-ist/s-private/commit/8d6f1b2b294dac4b76198c8de8dcc4eb2ff5c69e))
+* **ci:** inherit backend type resolution from parent PR ([d72f244](https://github.com/s-hirano-ist/s-private/commit/d72f2445444aff184f86ec4e73547922f82086ca))
+* **ci:** inherit backend type resolution from parent PR ([b5b0a22](https://github.com/s-hirano-ist/s-private/commit/b5b0a22b83c0768f3b466b3fa592b17b84fb4c61))
+* **ci:** merge main to include backend type resolution ([0520847](https://github.com/s-hirano-ist/s-private/commit/0520847b040438eba49690cdc44f96776f4a30af))
+
+
+### Maintenance
+
+* **deps:** update node and pnpm ([112702b](https://github.com/s-hirano-ist/s-private/commit/112702bc5a24e7604a28cf3ec8af71038db8f709))
+* **deps:** update node and pnpm ([667f93e](https://github.com/s-hirano-ist/s-private/commit/667f93ece6d212cae1f67b85775873c3f8fa3ff5))
+
 ## [1.21.6](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-core-v1.21.5...@s-hirano-ist/s-core-v1.21.6) (2026-10-06)
 
 
