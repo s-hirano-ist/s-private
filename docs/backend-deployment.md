@@ -82,6 +82,9 @@ backend障害時に別ホストへmutationを再送しない。自動retryも追
 
 ## 公開Webの接続先切替
 
+旧 `/api/mobile/v1` 撤去PRは、`/api/v1` 対応iOSの配布と接続確認後に適用する。
+旧クライアントへの長期互換は提供しない。端末のキュー・draft・cursorとサーバーのoperation・uploadは保持する。
+
 backendの単体検証後に、Webの `BACKEND_URL` をbackendのHTTPS originへ設定して再デプロイする。
 WebのAuth0 callback URLとCookieのoriginは維持する。backendの `BETTER_AUTH_URL` は公開Webを指定する。
 Vercel Deployment Protectionを使う場合、Webからbackendへの通信が拒否されない構成を担当者が設定する。
