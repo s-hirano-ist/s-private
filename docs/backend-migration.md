@@ -22,6 +22,10 @@ DBの日時をISO文字列にし、公開Zod DTOで内部のuserId等を除去�
 読み取り応答とエラーはprivate/no-storeとし、Web sessionの更新Cookieは入口から転送する。
 作成・削除と分割uploadも同じrouterへ接続する。JSONは4MiB、chunkは1MiBまでとし、
 Vercelのrequest上限を超える画像は直接Server Actionへ送らない。
+Webの画像・書影はブラウザの生成clientから1MiBずつ直列送信し、受信済みpartをスキップする。
+書影はフォームdraftのoperation ID、画像は保持したFileごとのIDを再送に使う。
+成功後の応答が失われてsessionが削除済みでも、同じoperation IDで再開して作成結果を照合する。
+WebのdraftとFileは画面内で保持し、ページ再読み込み後の永続キューは追加しない。
 operation IDと入力hashの一致を確認し、成功済みの作成は保存済みresource IDを返す。
 新しい画像の保存pathはoperation IDと検出した画像形式から確定し、失敗後の再送でも変えない。
 書籍metadataはJSONで保存し、tags内のカンマも保持する。旧uploadの文字列metadataも読み取れる。
@@ -109,7 +113,8 @@ Better AuthのOAuthプロトコルと内部Cronは、一般クライアント契
 | 7f | Web検索を生成クライアントへ切替 |
 | 7g | Webの記事・ノート作成と全ドメイン削除を生成クライアントへ切替 |
 | 7h | Web Pushを生成クライアントへ切替 |
-| 7i | 分割upload・認証を切替、依存と永続キャッシュを撤去 |
+| 7i | ブラウザからの1MiB分割uploadへ切替 |
+| 7j | 認証を切替、依存と永続キャッシュを撤去 |
 | 8 | iOSを生成クライアント・共通APIへ切替 |
 | 9 | 独立Hono backendの起動・Vercel配置準備 |
 | 10 | 手動デプロイ確認後に接続先切替、暫定実装の撤去 |

@@ -22,7 +22,6 @@ import {
 } from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
 import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
-import { addBooks } from "./add-books";
 import { addBooksCore } from "./add-books.core";
 import { parseAddBooksFormData } from "./helpers/form-data-parser";
 
@@ -221,17 +220,5 @@ describe("addBooksCore", () => {
 		const result = await addBooksCore(mockFormData, deps);
 
 		expect(result).toEqual({ success: false, message: "unexpected" });
-	});
-});
-
-describe("addBooks (Server Action)", () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
-
-	test("should reject when the request is not authenticated", async () => {
-		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
-
-		await expect(addBooks(mockFormData)).rejects.toThrow("UNAUTHORIZED");
 	});
 });

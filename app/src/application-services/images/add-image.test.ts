@@ -9,7 +9,6 @@ import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/service
 import { getSelfId, requireAuth } from "@/common/auth/session";
 import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
-import { addImage } from "./add-image";
 import { addImageCore } from "./add-image.core";
 import { parseAddImageFormData } from "./helpers/form-data-parser";
 
@@ -227,17 +226,5 @@ describe("addImageCore", () => {
 			success: false,
 			message: "unexpected",
 		});
-	});
-});
-
-describe("addImage (Server Action)", () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
-
-	test("should reject when the request is not authenticated", async () => {
-		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
-
-		await expect(addImage(new FormData())).rejects.toThrow("UNAUTHORIZED");
 	});
 });

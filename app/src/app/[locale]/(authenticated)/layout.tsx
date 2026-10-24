@@ -1,8 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { addArticle } from "@/application-services/articles/add-article";
-import { addBooks } from "@/application-services/books/add-books";
-import { addImage } from "@/application-services/images/add-image";
 import { addNote } from "@/application-services/notes/add-note";
 import { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 import { PAGE_NAME } from "@/common/constants";
@@ -32,8 +30,8 @@ export default function Layout({ children }: { children: ReactNode }) {
 				<AppNavigation
 					forms={{
 						articles: <ArticleFormLoader addArticle={addArticle} />,
-						books: <BooksFormLoader addBooks={addBooks} />,
-						images: <ImageFormLoader addImage={addImage} />,
+						books: <BooksFormLoader />,
+						images: <ImageFormLoader />,
 						notes: <NoteFormLoader addNote={addNote} />,
 					}}
 					search={searchContentFromClient}
