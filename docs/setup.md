@@ -122,14 +122,8 @@ https://<application-origin>/api/auth/callback/auth0
 Better Auth 1.7ではGeneric OAuthも標準のsocial provider callbackを使用します。旧URLの
 `/api/auth/oauth2/callback/auth0`は使用しません。
 
-外部の `reset-*` / `revert-*` バッチから Next.js のキャッシュを無効化する場合は、次の変数も設定します。
-
-| 変数 | 用途 |
-|---|---|
-| `CACHE_INVALIDATION_SECRET` | アプリとバッチで共有する内部 API の Bearer token（`openssl rand -base64 32` などで生成） |
-| `CACHE_INVALIDATION_URL` | バッチ側のみ。デプロイ済みアプリの `/api/internal/cache/invalidate` の絶対 URL |
-
-バッチの DB トランザクション成功後に内部 API を呼び出します。呼び出しに失敗した場合、DB 更新はロールバックされませんが、バッチ自体は失敗終了し、標準エラーと Pushover 通知に失敗を残します。
+`reset-*` / `revert-*` バッチは従来どおりDBトランザクションを実行します。
+Webのコンテンツ取得は共通backend経由の `no-store` のため、更新後の内部キャッシュ無効化API呼び出しと専用secretは不要です。
 
 ### Web Push と Vercel Cron
 

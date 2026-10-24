@@ -51,8 +51,6 @@ export const env = createEnv({
 		WEB_PUSH_PRIVATE_KEY: z.string().optional(),
 		/** VAPID contact URI, normally a mailto: address or HTTPS URL. */
 		WEB_PUSH_SUBJECT: z.string().optional(),
-		/** Shared bearer token used only by trusted batch scripts to invalidate Next.js caches. */
-		CACHE_INVALIDATION_SECRET: z.string().optional(),
 		/** Generate by `openssl rand -base64 32`. Required in production. Shared secret for Better Auth. */
 		AUTH_SECRET:
 			process.env.NODE_ENV === "production"
@@ -126,7 +124,6 @@ export const env = createEnv({
 		CRON_SECRET: process.env.CRON_SECRET,
 		WEB_PUSH_PRIVATE_KEY: process.env.WEB_PUSH_PRIVATE_KEY,
 		WEB_PUSH_SUBJECT: process.env.WEB_PUSH_SUBJECT,
-		CACHE_INVALIDATION_SECRET: process.env.CACHE_INVALIDATION_SECRET,
 		AUTH_SECRET: process.env.AUTH_SECRET,
 		BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
 		BACKEND_URL: process.env.BACKEND_URL,
