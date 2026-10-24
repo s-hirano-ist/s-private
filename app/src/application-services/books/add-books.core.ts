@@ -10,12 +10,15 @@
 import "server-only";
 import type { AddBooksDeps } from "@/application-services/books/add-books.deps";
 import type { ServerActionWithData } from "@/common/types";
-import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { parseAddBooksFormData } from "@/application-services/books/helpers/form-data-parser";
 import { getSelfId } from "@/common/auth/session";
 import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
 import { withOperationPhase } from "@/common/error/operation-phase-error";
 import { createBook } from "@s-hirano-ist/s-backend/books/use-cases";
+import {
+	makeUserId,
+	type UserId,
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 
 /**
  * Core business logic for creating a book.
@@ -48,7 +51,10 @@ export async function addBooksCore(
 		const parsedData = await withOperationPhase(
 			{ ...phaseContext, phase: "parse-form-data" },
 			async () =>
-				parseAddBooksFormData(formData, principalId ?? (await getSelfId())),
+				parseAddBooksFormData(
+					formData,
+					principalId ?? makeUserId(await getSelfId()),
+				),
 		);
 
 		const result = await createBook(parsedData, deps, phaseContext);
