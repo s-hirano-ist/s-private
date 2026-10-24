@@ -27,66 +27,31 @@
 
 ## クリーンアーキテクチャの構成
 
-本コードベースはドメイン駆動設計に基づくクリーンアーキテクチャを採用しています。
+Web、iOS、共通backendの責務を分離する。Webからドメイン・DB・storageへの直接依存はdependency-cruiserの `boundary-web-frontend-only` で禁止する。
 
-### ドメイン層 (`packages/core/`)
-ドメイン（`articles` / `books` / `images` / `notes`）ごとにサブパッケージを持ち、各ドメインは以下の構成を取る。横断的な要素は `shared-kernel/` に集約:
-- `entities/` - コアビジネスロジックとドメインエンティティ
-- `events/` - ドメインイベント（作成・削除等）
-- `repositories/` - リポジトリインターフェース（依存性の逆転）
-- `services/` - 複雑なビジネスロジックのためのドメインサービス
-- `types/` - ドメイン固有の型と定数
-- `shared-kernel/` - 全ドメイン共通の entities / errors / events / repositories / services / types
+| 配置 | 責務 |
+|------|------|
+| `packages/core/` | ドメインごとのエンティティ、値オブジェクト、repository interface、ドメインサービス |
+| `packages/backend/` | ユースケース、Prisma adapter、認証・tenant、同期・operation・upload、検索、イベント、通知・Cron |
+| `services/backend/` | Honoの独立HTTP host。環境変数、DB・storage・監視を生成し共有factoryへ注入 |
+| `packages/api-contracts/` | HonoルートとZodによるHTTP契約。core・ORM・Next.jsに依存しない |
+| `packages/api-client/` | Orval生成のDTO・検証schema・fetchと共通transport |
+| `app/src/application-services/` | WebのServer Action。生成client呼び出し、フォーム値・表示エラー変換、画面更新 |
+| `app/src/common/backend/` | Cookieをリクエスト単位で束縛するSSR clientと固定upstreamへのBFF転送 |
+| `app/src/infrastructures/` | Webのi18n・ブラウザ認証・セキュリティ等。PrismaやドメインDIを置かない |
+| `ios/` | Swift生成client、端末の表示・同期・保留中の項目 |
 
-### 共通backend (`packages/backend/`)
-
-WebとiOSで共有するユースケースと永続化adapterをドメインごとのsubpathで公開する。
-articles／notes／images／booksの作成・削除、入力検証、Prismaリポジトリを移管している。
-Sharp画像処理とMinIO保存prefixも共通化し、アップロードのFormData変換はWeb入口に残す。
-認証済み所有者、イベントdispatcher、DBのtenant・観測hookを明示的に注入し、Next.jsには依存しない。
-Prisma拡張済みclient型、tenant context／filterもこのpackageで定義する。
-認証provider設定・Bearer検証・ログ・イベント・通知・Cronの実装は設定とportを受け取る。
-Webとbackendの型境界で型assertionを加えず、Next.js用SentryはWeb側のadapterから注入する。
-移行の順序と暫定adapterの役割は[共通backend移行](backend-migration.md)を参照。
-
-### アプリケーションサービス層 (`app/src/application-services/`)
-- ドメイン操作とユースケースのオーケストレーション
-- フォームデータのパースとバリデーション処理
-- 各ドメインに専用のアプリケーションサービスを配置
-- mobile API と push 通知の永続化・一時ファイル保存は application port を通じて行う。`*.deps.ts` で infrastructure の実装を結び、ユースケースから Prisma・MinIO を直接呼ばない
-
-### インフラストラクチャ層 (`app/src/infrastructures/`)
-- リポジトリ実装（Prisma ORM）
-- 外部サービス連携（認証、i18n、監視）
-- 技術的関心事（MinIO、ロギング、モニタリング）
-
-#### インフラストラクチャサービス（アダプター）
-
-インフラストラクチャサービスは、特定の技術を使用してドメインインターフェースを実装します。これらはドメイン層を外部システムに接続する**アダプター**です。
-
-| ディレクトリ | サービス | インターフェース | 技術 |
-|-----------|---------|-----------|------------|
-| `shared-kernel/services/` | `minioStorageService` | `IStorageService` | MinIOクライアント |
-| `books/services/` | `booksStorageService` | `IStorageService` | MinIO（booksパス） |
-| `images/services/` | `sharpImageProcessor` | `IImageProcessor` | Sharp画像処理（Node-API） |
-
-**命名規則:**
-- 実装が特定の技術に固有の場合は技術ベースの命名を使用（例：`minio-*`、`sharp-*`）
-- アダプターがドメイン固有の設定を持つ場合はドメインベースの命名を使用（例：`books-storage-service`はbook固有のパスを使用）
-
-MarkdownのYAML frontmatter解析は`@s-hirano-ist/s-search/frontmatter`に集約する。検索チャンク生成とバッチスクリプトは同じパーサーを利用し、delimiter・BOM・改行コード・YAML構文の解釈を一致させる。
-
-#### ドメインサービスファクトリ
-
-ドメインサービスは`app/src/infrastructures/factories/`の`domainServiceFactory`を通じてインスタンス化されます。
-
-```typescript
-import { domainServiceFactory } from "@/infrastructures/factories/domain-service-factory";
-
-const articlesDomainService = domainServiceFactory.createArticlesDomainService();
+```mermaid
+flowchart LR
+    Web[Next.js SSR / BFF] --> API[Hono共通backend]
+    iOS[SwiftUI] --> API
+    API --> UseCases[共有ユースケース]
+    UseCases --> Core[ドメイン]
+    API --> Adapters[Prisma / MinIO / 検索 / 通知]
 ```
 
-これにより依存性注入が一元化され、モック実装によるテストが簡素化されます。
+各ドメイン間の直接importは禁止し、共通要素はshared-kernelへ置く。repositoryはcoreのinterfaceを実装し、外部設定はhostで構成する。Web用Sentryとbackend用Sentryはそれぞれの実行環境で扱う。
+移行履歴は[共通backend移行](backend-migration.md)、手動配置は[Vercelセットアップ](backend-vercel-setup.md)を参照する。
 
 ## ドメインモデル
 
@@ -131,6 +96,8 @@ iOS のコンテンツ色は `ios/SPrivate/Assets.xcassets` の動的 Color Set 
 - 依存関係の不明確化
 
 **ディープパスインポートを使用**
+
+coreの例はbackend内だけで使用する。Webは生成API clientと表示moduleを参照する。
 ```typescript
 // ✅ Good: 直接ファイルからインポート
 import { ArticlesDomainService } from "@s-hirano-ist/s-core/articles/services/articles-domain-service";
@@ -170,85 +137,12 @@ import { ArticlesStackLoader } from "@/loaders/articles";
 
 ## Authorization Pattern
 
-認可はシンプルに「認証済みかどうか」だけで判定します。ログインしているユーザーはオーナー本人であり、すべての操作が可能です。ロール（viewer/dumper）や権限による区別は廃止されています。
+共通backendが認証・所有者検証・tenant contextを確立する。WebはBetter AuthのCookieセッション、iOSはAuth0のBearerトークンを使う。
+BearerはRS256・issuer・audience・必須claimsをJWKSで検証し、既存Auth0 Accountのsubjectから所有者を解決する。不正なBearerからCookie認証へfallbackしない。
+Cookieによるmutationは信頼されたOriginを必須とする。tenant filterをデータアクセスにも適用し、他の所有者のレコードやupload sessionへアクセスさせない。
 
-### 認証関数
-
-| 関数 | 説明 |
-|------|------|
-| `requireAuth(): Promise<void>` | 認証チェック。未認証なら `unauthorized()` にリダイレクト |
-| `getSelfId(): Promise<UserId>` | 認証済みユーザーIDの取得（未認証なら `unauthorized()`） |
-| `withSelfTenant(fn): Promise<T>` | `getSelfId()` で認証し、テナントスコープ（`tenantContext`）を確立して `fn` を実行 |
-
-### Server Actionでの認可
-
-mutation系Server Action（`add-*.ts` / `delete-*.ts`）は `withSelfTenant()` でラップします。`withSelfTenant` は内部で `getSelfId()` を呼んで認証し（未認証なら `unauthorized()` にリダイレクト）、`AsyncLocalStorage` のテナントスコープを確立した上で Core 処理を実行します。ログイン済みのオーナーは全操作が可能で、ロールによる区別はありません。
-
-```typescript
-// app/src/application-services/articles/add-article.ts
-"use server";
-import "server-only";
-import { withSelfTenant } from "@/common/tenant/with-tenant";
-import type { ServerAction } from "@/common/types";
-import { addArticleCore } from "./add-article.core";
-import { defaultAddArticleDeps } from "./add-article.deps";
-
-export async function addArticle(formData: FormData): Promise<ServerAction> {
-  return withSelfTenant(() => addArticleCore(formData, defaultAddArticleDeps));
-}
-```
-
-**ポイント:**
-- `withSelfTenant()`は未認証時に`unauthorized()`（401）にリダイレクトする（`getSelfId()`経由）
-- 認証＋テナントスコープ確立はServer Action層（`add-*.ts` / `delete-*.ts`）で実行し、Core層には認証を渡さない
-- 読み取り系（`get-*.ts`）は既に `getSelfId()` で取得した `userId` を使って `tenantContext.run({ userId }, ...)` でスコープを張る
-- ページ境界や読み取り委譲Server Action（`load-more-*.ts`）は従来どおり `requireAuth()` を使う
-- `requireAuth` / `getSelfId` は`@/common/auth/session.ts`、`withSelfTenant` は`@/common/tenant/with-tenant.ts`に配置
-
-### テナント隔離（DB層の多重防御）
-
-リポジトリは全クエリで `where: { userId }` を明示指定していますが、これは**コードレビュー依存**でフェイルセーフがありません。これを補強するため、Prisma Client Extensions と `AsyncLocalStorage` で対象モデル（Article / Note / Image / Book / Category）の操作に `userId` をDB層で強制します（[app/src/prisma.ts](../app/src/prisma.ts) の `tenantExtension`、注入ロジックは [app/src/common/tenant/tenant-filter.ts](../app/src/common/tenant/tenant-filter.ts)）。
-
-| 操作 | 挙動（`tenantContext` が無い場合） |
-|------|------------------------------------|
-| `findMany` / `findFirst` / `count` / `aggregate` / `groupBy` | **fail-open**: 無変換でパススルー（既存の `where: { userId }` が防御）。スコープがあれば `where` に `AND { userId }` を注入 |
-| `create` / `update` / `delete` / `*Many` / `upsert` | **fail-closed**: スコープが無ければ例外。`create` は `data.userId` を上書き、`update`/`delete` は `where` に `userId` をマージ |
-| `findUnique` / `findUniqueOrThrow` | 常に無変換。Prisma が unique セレクタしか許さないため、複合ユニークキー規約（`url_userId` 等）で `userId` を担保する |
-
-**規約:**
-- 対象モデルを `findUnique` する場合は必ず複合ユニークキー（`x_userId`）を使い、素の `id` だけで引かない
-- 読み取りは `"use cache"` 境界を跨ぐと `AsyncLocalStorage` が伝播しない可能性があるため fail-open。書き込みは use cache を跨がず確実にスコープが立つため fail-closed
-- cron / migration 等のシステム操作が将来必要になれば `tenantContext.run({ userId, system: true }, ...)` で明示バイパスする
-- 既存リポジトリの `userId` 明示渡しは**残す**（冗長だが二重防御）
-
-### ページ・コンポーネントでの認証
-
-ページ配下の認証は `(authenticated)/layout.tsx` の `await requireAuth();` と、各データloaderの `getSelfId()` で担保します。コンポーネント境界には権限チェックを持たない純粋なエラー境界 `ErrorBoundary` を用います。
-
-```typescript
-// ページでの使用例（純粋なエラー境界）
-<ErrorBoundary
-  errorCaller="ArticlesStack"
-  render={() => <ArticlesStackLoader variant="exported" />}
-/>
-```
-
-**`ErrorBoundary`の責務:**
-- 配下で発生したエラーを捕捉してフォールバックUIを表示
-- 認可チェックは行わない（認証は`(authenticated)/layout.tsx`の`requireAuth()`が担保）
-- エラー発生時は`errorCaller`を含めてエラーを伝播
-
-### 実装箇所
-
-| ファイル | 内容 |
-|---------|------|
-| `/app/src/common/auth/session.ts` | 認証関数（`requireAuth` / `getSelfId`）の定義 |
-| `/app/src/common/tenant/tenant-context.ts` | `AsyncLocalStorage` テナントスコープの定義 |
-| `/app/src/common/tenant/tenant-filter.ts` | テナント注入の純粋ロジック（`applyTenantFilter`） |
-| `/app/src/common/tenant/with-tenant.ts` | 認証＋スコープ確立ヘルパ（`withSelfTenant`） |
-| `/app/src/prisma.ts` | Prisma Client Extension（`tenantExtension`）でDB層に強制 |
-| `/app/src/components/common/layouts/error-boundary.tsx` | エラー境界コンポーネント |
-| `/app/src/app/[locale]/(authenticated)/layout.tsx` | 認証ゲート（`requireAuth()`） |
+Webの `getBackendClient` はReactのリクエスト単位cacheでCookieと公開Originを束縛する。SSRから受信Authorizationは転送しない。期限切れセッションは認証入口へ戻し、backend障害を認証成功として扱わない。
+OAuth callbackの公開URLはWeb側の `/api/auth/callback/auth0` を維持し、BFFからbackendへ中継する。詳細は[配置手順](backend-deployment.md)を参照する。
 
 ## i18n Pattern
 
@@ -366,163 +260,14 @@ React Compilerは`reactCompiler: true`と`experimental.turbopackRustReactCompile
 
 ## Loader Pattern
 
-Suspense境界内でデータフェッチを実行し、取得データをプレゼンテーションコンポーネントに渡すパターン。
-
-### ディレクトリ構成
-
-```text
-app/src/loaders/
-├── types.ts                # 共通型定義
-└── [domain]/
-    └── *-loader.tsx        # Loader実装
-```
-
-### 命名規則
-
-| パターン | 例 |
-|---------|-----|
-| ファイル | `{component}-loader.tsx` |
-| 関数 | `{Component}Loader` |
-| Props | `{Component}LoaderProps` |
-
-### 実装例
-
-```typescript
-// app/src/loaders/articles/articles-stack-loader.tsx
-import "server-only";
-import { getExportedArticles } from "@/application-services/articles/get-articles";
-import { ArticlesStack } from "@/components/articles/server/articles-stack";
-import type { PaginatedLinkCardLoaderProps } from "@/loaders/types";
-
-export type ArticlesStackLoaderProps = PaginatedLinkCardLoaderProps & {
-  variant: "exported" | "unexported";
-};
-
-export async function ArticlesStackLoader({
-  variant,
-  deleteAction,
-  loadMoreAction,
-}: ArticlesStackLoaderProps) {
-  const getData = variant === "exported" ? getExportedArticles : getUnexportedArticles;
-  const initialData = await getData(0);
-
-  return (
-    <ArticlesStack
-      deleteAction={deleteAction}
-      initialData={initialData}
-      loadMoreAction={loadMoreAction}
-    />
-  );
-}
-```
-
-### ページでの使用
-
-```typescript
-return renderContentListPage({
-  counter: {
-    errorCaller: "ArticlesCounter",
-    render: () => ArticlesCounterLoader({}),
-  },
-  stack: {
-    errorCaller: "ArticlesStack",
-    render: () => ArticlesStackLoader({
-      variant: "exported",
-      loadMoreAction: loadMoreExportedArticles,
-    }),
-  },
-});
-```
-
-articles・notes・books・images の一覧ページは `renderContentListPage` で共通の Suspense と ErrorBoundary を構成する。viewer は `counter` と `stack` を渡し、dumper は `stack` のみを渡す。データ取得と Server Action は各ドメインの loader とページに残す。
-
-### 責務の分離
-
-| レイヤー | 責務 |
-|---------|------|
-| Application Services | キャッシュ、データ変換 |
-| Loaders | データ取得の実行、Suspense連携 |
-| Server Components | プレゼンテーション |
-| Client Components | インタラクティブ機能 |
-
-**エラーハンドリング**: Loader内ではエラーをcatchせず、ErrorBoundaryに伝播させる。
+`app/src/loaders/` は生成API clientから取得した値をServer Componentへ渡す。認証は `getBackendClient` が扱い、loaderでDBやドメインサービスを構成しない。
+一覧・件数・検索・media URLも共通APIから取得する。同一SSR内の重複取得にはReactのリクエスト単位cacheを使い、ユーザーをまたぐ永続cacheは使わない。
+表示日時などのUI変換はloaderまたは表示用queryに置き、wire DTOの定義は生成契約を使用する。
 
 ## Error Boundary Pattern
 
-エラーハンドリングを担うコンポーネント境界パターン。認証はページ側（`(authenticated)/layout.tsx` の `requireAuth()`）と各loaderの `getSelfId()` で担保するため、`ErrorBoundary` は権限チェックを持たない純粋なエラー境界です。
-
-### ErrorBoundary Props
-
-| Props | 型 | 説明 |
-|-------|---|------|
-| `render` | `() => ReactNode` | 描画するコンポーネント |
-| `errorCaller` | `string` | エラー追跡用の識別子 |
-| `fallback` | `ReactNode` (optional) | エラー時のフォールバックUI |
-
-### 基本的な使用パターン
-
-```typescript
-// Suspense + ErrorBoundary + Loader の組み合わせ
-<Suspense fallback={<Loading />}>
-  <ErrorBoundary
-    errorCaller="ArticlesStack"
-    render={() => <ArticlesStackLoader variant="exported" />}
-  />
-</Suspense>
-```
-
-### コンポーネント階層
-
-```text
-Suspense (Loading状態を処理)
-└── ErrorBoundary (エラーを処理)
-    └── Loader (データフェッチ)
-        └── Server Component (表示)
-```
-
-### エラー伝播の仕組み
-
-1. **Loader層**: エラーをcatchせずに上位に伝播
-2. **ErrorBoundary層**: エラーを捕捉してフォールバックを表示、想定外のものは再throw
-3. **`/app/src/app/error.tsx`**: 未処理エラーをキャッチしSentryに報告
-
-```typescript
-// app/src/app/error.tsx の役割
-"use client";
-import * as Sentry from "@sentry/nextjs";
-import { useEffect } from "react";
-
-export default function Error({ error, reset }: ErrorPageProps) {
-  useEffect(() => {
-    Sentry.captureException(error);
-  }, [error]);
-
-  return (
-    <div>
-      <h2>エラーが発生しました</h2>
-      <button onClick={reset}>再試行</button>
-    </div>
-  );
-}
-```
-
-### 実装箇所
-
-| ファイル | 内容 |
-|---------|------|
-| `/app/src/components/common/layouts/error-boundary.tsx` | ErrorBoundaryコンポーネント |
-| `/app/src/app/[locale]/error.tsx` | localeルート配下のエラーハンドラー |
-| `/app/src/app/global-error.tsx` | ルートレイアウト自体のエラーハンドラー |
-
-### 注意事項
-
-- Loader内でエラーをtry-catchで握りつぶさない
-- `errorCaller`は問題追跡に使用されるため、コンポーネントを特定できる名前を付ける
-- 未処理エラーはNext.jsのError Boundaryと`onRequestError`からSentryへ送信する
-- Server Actionで安全なレスポンスへ変換した処理済み例外は、`serverLogger.error()`からSentryへ明示送信する
-- 想定内のwarning（入力不備、重複、認証失敗）はSentry Issueを作成しない
-- PushoverはDB・Storage・未知の500系などの致命障害と、バッチ処理の成否通知に限定する
-- Sentryのイベント収集と通知は別設定であり、ProductionではIssue Alertの通知先も設定する
+WebのSSR表示エラーはWeb用Sentryへ記録し、各loaderのfallback表示へ変換する。Next.jsのredirect・not-found・認証例外は `unstable_rethrow` で再throwし、通常の表示エラーとして吸収しない。
+Server Actionは `backendActionError` でAPIエラーと入力値を表示用結果へ変換する。backendのドメインエラー通知やイベントをWebから重ねて発行しない。
 
 ## 静的 CSP と Instant Navigation
 
@@ -530,7 +275,7 @@ export default function Error({ error, reset }: ErrorPageProps) {
 
 Next.js/Vercelのstreamed responseやerror responseで生成されるparser-inserted framework scriptとの互換性のため、既存の`script-src-elem 'unsafe-inline'`は維持する。Productionのstyle elementは`self`と確認済みの個別hashだけを許可し、新しい違反には対象を検証してhashを追加する。PreviewのVercel Toolbarだけは環境別allowlistを使用する。DevelopmentのReact Scanは`instrumentation-client.ts`で初期化し、Productionでは起動しない。experimental SRIはinline Flight scriptや`next-themes`のinline scriptを保護しないため導入しない。
 
-`cacheComponents: true`と`partialPrefetching: true`により、ナビゲーション時は静的なApp Shellを即時commitし、認証、DB、`params`、`searchParams`に依存する部分をSuspenseのholeとして後からstreamする。静的locale JSONはlocaleをkeyにした`use cache`関数からShellへ読み込む。`headers()`、`cookies()`、tenantデータ、認証結果を共有Shellへ直接含めない。
+`cacheComponents: true`と`partialPrefetching: true`により、ナビゲーション時は静的なApp Shellを即時commitし、認証、backend取得、`params`、`searchParams`に依存する部分をSuspenseのholeとして後からstreamする。静的locale JSONはlocaleをkeyにした`use cache`関数からShellへ読み込む。`headers()`、`cookies()`、tenantデータ、認証結果を共有Shellへ直接含めない。
 
 nonce廃止により、inline elementをリクエスト単位で認可する性質は失われる。一方、CSPが静的になりShell再利用が可能になる。Productionで`unsafe-inline`の許可範囲を追加で広げず、既存のcompatibility許可、既知style hash、Sentry reportingを継続して差分を抑える。
 
@@ -588,151 +333,11 @@ async function DynamicComponent() {
 
 ## Server Actions Architecture Pattern
 
-Server Actionsを3層分離構造（action/core/deps）で実装し、テスタビリティと認証責務の分離を実現するパターン。
+WebのServer Actionは薄いAPI adapterとする。`"use server"` と `server-only` を使い、FormDataから生成Zodモデルで入力を読み取り、`getBackendClient` の生成メソッドを呼ぶ。
+成功時は `refresh()` で表示を更新し、失敗時は `backendActionError` へ渡す。Webに `*.core.ts`、`*.deps.ts`、default repository、ドメイン不変条件を再実装しない。
 
-### ディレクトリ構成
-
-```text
-app/src/application-services/
-└── [domain]/
-    ├── add-{domain}.ts         # Server Action（認証）
-    ├── add-{domain}.core.ts    # ビジネスロジック
-    └── add-{domain}.deps.ts    # 依存性定義
-```
-
-### 命名規則
-
-| パターン | 例 |
-|---------|-----|
-| Action ファイル | `add-article.ts` |
-| Core ファイル | `add-article.core.ts` |
-| Deps ファイル | `add-article.deps.ts` |
-| Action 関数 | `addArticle` |
-| Core 関数 | `addArticleCore` |
-| Deps 型 | `AddArticleDeps` |
-| デフォルト依存 | `defaultAddArticleDeps` |
-
-### 実装例
-
-```typescript
-// app/src/application-services/articles/add-article.ts
-"use server";
-import "server-only";
-import { requireAuth } from "@/common/auth/session";
-import type { ServerAction } from "@/common/types";
-import { addArticleCore } from "./add-article.core";
-import { defaultAddArticleDeps } from "./add-article.deps";
-
-export async function addArticle(formData: FormData): Promise<ServerAction> {
-  await requireAuth();
-
-  return addArticleCore(formData, defaultAddArticleDeps);
-}
-```
-
-```typescript
-// app/src/application-services/articles/add-article.core.ts
-import "server-only";
-import type { ServerAction } from "@/common/types";
-import type { AddArticleDeps } from "./add-article.deps";
-
-export async function addArticleCore(
-  formData: FormData,
-  deps: AddArticleDeps,
-): Promise<ServerAction> {
-  const { commandRepository, domainServiceFactory, eventDispatcher } = deps;
-
-  try {
-    // 1. Form data parsing
-    // 2. Domain validation
-    // 3. Entity creation
-    // 4. Persistence
-    // 5. Event dispatch
-    // 6. Cache invalidation
-    return { success: true, message: "inserted" };
-  } catch (error) {
-    return await wrapServerSideErrorForClient(error, formData);
-  }
-}
-```
-
-```typescript
-// app/src/application-services/articles/add-article.deps.ts
-import type { IArticlesCommandRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-command-repository.interface";
-import { articlesCommandRepository } from "@/infrastructures/articles/repositories/articles-command-repository";
-import { eventDispatcher } from "@/infrastructures/events/event-dispatcher";
-import {
-  type createDomainServiceFactory,
-  domainServiceFactory,
-} from "@/infrastructures/factories/domain-service-factory";
-
-export type AddArticleDeps = {
-  commandRepository: IArticlesCommandRepository;
-  domainServiceFactory: ReturnType<typeof createDomainServiceFactory>;
-  eventDispatcher: IEventDispatcher;
-};
-
-export const defaultAddArticleDeps: AddArticleDeps = {
-  commandRepository: articlesCommandRepository,
-  domainServiceFactory: domainServiceFactory,
-  eventDispatcher: eventDispatcher,
-};
-```
-
-### 責務の分離
-
-| レイヤー | ファイル | 責務 |
-|---------|---------|------|
-| Action | `add-*.ts` | 認証（`requireAuth()`）、`"use server"`ディレクティブ |
-| Core | `add-*.core.ts` | ビジネスロジック、エラーハンドリング |
-| Deps | `add-*.deps.ts` | 依存性の型定義とデフォルト実装 |
-
-**注意**: `"use server"`ファイルからは非同期関数のみエクスポート可能なため、deps は分離が必要。
-
-### Progressive Enhancement
-
-Server ActionsはProgressive Enhancementをサポートし、JavaScriptが無効な環境でも動作する。
-
-**フォームでの使用:**
-
-```typescript
-// JavaScriptなしでも動作するフォーム
-<form action={addArticle}>
-  <input name="title" required />
-  <input name="url" type="url" required />
-  <button type="submit">追加</button>
-</form>
-```
-
-**`useActionState`との組み合わせ:**
-
-```typescript
-"use client";
-import { useActionState } from "react";
-import { addArticle } from "@/application-services/articles/add-article";
-
-function ArticleForm() {
-  const [state, formAction, isPending] = useActionState(addArticle, null);
-
-  return (
-    <form action={formAction}>
-      <input name="title" required disabled={isPending} />
-      <button type="submit" disabled={isPending}>
-        {isPending ? "追加中..." : "追加"}
-      </button>
-      {state?.success === false && <p className="error">{state.message}</p>}
-    </form>
-  );
-}
-```
-
-**Progressive Enhancement のポイント:**
-- `action`属性を使用し、`onSubmit`ではなくネイティブフォーム送信を活用
-- JavaScriptが有効な場合は`useActionState`で楽観的UI更新を提供
-- JavaScriptが無効でもフォームは正常に送信され、ページがリロードされる
-- `disabled={isPending}`で二重送信を防止
-
-認証済み画面の新規作成フォームは例外として、送信直後にダイアログを閉じるため `GenericFormWrapper` の `onSubmit` から Server Action を呼ぶ。失敗時の再表示とファイル保持にはクライアント側の状態が必要であり、このフローは JavaScript を前提とする。
+実装例は `app/src/application-services/notes/add-note.ts`。作成・削除の検証、永続化、イベント発行とその回帰テストは `packages/backend/src/{domain}/use-cases.ts` と対応テストに置く。
+画像・書影はブラウザから共通APIへ分割アップロードし、完了後にbackendの同じユースケースを実行する。
 
 ## Value Object Pattern with Zod Branding
 
@@ -789,7 +394,7 @@ createArticle(categoryName, title); // コンパイルエラー
 
 ### バリデーションエラーハンドリング
 
-バリデーションエラーは`ZodError`としてスローされ、`wrapServerSideErrorForClient`で`InvalidFormatError`に変換される。
+backendでZodとドメインのエラーをHTTP契約へ変換する。Webは生成schemaの入力エラーとAPIエラーを `backendActionError` で表示用結果へ変換する。
 
 ## Domain Entity Creation Pattern
 
@@ -799,10 +404,9 @@ createArticle(categoryName, title); // コンパイルエラー
 
 ```typescript
 // packages/core/articles/entities/article-entity.ts
-// Note: packages/core内部では相対インポートを使用
-// パッケージ外からは @s-hirano-ist/s-core/common 等のバレルインポートを使用
-import { createEntityWithErrorHandling } from "../../shared-kernel/services/entity-factory.js";
-import { ArticleCreatedEvent } from "../events/article-created-event.js";
+// package内外とも明示的subpathからimportする
+import { createEntityWithErrorHandling } from "@s-hirano-ist/s-core/shared-kernel/services/entity-factory";
+import { ArticleCreatedEvent } from "@s-hirano-ist/s-core/articles/events/article-created-event";
 
 export type ArticleWithEvent = readonly [UnexportedArticle, ArticleCreatedEvent];
 
@@ -872,169 +476,14 @@ await eventDispatcher.dispatch(event);
 
 ## Server-Side Error Handling Pattern
 
-エラーをクライアント安全な`ServerAction`レスポンスに変換するパターン。
-
-### 実装例
-
-```typescript
-// app/src/common/error/error-wrapper.ts
-export async function wrapServerSideErrorForClient(
-  error: unknown,
-  formData?: FormData,
-): Promise<ServerAction> {
-  if (error instanceof DuplicateError) {
-    await eventDispatcher.dispatch(new SystemWarningEvent({ ... }));
-    return { success: false, message: "duplicated", formData: ... };
-  }
-
-  if (error instanceof InvalidFormatError) {
-    await eventDispatcher.dispatch(new SystemWarningEvent({ ... }));
-    return { success: false, message: error.message, formData: ... };
-  }
-
-  if (error instanceof NotificationError) {
-    await eventDispatcher.dispatch(new SystemWarningEvent({ ... }));
-    return { success: false, message: "notificationFailed" };
-  }
-
-  if (error instanceof Prisma.PrismaClientKnownRequestError) {
-    await eventDispatcher.dispatch(new SystemErrorEvent({ ... }));
-    return { success: false, message: "prismaUnexpected" };
-  }
-
-  // その他のエラー
-  await eventDispatcher.dispatch(new SystemErrorEvent({ ... }));
-  return { success: false, message: "unexpected" };
-}
-```
-
-```typescript
-// packages/core/shared-kernel/errors/error-classes.ts
-// エラークラスはドメイン層に配置され、app層からは以下のようにインポート:
-// import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
-
-export class UnexpectedError extends Error {
-  constructor() { super("unexpected"); this.name = "UnexpectedError"; }
-}
-
-export class InvalidFormatError extends Error {
-  constructor() { super("invalidFormat"); this.name = "InvalidFormatError"; }
-}
-
-export class DuplicateError extends Error {
-  constructor() { super("duplicate"); this.name = "DuplicateError"; }
-}
-
-export class FileNotAllowedError extends Error {
-  constructor() { super("invalidFileFormat"); this.name = "FileNotAllowedError"; }
-}
-```
-
-**エラークラスの分類基準:**
-
-| エラークラス | 用途 | 発生箇所 |
-|------------|------|---------|
-| `UnexpectedError` | 予期せぬシステムエラー | catch-all |
-| `InvalidFormatError` | Zodバリデーションエラー | エンティティファクトリ |
-| `DuplicateError` | ビジネスルール違反（重複） | ドメインサービス |
-| `FileNotAllowedError` | ファイル形式不正 | imagesドメイン |
-
-### エラータイプ別処理
-
-| エラータイプ | レスポンス message | イベント | ステータス |
-|-------------|-------------------|---------|-----------|
-| `DuplicateError` | `"duplicated"` | SystemWarningEvent | 400 |
-| `InvalidFormatError` | `error.message` | SystemWarningEvent | 500 |
-| `FileNotAllowedError` | `error.message` | SystemWarningEvent | 500 |
-| `NotificationError` | `"notificationFailed"` | SystemWarningEvent | 500 |
-| `AuthError` | `"signInUnknown"` | SystemWarningEvent | 401 |
-| `PrismaClientKnownRequestError` | `"prismaUnexpected"` | SystemErrorEvent | 500 |
-| `PrismaClientValidationError` | `"prismaUnexpected"` | SystemErrorEvent | 500 |
-| `PrismaClientInitializationError` | `"prismaUnexpected"` | SystemErrorEvent | 500 |
-| その他 | `"unexpected"` | SystemErrorEvent | 500 |
-
-### 使用例
-
-```typescript
-// add-article.core.ts
-try {
-  // ビジネスロジック
-  return { success: true, message: "inserted" };
-} catch (error) {
-  return await wrapServerSideErrorForClient(error, formData);
-}
-```
+backendのユースケースは型付き依存を受け取り、ドメインエラー、operation phase、storage診断を共有実装で扱う。HTTP入口で契約に沿ったステータスとエラーへ変換し、監視portへ記録する。
+WebはHTTPエラーを表示用結果へ変換する。固定upstreamへの通信失敗は `API_UNAVAILABLE` の503となり、内部backendへのfallbackやmutationの自動retryは行わない。取消は通常エラーとして再送せず、呼び出し元へ伝える。
 
 ## Form Data Parsing Pattern
 
-FormDataをドメイン値オブジェクトに変換するパターン。
-
-### ディレクトリ構成
-
-```text
-app/src/application-services/
-└── [domain]/
-    └── helpers/
-        └── form-data-parser.ts
-```
-
-### 命名規則
-
-| パターン | 例 |
-|---------|-----|
-| パーサー関数 | `parseAdd{Domain}FormData` |
-| ファイル | `helpers/form-data-parser.ts` |
-
-### 実装例
-
-```typescript
-// app/src/application-services/articles/helpers/form-data-parser.ts
-import {
-  makeArticleTitle,
-  makeCategoryName,
-  makeQuote,
-  makeUrl,
-} from "@s-hirano-ist/s-core/articles/entities/article-entity";
-import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { getFormDataString } from "@/common/utils/form-data-utils";
-
-export const parseAddArticleFormData = (formData: FormData, userId: UserId) => {
-  const title = getFormDataString(formData, "title");
-  const quote = getFormDataString(formData, "quote");
-  const url = getFormDataString(formData, "url");
-  const categoryName = getFormDataString(formData, "category");
-
-  return {
-    title: makeArticleTitle(title),
-    quote: makeQuote(quote),
-    url: makeUrl(url),
-    categoryName: makeCategoryName(categoryName),
-    userId,
-  };
-};
-```
-
-### 使用例
-
-```typescript
-// add-article.core.ts
-export async function addArticleCore(formData: FormData, deps: AddArticleDeps) {
-  const { title, quote, url, categoryName, userId } = parseAddArticleFormData(
-    formData,
-    await getSelfId(),
-  );
-
-  // バリデーション済みValue Objectとして使用
-  await articlesDomainService.ensureNoDuplicate(url, userId);
-  // ...
-}
-```
-
-### 注意事項
-
-- パーサーはZodバリデーションを実行し、失敗時は`ZodError`をスロー
-- `wrapServerSideErrorForClient`で`InvalidFormatError`に変換される
-- `userId`は認証層から取得し、パーサーに渡す
+WebではFormDataの文字列・operation IDを生成Zodモデルへ渡す。必須項目、数値queryの上限・下限・既定値は共通契約から生成し、手書きのwire型や型assertionで補わない。
+backendはHTTP入力検証の後にcoreの値オブジェクトとドメイン不変条件を検証する。
+画像は所有者に束縛したupload sessionへ1 MiB単位で保存する。署名とdecode形式、thumbnail、metadata、合計サイズの検証はbackendが行い、完了時のみ元画像→thumbnail→DB→イベントの順序で処理する。
 
 ## Client Form Pattern
 
@@ -1126,516 +575,45 @@ afterSubmit={(response) => toast[response.success ? "success" : "error"](message
 
 ## Data Fetching Pattern
 
-`unstable_cache()`とReact `cache()`を使用したデータフェッチパターン。
-
-### 実装例
-
-```typescript
-// app/src/application-services/articles/get-articles.ts
-import { unstable_cache } from "next/cache";
-import { cache } from "react";
-import { getSelfId } from "@/common/auth/session";
-import {
-  buildContentCacheTag,
-  buildPaginatedContentCacheTag,
-} from "@/infrastructures/shared/cache/cache-tag-builder";
-
-// 内部実装: unstable_cacheでリクエスト間キャッシュ
-const getArticlesCached = async (
-  currentCount: number,
-  userId: UserId,
-  status: Status,
-) =>
-  unstable_cache(
-    async (): Promise<LinkCardStackInitialData> => {
-      const articles = await articlesQueryRepository.findMany(userId, status, {
-        skip: currentCount,
-        take: PAGE_SIZE,
-        orderBy: { createdAt: "desc" },
-      });
-
-      const totalCount = await getArticlesCountCached(userId, status);
-      return { data: articles.map(transformToDTO), totalCount };
-    },
-    ["articles", "list", userId, status, String(currentCount)],
-    {
-      tags: [
-        buildContentCacheTag("articles", status, userId),
-        buildPaginatedContentCacheTag("articles", status, userId, currentCount),
-      ],
-    },
-  )();
-
-// 公開関数: cache()でリクエストレベル重複排除
-export const getExportedArticles: GetPaginatedData<LinkCardStackInitialData> =
-  cache(async (currentCount: number) => {
-    const userId = await getSelfId();
-    return getArticlesCached(currentCount, userId, makeExportedStatus().status);
-  });
-```
-
-### キャッシュ層の役割
-
-| 層 | 技術 | 役割 |
-|---|------|------|
-| Next.js | `unstable_cache()` + tags | リクエスト間キャッシュ |
-| React | `cache()` | リクエスト内重複排除（同一リクエストで複数回呼ばれても1回のみ実行） |
-
-### `cache()` と `unstable_cache()` の使い分け
-
-| 観点 | `cache()` (React) | `unstable_cache()` (Next.js) |
-|------|-------------------|-------------------------|
-| **スコープ** | 単一リクエスト内 | リクエスト間（永続的） |
-| **用途** | 同一レンダリングツリー内での重複排除 | DBクエリ結果などの動的キャッシュ |
-| **無効化** | リクエスト終了で自動消滅 | `updateTag()` (Server Action) / `revalidateTag()` (Route Handler) |
-| **認証データ** | 適切（リクエストスコープ） | キーとタグの両方でユーザー分離が必要 |
-
-**判断基準:**
-1. **同一リクエスト内で複数回呼ばれる可能性がある** → `cache()` でラップ
-2. **リクエスト間でキャッシュしたい** → `unstable_cache()` で明示的なキーとタグを設定
-3. **両方の恩恵を受けたい** → 内部関数で`unstable_cache()`を呼び、公開関数を`cache()`でラップ（本コードベースの標準パターン）
-
-```typescript
-// 推奨パターン: 両方を組み合わせ + ビルダー関数使用
-import { buildContentCacheTag } from "@/infrastructures/shared/cache/cache-tag-builder";
-import { unstable_cache } from "next/cache";
-
-const getDataCached = async (userId: UserId, status: Status) =>
-  unstable_cache(
-    () => repository.findMany(userId, status),
-    ["articles", "list", userId, status],
-    { tags: [buildContentCacheTag("articles", status, userId)] },
-  )();
-
-export const getData = cache(async () => {
-  const userId = await getSelfId();
-  return getDataCached(userId, makeUnexportedStatus());
-});
-```
-
-### 命名規則
-
-| パターン | 例 |
-|---------|-----|
-| 内部関数 | `getArticlesCached`（`Cached`サフィックス） |
-| 公開関数 | `getExportedArticles`, `getUnexportedArticles` |
-
-### 注意事項
-
-- 内部関数は`unstable_cache()`でキャッシュ、公開関数は`cache()`でラップ
-- `unstable_cache()`のキーにはドメイン、操作、ユーザーID、ステータス、ページ位置を含める
-- `tags`で複数タグを設定し、柔軟な無効化を可能に
+WebとiOSは共通の `/api/v1` 契約を利用する。Webの生成fetch transportは `no-store` とし、SSRはCookieをリクエスト単位で付与する。BFFは許可したAPI・認証・サインイン経路のみを `BACKEND_URL` へ転送する。
+一覧offset・limit、検索、同期、upload partの数値制約もOpenAPIへ出力する。load-moreや検索Server Actionも生成queryモデルで検証し、coreの型に依存させない。
+media stream、複数Set-Cookie、redirectの応答をBFFで保持する。接続先の自動切替や書き込みの二重実行は行わない。
 
 ## DTO Transform Pattern
 
-Query RepositoryからUIまでのデータ形状変換パターン。
-
-### 3層のデータ形状
-
-| 層 | 形状 | 責務 |
-|---|------|------|
-| Domain | Entity（`UnexportedArticle`, `ExportedArticle`） | ビジネスルール、不変条件 |
-| Query Repository | DTO（`ArticleListItemDTO`） | クエリ最適化、必要フィールドのみ |
-| Application Service | UI型（`LinkCardData`） | 表示に最適化された形状 |
-
-### Query RepositoryでのDTO定義
-
-```typescript
-// packages/core/articles/repositories/articles-query-repository.interface.ts
-export type ArticleListItemDTO = {
-  id: string;
-  title: string;
-  url: string;
-  quote: string | null;
-  categoryName: string;
-  createdAt: Date;
-};
-
-export type IArticlesQueryRepository = {
-  findMany(userId: UserId, status: Status, params: FindManyParams): Promise<ArticleListItemDTO[]>;
-  // ...
-};
-```
-
-### Application Serviceでの変換
-
-```typescript
-// app/src/application-services/articles/get-articles.ts
-import type { LinkCardData } from "@/components/common/layouts/cards/types";
-
-function transformToLinkCard(dto: ArticleListItemDTO): LinkCardData {
-  return {
-    id: dto.id,
-    title: dto.title,
-    description: dto.quote ?? "",
-    primaryBadgeText: dto.categoryName,
-    secondaryBadgeText: new URL(dto.url).hostname,
-    href: dto.url,
-  };
-}
-
-export const getExportedArticles = cache(async (currentCount: number) => {
-  const userId = await getSelfId();
-  const articles = await _getArticles(currentCount, userId, "EXPORTED");
-
-  return {
-    data: articles.map(transformToLinkCard),
-    totalCount: await _getArticlesCount(userId, "EXPORTED"),
-  };
-});
-```
-
-### 変換ロジックの種類
-
-| 変換 | 例 | 説明 |
-|------|---|------|
-| フラット化 | `category.name` → `categoryName` | ネストを解消 |
-| 複合フィールド | `quote ?? ""` | null処理、デフォルト値 |
-| URL処理 | `new URL(url).hostname` | ドメイン抽出 |
-| フォーマット | `formatDate(createdAt)` | 日付整形 |
-| 命名変換 | `url` → `href` | UIコンポーネントの期待する名前 |
-
-### 変換の配置場所
-
-```text
-Repository (DTO)
-    ↓ そのまま返す
-Application Service
-    ↓ transformToXxx() で変換
-UI Component (props)
-```
-
-**Application Serviceで変換する理由:**
-- Repositoryはクエリ最適化に専念
-- 変換ロジックをドメイン層から分離
-- UIコンポーネントの要求に合わせやすい
-
-### 実装例: 複数ドメインでの統一
-
-```typescript
-// 各ドメインで同じ UI 型に変換
-// articles
-const articleCard: LinkCardData = transformToLinkCard(articleDTO);
-
-// books
-const bookCard: LinkCardData = transformBookToLinkCard(bookDTO);
-
-// notes
-const noteCard: LinkCardData = transformNoteToLinkCard(noteDTO);
-
-// 同じ LinkCardStack コンポーネントで表示可能
-<LinkCardStack data={[...articleCards, ...bookCards, ...noteCards]} />
-```
-
-### 実装箇所
-
-| ファイル | 内容 |
-|---------|------|
-| `/app/src/application-services/articles/get-articles.ts` | 記事のDTO→UI型変換 |
-| `/app/src/application-services/books/get-books.ts` | 書籍のDTO→UI型変換 |
-| `/app/src/components/common/layouts/cards/types.ts` | UI型定義（`LinkCardData`等） |
+HTTPのDTOは `packages/api-contracts` を正本とし、trackedな `docs/openapi/backend-v1.json` からOrvalとSwift OpenAPI Generatorで生成する。生成ソースはGit管理せず、build・typecheck前に再生成し契約の差分をCIで検証する。
+backendがドメイン値をHTTPレスポンスへ変換する。WebとSwiftは生成DTOから表示日時・端末cacheモデルへ明示的に変換する。wire型を別途手書きしたり、coreのbranded型をWebへ漏らしたりしない。
 
 ## Event-Driven Architecture Pattern
 
-ドメインイベントとPub-Subディスパッチャーによるイベント駆動アーキテクチャ。
-
-### ディレクトリ構成
-
-```text
-packages/core/
-├── shared-kernel/
-│   └── events/
-│       ├── base-domain-event.ts       # 基底クラス
-│       ├── domain-event.interface.ts  # インターフェース
-│       ├── system-error-event.ts      # システムイベント
-│       └── system-warning-event.ts
-└── [domain]/
-    └── events/
-        ├── article-created-event.ts   # ドメインイベント
-        └── article-deleted-event.ts
-
-app/src/infrastructures/events/
-├── event-dispatcher.ts                # ディスパッチャー実装
-└── event-setup.ts                     # ハンドラー登録
-```
-
-### 実装例
-
-```typescript
-// packages/core/shared-kernel/events/base-domain-event.ts
-export abstract class BaseDomainEvent implements DomainEvent {
-  public readonly eventType: string;
-  public readonly payload: Record<string, unknown>;
-  public readonly metadata: {
-    timestamp: Date;
-    caller: string;
-    userId: string;
-  };
-
-  constructor(
-    eventType: string,
-    payload: Record<string, unknown>,
-    metadata: { caller: string; userId: string },
-  ) {
-    this.eventType = eventType;
-    this.payload = payload;
-    this.metadata = { ...metadata, timestamp: new Date() };
-  }
-}
-```
-
-```typescript
-// packages/core/articles/events/article-created-event.ts
-import { BaseDomainEvent } from "../../shared-kernel/events/base-domain-event.js";
-
-export class ArticleCreatedEvent extends BaseDomainEvent {
-  constructor(data: {
-    title: string;
-    url: string;
-    quote: string;
-    categoryName: string;
-    userId: string;
-    caller: string;
-  }) {
-    super(
-      "article.created",
-      { title: data.title, url: data.url, quote: data.quote, categoryName: data.categoryName },
-      { caller: data.caller, userId: data.userId },
-    );
-  }
-}
-```
-
-```typescript
-// app/src/infrastructures/events/event-dispatcher.ts
-class EventDispatcher {
-  private handlers: Map<string, DomainEventHandler[]> = new Map();
-
-  register(eventType: string, handler: DomainEventHandler): void {
-    if (!this.handlers.has(eventType)) {
-      this.handlers.set(eventType, []);
-    }
-    this.handlers.get(eventType)?.push(handler);
-  }
-
-  async dispatch(event: DomainEvent): Promise<void> {
-    const eventHandlers = this.handlers.get(event.eventType);
-    if (eventHandlers) {
-      await Promise.all(eventHandlers.map((handler) => handler.handle(event)));
-    }
-  }
-}
-
-export const eventDispatcher = new EventDispatcher();
-```
-
-### イベントタイプ命名規則
-
-| パターン | 例 |
-|---------|-----|
-| ドメインイベント | `{domain}.{action}` (`article.created`, `article.deleted`) |
-| システムイベント | `system.error`, `system.warning` |
-
-### 使用例
-
-```typescript
-// エンティティ作成時にイベント生成
-const [article, event] = articleEntity.create({ ... });
-
-// 永続化後にディスパッチ
-await commandRepository.create(article);
-await eventDispatcher.dispatch(event);
-```
+作成・削除ユースケースは永続化後にドメインイベントを発行する。共有dispatcherとhandlerは `packages/backend/src/events/` に置き、ログ・通知・検索等の依存をhostから注入する。
+`services/backend` がhandlerを登録し、Webのinstrumentationからイベントを初期化しない。登録の重複防止とhandler構成はbackendの回帰テストで検証する。
+DBと通知の原子性を保証するOutboxは導入していない。外部処理の失敗時動作は[ドメインモデル](domain-model.md)の設計上の制約を参照する。
 
 ## Repository CQRS Pattern
 
-Command/Query責務分離のリポジトリパターン。
-
-### ディレクトリ構成
-
-```text
-packages/core/[domain]/repositories/
-├── {domain}-command-repository.interface.ts   # Commandインターフェース
-└── {domain}-query-repository.interface.ts     # Queryインターフェース
-
-app/src/infrastructures/[domain]/repositories/
-├── {domain}-command-repository.ts             # Command実装
-└── {domain}-query-repository.ts               # Query実装
-```
-
-### 命名規則
-
-| パターン | 例 |
-|---------|-----|
-| Command インターフェース | `IArticlesCommandRepository` |
-| Query インターフェース | `IArticlesQueryRepository` |
-| Command 実装 | `articlesCommandRepository` |
-| Query 実装 | `articlesQueryRepository` |
-
-### 実装例（インターフェース）
-
-```typescript
-// packages/core/articles/repositories/articles-command-repository.interface.ts
-export type IArticlesCommandRepository = {
-  create(data: UnexportedArticle): Promise<void>;
-  deleteById(id: Id, userId: UserId, status: Status): Promise<DeleteArticleResult>;
-};
-```
-
-```typescript
-// packages/core/articles/repositories/articles-query-repository.interface.ts
-export type IArticlesQueryRepository = {
-  findByUrl(url: Url, userId: UserId): Promise<UnexportedArticle | ExportedArticle | null>;
-  findMany(userId: UserId, status: Status, params: ArticlesFindManyParams): Promise<ArticleListItemDTO[]>;
-  count(userId: UserId, status: Status): Promise<number>;
-  search(query: string, userId: UserId, limit?: number): Promise<ArticleListItemDTO[]>;
-};
-```
-
-### 実装例（オブジェクトリテラル）
-
-```typescript
-// app/src/infrastructures/articles/repositories/articles-command-repository.ts
-import type { IArticlesCommandRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-command-repository.interface";
-import prisma from "@/prisma";
-
-async function create(data: UnexportedArticle): Promise<void> {
-  await prisma.article.create({
-    data: {
-      id: data.id,
-      title: data.title,
-      url: data.url,
-      // ...
-    },
-  });
-}
-
-async function deleteById(id: Id, userId: UserId, status: Status): Promise<DeleteArticleResult> {
-  const data = await prisma.article.delete({
-    where: { id, userId, status },
-    select: { title: true },
-  });
-  return { title: data.title };
-}
-
-export const articlesCommandRepository: IArticlesCommandRepository = {
-  create,
-  deleteById,
-};
-```
-
-### Command/Query分離の理由
-
-| 種別 | 責務 | 最適化 |
-|------|------|--------|
-| Command | 書き込み操作（create, update, delete） | トランザクション整合性 |
-| Query | 読み取り操作（find, count, search） | キャッシュ、パフォーマンス |
-
-### 注意事項
-
-- インターフェースはドメイン層（packages/core）に配置
-- 実装はインフラ層（app/src/infrastructures）に配置
-- オブジェクトリテラルパターンでシンプルに実装
+coreでドメインごとにCommand/Query repository interfaceを分離し、`packages/backend/src/{domain}/` のPrisma実装で永続化する。
+Commandは所有者・状態条件付きの書き込みを行い、Queryは認証済みtenant内を読み取る。Next.jsのcache・Cookie・画面更新をrepositoryへ持ち込まない。
+これはrepositoryの責務分離であり、別DBやイベントソーシングを導入したCQRSではない。
 
 ## Dependency Injection Factory Pattern
 
-テスタビリティのためのファクトリベースDI。
-
-### 実装例
-
-```typescript
-// app/src/infrastructures/factories/domain-service-factory.ts
-import { ArticlesDomainService } from "@s-hirano-ist/s-core/articles/services/articles-domain-service";
-import type { IArticlesQueryRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-query-repository.interface";
-import { articlesQueryRepository } from "@/infrastructures/articles/repositories/articles-query-repository";
-
-export type DomainServiceFactoryConfig = {
-  articlesQueryRepository?: IArticlesQueryRepository;
-  booksQueryRepository?: IBooksQueryRepository;
-  // ...
-};
-
-const defaultConfig: Required<DomainServiceFactoryConfig> = {
-  articlesQueryRepository,
-  booksQueryRepository,
-  // ...
-};
-
-export function createDomainServiceFactory(
-  config: DomainServiceFactoryConfig = {},
-) {
-  const mergedConfig = { ...defaultConfig, ...config };
-
-  return {
-    createArticlesDomainService: (): ArticlesDomainService => {
-      return new ArticlesDomainService(mergedConfig.articlesQueryRepository);
-    },
-    createBooksDomainService: (): BooksDomainService => {
-      return new BooksDomainService(mergedConfig.booksQueryRepository);
-    },
-    // ...
-  };
-}
-
-// デフォルトシングルトンインスタンス
-export const domainServiceFactory = createDomainServiceFactory();
-```
-
-### 使用例（本番）
-
-```typescript
-// add-article.deps.ts
-import { domainServiceFactory } from "@/infrastructures/factories/domain-service-factory";
-
-export const defaultAddArticleDeps: AddArticleDeps = {
-  commandRepository: articlesCommandRepository,
-  domainServiceFactory: domainServiceFactory,
-  eventDispatcher: eventDispatcher,
-};
-```
-
-### 使用例（テスト）
-
-```typescript
-// add-article.test.ts
-const mockQueryRepo: IArticlesQueryRepository = {
-  findByUrl: vi.fn().mockResolvedValue(null),
-  // ...
-};
-
-const testFactory = createDomainServiceFactory({
-  articlesQueryRepository: mockQueryRepo,
-});
-
-const testDeps: AddArticleDeps = {
-  commandRepository: mockCommandRepo,
-  domainServiceFactory: testFactory,
-  eventDispatcher: mockDispatcher,
-};
-
-// テスト実行
-const result = await addArticleCore(formData, testDeps);
-```
-
-### 注意事項
-
-- ファクトリ関数でデフォルト依存をマージし、テスト時のモック注入を容易に
-- デフォルトシングルトン（`domainServiceFactory`）は本番で使用
-- `createDomainServiceFactory`はテストでカスタム依存を注入する際に使用
+`services/backend` が環境変数を検証し、Prisma・storage・監視等の実装を生成する。`packages/backend/src/api/composition.ts` の `createApiServices` へ型付きで渡し、repository、domain service、ユースケース、HTTP handlerを組み立てる。
+ユースケースのテストは同じ依存型のmockを注入し、DBやNext.jsを必要としない。実装packageがhostやWebのmoduleをimportする逆向き依存は禁止する。
 
 ## Workspace task graph
 
 Workspace package 間の依存関係は各 `package.json` の `workspace:*` dependency を正本とし、タスクの依存順と build 成果物は `pnpm-workspace.yaml` の `tasks` で定義する。`pnpm build` は `pnpm pipeline build --full` を実行し、全 workspace の build を依存順に実行してローカルキャッシュを利用する。`packages:build` と `typecheck` は pnpm の再帰実行を使う。開発起動や Storybook・Pages など成果物を読むルート task は、必要な package をビルドしてから実行する。公開 package は別 repository から単独利用されるため、配布対象の `dist` や generated code を package 自身の publish lifecycle で生成する。
 
-pnpm pipeline は実験的機能で、キャッシュは全体ビルドにだけ利用する。Vercel は Root Directory が `app` のため、`app/vercel.json` の buildCommand でアプリとその workspace 依存 package を pnpm の再帰タスクとしてビルドする。個別の lint・生成コマンドは毎回実行する。
+pnpm pipeline は実験的機能で、キャッシュは全体ビルドにだけ利用する。VercelではWebを `app`、backendを `services/backend` の別projectとして配置し、それぞれとworkspace依存を再帰buildする。個別の lint・生成コマンドは毎回実行する。
 
 ## iOSの共有受け渡しと認証境界
 
-iOSの閲覧はSwiftDataの所有者別ローカルコピーを正本とする。初回同期は`/api/v1/sync/head`で所有者の変更版を記録し、`/sync/snapshot`をIDのkeysetで全ドメインとカテゴリについてページ取得する。以後は`/sync/changes`で版以降の追加・更新・削除のみ取得し、端末へ適用したページのカーソルだけを保存する。変更履歴は各コンテンツとカテゴリのDB行トリガーが同一トランザクションで記録するため、Webと取り込みスクリプトの更新を含む。カテゴリ名はローカルカテゴリから表示時に解決する。一覧はSwiftDataから30件ずつ取得し、詳細はIDで1件取得する。縮小画像は同期後に少量ずつディスクへ保存し、原本は必要時に取得する。削除はオンラインでのみ行う。終了中のバックグラウンド同期は保証しない。旧`/manifest`は移行期間中のみ残す。
+iOSの閲覧はSwiftDataの所有者別ローカルコピーを正本とする。初回同期は`/api/v1/sync/head`で所有者の変更版を記録し、`/sync/snapshot`をIDのkeysetで全ドメインとカテゴリについてページ取得する。以後は`/sync/changes`で版以降の追加・更新・削除のみ取得し、端末へ適用したページのカーソルだけを保存する。変更履歴は各コンテンツとカテゴリのDB行トリガーが同一トランザクションで記録するため、Webと取り込みスクリプトの更新を含む。カテゴリ名はローカルカテゴリから表示時に解決する。一覧はSwiftDataから30件ずつ取得し、詳細はIDで1件取得する。縮小画像は同期後に少量ずつディスクへ保存し、原本は必要時に取得する。削除はオンラインでのみ行う。終了中のバックグラウンド同期は保証しない。旧mobile APIの `/manifest` は撤去済み。
 
 iOSの同期要求は`SyncCoordinator`で単一のタスクにまとめる。手動の強制更新は進行中の同期が終わった後にも実行し、呼び出し元は完了を待てる。端末への登録が確定した後の通信は画面の表示期間に依存させない。タスクの取消はユーザー向けエラーや送信失敗として保存しない。一覧はローカルデータを表示しながら更新し、初回取得中・空・失敗の表示を重ねない。
 
-共通APIは `/api/v1` のNode.js catch-all Route HandlerからHonoへ委譲する。iOSのHTTP通信はSwift OpenAPI生成clientを使い、端末の表示・キャッシュモデルへ明示的に変換する。旧 `/api/mobile/v1` は移行中の旧client用に残す。HTTP controllerは `app/src/backend/http/mobile` に置き、Next.jsのRoute HandlerはHono adapterだけを公開する。Auth0 API audience向けのRS256アクセストークンをJWKSで検証し、`providerId=auth0` と `accountId=sub` の既存Better Auth AccountからユーザーIDを取得する。ユーザーごとにtenant contextを設定してからデータアクセスする。Web用Server Actionと異なり、この認証済みネイティブAPIではRoute Handlerによるmutationを許可する。登録は所有者・操作ID・正規化入力ハッシュ・結果を永続化し、同一入力の再送へ同じリソースを返す。画像と書影は所有者検証済みの一時領域へ1 MiB単位で分割アップロードし、完了時だけ既存ユースケースへ渡す。共通契約は `docs/openapi/backend-v1.json` を参照する。
+共通APIは `services/backend` の独立Hono hostで提供する。iOSはSwift OpenAPI生成clientで直接接続し、Webは薄いRoute Handlerで固定upstreamへ中継する。Auth0の既存API audienceと所有者IDを維持し、backendでBearer認証・tenant contextを確立する。作成は所有者・operation ID・正規化入力hash・結果を永続化し、同一入力の再送へ同じ結果を返す。未完了upload、同期cursor、端末draftは接続先切替時も保持する。共通契約は `docs/openapi/backend-v1.json` を参照する。
 
 iOS本体とShare Extensionは`group.ist.s-hirano.s-private`のApp Groupだけを共有する。Extensionは認証情報を保持せず、サーバー通信もしない。共有されたURL、テキスト、画像はschema version、operation ID、種別、本文または添付相対パス、作成日時を持つJSONとして、一時ディレクトリからoperation IDディレクトリへのrenameで原子的に確定する。本体は未処理ディレクトリを取り込み済み領域へ移動し、同じoperation IDの二重取り込みを防ぐ。
 
@@ -1645,12 +623,6 @@ Auth0のNative Application設定はWeb用Applicationと分離する。iOSはAuth
 
 ## Hono共通backendへの段階移行
 
-WebとiOSの共通APIは `packages/api-contracts` のHonoルート・Zodスキーマから
-OpenAPI 3.1を出力し、OrvalとSwift OpenAPI Generatorでクライアントを生成する。
-契約はcore、Prisma、Next.js、実行時adapterから独立させる。
-`packages/api-client` は生成したDTOとリクエスト単位の検証付きtransportを提供する。
-`packages/backend/src/api/composition` はプラットフォームadapterを型付きで受け取り、raw repository・domain service・API serviceを組み立てる。共有APIからWebのapplication-servicesやNext.js cache adapterへ依存させない。
-既存mobile APIはNext.js内のHonoでホストし、認証・tenant・レスポンス形式を維持する。
-`app/src/backend/http/mobile` は移行期間のHTTP層で、UIとNext.js APIへの直接依存を禁止する。
-移管順序、認証・キャッシュ・デプロイの境界は
-[共通backendへの移行](backend-migration.md) を参照する。
+共通backendとWebの分離実装は完了している。`BACKEND_URL` は必須で、Web内のHono・Prisma・storage・ドメインadapterは撤去した。旧 `/api/mobile/v1`、cache無効化入口、Web Cronは404となる。
+共有契約・生成client・backendの依存境界は上記の構成に従う。stacked PRの順序と本番適用gateは[移行履歴](backend-migration.md)、環境変数と手動切替は[Vercelセットアップ](backend-vercel-setup.md)を参照する。
+コードの完了と本番切替は別であり、対応iOS配布、外部認証、実機、Cronの単独稼働を確認してから旧入口撤去を適用する。
