@@ -1,5 +1,5 @@
 import { requireAuth } from "@/common/auth/session";
-import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
+import { backendActionError } from "@/common/backend/action-error";
 import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import { getExportedBooks, getUnexportedBooks } from "./get-books";
 import {
@@ -8,13 +8,11 @@ import {
 } from "./load-more-books";
 
 vi.mock("@/common/auth/session");
-vi.mock("@/common/error/error-wrapper");
+vi.mock("@/common/backend/action-error");
 vi.mock("./get-books");
 
 const mockRequireAuth = vi.mocked(requireAuth);
-const mockWrapServerSideErrorForClient = vi.mocked(
-	wrapServerSideErrorForClient,
-);
+const mockBackendActionError = vi.mocked(backendActionError);
 const mockGetExportedBooks = vi.mocked(getExportedBooks);
 const mockGetUnexportedBooks = vi.mocked(getUnexportedBooks);
 
@@ -47,11 +45,11 @@ describe("load-more-books", () => {
 
 			mockRequireAuth.mockResolvedValue(undefined);
 			mockGetExportedBooks.mockRejectedValue(error);
-			mockWrapServerSideErrorForClient.mockResolvedValue(wrappedError);
+			mockBackendActionError.mockReturnValue(wrappedError);
 
 			const result = await loadMoreExportedBooks(10);
 
-			expect(mockWrapServerSideErrorForClient).toHaveBeenCalledWith(error);
+			expect(mockBackendActionError).toHaveBeenCalledWith(error);
 			expect(result).toEqual(wrappedError);
 		});
 	});
@@ -80,12 +78,27 @@ describe("load-more-books", () => {
 
 			mockRequireAuth.mockResolvedValue(undefined);
 			mockGetUnexportedBooks.mockRejectedValue(error);
-			mockWrapServerSideErrorForClient.mockResolvedValue(wrappedError);
+			mockBackendActionError.mockReturnValue(wrappedError);
 
 			const result = await loadMoreUnexportedBooks(5);
 
-			expect(mockWrapServerSideErrorForClient).toHaveBeenCalledWith(error);
+			expect(mockBackendActionError).toHaveBeenCalledWith(error);
 			expect(result).toEqual(wrappedError);
 		});
 	});
 });
+
+test.each([-1, 10001, 1.5, "5"])(
+	"rejects invalid generated offset %s before data access",
+	async (offset) => {
+		vi.clearAllMocks();
+		mockBackendActionError.mockReturnValue({
+			success: false,
+			message: "invalidFormat",
+		});
+		const result = await loadMoreExportedBooks(offset);
+		expect(result).toEqual({ success: false, message: "invalidFormat" });
+		expect(mockGetExportedBooks).not.toHaveBeenCalled();
+		expect(mockBackendActionError).toHaveBeenCalledOnce();
+	},
+);

@@ -195,3 +195,6 @@ redirectは追従せず、複数Set-Cookieとmedia streamを保持する。
 
 数値queryの型overrideでは上限・下限・既定値も同じ定数からOpenAPIへ明示する。
 一覧offsetは既存Web入力の上限10000をAPIにも適用し、生成clientにも制約を保持する。
+
+Webのload-moreは生成したドメイン別queryモデルでoffsetを検証し、ドメイン型を参照しない。
+load-moreと検索Server Actionのエラーは共通のAPIエラー変換で処理する。

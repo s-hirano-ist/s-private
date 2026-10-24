@@ -1,5 +1,5 @@
 import { requireAuth } from "@/common/auth/session";
-import { wrapServerSideErrorForClient } from "@/common/error/error-wrapper";
+import { backendActionError } from "@/common/backend/action-error";
 import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import { getExportedImages, getUnexportedImages } from "./get-images";
 import {
@@ -8,13 +8,11 @@ import {
 } from "./load-more-images";
 
 vi.mock("@/common/auth/session");
-vi.mock("@/common/error/error-wrapper");
+vi.mock("@/common/backend/action-error");
 vi.mock("./get-images");
 
 const mockRequireAuth = vi.mocked(requireAuth);
-const mockWrapServerSideErrorForClient = vi.mocked(
-	wrapServerSideErrorForClient,
-);
+const mockBackendActionError = vi.mocked(backendActionError);
 const mockGetExportedImages = vi.mocked(getExportedImages);
 const mockGetUnexportedImages = vi.mocked(getUnexportedImages);
 
@@ -47,11 +45,11 @@ describe("load-more-images", () => {
 
 			mockRequireAuth.mockResolvedValue(undefined);
 			mockGetExportedImages.mockRejectedValue(error);
-			mockWrapServerSideErrorForClient.mockResolvedValue(wrappedError);
+			mockBackendActionError.mockReturnValue(wrappedError);
 
 			const result = await loadMoreExportedImages(10);
 
-			expect(mockWrapServerSideErrorForClient).toHaveBeenCalledWith(error);
+			expect(mockBackendActionError).toHaveBeenCalledWith(error);
 			expect(result).toEqual(wrappedError);
 		});
 	});
@@ -80,12 +78,27 @@ describe("load-more-images", () => {
 
 			mockRequireAuth.mockResolvedValue(undefined);
 			mockGetUnexportedImages.mockRejectedValue(error);
-			mockWrapServerSideErrorForClient.mockResolvedValue(wrappedError);
+			mockBackendActionError.mockReturnValue(wrappedError);
 
 			const result = await loadMoreUnexportedImages(5);
 
-			expect(mockWrapServerSideErrorForClient).toHaveBeenCalledWith(error);
+			expect(mockBackendActionError).toHaveBeenCalledWith(error);
 			expect(result).toEqual(wrappedError);
 		});
 	});
 });
+
+test.each([-1, 10001, 1.5, "5"])(
+	"rejects invalid generated offset %s before data access",
+	async (offset) => {
+		vi.clearAllMocks();
+		mockBackendActionError.mockReturnValue({
+			success: false,
+			message: "invalidFormat",
+		});
+		const result = await loadMoreExportedImages(offset);
+		expect(result).toEqual({ success: false, message: "invalidFormat" });
+		expect(mockGetExportedImages).not.toHaveBeenCalled();
+		expect(mockBackendActionError).toHaveBeenCalledOnce();
+	},
+);
