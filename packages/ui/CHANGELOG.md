@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.2.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v2.2.1...@s-hirano-ist/s-ui-v2.2.2) (2026-10-24)
+
+
+### Maintenance
+
+* **deps:** update node and pnpm ([112702b](https://github.com/s-hirano-ist/s-private/commit/112702bc5a24e7604a28cf3ec8af71038db8f709))
+* **deps:** update node and pnpm ([667f93e](https://github.com/s-hirano-ist/s-private/commit/667f93ece6d212cae1f67b85775873c3f8fa3ff5))
+
 ## [2.2.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v2.2.0...@s-hirano-ist/s-ui-v2.2.1) (2026-10-06)
 
 
