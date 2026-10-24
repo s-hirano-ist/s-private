@@ -65,6 +65,11 @@ mise exec -- env BACKEND_URL=http://localhost:3002 pnpm --filter s-private-app d
 
 `BACKEND_URL` は末尾slash・path・query・credentialsのないoriginを指定する。
 HTTPはlocalhost／127.0.0.1だけ許可し、VercelではHTTPSのbackend originを設定する。
+Vercel Previewでは `app/vercel.json` の `relatedProjects` でbackend projectを関連付け、
+`VERCEL_RELATED_PROJECTS` から同じブランチのbackend originを自動解決する。
+PRごとの `BACKEND_URL` 登録は不要。Productionとローカルでは明示した `BACKEND_URL` を使う。
+関連情報のないPreviewでは明示した `BACKEND_URL` が必要で、backend Productionへ自動接続しない。
+backend projectを作り直した場合は `relatedProjects` のproject IDを更新する。
 ブラウザは公開Webの同一originのAPIを使い、SSRも同じBFF transportを使う。
 backend障害時に別ホストへmutationを再送しない。自動retryも追加しない。
 
