@@ -1,7 +1,7 @@
 "use client";
 
 import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
-import type { SearchQuery } from "@s-hirano-ist/s-core/shared-kernel/types/search-types";
+import type { SearchContentParams } from "@s-hirano-ist/s-api-client/models";
 import { useRef, useState, useTransition } from "react";
 
 type SearchableArticle = {
@@ -67,7 +67,7 @@ export function useSearch({
 		startTransition(async () => {
 			try {
 				setIsError(false);
-				const query: SearchQuery = {
+				const query: SearchContentParams = {
 					query: queryText.trim(),
 					limit: 50,
 				};
