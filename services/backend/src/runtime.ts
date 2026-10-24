@@ -9,16 +9,21 @@ import { EventDispatcher } from "@s-hirano-ist/s-backend/events/event-dispatcher
 import { createEventInitializer } from "@s-hirano-ist/s-backend/events/event-setup";
 import { LoggingEventHandler } from "@s-hirano-ist/s-backend/events/logging-event-handler";
 import { SystemEventHandler } from "@s-hirano-ist/s-backend/events/system-event-handler";
+import { createMobileChunkStore } from "@s-hirano-ist/s-backend/mobile/minio-chunk-store";
 import { createGigazineCronHandler } from "@s-hirano-ist/s-backend/notifications/cron";
 import { createBackendNotificationService } from "@s-hirano-ist/s-backend/notifications/pushover-service";
 import { ServerLogger } from "@s-hirano-ist/s-backend/observability/server-logger";
 import { createVectorSearch } from "@s-hirano-ist/s-backend/search/vector-search";
+import { createBooksStorageService } from "@s-hirano-ist/s-backend/shared/books-storage-service";
 import { extendDatabase } from "@s-hirano-ist/s-backend/shared/database";
+import { createLocalSampleSeeder } from "@s-hirano-ist/s-backend/shared/local-fixtures";
+import { createImagesStorageService } from "@s-hirano-ist/s-backend/shared/minio-storage-service";
 import { tenantContext } from "@s-hirano-ist/s-backend/shared/tenant-context";
 import { applyTenantFilter } from "@s-hirano-ist/s-backend/shared/tenant-filter";
 import { PrismaClient, PrismaPg } from "@s-hirano-ist/s-database";
+import { createMinioClient } from "@s-hirano-ist/s-storage";
 import * as Sentry from "@sentry/node";
-import { createUnavailableObjectStorage } from "s-private-backend/unavailable-object-storage";
+import { readFile } from "node:fs/promises";
 
 export function createBackendRuntime(env: BackendEnv) {
 	Sentry.init({
@@ -47,7 +52,21 @@ export function createBackendRuntime(env: BackendEnv) {
 			applyTenantFilter(model, operation, args, tenantContext.getStore()),
 		() => {},
 	);
-	const { storage, chunks } = createUnavailableObjectStorage();
+	const minio = createMinioClient(
+		{
+			endPoint: env.MINIO_HOST,
+			port: env.MINIO_PORT,
+			useSSL: env.MINIO_USE_SSL,
+			accessKey: env.MINIO_ACCESS_KEY,
+			secretKey: env.MINIO_SECRET_KEY,
+		},
+		{
+			clientId: env.CF_ACCESS_CLIENT_ID ?? "",
+			clientSecret: env.CF_ACCESS_CLIENT_SECRET ?? "",
+		},
+	);
+	const images = createImagesStorageService(minio, env.MINIO_BUCKET_NAME);
+	const books = createBooksStorageService(minio, env.MINIO_BUCKET_NAME);
 	const eventDispatcher = new EventDispatcher();
 	const logger = new ServerLogger(
 		createBackendNotificationService(env),
@@ -59,8 +78,8 @@ export function createBackendRuntime(env: BackendEnv) {
 	})();
 	const services = createApiServices({
 		database,
-		chunks,
-		storage: { images: storage, books: storage },
+		chunks: createMobileChunkStore(minio, env.MINIO_BUCKET_NAME),
+		storage: { images, books },
 		eventDispatcher,
 		searchVectors: createVectorSearch({
 			url: env.QDRANT_URL,
@@ -71,12 +90,22 @@ export function createBackendRuntime(env: BackendEnv) {
 	});
 	const { auth, isLocalDevAuthEnabled } = createBackendAuth(env, database);
 	const apiAuth = createApiAuth(env, auth, services.mobile, Sentry);
+	const seedLocalUser = createLocalSampleSeeder({
+		database,
+		storage: images,
+		loadImage: () =>
+			readFile(
+				new URL(
+					"../../../packages/backend/fixtures/local-sample-landscape.png",
+					import.meta.url,
+				),
+			),
+	});
 	const cron = createGigazineCronHandler(
 		env,
 		services.pushDelivery.sendPushToAll,
 	);
 	const app = createBackendHttpApp({
-		objectStorageUnavailable: true,
 		api: createApiApp(apiAuth, services.reads, services.mutations).fetch,
 		auth: (request) => auth.handler(request),
 		signIn: createSignInHandler(env, {
@@ -84,8 +113,7 @@ export function createBackendRuntime(env: BackendEnv) {
 			isLocalDevAuthEnabled,
 			findUser: (email) =>
 				database.user.findUnique({ where: { email }, select: { id: true } }),
-			// The local sample seeder uploads images; keep sign-in independent of MinIO.
-			seedLocalUser: async () => {},
+			seedLocalUser,
 		}),
 		cron: (request) =>
 			env.BACKEND_CRON_ENABLED

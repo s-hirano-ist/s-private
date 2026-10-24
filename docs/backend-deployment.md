@@ -5,19 +5,6 @@ Codexはデプロイ・マージを実施しない。最終Web分離PRの適用�
 
 Vercel Dashboardでの具体的な設定手順は [Vercelセットアップ](backend-vercel-setup.md) を参照。
 
-## MinIOの一時停止
-
-移行先を検討している間、composition rootはMinIO clientを生成せず、
-`/api/v1/media/*` と `/api/v1/uploads` 配下の全操作を `NOT_FOUND`（404）で返す。
-uploadの作成・再開・完了・取消・期限切れcleanupへ入る前に遮断するため、
-停止中に既存upload情報やobjectを削除しない。既存DBの一覧・詳細・記事・ノート・検索・同期は維持する。
-画像と書影は表示できず、画像・書影の新規登録も停止する。
-
-この一時停止中は `MINIO_*` と `CF_ACCESS_*` の登録は起動条件に含めない。
-ローカル認証時の画像付きsample seedも停止する。既存のsecret、bucket、DB、operationは保持する。
-再有効化は一時停止コミットをrevertするPRで行い、必要なMinIO/Cloudflare設定を復旧してから
-画像・書影取得、5MiB超upload、再開、thumbnailを再確認する。
-
 ## 独立サービス
 
 `services/backend/src/index.ts` はHono appをdefault exportする。
