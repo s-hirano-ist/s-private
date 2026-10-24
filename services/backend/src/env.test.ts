@@ -19,6 +19,20 @@ const local = {
 	EMBEDDING_URL: "http://localhost:3001",
 };
 describe("standalone backend configuration", () => {
+	test("starts without object storage credentials during the temporary outage", () => {
+		const env = parseBackendEnv({
+			...local,
+			MINIO_HOST: undefined,
+			MINIO_BUCKET_NAME: undefined,
+			MINIO_ACCESS_KEY: undefined,
+			MINIO_SECRET_KEY: undefined,
+			MINIO_USE_SSL: "true",
+			CF_ACCESS_CLIENT_ID: undefined,
+			CF_ACCESS_CLIENT_SECRET: undefined,
+		});
+		expect(env.MINIO_HOST).toBeUndefined();
+		expect(env.MINIO_SECRET_KEY).toBeUndefined();
+	});
 	test("parses port/SSL strictly and leaves Cron disabled", () => {
 		const env = parseBackendEnv({ ...local, AUTH0_CLIENT_ID: "" });
 		expect(env.AUTH0_CLIENT_ID).toBeUndefined();

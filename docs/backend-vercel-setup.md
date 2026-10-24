@@ -1,5 +1,9 @@
 # VercelでWebと共通backendを配置する
 
+現在はMinIOをコード上で一時停止している。画像・書影取得とuploadは404となり、
+MinIO/Cloudflareの資格情報なしで起動できる。再有効化時の条件は
+[MinIOの一時停止](backend-deployment.md#minioの一時停止) を参照。
+
 この手順は担当者が手動で実施する。デプロイ・環境変数の登録・Cronの有効化は未実施。
 移行PRは下から順番に取り込み、最終Web分離PRを本番へ適用する前にbackendを稼働させる。
 旧mobile入口の撤去は `/api/v1` 対応iOSの配布・接続確認後に行う。
