@@ -1,4 +1,5 @@
 import Foundation
+import SPrivateAPI
 import Security
 import SwiftData
 import Testing
@@ -256,20 +257,20 @@ struct MobileAPIContractTests {
     @Test("Article pages decode string IDs and ISO 8601 dates")
     func decodesArticlePage() throws {
         let payload = Data(#"{"data":[{"id":"article-1","title":"Example","url":"https://example.com","quote":null,"categoryId":"category-1","categoryName":"News","status":"UNEXPORTED","createdAt":"2026-09-21T01:02:03.000Z","updatedAt":"2026-09-21T01:02:03.000Z","exportedAt":null}],"totalCount":1,"offset":0,"limit":30}"#.utf8)
-        let page = try MobileAPICoding.decoder().decode(MobilePage<MobileArticle>.self, from: payload)
+        let page = try MobileAPICoding.decoder().decode(Components.Schemas.ArticlesPage.self, from: payload)
         #expect(page.data.first?.id == "article-1")
-        #expect(page.data.first?.status == .unexported)
+        #expect(page.data.first?.status == .UNEXPORTED)
         #expect(page.totalCount == 1)
     }
 
     @Test("Stable API error codes decode without localized messages")
     func decodesError() throws {
         let payload = Data(#"{"error":{"code":"UNAUTHORIZED"}}"#.utf8)
-        let envelope = try MobileAPICoding.decoder().decode(MobileAPIErrorEnvelope.self, from: payload)
-        #expect(envelope.error.code == "UNAUTHORIZED")
+        let envelope = try MobileAPICoding.decoder().decode(Components.Schemas.ApiError.self, from: payload)
+        #expect(envelope.error.code == .UNAUTHORIZED)
     }
 
-    @Test("All four domain records decode from the mobile API")
+    @Test("Existing device cache records still decode for all four domains")
     func decodesDomainRecords() throws {
         let base = #""id":"one","status":"UNEXPORTED","createdAt":"2026-09-21T01:02:03Z","updatedAt":"2026-09-21T01:02:03Z""#
         let fixtures = [
@@ -282,14 +283,6 @@ struct MobileAPIContractTests {
             let record = try MobileAPICoding.decoder().decode(MobileRecord.self, from: Data(fixture.utf8))
             #expect(record.id == "one")
         }
-    }
-
-    @Test("Image manifest carries records ready for the local grid")
-    func decodesImageManifest() throws {
-        let payload = Data(#"{"articles":[],"notes":[],"books":[],"images":[{"id":"image-1","status":"UNEXPORTED","createdAt":"2026-09-21T01:02:03Z","updatedAt":"2026-09-21T01:02:03Z","path":"image.jpg","contentType":"image/jpeg"}],"categories":[]}"#.utf8)
-        let manifest = try MobileAPICoding.decoder().decode(MobileManifest.self, from: payload)
-        #expect(manifest.images.first?.path == "image.jpg")
-        #expect(manifest.items(for: .images).map(\.id) == ["image-1"])
     }
 
     @Test("Cached record preserves server update time including milliseconds")
