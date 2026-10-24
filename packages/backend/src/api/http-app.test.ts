@@ -1,7 +1,7 @@
 import { createBackendHttpApp } from "@s-hirano-ist/s-backend/api/http-app";
 import { describe, expect, test, vi } from "vite-plus/test";
 
-function setup() {
+function setup(objectStorageUnavailable = false) {
 	const cookies = new Headers();
 	cookies.append("set-cookie", "state=one; HttpOnly");
 	cookies.append("set-cookie", "aux=two; HttpOnly");
@@ -32,6 +32,7 @@ function setup() {
 	);
 	const reportError = vi.fn();
 	const app = createBackendHttpApp({
+		objectStorageUnavailable,
 		api,
 		auth,
 		signIn,
@@ -44,6 +45,40 @@ function setup() {
 	return { app, auth, api, signIn, reportError };
 }
 describe("backend HTTP host", () => {
+	test.each([
+		["GET", "/api/v1/media/images/image/original"],
+		["GET", "/api/v1/media/books/book/thumbnail"],
+		["POST", "/api/v1/uploads"],
+		["GET", "/api/v1/uploads/upload"],
+		["PUT", "/api/v1/uploads/upload/chunks/0"],
+		["POST", "/api/v1/uploads/upload/complete"],
+		["DELETE", "/api/v1/uploads/upload"],
+	])(
+		"returns 404 for disabled storage %s %s before persistence",
+		async (method, path) => {
+			const { app, api, auth, reportError } = setup(true);
+			const response = await app.request(path, { method });
+			expect(response.status).toBe(404);
+			expect(await response.json()).toEqual({ error: { code: "NOT_FOUND" } });
+			expect(response.headers.get("cache-control")).toBe("private, no-store");
+			expect(api).not.toHaveBeenCalled();
+			expect(auth).not.toHaveBeenCalled();
+			expect(reportError).not.toHaveBeenCalled();
+		},
+	);
+	test("keeps session and content metadata APIs available during the outage", async () => {
+		const { app, api } = setup(true);
+		for (const path of [
+			"/api/v1/session",
+			"/api/v1/articles",
+			"/api/v1/notes",
+			"/api/v1/books",
+			"/api/v1/images",
+		]) {
+			expect((await app.request(path)).status).toBe(200);
+		}
+		expect(api).toHaveBeenCalledTimes(5);
+	});
 	test("reconstructs public OAuth URL and preserves body and separate cookies", async () => {
 		const { app } = setup();
 		const response = await app.request(
