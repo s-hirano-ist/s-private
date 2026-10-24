@@ -822,6 +822,40 @@ importers:
         specifier: 'catalog:'
         version: 8.3.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)
 
+  services/backend:
+    dependencies:
+      '@hono/node-server':
+        specifier: 2.1.4
+        version: 2.1.4(hono@4.13.13)
+      '@s-hirano-ist/s-backend':
+        specifier: workspace:*
+        version: link:../../packages/backend
+      '@s-hirano-ist/s-database':
+        specifier: workspace:*
+        version: link:../../packages/database
+      '@s-hirano-ist/s-storage':
+        specifier: workspace:*
+        version: link:../../packages/storage
+      '@sentry/node':
+        specifier: 10.76.0
+        version: 10.76.0(@opentelemetry/core@2.11.0(@opentelemetry/api@1.9.1))(supports-color@10.2.2)
+      hono:
+        specifier: 'catalog:'
+        version: 4.13.13
+      zod:
+        specifier: 'catalog:'
+        version: 4.6.5
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 24.19.1
+      tsx:
+        specifier: 4.23.15
+        version: 4.23.15
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
+
 packages:
 
   '@adobe/css-tools@4.5.0':
@@ -1564,6 +1598,12 @@ packages:
   '@googleapis/books@13.0.1':
     resolution: {integrity: sha512-9CIe+RSNn/StFFHsACg6N0NNj0wndw4OWJv31iRfX+B9PGjc7SkO745tpNhSZqfI+CmkHt+kp5StkDRd31xk0A==}
     engines: {node: '>=22.0.0'}
+
+  '@hono/node-server@2.1.4':
+    resolution: {integrity: sha512-2g1qeHl4BduwDn6L8nkAvDrPUWPMlkQ//a5NhP/zIyaXKMjZNRV+cG9Csu+BiJFf6+68pqzjf4Hi5sJGKHuS1g==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      hono: ^4 || ^5.0.0-0
 
   '@hono/zod-openapi@1.6.3':
     resolution: {integrity: sha512-VYR82Y60plu8g3pN60OUXMVKpmxh3R04Qs++3DY9vtwZ9/sA/BRY0PcRIR+Z37/3itWtM7pYwT9bKiH9JhqV6Q==}
@@ -10559,6 +10599,10 @@ snapshots:
       googleapis-common: 9.1.0(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
+
+  '@hono/node-server@2.1.4(hono@4.13.13)':
+    dependencies:
+      hono: 4.13.13
 
   '@hono/zod-openapi@1.6.3(hono@4.13.13)(zod@4.6.5)':
     dependencies:

@@ -1,0 +1,29 @@
+{
+	"name": "s-private-backend",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"build": "tsc --noEmit",
+		"typecheck": "tsc --noEmit",
+		"dev": "tsx watch src/dev.ts",
+		"start": "tsx src/dev.ts"
+	},
+	"dependencies": {
+		"@s-hirano-ist/s-backend": "workspace:*",
+		"@s-hirano-ist/s-database": "workspace:*",
+		"@s-hirano-ist/s-storage": "workspace:*",
+		"@sentry/node": "10.76.0",
+		"@hono/node-server": "2.1.4",
+		"hono": "catalog:",
+		"zod": "catalog:"
+	},
+	"devDependencies": {
+		"@types/node": "catalog:",
+		"typescript": "catalog:",
+		"tsx": "4.23.15"
+	},
+	"exports": {
+		"./*": "./src/*.ts"
+	}
+}

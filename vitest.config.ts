@@ -12,7 +12,10 @@ export default defineConfig({
 			{
 				test: {
 					name: "backend",
-					include: ["packages/backend/src/**/*.test.ts"],
+					include: [
+						"packages/backend/src/**/*.test.ts",
+						"services/backend/src/**/*.test.ts",
+					],
 				},
 			},
 
