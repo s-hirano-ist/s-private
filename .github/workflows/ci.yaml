@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        check: [build, supplemental-lint, storybook, docs, schema-locked]
+        check: [build, supplemental-lint, storybook, docs, schema-locked, api-contract]
     permissions: {}
     uses: ./.github/workflows/ci-check.yaml
     with:

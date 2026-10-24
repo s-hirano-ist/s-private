@@ -26,6 +26,25 @@ const COLLAPSE_PATTERN =
    Verified: 0 false positives on the current tree; fires on deliberate violations. */
 const boundaryRules = [
 	{
+		name: "boundary-api-contracts",
+		severity: "error",
+		comment:
+			"API contracts must stay independent of runtime and domain adapters",
+		from: { path: "^packages/api-contracts/" },
+		to: {
+			path: "^(app/|services/|packages/(?!api-contracts/))|(^|/)node_modules/(next|react|server-only)(/|$)",
+		},
+	},
+	{
+		name: "boundary-api-client",
+		severity: "error",
+		comment: "Generated clients cannot depend on backend implementation",
+		from: { path: "^packages/api-client/" },
+		to: {
+			path: "^(app/|services/|packages/(?!api-client/))|(^|/)node_modules/(next|react|server-only)(/|$)",
+		},
+	},
+	{
 		name: "boundary-appsvc-persistence-adapters",
 		severity: "error",
 		comment:

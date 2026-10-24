@@ -80,3 +80,9 @@ jobs:
       - name: Check schema locking
         if: ${{ inputs.check == 'schema-locked' }}
         run: pnpm check:schema-locked
+
+      - name: Check OpenAPI snapshot and generate typed clients
+        if: ${{ inputs.check == 'api-contract' }}
+        run: |
+          pnpm api:check
+          pnpm --filter @s-hirano-ist/s-api-client typecheck

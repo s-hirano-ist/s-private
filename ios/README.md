@@ -234,3 +234,22 @@ signed app with the Production `MOBILE_API_BASE_URL` on the owner's physical
 iPhone. Confirm login, list retrieval, record creation, and synchronization of
 queued items, including Share Extension items. Repeat the offline/sync smoke
 test after each Personal Team re-signing.
+
+## Generated shared-backend API
+
+`Packages/SPrivateAPI` compiles a client and models from the shared OpenAPI 3.1
+contract using pinned Swift OpenAPI Generator, Runtime, and URLSession packages.
+The current app still uses `MobileClient` and `/api/mobile/v1`; switching the
+networking implementation is a later migration step.
+
+Run `pnpm api:generate` from the repository root after changing the Hono/Zod
+contract. The Swift generator reads `docs/openapi/backend-v1.json` directly; no copy is
+stored in the package. Do not edit this snapshot by hand. Run `pnpm api:check`
+to compare the OpenAPI snapshot without modifying it, and
+`swift test --package-path ios/Packages/SPrivateAPI` to test the generated models.
+
+`mise run ios:generate` first runs the pinned generator CLI on the development
+host, then runs XcodeGen. Generated Swift sources stay in the current worktree
+and are ignored by Git. Xcode links only the generated client and runtime, so the
+generator tool itself is never built for iOS and no plugin trust bypass is needed.
+Run `mise run ios:generate` before testing the Swift Package on a fresh checkout.

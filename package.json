@@ -30,11 +30,11 @@
 		"lint:md:fix": "mise exec -- rumdl check --fix .",
 		"lint:secret": "mise exec -- node scripts/check-secrets.mjs",
 		"check:fix": "pnpm format && pnpm lint:fix && pnpm lint:css:fix && pnpm lint:md:fix",
-		"check:agent": "pnpm format:check && SKIP_ENV_VALIDATION=true pnpm typecheck && SKIP_ENV_VALIDATION=true pnpm lint && pnpm deps:check && pnpm packages:build && pnpm test",
+		"check:agent": "pnpm format:check && pnpm api:check && SKIP_ENV_VALIDATION=true pnpm typecheck && SKIP_ENV_VALIDATION=true pnpm lint && pnpm deps:check && pnpm packages:build && pnpm test",
 		"bench": "vp test run --project 'bench (bench)'",
 		"bench:components": "vp test run --project 'app-bench (bench)'",
 		"bench:all": "vp test run --project 'bench (bench)' --project 'app-bench (bench)'",
-		"test": "STORYBOOK_DISABLE_TELEMETRY=true vitest run --project storybook --coverage.reportsDirectory=.vitest-coverage/storybook && STORYBOOK_DISABLE_TELEMETRY=true vp test run --project app --project components --project core --project database --project image-processing --project notification --project scripts --project search --coverage.reportsDirectory=.vitest-coverage/node && node scripts/merge-vitest-coverage.mjs",
+		"test": "STORYBOOK_DISABLE_TELEMETRY=true vitest run --project storybook --coverage.reportsDirectory=.vitest-coverage/storybook && STORYBOOK_DISABLE_TELEMETRY=true vp test run --project api --project app --project components --project core --project database --project image-processing --project notification --project scripts --project search --coverage.reportsDirectory=.vitest-coverage/node && node scripts/merge-vitest-coverage.mjs",
 		"test:watch": "vp test watch",
 		"typecheck": "pnpm packages:build && pnpm -r run typecheck",
 		"license:summary": "pnpm licenses list > library-license.txt",
@@ -46,7 +46,7 @@
 		"jscpd": "jscpd",
 		"jscpd:json": "jscpd -r json -o ./jscpd-report",
 		"jscpd:summary": "jscpd > jscpd-summary.txt 2>&1 || true",
-		"knip": "knip",
+		"knip": "pnpm packages:build && knip",
 		"storybook": "storybook dev -p 6006",
 		"storybook:agent": "storybook dev -p 6006 --ci",
 		"storybook:build": "pnpm --filter @s-hirano-ist/s-ui build && pnpm storybook:build:raw",
@@ -57,7 +57,7 @@
 		"ui-gallery:build": "pnpm storybook:build && pnpm docs:build && pnpm ui-gallery:build:raw",
 		"ui-gallery:build:raw": "node scripts/build-ui-gallery.mjs",
 		"pages:build": "pnpm ui-gallery:build",
-		"deps:check": "depcruise app/src packages/ui packages/core packages/notification --config dependency-cruiser.config.js",
+		"deps:check": "pnpm api:generate && depcruise app/src packages/ui packages/core packages/notification packages/api-contracts packages/api-client --config dependency-cruiser.config.js",
 		"deps:circular": "depcruise app/src packages/ui packages/core packages/notification --config dependency-cruiser.config.js --output-type text --focus-depth 0",
 		"deps:graph": "{ echo '```mermaid'; depcruise app/src packages/ui packages/core packages/notification --config dependency-cruiser.config.js --output-type mermaid --collapse 'app/src/(application-services|infrastructures)/[^/]+/|app/src/(app|common|components|loaders)/|packages/core/[^/]+/|packages/(ui|database|notification|search|storage)/' --include-only '^(app/src|packages)/(?!.*(vitest|\\.stories\\.))'; echo '```'; } > dependency-graph.md",
 		"prisma:deploy": "pnpm --filter s-database prisma:deploy",
@@ -74,7 +74,9 @@
 		"test:mutation": "stryker run",
 		"test:mutation:core": "stryker run stryker.config.json",
 		"preinstall": "npx only-allow pnpm",
-		"prepare": "lefthook install"
+		"prepare": "lefthook install",
+		"api:generate": "pnpm --filter @s-hirano-ist/s-api-contracts build && node scripts/generate-api.mjs",
+		"api:check": "pnpm --filter @s-hirano-ist/s-api-contracts build && node scripts/generate-api.mjs --check"
 	},
 	"dependencies": {
 		"next": "catalog:",
@@ -137,6 +139,8 @@
 		"typescript": "catalog:",
 		"vite": "catalog:",
 		"vite-plus": "catalog:",
-		"vitest": "catalog:"
+		"vitest": "catalog:",
+		"orval": "8.41.0",
+		"@s-hirano-ist/s-api-contracts": "workspace:*"
 	}
 }
