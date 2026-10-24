@@ -123,18 +123,18 @@
 		"validate:package": "publint && npm_config_cache=/tmp/s-ui-npm-cache attw --pack . --profile esm-only --exclude-entrypoints ./styles.css ./package.json"
 	},
 	"peerDependencies": {
-		"react": "^19.3.0",
-		"react-dom": "^19.3.0"
+		"react": "^19.3.1",
+		"react-dom": "^19.3.1"
 	},
 	"dependencies": {
-		"@base-ui/react": "1.8.0",
+		"@base-ui/react": "1.9.0",
 		"lucide-react": "catalog:",
 		"tailwind-merge": "3.7.0",
 		"tailwind-variants": "3.3.1"
 	},
 	"devDependencies": {
 		"@arethetypeswrong/cli": "0.18.5",
-		"@storybook/react-vite": "10.6.1",
+		"@storybook/react-vite": "10.6.3",
 		"@tailwindcss/cli": "4.3.3",
 		"@tailwindcss/postcss": "catalog:",
 		"@types/react": "catalog:",
@@ -143,7 +143,7 @@
 		"publint": "0.3.25",
 		"react": "catalog:",
 		"react-dom": "catalog:",
-		"tsdown": "0.23.0",
+		"tsdown": "0.23.2",
 		"typescript": "catalog:",
 		"vite": "catalog:"
 	},

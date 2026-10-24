@@ -245,7 +245,7 @@
 		"directory": "packages/core"
 	},
 	"dependencies": {
-		"uuid": "14.0.2",
+		"uuid": "14.0.3",
 		"zod": "catalog:"
 	},
 	"devDependencies": {
