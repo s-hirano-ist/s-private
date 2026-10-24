@@ -54,8 +54,8 @@ export function createBackendHttpApp(deps: {
 	});
 	app.get("/api/cron/gigazine-headline", (c) => deps.cron(c.req.raw));
 	app.all("/api/v1/*", (c) => deps.api(c.req.raw));
-	app.onError((error, c) => {
-		deps.reportError(error);
+	app.onError(async (error, c) => {
+		await deps.reportError(error);
 		return c.json({ error: "Internal server error" }, 500);
 	});
 	return app;

@@ -45,6 +45,17 @@ Previewには既存のPreview用DB・bucket・Auth0設定を使い、Production�
 `LOCAL_DEV_MODE=false`、`BACKEND_CRON_ENABLED=false` を配置先で明示する。`LOCAL_AUTH_*` は登録しない。`VERCEL=1` ではlocal認証を利用できない。
 ProductionのDBは `sslmode=verify-full` を使い、`NODE_TLS_REJECT_UNAUTHORIZED=0` を設定しない。ローカルファイルへの証明書pathをそのままコピーしない。
 
+Productionの `DATABASE_URL` は既存の `s-prod-runtime` / `prod-db` 用接続文字列を使う。
+`s-prod` はGitHub Actionsのmigration用で、backend実行用へ転用しない。
+移行時は [DBロールの手順](cockroachdb-role-minimization-runbook.md) に従い、
+接続ユーザー・DB、public schemaのUSAGE、既存テーブルのDML権限を確認する。
+OAuth開始時にも `verification` へのINSERTが発生するため、DB接続や `/health` の成功だけでは不十分。
+`42501` が出た場合は接続先とユーザーを先に確認し、認証を迂回したりadmin権限を付与したりしない。
+
+backendにも既存Sentryの `NEXT_PUBLIC_SENTRY_DSN` を登録し、変更後に再デプロイする。
+HTTP hostの未処理例外は秘密値を伏せた診断情報をVercelログとSentryへ記録し、
+レスポンス完了前に最大2秒Sentryの送信を待つ。Cookie・Authorization・OAuth queryを記録しない。
+
 ## 3. Deployment Protectionと認証を確認する
 
 ### 配布成果物の起動を確認する

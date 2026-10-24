@@ -18,6 +18,7 @@ import { tenantContext } from "@s-hirano-ist/s-backend/shared/tenant-context";
 import { applyTenantFilter } from "@s-hirano-ist/s-backend/shared/tenant-filter";
 import { PrismaClient, PrismaPg } from "@s-hirano-ist/s-database";
 import * as Sentry from "@sentry/node";
+import { createHttpErrorReporter } from "s-private-backend/error-reporter";
 import { createUnavailableObjectStorage } from "s-private-backend/unavailable-object-storage";
 
 export function createBackendRuntime(env: BackendEnv) {
@@ -25,6 +26,16 @@ export function createBackendRuntime(env: BackendEnv) {
 		dsn: env.NEXT_PUBLIC_SENTRY_DSN,
 		enabled: env.NODE_ENV === "production",
 		sendDefaultPii: false,
+		beforeSend(event) {
+			// OAuth query strings and request headers must never accompany diagnostics.
+			delete event.request;
+			delete event.breadcrumbs;
+			return event;
+		},
+	});
+	const reportError = createHttpErrorReporter(env, async (error) => {
+		Sentry.captureException(error, { tags: { source: "backend_http" } });
+		await Sentry.flush(2000);
 	});
 	const client = new PrismaClient({
 		adapter: new PrismaPg({
@@ -93,7 +104,7 @@ export function createBackendRuntime(env: BackendEnv) {
 				: Promise.resolve(new Response(null, { status: 404 })),
 		publicOrigin: new URL(env.BETTER_AUTH_URL).origin,
 		isTrustedOrigin: apiAuth.isTrustedOrigin,
-		reportError: Sentry.captureException,
+		reportError,
 	});
 	return { app, close: () => client.$disconnect() };
 }
