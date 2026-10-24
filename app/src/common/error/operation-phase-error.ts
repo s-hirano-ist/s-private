@@ -1,4 +1,1 @@
-export {
-	OperationPhaseError,
-	withOperationPhase,
-} from "@s-hirano-ist/s-backend/shared/operation-phase-error";
+export { OperationPhaseError } from "@s-hirano-ist/s-backend/shared/operation-phase-error";
