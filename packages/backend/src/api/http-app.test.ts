@@ -139,4 +139,24 @@ describe("backend HTTP host", () => {
 		expect(await response.text()).not.toContain("private-database-error");
 		expect(reportError).toHaveBeenCalledOnce();
 	});
+	test("waits for error delivery before completing a serverless response", async () => {
+		const { app, signIn, reportError } = setup();
+		let finishReporting = () => {};
+		const reporting = new Promise<void>((resolve) => {
+			finishReporting = resolve;
+		});
+		reportError.mockReturnValue(reporting);
+		signIn.mockRejectedValueOnce(new Error("authentication failed"));
+		let completed = false;
+		const request = Promise.resolve(app.request("/api/sign-in")).then(
+			(response) => {
+				completed = true;
+				return response;
+			},
+		);
+		await vi.waitFor(() => expect(reportError).toHaveBeenCalledOnce());
+		expect(completed).toBe(false);
+		finishReporting();
+		expect((await request).status).toBe(500);
+	});
 });
