@@ -1,5 +1,6 @@
 import type { PushSubscriptionRepository } from "@s-hirano-ist/s-backend/notifications/ports";
 import type { createPushDeliveryService } from "@s-hirano-ist/s-backend/notifications/push-notification-service";
+import { PushSubscriptionError } from "@s-hirano-ist/s-backend/notifications/error";
 import { buildGigazineHeadline } from "@s-hirano-ist/s-backend/notifications/gigazine-headline";
 import { z } from "zod";
 export const subscriptionSchema = z.object({
@@ -13,11 +14,18 @@ export async function subscribeToPush(
 	publicKey: string | undefined,
 	repository: PushSubscriptionRepository,
 ): Promise<void> {
-	if (!publicKey) throw new Error("Web Push public key is missing");
+	if (!publicKey)
+		throw new PushSubscriptionError(
+			"UNAVAILABLE",
+			"Web Push public key is missing",
+		);
 	const subscription = subscriptionSchema.parse(input);
 	const existing = await repository.findByEndpoint(subscription.endpoint);
 	if (existing && existing.userId !== userId)
-		throw new Error("Push subscription belongs to another user");
+		throw new PushSubscriptionError(
+			"FORBIDDEN",
+			"Push subscription belongs to another user",
+		);
 	await repository.save(
 		userId,
 		subscription.endpoint,
@@ -39,7 +47,8 @@ export async function sendTestPush(
 	send: ReturnType<typeof createPushDeliveryService>["sendPushToSubscription"],
 ): Promise<void> {
 	const subscription = await repository.findOwned(userId, endpoint);
-	if (!subscription) throw new Error("Push subscription not found");
+	if (!subscription)
+		throw new PushSubscriptionError("NOT_FOUND", "Push subscription not found");
 	const headline = buildGigazineHeadline();
 	await send(subscription, {
 		...headline.payload,
