@@ -23,7 +23,11 @@ import {
  * ```
  */
 export class NotesBatchDomainService {
-	constructor(private readonly commandRepository: IBatchCommandRepository) {}
+	private readonly commandRepository: IBatchCommandRepository;
+
+	constructor(commandRepository: IBatchCommandRepository) {
+		this.commandRepository = commandRepository;
+	}
 
 	/**
 	 * Resets notes for a new batch export.

@@ -9,7 +9,7 @@ export function resolveBackendUrl(settings: {
 	if (settings.vercel === "1" && settings.vercelEnv === "preview") {
 		return (
 			withRelatedProject({
-				projectName: "backend",
+				projectName: "memdex-backend",
 				defaultHost: settings.backendUrl ?? "",
 			}) || undefined
 		);

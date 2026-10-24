@@ -12,7 +12,7 @@ describe("resolveBackendUrl", () => {
 			"VERCEL_RELATED_PROJECTS",
 			JSON.stringify([
 				{
-					project: { id: "prj_backend", name: "backend" },
+					project: { id: "prj_backend", name: "memdex-backend" },
 					production: { alias: "production.example.com" },
 					preview: { branch: "backend-git-feature.example.com" },
 				},
@@ -35,7 +35,7 @@ describe("resolveBackendUrl", () => {
 			"VERCEL_RELATED_PROJECTS",
 			JSON.stringify([
 				{
-					project: { id: "prj_backend", name: "backend" },
+					project: { id: "prj_backend", name: "memdex-backend" },
 					production: { alias: "production.example.com" },
 					preview: {},
 				},

@@ -29,12 +29,16 @@ import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-
  * @see {@link DuplicateError} for duplicate handling
  */
 export class ImagesDomainService {
+	private readonly imagesQueryRepository: IImagesQueryRepository;
+
 	/**
 	 * Creates a new ImagesDomainService instance.
 	 *
 	 * @param imagesQueryRepository - The query repository for checking duplicates
 	 */
-	constructor(private readonly imagesQueryRepository: IImagesQueryRepository) {}
+	constructor(imagesQueryRepository: IImagesQueryRepository) {
+		this.imagesQueryRepository = imagesQueryRepository;
+	}
 
 	/**
 	 * Validates that no image with the same path exists for the user.

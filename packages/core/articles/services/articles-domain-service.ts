@@ -29,14 +29,16 @@ import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-
  * @see {@link DuplicateError} for duplicate handling
  */
 export class ArticlesDomainService {
+	private readonly articlesQueryRepository: IArticlesQueryRepository;
+
 	/**
 	 * Creates a new ArticlesDomainService instance.
 	 *
 	 * @param articlesQueryRepository - The query repository for checking duplicates
 	 */
-	constructor(
-		private readonly articlesQueryRepository: IArticlesQueryRepository,
-	) {}
+	constructor(articlesQueryRepository: IArticlesQueryRepository) {
+		this.articlesQueryRepository = articlesQueryRepository;
+	}
 
 	/**
 	 * Validates that no article with the same URL exists for the user.

@@ -16,7 +16,11 @@ import { NotificationError } from "./errors.js";
  * @internal
  */
 class PushoverService implements NotificationService {
-	constructor(private readonly config: NotificationConfig) {}
+	private readonly config: NotificationConfig;
+
+	constructor(config: NotificationConfig) {
+		this.config = config;
+	}
 
 	/**
 	 * Sends a message to the Pushover API.

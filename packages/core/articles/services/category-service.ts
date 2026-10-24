@@ -27,6 +27,9 @@ import {
  * @see {@link ICategoryCommandRepository} for command operations
  */
 export class CategoryService {
+	private readonly categoryQueryRepository: ICategoryQueryRepository;
+	private readonly categoryCommandRepository: ICategoryCommandRepository;
+
 	/**
 	 * Creates a new CategoryService instance.
 	 *
@@ -34,9 +37,12 @@ export class CategoryService {
 	 * @param categoryCommandRepository - The command repository for creating categories
 	 */
 	constructor(
-		private readonly categoryQueryRepository: ICategoryQueryRepository,
-		private readonly categoryCommandRepository: ICategoryCommandRepository,
-	) {}
+		categoryQueryRepository: ICategoryQueryRepository,
+		categoryCommandRepository: ICategoryCommandRepository,
+	) {
+		this.categoryQueryRepository = categoryQueryRepository;
+		this.categoryCommandRepository = categoryCommandRepository;
+	}
 
 	/**
 	 * Resolves an existing category or creates a new one.

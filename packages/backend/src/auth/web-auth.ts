@@ -21,6 +21,7 @@
 
 import type { DatabaseClient } from "@s-hirano-ist/s-backend/shared/database";
 import type { BaseURLConfig } from "better-auth";
+import { vercelPreviewHosts } from "@s-hirano-ist/s-backend/auth/web-origin";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { betterAuth } from "better-auth/minimal";
 import { auth0, genericOAuth } from "better-auth/plugins/generic-oauth";
@@ -66,9 +67,6 @@ export function createBackendAuth(env: AuthConfig, prisma: DatabaseClient) {
 
 	const THIRTY_DAYS_IN_SECONDS = 60 * 60 * 24 * 30;
 
-	/** Vercel preview/deployment URL pattern for this project (branch & hash forms). */
-	const VERCEL_PREVIEW_HOST = "s-private-*-s-hirano-ist-team.vercel.app";
-
 	/**
 	 * On Vercel, derive the base URL from the incoming request host so every preview
 	 * deployment authenticates against its own (dynamic) origin — `allowedHosts` are
@@ -77,7 +75,10 @@ export function createBackendAuth(env: AuthConfig, prisma: DatabaseClient) {
 	 */
 	const baseURL: BaseURLConfig = env.VERCEL
 		? {
-				allowedHosts: [new URL(env.BETTER_AUTH_URL).host, VERCEL_PREVIEW_HOST],
+				allowedHosts: [
+					new URL(env.BETTER_AUTH_URL).host,
+					...vercelPreviewHosts,
+				],
 				fallback: env.BETTER_AUTH_URL,
 				protocol: "https",
 			}
@@ -97,7 +98,10 @@ export function createBackendAuth(env: AuthConfig, prisma: DatabaseClient) {
 	const auth = betterAuth({
 		baseURL,
 		secret: env.AUTH_SECRET,
-		trustedOrigins: [env.BETTER_AUTH_URL, `https://${VERCEL_PREVIEW_HOST}`],
+		trustedOrigins: [
+			env.BETTER_AUTH_URL,
+			...vercelPreviewHosts.map((host) => `https://${host}`),
+		],
 		onAPIError: { errorURL: "/error" },
 		database: prismaAdapter(prisma, { provider: "cockroachdb" }),
 		account: {

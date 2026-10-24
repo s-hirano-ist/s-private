@@ -23,7 +23,11 @@ import {
  * ```
  */
 export class BooksBatchDomainService {
-	constructor(private readonly commandRepository: IBatchCommandRepository) {}
+	private readonly commandRepository: IBatchCommandRepository;
+
+	constructor(commandRepository: IBatchCommandRepository) {
+		this.commandRepository = commandRepository;
+	}
 
 	/**
 	 * Resets books for a new batch export.

@@ -36,12 +36,43 @@ Webの `BETTER_AUTH_URL` も公開Web originを指定する。
 
 WebへDB・MinIO・Auth0 client secret・VAPID秘密鍵・Pushover・Qdrantの資格情報を渡す必要はなくなる。backendの確認と切替後にWeb projectから不要な変数を削除する。共有secret自体は変更しない。
 
-Previewには既存のPreview用DB・bucket・Auth0設定を使い、ProductionのDBや通知先と混在させない。Preview backendとPreview Webを対応させ、WebのPreview用 `BACKEND_URL` をそのbackendへ向ける。必要なら固定のPreview domainを使用する。現在の認証設定は公開Web originと既存teamの `s-private-*-s-hirano-ist-team.vercel.app` を許可する。別名のWeb project/domainへ変える場合は、認証の許可hostとAuth0の許可URLを合わせて変更・確認する。
+Previewには既存のPreview用DB・bucket・Auth0設定を使い、ProductionのDBや通知先と混在させない。Preview backendとPreview Webを対応させ、WebのPreview用 `BACKEND_URL` をそのbackendへ向ける。必要なら固定のPreview domainを使用する。現在の認証設定は公開Web originと既存teamの `s-private-*-s-hirano-ist-team.vercel.app` および `memdex-web-*-s-hirano-ist-team.vercel.app` を許可する。別名のWeb project/domainへ変える場合は、認証の許可hostとAuth0の許可URLを合わせて変更・確認する。
 
 `LOCAL_DEV_MODE=false`、`BACKEND_CRON_ENABLED=false` を配置先で明示する。`LOCAL_AUTH_*` は登録しない。`VERCEL=1` ではlocal認証を利用できない。
 ProductionのDBは `sslmode=verify-full` を使い、`NODE_TLS_REJECT_UNAUTHORIZED=0` を設定しない。ローカルファイルへの証明書pathをそのままコピーしない。
 
 ## 3. Deployment Protectionと認証を確認する
+
+### 配布成果物の起動を確認する
+
+Vercelのビルド成功だけでは起動成功を保証しない。workspaceのpackage exportsは
+TypeScriptソースを指しているため、`services/backend/vercel.json` の `includeFiles` で
+host・backend・core・DBのソースをFunctionに含める。Node.js 24の型除去で実行するため、
+対象のTypeScript設定では `erasableSyntaxOnly` を有効にする。
+constructorのparameter propertyなど、JavaScriptへの変換が必要な構文は使用しない。
+型検査の回帰テストに加え、生成されたFunctionをリポジトリ外へ展開し、
+次のコマンドで実際のentrypointをロードする。認証情報はテスト専用のダミー値を使用する。
+
+```bash
+node services/backend/scripts/smoke-runtime.mjs /ABSOLUTE/FUNCTION/services/backend/src/index.js
+```
+
+`/health: 200` と `/api/v1/session: 401` の両方が出力されることを確認する。
+`ERR_MODULE_NOT_FOUND` や `ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX` が出た成果物は公開しない。
+
+PreviewのRelated Projectsはproject IDだけでなく解決に使う名前も一致させる。
+現在のbackend project名は `memdex-backend`。rename時にはWebの解決処理も更新する。
+
+### Auth0の設定を確認する
+
+ProductionのWebとbackendの `BETTER_AUTH_URL` は `https://private.s-hirano.com`、
+Webの `BACKEND_URL` は `https://api.s-hirano.com` とする。
+Auth0のWeb Applicationで、Allowed Callback URLsには
+`https://private.s-hirano.com/api/auth/callback/auth0`、Allowed Web Originsと
+Allowed Logout URLsには `https://private.s-hirano.com` を登録する。
+Previewも対応するWeb originのcallbackを許可し、Productionのclient secretやDBを共有しない。
+Discoveryとログイン画面までの疎通だけではclient secretのtoken交換・DB永続化・session発行は
+検証できないため、実際のログイン完了まで確認する。
 
 backendはWebサーバーとiOSからHTTPで到達できる必要がある。Vercel Authenticationで保護すると、アプリの認証に到達する前に拒否される。
 この実装はVercelのbypass secretを送らない。backendの対象deploymentについて、projectの **Settings → Deployment Protection** で到達可能な設定にする。Web projectの保護設定とは分ける。
