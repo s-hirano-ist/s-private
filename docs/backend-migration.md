@@ -192,3 +192,6 @@ Webの `BACKEND_URL` 設定後は、API・認証protocol・サインインを固
 Cookie・Bearer・Origin・Content-Typeを明示的に転送し、SSRから受信Authorizationは転送しない。
 redirectは追従せず、複数Set-Cookieとmedia streamを保持する。
 未設定の暫定handlerはlazy importし、独立backendの障害時にはfallback・retryしない。
+
+数値queryの型overrideでは上限・下限・既定値も同じ定数からOpenAPIへ明示する。
+一覧offsetは既存Web入力の上限10000をAPIにも適用し、生成clientにも制約を保持する。

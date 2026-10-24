@@ -1,5 +1,6 @@
 import { createApiDocument } from "@s-hirano-ist/s-api-contracts/document";
 import {
+	listQuerySchema,
 	snapshotRecordSchema,
 	syncChangeSchema,
 	uploadStartSchema,
@@ -119,4 +120,48 @@ test("chunk size keeps its integer type and fixed value in OpenAPI", () => {
 		type: "integer",
 		enum: [1048576],
 	});
+});
+
+test("numeric query bounds and defaults survive OpenAPI generation", () => {
+	const paths = createApiDocument().paths;
+	const numeric = (path: string, name: string) =>
+		z
+			.array(
+				z.object({
+					name: z.string(),
+					schema: z.record(z.string(), z.unknown()),
+				}),
+			)
+			.parse(paths?.[path]?.get?.parameters)
+			.find((parameter) => parameter.name === name)?.schema;
+	for (const domain of ["articles", "notes", "images", "books"]) {
+		expect(numeric("/" + domain, "offset")).toEqual({
+			type: "integer",
+			minimum: 0,
+			maximum: 10000,
+			default: 0,
+		});
+		expect(numeric("/" + domain, "limit")).toEqual({
+			type: "integer",
+			minimum: 1,
+			maximum: 100,
+			default: 30,
+		});
+	}
+	for (const path of ["/sync/snapshot", "/sync/changes"])
+		expect(numeric(path, "limit")).toEqual({
+			type: "integer",
+			minimum: 1,
+			maximum: 100,
+			default: 100,
+		});
+	expect(numeric("/search", "limit")).toEqual({
+		type: "integer",
+		minimum: 1,
+		maximum: 50,
+		default: 20,
+	});
+	expect(listQuerySchema.parse({})).toEqual({ offset: 0, limit: 30 });
+	for (const offset of [-1, 10001, 1.5])
+		expect(listQuerySchema.safeParse({ offset }).success).toBe(false);
 });
