@@ -17,7 +17,14 @@ export const RAG_CONFIG = {
 		distance: "Cosine" as const,
 	},
 	embedding: {
-		url: process.env.EMBEDDING_URL,
+		// Deployed services and ingestion jobs always use Qdrant Cloud Inference.
+		// Keep TEI only for explicitly enabled, non-production local development.
+		url:
+			process.env.LOCAL_DEV_MODE === "true" &&
+			process.env.VERCEL !== "1" &&
+			process.env.NODE_ENV !== "production"
+				? process.env.EMBEDDING_URL
+				: undefined,
 		model: envWithDefault("EMBEDDING_MODEL", "intfloat/multilingual-e5-small"),
 	},
 	chunking: { maxChunkLength: 2000, headingLevels: [2, 3] },

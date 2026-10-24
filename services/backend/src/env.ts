@@ -31,7 +31,8 @@ const schema = z.object({
 	QDRANT_URL: z.url(),
 	QDRANT_API_KEY: optional,
 	QDRANT_COLLECTION_NAME: z.string().min(1),
-	EMBEDDING_URL: z.url(),
+	/** Optional TEI origin for hermetic local development; Cloud Inference needs no separate URL. */
+	EMBEDDING_URL: z.url().optional(),
 	PUSHOVER_URL: z.url().default("https://api.pushover.net/1/messages.json"),
 	PUSHOVER_USER_KEY: optional,
 	PUSHOVER_APP_TOKEN: optional,
