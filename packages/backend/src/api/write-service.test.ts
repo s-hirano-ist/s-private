@@ -7,12 +7,17 @@ import {
 	type WriteServiceDeps,
 	type MediaInput,
 } from "@s-hirano-ist/s-backend/api/write-service";
+import { createBook } from "@s-hirano-ist/s-backend/books/use-cases";
 import { createImage } from "@s-hirano-ist/s-backend/images/use-cases";
 import { mobileInputHash } from "@s-hirano-ist/s-backend/mobile/operations";
 import { createNote } from "@s-hirano-ist/s-backend/notes/use-cases";
 import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import { createHash } from "node:crypto";
 import { describe, expect, test, vi } from "vitest";
+vi.mock("@s-hirano-ist/s-backend/books/use-cases", () => ({
+	createBook: vi.fn(),
+	deleteBook: vi.fn(),
+}));
 vi.mock("@s-hirano-ist/s-backend/images/input", () => ({
 	parseImageInput: vi.fn(async () => ({ contentType: "image/png" })),
 }));
@@ -157,4 +162,45 @@ describe("Shared API operation replay", () => {
 		});
 		expect(lookupContentId).not.toHaveBeenCalled();
 	});
+});
+
+test("replays a completed legacy book after its upload row was removed, preserving raw CSV hash input", async () => {
+	const { service, setOperation, lookupContentId } = fixture();
+	const metadata = {
+		isbn: "9781234567890",
+		title: "Book",
+		rating: "3",
+		tags: " a , b, ",
+	};
+	const file = new File(["png"], "upload.jpg", { type: "image/jpeg" });
+	setOperation({
+		userId: "owner",
+		domain: "books",
+		status: "SUCCEEDED",
+		resourceId: "old-book",
+		inputHash: mobileInputHash({
+			...metadata,
+			operationId,
+			fileHash: createHash("sha256").update("png").digest("hex"),
+		}),
+	});
+	const input: MediaInput = {
+		operationId,
+		domain: "books",
+		contentType: "image/jpeg",
+		fileSize: 3,
+		metadata: { ...metadata, rating: 3, tags: metadata.tags.split(",") },
+	};
+	expect((await service.media("owner", input, file)).resource.id).toBe(
+		"old-book",
+	);
+	expect(createBook).not.toHaveBeenCalled();
+	expect(lookupContentId).not.toHaveBeenCalled();
+	await expect(
+		service.media(
+			"owner",
+			{ ...input, metadata: { ...input.metadata, title: "Changed" } },
+			file,
+		),
+	).rejects.toMatchObject({ code: "OPERATION_CONFLICT" });
 });

@@ -106,7 +106,7 @@ describe("Shared API resumable uploads", () => {
 			isbn: "9781234567890",
 			title: "Book",
 			rating: "3",
-			tags: "a,b",
+			tags: " a , b, ",
 		};
 		setRecord({
 			id: "legacy",
@@ -121,9 +121,17 @@ describe("Shared API resumable uploads", () => {
 		});
 		const modern: MediaInput = {
 			...input,
-			metadata: { ...input.metadata, tags: ["a", "b"] },
+			metadata: { ...input.metadata, tags: [" a ", " b", " "] },
 		};
-		expect((await service.start("owner", modern)).uploadId).toBe("legacy");
+		const resumed = await service.start("owner", modern);
+		expect(resumed.uploadId).toBe("legacy");
+		expect(resumed.receivedParts).toEqual([0]);
+		await expect(
+			service.start("owner", {
+				...modern,
+				metadata: { ...modern.metadata, tags: ["different"] },
+			}),
+		).rejects.toMatchObject({ code: "OPERATION_CONFLICT" });
 		await service.complete("owner", "legacy");
 		expect(media.mock.calls[0][3]).toEqual(metadata);
 	});
