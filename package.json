@@ -49,7 +49,7 @@
 		"knip": "pnpm packages:build && knip",
 		"storybook": "storybook dev -p 6006",
 		"storybook:agent": "storybook dev -p 6006 --ci",
-		"storybook:build": "pnpm --filter @s-hirano-ist/s-ui build && pnpm storybook:build:raw",
+		"storybook:build": "pnpm --filter @s-hirano-ist/s-api-client build && pnpm --filter @s-hirano-ist/s-ui build && pnpm storybook:build:raw",
 		"storybook:build:raw": "storybook build -o .storybook-static",
 		"storybook:ui": "storybook dev -c packages/ui/.storybook -p 6007",
 		"storybook:ui:build": "storybook build -c packages/ui/.storybook -o .storybook-ui-static",
