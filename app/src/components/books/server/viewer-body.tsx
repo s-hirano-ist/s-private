@@ -19,8 +19,8 @@ export async function ViewerBody({ slug, getBookByISBN }: Props) {
 	if (!data) notFound();
 
 	const altText = data.title;
-	const tags = data.tags as unknown as string[] | undefined;
-	const authors = data.googleAuthors as unknown as string[] | null | undefined;
+	const tags = data.tags;
+	const authors = data.googleAuthors;
 
 	return (
 		<ViewerBodyClient markdown={data.markdown ?? ""}>
@@ -32,8 +32,9 @@ export async function ViewerBody({ slug, getBookByISBN }: Props) {
 								alt={`${altText} (uploaded)`}
 								className="rounded bg-media-surface"
 								height={192}
-								src={`/api/books/images/original/${data.imagePath}`}
+								src={`/api/v1/media/books/${encodeURIComponent(data.id)}/original`}
 								width={192}
+								unoptimized
 							/>
 						)}
 					</div>

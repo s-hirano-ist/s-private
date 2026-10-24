@@ -104,8 +104,9 @@ Better AuthのOAuthプロトコルと内部Cronは、一般クライアント契
 | 7b | mutation・分割uploadを共通APIへ接続 |
 | 7c | Web Push APIの接続 |
 | 7d | Webの記事・ノート読み取りを生成クライアントへ切替 |
-| 7e | Webの画像・書籍・検索読み取りを切替 |
-| 7f | Web mutation・分割upload・認証を切替、依存と永続キャッシュを撤去 |
+| 7e | Webの画像・書籍読み取りを切替 |
+| 7f | Web検索を生成クライアントへ切替 |
+| 7g | Web mutation・分割upload・認証を切替、依存と永続キャッシュを撤去 |
 | 8 | iOSを生成クライアント・共通APIへ切替 |
 | 9 | 独立Hono backendの起動・Vercel配置準備 |
 | 10 | 手動デプロイ確認後に接続先切替、暫定実装の撤去 |
@@ -118,6 +119,11 @@ DB・認証・同期cursor・operation・未完了uploadの状態を保持する
 Webの記事・ノート一覧、件数、カテゴリ、ノート詳細はOrvalクライアント経由で取得する。
 `app/src/common/backend/server-client` はCookieとOriginをリクエストごとに束縛し、
 独立backendの配置までは同一プロセスのHono fetch adapterを使う。受信したAuthorizationは転送しない。
+画像・書籍も同じ生成clientで取得し、書影の配列metadataはキャストせず表示する。
+メディアは `/api/v1/media/{domain}/{id}/{variant}` を使用し、backendで所有者を検証してprivate/no-storeで返す。
+認証付き書影はNext.js image optimizerを経由せずブラウザから取得し、Cookieを維持する。
+画像の代替テキストはURLと分離する。旧path指定の画像Route HandlerとWebのストレージ直接参照は撤去する。
+ISBNのハイフン除去と検証はbackendに置く。
 本文の表示用変換はWeb側で行い、ノート詳細はviewerが必要とするtitle・markdownだけを公開する。
 401はWebの認証境界へ、ノートの404だけはnullへ変換する。
 Webのユーザーデータ取得はno-storeとリクエスト内の重複排除へ移行する。

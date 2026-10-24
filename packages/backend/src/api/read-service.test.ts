@@ -11,7 +11,7 @@ function fixture() {
 		book: { findMany: vi.fn().mockResolvedValue([]) },
 	};
 	const mobile = {
-		content: { getContent: vi.fn() },
+		content: { getContent: vi.fn(), lookupContentId: vi.fn() },
 		sync: { snapshot: vi.fn() },
 	};
 	const storage = {
@@ -128,5 +128,22 @@ describe("Shared API read service", () => {
 			],
 			nextAfter: null,
 		});
+	});
+	test("normalizes ISBN in the backend and rejects invalid lookup keys before querying", async () => {
+		const { mobile, service } = fixture();
+		mobile.content.lookupContentId.mockResolvedValue("book");
+		mobile.content.getContent.mockResolvedValue({ id: "book" });
+		expect(await service.lookup("books", "owner", "978-0-306-40615-7")).toEqual(
+			{ id: "book" },
+		);
+		expect(mobile.content.lookupContentId).toHaveBeenCalledWith(
+			"books",
+			"owner",
+			"9780306406157",
+		);
+		await expect(
+			service.lookup("books", "owner", "invalid"),
+		).rejects.toMatchObject({ code: "VALIDATION_ERROR", status: 422 });
+		expect(mobile.content.lookupContentId).toHaveBeenCalledTimes(1);
 	});
 });

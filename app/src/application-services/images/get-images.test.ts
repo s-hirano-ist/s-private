@@ -1,258 +1,83 @@
-import { imagesQueryRepository } from "@/infrastructures/images/repositories/images-query-repository";
-import { minioStorageService } from "@/infrastructures/shared/storage/minio-storage-service";
-import { makePixel } from "@s-hirano-ist/s-core/images/entities/image-entity";
-import { makeId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { makePath } from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
-import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import {
 	getExportedImages,
 	getImagesCount,
-	getImagesFromStorage,
 	getUnexportedImages,
-} from "./get-images";
-
-vi.mock(
-	"@/infrastructures/images/repositories/images-query-repository",
-	() => ({
-		imagesQueryRepository: {
-			findMany: vi.fn(),
-			count: vi.fn(),
-		},
-	}),
-);
-
-vi.mock("@/infrastructures/shared/storage/minio-storage-service", () => ({
-	minioStorageService: { getImage: vi.fn() },
+} from "@/application-services/images/get-images";
+import { getBackendClient } from "@/common/backend/server-client";
+import {
+	createBackendClient,
+	ApiProtocolError,
+} from "@s-hirano-ist/s-api-client";
+import { beforeEach, expect, test, vi } from "vite-plus/test";
+vi.mock("@/common/backend/server-client", () => ({
+	getBackendClient: vi.fn(),
 }));
-
-vi.mock("@/common/auth/session", () => ({
-	getSelfId: vi.fn().mockResolvedValue("test-user-id"),
-}));
-
-describe("get-images", () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-		vi.mocked(imagesQueryRepository.count).mockResolvedValue(0);
+const image = {
+	id: "image-id",
+	path: "folder/photo.png",
+	contentType: "image/png",
+	fileSize: 5,
+	width: 300,
+	height: 200,
+	status: "EXPORTED",
+	createdAt: "2026-10-11T00:00:00Z",
+	updatedAt: "2026-10-11T00:00:00Z",
+	exportedAt: null,
+};
+beforeEach(() => vi.clearAllMocks());
+function fixture(payload: unknown) {
+	const fetch = vi
+		.fn<typeof globalThis.fetch>()
+		.mockResolvedValue(Response.json(payload));
+	vi.mocked(getBackendClient).mockResolvedValue(
+		createBackendClient({ baseURL: "https://backend.example/api/v1", fetch }),
+	);
+	return fetch;
+}
+function urlOf(input: RequestInfo | URL) {
+	return new URL(input instanceof Request ? input.url : input);
+}
+test("uses owner-checked media IDs while preserving the image's accessible name and dimensions", async () => {
+	const fetch = fixture({
+		data: [image],
+		totalCount: 1,
+		offset: 24,
+		limit: 24,
 	});
-
-	describe("getExportedImages", () => {
-		test("should fetch exported images with correct parameters", async () => {
-			const mockImages = [
-				{
-					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b"),
-					path: makePath("image1.jpg", false),
-					height: makePixel(100),
-					width: makePixel(200),
-				},
-				{
-					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c"),
-					path: makePath("image2.jpg", false),
-					height: makePixel(150),
-					width: makePixel(250),
-				},
-			];
-
-			vi.mocked(imagesQueryRepository.findMany).mockResolvedValue(mockImages);
-			vi.mocked(imagesQueryRepository.count).mockResolvedValue(
-				mockImages.length,
-			);
-
-			const result = await getExportedImages(0);
-
-			expect(imagesQueryRepository.findMany).toHaveBeenCalledWith(
-				"test-user-id",
-				"EXPORTED",
-				{
-					skip: 0,
-					take: 24,
-					orderBy: { createdAt: "desc" },
-				},
-			);
-
-			expect(result).toEqual({
-				data: [
-					{
-						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7b",
-						originalPath: "/api/images/original/image1.jpg",
-						thumbnailPath: "/api/images/thumbnail/image1.jpg",
-						height: 100,
-						width: 200,
-					},
-					{
-						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7c",
-						originalPath: "/api/images/original/image2.jpg",
-						thumbnailPath: "/api/images/thumbnail/image2.jpg",
-						height: 150,
-						width: 250,
-					},
-				],
-				totalCount: 2,
-			});
-		});
-
-		test("should offset by the loaded image count", async () => {
-			vi.mocked(imagesQueryRepository.findMany).mockResolvedValue([]);
-
-			await getExportedImages(48);
-
-			expect(imagesQueryRepository.findMany).toHaveBeenCalledWith(
-				"test-user-id",
-				"EXPORTED",
-				{
-					skip: 48,
-					take: 24,
-					orderBy: { createdAt: "desc" },
-				},
-			);
-		});
-
-		test("should handle empty results", async () => {
-			vi.mocked(imagesQueryRepository.findMany).mockResolvedValue([]);
-
-			const result = await getExportedImages(0);
-
-			expect(result).toEqual({ data: [], totalCount: 0 });
-		});
-
-		test("should handle database errors", async () => {
-			vi.mocked(imagesQueryRepository.findMany).mockRejectedValue(
-				new Error("Database error"),
-			);
-
-			await expect(getExportedImages(0)).rejects.toThrow("Database error");
-		});
+	expect(await getExportedImages(24)).toEqual({
+		data: [
+			{
+				id: image.id,
+				alt: "Image folder/photo.png",
+				originalPath: "/api/v1/media/images/image-id/original",
+				thumbnailPath: "/api/v1/media/images/image-id/thumbnail",
+				width: 300,
+				height: 200,
+			},
+		],
+		totalCount: 1,
 	});
-
-	describe("getUnexportedImages", () => {
-		test("should fetch unexported images correctly", async () => {
-			const mockImages = [
-				{
-					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d"),
-					path: makePath("unexported1.jpg", false),
-					height: makePixel(300),
-					width: makePixel(400),
-				},
-				{
-					id: makeId("01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e"),
-					path: makePath("unexported2.jpg", false),
-					height: makePixel(350),
-					width: makePixel(450),
-				},
-			];
-
-			vi.mocked(imagesQueryRepository.findMany).mockResolvedValue(mockImages);
-			vi.mocked(imagesQueryRepository.count).mockResolvedValue(
-				mockImages.length,
-			);
-
-			const result = await getUnexportedImages(0);
-
-			expect(imagesQueryRepository.findMany).toHaveBeenCalledWith(
-				"test-user-id",
-				"UNEXPORTED",
-				{
-					skip: 0,
-					take: 24,
-					orderBy: {
-						createdAt: "desc",
-					},
-				},
-			);
-
-			expect(result).toEqual({
-				data: [
-					{
-						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7d",
-						originalPath: "/api/images/original/unexported1.jpg",
-						thumbnailPath: "/api/images/thumbnail/unexported1.jpg",
-						height: 300,
-						width: 400,
-					},
-					{
-						id: "01912c9a-5e8a-7b5c-8a1b-2c3d4e5f6a7e",
-						originalPath: "/api/images/original/unexported2.jpg",
-						thumbnailPath: "/api/images/thumbnail/unexported2.jpg",
-						height: 350,
-						width: 450,
-					},
-				],
-				totalCount: 2,
-			});
-		});
-
-		test("should handle empty results", async () => {
-			vi.mocked(imagesQueryRepository.findMany).mockResolvedValue([]);
-
-			const result = await getUnexportedImages(0);
-
-			expect(result).toEqual({ data: [], totalCount: 0 });
-		});
-
-		test("should handle database errors", async () => {
-			vi.mocked(imagesQueryRepository.findMany).mockRejectedValue(
-				new Error("Database error"),
-			);
-
-			await expect(getUnexportedImages(0)).rejects.toThrow("Database error");
-		});
+	expect(
+		Object.fromEntries(urlOf(fetch.mock.calls[0][0]).searchParams),
+	).toEqual({ status: "EXPORTED", offset: "24", limit: "24" });
+	expect(fetch.mock.calls[0][1]?.cache).toBe("no-store");
+});
+test("fetches updated image pages and typed counts", async () => {
+	const fetch = fixture({ data: [], totalCount: 0, offset: 0, limit: 24 });
+	expect((await getUnexportedImages(0)).totalCount).toBe(0);
+	fetch.mockResolvedValue(
+		Response.json({ data: [image], totalCount: 1, offset: 0, limit: 24 }),
+	);
+	expect((await getUnexportedImages(0)).totalCount).toBe(1);
+	fetch.mockResolvedValue(Response.json({ count: 7 }));
+	expect(await getImagesCount("EXPORTED")).toBe(7);
+});
+test("rejects invalid persisted dimensions before rendering", async () => {
+	fixture({
+		data: [{ ...image, width: -1 }],
+		totalCount: 1,
+		offset: 0,
+		limit: 24,
 	});
-
-	describe("getImagesCount", () => {
-		test("should return count of images by status", async () => {
-			vi.mocked(imagesQueryRepository.count).mockResolvedValue(25);
-
-			const result = await getImagesCount("EXPORTED");
-
-			expect(imagesQueryRepository.count).toHaveBeenCalledWith(
-				"test-user-id",
-				"EXPORTED",
-			);
-			expect(result).toEqual(25);
-		});
-
-		test("should return 0 for empty collection", async () => {
-			vi.mocked(imagesQueryRepository.count).mockResolvedValue(0);
-
-			const result = await getImagesCount("UNEXPORTED");
-
-			expect(result).toEqual(0);
-		});
-
-		test("should handle database errors", async () => {
-			vi.mocked(imagesQueryRepository.count).mockRejectedValue(
-				new Error("Database error"),
-			);
-
-			await expect(getImagesCount("EXPORTED")).rejects.toThrow(
-				"Database error",
-			);
-		});
-	});
-
-	describe("getImageFromStorage", () => {
-		test("should fetch image from storage with correct path and thumbnail flag", async () => {
-			const mockStream = {} as NodeJS.ReadableStream;
-
-			vi.mocked(minioStorageService.getImage).mockResolvedValue(mockStream);
-
-			const result = await getImagesFromStorage("test-image-key.jpg", false);
-
-			expect(minioStorageService.getImage).toHaveBeenCalledWith(
-				"test-image-key.jpg",
-				false,
-			);
-
-			expect(result).toBe(mockStream);
-		});
-
-		test("should handle storage errors", async () => {
-			vi.mocked(minioStorageService.getImage).mockRejectedValue(
-				new Error("Storage error"),
-			);
-
-			await expect(getImagesFromStorage("test-key", false)).rejects.toThrow(
-				"Storage error",
-			);
-		});
-	});
+	await expect(getExportedImages(0)).rejects.toBeInstanceOf(ApiProtocolError);
 });
