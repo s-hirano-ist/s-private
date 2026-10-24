@@ -3,7 +3,7 @@
 	"buildCommand": "pnpm --filter s-private-backend... -r run build",
 	"functions": {
 		"src/index.ts": {
-			"includeFiles": "{src/{env,runtime,unavailable-object-storage}.ts,../../packages/backend/src/**/!(*.test).ts,../../packages/core/{articles,books,images,notes,shared-kernel}/**/!(*.test|*.spec).ts,../../packages/database/src/index.ts}"
+			"includeFiles": "{src/{env,runtime}.ts,../../packages/backend/src/**/!(*.test).ts,../../packages/core/{articles,books,images,notes,shared-kernel}/**/!(*.test|*.spec).ts,../../packages/database/src/index.ts}"
 		}
 	}
 }

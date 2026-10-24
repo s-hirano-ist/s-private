@@ -5,7 +5,6 @@ export function createBackendHttpApp(deps: {
 	auth(request: Request): Promise<Response>;
 	cron(request: Request): Promise<Response>;
 	isTrustedOrigin(origin: string): boolean;
-	objectStorageUnavailable?: boolean;
 	publicOrigin: string;
 	reportError(error: unknown): unknown;
 	signIn(request: Request): Promise<Response>;
@@ -16,16 +15,6 @@ export function createBackendHttpApp(deps: {
 		c.header("cache-control", "private, no-store");
 	});
 	app.get("/health", (c) => c.json({ status: "ok" }));
-	if (deps.objectStorageUnavailable) {
-		// Stop before upload persistence/cleanup so existing resumable uploads survive.
-		for (const path of [
-			"/api/v1/media/*",
-			"/api/v1/uploads",
-			"/api/v1/uploads/*",
-		]) {
-			app.all(path, (c) => c.json({ error: { code: "NOT_FOUND" } }, 404));
-		}
-	}
 	// OAuth stays on the Web origin. The BFF supplies only a validated public origin.
 	function publicRequest(request: Request): Request | null {
 		const origin =

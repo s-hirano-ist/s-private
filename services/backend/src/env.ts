@@ -17,11 +17,11 @@ const schema = z.object({
 	LOCAL_AUTH_EMAIL: z.email().optional(),
 	LOCAL_AUTH_PASSWORD: z.string().min(8).optional(),
 	LOCAL_AUTH_NAME: optional,
-	MINIO_HOST: optional,
+	MINIO_HOST: z.string().min(1),
 	MINIO_PORT: z.coerce.number().int().min(1).max(65535).default(443),
-	MINIO_BUCKET_NAME: optional,
-	MINIO_ACCESS_KEY: optional,
-	MINIO_SECRET_KEY: optional,
+	MINIO_BUCKET_NAME: z.string().min(1),
+	MINIO_ACCESS_KEY: z.string().min(1),
+	MINIO_SECRET_KEY: z.string().min(1),
 	MINIO_USE_SSL: z
 		.enum(["true", "false"])
 		.default("true")
@@ -79,8 +79,11 @@ export function parseBackendEnv(input: Record<string, string | undefined>) {
 		throw new Error("Production requires verified database and outbound TLS");
 	if (env.BACKEND_CRON_ENABLED && !env.CRON_SECRET)
 		throw new Error("Enabled Cron requires CRON_SECRET");
-	// Object storage is temporarily disabled in the composition root.
-	// Its credentials must not prevent authentication and text content from starting.
+	if (
+		env.MINIO_USE_SSL &&
+		(!env.CF_ACCESS_CLIENT_ID || !env.CF_ACCESS_CLIENT_SECRET)
+	)
+		throw new Error("MinIO TLS requires Cloudflare Access credentials");
 	return env;
 }
 export type BackendEnv = ReturnType<typeof parseBackendEnv>;

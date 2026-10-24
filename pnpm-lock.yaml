@@ -818,6 +818,9 @@ importers:
       '@s-hirano-ist/s-database':
         specifier: workspace:*
         version: link:../../packages/database
+      '@s-hirano-ist/s-storage':
+        specifier: workspace:*
+        version: link:../../packages/storage
       '@sentry/node':
         specifier: 10.76.0
         version: 10.76.0(@opentelemetry/core@2.11.0(@opentelemetry/api@1.9.1))(supports-color@10.2.2)
