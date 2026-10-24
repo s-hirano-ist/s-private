@@ -1,6 +1,6 @@
-import { backendApi } from "@/backend/api";
-export const GET = (request: Request) => backendApi.fetch(request);
-export const POST = (request: Request) => backendApi.fetch(request);
-export const PUT = (request: Request) => backendApi.fetch(request);
-export const DELETE = (request: Request) => backendApi.fetch(request);
-export const OPTIONS = (request: Request) => backendApi.fetch(request);
+import { dispatchBackendRequest } from "@/common/backend/dispatch";
+export const GET = dispatchBackendRequest;
+export const POST = GET;
+export const PUT = GET;
+export const DELETE = GET;
+export const OPTIONS = GET;

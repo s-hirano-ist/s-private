@@ -60,6 +60,19 @@ export const env = createEnv({
 				: z.string().optional(),
 		/** Better Auth base URL (deployment origin, e.g. "https://example.com"). Used for baseURL / trustedOrigins. */
 		BETTER_AUTH_URL: z.string().default("http://localhost:3000"),
+		/** Independent backend origin. Unset during the embedded transition. */
+		BACKEND_URL: z
+			.url()
+			.refine((value) => {
+				const url = new URL(value);
+				return (
+					url.origin === value &&
+					(url.protocol === "https:" ||
+						(url.protocol === "http:" &&
+							["localhost", "127.0.0.1"].includes(url.hostname)))
+				);
+			}, "backend must be an HTTPS origin (HTTP localhost allowed)")
+			.optional(),
 		/** Set to "1" by Vercel on every deployment (prod & preview); absent locally. Gates dynamic baseURL resolution. */
 		VERCEL: z.string().optional(),
 		/** Enables the hermetic local authentication and infrastructure path. Ignored on Vercel. */
@@ -116,6 +129,7 @@ export const env = createEnv({
 		CACHE_INVALIDATION_SECRET: process.env.CACHE_INVALIDATION_SECRET,
 		AUTH_SECRET: process.env.AUTH_SECRET,
 		BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
+		BACKEND_URL: process.env.BACKEND_URL,
 		VERCEL: process.env.VERCEL,
 		LOCAL_DEV_MODE: process.env.LOCAL_DEV_MODE,
 		LOCAL_AUTH_EMAIL: process.env.LOCAL_AUTH_EMAIL,

@@ -19,7 +19,7 @@ vi.mock("@/infrastructures/auth/auth", () => ({
 	isLocalDevAuthEnabled: vi.fn(() => false),
 }));
 
-const { GET } = await import("./route");
+const { signIn: GET } = await import("@/backend/embedded-auth");
 const { seedLocalDevelopmentSampleData } =
 	await import("@/application-services/local-development/seed-sample-data");
 
