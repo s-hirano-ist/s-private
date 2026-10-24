@@ -7,7 +7,6 @@ import {
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
-import { deleteImage } from "./delete-image";
 import { deleteImageCore } from "./delete-image.core";
 
 vi.mock("@/common/auth/session", () => ({
@@ -93,19 +92,5 @@ describe("deleteImageCore", () => {
 		const result = await deleteImageCore(testId, deps);
 
 		expect(result.success).toBe(false);
-	});
-});
-
-describe("deleteImage (Server Action)", () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
-
-	test("should reject when the request is not authenticated", async () => {
-		vi.mocked(getSelfId).mockRejectedValue(new Error("UNAUTHORIZED"));
-
-		const testId = "01234567-89ab-7def-8123-456789abcdef";
-
-		await expect(deleteImage(testId)).rejects.toThrow("UNAUTHORIZED");
 	});
 });

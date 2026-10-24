@@ -324,3 +324,43 @@ export const SubmitError: Story = {
 		await expect(args.action).toHaveBeenCalled();
 	},
 };
+
+export const RetryKeepsOperation: Story = {
+	args: {
+		...SimpleForm.args,
+		action: fn().mockResolvedValue({ success: false, message: "error" }),
+	},
+	play: async ({ args, canvasElement }) => {
+		const canvas = within(canvasElement);
+		const action = args.action;
+		action.mockClear();
+		await userEvent.type(
+			canvas.getByRole("textbox", { name: "タイトル" }),
+			"Draft",
+		);
+		await userEvent.click(canvas.getByRole("button", { name: "save" }));
+		await expect(
+			canvas.findByRole("textbox", { name: "タイトル" }),
+		).resolves.toHaveValue("Draft");
+		await userEvent.click(canvas.getByRole("button", { name: "save" }));
+		await expect(
+			canvas.findByRole("textbox", { name: "タイトル" }),
+		).resolves.toHaveValue("Draft");
+		await expect(action).toHaveBeenCalledTimes(2);
+		await expect(action.mock.calls[1][0].get("operationId")).toBe(
+			action.mock.calls[0][0].get("operationId"),
+		);
+		await userEvent.type(
+			canvas.getByRole("textbox", { name: "タイトル" }),
+			" edited",
+		);
+		await userEvent.click(canvas.getByRole("button", { name: "save" }));
+		await expect(
+			canvas.findByRole("textbox", { name: "タイトル" }),
+		).resolves.toHaveValue("Draft edited");
+		await expect(action).toHaveBeenCalledTimes(3);
+		await expect(action.mock.calls[2][0].get("operationId")).not.toBe(
+			action.mock.calls[0][0].get("operationId"),
+		);
+	},
+};
