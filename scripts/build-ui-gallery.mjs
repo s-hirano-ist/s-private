@@ -1,4 +1,4 @@
-import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { cp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 const root = path.resolve(import.meta.dirname, "..");
@@ -314,6 +314,27 @@ function renderGallery(stories) {
 `;
 }
 
+async function excludeHtmlFromSearch(directory) {
+	for (const entry of await readdir(directory, { withFileTypes: true })) {
+		const filePath = path.join(directory, entry.name);
+		if (entry.isDirectory()) {
+			await excludeHtmlFromSearch(filePath);
+		} else if (entry.isFile() && /\.html?$/iu.test(entry.name)) {
+			const html = await readFile(filePath, "utf8");
+			if (!/<head\b[^>]*>/iu.test(html)) {
+				throw new Error(`Cannot add noindex: missing <head> in ${filePath}`);
+			}
+			await writeFile(
+				filePath,
+				html.replace(
+					/<head\b[^>]*>/iu,
+					'$&\n<meta name="robots" content="noindex, nofollow">',
+				),
+			);
+		}
+	}
+}
+
 async function main() {
 	const indexJson = JSON.parse(await readFile(storybookIndexPath, "utf8"));
 	const stories = normalizeStories(indexJson.entries ?? {});
@@ -325,6 +346,7 @@ async function main() {
 	await writeFile(path.join(pagesDir, ".nojekyll"), "");
 	await writeFile(path.join(pagesDir, "index.html"), renderRootIndex());
 	await writeFile(path.join(uiDir, "index.html"), renderGallery(stories));
+	await excludeHtmlFromSearch(pagesDir);
 
 	console.log(
 		`Built UI gallery with ${stories.length} stories at .pages/ui/index.html`,
