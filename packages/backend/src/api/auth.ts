@@ -6,6 +6,7 @@ import type {
 import type { MobileDeps } from "@s-hirano-ist/s-backend/mobile/deps";
 import type { ErrorReporter } from "@s-hirano-ist/s-backend/observability/reporter";
 import { authenticateMobileRequest } from "@s-hirano-ist/s-backend/auth/mobile-auth";
+import { isTrustedWebOrigin } from "@s-hirano-ist/s-backend/auth/web-origin";
 
 export function createApiAuth(
 	config: AuthConfig & { MOBILE_API_AUDIENCE?: string },
@@ -37,20 +38,7 @@ export function createApiAuth(
 			};
 		},
 		isTrustedOrigin(origin) {
-			if (origin === new URL(config.BETTER_AUTH_URL).origin) return true;
-			try {
-				const url = new URL(origin);
-				return (
-					config.VERCEL === "1" &&
-					url.origin === origin &&
-					url.protocol === "https:" &&
-					/^s-private-[a-z0-9-]+-s-hirano-ist-team\.vercel\.app$/u.test(
-						url.hostname,
-					)
-				);
-			} catch {
-				return false;
-			}
+			return isTrustedWebOrigin(origin, config);
 		},
 		reportError(error) {
 			reporter.captureException(error);
