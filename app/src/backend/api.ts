@@ -1,6 +1,10 @@
-import "server-only";
+import { defaultAddArticleDeps } from "@/application-services/articles/add-article.deps";
+import { defaultAddBooksDeps } from "@/application-services/books/add-books.deps";
+import { defaultAddImageDeps } from "@/application-services/images/add-image.deps";
 import { defaultMobileDeps } from "@/application-services/mobile/deps";
+import { defaultAddNoteDeps } from "@/application-services/notes/add-note.deps";
 import { env } from "@/env";
+import "server-only";
 import { auth } from "@/infrastructures/auth/auth";
 import { searchVectors } from "@/infrastructures/search/search-service";
 import { booksStorageService } from "@/infrastructures/shared/storage/books-storage-service";
@@ -8,9 +12,19 @@ import { minioStorageService } from "@/infrastructures/shared/storage/minio-stor
 import prisma from "@/prisma";
 import { createApiApp } from "@s-hirano-ist/s-backend/api/app";
 import { createReadService } from "@s-hirano-ist/s-backend/api/read-service";
+import { createUploadService } from "@s-hirano-ist/s-backend/api/upload-service";
+import { createWriteService } from "@s-hirano-ist/s-backend/api/write-service";
 import { authenticateMobileRequest } from "@s-hirano-ist/s-backend/auth/mobile-auth";
 import * as Sentry from "@sentry/nextjs";
 
+const writes = createWriteService({
+	articles: defaultAddArticleDeps,
+	notes: defaultAddNoteDeps,
+	images: defaultAddImageDeps,
+	books: defaultAddBooksDeps,
+	mobile: defaultMobileDeps,
+});
+const uploads = createUploadService(defaultMobileDeps, writes);
 // Transitional composition root. The shared API itself never imports Next.js.
 export const backendApi = createApiApp(
 	{
@@ -62,4 +76,5 @@ export const backendApi = createApiApp(
 		storage: { images: minioStorageService, books: booksStorageService },
 		searchVectors,
 	}),
+	{ writes, uploads },
 );
