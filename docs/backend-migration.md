@@ -103,7 +103,9 @@ Better AuthのOAuthプロトコルと内部Cronは、一般クライアント契
 | 7a | 共通APIの認証・tenant境界と読み取りHTTP処理を接続 |
 | 7b | mutation・分割uploadを共通APIへ接続 |
 | 7c | Web Push APIの接続 |
-| 7d | Webを生成クライアントへ切替、永続データキャッシュを撤去 |
+| 7d | Webの記事・ノート読み取りを生成クライアントへ切替 |
+| 7e | Webの画像・書籍・検索読み取りを切替 |
+| 7f | Web mutation・分割upload・認証を切替、依存と永続キャッシュを撤去 |
 | 8 | iOSを生成クライアント・共通APIへ切替 |
 | 9 | 独立Hono backendの起動・Vercel配置準備 |
 | 10 | 手動デプロイ確認後に接続先切替、暫定実装の撤去 |
@@ -113,6 +115,11 @@ Better AuthのOAuthプロトコルと内部Cronは、一般クライアント契
 DB・認証・同期cursor・operation・未完了uploadの状態を保持する。
 長期の旧iOS互換は維持しないが、移行中の既存URLはクライアント切替まで残す。
 
+Webの記事・ノート一覧、件数、カテゴリ、ノート詳細はOrvalクライアント経由で取得する。
+`app/src/common/backend/server-client` はCookieとOriginをリクエストごとに束縛し、
+独立backendの配置までは同一プロセスのHono fetch adapterを使う。受信したAuthorizationは転送しない。
+本文の表示用変換はWeb側で行い、ノート詳細はviewerが必要とするtitle・markdownだけを公開する。
+401はWebの認証境界へ、ノートの404だけはnullへ変換する。
 Webのユーザーデータ取得はno-storeとリクエスト内の重複排除へ移行する。
 iOS変更は次回取得で反映し、サービス間の永続キャッシュ無効化通知を廃止する。
 Auth0＋Better Authを維持し、Webの同一originの認証URLはBFFで中継する。
