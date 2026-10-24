@@ -1894,7 +1894,7 @@ iOSの閲覧はSwiftDataの所有者別ローカルコピーを正本とする�
 
 iOSの同期要求は`SyncCoordinator`で単一のタスクにまとめる。手動の強制更新は進行中の同期が終わった後にも実行し、呼び出し元は完了を待てる。端末への登録が確定した後の通信は画面の表示期間に依存させない。タスクの取消はユーザー向けエラーや送信失敗として保存しない。一覧はローカルデータを表示しながら更新し、初回取得中・空・失敗の表示を重ねない。
 
-モバイルAPIは `/api/mobile/v1` のNode.js Route Handlerで公開する。Auth0 API audience向けのRS256アクセストークンをJWKSで検証し、`providerId=auth0` と `accountId=sub` の既存Better Auth AccountからユーザーIDを取得する。ユーザーごとにtenant contextを設定してからデータアクセスする。Web用Server Actionと異なり、この認証済みネイティブAPIではRoute Handlerによるmutationを許可する。登録は所有者・操作ID・正規化入力ハッシュ・結果を永続化し、同一入力の再送へ同じリソースを返す。画像と書影は所有者検証済みの一時領域へ1 MiB単位で分割アップロードし、完了時だけ既存ユースケースへ渡す。契約は `docs/openapi/mobile-v1.yaml` を参照する。
+モバイルAPIは `/api/mobile/v1` のNode.js catch-all Route HandlerからHonoへ委譲する。HTTP controllerは `app/src/backend/http/mobile` に置き、Next.jsのRoute HandlerはHono adapterだけを公開する。Auth0 API audience向けのRS256アクセストークンをJWKSで検証し、`providerId=auth0` と `accountId=sub` の既存Better Auth AccountからユーザーIDを取得する。ユーザーごとにtenant contextを設定してからデータアクセスする。Web用Server Actionと異なり、この認証済みネイティブAPIではRoute Handlerによるmutationを許可する。登録は所有者・操作ID・正規化入力ハッシュ・結果を永続化し、同一入力の再送へ同じリソースを返す。画像と書影は所有者検証済みの一時領域へ1 MiB単位で分割アップロードし、完了時だけ既存ユースケースへ渡す。契約は `docs/openapi/mobile-v1.yaml` を参照する。
 
 iOS本体とShare Extensionは`group.ist.s-hirano.s-private`のApp Groupだけを共有する。Extensionは認証情報を保持せず、サーバー通信もしない。共有されたURL、テキスト、画像はschema version、operation ID、種別、本文または添付相対パス、作成日時を持つJSONとして、一時ディレクトリからoperation IDディレクトリへのrenameで原子的に確定する。本体は未処理ディレクトリを取り込み済み領域へ移動し、同じoperation IDの二重取り込みを防ぐ。
 
@@ -1908,6 +1908,7 @@ WebとiOSの共通APIは `packages/api-contracts` のHonoルート・Zodスキ�
 OpenAPI 3.1を出力し、OrvalとSwift OpenAPI Generatorでクライアントを生成する。
 契約はcore、Prisma、Next.js、実行時adapterから独立させる。
 `packages/api-client` は生成したDTOとリクエスト単位の検証付きtransportを提供する。
-現段階では契約生成基盤のみを追加し、既存の通信経路は維持する。
+既存mobile APIはNext.js内のHonoでホストし、認証・tenant・レスポンス形式を維持する。
+`app/src/backend/http/mobile` は移行期間のHTTP層で、UIとNext.js APIへの直接依存を禁止する。
 移管順序、認証・キャッシュ・デプロイの境界は
 [共通backendへの移行](backend-migration.md) を参照する。

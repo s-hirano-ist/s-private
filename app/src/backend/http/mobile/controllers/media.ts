@@ -9,16 +9,11 @@ import { minioStorageService } from "@/infrastructures/shared/storage/minio-stor
 import prisma from "@/prisma";
 import { Readable } from "node:stream";
 
-type Context = {
-	params: Promise<{ domain: string; id: string; variant: string }>;
-};
+type Params = { domain: string; id: string; variant: string };
 
-export async function GET(
-	request: Request,
-	{ params }: Context,
-): Promise<Response> {
+export async function GET(request: Request, params: Params): Promise<Response> {
 	try {
-		const { domain, id, variant } = await params;
+		const { domain, id, variant } = params;
 		if (
 			!(
 				["images", "books"].includes(domain) &&
