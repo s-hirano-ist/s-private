@@ -10,6 +10,7 @@ import { ThemeProvider } from "../app/src/providers/theme-provider";
 
 sb.mock(import("../app/src/common/backend/browser-client.ts"), { spy: true });
 sb.mock(import("../app/src/common/observability/report-render-error.ts"));
+sb.mock(import("../app/src/common/auth/reauthenticate.ts"), { spy: true });
 sb.mock(import("next-intl/server"), { spy: true });
 
 const messages = { en: enMessages, ja: jaMessages };

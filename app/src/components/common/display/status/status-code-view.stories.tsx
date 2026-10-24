@@ -29,3 +29,7 @@ export const NotFound: Story = {
 export const InternalServerError: Story = {
 	args: { statusCode: "500", statusCodeString: "Internal Server Error" },
 };
+
+export const Unauthorized: Story = {
+	args: { statusCode: "401", statusCodeString: "Unauthorized" },
+};
