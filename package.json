@@ -114,7 +114,7 @@
 		"eslint-plugin-storybook": "10.6.1",
 		"eslint-plugin-unicorn": "78.0.0",
 		"eslint-plugin-yml": "3.8.1",
-		"happy-dom": "20.14.5",
+		"happy-dom": "21.0.4",
 		"istanbul-lib-coverage": "catalog:",
 		"jscpd": "5.4.0",
 		"json5": "catalog:",
