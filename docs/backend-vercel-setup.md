@@ -60,14 +60,18 @@ HTTP hostの未処理例外は秘密値を伏せた診断情報をVercelログ�
 
 ## 3. Deployment Protectionと認証を確認する
 
+backend実装は `services/backend` に集約する。Root Directory、起動入口、Cron、環境変数は変更不要。
+
 ### 配布成果物の起動を確認する
 
 Vercelのビルド成功だけでは起動成功を保証しない。workspaceのpackage exportsは
 TypeScriptソースを指しているため、`services/backend/vercel.json` の `includeFiles` で
-host・backend・core・DBのソースをFunctionに含める。Node.js 24の型除去で実行するため、
+サービス内の実装・core・DBのソースをFunctionに含める。Node.js 24の型除去で実行するため、
 対象のTypeScript設定では `erasableSyntaxOnly` を有効にする。
 constructorのparameter propertyなど、JavaScriptへの変換が必要な構文は使用しない。
 型検査の回帰テストに加え、生成されたFunctionをリポジトリ外へ展開し、
+`.vc-config.json` の `filePathMap` に記載されたファイルとsymlinkもworkspaceルートから対応する出力パスへ複製する。
+CLIがアップロード時に参照するこれらのファイルを含めた状態で、
 次のコマンドで実際のentrypointをロードする。認証情報はテスト専用のダミー値を使用する。
 
 ```bash

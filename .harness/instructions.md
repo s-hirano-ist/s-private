@@ -64,8 +64,7 @@ Next.js + TypeScript + Clean Architectureベースのコンテンツ管理シス
 - `packages/notification/` - 通知サービス（Pushover）
 - `packages/storage/` - MinIOストレージクライアント
 - `packages/scripts/` - ビルド・ユーティリティスクリプト
-- `packages/backend/` - 共有ユースケース・認証・tenant・永続化adapter・検索・通知
-- `services/backend/` - 独立Hono HTTP hostと環境設定・DI
+- `services/backend/` - Hono HTTP host・環境設定・DI・ユースケース・認証・tenant・永続化adapter・検索・通知
 - `packages/api-contracts/` - Hono + Zodの共通HTTP契約
 - `packages/api-client/` - Orval生成client・DTO・検証schema
 - `app/src/application-services/` - WebのServer Action API adapter

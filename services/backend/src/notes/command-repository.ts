@@ -1,0 +1,42 @@
+import type {
+	DeleteNoteResult,
+	INotesCommandRepository,
+} from "@s-hirano-ist/s-core/notes/repositories/notes-command-repository.interface";
+import type {
+	Id,
+	Status,
+	UserId,
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import type { DatabaseClient } from "s-private-backend/shared/database";
+import {
+	makeNoteTitle,
+	type UnexportedNote,
+} from "@s-hirano-ist/s-core/notes/entities/note-entity";
+
+export function createNotesCommandRepository(
+	prisma: Pick<DatabaseClient, "note">,
+) {
+	async function create(data: UnexportedNote): Promise<void> {
+		await prisma.note.create({ data });
+	}
+
+	async function deleteById(
+		id: Id,
+		userId: UserId,
+		status: Status,
+	): Promise<DeleteNoteResult> {
+		const data = await prisma.note.delete({
+			where: { id, userId, status },
+			select: { title: true },
+		});
+
+		return { title: makeNoteTitle(data.title) };
+	}
+
+	const notesCommandRepository: INotesCommandRepository = {
+		create,
+		deleteById,
+	};
+
+	return notesCommandRepository;
+}

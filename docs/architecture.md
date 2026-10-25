@@ -32,8 +32,7 @@ Web、iOS、共通backendの責務を分離する。Webからドメイン・DB�
 | 配置 | 責務 |
 |------|------|
 | `packages/core/` | ドメインごとのエンティティ、値オブジェクト、repository interface、ドメインサービス |
-| `packages/backend/` | ユースケース、Prisma adapter、認証・tenant、同期・operation・upload、検索、イベント、通知・Cron |
-| `services/backend/` | Honoの独立HTTP host。環境変数、DB・storage・監視を生成し共有factoryへ注入 |
+| `services/backend/` | Hono HTTP host、環境設定・DI、ユースケース、Prisma adapter、認証・tenant、同期・upload、検索、イベント、通知・Cron |
 | `packages/api-contracts/` | HonoルートとZodによるHTTP契約。core・ORM・Next.jsに依存しない |
 | `packages/api-client/` | Orval生成のDTO・検証schema・fetchと共通transport |
 | `app/src/application-services/` | WebのServer Action。生成client呼び出し、フォーム値・表示エラー変換、画面更新 |
@@ -336,7 +335,7 @@ async function DynamicComponent() {
 WebのServer Actionは薄いAPI adapterとする。`"use server"` と `server-only` を使い、FormDataから生成Zodモデルで入力を読み取り、`getBackendClient` の生成メソッドを呼ぶ。
 成功時は `refresh()` で表示を更新し、失敗時は `backendActionError` へ渡す。Webに `*.core.ts`、`*.deps.ts`、default repository、ドメイン不変条件を再実装しない。
 
-実装例は `app/src/application-services/notes/add-note.ts`。作成・削除の検証、永続化、イベント発行とその回帰テストは `packages/backend/src/{domain}/use-cases.ts` と対応テストに置く。
+実装例は `app/src/application-services/notes/add-note.ts`。作成・削除の検証、永続化、イベント発行とその回帰テストは `services/backend/src/{domain}/use-cases.ts` と対応テストに置く。
 画像・書影はブラウザから共通APIへ分割アップロードし、完了後にbackendの同じユースケースを実行する。
 
 ## Value Object Pattern with Zod Branding
@@ -586,20 +585,20 @@ backendがドメイン値をHTTPレスポンスへ変換する。WebとSwiftは�
 
 ## Event-Driven Architecture Pattern
 
-作成・削除ユースケースは永続化後にドメインイベントを発行する。共有dispatcherとhandlerは `packages/backend/src/events/` に置き、ログ・通知・検索等の依存をhostから注入する。
+作成・削除ユースケースは永続化後にドメインイベントを発行する。共有dispatcherとhandlerは `services/backend/src/events/` に置き、ログ・通知・検索等の依存をhostから注入する。
 `services/backend` がhandlerを登録し、Webのinstrumentationからイベントを初期化しない。登録の重複防止とhandler構成はbackendの回帰テストで検証する。
 DBと通知の原子性を保証するOutboxは導入していない。外部処理の失敗時動作は[ドメインモデル](domain-model.md)の設計上の制約を参照する。
 
 ## Repository CQRS Pattern
 
-coreでドメインごとにCommand/Query repository interfaceを分離し、`packages/backend/src/{domain}/` のPrisma実装で永続化する。
+coreでドメインごとにCommand/Query repository interfaceを分離し、`services/backend/src/{domain}/` のPrisma実装で永続化する。
 Commandは所有者・状態条件付きの書き込みを行い、Queryは認証済みtenant内を読み取る。Next.jsのcache・Cookie・画面更新をrepositoryへ持ち込まない。
 これはrepositoryの責務分離であり、別DBやイベントソーシングを導入したCQRSではない。
 
 ## Dependency Injection Factory Pattern
 
-`services/backend` が環境変数を検証し、Prisma・storage・監視等の実装を生成する。`packages/backend/src/api/composition.ts` の `createApiServices` へ型付きで渡し、repository、domain service、ユースケース、HTTP handlerを組み立てる。
-ユースケースのテストは同じ依存型のmockを注入し、DBやNext.jsを必要としない。実装packageがhostやWebのmoduleをimportする逆向き依存は禁止する。
+`services/backend` が環境変数を検証し、Prisma・storage・監視等の実装を生成する。`services/backend/src/api/composition.ts` の `createApiServices` へ型付きで渡し、repository、domain service、ユースケース、HTTP handlerを組み立てる。
+ユースケースのテストは同じ依存型のmockを注入し、DBやNext.jsを必要としない。ドメイン別の実装が起動入口・環境設定やWebのmoduleをimportする逆向き依存は禁止する。
 
 ## Workspace task graph
 
