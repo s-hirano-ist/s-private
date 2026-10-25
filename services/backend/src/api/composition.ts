@@ -34,7 +34,7 @@ export type ApiServicesConfig = {
 	push: PushConfig;
 	reporter: Pick<ErrorReporter, "captureException">;
 	searchVectors: ReturnType<typeof createVectorSearch>;
-	storage: { books: IStorageService; images: IStorageService; };
+	storage: { books: IStorageService; images: IStorageService };
 };
 
 /** Shared composition: raw repositories and domain services, without Web caches or Next.js. */
