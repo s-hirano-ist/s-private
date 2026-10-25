@@ -18,8 +18,23 @@ export function createApiAuth(
 		authenticateBearer: (request) =>
 			authenticateMobileRequest(request, config, mobile),
 		async getWebSession(headers) {
+			const origin =
+				headers.get("x-s-private-web-origin") ??
+				headers.get("origin") ??
+				config.BETTER_AUTH_URL;
+			if (!origin || !isTrustedWebOrigin(origin, config))
+				return { session: null };
+			const publicHeaders = new Headers(headers);
+			for (const name of [
+				"x-s-private-web-origin",
+				"x-forwarded-host",
+				"x-forwarded-proto",
+				"forwarded",
+			])
+				publicHeaders.delete(name);
+			publicHeaders.set("host", new URL(origin).host);
 			const { response, headers: responseHeaders } = await auth.api.getSession({
-				headers,
+				headers: publicHeaders,
 				returnHeaders: true,
 			});
 			return {

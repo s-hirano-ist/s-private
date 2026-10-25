@@ -19,11 +19,41 @@ const local = {
 	EMBEDDING_URL: "http://localhost:3001",
 };
 describe("standalone backend configuration", () => {
+	test("Preview needs no fixed Web origin and cannot enable Cron", () => {
+		const input = {
+			...local,
+			NODE_ENV: "production",
+			VERCEL: "1",
+			VERCEL_ENV: "preview",
+			LOCAL_DEV_MODE: undefined,
+			DATABASE_URL: "postgresql://db/test?sslmode=verify-full",
+			AUTH0_CLIENT_ID: "client",
+			AUTH0_CLIENT_SECRET: "secret",
+			AUTH0_ISSUER_BASE_URL: "https://auth.example.com",
+			MOBILE_API_AUDIENCE: "https://api.example.com",
+		};
+		expect(parseBackendEnv(input).BETTER_AUTH_URL).toBeUndefined();
+		expect(parseBackendEnv(input).LOCAL_DEV_MODE).toBe("false");
+		expect(() =>
+			parseBackendEnv({ ...input, VERCEL_ENV: "production" }),
+		).toThrow("BETTER_AUTH_URL");
+		expect(() =>
+			parseBackendEnv({ ...input, BETTER_AUTH_URL: "http://localhost:3000" }),
+		).toThrow("HTTPS");
+		expect(() =>
+			parseBackendEnv({
+				...input,
+				BACKEND_CRON_ENABLED: "true",
+				CRON_SECRET: "test-secret-long-enough",
+			}),
+		).toThrow("Preview");
+	});
 	test("starts in production with Qdrant Cloud and no separate embedding URL", () => {
 		const env = parseBackendEnv({
 			...local,
 			NODE_ENV: "production",
 			VERCEL: "1",
+			BETTER_AUTH_URL: "https://web.example.com",
 			LOCAL_DEV_MODE: "false",
 			DATABASE_URL: "postgresql://db/test?sslmode=verify-full",
 			AUTH0_CLIENT_ID: "test-client",

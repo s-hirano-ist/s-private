@@ -6,7 +6,7 @@ export function createBackendHttpApp(deps: {
 	cron(request: Request): Promise<Response>;
 	isTrustedOrigin(origin: string): boolean;
 	objectStorageUnavailable?: boolean;
-	publicOrigin: string;
+	publicOrigin?: string;
 	reportError(error: unknown): unknown;
 	signIn(request: Request): Promise<Response>;
 }) {
@@ -30,7 +30,7 @@ export function createBackendHttpApp(deps: {
 	function publicRequest(request: Request): Request | null {
 		const origin =
 			request.headers.get("x-s-private-web-origin") ?? deps.publicOrigin;
-		if (!deps.isTrustedOrigin(origin)) return null;
+		if (!origin || !deps.isTrustedOrigin(origin)) return null;
 		const url = new URL(request.url);
 		const target = new URL(url.pathname + url.search, origin);
 		const headers = new Headers(request.headers);

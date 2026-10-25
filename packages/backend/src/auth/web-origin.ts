@@ -6,9 +6,13 @@ export const vercelPreviewHosts = [
 /** Match only this Web project's deployment aliases in the existing Vercel team. */
 export function isTrustedWebOrigin(
 	origin: string,
-	config: { BETTER_AUTH_URL: string; VERCEL?: string },
+	config: { BETTER_AUTH_URL?: string; VERCEL?: string },
 ): boolean {
-	if (origin === new URL(config.BETTER_AUTH_URL).origin) return true;
+	if (
+		config.BETTER_AUTH_URL &&
+		origin === new URL(config.BETTER_AUTH_URL).origin
+	)
+		return true;
 	if (config.VERCEL !== "1") return false;
 	try {
 		const url = new URL(origin);

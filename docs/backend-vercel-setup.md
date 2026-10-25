@@ -4,7 +4,8 @@
 MinIO/Cloudflareの資格情報なしで起動できる。再有効化時の条件は
 [MinIOの一時停止](backend-deployment.md#minioの一時停止) を参照。
 
-この手順は担当者が手動で実施する。デプロイ・環境変数の登録・Cronの有効化は未実施。
+Productionの環境変数はVercelで手動管理し、PreviewはDopplerのサービス別configから同期する。
+デプロイ・認証・Cronの稼働状態は配置後に検証する。
 移行PRは下から順番に取り込み、最終Web分離PRを本番へ適用する前にbackendを稼働させる。
 旧mobile入口の撤去は `/api/v1` 対応iOSの配布・接続確認後に行う。
 
@@ -17,7 +18,7 @@ MinIO/Cloudflareの資格情報なしで起動できる。再有効化時の条�
 5. Node.jsは **24.x** を選び、ビルドログのversionがリポジトリの `.nvmrc` / `engines` を満たすことを確認する。
 6. Install Commandはworkspaceルートのlockfileを使う `pnpm install --frozen-lockfile`。Build Commandは `services/backend/vercel.json` の `pnpm --filter s-private-backend... -r run build` を使用する。Output Directoryを静的サイト用の `dist` などへ上書きしない。
 7. Functionsのregionは既存CockroachDBに近いregionを選ぶ。HTTP APIとSharpを使用するためNode.jsで実行する。Cloudflare Workersへの配置はこの構成の対象外。
-8. 以下の環境変数を登録してから担当者がdeployする。初期状態ではCron scheduleを登録しない。
+8. 以下の環境変数を登録してから担当者がdeployする。Cron scheduleはリポジトリの設定を使用し、PreviewではCronを無効にする。
 
 Vercelの [Hono](https://vercel.com/docs/frameworks/backend/hono)、[monorepo](https://vercel.com/docs/monorepos)、[Root Directory](https://vercel.com/docs/builds/configure-a-build#root-directory) の手順に対応する。
 
@@ -35,14 +36,15 @@ backendのProductionには既存Productionと同じDB・bucket・`AUTH_SECRET`�
 
 backendの `BETTER_AUTH_URL` は **公開Webのorigin**（例: `https://private.s-hirano.com`）。backendのoriginには変更しない。
 Webの `BACKEND_URL` はbackendのHTTPS originで、`/api/v1`・末尾slash・queryを含めない。
-Webの `BETTER_AUTH_URL` も公開Web originを指定する。
+Production Webの `BETTER_AUTH_URL` も公開Web originを指定する。
+Previewは両projectで `BETTER_AUTH_URL` を設定せず、リクエストのWeb originを検証して使用する。
 ブラウザは同一originのBFFを使うため、CORSを広く開放する設定は不要。
 
 WebへDB・MinIO・Auth0 client secret・VAPID秘密鍵・Pushover・Qdrantの資格情報を渡す必要はなくなる。backendの確認と切替後にWeb projectから不要な変数を削除する。共有secret自体は変更しない。
 
 Previewには既存のPreview用DB・bucket・Auth0設定を使い、ProductionのDBや通知先と混在させない。Preview backendとPreview Webを対応させ、WebのPreview用 `BACKEND_URL` をそのbackendへ向ける。必要なら固定のPreview domainを使用する。現在の認証設定は公開Web originと既存teamの `s-private-*-s-hirano-ist-team.vercel.app` および `memdex-web-*-s-hirano-ist-team.vercel.app` を許可する。別名のWeb project/domainへ変える場合は、認証の許可hostとAuth0の許可URLを合わせて変更・確認する。
 
-`LOCAL_DEV_MODE=false`、`BACKEND_CRON_ENABLED=false` を配置先で明示する。`LOCAL_AUTH_*` は登録しない。`VERCEL=1` ではlocal認証を利用できない。
+`LOCAL_DEV_MODE` は配置先に登録せず既定値falseを使う。Previewの `BACKEND_CRON_ENABLED=false` は明示する。`LOCAL_AUTH_*` は登録しない。`VERCEL=1` ではlocal認証を利用できない。
 ProductionのDBは `sslmode=verify-full` を使い、`NODE_TLS_REJECT_UNAUTHORIZED=0` を設定しない。ローカルファイルへの証明書pathをそのままコピーしない。
 
 Productionの `DATABASE_URL` は既存の `s-prod-runtime` / `prod-db` 用接続文字列を使う。
@@ -134,7 +136,7 @@ iOSのNative ApplicationとAPI audienceは既存値を維持し、backendホス�
 
 1. Web Cron撤去PRをProductionへdeployし、旧Web projectのCron一覧からscheduleが消えたことを確認する。過去deploymentをroll backして旧Cronを復活させない。
 2. backend Productionに既存 `CRON_SECRET` と通知設定を登録する。PreviewではCronを有効化しない。
-3. backendの `BACKEND_CRON_ENABLED=true` を設定し、担当者が `services/backend/vercel.json` に次のscheduleを追加してdeployする。既存の `buildCommand` は残す。
+3. backendのProductionに `BACKEND_CRON_ENABLED=true` と `CRON_SECRET` を設定し、`services/backend/vercel.json` の次のscheduleを含む成果物をdeployする。scheduleはリポジトリに登録済みで、追加作業は不要。
 
 ```json
 {
@@ -146,7 +148,7 @@ iOSのNative ApplicationとAPI audienceは既存値を維持し、backendホス�
 
 4. 未認証呼び出しが401であることを確認する。認証付きの実通知確認は担当者が行い、配信件数とSentryを確認する。
 
-初期状態のbackendはCron無効・schedule未登録。旧Webとbackendを同時に稼働させない。詳細は [Cronの手動切替](backend-deployment.md#cronと切替時の確認) と [Vercel Cron](https://vercel.com/docs/cron-jobs) を参照。
+backendのscheduleはProduction用に登録済み。ProductionのCron有効化には `CRON_SECRET` が必要で、Previewは常に無効とする。旧Webとbackendを同時に稼働させない。詳細は [Cronの手動切替](backend-deployment.md#cronと切替時の確認) と [Vercel Cron](https://vercel.com/docs/cron-jobs) を参照。
 
 ## 6. 問題があった場合
 
