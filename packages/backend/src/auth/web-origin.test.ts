@@ -3,6 +3,20 @@ import { expect, test } from "vitest";
 
 const config = { BETTER_AUTH_URL: "https://private.s-hirano.com", VERCEL: "1" };
 
+test("Preview has no localhost or Production fallback when no canonical Web origin is configured", () => {
+	const preview = { VERCEL: "1" };
+	expect(
+		isTrustedWebOrigin(
+			"https://memdex-web-abc-s-hirano-ist-team.vercel.app",
+			preview,
+		),
+	).toBe(true);
+	expect(isTrustedWebOrigin("http://localhost:3000", preview)).toBe(false);
+	expect(isTrustedWebOrigin("https://private.s-hirano.com", preview)).toBe(
+		false,
+	);
+});
+
 test.each([
 	"https://private.s-hirano.com",
 	"https://s-private-git-feature-s-hirano-ist-team.vercel.app",

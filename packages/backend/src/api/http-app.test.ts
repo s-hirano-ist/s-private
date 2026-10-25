@@ -1,7 +1,10 @@
 import { createBackendHttpApp } from "@s-hirano-ist/s-backend/api/http-app";
 import { describe, expect, test, vi } from "vite-plus/test";
 
-function setup(objectStorageUnavailable = false) {
+function setup(
+	objectStorageUnavailable = false,
+	publicOrigin: string | null = "https://web.example",
+) {
 	const cookies = new Headers();
 	cookies.append("set-cookie", "state=one; HttpOnly");
 	cookies.append("set-cookie", "aux=two; HttpOnly");
@@ -37,7 +40,7 @@ function setup(objectStorageUnavailable = false) {
 		auth,
 		signIn,
 		cron: async () => new Response(null, { status: 401 }),
-		publicOrigin: "https://web.example",
+		publicOrigin: publicOrigin ?? undefined,
 		isTrustedOrigin: (origin) =>
 			["https://web.example", "https://preview.example"].includes(origin),
 		reportError,
@@ -45,6 +48,18 @@ function setup(objectStorageUnavailable = false) {
 	return { app, auth, api, signIn, reportError };
 }
 describe("backend HTTP host", () => {
+	test("requires the BFF's validated origin when Preview has no canonical origin", async () => {
+		const { app, signIn } = setup(false, null);
+		expect(
+			(await app.request("https://backend.example/api/sign-in")).status,
+		).toBe(403);
+		expect(signIn).not.toHaveBeenCalled();
+		const response = await app.request("https://backend.example/api/sign-in", {
+			headers: { "x-s-private-web-origin": "https://preview.example" },
+		});
+		expect(response.status).toBe(307);
+		expect(response.headers.get("location")).toBe("https://preview.example/");
+	});
 	test.each([
 		["GET", "/api/v1/media/images/image/original"],
 		["GET", "/api/v1/media/books/book/thumbnail"],

@@ -41,7 +41,7 @@ iOSのAuth0 audienceはURLと独立した既存値を維持する。
 | --- | --- |
 | `DATABASE_URL` | 既存CockroachDB。productionは `sslmode=verify-full` |
 | `AUTH_SECRET` | 既存Better Authと同じ値。32文字以上 |
-| `BETTER_AUTH_URL` | 公開Web origin。backendのホスト名に変更しない |
+| `BETTER_AUTH_URL` | Production・ローカルの公開Web origin。Previewは未設定とし、BFFが検証済みのWeb originを渡す |
 | `AUTH0_CLIENT_ID` / `AUTH0_CLIENT_SECRET` / `AUTH0_ISSUER_BASE_URL` | 既存WebのAuth0 provider |
 | `MOBILE_API_AUDIENCE` | 既存iOS API identifier |
 | `MINIO_*` / `CF_ACCESS_*` | 既存bucketとCloudflare Access credentials |
@@ -96,11 +96,11 @@ backend障害時に別ホストへmutationを再送しない。自動retryも追
 
 ## Cronと切替時の確認
 
-独立サービスの `vercel.json` にはscheduleを登録しない。
-このスタックのWeb Cron撤去PRで旧Next.jsのscheduleと入口を削除する。
-旧Productionの停止を確認し、独立サービスの動作確認後に担当者がscheduleを追加する。
+独立サービスの `vercel.json` にProduction用scheduleを登録する。
+旧Next.jsにはscheduleとCron入口を置かず、配信をbackendに集約する。
 パスは `/api/cron/gigazine-headline`、既存scheduleは `0 0 * * *`。
-`BACKEND_CRON_ENABLED=true` と `CRON_SECRET` を設定する。同時実行しない。
+Productionに `BACKEND_CRON_ENABLED=true` と `CRON_SECRET` を設定する。同時実行しない。
+Previewは `BACKEND_CRON_ENABLED=false` を維持し、誤って有効化した場合は起動を拒否する。
 未認証の入口が401を返すことを先に確認し、実通知の検証は担当者が行う。
 
 切替前に既存Cookie、Auth0 callback、所有者の分離、全CRUD、検索、同期cursor、
@@ -113,9 +113,21 @@ backend障害時に別ホストへmutationを再送しない。自動retryも追
 旧クライアントへの長期互換は提供しない。端末のキュー・draft・cursorとサーバーのoperation・uploadは保持する。
 
 backendの単体検証後に、Webの `BACKEND_URL` をbackendのHTTPS originへ設定して再デプロイする。
-WebのAuth0 callback URLとCookieのoriginは維持する。backendの `BETTER_AUTH_URL` は公開Webを指定する。
+WebのAuth0 callback URLとCookieのoriginは維持する。Production backendの `BETTER_AUTH_URL` は公開Webを指定する。
 この実装はVercelのbypass secretを送らない。対象backendはWebとiOSから到達可能にし、Deployment Protectionで拒否されない設定を担当者が確認する。
 公開URLの確認だけで切替済みと判断せず、認証・所有者・実CRUD・同期・uploadを確認する。
 接続先を戻す場合は書き込みを停止して状態を確認し、互換性のあるbackend deploymentへ手動で `BACKEND_URL` を戻す。
 最終Webには組み込みhandlerがないため、URLを削除しても旧構成へ戻らない。
 接続済み通信を障害時に暗黙に旧handlerへfallbackしない。
+
+## Previewの認証origin
+
+Previewのfrontend・backendでは `BETTER_AUTH_URL` を設定しない。
+WebのSSRはリクエストのhostをこのteamのWeb deployment allowlistで検証してoriginを決める。
+BFFはOAuth開始・callbackも同じWeb originとしてbackendへ転送する。
+backendは許可したWeb originのみでURLを復元し、originのない直接OAuthリクエストを拒否する。
+Better Authの動的baseURLにもlocalhost・Productionへのfallbackを設けない。
+Previewで新規作成するAccountのissuer既定値はAuth0 issuerとし、Productionの既存値は維持する。
+Auth0のPreview用Web applicationに、対象Web callbackとWeb Origins・Logout URLsを登録する。
+backendのVercelログイン保護は解除し、アプリのCookie／Bearer認証・所有者検証は維持する。
+frontendのVercelログイン保護は維持する。実Auth0のログイン完了は配置後に別途検証する。

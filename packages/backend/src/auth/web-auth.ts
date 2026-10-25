@@ -31,7 +31,7 @@ export type AuthConfig = {
 	AUTH0_CLIENT_ID?: string;
 	AUTH0_CLIENT_SECRET?: string;
 	AUTH0_ISSUER_BASE_URL?: string;
-	BETTER_AUTH_URL: string;
+	BETTER_AUTH_URL?: string;
 	LOCAL_DEV_MODE: "true" | "false";
 	NODE_ENV: "development" | "test" | "production";
 	VERCEL?: string;
@@ -76,13 +76,13 @@ export function createBackendAuth(env: AuthConfig, prisma: DatabaseClient) {
 	const baseURL: BaseURLConfig = env.VERCEL
 		? {
 				allowedHosts: [
-					new URL(env.BETTER_AUTH_URL).host,
+					...(env.BETTER_AUTH_URL ? [new URL(env.BETTER_AUTH_URL).host] : []),
 					...vercelPreviewHosts,
 				],
-				fallback: env.BETTER_AUTH_URL,
+				...(env.BETTER_AUTH_URL ? { fallback: env.BETTER_AUTH_URL } : {}),
 				protocol: "https",
 			}
-		: env.BETTER_AUTH_URL;
+		: (env.BETTER_AUTH_URL ?? "http://localhost:3000");
 
 	/**
 	 * The Better Auth instance.
@@ -99,7 +99,7 @@ export function createBackendAuth(env: AuthConfig, prisma: DatabaseClient) {
 		baseURL,
 		secret: env.AUTH_SECRET,
 		trustedOrigins: [
-			env.BETTER_AUTH_URL,
+			...(env.BETTER_AUTH_URL ? [env.BETTER_AUTH_URL] : []),
 			...vercelPreviewHosts.map((host) => `https://${host}`),
 		],
 		onAPIError: { errorURL: "/error" },
@@ -109,7 +109,7 @@ export function createBackendAuth(env: AuthConfig, prisma: DatabaseClient) {
 				issuer: {
 					type: "string",
 					input: false,
-					defaultValue: env.BETTER_AUTH_URL,
+					defaultValue: env.BETTER_AUTH_URL ?? env.AUTH0_ISSUER_BASE_URL,
 				},
 			},
 		},

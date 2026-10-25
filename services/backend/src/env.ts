@@ -6,9 +6,10 @@ const schema = z.object({
 		.enum(["development", "test", "production"])
 		.default("development"),
 	VERCEL: optional,
+	VERCEL_ENV: z.enum(["production", "preview", "development"]).optional(),
 	LOCAL_DEV_MODE: z.enum(["true", "false"]).default("false"),
 	DATABASE_URL: z.string().min(1),
-	BETTER_AUTH_URL: z.url().default("http://localhost:3000"),
+	BETTER_AUTH_URL: z.url().optional(),
 	AUTH_SECRET: z.string().min(32),
 	AUTH0_CLIENT_ID: optional,
 	AUTH0_CLIENT_SECRET: optional,
@@ -49,6 +50,22 @@ const schema = z.object({
 	NODE_TLS_REJECT_UNAUTHORIZED: optional,
 });
 
+function applyDeploymentPolicy(env: z.infer<typeof schema>) {
+	const preview = env.VERCEL === "1" && env.VERCEL_ENV === "preview";
+	if (!env.BETTER_AUTH_URL && env.VERCEL !== "1")
+		env.BETTER_AUTH_URL = "http://localhost:3000";
+	if (env.VERCEL === "1" && !preview && !env.BETTER_AUTH_URL)
+		throw new Error("BETTER_AUTH_URL is required outside Preview");
+	if (
+		env.VERCEL === "1" &&
+		env.BETTER_AUTH_URL &&
+		new URL(env.BETTER_AUTH_URL).protocol !== "https:"
+	)
+		throw new Error("Deployed Web origin must use HTTPS");
+	if (preview && env.BACKEND_CRON_ENABLED)
+		throw new Error("Cron must remain disabled in Preview");
+}
+
 export function parseBackendEnv(input: Record<string, string | undefined>) {
 	const env = schema.parse(
 		Object.fromEntries(
@@ -72,6 +89,7 @@ export function parseBackendEnv(input: Record<string, string | undefined>) {
 		(!env.LOCAL_AUTH_EMAIL || !env.LOCAL_AUTH_PASSWORD || !env.LOCAL_AUTH_NAME)
 	)
 		throw new Error("Local authentication configuration is required");
+	applyDeploymentPolicy(env);
 	if (
 		env.NODE_ENV === "production" &&
 		(!env.DATABASE_URL.includes("sslmode=verify-full") ||

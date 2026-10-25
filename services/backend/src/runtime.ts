@@ -102,7 +102,9 @@ export function createBackendRuntime(env: BackendEnv) {
 			env.BACKEND_CRON_ENABLED
 				? cron(request)
 				: Promise.resolve(new Response(null, { status: 404 })),
-		publicOrigin: new URL(env.BETTER_AUTH_URL).origin,
+		publicOrigin: env.BETTER_AUTH_URL
+			? new URL(env.BETTER_AUTH_URL).origin
+			: undefined,
 		isTrustedOrigin: apiAuth.isTrustedOrigin,
 		reportError,
 	});
