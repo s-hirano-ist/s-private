@@ -37,7 +37,7 @@
 --   once a row's user_id is the new id it no longer matches any account_id, so
 --   re-running is safe and is a no-op.
 -- * Run as raw SQL only. Do NOT route through the Prisma client: the tenant
---   extension (app/src/prisma.ts) rewrites updateMany to force the active
+--   extension (apps/web/src/prisma.ts) rewrites updateMany to force the active
 --   tenant's user_id, which would defeat the remap. Raw SQL bypasses it.
 -- * The join through `account` (account_id = old sub -> user_id = new id) means
 --   you never have to hardcode any id.

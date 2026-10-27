@@ -190,7 +190,7 @@ model MobileUpload {
 //
 // Managed entirely by Better Auth via @better-auth/prisma-adapter. These are
 // intentionally NOT registered in the Prisma tenant extension whitelist
-// (app/src/prisma.ts), so tenant filtering never touches them. createdAt has a
+// (apps/web/src/prisma.ts), so tenant filtering never touches them. createdAt has a
 // DB default and emailVerified defaults to false as a safety net for the
 // library-managed write paths (unlike the domain models, which set timestamps
 // explicitly in domain logic).

@@ -6,11 +6,11 @@
 		"moduleResolution": "Bundler",
 		"noEmit": true,
 		"paths": {
-			"@/*": ["./app/src/*"],
+			"@/*": ["./apps/web/src/*"],
 			"@s-hirano-ist/s-core/*": ["./packages/core/*"]
 		},
 		"jsx": "react-jsx"
 	},
-	"include": ["app/src/**/*", "packages/*/src/**/*", "packages/*/**/*"],
+	"include": ["apps/web/src/**/*", "packages/*/src/**/*", "packages/*/**/*"],
 	"exclude": ["node_modules", ".next", "**/node_modules"]
 }

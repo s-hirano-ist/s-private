@@ -13,7 +13,7 @@ const isVercelBuild = process.env.VERCEL === "1";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 	transpilePackages: ["@s-hirano-ist/s-api-client", "@s-hirano-ist/s-ui"],
-	outputFileTracingRoot: path.join(import.meta.dirname, ".."),
+	outputFileTracingRoot: path.join(import.meta.dirname, "../.."),
 	typedRoutes: true,
 	reactCompiler: true,
 	cacheComponents: true,

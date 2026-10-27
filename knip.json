@@ -1,7 +1,11 @@
 {
 	"$schema": "https://unpkg.com/knip@5/schema.json",
 	"ignoreExportsUsedInFile": true,
-	"ignore": ["e2e/**/*", "scripts/check-secrets.mjs", "app/oxfmt-tailwind.css"],
+	"ignore": [
+		"e2e/**/*",
+		"scripts/check-secrets.mjs",
+		"apps/web/oxfmt-tailwind.css"
+	],
 	"ignoreDependencies": ["@secretlint/secretlint-rule-preset-recommend"],
 	"ignoreBinaries": ["mise", "pipeline", "vercel"],
 	"workspaces": {
@@ -12,7 +16,7 @@
 			],
 			"ignoreDependencies": ["@tailwindcss/typography"]
 		},
-		"app": {
+		"apps/web": {
 			"entry": ["public/push-service-worker.js"],
 			"ignore": ["src/infrastructures/i18n/request.ts"],
 			"ignoreDependencies": ["@types/react-syntax-highlighter"],
@@ -57,7 +61,7 @@
 		"packages/database": {
 			"ignoreDependencies": ["@prisma/client"]
 		},
-		"services/backend": {
+		"apps/backend": {
 			"entry": ["src/index.ts", "src/dev.ts"],
 			"project": ["src/**/*.ts"]
 		}

@@ -16,26 +16,26 @@ gitleaks = "8.30.1"
 [tasks."ios:generate"]
 description = "Generate the iOS Xcode project"
 run = [
-	"bash ios/scripts/generate-api.sh",
-	"xcodegen generate --spec ios/project.yml --project ios",
+	"bash apps/ios/scripts/generate-api.sh",
+	"xcodegen generate --spec apps/ios/project.yml --project apps/ios",
 ]
 
 [tasks."ios:build"]
 description = "Build the iOS app for an iOS 27 Simulator"
 depends = ["ios:generate"]
-run = "xcodebuild -project ios/SPrivate.xcodeproj -scheme SPrivate -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath ios/.derivedData CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual build"
+run = "xcodebuild -project apps/ios/SPrivate.xcodeproj -scheme SPrivate -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath apps/ios/.derivedData CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual build"
 
 [tasks."ios:test"]
 description = "Run the iOS unit and UI tests"
 depends = ["ios:generate"]
-run = "xcodebuild -project ios/SPrivate.xcodeproj -scheme SPrivate -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest' -derivedDataPath ios/.derivedData CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual test"
+run = "xcodebuild -project apps/ios/SPrivate.xcodeproj -scheme SPrivate -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest' -derivedDataPath apps/ios/.derivedData CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual test"
 
 [tasks."ios:device-build"]
 description = "Build the iOS app and Share Extension with local Personal Team signing"
 depends = ["ios:generate"]
-run = "xcodebuild -project ios/SPrivate.xcodeproj -scheme SPrivate -destination 'generic/platform=iOS' -derivedDataPath ios/.derivedData build"
+run = "xcodebuild -project apps/ios/SPrivate.xcodeproj -scheme SPrivate -destination 'generic/platform=iOS' -derivedDataPath apps/ios/.derivedData build"
 
 [tasks."ios:run"]
 description = "Build and launch the app in an iPhone 17 iOS 27 Simulator"
 depends = ["ios:generate"]
-run = "ios/scripts/run-simulator.sh"
+run = "apps/ios/scripts/run-simulator.sh"

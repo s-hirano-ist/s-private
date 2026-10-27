@@ -20,9 +20,9 @@ uploadの作成・再開・完了・取消・期限切れcleanupへ入る前に�
 
 ## 独立サービス
 
-`services/backend/src/index.ts` はHono appをdefault exportする。
+`apps/backend/src/index.ts` はHono appをdefault exportする。
 [VercelのHono構成](https://vercel.com/docs/frameworks/backend/hono)に従い、Node.jsで実行する。
-Webとは別のVercel projectを作り、Root Directoryを `services/backend` にする。
+Webとは別のVercel projectを作り、Root Directoryを `apps/backend` にする。
 ルート外のworkspaceをビルドに含める設定を有効にする。
 Build Commandは同ディレクトリの `vercel.json` を使用する。
 Nodeのバージョンはリポジトリの `.nvmrc` に合わせる。
@@ -33,7 +33,7 @@ iOSのAuth0 audienceはURLと独立した既存値を維持する。
 
 ## 環境変数
 
-サービス側は `services/backend/src/env.ts` で起動時に検証する。
+サービス側は `apps/backend/src/env.ts` で起動時に検証する。
 既存Webの値をコピーし、DB・Qdrant・Auth0・Better Authを同じ状態へ接続する。
 新しいDBや認証アカウントへ切り替えない。
 
@@ -86,7 +86,7 @@ mise exec -- env BACKEND_URL=http://localhost:3002 pnpm --filter s-private-app d
 
 `BACKEND_URL` は末尾slash・path・query・credentialsのないoriginを指定する。
 HTTPはlocalhost／127.0.0.1だけ許可し、VercelではHTTPSのbackend originを設定する。
-Vercel Previewでは `app/vercel.json` の `relatedProjects` でbackend projectを関連付け、
+Vercel Previewでは `apps/web/vercel.json` の `relatedProjects` でbackend projectを関連付け、
 `VERCEL_RELATED_PROJECTS` から同じブランチのbackend originを自動解決する。
 PRごとの `BACKEND_URL` 登録は不要。Productionとローカルでは明示した `BACKEND_URL` を使う。
 関連情報のないPreviewでは明示した `BACKEND_URL` が必要で、backend Productionへ自動接続しない。

@@ -1,6 +1,6 @@
 # iOS Development
 
-`ios/project.yml` is the source of truth for the Xcode project. The generated
+`apps/ios/project.yml` is the source of truth for the Xcode project. The generated
 `SPrivate.xcodeproj` is intentionally excluded from Git.
 
 ## Requirements
@@ -31,7 +31,7 @@ mise run ios:generate
 
 ## Codex skills and Simulator automation
 
-The repository provides the `develop-ios-app` skill for changes under `ios/`.
+The repository provides the `develop-ios-app` skill for changes under `apps/ios/`.
 Its canonical source is `.harness/skills/develop-ios-app`; the checked-in
 adapter links make it available after cloning and in every Git worktree.
 
@@ -52,7 +52,7 @@ installed universal-directory copy while this repository is open so the same
 skills and MCP server are not loaded twice.
 
 All commands and XcodeBuildMCP project paths must resolve from the current
-worktree. Each worktree keeps its generated project and `ios/.derivedData`
+worktree. Each worktree keeps its generated project and `apps/ios/.derivedData`
 locally. Do not reuse an absolute path from the primary checkout. Multiple
 worktrees using the same Simulator and bundle identifier overwrite the same
 installed app, so use separate Simulators or serialize runs and rebuild from
@@ -86,11 +86,11 @@ use the Personal Team configuration below.
 
 1. In Xcode > Settings > Accounts, add the Apple ID used by the Personal Team.
 2. The shared Auth0, API, and Personal Team values are already in
-   `ios/Config/Shared.xcconfig`, so no per-worktree setup is needed. To use a
+   `apps/ios/Config/Shared.xcconfig`, so no per-worktree setup is needed. To use a
    different Apple team or API environment, copy
-   `ios/Config/Local.xcconfig.example` to `ios/Config/Local.xcconfig` and
+   `apps/ios/Config/Local.xcconfig.example` to `apps/ios/Config/Local.xcconfig` and
    override only the values you need. `Local.xcconfig` is ignored by Git.
-3. Run `mise run ios:generate`, open `ios/SPrivate.xcodeproj`, select the
+3. Run `mise run ios:generate`, open `apps/ios/SPrivate.xcodeproj`, select the
    physical iPhone, and run the `SPrivate` scheme. To verify compilation from
    the command line, run `mise run ios:device-build`.
 4. Confirm that Signing & Capabilities lists the App Group
@@ -251,7 +251,7 @@ Run `pnpm api:generate` from the repository root after changing the Hono/Zod
 contract. The Swift generator reads `docs/openapi/backend-v1.json` directly; no copy is
 stored in the package. Do not edit this snapshot by hand. Run `pnpm api:check`
 to compare the OpenAPI snapshot without modifying it, and
-`swift test --package-path ios/Packages/SPrivateAPI` to test the generated models.
+`swift test --package-path apps/ios/Packages/SPrivateAPI` to test the generated models.
 
 `mise run ios:generate` first runs the pinned generator CLI on the development
 host, then runs XcodeGen. Generated Swift sources stay in the current worktree

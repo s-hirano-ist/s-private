@@ -11,7 +11,7 @@ export default [
 			"**/.derivedData/**",
 			"**/.build/**",
 			"**/.storybook-static/**",
-			"ios/*.xcodeproj/**",
+			"apps/ios/*.xcodeproj/**",
 			".storybook-ui-static/**",
 			"**/.vitest-coverage/**",
 			"**/dist/**",

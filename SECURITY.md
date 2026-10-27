@@ -233,7 +233,7 @@ pnpm i --frozen-lockfile
 ## Content Security Policy
 
 The application uses a deterministic Content Security Policy generated from
-the deployment environment. `app/src/proxy.ts` adds the enforced policy only
+the deployment environment. `apps/web/src/proxy.ts` adds the enforced policy only
 to browser responses, including unauthenticated redirects. It does not inject
 CSP or private headers into the upstream server-rendering request.
 

@@ -12,7 +12,7 @@ Next.js + TypeScript + Clean Architectureベースのコンテンツ管理シス
 - 計画時、後方互換性は基本的に捨てること。
 - ハーネス共通資産の正本は `.harness/` に置く。`AGENTS.md`、`CLAUDE.md`、`.agents/skills/`、`.claude/skills/` のリンク先を直接編集しないこと。
 - Skillを追加・削除したら `pnpm harness:sync` でリンクを同期し、`pnpm harness:check` で検証すること。
-- `ios/`配下のSwiftUIアプリを変更、ビルド、テスト、Simulatorデバッグするときは`develop-ios-app` Skillを使用する。現在のworktree内のXcode projectとDerivedDataだけを使い、主checkoutや別worktreeの生成物を参照しないこと。
+- `apps/ios/`配下のSwiftUIアプリを変更、ビルド、テスト、Simulatorデバッグするときは`develop-ios-app` Skillを使用する。現在のworktree内のXcode projectとDerivedDataだけを使い、主checkoutや別worktreeの生成物を参照しないこと。
 
 ## 技術スタック
 
@@ -64,14 +64,14 @@ Next.js + TypeScript + Clean Architectureベースのコンテンツ管理シス
 - `packages/notification/` - 通知サービス（Pushover）
 - `packages/storage/` - MinIOストレージクライアント
 - `packages/scripts/` - ビルド・ユーティリティスクリプト
-- `services/backend/` - Hono HTTP host・環境設定・DI・ユースケース・認証・tenant・永続化adapter・検索・通知
+- `apps/backend/` - Hono HTTP host・環境設定・DI・ユースケース・認証・tenant・永続化adapter・検索・通知
 - `packages/api-contracts/` - Hono + Zodの共通HTTP契約
 - `packages/api-client/` - Orval生成client・DTO・検証schema
-- `app/src/application-services/` - WebのServer Action API adapter
-- `app/src/infrastructures/` - Webのi18n・ブラウザ認証・セキュリティ
-- `app/src/loaders/` - データローダー層
+- `apps/web/src/application-services/` - WebのServer Action API adapter
+- `apps/web/src/infrastructures/` - Webのi18n・ブラウザ認証・セキュリティ
+- `apps/web/src/loaders/` - データローダー層
 - `packages/search/` - RAG検索ライブラリ（Qdrant・Embedding APIクライアント）
-- `app/src/app/[locale]/` - Next.js App Router（i18n対応: en/ja）
+- `apps/web/src/app/[locale]/` - Next.js App Router（i18n対応: en/ja）
 
 ## 主要ドメイン
 
@@ -99,7 +99,7 @@ Next.js + TypeScript + Clean Architectureベースのコンテンツ管理シス
 
 ## 環境設定
 
-環境変数はローカル環境では`.env.local`、Preview/Production環境ではVercel Dashboardで管理します。Miseがプロジェクトルートの`.env.local`を読み込み、`pnpm dev`がDocker依存サービスの起動、migration、検索初期化、独立backendとNext.js起動を順番に実行します。環境変数定義はWebの`app/src/env.ts`とbackendの`services/backend/src/env.ts`を参照してください。初回セットアップ: `mise install` → `pnpm install` → `pnpm dev`。
+環境変数はローカル環境では`.env.local`、Preview/Production環境ではVercel Dashboardで管理します。Miseがプロジェクトルートの`.env.local`を読み込み、`pnpm dev`がDocker依存サービスの起動、migration、検索初期化、独立backendとNext.js起動を順番に実行します。環境変数定義はWebの`apps/web/src/env.ts`とbackendの`apps/backend/src/env.ts`を参照してください。初回セットアップ: `mise install` → `pnpm install` → `pnpm dev`。
 
 ## 詳細資料
 
