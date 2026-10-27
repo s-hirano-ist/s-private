@@ -1,6 +1,6 @@
 import type { MobileDeps } from "s-private-backend/mobile/deps";
 import { createRemoteJWKSet, jwtVerify } from "jose";
-import { MobileApiError } from "s-private-backend/mobile/error";
+import { ApiError } from "s-private-backend/api/error";
 import { tenantContext } from "s-private-backend/shared/tenant-context";
 const resolvers = new Map<string, ReturnType<typeof createRemoteJWKSet>>();
 export async function verifyMobileToken(
@@ -30,7 +30,7 @@ export async function verifyMobileToken(
 		if (!protectedHeader.kid || !payload.sub) throw new Error("Invalid claims");
 		return payload.sub;
 	} catch {
-		throw new MobileApiError("UNAUTHORIZED", 401);
+		throw new ApiError("UNAUTHORIZED");
 	}
 }
 export type MobileAuthConfig = {
@@ -44,15 +44,14 @@ export async function authenticateMobileRequest(
 ): Promise<string> {
 	const issuer = config.AUTH0_ISSUER_BASE_URL;
 	const audience = config.MOBILE_API_AUDIENCE;
-	if (!issuer || !audience)
-		throw new MobileApiError("MOBILE_API_UNAVAILABLE", 503);
+	if (!issuer || !audience) throw new ApiError("API_UNAVAILABLE");
 	const match = /^Bearer (\S+)$/u.exec(
 		request.headers.get("authorization") ?? "",
 	);
-	if (!match) throw new MobileApiError("UNAUTHORIZED", 401);
+	if (!match) throw new ApiError("UNAUTHORIZED");
 	const subject = await verifyMobileToken(match[1], issuer, audience);
 	const userId = await deps.accounts.findLinkedUser(subject);
-	if (!userId) throw new MobileApiError("FORBIDDEN", 403);
+	if (!userId) throw new ApiError("FORBIDDEN");
 	return userId;
 }
 export async function withMobileTenant<T>(

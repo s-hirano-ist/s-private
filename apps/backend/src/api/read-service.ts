@@ -7,7 +7,7 @@ import type { z } from "zod";
 import * as schemas from "@s-hirano-ist/s-api-contracts/schemas";
 import { ISBN } from "@s-hirano-ist/s-core/books/entities/book-entity";
 import { Readable } from "node:stream";
-import { MobileApiError } from "s-private-backend/mobile/error";
+import { ApiError } from "s-private-backend/api/error";
 import {
 	getSyncHead,
 	listSyncSnapshot,
@@ -31,7 +31,7 @@ export function createReadService(deps: ReadServiceDeps) {
 	const { database, mobile } = deps;
 	async function detail(domain: MobileDomain, owner: string, id: string) {
 		const record = await mobile.content.getContent(domain, owner, id);
-		if (!record) throw new MobileApiError("NOT_FOUND", 404);
+		if (!record) throw new ApiError("NOT_FOUND");
 		return jsonValue(record);
 	}
 	async function page(
@@ -72,13 +72,13 @@ export function createReadService(deps: ReadServiceDeps) {
 		async lookup(domain: "books" | "notes", owner: string, key: string) {
 			const normalized = domain === "books" ? ISBN.safeParse(key) : null;
 			if (normalized && !normalized.success)
-				throw new MobileApiError("VALIDATION_ERROR", 422);
+				throw new ApiError("VALIDATION_ERROR");
 			const id = await mobile.content.lookupContentId(
 				domain,
 				owner,
 				normalized?.success ? normalized.data : key,
 			);
-			if (!id) throw new MobileApiError("NOT_FOUND", 404);
+			if (!id) throw new ApiError("NOT_FOUND");
 			return detail(domain, owner, id);
 		},
 		async categories(owner: string) {
@@ -135,7 +135,7 @@ export function createReadService(deps: ReadServiceDeps) {
 					? schemas.imageSchema.parse(record)
 					: schemas.bookSchema.parse(record);
 			const path = "path" in item ? item.path : item.imagePath;
-			if (!path) throw new MobileApiError("NOT_FOUND", 404);
+			if (!path) throw new ApiError("NOT_FOUND");
 			const stream = await deps.storage[domain].getImage(
 				path,
 				variant === "thumbnail",

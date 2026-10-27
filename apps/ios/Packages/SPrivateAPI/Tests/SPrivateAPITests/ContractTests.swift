@@ -40,4 +40,13 @@ struct ContractTests {
         #expect(metadata["isbn"] as? String == "978-4-06-521234-5")
         #expect(metadata["tags"] as? [String] == ["  tag  ", " "])
     }
+    @Test("Status-specific errors reject a code belonging to another HTTP status")
+    func statusSpecificErrors() throws {
+        let valid = Data(#"{"error":{"code":"UNAUTHORIZED"}}"#.utf8)
+        _ = try JSONDecoder().decode(Components.Schemas.ApiError401.self, from: valid)
+        let invalid = Data(#"{"error":{"code":"UPLOAD_EXPIRED"}}"#.utf8)
+        #expect(throws: (any Error).self) {
+            try JSONDecoder().decode(Components.Schemas.ApiError401.self, from: invalid)
+        }
+    }
 }

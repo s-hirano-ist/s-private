@@ -7,8 +7,8 @@ import { OpenAPIHono } from "@hono/zod-openapi";
 import * as routes from "@s-hirano-ist/s-api-contracts/routes";
 import * as schemas from "@s-hirano-ist/s-api-contracts/schemas";
 import { bodyLimit } from "hono/body-limit";
-import { HTTPException } from "hono/http-exception";
-import { MobileApiError } from "s-private-backend/mobile/error";
+import { ApiError } from "s-private-backend/api/error";
+import { apiErrorResponse } from "s-private-backend/api/error-handler";
 import { tenantContext } from "s-private-backend/shared/tenant-context";
 
 export type ApiSession = z.output<typeof schemas.sessionSchema>;
@@ -46,14 +46,14 @@ export function createApiApp(
 		let owner: string;
 		if (authorization === undefined) {
 			const result = await auth.getWebSession(c.req.raw.headers);
-			if (!result.session) throw new MobileApiError("UNAUTHORIZED", 401);
+			if (!result.session) throw new ApiError("UNAUTHORIZED");
 			session = schemas.sessionSchema.parse(result.session);
 			responseHeaders = result.headers;
 			owner = session.user.id;
 			if (!["GET", "HEAD", "OPTIONS"].includes(c.req.method)) {
 				const origin = c.req.header("origin");
 				if (!origin || !auth.isTrustedOrigin(origin))
-					throw new MobileApiError("FORBIDDEN", 403);
+					throw new ApiError("FORBIDDEN");
 			}
 		} else {
 			owner = await auth.authenticateBearer(c.req.raw);
@@ -68,7 +68,7 @@ export function createApiApp(
 	const jsonLimit = bodyLimit({
 		maxSize: 4 * 1024 * 1024,
 		onError: () => {
-			throw new MobileApiError("UPLOAD_TOO_LARGE", 413);
+			throw new ApiError("UPLOAD_TOO_LARGE");
 		},
 	});
 	app.on(
@@ -83,33 +83,13 @@ export function createApiApp(
 		bodyLimit({
 			maxSize: schemas.uploadChunkSize,
 			onError: () => {
-				throw new MobileApiError("UPLOAD_TOO_LARGE", 413);
+				throw new ApiError("UPLOAD_TOO_LARGE");
 			},
 		}),
 	);
-	app.onError((original) => {
-		const error =
-			original instanceof HTTPException && original.status === 400
-				? new MobileApiError("VALIDATION_ERROR", 422)
-				: original;
-		let code = "INTERNAL_ERROR";
-		if (error instanceof MobileApiError) code = error.code;
-		if (code === "MOBILE_API_UNAVAILABLE") code = "API_UNAVAILABLE";
-		const parsed = schemas.errorSchema.safeParse({ error: { code } });
-		const status =
-			error instanceof MobileApiError &&
-			[401, 403, 404, 409, 410, 413, 422, 503].includes(error.status) &&
-			parsed.success
-				? error.status
-				: 500;
-		if (status === 500) auth.reportError(error);
-		return Response.json(
-			parsed.success && status !== 500
-				? parsed.data
-				: { error: { code: "INTERNAL_ERROR" } },
-			{ status, headers: { "cache-control": "private, no-store" } },
-		);
-	});
+	app.onError((error) =>
+		apiErrorResponse(error, (cause) => auth.reportError(cause)),
+	);
 	app.notFound((c) => c.json({ error: { code: "NOT_FOUND" } }, 404));
 	app.openapi(routes.bookByIsbnRoute, async (c) =>
 		c.json(
@@ -244,7 +224,7 @@ export function createApiApp(
 	});
 	app.openapi(routes.sessionRoute, (c) => {
 		const session = c.get("session");
-		if (!session) throw new MobileApiError("UNAUTHORIZED", 401);
+		if (!session) throw new ApiError("UNAUTHORIZED");
 		return c.json(session, 200);
 	});
 

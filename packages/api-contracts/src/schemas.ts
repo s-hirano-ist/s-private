@@ -1,4 +1,5 @@
 import { z } from "@hono/zod-openapi";
+import { apiErrorCodeSchema } from "@s-hirano-ist/s-api-contracts/errors";
 
 export const contentDomainSchema = z
 	.enum(["articles", "notes", "images", "books"])
@@ -50,23 +51,7 @@ export const bookTagsInputSchema = z
 export const errorSchema = z
 	.object({
 		error: z.object({
-			code: z.enum([
-				"UNAUTHORIZED",
-				"FORBIDDEN",
-				"NOT_FOUND",
-				"VALIDATION_ERROR",
-				"DUPLICATE",
-				"NOT_DELETABLE",
-				"UPLOAD_TOO_LARGE",
-				"OPERATION_CONFLICT",
-				"OPERATION_IN_PROGRESS",
-				"INVALID_CHUNK_SIZE",
-				"UPLOAD_INCOMPLETE",
-				"UPLOAD_EXPIRED",
-				"INVALID_SYNC_CURSOR",
-				"API_UNAVAILABLE",
-				"INTERNAL_ERROR",
-			]),
+			code: apiErrorCodeSchema,
 		}),
 	})
 	.openapi("ApiError");

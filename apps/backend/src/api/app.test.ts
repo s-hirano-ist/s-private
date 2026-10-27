@@ -3,7 +3,7 @@ import type { ReadService } from "s-private-backend/api/read-service";
 import type { UploadService } from "s-private-backend/api/upload-service";
 import type { WriteService } from "s-private-backend/api/write-service";
 import { createApiApp, type ApiAuth } from "s-private-backend/api/app";
-import { MobileApiError } from "s-private-backend/mobile/error";
+import { ApiError } from "s-private-backend/api/error";
 import { tenantContext } from "s-private-backend/shared/tenant-context";
 import { describe, expect, test, vi } from "vitest";
 
@@ -100,9 +100,7 @@ describe("Shared Hono API boundary", () => {
 	});
 	test("never falls back to a cookie after an invalid Authorization header", async () => {
 		const { app, auth, reads } = fixture();
-		auth.authenticateBearer.mockRejectedValue(
-			new MobileApiError("UNAUTHORIZED", 401),
-		);
+		auth.authenticateBearer.mockRejectedValue(new ApiError("UNAUTHORIZED"));
 		const response = await app.request("/api/v1/notes/note", {
 			headers: { authorization: "Bearer invalid", cookie: "session=valid" },
 		});
@@ -145,7 +143,7 @@ describe("Shared Hono API boundary", () => {
 	});
 	test("keeps missing and foreign-owned resources indistinguishable", async () => {
 		const { app, reads } = fixture();
-		reads.detail.mockRejectedValue(new MobileApiError("NOT_FOUND", 404));
+		reads.detail.mockRejectedValue(new ApiError("NOT_FOUND"));
 		const response = await app.request("/api/v1/notes/foreign");
 		expect(response.status).toBe(404);
 		expect(await response.json()).toEqual({ error: { code: "NOT_FOUND" } });
@@ -265,7 +263,7 @@ describe("Shared Hono API boundary", () => {
 			).status,
 		).toBe(403);
 		expect(push.test).not.toHaveBeenCalled();
-		push.test.mockRejectedValue(new MobileApiError("NOT_FOUND", 404));
+		push.test.mockRejectedValue(new ApiError("NOT_FOUND"));
 		expect(
 			(
 				await app.request("/api/v1/push/test", {

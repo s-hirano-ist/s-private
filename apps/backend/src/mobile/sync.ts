@@ -2,8 +2,8 @@ import type {
 	snapshotQuerySchema,
 	changesQuerySchema,
 } from "@s-hirano-ist/s-api-contracts/schemas";
+import { ApiError } from "s-private-backend/api/error";
 import { type MobileDeps } from "s-private-backend/mobile/deps";
-import { MobileApiError } from "s-private-backend/mobile/error";
 import { z } from "zod";
 
 function encodeCursor(userId: string, version: bigint): string {
@@ -24,7 +24,7 @@ function decodeCursor(userId: string, cursor: string): bigint {
 	} catch {
 		// Invalid and foreign-owner cursors have the same response.
 	}
-	throw new MobileApiError("INVALID_SYNC_CURSOR", 422);
+	throw new ApiError("INVALID_SYNC_CURSOR");
 }
 
 export async function getSyncHead(
@@ -59,7 +59,7 @@ export async function listSyncChanges(
 ) {
 	const cursor = decodeCursor(userId, query.cursor);
 	const head = await deps.sync.getSyncVersion(userId);
-	if (cursor > head) throw new MobileApiError("INVALID_SYNC_CURSOR", 422);
+	if (cursor > head) throw new ApiError("INVALID_SYNC_CURSOR");
 	const events = await deps.sync.changes(userId, cursor, query.limit + 1);
 	const page = events.slice(0, query.limit);
 	const byKey = await deps.sync.changeRecords(userId, page);

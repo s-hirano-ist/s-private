@@ -2,7 +2,7 @@ import type { PushSubscriptionRepository } from "s-private-backend/notifications
 import type { createPushDeliveryService } from "s-private-backend/notifications/push-notification-service";
 import type { BrowserPushSubscription } from "s-private-backend/notifications/subscriptions";
 import { Prisma } from "@s-hirano-ist/s-database";
-import { MobileApiError } from "s-private-backend/mobile/error";
+import { ApiError } from "s-private-backend/api/error";
 import { PushSubscriptionError } from "s-private-backend/notifications/error";
 import {
 	subscribeToPush,
@@ -16,11 +16,11 @@ async function run(work: () => Promise<void>) {
 		if (error instanceof PushSubscriptionError) {
 			switch (error.code) {
 				case "UNAVAILABLE":
-					throw new MobileApiError("API_UNAVAILABLE", 503);
+					throw new ApiError("API_UNAVAILABLE");
 				case "FORBIDDEN":
-					throw new MobileApiError("FORBIDDEN", 403);
+					throw new ApiError("FORBIDDEN");
 				case "NOT_FOUND":
-					throw new MobileApiError("NOT_FOUND", 404);
+					throw new ApiError("NOT_FOUND");
 			}
 		}
 		// A foreign endpoint inserted between the ownership check and upsert must not be updated.
@@ -28,7 +28,7 @@ async function run(work: () => Promise<void>) {
 			error instanceof Prisma.PrismaClientKnownRequestError &&
 			error.code === "P2002"
 		)
-			throw new MobileApiError("FORBIDDEN", 403);
+			throw new ApiError("FORBIDDEN");
 		throw error;
 	}
 }

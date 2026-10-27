@@ -272,3 +272,24 @@ test("OpenAPI patterns are portable regular expressions without literal delimite
 		new RegExp(change.properties.version.pattern, "u").test("9007199254740993"),
 	).toBe(true);
 });
+
+test("error responses restrict codes by status and omit unrelated upload statuses", async () => {
+	const { apiErrorDefinitions } =
+		await import("@s-hirano-ist/s-api-contracts/errors");
+	const { errorResponses } =
+		await import("@s-hirano-ist/s-api-contracts/routes");
+	for (const entry of apiErrorDefinitions) {
+		const schema =
+			errorResponses[entry.status].content["application/json"].schema;
+		for (const other of apiErrorDefinitions) {
+			for (const code of other.codes)
+				expect(schema.safeParse({ error: { code } }).success).toBe(
+					entry.status === other.status,
+				);
+		}
+	}
+	const paths = createApiDocument().paths;
+	expect(paths?.["/articles"]?.get?.responses).not.toHaveProperty("410");
+	expect(paths?.["/uploads/{id}"]?.get?.responses).toHaveProperty("410");
+	expect(paths?.["/articles/{id}"]?.delete?.responses).toHaveProperty("409");
+});
