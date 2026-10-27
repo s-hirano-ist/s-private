@@ -1,0 +1,30 @@
+{
+	"extends": "../../tsconfig.base.json",
+	"compilerOptions": {
+		"lib": ["DOM", "ES2025"],
+		"noEmit": true,
+		"jsx": "react-jsx",
+		"incremental": true,
+		"plugins": [
+			{
+				"name": "next"
+			}
+		],
+		"paths": {
+			"@/*": ["./src/*"]
+		},
+		"module": "esnext",
+		"moduleResolution": "Bundler"
+	},
+	"include": [
+		"next-env.d.ts",
+		"**/*.ts",
+		"**/*.tsx",
+		".next/types/**/*.ts",
+		"vitest.config.ts",
+		".storybook/**/*.ts",
+		".storybook/**/*.tsx",
+		".next/dev/types/**/*.ts"
+	],
+	"exclude": ["node_modules"]
+}

@@ -1,4 +1,5 @@
 import { z } from "@hono/zod-openapi";
+import { apiErrorCodeSchema } from "@s-hirano-ist/s-api-contracts/errors";
 
 export const contentDomainSchema = z
 	.enum(["articles", "notes", "images", "books"])
@@ -11,27 +12,46 @@ export const statusSchema = z
 	.openapi("ContentStatus");
 const timestamp = z.iso.datetime({ offset: true });
 export const idSchema = z.string().min(1).max(512);
-export const operationIdSchema = z.uuid();
+export const operationIdSchema = z.uuid().openapi({
+	description:
+		"Client-generated UUID. Reuse it only with identical input when retrying a creation.",
+	example: "6ab4a998-177a-4a34-ae38-9f5e75a05b2c",
+});
+// Validate normalized values without transforming the wire input before operation hashing.
+export const categoryInputSchema = z
+	.string()
+	.refine((value) => value.trim().length > 0 && value.trim().length <= 16)
+	.openapi({
+		description:
+			"Category name: 1–16 UTF-16 code units after trimming. The original input is retained for idempotency hashing.",
+		example: "Technology",
+		pattern: "^\\s*\\S(?:[\\s\\S]{0,14}\\S)?\\s*$",
+	});
+export const isbnInputSchema = z
+	.string()
+	.regex(/^(?:-*\d){13}-*$/u)
+	.openapi({
+		description:
+			"Exactly 13 digits after removing ASCII hyphens. ISBN-10 is not supported. Normalization occurs in the domain layer after operation hashing.",
+		example: "978-4-06-521234-5",
+		pattern: "^(?:-*\\d){13}-*$",
+	});
+export const bookTagsInputSchema = z
+	.array(
+		z
+			.string()
+			.refine((value) => value.trim().length <= 64)
+			.openapi({ pattern: "^\\s*(?:\\S(?:[\\s\\S]{0,62}\\S)?)?\\s*$" }),
+	)
+	.openapi({
+		description:
+			"Tags are trimmed and empty tags removed in the domain layer. Each remaining tag must contain 1–64 UTF-16 code units. Input is retained for idempotency hashing.",
+		example: ["TypeScript"],
+	});
 export const errorSchema = z
 	.object({
 		error: z.object({
-			code: z.enum([
-				"UNAUTHORIZED",
-				"FORBIDDEN",
-				"NOT_FOUND",
-				"VALIDATION_ERROR",
-				"DUPLICATE",
-				"NOT_DELETABLE",
-				"UPLOAD_TOO_LARGE",
-				"OPERATION_CONFLICT",
-				"OPERATION_IN_PROGRESS",
-				"INVALID_CHUNK_SIZE",
-				"UPLOAD_INCOMPLETE",
-				"UPLOAD_EXPIRED",
-				"INVALID_SYNC_CURSOR",
-				"API_UNAVAILABLE",
-				"INTERNAL_ERROR",
-			]),
+			code: apiErrorCodeSchema,
 		}),
 	})
 	.openapi("ApiError");
@@ -90,17 +110,33 @@ export const categorySchema = z
 export const articleCreateSchema = z
 	.strictObject({
 		operationId: operationIdSchema,
-		title: z.string().min(1),
-		url: z.url(),
-		category: z.string().min(1),
-		quote: z.string().optional(),
+		title: z
+			.string()
+			.min(1)
+			.max(128)
+			.openapi({ example: "TypeScript handbook" }),
+		url: z
+			.url()
+			.max(1024)
+			.regex(/^https?:\/\//iu)
+			.openapi({
+				description: "HTTP or HTTPS URL, at most 1024 UTF-16 code units.",
+				pattern: "^[hH][tT][tT][pP][sS]?://",
+				format: "uri",
+				example: "https://example.com/article",
+			}),
+		category: categoryInputSchema,
+		quote: z.string().max(512).optional(),
 	})
 	.openapi("ArticleCreate");
 export const noteCreateSchema = z
 	.strictObject({
 		operationId: operationIdSchema,
-		title: z.string().min(1),
-		markdown: z.string(),
+		title: z.string().min(1).max(64).openapi({ example: "Meeting notes" }),
+		markdown: z
+			.string()
+			.min(1)
+			.openapi({ example: "# Notes\nMeeting summary" }),
 	})
 	.openapi("NoteCreate");
 // Zod coercion needs an explicit OpenAPI type; retain bounds/default from the same values.
@@ -155,7 +191,10 @@ export const snapshotRecordSchema = z
 		categorySnapshot,
 	])
 	.openapi("SnapshotRecord");
-const changeBase = { id: idSchema, version: z.string().regex(/^\d+$/u) };
+const changeBase = {
+	id: idSchema,
+	version: z.string().regex(/^\d+$/u).openapi({ pattern: "^\\d+$" }),
+};
 // Separate action and domain discriminators avoid ambiguous optional record fields.
 export const syncChangeSchema = z
 	.discriminatedUnion("action", [
@@ -177,7 +216,10 @@ export const syncChangeSchema = z
 	.openapi("SyncChange");
 export const snapshotQuerySchema = z.object({
 	domain: syncDomainSchema,
-	after: z.string().max(512).default(""),
+	after: z.string().max(512).default("").openapi({
+		description: "Last record ID from nextAfter; omit for the first page.",
+		example: "record-id",
+	}),
 	limit: integerQuery(1, 100, 100),
 });
 export const snapshotPageSchema = z
@@ -187,7 +229,10 @@ export const snapshotPageSchema = z
 	})
 	.openapi("SnapshotPage");
 export const changesQuerySchema = z.object({
-	cursor: z.string().min(1).max(512),
+	cursor: z.string().min(1).max(512).openapi({
+		description:
+			"Opaque owner-bound cursor returned by sync head or changes. Do not construct or edit it.",
+	}),
 	limit: integerQuery(1, 100, 100),
 });
 export const changesPageSchema = z
@@ -221,10 +266,10 @@ const bookUploadSchema = z
 		domain: z.literal("books"),
 		metadata: z.strictObject({
 			filename: z.string().min(1).optional(),
-			isbn: z.string().min(1),
-			title: z.string().min(1),
-			rating: z.number().int(),
-			tags: z.array(z.string()),
+			isbn: isbnInputSchema,
+			title: z.string().min(1).max(512),
+			rating: z.number().int().min(1).max(5),
+			tags: bookTagsInputSchema,
 		}),
 	})
 	.openapi("BookUploadStart");

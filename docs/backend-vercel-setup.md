@@ -10,11 +10,11 @@ Productionの環境変数はVercelで手動管理し、PreviewはDopplerのサ�
 ## 1. backendのVercel projectを作る
 
 1. Vercel Dashboardで既存Webと同じteamを選び、**Add New → Project** から同じGitHub repositoryをimportする。
-2. Webとは別のproject名を付け、**Root Directory** を `services/backend` に設定する。
+2. Webとは別のproject名を付け、**Root Directory** を `apps/backend` に設定する。
 3. **Build and Deployment → Root Directory** で **Include source files outside of the Root Directory in the Build Step** を有効にする。`packages/*` とルートのworkspace/lockfileが必要。
-4. FrameworkはHonoの自動検出を使用する。入口は `services/backend/src/index.ts` のdefault export。`api/index.ts` やNext.js adapterを追加しない。
+4. FrameworkはHonoの自動検出を使用する。入口は `apps/backend/src/index.ts` のdefault export。`api/index.ts` やNext.js adapterを追加しない。
 5. Node.jsは **24.x** を選び、ビルドログのversionがリポジトリの `.nvmrc` / `engines` を満たすことを確認する。
-6. Install Commandはworkspaceルートのlockfileを使う `pnpm install --frozen-lockfile`。Build Commandは `services/backend/vercel.json` の `pnpm --filter s-private-backend... -r run build` を使用する。Output Directoryを静的サイト用の `dist` などへ上書きしない。
+6. Install Commandはworkspaceルートのlockfileを使う `pnpm install --frozen-lockfile`。Build Commandは `apps/backend/vercel.json` の `pnpm --filter s-private-backend... -r run build` を使用する。Output Directoryを静的サイト用の `dist` などへ上書きしない。
 7. Functionsのregionは既存CockroachDBに近いregionを選ぶ。HTTP APIとSharpを使用するためNode.jsで実行する。Cloudflare Workersへの配置はこの構成の対象外。
 8. 以下の環境変数を登録してから担当者がdeployする。Cron scheduleはリポジトリの設定を使用し、PreviewではCronを無効にする。
 
@@ -22,15 +22,16 @@ Vercelの [Hono](https://vercel.com/docs/frameworks/backend/hono)、[monorepo](h
 
 ## 2. 環境変数を分ける
 
-具体的なbackend変数一覧と起動時の制約は [共通backendの環境変数](backend-deployment.md#環境変数) と `services/backend/src/env.ts` を参照。
+具体的なbackend変数一覧と起動時の制約は [共通backendの環境変数](backend-deployment.md#環境変数) と `apps/backend/src/env.ts` を参照。
 
 | project | 必要な設定 |
 | --- | --- |
 | backend | 既存DB、Auth0、Better Auth、Backblaze B2（S3_*）、Qdrant/embedding、監視・通知の設定 |
-| Web (`app`) | `BACKEND_URL`、`BETTER_AUTH_URL`、`NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY`、Sentryの既存設定 |
+| Web (`apps/web`) | `BACKEND_URL`、`BETTER_AUTH_URL`、`NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY`、Sentryの既存設定 |
 | iOS | Git管理外の `Local.xcconfig` に `MOBILE_API_BASE_URL=https:/$()/BACKEND_HOST/api/v1`。既存Auth0 domain/client ID/audienceを維持 |
 
-backendのProductionには既存Productionと同じDB・bucket・`AUTH_SECRET`・VAPID鍵を設定する。新規DBや新規ユーザーを作らず、既存のAccount・Session・operation・upload・sync状態を引き継ぐ。`AUTH_SECRET` は32文字以上。移行のために鍵を再生成しない。
+backendのProductionには既存Productionと同じDB・`AUTH_SECRET`・VAPID鍵を設定する。
+object storageはB2のProduction用bucketを設定し、既存DBに対応するobjectの準備状況を切替前に確認する。新規DBや新規ユーザーを作らず、既存のAccount・Session・operation・upload・sync状態を引き継ぐ。`AUTH_SECRET` は32文字以上。移行のために鍵を再生成しない。
 
 backendの `BETTER_AUTH_URL` は **公開Webのorigin**（例: `https://private.s-hirano.com`）。backendのoriginには変更しない。
 Webの `BACKEND_URL` はbackendのHTTPS originで、`/api/v1`・末尾slash・queryを含めない。
@@ -40,7 +41,7 @@ Previewは両projectで `BETTER_AUTH_URL` を設定せず、リクエストのWe
 
 WebへDB・S3・Auth0 client secret・VAPID秘密鍵・Pushover・Qdrantの資格情報を渡す必要はなくなる。backendの確認と切替後にWeb projectから不要な変数を削除する。共有secret自体は変更しない。
 
-Previewには既存のPreview用DB・bucket・Auth0設定を使い、ProductionのDBや通知先と混在させない。Preview backendとPreview Webを対応させ、WebのPreview用 `BACKEND_URL` をそのbackendへ向ける。必要なら固定のPreview domainを使用する。現在の認証設定は公開Web originと既存teamの `s-private-*-s-hirano-ist-team.vercel.app` および `memdex-web-*-s-hirano-ist-team.vercel.app` を許可する。別名のWeb project/domainへ変える場合は、認証の許可hostとAuth0の許可URLを合わせて変更・確認する。
+PreviewにはPreview用DB・B2 bucket・Auth0設定を使い、ProductionのDBや通知先と混在させない。Preview backendとPreview Webを対応させ、WebのPreview用 `BACKEND_URL` をそのbackendへ向ける。必要なら固定のPreview domainを使用する。現在の認証設定は公開Web originと既存teamの `s-private-*-s-hirano-ist-team.vercel.app` および `memdex-web-*-s-hirano-ist-team.vercel.app` を許可する。別名のWeb project/domainへ変える場合は、認証の許可hostとAuth0の許可URLを合わせて変更・確認する。
 
 `LOCAL_DEV_MODE` は配置先に登録せず既定値falseを使う。Previewの `BACKEND_CRON_ENABLED=false` は明示する。`LOCAL_AUTH_*` は登録しない。`VERCEL=1` ではlocal認証を利用できない。
 ProductionのDBは `sslmode=verify-full` を使い、`NODE_TLS_REJECT_UNAUTHORIZED=0` を設定しない。ローカルファイルへの証明書pathをそのままコピーしない。
@@ -58,12 +59,12 @@ HTTP hostの未処理例外は秘密値を伏せた診断情報をVercelログ�
 
 ## 3. Deployment Protectionと認証を確認する
 
-backend実装は `services/backend` に集約する。Root Directory、起動入口、Cron、環境変数は変更不要。
+backend実装は `apps/backend` に集約する。Root Directory、起動入口、Cron、環境変数は変更不要。
 
 ### 配布成果物の起動を確認する
 
 Vercelのビルド成功だけでは起動成功を保証しない。workspaceのpackage exportsは
-TypeScriptソースを指しているため、`services/backend/vercel.json` の `includeFiles` で
+TypeScriptソースを指しているため、`apps/backend/vercel.json` の `includeFiles` で
 サービス内の実装・core・DBのソースをFunctionに含める。Node.js 24の型除去で実行するため、
 対象のTypeScript設定では `erasableSyntaxOnly` を有効にする。
 constructorのparameter propertyなど、JavaScriptへの変換が必要な構文は使用しない。
@@ -73,7 +74,7 @@ CLIがアップロード時に参照するこれらのファイルを含めた�
 次のコマンドで実際のentrypointをロードする。認証情報はテスト専用のダミー値を使用する。
 
 ```bash
-node services/backend/scripts/smoke-runtime.mjs /ABSOLUTE/FUNCTION/services/backend/src/index.js
+node apps/backend/scripts/smoke-runtime.mjs /ABSOLUTE/FUNCTION/apps/backend/src/index.js
 ```
 
 `/health: 200` と `/api/v1/session: 401` の両方が出力されることを確認する。
@@ -138,7 +139,7 @@ iOSのNative ApplicationとAPI audienceは既存値を維持し、backendホス�
 
 1. Web Cron撤去PRをProductionへdeployし、旧Web projectのCron一覧からscheduleが消えたことを確認する。過去deploymentをroll backして旧Cronを復活させない。
 2. backend Productionに既存 `CRON_SECRET` と通知設定を登録する。PreviewではCronを有効化しない。
-3. backendのProductionに `BACKEND_CRON_ENABLED=true` と `CRON_SECRET` を設定し、`services/backend/vercel.json` の次のscheduleを含む成果物をdeployする。scheduleはリポジトリに登録済みで、追加作業は不要。
+3. backendのProductionに `BACKEND_CRON_ENABLED=true` と `CRON_SECRET` を設定し、`apps/backend/vercel.json` の次のscheduleを含む成果物をdeployする。scheduleはリポジトリに登録済みで、追加作業は不要。
 
 ```json
 {

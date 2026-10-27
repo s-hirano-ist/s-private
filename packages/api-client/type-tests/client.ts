@@ -28,3 +28,24 @@ export async function verifyContractTypes(
 	}
 	void url;
 }
+
+export async function verifyUploadTypes(
+	client: ReturnType<typeof createBackendClient>,
+) {
+	// @ts-expect-error book uploads require ISBN, title, rating and tags.
+	await client.startUpload({
+		operationId: "id",
+		domain: "books",
+		contentType: "image/jpeg",
+		fileSize: 100,
+		metadata: { filename: "cover.jpg" },
+	});
+	await client.startUpload({
+		operationId: "id",
+		domain: "images",
+		// @ts-expect-error only supported image MIME types are accepted.
+		contentType: "text/plain",
+		fileSize: 100,
+		metadata: { filename: "cover.jpg" },
+	});
+}

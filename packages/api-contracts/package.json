@@ -19,6 +19,10 @@
 		"./document": {
 			"types": "./dist/document.d.ts",
 			"import": "./dist/document.js"
+		},
+		"./errors": {
+			"types": "./dist/errors.d.ts",
+			"import": "./dist/errors.js"
 		}
 	},
 	"scripts": {

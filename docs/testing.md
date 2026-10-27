@@ -80,8 +80,8 @@ The project uses Vitest workspace to manage tests across multiple packages:
 
 ### app
 - **Environment**: happy-dom with Next.js-specific mocks (auth, prisma, minio, env)
-- **Config**: [app/vitest.config.ts](../app/vitest.config.ts)
-- **Setup**: [app/vitest-setup.tsx](../app/vitest-setup.tsx)
+- **Config**: [apps/web/vitest.config.ts](../apps/web/vitest.config.ts)
+- **Setup**: [apps/web/vitest-setup.tsx](../apps/web/vitest-setup.tsx)
 - **Features**: Includes Storybook integration with browser testing
 
 ### packages/ui (project: components)
@@ -274,4 +274,4 @@ Production buildではInstant testing APIを公開しない。Vercel Previewで�
 
 ## iOS 実機での API 通信確認
 
-iOS も利用する共通backendの `/api/v1` の変更は、対応する API を Production にデプロイしてから実機で確認する。PR 作成時点で未デプロイなら、実機での API 通信確認は「未実施」と記録し、Production デプロイ後に実施する。実機では Production の API 接続先を設定し、ログイン、一覧取得、レコード作成、保留中の項目の同期を確認する。署名と実機での操作手順は [`ios/README.md`](../ios/README.md) を参照する。
+iOS も利用する共通backendの `/api/v1` の変更は、対応する API を Production にデプロイしてから実機で確認する。PR 作成時点で未デプロイなら、実機での API 通信確認は「未実施」と記録し、Production デプロイ後に実施する。実機では Production の API 接続先を設定し、ログイン、一覧取得、レコード作成、保留中の項目の同期を確認する。署名と実機での操作手順は [`apps/ios/README.md`](../apps/ios/README.md) を参照する。

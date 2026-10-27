@@ -24,6 +24,38 @@
 			}
 		},
 		"schemas": {
+			"ApiError": {
+				"type": "object",
+				"properties": {
+					"error": {
+						"type": "object",
+						"properties": {
+							"code": {
+								"type": "string",
+								"enum": [
+									"UNAUTHORIZED",
+									"FORBIDDEN",
+									"NOT_FOUND",
+									"DUPLICATE",
+									"NOT_DELETABLE",
+									"OPERATION_CONFLICT",
+									"OPERATION_IN_PROGRESS",
+									"UPLOAD_INCOMPLETE",
+									"UPLOAD_EXPIRED",
+									"UPLOAD_TOO_LARGE",
+									"VALIDATION_ERROR",
+									"INVALID_CHUNK_SIZE",
+									"INVALID_SYNC_CURSOR",
+									"INTERNAL_ERROR",
+									"API_UNAVAILABLE"
+								]
+							}
+						},
+						"required": ["code"]
+					}
+				},
+				"required": ["error"]
+			},
 			"Book": {
 				"type": "object",
 				"properties": {
@@ -105,7 +137,55 @@
 				"type": "string",
 				"enum": ["UNEXPORTED", "LAST_UPDATED", "EXPORTED"]
 			},
-			"ApiError": {
+			"ApiError401": {
+				"type": "object",
+				"properties": {
+					"error": {
+						"type": "object",
+						"properties": {
+							"code": {
+								"type": "string",
+								"enum": ["UNAUTHORIZED"]
+							}
+						},
+						"required": ["code"]
+					}
+				},
+				"required": ["error"]
+			},
+			"ApiError403": {
+				"type": "object",
+				"properties": {
+					"error": {
+						"type": "object",
+						"properties": {
+							"code": {
+								"type": "string",
+								"enum": ["FORBIDDEN"]
+							}
+						},
+						"required": ["code"]
+					}
+				},
+				"required": ["error"]
+			},
+			"ApiError404": {
+				"type": "object",
+				"properties": {
+					"error": {
+						"type": "object",
+						"properties": {
+							"code": {
+								"type": "string",
+								"enum": ["NOT_FOUND"]
+							}
+						},
+						"required": ["code"]
+					}
+				},
+				"required": ["error"]
+			},
+			"ApiError422": {
 				"type": "object",
 				"properties": {
 					"error": {
@@ -114,22 +194,42 @@
 							"code": {
 								"type": "string",
 								"enum": [
-									"UNAUTHORIZED",
-									"FORBIDDEN",
-									"NOT_FOUND",
 									"VALIDATION_ERROR",
-									"DUPLICATE",
-									"NOT_DELETABLE",
-									"UPLOAD_TOO_LARGE",
-									"OPERATION_CONFLICT",
-									"OPERATION_IN_PROGRESS",
 									"INVALID_CHUNK_SIZE",
-									"UPLOAD_INCOMPLETE",
-									"UPLOAD_EXPIRED",
-									"INVALID_SYNC_CURSOR",
-									"API_UNAVAILABLE",
-									"INTERNAL_ERROR"
+									"INVALID_SYNC_CURSOR"
 								]
+							}
+						},
+						"required": ["code"]
+					}
+				},
+				"required": ["error"]
+			},
+			"ApiError500": {
+				"type": "object",
+				"properties": {
+					"error": {
+						"type": "object",
+						"properties": {
+							"code": {
+								"type": "string",
+								"enum": ["INTERNAL_ERROR"]
+							}
+						},
+						"required": ["code"]
+					}
+				},
+				"required": ["error"]
+			},
+			"ApiError503": {
+				"type": "object",
+				"properties": {
+					"error": {
+						"type": "object",
+						"properties": {
+							"code": {
+								"type": "string",
+								"enum": ["API_UNAVAILABLE"]
 							}
 						},
 						"required": ["code"]
@@ -274,6 +374,28 @@
 					}
 				},
 				"required": ["count"]
+			},
+			"ApiError409": {
+				"type": "object",
+				"properties": {
+					"error": {
+						"type": "object",
+						"properties": {
+							"code": {
+								"type": "string",
+								"enum": [
+									"DUPLICATE",
+									"NOT_DELETABLE",
+									"OPERATION_CONFLICT",
+									"OPERATION_IN_PROGRESS",
+									"UPLOAD_INCOMPLETE"
+								]
+							}
+						},
+						"required": ["code"]
+					}
+				},
+				"required": ["error"]
 			},
 			"NotesPage": {
 				"type": "object",
@@ -442,7 +564,9 @@
 					},
 					"operationId": {
 						"type": "string",
-						"format": "uuid"
+						"format": "uuid",
+						"description": "Client-generated UUID. Reuse it only with identical input when retrying a creation.",
+						"example": "6ab4a998-177a-4a34-ae38-9f5e75a05b2c"
 					},
 					"resource": {
 						"$ref": "#/components/schemas/ResourceReference"
@@ -468,27 +592,54 @@
 				"type": "string",
 				"enum": ["articles", "notes", "images", "books"]
 			},
+			"ApiError413": {
+				"type": "object",
+				"properties": {
+					"error": {
+						"type": "object",
+						"properties": {
+							"code": {
+								"type": "string",
+								"enum": ["UPLOAD_TOO_LARGE"]
+							}
+						},
+						"required": ["code"]
+					}
+				},
+				"required": ["error"]
+			},
 			"ArticleCreate": {
 				"type": "object",
 				"properties": {
 					"operationId": {
 						"type": "string",
-						"format": "uuid"
+						"format": "uuid",
+						"description": "Client-generated UUID. Reuse it only with identical input when retrying a creation.",
+						"example": "6ab4a998-177a-4a34-ae38-9f5e75a05b2c"
 					},
 					"title": {
 						"type": "string",
-						"minLength": 1
+						"minLength": 1,
+						"maxLength": 128,
+						"example": "TypeScript handbook"
 					},
 					"url": {
 						"type": "string",
-						"format": "uri"
+						"maxLength": 1024,
+						"format": "uri",
+						"pattern": "^[hH][tT][tT][pP][sS]?://",
+						"description": "HTTP or HTTPS URL, at most 1024 UTF-16 code units.",
+						"example": "https://example.com/article"
 					},
 					"category": {
 						"type": "string",
-						"minLength": 1
+						"pattern": "^\\s*\\S(?:[\\s\\S]{0,14}\\S)?\\s*$",
+						"description": "Category name: 1–16 UTF-16 code units after trimming. The original input is retained for idempotency hashing.",
+						"example": "Technology"
 					},
 					"quote": {
-						"type": "string"
+						"type": "string",
+						"maxLength": 512
 					}
 				},
 				"required": ["operationId", "title", "url", "category"],
@@ -499,14 +650,20 @@
 				"properties": {
 					"operationId": {
 						"type": "string",
-						"format": "uuid"
+						"format": "uuid",
+						"description": "Client-generated UUID. Reuse it only with identical input when retrying a creation.",
+						"example": "6ab4a998-177a-4a34-ae38-9f5e75a05b2c"
 					},
 					"title": {
 						"type": "string",
-						"minLength": 1
+						"minLength": 1,
+						"maxLength": 64,
+						"example": "Meeting notes"
 					},
 					"markdown": {
-						"type": "string"
+						"type": "string",
+						"minLength": 1,
+						"example": "# Notes\nMeeting summary"
 					}
 				},
 				"required": ["operationId", "title", "markdown"],
@@ -705,7 +862,7 @@
 					},
 					"version": {
 						"type": "string",
-						"pattern": "^\\d+$/u"
+						"pattern": "^\\d+$"
 					},
 					"action": {
 						"type": "string",
@@ -727,7 +884,7 @@
 					},
 					"version": {
 						"type": "string",
-						"pattern": "^\\d+$/u"
+						"pattern": "^\\d+$"
 					},
 					"action": {
 						"type": "string",
@@ -867,7 +1024,9 @@
 					},
 					"operationId": {
 						"type": "string",
-						"format": "uuid"
+						"format": "uuid",
+						"description": "Client-generated UUID. Reuse it only with identical input when retrying a creation.",
+						"example": "6ab4a998-177a-4a34-ae38-9f5e75a05b2c"
 					},
 					"chunkSize": {
 						"type": "integer",
@@ -915,7 +1074,9 @@
 				"properties": {
 					"operationId": {
 						"type": "string",
-						"format": "uuid"
+						"format": "uuid",
+						"description": "Client-generated UUID. Reuse it only with identical input when retrying a creation.",
+						"example": "6ab4a998-177a-4a34-ae38-9f5e75a05b2c"
 					},
 					"contentType": {
 						"type": "string",
@@ -956,7 +1117,9 @@
 				"properties": {
 					"operationId": {
 						"type": "string",
-						"format": "uuid"
+						"format": "uuid",
+						"description": "Client-generated UUID. Reuse it only with identical input when retrying a creation.",
+						"example": "6ab4a998-177a-4a34-ae38-9f5e75a05b2c"
 					},
 					"contentType": {
 						"type": "string",
@@ -980,20 +1143,28 @@
 							},
 							"isbn": {
 								"type": "string",
-								"minLength": 1
+								"pattern": "^(?:-*\\d){13}-*$",
+								"description": "Exactly 13 digits after removing ASCII hyphens. ISBN-10 is not supported. Normalization occurs in the domain layer after operation hashing.",
+								"example": "978-4-06-521234-5"
 							},
 							"title": {
 								"type": "string",
-								"minLength": 1
+								"minLength": 1,
+								"maxLength": 512
 							},
 							"rating": {
-								"type": "integer"
+								"type": "integer",
+								"minimum": 1,
+								"maximum": 5
 							},
 							"tags": {
 								"type": "array",
 								"items": {
-									"type": "string"
-								}
+									"type": "string",
+									"pattern": "^\\s*(?:\\S(?:[\\s\\S]{0,62}\\S)?)?\\s*$"
+								},
+								"description": "Tags are trimmed and empty tags removed in the domain layer. Each remaining tag must contain 1–64 UTF-16 code units. Input is retained for idempotency hashing.",
+								"example": ["TypeScript"]
 							}
 						},
 						"required": ["isbn", "title", "rating", "tags"],
@@ -1008,6 +1179,22 @@
 					"metadata"
 				],
 				"additionalProperties": false
+			},
+			"ApiError410": {
+				"type": "object",
+				"properties": {
+					"error": {
+						"type": "object",
+						"properties": {
+							"code": {
+								"type": "string",
+								"enum": ["UPLOAD_EXPIRED"]
+							}
+						},
+						"required": ["code"]
+					}
+				},
+				"required": ["error"]
 			},
 			"ChunkResult": {
 				"type": "object",
@@ -1112,10 +1299,12 @@
 					{
 						"schema": {
 							"type": "string",
-							"minLength": 1,
-							"maxLength": 512
+							"pattern": "^(?:-*\\d){13}-*$",
+							"description": "Exactly 13 digits after removing ASCII hyphens. ISBN-10 is not supported. Normalization occurs in the domain layer after operation hashing.",
+							"example": "978-4-06-521234-5"
 						},
 						"required": true,
+						"description": "Exactly 13 digits after removing ASCII hyphens. ISBN-10 is not supported. Normalization occurs in the domain layer after operation hashing.",
 						"name": "isbn",
 						"in": "path"
 					}
@@ -1136,7 +1325,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -1146,7 +1335,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -1156,37 +1345,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"409": {
-						"description": "Conflict",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"410": {
-						"description": "Upload expired",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"413": {
-						"description": "Payload too large",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError404"
 								}
 							}
 						}
@@ -1196,7 +1355,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -1206,7 +1365,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -1216,7 +1375,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -1241,7 +1400,7 @@
 						"schema": {
 							"type": "string",
 							"minLength": 1,
-							"maxLength": 512
+							"maxLength": 64
 						},
 						"required": true,
 						"name": "title",
@@ -1264,7 +1423,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -1274,7 +1433,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -1284,37 +1443,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"409": {
-						"description": "Conflict",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"410": {
-						"description": "Upload expired",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"413": {
-						"description": "Payload too large",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError404"
 								}
 							}
 						}
@@ -1324,7 +1453,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -1334,7 +1463,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -1344,7 +1473,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -1412,7 +1541,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -1422,47 +1551,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "Not found",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"409": {
-						"description": "Conflict",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"410": {
-						"description": "Upload expired",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"413": {
-						"description": "Payload too large",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -1472,7 +1561,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -1482,7 +1571,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -1492,7 +1581,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -1536,7 +1625,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -1546,17 +1635,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "Not found",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -1566,17 +1645,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"410": {
-						"description": "Upload expired",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError409"
 								}
 							}
 						}
@@ -1586,7 +1655,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError413"
 								}
 							}
 						}
@@ -1596,7 +1665,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -1606,7 +1675,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -1616,7 +1685,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -1662,7 +1731,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -1672,47 +1741,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "Not found",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"409": {
-						"description": "Conflict",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"410": {
-						"description": "Upload expired",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"413": {
-						"description": "Payload too large",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -1722,7 +1751,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -1732,7 +1761,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -1742,7 +1771,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -1790,7 +1819,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -1800,7 +1829,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -1810,37 +1839,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"409": {
-						"description": "Conflict",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"410": {
-						"description": "Upload expired",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"413": {
-						"description": "Payload too large",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError404"
 								}
 							}
 						}
@@ -1850,7 +1849,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -1860,7 +1859,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -1870,7 +1869,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -1909,7 +1908,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -1919,7 +1918,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -1929,7 +1928,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError404"
 								}
 							}
 						}
@@ -1939,27 +1938,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"410": {
-						"description": "Upload expired",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"413": {
-						"description": "Payload too large",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError409"
 								}
 							}
 						}
@@ -1969,7 +1948,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -1979,7 +1958,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -1989,7 +1968,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -2057,7 +2036,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -2067,47 +2046,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "Not found",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"409": {
-						"description": "Conflict",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"410": {
-						"description": "Upload expired",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"413": {
-						"description": "Payload too large",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -2117,7 +2056,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -2127,7 +2066,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -2137,7 +2076,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -2181,7 +2120,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -2191,17 +2130,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "Not found",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -2211,17 +2140,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"410": {
-						"description": "Upload expired",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError409"
 								}
 							}
 						}
@@ -2231,7 +2150,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError413"
 								}
 							}
 						}
@@ -2241,7 +2160,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -2251,7 +2170,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -2261,7 +2180,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -2307,7 +2226,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -2317,47 +2236,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "Not found",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"409": {
-						"description": "Conflict",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"410": {
-						"description": "Upload expired",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"413": {
-						"description": "Payload too large",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -2367,7 +2246,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -2377,7 +2256,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -2387,7 +2266,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -2435,7 +2314,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -2445,7 +2324,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -2455,37 +2334,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"409": {
-						"description": "Conflict",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"410": {
-						"description": "Upload expired",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"413": {
-						"description": "Payload too large",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError404"
 								}
 							}
 						}
@@ -2495,7 +2344,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -2505,7 +2354,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -2515,7 +2364,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -2554,7 +2403,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -2564,7 +2413,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -2574,7 +2423,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError404"
 								}
 							}
 						}
@@ -2584,27 +2433,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"410": {
-						"description": "Upload expired",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"413": {
-						"description": "Payload too large",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError409"
 								}
 							}
 						}
@@ -2614,7 +2443,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -2624,7 +2453,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -2634,7 +2463,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -2702,7 +2531,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -2712,47 +2541,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "Not found",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"409": {
-						"description": "Conflict",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"410": {
-						"description": "Upload expired",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"413": {
-						"description": "Payload too large",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -2762,7 +2551,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -2772,7 +2561,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -2782,7 +2571,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -2828,7 +2617,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -2838,47 +2627,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "Not found",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"409": {
-						"description": "Conflict",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"410": {
-						"description": "Upload expired",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"413": {
-						"description": "Payload too large",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -2888,7 +2637,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -2898,7 +2647,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -2908,7 +2657,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -2956,7 +2705,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -2966,7 +2715,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -2976,37 +2725,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"409": {
-						"description": "Conflict",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"410": {
-						"description": "Upload expired",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"413": {
-						"description": "Payload too large",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError404"
 								}
 							}
 						}
@@ -3016,7 +2735,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -3026,7 +2745,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -3036,7 +2755,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -3075,7 +2794,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -3085,7 +2804,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -3095,7 +2814,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError404"
 								}
 							}
 						}
@@ -3105,27 +2824,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"410": {
-						"description": "Upload expired",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"413": {
-						"description": "Payload too large",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError409"
 								}
 							}
 						}
@@ -3135,7 +2834,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -3145,7 +2844,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -3155,7 +2854,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -3223,7 +2922,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -3233,47 +2932,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "Not found",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"409": {
-						"description": "Conflict",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"410": {
-						"description": "Upload expired",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"413": {
-						"description": "Payload too large",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -3283,7 +2942,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -3293,7 +2952,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -3303,7 +2962,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -3349,7 +3008,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -3359,47 +3018,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "Not found",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"409": {
-						"description": "Conflict",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"410": {
-						"description": "Upload expired",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"413": {
-						"description": "Payload too large",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -3409,7 +3028,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -3419,7 +3038,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -3429,7 +3048,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -3477,7 +3096,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -3487,7 +3106,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -3497,37 +3116,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"409": {
-						"description": "Conflict",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"410": {
-						"description": "Upload expired",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"413": {
-						"description": "Payload too large",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError404"
 								}
 							}
 						}
@@ -3537,7 +3126,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -3547,7 +3136,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -3557,7 +3146,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -3596,7 +3185,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -3606,7 +3195,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -3616,7 +3205,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError404"
 								}
 							}
 						}
@@ -3626,27 +3215,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"410": {
-						"description": "Upload expired",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"413": {
-						"description": "Payload too large",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError409"
 								}
 							}
 						}
@@ -3656,7 +3225,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -3666,7 +3235,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -3676,7 +3245,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -3712,7 +3281,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -3722,57 +3291,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "Not found",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"409": {
-						"description": "Conflict",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"410": {
-						"description": "Upload expired",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"413": {
-						"description": "Payload too large",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"422": {
-						"description": "Validation failed",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -3782,7 +3301,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -3792,7 +3311,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -3828,7 +3347,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -3838,57 +3357,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "Not found",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"409": {
-						"description": "Conflict",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"410": {
-						"description": "Upload expired",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"413": {
-						"description": "Payload too large",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"422": {
-						"description": "Validation failed",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -3898,7 +3367,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -3908,7 +3377,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -3941,9 +3410,12 @@
 						"schema": {
 							"type": "string",
 							"maxLength": 512,
-							"default": ""
+							"default": "",
+							"description": "Last record ID from nextAfter; omit for the first page.",
+							"example": "record-id"
 						},
 						"required": false,
+						"description": "Last record ID from nextAfter; omit for the first page.",
 						"name": "after",
 						"in": "query"
 					},
@@ -3975,7 +3447,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -3985,47 +3457,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "Not found",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"409": {
-						"description": "Conflict",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"410": {
-						"description": "Upload expired",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"413": {
-						"description": "Payload too large",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -4035,7 +3467,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -4045,7 +3477,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -4055,7 +3487,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -4080,9 +3512,11 @@
 						"schema": {
 							"type": "string",
 							"minLength": 1,
-							"maxLength": 512
+							"maxLength": 512,
+							"description": "Opaque owner-bound cursor returned by sync head or changes. Do not construct or edit it."
 						},
 						"required": true,
+						"description": "Opaque owner-bound cursor returned by sync head or changes. Do not construct or edit it.",
 						"name": "cursor",
 						"in": "query"
 					},
@@ -4114,7 +3548,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -4124,47 +3558,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "Not found",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"409": {
-						"description": "Conflict",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"410": {
-						"description": "Upload expired",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"413": {
-						"description": "Payload too large",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -4174,7 +3568,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -4184,7 +3578,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -4194,7 +3588,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -4253,7 +3647,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -4263,47 +3657,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "Not found",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"409": {
-						"description": "Conflict",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"410": {
-						"description": "Upload expired",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"413": {
-						"description": "Payload too large",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -4313,7 +3667,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -4323,7 +3677,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -4333,7 +3687,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -4379,7 +3733,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -4389,17 +3743,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "Not found",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -4409,17 +3753,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"410": {
-						"description": "Upload expired",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError409"
 								}
 							}
 						}
@@ -4429,7 +3763,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError413"
 								}
 							}
 						}
@@ -4439,7 +3773,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -4449,7 +3783,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -4459,7 +3793,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -4507,7 +3841,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -4517,7 +3851,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -4527,17 +3861,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"409": {
-						"description": "Conflict",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError404"
 								}
 							}
 						}
@@ -4547,17 +3871,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"413": {
-						"description": "Payload too large",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError410"
 								}
 							}
 						}
@@ -4567,7 +3881,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -4577,7 +3891,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -4587,7 +3901,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -4626,7 +3940,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -4636,7 +3950,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -4646,17 +3960,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"409": {
-						"description": "Conflict",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError404"
 								}
 							}
 						}
@@ -4666,17 +3970,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"413": {
-						"description": "Payload too large",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError410"
 								}
 							}
 						}
@@ -4686,7 +3980,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -4696,7 +3990,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -4706,7 +4000,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -4773,7 +4067,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -4783,7 +4077,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -4793,17 +4087,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"409": {
-						"description": "Conflict",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError404"
 								}
 							}
 						}
@@ -4813,7 +4097,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError410"
 								}
 							}
 						}
@@ -4823,7 +4107,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError413"
 								}
 							}
 						}
@@ -4833,7 +4117,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -4843,7 +4127,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -4853,7 +4137,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -4901,7 +4185,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -4911,7 +4195,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -4921,7 +4205,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError404"
 								}
 							}
 						}
@@ -4931,7 +4215,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError409"
 								}
 							}
 						}
@@ -4941,17 +4225,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"413": {
-						"description": "Payload too large",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError410"
 								}
 							}
 						}
@@ -4961,7 +4235,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -4971,7 +4245,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -4981,7 +4255,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -5066,7 +4340,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -5076,7 +4350,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -5086,37 +4360,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"409": {
-						"description": "Conflict",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"410": {
-						"description": "Upload expired",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"413": {
-						"description": "Payload too large",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError404"
 								}
 							}
 						}
@@ -5126,7 +4370,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -5136,7 +4380,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -5146,7 +4390,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -5179,7 +4423,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -5189,57 +4433,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "Not found",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"409": {
-						"description": "Conflict",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"410": {
-						"description": "Upload expired",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"413": {
-						"description": "Payload too large",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"422": {
-						"description": "Validation failed",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -5249,7 +4443,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -5259,7 +4453,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -5298,7 +4492,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -5308,37 +4502,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "Not found",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"409": {
-						"description": "Conflict",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"410": {
-						"description": "Upload expired",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -5348,7 +4512,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError413"
 								}
 							}
 						}
@@ -5358,7 +4522,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -5368,7 +4532,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -5378,7 +4542,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -5415,7 +4579,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -5425,7 +4589,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -5435,27 +4599,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"409": {
-						"description": "Conflict",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"410": {
-						"description": "Upload expired",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError404"
 								}
 							}
 						}
@@ -5465,7 +4609,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError413"
 								}
 							}
 						}
@@ -5475,7 +4619,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -5485,7 +4629,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -5495,7 +4639,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}
@@ -5534,7 +4678,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError401"
 								}
 							}
 						}
@@ -5544,7 +4688,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError403"
 								}
 							}
 						}
@@ -5554,27 +4698,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"409": {
-						"description": "Conflict",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"410": {
-						"description": "Upload expired",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError404"
 								}
 							}
 						}
@@ -5584,7 +4708,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError413"
 								}
 							}
 						}
@@ -5594,7 +4718,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError422"
 								}
 							}
 						}
@@ -5604,7 +4728,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError500"
 								}
 							}
 						}
@@ -5614,7 +4738,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiError"
+									"$ref": "#/components/schemas/ApiError503"
 								}
 							}
 						}

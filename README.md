@@ -25,9 +25,9 @@
 
 ## iOS版
 
-`ios/` にはSwiftUI製のiOSアプリがあります。記事・ノート・画像・書籍の閲覧と登録、コンテンツの検索に対応しています。SwiftDataに保存したデータをオフラインで閲覧でき、再接続後の同期やShare Extensionからの登録にも対応しています。認証とデータの同期にはWebアプリが提供するモバイルAPIを使用します。
+`apps/ios/` にはSwiftUI製のiOSアプリがあります。記事・ノート・画像・書籍の閲覧と登録、コンテンツの検索に対応しています。SwiftDataに保存したデータをオフラインで閲覧でき、再接続後の同期やShare Extensionからの登録にも対応しています。認証とデータの同期にはWebアプリが提供するモバイルAPIを使用します。
 
-開発環境の準備、Auth0の設定、実機での署名手順は [iOS開発ガイド](ios/README.md) を参照してください。
+開発環境の準備、Auth0の設定、実機での署名手順は [iOS開発ガイド](apps/ios/README.md) を参照してください。
 
 ## Technology Stack
 
@@ -149,9 +149,10 @@ This project follows clean architecture principles with domain-driven design, en
 │           ├── infrastructures/
 │           └── rag/
 │
-├── ios/                            # SwiftUI app, Share Extension, XcodeGen configuration
+├── apps/backend/                   # Shared Hono backend
+├── apps/ios/                       # SwiftUI app, Share Extension, XcodeGen configuration
 │
-└── app/src/                        # Next.js Application
+└── apps/web/src/                   # Next.js Application
     ├── application-services/       # Application Layer (Use Cases)
     │   ├── articles/
     │   ├── notes/
@@ -311,13 +312,13 @@ mise run ios:build
 mise run ios:test
 ```
 
-実機での実行や認証・API接続の設定は [iOS開発ガイド](ios/README.md) を参照してください。
+実機での実行や認証・API接続の設定は [iOS開発ガイド](apps/ios/README.md) を参照してください。
 
 ### Environment Configuration
 
 ローカル用の非機密設定はコミット済みの `.env.local`、Preview/Productionの秘密値は [Vercel Dashboard](https://vercel.com/) で管理します。`pnpm dev` はDockerサービス、migration、MinIO bucket、Qdrant collectionを初期化してからNext.jsを起動します。
 
-型定義とバリデーション: [`app/src/env.ts`](app/src/env.ts)（`@t3-oss/env-nextjs` + Zod）
+型定義とバリデーション: [`apps/web/src/env.ts`](apps/web/src/env.ts)（`@t3-oss/env-nextjs` + Zod）
 
 > 環境変数の全体的な管理戦略（ローカル・CI・本番・VPS）については[環境変数管理](#環境変数管理)を参照。
 
@@ -492,7 +493,7 @@ VPS 上の Docker Compose サービス用の環境変数は `~/s-private/.env` �
 
 #### 型定義・バリデーション
 
-[`app/src/env.ts`](app/src/env.ts) で `@t3-oss/env-nextjs` + Zod を使用し、ビルド時に全変数をバリデーションする。`SKIP_ENV_VALIDATION` を設定するとバリデーションをスキップできる。
+[`apps/web/src/env.ts`](apps/web/src/env.ts) で `@t3-oss/env-nextjs` + Zod を使用し、ビルド時に全変数をバリデーションする。`SKIP_ENV_VALIDATION` を設定するとバリデーションをスキップできる。
 
 ## Code Standards & Architecture Rules
 
