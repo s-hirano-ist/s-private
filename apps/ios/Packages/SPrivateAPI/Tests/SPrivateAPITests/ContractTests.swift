@@ -30,4 +30,14 @@ struct ContractTests {
             try JSONDecoder().decode(Components.Schemas.SnapshotRecord.self, from: data)
         }
     }
+    @Test("Book upload input preserves ISBN and tags before backend normalization")
+    func uploadInput() throws {
+        let data = Data(#"{"operationId":"6ab4a998-177a-4a34-ae38-9f5e75a05b2c","domain":"books","contentType":"image/jpeg","fileSize":100,"metadata":{"isbn":"978-4-06-521234-5","title":"Book","rating":5,"tags":["  tag  "," "]}}"#.utf8)
+        let value = try JSONDecoder().decode(Components.Schemas.UploadStart.self, from: data)
+        let encoded = try JSONEncoder().encode(value)
+        let object = try #require(JSONSerialization.jsonObject(with: encoded) as? [String: Any])
+        let metadata = try #require(object["metadata"] as? [String: Any])
+        #expect(metadata["isbn"] as? String == "978-4-06-521234-5")
+        #expect(metadata["tags"] as? [String] == ["  tag  ", " "])
+    }
 }
