@@ -1,5 +1,5 @@
-import type { ApiServicesConfig } from "@s-hirano-ist/s-backend/api/composition";
-import { MobileApiError } from "@s-hirano-ist/s-backend/mobile/error";
+import type { ApiServicesConfig } from "s-private-backend/api/composition";
+import { MobileApiError } from "s-private-backend/mobile/error";
 
 async function unavailable(): Promise<never> {
 	throw new MobileApiError("NOT_FOUND", 404);

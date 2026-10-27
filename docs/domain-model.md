@@ -231,9 +231,9 @@ graph TB
 
 ## Application Service層
 
-共通ユースケースは `packages/backend/src/{domain}/use-cases.ts` に置く。入力のドメイン値への変換、不変条件検証、永続化、イベント発行を型付き依存で実行する。同じディレクトリのテストからmockを注入し、Next.jsや実DBなしで順序・失敗時動作を検証する。
+共通ユースケースは `services/backend/src/{domain}/use-cases.ts` に置く。入力のドメイン値への変換、不変条件検証、永続化、イベント発行を型付き依存で実行する。同じディレクトリのテストからmockを注入し、Next.jsや実DBなしで順序・失敗時動作を検証する。
 
-`services/backend` がPrisma・storage・監視を構成し、`packages/backend/src/api/composition.ts` でユースケースへ注入する。Webの `app/src/application-services/` は生成API clientの呼び出し、フォーム・表示エラー変換、画面更新に限定する。詳細は[アーキテクチャ](architecture.md)を参照する。
+`services/backend` がPrisma・storage・監視を構成し、`services/backend/src/api/composition.ts` でユースケースへ注入する。Webの `app/src/application-services/` は生成API clientの呼び出し、フォーム・表示エラー変換、画面更新に限定する。詳細は[アーキテクチャ](architecture.md)を参照する。
 
 ## 設計の特徴
 
@@ -331,7 +331,7 @@ graph TB
 **理由**: 単一ユーザー・単一サーバーの現規模では、Outbox PatternやSaga Pattern導入による複雑性増加がメリットを上回る。TypeScriptでの補償トランザクションの型安全な表現も困難。
 
 **対象ファイル**:
-- `packages/backend/src/*/use-cases.ts`
+- `services/backend/src/*/use-cases.ts`
 
 ### 006: 不変条件検証とエンティティ生成の分離
 
@@ -349,8 +349,8 @@ graph TB
 **理由**: Prisma型の使用はインフラ層内に限定されており、Domain層・Application層への漏洩はない。ORM変更の可能性が現実的に低く、Prisma型による型安全性の恩恵（タイポ検知、補完、リファクタリング支援）が大きい。
 
 **対象ファイル**:
-- `packages/backend/src/*/query-repository.ts`
-- `packages/backend/src/*/command-repository.ts`
+- `services/backend/src/*/query-repository.ts`
+- `services/backend/src/*/command-repository.ts`
 
 ### 008: 外部サービス連携のACL明示の省略
 
@@ -381,7 +381,7 @@ graph TB
 **理由**: Anemic Domain Model（010）を意図的に採用しているため、更新メソッドもEntity外に配置する方が一貫性がある。現在の更新操作は主にOGメタデータ更新・Google Books情報更新・ステータス更新の3種類のみで単純。ステータス更新はバッチ処理で一括実行される（001参照）。
 
 **対象ファイル**:
-- `packages/backend/src/*/command-repository.ts`
+- `services/backend/src/*/command-repository.ts`
 
 ### 012: DIコンテナ・CQRS等の高度な設計パターンの不採用
 
@@ -390,7 +390,7 @@ graph TB
 **理由**: 単一ユーザー向けの個人コンテンツ管理システムであり、これらのパターンは過度な複雑性をもたらす。手動DI（ファクトリ関数）で十分であり、読み取り/書き込みのスケーリング要件もない。Next.js App RouterのServer Actions + 関数型スタイルでは、関数とファクトリによる依存注入の方が自然。
 
 **対象ファイル**:
-- `packages/backend/src/api/composition.ts`
+- `services/backend/src/api/composition.ts`
 
 ### 013: ドメインイベントのバージョニング省略
 

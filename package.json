@@ -57,7 +57,7 @@
 		"ui-gallery:build": "pnpm storybook:build && pnpm docs:build && pnpm ui-gallery:build:raw",
 		"ui-gallery:build:raw": "node scripts/build-ui-gallery.mjs",
 		"pages:build": "pnpm ui-gallery:build",
-		"deps:check": "pnpm api:generate && depcruise app/src packages/ui packages/core packages/notification packages/api-contracts packages/api-client packages/backend services/backend --config dependency-cruiser.config.js",
+		"deps:check": "pnpm api:generate && depcruise app/src packages/ui packages/core packages/notification packages/api-contracts packages/api-client services/backend --config dependency-cruiser.config.js",
 		"deps:circular": "depcruise app/src packages/ui packages/core packages/notification --config dependency-cruiser.config.js --output-type text --focus-depth 0",
 		"deps:graph": "{ echo '```mermaid'; depcruise app/src packages/ui packages/core packages/notification --config dependency-cruiser.config.js --output-type mermaid --collapse 'app/src/(application-services|infrastructures)/[^/]+/|app/src/(app|common|components|loaders)/|packages/core/[^/]+/|packages/(ui|database|notification|search|storage)/' --include-only '^(app/src|packages)/(?!.*(vitest|\\.stories\\.))'; echo '```'; } > dependency-graph.md",
 		"prisma:deploy": "pnpm --filter s-database prisma:deploy",

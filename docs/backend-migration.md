@@ -38,7 +38,7 @@ iOSのSwift生成clientへの切替後、この旧HTTP入口とcontrollerを撤�
 旧URLへの通信は404となるため、撤去PRの本番適用は対応iOSクライアントの配布・切替確認後に行う。
 DBのoperation・同期cursor・未完了uploadは削除せず、共通APIで引き継ぐ。
 
-`packages/backend` はNext.jsに依存しない実装packageとし、ドメイン別の公開subpathを持つ。
+`services/backend` はNext.jsに依存しない単一のbackendサービスとし、HTTP hostとドメイン別の実装を同じworkspace内に置く。
 articles／notes／images／booksの入力検証、作成・削除ユースケース、Prismaリポジトリを配置する。
 所有者IDとイベントdispatchは明示的な依存として渡し、backend内でWeb sessionを取得しない。
 移行初期のNext.jsはFormData、認証、エラー変換、キャッシュ無効化の暫定adapterだった。最終構成では生成clientを呼ぶSSR/BFFだけを残し、永続cacheとドメインadapterを撤去した。
@@ -51,10 +51,10 @@ HTTP入口とクライアントを切り替える前に処理を移管するた�
 original→thumbnail→DB→イベントの順序と既存の失敗時動作を維持する。
 operation／storage phaseと不正画像の診断エラーもbackendで定義し、Webのエラー変換から再利用する。
 
-同期cursor・snapshot・差分取得とoperationの冪等性管理は `packages/backend/src/mobile` に置く。
+同期cursor・snapshot・差分取得とoperationの冪等性管理は `services/backend/src/mobile` に置く。
 DBの状態と保存形式を維持し、依存の構成は独立backendのhostで行う。
 共有Prisma persistenceとMinIO chunk storeも設定を受け取るfactoryとする。
-Qdrant検索と結果整形は `packages/backend/src/search` に置き、hostから設定・検索portを渡す。
+Qdrant検索と結果整形は `services/backend/src/search` に置き、hostから設定・検索portを渡す。
 
 Better Authのprovider・session設定、Auth0 Bearer検証、tenant context／filterもbackendで共有する。
 Bearer検証はjoseのRS256・issuer・audience・必須claims検証とRemote JWKS resolverを使用する。
@@ -166,7 +166,7 @@ Auth0＋Better Authを維持し、Webの同一originの認証URLはBFFで中継�
 独立稼働への切替前にOAuth callback、画像の最大サイズ転送、外部サービス接続を検証する。
 Cronは旧・新で同時に有効化しない。
 
-共通APIの依存組み立ては `packages/backend/src/api/composition` に置く。
+共通APIの依存組み立ては `services/backend/src/api/composition` に置く。
 DB・chunk store・storage・event dispatcher・search・通知設定を型付きで受け取り、
 raw repositoryとdomain service、読み取り・mutation・upload・Pushの各serviceを組み立てる。
 Next.jsのcommand cache adapterを使わず、同じ構成を独立backendで再利用する。

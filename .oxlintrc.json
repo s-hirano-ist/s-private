@@ -375,7 +375,11 @@
 	},
 	"overrides": [
 		{
-			"files": ["app/**/*.{ts,tsx}", "packages/**/*.{ts,tsx}"],
+			"files": [
+				"app/**/*.{ts,tsx}",
+				"packages/**/*.{ts,tsx}",
+				"services/backend/src/*/**/*.{ts,tsx}"
+			],
 			"rules": {
 				"no-array-constructor": "error",
 				"no-implied-eval": "off",
@@ -516,7 +520,11 @@
 			}
 		},
 		{
-			"files": ["app/**/*.{ts,tsx}", "packages/**/*.{ts,tsx}"],
+			"files": [
+				"app/**/*.{ts,tsx}",
+				"packages/**/*.{ts,tsx}",
+				"services/backend/src/*/**/*.{ts,tsx}"
+			],
 			"rules": {
 				"no-unused-vars": "off",
 				"typescript/no-empty-object-type": "off",
@@ -648,7 +656,11 @@
 			"jsPlugins": ["eslint-plugin-storybook"]
 		},
 		{
-			"files": ["app/**/*.{ts,tsx}", "packages/**/*.{ts,tsx}"],
+			"files": [
+				"app/**/*.{ts,tsx}",
+				"packages/**/*.{ts,tsx}",
+				"services/**/*.{ts,tsx}"
+			],
 			"rules": {
 				"eslint-js/no-restricted-syntax": [
 					"error",
