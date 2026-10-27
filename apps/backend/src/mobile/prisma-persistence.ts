@@ -1,14 +1,19 @@
 import type { MobilePersistence } from "s-private-backend/mobile/ports";
 import type { DatabaseClient } from "s-private-backend/shared/database";
+import { syncDomainSchema } from "@s-hirano-ist/s-api-contracts/schemas";
 import { Prisma } from "@s-hirano-ist/s-database";
+import {
+	parseReadModel,
+	parseStoredSnapshot,
+	type StoredSnapshot,
+} from "s-private-backend/api/read-models";
+import { z } from "zod";
 
 function unreachable(_domain: never): never {
 	throw new Error("Unsupported mobile domain");
 }
 
-export function createMobilePersistence(
-	prisma: DatabaseClient,
-): MobilePersistence {
+function createRawPersistence(prisma: DatabaseClient): RawPersistence {
 	return {
 		isRecordNotFoundError(error) {
 			return (
@@ -74,37 +79,6 @@ export function createMobilePersistence(
 				}
 			}
 			return unreachable(domain);
-		},
-		async manifest(userId) {
-			const select = { id: true, updatedAt: true } as const;
-			const where = { userId };
-			const [articles, notes, books, images, categories] = await Promise.all([
-				prisma.article.findMany({ where, select, orderBy: { id: "asc" } }),
-				prisma.note.findMany({ where, select, orderBy: { id: "asc" } }),
-				prisma.book.findMany({ where, select, orderBy: { id: "asc" } }),
-				prisma.image.findMany({
-					where,
-					select: {
-						id: true,
-						status: true,
-						createdAt: true,
-						updatedAt: true,
-						exportedAt: true,
-						path: true,
-						contentType: true,
-						fileSize: true,
-						width: true,
-						height: true,
-					},
-					orderBy: { id: "asc" },
-				}),
-				prisma.category.findMany({
-					where,
-					select: { id: true, name: true },
-					orderBy: { id: "asc" },
-				}),
-			]);
-			return { articles, notes, books, images, categories };
 		},
 		async getContent(domain, userId, id) {
 			switch (domain) {
@@ -302,6 +276,86 @@ export function createMobilePersistence(
 			return prisma.mobileUpload.findMany({
 				where: { expiresAt: { lt: now } },
 			});
+		},
+	};
+}
+
+// Unknown values remain private to the database adapter; consumers receive validated projections.
+type RawPersistence = Omit<
+	MobilePersistence,
+	| "getContent"
+	| "listContent"
+	| "listCategories"
+	| "snapshot"
+	| "changeRecords"
+	| "changes"
+> & {
+	changeRecords(
+		...args: Parameters<MobilePersistence["changeRecords"]>
+	): Promise<Map<string, unknown>>;
+	changes(
+		...args: Parameters<MobilePersistence["changes"]>
+	): Promise<unknown[]>;
+	getContent(
+		...args: Parameters<MobilePersistence["getContent"]>
+	): Promise<unknown>;
+	listCategories(userId: string): Promise<unknown>;
+	listContent(
+		...args: Parameters<MobilePersistence["listContent"]>
+	): Promise<{ data: unknown[]; totalCount: number }>;
+	snapshot(
+		...args: Parameters<MobilePersistence["snapshot"]>
+	): Promise<unknown[]>;
+};
+const changeSchema = z.object({
+	action: z.enum(["delete", "upsert"]),
+	domain: syncDomainSchema,
+	recordId: z.string(),
+	version: z.bigint(),
+});
+export function createMobilePersistence(
+	prisma: DatabaseClient,
+): MobilePersistence {
+	const raw = createRawPersistence(prisma);
+	return {
+		...raw,
+		async getContent(domain, ...args) {
+			const record = await raw.getContent(domain, ...args);
+			return record === null ? null : parseReadModel(domain, record);
+		},
+		async listContent(domain, ...args) {
+			const result = await raw.listContent(domain, ...args);
+			return {
+				data: result.data.map((record) => parseReadModel(domain, record)),
+				totalCount: result.totalCount,
+			};
+		},
+		async listCategories(userId) {
+			return z
+				.array(z.unknown())
+				.parse(await raw.listCategories(userId))
+				.map((record) => parseReadModel("categories", record));
+		},
+		async snapshot(domain, ...args) {
+			return (await raw.snapshot(domain, ...args)).map((record) =>
+				parseReadModel(domain, record),
+			);
+		},
+		async changes(...args) {
+			return (await raw.changes(...args)).map((record) =>
+				changeSchema.parse(record),
+			);
+		},
+		async changeRecords(userId, changes) {
+			const records = await raw.changeRecords(userId, changes);
+			const result = new Map<string, StoredSnapshot>();
+			for (const change of changes) {
+				const key = `${change.domain}:${change.recordId}`;
+				const value = records.get(key);
+				if (value !== undefined)
+					result.set(key, parseStoredSnapshot(change.domain, value));
+			}
+			return result;
 		},
 	};
 }
