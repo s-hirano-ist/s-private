@@ -92,7 +92,7 @@ const security: Record<string, string[]>[] = [
 	{ sessionCookie: [] },
 ];
 const idParams = z.object({ id: idSchema });
-function contentRoutes<const D extends string, T extends ZodType>(
+export function contentRoutes<const D extends string, T extends ZodType>(
 	domain: D,
 	record: T,
 ) {

@@ -1,3 +1,5 @@
+import { noteSchema } from "@s-hirano-ist/s-api-contracts/schemas";
+import { registerContentDomain } from "s-private-backend/api/content-routes";
 import { ApiError } from "s-private-backend/api/error";
 // Compiled by the backend typecheck, never executed.
 export function verifyInvalidCode() {
@@ -28,4 +30,13 @@ export async function verifyReadModels(
 	// @ts-expect-error book DTOs have no article category.
 	void book.categoryId;
 	void createdAt;
+}
+
+export function verifyRouteBinding(
+	app: import("s-private-backend/api/types").ApiApp,
+	reads: import("s-private-backend/api/read-service").ReadService,
+	writes: import("s-private-backend/api/write-service").WriteService,
+) {
+	// @ts-expect-error the article routes cannot bind a note response schema.
+	registerContentDomain(app, "articles", noteSchema, reads, writes);
 }

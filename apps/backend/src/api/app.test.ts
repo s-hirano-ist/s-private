@@ -1,11 +1,14 @@
 import type { PushService } from "s-private-backend/api/push-service";
 import type { ReadService } from "s-private-backend/api/read-service";
+import type { ApiAuth } from "s-private-backend/api/types";
 import type { UploadService } from "s-private-backend/api/upload-service";
 import type { WriteService } from "s-private-backend/api/write-service";
-import { createApiApp, type ApiAuth } from "s-private-backend/api/app";
+import { apiRoutes } from "@s-hirano-ist/s-api-contracts/routes";
+import { createApiApp } from "s-private-backend/api/app";
 import { ApiError } from "s-private-backend/api/error";
 import { tenantContext } from "s-private-backend/shared/tenant-context";
 import { describe, expect, test, vi } from "vitest";
+import { z } from "zod";
 
 const session = {
 	user: { id: "owner", name: "Name", email: "owner@example.com", image: null },
@@ -277,4 +280,132 @@ describe("Shared Hono API boundary", () => {
 			).status,
 		).toBe(404);
 	});
+});
+
+const examples = [
+	[
+		"articles",
+		{
+			...note,
+			url: "https://example.com",
+			quote: null,
+			categoryId: "category",
+			categoryName: "Tech",
+		},
+	],
+	["notes", note],
+	[
+		"images",
+		{
+			...note,
+			path: "file.png",
+			contentType: "image/png",
+			fileSize: 1,
+			width: null,
+			height: null,
+		},
+	],
+	[
+		"books",
+		{ ...note, isbn: "9780306406157", imagePath: null, rating: 3, tags: [] },
+	],
+] as const;
+test.each(examples)(
+	"shared %s routes preserve DTOs, owner and empty deletion responses",
+	async (domain, record) => {
+		const { app, reads, writes } = fixture();
+		reads.detail.mockResolvedValue({ ...record, userId: "secret" });
+		reads.page.mockResolvedValue({
+			data: [{ ...record, userId: "secret" }],
+			totalCount: 1,
+			offset: 0,
+			limit: 30,
+		});
+		reads.count.mockResolvedValue({ count: 1 });
+		const detail = await app.request(`/api/v1/${domain}/record`);
+		expect(detail.status).toBe(200);
+		expect(await detail.json()).not.toHaveProperty("userId");
+		expect(reads.detail).toHaveBeenCalledWith(domain, "owner", "record");
+		const page = await app.request(`/api/v1/${domain}`);
+		expect(page.status).toBe(200);
+		expect(await page.text()).not.toContain("secret");
+		expect(await (await app.request(`/api/v1/${domain}/count`)).json()).toEqual(
+			{ count: 1 },
+		);
+		const deleted = await app.request(`/api/v1/${domain}/record`, {
+			method: "DELETE",
+			headers: { origin: "https://web.example" },
+		});
+		expect(deleted.status).toBe(204);
+		expect(await deleted.text()).toBe("");
+		expect(writes.remove).toHaveBeenCalledWith("owner", domain, "record");
+	},
+);
+test("all contract operations are registered exactly once in the OpenAPI registry", () => {
+	const { app } = fixture();
+	const document = app.getOpenAPI31Document({
+		openapi: "3.1.0",
+		info: { title: "Test", version: "1" },
+	});
+	const registered = Object.entries(
+		z
+			.record(
+				z.string(),
+				z.record(z.string(), z.object({ operationId: z.string() })),
+			)
+			.parse(document.paths),
+	).flatMap(([path, methods]) =>
+		Object.entries(methods).map(([method, operation]) => ({
+			method,
+			path: path.replace("/api/v1", ""),
+			operationId: operation.operationId,
+		})),
+	);
+	expect(
+		registered.toSorted((a, b) => a.operationId.localeCompare(b.operationId)),
+	).toEqual(
+		apiRoutes
+			.map(({ method, path, operationId }) => ({ method, path, operationId }))
+			.toSorted((a, b) => a.operationId.localeCompare(b.operationId)),
+	);
+	const runtime = new Set(
+		app.routes
+			.filter((route) => route.method !== "ALL")
+			.map(
+				(route) =>
+					`${route.method.toLowerCase()} ${route.path.replace("/api/v1", "").replaceAll(/:([^/]+)/gu, "{$1}")}`,
+			),
+	);
+	expect([...runtime].toSorted()).toEqual(
+		apiRoutes.map(({ method, path }) => `${method} ${path}`).toSorted(),
+	);
+});
+test("malformed successful service responses are rejected consistently", async () => {
+	const { app, reads, auth, uploads } = fixture();
+	reads.count.mockResolvedValue({ count: -1 });
+	reads.head.mockResolvedValue({ cursor: null });
+	uploads.start.mockResolvedValue({ uploadId: "missing-fields" });
+	for (const path of ["/api/v1/notes/count", "/api/v1/sync/head"]) {
+		const response = await app.request(path);
+		expect(response.status).toBe(500);
+		expect(await response.json()).toEqual({
+			error: { code: "INTERNAL_ERROR" },
+		});
+	}
+	const response = await app.request("/api/v1/uploads", {
+		method: "POST",
+		headers: {
+			origin: "https://web.example",
+			"content-type": "application/json",
+		},
+		body: JSON.stringify({
+			operationId: "6ab4a998-177a-4a34-ae38-9f5e75a05b2c",
+			domain: "images",
+			contentType: "image/png",
+			fileSize: 1,
+			metadata: { filename: "image.png" },
+		}),
+	});
+	expect(response.status).toBe(500);
+	expect(auth.reportError).toHaveBeenCalledTimes(3);
 });
