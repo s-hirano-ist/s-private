@@ -1,0 +1,27 @@
+// This file configures the initialization of Sentry on the server.
+// The config you add here will be used whenever the server handles a request.
+// https://docs.sentry.io/platforms/javascript/guides/nextjs/
+
+import {
+	sentryPrivacyOptions,
+	resolveTraceSampleRate,
+} from "@/common/observability/sentry-options";
+import { env } from "@/env";
+import * as Sentry from "@sentry/nextjs";
+
+Sentry.init({
+	...sentryPrivacyOptions,
+	dsn: env.NEXT_PUBLIC_SENTRY_DSN,
+	enabled: process.env.NODE_ENV === "production",
+	environment: process.env.VERCEL_ENV ?? env.NODE_ENV,
+	release: process.env.SENTRY_RELEASE ?? process.env.VERCEL_GIT_COMMIT_SHA,
+
+	// Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
+	tracesSampler: ({ inheritOrSampleWith }) =>
+		inheritOrSampleWith(
+			resolveTraceSampleRate(env.NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE),
+		),
+
+	// Setting this option to true will print useful information to the console while you're setting up Sentry.
+	debug: false,
+});

@@ -38,6 +38,12 @@ jobs:
         env:
           BACKEND_URL: "https://backend.example.com"
 
+      - name: Verify publication boundary and CLI consumer
+        if: ${{ inputs.check == 'build' }}
+        run: |
+          pnpm check:publish
+          pnpm check:cli-package
+
       - name: Check harness
         if: ${{ inputs.check == 'supplemental-lint' }}
         run: pnpm harness:check

@@ -1,0 +1,35 @@
+{
+	"name": "@s-hirano-ist/s-application",
+	"version": "2.0.0",
+	"description": "Shared application layer for HTTP and CLI hosts",
+	"type": "module",
+	"engines": {
+		"node": "26.x"
+	},
+	"exports": {
+		"./*": {
+			"types": "./dist/*.d.ts",
+			"import": "./dist/*.js"
+		}
+	},
+	"files": [
+		"dist",
+		"README.md",
+		"LICENSE"
+	],
+	"scripts": {
+		"build": "pnpm clean && tsc",
+		"typecheck": "tsc --noEmit",
+		"clean": "rm -rf dist"
+	},
+	"license": "AGPL-3.0",
+	"devDependencies": {
+		"@types/node": "catalog:",
+		"typescript": "catalog:"
+	},
+	"dependencies": {
+		"zod": "catalog:",
+		"@s-hirano-ist/s-core": "workspace:*"
+	},
+	"private": true
+}

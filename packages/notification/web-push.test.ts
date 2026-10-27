@@ -34,6 +34,18 @@ const payload: WebPushPayload = {
 };
 
 describe("createWebPushService", () => {
+	test("extracts an allowlisted provider reason without exposing arbitrary response text", () => {
+		expect(
+			new WebPushSendError({
+				statusCode: 403,
+				body: '{"reason":"VapidPkHashMismatch","token":"private-token"}',
+			}).providerCode,
+		).toBe("VapidPkHashMismatch");
+		expect(
+			new WebPushSendError({ statusCode: 403, body: "private-token" })
+				.providerCode,
+		).toBeUndefined();
+	});
 	beforeEach(() => {
 		vi.clearAllMocks();
 		sendNotification.mockResolvedValue({ statusCode: 201 });

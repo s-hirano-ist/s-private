@@ -34,7 +34,7 @@ import { ProfilerWrapper } from "@/components/common/dev/profiler-wrapper";
 
 | コンポーネント | ID | ファイル |
 |----------------|-----|---------|
-| `BaseCardStackWrapper` | `BaseCardStack` | `app/src/components/common/layouts/cards/base-card-stack.tsx` |
+| `BaseCardStackWrapper` | `BaseCardStack` | `apps/web/src/components/common/layouts/cards/base-card-stack.tsx` |
 
 ## ベンチマークコマンド
 
@@ -67,10 +67,10 @@ pnpm bench:all
 
 ## React Compiler 比較
 
-`app/next.config.mjs` で `reactCompiler` を一時的に無効化して比較可能：
+`apps/web/next.config.mjs` で `reactCompiler` を一時的に無効化して比較可能：
 
 ```js
-// app/next.config.mjs
+// apps/web/next.config.mjs
 const nextConfig = {
   reactCompiler: false, // 一時的に無効化
   // ...

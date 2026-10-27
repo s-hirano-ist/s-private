@@ -71,6 +71,8 @@ export function createPrismaClient(databaseUrl: string) {
 			idleTimeoutMillis: 30_000,
 			connectionTimeoutMillis: 10_000,
 		}),
+		// Allow cloud connection establishment to finish before acquisition times out.
+		transactionOptions: { maxWait: 10_000 },
 	});
 }
 
@@ -87,14 +89,44 @@ export function createPrismaClient(databaseUrl: string) {
 const SERIALIZATION_RETRY_CODES = new Set(["40001", "P2034"]);
 
 function isRetryableTransactionError(error: unknown): boolean {
-	if (typeof error !== "object" || error === null) return false;
-	const code = (error as { code?: unknown }).code;
-	return typeof code === "string" && SERIALIZATION_RETRY_CODES.has(code);
+	const seen = new Set<object>();
+	let current: unknown = error;
+	while (
+		typeof current === "object" &&
+		current !== null &&
+		!seen.has(current)
+	) {
+		seen.add(current);
+		const wrapped = current as {
+			cause?: unknown;
+			code?: unknown;
+			message?: unknown;
+		};
+		if (
+			typeof wrapped.code === "string" &&
+			SERIALIZATION_RETRY_CODES.has(wrapped.code)
+		)
+			return true;
+		// This specific P2028 occurs before the transaction starts. Other P2028
+		// errors (expired/closed transactions or commit failures) are not replayed.
+		if (
+			wrapped.code === "P2028" &&
+			typeof wrapped.message === "string" &&
+			wrapped.message.includes(
+				"Transaction API error: Unable to start a transaction in the given time.",
+			)
+		)
+			return true;
+		current = wrapped.cause;
+	}
+	return false;
 }
 
 /**
  * Runs a database operation, retrying it on CockroachDB serialization
- * conflicts (`40001` / Prisma `P2034`) with exponential backoff.
+ * conflicts (`40001` / Prisma `P2034`) or transaction acquisition timeouts
+ * (`P2028` with an explicit failure to start), including wrapped causes,
+ * with exponential backoff.
  *
  * @remarks
  * Wrap multi-statement transactions (`prisma.$transaction([...])`) and any

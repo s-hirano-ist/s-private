@@ -204,3 +204,12 @@ describe("Generated backend client", () => {
 		expect(fetch).not.toHaveBeenCalled();
 	});
 });
+
+test("rejects error codes assigned to a different HTTP status", async () => {
+	const client = createBackendClient({
+		baseURL: "https://backend.example/api/v1",
+		fetch: async () =>
+			Response.json({ error: { code: "UPLOAD_EXPIRED" } }, { status: 401 }),
+	});
+	await expect(client.listArticles()).rejects.toBeInstanceOf(ApiProtocolError);
+});

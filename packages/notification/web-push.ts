@@ -21,11 +21,34 @@ export type WebPushPayload = {
 };
 
 export class WebPushSendError extends Error {
+	readonly providerCode?: string;
 	readonly statusCode?: number;
 
 	constructor(cause: unknown) {
 		super("Failed to send Web Push notification", { cause });
 		this.name = "WebPushSendError";
+		// Extract known diagnostic tokens, never retain a response body in telemetry.
+		const body =
+			typeof cause === "object" &&
+			cause !== null &&
+			"body" in cause &&
+			typeof cause.body === "string"
+				? cause.body
+				: "";
+		this.providerCode = [
+			"BadJwtToken",
+			"VapidPkHashMismatch",
+			"BadExpirationTime",
+			"BadDeviceToken",
+			"ExpiredToken",
+			"InvalidProviderToken",
+			"ExpiredProviderToken",
+			"TopicDisallowed",
+			"UnauthorizedRegistration",
+			"InvalidRegistration",
+			"NotRegistered",
+			"MismatchSenderId",
+		].find((code) => new RegExp(`\\b${code}\\b`, "u").test(body));
 		this.statusCode =
 			typeof cause === "object" && cause !== null && "statusCode" in cause
 				? Number(cause.statusCode)

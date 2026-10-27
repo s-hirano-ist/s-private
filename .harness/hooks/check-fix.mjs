@@ -42,7 +42,7 @@ if (changes.status !== 0 || changes.error !== undefined) {
 if (
 	changes.stdout.trim() === "" ||
 	!existsSync(path.join(repoRoot, "node_modules")) ||
-	!existsSync(path.join(repoRoot, "app/.next/types"))
+	!existsSync(path.join(repoRoot, "apps/web/.next/types"))
 ) {
 	writeResult({});
 	process.exit(0);

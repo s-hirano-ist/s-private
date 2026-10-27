@@ -2,7 +2,7 @@ import type { StorybookConfig } from "@storybook/nextjs-vite";
 import tailwindcss from "@tailwindcss/postcss";
 
 const config: StorybookConfig = {
-	stories: ["../app/src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
+	stories: ["../apps/web/src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
 	addons: [
 		"@chromatic-com/storybook",
 		"@storybook/addon-a11y",
@@ -17,7 +17,7 @@ const config: StorybookConfig = {
 		options: {},
 	},
 	features: { experimentalRSC: true },
-	staticDirs: ["../app/public"],
+	staticDirs: ["../apps/web/public"],
 	viteFinal: async (viteConfig) => {
 		viteConfig.css = {
 			...viteConfig.css,

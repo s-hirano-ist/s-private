@@ -109,7 +109,7 @@ DEFAULT PRIVILEGES は「以後に作られる」オブジェクトにのみ効�
 
 ### Step 4. dev を `s-dev` 単一に統一
 
-`s-dev` は dev-db 全オブジェクトの owner ＋（次の admin 剥奪前提で）DB/schema ALL を持たせ、ローカルの全操作（app/scripts/migrate）をこの 1 ユーザーで賄う。
+`s-dev` は dev-db 全オブジェクトの owner ＋（次の admin 剥奪前提で）DB/schema ALL を持たせ、ローカルの全操作（apps/web/scripts/migrate）をこの 1 ユーザーで賄う。
 
 ```sql
 GRANT ALL ON DATABASE "dev-db" TO "s-dev";

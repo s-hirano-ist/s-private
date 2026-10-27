@@ -43,12 +43,12 @@ pnpm knip    # デッドコード検出を実行
 |------|-----|
 | 重複率閾値 | 10% |
 | 対象パターン | `**/*.{ts,tsx}` |
-| 分析パス | `app/src`, `packages/ui`, `packages/core` |
+| 分析パス | `apps/web/src`, `packages/ui`, `packages/core` |
 
 除外対象:
 - `node_modules`, `.next`, `dist`, `.storybook-static`, `coverage`
 - テストファイル（`*.test.ts`）
-- 生成ファイル（`app/src/generated/**`）
+- 生成ファイル（`apps/web/src/generated/**`）
 
 ### コマンド
 
@@ -111,7 +111,7 @@ pnpm deps:graph      # 依存関係グラフをmermaidとして出力（dependen
 グラフは「Clean Architectureの層境界・cross-domain禁止が守られているか」を一目で確認する用途のため、**層×ドメイン単位**まで粗く集約している:
 
 - `--collapse '<regex>'`で集約。`core`/`application-services`/`infrastructures`はドメイン（`articles`/`books`/`images`/`notes`等）ごとのノードを残し（cross-domain依存の可視化）、`app`/`common`/`components`/`loaders`や各パッケージ（`ui`/`database`等）は1ノードに集約する。ドメイン内部のファイル詳細は描画しない。
-- `--include-only '^(app/src|packages)/...'`でグラフ出力のみを絞り込み（ルール検査には不適用）、`node_modules`等の外部依存と`vitest`設定・`*.stories.*`などのノイズノードを除外する。
+- `--include-only '^(apps/web/src|packages)/...'`でグラフ出力のみを絞り込み（ルール検査には不適用）、`node_modules`等の外部依存と`vitest`設定・`*.stories.*`などのノイズノードを除外する。
 
 ### CI連携
 

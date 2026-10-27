@@ -1,0 +1,88 @@
+import type {
+	BulkUpdateResult,
+	IBatchCommandRepository,
+	ResetStatusResult,
+	StatusTransitionParams,
+} from "@s-hirano-ist/s-application/batch/ports";
+import type {
+	ExportedAt,
+	UserId,
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { type Status, withTransactionRetry } from "@s-hirano-ist/s-database";
+
+type PrismaClientLike = {
+	$transaction: <T extends Promise<{ count: number }>[]>(
+		queries: [...T],
+	) => Promise<{ [K in keyof T]: { count: number } }>;
+	image: {
+		updateMany: (args: {
+			data: { exportedAt?: Date; status: Status };
+			where: { status: Status; userId: string };
+		}) => Promise<{ count: number }>;
+	};
+};
+
+/**
+ * Creates an Images batch command repository for bulk operations.
+ *
+ * @param prisma - The Prisma client or transaction client
+ * @returns An IBatchCommandRepository implementation for images
+ */
+export function createImagesCommandRepository(
+	prisma: PrismaClientLike,
+): IBatchCommandRepository {
+	return {
+		async bulkUpdateStatus(
+			params: StatusTransitionParams,
+		): Promise<BulkUpdateResult> {
+			const { userId, fromStatus, toStatus, exportedAt } = params;
+
+			const result = await prisma.image.updateMany({
+				where: {
+					userId: userId,
+					status: fromStatus,
+				},
+				data: {
+					status: toStatus,
+					...(exportedAt && { exportedAt: exportedAt }),
+				},
+			});
+
+			return { count: result.count };
+		},
+
+		async resetStatus(
+			userId: UserId,
+			exportedAt: ExportedAt,
+		): Promise<ResetStatusResult> {
+			const [finalized, marked] = await withTransactionRetry(() =>
+				prisma.$transaction([
+					prisma.image.updateMany({
+						where: {
+							userId: userId,
+							status: "LAST_UPDATED",
+						},
+						data: {
+							status: "EXPORTED",
+							exportedAt: exportedAt,
+						},
+					}),
+					prisma.image.updateMany({
+						where: {
+							userId: userId,
+							status: "UNEXPORTED",
+						},
+						data: {
+							status: "LAST_UPDATED",
+						},
+					}),
+				]),
+			);
+
+			return {
+				finalized: { count: finalized.count },
+				marked: { count: marked.count },
+			};
+		},
+	};
+}

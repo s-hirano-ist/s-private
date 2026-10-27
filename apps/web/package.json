@@ -1,0 +1,56 @@
+{
+	"name": "s-private-app",
+	"version": "10.0.0",
+	"author": "s-hirano-ist",
+	"description": "Private pages and admin tools for s-hirano-ist.",
+	"engines": {
+		"node": "26.x"
+	},
+	"type": "module",
+	"scripts": {
+		"dev": "next dev",
+		"build": "next build",
+		"analyze": "next experimental-analyze",
+		"start": "next start",
+		"typegen": "next typegen",
+		"typecheck": "pnpm typegen && tsc --noEmit"
+	},
+	"dependencies": {
+		"@s-hirano-ist/s-api-client": "catalog:",
+		"@s-hirano-ist/s-ui": "workspace:*",
+		"@sentry/nextjs": "11.4.0",
+		"@t3-oss/env-nextjs": "0.13.11",
+		"@tailwindcss/typography": "catalog:",
+		"@vercel/analytics": "2.0.1",
+		"@vercel/related-projects": "catalog:",
+		"better-auth": "1.7.7",
+		"lucide-react": "catalog:",
+		"markdown-to-jsx": "9.10.3",
+		"next": "catalog:",
+		"next-intl": "catalog:",
+		"next-themes": "0.4.6",
+		"react": "catalog:",
+		"react-dom": "catalog:",
+		"react-syntax-highlighter": "16.1.1",
+		"server-only": "0.0.1",
+		"yet-another-react-lightbox": "3.32.2",
+		"zod": "catalog:"
+	},
+	"browserslist": [
+		"last 2 Chrome versions",
+		"last 2 Firefox versions",
+		"last 2 Safari versions",
+		"last 2 Edge versions"
+	],
+	"devDependencies": {
+		"@tailwindcss/postcss": "catalog:",
+		"@types/node": "catalog:",
+		"@types/react": "catalog:",
+		"@types/react-dom": "catalog:",
+		"@types/react-syntax-highlighter": "15.5.13",
+		"postcss": "catalog:",
+		"react-scan": "0.5.7",
+		"tailwindcss": "catalog:"
+	},
+	"private": true
+}

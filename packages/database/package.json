@@ -1,9 +1,9 @@
 {
 	"name": "@s-hirano-ist/s-database",
-	"version": "1.23.0",
+	"version": "2.0.0",
 	"description": "Prisma database schema and client for s-private project",
 	"engines": {
-		"node": ">=24.22.1"
+		"node": "26.x"
 	},
 	"type": "module",
 	"exports": {
@@ -16,21 +16,6 @@
 		},
 		"./generated/*": {
 			"import": "./src/generated/*"
-		}
-	},
-	"publishConfig": {
-		"access": "public",
-		"exports": {
-			".": {
-				"types": "./src/index.ts",
-				"import": "./src/index.ts"
-			},
-			"./generated": {
-				"import": "./src/generated/index.js"
-			},
-			"./generated/*": {
-				"import": "./src/generated/*"
-			}
 		}
 	},
 	"files": [
@@ -48,7 +33,6 @@
 		"docs:build": "node scripts/generate-db-docs.mjs",
 		"build": "prisma generate && tsc --noEmit",
 		"postinstall": "pnpm prisma:generate",
-		"prepublishOnly": "pnpm prisma:generate",
 		"typecheck": "tsc --noEmit"
 	},
 	"repository": {
@@ -66,5 +50,6 @@
 	"devDependencies": {
 		"@types/node": "catalog:",
 		"typescript": "catalog:"
-	}
+	},
+	"private": true
 }

@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-import { BooksBatchDomainService } from "@s-hirano-ist/s-core/books/services/books-batch-domain-service";
+import { BooksBatchApplicationService } from "@s-hirano-ist/s-application/batch/books-batch-service";
 import {
 	makeUserId,
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { createPrismaClient } from "@s-hirano-ist/s-database";
+import { createBooksCommandRepository } from "@s-hirano-ist/s-infrastructure/batch/books-command-repository";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
-import { createBooksCommandRepository } from "./infrastructures/books-command-repository.js";
 
 async function main() {
 	const env = {
@@ -35,7 +35,7 @@ async function main() {
 		// DDD: Create repository and domain service
 		// Transaction is handled internally by repository's resetStatus method
 		const commandRepository = createBooksCommandRepository(prisma);
-		const batchService = new BooksBatchDomainService(commandRepository);
+		const batchService = new BooksBatchApplicationService(commandRepository);
 
 		const result = await batchService.resetBooks(userId);
 
@@ -47,18 +47,19 @@ async function main() {
 
 	try {
 		await resetBooks();
-		await notificationService.notifyInfo("reset-books completed", {
-			caller: "reset-books",
-		});
+		await notificationService
+			.notifyInfo("reset-books completed", {
+				caller: "reset-books",
+			})
+			.catch((error: unknown) => console.error("通知失敗:", error));
 	} catch (error) {
 		console.error("❌ エラーが発生しました:", error);
-		await notificationService.notifyError(
-			`reset-books failed: ${String(error)}`,
-			{
+		await notificationService
+			.notifyError(`reset-books failed: ${String(error)}`, {
 				caller: "reset-books",
-			},
-		);
-		process.exit(1);
+			})
+			.catch((notifyError: unknown) => console.error("通知失敗:", notifyError));
+		process.exitCode = 1;
 	} finally {
 		await prisma.$disconnect();
 	}

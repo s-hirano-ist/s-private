@@ -23,7 +23,7 @@
 	},
 	"sortTailwindcss": {
 		"functions": ["cn", "clsx", "tv"],
-		"stylesheet": "./app/oxfmt-tailwind.css"
+		"stylesheet": "./apps/web/oxfmt-tailwind.css"
 	},
 	"sortPackageJson": false,
 	"ignorePatterns": [

@@ -1,0 +1,235 @@
+import type { IImageProcessor } from "@s-hirano-ist/s-application/content/image-processor";
+import type { MobileDomain } from "@s-hirano-ist/s-application/content/models";
+import type { MobileDeps } from "@s-hirano-ist/s-application/mobile/deps";
+import type { MutationCommit } from "@s-hirano-ist/s-application/transaction";
+import * as schemas from "@s-hirano-ist/s-api-contracts/schemas";
+import {
+	createArticle,
+	deleteArticle,
+	parseArticleInput,
+	type CreateArticleDeps,
+} from "@s-hirano-ist/s-application/articles/use-cases";
+import { parseBookInput } from "@s-hirano-ist/s-application/books/input";
+import {
+	createBook,
+	deleteBook,
+	type CreateBookDeps,
+} from "@s-hirano-ist/s-application/books/use-cases";
+import { OperationPhaseError } from "@s-hirano-ist/s-application/diagnostics/operation-phase-error";
+import { ApplicationError } from "@s-hirano-ist/s-application/error";
+import { parseImageInput } from "@s-hirano-ist/s-application/images/input";
+import {
+	createImage,
+	deleteImage,
+	type CreateImageDeps,
+} from "@s-hirano-ist/s-application/images/use-cases";
+import { runMobileOperation } from "@s-hirano-ist/s-application/mobile/operations";
+import {
+	createNote,
+	deleteNote,
+	parseNoteInput,
+	type CreateNoteDeps,
+} from "@s-hirano-ist/s-application/notes/use-cases";
+import {
+	makeId,
+	makeUserId,
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { makePath } from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
+import {
+	DuplicateError,
+	FileNotAllowedError,
+	InvalidFormatError,
+} from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
+import { createHash } from "node:crypto";
+import { ApiError } from "s-private-backend/api/error";
+import { z, ZodError } from "zod";
+
+export type MediaInput = z.output<typeof schemas.uploadStartSchema>;
+export type WriteServiceDeps = {
+	articles: CreateArticleDeps;
+	books: CreateBookDeps;
+	imageProcessor: IImageProcessor;
+	images: CreateImageDeps;
+	mobile: Pick<
+		MobileDeps,
+		"content" | "operations" | "errors" | "transactions"
+	>;
+	notes: CreateNoteDeps;
+};
+function unwrap(error: unknown): unknown {
+	return error instanceof OperationPhaseError ? unwrap(error.cause) : error;
+}
+function duplicate(error: unknown): boolean {
+	const cause = unwrap(error);
+	return (
+		cause instanceof DuplicateError ||
+		(cause instanceof ApplicationError && cause.code === "DUPLICATE")
+	);
+}
+async function validateDomain<T>(work: () => Promise<T>): Promise<T> {
+	try {
+		return await work();
+	} catch (error) {
+		const cause = unwrap(error);
+		if (
+			cause instanceof ZodError ||
+			cause instanceof InvalidFormatError ||
+			cause instanceof FileNotAllowedError
+		)
+			throw new ApiError("VALIDATION_ERROR");
+		throw error;
+	}
+}
+export function createWriteService(deps: WriteServiceDeps) {
+	const { mobile } = deps;
+	async function run(
+		owner: string,
+		domain: MobileDomain,
+		operationId: string,
+		input: unknown,
+		work: (commit: MutationCommit) => Promise<{ id: string }>,
+		beforeCommit?: () => Promise<void>,
+	) {
+		return schemas.createResultSchema.parse(
+			await runMobileOperation(
+				owner,
+				domain,
+				operationId,
+				input,
+				async (commit) => {
+					try {
+						return (
+							await validateDomain(() =>
+								work(async (persist) =>
+									commit(async () => {
+										await beforeCommit?.();
+										return persist();
+									}),
+								),
+							)
+						).id;
+					} catch (error) {
+						if (duplicate(error)) throw new ApiError("DUPLICATE");
+						throw error;
+					}
+				},
+				mobile,
+			),
+		);
+	}
+	return {
+		async article(
+			owner: string,
+			input: z.output<typeof schemas.articleCreateSchema>,
+		) {
+			const canonical = { ...input, quote: input.quote ?? "" };
+			return run(owner, "articles", input.operationId, canonical, (commit) =>
+				createArticle(
+					parseArticleInput(canonical, makeUserId(owner)),
+					deps.articles,
+					commit,
+				),
+			);
+		},
+		async note(
+			owner: string,
+			input: z.output<typeof schemas.noteCreateSchema>,
+		) {
+			return run(owner, "notes", input.operationId, input, (commit) =>
+				createNote(
+					parseNoteInput(input, makeUserId(owner)),
+					deps.notes,
+					commit,
+				),
+			);
+		},
+		async media(
+			owner: string,
+			input: MediaInput,
+			file: File,
+			beforeCommit?: () => Promise<void>,
+		) {
+			const fileHash = createHash("sha256")
+				.update(Buffer.from(await file.arrayBuffer()))
+				.digest("hex");
+			const modern = {
+				version: 1,
+				operationId: input.operationId,
+				metadata: input.metadata,
+				contentType: input.contentType,
+				fileHash,
+			};
+
+			return run(
+				owner,
+				input.domain,
+				input.operationId,
+				modern,
+				async (commit) => {
+					const phase = {
+						action: input.domain === "images" ? "addImage" : "addBooks",
+						fileName: file.name,
+						fileSize: file.size,
+						contentType: file.type,
+					};
+					if (input.domain === "images") {
+						const parsed = await parseImageInput(
+							file,
+							makeUserId(owner),
+							deps.imageProcessor,
+						);
+						const extension = parsed.contentType.split("/").at(-1) ?? "jpeg";
+						const path = makePath(`${input.operationId}.${extension}`, false);
+						return createImage({ ...parsed, path }, deps.images, phase, commit);
+					}
+					const parsed = await parseBookInput(
+						{ ...input.metadata, image: file },
+						makeUserId(owner),
+						deps.imageProcessor,
+					);
+					const extension = parsed.contentType.split("/").at(-1) ?? "jpeg";
+					const path = makePath(`${input.operationId}.${extension}`, false);
+					return createBook(
+						{ ...parsed, path, imagePath: path },
+						deps.books,
+						phase,
+						commit,
+					);
+				},
+				beforeCommit,
+			);
+		},
+		async remove(owner: string, domain: MobileDomain, id: string) {
+			const record = await mobile.content.getContent(domain, owner, id);
+			if (!record) throw new ApiError("NOT_FOUND");
+			if (
+				z.object({ status: schemas.statusSchema }).parse(record).status !==
+				"UNEXPORTED"
+			)
+				throw new ApiError("NOT_DELETABLE");
+			const ownerId = makeUserId(owner);
+			const resourceId = makeId(id);
+			try {
+				switch (domain) {
+					case "articles":
+						await deleteArticle(resourceId, ownerId, deps.articles);
+						break;
+					case "notes":
+						await deleteNote(resourceId, ownerId, deps.notes);
+						break;
+					case "images":
+						await deleteImage(resourceId, ownerId, deps.images);
+						break;
+					case "books":
+						await deleteBook(resourceId, ownerId, deps.books);
+						break;
+				}
+			} catch (error) {
+				if (mobile.errors.isRecordNotFoundError(error))
+					throw new ApiError("NOT_FOUND");
+				throw error;
+			}
+		},
+	};
+}
+export type WriteService = ReturnType<typeof createWriteService>;

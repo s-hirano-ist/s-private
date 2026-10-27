@@ -1,18 +1,25 @@
 {
 	"$schema": "https://unpkg.com/knip@5/schema.json",
 	"ignoreExportsUsedInFile": true,
-	"ignore": ["e2e/**/*", "scripts/check-secrets.mjs", "app/oxfmt-tailwind.css"],
+	"ignore": [
+		"e2e/**/*",
+		"scripts/check-secrets.mjs",
+		"apps/web/oxfmt-tailwind.css"
+	],
 	"ignoreDependencies": ["@secretlint/secretlint-rule-preset-recommend"],
 	"ignoreBinaries": ["mise", "pipeline", "vercel"],
 	"workspaces": {
 		".": {
+			"playwright": {
+				"config": ["playwright.config.ts", "playwright.rum.config.ts"]
+			},
 			"entry": [
 				".harness/hooks/check-fix.mjs",
 				"scripts/init-local-search.mjs"
 			],
 			"ignoreDependencies": ["@tailwindcss/typography"]
 		},
-		"app": {
+		"apps/web": {
 			"entry": ["public/push-service-worker.js"],
 			"ignore": ["src/infrastructures/i18n/request.ts"],
 			"ignoreDependencies": ["@types/react-syntax-highlighter"],
@@ -55,10 +62,19 @@
 			"ignoreDependencies": ["zod", "@s-hirano-ist/s-api-contracts"]
 		},
 		"packages/database": {
-			"ignoreDependencies": ["@prisma/client"]
+			"ignoreDependencies": ["@prisma/client"],
+			"entry": ["src/generated/runtime/client.js"]
 		},
-		"services/backend": {
+		"apps/backend": {
 			"entry": ["src/index.ts", "src/dev.ts"],
+			"project": ["src/**/*.ts"]
+		},
+		"packages/application": {
+			"entry": ["src/**/*.ts", "!src/**/*.test.ts"],
+			"project": ["src/**/*.ts"]
+		},
+		"packages/infrastructure": {
+			"entry": ["src/**/*.ts", "!src/**/*.test.ts"],
 			"project": ["src/**/*.ts"]
 		}
 	}

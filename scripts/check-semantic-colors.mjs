@@ -3,7 +3,7 @@ import { join, relative, resolve } from "node:path";
 import ts from "typescript";
 
 const root = resolve(import.meta.dirname, "..");
-const sourceDirectories = ["app/src", "packages/ui/src"];
+const sourceDirectories = ["apps/web/src", "packages/ui/src"];
 const palettes = new Set([
 	"slate",
 	"gray",

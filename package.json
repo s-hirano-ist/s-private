@@ -1,11 +1,11 @@
 {
 	"name": "s-private",
-	"version": "3.16.1",
+	"version": "4.1.0",
 	"author": "s-hirano-ist",
 	"description": "Private pages and admin tools for s-hirano-ist.",
 	"packageManager": "pnpm@12.15.0",
 	"engines": {
-		"node": ">=24.22.1"
+		"node": "26.x"
 	},
 	"type": "module",
 	"scripts": {
@@ -13,8 +13,8 @@
 		"dev:app": "pnpm packages:build && node scripts/start-development.mjs",
 		"local:down": "docker compose --env-file .env.local --profile local down",
 		"build": "pnpm pipeline build --full",
-		"packages:build": "pnpm --filter './packages/*' -r run build",
-		"clean": "rm -rf app/node_modules app/.next packages/*/node_modules packages/*/dist",
+		"packages:build": "pnpm --filter './packages/*' -r run build && pnpm check:publish",
+		"clean": "rm -rf apps/web/node_modules apps/web/.next packages/*/node_modules packages/*/dist",
 		"format": "vp fmt",
 		"format:check": "vp fmt --check .",
 		"harness:sync": "node scripts/harness.mjs sync",
@@ -34,7 +34,7 @@
 		"bench": "vp test run --project 'bench (bench)'",
 		"bench:components": "vp test run --project 'app-bench (bench)'",
 		"bench:all": "vp test run --project 'bench (bench)' --project 'app-bench (bench)'",
-		"test": "STORYBOOK_DISABLE_TELEMETRY=true vitest run --project storybook --coverage.reportsDirectory=.vitest-coverage/storybook && STORYBOOK_DISABLE_TELEMETRY=true vp test run --project api --project backend --project app --project components --project core --project database --project image-processing --project notification --project scripts --project search --coverage.reportsDirectory=.vitest-coverage/node && node scripts/merge-vitest-coverage.mjs",
+		"test": "STORYBOOK_DISABLE_TELEMETRY=true vitest run --project storybook --coverage.reportsDirectory=.vitest-coverage/storybook && STORYBOOK_DISABLE_TELEMETRY=true vp test run --project api --project backend --project application --project infrastructure --project app --project components --project core --project database --project image-processing --project notification --project scripts --project search --coverage.reportsDirectory=.vitest-coverage/node && node scripts/merge-vitest-coverage.mjs",
 		"test:watch": "vp test watch",
 		"typecheck": "pnpm packages:build && pnpm -r run typecheck",
 		"license:summary": "pnpm licenses list > library-license.txt",
@@ -57,9 +57,9 @@
 		"ui-gallery:build": "pnpm storybook:build && pnpm docs:build && pnpm ui-gallery:build:raw",
 		"ui-gallery:build:raw": "node scripts/build-ui-gallery.mjs",
 		"pages:build": "pnpm ui-gallery:build",
-		"deps:check": "pnpm api:generate && depcruise app/src packages/ui packages/core packages/notification packages/api-contracts packages/api-client services/backend --config dependency-cruiser.config.js",
-		"deps:circular": "depcruise app/src packages/ui packages/core packages/notification --config dependency-cruiser.config.js --output-type text --focus-depth 0",
-		"deps:graph": "{ echo '```mermaid'; depcruise app/src packages/ui packages/core packages/notification --config dependency-cruiser.config.js --output-type mermaid --collapse 'app/src/(application-services|infrastructures)/[^/]+/|app/src/(app|common|components|loaders)/|packages/core/[^/]+/|packages/(ui|database|notification|search|storage)/' --include-only '^(app/src|packages)/(?!.*(vitest|\\.stories\\.))'; echo '```'; } > dependency-graph.md",
+		"deps:check": "pnpm api:generate && depcruise apps/web/src packages/ui packages/core packages/notification packages/api-contracts packages/api-client apps/backend packages/application packages/infrastructure packages/scripts --config dependency-cruiser.config.js",
+		"deps:circular": "depcruise apps/web/src packages/ui packages/core packages/notification --config dependency-cruiser.config.js --output-type text --focus-depth 0",
+		"deps:graph": "{ echo '```mermaid'; depcruise apps/web/src packages/ui packages/core packages/notification --config dependency-cruiser.config.js --output-type mermaid --collapse 'apps/web/src/(application-services|infrastructures)/[^/]+/|apps/web/src/(app|common|components|loaders)/|packages/core/[^/]+/|packages/(ui|database|notification|search|storage)/' --include-only '^(apps/web/src|packages)/(?!.*(vitest|\\.stories\\.))'; echo '```'; } > dependency-graph.md",
 		"prisma:deploy": "pnpm --filter s-database prisma:deploy",
 		"prisma:studio": "pnpm --filter s-database prisma:studio",
 		"docs:build": "pnpm --filter @s-hirano-ist/s-database build && pnpm docs:build:raw",
@@ -76,7 +76,9 @@
 		"preinstall": "npx only-allow pnpm",
 		"prepare": "lefthook install",
 		"api:generate": "pnpm --filter @s-hirano-ist/s-api-contracts build && node scripts/generate-api.mjs",
-		"api:check": "pnpm --filter @s-hirano-ist/s-api-contracts build && node scripts/generate-api.mjs --check"
+		"api:check": "pnpm --filter @s-hirano-ist/s-api-contracts build && node scripts/generate-api.mjs --check",
+		"check:publish": "node scripts/check-publish-boundaries.mjs",
+		"check:cli-package": "node scripts/verify-cli-package.mjs"
 	},
 	"dependencies": {
 		"next": "catalog:",
@@ -142,5 +144,6 @@
 		"vitest": "catalog:",
 		"orval": "8.41.0",
 		"@s-hirano-ist/s-api-contracts": "workspace:*"
-	}
+	},
+	"private": true
 }

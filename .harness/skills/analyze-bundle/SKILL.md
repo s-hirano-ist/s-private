@@ -1,6 +1,6 @@
 ---
 name: analyze-bundle
-description: Next.jsアプリをビルドしてapp/.next/static/chunksのクライアントbundleを分析し、削減候補をGitHub Issuesへ記録する。bundleサイズ調査やフロントエンド性能最適化を依頼されたときに使用する。
+description: Next.jsアプリをビルドしてapps/web/.next/static/chunksのクライアントbundleを分析し、削減候補をGitHub Issuesへ記録する。bundleサイズ調査やフロントエンド性能最適化を依頼されたときに使用する。
 ---
 
 # Analyze Bundle Skill
@@ -22,8 +22,8 @@ pnpm --filter s-private-app build
 
 ```bash
 # JS/CSSチャンクをサイズ降順で一覧
-ls -lhS app/.next/static/chunks/*.js
-ls -lhS app/.next/static/chunks/*.css
+ls -lhS apps/web/.next/static/chunks/*.js
+ls -lhS apps/web/.next/static/chunks/*.css
 ```
 
 ### 3. チャンク内容の特定
@@ -80,7 +80,7 @@ for (const file of files.slice(0, 15)) {
 
 実行:
 ```bash
-node /tmp/identify-chunks.js app/.next/static/chunks/
+node /tmp/identify-chunks.js apps/web/.next/static/chunks/
 ```
 
 ### 4. 分析レポート作成

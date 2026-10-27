@@ -27,7 +27,8 @@ function escapeHtml(value) {
 function storyPath(entry) {
 	const importPath = entry.importPath ?? "";
 	if (importPath.startsWith("./packages/ui/")) return "packages/ui";
-	if (importPath.startsWith("./app/src/components/")) return "app/components";
+	if (importPath.startsWith("./apps/web/src/components/"))
+		return "apps/web/components";
 	return "other";
 }
 

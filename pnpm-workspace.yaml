@@ -1,6 +1,5 @@
 packages:
-  - app
-  - services/*
+  - apps/*
   - packages/*
 
 tasks:
@@ -30,6 +29,7 @@ tasks:
       - LOCAL_DEV_MODE
       - MOBILE_API_AUDIENCE
       - NEXT_PUBLIC_SENTRY_DSN
+      - NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE
       - NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY
       - NODE_EXTRA_CA_CERTS
       - NODE_TLS_REJECT_UNAUTHORIZED
@@ -46,10 +46,12 @@ tasks:
       - QDRANT_COLLECTION_NAME
       - QDRANT_URL
       - SENTRY_AUTH_TOKEN
+      - SENTRY_RELEASE
       - SENTRY_REPORT_URL
       - SKIP_ENV_VALIDATION
       - VERCEL
       - VERCEL_ENV
+      - VERCEL_GIT_COMMIT_SHA
       - VERCEL_RELATED_PROJECTS
 
 pipelines:
@@ -61,7 +63,7 @@ catalog:
   '@s-hirano-ist/s-api-client': workspace:*
   '@tailwindcss/postcss': 4.3.3
   '@tailwindcss/typography': 0.5.20
-  '@types/node': 24.19.1
+  '@types/node': 26.6.6
   '@types/react': 19.3.0
   '@types/react-dom': 19.3.0
   '@vercel/related-projects': 1.1.1

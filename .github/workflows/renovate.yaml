@@ -5,10 +5,8 @@ permissions: {}
 on:
   schedule:
     # 毎日 16:00 UTC = 翌 01:00 JST に起動。実際の PR 生成は .github/renovate.json5 の
-    # schedule / timezone(Asia/Tokyo) が gate する。この時刻なら
-    #   - "before 11am on monday"            → 月曜 01:00 JST でヒット
-    #   - 四半期 "before 5am on the 1st"      → 1日 01:00 JST でヒット
-    # の両方の窓を取りこぼさない（窓外の日は Renovate 側で no-op になるだけ）。
+    # schedule / timezone(Asia/Tokyo) が gate する。月曜 01:00 JST が更新窓に入る。
+    # 脆弱性修正は週次の更新窓を待たず、毎日の実行で検出する。
     - cron: "0 16 * * *"
   workflow_dispatch:
     inputs:
@@ -60,6 +58,9 @@ jobs:
           #   contents            : ブランチ・コミット・lockfile 更新
           #   pull-requests       : PR 作成・更新
           #   issues              : Dependency Dashboard issue の維持
+          #   workflows           : GitHub Actions の依存更新を含むコミットの push
+          #     App 側にも "Workflows: Read and write" の付与とインストール先の承認が必要。
+          #     無いと workflow 更新が拒否され、単一集約ブランチ全体の PR を作成できない。
           #   statuses            : minimumReleaseAge の内部チェックを renovate/stability-days という
           #     commit status として branch に書き込む。無いと POST /statuses が 403
           #     "Resource not accessible by integration" → Renovate が integration-unauthorized を
@@ -71,8 +72,22 @@ jobs:
           permission-contents: write
           permission-pull-requests: write
           permission-issues: write
+          permission-workflows: write
           permission-statuses: write
           permission-vulnerability-alerts: read
+
+      # Grouped branches inherit schedule from one upgrade, which may be non-security.
+      # Open alerts with a fix make the whole shared branch eligible on today's run.
+      - name: Check for security fixes
+        id: security-fixes
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          has_fixes="$(gh api --paginate --slurp \
+            "repos/$GH_REPO/dependabot/alerts?state=open&per_page=100" | \
+            jq 'any(.[][]; .security_vulnerability.first_patched_version != null)')"
+          echo "has-fixes=$has_fixes" >> "$GITHUB_OUTPUT"
 
       # self-host 実行。repo 設定 .github/renovate.json5 は Renovate が自動検出する
       # （configurationFile はグローバル設定用なので渡さない）。
@@ -93,8 +108,6 @@ jobs:
           LOG_LEVEL: ${{ inputs.logLevel || 'info' }}
           # dryRun=true のとき 'full'、それ以外は空＝通常実行。
           RENOVATE_DRY_RUN: ${{ inputs.dryRun && 'full' || '' }}
-          # workflow_dispatch だけ schedule を無視して即時実行する（force で schedule を空に上書き）。
-          # issues(Dependency Dashboard の checkbox)起動では force を付けない: force で schedule を
-          # 全体平坦化すると「チェックした 1 項目だけ作る」という checkbox の意図に反して全 schedule
-          # 待ち項目を作ってしまうため。checkbox の unschedule/unlimit セマンティクスに委ねる。
-          RENOVATE_FORCE: ${{ github.event_name == 'workflow_dispatch' && '{"schedule":[]}' || '' }}
+          # 手動実行または修正版のある脆弱性検出時は、集約PR全体を更新する。
+          # 通常のDashboard操作ではcheckboxによるschedule解除だけを使う。
+          RENOVATE_FORCE: ${{ (github.event_name == 'workflow_dispatch' || steps.security-fixes.outputs.has-fixes == 'true') && '{"schedule":[]}' || '' }}

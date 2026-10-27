@@ -1,5 +1,7 @@
 # アーキテクチャ
 
+RUM・Web Vitals・Replay と無料枠の運用は [Sentry RUM](rum.md) を参照する。
+
 ## 目次
 - [クリーンアーキテクチャの構成](#クリーンアーキテクチャの構成)
 - [ドメインモデル](#ドメインモデル)
@@ -27,18 +29,20 @@
 
 ## クリーンアーキテクチャの構成
 
+共有Application/Infrastructureへの段階的な責務分離は[backend責務の整理](backend-layer-refactoring.md)を参照する。
+
 Web、iOS、共通backendの責務を分離する。Webからドメイン・DB・storageへの直接依存はdependency-cruiserの `boundary-web-frontend-only` で禁止する。
 
 | 配置 | 責務 |
 |------|------|
 | `packages/core/` | ドメインごとのエンティティ、値オブジェクト、repository interface、ドメインサービス |
-| `services/backend/` | Hono HTTP host、環境設定・DI、ユースケース、Prisma adapter、認証・tenant、同期・upload、検索、イベント、通知・Cron |
+| `apps/backend/` | Hono HTTP host、環境設定・DI、ユースケース、Prisma adapter、認証・tenant、同期・upload、検索、イベント、通知・Cron |
 | `packages/api-contracts/` | HonoルートとZodによるHTTP契約。core・ORM・Next.jsに依存しない |
 | `packages/api-client/` | Orval生成のDTO・検証schema・fetchと共通transport |
-| `app/src/application-services/` | WebのServer Action。生成client呼び出し、フォーム値・表示エラー変換、画面更新 |
-| `app/src/common/backend/` | Cookieをリクエスト単位で束縛するSSR clientと固定upstreamへのBFF転送 |
-| `app/src/infrastructures/` | Webのi18n・ブラウザ認証・セキュリティ等。PrismaやドメインDIを置かない |
-| `ios/` | Swift生成client、端末の表示・同期・保留中の項目 |
+| `apps/web/src/application-services/` | WebのServer Action。生成client呼び出し、フォーム値・表示エラー変換、画面更新 |
+| `apps/web/src/common/backend/` | Cookieをリクエスト単位で束縛するSSR clientと固定upstreamへのBFF転送 |
+| `apps/web/src/infrastructures/` | Webのi18n・ブラウザ認証・セキュリティ等。PrismaやドメインDIを置かない |
+| `apps/ios/` | Swift生成client、端末の表示・同期・保留中の項目 |
 
 ```mermaid
 flowchart LR
@@ -80,9 +84,9 @@ flowchart LR
 
 ### UIの色
 
-`packages/ui/src/styles.css` の `--sui-*` をライト・ダーク両モードの色の定義元とする。`app/src/app/globals.css` と共通 UI の Tailwind CSS ビルドは既定の色パレットを無効にし、用途別の `--color-*` のみを公開する。コンポーネントでは `bg-background`、`text-destructive` などの用途別クラスを使用し、固定用途の色も新しいトークンとして定義する。`pnpm lint:colors` はパレット色と任意の色指定の再混入を検出し、通常の `pnpm lint` に含まれる。
+`packages/ui/src/styles.css` の `--sui-*` をライト・ダーク両モードの色の定義元とする。`apps/web/src/app/globals.css` と共通 UI の Tailwind CSS ビルドは既定の色パレットを無効にし、用途別の `--color-*` のみを公開する。コンポーネントでは `bg-background`、`text-destructive` などの用途別クラスを使用し、固定用途の色も新しいトークンとして定義する。`pnpm lint:colors` はパレット色と任意の色指定の再混入を検出し、通常の `pnpm lint` に含まれる。
 
-iOS のコンテンツ色は `ios/SPrivate/Assets.xcassets` の動的 Color Set で定義し、通常のライト・ダーク値を Web の `background`、`foreground`、`muted`、`muted-foreground`、`primary`、`destructive`、`success` と一致させる。各 Color Set にはコントラスト強調時の値も設定する。`AppColors` を SwiftUI 側の用途別入口とし、背景・本文・補助文字・エラー表示へ適用する。タブバー、ツールバー、標準ボタン、共有拡張のシステムシートは iOS の描画に任せ、アプリの primary 色を操作要素の tint に使う。通常値の一致は `pnpm lint:colors` で検証する。
+iOS のコンテンツ色は `apps/ios/SPrivate/Assets.xcassets` の動的 Color Set で定義し、通常のライト・ダーク値を Web の `background`、`foreground`、`muted`、`muted-foreground`、`primary`、`destructive`、`success` と一致させる。各 Color Set にはコントラスト強調時の値も設定する。`AppColors` を SwiftUI 側の用途別入口とし、背景・本文・補助文字・エラー表示へ適用する。タブバー、ツールバー、標準ボタン、共有拡張のシステムシートは iOS の描画に任せ、アプリの primary 色を操作要素の tint に使う。通常値の一致は `pnpm lint:colors` で検証する。
 
 ### インポートルール
 
@@ -116,12 +120,13 @@ import { ArticlesStackLoader } from "@/loaders/articles";
 
 ## セキュリティ
 
-### 自動依存関係管理（Renovate + Dependabot）
-- **役割分担**:
-  - **Renovate**: npm（pnpm）/ mise / nvm / lockFileMaintenance。
-  - **Dependabot**: pnpm 非依存の github-actions / docker-compose。
-- **脆弱性アラート**: セキュリティ問題の自動PR（`security`ラベル付き、Renovate）
-- **設定**: [.github/renovate.json5](../.github/renovate.json5) / [.github/dependabot.yml](../.github/dependabot.yml) を参照
+### 自動依存関係管理（Renovate）
+- **対象**: npm（pnpm catalog・overrides・型定義を含む）/ mise / nvm / Docker Compose / GitHub Actions。Dependabotとの二重管理は行わない。
+- **更新PR**: major・minor・patch・digestを単一の `all dependencies` PRへ集約し、すべて手動レビューでマージする。
+- **スケジュール**: 通常更新は月曜11時前（Asia/Tokyo）。脆弱性修正も同じPRに集約する。修正版のある未解決アラートを検出した日は、週次の更新窓を待たず集約PR全体を更新する。
+- **Node.js**: `.nvmrc` は26系の完全バージョン、`engines.node` とVercelの両projectは `26.x`。RenovateはNode.jsと `@types/node` を26系に制限する。次のmajor移行では制約・型定義・Vercel設定も同じPRで変更する。
+- **lockfile**: 各依存更新で再生成する。定期的な全件再生成は無効。
+- **設定**: [.github/renovate.json5](../.github/renovate.json5) を参照。
 
 ### npm/pnpmセキュリティ設定
 - **バージョン固定**: pnpm-workspace.yamlの`savePrefix: ''`
@@ -150,12 +155,12 @@ next-intlを使用した国際化パターン。
 ### ディレクトリ構成
 
 ```text
-app/src/infrastructures/i18n/
+apps/web/src/infrastructures/i18n/
 ├── routing-config.ts   # Proxyでも利用する副作用のないlocale設定
 ├── routing.ts          # Server/Client用ナビゲーション（Link, redirect, useRouter等）
 └── request.ts          # リクエストスコープ設定
 
-app/messages/
+apps/web/messages/
 ├── ja.json             # 日本語翻訳
 └── en.json             # 英語翻訳
 ```
@@ -163,7 +168,7 @@ app/messages/
 ### 翻訳ファイル構造
 
 ```json
-// app/messages/ja.json
+// apps/web/messages/ja.json
 {
   "label": {
     "save": "保存",
@@ -237,11 +242,11 @@ import { Link, redirect, useRouter } from "@/infrastructures/i18n/routing";
 
 ### 動的ルートレイアウトと生成型
 
-`app/[locale]/layout.tsx`をルートレイアウトとし、`app/layout.tsx`は置かない。これによりNext.jsが生成する`next/root-params`の`locale()`をServer Componentとserver-side utilityから利用できる。Client Component、Server Action、Route Handlerではroot params getterを使用せず、それぞれの公開インターフェースからlocaleを受け取る。
+`apps/web/src/app/[locale]/layout.tsx`をルートレイアウトとし、`apps/web/src/app/layout.tsx`は置かない。これによりNext.jsが生成する`next/root-params`の`locale()`をServer Componentとserver-side utilityから利用できる。Client Component、Server Action、Route Handlerではroot params getterを使用せず、それぞれの公開インターフェースからlocaleを受け取る。
 
-localeの妥当性検証と翻訳メッセージの読み込みは`infrastructures/i18n/request.ts`に集約し、next-intlから明示されたlocale、middlewareのrequest locale、`next/root-params`の順で解決する。不正localeはdefault localeへ暗黙変換せず`notFound()`とする。ProxyはServer Component用navigationをmiddleware bundleへ混入させないよう`routing-config.ts`だけを参照する。locale配下の404は`app/[locale]/not-found.tsx`、どのlocaleルートにも一致しないURLは完全なHTML文書を返す`app/global-not-found.tsx`が担当する。global 404は既定localeの静的な404を即時表示し、`NEXT_LOCALE` cookie、`Accept-Language`、`ja`の順で決定する表示を局所`Suspense`からストリームする。
+localeの妥当性検証と翻訳メッセージの読み込みは`infrastructures/i18n/request.ts`に集約し、next-intlから明示されたlocale、middlewareのrequest locale、`next/root-params`の順で解決する。不正localeはdefault localeへ暗黙変換せず`notFound()`とする。ProxyはServer Component用navigationをmiddleware bundleへ混入させないよう`routing-config.ts`だけを参照する。locale配下の404は`apps/web/src/app/[locale]/not-found.tsx`、どのlocaleルートにも一致しないURLは完全なHTML文書を返す`apps/web/src/app/global-not-found.tsx`が担当する。global 404は既定localeの静的な404を即時表示し、`NEXT_LOCALE` cookie、`Accept-Language`、`ja`の順で決定する表示を局所`Suspense`からストリームする。
 
-認証済みWeb画面の共通ナビゲーションは`app/[locale]/(authenticated)/layout.tsx`に置く。下タブはコンテンツ種別、上バーは公開状態と作成・検索・設定を担当する。公開状態は既存の`/{domain}`（未公開）と`/{domain}/viewer`（公開済み）で表し、種別を切り替えるときもURL上の状態を維持する。作成フォームは共通レイアウトからダイアログへ渡し、各ページは一覧データの描画を担当する。検索はドロワー、設定は`/settings`画面で表示する。
+認証済みWeb画面の共通ナビゲーションは`apps/web/src/app/[locale]/(authenticated)/layout.tsx`に置く。下タブはコンテンツ種別、上バーは公開状態と作成・検索・設定を担当する。公開状態は既存の`/{domain}`（未公開）と`/{domain}/viewer`（公開済み）で表し、種別を切り替えるときもURL上の状態を維持する。作成フォームは共通レイアウトからダイアログへ渡し、各ページは一覧データの描画を担当する。検索はドロワー、設定は`/settings`画面で表示する。
 
 routeファイルのprops型は手書きせず、次のNext.js生成型を唯一の定義元とする。
 
@@ -259,7 +264,7 @@ React Compilerは`reactCompiler: true`と`experimental.turbopackRustReactCompile
 
 ## Loader Pattern
 
-`app/src/loaders/` は生成API clientから取得した値をServer Componentへ渡す。認証は `getBackendClient` が扱い、loaderでDBやドメインサービスを構成しない。
+`apps/web/src/loaders/` は生成API clientから取得した値をServer Componentへ渡す。認証は `getBackendClient` が扱い、loaderでDBやドメインサービスを構成しない。
 一覧・件数・検索・media URLも共通APIから取得する。同一SSR内の重複取得にはReactのリクエスト単位cacheを使い、ユーザーをまたぐ永続cacheは使わない。
 表示日時などのUI変換はloaderまたは表示用queryに置き、wire DTOの定義は生成契約を使用する。
 
@@ -267,6 +272,33 @@ React Compilerは`reactCompiler: true`と`experimental.turbopackRustReactCompile
 
 WebのSSR表示エラーはWeb用Sentryへ記録し、各loaderのfallback表示へ変換する。Next.jsのredirect・not-found・認証例外は `unstable_rethrow` で再throwし、通常の表示エラーとして吸収しない。
 Server Actionは `backendActionError` でAPIエラーと入力値を表示用結果へ変換する。backendのドメインエラー通知やイベントをWebから重ねて発行しない。
+
+## Web認証の初期化と通知診断
+
+Auth0のWeb認証インスタンスは要求時に`getAuth()`で初期化する。同時要求では初期化Promiseを共有し、
+OIDC discovery・署名検証情報・Auth0 provider登録を確認できたインスタンスだけを再利用する。
+初期化失敗時は250ms後に1回だけ再試行し、両方失敗した場合は30秒後の要求から再初期化する。
+OAuth開始・callback・session取得そのものは再送しない。認証入口は`Retry-After: 30`付き503、
+共通APIは既存の`API_UNAVAILABLE`を返す。失敗報告は初期化単位で行い、待機中の要求では重複しない。
+復旧時は1回だけinfoを記録する。Node fetchの診断はdiscoveryのURLに限定し、既知の通信エラーコードだけを保存する。
+Cookie・OAuth code・token・request全体を保存せず、不明な通信原因は`UNKNOWN`とする。
+
+Push送信失敗ではHTTP status・失敗分類・送信先hostname・購読IDだけを報告し、providerの生のErrorや応答本文は送らない。
+404/410は期限切れとして削除する。401/403・429・5xx・通信失敗は購読を保持し、送信の自動再試行は行わない。
+Apple (`web.push.apple.com`) の400 `VapidPkHashMismatch` だけを再登録待ちに分類する。
+infrastructureが秘密鍵から導出した公開鍵と設定公開鍵を検証し、設定不足・不一致は503として購読を変更しない。
+applicationは取得時のIDと`updatedAt`が一致する購読のみ`requiresResubscribe=true`へ変更し、その変更時にだけ診断する。
+再登録待ちはCronの取得対象から除外する。集計の`requiresResubscribe`は今回の該当送信件数で、他の失敗がなければ200を返す。
+テスト送信にも同じ方針を適用し、再登録待ちは409 `PUSH_RESUBSCRIPTION_REQUIRED`でWebへ伝える。
+
+認証付きPOST `/api/v1/push/subscriptions/status` は任意endpointをJSONで受け取り、backendの検証済み公開鍵と本人の登録状態を返す。
+Webは設定画面を開く時にこの鍵とブラウザ購読の`applicationServerKey`をバイト比較する。
+鍵不一致・鍵取得不能・再登録待ちは、利用者の「再登録」操作で旧購読を解除してから現行鍵で再購読する。
+登録APIは`applicationServerKey`を検証し、新旧endpointの所有権確認、新購読保存、旧購読の配信停止を同一transactionで行う。
+同一endpointの保存は再登録待ちを解除する。保存失敗時は新しいブラウザ購読と置換元endpointを保持して保存だけ再試行する。
+現行鍵のブラウザ購読がDB未登録の場合も保存のみ行い、再登録に伴う自動テスト送信は行わない。
+購読の鍵を変更できない理由は[Push API仕様](https://w3c.github.io/push-api/)を参照。
+トップページの死活監視は認証経路も監視するため継続し、`/health`による浅い監視には置き換えない。
 
 ## 静的 CSP と Instant Navigation
 
@@ -335,7 +367,7 @@ async function DynamicComponent() {
 WebのServer Actionは薄いAPI adapterとする。`"use server"` と `server-only` を使い、FormDataから生成Zodモデルで入力を読み取り、`getBackendClient` の生成メソッドを呼ぶ。
 成功時は `refresh()` で表示を更新し、失敗時は `backendActionError` へ渡す。Webに `*.core.ts`、`*.deps.ts`、default repository、ドメイン不変条件を再実装しない。
 
-実装例は `app/src/application-services/notes/add-note.ts`。作成・削除の検証、永続化、イベント発行とその回帰テストは `services/backend/src/{domain}/use-cases.ts` と対応テストに置く。
+実装例は `apps/web/src/application-services/notes/add-note.ts`。作成・削除の検証、永続化、イベント発行とその回帰テストは `apps/backend/src/{domain}/use-cases.ts` と対応テストに置く。
 画像・書影はブラウザから共通APIへ分割アップロードし、完了後にbackendの同じユースケースを実行する。
 
 ## Value Object Pattern with Zod Branding
@@ -537,7 +569,7 @@ export function ArticleForm() {
 エラー時に保存されたフォーム値へ子フィールドからアクセスするためのContext consumer。引数は取らず、保存済みの値（`Record<string, string>`）を返す。`GenericFormWrapper`と同一ファイルで定義・exportされる:
 
 ```typescript
-// app/src/components/common/forms/generic-form-wrapper.tsx
+// apps/web/src/components/common/forms/generic-form-wrapper.tsx
 export const useFormValues = () => use(FormValuesContext);
 
 // 利用例（フィールドコンポーネント側）
@@ -583,28 +615,40 @@ media stream、複数Set-Cookie、redirectの応答をBFFで保持する。接�
 HTTPのDTOは `packages/api-contracts` を正本とし、trackedな `docs/openapi/backend-v1.json` からOrvalとSwift OpenAPI Generatorで生成する。生成ソースはGit管理せず、build・typecheck前に再生成し契約の差分をCIで検証する。
 backendがドメイン値をHTTPレスポンスへ変換する。WebとSwiftは生成DTOから表示日時・端末cacheモデルへ明示的に変換する。wire型を別途手書きしたり、coreのbranded型をWebへ漏らしたりしない。
 
+### API境界の契約と型
+
+HTTP契約の正本は `packages/api-contracts` とする。入力スキーマからquery・body・OpenAPI・生成clientを一貫して扱い、正規化前の入力を冪等性hashへ渡す順序を維持する。正規表現のOpenAPI `pattern` はliteralの区切りやflagsを含まない形式で明示する。trimやISBNのハイフン除去など、wire入力とドメイン値の違いも契約へ記載する。
+
+エラーコードとHTTP statusの対応は契約の共通定義に集約する。backendの `ApiError` はコードのみを受け取り、statusを導出する。各ルートは共通の認証・障害レスポンスに操作固有のstatusを加え、生成clientでもstatus別のコードを検証する。入力エラーは422、保存値・出力の検証失敗は500として監視へ送る。
+
+DB adapterが未検証の取得結果をドメイン別の読み取りモデルへ変換する。内部ではDateを保持し、一覧・詳細・同期で共通のDTO変換を使ってISO文字列と公開項目だけを出力する。同期のupsertはドメインとレコードを組にしたunion、deleteはドメインとIDで表し、型assertionやJSON再シリアライズで型を復元しない。
+
+`createApiApp` はmiddleware・エラー処理・機能別ルートの組み立てを担う。4ドメインの一覧・件数・詳細・削除は契約と同じfactoryで登録し、ISBN・タイトル検索を先に登録する。すべてのJSON成功レスポンスはHTTP境界で契約検証し、204とmedia streamは専用処理とする。契約一覧・実ルート・OpenAPI登録の一致をテストで固定する。
+
 ## Event-Driven Architecture Pattern
 
-作成・削除ユースケースは永続化後にドメインイベントを発行する。共有dispatcherとhandlerは `services/backend/src/events/` に置き、ログ・通知・検索等の依存をhostから注入する。
-`services/backend` がhandlerを登録し、Webのinstrumentationからイベントを初期化しない。登録の重複防止とhandler構成はbackendの回帰テストで検証する。
+作成・削除ユースケースは永続化後にドメインイベントを発行する。共有dispatcherとhandlerは `apps/backend/src/events/` に置き、ログ・通知・検索等の依存をhostから注入する。
+`apps/backend` がhandlerを登録し、Webのinstrumentationからイベントを初期化しない。登録の重複防止とhandler構成はbackendの回帰テストで検証する。
 DBと通知の原子性を保証するOutboxは導入していない。外部処理の失敗時動作は[ドメインモデル](domain-model.md)の設計上の制約を参照する。
 
 ## Repository CQRS Pattern
 
-coreでドメインごとにCommand/Query repository interfaceを分離し、`services/backend/src/{domain}/` のPrisma実装で永続化する。
+coreでドメインごとにCommand/Query repository interfaceを分離し、`apps/backend/src/{domain}/` のPrisma実装で永続化する。
 Commandは所有者・状態条件付きの書き込みを行い、Queryは認証済みtenant内を読み取る。Next.jsのcache・Cookie・画面更新をrepositoryへ持ち込まない。
 これはrepositoryの責務分離であり、別DBやイベントソーシングを導入したCQRSではない。
 
 ## Dependency Injection Factory Pattern
 
-`services/backend` が環境変数を検証し、Prisma・storage・監視等の実装を生成する。`services/backend/src/api/composition.ts` の `createApiServices` へ型付きで渡し、repository、domain service、ユースケース、HTTP handlerを組み立てる。
+`apps/backend` が環境変数を検証し、Prisma・storage・監視等の実装を生成する。`apps/backend/src/api/composition.ts` の `createApiServices` へ型付きで渡し、repository、domain service、ユースケース、HTTP handlerを組み立てる。
 ユースケースのテストは同じ依存型のmockを注入し、DBやNext.jsを必要としない。ドメイン別の実装が起動入口・環境設定やWebのmoduleをimportする逆向き依存は禁止する。
 
 ## Workspace task graph
 
+独立した実行対象は `apps/`（Web・iOS・backend）、共有ライブラリは `packages/` に置く。iOSはpnpm packageではなく、ルートのMise taskから生成・ビルドする。
+
 Workspace package 間の依存関係は各 `package.json` の `workspace:*` dependency を正本とし、タスクの依存順と build 成果物は `pnpm-workspace.yaml` の `tasks` で定義する。`pnpm build` は `pnpm pipeline build --full` を実行し、全 workspace の build を依存順に実行してローカルキャッシュを利用する。`packages:build` と `typecheck` は pnpm の再帰実行を使う。開発起動や Storybook・Pages など成果物を読むルート task は、必要な package をビルドしてから実行する。公開 package は別 repository から単独利用されるため、配布対象の `dist` や generated code を package 自身の publish lifecycle で生成する。
 
-pnpm pipeline は実験的機能で、キャッシュは全体ビルドにだけ利用する。VercelではWebを `app`、backendを `services/backend` の別projectとして配置し、それぞれとworkspace依存を再帰buildする。個別の lint・生成コマンドは毎回実行する。
+pnpm pipeline は実験的機能で、キャッシュは全体ビルドにだけ利用する。VercelではWebを `apps/web`、backendを `apps/backend` の別projectとして配置し、それぞれとworkspace依存を再帰buildする。個別の lint・生成コマンドは毎回実行する。
 
 ## iOSの共有受け渡しと認証境界
 
@@ -612,13 +656,13 @@ iOSの閲覧はSwiftDataの所有者別ローカルコピーを正本とする�
 
 iOSの同期要求は`SyncCoordinator`で単一のタスクにまとめる。手動の強制更新は進行中の同期が終わった後にも実行し、呼び出し元は完了を待てる。端末への登録が確定した後の通信は画面の表示期間に依存させない。タスクの取消はユーザー向けエラーや送信失敗として保存しない。一覧はローカルデータを表示しながら更新し、初回取得中・空・失敗の表示を重ねない。
 
-共通APIは `services/backend` の独立Hono hostで提供する。iOSはSwift OpenAPI生成clientで直接接続し、Webは薄いRoute Handlerで固定upstreamへ中継する。Auth0の既存API audienceと所有者IDを維持し、backendでBearer認証・tenant contextを確立する。作成は所有者・operation ID・正規化入力hash・結果を永続化し、同一入力の再送へ同じ結果を返す。未完了upload、同期cursor、端末draftは接続先切替時も保持する。共通契約は `docs/openapi/backend-v1.json` を参照する。
+共通APIは `apps/backend` の独立Hono hostで提供する。iOSはSwift OpenAPI生成clientで直接接続し、Webは薄いRoute Handlerで固定upstreamへ中継する。Auth0の既存API audienceと所有者IDを維持し、backendでBearer認証・tenant contextを確立する。作成は所有者・operation ID・正規化入力hash・結果を永続化し、同一入力の再送へ同じ結果を返す。未完了upload、同期cursor、端末draftは接続先切替時も保持する。共通契約は `docs/openapi/backend-v1.json` を参照する。
 
 iOS本体とShare Extensionは`group.ist.s-hirano.s-private`のApp Groupだけを共有する。Extensionは認証情報を保持せず、サーバー通信もしない。共有されたURL、テキスト、画像はschema version、operation ID、種別、本文または添付相対パス、作成日時を持つJSONとして、一時ディレクトリからoperation IDディレクトリへのrenameで原子的に確定する。本体は未処理ディレクトリを取り込み済み領域へ移動し、同じoperation IDの二重取り込みを防ぐ。
 
 記事カテゴリは本体が同期済みの所有者別ローカルコピーから候補名だけをApp Groupの`ArticleCategories.json`へ原子的に書き出し、Share Extensionが選択肢として読む。Extensionは候補がなくても新規名を入力できる。同期完了時に候補を更新し、ログアウト、所有者切替、キャッシュ削除時に共有コピーを消去する。カテゴリ名は記事作成時に既存名の選択または新規入力で指定し、前後の空白を除いた1〜16 UTF-16コード単位を端末側でも検証する。
 
-Auth0のNative Application設定はWeb用Applicationと分離する。iOSはAuth0.swiftのAuthorization Code + PKCEを使用し、資格情報をKeychainへ保存する。無料Personal Teamを前提とする段階ではUniversal Linksを使わず、`ist.s-hirano.s-private` URL schemeでコールバックを受ける。Team ID、Auth0 client ID、domain、audience、API接続先はGit管理外の`ios/Config/Local.xcconfig`から生成済みInfo.plistへ注入し、クライアントシークレットは使用しない。
+Auth0のNative Application設定はWeb用Applicationと分離する。iOSはAuth0.swiftのAuthorization Code + PKCEを使用し、資格情報をKeychainへ保存する。無料Personal Teamを前提とする段階ではUniversal Linksを使わず、`ist.s-hirano.s-private` URL schemeでコールバックを受ける。Team ID、Auth0 client ID、domain、audience、API接続先はGit管理外の`apps/ios/Config/Local.xcconfig`から生成済みInfo.plistへ注入し、クライアントシークレットは使用しない。
 
 ## Hono共通backendへの段階移行
 
@@ -633,3 +677,13 @@ Auth0のNative Application設定はWeb用Applicationと分離する。iOSはAuth
 Web/iOSは認証付きbackend APIから画像・書影を取得する。分割uploadのchunkは
 `mobile-uploads/`に通常objectとして保存する。設定・保持方針は
 [Backblaze B2セットアップ](backblaze-b2-setup.md)を参照。
+
+## npm配布の境界
+
+npm公開は別repositoryから直接利用される `@s-hirano-ist/s-ui`（s-public）と `@s-hirano-ist/s-scripts`（s-contents）のみに限定する。core・Application・Infrastructure・database・storage・notification・search・image-processingは `private: true` の内部workspaceとし、独立したnpm公開とrelease-please管理を行わない。package分割は責務と依存方向を表し、npm配布単位とは一致させない。
+
+CLIは必要な内部workspaceコードと生成済みPrisma clientを `dist-package` に同梱し、外部ライブラリ（Sharp等）は通常の依存として宣言する。利用側で内部packageやPrisma生成を要求しない。bin名と設定ファイルを維持し、`pnpm check:publish` で公開対象・CLI依存・コマンドを検査する。内部コードを同梱するため、そのコード自体はCLIの公開物に含まれる。
+
+内部workspaceだけの変更もCLIへ反映されるよう、CLIは次回releaseからrootアプリと同じversionで公開する。rootのrelease-pleaseがCLI manifestのversionを同時に更新する。UIは独立releaseを維持する。
+
+既存npmバージョンは削除・unpublish・deprecateしない。旧CLIの依存解決を維持したまま、内部packageの新規公開を停止する。

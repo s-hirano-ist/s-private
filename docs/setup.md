@@ -83,7 +83,7 @@ xcodebuild -downloadPlatform iOS -buildVersion 27.0
 mise install
 ```
 
-Xcodeプロジェクトは`ios/project.yml`から生成し、生成物自体はGit管理しません。
+Xcodeプロジェクトは`apps/ios/project.yml`から生成し、生成物自体はGit管理しません。
 
 ```bash
 mise run ios:generate # Xcodeプロジェクトを生成
@@ -92,7 +92,7 @@ mise run ios:test     # 単体テストとUIテスト
 mise run ios:run      # iPhone 17 Simulatorへインストールして起動
 ```
 
-詳細とトラブルシュートは[`ios/README.md`](../ios/README.md)を参照してください。
+詳細とトラブルシュートは[`apps/ios/README.md`](../apps/ios/README.md)を参照してください。
 
 ## Environment Variables
 
@@ -108,7 +108,7 @@ Webの接続先は既定で `http://127.0.0.1:3002`。`BACKEND_PORT` でbackend�
 
 ### 変数一覧
 
-環境変数のスキーマと型定義は `app/src/env.ts`（`@t3-oss/env-nextjs` + Zod）を参照してください。
+環境変数のスキーマと型定義は `apps/web/src/env.ts`（`@t3-oss/env-nextjs` + Zod）を参照してください。
 Docker Compose 用の変数（VPS デプロイ時）は [docs/vps-deployment.md Step 7](vps-deployment.md) を参照してください。
 
 ### Auth0 callback URL
@@ -123,6 +123,11 @@ Better Auth 1.7ではGeneric OAuthも標準のsocial provider callbackを使用�
 `/api/auth/oauth2/callback/auth0`は使用しません。
 
 `reset-*` / `revert-*` バッチは従来どおりDBトランザクションを実行します。
+
+記事の OGP 画像URLはDB列と同じ4096文字まで受け付けます。OGP取得時と記事取り込み時に相対URLを記事URL基準の絶対URLへ解決し、絶対URLは切り詰めず保持します。OGP取得でリダイレクトした場合は最終応答URLを基準にします。
+
+共通Prisma clientのトランザクション開始待ちは接続待ちと同じ10秒です。シリアライズ競合（`40001` / `P2034`）と、開始できなかったことを明示する `P2028` だけを最大5回、指数バックオフで再試行します。実行期限切れやコミット失敗など、その他の `P2028` は再試行しません。reset の一部が成功した後は、成功済みドメインを再実行せず未実行分だけを復旧してください。
+
 Webのコンテンツ取得は共通backend経由の `no-store` のため、更新後の内部キャッシュ無効化API呼び出しと専用secretは不要です。
 
 ### Web Push と Vercel Cron
@@ -136,9 +141,19 @@ Production の Vercel Environment Variables に次を設定します。秘密鍵
 | `WEB_PUSH_PRIVATE_KEY` | Web Push 署名用 VAPID 秘密鍵 |
 | `WEB_PUSH_SUBJECT` | VAPID の連絡先（例: `mailto:admin@example.com`） |
 
-VAPID 鍵は `pnpm --filter @s-hirano-ist/s-notification exec web-push generate-vapid-keys` で生成します。公開鍵と秘密鍵は必ず同じ組を登録してください。鍵を更新すると既存購読は利用できなくなるため、利用端末で通知を解除してから再度有効化します。
+VAPID 鍵は `pnpm --filter @s-hirano-ist/s-notification exec web-push generate-vapid-keys` で生成します。公開鍵と秘密鍵は必ず同じ組をbackendへ登録してください。ブラウザは認証付き状態APIからbackendの公開鍵を取得し、Web側の環境変数は参照しません。通常の復旧では鍵を再生成しません。
 
-Cronは共通backendだけが担当し、Production用scheduleは `services/backend/vercel.json` に登録します。旧Webのscheduleを停止した後、backendのProductionに `CRON_SECRET` と `BACKEND_CRON_ENABLED=true` を設定してください。Previewは `BACKEND_CRON_ENABLED=false` を維持します。具体的な順序・環境変数・確認方法は [共通backendの配置と手動切替](backend-deployment.md) を参照してください。
+鍵不一致の復旧手順:
+
+1. `7_push_subscription_renewal` migrationをアプリ切替前に適用します（既存購読は配信継続）。
+2. backendの秘密鍵から公開鍵を導出して設定公開鍵との一致を、値を表示せず確認します。設定不足・不一致は状態API・登録・送信を503にするため、是正をリリース条件とします。VercelのSensitive変数は読み戻せないので、権限のある実行環境で確認します。
+3. Appleの400 `VapidPkHashMismatch` が発生すると、その購読はDBに残して配信停止します。Cronの `requiresResubscribe` は今回の該当件数です。一般的な400・401・403は停止対象ではありません。
+4. 対象端末の通知設定で「再登録」を押します。旧購読解除が失敗したら先へ進みません。新購読のDB保存だけ失敗した場合は、同じ画面から保存を再試行できます。
+5. 明示的に「テスト通知」を送り受信を確認し、次回Cronの正常配信と同じ鍵不一致の再発停止を確認します。
+
+配信停止はエラー再発を抑止する処理であり、端末で再登録・受信確認するまでは通知復旧と区別します。Safari/iOSの実機確認が必要です。
+
+Cronは共通backendだけが担当し、Production用scheduleは `apps/backend/vercel.json` に登録します。旧Webのscheduleを停止した後、backendのProductionに `CRON_SECRET` と `BACKEND_CRON_ENABLED=true` を設定してください。Previewは `BACKEND_CRON_ENABLED=false` を維持します。具体的な順序・環境変数・確認方法は [共通backendの配置と手動切替](backend-deployment.md) を参照してください。
 
 ## Database (CockroachDB)
 

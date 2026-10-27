@@ -25,9 +25,9 @@
 
 ## iOS版
 
-`ios/` にはSwiftUI製のiOSアプリがあります。記事・ノート・画像・書籍の閲覧と登録、コンテンツの検索に対応しています。SwiftDataに保存したデータをオフラインで閲覧でき、再接続後の同期やShare Extensionからの登録にも対応しています。認証とデータの同期にはWebアプリが提供するモバイルAPIを使用します。
+`apps/ios/` にはSwiftUI製のiOSアプリがあります。記事・ノート・画像・書籍の閲覧と登録、コンテンツの検索に対応しています。SwiftDataに保存したデータをオフラインで閲覧でき、再接続後の同期やShare Extensionからの登録にも対応しています。認証とデータの同期にはWebアプリが提供するモバイルAPIを使用します。
 
-開発環境の準備、Auth0の設定、実機での署名手順は [iOS開発ガイド](ios/README.md) を参照してください。
+開発環境の準備、Auth0の設定、実機での署名手順は [iOS開発ガイド](apps/ios/README.md) を参照してください。
 
 ## Technology Stack
 
@@ -149,9 +149,10 @@ This project follows clean architecture principles with domain-driven design, en
 │           ├── infrastructures/
 │           └── rag/
 │
-├── ios/                            # SwiftUI app, Share Extension, XcodeGen configuration
+├── apps/backend/                   # Shared Hono backend
+├── apps/ios/                       # SwiftUI app, Share Extension, XcodeGen configuration
 │
-└── app/src/                        # Next.js Application
+└── apps/web/src/                   # Next.js Application
     ├── application-services/       # Application Layer (Use Cases)
     │   ├── articles/
     │   ├── notes/
@@ -311,13 +312,13 @@ mise run ios:build
 mise run ios:test
 ```
 
-実機での実行や認証・API接続の設定は [iOS開発ガイド](ios/README.md) を参照してください。
+実機での実行や認証・API接続の設定は [iOS開発ガイド](apps/ios/README.md) を参照してください。
 
 ### Environment Configuration
 
 ローカル用の非機密設定はコミット済みの `.env.local`、Preview/Productionの秘密値は [Vercel Dashboard](https://vercel.com/) で管理します。`pnpm dev` はDockerサービス、migration、MinIO bucket、Qdrant collectionを初期化してからNext.jsを起動します。
 
-型定義とバリデーション: [`app/src/env.ts`](app/src/env.ts)（`@t3-oss/env-nextjs` + Zod）
+型定義とバリデーション: [`apps/web/src/env.ts`](apps/web/src/env.ts)（`@t3-oss/env-nextjs` + Zod）
 
 > 環境変数の全体的な管理戦略（ローカル・CI・本番・VPS）については[環境変数管理](#環境変数管理)を参照。
 
@@ -482,7 +483,7 @@ CI の build/test はワークフロー内の localhost 向け固定値を使い
 - Secret: `RENOVATE_APP_PRIVATE_KEY` — Renovate、release-please、月次レポート PR に使う GitHub App 秘密鍵
 - Actions Variable: `RENOVATE_CLIENT_ID` — 上記 GitHub App の Client ID
 
-npm 公開は OIDC trusted publishing を使用します。`@s-hirano-ist/s-core`、`@s-hirano-ist/s-ui`、`@s-hirano-ist/s-database`、`@s-hirano-ist/s-notification`、`@s-hirano-ist/s-scripts`、`@s-hirano-ist/s-search`、`@s-hirano-ist/s-storage` の各 npm package で、repository を `s-hirano-ist/s-private`、workflow を `.github/workflows/release-please.yaml` として trusted publisher を設定してください。`NPM_TOKEN` は不要です。
+npm 公開は OIDC trusted publishing を使用し、外部利用のある `@s-hirano-ist/s-ui` と `@s-hirano-ist/s-scripts` に限定します。この2 packageで、repository を `s-hirano-ist/s-private`、workflow を `.github/workflows/release-please.yaml` として trusted publisher を設定してください。`NPM_TOKEN` は不要です。CLIは必要な内部workspaceを同梱します。既存バージョンのunpublishは行いません。
 
 環境変数が不要なジョブ（lint, storybook）では `SKIP_ENV_VALIDATION: "true"` を設定。
 
@@ -492,7 +493,7 @@ VPS 上の Docker Compose サービス用の環境変数は `~/s-private/.env` �
 
 #### 型定義・バリデーション
 
-[`app/src/env.ts`](app/src/env.ts) で `@t3-oss/env-nextjs` + Zod を使用し、ビルド時に全変数をバリデーションする。`SKIP_ENV_VALIDATION` を設定するとバリデーションをスキップできる。
+[`apps/web/src/env.ts`](apps/web/src/env.ts) で `@t3-oss/env-nextjs` + Zod を使用し、ビルド時に全変数をバリデーションする。`SKIP_ENV_VALIDATION` を設定するとバリデーションをスキップできる。
 
 ## Code Standards & Architecture Rules
 

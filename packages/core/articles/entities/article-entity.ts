@@ -270,13 +270,14 @@ export const makeOgDescription = (
  *
  * @remarks
  * Optional string for the OG image URL fetched from the article URL.
+ * Allows up to 4096 characters, matching the database column.
  * Null and undefined values are allowed.
  *
  * @see {@link makeOgImageUrl} for factory function
  */
 export const OgImageUrl = z
 	.string()
-	.max(1024, { message: "tooLong" })
+	.max(4096, { message: "tooLong" })
 	.refine(isValidHttpUrl, { message: "invalidFormat" })
 	.nullable()
 	.optional()

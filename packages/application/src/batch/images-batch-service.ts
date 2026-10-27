@@ -1,0 +1,53 @@
+import type {
+	BulkUpdateResult,
+	IBatchCommandRepository,
+	ResetStatusResult,
+} from "@s-hirano-ist/s-application/batch/ports";
+import {
+	makeExportedAt,
+	type UserId,
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+
+/**
+ * Domain service for batch operations on Images.
+ *
+ * @remarks
+ * Encapsulates the business logic for batch status transitions.
+ * Manages the state machine for image lifecycle:
+ *
+ * ```
+ * UNEXPORTED --> LAST_UPDATED --> EXPORTED
+ *                    |
+ *                    v
+ *               UNEXPORTED (revert)
+ * ```
+ */
+export class ImagesBatchApplicationService {
+	private readonly commandRepository: IBatchCommandRepository;
+
+	constructor(commandRepository: IBatchCommandRepository) {
+		this.commandRepository = commandRepository;
+	}
+
+	/**
+	 * Resets images for a new batch export.
+	 *
+	 * @remarks
+	 * Delegates to repository's resetStatus which performs two operations
+	 * atomically within a single transaction.
+	 */
+	public async resetImages(userId: UserId): Promise<ResetStatusResult> {
+		return this.commandRepository.resetStatus(userId, makeExportedAt());
+	}
+
+	/**
+	 * Reverts images from LAST_UPDATED back to UNEXPORTED.
+	 */
+	public async revertImages(userId: UserId): Promise<BulkUpdateResult> {
+		return this.commandRepository.bulkUpdateStatus({
+			userId,
+			fromStatus: "LAST_UPDATED",
+			toStatus: "UNEXPORTED",
+		});
+	}
+}

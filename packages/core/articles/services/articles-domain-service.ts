@@ -51,8 +51,8 @@ export class ArticlesDomainService {
 	 * This is a domain invariant check that should be called before creating articles.
 	 */
 	public async ensureNoDuplicate(url: Url, userId: UserId): Promise<void> {
-		const exists = await this.articlesQueryRepository.findByUrl(url, userId);
-		if (exists !== null) {
+		const exists = await this.articlesQueryRepository.existsByUrl(url, userId);
+		if (exists) {
 			throw new DuplicateError();
 		}
 	}

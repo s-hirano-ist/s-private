@@ -1,0 +1,165 @@
+import { createWebPushSender } from "@s-hirano-ist/s-infrastructure/notifications/web-push-sender";
+import {
+	WebPushSendError,
+	type WebPushPayload,
+} from "@s-hirano-ist/s-notification";
+import { createECDH } from "node:crypto";
+import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
+
+const { captureException, send } = vi.hoisted(() => ({
+	captureException: vi.fn(),
+	send: vi.fn(),
+}));
+
+vi.mock("@s-hirano-ist/s-notification", async (importOriginal) => ({
+	...(await importOriginal<typeof import("@s-hirano-ist/s-notification")>()),
+	createWebPushService: vi.fn(() => ({ send })),
+}));
+
+import type { PushSubscriptionRepository } from "@s-hirano-ist/s-application/notifications/ports";
+import { createPushDeliveryService } from "@s-hirano-ist/s-application/notifications/push-notification-service";
+const listAll = vi.fn<PushSubscriptionRepository["listAll"]>();
+const deleteByIds = vi.fn<PushSubscriptionRepository["deleteByIds"]>();
+const repository: PushSubscriptionRepository = {
+	markRequiresResubscribe: vi.fn(),
+	listAll,
+	deleteByIds,
+	deleteOwned: vi.fn(),
+	findByEndpoint: vi.fn(),
+	findOwned: vi.fn(),
+	save: vi.fn(),
+};
+const pair = createECDH("prime256v1");
+pair.generateKeys();
+const { sendPushToAll } = createPushDeliveryService(
+	createWebPushSender({
+		NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY: pair.getPublicKey().toString("base64url"),
+		WEB_PUSH_PRIVATE_KEY: Buffer.from(
+			pair.getPrivateKey().toString("hex").padStart(64, "0"),
+			"hex",
+		).toString("base64url"),
+		WEB_PUSH_SUBJECT: "mailto:test@example.com",
+	}),
+	repository,
+	{ captureException },
+);
+
+const payload: WebPushPayload = {
+	body: "body",
+	icon: "/apple-icon.png",
+	tag: "tag",
+	title: "title",
+	url: "https://gigazine.net/news/20260918-headline",
+};
+const subscriptions = [
+	{
+		requiresResubscribe: false,
+		updatedAt: new Date(),
+		auth: "a1",
+		endpoint: "https://push.example.com/1",
+		id: "1",
+		userId: "owner",
+		p256dh: "p1",
+	},
+	{
+		requiresResubscribe: false,
+		updatedAt: new Date(),
+		auth: "a2",
+		endpoint: "https://push.example.com/2",
+		id: "2",
+		userId: "owner",
+		p256dh: "p2",
+	},
+];
+
+describe("sendPushToAll", () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+		listAll.mockResolvedValue(subscriptions);
+		deleteByIds.mockResolvedValue(undefined);
+		send.mockResolvedValue(undefined);
+	});
+
+	test("sends to every subscription", async () => {
+		await expect(sendPushToAll(payload)).resolves.toEqual({
+			requiresResubscribe: 0,
+			expired: 0,
+			failed: 0,
+			sent: 2,
+		});
+		expect(send).toHaveBeenCalledTimes(2);
+	});
+
+	test("deletes expired subscriptions", async () => {
+		send.mockRejectedValueOnce(new WebPushSendError({ statusCode: 410 }));
+		await expect(sendPushToAll(payload)).resolves.toEqual({
+			requiresResubscribe: 0,
+			expired: 1,
+			failed: 0,
+			sent: 1,
+		});
+		expect(deleteByIds).toHaveBeenCalledWith(["1"]);
+	});
+
+	test("reports transient failures without deleting the subscription", async () => {
+		const error = new WebPushSendError({ statusCode: 503 });
+		send.mockRejectedValueOnce(error);
+		await expect(sendPushToAll(payload)).resolves.toEqual({
+			requiresResubscribe: 0,
+			expired: 0,
+			failed: 1,
+			sent: 1,
+		});
+		expect(deleteByIds).not.toHaveBeenCalled();
+		expect(captureException).toHaveBeenCalledWith(expect.any(Error), {
+			tags: {
+				source: "web-push",
+				category: "provider-unavailable",
+				providerHost: "push.example.com",
+				providerCode: "unknown",
+				statusCode: "503",
+			},
+			extra: { subscriptionId: "1" },
+		});
+		expect(captureException.mock.calls[0][0]).not.toBe(error);
+	});
+
+	test.each([401, 403, 429, 400, undefined])(
+		"retains rejected subscriptions and reports safe metadata for %s",
+		async (statusCode) => {
+			const cause = {
+				statusCode,
+				body: "private-response",
+				endpoint: "https://push.example.com/private-subscription",
+				headers: { authorization: "private-token" },
+			};
+			send.mockRejectedValueOnce(new WebPushSendError(cause));
+			await expect(sendPushToAll(payload)).resolves.toEqual({
+				requiresResubscribe: 0,
+				expired: 0,
+				failed: 1,
+				sent: 1,
+			});
+			expect(deleteByIds).not.toHaveBeenCalled();
+			const [diagnostic, context] = captureException.mock.calls[0] as [
+				Error,
+				unknown,
+			];
+			expect(diagnostic).not.toHaveProperty("cause");
+			expect(
+				JSON.stringify(context) + diagnostic.message + String(diagnostic.stack),
+			).not.toMatch(/private-response|private-subscription|private-token/u);
+		},
+	);
+
+	test("does not require VAPID configuration when there are no subscribers", async () => {
+		listAll.mockResolvedValue([]);
+		await expect(sendPushToAll(payload)).resolves.toEqual({
+			requiresResubscribe: 0,
+			expired: 0,
+			failed: 0,
+			sent: 0,
+		});
+		expect(send).not.toHaveBeenCalled();
+	});
+});
