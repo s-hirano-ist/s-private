@@ -31,16 +31,10 @@ export default function proxy(request: NextRequest) {
 	// oxlint-disable-next-line node/no-process-env
 	const isPreview = process.env.VERCEL_ENV === "preview";
 	// oxlint-disable-next-line node/no-process-env
-	const minioHost = process.env.MINIO_HOST;
-	// oxlint-disable-next-line node/no-process-env
-	const minioPort = process.env.MINIO_PORT;
-	// oxlint-disable-next-line node/no-process-env
 	const reportUrl = process.env.SENTRY_REPORT_URL;
 	const contentSecurityPolicy = buildContentSecurityPolicy({
 		isDevelopment,
 		isPreview,
-		minioHost,
-		minioPort,
 		reportUrl,
 	});
 

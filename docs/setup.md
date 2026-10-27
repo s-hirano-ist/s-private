@@ -138,7 +138,7 @@ Production の Vercel Environment Variables に次を設定します。秘密鍵
 
 VAPID 鍵は `pnpm --filter @s-hirano-ist/s-notification exec web-push generate-vapid-keys` で生成します。公開鍵と秘密鍵は必ず同じ組を登録してください。鍵を更新すると既存購読は利用できなくなるため、利用端末で通知を解除してから再度有効化します。
 
-Cronは共通backendだけが担当します。旧Webのscheduleを停止した後、担当者がbackendにscheduleと `BACKEND_CRON_ENABLED=true` を設定してください。具体的な順序・環境変数・確認方法は [共通backendの配置と手動切替](backend-deployment.md) を参照してください。
+Cronは共通backendだけが担当し、Production用scheduleは `services/backend/vercel.json` に登録します。旧Webのscheduleを停止した後、backendのProductionに `CRON_SECRET` と `BACKEND_CRON_ENABLED=true` を設定してください。Previewは `BACKEND_CRON_ENABLED=false` を維持します。具体的な順序・環境変数・確認方法は [共通backendの配置と手動切替](backend-deployment.md) を参照してください。
 
 ## Database (CockroachDB)
 
@@ -190,3 +190,9 @@ CockroachDB Cloud Basic は接続プーリングが内蔵で、pooled / direct �
 ## Web・共通backendのVercel配置
 
 Webと共通Hono backendは別projectに配置します。Root Directory、workspaceビルド、環境変数の分担、Auth0 callback、Deployment Protection、段階切替、Cron、rollbackは [Vercelセットアップ手順](backend-vercel-setup.md) を参照してください。デプロイは担当者が手動で行います。
+
+## オブジェクトストレージ
+
+本番・PreviewはBackblaze B2、ローカルはMinIOを使用する。AWS SDK v3を使い、
+`S3_*`変数で接続する。会員登録・キー発行・環境設定・ingestの手順は
+[Backblaze B2セットアップ](backblaze-b2-setup.md)を参照。

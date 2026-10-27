@@ -15,6 +15,8 @@ import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
 const isVercelRuntime = process.env.VERCEL === "1";
+const isVercelPreview = isVercelRuntime && process.env.VERCEL_ENV === "preview";
+const deployedWebOriginSchema = isVercelPreview ? z.url().optional() : z.url();
 const vercelSecret = isVercelRuntime ? z.string() : z.string().optional();
 
 /**
@@ -33,7 +35,9 @@ export const env = createEnv({
 			.enum(["development", "test", "production"])
 			.default("development"),
 		/** Better Auth base URL (deployment origin, e.g. "https://example.com"). Used for baseURL / trustedOrigins. */
-		BETTER_AUTH_URL: z.string().default("http://localhost:3000"),
+		BETTER_AUTH_URL: isVercelRuntime
+			? deployedWebOriginSchema
+			: z.url().default("http://localhost:3000"),
 		/** Required independent backend origin. Web never hosts domain services. */
 		BACKEND_URL: z.url().refine((value) => {
 			const url = new URL(value);
@@ -46,6 +50,7 @@ export const env = createEnv({
 		}, "backend must be an HTTPS origin (HTTP localhost allowed)"),
 		/** Set to "1" by Vercel on every deployment (prod & preview); absent locally. Gates dynamic baseURL resolution. */
 		VERCEL: z.string().optional(),
+		VERCEL_ENV: z.enum(["production", "preview", "development"]).optional(),
 		/** Enables the hermetic local authentication and infrastructure path. Ignored on Vercel. */
 		LOCAL_DEV_MODE: z.enum(["true", "false"]).default("false"),
 		SENTRY_AUTH_TOKEN: vercelSecret,
@@ -74,6 +79,7 @@ export const env = createEnv({
 			backendUrl: process.env.BACKEND_URL,
 		}),
 		VERCEL: process.env.VERCEL,
+		VERCEL_ENV: process.env.VERCEL_ENV,
 		LOCAL_DEV_MODE: process.env.LOCAL_DEV_MODE,
 		SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
 		SENTRY_REPORT_URL: process.env.SENTRY_REPORT_URL,

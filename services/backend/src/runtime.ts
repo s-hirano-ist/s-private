@@ -1,35 +1,46 @@
 import type { BackendEnv } from "s-private-backend/env";
-import { createApiApp } from "@s-hirano-ist/s-backend/api/app";
-import { createApiAuth } from "@s-hirano-ist/s-backend/api/auth";
-import { createApiServices } from "@s-hirano-ist/s-backend/api/composition";
-import { createBackendHttpApp } from "@s-hirano-ist/s-backend/api/http-app";
-import { createSignInHandler } from "@s-hirano-ist/s-backend/auth/sign-in";
-import { createBackendAuth } from "@s-hirano-ist/s-backend/auth/web-auth";
-import { EventDispatcher } from "@s-hirano-ist/s-backend/events/event-dispatcher";
-import { createEventInitializer } from "@s-hirano-ist/s-backend/events/event-setup";
-import { LoggingEventHandler } from "@s-hirano-ist/s-backend/events/logging-event-handler";
-import { SystemEventHandler } from "@s-hirano-ist/s-backend/events/system-event-handler";
-import { createMobileChunkStore } from "@s-hirano-ist/s-backend/mobile/minio-chunk-store";
-import { createGigazineCronHandler } from "@s-hirano-ist/s-backend/notifications/cron";
-import { createBackendNotificationService } from "@s-hirano-ist/s-backend/notifications/pushover-service";
-import { ServerLogger } from "@s-hirano-ist/s-backend/observability/server-logger";
-import { createVectorSearch } from "@s-hirano-ist/s-backend/search/vector-search";
-import { createBooksStorageService } from "@s-hirano-ist/s-backend/shared/books-storage-service";
-import { extendDatabase } from "@s-hirano-ist/s-backend/shared/database";
-import { createLocalSampleSeeder } from "@s-hirano-ist/s-backend/shared/local-fixtures";
-import { createImagesStorageService } from "@s-hirano-ist/s-backend/shared/minio-storage-service";
-import { tenantContext } from "@s-hirano-ist/s-backend/shared/tenant-context";
-import { applyTenantFilter } from "@s-hirano-ist/s-backend/shared/tenant-filter";
 import { PrismaClient, PrismaPg } from "@s-hirano-ist/s-database";
-import { createMinioClient } from "@s-hirano-ist/s-storage";
+import { createObjectStorageClient } from "@s-hirano-ist/s-storage";
 import * as Sentry from "@sentry/node";
 import { readFile } from "node:fs/promises";
+import { createApiApp } from "s-private-backend/api/app";
+import { createApiAuth } from "s-private-backend/api/auth";
+import { createApiServices } from "s-private-backend/api/composition";
+import { createBackendHttpApp } from "s-private-backend/api/http-app";
+import { createSignInHandler } from "s-private-backend/auth/sign-in";
+import { createBackendAuth } from "s-private-backend/auth/web-auth";
+import { createHttpErrorReporter } from "s-private-backend/error-reporter";
+import { EventDispatcher } from "s-private-backend/events/event-dispatcher";
+import { createEventInitializer } from "s-private-backend/events/event-setup";
+import { LoggingEventHandler } from "s-private-backend/events/logging-event-handler";
+import { SystemEventHandler } from "s-private-backend/events/system-event-handler";
+import { createMobileChunkStore } from "s-private-backend/mobile/s3-chunk-store";
+import { createGigazineCronHandler } from "s-private-backend/notifications/cron";
+import { createBackendNotificationService } from "s-private-backend/notifications/pushover-service";
+import { ServerLogger } from "s-private-backend/observability/server-logger";
+import { createVectorSearch } from "s-private-backend/search/vector-search";
+import { createBooksStorageService } from "s-private-backend/shared/books-storage-service";
+import { extendDatabase } from "s-private-backend/shared/database";
+import { createImagesStorageService } from "s-private-backend/shared/images-storage-service";
+import { createLocalSampleSeeder } from "s-private-backend/shared/local-fixtures";
+import { tenantContext } from "s-private-backend/shared/tenant-context";
+import { applyTenantFilter } from "s-private-backend/shared/tenant-filter";
 
 export function createBackendRuntime(env: BackendEnv) {
 	Sentry.init({
 		dsn: env.NEXT_PUBLIC_SENTRY_DSN,
 		enabled: env.NODE_ENV === "production",
 		sendDefaultPii: false,
+		beforeSend(event) {
+			// OAuth query strings and request headers must never accompany diagnostics.
+			delete event.request;
+			delete event.breadcrumbs;
+			return event;
+		},
+	});
+	const reportError = createHttpErrorReporter(env, async (error) => {
+		Sentry.captureException(error, { tags: { source: "backend_http" } });
+		await Sentry.flush(2000);
 	});
 	const client = new PrismaClient({
 		adapter: new PrismaPg({
@@ -52,21 +63,16 @@ export function createBackendRuntime(env: BackendEnv) {
 			applyTenantFilter(model, operation, args, tenantContext.getStore()),
 		() => {},
 	);
-	const minio = createMinioClient(
-		{
-			endPoint: env.MINIO_HOST,
-			port: env.MINIO_PORT,
-			useSSL: env.MINIO_USE_SSL,
-			accessKey: env.MINIO_ACCESS_KEY,
-			secretKey: env.MINIO_SECRET_KEY,
-		},
-		{
-			clientId: env.CF_ACCESS_CLIENT_ID ?? "",
-			clientSecret: env.CF_ACCESS_CLIENT_SECRET ?? "",
-		},
-	);
-	const images = createImagesStorageService(minio, env.MINIO_BUCKET_NAME);
-	const books = createBooksStorageService(minio, env.MINIO_BUCKET_NAME);
+	const storageClient = createObjectStorageClient({
+		endpoint: env.S3_ENDPOINT,
+		region: env.S3_REGION,
+		accessKeyId: env.S3_ACCESS_KEY_ID,
+		secretAccessKey: env.S3_SECRET_ACCESS_KEY,
+		forcePathStyle: env.S3_FORCE_PATH_STYLE,
+	});
+	const images = createImagesStorageService(storageClient, env.S3_BUCKET_NAME);
+	const books = createBooksStorageService(storageClient, env.S3_BUCKET_NAME);
+	const chunks = createMobileChunkStore(storageClient, env.S3_BUCKET_NAME);
 	const eventDispatcher = new EventDispatcher();
 	const logger = new ServerLogger(
 		createBackendNotificationService(env),
@@ -78,7 +84,7 @@ export function createBackendRuntime(env: BackendEnv) {
 	})();
 	const services = createApiServices({
 		database,
-		chunks: createMobileChunkStore(minio, env.MINIO_BUCKET_NAME),
+		chunks,
 		storage: { images, books },
 		eventDispatcher,
 		searchVectors: createVectorSearch({
@@ -90,17 +96,6 @@ export function createBackendRuntime(env: BackendEnv) {
 	});
 	const { auth, isLocalDevAuthEnabled } = createBackendAuth(env, database);
 	const apiAuth = createApiAuth(env, auth, services.mobile, Sentry);
-	const seedLocalUser = createLocalSampleSeeder({
-		database,
-		storage: images,
-		loadImage: () =>
-			readFile(
-				new URL(
-					"../../../packages/backend/fixtures/local-sample-landscape.png",
-					import.meta.url,
-				),
-			),
-	});
 	const cron = createGigazineCronHandler(
 		env,
 		services.pushDelivery.sendPushToAll,
@@ -113,15 +108,24 @@ export function createBackendRuntime(env: BackendEnv) {
 			isLocalDevAuthEnabled,
 			findUser: (email) =>
 				database.user.findUnique({ where: { email }, select: { id: true } }),
-			seedLocalUser,
+			seedLocalUser: createLocalSampleSeeder({
+				database,
+				storage: images,
+				loadImage: () =>
+					readFile(
+						new URL("../fixtures/local-sample-landscape.png", import.meta.url),
+					),
+			}),
 		}),
 		cron: (request) =>
 			env.BACKEND_CRON_ENABLED
 				? cron(request)
 				: Promise.resolve(new Response(null, { status: 404 })),
-		publicOrigin: new URL(env.BETTER_AUTH_URL).origin,
+		publicOrigin: env.BETTER_AUTH_URL
+			? new URL(env.BETTER_AUTH_URL).origin
+			: undefined,
 		isTrustedOrigin: apiAuth.isTrustedOrigin,
-		reportError: Sentry.captureException,
+		reportError,
 	});
 	return { app, close: () => client.$disconnect() };
 }

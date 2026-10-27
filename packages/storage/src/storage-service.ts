@@ -1,12 +1,12 @@
+import type { ObjectStorageClient } from "./client.js";
 import type { StoragePathConfig, StorageServiceOperations } from "./types.js";
-import type { Client } from "minio";
 import {
 	type StorageOperationContext,
 	StorageOperationError,
 } from "./errors.js";
 
 export function createStorageService(
-	client: Client,
+	client: ObjectStorageClient,
 	bucketName: string,
 	pathConfig: StoragePathConfig,
 ): StorageServiceOperations {

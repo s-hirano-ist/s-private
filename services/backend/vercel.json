@@ -1,9 +1,15 @@
 {
 	"$schema": "https://openapi.vercel.sh/vercel.json",
 	"buildCommand": "pnpm --filter s-private-backend... -r run build",
+	"crons": [
+		{
+			"path": "/api/cron/gigazine-headline",
+			"schedule": "0 0 * * *"
+		}
+	],
 	"functions": {
 		"src/index.ts": {
-			"includeFiles": "{src/{env,runtime}.ts,../../packages/backend/src/**/!(*.test).ts,../../packages/core/{articles,books,images,notes,shared-kernel}/**/!(*.test|*.spec).ts,../../packages/database/src/index.ts}"
+			"includeFiles": "{fixtures/*.png,src/**/!(*.test|*.spec).ts,../../packages/core/{articles,books,images,notes,shared-kernel}/**/!(*.test|*.spec).ts,../../packages/database/src/index.ts}"
 		}
 	}
 }

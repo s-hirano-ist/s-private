@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 import { createPushoverService } from "@s-hirano-ist/s-notification";
-import { createMinioClient, type MinioClient } from "@s-hirano-ist/s-storage";
+import {
+	createObjectStorageClient,
+	type ObjectStorageClient,
+} from "@s-hirano-ist/s-storage";
 import { basename, extname } from "node:path";
 import { globPaths } from "./lib/glob-paths.js";
 
@@ -15,19 +18,11 @@ function isImageFile(filePath: string): boolean {
 }
 
 function listObjects(
-	client: MinioClient,
+	client: ObjectStorageClient,
 	bucket: string,
 	prefix: string,
 ): Promise<string[]> {
-	const { promise, resolve, reject } = Promise.withResolvers<string[]>();
-	const keys: string[] = [];
-	const stream = client.listObjectsV2(bucket, prefix, true);
-	stream.on("data", (obj) => {
-		if (obj.name) keys.push(obj.name);
-	});
-	stream.on("end", () => resolve(keys));
-	stream.on("error", reject);
-	return promise;
+	return client.listObjects(bucket, prefix);
 }
 
 async function main() {
@@ -37,20 +32,11 @@ async function main() {
 		PUSHOVER_URL: process.env.PUSHOVER_URL,
 		PUSHOVER_USER_KEY: process.env.PUSHOVER_USER_KEY,
 		PUSHOVER_APP_TOKEN: process.env.PUSHOVER_APP_TOKEN,
-		MINIO_BUCKET_NAME: process.env.MINIO_BUCKET_NAME,
+		S3_BUCKET_NAME: process.env.S3_BUCKET_NAME,
 	} as const;
 
 	if (Object.values(env).some((v) => !v)) {
 		throw new Error("Required environment variables are not set.");
-	}
-
-	if (
-		process.env.MINIO_USE_SSL === "true" &&
-		(!process.env.CF_ACCESS_CLIENT_ID || !process.env.CF_ACCESS_CLIENT_SECRET)
-	) {
-		throw new Error(
-			"CF_ACCESS_CLIENT_ID and CF_ACCESS_CLIENT_SECRET are required when MINIO_USE_SSL is true.",
-		);
 	}
 
 	const contentsPath = process.env.S_CONTENTS_PATH ?? process.cwd();
@@ -61,9 +47,9 @@ async function main() {
 		appToken: env.PUSHOVER_APP_TOKEN ?? "",
 	});
 
-	const minioClient = createMinioClient();
+	const storageClient = createObjectStorageClient();
 
-	const bucketName = env.MINIO_BUCKET_NAME ?? "";
+	const bucketName = env.S3_BUCKET_NAME ?? "";
 
 	try {
 		// 1. ローカルファイル一覧取得
@@ -75,13 +61,13 @@ async function main() {
 			`📁 ローカルに ${localFileNames.size} 件の画像ファイルを検出しました。`,
 		);
 
-		// 2. MinIOオブジェクト一覧取得
+		// 2. S3オブジェクト一覧取得
 		const [originalKeys, thumbnailKeys] = await Promise.all([
-			listObjects(minioClient, bucketName, `${ORIGINAL_IMAGE_PATH}/`),
-			listObjects(minioClient, bucketName, `${THUMBNAIL_IMAGE_PATH}/`),
+			listObjects(storageClient, bucketName, `${ORIGINAL_IMAGE_PATH}/`),
+			listObjects(storageClient, bucketName, `${THUMBNAIL_IMAGE_PATH}/`),
 		]);
 		console.log(
-			`📦 MinIO: original ${originalKeys.length} 件, thumbnail ${thumbnailKeys.length} 件`,
+			`📦 S3: original ${originalKeys.length} 件, thumbnail ${thumbnailKeys.length} 件`,
 		);
 
 		// 3. 差分検出
@@ -95,10 +81,11 @@ async function main() {
 		const totalOrphaned = orphanedOriginals.length + orphanedThumbnails.length;
 		if (totalOrphaned === 0) {
 			console.log("✅ 孤立ファイルなし");
-			await notificationService.notifyInfo(
-				`${SCRIPT_NAME} completed: no orphaned files`,
-				{ caller: SCRIPT_NAME },
-			);
+			if (!dryRun)
+				await notificationService.notifyInfo(
+					`${SCRIPT_NAME} completed: no orphaned files`,
+					{ caller: SCRIPT_NAME },
+				);
 			return;
 		}
 
@@ -115,7 +102,7 @@ async function main() {
 				if (dryRun) {
 					console.log(`🔍 [dry-run] 削除予定: ${key}`);
 				} else {
-					await minioClient.removeObject(bucketName, key);
+					await storageClient.removeObject(bucketName, key);
 					console.log(`🗑️  削除: ${key}`);
 				}
 				deletedCount++;
@@ -128,17 +115,19 @@ async function main() {
 		console.log(
 			`\n📊 結果: 削除 ${deletedCount} 件, エラー ${errorCount} 件${dryRun ? " (dry-run)" : ""}`,
 		);
-		await notificationService.notifyInfo(`${SCRIPT_NAME} completed`, {
-			caller: SCRIPT_NAME,
-		});
+		if (!dryRun)
+			await notificationService.notifyInfo(`${SCRIPT_NAME} completed`, {
+				caller: SCRIPT_NAME,
+			});
 	} catch (error) {
 		console.error("❌ エラーが発生しました:", error);
-		await notificationService.notifyError(
-			`${SCRIPT_NAME} failed: ${String(error)}`,
-			{
-				caller: SCRIPT_NAME,
-			},
-		);
+		if (!dryRun)
+			await notificationService.notifyError(
+				`${SCRIPT_NAME} failed: ${String(error)}`,
+				{
+					caller: SCRIPT_NAME,
+				},
+			);
 		process.exit(1);
 	}
 }

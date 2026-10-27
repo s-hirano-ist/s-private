@@ -11,10 +11,11 @@ import {
 	readImageMetadata,
 } from "@s-hirano-ist/s-image-processing/node";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
-import { createMinioClient } from "@s-hirano-ist/s-storage";
+import { createObjectStorageClient } from "@s-hirano-ist/s-storage";
 import { readFile, stat } from "node:fs/promises";
 import { basename, extname } from "node:path";
 import { globPaths } from "./lib/glob-paths.js";
+import { uploadObjectIfMissing } from "./lib/upload-object-if-missing.js";
 
 const SCRIPT_NAME = "ingest-images";
 
@@ -46,20 +47,11 @@ async function main() {
 		PUSHOVER_USER_KEY: process.env.PUSHOVER_USER_KEY,
 		PUSHOVER_APP_TOKEN: process.env.PUSHOVER_APP_TOKEN,
 		USERNAME_TO_EXPORT: process.env.USERNAME_TO_EXPORT,
-		MINIO_BUCKET_NAME: process.env.MINIO_BUCKET_NAME,
+		S3_BUCKET_NAME: process.env.S3_BUCKET_NAME,
 	} as const;
 
 	if (Object.values(env).some((v) => !v)) {
 		throw new Error("Required environment variables are not set.");
-	}
-
-	if (
-		process.env.MINIO_USE_SSL === "true" &&
-		(!process.env.CF_ACCESS_CLIENT_ID || !process.env.CF_ACCESS_CLIENT_SECRET)
-	) {
-		throw new Error(
-			"CF_ACCESS_CLIENT_ID and CF_ACCESS_CLIENT_SECRET are required when MINIO_USE_SSL is true.",
-		);
 	}
 
 	const contentsPath = process.env.S_CONTENTS_PATH ?? process.cwd();
@@ -72,9 +64,9 @@ async function main() {
 		appToken: env.PUSHOVER_APP_TOKEN ?? "",
 	});
 
-	const minioClient = createMinioClient();
+	const storageClient = createObjectStorageClient();
 
-	const bucketName = env.MINIO_BUCKET_NAME ?? "";
+	const bucketName = env.S3_BUCKET_NAME ?? "";
 
 	const userId: UserId = makeUserId(env.USERNAME_TO_EXPORT ?? "");
 	const exported = makeExportedStatus();
@@ -126,15 +118,15 @@ async function main() {
 					continue;
 				}
 
-				// Upload original to MinIO if not exists
+				// Upload original to S3 if not exists
 				const originalKey = `${ORIGINAL_IMAGE_PATH}/${imagePath}`;
-				try {
-					await minioClient.statObject(bucketName, originalKey);
-					console.log(`📦 MinIO に既存（original）: ${imagePath}`);
-				} catch {
-					await minioClient.putObject(bucketName, originalKey, buffer);
-					console.log(`📤 MinIO アップロード（original）: ${imagePath}`);
-				}
+				await uploadObjectIfMissing(
+					storageClient,
+					bucketName,
+					originalKey,
+					buffer,
+					dryRun,
+				);
 
 				// Generate and upload thumbnail
 				const thumbnailBuffer = await createWebpThumbnail(buffer, {
@@ -142,12 +134,12 @@ async function main() {
 					height: THUMBNAIL_SIZE,
 				});
 				const thumbnailKey = `${THUMBNAIL_IMAGE_PATH}/${imagePath}`;
-				await minioClient.putObject(
+				await storageClient.putObject(
 					bucketName,
 					thumbnailKey,
 					Buffer.from(thumbnailBuffer),
 				);
-				console.log(`📤 MinIO アップロード（thumbnail）: ${imagePath}`);
+				console.log(`📤 S3 アップロード（thumbnail）: ${imagePath}`);
 
 				// Create DB record
 				await prisma.image.create({
@@ -197,11 +189,11 @@ async function main() {
 					console.log(`🗑️  [dry-run] 削除予定: ${image.path}`);
 				} else {
 					await prisma.image.delete({ where: { id: image.id } });
-					await minioClient.removeObject(
+					await storageClient.removeObject(
 						bucketName,
 						`${ORIGINAL_IMAGE_PATH}/${image.path}`,
 					);
-					await minioClient.removeObject(
+					await storageClient.removeObject(
 						bucketName,
 						`${THUMBNAIL_IMAGE_PATH}/${image.path}`,
 					);
@@ -222,17 +214,19 @@ async function main() {
 		console.log(
 			`\n📊 結果: 挿入 ${insertedCount} 件, スキップ ${skippedCount} 件, 削除 ${deletedCount} 件, エラー ${errorCount} 件${dryRun ? " (dry-run)" : ""}`,
 		);
-		await notificationService.notifyInfo(`${SCRIPT_NAME} completed`, {
-			caller: SCRIPT_NAME,
-		});
+		if (!dryRun)
+			await notificationService.notifyInfo(`${SCRIPT_NAME} completed`, {
+				caller: SCRIPT_NAME,
+			});
 	} catch (error) {
 		console.error("❌ エラーが発生しました:", error);
-		await notificationService.notifyError(
-			`${SCRIPT_NAME} failed: ${String(error)}`,
-			{
-				caller: SCRIPT_NAME,
-			},
-		);
+		if (!dryRun)
+			await notificationService.notifyError(
+				`${SCRIPT_NAME} failed: ${String(error)}`,
+				{
+					caller: SCRIPT_NAME,
+				},
+			);
 		process.exit(1);
 	} finally {
 		await prisma.$disconnect();

@@ -1,4 +1,11 @@
-import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
+import {
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	test,
+	vi,
+} from "vite-plus/test";
 
 const mockClient = {
 	deleteCollection: vi.fn(),
@@ -23,6 +30,12 @@ describe("qdrant-client", () => {
 		vi.clearAllMocks();
 		vi.resetModules();
 		delete process.env.EMBEDDING_URL;
+		vi.stubEnv("LOCAL_DEV_MODE", "false");
+		vi.stubEnv("VERCEL", undefined);
+	});
+	afterEach(() => {
+		vi.unstubAllEnvs();
+		vi.unstubAllGlobals();
 	});
 
 	async function loadModule() {
@@ -163,42 +176,57 @@ describe("qdrant-client", () => {
 	});
 
 	describe("upsertPoints", () => {
-		test("converts string IDs to numeric via hashToUint and upserts with Document vector", async () => {
-			mockClient.upsert.mockResolvedValue({});
-			const { upsertPoints, getQdrantClient } = await loadModule();
-			getQdrantClient({ url: "http://localhost:6333" });
+		test.each([
+			{ local: "false", vercel: undefined, nodeEnv: "test" },
+			{ local: "true", vercel: "1", nodeEnv: "test" },
+			{ local: "true", vercel: undefined, nodeEnv: "production" },
+		])(
+			"upserts with Cloud Inference even with a stale TEI URL: %j",
+			async ({ local, vercel, nodeEnv }) => {
+				vi.stubEnv("LOCAL_DEV_MODE", local);
+				vi.stubEnv("VERCEL", vercel);
+				vi.stubEnv("NODE_ENV", nodeEnv);
+				vi.stubEnv("EMBEDDING_URL", "https://obsolete-tei.example.com");
+				const fetcher = vi.fn();
+				vi.stubGlobal("fetch", fetcher);
+				mockClient.upsert.mockResolvedValue({});
+				const { upsertPoints, getQdrantClient } = await loadModule();
+				getQdrantClient({ url: "http://localhost:6333" });
 
-			await upsertPoints([
-				{
-					id: "chunk-1",
-					text: "hello",
-					payload: {
-						type: "markdown_note",
-						content_type: "notes",
-						top_heading: "Test",
-						doc_id: "doc1",
-						chunk_id: "chunk-1",
-						title: "Test",
-						heading_path: [],
+				await upsertPoints([
+					{
+						id: "chunk-1",
 						text: "hello",
-						content_hash: "abc",
+						payload: {
+							type: "markdown_note",
+							content_type: "notes",
+							top_heading: "Test",
+							doc_id: "doc1",
+							chunk_id: "chunk-1",
+							title: "Test",
+							heading_path: [],
+							text: "hello",
+							content_hash: "abc",
+						},
 					},
-				},
-			]);
+				]);
 
-			expect(mockClient.upsert).toHaveBeenCalledOnce();
-			const call = mockClient.upsert.mock.calls[0];
-			expect(call[0]).toBe("knowledge_v1");
-			const point = call[1].points[0];
-			expect(typeof point.id).toBe("number");
-			expect(point.id).toBeGreaterThanOrEqual(0);
-			expect(point.vector).toEqual({
-				text: "hello",
-				model: "intfloat/multilingual-e5-small",
-			});
-		});
+				expect(mockClient.upsert).toHaveBeenCalledOnce();
+				const call = mockClient.upsert.mock.calls[0];
+				expect(call[0]).toBe("knowledge_v1");
+				const point = call[1].points[0];
+				expect(typeof point.id).toBe("number");
+				expect(point.id).toBeGreaterThanOrEqual(0);
+				expect(point.vector).toEqual({
+					text: "hello",
+					model: "intfloat/multilingual-e5-small",
+				});
+				expect(fetcher).not.toHaveBeenCalled();
+			},
+		);
 
 		test("uses local TEI vectors when EMBEDDING_URL is configured", async () => {
+			vi.stubEnv("LOCAL_DEV_MODE", "true");
 			process.env.EMBEDDING_URL = "http://localhost:3001";
 			mockClient.upsert.mockResolvedValue({});
 			vi.stubGlobal(
@@ -320,25 +348,40 @@ describe("qdrant-client", () => {
 			]);
 		});
 
-		test("passes query as Document with model", async () => {
-			mockClient.query.mockResolvedValue({ points: [] });
-			const { search, getQdrantClient } = await loadModule();
-			getQdrantClient({ url: "http://localhost:6333" });
+		test.each([
+			{ local: "false", vercel: undefined, nodeEnv: "test" },
+			{ local: "true", vercel: "1", nodeEnv: "test" },
+			{ local: "true", vercel: undefined, nodeEnv: "production" },
+		])(
+			"queries with Cloud Inference even with a stale TEI URL: %j",
+			async ({ local, vercel, nodeEnv }) => {
+				vi.stubEnv("LOCAL_DEV_MODE", local);
+				vi.stubEnv("VERCEL", vercel);
+				vi.stubEnv("NODE_ENV", nodeEnv);
+				vi.stubEnv("EMBEDDING_URL", "https://obsolete-tei.example.com");
+				const fetcher = vi.fn();
+				vi.stubGlobal("fetch", fetcher);
+				mockClient.query.mockResolvedValue({ points: [] });
+				const { search, getQdrantClient } = await loadModule();
+				getQdrantClient({ url: "http://localhost:6333" });
 
-			await search("test query");
+				await search("test query");
 
-			expect(mockClient.query).toHaveBeenCalledWith(
-				expect.any(String),
-				expect.objectContaining({
-					query: {
-						text: "test query",
-						model: "intfloat/multilingual-e5-small",
-					},
-				}),
-			);
-		});
+				expect(mockClient.query).toHaveBeenCalledWith(
+					expect.any(String),
+					expect.objectContaining({
+						query: {
+							text: "test query",
+							model: "intfloat/multilingual-e5-small",
+						},
+					}),
+				);
+				expect(fetcher).not.toHaveBeenCalled();
+			},
+		);
 
 		test("queries with a local TEI vector when configured", async () => {
+			vi.stubEnv("LOCAL_DEV_MODE", "true");
 			process.env.EMBEDDING_URL = "http://localhost:3001";
 			mockClient.query.mockResolvedValue({ points: [] });
 			vi.stubGlobal(

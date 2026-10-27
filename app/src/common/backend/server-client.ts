@@ -1,5 +1,6 @@
 import "server-only";
 import { dispatchBackendRequest } from "@/common/backend/dispatch";
+import { resolveWebOrigin } from "@/common/backend/resolve-web-origin";
 import { env } from "@/env";
 import { createBackendClient } from "@s-hirano-ist/s-api-client";
 import { headers } from "next/headers";
@@ -9,7 +10,12 @@ import { cache } from "react";
 // Request-scoped Cookie/Origin binding for SSR and Server Actions.
 export const getBackendClient = cache(async () => {
 	const incoming = await headers();
-	const origin = new URL(env.BETTER_AUTH_URL).origin;
+	const origin = resolveWebOrigin({
+		headers: incoming,
+		betterAuthUrl: env.BETTER_AUTH_URL,
+		vercel: env.VERCEL,
+		vercelEnv: env.VERCEL_ENV,
+	});
 	return createBackendClient({
 		baseURL: `${origin}/api/v1`,
 		headers: { cookie: incoming.get("cookie") ?? "", origin },

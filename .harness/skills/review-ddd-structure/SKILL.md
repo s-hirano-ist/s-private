@@ -1,6 +1,6 @@
 ---
 name: review-ddd-structure
-description: packages/core・packages/backend・services/backend・app/srcのディレクトリ構造や依存方向をDDDとClean Architectureの観点でレビューし、改善候補をGitHub Issuesへ記録する。レイヤー境界や構成の監査を依頼されたときに使用する。
+description: packages/core・services/backend・app/srcのディレクトリ構造や依存方向をDDDとClean Architectureの観点でレビューし、改善候補をGitHub Issuesへ記録する。レイヤー境界や構成の監査を依頼されたときに使用する。
 ---
 
 # Review DDD Structure Skill
@@ -19,8 +19,8 @@ description: packages/core・packages/backend・services/backend・app/srcのデ
 
 #### レイヤー分離
 - **ドメイン層** (`packages/core/`): entities, events, repositories, services, types, shared-kernel
-- **アプリケーション層** (`packages/backend/src/{domain}/`): ユースケース
-- **インフラ層** (`packages/backend/`): repository等の技術的実装。`services/backend/`で構成する
+- **アプリケーション層** (`services/backend/src/{domain}/`): ユースケース
+- **インフラ層** (`services/backend/`): repository等の技術的実装。`services/backend/`で構成する
 - **プレゼンテーション層** (`app/src/app/` = Next.js App Router のルート/ページ、`app/src/components/` および `packages/ui/` = UIコンポーネント)
 
 Webの `app/src/application-services/` は生成API clientのadapterとし、core・backend・DBへの直接依存を禁止する。

@@ -10,7 +10,7 @@ const { options } = ts.parseJsonConfigFileContent(
 	fileURLToPath(new URL("../", import.meta.url)),
 );
 const compositionPath = fileURLToPath(
-	new URL("../../../packages/backend/src/api/composition.ts", import.meta.url),
+	new URL("./api/composition.ts", import.meta.url),
 );
 
 describe("backend core package resolution", () => {

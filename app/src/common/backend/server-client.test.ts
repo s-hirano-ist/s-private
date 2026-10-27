@@ -6,6 +6,8 @@ const state = vi.hoisted(() => ({
 	cookie: "session=first",
 	localDevMode: "false",
 	vercel: undefined as string | undefined,
+	vercelEnv: undefined as string | undefined,
+	host: "web.example",
 }));
 vi.mock("@/common/backend/dispatch", () => ({
 	dispatchBackendRequest: vi.fn(),
@@ -19,11 +21,15 @@ vi.mock("@/env", () => ({
 		get VERCEL() {
 			return state.vercel;
 		},
+		get VERCEL_ENV() {
+			return state.vercelEnv;
+		},
 	},
 }));
 vi.mock("next/headers", () => ({
 	headers: async () =>
 		new Headers({
+			host: state.host,
 			cookie: state.cookie,
 			authorization: "Bearer incoming-must-not-be-forwarded",
 		}),
@@ -41,6 +47,20 @@ beforeEach(() => {
 	state.cookie = "session=first";
 	state.localDevMode = "false";
 	state.vercel = undefined;
+	state.vercelEnv = undefined;
+	state.host = "web.example";
+});
+test("SSR binds Preview cookies and API origin to the requesting deployment", async () => {
+	state.vercel = "1";
+	state.vercelEnv = "preview";
+	state.host = "memdex-web-git-feature-s-hirano-ist-team.vercel.app";
+	vi.mocked(dispatchBackendRequest).mockImplementation(async (request) => {
+		expect(new URL(request.url).origin).toBe(`https://${state.host}`);
+		expect(request.headers.get("origin")).toBe(`https://${state.host}`);
+		expect(request.headers.get("cookie")).toBe(state.cookie);
+		return Response.json({ count: 1 });
+	});
+	expect((await (await getBackendClient()).countNotes()).data.count).toBe(1);
 });
 test("keeps cookies scoped to each server request and supplies a canonical trusted Origin", async () => {
 	vi.mocked(dispatchBackendRequest).mockImplementation(async (request) => {

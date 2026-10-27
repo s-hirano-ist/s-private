@@ -10,10 +10,11 @@ import { createPrismaClient } from "@s-hirano-ist/s-database";
 import { createWebpThumbnail } from "@s-hirano-ist/s-image-processing/node";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
 import { parseMarkdownFrontmatter } from "@s-hirano-ist/s-search/frontmatter";
-import { createMinioClient } from "@s-hirano-ist/s-storage";
+import { createObjectStorageClient } from "@s-hirano-ist/s-storage";
 import { readFile } from "node:fs/promises";
 import { basename, extname } from "node:path";
 import { globPaths } from "./lib/glob-paths.js";
+import { uploadObjectIfMissing } from "./lib/upload-object-if-missing.js";
 
 type BookFrontmatter = {
 	googleAuthors?: string[];
@@ -142,20 +143,11 @@ async function main() {
 		PUSHOVER_USER_KEY: process.env.PUSHOVER_USER_KEY,
 		PUSHOVER_APP_TOKEN: process.env.PUSHOVER_APP_TOKEN,
 		USERNAME_TO_EXPORT: process.env.USERNAME_TO_EXPORT,
-		MINIO_BUCKET_NAME: process.env.MINIO_BUCKET_NAME,
+		S3_BUCKET_NAME: process.env.S3_BUCKET_NAME,
 	} as const;
 
 	if (Object.values(env).some((v) => !v)) {
 		throw new Error("Required environment variables are not set.");
-	}
-
-	if (
-		process.env.MINIO_USE_SSL === "true" &&
-		(!process.env.CF_ACCESS_CLIENT_ID || !process.env.CF_ACCESS_CLIENT_SECRET)
-	) {
-		throw new Error(
-			"CF_ACCESS_CLIENT_ID and CF_ACCESS_CLIENT_SECRET are required when MINIO_USE_SSL is true.",
-		);
 	}
 
 	const contentsPath = process.env.S_CONTENTS_PATH ?? process.cwd();
@@ -168,9 +160,9 @@ async function main() {
 		appToken: env.PUSHOVER_APP_TOKEN ?? "",
 	});
 
-	const minioClient = createMinioClient();
+	const storageClient = createObjectStorageClient();
 
-	const bucketName = env.MINIO_BUCKET_NAME ?? "";
+	const bucketName = env.S3_BUCKET_NAME ?? "";
 
 	const userId: UserId = makeUserId(env.USERNAME_TO_EXPORT ?? "");
 	const exported = makeExportedStatus();
@@ -182,19 +174,20 @@ async function main() {
 		const buffer = await readFile(localPath);
 
 		const originalKey = `${ORIGINAL_BOOK_IMAGE_PATH}/${fileName}`;
-		try {
-			await minioClient.statObject(bucketName, originalKey);
-		} catch {
-			await minioClient.putObject(bucketName, originalKey, buffer);
-			console.log(`📤 MinIO アップロード（original）: ${fileName}`);
-		}
+		await uploadObjectIfMissing(
+			storageClient,
+			bucketName,
+			originalKey,
+			buffer,
+			dryRun,
+		);
 
 		const thumbnailBuffer = await createWebpThumbnail(buffer, {
 			width: THUMBNAIL_SIZE,
 			height: THUMBNAIL_SIZE,
 		});
 		const thumbnailKey = `${THUMBNAIL_BOOK_IMAGE_PATH}/${fileName}`;
-		await minioClient.putObject(
+		await storageClient.putObject(
 			bucketName,
 			thumbnailKey,
 			Buffer.from(thumbnailBuffer),
@@ -224,8 +217,8 @@ async function main() {
 			try {
 				const isbn = makeISBN(rawIsbn);
 				bookImageMap.set(isbn, f);
-			} catch {
-				console.error(`⚠️  無効な画像ISBN: ${basename(f)}`);
+			} catch (error) {
+				console.error(`⚠️  無効な画像ISBN: ${basename(f)}`, error);
 			}
 		}
 		console.log(`🖼️  ${bookImageMap.size} 件の書籍画像を検出しました。`);
@@ -447,17 +440,19 @@ async function main() {
 		console.log(
 			`\n📊 結果: 挿入 ${insertedCount} 件, 更新 ${updatedCount} 件, スキップ ${skippedCount} 件, 削除 ${deletedCount} 件, エラー ${errorCount} 件${dryRun ? " (dry-run)" : ""}`,
 		);
-		await notificationService.notifyInfo(`${SCRIPT_NAME} completed`, {
-			caller: SCRIPT_NAME,
-		});
+		if (!dryRun)
+			await notificationService.notifyInfo(`${SCRIPT_NAME} completed`, {
+				caller: SCRIPT_NAME,
+			});
 	} catch (error) {
 		console.error("❌ エラーが発生しました:", error);
-		await notificationService.notifyError(
-			`${SCRIPT_NAME} failed: ${String(error)}`,
-			{
-				caller: SCRIPT_NAME,
-			},
-		);
+		if (!dryRun)
+			await notificationService.notifyError(
+				`${SCRIPT_NAME} failed: ${String(error)}`,
+				{
+					caller: SCRIPT_NAME,
+				},
+			);
 		process.exit(1);
 	} finally {
 		await prisma.$disconnect();
