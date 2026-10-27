@@ -5,7 +5,7 @@ on:
     paths:
       - ".github/workflows/ios.yaml"
       - ".mise.toml"
-      - "ios/**"
+      - "apps/ios/**"
       - "packages/api-contracts/**"
       - "docs/openapi/backend-v1.json"
       - "scripts/generate-api.mjs"
@@ -15,7 +15,7 @@ on:
     paths:
       - ".github/workflows/ios.yaml"
       - ".mise.toml"
-      - "ios/**"
+      - "apps/ios/**"
       - "packages/api-contracts/**"
       - "docs/openapi/backend-v1.json"
       - "scripts/generate-api.mjs"
@@ -47,7 +47,7 @@ jobs:
         run: mise run ios:generate
 
       - name: Test generated API package
-        run: swift test --package-path ios/Packages/SPrivateAPI
+        run: swift test --package-path apps/ios/Packages/SPrivateAPI
 
       - name: Build app
         run: mise run ios:build

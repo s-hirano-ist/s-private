@@ -28,8 +28,7 @@ const minioStorageService = {
 const seedLocalDevelopmentSampleData = createLocalSampleSeeder({
 	database: prisma,
 	storage: minioStorageService,
-	loadImage: () =>
-		readFile("services/backend/fixtures/local-sample-landscape.png"),
+	loadImage: () => readFile("apps/backend/fixtures/local-sample-landscape.png"),
 });
 
 describe("seedLocalDevelopmentSampleData", () => {

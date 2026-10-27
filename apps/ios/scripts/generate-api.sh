@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-package="$root/ios/Packages/SPrivateAPI"
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
+package="$root/apps/ios/Packages/SPrivateAPI"
 sources="$package/Sources/SPrivateAPI"
 
 # Keep the generator on the host; Xcode must only compile the generated API for iOS.

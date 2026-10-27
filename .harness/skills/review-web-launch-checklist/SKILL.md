@@ -1,6 +1,6 @@
 ---
 name: review-web-launch-checklist
-description: app/srcとpackagesをWebサービス公開前チェックリストでレビューし、セキュリティ、SEO、アクセシビリティ、運用上の改善候補をGitHub Issuesへ記録する。公開前監査を依頼されたときに使用する。
+description: apps/web/srcとpackagesをWebサービス公開前チェックリストでレビューし、セキュリティ、SEO、アクセシビリティ、運用上の改善候補をGitHub Issuesへ記録する。公開前監査を依頼されたときに使用する。
 ---
 
 # Review Web Launch Checklist Skill
@@ -151,7 +151,7 @@ Zenn記事「[Webサービス公開前のチェックリスト](https://zenn.dev
 #### 認証Cookie設定
 ```typescript
 // 確認ポイント: next-auth設定
-// app/src/infrastructures/auth/auth-provider.ts (NextAuth設定)
+// apps/web/src/infrastructures/auth/auth-provider.ts (NextAuth設定)
 cookies: {
   sessionToken: {
     httpOnly: true,
@@ -174,7 +174,7 @@ await db.insert(validated);
 
 #### レスポンスヘッダ
 ```typescript
-// app/next.config.mjs での設定確認
+// apps/web/next.config.mjs での設定確認
 headers: async () => [
   {
     source: '/:path*',

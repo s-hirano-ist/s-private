@@ -55,7 +55,7 @@ test("iOS content colors match the Web light and dark semantic tokens", async ()
 			await readFile(
 				join(
 					root,
-					"ios/SPrivate/Assets.xcassets",
+					"apps/ios/SPrivate/Assets.xcassets",
 					`${asset}.colorset`,
 					"Contents.json",
 				),

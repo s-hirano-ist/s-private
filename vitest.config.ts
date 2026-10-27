@@ -12,7 +12,7 @@ export default defineConfig({
 			{
 				test: {
 					name: "backend",
-					include: ["services/backend/src/**/*.test.ts"],
+					include: ["apps/backend/src/**/*.test.ts"],
 				},
 			},
 
@@ -55,10 +55,10 @@ export default defineConfig({
 
 			// Main Next.js application with Storybook integration
 			{
-				extends: "./app/vitest.config.ts",
+				extends: "./apps/web/vitest.config.ts",
 				test: {
 					name: "app",
-					root: "./app",
+					root: "./apps/web",
 					include: ["./src/**/*.test.?(c|m)[jt]s?(x)"],
 				},
 			},
@@ -139,10 +139,10 @@ export default defineConfig({
 			},
 			// Component benchmarks (happy-dom environment, used by `pnpm bench:components`)
 			{
-				extends: "./app/vitest.config.ts",
+				extends: "./apps/web/vitest.config.ts",
 				test: {
 					name: "app-bench",
-					root: "./app",
+					root: "./apps/web",
 					include: [],
 					benchmark: {
 						enabled: true,
@@ -162,7 +162,7 @@ export default defineConfig({
 				"**/dist/**/*",
 
 				// 生成コード
-				"app/src/generated/**/*",
+				"apps/web/src/generated/**/*",
 				"packages/database/**/*",
 
 				// テスト・Storybook・ベンチマーク
@@ -179,12 +179,12 @@ export default defineConfig({
 				// 設定ファイル
 				"**/vitest.config.ts",
 				"**/vitest-setup.*",
-				"app/next.config.mjs",
-				"app/tailwind.config.ts",
-				"app/postcss.config.js",
-				"app/sentry.*.config.ts",
-				"app/src/env.ts",
-				"app/messages/**/*",
+				"apps/web/next.config.mjs",
+				"apps/web/tailwind.config.ts",
+				"apps/web/postcss.config.js",
+				"apps/web/sentry.*.config.ts",
+				"apps/web/src/env.ts",
+				"apps/web/messages/**/*",
 
 				// テスト困難なインフラ・スクリプト
 				"packages/search/src/config.ts",
@@ -192,17 +192,17 @@ export default defineConfig({
 				"packages/scripts/**/*",
 
 				// Next.js App Router（ページ/レイアウト/メタデータのみ除外、API routeは含める）
-				"app/src/app/[locale]/**/*",
-				"app/src/app/layout.tsx",
-				"app/src/app/not-found.tsx",
-				"app/src/app/error.tsx",
-				"app/src/app/global-error.tsx",
-				"app/src/app/manifest.ts",
-				"app/src/app/robots.ts",
-				"app/src/app/globals.css",
+				"apps/web/src/app/[locale]/**/*",
+				"apps/web/src/app/layout.tsx",
+				"apps/web/src/app/not-found.tsx",
+				"apps/web/src/app/error.tsx",
+				"apps/web/src/app/global-error.tsx",
+				"apps/web/src/app/manifest.ts",
+				"apps/web/src/app/robots.ts",
+				"apps/web/src/app/globals.css",
 
 				// データローダー（サーバーコンポーネント依存で単体テスト困難）
-				"app/src/loaders/**/*",
+				"apps/web/src/loaders/**/*",
 			],
 			reporter: ["text", "json-summary", "json"],
 		},

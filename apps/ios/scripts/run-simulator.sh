@@ -2,9 +2,9 @@
 
 set -euo pipefail
 
-readonly project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-readonly derived_data_path="${project_root}/ios/.derivedData"
-readonly project_path="${project_root}/ios/SPrivate.xcodeproj"
+readonly project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
+readonly derived_data_path="${project_root}/apps/ios/.derivedData"
+readonly project_path="${project_root}/apps/ios/SPrivate.xcodeproj"
 readonly scheme="SPrivate"
 readonly bundle_id="ist.s-hirano.s-private"
 

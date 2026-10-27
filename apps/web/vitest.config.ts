@@ -13,7 +13,7 @@ export default defineConfig({
 			"@": path.resolve(import.meta.dirname, "./src"),
 			"@s-hirano-ist/s-ui": path.resolve(
 				import.meta.dirname,
-				"../packages/ui/dist",
+				"../../packages/ui/dist",
 			),
 		},
 	},

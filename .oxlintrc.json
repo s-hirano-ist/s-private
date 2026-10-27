@@ -301,7 +301,7 @@
 
 		// ── Hand-picked restriction rules (NOT enabled by category; aligned with CLAUDE.md) ──
 		"no-console": "error", // logging goes through Pushover/Sentry; scripts/tests opt out via overrides
-		"node/no-process-env": "error", // funnel env access through app/src/env.ts (typed); scripts/config/env.ts opt out via overrides
+		"node/no-process-env": "error", // funnel env access through apps/web/src/env.ts (typed); scripts/config/env.ts opt out via overrides
 		"import/no-relative-parent-imports": "error", // CLAUDE.md: 絶対パス import 必須 (../../* 禁止)
 		"no-use-before-define": [
 			"error",
@@ -376,9 +376,9 @@
 	"overrides": [
 		{
 			"files": [
-				"app/**/*.{ts,tsx}",
+				"apps/web/**/*.{ts,tsx}",
 				"packages/**/*.{ts,tsx}",
-				"services/backend/src/*/**/*.{ts,tsx}"
+				"apps/backend/src/*/**/*.{ts,tsx}"
 			],
 			"rules": {
 				"no-array-constructor": "error",
@@ -521,9 +521,9 @@
 		},
 		{
 			"files": [
-				"app/**/*.{ts,tsx}",
+				"apps/web/**/*.{ts,tsx}",
 				"packages/**/*.{ts,tsx}",
-				"services/backend/src/*/**/*.{ts,tsx}"
+				"apps/backend/src/*/**/*.{ts,tsx}"
 			],
 			"rules": {
 				"no-unused-vars": "off",
@@ -657,9 +657,9 @@
 		},
 		{
 			"files": [
-				"app/**/*.{ts,tsx}",
+				"apps/web/**/*.{ts,tsx}",
 				"packages/**/*.{ts,tsx}",
-				"services/**/*.{ts,tsx}"
+				"apps/backend/**/*.{ts,tsx}"
 			],
 			"rules": {
 				"eslint-js/no-restricted-syntax": [
@@ -693,10 +693,10 @@
 			}
 		},
 		{
-			// app/src/env.ts is the typed env boundary for the app. Workspace packages are separate
+			// apps/web/src/env.ts is the typed env boundary for the app. Workspace packages are separate
 			// (cannot import the app's env.ts) so each owns its own env boundary in its config/client.
 			"files": [
-				"app/src/env.ts",
+				"apps/web/src/env.ts",
 				"**/env.{ts,mjs}",
 				"next.config.{ts,mjs}",
 				"packages/storage/src/client.ts",
@@ -711,7 +711,7 @@
 			// Workspace packages have NO internal path alias (tsconfig paths: {}); they expose an
 			// `exports` map for external consumers and use relative imports internally by design.
 			// So parent-relative imports are idiomatic here — the "絶対パス必須" convention applies to
-			// app/src (which has the @/* alias). Cross-package layering is enforced by dependency-cruiser.
+			// apps/web/src (which has the @/* alias). Cross-package layering is enforced by dependency-cruiser.
 			"files": ["packages/**/*.{ts,tsx}"],
 			"rules": {
 				"import/no-relative-parent-imports": "off"
@@ -722,8 +722,8 @@
 			// clients (last-resort fallback), the RAG CLI/ingest library, and dev-only tooling. The rule
 			// stays "error" everywhere else (UI/business logic must log via the server logger / Pushover).
 			"files": [
-				"app/src/infrastructures/observability/**/*.{ts,tsx}",
-				"app/src/prisma.ts",
+				"apps/web/src/infrastructures/observability/**/*.{ts,tsx}",
+				"apps/web/src/prisma.ts",
 				"packages/search/**/*.{ts,tsx}",
 				"packages/notification/**/*.{ts,tsx}",
 				"packages/ui/dev/**/*.{ts,tsx}"

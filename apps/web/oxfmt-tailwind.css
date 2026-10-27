@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "../packages/ui/src/styles.css";
+@import "../../packages/ui/src/styles.css";
 
 @config "./tailwind.config.ts";
 

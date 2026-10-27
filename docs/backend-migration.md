@@ -38,7 +38,7 @@ iOSのSwift生成clientへの切替後、この旧HTTP入口とcontrollerを撤�
 旧URLへの通信は404となるため、撤去PRの本番適用は対応iOSクライアントの配布・切替確認後に行う。
 DBのoperation・同期cursor・未完了uploadは削除せず、共通APIで引き継ぐ。
 
-`services/backend` はNext.jsに依存しない単一のbackendサービスとし、HTTP hostとドメイン別の実装を同じworkspace内に置く。
+`apps/backend` はNext.jsに依存しない単一のbackendサービスとし、HTTP hostとドメイン別の実装を同じworkspace内に置く。
 articles／notes／images／booksの入力検証、作成・削除ユースケース、Prismaリポジトリを配置する。
 所有者IDとイベントdispatchは明示的な依存として渡し、backend内でWeb sessionを取得しない。
 移行初期のNext.jsはFormData、認証、エラー変換、キャッシュ無効化の暫定adapterだった。最終構成では生成clientを呼ぶSSR/BFFだけを残し、永続cacheとドメインadapterを撤去した。
@@ -51,10 +51,10 @@ HTTP入口とクライアントを切り替える前に処理を移管するた�
 original→thumbnail→DB→イベントの順序と既存の失敗時動作を維持する。
 operation／storage phaseと不正画像の診断エラーもbackendで定義し、Webのエラー変換から再利用する。
 
-同期cursor・snapshot・差分取得とoperationの冪等性管理は `services/backend/src/mobile` に置く。
+同期cursor・snapshot・差分取得とoperationの冪等性管理は `apps/backend/src/mobile` に置く。
 DBの状態と保存形式を維持し、依存の構成は独立backendのhostで行う。
 共有Prisma persistenceとMinIO chunk storeも設定を受け取るfactoryとする。
-Qdrant検索と結果整形は `services/backend/src/search` に置き、hostから設定・検索portを渡す。
+Qdrant検索と結果整形は `apps/backend/src/search` に置き、hostから設定・検索portを渡す。
 
 Better Authのprovider・session設定、Auth0 Bearer検証、tenant context／filterもbackendで共有する。
 Bearer検証はjoseのRS256・issuer・audience・必須claims検証とRemote JWKS resolverを使用する。
@@ -66,7 +66,7 @@ Next.js用Sentry adapterはWeb側に置き、独立backendでも同じ処理を�
 pnpm api:generate
 pnpm api:check
 mise run ios:generate
-swift test --package-path ios/Packages/SPrivateAPI
+swift test --package-path apps/ios/Packages/SPrivateAPI
 ```
 
 `api:check` は一時ディレクトリにOpenAPIを再生成し、Git管理したスナップショットと比較する。
@@ -143,7 +143,7 @@ iOSは `/api/v1` のSwift生成clientへ切り替える。Auth0 audienceはAPI�
 長期の旧iOS互換は維持しないが、移行中の既存URLはクライアント切替まで残す。
 
 Webの記事・ノート一覧、件数、カテゴリ、ノート詳細はOrvalクライアント経由で取得する。
-`app/src/common/backend/server-client` はCookieとOriginをリクエストごとに束縛し、
+`apps/web/src/common/backend/server-client` はCookieとOriginをリクエストごとに束縛し、
 独立backendの配置までは同一プロセスのHono fetch adapterを使う。受信したAuthorizationは転送しない。
 画像・書籍も同じ生成clientで取得し、書影の配列metadataはキャストせず表示する。
 メディアは `/api/v1/media/{domain}/{id}/{variant}` を使用し、backendで所有者を検証してprivate/no-storeで返す。
@@ -166,7 +166,7 @@ Auth0＋Better Authを維持し、Webの同一originの認証URLはBFFで中継�
 独立稼働への切替前にOAuth callback、画像の最大サイズ転送、外部サービス接続を検証する。
 Cronは旧・新で同時に有効化しない。
 
-共通APIの依存組み立ては `services/backend/src/api/composition` に置く。
+共通APIの依存組み立ては `apps/backend/src/api/composition` に置く。
 DB・chunk store・storage・event dispatcher・search・通知設定を型付きで受け取り、
 raw repositoryとdomain service、読み取り・mutation・upload・Pushの各serviceを組み立てる。
 Next.jsのcommand cache adapterを使わず、同じ構成を独立backendで再利用する。
@@ -183,7 +183,7 @@ HonoのHTTP hostはAPI・認証・サインイン・Cronを型付きhandlerと�
 OAuthの公開originを検証してrequest URLを復元し、複数Cookieと本文を保持する。
 転送元のhost関連headerは除去し、すべての応答をprivate/no-storeにする。
 
-独立Nodeサービスは `services/backend` に置き、共有factoryだけでAPI・認証・イベント・通知を組み立てる。
+独立Nodeサービスは `apps/backend` に置き、共有factoryだけでAPI・認証・イベント・通知を組み立てる。
 [手動配置・切替手順](backend-deployment.md)に環境変数とCronの単独稼働手順を記載する。
 この段階ではWebの接続先を変更しない。
 

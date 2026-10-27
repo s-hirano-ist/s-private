@@ -1,16 +1,18 @@
 import type { Preview } from "@storybook/nextjs-vite";
 import { ToastProvider } from "@s-hirano-ist/s-ui/toast";
-import "../app/src/app/globals.css";
+import "../apps/web/src/app/globals.css";
 import { withThemeByClassName } from "@storybook/addon-themes";
 import { sb } from "storybook/test";
 import { MINIMAL_VIEWPORTS } from "storybook/viewport";
-import enMessages from "../app/messages/en.json";
-import jaMessages from "../app/messages/ja.json";
-import { ThemeProvider } from "../app/src/providers/theme-provider";
+import enMessages from "../apps/web/messages/en.json";
+import jaMessages from "../apps/web/messages/ja.json";
+import { ThemeProvider } from "../apps/web/src/providers/theme-provider";
 
-sb.mock(import("../app/src/common/backend/browser-client.ts"), { spy: true });
-sb.mock(import("../app/src/common/observability/report-render-error.ts"));
-sb.mock(import("../app/src/common/auth/reauthenticate.ts"), { spy: true });
+sb.mock(import("../apps/web/src/common/backend/browser-client.ts"), {
+	spy: true,
+});
+sb.mock(import("../apps/web/src/common/observability/report-render-error.ts"));
+sb.mock(import("../apps/web/src/common/auth/reauthenticate.ts"), { spy: true });
 sb.mock(import("next-intl/server"), { spy: true });
 
 const messages = { en: enMessages, ja: jaMessages };
