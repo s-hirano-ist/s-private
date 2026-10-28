@@ -82,7 +82,7 @@ export function createImagesQueryRepository(
 			},
 			...params,
 		});
-		return data.map((d) => ({
+		return data.map((d: ListProjection) => ({
 			id: makeId(d.id),
 			path: makePath(d.path, false),
 			width: d.width === null ? undefined : makePixel(d.width),
@@ -103,3 +103,10 @@ export function createImagesQueryRepository(
 
 	return imagesQueryRepository;
 }
+
+type ListProjection = {
+	id: string;
+	path: string;
+	width: number | null;
+	height: number | null;
+};

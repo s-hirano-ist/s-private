@@ -69,7 +69,7 @@ export function createNotesQueryRepository(
 			select: { id: true, title: true, markdown: true, createdAt: true },
 			...params,
 		});
-		return data.map((d) => ({
+		return data.map((d: ListProjection) => ({
 			id: makeId(d.id),
 			title: makeNoteTitle(d.title),
 			markdown: makeMarkdown(d.markdown),
@@ -90,3 +90,10 @@ export function createNotesQueryRepository(
 
 	return notesQueryRepository;
 }
+
+type ListProjection = {
+	id: string;
+	title: string;
+	markdown: string;
+	createdAt: Date;
+};
