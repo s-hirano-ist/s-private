@@ -10,7 +10,6 @@ import type {
 	UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import type { Path } from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
-import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/services/storage-service.interface";
 import type { InfraQueryOptions } from "@s-hirano-ist/s-core/shared-kernel/types/query-options";
 
 /**
@@ -39,7 +38,7 @@ export type ImagesFindManyParams = {
  * Follows the CQRS pattern - this interface handles read operations only.
  * Implementations should be provided by the infrastructure layer (e.g., Prisma).
  *
- * For object storage operations (get image), use {@link IStorageService}
+ * For object storage operations (get image), use the application storage port
  * from the common module.
  *
  * Return types are either full entities (for single item lookup) or DTOs
@@ -59,7 +58,7 @@ export type ImagesFindManyParams = {
  * ```
  *
  * @see {@link IImagesCommandRepository} for write operations
- * @see {@link IStorageService} for object storage operations
+ * @see the application storage port for object storage operations
  */
 export type IImagesQueryRepository = {
 	/**

@@ -6,7 +6,6 @@ import type {
 	UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import type { IBatchCommandRepository } from "@s-hirano-ist/s-core/shared-kernel/repositories/batch-command-repository.interface";
-import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/services/storage-service.interface";
 
 /**
  * Command repository interface for the Image domain.
@@ -18,7 +17,7 @@ import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/service
  * For batch operations (bulkUpdateStatus), use {@link IBatchCommandRepository}
  * from the common module directly.
  *
- * For object storage operations (upload, delete), use {@link IStorageService}
+ * For object storage operations (upload, delete), use the application storage port
  * from the common module.
  *
  * @example
@@ -33,7 +32,7 @@ import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/service
  *
  * @see {@link IImagesQueryRepository} for read operations
  * @see {@link IBatchCommandRepository} for batch operations
- * @see {@link IStorageService} for object storage operations
+ * @see the application storage port for object storage operations
  */
 export type IImagesCommandRepository = {
 	/**

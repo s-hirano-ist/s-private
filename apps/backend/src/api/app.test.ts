@@ -4,9 +4,9 @@ import type { ApiAuth } from "s-private-backend/api/types";
 import type { UploadService } from "s-private-backend/api/upload-service";
 import type { WriteService } from "s-private-backend/api/write-service";
 import { apiRoutes } from "@s-hirano-ist/s-api-contracts/routes";
+import { tenantContext } from "@s-hirano-ist/s-infrastructure/shared/tenant-context";
 import { createApiApp } from "s-private-backend/api/app";
 import { ApiError } from "s-private-backend/api/error";
-import { tenantContext } from "s-private-backend/shared/tenant-context";
 import { describe, expect, test, vi } from "vitest";
 import { z } from "zod";
 

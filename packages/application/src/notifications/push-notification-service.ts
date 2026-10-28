@@ -2,61 +2,27 @@ import type { PushSubscriptionRepository } from "@s-hirano-ist/s-application/not
 import type {
 	CaptureContext,
 	ErrorReporter,
-} from "s-private-backend/observability/reporter";
+} from "@s-hirano-ist/s-application/observability/reporter";
 import {
-	createWebPushService,
-	WebPushSendError,
-	type WebPushPayload,
-	type WebPushService,
-} from "@s-hirano-ist/s-notification";
-import { PushSubscriptionError } from "s-private-backend/notifications/error";
+	PushDeliveryError,
+	type PushPayload,
+	type PushSender,
+	type PushDeliverySummary,
+} from "@s-hirano-ist/s-application/notifications/delivery-port";
+import { PushSubscriptionError } from "@s-hirano-ist/s-application/notifications/error";
 
-export type PushDeliverySummary = {
-	expired: number;
-	failed: number;
-	sent: number;
-};
-
-export type PushConfig = {
-	NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY?: string;
-	WEB_PUSH_PRIVATE_KEY?: string;
-	WEB_PUSH_SUBJECT?: string;
-};
 export function createPushDeliveryService(
-	env: PushConfig,
+	sender: PushSender,
 	pushSubscriptionRepository: PushSubscriptionRepository,
 	reporter: Pick<ErrorReporter, "captureException">,
 ) {
-	function requireWebPushService(): WebPushService {
-		const {
-			NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY,
-			WEB_PUSH_PRIVATE_KEY,
-			WEB_PUSH_SUBJECT,
-		} = env;
-		if (
-			!NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY ||
-			!WEB_PUSH_PRIVATE_KEY ||
-			!WEB_PUSH_SUBJECT
-		) {
-			throw new PushSubscriptionError(
-				"UNAVAILABLE",
-				"Web Push VAPID configuration is missing",
-			);
-		}
-		return createWebPushService({
-			privateKey: WEB_PUSH_PRIVATE_KEY,
-			publicKey: NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY,
-			subject: WEB_PUSH_SUBJECT,
-		});
-	}
-
 	async function sendPushToAll(
-		payload: WebPushPayload,
+		payload: PushPayload,
 	): Promise<PushDeliverySummary> {
 		const subscriptions = await pushSubscriptionRepository.listAll();
 		if (subscriptions.length === 0) return { expired: 0, failed: 0, sent: 0 };
 
-		const service = requireWebPushService();
+		const service = sender;
 		const expiredIds: string[] = [];
 		let failed = 0;
 		let sent = 0;
@@ -68,7 +34,12 @@ export function createPushDeliveryService(
 					sent += 1;
 				} catch (error) {
 					if (
-						error instanceof WebPushSendError &&
+						error instanceof PushSubscriptionError &&
+						error.code === "UNAVAILABLE"
+					)
+						throw error;
+					if (
+						error instanceof PushDeliveryError &&
 						error.isSubscriptionExpired
 					) {
 						expiredIds.push(subscription.id);
@@ -94,9 +65,9 @@ export function createPushDeliveryService(
 
 	async function sendPushToSubscription(
 		subscription: { auth: string; endpoint: string; p256dh: string },
-		payload: WebPushPayload,
+		payload: PushPayload,
 	): Promise<void> {
-		await requireWebPushService().send(subscription, payload);
+		await sender.send(subscription, payload);
 	}
 
 	return { sendPushToAll, sendPushToSubscription };
@@ -123,7 +94,9 @@ function pushFailureDiagnostic(
 		/* Keep malformed endpoints private. */
 	}
 	const candidate =
-		error instanceof WebPushSendError ? error.statusCode : undefined;
+		error instanceof PushDeliveryError
+			? error.diagnostics.statusCode
+			: undefined;
 	const status =
 		candidate !== undefined &&
 		Number.isInteger(candidate) &&
@@ -140,8 +113,8 @@ function pushFailureDiagnostic(
 				category,
 				providerHost,
 				providerCode:
-					error instanceof WebPushSendError
-						? (error.providerCode ?? "unknown")
+					error instanceof PushDeliveryError
+						? (error.diagnostics.providerCode ?? "unknown")
 						: "unknown",
 				statusCode: String(status ?? "unknown"),
 			},
