@@ -2,6 +2,8 @@ import type {
 	snapshotQuerySchema,
 	changesQuerySchema,
 } from "@s-hirano-ist/s-api-contracts/schemas";
+import type { StoredSnapshot } from "s-private-backend/api/read-models";
+import type { SyncDomain } from "s-private-backend/mobile/models";
 import { ApiError } from "s-private-backend/api/error";
 import { type MobileDeps } from "s-private-backend/mobile/deps";
 import { z } from "zod";
@@ -63,18 +65,12 @@ export async function listSyncChanges(
 	const events = await deps.sync.changes(userId, cursor, query.limit + 1);
 	const page = events.slice(0, query.limit);
 	const byKey = await deps.sync.changeRecords(userId, page);
-	const data = page.map((event) => {
-		const record = byKey.get(`${event.domain}:${event.recordId}`);
-		const deleted = event.action === "delete" || !record;
-		const base = {
-			version: event.version.toString(),
-			domain: event.domain,
-			id: event.recordId,
-			action: deleted ? "delete" : "upsert",
-		};
-		if (deleted) return base;
-		if (event.domain === "categories") return { ...base, category: record };
-		return { ...base, record };
+	const data = page.map((event): StoredSyncChange => {
+		const value = byKey.get(`${event.domain}:${event.recordId}`);
+		const base = { id: event.recordId, version: event.version.toString() };
+		if (event.action === "delete" || !value)
+			return { ...base, action: "delete", domain: event.domain };
+		return { ...base, action: "upsert", value };
 	});
 	const lastEvent = page.at(-1);
 	return {
@@ -85,3 +81,8 @@ export async function listSyncChanges(
 		hasMore: events.length > query.limit,
 	};
 }
+
+export type StoredSyncChange = { id: string; version: string } & (
+	| { action: "delete"; domain: SyncDomain }
+	| { action: "upsert"; value: StoredSnapshot }
+);

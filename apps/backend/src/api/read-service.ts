@@ -9,15 +9,16 @@ import { ISBN } from "@s-hirano-ist/s-core/books/entities/book-entity";
 import { Readable } from "node:stream";
 import { ApiError } from "s-private-backend/api/error";
 import {
+	toDto,
+	toSnapshot,
+	snapshotDto,
+} from "s-private-backend/api/read-models";
+import {
 	getSyncHead,
 	listSyncSnapshot,
 	listSyncChanges,
 } from "s-private-backend/mobile/sync";
 
-// DB Dates become ISO strings, then the public DTO schema strips internal fields.
-export function jsonValue(value: unknown): unknown {
-	return JSON.parse(JSON.stringify(value));
-}
 export type ReadServiceDeps = {
 	database: DatabaseClient;
 	mobile: Pick<MobileDeps, "content" | "sync">;
@@ -29,20 +30,24 @@ export type ReadServiceDeps = {
 };
 export function createReadService(deps: ReadServiceDeps) {
 	const { database, mobile } = deps;
-	async function detail(domain: MobileDomain, owner: string, id: string) {
+	async function detail<D extends MobileDomain>(
+		domain: D,
+		owner: string,
+		id: string,
+	) {
 		const record = await mobile.content.getContent(domain, owner, id);
 		if (!record) throw new ApiError("NOT_FOUND");
-		return jsonValue(record);
+		return toDto(domain, record);
 	}
-	async function page(
-		domain: MobileDomain,
+	async function page<D extends MobileDomain>(
+		domain: D,
 		owner: string,
 		query: z.output<typeof schemas.listQuerySchema>,
 	) {
 		const result = await mobile.content.listContent(domain, owner, query);
 		return {
 			...result,
-			data: jsonValue(result.data),
+			data: result.data.map((record) => toDto(domain, record)),
 			offset: query.offset,
 			limit: query.limit,
 		};
@@ -69,7 +74,11 @@ export function createReadService(deps: ReadServiceDeps) {
 		detail,
 		page,
 		count,
-		async lookup(domain: "books" | "notes", owner: string, key: string) {
+		async lookup<D extends "books" | "notes">(
+			domain: D,
+			owner: string,
+			key: string,
+		) {
 			const normalized = domain === "books" ? ISBN.safeParse(key) : null;
 			if (normalized && !normalized.success)
 				throw new ApiError("VALIDATION_ERROR");
@@ -95,10 +104,7 @@ export function createReadService(deps: ReadServiceDeps) {
 		) {
 			const result = await listSyncSnapshot(owner, query, mobile);
 			return schemas.snapshotPageSchema.parse({
-				data: result.data.map((record) => ({
-					domain: query.domain,
-					record: jsonValue(record),
-				})),
+				data: result.data.map((record) => snapshotDto(query.domain, record)),
 				nextAfter: result.nextAfter ?? null,
 			});
 		},
@@ -109,18 +115,16 @@ export function createReadService(deps: ReadServiceDeps) {
 			const result = await listSyncChanges(owner, query, mobile);
 			return schemas.changesPageSchema.parse({
 				...result,
-				data: result.data.map((event) => {
-					if (event.action === "delete") return event;
-					let record: unknown;
-					if ("category" in event) record = event.category;
-					else if ("record" in event) record = event.record;
-					return {
-						id: event.id,
-						version: event.version,
-						action: "upsert",
-						value: { domain: event.domain, record: jsonValue(record) },
-					};
-				}),
+				data: result.data.map((event) =>
+					event.action === "delete"
+						? event
+						: {
+								id: event.id,
+								version: event.version,
+								action: event.action,
+								value: toSnapshot(event.value),
+							},
+				),
 			});
 		},
 		async media(

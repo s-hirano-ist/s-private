@@ -1,3 +1,7 @@
+import type {
+	ReadModelByDomain,
+	StoredSnapshot,
+} from "s-private-backend/api/read-models";
 import type { MobileDomain } from "s-private-backend/mobile/models";
 import type { SyncDomain } from "s-private-backend/mobile/models";
 
@@ -22,8 +26,8 @@ export type MobileOperation = {
 };
 
 export type SyncChange = {
-	action: string;
-	domain: string;
+	action: "delete" | "upsert";
+	domain: SyncDomain;
 	recordId: string;
 	version: bigint;
 };
@@ -37,42 +41,41 @@ export type MobileAccountRepository = {
 };
 
 export type MobileContentRepository = {
-	getContent(
-		domain: MobileDomain,
+	getContent<D extends MobileDomain>(
+		domain: D,
 		userId: string,
 		id: string,
-	): Promise<unknown>;
-	listCategories(userId: string): Promise<unknown>;
-	listContent(
-		domain: MobileDomain,
+	): Promise<ReadModelByDomain[D] | null>;
+	listCategories(userId: string): Promise<ReadModelByDomain["categories"][]>;
+	listContent<D extends MobileDomain>(
+		domain: D,
 		userId: string,
 		query: {
 			limit: number;
 			offset: number;
 			status?: "UNEXPORTED" | "LAST_UPDATED" | "EXPORTED";
 		},
-	): Promise<{ data: unknown[]; totalCount: number }>;
+	): Promise<{ data: ReadModelByDomain[D][]; totalCount: number }>;
 	lookupContentId(
 		domain: MobileDomain,
 		userId: string,
 		key?: string,
 	): Promise<string | null>;
-	manifest(userId: string): Promise<unknown>;
 };
 
 export type MobileSyncRepository = {
 	changeRecords(
 		userId: string,
 		changes: SyncChange[],
-	): Promise<Map<string, unknown>>;
+	): Promise<Map<string, StoredSnapshot>>;
 	changes(userId: string, after: bigint, take: number): Promise<SyncChange[]>;
 	getSyncVersion(userId: string): Promise<bigint>;
-	snapshot(
-		domain: SyncDomain,
+	snapshot<D extends SyncDomain>(
+		domain: D,
 		userId: string,
 		after: string,
 		take: number,
-	): Promise<{ id: string }[]>;
+	): Promise<ReadModelByDomain[D][]>;
 };
 
 export type MobileOperationRepository = {

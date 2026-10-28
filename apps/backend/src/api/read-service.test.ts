@@ -132,10 +132,22 @@ describe("Shared API read service", () => {
 	test("normalizes ISBN in the backend and rejects invalid lookup keys before querying", async () => {
 		const { mobile, service } = fixture();
 		mobile.content.lookupContentId.mockResolvedValue("book");
-		mobile.content.getContent.mockResolvedValue({ id: "book" });
-		expect(await service.lookup("books", "owner", "978-0-306-40615-7")).toEqual(
-			{ id: "book" },
-		);
+		mobile.content.getContent.mockResolvedValue({
+			id: "book",
+			status: "UNEXPORTED",
+			createdAt: new Date(),
+			updatedAt: new Date(),
+			exportedAt: null,
+			isbn: "9780306406157",
+			title: "Book",
+			markdown: null,
+			imagePath: null,
+			rating: 3,
+			tags: [],
+		});
+		expect(
+			await service.lookup("books", "owner", "978-0-306-40615-7"),
+		).toMatchObject({ id: "book" });
 		expect(mobile.content.lookupContentId).toHaveBeenCalledWith(
 			"books",
 			"owner",
