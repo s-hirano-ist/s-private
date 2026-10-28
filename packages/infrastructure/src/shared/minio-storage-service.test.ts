@@ -1,7 +1,7 @@
+import { createImagesStorageService } from "@s-hirano-ist/s-infrastructure/shared/minio-storage-service";
 import { createMinioClient } from "@s-hirano-ist/s-storage";
 import { StorageOperationError } from "@s-hirano-ist/s-storage";
 import { Readable } from "node:stream";
-import { createImagesStorageService } from "s-private-backend/shared/minio-storage-service";
 import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 const minioClient = createMinioClient({
 	endPoint: "localhost",

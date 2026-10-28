@@ -1,8 +1,8 @@
-import type { createPushDeliveryService } from "s-private-backend/notifications/push-notification-service";
-import { buildGigazineHeadline } from "s-private-backend/notifications/gigazine-headline";
+import type { SendPushToAll } from "@s-hirano-ist/s-application/notifications/delivery-port";
+import { buildGigazineHeadline } from "@s-hirano-ist/s-application/notifications/gigazine-headline";
 export function createGigazineCronHandler(
 	config: { CRON_SECRET?: string },
-	sendPushToAll: ReturnType<typeof createPushDeliveryService>["sendPushToAll"],
+	sendPushToAll: SendPushToAll,
 ) {
 	return async function GET(request: Request): Promise<Response> {
 		if (

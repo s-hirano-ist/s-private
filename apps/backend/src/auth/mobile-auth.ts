@@ -1,7 +1,7 @@
 import type { MobileDeps } from "@s-hirano-ist/s-application/mobile/deps";
+import { tenantContext } from "@s-hirano-ist/s-infrastructure/shared/tenant-context";
 import { createRemoteJWKSet, jwtVerify } from "jose";
 import { ApiError } from "s-private-backend/api/error";
-import { tenantContext } from "s-private-backend/shared/tenant-context";
 const resolvers = new Map<string, ReturnType<typeof createRemoteJWKSet>>();
 export async function verifyMobileToken(
 	token: string,
