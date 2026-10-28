@@ -8,7 +8,7 @@ import type {
 	Status,
 	UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import type { DatabaseClient } from "s-private-backend/shared/database";
+import type { DatabaseClient } from "@s-hirano-ist/s-infrastructure/database";
 
 export function createImagesCommandRepository(
 	prisma: Pick<DatabaseClient, "image">,

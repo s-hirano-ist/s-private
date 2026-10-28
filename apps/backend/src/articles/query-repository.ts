@@ -6,7 +6,7 @@ import type {
 	CategoryFindManyParams,
 	ICategoryQueryRepository,
 } from "@s-hirano-ist/s-core/articles/repositories/category-query-repository.interface";
-import type { DatabaseClient } from "s-private-backend/shared/database";
+import type { DatabaseClient } from "@s-hirano-ist/s-infrastructure/database";
 import {
 	type ArticleListItemDTO,
 	type ExportedArticle,

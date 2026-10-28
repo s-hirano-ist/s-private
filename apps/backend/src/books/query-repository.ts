@@ -2,7 +2,7 @@ import type {
 	BooksFindManyParams,
 	IBooksQueryRepository,
 } from "@s-hirano-ist/s-core/books/repositories/books-query-repository.interface";
-import type { DatabaseClient } from "s-private-backend/shared/database";
+import type { DatabaseClient } from "@s-hirano-ist/s-infrastructure/database";
 import {
 	type BookListItemDTO,
 	type ExportedBook,

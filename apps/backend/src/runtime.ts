@@ -1,5 +1,7 @@
 import type { BackendEnv } from "s-private-backend/env";
 import { PrismaClient, PrismaPg } from "@s-hirano-ist/s-database";
+import { extendDatabase } from "@s-hirano-ist/s-infrastructure/database";
+import { createVectorSearch } from "@s-hirano-ist/s-infrastructure/search/vector-search";
 import * as Sentry from "@sentry/node";
 import { createApiApp } from "s-private-backend/api/app";
 import { createApiAuth } from "s-private-backend/api/auth";
@@ -15,8 +17,6 @@ import { SystemEventHandler } from "s-private-backend/events/system-event-handle
 import { createGigazineCronHandler } from "s-private-backend/notifications/cron";
 import { createBackendNotificationService } from "s-private-backend/notifications/pushover-service";
 import { ServerLogger } from "s-private-backend/observability/server-logger";
-import { createVectorSearch } from "s-private-backend/search/vector-search";
-import { extendDatabase } from "s-private-backend/shared/database";
 import { tenantContext } from "s-private-backend/shared/tenant-context";
 import { applyTenantFilter } from "s-private-backend/shared/tenant-filter";
 import { createUnavailableObjectStorage } from "s-private-backend/unavailable-object-storage";
