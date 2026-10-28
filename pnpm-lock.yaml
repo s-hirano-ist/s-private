@@ -458,9 +458,6 @@ importers:
       '@s-hirano-ist/s-database':
         specifier: workspace:*
         version: link:../../packages/database
-      '@s-hirano-ist/s-image-processing':
-        specifier: workspace:*
-        version: link:../../packages/image-processing
       '@s-hirano-ist/s-infrastructure':
         specifier: workspace:*
         version: link:../../packages/infrastructure
