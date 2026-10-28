@@ -1,3 +1,4 @@
+import type { IImageProcessor } from "@s-hirano-ist/s-application/content/image-processor";
 import type { MobileDomain } from "@s-hirano-ist/s-application/content/models";
 import type { MobileDeps } from "@s-hirano-ist/s-application/mobile/deps";
 import * as schemas from "@s-hirano-ist/s-api-contracts/schemas";
@@ -7,6 +8,7 @@ import {
 	parseArticleInput,
 	type CreateArticleDeps,
 } from "@s-hirano-ist/s-application/articles/use-cases";
+import { parseBookInput } from "@s-hirano-ist/s-application/books/input";
 import {
 	createBook,
 	deleteBook,
@@ -14,6 +16,7 @@ import {
 } from "@s-hirano-ist/s-application/books/use-cases";
 import { OperationPhaseError } from "@s-hirano-ist/s-application/diagnostics/operation-phase-error";
 import { ApplicationError } from "@s-hirano-ist/s-application/error";
+import { parseImageInput } from "@s-hirano-ist/s-application/images/input";
 import {
 	createImage,
 	deleteImage,
@@ -41,12 +44,11 @@ import {
 } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import { createHash } from "node:crypto";
 import { ApiError } from "s-private-backend/api/error";
-import { parseBookInput } from "s-private-backend/books/input";
-import { parseImageInput } from "s-private-backend/images/input";
 import { z, ZodError } from "zod";
 
 export type MediaInput = z.output<typeof schemas.uploadStartSchema>;
 export type WriteServiceDeps = {
+	imageProcessor: IImageProcessor;
 	articles: CreateArticleDeps;
 	books: CreateBookDeps;
 	images: CreateImageDeps;
@@ -217,7 +219,11 @@ export function createWriteService(deps: WriteServiceDeps) {
 						contentType: file.type,
 					};
 					if (input.domain === "images") {
-						const parsed = await parseImageInput(file, makeUserId(owner));
+						const parsed = await parseImageInput(
+							file,
+							makeUserId(owner),
+							deps.imageProcessor,
+						);
 						const extension = parsed.contentType.split("/").at(-1) ?? "jpeg";
 						const path = makePath(`${input.operationId}.${extension}`, false);
 						storedPath = path;
@@ -226,6 +232,7 @@ export function createWriteService(deps: WriteServiceDeps) {
 					const parsed = await parseBookInput(
 						{ ...input.metadata, image: file },
 						makeUserId(owner),
+						deps.imageProcessor,
 					);
 					const extension = parsed.contentType.split("/").at(-1) ?? "jpeg";
 					const path = makePath(`${input.operationId}.${extension}`, false);

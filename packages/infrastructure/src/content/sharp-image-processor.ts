@@ -11,10 +11,9 @@
 import type {
 	IImageProcessor,
 	ImageMetadata,
-} from "@s-hirano-ist/s-core/images/services/image-processor.interface";
+} from "@s-hirano-ist/s-application/content/image-processor";
 import {
 	createWebpThumbnail,
-	fileToBytes,
 	readImageMetadata,
 } from "@s-hirano-ist/s-image-processing/node";
 
@@ -36,5 +35,4 @@ async function getMetadata(bytes: Uint8Array): Promise<ImageMetadata> {
 export const sharpImageProcessor: IImageProcessor = {
 	createThumbnail,
 	getMetadata,
-	fileToBytes,
 };

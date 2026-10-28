@@ -1,3 +1,8 @@
+import type {
+	IImageProcessor,
+	UploadedFile,
+} from "@s-hirano-ist/s-application/content/image-processor";
+import type { MediaCreationInput } from "@s-hirano-ist/s-application/content/media-input";
 /**
  * Image form data parsing utilities.
  *
@@ -7,14 +12,13 @@
  *
  * @module
  */
-
 import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { parseSupportedImageFile } from "@s-hirano-ist/s-application/content/image-upload-parser";
 import {
 	makeContentType,
 	makeFileSize,
 	makePath,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
-import { parseSupportedImageFile } from "s-private-backend/shared/image-upload-parser";
 
 /**
  * Parses image upload form data into domain value objects.
@@ -26,12 +30,16 @@ import { parseSupportedImageFile } from "s-private-backend/shared/image-upload-p
  * @param userId - Current user's ID
  * @returns Validated image data with buffers for storage
  */
-export const parseImageInput = async (file: File, userId: UserId) => {
+export const parseImageInput = async (
+	file: UploadedFile,
+	userId: UserId,
+	processor: IImageProcessor,
+): Promise<MediaCreationInput> => {
 	const {
 		contentType: detectedContentType,
 		originalBuffer,
 		thumbnailBuffer,
-	} = await parseSupportedImageFile(file);
+	} = await parseSupportedImageFile(file, processor);
 	const path = makePath(file.name, true);
 	const contentType = makeContentType(detectedContentType);
 	const fileSize = makeFileSize(file.size);
