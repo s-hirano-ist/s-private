@@ -1,24 +1,10 @@
+import type {
+	snapshotQuerySchema,
+	changesQuerySchema,
+} from "@s-hirano-ist/s-api-contracts/schemas";
 import { type MobileDeps } from "s-private-backend/mobile/deps";
 import { MobileApiError } from "s-private-backend/mobile/error";
 import { z } from "zod";
-
-export const syncDomainSchema = z.enum([
-	"articles",
-	"notes",
-	"books",
-	"images",
-	"categories",
-]);
-export type SyncDomain = z.infer<typeof syncDomainSchema>;
-export const snapshotQuerySchema = z.object({
-	domain: syncDomainSchema,
-	after: z.string().max(36).default(""),
-	limit: z.coerce.number().int().min(1).max(100).default(100),
-});
-export const changesQuerySchema = z.object({
-	cursor: z.string().min(1).max(512),
-	limit: z.coerce.number().int().min(1).max(100).default(100),
-});
 
 function encodeCursor(userId: string, version: bigint): string {
 	return Buffer.from(JSON.stringify([userId, version.toString()])).toString(

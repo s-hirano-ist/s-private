@@ -1,6 +1,7 @@
 import type { ZodType } from "zod";
 import { createRoute, z } from "@hono/zod-openapi";
 import {
+	isbnInputSchema,
 	articleSchema,
 	noteSchema,
 	imageSchema,
@@ -158,7 +159,7 @@ export const bookByIsbnRoute = createRoute({
 	operationId: "getBookByIsbn",
 	tags: ["books"],
 	security,
-	request: { params: z.object({ isbn: idSchema }) },
+	request: { params: z.object({ isbn: isbnInputSchema }) },
 	responses: {
 		200: {
 			description: "Owner-scoped book by ISBN",
@@ -173,7 +174,7 @@ export const noteByTitleRoute = createRoute({
 	operationId: "getNoteByTitle",
 	tags: ["notes"],
 	security,
-	request: { params: z.object({ title: idSchema }) },
+	request: { params: z.object({ title: z.string().min(1).max(64) }) },
 	responses: {
 		200: {
 			description: "Owner-scoped note by title",

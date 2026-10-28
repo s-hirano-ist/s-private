@@ -165,3 +165,110 @@ test("numeric query bounds and defaults survive OpenAPI generation", () => {
 	for (const offset of [-1, 10001, 1.5])
 		expect(listQuerySchema.safeParse({ offset }).success).toBe(false);
 });
+
+test("creation inputs enforce domain bounds without changing hash input", async () => {
+	const { articleCreateSchema, noteCreateSchema, snapshotQuerySchema } =
+		await import("@s-hirano-ist/s-api-contracts/schemas");
+	const operationId = "6ab4a998-177a-4a34-ae38-9f5e75a05b2c";
+	const article = {
+		operationId,
+		title: "a".repeat(128),
+		url: "https://example.com",
+		category: "  Technology  ",
+		quote: "q".repeat(512),
+	};
+	expect(articleCreateSchema.parse(article)).toEqual(article);
+	for (const extra of [
+		{ title: "a".repeat(129) },
+		{ category: " " },
+		{ category: "a".repeat(17) },
+		{ quote: "a".repeat(513) },
+		{ url: "ftp://example.com" },
+	])
+		expect(
+			articleCreateSchema.safeParse({ ...article, ...extra }).success,
+		).toBe(false);
+	const note = { operationId, title: "n".repeat(64), markdown: "Body" };
+	expect(noteCreateSchema.safeParse(note).success).toBe(true);
+	for (const extra of [{ title: "n".repeat(65) }, { markdown: "" }])
+		expect(noteCreateSchema.safeParse({ ...note, ...extra }).success).toBe(
+			false,
+		);
+	const book = {
+		operationId,
+		domain: "books",
+		contentType: "image/jpeg",
+		fileSize: 100,
+		metadata: {
+			isbn: "978-4-06-521234-5",
+			title: "b".repeat(512),
+			rating: 5,
+			tags: ["  tag  ", " "],
+		},
+	};
+	expect(uploadStartSchema.parse(book)).toEqual(book);
+	for (const extra of [
+		{ isbn: "1234567890" },
+		{ title: "b".repeat(513) },
+		{ rating: 0 },
+		{ rating: 6 },
+		{ tags: ["a".repeat(65)] },
+	])
+		expect(
+			uploadStartSchema.safeParse({
+				...book,
+				metadata: { ...book.metadata, ...extra },
+			}).success,
+		).toBe(false);
+	expect(
+		snapshotQuerySchema.parse({ domain: "notes", after: "a".repeat(512) })
+			.after,
+	).toHaveLength(512);
+	expect(
+		snapshotQuerySchema.safeParse({ domain: "notes", after: "a".repeat(513) })
+			.success,
+	).toBe(false);
+});
+
+test("OpenAPI patterns are portable regular expressions without literal delimiters or flags", () => {
+	const document = createApiDocument();
+	const article = z
+		.object({
+			properties: z.object({
+				url: z.object({ pattern: z.string() }),
+				category: z.object({ pattern: z.string() }),
+			}),
+		})
+		.parse(document.components?.schemas?.ArticleCreate);
+	expect(
+		new RegExp(article.properties.url.pattern, "u").test("https://example.com"),
+	).toBe(true);
+	expect(
+		new RegExp(article.properties.category.pattern, "u").test("  Technology  "),
+	).toBe(true);
+	expect(
+		new RegExp(article.properties.category.pattern, "u").test("a".repeat(17)),
+	).toBe(false);
+	const upload = z
+		.object({
+			properties: z.object({
+				metadata: z.object({
+					properties: z.object({ isbn: z.object({ pattern: z.string() }) }),
+				}),
+			}),
+		})
+		.parse(document.components?.schemas?.BookUploadStart);
+	expect(
+		new RegExp(upload.properties.metadata.properties.isbn.pattern, "u").test(
+			"978-4-06-521234-5",
+		),
+	).toBe(true);
+	const change = z
+		.object({
+			properties: z.object({ version: z.object({ pattern: z.string() }) }),
+		})
+		.parse(document.components?.schemas?.SyncDelete);
+	expect(
+		new RegExp(change.properties.version.pattern, "u").test("9007199254740993"),
+	).toBe(true);
+});

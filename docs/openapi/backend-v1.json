@@ -442,7 +442,9 @@
 					},
 					"operationId": {
 						"type": "string",
-						"format": "uuid"
+						"format": "uuid",
+						"description": "Client-generated UUID. Reuse it only with identical input when retrying a creation.",
+						"example": "6ab4a998-177a-4a34-ae38-9f5e75a05b2c"
 					},
 					"resource": {
 						"$ref": "#/components/schemas/ResourceReference"
@@ -473,22 +475,33 @@
 				"properties": {
 					"operationId": {
 						"type": "string",
-						"format": "uuid"
+						"format": "uuid",
+						"description": "Client-generated UUID. Reuse it only with identical input when retrying a creation.",
+						"example": "6ab4a998-177a-4a34-ae38-9f5e75a05b2c"
 					},
 					"title": {
 						"type": "string",
-						"minLength": 1
+						"minLength": 1,
+						"maxLength": 128,
+						"example": "TypeScript handbook"
 					},
 					"url": {
 						"type": "string",
-						"format": "uri"
+						"maxLength": 1024,
+						"format": "uri",
+						"pattern": "^[hH][tT][tT][pP][sS]?://",
+						"description": "HTTP or HTTPS URL, at most 1024 UTF-16 code units.",
+						"example": "https://example.com/article"
 					},
 					"category": {
 						"type": "string",
-						"minLength": 1
+						"pattern": "^\\s*\\S(?:[\\s\\S]{0,14}\\S)?\\s*$",
+						"description": "Category name: 1–16 UTF-16 code units after trimming. The original input is retained for idempotency hashing.",
+						"example": "Technology"
 					},
 					"quote": {
-						"type": "string"
+						"type": "string",
+						"maxLength": 512
 					}
 				},
 				"required": ["operationId", "title", "url", "category"],
@@ -499,14 +512,20 @@
 				"properties": {
 					"operationId": {
 						"type": "string",
-						"format": "uuid"
+						"format": "uuid",
+						"description": "Client-generated UUID. Reuse it only with identical input when retrying a creation.",
+						"example": "6ab4a998-177a-4a34-ae38-9f5e75a05b2c"
 					},
 					"title": {
 						"type": "string",
-						"minLength": 1
+						"minLength": 1,
+						"maxLength": 64,
+						"example": "Meeting notes"
 					},
 					"markdown": {
-						"type": "string"
+						"type": "string",
+						"minLength": 1,
+						"example": "# Notes\nMeeting summary"
 					}
 				},
 				"required": ["operationId", "title", "markdown"],
@@ -705,7 +724,7 @@
 					},
 					"version": {
 						"type": "string",
-						"pattern": "^\\d+$/u"
+						"pattern": "^\\d+$"
 					},
 					"action": {
 						"type": "string",
@@ -727,7 +746,7 @@
 					},
 					"version": {
 						"type": "string",
-						"pattern": "^\\d+$/u"
+						"pattern": "^\\d+$"
 					},
 					"action": {
 						"type": "string",
@@ -867,7 +886,9 @@
 					},
 					"operationId": {
 						"type": "string",
-						"format": "uuid"
+						"format": "uuid",
+						"description": "Client-generated UUID. Reuse it only with identical input when retrying a creation.",
+						"example": "6ab4a998-177a-4a34-ae38-9f5e75a05b2c"
 					},
 					"chunkSize": {
 						"type": "integer",
@@ -915,7 +936,9 @@
 				"properties": {
 					"operationId": {
 						"type": "string",
-						"format": "uuid"
+						"format": "uuid",
+						"description": "Client-generated UUID. Reuse it only with identical input when retrying a creation.",
+						"example": "6ab4a998-177a-4a34-ae38-9f5e75a05b2c"
 					},
 					"contentType": {
 						"type": "string",
@@ -956,7 +979,9 @@
 				"properties": {
 					"operationId": {
 						"type": "string",
-						"format": "uuid"
+						"format": "uuid",
+						"description": "Client-generated UUID. Reuse it only with identical input when retrying a creation.",
+						"example": "6ab4a998-177a-4a34-ae38-9f5e75a05b2c"
 					},
 					"contentType": {
 						"type": "string",
@@ -980,20 +1005,28 @@
 							},
 							"isbn": {
 								"type": "string",
-								"minLength": 1
+								"pattern": "^(?:-*\\d){13}-*$",
+								"description": "Exactly 13 digits after removing ASCII hyphens. ISBN-10 is not supported. Normalization occurs in the domain layer after operation hashing.",
+								"example": "978-4-06-521234-5"
 							},
 							"title": {
 								"type": "string",
-								"minLength": 1
+								"minLength": 1,
+								"maxLength": 512
 							},
 							"rating": {
-								"type": "integer"
+								"type": "integer",
+								"minimum": 1,
+								"maximum": 5
 							},
 							"tags": {
 								"type": "array",
 								"items": {
-									"type": "string"
-								}
+									"type": "string",
+									"pattern": "^\\s*(?:\\S(?:[\\s\\S]{0,62}\\S)?)?\\s*$"
+								},
+								"description": "Tags are trimmed and empty tags removed in the domain layer. Each remaining tag must contain 1–64 UTF-16 code units. Input is retained for idempotency hashing.",
+								"example": ["TypeScript"]
 							}
 						},
 						"required": ["isbn", "title", "rating", "tags"],
@@ -1112,10 +1145,12 @@
 					{
 						"schema": {
 							"type": "string",
-							"minLength": 1,
-							"maxLength": 512
+							"pattern": "^(?:-*\\d){13}-*$",
+							"description": "Exactly 13 digits after removing ASCII hyphens. ISBN-10 is not supported. Normalization occurs in the domain layer after operation hashing.",
+							"example": "978-4-06-521234-5"
 						},
 						"required": true,
+						"description": "Exactly 13 digits after removing ASCII hyphens. ISBN-10 is not supported. Normalization occurs in the domain layer after operation hashing.",
 						"name": "isbn",
 						"in": "path"
 					}
@@ -1241,7 +1276,7 @@
 						"schema": {
 							"type": "string",
 							"minLength": 1,
-							"maxLength": 512
+							"maxLength": 64
 						},
 						"required": true,
 						"name": "title",
@@ -3941,9 +3976,12 @@
 						"schema": {
 							"type": "string",
 							"maxLength": 512,
-							"default": ""
+							"default": "",
+							"description": "Last record ID from nextAfter; omit for the first page.",
+							"example": "record-id"
 						},
 						"required": false,
+						"description": "Last record ID from nextAfter; omit for the first page.",
 						"name": "after",
 						"in": "query"
 					},
@@ -4080,9 +4118,11 @@
 						"schema": {
 							"type": "string",
 							"minLength": 1,
-							"maxLength": 512
+							"maxLength": 512,
+							"description": "Opaque owner-bound cursor returned by sync head or changes. Do not construct or edit it."
 						},
 						"required": true,
+						"description": "Opaque owner-bound cursor returned by sync head or changes. Do not construct or edit it.",
 						"name": "cursor",
 						"in": "query"
 					},
