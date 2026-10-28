@@ -1,8 +1,8 @@
 import type { ApiServicesConfig } from "s-private-backend/api/composition";
-import { MobileApiError } from "s-private-backend/mobile/error";
+import { ApiError } from "s-private-backend/api/error";
 
 async function unavailable(): Promise<never> {
-	throw new MobileApiError("NOT_FOUND", 404);
+	throw new ApiError("NOT_FOUND");
 }
 
 /** Temporary outage adapter: never connect to MinIO or pretend a write succeeded. */

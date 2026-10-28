@@ -1,5 +1,6 @@
 import type { ZodType } from "zod";
 import { createRoute, z } from "@hono/zod-openapi";
+import { apiErrorResponseSchema } from "@s-hirano-ist/s-api-contracts/errors";
 import {
 	isbnInputSchema,
 	articleSchema,
@@ -12,7 +13,6 @@ import {
 	countQuerySchema,
 	idSchema,
 	createResultSchema,
-	errorSchema,
 	categorySchema,
 	snapshotQuerySchema,
 	snapshotPageSchema,
@@ -35,19 +35,57 @@ export const jsonContent = <T extends ZodType>(schema: T) => ({
 export const errorResponses = {
 	401: {
 		description: "Authentication required",
-		content: jsonContent(errorSchema),
+		content: jsonContent(apiErrorResponseSchema(401)),
 	},
-	403: { description: "Forbidden", content: jsonContent(errorSchema) },
-	404: { description: "Not found", content: jsonContent(errorSchema) },
-	409: { description: "Conflict", content: jsonContent(errorSchema) },
-	410: { description: "Upload expired", content: jsonContent(errorSchema) },
-	413: { description: "Payload too large", content: jsonContent(errorSchema) },
-	422: { description: "Validation failed", content: jsonContent(errorSchema) },
-	500: { description: "Internal error", content: jsonContent(errorSchema) },
+	403: {
+		description: "Forbidden",
+		content: jsonContent(apiErrorResponseSchema(403)),
+	},
+	404: {
+		description: "Not found",
+		content: jsonContent(apiErrorResponseSchema(404)),
+	},
+	409: {
+		description: "Conflict",
+		content: jsonContent(apiErrorResponseSchema(409)),
+	},
+	410: {
+		description: "Upload expired",
+		content: jsonContent(apiErrorResponseSchema(410)),
+	},
+	413: {
+		description: "Payload too large",
+		content: jsonContent(apiErrorResponseSchema(413)),
+	},
+	422: {
+		description: "Validation failed",
+		content: jsonContent(apiErrorResponseSchema(422)),
+	},
+	500: {
+		description: "Internal error",
+		content: jsonContent(apiErrorResponseSchema(500)),
+	},
 	503: {
 		description: "Service unavailable",
-		content: jsonContent(errorSchema),
+		content: jsonContent(apiErrorResponseSchema(503)),
 	},
+};
+const commonErrors = {
+	401: errorResponses[401],
+	403: errorResponses[403],
+	500: errorResponses[500],
+	503: errorResponses[503],
+};
+const queryErrors = { ...commonErrors, 422: errorResponses[422] };
+const recordErrors = { ...queryErrors, 404: errorResponses[404] };
+const createErrors = {
+	...queryErrors,
+	409: errorResponses[409],
+	413: errorResponses[413],
+};
+const uploadErrors = {
+	...recordErrors,
+	410: errorResponses[410],
 };
 const security: Record<string, string[]>[] = [
 	{ bearerAuth: [] },
@@ -77,7 +115,7 @@ function contentRoutes<const D extends string, T extends ZodType>(
 			request: { query: listQuerySchema },
 			responses: {
 				200: { description: "Owner-scoped page", content: jsonContent(page) },
-				...errorResponses,
+				...queryErrors,
 			},
 		}),
 		count: createRoute({
@@ -96,7 +134,7 @@ function contentRoutes<const D extends string, T extends ZodType>(
 							.openapi(`${capitalized}Count`),
 					),
 				},
-				...errorResponses,
+				...queryErrors,
 			},
 		}),
 		detail: createRoute({
@@ -111,7 +149,7 @@ function contentRoutes<const D extends string, T extends ZodType>(
 					description: "Owner-scoped record",
 					content: jsonContent(record),
 				},
-				...errorResponses,
+				...recordErrors,
 			},
 		}),
 		delete: createRoute({
@@ -123,7 +161,8 @@ function contentRoutes<const D extends string, T extends ZodType>(
 			request: { params: idParams },
 			responses: {
 				204: { description: "Deleted; only UNEXPORTED records may be deleted" },
-				...errorResponses,
+				...recordErrors,
+				409: errorResponses[409],
 			},
 		}),
 	};
@@ -149,7 +188,7 @@ function createContentRoute<const D extends string, T extends ZodType>(
 					"Durable result; retry the same operationId only with identical input",
 				content: jsonContent(createResultSchema),
 			},
-			...errorResponses,
+			...createErrors,
 		},
 	});
 }
@@ -165,7 +204,7 @@ export const bookByIsbnRoute = createRoute({
 			description: "Owner-scoped book by ISBN",
 			content: jsonContent(bookSchema),
 		},
-		...errorResponses,
+		...recordErrors,
 	},
 });
 export const noteByTitleRoute = createRoute({
@@ -180,7 +219,7 @@ export const noteByTitleRoute = createRoute({
 			description: "Owner-scoped note by title",
 			content: jsonContent(noteSchema),
 		},
-		...errorResponses,
+		...recordErrors,
 	},
 });
 export const createArticleRoute = createContentRoute(
@@ -203,7 +242,7 @@ export const categoriesRoute = createRoute({
 					.openapi("CategoriesResponse"),
 			),
 		},
-		...errorResponses,
+		...commonErrors,
 	},
 });
 export const syncHeadRoute = createRoute({
@@ -217,7 +256,7 @@ export const syncHeadRoute = createRoute({
 			description: "Owner-bound opaque cursor",
 			content: jsonContent(syncHeadSchema),
 		},
-		...errorResponses,
+		...commonErrors,
 	},
 });
 export const syncSnapshotRoute = createRoute({
@@ -232,7 +271,7 @@ export const syncSnapshotRoute = createRoute({
 			description: "Keyset page; replay changes after completing the snapshot",
 			content: jsonContent(snapshotPageSchema),
 		},
-		...errorResponses,
+		...queryErrors,
 	},
 });
 export const syncChangesRoute = createRoute({
@@ -247,7 +286,7 @@ export const syncChangesRoute = createRoute({
 			description: "Ordered changes; persist records and nextCursor together",
 			content: jsonContent(changesPageSchema),
 		},
-		...errorResponses,
+		...queryErrors,
 	},
 });
 export const searchRoute = createRoute({
@@ -262,7 +301,7 @@ export const searchRoute = createRoute({
 			description: "Owner-scoped search results",
 			content: jsonContent(searchResponseSchema),
 		},
-		...errorResponses,
+		...queryErrors,
 	},
 });
 export const startUploadRoute = createRoute({
@@ -279,7 +318,7 @@ export const startUploadRoute = createRoute({
 			description: "Created or resumed upload",
 			content: jsonContent(uploadSessionSchema),
 		},
-		...errorResponses,
+		...createErrors,
 	},
 });
 export const getUploadRoute = createRoute({
@@ -294,7 +333,7 @@ export const getUploadRoute = createRoute({
 			description: "Upload status",
 			content: jsonContent(uploadSessionSchema),
 		},
-		...errorResponses,
+		...uploadErrors,
 	},
 });
 export const cancelUploadRoute = createRoute({
@@ -304,7 +343,7 @@ export const cancelUploadRoute = createRoute({
 	tags: ["uploads"],
 	security,
 	request: { params: idParams },
-	responses: { 204: { description: "Cancelled" }, ...errorResponses },
+	responses: { 204: { description: "Cancelled" }, ...uploadErrors },
 });
 export const putChunkRoute = createRoute({
 	method: "put",
@@ -338,7 +377,8 @@ export const putChunkRoute = createRoute({
 			description: "Chunk received",
 			content: jsonContent(chunkResultSchema),
 		},
-		...errorResponses,
+		...uploadErrors,
+		413: errorResponses[413],
 	},
 });
 export const completeUploadRoute = createRoute({
@@ -353,7 +393,8 @@ export const completeUploadRoute = createRoute({
 			description: "Durable created resource",
 			content: jsonContent(createResultSchema),
 		},
-		...errorResponses,
+		...uploadErrors,
+		409: errorResponses[409],
 	},
 });
 export const mediaRoute = createRoute({
@@ -387,7 +428,7 @@ export const mediaRoute = createRoute({
 				},
 			},
 		},
-		...errorResponses,
+		...recordErrors,
 	},
 });
 export const sessionRoute = createRoute({
@@ -401,7 +442,7 @@ export const sessionRoute = createRoute({
 			description: "Authenticated Web session",
 			content: jsonContent(sessionSchema),
 		},
-		...errorResponses,
+		...commonErrors,
 	},
 });
 export const subscribeRoute = createRoute({
@@ -413,7 +454,11 @@ export const subscribeRoute = createRoute({
 	request: {
 		body: { required: true, content: jsonContent(subscriptionSchema) },
 	},
-	responses: { 204: { description: "Subscribed" }, ...errorResponses },
+	responses: {
+		204: { description: "Subscribed" },
+		...queryErrors,
+		413: errorResponses[413],
+	},
 });
 export const unsubscribeRoute = createRoute({
 	method: "delete",
@@ -424,7 +469,12 @@ export const unsubscribeRoute = createRoute({
 	request: {
 		body: { required: true, content: jsonContent(subscriptionEndpointSchema) },
 	},
-	responses: { 204: { description: "Unsubscribed" }, ...errorResponses },
+	responses: {
+		204: { description: "Unsubscribed" },
+		...queryErrors,
+		413: errorResponses[413],
+		404: errorResponses[404],
+	},
 });
 export const testPushRoute = createRoute({
 	method: "post",
@@ -435,7 +485,12 @@ export const testPushRoute = createRoute({
 	request: {
 		body: { required: true, content: jsonContent(subscriptionEndpointSchema) },
 	},
-	responses: { 204: { description: "Sent" }, ...errorResponses },
+	responses: {
+		204: { description: "Sent" },
+		...queryErrors,
+		413: errorResponses[413],
+		404: errorResponses[404],
+	},
 });
 export const apiRoutes = [
 	bookByIsbnRoute,

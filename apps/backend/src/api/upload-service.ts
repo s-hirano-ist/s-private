@@ -5,7 +5,7 @@ import type {
 import type { MobileDeps } from "s-private-backend/mobile/deps";
 import type { MobileUpload } from "s-private-backend/mobile/ports";
 import * as schemas from "@s-hirano-ist/s-api-contracts/schemas";
-import { MobileApiError } from "s-private-backend/mobile/error";
+import { ApiError } from "s-private-backend/api/error";
 import { mobileInputHash } from "s-private-backend/mobile/operations";
 import { z } from "zod";
 const ttl = 24 * 60 * 60 * 1000;
@@ -65,9 +65,8 @@ export function createUploadService(
 ) {
 	async function owned(owner: string, id: string) {
 		const upload = await deps.uploads.findUpload(owner, id);
-		if (!upload) throw new MobileApiError("NOT_FOUND", 404);
-		if (upload.expiresAt <= new Date())
-			throw new MobileApiError("UPLOAD_EXPIRED", 410);
+		if (!upload) throw new ApiError("NOT_FOUND");
+		if (upload.expiresAt <= new Date()) throw new ApiError("UPLOAD_EXPIRED");
 		return upload;
 	}
 	async function cleanup(upload: MobileUpload) {
@@ -109,7 +108,7 @@ export function createUploadService(
 					left.metadata = { filename: input.metadata.filename };
 				}
 				if (mobileInputHash(left) !== mobileInputHash(right))
-					throw new MobileApiError("OPERATION_CONFLICT", 409);
+					throw new ApiError("OPERATION_CONFLICT");
 				return session(existing);
 			}
 			return session(
@@ -132,13 +131,13 @@ export function createUploadService(
 			const upload = await owned(owner, id);
 			const count = Math.ceil(upload.fileSize / schemas.uploadChunkSize);
 			if (!Number.isInteger(part) || part < 0 || part >= count)
-				throw new MobileApiError("VALIDATION_ERROR", 422);
+				throw new ApiError("VALIDATION_ERROR");
 			const expected =
 				part === count - 1
 					? upload.fileSize - part * schemas.uploadChunkSize
 					: schemas.uploadChunkSize;
 			if (bytes.byteLength !== expected)
-				throw new MobileApiError("INVALID_CHUNK_SIZE", 422);
+				throw new ApiError("INVALID_CHUNK_SIZE");
 			await deps.chunks.put(id, part, bytes);
 			if (!upload.receivedParts.includes(part))
 				await deps.uploads.updateUploadParts(
@@ -152,13 +151,13 @@ export function createUploadService(
 			const count = Math.ceil(upload.fileSize / schemas.uploadChunkSize);
 			const parts = upload.receivedParts.toSorted((a, b) => a - b);
 			if (parts.length !== count || parts.some((part, index) => part !== index))
-				throw new MobileApiError("UPLOAD_INCOMPLETE", 409);
+				throw new ApiError("UPLOAD_INCOMPLETE");
 			const chunks: Buffer[] = [];
 			for (let part = 0; part < count; part++)
 				chunks.push(await deps.chunks.get(id, part));
 			const bytes = Buffer.concat(chunks);
 			if (bytes.byteLength !== upload.fileSize)
-				throw new MobileApiError("UPLOAD_INCOMPLETE", 409);
+				throw new ApiError("UPLOAD_INCOMPLETE");
 			const { input, legacyMetadata } = decode(upload);
 			const filename =
 				input.metadata.filename ??

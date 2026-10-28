@@ -7,6 +7,6 @@
 		"lib": ["ES2025", "DOM", "DOM.Iterable"],
 		"noEmit": true
 	},
-	"include": ["src/**/*.ts"],
+	"include": ["src/**/*.ts", "type-tests/**/*.ts"],
 	"exclude": ["src/**/*.test.ts"]
 }

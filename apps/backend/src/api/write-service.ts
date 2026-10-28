@@ -13,6 +13,7 @@ import {
 } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import { Prisma } from "@s-hirano-ist/s-database";
 import { createHash } from "node:crypto";
+import { ApiError } from "s-private-backend/api/error";
 import {
 	createArticle,
 	deleteArticle,
@@ -31,7 +32,6 @@ import {
 	deleteImage,
 	type CreateImageDeps,
 } from "s-private-backend/images/use-cases";
-import { MobileApiError } from "s-private-backend/mobile/error";
 import {
 	mobileInputHash,
 	runMobileOperation,
@@ -74,7 +74,7 @@ async function validateDomain<T>(work: () => Promise<T>): Promise<T> {
 			cause instanceof InvalidFormatError ||
 			cause instanceof FileNotAllowedError
 		)
-			throw new MobileApiError("VALIDATION_ERROR", 422);
+			throw new ApiError("VALIDATION_ERROR");
 		throw error;
 	}
 }
@@ -112,7 +112,7 @@ export function createWriteService(deps: WriteServiceDeps) {
 								);
 								if (id) return id;
 							}
-							throw new MobileApiError("DUPLICATE", 409);
+							throw new ApiError("DUPLICATE");
 						}
 						throw error;
 					}
@@ -202,7 +202,7 @@ export function createWriteService(deps: WriteServiceDeps) {
 				hashInput = legacyInput;
 				// Old failed image operations have no durable file hash/path association. Never guess the latest image.
 				if (input.domain === "images" && existing.status === "FAILED")
-					throw new MobileApiError("OPERATION_CONFLICT", 409);
+					throw new ApiError("OPERATION_CONFLICT");
 			}
 			let storedPath = "";
 			return run(
@@ -241,12 +241,12 @@ export function createWriteService(deps: WriteServiceDeps) {
 		},
 		async remove(owner: string, domain: MobileDomain, id: string) {
 			const record = await mobile.content.getContent(domain, owner, id);
-			if (!record) throw new MobileApiError("NOT_FOUND", 404);
+			if (!record) throw new ApiError("NOT_FOUND");
 			if (
 				z.object({ status: schemas.statusSchema }).parse(record).status !==
 				"UNEXPORTED"
 			)
-				throw new MobileApiError("NOT_DELETABLE", 409);
+				throw new ApiError("NOT_DELETABLE");
 			const ownerId = makeUserId(owner);
 			const resourceId = makeId(id);
 			try {
@@ -266,7 +266,7 @@ export function createWriteService(deps: WriteServiceDeps) {
 				}
 			} catch (error) {
 				if (mobile.errors.isRecordNotFoundError(error))
-					throw new MobileApiError("NOT_FOUND", 404);
+					throw new ApiError("NOT_FOUND");
 				throw error;
 			}
 		},
