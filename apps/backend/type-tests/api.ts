@@ -12,7 +12,7 @@ export function verifyInvalidStatus() {
 }
 
 export async function verifyReadModels(
-	content: import("s-private-backend/mobile/ports").MobileContentRepository,
+	content: import("@s-hirano-ist/s-application/mobile/ports").MobileContentRepository,
 	reads: import("s-private-backend/api/read-service").ReadService,
 ) {
 	const article = await content.getContent("articles", "owner", "id");

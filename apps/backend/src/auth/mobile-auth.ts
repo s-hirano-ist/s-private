@@ -1,4 +1,4 @@
-import type { MobileDeps } from "s-private-backend/mobile/deps";
+import type { MobileDeps } from "@s-hirano-ist/s-application/mobile/deps";
 import { createRemoteJWKSet, jwtVerify } from "jose";
 import { ApiError } from "s-private-backend/api/error";
 import { tenantContext } from "s-private-backend/shared/tenant-context";
