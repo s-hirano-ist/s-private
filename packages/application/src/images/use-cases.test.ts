@@ -1,3 +1,9 @@
+import { StoragePhaseError } from "@s-hirano-ist/s-application/diagnostics/storage-phase-error";
+import {
+	createImage,
+	deleteImage,
+	type CreateImageDeps,
+} from "@s-hirano-ist/s-application/images/use-cases";
 import {
 	makeId,
 	makeUserId,
@@ -9,12 +15,6 @@ import {
 	makeFileSize,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
 import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
-import { StorageOperationError } from "@s-hirano-ist/s-storage";
-import {
-	createImage,
-	deleteImage,
-	type CreateImageDeps,
-} from "s-private-backend/images/use-cases";
 import { expect, test, vi } from "vite-plus/test";
 
 const input = {
@@ -98,7 +98,7 @@ test.each([
 		await expect(
 			createImage(input, f.deps, { action: "addImage" }),
 		).rejects.toMatchObject({
-			name: StorageOperationError.name,
+			name: StoragePhaseError.name,
 			context: expect.objectContaining({ phase }),
 		});
 		expect(f.create).not.toHaveBeenCalled();

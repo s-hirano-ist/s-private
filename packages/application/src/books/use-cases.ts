@@ -1,8 +1,13 @@
+import type { BookCreationInput } from "@s-hirano-ist/s-application/books/input-model";
+import type { EventDispatcher } from "@s-hirano-ist/s-application/events/ports";
 import type { IBooksCommandRepository } from "@s-hirano-ist/s-core/books/repositories/books-command-repository.interface";
 import type { BooksDomainService } from "@s-hirano-ist/s-core/books/services/books-domain-service";
 import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/services/storage-service.interface";
-import type { parseBookInput } from "s-private-backend/books/input";
-import type { EventDispatcher } from "s-private-backend/shared/ports";
+import {
+	withOperationPhase,
+	type OperationPhaseContext,
+} from "@s-hirano-ist/s-application/diagnostics/operation-phase-error";
+import { withStoragePhase } from "@s-hirano-ist/s-application/diagnostics/storage-phase-error";
 import { bookEntity } from "@s-hirano-ist/s-core/books/entities/book-entity";
 import { BookDeletedEvent } from "@s-hirano-ist/s-core/books/events/book-deleted-event";
 import {
@@ -10,11 +15,6 @@ import {
 	type Id,
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import {
-	withOperationPhase,
-	type OperationPhaseContext,
-} from "s-private-backend/shared/operation-phase-error";
-import { withStoragePhase } from "s-private-backend/shared/storage-phase-error";
 export type DeleteBookDeps = {
 	commandRepository: IBooksCommandRepository;
 	eventDispatcher: EventDispatcher;
@@ -26,7 +26,7 @@ export type CreateBookDeps = DeleteBookDeps & {
 	storageService: IStorageService;
 };
 export async function createBook(
-	parsedData: Awaited<ReturnType<typeof parseBookInput>>,
+	parsedData: BookCreationInput,
 	deps: CreateBookDeps,
 	phaseContext: Omit<OperationPhaseContext, "phase">,
 ) {

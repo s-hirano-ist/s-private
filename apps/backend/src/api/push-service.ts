@@ -1,7 +1,6 @@
-import type { PushSubscriptionRepository } from "s-private-backend/notifications/ports";
+import type { PushSubscriptionRepository } from "@s-hirano-ist/s-application/notifications/ports";
 import type { createPushDeliveryService } from "s-private-backend/notifications/push-notification-service";
 import type { BrowserPushSubscription } from "s-private-backend/notifications/subscriptions";
-import { Prisma } from "@s-hirano-ist/s-database";
 import { ApiError } from "s-private-backend/api/error";
 import { PushSubscriptionError } from "s-private-backend/notifications/error";
 import {
@@ -23,12 +22,6 @@ async function run(work: () => Promise<void>) {
 					throw new ApiError("NOT_FOUND");
 			}
 		}
-		// A foreign endpoint inserted between the ownership check and upsert must not be updated.
-		if (
-			error instanceof Prisma.PrismaClientKnownRequestError &&
-			error.code === "P2002"
-		)
-			throw new ApiError("FORBIDDEN");
 		throw error;
 	}
 }

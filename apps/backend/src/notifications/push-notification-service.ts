@@ -1,4 +1,4 @@
-import type { PushSubscriptionRepository } from "s-private-backend/notifications/ports";
+import type { PushSubscriptionRepository } from "@s-hirano-ist/s-application/notifications/ports";
 import type { ErrorReporter } from "s-private-backend/observability/reporter";
 import {
 	createWebPushService,

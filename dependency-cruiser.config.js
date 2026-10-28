@@ -26,6 +26,21 @@ const COLLAPSE_PATTERN =
    into the tracked first-party universe is forbidden unless the target is in `to.pathNot`.
    Verified: 0 false positives on the current tree; fires on deliberate violations. */
 const boundaryRules = [
+	...["articles", "notes", "images", "books"].map((domain) => ({
+		name: `boundary-shared-domain-${domain}`,
+		severity: "error",
+		from: { path: `^packages/(application|infrastructure)/src/${domain}/` },
+		to: {
+			path: "^packages/(application|infrastructure)/src/(articles|notes|images|books)/|^packages/core/(articles|notes|images|books)/",
+			pathNot: `^packages/(application|infrastructure)/src/${domain}/|^packages/core/${domain}/`,
+		},
+	})),
+	{
+		name: "boundary-http-write-services",
+		severity: "error",
+		from: { path: "^apps/backend/src/api/(write|push)-service\\.ts$" },
+		to: { path: "^packages/database/" },
+	},
 	{
 		name: "boundary-http-read-service",
 		severity: "error",
