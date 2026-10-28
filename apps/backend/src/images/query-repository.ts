@@ -2,7 +2,7 @@ import type {
 	IImagesQueryRepository,
 	ImagesFindManyParams,
 } from "@s-hirano-ist/s-core/images/repositories/images-query-repository.interface";
-import type { DatabaseClient } from "s-private-backend/shared/database";
+import type { DatabaseClient } from "@s-hirano-ist/s-infrastructure/database";
 import {
 	type ExportedImage,
 	type ImageListItemDTO,

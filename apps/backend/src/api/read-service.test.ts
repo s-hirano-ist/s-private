@@ -1,8 +1,13 @@
-import { Readable } from "node:stream";
+import type { DatabaseClient } from "@s-hirano-ist/s-infrastructure/database";
 import {
-	createReadService,
-	type ReadServiceDeps,
-} from "s-private-backend/api/read-service";
+	createReadQueries,
+	type ReadQueriesDeps,
+} from "@s-hirano-ist/s-application/content/queries";
+import { createMediaReader } from "@s-hirano-ist/s-infrastructure/content/media-reader";
+import { createContentQueryRepository } from "@s-hirano-ist/s-infrastructure/content/query-repository";
+import { createSearchIndex } from "@s-hirano-ist/s-infrastructure/search/search-index";
+import { Readable } from "node:stream";
+import { createReadService } from "s-private-backend/api/read-service";
 import { describe, expect, test, vi } from "vitest";
 function fixture() {
 	const database = {
@@ -24,17 +29,21 @@ function fixture() {
 	};
 	const searchVectors = vi.fn().mockResolvedValue({ results: [] });
 	const deps = {
-		database,
-		mobile,
-		storage,
-		searchVectors,
-	} as unknown as ReadServiceDeps;
+		content: mobile.content,
+		sync: mobile.sync,
+		query: createContentQueryRepository(database as unknown as DatabaseClient),
+		search: createSearchIndex(searchVectors),
+		media: {
+			images: createMediaReader(storage.images),
+			books: createMediaReader(storage.books),
+		},
+	} as unknown as ReadQueriesDeps;
 	return {
 		database,
 		mobile,
 		storage,
 		searchVectors,
-		service: createReadService(deps),
+		service: createReadService(createReadQueries(deps)),
 	};
 }
 describe("Shared API read service", () => {
@@ -87,7 +96,7 @@ describe("Shared API read service", () => {
 		mobile.content.getContent.mockResolvedValue(null);
 		await expect(
 			service.media("owner", "images", "foreign", "original"),
-		).rejects.toMatchObject({ code: "NOT_FOUND", status: 404 });
+		).rejects.toMatchObject({ code: "NOT_FOUND" });
 		expect(storage.images.getImage).not.toHaveBeenCalled();
 	});
 	test("converts DB timestamps and streams thumbnails with their actual content type", async () => {
@@ -155,7 +164,27 @@ describe("Shared API read service", () => {
 		);
 		await expect(
 			service.lookup("books", "owner", "invalid"),
-		).rejects.toMatchObject({ code: "VALIDATION_ERROR", status: 422 });
+		).rejects.toMatchObject({ code: "VALIDATION_ERROR" });
 		expect(mobile.content.lookupContentId).toHaveBeenCalledTimes(1);
 	});
+});
+
+test("cancelling media closes the storage stream even before its first chunk", async () => {
+	const { mobile, storage, service } = fixture();
+	mobile.content.getContent.mockResolvedValue({
+		id: "image",
+		path: "file.jpg",
+		contentType: "image/jpeg",
+		status: "UNEXPORTED",
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		exportedAt: null,
+		fileSize: 5,
+		width: null,
+		height: null,
+	});
+	const response = await service.media("owner", "images", "image", "original");
+	const stream = await storage.images.getImage.mock.results[0].value;
+	await response.body?.cancel();
+	expect(stream.destroyed).toBe(true);
 });

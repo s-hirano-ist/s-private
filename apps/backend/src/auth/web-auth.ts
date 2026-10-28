@@ -19,8 +19,8 @@
  * @module
  */
 
+import type { DatabaseClient } from "@s-hirano-ist/s-infrastructure/database";
 import type { BaseURLConfig } from "better-auth";
-import type { DatabaseClient } from "s-private-backend/shared/database";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { betterAuth } from "better-auth/minimal";
 import { auth0, genericOAuth } from "better-auth/plugins/generic-oauth";

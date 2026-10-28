@@ -2,7 +2,7 @@ import type {
 	INotesQueryRepository,
 	NotesFindManyParams,
 } from "@s-hirano-ist/s-core/notes/repositories/notes-query-repository.interface";
-import type { DatabaseClient } from "s-private-backend/shared/database";
+import type { DatabaseClient } from "@s-hirano-ist/s-infrastructure/database";
 import {
 	type ExportedNote,
 	makeMarkdown,

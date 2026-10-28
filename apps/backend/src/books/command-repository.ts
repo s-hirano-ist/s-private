@@ -7,7 +7,7 @@ import type {
 	Status,
 	UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import type { DatabaseClient } from "s-private-backend/shared/database";
+import type { DatabaseClient } from "@s-hirano-ist/s-infrastructure/database";
 import {
 	makeBookTitle,
 	type UnexportedBook,

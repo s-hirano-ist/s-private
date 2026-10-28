@@ -19,7 +19,7 @@ import type {
 	SearchResultGroup,
 	UnifiedSearchResults,
 } from "@s-hirano-ist/s-core/shared-kernel/types/search-types";
-import type { createVectorSearch } from "s-private-backend/search/vector-search";
+import type { createVectorSearch } from "@s-hirano-ist/s-infrastructure/search/vector-search";
 
 /**
  * Truncates text to a maximum length with ellipsis.
