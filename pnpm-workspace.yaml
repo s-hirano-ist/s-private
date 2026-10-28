@@ -18,8 +18,6 @@ tasks:
       - AUTH_SECRET
       - BACKEND_URL
       - BETTER_AUTH_URL
-      - CF_ACCESS_CLIENT_ID
-      - CF_ACCESS_CLIENT_SECRET
       - CI
       - DATABASE_URL
       - EMBEDDING_URL
@@ -30,12 +28,6 @@ tasks:
       - LOCAL_AUTH_PASSWORD
       - LOCAL_DEV_MODE
       - MOBILE_API_AUDIENCE
-      - MINIO_ACCESS_KEY
-      - MINIO_BUCKET_NAME
-      - MINIO_HOST
-      - MINIO_PORT
-      - MINIO_SECRET_KEY
-      - MINIO_USE_SSL
       - NEXT_PUBLIC_SENTRY_DSN
       - NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY
       - NODE_EXTRA_CA_CERTS
@@ -43,6 +35,12 @@ tasks:
       - PUSHOVER_APP_TOKEN
       - PUSHOVER_URL
       - PUSHOVER_USER_KEY
+      - S3_ENDPOINT
+      - S3_REGION
+      - S3_BUCKET_NAME
+      - S3_ACCESS_KEY_ID
+      - S3_SECRET_ACCESS_KEY
+      - S3_FORCE_PATH_STYLE
       - QDRANT_API_KEY
       - QDRANT_COLLECTION_NAME
       - QDRANT_URL
@@ -58,6 +56,7 @@ pipelines:
     - build
 
 catalog:
+  '@aws-sdk/client-s3': 3.1156.0
   '@s-hirano-ist/s-api-client': workspace:*
   '@tailwindcss/postcss': 4.3.3
   '@tailwindcss/typography': 0.5.20

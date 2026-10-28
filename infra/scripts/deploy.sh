@@ -123,7 +123,7 @@ do_init() {
         echo "    CLOUDFLARE_TUNNEL_TOKEN=<Cloudflare Dashboard から取得>"
         echo "    MINIO_ROOT_USER=<任意のユーザー名>"
         echo "    MINIO_ROOT_PASSWORD=<openssl rand -base64 32 で生成>"
-        echo "    MINIO_BUCKET_NAME=<バケット名>"
+        echo "    S3_BUCKET_NAME=<バケット名>"
         echo ""
         read -rp ".env を作成しましたか? (y/N): " ENV_CREATED
         if [[ "${ENV_CREATED}" != "y" && "${ENV_CREATED}" != "Y" ]]; then

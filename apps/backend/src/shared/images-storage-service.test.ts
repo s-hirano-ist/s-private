@@ -1,14 +1,14 @@
-import { createMinioClient } from "@s-hirano-ist/s-storage";
+import { createObjectStorageClient } from "@s-hirano-ist/s-storage";
 import { StorageOperationError } from "@s-hirano-ist/s-storage";
 import { Readable } from "node:stream";
-import { createImagesStorageService } from "s-private-backend/shared/minio-storage-service";
+import { createImagesStorageService } from "s-private-backend/shared/images-storage-service";
 import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
-const minioClient = createMinioClient({
-	endPoint: "localhost",
-	port: 9000,
-	useSSL: false,
-	accessKey: "local-access-key",
-	secretKey: "local-secret-key",
+const storageClient = createObjectStorageClient({
+	endpoint: "http://localhost:9000",
+	region: "us-east-1",
+	forcePathStyle: true,
+	accessKeyId: "local-access-key",
+	secretAccessKey: "local-secret-key",
 });
 for (const method of [
 	"putObject",
@@ -16,11 +16,11 @@ for (const method of [
 	"statObject",
 	"removeObject",
 ] as const)
-	vi.spyOn(minioClient, method).mockRejectedValue(
+	vi.spyOn(storageClient, method).mockRejectedValue(
 		new Error("unconfigured storage mock"),
 	);
 const minioStorageService = createImagesStorageService(
-	minioClient,
+	storageClient,
 	"test-bucket",
 );
 
@@ -34,14 +34,14 @@ describe("MinioStorageService", () => {
 			const buffer = Buffer.from("test image data");
 			const path = "image-123.png";
 
-			vi.mocked(minioClient.putObject).mockResolvedValue({
+			vi.mocked(storageClient.putObject).mockResolvedValue({
 				etag: "test-etag",
 				versionId: "test-version",
 			});
 
 			await minioStorageService.uploadImage(path, buffer, false);
 
-			expect(minioClient.putObject).toHaveBeenCalledWith(
+			expect(storageClient.putObject).toHaveBeenCalledWith(
 				"test-bucket",
 				`images/original/${path}`,
 				buffer,
@@ -52,14 +52,14 @@ describe("MinioStorageService", () => {
 			const buffer = Buffer.from("test thumbnail data");
 			const path = "image-123.png";
 
-			vi.mocked(minioClient.putObject).mockResolvedValue({
+			vi.mocked(storageClient.putObject).mockResolvedValue({
 				etag: "test-etag",
 				versionId: "test-version",
 			});
 
 			await minioStorageService.uploadImage(path, buffer, true);
 
-			expect(minioClient.putObject).toHaveBeenCalledWith(
+			expect(storageClient.putObject).toHaveBeenCalledWith(
 				"test-bucket",
 				`images/thumbnail/${path}`,
 				buffer,
@@ -70,7 +70,7 @@ describe("MinioStorageService", () => {
 			const buffer = Buffer.from("test image data");
 			const path = "image-123.png";
 
-			vi.mocked(minioClient.putObject).mockRejectedValue(
+			vi.mocked(storageClient.putObject).mockRejectedValue(
 				new Error("Storage upload failed"),
 			);
 
@@ -86,7 +86,7 @@ describe("MinioStorageService", () => {
 				},
 			});
 
-			expect(minioClient.putObject).toHaveBeenCalledWith(
+			expect(storageClient.putObject).toHaveBeenCalledWith(
 				"test-bucket",
 				`images/original/${path}`,
 				buffer,
@@ -99,11 +99,11 @@ describe("MinioStorageService", () => {
 			const mockStream = new Readable();
 			const path = "image-123.png";
 
-			vi.mocked(minioClient.getObject).mockResolvedValue(mockStream);
+			vi.mocked(storageClient.getObject).mockResolvedValue(mockStream);
 
 			const result = await minioStorageService.getImage(path, false);
 
-			expect(minioClient.getObject).toHaveBeenCalledWith(
+			expect(storageClient.getObject).toHaveBeenCalledWith(
 				"test-bucket",
 				`images/original/${path}`,
 			);
@@ -114,11 +114,11 @@ describe("MinioStorageService", () => {
 			const mockStream = new Readable();
 			const path = "image-123.png";
 
-			vi.mocked(minioClient.getObject).mockResolvedValue(mockStream);
+			vi.mocked(storageClient.getObject).mockResolvedValue(mockStream);
 
 			const result = await minioStorageService.getImage(path, true);
 
-			expect(minioClient.getObject).toHaveBeenCalledWith(
+			expect(storageClient.getObject).toHaveBeenCalledWith(
 				"test-bucket",
 				`images/thumbnail/${path}`,
 			);
@@ -128,7 +128,7 @@ describe("MinioStorageService", () => {
 		test("should handle storage errors", async () => {
 			const path = "nonexistent.png";
 
-			vi.mocked(minioClient.getObject).mockRejectedValue(
+			vi.mocked(storageClient.getObject).mockRejectedValue(
 				new Error("Object not found"),
 			);
 
@@ -136,7 +136,7 @@ describe("MinioStorageService", () => {
 				StorageOperationError,
 			);
 
-			expect(minioClient.getObject).toHaveBeenCalledWith(
+			expect(storageClient.getObject).toHaveBeenCalledWith(
 				"test-bucket",
 				`images/original/${path}`,
 			);
@@ -147,7 +147,7 @@ describe("MinioStorageService", () => {
 		test("should verify image exists in storage", async () => {
 			const path = "image-123.png";
 
-			vi.mocked(minioClient.statObject).mockResolvedValue({
+			vi.mocked(storageClient.statObject).mockResolvedValue({
 				size: 1024,
 				etag: "test-etag",
 				lastModified: new Date("2024-01-01"),
@@ -156,7 +156,7 @@ describe("MinioStorageService", () => {
 
 			await minioStorageService.getImageOrThrow(path, false);
 
-			expect(minioClient.statObject).toHaveBeenCalledWith(
+			expect(storageClient.statObject).toHaveBeenCalledWith(
 				"test-bucket",
 				`images/original/${path}`,
 			);
@@ -165,7 +165,7 @@ describe("MinioStorageService", () => {
 		test("should throw when image does not exist", async () => {
 			const path = "nonexistent.png";
 
-			vi.mocked(minioClient.statObject).mockRejectedValue(
+			vi.mocked(storageClient.statObject).mockRejectedValue(
 				new Error("Object not found"),
 			);
 
@@ -179,11 +179,11 @@ describe("MinioStorageService", () => {
 		test("should delete original image from storage", async () => {
 			const path = "image-123.png";
 
-			vi.mocked(minioClient.removeObject).mockResolvedValue(undefined);
+			vi.mocked(storageClient.removeObject).mockResolvedValue(undefined);
 
 			await minioStorageService.deleteImage(path, false);
 
-			expect(minioClient.removeObject).toHaveBeenCalledWith(
+			expect(storageClient.removeObject).toHaveBeenCalledWith(
 				"test-bucket",
 				`images/original/${path}`,
 			);
@@ -192,11 +192,11 @@ describe("MinioStorageService", () => {
 		test("should delete thumbnail image from storage", async () => {
 			const path = "image-123.png";
 
-			vi.mocked(minioClient.removeObject).mockResolvedValue(undefined);
+			vi.mocked(storageClient.removeObject).mockResolvedValue(undefined);
 
 			await minioStorageService.deleteImage(path, true);
 
-			expect(minioClient.removeObject).toHaveBeenCalledWith(
+			expect(storageClient.removeObject).toHaveBeenCalledWith(
 				"test-bucket",
 				`images/thumbnail/${path}`,
 			);
@@ -205,7 +205,7 @@ describe("MinioStorageService", () => {
 		test("should handle delete errors", async () => {
 			const path = "image-123.png";
 
-			vi.mocked(minioClient.removeObject).mockRejectedValue(
+			vi.mocked(storageClient.removeObject).mockRejectedValue(
 				new Error("Delete failed"),
 			);
 

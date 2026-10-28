@@ -2,8 +2,6 @@ import { describe, expect, test } from "vite-plus/test";
 import { buildContentSecurityPolicy } from "./content-security-policy";
 
 const BASE_OPTIONS = {
-	minioHost: "minio.example.com",
-	minioPort: "443",
 	reportUrl: "https://sentry.example.com/csp",
 };
 
@@ -30,7 +28,7 @@ describe("buildContentSecurityPolicy", () => {
 		expect(policy).not.toMatch(/style-src-elem[^;]*'unsafe-inline'/u);
 		expect(policy).toContain("style-src-attr 'unsafe-inline'");
 		expect(policy).toContain(
-			"img-src 'self' blob: data: https://books.google.com https://s-hirano.com https://minio.example.com",
+			"img-src 'self' blob: data: https://books.google.com https://s-hirano.com",
 		);
 		expect(policy).toContain("upgrade-insecure-requests");
 		expect(policy).toContain("report-uri https://sentry.example.com/csp");

@@ -1,10 +1,7 @@
 import { createBackendHttpApp } from "s-private-backend/api/http-app";
 import { describe, expect, test, vi } from "vite-plus/test";
 
-function setup(
-	objectStorageUnavailable = false,
-	publicOrigin: string | null = "https://web.example",
-) {
+function setup(publicOrigin: string | null = "https://web.example") {
 	const cookies = new Headers();
 	cookies.append("set-cookie", "state=one; HttpOnly");
 	cookies.append("set-cookie", "aux=two; HttpOnly");
@@ -35,7 +32,6 @@ function setup(
 	);
 	const reportError = vi.fn();
 	const app = createBackendHttpApp({
-		objectStorageUnavailable,
 		api,
 		auth,
 		signIn,
@@ -49,7 +45,7 @@ function setup(
 }
 describe("backend HTTP host", () => {
 	test("requires the BFF's validated origin when Preview has no canonical origin", async () => {
-		const { app, signIn } = setup(false, null);
+		const { app, signIn } = setup(null);
 		expect(
 			(await app.request("https://backend.example/api/sign-in")).status,
 		).toBe(403);
@@ -59,40 +55,6 @@ describe("backend HTTP host", () => {
 		});
 		expect(response.status).toBe(307);
 		expect(response.headers.get("location")).toBe("https://preview.example/");
-	});
-	test.each([
-		["GET", "/api/v1/media/images/image/original"],
-		["GET", "/api/v1/media/books/book/thumbnail"],
-		["POST", "/api/v1/uploads"],
-		["GET", "/api/v1/uploads/upload"],
-		["PUT", "/api/v1/uploads/upload/chunks/0"],
-		["POST", "/api/v1/uploads/upload/complete"],
-		["DELETE", "/api/v1/uploads/upload"],
-	])(
-		"returns 404 for disabled storage %s %s before persistence",
-		async (method, path) => {
-			const { app, api, auth, reportError } = setup(true);
-			const response = await app.request(path, { method });
-			expect(response.status).toBe(404);
-			expect(await response.json()).toEqual({ error: { code: "NOT_FOUND" } });
-			expect(response.headers.get("cache-control")).toBe("private, no-store");
-			expect(api).not.toHaveBeenCalled();
-			expect(auth).not.toHaveBeenCalled();
-			expect(reportError).not.toHaveBeenCalled();
-		},
-	);
-	test("keeps session and content metadata APIs available during the outage", async () => {
-		const { app, api } = setup(true);
-		for (const path of [
-			"/api/v1/session",
-			"/api/v1/articles",
-			"/api/v1/notes",
-			"/api/v1/books",
-			"/api/v1/images",
-		]) {
-			expect((await app.request(path)).status).toBe(200);
-		}
-		expect(api).toHaveBeenCalledTimes(5);
 	});
 	test("reconstructs public OAuth URL and preserves body and separate cookies", async () => {
 		const { app } = setup();

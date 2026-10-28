@@ -46,7 +46,7 @@ flowchart LR
     iOS[SwiftUI] --> API
     API --> UseCases[共有ユースケース]
     UseCases --> Core[ドメイン]
-    API --> Adapters[Prisma / MinIO / 検索 / 通知]
+    API --> Adapters[Prisma / S3 / 検索 / 通知]
 ```
 
 各ドメイン間の直接importは禁止し、共通要素はshared-kernelへ置く。repositoryはcoreのinterfaceを実装し、外部設定はhostで構成する。Web用Sentryとbackend用Sentryはそれぞれの実行環境で扱う。
@@ -637,3 +637,11 @@ Auth0のNative Application設定はWeb用Applicationと分離する。iOSはAuth
 共通backendとWebの分離実装は完了している。`BACKEND_URL` は必須で、Web内のHono・Prisma・storage・ドメインadapterは撤去した。旧 `/api/mobile/v1`、cache無効化入口、Web Cronは404となる。
 共有契約・生成client・backendの依存境界は上記の構成に従う。stacked PRの順序と本番適用gateは[移行履歴](backend-migration.md)、環境変数と手動切替は[Vercelセットアップ](backend-vercel-setup.md)を参照する。
 コードの完了と本番切替は別であり、対応iOS配布、外部認証、実機、Cronの単独稼働を確認してから旧入口撤去を適用する。
+
+### オブジェクトストレージ
+
+`packages/storage`がAWS SDK v3でS3互換APIを扱う。本番は非公開Backblaze B2、
+ローカルはMinIOへ接続する。backendとbatch scriptsだけが資格情報を持ち、
+Web/iOSは認証付きbackend APIから画像・書影を取得する。分割uploadのchunkは
+`mobile-uploads/`に通常objectとして保存する。設定・保持方針は
+[Backblaze B2セットアップ](backblaze-b2-setup.md)を参照。

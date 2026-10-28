@@ -190,3 +190,9 @@ CockroachDB Cloud Basic は接続プーリングが内蔵で、pooled / direct �
 ## Web・共通backendのVercel配置
 
 Webと共通Hono backendは別projectに配置します。Root Directory、workspaceビルド、環境変数の分担、Auth0 callback、Deployment Protection、段階切替、Cron、rollbackは [Vercelセットアップ手順](backend-vercel-setup.md) を参照してください。デプロイは担当者が手動で行います。
+
+## オブジェクトストレージ
+
+本番・PreviewはBackblaze B2、ローカルはMinIOを使用する。AWS SDK v3を使い、
+`S3_*`変数で接続する。会員登録・キー発行・環境設定・ingestの手順は
+[Backblaze B2セットアップ](backblaze-b2-setup.md)を参照。

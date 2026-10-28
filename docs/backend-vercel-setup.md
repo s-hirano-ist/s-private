@@ -1,8 +1,6 @@
 # VercelでWebと共通backendを配置する
 
-現在はMinIOをコード上で一時停止している。画像・書影取得とuploadは404となり、
-MinIO/Cloudflareの資格情報なしで起動できる。再有効化時の条件は
-[MinIOの一時停止](backend-deployment.md#minioの一時停止) を参照。
+ストレージは[Backblaze B2セットアップ](backblaze-b2-setup.md)を先に実施する。
 
 Productionの環境変数はVercelで手動管理し、PreviewはDopplerのサービス別configから同期する。
 デプロイ・認証・Cronの稼働状態は配置後に検証する。
@@ -28,11 +26,12 @@ Vercelの [Hono](https://vercel.com/docs/frameworks/backend/hono)、[monorepo](h
 
 | project | 必要な設定 |
 | --- | --- |
-| backend | 既存DB、Auth0、Better Auth、MinIO/Cloudflare Access、Qdrant/embedding、監視・通知の設定 |
+| backend | 既存DB、Auth0、Better Auth、Backblaze B2（S3_*）、Qdrant/embedding、監視・通知の設定 |
 | Web (`apps/web`) | `BACKEND_URL`、`BETTER_AUTH_URL`、`NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY`、Sentryの既存設定 |
 | iOS | Git管理外の `Local.xcconfig` に `MOBILE_API_BASE_URL=https:/$()/BACKEND_HOST/api/v1`。既存Auth0 domain/client ID/audienceを維持 |
 
-backendのProductionには既存Productionと同じDB・bucket・`AUTH_SECRET`・VAPID鍵を設定する。新規DBや新規ユーザーを作らず、既存のAccount・Session・operation・upload・sync状態を引き継ぐ。`AUTH_SECRET` は32文字以上。移行のために鍵を再生成しない。
+backendのProductionには既存Productionと同じDB・`AUTH_SECRET`・VAPID鍵を設定する。
+object storageはB2のProduction用bucketを設定し、既存DBに対応するobjectの準備状況を切替前に確認する。新規DBや新規ユーザーを作らず、既存のAccount・Session・operation・upload・sync状態を引き継ぐ。`AUTH_SECRET` は32文字以上。移行のために鍵を再生成しない。
 
 backendの `BETTER_AUTH_URL` は **公開Webのorigin**（例: `https://private.s-hirano.com`）。backendのoriginには変更しない。
 Webの `BACKEND_URL` はbackendのHTTPS originで、`/api/v1`・末尾slash・queryを含めない。
@@ -40,9 +39,9 @@ Production Webの `BETTER_AUTH_URL` も公開Web originを指定する。
 Previewは両projectで `BETTER_AUTH_URL` を設定せず、リクエストのWeb originを検証して使用する。
 ブラウザは同一originのBFFを使うため、CORSを広く開放する設定は不要。
 
-WebへDB・MinIO・Auth0 client secret・VAPID秘密鍵・Pushover・Qdrantの資格情報を渡す必要はなくなる。backendの確認と切替後にWeb projectから不要な変数を削除する。共有secret自体は変更しない。
+WebへDB・S3・Auth0 client secret・VAPID秘密鍵・Pushover・Qdrantの資格情報を渡す必要はなくなる。backendの確認と切替後にWeb projectから不要な変数を削除する。共有secret自体は変更しない。
 
-Previewには既存のPreview用DB・bucket・Auth0設定を使い、ProductionのDBや通知先と混在させない。Preview backendとPreview Webを対応させ、WebのPreview用 `BACKEND_URL` をそのbackendへ向ける。必要なら固定のPreview domainを使用する。現在の認証設定は公開Web originと既存teamの `s-private-*-s-hirano-ist-team.vercel.app` および `memdex-web-*-s-hirano-ist-team.vercel.app` を許可する。別名のWeb project/domainへ変える場合は、認証の許可hostとAuth0の許可URLを合わせて変更・確認する。
+PreviewにはPreview用DB・B2 bucket・Auth0設定を使い、ProductionのDBや通知先と混在させない。Preview backendとPreview Webを対応させ、WebのPreview用 `BACKEND_URL` をそのbackendへ向ける。必要なら固定のPreview domainを使用する。現在の認証設定は公開Web originと既存teamの `s-private-*-s-hirano-ist-team.vercel.app` および `memdex-web-*-s-hirano-ist-team.vercel.app` を許可する。別名のWeb project/domainへ変える場合は、認証の許可hostとAuth0の許可URLを合わせて変更・確認する。
 
 `LOCAL_DEV_MODE` は配置先に登録せず既定値falseを使う。Previewの `BACKEND_CRON_ENABLED=false` は明示する。`LOCAL_AUTH_*` は登録しない。`VERCEL=1` ではlocal認証を利用できない。
 ProductionのDBは `sslmode=verify-full` を使い、`NODE_TLS_REJECT_UNAUTHORIZED=0` を設定しない。ローカルファイルへの証明書pathをそのままコピーしない。

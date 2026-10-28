@@ -1,4 +1,4 @@
-import type { createMinioClient } from "@s-hirano-ist/s-storage";
+import type { createObjectStorageClient } from "@s-hirano-ist/s-storage";
 import type { MobileChunkStore } from "s-private-backend/mobile/ports";
 
 function objectKey(uploadId: string, part: number): string {
@@ -6,19 +6,19 @@ function objectKey(uploadId: string, part: number): string {
 }
 
 export function createMobileChunkStore(
-	minioClient: ReturnType<typeof createMinioClient>,
+	storageClient: ReturnType<typeof createObjectStorageClient>,
 	bucketName: string,
 ): MobileChunkStore {
 	return {
 		async put(uploadId, part, bytes) {
-			await minioClient.putObject(
+			await storageClient.putObject(
 				bucketName,
 				objectKey(uploadId, part),
 				Buffer.from(bytes),
 			);
 		},
 		async get(uploadId, part) {
-			const stream = await minioClient.getObject(
+			const stream = await storageClient.getObject(
 				bucketName,
 				objectKey(uploadId, part),
 			);
@@ -28,7 +28,7 @@ export function createMobileChunkStore(
 			return Buffer.concat(buffers);
 		},
 		async remove(uploadId, part) {
-			await minioClient.removeObject(bucketName, objectKey(uploadId, part));
+			await storageClient.removeObject(bucketName, objectKey(uploadId, part));
 		},
 	};
 }

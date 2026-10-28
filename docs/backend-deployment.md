@@ -5,19 +5,6 @@ Codexはデプロイ・マージを実施しない。最終Web分離PRの適用�
 
 Vercel Dashboardでの具体的な設定手順は [Vercelセットアップ](backend-vercel-setup.md) を参照。
 
-## MinIOの一時停止
-
-移行先を検討している間、composition rootはMinIO clientを生成せず、
-`/api/v1/media/*` と `/api/v1/uploads` 配下の全操作を `NOT_FOUND`（404）で返す。
-uploadの作成・再開・完了・取消・期限切れcleanupへ入る前に遮断するため、
-停止中に既存upload情報やobjectを削除しない。既存DBの一覧・詳細・記事・ノート・検索・同期は維持する。
-画像と書影は表示できず、画像・書影の新規登録も停止する。
-
-この一時停止中は `MINIO_*` と `CF_ACCESS_*` の登録は起動条件に含めない。
-ローカル認証時の画像付きsample seedも停止する。既存のsecret、bucket、DB、operationは保持する。
-再有効化は一時停止コミットをrevertするPRで行い、必要なMinIO/Cloudflare設定を復旧してから
-画像・書影取得、5MiB超upload、再開、thumbnailを再確認する。
-
 ## 独立サービス
 
 `apps/backend/src/index.ts` はHono appをdefault exportする。
@@ -44,7 +31,7 @@ iOSのAuth0 audienceはURLと独立した既存値を維持する。
 | `BETTER_AUTH_URL` | Production・ローカルの公開Web origin。Previewは未設定とし、BFFが検証済みのWeb originを渡す |
 | `AUTH0_CLIENT_ID` / `AUTH0_CLIENT_SECRET` / `AUTH0_ISSUER_BASE_URL` | 既存WebのAuth0 provider |
 | `MOBILE_API_AUDIENCE` | 既存iOS API identifier |
-| `MINIO_*` / `CF_ACCESS_*` | 既存bucketとCloudflare Access credentials |
+| `S3_*` | [B2バケットと専用Application Key](backblaze-b2-setup.md) |
 | `QDRANT_URL` / `QDRANT_API_KEY` / `QDRANT_COLLECTION_NAME` | 既存のQdrant Cloud cluster・API key・collection |
 | `PUSHOVER_*` | 既存通知設定 |
 | `NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY` / `WEB_PUSH_PRIVATE_KEY` / `WEB_PUSH_SUBJECT` | 同じVAPID鍵 |

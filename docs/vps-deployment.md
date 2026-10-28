@@ -3,6 +3,13 @@
 ConoHa VPS (Ubuntu) + Docker + Cloudflare Tunnel の汎用デプロイ手順書。
 VPS 上では全ポートを firewall で閉じ、Cloudflare Tunnel の outbound 接続のみで外部からアクセス可能にする。
 
+## ストレージ構成の変更
+
+本番object storageはBackblaze B2へ移行した。以下のMinIO/VPS手順は旧構成の運用資料であり、
+現在のbackendはCloudflare Access付きMinIOへ接続しない。新規構築では
+[Backblaze B2セットアップ](backblaze-b2-setup.md)を使用する。
+旧VPSやvolumeの削除はこの変更では実施しない。
+
 ## アーキテクチャ
 
 ```text
