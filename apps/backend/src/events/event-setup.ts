@@ -1,5 +1,5 @@
 import type { DomainEventHandler } from "@s-hirano-ist/s-core/shared-kernel/events/domain-event.interface";
-import type { EventDispatcher } from "s-private-backend/events/event-dispatcher";
+import type { EventDispatcher } from "@s-hirano-ist/s-infrastructure/events/event-dispatcher";
 export function createEventInitializer(
 	eventDispatcher: Pick<EventDispatcher, "register">,
 	handlers: { logging: DomainEventHandler; system: DomainEventHandler },

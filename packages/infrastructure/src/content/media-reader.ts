@@ -1,5 +1,5 @@
 import type { MediaReader } from "@s-hirano-ist/s-application/content/queries";
-import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/services/storage-service.interface";
+import type { IStorageService } from "@s-hirano-ist/s-application/content/storage-port";
 import { Readable } from "node:stream";
 export function createMediaReader(
 	storage: Pick<IStorageService, "getImage">,

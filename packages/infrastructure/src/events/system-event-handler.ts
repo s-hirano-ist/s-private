@@ -1,9 +1,9 @@
+import type { LogContext } from "@s-hirano-ist/s-application/observability/logger.interface";
+import type { Logger } from "@s-hirano-ist/s-application/observability/logger.interface";
 import type {
 	DomainEvent,
 	DomainEventHandler,
 } from "@s-hirano-ist/s-core/shared-kernel/events/domain-event.interface";
-import type { LogContext } from "s-private-backend/observability/logger.interface";
-import type { Logger } from "s-private-backend/observability/logger.interface";
 
 export class SystemEventHandler implements DomainEventHandler {
 	private logger: Logger;

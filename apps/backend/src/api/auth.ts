@@ -1,10 +1,10 @@
 import type { MobileDeps } from "@s-hirano-ist/s-application/mobile/deps";
+import type { ErrorReporter } from "@s-hirano-ist/s-application/observability/reporter";
 import type { ApiAuth } from "s-private-backend/api/types";
 import type {
 	createBackendAuth,
 	AuthConfig,
 } from "s-private-backend/auth/web-auth";
-import type { ErrorReporter } from "s-private-backend/observability/reporter";
 import { authenticateMobileRequest } from "s-private-backend/auth/mobile-auth";
 import { isTrustedWebOrigin } from "s-private-backend/auth/web-origin";
 

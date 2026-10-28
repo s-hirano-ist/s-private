@@ -1,5 +1,5 @@
-import type { TenantStore } from "s-private-backend/shared/tenant-context";
-import { applyTenantFilter } from "s-private-backend/shared/tenant-filter";
+import type { TenantStore } from "@s-hirano-ist/s-infrastructure/shared/tenant-context";
+import { applyTenantFilter } from "@s-hirano-ist/s-infrastructure/shared/tenant-filter";
 import { describe, expect, test } from "vite-plus/test";
 
 const STORE: TenantStore = { userId: "user-a" };

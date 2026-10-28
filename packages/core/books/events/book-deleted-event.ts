@@ -1,5 +1,5 @@
 import type { BookCreatedEvent } from "@s-hirano-ist/s-core/books/events/book-created-event";
-import type { BookDeletedPayload } from "@s-hirano-ist/s-core/shared-kernel/events/payload-types";
+import type { BookDeletedPayload } from "@s-hirano-ist/s-core/books/events/payload-types";
 import { BaseDomainEvent } from "@s-hirano-ist/s-core/shared-kernel/events/base-domain-event";
 
 /**

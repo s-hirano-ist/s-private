@@ -1,5 +1,5 @@
 import type { NoteDeletedEvent } from "@s-hirano-ist/s-core/notes/events/note-deleted-event";
-import type { NoteCreatedPayload } from "@s-hirano-ist/s-core/shared-kernel/events/payload-types";
+import type { NoteCreatedPayload } from "@s-hirano-ist/s-core/notes/events/payload-types";
 import { BaseDomainEvent } from "@s-hirano-ist/s-core/shared-kernel/events/base-domain-event";
 
 /**

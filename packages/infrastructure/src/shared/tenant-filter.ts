@@ -28,7 +28,7 @@
  * @module
  */
 
-import type { TenantStore } from "s-private-backend/shared/tenant-context";
+import type { TenantStore } from "@s-hirano-ist/s-infrastructure/shared/tenant-context";
 
 /** Loose view of a Prisma operation's args, covering the fields we rewrite. */
 type TenantQueryArgs = {

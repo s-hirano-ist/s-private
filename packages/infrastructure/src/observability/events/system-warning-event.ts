@@ -1,5 +1,5 @@
-import type { SystemWarningPayload } from "@s-hirano-ist/s-core/shared-kernel/events/payload-types";
-import type { SystemErrorEvent } from "@s-hirano-ist/s-core/shared-kernel/events/system-error-event";
+import type { SystemWarningPayload } from "@s-hirano-ist/s-infrastructure/observability/events/payload-types";
+import type { SystemErrorEvent } from "@s-hirano-ist/s-infrastructure/observability/events/system-error-event";
 import { BaseDomainEvent } from "@s-hirano-ist/s-core/shared-kernel/events/base-domain-event";
 
 /**

@@ -15,7 +15,6 @@ const compositionPath = fileURLToPath(
 
 describe("backend core package resolution", () => {
 	test.each([
-		"shared-kernel/services/storage-service.interface",
 		"articles/services/articles-domain-service",
 		"articles/services/category-service",
 		"books/services/books-domain-service",

@@ -1,5 +1,5 @@
-import { SystemErrorEvent } from "@s-hirano-ist/s-core/shared-kernel/events/system-error-event";
-import { SystemWarningEvent } from "@s-hirano-ist/s-core/shared-kernel/events/system-warning-event";
+import { SystemErrorEvent } from "@s-hirano-ist/s-infrastructure/observability/events/system-error-event";
+import { SystemWarningEvent } from "@s-hirano-ist/s-infrastructure/observability/events/system-warning-event";
 import { describe, expect, test } from "vitest";
 
 describe("SystemErrorEvent", () => {

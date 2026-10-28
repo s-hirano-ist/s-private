@@ -1,5 +1,5 @@
 import type { ImageDeletedEvent } from "@s-hirano-ist/s-core/images/events/image-deleted-event";
-import type { ImageCreatedPayload } from "@s-hirano-ist/s-core/shared-kernel/events/payload-types";
+import type { ImageCreatedPayload } from "@s-hirano-ist/s-core/images/events/payload-types";
 import { BaseDomainEvent } from "@s-hirano-ist/s-core/shared-kernel/events/base-domain-event";
 
 /**
