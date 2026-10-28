@@ -51,8 +51,8 @@ export class ImagesDomainService {
 	 * This is a domain invariant check that should be called before creating images.
 	 */
 	public async ensureNoDuplicate(path: Path, userId: UserId): Promise<void> {
-		const exists = await this.imagesQueryRepository.findByPath(path, userId);
-		if (exists !== null) {
+		const exists = await this.imagesQueryRepository.existsByPath(path, userId);
+		if (exists) {
 			throw new DuplicateError();
 		}
 	}
