@@ -1,3 +1,9 @@
+import {
+	createArticle,
+	deleteArticle,
+	parseArticleInput,
+	type CreateArticleDeps,
+} from "@s-hirano-ist/s-application/articles/use-cases";
 import { makeArticleTitle } from "@s-hirano-ist/s-core/articles/entities/article-entity";
 import {
 	makeId,
@@ -5,12 +11,6 @@ import {
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
-import {
-	createArticle,
-	deleteArticle,
-	parseArticleInput,
-	type CreateArticleDeps,
-} from "s-private-backend/articles/use-cases";
 import { describe, expect, test, vi } from "vite-plus/test";
 
 function dependencies() {
