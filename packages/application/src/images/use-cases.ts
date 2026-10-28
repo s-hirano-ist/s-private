@@ -1,8 +1,13 @@
+import type { MediaCreationInput } from "@s-hirano-ist/s-application/content/media-input";
+import type { EventDispatcher } from "@s-hirano-ist/s-application/events/ports";
 import type { IImagesCommandRepository } from "@s-hirano-ist/s-core/images/repositories/images-command-repository.interface";
 import type { ImagesDomainService } from "@s-hirano-ist/s-core/images/services/images-domain-service";
 import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/services/storage-service.interface";
-import type { parseImageInput } from "s-private-backend/images/input";
-import type { EventDispatcher } from "s-private-backend/shared/ports";
+import {
+	withOperationPhase,
+	type OperationPhaseContext,
+} from "@s-hirano-ist/s-application/diagnostics/operation-phase-error";
+import { withStoragePhase } from "@s-hirano-ist/s-application/diagnostics/storage-phase-error";
 import { imageEntity } from "@s-hirano-ist/s-core/images/entities/image-entity";
 import { ImageDeletedEvent } from "@s-hirano-ist/s-core/images/events/image-deleted-event";
 import {
@@ -10,11 +15,6 @@ import {
 	type Id,
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import {
-	withOperationPhase,
-	type OperationPhaseContext,
-} from "s-private-backend/shared/operation-phase-error";
-import { withStoragePhase } from "s-private-backend/shared/storage-phase-error";
 export type DeleteImageDeps = {
 	commandRepository: IImagesCommandRepository;
 	eventDispatcher: EventDispatcher;
@@ -26,7 +26,7 @@ export type CreateImageDeps = DeleteImageDeps & {
 	storageService: IStorageService;
 };
 export async function createImage(
-	parsedData: Awaited<ReturnType<typeof parseImageInput>>,
+	parsedData: MediaCreationInput,
 	deps: CreateImageDeps,
 	phaseContext: Omit<OperationPhaseContext, "phase">,
 ) {

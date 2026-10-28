@@ -1,7 +1,7 @@
+import type { EventDispatcher } from "@s-hirano-ist/s-application/events/ports";
 import type { IArticlesCommandRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-command-repository.interface";
 import type { ArticlesDomainService } from "@s-hirano-ist/s-core/articles/services/articles-domain-service";
 import type { CategoryService } from "@s-hirano-ist/s-core/articles/services/category-service";
-import type { EventDispatcher } from "s-private-backend/shared/ports";
 import {
 	articleEntity,
 	makeArticleTitle,

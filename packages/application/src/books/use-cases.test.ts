@@ -1,4 +1,10 @@
 import {
+	createBook,
+	deleteBook,
+	type CreateBookDeps,
+} from "@s-hirano-ist/s-application/books/use-cases";
+import { StoragePhaseError } from "@s-hirano-ist/s-application/diagnostics/storage-phase-error";
+import {
 	makeISBN,
 	makeBookTitle,
 	makeRating,
@@ -15,12 +21,6 @@ import {
 	makeFileSize,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
 import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
-import { StorageOperationError } from "@s-hirano-ist/s-storage";
-import {
-	createBook,
-	deleteBook,
-	type CreateBookDeps,
-} from "s-private-backend/books/use-cases";
 import { expect, test, vi } from "vite-plus/test";
 
 const input = {
@@ -112,7 +112,7 @@ test.each([
 		await expect(
 			createBook(input, f.deps, { action: "addBooks" }),
 		).rejects.toMatchObject({
-			name: StorageOperationError.name,
+			name: StoragePhaseError.name,
 			context: expect.objectContaining({ phase }),
 		});
 		expect(f.create).not.toHaveBeenCalled();

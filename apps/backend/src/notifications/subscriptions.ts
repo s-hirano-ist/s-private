@@ -1,4 +1,4 @@
-import type { PushSubscriptionRepository } from "s-private-backend/notifications/ports";
+import type { PushSubscriptionRepository } from "@s-hirano-ist/s-application/notifications/ports";
 import type { createPushDeliveryService } from "s-private-backend/notifications/push-notification-service";
 import { PushSubscriptionError } from "s-private-backend/notifications/error";
 import { buildGigazineHeadline } from "s-private-backend/notifications/gigazine-headline";
