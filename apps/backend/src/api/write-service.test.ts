@@ -18,7 +18,7 @@ vi.mock("@s-hirano-ist/s-application/books/use-cases", () => ({
 	createBook: vi.fn(),
 	deleteBook: vi.fn(),
 }));
-vi.mock("s-private-backend/images/input", () => ({
+vi.mock("@s-hirano-ist/s-application/images/input", () => ({
 	parseImageInput: vi.fn(async () => ({ contentType: "image/png" })),
 }));
 vi.mock("@s-hirano-ist/s-application/images/use-cases", () => ({

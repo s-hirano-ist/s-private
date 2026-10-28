@@ -1,7 +1,7 @@
 import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/services/storage-service.interface";
 import type { DatabaseClient } from "@s-hirano-ist/s-infrastructure/database";
 import { Status } from "@s-hirano-ist/s-database";
-import { sharpImageProcessor } from "s-private-backend/shared/sharp-image-processor";
+import { sharpImageProcessor } from "@s-hirano-ist/s-infrastructure/content/sharp-image-processor";
 import { tenantContext } from "s-private-backend/shared/tenant-context";
 
 /** Local-only fixtures; callers must enforce the local authentication guard. */

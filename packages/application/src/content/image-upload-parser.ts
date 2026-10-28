@@ -1,8 +1,11 @@
-import { sharpImageProcessor } from "s-private-backend/shared/sharp-image-processor";
+import type {
+	IImageProcessor,
+	UploadedFile,
+} from "@s-hirano-ist/s-application/content/image-processor";
 import {
 	UploadFileNotAllowedError,
 	type UploadFileNotAllowedReason,
-} from "s-private-backend/shared/upload-file-not-allowed-error";
+} from "@s-hirano-ist/s-application/content/upload-file-not-allowed-error";
 
 const SUPPORTED_IMAGE_FORMAT_TO_CONTENT_TYPE = new Map<string, string>([
 	["jpeg", "image/jpeg"],
@@ -49,7 +52,7 @@ const IMAGE_SIGNATURE_MATCHERS: readonly ImageSignatureMatcher[] = [
 ];
 
 function createUploadFileNotAllowedError(
-	file: File,
+	file: UploadedFile,
 	reason: UploadFileNotAllowedReason,
 	options?: Readonly<{
 		cause?: unknown;
@@ -83,7 +86,7 @@ function detectContentTypeFromMagicBytes(
 }
 
 function toSupportedImageContentType(
-	file: File,
+	file: UploadedFile,
 	format: string | undefined,
 	detectedContentType: string,
 ): string {
@@ -112,12 +115,15 @@ function toSupportedImageContentType(
 	return contentType;
 }
 
-export async function parseSupportedImageFile(file: File): Promise<{
+export async function parseSupportedImageFile(
+	file: UploadedFile,
+	processor: IImageProcessor,
+): Promise<{
 	contentType: string;
 	originalBuffer: Uint8Array;
 	thumbnailBuffer: Uint8Array;
 }> {
-	const originalBuffer = await sharpImageProcessor.fileToBytes(file);
+	const originalBuffer = new Uint8Array(await file.arrayBuffer());
 
 	if (originalBuffer.length === 0) {
 		throw createUploadFileNotAllowedError(file, "empty-buffer");
@@ -130,7 +136,7 @@ export async function parseSupportedImageFile(file: File): Promise<{
 
 	let decodedFormat: string | undefined;
 	try {
-		const metadata = await sharpImageProcessor.getMetadata(originalBuffer);
+		const metadata = await processor.getMetadata(originalBuffer);
 		decodedFormat = metadata.format;
 	} catch (error) {
 		throw createUploadFileNotAllowedError(file, "metadata-read-failed", {
@@ -146,7 +152,7 @@ export async function parseSupportedImageFile(file: File): Promise<{
 	);
 
 	try {
-		const thumbnailBuffer = await sharpImageProcessor.createThumbnail(
+		const thumbnailBuffer = await processor.createThumbnail(
 			originalBuffer,
 			192,
 			192,
