@@ -32,7 +32,8 @@
 		"@s-hirano-ist/s-core": "workspace:*",
 		"@s-hirano-ist/s-database": "workspace:*",
 		"@s-hirano-ist/s-search": "workspace:*",
-		"zod": "catalog:"
+		"zod": "catalog:",
+		"@s-hirano-ist/s-image-processing": "workspace:*"
 	},
 	"devDependencies": {
 		"@types/node": "catalog:",

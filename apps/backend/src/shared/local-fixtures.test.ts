@@ -1,9 +1,9 @@
 import { Status } from "@s-hirano-ist/s-database";
 import { createPrismaClient } from "@s-hirano-ist/s-database";
+import { sharpImageProcessor } from "@s-hirano-ist/s-infrastructure/content/sharp-image-processor";
 import { extendDatabase } from "@s-hirano-ist/s-infrastructure/database";
 import { readFile } from "node:fs/promises";
 import { createLocalSampleSeeder } from "s-private-backend/shared/local-fixtures";
-import { sharpImageProcessor } from "s-private-backend/shared/sharp-image-processor";
 import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 const prisma = extendDatabase(
 	createPrismaClient("postgresql://root@localhost:26257/test?sslmode=disable"),

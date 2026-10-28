@@ -1,10 +1,15 @@
+import type { BookCreationInput } from "@s-hirano-ist/s-application/books/input-model";
+import type {
+	IImageProcessor,
+	UploadedFile,
+} from "@s-hirano-ist/s-application/content/image-processor";
 /**
  * Book form data parsing utilities.
  *
  * @module
  */
-
 import type { UserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
+import { parseSupportedImageFile } from "@s-hirano-ist/s-application/content/image-upload-parser";
 import {
 	makeBookTitle,
 	makeISBN,
@@ -16,7 +21,6 @@ import {
 	makeFileSize,
 	makePath,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/file-entity";
-import { parseSupportedImageFile } from "s-private-backend/shared/image-upload-parser";
 
 /**
  * Parses book creation form data into domain value objects.
@@ -25,7 +29,11 @@ import { parseSupportedImageFile } from "s-private-backend/shared/image-upload-p
  * @param userId - Current user's ID
  * @returns Validated book data with domain value objects
  */
-export const parseBookInput = async (input: BookInput, userId: UserId) => {
+export const parseBookInput = async (
+	input: BookInput,
+	userId: UserId,
+	processor: IImageProcessor,
+): Promise<BookCreationInput> => {
 	const {
 		isbn: isbnInput,
 		title,
@@ -38,7 +46,7 @@ export const parseBookInput = async (input: BookInput, userId: UserId) => {
 		contentType: detectedContentType,
 		originalBuffer,
 		thumbnailBuffer,
-	} = await parseSupportedImageFile(file);
+	} = await parseSupportedImageFile(file, processor);
 	const path = makePath(file.name, true);
 	const contentType = makeContentType(detectedContentType);
 	const fileSize = makeFileSize(file.size);
@@ -59,7 +67,7 @@ export const parseBookInput = async (input: BookInput, userId: UserId) => {
 };
 
 export type BookInput = {
-	image: File;
+	image: UploadedFile;
 	isbn: string;
 	rating: number;
 	tags: string[];
