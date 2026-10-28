@@ -32,6 +32,7 @@
 		"typescript": "catalog:"
 	},
 	"dependencies": {
-		"zod": "catalog:"
+		"zod": "catalog:",
+		"@s-hirano-ist/s-core": "workspace:*"
 	}
 }

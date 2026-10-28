@@ -17,7 +17,6 @@
 		"@s-hirano-ist/s-storage": "workspace:*",
 		"better-auth": "1.7.7",
 		"zod": "catalog:",
-		"@s-hirano-ist/s-search": "workspace:*",
 		"jose": "6.2.12",
 		"pino": "10.4.0",
 		"@hono/zod-openapi": "1.6.3",
