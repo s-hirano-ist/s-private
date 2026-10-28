@@ -113,7 +113,7 @@ export function createBooksQueryRepository(
 			},
 			...params,
 		});
-		return data.map((d) => ({
+		return data.map((d: ListProjection) => ({
 			id: makeId(d.id),
 			isbn: makeISBN(d.isbn),
 			title: makeBookTitle(d.title),
@@ -144,3 +144,13 @@ export function createBooksQueryRepository(
 
 	return booksQueryRepository;
 }
+
+type ListProjection = {
+	id: string;
+	isbn: string;
+	title: string;
+	googleImgSrc: string | null;
+	imagePath: string | null;
+	googleAuthors: string[];
+	googleSubTitle: string | null;
+};
