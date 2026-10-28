@@ -1,5 +1,5 @@
+import type { MobileChunkStore } from "@s-hirano-ist/s-application/mobile/ports";
 import type { createMinioClient } from "@s-hirano-ist/s-storage";
-import type { MobileChunkStore } from "s-private-backend/mobile/ports";
 
 function objectKey(uploadId: string, part: number): string {
 	return `mobile-uploads/${uploadId}/${part}`;

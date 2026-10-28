@@ -1,9 +1,9 @@
 import type {
 	ReadModelByDomain,
 	StoredSnapshot,
-} from "s-private-backend/api/read-models";
-import type { MobileDomain } from "s-private-backend/mobile/models";
-import type { SyncDomain } from "s-private-backend/mobile/models";
+} from "@s-hirano-ist/s-application/content/models";
+import type { MobileDomain } from "@s-hirano-ist/s-application/content/models";
+import type { SyncDomain } from "@s-hirano-ist/s-application/content/models";
 
 export type MobileUpload = {
 	contentType: string;
