@@ -21,9 +21,10 @@
 		"access": "public"
 	},
 	"scripts": {
-		"build": "tsc",
+		"build": "pnpm clean && tsc",
 		"typecheck": "tsc --noEmit",
-		"prepublishOnly": "pnpm run build"
+		"prepublishOnly": "pnpm run build",
+		"clean": "rm -rf dist"
 	},
 	"license": "AGPL-3.0",
 	"dependencies": {
