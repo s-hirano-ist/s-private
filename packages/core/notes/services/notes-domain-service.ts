@@ -54,7 +54,7 @@ export class NotesDomainService {
 		title: NoteTitle,
 		userId: UserId,
 	): Promise<void> {
-		const exists = await this.notesQueryRepository.findByTitle(title, userId);
+		const exists = await this.notesQueryRepository.existsByTitle(title, userId);
 		if (exists) {
 			throw new DuplicateError();
 		}

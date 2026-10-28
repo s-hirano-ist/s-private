@@ -51,8 +51,8 @@ export class BooksDomainService {
 	 * This is a domain invariant check that should be called before creating books.
 	 */
 	public async ensureNoDuplicate(isbn: ISBN, userId: UserId): Promise<void> {
-		const exists = await this.booksQueryRepository.findByISBN(isbn, userId);
-		if (exists !== null) {
+		const exists = await this.booksQueryRepository.existsByISBN(isbn, userId);
+		if (exists) {
 			throw new DuplicateError();
 		}
 	}
