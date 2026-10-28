@@ -467,9 +467,6 @@ importers:
       '@s-hirano-ist/s-notification':
         specifier: workspace:*
         version: link:../../packages/notification
-      '@s-hirano-ist/s-search':
-        specifier: workspace:*
-        version: link:../../packages/search
       '@s-hirano-ist/s-storage':
         specifier: workspace:*
         version: link:../../packages/storage
@@ -627,6 +624,9 @@ importers:
 
   packages/application:
     dependencies:
+      '@s-hirano-ist/s-core':
+        specifier: workspace:*
+        version: link:../core
       zod:
         specifier: 'catalog:'
         version: 4.6.5

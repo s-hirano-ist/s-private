@@ -97,7 +97,7 @@ export function createArticlesQueryRepositories(
 			},
 			...params,
 		});
-		return data.map((d) => ({
+		return data.map((d: ArticleListProjection) => ({
 			id: makeId(d.id),
 			title: makeArticleTitle(d.title),
 			url: makeUrl(d.url),
@@ -127,7 +127,7 @@ export function createArticlesQueryRepositories(
 			select: { id: true, name: true },
 			...params,
 		});
-		return data.map((d) => ({
+		return data.map((d: CategoryProjection) => ({
 			id: makeId(d.id),
 			name: makeCategoryName(d.name),
 		}));
@@ -151,3 +151,14 @@ export function createArticlesQueryRepositories(
 
 	return { articlesQueryRepository, categoryQueryRepository };
 }
+
+type ArticleListProjection = {
+	id: string;
+	title: string;
+	url: string;
+	quote: string | null;
+	ogTitle: string | null;
+	ogDescription: string | null;
+	Category: { name: string };
+};
+type CategoryProjection = { id: string; name: string };
