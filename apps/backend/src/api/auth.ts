@@ -1,4 +1,4 @@
-import type { ApiAuth } from "s-private-backend/api/app";
+import type { ApiAuth } from "s-private-backend/api/types";
 import type {
 	createBackendAuth,
 	AuthConfig,

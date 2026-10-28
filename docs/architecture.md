@@ -583,6 +583,16 @@ media stream、複数Set-Cookie、redirectの応答をBFFで保持する。接�
 HTTPのDTOは `packages/api-contracts` を正本とし、trackedな `docs/openapi/backend-v1.json` からOrvalとSwift OpenAPI Generatorで生成する。生成ソースはGit管理せず、build・typecheck前に再生成し契約の差分をCIで検証する。
 backendがドメイン値をHTTPレスポンスへ変換する。WebとSwiftは生成DTOから表示日時・端末cacheモデルへ明示的に変換する。wire型を別途手書きしたり、coreのbranded型をWebへ漏らしたりしない。
 
+### API境界の契約と型
+
+HTTP契約の正本は `packages/api-contracts` とする。入力スキーマからquery・body・OpenAPI・生成clientを一貫して扱い、正規化前の入力を冪等性hashへ渡す順序を維持する。正規表現のOpenAPI `pattern` はliteralの区切りやflagsを含まない形式で明示する。trimやISBNのハイフン除去など、wire入力とドメイン値の違いも契約へ記載する。
+
+エラーコードとHTTP statusの対応は契約の共通定義に集約する。backendの `ApiError` はコードのみを受け取り、statusを導出する。各ルートは共通の認証・障害レスポンスに操作固有のstatusを加え、生成clientでもstatus別のコードを検証する。入力エラーは422、保存値・出力の検証失敗は500として監視へ送る。
+
+DB adapterが未検証の取得結果をドメイン別の読み取りモデルへ変換する。内部ではDateを保持し、一覧・詳細・同期で共通のDTO変換を使ってISO文字列と公開項目だけを出力する。同期のupsertはドメインとレコードを組にしたunion、deleteはドメインとIDで表し、型assertionやJSON再シリアライズで型を復元しない。
+
+`createApiApp` はmiddleware・エラー処理・機能別ルートの組み立てを担う。4ドメインの一覧・件数・詳細・削除は契約と同じfactoryで登録し、ISBN・タイトル検索を先に登録する。すべてのJSON成功レスポンスはHTTP境界で契約検証し、204とmedia streamは専用処理とする。契約一覧・実ルート・OpenAPI登録の一致をテストで固定する。
+
 ## Event-Driven Architecture Pattern
 
 作成・削除ユースケースは永続化後にドメインイベントを発行する。共有dispatcherとhandlerは `apps/backend/src/events/` に置き、ログ・通知・検索等の依存をhostから注入する。
