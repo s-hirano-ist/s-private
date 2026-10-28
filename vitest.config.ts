@@ -11,6 +11,21 @@ export default defineConfig({
 		projects: [
 			{
 				test: {
+					name: "application",
+					include: ["packages/application/src/**/*.test.ts"],
+					passWithNoTests: true,
+				},
+			},
+			{
+				test: {
+					name: "infrastructure",
+					include: ["packages/infrastructure/src/**/*.test.ts"],
+					passWithNoTests: true,
+				},
+			},
+
+			{
+				test: {
 					name: "backend",
 					include: ["apps/backend/src/**/*.test.ts"],
 				},

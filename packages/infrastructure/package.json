@@ -1,0 +1,36 @@
+{
+	"name": "@s-hirano-ist/s-infrastructure",
+	"version": "1.0.0",
+	"description": "Shared infrastructure layer for HTTP and CLI hosts",
+	"type": "module",
+	"engines": {
+		"node": ">=24.22.1"
+	},
+	"exports": {
+		"./*": {
+			"types": "./dist/*.d.ts",
+			"import": "./dist/*.js"
+		}
+	},
+	"files": [
+		"dist",
+		"README.md",
+		"LICENSE"
+	],
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"build": "tsc",
+		"typecheck": "tsc --noEmit",
+		"prepublishOnly": "pnpm run build"
+	},
+	"license": "AGPL-3.0",
+	"dependencies": {
+		"@s-hirano-ist/s-application": "workspace:*"
+	},
+	"devDependencies": {
+		"@types/node": "catalog:",
+		"typescript": "catalog:"
+	}
+}

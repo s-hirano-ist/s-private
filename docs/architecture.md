@@ -27,6 +27,8 @@
 
 ## クリーンアーキテクチャの構成
 
+共有Application/Infrastructureへの段階的な責務分離は[backend責務の整理](backend-layer-refactoring.md)を参照する。
+
 Web、iOS、共通backendの責務を分離する。Webからドメイン・DB・storageへの直接依存はdependency-cruiserの `boundary-web-frontend-only` で禁止する。
 
 | 配置 | 責務 |
