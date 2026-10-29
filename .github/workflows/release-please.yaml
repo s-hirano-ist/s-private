@@ -15,8 +15,6 @@ jobs:
     outputs:
       releases_created: ${{ steps.release.outputs.releases_created }}
       paths_released: ${{ steps.release.outputs.paths_released }}
-      application_release_created: ${{ steps.release.outputs['packages/application--release_created'] }}
-      infrastructure_release_created: ${{ steps.release.outputs['packages/infrastructure--release_created'] }}
       core_release_created: ${{ steps.release.outputs['packages/core--release_created'] }}
       ui_release_created: ${{ steps.release.outputs['packages/ui--release_created'] }}
       database_release_created: ${{ steps.release.outputs['packages/database--release_created'] }}
@@ -93,13 +91,4 @@ jobs:
       - name: Publish @s-hirano-ist/s-storage
         if: ${{ needs.release-please.outputs.storage_release_created == 'true' }}
         working-directory: packages/storage
-        run: pnpm publish --no-git-checks --access public --provenance
-
-      - name: Publish @s-hirano-ist/s-application
-        if: ${{ needs.release-please.outputs.application_release_created == 'true' }}
-        working-directory: packages/application
-        run: pnpm publish --no-git-checks --access public --provenance
-      - name: Publish @s-hirano-ist/s-infrastructure
-        if: ${{ needs.release-please.outputs.infrastructure_release_created == 'true' }}
-        working-directory: packages/infrastructure
         run: pnpm publish --no-git-checks --access public --provenance

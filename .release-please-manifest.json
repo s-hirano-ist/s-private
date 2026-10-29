@@ -6,7 +6,5 @@
 	"packages/notification": "1.19.1",
 	"packages/scripts": "1.26.8",
 	"packages/search": "1.19.1",
-	"packages/storage": "1.18.11",
-	"packages/application": "1.0.0",
-	"packages/infrastructure": "1.0.0"
+	"packages/storage": "1.18.11"
 }

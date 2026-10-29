@@ -31,14 +31,6 @@
 		"packages/storage": {
 			"release-type": "node",
 			"component": "@s-hirano-ist/s-storage"
-		},
-		"packages/application": {
-			"release-type": "node",
-			"component": "@s-hirano-ist/s-application"
-		},
-		"packages/infrastructure": {
-			"release-type": "node",
-			"component": "@s-hirano-ist/s-infrastructure"
 		}
 	},
 	"plugins": [

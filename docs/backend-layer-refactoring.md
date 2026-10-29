@@ -12,7 +12,7 @@
 
 Applicationはcoreと汎用ライブラリだけに依存する。InfrastructureはApplicationのportを実装する。
 Webは生成clientだけを使い、共有Applicationも直接呼ばない。
-共有packageは公開可能とし、CLIからprivate backendへの依存を作らない。
+共有packageは内部workspaceとして分離し、CLIからprivate backendへの依存を作らない。npm公開対象は外部利用のあるUIとCLIに限定する。
 
 ## 監査結果とstack
 
