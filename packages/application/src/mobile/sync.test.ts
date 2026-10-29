@@ -1,9 +1,9 @@
-import type { MobileSyncRepository } from "s-private-backend/mobile/ports";
+import type { MobileSyncRepository } from "@s-hirano-ist/s-application/mobile/ports";
 import {
 	getSyncHead,
 	listSyncChanges,
 	listSyncSnapshot,
-} from "s-private-backend/mobile/sync";
+} from "@s-hirano-ist/s-application/mobile/sync";
 import { expect, test, vi } from "vitest";
 function fixture() {
 	return {

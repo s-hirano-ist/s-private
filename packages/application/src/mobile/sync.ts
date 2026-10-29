@@ -1,11 +1,11 @@
 import type {
-	snapshotQuerySchema,
-	changesQuerySchema,
-} from "@s-hirano-ist/s-api-contracts/schemas";
-import type { StoredSnapshot } from "s-private-backend/api/read-models";
-import type { SyncDomain } from "s-private-backend/mobile/models";
-import { ApiError } from "s-private-backend/api/error";
-import { type MobileDeps } from "s-private-backend/mobile/deps";
+	SnapshotQuery,
+	ChangesQuery,
+} from "@s-hirano-ist/s-application/content/models";
+import type { StoredSnapshot } from "@s-hirano-ist/s-application/content/models";
+import type { SyncDomain } from "@s-hirano-ist/s-application/content/models";
+import { ApplicationError } from "@s-hirano-ist/s-application/error";
+import { type MobileDeps } from "@s-hirano-ist/s-application/mobile/deps";
 import { z } from "zod";
 
 function encodeCursor(userId: string, version: bigint): string {
@@ -26,7 +26,7 @@ function decodeCursor(userId: string, cursor: string): bigint {
 	} catch {
 		// Invalid and foreign-owner cursors have the same response.
 	}
-	throw new ApiError("INVALID_SYNC_CURSOR");
+	throw new ApplicationError("INVALID_SYNC_CURSOR");
 }
 
 export async function getSyncHead(
@@ -39,7 +39,7 @@ export async function getSyncHead(
 /** Keyset pagination is stable when earlier rows are deleted during bootstrap. */
 export async function listSyncSnapshot(
 	userId: string,
-	query: z.infer<typeof snapshotQuerySchema>,
+	query: SnapshotQuery,
 	deps: Pick<MobileDeps, "sync">,
 ) {
 	const rows = await deps.sync.snapshot(
@@ -56,12 +56,12 @@ export async function listSyncSnapshot(
 /** Resolve events in batches so a page makes at most five content queries. */
 export async function listSyncChanges(
 	userId: string,
-	query: z.infer<typeof changesQuerySchema>,
+	query: ChangesQuery,
 	deps: Pick<MobileDeps, "sync">,
 ) {
 	const cursor = decodeCursor(userId, query.cursor);
 	const head = await deps.sync.getSyncVersion(userId);
-	if (cursor > head) throw new ApiError("INVALID_SYNC_CURSOR");
+	if (cursor > head) throw new ApplicationError("INVALID_SYNC_CURSOR");
 	const events = await deps.sync.changes(userId, cursor, query.limit + 1);
 	const page = events.slice(0, query.limit);
 	const byKey = await deps.sync.changeRecords(userId, page);

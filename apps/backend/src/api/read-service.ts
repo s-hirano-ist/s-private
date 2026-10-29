@@ -1,10 +1,15 @@
+import type { MobileDomain } from "@s-hirano-ist/s-application/content/models";
+import type { MobileDeps } from "@s-hirano-ist/s-application/mobile/deps";
 import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/services/storage-service.interface";
-import type { MobileDeps } from "s-private-backend/mobile/deps";
-import type { MobileDomain } from "s-private-backend/mobile/models";
 import type { createVectorSearch } from "s-private-backend/search/vector-search";
 import type { DatabaseClient } from "s-private-backend/shared/database";
 import type { z } from "zod";
 import * as schemas from "@s-hirano-ist/s-api-contracts/schemas";
+import {
+	getSyncHead,
+	listSyncSnapshot,
+	listSyncChanges,
+} from "@s-hirano-ist/s-application/mobile/sync";
 import { ISBN } from "@s-hirano-ist/s-core/books/entities/book-entity";
 import { Readable } from "node:stream";
 import { ApiError } from "s-private-backend/api/error";
@@ -13,11 +18,6 @@ import {
 	toSnapshot,
 	snapshotDto,
 } from "s-private-backend/api/read-models";
-import {
-	getSyncHead,
-	listSyncSnapshot,
-	listSyncChanges,
-} from "s-private-backend/mobile/sync";
 
 export type ReadServiceDeps = {
 	database: DatabaseClient;
