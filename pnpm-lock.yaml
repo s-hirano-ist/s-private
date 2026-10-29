@@ -461,12 +461,12 @@ importers:
       '@s-hirano-ist/s-image-processing':
         specifier: workspace:*
         version: link:../../packages/image-processing
+      '@s-hirano-ist/s-infrastructure':
+        specifier: workspace:*
+        version: link:../../packages/infrastructure
       '@s-hirano-ist/s-notification':
         specifier: workspace:*
         version: link:../../packages/notification
-      '@s-hirano-ist/s-search':
-        specifier: workspace:*
-        version: link:../../packages/search
       '@s-hirano-ist/s-storage':
         specifier: workspace:*
         version: link:../../packages/storage
@@ -624,6 +624,9 @@ importers:
 
   packages/application:
     dependencies:
+      '@s-hirano-ist/s-core':
+        specifier: workspace:*
+        version: link:../core
       zod:
         specifier: 'catalog:'
         version: 4.6.5
@@ -691,6 +694,18 @@ importers:
       '@s-hirano-ist/s-application':
         specifier: workspace:*
         version: link:../application
+      '@s-hirano-ist/s-core':
+        specifier: workspace:*
+        version: link:../core
+      '@s-hirano-ist/s-database':
+        specifier: workspace:*
+        version: link:../database
+      '@s-hirano-ist/s-search':
+        specifier: workspace:*
+        version: link:../search
+      zod:
+        specifier: 'catalog:'
+        version: 4.6.5
     devDependencies:
       '@types/node':
         specifier: 'catalog:'

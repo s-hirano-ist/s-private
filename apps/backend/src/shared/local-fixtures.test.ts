@@ -1,7 +1,7 @@
 import { Status } from "@s-hirano-ist/s-database";
 import { createPrismaClient } from "@s-hirano-ist/s-database";
+import { extendDatabase } from "@s-hirano-ist/s-infrastructure/database";
 import { readFile } from "node:fs/promises";
-import { extendDatabase } from "s-private-backend/shared/database";
 import { createLocalSampleSeeder } from "s-private-backend/shared/local-fixtures";
 import { sharpImageProcessor } from "s-private-backend/shared/sharp-image-processor";
 import { beforeEach, describe, expect, test, vi } from "vite-plus/test";

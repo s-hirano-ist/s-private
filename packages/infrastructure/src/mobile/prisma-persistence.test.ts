@@ -1,5 +1,5 @@
-import type { DatabaseClient } from "s-private-backend/shared/database";
-import { createMobilePersistence } from "s-private-backend/mobile/prisma-persistence";
+import type { DatabaseClient } from "@s-hirano-ist/s-infrastructure/database";
+import { createMobilePersistence } from "@s-hirano-ist/s-infrastructure/mobile/prisma-persistence";
 import { expect, test, vi } from "vitest";
 const note = {
 	id: "note",

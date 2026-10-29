@@ -17,7 +17,6 @@
 		"@s-hirano-ist/s-storage": "workspace:*",
 		"better-auth": "1.7.7",
 		"zod": "catalog:",
-		"@s-hirano-ist/s-search": "workspace:*",
 		"jose": "6.2.12",
 		"pino": "10.4.0",
 		"@hono/zod-openapi": "1.6.3",
@@ -25,7 +24,8 @@
 		"@s-hirano-ist/s-api-contracts": "workspace:*",
 		"@sentry/node": "10.76.0",
 		"@hono/node-server": "2.1.4",
-		"@s-hirano-ist/s-application": "workspace:*"
+		"@s-hirano-ist/s-application": "workspace:*",
+		"@s-hirano-ist/s-infrastructure": "workspace:*"
 	},
 	"devDependencies": {
 		"@types/node": "catalog:",
