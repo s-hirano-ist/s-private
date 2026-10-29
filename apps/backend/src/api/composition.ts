@@ -18,6 +18,7 @@ import { createBooksCommandRepository } from "@s-hirano-ist/s-infrastructure/boo
 import { createBooksQueryRepository } from "@s-hirano-ist/s-infrastructure/books/query-repository";
 import { createMediaReader } from "@s-hirano-ist/s-infrastructure/content/media-reader";
 import { createContentQueryRepository } from "@s-hirano-ist/s-infrastructure/content/query-repository";
+import { sharpImageProcessor } from "@s-hirano-ist/s-infrastructure/content/sharp-image-processor";
 import { createImagesCommandRepository } from "@s-hirano-ist/s-infrastructure/images/command-repository";
 import { createImagesQueryRepository } from "@s-hirano-ist/s-infrastructure/images/query-repository";
 import { createMobilePersistence } from "@s-hirano-ist/s-infrastructure/mobile/prisma-persistence";
@@ -73,6 +74,7 @@ export function createApiServices(config: ApiServicesConfig) {
 			new BooksDomainService(booksQueryRepository),
 	};
 	const writes = createWriteService({
+		imageProcessor: sharpImageProcessor,
 		articles: {
 			commandRepository: createArticlesCommandRepository(database),
 			domainServiceFactory,

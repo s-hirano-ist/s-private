@@ -1,7 +1,7 @@
+import { parseBookInput } from "@s-hirano-ist/s-application/books/input";
 import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { parseBookInput } from "s-private-backend/books/input";
 import { expect, test, vi } from "vitest";
-vi.mock("s-private-backend/shared/image-upload-parser", () => ({
+vi.mock("@s-hirano-ist/s-application/content/image-upload-parser", () => ({
 	parseSupportedImageFile: vi.fn(async () => ({
 		contentType: "image/png",
 		originalBuffer: Buffer.from("png"),
@@ -19,6 +19,7 @@ test("normalizes legacy CSV segments at the domain boundary without mutating ope
 			image: new File(["png"], "cover.png", { type: "image/png" }),
 		},
 		makeUserId("owner"),
+		{ createThumbnail: vi.fn(), getMetadata: vi.fn() },
 	);
 	expect(result.tags).toEqual(["a", "b"]);
 	expect(tags.join(",")).toBe(" a , b, ,");
