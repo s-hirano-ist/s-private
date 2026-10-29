@@ -1,6 +1,6 @@
+import type { EventDispatcher } from "@s-hirano-ist/s-application/events/ports";
 import type { INotesCommandRepository } from "@s-hirano-ist/s-core/notes/repositories/notes-command-repository.interface";
 import type { NotesDomainService } from "@s-hirano-ist/s-core/notes/services/notes-domain-service";
-import type { EventDispatcher } from "s-private-backend/shared/ports";
 import {
 	noteEntity,
 	makeNoteTitle,
