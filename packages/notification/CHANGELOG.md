@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.19.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-notification-v1.19.1...@s-hirano-ist/s-notification-v1.19.2) (2026-10-29)
+
+
+### Bug Fixes
+
+* **auth:** recover failed Auth0 initialization and improve diagnostics ([2958a0c](https://github.com/s-hirano-ist/s-private/commit/2958a0cc8c7640efec85fa7cb66320ef727e9ebf))
+* **backend:** preserve TypeScript package exports in Vercel functions ([669ba65](https://github.com/s-hirano-ist/s-private/commit/669ba65fc06d326699ff144165091b01a76bcf44))
+* **backend:** Vercelの起動エラーとPreview接続先を修正 ([8d6f1b2](https://github.com/s-hirano-ist/s-private/commit/8d6f1b2b294dac4b76198c8de8dcc4eb2ff5c69e))
+
+
+### Maintenance
+
+* **deps:** update node and pnpm ([112702b](https://github.com/s-hirano-ist/s-private/commit/112702bc5a24e7604a28cf3ec8af71038db8f709))
+* **deps:** update node and pnpm ([667f93e](https://github.com/s-hirano-ist/s-private/commit/667f93ece6d212cae1f67b85775873c3f8fa3ff5))
+
 ## [1.19.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-notification-v1.19.0...@s-hirano-ist/s-notification-v1.19.1) (2026-10-06)
 
 

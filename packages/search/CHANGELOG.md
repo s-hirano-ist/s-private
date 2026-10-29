@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.19.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-search-v1.19.1...@s-hirano-ist/s-search-v1.19.2) (2026-10-29)
+
+
+### Bug Fixes
+
+* **search:** use Qdrant Cloud inference in deployed backends ([960c5b3](https://github.com/s-hirano-ist/s-private/commit/960c5b36793eac0d7821a95a2c43a4f6bb9961e5))
+* **search:** use Qdrant Cloud inference in deployed backends ([123be62](https://github.com/s-hirano-ist/s-private/commit/123be622fee1b2a0b00f83fa7b08b978e23550c5))
+
+
+### Maintenance
+
+* **deps:** update node and pnpm ([112702b](https://github.com/s-hirano-ist/s-private/commit/112702bc5a24e7604a28cf3ec8af71038db8f709))
+* **deps:** update node and pnpm ([667f93e](https://github.com/s-hirano-ist/s-private/commit/667f93ece6d212cae1f67b85775873c3f8fa3ff5))
+
 ## [1.19.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-search-v1.19.0...@s-hirano-ist/s-search-v1.19.1) (2026-10-06)
 
 
