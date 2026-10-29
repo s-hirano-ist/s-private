@@ -1,71 +1,17 @@
-import type { IArticlesQueryRepository } from "@s-hirano-ist/s-core/articles/repositories/articles-query-repository.interface";
 import { makeUrl } from "@s-hirano-ist/s-core/articles/entities/article-entity";
 import { ArticlesDomainService } from "@s-hirano-ist/s-core/articles/services/articles-domain-service";
 import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
-import { beforeEach, describe, expect, test, vi } from "vitest";
-
-describe("ArticlesDomainService", () => {
-	let articlesQueryRepository: IArticlesQueryRepository;
-	let articlesDomainService: ArticlesDomainService;
-
-	beforeEach(() => {
-		articlesQueryRepository = {
-			findByUrl: vi.fn(),
-			findMany: vi.fn(),
-			count: vi.fn(),
-			search: vi.fn(),
-		} as IArticlesQueryRepository;
-
-		articlesDomainService = new ArticlesDomainService(articlesQueryRepository);
-	});
-
-	describe("ensureNoDuplicate", () => {
-		test("should not throw error when no duplicate exists", async () => {
-			const url = makeUrl("https://example.com/articles");
-			const userId = makeUserId("test-user-id");
-
-			vi.mocked(articlesQueryRepository.findByUrl).mockResolvedValue(null);
-
-			await expect(
-				articlesDomainService.ensureNoDuplicate(url, userId),
-			).resolves.not.toThrow();
-
-			expect(articlesQueryRepository.findByUrl).toHaveBeenCalledWith(
-				url,
-				userId,
-			);
-		});
-
-		test("should throw DuplicateError when duplicate exists", async () => {
-			const url = makeUrl("https://example.com/articles");
-			const userId = makeUserId("test-user-id");
-
-			const mockArticle = {
-				id: "existing-article-id",
-				url,
-				userId,
-				title: "Existing Article",
-				status: "UNEXPORTED" as const,
-				quote: "Sample quote",
-				ogTitle: "OG Title",
-				ogDescription: "OG Description",
-				ogImageUrl: "https://example.com/og-image.jpg",
-				Category: { id: "category-id", name: "Tech" },
-			};
-
-			vi.mocked(articlesQueryRepository.findByUrl).mockResolvedValue(
-				mockArticle,
-			);
-
-			await expect(
-				articlesDomainService.ensureNoDuplicate(url, userId),
-			).rejects.toThrow(DuplicateError);
-
-			expect(articlesQueryRepository.findByUrl).toHaveBeenCalledWith(
-				url,
-				userId,
-			);
-		});
-	});
+import { expect, test, vi } from "vitest";
+test("duplication is scoped by owner and independent of the stored lifecycle state", async () => {
+	const existsByUrl = vi.fn().mockResolvedValue(false);
+	const service = new ArticlesDomainService({ existsByUrl });
+	const key = makeUrl("https://example.com");
+	const owner = makeUserId("owner");
+	await expect(service.ensureNoDuplicate(key, owner)).resolves.toBeUndefined();
+	expect(existsByUrl).toHaveBeenCalledWith(key, owner);
+	existsByUrl.mockResolvedValue(true);
+	await expect(service.ensureNoDuplicate(key, owner)).rejects.toBeInstanceOf(
+		DuplicateError,
+	);
 });
