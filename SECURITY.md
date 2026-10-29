@@ -242,6 +242,7 @@ CSP or private headers into the upstream server-rendering request.
 - `script-src` permits self; development also allows `unsafe-eval`.
 - `script-src-elem` permits self, Vercel Analytics, Preview-only Vercel Toolbar, and `unsafe-inline` as a compatibility fallback for Next.js/Vercel streamed or error responses that can emit parser-inserted scripts without a nonce. Development-only React Scan runs through its local CLI rather than an application script.
 - Production `style-src-elem` requires self or documented deterministic framework/library hashes. Add a specific hash for a verified new inline style instead of broadening Production with `unsafe-inline`.
+  The next-themes transition-suppression style is allowed by `sha256-skqujXORqzxt1aE0NNXxujEanPTX6raoqSscTV/Ww/Y=`. Recheck its exact text and hash when updating next-themes; exercise light, dark and system themes under the Production policy.
 - `style-src-attr 'unsafe-inline'` remains enabled because UI positioning and syntax highlighting use dynamic style attributes.
 - Preview deployments allow the additional script, connection, image, frame, style, and font sources documented for Vercel Toolbar.
 - CSP violations are reported to the configured Sentry reporting endpoint through `report-uri` and `Report-To`.

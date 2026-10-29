@@ -27,6 +27,9 @@ describe("buildContentSecurityPolicy", () => {
 			"style-src-elem 'self' 'sha256-Wwucq8eX2r0YFymkQhDXm5hN0+FfSvI3s4JSSaqa4iw='",
 		);
 		expect(policy).not.toContain("nonce-");
+		expect(policy).toContain(
+			"'sha256-skqujXORqzxt1aE0NNXxujEanPTX6raoqSscTV/Ww/Y='",
+		);
 		expect(policy).not.toMatch(/style-src-elem[^;]*'unsafe-inline'/u);
 		expect(policy).toContain("style-src-attr 'unsafe-inline'");
 		expect(policy).toContain(

@@ -80,8 +80,15 @@ export function createBackendRuntime(env: BackendEnv) {
 		push: env,
 		reporter: Sentry,
 	});
-	const { auth, isLocalDevAuthEnabled } = createBackendAuth(env, database);
-	const apiAuth = createApiAuth(env, auth, services.mobile, Sentry);
+	const { getAuth, isLocalDevAuthEnabled } = createBackendAuth(env, database, {
+		failure: reportError,
+		recovery() {
+			// oxlint-disable-next-line no-console -- retain recovery alongside initialization failures.
+			console.info("Auth0 initialization recovered");
+			Sentry.captureMessage("Auth0 initialization recovered", "info");
+		},
+	});
+	const apiAuth = createApiAuth(env, getAuth, services.mobile, Sentry);
 	const cron = createGigazineCronHandler(
 		env,
 		services.pushDelivery.sendPushToAll,
@@ -89,15 +96,16 @@ export function createBackendRuntime(env: BackendEnv) {
 	const app = createBackendHttpApp({
 		objectStorageUnavailable: true,
 		api: createApiApp(apiAuth, services.reads, services.mutations).fetch,
-		auth: (request) => auth.handler(request),
-		signIn: createSignInHandler(env, {
-			auth,
-			isLocalDevAuthEnabled,
-			findUser: (email) =>
-				database.user.findUnique({ where: { email }, select: { id: true } }),
-			// The local sample seeder uploads images; keep sign-in independent of MinIO.
-			seedLocalUser: async () => {},
-		}),
+		auth: async (request) => (await getAuth()).handler(request),
+		signIn: async (request) =>
+			createSignInHandler(env, {
+				auth: await getAuth(),
+				isLocalDevAuthEnabled,
+				findUser: (email) =>
+					database.user.findUnique({ where: { email }, select: { id: true } }),
+				// The local sample seeder uploads images; keep sign-in independent of MinIO.
+				seedLocalUser: async () => {},
+			})(request),
 		cron: (request) =>
 			env.BACKEND_CRON_ENABLED
 				? cron(request)

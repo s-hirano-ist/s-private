@@ -1,4 +1,5 @@
 import { createBackendHttpApp } from "s-private-backend/api/http-app";
+import { AuthInitializationError } from "s-private-backend/auth/recoverable-auth";
 import { describe, expect, test, vi } from "vite-plus/test";
 
 function setup(
@@ -48,6 +49,22 @@ function setup(
 	return { app, auth, api, signIn, reportError };
 }
 describe("backend HTTP host", () => {
+	test.each(["/api/sign-in", "/api/auth/callback/auth0?code=secret"])(
+		"returns retryable 503 without reporting an initialization failure again: %s",
+		async (path) => {
+			const { app, signIn, auth, reportError } = setup();
+			signIn.mockRejectedValue(new AuthInitializationError());
+			auth.mockRejectedValue(new AuthInitializationError());
+			const response = await app.request(`https://backend.example${path}`);
+			expect(response.status).toBe(503);
+			expect(response.headers.get("retry-after")).toBe("30");
+			expect(response.headers.get("cache-control")).toBe("private, no-store");
+			expect(await response.json()).toEqual({
+				error: { code: "API_UNAVAILABLE" },
+			});
+			expect(reportError).not.toHaveBeenCalled();
+		},
+	);
 	test("requires the BFF's validated origin when Preview has no canonical origin", async () => {
 		const { app, signIn } = setup(false, null);
 		expect(

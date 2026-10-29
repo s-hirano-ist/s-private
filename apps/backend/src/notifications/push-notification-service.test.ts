@@ -96,8 +96,45 @@ describe("sendPushToAll", () => {
 			sent: 1,
 		});
 		expect(deleteByIds).not.toHaveBeenCalled();
-		expect(captureException).toHaveBeenCalledWith(error, expect.any(Object));
+		expect(captureException).toHaveBeenCalledWith(expect.any(Error), {
+			tags: {
+				source: "web-push",
+				category: "provider-unavailable",
+				providerHost: "push.example.com",
+				providerCode: "unknown",
+				statusCode: "503",
+			},
+			extra: { subscriptionId: "1" },
+		});
+		expect(captureException.mock.calls[0][0]).not.toBe(error);
 	});
+
+	test.each([401, 403, 429, 400, undefined])(
+		"retains rejected subscriptions and reports safe metadata for %s",
+		async (statusCode) => {
+			const cause = {
+				statusCode,
+				body: "private-response",
+				endpoint: "https://push.example.com/private-subscription",
+				headers: { authorization: "private-token" },
+			};
+			send.mockRejectedValueOnce(new WebPushSendError(cause));
+			await expect(sendPushToAll(payload)).resolves.toEqual({
+				expired: 0,
+				failed: 1,
+				sent: 1,
+			});
+			expect(deleteByIds).not.toHaveBeenCalled();
+			const [diagnostic, context] = captureException.mock.calls[0] as [
+				Error,
+				unknown,
+			];
+			expect(diagnostic).not.toHaveProperty("cause");
+			expect(
+				JSON.stringify(context) + diagnostic.message + String(diagnostic.stack),
+			).not.toMatch(/private-response|private-subscription|private-token/u);
+		},
+	);
 
 	test("does not require VAPID configuration when there are no subscribers", async () => {
 		listAll.mockResolvedValue([]);

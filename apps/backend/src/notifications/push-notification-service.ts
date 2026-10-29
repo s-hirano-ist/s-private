@@ -1,5 +1,8 @@
 import type { PushSubscriptionRepository } from "s-private-backend/notifications/ports";
-import type { ErrorReporter } from "s-private-backend/observability/reporter";
+import type {
+	CaptureContext,
+	ErrorReporter,
+} from "s-private-backend/observability/reporter";
 import {
 	createWebPushService,
 	WebPushSendError,
@@ -72,10 +75,12 @@ export function createPushDeliveryService(
 						return;
 					}
 					failed += 1;
-					reporter.captureException(error, {
-						tags: { source: "web-push" },
-						extra: { subscriptionId: subscription.id },
-					});
+					const diagnostic = pushFailureDiagnostic(
+						error,
+						subscription.endpoint,
+						subscription.id,
+					);
+					reporter.captureException(diagnostic.error, diagnostic.context);
 				}
 			}),
 		);
@@ -95,4 +100,52 @@ export function createPushDeliveryService(
 	}
 
 	return { sendPushToAll, sendPushToSubscription };
+}
+
+function failureCategory(status?: number): string {
+	if (status === undefined) return "transport-or-unknown";
+	if (status === 401 || status === 403) return "authentication";
+	if (status === 429) return "rate-limited";
+	if (status >= 500) return "provider-unavailable";
+	return "request-rejected";
+}
+
+/** Never attach the original provider Error: it may contain keys and endpoint URLs. */
+function pushFailureDiagnostic(
+	error: unknown,
+	endpoint: string,
+	subscriptionId: string,
+): { context: CaptureContext; error: Error } {
+	let providerHost = "unknown";
+	try {
+		providerHost = new URL(endpoint).hostname;
+	} catch {
+		/* Keep malformed endpoints private. */
+	}
+	const candidate =
+		error instanceof WebPushSendError ? error.statusCode : undefined;
+	const status =
+		candidate !== undefined &&
+		Number.isInteger(candidate) &&
+		candidate >= 100 &&
+		candidate <= 599
+			? candidate
+			: undefined;
+	const category = failureCategory(status);
+	return {
+		error: new Error(`Web Push failed: ${category} (${status ?? "unknown"})`),
+		context: {
+			tags: {
+				source: "web-push",
+				category,
+				providerHost,
+				providerCode:
+					error instanceof WebPushSendError
+						? (error.providerCode ?? "unknown")
+						: "unknown",
+				statusCode: String(status ?? "unknown"),
+			},
+			extra: { subscriptionId },
+		},
+	};
 }

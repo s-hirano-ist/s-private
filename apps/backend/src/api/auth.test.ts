@@ -8,7 +8,9 @@ function setup() {
 	}));
 	const auth = createApiAuth(
 		{ LOCAL_DEV_MODE: "false", NODE_ENV: "test", VERCEL: "1" },
-		{ api: { getSession } } as unknown as Parameters<typeof createApiAuth>[1],
+		(async () => ({ api: { getSession } })) as unknown as Parameters<
+			typeof createApiAuth
+		>[1],
 		{} as Parameters<typeof createApiAuth>[2],
 		{ captureException: vi.fn() },
 	);
@@ -18,7 +20,7 @@ function setup() {
 test("resolves direct Better Auth API calls with the validated Preview Web host", async () => {
 	const { auth, getSession } = setup();
 	const headers = new Headers({
-		cookie: "session=secret",
+		cookie: "better-auth.session_token=secret",
 		host: "backend.example",
 		"x-s-private-web-origin":
 			"https://memdex-web-abc-s-hirano-ist-team.vercel.app",
@@ -29,7 +31,7 @@ test("resolves direct Better Auth API calls with the validated Preview Web host"
 	expect(received.get("host")).toBe(
 		"memdex-web-abc-s-hirano-ist-team.vercel.app",
 	);
-	expect(received.get("cookie")).toBe("session=secret");
+	expect(received.get("cookie")).toBe("better-auth.session_token=secret");
 	expect(received.has("x-forwarded-host")).toBe(false);
 	expect(headers.get("host")).toBe("backend.example");
 });
@@ -47,3 +49,16 @@ test.each([
 		expect(getSession).not.toHaveBeenCalled();
 	},
 );
+
+test("returns an anonymous session without initializing Auth0", async () => {
+	const { auth, getSession } = setup();
+	await expect(
+		auth.getWebSession(
+			new Headers({
+				"x-s-private-web-origin":
+					"https://memdex-web-abc-s-hirano-ist-team.vercel.app",
+			}),
+		),
+	).resolves.toEqual({ session: null });
+	expect(getSession).not.toHaveBeenCalled();
+});

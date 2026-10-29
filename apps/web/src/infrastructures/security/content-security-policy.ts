@@ -3,6 +3,10 @@ const CSP_REPORTING_GROUP = "csp-endpoint";
 const NEXT_INLINE_STYLE_HASH =
 	"'sha256-Wwucq8eX2r0YFymkQhDXm5hN0+FfSvI3s4JSSaqa4iw='";
 
+// next-themes disableTransitionOnChange inserts this deterministic style.
+const NEXT_THEMES_STYLE_HASH =
+	"'sha256-skqujXORqzxt1aE0NNXxujEanPTX6raoqSscTV/Ww/Y='";
+
 type ContentSecurityPolicyOptions = {
 	isDevelopment: boolean;
 	isPreview: boolean;
@@ -48,7 +52,7 @@ export function buildContentSecurityPolicy({
 				"'unsafe-inline'",
 				...(allowsVercelToolbar ? ["https://vercel.live"] : []),
 			]
-		: ["'self'", NEXT_INLINE_STYLE_HASH];
+		: ["'self'", NEXT_INLINE_STYLE_HASH, NEXT_THEMES_STYLE_HASH];
 	const imageSources = [
 		"'self'",
 		"blob:",
