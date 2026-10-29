@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-import { NotesBatchDomainService } from "@s-hirano-ist/s-core/notes/services/notes-batch-domain-service";
+import { NotesBatchApplicationService } from "@s-hirano-ist/s-application/batch/notes-batch-service";
 import {
 	makeUserId,
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { createPrismaClient } from "@s-hirano-ist/s-database";
+import { createNotesCommandRepository } from "@s-hirano-ist/s-infrastructure/batch/notes-command-repository";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
-import { createNotesCommandRepository } from "./infrastructures/notes-command-repository.js";
 
 async function main() {
 	const env = {
@@ -35,7 +35,7 @@ async function main() {
 		// DDD: Create repository and domain service
 		// Transaction is handled internally by repository's resetStatus method
 		const commandRepository = createNotesCommandRepository(prisma);
-		const batchService = new NotesBatchDomainService(commandRepository);
+		const batchService = new NotesBatchApplicationService(commandRepository);
 
 		const result = await batchService.resetNotes(userId);
 
@@ -47,18 +47,19 @@ async function main() {
 
 	try {
 		await resetNotes();
-		await notificationService.notifyInfo("reset-notes completed", {
-			caller: "reset-notes",
-		});
+		await notificationService
+			.notifyInfo("reset-notes completed", {
+				caller: "reset-notes",
+			})
+			.catch((error: unknown) => console.error("通知失敗:", error));
 	} catch (error) {
 		console.error("❌ エラーが発生しました:", error);
-		await notificationService.notifyError(
-			`reset-notes failed: ${String(error)}`,
-			{
+		await notificationService
+			.notifyError(`reset-notes failed: ${String(error)}`, {
 				caller: "reset-notes",
-			},
-		);
-		process.exit(1);
+			})
+			.catch((notifyError: unknown) => console.error("通知失敗:", notifyError));
+		process.exitCode = 1;
 	} finally {
 		await prisma.$disconnect();
 	}

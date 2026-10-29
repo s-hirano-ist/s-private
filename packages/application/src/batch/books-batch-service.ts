@@ -2,18 +2,18 @@ import type {
 	BulkUpdateResult,
 	IBatchCommandRepository,
 	ResetStatusResult,
-} from "@s-hirano-ist/s-core/shared-kernel/repositories/batch-command-repository.interface";
+} from "@s-hirano-ist/s-application/batch/ports";
 import {
 	makeExportedAt,
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 
 /**
- * Domain service for batch operations on Notes.
+ * Domain service for batch operations on Books.
  *
  * @remarks
  * Encapsulates the business logic for batch status transitions.
- * Manages the state machine for note lifecycle:
+ * Manages the state machine for book lifecycle:
  *
  * ```
  * UNEXPORTED --> LAST_UPDATED --> EXPORTED
@@ -22,7 +22,7 @@ import {
  *               UNEXPORTED (revert)
  * ```
  */
-export class NotesBatchDomainService {
+export class BooksBatchApplicationService {
 	private readonly commandRepository: IBatchCommandRepository;
 
 	constructor(commandRepository: IBatchCommandRepository) {
@@ -30,20 +30,20 @@ export class NotesBatchDomainService {
 	}
 
 	/**
-	 * Resets notes for a new batch export.
+	 * Resets books for a new batch export.
 	 *
 	 * @remarks
 	 * Delegates to repository's resetStatus which performs two operations
 	 * atomically within a single transaction.
 	 */
-	public async resetNotes(userId: UserId): Promise<ResetStatusResult> {
+	public async resetBooks(userId: UserId): Promise<ResetStatusResult> {
 		return this.commandRepository.resetStatus(userId, makeExportedAt());
 	}
 
 	/**
-	 * Reverts notes from LAST_UPDATED back to UNEXPORTED.
+	 * Reverts books from LAST_UPDATED back to UNEXPORTED.
 	 */
-	public async revertNotes(userId: UserId): Promise<BulkUpdateResult> {
+	public async revertBooks(userId: UserId): Promise<BulkUpdateResult> {
 		return this.commandRepository.bulkUpdateStatus({
 			userId,
 			fromStatus: "LAST_UPDATED",

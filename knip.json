@@ -59,7 +59,8 @@
 			"ignoreDependencies": ["zod", "@s-hirano-ist/s-api-contracts"]
 		},
 		"packages/database": {
-			"ignoreDependencies": ["@prisma/client"]
+			"ignoreDependencies": ["@prisma/client"],
+			"entry": ["src/generated/runtime/client.js"]
 		},
 		"apps/backend": {
 			"entry": ["src/index.ts", "src/dev.ts"],

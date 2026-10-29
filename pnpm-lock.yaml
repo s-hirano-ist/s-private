@@ -732,6 +732,9 @@ importers:
       '@googleapis/books':
         specifier: 13.0.1
         version: 13.0.1(supports-color@10.2.2)
+      '@s-hirano-ist/s-application':
+        specifier: workspace:*
+        version: link:../application
       '@s-hirano-ist/s-core':
         specifier: workspace:*
         version: link:../core
@@ -741,6 +744,9 @@ importers:
       '@s-hirano-ist/s-image-processing':
         specifier: workspace:*
         version: link:../image-processing
+      '@s-hirano-ist/s-infrastructure':
+        specifier: workspace:*
+        version: link:../infrastructure
       '@s-hirano-ist/s-notification':
         specifier: workspace:*
         version: link:../notification
@@ -769,12 +775,17 @@ importers:
       '@types/turndown':
         specifier: 5.0.6
         version: 5.0.6
+      esbuild:
+        specifier: 0.28.2
+        version: 0.28.2
       tsx:
         specifier: 4.23.15
         version: 4.23.15
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
+    linkDirectory: false
+    publishDirectory: dist-package
 
   packages/search:
     dependencies:

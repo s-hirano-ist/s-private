@@ -48,9 +48,9 @@ import { z, ZodError } from "zod";
 
 export type MediaInput = z.output<typeof schemas.uploadStartSchema>;
 export type WriteServiceDeps = {
-	imageProcessor: IImageProcessor;
 	articles: CreateArticleDeps;
 	books: CreateBookDeps;
+	imageProcessor: IImageProcessor;
 	images: CreateImageDeps;
 	mobile: Pick<MobileDeps, "content" | "operations" | "errors">;
 	notes: CreateNoteDeps;

@@ -5,7 +5,6 @@ import type {
 	Status,
 	UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import type { IBatchCommandRepository } from "@s-hirano-ist/s-core/shared-kernel/repositories/batch-command-repository.interface";
 
 /**
  * Command repository interface for the Image domain.
@@ -14,8 +13,7 @@ import type { IBatchCommandRepository } from "@s-hirano-ist/s-core/shared-kernel
  * Follows the CQRS pattern - this interface handles write operations only.
  * Implementations should be provided by the infrastructure layer (e.g., Prisma).
  *
- * For batch operations (bulkUpdateStatus), use {@link IBatchCommandRepository}
- * from the common module directly.
+ * Batch status transitions are orchestrated by the application layer.
  *
  * For object storage operations (upload, delete), use the application storage port
  * from the common module.
@@ -31,7 +29,6 @@ import type { IBatchCommandRepository } from "@s-hirano-ist/s-core/shared-kernel
  * ```
  *
  * @see {@link IImagesQueryRepository} for read operations
- * @see {@link IBatchCommandRepository} for batch operations
  * @see the application storage port for object storage operations
  */
 export type IImagesCommandRepository = {

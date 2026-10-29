@@ -13,7 +13,7 @@
 		"dev:app": "pnpm packages:build && node scripts/start-development.mjs",
 		"local:down": "docker compose --env-file .env.local --profile local down",
 		"build": "pnpm pipeline build --full",
-		"packages:build": "pnpm --filter './packages/*' -r run build",
+		"packages:build": "pnpm --filter './packages/*' -r run build && pnpm check:publish",
 		"clean": "rm -rf apps/web/node_modules apps/web/.next packages/*/node_modules packages/*/dist",
 		"format": "vp fmt",
 		"format:check": "vp fmt --check .",
@@ -76,7 +76,9 @@
 		"preinstall": "npx only-allow pnpm",
 		"prepare": "lefthook install",
 		"api:generate": "pnpm --filter @s-hirano-ist/s-api-contracts build && node scripts/generate-api.mjs",
-		"api:check": "pnpm --filter @s-hirano-ist/s-api-contracts build && node scripts/generate-api.mjs --check"
+		"api:check": "pnpm --filter @s-hirano-ist/s-api-contracts build && node scripts/generate-api.mjs --check",
+		"check:publish": "node scripts/check-publish-boundaries.mjs",
+		"check:cli-package": "node scripts/verify-cli-package.mjs"
 	},
 	"dependencies": {
 		"next": "catalog:",
@@ -142,5 +144,6 @@
 		"vitest": "catalog:",
 		"orval": "8.41.0",
 		"@s-hirano-ist/s-api-contracts": "workspace:*"
-	}
+	},
+	"private": true
 }

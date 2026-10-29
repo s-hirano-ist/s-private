@@ -12,15 +12,6 @@
 			"import": "./dist/node.js"
 		}
 	},
-	"publishConfig": {
-		"access": "public",
-		"exports": {
-			"./node": {
-				"types": "./dist/node.d.ts",
-				"import": "./dist/node.js"
-			}
-		}
-	},
 	"files": [
 		"dist",
 		"README.md",
@@ -28,7 +19,6 @@
 	],
 	"scripts": {
 		"build": "tsc",
-		"prepublishOnly": "pnpm run build",
 		"clean": "rm -rf dist",
 		"typecheck": "tsc --noEmit"
 	},
@@ -39,5 +29,6 @@
 	"devDependencies": {
 		"@types/node": "catalog:",
 		"typescript": "catalog:"
-	}
+	},
+	"private": true
 }

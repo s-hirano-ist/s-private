@@ -26,6 +26,14 @@ const COLLAPSE_PATTERN =
    into the tracked first-party universe is forbidden unless the target is in `to.pathNot`.
    Verified: 0 false positives on the current tree; fires on deliberate violations. */
 const boundaryRules = [
+	{
+		name: "boundary-cli-ingest-policy",
+		severity: "error",
+		from: {
+			path: "^packages/scripts/src/ingest-(articles|notes|books|images)\\.ts$",
+		},
+		to: { path: "^packages/(database|storage)/|^apps/backend/" },
+	},
 	...["articles", "notes", "images", "books"].map((domain) => ({
 		name: `boundary-shared-domain-${domain}`,
 		severity: "error",

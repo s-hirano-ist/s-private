@@ -112,122 +112,13 @@
 			"import": "./notes/types/*.ts"
 		}
 	},
-	"publishConfig": {
-		"access": "public",
-		"exports": {
-			"./articles/entities/*": {
-				"import": "./dist/articles/entities/*.js"
-			},
-			"./articles/events/*": {
-				"types": "./dist/articles/events/*.d.ts",
-				"import": "./dist/articles/events/*.js"
-			},
-			"./articles/repositories/*": {
-				"types": "./dist/articles/repositories/*.d.ts",
-				"import": "./dist/articles/repositories/*.js"
-			},
-			"./articles/services/*": {
-				"types": "./dist/articles/services/*.d.ts",
-				"import": "./dist/articles/services/*.js"
-			},
-			"./articles/types/*": {
-				"types": "./dist/articles/types/*.d.ts",
-				"import": "./dist/articles/types/*.js"
-			},
-			"./books/entities/*": {
-				"types": "./dist/books/entities/*.d.ts",
-				"import": "./dist/books/entities/*.js"
-			},
-			"./books/events/*": {
-				"types": "./dist/books/events/*.d.ts",
-				"import": "./dist/books/events/*.js"
-			},
-			"./books/repositories/*": {
-				"types": "./dist/books/repositories/*.d.ts",
-				"import": "./dist/books/repositories/*.js"
-			},
-			"./books/services/*": {
-				"types": "./dist/books/services/*.d.ts",
-				"import": "./dist/books/services/*.js"
-			},
-			"./books/types/*": {
-				"types": "./dist/books/types/*.d.ts",
-				"import": "./dist/books/types/*.js"
-			},
-			"./shared-kernel/entities/*": {
-				"types": "./dist/shared-kernel/entities/*.d.ts",
-				"import": "./dist/shared-kernel/entities/*.js"
-			},
-			"./shared-kernel/events/*": {
-				"types": "./dist/shared-kernel/events/*.d.ts",
-				"import": "./dist/shared-kernel/events/*.js"
-			},
-			"./shared-kernel/repositories/*": {
-				"types": "./dist/shared-kernel/repositories/*.d.ts",
-				"import": "./dist/shared-kernel/repositories/*.js"
-			},
-			"./shared-kernel/services/*": {
-				"types": "./dist/shared-kernel/services/*.d.ts",
-				"import": "./dist/shared-kernel/services/*.js"
-			},
-			"./shared-kernel/types/*": {
-				"types": "./dist/shared-kernel/types/*.d.ts",
-				"import": "./dist/shared-kernel/types/*.js"
-			},
-			"./shared-kernel/errors/*": {
-				"types": "./dist/shared-kernel/errors/*.d.ts",
-				"import": "./dist/shared-kernel/errors/*.js"
-			},
-			"./images/entities/*": {
-				"types": "./dist/images/entities/*.d.ts",
-				"import": "./dist/images/entities/*.js"
-			},
-			"./images/events/*": {
-				"types": "./dist/images/events/*.d.ts",
-				"import": "./dist/images/events/*.js"
-			},
-			"./images/repositories/*": {
-				"types": "./dist/images/repositories/*.d.ts",
-				"import": "./dist/images/repositories/*.js"
-			},
-			"./images/services/*": {
-				"types": "./dist/images/services/*.d.ts",
-				"import": "./dist/images/services/*.js"
-			},
-			"./images/types/*": {
-				"types": "./dist/images/types/*.d.ts",
-				"import": "./dist/images/types/*.js"
-			},
-			"./notes/entities/*": {
-				"types": "./dist/notes/entities/*.d.ts",
-				"import": "./dist/notes/entities/*.js"
-			},
-			"./notes/events/*": {
-				"types": "./dist/notes/events/*.d.ts",
-				"import": "./dist/notes/events/*.js"
-			},
-			"./notes/repositories/*": {
-				"types": "./dist/notes/repositories/*.d.ts",
-				"import": "./dist/notes/repositories/*.js"
-			},
-			"./notes/services/*": {
-				"types": "./dist/notes/services/*.d.ts",
-				"import": "./dist/notes/services/*.js"
-			},
-			"./notes/types/*": {
-				"types": "./dist/notes/types/*.d.ts",
-				"import": "./dist/notes/types/*.js"
-			}
-		}
-	},
 	"files": [
 		"dist",
 		"README.md",
 		"LICENSE"
 	],
 	"scripts": {
-		"build": "tsc",
-		"prepublishOnly": "pnpm run build",
+		"build": "pnpm clean && tsc --incremental false",
 		"clean": "rm -rf dist",
 		"typecheck": "tsc --noEmit"
 	},
@@ -251,5 +142,6 @@
 	"devDependencies": {
 		"@types/node": "catalog:",
 		"typescript": "catalog:"
-	}
+	},
+	"private": true
 }
