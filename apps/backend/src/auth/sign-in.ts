@@ -1,4 +1,4 @@
-import type { createBackendAuth } from "s-private-backend/auth/web-auth";
+import type { BackendAuth } from "s-private-backend/auth/web-auth";
 
 export type SignInConfig = {
 	LOCAL_AUTH_EMAIL?: string;
@@ -8,7 +8,7 @@ export type SignInConfig = {
 export type SignInDeps = {
 	auth: {
 		api: Pick<
-			ReturnType<typeof createBackendAuth>["auth"]["api"],
+			BackendAuth["api"],
 			"signInEmail" | "signUpEmail" | "signInSocial"
 		>;
 	};

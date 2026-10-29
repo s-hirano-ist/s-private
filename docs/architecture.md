@@ -268,6 +268,21 @@ React Compilerは`reactCompiler: true`と`experimental.turbopackRustReactCompile
 WebのSSR表示エラーはWeb用Sentryへ記録し、各loaderのfallback表示へ変換する。Next.jsのredirect・not-found・認証例外は `unstable_rethrow` で再throwし、通常の表示エラーとして吸収しない。
 Server Actionは `backendActionError` でAPIエラーと入力値を表示用結果へ変換する。backendのドメインエラー通知やイベントをWebから重ねて発行しない。
 
+## Web認証の初期化と通知診断
+
+Auth0のWeb認証インスタンスは要求時に`getAuth()`で初期化する。同時要求では初期化Promiseを共有し、
+OIDC discovery・署名検証情報・Auth0 provider登録を確認できたインスタンスだけを再利用する。
+初期化失敗時は250ms後に1回だけ再試行し、両方失敗した場合は30秒後の要求から再初期化する。
+OAuth開始・callback・session取得そのものは再送しない。認証入口は`Retry-After: 30`付き503、
+共通APIは既存の`API_UNAVAILABLE`を返す。失敗報告は初期化単位で行い、待機中の要求では重複しない。
+復旧時は1回だけinfoを記録する。Node fetchの診断はdiscoveryのURLに限定し、既知の通信エラーコードだけを保存する。
+Cookie・OAuth code・token・request全体を保存せず、不明な通信原因は`UNKNOWN`とする。
+
+Push送信失敗ではHTTP status・失敗分類・送信先hostname・購読IDだけを報告し、providerの生のErrorや応答本文は送らない。
+404/410は期限切れとして削除する。401/403・429・5xx・通信失敗は購読を保持し、送信の自動再試行は行わない。
+診断追加の本番反映後に次回Cronの応答を確認し、provider固有の原因修正と対象購読への通知確認を別PRで行う。
+トップページの死活監視は認証経路も監視するため継続し、`/health`による浅い監視には置き換えない。
+
 ## 静的 CSP と Instant Navigation
 
 本コードベースは、同じdeployment環境では常に同じ値になる決定的なCSPを使用する。Proxyはbrowser responseだけへ`Content-Security-Policy`を付与し、上流requestへCSPや`x-nonce`を注入しない。認証失敗redirectにも同じCSPを付与する。

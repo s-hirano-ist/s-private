@@ -5,12 +5,13 @@ import type {
 } from "s-private-backend/auth/web-auth";
 import type { MobileDeps } from "s-private-backend/mobile/deps";
 import type { ErrorReporter } from "s-private-backend/observability/reporter";
+import { getSessionCookie } from "better-auth/cookies";
 import { authenticateMobileRequest } from "s-private-backend/auth/mobile-auth";
 import { isTrustedWebOrigin } from "s-private-backend/auth/web-origin";
 
 export function createApiAuth(
 	config: AuthConfig & { MOBILE_API_AUDIENCE?: string },
-	auth: ReturnType<typeof createBackendAuth>["auth"],
+	getAuth: ReturnType<typeof createBackendAuth>["getAuth"],
 	mobile: MobileDeps,
 	reporter: Pick<ErrorReporter, "captureException">,
 ): ApiAuth {
@@ -18,6 +19,8 @@ export function createApiAuth(
 		authenticateBearer: (request) =>
 			authenticateMobileRequest(request, config, mobile),
 		async getWebSession(headers) {
+			// Anonymous API requests must not depend on Auth0 discovery availability.
+			if (!getSessionCookie(headers)) return { session: null };
 			const origin =
 				headers.get("x-s-private-web-origin") ??
 				headers.get("origin") ??
@@ -33,6 +36,7 @@ export function createApiAuth(
 			])
 				publicHeaders.delete(name);
 			publicHeaders.set("host", new URL(origin).host);
+			const auth = await getAuth();
 			const { response, headers: responseHeaders } = await auth.api.getSession({
 				headers: publicHeaders,
 				returnHeaders: true,

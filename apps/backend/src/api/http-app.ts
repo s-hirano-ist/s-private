@@ -1,4 +1,8 @@
 import { Hono } from "hono";
+import {
+	AuthInitializationError,
+	AUTH_RETRY_AFTER_SECONDS,
+} from "s-private-backend/auth/recoverable-auth";
 
 export function createBackendHttpApp(deps: {
 	api(request: Request): Response | Promise<Response>;
@@ -55,6 +59,10 @@ export function createBackendHttpApp(deps: {
 	app.get("/api/cron/gigazine-headline", (c) => deps.cron(c.req.raw));
 	app.all("/api/v1/*", (c) => deps.api(c.req.raw));
 	app.onError(async (error, c) => {
+		if (error instanceof AuthInitializationError) {
+			c.header("retry-after", String(AUTH_RETRY_AFTER_SECONDS));
+			return c.json({ error: { code: "API_UNAVAILABLE" } }, 503);
+		}
 		await deps.reportError(error);
 		return c.json({ error: "Internal server error" }, 500);
 	});
