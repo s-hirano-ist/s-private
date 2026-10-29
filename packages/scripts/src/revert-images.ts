@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-import { ImagesBatchDomainService } from "@s-hirano-ist/s-core/images/services/images-batch-domain-service";
+import { ImagesBatchApplicationService } from "@s-hirano-ist/s-application/batch/images-batch-service";
 import {
 	makeUserId,
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { createPrismaClient } from "@s-hirano-ist/s-database";
+import { createImagesCommandRepository } from "@s-hirano-ist/s-infrastructure/batch/images-command-repository";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
-import { createImagesCommandRepository } from "./infrastructures/images-command-repository.js";
 
 async function main() {
 	const env = {
@@ -33,25 +33,26 @@ async function main() {
 
 	try {
 		const commandRepository = createImagesCommandRepository(prisma);
-		const batchService = new ImagesBatchDomainService(commandRepository);
+		const batchService = new ImagesBatchApplicationService(commandRepository);
 
 		const result = await batchService.revertImages(userId);
 
 		console.log(
 			`💾 LAST_UPDATEDの画像をUNEXPORTEDに変更しました（${result.count}件）`,
 		);
-		await notificationService.notifyInfo("revert-images completed", {
-			caller: "revert-images",
-		});
+		await notificationService
+			.notifyInfo("revert-images completed", {
+				caller: "revert-images",
+			})
+			.catch((error: unknown) => console.error("通知失敗:", error));
 	} catch (error) {
 		console.error("❌ エラーが発生しました:", error);
-		await notificationService.notifyError(
-			`revert-images failed: ${String(error)}`,
-			{
+		await notificationService
+			.notifyError(`revert-images failed: ${String(error)}`, {
 				caller: "revert-images",
-			},
-		);
-		process.exit(1);
+			})
+			.catch((notifyError: unknown) => console.error("通知失敗:", notifyError));
+		process.exitCode = 1;
 	} finally {
 		await prisma.$disconnect();
 	}

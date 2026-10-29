@@ -1,11 +1,11 @@
-import type { IBatchCommandRepository } from "@s-hirano-ist/s-core/shared-kernel/repositories/batch-command-repository.interface";
-import { ArticlesBatchDomainService } from "@s-hirano-ist/s-core/articles/services/articles-batch-domain-service";
+import type { IBatchCommandRepository } from "@s-hirano-ist/s-application/batch/ports";
+import { ArticlesBatchApplicationService } from "@s-hirano-ist/s-application/batch/articles-batch-service";
 import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
-describe("ArticlesBatchDomainService", () => {
+describe("ArticlesBatchApplicationService", () => {
 	let batchCommandRepository: IBatchCommandRepository;
-	let batchService: ArticlesBatchDomainService;
+	let batchService: ArticlesBatchApplicationService;
 
 	beforeEach(() => {
 		batchCommandRepository = {
@@ -13,7 +13,7 @@ describe("ArticlesBatchDomainService", () => {
 			resetStatus: vi.fn(),
 		};
 
-		batchService = new ArticlesBatchDomainService(batchCommandRepository);
+		batchService = new ArticlesBatchApplicationService(batchCommandRepository);
 	});
 
 	describe("resetArticles", () => {

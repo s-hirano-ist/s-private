@@ -1,20 +1,20 @@
 import type {
-	ExportedAt,
-	UserId,
-} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import type {
 	BulkUpdateResult,
 	IBatchCommandRepository,
 	ResetStatusResult,
 	StatusTransitionParams,
-} from "@s-hirano-ist/s-core/shared-kernel/repositories/batch-command-repository.interface";
+} from "@s-hirano-ist/s-application/batch/ports";
+import type {
+	ExportedAt,
+	UserId,
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { type Status, withTransactionRetry } from "@s-hirano-ist/s-database";
 
 type PrismaClientLike = {
 	$transaction: <T extends Promise<{ count: number }>[]>(
 		queries: [...T],
 	) => Promise<{ [K in keyof T]: { count: number } }>;
-	book: {
+	note: {
 		updateMany: (args: {
 			data: { exportedAt?: Date; status: Status };
 			where: { status: Status; userId: string };
@@ -23,12 +23,12 @@ type PrismaClientLike = {
 };
 
 /**
- * Creates a Books batch command repository for bulk operations.
+ * Creates a Notes batch command repository for bulk operations.
  *
  * @param prisma - The Prisma client or transaction client
- * @returns An IBatchCommandRepository implementation for books
+ * @returns An IBatchCommandRepository implementation for notes
  */
-export function createBooksCommandRepository(
+export function createNotesCommandRepository(
 	prisma: PrismaClientLike,
 ): IBatchCommandRepository {
 	return {
@@ -37,7 +37,7 @@ export function createBooksCommandRepository(
 		): Promise<BulkUpdateResult> {
 			const { userId, fromStatus, toStatus, exportedAt } = params;
 
-			const result = await prisma.book.updateMany({
+			const result = await prisma.note.updateMany({
 				where: {
 					userId: userId,
 					status: fromStatus,
@@ -57,7 +57,7 @@ export function createBooksCommandRepository(
 		): Promise<ResetStatusResult> {
 			const [finalized, marked] = await withTransactionRetry(() =>
 				prisma.$transaction([
-					prisma.book.updateMany({
+					prisma.note.updateMany({
 						where: {
 							userId: userId,
 							status: "LAST_UPDATED",
@@ -67,7 +67,7 @@ export function createBooksCommandRepository(
 							exportedAt: exportedAt,
 						},
 					}),
-					prisma.book.updateMany({
+					prisma.note.updateMany({
 						where: {
 							userId: userId,
 							status: "UNEXPORTED",

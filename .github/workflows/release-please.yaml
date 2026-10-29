@@ -15,15 +15,8 @@ jobs:
     outputs:
       releases_created: ${{ steps.release.outputs.releases_created }}
       paths_released: ${{ steps.release.outputs.paths_released }}
-      application_release_created: ${{ steps.release.outputs['packages/application--release_created'] }}
-      infrastructure_release_created: ${{ steps.release.outputs['packages/infrastructure--release_created'] }}
-      core_release_created: ${{ steps.release.outputs['packages/core--release_created'] }}
       ui_release_created: ${{ steps.release.outputs['packages/ui--release_created'] }}
-      database_release_created: ${{ steps.release.outputs['packages/database--release_created'] }}
-      notification_release_created: ${{ steps.release.outputs['packages/notification--release_created'] }}
-      scripts_release_created: ${{ steps.release.outputs['packages/scripts--release_created'] }}
-      search_release_created: ${{ steps.release.outputs['packages/search--release_created'] }}
-      storage_release_created: ${{ steps.release.outputs['packages/storage--release_created'] }}
+      scripts_release_created: ${{ steps.release.outputs.release_created }}
     steps:
       # App token 起点の PR は後続 CI を発火できる。GITHUB_TOKEN は使用しない。
       - name: Generate GitHub App token
@@ -61,45 +54,12 @@ jobs:
       - name: Build packages
         run: pnpm packages:build
 
-      - name: Publish @s-hirano-ist/s-core
-        if: ${{ needs.release-please.outputs.core_release_created == 'true' }}
-        working-directory: packages/core
-        run: pnpm publish --no-git-checks --access public --provenance
       - name: Publish @s-hirano-ist/s-ui
         if: ${{ needs.release-please.outputs.ui_release_created == 'true' }}
         working-directory: packages/ui
         run: pnpm publish --no-git-checks --access public --provenance
 
-      - name: Publish @s-hirano-ist/s-database
-        if: ${{ needs.release-please.outputs.database_release_created == 'true' }}
-        working-directory: packages/database
-        run: pnpm publish --no-git-checks --access public --provenance
-
-      - name: Publish @s-hirano-ist/s-notification
-        if: ${{ needs.release-please.outputs.notification_release_created == 'true' }}
-        working-directory: packages/notification
-        run: pnpm publish --no-git-checks --access public --provenance
-
       - name: Publish @s-hirano-ist/s-scripts
         if: ${{ needs.release-please.outputs.scripts_release_created == 'true' }}
         working-directory: packages/scripts
-        run: pnpm publish --no-git-checks --access public --provenance
-
-      - name: Publish @s-hirano-ist/s-search
-        if: ${{ needs.release-please.outputs.search_release_created == 'true' }}
-        working-directory: packages/search
-        run: pnpm publish --no-git-checks --access public --provenance
-
-      - name: Publish @s-hirano-ist/s-storage
-        if: ${{ needs.release-please.outputs.storage_release_created == 'true' }}
-        working-directory: packages/storage
-        run: pnpm publish --no-git-checks --access public --provenance
-
-      - name: Publish @s-hirano-ist/s-application
-        if: ${{ needs.release-please.outputs.application_release_created == 'true' }}
-        working-directory: packages/application
-        run: pnpm publish --no-git-checks --access public --provenance
-      - name: Publish @s-hirano-ist/s-infrastructure
-        if: ${{ needs.release-please.outputs.infrastructure_release_created == 'true' }}
-        working-directory: packages/infrastructure
         run: pnpm publish --no-git-checks --access public --provenance

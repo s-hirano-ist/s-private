@@ -47,35 +47,10 @@
 		"qdrant",
 		"embedding"
 	],
-	"publishConfig": {
-		"exports": {
-			"./config": {
-				"types": "./dist/config.d.ts",
-				"import": "./dist/config.js"
-			},
-			"./qdrant-client": {
-				"types": "./dist/qdrant-client.d.ts",
-				"import": "./dist/qdrant-client.js"
-			},
-			"./chunker": {
-				"types": "./dist/chunker.d.ts",
-				"import": "./dist/chunker.js"
-			},
-			"./ingest": {
-				"types": "./dist/ingest.d.ts",
-				"import": "./dist/ingest.js"
-			},
-			"./frontmatter": {
-				"types": "./dist/frontmatter.d.ts",
-				"import": "./dist/frontmatter.js"
-			}
-		}
-	},
 	"scripts": {
 		"build": "tsc",
 		"clean": "rm -rf dist",
-		"typecheck": "tsc --noEmit",
-		"prepublishOnly": "pnpm run build"
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@qdrant/js-client-rest": "1.19.0",
@@ -84,5 +59,6 @@
 	"devDependencies": {
 		"@types/node": "catalog:",
 		"typescript": "catalog:"
-	}
+	},
+	"private": true
 }

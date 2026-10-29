@@ -483,7 +483,7 @@ CI の build/test はワークフロー内の localhost 向け固定値を使い
 - Secret: `RENOVATE_APP_PRIVATE_KEY` — Renovate、release-please、月次レポート PR に使う GitHub App 秘密鍵
 - Actions Variable: `RENOVATE_CLIENT_ID` — 上記 GitHub App の Client ID
 
-npm 公開は OIDC trusted publishing を使用します。`@s-hirano-ist/s-core`、`@s-hirano-ist/s-ui`、`@s-hirano-ist/s-database`、`@s-hirano-ist/s-notification`、`@s-hirano-ist/s-scripts`、`@s-hirano-ist/s-search`、`@s-hirano-ist/s-storage` の各 npm package で、repository を `s-hirano-ist/s-private`、workflow を `.github/workflows/release-please.yaml` として trusted publisher を設定してください。`NPM_TOKEN` は不要です。
+npm 公開は OIDC trusted publishing を使用し、外部利用のある `@s-hirano-ist/s-ui` と `@s-hirano-ist/s-scripts` に限定します。この2 packageで、repository を `s-hirano-ist/s-private`、workflow を `.github/workflows/release-please.yaml` として trusted publisher を設定してください。`NPM_TOKEN` は不要です。CLIは必要な内部workspaceを同梱します。既存バージョンのunpublishは行いません。
 
 環境変数が不要なジョブ（lint, storybook）では `SKIP_ENV_VALIDATION: "true"` を設定。
 

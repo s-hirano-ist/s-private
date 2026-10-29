@@ -70,3 +70,6 @@ xcuserdata/
 .build/
 .swiftpm/
 apps/ios/Packages/SPrivateAPI/Sources/SPrivateAPI/Generated/
+
+# Self-contained CLI publish artifact
+packages/scripts/dist-package/

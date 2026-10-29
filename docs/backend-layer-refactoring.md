@@ -12,7 +12,7 @@
 
 Applicationはcoreと汎用ライブラリだけに依存する。InfrastructureはApplicationのportを実装する。
 Webは生成clientだけを使い、共有Applicationも直接呼ばない。
-共有packageは公開可能とし、CLIからprivate backendへの依存を作らない。
+共有packageは内部workspaceとして分離し、CLIからprivate backendへの依存を作らない。npm公開対象は外部利用のあるUIとCLIに限定する。
 
 ## 監査結果とstack
 
@@ -50,3 +50,12 @@ Webは生成clientだけを使い、共有Applicationも直接呼ばない。
 DB変更はローカルmigration適用後、同時実行・lease・rollback・part追加・完了/取消競合を実DBで検証する。
 HTTP契約・所有者分離・状態別一覧・検索順位・CLI dry-runを回帰確認する。
 MinIO停止中のuploadはadapterと統合テスト環境で検証し、実サービスでの未確認事項はPRへ記載する。
+
+## CLI の状態遷移と保存方針
+
+- reset は同一transactionで LAST_UPDATED → EXPORTED を確定し、UNEXPORTED → LAST_UPDATED を選択する。revert は LAST_UPDATED → UNEXPORTED のみを戻す。
+- ingest は新規レコードを EXPORTED として登録し、既存レコードの状態・ID・作成日時を保持して本文を更新する。画像はpathを識別子として既存objectを上書きしない。
+- 入力の走査を完了した場合のみ、入力に存在しない所有者本人の EXPORTED を削除する。入力の読み取り・検証・保存に失敗した場合は削除段階へ進まない。
+- dry-run は差分と予定件数を返し、DB・objectの変更を行わない。表紙が入力にない書籍は既存のimagePathを保持する。
+- 確定済みのバッチ操作は通知の配送失敗では失敗に戻さない。CLIは通知失敗を標準エラーへ記録する。
+- CLIのbin名・配布packageは維持し、内部workspaceの必要コードをCLI成果物へ同梱する。内部packageの個別公開は行わない。

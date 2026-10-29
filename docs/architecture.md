@@ -639,3 +639,13 @@ Auth0のNative Application設定はWeb用Applicationと分離する。iOSはAuth
 共通backendとWebの分離実装は完了している。`BACKEND_URL` は必須で、Web内のHono・Prisma・storage・ドメインadapterは撤去した。旧 `/api/mobile/v1`、cache無効化入口、Web Cronは404となる。
 共有契約・生成client・backendの依存境界は上記の構成に従う。stacked PRの順序と本番適用gateは[移行履歴](backend-migration.md)、環境変数と手動切替は[Vercelセットアップ](backend-vercel-setup.md)を参照する。
 コードの完了と本番切替は別であり、対応iOS配布、外部認証、実機、Cronの単独稼働を確認してから旧入口撤去を適用する。
+
+## npm配布の境界
+
+npm公開は別repositoryから直接利用される `@s-hirano-ist/s-ui`（s-public）と `@s-hirano-ist/s-scripts`（s-contents）のみに限定する。core・Application・Infrastructure・database・storage・notification・search・image-processingは `private: true` の内部workspaceとし、独立したnpm公開とrelease-please管理を行わない。package分割は責務と依存方向を表し、npm配布単位とは一致させない。
+
+CLIは必要な内部workspaceコードと生成済みPrisma clientを `dist-package` に同梱し、外部ライブラリ（Sharp等）は通常の依存として宣言する。利用側で内部packageやPrisma生成を要求しない。bin名と設定ファイルを維持し、`pnpm check:publish` で公開対象・CLI依存・コマンドを検査する。内部コードを同梱するため、そのコード自体はCLIの公開物に含まれる。
+
+内部workspaceだけの変更もCLIへ反映されるよう、CLIは次回releaseからrootアプリと同じversionで公開する。rootのrelease-pleaseがCLI manifestのversionを同時に更新する。UIは独立releaseを維持する。
+
+既存npmバージョンは削除・unpublish・deprecateしない。旧CLIの依存解決を維持したまま、内部packageの新規公開を停止する。

@@ -1,18 +1,10 @@
 #!/usr/bin/env node
-import {
-	makeExportedStatus,
-	makeId,
-	makeUserId,
-	type UserId,
-} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import { createPrismaClient } from "@s-hirano-ist/s-database";
-import { createPushoverService } from "@s-hirano-ist/s-notification";
+import type { PreparedImport } from "@s-hirano-ist/s-application/batch/import-models";
 import { parseMarkdownFrontmatter } from "@s-hirano-ist/s-search/frontmatter";
 import { readFile } from "node:fs/promises";
 import { basename } from "node:path";
 import { globPaths } from "./lib/glob-paths.js";
-
-const SCRIPT_NAME = "ingest-notes";
+import { runContentImport } from "./lib/run-content-import.js";
 
 function parseFrontmatter(content: string): {
 	body: string;
@@ -50,185 +42,10 @@ function parseNoteFile(
 	return { title, markdown };
 }
 
-async function main() {
-	const dryRun = process.argv.includes("--dry-run");
-
-	const env = {
-		DATABASE_URL: process.env.DATABASE_URL,
-		PUSHOVER_URL: process.env.PUSHOVER_URL,
-		PUSHOVER_USER_KEY: process.env.PUSHOVER_USER_KEY,
-		PUSHOVER_APP_TOKEN: process.env.PUSHOVER_APP_TOKEN,
-		USERNAME_TO_EXPORT: process.env.USERNAME_TO_EXPORT,
-	} as const;
-
-	if (Object.values(env).some((v) => !v)) {
-		throw new Error("Required environment variables are not set.");
-	}
-
-	const contentsPath = process.env.S_CONTENTS_PATH ?? process.cwd();
-
-	const prisma = createPrismaClient(env.DATABASE_URL ?? "");
-
-	const notificationService = createPushoverService({
-		url: env.PUSHOVER_URL ?? "",
-		userKey: env.PUSHOVER_USER_KEY ?? "",
-		appToken: env.PUSHOVER_APP_TOKEN ?? "",
-	});
-
-	const userId: UserId = makeUserId(env.USERNAME_TO_EXPORT ?? "");
-	const exported = makeExportedStatus();
-
-	const fileTitles = new Set<string>();
-
-	async function ingestNotes() {
-		const files = await globPaths(`${contentsPath}/markdown/note/*.md`);
-		console.log(`📁 ${files.length} 件のファイルを検出しました。`);
-
-		const existingNotes = await prisma.note.findMany({
-			where: { userId },
-			select: { id: true, title: true, markdown: true },
-		});
-		const existingNotesMap = new Map(
-			existingNotes.map(
-				(n: { id: string; markdown: string; title: string }) => [n.title, n],
-			),
-		);
-		console.log(`📊 DB に ${existingNotesMap.size} 件の既存ノートがあります。`);
-
-		async function upsertNote(parsed: {
-			markdown: string;
-			title: string;
-		}): Promise<"inserted" | "updated" | "skipped"> {
-			fileTitles.add(parsed.title);
-
-			const existing = existingNotesMap.get(parsed.title);
-			if (existing) {
-				if (existing.markdown === parsed.markdown) {
-					// console.log(`⏭️  スキップ（変更なし）: ${parsed.title}`);
-					return "skipped";
-				}
-				if (dryRun) {
-					console.log(`🔄 [dry-run] 更新予定: ${parsed.title}`);
-				} else {
-					await prisma.note.update({
-						where: { id: existing.id },
-						data: { markdown: parsed.markdown },
-					});
-					console.log(`🔄 更新: ${parsed.title}`);
-				}
-				return "updated";
-			}
-
-			if (dryRun) {
-				console.log(`🔍 [dry-run] 挿入予定: ${parsed.title}`);
-				return "inserted";
-			}
-
-			await prisma.note.create({
-				data: {
-					id: String(makeId()),
-					title: parsed.title,
-					markdown: parsed.markdown,
-					status: exported.status,
-					exportedAt: exported.exportedAt,
-					userId,
-					createdAt: new Date(),
-				},
-			});
-			console.log(`✅ 挿入: ${parsed.title}`);
-			return "inserted";
-		}
-
-		let insertedCount = 0;
-		let updatedCount = 0;
-		let skippedCount = 0;
-		let errorCount = 0;
-
-		for (const filePath of files) {
-			let parsed: { markdown: string; title: string } | null = null;
-			try {
-				const content = await readFile(filePath, "utf-8");
-				parsed = parseNoteFile(filePath, content);
-
-				if (!parsed) {
-					console.log(`⏭️  スキップ（draft）: ${basename(filePath)}`);
-					skippedCount++;
-					continue;
-				}
-
-				const result = await upsertNote(parsed);
-				if (result === "inserted") insertedCount++;
-				else if (result === "updated") updatedCount++;
-				else skippedCount++;
-			} catch (error) {
-				console.error(
-					`❌ エラー（${basename(filePath)}）:`,
-					parsed
-						? `title(${parsed.title.length}文字) markdown(${parsed.markdown.length}文字)`
-						: "parse前",
-					error,
-				);
-				errorCount++;
-			}
-		}
-
-		return { insertedCount, updatedCount, skippedCount, errorCount };
-	}
-
-	async function purgeNotes(): Promise<number> {
-		const exportedNotes = await prisma.note.findMany({
-			where: { userId, status: exported.status },
-			select: { id: true, title: true },
-		});
-
-		const toDelete = exportedNotes.filter(
-			(n: { id: string; title: string }) => !fileTitles.has(n.title),
-		);
-
-		if (toDelete.length === 0) {
-			console.log("🗑️  削除対象なし");
-			return 0;
-		}
-
-		let deletedCount = 0;
-		for (const note of toDelete) {
-			if (dryRun) {
-				console.log(`🗑️  [dry-run] 削除予定: ${note.title}`);
-			} else {
-				await prisma.note.delete({ where: { id: note.id } });
-				console.log(`🗑️  削除: ${note.title}`);
-			}
-			deletedCount++;
-		}
-
-		return deletedCount;
-	}
-
-	try {
-		const { insertedCount, updatedCount, skippedCount, errorCount } =
-			await ingestNotes();
-		const deletedCount = await purgeNotes();
-		console.log(
-			`\n📊 結果: 挿入 ${insertedCount} 件, 更新 ${updatedCount} 件, スキップ ${skippedCount} 件, 削除 ${deletedCount} 件, エラー ${errorCount} 件${dryRun ? " (dry-run)" : ""}`,
-		);
-		await notificationService.notifyInfo(`${SCRIPT_NAME} completed`, {
-			caller: SCRIPT_NAME,
-		});
-	} catch (error) {
-		console.error("❌ エラーが発生しました:", error);
-		await notificationService.notifyError(
-			`${SCRIPT_NAME} failed: ${String(error)}`,
-			{
-				caller: SCRIPT_NAME,
-			},
-		);
-		process.exit(1);
-	} finally {
-		await prisma.$disconnect();
+async function* source(root: string): AsyncGenerator<PreparedImport> {
+	for (const path of await globPaths(`${root}/markdown/note/*.md`)) {
+		const values = parseNoteFile(path, await readFile(path, "utf-8"));
+		if (values) yield { values };
 	}
 }
-
-main().catch((error: unknown) => {
-	console.error(error);
-	process.exit(1);
-});
+await runContentImport("notes", source);
