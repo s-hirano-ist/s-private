@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.26.9](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.26.8...@s-hirano-ist/s-scripts-v1.26.9) (2026-10-29)
+
+
+### Maintenance
+
+* **cache:** retire content invalidation API and batch callbacks ([da70446](https://github.com/s-hirano-ist/s-private/commit/da70446339d2d9a7c1d6dda159f6e7cf25dae199))
+* **cache:** 不要なキャッシュ無効化APIとバッチ通信を撤去 ([6b7e3f4](https://github.com/s-hirano-ist/s-private/commit/6b7e3f418cc2c790b1dcd3e50913928258ee8e73))
+* **deps:** update node and pnpm ([112702b](https://github.com/s-hirano-ist/s-private/commit/112702bc5a24e7604a28cf3ec8af71038db8f709))
+* **deps:** update node and pnpm ([667f93e](https://github.com/s-hirano-ist/s-private/commit/667f93ece6d212cae1f67b85775873c3f8fa3ff5))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @s-hirano-ist/s-core bumped to 1.21.7
+    * @s-hirano-ist/s-database bumped to 1.23.1
+    * @s-hirano-ist/s-notification bumped to 1.19.2
+    * @s-hirano-ist/s-search bumped to 1.19.2
+    * @s-hirano-ist/s-storage bumped to 1.18.12
+
 ## [1.26.8](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-scripts-v1.26.7...@s-hirano-ist/s-scripts-v1.26.8) (2026-10-06)
 
 

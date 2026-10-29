@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.23.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.23.0...@s-hirano-ist/s-database-v1.23.1) (2026-10-29)
+
+
+### Maintenance
+
+* consolidate executable applications under apps ([defb310](https://github.com/s-hirano-ist/s-private/commit/defb310990781ed2910828995e182ed163e8c0b0))
+* **deps:** update node and pnpm ([112702b](https://github.com/s-hirano-ist/s-private/commit/112702bc5a24e7604a28cf3ec8af71038db8f709))
+* **deps:** update node and pnpm ([667f93e](https://github.com/s-hirano-ist/s-private/commit/667f93ece6d212cae1f67b85775873c3f8fa3ff5))
+* 実行対象をapps配下へ統一 ([41969e2](https://github.com/s-hirano-ist/s-private/commit/41969e23ee39dfaec49e06721dabdf240b806f02))
+
 ## [1.23.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-database-v1.22.0...@s-hirano-ist/s-database-v1.23.0) (2026-09-29)
 
 
