@@ -37,10 +37,9 @@
 		"enrich-books": "./dist/enrich-books.js"
 	},
 	"scripts": {
-		"build": "tsc",
-		"clean": "rm -rf dist",
+		"build": "pnpm clean && tsc --incremental false && node build.mjs",
+		"clean": "rm -rf dist dist-package",
 		"typecheck": "tsc --noEmit",
-		"prepublishOnly": "pnpm run build",
 		"s-content-format": "tsx src/s-content-format.ts",
 		"fetch-articles": "tsx src/fetch-articles.ts",
 		"fetch-books": "tsx src/fetch-books.ts",
@@ -68,7 +67,8 @@
 		"fix-image-formats": "tsx src/fix-image-formats.ts",
 		"fix-book-frontmatter": "tsx src/fix-book-frontmatter.ts",
 		"validate-json-articles": "tsx src/validate-json-articles.ts",
-		"enrich-books": "tsx src/enrich-books.ts"
+		"enrich-books": "tsx src/enrich-books.ts",
+		"prepack": "pnpm build"
 	},
 	"files": [
 		"dist",
@@ -83,7 +83,9 @@
 	},
 	"license": "AGPL-3.0",
 	"publishConfig": {
-		"access": "public"
+		"access": "public",
+		"directory": "dist-package",
+		"linkDirectory": false
 	},
 	"dependencies": {
 		"@googleapis/books": "13.0.1",
@@ -96,12 +98,15 @@
 		"cheerio": "1.2.0",
 		"js-yaml": "catalog:",
 		"oxfmt": "catalog:",
-		"turndown": "7.2.4"
+		"turndown": "7.2.4",
+		"@s-hirano-ist/s-application": "workspace:*",
+		"@s-hirano-ist/s-infrastructure": "workspace:*"
 	},
 	"devDependencies": {
 		"@types/node": "catalog:",
 		"@types/turndown": "5.0.6",
 		"tsx": "4.23.15",
-		"typescript": "catalog:"
+		"typescript": "catalog:",
+		"esbuild": "0.28.2"
 	}
 }

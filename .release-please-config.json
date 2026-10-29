@@ -2,43 +2,18 @@
 	"packages": {
 		".": {
 			"release-type": "node",
-			"component": "s-private"
-		},
-		"packages/core": {
-			"release-type": "node",
-			"component": "@s-hirano-ist/s-core"
+			"component": "s-private",
+			"extra-files": [
+				{
+					"type": "json",
+					"path": "packages/scripts/package.json",
+					"jsonpath": "$.version"
+				}
+			]
 		},
 		"packages/ui": {
 			"release-type": "node",
 			"component": "@s-hirano-ist/s-ui"
-		},
-		"packages/database": {
-			"release-type": "node",
-			"component": "@s-hirano-ist/s-database"
-		},
-		"packages/notification": {
-			"release-type": "node",
-			"component": "@s-hirano-ist/s-notification"
-		},
-		"packages/scripts": {
-			"release-type": "node",
-			"component": "@s-hirano-ist/s-scripts"
-		},
-		"packages/search": {
-			"release-type": "node",
-			"component": "@s-hirano-ist/s-search"
-		},
-		"packages/storage": {
-			"release-type": "node",
-			"component": "@s-hirano-ist/s-storage"
-		},
-		"packages/application": {
-			"release-type": "node",
-			"component": "@s-hirano-ist/s-application"
-		},
-		"packages/infrastructure": {
-			"release-type": "node",
-			"component": "@s-hirano-ist/s-infrastructure"
 		}
 	},
 	"plugins": [

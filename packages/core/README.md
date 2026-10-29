@@ -12,15 +12,9 @@ This package contains the core domain logic for the s-private content management
 - **Domain Events**: Events emitted during domain operations
 - **Value Objects & Types**: Domain-specific types and constants
 
-## Installation
+## Workspace usage
 
-```bash
-npm install @s-hirano-ist/s-core
-# or
-pnpm add @s-hirano-ist/s-core
-# or
-yarn add @s-hirano-ist/s-core
-```
+This is an internal workspace package. Add it with `workspace:*` inside this repository. It is not published independently; the CLI bundles its required code.
 
 ## Usage
 

@@ -17,13 +17,9 @@
 		"README.md",
 		"LICENSE"
 	],
-	"publishConfig": {
-		"access": "public"
-	},
 	"scripts": {
 		"build": "pnpm clean && tsc",
 		"typecheck": "tsc --noEmit",
-		"prepublishOnly": "pnpm run build",
 		"clean": "rm -rf dist"
 	},
 	"license": "AGPL-3.0",
@@ -34,5 +30,6 @@
 	"dependencies": {
 		"zod": "catalog:",
 		"@s-hirano-ist/s-core": "workspace:*"
-	}
+	},
+	"private": true
 }

@@ -1,13 +1,13 @@
 import type {
-	ExportedAt,
-	UserId,
-} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
-import type {
 	BulkUpdateResult,
 	IBatchCommandRepository,
 	ResetStatusResult,
 	StatusTransitionParams,
-} from "@s-hirano-ist/s-core/shared-kernel/repositories/batch-command-repository.interface";
+} from "@s-hirano-ist/s-application/batch/ports";
+import type {
+	ExportedAt,
+	UserId,
+} from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { type Status, withTransactionRetry } from "@s-hirano-ist/s-database";
 
 type PrismaClientLike = {

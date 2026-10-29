@@ -1,11 +1,11 @@
-import type { IBatchCommandRepository } from "@s-hirano-ist/s-core/shared-kernel/repositories/batch-command-repository.interface";
-import { ImagesBatchDomainService } from "@s-hirano-ist/s-core/images/services/images-batch-domain-service";
+import type { IBatchCommandRepository } from "@s-hirano-ist/s-application/batch/ports";
+import { BooksBatchApplicationService } from "@s-hirano-ist/s-application/batch/books-batch-service";
 import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
-describe("ImagesBatchDomainService", () => {
+describe("BooksBatchApplicationService", () => {
 	let batchCommandRepository: IBatchCommandRepository;
-	let batchService: ImagesBatchDomainService;
+	let batchService: BooksBatchApplicationService;
 
 	beforeEach(() => {
 		batchCommandRepository = {
@@ -13,10 +13,10 @@ describe("ImagesBatchDomainService", () => {
 			resetStatus: vi.fn(),
 		};
 
-		batchService = new ImagesBatchDomainService(batchCommandRepository);
+		batchService = new BooksBatchApplicationService(batchCommandRepository);
 	});
 
-	describe("resetImages", () => {
+	describe("resetBooks", () => {
 		test("should delegate to repository's resetStatus method", async () => {
 			const userId = makeUserId("test-user-id");
 
@@ -25,7 +25,7 @@ describe("ImagesBatchDomainService", () => {
 				marked: { count: 10 },
 			});
 
-			const result = await batchService.resetImages(userId);
+			const result = await batchService.resetBooks(userId);
 
 			expect(result.finalized.count).toBe(5);
 			expect(result.marked.count).toBe(10);
@@ -36,7 +36,7 @@ describe("ImagesBatchDomainService", () => {
 			);
 		});
 
-		test("should handle zero images case", async () => {
+		test("should handle zero books case", async () => {
 			const userId = makeUserId("test-user-id");
 
 			vi.mocked(batchCommandRepository.resetStatus).mockResolvedValue({
@@ -44,22 +44,22 @@ describe("ImagesBatchDomainService", () => {
 				marked: { count: 0 },
 			});
 
-			const result = await batchService.resetImages(userId);
+			const result = await batchService.resetBooks(userId);
 
 			expect(result.finalized.count).toBe(0);
 			expect(result.marked.count).toBe(0);
 		});
 	});
 
-	describe("revertImages", () => {
-		test("should revert LAST_UPDATED images to UNEXPORTED", async () => {
+	describe("revertBooks", () => {
+		test("should revert LAST_UPDATED books to UNEXPORTED", async () => {
 			const userId = makeUserId("test-user-id");
 
 			vi.mocked(batchCommandRepository.bulkUpdateStatus).mockResolvedValue({
 				count: 7,
 			});
 
-			const result = await batchService.revertImages(userId);
+			const result = await batchService.revertBooks(userId);
 
 			expect(result.count).toBe(7);
 			expect(batchCommandRepository.bulkUpdateStatus).toHaveBeenCalledWith({
@@ -69,14 +69,14 @@ describe("ImagesBatchDomainService", () => {
 			});
 		});
 
-		test("should handle zero images case", async () => {
+		test("should handle zero books case", async () => {
 			const userId = makeUserId("test-user-id");
 
 			vi.mocked(batchCommandRepository.bulkUpdateStatus).mockResolvedValue({
 				count: 0,
 			});
 
-			const result = await batchService.revertImages(userId);
+			const result = await batchService.revertBooks(userId);
 
 			expect(result.count).toBe(0);
 		});
