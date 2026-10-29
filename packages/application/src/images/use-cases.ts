@@ -1,8 +1,8 @@
 import type { MediaCreationInput } from "@s-hirano-ist/s-application/content/media-input";
+import type { IStorageService } from "@s-hirano-ist/s-application/content/storage-port";
 import type { EventDispatcher } from "@s-hirano-ist/s-application/events/ports";
 import type { IImagesCommandRepository } from "@s-hirano-ist/s-core/images/repositories/images-command-repository.interface";
 import type { ImagesDomainService } from "@s-hirano-ist/s-core/images/services/images-domain-service";
-import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/services/storage-service.interface";
 import {
 	withOperationPhase,
 	type OperationPhaseContext,

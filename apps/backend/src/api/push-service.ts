@@ -1,13 +1,13 @@
+import type { SendPush } from "@s-hirano-ist/s-application/notifications/delivery-port";
 import type { PushSubscriptionRepository } from "@s-hirano-ist/s-application/notifications/ports";
-import type { createPushDeliveryService } from "s-private-backend/notifications/push-notification-service";
-import type { BrowserPushSubscription } from "s-private-backend/notifications/subscriptions";
-import { ApiError } from "s-private-backend/api/error";
-import { PushSubscriptionError } from "s-private-backend/notifications/error";
+import type { BrowserPushSubscription } from "@s-hirano-ist/s-application/notifications/subscriptions";
+import { PushSubscriptionError } from "@s-hirano-ist/s-application/notifications/error";
 import {
 	subscribeToPush,
 	unsubscribeFromPush,
 	sendTestPush,
-} from "s-private-backend/notifications/subscriptions";
+} from "@s-hirano-ist/s-application/notifications/subscriptions";
+import { ApiError } from "s-private-backend/api/error";
 async function run(work: () => Promise<void>) {
 	try {
 		await work();
@@ -28,7 +28,7 @@ async function run(work: () => Promise<void>) {
 export function createPushService(
 	repository: PushSubscriptionRepository,
 	publicKey: string | undefined,
-	send: ReturnType<typeof createPushDeliveryService>["sendPushToSubscription"],
+	send: SendPush,
 ) {
 	return {
 		subscribe: (owner: string, input: BrowserPushSubscription) =>

@@ -1,5 +1,5 @@
 import type { ArticleCreatedEvent } from "@s-hirano-ist/s-core/articles/events/article-created-event";
-import type { ArticleDeletedPayload } from "@s-hirano-ist/s-core/shared-kernel/events/payload-types";
+import type { ArticleDeletedPayload } from "@s-hirano-ist/s-core/articles/events/payload-types";
 import { BaseDomainEvent } from "@s-hirano-ist/s-core/shared-kernel/events/base-domain-event";
 
 /**

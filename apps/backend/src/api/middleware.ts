@@ -1,8 +1,8 @@
 import type { ApiApp, ApiAuth, ApiSession } from "s-private-backend/api/types";
 import * as schemas from "@s-hirano-ist/s-api-contracts/schemas";
+import { tenantContext } from "@s-hirano-ist/s-infrastructure/shared/tenant-context";
 import { bodyLimit } from "hono/body-limit";
 import { ApiError } from "s-private-backend/api/error";
-import { tenantContext } from "s-private-backend/shared/tenant-context";
 export function registerApiMiddleware(app: ApiApp, auth: ApiAuth) {
 	app.use("*", async (c, next) => {
 		c.header("cache-control", "private, no-store");

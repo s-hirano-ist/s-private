@@ -1,3 +1,4 @@
+import { createWebPushSender } from "@s-hirano-ist/s-infrastructure/notifications/web-push-sender";
 import {
 	WebPushSendError,
 	type WebPushPayload,
@@ -15,7 +16,7 @@ vi.mock("@s-hirano-ist/s-notification", async (importOriginal) => ({
 }));
 
 import type { PushSubscriptionRepository } from "@s-hirano-ist/s-application/notifications/ports";
-import { createPushDeliveryService } from "s-private-backend/notifications/push-notification-service";
+import { createPushDeliveryService } from "@s-hirano-ist/s-application/notifications/push-notification-service";
 const listAll = vi.fn<PushSubscriptionRepository["listAll"]>();
 const deleteByIds = vi.fn<PushSubscriptionRepository["deleteByIds"]>();
 const repository: PushSubscriptionRepository = {
@@ -27,11 +28,11 @@ const repository: PushSubscriptionRepository = {
 	save: vi.fn(),
 };
 const { sendPushToAll } = createPushDeliveryService(
-	{
+	createWebPushSender({
 		NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY: "public",
 		WEB_PUSH_PRIVATE_KEY: "private",
 		WEB_PUSH_SUBJECT: "mailto:test@example.com",
-	},
+	}),
 	repository,
 	{ captureException },
 );
@@ -96,7 +97,10 @@ describe("sendPushToAll", () => {
 			sent: 1,
 		});
 		expect(deleteByIds).not.toHaveBeenCalled();
-		expect(captureException).toHaveBeenCalledWith(error, expect.any(Object));
+		expect(captureException).toHaveBeenCalledWith(
+			expect.objectContaining({ cause: error }),
+			expect.any(Object),
+		);
 	});
 
 	test("does not require VAPID configuration when there are no subscribers", async () => {
