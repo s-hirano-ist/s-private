@@ -27,6 +27,34 @@ const COLLAPSE_PATTERN =
    Verified: 0 false positives on the current tree; fires on deliberate violations. */
 const boundaryRules = [
 	{
+		name: "boundary-application-inward",
+		severity: "error",
+		from: { path: "^packages/application/" },
+		to: {
+			path: "^apps/|^packages/(?!application/|core/)|(^|/)node_modules/(hono|@hono|@prisma|@sentry|sharp|jose|better-auth)(/|$)",
+		},
+	},
+	{
+		name: "boundary-infrastructure-inward",
+		severity: "error",
+		from: { path: "^packages/infrastructure/" },
+		to: { path: "^apps/|^packages/(ui|api-client|api-contracts|scripts)/" },
+	},
+	{
+		name: "boundary-core-shared-layers",
+		severity: "error",
+		from: { path: "^packages/core/" },
+		to: {
+			path: "^packages/(application|infrastructure|api-contracts|api-client)/",
+		},
+	},
+	{
+		name: "boundary-web-shared-layers",
+		severity: "error",
+		from: { path: "^apps/web/" },
+		to: { path: "^packages/(application|infrastructure)/" },
+	},
+	{
 		name: "boundary-web-frontend-only",
 		severity: "error",
 		comment:

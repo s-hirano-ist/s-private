@@ -64,6 +64,14 @@
 		"apps/backend": {
 			"entry": ["src/index.ts", "src/dev.ts"],
 			"project": ["src/**/*.ts"]
+		},
+		"packages/application": {
+			"entry": ["src/**/*.ts", "!src/**/*.test.ts"],
+			"project": ["src/**/*.ts"]
+		},
+		"packages/infrastructure": {
+			"entry": ["src/**/*.ts", "!src/**/*.test.ts"],
+			"project": ["src/**/*.ts"]
 		}
 	}
 }
