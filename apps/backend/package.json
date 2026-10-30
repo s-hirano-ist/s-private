@@ -15,16 +15,16 @@
 		"@s-hirano-ist/s-image-processing": "workspace:*",
 		"@s-hirano-ist/s-notification": "workspace:*",
 		"@s-hirano-ist/s-storage": "workspace:*",
-		"better-auth": "1.7.7",
+		"better-auth": "1.7.14",
 		"zod": "catalog:",
 		"@s-hirano-ist/s-search": "workspace:*",
-		"jose": "6.2.12",
+		"jose": "6.2.14",
 		"pino": "10.4.0",
 		"@hono/zod-openapi": "1.6.3",
 		"hono": "catalog:",
 		"@s-hirano-ist/s-api-contracts": "workspace:*",
-		"@sentry/node": "10.76.0",
-		"@hono/node-server": "2.1.4"
+		"@sentry/node": "10.78.0",
+		"@hono/node-server": "2.1.5"
 	},
 	"devDependencies": {
 		"@types/node": "catalog:",
