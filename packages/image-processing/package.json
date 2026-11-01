@@ -1,6 +1,6 @@
 {
 	"name": "@s-hirano-ist/s-image-processing",
-	"version": "1.0.0",
+	"version": "2.0.0",
 	"description": "Shared Sharp-based image processing utilities for s-private",
 	"engines": {
 		"node": ">=24.22.1"

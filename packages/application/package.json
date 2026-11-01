@@ -1,6 +1,6 @@
 {
 	"name": "@s-hirano-ist/s-application",
-	"version": "1.0.0",
+	"version": "2.0.0",
 	"description": "Shared application layer for HTTP and CLI hosts",
 	"type": "module",
 	"engines": {
