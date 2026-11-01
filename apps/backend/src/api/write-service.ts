@@ -92,6 +92,7 @@ export function createWriteService(deps: WriteServiceDeps) {
 		input: unknown,
 		work: (commit: MutationCommit) => Promise<{ id: string }>,
 		key: () => string,
+		beforeCommit?: () => Promise<void>,
 	) {
 		const existing = await mobile.operations.findOperation(operationId);
 		return schemas.createResultSchema.parse(
@@ -102,7 +103,16 @@ export function createWriteService(deps: WriteServiceDeps) {
 				input,
 				async (commit) => {
 					try {
-						return (await validateDomain(() => work(commit))).id;
+						return (
+							await validateDomain(() =>
+								work(async (persist) =>
+									commit(async () => {
+										await beforeCommit?.();
+										return persist();
+									}),
+								),
+							)
+						).id;
 					} catch (error) {
 						if (duplicate(error)) {
 							if (
@@ -169,6 +179,7 @@ export function createWriteService(deps: WriteServiceDeps) {
 			input: MediaInput,
 			file: File,
 			legacyMetadata?: Record<string, string>,
+			beforeCommit?: () => Promise<void>,
 		) {
 			const fileHash = createHash("sha256")
 				.update(Buffer.from(await file.arrayBuffer()))
@@ -254,6 +265,7 @@ export function createWriteService(deps: WriteServiceDeps) {
 					);
 				},
 				() => (input.domain === "books" ? input.metadata.isbn : storedPath),
+				beforeCommit,
 			);
 		},
 		async remove(owner: string, domain: MobileDomain, id: string) {

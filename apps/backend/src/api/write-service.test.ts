@@ -3,6 +3,7 @@ import type {
 	MobileOperationRepository,
 } from "@s-hirano-ist/s-application/mobile/ports";
 import { createBook } from "@s-hirano-ist/s-application/books/use-cases";
+import { ApplicationError } from "@s-hirano-ist/s-application/error";
 import { createImage } from "@s-hirano-ist/s-application/images/use-cases";
 import { mobileInputHash } from "@s-hirano-ist/s-application/mobile/operations";
 import { createNote } from "@s-hirano-ist/s-application/notes/use-cases";
@@ -35,18 +36,29 @@ function fixture() {
 	let operation: MobileOperation | null = null;
 	const operations: MobileOperationRepository = {
 		findOperation: vi.fn(async () => (operation ? { ...operation } : null)),
-		createOperation: vi.fn(async (_id, userId, domain, inputHash) => {
+		claimOperation: vi.fn(async (_id, userId, domain, inputHash) => {
+			if (operation) {
+				if (operation.userId !== userId)
+					throw new ApplicationError("NOT_FOUND");
+				if (operation.domain !== domain || operation.inputHash !== inputHash)
+					throw new ApplicationError("OPERATION_CONFLICT");
+				if (operation.status === "SUCCEEDED" && operation.resourceId)
+					return { resourceId: operation.resourceId };
+				if (operation.status === "PENDING")
+					throw new ApplicationError("OPERATION_IN_PROGRESS");
+			}
 			operation = {
 				userId,
 				domain,
 				inputHash,
 				status: "PENDING",
 				resourceId: null,
+				protocolVersion: 2,
+				leaseExpiresAt: new Date(Date.now() + 600000),
 			};
+			return { token: "lease" };
 		}),
-		markOperationPending: vi.fn(async () => {
-			if (operation) operation.status = "PENDING";
-		}),
+		renewOperation: vi.fn(async () => true),
 		markOperationFailed: vi.fn(async () => {
 			if (operation) operation.status = "FAILED";
 		}),
@@ -74,8 +86,10 @@ function fixture() {
 		service: createWriteService(deps),
 		operations,
 		lookupContentId,
-		setOperation(value: MobileOperation) {
-			operation = value;
+		setOperation(
+			value: Omit<MobileOperation, "protocolVersion" | "leaseExpiresAt">,
+		) {
+			operation = { ...value, protocolVersion: 1, leaseExpiresAt: null };
 		},
 	};
 }

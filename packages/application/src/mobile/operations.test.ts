@@ -7,8 +7,8 @@ function fixture() {
 	const order: string[] = [];
 	const operations: MobileOperationRepository = {
 		findOperation: vi.fn(async () => null),
-		createOperation: vi.fn(async () => {}),
-		markOperationPending: vi.fn(async () => {}),
+		claimOperation: vi.fn(async () => ({ token: "lease" })),
+		renewOperation: vi.fn(async () => true),
 		markOperationFailed: vi.fn(async () => {
 			order.push("failed");
 		}),
