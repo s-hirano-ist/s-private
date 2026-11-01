@@ -140,7 +140,7 @@ VAPID 鍵は `pnpm --filter @s-hirano-ist/s-notification exec web-push generate-
 
 鍵不一致の復旧手順:
 
-1. `20261101050000_push_subscription_renewal` migrationをアプリ切替前に適用します（既存購読は配信継続）。
+1. `7_push_subscription_renewal` migrationをアプリ切替前に適用します（既存購読は配信継続）。
 2. backendの秘密鍵から公開鍵を導出して設定公開鍵との一致を、値を表示せず確認します。設定不足・不一致は状態API・登録・送信を503にするため、是正をリリース条件とします。VercelのSensitive変数は読み戻せないので、権限のある実行環境で確認します。
 3. Appleの400 `VapidPkHashMismatch` が発生すると、その購読はDBに残して配信停止します。Cronの `requiresResubscribe` は今回の該当件数です。一般的な400・401・403は停止対象ではありません。
 4. 対象端末の通知設定で「再登録」を押します。旧購読解除が失敗したら先へ進みません。新購読のDB保存だけ失敗した場合は、同じ画面から保存を再試行できます。

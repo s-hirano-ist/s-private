@@ -24,7 +24,7 @@ export class PushDeliveryError extends Error {
 	constructor(
 		readonly isSubscriptionExpired: boolean,
 		cause: unknown,
-		readonly diagnostics: { providerCode?: string; statusCode?: number; } = {},
+		readonly diagnostics: { providerCode?: string; statusCode?: number } = {},
 		readonly requiresResubscribe = false,
 	) {
 		super("Push delivery failed", { cause });

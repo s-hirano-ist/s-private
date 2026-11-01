@@ -34,7 +34,10 @@ pair.generateKeys();
 const { sendPushToAll } = createPushDeliveryService(
 	createWebPushSender({
 		NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY: pair.getPublicKey().toString("base64url"),
-		WEB_PUSH_PRIVATE_KEY: pair.getPrivateKey().toString("base64url"),
+		WEB_PUSH_PRIVATE_KEY: Buffer.from(
+			pair.getPrivateKey().toString("hex").padStart(64, "0"),
+			"hex",
+		).toString("base64url"),
 		WEB_PUSH_SUBJECT: "mailto:test@example.com",
 	}),
 	repository,

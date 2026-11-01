@@ -14,7 +14,10 @@ const pair = createECDH("prime256v1");
 pair.generateKeys();
 const config = {
 	NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY: pair.getPublicKey().toString("base64url"),
-	WEB_PUSH_PRIVATE_KEY: pair.getPrivateKey().toString("base64url"),
+	WEB_PUSH_PRIVATE_KEY: Buffer.from(
+		pair.getPrivateKey().toString("hex").padStart(64, "0"),
+		"hex",
+	).toString("base64url"),
 	WEB_PUSH_SUBJECT: "mailto:test@example.com",
 };
 const payload = {
@@ -30,6 +33,18 @@ test("derives the public key and rejects missing, malformed and mismatched pairs
 	);
 	const short = createECDH("prime256v1");
 	short.setPrivateKey(Buffer.from([1]));
+	expect(
+		validatePushConfig({
+			...config,
+			NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY: short
+				.getPublicKey()
+				.toString("base64url"),
+			WEB_PUSH_PRIVATE_KEY: Buffer.concat([
+				Buffer.alloc(31),
+				Buffer.from([1]),
+			]).toString("base64url"),
+		}),
+	).toHaveProperty("publicKey", short.getPublicKey().toString("base64url"));
 	const other = createECDH("prime256v1");
 	other.generateKeys();
 	for (const invalid of [
