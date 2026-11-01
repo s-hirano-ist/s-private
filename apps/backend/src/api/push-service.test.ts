@@ -1,6 +1,6 @@
-import type { PushSubscriptionRepository } from "s-private-backend/notifications/ports";
+import type { PushSubscriptionRepository } from "@s-hirano-ist/s-application/notifications/ports";
 import type { createPushDeliveryService } from "s-private-backend/notifications/push-notification-service";
-import { Prisma } from "@s-hirano-ist/s-database";
+import { ApplicationError } from "@s-hirano-ist/s-application/error";
 import { createPushService } from "s-private-backend/api/push-service";
 import { describe, expect, test, vi } from "vitest";
 const input = {
@@ -60,21 +60,14 @@ describe("Shared API push ownership", () => {
 		});
 		await expect(service.subscribe("owner", input)).rejects.toMatchObject({
 			code: "FORBIDDEN",
-			status: 403,
 		});
 		expect(repository.save).not.toHaveBeenCalled();
 	});
 	test("maps an ownership race to forbidden and missing configuration to unavailable", async () => {
 		const { repository, service } = fixture();
-		repository.save.mockRejectedValue(
-			new Prisma.PrismaClientKnownRequestError("unique endpoint", {
-				code: "P2002",
-				clientVersion: "test",
-			}),
-		);
+		repository.save.mockRejectedValue(new ApplicationError("FORBIDDEN"));
 		await expect(service.subscribe("owner", input)).rejects.toMatchObject({
 			code: "FORBIDDEN",
-			status: 403,
 		});
 		const unconfigured = fixture("");
 		await expect(

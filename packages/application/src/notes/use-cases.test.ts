@@ -1,3 +1,9 @@
+import {
+	createNote,
+	deleteNote,
+	parseNoteInput,
+	type CreateNoteDeps,
+} from "@s-hirano-ist/s-application/notes/use-cases";
 import { makeNoteTitle } from "@s-hirano-ist/s-core/notes/entities/note-entity";
 import {
 	makeId,
@@ -5,12 +11,6 @@ import {
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
-import {
-	createNote,
-	deleteNote,
-	parseNoteInput,
-	type CreateNoteDeps,
-} from "s-private-backend/notes/use-cases";
 import { describe, expect, test, vi } from "vite-plus/test";
 
 function dependencies() {

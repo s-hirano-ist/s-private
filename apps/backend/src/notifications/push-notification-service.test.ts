@@ -14,7 +14,7 @@ vi.mock("@s-hirano-ist/s-notification", async (importOriginal) => ({
 	createWebPushService: vi.fn(() => ({ send })),
 }));
 
-import type { PushSubscriptionRepository } from "s-private-backend/notifications/ports";
+import type { PushSubscriptionRepository } from "@s-hirano-ist/s-application/notifications/ports";
 import { createPushDeliveryService } from "s-private-backend/notifications/push-notification-service";
 const listAll = vi.fn<PushSubscriptionRepository["listAll"]>();
 const deleteByIds = vi.fn<PushSubscriptionRepository["deleteByIds"]>();

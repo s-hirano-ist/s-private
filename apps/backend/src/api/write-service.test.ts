@@ -2,7 +2,10 @@ import type {
 	MobileOperation,
 	MobileOperationRepository,
 } from "@s-hirano-ist/s-application/mobile/ports";
+import { createBook } from "@s-hirano-ist/s-application/books/use-cases";
+import { createImage } from "@s-hirano-ist/s-application/images/use-cases";
 import { mobileInputHash } from "@s-hirano-ist/s-application/mobile/operations";
+import { createNote } from "@s-hirano-ist/s-application/notes/use-cases";
 import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import { createHash } from "node:crypto";
 import {
@@ -10,22 +13,19 @@ import {
 	type WriteServiceDeps,
 	type MediaInput,
 } from "s-private-backend/api/write-service";
-import { createBook } from "s-private-backend/books/use-cases";
-import { createImage } from "s-private-backend/images/use-cases";
-import { createNote } from "s-private-backend/notes/use-cases";
 import { describe, expect, test, vi } from "vitest";
-vi.mock("s-private-backend/books/use-cases", () => ({
+vi.mock("@s-hirano-ist/s-application/books/use-cases", () => ({
 	createBook: vi.fn(),
 	deleteBook: vi.fn(),
 }));
 vi.mock("s-private-backend/images/input", () => ({
 	parseImageInput: vi.fn(async () => ({ contentType: "image/png" })),
 }));
-vi.mock("s-private-backend/images/use-cases", () => ({
+vi.mock("@s-hirano-ist/s-application/images/use-cases", () => ({
 	createImage: vi.fn(),
 	deleteImage: vi.fn(),
 }));
-vi.mock("s-private-backend/notes/use-cases", () => ({
+vi.mock("@s-hirano-ist/s-application/notes/use-cases", () => ({
 	parseNoteInput: vi.fn((input) => input),
 	createNote: vi.fn(),
 	deleteNote: vi.fn(),

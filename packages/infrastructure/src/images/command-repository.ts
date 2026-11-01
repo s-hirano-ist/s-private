@@ -9,13 +9,16 @@ import type {
 	UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import type { DatabaseClient } from "@s-hirano-ist/s-infrastructure/database";
+import { withPersistenceErrors } from "@s-hirano-ist/s-infrastructure/persistence-errors";
 
 export function createImagesCommandRepository(
 	prisma: Pick<DatabaseClient, "image">,
 ) {
 	async function create(data: UnexportedImage): Promise<void> {
-		await prisma.image.create({
-			data,
+		await withPersistenceErrors(async () => {
+			await prisma.image.create({
+				data,
+			});
 		});
 	}
 
@@ -24,12 +27,14 @@ export function createImagesCommandRepository(
 		userId: UserId,
 		status: Status,
 	): Promise<DeleteImageResult> {
-		const data = await prisma.image.delete({
-			where: { id, userId, status },
-			select: { path: true },
-		});
+		return await withPersistenceErrors(async () => {
+			const data = await prisma.image.delete({
+				where: { id, userId, status },
+				select: { path: true },
+			});
 
-		return { path: data.path };
+			return { path: data.path };
+		});
 	}
 
 	const imagesCommandRepository: IImagesCommandRepository = {

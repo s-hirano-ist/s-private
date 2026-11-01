@@ -2,9 +2,33 @@ import type { MobileDomain } from "@s-hirano-ist/s-application/content/models";
 import type { MobileDeps } from "@s-hirano-ist/s-application/mobile/deps";
 import * as schemas from "@s-hirano-ist/s-api-contracts/schemas";
 import {
+	createArticle,
+	deleteArticle,
+	parseArticleInput,
+	type CreateArticleDeps,
+} from "@s-hirano-ist/s-application/articles/use-cases";
+import {
+	createBook,
+	deleteBook,
+	type CreateBookDeps,
+} from "@s-hirano-ist/s-application/books/use-cases";
+import { OperationPhaseError } from "@s-hirano-ist/s-application/diagnostics/operation-phase-error";
+import { ApplicationError } from "@s-hirano-ist/s-application/error";
+import {
+	createImage,
+	deleteImage,
+	type CreateImageDeps,
+} from "@s-hirano-ist/s-application/images/use-cases";
+import {
 	mobileInputHash,
 	runMobileOperation,
 } from "@s-hirano-ist/s-application/mobile/operations";
+import {
+	createNote,
+	deleteNote,
+	parseNoteInput,
+	type CreateNoteDeps,
+} from "@s-hirano-ist/s-application/notes/use-cases";
 import {
 	makeId,
 	makeUserId,
@@ -15,34 +39,10 @@ import {
 	FileNotAllowedError,
 	InvalidFormatError,
 } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
-import { Prisma } from "@s-hirano-ist/s-database";
 import { createHash } from "node:crypto";
 import { ApiError } from "s-private-backend/api/error";
-import {
-	createArticle,
-	deleteArticle,
-	parseArticleInput,
-	type CreateArticleDeps,
-} from "s-private-backend/articles/use-cases";
 import { parseBookInput } from "s-private-backend/books/input";
-import {
-	createBook,
-	deleteBook,
-	type CreateBookDeps,
-} from "s-private-backend/books/use-cases";
 import { parseImageInput } from "s-private-backend/images/input";
-import {
-	createImage,
-	deleteImage,
-	type CreateImageDeps,
-} from "s-private-backend/images/use-cases";
-import {
-	createNote,
-	deleteNote,
-	parseNoteInput,
-	type CreateNoteDeps,
-} from "s-private-backend/notes/use-cases";
-import { OperationPhaseError } from "s-private-backend/shared/operation-phase-error";
 import { z, ZodError } from "zod";
 
 export type MediaInput = z.output<typeof schemas.uploadStartSchema>;
@@ -60,8 +60,7 @@ function duplicate(error: unknown): boolean {
 	const cause = unwrap(error);
 	return (
 		cause instanceof DuplicateError ||
-		(cause instanceof Prisma.PrismaClientKnownRequestError &&
-			cause.code === "P2002")
+		(cause instanceof ApplicationError && cause.code === "DUPLICATE")
 	);
 }
 async function validateDomain<T>(work: () => Promise<T>): Promise<T> {

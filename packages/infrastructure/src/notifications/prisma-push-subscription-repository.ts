@@ -1,5 +1,6 @@
+import type { PushSubscriptionRepository } from "@s-hirano-ist/s-application/notifications/ports";
 import type { DatabaseClient } from "@s-hirano-ist/s-infrastructure/database";
-import type { PushSubscriptionRepository } from "s-private-backend/notifications/ports";
+import { withPersistenceErrors } from "@s-hirano-ist/s-infrastructure/persistence-errors";
 import { randomUUID } from "node:crypto";
 
 export function createPushSubscriptionRepository(
@@ -16,11 +17,13 @@ export function createPushSubscriptionRepository(
 			return prisma.pushSubscription.findMany();
 		},
 		async save(userId, endpoint, auth, p256dh) {
-			await prisma.pushSubscription.upsert({
-				where: { endpoint, userId },
-				create: { id: randomUUID(), userId, endpoint, auth, p256dh },
-				update: { auth, p256dh },
-			});
+			await withPersistenceErrors(async () => {
+				await prisma.pushSubscription.upsert({
+					where: { endpoint, userId },
+					create: { id: randomUUID(), userId, endpoint, auth, p256dh },
+					update: { auth, p256dh },
+				});
+			}, "FORBIDDEN");
 		},
 		async deleteOwned(userId, endpoint) {
 			await prisma.pushSubscription.deleteMany({ where: { endpoint, userId } });
