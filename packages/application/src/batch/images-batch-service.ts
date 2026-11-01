@@ -2,7 +2,7 @@ import type {
 	BulkUpdateResult,
 	IBatchCommandRepository,
 	ResetStatusResult,
-} from "@s-hirano-ist/s-core/shared-kernel/repositories/batch-command-repository.interface";
+} from "@s-hirano-ist/s-application/batch/ports";
 import {
 	makeExportedAt,
 	type UserId,
@@ -22,7 +22,7 @@ import {
  *               UNEXPORTED (revert)
  * ```
  */
-export class ImagesBatchDomainService {
+export class ImagesBatchApplicationService {
 	private readonly commandRepository: IBatchCommandRepository;
 
 	constructor(commandRepository: IBatchCommandRepository) {

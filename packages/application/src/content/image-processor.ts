@@ -12,8 +12,8 @@ export type IImageProcessor = {
 	getMetadata(bytes: Uint8Array): Promise<ImageMetadata>;
 };
 export type UploadedFile = {
-	name: string;
-	type: string;
-	size: number;
 	arrayBuffer(): Promise<ArrayBuffer>;
+	name: string;
+	size: number;
+	type: string;
 };

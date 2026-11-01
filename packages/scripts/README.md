@@ -2,6 +2,8 @@
 
 CLI scripts for s-private data operations.
 
+The npm artifact bundles the required internal workspace code and generated Prisma client. Consumers install only this CLI package; internal s-private packages are not separate npm dependencies. Command names remain unchanged.
+
 ## Installation
 
 ```sh

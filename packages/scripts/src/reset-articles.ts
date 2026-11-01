@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-import { ArticlesBatchDomainService } from "@s-hirano-ist/s-core/articles/services/articles-batch-domain-service";
+import { ArticlesBatchApplicationService } from "@s-hirano-ist/s-application/batch/articles-batch-service";
 import {
 	makeUserId,
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { createPrismaClient } from "@s-hirano-ist/s-database";
+import { createArticlesCommandRepository } from "@s-hirano-ist/s-infrastructure/batch/articles-command-repository";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
-import { createArticlesCommandRepository } from "./infrastructures/articles-command-repository.js";
 
 async function main() {
 	const env = {
@@ -35,7 +35,7 @@ async function main() {
 		// DDD: Create repository and domain service
 		// Transaction is handled internally by repository's resetStatus method
 		const commandRepository = createArticlesCommandRepository(prisma);
-		const batchService = new ArticlesBatchDomainService(commandRepository);
+		const batchService = new ArticlesBatchApplicationService(commandRepository);
 
 		// Execute batch reset through domain service
 		const result = await batchService.resetArticles(userId);
@@ -48,18 +48,19 @@ async function main() {
 
 	try {
 		await resetArticles();
-		await notificationService.notifyInfo("reset-articles completed", {
-			caller: "reset-articles",
-		});
+		await notificationService
+			.notifyInfo("reset-articles completed", {
+				caller: "reset-articles",
+			})
+			.catch((error: unknown) => console.error("通知失敗:", error));
 	} catch (error) {
 		console.error("❌ エラーが発生しました:", error);
-		await notificationService.notifyError(
-			`reset-articles failed: ${String(error)}`,
-			{
+		await notificationService
+			.notifyError(`reset-articles failed: ${String(error)}`, {
 				caller: "reset-articles",
-			},
-		);
-		process.exit(1);
+			})
+			.catch((notifyError: unknown) => console.error("通知失敗:", notifyError));
+		process.exitCode = 1;
 	} finally {
 		await prisma.$disconnect();
 	}

@@ -2,7 +2,7 @@ import type {
 	BulkUpdateResult,
 	IBatchCommandRepository,
 	ResetStatusResult,
-} from "@s-hirano-ist/s-core/shared-kernel/repositories/batch-command-repository.interface";
+} from "@s-hirano-ist/s-application/batch/ports";
 import {
 	makeExportedAt,
 	type UserId,
@@ -25,7 +25,7 @@ import {
  * @example
  * ```typescript
  * const commandRepo = createArticlesCommandRepository(prisma);
- * const batchService = new ArticlesBatchDomainService(commandRepo);
+ * const batchService = new ArticlesBatchApplicationService(commandRepo);
  *
  * // Reset: finalize previous batch and mark new items
  * const result = await batchService.resetArticles(userId);
@@ -39,11 +39,11 @@ import {
  * @see {@link IBatchCommandRepository} for repository interface
  * @see {@link ResetStatusResult} for reset operation result
  */
-export class ArticlesBatchDomainService {
+export class ArticlesBatchApplicationService {
 	private readonly commandRepository: IBatchCommandRepository;
 
 	/**
-	 * Creates a new ArticlesBatchDomainService instance.
+	 * Creates a new ArticlesBatchApplicationService instance.
 	 *
 	 * @param commandRepository - The command repository for batch updates
 	 */

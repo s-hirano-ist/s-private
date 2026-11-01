@@ -52,5 +52,6 @@
 		"postcss": "catalog:",
 		"react-scan": "0.5.7",
 		"tailwindcss": "catalog:"
-	}
+	},
+	"private": true
 }

@@ -1,11 +1,11 @@
-import type { IBatchCommandRepository } from "@s-hirano-ist/s-core/shared-kernel/repositories/batch-command-repository.interface";
-import { NotesBatchDomainService } from "@s-hirano-ist/s-core/notes/services/notes-batch-domain-service";
+import type { IBatchCommandRepository } from "@s-hirano-ist/s-application/batch/ports";
+import { ImagesBatchApplicationService } from "@s-hirano-ist/s-application/batch/images-batch-service";
 import { makeUserId } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
-describe("NotesBatchDomainService", () => {
+describe("ImagesBatchApplicationService", () => {
 	let batchCommandRepository: IBatchCommandRepository;
-	let batchService: NotesBatchDomainService;
+	let batchService: ImagesBatchApplicationService;
 
 	beforeEach(() => {
 		batchCommandRepository = {
@@ -13,10 +13,10 @@ describe("NotesBatchDomainService", () => {
 			resetStatus: vi.fn(),
 		};
 
-		batchService = new NotesBatchDomainService(batchCommandRepository);
+		batchService = new ImagesBatchApplicationService(batchCommandRepository);
 	});
 
-	describe("resetNotes", () => {
+	describe("resetImages", () => {
 		test("should delegate to repository's resetStatus method", async () => {
 			const userId = makeUserId("test-user-id");
 
@@ -25,7 +25,7 @@ describe("NotesBatchDomainService", () => {
 				marked: { count: 10 },
 			});
 
-			const result = await batchService.resetNotes(userId);
+			const result = await batchService.resetImages(userId);
 
 			expect(result.finalized.count).toBe(5);
 			expect(result.marked.count).toBe(10);
@@ -36,7 +36,7 @@ describe("NotesBatchDomainService", () => {
 			);
 		});
 
-		test("should handle zero notes case", async () => {
+		test("should handle zero images case", async () => {
 			const userId = makeUserId("test-user-id");
 
 			vi.mocked(batchCommandRepository.resetStatus).mockResolvedValue({
@@ -44,22 +44,22 @@ describe("NotesBatchDomainService", () => {
 				marked: { count: 0 },
 			});
 
-			const result = await batchService.resetNotes(userId);
+			const result = await batchService.resetImages(userId);
 
 			expect(result.finalized.count).toBe(0);
 			expect(result.marked.count).toBe(0);
 		});
 	});
 
-	describe("revertNotes", () => {
-		test("should revert LAST_UPDATED notes to UNEXPORTED", async () => {
+	describe("revertImages", () => {
+		test("should revert LAST_UPDATED images to UNEXPORTED", async () => {
 			const userId = makeUserId("test-user-id");
 
 			vi.mocked(batchCommandRepository.bulkUpdateStatus).mockResolvedValue({
 				count: 7,
 			});
 
-			const result = await batchService.revertNotes(userId);
+			const result = await batchService.revertImages(userId);
 
 			expect(result.count).toBe(7);
 			expect(batchCommandRepository.bulkUpdateStatus).toHaveBeenCalledWith({
@@ -69,14 +69,14 @@ describe("NotesBatchDomainService", () => {
 			});
 		});
 
-		test("should handle zero notes case", async () => {
+		test("should handle zero images case", async () => {
 			const userId = makeUserId("test-user-id");
 
 			vi.mocked(batchCommandRepository.bulkUpdateStatus).mockResolvedValue({
 				count: 0,
 			});
 
-			const result = await batchService.revertNotes(userId);
+			const result = await batchService.revertImages(userId);
 
 			expect(result.count).toBe(0);
 		});

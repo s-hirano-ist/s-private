@@ -12,15 +12,6 @@
 			"import": "./dist/index.js"
 		}
 	},
-	"publishConfig": {
-		"access": "public",
-		"exports": {
-			".": {
-				"types": "./dist/index.d.ts",
-				"import": "./dist/index.js"
-			}
-		}
-	},
 	"files": [
 		"dist",
 		"README.md",
@@ -28,7 +19,6 @@
 	],
 	"scripts": {
 		"build": "tsc",
-		"prepublishOnly": "pnpm run build",
 		"clean": "rm -rf dist",
 		"typecheck": "tsc --noEmit"
 	},
@@ -51,5 +41,6 @@
 	"devDependencies": {
 		"@types/web-push": "3.6.4",
 		"typescript": "catalog:"
-	}
+	},
+	"private": true
 }
