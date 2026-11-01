@@ -1,10 +1,14 @@
-import type { MobileDomain, SyncDomain } from "s-private-backend/mobile/models";
+import type * as schemas from "@s-hirano-ist/s-api-contracts/schemas";
+import type {
+	MobileDomain,
+	SyncDomain,
+} from "@s-hirano-ist/s-application/content/models";
+import type {
+	ReadModelByDomain,
+	StoredSnapshot,
+} from "@s-hirano-ist/s-application/content/models";
 import type { z } from "zod";
-import * as schemas from "@s-hirano-ist/s-api-contracts/schemas";
-import { z as schema } from "zod";
-
 type Dates = { createdAt: Date; exportedAt: Date | null; updatedAt: Date };
-type Stored<T> = Omit<T, keyof Dates> & Dates;
 export type DtoByDomain = {
 	articles: z.output<typeof schemas.articleSchema>;
 	books: z.output<typeof schemas.bookSchema>;
@@ -12,53 +16,8 @@ export type DtoByDomain = {
 	images: z.output<typeof schemas.imageSchema>;
 	notes: z.output<typeof schemas.noteSchema>;
 };
-export type ReadModelByDomain = {
-	[D in SyncDomain]: D extends MobileDomain
-		? Stored<DtoByDomain[D]>
-		: DtoByDomain[D];
-};
-export type StoredSnapshot = {
-	[D in SyncDomain]: { domain: D; record: ReadModelByDomain[D] };
-}[SyncDomain];
-const dates = {
-	createdAt: schema.date(),
-	updatedAt: schema.date(),
-	exportedAt: schema.date().nullable(),
-};
-const readSchemas: { [D in SyncDomain]: z.ZodType<ReadModelByDomain[D]> } = {
-	articles: schemas.articleSchema.extend(dates),
-	notes: schemas.noteSchema.extend(dates),
-	images: schemas.imageSchema.extend(dates),
-	books: schemas.bookSchema.extend(dates),
-	categories: schemas.categorySchema,
-};
-/** Decode at the database adapter, before exposing a typed internal projection. */
-export function parseReadModel<D extends SyncDomain>(
-	domain: D,
-	value: unknown,
-): ReadModelByDomain[D] {
-	return readSchemas[domain].parse(value);
-}
 function unreachable(value: never): never {
 	throw new Error(`Unsupported read model: ${String(value)}`);
-}
-export function parseStoredSnapshot(
-	domain: SyncDomain,
-	value: unknown,
-): StoredSnapshot {
-	switch (domain) {
-		case "articles":
-			return { domain, record: parseReadModel(domain, value) };
-		case "notes":
-			return { domain, record: parseReadModel(domain, value) };
-		case "images":
-			return { domain, record: parseReadModel(domain, value) };
-		case "books":
-			return { domain, record: parseReadModel(domain, value) };
-		case "categories":
-			return { domain, record: parseReadModel(domain, value) };
-	}
-	return unreachable(domain);
 }
 function contentBase(
 	record: Dates & { id: string; status: DtoByDomain["notes"]["status"] },

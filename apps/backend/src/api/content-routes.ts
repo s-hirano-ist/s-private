@@ -1,8 +1,8 @@
+import type { MobileDomain } from "@s-hirano-ist/s-application/content/models";
 import type { DtoByDomain } from "s-private-backend/api/read-models";
 import type { ReadService } from "s-private-backend/api/read-service";
 import type { ApiApp } from "s-private-backend/api/types";
 import type { WriteService } from "s-private-backend/api/write-service";
-import type { MobileDomain } from "s-private-backend/mobile/models";
 import type { ZodType } from "zod";
 import * as routes from "@s-hirano-ist/s-api-contracts/routes";
 import * as schemas from "@s-hirano-ist/s-api-contracts/schemas";

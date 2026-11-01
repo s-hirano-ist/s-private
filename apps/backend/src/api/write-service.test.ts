@@ -1,7 +1,8 @@
 import type {
 	MobileOperation,
 	MobileOperationRepository,
-} from "s-private-backend/mobile/ports";
+} from "@s-hirano-ist/s-application/mobile/ports";
+import { mobileInputHash } from "@s-hirano-ist/s-application/mobile/operations";
 import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import { createHash } from "node:crypto";
 import {
@@ -11,7 +12,6 @@ import {
 } from "s-private-backend/api/write-service";
 import { createBook } from "s-private-backend/books/use-cases";
 import { createImage } from "s-private-backend/images/use-cases";
-import { mobileInputHash } from "s-private-backend/mobile/operations";
 import { createNote } from "s-private-backend/notes/use-cases";
 import { describe, expect, test, vi } from "vitest";
 vi.mock("s-private-backend/books/use-cases", () => ({

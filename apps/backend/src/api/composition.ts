@@ -1,5 +1,5 @@
+import type { MobileDeps } from "@s-hirano-ist/s-application/mobile/deps";
 import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/services/storage-service.interface";
-import type { MobileDeps } from "s-private-backend/mobile/deps";
 import type { PushConfig } from "s-private-backend/notifications/push-notification-service";
 import type { ErrorReporter } from "s-private-backend/observability/reporter";
 import type { createVectorSearch } from "s-private-backend/search/vector-search";

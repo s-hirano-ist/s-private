@@ -1,6 +1,10 @@
-import type { MobileDeps } from "s-private-backend/mobile/deps";
-import type { MobileDomain } from "s-private-backend/mobile/models";
+import type { MobileDomain } from "@s-hirano-ist/s-application/content/models";
+import type { MobileDeps } from "@s-hirano-ist/s-application/mobile/deps";
 import * as schemas from "@s-hirano-ist/s-api-contracts/schemas";
+import {
+	mobileInputHash,
+	runMobileOperation,
+} from "@s-hirano-ist/s-application/mobile/operations";
 import {
 	makeId,
 	makeUserId,
@@ -32,10 +36,6 @@ import {
 	deleteImage,
 	type CreateImageDeps,
 } from "s-private-backend/images/use-cases";
-import {
-	mobileInputHash,
-	runMobileOperation,
-} from "s-private-backend/mobile/operations";
 import {
 	createNote,
 	deleteNote,

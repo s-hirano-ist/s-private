@@ -24,7 +24,8 @@
 		"hono": "catalog:",
 		"@s-hirano-ist/s-api-contracts": "workspace:*",
 		"@sentry/node": "10.76.0",
-		"@hono/node-server": "2.1.4"
+		"@hono/node-server": "2.1.4",
+		"@s-hirano-ist/s-application": "workspace:*"
 	},
 	"devDependencies": {
 		"@types/node": "catalog:",

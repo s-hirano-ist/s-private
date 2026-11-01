@@ -1,8 +1,8 @@
+import type { MobileUpload } from "@s-hirano-ist/s-application/mobile/ports";
 import type {
 	MediaInput,
 	WriteService,
 } from "s-private-backend/api/write-service";
-import type { MobileUpload } from "s-private-backend/mobile/ports";
 import { createUploadService } from "s-private-backend/api/upload-service";
 import { describe, expect, test, vi } from "vitest";
 const operationId = "0199cb00-0000-7000-8000-000000000001";

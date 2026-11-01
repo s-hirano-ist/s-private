@@ -1,12 +1,12 @@
-import type { MobilePersistence } from "s-private-backend/mobile/ports";
+import type { StoredSnapshot } from "@s-hirano-ist/s-application/content/models";
+import type { MobilePersistence } from "@s-hirano-ist/s-application/mobile/ports";
 import type { DatabaseClient } from "s-private-backend/shared/database";
-import { syncDomainSchema } from "@s-hirano-ist/s-api-contracts/schemas";
+import { syncDomainSchema } from "@s-hirano-ist/s-application/content/models";
 import { Prisma } from "@s-hirano-ist/s-database";
 import {
 	parseReadModel,
 	parseStoredSnapshot,
-	type StoredSnapshot,
-} from "s-private-backend/api/read-models";
+} from "s-private-backend/mobile/read-model-decoder";
 import { z } from "zod";
 
 function unreachable(_domain: never): never {

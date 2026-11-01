@@ -6,7 +6,7 @@ import type {
 	MobileOperationRepository,
 	MobileSyncRepository,
 	MobileUploadRepository,
-} from "s-private-backend/mobile/ports";
+} from "@s-hirano-ist/s-application/mobile/ports";
 export type MobileDeps = {
 	accounts: MobileAccountRepository;
 	chunks: MobileChunkStore;

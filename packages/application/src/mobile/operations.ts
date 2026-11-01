@@ -1,6 +1,6 @@
+import { ApplicationError } from "@s-hirano-ist/s-application/error";
+import { type MobileDeps } from "@s-hirano-ist/s-application/mobile/deps";
 import { createHash } from "node:crypto";
-import { ApiError } from "s-private-backend/api/error";
-import { type MobileDeps } from "s-private-backend/mobile/deps";
 
 export type MobileCreateResult = {
 	accepted: true;
@@ -36,9 +36,9 @@ export async function runMobileOperation(
 	const inputHash = mobileInputHash(input);
 	const existing = await deps.operations.findOperation(operationId);
 	if (existing) {
-		if (existing.userId !== userId) throw new ApiError("NOT_FOUND");
+		if (existing.userId !== userId) throw new ApplicationError("NOT_FOUND");
 		if (existing.inputHash !== inputHash || existing.domain !== domain)
-			throw new ApiError("OPERATION_CONFLICT");
+			throw new ApplicationError("OPERATION_CONFLICT");
 		if (existing.status === "SUCCEEDED" && existing.resourceId) {
 			return {
 				accepted: true,
@@ -47,7 +47,7 @@ export async function runMobileOperation(
 			};
 		}
 		if (existing.status === "PENDING")
-			throw new ApiError("OPERATION_IN_PROGRESS");
+			throw new ApplicationError("OPERATION_IN_PROGRESS");
 	}
 
 	if (existing) {
@@ -72,7 +72,7 @@ export async function runMobileOperation(
 	} catch (error) {
 		await deps.operations.markOperationFailed(
 			operationId,
-			error instanceof ApiError ? error.code : "INTERNAL_ERROR",
+			error instanceof ApplicationError ? error.code : "INTERNAL_ERROR",
 		);
 		throw error;
 	}

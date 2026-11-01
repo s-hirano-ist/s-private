@@ -449,6 +449,9 @@ importers:
       '@s-hirano-ist/s-api-contracts':
         specifier: workspace:*
         version: link:../../packages/api-contracts
+      '@s-hirano-ist/s-application':
+        specifier: workspace:*
+        version: link:../../packages/application
       '@s-hirano-ist/s-core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -620,6 +623,10 @@ importers:
         version: 6.0.3
 
   packages/application:
+    dependencies:
+      zod:
+        specifier: 'catalog:'
+        version: 4.6.5
     devDependencies:
       '@types/node':
         specifier: 'catalog:'

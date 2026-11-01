@@ -27,5 +27,8 @@
 		"@types/node": "catalog:",
 		"typescript": "catalog:"
 	},
+	"dependencies": {
+		"zod": "catalog:"
+	},
 	"private": true
 }
