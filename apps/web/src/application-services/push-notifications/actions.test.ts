@@ -1,5 +1,6 @@
 import {
 	subscribeToPush,
+	getPushStatus,
 	unsubscribeFromPush,
 	sendTestPush,
 } from "@/application-services/push-notifications/actions";
@@ -12,6 +13,7 @@ vi.mock("@/common/backend/server-client", () => ({
 vi.mock("next/navigation", () => ({ unstable_rethrow: vi.fn() }));
 vi.mock("@sentry/nextjs", () => ({ captureException: vi.fn() }));
 const input = {
+	applicationServerKey: "public",
 	endpoint: "https://push.example/subscription",
 	keys: { auth: "auth", p256dh: "key" },
 };
@@ -29,9 +31,10 @@ test("registers using the generated subscription DTO and 204 contract", async ()
 		success: true,
 		message: "pushSubscribed",
 	});
+	expect(JSON.parse(fetch.mock.calls[0][1]!.body as string)).toEqual(input);
 	expect(fetch.mock.calls[0][1]).toMatchObject({
 		method: "POST",
-		body: JSON.stringify(input),
+		body: expect.any(String),
 	});
 });
 test("unregisters and requests test delivery using endpoint DTOs", async () => {
@@ -84,4 +87,35 @@ test("validates browser subscription JSON before sending it", async () => {
 		await subscribeToPush({ ...input, keys: { auth: "", p256dh: "key" } }),
 	).toEqual({ success: false, message: "invalidFormat" });
 	expect(fetch).not.toHaveBeenCalled();
+});
+
+test("passes status endpoint in JSON and maps delivery 409 into a renewal signal", async () => {
+	const data = {
+		publicKey: "public",
+		registered: true,
+		requiresResubscribe: true,
+	};
+	const fetch = fixture(Response.json(data));
+	expect(await getPushStatus(input.endpoint)).toEqual({
+		success: true,
+		message: "",
+		data,
+	});
+	expect(fetch.mock.calls[0][0]).toEqual(
+		new URL("https://backend.example/api/v1/push/subscriptions/status"),
+	);
+	expect(fetch.mock.calls[0][1]).toMatchObject({
+		method: "POST",
+		body: JSON.stringify({ endpoint: input.endpoint }),
+	});
+	fetch.mockResolvedValue(
+		Response.json(
+			{ error: { code: "PUSH_RESUBSCRIPTION_REQUIRED" } },
+			{ status: 409 },
+		),
+	);
+	expect(await sendTestPush(input.endpoint)).toMatchObject({
+		success: false,
+		requiresResubscribe: true,
+	});
 });

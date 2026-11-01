@@ -1,9 +1,12 @@
 import type { SendPush } from "@s-hirano-ist/s-application/notifications/delivery-port";
 import type { PushSubscriptionRepository } from "@s-hirano-ist/s-application/notifications/ports";
 import { ApplicationError } from "@s-hirano-ist/s-application/error";
+import { PushDeliveryError } from "@s-hirano-ist/s-application/notifications/delivery-port";
+import { PushSubscriptionError } from "@s-hirano-ist/s-application/notifications/error";
 import { createPushService } from "s-private-backend/api/push-service";
 import { describe, expect, test, vi } from "vitest";
 const input = {
+	applicationServerKey: "public",
 	endpoint: "https://push.example/subscription",
 	keys: { auth: "auth", p256dh: "key" },
 };
@@ -19,6 +22,7 @@ function fixture(publicKey: string | undefined = "public") {
 		deleteOwned: vi
 			.fn<PushSubscriptionRepository["deleteOwned"]>()
 			.mockResolvedValue(),
+		markRequiresResubscribe: vi.fn(),
 		listAll: vi.fn<PushSubscriptionRepository["listAll"]>(),
 		deleteByIds: vi.fn<PushSubscriptionRepository["deleteByIds"]>(),
 	};
@@ -26,7 +30,16 @@ function fixture(publicKey: string | undefined = "public") {
 	return {
 		repository,
 		send,
-		service: createPushService(repository, publicKey, send),
+		service: createPushService(
+			repository,
+			() => {
+				if (!publicKey)
+					throw new PushSubscriptionError("UNAVAILABLE", "missing");
+				return publicKey;
+			},
+			send,
+			{ captureException: vi.fn() },
+		),
 	};
 }
 describe("Shared API push ownership", () => {
@@ -38,6 +51,7 @@ describe("Shared API push ownership", () => {
 			input.endpoint,
 			"auth",
 			"key",
+			undefined,
 		);
 		await service.unsubscribe("owner", input.endpoint);
 		expect(repository.deleteOwned).toHaveBeenCalledWith(
@@ -48,6 +62,8 @@ describe("Shared API push ownership", () => {
 	test("rejects a foreign endpoint before updating its keys", async () => {
 		const { repository, service } = fixture();
 		repository.findByEndpoint.mockResolvedValue({
+			requiresResubscribe: false,
+			updatedAt: new Date(),
 			id: "id",
 			userId: "foreign",
 			endpoint: input.endpoint,
@@ -80,4 +96,52 @@ describe("Shared API push ownership", () => {
 		expect(repository.findOwned).toHaveBeenCalledWith("owner", input.endpoint);
 		expect(send).not.toHaveBeenCalled();
 	});
+});
+
+test("status discloses only the current owner's registration and validates the submitted key", async () => {
+	const { service, repository } = fixture();
+	await expect(service.status("owner", input.endpoint)).resolves.toEqual({
+		publicKey: "public",
+		registered: false,
+		requiresResubscribe: false,
+	});
+	expect(repository.findOwned).toHaveBeenCalledWith("owner", input.endpoint);
+	await expect(
+		service.subscribe("owner", { ...input, applicationServerKey: "stale" }),
+	).rejects.toMatchObject({ code: "VALIDATION_ERROR" });
+	expect(repository.save).not.toHaveBeenCalled();
+});
+test("marks test delivery mismatches with the snapshot and returns 409, while paused subscriptions are not sent", async () => {
+	const { service, repository, send } = fixture();
+	const snapshot = {
+		id: "id",
+		userId: "owner",
+		endpoint: input.endpoint,
+		auth: "auth",
+		p256dh: "key",
+		requiresResubscribe: false,
+		updatedAt: new Date(),
+	};
+	repository.findOwned.mockResolvedValue(snapshot);
+	send.mockRejectedValueOnce(
+		new PushDeliveryError(
+			false,
+			undefined,
+			{ statusCode: 400, providerCode: "VapidPkHashMismatch" },
+			true,
+		),
+	);
+	await expect(service.test("owner", input.endpoint)).rejects.toMatchObject({
+		code: "PUSH_RESUBSCRIPTION_REQUIRED",
+		status: 409,
+	});
+	expect(repository.markRequiresResubscribe).toHaveBeenCalledWith(
+		snapshot.id,
+		snapshot.updatedAt,
+	);
+	snapshot.requiresResubscribe = true;
+	await expect(service.test("owner", input.endpoint)).rejects.toMatchObject({
+		status: 409,
+	});
+	expect(send).toHaveBeenCalledTimes(1);
 });

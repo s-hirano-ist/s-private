@@ -3,6 +3,7 @@ import {
 	WebPushSendError,
 	type WebPushPayload,
 } from "@s-hirano-ist/s-notification";
+import { createECDH } from "node:crypto";
 import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 
 const { captureException, send } = vi.hoisted(() => ({
@@ -20,6 +21,7 @@ import { createPushDeliveryService } from "@s-hirano-ist/s-application/notificat
 const listAll = vi.fn<PushSubscriptionRepository["listAll"]>();
 const deleteByIds = vi.fn<PushSubscriptionRepository["deleteByIds"]>();
 const repository: PushSubscriptionRepository = {
+	markRequiresResubscribe: vi.fn(),
 	listAll,
 	deleteByIds,
 	deleteOwned: vi.fn(),
@@ -27,10 +29,15 @@ const repository: PushSubscriptionRepository = {
 	findOwned: vi.fn(),
 	save: vi.fn(),
 };
+const pair = createECDH("prime256v1");
+pair.generateKeys();
 const { sendPushToAll } = createPushDeliveryService(
 	createWebPushSender({
-		NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY: "public",
-		WEB_PUSH_PRIVATE_KEY: "private",
+		NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY: pair.getPublicKey().toString("base64url"),
+		WEB_PUSH_PRIVATE_KEY: Buffer.from(
+			pair.getPrivateKey().toString("hex").padStart(64, "0"),
+			"hex",
+		).toString("base64url"),
 		WEB_PUSH_SUBJECT: "mailto:test@example.com",
 	}),
 	repository,
@@ -46,6 +53,8 @@ const payload: WebPushPayload = {
 };
 const subscriptions = [
 	{
+		requiresResubscribe: false,
+		updatedAt: new Date(),
 		auth: "a1",
 		endpoint: "https://push.example.com/1",
 		id: "1",
@@ -53,6 +62,8 @@ const subscriptions = [
 		p256dh: "p1",
 	},
 	{
+		requiresResubscribe: false,
+		updatedAt: new Date(),
 		auth: "a2",
 		endpoint: "https://push.example.com/2",
 		id: "2",
@@ -71,6 +82,7 @@ describe("sendPushToAll", () => {
 
 	test("sends to every subscription", async () => {
 		await expect(sendPushToAll(payload)).resolves.toEqual({
+			requiresResubscribe: 0,
 			expired: 0,
 			failed: 0,
 			sent: 2,
@@ -81,6 +93,7 @@ describe("sendPushToAll", () => {
 	test("deletes expired subscriptions", async () => {
 		send.mockRejectedValueOnce(new WebPushSendError({ statusCode: 410 }));
 		await expect(sendPushToAll(payload)).resolves.toEqual({
+			requiresResubscribe: 0,
 			expired: 1,
 			failed: 0,
 			sent: 1,
@@ -92,6 +105,7 @@ describe("sendPushToAll", () => {
 		const error = new WebPushSendError({ statusCode: 503 });
 		send.mockRejectedValueOnce(error);
 		await expect(sendPushToAll(payload)).resolves.toEqual({
+			requiresResubscribe: 0,
 			expired: 0,
 			failed: 1,
 			sent: 1,
@@ -121,6 +135,7 @@ describe("sendPushToAll", () => {
 			};
 			send.mockRejectedValueOnce(new WebPushSendError(cause));
 			await expect(sendPushToAll(payload)).resolves.toEqual({
+				requiresResubscribe: 0,
 				expired: 0,
 				failed: 1,
 				sent: 1,
@@ -140,6 +155,7 @@ describe("sendPushToAll", () => {
 	test("does not require VAPID configuration when there are no subscribers", async () => {
 		listAll.mockResolvedValue([]);
 		await expect(sendPushToAll(payload)).resolves.toEqual({
+			requiresResubscribe: 0,
 			expired: 0,
 			failed: 0,
 			sent: 0,

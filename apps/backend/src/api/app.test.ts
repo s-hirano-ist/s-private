@@ -63,6 +63,7 @@ function fixture() {
 		cancel: vi.fn<UploadService["cancel"]>(),
 	};
 	const push = {
+		status: vi.fn<PushService["status"]>(),
 		subscribe: vi.fn<PushService["subscribe"]>(),
 		unsubscribe: vi.fn<PushService["unsubscribe"]>(),
 		test: vi.fn<PushService["test"]>(),
@@ -231,6 +232,7 @@ describe("Shared Hono API boundary", () => {
 					headers,
 					body: JSON.stringify({
 						endpoint,
+						applicationServerKey: "public",
 						keys: { auth: "auth", p256dh: "key" },
 					}),
 				})
@@ -238,6 +240,7 @@ describe("Shared Hono API boundary", () => {
 		).toBe(204);
 		expect(push.subscribe).toHaveBeenCalledWith("owner", {
 			endpoint,
+			applicationServerKey: "public",
 			keys: { auth: "auth", p256dh: "key" },
 		});
 		expect(
@@ -408,4 +411,37 @@ test("malformed successful service responses are rejected consistently", async (
 	});
 	expect(response.status).toBe(500);
 	expect(auth.reportError).toHaveBeenCalledTimes(3);
+});
+
+test("protects status JSON behind authentication and CSRF and returns the owned state", async () => {
+	const { app, push, auth } = fixture();
+	push.status.mockResolvedValue({
+		publicKey: "public",
+		registered: true,
+		requiresResubscribe: true,
+	});
+	const body = JSON.stringify({ endpoint: "https://push.example/private" });
+	const request = (origin = "") =>
+		app.request("/api/v1/push/subscriptions/status", {
+			method: "POST",
+			headers: {
+				"content-type": "application/json",
+				origin,
+			},
+			body,
+		});
+	expect((await request()).status).toBe(403);
+	const response = await request("https://web.example");
+	expect(response.status).toBe(200);
+	expect(await response.json()).toEqual({
+		publicKey: "public",
+		registered: true,
+		requiresResubscribe: true,
+	});
+	expect(push.status).toHaveBeenCalledWith(
+		"owner",
+		"https://push.example/private",
+	);
+	auth.getWebSession.mockResolvedValue({ session: null });
+	expect((await request("https://web.example")).status).toBe(401);
 });

@@ -1,13 +1,15 @@
+import type { PushBrowser } from "@/components/common/layouts/nav/push-browser";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, fn, userEvent, within } from "storybook/test";
 import { UtilButtons } from "./util-buttons";
 
 type UtilButtonsWrapperProps = {
+	browser?: PushBrowser;
+	getPushStatus: () => Promise<{ message: string; success: boolean }>;
 	handleReload: () => void;
 	locale?: string;
 	onSignOutSubmit: () => Promise<void>;
 	pathname?: string;
-	publicKey: string;
 	sendTestPush: () => Promise<{ message: string; success: boolean }>;
 	subscribeToPush: () => Promise<{ message: string; success: boolean }>;
 	theme?: string;
@@ -35,7 +37,10 @@ const meta = {
 	args: {
 		handleReload: fn(),
 		onSignOutSubmit: fn(),
-		publicKey: "test-public-key",
+		getPushStatus: fn().mockResolvedValue({
+			success: false,
+			message: "unexpected",
+		}),
 		sendTestPush: fn().mockResolvedValue({ message: "success", success: true }),
 		subscribeToPush: fn().mockResolvedValue({
 			message: "success",
@@ -156,12 +161,21 @@ export const DarkThemeJapanese: Story = {
 };
 
 export const UnsupportedPush: Story = {
-	args: { publicKey: "" },
+	args: {
+		browser: {
+			inspect: async () => ({ state: "unsupported", subscription: null }),
+			subscribe: fn(),
+		},
+		getPushStatus: fn().mockResolvedValue({
+			success: false,
+			message: "unexpected",
+		}),
+	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await userEvent.click(canvas.getByRole("button", { name: /Web Push/u }));
 		await expect(
-			within(document.body).getByText(
+			await within(canvasElement.ownerDocument.body).findByText(
 				"このブラウザまたは環境ではWeb Push通知を利用できません。",
 			),
 		).toBeInTheDocument();

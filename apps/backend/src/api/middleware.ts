@@ -39,7 +39,14 @@ export function registerApiMiddleware(app: ApiApp, auth: ApiAuth) {
 	});
 	app.on(
 		"POST",
-		["/articles", "/notes", "/uploads", "/push/subscriptions", "/push/test"],
+		[
+			"/articles",
+			"/notes",
+			"/uploads",
+			"/push/subscriptions",
+			"/push/subscriptions/status",
+			"/push/test",
+		],
 		jsonLimit,
 	);
 	app.on("DELETE", "/push/subscriptions", jsonLimit);

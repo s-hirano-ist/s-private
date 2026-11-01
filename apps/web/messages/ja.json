@@ -39,7 +39,11 @@
 		"pushRegistrationError": "通知の準備に失敗しました。ページを再読み込みして、もう一度お試しください。",
 		"pushSubscriptionError": "このブラウザで通知を登録できませんでした。ブラウザの通知設定を確認してください。",
 		"pushSaveError": "通知設定を保存できませんでした。しばらくしてからもう一度お試しください。",
-		"pushError": "通知設定の更新に失敗しました。"
+		"pushError": "通知設定の更新に失敗しました。",
+		"pushResubscribeRequired": "通知の再登録が必要です。「再登録」で通知を受信できる状態に戻します。",
+		"pushResubscribe": "再登録",
+		"pushSaveRequired": "ブラウザの登録は完了しています。通知を受信するために登録を保存してください。",
+		"pushRetry": "再試行"
 	},
 	"label": {
 		"category": "カテゴリー",

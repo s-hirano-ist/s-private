@@ -26,7 +26,10 @@ import { createMobilePersistence } from "@s-hirano-ist/s-infrastructure/mobile/p
 import { createNotesCommandRepository } from "@s-hirano-ist/s-infrastructure/notes/command-repository";
 import { createNotesQueryRepository } from "@s-hirano-ist/s-infrastructure/notes/query-repository";
 import { createPushSubscriptionRepository } from "@s-hirano-ist/s-infrastructure/notifications/prisma-push-subscription-repository";
-import { createWebPushSender } from "@s-hirano-ist/s-infrastructure/notifications/web-push-sender";
+import {
+	validatePushConfig,
+	createWebPushSender,
+} from "@s-hirano-ist/s-infrastructure/notifications/web-push-sender";
 import { createSearchIndex } from "@s-hirano-ist/s-infrastructure/search/search-index";
 import { createPushService } from "s-private-backend/api/push-service";
 import { createReadService } from "s-private-backend/api/read-service";
@@ -126,8 +129,9 @@ export function createApiServices(config: ApiServicesConfig) {
 			uploads: createUploadService(mobile, writes),
 			push: createPushService(
 				pushRepository,
-				config.push.NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY,
+				() => validatePushConfig(config.push).publicKey,
 				pushDelivery.sendPushToSubscription,
+				config.reporter,
 			),
 		},
 	};
