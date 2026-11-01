@@ -8,7 +8,7 @@
  * @module
  */
 
-import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/services/storage-service.interface";
+import type { IStorageService } from "@s-hirano-ist/s-application/content/storage-port";
 import { createStorageService } from "@s-hirano-ist/s-storage";
 
 /**

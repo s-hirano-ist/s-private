@@ -1,8 +1,8 @@
 import type { BookCreationInput } from "@s-hirano-ist/s-application/books/input-model";
+import type { IStorageService } from "@s-hirano-ist/s-application/content/storage-port";
 import type { EventDispatcher } from "@s-hirano-ist/s-application/events/ports";
 import type { IBooksCommandRepository } from "@s-hirano-ist/s-core/books/repositories/books-command-repository.interface";
 import type { BooksDomainService } from "@s-hirano-ist/s-core/books/services/books-domain-service";
-import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/services/storage-service.interface";
 import {
 	withOperationPhase,
 	type OperationPhaseContext,

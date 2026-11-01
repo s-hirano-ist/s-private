@@ -1,4 +1,4 @@
-import { buildGigazineHeadline } from "s-private-backend/notifications/gigazine-headline";
+import { buildGigazineHeadline } from "@s-hirano-ist/s-application/notifications/gigazine-headline";
 import { describe, expect, test } from "vite-plus/test";
 
 describe("buildGigazineHeadline", () => {

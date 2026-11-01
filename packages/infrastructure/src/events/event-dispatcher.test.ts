@@ -2,7 +2,7 @@ import type {
 	DomainEvent,
 	DomainEventHandler,
 } from "@s-hirano-ist/s-core/shared-kernel/events/domain-event.interface";
-import { EventDispatcher } from "s-private-backend/events/event-dispatcher";
+import { EventDispatcher } from "@s-hirano-ist/s-infrastructure/events/event-dispatcher";
 import { describe, expect, test, vi } from "vite-plus/test";
 
 const eventDispatcher = new EventDispatcher();

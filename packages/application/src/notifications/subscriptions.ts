@@ -1,7 +1,7 @@
+import type { SendPush } from "@s-hirano-ist/s-application/notifications/delivery-port";
 import type { PushSubscriptionRepository } from "@s-hirano-ist/s-application/notifications/ports";
-import type { createPushDeliveryService } from "s-private-backend/notifications/push-notification-service";
-import { PushSubscriptionError } from "s-private-backend/notifications/error";
-import { buildGigazineHeadline } from "s-private-backend/notifications/gigazine-headline";
+import { PushSubscriptionError } from "@s-hirano-ist/s-application/notifications/error";
+import { buildGigazineHeadline } from "@s-hirano-ist/s-application/notifications/gigazine-headline";
 import { z } from "zod";
 export const subscriptionSchema = z.object({
 	endpoint: z.url(),
@@ -44,7 +44,7 @@ export async function sendTestPush(
 	userId: string,
 	endpoint: string,
 	repository: PushSubscriptionRepository,
-	send: ReturnType<typeof createPushDeliveryService>["sendPushToSubscription"],
+	send: SendPush,
 ): Promise<void> {
 	const subscription = await repository.findOwned(userId, endpoint);
 	if (!subscription)

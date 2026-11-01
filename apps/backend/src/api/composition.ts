@@ -1,11 +1,12 @@
+import type { IStorageService } from "@s-hirano-ist/s-application/content/storage-port";
 import type { EventDispatcher } from "@s-hirano-ist/s-application/events/ports";
 import type { MobileDeps } from "@s-hirano-ist/s-application/mobile/deps";
-import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/services/storage-service.interface";
+import type { ErrorReporter } from "@s-hirano-ist/s-application/observability/reporter";
 import type { DatabaseClient } from "@s-hirano-ist/s-infrastructure/database";
+import type { PushConfig } from "@s-hirano-ist/s-infrastructure/notifications/web-push-sender";
 import type { createVectorSearch } from "@s-hirano-ist/s-infrastructure/search/vector-search";
-import type { PushConfig } from "s-private-backend/notifications/push-notification-service";
-import type { ErrorReporter } from "s-private-backend/observability/reporter";
 import { createReadQueries } from "@s-hirano-ist/s-application/content/queries";
+import { createPushDeliveryService } from "@s-hirano-ist/s-application/notifications/push-notification-service";
 import { ArticlesDomainService } from "@s-hirano-ist/s-core/articles/services/articles-domain-service";
 import { CategoryService } from "@s-hirano-ist/s-core/articles/services/category-service";
 import { BooksDomainService } from "@s-hirano-ist/s-core/books/services/books-domain-service";
@@ -25,12 +26,12 @@ import { createMobilePersistence } from "@s-hirano-ist/s-infrastructure/mobile/p
 import { createNotesCommandRepository } from "@s-hirano-ist/s-infrastructure/notes/command-repository";
 import { createNotesQueryRepository } from "@s-hirano-ist/s-infrastructure/notes/query-repository";
 import { createPushSubscriptionRepository } from "@s-hirano-ist/s-infrastructure/notifications/prisma-push-subscription-repository";
+import { createWebPushSender } from "@s-hirano-ist/s-infrastructure/notifications/web-push-sender";
 import { createSearchIndex } from "@s-hirano-ist/s-infrastructure/search/search-index";
 import { createPushService } from "s-private-backend/api/push-service";
 import { createReadService } from "s-private-backend/api/read-service";
 import { createUploadService } from "s-private-backend/api/upload-service";
 import { createWriteService } from "s-private-backend/api/write-service";
-import { createPushDeliveryService } from "s-private-backend/notifications/push-notification-service";
 
 export type ApiServicesConfig = {
 	chunks: MobileDeps["chunks"];
@@ -101,7 +102,7 @@ export function createApiServices(config: ApiServicesConfig) {
 	});
 	const pushRepository = createPushSubscriptionRepository(database);
 	const pushDelivery = createPushDeliveryService(
-		config.push,
+		createWebPushSender(config.push),
 		pushRepository,
 		config.reporter,
 	);

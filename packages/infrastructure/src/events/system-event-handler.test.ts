@@ -1,6 +1,6 @@
+import type { Logger } from "@s-hirano-ist/s-application/observability/logger.interface";
 import type { DomainEvent } from "@s-hirano-ist/s-core/shared-kernel/events/domain-event.interface";
-import type { Logger } from "s-private-backend/observability/logger.interface";
-import { SystemEventHandler } from "s-private-backend/events/system-event-handler";
+import { SystemEventHandler } from "@s-hirano-ist/s-infrastructure/events/system-event-handler";
 import { describe, expect, test, vi } from "vite-plus/test";
 
 const serverLogger: Logger = { info: vi.fn(), warn: vi.fn(), error: vi.fn() };

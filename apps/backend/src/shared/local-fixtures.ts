@@ -1,8 +1,8 @@
-import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/services/storage-service.interface";
+import type { IStorageService } from "@s-hirano-ist/s-application/content/storage-port";
 import type { DatabaseClient } from "@s-hirano-ist/s-infrastructure/database";
 import { Status } from "@s-hirano-ist/s-database";
 import { sharpImageProcessor } from "@s-hirano-ist/s-infrastructure/content/sharp-image-processor";
-import { tenantContext } from "s-private-backend/shared/tenant-context";
+import { tenantContext } from "@s-hirano-ist/s-infrastructure/shared/tenant-context";
 
 /** Local-only fixtures; callers must enforce the local authentication guard. */
 const SAMPLE_CREATED_AT = new Date("2026-01-01T00:00:00.000Z");

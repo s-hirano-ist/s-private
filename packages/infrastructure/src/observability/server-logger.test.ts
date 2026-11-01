@@ -1,6 +1,6 @@
+import type { LogContext } from "@s-hirano-ist/s-application/observability/logger.interface";
 import type { NotificationService } from "@s-hirano-ist/s-notification";
-import type { LogContext } from "s-private-backend/observability/logger.interface";
-import { ServerLogger } from "s-private-backend/observability/server-logger";
+import { ServerLogger } from "@s-hirano-ist/s-infrastructure/observability/server-logger";
 import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 
 const { captureException, captureMessage } = vi.hoisted(() => ({

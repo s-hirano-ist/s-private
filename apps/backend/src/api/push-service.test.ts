@@ -1,5 +1,5 @@
+import type { SendPush } from "@s-hirano-ist/s-application/notifications/delivery-port";
 import type { PushSubscriptionRepository } from "@s-hirano-ist/s-application/notifications/ports";
-import type { createPushDeliveryService } from "s-private-backend/notifications/push-notification-service";
 import { ApplicationError } from "@s-hirano-ist/s-application/error";
 import { createPushService } from "s-private-backend/api/push-service";
 import { describe, expect, test, vi } from "vitest";
@@ -22,11 +22,7 @@ function fixture(publicKey: string | undefined = "public") {
 		listAll: vi.fn<PushSubscriptionRepository["listAll"]>(),
 		deleteByIds: vi.fn<PushSubscriptionRepository["deleteByIds"]>(),
 	};
-	const send = vi
-		.fn<
-			ReturnType<typeof createPushDeliveryService>["sendPushToSubscription"]
-		>()
-		.mockResolvedValue();
+	const send = vi.fn<SendPush>().mockResolvedValue();
 	return {
 		repository,
 		send,

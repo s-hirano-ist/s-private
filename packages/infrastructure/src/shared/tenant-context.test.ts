@@ -1,4 +1,4 @@
-import { tenantContext } from "s-private-backend/shared/tenant-context";
+import { tenantContext } from "@s-hirano-ist/s-infrastructure/shared/tenant-context";
 import { describe, expect, test, vi } from "vite-plus/test";
 
 describe("tenantContext", () => {
@@ -32,7 +32,7 @@ describe("tenantContext", () => {
 	test("reuses its instance when the module is re-evaluated", async () => {
 		vi.resetModules();
 		const { tenantContext: reloadedTenantContext } =
-			await import("s-private-backend/shared/tenant-context");
+			await import("@s-hirano-ist/s-infrastructure/shared/tenant-context");
 
 		expect(reloadedTenantContext).toBe(tenantContext);
 	});
