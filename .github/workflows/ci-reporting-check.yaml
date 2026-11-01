@@ -32,7 +32,7 @@ jobs:
             const version = (await readFile(".nvmrc", "utf8")).trim();
             const range = packageJson.engines.node;
             const major = version.split(".")[0];
-            const satisfies = /^\d+\.\d+\.\d+$/.test(version) && range === `${major}.x`;
+            const satisfies = /^\d+\.\d+\.\d+$/.test(version) && range === major + ".x";
             if (!satisfies) {
               throw new Error(".nvmrc (" + version + ") does not satisfy engines.node (" + range + ")");
             }
