@@ -15,7 +15,7 @@ Productionの環境変数はVercelで手動管理し、PreviewはDopplerのサ�
 2. Webとは別のproject名を付け、**Root Directory** を `apps/backend` に設定する。
 3. **Build and Deployment → Root Directory** で **Include source files outside of the Root Directory in the Build Step** を有効にする。`packages/*` とルートのworkspace/lockfileが必要。
 4. FrameworkはHonoの自動検出を使用する。入口は `apps/backend/src/index.ts` のdefault export。`api/index.ts` やNext.js adapterを追加しない。
-5. Node.jsは **24.x** を選び、ビルドログのversionがリポジトリの `.nvmrc` / `engines` を満たすことを確認する。
+5. Node.jsは **26.x** を選び、ビルドログのversionがリポジトリの `.nvmrc` / `engines` を満たすことを確認する。
 6. Install Commandはworkspaceルートのlockfileを使う `pnpm install --frozen-lockfile`。Build Commandは `apps/backend/vercel.json` の `pnpm --filter s-private-backend... -r run build` を使用する。Output Directoryを静的サイト用の `dist` などへ上書きしない。
 7. Functionsのregionは既存CockroachDBに近いregionを選ぶ。HTTP APIとSharpを使用するためNode.jsで実行する。Cloudflare Workersへの配置はこの構成の対象外。
 8. 以下の環境変数を登録してから担当者がdeployする。Cron scheduleはリポジトリの設定を使用し、PreviewではCronを無効にする。
@@ -66,7 +66,7 @@ backend実装は `apps/backend` に集約する。Root Directory、起動入口�
 
 Vercelのビルド成功だけでは起動成功を保証しない。workspaceのpackage exportsは
 TypeScriptソースを指しているため、`apps/backend/vercel.json` の `includeFiles` で
-サービス内の実装・core・DBのソースをFunctionに含める。Node.js 24の型除去で実行するため、
+サービス内の実装・core・DBのソースをFunctionに含める。Node.js 26の型除去で実行するため、
 対象のTypeScript設定では `erasableSyntaxOnly` を有効にする。
 constructorのparameter propertyなど、JavaScriptへの変換が必要な構文は使用しない。
 型検査の回帰テストに加え、生成されたFunctionをリポジトリ外へ展開し、
