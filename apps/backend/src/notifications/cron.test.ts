@@ -16,7 +16,12 @@ const createRequest = (secret?: string) =>
 describe("GET /api/cron/gigazine-headline", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
-		sendPushToAll.mockResolvedValue({ expired: 0, failed: 0, sent: 2 });
+		sendPushToAll.mockResolvedValue({
+			requiresResubscribe: 0,
+			expired: 0,
+			failed: 0,
+			sent: 2,
+		});
 	});
 
 	test.each([undefined, "wrong-secret"])(
@@ -32,18 +37,44 @@ describe("GET /api/cron/gigazine-headline", () => {
 		const response = await GET(createRequest("test-cron-secret-value"));
 		const body = await response.json();
 		expect(response.status).toBe(200);
-		expect(body).toMatchObject({ expired: 0, failed: 0, sent: 2 });
+		expect(body).toMatchObject({
+			requiresResubscribe: 0,
+			expired: 0,
+			failed: 0,
+			sent: 2,
+		});
 		expect(sendPushToAll).toHaveBeenCalledOnce();
 	});
 
 	test("returns 500 when a transient delivery fails", async () => {
-		sendPushToAll.mockResolvedValue({ expired: 1, failed: 1, sent: 1 });
-		const response = await GET(createRequest("test-cron-secret-value"));
-		expect(response.status).toBe(500);
-		expect(await response.json()).toMatchObject({
+		sendPushToAll.mockResolvedValue({
+			requiresResubscribe: 0,
 			expired: 1,
 			failed: 1,
 			sent: 1,
 		});
+		const response = await GET(createRequest("test-cron-secret-value"));
+		expect(response.status).toBe(500);
+		expect(await response.json()).toMatchObject({
+			requiresResubscribe: 0,
+			expired: 1,
+			failed: 1,
+			sent: 1,
+		});
+	});
+});
+
+test("returns 200 for quarantined subscriptions without other delivery failures", async () => {
+	sendPushToAll.mockResolvedValue({
+		requiresResubscribe: 1,
+		expired: 0,
+		failed: 0,
+		sent: 0,
+	});
+	const response = await GET(createRequest("test-cron-secret-value"));
+	expect(response.status).toBe(200);
+	expect(await response.json()).toMatchObject({
+		requiresResubscribe: 1,
+		failed: 0,
 	});
 });

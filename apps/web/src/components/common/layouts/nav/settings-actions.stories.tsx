@@ -5,7 +5,10 @@ import { SettingsActions } from "./settings-actions";
 const meta = {
 	component: SettingsActions,
 	args: {
-		publicKey: "test-public-key",
+		getPushStatus: fn().mockResolvedValue({
+			success: false,
+			message: "unexpected",
+		}),
 		sendTestPush: fn().mockResolvedValue({ message: "success", success: true }),
 		subscribeToPush: fn().mockResolvedValue({
 			message: "success",

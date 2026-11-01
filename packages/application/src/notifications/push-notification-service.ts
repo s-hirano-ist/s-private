@@ -20,15 +20,18 @@ export function createPushDeliveryService(
 		payload: PushPayload,
 	): Promise<PushDeliverySummary> {
 		const subscriptions = await pushSubscriptionRepository.listAll();
-		if (subscriptions.length === 0) return { expired: 0, failed: 0, sent: 0 };
+		if (subscriptions.length === 0)
+			return { expired: 0, failed: 0, sent: 0, requiresResubscribe: 0 };
 
 		const service = sender;
 		const expiredIds: string[] = [];
 		let failed = 0;
 		let sent = 0;
+		let requiresResubscribe = 0;
 
 		await Promise.all(
 			subscriptions.map(async (subscription) => {
+				if (subscription.requiresResubscribe) return;
 				try {
 					await service.send(subscription, payload);
 					sent += 1;
@@ -43,6 +46,23 @@ export function createPushDeliveryService(
 						error.isSubscriptionExpired
 					) {
 						expiredIds.push(subscription.id);
+						return;
+					}
+					if (error instanceof PushDeliveryError && error.requiresResubscribe) {
+						requiresResubscribe += 1;
+						const changed =
+							await pushSubscriptionRepository.markRequiresResubscribe(
+								subscription.id,
+								subscription.updatedAt,
+							);
+						if (changed) {
+							const diagnostic = pushFailureDiagnostic(
+								error,
+								subscription.endpoint,
+								subscription.id,
+							);
+							reporter.captureException(diagnostic.error, diagnostic.context);
+						}
 						return;
 					}
 					failed += 1;
@@ -60,7 +80,7 @@ export function createPushDeliveryService(
 			await pushSubscriptionRepository.deleteByIds(expiredIds);
 		}
 
-		return { expired: expiredIds.length, failed, sent };
+		return { expired: expiredIds.length, failed, sent, requiresResubscribe };
 	}
 
 	async function sendPushToSubscription(
@@ -82,7 +102,7 @@ function failureCategory(status?: number): string {
 }
 
 /** Never attach the original provider Error: it may contain keys and endpoint URLs. */
-function pushFailureDiagnostic(
+export function pushFailureDiagnostic(
 	error: unknown,
 	endpoint: string,
 	subscriptionId: string,

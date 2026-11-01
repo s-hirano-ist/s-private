@@ -12,6 +12,7 @@ const apiMessages: Record<ApiHttpError["code"], string> = {
 	FORBIDDEN: "notAllowed",
 	NOT_DELETABLE: "notAllowed",
 	UNAUTHORIZED: "unauthorized",
+	PUSH_RESUBSCRIPTION_REQUIRED: "unexpected",
 	API_UNAVAILABLE: "unexpected",
 	INTERNAL_ERROR: "unexpected",
 	INVALID_SYNC_CURSOR: "unexpected",

@@ -282,7 +282,19 @@ Cookie・OAuth code・token・request全体を保存せず、不明な通信原�
 
 Push送信失敗ではHTTP status・失敗分類・送信先hostname・購読IDだけを報告し、providerの生のErrorや応答本文は送らない。
 404/410は期限切れとして削除する。401/403・429・5xx・通信失敗は購読を保持し、送信の自動再試行は行わない。
-診断追加の本番反映後に次回Cronの応答を確認し、provider固有の原因修正と対象購読への通知確認を別PRで行う。
+Apple (`web.push.apple.com`) の400 `VapidPkHashMismatch` だけを再登録待ちに分類する。
+infrastructureが秘密鍵から導出した公開鍵と設定公開鍵を検証し、設定不足・不一致は503として購読を変更しない。
+applicationは取得時のIDと`updatedAt`が一致する購読のみ`requiresResubscribe=true`へ変更し、その変更時にだけ診断する。
+再登録待ちはCronの取得対象から除外する。集計の`requiresResubscribe`は今回の該当送信件数で、他の失敗がなければ200を返す。
+テスト送信にも同じ方針を適用し、再登録待ちは409 `PUSH_RESUBSCRIPTION_REQUIRED`でWebへ伝える。
+
+認証付きPOST `/api/v1/push/subscriptions/status` は任意endpointをJSONで受け取り、backendの検証済み公開鍵と本人の登録状態を返す。
+Webは設定画面を開く時にこの鍵とブラウザ購読の`applicationServerKey`をバイト比較する。
+鍵不一致・鍵取得不能・再登録待ちは、利用者の「再登録」操作で旧購読を解除してから現行鍵で再購読する。
+登録APIは`applicationServerKey`を検証し、新旧endpointの所有権確認、新購読保存、旧購読の配信停止を同一transactionで行う。
+同一endpointの保存は再登録待ちを解除する。保存失敗時は新しいブラウザ購読と置換元endpointを保持して保存だけ再試行する。
+現行鍵のブラウザ購読がDB未登録の場合も保存のみ行い、再登録に伴う自動テスト送信は行わない。
+購読の鍵を変更できない理由は[Push API仕様](https://w3c.github.io/push-api/)を参照。
 トップページの死活監視は認証経路も監視するため継続し、`/health`による浅い監視には置き換えない。
 
 ## 静的 CSP と Instant Navigation

@@ -8,6 +8,7 @@ export const apiErrorDefinitions = [
 		status: 409,
 		codes: [
 			"DUPLICATE",
+			"PUSH_RESUBSCRIPTION_REQUIRED",
 			"NOT_DELETABLE",
 			"OPERATION_CONFLICT",
 			"OPERATION_IN_PROGRESS",

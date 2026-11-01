@@ -14,6 +14,7 @@ export type PushSender = { send: SendPush };
 export type PushDeliverySummary = {
 	expired: number;
 	failed: number;
+	requiresResubscribe: number;
 	sent: number;
 };
 export type SendPushToAll = (
@@ -23,7 +24,8 @@ export class PushDeliveryError extends Error {
 	constructor(
 		readonly isSubscriptionExpired: boolean,
 		cause: unknown,
-		readonly diagnostics: { statusCode?: number; providerCode?: string } = {},
+		readonly diagnostics: { providerCode?: string; statusCode?: number; } = {},
+		readonly requiresResubscribe = false,
 	) {
 		super("Push delivery failed", { cause });
 		this.name = "PushDeliveryError";

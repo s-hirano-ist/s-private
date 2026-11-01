@@ -215,10 +215,11 @@ model User {
 }
 
 model PushSubscription {
-  id       String @id @db.String(36)
-  endpoint String @unique @db.String
-  p256dh   String @db.String
-  auth     String @db.String
+  requiresResubscribe Boolean @default(false) @map("requires_resubscribe")
+  id                  String  @id @db.String(36)
+  endpoint            String  @unique @db.String
+  p256dh              String  @db.String
+  auth                String  @db.String
 
   User   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId String @map("user_id") @db.String(64)

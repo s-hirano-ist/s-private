@@ -325,6 +325,8 @@ export const searchResponseSchema = z
 export const subscriptionSchema = z
 	.strictObject({
 		endpoint: z.url(),
+		applicationServerKey: z.string().min(1),
+		replacesEndpoint: z.url().optional(),
 		keys: z.strictObject({
 			auth: z.string().min(1),
 			p256dh: z.string().min(1),
@@ -334,6 +336,16 @@ export const subscriptionSchema = z
 export const subscriptionEndpointSchema = z
 	.strictObject({ endpoint: z.url() })
 	.openapi("PushSubscriptionEndpoint");
+export const pushStatusInputSchema = z
+	.strictObject({ endpoint: z.url().optional() })
+	.openapi("PushStatusInput");
+export const pushStatusSchema = z
+	.strictObject({
+		publicKey: z.string(),
+		registered: z.boolean(),
+		requiresResubscribe: z.boolean(),
+	})
+	.openapi("PushStatus");
 export const sessionSchema = z
 	.object({
 		user: z.object({

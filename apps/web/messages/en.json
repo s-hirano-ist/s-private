@@ -39,7 +39,11 @@
 		"pushRegistrationError": "Failed to prepare notifications. Reload the page and try again.",
 		"pushSubscriptionError": "This browser could not register notifications. Check your browser notification settings.",
 		"pushSaveError": "Could not save notification settings. Try again in a moment.",
-		"pushError": "Failed to update notification settings."
+		"pushError": "Failed to update notification settings.",
+		"pushResubscribeRequired": "Notifications need to be registered again. Select Register again to restore delivery.",
+		"pushResubscribe": "Register again",
+		"pushSaveRequired": "Your browser is ready. Save the notification registration to receive notifications.",
+		"pushRetry": "Try again"
 	},
 	"label": {
 		"category": "Category",

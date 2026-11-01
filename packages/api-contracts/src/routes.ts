@@ -25,6 +25,8 @@ import {
 	searchQuerySchema,
 	searchResponseSchema,
 	subscriptionSchema,
+	pushStatusInputSchema,
+	pushStatusSchema,
 	subscriptionEndpointSchema,
 	sessionSchema,
 } from "@s-hirano-ist/s-api-contracts/schemas";
@@ -490,9 +492,29 @@ export const testPushRoute = createRoute({
 		...queryErrors,
 		413: errorResponses[413],
 		404: errorResponses[404],
+		409: errorResponses[409],
+	},
+});
+export const pushStatusRoute = createRoute({
+	method: "post",
+	path: "/push/subscriptions/status",
+	operationId: "getPushStatus",
+	tags: ["push"],
+	security,
+	request: {
+		body: { required: true, content: jsonContent(pushStatusInputSchema) },
+	},
+	responses: {
+		200: {
+			description: "Push subscription status",
+			content: jsonContent(pushStatusSchema),
+		},
+		...queryErrors,
+		413: errorResponses[413],
 	},
 });
 export const apiRoutes = [
+	pushStatusRoute,
 	bookByIsbnRoute,
 	noteByTitleRoute,
 	...Object.values(articlesRoutes),

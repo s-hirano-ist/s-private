@@ -28,6 +28,16 @@ export function registerWriteRoutes(
 			201,
 		),
 	);
+	app.openapi(routes.pushStatusRoute, async (c) =>
+		c.json(
+			responseBody(
+				routes.pushStatusRoute.responses[200].content["application/json"]
+					.schema,
+				await push.status(c.get("owner"), c.req.valid("json").endpoint),
+			),
+			200,
+		),
+	);
 	app.openapi(routes.subscribeRoute, async (c) => {
 		await push.subscribe(c.get("owner"), c.req.valid("json"));
 		return c.body(null, 204);

@@ -1,5 +1,10 @@
 "use client";
-import type { ServerAction } from "@/common/types";
+import type { ServerAction, ServerActionWithData } from "@/common/types";
+import {
+	pushBrowser,
+	matchesPushKey,
+	type PushBrowser,
+} from "@/components/common/layouts/nav/push-browser";
 import { PushSubscription as PushSubscriptionDto } from "@s-hirano-ist/s-api-client/models";
 import { Button } from "@s-hirano-ist/s-ui/button";
 import {
@@ -14,18 +19,31 @@ import { haptic } from "@s-hirano-ist/s-ui/utils/haptic";
 import { captureException } from "@sentry/nextjs";
 import { Bell, BellOff } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 
-type PushAction = (endpoint: string) => Promise<ServerAction>;
+export type PushStatus = {
+	publicKey: string;
+	registered: boolean;
+	requiresResubscribe: boolean;
+};
+type PushAction = (
+	endpoint: string,
+) => Promise<ServerAction & { requiresResubscribe?: boolean }>;
 
 export type PushNotificationButtonProps = {
-	publicKey: string;
+	browser?: PushBrowser;
+	getPushStatus: (
+		endpoint?: string,
+	) => Promise<ServerActionWithData<PushStatus>>;
 	sendTestPush: PushAction;
 	subscribeToPush: (subscription: PushSubscriptionDto) => Promise<ServerAction>;
 	unsubscribeFromPush: PushAction;
 };
 
 type PushState =
+	| "error"
+	| "repair-required"
+	| "save-required"
 	| "checking"
 	| "denied"
 	| "ios-install-required"
@@ -43,43 +61,17 @@ export function feedbackKeyForFailure(
 	return "pushSaveError";
 }
 
-function base64UrlToUint8Array(value: string): Uint8Array<ArrayBuffer> {
-	const padding = "=".repeat((4 - (value.length % 4)) % 4);
-	const base64 = (value + padding).replaceAll("-", "+").replaceAll("_", "/");
-	const raw = window.atob(base64);
-	return Uint8Array.from(raw, (character) => character.codePointAt(0) ?? 0);
-}
-
-function isIosOutsideStandalone(): boolean {
-	const isIos = /iphone|ipad|ipod/iu.test(navigator.userAgent);
-	const standalone =
-		window.matchMedia("(display-mode: standalone)").matches ||
-		("standalone" in navigator &&
-			(navigator as Navigator & { standalone?: boolean }).standalone === true);
-	return isIos && !standalone;
-}
-
-function getInitialState(publicKey: string): PushState {
-	if (
-		!publicKey ||
-		!("serviceWorker" in navigator) ||
-		!("PushManager" in window) ||
-		!("Notification" in window)
-	) {
-		return "unsupported";
-	}
-	if (isIosOutsideStandalone()) return "ios-install-required";
-	if (Notification.permission === "denied") return "denied";
-	return "checking";
-}
-
 export function PushNotificationButton({
-	publicKey,
+	getPushStatus,
+	browser = pushBrowser,
 	sendTestPush,
 	subscribeToPush,
 	unsubscribeFromPush,
 }: PushNotificationButtonProps) {
 	const t = useTranslations("utils");
+	const [publicKey, setPublicKey] = useState("");
+	const replacesEndpoint = useRef<string | null>(null);
+	const version = useRef(0);
 	const [open, setOpen] = useState(false);
 	const [state, setState] = useState<PushState>("checking");
 	const [subscription, setSubscription] = useState<PushSubscription | null>(
@@ -88,28 +80,44 @@ export function PushNotificationButton({
 	const [feedback, setFeedback] = useState("");
 	const [isPending, startTransition] = useTransition();
 
-	useEffect(() => {
-		let active = true;
-		const syncSubscription = async () => {
-			await Promise.resolve();
-			const initialState = getInitialState(publicKey);
-			if (!active) return;
-			if (initialState !== "checking") {
-				setState(initialState);
-				return;
+	const refresh = () => {
+		const requestVersion = ++version.current;
+		setState("checking");
+		setFeedback("");
+		startTransition(async () => {
+			try {
+				const inspection = await browser.inspect();
+				if (requestVersion !== version.current) return;
+				setSubscription(inspection.subscription);
+				if (inspection.state !== "checking") {
+					setState(inspection.state);
+					return;
+				}
+				const result = await getPushStatus(inspection.subscription?.endpoint);
+				if (requestVersion !== version.current) return;
+				if (!result.success || !result.data)
+					throw new Error("Could not check notification settings");
+				setPublicKey(result.data.publicKey);
+				if (!inspection.subscription) {
+					setState("unsubscribed");
+					return;
+				}
+				if (
+					result.data.requiresResubscribe ||
+					!matchesPushKey(inspection.subscription, result.data.publicKey)
+				) {
+					setState("repair-required");
+					return;
+				}
+				setState(result.data.registered ? "subscribed" : "save-required");
+			} catch {
+				if (requestVersion === version.current) {
+					setState("error");
+					setFeedback(t("pushError"));
+				}
 			}
-			const registration = await navigator.serviceWorker.getRegistration("/");
-			const current = await registration?.pushManager.getSubscription();
-			// oxlint-disable-next-line typescript/no-unnecessary-condition -- effect cleanup can flip active while the browser promise is pending
-			if (!active) return;
-			setSubscription(current ?? null);
-			setState(current ? "subscribed" : "unsubscribed");
-		};
-		void syncSubscription();
-		return () => {
-			active = false;
-		};
-	}, [publicKey]);
+		});
+	};
 
 	const enable = () => {
 		haptic();
@@ -117,38 +125,45 @@ export function PushNotificationButton({
 		startTransition(async () => {
 			let failureStage: PushFailureStage = "register";
 			try {
-				const permission = await Notification.requestPermission();
-				if (permission !== "granted") {
-					setState("denied");
-					return;
-				}
-				const registration = await navigator.serviceWorker.register(
-					"/push-service-worker.js",
-					{ scope: "/" },
-				);
-				await navigator.serviceWorker.ready;
 				failureStage = "subscribe";
-				const nextSubscription = await registration.pushManager.subscribe({
-					applicationServerKey: base64UrlToUint8Array(publicKey),
-					userVisibleOnly: true,
-				});
+				const previous = state === "repair-required" ? subscription : null;
+				if (previous) replacesEndpoint.current = previous.endpoint;
+				const nextSubscription =
+					state === "save-required" && subscription
+						? subscription
+						: await browser.subscribe(publicKey, previous);
+				setSubscription(nextSubscription);
+				setState("save-required");
 				failureStage = "save";
 				const result = await subscribeToPush(
-					PushSubscriptionDto.parse(nextSubscription.toJSON()),
+					PushSubscriptionDto.parse({
+						...nextSubscription.toJSON(),
+						applicationServerKey: publicKey,
+						replacesEndpoint: replacesEndpoint.current ?? undefined,
+					}),
 				);
 				if (!result.success) throw new Error(result.message);
 				setSubscription(nextSubscription);
+				replacesEndpoint.current = null;
 				setState("subscribed");
 				setFeedback(t("pushSubscribed"));
 			} catch (error) {
 				captureException(error, {
-					extra: { notificationPermission: Notification.permission },
 					tags: {
 						feature: "web-push",
 						operation: "subscribe",
 						stage: failureStage,
 					},
 				});
+				if (failureStage === "subscribe") {
+					const inspection = await browser.inspect().catch(() => null);
+					if (inspection && inspection.state !== "checking") {
+						setState(inspection.state);
+					} else if (inspection && !inspection.subscription) {
+						setSubscription(null);
+						setState("unsubscribed");
+					}
+				}
 				setFeedback(t(feedbackKeyForFailure(failureStage)));
 			}
 		});
@@ -164,7 +179,10 @@ export function PushNotificationButton({
 				setFeedback(t("pushError"));
 				return;
 			}
-			await subscription.unsubscribe();
+			if (!(await subscription.unsubscribe())) {
+				setFeedback(t("pushError"));
+				return;
+			}
 			setSubscription(null);
 			setState("unsubscribed");
 			setFeedback(t("pushUnsubscribed"));
@@ -177,12 +195,16 @@ export function PushNotificationButton({
 		setFeedback("");
 		startTransition(async () => {
 			const result = await sendTestPush(subscription.endpoint);
+			if (result.requiresResubscribe) setState("repair-required");
 			setFeedback(t(result.success ? "pushTestSent" : "pushError"));
 		});
 	};
 
 	const descriptions: Record<PushState, string> = {
 		checking: t("pushChecking"),
+		error: t("pushError"),
+		"repair-required": t("pushResubscribeRequired"),
+		"save-required": t("pushSaveRequired"),
 		denied: t("pushDenied"),
 		"ios-install-required": t("pushIosInstall"),
 		subscribed: t("pushEnabled"),
@@ -198,6 +220,7 @@ export function PushNotificationButton({
 				onClick={() => {
 					haptic();
 					setOpen(true);
+					refresh();
 				}}
 				variant="outline"
 			>
@@ -208,7 +231,13 @@ export function PushNotificationButton({
 				)}
 				<span className="text-xs">PUSH</span>
 			</Button>
-			<Dialog onOpenChange={setOpen} open={open}>
+			<Dialog
+				onOpenChange={(value) => {
+					setOpen(value);
+					if (!value) version.current += 1;
+				}}
+				open={open}
+			>
 				<DialogContent>
 					<DialogHeader>
 						<DialogTitle>{t("pushNotifications")}</DialogTitle>
@@ -220,9 +249,16 @@ export function PushNotificationButton({
 						</p>
 					) : null}
 					<DialogFooter>
-						{state === "unsubscribed" ? (
+						{state === "error" ? (
+							<Button disabled={isPending} onClick={refresh}>
+								{t("pushRetry")}
+							</Button>
+						) : null}
+						{state === "unsubscribed" ||
+						state === "repair-required" ||
+						state === "save-required" ? (
 							<Button disabled={isPending} onClick={enable}>
-								{t("pushEnable")}
+								{t(state === "unsubscribed" ? "pushEnable" : "pushResubscribe")}
 							</Button>
 						) : null}
 						{state === "subscribed" ? (

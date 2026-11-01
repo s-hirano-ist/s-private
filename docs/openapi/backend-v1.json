@@ -37,6 +37,7 @@
 									"FORBIDDEN",
 									"NOT_FOUND",
 									"DUPLICATE",
+									"PUSH_RESUBSCRIPTION_REQUIRED",
 									"NOT_DELETABLE",
 									"OPERATION_CONFLICT",
 									"OPERATION_IN_PROGRESS",
@@ -55,6 +56,132 @@
 					}
 				},
 				"required": ["error"]
+			},
+			"PushStatus": {
+				"type": "object",
+				"properties": {
+					"publicKey": {
+						"type": "string"
+					},
+					"registered": {
+						"type": "boolean"
+					},
+					"requiresResubscribe": {
+						"type": "boolean"
+					}
+				},
+				"required": ["publicKey", "registered", "requiresResubscribe"],
+				"additionalProperties": false
+			},
+			"ApiError401": {
+				"type": "object",
+				"properties": {
+					"error": {
+						"type": "object",
+						"properties": {
+							"code": {
+								"type": "string",
+								"enum": ["UNAUTHORIZED"]
+							}
+						},
+						"required": ["code"]
+					}
+				},
+				"required": ["error"]
+			},
+			"ApiError403": {
+				"type": "object",
+				"properties": {
+					"error": {
+						"type": "object",
+						"properties": {
+							"code": {
+								"type": "string",
+								"enum": ["FORBIDDEN"]
+							}
+						},
+						"required": ["code"]
+					}
+				},
+				"required": ["error"]
+			},
+			"ApiError413": {
+				"type": "object",
+				"properties": {
+					"error": {
+						"type": "object",
+						"properties": {
+							"code": {
+								"type": "string",
+								"enum": ["UPLOAD_TOO_LARGE"]
+							}
+						},
+						"required": ["code"]
+					}
+				},
+				"required": ["error"]
+			},
+			"ApiError422": {
+				"type": "object",
+				"properties": {
+					"error": {
+						"type": "object",
+						"properties": {
+							"code": {
+								"type": "string",
+								"enum": [
+									"VALIDATION_ERROR",
+									"INVALID_CHUNK_SIZE",
+									"INVALID_SYNC_CURSOR"
+								]
+							}
+						},
+						"required": ["code"]
+					}
+				},
+				"required": ["error"]
+			},
+			"ApiError500": {
+				"type": "object",
+				"properties": {
+					"error": {
+						"type": "object",
+						"properties": {
+							"code": {
+								"type": "string",
+								"enum": ["INTERNAL_ERROR"]
+							}
+						},
+						"required": ["code"]
+					}
+				},
+				"required": ["error"]
+			},
+			"ApiError503": {
+				"type": "object",
+				"properties": {
+					"error": {
+						"type": "object",
+						"properties": {
+							"code": {
+								"type": "string",
+								"enum": ["API_UNAVAILABLE"]
+							}
+						},
+						"required": ["code"]
+					}
+				},
+				"required": ["error"]
+			},
+			"PushStatusInput": {
+				"type": "object",
+				"properties": {
+					"endpoint": {
+						"type": "string",
+						"format": "uri"
+					}
+				},
+				"additionalProperties": false
 			},
 			"Book": {
 				"type": "object",
@@ -137,38 +264,6 @@
 				"type": "string",
 				"enum": ["UNEXPORTED", "LAST_UPDATED", "EXPORTED"]
 			},
-			"ApiError401": {
-				"type": "object",
-				"properties": {
-					"error": {
-						"type": "object",
-						"properties": {
-							"code": {
-								"type": "string",
-								"enum": ["UNAUTHORIZED"]
-							}
-						},
-						"required": ["code"]
-					}
-				},
-				"required": ["error"]
-			},
-			"ApiError403": {
-				"type": "object",
-				"properties": {
-					"error": {
-						"type": "object",
-						"properties": {
-							"code": {
-								"type": "string",
-								"enum": ["FORBIDDEN"]
-							}
-						},
-						"required": ["code"]
-					}
-				},
-				"required": ["error"]
-			},
 			"ApiError404": {
 				"type": "object",
 				"properties": {
@@ -178,58 +273,6 @@
 							"code": {
 								"type": "string",
 								"enum": ["NOT_FOUND"]
-							}
-						},
-						"required": ["code"]
-					}
-				},
-				"required": ["error"]
-			},
-			"ApiError422": {
-				"type": "object",
-				"properties": {
-					"error": {
-						"type": "object",
-						"properties": {
-							"code": {
-								"type": "string",
-								"enum": [
-									"VALIDATION_ERROR",
-									"INVALID_CHUNK_SIZE",
-									"INVALID_SYNC_CURSOR"
-								]
-							}
-						},
-						"required": ["code"]
-					}
-				},
-				"required": ["error"]
-			},
-			"ApiError500": {
-				"type": "object",
-				"properties": {
-					"error": {
-						"type": "object",
-						"properties": {
-							"code": {
-								"type": "string",
-								"enum": ["INTERNAL_ERROR"]
-							}
-						},
-						"required": ["code"]
-					}
-				},
-				"required": ["error"]
-			},
-			"ApiError503": {
-				"type": "object",
-				"properties": {
-					"error": {
-						"type": "object",
-						"properties": {
-							"code": {
-								"type": "string",
-								"enum": ["API_UNAVAILABLE"]
 							}
 						},
 						"required": ["code"]
@@ -385,6 +428,7 @@
 								"type": "string",
 								"enum": [
 									"DUPLICATE",
+									"PUSH_RESUBSCRIPTION_REQUIRED",
 									"NOT_DELETABLE",
 									"OPERATION_CONFLICT",
 									"OPERATION_IN_PROGRESS",
@@ -591,22 +635,6 @@
 			"ContentDomain": {
 				"type": "string",
 				"enum": ["articles", "notes", "images", "books"]
-			},
-			"ApiError413": {
-				"type": "object",
-				"properties": {
-					"error": {
-						"type": "object",
-						"properties": {
-							"code": {
-								"type": "string",
-								"enum": ["UPLOAD_TOO_LARGE"]
-							}
-						},
-						"required": ["code"]
-					}
-				},
-				"required": ["error"]
 			},
 			"ArticleCreate": {
 				"type": "object",
@@ -1249,6 +1277,14 @@
 						"type": "string",
 						"format": "uri"
 					},
+					"applicationServerKey": {
+						"type": "string",
+						"minLength": 1
+					},
+					"replacesEndpoint": {
+						"type": "string",
+						"format": "uri"
+					},
 					"keys": {
 						"type": "object",
 						"properties": {
@@ -1265,7 +1301,7 @@
 						"additionalProperties": false
 					}
 				},
-				"required": ["endpoint", "keys"],
+				"required": ["endpoint", "applicationServerKey", "keys"],
 				"additionalProperties": false
 			},
 			"PushSubscriptionEndpoint": {
@@ -1283,6 +1319,102 @@
 		"parameters": {}
 	},
 	"paths": {
+		"/push/subscriptions/status": {
+			"post": {
+				"operationId": "getPushStatus",
+				"tags": ["push"],
+				"security": [
+					{
+						"bearerAuth": []
+					},
+					{
+						"sessionCookie": []
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/PushStatusInput"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Push subscription status",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PushStatus"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Authentication required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError401"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError403"
+								}
+							}
+						}
+					},
+					"413": {
+						"description": "Payload too large",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError413"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation failed",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError422"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError500"
+								}
+							}
+						}
+					},
+					"503": {
+						"description": "Service unavailable",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError503"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/books/isbn/{isbn}": {
 			"get": {
 				"operationId": "getBookByIsbn",
@@ -4699,6 +4831,16 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ApiError404"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "Conflict",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError409"
 								}
 							}
 						}
