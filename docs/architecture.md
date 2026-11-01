@@ -118,12 +118,13 @@ import { ArticlesStackLoader } from "@/loaders/articles";
 
 ## セキュリティ
 
-### 自動依存関係管理（Renovate + Dependabot）
-- **役割分担**:
-  - **Renovate**: npm（pnpm）/ mise / nvm / lockFileMaintenance。
-  - **Dependabot**: pnpm 非依存の github-actions / docker-compose。
-- **脆弱性アラート**: セキュリティ問題の自動PR（`security`ラベル付き、Renovate）
-- **設定**: [.github/renovate.json5](../.github/renovate.json5) / [.github/dependabot.yml](../.github/dependabot.yml) を参照
+### 自動依存関係管理（Renovate）
+- **対象**: npm（pnpm catalog・overrides・型定義を含む）/ mise / nvm / Docker Compose / GitHub Actions。Dependabotとの二重管理は行わない。
+- **更新PR**: major・minor・patch・digestを単一の `all dependencies` PRへ集約し、すべて手動レビューでマージする。
+- **スケジュール**: 通常更新は月曜11時前（Asia/Tokyo）。脆弱性修正も同じPRに集約する。修正版のある未解決アラートを検出した日は、週次の更新窓を待たず集約PR全体を更新する。
+- **Node.js**: `.nvmrc` は26系の完全バージョン、`engines.node` とVercelの両projectは `26.x`。RenovateはNode.jsと `@types/node` を26系に制限する。次のmajor移行では制約・型定義・Vercel設定も同じPRで変更する。
+- **lockfile**: 各依存更新で再生成する。定期的な全件再生成は無効。
+- **設定**: [.github/renovate.json5](../.github/renovate.json5) を参照。
 
 ### npm/pnpmセキュリティ設定
 - **バージョン固定**: pnpm-workspace.yamlの`savePrefix: ''`
