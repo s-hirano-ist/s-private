@@ -1,5 +1,19 @@
 # Changelog
 
+## [3.0.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v2.2.1...@s-hirano-ist/s-ui-v3.0.0) (2026-11-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* workspace versions advance to the next major; CLI follows the root 4.0.0 release.
+
+### Maintenance
+
+* bump all workspace package major versions ([84c7b0a](https://github.com/s-hirano-ist/s-private/commit/84c7b0a15a35d99112bdeed7c8da9029eb682515))
+* **deps:** unify Node.js 26 and Renovate updates ([0b7c51f](https://github.com/s-hirano-ist/s-private/commit/0b7c51f1b0031aa9030f7f18a03177985d7d6545))
+* **deps:** update node and pnpm ([112702b](https://github.com/s-hirano-ist/s-private/commit/112702bc5a24e7604a28cf3ec8af71038db8f709))
+* **deps:** update node and pnpm ([667f93e](https://github.com/s-hirano-ist/s-private/commit/667f93ece6d212cae1f67b85775873c3f8fa3ff5))
+
 ## [2.2.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v2.2.0...@s-hirano-ist/s-ui-v2.2.1) (2026-10-06)
 
 
