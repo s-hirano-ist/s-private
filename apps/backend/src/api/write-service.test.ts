@@ -64,6 +64,7 @@ function fixture() {
 		images: {},
 		books: {},
 		mobile: {
+			transactions: { run: (work: () => Promise<unknown>) => work() },
 			operations,
 			content: { lookupContentId },
 			errors: { isRecordNotFoundError: () => false },
@@ -82,7 +83,10 @@ describe("Shared API operation replay", () => {
 	test("returns the durable result without creating twice, rejects changed input and foreign owner", async () => {
 		const { service } = fixture();
 		const input = { operationId, title: "Note", markdown: "Body" };
-		vi.mocked(createNote).mockResolvedValue({ id: "note" });
+		vi.mocked(createNote).mockImplementation(async (_input, _deps, commit) => {
+			const id = await commit!(async () => "note");
+			return { id };
+		});
 		const before = vi.mocked(createNote).mock.calls.length;
 		expect(await service.note("owner", input)).toEqual(
 			await service.note("owner", input),

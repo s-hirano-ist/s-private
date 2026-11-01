@@ -8,6 +8,10 @@ import {
 	type OperationPhaseContext,
 } from "@s-hirano-ist/s-application/diagnostics/operation-phase-error";
 import { withStoragePhase } from "@s-hirano-ist/s-application/diagnostics/storage-phase-error";
+import {
+	directCommit,
+	type MutationCommit,
+} from "@s-hirano-ist/s-application/transaction";
 import { imageEntity } from "@s-hirano-ist/s-core/images/entities/image-entity";
 import { ImageDeletedEvent } from "@s-hirano-ist/s-core/images/events/image-deleted-event";
 import {
@@ -29,6 +33,7 @@ export async function createImage(
 	parsedData: MediaCreationInput,
 	deps: CreateImageDeps,
 	phaseContext: Omit<OperationPhaseContext, "phase">,
+	commit: MutationCommit = directCommit,
 ) {
 	const {
 		commandRepository,
@@ -90,9 +95,12 @@ export async function createImage(
 		() => storageService.uploadImage(image.path, thumbnailBuffer, true),
 	);
 	// Cache invalidation is handled in repository
-	await withOperationPhase({ ...phaseContext, phase: "create-record" }, () =>
-		commandRepository.create(image),
-	);
+	await commit(async () => {
+		await withOperationPhase({ ...phaseContext, phase: "create-record" }, () =>
+			commandRepository.create(image),
+		);
+		return image.id;
+	});
 
 	// Dispatch domain event
 	await withOperationPhase({ ...phaseContext, phase: "dispatch-event" }, () =>

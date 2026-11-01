@@ -1,6 +1,7 @@
 import type { IImageProcessor } from "@s-hirano-ist/s-application/content/image-processor";
 import type { MobileDomain } from "@s-hirano-ist/s-application/content/models";
 import type { MobileDeps } from "@s-hirano-ist/s-application/mobile/deps";
+import type { MutationCommit } from "@s-hirano-ist/s-application/transaction";
 import * as schemas from "@s-hirano-ist/s-api-contracts/schemas";
 import {
 	createArticle,
@@ -52,7 +53,10 @@ export type WriteServiceDeps = {
 	books: CreateBookDeps;
 	imageProcessor: IImageProcessor;
 	images: CreateImageDeps;
-	mobile: Pick<MobileDeps, "content" | "operations" | "errors">;
+	mobile: Pick<
+		MobileDeps,
+		"content" | "operations" | "errors" | "transactions"
+	>;
 	notes: CreateNoteDeps;
 };
 function unwrap(error: unknown): unknown {
@@ -86,7 +90,7 @@ export function createWriteService(deps: WriteServiceDeps) {
 		domain: MobileDomain,
 		operationId: string,
 		input: unknown,
-		work: () => Promise<{ id: string }>,
+		work: (commit: MutationCommit) => Promise<{ id: string }>,
 		key: () => string,
 	) {
 		const existing = await mobile.operations.findOperation(operationId);
@@ -96,9 +100,9 @@ export function createWriteService(deps: WriteServiceDeps) {
 				domain,
 				operationId,
 				input,
-				async () => {
+				async (commit) => {
 					try {
-						return (await validateDomain(work)).id;
+						return (await validateDomain(() => work(commit))).id;
 					} catch (error) {
 						if (duplicate(error)) {
 							if (
@@ -111,7 +115,7 @@ export function createWriteService(deps: WriteServiceDeps) {
 									owner,
 									key(),
 								);
-								if (id) return id;
+								if (id) return commit(async () => id);
 							}
 							throw new ApiError("DUPLICATE");
 						}
@@ -133,10 +137,11 @@ export function createWriteService(deps: WriteServiceDeps) {
 				"articles",
 				input.operationId,
 				canonical,
-				() =>
+				(commit) =>
 					createArticle(
 						parseArticleInput(canonical, makeUserId(owner)),
 						deps.articles,
+						commit,
 					),
 				() => input.url,
 			);
@@ -150,7 +155,12 @@ export function createWriteService(deps: WriteServiceDeps) {
 				"notes",
 				input.operationId,
 				input,
-				() => createNote(parseNoteInput(input, makeUserId(owner)), deps.notes),
+				(commit) =>
+					createNote(
+						parseNoteInput(input, makeUserId(owner)),
+						deps.notes,
+						commit,
+					),
 				() => input.title,
 			);
 		},
@@ -211,7 +221,7 @@ export function createWriteService(deps: WriteServiceDeps) {
 				input.domain,
 				input.operationId,
 				hashInput,
-				async () => {
+				async (commit) => {
 					const phase = {
 						action: input.domain === "images" ? "addImage" : "addBooks",
 						fileName: file.name,
@@ -227,7 +237,7 @@ export function createWriteService(deps: WriteServiceDeps) {
 						const extension = parsed.contentType.split("/").at(-1) ?? "jpeg";
 						const path = makePath(`${input.operationId}.${extension}`, false);
 						storedPath = path;
-						return createImage({ ...parsed, path }, deps.images, phase);
+						return createImage({ ...parsed, path }, deps.images, phase, commit);
 					}
 					const parsed = await parseBookInput(
 						{ ...input.metadata, image: file },
@@ -240,6 +250,7 @@ export function createWriteService(deps: WriteServiceDeps) {
 						{ ...parsed, path, imagePath: path },
 						deps.books,
 						phase,
+						commit,
 					);
 				},
 				() => (input.domain === "books" ? input.metadata.isbn : storedPath),

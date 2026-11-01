@@ -7,6 +7,7 @@ import type {
 	MobileSyncRepository,
 	MobileUploadRepository,
 } from "@s-hirano-ist/s-application/mobile/ports";
+import type { Transaction } from "@s-hirano-ist/s-application/transaction";
 export type MobileDeps = {
 	accounts: MobileAccountRepository;
 	chunks: MobileChunkStore;
@@ -14,5 +15,6 @@ export type MobileDeps = {
 	errors: MobileErrorClassifier;
 	operations: MobileOperationRepository;
 	sync: MobileSyncRepository;
+	transactions: Transaction;
 	uploads: MobileUploadRepository;
 };

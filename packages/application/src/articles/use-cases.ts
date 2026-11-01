@@ -3,6 +3,10 @@ import type { IArticlesCommandRepository } from "@s-hirano-ist/s-core/articles/r
 import type { ArticlesDomainService } from "@s-hirano-ist/s-core/articles/services/articles-domain-service";
 import type { CategoryService } from "@s-hirano-ist/s-core/articles/services/category-service";
 import {
+	directCommit,
+	type MutationCommit,
+} from "@s-hirano-ist/s-application/transaction";
+import {
 	articleEntity,
 	makeArticleTitle,
 	makeCategoryName,
@@ -49,22 +53,28 @@ export type CreateArticleDeps = DeleteArticleDeps & {
 export async function createArticle(
 	data: ReturnType<typeof parseArticleInput>,
 	deps: CreateArticleDeps,
+	commit: MutationCommit = directCommit,
 ) {
-	const service = deps.domainServiceFactory.createArticlesDomainService();
-	const categories = deps.domainServiceFactory.createCategoryService();
-	await service.ensureNoDuplicate(data.url, data.userId);
-	const categoryId = await categories.resolveOrCreate(
-		data.categoryName,
-		data.userId,
-	);
-	const [article, event] = articleEntity.create({
-		...data,
-		categoryId,
-		caller: "addArticle",
+	let event!: Parameters<EventDispatcher["dispatch"]>[0];
+	const id = await commit(async () => {
+		const service = deps.domainServiceFactory.createArticlesDomainService();
+		const categories = deps.domainServiceFactory.createCategoryService();
+		await service.ensureNoDuplicate(data.url, data.userId);
+		const categoryId = await categories.resolveOrCreate(
+			data.categoryName,
+			data.userId,
+		);
+		const [article, createdEvent] = articleEntity.create({
+			...data,
+			categoryId,
+			caller: "addArticle",
+		});
+		await deps.commandRepository.create(article);
+		event = createdEvent;
+		return article.id;
 	});
-	await deps.commandRepository.create(article);
 	await deps.eventDispatcher.dispatch(event);
-	return { id: article.id };
+	return { id };
 }
 export async function deleteArticle(
 	id: Id,

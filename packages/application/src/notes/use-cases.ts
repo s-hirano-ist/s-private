@@ -2,6 +2,10 @@ import type { EventDispatcher } from "@s-hirano-ist/s-application/events/ports";
 import type { INotesCommandRepository } from "@s-hirano-ist/s-core/notes/repositories/notes-command-repository.interface";
 import type { NotesDomainService } from "@s-hirano-ist/s-core/notes/services/notes-domain-service";
 import {
+	directCommit,
+	type MutationCommit,
+} from "@s-hirano-ist/s-application/transaction";
+import {
 	noteEntity,
 	makeNoteTitle,
 	makeMarkdown,
@@ -33,13 +37,22 @@ export type CreateNoteDeps = DeleteNoteDeps & {
 export async function createNote(
 	data: ReturnType<typeof parseNoteInput>,
 	deps: CreateNoteDeps,
+	commit: MutationCommit = directCommit,
 ) {
-	const service = deps.domainServiceFactory.createNotesDomainService();
-	await service.ensureNoDuplicate(data.title, data.userId);
-	const [note, event] = noteEntity.create({ ...data, caller: "addNote" });
-	await deps.commandRepository.create(note);
+	let event!: Parameters<EventDispatcher["dispatch"]>[0];
+	const id = await commit(async () => {
+		const service = deps.domainServiceFactory.createNotesDomainService();
+		await service.ensureNoDuplicate(data.title, data.userId);
+		const [note, createdEvent] = noteEntity.create({
+			...data,
+			caller: "addNote",
+		});
+		await deps.commandRepository.create(note);
+		event = createdEvent;
+		return note.id;
+	});
 	await deps.eventDispatcher.dispatch(event);
-	return { id: note.id };
+	return { id };
 }
 export async function deleteNote(
 	id: Id,
