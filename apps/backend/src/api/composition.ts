@@ -1,15 +1,20 @@
 import type { MobileDeps } from "@s-hirano-ist/s-application/mobile/deps";
 import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/services/storage-service.interface";
+import type { DatabaseClient } from "@s-hirano-ist/s-infrastructure/database";
+import type { createVectorSearch } from "@s-hirano-ist/s-infrastructure/search/vector-search";
 import type { PushConfig } from "s-private-backend/notifications/push-notification-service";
 import type { ErrorReporter } from "s-private-backend/observability/reporter";
-import type { createVectorSearch } from "s-private-backend/search/vector-search";
-import type { DatabaseClient } from "s-private-backend/shared/database";
 import type { EventDispatcher } from "s-private-backend/shared/ports";
+import { createReadQueries } from "@s-hirano-ist/s-application/content/queries";
 import { ArticlesDomainService } from "@s-hirano-ist/s-core/articles/services/articles-domain-service";
 import { CategoryService } from "@s-hirano-ist/s-core/articles/services/category-service";
 import { BooksDomainService } from "@s-hirano-ist/s-core/books/services/books-domain-service";
 import { ImagesDomainService } from "@s-hirano-ist/s-core/images/services/images-domain-service";
 import { NotesDomainService } from "@s-hirano-ist/s-core/notes/services/notes-domain-service";
+import { createMediaReader } from "@s-hirano-ist/s-infrastructure/content/media-reader";
+import { createContentQueryRepository } from "@s-hirano-ist/s-infrastructure/content/query-repository";
+import { createMobilePersistence } from "@s-hirano-ist/s-infrastructure/mobile/prisma-persistence";
+import { createSearchIndex } from "@s-hirano-ist/s-infrastructure/search/search-index";
 import { createPushService } from "s-private-backend/api/push-service";
 import { createReadService } from "s-private-backend/api/read-service";
 import { createUploadService } from "s-private-backend/api/upload-service";
@@ -21,7 +26,6 @@ import { createBooksCommandRepository } from "s-private-backend/books/command-re
 import { createBooksQueryRepository } from "s-private-backend/books/query-repository";
 import { createImagesCommandRepository } from "s-private-backend/images/command-repository";
 import { createImagesQueryRepository } from "s-private-backend/images/query-repository";
-import { createMobilePersistence } from "s-private-backend/mobile/prisma-persistence";
 import { createNotesCommandRepository } from "s-private-backend/notes/command-repository";
 import { createNotesQueryRepository } from "s-private-backend/notes/query-repository";
 import { createPushSubscriptionRepository } from "s-private-backend/notifications/prisma-push-subscription-repository";
@@ -102,12 +106,18 @@ export function createApiServices(config: ApiServicesConfig) {
 	return {
 		mobile,
 		pushDelivery,
-		reads: createReadService({
-			database,
-			mobile,
-			storage,
-			searchVectors: config.searchVectors,
-		}),
+		reads: createReadService(
+			createReadQueries({
+				content: mobile.content,
+				sync: mobile.sync,
+				query: createContentQueryRepository(database),
+				search: createSearchIndex(config.searchVectors),
+				media: {
+					images: createMediaReader(storage.images),
+					books: createMediaReader(storage.books),
+				},
+			}),
+		),
 		mutations: {
 			writes,
 			uploads: createUploadService(mobile, writes),

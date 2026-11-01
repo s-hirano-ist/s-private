@@ -2,7 +2,7 @@ import type {
 	BooksFindManyParams,
 	IBooksQueryRepository,
 } from "@s-hirano-ist/s-core/books/repositories/books-query-repository.interface";
-import type { DatabaseClient } from "s-private-backend/shared/database";
+import type { DatabaseClient } from "@s-hirano-ist/s-infrastructure/database";
 import {
 	type BookListItemDTO,
 	type ExportedBook,
@@ -113,7 +113,7 @@ export function createBooksQueryRepository(
 			},
 			...params,
 		});
-		return data.map((d) => ({
+		return data.map((d: ListProjection) => ({
 			id: makeId(d.id),
 			isbn: makeISBN(d.isbn),
 			title: makeBookTitle(d.title),
@@ -144,3 +144,13 @@ export function createBooksQueryRepository(
 
 	return booksQueryRepository;
 }
+
+type ListProjection = {
+	id: string;
+	isbn: string;
+	title: string;
+	googleImgSrc: string | null;
+	imagePath: string | null;
+	googleAuthors: string[];
+	googleSubTitle: string | null;
+};

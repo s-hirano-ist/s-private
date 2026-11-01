@@ -1,8 +1,8 @@
-import { toDto, toSnapshot } from "s-private-backend/api/read-models";
 import {
 	parseReadModel,
 	parseStoredSnapshot,
-} from "s-private-backend/mobile/read-model-decoder";
+} from "@s-hirano-ist/s-infrastructure/mobile/read-model-decoder";
+import { toDto, toSnapshot } from "s-private-backend/api/read-models";
 import { expect, test } from "vitest";
 import { ZodError } from "zod";
 

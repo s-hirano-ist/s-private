@@ -2,7 +2,7 @@ import type {
 	IImagesQueryRepository,
 	ImagesFindManyParams,
 } from "@s-hirano-ist/s-core/images/repositories/images-query-repository.interface";
-import type { DatabaseClient } from "s-private-backend/shared/database";
+import type { DatabaseClient } from "@s-hirano-ist/s-infrastructure/database";
 import {
 	type ExportedImage,
 	type ImageListItemDTO,
@@ -82,7 +82,7 @@ export function createImagesQueryRepository(
 			},
 			...params,
 		});
-		return data.map((d) => ({
+		return data.map((d: ListProjection) => ({
 			id: makeId(d.id),
 			path: makePath(d.path, false),
 			width: d.width === null ? undefined : makePixel(d.width),
@@ -103,3 +103,10 @@ export function createImagesQueryRepository(
 
 	return imagesQueryRepository;
 }
+
+type ListProjection = {
+	id: string;
+	path: string;
+	width: number | null;
+	height: number | null;
+};

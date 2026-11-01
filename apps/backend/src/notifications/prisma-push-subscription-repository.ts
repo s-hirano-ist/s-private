@@ -1,5 +1,5 @@
+import type { DatabaseClient } from "@s-hirano-ist/s-infrastructure/database";
 import type { PushSubscriptionRepository } from "s-private-backend/notifications/ports";
-import type { DatabaseClient } from "s-private-backend/shared/database";
 import { randomUUID } from "node:crypto";
 
 export function createPushSubscriptionRepository(

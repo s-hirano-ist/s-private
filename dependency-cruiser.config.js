@@ -27,6 +27,12 @@ const COLLAPSE_PATTERN =
    Verified: 0 false positives on the current tree; fires on deliberate violations. */
 const boundaryRules = [
 	{
+		name: "boundary-http-read-service",
+		severity: "error",
+		from: { path: "^apps/backend/src/api/read-service\\.ts$" },
+		to: { path: "^packages/(infrastructure|database|storage|search)/" },
+	},
+	{
 		name: "boundary-application-inward",
 		severity: "error",
 		from: { path: "^packages/application/" },

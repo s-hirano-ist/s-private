@@ -2,7 +2,7 @@ import type {
 	CategoryCreateData,
 	ICategoryCommandRepository,
 } from "@s-hirano-ist/s-core/articles/repositories/category-command-repository.interface";
-import type { DatabaseClient } from "s-private-backend/shared/database";
+import type { DatabaseClient } from "@s-hirano-ist/s-infrastructure/database";
 
 export function createCategoryCommandRepository(
 	prisma: Pick<DatabaseClient, "category">,

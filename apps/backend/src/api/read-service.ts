@@ -1,118 +1,51 @@
-import type { MobileDomain } from "@s-hirano-ist/s-application/content/models";
-import type { MobileDeps } from "@s-hirano-ist/s-application/mobile/deps";
-import type { IStorageService } from "@s-hirano-ist/s-core/shared-kernel/services/storage-service.interface";
-import type { createVectorSearch } from "s-private-backend/search/vector-search";
-import type { DatabaseClient } from "s-private-backend/shared/database";
-import type { z } from "zod";
+import type { ReadQueries } from "@s-hirano-ist/s-application/content/queries";
 import * as schemas from "@s-hirano-ist/s-api-contracts/schemas";
-import {
-	getSyncHead,
-	listSyncSnapshot,
-	listSyncChanges,
-} from "@s-hirano-ist/s-application/mobile/sync";
-import { ISBN } from "@s-hirano-ist/s-core/books/entities/book-entity";
-import { Readable } from "node:stream";
-import { ApiError } from "s-private-backend/api/error";
 import {
 	toDto,
 	toSnapshot,
 	snapshotDto,
 } from "s-private-backend/api/read-models";
-
-export type ReadServiceDeps = {
-	database: DatabaseClient;
-	mobile: Pick<MobileDeps, "content" | "sync">;
-	searchVectors: ReturnType<typeof createVectorSearch>;
-	storage: {
-		books: Pick<IStorageService, "getImage">;
-		images: Pick<IStorageService, "getImage">;
-	};
-};
-export function createReadService(deps: ReadServiceDeps) {
-	const { database, mobile } = deps;
-	async function detail<D extends MobileDomain>(
-		domain: D,
-		owner: string,
-		id: string,
-	) {
-		const record = await mobile.content.getContent(domain, owner, id);
-		if (!record) throw new ApiError("NOT_FOUND");
-		return toDto(domain, record);
-	}
-	async function page<D extends MobileDomain>(
-		domain: D,
-		owner: string,
-		query: z.output<typeof schemas.listQuerySchema>,
-	) {
-		const result = await mobile.content.listContent(domain, owner, query);
-		return {
-			...result,
-			data: result.data.map((record) => toDto(domain, record)),
-			offset: query.offset,
-			limit: query.limit,
-		};
-	}
-	async function count(
-		domain: MobileDomain,
-		owner: string,
-		query: z.output<typeof schemas.countQuerySchema>,
-	) {
-		const where = { userId: owner, ...query };
-		switch (domain) {
-			case "articles":
-				return { count: await database.article.count({ where }) };
-			case "notes":
-				return { count: await database.note.count({ where }) };
-			case "images":
-				return { count: await database.image.count({ where }) };
-			case "books":
-				return { count: await database.book.count({ where }) };
-		}
-		throw new Error("Unsupported content domain");
-	}
+export function createReadService(queries: ReadQueries) {
 	return {
-		detail,
-		page,
-		count,
-		async lookup<D extends "books" | "notes">(
+		detail: async <D extends Parameters<ReadQueries["detail"]>[0]>(
+			domain: D,
+			owner: string,
+			id: string,
+		) => toDto(domain, await queries.detail(domain, owner, id)),
+		async page<D extends Parameters<ReadQueries["page"]>[0]>(
+			domain: D,
+			owner: string,
+			query: Parameters<ReadQueries["page"]>[2],
+		) {
+			const result = await queries.page(domain, owner, query);
+			return {
+				...result,
+				data: result.data.map((record) => toDto(domain, record)),
+				offset: query.offset,
+				limit: query.limit,
+			};
+		},
+		count: queries.count,
+		lookup: async <D extends "books" | "notes">(
 			domain: D,
 			owner: string,
 			key: string,
-		) {
-			const normalized = domain === "books" ? ISBN.safeParse(key) : null;
-			if (normalized && !normalized.success)
-				throw new ApiError("VALIDATION_ERROR");
-			const id = await mobile.content.lookupContentId(
-				domain,
-				owner,
-				normalized?.success ? normalized.data : key,
-			);
-			if (!id) throw new ApiError("NOT_FOUND");
-			return detail(domain, owner, id);
-		},
-		async categories(owner: string) {
-			return schemas.categorySchema
-				.array()
-				.parse(await mobile.content.listCategories(owner));
-		},
-		async head(owner: string) {
-			return { cursor: await getSyncHead(owner, mobile) };
-		},
+		) => toDto(domain, await queries.lookup(domain, owner, key)),
+		categories: async (owner: string) =>
+			schemas.categorySchema.array().parse(await queries.categories(owner)),
+		head: queries.head,
 		async snapshot(
 			owner: string,
-			query: z.output<typeof schemas.snapshotQuerySchema>,
+			query: Parameters<ReadQueries["snapshot"]>[1],
 		) {
-			const result = await listSyncSnapshot(owner, query, mobile);
+			const result = await queries.snapshot(owner, query);
 			return schemas.snapshotPageSchema.parse({
 				data: result.data.map((record) => snapshotDto(query.domain, record)),
 				nextAfter: result.nextAfter ?? null,
 			});
 		},
-		async changes(
-			owner: string,
-			query: z.output<typeof schemas.changesQuerySchema>,
-		) {
-			const result = await listSyncChanges(owner, query, mobile);
+		async changes(owner: string, query: Parameters<ReadQueries["changes"]>[1]) {
+			const result = await queries.changes(owner, query);
 			return schemas.changesPageSchema.parse({
 				...result,
 				data: result.data.map((event) =>
@@ -127,156 +60,35 @@ export function createReadService(deps: ReadServiceDeps) {
 				),
 			});
 		},
-		async media(
-			owner: string,
-			domain: "images" | "books",
-			id: string,
-			variant: "original" | "thumbnail",
-		) {
-			const record = await detail(domain, owner, id);
-			const item =
-				domain === "images"
-					? schemas.imageSchema.parse(record)
-					: schemas.bookSchema.parse(record);
-			const path = "path" in item ? item.path : item.imagePath;
-			if (!path) throw new ApiError("NOT_FOUND");
-			const stream = await deps.storage[domain].getImage(
-				path,
-				variant === "thumbnail",
-			);
-			if (!(stream instanceof Readable))
-				throw new Error("Unsupported storage stream");
-			const extension = path.split(".").at(-1)?.toLowerCase();
-			const extensionTypes: Record<string, string> = {
-				png: "image/png",
-				webp: "image/webp",
-			};
-			const originalType =
-				"contentType" in item
-					? item.contentType
-					: (extensionTypes[extension ?? ""] ?? "image/jpeg");
-			const iterator = stream[Symbol.asyncIterator]();
-			const body = new ReadableStream<Uint8Array>({
-				async pull(controller) {
-					const result: IteratorResult<unknown> = await iterator.next();
-					if (result.done) {
-						controller.close();
-						return;
-					}
-					if (!(result.value instanceof Uint8Array))
-						throw new Error("Invalid storage chunk");
-					controller.enqueue(new Uint8Array(result.value));
-				},
-				cancel() {
-					stream.destroy();
-				},
-			});
-			return new Response(body, {
-				headers: {
-					"content-type": variant === "thumbnail" ? "image/webp" : originalType,
-					"cache-control": "private, no-store",
-				},
-			});
-		},
-		async search(
-			owner: string,
-			query: z.output<typeof schemas.searchQuerySchema>,
-		) {
-			const hits = (
-				await deps.searchVectors(query.query, { topK: query.limit })
-			).results;
-			const isbns = hits.flatMap((hit) =>
-				hit.content_type === "books"
-					? [/\/book\/([^/]+)\.md$/u.exec(hit.doc_id)?.[1] ?? ""]
-					: [],
-			);
-			const [articles, notes, books] = await Promise.all([
-				database.article.findMany({
-					where: {
-						userId: owner,
-						url: {
-							in: hits.flatMap((hit) =>
-								hit.content_type === "articles" && hit.url ? [hit.url] : [],
-							),
-						},
+		async media(...args: Parameters<ReadQueries["media"]>) {
+			const { body, contentType } = await queries.media(...args);
+			const iterator = body[Symbol.asyncIterator]();
+			return new Response(
+				new ReadableStream<Uint8Array>({
+					async pull(controller) {
+						try {
+							const result = await iterator.next();
+							if (result.done) controller.close();
+							else controller.enqueue(result.value);
+						} catch (error) {
+							await iterator.return?.();
+							controller.error(error);
+						}
 					},
-					include: { Category: { select: { id: true, name: true } } },
-				}),
-				database.note.findMany({
-					where: {
-						userId: owner,
-						title: {
-							in: hits
-								.filter((hit) => hit.content_type === "notes")
-								.map((hit) => hit.heading_path[0] ?? hit.title),
-						},
+					async cancel() {
+						await iterator.return?.();
 					},
 				}),
-				database.book.findMany({
-					where: { userId: owner, isbn: { in: isbns } },
-				}),
-			]);
-			const data: z.output<typeof schemas.searchHitSchema>[] = [];
-			const seen = new Set<string>();
-			for (const hit of hits) {
-				let result: z.output<typeof schemas.searchHitSchema> | undefined;
-				switch (hit.content_type) {
-					case "articles": {
-						const record = articles.find((item) => item.url === hit.url);
-						if (record)
-							result = {
-								id: record.id,
-								type: "articles",
-								title: record.title,
-								snippet: (record.quote ?? record.ogDescription ?? "").slice(
-									0,
-									150,
-								),
-								url: record.url,
-								category: record.Category,
-							};
-						break;
-					}
-					case "notes": {
-						const record = notes.find(
-							(item) => item.title === (hit.heading_path[0] ?? hit.title),
-						);
-						if (record)
-							result = {
-								id: record.id,
-								type: "notes",
-								title: record.title,
-								snippet: record.markdown.slice(0, 150),
-							};
-						break;
-					}
-					case "books": {
-						const isbn = /\/book\/([^/]+)\.md$/u.exec(hit.doc_id)?.[1];
-						const record = books.find((item) => item.isbn === isbn);
-						if (record)
-							result = {
-								id: record.id,
-								type: "books",
-								title: record.title,
-								snippet: (
-									record.markdown ??
-									record.googleDescription ??
-									""
-								).slice(0, 150),
-								isbn: record.isbn,
-								rating: record.rating,
-								tags: record.tags,
-							};
-					}
-				}
-				if (result && !seen.has(`${result.type}:${result.id}`)) {
-					seen.add(`${result.type}:${result.id}`);
-					data.push(result);
-				}
-			}
-			// Index payloads are untrusted/global. Only owner DB fields cross the API boundary.
-			return schemas.searchResponseSchema.parse({ query: query.query, data });
+				{
+					headers: {
+						"content-type": contentType,
+						"cache-control": "private, no-store",
+					},
+				},
+			);
 		},
+		search: async (...args: Parameters<ReadQueries["search"]>) =>
+			schemas.searchResponseSchema.parse(await queries.search(...args)),
 	};
 }
 export type ReadService = ReturnType<typeof createReadService>;
