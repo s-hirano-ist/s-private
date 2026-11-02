@@ -55,7 +55,10 @@ good 以下で回復する。Sentry側で集計し、SDK から warning を量�
 
 [専用Alert](https://s-hirano-ist-z2.sentry.io/monitors/alerts/6277966/) は上記3件の初回・再発・regressionを
 最小間隔24時間で通知する。既存と同じ issue owner（未割当時 active member）宛。
-既存通知の `vercel-production` は変更せず、RUM通知には `production` を明示する。
+2026-11-03 に旧エラー通知 `Notify Suggested Assignees` の対象も `production` に統一した。
+`vercel-production` / `vercel-preview` は Sentry–Vercel 連携が付けた旧環境名で、別のインフラ環境ではない。
+現在使う `production` / `preview` を表示し、未使用の旧2環境と送信停止済みの `development` は非表示にした。
+Sentryの環境は削除できないため、非表示で整理する。過去データと再表示する手段は残る。
 データなしを良好と判断しない。低traffic時は単発値の影響が大きく、通知時にサンプル数も確認する。
 
 ## 確認
