@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.0.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v4.0.0...s-private-v4.0.1) (2026-11-02)
+
+
+### Bug Fixes
+
+* commit content and operation success atomically ([93c2de6](https://github.com/s-hirano-ist/s-private/commit/93c2de631cb67fb2cba75c929db008f84f45f62e))
+* expire legacy operations and verify atomic backend flows ([ecfdf92](https://github.com/s-hirano-ist/s-private/commit/ecfdf92087c7a8b03196ce4533e453176b4f735d))
+* fence operations and serialize upload lifecycle ([2549ba5](https://github.com/s-hirano-ist/s-private/commit/2549ba5fefb150f11ace945e64b9c69602f1dc0b))
+* **push:** VAPID鍵不一致の購読を停止し再登録で復旧する ([ef31f93](https://github.com/s-hirano-ist/s-private/commit/ef31f933aa6d2521b03e2b22810df59d1d50c53c))
+
 ## [4.0.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v3.16.1...s-private-v4.0.0) (2026-11-01)
 
 
