@@ -1,6 +1,84 @@
 import { expect, test } from "@playwright/test";
 import { inflateSync } from "node:zlib";
 
+test("unsupported locales and scanner paths return 404 without importing messages", async ({
+	request,
+}) => {
+	for (const path of ["/zz/error", "/sitemap.xml.zip", "/favicon.ico.zip"]) {
+		const response = await request.get(path, {
+			headers: { cookie: "better-auth.session_token=rum-fixture" },
+		});
+		expect(response.status()).toBe(404);
+	}
+});
+
+test("OAuth retry uses a document navigation without RSC prefetch", async ({
+	page,
+}) => {
+	const signInRequests: string[] = [];
+	await page.route("**/api/sign-in**", async (route) => {
+		signInRequests.push(route.request().resourceType());
+		await route.fulfill({
+			status: 200,
+			contentType: "text/html",
+			body: "<h1>OAuth entry</h1>",
+		});
+	});
+	await page.route(/\/monitoring|sentry\.io/u, (route) =>
+		route.fulfill({ status: 200, body: "{}" }),
+	);
+	await page.goto("/ja/error");
+	const retry = page.getByRole("link", { name: "再サインイン" });
+	await retry.hover();
+	// Allow the browser to process idle prefetch work before the explicit navigation.
+	await page.waitForTimeout(1000);
+	expect(signInRequests).toEqual([]);
+	await retry.click();
+	await expect(
+		page.getByRole("heading", { name: "OAuth entry" }),
+	).toBeVisible();
+	expect(signInRequests).toEqual(["document"]);
+});
+
+test("production prefetch and list navigation preserve Next.js control flow", async ({
+	page,
+	context,
+}) => {
+	await context.addCookies([
+		{
+			name: "better-auth.session_token",
+			value: "rum-fixture",
+			domain: "localhost",
+			path: "/",
+		},
+	]);
+	const failures: string[] = [];
+	page.on("console", (message) => {
+		if (message.text().includes("API_UNAVAILABLE"))
+			failures.push(message.text());
+	});
+	await page.route(/\/monitoring|sentry\.io/u, (route) =>
+		route.fulfill({ status: 200, body: "{}" }),
+	);
+	await page.goto("/ja/articles");
+	await expect(page.getByLabel("Loading")).toHaveCount(0);
+	for (const name of ["ノート", "画像", "書籍", "記事"]) {
+		await page
+			.getByRole("navigation", { name: "コンテンツの種類" })
+			.getByRole("link", { name, exact: true })
+			.click();
+		await expect(page.getByLabel("Loading")).toHaveCount(0);
+		await expect(page.locator("main")).not.toContainText("500");
+		await page.getByRole("link", { name: /公開済みに切り替え/u }).click();
+		await expect(page).toHaveURL(/\/viewer$/u);
+		await expect(page.getByLabel("Loading")).toHaveCount(0);
+		await expect(page.locator("main")).not.toContainText("500");
+		await page.getByRole("link", { name: /未公開に切り替え/u }).click();
+		await expect(page).not.toHaveURL(/\/viewer$/u);
+	}
+	expect(failures).toEqual([]);
+});
+
 // The dedicated config uses a production build and fake DSN, without auth/DB fixtures.
 test("production RUM links vitals, error and masked Replay without sending to Sentry", async ({
 	page,

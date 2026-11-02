@@ -1,6 +1,5 @@
 import { StatusCodeView } from "@/components/common/display/status/status-code-view";
 import { buttonVariants } from "@s-hirano-ist/s-ui/button";
-import Link from "next/link";
 
 export type AuthErrorViewProps = {
 	errorCode: string;
@@ -22,12 +21,14 @@ export function AuthErrorView({
 				<p className="text-muted-foreground text-sm">
 					{errorCodeLabel}: <code className="font-mono">{errorCode}</code>
 				</p>
-				<Link
+				{/* OAuth starts a document navigation; RSC prefetch follows the external redirect and violates connect-src. */}
+				{/* oxlint-disable-next-line next/no-html-link-for-pages -- API endpoint, not a Next.js page. */}
+				<a
 					className={buttonVariants({ variant: "outline" })}
 					href="/api/sign-in"
 				>
 					{retryLabel}
-				</Link>
+				</a>
 			</div>
 		</main>
 	);

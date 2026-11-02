@@ -2,6 +2,7 @@ import "server-only";
 import { forwardBackendRequest } from "@/common/backend/forward-request";
 import { env } from "@/env";
 import * as Sentry from "@sentry/nextjs";
+import { unstable_rethrow } from "next/navigation";
 
 export async function dispatchBackendRequest(
 	request: Request,
@@ -18,6 +19,9 @@ export async function dispatchBackendRequest(
 				Sentry.setHttpStatus(span, response.status);
 				return response;
 			} catch (error) {
+				// Uncached fetch can reject during PPR without contacting the backend.
+				// Let Next.js resume dynamic work instead of caching a synthetic 503.
+				unstable_rethrow(error);
 				if (request.signal.aborted) throw error;
 				Sentry.captureException(error, {
 					tags: { source: "backend-transport" },

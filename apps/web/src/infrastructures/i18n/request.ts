@@ -8,6 +8,9 @@ import { routing } from "./routing-config";
 export async function loadMessages(resolvedLocale: string): Promise<Messages> {
 	"use cache";
 
+	// RootLayout also calls this loader directly, bypassing getRequestConfig.
+	if (!hasLocale(routing.locales, resolvedLocale)) notFound();
+
 	return (
 		(await import(`../../../messages/${resolvedLocale}.json`)) as {
 			default: Messages;

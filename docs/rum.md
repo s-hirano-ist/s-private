@@ -12,11 +12,16 @@ Vercel Speed Insights は削除し、アクセス数・流入元を集計する 
   LCP/INP は ms、CLS は単位なし。旧 `measurements.lcp` を前提にしない。
 - Server Action/loader の backend 呼び出しは `app.backend` span で時間・HTTP status を記録する。
   span 名は method と API domain のみ。Action全体ではなく共通backend境界の待ち時間である。
+  `fetch` の例外処理では最初に `unstable_rethrow` を呼ぶ。Cache Components のプリレンダー中断を
+  API 障害の503に変換すると、一覧や件数の error fallback がプリフェッチ結果に入り得る。
+  実際の通信失敗は引き続き報告し、書き込みを自動再試行しない。
 - browser の trace header は SDK 既定の同一 origin に限定する。Web の error/trace を同じ
   release/environment で調査する。独立 Hono backend 内部の distributed tracing は対象外。
 - upload token がなくても `withSentryConfig` で instrumentation と `/monitoring` tunnel を有効化する。
   source map upload のみ token が必要。proxy は tunnel を認証対象から除外済み。
   CSP の `connect-src 'self'` と `worker-src 'self' blob:` を利用する。
+  OAuth 開始の `/api/sign-in` は通常の anchor で document navigation する。
+  Next Link の RSC prefetch で外部 IdP の redirect を取得しない。
 
 ## 無料枠
 
