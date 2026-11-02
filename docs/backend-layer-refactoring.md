@@ -59,3 +59,9 @@ MinIO停止中のuploadはadapterと統合テスト環境で検証し、実サ�
 - dry-run は差分と予定件数を返し、DB・objectの変更を行わない。表紙が入力にない書籍は既存のimagePathを保持する。
 - 確定済みのバッチ操作は通知の配送失敗では失敗に戻さない。CLIは通知失敗を標準エラーへ記録する。
 - CLIのbin名・配布packageは維持し、内部workspaceの必要コードをCLI成果物へ同梱する。内部packageの個別公開は行わない。
+
+## DB確定とcommit後イベント
+
+HTTPの作成処理はApplicationの`MutationCommit`を通して、コンテンツ保存とoperation成功を同一transactionで確定する。同期changeは既存DB triggerにより同じtransactionに含まれる。画像decode・object保存はcommitの前、イベント配送はcommitの後に実行する。
+
+Infrastructureのtransaction adapterはcompositionごとのAsyncLocalStorageでrepositoryのDB clientをtransaction clientへ切り替える。並行リクエスト・再試行のscopeを分離し、再試行callbackにはDB操作だけを置く。HTTPのevent dispatcherは配送失敗を監視へ報告し、監視側の失敗も確定結果へ伝播させない。

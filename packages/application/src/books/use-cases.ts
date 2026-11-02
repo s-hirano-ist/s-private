@@ -8,6 +8,10 @@ import {
 	type OperationPhaseContext,
 } from "@s-hirano-ist/s-application/diagnostics/operation-phase-error";
 import { withStoragePhase } from "@s-hirano-ist/s-application/diagnostics/storage-phase-error";
+import {
+	directCommit,
+	type MutationCommit,
+} from "@s-hirano-ist/s-application/transaction";
 import { bookEntity } from "@s-hirano-ist/s-core/books/entities/book-entity";
 import { BookDeletedEvent } from "@s-hirano-ist/s-core/books/events/book-deleted-event";
 import {
@@ -29,6 +33,7 @@ export async function createBook(
 	parsedData: BookCreationInput,
 	deps: CreateBookDeps,
 	phaseContext: Omit<OperationPhaseContext, "phase">,
+	commit: MutationCommit = directCommit,
 ) {
 	const {
 		commandRepository,
@@ -97,9 +102,12 @@ export async function createBook(
 	);
 
 	// Persist (cache invalidation is handled in repository)
-	await withOperationPhase({ ...phaseContext, phase: "create-record" }, () =>
-		commandRepository.create(book),
-	);
+	await commit(async () => {
+		await withOperationPhase({ ...phaseContext, phase: "create-record" }, () =>
+			commandRepository.create(book),
+		);
+		return book.id;
+	});
 
 	// Dispatch domain event
 	await withOperationPhase({ ...phaseContext, phase: "dispatch-event" }, () =>

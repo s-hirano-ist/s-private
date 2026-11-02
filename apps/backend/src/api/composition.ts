@@ -20,6 +20,7 @@ import { createBooksQueryRepository } from "@s-hirano-ist/s-infrastructure/books
 import { createMediaReader } from "@s-hirano-ist/s-infrastructure/content/media-reader";
 import { createContentQueryRepository } from "@s-hirano-ist/s-infrastructure/content/query-repository";
 import { sharpImageProcessor } from "@s-hirano-ist/s-infrastructure/content/sharp-image-processor";
+import { createPostCommitDispatcher } from "@s-hirano-ist/s-infrastructure/events/post-commit-dispatcher";
 import { createImagesCommandRepository } from "@s-hirano-ist/s-infrastructure/images/command-repository";
 import { createImagesQueryRepository } from "@s-hirano-ist/s-infrastructure/images/query-repository";
 import { createMobilePersistence } from "@s-hirano-ist/s-infrastructure/mobile/prisma-persistence";
@@ -31,6 +32,7 @@ import {
 	createWebPushSender,
 } from "@s-hirano-ist/s-infrastructure/notifications/web-push-sender";
 import { createSearchIndex } from "@s-hirano-ist/s-infrastructure/search/search-index";
+import { createTransactionalDatabase } from "@s-hirano-ist/s-infrastructure/transaction";
 import { createPushService } from "s-private-backend/api/push-service";
 import { createReadService } from "s-private-backend/api/read-service";
 import { createUploadService } from "s-private-backend/api/upload-service";
@@ -48,9 +50,17 @@ export type ApiServicesConfig = {
 
 /** Shared composition: raw repositories and domain services, without Web caches or Next.js. */
 export function createApiServices(config: ApiServicesConfig) {
-	const { database, storage, eventDispatcher } = config;
+	const { storage } = config;
+	const { database, transactions } = createTransactionalDatabase(
+		config.database,
+	);
+	const eventDispatcher = createPostCommitDispatcher(
+		config.eventDispatcher,
+		config.reporter,
+	);
 	const persistence = createMobilePersistence(database);
 	const mobile: MobileDeps = {
+		transactions,
 		accounts: persistence,
 		content: persistence,
 		sync: persistence,

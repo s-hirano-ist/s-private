@@ -1,3 +1,4 @@
+import type { MutationCommit } from "@s-hirano-ist/s-application/transaction";
 import { ApplicationError } from "@s-hirano-ist/s-application/error";
 import { type MobileDeps } from "@s-hirano-ist/s-application/mobile/deps";
 import { createHash } from "node:crypto";
@@ -30,8 +31,8 @@ export async function runMobileOperation(
 	domain: string,
 	operationId: string,
 	input: unknown,
-	work: () => Promise<string>,
-	deps: Pick<MobileDeps, "operations">,
+	work: (commit: MutationCommit) => Promise<string>,
+	deps: Pick<MobileDeps, "operations" | "transactions">,
 ): Promise<MobileCreateResult> {
 	const inputHash = mobileInputHash(input);
 	const existing = await deps.operations.findOperation(operationId);
@@ -62,8 +63,13 @@ export async function runMobileOperation(
 	}
 
 	try {
-		const resourceId = await work();
-		await deps.operations.markOperationSucceeded(operationId, resourceId);
+		const resourceId = await work((persist) =>
+			deps.transactions.run(async () => {
+				const id = await persist();
+				await deps.operations.markOperationSucceeded(operationId, id);
+				return id;
+			}),
+		);
 		return {
 			accepted: true,
 			operationId,
