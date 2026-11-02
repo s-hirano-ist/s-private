@@ -7,7 +7,6 @@ import { routing } from "@/infrastructures/i18n/routing-config";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { ToastProvider } from "@s-hirano-ist/s-ui/toast";
 import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Noto_Sans_JP } from "next/font/google";
 import { locale } from "next/root-params";
 
@@ -53,7 +52,6 @@ export default async function RootLayout({
 					</ThemeProvider>
 				</IntlClientProvider>
 				<Analytics />
-				<SpeedInsights />
 			</body>
 		</html>
 	);
