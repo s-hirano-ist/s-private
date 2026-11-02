@@ -12,14 +12,23 @@ export default defineConfig({
 		baseURL: "http://localhost:4317",
 		storageState: { cookies: [], origins: [] },
 	},
-	webServer: {
-		command: "pnpm --filter s-private-app start --port 4317",
-		url: "http://localhost:4317/logo.png",
-		reuseExistingServer: false,
-		env: {
-			NEXT_PUBLIC_SENTRY_DSN: "https://public@o0.ingest.sentry.io/1",
-			SENTRY_AUTH_TOKEN: "",
-			SKIP_ENV_VALIDATION: "true",
+	webServer: [
+		{
+			command: "node e2e/fixtures/rum-backend.mjs",
+			url: "http://127.0.0.1:4318/health",
+			reuseExistingServer: false,
 		},
-	},
+		{
+			command: "pnpm --filter s-private-app start --port 4317",
+			url: "http://localhost:4317/logo.png",
+			reuseExistingServer: false,
+			env: {
+				NEXT_PUBLIC_SENTRY_DSN: "https://public@o0.ingest.sentry.io/1",
+				SENTRY_AUTH_TOKEN: "",
+				SKIP_ENV_VALIDATION: "true",
+				BACKEND_URL: "http://127.0.0.1:4318",
+				BETTER_AUTH_URL: "http://localhost:4317",
+			},
+		},
+	],
 });

@@ -2,6 +2,9 @@
 import { dispatchBackendRequest } from "@/common/backend/dispatch";
 import * as Sentry from "@sentry/nextjs";
 import { beforeEach, expect, test, vi } from "vite-plus/test";
+vi.mock("next/navigation", async (importOriginal) =>
+	importOriginal<typeof import("next/navigation")>(),
+);
 const state = vi.hoisted(() => ({
 	backendURL: "https://backend.example",
 }));
@@ -79,3 +82,19 @@ test("preserves cancellation instead of returning a recoverable API failure", as
 		),
 	).rejects.toThrow("aborted");
 });
+
+test.each([
+	"HANGING_PROMISE_REJECTION",
+	"NEXT_PRERENDER_INTERRUPTED",
+	"DYNAMIC_SERVER_USAGE",
+])(
+	"preserves Next.js prerender control flow (%s) without reporting a transport error",
+	async (digest) => {
+		const error = Object.assign(new Error("prerender interrupted"), { digest });
+		vi.stubGlobal("fetch", vi.fn<typeof fetch>().mockRejectedValue(error));
+		await expect(
+			dispatchBackendRequest(new Request("https://web.example/api/v1/books")),
+		).rejects.toBe(error);
+		expect(Sentry.captureException).not.toHaveBeenCalled();
+	},
+);
