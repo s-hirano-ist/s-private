@@ -168,7 +168,12 @@ export function createUploadRepository(
 					const chunk = await tx.mobileUploadChunk.findUnique({
 						where: { objectKey: part.objectKey },
 					});
-					if (!chunk || !chunk.writingUntil || chunk.writingUntil <= new Date())
+					if (
+						!chunk ||
+						chunk.uploadId !== id ||
+						!chunk.writingUntil ||
+						chunk.writingUntil <= new Date()
+					)
 						throw new ApplicationError("OPERATION_IN_PROGRESS");
 					const existing = await tx.mobileUploadPart.findUnique({
 						where: { uploadId_part: { uploadId: id, part: part.part } },

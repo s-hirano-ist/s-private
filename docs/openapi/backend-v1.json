@@ -1080,6 +1080,22 @@
 					"expiresAt"
 				]
 			},
+			"ApiError410": {
+				"type": "object",
+				"properties": {
+					"error": {
+						"type": "object",
+						"properties": {
+							"code": {
+								"type": "string",
+								"enum": ["UPLOAD_EXPIRED"]
+							}
+						},
+						"required": ["code"]
+					}
+				},
+				"required": ["error"]
+			},
 			"UploadStart": {
 				"oneOf": [
 					{
@@ -1207,22 +1223,6 @@
 					"metadata"
 				],
 				"additionalProperties": false
-			},
-			"ApiError410": {
-				"type": "object",
-				"properties": {
-					"error": {
-						"type": "object",
-						"properties": {
-							"code": {
-								"type": "string",
-								"enum": ["UPLOAD_EXPIRED"]
-							}
-						},
-						"required": ["code"]
-					}
-				},
-				"required": ["error"]
 			},
 			"ChunkResult": {
 				"type": "object",
@@ -1772,6 +1772,16 @@
 							}
 						}
 					},
+					"404": {
+						"description": "Not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError404"
+								}
+							}
+						}
+					},
 					"409": {
 						"description": "Conflict",
 						"content": {
@@ -2263,6 +2273,16 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ApiError403"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError404"
 								}
 							}
 						}
@@ -3880,12 +3900,32 @@
 							}
 						}
 					},
+					"404": {
+						"description": "Not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError404"
+								}
+							}
+						}
+					},
 					"409": {
 						"description": "Conflict",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ApiError409"
+								}
+							}
+						}
+					},
+					"410": {
+						"description": "Upload expired",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError410"
 								}
 							}
 						}
@@ -3998,6 +4038,16 @@
 							}
 						}
 					},
+					"409": {
+						"description": "Conflict",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError409"
+								}
+							}
+						}
+					},
 					"410": {
 						"description": "Upload expired",
 						"content": {
@@ -4093,6 +4143,16 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ApiError404"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "Conflict",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError409"
 								}
 							}
 						}
@@ -4220,6 +4280,16 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ApiError404"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "Conflict",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError409"
 								}
 							}
 						}

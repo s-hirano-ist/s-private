@@ -4,7 +4,7 @@ import { extendDatabase } from "@s-hirano-ist/s-infrastructure/database";
 import { createMobilePersistence } from "@s-hirano-ist/s-infrastructure/mobile/prisma-persistence";
 import { createTransactionalDatabase } from "@s-hirano-ist/s-infrastructure/transaction";
 import { randomUUID } from "node:crypto";
-import { afterAll, expect, test } from "vitest";
+import { afterAll, expect, test, vi } from "vitest";
 import { z } from "zod";
 
 const url = process.env.TEST_DATABASE_URL;
@@ -193,5 +193,44 @@ test.skipIf(!url)(
 				"a".repeat(64),
 			),
 		).toEqual({ resourceId: "current" });
+	},
+);
+
+test.skipIf(!url)(
+	"wrapped serialization failures roll back and retry only the database work",
+	async () => {
+		const maybeConflict = vi
+			.fn()
+			.mockRejectedValueOnce(
+				new Error("create-record", {
+					cause: Object.assign(new Error("serialization conflict"), {
+						code: "P2034",
+					}),
+				}),
+			)
+			.mockResolvedValue(undefined);
+		const id = randomUUID();
+		const prepareStorage = vi.fn(async () => {});
+		const dispatch = vi.fn(async () => {});
+		await prepareStorage();
+		await transactions.run(async () => {
+			await database.note.create({
+				data: {
+					id,
+					userId: owner,
+					title: "serialization retry",
+					markdown: "Body",
+					status: "UNEXPORTED",
+					createdAt: new Date(),
+					updatedAt: new Date(),
+				},
+			});
+			await maybeConflict();
+		});
+		await dispatch();
+		expect(maybeConflict).toHaveBeenCalledTimes(2);
+		expect(await database.note.count({ where: { id } })).toBe(1);
+		expect(prepareStorage).toHaveBeenCalledOnce();
+		expect(dispatch).toHaveBeenCalledOnce();
 	},
 );

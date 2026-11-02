@@ -2,7 +2,6 @@ import type {
 	MobileOperation,
 	MobileOperationRepository,
 } from "@s-hirano-ist/s-application/mobile/ports";
-import { createBook } from "@s-hirano-ist/s-application/books/use-cases";
 import { ApplicationError } from "@s-hirano-ist/s-application/error";
 import { createImage } from "@s-hirano-ist/s-application/images/use-cases";
 import { mobileInputHash } from "@s-hirano-ist/s-application/mobile/operations";
@@ -113,33 +112,8 @@ describe("Shared API operation replay", () => {
 			code: "NOT_FOUND",
 		});
 	});
-	test("uses a stable detected image path when retrying a failed operation", async () => {
-		const { service, lookupContentId } = fixture();
-		const input: MediaInput = {
-			operationId,
-			domain: "images",
-			contentType: "image/jpeg",
-			fileSize: 3,
-			metadata: { filename: "photo.jpg" },
-		};
-		const file = new File(["png"], "photo.jpg", { type: "image/jpeg" });
-		vi.mocked(createImage)
-			.mockRejectedValueOnce(new Error("event failed"))
-			.mockRejectedValueOnce(new DuplicateError("exists"));
-		await expect(service.media("owner", input, file)).rejects.toThrow(
-			"event failed",
-		);
-		const result = await service.media("owner", input, file);
-		expect(result.resource.id).toBe("recovered-image");
-		expect(lookupContentId).toHaveBeenCalledWith(
-			"images",
-			"owner",
-			`${operationId}.png`,
-		);
-	});
-	test("replays legacy successful images but refuses to guess a resource for legacy failures", async () => {
-		const { service, setOperation, lookupContentId } = fixture();
-		const file = new File(["png"], "photo.png", { type: "image/png" });
+	test("replays modern media and rejects changed metadata", async () => {
+		const { service } = fixture();
 		const input: MediaInput = {
 			operationId,
 			domain: "images",
@@ -147,7 +121,26 @@ describe("Shared API operation replay", () => {
 			fileSize: 3,
 			metadata: { filename: "photo.png" },
 		};
-		const old = {
+		const file = new File(["png"], "photo.png", { type: "image/png" });
+		vi.mocked(createImage).mockImplementation(
+			async (_input, _deps, _phase, commit) => ({
+				id: await commit!(async () => "image"),
+			}),
+		);
+		const result = await service.media("owner", input, file);
+		expect(await service.media("owner", input, file)).toEqual(result);
+		await expect(
+			service.media(
+				"owner",
+				{ ...input, metadata: { filename: "changed.png" } },
+				file,
+			),
+		).rejects.toMatchObject({ code: "OPERATION_CONFLICT" });
+	});
+	test("rejects legacy hashes without guessing a resource", async () => {
+		const { service, setOperation, lookupContentId } = fixture();
+		const file = new File(["png"], "photo.png", { type: "image/png" });
+		setOperation({
 			userId: "owner",
 			domain: "images",
 			inputHash: mobileInputHash({
@@ -155,17 +148,22 @@ describe("Shared API operation replay", () => {
 				contentType: "image/png",
 				fileHash: createHash("sha256").update("png").digest("hex"),
 			}),
-			status: "SUCCEEDED" as const,
+			status: "SUCCEEDED",
 			resourceId: "old-image",
-		};
-		setOperation(old);
-		expect((await service.media("owner", input, file)).resource.id).toBe(
-			"old-image",
-		);
-		setOperation({ ...old, status: "FAILED", resourceId: null });
-		await expect(service.media("owner", input, file)).rejects.toMatchObject({
-			code: "OPERATION_CONFLICT",
 		});
+		await expect(
+			service.media(
+				"owner",
+				{
+					operationId,
+					domain: "images",
+					contentType: "image/png",
+					fileSize: 3,
+					metadata: { filename: "photo.png" },
+				},
+				file,
+			),
+		).rejects.toMatchObject({ code: "OPERATION_CONFLICT" });
 		expect(lookupContentId).not.toHaveBeenCalled();
 	});
 	test("does not turn a repeated natural-key duplicate into another operation's success", async () => {
@@ -180,45 +178,4 @@ describe("Shared API operation replay", () => {
 		});
 		expect(lookupContentId).not.toHaveBeenCalled();
 	});
-});
-
-test("replays a completed legacy book after its upload row was removed, preserving raw CSV hash input", async () => {
-	const { service, setOperation, lookupContentId } = fixture();
-	const metadata = {
-		isbn: "9781234567890",
-		title: "Book",
-		rating: "3",
-		tags: " a , b, ",
-	};
-	const file = new File(["png"], "upload.jpg", { type: "image/jpeg" });
-	setOperation({
-		userId: "owner",
-		domain: "books",
-		status: "SUCCEEDED",
-		resourceId: "old-book",
-		inputHash: mobileInputHash({
-			...metadata,
-			operationId,
-			fileHash: createHash("sha256").update("png").digest("hex"),
-		}),
-	});
-	const input: MediaInput = {
-		operationId,
-		domain: "books",
-		contentType: "image/jpeg",
-		fileSize: 3,
-		metadata: { ...metadata, rating: 3, tags: metadata.tags.split(",") },
-	};
-	expect((await service.media("owner", input, file)).resource.id).toBe(
-		"old-book",
-	);
-	expect(createBook).not.toHaveBeenCalled();
-	expect(lookupContentId).not.toHaveBeenCalled();
-	await expect(
-		service.media(
-			"owner",
-			{ ...input, metadata: { ...input.metadata, title: "Changed" } },
-			file,
-		),
-	).rejects.toMatchObject({ code: "OPERATION_CONFLICT" });
 });

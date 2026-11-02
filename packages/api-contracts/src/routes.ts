@@ -81,12 +81,13 @@ const commonErrors = {
 const queryErrors = { ...commonErrors, 422: errorResponses[422] };
 const recordErrors = { ...queryErrors, 404: errorResponses[404] };
 const createErrors = {
-	...queryErrors,
+	...recordErrors,
 	409: errorResponses[409],
 	413: errorResponses[413],
 };
 const uploadErrors = {
 	...recordErrors,
+	409: errorResponses[409],
 	410: errorResponses[410],
 };
 const security: Record<string, string[]>[] = [
@@ -321,6 +322,7 @@ export const startUploadRoute = createRoute({
 			content: jsonContent(uploadSessionSchema),
 		},
 		...createErrors,
+		410: errorResponses[410],
 	},
 });
 export const getUploadRoute = createRoute({

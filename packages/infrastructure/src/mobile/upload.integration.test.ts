@@ -92,7 +92,7 @@ beforeAll(async () => {
 afterAll(async () => {
 	if (enabled && minio) {
 		const objects: string[] = [];
-		for await (const object of minio.listObjectsV2(bucket))
+		for await (const object of minio.listObjectsV2(bucket, "", true))
 			if (object.name) objects.push(object.name);
 		if (objects.length > 0) await minio.removeObjects(bucket, objects);
 		await minio.removeBucket(bucket);

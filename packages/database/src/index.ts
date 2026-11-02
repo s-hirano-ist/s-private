@@ -87,14 +87,28 @@ export function createPrismaClient(databaseUrl: string) {
 const SERIALIZATION_RETRY_CODES = new Set(["40001", "P2034"]);
 
 function isRetryableTransactionError(error: unknown): boolean {
-	if (typeof error !== "object" || error === null) return false;
-	const code = (error as { code?: unknown }).code;
-	return typeof code === "string" && SERIALIZATION_RETRY_CODES.has(code);
+	const seen = new Set<object>();
+	let current: unknown = error;
+	while (
+		typeof current === "object" &&
+		current !== null &&
+		!seen.has(current)
+	) {
+		seen.add(current);
+		const wrapped = current as { cause?: unknown; code?: unknown };
+		if (
+			typeof wrapped.code === "string" &&
+			SERIALIZATION_RETRY_CODES.has(wrapped.code)
+		)
+			return true;
+		current = wrapped.cause;
+	}
+	return false;
 }
 
 /**
  * Runs a database operation, retrying it on CockroachDB serialization
- * conflicts (`40001` / Prisma `P2034`) with exponential backoff.
+ * conflicts (`40001` / Prisma `P2034`, including wrapped causes) with exponential backoff.
  *
  * @remarks
  * Wrap multi-statement transactions (`prisma.$transaction([...])`) and any

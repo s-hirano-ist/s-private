@@ -34,7 +34,7 @@ test("validates Application output at the HTTP boundary and delegates guarded cr
 	const guard = vi.fn();
 	const file = new File(["png"], "image.png");
 	await vi.mocked(createUploads).mock.calls[0][1]("owner", input, file, guard);
-	expect(media).toHaveBeenCalledWith("owner", input, file, undefined, guard);
+	expect(media).toHaveBeenCalledWith("owner", input, file, guard);
 	start.mockResolvedValue({ ...value, chunkSize: 1 });
 	await expect(service.start("owner", input)).rejects.toThrow("1048576");
 });
