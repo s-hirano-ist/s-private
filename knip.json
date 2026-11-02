@@ -10,6 +10,9 @@
 	"ignoreBinaries": ["mise", "pipeline", "vercel"],
 	"workspaces": {
 		".": {
+			"playwright": {
+				"config": ["playwright.config.ts", "playwright.rum.config.ts"]
+			},
 			"entry": [
 				".harness/hooks/check-fix.mjs",
 				"scripts/init-local-search.mjs"
