@@ -136,7 +136,7 @@ export function createApiServices(config: ApiServicesConfig) {
 		),
 		mutations: {
 			writes,
-			uploads: createUploadService(mobile, writes),
+			uploads: createUploadService(mobile, writes, config.reporter),
 			push: createPushService(
 				pushRepository,
 				() => validatePushConfig(config.push).publicKey,

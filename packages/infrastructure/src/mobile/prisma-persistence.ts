@@ -3,10 +3,12 @@ import type { MobilePersistence } from "@s-hirano-ist/s-application/mobile/ports
 import type { DatabaseClient } from "@s-hirano-ist/s-infrastructure/database";
 import { syncDomainSchema } from "@s-hirano-ist/s-application/content/models";
 import { Prisma } from "@s-hirano-ist/s-database";
+import { createOperationRepository } from "@s-hirano-ist/s-infrastructure/mobile/operation-repository";
 import {
 	parseReadModel,
 	parseStoredSnapshot,
 } from "@s-hirano-ist/s-infrastructure/mobile/read-model-decoder";
+import { createUploadRepository } from "@s-hirano-ist/s-infrastructure/mobile/upload-repository";
 import { z } from "zod";
 
 function unreachable(_domain: never): never {
@@ -228,55 +230,8 @@ function createRawPersistence(prisma: DatabaseClient): RawPersistence {
 			}
 			return byKey;
 		},
-		findOperation(id) {
-			return prisma.mobileOperation.findUnique({ where: { id } });
-		},
-		async createOperation(id, userId, domain, inputHash) {
-			await prisma.mobileOperation.create({
-				data: { id, userId, domain, inputHash },
-			});
-		},
-		async markOperationPending(id) {
-			await prisma.mobileOperation.update({
-				where: { id },
-				data: { status: "PENDING", errorCode: null },
-			});
-		},
-		async markOperationSucceeded(id, resourceId) {
-			await prisma.mobileOperation.update({
-				where: { id },
-				data: { status: "SUCCEEDED", resourceId },
-			});
-		},
-		async markOperationFailed(id, errorCode) {
-			await prisma.mobileOperation.update({
-				where: { id },
-				data: { status: "FAILED", errorCode },
-			});
-		},
-		findUpload(userId, id) {
-			return prisma.mobileUpload.findFirst({ where: { id, userId } });
-		},
-		findUploadByOperation(userId, operationId) {
-			return prisma.mobileUpload.findFirst({ where: { userId, operationId } });
-		},
-		createUpload(upload) {
-			return prisma.mobileUpload.create({ data: upload });
-		},
-		async updateUploadParts(id, parts) {
-			await prisma.mobileUpload.update({
-				where: { id },
-				data: { receivedParts: parts },
-			});
-		},
-		async deleteUpload(id) {
-			await prisma.mobileUpload.delete({ where: { id } });
-		},
-		findExpiredUploads(now) {
-			return prisma.mobileUpload.findMany({
-				where: { expiresAt: { lt: now } },
-			});
-		},
+		...createOperationRepository(prisma),
+		...createUploadRepository(prisma),
 	};
 }
 

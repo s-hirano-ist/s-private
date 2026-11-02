@@ -1,6 +1,7 @@
 import type { MutationCommit } from "@s-hirano-ist/s-application/transaction";
 import { ApplicationError } from "@s-hirano-ist/s-application/error";
 import { type MobileDeps } from "@s-hirano-ist/s-application/mobile/deps";
+import { withLease } from "@s-hirano-ist/s-application/mobile/lease";
 import { createHash } from "node:crypto";
 
 export type MobileCreateResult = {
@@ -35,51 +36,51 @@ export async function runMobileOperation(
 	deps: Pick<MobileDeps, "operations" | "transactions">,
 ): Promise<MobileCreateResult> {
 	const inputHash = mobileInputHash(input);
-	const existing = await deps.operations.findOperation(operationId);
-	if (existing) {
-		if (existing.userId !== userId) throw new ApplicationError("NOT_FOUND");
-		if (existing.inputHash !== inputHash || existing.domain !== domain)
-			throw new ApplicationError("OPERATION_CONFLICT");
-		if (existing.status === "SUCCEEDED" && existing.resourceId) {
-			return {
-				accepted: true,
-				operationId,
-				resource: { id: existing.resourceId, type: domain },
-			};
-		}
-		if (existing.status === "PENDING")
-			throw new ApplicationError("OPERATION_IN_PROGRESS");
-	}
-
-	if (existing) {
-		await deps.operations.markOperationPending(operationId);
-	} else {
-		await deps.operations.createOperation(
-			operationId,
-			userId,
-			domain,
-			inputHash,
-		);
-	}
-
-	try {
-		const resourceId = await work((persist) =>
-			deps.transactions.run(async () => {
-				const id = await persist();
-				await deps.operations.markOperationSucceeded(operationId, id);
-				return id;
-			}),
-		);
-		return {
-			accepted: true,
-			operationId,
-			resource: { id: resourceId, type: domain },
-		};
-	} catch (error) {
-		await deps.operations.markOperationFailed(
-			operationId,
-			error instanceof ApplicationError ? error.code : "INTERNAL_ERROR",
-		);
-		throw error;
-	}
+	const claim = await deps.operations.claimOperation(
+		operationId,
+		userId,
+		domain,
+		inputHash,
+	);
+	const result = (resourceId: string): MobileCreateResult => ({
+		accepted: true,
+		operationId,
+		resource: { id: resourceId, type: domain },
+	});
+	if ("resourceId" in claim) return result(claim.resourceId);
+	return withLease(
+		() => deps.operations.renewOperation(operationId, claim.token),
+		async (assertHeld) => {
+			let committed: string | undefined;
+			try {
+				const resourceId = await work((persist) =>
+					deps.transactions
+						.run(async () => {
+							assertHeld();
+							const id = await persist();
+							await deps.operations.markOperationSucceeded(
+								operationId,
+								id,
+								claim.token,
+							);
+							return id;
+						})
+						.then((id) => {
+							committed = id;
+							return id;
+						}),
+				);
+				if (!committed) throw new ApplicationError("INTERNAL_ERROR");
+				return result(resourceId);
+			} catch (error) {
+				if (committed) return result(committed);
+				await deps.operations.markOperationFailed(
+					operationId,
+					error instanceof ApplicationError ? error.code : "INTERNAL_ERROR",
+					claim.token,
+				);
+				throw error;
+			}
+		},
+	);
 }

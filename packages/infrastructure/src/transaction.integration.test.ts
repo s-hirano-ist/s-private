@@ -5,6 +5,7 @@ import { createMobilePersistence } from "@s-hirano-ist/s-infrastructure/mobile/p
 import { createTransactionalDatabase } from "@s-hirano-ist/s-infrastructure/transaction";
 import { randomUUID } from "node:crypto";
 import { afterAll, expect, test } from "vitest";
+import { z } from "zod";
 
 const url = process.env.TEST_DATABASE_URL;
 if (url && !["localhost", "127.0.0.1"].includes(new URL(url).hostname))
@@ -90,5 +91,107 @@ test.skipIf(!url)(
 		expect((await operations.findOperation(operationId))?.resourceId).toBe(id);
 		expect(await operations.getSyncVersion(owner)).toBe(before);
 		expect(before).toBeGreaterThan(0n);
+	},
+);
+
+test.skipIf(!url)(
+	"only one concurrent claim wins; expired tokens cannot commit or fail a newer attempt",
+	async () => {
+		const operationId = randomUUID();
+		const results = await Promise.allSettled(
+			Array.from({ length: 8 }, () =>
+				operations.claimOperation(operationId, owner, "notes", "a".repeat(64)),
+			),
+		);
+		const winners = results.filter((result) => result.status === "fulfilled");
+		expect(winners).toHaveLength(1);
+		expect(
+			results
+				.filter((result) => result.status === "rejected")
+				.map((result) => result.reason),
+		).toEqual(
+			Array.from({ length: 7 }, () =>
+				expect.objectContaining({ code: "OPERATION_IN_PROGRESS" }),
+			),
+		);
+		const first = z.object({ token: z.string() }).parse(winners[0].value);
+		await expect(
+			operations.claimOperation(
+				operationId,
+				"foreign",
+				"notes",
+				"a".repeat(64),
+			),
+		).rejects.toMatchObject({ code: "NOT_FOUND" });
+		await expect(
+			operations.claimOperation(operationId, owner, "books", "a".repeat(64)),
+		).rejects.toMatchObject({ code: "OPERATION_CONFLICT" });
+		await expect(
+			operations.claimOperation(operationId, owner, "notes", "b".repeat(64)),
+		).rejects.toMatchObject({ code: "OPERATION_CONFLICT" });
+		expect(await operations.renewOperation(operationId, first.token)).toBe(
+			true,
+		);
+		await database.mobileOperation.update({
+			where: { id: operationId },
+			data: { leaseExpiresAt: new Date(0) },
+		});
+		const second = z
+			.object({ token: z.string() })
+			.parse(
+				await operations.claimOperation(
+					operationId,
+					owner,
+					"notes",
+					"a".repeat(64),
+				),
+			);
+		expect(second.token).not.toBe(first.token);
+		expect(await operations.renewOperation(operationId, first.token)).toBe(
+			false,
+		);
+		await expect(
+			transactions.run(async () => {
+				await database.note.create({
+					data: {
+						id: randomUUID(),
+						userId: owner,
+						title: "stale worker",
+						markdown: "Body",
+						status: "UNEXPORTED",
+						createdAt: new Date(),
+						updatedAt: new Date(),
+					},
+				});
+				await operations.markOperationSucceeded(
+					operationId,
+					"stale",
+					first.token,
+				);
+			}),
+		).rejects.toMatchObject({ code: "OPERATION_IN_PROGRESS" });
+		expect(
+			await database.note.count({
+				where: { userId: owner, title: "stale worker" },
+			}),
+		).toBe(0);
+		await operations.markOperationFailed(operationId, "OLD", first.token);
+		expect((await operations.findOperation(operationId))?.status).toBe(
+			"PENDING",
+		);
+		await operations.markOperationSucceeded(
+			operationId,
+			"current",
+			second.token,
+		);
+		await operations.markOperationFailed(operationId, "OLD", first.token);
+		expect(
+			await operations.claimOperation(
+				operationId,
+				owner,
+				"notes",
+				"a".repeat(64),
+			),
+		).toEqual({ resourceId: "current" });
 	},
 );

@@ -156,6 +156,9 @@ model MobileOperation {
   userId     String                @map("user_id") @db.String(128)
   domain     String                @db.String(16)
   inputHash  String                @map("input_hash") @db.String(64)
+  protocolVersion Int @default(2) @map("protocol_version")
+  leaseToken String? @map("lease_token") @db.String(36)
+  leaseExpiresAt DateTime? @map("lease_expires_at")
   status     MobileOperationStatus @default(PENDING)
   resourceId String?               @map("resource_id") @db.String(36)
   errorCode  String?               @map("error_code") @db.String(64)
@@ -176,6 +179,14 @@ model MobileUpload {
   fileSize      Int      @map("file_size")
   metadata      Json
   receivedParts Int[]    @default([]) @map("received_parts")
+  protocolVersion Int @default(2) @map("protocol_version")
+  state String @default("ACTIVE") @db.String(16)
+  leaseToken String? @map("lease_token") @db.String(36)
+  leaseExpiresAt DateTime? @map("lease_expires_at")
+  resourceId String? @map("resource_id") @db.String(36)
+  revision Int @default(0)
+  parts MobileUploadPart[]
+  chunks MobileUploadChunk[]
   expiresAt     DateTime @map("expires_at")
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
@@ -183,6 +194,26 @@ model MobileUpload {
   @@unique([userId, operationId])
   @@index([expiresAt])
   @@map("mobile_uploads")
+}
+
+model MobileUploadPart {
+  uploadId String @map("upload_id") @db.String(36)
+  part Int
+  hash String @db.String(64)
+  size Int
+  objectKey String @map("object_key")
+  upload MobileUpload @relation(fields: [uploadId], references: [id], onDelete: Cascade)
+  @@id([uploadId, part])
+  @@map("mobile_upload_parts")
+}
+
+// Register immutable object attempts before writing so interrupted sends remain discoverable.
+model MobileUploadChunk {
+  objectKey String @id @map("object_key")
+  uploadId String @map("upload_id") @db.String(36)
+  writingUntil DateTime? @map("writing_until")
+  upload MobileUpload @relation(fields: [uploadId], references: [id], onDelete: Cascade)
+  @@map("mobile_upload_chunks")
 }
 
 // ---------------------------------------------------------------------------
