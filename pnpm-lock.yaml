@@ -477,6 +477,9 @@ importers:
         specifier: 'catalog:'
         version: 4.6.5
     devDependencies:
+      '@s-hirano-ist/s-storage':
+        specifier: workspace:*
+        version: link:../../packages/storage
       '@types/node':
         specifier: 'catalog:'
         version: 26.6.6

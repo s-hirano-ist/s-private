@@ -291,5 +291,11 @@ test("error responses restrict codes by status and omit unrelated upload statuse
 	const paths = createApiDocument().paths;
 	expect(paths?.["/articles"]?.get?.responses).not.toHaveProperty("410");
 	expect(paths?.["/uploads/{id}"]?.get?.responses).toHaveProperty("410");
+	expect(paths?.["/articles"]?.post?.responses).toHaveProperty("404");
+	expect(paths?.["/uploads"]?.post?.responses).toHaveProperty("410");
+	expect(paths?.["/uploads/{id}"]?.delete?.responses).toHaveProperty("409");
+	expect(paths?.["/uploads/{id}/chunks/{part}"]?.put?.responses).toHaveProperty(
+		"409",
+	);
 	expect(paths?.["/articles/{id}"]?.delete?.responses).toHaveProperty("409");
 });

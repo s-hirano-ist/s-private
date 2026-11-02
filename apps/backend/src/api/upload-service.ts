@@ -12,8 +12,7 @@ export function createUploadService(
 ) {
 	const service = createUploads(
 		{ ...deps, reporter },
-		(owner, input, file, guard) =>
-			writes.media(owner, input, file, undefined, guard),
+		(owner, input, file, guard) => writes.media(owner, input, file, guard),
 	);
 	return {
 		async start(owner: string, input: Parameters<WriteService["media"]>[1]) {

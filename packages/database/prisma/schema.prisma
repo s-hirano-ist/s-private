@@ -178,7 +178,6 @@ model MobileUpload {
   contentType   String   @map("content_type") @db.String(64)
   fileSize      Int      @map("file_size")
   metadata      Json
-  receivedParts Int[]    @default([]) @map("received_parts")
   protocolVersion Int @default(2) @map("protocol_version")
   state String @default("ACTIVE") @db.String(16)
   leaseToken String? @map("lease_token") @db.String(36)

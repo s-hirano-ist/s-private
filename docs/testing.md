@@ -275,3 +275,19 @@ Production buildではInstant testing APIを公開しない。Vercel Previewで�
 ## iOS 実機での API 通信確認
 
 iOS も利用する共通backendの `/api/v1` の変更は、対応する API を Production にデプロイしてから実機で確認する。PR 作成時点で未デプロイなら、実機での API 通信確認は「未実施」と記録し、Production デプロイ後に実施する。実機では Production の API 接続先を設定し、ログイン、一覧取得、レコード作成、保留中の項目の同期を確認する。署名と実機での操作手順は [`apps/ios/README.md`](../apps/ios/README.md) を参照する。
+
+## operation・uploadの実DB検証
+
+ローカルCockroachDBに専用DBを作成し、そのURLを`DATABASE_URL`に指定して`pnpm dev`でmigrationを適用する。以下はMiseによる`.env.local`読込後に検証用URLを指定する例。テストはlocalhost以外のDB URLを拒否し、既定の標準テストでは実DB接続を省略する。
+
+```sh
+mise exec -- env \
+  TEST_DATABASE_URL='postgresql://root@127.0.0.1:26257/issue2951?sslmode=disable' \
+  TEST_UPLOAD_INTEGRATION=1 \
+  pnpm exec vp test run --project backend --project infrastructure \
+  apps/backend/src/api/flow.integration.test.ts \
+  packages/infrastructure/src/transaction.integration.test.ts \
+  packages/infrastructure/src/mobile/upload.integration.test.ts
+```
+
+ローカルMinIO（127.0.0.1:9000）と`MINIO_ROOT_USER`・`MINIO_ROOT_PASSWORD`を使い、テストごとに専用bucketを作成・削除する。本番runtimeのstorage停止設定は変更しない。4ドメインのHTTP作成・成功再送・所有者分離・同期・削除、実画像のoriginal/thumbnail取得、通知失敗時の成功維持、lease競合・期限切れ再取得・旧token拒否、part再送と完了/取消の排他、cleanup障害後の再送を検証する。

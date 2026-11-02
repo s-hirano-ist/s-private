@@ -23,10 +23,7 @@ import {
 	deleteImage,
 	type CreateImageDeps,
 } from "@s-hirano-ist/s-application/images/use-cases";
-import {
-	mobileInputHash,
-	runMobileOperation,
-} from "@s-hirano-ist/s-application/mobile/operations";
+import { runMobileOperation } from "@s-hirano-ist/s-application/mobile/operations";
 import {
 	createNote,
 	deleteNote,
@@ -91,10 +88,8 @@ export function createWriteService(deps: WriteServiceDeps) {
 		operationId: string,
 		input: unknown,
 		work: (commit: MutationCommit) => Promise<{ id: string }>,
-		key: () => string,
 		beforeCommit?: () => Promise<void>,
 	) {
-		const existing = await mobile.operations.findOperation(operationId);
 		return schemas.createResultSchema.parse(
 			await runMobileOperation(
 				owner,
@@ -114,21 +109,7 @@ export function createWriteService(deps: WriteServiceDeps) {
 							)
 						).id;
 					} catch (error) {
-						if (duplicate(error)) {
-							if (
-								domain === "images" &&
-								existing?.userId === owner &&
-								existing.status === "FAILED"
-							) {
-								const id = await mobile.content.lookupContentId(
-									domain,
-									owner,
-									key(),
-								);
-								if (id) return commit(async () => id);
-							}
-							throw new ApiError("DUPLICATE");
-						}
+						if (duplicate(error)) throw new ApiError("DUPLICATE");
 						throw error;
 					}
 				},
@@ -142,43 +123,30 @@ export function createWriteService(deps: WriteServiceDeps) {
 			input: z.output<typeof schemas.articleCreateSchema>,
 		) {
 			const canonical = { ...input, quote: input.quote ?? "" };
-			return run(
-				owner,
-				"articles",
-				input.operationId,
-				canonical,
-				(commit) =>
-					createArticle(
-						parseArticleInput(canonical, makeUserId(owner)),
-						deps.articles,
-						commit,
-					),
-				() => input.url,
+			return run(owner, "articles", input.operationId, canonical, (commit) =>
+				createArticle(
+					parseArticleInput(canonical, makeUserId(owner)),
+					deps.articles,
+					commit,
+				),
 			);
 		},
 		async note(
 			owner: string,
 			input: z.output<typeof schemas.noteCreateSchema>,
 		) {
-			return run(
-				owner,
-				"notes",
-				input.operationId,
-				input,
-				(commit) =>
-					createNote(
-						parseNoteInput(input, makeUserId(owner)),
-						deps.notes,
-						commit,
-					),
-				() => input.title,
+			return run(owner, "notes", input.operationId, input, (commit) =>
+				createNote(
+					parseNoteInput(input, makeUserId(owner)),
+					deps.notes,
+					commit,
+				),
 			);
 		},
 		async media(
 			owner: string,
 			input: MediaInput,
 			file: File,
-			legacyMetadata?: Record<string, string>,
 			beforeCommit?: () => Promise<void>,
 		) {
 			const fileHash = createHash("sha256")
@@ -191,47 +159,12 @@ export function createWriteService(deps: WriteServiceDeps) {
 				contentType: input.contentType,
 				fileHash,
 			};
-			let hashInput: unknown = modern;
-			const existing = await mobile.operations.findOperation(input.operationId);
-			const oldImage = {
-				operationId: input.operationId,
-				fileHash,
-				contentType: input.contentType,
-			};
-			let legacyInput: unknown = oldImage;
-			if (input.domain === "books") {
-				const { isbn, title, rating, tags } = input.metadata;
-				legacyInput = {
-					...(legacyMetadata ?? {
-						isbn,
-						title,
-						rating: String(rating),
-						tags: tags.join(","),
-					}),
-					operationId: input.operationId,
-					fileHash,
-				};
-			}
-			const representable =
-				input.domain === "images" ||
-				!input.metadata.tags.some((tag) => tag.includes(","));
-			const matchesLegacy =
-				existing?.userId === owner &&
-				existing.domain === input.domain &&
-				representable &&
-				existing.inputHash === mobileInputHash(legacyInput);
-			if (matchesLegacy) {
-				hashInput = legacyInput;
-				// Old failed image operations have no durable file hash/path association. Never guess the latest image.
-				if (input.domain === "images" && existing.status === "FAILED")
-					throw new ApiError("OPERATION_CONFLICT");
-			}
-			let storedPath = "";
+
 			return run(
 				owner,
 				input.domain,
 				input.operationId,
-				hashInput,
+				modern,
 				async (commit) => {
 					const phase = {
 						action: input.domain === "images" ? "addImage" : "addBooks",
@@ -247,7 +180,6 @@ export function createWriteService(deps: WriteServiceDeps) {
 						);
 						const extension = parsed.contentType.split("/").at(-1) ?? "jpeg";
 						const path = makePath(`${input.operationId}.${extension}`, false);
-						storedPath = path;
 						return createImage({ ...parsed, path }, deps.images, phase, commit);
 					}
 					const parsed = await parseBookInput(
@@ -264,7 +196,6 @@ export function createWriteService(deps: WriteServiceDeps) {
 						commit,
 					);
 				},
-				() => (input.domain === "books" ? input.metadata.isbn : storedPath),
 				beforeCommit,
 			);
 		},
