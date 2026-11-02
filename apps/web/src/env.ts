@@ -61,6 +61,13 @@ export const env = createEnv({
 	 * Specify your client-side environment variables schema here. This way you can ensure the app isn't built with invalid env vars. To expose them to the client, prefix them with `NEXT_PUBLIC_`.
 	 */
 	client: {
+		NEXT_PUBLIC_SENTRY_ENVIRONMENT: z.string().default("development"),
+		NEXT_PUBLIC_SENTRY_RELEASE: z.string().optional(),
+		NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE: z.coerce
+			.number()
+			.min(0)
+			.max(1)
+			.default(1),
 		NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY: z.string().optional(),
 		NEXT_PUBLIC_SENTRY_DSN: isVercelRuntime
 			? z.string()
@@ -71,6 +78,10 @@ export const env = createEnv({
 	 * You can't destruct `process.env` as a regular object in the Next.js edge runtimes (e.g. middlewares) or client-side so we need to destruct manually.
 	 */
 	runtimeEnv: {
+		NEXT_PUBLIC_SENTRY_ENVIRONMENT: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT,
+		NEXT_PUBLIC_SENTRY_RELEASE: process.env.NEXT_PUBLIC_SENTRY_RELEASE,
+		NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE:
+			process.env.NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE,
 		NODE_ENV: process.env.NODE_ENV,
 		BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
 		BACKEND_URL: resolveBackendUrl({

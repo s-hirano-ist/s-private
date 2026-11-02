@@ -1,5 +1,6 @@
 // @vitest-environment node
 import { dispatchBackendRequest } from "@/common/backend/dispatch";
+import * as Sentry from "@sentry/nextjs";
 import { beforeEach, expect, test, vi } from "vite-plus/test";
 const state = vi.hoisted(() => ({
 	backendURL: "https://backend.example",
@@ -11,7 +12,11 @@ vi.mock("@/env", () => ({
 		},
 	},
 }));
-vi.mock("@sentry/nextjs", () => ({ captureException: vi.fn() }));
+vi.mock("@sentry/nextjs", () => ({
+	captureException: vi.fn(),
+	setHttpStatus: vi.fn(),
+	startSpan: vi.fn((_options, callback) => callback({ setStatus: vi.fn() })),
+}));
 beforeEach(() => {
 	vi.clearAllMocks();
 	vi.unstubAllGlobals();
@@ -26,6 +31,11 @@ test("forwards successful responses from the configured backend", async () => {
 		new Request("https://web.example/api/v1/notes/id", { method: "DELETE" }),
 	);
 	expect(response.status).toBe(204);
+	expect(Sentry.startSpan).toHaveBeenCalledWith(
+		{ name: "DELETE notes", op: "app.backend" },
+		expect.any(Function),
+	);
+	expect(Sentry.setHttpStatus).toHaveBeenCalledWith(expect.anything(), 204);
 	expect(upstream).toHaveBeenCalledExactlyOnceWith(
 		new URL("https://backend.example/api/v1/notes/id"),
 		expect.objectContaining({
