@@ -1,6 +1,92 @@
 import { expect, test } from "@playwright/test";
 import { inflateSync } from "node:zlib";
 
+test("a plain Chromium page does not inject inline styles into the CSP probe", async ({
+	page,
+}) => {
+	await page.goto("http://127.0.0.1:4320");
+	await expect(page.locator("#violations")).toHaveText("[]");
+	expect(await page.locator("style").count()).toBe(0);
+});
+
+test("production CSP permits real next-themes transitions", async ({
+	page,
+}) => {
+	const violations: string[] = [];
+	const transitionStyles: string[] = [];
+	await page.emulateMedia({ colorScheme: "light" });
+	await page.addInitScript(() => {
+		new MutationObserver((records) => {
+			for (const record of records) {
+				for (const node of record.addedNodes) {
+					if (node instanceof HTMLStyleElement)
+						console.info("THEME-STYLE", node.textContent);
+				}
+			}
+		}).observe(document, { childList: true, subtree: true });
+		document.addEventListener("securitypolicyviolation", (event) =>
+			console.error("THEME-CSP", event.effectiveDirective),
+		);
+	});
+	page.on("console", (message) => {
+		if (message.text().includes("THEME-CSP")) violations.push(message.text());
+		if (message.text().includes("THEME-STYLE"))
+			transitionStyles.push(message.text());
+	});
+	await page.route(/sentry\.io|\/monitoring|csp\.invalid/u, (route) =>
+		route.fulfill({ status: 200, body: "{}" }),
+	);
+	await page.goto("/ja/error");
+	await expect(page.locator("html")).toHaveClass("light");
+	await page.emulateMedia({ colorScheme: "dark" });
+	await expect(page.locator("html")).toHaveClass("dark");
+	await page.emulateMedia({ colorScheme: "light" });
+	await expect(page.locator("html")).toHaveClass("light");
+	await expect
+		.poll(() =>
+			transitionStyles.some((style) =>
+				style.includes("transition:none!important"),
+			),
+		)
+		.toBe(true);
+	expect(violations).toEqual([]);
+});
+
+test("production CSP still blocks an unknown injected style", async ({
+	page,
+}) => {
+	await page.route(/sentry\.io|\/monitoring|csp\.invalid/u, (route) =>
+		route.fulfill({ status: 200, body: "{}" }),
+	);
+	await page.goto("/ja/error");
+	const violation = await page.evaluate(
+		() =>
+			new Promise<{ directive: string; blocked: string }>((resolve) => {
+				document.addEventListener(
+					"securitypolicyviolation",
+					(event) =>
+						resolve({
+							directive: event.effectiveDirective,
+							blocked: event.blockedURI,
+						}),
+					{ once: true },
+				);
+				const style = document.createElement("style");
+				style.textContent = ".csp-untrusted-probe { color: rgb(1, 2, 3); }";
+				document.head.append(style);
+				const probe = document.createElement("p");
+				probe.className = "csp-untrusted-probe";
+				probe.textContent = "CSP regression probe";
+				document.body.append(probe);
+			}),
+	);
+	expect(violation).toEqual({ directive: "style-src-elem", blocked: "inline" });
+	await expect(page.locator(".csp-untrusted-probe")).not.toHaveCSS(
+		"color",
+		"rgb(1, 2, 3)",
+	);
+});
+
 test("unsupported locales and scanner paths return 404 without importing messages", async ({
 	request,
 }) => {
