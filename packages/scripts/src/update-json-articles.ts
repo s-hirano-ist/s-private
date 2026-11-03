@@ -4,6 +4,7 @@ import * as cheerio from "cheerio";
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { setTimeout } from "node:timers/promises";
+import { resolveArticleOgImageUrl } from "./lib/article-og-image-url.js";
 import { decodeHtml } from "./lib/html-charset.js";
 
 type ArticleItem = {
@@ -50,7 +51,9 @@ async function getOgTags(
 			}
 		});
 
-		const ogImageUrl = ogTags["og:image"];
+		const ogImageUrl =
+			resolveArticleOgImageUrl(ogTags["og:image"], response.url || url) ??
+			undefined;
 		const ogTitle = ogTags["og:title"];
 		const ogDescription = ogTags["og:description"];
 

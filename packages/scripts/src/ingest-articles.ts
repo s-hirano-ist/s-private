@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import type { PreparedImport } from "@s-hirano-ist/s-application/batch/import-models";
 import { readFile } from "node:fs/promises";
+import { resolveArticleOgImageUrl } from "./lib/article-og-image-url.js";
 import { globPaths } from "./lib/glob-paths.js";
 import { runContentImport } from "./lib/run-content-import.js";
 
@@ -27,7 +28,7 @@ async function* source(root: string): AsyncGenerator<PreparedImport> {
 					quote: item.quote ?? null,
 					ogTitle: item.ogTitle ?? null,
 					ogDescription: item.ogDescription ?? null,
-					ogImageUrl: item.ogImageUrl ?? null,
+					ogImageUrl: resolveArticleOgImageUrl(item.ogImageUrl, item.url),
 				},
 			};
 	}

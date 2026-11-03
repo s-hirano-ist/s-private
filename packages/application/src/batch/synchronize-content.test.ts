@@ -29,6 +29,33 @@ const note = (
 	values: { title: key, markdown: "old" },
 });
 describe("CLI synchronization policy", () => {
+	test("imports long OG image URLs without truncating them", async () => {
+		const deps = setup();
+		const ogImageUrl = `https://example.com/og.png?data=${"a".repeat(2000)}`;
+		const values = {
+			title: "Article",
+			url: "https://example.com/article",
+			categoryName: "tech",
+			quote: null,
+			ogTitle: null,
+			ogDescription: null,
+			ogImageUrl,
+		};
+		const result = await synchronizeContent(
+			"articles",
+			"owner",
+			source({ values }),
+			deps,
+			{ dryRun: false },
+		);
+		expect(result.insertedCount).toBe(1);
+		expect(deps.repository.save).toHaveBeenCalledWith(
+			"owner",
+			expect.objectContaining({ domain: "articles", values }),
+			true,
+			now,
+		);
+	});
 	test("dry run reports changes without writes or object operations", async () => {
 		const deps = setup([note("missing")]);
 		const result = await synchronizeContent(
