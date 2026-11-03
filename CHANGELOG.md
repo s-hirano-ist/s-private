@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.1.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v4.0.1...s-private-v4.1.0) (2026-11-03)
+
+
+### Features
+
+* **web:** add Sentry RUM within the free plan ([7a04477](https://github.com/s-hirano-ist/s-private/commit/7a04477322da39a6806eba2d0c9b1de3b994f006))
+
+
+### Bug Fixes
+
+* accept stored OG image URLs and retry transaction acquisition ([3615f20](https://github.com/s-hirano-ist/s-private/commit/3615f20e4bd6e419bad0650afa08f1c7163d805d))
+* **ci:** recognize the RUM Playwright configuration in knip ([d7d6645](https://github.com/s-hirano-ist/s-private/commit/d7d66450f402fc4f7d20c8c46f10ad0a144becc4))
+* **web:** preserve prerender control flow and OAuth navigation ([bfdadbc](https://github.com/s-hirano-ist/s-private/commit/bfdadbc0bd7d279e27f104a37d7af2f5c6431280))
+
+
+### Documentation
+
+* record Sentry environment cleanup ([33dc344](https://github.com/s-hirano-ist/s-private/commit/33dc344499074afe1fa06594f0b7cce3f6d85422))
+* **web:** verify CSP style origins and preserve enforcement ([3d3790a](https://github.com/s-hirano-ist/s-private/commit/3d3790a7664ea42c57d48d4cc35bc999d6d610d3))
+
 ## [4.0.1](https://github.com/s-hirano-ist/s-private/compare/s-private-v4.0.0...s-private-v4.0.1) (2026-11-02)
 
 
