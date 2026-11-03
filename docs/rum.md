@@ -77,7 +77,7 @@ Productionデプロイ後に新release/environmentでの到着を確認し、Iss
 隔離したブラウザ検証（DB・ログイン不要）:
 
 ```bash
-mise exec -- env NEXT_PUBLIC_SENTRY_DSN=https://public@o0.ingest.sentry.io/1 SENTRY_AUTH_TOKEN= SKIP_ENV_VALIDATION=true pnpm build
+mise exec -- env NEXT_PUBLIC_SENTRY_DSN=https://public@o0.ingest.sentry.io/1 SENTRY_AUTH_TOKEN= SENTRY_REPORT_URL=https://csp.invalid/report SKIP_ENV_VALIDATION=true pnpm build
 mise exec -- pnpm exec playwright test --config playwright.rum.config.ts
 ```
 
@@ -85,6 +85,11 @@ mise exec -- pnpm exec playwright test --config playwright.rum.config.ts
 SDK の10% sampling をテスト内の乱数だけで確定させ、LCP・error・Replayのtrace ID一致、CSP違反なし、
 圧縮recordingの展開後にprivate text/input/attribute/image markerが含まれないことを確認する。
 通常の開発用E2Eからは除外する。テスト用DSNをbuildに含めたため、成果物をProductionへ流用しない。
+
+テーマ切替時の固定CSS許可と、未知のCSSの拒否も同じproduction E2Eで確認する。
+意図的なCSP違反の報告先はテスト専用の無効なhostとし、実Sentryには送らない。
+操作補助付きブラウザ自身がCSSを注入する場合の切り分けは
+[Inline style CSP の調査](csp-investigation.md) を参照する。
 
 参考: [SDK](https://docs.sentry.io/platforms/javascript/guides/nextjs/)、
 [無料プラン更新](https://www.sentry.help/en/articles/16738709-changes-to-legacy-developer-plans-september-2026)。

@@ -14,6 +14,11 @@ export default defineConfig({
 	},
 	webServer: [
 		{
+			command: "node e2e/fixtures/csp-probe.mjs",
+			url: "http://127.0.0.1:4320",
+			reuseExistingServer: false,
+		},
+		{
 			command: "node e2e/fixtures/rum-backend.mjs",
 			url: "http://127.0.0.1:4318/health",
 			reuseExistingServer: false,
@@ -25,6 +30,7 @@ export default defineConfig({
 			env: {
 				NEXT_PUBLIC_SENTRY_DSN: "https://public@o0.ingest.sentry.io/1",
 				SENTRY_AUTH_TOKEN: "",
+				SENTRY_REPORT_URL: "https://csp.invalid/report",
 				SKIP_ENV_VALIDATION: "true",
 				BACKEND_URL: "http://127.0.0.1:4318",
 				BETTER_AUTH_URL: "http://localhost:4317",
