@@ -172,8 +172,14 @@ describe("articleEntity", () => {
 			expect(() => makeOgImageUrl("not-a-url")).toThrow(ZodError);
 		});
 
+		test("should accept an OG image URL at the database length limit", () => {
+			const prefix = "https://example.com/";
+			const url = `${prefix}${"a".repeat(4096 - prefix.length)}`;
+			expect(makeOgImageUrl(url)).toBe(url);
+		});
+
 		test("should throw error for too long URL", () => {
-			const longUrl = `https://example.com/${"a".repeat(1020)}`;
+			const longUrl = `https://example.com/${"a".repeat(4097 - "https://example.com/".length)}`;
 			expect(() => makeOgImageUrl(longUrl)).toThrow(ZodError);
 		});
 	});

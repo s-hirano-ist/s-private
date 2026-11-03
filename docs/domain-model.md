@@ -51,7 +51,7 @@ erDiagram
         Status status
         OgTitle ogTitle "nullable"
         OgDescription ogDescription "nullable"
-        OgImageUrl ogImageUrl "nullable"
+        OgImageUrl ogImageUrl "nullable, max 4096"
         CreatedAt createdAt
         ExportedAt exportedAt "nullable"
     }
