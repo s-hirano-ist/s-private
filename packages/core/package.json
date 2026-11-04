@@ -3,7 +3,7 @@
 	"version": "2.0.0",
 	"description": "Core domain layer for s-private application - Clean architecture domain entities, repositories, and services",
 	"engines": {
-		"node": "26.x"
+		"node": "26.13.0"
 	},
 	"type": "module",
 	"exports": {
@@ -136,7 +136,7 @@
 		"directory": "packages/core"
 	},
 	"dependencies": {
-		"uuid": "14.0.2",
+		"uuid": "14.0.3",
 		"zod": "catalog:"
 	},
 	"devDependencies": {

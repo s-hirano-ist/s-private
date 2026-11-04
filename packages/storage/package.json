@@ -3,7 +3,7 @@
 	"version": "2.0.0",
 	"description": "MinIO storage client for s-private application",
 	"engines": {
-		"node": "26.x"
+		"node": "26.13.0"
 	},
 	"type": "module",
 	"exports": {

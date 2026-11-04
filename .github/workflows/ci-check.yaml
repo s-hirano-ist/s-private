@@ -17,7 +17,7 @@ jobs:
       group: ${{ github.workflow }}-${{ inputs.check }}-${{ github.ref }}
     steps:
       - name: Checkout files
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
           submodules: true
@@ -50,9 +50,9 @@ jobs:
 
       - name: Install native lint tools
         if: ${{ inputs.check == 'supplemental-lint' }}
-        uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14 # v4.2.3
+        uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
         with:
-          version: 2026.8.6
+          version: 2026.11.0
           install_args: rumdl gitleaks
 
       - name: Lint CSS, Markdown and secrets

@@ -1,6 +1,6 @@
 services:
   cockroachdb:
-    image: cockroachdb/cockroach:v26.2.1
+    image: cockroachdb/cockroach:v26.3.4@sha256:e9a8c0a4f23e53cceabff8cd6e853a97ba589f7dfe41e7975f17c1279eca27ea
     profiles: [local]
     restart: unless-stopped
     command: start-single-node --insecure
@@ -16,7 +16,7 @@ services:
       retries: 20
 
   qdrant:
-    image: qdrant/qdrant:v1.19.1
+    image: qdrant/qdrant:v1.20.0@sha256:9bfc89f9914fc14876a88c05270685921a55b8877b254a98bcc1cc2f0a424cd2
     profiles: [local]
     restart: unless-stopped
     ports:
@@ -35,7 +35,7 @@ services:
       retries: 20
 
   embedding-api:
-    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.9@sha256:ad950d30878eceb72aaf32024d26fa2b1d04a75304fa0b4776b49aa1941fea07
+    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.9@sha256:2538ea1c9640d3763b15af668039d24172d063b42337b0c27796fc2be180c78d
     profiles: [local]
     platform: linux/amd64
     restart: unless-stopped
@@ -55,7 +55,7 @@ services:
       start_period: 120s
 
   local-minio:
-    image: pgsty/minio:RELEASE.2026-02-14T12-00-00Z
+    image: pgsty/minio:RELEASE.2026-02-14T12-00-00Z@sha256:00c404465c4e7c4fd716d98caec2928e9e0f82c3548615662fdd3866ea9a28c0
     profiles: [local]
     restart: unless-stopped
     command: server /data --console-address ":9001"
@@ -76,7 +76,7 @@ services:
       retries: 10
 
   local-minio-init:
-    image: pgsty/mc:RELEASE.2026-03-13T08-57-32Z
+    image: pgsty/mc:RELEASE.2026-03-13T08-57-32Z@sha256:25f84fb22b86b7cf9006bff591cff247efff12b02caebbe94b020310f5523917
     profiles: [local]
     depends_on:
       local-minio:
@@ -138,7 +138,7 @@ services:
       - tunnel-net
 
   cloudflared:
-    image: cloudflare/cloudflared:latest@sha256:59bab8d3aceec09bf6bdb07d6beca0225ca5cd7ab79436a87ea97978fe1dc4f9
+    image: cloudflare/cloudflared:latest@sha256:4955524aeaa379e154023d5a027c250f7b35041a2e7e950cf13f144bc9b9c5ba
     container_name: cloudflared
     profiles: [vps]
     restart: unless-stopped
