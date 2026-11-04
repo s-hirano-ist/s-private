@@ -38,11 +38,11 @@ export function createBackendHttpApp(deps: {
 		headers.set("host", target.host);
 		return new Request(target, new Request(request, { headers }));
 	}
-	app.get("/api/sign-in", (c) => {
+	app.get("/api/sign-in", async (c) => {
 		const request = publicRequest(c.req.raw);
 		return request ? deps.signIn(request) : c.json({ error: "Forbidden" }, 403);
 	});
-	app.on(["GET", "POST"], "/api/auth/*", (c) => {
+	app.on(["GET", "POST"], "/api/auth/*", async (c) => {
 		const request = publicRequest(c.req.raw);
 		return request ? deps.auth(request) : c.json({ error: "Forbidden" }, 403);
 	});

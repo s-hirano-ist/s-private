@@ -61,33 +61,33 @@ pipelines:
 catalog:
   '@aws-sdk/client-s3': 3.1156.0
   '@s-hirano-ist/s-api-client': workspace:*
-  '@tailwindcss/postcss': 4.3.3
+  '@tailwindcss/postcss': 4.3.4
   '@tailwindcss/typography': 0.5.20
   '@types/node': 26.6.6
   '@types/react': 19.3.0
   '@types/react-dom': 19.3.0
   '@vercel/related-projects': 1.1.1
-  '@vitest/browser': 5.0.3
-  '@vitest/browser-playwright': 5.0.3
-  '@vitest/coverage-v8': 5.0.3
-  hono: 4.13.13
+  '@vitest/browser': 5.0.5
+  '@vitest/browser-playwright': 5.1.0
+  '@vitest/coverage-v8': 5.1.0
+  hono: 4.13.16
   istanbul-lib-coverage: 3.2.2
-  js-yaml: 5.4.2
+  js-yaml: 5.5.0
   json5: 2.2.3
-  lefthook: 2.1.17
-  lucide-react: 1.52.0
-  next: 16.3.8
+  lefthook: 2.2.2
+  lucide-react: 1.67.0
+  next: 16.4.1
   next-intl: 4.14.9
-  oxfmt: 0.72.0
-  postcss: 8.5.29
-  react: 19.3.0
-  react-dom: 19.3.0
-  tailwindcss: 4.3.3
+  oxfmt: 0.76.0
+  postcss: 8.5.32
+  react: 19.3.1
+  react-dom: 19.3.1
+  tailwindcss: 4.3.4
   typescript: 6.0.3
-  vite: 8.3.2
-  vite-plus: 1.0.0
-  vitest: 5.0.3
-  zod: 4.6.5
+  vite: 8.3.3
+  vite-plus: 1.3.0
+  vitest: 5.1.0
+  zod: 4.6.7
 
 catalogMode: prefer
 catalogPrune: true
@@ -118,3 +118,11 @@ blockExoticSubdeps: true
 minimumReleaseAgeExclude:
   # Renovate security update: happy-dom@21.0.4
   - happy-dom@21.0.4
+  # Renovate security update: @vitest/browser@5.0.5
+  - "@vitest/browser@5.0.5"
+  # Renovate security update: next@16.4.1
+  - next@16.4.1
+  # Renovate security update: vite@8.3.3
+  - vite@8.3.3
+  # Renovate security update: vite-plus@1.3.0
+  - vite-plus@1.3.0

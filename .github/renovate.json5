@@ -51,6 +51,23 @@
 			allowedVersions: "26.x",
 		},
 		{
+			// Preserve the major-range contract checked by CI and used by Vercel.
+			matchPackageNames: ["node"],
+			matchDepTypes: ["engines"],
+			rangeStrategy: "replace",
+		},
+		{
+			// API generation, TypeDoc and Stryker require the JavaScript compiler API.
+			matchPackageNames: ["typescript"],
+			allowedVersions: "<7",
+		},
+		{
+			// 26.3.4 rejects writes with the existing mobile-sync row triggers.
+			matchDatasources: ["docker"],
+			matchPackageNames: ["cockroachdb/cockroach"],
+			allowedVersions: "/^v26\\.2\\./",
+		},
+		{
 			// Preserve the intentionally unmanaged legacy embedding image.
 			matchDatasources: ["docker"],
 			matchPackageNames: ["s0hirano/embedding-api"],
