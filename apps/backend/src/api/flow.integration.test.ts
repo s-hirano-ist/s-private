@@ -2,12 +2,12 @@ import type { ApiAuth } from "s-private-backend/api/types";
 import * as schemas from "@s-hirano-ist/s-api-contracts/schemas";
 import { createPrismaClient } from "@s-hirano-ist/s-database";
 import { extendDatabase } from "@s-hirano-ist/s-infrastructure/database";
-import { createMobileChunkStore } from "@s-hirano-ist/s-infrastructure/mobile/minio-chunk-store";
+import { createMobileChunkStore } from "@s-hirano-ist/s-infrastructure/mobile/s3-chunk-store";
 import { createBooksStorageService } from "@s-hirano-ist/s-infrastructure/shared/books-storage-service";
-import { createImagesStorageService } from "@s-hirano-ist/s-infrastructure/shared/minio-storage-service";
+import { createImagesStorageService } from "@s-hirano-ist/s-infrastructure/shared/images-storage-service";
 import { tenantContext } from "@s-hirano-ist/s-infrastructure/shared/tenant-context";
 import { applyTenantFilter } from "@s-hirano-ist/s-infrastructure/shared/tenant-filter";
-import { createMinioClient } from "@s-hirano-ist/s-storage";
+import { createObjectStorageClient } from "@s-hirano-ist/s-storage";
 import { randomUUID } from "node:crypto";
 import { createApiApp } from "s-private-backend/api/app";
 import { createApiServices } from "s-private-backend/api/composition";
@@ -27,12 +27,12 @@ const png = Buffer.from(
 	"base64",
 );
 const minio = enabled
-	? createMinioClient({
-			endPoint: "127.0.0.1",
-			port: 9000,
-			useSSL: false,
-			accessKey: process.env.MINIO_ROOT_USER ?? "",
-			secretKey: process.env.MINIO_ROOT_PASSWORD ?? "",
+	? createObjectStorageClient({
+			endpoint: "http://127.0.0.1:9000",
+			region: "us-east-1",
+			forcePathStyle: true,
+			accessKeyId: process.env.MINIO_ROOT_USER ?? "",
+			secretAccessKey: process.env.MINIO_ROOT_PASSWORD ?? "",
 		})
 	: null;
 const reporter = { captureException: vi.fn() };
@@ -209,15 +209,14 @@ function create(
 }
 
 beforeAll(async () => {
-	if (minio) await minio.makeBucket(bucket);
+	if (minio) await minio.createBucket(bucket);
 });
 afterAll(async () => {
 	if (enabled && minio) {
-		const objects: string[] = [];
-		for await (const object of minio.listObjectsV2(bucket, "", true))
-			if (object.name) objects.push(object.name);
-		if (objects.length > 0) await minio.removeObjects(bucket, objects);
-		await minio.removeBucket(bucket);
+		const objects = await minio.listObjects(bucket, "");
+		if (objects.length > 0)
+			await Promise.all(objects.map((key) => minio.removeObject(bucket, key)));
+		await minio.deleteBucket(bucket);
 		await client.article.deleteMany({ where: { userId: owner } });
 		await client.note.deleteMany({ where: { userId: owner } });
 		await client.image.deleteMany({ where: { userId: owner } });

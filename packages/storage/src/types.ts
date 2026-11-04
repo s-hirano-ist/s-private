@@ -1,18 +1,3 @@
-import type { Client } from "minio";
-
-export type StorageClientConfig = {
-	accessKey: string;
-	endPoint: string;
-	port: number;
-	secretKey: string;
-	useSSL: boolean;
-};
-
-export type CfAccessConfig = {
-	clientId: string;
-	clientSecret: string;
-};
-
 export type StoragePathConfig = {
 	originalPrefix: string;
 	thumbnailPrefix: string;
@@ -28,5 +13,3 @@ export type StorageServiceOperations = {
 		isThumbnail: boolean,
 	): Promise<void>;
 };
-
-export type MinioClient = Client;

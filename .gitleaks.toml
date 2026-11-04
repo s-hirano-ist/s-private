@@ -17,11 +17,12 @@ paths = [
 [[rules]]
 id = "project-secret-assignment"
 description = "Project secret environment variable assigned a literal value"
-regex = '''(?i)(?:AUTH_SECRET|AUTH0_CLIENT_SECRET|PUSHOVER_APP_TOKEN|MINIO_SECRET_KEY|CF_ACCESS_CLIENT_SECRET)\s*[:=]\s*["'][A-Za-z0-9_+/.=-]{16,}'''
+regex = '''(?i)(?:AUTH_SECRET|AUTH0_CLIENT_SECRET|PUSHOVER_APP_TOKEN|MINIO_SECRET_KEY|CF_ACCESS_CLIENT_SECRET|S3_SECRET_ACCESS_KEY)\s*[:=]\s*["'][A-Za-z0-9_+/.=-]{16,}'''
 keywords = [
 	"AUTH_SECRET",
 	"AUTH0_CLIENT_SECRET",
 	"PUSHOVER_APP_TOKEN",
+	"S3_SECRET_ACCESS_KEY",
 	"MINIO_SECRET_KEY",
 	"CF_ACCESS_CLIENT_SECRET",
 ]

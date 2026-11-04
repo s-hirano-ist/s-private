@@ -4,12 +4,17 @@ import { extendDatabase } from "@s-hirano-ist/s-infrastructure/database";
 import { EventDispatcher } from "@s-hirano-ist/s-infrastructure/events/event-dispatcher";
 import { LoggingEventHandler } from "@s-hirano-ist/s-infrastructure/events/logging-event-handler";
 import { SystemEventHandler } from "@s-hirano-ist/s-infrastructure/events/system-event-handler";
+import { createMobileChunkStore } from "@s-hirano-ist/s-infrastructure/mobile/s3-chunk-store";
 import { createBackendNotificationService } from "@s-hirano-ist/s-infrastructure/notifications/pushover-service";
 import { ServerLogger } from "@s-hirano-ist/s-infrastructure/observability/server-logger";
 import { createVectorSearch } from "@s-hirano-ist/s-infrastructure/search/vector-search";
+import { createBooksStorageService } from "@s-hirano-ist/s-infrastructure/shared/books-storage-service";
+import { createImagesStorageService } from "@s-hirano-ist/s-infrastructure/shared/images-storage-service";
 import { tenantContext } from "@s-hirano-ist/s-infrastructure/shared/tenant-context";
 import { applyTenantFilter } from "@s-hirano-ist/s-infrastructure/shared/tenant-filter";
+import { createObjectStorageClient } from "@s-hirano-ist/s-storage";
 import * as Sentry from "@sentry/node";
+import { readFile } from "node:fs/promises";
 import { createApiApp } from "s-private-backend/api/app";
 import { createApiAuth } from "s-private-backend/api/auth";
 import { createApiServices } from "s-private-backend/api/composition";
@@ -19,7 +24,7 @@ import { createBackendAuth } from "s-private-backend/auth/web-auth";
 import { createHttpErrorReporter } from "s-private-backend/error-reporter";
 import { createEventInitializer } from "s-private-backend/events/event-setup";
 import { createGigazineCronHandler } from "s-private-backend/notifications/cron";
-import { createUnavailableObjectStorage } from "s-private-backend/unavailable-object-storage";
+import { createLocalSampleSeeder } from "s-private-backend/shared/local-fixtures";
 
 export function createBackendRuntime(env: BackendEnv) {
 	Sentry.init({
@@ -58,7 +63,16 @@ export function createBackendRuntime(env: BackendEnv) {
 			applyTenantFilter(model, operation, args, tenantContext.getStore()),
 		() => {},
 	);
-	const { storage, chunks } = createUnavailableObjectStorage();
+	const storageClient = createObjectStorageClient({
+		endpoint: env.S3_ENDPOINT,
+		region: env.S3_REGION,
+		accessKeyId: env.S3_ACCESS_KEY_ID,
+		secretAccessKey: env.S3_SECRET_ACCESS_KEY,
+		forcePathStyle: env.S3_FORCE_PATH_STYLE,
+	});
+	const images = createImagesStorageService(storageClient, env.S3_BUCKET_NAME);
+	const books = createBooksStorageService(storageClient, env.S3_BUCKET_NAME);
+	const chunks = createMobileChunkStore(storageClient, env.S3_BUCKET_NAME);
 	const eventDispatcher = new EventDispatcher();
 	const logger = new ServerLogger(
 		createBackendNotificationService(env),
@@ -71,7 +85,7 @@ export function createBackendRuntime(env: BackendEnv) {
 	const services = createApiServices({
 		database,
 		chunks,
-		storage: { images: storage, books: storage },
+		storage: { images, books },
 		eventDispatcher,
 		searchVectors: createVectorSearch({
 			url: env.QDRANT_URL,
@@ -94,7 +108,6 @@ export function createBackendRuntime(env: BackendEnv) {
 		services.pushDelivery.sendPushToAll,
 	);
 	const app = createBackendHttpApp({
-		objectStorageUnavailable: true,
 		api: createApiApp(apiAuth, services.reads, services.mutations).fetch,
 		auth: async (request) => (await getAuth()).handler(request),
 		signIn: async (request) =>
@@ -103,8 +116,17 @@ export function createBackendRuntime(env: BackendEnv) {
 				isLocalDevAuthEnabled,
 				findUser: (email) =>
 					database.user.findUnique({ where: { email }, select: { id: true } }),
-				// The local sample seeder uploads images; keep sign-in independent of MinIO.
-				seedLocalUser: async () => {},
+				seedLocalUser: createLocalSampleSeeder({
+					database,
+					storage: images,
+					loadImage: () =>
+						readFile(
+							new URL(
+								"../fixtures/local-sample-landscape.png",
+								import.meta.url,
+							),
+						),
+				}),
 			})(request),
 		cron: (request) =>
 			env.BACKEND_CRON_ENABLED

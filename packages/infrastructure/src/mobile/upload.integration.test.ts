@@ -6,11 +6,11 @@ import {
 } from "@s-hirano-ist/s-application/mobile/uploads";
 import { createPrismaClient } from "@s-hirano-ist/s-database";
 import { extendDatabase } from "@s-hirano-ist/s-infrastructure/database";
-import { createMobileChunkStore } from "@s-hirano-ist/s-infrastructure/mobile/minio-chunk-store";
 import { createOperationRepository } from "@s-hirano-ist/s-infrastructure/mobile/operation-repository";
+import { createMobileChunkStore } from "@s-hirano-ist/s-infrastructure/mobile/s3-chunk-store";
 import { createUploadRepository } from "@s-hirano-ist/s-infrastructure/mobile/upload-repository";
 import { createTransactionalDatabase } from "@s-hirano-ist/s-infrastructure/transaction";
-import { createMinioClient } from "@s-hirano-ist/s-storage";
+import { createObjectStorageClient } from "@s-hirano-ist/s-storage";
 import { randomUUID } from "node:crypto";
 import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
 
@@ -33,12 +33,12 @@ const operations = createOperationRepository(database);
 const owner = `upload-${randomUUID()}`;
 const bucket = `issue2951-${randomUUID()}`;
 const minio = enabled
-	? createMinioClient({
-			endPoint: "127.0.0.1",
-			port: 9000,
-			useSSL: false,
-			accessKey: process.env.MINIO_ROOT_USER ?? "",
-			secretKey: process.env.MINIO_ROOT_PASSWORD ?? "",
+	? createObjectStorageClient({
+			endpoint: "http://127.0.0.1:9000",
+			region: "us-east-1",
+			forcePathStyle: true,
+			accessKeyId: process.env.MINIO_ROOT_USER ?? "",
+			secretAccessKey: process.env.MINIO_ROOT_PASSWORD ?? "",
 		})
 	: null;
 function fixture() {
@@ -87,15 +87,14 @@ function makeInput(fileSize = 3): UploadInput {
 	};
 }
 beforeAll(async () => {
-	if (minio) await minio.makeBucket(bucket);
+	if (minio) await minio.createBucket(bucket);
 });
 afterAll(async () => {
 	if (enabled && minio) {
-		const objects: string[] = [];
-		for await (const object of minio.listObjectsV2(bucket, "", true))
-			if (object.name) objects.push(object.name);
-		if (objects.length > 0) await minio.removeObjects(bucket, objects);
-		await minio.removeBucket(bucket);
+		const objects = await minio.listObjects(bucket, "");
+		if (objects.length > 0)
+			await Promise.all(objects.map((key) => minio.removeObject(bucket, key)));
+		await minio.deleteBucket(bucket);
 		await database.mobileUpload.deleteMany({ where: { userId: owner } });
 		await database.mobileOperation.deleteMany({ where: { userId: owner } });
 	}
