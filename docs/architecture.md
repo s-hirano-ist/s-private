@@ -126,6 +126,7 @@ import { ArticlesStackLoader } from "@/loaders/articles";
 - **スケジュール**: 通常更新は月曜11時前（Asia/Tokyo）。脆弱性修正も同じPRに集約する。修正版のある未解決アラートを検出した日は、週次の更新窓を待たず集約PR全体を更新する。
 - **Node.js**: `.nvmrc` は26系の完全バージョン、`engines.node` とVercelの両projectは `26.x`。RenovateはNode.jsと `@types/node` を26系に制限する。次のmajor移行では制約・型定義・Vercel設定も同じPRで変更する。
 - **TypeScript**: API生成・TypeDoc・StrykerがJavaScript Compiler APIを利用するため、Renovateの更新は6系までに制限する。7系への移行はこれらのツールの対応と合わせて行う。
+- **CockroachDB**: ローカルイメージは26.2系に制限する。26.3.4では既存のモバイル同期row triggerを持つテーブルへの書き込みが `could not decorrelate subquery with mutation` で失敗することを確認済み。次の系列への移行時は、migration・trigger適用後のCRUDとE2Eを検証する。
 - **lockfile**: 各依存更新で再生成する。定期的な全件再生成は無効。
 - **設定**: [.github/renovate.json5](../.github/renovate.json5) を参照。
 
