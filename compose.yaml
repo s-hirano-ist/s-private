@@ -1,6 +1,6 @@
 services:
   cockroachdb:
-    image: cockroachdb/cockroach:v26.2.1@sha256:626a830ee9c8c90655812492b17ea1ad85bae9de8268f46db686f0cb833da898
+    image: cockroachdb/cockroach:v26.2.11@sha256:811e5001de2f003ca4539b03853d98e1fd79f70bf929393b17a645673f8d5f47
     profiles: [local]
     restart: unless-stopped
     command: start-single-node --insecure
