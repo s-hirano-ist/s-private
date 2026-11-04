@@ -3,7 +3,7 @@
 	"version": "2.0.0",
 	"description": "Core domain layer for s-private application - Clean architecture domain entities, repositories, and services",
 	"engines": {
-		"node": "26.13.0"
+		"node": "26.x"
 	},
 	"type": "module",
 	"exports": {

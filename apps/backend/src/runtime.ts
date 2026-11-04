@@ -30,7 +30,15 @@ export function createBackendRuntime(env: BackendEnv) {
 	Sentry.init({
 		dsn: env.NEXT_PUBLIC_SENTRY_DSN,
 		enabled: env.NODE_ENV === "production",
-		sendDefaultPii: false,
+		dataCollection: {
+			userInfo: false,
+			cookies: false,
+			httpHeaders: false,
+			httpBodies: [],
+			urlQueryParams: false,
+			databaseQueryData: false,
+			stackFrameVariables: false,
+		},
 		beforeSend(event) {
 			// OAuth query strings and request headers must never accompany diagnostics.
 			delete event.request;

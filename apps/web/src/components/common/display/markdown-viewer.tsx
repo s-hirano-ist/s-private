@@ -9,7 +9,7 @@ const SLUG_REGEX = /\W+/gu;
 function generateHeadingId(children: ReactNode): string {
 	// Heading children are text at runtime; toString coercion must be preserved exactly.
 	// oxlint-disable-next-line typescript/no-base-to-string -- ReactNode is a runtime-text boundary; preserving existing coercion
-	return children?.toString().toLowerCase().replace(SLUG_REGEX, "-") ?? "";
+	return children?.toString().toLowerCase().replaceAll(SLUG_REGEX, "-") ?? "";
 }
 
 /**
