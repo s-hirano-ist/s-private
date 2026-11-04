@@ -1,7 +1,7 @@
+import { createImagesStorageService } from "@s-hirano-ist/s-infrastructure/shared/images-storage-service";
 import { createObjectStorageClient } from "@s-hirano-ist/s-storage";
 import { StorageOperationError } from "@s-hirano-ist/s-storage";
 import { Readable } from "node:stream";
-import { createImagesStorageService } from "@s-hirano-ist/s-infrastructure/shared/images-storage-service";
 import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 const storageClient = createObjectStorageClient({
 	endpoint: "http://localhost:9000",

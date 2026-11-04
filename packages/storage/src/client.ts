@@ -1,6 +1,7 @@
 import {
 	S3Client,
- CreateBucketCommand, DeleteBucketCommand,
+	CreateBucketCommand,
+	DeleteBucketCommand,
 	PutObjectCommand,
 	GetObjectCommand,
 	HeadObjectCommand,
@@ -73,8 +74,12 @@ export function createObjectStorageClient(config = loadStorageConfig()) {
 		forcePathStyle: config.forcePathStyle,
 	});
 	return {
- async createBucket(bucket: string): Promise<void> { await client.send(new CreateBucketCommand({ Bucket: bucket })); },
- async deleteBucket(bucket: string): Promise<void> { await client.send(new DeleteBucketCommand({ Bucket: bucket })); },
+		async createBucket(bucket: string): Promise<void> {
+			await client.send(new CreateBucketCommand({ Bucket: bucket }));
+		},
+		async deleteBucket(bucket: string): Promise<void> {
+			await client.send(new DeleteBucketCommand({ Bucket: bucket }));
+		},
 		async putObject(bucket: string, key: string, body: Uint8Array) {
 			const result = await client.send(
 				new PutObjectCommand({ Bucket: bucket, Key: key, Body: body }),

@@ -6,8 +6,8 @@ import {
 } from "@s-hirano-ist/s-application/mobile/uploads";
 import { createPrismaClient } from "@s-hirano-ist/s-database";
 import { extendDatabase } from "@s-hirano-ist/s-infrastructure/database";
-import { createMobileChunkStore } from "@s-hirano-ist/s-infrastructure/mobile/s3-chunk-store";
 import { createOperationRepository } from "@s-hirano-ist/s-infrastructure/mobile/operation-repository";
+import { createMobileChunkStore } from "@s-hirano-ist/s-infrastructure/mobile/s3-chunk-store";
 import { createUploadRepository } from "@s-hirano-ist/s-infrastructure/mobile/upload-repository";
 import { createTransactionalDatabase } from "@s-hirano-ist/s-infrastructure/transaction";
 import { createObjectStorageClient } from "@s-hirano-ist/s-storage";
@@ -35,8 +35,8 @@ const bucket = `issue2951-${randomUUID()}`;
 const minio = enabled
 	? createObjectStorageClient({
 			endpoint: "http://127.0.0.1:9000",
- region: "us-east-1",
- forcePathStyle: true,
+			region: "us-east-1",
+			forcePathStyle: true,
 			accessKeyId: process.env.MINIO_ROOT_USER ?? "",
 			secretAccessKey: process.env.MINIO_ROOT_PASSWORD ?? "",
 		})
@@ -91,9 +91,9 @@ beforeAll(async () => {
 });
 afterAll(async () => {
 	if (enabled && minio) {
-		const objects: string[] = [];
-		objects.push(...await minio.listObjects(bucket, ""));
-		if (objects.length > 0) await Promise.all(objects.map((key) => minio.removeObject(bucket, key)));
+		const objects = await minio.listObjects(bucket, "");
+		if (objects.length > 0)
+			await Promise.all(objects.map((key) => minio.removeObject(bucket, key)));
 		await minio.deleteBucket(bucket);
 		await database.mobileUpload.deleteMany({ where: { userId: owner } });
 		await database.mobileOperation.deleteMany({ where: { userId: owner } });

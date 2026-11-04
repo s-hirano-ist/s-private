@@ -70,7 +70,7 @@ pnpm --filter @s-hirano-ist/s-scripts ingest-books
 ```
 
 画像の元ファイルは`$S_CONTENTS_PATH/image/dump/`、書籍は`markdown/book/`と`image/book/`に置く。
-画像ingestはDB登録済みのpathをスキップする。書籍も既存データの更新条件に従うため、
+ingestは既存DBと内容が同じデータをスキップする。既存データの更新条件に従うため、
 空のB2へ接続先を変更して再実行するだけでは、全既存objectの復元は保証されない。
 このPRにDBのリセットや強制再アップロード、MinIOからのコピー処理は含めない。
 必要な既存objectが欠ける場合は、その解消方法を決めてから本番を切り替える。

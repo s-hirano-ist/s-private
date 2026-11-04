@@ -32,7 +32,8 @@ export async function runContentImport(
 		const bucket = process.env.S3_BUCKET_NAME;
 		if (mediaDomain && !dryRun && !bucket)
 			throw new Error("S3_BUCKET_NAME is required.");
-		const client = mediaDomain && !dryRun ? createObjectStorageClient() : undefined;
+		const client =
+			mediaDomain && !dryRun ? createObjectStorageClient() : undefined;
 		const media =
 			client && bucket
 				? createImportMediaStore(
@@ -61,15 +62,21 @@ export async function runContentImport(
 			},
 		);
 		console.log(summary);
-		if (!dryRun) await notification
-			.notifyInfo(`ingest-${domain} completed`, { caller: `ingest-${domain}` })
-			.catch((error: unknown) => console.error("通知失敗:", error));
+		if (!dryRun)
+			await notification
+				.notifyInfo(`ingest-${domain} completed`, {
+					caller: `ingest-${domain}`,
+				})
+				.catch((error: unknown) => console.error("通知失敗:", error));
 	} catch (error) {
 		console.error(error);
 		process.exitCode = 1;
-		if (!dryRun) await notification
-			.notifyError(`ingest-${domain} failed`, { caller: `ingest-${domain}` })
-			.catch((notifyError: unknown) => console.error("通知失敗:", notifyError));
+		if (!dryRun)
+			await notification
+				.notifyError(`ingest-${domain} failed`, { caller: `ingest-${domain}` })
+				.catch((notifyError: unknown) =>
+					console.error("通知失敗:", notifyError),
+				);
 	} finally {
 		await prisma.$disconnect();
 	}

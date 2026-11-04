@@ -29,8 +29,8 @@ const png = Buffer.from(
 const minio = enabled
 	? createObjectStorageClient({
 			endpoint: "http://127.0.0.1:9000",
- region: "us-east-1",
- forcePathStyle: true,
+			region: "us-east-1",
+			forcePathStyle: true,
 			accessKeyId: process.env.MINIO_ROOT_USER ?? "",
 			secretAccessKey: process.env.MINIO_ROOT_PASSWORD ?? "",
 		})
@@ -213,9 +213,9 @@ beforeAll(async () => {
 });
 afterAll(async () => {
 	if (enabled && minio) {
-		const objects: string[] = [];
-		objects.push(...await minio.listObjects(bucket, ""));
-		if (objects.length > 0) await Promise.all(objects.map((key) => minio.removeObject(bucket, key)));
+		const objects = await minio.listObjects(bucket, "");
+		if (objects.length > 0)
+			await Promise.all(objects.map((key) => minio.removeObject(bucket, key)));
 		await minio.deleteBucket(bucket);
 		await client.article.deleteMany({ where: { userId: owner } });
 		await client.note.deleteMany({ where: { userId: owner } });
