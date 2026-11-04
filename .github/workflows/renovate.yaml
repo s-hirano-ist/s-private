@@ -58,6 +58,9 @@ jobs:
           #   contents            : ブランチ・コミット・lockfile 更新
           #   pull-requests       : PR 作成・更新
           #   issues              : Dependency Dashboard issue の維持
+          #   workflows           : GitHub Actions の依存更新を含むコミットの push
+          #     App 側にも "Workflows: Read and write" の付与とインストール先の承認が必要。
+          #     無いと workflow 更新が拒否され、単一集約ブランチ全体の PR を作成できない。
           #   statuses            : minimumReleaseAge の内部チェックを renovate/stability-days という
           #     commit status として branch に書き込む。無いと POST /statuses が 403
           #     "Resource not accessible by integration" → Renovate が integration-unauthorized を
@@ -69,6 +72,7 @@ jobs:
           permission-contents: write
           permission-pull-requests: write
           permission-issues: write
+          permission-workflows: write
           permission-statuses: write
           permission-vulnerability-alerts: read
 
