@@ -10,8 +10,6 @@ const NEXT_THEMES_STYLE_HASH =
 type ContentSecurityPolicyOptions = {
 	isDevelopment: boolean;
 	isPreview: boolean;
-	minioHost?: string;
-	minioPort?: string;
 	reportUrl?: string;
 };
 
@@ -19,23 +17,13 @@ function compactDirectives(directives: string[]): string {
 	return directives.join("; ");
 }
 
-function getMinioOrigin(host?: string, port?: string): string | undefined {
-	if (!host) return undefined;
-
-	const normalizedPort = port && port !== "443" ? `:${port}` : "";
-	return `https://${host}${normalizedPort}`;
-}
-
 export function buildContentSecurityPolicy({
 	isDevelopment,
 	isPreview,
-	minioHost,
-	minioPort,
 	reportUrl,
 }: ContentSecurityPolicyOptions): string {
 	const allowsVercelToolbar = isPreview;
 	const allowsInlineStyleElements = isDevelopment || allowsVercelToolbar;
-	const minioOrigin = getMinioOrigin(minioHost, minioPort);
 
 	const scriptSources = ["'self'", ...(isDevelopment ? ["'unsafe-eval'"] : [])];
 	const scriptElementSources = [
@@ -59,7 +47,6 @@ export function buildContentSecurityPolicy({
 		"data:",
 		"https://books.google.com",
 		"https://s-hirano.com",
-		...(minioOrigin ? [minioOrigin] : []),
 		...(allowsVercelToolbar
 			? ["https://vercel.live", "https://vercel.com"]
 			: []),

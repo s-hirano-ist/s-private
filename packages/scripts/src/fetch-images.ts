@@ -7,7 +7,7 @@ import {
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { createPrismaClient } from "@s-hirano-ist/s-database";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
-import { createMinioClient } from "@s-hirano-ist/s-storage";
+import { createObjectStorageClient } from "@s-hirano-ist/s-storage";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import { setTimeout } from "node:timers/promises";
@@ -33,20 +33,11 @@ async function main() {
 		PUSHOVER_USER_KEY: process.env.PUSHOVER_USER_KEY,
 		PUSHOVER_APP_TOKEN: process.env.PUSHOVER_APP_TOKEN,
 		USERNAME_TO_EXPORT: process.env.USERNAME_TO_EXPORT,
-		MINIO_BUCKET_NAME: process.env.MINIO_BUCKET_NAME,
+		S3_BUCKET_NAME: process.env.S3_BUCKET_NAME,
 	} as const;
 
 	if (Object.values(env).some((v) => !v)) {
 		throw new Error("Required environment variables are not set.");
-	}
-
-	if (
-		process.env.MINIO_USE_SSL === "true" &&
-		(!process.env.CF_ACCESS_CLIENT_ID || !process.env.CF_ACCESS_CLIENT_SECRET)
-	) {
-		throw new Error(
-			"CF_ACCESS_CLIENT_ID and CF_ACCESS_CLIENT_SECRET are required when MINIO_USE_SSL is true.",
-		);
 	}
 
 	const prisma = createPrismaClient(env.DATABASE_URL ?? "");
@@ -57,7 +48,7 @@ async function main() {
 		appToken: env.PUSHOVER_APP_TOKEN ?? "",
 	});
 
-	const minioClient = createMinioClient();
+	const storageClient = createObjectStorageClient();
 
 	const userId: UserId = makeUserId(env.USERNAME_TO_EXPORT ?? "");
 	const UNEXPORTED: Status = makeUnexportedStatus();
@@ -77,8 +68,8 @@ async function main() {
 
 			await mkdir(path.dirname(filePath), { recursive: true });
 			await withRetry(() =>
-				minioClient.fGetObject(
-					env.MINIO_BUCKET_NAME ?? "",
+				storageClient.downloadObject(
+					env.S3_BUCKET_NAME ?? "",
 					`images/original/${imagePath}`,
 					filePath,
 				),

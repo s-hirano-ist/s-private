@@ -6,10 +6,10 @@ import { createContentImportRepository } from "@s-hirano-ist/s-infrastructure/ba
 import { createImportMediaStore } from "@s-hirano-ist/s-infrastructure/batch/import-media-store";
 import { sharpImageProcessor } from "@s-hirano-ist/s-infrastructure/content/sharp-image-processor";
 import { createBooksStorageService } from "@s-hirano-ist/s-infrastructure/shared/books-storage-service";
-import { createImagesStorageService } from "@s-hirano-ist/s-infrastructure/shared/minio-storage-service";
+import { createImagesStorageService } from "@s-hirano-ist/s-infrastructure/shared/images-storage-service";
 import { systemClock } from "@s-hirano-ist/s-infrastructure/system-clock";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
-import { createMinioClient } from "@s-hirano-ist/s-storage";
+import { createObjectStorageClient } from "@s-hirano-ist/s-storage";
 
 /** CLI composition root: arguments, environment, progress and process result. */
 export async function runContentImport(
@@ -29,10 +29,11 @@ export async function runContentImport(
 	});
 	try {
 		const mediaDomain = domain === "images" || domain === "books";
-		const bucket = process.env.MINIO_BUCKET_NAME;
+		const bucket = process.env.S3_BUCKET_NAME;
 		if (mediaDomain && !dryRun && !bucket)
-			throw new Error("MINIO_BUCKET_NAME is required.");
-		const client = mediaDomain && !dryRun ? createMinioClient() : undefined;
+			throw new Error("S3_BUCKET_NAME is required.");
+		const client =
+			mediaDomain && !dryRun ? createObjectStorageClient() : undefined;
 		const media =
 			client && bucket
 				? createImportMediaStore(
@@ -61,15 +62,21 @@ export async function runContentImport(
 			},
 		);
 		console.log(summary);
-		await notification
-			.notifyInfo(`ingest-${domain} completed`, { caller: `ingest-${domain}` })
-			.catch((error: unknown) => console.error("通知失敗:", error));
+		if (!dryRun)
+			await notification
+				.notifyInfo(`ingest-${domain} completed`, {
+					caller: `ingest-${domain}`,
+				})
+				.catch((error: unknown) => console.error("通知失敗:", error));
 	} catch (error) {
 		console.error(error);
 		process.exitCode = 1;
-		await notification
-			.notifyError(`ingest-${domain} failed`, { caller: `ingest-${domain}` })
-			.catch((notifyError: unknown) => console.error("通知失敗:", notifyError));
+		if (!dryRun)
+			await notification
+				.notifyError(`ingest-${domain} failed`, { caller: `ingest-${domain}` })
+				.catch((notifyError: unknown) =>
+					console.error("通知失敗:", notifyError),
+				);
 	} finally {
 		await prisma.$disconnect();
 	}

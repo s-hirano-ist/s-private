@@ -20,10 +20,14 @@ Object.assign(process.env, {
 });
 delete process.env.NEXT_PUBLIC_SENTRY_DSN;
 delete process.env.EMBEDDING_URL;
-for (const key of Object.keys(process.env)) {
-	if (key.startsWith("MINIO_") || key.startsWith("CF_ACCESS_"))
-		delete process.env[key];
-}
+Object.assign(process.env, {
+	S3_ENDPOINT: "https://s3.us-west-004.backblazeb2.com",
+	S3_REGION: "us-west-004",
+	S3_BUCKET_NAME: "test",
+	S3_ACCESS_KEY_ID: "test",
+	S3_SECRET_ACCESS_KEY: "test",
+	S3_FORCE_PATH_STYLE: "false",
+});
 const entrypoint = process.argv[2]
 	? pathToFileURL(process.argv[2])
 	: new URL("../src/index.ts", import.meta.url);
@@ -31,8 +35,8 @@ const { default: app } = await import(entrypoint.href);
 for (const [path, status] of [
 	["/health", 200],
 	["/api/v1/session", 401],
-	["/api/v1/media/images/test/original", 404],
-	["/api/v1/uploads/test", 404],
+	["/api/v1/media/images/test/original", 401],
+	["/api/v1/uploads/test", 401],
 ]) {
 	const response = await app.fetch(
 		new Request(`https://api.s-hirano.com${path}`),

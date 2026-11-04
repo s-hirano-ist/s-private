@@ -8,12 +8,12 @@ const local = {
 	LOCAL_AUTH_EMAIL: "dev@example.test",
 	LOCAL_AUTH_PASSWORD: "local-password",
 	LOCAL_AUTH_NAME: "Developer",
-	MINIO_HOST: "localhost",
-	MINIO_PORT: "9000",
-	MINIO_BUCKET_NAME: "test",
-	MINIO_ACCESS_KEY: "test",
-	MINIO_SECRET_KEY: "test",
-	MINIO_USE_SSL: "false",
+	S3_ENDPOINT: "http://localhost:9000",
+	S3_REGION: "us-east-1",
+	S3_BUCKET_NAME: "test",
+	S3_ACCESS_KEY_ID: "test",
+	S3_SECRET_ACCESS_KEY: "test",
+	S3_FORCE_PATH_STYLE: "true",
 	QDRANT_URL: "http://localhost:6333",
 	QDRANT_COLLECTION_NAME: "test",
 	EMBEDDING_URL: "http://localhost:3001",
@@ -23,6 +23,7 @@ describe("standalone backend configuration", () => {
 		const input = {
 			...local,
 			NODE_ENV: "production",
+			S3_ENDPOINT: "https://s3.us-west-004.backblazeb2.com",
 			VERCEL: "1",
 			VERCEL_ENV: "preview",
 			LOCAL_DEV_MODE: undefined,
@@ -52,6 +53,7 @@ describe("standalone backend configuration", () => {
 		const env = parseBackendEnv({
 			...local,
 			NODE_ENV: "production",
+			S3_ENDPOINT: "https://s3.us-west-004.backblazeb2.com",
 			VERCEL: "1",
 			BETTER_AUTH_URL: "https://web.example.com",
 			LOCAL_DEV_MODE: "false",
@@ -65,30 +67,29 @@ describe("standalone backend configuration", () => {
 		expect(env.EMBEDDING_URL).toBeUndefined();
 		expect(env.QDRANT_URL).toBe(local.QDRANT_URL);
 	});
-	test("starts without object storage credentials during the temporary outage", () => {
+	test("requires object storage credentials", () => {
+		expect(() =>
+			parseBackendEnv({ ...local, S3_SECRET_ACCESS_KEY: undefined }),
+		).toThrow("S3_SECRET_ACCESS_KEY");
+	});
+	test("accepts B2 HTTPS without Cloudflare credentials", () => {
 		const env = parseBackendEnv({
 			...local,
-			MINIO_HOST: undefined,
-			MINIO_BUCKET_NAME: undefined,
-			MINIO_ACCESS_KEY: undefined,
-			MINIO_SECRET_KEY: undefined,
-			MINIO_USE_SSL: "true",
-			CF_ACCESS_CLIENT_ID: undefined,
-			CF_ACCESS_CLIENT_SECRET: undefined,
+			S3_ENDPOINT: "https://s3.us-west-004.backblazeb2.com",
+			S3_REGION: "us-west-004",
+			S3_FORCE_PATH_STYLE: "false",
 		});
-		expect(env.MINIO_HOST).toBeUndefined();
-		expect(env.MINIO_SECRET_KEY).toBeUndefined();
+		expect(env.S3_FORCE_PATH_STYLE).toBe(false);
 	});
-	test("parses port/SSL strictly and leaves Cron disabled", () => {
+	test("parses path style strictly and leaves Cron disabled", () => {
 		const env = parseBackendEnv({ ...local, AUTH0_CLIENT_ID: "" });
 		expect(env.AUTH0_CLIENT_ID).toBeUndefined();
-		expect(env.MINIO_USE_SSL).toBe(false);
-		expect(env.MINIO_PORT).toBe(9000);
+		expect(env.S3_FORCE_PATH_STYLE).toBe(true);
 		expect(env.BACKEND_PORT).toBe(3002);
 		expect(env.BACKEND_CRON_ENABLED).toBe(false);
-		expect(() => parseBackendEnv({ ...local, MINIO_USE_SSL: "yes" })).toThrow(
-			"MINIO_USE_SSL",
-		);
+		expect(() =>
+			parseBackendEnv({ ...local, S3_FORCE_PATH_STYLE: "yes" }),
+		).toThrow("S3_FORCE_PATH_STYLE");
 	});
 	test("never uses local authentication on Vercel", () => {
 		expect(() => parseBackendEnv({ ...local, VERCEL: "1" })).toThrow("Auth0");

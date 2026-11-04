@@ -24,13 +24,13 @@
 		"@sentry/node": "11.10.0",
 		"@hono/node-server": "2.1.6",
 		"@s-hirano-ist/s-application": "workspace:*",
-		"@s-hirano-ist/s-infrastructure": "workspace:*"
+		"@s-hirano-ist/s-infrastructure": "workspace:*",
+		"@s-hirano-ist/s-storage": "workspace:*"
 	},
 	"devDependencies": {
 		"@types/node": "catalog:",
 		"typescript": "catalog:",
-		"tsx": "4.23.15",
-		"@s-hirano-ist/s-storage": "workspace:*"
+		"tsx": "4.23.15"
 	},
 	"exports": {
 		"./*": "./src/*.ts"

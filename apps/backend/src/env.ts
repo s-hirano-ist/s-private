@@ -18,17 +18,17 @@ const schema = z.object({
 	LOCAL_AUTH_EMAIL: z.email().optional(),
 	LOCAL_AUTH_PASSWORD: z.string().min(8).optional(),
 	LOCAL_AUTH_NAME: optional,
-	MINIO_HOST: optional,
-	MINIO_PORT: z.coerce.number().int().min(1).max(65535).default(443),
-	MINIO_BUCKET_NAME: optional,
-	MINIO_ACCESS_KEY: optional,
-	MINIO_SECRET_KEY: optional,
-	MINIO_USE_SSL: z
+	S3_ENDPOINT: z
+		.url()
+		.refine((value) => ["http:", "https:"].includes(new URL(value).protocol)),
+	S3_REGION: z.string().min(1),
+	S3_BUCKET_NAME: z.string().min(1),
+	S3_ACCESS_KEY_ID: z.string().min(1),
+	S3_SECRET_ACCESS_KEY: z.string().min(1),
+	S3_FORCE_PATH_STYLE: z
 		.enum(["true", "false"])
-		.default("true")
+		.default("false")
 		.transform((v) => v === "true"),
-	CF_ACCESS_CLIENT_ID: optional,
-	CF_ACCESS_CLIENT_SECRET: optional,
 	QDRANT_URL: z.url(),
 	QDRANT_API_KEY: optional,
 	QDRANT_COLLECTION_NAME: z.string().min(1),
@@ -98,8 +98,11 @@ export function parseBackendEnv(input: Record<string, string | undefined>) {
 		throw new Error("Production requires verified database and outbound TLS");
 	if (env.BACKEND_CRON_ENABLED && !env.CRON_SECRET)
 		throw new Error("Enabled Cron requires CRON_SECRET");
-	// Object storage is temporarily disabled in the composition root.
-	// Its credentials must not prevent authentication and text content from starting.
+	if (
+		env.NODE_ENV === "production" &&
+		new URL(env.S3_ENDPOINT).protocol !== "https:"
+	)
+		throw new Error("Production object storage requires HTTPS");
 	return env;
 }
 export type BackendEnv = ReturnType<typeof parseBackendEnv>;

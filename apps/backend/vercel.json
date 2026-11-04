@@ -9,7 +9,7 @@
 	],
 	"functions": {
 		"src/index.ts": {
-			"includeFiles": "{src/**/!(*.test|*.spec).ts,../../packages/core/{articles,books,images,notes,shared-kernel}/**/!(*.test|*.spec).ts,../../packages/database/src/index.ts}"
+			"includeFiles": "{fixtures/*.png,src/**/!(*.test|*.spec).ts,../../packages/core/{articles,books,images,notes,shared-kernel}/**/!(*.test|*.spec).ts,../../packages/database/src/index.ts}"
 		}
 	}
 }

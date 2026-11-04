@@ -1,7 +1,7 @@
 {
 	"name": "@s-hirano-ist/s-storage",
 	"version": "2.0.0",
-	"description": "MinIO storage client for s-private application",
+	"description": "S3-compatible object storage for s-private",
 	"engines": {
 		"node": "26.13.0"
 	},
@@ -35,7 +35,7 @@
 		"directory": "packages/storage"
 	},
 	"dependencies": {
-		"minio": "8.0.7"
+		"@aws-sdk/client-s3": "catalog:"
 	},
 	"devDependencies": {
 		"@types/node": "catalog:",
