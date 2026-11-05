@@ -3,6 +3,7 @@ name: github-actions-lint
 on:
   pull_request:
     paths:
+      - .github/actionlint.yaml
       - .github/workflows/*.yaml
       - .github/workflows/*.yml
       - .github/actions/**
