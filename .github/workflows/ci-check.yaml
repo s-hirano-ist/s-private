@@ -10,7 +10,7 @@ on:
 jobs:
   run:
     name: ${{ inputs.check }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions: {}
     timeout-minutes: 10
     concurrency:
@@ -52,7 +52,7 @@ jobs:
         if: ${{ inputs.check == 'supplemental-lint' }}
         uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
         with:
-          version: 2026.11.0
+          version: 2026.11.1
           install_args: rumdl gitleaks
 
       - name: Lint CSS, Markdown and secrets
