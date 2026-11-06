@@ -98,7 +98,7 @@
 		"cheerio": "1.2.0",
 		"js-yaml": "catalog:",
 		"oxfmt": "catalog:",
-		"turndown": "7.2.4",
+		"turndown": "7.2.5",
 		"@s-hirano-ist/s-application": "workspace:*",
 		"@s-hirano-ist/s-infrastructure": "workspace:*"
 	},
