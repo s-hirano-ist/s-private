@@ -1,5 +1,21 @@
 # Changelog
 
+## [3.0.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v3.0.0...@s-hirano-ist/s-ui-v3.0.1) (2026-11-07)
+
+
+### Bug Fixes
+
+* **deps:** restore CI compatibility after dependency updates ([fedc8a2](https://github.com/s-hirano-ist/s-private/commit/fedc8a28d77b661d89a984f886cd149ba2b032ab))
+
+
+### Maintenance
+
+* **deps:** update all dependencies ([044135c](https://github.com/s-hirano-ist/s-private/commit/044135c8349b42dc3289522dc59009170d5ae16f))
+* **deps:** update all dependencies ([240a6c8](https://github.com/s-hirano-ist/s-private/commit/240a6c810c49cb4d599e5e7071987e83e3c21507))
+* **deps:** update all dependencies ([2a644f6](https://github.com/s-hirano-ist/s-private/commit/2a644f67864d0effd64f96122cce2e0cbd72ce77))
+* **deps:** update all dependencies ([def2bad](https://github.com/s-hirano-ist/s-private/commit/def2bad15dc76e2e29fc0b886d93c8ccb2a18ac3))
+* merge latest main and resolve apps layout conflicts ([5a37c72](https://github.com/s-hirano-ist/s-private/commit/5a37c724b7a2809dd46cad6f7b268a4f4cc6eb55))
+
 ## [3.0.0](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v2.2.1...@s-hirano-ist/s-ui-v3.0.0) (2026-11-01)
 
 

@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.2.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v4.1.0...s-private-v4.2.0) (2026-11-07)
+
+
+### Features
+
+* **storage:** Backblaze B2対応とメディア機能の再有効化 ([cb440be](https://github.com/s-hirano-ist/s-private/commit/cb440be776fb0d1d6e5ce48782bac0bc54d2307f))
+
+
+### Bug Fixes
+
+* **ci:** allow Ubuntu 26.04 runner in actionlint ([7a730a0](https://github.com/s-hirano-ist/s-private/commit/7a730a042546000395fa2a37bb5851e1195f0eef))
+* **ci:** grant Renovate workflow update permission ([9003941](https://github.com/s-hirano-ist/s-private/commit/900394112af8db8bf95b746eb804400c201f4d1e))
+* **ci:** Renovateのworkflow更新権限を追加 ([d7e1432](https://github.com/s-hirano-ist/s-private/commit/d7e1432d7e7bbf7854e3c1ceeaaf862cb7ae3bbd))
+* **deps:** keep CockroachDB on trigger-compatible release line ([c804835](https://github.com/s-hirano-ist/s-private/commit/c804835d00b5089e841722651c1880524834d2f5))
+* **deps:** restore CI compatibility after dependency updates ([fedc8a2](https://github.com/s-hirano-ist/s-private/commit/fedc8a28d77b661d89a984f886cd149ba2b032ab))
+* **storage:** adapt B2 support to extracted infrastructure and import flow ([d03dcba](https://github.com/s-hirano-ist/s-private/commit/d03dcba277c80bd7d33c8174b3787783de0abb8a))
+
+
+### Maintenance
+
+* **deps:** update all dependencies ([044135c](https://github.com/s-hirano-ist/s-private/commit/044135c8349b42dc3289522dc59009170d5ae16f))
+* **deps:** update all dependencies ([240a6c8](https://github.com/s-hirano-ist/s-private/commit/240a6c810c49cb4d599e5e7071987e83e3c21507))
+* **deps:** update all dependencies ([2a644f6](https://github.com/s-hirano-ist/s-private/commit/2a644f67864d0effd64f96122cce2e0cbd72ce77))
+* **deps:** update all dependencies ([def2bad](https://github.com/s-hirano-ist/s-private/commit/def2bad15dc76e2e29fc0b886d93c8ccb2a18ac3))
+* merge latest main and resolve apps layout conflicts ([5a37c72](https://github.com/s-hirano-ist/s-private/commit/5a37c724b7a2809dd46cad6f7b268a4f4cc6eb55))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @s-hirano-ist/s-ui bumped to 3.0.1
+
 ## [4.1.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v4.0.1...s-private-v4.1.0) (2026-11-03)
 
 

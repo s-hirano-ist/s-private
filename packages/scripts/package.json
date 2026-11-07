@@ -1,6 +1,6 @@
 {
 	"name": "@s-hirano-ist/s-scripts",
-	"version": "4.1.0",
+	"version": "4.2.0",
 	"description": "CLI scripts for s-private data operations",
 	"engines": {
 		"node": "26.x"
