@@ -200,15 +200,9 @@ catalogs:
     hono:
       specifier: 4.13.16
       version: 4.13.16
-    istanbul-lib-coverage:
-      specifier: 3.2.2
-      version: 3.2.2
     js-yaml:
       specifier: 5.5.0
       version: 5.5.0
-    json5:
-      specifier: 2.2.3
-      version: 2.2.3
     lefthook:
       specifier: 2.2.2
       version: 2.2.2
@@ -362,15 +356,12 @@ importers:
       happy-dom:
         specifier: 21.0.4
         version: 21.0.4
-      istanbul-lib-coverage:
-        specifier: 'catalog:'
-        version: 3.2.2
       jscpd:
         specifier: 5.4.2
         version: 5.4.2
-      json5:
-        specifier: 'catalog:'
-        version: 2.2.3
+      jsonc-parser:
+        specifier: 3.3.1
+        version: 3.3.1
       knip:
         specifier: 6.44.1
         version: 6.44.1
@@ -6667,10 +6658,6 @@ packages:
 
   isexe@2.0.0:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
-
-  istanbul-lib-coverage@3.2.2:
-    resolution: {integrity: sha512-O8dpsF+r0WV/8MNRKfnmrtCWhuKjxrq2w+jpzBL5UZKTi2LeVWnWOmWRxFlesJONmc+wLAGvKQZEOanko0LFTg==}
-    engines: {node: '>=8'}
 
   jest-worker@27.5.1:
     resolution: {integrity: sha512-7vuh85V5cdDofPyxn58nrPjBktZo0u9x1g8WtjQol+jZDaE+fhN+cIvTj11GndBnMnyfrUOG1sZQxCdjKh+DKg==}
@@ -14258,8 +14245,6 @@ snapshots:
   isarray@0.0.1: {}
 
   isexe@2.0.0: {}
-
-  istanbul-lib-coverage@3.2.2: {}
 
   jest-worker@27.5.1:
     dependencies:

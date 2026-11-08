@@ -17,8 +17,8 @@ Vite+ and Vitest 5. The core test files keep direct `vitest` imports so Stryker
 can find them.
 
 Vite+ 1.0 runs the Node and component suites. Storybook 10.6 still needs the
-standalone Vitest runner for its browser addon. The two coverage reports are
-merged into the existing CI coverage files. The test setups register jest-dom
+standalone Vitest runner for its browser addon. Both runners write blob reports,
+which Vitest merges into the existing CI coverage files. The test setups register jest-dom
 matchers on the active Vite+ `expect` instance.
 
 ## AI-assisted Storybook Workflow
