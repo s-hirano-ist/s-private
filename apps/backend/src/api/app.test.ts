@@ -445,3 +445,87 @@ test("protects status JSON behind authentication and CSRF and returns the owned 
 	auth.getWebSession.mockResolvedValue({ session: null });
 	expect((await request("https://web.example")).status).toBe(401);
 });
+
+const jsonBodyRoutes = [
+	["POST", "/articles"],
+	["POST", "/notes"],
+	["POST", "/uploads"],
+	["POST", "/push/subscriptions"],
+	["DELETE", "/push/subscriptions"],
+	["POST", "/push/subscriptions/status"],
+	["POST", "/push/test"],
+];
+test.each(jsonBodyRoutes)(
+	"limits JSON bodies before services: %s %s",
+	async (method, path) => {
+		const { app, writes, uploads, push } = fixture();
+		const response = await app.request(`/api/v1${path}`, {
+			method,
+			headers: {
+				authorization: "Bearer valid",
+				"content-type": "application/json",
+			},
+			body: JSON.stringify({ padding: "x".repeat(4 * 1024 * 1024) }),
+		});
+		expect(response.status).toBe(413);
+		expect(await response.json()).toEqual({
+			error: { code: "UPLOAD_TOO_LARGE" },
+		});
+		for (const service of [writes, uploads, push]) {
+			for (const operation of Object.values(service))
+				expect(operation).not.toHaveBeenCalled();
+		}
+	},
+);
+test("auth and CSRF checks precede the JSON body limit", async () => {
+	const { app, auth } = fixture();
+	const request = () =>
+		app.request("/api/v1/notes", {
+			method: "POST",
+			headers: { "content-type": "application/json" },
+			body: "x".repeat(4 * 1024 * 1024 + 1),
+		});
+	expect((await request()).status).toBe(403);
+	auth.getWebSession.mockResolvedValue({ session: null });
+	expect((await request()).status).toBe(401);
+});
+test("validates and strips created JSON while retaining 201 and owner", async () => {
+	const { app, writes } = fixture();
+	const operationId = "6ab4a998-177a-4a34-ae38-9f5e75a05b2c";
+	const input = { operationId, title: "Title", markdown: "Body" };
+	const result = {
+		accepted: true as const,
+		operationId,
+		resource: { type: "notes" as const, id: "note" },
+	};
+	writes.note.mockResolvedValue({ ...result, internal: "secret" });
+	const request = () =>
+		app.request("/api/v1/notes", {
+			method: "POST",
+			headers: {
+				authorization: "Bearer valid",
+				"content-type": "application/json",
+			},
+			body: JSON.stringify(input),
+		});
+	const response = await request();
+	expect(response.status).toBe(201);
+	expect(await response.json()).toEqual(result);
+	expect(writes.note).toHaveBeenCalledWith("bearer-owner", input);
+	writes.note.mockResolvedValue({ accepted: false });
+	expect((await request()).status).toBe(500);
+});
+test("returns media streams without JSON validation", async () => {
+	const { app, reads } = fixture();
+	reads.media.mockResolvedValue(
+		new Response(new Uint8Array([1, 2, 3]), {
+			headers: { "content-type": "image/webp" },
+		}),
+	);
+	const response = await app.request("/api/v1/media/images/image/thumbnail");
+	expect(response.status).toBe(200);
+	expect(response.headers.get("content-type")).toBe("image/webp");
+	expect(new Uint8Array(await response.arrayBuffer())).toEqual(
+		new Uint8Array([1, 2, 3]),
+	);
+});

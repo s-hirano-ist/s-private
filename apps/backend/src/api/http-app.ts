@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { publicOriginHeaders } from "s-private-backend/auth/public-origin-headers";
 import {
 	AuthInitializationError,
 	AUTH_RETRY_AFTER_SECONDS,
@@ -27,15 +28,7 @@ export function createBackendHttpApp(deps: {
 		if (!origin || !deps.isTrustedOrigin(origin)) return null;
 		const url = new URL(request.url);
 		const target = new URL(url.pathname + url.search, origin);
-		const headers = new Headers(request.headers);
-		for (const name of [
-			"x-s-private-web-origin",
-			"x-forwarded-host",
-			"x-forwarded-proto",
-			"forwarded",
-		])
-			headers.delete(name);
-		headers.set("host", target.host);
+		const headers = publicOriginHeaders(request.headers, origin);
 		return new Request(target, new Request(request, { headers }));
 	}
 	app.get("/api/sign-in", async (c) => {

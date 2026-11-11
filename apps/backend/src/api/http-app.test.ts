@@ -13,6 +13,9 @@ function setup(publicOrigin: string | null = "https://web.example") {
 				host: request.headers.get("host"),
 				cookie: request.headers.get("cookie"),
 				forwarded: request.headers.get("x-forwarded-host"),
+				forwardOrigin: request.headers.get("x-s-private-web-origin"),
+				forwardProto: request.headers.get("x-forwarded-proto"),
+				standardForwarded: request.headers.get("forwarded"),
 				body: request.method === "POST" ? await request.text() : null,
 			},
 			{ headers: cookies },
@@ -84,6 +87,8 @@ describe("backend HTTP host", () => {
 					"x-s-private-web-origin": "https://preview.example",
 					cookie: "state=one",
 					"x-forwarded-host": "attacker.example",
+					"x-forwarded-proto": "http",
+					forwarded: "host=attacker.example",
 				},
 			},
 		);
@@ -92,6 +97,9 @@ describe("backend HTTP host", () => {
 			host: "preview.example",
 			cookie: "state=one",
 			forwarded: null,
+			forwardOrigin: null,
+			forwardProto: null,
+			standardForwarded: null,
 			body: "callback-body",
 		});
 		expect(response.headers.getSetCookie()).toHaveLength(2);
