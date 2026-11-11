@@ -666,6 +666,10 @@ iOS本体とShare Extensionは`group.ist.s-hirano.s-private`のApp Groupだけ�
 
 Auth0のNative Application設定はWeb用Applicationと分離する。iOSはAuth0.swiftのAuthorization Code + PKCEを使用し、資格情報をKeychainへ保存する。無料Personal Teamを前提とする段階ではUniversal Linksを使わず、`ist.s-hirano.s-private` URL schemeでコールバックを受ける。Team ID、Auth0 client ID、domain、audience、API接続先はGit管理外の`apps/ios/Config/Local.xcconfig`から生成済みInfo.plistへ注入し、クライアントシークレットは使用しない。
 
+### HTTP境界の共通処理
+
+JSON成功応答の検証と返却はbackendの `jsonResponse` にまとめ、契約のスキーマと200／201を渡す。JSON bodyのサイズ制限対象は契約のrequest bodyから導出する。認証入口の `publicOriginHeaders` は検証済み公開Originに対する転送ヘッダー除去とHost設定だけを担い、Origin選択と信頼性検証は呼び出し元で行う。API一覧と共通化判断は [backend API棚卸し](backend-api-inventory.md) を参照する。
+
 ## Hono共通backendへの段階移行
 
 共通backendとWebの分離実装は完了している。`BACKEND_URL` は必須で、Web内のHono・Prisma・storage・ドメインadapterは撤去した。旧 `/api/mobile/v1`、cache無効化入口、Web Cronは404となる。
@@ -689,3 +693,14 @@ CLIは必要な内部workspaceコードと生成済みPrisma clientを `dist-pac
 内部workspaceだけの変更もCLIへ反映されるよう、CLIは次回releaseからrootアプリと同じversionで公開する。rootのrelease-pleaseがCLI manifestのversionを同時に更新する。UIは独立releaseを維持する。
 
 既存npmバージョンは削除・unpublish・deprecateしない。旧CLIの依存解決を維持したまま、内部packageの新規公開を停止する。
+
+## 運用通知（Sentry / Pushover）
+
+予期しないエラーはSentryへ記録する。入力検証・認証拒否など想定内の4xxは対象外とする。
+`Logger.error` の `severity: "critical"` は、CLI・バッチ全体の失敗や認証初期化不能に使用し、Sentry記録後にPushoverへ追加通知する。個別API・Prisma・配信の失敗は通常エラーとし、HTTP 5xxだけではcriticalにしない。Cronは処理の例外終了、または一時的な配信失敗があり成功配信が0件の場合にcriticalとする。期限切れ・再登録待ちの購読だけの場合はcriticalにしない。
+
+正常系は既存のバッチ完了と障害復旧を `notifyCompletion: true` でPushoverへ送る。Sentryのエラーイベントには記録しない。CRUD成功はログだけを残す。システムエラーイベントは `severity` を渡し、警告イベントにはPushover通知指定を持たせない。
+
+Pushover adapterは送信失敗を呼び出し側へ返す。共通 `ServerLogger` がその失敗をSentryへ記録し、再通知せず、業務の成否を変更しない。Sentryの記録失敗時もcriticalのPushover送信を試みる。
+
+CLIは `runCli` で初期化・処理・終了処理の例外を捕捉し、異常終了コードを設定した後、通知とSentryのflushを待つ。継続可能な個別失敗は `reportCliError` で記録する。RAGの設定評価を伴うimportもこの境界内で実行する。外部送信する診断は既知の秘密情報・資格情報付きURL・認証ヘッダーを除去し、requestや任意の例外オブジェクトをシリアライズしない。

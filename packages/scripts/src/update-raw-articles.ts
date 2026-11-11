@@ -1,9 +1,13 @@
 #!/usr/bin/env node
-import { createPushoverService } from "@s-hirano-ist/s-notification";
 import { existsSync } from "node:fs";
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import TurndownService from "turndown";
+import {
+	reportCliError,
+	runCli,
+	cliNotifications,
+} from "./lib/cli-observability.js";
 import { decodeHtml } from "./lib/html-charset.js";
 
 const JSON_DIR = "json/article";
@@ -77,6 +81,7 @@ async function fetchWebsiteMarkdown(url: string): Promise<string> {
 		const markdown = turndownService.turndown(html);
 		return markdown.trim();
 	} catch (error) {
+		reportCliError(error, "update-raw-articles");
 		console.error(`Failed to fetch ${url}:`, error);
 		return "";
 	}
@@ -146,48 +151,20 @@ ${websiteText}
 }
 
 async function main() {
-	const env = {
-		PUSHOVER_URL: process.env.PUSHOVER_URL,
-		PUSHOVER_USER_KEY: process.env.PUSHOVER_USER_KEY,
-		PUSHOVER_APP_TOKEN: process.env.PUSHOVER_APP_TOKEN,
-	} as const;
+	const notificationService = cliNotifications;
 
-	if (Object.values(env).some((v) => !v)) {
-		throw new Error("Required environment variables are not set.");
+	const jsonFiles = await readdir(JSON_DIR);
+	const jsonFilePaths = jsonFiles
+		.filter((file) => file.endsWith(".json"))
+		.map((file) => path.join(JSON_DIR, file));
+
+	for (const jsonFile of jsonFilePaths) {
+		console.log(`Processing: ${jsonFile}`);
+		await jsonToMarkdown(jsonFile);
 	}
-
-	const notificationService = createPushoverService({
-		url: env.PUSHOVER_URL ?? "",
-		userKey: env.PUSHOVER_USER_KEY ?? "",
-		appToken: env.PUSHOVER_APP_TOKEN ?? "",
+	await notificationService.notifyInfo("update-raw-articles completed", {
+		caller: "update-raw-articles",
 	});
-
-	try {
-		const jsonFiles = await readdir(JSON_DIR);
-		const jsonFilePaths = jsonFiles
-			.filter((file) => file.endsWith(".json"))
-			.map((file) => path.join(JSON_DIR, file));
-
-		for (const jsonFile of jsonFilePaths) {
-			console.log(`Processing: ${jsonFile}`);
-			await jsonToMarkdown(jsonFile);
-		}
-		await notificationService.notifyInfo("update-raw-articles completed", {
-			caller: "update-raw-articles",
-		});
-	} catch (error) {
-		console.error("Error in main process:", error);
-		await notificationService.notifyError(
-			`update-raw-articles failed: ${String(error)}`,
-			{
-				caller: "update-raw-articles",
-			},
-		);
-		process.exit(1);
-	}
 }
 
-main().catch((error: unknown) => {
-	console.error(error);
-	process.exit(1);
-});
+await runCli("update-raw-articles", main);

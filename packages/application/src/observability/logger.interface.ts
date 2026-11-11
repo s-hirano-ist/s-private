@@ -8,7 +8,8 @@ export type LogContext = {
 };
 
 export type LogOptions = {
-	notify?: boolean; // Whether to send notification
+	notifyCompletion?: boolean;
+	severity?: "normal" | "critical";
 };
 
 export type Logger = {

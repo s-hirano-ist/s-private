@@ -170,6 +170,9 @@ catalogs:
     '@s-hirano-ist/s-api-client':
       specifier: workspace:*
       version: workspace:*
+    '@sentry/node':
+      specifier: 11.11.0
+      version: 11.11.0
     '@tailwindcss/postcss':
       specifier: 4.3.5
       version: 4.3.5
@@ -750,6 +753,9 @@ importers:
       '@s-hirano-ist/s-storage':
         specifier: workspace:*
         version: link:../storage
+      '@sentry/node':
+        specifier: 'catalog:'
+        version: 11.11.0(rollup@4.63.2)(webpack@5.110.3(@swc/core@1.16.2(@swc/helpers@0.5.23))(esbuild@0.28.2)(lightningcss@1.33.0)(postcss@8.5.32)(sharp@0.35.5(@types/node@26.6.6)))
       cheerio:
         specifier: 1.2.0
         version: 1.2.0

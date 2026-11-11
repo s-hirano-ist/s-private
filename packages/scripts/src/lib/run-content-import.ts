@@ -8,8 +8,8 @@ import { sharpImageProcessor } from "@s-hirano-ist/s-infrastructure/content/shar
 import { createBooksStorageService } from "@s-hirano-ist/s-infrastructure/shared/books-storage-service";
 import { createImagesStorageService } from "@s-hirano-ist/s-infrastructure/shared/images-storage-service";
 import { systemClock } from "@s-hirano-ist/s-infrastructure/system-clock";
-import { createPushoverService } from "@s-hirano-ist/s-notification";
 import { createObjectStorageClient } from "@s-hirano-ist/s-storage";
+import { cliNotifications } from "./cli-observability.js";
 
 /** CLI composition root: arguments, environment, progress and process result. */
 export async function runContentImport(
@@ -22,11 +22,7 @@ export async function runContentImport(
 		throw new Error("DATABASE_URL and USERNAME_TO_EXPORT are required.");
 	const dryRun = process.argv.includes("--dry-run");
 	const prisma = createPrismaClient(databaseUrl);
-	const notification = createPushoverService({
-		url: process.env.PUSHOVER_URL ?? "",
-		userKey: process.env.PUSHOVER_USER_KEY ?? "",
-		appToken: process.env.PUSHOVER_APP_TOKEN ?? "",
-	});
+	const notification = cliNotifications;
 	try {
 		const mediaDomain = domain === "images" || domain === "books";
 		const bucket = process.env.S3_BUCKET_NAME;
@@ -63,20 +59,9 @@ export async function runContentImport(
 		);
 		console.log(summary);
 		if (!dryRun)
-			await notification
-				.notifyInfo(`ingest-${domain} completed`, {
-					caller: `ingest-${domain}`,
-				})
-				.catch((error: unknown) => console.error("通知失敗:", error));
-	} catch (error) {
-		console.error(error);
-		process.exitCode = 1;
-		if (!dryRun)
-			await notification
-				.notifyError(`ingest-${domain} failed`, { caller: `ingest-${domain}` })
-				.catch((notifyError: unknown) =>
-					console.error("通知失敗:", notifyError),
-				);
+			await notification.notifyInfo(`ingest-${domain} completed`, {
+				caller: `ingest-${domain}`,
+			});
 	} finally {
 		await prisma.$disconnect();
 	}

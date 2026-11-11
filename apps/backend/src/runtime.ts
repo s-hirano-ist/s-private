@@ -46,10 +46,7 @@ export function createBackendRuntime(env: BackendEnv) {
 			return event;
 		},
 	});
-	const reportError = createHttpErrorReporter(env, async (error) => {
-		Sentry.captureException(error, { tags: { source: "backend_http" } });
-		await Sentry.flush(2000);
-	});
+
 	const client = new PrismaClient({
 		adapter: new PrismaPg({
 			connectionString: env.DATABASE_URL,
@@ -86,6 +83,17 @@ export function createBackendRuntime(env: BackendEnv) {
 		createBackendNotificationService(env),
 		Sentry,
 	);
+	const reportError = createHttpErrorReporter(env, async (error) => {
+		Sentry.captureException(error, { tags: { source: "backend_http" } });
+		await Sentry.flush(2000);
+	});
+	const reportCritical = (caller: string) =>
+		createHttpErrorReporter(env, async (error) => {
+			await logger.error(`${caller} failed`, { caller, status: 500 }, error, {
+				severity: "critical",
+			});
+			await Sentry.flush(2000);
+		});
 	createEventInitializer(eventDispatcher, {
 		logging: new LoggingEventHandler(logger),
 		system: new SystemEventHandler(logger),
@@ -103,17 +111,20 @@ export function createBackendRuntime(env: BackendEnv) {
 		reporter: Sentry,
 	});
 	const { getAuth, isLocalDevAuthEnabled } = createBackendAuth(env, database, {
-		failure: reportError,
-		recovery() {
-			// oxlint-disable-next-line no-console -- retain recovery alongside initialization failures.
-			console.info("Auth0 initialization recovered");
-			Sentry.captureMessage("Auth0 initialization recovered", "info");
+		failure: reportCritical("auth_initialization"),
+		async recovery() {
+			await logger.info(
+				"Auth0 initialization recovered",
+				{ caller: "auth_initialization", status: 200 },
+				{ notifyCompletion: true },
+			);
 		},
 	});
 	const apiAuth = createApiAuth(env, getAuth, services.mobile, Sentry);
 	const cron = createGigazineCronHandler(
 		env,
 		services.pushDelivery.sendPushToAll,
+		reportCritical("gigazine_cron"),
 	);
 	const app = createBackendHttpApp({
 		api: createApiApp(apiAuth, services.reads, services.mutations).fetch,

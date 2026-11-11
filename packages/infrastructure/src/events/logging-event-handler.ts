@@ -47,14 +47,10 @@ export class LoggingEventHandler implements DomainEventHandler {
 
 		const status = eventType.includes("created") ? 201 : 200;
 
-		await this.logger.info(
-			message,
-			{
-				caller: metadata.caller,
-				status,
-				userId: metadata.userId,
-			},
-			{ notify: true },
-		);
+		await this.logger.info(message, {
+			caller: metadata.caller,
+			status,
+			userId: metadata.userId,
+		});
 	}
 }

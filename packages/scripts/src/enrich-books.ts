@@ -13,6 +13,7 @@ import { dump } from "js-yaml";
 import { readFile, writeFile } from "node:fs/promises";
 import { basename, join } from "node:path";
 import { setTimeout } from "node:timers/promises";
+import { reportCliError, runCli } from "./lib/cli-observability.js";
 import { globPaths } from "./lib/glob-paths.js";
 
 const NO_IMG_SRC = "https://s-hirano.com/notFound.png";
@@ -100,6 +101,7 @@ async function main(): Promise<void> {
 			}
 			enrichedCount++;
 		} catch (error) {
+			reportCliError(error, "enrich-books");
 			console.error(`❌ ${fileName}:`, error);
 			errorCount++;
 		}
@@ -110,7 +112,4 @@ async function main(): Promise<void> {
 	);
 }
 
-main().catch((error: unknown) => {
-	console.error("❌ エラーが発生しました:", error);
-	process.exit(1);
-});
+await runCli("enrich-books", main);

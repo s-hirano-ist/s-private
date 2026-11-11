@@ -1,40 +1,7 @@
 #!/usr/bin/env node
-import {
-	deleteCollection,
-	getQdrantClient,
-} from "@s-hirano-ist/s-search/qdrant-client";
+import { runCli } from "../lib/cli-observability.js";
 
-async function main() {
-	const collectionName = process.argv[2];
-
-	if (!collectionName) {
-		console.error(
-			"Usage: rag-delete-collection <collection-name>\nExample: rag-delete-collection knowledge_v1",
-		);
-		process.exit(1);
-	}
-
-	if (!process.env.QDRANT_URL) {
-		throw new Error("QDRANT_URL environment variable is required.");
-	}
-
-	const qdrant = getQdrantClient();
-	const collections = await qdrant.getCollections();
-	const exists = collections.collections.some((c) => c.name === collectionName);
-
-	if (!exists) {
-		console.log(
-			`Collection "${collectionName}" does not exist. Nothing to delete.`,
-		);
-		return;
-	}
-
-	console.log(`Deleting collection "${collectionName}"...`);
-	await deleteCollection(collectionName);
-	console.log(`Collection "${collectionName}" deleted successfully.`);
-}
-
-main().catch((error: unknown) => {
-	console.error("Failed to delete collection:", error);
-	process.exit(1);
+await runCli("rag-delete-collection", async () => {
+	const { main } = await import("./delete-collection-command.js");
+	await main();
 });

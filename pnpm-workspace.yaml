@@ -61,6 +61,7 @@ pipelines:
 catalog:
   '@aws-sdk/client-s3': 3.1165.0
   '@s-hirano-ist/s-api-client': workspace:*
+  '@sentry/node': 11.11.0
   '@tailwindcss/postcss': 4.3.5
   '@tailwindcss/typography': 0.5.20
   '@types/node': 26.6.6

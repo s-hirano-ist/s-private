@@ -1,4 +1,5 @@
 import type { ApiApp, ApiAuth, ApiSession } from "s-private-backend/api/types";
+import { apiRoutes } from "@s-hirano-ist/s-api-contracts/routes";
 import * as schemas from "@s-hirano-ist/s-api-contracts/schemas";
 import { tenantContext } from "@s-hirano-ist/s-infrastructure/shared/tenant-context";
 import { bodyLimit } from "hono/body-limit";
@@ -37,19 +38,19 @@ export function registerApiMiddleware(app: ApiApp, auth: ApiAuth) {
 			throw new ApiError("UPLOAD_TOO_LARGE");
 		},
 	});
-	app.on(
-		"POST",
-		[
-			"/articles",
-			"/notes",
-			"/uploads",
-			"/push/subscriptions",
-			"/push/subscriptions/status",
-			"/push/test",
-		],
-		jsonLimit,
-	);
-	app.on("DELETE", "/push/subscriptions", jsonLimit);
+	for (const route of apiRoutes) {
+		if (
+			"request" in route &&
+			"body" in route.request &&
+			"application/json" in route.request.body.content
+		) {
+			app.on(
+				route.method.toUpperCase(),
+				route.path.replaceAll(/\{([^{}]+)\}/gu, ":$1"),
+				jsonLimit,
+			);
+		}
+	}
 	app.on(
 		"PUT",
 		"/uploads/:id/chunks/:part",

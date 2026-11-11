@@ -34,11 +34,9 @@ describe("LoggingEventHandler", () => {
 		expect(serverLogger.info).toHaveBeenCalledWith(
 			expect.stringContaining("【ARTICLE】"),
 			{ caller: "testCaller", status: 201, userId: "user-123" },
-			{ notify: true },
 		);
 		expect(serverLogger.info).toHaveBeenCalledWith(
 			expect.stringContaining("title: Test Article"),
-			expect.any(Object),
 			expect.any(Object),
 		);
 	});
@@ -51,7 +49,6 @@ describe("LoggingEventHandler", () => {
 		expect(serverLogger.info).toHaveBeenCalledWith(
 			expect.stringContaining("削除"),
 			{ caller: "testCaller", status: 200, userId: "user-123" },
-			{ notify: true },
 		);
 	});
 
@@ -66,7 +63,6 @@ describe("LoggingEventHandler", () => {
 		expect(serverLogger.info).toHaveBeenCalledWith(
 			expect.stringContaining("【NOTES】"),
 			{ caller: "testCaller", status: 201, userId: "user-123" },
-			{ notify: true },
 		);
 	});
 
@@ -78,7 +74,6 @@ describe("LoggingEventHandler", () => {
 		expect(serverLogger.info).toHaveBeenCalledWith(
 			expect.stringContaining("削除"),
 			{ caller: "testCaller", status: 200, userId: "user-123" },
-			{ notify: true },
 		);
 	});
 
@@ -93,7 +88,6 @@ describe("LoggingEventHandler", () => {
 		expect(serverLogger.info).toHaveBeenCalledWith(
 			expect.stringContaining("【IMAGE】"),
 			{ caller: "testCaller", status: 201, userId: "user-123" },
-			{ notify: true },
 		);
 	});
 
@@ -105,7 +99,6 @@ describe("LoggingEventHandler", () => {
 		expect(serverLogger.info).toHaveBeenCalledWith(
 			expect.stringContaining("削除"),
 			{ caller: "testCaller", status: 200, userId: "user-123" },
-			{ notify: true },
 		);
 	});
 
@@ -120,7 +113,6 @@ describe("LoggingEventHandler", () => {
 		expect(serverLogger.info).toHaveBeenCalledWith(
 			expect.stringContaining("【BOOKS】"),
 			{ caller: "testCaller", status: 201, userId: "user-123" },
-			{ notify: true },
 		);
 	});
 
@@ -132,7 +124,6 @@ describe("LoggingEventHandler", () => {
 		expect(serverLogger.info).toHaveBeenCalledWith(
 			expect.stringContaining("削除"),
 			{ caller: "testCaller", status: 200, userId: "user-123" },
-			{ notify: true },
 		);
 	});
 
@@ -144,7 +135,6 @@ describe("LoggingEventHandler", () => {
 		expect(serverLogger.info).toHaveBeenCalledWith(
 			"Unknown event: unknown.event",
 			{ caller: "testCaller", status: 200, userId: "user-123" },
-			{ notify: true },
 		);
 	});
 });

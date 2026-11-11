@@ -6,9 +6,9 @@ import {
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { createPrismaClient } from "@s-hirano-ist/s-database";
-import { createPushoverService } from "@s-hirano-ist/s-notification";
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
+import { runCli, cliNotifications } from "./lib/cli-observability.js";
 
 type Note = {
 	id: string;
@@ -29,9 +29,6 @@ async function exportData(data: Note[]) {
 async function main() {
 	const env = {
 		DATABASE_URL: process.env.DATABASE_URL,
-		PUSHOVER_URL: process.env.PUSHOVER_URL,
-		PUSHOVER_USER_KEY: process.env.PUSHOVER_USER_KEY,
-		PUSHOVER_APP_TOKEN: process.env.PUSHOVER_APP_TOKEN,
 		USERNAME_TO_EXPORT: process.env.USERNAME_TO_EXPORT,
 	} as const;
 
@@ -41,11 +38,7 @@ async function main() {
 
 	const prisma = createPrismaClient(env.DATABASE_URL ?? "");
 
-	const notificationService = createPushoverService({
-		url: env.PUSHOVER_URL ?? "",
-		userKey: env.PUSHOVER_USER_KEY ?? "",
-		appToken: env.PUSHOVER_APP_TOKEN ?? "",
-	});
+	const notificationService = cliNotifications;
 
 	const userId: UserId = makeUserId(env.USERNAME_TO_EXPORT ?? "");
 	const UNEXPORTED: Status = makeUnexportedStatus();
@@ -66,21 +59,9 @@ async function main() {
 		await notificationService.notifyInfo("fetch-notes completed", {
 			caller: "fetch-notes",
 		});
-	} catch (error) {
-		console.error("❌ エラーが発生しました:", error);
-		await notificationService.notifyError(
-			`fetch-notes failed: ${String(error)}`,
-			{
-				caller: "fetch-notes",
-			},
-		);
-		process.exit(1);
 	} finally {
 		await prisma.$disconnect();
 	}
 }
 
-main().catch((error: unknown) => {
-	console.error(error);
-	process.exit(1);
-});
+await runCli("fetch-notes", main);

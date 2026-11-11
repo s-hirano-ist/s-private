@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import { join } from "node:path";
+import { reportCliError, runCli } from "./lib/cli-observability.js";
 
 type ArticleItem = {
 	ogDescription?: string;
@@ -81,6 +82,7 @@ function findDuplicateUrls(): DuplicateUrl[] {
 				}
 			}
 		} catch (error) {
+			reportCliError(error, "find-duplicate-json-articles");
 			console.error(`エラー: ${fileName} の読み込みに失敗しました:`, error);
 		}
 	}
@@ -162,20 +164,12 @@ function displayResults(duplicates: DuplicateUrl[]): void {
 }
 
 async function main(): Promise<void> {
-	try {
-		console.log("json/articleディレクトリ内のURL重複を検索中...\n");
+	console.log("json/articleディレクトリ内のURL重複を検索中...\n");
 
-		const duplicates = findDuplicateUrls();
-		displayResults(duplicates);
+	const duplicates = findDuplicateUrls();
+	displayResults(duplicates);
 
-		console.log("\n検索完了");
-	} catch (error) {
-		console.error("❌ エラーが発生しました:", error);
-		process.exit(1);
-	}
+	console.log("\n検索完了");
 }
 
-main().catch((error: unknown) => {
-	console.error(error);
-	process.exit(1);
-});
+await runCli("find-duplicate-json-articles", main);

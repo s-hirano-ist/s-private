@@ -1,10 +1,14 @@
 #!/usr/bin/env node
-import { createPushoverService } from "@s-hirano-ist/s-notification";
 import * as cheerio from "cheerio";
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { setTimeout } from "node:timers/promises";
 import { resolveArticleOgImageUrl } from "./lib/article-og-image-url.js";
+import {
+	reportCliError,
+	runCli,
+	cliNotifications,
+} from "./lib/cli-observability.js";
 import { decodeHtml } from "./lib/html-charset.js";
 
 type ArticleItem = {
@@ -59,6 +63,7 @@ async function getOgTags(
 
 		return { ogImageUrl, ogTitle, ogDescription };
 	} catch (error) {
+		reportCliError(error, "update-json-articles");
 		console.error(`Error fetching OG tags for ${url}:`, error);
 		return {};
 	}
@@ -101,58 +106,31 @@ async function processArticleFile(filePath: string): Promise<void> {
 		);
 		console.log(`Completed processing ${filePath}`);
 	} catch (error) {
+		reportCliError(error, "update-json-articles");
 		console.error(`Error processing ${filePath}:`, error);
 	}
 }
 
 async function main(): Promise<void> {
-	const env = {
-		PUSHOVER_URL: process.env.PUSHOVER_URL,
-		PUSHOVER_USER_KEY: process.env.PUSHOVER_USER_KEY,
-		PUSHOVER_APP_TOKEN: process.env.PUSHOVER_APP_TOKEN,
-	} as const;
-
-	if (Object.values(env).some((v) => !v)) {
-		throw new Error("Required environment variables are not set.");
-	}
-
-	const notificationService = createPushoverService({
-		url: env.PUSHOVER_URL ?? "",
-		userKey: env.PUSHOVER_USER_KEY ?? "",
-		appToken: env.PUSHOVER_APP_TOKEN ?? "",
-	});
+	const notificationService = cliNotifications;
 
 	const articleDir = join(process.cwd(), "json", "article");
 
-	try {
-		const files = readdirSync(articleDir).filter((file) =>
-			file.endsWith(".json"),
-		);
+	const files = readdirSync(articleDir).filter((file) =>
+		file.endsWith(".json"),
+	);
 
-		console.log(`Found ${files.length} JSON files to process`);
+	console.log(`Found ${files.length} JSON files to process`);
 
-		for (const file of files) {
-			const filePath = join(articleDir, file);
-			await processArticleFile(filePath);
-		}
-
-		console.log("All files processed successfully!");
-		await notificationService.notifyInfo("update-json-articles completed", {
-			caller: "update-json-articles",
-		});
-	} catch (error) {
-		console.error("Error in main process:", error);
-		await notificationService.notifyError(
-			`update-json-articles failed: ${String(error)}`,
-			{
-				caller: "update-json-articles",
-			},
-		);
-		process.exit(1);
+	for (const file of files) {
+		const filePath = join(articleDir, file);
+		await processArticleFile(filePath);
 	}
+
+	console.log("All files processed successfully!");
+	await notificationService.notifyInfo("update-json-articles completed", {
+		caller: "update-json-articles",
+	});
 }
 
-main().catch((error: unknown) => {
-	console.error(error);
-	process.exit(1);
-});
+await runCli("update-json-articles", main);
