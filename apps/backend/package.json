@@ -15,9 +15,9 @@
 	"dependencies": {
 		"@s-hirano-ist/s-core": "workspace:*",
 		"@s-hirano-ist/s-database": "workspace:*",
-		"better-auth": "1.7.18",
+		"better-auth": "1.7.19",
 		"zod": "catalog:",
-		"jose": "6.2.15",
+		"jose": "6.2.17",
 		"@hono/zod-openapi": "1.6.3",
 		"hono": "catalog:",
 		"@s-hirano-ist/s-api-contracts": "workspace:*",
