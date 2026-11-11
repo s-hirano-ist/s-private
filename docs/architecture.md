@@ -666,6 +666,10 @@ iOS本体とShare Extensionは`group.ist.s-hirano.s-private`のApp Groupだけ�
 
 Auth0のNative Application設定はWeb用Applicationと分離する。iOSはAuth0.swiftのAuthorization Code + PKCEを使用し、資格情報をKeychainへ保存する。無料Personal Teamを前提とする段階ではUniversal Linksを使わず、`ist.s-hirano.s-private` URL schemeでコールバックを受ける。Team ID、Auth0 client ID、domain、audience、API接続先はGit管理外の`apps/ios/Config/Local.xcconfig`から生成済みInfo.plistへ注入し、クライアントシークレットは使用しない。
 
+### HTTP境界の共通処理
+
+JSON成功応答の検証と返却はbackendの `jsonResponse` にまとめ、契約のスキーマと200／201を渡す。JSON bodyのサイズ制限対象は契約のrequest bodyから導出する。認証入口の `publicOriginHeaders` は検証済み公開Originに対する転送ヘッダー除去とHost設定だけを担い、Origin選択と信頼性検証は呼び出し元で行う。API一覧と共通化判断は [backend API棚卸し](backend-api-inventory.md) を参照する。
+
 ## Hono共通backendへの段階移行
 
 共通backendとWebの分離実装は完了している。`BACKEND_URL` は必須で、Web内のHono・Prisma・storage・ドメインadapterは撤去した。旧 `/api/mobile/v1`、cache無効化入口、Web Cronは404となる。

@@ -25,6 +25,8 @@ test("resolves direct Better Auth API calls with the validated Preview Web host"
 		"x-s-private-web-origin":
 			"https://memdex-web-abc-s-hirano-ist-team.vercel.app",
 		"x-forwarded-host": "attacker.example",
+		"x-forwarded-proto": "http",
+		forwarded: "host=attacker.example",
 	});
 	await auth.getWebSession(headers);
 	const received = getSession.mock.calls[0][0].headers;
@@ -32,7 +34,13 @@ test("resolves direct Better Auth API calls with the validated Preview Web host"
 		"memdex-web-abc-s-hirano-ist-team.vercel.app",
 	);
 	expect(received.get("cookie")).toBe("better-auth.session_token=secret");
-	expect(received.has("x-forwarded-host")).toBe(false);
+	for (const name of [
+		"x-s-private-web-origin",
+		"x-forwarded-host",
+		"x-forwarded-proto",
+		"forwarded",
+	])
+		expect(received.has(name)).toBe(false);
 	expect(headers.get("host")).toBe("backend.example");
 });
 
@@ -45,6 +53,7 @@ test.each([
 	"does not invoke auth for an untrusted Preview origin: %s",
 	async (_name, headers) => {
 		const { auth, getSession } = setup();
+		headers.set("cookie", "better-auth.session_token=secret");
 		expect(await auth.getWebSession(headers)).toEqual({ session: null });
 		expect(getSession).not.toHaveBeenCalled();
 	},

@@ -6,7 +6,7 @@ import type { WriteService } from "s-private-backend/api/write-service";
 import type { ZodType } from "zod";
 import * as routes from "@s-hirano-ist/s-api-contracts/routes";
 import * as schemas from "@s-hirano-ist/s-api-contracts/schemas";
-import { responseBody } from "s-private-backend/api/response";
+import { jsonResponse } from "s-private-backend/api/response";
 
 export function registerContentDomain<D extends MobileDomain>(
 	app: ApiApp,
@@ -17,29 +17,26 @@ export function registerContentDomain<D extends MobileDomain>(
 ) {
 	const contract = routes.contentRoutes(domain, record);
 	app.openapi(contract.list, async (c) =>
-		c.json(
-			responseBody(
-				contract.list.responses[200].content["application/json"].schema,
-				await reads.page(domain, c.get("owner"), c.req.valid("query")),
-			),
+		jsonResponse(
+			c,
+			contract.list.responses[200].content["application/json"].schema,
+			await reads.page(domain, c.get("owner"), c.req.valid("query")),
 			200,
 		),
 	);
 	app.openapi(contract.count, async (c) =>
-		c.json(
-			responseBody(
-				contract.count.responses[200].content["application/json"].schema,
-				await reads.count(domain, c.get("owner"), c.req.valid("query")),
-			),
+		jsonResponse(
+			c,
+			contract.count.responses[200].content["application/json"].schema,
+			await reads.count(domain, c.get("owner"), c.req.valid("query")),
 			200,
 		),
 	);
 	app.openapi(contract.detail, async (c) =>
-		c.json(
-			responseBody(
-				contract.detail.responses[200].content["application/json"].schema,
-				await reads.detail(domain, c.get("owner"), c.req.valid("param").id),
-			),
+		jsonResponse(
+			c,
+			contract.detail.responses[200].content["application/json"].schema,
+			await reads.detail(domain, c.get("owner"), c.req.valid("param").id),
 			200,
 		),
 	);
