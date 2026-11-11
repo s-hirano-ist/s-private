@@ -1,83 +1,114 @@
 {
-	$schema: "https://docs.renovatebot.com/renovate-schema.json",
-	timezone: "Asia/Tokyo",
-	baseBranchPatterns: ["main"],
-	extends: [
-		"config:recommended",
-		"config:best-practices",
-		":semanticCommitTypeAll(chore)",
-		":enableVulnerabilityAlertsWithLabel(security)",
+	$schema: 'https://docs.renovatebot.com/renovate-schema.json',
+	timezone: 'Asia/Tokyo',
+	baseBranchPatterns: [
+		'main',
 	],
-	reviewers: ["s-hirano-ist"],
-	// Keep every dependency source in one reviewable PR, including Actions and Docker.
-	enabledManagers: ["npm", "mise", "nvm", "docker-compose", "github-actions"],
-	// Skip lifecycle scripts only during Renovate's lockfile regeneration.
-	// CI and deployment installs still build the explicitly allowed dependencies.
+	extends: [
+		'config:recommended',
+		'config:best-practices',
+		':semanticCommitTypeAll(chore)',
+		':enableVulnerabilityAlertsWithLabel(security)',
+	],
+	reviewers: [
+		's-hirano-ist',
+	],
+	enabledManagers: [
+		'npm',
+		'mise',
+		'nvm',
+		'docker-compose',
+		'github-actions',
+	],
 	ignoreScripts: true,
 	toolSettings: {
 		nodeMaxMemory: 4096,
 	},
-	dependencyDashboard: true,
+	dependencyDashboard: {
+		enabled: true,
+	},
 	branchConcurrentLimit: 1,
 	prConcurrentLimit: 1,
 	separateMajorMinor: false,
 	separateMinorPatch: false,
 	separateMultipleMajor: false,
-	schedule: ["before 11am on monday"],
-	labels: ["dependencies"],
-	rangeStrategy: "bump",
+	schedule: [
+		'before 11am on monday',
+	],
+	labels: [
+		'dependencies',
+	],
+	rangeStrategy: 'bump',
 	automerge: false,
 	lockFileMaintenance: {
 		enabled: false,
 	},
 	vulnerabilityAlerts: {
-		// Share the regular update branch, but do not wait for the weekly window.
-		groupName: "all dependencies",
-		groupSlug: "all-dependencies",
-		branchTopic: "all-dependencies",
-		schedule: ["at any time"],
-		labels: ["dependencies", "security"],
+		groupName: 'all dependencies',
+		groupSlug: 'all-dependencies',
+		branchTopic: 'all-dependencies',
+		schedule: [
+			'at any time',
+		],
+		labels: [
+			'dependencies',
+			'security',
+		],
 	},
 	packageRules: [
 		{
-			// Match pnpm's strict minimumReleaseAge during lockfile regeneration.
-			matchDatasources: ["npm"],
-			minimumReleaseAge: "1 day",
-			internalChecksFilter: "strict",
+			matchDatasources: [
+				'npm',
+			],
+			minimumReleaseAge: '1 day',
+			internalChecksFilter: 'strict',
 		},
 		{
-			// Runtime, engines and type definitions must stay on the same major.
-			matchPackageNames: ["node", "@types/node"],
-			allowedVersions: "26.x",
+			matchPackageNames: [
+				'node',
+				'@types/node',
+			],
+			allowedVersions: '26.x',
 		},
 		{
-			// Preserve the major-range contract checked by CI and used by Vercel.
-			matchPackageNames: ["node"],
-			matchDepTypes: ["engines"],
-			rangeStrategy: "replace",
+			matchPackageNames: [
+				'node',
+			],
+			matchDepTypes: [
+				'engines',
+			],
+			rangeStrategy: 'replace',
 		},
 		{
-			// API generation, TypeDoc and Stryker require the JavaScript compiler API.
-			matchPackageNames: ["typescript"],
-			allowedVersions: "<7",
+			matchPackageNames: [
+				'typescript',
+			],
+			allowedVersions: '<7',
 		},
 		{
-			// 26.3.4 rejects writes with the existing mobile-sync row triggers.
-			matchDatasources: ["docker"],
-			matchPackageNames: ["cockroachdb/cockroach"],
-			allowedVersions: "/^v26\\.2\\./",
+			matchDatasources: [
+				'docker',
+			],
+			matchPackageNames: [
+				'cockroachdb/cockroach',
+			],
+			allowedVersions: '/^v26\\.2\\./',
 		},
 		{
-			// Preserve the intentionally unmanaged legacy embedding image.
-			matchDatasources: ["docker"],
-			matchPackageNames: ["s0hirano/embedding-api"],
+			matchDatasources: [
+				'docker',
+			],
+			matchPackageNames: [
+				's0hirano/embedding-api',
+			],
 			enabled: false,
 		},
 		{
-			// Override preset groups and update-type splitting for every manager.
-			matchPackageNames: ["*"],
-			groupName: "all dependencies",
-			groupSlug: "all-dependencies",
+			matchPackageNames: [
+				'*',
+			],
+			groupName: 'all dependencies',
+			groupSlug: 'all-dependencies',
 			separateMajorMinor: false,
 			separateMinorPatch: false,
 			separateMultipleMajor: false,
