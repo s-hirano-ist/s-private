@@ -3,6 +3,7 @@ import type { PreparedImport } from "@s-hirano-ist/s-application/batch/import-mo
 import { parseMarkdownFrontmatter } from "@s-hirano-ist/s-search/frontmatter";
 import { readFile } from "node:fs/promises";
 import { basename } from "node:path";
+import { runCli } from "./lib/cli-observability.js";
 import { globPaths } from "./lib/glob-paths.js";
 import { runContentImport } from "./lib/run-content-import.js";
 
@@ -48,4 +49,4 @@ async function* source(root: string): AsyncGenerator<PreparedImport> {
 		if (values) yield { values };
 	}
 }
-await runContentImport("notes", source);
+await runCli("ingest-notes", () => runContentImport("notes", source));

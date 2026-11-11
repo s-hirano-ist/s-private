@@ -3,6 +3,7 @@ import { parseMarkdownFrontmatter } from "@s-hirano-ist/s-search/frontmatter";
 import { dump } from "js-yaml";
 import { readFile, writeFile } from "node:fs/promises";
 import { basename, join } from "node:path";
+import { reportCliError, runCli } from "./lib/cli-observability.js";
 import { globPaths } from "./lib/glob-paths.js";
 
 const REQUIRED_KEYS = [
@@ -113,6 +114,7 @@ async function processFile(
 		}
 		return "fixed";
 	} catch (error) {
+		reportCliError(error, "fix-book-frontmatter");
 		console.error(`❌ ${fileName}: ${String(error)}`);
 		return "error";
 	}
@@ -150,7 +152,4 @@ async function main(): Promise<void> {
 	);
 }
 
-main().catch((error: unknown) => {
-	console.error("❌ エラーが発生しました:", error);
-	process.exit(1);
-});
+await runCli("fix-book-frontmatter", main);

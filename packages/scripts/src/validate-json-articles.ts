@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import { join } from "node:path";
+import { reportCliError, runCli } from "./lib/cli-observability.js";
 
 type ArticleItem = {
 	ogDescription?: string;
@@ -171,6 +172,7 @@ async function main(): Promise<void> {
 				);
 			}
 		} catch (error) {
+			reportCliError(error, "validate-json-articles");
 			if (error instanceof SyntaxError) {
 				allIssues.push({
 					file: fileName,
@@ -193,11 +195,8 @@ async function main(): Promise<void> {
 
 	const errorCount = allIssues.filter((i) => i.level === "error").length;
 	if (errorCount > 0) {
-		process.exit(1);
+		process.exitCode = 1;
 	}
 }
 
-main().catch((error: unknown) => {
-	console.error("❌ エラーが発生しました:", error);
-	process.exit(1);
-});
+await runCli("validate-json-articles", main);

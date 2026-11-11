@@ -170,6 +170,9 @@ catalogs:
     '@s-hirano-ist/s-api-client':
       specifier: workspace:*
       version: workspace:*
+    '@sentry/node':
+      specifier: 11.11.0
+      version: 11.11.0
     '@tailwindcss/postcss':
       specifier: 4.3.4
       version: 4.3.4
@@ -750,6 +753,9 @@ importers:
       '@s-hirano-ist/s-storage':
         specifier: workspace:*
         version: link:../storage
+      '@sentry/node':
+        specifier: 'catalog:'
+        version: 11.11.0(rollup@4.63.2)(webpack@5.110.3(@swc/core@1.16.2(@swc/helpers@0.5.23))(esbuild@0.28.2)(lightningcss@1.33.0)(postcss@8.5.32)(sharp@0.35.5(@types/node@26.6.6)))
       cheerio:
         specifier: 1.2.0
         version: 1.2.0
@@ -7643,11 +7649,6 @@ packages:
 
   pkg-types@2.3.3:
     resolution: {integrity: sha512-j/lCFdcppV0JxWpCEITdbDltBxPP6cHT+yNJ6Go2OgoSA9518X847X9z0p6LtA4Nc16+eQzCZjRrWanTGvHJ5w==}
-
-  playwright-core@1.64.1:
-    resolution: {integrity: sha512-BC4s8y6SEVA6Q1rSxZTto8hI1KUI3xXlHGZgvGqP4IqPdI/a6FX9H29IDNz7vKo9l21b6LfYosScPL6M3xxyDQ==}
-    engines: {node: '>=20'}
-    hasBin: true
 
   playwright-core@1.65.0:
     resolution: {integrity: sha512-vNSKgH6YqtN7cdT/L334zo0a+YwkrpicyrHJlWWPIm/Q+Nn2SWInil01oT0mbu96U4GgoRtCYQD9CzJQgju+lA==}
@@ -15470,8 +15471,6 @@ snapshots:
       exsolve: 1.1.1
       pathe: 2.0.3
 
-  playwright-core@1.64.1: {}
-
   playwright-core@1.65.0: {}
 
   playwright@1.65.0:
@@ -15667,7 +15666,7 @@ snapshots:
       oxc-resolver: 11.24.2
       oxlint: 1.81.0(oxlint-tsgolint@7.0.2006)(vite-plus@1.5.0(@arethetypeswrong/core@0.18.5)(@opentelemetry/api@1.9.1)(@types/node@26.6.6)(@vitest/browser-playwright@5.1.0)(@vitest/coverage-v8@5.1.0)(@vitest/ui@5.1.0)(esbuild@0.28.2)(happy-dom@21.0.4)(jiti@2.7.0)(playwright@1.65.0)(publint@0.3.25)(terser@5.51.2)(tsx@4.23.15)(typescript@6.0.3)(yaml@2.9.1))
       oxlint-plugin-react-doctor: 0.9.22
-      playwright-core: 1.64.1
+      playwright-core: 1.65.0
       prompts: 2.4.2
       typescript: 5.9.3
       yaml: 2.9.1

@@ -6,9 +6,6 @@ import { createPushoverService } from "./pushover.js";
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
-// Mock console.error to avoid noise in tests
-const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-
 describe("PushoverService", () => {
 	const mockConfig: NotificationConfig = {
 		url: "https://api.pushover.net/1/messages.json",
@@ -37,6 +34,7 @@ describe("PushoverService", () => {
 			"https://api.pushover.net/1/messages.json",
 			{
 				method: "POST",
+				signal: expect.any(AbortSignal),
 				headers: { "Content-Type": "application/x-www-form-urlencoded" },
 				body: new URLSearchParams({
 					token: "test_app_token",
@@ -57,6 +55,7 @@ describe("PushoverService", () => {
 			"https://api.pushover.net/1/messages.json",
 			{
 				method: "POST",
+				signal: expect.any(AbortSignal),
 				headers: { "Content-Type": "application/x-www-form-urlencoded" },
 				body: new URLSearchParams({
 					token: "test_app_token",
@@ -77,6 +76,7 @@ describe("PushoverService", () => {
 			"https://api.pushover.net/1/messages.json",
 			{
 				method: "POST",
+				signal: expect.any(AbortSignal),
 				headers: { "Content-Type": "application/x-www-form-urlencoded" },
 				body: new URLSearchParams({
 					token: "test_app_token",
@@ -88,7 +88,7 @@ describe("PushoverService", () => {
 		);
 	});
 
-	test("should handle NotificationError gracefully", async () => {
+	test("propagates HTTP delivery failures", async () => {
 		mockFetch.mockResolvedValue({
 			ok: false,
 			status: 400,
@@ -96,49 +96,33 @@ describe("PushoverService", () => {
 
 		const service = createPushoverService(mockConfig);
 
-		// Should not throw
+		// Delivery failures are handled by the host logger.
 		await expect(
 			service.notifyError("Test error", mockContext),
-		).resolves.toBeUndefined();
-
-		expect(consoleSpy).toHaveBeenCalledWith(
-			expect.stringContaining(
-				"[NotificationService] Failed to send notification:",
-			),
-		);
+		).rejects.toThrow("notificationSend");
 	});
 
-	test("should handle fetch errors gracefully", async () => {
+	test("propagates network delivery failures", async () => {
 		mockFetch.mockRejectedValue(new Error("Network error"));
 
 		const service = createPushoverService(mockConfig);
 
-		// Should not throw
+		// Delivery failures are handled by the host logger.
 		await expect(
 			service.notifyWarning("Test warning", mockContext),
-		).resolves.toBeUndefined();
-
-		expect(consoleSpy).toHaveBeenCalledWith(
-			"[NotificationService] Unknown error occurred while sending notification:",
-			expect.any(Error),
-		);
+		).rejects.toThrow("Network error");
 	});
 
-	test("should handle unexpected errors gracefully", async () => {
+	test("propagates unexpected delivery failures", async () => {
 		mockFetch.mockImplementation(() => {
 			throw new TypeError("Unexpected error");
 		});
 
 		const service = createPushoverService(mockConfig);
 
-		// Should not throw
-		await expect(
-			service.notifyInfo("Test info", mockContext),
-		).resolves.toBeUndefined();
-
-		expect(consoleSpy).toHaveBeenCalledWith(
-			"[NotificationService] Unknown error occurred while sending notification:",
-			expect.any(TypeError),
+		// Delivery failures are handled by the host logger.
+		await expect(service.notifyInfo("Test info", mockContext)).rejects.toThrow(
+			"Unexpected error",
 		);
 	});
 
@@ -169,6 +153,7 @@ describe("PushoverService", () => {
 
 		expect(mockFetch).toHaveBeenCalledWith("https://custom.api.com/notify", {
 			method: "POST",
+			signal: expect.any(AbortSignal),
 			headers: { "Content-Type": "application/x-www-form-urlencoded" },
 			body: new URLSearchParams({
 				token: "custom_token",

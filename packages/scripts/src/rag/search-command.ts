@@ -1,0 +1,101 @@
+import type { ContentType, SearchResult } from "@s-hirano-ist/s-search/config";
+import {
+	ensureCollection,
+	search as qdrantSearch,
+} from "@s-hirano-ist/s-search/qdrant-client";
+
+type SearchOptions = {
+	contentType?: ContentType | ContentType[];
+	heading?: string;
+	topK?: number;
+	type?: "markdown_note" | "bookmark_json";
+};
+
+function parseArgs(): { options: SearchOptions; query: string } | undefined {
+	const args = process.argv.slice(2);
+	const options: SearchOptions = {};
+	const positional: string[] = [];
+
+	for (let i = 0; i < args.length; i++) {
+		const arg = args[i];
+		if (arg === "--top-k" && i + 1 < args.length) {
+			options.topK = Number(args[++i]);
+		} else if (arg === "--type" && i + 1 < args.length) {
+			options.type = args[++i] as SearchOptions["type"];
+		} else if (arg === "--heading" && i + 1 < args.length) {
+			options.heading = args[++i];
+		} else if (arg === "--content-type" && i + 1 < args.length) {
+			const value = args[++i];
+			const types = value.split(",") as ContentType[];
+			options.contentType = types.length === 1 ? types[0] : types;
+		} else {
+			positional.push(arg);
+		}
+	}
+
+	const query = positional.join(" ");
+	if (!query) {
+		console.error(
+			"Usage: rag-search <query> [--top-k N] [--type markdown_note|bookmark_json] [--heading HEADING] [--content-type articles|books|notes]",
+		);
+		process.exitCode = 1;
+		return undefined;
+	}
+
+	return { query, options };
+}
+
+async function searchContent(
+	query: string,
+	options: SearchOptions = {},
+): Promise<{ query: string; results: SearchResult[]; totalResults: number }> {
+	const results = await qdrantSearch(query, {
+		topK: options.topK,
+		filter: {
+			type: options.type,
+			top_heading: options.heading,
+			content_type: options.contentType,
+		},
+	});
+	return { results, query, totalResults: results.length };
+}
+
+async function search(): Promise<void> {
+	const args = parseArgs();
+	if (!args) return;
+	const { query, options } = args;
+
+	console.log(`Searching for: "${query}"`);
+	if (options.topK) console.log(`  top-k: ${options.topK}`);
+	if (options.type) console.log(`  type: ${options.type}`);
+	if (options.heading) console.log(`  heading: ${options.heading}`);
+	if (options.contentType)
+		console.log(
+			`  content-type: ${Array.isArray(options.contentType) ? options.contentType.join(",") : options.contentType}`,
+		);
+	console.log();
+
+	await ensureCollection();
+
+	const response = await searchContent(query, options);
+
+	console.log(`Found ${response.totalResults} results:\n`);
+
+	for (const [i, result] of response.results.entries()) {
+		console.log(`--- Result ${i + 1} (score: ${result.score.toFixed(4)}) ---`);
+		console.log(`Title: ${result.title}`);
+		if (result.url) console.log(`URL: ${result.url}`);
+		console.log(`Type: ${result.type}`);
+		console.log(`Content-Type: ${result.content_type}`);
+		console.log(`Heading: ${result.heading_path.join(" > ")}`);
+		console.log(`\n${result.text}\n`);
+	}
+}
+
+export async function main() {
+	if (!process.env.QDRANT_URL) {
+		throw new Error("QDRANT_URL environment variable is required.");
+	}
+
+	await search();
+}

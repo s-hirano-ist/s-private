@@ -89,24 +89,25 @@
 	},
 	"dependencies": {
 		"@googleapis/books": "13.0.1",
+		"@s-hirano-ist/s-application": "workspace:*",
 		"@s-hirano-ist/s-core": "workspace:*",
 		"@s-hirano-ist/s-database": "workspace:*",
 		"@s-hirano-ist/s-image-processing": "workspace:*",
+		"@s-hirano-ist/s-infrastructure": "workspace:*",
 		"@s-hirano-ist/s-notification": "workspace:*",
 		"@s-hirano-ist/s-search": "workspace:*",
 		"@s-hirano-ist/s-storage": "workspace:*",
+		"@sentry/node": "catalog:",
 		"cheerio": "1.2.0",
 		"js-yaml": "catalog:",
 		"oxfmt": "catalog:",
-		"turndown": "7.2.5",
-		"@s-hirano-ist/s-application": "workspace:*",
-		"@s-hirano-ist/s-infrastructure": "workspace:*"
+		"turndown": "7.2.5"
 	},
 	"devDependencies": {
 		"@types/node": "catalog:",
 		"@types/turndown": "5.0.6",
+		"esbuild": "0.28.2",
 		"tsx": "4.23.15",
-		"typescript": "catalog:",
-		"esbuild": "0.28.2"
+		"typescript": "catalog:"
 	}
 }

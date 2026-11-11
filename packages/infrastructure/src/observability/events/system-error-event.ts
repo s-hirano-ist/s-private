@@ -7,7 +7,7 @@ import { BaseDomainEvent } from "@s-hirano-ist/s-core/shared-kernel/events/base-
  *
  * @remarks
  * Used to track and notify about system-level errors.
- * The shouldNotify flag controls whether external notifications (e.g., Pushover) are sent.
+ * Critical severity sends an additional Pushover notification.
  *
  * @example
  * ```typescript
@@ -16,7 +16,7 @@ import { BaseDomainEvent } from "@s-hirano-ist/s-core/shared-kernel/events/base-
  *   status: 500,
  *   caller: "connectDatabase",
  *   userId: "system",
- *   shouldNotify: true,
+ *   severity: "critical",
  *   extraData: { host: "localhost", port: 5432 }
  * });
  *
@@ -37,13 +37,13 @@ export class SystemErrorEvent extends BaseDomainEvent<SystemErrorPayload> {
 	 * @param data.caller - The function/method where the error occurred
 	 * @param data.userId - The user affected (defaults to "system")
 	 * @param data.extraData - Additional context about the error
-	 * @param data.shouldNotify - Whether to send external notifications (defaults to false)
+	 * @param data.severity - Error severity (defaults to normal)
 	 */
 	constructor(data: {
 		caller: string;
 		extraData?: unknown;
 		message: string;
-		shouldNotify?: boolean;
+		severity?: "normal" | "critical";
 		status: number;
 		userId?: string;
 	}) {
@@ -53,7 +53,7 @@ export class SystemErrorEvent extends BaseDomainEvent<SystemErrorPayload> {
 				message: data.message,
 				status: data.status,
 				extraData: data.extraData,
-				shouldNotify: data.shouldNotify ?? false,
+				severity: data.severity ?? "normal",
 			},
 			{
 				caller: data.caller,

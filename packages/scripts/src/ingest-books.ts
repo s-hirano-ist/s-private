@@ -4,6 +4,7 @@ import { makeISBN } from "@s-hirano-ist/s-core/books/entities/book-entity";
 import { parseMarkdownFrontmatter } from "@s-hirano-ist/s-search/frontmatter";
 import { readFile } from "node:fs/promises";
 import { basename, extname } from "node:path";
+import { runCli } from "./lib/cli-observability.js";
 import { globPaths } from "./lib/glob-paths.js";
 import { runContentImport } from "./lib/run-content-import.js";
 
@@ -86,4 +87,4 @@ async function* source(root: string): AsyncGenerator<PreparedImport> {
 		};
 	}
 }
-await runContentImport("books", source);
+await runCli("ingest-books", () => runContentImport("books", source));

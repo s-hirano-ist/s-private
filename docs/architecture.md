@@ -693,3 +693,14 @@ CLIは必要な内部workspaceコードと生成済みPrisma clientを `dist-pac
 内部workspaceだけの変更もCLIへ反映されるよう、CLIは次回releaseからrootアプリと同じversionで公開する。rootのrelease-pleaseがCLI manifestのversionを同時に更新する。UIは独立releaseを維持する。
 
 既存npmバージョンは削除・unpublish・deprecateしない。旧CLIの依存解決を維持したまま、内部packageの新規公開を停止する。
+
+## 運用通知（Sentry / Pushover）
+
+予期しないエラーはSentryへ記録する。入力検証・認証拒否など想定内の4xxは対象外とする。
+`Logger.error` の `severity: "critical"` は、CLI・バッチ全体の失敗や認証初期化不能に使用し、Sentry記録後にPushoverへ追加通知する。個別API・Prisma・配信の失敗は通常エラーとし、HTTP 5xxだけではcriticalにしない。Cronは処理の例外終了、または一時的な配信失敗があり成功配信が0件の場合にcriticalとする。期限切れ・再登録待ちの購読だけの場合はcriticalにしない。
+
+正常系は既存のバッチ完了と障害復旧を `notifyCompletion: true` でPushoverへ送る。Sentryのエラーイベントには記録しない。CRUD成功はログだけを残す。システムエラーイベントは `severity` を渡し、警告イベントにはPushover通知指定を持たせない。
+
+Pushover adapterは送信失敗を呼び出し側へ返す。共通 `ServerLogger` がその失敗をSentryへ記録し、再通知せず、業務の成否を変更しない。Sentryの記録失敗時もcriticalのPushover送信を試みる。
+
+CLIは `runCli` で初期化・処理・終了処理の例外を捕捉し、異常終了コードを設定した後、通知とSentryのflushを待つ。継続可能な個別失敗は `reportCliError` で記録する。RAGの設定評価を伴うimportもこの境界内で実行する。外部送信する診断は既知の秘密情報・資格情報付きURL・認証ヘッダーを除去し、requestや任意の例外オブジェクトをシリアライズしない。

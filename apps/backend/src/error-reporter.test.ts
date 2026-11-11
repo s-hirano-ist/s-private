@@ -93,7 +93,7 @@ test("does not serialize non-Error thrown values", () => {
 	const { reportError, captureException, consoleError } = setup();
 	reportError({ cookie: "private-cookie" });
 	expect(captureException.mock.calls[0]?.[0]?.message).toBe(
-		"Unknown backend error",
+		"Unknown operational error",
 	);
 	expect(JSON.stringify(consoleError.mock.calls)).not.toContain(
 		"private-cookie",

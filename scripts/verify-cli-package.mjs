@@ -62,8 +62,27 @@ try {
 	assert.equal(database.status, 1);
 	assert.match(
 		database.stderr,
-		/P1001/u,
+		/PrismaClientKnownRequestError/u,
 		"Bundled Prisma must initialize and reach the deliberately unavailable local database",
+	);
+	assert.match(
+		database.stderr,
+		/Can't reach database server at 127\.0\.0\.1:1/u,
+	);
+	const rag = spawnSync(
+		process.execPath,
+		[path.join(directory, "dist/rag/search.js"), "query", "--dry-run"],
+		{
+			cwd: consumer,
+			env: { ...env, QDRANT_COLLECTION_NAME: "" },
+			encoding: "utf8",
+			timeout: 30_000,
+		},
+	);
+	assert.equal(rag.status, 1);
+	assert.match(
+		rag.stderr,
+		/QDRANT_COLLECTION_NAME environment variable is required/u,
 	);
 	console.log(
 		`CLI consumer passed: isolated install, ${Object.keys(manifest.bin).length} commands, formatter and bundled Prisma.`,

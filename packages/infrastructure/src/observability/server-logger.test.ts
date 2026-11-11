@@ -83,7 +83,9 @@ describe("ServerLogger", () => {
 		const logger = new ServerLogger(failingNotificationService, reporter);
 
 		await expect(
-			logger.error("Critical failure", context, undefined, { notify: true }),
+			logger.error("Critical failure", context, undefined, {
+				severity: "critical",
+			}),
 		).resolves.toBeUndefined();
 
 		expect(captureException).toHaveBeenCalledWith(notificationError, {
