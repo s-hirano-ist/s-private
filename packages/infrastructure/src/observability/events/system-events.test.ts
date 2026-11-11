@@ -23,27 +23,27 @@ describe("SystemErrorEvent", () => {
 			message: "Database connection failed",
 			status: 500,
 			extraData: { host: "localhost" },
-			shouldNotify: false,
+			severity: "normal",
 		});
 	});
 
-	test("should default shouldNotify to false", () => {
+	test("should default severity to normal", () => {
 		const event = new SystemErrorEvent({
 			message: "Error",
 			status: 500,
 			caller: "test",
 		});
-		expect(event.payload.shouldNotify).toBe(false);
+		expect(event.payload.severity).toBe("normal");
 	});
 
-	test("should accept shouldNotify true", () => {
+	test("should accept critical severity", () => {
 		const event = new SystemErrorEvent({
 			message: "Critical Error",
 			status: 500,
 			caller: "test",
-			shouldNotify: true,
+			severity: "critical",
 		});
-		expect(event.payload.shouldNotify).toBe(true);
+		expect(event.payload.severity).toBe("critical");
 	});
 
 	test("should default userId to 'system' when not provided", () => {
@@ -108,27 +108,7 @@ describe("SystemWarningEvent", () => {
 			message: "Cache miss rate high",
 			status: 200,
 			extraData: { missRate: 0.75 },
-			shouldNotify: false,
 		});
-	});
-
-	test("should default shouldNotify to false", () => {
-		const event = new SystemWarningEvent({
-			message: "Warning",
-			status: 200,
-			caller: "test",
-		});
-		expect(event.payload.shouldNotify).toBe(false);
-	});
-
-	test("should accept shouldNotify true", () => {
-		const event = new SystemWarningEvent({
-			message: "Warning",
-			status: 200,
-			caller: "test",
-			shouldNotify: true,
-		});
-		expect(event.payload.shouldNotify).toBe(true);
 	});
 
 	test("should default userId to 'system' when not provided", () => {

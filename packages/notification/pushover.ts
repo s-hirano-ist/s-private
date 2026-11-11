@@ -31,36 +31,19 @@ class PushoverService implements NotificationService {
 	 * @internal
 	 */
 	private async sendMessage(message: string, priority = 0): Promise<void> {
-		try {
-			const body = new URLSearchParams({
-				token: this.config.appToken,
-				user: this.config.userKey,
-				message,
-				priority: String(priority),
-			});
-
-			const result = await fetch(this.config.url, {
-				method: "POST",
-				headers: { "Content-Type": "application/x-www-form-urlencoded" },
-				body,
-			});
-
-			if (!result.ok) {
-				throw new NotificationError();
-			}
-		} catch (error) {
-			if (error instanceof NotificationError) {
-				console.error(
-					`[NotificationService] Failed to send notification: ${error.message}`,
-				);
-			} else {
-				console.error(
-					"[NotificationService] Unknown error occurred while sending notification:",
-					error,
-				);
-			}
-			// Don't throw here to prevent infinite loops in error handling
-		}
+		const body = new URLSearchParams({
+			token: this.config.appToken,
+			user: this.config.userKey,
+			message,
+			priority: String(priority),
+		});
+		const result = await fetch(this.config.url, {
+			method: "POST",
+			headers: { "Content-Type": "application/x-www-form-urlencoded" },
+			body,
+			signal: AbortSignal.timeout(5000),
+		});
+		if (!result.ok) throw new NotificationError();
 	}
 
 	async notifyError(

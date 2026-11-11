@@ -2,6 +2,7 @@
 import type { PreparedImport } from "@s-hirano-ist/s-application/batch/import-models";
 import { readFile } from "node:fs/promises";
 import { resolveArticleOgImageUrl } from "./lib/article-og-image-url.js";
+import { runCli } from "./lib/cli-observability.js";
 import { globPaths } from "./lib/glob-paths.js";
 import { runContentImport } from "./lib/run-content-import.js";
 
@@ -33,4 +34,4 @@ async function* source(root: string): AsyncGenerator<PreparedImport> {
 			};
 	}
 }
-await runContentImport("articles", source);
+await runCli("ingest-articles", () => runContentImport("articles", source));

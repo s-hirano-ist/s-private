@@ -3,9 +3,11 @@ import { beforeEach, describe, expect, test, vi } from "vite-plus/test";
 const { sendPushToAll } = vi.hoisted(() => ({ sendPushToAll: vi.fn() }));
 
 import { createGigazineCronHandler } from "s-private-backend/notifications/cron";
+const reportCritical = vi.fn();
 const GET = createGigazineCronHandler(
 	{ CRON_SECRET: "test-cron-secret-value" },
 	sendPushToAll,
+	reportCritical,
 );
 
 const createRequest = (secret?: string) =>
@@ -13,17 +15,17 @@ const createRequest = (secret?: string) =>
 		headers: secret ? { authorization: `Bearer ${secret}` } : undefined,
 	});
 
-describe("GET /api/cron/gigazine-headline", () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-		sendPushToAll.mockResolvedValue({
-			requiresResubscribe: 0,
-			expired: 0,
-			failed: 0,
-			sent: 2,
-		});
+beforeEach(() => {
+	vi.clearAllMocks();
+	sendPushToAll.mockResolvedValue({
+		requiresResubscribe: 0,
+		expired: 0,
+		failed: 0,
+		sent: 2,
 	});
+});
 
+describe("GET /api/cron/gigazine-headline", () => {
 	test.each([undefined, "wrong-secret"])(
 		"rejects an invalid bearer token",
 		async (secret) => {
@@ -73,8 +75,29 @@ test("returns 200 for quarantined subscriptions without other delivery failures"
 	});
 	const response = await GET(createRequest("test-cron-secret-value"));
 	expect(response.status).toBe(200);
+	expect(reportCritical).not.toHaveBeenCalled();
 	expect(await response.json()).toMatchObject({
 		requiresResubscribe: 1,
 		failed: 0,
 	});
+});
+
+test("reports a whole batch failure once as critical", async () => {
+	const error = new Error("batch unavailable");
+	sendPushToAll.mockRejectedValueOnce(error);
+	const response = await GET(createRequest("test-cron-secret-value"));
+	expect(response.status).toBe(500);
+	expect(reportCritical).toHaveBeenCalledExactlyOnceWith(error);
+});
+
+test("pages when all transient deliveries fail", async () => {
+	sendPushToAll.mockResolvedValueOnce({
+		requiresResubscribe: 0,
+		expired: 0,
+		failed: 2,
+		sent: 0,
+	});
+	const response = await GET(createRequest("test-cron-secret-value"));
+	expect(response.status).toBe(500);
+	expect(reportCritical).toHaveBeenCalledOnce();
 });

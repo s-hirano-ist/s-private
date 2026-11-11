@@ -6,11 +6,11 @@ import {
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { createPrismaClient } from "@s-hirano-ist/s-database";
-import { createPushoverService } from "@s-hirano-ist/s-notification";
 import { createObjectStorageClient } from "@s-hirano-ist/s-storage";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import { setTimeout } from "node:timers/promises";
+import { runCli, cliNotifications } from "./lib/cli-observability.js";
 
 async function withRetry<T>(fn: () => Promise<T>, retries = 3): Promise<T> {
 	for (let attempt = 0; attempt < retries; attempt++) {
@@ -29,9 +29,6 @@ async function withRetry<T>(fn: () => Promise<T>, retries = 3): Promise<T> {
 async function main() {
 	const env = {
 		DATABASE_URL: process.env.DATABASE_URL,
-		PUSHOVER_URL: process.env.PUSHOVER_URL,
-		PUSHOVER_USER_KEY: process.env.PUSHOVER_USER_KEY,
-		PUSHOVER_APP_TOKEN: process.env.PUSHOVER_APP_TOKEN,
 		USERNAME_TO_EXPORT: process.env.USERNAME_TO_EXPORT,
 		S3_BUCKET_NAME: process.env.S3_BUCKET_NAME,
 	} as const;
@@ -42,11 +39,7 @@ async function main() {
 
 	const prisma = createPrismaClient(env.DATABASE_URL ?? "");
 
-	const notificationService = createPushoverService({
-		url: env.PUSHOVER_URL ?? "",
-		userKey: env.PUSHOVER_USER_KEY ?? "",
-		appToken: env.PUSHOVER_APP_TOKEN ?? "",
-	});
+	const notificationService = cliNotifications;
 
 	const storageClient = createObjectStorageClient();
 
@@ -83,21 +76,9 @@ async function main() {
 		await notificationService.notifyInfo("fetch-images completed", {
 			caller: "fetch-images",
 		});
-	} catch (error) {
-		console.error("❌ エラーが発生しました:", error);
-		await notificationService.notifyError(
-			`fetch-images failed: ${String(error)}`,
-			{
-				caller: "fetch-images",
-			},
-		);
-		process.exit(1);
 	} finally {
 		await prisma.$disconnect();
 	}
 }
 
-main().catch((error: unknown) => {
-	console.error(error);
-	process.exit(1);
-});
+await runCli("fetch-images", main);

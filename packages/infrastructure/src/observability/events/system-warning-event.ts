@@ -7,7 +7,6 @@ import { BaseDomainEvent } from "@s-hirano-ist/s-core/shared-kernel/events/base-
  *
  * @remarks
  * Used to track non-critical issues that don't require immediate action.
- * The shouldNotify flag controls whether external notifications are sent.
  *
  * @example
  * ```typescript
@@ -15,7 +14,6 @@ import { BaseDomainEvent } from "@s-hirano-ist/s-core/shared-kernel/events/base-
  *   message: "Cache miss rate above threshold",
  *   status: 200,
  *   caller: "cacheService",
- *   shouldNotify: false,
  *   extraData: { missRate: 0.75 }
  * });
  *
@@ -36,13 +34,11 @@ export class SystemWarningEvent extends BaseDomainEvent<SystemWarningPayload> {
 	 * @param data.caller - The function/method where the warning occurred
 	 * @param data.userId - The user affected (defaults to "system")
 	 * @param data.extraData - Additional context about the warning
-	 * @param data.shouldNotify - Whether to send external notifications (defaults to false)
 	 */
 	constructor(data: {
 		caller: string;
 		extraData?: unknown;
 		message: string;
-		shouldNotify?: boolean;
 		status: number;
 		userId?: string;
 	}) {
@@ -52,7 +48,6 @@ export class SystemWarningEvent extends BaseDomainEvent<SystemWarningPayload> {
 				message: data.message,
 				status: data.status,
 				extraData: data.extraData,
-				shouldNotify: data.shouldNotify ?? false,
 			},
 			{
 				caller: data.caller,

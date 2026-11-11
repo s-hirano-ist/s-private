@@ -6,14 +6,11 @@ import {
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { createPrismaClient } from "@s-hirano-ist/s-database";
 import { createBooksCommandRepository } from "@s-hirano-ist/s-infrastructure/batch/books-command-repository";
-import { createPushoverService } from "@s-hirano-ist/s-notification";
+import { runCli, cliNotifications } from "./lib/cli-observability.js";
 
 async function main() {
 	const env = {
 		DATABASE_URL: process.env.DATABASE_URL,
-		PUSHOVER_URL: process.env.PUSHOVER_URL,
-		PUSHOVER_USER_KEY: process.env.PUSHOVER_USER_KEY,
-		PUSHOVER_APP_TOKEN: process.env.PUSHOVER_APP_TOKEN,
 		USERNAME_TO_EXPORT: process.env.USERNAME_TO_EXPORT,
 	} as const;
 
@@ -23,11 +20,7 @@ async function main() {
 
 	const prisma = createPrismaClient(env.DATABASE_URL ?? "");
 
-	const notificationService = createPushoverService({
-		url: env.PUSHOVER_URL ?? "",
-		userKey: env.PUSHOVER_USER_KEY ?? "",
-		appToken: env.PUSHOVER_APP_TOKEN ?? "",
-	});
+	const notificationService = cliNotifications;
 
 	const userId: UserId = makeUserId(env.USERNAME_TO_EXPORT ?? "");
 
@@ -40,25 +33,12 @@ async function main() {
 		console.log(
 			`💾 LAST_UPDATEDの本をUNEXPORTEDに変更しました（${result.count}件）`,
 		);
-		await notificationService
-			.notifyInfo("revert-books completed", {
-				caller: "revert-books",
-			})
-			.catch((error: unknown) => console.error("通知失敗:", error));
-	} catch (error) {
-		console.error("❌ エラーが発生しました:", error);
-		await notificationService
-			.notifyError(`revert-books failed: ${String(error)}`, {
-				caller: "revert-books",
-			})
-			.catch((notifyError: unknown) => console.error("通知失敗:", notifyError));
-		process.exitCode = 1;
+		await notificationService.notifyInfo("revert-books completed", {
+			caller: "revert-books",
+		});
 	} finally {
 		await prisma.$disconnect();
 	}
 }
 
-main().catch((error: unknown) => {
-	console.error(error);
-	process.exit(1);
-});
+await runCli("revert-books", main);

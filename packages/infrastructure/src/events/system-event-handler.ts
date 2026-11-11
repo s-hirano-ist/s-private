@@ -22,24 +22,16 @@ export class SystemEventHandler implements DomainEventHandler {
 				: { additionalContext: { extraData: payload.extraData } }),
 		};
 
-		const notifyOptions = payload.shouldNotify
-			? { notify: payload.shouldNotify as boolean }
-			: undefined;
-
 		switch (eventType) {
 			case "system.warning":
-				await this.logger.warn(
-					payload.message as string,
-					context,
-					notifyOptions,
-				);
+				await this.logger.warn(payload.message as string, context);
 				break;
 			case "system.error":
 				await this.logger.error(
 					payload.message as string,
 					context,
 					payload.extraData,
-					notifyOptions,
+					{ severity: payload.severity === "critical" ? "critical" : "normal" },
 				);
 				break;
 			default:

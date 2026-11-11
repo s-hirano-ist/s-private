@@ -2,6 +2,7 @@
 import { convertToWebp as convertImageToWebp } from "@s-hirano-ist/s-image-processing/node";
 import { readFile, stat, unlink, writeFile } from "node:fs/promises";
 import { basename, extname, join } from "node:path";
+import { reportCliError, runCli } from "./lib/cli-observability.js";
 import { globPaths } from "./lib/glob-paths.js";
 
 const WEBP_QUALITY = 80;
@@ -78,6 +79,7 @@ async function processDirectory(
 			console.log(`✅ 変換完了: ${fileName} → ${basename(outputPath)}`);
 			converted++;
 		} catch (error) {
+			reportCliError(error, "fix-image-formats");
 			console.error(`❌ ${fileName}: ${String(error)}`);
 			errors++;
 		}
@@ -107,11 +109,8 @@ async function main(): Promise<void> {
 	);
 
 	if (errors > 0) {
-		process.exit(1);
+		process.exitCode = 1;
 	}
 }
 
-main().catch((error: unknown) => {
-	console.error("❌ エラーが発生しました:", error);
-	process.exit(1);
-});
+await runCli("fix-image-formats", main);

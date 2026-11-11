@@ -3,6 +3,7 @@ import type { PreparedImport } from "@s-hirano-ist/s-application/batch/import-mo
 import { sharpImageProcessor } from "@s-hirano-ist/s-infrastructure/content/sharp-image-processor";
 import { readFile, stat } from "node:fs/promises";
 import { basename } from "node:path";
+import { runCli } from "./lib/cli-observability.js";
 import { globPaths } from "./lib/glob-paths.js";
 import { runContentImport } from "./lib/run-content-import.js";
 
@@ -24,4 +25,4 @@ async function* source(root: string): AsyncGenerator<PreparedImport> {
 		};
 	}
 }
-await runContentImport("images", source);
+await runCli("ingest-images", () => runContentImport("images", source));

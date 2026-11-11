@@ -71,7 +71,11 @@ export class ServerLogger implements Logger {
 		};
 
 		if (level === "error") {
-			this.captureError(message, context, error);
+			try {
+				this.captureError(message, context, error);
+			} catch (reportError) {
+				this.logger.warn({ error: reportError }, "Failed to report error");
+			}
 		}
 
 		// Handle additional error logging for console compatibility
@@ -93,21 +97,18 @@ export class ServerLogger implements Logger {
 		}
 
 		// Send notification if requested
-		if (options?.notify) {
+		if (
+			(level === "error" && options?.severity === "critical") ||
+			(level === "info" && options?.notifyCompletion)
+		) {
 			const notificationContext = {
 				caller: context.caller,
 				userId: context.userId,
 			};
 			try {
-				switch (finalLevel) {
+				switch (level) {
 					case "info":
 						await this.notificationService.notifyInfo(
-							message,
-							notificationContext,
-						);
-						break;
-					case "warn":
-						await this.notificationService.notifyWarning(
 							message,
 							notificationContext,
 						);
@@ -125,14 +126,21 @@ export class ServerLogger implements Logger {
 					{ error: notificationError },
 					"Failed to send notification",
 				);
-				this.reporter.captureException(notificationError, {
-					tags: {
-						caller: context.caller,
-						error_type: "notification_delivery",
-						status: String(context.status),
-					},
-					user: context.userId ? { id: context.userId } : undefined,
-				});
+				try {
+					this.reporter.captureException(notificationError, {
+						tags: {
+							caller: context.caller,
+							error_type: "notification_delivery",
+							status: String(context.status),
+						},
+						user: context.userId ? { id: context.userId } : undefined,
+					});
+				} catch (reportError) {
+					this.logger.warn(
+						{ error: reportError },
+						"Failed to report notification failure",
+					);
+				}
 			}
 		}
 	}
