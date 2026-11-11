@@ -48,7 +48,6 @@ export default defineConfig({
 						"next-intl/server",
 						"next-intl/navigation",
 						"next-intl/routing",
-						"@base-ui/react/dialog",
 					],
 				},
 				plugins: [
