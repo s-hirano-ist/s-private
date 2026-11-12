@@ -45,7 +45,8 @@ function path(input: RequestInfo | URL) {
 		.pathname;
 }
 function body(init?: RequestInit) {
-	if (typeof init?.body !== "string") throw new Error("Expected JSON request");
+	if (typeof init?.body !== "string")
+		throw new TypeError("Expected JSON request");
 	const value: unknown = JSON.parse(init.body);
 	return UploadStart.parse(value);
 }
@@ -112,7 +113,7 @@ test("sends files above the server-action limit in serial 1MiB chunks and skips 
 	).toEqual([chunkSize, chunkSize, chunkSize, chunkSize, 17]);
 });
 function blobSize(value: BodyInit | null | undefined) {
-	if (!(value instanceof Blob)) throw new Error("Expected Blob chunk");
+	if (!(value instanceof Blob)) throw new TypeError("Expected Blob chunk");
 	return value.size;
 }
 test("retains a file's operation ID after a failed chunk and resumes without automatic retries", async () => {

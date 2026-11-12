@@ -91,7 +91,7 @@ export function createObjectStorageClient(config = loadStorageConfig()) {
 				new GetObjectCommand({ Bucket: bucket, Key: key }),
 			);
 			if (!(result.Body instanceof Readable))
-				throw new Error("Object storage returned no Node readable body");
+				throw new TypeError("Object storage returned no Node readable body");
 			return result.Body;
 		},
 		async downloadObject(
@@ -103,7 +103,7 @@ export function createObjectStorageClient(config = loadStorageConfig()) {
 				new GetObjectCommand({ Bucket: bucket, Key: key }),
 			);
 			if (!(result.Body instanceof Readable))
-				throw new Error("Object storage returned no Node readable body");
+				throw new TypeError("Object storage returned no Node readable body");
 			await pipeline(result.Body, createWriteStream(destination));
 		},
 
