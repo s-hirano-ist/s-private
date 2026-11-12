@@ -1,6 +1,7 @@
 import { getBrowserBackendClient } from "@/common/backend/browser-client";
 // @vitest-environment node
 import { uploadImage, uploadBook } from "@/common/backend/upload";
+import { invalidateUploadedContent } from "@/common/cache/invalidate-upload";
 import { createBackendClient } from "@s-hirano-ist/s-api-client";
 import { UploadStart } from "@s-hirano-ist/s-api-client/models";
 import { beforeEach, expect, test, vi } from "vite-plus/test";
@@ -9,6 +10,9 @@ vi.mock("@/common/backend/browser-client", () => ({
 }));
 vi.mock("next/navigation", () => ({ unstable_rethrow: vi.fn() }));
 vi.mock("@sentry/nextjs", () => ({ captureException: vi.fn() }));
+vi.mock("@/common/cache/invalidate-upload", () => ({
+	invalidateUploadedContent: vi.fn(),
+}));
 const chunkSize = 1048576;
 const uploadId = "upload-session";
 const operationId = "01933f5c-9df0-7001-9123-456789abcdef";
@@ -45,7 +49,8 @@ function path(input: RequestInfo | URL) {
 		.pathname;
 }
 function body(init?: RequestInit) {
-	if (typeof init?.body !== "string") throw new Error("Expected JSON request");
+	if (typeof init?.body !== "string")
+		throw new TypeError("Expected JSON request");
 	const value: unknown = JSON.parse(init.body);
 	return UploadStart.parse(value);
 }
@@ -100,6 +105,7 @@ test("sends files above the server-action limit in serial 1MiB chunks and skips 
 		success: true,
 		message: "inserted",
 	});
+	expect(invalidateUploadedContent).toHaveBeenCalledExactlyOnceWith("images");
 	expect(fetch.mock.calls.map(([input]) => path(input))).toEqual([
 		"/api/v1/uploads",
 		...[0, 2, 3, 4, 5].map(
@@ -112,7 +118,7 @@ test("sends files above the server-action limit in serial 1MiB chunks and skips 
 	).toEqual([chunkSize, chunkSize, chunkSize, chunkSize, 17]);
 });
 function blobSize(value: BodyInit | null | undefined) {
-	if (!(value instanceof Blob)) throw new Error("Expected Blob chunk");
+	if (!(value instanceof Blob)) throw new TypeError("Expected Blob chunk");
 	return value.size;
 }
 test("retains a file's operation ID after a failed chunk and resumes without automatic retries", async () => {
@@ -125,6 +131,7 @@ test("retains a file's operation ID after a failed chunk and resumes without aut
 		message: "unexpected",
 	});
 	expect(fetch).toHaveBeenCalledTimes(3);
+	expect(invalidateUploadedContent).not.toHaveBeenCalled();
 	expect(await uploadImage(form(file))).toEqual({
 		success: true,
 		message: "inserted",
@@ -153,6 +160,7 @@ test("uses the book draft ID and sends typed rating and tag metadata", async () 
 		success: true,
 		message: "inserted",
 	});
+	expect(invalidateUploadedContent).toHaveBeenCalledExactlyOnceWith("books");
 	expect(body(fetch.mock.calls[0][1])).toEqual({
 		operationId,
 		domain: "books",
@@ -196,9 +204,20 @@ test("keeps the operation ID when completion succeeded but its response was lost
 		message: "unexpected",
 	});
 	expect(fetch).toHaveBeenCalledTimes(3);
+	expect(invalidateUploadedContent).not.toHaveBeenCalled();
 	expect(await uploadImage(form(file))).toEqual({
 		success: true,
 		message: "inserted",
 	});
 	expect(ids[1]).toBe(ids[0]);
+});
+
+test("invalidates each completed image even when another image in the batch fails", async () => {
+	const first = new File(["png"], "first.png", { type: "image/png" });
+	const second = new File(["png"], "second.png", { type: "image/png" });
+	uploadFixture();
+	expect((await uploadImage(form(first))).success).toBe(true);
+	uploadFixture({ failPart: 0 });
+	expect((await uploadImage(form(second))).success).toBe(false);
+	expect(invalidateUploadedContent).toHaveBeenCalledExactlyOnceWith("images");
 });

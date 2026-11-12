@@ -16,6 +16,7 @@ sb.mock(import("../apps/web/src/common/auth/reauthenticate.ts"), { spy: true });
 sb.mock(import("../apps/web/src/common/observability/feedback.ts"), {
 	spy: true,
 });
+sb.mock(import("../apps/web/src/common/cache/invalidate-upload.ts"));
 sb.mock(import("next-intl/server"), { spy: true });
 
 const messages = { en: enMessages, ja: jaMessages };

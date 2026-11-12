@@ -3,8 +3,9 @@ import "server-only";
 import type { ServerAction } from "@/common/types";
 import { backendActionError } from "@/common/backend/action-error";
 import { getBackendClient } from "@/common/backend/server-client";
+import { contentCacheTag } from "@/common/cache/content-cache";
 import { ArticleCreate } from "@s-hirano-ist/s-api-client/models";
-import { refresh } from "next/cache";
+import { refresh, updateTag } from "next/cache";
 export async function addArticle(formData: FormData): Promise<ServerAction> {
 	try {
 		const input = ArticleCreate.parse({
@@ -15,6 +16,7 @@ export async function addArticle(formData: FormData): Promise<ServerAction> {
 			quote: formData.get("quote") ?? undefined,
 		});
 		await (await getBackendClient()).createArticles(input);
+		updateTag(contentCacheTag("articles"));
 		refresh();
 		return { success: true, message: "inserted" };
 	} catch (error) {

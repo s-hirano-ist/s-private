@@ -1,6 +1,8 @@
 import type { ImageCardStackInitialData } from "@/components/common/layouts/cards/types";
 import type { Book, ContentStatus } from "@s-hirano-ist/s-api-client/models";
+import { requireAuth } from "@/common/auth/session";
 import { getBackendClient } from "@/common/backend/server-client";
+import { configureContentCache } from "@/common/cache/content-cache";
 import { PAGE_SIZE } from "@/common/constants";
 import { ApiHttpError } from "@s-hirano-ist/s-api-client";
 import { cache } from "react";
@@ -23,6 +25,8 @@ const page = cache(
 		offset: number,
 		status: ContentStatus,
 	): Promise<ImageCardStackInitialData> => {
+		"use cache: private";
+		configureContentCache("books");
 		const { data } = await (
 			await getBackendClient()
 		).listBooks({ offset, limit: PAGE_SIZE, status });
@@ -44,13 +48,17 @@ const page = cache(
 export const getUnexportedBooks = (offset: number) =>
 	page(offset, "UNEXPORTED");
 export const getExportedBooks = (offset: number) => page(offset, "EXPORTED");
-export const getExportedBooksCount = cache(
-	async () =>
-		(await (await getBackendClient()).countBooks({ status: "EXPORTED" })).data
-			.count,
-);
+export const getExportedBooksCount = cache(async () => {
+	"use cache: private";
+	configureContentCache("books");
+	return (await (await getBackendClient()).countBooks({ status: "EXPORTED" }))
+		.data.count;
+});
 export const getBookByISBN = cache(
 	async (isbn: string): Promise<BookViewerData | null> => {
+		"use cache: private";
+		configureContentCache("books");
+		await requireAuth();
 		try {
 			return (await (await getBackendClient()).getBookByIsbn(isbn)).data;
 		} catch (error) {

@@ -56,11 +56,19 @@ export function initializeObservability(
 				span.attributes["http.route"]?.toString() ??
 				span.attributes["sentry.op"]?.toString() ??
 				"backend operation";
+			span.attributes["sentry.segment.name"] = "backend request";
 			span.attributes = Object.fromEntries(
 				Object.entries(span.attributes).filter(([key]) =>
 					[
 						"sentry.op",
 						"sentry.origin",
+						"sentry.environment",
+						"sentry.release",
+						"sentry.sdk.name",
+						"sentry.sdk.version",
+						"sentry.segment.name",
+						"sentry.segment.id",
+						"sentry.trace_lifecycle",
 						"http.request.method",
 						"http.response.status_code",
 						"http.route",

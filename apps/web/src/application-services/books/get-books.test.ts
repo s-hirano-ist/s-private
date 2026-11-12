@@ -4,12 +4,14 @@ import {
 	getExportedBooksCount,
 	getUnexportedBooks,
 } from "@/application-services/books/get-books";
+import { requireAuth } from "@/common/auth/session";
 import { getBackendClient } from "@/common/backend/server-client";
 import { createBackendClient, ApiHttpError } from "@s-hirano-ist/s-api-client";
 import { beforeEach, expect, test, vi } from "vite-plus/test";
 vi.mock("@/common/backend/server-client", () => ({
 	getBackendClient: vi.fn(),
 }));
+vi.mock("@/common/auth/session", () => ({ requireAuth: vi.fn() }));
 const book = {
 	id: "book-id",
 	isbn: "9780306406157",
@@ -81,4 +83,11 @@ test("returns null only for missing books and propagates backend failures", asyn
 	await expect(getBookByISBN("9780306406157")).rejects.toBeInstanceOf(
 		ApiHttpError,
 	);
+});
+
+test("validates the session inside the detail read before requesting content", async () => {
+	vi.mocked(requireAuth).mockRejectedValueOnce(new Error("UNAUTHORIZED"));
+	const fetch = fixture({});
+	await expect(getBookByISBN("9780306406157")).rejects.toThrow("UNAUTHORIZED");
+	expect(fetch).not.toHaveBeenCalled();
 });

@@ -7,7 +7,14 @@ import {
 } from "s-private-backend/observability";
 import { afterEach, expect, test, vi } from "vite-plus/test";
 
-const captured = vi.hoisted(() => ({ envelopes: [] as unknown[] }));
+type TestEnvelope = Parameters<
+	ReturnType<NonNullable<Sentry.NodeOptions["transport"]>>["send"]
+>[0];
+type InspectEnvelope = readonly [
+	unknown,
+	readonly (readonly [{ readonly type: string }, unknown])[],
+];
+const captured = vi.hoisted(() => ({ envelopes: [] as TestEnvelope[] }));
 vi.mock("@sentry/node", async (original) => {
 	const sdk = await original<typeof import("@sentry/node")>();
 	return {
@@ -74,6 +81,16 @@ test("real SDK transports correlated spans, logs and metrics without private req
 	});
 	await Sentry.flush(2000);
 	const payload = JSON.stringify(captured.envelopes);
+	const spans = captured.envelopes
+		.flatMap(([, items]: InspectEnvelope) => items)
+		.filter(([header]: InspectEnvelope[1][number]) => header.type === "span");
+	expect(spans).not.toHaveLength(0);
+	const spanPayload = JSON.stringify(spans);
+	expect(spanPayload).toContain("sentry.environment");
+	expect(spanPayload).toContain("sentry.release");
+	expect(spanPayload).toContain("observability-test-release");
+	expect(spanPayload).toContain("sentry.segment.id");
+	expect(spanPayload).toContain("sentry.segment.name");
 	expect(payload).toContain("backend.http.requests");
 	expect(payload).toContain("backend.http.duration");
 	expect(payload).toContain("Application operation");

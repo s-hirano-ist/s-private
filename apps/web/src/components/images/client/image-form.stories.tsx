@@ -47,7 +47,7 @@ function prepareUploadClient() {
 		);
 		if (url.pathname.endsWith("/uploads")) {
 			if (typeof init?.body !== "string")
-				throw new Error("Expected JSON input");
+				throw new TypeError("Expected JSON input");
 			const value: unknown = JSON.parse(init.body);
 			operationId = UploadStart.parse(value).operationId;
 			return Response.json({
@@ -82,7 +82,8 @@ function prepareUploadClient() {
 }
 function chunkSizes() {
 	return uploadFetch.mock.calls.slice(1, -1).map(([, init]) => {
-		if (!(init?.body instanceof Blob)) throw new Error("Expected binary chunk");
+		if (!(init?.body instanceof Blob))
+			throw new TypeError("Expected binary chunk");
 		return init.body.size;
 	});
 }

@@ -31,7 +31,7 @@
 	},
 	"dependencies": {
 		"@hono/zod-openapi": "1.6.3",
-		"hono": "4.13.16",
+		"hono": "4.13.17",
 		"zod": "catalog:"
 	},
 	"devDependencies": {

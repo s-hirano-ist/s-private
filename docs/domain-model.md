@@ -363,7 +363,9 @@ graph TB
 
 ### 009: キャッシュ無効化のRepository内配置（撤去済み）
 
-旧Web repositoryの `revalidateTag` と永続cacheは共通backend移行で撤去した。現在は `no-store` のAPI取得とServer Action成功後の画面更新を使い、repositoryはNext.jsへ依存しない。
+Webの一覧・件数・詳細・記事カテゴリー取得は `use cache: private` と `cacheLife({ stale: 60 })` を使い、同じタブ内の描画結果を60秒間再利用する。本番のサーバー上ではリクエスト間で保持せず、backend通信は `no-store` を維持する。repositoryはNext.jsへ依存しない。
+
+Webの追加・削除成功後はドメイン別タグ（`content:articles`、`content:notes`、`content:images`、`content:books`）を `updateTag` で失効させ、画面を更新する。画像・書籍は分割アップロード完了後に認証付きServer Actionで同じ処理を行う。一部の画像だけが成功した場合も成功分のキャッシュは失効する。失敗したmutationや未完了のアップロードは失効させない。
 
 ### 010: Anemic Domain Model（データの入れ物としてのEntity）
 

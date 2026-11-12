@@ -291,3 +291,9 @@ mise exec -- env \
 ```
 
 ローカルMinIO（127.0.0.1:9000）と`MINIO_ROOT_USER`・`MINIO_ROOT_PASSWORD`を使い、テストごとに専用bucketを作成・削除する。本番runtimeのstorage停止設定は変更しない。4ドメインのHTTP作成・成功再送・所有者分離・同期・削除、実画像のoriginal/thumbnail取得、通知失敗時の成功維持、lease競合・期限切れ再取得・旧token拒否、part再送と完了/取消の排他、cleanup障害後の再送を検証する。
+
+## Private Cache Production Tests
+
+`SKIP_ENV_VALIDATION=true pnpm build` の後に `pnpm test:private-cache` を実行する。現在のworktreeの本番ビルドを4327番ポートで起動し、4328番ポートの隔離backend fixtureに接続する。外部DB・認証サービスは使わない。
+
+4ドメインの再訪時のbackend呼び出し回数、60秒後の再取得、再読み込み、作成・削除・分割アップロード後の無効化、公開状態・ページoffsetの分離、セッションの分離と破棄を検証する。開発サーバーのキャッシュ動作だけで本番の動作を判断しない。通常のPlaywright設定からはこの専用suiteを除外する。

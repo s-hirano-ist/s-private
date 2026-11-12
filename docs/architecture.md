@@ -711,3 +711,11 @@ Webは独自の薄いadapterでSDKを使い、infrastructureへ直接依存し�
 Pushover adapterは送信失敗を呼び出し側へ返す。共通 `ServerLogger` がその失敗をSentryへ記録し、再通知せず、業務の成否を変更しない。Sentryの記録失敗時もcriticalのPushover送信を試みる。
 
 CLIは `runCli` で初期化・処理・終了処理の例外を捕捉し、異常終了コードを設定した後、通知とSentryのflushを待つ。継続可能な個別失敗は `reportCliError` で記録する。RAGの設定評価を伴うimportもこの境界内で実行する。外部送信する診断は既知の秘密情報・資格情報付きURL・認証ヘッダーを除去し、requestや任意の例外オブジェクトをシリアライズしない。
+
+### Webのprivate cache
+
+一覧・件数・詳細・記事カテゴリーの取得関数に `use cache: private` と `cacheLife({ stale: 60 })` を設定し、ブラウザの同じタブ内で描画結果を再利用する。ページ番号・公開状態・詳細識別子は引数で区別する。認証情報の読み取りと詳細のセッション検証はprivate cache内で行い、backendが認証・所有者検証を担う。静的App Shell、エラー表示、検索、通知設定はこのキャッシュの対象外とする。カテゴリー取得失敗時の空配列fallbackはキャッシュの外で処理する。
+
+本番のサーバーにはリクエスト間のprivate cacheを保存せず、backendへの `no-store` 通信も維持する。開発時にはNext.js自体のインメモリキャッシュが働くため、再訪と無効化は本番ビルドでも検証する。Next.js 16.3の[公式仕様](https://github.com/vercel/next.js/blob/v16.3.0/docs/01-app/03-api-reference/01-directives/use-cache-private.mdx)を参照。
+
+Webの更新成功後は対象ドメインの `content:<domain>` タグを `updateTag` で失効させる。画像・書籍の分割アップロードは完了API成功後に認証付きServer Actionを呼び、タグ失効と画面更新を行う。即時無効化は操作したタブに限定し、別タブ・iOS・外部APIの更新は保持期限後の再取得またはページ再読み込みで反映する。
