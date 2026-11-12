@@ -6,6 +6,8 @@ const schema = z.object({
 		.enum(["development", "test", "production"])
 		.default("development"),
 	VERCEL: optional,
+	SENTRY_RELEASE: optional,
+	VERCEL_GIT_COMMIT_SHA: optional,
 	VERCEL_ENV: z.enum(["production", "preview", "development"]).optional(),
 	LOCAL_DEV_MODE: z.enum(["true", "false"]).default("false"),
 	DATABASE_URL: z.string().min(1),

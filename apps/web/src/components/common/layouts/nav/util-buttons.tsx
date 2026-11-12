@@ -1,4 +1,5 @@
 "use client";
+import { FeedbackButton } from "@/components/common/layouts/nav/feedback-button";
 import { redirect } from "@/infrastructures/i18n/routing";
 import { Button } from "@s-hirano-ist/s-ui/button";
 import { haptic } from "@s-hirano-ist/s-ui/utils/haptic";
@@ -83,6 +84,7 @@ export function UtilButtons({
 				<span className="sr-only">language</span>
 			</Button>
 			<PushNotificationButton {...pushNotificationProps} />
+			<FeedbackButton />
 			{shouldShowSignOut && (
 				<Button
 					className="flex h-16 flex-col items-center gap-1"

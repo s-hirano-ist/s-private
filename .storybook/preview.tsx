@@ -13,6 +13,9 @@ sb.mock(import("../apps/web/src/common/backend/browser-client.ts"), {
 });
 sb.mock(import("../apps/web/src/common/observability/report-render-error.ts"));
 sb.mock(import("../apps/web/src/common/auth/reauthenticate.ts"), { spy: true });
+sb.mock(import("../apps/web/src/common/observability/feedback.ts"), {
+	spy: true,
+});
 sb.mock(import("../apps/web/src/common/cache/invalidate-upload.ts"));
 sb.mock(import("next-intl/server"), { spy: true });
 

@@ -13,6 +13,28 @@ export function telemetryUrl(value: string): string {
 	return value.split(/[?#]/u)[0] ?? "";
 }
 
+export function operationalAttributes(
+	attributes: Record<string, unknown> = {},
+) {
+	return Object.fromEntries(
+		Object.entries(attributes).filter(([key]) =>
+			[
+				"method",
+				"route",
+				"domain",
+				"status",
+				"job",
+				"sentry.environment",
+				"sentry.release",
+				"sentry.sdk.name",
+				"sentry.sdk.version",
+				"sentry.trace.parent_span_id",
+				"sentry.replay_id",
+			].includes(key),
+		),
+	);
+}
+
 /** Shared by the browser, Node and Edge; no application content is added to telemetry. */
 export const sentryPrivacyOptions = {
 	dataCollection: {
@@ -25,6 +47,14 @@ export const sentryPrivacyOptions = {
 		stackFrameVariables: false,
 	},
 	maxBreadcrumbs: 30,
+	beforeSendLog(log) {
+		log.attributes = operationalAttributes(log.attributes);
+		return log;
+	},
+	beforeSendMetric(metric) {
+		metric.attributes = operationalAttributes(metric.attributes);
+		return metric;
+	},
 	beforeBreadcrumb(breadcrumb) {
 		// Console messages and DOM selectors can contain private content or input values.
 		if (

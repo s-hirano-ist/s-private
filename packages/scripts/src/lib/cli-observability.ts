@@ -1,10 +1,22 @@
 import { createDiagnosticError } from "@s-hirano-ist/s-infrastructure/observability/diagnostic-error";
+import {
+	createOperationalTelemetry,
+	operationalAttributes,
+	telemetryJob,
+} from "@s-hirano-ist/s-infrastructure/observability/operational-telemetry";
 import { ServerLogger } from "@s-hirano-ist/s-infrastructure/observability/server-logger";
 import { createPushoverService } from "@s-hirano-ist/s-notification";
 import * as Sentry from "@sentry/node";
 
 const dryRun = () => process.argv.includes("--dry-run");
 let initialized = false;
+const telemetry = createOperationalTelemetry(
+	Sentry,
+	() =>
+		!dryRun() &&
+		process.env.NODE_ENV === "production" &&
+		Boolean(process.env.NEXT_PUBLIC_SENTRY_DSN),
+);
 
 function initialize() {
 	if (initialized || dryRun()) return;
@@ -16,7 +28,19 @@ function initialize() {
 	try {
 		Sentry.init({
 			dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
-			enabled: Boolean(process.env.NEXT_PUBLIC_SENTRY_DSN),
+			enabled:
+				process.env.NODE_ENV === "production" &&
+				Boolean(process.env.NEXT_PUBLIC_SENTRY_DSN),
+			environment: process.env.VERCEL_ENV ?? process.env.NODE_ENV,
+			release: process.env.SENTRY_RELEASE ?? process.env.VERCEL_GIT_COMMIT_SHA,
+			beforeSendLog(log) {
+				log.attributes = operationalAttributes(log.attributes);
+				return log;
+			},
+			beforeSendMetric(metric) {
+				metric.attributes = operationalAttributes(metric.attributes);
+				return metric;
+			},
 			// The runner owns reporting and flushing, including handled item failures.
 			defaultIntegrations: false,
 			dataCollection: {
@@ -29,6 +53,7 @@ function initialize() {
 				stackFrameVariables: false,
 			},
 			beforeSend(event) {
+				delete event.user;
 				delete event.request;
 				delete event.breadcrumbs;
 				return event;
@@ -67,6 +92,7 @@ export function reportCliError(error: unknown, caller: string): void {
 	console.error(diagnostic);
 	if (dryRun()) return;
 	initialize();
+	telemetry.log("error", "CLI item failed", { job: telemetryJob(caller) });
 	try {
 		Sentry.captureException(diagnostic, {
 			tags: { caller, severity: "normal" },
@@ -96,10 +122,17 @@ export const cliNotifications = {
 
 /** Owns the command boundary: initialization, failure notification and final flush. */
 export async function runCli(caller: string, execute: () => Promise<unknown>) {
+	const started = performance.now();
+	const job = telemetryJob(caller);
+	let status = "ok";
 	try {
 		initialize();
+		telemetry.log("info", "CLI started", { job });
 		await execute();
+		telemetry.log("info", "CLI completed", { job, status: "ok" });
 	} catch (error) {
+		status = "error";
+		telemetry.log("error", "CLI failed", { job, status: "error" });
 		process.exitCode = 1;
 		const diagnostic = createDiagnosticError(process.env)(error);
 		console.error(diagnostic);
@@ -111,6 +144,11 @@ export async function runCli(caller: string, execute: () => Promise<unknown>) {
 				{ severity: "critical" },
 			);
 	} finally {
+		telemetry.count("cli.runs", 1, { job, status });
+		telemetry.duration("cli.duration", performance.now() - started, {
+			job,
+			status,
+		});
 		if (initialized && !dryRun()) {
 			try {
 				if (!(await Sentry.flush(2000)))

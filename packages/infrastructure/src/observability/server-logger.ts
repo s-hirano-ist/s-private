@@ -4,6 +4,7 @@ import type {
 	LogOptions,
 } from "@s-hirano-ist/s-application/observability/logger.interface";
 import type { ErrorReporter } from "@s-hirano-ist/s-application/observability/reporter";
+import type { OperationalTelemetry } from "@s-hirano-ist/s-infrastructure/observability/operational-telemetry";
 import type { NotificationService } from "@s-hirano-ist/s-notification";
 import { mapStatusToLogLevel } from "@s-hirano-ist/s-infrastructure/observability/log-level";
 import pino from "pino";
@@ -20,6 +21,7 @@ export class ServerLogger implements Logger {
 	constructor(
 		notificationService: NotificationService,
 		reporter: ErrorReporter,
+		private readonly telemetry?: OperationalTelemetry,
 	) {
 		this.reporter = reporter;
 		this.logger = pino(pinoConfig);
@@ -62,6 +64,10 @@ export class ServerLogger implements Logger {
 
 		// If the provided level doesn't match the status code, use the mapped level
 		const finalLevel = level === expectedLevel ? level : expectedLevel;
+
+		this.telemetry?.log(finalLevel, "Application operation", {
+			status: context.status,
+		});
 
 		const logData = {
 			caller: context.caller,

@@ -696,6 +696,13 @@ CLIは必要な内部workspaceコードと生成済みPrisma clientを `dist-pac
 
 ## 運用通知（Sentry / Pushover）
 
+運用Logs / Application MetricsはhostでSDKを構成し、infrastructureの
+`OperationalTelemetry` adapterを `ServerLogger` に任意注入する。
+coreとapplicationの業務portにはSentry依存を追加しない。
+Webは独自の薄いadapterでSDKを使い、infrastructureへ直接依存しない。
+送信する値・無料枠・Feedback / Cron / Uptimeは [Sentry RUM](rum.md) を参照する。
+
+
 予期しないエラーはSentryへ記録する。入力検証・認証拒否など想定内の4xxは対象外とする。
 `Logger.error` の `severity: "critical"` は、CLI・バッチ全体の失敗や認証初期化不能に使用し、Sentry記録後にPushoverへ追加通知する。個別API・Prisma・配信の失敗は通常エラーとし、HTTP 5xxだけではcriticalにしない。Cronは処理の例外終了、または一時的な配信失敗があり成功配信が0件の場合にcriticalとする。期限切れ・再登録待ちの購読だけの場合はcriticalにしない。
 

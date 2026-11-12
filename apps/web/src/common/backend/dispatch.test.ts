@@ -17,6 +17,12 @@ vi.mock("@/env", () => ({
 }));
 vi.mock("@sentry/nextjs", () => ({
 	captureException: vi.fn(),
+	getTraceData: vi.fn(() => ({
+		"sentry-trace": "12345678901234567890123456789012-1234567890123456-1",
+		baggage: "sentry-release=test",
+	})),
+	logger: { error: vi.fn() },
+	metrics: { distribution: vi.fn() },
 	setHttpStatus: vi.fn(),
 	startSpan: vi.fn((_options, callback) => callback({ setStatus: vi.fn() })),
 }));
@@ -98,3 +104,47 @@ test.each([
 		expect(Sentry.captureException).not.toHaveBeenCalled();
 	},
 );
+
+test("uses the active host trace and records bounded metrics without forwarding caller trace data", async () => {
+	const upstream = vi
+		.fn<typeof fetch>()
+		.mockResolvedValue(new Response(null, { status: 200 }));
+	vi.stubGlobal("fetch", upstream);
+	await dispatchBackendRequest(
+		new Request("https://web.example/api/v1/notes/private-id?q=secret", {
+			headers: { "sentry-trace": "untrusted", baggage: "private=secret" },
+		}),
+	);
+	const headers = new Headers(upstream.mock.calls[0][1]?.headers);
+	expect(headers.get("sentry-trace")).toBe(
+		Sentry.getTraceData()["sentry-trace"],
+	);
+	expect(headers.get("baggage")).toBe("sentry-release=test");
+	expect(Sentry.metrics.distribution).toHaveBeenCalledWith(
+		"web.backend.duration",
+		expect.any(Number),
+		{
+			unit: "millisecond",
+			attributes: { method: "GET", domain: "notes", status: 200 },
+		},
+	);
+});
+test("a failed metric or log sink does not prevent the API fallback", async () => {
+	vi.mocked(Sentry.logger.error).mockImplementationOnce(() => {
+		throw new Error("sink failed");
+	});
+	vi.mocked(Sentry.metrics.distribution).mockImplementationOnce(() => {
+		throw new Error("sink failed");
+	});
+	vi.stubGlobal(
+		"fetch",
+		vi.fn<typeof fetch>().mockRejectedValue(new Error("offline")),
+	);
+	expect(
+		(
+			await dispatchBackendRequest(
+				new Request("https://web.example/api/v1/notes"),
+			)
+		).status,
+	).toBe(503);
+});

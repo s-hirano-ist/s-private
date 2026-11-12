@@ -12,6 +12,10 @@ import {
 	init,
 	replayIntegration,
 } from "@sentry/nextjs";
+import { config } from "zod";
+
+// Zod must not probe Function() or JIT-compile browser validators under the production CSP.
+config({ jitless: true });
 
 if (process.env.NODE_ENV === "development") {
 	void import("react-scan").then(({ scan }) => scan({ enabled: true }));
