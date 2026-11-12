@@ -16,7 +16,8 @@ Vercel Speed Insights は削除し、アクセス数・流入元を集計する 
   API 障害の503に変換すると、一覧や件数の error fallback がプリフェッチ結果に入り得る。
   実際の通信失敗は引き続き報告し、書き込みを自動再試行しない。
 - browser の trace header は SDK 既定の同一 origin に限定する。Web の error/trace を同じ
-  release/environment で調査する。独立 Hono backend 内部の distributed tracing は対象外。
+  release/environment で調査する。独立 Hono backend は isolation scope と受信 HTTP span を作り、Web が生成した trace context を引き継ぐ。
+  backend の span は route template と許可した HTTP 属性だけを残す。
 - upload token がなくても `withSentryConfig` で instrumentation と `/monitoring` tunnel を有効化する。
   source map upload のみ token が必要。proxy は tunnel を認証対象から除外済み。
   CSP の `connect-src 'self'` と `worker-src 'self' blob:` を利用する。
@@ -27,7 +28,8 @@ Vercel Speed Insights は削除し、アクセス数・流入元を集計する 
 
 2026-11-02 に実際の Subscription を確認した。Developer plan、追加支出 $0。
 当期（10/3–11/2）は Errors 3,195/5,000、Spans 約65K/5M、Replays 0/50。
-Logs/Application Metrics は各5GBだが、重複するログ送信は追加しない。有料プラン・trial は有効化しない。
+Logs/Application Metrics は各5GB。固定メッセージの運用ログと低cardinalityの独自Metricsを送る。
+有料プラン・trial は有効化しない。
 
 - 本番 trace は既定100%。現状の使用量は無料枠の約1.3%で全件計測が妥当。Preview は10%。
   `NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE`（0–1）で変更する。Node/Edge は親の sampling 決定を継承する。
@@ -93,3 +95,80 @@ SDK の10% sampling をテスト内の乱数だけで確定させ、LCP・error�
 
 参考: [SDK](https://docs.sentry.io/platforms/javascript/guides/nextjs/)、
 [無料プラン更新](https://www.sentry.help/en/articles/16738709-changes-to-legacy-developer-plans-september-2026)。
+
+## Logs・Application Metrics・Feedback
+
+SDK 11 は `enableLogs` / `enableMetrics` を使わず、API呼び出しで送信する。
+既存Pinoの標準出力は維持し、console / Pino integrationによる全件転送は行わない。
+`ServerLogger` は固定メッセージ `Application operation` とstatusだけを追加送信する。
+backendのHTTP 5xxは固定の失敗ログ、CLIは開始・完了・失敗・継続可能な個別失敗を記録する。
+CLIのLifecycle記録と既存のError Monitoring / Pushoverを使い分け、同一ログの二重転送を避ける。
+
+| Metric | 種別・単位 | 属性 |
+|--------|-----------|------|
+| `backend.http.requests` | counter | method・route template・status |
+| `backend.http.duration` | distribution / millisecond | method・route template・status |
+| `web.backend.duration` | distribution / millisecond | method・固定domain・status |
+| `cli.runs` | counter | 固定job名・status (`ok` / `error`) |
+| `cli.duration` | distribution / millisecond | 固定job名・status |
+| `cron.deliveries` | counter | job (`gigazine-headline`)・status (`sent` / `failed`) |
+
+Logs / Metricsの送信前hookは上記の運用属性以外を除去する。
+ユーザーID、任意のadditionalContext、本文、URL query、資格情報は追加送信しない。
+Webとbackendは開発モードでは送信せず、CLIは `NODE_ENV=production` とDSNがある場合だけ送信する。
+CLIの `--dry-run` は初期化も外部送信もしない。CLIの未知のjob名は `other` にまとめる。
+backend / CLIのreleaseは `SENTRY_RELEASE`、なければ `VERCEL_GIT_COMMIT_SHA` を使う。
+Webの既存ソースマップuploadは `SENTRY_AUTH_TOKEN` があるビルドでのみ行う。
+backend / CLIのソースマップのSentryへのuploadは今回追加していない。
+
+設定画面のFeedbackボタンは日英対応のSDKフォームを明示操作で開く。
+名前・メールの入力とユーザー情報の自動補完、スクリーンショットは無効。
+利用者が入力した本文はSentryに送られるため、フォーム内で送信先と機密情報を含めない旨を表示する。
+既存Replayの保護設定を適用し、Feedback送信時にSDKが紐付けるReplayも無料50件枠を消費し得る。
+SDKフォームのsystem theme用の固定style hashをCSPで許可し、未知のinline styleは引き続き拒否する。
+ブラウザのZodはJITを無効化し、`Function()` による機能検出も実行しない。
+SDK更新時は隔離production E2EでフォームのCSP・失敗後の再送信を再確認する。
+
+## Uptime・Cronの無料枠
+
+2026-11-11のSubscription実画面でDeveloper plan、追加支出 $0を確認した。
+当期（11/3–12/2）はErrors 97/5K、Spans約23K/5M、Logs / Metrics 0B/5GB、
+Replays 0/50、Cron 0/1、Uptime 1/1、Attachments 0B/1GBだった。
+Uptimeの容量表示は既存1枠の使用によるもので、追加monitorやtrialを作らない。
+
+既存Uptime monitor `7685301` を再利用し、対象は `GET https://private.s-hirano.com`、
+環境 `production`、5分間隔、timeout 10秒、3回連続失敗で検知、1回成功で回復とした。
+旧Preview URLを含むmonitor名は過去の自動生成名で、実際の監視URLとは異なる。
+公開画面への到達性を監視し、ログイン後の操作やbackend / DBの正常性を保証しない。
+
+Gigazine Cronは認証・有効化を通った本番実行だけがcheck-inする。
+monitor slugは `gigazine-headline`、scheduleは既存Vercelと同じ `0 0 * * *` / UTC、
+開始猶予60分、最大実行時間10分。配信の部分失敗（HTTP 500）もerrorとする。
+Preview・開発・401ではcheck-inしない。monitorはデプロイ後の最初の正規実行でupsertするため、
+未デプロイのコードに対して欠落通知が発生するような事前check-inは送らない。
+monitor作成後のスケジュール・受信・通知はProduction反映後に確認する。
+
+既存のperformance monitorと通知は維持する。運用通知はメールを使い、外部連携の有料通知や
+実測の基準値がない新規Metricsの閾値通知は追加しない。
+週次または異常時にSubscriptionの残量とStats & Usageのaccepted / droppedを確認し、
+Logs / Metrics各5GB、Errors 5K、Spans 5M、Replay 50件、Cron / Uptime各1件の枠を超える設定を追加しない。
+Attachmentsの1GB枠は利用できるが、スクリーンショットや任意ファイルの自動添付は行わない。
+
+## 運用ダッシュボードと通知
+
+2026-11-12に無料枠内でカスタムダッシュボード
+[SPrivate Operations](https://s-hirano-ist-z2.sentry.io/dashboard/10758689/) を作成した。
+既定の環境は `production`。Errors、Operational Logs、HTTP Requests、HTTP Latency p95、
+CLI Succeeded / Failed、LCP / INP / CLS p75の9ウィジェットを表示する。
+HTTP件数・遅延は `span.op:http.server` のspan集計で、samplingの影響を受ける。
+全リクエストの件数・遅延を確認する場合はApplication Metricsの
+`backend.http.requests` / `backend.http.duration` を利用する。
+CLI成否はLogsの `has:job status:ok` / `has:job status:error` で集計する。
+デプロイ前のLogs / CLIや、まだ受信していないCLSの空表示を成功・良好と解釈しない。
+
+本番メール通知は既存の
+[Notify Suggested Assignees](https://s-hirano-ist-z2.sentry.io/monitors/alerts/6038148/) を再利用する。
+実画面で `production`、対象project全体、フィルター `Any event` を確認した。
+Uptimeと今後作成されるCronのissueもこのproject通知の対象になるため、同じ通知を重複作成しない。
+新規・再発・復旧等の既存条件と、issue owner未割当時のactive memberへの通知を維持する。
+意図的な本番障害・テストメールは送らず、初回の実運用でcheck-in受信とメール通知を確認する。

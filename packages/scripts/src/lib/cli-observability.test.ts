@@ -5,6 +5,8 @@ const sentry = vi.hoisted(() => ({
 	captureException: vi.fn(),
 	captureMessage: vi.fn(),
 	flush: vi.fn(),
+	logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
+	metrics: { count: vi.fn(), distribution: vi.fn() },
 }));
 const notifications = vi.hoisted(() => ({
 	notifyInfo: vi.fn(),
@@ -173,4 +175,63 @@ test("monitoring initialization failures do not prevent business execution", asy
 	expect(execute).toHaveBeenCalledOnce();
 	expect(process.exitCode).toBeUndefined();
 	expect(notifications.notifyError).not.toHaveBeenCalled();
+});
+
+test("production commands send lifecycle logs and metrics with a bounded job name", async () => {
+	vi.stubEnv("NODE_ENV", "production");
+	const { runCli } = await import("./cli-observability.js");
+	await runCli("fetch-books", async () => {});
+	expect(sentry.logger.info).toHaveBeenNthCalledWith(1, "CLI started", {
+		job: "fetch-books",
+	});
+	expect(sentry.logger.info).toHaveBeenNthCalledWith(2, "CLI completed", {
+		job: "fetch-books",
+		status: "ok",
+	});
+	expect(sentry.metrics.count).toHaveBeenCalledWith("cli.runs", 1, {
+		attributes: { job: "fetch-books", status: "ok" },
+	});
+	expect(sentry.metrics.distribution).toHaveBeenCalledWith(
+		"cli.duration",
+		expect.any(Number),
+		expect.objectContaining({ unit: "millisecond" }),
+	);
+});
+test("development and dry-run never send operational logs or metrics", async () => {
+	vi.stubEnv("NODE_ENV", "development");
+	const { runCli } = await import("./cli-observability.js");
+	await runCli("fetch-books", async () => {});
+	expect(sentry.logger.info).not.toHaveBeenCalled();
+	expect(sentry.metrics.count).not.toHaveBeenCalled();
+});
+
+test("operational sink failures never change a successful CLI exit", async () => {
+	vi.stubEnv("NODE_ENV", "production");
+	sentry.logger.info.mockImplementation(() => {
+		throw new Error("logs unavailable");
+	});
+	sentry.metrics.count.mockImplementation(() => {
+		throw new Error("metrics unavailable");
+	});
+	const { runCli } = await import("./cli-observability.js");
+	const execute = vi.fn().mockResolvedValue(undefined);
+	await runCli("fetch-books", execute);
+	expect(execute).toHaveBeenCalledOnce();
+	expect(process.exitCode).toBeUndefined();
+	expect(notifications.notifyError).not.toHaveBeenCalled();
+});
+
+test("production dry-run does not initialize or send operational telemetry", async () => {
+	vi.stubEnv("NODE_ENV", "production");
+	const argv = process.argv;
+	process.argv = [...argv, "--dry-run"];
+	try {
+		const { runCli } = await import("./cli-observability.js");
+		await runCli("fetch-books", async () => {});
+		expect(sentry.init).not.toHaveBeenCalled();
+		expect(sentry.logger.info).not.toHaveBeenCalled();
+		expect(sentry.metrics.count).not.toHaveBeenCalled();
+	} finally {
+		process.argv = argv;
+	}
 });

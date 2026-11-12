@@ -7,6 +7,13 @@ const NEXT_INLINE_STYLE_HASH =
 const NEXT_THEMES_STYLE_HASH =
 	"'sha256-skqujXORqzxt1aE0NNXxujEanPTX6raoqSscTV/Ww/Y='";
 
+// @sentry/feedback 11.11.0: system-theme host variables and the screenshot-free dialog.
+// Production Feedback E2E verifies these exact SDK styles and rejects unknown styles.
+const SENTRY_FEEDBACK_STYLE_HASHES = [
+	"'sha256-k/rwOSsvlNlNYj8OPfXXYaKUZm988AtmHk5Wa6ABsgE='",
+	"'sha256-G61BLZZF0fr2BDlAVwUrUSRuH8VwG0dfrT02Cjnd7fE='",
+];
+
 type ContentSecurityPolicyOptions = {
 	isDevelopment: boolean;
 	isPreview: boolean;
@@ -40,7 +47,12 @@ export function buildContentSecurityPolicy({
 				"'unsafe-inline'",
 				...(allowsVercelToolbar ? ["https://vercel.live"] : []),
 			]
-		: ["'self'", NEXT_INLINE_STYLE_HASH, NEXT_THEMES_STYLE_HASH];
+		: [
+				"'self'",
+				NEXT_INLINE_STYLE_HASH,
+				NEXT_THEMES_STYLE_HASH,
+				...SENTRY_FEEDBACK_STYLE_HASHES,
+			];
 	const imageSources = [
 		"'self'",
 		"blob:",

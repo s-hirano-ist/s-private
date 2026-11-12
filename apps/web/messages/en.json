@@ -1,4 +1,16 @@
 {
+	"feedback": {
+		"requiredLabel": "(required)",
+		"button": "Feedback",
+		"title": "Send feedback",
+		"notice": "Your message will be sent to Sentry. Do not include private content or credentials.",
+		"placeholder": "Describe the problem or suggestion",
+		"submit": "Send feedback",
+		"cancel": "Cancel",
+		"success": "Thank you. Your feedback was sent.",
+		"error": "Feedback could not be sent. Please try again.",
+		"required": "Please enter a message."
+	},
 	"unauthorized": {
 		"description": "Your session could not be verified. Sign out and sign in again.",
 		"retry": "Sign out and sign in again",

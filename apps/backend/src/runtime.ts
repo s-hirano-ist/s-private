@@ -24,28 +24,14 @@ import { createBackendAuth } from "s-private-backend/auth/web-auth";
 import { createHttpErrorReporter } from "s-private-backend/error-reporter";
 import { createEventInitializer } from "s-private-backend/events/event-setup";
 import { createGigazineCronHandler } from "s-private-backend/notifications/cron";
+import {
+	backendTelemetry,
+	initializeObservability,
+} from "s-private-backend/observability";
 import { createLocalSampleSeeder } from "s-private-backend/shared/local-fixtures";
 
 export function createBackendRuntime(env: BackendEnv) {
-	Sentry.init({
-		dsn: env.NEXT_PUBLIC_SENTRY_DSN,
-		enabled: env.NODE_ENV === "production",
-		dataCollection: {
-			userInfo: false,
-			cookies: false,
-			httpHeaders: false,
-			httpBodies: [],
-			urlQueryParams: false,
-			databaseQueryData: false,
-			stackFrameVariables: false,
-		},
-		beforeSend(event) {
-			// OAuth query strings and request headers must never accompany diagnostics.
-			delete event.request;
-			delete event.breadcrumbs;
-			return event;
-		},
-	});
+	const telemetry = initializeObservability(env);
 
 	const client = new PrismaClient({
 		adapter: new PrismaPg({
@@ -82,6 +68,7 @@ export function createBackendRuntime(env: BackendEnv) {
 	const logger = new ServerLogger(
 		createBackendNotificationService(env),
 		Sentry,
+		telemetry,
 	);
 	const reportError = createHttpErrorReporter(env, async (error) => {
 		Sentry.captureException(error, { tags: { source: "backend_http" } });
@@ -125,8 +112,18 @@ export function createBackendRuntime(env: BackendEnv) {
 		env,
 		services.pushDelivery.sendPushToAll,
 		reportCritical("gigazine_cron"),
+		{
+			telemetry,
+			enabled:
+				env.NODE_ENV === "production" &&
+				env.VERCEL_ENV !== "preview" &&
+				env.BACKEND_CRON_ENABLED,
+			captureCheckIn: Sentry.captureCheckIn,
+			flush: () => Sentry.flush(2000),
+		},
 	);
 	const app = createBackendHttpApp({
+		telemetryMiddleware: backendTelemetry(telemetry),
 		api: createApiApp(apiAuth, services.reads, services.mutations).fetch,
 		auth: async (request) => (await getAuth()).handler(request),
 		signIn: async (request) =>

@@ -1,4 +1,4 @@
-import { Hono } from "hono";
+import { Hono, type MiddlewareHandler } from "hono";
 import { publicOriginHeaders } from "s-private-backend/auth/public-origin-headers";
 import {
 	AuthInitializationError,
@@ -13,8 +13,10 @@ export function createBackendHttpApp(deps: {
 	publicOrigin?: string;
 	reportError(error: unknown): unknown;
 	signIn(request: Request): Promise<Response>;
+	telemetryMiddleware?: MiddlewareHandler;
 }) {
 	const app = new Hono();
+	if (deps.telemetryMiddleware) app.use("*", deps.telemetryMiddleware);
 	app.use("*", async (c, next) => {
 		await next();
 		c.header("cache-control", "private, no-store");

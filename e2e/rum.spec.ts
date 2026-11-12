@@ -252,3 +252,94 @@ test("production RUM links vitals, error and masked Replay without sending to Se
 	expect(recording).not.toContain("RUM_PRIVATE_");
 	expect(violations).toEqual([]);
 });
+
+for (const locale of ["ja", "en"] as const) {
+	test(`production Feedback ${locale} uses the SDK form and preserves CSP and privacy`, async ({
+		page,
+		context,
+	}) => {
+		await context.addCookies([
+			{
+				name: "better-auth.session_token",
+				value: "rum-fixture",
+				domain: "localhost",
+				path: "/",
+			},
+		]);
+		const violations: string[] = [];
+		const envelopes: string[] = [];
+		let feedbackFails = true;
+		page.on("console", (message) => {
+			if (message.text().includes("FEEDBACK-CSP"))
+				violations.push(message.text());
+		});
+		await page.addInitScript(() =>
+			document.addEventListener("securitypolicyviolation", (event) =>
+				console.error(
+					"FEEDBACK-CSP",
+					event.effectiveDirective,
+					event.blockedURI,
+					event.sourceFile,
+					event.lineNumber,
+					event.columnNumber,
+					event.sample,
+				),
+			),
+		);
+		await page.route(/sentry\.io|\/monitoring|csp\.invalid/u, async (route) => {
+			const body = route.request().postData() ?? "";
+			envelopes.push(body);
+			await route.fulfill({
+				status: body.includes('"feedback"') && feedbackFails ? 500 : 200,
+				body: "{}",
+			});
+		});
+		await page.goto(`/${locale}/settings`);
+		const button = page.getByRole("button", {
+			name: locale === "ja" ? "フィードバック" : "Feedback",
+			exact: true,
+		});
+		await button.focus();
+		await page.keyboard.press("Enter");
+		const dialog = page.getByRole("dialog");
+		await expect(dialog).toBeVisible();
+		await expect(dialog.getByRole("textbox")).toHaveCount(1);
+		await expect(dialog).toContainText(
+			locale === "ja" ? "Sentryへ送信" : "sent to Sentry",
+		);
+		await expect(
+			dialog.getByRole("button", { name: /screenshot|スクリーンショット/iu }),
+		).toHaveCount(0);
+		await dialog.getByRole("textbox").fill("Deliberate feedback test");
+		await dialog
+			.getByRole("button", {
+				name: locale === "ja" ? "送信" : "Send feedback",
+				exact: true,
+			})
+			.click();
+		await expect(dialog).toContainText(
+			locale === "ja" ? "送信できませんでした" : "could not be sent",
+		);
+		feedbackFails = false;
+		await dialog
+			.getByRole("button", {
+				name: locale === "ja" ? "送信" : "Send feedback",
+				exact: true,
+			})
+			.click();
+		await expect(
+			page.getByText(
+				locale === "ja"
+					? "フィードバックを送信しました。"
+					: "Thank you. Your feedback was sent.",
+				{ exact: true },
+			),
+		).toBeVisible();
+		expect(
+			envelopes.some((body) => body.includes("Deliberate feedback test")),
+		).toBe(true);
+		expect(envelopes.join("")).not.toContain("rum@example.test");
+		expect(envelopes.join("")).not.toContain("RUM fixture");
+		expect(violations).toEqual([]);
+	});
+}

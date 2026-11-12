@@ -11,6 +11,7 @@ export async function forwardBackendRequest(
 	request: Request,
 	backendURL: string,
 	fetcher: typeof fetch = fetch,
+	traceHeaders: { baggage?: string; "sentry-trace"?: string } = {},
 ): Promise<Response> {
 	const source = new URL(request.url);
 	if (!/^\/api\/(?:v1\/|auth\/|sign-in$)/u.test(source.pathname))
@@ -20,6 +21,10 @@ export async function forwardBackendRequest(
 	for (const name of forwardedHeaders) {
 		const value = request.headers.get(name);
 		if (value !== null) headers.set(name, value);
+	}
+	for (const name of ["sentry-trace", "baggage"] as const) {
+		const value = traceHeaders[name];
+		if (value) headers.set(name, value);
 	}
 	headers.set("x-s-private-web-origin", source.origin);
 	// Bodyless DELETE/complete must not access the Next.js Request body proxy.
