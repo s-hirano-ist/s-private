@@ -17,7 +17,9 @@
 	toolSettings: {
 		nodeMaxMemory: 4096,
 	},
-	dependencyDashboard: true,
+	dependencyDashboard: {
+		enabled: true,
+	},
 	branchConcurrentLimit: 1,
 	prConcurrentLimit: 1,
 	separateMajorMinor: false,
