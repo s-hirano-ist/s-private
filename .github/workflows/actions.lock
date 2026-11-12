@@ -7,7 +7,7 @@ workflows:
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1'
         - 'actions/setup-node@v7.1.0'
-        - 'jdx/mise-action@v5.2.7'
+        - 'jdx/mise-action@v5.2.8'
         - 'pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115'
         - 'pnpm/action-setup@v6.1.1'
     '.github/workflows/ci-reporting-check.yaml':
@@ -45,7 +45,7 @@ workflows:
     '.github/workflows/github-actions-lint.yaml': []
     '.github/workflows/ios.yaml':
         - 'actions/checkout@v7.0.1'
-        - 'jdx/mise-action@v5.2.7'
+        - 'jdx/mise-action@v5.2.8'
     '.github/workflows/jscpd.yaml':
         - 'actions/checkout@v7.0.1'
         - 'actions/github-script@v9.0.0'
@@ -158,9 +158,9 @@ dependencies:
         commit: 'sha1-45996ed1f6d02564a971a2fa1b5860e934307cf7'
         owner_id: 16785467
         repo_id: 262236530
-    'jdx/mise-action@v5.2.7':
-        ref: 'v5.2.7'
-        commit: 'sha1-b44d12e7d0d8ee7461bb893e1b1993500433185b'
+    'jdx/mise-action@v5.2.8':
+        ref: 'v5.2.8'
+        commit: 'sha1-d5574b52816a478f9d4e6529a3f6ff17a8a36785'
         owner_id: 216188
         repo_id: 738284564
     'peter-evans/create-pull-request@v8.1.3':
