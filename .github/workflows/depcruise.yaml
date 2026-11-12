@@ -20,6 +20,9 @@ jobs:
 
       - uses: $/.github/actions/setup-pnpm
 
+      - name: Build workspace packages
+        run: pnpm packages:build
+
       - name: Check dependency boundaries
         id: check
         run: pnpm deps:check
