@@ -2,6 +2,7 @@ import type { ImageData } from "@/components/common/display/image/image-stack";
 import type { CardStackInitialData } from "@/components/common/layouts/cards/types";
 import type { ContentStatus } from "@s-hirano-ist/s-api-client/models";
 import { getBackendClient } from "@/common/backend/server-client";
+import { configureContentCache } from "@/common/cache/content-cache";
 import { PAGE_SIZE } from "@/common/constants";
 import { cache } from "react";
 const page = cache(
@@ -9,6 +10,8 @@ const page = cache(
 		offset: number,
 		status: ContentStatus,
 	): Promise<CardStackInitialData<ImageData>> => {
+		"use cache: private";
+		configureContentCache("images");
 		const { data } = await (
 			await getBackendClient()
 		).listImages({ offset, limit: PAGE_SIZE, status });
@@ -25,10 +28,11 @@ const page = cache(
 		};
 	},
 );
-export const getImagesCount = cache(
-	async (status: ContentStatus) =>
-		(await (await getBackendClient()).countImages({ status })).data.count,
-);
+export const getImagesCount = cache(async (status: ContentStatus) => {
+	"use cache: private";
+	configureContentCache("images");
+	return (await (await getBackendClient()).countImages({ status })).data.count;
+});
 export const getExportedImages = (offset: number) => page(offset, "EXPORTED");
 export const getUnexportedImages = (offset: number) =>
 	page(offset, "UNEXPORTED");

@@ -3,6 +3,7 @@ import type { ServerAction } from "@/common/types";
 import type { UploadStart as UploadInput } from "@s-hirano-ist/s-api-client/models";
 import { backendActionError } from "@/common/backend/action-error";
 import { getBrowserBackendClient } from "@/common/backend/browser-client";
+import { invalidateUploadedContent } from "@/common/cache/invalidate-upload";
 import { UploadStart } from "@s-hirano-ist/s-api-client/models";
 import { z } from "zod";
 const imageOperations = new WeakMap<File, string>();
@@ -22,6 +23,7 @@ async function upload(file: File, input: UploadInput) {
 		);
 	}
 	await client.completeUpload(session.uploadId);
+	await invalidateUploadedContent(input.domain);
 	return { success: true, message: "inserted" };
 }
 function contentType(file: File) {

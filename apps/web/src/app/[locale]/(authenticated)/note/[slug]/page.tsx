@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { getNoteByTitle } from "@/application-services/notes/get-notes";
-import { requireAuth } from "@/common/auth/session";
 import { ErrorBoundary } from "@/components/common/layouts/error-boundary";
 import { ViewerBody } from "@/components/notes/server/viewer-body";
 import { LoadingIndicator as Loading } from "@s-hirano-ist/s-ui/loading-indicator";
@@ -20,8 +19,6 @@ export async function generateMetadata({
 type NoteContentProps = Pick<PageProps<"/[locale]/note/[slug]">, "params">;
 
 async function NoteContent({ params }: NoteContentProps) {
-	await requireAuth();
-
 	const { slug } = await params;
 
 	return (

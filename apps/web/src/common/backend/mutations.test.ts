@@ -17,7 +17,7 @@ vi.mock("next/navigation", () => ({
 		if (error instanceof Error && error === authBoundary) throw error;
 	},
 }));
-vi.mock("next/cache", () => ({ refresh: vi.fn() }));
+vi.mock("next/cache", () => ({ refresh: vi.fn(), updateTag: vi.fn() }));
 const operationId = "01933f5c-9df0-7001-9123-456789abcdef";
 beforeEach(() => vi.clearAllMocks());
 function form(fields: Record<string, string>) {
