@@ -1,5 +1,14 @@
 # Changelog
 
+## [3.0.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v3.0.1...@s-hirano-ist/s-ui-v3.0.2) (2026-11-12)
+
+
+### Maintenance
+
+* **deps:** update all dependencies ([25f422d](https://github.com/s-hirano-ist/s-private/commit/25f422d288b10426adff0463f667344fde71e0d9))
+* **deps:** update all dependencies ([9268d13](https://github.com/s-hirano-ist/s-private/commit/9268d138580818cfa7891bcb383820a57525ba4d))
+* merge latest main for Sentry integration ([3608cb6](https://github.com/s-hirano-ist/s-private/commit/3608cb61b62763d2befc069e68f366b0b307ff6f))
+
 ## [3.0.1](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v3.0.0...@s-hirano-ist/s-ui-v3.0.1) (2026-11-07)
 
 

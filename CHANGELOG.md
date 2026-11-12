@@ -2,6 +2,48 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.3.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v4.2.0...s-private-v4.3.0) (2026-11-12)
+
+
+### Features
+
+* **observability:** enable free Sentry monitoring ([4af0bce](https://github.com/s-hirano-ist/s-private/commit/4af0bce443786a50d3ce9bf08a5f6fa94e7bb4a0))
+* **web:** cache private content and invalidate after mutations ([53cd035](https://github.com/s-hirano-ist/s-private/commit/53cd035d27f2159234da0974410c210f2b0eb7ba))
+
+
+### Bug Fixes
+
+* adapt dependency updates to web-push v4 and stricter lint ([3ff3d7d](https://github.com/s-hirano-ist/s-private/commit/3ff3d7d602726b6b84c7cfb72b7fae66ed6c194b))
+* **ci:** format migrated Renovate configuration ([49bd267](https://github.com/s-hirano-ist/s-private/commit/49bd2679756d45ea5f2522718760a1315706b82e))
+* **observability:** retain Sentry correlation metadata ([d1e9cbc](https://github.com/s-hirano-ist/s-private/commit/d1e9cbc3a391b4845984eb5c01a0625385b24e5a))
+* separate Sentry errors from Pushover operational alerts ([ca7e4f0](https://github.com/s-hirano-ist/s-private/commit/ca7e4f0d895a2d6fb8cb1c6e6884d05fdd5f6209))
+
+
+### Documentation
+
+* remove resolved Sentry triage report ([aaa0372](https://github.com/s-hirano-ist/s-private/commit/aaa0372e7c2a65c821f72faa8c180e8cdb77ad5f))
+
+
+### Maintenance
+
+* adopt Actions lockfiles and shared setup ([b01141b](https://github.com/s-hirano-ist/s-private/commit/b01141b5d6fd57b5546af3e1a9d0741f8573f5d7))
+* **backend:** consolidate HTTP boundary handling and inventory APIs ([a26cabb](https://github.com/s-hirano-ist/s-private/commit/a26cabb4d921c72d716b2f54c9aff1023da5903c))
+* build workspace packages before dependency checks ([0487404](https://github.com/s-hirano-ist/s-private/commit/0487404cdd42fa3f054015367ba791dd6e5d730f))
+* **config:** migrate config .github/renovate.json5 ([dfe0aac](https://github.com/s-hirano-ist/s-private/commit/dfe0aac0ac6c1836a47c2fb52573d4524c25f48f))
+* **deps:** update all dependencies ([25f422d](https://github.com/s-hirano-ist/s-private/commit/25f422d288b10426adff0463f667344fde71e0d9))
+* **deps:** update all dependencies ([9268d13](https://github.com/s-hirano-ist/s-private/commit/9268d138580818cfa7891bcb383820a57525ba4d))
+* **deps:** update dependency vite-plus to v1.6.0 ([0895a6c](https://github.com/s-hirano-ist/s-private/commit/0895a6cba2a0dd8f2b7c2c4faf6015a087d5c96e))
+* merge latest main for Sentry integration ([3608cb6](https://github.com/s-hirano-ist/s-private/commit/3608cb61b62763d2befc069e68f366b0b307ff6f))
+* merge main into dependency updates ([5ad1d96](https://github.com/s-hirano-ist/s-private/commit/5ad1d96524e2a7f94f76d51ccf6d9d79b2c48b99))
+* **test:** merge coverage with Vitest blob reports ([3fba2bc](https://github.com/s-hirano-ist/s-private/commit/3fba2bcce5de0786e76d703636bc576a891d6edb))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @s-hirano-ist/s-ui bumped to 3.0.2
+
 ## [4.2.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v4.1.0...s-private-v4.2.0) (2026-11-07)
 
 
