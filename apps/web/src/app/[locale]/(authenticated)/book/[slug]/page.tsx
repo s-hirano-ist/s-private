@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { getBookByISBN } from "@/application-services/books/get-books";
-import { requireAuth } from "@/common/auth/session";
 import { ViewerBody } from "@/components/books/server/viewer-body";
 import { ErrorBoundary } from "@/components/common/layouts/error-boundary";
 import { LoadingIndicator as Loading } from "@s-hirano-ist/s-ui/loading-indicator";
@@ -20,8 +19,6 @@ export async function generateMetadata({
 type BookContentProps = Pick<PageProps<"/[locale]/book/[slug]">, "params">;
 
 async function BookContent({ params }: BookContentProps) {
-	await requireAuth();
-
 	const { slug } = await params;
 
 	return (

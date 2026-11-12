@@ -1,4 +1,4 @@
-import webPush from "web-push";
+import { sendNotification, setVapidDetails } from "web-push";
 
 export type WebPushConfig = {
 	privateKey: string;
@@ -68,12 +68,12 @@ export type WebPushService = {
 };
 
 export function createWebPushService(config: WebPushConfig): WebPushService {
-	webPush.setVapidDetails(config.subject, config.publicKey, config.privateKey);
+	setVapidDetails(config.subject, config.publicKey, config.privateKey);
 
 	return {
 		async send(subscription, payload) {
 			try {
-				await webPush.sendNotification(
+				await sendNotification(
 					{
 						endpoint: subscription.endpoint,
 						keys: {

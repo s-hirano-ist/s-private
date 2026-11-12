@@ -4,12 +4,14 @@ import {
 	getNoteByTitle,
 	getUnexportedNotes,
 } from "@/application-services/notes/get-notes";
+import { requireAuth } from "@/common/auth/session";
 import { getBackendClient } from "@/common/backend/server-client";
 import { createBackendClient, ApiHttpError } from "@s-hirano-ist/s-api-client";
 import { beforeEach, expect, test, vi } from "vite-plus/test";
 vi.mock("@/common/backend/server-client", () => ({
 	getBackendClient: vi.fn(),
 }));
+vi.mock("@/common/auth/session", () => ({ requireAuth: vi.fn() }));
 const note = {
 	id: "note",
 	title: "Title / 日本語",
@@ -79,3 +81,10 @@ test("returns null only for a missing note and propagates service failures", asy
 function urlOf(input: RequestInfo | URL) {
 	return new URL(input instanceof Request ? input.url : input);
 }
+
+test("validates the session inside the detail read before requesting content", async () => {
+	vi.mocked(requireAuth).mockRejectedValueOnce(new Error("UNAUTHORIZED"));
+	const fetch = fixture({});
+	await expect(getNoteByTitle("title")).rejects.toThrow("UNAUTHORIZED");
+	expect(fetch).not.toHaveBeenCalled();
+});

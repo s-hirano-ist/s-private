@@ -6,7 +6,8 @@ const { sendNotification, setVapidDetails } = vi.hoisted(() => ({
 }));
 
 vi.mock("web-push", () => ({
-	default: { sendNotification, setVapidDetails },
+	sendNotification,
+	setVapidDetails,
 }));
 
 import {

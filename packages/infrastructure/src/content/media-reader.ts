@@ -8,7 +8,7 @@ export function createMediaReader(
 		async getImage(path, thumbnail) {
 			const stream = await storage.getImage(path, thumbnail);
 			if (!(stream instanceof Readable))
-				throw new Error("Unsupported storage stream");
+				throw new TypeError("Unsupported storage stream");
 			return {
 				[Symbol.asyncIterator]() {
 					const iterator = stream[Symbol.asyncIterator]();
@@ -18,7 +18,7 @@ export function createMediaReader(
 								const result: IteratorResult<unknown> = await iterator.next();
 								if (result.done) return { done: true, value: undefined };
 								if (!(result.value instanceof Uint8Array))
-									throw new Error("Invalid storage chunk");
+									throw new TypeError("Invalid storage chunk");
 								return { done: false, value: new Uint8Array(result.value) };
 							} catch (error) {
 								stream.destroy();

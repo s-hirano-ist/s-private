@@ -3,8 +3,9 @@ import "server-only";
 import type { ServerAction } from "@/common/types";
 import { backendActionError } from "@/common/backend/action-error";
 import { getBackendClient } from "@/common/backend/server-client";
+import { contentCacheTag } from "@/common/cache/content-cache";
 import { NoteCreate } from "@s-hirano-ist/s-api-client/models";
-import { refresh } from "next/cache";
+import { refresh, updateTag } from "next/cache";
 export async function addNote(formData: FormData): Promise<ServerAction> {
 	try {
 		const input = NoteCreate.parse({
@@ -13,6 +14,7 @@ export async function addNote(formData: FormData): Promise<ServerAction> {
 			markdown: formData.get("markdown"),
 		});
 		await (await getBackendClient()).createNotes(input);
+		updateTag(contentCacheTag("notes"));
 		refresh();
 		return { success: true, message: "inserted" };
 	} catch (error) {
