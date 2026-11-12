@@ -17,7 +17,7 @@ jobs:
       group: ${{ github.workflow }}-${{ inputs.check }}-${{ github.ref }}
     steps:
       - name: Checkout files
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
           submodules: true
@@ -30,7 +30,7 @@ jobs:
             exit 1
           fi
 
-      - uses: ./.github/actions/setup-pnpm
+      - uses: $/.github/actions/setup-pnpm
 
       - name: Build application
         if: ${{ inputs.check == 'build' }}
@@ -50,7 +50,7 @@ jobs:
 
       - name: Install native lint tools
         if: ${{ inputs.check == 'supplemental-lint' }}
-        uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
+        uses: jdx/mise-action@v5.2.7
         with:
           version: 2026.11.7
           install_args: rumdl gitleaks

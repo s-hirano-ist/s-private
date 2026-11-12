@@ -14,7 +14,7 @@ jobs:
       matrix:
         check: [build, supplemental-lint, storybook, docs, schema-locked, api-contract]
     permissions: {}
-    uses: ./.github/workflows/ci-check.yaml
+    uses: ./.github/workflows/ci-check.yaml # zizmor: ignore[self-repository] -- actionlint 1.7.12 does not support $/ workflow calls yet.
     with:
       check: ${{ matrix.check }}
 
@@ -25,6 +25,6 @@ jobs:
         check: [oxfmt, lint, knip, test]
     permissions:
       pull-requests: write
-    uses: ./.github/workflows/ci-reporting-check.yaml
+    uses: ./.github/workflows/ci-reporting-check.yaml # zizmor: ignore[self-repository] -- actionlint 1.7.12 does not support $/ workflow calls yet.
     with:
       check: ${{ matrix.check }}

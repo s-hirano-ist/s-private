@@ -19,20 +19,20 @@ jobs:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
       - name: Checkout files
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
           submodules: true
 
-      - uses: ./.github/actions/setup-pnpm
+      - uses: $/.github/actions/setup-pnpm
       # Stryker 10 reports a lower mutation score with Vitest 5. Keep the
       # compatibility version isolated to this disposable CI checkout.
-      - run: pnpm add -Dw --ignore-scripts vitest@4.1.11
+      - run: pnpm add -Dw --ignore-scripts vitest@4.1.11 # zizmor: ignore[adhoc-packages] -- Exact compatibility version in a disposable checkout.
       - run: pnpm test:mutation:core
 
       - name: Upload mutation report
         if: always()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: mutation-report
           path: reports/mutation/

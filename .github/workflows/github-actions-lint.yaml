@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - .github/actionlint.yaml
+      - .github/ghalint.yaml
+      - .github/workflows/actions.lock
       - .github/workflows/*.yaml
       - .github/workflows/*.yml
       - .github/actions/**
@@ -13,5 +15,4 @@ jobs:
   github-actions-lint:
     permissions:
       contents: read
-      pull-requests: write
-    uses: s-hirano-ist/s-templates/.github/workflows/github-actions-lint.yaml@1a271f60f318bb45cfdae11608529540996cf630
+    uses: s-hirano-ist/s-templates/.github/workflows/github-actions-lint.yaml@f99b522f6bfc60282db65e697f173d25586afe45

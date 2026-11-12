@@ -16,12 +16,12 @@ jobs:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
       - name: Checkout files
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
           submodules: true
 
-      - uses: ./.github/actions/setup-pnpm
+      - uses: $/.github/actions/setup-pnpm
       - run: pnpm --filter s-database prisma:generate
         env:
           DATABASE_URL: ${{ secrets.PRODUCTION_DIRECT_URL }}
