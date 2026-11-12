@@ -1,7 +1,9 @@
 import type { GetCount, GetPaginatedData } from "@/common/types";
 import type { LinkCardStackInitialData } from "@/components/common/layouts/cards/types";
 import type { ContentStatus } from "@s-hirano-ist/s-api-client/models";
+import { requireAuth } from "@/common/auth/session";
 import { getBackendClient } from "@/common/backend/server-client";
+import { configureContentCache } from "@/common/cache/content-cache";
 import { PAGE_SIZE } from "@/common/constants";
 import { ApiHttpError } from "@s-hirano-ist/s-api-client";
 import { cache } from "react";
@@ -45,6 +47,8 @@ const page = cache(
 		offset: number,
 		status: ContentStatus,
 	): Promise<LinkCardStackInitialData> => {
+		"use cache: private";
+		configureContentCache("notes");
 		const response = await (
 			await getBackendClient()
 		).listNotes({ offset, limit: PAGE_SIZE, status });
@@ -73,11 +77,12 @@ const page = cache(
 		};
 	},
 );
-export const getExportedNotesCount: GetCount = cache(
-	async () =>
-		(await (await getBackendClient()).countNotes({ status: "EXPORTED" })).data
-			.count,
-);
+export const getExportedNotesCount: GetCount = cache(async () => {
+	"use cache: private";
+	configureContentCache("notes");
+	return (await (await getBackendClient()).countNotes({ status: "EXPORTED" }))
+		.data.count;
+});
 export const getUnexportedNotes: GetPaginatedData<LinkCardStackInitialData> = (
 	offset,
 ) => page(offset, "UNEXPORTED");
@@ -85,6 +90,9 @@ export const getExportedNotes: GetPaginatedData<LinkCardStackInitialData> = (
 	offset,
 ) => page(offset, "EXPORTED");
 export const getNoteByTitle = cache(async (title: string) => {
+	"use cache: private";
+	configureContentCache("notes");
+	await requireAuth();
 	try {
 		const { data } = await (await getBackendClient()).getNoteByTitle(title);
 		return { title: data.title, markdown: data.markdown };
