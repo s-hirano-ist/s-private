@@ -56,7 +56,19 @@ export function operationalAttributes(
 			(entry): entry is [string, string | number] => {
 				const [key, value] = entry;
 				return (
-					["method", "route", "domain", "status", "job"].includes(key) &&
+					[
+						"method",
+						"route",
+						"domain",
+						"status",
+						"job",
+						"sentry.environment",
+						"sentry.release",
+						"sentry.sdk.name",
+						"sentry.sdk.version",
+						"sentry.trace.parent_span_id",
+						"sentry.replay_id",
+					].includes(key) &&
 					(typeof value === "string" || typeof value === "number")
 				);
 			},

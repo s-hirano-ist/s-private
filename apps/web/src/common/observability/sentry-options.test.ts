@@ -84,3 +84,38 @@ describe("Sentry telemetry privacy", () => {
 		expect(result.trace_id).toBe("trace");
 	});
 });
+
+test("operational telemetry preserves environment and release without user enrichment", () => {
+	const attributes = {
+		domain: "notes",
+		status: 200,
+		"sentry.environment": "production",
+		"sentry.release": "test-release",
+		"sentry.trace.parent_span_id": "1234567890123456",
+		"user.id": "private-user",
+		cookie: "private-cookie",
+		"http.url": "/notes?q=private-query",
+	};
+	const expected = {
+		domain: "notes",
+		status: 200,
+		"sentry.environment": "production",
+		"sentry.release": "test-release",
+		"sentry.trace.parent_span_id": "1234567890123456",
+	};
+	expect(
+		sentryPrivacyOptions.beforeSendLog({
+			message: "Backend transport failed",
+			level: "error",
+			attributes,
+		}).attributes,
+	).toEqual(expected);
+	expect(
+		sentryPrivacyOptions.beforeSendMetric({
+			name: "web.backend.duration",
+			type: "distribution",
+			value: 20,
+			attributes,
+		}).attributes,
+	).toEqual(expected);
+});

@@ -38,6 +38,7 @@ test("real SDK transports correlated spans, logs and metrics without private req
 		NODE_ENV: "production",
 		NEXT_PUBLIC_SENTRY_DSN: "https://public@o0.ingest.sentry.io/1",
 		VERCEL_ENV: "production",
+		SENTRY_RELEASE: "observability-test-release",
 	});
 	const app = new Hono();
 	app.use("*", backendTelemetry(telemetry));
@@ -76,6 +77,11 @@ test("real SDK transports correlated spans, logs and metrics without private req
 	expect(payload).toContain("backend.http.requests");
 	expect(payload).toContain("backend.http.duration");
 	expect(payload).toContain("Application operation");
+	expect(payload).toContain("sentry.environment");
+	expect(payload).toContain('"production"');
+	expect(payload).toContain("sentry.release");
+	expect(payload).toContain("observability-test-release");
+	expect(payload).toContain("sentry.trace.parent_span_id");
 	expect(payload).toContain("/notes/:id");
 	expect(payload).toContain("12345678901234567890123456789012");
 	for (const value of [

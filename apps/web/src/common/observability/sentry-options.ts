@@ -18,7 +18,19 @@ export function operationalAttributes(
 ) {
 	return Object.fromEntries(
 		Object.entries(attributes).filter(([key]) =>
-			["method", "route", "domain", "status", "job"].includes(key),
+			[
+				"method",
+				"route",
+				"domain",
+				"status",
+				"job",
+				"sentry.environment",
+				"sentry.release",
+				"sentry.sdk.name",
+				"sentry.sdk.version",
+				"sentry.trace.parent_span_id",
+				"sentry.replay_id",
+			].includes(key),
 		),
 	);
 }

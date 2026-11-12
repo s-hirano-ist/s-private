@@ -113,7 +113,8 @@ CLIのLifecycle記録と既存のError Monitoring / Pushoverを使い分け、�
 | `cli.duration` | distribution / millisecond | 固定job名・status |
 | `cron.deliveries` | counter | job (`gigazine-headline`)・status (`sent` / `failed`) |
 
-Logs / Metricsの送信前hookは上記の運用属性以外を除去する。
+Logs / Metricsの送信前hookは上記の運用属性と、安全なSDKメタデータ
+（environment・release・SDK名/version・traceの親span ID・Replay ID）以外を除去する。
 ユーザーID、任意のadditionalContext、本文、URL query、資格情報は追加送信しない。
 Webとbackendは開発モードでは送信せず、CLIは `NODE_ENV=production` とDSNがある場合だけ送信する。
 CLIの `--dry-run` は初期化も外部送信もしない。CLIの未知のjob名は `other` にまとめる。
