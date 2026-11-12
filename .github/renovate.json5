@@ -1,25 +1,18 @@
 {
-	$schema: 'https://docs.renovatebot.com/renovate-schema.json',
-	timezone: 'Asia/Tokyo',
-	baseBranchPatterns: [
-		'main',
-	],
+	$schema: "https://docs.renovatebot.com/renovate-schema.json",
+	timezone: "Asia/Tokyo",
+	baseBranchPatterns: ["main"],
 	extends: [
-		'config:recommended',
-		'config:best-practices',
-		':semanticCommitTypeAll(chore)',
-		':enableVulnerabilityAlertsWithLabel(security)',
+		"config:recommended",
+		"config:best-practices",
+		":semanticCommitTypeAll(chore)",
+		":enableVulnerabilityAlertsWithLabel(security)",
 	],
-	reviewers: [
-		's-hirano-ist',
-	],
-	enabledManagers: [
-		'npm',
-		'mise',
-		'nvm',
-		'docker-compose',
-		'github-actions',
-	],
+	reviewers: ["s-hirano-ist"],
+	// Keep every dependency source in one reviewable PR, including Actions and Docker.
+	enabledManagers: ["npm", "mise", "nvm", "docker-compose", "github-actions"],
+	// Skip lifecycle scripts only during Renovate's lockfile regeneration.
+	// CI and deployment installs still build the explicitly allowed dependencies.
 	ignoreScripts: true,
 	toolSettings: {
 		nodeMaxMemory: 4096,
@@ -32,83 +25,61 @@
 	separateMajorMinor: false,
 	separateMinorPatch: false,
 	separateMultipleMajor: false,
-	schedule: [
-		'before 11am on monday',
-	],
-	labels: [
-		'dependencies',
-	],
-	rangeStrategy: 'bump',
+	schedule: ["before 11am on monday"],
+	labels: ["dependencies"],
+	rangeStrategy: "bump",
 	automerge: false,
 	lockFileMaintenance: {
 		enabled: false,
 	},
 	vulnerabilityAlerts: {
-		groupName: 'all dependencies',
-		groupSlug: 'all-dependencies',
-		branchTopic: 'all-dependencies',
-		schedule: [
-			'at any time',
-		],
-		labels: [
-			'dependencies',
-			'security',
-		],
+		// Share the regular update branch, but do not wait for the weekly window.
+		groupName: "all dependencies",
+		groupSlug: "all-dependencies",
+		branchTopic: "all-dependencies",
+		schedule: ["at any time"],
+		labels: ["dependencies", "security"],
 	},
 	packageRules: [
 		{
-			matchDatasources: [
-				'npm',
-			],
-			minimumReleaseAge: '1 day',
-			internalChecksFilter: 'strict',
+			// Match pnpm's strict minimumReleaseAge during lockfile regeneration.
+			matchDatasources: ["npm"],
+			minimumReleaseAge: "1 day",
+			internalChecksFilter: "strict",
 		},
 		{
-			matchPackageNames: [
-				'node',
-				'@types/node',
-			],
-			allowedVersions: '26.x',
+			// Runtime, engines and type definitions must stay on the same major.
+			matchPackageNames: ["node", "@types/node"],
+			allowedVersions: "26.x",
 		},
 		{
-			matchPackageNames: [
-				'node',
-			],
-			matchDepTypes: [
-				'engines',
-			],
-			rangeStrategy: 'replace',
+			// Preserve the major-range contract checked by CI and used by Vercel.
+			matchPackageNames: ["node"],
+			matchDepTypes: ["engines"],
+			rangeStrategy: "replace",
 		},
 		{
-			matchPackageNames: [
-				'typescript',
-			],
-			allowedVersions: '<7',
+			// API generation, TypeDoc and Stryker require the JavaScript compiler API.
+			matchPackageNames: ["typescript"],
+			allowedVersions: "<7",
 		},
 		{
-			matchDatasources: [
-				'docker',
-			],
-			matchPackageNames: [
-				'cockroachdb/cockroach',
-			],
-			allowedVersions: '/^v26\\.2\\./',
+			// 26.3.4 rejects writes with the existing mobile-sync row triggers.
+			matchDatasources: ["docker"],
+			matchPackageNames: ["cockroachdb/cockroach"],
+			allowedVersions: "/^v26\\.2\\./",
 		},
 		{
-			matchDatasources: [
-				'docker',
-			],
-			matchPackageNames: [
-				's0hirano/embedding-api',
-			],
+			// Preserve the intentionally unmanaged legacy embedding image.
+			matchDatasources: ["docker"],
+			matchPackageNames: ["s0hirano/embedding-api"],
 			enabled: false,
 		},
 		{
-			matchPackageNames: [
-				'*',
-			],
-			groupName: 'all dependencies',
-			groupSlug: 'all-dependencies',
+			// Override preset groups and update-type splitting for every manager.
+			matchPackageNames: ["*"],
+			groupName: "all dependencies",
+			groupSlug: "all-dependencies",
 			separateMajorMinor: false,
 			separateMinorPatch: false,
 			separateMultipleMajor: false,
