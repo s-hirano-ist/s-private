@@ -10,12 +10,12 @@ jobs:
     runs-on: ubuntu-26.04
     steps:
       - name: Checkout files
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
           submodules: true
 
-      - uses: ./.github/actions/setup-pnpm
+      - uses: $/.github/actions/setup-pnpm
 
       - name: Run jscpd
         id: jscpd
@@ -35,7 +35,7 @@ jobs:
 
       - name: Parse jscpd results and create PR comment
         if: steps.jscpd.outputs.has_report == 'true'
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ github.token }}
           script: |
@@ -145,7 +145,7 @@ jobs:
 
       - name: No duplications found
         if: steps.jscpd.outputs.has_report == 'false'
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ github.token }}
           script: |
@@ -179,7 +179,7 @@ jobs:
 
       - name: Upload jscpd report as artifact
         if: always()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: jscpd-report
           path: |

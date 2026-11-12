@@ -14,6 +14,9 @@
 	// Skip lifecycle scripts only during Renovate's lockfile regeneration.
 	// CI and deployment installs still build the explicitly allowed dependencies.
 	ignoreScripts: true,
+	constraints: {
+		ghActionsLock: "v0.4.1",
+	},
 	toolSettings: {
 		nodeMaxMemory: 4096,
 	},
@@ -41,6 +44,13 @@
 		labels: ["dependencies", "security"],
 	},
 	packageRules: [
+		{
+			// Workflow actions use tags backed by actions.lock; composites retain SHA pins.
+			matchManagers: ["github-actions"],
+			matchFileNames: [".github/workflows/**"],
+			matchDepTypes: ["action"],
+			pinDigests: false,
+		},
 		{
 			// Match pnpm's strict minimumReleaseAge during lockfile regeneration.
 			matchDatasources: ["npm"],
