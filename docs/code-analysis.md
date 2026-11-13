@@ -132,6 +132,7 @@ TypeScript/JavaScript は oxlint に一本化した状態を維持し、oxlint �
 - **色チェック**: `scripts/check-semantic-colors.mjs` が app と共通 UI の Tailwind クラスから既定パレット色と任意の色指定を検出する。`pnpm lint:colors` はチェック自身のテストも実行し、`pnpm lint` に含まれる。
 - **rumdl**: Rust ネイティブ実装で手書き Markdown の構造を検査する。既存違反ファイルは `.rumdl.toml` の baseline に列挙し、修正完了時に該当 entry を削除する。生成 docs、CHANGELOG、agent skills は対象外。
 - **Gitleaks**: デフォルトルールと `.gitleaks.toml` のプロジェクト固有ルールで credential、token、秘密鍵、接続文字列を検査する。`scripts/check-secrets.mjs` は合成secretを標準入力で先に検知させ、ルールやバイナリが機能しない状態を fail-close する。検知値は常に完全マスクする。
+- **GitGuardian（導入手順整備済み・接続未完了）**: 無料 Starter の GitHub App で PR 内の各コミットと過去の履歴を検査する。現在の `gitleaks dir` は Git 履歴を検査しないため、その範囲を補完する。初回履歴スキャンと検証後に main の Ruleset で必須化する。Actions workflow や API キーは追加しない。設定・検証・誤検知・障害時の対応は [SECURITY.md](../SECURITY.md#secret-monitoring-gitguardian) を参照する。
 
 補助 lint のコマンド:
 

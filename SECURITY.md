@@ -11,6 +11,7 @@ This document outlines the security practices and policies for this project.
 - [Security Auditing](#security-auditing)
 - [Content Security Policy](#content-security-policy)
 - [Application Security Scanning (Aikido)](#application-security-scanning-aikido)
+- [Secret Monitoring (GitGuardian)](#secret-monitoring-gitguardian)
 - [Supply Chain Attack Prevention](#supply-chain-attack-prevention)
 
 ## Reporting a Vulnerability
@@ -323,6 +324,63 @@ Node.js アプリではない（TEI / MinIO）ため適用先もない。
 4. GitHub の `main` branch protection で Aikido のステータスチェックを required に指定
 
 > 無料枠制約: 2 ユーザー / 10 リポジトリ / 1 ドメイン / 1 クラウド接続 / 再スキャン 3 日ごと。
+
+## Secret Monitoring (GitGuardian)
+
+GitGuardian は GitHub App で PR 内の各コミットと過去の履歴を検査する。
+Gitleaks は pre-commit / CI で現在のファイルとプロジェクト固有ルールを検査するため継続する。
+GitGuardian 用の Actions workflow、API キー、コード書き込み用 App は追加しない。
+
+### 導入状況
+
+Issue [#2688](https://github.com/s-hirano-ist/s-private/issues/2688) の導入手順。
+GitHub アカウントの認可、App インストール、初回スキャン、検証、Ruleset 必須化は未完了。
+以下の手順を完了し、実際の設定と検証結果を PR に記録してから稼働済みと扱う。
+
+### 初回セットアップ
+
+1. [GitGuardian](https://dashboard.gitguardian.com/) で無料 Starter を使用する。
+   Plan & usage で無料枠（貢献開発者25人、スキャン容量1GB）に収まることを確認する。
+   超える場合は有料化せず停止し、試用期間限定の機能には依存しない。
+2. GitHub App の対象を `s-hirano-ist/s-private` だけに限定する。
+   ソースコードの読み取りを許可し、追加の `GitGuardian:write` App は導入しない。
+3. リアルタイム監視と初回履歴スキャンを実行する。
+   有効な秘密情報は失効・再発行し、誤検知とテスト値は理由を記録して分類する。
+   秘密値は Issue、PR、ログへ転記しない。
+4. GitHub Check Runs を有効にし、検出時の結論を `Failed` にする。
+   PR コメント通知と管理者へのメール通知を有効にする。
+   PR 上の skip 操作は無効化し、merge commit も検査対象に含める。
+5. 以下の検証後、既存の `main branch rule` Ruleset（ID: `932273`）に必須チェックを追加する。
+   実際に発行されたチェック名と GitGuardian App の識別子を指定する。
+   既存ルールと bypass 設定は保持し、ブランチ最新化の要求は追加しない。
+
+### 導入検証
+
+使い捨ての PR で以下を確認し、検証 PR はマージしない。
+実際の認証情報は使用せず、GitGuardian での検知を事前確認した無効なテスト用サンプルを使う。
+
+- 秘密情報のない PR でチェックが成功する。
+- テスト用サンプルを含むコミットでチェックが失敗する。
+- 次のコミットでサンプルを削除しても、過去コミットの検出が残る。
+- 管理画面でテスト値として理由付きで処理し、再実行するとチェックが通る。
+- Ruleset 必須化後、失敗中はマージ不可となり、成功後は当該条件を満たす。
+
+### 検出・障害時の対応
+
+- 有効な秘密情報は、ファイル削除だけで対応を終えず、先に失効・再発行する。
+- 誤検知やテスト値は管理画面で根拠を残して処理し、チェックを再実行する。
+  同じ値は過去の incident 処理により再通知されない場合があるため、再検証時は注意する。
+- タイムアウトによる自動 skip があり、必須チェックでも外部障害時に必ずマージを拒否する保証はない。
+  skip や実行失敗時は再実行し、回復しなければ管理者が状況を判断する。
+  通常の復旧では必須チェックを解除しない。
+- 無料枠超過や長期障害で撤去する場合は、必須チェックを先に外してから App の監視を停止する。
+  Gitleaks の pre-commit / CI 検査は継続する。
+
+設定の根拠: [GitHub 連携](https://docs.gitguardian.com/internal-monitoring/integrate-sources/vcs-integrations/github)、
+[PR チェック](https://docs.gitguardian.com/internal-monitoring/prevent/detect-secrets-in-real-time-in-github)、
+[無料枠と機能](https://docs.gitguardian.com/platform/user-account/plan-usage)。
+無料枠には履歴スキャン最大500回、ファイル最大1MBなどの制約もあり、全ファイルの検査を保証しない。
+無料枠では独自検知ルールやファイル・パターンの除外設定を使わず、独自ルールは Gitleaks で管理する。
 
 ## Supply Chain Attack Prevention
 
