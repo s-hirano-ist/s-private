@@ -23,7 +23,7 @@
 		"@tailwindcss/typography": "catalog:",
 		"@vercel/analytics": "2.0.1",
 		"@vercel/related-projects": "catalog:",
-		"better-auth": "1.7.20",
+		"better-auth": "1.7.21",
 		"lucide-react": "catalog:",
 		"markdown-to-jsx": "9.10.6",
 		"next": "catalog:",

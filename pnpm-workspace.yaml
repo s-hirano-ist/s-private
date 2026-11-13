@@ -59,7 +59,7 @@ pipelines:
     - build
 
 catalog:
-  '@aws-sdk/client-s3': 3.1166.0
+  '@aws-sdk/client-s3': 3.1167.0
   '@s-hirano-ist/s-api-client': workspace:*
   '@sentry/node': 11.12.0
   '@tailwindcss/postcss': 4.3.5
@@ -71,12 +71,12 @@ catalog:
   '@vitest/browser': 5.1.0
   '@vitest/browser-playwright': 5.1.0
   '@vitest/coverage-v8': 5.1.0
-  hono: 4.13.17
+  hono: 4.13.18
   js-yaml: 5.5.0
   lefthook: 2.2.2
-  lucide-react: 1.71.0
+  lucide-react: 1.72.0
   next: 16.4.6
-  next-intl: 4.14.10
+  next-intl: 4.15.0
   oxfmt: 0.78.0
   postcss: 8.5.32
   react: 19.3.1
