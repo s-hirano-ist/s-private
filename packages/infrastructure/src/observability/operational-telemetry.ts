@@ -57,6 +57,8 @@ export function operationalAttributes(
 				const [key, value] = entry;
 				return (
 					[
+						"tool",
+						"client",
 						"method",
 						"route",
 						"domain",

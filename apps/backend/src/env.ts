@@ -1,7 +1,9 @@
+import { mcpEnvSchema, resolveMcpConfig } from "s-private-backend/mcp/config";
 import { z } from "zod";
 
 const optional = z.string().min(1).optional();
 const schema = z.object({
+	...mcpEnvSchema.shape,
 	NODE_ENV: z
 		.enum(["development", "test", "production"])
 		.default("development"),
@@ -92,6 +94,7 @@ export function parseBackendEnv(input: Record<string, string | undefined>) {
 	)
 		throw new Error("Local authentication configuration is required");
 	applyDeploymentPolicy(env);
+	resolveMcpConfig(env);
 	if (
 		env.NODE_ENV === "production" &&
 		(!env.DATABASE_URL.includes("sslmode=verify-full") ||

@@ -13,24 +13,27 @@
 		"start": "tsx src/dev.ts"
 	},
 	"dependencies": {
+		"@hono/node-server": "2.1.8",
+		"@hono/zod-openapi": "1.6.3",
+		"@modelcontextprotocol/hono": "catalog:",
+		"@modelcontextprotocol/server": "catalog:",
+		"@s-hirano-ist/s-api-contracts": "workspace:*",
+		"@s-hirano-ist/s-application": "workspace:*",
 		"@s-hirano-ist/s-core": "workspace:*",
 		"@s-hirano-ist/s-database": "workspace:*",
-		"better-auth": "1.7.22",
-		"zod": "catalog:",
-		"jose": "6.2.17",
-		"@hono/zod-openapi": "1.6.3",
-		"hono": "catalog:",
-		"@s-hirano-ist/s-api-contracts": "workspace:*",
-		"@sentry/node": "11.12.0",
-		"@hono/node-server": "2.1.8",
-		"@s-hirano-ist/s-application": "workspace:*",
 		"@s-hirano-ist/s-infrastructure": "workspace:*",
-		"@s-hirano-ist/s-storage": "workspace:*"
+		"@s-hirano-ist/s-storage": "workspace:*",
+		"@sentry/node": "11.12.0",
+		"better-auth": "1.7.22",
+		"hono": "catalog:",
+		"jose": "6.2.17",
+		"zod": "catalog:"
 	},
 	"devDependencies": {
+		"@modelcontextprotocol/client": "catalog:",
 		"@types/node": "catalog:",
-		"typescript": "catalog:",
-		"tsx": "4.23.15"
+		"tsx": "4.23.15",
+		"typescript": "catalog:"
 	},
 	"exports": {
 		"./*": "./src/*.ts"

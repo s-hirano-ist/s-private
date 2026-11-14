@@ -1,33 +1,14 @@
 import type { MobileDeps } from "@s-hirano-ist/s-application/mobile/deps";
 import { tenantContext } from "@s-hirano-ist/s-infrastructure/shared/tenant-context";
-import { createRemoteJWKSet, jwtVerify } from "jose";
 import { ApiError } from "s-private-backend/api/error";
-const resolvers = new Map<string, ReturnType<typeof createRemoteJWKSet>>();
+import { verifyAccessToken } from "s-private-backend/auth/access-token";
 export async function verifyMobileToken(
 	token: string,
 	issuer: string,
 	audience: string,
 ): Promise<string> {
 	try {
-		const canonicalIssuer = issuer.endsWith("/") ? issuer : `${issuer}/`;
-		const url = new URL(canonicalIssuer);
-		if (url.protocol !== "https:") throw new Error("Invalid issuer");
-		let keys = resolvers.get(canonicalIssuer);
-		if (!keys) {
-			keys = createRemoteJWKSet(new URL(".well-known/jwks.json", url), {
-				cacheMaxAge: 300_000,
-				timeoutDuration: 5_000,
-			});
-			if (resolvers.size >= 4) resolvers.clear();
-			resolvers.set(canonicalIssuer, keys);
-		}
-		const { payload, protectedHeader } = await jwtVerify(token, keys, {
-			issuer: canonicalIssuer,
-			audience,
-			algorithms: ["RS256"],
-			requiredClaims: ["exp", "sub", "iss", "aud"],
-		});
-		if (!protectedHeader.kid || !payload.sub) throw new Error("Invalid claims");
+		const payload = await verifyAccessToken(token, issuer, audience);
 		return payload.sub;
 	} catch {
 		throw new ApiError("UNAUTHORIZED");

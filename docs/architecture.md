@@ -719,3 +719,14 @@ CLIは `runCli` で初期化・処理・終了処理の例外を捕捉し、異�
 本番のサーバーにはリクエスト間のprivate cacheを保存せず、backendへの `no-store` 通信も維持する。開発時にはNext.js自体のインメモリキャッシュが働くため、再訪と無効化は本番ビルドでも検証する。Next.js 16.3の[公式仕様](https://github.com/vercel/next.js/blob/v16.3.0/docs/01-app/03-api-reference/01-directives/use-cache-private.mdx)を参照。
 
 Webの更新成功後は対象ドメインの `content:<domain>` タグを `updateTag` で失効させる。画像・書籍の分割アップロードは完了API成功後に認証付きServer Actionを呼び、タグ失効と画面更新を行う。即時無効化は操作したタブに限定し、別タブ・iOS・外部APIの更新は保持期限後の再取得またはページ再読み込みで反映する。
+
+## MCPの参照adapter
+
+共通backendは任意設定の `/mcp` を公開し、Auth0を外部OAuth認可サーバーとして使う。
+公式MCP SDKがステートレスHTTP transportと認可challengeを担い、
+MCP adapterは既存ReadServiceを本人のowner・tenant contextで呼び出す。
+MCP audienceはモバイルAPIから分離し、許可clientと `content:read` scopeを毎回検証する。
+Web CookieをMCPへ流用せず、認可コード・トークン発行・クライアント登録を自作しない。
+DTOから内部ストレージパスを除いた参照toolのみを提供する。
+認可メタデータは公開し、tool実行を含む `/mcp` は認証必須とする。
+配置と利用者の接続手順は[MCP設定](mcp-setup.md)を参照。

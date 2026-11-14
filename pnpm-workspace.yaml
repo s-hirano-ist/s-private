@@ -60,6 +60,9 @@ pipelines:
 
 catalog:
   '@aws-sdk/client-s3': 3.1168.0
+  '@modelcontextprotocol/client': 2.4.0
+  '@modelcontextprotocol/hono': 2.0.2
+  '@modelcontextprotocol/server': 2.4.0
   '@s-hirano-ist/s-api-client': workspace:*
   '@sentry/node': 11.12.0
   '@tailwindcss/postcss': 4.3.5
