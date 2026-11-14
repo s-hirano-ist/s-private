@@ -174,6 +174,23 @@ MuseアプリのCustom Connectorを使う。公式ヘルプでは、Museにカ�
 依頼し、必要な認証情報をSecure Credentials Storeで設定する方式が案内されている。
 MuseがChatGPTと同じCIMDに対応することや、URLだけで追加できることは前提にしない。
 
+今回Muse側から提示された接続設定は以下のとおり。実機接続の成否とは分けて確認する。
+
+| 項目 | 設定 |
+| --- | --- |
+| MCP URL / Resource / Audience | `https://api.s-hirano.com/mcp` |
+| Authorization endpoint | `https://s-hirano.jp.auth0.com/authorize` |
+| Token endpoint | `https://s-hirano.jp.auth0.com/oauth/token` |
+| Redirect URI | `https://agent.meta.ai/api/hatch/oauth/callback` |
+| Scope | `content:read` |
+| Token endpoint authentication | `none`（client secretなし） |
+| OAuth flow | Authorization Code + PKCE S256 |
+
+この設定ではAuth0のApplication TypeをNative、所有者をサードパーティーとし、
+Muse専用のclient IDを事前発行する。Museの追加シートにはこのclient IDを指定する。
+DCRによる自動登録は使わず、secretを必要とする認証方式へ切り替えない。
+接続先URLとclient IDは公開識別子であり、secretやアクセストークンとは区別する。
+
 1. Museに `https://api.s-hirano.com/mcp` へのカスタムコネクタ作成を依頼する。
    transportはStreamable HTTP、認証はOAuth Authorization Code + PKCE S256、
    scopeは `content:read` と伝える。ログインと同意は本人が行う。
@@ -183,8 +200,8 @@ MuseがChatGPTと同じCIMDに対応することや、URLだけで追加でき�
    callbackをChatGPT・Claude・Muse Codeから流用しない。
 3. アプリにMCP専用APIの `content:read` だけを許可し、ユーザー同意を必須にする。
    発行JWTのclient識別子を `MCP_ALLOWED_CLIENT_IDS` に追加してbackendを再デプロイする。
-4. 事前登録したclient IDと、必要な場合だけclient secretをMuseの安全な認証設定へ入力する。
-   チャット本文にはsecretを渡さない。tool一覧、検索、再接続とユーザー分離を検証する。
+4. 事前登録したclient IDをMuseの認証設定へ入力する。上記の公開クライアント構成では
+   client secretを入力しない。tool一覧、検索、再接続とユーザー分離を検証する。
 
 Muse側がPKCEまたは事前登録OAuthに対応しない場合は接続を未対応として扱い、
 Web Cookieの流用や認証省略では回避しない。実際のcallback・認証方式と接続成功は
