@@ -66,6 +66,7 @@ This project uses [Mise](https://mise.jdx.dev/) for tool version management.
 
 1. [Mise](https://mise.jdx.dev/getting-started.html) をインストール
 2. プロジェクトルートで以下を実行:
+
    ```bash
    mise install
    ```
@@ -122,6 +123,52 @@ https://<application-origin>/api/auth/callback/auth0
 Better Auth 1.7ではGeneric OAuthも標準のsocial provider callbackを使用します。旧URLの
 `/api/auth/oauth2/callback/auth0`は使用しません。
 
+### Auth0の環境分離と最小設定
+
+Auth0 tenantはProductionの `s-hirano` と、Webのlocal/Preview用の
+`s-hirano-dev` に分離します。環境タグはそれぞれProductionとDevelopmentです。
+devにiOS・MCP用APIを追加せず、Productionのユーザー・client secretをPreviewへコピーしません。
+ローカルの通常開発は引き続き `LOCAL_DEV_MODE=true` を使います。
+
+WebのApplicationは両環境ともRegular Web Application、OIDC準拠、RS256、
+token endpoint認証は `client_secret_post`、grantはAuthorization Codeのみとします。
+セッションはBetter Authが管理し、Auth0の `offline_access` は要求しません。
+ブラウザからAuth0への直接通信を使わないため、Allowed Web Originsは空にします。
+Cross-Origin Authenticationも無効のままにします。
+
+| 環境 | Allowed Callback URLs | Allowed Logout URLs |
+| --- | --- | --- |
+| Production | `https://private.s-hirano.com/api/auth/callback/auth0` | `https://private.s-hirano.com` |
+| local | `http://localhost:3000/api/auth/callback/auth0` | `http://localhost:3000` |
+| Preview | 下記2つのoriginに `/api/auth/callback/auth0` を付けたURL | 下記2つのorigin |
+
+Previewの許可originは `https://s-private-*-s-hirano-ist-team.vercel.app` と
+`https://memdex-web-*-s-hirano-ist-team.vercel.app` です。backendの公開URLを登録したり、
+`https://*.vercel.app` のように別teamまで許可したりしません。
+
+iOSはNative、RS256、token endpoint認証none、Authorization Code + PKCEと
+Refresh Tokenを使用します。iOS APIのoffline accessを有効にし、clientのrefresh tokenは
+rotation有効・最大2592000秒（30日）・未使用1296000秒（15日）・重複許容0秒とします。
+MCPの設定は[参照専用MCPの設定](mcp-setup.md)を参照してください。
+
+#### 2026-11-14の設定確認・適用状況
+
+- dev WebのApplication種別、token endpoint認証、grant、URL制限、Web Originsは上記へ変更し、Dashboardで保存済みの状態を確認しました。既存client ID/secretは維持しています。
+- Production iOSはImplicitを無効にし、上記の期限・rotationを保存しました。Native、認証none、callback、APIのoffline accessは維持しています。
+- Production WebもOIDC準拠ON・Authorization Codeのみ・Web Originsなしへ変更しました。RS256、Client Secret Post、既存callback/Logout URLを維持し、Management APIの再取得で確認しています。devの実ログイン未検証を承知した上で適用しました。
+- 変更後の本番 `/api/sign-in` からAuth0のログイン画面へ遷移することを確認しました。認証完了後のcallbackとログアウトの実操作は未検証です。MCPの実接続・refresh token交換の結果は[参照専用MCPの設定](mcp-setup.md)に記録しています。
+- 既存Preview 2件と本PRのPreview backendで `500 FUNCTION_INVOCATION_FAILED` を再現し、起動時のS3必須5変数不足が原因と特定しました。Dopplerの `memdex-backend/stg` と同期先Vercel Previewの両方にS3変数がありませんでした。Vercel build時の実環境変数検証を追加し、不足したdeploymentがReadyになるのを防ぎます。
+- 承認を得て非公開・暗号化有効のB2 bucket `memdex-preview-s-hirano-ist` とbucket限定キー `memdex-preview` を作成し、S3設定6件をDopplerへ登録・Vercel Previewへ同期しました。テストobjectの書込・読取・削除が成功し、backend再デプロイ後の `/health` は200、未認証sessionは401、Webの `/api/sign-in` はdev Auth0への307となり500が解消しました。clientとcallbackがdev／当該Previewであることも確認しました。
+- Safariの同一フローで、dev Auth0ログイン完了・callback後の `/ja/articles` への遷移・保護された `/ja/settings` への遷移・サインアウト後のAuth0ログイン画面への戻りを確認しました。認証状態とURLのみを確認し、非公開記事の本文やCRUDは検証していません。
+- 本番Database connectionはサインアップ禁止・改善された総当たり攻撃防御が有効です。tenantの不審IPスロットリング・総当たり攻撃防御も有効、ボット検知・パスワード漏洩検知は無効でした。今回これらは変更していません。
+- 本番の `fetch-role` ActionはID tokenに `https://private.s-hirano.com/roles` claimを追加し、Node 18の古いruntime警告があります。リポジトリにclaimの利用箇所はありませんが、外部利用とトリガーへの接続状態が未確認のため削除していません。
+- 本番の2つのAPI Test ApplicationはM2M clientです。利用履歴を確認できないため維持します。`All Applications` はtenantのグローバルclientであり、削除対象にしません。
+- Connections全種別、devのActions/攻撃対策、利用ログの監査、iOS実機のログイン・更新・再起動・ログアウトは未完了です。API/DTO、DBのユーザー・Accountの紐付けは変更していません。
+
+設定変更後はdevで認証を確認してからProductionへ適用し、iOS/MCPでは新規ログインに加えて
+期限後のtoken更新も確認します。変更前の秘密値を含まない設定と、未検証の操作を記録し、
+失敗時は直前の設定だけを戻します。client secretの再生成やユーザー移行は行いません。
+
 `reset-*` / `revert-*` バッチは従来どおりDBトランザクションを実行します。
 
 記事の OGP 画像URLはDB列と同じ4096文字まで受け付けます。OGP取得時と記事取り込み時に相対URLを記事URL基準の絶対URLへ解決し、絶対URLは切り詰めず保持します。OGP取得でリダイレクトした場合は最終応答URLを基準にします。
@@ -163,11 +210,9 @@ DB ホスティングは **CockroachDB Cloud Basic**（region `gcp-asia-southeas
 
 CockroachDB Cloud Basic は接続プーリングが内蔵で、pooled / direct の二重エンドポイントを持ちません。よってアプリ実行も `prisma deploy` も `DATABASE_URL` 1本で足ります:
 
-
 | 変数 | 用途 | 備考 |
 |---|---|---|
 | `DATABASE_URL` | アプリ実行 + `prisma deploy` | `postgresql://<user>:<password>@<host>:26257/<db>?sslmode=verify-full` |
-
 
 - TLS は `sslmode=verify-full`。CockroachDB Cloud のサーバ証明書はパブリック CA のため Node.js の `rootCertificates` で検証できます。
 
@@ -188,6 +233,7 @@ CockroachDB Cloud Basic は接続プーリングが内蔵で、pooled / direct �
 
 1. `packages/database/prisma/schema.prisma` を編集
 2. 差分 SQL を生成（git HEAD のスキーマと現スキーマを比較。DB 接続不要）:
+
    ```bash
    cd packages/database
    git show HEAD:packages/database/prisma/schema.prisma > /tmp/old-schema.prisma
@@ -197,6 +243,7 @@ CockroachDB Cloud Basic は接続プーリングが内蔵で、pooled / direct �
      --to-schema prisma/schema.prisma \
      --script > "prisma/migrations/<dir>/migration.sql"
    ```
+
 3. 生成 SQL の**新規 `CREATE TABLE` に `WITH (schema_locked = false)` を付与**
 4. コミット → クラウドへ `pnpm --filter s-database prisma:deploy`
 

@@ -14,7 +14,7 @@ Productionの環境変数はVercelで手動管理し、PreviewはDopplerのサ�
 3. **Build and Deployment → Root Directory** で **Include source files outside of the Root Directory in the Build Step** を有効にする。`packages/*` とルートのworkspace/lockfileが必要。
 4. FrameworkはHonoの自動検出を使用する。入口は `apps/backend/src/index.ts` のdefault export。`api/index.ts` やNext.js adapterを追加しない。
 5. Node.jsは **26.x** を選び、ビルドログのversionがリポジトリの `.nvmrc` / `engines` を満たすことを確認する。
-6. Install Commandはworkspaceルートのlockfileを使う `pnpm install --frozen-lockfile`。Build Commandは `apps/backend/vercel.json` の `pnpm --filter s-private-backend... -r run build` を使用する。Output Directoryを静的サイト用の `dist` などへ上書きしない。
+6. Install Commandはworkspaceルートのlockfileを使う `pnpm install --frozen-lockfile`。Build Commandは `apps/backend/vercel.json` を使用する。最初に `node scripts/validate-env.mjs` で配置先の実環境変数を検証し、成功後にworkspaceをビルドする。Output Directoryを静的サイト用の `dist` などへ上書きしない。
 7. Functionsのregionは既存CockroachDBに近いregionを選ぶ。HTTP APIとSharpを使用するためNode.jsで実行する。Cloudflare Workersへの配置はこの構成の対象外。
 8. 以下の環境変数を登録してから担当者がdeployする。Cron scheduleはリポジトリの設定を使用し、PreviewではCronを無効にする。
 
@@ -62,6 +62,13 @@ backend実装は `apps/backend` に集約する。Root Directory、起動入口�
 
 ### 配布成果物の起動を確認する
 
+環境変数の不足はVercelのbuild時に検出する。検証はbackendを起動せず、DB・Auth0・storageへ通信しない。
+ログには不正な変数名のみを表示し、値や例外全体を出力しない。配置ポリシー違反は
+`deployment policy` と表示するため、`apps/backend/src/env.ts` の制約と設定を照合する。
+PreviewでS3設定が欠けている場合は、Dopplerの `memdex-backend/stg` にPreview専用bucketとkeyの
+6つの `S3_*` 変数を登録し、Vercel Previewへ同期されたことを確認してから再デプロイする。
+Productionの資格情報をPreviewへコピーしたり、検証を無効にしたりしない。
+
 Vercelのビルド成功だけでは起動成功を保証しない。workspaceのpackage exportsは
 TypeScriptソースを指しているため、`apps/backend/vercel.json` の `includeFiles` で
 サービス内の実装・core・DBのソースをFunctionに含める。Node.js 26の型除去で実行するため、
@@ -92,6 +99,9 @@ Allowed Logout URLsには `https://private.s-hirano.com` を登録する。
 Previewも対応するWeb originのcallbackを許可し、Productionのclient secretやDBを共有しない。
 Discoveryとログイン画面までの疎通だけではclient secretのtoken交換・DB永続化・session発行は
 検証できないため、実際のログイン完了まで確認する。
+認証開始は実ブラウザでWebの `/api/sign-in` を開き、callbackまで同じブラウザで続ける。
+CLIが取得したAuth0のauthorize URLだけをブラウザへ移すと、開始時のstate Cookieを引き継げず
+`state_mismatch` になる。CLIのredirect確認とブラウザのログイン完了確認は独立したフローとして行う。
 
 backendはWebサーバーとiOSからHTTPで到達できる必要がある。Vercel Authenticationで保護すると、アプリの認証に到達する前に拒否される。
 この実装はVercelのbypass secretを送らない。backendの対象deploymentについて、projectの **Settings → Deployment Protection** で到達可能な設定にする。Web projectの保護設定とは分ける。

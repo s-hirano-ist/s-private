@@ -34,8 +34,27 @@ Auth0がログイン、同意、クライアント登録、トークン発行を
    RBACを有効にする場合は、各ユーザーのロールにもpermissionを割り当てる。
    トークンの `scope` に `content:read` が含まれることを確認する。
    `permissions` claimだけに含まれる場合、MCPは許可しない。
-5. 接続の維持にrefresh tokenを使う場合はAPI側のAllow Offline Accessを有効にし、
-   対象clientでrotationと有効期限を設定する。refresh tokenをMCP backendへ保存しない。
+5. 接続の維持にrefresh tokenを使うclientでは、API側のAllow Offline Accessと
+   clientのRefresh Token grantを有効にする。rotation有効、最大2592000秒（30日）、
+   未使用1296000秒（15日）、重複許容0秒とし、`content:read offline_access` を要求して再認可する。
+   refresh tokenは各clientが安全に保存・更新し、MCP backendへ保存しない。
+
+2026-11-14に、既存Claude/Codex clientのRefresh Token grant、上記期限・rotationと、
+Production MCP APIのoffline accessを有効化し、Dashboardで保存済みの状態を確認した。
+APIのRS256・access token有効期間3600秒・ユーザー同意スキップ無効・アプリごとの認可は維持した。
+ChatGPTのCIMD登録・Muse専用client・backendの許可リストは、この設定整理では変更しない。
+`offline_access` はAuth0のtoken発行用であり、backendの操作権限は `content:read` のみ。
+Claude/Codexで接続を継続する場合は、scopeを追加して再認可する。
+ChatGPT/Museの初回登録・要求scopeは、それぞれの接続手順とclientの対応に従う。
+
+同日にCodex CLIで `content:read offline_access` を指定した再認可が成功し、
+既存callbackで繰り返し認可できることを確認した。さらに同じCodex clientで本番MCPへ接続し、
+JWTの署名・issuer・audience・client ID・scopeを検証して、tool一覧と
+`count_content`（`domain=books`）の取得に成功した。
+refresh token交換で新しいrefresh tokenが発行され、更新後のaccess tokenでも同じ呼び出しが成功した。
+検証用tokenはメモリ内だけで扱い、取得件数・本文・tokenを記録していない。
+Claudeの実接続、access tokenの3600秒経過後のclientによる自動更新、アプリ再起動後の復帰は未検証。
+別tenant・異なるaudience・scope不足の拒否は既存の自動テストで確認し、実Auth0 tokenでの負例試験は行っていない。
 
 既存Webにログインして内部アカウントが作成済みのユーザーだけ利用できる。
 Auth0 subjectと既存Accountの紐付けがない場合や、一意でない場合は拒否する。
@@ -156,7 +175,7 @@ public clientを事前登録し、固定callback portを設定する。
 ```toml
 [mcp_servers.s-private]
 url = "https://api.s-hirano.com/mcp"
-scopes = ["content:read"]
+scopes = ["content:read", "offline_access"]
 
 [mcp_servers.s-private.oauth]
 client_id = "YOUR_CLIENT_ID"
@@ -165,6 +184,10 @@ callback_port = 8766
 
 起動したOAuthフローに表示されるredirect URIのhostとpathを確認し、
 同じportの完全一致URLをAuth0へ登録する。登録後 `codex mcp login s-private` を実行する。
+callback末尾のIDはMCP URLから導出されるため、ランダムな値とみなして削除しない。
+URLを変えずに再ログインし、表示されたredirect URIが登録値と一致することを確認する。
+既存設定を変更せずにscopeを指定して再認可する場合は、
+`codex mcp login s-private --scopes content:read,offline_access` を使用する。
 [Codex設定リファレンス](https://developers.openai.com/codex/config-reference)と
 [公式MCPガイド](https://developers.openai.com/codex/mcp)を参照。
 
