@@ -23,6 +23,9 @@ Auth0がログイン、同意、クライアント登録、トークン発行を
 2. tenantのSettings → AdvancedでResource Parameter Compatibility Profileを有効にする。
    `resource` がAPI audienceとして解決されること、既存iOSのログインも成功することを確認する。
 3. 各クライアントを事前登録する。CIMDは管理者がmetadata URLを確認して登録する方式を使う。
+   tenantのSettings → AdvancedでClient ID Metadata Document (CIMD) Registrationを有効にする。
+   Auth0の `/.well-known/oauth-authorization-server` で
+   `client_id_metadata_document_supported: true` が公開されることを確認する。
    Open DCRと動的CIMD登録は無効のままにする。
    通常のOAuthアプリ登録でもよい。Authorization Code + PKCE S256を使い、
    public clientのtoken endpoint authentication methodはnoneにする。
@@ -77,11 +80,51 @@ Auth0 JWT検証は省略しない。Inspectorをブラウザで使う場合は�
 
 ### ChatGPT
 
-MCP接続の管理画面に表示されるmetadata document URLまたはOAuth callback URLを
-Auth0へ事前登録する。固定URLを推測せず、画面に表示される値を使う。
-CIMDを使わない場合は、事前登録したclient IDと必要なsecretを接続画面で指定する。
-RFC9207対応の場合は安定したCIMD URL・callbackを使えるが、Auth0のdiscoveryと
-認可応答のissuer対応を確認してから選ぶ。登録後、OAuth接続を開始して同意する。
+管理者がCIMDを事前登録し、利用者はMCP URLだけで追加する方式を使う。
+CIMD対応の宣言を有効にするだけでは接続は完了しない。Auth0への事前登録と
+backendのclient許可リストへの追加まで必要となる。
+
+#### 管理者の初回設定
+
+1. Auth0の公開discoveryに `client_id_metadata_document_supported: true` と
+   `code_challenge_methods_supported` の `S256` が含まれることを確認する。
+   MCPのprotected resource metadataの `authorization_servers` とAuth0の `issuer` は
+   末尾の `/` を含め完全一致させる。backend側にAuth0のdiscoveryを自作しない。
+2. ChatGPTのMCP接続設定でOAuthとCIMDを選び、接続管理画面に表示される
+   metadata document URLとOAuth redirect URIを確認する。
+   Auth0へそのCIMD URLを事前登録し、取り込まれたcallbackが表示値と一致することを確認する。
+   固定URLを推測したり、callbackにワイルドカードを設定したりしない。
+3. アプリにMCP専用APIへのアクセスと `content:read` を許可し、ユーザー同意を必須にする。
+   ChatGPTはAuth0がdiscoveryで公開するOIDC scopeも要求するため、アプリの
+   OpenID Connect Settingsでユーザー識別を許可し、要求されるOIDC scopeを有効にする。
+   token endpoint認証はChatGPTのCIMDとAuth0の両方が対応する `none` または
+   `private_key_jwt` と整合させる。`none` でもAuthorization Code + PKCE S256を必須とする。
+   `private_key_jwt` ではCIMDに公開されたJWKSを使い、client secretを手入力させない。
+   Auth0のインポートで `token_endpoint_auth_methods_supported` が未対応と表示された場合は、
+   単数形の `token_endpoint_auth_method` から設定された認証方式と公開鍵の取り込み結果を確認する。
+4. Auth0発行JWTの `client_id` または `azp` に入る識別子を確認し、backendの
+   Production環境の `MCP_ALLOWED_CLIENT_IDS` に追加して再デプロイする。
+   既存clientの値は保持し、Auth0の内部client IDとCIMD URLを推測で置き換えない。
+   JWTや認可コードをチャット・Git・ログへ貼らない。
+
+RFC9207対応をAuth0が宣言し、成功・エラーの認可応答に正しい `iss` を返す場合は
+安定したCIMD URL・callbackを使える。それ以外では接続ごとのURLとなるため、
+新しい接続で異なるURLが表示された場合は管理者が追加登録する。
+Auth0のissuer応答設定を変更する場合は、既存Web・iOS・他MCPクライアントのログインも検証する。
+
+#### 利用者の接続
+
+1. ChatGPTでMCP URL `https://api.s-hirano.com/mcp` を入力し、OAuthとCIMDを選ぶ。
+   OAuth client ID・client secretの手入力は不要。
+2. Auth0で本人がログインし、`content:read` のアクセスに同意する。
+3. tool一覧の取得、検索、自分のコンテンツの詳細取得、再接続を確認する。
+
+「OAuthクライアントIDを入力してください」と表示される場合は、CIMDが選択されているか、
+Auth0のdiscoveryがCIMD対応を公開しているかを確認する。
+ログイン開始後の `invalid_client` はCIMD事前登録とtoken認証方式、callbackエラーは
+表示されたredirect URIとの一致、ログイン後の401はJWTのclient許可リストなどを確認する。
+DCRや動的CIMD登録の有効化、client許可リストの撤廃で回避しない。
+
 [OpenAI公式認可ガイド](https://developers.openai.com/plugins/build/auth)を参照。
 
 ### Claude
