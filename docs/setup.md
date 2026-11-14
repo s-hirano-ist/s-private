@@ -157,7 +157,7 @@ MCPの設定は[参照専用MCPの設定](mcp-setup.md)を参照してくださ�
 - Production iOSはImplicitを無効にし、上記の期限・rotationを保存しました。Native、認証none、callback、APIのoffline accessは維持しています。
 - Production WebもOIDC準拠ON・Authorization Codeのみ・Web Originsなしへ変更しました。RS256、Client Secret Post、既存callback/Logout URLを維持し、Management APIの再取得で確認しています。devの実ログイン未検証を承知した上で適用しました。
 - 変更後の本番 `/api/sign-in` からAuth0のログイン画面へ遷移することを確認しました。認証完了後のcallbackとログアウトの実操作は未検証です。MCPの実接続・refresh token交換の結果は[参照専用MCPの設定](mcp-setup.md)に記録しています。
-- 既存Preview 2件の `/api/sign-in` はVercel CLIの既存認証でアクセスしても `500 FUNCTION_INVOCATION_FAILED` でした。Auth0へのredirect以前に停止するため、devのログイン・callback・ログアウトは未検証です。対象デプロイのruntimeログは取得できず、原因は未特定です。
+- 既存Preview 2件と本PRのPreview backendで `500 FUNCTION_INVOCATION_FAILED` を再現しました。Webが転送したbackendの起動時に `S3_ENDPOINT`・`S3_REGION`・`S3_BUCKET_NAME`・`S3_ACCESS_KEY_ID`・`S3_SECRET_ACCESS_KEY` が未設定のため環境変数検証で停止していました。Dopplerの `memdex-backend/stg` と同期先Vercel Previewの両方にS3変数がありません。修復にはPreview専用B2設定の登録・同期・再デプロイが必要です。devのログイン・callback・ログアウトは未検証です。
 - 本番Database connectionはサインアップ禁止・改善された総当たり攻撃防御が有効です。tenantの不審IPスロットリング・総当たり攻撃防御も有効、ボット検知・パスワード漏洩検知は無効でした。今回これらは変更していません。
 - 本番の `fetch-role` ActionはID tokenに `https://private.s-hirano.com/roles` claimを追加し、Node 18の古いruntime警告があります。リポジトリにclaimの利用箇所はありませんが、外部利用とトリガーへの接続状態が未確認のため削除していません。
 - 本番の2つのAPI Test ApplicationはM2M clientです。利用履歴を確認できないため維持します。`All Applications` はtenantのグローバルclientであり、削除対象にしません。
