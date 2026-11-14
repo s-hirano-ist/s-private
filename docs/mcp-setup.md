@@ -78,6 +78,12 @@ Auth0 JWT検証は省略しない。Inspectorをブラウザで使う場合は�
 ログイン・同意は利用者本人が行う。client secretが必要ならクライアントの安全な入力画面に入れ、
 チャット・Git・backendの環境変数へ転記しない。
 
+クライアントごとにAuth0アプリを分離する。MCPのtool・resource・scopeとJWT検証は共通にし、
+接続元を追加するときはAuth0の登録とbackendの許可リストを更新する。
+ChatGPT専用の認証分岐や、他クライアントへのclient ID・secretの流用は行わない。
+CIMDを使わないクライアントも、Authorization Code + PKCE S256と事前登録に対応していれば
+同じ `/mcp` に接続できる。URLだけで追加できるかは各クライアントの登録方式による。
+
 ### ChatGPT
 
 管理者がCIMDを事前登録し、利用者はMCP URLだけで追加する方式を使う。
@@ -161,6 +167,35 @@ callback_port = 8766
 同じportの完全一致URLをAuth0へ登録する。登録後 `codex mcp login s-private` を実行する。
 [Codex設定リファレンス](https://developers.openai.com/codex/config-reference)と
 [公式MCPガイド](https://developers.openai.com/codex/mcp)を参照。
+
+### Muse（Meta）
+
+MuseアプリのCustom Connectorを使う。公式ヘルプでは、Museにカスタムコネクタの作成を
+依頼し、必要な認証情報をSecure Credentials Storeで設定する方式が案内されている。
+MuseがChatGPTと同じCIMDに対応することや、URLだけで追加できることは前提にしない。
+
+1. Museに `https://api.s-hirano.com/mcp` へのカスタムコネクタ作成を依頼する。
+   transportはStreamable HTTP、認証はOAuth Authorization Code + PKCE S256、
+   scopeは `content:read` と伝える。ログインと同意は本人が行う。
+2. Museの接続設定が示すredirect URIとtoken認証方式を確認し、管理者がMuse専用の
+   サードパーティーAuth0アプリを事前登録する。callbackは完全一致で登録する。
+   CIMD URLが提示される場合は、その内容を確認して事前登録する。
+   callbackをChatGPT・Claude・Muse Codeから流用しない。
+3. アプリにMCP専用APIの `content:read` だけを許可し、ユーザー同意を必須にする。
+   発行JWTのclient識別子を `MCP_ALLOWED_CLIENT_IDS` に追加してbackendを再デプロイする。
+4. 事前登録したclient IDと、必要な場合だけclient secretをMuseの安全な認証設定へ入力する。
+   チャット本文にはsecretを渡さない。tool一覧、検索、再接続とユーザー分離を検証する。
+
+Muse側がPKCEまたは事前登録OAuthに対応しない場合は接続を未対応として扱い、
+Web Cookieの流用や認証省略では回避しない。実際のcallback・認証方式と接続成功は
+利用するMuseアカウントの画面で確認する必要がある。
+[Muse公式ヘルプ](https://www.meta.com/help/superintelligence/1687253048996149/)と
+[Connectorガイドライン](https://platform.muse.ai/docs)を参照。
+
+Muse CodeはMuseアプリと別のクライアントとして登録する。
+公式CLIは `muse mcp login <server> --oauth-client-id <CLIENT_ID> --scope content:read --callback-port <PORT>`
+による事前登録clientの指定に対応する。実際のloopback redirect URIをAuth0へ登録する。
+[Muse Code公式MCPガイド](https://meta-models.github.io/muse-code-sdk/next/guides/extend/mcp-servers/)を参照。
 
 ## 検証・監視・切り戻し
 
