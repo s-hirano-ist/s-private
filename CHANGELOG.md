@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.4.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v4.3.0...s-private-v4.4.0) (2026-11-14)
+
+
+### Features
+
+* **backend:** add Auth0-protected read-only MCP server ([0440a52](https://github.com/s-hirano-ist/s-private/commit/0440a52f5bb10fcc8a05ae4e34f0c0896ae92177))
+* **backend:** Auth0認可付きの参照専用MCPを追加 ([ff9a9fb](https://github.com/s-hirano-ist/s-private/commit/ff9a9fb0ed633b73800764c23ab727be9d913a8c))
+
+
+### Bug Fixes
+
+* **backend:** allow MCP browser transport headers ([3d660d3](https://github.com/s-hirano-ist/s-private/commit/3d660d3efb1b104c32610d46908649a4d78977a5))
+* **ci:** pin Sonar action and restrict analysis scope ([5e01405](https://github.com/s-hirano-ist/s-private/commit/5e01405a3c6f0e22b9db9c767f8f25e25ace468b))
+
+
+### Documentation
+
+* document GitGuardian rollout for [#2688](https://github.com/s-hirano-ist/s-private/issues/2688) ([a492074](https://github.com/s-hirano-ist/s-private/commit/a492074f770be6283c3ec0843d2add1755cf5743))
+* GitGuardian導入結果と運用手順を記録 ([225caac](https://github.com/s-hirano-ist/s-private/commit/225caacd63b53d8fe73b74609bbea70ce6d3ba5a))
+* record verified GitGuardian rollout for [#2688](https://github.com/s-hirano-ist/s-private/issues/2688) ([b9df9a5](https://github.com/s-hirano-ist/s-private/commit/b9df9a5963f6cac874050262b87a86d1311bef11))
+
+
+### Maintenance
+
+* add optional SonarQube Cloud trial analysis ([a7e5be4](https://github.com/s-hirano-ist/s-private/commit/a7e5be41c0f7a8b815435b289eede03c69085688))
+* **deps:** update all dependencies ([421ab6e](https://github.com/s-hirano-ist/s-private/commit/421ab6e0740bb08a23235dd6b9aa838401bdd899))
+* SonarQube Cloudの無料試用を追加 ([323b422](https://github.com/s-hirano-ist/s-private/commit/323b42225e0c8927adb996e6fc7e10b4aa5915af))
+
 ## [4.3.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v4.2.0...s-private-v4.3.0) (2026-11-12)
 
 
