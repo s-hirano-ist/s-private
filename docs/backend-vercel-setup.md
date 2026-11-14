@@ -99,6 +99,9 @@ Allowed Logout URLsには `https://private.s-hirano.com` を登録する。
 Previewも対応するWeb originのcallbackを許可し、Productionのclient secretやDBを共有しない。
 Discoveryとログイン画面までの疎通だけではclient secretのtoken交換・DB永続化・session発行は
 検証できないため、実際のログイン完了まで確認する。
+認証開始は実ブラウザでWebの `/api/sign-in` を開き、callbackまで同じブラウザで続ける。
+CLIが取得したAuth0のauthorize URLだけをブラウザへ移すと、開始時のstate Cookieを引き継げず
+`state_mismatch` になる。CLIのredirect確認とブラウザのログイン完了確認は独立したフローとして行う。
 
 backendはWebサーバーとiOSからHTTPで到達できる必要がある。Vercel Authenticationで保護すると、アプリの認証に到達する前に拒否される。
 この実装はVercelのbypass secretを送らない。backendの対象deploymentについて、projectの **Settings → Deployment Protection** で到達可能な設定にする。Web projectの保護設定とは分ける。
