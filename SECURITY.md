@@ -333,9 +333,22 @@ GitGuardian 用の Actions workflow、API キー、コード書き込み用 App 
 
 ### 導入状況
 
-Issue [#2688](https://github.com/s-hirano-ist/s-private/issues/2688) の導入手順。
-GitHub アカウントの認可、App インストール、初回スキャン、検証、Ruleset 必須化は未完了。
-以下の手順を完了し、実際の設定と検証結果を PR に記録してから稼働済みと扱う。
+2026-11-14 に Issue [#2688](https://github.com/s-hirano-ist/s-private/issues/2688) の導入を確認。
+無料 Starter で本リポジトリのみを監視し、初回履歴スキャンは成功した。
+履歴からの検出3件は、所有者による失効・変更済みの確認を記録して解決した。
+PR チェックは検出時 `Failed`、skip 操作なし、merge commit も対象、PR コメント通知あり。
+管理者のメール通知は全 incident・全 severity を対象とする。
+
+main の `main branch rule` Ruleset（ID: `932273`）に
+`GitGuardian Security Checks`（GitHub App ID: `46505`）を必須チェックとして登録済み。
+[検証 PR #3009](https://github.com/s-hirano-ist/s-private/pull/3009) で以下を確認し、マージせずクローズした。
+
+- 正常な PR のチェック成功。
+- 未登録・未使用の使い捨て RSA 鍵追加によるチェック失敗。
+- 次のコミットでファイルを削除しても履歴内の鍵を検出し、マージをブロック。
+- 検証値を根拠付きでテスト資格情報に分類し、再実行後に成功へ戻ること。
+
+設定の再構築と運用時の検証は以下の手順に従う。
 
 ### 初回セットアップ
 
