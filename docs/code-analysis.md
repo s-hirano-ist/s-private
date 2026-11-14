@@ -162,7 +162,12 @@ CI の `supplemental-lint` job で3種すべてを検査する。CI の mise act
 既存のlint・jscpd・dependency-cruiserを維持し、追加の問題検出と品質の推移を2〜4週間評価する。
 Web・backend・共通packagesのTypeScript/JavaScriptを1つの非公開プロジェクトとして解析する。
 iOS、生成コード、依存パッケージ、ビルド成果物、Story、ベンチマークは対象外。
-テストは製品コードと区別する。解析範囲はルートの `sonar-project.properties` に定義する。
+テストは解析対象外とし、製品コードのLOCやカバレッジに混入させない。
+解析範囲は `scripts/prepare-sonar-scope.mjs` の許可条件とルートの `sonar-project.properties` で管理する。
+現行Cloudの解析ログで `sonar.sources`・`sonar.tests`・inclusion系設定が無効と確認できたため、
+Git管理ファイルと未追跡の非ignoreファイルから対象外パスを列挙し、`sonar.exclusions` に追加する。
+CIの一時ディレクトリに生成した設定を `project.settings` で渡し、設定ファイルや画像・iOSの解析を防ぐ。
+生成コード等のignore済みファイルはSCMの除外と共通の除外パターンで対象外にする。
 
 ### 初回設定
 
@@ -192,7 +197,7 @@ SonarQube Cloudのチェックをブランチ保護の必須チェックに追�
 ### 試用時の確認
 
 - 初回解析で非公開プロジェクトの合計が無料枠の50,000 LOC以内、組織メンバーが5人以内であること。
-- SonarQube Cloud上で対象ファイルとテストの区別、生成コードの除外、カバレッジの取り込みが正しいこと。
+- SonarQube Cloud上でテスト・生成コード・画像・iOSの除外、カバレッジの取り込みが正しいこと。
 - main向けPRに解析結果が表示されること。
 - 既存lintで拾えなかった有用な指摘、重複・誤検知への対応時間、CI時間を比較すること。
 

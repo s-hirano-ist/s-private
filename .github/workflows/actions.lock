@@ -17,6 +17,7 @@ workflows:
         - 'davelosert/vitest-coverage-report-action@v2.13.2'
         - 'pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115'
         - 'pnpm/action-setup@v6.1.1'
+        - 'sonarsource/sonarqube-scan-action@59202af334b4ba7b5db01b701b8e79f8b3bef0f4'
         - 'sonarsource/sonarqube-scan-action@v8.5.0'
     '.github/workflows/ci.yaml': []
     '.github/workflows/depcruise.yaml':
@@ -184,6 +185,11 @@ dependencies:
         commit: 'sha1-266fef21329c44765ad42f9dea1f01f5d2d91084'
         owner_id: 38656520
         repo_id: 252754603
+    'sonarsource/sonarqube-scan-action@59202af334b4ba7b5db01b701b8e79f8b3bef0f4':
+        ref: 'v8.5.0'
+        commit: 'sha1-59202af334b4ba7b5db01b701b8e79f8b3bef0f4'
+        owner_id: 545988
+        repo_id: 366408409
     'sonarsource/sonarqube-scan-action@v8.5.0':
         ref: 'v8.5.0'
         commit: 'sha1-59202af334b4ba7b5db01b701b8e79f8b3bef0f4'
