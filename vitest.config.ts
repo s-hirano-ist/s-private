@@ -218,7 +218,7 @@ export default defineConfig({
 				// データローダー（サーバーコンポーネント依存で単体テスト困難）
 				"apps/web/src/loaders/**/*",
 			],
-			reporter: ["text", "json-summary", "json"],
+			reporter: ["text", "json-summary", "json", "lcov"],
 		},
 	},
 });

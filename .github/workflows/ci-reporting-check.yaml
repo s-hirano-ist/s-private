@@ -7,6 +7,10 @@ on:
         description: Check to run
         required: true
         type: string
+    secrets:
+      SONAR_TOKEN:
+        description: SonarQube Cloud analysis token (optional during setup)
+        required: false
 jobs:
   run:
     name: ${{ inputs.check }}
@@ -22,6 +26,7 @@ jobs:
         with:
           persist-credentials: false
           submodules: true
+          fetch-depth: ${{ inputs.check == 'test' && '0' || '1' }}
 
       - name: Verify .nvmrc satisfies package.json#engines.node
         if: ${{ inputs.check == 'oxfmt' }}
@@ -91,3 +96,31 @@ jobs:
         with:
           json-summary-path: ./.vitest-coverage/coverage-summary.json
           json-final-path: ./.vitest-coverage/coverage-final.json
+
+      - name: Prepare SonarQube analysis scope
+        if: >-
+          ${{ inputs.check == 'test' &&
+              vars.SONAR_ORGANIZATION != '' && vars.SONAR_PROJECT_KEY != '' &&
+              (github.event_name == 'push' ||
+               (github.event.pull_request.base.ref == 'main' &&
+                github.event.pull_request.head.repo.full_name == github.repository)) }}
+        run: node scripts/prepare-sonar-scope.mjs > "$RUNNER_TEMP/sonar-project.properties"
+
+      - name: Analyze with SonarQube Cloud (trial)
+        if: >-
+          ${{ inputs.check == 'test' &&
+              vars.SONAR_ORGANIZATION != '' && vars.SONAR_PROJECT_KEY != '' &&
+              (github.event_name == 'push' ||
+               (github.event.pull_request.base.ref == 'main' &&
+                github.event.pull_request.head.repo.full_name == github.repository)) }}
+        continue-on-error: true
+        uses: SonarSource/sonarqube-scan-action@59202af334b4ba7b5db01b701b8e79f8b3bef0f4 # v8.5.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_ORGANIZATION: ${{ vars.SONAR_ORGANIZATION }}
+          SONAR_PROJECT_KEY: ${{ vars.SONAR_PROJECT_KEY }}
+        with:
+          args: >-
+            -Dproject.settings=${{ runner.temp }}/sonar-project.properties
+            -Dsonar.organization=${{ env.SONAR_ORGANIZATION }}
+            -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}

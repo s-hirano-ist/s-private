@@ -1,6 +1,6 @@
 # コード分析ツール
 
-プロジェクトでは3つのコード分析ツールを使用して、コード品質とアーキテクチャの健全性を維持している。
+プロジェクトでは以下のコード分析ツールを使用して、コード品質とアーキテクチャの健全性を維持している。
 
 ## Knip（デッドコード検出）
 
@@ -46,6 +46,7 @@ pnpm knip    # デッドコード検出を実行
 | 分析パス | `apps/web/src`, `packages/ui`, `packages/core` |
 
 除外対象:
+
 - `node_modules`, `.next`, `dist`, `.storybook-static`, `coverage`
 - テストファイル（`*.test.ts`）
 - 生成ファイル（`apps/web/src/generated/**`）
@@ -118,12 +119,12 @@ pnpm deps:graph      # 依存関係グラフをmermaidとして出力（dependen
 - **PR時**: [`depcruise.yaml`](../.github/workflows/depcruise.yaml) — [dependency-cruiser-report-action](https://github.com/MH4GF/dependency-cruiser-report-action)を使用し、依存関係分析レポートをPRコメントとして投稿
 - **月次レポート**: [`update-reports.yaml`](../.github/workflows/update-reports.yaml) — 毎月1日に`dependency-graph.md`を再生成し、自動更新PRを作成
 
-
 ## Lint/Format: oxlint主体 + コンテンツESLint、oxfmt
 
 TypeScript/JavaScript は oxlint に一本化した状態を維持し、oxlint が扱わない YAML/JSON のみ ESLint で検査する。Markdown は Rust 製の rumdl、秘密情報は Go 製の Gitleaks で検査する。ネイティブツールのバージョンと配布物チェックサムは `.mise.toml` と `mise.lock` に固定する。oxlint 設定は `.oxlintrc.json`（JSONC）、構造化設定 lint は `eslint.config.js`、フォーマットは `.oxfmtrc.json`。`pnpm lint` / `pnpm lint:fix` は oxlint と対象を YAML/JSON 系に限定した ESLint を順に実行する。
 
 役割分担:
+
 - **oxlint**: 旧 ESLint の全ルール。typescript-eslint strict+stylistic type-checked（`options.typeAware`, tsgolint）、`@next/*`→native `nextjs`、`@vitest/*`→native `vitest`、`eslint-plugin-regexp`/`eslint-plugin-storybook`（JS plugin）、Prisma raw-SQL ガード（`eslint-js/no-restricted-syntax` via `oxlint-plugin-eslint`）。`@eslint-react` の明示ルールは native へ: use-state→`react/hook-use-state`、jsx-no-useless-fragment→`react/jsx-no-useless-fragment`、dom-no-dangerously-set-innerhtml→`react/no-danger`、no-array-index-key→`react/no-array-index-key`。set-state-in-effect は `eslint-plugin-react-hooks`（alias `react-hooks-js`）。Unicorn の `prefer-export-from` / `prefer-single-call` は native Rust ルールを使用し、非推奨の `no-array-push-push` は `prefer-single-call` に統合。
 - **ESLint**: `eslint-plugin-yml`、`eslint-plugin-jsonc` で YAML/JSON/JSONC/JSON5 を検査。コマンドの glob で対象形式を限定し、ロックファイルと生成物は除外。
 - **dependency-cruiser**: Clean Architecture 層境界（`eslint-plugin-boundaries` から移植。oxlint の JS plugin は `settings` の boundaries/* キーを受け付けず動作不可のため）。`dependency-cruiser.config.js` の `boundary-*` ルール（allow-list を deny-list に翻訳、29 本）。
@@ -146,11 +147,61 @@ pnpm lint:secret       # secret 検査（自己診断付き、出力は完全 ma
 ```
 
 CI の `supplemental-lint` job で3種すべてを検査する。CI の mise action はコミット SHA 固定で、`mise.lock` の checksum を使って rumdl と Gitleaks だけを導入する。ローカルでは Lefthook が pre-commit で lint-staged を起動し、staged file に対して formatter と安全な fix を直列実行し、最後にリポジトリ全体へ Gitleaks を1回だけ実行する。pre-commit の oxlint は高速化と Next.js type generation への非依存化のため非 type-aware とし、完全な type-aware 検査（`.oxlintrc.json` の `options.typeAware: true`）は `pnpm lint` と CI で担保する。
+
 - 旧 Biome の base lint は oxlint へ吸収（`categories.correctness="error"` + style ルール移植: noParameterAssign→`no-param-reassign`、useSelfClosingElements→`react/self-closing-comp`、useNumberNamespace→`unicorn/prefer-number-properties`、noUselessElse→`no-else-return` ほか）。`noExplicitAny` は `typescript/no-explicit-any="error"` に統一。
 
 新規有効化（旧コメントアウト分）: `jsx-a11y`（oxlint native, error）。
 
 移行できなかったもの（oxlint に等価なし）:
+
 - `@eslint-react` の react-x 固有ルール（type-aware で JS plugin 不可）: no-unused-props, naming-convention-ref-name, no-context-provider, ほか strict-type-checked 群。本コードベースでは warning 8 件相当の損失（error 損失は 0）。
 - `eslint-plugin-tailwindcss`: このプロジェクトのCSS-first設定（`tailwind.config.js` 無し）と非互換のため不採用。class 並べ替えは oxfmt `sortTailwindcss`が担当。
 - Biome 専用ルール `noUnusedTemplateLiteral` と `useSingleVarDeclarator`（oxlint に `one-var` 無し）は等価がなく削除（軽微なスタイル系のみ）。
+
+## SonarQube Cloud（無料プランの試用）
+
+既存のlint・jscpd・dependency-cruiserを維持し、追加の問題検出と品質の推移を2〜4週間評価する。
+Web・backend・共通packagesのTypeScript/JavaScriptを1つの非公開プロジェクトとして解析する。
+iOS、生成コード、依存パッケージ、ビルド成果物、Story、ベンチマークは対象外。
+テストは解析対象外とし、製品コードのLOCやカバレッジに混入させない。
+解析範囲は `scripts/prepare-sonar-scope.mjs` の許可条件とルートの `sonar-project.properties` で管理する。
+現行Cloudの解析ログで `sonar.sources`・`sonar.tests`・inclusion系設定が無効と確認できたため、
+Git管理ファイルと未追跡の非ignoreファイルから対象外パスを列挙し、`sonar.exclusions` に追加する。
+CIの一時ディレクトリに生成した設定を `project.settings` で渡し、設定ファイルや画像・iOSの解析を防ぐ。
+生成コード等のignore済みファイルはSCMの除外と共通の除外パターンで対象外にする。
+
+### 初回設定
+
+1. [公式GitHub App](https://github.com/apps/sonarqubecloud)を対象リポジトリにインストールする。
+2. SonarQube Cloud（EU / `sonarcloud.io`）でGitHubアカウントを連携し、Freeプランの組織に `s-private` を非公開プロジェクトとしてインポートする。有料プランのトライアルは選択しない。
+3. プロジェクトの **Administration → Analysis Method** で **Automatic Analysis** を無効にする。CI解析との併用はできず、自動解析ではカバレッジや `sonar-project.properties` を利用できない。
+4. SonarQube Cloudで解析用tokenを発行し、GitHubリポジトリの **Settings → Secrets and variables → Actions** にSecret `SONAR_TOKEN` として登録する。tokenをソースコードやログに記録しない。
+5. 同じ画面のVariablesに `SONAR_ORGANIZATION`（組織キー）と `SONAR_PROJECT_KEY`（プロジェクトキー）を登録する。値はSonarQube Cloud画面に表示されるキーを使う。
+6. mainへのpushで初回解析を実行してから、main向けPRで差分解析を確認する。初回PRより先にmainの解析を完了させる。
+
+キーが未設定の間は解析をスキップする。forkからのPRにはtokenを渡さず、解析を実行しない。
+無料プランの対象に合わせ、mainへのpushと同一リポジトリのmain向けPRのみ解析する。
+GitHub Appはリポジトリ連携とPRへの結果表示を担い、解析はGitHub Actionsが実行する。
+
+### CIとカバレッジ
+
+既存の `ci-reporting-check.yaml` のtestジョブで `pnpm test` が出力した
+`.vitest-coverage/lcov.info` を公式SonarQube Scan Actionに渡す。テストの追加実行は行わない。
+既存のJSONカバレッジとPRコメントも維持する。
+解析対象コードとカバレッジ対象は別に設定し、既存Vitestでカバレッジ対象外のコードも静的解析する。
+
+試用中は `sonar.qualitygate.wait=false` と解析ステップの `continue-on-error: true` により、
+解析のエラーやQuality Gateの不合格で既存のCIを失敗させない。
+SonarQube Cloudのチェックをブランチ保護の必須チェックに追加しない。
+解析ステップの警告・ログは確認し、設定ミスによる未解析を放置しない。
+
+### 試用時の確認
+
+- 初回解析で非公開プロジェクトの合計が無料枠の50,000 LOC以内、組織メンバーが5人以内であること。
+- SonarQube Cloud上でテスト・生成コード・画像・iOSの除外、カバレッジの取り込みが正しいこと。
+- main向けPRに解析結果が表示されること。
+- 既存lintで拾えなかった有用な指摘、重複・誤検知への対応時間、CI時間を比較すること。
+
+無料プランでは独自のQuality Profile・Quality Gateを設定できないため、標準設定で評価する。
+試用を止める場合は `SONAR_PROJECT_KEY` を削除してCI解析を停止し、不要になったtokenも失効する。
+無料枠やプラン条件は [公式プラン比較](https://docs.sonarsource.com/sonarqube-cloud/administering-sonarcloud/managing-subscription/subscription-plans)で確認する。

@@ -25,6 +25,8 @@ jobs:
         check: [oxfmt, lint, knip, test]
     permissions:
       pull-requests: write
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     uses: ./.github/workflows/ci-reporting-check.yaml # zizmor: ignore[self-repository] -- actionlint 1.7.12 does not support $/ workflow calls yet.
     with:
       check: ${{ matrix.check }}
