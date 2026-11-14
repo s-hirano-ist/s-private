@@ -10,6 +10,7 @@ export function createBackendHttpApp(deps: {
 	auth(request: Request): Promise<Response>;
 	cron(request: Request): Promise<Response>;
 	isTrustedOrigin(origin: string): boolean;
+	mcp?: (request: Request) => Response | Promise<Response>;
 	publicOrigin?: string;
 	reportError(error: unknown): unknown;
 	signIn(request: Request): Promise<Response>;
@@ -21,6 +22,15 @@ export function createBackendHttpApp(deps: {
 		await next();
 		c.header("cache-control", "private, no-store");
 	});
+	const mcp = deps.mcp;
+	if (mcp) {
+		for (const path of [
+			"/mcp",
+			"/.well-known/oauth-protected-resource/mcp",
+			"/.well-known/oauth-protected-resource",
+		])
+			app.all(path, (c) => mcp(c.req.raw));
+	}
 	app.get("/health", (c) => c.json({ status: "ok" }));
 
 	// OAuth stays on the Web origin. The BFF supplies only a validated public origin.

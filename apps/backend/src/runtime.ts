@@ -23,6 +23,8 @@ import { createSignInHandler } from "s-private-backend/auth/sign-in";
 import { createBackendAuth } from "s-private-backend/auth/web-auth";
 import { createHttpErrorReporter } from "s-private-backend/error-reporter";
 import { createEventInitializer } from "s-private-backend/events/event-setup";
+import { createMcpApp } from "s-private-backend/mcp/app";
+import { resolveMcpConfig } from "s-private-backend/mcp/config";
 import { createGigazineCronHandler } from "s-private-backend/notifications/cron";
 import {
 	backendTelemetry,
@@ -122,7 +124,17 @@ export function createBackendRuntime(env: BackendEnv) {
 			flush: () => Sentry.flush(2000),
 		},
 	);
+	const mcpConfig = resolveMcpConfig(env);
+	const mcp = mcpConfig
+		? createMcpApp(mcpConfig, {
+				reads: services.reads,
+				accounts: services.mobile.accounts,
+				telemetry,
+				reportError,
+			})
+		: undefined;
 	const app = createBackendHttpApp({
+		mcp: mcp?.fetch,
 		telemetryMiddleware: backendTelemetry(telemetry),
 		api: createApiApp(apiAuth, services.reads, services.mutations).fetch,
 		auth: async (request) => (await getAuth()).handler(request),

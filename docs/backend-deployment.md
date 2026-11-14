@@ -118,3 +118,10 @@ Previewで新規作成するAccountのissuer既定値はAuth0 issuerとし、Pro
 Auth0のPreview用Web applicationに、対象Web callbackとWeb Origins・Logout URLsを登録する。
 backendのVercelログイン保護は解除し、アプリのCookie／Bearer認証・所有者検証は維持する。
 frontendのVercelログイン保護は維持する。実Auth0のログイン完了は配置後に別途検証する。
+
+## 参照専用MCP
+
+MCPは既定で無効。Auth0の専用API・クライアント事前登録後に、backendへ
+`MCP_RESOURCE_URL` と `MCP_ALLOWED_CLIENT_IDS` を環境別に設定する。
+Productionのresourceは `https://api.s-hirano.com/mcp` とし、Previewへ流用しない。
+Auth0設定、3クライアントの接続確認、監視・切り戻しは[MCP設定](mcp-setup.md)を参照。
