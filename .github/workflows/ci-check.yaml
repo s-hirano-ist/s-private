@@ -50,9 +50,9 @@ jobs:
 
       - name: Install native lint tools
         if: ${{ inputs.check == 'supplemental-lint' }}
-        uses: jdx/mise-action@v5.2.7
+        uses: jdx/mise-action@v5.2.8
         with:
-          version: 2026.11.7
+          version: 2026.11.8
           install_args: rumdl gitleaks
 
       - name: Lint CSS, Markdown and secrets
