@@ -294,12 +294,20 @@ test("rejects untrusted hosts and exact origins; allows approved CORS preflight"
 		headers: {
 			origin: config.origins[1],
 			"access-control-request-method": "POST",
+			"access-control-request-headers":
+				"authorization,content-type,mcp-protocol-version,mcp-method,mcp-name",
 		},
 	});
 	expect(response.status).toBe(204);
 	expect(response.headers.get("access-control-allow-origin")).toBe(
 		config.origins[1],
 	);
+	expect(
+		response.headers.get("access-control-allow-headers")?.toLowerCase(),
+	).toContain("mcp-method");
+	expect(
+		response.headers.get("access-control-allow-headers")?.toLowerCase(),
+	).toContain("mcp-name");
 	const { deps } = setup();
 	expect(
 		(

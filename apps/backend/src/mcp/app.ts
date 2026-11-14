@@ -42,6 +42,8 @@ export function createMcpApp(
 				"Authorization",
 				"Content-Type",
 				"MCP-Protocol-Version",
+				"Mcp-Method",
+				"Mcp-Name",
 				"Mcp-Session-Id",
 			],
 			exposeHeaders: ["WWW-Authenticate", "MCP-Protocol-Version"],
