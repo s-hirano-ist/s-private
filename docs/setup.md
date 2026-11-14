@@ -157,7 +157,8 @@ MCPの設定は[参照専用MCPの設定](mcp-setup.md)を参照してくださ�
 - Production iOSはImplicitを無効にし、上記の期限・rotationを保存しました。Native、認証none、callback、APIのoffline accessは維持しています。
 - Production WebもOIDC準拠ON・Authorization Codeのみ・Web Originsなしへ変更しました。RS256、Client Secret Post、既存callback/Logout URLを維持し、Management APIの再取得で確認しています。devの実ログイン未検証を承知した上で適用しました。
 - 変更後の本番 `/api/sign-in` からAuth0のログイン画面へ遷移することを確認しました。認証完了後のcallbackとログアウトの実操作は未検証です。MCPの実接続・refresh token交換の結果は[参照専用MCPの設定](mcp-setup.md)に記録しています。
-- 既存Preview 2件と本PRのPreview backendで `500 FUNCTION_INVOCATION_FAILED` を再現しました。Webが転送したbackendの起動時に `S3_ENDPOINT`・`S3_REGION`・`S3_BUCKET_NAME`・`S3_ACCESS_KEY_ID`・`S3_SECRET_ACCESS_KEY` が未設定のため環境変数検証で停止していました。Dopplerの `memdex-backend/stg` と同期先Vercel Previewの両方にS3変数がありません。修復にはPreview専用B2設定の登録・同期・再デプロイが必要です。devのログイン・callback・ログアウトは未検証です。
+- 既存Preview 2件と本PRのPreview backendで `500 FUNCTION_INVOCATION_FAILED` を再現し、起動時のS3必須5変数不足が原因と特定しました。Dopplerの `memdex-backend/stg` と同期先Vercel Previewの両方にS3変数がありませんでした。Vercel build時の実環境変数検証を追加し、不足したdeploymentがReadyになるのを防ぎます。
+- 承認を得て非公開・暗号化有効のB2 bucket `memdex-preview-s-hirano-ist` とbucket限定キー `memdex-preview` を作成し、S3設定6件をDopplerへ登録・Vercel Previewへ同期しました。テストobjectの書込・読取・削除が成功し、backend再デプロイ後の `/health` は200、未認証sessionは401、Webの `/api/sign-in` はdev Auth0への307となり500が解消しました。clientとcallbackがdev／当該Previewであることも確認しました。devのログイン完了・callback・ログアウトは利用者のログイン待ちです。
 - 本番Database connectionはサインアップ禁止・改善された総当たり攻撃防御が有効です。tenantの不審IPスロットリング・総当たり攻撃防御も有効、ボット検知・パスワード漏洩検知は無効でした。今回これらは変更していません。
 - 本番の `fetch-role` ActionはID tokenに `https://private.s-hirano.com/roles` claimを追加し、Node 18の古いruntime警告があります。リポジトリにclaimの利用箇所はありませんが、外部利用とトリガーへの接続状態が未確認のため削除していません。
 - 本番の2つのAPI Test ApplicationはM2M clientです。利用履歴を確認できないため維持します。`All Applications` はtenantのグローバルclientであり、削除対象にしません。

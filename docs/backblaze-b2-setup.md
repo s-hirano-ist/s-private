@@ -40,6 +40,13 @@ Previewは既存のDopplerサービス別configと同期フローへ同じS3変�
 設定後は新しいdeploymentが必要。Web projectにはS3資格情報を設定しない。
 旧`MINIO_*`接続変数と`CF_ACCESS_*`は使用しない。B2にCloudflare Accessは不要。
 
+2026-11-14にPreview用の非公開・暗号化有効bucket `memdex-preview-s-hirano-ist` と、
+当該bucket限定のRead and Writeキー `memdex-preview` を作成した。
+全bucket名の一覧権限は無効、prefix制限なし。endpointは `https://s3.us-west-004.backblazeb2.com`、
+regionは `us-west-004`、path styleはfalse。S3設定6件はDopplerの `memdex-backend/stg` から
+Vercel backendのPreviewへSecretとして同期する。キー値は文書・リポジトリへ記載しない。
+テストobjectの書込・読取・削除を確認済み。既存Productionのbucket・キーは変更していない。
+
 ローカルの`.env.local`には次を設定する。
 `MINIO_ROOT_USER`と`MINIO_ROOT_PASSWORD`はDockerのローカルMinIOを初期化するために残す。
 
