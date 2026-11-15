@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.6.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v4.5.0...s-private-v4.6.0) (2026-11-15)
+
+
+### Features
+
+* allow content deletion with durable media cleanup ([c462991](https://github.com/s-hirano-ist/s-private/commit/c462991dd5a5321639785d3259c007937c74f377))
+* resume note creation drafts within the tab session ([e7526f7](https://github.com/s-hirano-ist/s-private/commit/e7526f7a3821500f47b7567d75200f140348430f))
+* **rss:** add lightweight unread reader and Inoreader import ([3d1f925](https://github.com/s-hirano-ist/s-private/commit/3d1f925890105151ef11893873f05042927b0153))
+
+
+### Bug Fixes
+
+* **rss:** resolve CI analysis and coverage failures ([43f63e7](https://github.com/s-hirano-ist/s-private/commit/43f63e7e86e0e77dc1a55e0101ce52b7e2f9e068))
+* show deletion confirmation and wait for keyboard in iOS tests ([ffc3222](https://github.com/s-hirano-ist/s-private/commit/ffc3222ff95ca5dcfb9823bc8fbc739b17e81919))
+
+
+### Documentation
+
+* dismiss native iOS confirmation popovers correctly ([3cc9d4d](https://github.com/s-hirano-ist/s-private/commit/3cc9d4d10e520f9305b01a41fa49853fc2745d31))
+
+
+### Maintenance
+
+* **deps:** update all dependencies ([477b9d7](https://github.com/s-hirano-ist/s-private/commit/477b9d7d320ac134734597366ed9cb96892f1876))
+* merge latest main into RSS reader ([352dd5d](https://github.com/s-hirano-ist/s-private/commit/352dd5db33d0ea5ed9bd349b284e0ddd209f77cc))
+
 ## [4.5.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v4.4.0...s-private-v4.5.0) (2026-11-15)
 
 
