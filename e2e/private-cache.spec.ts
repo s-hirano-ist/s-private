@@ -310,3 +310,40 @@ test("the static shell and dumper form render while backend data is blocked", as
 		page.getByText("articles alice 0", { exact: true }),
 	).toBeVisible();
 });
+
+for (const domain of domains) {
+	test(`${domain}: exported deletion confirms, refreshes the list and survives navigation`, async ({
+		page,
+		request,
+	}) => {
+		await seed(request, domain, "EXPORTED");
+		await page.goto(`/ja/${domain}/viewer`);
+		await ready(page);
+		const remove = page.getByRole("button", { name: "削除", exact: true });
+		await expect(remove).toHaveCount(1);
+		await expect(
+			page.getByRole("navigation", { name: "公開状態" }),
+		).toContainText("1件");
+		await remove.click();
+		const dialog = page.getByRole("dialog", { name: "削除の確認" });
+		await expect(dialog).toBeVisible();
+		await dialog.getByRole("button", { name: "キャンセル" }).click();
+		await expect(remove).toHaveCount(1);
+		await remove.click();
+		await dialog.getByRole("button", { name: "削除", exact: true }).click();
+		await expect(dialog).not.toBeVisible();
+		await expect(remove).toHaveCount(0);
+		await expect(
+			page.getByRole("navigation", { name: "公開状態" }),
+		).toContainText("0件");
+		await navigate(
+			page,
+			domain === "notes" ? "articles/viewer" : "notes/viewer",
+		);
+		await navigate(page, `${domain}/viewer`);
+		await expect(remove).toHaveCount(0);
+		await expect(
+			page.getByRole("navigation", { name: "公開状態" }),
+		).toContainText("0件");
+	});
+}

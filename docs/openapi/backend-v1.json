@@ -38,7 +38,6 @@
 									"NOT_FOUND",
 									"DUPLICATE",
 									"PUSH_RESUBSCRIPTION_REQUIRED",
-									"NOT_DELETABLE",
 									"OPERATION_CONFLICT",
 									"OPERATION_IN_PROGRESS",
 									"UPLOAD_INCOMPLETE",
@@ -429,7 +428,6 @@
 								"enum": [
 									"DUPLICATE",
 									"PUSH_RESUBSCRIPTION_REQUIRED",
-									"NOT_DELETABLE",
 									"OPERATION_CONFLICT",
 									"OPERATION_IN_PROGRESS",
 									"UPLOAD_INCOMPLETE"
@@ -2043,7 +2041,7 @@
 				],
 				"responses": {
 					"204": {
-						"description": "Deleted; only UNEXPORTED records may be deleted"
+						"description": "Deleted regardless of export status"
 					},
 					"401": {
 						"description": "Authentication required",
@@ -2548,7 +2546,7 @@
 				],
 				"responses": {
 					"204": {
-						"description": "Deleted; only UNEXPORTED records may be deleted"
+						"description": "Deleted regardless of export status"
 					},
 					"401": {
 						"description": "Authentication required",
@@ -2939,7 +2937,7 @@
 				],
 				"responses": {
 					"204": {
-						"description": "Deleted; only UNEXPORTED records may be deleted"
+						"description": "Deleted regardless of export status"
 					},
 					"401": {
 						"description": "Authentication required",
@@ -3330,7 +3328,7 @@
 				],
 				"responses": {
 					"204": {
-						"description": "Deleted; only UNEXPORTED records may be deleted"
+						"description": "Deleted regardless of export status"
 					},
 					"401": {
 						"description": "Authentication required",

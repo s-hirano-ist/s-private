@@ -4,7 +4,6 @@ import type {
 } from "@s-hirano-ist/s-core/articles/repositories/articles-command-repository.interface";
 import type {
 	Id,
-	Status,
 	UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import type { DatabaseClient } from "@s-hirano-ist/s-infrastructure/database";
@@ -37,11 +36,10 @@ export function createArticlesCommandRepository(
 	async function deleteById(
 		id: Id,
 		userId: UserId,
-		status: Status,
 	): Promise<DeleteArticleResult> {
 		return await withPersistenceErrors(async () => {
 			const data = await prisma.article.delete({
-				where: { id, userId, status },
+				where: { id, userId },
 				select: { title: true },
 			});
 

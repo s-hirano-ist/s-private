@@ -4,7 +4,6 @@ import type {
 } from "@s-hirano-ist/s-core/books/entities/book-entity";
 import type {
 	Id,
-	Status,
 	UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 
@@ -32,9 +31,9 @@ import type {
  *     await prisma.book.create({ data });
  *   }
  *
- *   async deleteById(id: Id, userId: UserId, status: Status) {
+ *   async deleteById(id: Id, userId: UserId) {
  *     await prisma.book.delete({
- *       where: { id, userId, status }
+ *       where: { id, userId }
  *     });
  *   }
  * }
@@ -49,6 +48,7 @@ import type {
  * Result of a delete operation containing data needed for events.
  */
 export type DeleteBookResult = {
+	imagePath: string | null;
 	title: BookTitle;
 };
 
@@ -65,8 +65,7 @@ export type IBooksCommandRepository = {
 	 *
 	 * @param id - The book ID to delete
 	 * @param userId - The user ID for tenant isolation
-	 * @param status - The expected status of the book
 	 * @returns The deleted book data needed for domain events
 	 */
-	deleteById(id: Id, userId: UserId, status: Status): Promise<DeleteBookResult>;
+	deleteById(id: Id, userId: UserId): Promise<DeleteBookResult>;
 };

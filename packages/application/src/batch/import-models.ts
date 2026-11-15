@@ -1,3 +1,4 @@
+import type { MediaLock } from "@s-hirano-ist/s-application/content/media-lifecycle";
 import type { MobileDomain } from "@s-hirano-ist/s-application/content/models";
 import type { z } from "zod";
 import {
@@ -55,7 +56,7 @@ export type ImportRecord = {
 	values: ImportValuesByDomain[MobileDomain];
 };
 export type PreparedImport = {
-	media?: { path: string; bytes: Uint8Array };
+	media?: { bytes: Uint8Array; path: string };
 	preserveImagePath?: boolean;
 	values: unknown;
 };
@@ -75,10 +76,12 @@ export type ImportRepository = {
 	): Promise<void>;
 };
 export type ImportMediaStore = {
+	lock: MediaLock;
 	put(
 		domain: "images" | "books",
 		path: string,
 		bytes: Uint8Array,
+		assertActive: () => Promise<void>,
 	): Promise<void>;
 	removeImage(path: string): Promise<void>;
 };

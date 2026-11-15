@@ -5,7 +5,6 @@ import type {
 } from "@s-hirano-ist/s-core/images/repositories/images-command-repository.interface";
 import type {
 	Id,
-	Status,
 	UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import type { DatabaseClient } from "@s-hirano-ist/s-infrastructure/database";
@@ -25,11 +24,10 @@ export function createImagesCommandRepository(
 	async function deleteById(
 		id: Id,
 		userId: UserId,
-		status: Status,
 	): Promise<DeleteImageResult> {
 		return await withPersistenceErrors(async () => {
 			const data = await prisma.image.delete({
-				where: { id, userId, status },
+				where: { id, userId },
 				select: { path: true },
 			});
 

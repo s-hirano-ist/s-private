@@ -315,3 +315,28 @@ model Verification {
 
   @@map("verification")
 }
+
+// Durable storage cleanup; content deletion and enqueue share one transaction.
+model MediaDeletion {
+  id String @id @db.String(36)
+  userId String @map("user_id") @db.String(128)
+  domain String @db.String(16)
+  path String @db.String(512)
+  attempts Int @default(0)
+  nextAttemptAt DateTime @default(now()) @map("next_attempt_at")
+  leaseToken String? @map("lease_token") @db.String(36)
+  leaseExpiresAt DateTime? @map("lease_expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  @@index([nextAttemptAt, leaseExpiresAt])
+  @@map("media_deletions")
+}
+
+// Global per-object exclusion: paths can be shared by different owners.
+model MediaObjectLock {
+  domain String @db.String(16)
+  path String @db.String(512)
+  token String? @db.String(36)
+  expiresAt DateTime? @map("expires_at")
+  @@id([domain, path])
+  @@map("media_object_locks")
+}

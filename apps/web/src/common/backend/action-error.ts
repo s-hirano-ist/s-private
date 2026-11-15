@@ -10,7 +10,6 @@ const apiMessages: Record<ApiHttpError["code"], string> = {
 	UPLOAD_TOO_LARGE: "invalidFormat",
 	INVALID_CHUNK_SIZE: "invalidFormat",
 	FORBIDDEN: "notAllowed",
-	NOT_DELETABLE: "notAllowed",
 	UNAUTHORIZED: "unauthorized",
 	PUSH_RESUBSCRIPTION_REQUIRED: "unexpected",
 	API_UNAVAILABLE: "unexpected",

@@ -13,7 +13,6 @@ import {
 import {
 	makeId,
 	makeUserId,
-	makeUnexportedStatus,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import {
 	makePath,
@@ -43,7 +42,7 @@ function fixture() {
 		.mockResolvedValue(undefined);
 	const deleteById = vi
 		.fn<CreateBookDeps["commandRepository"]["deleteById"]>()
-		.mockResolvedValue({ title: input.title });
+		.mockResolvedValue({ title: input.title, imagePath: input.path });
 	const dispatch = vi
 		.fn<CreateBookDeps["eventDispatcher"]["dispatch"]>()
 		.mockResolvedValue(undefined);
@@ -51,6 +50,12 @@ function fixture() {
 		.fn<CreateBookDeps["storageService"]["uploadImage"]>()
 		.mockResolvedValue(undefined);
 	const deps: CreateBookDeps = {
+		transactions: { run: async (work) => work() },
+		mediaLock: { run: async (_domain, _path, work) => work(async () => {}) },
+		deletionQueue: {
+			enqueue: vi.fn().mockResolvedValue("job"),
+			process: vi.fn().mockResolvedValue(undefined),
+		},
 		commandRepository: { create, deleteById },
 		eventDispatcher: { dispatch },
 		domainServiceFactory: {
@@ -119,7 +124,7 @@ test.each([
 		expect(f.dispatch).not.toHaveBeenCalled();
 	},
 );
-test("deletes only the owner's unexported record and does not publish a refused deletion", async () => {
+test("deletes only the owner's record regardless of status and does not publish a refused deletion", async () => {
 	const f = fixture();
 	const id = makeId();
 	f.deleteById.mockRejectedValueOnce(new Error("not deletable"));
@@ -128,10 +133,15 @@ test("deletes only the owner's unexported record and does not publish a refused 
 	);
 	expect(f.dispatch).not.toHaveBeenCalled();
 	await deleteBook(id, input.userId, f.deps);
-	expect(f.deleteById).toHaveBeenCalledWith(
-		id,
-		input.userId,
-		makeUnexportedStatus(),
-	);
+	expect(f.deleteById).toHaveBeenCalledWith(id, input.userId);
+	expect(f.dispatch).toHaveBeenCalledOnce();
+});
+
+test("deleting a book without an uploaded cover does not enqueue storage work", async () => {
+	const f = fixture();
+	f.deleteById.mockResolvedValueOnce({ title: input.title, imagePath: null });
+	await deleteBook(makeId(), input.userId, f.deps);
+	expect(f.deps.deletionQueue.enqueue).not.toHaveBeenCalled();
+	expect(f.deps.deletionQueue.process).not.toHaveBeenCalled();
 	expect(f.dispatch).toHaveBeenCalledOnce();
 });

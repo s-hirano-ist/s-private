@@ -8,6 +8,7 @@ import {
 export function createBackendHttpApp(deps: {
 	api(request: Request): Response | Promise<Response>;
 	auth(request: Request): Promise<Response>;
+	cleanupMedia?: (request: Request) => Promise<Response>;
 	cron(request: Request): Promise<Response>;
 	isTrustedOrigin(origin: string): boolean;
 	mcp?: (request: Request) => Response | Promise<Response>;
@@ -52,6 +53,11 @@ export function createBackendHttpApp(deps: {
 		return request ? deps.auth(request) : c.json({ error: "Forbidden" }, 403);
 	});
 	app.get("/api/cron/gigazine-headline", (c) => deps.cron(c.req.raw));
+	app.get("/api/cron/media-cleanup", (c) =>
+		deps.cleanupMedia
+			? deps.cleanupMedia(c.req.raw)
+			: new Response(null, { status: 404 }),
+	);
 	app.all("/api/v1/*", (c) => deps.api(c.req.raw));
 	app.onError(async (error, c) => {
 		if (error instanceof AuthInitializationError) {

@@ -15,7 +15,6 @@ import {
 } from "@s-hirano-ist/s-core/articles/entities/article-entity";
 import { ArticleDeletedEvent } from "@s-hirano-ist/s-core/articles/events/article-deleted-event";
 import {
-	makeUnexportedStatus,
 	type Id,
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
@@ -81,11 +80,7 @@ export async function deleteArticle(
 	userId: UserId,
 	deps: DeleteArticleDeps,
 ): Promise<void> {
-	const { title } = await deps.commandRepository.deleteById(
-		id,
-		userId,
-		makeUnexportedStatus(),
-	);
+	const { title } = await deps.commandRepository.deleteById(id, userId);
 	await deps.eventDispatcher.dispatch(
 		new ArticleDeletedEvent({ title, userId, caller: "deleteArticle" }),
 	);

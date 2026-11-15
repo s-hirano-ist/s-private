@@ -4,7 +4,6 @@ import type {
 } from "@s-hirano-ist/s-core/notes/entities/note-entity";
 import type {
 	Id,
-	Status,
 	UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 
@@ -26,9 +25,9 @@ import type {
  *     await prisma.note.create({ data });
  *   }
  *
- *   async deleteById(id: Id, userId: UserId, status: Status) {
+ *   async deleteById(id: Id, userId: UserId) {
  *     await prisma.note.delete({
- *       where: { id, userId, status }
+ *       where: { id, userId }
  *     });
  *   }
  * }
@@ -57,8 +56,7 @@ export type INotesCommandRepository = {
 	 *
 	 * @param id - The note ID to delete
 	 * @param userId - The user ID for tenant isolation
-	 * @param status - The expected status of the note
 	 * @returns The deleted note data needed for domain events
 	 */
-	deleteById(id: Id, userId: UserId, status: Status): Promise<DeleteNoteResult>;
+	deleteById(id: Id, userId: UserId): Promise<DeleteNoteResult>;
 };

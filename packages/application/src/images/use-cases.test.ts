@@ -7,7 +7,6 @@ import {
 import {
 	makeId,
 	makeUserId,
-	makeUnexportedStatus,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import {
 	makePath,
@@ -40,6 +39,12 @@ function fixture() {
 		.fn<CreateImageDeps["storageService"]["uploadImage"]>()
 		.mockResolvedValue(undefined);
 	const deps: CreateImageDeps = {
+		transactions: { run: async (work) => work() },
+		mediaLock: { run: async (_domain, _path, work) => work(async () => {}) },
+		deletionQueue: {
+			enqueue: vi.fn().mockResolvedValue("job"),
+			process: vi.fn().mockResolvedValue(undefined),
+		},
 		commandRepository: { create, deleteById },
 		eventDispatcher: { dispatch },
 		domainServiceFactory: {
@@ -105,7 +110,7 @@ test.each([
 		expect(f.dispatch).not.toHaveBeenCalled();
 	},
 );
-test("deletes only the owner's unexported record and does not publish a refused deletion", async () => {
+test("deletes only the owner's record regardless of status and does not publish a refused deletion", async () => {
 	const f = fixture();
 	const id = makeId();
 	f.deleteById.mockRejectedValueOnce(new Error("not deletable"));
@@ -114,10 +119,6 @@ test("deletes only the owner's unexported record and does not publish a refused 
 	);
 	expect(f.dispatch).not.toHaveBeenCalled();
 	await deleteImage(id, input.userId, f.deps);
-	expect(f.deleteById).toHaveBeenCalledWith(
-		id,
-		input.userId,
-		makeUnexportedStatus(),
-	);
+	expect(f.deleteById).toHaveBeenCalledWith(id, input.userId);
 	expect(f.dispatch).toHaveBeenCalledOnce();
 });

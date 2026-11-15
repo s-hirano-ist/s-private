@@ -17,6 +17,8 @@ import { createArticlesCommandRepository } from "@s-hirano-ist/s-infrastructure/
 import { createArticlesQueryRepositories } from "@s-hirano-ist/s-infrastructure/articles/query-repository";
 import { createBooksCommandRepository } from "@s-hirano-ist/s-infrastructure/books/command-repository";
 import { createBooksQueryRepository } from "@s-hirano-ist/s-infrastructure/books/query-repository";
+import { createMediaDeletionQueue } from "@s-hirano-ist/s-infrastructure/content/media-deletion-queue";
+import { createMediaLock } from "@s-hirano-ist/s-infrastructure/content/media-lock";
 import { createMediaReader } from "@s-hirano-ist/s-infrastructure/content/media-reader";
 import { createContentQueryRepository } from "@s-hirano-ist/s-infrastructure/content/query-repository";
 import { sharpImageProcessor } from "@s-hirano-ist/s-infrastructure/content/sharp-image-processor";
@@ -57,6 +59,13 @@ export function createApiServices(config: ApiServicesConfig) {
 	const eventDispatcher = createPostCommitDispatcher(
 		config.eventDispatcher,
 		config.reporter,
+	);
+	const mediaLock = createMediaLock(config.database);
+	const deletionQueue = createMediaDeletionQueue(
+		database,
+		mediaLock,
+		storage,
+		(error) => config.reporter.captureException(error),
 	);
 	const persistence = createMobilePersistence(database);
 	const mobile: MobileDeps = {
@@ -100,12 +109,18 @@ export function createApiServices(config: ApiServicesConfig) {
 			eventDispatcher,
 		},
 		images: {
+			transactions,
+			deletionQueue,
+			mediaLock,
 			commandRepository: createImagesCommandRepository(database),
 			storageService: storage.images,
 			domainServiceFactory,
 			eventDispatcher,
 		},
 		books: {
+			transactions,
+			deletionQueue,
+			mediaLock,
 			commandRepository: createBooksCommandRepository(database),
 			storageService: storage.books,
 			domainServiceFactory,
@@ -121,6 +136,7 @@ export function createApiServices(config: ApiServicesConfig) {
 	);
 	return {
 		mobile,
+		cleanupMedia: () => deletionQueue.drain(),
 		pushDelivery,
 		reads: createReadService(
 			createReadQueries({

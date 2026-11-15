@@ -7,7 +7,6 @@ import {
 import { makeArticleTitle } from "@s-hirano-ist/s-core/articles/entities/article-entity";
 import {
 	makeId,
-	makeUnexportedStatus,
 	makeUserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import { DuplicateError } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
@@ -120,11 +119,7 @@ describe("Backend article use cases", () => {
 		);
 		expect(fixture.dispatch).not.toHaveBeenCalled();
 		await deleteArticle(id, owner, fixture.deps);
-		expect(fixture.deleteById).toHaveBeenCalledWith(
-			id,
-			owner,
-			makeUnexportedStatus(),
-		);
+		expect(fixture.deleteById).toHaveBeenCalledWith(id, owner);
 		expect(fixture.dispatch).toHaveBeenCalledExactlyOnceWith(
 			expect.objectContaining({
 				metadata: expect.objectContaining({ userId: owner }),
