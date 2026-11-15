@@ -125,3 +125,15 @@ describe("RSS ingestion", () => {
 		},
 	);
 });
+
+test("comments and CDATA do not hide a following unsafe XML declaration", () => {
+	for (const prefix of [
+		"<!-- <!DOCTYPE ignored> -->",
+		"<![CDATA[<!DOCTYPE ignored>]]>",
+		"<!--one--><!--two-->",
+	]) {
+		expect(() =>
+			parseFeed(`${prefix}<!DOCTYPE rss><rss/>`, "https://example.com"),
+		).toThrow("Invalid XML");
+	}
+});

@@ -5,7 +5,21 @@ import { Suspense } from "react";
 async function Reader() {
 	await connection();
 	const initialData = await services.loadRss();
-	return <RssReader initialData={initialData} services={services} />;
+	return (
+		<RssReader
+			initialData={initialData}
+			services={{
+				loadRss: services.loadRss,
+				subscribeRss: services.subscribeRss,
+				unsubscribeRss: services.unsubscribeRss,
+				markRssRead: services.markRssRead,
+				saveRss: services.saveRss,
+				unsaveRss: services.unsaveRss,
+				refreshRss: services.refreshRss,
+				importRss: services.importRss,
+			}}
+		/>
+	);
 }
 export default function Page() {
 	return (

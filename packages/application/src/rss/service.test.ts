@@ -70,3 +70,29 @@ test("import reports invalid and duplicate metadata without creating unread entr
 	).toEqual({ added: 1, duplicates: 2, invalid: 1 });
 	expect(repo.complete).not.toHaveBeenCalled();
 });
+
+test("owner-scoped operations forward filters and mutations", async () => {
+	const repo = repository();
+	const service = createRssService(repo, vi.fn());
+	await service.page("owner", 50, "feed");
+	expect(repo.page).toHaveBeenCalledWith("owner", 50, "feed");
+	await service.subscribe("owner", lease);
+	expect(repo.subscribe).toHaveBeenCalledWith("owner", lease);
+	await service.unsubscribe("owner", "feed");
+	expect(repo.unsubscribe).toHaveBeenCalledWith("owner", "feed");
+	await service.read("owner", { ids: ["one"] });
+	expect(repo.read).toHaveBeenCalledWith("owner", { ids: ["one"] });
+	const entry = {
+		title: "One",
+		url: "https://example.com/one",
+		publishedAt: null,
+	};
+	await service.save("owner", entry);
+	expect(repo.save).toHaveBeenCalledWith("owner", entry);
+	await service.unsave("owner", "one");
+	expect(repo.unsave).toHaveBeenCalledWith("owner", "one");
+	repo.save.mockResolvedValue(true);
+	expect(
+		await service.import("owner", { feeds: [], saved: [entry], invalid: 0 }),
+	).toEqual({ added: 1, duplicates: 0, invalid: 0 });
+});

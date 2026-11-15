@@ -102,3 +102,51 @@ test("invalid exports return a validation error rather than partially writing ar
 	expect(response.status).toBe(422);
 	expect(repository.save).not.toHaveBeenCalled();
 });
+
+test("authenticated RSS mutations forward the owner and parsed input", async () => {
+	const { app, repository } = fixture();
+	const id = "00000000-0000-4000-8000-000000000001";
+	const call = (path: string, method: string, body?: unknown) =>
+		app.request(`https://web.example/api/v1/rss${path}`, {
+			method,
+			headers: {
+				authorization: "Bearer valid",
+				"content-type": "application/json",
+			},
+			body: JSON.stringify(body),
+		});
+	const feed = {
+		url: "https://example.com/feed",
+		title: "News",
+		folder: "Tech",
+	};
+	const entry = {
+		url: "https://example.com/one",
+		title: "One",
+		publishedAt: null,
+	};
+	expect((await call("/feeds", "POST", feed)).status).toBe(200);
+	expect(repository.subscribe).toHaveBeenCalledWith("owner", feed);
+	expect((await call(`/feeds/${id}`, "DELETE")).status).toBe(204);
+	expect(repository.unsubscribe).toHaveBeenCalledWith("owner", id);
+	expect((await call("/read", "POST", { ids: [id] })).status).toBe(204);
+	expect(repository.read).toHaveBeenCalledWith("owner", { ids: [id] });
+	expect((await call("/saved", "POST", entry)).status).toBe(200);
+	expect(repository.save).toHaveBeenCalledWith("owner", entry);
+	expect((await call(`/saved/${id}`, "DELETE")).status).toBe(204);
+	expect(repository.unsave).toHaveBeenCalledWith("owner", id);
+	expect(
+		(await call("/refresh", "POST", { ids: [id], force: true })).status,
+	).toBe(200);
+	expect(repository.claim).toHaveBeenCalledWith("owner", id, true);
+	const response = await call("/import", "POST", {
+		kind: "starred",
+		content: JSON.stringify([entry]),
+	});
+	expect(response.status).toBe(200);
+	expect(await response.json()).toEqual({
+		added: 1,
+		duplicates: 0,
+		invalid: 0,
+	});
+});

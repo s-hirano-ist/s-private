@@ -3,12 +3,14 @@ import { XMLParser } from "fast-xml-parser";
 import { SyntaxValidator } from "fast-xml-validator";
 export function parseXml(xml: string): unknown {
 	try {
-		const declarations = xml.replaceAll(
-			/<!\[CDATA\[[\s\S]*?\]\]>|<!--[\s\S]*?-->/gu,
-			"",
-		);
-		if (/<!DOCTYPE|<!ENTITY/iu.test(declarations))
-			throw new Error("Unsafe declaration");
+		// Inspect tokens without deleting text: removing comments can join adjacent
+		// fragments into a declaration that was not present in the original XML.
+		for (const token of xml.matchAll(
+			/<!\[CDATA\[[\s\S]*?\]\]>|<!--[\s\S]*?-->|<!DOCTYPE|<!ENTITY/giu,
+		)) {
+			if (/^<!DOCTYPE|^<!ENTITY/iu.test(token[0]))
+				throw new Error("Unsafe declaration");
+		}
 		SyntaxValidator.validate(xml);
 	} catch {
 		throw new Error("Invalid XML");
