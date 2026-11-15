@@ -23,7 +23,7 @@
 		"@tailwindcss/typography": "catalog:",
 		"@vercel/analytics": "2.0.1",
 		"@vercel/related-projects": "catalog:",
-		"better-auth": "1.7.23",
+		"better-auth": "1.7.25",
 		"fflate": "catalog:",
 		"lucide-react": "catalog:",
 		"markdown-to-jsx": "9.10.6",
@@ -34,7 +34,7 @@
 		"react-dom": "catalog:",
 		"react-syntax-highlighter": "16.1.2",
 		"server-only": "0.0.1",
-		"yet-another-react-lightbox": "3.33.0",
+		"yet-another-react-lightbox": "3.33.1",
 		"zod": "catalog:"
 	},
 	"browserslist": [

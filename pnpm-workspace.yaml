@@ -59,7 +59,7 @@ pipelines:
     - build
 
 catalog:
-  '@aws-sdk/client-s3': 3.1168.0
+  '@aws-sdk/client-s3': 3.1169.0
   '@modelcontextprotocol/client': 2.4.0
   '@modelcontextprotocol/hono': 2.0.2
   '@modelcontextprotocol/server': 2.4.0
@@ -82,11 +82,11 @@ catalog:
   ipaddr.js: 2.5.0
   js-yaml: 5.5.0
   lefthook: 2.2.2
-  lucide-react: 1.72.0
+  lucide-react: 1.73.0
   next: 16.4.6
   next-intl: 4.15.1
   oxfmt: 0.78.0
-  postcss: 8.5.32
+  postcss: 8.5.33
   react: 19.3.1
   react-dom: 19.3.1
   tailwindcss: 4.3.5
