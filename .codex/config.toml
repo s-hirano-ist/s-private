@@ -8,3 +8,50 @@ enabled = true
 # universal-directory copy in their personal Codex configuration.
 [plugins."build-ios-apps@openai-curated-remote"]
 enabled = false
+
+# BEGIN generated MCP — pnpm harness:sync
+
+[mcp_servers.github]
+url = "https://api.githubcopilot.com/mcp/"
+bearer_token_env_var = "GITHUB_MCP_TOKEN"
+
+[mcp_servers.vercel]
+url = "https://mcp.vercel.com"
+
+[mcp_servers.sentry]
+url = "https://mcp.sentry.dev/mcp"
+
+[mcp_servers.auth0]
+command = "npx"
+args = ["-y", "@auth0/auth0-mcp-server@0.1.0-beta.19", "run"]
+
+[mcp_servers.cockroachdb-cloud]
+url = "https://cockroachlabs.cloud/mcp"
+
+[mcp_servers.cloudflare]
+url = "https://mcp.cloudflare.com/mcp"
+
+[mcp_servers.qdrant-cloud]
+url = "https://api.cloud.qdrant.io/mcp"
+
+[mcp_servers.backblaze-b2]
+command = "npx"
+args = ["-y", "@backblaze-labs/b2-mcp@0.2.2"]
+env_vars = ["B2_APPLICATION_KEY_ID", "B2_APPLICATION_KEY", "B2_REGION"]
+
+[mcp_servers.doppler]
+command = "npx"
+args = ["-y", "@dopplerhq/mcp-server@1.0.5"]
+env_vars = ["DOPPLER_TOKEN"]
+
+[mcp_servers.huggingface]
+url = "https://huggingface.co/mcp"
+
+[mcp_servers.xcodebuildmcp]
+command = "npx"
+args = ["-y", "xcodebuildmcp@2.7.0", "mcp"]
+
+[mcp_servers.xcodebuildmcp.env]
+XCODEBUILDMCP_ENABLED_WORKFLOWS = "simulator,ui-automation,debugging,logging"
+
+# END generated MCP

@@ -730,3 +730,10 @@ Web CookieをMCPへ流用せず、認可コード・トークン発行・クラ�
 DTOから内部ストレージパスを除いた参照toolのみを提供する。
 認可メタデータは公開し、tool実行を含む `/mcp` は認証必須とする。
 配置と利用者の接続手順は[MCP設定](mcp-setup.md)を参照。
+
+## 開発エージェントの共通接続設定
+
+`.harness/mcp.json` を接続定義の正本とし、`pnpm harness:sync` がCodexとClaude Codeの
+project設定を生成する。`pnpm harness:check` で差分を検出する。
+生成対象外のCodex設定とhooksは維持し、token・secretは個人の認証ストアまたは
+実行時の環境変数で管理する。詳細は [開発用MCP設定](development-mcp.md) を参照。

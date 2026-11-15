@@ -9,7 +9,7 @@
 - **Articles**: 記事管理（カテゴリー付き、OGメタデータ対応）
 - **Books**: 書籍管理（ISBN、GitHub Books連携）
 - **Notes**: ノート管理（Markdown形式）
-- **Images**: 画像管理（MinIO連携、サムネイル生成）
+- **Images**: 画像管理（S3互換ストレージ連携、サムネイル生成）
 
 これらのドメインは共通の **Common** ドメインで定義された基本的な Value Objects を使用しています。
 
@@ -251,7 +251,7 @@ graph TB
 | Articles | URL収集、OGメタデータ取得、カテゴリ分類 |
 | Books | ISBN管理、GitHub Books連携 |
 | Notes | Markdownノート作成・編集 |
-| Images | 画像アップロード、MinIOストレージ連携、サムネイル生成 |
+| Images | 画像アップロード、S3互換ストレージ連携、サムネイル生成 |
 | Shared-Kernel | 共通Value Objects (Id, UserId, Status, Timestamp等) |
 
 ### ドメイン間関係図
@@ -280,7 +280,7 @@ graph TB
 | External System | Domain | Integration Pattern | Interface |
 |----------------|--------|---------------------|-----------|
 | GitHub Books | Books | ACL (Anti-Corruption Layer) | `IGitHubBookFetcher` |
-| MinIO | Images, Books | Infrastructure Adapter | `IStorageService` |
+| S3互換ストレージ（B2 / ローカルMinIO） | Images, Books | Infrastructure Adapter | `IStorageService` |
 | Image Processor | Images | Infrastructure Adapter | `IImageProcessor` |
 | Auth0 | All | Separate Context | Better Auth / Bearer統合 |
 
