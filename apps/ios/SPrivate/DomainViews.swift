@@ -336,7 +336,7 @@ struct RecordDetailView: View {
                 }
             }
         }
-        .confirmationDialog(String(localized: "この項目を削除しますか？"), isPresented: $showingDelete) {
+        .confirmationDialog(String(localized: "この項目を削除しますか？"), isPresented: $showingDelete, titleVisibility: .visible) {
             Button(String(localized: "削除"), role: .destructive) { Task { await delete() } }
                 .disabled(deleting)
         }

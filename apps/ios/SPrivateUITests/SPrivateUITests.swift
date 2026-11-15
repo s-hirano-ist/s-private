@@ -52,16 +52,13 @@ final class SPrivateUITests: XCTestCase {
 
         let title = app.textFields["create-title-field"]
         XCTAssertTrue(title.waitForExistence(timeout: 5))
-        title.tap()
-        title.typeText("Example")
+        enterText("Example", into: title, in: app)
         let url = app.textFields["URL"]
-        url.tap()
-        url.typeText("https://example.com")
+        enterText("https://example.com", into: url, in: app)
 
         let category = app.textFields["category-name-field"]
         XCTAssertTrue(category.exists)
-        category.tap()
-        category.typeText(String(repeating: "a", count: 17))
+        enterText(String(repeating: "a", count: 17), into: category, in: app)
         XCTAssertFalse(app.buttons["save-button"].isEnabled)
         XCTAssertTrue(app.staticTexts["カテゴリ名は1〜16文字で入力してください"].exists)
         category.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 17) + "Tech")
@@ -267,5 +264,18 @@ final class SPrivateUITests: XCTestCase {
         screenshot.name = "books-aligned-grid"
         screenshot.lifetime = .keepAlways
         add(screenshot)
+    }
+
+    @MainActor
+    private func enterText(_ text: String, into field: XCUIElement, in app: XCUIApplication, file: StaticString = #filePath, line: UInt = #line) {
+        let hittable = XCTNSPredicateExpectation(predicate: NSPredicate(format: "isHittable == true"), object: field)
+        XCTAssertEqual(XCTWaiter.wait(for: [hittable], timeout: 10), .completed, file: file, line: line)
+        field.tap()
+        // Sheet controls can appear before their first tap establishes keyboard focus on CI.
+        if !app.keyboards.firstMatch.waitForExistence(timeout: 5) {
+            field.tap()
+        }
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5), file: file, line: line)
+        field.typeText(text)
     }
 }
