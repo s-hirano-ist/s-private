@@ -136,6 +136,11 @@ token endpoint認証は `client_secret_post`、grantはAuthorization Codeのみ�
 ブラウザからAuth0への直接通信を使わないため、Allowed Web Originsは空にします。
 Cross-Origin Authenticationも無効のままにします。
 
+Webのログイン手段は両環境ともDatabase connectionに揃え、公開サインアップを無効にします。
+devのテストユーザーは管理者がDashboardで用意し、Productionのユーザーをコピーしません。
+devの `google-oauth2` はWeb Applicationから無効化し、接続自体と既存ユーザーは削除しません。
+Auth0の開発キーを使用するGoogle接続は、本番へ移植しません。
+
 | 環境 | Allowed Callback URLs | Allowed Logout URLs |
 | --- | --- | --- |
 | Production | `https://private.s-hirano.com/api/auth/callback/auth0` | `https://private.s-hirano.com` |
@@ -164,6 +169,18 @@ MCPの設定は[参照専用MCPの設定](mcp-setup.md)を参照してくださ�
 - 本番の `fetch-role` ActionはID tokenに `https://private.s-hirano.com/roles` claimを追加し、Node 18の古いruntime警告があります。リポジトリにclaimの利用箇所はありませんが、外部利用とトリガーへの接続状態が未確認のため削除していません。
 - 本番の2つのAPI Test ApplicationはM2M clientです。利用履歴を確認できないため維持します。`All Applications` はtenantのグローバルclientであり、削除対象にしません。
 - Connections全種別、devのActions/攻撃対策、利用ログの監査、iOS実機のログイン・更新・再起動・ログアウトは未完了です。API/DTO、DBのユーザー・Accountの紐付けは変更していません。
+
+#### 2026-11-15の追加監査・devログイン手段の統一
+
+- dev Webの `google-oauth2` 接続を有効から無効へ変更しました。接続自体・既存ユーザーは削除せず、Database接続は有効のままです。中断後のDashboard再取得でも保存済みの無効状態を確認しました。
+- devの `Username-Password-Authentication` で「サインアップを無効にする」を無効から有効へ変更し、保存成功と再読み込み後の有効状態を確認しました。「改善された総当たり攻撃防御」は有効、「接続をドメインレベルに昇格する」は無効のままです。
+- 既存Previewから新しく `/api/sign-in` を開始し、devのログイン画面にGoogleとSign upの導線がないことを確認しました。古い認証stateの再読み込みではエラー画面となったため、動作確認には新しい認証フローを使いました。
+- 利用者が既存Databaseユーザーでログインした後、callback後の `/ja/articles` 表示、保護された `/ja/settings` への遷移と再読み込み、サインアウト後のdevログイン画面への戻りを確認しました。サインアウト後に `/ja/settings` へ直接アクセスしてもdevログイン画面へ戻ります。認証情報を転記せず、コンテンツのCRUDは行っていません。
+- 両Web ApplicationのConnections画面で全種別を確認しました。ProductionはDatabase接続のみ、devはDatabase接続と無効化したGoogle接続があり、両環境ともEnterprise・Passwordless接続は表示されませんでした。dev Google接続はAuth0の開発キーを使っており、本番には移植しません。
+- API一覧は、devがシステムのManagement APIのみ、ProductionがManagement API・Memdex iOS API・Memdex MCP APIでした。Production MCP APIはRS256、アクセストークン3600秒、権限 `content:read` のみ、同意スキップ無効、offline access有効、アプリごとの認可です。設定は変更していません。iOS APIの個別設定・全client grantは今回再監査していません。
+- 両tenantとも、不審IPスロットリングと総当たり攻撃防御は有効、ボット検知とパスワード漏洩検知は無効でした。今回これらの設定は変更していません。
+- Productionの `fetch-role` とdevの `fetch role` は、それぞれPost Loginフローに接続されています。両ActionともDEPLOYED、Node 18（Not Recommended）でした。リポジトリの実装にProductionのroles claimの利用箇所はありませんが、外部利用は未確認のため削除・接続解除・runtime変更は行っていません。runtimeの更新とclaimの要否は追加対応が必要です。
+- 本番のAPI Test Application 2件は利用履歴未確認のため維持し、グローバルclientの `All Applications` も整理対象から除外します。tenant分離・client ID/secret・callback・iOS/MCP client設定・ユーザーの紐付けは変更していません。
 
 設定変更後はdevで認証を確認してからProductionへ適用し、iOS/MCPでは新規ログインに加えて
 期限後のtoken更新も確認します。変更前の秘密値を含まない設定と、未検証の操作を記録し、
