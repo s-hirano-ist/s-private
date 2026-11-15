@@ -1,5 +1,7 @@
 # 共通backendへの移行
 
+> この文書は共通backend分離の設計判断・移行履歴を含む。現行の配置と依存方向は [アーキテクチャ](architecture.md#クリーンアーキテクチャの構成)、日常の開発は [セットアップ](setup.md)、配置手順は [Vercelセットアップ](backend-vercel-setup.md) を正本とする。
+
 ## 到達する構成
 
 Next.jsはSSR、UI、薄いBFFを担当し、iOSと共通のHono backendへアクセスする。

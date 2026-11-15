@@ -25,7 +25,7 @@ OAuth同意、API keyで決まる。設定を追加しただけでは認証や�
 | `cloudflare` | [DNS・Pages等](https://developers.cloudflare.com/agents/model-context-protocol/cloudflare/servers-for-cloudflare/) | OAuth |
 | `qdrant-cloud` | [cluster・backup等](https://qdrant.tech/documentation/qdrant-mcp/cloud/) | OAuth |
 | `backblaze-b2` | [bucket・object等](https://github.com/backblaze-labs/b2-mcp) | `B2_APPLICATION_KEY_ID`・`B2_APPLICATION_KEY` |
-| `doppler` | [project・config・secret管理](https://docs.doppler.com/docs/mcp) | 個人用keyring、または `DOPPLER_TOKEN` |
+| `doppler` | 環境変数管理（[project・config・secret管理](https://docs.doppler.com/docs/mcp)） | 個人用keyring、または `DOPPLER_TOKEN` |
 | `huggingface` | [モデル・Hubの調査](https://huggingface.co/docs/hub/agents-mcp) | Hugging Faceの接続設定・OAuthに従う |
 | `xcodebuildmcp` | iOS Simulator・ビルド・デバッグ | ローカルXcode |
 
@@ -72,6 +72,7 @@ OAuth token・API key・secretをGit・チャット・PR・診断ログへ記録
 
 ## MCP以外の操作
 
+- agent-browserは動作確認に使用する。バージョンは `.mise.toml` で管理する。
 - Storybookは `pnpm exec storybook tools ...` を使う。固定URLのMCPは登録しない。
 - Pushoverは2026-11-15時点の調査で公式MCPを確認できていない。
   [公式API](https://pushover.net/api)と既存 `packages/notification` を使う。

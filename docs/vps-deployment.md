@@ -267,7 +267,7 @@ compose.yaml          ← 全サービス定義（minio, minio-init, cloudflared
 docker compose --profile vps up -d
 ```
 
-> **注意:** 現在の `compose.yaml` は全サービスが `profiles: [vps]` 配下にあるため、`--profile vps` を付けない `docker compose up` ではどのサービスも起動しない。
+> **注意:** VPS用のサービスは `profiles: [vps]`、ローカル開発用のサービスは `profiles: [local]` に分かれている。profileを指定しない `docker compose up` ではサービスは起動しない。
 
 `deploy.sh` は自動的に `--profile vps` を付与するため、VPS デプロイ時は意識する必要はない。
 

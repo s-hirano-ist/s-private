@@ -2,6 +2,8 @@
 
 CLI scripts for s-private data operations.
 
+CLI hosts compose shared use cases from `packages/application` with adapters from `packages/infrastructure`; they do not import the HTTP backend. Repository build/dev orchestration lives in the root `scripts/` directory.
+
 The npm artifact bundles the required internal workspace code and generated Prisma client. Consumers install only this CLI package; internal s-private packages are not separate npm dependencies. Command names remain unchanged.
 
 ## Installation

@@ -6,7 +6,6 @@
 		"scripts/check-secrets.mjs",
 		"apps/web/oxfmt-tailwind.css"
 	],
-	"ignoreDependencies": ["@secretlint/secretlint-rule-preset-recommend"],
 	"ignoreBinaries": ["mise", "pipeline", "vercel"],
 	"workspaces": {
 		".": {

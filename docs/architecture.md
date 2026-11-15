@@ -29,14 +29,16 @@ RUM・Web Vitals・Replay と無料枠の運用は [Sentry RUM](rum.md) を参�
 
 ## クリーンアーキテクチャの構成
 
-共有Application/Infrastructureへの段階的な責務分離は[backend責務の整理](backend-layer-refactoring.md)を参照する。
+共有Application/Infrastructureの責務と移行履歴は[backend責務の整理](backend-layer-refactoring.md)を参照する。
 
 Web、iOS、共通backendの責務を分離する。Webからドメイン・DB・storageへの直接依存はdependency-cruiserの `boundary-web-frontend-only` で禁止する。
 
 | 配置 | 責務 |
 |------|------|
 | `packages/core/` | ドメインごとのエンティティ、値オブジェクト、repository interface、ドメインサービス |
-| `apps/backend/` | Hono HTTP host、環境設定・DI、ユースケース、Prisma adapter、認証・tenant、同期・upload、検索、イベント、通知・Cron |
+| `packages/application/` | HTTP・CLIで共有するユースケース、入出力、Applicationエラー、技術に依存しないport |
+| `packages/infrastructure/` | Prisma・storage・画像処理・検索・配信・監視adapter |
+| `apps/backend/` | Hono HTTP host、環境設定・DI、認証protocol、Cron入口 |
 | `packages/api-contracts/` | HonoルートとZodによるHTTP契約。core・ORM・Next.jsに依存しない |
 | `packages/api-client/` | Orval生成のDTO・検証schema・fetchと共通transport |
 | `apps/web/src/application-services/` | WebのServer Action。生成client呼び出し、フォーム値・表示エラー変換、画面更新 |
@@ -65,11 +67,11 @@ flowchart LR
 ## コードスタイルとアーキテクチャルール
 
 ### フォーマッターとリンター
-- **フォーマッター**: oxfmt（Prettier互換）- `pnpm format` / `pnpm format:check`を使用
+- **フォーマッター**: Vite+（`vp fmt`）経由のoxfmt（Prettier互換）- `pnpm format` / `pnpm format:check`を使用
   - インポート整理（sortImports）、Tailwindクラス並べ替え（sortTailwindcss）を含む
   - Biomeから移行済み（タブ・行幅80を踏襲）。設定は`.oxfmtrc.json`
   - **コンポーネントa11yテスト**: Storybookの全ストーリーに対して`@storybook/addon-a11y`（axe-core）で自動チェック（詳細は[testing.md](testing.md)を参照）
-- **リンター**: oxlint + ESLint - `pnpm lint`を使用
+- **リンター**: Vite+（`vp lint`）経由のoxlint + ESLint - `pnpm lint`を使用
   - oxlint: TypeScript/JavaScriptのtype-aware検査、React/Next.js/jsx-a11y、旧Biome base lint
   - ESLint: YAML/JSONの検査に限定
   - rumdl: Rust製Markdown構造検査（`pnpm lint:md`）
@@ -113,6 +115,7 @@ import { ArticlesStackLoader } from "@/loaders/articles";
 ```
 
 ### 設定ファイル
+- `vite.config.ts` - Vite+の入口。以下のoxfmt・oxlint設定を読み込む
 - `.oxfmtrc.json` - フォーマッター設定（oxfmt: format + import/Tailwind並べ替え）
 - `.oxlintrc.json` - リンター設定（oxlint, type-aware）
 - `eslint.config.js` - YAML/JSON用ESLint設定
@@ -369,7 +372,7 @@ async function DynamicComponent() {
 WebのServer Actionは薄いAPI adapterとする。`"use server"` と `server-only` を使い、FormDataから生成Zodモデルで入力を読み取り、`getBackendClient` の生成メソッドを呼ぶ。
 成功時は `refresh()` で表示を更新し、失敗時は `backendActionError` へ渡す。Webに `*.core.ts`、`*.deps.ts`、default repository、ドメイン不変条件を再実装しない。
 
-実装例は `apps/web/src/application-services/notes/add-note.ts`。作成・削除の検証、永続化、イベント発行とその回帰テストは `apps/backend/src/{domain}/use-cases.ts` と対応テストに置く。
+実装例は `apps/web/src/application-services/notes/add-note.ts`。作成・削除の検証、永続化、イベント発行とその回帰テストは `packages/application/src/{domain}/use-cases.ts` と対応テストに置く。
 画像・書影はブラウザから共通APIへ分割アップロードし、完了後にbackendの同じユースケースを実行する。
 
 ## Value Object Pattern with Zod Branding
@@ -629,13 +632,13 @@ DB adapterが未検証の取得結果をドメイン別の読み取りモデル�
 
 ## Event-Driven Architecture Pattern
 
-作成・削除ユースケースは永続化後にドメインイベントを発行する。共有dispatcherとhandlerは `apps/backend/src/events/` に置き、ログ・通知・検索等の依存をhostから注入する。
+作成・削除ユースケースは永続化後にドメインイベントを発行する。共有dispatcherとhandlerは `packages/infrastructure/src/events/` に置き、ログ・通知・検索等の依存をhostから注入する。
 `apps/backend` がhandlerを登録し、Webのinstrumentationからイベントを初期化しない。登録の重複防止とhandler構成はbackendの回帰テストで検証する。
 DBと通知の原子性を保証するOutboxは導入していない。外部処理の失敗時動作は[ドメインモデル](domain-model.md)の設計上の制約を参照する。
 
 ## Repository CQRS Pattern
 
-coreでドメインごとにCommand/Query repository interfaceを分離し、`apps/backend/src/{domain}/` のPrisma実装で永続化する。
+coreでドメインごとにCommand/Query repository interfaceを分離し、`packages/infrastructure/src/{domain}/` のPrisma実装で永続化する。
 Commandは所有者・状態条件付きの書き込みを行い、Queryは認証済みtenant内を読み取る。Next.jsのcache・Cookie・画面更新をrepositoryへ持ち込まない。
 これはrepositoryの責務分離であり、別DBやイベントソーシングを導入したCQRSではない。
 

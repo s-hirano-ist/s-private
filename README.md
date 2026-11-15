@@ -25,7 +25,7 @@
 
 ## iOS版
 
-`apps/ios/` にはSwiftUI製のiOSアプリがあります。記事・ノート・画像・書籍の閲覧と登録、コンテンツの検索に対応しています。SwiftDataに保存したデータをオフラインで閲覧でき、再接続後の同期やShare Extensionからの登録にも対応しています。認証とデータの同期にはWebアプリが提供するモバイルAPIを使用します。
+`apps/ios/` にはSwiftUI製のiOSアプリがあります。記事・ノート・画像・書籍の閲覧と登録、コンテンツの検索に対応しています。SwiftDataに保存したデータをオフラインで閲覧でき、再接続後の同期やShare Extensionからの登録にも対応しています。認証とデータの同期には独立した共通Hono backendの `/api/v1` を使用します。
 
 開発環境の準備、Auth0の設定、実機での署名手順は [iOS開発ガイド](apps/ios/README.md) を参照してください。
 
@@ -52,12 +52,12 @@
 - **Vector Database** - [Qdrant](https://qdrant.tech/)
 
 ### Authentication & Internationalization
-- **Authentication** - [Auth0](https://auth0.com/) with [NextAuth.js](https://next-auth.js.org/)
+- **Authentication** - [Auth0](https://auth0.com/) with [Better Auth](https://www.better-auth.com/)
 - **Internationalization** - [next-intl](https://next-intl-docs.vercel.app/) (Japanese/English support)
 
 ### Code Quality & Development Tools
-- **Formatter** - [oxfmt](https://oxc.rs/docs/guide/usage/formatter) (Prettier-compatible; formatting + import & Tailwind class sorting)
-- **Linters** - [oxlint](https://oxc.rs/docs/guide/usage/linter) for type-aware code linting + ESLint for YAML/JSON + Rust-native [rumdl](https://github.com/rvben/rumdl) for Markdown
+- **Formatter** - Vite+ (`vp fmt`) with [oxfmt](https://oxc.rs/docs/guide/usage/formatter) (Prettier-compatible; formatting + import & Tailwind class sorting)
+- **Linters** - Vite+ (`vp lint`) with [oxlint](https://oxc.rs/docs/guide/usage/linter) for type-aware code linting + ESLint for YAML/JSON + Rust-native [rumdl](https://github.com/rvben/rumdl) for Markdown
 - **Testing Framework** - [Vitest](https://vitest.dev/) with [Testing Library](https://testing-library.com/)
 - **Component Development** - [Storybook](https://storybook.js.org/)
 
@@ -76,8 +76,9 @@
 - **Automated Updates** - [Renovate](https://docs.renovatebot.com/)
   - Weekly scheduled updates (Mondays before 11am JST)
   - Automatic vulnerability alerts with `security` label
-  - Grouped updates: non-major dependencies & devDependencies (GitHub Actions and docker-compose are handled by Dependabot)
-  - Lock file maintenance enabled
+  - All dependency sources (npm, mise, Node.js, Docker Compose, GitHub Actions), including major updates, share one manually reviewed PR
+  - Vulnerability fixes update that PR outside the weekly window
+  - Periodic lockfile maintenance disabled
 - **Manual Security Audits** - `pnpm audit` (moderate+ severity threshold)
 - **Supply Chain Protection**
   - Package version pinning (`savePrefix: ''` in pnpm-workspace.yaml)
@@ -119,88 +120,29 @@ This project follows clean architecture principles with domain-driven design, en
 #### Directory Structure
 
 ```text
-├── packages/                       # Monorepo packages
-│   ├── core/                       # Domain Layer (Core Business Logic)
-│   │   ├── articles/               # News/link management domain
-│   │   ├── notes/                  # Markdown content domain
-│   │   ├── images/                 # File metadata domain
-│   │   ├── books/                  # ISBN-based book tracking domain
-│   │   └── shared-kernel/          # Cross-domain shared logic
-│   │
-│   ├── database/                   # Database Layer
-│   │   └── prisma/                 # Prisma ORM & migrations
-│   │
-│   ├── ui/                         # React 19 design system (framework-agnostic)
-│   │   ├── src/                    # Components and explicit public entries
-│   │   ├── fixtures/vite/          # Non-Next.js consumer build fixture
-│   │   └── .storybook/             # React Vite Storybook
-│   │
-│   ├── notification/               # Notification services
-│   │
-│   ├── storage/                    # S3-compatible Storage Client
-│   │   └── src/                    # AWS SDK v3 implementation
-│   │
-│   ├── search/                     # RAG Search Library
-│   │   └── src/                    # Qdrant client, Embedding API client
-│   │
-│   └── scripts/                    # Build & utility scripts
-│       └── src/
-│           ├── infrastructures/
-│           └── rag/
-│
-├── apps/backend/                   # Shared Hono backend
-├── apps/ios/                       # SwiftUI app, Share Extension, XcodeGen configuration
-│
-└── apps/web/src/                   # Next.js Application
-    ├── application-services/       # Application Layer (Use Cases)
-    │   ├── articles/
-    │   ├── notes/
-    │   ├── images/
-    │   ├── books/
-    │   ├── search/                 # Search functionality
-    │   └── common/                 # Shared application utilities
-    │
-    ├── infrastructures/            # Infrastructure Layer (External Concerns)
-    │   ├── articles/               # Article repository implementation
-    │   ├── notes/                  # Note repository implementation
-    │   ├── images/                 # Image repository implementation
-    │   ├── books/                  # Book repository implementation
-    │   ├── auth/                   # Auth0 + NextAuth.js integration
-    │   ├── i18n/                   # next-intl configuration
-    │   ├── observability/          # Sentry, logging, monitoring
-    │   ├── events/                 # Event handling
-    │   ├── factories/              # Dependency injection factories
-    │   ├── search/                 # Search infrastructure
-    │   └── shared/                 # Shared infrastructure utilities
-    │
-    ├── loaders/                    # Data loading layer
-    │   ├── articles/
-    │   ├── notes/
-    │   ├── images/
-    │   └── books/
-    │
-    ├── common/                     # Shared utilities
-    │   ├── auth/
-    │   ├── error/
-    │   └── utils/
-    │
-    ├── components/                 # UI Components (Interface Layer)
-    │   ├── articles/
-    │   ├── notes/
-    │   ├── images/
-    │   ├── books/
-    │   └── common/
-    │
-    └── app/                        # Next.js App Router
-        └── [locale]/               # Internationalized routes (en/ja)
-            ├── (authenticated)/    # Authenticated (owner-only) pages
-            │   ├── articles/       # Articles management page (viewer/ = エクスポート済み閲覧ビュー)
-            │   ├── books/          # Books management page (viewer/, [slug]/)
-            │   ├── images/         # Images management page (viewer/)
-            │   ├── notes/          # Notes management page (viewer/, [slug]/)
-            │   └── error/          # Error page
-            ├── book/[slug]/        # Book detail page
-            └── note/[slug]/        # Note detail page
+├── packages/
+│   ├── core/              # Domain entities, values, repository contracts
+│   ├── application/       # Shared use cases, inputs/outputs, ports
+│   ├── infrastructure/    # Prisma, storage, search, delivery adapters
+│   ├── api-contracts/     # Hono + Zod HTTP contracts
+│   ├── api-client/        # Generated client and transport
+│   ├── database/          # Prisma schema, migrations, generated client
+│   ├── image-processing/  # Shared image processing
+│   ├── ui/                # Framework-agnostic React design system
+│   ├── notification/      # Pushover client
+│   ├── storage/           # S3-compatible storage client
+│   ├── search/            # Qdrant and embedding clients
+│   └── scripts/           # Published data-operation CLI and CLI composition
+└── apps/
+    ├── backend/           # Hono HTTP host, auth protocols, environment, DI, Cron
+    ├── ios/               # SwiftUI, SwiftData, Share Extension
+    └── web/src/           # Next.js SSR and BFF
+        ├── application-services/ # Server Action API adapters
+        ├── infrastructures/      # Browser auth, i18n, security, observability
+        ├── common/backend/       # Request-scoped client and upstream forwarding
+        ├── loaders/              # Data loading through the generated client
+        ├── components/           # Application UI
+        └── app/[locale]/         # Internationalized routes (en/ja)
 ```
 
 #### Domain Boundaries
@@ -260,7 +202,7 @@ Schema location: `packages/database/prisma/schema.prisma`
 ### Key Architectural Patterns
 
 - **Server Actions**: All mutations wrapped with `wrapServerSideErrorForClient`
-- **Authentication-only Authorization**: ログイン＝オーナー本人＝全操作可（ロールによる権限区別は廃止）。Better Auth + Auth0（ローカルは固定開発ユーザー）で認証し、Server Actionは冒頭で `requireAuth()` を呼ぶ
+- **Authorization**: 共通backendがBetter Auth CookieまたはAuth0 Bearerを検証し、所有者・tenantを確定する。WebのServer Actionは生成clientを呼ぶ。詳細は [認証・所有者検証](docs/architecture.md#authorization-pattern) を参照。
 - **Error Handling**: Custom error classes with Sentry monitoring and critical-only Pushover notifications
 - **Input Validation**: Zod schemas for all form and API input validation
 - **Type Safety**: End-to-end TypeScript with runtime validation
@@ -305,7 +247,7 @@ mise run ios:test
 
 ローカル用の非機密設定はコミット済みの `.env.local`、Preview/Productionの秘密値は [Vercel Dashboard](https://vercel.com/) で管理します。`pnpm dev` はDockerサービス、migration、ローカルMinIO bucket、Qdrant collectionを初期化してから共通backendとNext.jsを起動します。
 
-型定義とバリデーション: [`apps/web/src/env.ts`](apps/web/src/env.ts)（`@t3-oss/env-nextjs` + Zod）
+型定義とバリデーション: [`apps/web/src/env.ts`](apps/web/src/env.ts) と [`apps/backend/src/env.ts`](apps/backend/src/env.ts)。Doppler MCPは環境変数管理、agent-browserは動作確認に使用します。接続手順は [開発用MCP](docs/development-mcp.md) を参照。
 
 > 環境変数の全体的な管理戦略（ローカル・CI・本番）については[環境変数管理](#環境変数管理)を参照。
 
@@ -333,15 +275,15 @@ pnpm dev
 ### Essential Commands
 ```bash
 # Development
-pnpm dev                    # Start Next.js development server
+pnpm dev                    # Prepare Docker services and start backend + Next.js
 pnpm build                  # Build production application
-pnpm start                  # Start production server
+pnpm --filter s-private-app start # Start the built Web app (BACKEND_URL required)
 
 # Code Quality
-pnpm format                # Format + import/Tailwind class sorting (oxfmt)
-pnpm format:check          # Check formatting without writing (oxfmt)
-pnpm lint                  # Lint code and structured config (oxlint + ESLint)
-pnpm lint:fix              # Lint with auto-fixing (oxlint + ESLint)
+pnpm format                # Format + import/Tailwind class sorting (Vite+ / oxfmt)
+pnpm format:check          # Check formatting without writing (Vite+ / oxfmt)
+pnpm lint                  # Lint code and structured config (Vite+ / oxlint + ESLint)
+pnpm lint:fix              # Lint with auto-fixing (Vite+ / oxlint + ESLint)
 pnpm lint:md               # Lint Markdown (rumdl)
 pnpm lint:secret           # Scan secrets (Gitleaks)
 pnpm deps:check            # Clean Architecture boundary check (dependency-cruiser)
@@ -353,7 +295,8 @@ pnpm typecheck             # TypeScript type checking (全パッケージ)
 # Component Development
 pnpm storybook             # Start Storybook (http://localhost:6006)
 pnpm storybook:build       # Build static Storybook
-pnpm ui-gallery:build      # Build the embedded Storybook UI gallery from an existing static Storybook build
+pnpm storybook:agent       # Start non-interactive Storybook on an available port
+pnpm ui-gallery:build      # Build Storybook, API docs, and the embedded UI gallery
 ```
 
 ### Code Quality & Analysis Tools
@@ -367,7 +310,7 @@ pnpm jscpd                 # Detect code duplication patterns
 
 # Dependency Analysis
 pnpm deps:check            # Validate architectural boundaries and detect issues
-pnpm deps:graph            # Generate visual dependency graph (SVG)
+pnpm deps:graph            # Generate dependency-graph.md (Mermaid)
 pnpm deps:circular         # Find circular dependencies
 
 # Bundle Analysis
@@ -390,7 +333,7 @@ pnpm license:check         # Check for forbidden licenses (GPL, LGPL variants)
 
 ```bash
 # Prisma Commands (Prisma client は pnpm install 時に postinstall で自動生成)
-pnpm --filter s-database prisma:migrate:diff   # Generate migration SQL (DB 不要の diff フロー)
+pnpm --filter @s-hirano-ist/s-database prisma:migrate:diff # Generate SQL against migration history (shadow DB required)
 pnpm prisma:deploy         # Deploy migrations (cloud dev-db / production)
 pnpm prisma:studio         # Open Prisma Studio database browser
 ```
@@ -440,7 +383,7 @@ pnpm docs:clean            # Remove generated documentation
 - **Development**: Docker（CockroachDB、MinIO、Qdrant、TEI）
 - **Preview**: Vercel branch deployments
 - **Production**: Vercel production deployment
-- **Storybook**: Deployed to Cloudflare Pages
+- **Storybook**: Built into the GitHub Pages UI gallery; see [setup](docs/setup.md#static-documentation-and-ui-gallery)
 - **Embedding**: Qdrant Cloud Inference（Preview/Production）、TEI（local）
 
 ### 環境変数管理
@@ -463,11 +406,13 @@ pnpm docs:clean            # Remove generated documentation
 
 #### CI (GitHub Actions)
 
-CI の build/test はワークフロー内の localhost 向け固定値を使い、アプリ環境変数の GitHub Secrets は不要です。必要な GitHub 設定は次だけです:
+CI の build/test はワークフロー内の localhost 向け固定値を使い、アプリ環境変数の GitHub Secrets は不要です。migration・自動更新には次の GitHub 設定を使用します:
 
 - Secret: `PRODUCTION_DIRECT_URL` — 本番 Prisma migration 適用用（`.github/workflows/prisma-deploy.yaml`）
 - Secret: `RENOVATE_APP_PRIVATE_KEY` — Renovate、release-please、月次レポート PR に使う GitHub App 秘密鍵
 - Actions Variable: `RENOVATE_CLIENT_ID` — 上記 GitHub App の Client ID
+
+任意のSonarQube Cloud連携のSecrets・Variablesは [コード分析](docs/code-analysis.md) を参照。
 
 npm 公開は OIDC trusted publishing を使用し、外部利用のある `@s-hirano-ist/s-ui` と `@s-hirano-ist/s-scripts` に限定します。この2 packageで、repository を `s-hirano-ist/s-private`、workflow を `.github/workflows/release-please.yaml` として trusted publisher を設定してください。`NPM_TOKEN` は不要です。CLIは必要な内部workspaceを同梱します。既存バージョンのunpublishは行いません。
 
@@ -475,13 +420,13 @@ npm 公開は OIDC trusted publishing を使用し、外部利用のある `@s-h
 
 #### 型定義・バリデーション
 
-[`apps/web/src/env.ts`](apps/web/src/env.ts) で `@t3-oss/env-nextjs` + Zod を使用し、ビルド時に全変数をバリデーションする。`SKIP_ENV_VALIDATION` を設定するとバリデーションをスキップできる。
+Webは [`apps/web/src/env.ts`](apps/web/src/env.ts)、backendは [`apps/backend/src/env.ts`](apps/backend/src/env.ts) で各環境の変数を検証する。`SKIP_ENV_VALIDATION` を設定するとバリデーションをスキップできる。
 
 ## Code Standards & Architecture Rules
 
 ### Formatting & Linting
-- **Formatting**: oxfmt for formatting, import organization, and Tailwind class sorting
-- **Linting**: oxlint (type-aware) for TypeScript/JavaScript; ESLint for YAML/JSON; rumdl for Markdown; Gitleaks for secrets
+- **Formatting**: Vite+ (`vp fmt`) with oxfmt for formatting, import organization, and Tailwind class sorting
+- **Linting**: Vite+ (`vp lint`) with oxlint (type-aware) for TypeScript/JavaScript; ESLint for YAML/JSON; rumdl for Markdown; Gitleaks for secrets
 - **Strict TypeScript**: Full type safety with runtime validation
 
 ### Architectural Constraints
@@ -494,7 +439,7 @@ npm 公開は OIDC trusted publishing を使用し、外部利用のある `@s-h
 
 [s-tools/s-private](https://github.com/s-hirano-ist/s-tools/tree/main/s-private)を参照。
 
-### 旧Storybook（現在はCloudflare Pagesに移行）
+### 旧Storybook（現在はGitHub PagesのUI Galleryで公開）
 
 [s-tools/s-storybook](https://github.com/s-hirano-ist/s-tools/tree/main/s-private)を参照。
 

@@ -16,7 +16,7 @@ temporary install in a separate checkout; the regular test toolchain uses
 Vite+ and Vitest 5. The core test files keep direct `vitest` imports so Stryker
 can find them.
 
-Vite+ 1.0 runs the Node and component suites. Storybook 10.6 still needs the
+Vite+ runs the Node and component suites. Storybook 10.6 still needs the
 standalone Vitest runner for its browser addon. Both runners write blob reports,
 which Vitest merges into the existing CI coverage files. The test setups register jest-dom
 matchers on the active Vite+ `expect` instance.
@@ -38,7 +38,7 @@ pnpm exec storybook tools stories changed
 pnpm exec storybook tools test run
 ```
 
-`pnpm exec storybook tools --help`で`[local]`と表示される操作には、起動中のStorybookは不要。`[requires running Storybook]`と表示されるpreview／review操作の場合だけ、同じworktreeで`pnpm storybook:agent`を起動する。このスクリプトはCIモードで対話確認を無効化するため、複数worktreeが同時に既定ポートを要求しても空きポートを選択して起動する。ポートをハードコードせず、`storybook tools`に現在のworktreeを基準として対応するinstanceを解決させる。
+`pnpm exec storybook tools --help`で`[local]`と表示される操作には、起動中のStorybookは不要。`[requires running Storybook]`と表示されるpreview／review操作の場合だけ、同じworktreeで`pnpm storybook:agent`を起動する。このスクリプトはCIモードで対話確認を無効化し、ポート指定を省略して空きポートへ起動する。ポートをハードコードせず、`storybook tools`に現在のworktreeを基準として対応するinstanceを解決させる。
 
 `@storybook/addon-mcp`はStorybook runtimeとCLIの機能提供に使用するが、エージェントに直接MCPツールが公開されることは前提にしない。これにより、CodexセッションにStorybook MCPが登録されていない場合でも、UI作業の開始、ドキュメント参照、変更検出、テストを継続できる。
 
@@ -47,11 +47,12 @@ pnpm exec storybook tools test run
 `pnpm check:agent` is the standard completion gate for code changes made by an AI agent. It fails fast and runs the following checks in order:
 
 1. Formatting check
-2. Type checking with environment validation skipped
-3. Type-aware linting with environment validation skipped
-4. Clean Architecture dependency checks
-5. Workspace package builds required by the test suite
-6. All Vitest projects, including Storybook browser tests
+2. OpenAPI snapshot check and client generation
+3. Type checking with environment validation skipped
+4. Type-aware linting with environment validation skipped
+5. Clean Architecture dependency checks
+6. Workspace package builds required by the test suite
+7. All Vitest projects, including Storybook browser tests
 
 Install dependencies with `pnpm install --frozen-lockfile` before running the command. Add checks that are specific to the change when necessary. For example, run `pnpm build` for application build or environment configuration changes, Prisma checks for database changes, and Playwright tests for E2E behavior.
 
@@ -72,7 +73,7 @@ Normal investigations, planning tasks, and small one-turn changes do not need Go
 ## Vitest Workspace Configuration
 
 The project uses Vitest workspace to manage tests across multiple packages:
-- **Workspace Root**: `vitest.config.ts` defines test projects via `test.projects`: `app`, `components` (packages/ui), `core`, `notification`, `search`, `storybook` (browser mode), plus benchmark projects `bench` and `app-bench`
+- **Workspace Root**: `vitest.config.ts` defines test projects via `test.projects`: `api`, `backend`, `application`, `infrastructure`, `app`, `components` (packages/ui), `core`, `database`, `image-processing`, `notification`, `scripts`, `search`, `storybook` (browser mode), plus benchmark projects `bench` and `app-bench`
 - **Individual Configs**: Each package has its own `vitest.config.ts` with specific settings
 - **Unified Execution**: Run all tests from the root with `pnpm test`
 
@@ -213,7 +214,7 @@ Playwright の CDP (Chrome DevTools Protocol) を使ったネットワークシ�
 ### 前提条件
 
 - Webが `http://localhost:3000`、共通backendが `http://127.0.0.1:3002` で起動済み、または `webServer` 設定で両方を自動起動
-- `E2E_AUTH0_USERNAME` / `E2E_AUTH0_PASSWORD` 環境変数の設定
+- ローカルでは `LOCAL_DEV_MODE=true`。Auth0経由で検証する場合は `E2E_AUTH0_USERNAME` / `E2E_AUTH0_PASSWORD` を設定
 - Chromium ブラウザ（CDP はChromiumのみ対応）
 
 ### コマンド
@@ -240,12 +241,11 @@ pnpm test:chaos --headed  # ブラウザ表示付きで実行
 
 ## Instant Navigation E2E
 
-Next.jsと同じ`16.3.3`へ固定した実験的`@next/playwright`の`instant()`を使い、動的データのstreamを一時停止した状態でApp Shellが即時commitされることを検証する。
+Next.jsと同じバージョンへ固定した実験的`@next/playwright`の`instant()`を使い、動的データのstreamを一時停止した状態でApp Shellが即時commitされることを検証する。
 
 ### 前提条件
 
-- `E2E_AUTH0_USERNAME` / `E2E_AUTH0_PASSWORD`をVercelまたは実行環境へ設定
-- Auth0テストユーザーが既存アプリへログイン可能
+- ローカルでは `LOCAL_DEV_MODE=true`。Auth0経由で検証する場合は実行環境に `E2E_AUTH0_USERNAME` / `E2E_AUTH0_PASSWORD` を設定し、テストユーザーがログイン可能であること
 - Playwright Chromiumをインストール済み
 - `.auth/user.json`は既存の`e2e/fixtures/auth.setup.ts`が生成し、各テストが再利用
 

@@ -31,14 +31,14 @@ Next.js + TypeScript + Clean Architectureベースのコンテンツ管理シス
 - `pnpm build` - ビルド
 - `pnpm check:agent` - AIエージェント向けの標準完了検証（format、typecheck、lint、依存境界、packages build、test）
 - `pnpm test` - テスト実行
-- `pnpm lint` - oxlint（TypeScript/JavaScript、type-aware）+ ESLint（YAML/JSON）
-- `pnpm lint:fix` - oxlint + ESLint自動修正
+- `pnpm lint` - Vite+経由のoxlint（TypeScript/JavaScript、type-aware）+ ESLint（YAML/JSON）
+- `pnpm lint:fix` - Vite+経由のoxlint + ESLint自動修正
 - `pnpm lint:md` - rumdl（Markdown）
 - `pnpm lint:secret` - Gitleaks（秘密情報）
 - `pnpm deps:check` - dependency-cruiser（Clean Architecture層境界の強制を含む）
-- `pnpm format` - oxfmt（Prettier互換。フォーマット + import並べ替え + Tailwindクラス並べ替え。Biomeから移行済み）
-- `pnpm format:check` - oxfmtフォーマットチェック（書き込みなし）
-- `pnpm --filter s-database prisma:migrate:diff` - 新規マイグレーションSQL生成（既存マイグレーション群とschema.prismaのdiff。ルートにスクリプトは無く packages/database にのみ存在。`--from-migrations` はシャドウDBを必要とする。`migrate dev` はクラウドの `crdb_internal_region` drift で失敗するため不使用）
+- `pnpm format` - Vite+経由のoxfmt（Prettier互換。フォーマット + import並べ替え + Tailwindクラス並べ替え。Biomeから移行済み）
+- `pnpm format:check` - Vite+経由のoxfmtフォーマットチェック（書き込みなし）
+- `pnpm --filter @s-hirano-ist/s-database prisma:migrate:diff` - 新規マイグレーションSQL生成（既存マイグレーション群とschema.prismaのdiff。ルートにスクリプトは無く packages/database にのみ存在。`--from-migrations` はシャドウDBを必要とする。`migrate dev` はクラウドの `crdb_internal_region` drift で失敗するため不使用）
 - `pnpm prisma:deploy` - マイグレーション適用（クラウドはこちらを使う）
 - `pnpm storybook` - Storybook起動
 - `pnpm storybook:agent` - AIエージェント向けにStorybookを非対話で空きポートに起動
@@ -64,8 +64,11 @@ Next.js + TypeScript + Clean Architectureベースのコンテンツ管理シス
 - `packages/database/` - データベース層（Prisma ORM・マイグレーション）
 - `packages/notification/` - 通知サービス（Pushover）
 - `packages/storage/` - AWS SDK v3のS3互換ストレージクライアント
-- `packages/scripts/` - ビルド・ユーティリティスクリプト
-- `apps/backend/` - Hono HTTP host・環境設定・DI・ユースケース・認証・tenant・永続化adapter・検索・通知
+- `packages/scripts/` - データ操作CLI・CLI用DI（リポジトリのビルド補助はルートの `scripts/`）
+- `packages/application/` - HTTP・CLIで共有するユースケース・入出力・port
+- `packages/infrastructure/` - Prisma・storage・画像処理・検索・配信adapter
+- `packages/image-processing/` - 共有画像処理
+- `apps/backend/` - Hono HTTP host・環境設定・DI・認証protocol・Cron入口
 - `packages/api-contracts/` - Hono + Zodの共通HTTP契約
 - `packages/api-client/` - Orval生成client・DTO・検証schema
 - `apps/web/src/application-services/` - WebのServer Action API adapter
@@ -100,7 +103,7 @@ Next.js + TypeScript + Clean Architectureベースのコンテンツ管理シス
 
 ## 環境設定
 
-環境変数はローカル環境では`.env.local`、Preview/Production環境ではVercel Dashboardで管理します。Miseがプロジェクトルートの`.env.local`を読み込み、`pnpm dev`がDocker依存サービスの起動、migration、検索初期化、独立backendとNext.js起動を順番に実行します。環境変数定義はWebの`apps/web/src/env.ts`とbackendの`apps/backend/src/env.ts`を参照してください。初回セットアップ: `mise install` → `pnpm install` → `pnpm dev`。
+環境変数はローカル環境では`.env.local`、Preview/Production環境ではVercel Dashboardで管理します。Doppler MCPも環境変数管理に使用します。Miseがプロジェクトルートの`.env.local`を読み込み、`pnpm dev`がDocker依存サービスの起動、migration、検索初期化、独立backendとNext.js起動を順番に実行します。環境変数定義はWebの`apps/web/src/env.ts`とbackendの`apps/backend/src/env.ts`を参照してください。初回セットアップ: `mise install` → `pnpm install` → `pnpm dev`。
 
 ## 詳細資料
 
