@@ -78,7 +78,7 @@ test("revalidates redirect DNS and rejects a rebound private target", async () =
 	mocks.lookup
 		.mockResolvedValueOnce([{ address: "8.8.8.8", family: 4 }])
 		.mockResolvedValueOnce([{ address: "127.0.0.1", family: 4 }]);
-	await expect(fetchFeed(lease)).rejects.toThrow("Non-public");
+	await expect(fetchFeed(lease)).rejects.toThrow("blocked_destination");
 	expect(mocks.request).toHaveBeenCalledTimes(1);
 });
 test("resolves relative redirects and returns absent response validators as null", async () => {
@@ -90,30 +90,36 @@ test("resolves relative redirects and returns absent response validators as null
 	expect(mocks.request.mock.calls[1][0].href).toBe("https://example.com/moved");
 });
 test.each([
-	[500, {}],
-	[200, { "content-encoding": "gzip" }],
-])("rejects status/encoding %s %j", async (status, headers) => {
+	[500, {}, "http_status"],
+	[200, { "content-encoding": "gzip" }, "unsupported_encoding"],
+])("rejects status/encoding %s %j", async (status, headers, reason) => {
 	respond(status, headers);
-	await expect(fetchFeed(lease)).rejects.toThrow("Feed request failed");
+	await expect(fetchFeed(lease)).rejects.toMatchObject({
+		diagnostic: {
+			stage: "http",
+			reason: reason,
+			httpStatus: status,
+		},
+	});
 });
 test("rejects missing redirects and redirect loops", async () => {
 	respond(302);
-	await expect(fetchFeed(lease)).rejects.toThrow("Missing redirect");
+	await expect(fetchFeed(lease)).rejects.toThrow("missing_redirect");
 	for (let i = 0; i < 6; i++) respond(302, { location: "/loop" });
-	await expect(fetchFeed(lease)).rejects.toThrow("Too many redirects");
+	await expect(fetchFeed(lease)).rejects.toThrow("redirect_limit");
 });
 test("bounds the streamed response size", async () => {
 	respond(200, {}, "x".repeat(2 * 1024 * 1024 + 1));
-	await expect(fetchFeed(lease)).rejects.toThrow("Feed too large");
+	await expect(fetchFeed(lease)).rejects.toThrow("body_too_large");
 });
 test("rejects non-web ports, empty DNS results and lookup failures before opening a socket", async () => {
 	await expect(
 		fetchFeed({ ...lease, url: "http://example.com:8080/" }),
-	).rejects.toThrow("Non-web port");
+	).rejects.toThrow("blocked_port");
 	mocks.lookup.mockResolvedValueOnce([]);
-	await expect(fetchFeed(lease)).rejects.toThrow("Non-public");
+	await expect(fetchFeed(lease)).rejects.toThrow("blocked_destination");
 	mocks.lookup.mockRejectedValueOnce(new Error("DNS failed"));
-	await expect(fetchFeed(lease)).rejects.toThrow("DNS failed");
+	await expect(fetchFeed(lease)).rejects.toThrow("dns_error");
 	expect(mocks.request).not.toHaveBeenCalled();
 });
 test("propagates socket errors", async () => {
@@ -123,5 +129,73 @@ test("propagates socket errors", async () => {
 			end: () => req.emit("error", new Error("Socket failed")),
 		});
 	});
-	await expect(fetchFeed(lease)).rejects.toThrow("Socket failed");
+	await expect(fetchFeed(lease)).rejects.toThrow("network_error");
+});
+
+test("DNS diagnostics contain only allowlisted codes and no query, path or raw error", async () => {
+	const raw = Object.assign(new Error("private-token response-body"), {
+		code: "ENOTFOUND",
+		secret: "private-token",
+	});
+	mocks.lookup.mockRejectedValueOnce(raw);
+	const pending = fetchFeed({
+		...lease,
+		url: "https://example.com/private-path?token=private-token#secret",
+	});
+	await expect(pending).rejects.toMatchObject({
+		diagnostic: {
+			stage: "dns",
+			reason: "dns_error",
+			hostname: "example.com",
+			networkCode: "ENOTFOUND",
+			redirects: 0,
+		},
+	});
+	const error: unknown = await pending.catch((failure: unknown) => failure);
+	expect(JSON.stringify(error)).not.toMatch(
+		/private-token|private-path|response-body|secret/u,
+	);
+	expect(error).not.toHaveProperty("cause");
+});
+test("drops arbitrary network codes", async () => {
+	mocks.lookup.mockRejectedValueOnce({ code: "private-token" });
+	await expect(fetchFeed(lease)).rejects.toMatchObject({
+		diagnostic: { networkCode: undefined },
+	});
+});
+test("records parse errors and received byte count without retaining malformed XML", async () => {
+	respond(200, {}, "<rss>private-body");
+	await expect(fetchFeed(lease)).rejects.toMatchObject({
+		diagnostic: {
+			stage: "parse",
+			reason: "invalid_xml",
+			httpStatus: 200,
+			bytes: 17,
+			hostname: "example.com",
+		},
+	});
+});
+test("classifies a DNS timeout and removes the abort listener", async () => {
+	const controller = new AbortController();
+	const timeout = vi
+		.spyOn(AbortSignal, "timeout")
+		.mockReturnValue(controller.signal);
+	mocks.lookup.mockImplementationOnce(() => new Promise(() => {}));
+	const pending = fetchFeed(lease);
+	queueMicrotask(() => controller.abort());
+	await expect(pending).rejects.toMatchObject({
+		diagnostic: { stage: "dns", reason: "timeout" },
+	});
+	timeout.mockRestore();
+});
+
+test("distinguishes unsupported feed formats from malformed XML", async () => {
+	respond(
+		200,
+		{},
+		'<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>',
+	);
+	await expect(fetchFeed(lease)).rejects.toMatchObject({
+		diagnostic: { stage: "parse", reason: "unsupported_feed" },
+	});
 });

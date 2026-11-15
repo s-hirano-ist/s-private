@@ -42,11 +42,13 @@ import { createPushService } from "s-private-backend/api/push-service";
 import { createReadService } from "s-private-backend/api/read-service";
 import { createUploadService } from "s-private-backend/api/upload-service";
 import { createWriteService } from "s-private-backend/api/write-service";
+import { createRssFailureReporter } from "s-private-backend/rss/failure-reporter";
 
 export type ApiServicesConfig = {
 	chunks: MobileDeps["chunks"];
 	database: DatabaseClient;
 	eventDispatcher: EventDispatcher;
+	flushReports: () => Promise<unknown>;
 	push: PushConfig;
 	reporter: Pick<ErrorReporter, "captureException">;
 	searchVectors: ReturnType<typeof createVectorSearch>;
@@ -154,7 +156,11 @@ export function createApiServices(config: ApiServicesConfig) {
 			}),
 		),
 		mutations: {
-			rss: createRssService(createRssRepository(config.database), fetchFeed),
+			rss: createRssService(
+				createRssRepository(config.database),
+				fetchFeed,
+				createRssFailureReporter(config.reporter, config.flushReports),
+			),
 			writes,
 			uploads: createUploadService(mobile, writes, config.reporter),
 			push: createPushService(
