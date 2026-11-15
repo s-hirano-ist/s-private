@@ -11,15 +11,18 @@ export type CreateOutcome = {
 };
 
 export type CreateFlow = {
+	discardDraft?: () => void;
 	domain: CreateDomain;
 	draft?: FormData;
 	draftVersion: number;
+	flushDraft?: () => void;
 	pending: boolean;
 	submit: (
 		formData: FormData,
 		execute: (formData: FormData) => Promise<CreateOutcome>,
 		afterSubmit: (response: ServerAction) => void,
 	) => void;
+	updateDraft?: (data: FormData) => void;
 };
 
 export const CreateFlowContext = createContext<CreateFlow | null>(null);

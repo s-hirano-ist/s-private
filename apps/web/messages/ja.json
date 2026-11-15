@@ -59,6 +59,7 @@
 		"pushRetry": "再試行"
 	},
 	"label": {
+		"discardDraft": "下書きを破棄",
 		"category": "カテゴリー",
 		"title": "タイトル",
 		"description": "詳細",

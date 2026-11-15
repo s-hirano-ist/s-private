@@ -10,6 +10,7 @@ import {
 	type SubmitEvent,
 	use,
 	useMemo,
+	useCallback,
 	useRef,
 	useState,
 } from "react";
@@ -106,6 +107,7 @@ export type GenericFormWrapperProps<T extends ServerAction> = {
 	afterSubmit: (response: ServerAction) => void;
 	/** Form field components */
 	children: ReactNode;
+	discardLabel?: string;
 	/** Label shown during loading state */
 	loadingLabel?: string;
 	/** Optional custom submit handler */
@@ -156,8 +158,11 @@ export function GenericFormWrapper<T extends ServerAction>({
 	onSubmit,
 	preservedValues,
 	afterSubmit,
+	discardLabel,
 }: GenericFormWrapperProps<T>) {
 	const createFlow = useCreateFlow();
+	const flushDraft = createFlow?.flushDraft;
+	const formRef = useCallback(() => () => flushDraft?.(), [flushDraft]);
 	const submitting = useRef(false);
 	const lastSubmission = useRef<FormData | null>(null);
 	const [isPending, setIsPending] = useState(false);
@@ -187,6 +192,8 @@ export function GenericFormWrapper<T extends ServerAction>({
 		if (submitting.current || createFlow?.pending) return;
 		submitting.current = true;
 		const formData = formDataWithFiles(event.currentTarget, createFlow?.draft);
+		createFlow?.updateDraft?.(formData);
+		createFlow?.flushDraft?.();
 		setIsPending(true);
 		void (async () => {
 			try {
@@ -232,7 +239,14 @@ export function GenericFormWrapper<T extends ServerAction>({
 				<form
 					className="space-y-4 px-2 py-4"
 					key={createFlow?.draftVersion}
+					onInput={(event) => {
+						if (!isPending && !submitting.current && createFlow?.updateDraft)
+							createFlow.updateDraft(
+								formDataWithFiles(event.currentTarget, createFlow.draft),
+							);
+					}}
 					onSubmit={handleSubmit}
+					ref={formRef}
 				>
 					{isPending ? <LoadingIndicator label={loadingLabel} /> : children}
 					<Button
@@ -243,6 +257,20 @@ export function GenericFormWrapper<T extends ServerAction>({
 					>
 						{buttonLabel}
 					</Button>
+					{discardLabel && createFlow?.discardDraft && (
+						<Button
+							disabled={isPending}
+							type="button"
+							variant="outline"
+							onClick={() => {
+								lastSubmission.current = null;
+								setServerFormData(null);
+								createFlow.discardDraft?.();
+							}}
+						>
+							{discardLabel}
+						</Button>
+					)}
 				</form>
 			</FormFilesContext.Provider>
 		</FormValuesContext.Provider>

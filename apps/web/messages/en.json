@@ -59,6 +59,7 @@
 		"pushRetry": "Try again"
 	},
 	"label": {
+		"discardDraft": "Discard draft",
 		"category": "Category",
 		"title": "Title",
 		"description": "Description",

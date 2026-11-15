@@ -3,6 +3,10 @@
 import type { searchContentFromClient } from "@/application-services/search/search-content-from-client";
 import type { ServerAction } from "@/common/types";
 import type { ReactNode } from "react";
+import {
+	createSessionDraft,
+	noteDraftFields,
+} from "@/common/forms/session-draft";
 import { BackButton } from "@/components/common/back-button";
 import {
 	CreateFlowContext,
@@ -30,7 +34,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { SearchDrawer } from "./search-drawer";
 import { useViewerCount } from "./viewer-count-context";
 
@@ -64,6 +68,7 @@ const domains = [
 type Domain = (typeof domains)[number]["key"];
 
 type Props = {
+	draftOwner?: string;
 	forms: Record<Domain, ReactNode>;
 	search: typeof searchContentFromClient;
 };
@@ -87,8 +92,54 @@ function getNavigationState(pathname: string) {
 	return { route, domain, isViewer, isContent, title };
 }
 
-export function AppNavigation({ forms, search }: Props) {
+function displayedViewerCount(
+	isViewer: boolean,
+	domain: Domain | undefined,
+	viewer: ReturnType<typeof useViewerCount>,
+) {
+	return isViewer && viewer !== null && viewer.domain === domain
+		? viewer.count
+		: null;
+}
+
+function clearNoteDraft(
+	domain: Domain,
+	store: ReturnType<typeof createSessionDraft> | null,
+) {
+	if (domain === "notes") store?.clear();
+}
+
+function restoreNoteDraft(
+	current: Partial<Record<Domain, FormData>>,
+	stored?: FormData,
+) {
+	return stored && !current.notes ? { ...current, notes: stored } : current;
+}
+
+function useNoteDraftStorage(draftOwner?: string) {
+	const draftStorage = useRef<ReturnType<typeof createSessionDraft> | null>(
+		null,
+	);
+	useEffect(() => {
+		const store = draftOwner
+			? createSessionDraft(draftOwner, "notes", "create", noteDraftFields)
+			: null;
+		draftStorage.current = store;
+		const flush = () => store?.flush();
+		window.addEventListener("pagehide", flush);
+		return () => {
+			window.removeEventListener("pagehide", flush);
+			store?.dispose();
+			draftStorage.current = null;
+		};
+	}, [draftOwner]);
+	const flushDraft = useCallback(() => draftStorage.current?.flush(), []);
+	return { draftStorage, flushDraft };
+}
+
+export function AppNavigation({ forms, search, draftOwner }: Props) {
 	const t = useTranslations("navigation");
+	const { draftStorage, flushDraft } = useNoteDraftStorage(draftOwner);
 	const pathname = usePathname();
 	const [createOpen, setCreateOpen] = useState(false);
 	const [createDomain, setCreateDomain] = useState<Domain | null>(null);
@@ -101,10 +152,7 @@ export function AppNavigation({ forms, search }: Props) {
 		getNavigationState(pathname);
 	const activeDomain = domains.find((item) => item.key === domain);
 	const viewerCount = useViewerCount();
-	const count =
-		isViewer && viewerCount !== null && viewerCount.domain === domain
-			? viewerCount.count
-			: null;
+	const count = displayedViewerCount(isViewer, domain, viewerCount);
 
 	const submitCreate = (
 		formData: FormData,
@@ -121,6 +169,7 @@ export function AppNavigation({ forms, search }: Props) {
 				const { response, retryData } = await execute(formData);
 				afterSubmit(response);
 				if (response.success) {
+					clearNoteDraft(submittedDomain, draftStorage.current);
 					setDrafts((current) => ({
 						...current,
 						[submittedDomain]: undefined,
@@ -164,7 +213,10 @@ export function AppNavigation({ forms, search }: Props) {
 									})}${count === null ? "" : t("contentCount", { count })}`}
 									className="inline-flex h-8 items-center gap-1.5 rounded-full bg-primary/10 px-3 text-xs font-medium whitespace-nowrap text-foreground transition-colors duration-200 hover:bg-primary/20"
 									href={isViewer ? activeDomain.href : activeDomain.viewerHref}
-									onClick={() => setCreateOpen(false)}
+									onClick={() => {
+										flushDraft();
+										setCreateOpen(false);
+									}}
 								>
 									{t(isViewer ? "exported" : "unexported")}
 									{count !== null && t("contentCount", { count })}
@@ -177,6 +229,10 @@ export function AppNavigation({ forms, search }: Props) {
 							className="size-9 shrink-0 rounded-full bg-linear-to-br from-primary to-primary-grad text-primary-foreground shadow-[0_4px_20px_rgb(var(--sui-primary)/0.4)] ring-2 ring-background transition-all duration-200 hover:scale-105 hover:text-primary-foreground hover:shadow-[0_6px_28px_rgb(var(--sui-primary)/0.5)] active:scale-95"
 							disabled={createPending}
 							onClick={() => {
+								if (domain === "notes") {
+									const stored = draftStorage.current?.read();
+									setDrafts((current) => restoreNoteDraft(current, stored));
+								}
 								setCreateDomain(domain ?? null);
 								setCreateOpen(true);
 							}}
@@ -238,7 +294,10 @@ export function AppNavigation({ forms, search }: Props) {
 								)}
 								href={isViewer ? item.viewerHref : item.href}
 								key={item.key}
-								onClick={() => setCreateOpen(false)}
+								onClick={() => {
+									flushDraft();
+									setCreateOpen(false);
+								}}
 							>
 								<Icon
 									aria-hidden="true"
@@ -261,9 +320,29 @@ export function AppNavigation({ forms, search }: Props) {
 						draftVersion,
 						pending: createPending,
 						submit: submitCreate,
+						...(createDomain === "notes"
+							? {
+									updateDraft: (data: FormData) => {
+										setDrafts((current) => ({ ...current, notes: data }));
+										draftStorage.current?.schedule(data);
+									},
+									flushDraft,
+									discardDraft: () => {
+										draftStorage.current?.clear();
+										setDrafts((current) => ({ ...current, notes: undefined }));
+										setDraftVersion((current) => current + 1);
+									},
+								}
+							: {}),
 					}}
 				>
-					<Dialog onOpenChange={setCreateOpen} open={createOpen}>
+					<Dialog
+						onOpenChange={(open) => {
+							flushDraft();
+							setCreateOpen(open);
+						}}
+						open={createOpen}
+					>
 						<DialogContent className="max-h-[85dvh] overflow-y-auto">
 							<DialogHeader>
 								<DialogTitle>{t("create")}</DialogTitle>

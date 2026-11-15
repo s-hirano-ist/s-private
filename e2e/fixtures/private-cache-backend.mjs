@@ -179,6 +179,11 @@ createServer(async (request, response) => {
 			}
 			if (request.method === "POST") {
 				const input = await jsonBody(request);
+				if (
+					domain === "notes" &&
+					data.some((item) => item.title === input.title)
+				)
+					return send({ error: { code: "DUPLICATE" } }, 409);
 				const item = record(domain, user, data.length, input);
 				data.unshift(item);
 				return send(
