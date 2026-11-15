@@ -30,7 +30,8 @@
 		"create": "新規作成",
 		"search": "検索",
 		"settings": "設定",
-		"contentTypes": "コンテンツの種類"
+		"contentTypes": "コンテンツの種類",
+		"rss": "RSS"
 	},
 	"utils": {
 		"signOut": "サインアウト",
@@ -124,5 +125,42 @@
 		"invalidFileFormat": "ファイルのフォーマットが無効です。",
 		"deleted": "正常に削除されました。",
 		"error": "エラーが発生しました。"
+	},
+	"rss": {
+		"title": "RSSリーダー",
+		"description": "未読を整理し、気になる記事をあとで読む。",
+		"views": "RSSの表示",
+		"unread": "未読",
+		"saved": "あとで読む",
+		"feeds": "購読管理",
+		"refresh": "更新",
+		"refreshing": "フィードを取得中",
+		"loading": "読み込み中…",
+		"error": "一部の処理に失敗しました。再試行してください。",
+		"retry": "再読み込み",
+		"addFeed": "フィードを追加",
+		"feedUrl": "フィードURL",
+		"feedTitle": "表示名（省略可）",
+		"folder": "フォルダー（省略可）",
+		"subscribe": "購読する",
+		"unsubscribe": "購読解除",
+		"confirmUnsubscribe": "購読を解除しますか？未読は削除され、あとで読むは残ります。",
+		"lastFetched": "最終取得：",
+		"notFetched": "未取得",
+		"feedError": "取得に失敗しました。次回の更新で再試行します。",
+		"import": "Inoreaderから取り込み",
+		"importHelp": "全アーカイブのZIP、subscriptions.xml／OPML、starred.jsonに対応。本文は取り込みません。同じファイルで再試行できます。ZIPは50 MiBまで。",
+		"importFile": "取り込みファイル",
+		"importResult": "追加 {added}件・重複 {duplicates}件・不正 {invalid}件",
+		"filter": "購読で絞り込み",
+		"allFeeds": "すべての購読",
+		"readAll": "すべて既読にする",
+		"emptyUnread": "未読記事はありません。",
+		"emptySaved": "あとで読む記事はありません。",
+		"save": "あとで読むに保存",
+		"unsave": "保存を解除",
+		"read": "既読にする",
+		"previous": "前へ",
+		"next": "次へ"
 	}
 }

@@ -1,6 +1,7 @@
 import type { ZodType } from "zod";
 import { createRoute, z } from "@hono/zod-openapi";
 import { apiErrorResponseSchema } from "@s-hirano-ist/s-api-contracts/errors";
+import * as rss from "@s-hirano-ist/s-api-contracts/schemas";
 import {
 	isbnInputSchema,
 	articleSchema,
@@ -515,7 +516,131 @@ export const pushStatusRoute = createRoute({
 		413: errorResponses[413],
 	},
 });
+
+export const rssPageRoute = createRoute({
+	method: "get",
+	path: "/rss",
+	operationId: "getRssPage",
+	tags: ["rss"],
+	security,
+	request: { query: rss.rssListQuerySchema },
+	responses: {
+		200: {
+			description: "Unread and saved metadata",
+			content: jsonContent(rss.rssPageSchema),
+		},
+		...queryErrors,
+	},
+});
+export const rssSubscribeRoute = createRoute({
+	method: "post",
+	path: "/rss/feeds",
+	operationId: "subscribeRss",
+	tags: ["rss"],
+	security,
+	request: {
+		body: { required: true, content: jsonContent(rss.rssFeedInputSchema) },
+	},
+	responses: {
+		200: {
+			description: "Subscription added or already present",
+			content: jsonContent(rss.rssAddedSchema),
+		},
+		...createErrors,
+	},
+});
+export const rssUnsubscribeRoute = createRoute({
+	method: "delete",
+	path: "/rss/feeds/{id}",
+	operationId: "unsubscribeRss",
+	tags: ["rss"],
+	security,
+	request: { params: idParams },
+	responses: {
+		204: { description: "Subscription removed; saved links retained" },
+		...recordErrors,
+	},
+});
+export const rssReadRoute = createRoute({
+	method: "post",
+	path: "/rss/read",
+	operationId: "markRssRead",
+	tags: ["rss"],
+	security,
+	request: {
+		body: { required: true, content: jsonContent(rss.rssReadInputSchema) },
+	},
+	responses: { 204: { description: "Unread rows removed" }, ...createErrors },
+});
+export const rssSaveRoute = createRoute({
+	method: "post",
+	path: "/rss/saved",
+	operationId: "saveRss",
+	tags: ["rss"],
+	security,
+	request: {
+		body: { required: true, content: jsonContent(rss.rssEntryInputSchema) },
+	},
+	responses: {
+		200: {
+			description: "Link saved or already present",
+			content: jsonContent(rss.rssAddedSchema),
+		},
+		...createErrors,
+	},
+});
+export const rssUnsaveRoute = createRoute({
+	method: "delete",
+	path: "/rss/saved/{id}",
+	operationId: "unsaveRss",
+	tags: ["rss"],
+	security,
+	request: { params: idParams },
+	responses: { 204: { description: "Saved link removed" }, ...recordErrors },
+});
+export const rssRefreshRoute = createRoute({
+	method: "post",
+	path: "/rss/refresh",
+	operationId: "refreshRss",
+	tags: ["rss"],
+	security,
+	request: {
+		body: { required: true, content: jsonContent(rss.rssRefreshInputSchema) },
+	},
+	responses: {
+		200: {
+			description: "Bounded feed refresh",
+			content: jsonContent(rss.rssRefreshResultSchema),
+		},
+		...createErrors,
+	},
+});
+export const rssImportRoute = createRoute({
+	method: "post",
+	path: "/rss/import",
+	operationId: "importRss",
+	tags: ["rss"],
+	security,
+	request: {
+		body: { required: true, content: jsonContent(rss.rssImportInputSchema) },
+	},
+	responses: {
+		200: {
+			description: "Idempotent import batch",
+			content: jsonContent(rss.rssImportResultSchema),
+		},
+		...createErrors,
+	},
+});
 export const apiRoutes = [
+	rssPageRoute,
+	rssSubscribeRoute,
+	rssUnsubscribeRoute,
+	rssReadRoute,
+	rssSaveRoute,
+	rssUnsaveRoute,
+	rssRefreshRoute,
+	rssImportRoute,
 	pushStatusRoute,
 	bookByIsbnRoute,
 	noteByTitleRoute,

@@ -357,3 +357,100 @@ export const sessionSchema = z
 		expiresAt: timestamp,
 	})
 	.openapi("Session");
+
+// RSS metadata contracts are independent of content export and mobile sync.
+export const rssWebUrlSchema = z
+	.url()
+	.max(2048)
+	.refine((value) => {
+		const url = new URL(value);
+		return (
+			["http:", "https:"].includes(url.protocol) &&
+			!url.username &&
+			!url.password
+		);
+	});
+export const rssFeedInputSchema = z
+	.object({
+		url: rssWebUrlSchema,
+		title: z.string().min(1).max(512),
+		folder: z.string().max(512),
+	})
+	.openapi("RssFeedInput");
+export const rssEntryInputSchema = z
+	.object({
+		url: rssWebUrlSchema,
+		title: z.string().min(1).max(512),
+		publishedAt: z.iso.datetime().nullable(),
+	})
+	.openapi("RssEntryInput");
+export const rssFeedSchema = rssFeedInputSchema
+	.extend({
+		id: z.uuid(),
+		lastFetchedAt: z.iso.datetime().nullable(),
+		error: z.string().nullable(),
+	})
+	.openapi("RssFeed");
+export const rssUnreadSchema = rssEntryInputSchema
+	.extend({
+		id: z.uuid(),
+		feedId: z.uuid(),
+		receivedAt: z.iso.datetime(),
+	})
+	.openapi("RssUnread");
+export const rssSavedSchema = rssEntryInputSchema
+	.extend({ id: z.uuid(), savedAt: z.iso.datetime() })
+	.openapi("RssSaved");
+export const rssPageSchema = z
+	.object({
+		feeds: z.array(rssFeedSchema),
+		unread: z.array(rssUnreadSchema),
+		saved: z.array(rssSavedSchema),
+		unreadCount: z.number().int().nonnegative(),
+		savedCount: z.number().int().nonnegative(),
+	})
+	.openapi("RssPage");
+export const rssListQuerySchema = z.object({
+	offset: z.coerce.number().int().min(0).max(1000000).default(0),
+	feedId: z.uuid().optional(),
+});
+export const rssAddedSchema = z
+	.object({ added: z.boolean() })
+	.openapi("RssAdded");
+export const rssReadInputSchema = z
+	.object({
+		ids: z.array(z.uuid()).min(1).max(100).optional(),
+		feedId: z.uuid().optional(),
+		before: z.iso.datetime().optional(),
+	})
+	.refine((value) => value.ids !== undefined || value.before !== undefined)
+	.openapi("RssReadInput");
+export const rssRefreshInputSchema = z
+	.object({
+		ids: z.array(z.uuid()).min(1).max(5),
+		force: z.boolean().default(false),
+	})
+	.openapi("RssRefreshInput");
+export const rssRefreshResultSchema = z
+	.object({
+		data: z.array(
+			z.object({
+				id: z.uuid(),
+				status: z.enum(["updated", "skipped", "failed"]),
+			}),
+		),
+	})
+	.openapi("RssRefreshResult");
+export const rssImportInputSchema = z
+	.object({
+		kind: z.enum(["opml", "starred"]),
+		content: z.string().min(1).max(2000000),
+	})
+	.openapi("RssImportInput");
+export const rssImportResultSchema = z
+	.object({
+		added: z.number().int().nonnegative(),
+		duplicates: z.number().int().nonnegative(),
+		invalid: z.number().int().nonnegative(),
+	})
+	.openapi("RssImportResult");

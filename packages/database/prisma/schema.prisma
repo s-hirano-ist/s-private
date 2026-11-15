@@ -315,3 +315,53 @@ model Verification {
 
   @@map("verification")
 }
+
+// RSS intentionally has no deleted flag or MobileSyncChange history.
+model RssFeed {
+  id String @id @db.Uuid
+  userId String @map("user_id") @db.String(128)
+  url String @db.String(2048)
+  title String @db.String(512)
+  folder String @db.String(512)
+  lastFetchedAt DateTime? @map("last_fetched_at")
+  etag String? @db.String(1024)
+  lastModified String? @map("last_modified") @db.String(128)
+  error String? @db.String(64)
+  leaseToken String? @map("lease_token") @db.Uuid
+  leaseExpiresAt DateTime? @map("lease_expires_at")
+  unread RssUnread[]
+  seen RssSeen[]
+  @@unique([userId, url])
+  @@map("rss_feeds")
+}
+model RssUnread {
+  id String @id @db.Uuid
+  userId String @map("user_id") @db.String(128)
+  feedId String @map("feed_id") @db.Uuid
+  feed RssFeed @relation(fields: [feedId], references: [id], onDelete: Cascade)
+  url String @db.String(2048)
+  title String @db.String(512)
+  publishedAt DateTime? @map("published_at")
+  receivedAt DateTime @map("received_at")
+  @@index([userId, receivedAt, id])
+  @@index([feedId])
+  @@map("rss_unread")
+}
+model RssSeen {
+  feedId String @map("feed_id") @db.Uuid
+  feed RssFeed @relation(fields: [feedId], references: [id], onDelete: Cascade)
+  hash Bytes
+  @@id([feedId, hash])
+  @@map("rss_seen")
+}
+model RssSaved {
+  id String @id @db.Uuid
+  userId String @map("user_id") @db.String(128)
+  url String @db.String(2048)
+  title String @db.String(512)
+  publishedAt DateTime? @map("published_at")
+  savedAt DateTime @map("saved_at")
+  @@unique([userId, url])
+  @@index([userId, savedAt, id])
+  @@map("rss_saved")
+}

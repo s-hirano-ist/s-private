@@ -1,3 +1,4 @@
+import type { RssService } from "@s-hirano-ist/s-application/rss/service";
 import type { PushService } from "s-private-backend/api/push-service";
 import type { ReadService } from "s-private-backend/api/read-service";
 import type { ApiAuth } from "s-private-backend/api/types";
@@ -68,13 +69,23 @@ function fixture() {
 		unsubscribe: vi.fn<PushService["unsubscribe"]>(),
 		test: vi.fn<PushService["test"]>(),
 	};
+	const rss = {
+		page: vi.fn<RssService["page"]>(),
+		subscribe: vi.fn<RssService["subscribe"]>(),
+		unsubscribe: vi.fn<RssService["unsubscribe"]>(),
+		read: vi.fn<RssService["read"]>(),
+		save: vi.fn<RssService["save"]>(),
+		unsave: vi.fn<RssService["unsave"]>(),
+		refresh: vi.fn<RssService["refresh"]>(),
+		import: vi.fn<RssService["import"]>(),
+	};
 	return {
 		push,
 		auth,
 		reads,
 		writes,
 		uploads,
-		app: createApiApp(auth, reads, { writes, uploads, push }),
+		app: createApiApp(auth, reads, { writes, uploads, push, rss }),
 	};
 }
 describe("Shared Hono API boundary", () => {

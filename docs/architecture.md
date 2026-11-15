@@ -740,3 +740,10 @@ DTOから内部ストレージパスを除いた参照toolのみを提供する�
 project設定を生成する。`pnpm harness:check` で差分を検出する。
 生成対象外のCodex設定とhooksは維持し、token・secretは個人の認証ストアまたは
 実行時の環境変数で管理する。詳細は [開発用MCP設定](development-mcp.md) を参照。
+
+## RSSリーダー
+
+`rss` は未読と保存リンクを管理する独立ドメイン。公開状態・mobile delta syncとは分離し、
+Webの生成client → Hono → RSSユースケース → repository／feed reader portの順で依存する。
+購読単位のlease、取得済みID hash、物理削除、外部URL取得の制限と無料枠の検証は
+[RSSリーダー](rss-reader.md)を参照する。

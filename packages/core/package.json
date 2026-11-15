@@ -110,6 +110,10 @@
 		"./notes/types/*": {
 			"types": "./notes/types/*.ts",
 			"import": "./notes/types/*.ts"
+		},
+		"./rss/types": {
+			"types": "./rss/types.ts",
+			"import": "./rss/types.ts"
 		}
 	},
 	"files": [

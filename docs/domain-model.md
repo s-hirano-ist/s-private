@@ -417,3 +417,10 @@ Webの追加・削除成功後はドメイン別タグ（`content:articles`、`c
 **対象ファイル**:
 - `packages/core/shared-kernel/types/query-options.ts`
 - `packages/core/*/repositories/*-query-repository.interface.ts`
+
+## RSSドメイン
+
+RSSは購読、未読メタデータ、取得済みID hash、あとで読むリンクを持つ。
+既存コンテンツのUNEXPORTED／LAST_UPDATED／EXPORTEDを適用しない。
+既読化は未読の物理削除、保存解除は保存リンクの物理削除として扱い、
+購読解除でも独立した保存リンクを保持する。詳細は[RSSリーダー](rss-reader.md)を参照する。

@@ -24,6 +24,7 @@ import {
 	ImageIcon,
 	PlusIcon,
 	SearchIcon,
+	RssIcon,
 	SettingsIcon,
 	StickyNoteIcon,
 } from "lucide-react";
@@ -82,7 +83,8 @@ function getNavigationState(pathname: string) {
 		noteDetailDomain !== undefined;
 
 	const isContent = route === "book" || route === "note";
-	return { route, domain, isViewer, isContent };
+	const title = route === "rss" ? "rss" : "settings";
+	return { route, domain, isViewer, isContent, title };
 }
 
 export function AppNavigation({ forms, search }: Props) {
@@ -95,7 +97,8 @@ export function AppNavigation({ forms, search }: Props) {
 	const [createPending, setCreatePending] = useState(false);
 	const createPendingRef = useRef(false);
 	const [searchOpen, setSearchOpen] = useState(false);
-	const { route, domain, isViewer, isContent } = getNavigationState(pathname);
+	const { route, domain, isViewer, isContent, title } =
+		getNavigationState(pathname);
 	const activeDomain = domains.find((item) => item.key === domain);
 	const viewerCount = useViewerCount();
 	const count =
@@ -186,7 +189,7 @@ export function AppNavigation({ forms, search }: Props) {
 					</>
 				) : (
 					<h1 className="mr-auto text-base font-semibold text-foreground">
-						{t("settings")}
+						{t(title)}
 					</h1>
 				)}
 				<Button
@@ -212,8 +215,17 @@ export function AppNavigation({ forms, search }: Props) {
 			<footer className="fixed bottom-[calc(0.75rem+env(safe-area-inset-bottom))] left-1/2 z-40 w-[calc(100%-1.5rem)] max-w-md -translate-x-1/2 rounded-full border border-nav-border/10 bg-nav-surface/70 shadow-lg backdrop-blur-xl">
 				<nav
 					aria-label={t("contentTypes")}
-					className="grid h-14 grid-cols-4 gap-0.5 p-1"
+					className="grid h-14 grid-cols-5 gap-0.5 p-1"
 				>
+					<Link
+						aria-current={route === "rss" ? "page" : undefined}
+						aria-label={t("rss")}
+						className="flex min-w-0 flex-col items-center justify-center gap-0.5 rounded-full text-[10px] text-foreground hover:bg-primary/10"
+						href="/rss"
+					>
+						<RssIcon aria-hidden="true" className="size-5" />
+						<span>{t("rss")}</span>
+					</Link>
 					{domains.map((item) => {
 						const Icon = item.icon;
 						return (

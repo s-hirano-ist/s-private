@@ -30,7 +30,8 @@
 		"create": "Create new",
 		"search": "Search",
 		"settings": "Settings",
-		"contentTypes": "Content types"
+		"contentTypes": "Content types",
+		"rss": "RSS"
 	},
 	"utils": {
 		"signOut": "SIGN OUT",
@@ -124,5 +125,42 @@
 		"invalidFileFormat": "Invalid file format.",
 		"deleted": "Deleted successfully.",
 		"error": "An error occurred."
+	},
+	"rss": {
+		"title": "RSS reader",
+		"description": "Keep up with unread articles and save links for later.",
+		"views": "RSS views",
+		"unread": "Unread",
+		"saved": "Read later",
+		"feeds": "Subscriptions",
+		"refresh": "Refresh",
+		"refreshing": "Fetching feeds",
+		"loading": "Loading…",
+		"error": "Some operations failed. Please try again.",
+		"retry": "Reload",
+		"addFeed": "Add a feed",
+		"feedUrl": "Feed URL",
+		"feedTitle": "Display name (optional)",
+		"folder": "Folder (optional)",
+		"subscribe": "Subscribe",
+		"unsubscribe": "Unsubscribe",
+		"confirmUnsubscribe": "Unsubscribe? Unread articles will be removed; saved links will remain.",
+		"lastFetched": "Last fetched:",
+		"notFetched": "Not fetched yet",
+		"feedError": "Fetch failed. The next refresh will try again.",
+		"import": "Import from Inoreader",
+		"importHelp": "Choose the full account ZIP, subscriptions.xml / OPML, or starred.json. Article bodies are discarded. Retrying the same file is safe. ZIP limit: 50 MiB.",
+		"importFile": "Import file",
+		"importResult": "Added {added} · Duplicates {duplicates} · Invalid {invalid}",
+		"filter": "Filter by subscription",
+		"allFeeds": "All subscriptions",
+		"readAll": "Mark all as read",
+		"emptyUnread": "You have no unread articles.",
+		"emptySaved": "No articles saved for later.",
+		"save": "Save for later",
+		"unsave": "Remove saved link",
+		"read": "Mark as read",
+		"previous": "Previous",
+		"next": "Next"
 	}
 }
