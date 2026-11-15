@@ -64,6 +64,7 @@ catalog:
   '@modelcontextprotocol/hono': 2.0.2
   '@modelcontextprotocol/server': 2.4.0
   '@s-hirano-ist/s-api-client': workspace:*
+  '@s-hirano-ist/s-database': workspace:*
   '@sentry/node': 11.12.0
   '@tailwindcss/postcss': 4.3.5
   '@tailwindcss/typography': 0.5.20
@@ -74,7 +75,11 @@ catalog:
   '@vitest/browser': 5.1.0
   '@vitest/browser-playwright': 5.1.0
   '@vitest/coverage-v8': 5.1.0
+  fast-xml-parser: 5.12.1
+  fast-xml-validator: 1.4.4
+  fflate: 0.8.3
   hono: 4.13.18
+  ipaddr.js: 2.5.0
   js-yaml: 5.5.0
   lefthook: 2.2.2
   lucide-react: 1.72.0

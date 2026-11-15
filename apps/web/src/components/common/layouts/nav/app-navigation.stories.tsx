@@ -388,3 +388,16 @@ export const CompactMobileArticles: Story = {
 		await expect(canvas.getByRole("link", { name: "設定" })).toBeVisible();
 	},
 };
+
+export const Rss: Story = {
+	parameters: { nextjs: { navigation: { pathname: "/ja/rss" } } },
+	play: async ({ canvas }) => {
+		await expect(canvas.getByRole("link", { name: "RSS" })).toHaveAttribute(
+			"aria-current",
+			"page",
+		);
+		await expect(
+			canvas.queryByRole("button", { name: "新規作成" }),
+		).not.toBeInTheDocument();
+	},
+};

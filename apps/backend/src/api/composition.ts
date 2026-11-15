@@ -7,6 +7,7 @@ import type { PushConfig } from "@s-hirano-ist/s-infrastructure/notifications/we
 import type { createVectorSearch } from "@s-hirano-ist/s-infrastructure/search/vector-search";
 import { createReadQueries } from "@s-hirano-ist/s-application/content/queries";
 import { createPushDeliveryService } from "@s-hirano-ist/s-application/notifications/push-notification-service";
+import { createRssService } from "@s-hirano-ist/s-application/rss/service";
 import { ArticlesDomainService } from "@s-hirano-ist/s-core/articles/services/articles-domain-service";
 import { CategoryService } from "@s-hirano-ist/s-core/articles/services/category-service";
 import { BooksDomainService } from "@s-hirano-ist/s-core/books/services/books-domain-service";
@@ -33,6 +34,8 @@ import {
 	validatePushConfig,
 	createWebPushSender,
 } from "@s-hirano-ist/s-infrastructure/notifications/web-push-sender";
+import { fetchFeed } from "@s-hirano-ist/s-infrastructure/rss/fetch-feed";
+import { createRssRepository } from "@s-hirano-ist/s-infrastructure/rss/repository";
 import { createSearchIndex } from "@s-hirano-ist/s-infrastructure/search/search-index";
 import { createTransactionalDatabase } from "@s-hirano-ist/s-infrastructure/transaction";
 import { createPushService } from "s-private-backend/api/push-service";
@@ -151,6 +154,7 @@ export function createApiServices(config: ApiServicesConfig) {
 			}),
 		),
 		mutations: {
+			rss: createRssService(createRssRepository(config.database), fetchFeed),
 			writes,
 			uploads: createUploadService(mobile, writes, config.reporter),
 			push: createPushService(

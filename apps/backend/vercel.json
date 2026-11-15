@@ -2,7 +2,10 @@
 	"$schema": "https://openapi.vercel.sh/vercel.json",
 	"buildCommand": "node scripts/validate-env.mjs && pnpm --filter s-private-backend... -r run build",
 	"crons": [
-		{ "path": "/api/cron/media-cleanup", "schedule": "0 1 * * *" },
+		{
+			"path": "/api/cron/media-cleanup",
+			"schedule": "0 1 * * *"
+		},
 		{
 			"path": "/api/cron/gigazine-headline",
 			"schedule": "0 0 * * *"
@@ -11,7 +14,7 @@
 	"functions": {
 		"src/index.ts": {
 			"maxDuration": 300,
-			"includeFiles": "{fixtures/*.png,src/**/!(*.test|*.spec).ts,../../packages/core/{articles,books,images,notes,shared-kernel}/**/!(*.test|*.spec).ts,../../packages/database/src/index.ts}"
+			"includeFiles": "{fixtures/*.png,src/**/!(*.test|*.spec).ts,../../packages/core/{articles,books,images,notes,rss,shared-kernel}/**/!(*.test|*.spec).ts,../../packages/database/src/index.ts}"
 		}
 	}
 }

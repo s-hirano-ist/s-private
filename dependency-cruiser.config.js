@@ -34,12 +34,12 @@ const boundaryRules = [
 		},
 		to: { path: "^packages/(database|storage)/|^apps/backend/" },
 	},
-	...["articles", "notes", "images", "books"].map((domain) => ({
+	...["articles", "notes", "images", "books", "rss"].map((domain) => ({
 		name: `boundary-shared-domain-${domain}`,
 		severity: "error",
 		from: { path: `^packages/(application|infrastructure)/src/${domain}/` },
 		to: {
-			path: "^packages/(application|infrastructure)/src/(articles|notes|images|books)/|^packages/core/(articles|notes|images|books)/",
+			path: "^packages/(application|infrastructure)/src/(articles|notes|images|books|rss)/|^packages/core/(articles|notes|images|books|rss)/",
 			pathNot: `^packages/(application|infrastructure)/src/${domain}/|^packages/core/${domain}/`,
 		},
 	})),

@@ -77,6 +77,13 @@ The project uses Vitest workspace to manage tests across multiple packages:
 - **Individual Configs**: Each package has its own `vitest.config.ts` with specific settings
 - **Unified Execution**: Run all tests from the root with `pnpm test`
 
+RSS tests in the `application`, `infrastructure`, and `backend` projects resolve
+RSS workspace imports to `src` through `rssSourceAliases`. Production exports
+still resolve to `dist`. This keeps tested source files in the merged LCOV report;
+coverage excludes compiled `dist` files. Repository unit tests cover tenant predicates,
+lease guards, and receipt deduplication without requiring a database. The optional
+CockroachDB integration suite separately verifies actual transaction behavior.
+
 ## Test Setup per Package
 
 ### app

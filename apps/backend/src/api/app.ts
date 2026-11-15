@@ -1,3 +1,4 @@
+import type { RssService } from "@s-hirano-ist/s-application/rss/service";
 import type { PushService } from "s-private-backend/api/push-service";
 import type { ReadService } from "s-private-backend/api/read-service";
 import type { ApiAuth, ApiEnvironment } from "s-private-backend/api/types";
@@ -8,6 +9,7 @@ import { registerContentRoutes } from "s-private-backend/api/content-routes";
 import { apiErrorResponse } from "s-private-backend/api/error-handler";
 import { registerApiMiddleware } from "s-private-backend/api/middleware";
 import { registerReadRoutes } from "s-private-backend/api/read-routes";
+import { registerRssRoutes } from "s-private-backend/api/rss-routes";
 import { registerUploadRoutes } from "s-private-backend/api/upload-routes";
 import { registerWriteRoutes } from "s-private-backend/api/write-routes";
 export function createApiApp(
@@ -15,6 +17,7 @@ export function createApiApp(
 	reads: ReadService,
 	mutations: {
 		push: PushService;
+		rss: RssService;
 		uploads: UploadService;
 		writes: WriteService;
 	},
@@ -31,6 +34,7 @@ export function createApiApp(
 	);
 	app.notFound((c) => c.json({ error: { code: "NOT_FOUND" } }, 404));
 	// Specific lookups must precede the shared /{id} routes.
+	registerRssRoutes(app, mutations.rss);
 	registerReadRoutes(app, reads);
 	registerContentRoutes(app, reads, mutations.writes);
 	registerWriteRoutes(app, mutations.writes, mutations.push);

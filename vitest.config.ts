@@ -1,6 +1,14 @@
 import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
 import { playwright } from "@vitest/browser-playwright";
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite-plus/test/config";
+
+const rssSourceAliases = ["application", "infrastructure"].map((name) => ({
+	find: new RegExp(`^@s-hirano-ist/s-${name}/rss/(.*)$`, "u"),
+	replacement: fileURLToPath(
+		new URL(`./packages/${name}/src/rss/$1`, import.meta.url),
+	),
+}));
 
 /**
  * Vitest Workspace Configuration
@@ -10,6 +18,7 @@ export default defineConfig({
 	test: {
 		projects: [
 			{
+				resolve: { alias: rssSourceAliases },
 				test: {
 					name: "application",
 					include: ["packages/application/src/**/*.test.ts"],
@@ -17,6 +26,7 @@ export default defineConfig({
 				},
 			},
 			{
+				resolve: { alias: rssSourceAliases },
 				test: {
 					name: "infrastructure",
 					include: ["packages/infrastructure/src/**/*.test.ts"],
@@ -25,6 +35,7 @@ export default defineConfig({
 			},
 
 			{
+				resolve: { alias: rssSourceAliases },
 				test: {
 					name: "backend",
 					include: ["apps/backend/src/**/*.test.ts"],

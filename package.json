@@ -89,6 +89,8 @@
 		"@chromatic-com/storybook": "5.6.0",
 		"@next/playwright": "16.4.6",
 		"@playwright/test": "1.65.0",
+		"@s-hirano-ist/s-api-contracts": "workspace:*",
+		"@s-hirano-ist/s-database": "catalog:",
 		"@s-hirano-ist/s-ui": "workspace:*",
 		"@storybook/addon-a11y": "10.6.7",
 		"@storybook/addon-docs": "10.6.7",
@@ -122,6 +124,7 @@
 		"knip": "6.45.1",
 		"lefthook": "catalog:",
 		"lint-staged": "17.6.0",
+		"orval": "8.47.0",
 		"oxfmt": "catalog:",
 		"oxlint": "1.93.0",
 		"oxlint-plugin-eslint": "1.93.0",
@@ -140,9 +143,7 @@
 		"typescript": "catalog:",
 		"vite": "catalog:",
 		"vite-plus": "catalog:",
-		"vitest": "catalog:",
-		"orval": "8.47.0",
-		"@s-hirano-ist/s-api-contracts": "workspace:*"
+		"vitest": "catalog:"
 	},
 	"private": true
 }

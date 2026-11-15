@@ -56,21 +56,147 @@
 				},
 				"required": ["error"]
 			},
-			"PushStatus": {
+			"RssPage": {
 				"type": "object",
 				"properties": {
-					"publicKey": {
-						"type": "string"
+					"feeds": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/RssFeed"
+						}
 					},
-					"registered": {
-						"type": "boolean"
+					"unread": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/RssUnread"
+						}
 					},
-					"requiresResubscribe": {
-						"type": "boolean"
+					"saved": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/RssSaved"
+						}
+					},
+					"unreadCount": {
+						"type": "integer",
+						"minimum": 0
+					},
+					"savedCount": {
+						"type": "integer",
+						"minimum": 0
 					}
 				},
-				"required": ["publicKey", "registered", "requiresResubscribe"],
-				"additionalProperties": false
+				"required": ["feeds", "unread", "saved", "unreadCount", "savedCount"]
+			},
+			"RssFeed": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/RssFeedInput"
+					},
+					{
+						"type": "object",
+						"properties": {
+							"id": {
+								"type": "string",
+								"format": "uuid"
+							},
+							"lastFetchedAt": {
+								"type": ["string", "null"],
+								"format": "date-time"
+							},
+							"error": {
+								"type": ["string", "null"]
+							}
+						},
+						"required": ["id", "lastFetchedAt", "error"]
+					}
+				]
+			},
+			"RssFeedInput": {
+				"type": "object",
+				"properties": {
+					"url": {
+						"type": "string",
+						"maxLength": 2048,
+						"format": "uri"
+					},
+					"title": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 512
+					},
+					"folder": {
+						"type": "string",
+						"maxLength": 512
+					}
+				},
+				"required": ["url", "title", "folder"]
+			},
+			"RssUnread": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/RssEntryInput"
+					},
+					{
+						"type": "object",
+						"properties": {
+							"id": {
+								"type": "string",
+								"format": "uuid"
+							},
+							"feedId": {
+								"type": "string",
+								"format": "uuid"
+							},
+							"receivedAt": {
+								"type": "string",
+								"format": "date-time"
+							}
+						},
+						"required": ["id", "feedId", "receivedAt"]
+					}
+				]
+			},
+			"RssEntryInput": {
+				"type": "object",
+				"properties": {
+					"url": {
+						"type": "string",
+						"maxLength": 2048,
+						"format": "uri"
+					},
+					"title": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 512
+					},
+					"publishedAt": {
+						"type": ["string", "null"],
+						"format": "date-time"
+					}
+				},
+				"required": ["url", "title", "publishedAt"]
+			},
+			"RssSaved": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/RssEntryInput"
+					},
+					{
+						"type": "object",
+						"properties": {
+							"id": {
+								"type": "string",
+								"format": "uuid"
+							},
+							"savedAt": {
+								"type": "string",
+								"format": "date-time"
+							}
+						},
+						"required": ["id", "savedAt"]
+					}
+				]
 			},
 			"ApiError401": {
 				"type": "object",
@@ -97,22 +223,6 @@
 							"code": {
 								"type": "string",
 								"enum": ["FORBIDDEN"]
-							}
-						},
-						"required": ["code"]
-					}
-				},
-				"required": ["error"]
-			},
-			"ApiError413": {
-				"type": "object",
-				"properties": {
-					"error": {
-						"type": "object",
-						"properties": {
-							"code": {
-								"type": "string",
-								"enum": ["UPLOAD_TOO_LARGE"]
 							}
 						},
 						"required": ["code"]
@@ -171,6 +281,182 @@
 					}
 				},
 				"required": ["error"]
+			},
+			"RssAdded": {
+				"type": "object",
+				"properties": {
+					"added": {
+						"type": "boolean"
+					}
+				},
+				"required": ["added"]
+			},
+			"ApiError404": {
+				"type": "object",
+				"properties": {
+					"error": {
+						"type": "object",
+						"properties": {
+							"code": {
+								"type": "string",
+								"enum": ["NOT_FOUND"]
+							}
+						},
+						"required": ["code"]
+					}
+				},
+				"required": ["error"]
+			},
+			"ApiError409": {
+				"type": "object",
+				"properties": {
+					"error": {
+						"type": "object",
+						"properties": {
+							"code": {
+								"type": "string",
+								"enum": [
+									"DUPLICATE",
+									"PUSH_RESUBSCRIPTION_REQUIRED",
+									"OPERATION_CONFLICT",
+									"OPERATION_IN_PROGRESS",
+									"UPLOAD_INCOMPLETE"
+								]
+							}
+						},
+						"required": ["code"]
+					}
+				},
+				"required": ["error"]
+			},
+			"ApiError413": {
+				"type": "object",
+				"properties": {
+					"error": {
+						"type": "object",
+						"properties": {
+							"code": {
+								"type": "string",
+								"enum": ["UPLOAD_TOO_LARGE"]
+							}
+						},
+						"required": ["code"]
+					}
+				},
+				"required": ["error"]
+			},
+			"RssReadInput": {
+				"type": "object",
+				"properties": {
+					"ids": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"format": "uuid"
+						},
+						"minItems": 1,
+						"maxItems": 100
+					},
+					"feedId": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"before": {
+						"type": "string",
+						"format": "date-time"
+					}
+				}
+			},
+			"RssRefreshResult": {
+				"type": "object",
+				"properties": {
+					"data": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"id": {
+									"type": "string",
+									"format": "uuid"
+								},
+								"status": {
+									"type": "string",
+									"enum": ["updated", "skipped", "failed"]
+								}
+							},
+							"required": ["id", "status"]
+						}
+					}
+				},
+				"required": ["data"]
+			},
+			"RssRefreshInput": {
+				"type": "object",
+				"properties": {
+					"ids": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"format": "uuid"
+						},
+						"minItems": 1,
+						"maxItems": 5
+					},
+					"force": {
+						"type": "boolean",
+						"default": false
+					}
+				},
+				"required": ["ids"]
+			},
+			"RssImportResult": {
+				"type": "object",
+				"properties": {
+					"added": {
+						"type": "integer",
+						"minimum": 0
+					},
+					"duplicates": {
+						"type": "integer",
+						"minimum": 0
+					},
+					"invalid": {
+						"type": "integer",
+						"minimum": 0
+					}
+				},
+				"required": ["added", "duplicates", "invalid"]
+			},
+			"RssImportInput": {
+				"type": "object",
+				"properties": {
+					"kind": {
+						"type": "string",
+						"enum": ["opml", "starred"]
+					},
+					"content": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 2000000
+					}
+				},
+				"required": ["kind", "content"]
+			},
+			"PushStatus": {
+				"type": "object",
+				"properties": {
+					"publicKey": {
+						"type": "string"
+					},
+					"registered": {
+						"type": "boolean"
+					},
+					"requiresResubscribe": {
+						"type": "boolean"
+					}
+				},
+				"required": ["publicKey", "registered", "requiresResubscribe"],
+				"additionalProperties": false
 			},
 			"PushStatusInput": {
 				"type": "object",
@@ -262,22 +548,6 @@
 			"ContentStatus": {
 				"type": "string",
 				"enum": ["UNEXPORTED", "LAST_UPDATED", "EXPORTED"]
-			},
-			"ApiError404": {
-				"type": "object",
-				"properties": {
-					"error": {
-						"type": "object",
-						"properties": {
-							"code": {
-								"type": "string",
-								"enum": ["NOT_FOUND"]
-							}
-						},
-						"required": ["code"]
-					}
-				},
-				"required": ["error"]
 			},
 			"Note": {
 				"type": "object",
@@ -416,28 +686,6 @@
 					}
 				},
 				"required": ["count"]
-			},
-			"ApiError409": {
-				"type": "object",
-				"properties": {
-					"error": {
-						"type": "object",
-						"properties": {
-							"code": {
-								"type": "string",
-								"enum": [
-									"DUPLICATE",
-									"PUSH_RESUBSCRIPTION_REQUIRED",
-									"OPERATION_CONFLICT",
-									"OPERATION_IN_PROGRESS",
-									"UPLOAD_INCOMPLETE"
-								]
-							}
-						},
-						"required": ["code"]
-					}
-				},
-				"required": ["error"]
 			},
 			"NotesPage": {
 				"type": "object",
@@ -1317,6 +1565,859 @@
 		"parameters": {}
 	},
 	"paths": {
+		"/rss": {
+			"get": {
+				"operationId": "getRssPage",
+				"tags": ["rss"],
+				"security": [
+					{
+						"bearerAuth": []
+					},
+					{
+						"sessionCookie": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": ["integer", "null"],
+							"minimum": 0,
+							"maximum": 1000000,
+							"default": 0
+						},
+						"required": false,
+						"name": "offset",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						},
+						"required": false,
+						"name": "feedId",
+						"in": "query"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Unread and saved metadata",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/RssPage"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Authentication required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError401"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError403"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation failed",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError422"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError500"
+								}
+							}
+						}
+					},
+					"503": {
+						"description": "Service unavailable",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError503"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/rss/feeds": {
+			"post": {
+				"operationId": "subscribeRss",
+				"tags": ["rss"],
+				"security": [
+					{
+						"bearerAuth": []
+					},
+					{
+						"sessionCookie": []
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/RssFeedInput"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Subscription added or already present",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/RssAdded"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Authentication required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError401"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError403"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError404"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "Conflict",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError409"
+								}
+							}
+						}
+					},
+					"413": {
+						"description": "Payload too large",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError413"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation failed",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError422"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError500"
+								}
+							}
+						}
+					},
+					"503": {
+						"description": "Service unavailable",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError503"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/rss/feeds/{id}": {
+			"delete": {
+				"operationId": "unsubscribeRss",
+				"tags": ["rss"],
+				"security": [
+					{
+						"bearerAuth": []
+					},
+					{
+						"sessionCookie": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1,
+							"maxLength": 512
+						},
+						"required": true,
+						"name": "id",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Subscription removed; saved links retained"
+					},
+					"401": {
+						"description": "Authentication required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError401"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError403"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError404"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation failed",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError422"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError500"
+								}
+							}
+						}
+					},
+					"503": {
+						"description": "Service unavailable",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError503"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/rss/read": {
+			"post": {
+				"operationId": "markRssRead",
+				"tags": ["rss"],
+				"security": [
+					{
+						"bearerAuth": []
+					},
+					{
+						"sessionCookie": []
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/RssReadInput"
+							}
+						}
+					}
+				},
+				"responses": {
+					"204": {
+						"description": "Unread rows removed"
+					},
+					"401": {
+						"description": "Authentication required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError401"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError403"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError404"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "Conflict",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError409"
+								}
+							}
+						}
+					},
+					"413": {
+						"description": "Payload too large",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError413"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation failed",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError422"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError500"
+								}
+							}
+						}
+					},
+					"503": {
+						"description": "Service unavailable",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError503"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/rss/saved": {
+			"post": {
+				"operationId": "saveRss",
+				"tags": ["rss"],
+				"security": [
+					{
+						"bearerAuth": []
+					},
+					{
+						"sessionCookie": []
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/RssEntryInput"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Link saved or already present",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/RssAdded"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Authentication required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError401"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError403"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError404"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "Conflict",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError409"
+								}
+							}
+						}
+					},
+					"413": {
+						"description": "Payload too large",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError413"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation failed",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError422"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError500"
+								}
+							}
+						}
+					},
+					"503": {
+						"description": "Service unavailable",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError503"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/rss/saved/{id}": {
+			"delete": {
+				"operationId": "unsaveRss",
+				"tags": ["rss"],
+				"security": [
+					{
+						"bearerAuth": []
+					},
+					{
+						"sessionCookie": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1,
+							"maxLength": 512
+						},
+						"required": true,
+						"name": "id",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Saved link removed"
+					},
+					"401": {
+						"description": "Authentication required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError401"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError403"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError404"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation failed",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError422"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError500"
+								}
+							}
+						}
+					},
+					"503": {
+						"description": "Service unavailable",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError503"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/rss/refresh": {
+			"post": {
+				"operationId": "refreshRss",
+				"tags": ["rss"],
+				"security": [
+					{
+						"bearerAuth": []
+					},
+					{
+						"sessionCookie": []
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/RssRefreshInput"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Bounded feed refresh",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/RssRefreshResult"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Authentication required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError401"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError403"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError404"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "Conflict",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError409"
+								}
+							}
+						}
+					},
+					"413": {
+						"description": "Payload too large",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError413"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation failed",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError422"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError500"
+								}
+							}
+						}
+					},
+					"503": {
+						"description": "Service unavailable",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError503"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/rss/import": {
+			"post": {
+				"operationId": "importRss",
+				"tags": ["rss"],
+				"security": [
+					{
+						"bearerAuth": []
+					},
+					{
+						"sessionCookie": []
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/RssImportInput"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Idempotent import batch",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/RssImportResult"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Authentication required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError401"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError403"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError404"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "Conflict",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError409"
+								}
+							}
+						}
+					},
+					"413": {
+						"description": "Payload too large",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError413"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation failed",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError422"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError500"
+								}
+							}
+						}
+					},
+					"503": {
+						"description": "Service unavailable",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError503"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/push/subscriptions/status": {
 			"post": {
 				"operationId": "getPushStatus",
