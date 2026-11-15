@@ -61,7 +61,7 @@ Next.js アプリ側の検索設定には影響しません。
 
 This project uses [Mise](https://mise.jdx.dev/) for tool version management.
 
-- **Node.js** は v24.11 以上が必須です。`.nvmrc` は開発・CIで使う推奨パッチ版を固定し、Mise は `.mise.toml` の `idiomatic_version_file_enable_tools = ["node"]` 設定によりこれを読み込みます。`package.json#engines.node` は最低バージョンを表し、CI で `.nvmrc` がその範囲を満たすことを検証します。Vercel ダッシュボードの Node.js Version 設定も `.nvmrc` と同じメジャーに揃えてください。
+- **Node.js** は26系を使用します。`.nvmrc` が開発・CIの完全バージョンの正本で、Miseは `idiomatic_version_file_enable_tools = ["node"]` により読み込みます。`package.json#engines.node` の `26.x` と一致することをCIで検証します。Vercelの両projectも同じメジャーに揃えます。
 - **pnpm** など他ツールのバージョンは `.mise.toml` の `[tools]` で定義されています。
 
 1. [Mise](https://mise.jdx.dev/getting-started.html) をインストール
@@ -109,7 +109,7 @@ Webの接続先は既定で `http://127.0.0.1:3002`。`BACKEND_PORT` でbackend�
 
 ### 変数一覧
 
-環境変数のスキーマと型定義は `apps/web/src/env.ts`（`@t3-oss/env-nextjs` + Zod）を参照してください。
+Webの環境変数は `apps/web/src/env.ts`、backendのDB・認証・storage・検索等は `apps/backend/src/env.ts` を参照してください。Doppler MCPも環境変数管理に使用します。[開発用MCP](development-mcp.md)に接続手順をまとめています。
 Docker Compose 用の変数（VPS デプロイ時）は [docs/vps-deployment.md Step 7](vps-deployment.md) を参照してください。
 
 ### Auth0 callback URL
@@ -252,7 +252,7 @@ CockroachDB Cloud Basic は接続プーリングが内蔵で、pooled / direct �
    ```
 
 3. 生成 SQL の**新規 `CREATE TABLE` に `WITH (schema_locked = false)` を付与**
-4. コミット → クラウドへ `pnpm --filter s-database prisma:deploy`
+4. コミット → クラウドへ `pnpm --filter @s-hirano-ist/s-database prisma:deploy`
 
 モバイル差分同期の `CREATE TRIGGER` は CockroachDB の制約により Prisma のマイグレーショントランザクション内で実行できません。`prisma:deploy` スクリプトはマイグレーション適用後に各トリガーを独立した SQL 文で作成します。再実行しても既存トリガーは重複作成しません。トリガーを含むデプロイでは `prisma migrate deploy` を直接実行せず、上記の `prisma:deploy` スクリプトを使用してください。
 

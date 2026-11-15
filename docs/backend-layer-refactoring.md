@@ -1,5 +1,7 @@
 # backend責務の整理
 
+> この文書は共有Application/Infrastructure分離の設計判断・移行履歴を含む。現行の配置と依存方向は [アーキテクチャ](architecture.md#クリーンアーキテクチャの構成)、日常の開発は [セットアップ](setup.md)、配置手順は [Vercelセットアップ](backend-vercel-setup.md) を正本とする。
+
 ## 承認済みの到達構成
 
 | 配置 | 責務 |

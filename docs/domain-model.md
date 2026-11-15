@@ -231,9 +231,9 @@ graph TB
 
 ## Application Service層
 
-共通ユースケースは `apps/backend/src/{domain}/use-cases.ts` に置く。入力のドメイン値への変換、不変条件検証、永続化、イベント発行を型付き依存で実行する。同じディレクトリのテストからmockを注入し、Next.jsや実DBなしで順序・失敗時動作を検証する。
+共通ユースケースは `packages/application/src/{domain}/use-cases.ts` に置く。入力のドメイン値への変換、不変条件検証、永続化、イベント発行を型付き依存で実行する。同じディレクトリのテストからmockを注入し、Next.jsや実DBなしで順序・失敗時動作を検証する。
 
-`apps/backend` がPrisma・storage・監視を構成し、`apps/backend/src/api/composition.ts` でユースケースへ注入する。Webの `apps/web/src/application-services/` は生成API clientの呼び出し、フォーム・表示エラー変換、画面更新に限定する。詳細は[アーキテクチャ](architecture.md)を参照する。
+`packages/infrastructure` が永続化・外部サービスのadapterを実装する。`apps/backend` がPrisma・storage・監視を構成し、`apps/backend/src/api/composition.ts` でユースケースへ注入する。Webの `apps/web/src/application-services/` は生成API clientの呼び出し、フォーム・表示エラー変換、画面更新に限定する。詳細は[アーキテクチャ](architecture.md)を参照する。
 
 ## 設計の特徴
 

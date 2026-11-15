@@ -149,17 +149,7 @@ Zenn記事「[Webサービス公開前のチェックリスト](https://zenn.dev
 ### セキュリティ
 
 #### 認証Cookie設定
-```typescript
-// 確認ポイント: next-auth設定
-// apps/web/src/infrastructures/auth/auth-provider.ts (NextAuth設定)
-cookies: {
-  sessionToken: {
-    httpOnly: true,
-    sameSite: 'lax', // または 'strict'
-    secure: process.env.NODE_ENV === 'production',
-  }
-}
-```
+Better AuthのCookie設定は `apps/backend/src/auth/`、認証URLの中継とCookie転送は `apps/web/src/common/backend/` を確認する。session Cookieの `httpOnly`・`sameSite`・`secure` と公開Web originへの整合、信頼済みOriginの検証を監査する。NextAuth.jsの設定形式は使用しない。
 
 #### ユーザー入力バリデーション
 ```typescript
