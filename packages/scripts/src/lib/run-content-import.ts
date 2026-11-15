@@ -4,7 +4,9 @@ import { synchronizeContent } from "@s-hirano-ist/s-application/batch/synchroniz
 import { createPrismaClient } from "@s-hirano-ist/s-database";
 import { createContentImportRepository } from "@s-hirano-ist/s-infrastructure/batch/content-import-repository";
 import { createImportMediaStore } from "@s-hirano-ist/s-infrastructure/batch/import-media-store";
+import { createMediaLock } from "@s-hirano-ist/s-infrastructure/content/media-lock";
 import { sharpImageProcessor } from "@s-hirano-ist/s-infrastructure/content/sharp-image-processor";
+import { extendDatabase } from "@s-hirano-ist/s-infrastructure/database";
 import { createBooksStorageService } from "@s-hirano-ist/s-infrastructure/shared/books-storage-service";
 import { createImagesStorageService } from "@s-hirano-ist/s-infrastructure/shared/images-storage-service";
 import { systemClock } from "@s-hirano-ist/s-infrastructure/system-clock";
@@ -38,6 +40,15 @@ export async function runContentImport(
 							books: createBooksStorageService(client, bucket),
 						},
 						sharpImageProcessor,
+						createMediaLock(
+							extendDatabase(
+								prisma,
+								(_model, _operation, args) => args,
+								() => {
+									/* CLI imports do not emit per-query timing. */
+								},
+							),
+						),
 					)
 				: undefined;
 		const summary = await synchronizeContent(

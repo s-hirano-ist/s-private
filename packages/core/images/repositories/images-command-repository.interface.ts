@@ -2,7 +2,6 @@ import type { UnexportedImage } from "@s-hirano-ist/s-core/images/entities/image
 import type { IImagesQueryRepository } from "@s-hirano-ist/s-core/images/repositories/images-query-repository.interface";
 import type {
 	Id,
-	Status,
 	UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 
@@ -44,14 +43,9 @@ export type IImagesCommandRepository = {
 	 *
 	 * @param id - The image ID to delete
 	 * @param userId - The user ID for tenant isolation
-	 * @param status - The expected status of the image
 	 * @returns The path of the deleted image for event dispatching
 	 */
-	deleteById(
-		id: Id,
-		userId: UserId,
-		status: Status,
-	): Promise<DeleteImageResult>;
+	deleteById(id: Id, userId: UserId): Promise<DeleteImageResult>;
 };
 
 /**

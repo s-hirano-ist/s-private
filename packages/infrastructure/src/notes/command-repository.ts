@@ -4,7 +4,6 @@ import type {
 } from "@s-hirano-ist/s-core/notes/repositories/notes-command-repository.interface";
 import type {
 	Id,
-	Status,
 	UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import type { DatabaseClient } from "@s-hirano-ist/s-infrastructure/database";
@@ -23,14 +22,10 @@ export function createNotesCommandRepository(
 		});
 	}
 
-	async function deleteById(
-		id: Id,
-		userId: UserId,
-		status: Status,
-	): Promise<DeleteNoteResult> {
+	async function deleteById(id: Id, userId: UserId): Promise<DeleteNoteResult> {
 		return await withPersistenceErrors(async () => {
 			const data = await prisma.note.delete({
-				where: { id, userId, status },
+				where: { id, userId },
 				select: { title: true },
 			});
 

@@ -633,13 +633,26 @@ DB adapterが未検証の取得結果をドメイン別の読み取りモデル�
 ## Event-Driven Architecture Pattern
 
 作成・削除ユースケースは永続化後にドメインイベントを発行する。共有dispatcherとhandlerは `packages/infrastructure/src/events/` に置き、ログ・通知・検索等の依存をhostから注入する。
+
 `apps/backend` がhandlerを登録し、Webのinstrumentationからイベントを初期化しない。登録の重複防止とhandler構成はbackendの回帰テストで検証する。
 DBと通知の原子性を保証するOutboxは導入していない。外部処理の失敗時動作は[ドメインモデル](domain-model.md)の設計上の制約を参照する。
+
+### コンテンツ削除と保存ファイルの後処理
+
+4ドメインの削除は所有者を検証し、UNEXPORTED・LAST_UPDATED・EXPORTEDのすべてを対象に物理削除する。Webの未公開・公開済み一覧とiOS詳細から確認後に既存DELETE APIを呼ぶ。成功は204、存在しないIDや他の所有者のIDは404とする。削除用MCP toolは提供しない。取り込み元は変更せず、次回の同期CLIによる再登録を許可する。外部ソース由来の検索インデックスはこの操作では更新しない。
+
+画像・書籍はDB削除と同じトランザクションで `media_deletions` に保存パスの削除予約を記録する。書籍の `imagePath` がnullなら予約は不要。コミット後に原本・サムネイルを削除し、両方の完了後に予約を消去する。オブジェクトの404は成功扱い。ストレージ障害でもDB削除の結果は成功とし、Sentryに記録して予約を残す。DB行の削除により既存の同期トリガーが削除履歴を記録する。
+
+`/api/cron/media-cleanup` は既存の `CRON_SECRET` と `BACKEND_CRON_ENABLED` で保護し、毎日UTC 01:00に期限到来分を最大100件処理する。失敗時は24時間後以降に再試行する。予約の処理leaseは10分で、プロセス停止後も期限切れから復旧できる。1回の処理予算は240秒、Functionの上限は300秒とし、原本・サムネイル各60秒の通信予算を残して次の項目を開始する。
+
+保存パスは所有者間で共有され得るため、後処理時の参照確認はsystem tenant contextで全所有者を対象にする。共有参照があればファイルを保持して予約を消去し、最後の参照を削除するときに改めて予約する。HTTPの作成、同期CLIのメディア保存・DB反映、ファイル後処理は `media_object_locks` のドメイン・パス別leaseを共用する。処理開始時と各書き込み・DB確定前に有効性を確認し、競合時はOPERATION_IN_PROGRESSとする。leaseは10分、ストレージの書き込み・削除はSDK再試行を含め60秒で打ち切る。正常終了時にlock行を消去する。ストレージ通信をDBトランザクションへ含めない。
+
+先にmigrationを適用してから新しいbackend・CLIを利用する。未適用のPreview DBでは新しい予約処理を検証できないため、migration済みローカルDB・MinIOで確認する。運用時はSentryのエラーと予約の `attempts`・`nextAttemptAt` を確認する。原因解消後は通常のCronで再処理し、急ぐ場合だけ予約の `nextAttemptAt` を現在以前へ変更して認証付きCronを実行する。
 
 ## Repository CQRS Pattern
 
 coreでドメインごとにCommand/Query repository interfaceを分離し、`packages/infrastructure/src/{domain}/` のPrisma実装で永続化する。
-Commandは所有者・状態条件付きの書き込みを行い、Queryは認証済みtenant内を読み取る。Next.jsのcache・Cookie・画面更新をrepositoryへ持ち込まない。
+Commandは所有者条件と操作ごとに必要な状態条件で書き込みを行い、Queryは認証済みtenant内を読み取る。Next.jsのcache・Cookie・画面更新をrepositoryへ持ち込まない。
 これはrepositoryの責務分離であり、別DBやイベントソーシングを導入したCQRSではない。
 
 ## Dependency Injection Factory Pattern

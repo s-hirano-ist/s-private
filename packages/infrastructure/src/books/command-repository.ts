@@ -4,7 +4,6 @@ import type {
 } from "@s-hirano-ist/s-core/books/repositories/books-command-repository.interface";
 import type {
 	Id,
-	Status,
 	UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 import type { DatabaseClient } from "@s-hirano-ist/s-infrastructure/database";
@@ -23,18 +22,14 @@ export function createBooksCommandRepository(
 		});
 	}
 
-	async function deleteById(
-		id: Id,
-		userId: UserId,
-		status: Status,
-	): Promise<DeleteBookResult> {
+	async function deleteById(id: Id, userId: UserId): Promise<DeleteBookResult> {
 		return await withPersistenceErrors(async () => {
 			const data = await prisma.book.delete({
-				where: { id, userId, status },
-				select: { title: true },
+				where: { id, userId },
+				select: { title: true, imagePath: true },
 			});
 
-			return { title: makeBookTitle(data.title) };
+			return { title: makeBookTitle(data.title), imagePath: data.imagePath };
 		});
 	}
 

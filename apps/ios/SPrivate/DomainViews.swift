@@ -323,7 +323,7 @@ struct RecordDetailView: View {
         .toolbar {
             if deleting {
                 ProgressView(String(localized: "削除中"))
-            } else if record?.status == .unexported {
+            } else if record != nil {
                 if domain == .images {
                     Menu {
                         Button(String(localized: "削除"), systemImage: "trash", role: .destructive) { showingDelete = true }
@@ -336,7 +336,7 @@ struct RecordDetailView: View {
                 }
             }
         }
-        .confirmationDialog(String(localized: "この項目を削除しますか？"), isPresented: $showingDelete) {
+        .confirmationDialog(String(localized: "この項目を削除しますか？"), isPresented: $showingDelete, titleVisibility: .visible) {
             Button(String(localized: "削除"), role: .destructive) { Task { await delete() } }
                 .disabled(deleting)
         }

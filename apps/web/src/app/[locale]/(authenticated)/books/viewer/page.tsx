@@ -1,3 +1,4 @@
+import { deleteBooks } from "@/application-services/books/delete-books";
 import { loadMoreExportedBooks } from "@/application-services/books/load-more-books";
 import { renderContentListPage } from "@/components/common/layouts/content-list-page-server";
 import { BooksCounterLoader } from "@/loaders/books/books-counter-loader";
@@ -15,6 +16,7 @@ export default function Page() {
 				BooksStackLoader({
 					loadMoreAction: loadMoreExportedBooks,
 					variant: "exported",
+					deleteAction: deleteBooks,
 				}),
 		},
 	});

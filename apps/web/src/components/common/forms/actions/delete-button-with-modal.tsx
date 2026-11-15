@@ -64,10 +64,16 @@ export function DeleteButtonWithModal({ id, title, deleteAction }: Props) {
 	const isDeleting = state.status === "deleting" || isPending;
 
 	const handleDelete = () => {
+		if (isDeleting) return;
 		dispatch({ type: "START_DELETE" });
 		startTransition(async () => {
 			try {
 				const response = await deleteAction(id);
+				if (!response.success) {
+					toast.error(message(response.message));
+					dispatch({ type: "DELETE_ERROR" });
+					return;
+				}
 				toast.show(message(response.message));
 				dispatch({ type: "DELETE_COMPLETE" });
 			} catch {

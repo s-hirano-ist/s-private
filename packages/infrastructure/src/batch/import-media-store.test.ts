@@ -26,12 +26,13 @@ function fixture() {
 		media: createImportMediaStore(
 			{ images: storage, books: storage },
 			processor,
+			{ run: async (_domain, _path, work) => work(async () => {}) },
 		),
 	};
 }
 test("existing originals are preserved while thumbnails are refreshed", async () => {
 	const { storage, media } = fixture();
-	await media.put("images", "a.png", Buffer.from("original"));
+	await media.put("images", "a.png", Buffer.from("original"), async () => {});
 	expect(storage.uploadImage).toHaveBeenCalledExactlyOnceWith(
 		"a.png",
 		Buffer.from("thumbnail"),
@@ -50,7 +51,7 @@ test("missing originals are uploaded through the new import adapter", async () =
 			{ name: "NotFound", $metadata: { httpStatusCode: 404 } },
 		),
 	);
-	await media.put("books", "a.png", Buffer.from("original"));
+	await media.put("books", "a.png", Buffer.from("original"), async () => {});
 	expect(storage.uploadImage).toHaveBeenCalledWith(
 		"a.png",
 		Buffer.from("original"),
@@ -69,7 +70,7 @@ test.each([
 	const { storage, media } = fixture();
 	storage.getImageOrThrow.mockRejectedValue(error);
 	await expect(
-		media.put("images", "a.png", Buffer.from("original")),
+		media.put("images", "a.png", Buffer.from("original"), async () => {}),
 	).rejects.toBe(error);
 	expect(storage.uploadImage).not.toHaveBeenCalled();
 });

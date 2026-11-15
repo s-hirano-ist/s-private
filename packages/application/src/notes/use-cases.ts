@@ -12,7 +12,6 @@ import {
 } from "@s-hirano-ist/s-core/notes/entities/note-entity";
 import { NoteDeletedEvent } from "@s-hirano-ist/s-core/notes/events/note-deleted-event";
 import {
-	makeUnexportedStatus,
 	type Id,
 	type UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
@@ -59,11 +58,7 @@ export async function deleteNote(
 	userId: UserId,
 	deps: DeleteNoteDeps,
 ): Promise<void> {
-	const { title } = await deps.commandRepository.deleteById(
-		id,
-		userId,
-		makeUnexportedStatus(),
-	);
+	const { title } = await deps.commandRepository.deleteById(id, userId);
 	await deps.eventDispatcher.dispatch(
 		new NoteDeletedEvent({ title, userId, caller: "deleteNote" }),
 	);

@@ -13,7 +13,17 @@ function setup(records: ImportRecord[] = []) {
 		deleteExported: vi.fn().mockResolvedValue(1),
 		isMediaReferenced: vi.fn().mockResolvedValue(false),
 	};
-	const media = { put: vi.fn(), removeImage: vi.fn() };
+	const media = {
+		put: vi.fn(),
+		removeImage: vi.fn(),
+		lock: {
+			run: async <T>(
+				_domain: string,
+				_path: string,
+				work: (assertActive: () => Promise<void>) => Promise<T>,
+			) => work(async () => {}),
+		},
+	};
 	return { repository, media, clock: { now: () => now } };
 }
 async function* source(...items: PreparedImport[]) {

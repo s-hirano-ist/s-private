@@ -96,10 +96,10 @@ test.each([
 ])(
 	"deletes %s via the common API and preserves state conflicts",
 	async (domain, action) => {
-		const fetch = fixture({ error: { code: "NOT_DELETABLE" } }, 409);
+		const fetch = fixture({ error: { code: "OPERATION_IN_PROGRESS" } }, 409);
 		expect(await action("record")).toEqual({
 			success: false,
-			message: "notAllowed",
+			message: "unexpected",
 		});
 		fetch.mockResolvedValue(new Response(null, { status: 204 }));
 		expect(await action("record")).toEqual({

@@ -40,6 +40,13 @@ struct SPrivateApp: App {
                 Self.fixtureRecord(id: "book-short", title: "Short book"),
                 Self.fixtureRecord(id: "book-long", title: "A long book title that wraps across two lines"),
             ])
+            if ProcessInfo.processInfo.arguments.contains("-ui-testing-deletion-fixtures") {
+                for domain in MobileDomain.allCases {
+                    try! coordinator.cache(domain: domain, records: [
+                        Self.fixtureRecord(id: "exported-\(domain.rawValue)", title: "Exported \(domain.rawValue)", status: .exported),
+                    ])
+                }
+            }
         }
         #endif
     }
@@ -92,9 +99,9 @@ struct SPrivateApp: App {
     }
 
     #if DEBUG
-    private static func fixtureRecord(id: String, title: String) -> MobileRecord {
+    private static func fixtureRecord(id: String, title: String, status: MobileContentStatus = .unexported) -> MobileRecord {
         MobileRecord(
-            id: id, status: .unexported, createdAt: .now, updatedAt: .now,
+            id: id, status: status, createdAt: .now, updatedAt: .now,
             exportedAt: nil, title: title, url: nil, quote: nil, categoryId: nil,
             categoryName: nil, markdown: nil, isbn: nil, rating: nil, tags: nil,
             path: nil, imagePath: nil, contentType: nil, fileSize: nil

@@ -42,7 +42,7 @@ import {
 } from "@s-hirano-ist/s-core/shared-kernel/errors/error-classes";
 import { createHash } from "node:crypto";
 import { ApiError } from "s-private-backend/api/error";
-import { z, ZodError } from "zod";
+import { type z, ZodError } from "zod";
 
 export type MediaInput = z.output<typeof schemas.uploadStartSchema>;
 export type WriteServiceDeps = {
@@ -202,11 +202,6 @@ export function createWriteService(deps: WriteServiceDeps) {
 		async remove(owner: string, domain: MobileDomain, id: string) {
 			const record = await mobile.content.getContent(domain, owner, id);
 			if (!record) throw new ApiError("NOT_FOUND");
-			if (
-				z.object({ status: schemas.statusSchema }).parse(record).status !==
-				"UNEXPORTED"
-			)
-				throw new ApiError("NOT_DELETABLE");
 			const ownerId = makeUserId(owner);
 			const resourceId = makeId(id);
 			try {

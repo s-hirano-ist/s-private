@@ -208,6 +208,46 @@ function create(
 	return createMedia(app, domain);
 }
 
+async function setStatus(
+	domain: "articles" | "notes" | "images" | "books",
+	id: string,
+	status: "UNEXPORTED" | "LAST_UPDATED" | "EXPORTED",
+) {
+	const where = { id };
+	const data = { status };
+	switch (domain) {
+		case "articles":
+			await client.article.update({ where, data });
+			return;
+		case "notes":
+			await client.note.update({ where, data });
+			return;
+		case "images":
+			await client.image.update({ where, data });
+			return;
+		case "books":
+			await client.book.update({ where, data });
+			break;
+	}
+}
+async function mediaKeys(
+	domain: "articles" | "notes" | "images" | "books",
+	id: string,
+) {
+	let path: string | null = null;
+	if (domain === "images")
+		path = (await client.image.findUniqueOrThrow({ where: { id } })).path;
+	if (domain === "books")
+		path = (await client.book.findUniqueOrThrow({ where: { id } })).imagePath;
+	return path
+		? [`${domain}/original/${path}`, `${domain}/thumbnail/${path}`]
+		: [];
+}
+async function storedObjects() {
+	if (!minio) throw new Error("Integration storage required");
+	return minio.listObjects(bucket, "");
+}
+
 beforeAll(async () => {
 	if (minio) await minio.createBucket(bucket);
 });
@@ -222,6 +262,7 @@ afterAll(async () => {
 		await client.image.deleteMany({ where: { userId: owner } });
 		await client.book.deleteMany({ where: { userId: owner } });
 		await client.category.deleteMany({ where: { userId: owner } });
+		await client.mediaDeletion.deleteMany({ where: { userId: owner } });
 		await client.mobileUpload.deleteMany({ where: { userId: owner } });
 		await client.mobileOperation.deleteMany({ where: { userId: owner } });
 		await client.mobileSyncChange.deleteMany({ where: { userId: owner } });
@@ -283,6 +324,54 @@ describe.skipIf(!enabled)(
 				expect(reporter.captureException).toHaveBeenCalled();
 			},
 		);
+		test.each(
+			(["articles", "notes", "images", "books"] as const).flatMap((domain) =>
+				(["UNEXPORTED", "LAST_UPDATED", "EXPORTED"] as const).map((status) => ({
+					domain,
+					status,
+				})),
+			),
+		)(
+			"$domain $status deletes only the owner, removes stored media and emits a sync deletion",
+			async ({ domain, status }) => {
+				const app = appFixture();
+				const result = await create(app, domain);
+				const id = result.resource.id;
+				await setStatus(domain, id, status);
+				const deletedKeys = await mediaKeys(domain, id);
+				const beforeObjects = await storedObjects();
+				expect(
+					(
+						await request(
+							app,
+							`/${domain}/${id}`,
+							"DELETE",
+							undefined,
+							"foreign",
+						)
+					).status,
+				).toBe(404);
+				expect((await request(app, `/${domain}/${id}`)).status).toBe(200);
+				expect((await request(app, `/${domain}/${id}`, "DELETE")).status).toBe(
+					204,
+				);
+				expect((await request(app, `/${domain}/${id}`, "DELETE")).status).toBe(
+					404,
+				);
+				expect(
+					await client.mobileSyncChange.count({
+						where: { recordId: id, action: "delete" },
+					}),
+				).toBe(1);
+				expect((await storedObjects()).toSorted()).toEqual(
+					beforeObjects.filter((key) => !deletedKeys.includes(key)).toSorted(),
+				);
+				expect(
+					await client.mediaDeletion.count({ where: { userId: owner } }),
+				).toBe(0);
+			},
+		);
+
 		test("expired uploads return 410 through the HTTP boundary", async () => {
 			const app = appFixture();
 			const response = await request(app, "/uploads", "POST", {
