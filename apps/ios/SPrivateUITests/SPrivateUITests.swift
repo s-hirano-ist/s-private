@@ -21,8 +21,15 @@ final class SPrivateUITests: XCTestCase {
             XCTAssertTrue(app.descendants(matching: .any)["record-detail-\(domain)"].waitForExistence(timeout: 5))
             if domain == "images" { app.buttons["その他"].tap() }
             app.buttons["削除"].tap()
-            XCTAssertTrue(app.staticTexts["この項目を削除しますか？"].waitForExistence(timeout: 5))
-            app.buttons["キャンセル"].tap()
+            let confirmation = app.staticTexts["この項目を削除しますか？"]
+            XCTAssertTrue(confirmation.waitForExistence(timeout: 5))
+            if app.buttons["キャンセル"].exists {
+                app.buttons["キャンセル"].tap()
+            } else {
+                // Popover confirmation dialogs dismiss on an outside tap and omit Cancel.
+                app.coordinate(withNormalizedOffset: CGVector(dx: 0.05, dy: 0.5)).tap()
+            }
+            XCTAssertTrue(confirmation.waitForNonExistence(timeout: 5))
             XCTAssertTrue(app.descendants(matching: .any)["record-detail-\(domain)"].exists)
             let screenshot = XCTAttachment(screenshot: app.screenshot())
             screenshot.name = "exported-\(domain)-delete"
