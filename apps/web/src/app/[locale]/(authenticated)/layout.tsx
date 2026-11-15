@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { addArticle } from "@/application-services/articles/add-article";
 import { addNote } from "@/application-services/notes/add-note";
 import { searchContentFromClient } from "@/application-services/search/search-content-from-client";
+import { getSelfId } from "@/common/auth/session";
 import { PAGE_NAME } from "@/common/constants";
 import { AppNavigation } from "@/components/common/layouts/nav/app-navigation";
 import { ViewerCountProvider } from "@/components/common/layouts/nav/viewer-count-context";
@@ -23,11 +24,14 @@ export const viewport: Viewport = {
 	userScalable: false,
 };
 
-export default function Layout({ children }: { children: ReactNode }) {
+export default async function Layout({ children }: { children: ReactNode }) {
+	const draftOwner = await getSelfId();
 	return (
 		<div className="mx-auto max-w-5xl pb-24 sm:px-2">
 			<ViewerCountProvider>
 				<AppNavigation
+					draftOwner={draftOwner}
+					key={draftOwner}
 					forms={{
 						articles: <ArticleFormLoader addArticle={addArticle} />,
 						books: <BooksFormLoader />,

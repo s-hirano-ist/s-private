@@ -23,6 +23,7 @@ export function NoteForm({ addNote }: Props) {
 		<GenericFormWrapper<ServerAction>
 			action={addNote}
 			afterSubmit={afterSubmit}
+			discardLabel={label("discardDraft")}
 			saveLabel={label("save")}
 		>
 			<FormInput

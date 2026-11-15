@@ -2,7 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
 	testDir: "./e2e",
-	testMatch: "private-cache.spec.ts",
+	testMatch: ["private-cache.spec.ts", "session-draft.spec.ts"],
 	workers: 1,
 	timeout: 90_000,
 	expect: { timeout: 15_000 },

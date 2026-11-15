@@ -1,5 +1,10 @@
 import type { ServerAction } from "@/common/types";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import {
+	clearSessionDrafts,
+	createSessionDraft,
+	noteDraftFields,
+} from "@/common/forms/session-draft";
 import { ArticleForm } from "@/components/articles/client/article-form";
 import { BooksForm } from "@/components/books/client/books-form";
 import { ImageForm } from "@/components/images/client/image-form";
@@ -17,7 +22,12 @@ import { ViewerCountProvider, ViewerCountSync } from "./viewer-count-context";
 
 const meta = {
 	component: AppNavigation,
+	beforeEach: () => {
+		clearSessionDrafts();
+		return () => clearSessionDrafts();
+	},
 	args: {
+		draftOwner: "storybook-owner",
 		forms: {
 			articles: <div>Article form</div>,
 			books: <div>Book form</div>,
@@ -399,5 +409,77 @@ export const Rss: Story = {
 		await expect(
 			canvas.queryByRole("button", { name: "新規作成" }),
 		).not.toBeInTheDocument();
+	},
+};
+
+export const ResumeAndDiscardNote: Story = {
+	parameters: { nextjs: { navigation: { pathname: "/ja/notes" } } },
+	render: (args) => (
+		<AppNavigation
+			{...args}
+			forms={{ ...args.forms, notes: <NoteForm addNote={fn()} /> }}
+		/>
+	),
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const body = within(canvasElement.ownerDocument.body);
+		await userEvent.click(canvas.getByRole("button", { name: "新規作成" }));
+		let dialog = within(await body.findByRole("dialog"));
+		await userEvent.type(
+			dialog.getByRole("textbox", { name: "タイトル" }),
+			"日本語の下書き",
+		);
+		await userEvent.type(
+			dialog.getByRole("textbox", { name: "詳細" }),
+			"# 作成途中の本文",
+		);
+		await userEvent.keyboard("{Escape}");
+		await waitFor(() =>
+			expect(body.queryByRole("dialog")).not.toBeInTheDocument(),
+		);
+		await userEvent.click(canvas.getByRole("button", { name: "新規作成" }));
+		dialog = within(await body.findByRole("dialog"));
+		await expect(dialog.getByRole("textbox", { name: "タイトル" })).toHaveValue(
+			"日本語の下書き",
+		);
+		await expect(dialog.getByRole("textbox", { name: "詳細" })).toHaveValue(
+			"# 作成途中の本文",
+		);
+		await userEvent.click(dialog.getByRole("button", { name: "下書きを破棄" }));
+		await expect(body.getByRole("textbox", { name: "タイトル" })).toHaveValue(
+			"",
+		);
+		await expect(body.getByRole("textbox", { name: "詳細" })).toHaveValue("");
+	},
+};
+
+export const RestoreStoredNote: Story = {
+	...ResumeAndDiscardNote,
+	beforeEach: () => {
+		const store = createSessionDraft(
+			"storybook-owner",
+			"notes",
+			"create",
+			noteDraftFields,
+		);
+		const data = new FormData();
+		data.set("title", "保存済みの下書き");
+		data.set("markdown", "リロード後に復元する本文");
+		store.schedule(data);
+		store.dispose();
+	},
+	play: async ({ canvasElement }) => {
+		await userEvent.click(
+			within(canvasElement).getByRole("button", { name: "新規作成" }),
+		);
+		const dialog = within(
+			await within(canvasElement.ownerDocument.body).findByRole("dialog"),
+		);
+		await expect(dialog.getByRole("textbox", { name: "タイトル" })).toHaveValue(
+			"保存済みの下書き",
+		);
+		await expect(dialog.getByRole("textbox", { name: "詳細" })).toHaveValue(
+			"リロード後に復元する本文",
+		);
 	},
 };
