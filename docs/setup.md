@@ -120,8 +120,7 @@ Auth0 Dashboard の Application Settings で、各環境の公開URLに対応す
 https://<application-origin>/api/auth/callback/auth0
 ```
 
-Better Auth 1.7ではGeneric OAuthも標準のsocial provider callbackを使用します。旧URLの
-`/api/auth/oauth2/callback/auth0`は使用しません。
+Better AuthのGeneric OAuthは標準のsocial provider callbackを使用します。
 
 ### Auth0の環境分離と最小設定
 
@@ -136,10 +135,11 @@ token endpoint認証は `client_secret_post`、grantはAuthorization Codeのみ�
 ブラウザからAuth0への直接通信を使わないため、Allowed Web Originsは空にします。
 Cross-Origin Authenticationも無効のままにします。
 
-Webのログイン手段は両環境ともDatabase connectionに揃え、公開サインアップを無効にします。
+Webのログイン手段は両環境ともDatabase connectionのみで、公開サインアップは無効です。
 devのテストユーザーは管理者がDashboardで用意し、Productionのユーザーをコピーしません。
-devの `google-oauth2` はWeb Applicationから無効化し、接続自体と既存ユーザーは削除しません。
-Auth0の開発キーを使用するGoogle接続は、本番へ移植しません。
+devの `google-oauth2` 接続は存在しますが、Web Applicationでは無効です。
+この接続はAuth0の開発キーを使用しています。Productionにソーシャル接続はありません。
+両Web ApplicationともEnterprise・Passwordless接続はありません。
 
 | 環境 | Allowed Callback URLs | Allowed Logout URLs |
 | --- | --- | --- |
@@ -156,35 +156,25 @@ Refresh Tokenを使用します。iOS APIのoffline accessを有効にし、clie
 rotation有効・最大2592000秒（30日）・未使用1296000秒（15日）・重複許容0秒とします。
 MCPの設定は[参照専用MCPの設定](mcp-setup.md)を参照してください。
 
-#### 2026-11-14の設定確認・適用状況
+#### API・Actions・攻撃対策
 
-- dev WebのApplication種別、token endpoint認証、grant、URL制限、Web Originsは上記へ変更し、Dashboardで保存済みの状態を確認しました。既存client ID/secretは維持しています。
-- Production iOSはImplicitを無効にし、上記の期限・rotationを保存しました。Native、認証none、callback、APIのoffline accessは維持しています。
-- Production WebもOIDC準拠ON・Authorization Codeのみ・Web Originsなしへ変更しました。RS256、Client Secret Post、既存callback/Logout URLを維持し、Management APIの再取得で確認しています。devの実ログイン未検証を承知した上で適用しました。
-- 変更後の本番 `/api/sign-in` からAuth0のログイン画面へ遷移することを確認しました。認証完了後のcallbackとログアウトの実操作は未検証です。MCPの実接続・refresh token交換の結果は[参照専用MCPの設定](mcp-setup.md)に記録しています。
-- 既存Preview 2件と本PRのPreview backendで `500 FUNCTION_INVOCATION_FAILED` を再現し、起動時のS3必須5変数不足が原因と特定しました。Dopplerの `memdex-backend/stg` と同期先Vercel Previewの両方にS3変数がありませんでした。Vercel build時の実環境変数検証を追加し、不足したdeploymentがReadyになるのを防ぎます。
-- 承認を得て非公開・暗号化有効のB2 bucket `memdex-preview-s-hirano-ist` とbucket限定キー `memdex-preview` を作成し、S3設定6件をDopplerへ登録・Vercel Previewへ同期しました。テストobjectの書込・読取・削除が成功し、backend再デプロイ後の `/health` は200、未認証sessionは401、Webの `/api/sign-in` はdev Auth0への307となり500が解消しました。clientとcallbackがdev／当該Previewであることも確認しました。
-- Safariの同一フローで、dev Auth0ログイン完了・callback後の `/ja/articles` への遷移・保護された `/ja/settings` への遷移・サインアウト後のAuth0ログイン画面への戻りを確認しました。認証状態とURLのみを確認し、非公開記事の本文やCRUDは検証していません。
-- 本番Database connectionはサインアップ禁止・改善された総当たり攻撃防御が有効です。tenantの不審IPスロットリング・総当たり攻撃防御も有効、ボット検知・パスワード漏洩検知は無効でした。今回これらは変更していません。
-- 本番の `fetch-role` ActionはID tokenに `https://private.s-hirano.com/roles` claimを追加し、Node 18の古いruntime警告があります。リポジトリにclaimの利用箇所はありませんが、外部利用とトリガーへの接続状態が未確認のため削除していません。
-- 本番の2つのAPI Test ApplicationはM2M clientです。利用履歴を確認できないため維持します。`All Applications` はtenantのグローバルclientであり、削除対象にしません。
-- Connections全種別、devのActions/攻撃対策、利用ログの監査、iOS実機のログイン・更新・再起動・ログアウトは未完了です。API/DTO、DBのユーザー・Accountの紐付けは変更していません。
+| 対象 | Production | dev |
+| --- | --- | --- |
+| API | Management API・Memdex iOS API・Memdex MCP API | Management APIのみ |
+| Post Login Action | `fetch-role` | `fetch role` |
+| Action runtime | Node 18（Not Recommended） | Node 18（Not Recommended） |
+| 不審IPスロットリング | 有効 | 有効 |
+| 総当たり攻撃防御 | 有効 | 有効 |
+| ボット検知 | 無効 | 無効 |
+| パスワード漏洩検知 | 無効 | 無効 |
 
-#### 2026-11-15の追加監査・devログイン手段の統一
+両ActionはDEPLOYEDでPost Loginフローに接続されています。
+Productionの `fetch-role` はID tokenに `https://private.s-hirano.com/roles` claimを追加します。
+リポジトリの実装にはこのclaimの利用箇所がなく、外部での利用は未確認です。
+Action runtimeの更新とclaimの要否が残課題です。
 
-- dev Webの `google-oauth2` 接続を有効から無効へ変更しました。接続自体・既存ユーザーは削除せず、Database接続は有効のままです。中断後のDashboard再取得でも保存済みの無効状態を確認しました。
-- devの `Username-Password-Authentication` で「サインアップを無効にする」を無効から有効へ変更し、保存成功と再読み込み後の有効状態を確認しました。「改善された総当たり攻撃防御」は有効、「接続をドメインレベルに昇格する」は無効のままです。
-- 既存Previewから新しく `/api/sign-in` を開始し、devのログイン画面にGoogleとSign upの導線がないことを確認しました。古い認証stateの再読み込みではエラー画面となったため、動作確認には新しい認証フローを使いました。
-- 利用者が既存Databaseユーザーでログインした後、callback後の `/ja/articles` 表示、保護された `/ja/settings` への遷移と再読み込み、サインアウト後のdevログイン画面への戻りを確認しました。サインアウト後に `/ja/settings` へ直接アクセスしてもdevログイン画面へ戻ります。認証情報を転記せず、コンテンツのCRUDは行っていません。
-- 両Web ApplicationのConnections画面で全種別を確認しました。ProductionはDatabase接続のみ、devはDatabase接続と無効化したGoogle接続があり、両環境ともEnterprise・Passwordless接続は表示されませんでした。dev Google接続はAuth0の開発キーを使っており、本番には移植しません。
-- API一覧は、devがシステムのManagement APIのみ、ProductionがManagement API・Memdex iOS API・Memdex MCP APIでした。Production MCP APIはRS256、アクセストークン3600秒、権限 `content:read` のみ、同意スキップ無効、offline access有効、アプリごとの認可です。設定は変更していません。iOS APIの個別設定・全client grantは今回再監査していません。
-- 両tenantとも、不審IPスロットリングと総当たり攻撃防御は有効、ボット検知とパスワード漏洩検知は無効でした。今回これらの設定は変更していません。
-- Productionの `fetch-role` とdevの `fetch role` は、それぞれPost Loginフローに接続されています。両ActionともDEPLOYED、Node 18（Not Recommended）でした。リポジトリの実装にProductionのroles claimの利用箇所はありませんが、外部利用は未確認のため削除・接続解除・runtime変更は行っていません。runtimeの更新とclaimの要否は追加対応が必要です。
-- 本番のAPI Test Application 2件は利用履歴未確認のため維持し、グローバルclientの `All Applications` も整理対象から除外します。tenant分離・client ID/secret・callback・iOS/MCP client設定・ユーザーの紐付けは変更していません。
-
-設定変更後はdevで認証を確認してからProductionへ適用し、iOS/MCPでは新規ログインに加えて
-期限後のtoken更新も確認します。変更前の秘密値を含まない設定と、未検証の操作を記録し、
-失敗時は直前の設定だけを戻します。client secretの再生成やユーザー移行は行いません。
+ProductionのAPI Test Application 2件はM2M clientで、利用履歴は未確認です。
+`All Applications` はtenantのグローバルclientです。
 
 `reset-*` / `revert-*` バッチは従来どおりDBトランザクションを実行します。
 
