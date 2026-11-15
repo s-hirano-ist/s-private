@@ -323,7 +323,7 @@ struct RecordDetailView: View {
         .toolbar {
             if deleting {
                 ProgressView(String(localized: "削除中"))
-            } else if record?.status == .unexported {
+            } else if record != nil {
                 if domain == .images {
                     Menu {
                         Button(String(localized: "削除"), systemImage: "trash", role: .destructive) { showingDelete = true }

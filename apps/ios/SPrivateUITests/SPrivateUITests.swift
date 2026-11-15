@@ -6,6 +6,33 @@ final class SPrivateUITests: XCTestCase {
     }
 
     @MainActor
+    func testExportedContentOffersDeleteConfirmationInAllDomains() throws {
+        let app = XCUIApplication()
+        app.launchArguments += ["-ui-testing-authenticated", "-ui-testing-list-fixtures", "-ui-testing-deletion-fixtures", "-AppleLanguages", "(ja)"]
+        app.launch()
+        for (index, domain) in ["articles", "notes", "images", "books"].enumerated() {
+            app.tabBars.buttons.element(boundBy: index).tap()
+            app.buttons["status-filter"].tap()
+            app.buttons["公開済み"].tap()
+            let identifier = index < 2 ? "domain-record-exported-\(domain)" : "media-cell-exported-\(domain)"
+            let row = app.descendants(matching: .any)[identifier]
+            XCTAssertTrue(row.waitForExistence(timeout: 5))
+            row.tap()
+            XCTAssertTrue(app.descendants(matching: .any)["record-detail-\(domain)"].waitForExistence(timeout: 5))
+            if domain == "images" { app.buttons["その他"].tap() }
+            app.buttons["削除"].tap()
+            XCTAssertTrue(app.staticTexts["この項目を削除しますか？"].waitForExistence(timeout: 5))
+            app.buttons["キャンセル"].tap()
+            XCTAssertTrue(app.descendants(matching: .any)["record-detail-\(domain)"].exists)
+            let screenshot = XCTAttachment(screenshot: app.screenshot())
+            screenshot.name = "exported-\(domain)-delete"
+            screenshot.lifetime = .keepAlways
+            add(screenshot)
+            app.navigationBars.buttons.firstMatch.tap()
+        }
+    }
+
+    @MainActor
     func testDomainTabsFollowSystemLanguage() throws {
         for (language, expectedTab) in [("ja", "記事"), ("en", "Articles")] {
             let app = XCUIApplication()

@@ -83,6 +83,7 @@ export function createObjectStorageClient(config = loadStorageConfig()) {
 		async putObject(bucket: string, key: string, body: Uint8Array) {
 			const result = await client.send(
 				new PutObjectCommand({ Bucket: bucket, Key: key, Body: body }),
+				{ abortSignal: AbortSignal.timeout(60000) },
 			);
 			return { etag: result.ETag, versionId: result.VersionId };
 		},
@@ -119,7 +120,9 @@ export function createObjectStorageClient(config = loadStorageConfig()) {
 			};
 		},
 		async removeObject(bucket: string, key: string): Promise<void> {
-			await client.send(new DeleteObjectCommand({ Bucket: bucket, Key: key }));
+			await client.send(new DeleteObjectCommand({ Bucket: bucket, Key: key }), {
+				abortSignal: AbortSignal.timeout(60000),
+			});
 		},
 		async listObjects(bucket: string, prefix: string): Promise<string[]> {
 			const keys: string[] = [];

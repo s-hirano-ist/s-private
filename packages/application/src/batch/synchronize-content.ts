@@ -51,11 +51,32 @@ async function saveItem(
 	creating: boolean,
 	deps: Dependencies,
 ) {
-	if (item.media && (change.domain === "images" || change.domain === "books")) {
+	const save = async (assertActive: () => Promise<void>) => {
+		if (
+			item.media &&
+			(change.domain === "images" || change.domain === "books")
+		) {
+			if (!deps.media) throw new ApplicationError("UNAVAILABLE");
+			await deps.media.put(
+				change.domain,
+				item.media.path,
+				item.media.bytes,
+				assertActive,
+			);
+		}
+		await assertActive();
+		await deps.repository.save(owner, change, creating, deps.clock.now());
+	};
+	let path: string | null = null;
+	if (change.domain === "images") path = change.values.path;
+	if (change.domain === "books") path = change.values.imagePath;
+	if (path && (change.domain === "images" || change.domain === "books")) {
 		if (!deps.media) throw new ApplicationError("UNAVAILABLE");
-		await deps.media.put(change.domain, item.media.path, item.media.bytes);
-	}
-	await deps.repository.save(owner, change, creating, deps.clock.now());
+		await deps.media.lock.run(change.domain, path, save);
+	} else
+		await save(async () => {
+			/* Text-only imports have no media lease. */
+		});
 }
 async function prune(
 	domain: MobileDomain,
@@ -67,18 +88,18 @@ async function prune(
 ) {
 	let deletedCount = 0;
 	for (const record of records) {
+		const media = deps.media;
 		if (record.status !== "EXPORTED" || present.has(record.key)) continue;
 		const count = options.dryRun
 			? 1
 			: await deps.repository.deleteExported(domain, owner, record.id);
-		if (
-			count &&
-			!options.dryRun &&
-			domain === "images" &&
-			deps.media &&
-			!(await deps.repository.isMediaReferenced(record.key))
-		)
-			await deps.media.removeImage(record.key);
+		if (count && !options.dryRun && domain === "images" && media)
+			await media.lock.run("images", record.key, async (assertActive) => {
+				if (!(await deps.repository.isMediaReferenced(record.key))) {
+					await assertActive();
+					await media.removeImage(record.key);
+				}
+			});
 		deletedCount += count;
 		if (count) options.onProgress?.({ action: "deleted", key: record.key });
 	}

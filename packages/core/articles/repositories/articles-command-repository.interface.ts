@@ -4,7 +4,6 @@ import type {
 } from "@s-hirano-ist/s-core/articles/entities/article-entity";
 import type {
 	Id,
-	Status,
 	UserId,
 } from "@s-hirano-ist/s-core/shared-kernel/entities/common-entity";
 
@@ -26,9 +25,9 @@ import type {
  *     await prisma.article.create({ data });
  *   }
  *
- *   async deleteById(id: Id, userId: UserId, status: Status) {
+ *   async deleteById(id: Id, userId: UserId) {
  *     await prisma.article.delete({
- *       where: { id, userId, status }
+ *       where: { id, userId }
  *     });
  *   }
  * }
@@ -57,12 +56,7 @@ export type IArticlesCommandRepository = {
 	 *
 	 * @param id - The article ID to delete
 	 * @param userId - The user ID for tenant isolation
-	 * @param status - The expected status of the article
 	 * @returns The deleted article data needed for domain events
 	 */
-	deleteById(
-		id: Id,
-		userId: UserId,
-		status: Status,
-	): Promise<DeleteArticleResult>;
+	deleteById(id: Id, userId: UserId): Promise<DeleteArticleResult>;
 };

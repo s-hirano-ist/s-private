@@ -21,6 +21,7 @@ import { createApiServices } from "s-private-backend/api/composition";
 import { createBackendHttpApp } from "s-private-backend/api/http-app";
 import { createSignInHandler } from "s-private-backend/auth/sign-in";
 import { createBackendAuth } from "s-private-backend/auth/web-auth";
+import { createMediaCleanupCron } from "s-private-backend/content/cleanup-cron";
 import { createHttpErrorReporter } from "s-private-backend/error-reporter";
 import { createEventInitializer } from "s-private-backend/events/event-setup";
 import { createMcpApp } from "s-private-backend/mcp/app";
@@ -156,6 +157,7 @@ export function createBackendRuntime(env: BackendEnv) {
 						),
 				}),
 			})(request),
+		cleanupMedia: createMediaCleanupCron(env, services.cleanupMedia),
 		cron: (request) =>
 			env.BACKEND_CRON_ENABLED
 				? cron(request)

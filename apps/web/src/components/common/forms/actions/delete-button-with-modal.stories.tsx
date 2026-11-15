@@ -110,3 +110,28 @@ export const DeleteError: Story = {
 		await expect(body.getByText("削除の確認")).toBeInTheDocument();
 	},
 };
+
+export const DeleteRefused: Story = {
+	args: {
+		id: "exported-record",
+		title: "Exported content",
+		deleteAction: fn().mockResolvedValue({
+			success: false,
+			message: "unexpected",
+		}),
+	},
+	play: async ({ args, canvas }) => {
+		await userEvent.click(canvas.getByRole("button"));
+		const body = within(document.body);
+		await userEvent.click(body.getByRole("button", { name: "削除" }));
+		await expect(args.deleteAction).toHaveBeenCalledTimes(1);
+		await expect(args.deleteAction).toHaveBeenCalledWith("exported-record");
+		await waitFor(() =>
+			expect(body.getByRole("button", { name: "削除" })).toBeEnabled(),
+		);
+		await expect(
+			body.getByRole("dialog", { name: "削除の確認" }),
+		).toBeInTheDocument();
+		await userEvent.click(body.getByRole("button", { name: "キャンセル" }));
+	},
+};

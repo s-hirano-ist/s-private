@@ -1,3 +1,4 @@
+import { deleteImage } from "@/application-services/images/delete-image";
 import { loadMoreExportedImages } from "@/application-services/images/load-more-images";
 import { renderContentListPage } from "@/components/common/layouts/content-list-page-server";
 import { ImagesCounterLoader } from "@/loaders/images/images-counter-loader";
@@ -15,6 +16,7 @@ export default function Page() {
 				ImagesStackLoader({
 					loadMoreAction: loadMoreExportedImages,
 					variant: "exported",
+					deleteAction: deleteImage,
 				}),
 		},
 	});

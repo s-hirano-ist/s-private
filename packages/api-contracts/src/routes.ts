@@ -163,7 +163,7 @@ export function contentRoutes<const D extends string, T extends ZodType>(
 			security,
 			request: { params: idParams },
 			responses: {
-				204: { description: "Deleted; only UNEXPORTED records may be deleted" },
+				204: { description: "Deleted regardless of export status" },
 				...recordErrors,
 				409: errorResponses[409],
 			},

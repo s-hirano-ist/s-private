@@ -9,7 +9,6 @@ export const apiErrorDefinitions = [
 		codes: [
 			"DUPLICATE",
 			"PUSH_RESUBSCRIPTION_REQUIRED",
-			"NOT_DELETABLE",
 			"OPERATION_CONFLICT",
 			"OPERATION_IN_PROGRESS",
 			"UPLOAD_INCOMPLETE",

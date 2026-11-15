@@ -1,3 +1,4 @@
+import { deleteArticle } from "@/application-services/articles/delete-article";
 import { loadMoreExportedArticles } from "@/application-services/articles/load-more-articles";
 import { renderContentListPage } from "@/components/common/layouts/content-list-page-server";
 import { ArticlesCounterLoader } from "@/loaders/articles/articles-counter-loader";
@@ -15,6 +16,7 @@ export default function Page() {
 				ArticlesStackLoader({
 					loadMoreAction: loadMoreExportedArticles,
 					variant: "exported",
+					deleteAction: deleteArticle,
 				}),
 		},
 	});
