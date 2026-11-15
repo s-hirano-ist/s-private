@@ -2,6 +2,43 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.5.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v4.4.0...s-private-v4.5.0) (2026-11-15)
+
+
+### Features
+
+* **harness:** share project MCP configuration across agents ([de1b125](https://github.com/s-hirano-ist/s-private/commit/de1b1252a2870b8e8b6fbc375a8869d5dae8a48f))
+* **harness:** 開発用MCPをリポジトリで共通管理 ([ee16b98](https://github.com/s-hirano-ist/s-private/commit/ee16b98cb9e399885c0b3ba1e093e49bb28b2b7a))
+
+
+### Bug Fixes
+
+* **deploy:** Preview起動時500の検出とAuth0設定整理 ([106a810](https://github.com/s-hirano-ist/s-private/commit/106a8105ef1642deea71438f3ac1a4502ac21c56))
+* **deploy:** validate backend configuration before Vercel builds ([603068b](https://github.com/s-hirano-ist/s-private/commit/603068b202a6029ec4f7a9fcdd3b298a4cf18b19))
+
+
+### Documentation
+
+* **auth:** describe current tenant configuration only ([8d7572e](https://github.com/s-hirano-ist/s-private/commit/8d7572ebaec6c7816fde5367c1afcf1051cfd832))
+* **auth:** record Auth0 environment settings and verification ([219e045](https://github.com/s-hirano-ist/s-private/commit/219e0455cd95b4f62b891ae99bde665339710df3))
+* **auth:** record dev connection hardening and tenant audit ([dd2fb0a](https://github.com/s-hirano-ist/s-private/commit/dd2fb0ad4552abb72cab8f40f494089cc02dcaa8))
+* **auth:** record Preview login and sign-out verification ([01c71a6](https://github.com/s-hirano-ist/s-private/commit/01c71a6a4abf427d6ecb96f8a9b3f7463469c055))
+* **auth:** 現在のAuth0設定を整理 ([70e199d](https://github.com/s-hirano-ist/s-private/commit/70e199da9d589c525e4cbd22fc65e6f7bf17b928))
+* **deploy:** record Preview storage recovery and smoke checks ([3fb375a](https://github.com/s-hirano-ist/s-private/commit/3fb375a6bccf33cdf60d44bff5afe3cd9924f18e))
+* **mcp:** add per-client OAuth setup for Muse ([d47e576](https://github.com/s-hirano-ist/s-private/commit/d47e576bfb5c7ba4157e0c8cae8501b37b40a154))
+* **mcp:** ChatGPTとMuseのOAuth接続手順を整備 ([735f862](https://github.com/s-hirano-ist/s-private/commit/735f86295efde255713d5106b8f868cb33d81fa6))
+* **mcp:** document ChatGPT CIMD setup ([55f87ff](https://github.com/s-hirano-ist/s-private/commit/55f87ffe4632f9c4f80ddc2edb70e64f8ad05129))
+* **mcp:** specify Muse public OAuth client settings ([66e6802](https://github.com/s-hirano-ist/s-private/commit/66e6802293b4e86343a9ffa46d9a7a94a458b2f2))
+
+
+### Maintenance
+
+* **deps:** update dependency better-auth to v1.7.23 ([37c8d6e](https://github.com/s-hirano-ist/s-private/commit/37c8d6e9c2cacc0c898ec60c2f9b9533b2d64624))
+* **deps:** update dependency better-auth to v1.7.23 ([174392d](https://github.com/s-hirano-ist/s-private/commit/174392d4db7d6fdb9322a4e55af787af679ae98e))
+* **deps:** update dependency npm:agent-browser to v0.43.0 ([92183f3](https://github.com/s-hirano-ist/s-private/commit/92183f367f3f54202c9a1ca64908f9a4e98b5178))
+* **deps:** update dependency npm:agent-browser to v0.43.0 ([ea51511](https://github.com/s-hirano-ist/s-private/commit/ea51511dd3ccf11efa7a64a3af4b4373d18f9605))
+* remove obsolete tooling and align development docs ([e98ae8b](https://github.com/s-hirano-ist/s-private/commit/e98ae8bf46d65b38715a8661dc190b6d6ade4cf3))
+
 ## [4.4.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v4.3.0...s-private-v4.4.0) (2026-11-14)
 
 
