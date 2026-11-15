@@ -2,6 +2,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { manageMcp } from "./harness-mcp.mjs";
 
 const mode = process.argv[2];
 if (mode !== "sync" && mode !== "check") {
@@ -39,6 +40,8 @@ if (mode === "sync") {
 		synchronizeSkillLinks(adapterDir);
 	}
 }
+
+errors.push(...manageMcp(repoRoot, mode));
 
 validateInstructionLinks();
 validateStorybookAgentWorkflow();

@@ -1,0 +1,54 @@
+{
+	"mcpServers": {
+		"github": {
+			"type": "http",
+			"url": "https://api.githubcopilot.com/mcp/",
+			"headers": {
+				"Authorization": "Bearer ${GITHUB_MCP_TOKEN}"
+			}
+		},
+		"vercel": {
+			"type": "http",
+			"url": "https://mcp.vercel.com"
+		},
+		"sentry": {
+			"type": "http",
+			"url": "https://mcp.sentry.dev/mcp"
+		},
+		"auth0": {
+			"command": "npx",
+			"args": ["-y", "@auth0/auth0-mcp-server@0.1.0-beta.19", "run"]
+		},
+		"cockroachdb-cloud": {
+			"type": "http",
+			"url": "https://cockroachlabs.cloud/mcp"
+		},
+		"cloudflare": {
+			"type": "http",
+			"url": "https://mcp.cloudflare.com/mcp"
+		},
+		"qdrant-cloud": {
+			"type": "http",
+			"url": "https://api.cloud.qdrant.io/mcp"
+		},
+		"backblaze-b2": {
+			"command": "npx",
+			"args": ["-y", "@backblaze-labs/b2-mcp@0.2.2"]
+		},
+		"doppler": {
+			"command": "npx",
+			"args": ["-y", "@dopplerhq/mcp-server@1.0.5"]
+		},
+		"huggingface": {
+			"type": "http",
+			"url": "https://huggingface.co/mcp"
+		},
+		"xcodebuildmcp": {
+			"command": "npx",
+			"args": ["-y", "xcodebuildmcp@2.7.0", "mcp"],
+			"env": {
+				"XCODEBUILDMCP_ENABLED_WORKFLOWS": "simulator,ui-automation,debugging,logging"
+			}
+		}
+	}
+}

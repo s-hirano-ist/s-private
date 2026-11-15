@@ -305,3 +305,7 @@ actionlint v1.7.12 の未対応構文に対する例外は、`$/` による自�
 公式資料: [GitHub workflow lockfiles](https://docs.github.com/en/actions/concepts/security/workflow-dependency-lockfiles)、
 [gh-actions-lock](https://github.com/github/gh-actions-lock)、
 [Renovate GitHub Actions](https://docs.renovatebot.com/modules/manager/github-actions/)。
+
+## 開発エージェントの接続
+
+Codex・Claude Codeのproject MCPは [開発用MCP設定](development-mcp.md) を参照してください。

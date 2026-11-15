@@ -11,6 +11,7 @@ Next.js + TypeScript + Clean Architectureベースのコンテンツ管理シス
 - プロンプトが `#123` のような Issue 番号のみの場合は、このリポジトリの GitHub Issue 対応依頼として扱う。対象 Issue の本文と関連コメントを読み、コードや既存設計と照合する。実装に影響する要件が不足している場合のみユーザーに確認し、明確になったら実装、検証、DraftではないPRの作成まで進めること。
 - 計画時、後方互換性は基本的に捨てること。
 - ハーネス共通資産の正本は `.harness/` に置く。`AGENTS.md`、`CLAUDE.md`、`.agents/skills/`、`.claude/skills/` のリンク先を直接編集しないこと。
+- 開発用MCPの正本は `.harness/mcp.json`。変更後は `pnpm harness:sync` と `pnpm harness:check` を実行し、生成設定へ秘密情報を記録しない。
 - Skillを追加・削除したら `pnpm harness:sync` でリンクを同期し、`pnpm harness:check` で検証すること。
 - `apps/ios/`配下のSwiftUIアプリを変更、ビルド、テスト、Simulatorデバッグするときは`develop-ios-app` Skillを使用する。現在のworktree内のXcode projectとDerivedDataだけを使い、主checkoutや別worktreeの生成物を参照しないこと。
 
@@ -21,8 +22,8 @@ Next.js + TypeScript + Clean Architectureベースのコンテンツ管理シス
 - Prisma + CockroachDB
 - Shadcn/ui + Tailwind CSS
 - Auth0 + Better Auth
-- MinIO (Object Storage)
-- Qdrant (Vector Database) + HuggingFace TEI (Text Embeddings Inference)
+- Backblaze B2（本番・Preview）/ MinIO（ローカル開発用）、AWS SDK v3 / S3互換API
+- Qdrant（Vector Database）+ Qdrant Cloud Inference（本番・Preview）/ Hugging Face TEI（ローカル）
 
 ## コマンド
 
@@ -62,7 +63,7 @@ Next.js + TypeScript + Clean Architectureベースのコンテンツ管理シス
 - `packages/ui/` - React 19汎用デザインシステム（Next.js・アプリ固有ロジック禁止、明示的subpath exports）
 - `packages/database/` - データベース層（Prisma ORM・マイグレーション）
 - `packages/notification/` - 通知サービス（Pushover）
-- `packages/storage/` - MinIOストレージクライアント
+- `packages/storage/` - AWS SDK v3のS3互換ストレージクライアント
 - `packages/scripts/` - ビルド・ユーティリティスクリプト
 - `apps/backend/` - Hono HTTP host・環境設定・DI・ユースケース・認証・tenant・永続化adapter・検索・通知
 - `packages/api-contracts/` - Hono + Zodの共通HTTP契約
@@ -90,11 +91,11 @@ Next.js + TypeScript + Clean Architectureベースのコンテンツ管理シス
 ## 外部サービス
 
 - CockroachDB Cloud + Prisma ORM
-- MinIO（オブジェクトストレージ）
+- Backblaze B2（本番・Previewのオブジェクトストレージ）、MinIO（ローカル）
 - Sentry（エラー監視）+ Pushover（通知）
 - Auth0 + Better Auth（認証）
 - next-intl（i18n）
-- HuggingFace TEI（Docker / ConoHa VPS + Cloudflare Tunnel）
+- Qdrant Cloud Inference（本番・Previewのembedding）、Hugging Face TEI（ローカルDocker）
 - Qdrant（ベクトルデータベース）
 
 ## 環境設定
@@ -108,6 +109,7 @@ Next.js + TypeScript + Clean Architectureベースのコンテンツ管理シス
 - アーキテクチャ: [docs/architecture.md](docs/architecture.md)
 - ドメインモデル: [docs/domain-model.md](docs/domain-model.md)
 - セキュリティ: [SECURITY.md](SECURITY.md)
-- VPSデプロイ: [docs/vps-deployment.md](docs/vps-deployment.md)
+- ストレージ: [docs/backblaze-b2-setup.md](docs/backblaze-b2-setup.md)
+- 開発用MCP: [docs/development-mcp.md](docs/development-mcp.md)
 - コード分析: [docs/code-analysis.md](docs/code-analysis.md)
 - スキーマ: [packages/database/prisma/schema.prisma](packages/database/prisma/schema.prisma)

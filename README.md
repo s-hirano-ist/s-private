@@ -46,11 +46,10 @@
 
 ### Database & Storage
 - **Database** - [CockroachDB](https://www.cockroachlabs.com/) (PostgreSQL-compatible, distributed) with [Prisma](https://www.prisma.io/) ORM
-- **Object Storage** - [MinIO](https://min.io/) (configurable for local/cloud deployment)
+- **Object Storage** - [Backblaze B2](https://www.backblaze.com/cloud-storage) in Preview/Production; MinIO for local development (AWS SDK v3 / S3-compatible API)
 ### AI & Search
-- **Embedding Model** - [intfloat/multilingual-e5-small](https://huggingface.co/intfloat/multilingual-e5-small) via [HuggingFace TEI](https://github.com/huggingface/text-embeddings-inference) (Docker)
+- **Embedding Model** - [intfloat/multilingual-e5-small](https://huggingface.co/intfloat/multilingual-e5-small) via Qdrant Cloud Inference in Preview/Production; [HuggingFace TEI](https://github.com/huggingface/text-embeddings-inference) in local Docker
 - **Vector Database** - [Qdrant](https://qdrant.tech/)
-- **Tunnel** - [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/) (Zero Trust)
 
 ### Authentication & Internationalization
 - **Authentication** - [Auth0](https://auth0.com/) with [NextAuth.js](https://next-auth.js.org/)
@@ -138,8 +137,8 @@ This project follows clean architecture principles with domain-driven design, en
 │   │
 │   ├── notification/               # Notification services
 │   │
-│   ├── storage/                    # MinIO Storage Client
-│   │   └── src/                    # MinIO client implementation
+│   ├── storage/                    # S3-compatible Storage Client
+│   │   └── src/                    # AWS SDK v3 implementation
 │   │
 │   ├── search/                     # RAG Search Library
 │   │   └── src/                    # Qdrant client, Embedding API client
@@ -221,32 +220,21 @@ Each domain is completely isolated with its own:
 ### RAG & Search Architecture
 
 ```text
-┌──────────────┐     ┌─────────────────────────────────────────┐
-│  Next.js App │     │  ConoHa VPS (Docker)                    │
-│  (Vercel)    │     │                                         │
-│              │ CF  │  ┌───────────────┐                      │
-│  packages/   │────▶│  │ HuggingFace   │  Cloudflare Tunnel   │
-│  search/     │Tunnel│  │ TEI (:3001)   │◀── cloudflared       │
-│              │     │  └───────────────┘                      │
-└──────┬───────┘     │  multilingual-e5-small                  │
-       │             └─────────────────────────────────────────┘
-       │
-       ▼
-┌──────────────┐
-│   Qdrant     │
-│ (Vector DB)  │
-└──────────────┘
+Web / iOS → 共通Hono backend → packages/search → Qdrant Cloud
+                                               ├─ Cloud Inference（embedding）
+                                               └─ collection（ベクトル保存・検索）
 ```
 
 #### Data Flow
 
-- **Ingestion**: コンテンツ → Embedding API → ベクトル化 → Qdrant に保存
-- **Search**: 検索クエリ → Embedding API → クエリベクトル化 → Qdrant で類似検索 → 結果返却
+- **Ingestion**: コンテンツ → Qdrant Cloud Inferenceでベクトル化 → collectionに保存
+- **Search**: 検索クエリ → Qdrant Cloud Inference → 類似検索 → 結果返却
+- **Local**: DockerのQdrantとHugging Face TEIを使用。`LOCAL_DEV_MODE=true` の明示時だけローカルTEIへ接続する。
 
 #### Key Components
 
-- **`packages/search/`** - RAG 検索ライブラリ（Qdrant クライアント、Embedding API クライアント、検索ロジック）
-- **HuggingFace TEI** - Embedding API サービス（ConoHa VPS 上で Docker 稼働、Cloudflare Tunnel 経由でアクセス。本リポジトリの `compose.yaml` には含まれず別管理）
+- **`packages/search/`** - Qdrantクライアント、ローカルTEIクライアント、検索ロジック
+- **Qdrant Cloud Inference** - Preview/Productionのembedding実行。ConoHa・Cloudflare Tunnelは使用しない。
 
 ### Database Architecture
 
@@ -255,7 +243,7 @@ Content management system with clean domain separation:
 #### Core Models
 - **Article** - News/link management with OpenGraph metadata and category association
 - **Note** - Markdown-based content creation and management  
-- **Image** - File metadata tracking with tags, dimensions, and MinIO path storage
+- **Image** - File metadata tracking with tags, dimensions, and S3 object path storage
 - **Book** - ISBN-based book tracking with Google Books API integration and ratings
 
 #### Supporting Models
@@ -280,10 +268,9 @@ Schema location: `packages/database/prisma/schema.prisma`
 ### External Service Integrations
 
 - **Authentication**: Better Auth + Auth0（Preview/Production）、固定開発ユーザー（local）
-- **File Storage**: MinIO for object storage (configurable for local/cloud)
+- **File Storage**: Backblaze B2 in Preview/Production, MinIO locally, through the S3-compatible API
 - **Monitoring**: Sentry as the error-tracking source of truth; Pushover for critical and batch notifications
 - **APIs**: Google Books API for ISBN-based book metadata enrichment
-- **VPS Services**: ConoHa VPS (Docker) + Cloudflare Tunnel ([deployment guide](docs/vps-deployment.md))
 - **Vector Database**: Qdrant for semantic vector search
 
 ## Development Setup
@@ -316,11 +303,11 @@ mise run ios:test
 
 ### Environment Configuration
 
-ローカル用の非機密設定はコミット済みの `.env.local`、Preview/Productionの秘密値は [Vercel Dashboard](https://vercel.com/) で管理します。`pnpm dev` はDockerサービス、migration、MinIO bucket、Qdrant collectionを初期化してからNext.jsを起動します。
+ローカル用の非機密設定はコミット済みの `.env.local`、Preview/Productionの秘密値は [Vercel Dashboard](https://vercel.com/) で管理します。`pnpm dev` はDockerサービス、migration、ローカルMinIO bucket、Qdrant collectionを初期化してから共通backendとNext.jsを起動します。
 
 型定義とバリデーション: [`apps/web/src/env.ts`](apps/web/src/env.ts)（`@t3-oss/env-nextjs` + Zod）
 
-> 環境変数の全体的な管理戦略（ローカル・CI・本番・VPS）については[環境変数管理](#環境変数管理)を参照。
+> 環境変数の全体的な管理戦略（ローカル・CI・本番）については[環境変数管理](#環境変数管理)を参照。
 
 ### Database Setup
 
@@ -454,7 +441,7 @@ pnpm docs:clean            # Remove generated documentation
 - **Preview**: Vercel branch deployments
 - **Production**: Vercel production deployment
 - **Storybook**: Deployed to Cloudflare Pages
-- **Embedding API**: ConoHa VPS (Docker) + Cloudflare Tunnel
+- **Embedding**: Qdrant Cloud Inference（Preview/Production）、TEI（local）
 
 ### 環境変数管理
 
@@ -466,7 +453,6 @@ pnpm docs:clean            # Remove generated documentation
 | **Preview** | Vercel Dashboard | ビルド・ランタイムに自動注入 |
 | **CI (GitHub Actions)** | ワークフロー内の固定ローカル値 | build/test は外部サービスへ接続しない |
 | **本番 (Vercel)** | Vercel Dashboard | ビルド・ランタイムに自動注入 |
-| **VPS (Docker Compose)** | `~/s-private/.env` | Docker Compose が `.env` を自動読み込み |
 
 #### ローカル開発
 
@@ -486,10 +472,6 @@ CI の build/test はワークフロー内の localhost 向け固定値を使い
 npm 公開は OIDC trusted publishing を使用し、外部利用のある `@s-hirano-ist/s-ui` と `@s-hirano-ist/s-scripts` に限定します。この2 packageで、repository を `s-hirano-ist/s-private`、workflow を `.github/workflows/release-please.yaml` として trusted publisher を設定してください。`NPM_TOKEN` は不要です。CLIは必要な内部workspaceを同梱します。既存バージョンのunpublishは行いません。
 
 環境変数が不要なジョブ（lint, storybook）では `SKIP_ENV_VALIDATION: "true"` を設定。
-
-#### VPS (Docker Compose)
-
-VPS 上の Docker Compose サービス用の環境変数は `~/s-private/.env` に配置する。詳細は [docs/vps-deployment.md Step 7](docs/vps-deployment.md) を参照。
 
 #### 型定義・バリデーション
 
@@ -541,3 +523,5 @@ To run code duplication analysis locally:
 ```bash
 pnpm jscpd
 ```
+
+開発エージェントの接続設定は [開発用MCP設定](docs/development-mcp.md) を参照してください。

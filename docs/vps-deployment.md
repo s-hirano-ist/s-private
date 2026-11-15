@@ -1,6 +1,11 @@
-# VPS デプロイ手順
+# 旧VPS デプロイ手順
 
-ConoHa VPS (Ubuntu) + Docker + Cloudflare Tunnel の汎用デプロイ手順書。
+本資料は廃止済みのConoHa VPS・本番MinIO・Cloudflare Tunnel構成の履歴資料。
+現行環境へのセットアップには使用しない。Docker構成・旧デプロイスクリプトは今回削除しない。
+本番・Previewは [Backblaze B2](backblaze-b2-setup.md) とQdrant Cloud Inferenceを使用し、
+MinIOとTEIはローカル開発用として維持する。
+
+以下は当時のConoHa VPS (Ubuntu) + Docker + Cloudflare Tunnelの手順。
 VPS 上では全ポートを firewall で閉じ、Cloudflare Tunnel の outbound 接続のみで外部からアクセス可能にする。
 
 ## ストレージ構成の変更
