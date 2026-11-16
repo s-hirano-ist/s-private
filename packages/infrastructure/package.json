@@ -24,6 +24,7 @@
 	},
 	"license": "AGPL-3.0",
 	"dependencies": {
+		"@nodable/entities": "catalog:",
 		"@s-hirano-ist/s-application": "workspace:*",
 		"@s-hirano-ist/s-core": "workspace:*",
 		"@s-hirano-ist/s-database": "workspace:*",

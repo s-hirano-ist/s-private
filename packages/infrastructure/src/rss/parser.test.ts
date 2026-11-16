@@ -2,6 +2,64 @@ import { isPublicAddress } from "@s-hirano-ist/s-infrastructure/rss/fetch-feed";
 import { parseRssImport } from "@s-hirano-ist/s-infrastructure/rss/import";
 import { parseFeed } from "@s-hirano-ist/s-infrastructure/rss/parser";
 import { describe, expect, test } from "vitest";
+
+const numericTitle =
+	"[&#x6CD5;&#26519;&#x5CB3;&#20043;] 36&#x4E07;&#x5186;&#x1F600;";
+test.each([
+	[
+		"RSS 2.0",
+		`<rss><channel><title>&#x65E5;本語</title><item><title>${numericTitle}</title><link>https://example.com/article</link></item></channel></rss>`,
+	],
+	[
+		"RSS 1.0",
+		`<rdf:RDF xmlns="http://purl.org/rss/1.0/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><channel><title>&#x65E5;本語</title></channel><item><title>${numericTitle}</title><link>https://example.com/article</link></item></rdf:RDF>`,
+	],
+	[
+		"Atom",
+		`<feed><title>&#x65E5;本語</title><entry><title>${numericTitle}</title><link href="https://example.com/article"/></entry></feed>`,
+	],
+])(
+	"expands hexadecimal, decimal and supplementary numeric references in %s titles",
+	(_format, xml) => {
+		const parsed = parseFeed(xml, "https://example.com/feed");
+		expect(parsed.title).toBe("日本語");
+		expect(parsed.entries[0].title).toBe("[法林岳之] 36万円😀");
+	},
+);
+
+test("does not recursively decode escaped references or expand literal CDATA", () => {
+	const parsed = parseFeed(
+		"<rss><channel><title>News</title><item><title>&amp;#x6CD5;</title><link>/escaped</link></item><item><title><![CDATA[&#x6CD5;]]></title><link>/cdata</link></item></channel></rss>",
+		"https://example.com/feed",
+	);
+	expect(parsed.entries.map((entry) => entry.title)).toEqual([
+		"&#x6CD5;",
+		"&#x6CD5;",
+	]);
+});
+
+test("rejects non-web links after numeric references in text and attributes are expanded", () => {
+	expect(
+		parseFeed(
+			"<rss><channel><item><link>&#x6a;avascript:alert(1)</link></item></channel></rss>",
+			"https://example.com/feed",
+		).entries,
+	).toEqual([]);
+	expect(
+		parseFeed(
+			'<feed><entry><link href="&#x6a;avascript:alert(1)"/></entry></feed>',
+			"https://example.com/feed",
+		).entries,
+	).toEqual([]);
+	const imported = parseRssImport(
+		"opml",
+		'<opml><body><outline title="&#x65E5;本語" xmlUrl="https://example.com/?a=1&amp;b=&#50;"/></body></opml>',
+	);
+	expect(imported.feeds[0]).toMatchObject({
+		title: "日本語",
+		url: "https://example.com/?a=1&b=2",
+	});
+});
 describe("RSS ingestion", () => {
 	test("keeps RSS identity separate from dates and strips bodies", () => {
 		const result = parseFeed(

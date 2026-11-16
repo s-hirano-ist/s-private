@@ -29,6 +29,39 @@ test("recognizes previously truncated damaged titles", () => {
 	expect(needsTitleRepair(damaged, fresh)).toBe(true);
 });
 
+test("repairs numeric references even if the encoded title was truncated or the feed wording changed", () => {
+	expect(
+		needsTitleRepair("[&#x6CD5;&#x6797;] 36&#19975;&#20870;", "36万円 [法林]"),
+	).toBe(true);
+	expect(
+		needsTitleRepair(
+			"&#x65E5;".repeat(100).slice(0, 512),
+			"日本語".repeat(100),
+		),
+	).toBe(true);
+	expect(needsTitleRepair("&#128512;", "😀")).toBe(true);
+});
+
+test.each([
+	"&#x110000;",
+	"&#xD800;",
+	"&#0;",
+	"&#x;",
+	"&#xNOPE;",
+	"&#12345678;",
+])("does not classify invalid reference %s as damage", (stored) => {
+	expect(needsTitleRepair(stored, "New title")).toBe(false);
+});
+
+test("preserves references that are literal text in the current source", () => {
+	expect(
+		needsTitleRepair("HTMLの &#x41; の書き方", "HTMLの &#x41; の書き方"),
+	).toBe(false);
+	expect(needsTitleRepair("以前の &#x41; の説明", "新しい &#x41; の説明")).toBe(
+		false,
+	);
+});
+
 test("retains normal, custom, and already repaired titles, and rejects a damaged source", () => {
 	expect(needsTitleRepair(title, title)).toBe(false);
 	expect(needsTitleRepair("自分で付けたタイトル", title)).toBe(false);
