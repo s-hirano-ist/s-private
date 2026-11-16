@@ -1,0 +1,5 @@
+version = 1
+name = "s-private"
+
+[setup]
+script = "sh .harness/setup-worktree.sh"
