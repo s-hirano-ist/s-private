@@ -77,9 +77,14 @@ export function createRssService(
 					if (!lease) return { id, status: "skipped" as const };
 					let stage: "fetch" | "complete" = "fetch";
 					try {
-						const result = await fetchFeed(lease);
+						const result = await fetchFeed(
+							force ? { ...lease, etag: null, lastModified: null } : lease,
+						);
 						stage = "complete";
-						await repository.complete(owner, lease, result);
+						await repository.complete(owner, lease, {
+							...result,
+							repairMetadata: force,
+						});
 						return { id, status: "updated" as const };
 					} catch (error) {
 						await report(error, id, stage, started, lease);

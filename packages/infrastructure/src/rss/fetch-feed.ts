@@ -5,6 +5,7 @@ import type {
 } from "@s-hirano-ist/s-application/rss/ports";
 import type { LookupAddress } from "node:dns";
 import { RssFetchError } from "@s-hirano-ist/s-application/rss/failure";
+import { decodeFeedXml } from "@s-hirano-ist/s-infrastructure/rss/decode";
 import { parseFeed, httpUrl } from "@s-hirano-ist/s-infrastructure/rss/parser";
 import ipaddr from "ipaddr.js";
 import { lookup } from "node:dns/promises";
@@ -56,6 +57,8 @@ export async function fetchFeed(lease: FeedLease): Promise<FeedResult> {
 			if (Object.hasOwn(reasons, error.message))
 				diagnostic.reason = reasons[error.message as keyof typeof reasons];
 		}
+		if (diagnostic.stage === "decode" && error instanceof RangeError)
+			diagnostic.reason = "unsupported_charset";
 		if (signal.aborted) diagnostic.reason = "timeout";
 		diagnostic.durationMs = Math.round(performance.now() - started);
 		diagnostic.networkCode = safeNetworkCode(error);
@@ -157,9 +160,16 @@ async function readResponse(
 		}
 		chunks.push(bytes);
 	}
+	diagnostic.stage = "decode";
+	diagnostic.reason = "invalid_text";
+	const contentType = response.headers["content-type"];
+	const xml = decodeFeedXml(
+		Buffer.concat(chunks),
+		typeof contentType === "string" ? contentType : undefined,
+	);
 	diagnostic.stage = "parse";
 	diagnostic.reason = "parse_error";
-	const parsed = parseFeed(Buffer.concat(chunks).toString("utf8"), url.href);
+	const parsed = parseFeed(xml, url.href);
 	const header = (name: string, max: number) =>
 		typeof response.headers[name] === "string"
 			? response.headers[name].slice(0, max)

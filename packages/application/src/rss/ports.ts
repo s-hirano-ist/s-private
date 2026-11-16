@@ -15,6 +15,7 @@ export type FeedResult = {
 	etag: string | null;
 	lastModified: string | null;
 	notModified: boolean;
+	repairMetadata?: boolean;
 	title: string;
 };
 export type RssRepository = {

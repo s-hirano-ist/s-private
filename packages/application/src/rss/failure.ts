@@ -1,4 +1,10 @@
-export type RssFetchStage = "url" | "dns" | "http" | "body" | "parse";
+export type RssFetchStage =
+	| "url"
+	| "dns"
+	| "http"
+	| "body"
+	| "decode"
+	| "parse";
 export type RssFetchReason =
 	| "invalid_url"
 	| "blocked_port"
@@ -13,6 +19,8 @@ export type RssFetchReason =
 	| "body_error"
 	| "body_too_large"
 	| "parse_error"
+	| "unsupported_charset"
+	| "invalid_text"
 	| "invalid_xml"
 	| "unsupported_feed"
 	| "entry_limit";

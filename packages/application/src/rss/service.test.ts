@@ -192,3 +192,27 @@ test("preserves structured fetch diagnostics and identifies the failed subscript
 	);
 	expect(repo.fail).toHaveBeenCalledOnce();
 });
+
+test("manual refresh bypasses old validators and requests metadata repair", async () => {
+	const repo = repository();
+	const withValidators = { ...lease, etag: "old", lastModified: "yesterday" };
+	repo.claim.mockResolvedValue(withValidators);
+	const result = {
+		entries: [],
+		notModified: false,
+		title: "Correct",
+		etag: "new",
+		lastModified: null,
+	};
+	const fetch = vi.fn().mockResolvedValue(result);
+	await createRssService(repo, fetch, vi.fn()).refresh("owner", ["feed"], true);
+	expect(fetch).toHaveBeenCalledWith({
+		...withValidators,
+		etag: null,
+		lastModified: null,
+	});
+	expect(repo.complete).toHaveBeenCalledWith("owner", withValidators, {
+		...result,
+		repairMetadata: true,
+	});
+});
