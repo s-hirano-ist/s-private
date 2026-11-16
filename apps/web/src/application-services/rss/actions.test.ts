@@ -11,7 +11,6 @@ const client = {
 	markRssRead: vi.fn(),
 	saveRss: vi.fn(),
 	unsaveRss: vi.fn(),
-	refreshRss: vi.fn(),
 	importRss: vi.fn(),
 };
 beforeEach(() => {
@@ -27,12 +26,6 @@ test("loads the requested page and unwraps backend envelopes", async () => {
 	expect(client.getRssPage).toHaveBeenLastCalledWith({
 		offset: 50,
 		feedId: "feed",
-	});
-	client.refreshRss.mockResolvedValue({ data: { data: [] } });
-	expect(await actions.refreshRss(["feed"], true)).toEqual({ data: [] });
-	expect(client.refreshRss).toHaveBeenCalledWith({
-		ids: ["feed"],
-		force: true,
 	});
 	client.importRss.mockResolvedValue({ data: { added: 2 } });
 	expect(await actions.importRss("opml", "<opml/>")).toEqual({ added: 2 });

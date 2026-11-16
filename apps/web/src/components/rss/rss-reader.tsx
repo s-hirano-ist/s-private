@@ -5,11 +5,13 @@ import type {
 	RssUnread,
 	RssSaved,
 } from "@s-hirano-ist/s-api-client/models";
+import { refreshRss } from "@/application-services/rss/client";
+import { refreshFeeds } from "@/components/rss/refresh-feeds";
 import { Button } from "@s-hirano-ist/s-ui/button";
 import { Input } from "@s-hirano-ist/s-ui/input";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState, useTransition } from "react";
-export type RssActions = typeof actions;
+type RssActions = typeof actions & { refreshRss?: typeof refreshRss };
 export function RssReader({
 	initialData,
 	services,
@@ -34,6 +36,24 @@ export function RssReader({
 		invalid: number;
 	} | null>(null);
 	const started = useRef(false);
+	const refreshLock = useRef(false);
+	const mounted = useRef(true);
+	const reloadTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+	useEffect(() => {
+		mounted.current = true;
+		return () => {
+			mounted.current = false;
+			if (reloadTimer.current) clearTimeout(reloadTimer.current);
+			reloadTimer.current = null;
+		};
+	}, []);
+	function scheduleReload() {
+		if (reloadTimer.current) return;
+		reloadTimer.current = setTimeout(() => {
+			reloadTimer.current = null;
+			if (mounted.current) setRevision((value) => value + 1);
+		}, 1000);
+	}
 	useEffect(() => {
 		let cancelled = false;
 		startLoading(async () => {
@@ -49,24 +69,32 @@ export function RssReader({
 		};
 	}, [services, offset, feedId, revision]);
 	async function refresh(ids: string[], force: boolean) {
+		if (refreshLock.current) return;
+		refreshLock.current = true;
 		setRefreshing(true);
+		setProgress(`0 / ${ids.length}`);
 		setError(false);
 		try {
-			for (let index = 0; index < ids.length; index += 5) {
-				const result = await services.refreshRss(
-					ids.slice(index, index + 5),
-					force,
-				);
-				if (result.data.some((item) => item.status === "failed"))
-					setError(true);
-				setProgress(`${Math.min(index + 5, ids.length)} / ${ids.length}`);
-				setRevision((value) => value + 1);
-			}
-		} catch {
-			setError(true);
+			await refreshFeeds(
+				ids,
+				force,
+				services.refreshRss ?? refreshRss,
+				(completed, failed) => {
+					if (!mounted.current) return;
+					if (failed) setError(true);
+					setProgress(`${completed} / ${ids.length}`);
+					scheduleReload();
+				},
+			);
 		} finally {
-			setRefreshing(false);
-			setProgress("");
+			refreshLock.current = false;
+			if (reloadTimer.current) clearTimeout(reloadTimer.current);
+			reloadTimer.current = null;
+			if (mounted.current) {
+				setRevision((value) => value + 1);
+				setRefreshing(false);
+				setProgress("");
+			}
 		}
 	}
 	useEffect(() => {

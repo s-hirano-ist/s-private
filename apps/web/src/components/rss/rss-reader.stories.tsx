@@ -170,3 +170,57 @@ export const Fetching: Story = {
 		).toBeVisible();
 	},
 };
+
+// The first feed stays pending while every other feed finishes, including those beyond slot five.
+const parallelFeeds = Array.from({ length: 7 }, (_, index) => ({
+	...page.feeds[0],
+	id: `00000000-0000-4000-8000-${String(index + 1).padStart(12, "0")}`,
+	title: `購読 ${index + 1}`,
+}));
+const parallelPage = { ...page, feeds: parallelFeeds };
+const parallelRefresh = fn(async ([id]: string[]) => {
+	if (id === feedId) return new Promise<{ data: [] }>(() => {});
+	return { data: [{ id, status: "updated" as const }] };
+});
+export const ProgressiveRefresh: Story = {
+	args: {
+		initialData: parallelPage,
+		services: {
+			...services,
+			refreshRss: parallelRefresh,
+			loadRss: fn(async () => ({
+				...parallelPage,
+				unread: [
+					{
+						...page.unread[0],
+						title:
+							parallelRefresh.mock.calls.length === 7
+								? "速い購読の新着記事"
+								: "RSSを軽量に読む",
+					},
+				],
+			})),
+		},
+	},
+	play: async ({ canvas }) => {
+		await waitFor(() =>
+			expect(parallelRefresh).toHaveBeenCalledWith(
+				[parallelFeeds[6].id],
+				false,
+			),
+		);
+		await expect(
+			await canvas.findByText("フィードを取得中 6 / 7"),
+		).toBeVisible();
+		await waitFor(
+			() =>
+				expect(
+					canvas.getByRole("link", { name: "速い購読の新着記事" }),
+				).toBeVisible(),
+			{ timeout: 3000 },
+		);
+		await expect(
+			canvas.getByRole("button", { name: "フィードを取得中" }),
+		).toBeDisabled();
+	},
+};
