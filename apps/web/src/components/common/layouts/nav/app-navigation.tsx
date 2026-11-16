@@ -299,6 +299,8 @@ export function AppNavigation({ forms, search, draftOwner }: Props) {
 				</Button>
 			</>
 		);
+	} else if (route === "settings") {
+		headerControls = null;
 	} else {
 		headerControls = (
 			<h1 className="mr-auto text-base font-semibold text-foreground">
@@ -308,7 +310,12 @@ export function AppNavigation({ forms, search, draftOwner }: Props) {
 	}
 	return (
 		<>
-			<header className="sticky top-3 z-40 mx-auto flex min-h-14 w-[calc(100%-1.5rem)] max-w-3xl flex-nowrap items-center gap-1 rounded-full border border-nav-border/10 bg-nav-surface/70 px-2 py-1 text-foreground shadow-lg backdrop-blur-xl sm:gap-2 sm:px-3">
+			<header
+				className={cn(
+					"sticky top-3 z-40 mx-auto flex min-h-14 w-[calc(100%-1.5rem)] max-w-3xl flex-nowrap items-center gap-1 rounded-full border border-nav-border/10 bg-nav-surface/70 px-2 py-1 text-foreground shadow-lg backdrop-blur-xl sm:gap-2 sm:px-3",
+					route === "settings" && "mr-3 ml-auto min-h-0 w-fit sm:mr-0",
+				)}
+			>
 				{headerControls}
 				<Button
 					aria-label={t("search")}

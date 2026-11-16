@@ -12,6 +12,7 @@ import { RssLoading } from "@/components/rss/rss-loading";
 import { useRssPage } from "@/components/rss/use-rss-page";
 import { Button } from "@s-hirano-ist/s-ui/button";
 import { Input } from "@s-hirano-ist/s-ui/input";
+import { RefreshCw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 type RssActions = Omit<typeof actions, "loadRss"> & {
@@ -22,6 +23,43 @@ function entriesForView(data: RssPage, view: "unread" | "saved" | "feeds") {
 	return view === "saved"
 		? { entries: data.saved, total: data.savedCount }
 		: { entries: data.unread, total: data.unreadCount };
+}
+
+function RssRefreshButton({
+	refreshing,
+	busy,
+	progress,
+	onRefresh,
+}: {
+	busy: boolean;
+	onRefresh: () => void;
+	progress: string;
+	refreshing: boolean;
+}) {
+	const t = useTranslations("rss");
+	return (
+		<Button
+			aria-label={refreshing ? `${t("refreshing")} ${progress}` : t("refresh")}
+			aria-busy={refreshing}
+			variant="outline"
+			className="gap-2"
+			disabled={refreshing || busy}
+			onClick={onRefresh}
+			type="button"
+		>
+			<span
+				aria-hidden="true"
+				className={
+					refreshing
+						? "inline-flex animate-spin motion-reduce:animate-none"
+						: "inline-flex"
+				}
+			>
+				<RefreshCw className="size-4" />
+			</span>
+			<span aria-live="polite">{refreshing ? progress : t("refresh")}</span>
+		</Button>
+	);
 }
 
 export function RssReader({
@@ -142,34 +180,73 @@ export function RssReader({
 	}
 	const { entries, total } = entriesForView(data, view);
 
-	let status = reloading || busy ? t("loading") : "";
-	if (refreshing) status = `${t("refreshing")} ${progress}`;
+	const status = !refreshing && (reloading || busy) ? t("loading") : "";
 	return (
-		<main className="mx-auto max-w-3xl space-y-6 px-4 py-8">
+		<main
+			className="space-y-4 bg-background px-3 pt-6 text-foreground sm:px-0"
+			aria-label={t(view === "feeds" ? "feeds" : "title")}
+		>
 			<ViewerCountSync domain="rss" count={entriesForView(data, view).total} />
-			<div className="flex flex-wrap items-center justify-between gap-3">
-				<div>
-					<h1 className="text-2xl font-semibold">
-						{t(view === "feeds" ? "feeds" : "title")}
-					</h1>
-					<p className="mt-1 text-sm text-muted-foreground">
-						{t(view === "feeds" ? "subscriptionsDescription" : "description")}
-					</p>
-				</div>
-				<Button
-					disabled={refreshing || busy}
-					onClick={() => {
+			<div
+				className={
+					view === "feeds"
+						? "mx-auto flex max-w-3xl flex-wrap items-center justify-end gap-2"
+						: "grid grid-cols-[auto_1fr] items-center gap-2 sm:flex"
+				}
+			>
+				<RssRefreshButton
+					refreshing={refreshing}
+					busy={busy}
+					progress={progress}
+					onRefresh={() => {
 						void refresh(
 							data.feeds.map((feed) => feed.id),
 							true,
 						);
 					}}
-					type="button"
-				>
-					{refreshing ? t("refreshing") : t("refresh")}
-				</Button>
+				/>
+				{view === "unread" ? (
+					<div className="contents">
+						<label className="order-first col-span-2 block min-w-0 sm:order-none sm:flex-1">
+							<span className="sr-only">{t("filter")}</span>
+							<select
+								className="h-9 w-full min-w-0 rounded-md border bg-background px-3 text-sm"
+								value={feedId}
+								onChange={(event) => {
+									setFeedId(event.target.value);
+									setOffset(0);
+								}}
+							>
+								<option value="">{t("allFeeds")}</option>
+								{data.feeds.map((feed) => (
+									<option key={feed.id} value={feed.id}>
+										{feed.folder ? `${feed.folder} / ` : ""}
+										{feed.title}
+									</option>
+								))}
+							</select>
+						</label>
+						<Button
+							className="justify-self-end"
+							disabled={busy || loading || !data.unreadCount}
+							onClick={() => {
+								const before = new Date().toISOString();
+								void perform(() =>
+									services.markRssRead({
+										before,
+										...(feedId ? { feedId } : {}),
+									}),
+								);
+							}}
+							type="button"
+							variant="outline"
+						>
+							{t("readAll")}
+						</Button>
+					</div>
+				) : null}
+				<RssLoading display="inline" label={status} />
 			</div>
-			<RssLoading display="inline" label={status} />
 			{error ? (
 				<div className="rounded-xl border border-destructive p-4" role="alert">
 					{t("error")}{" "}
@@ -186,9 +263,12 @@ export function RssReader({
 				</div>
 			) : null}
 			{view === "feeds" ? (
-				<section className="space-y-6" aria-label={t("feeds")}>
+				<section
+					className="mx-auto max-w-3xl space-y-4"
+					aria-label={t("feeds")}
+				>
 					<form
-						className="space-y-3 rounded-xl border p-4"
+						className="space-y-4 rounded-xl border bg-primary-foreground p-4 sm:p-6"
 						onSubmit={(event) => {
 							event.preventDefault();
 							const form = event.currentTarget;
@@ -213,15 +293,15 @@ export function RssReader({
 						}}
 					>
 						<h2 className="font-medium">{t("addFeed")}</h2>
-						<label className="block">
+						<label className="grid gap-2 text-sm font-medium">
 							{t("feedUrl")}
 							<Input name="url" required type="url" maxLength={2048} />
 						</label>
-						<label className="block">
+						<label className="grid gap-2 text-sm font-medium">
 							{t("feedTitle")}
 							<Input name="title" maxLength={512} />
 						</label>
-						<label className="block">
+						<label className="grid gap-2 text-sm font-medium">
 							{t("folder")}
 							<Input name="folder" maxLength={512} />
 						</label>
@@ -229,10 +309,10 @@ export function RssReader({
 							{t("subscribe")}
 						</Button>
 					</form>
-					<div className="space-y-3 rounded-xl border p-4">
+					<div className="space-y-4 rounded-xl border bg-primary-foreground p-4 sm:p-6">
 						<h2 className="font-medium">{t("import")}</h2>
 						<p className="text-sm text-muted-foreground">{t("importHelp")}</p>
-						<label className="block">
+						<label className="grid gap-2 text-sm font-medium">
 							{t("importFile")}
 							<Input
 								accept=".zip,.xml,.opml,.json"
@@ -274,7 +354,7 @@ export function RssReader({
 					</div>
 					<ul className="divide-y rounded-xl border">
 						{data.feeds.map((feed) => (
-							<li className="space-y-2 p-4" key={feed.id}>
+							<li className="space-y-2 p-4 sm:p-6" key={feed.id}>
 								<div className="flex items-start justify-between gap-3">
 									<div className="min-w-0">
 										<h3 className="break-words font-medium">{feed.title}</h3>
@@ -311,51 +391,15 @@ export function RssReader({
 				</section>
 			) : (
 				<section className="space-y-4" aria-label={t(view)}>
-					{view === "unread" ? (
-						<div className="flex flex-wrap items-end justify-between gap-3">
-							<label className="grid w-full min-w-0 gap-2 sm:flex sm:w-auto sm:flex-1 sm:items-center">
-								{t("filter")}
-								<select
-									className="w-full min-w-0 rounded-md border bg-background p-2 sm:w-auto sm:flex-1"
-									value={feedId}
-									onChange={(event) => {
-										setFeedId(event.target.value);
-										setOffset(0);
-									}}
-								>
-									<option value="">{t("allFeeds")}</option>
-									{data.feeds.map((feed) => (
-										<option key={feed.id} value={feed.id}>
-											{feed.folder ? `${feed.folder} / ` : ""}
-											{feed.title}
-										</option>
-									))}
-								</select>
-							</label>
-							<Button
-								disabled={busy || loading || !data.unreadCount}
-								onClick={() => {
-									const before = new Date().toISOString();
-									void perform(() =>
-										services.markRssRead({
-											before,
-											...(feedId ? { feedId } : {}),
-										}),
-									);
-								}}
-								type="button"
-								variant="outline"
-							>
-								{t("readAll")}
-							</Button>
-						</div>
-					) : null}
 					{entries.length > 0 ? (
-						<ul className="divide-y rounded-xl border">
+						<ul className="grid grid-cols-1 items-stretch gap-2 sm:grid-cols-2 sm:gap-4">
 							{entries.map((entry) => (
-								<li className="space-y-3 p-4" key={entry.id}>
+								<li
+									className="flex min-w-0 flex-col gap-3 rounded-xl border border-muted border-l-3 border-l-primary/40 bg-primary-foreground p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md"
+									key={entry.id}
+								>
 									<a
-										className="block break-words font-medium text-foreground underline-offset-4 hover:underline"
+										className="block break-words font-bold text-foreground underline-offset-4 hover:underline"
 										href={entry.url}
 										target="_blank"
 										rel="noopener noreferrer"
@@ -372,7 +416,7 @@ export function RssReader({
 											? ` · ${entry.publishedAt.slice(0, 10)}`
 											: ""}
 									</p>
-									<div className="flex flex-wrap gap-2">
+									<div className="mt-auto flex flex-wrap gap-2 pt-1">
 										{"feedId" in entry ? (
 											<>
 												<Button

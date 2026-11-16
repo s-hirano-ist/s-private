@@ -343,7 +343,10 @@ export const Settings: Story = {
 	parameters: { nextjs: { navigation: { pathname: "/ja/settings" } } },
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		await expect(canvas.getByRole("heading", { name: "設定" })).toBeVisible();
+		await expect(
+			canvas.queryByRole("heading", { name: "設定" }),
+		).not.toBeInTheDocument();
+		await expect(canvas.getByRole("button", { name: "検索" })).toBeVisible();
 		await expect(
 			canvas.queryByRole("button", { name: "新規作成" }),
 		).not.toBeInTheDocument();

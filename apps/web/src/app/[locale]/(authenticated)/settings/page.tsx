@@ -8,7 +8,7 @@ import { SettingsActions } from "@/components/common/layouts/nav/settings-action
 
 export default function Page() {
 	return (
-		<div className="mx-auto max-w-xl p-4">
+		<div className="mx-auto max-w-xl px-3 pt-6 sm:px-0">
 			<SettingsActions
 				getPushStatus={getPushStatus}
 				sendTestPush={sendTestPush}
