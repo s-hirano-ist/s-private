@@ -8,6 +8,7 @@ import type {
 import { loadRss, refreshRss } from "@/application-services/rss/client";
 import { ViewerCountSync } from "@/components/common/layouts/nav/viewer-count-context";
 import { refreshFeeds } from "@/components/rss/refresh-feeds";
+import { RssLoading } from "@/components/rss/rss-loading";
 import { useRssPage } from "@/components/rss/use-rss-page";
 import { Button } from "@s-hirano-ist/s-ui/button";
 import { Input } from "@s-hirano-ist/s-ui/input";
@@ -41,7 +42,7 @@ export function RssReader({
 	const [progress, setProgress] = useState("");
 	const [error, setError] = useState(false);
 	const readPage = services.loadRss ?? loadRss;
-	const { data, loading } = useRssPage(
+	const { data, loading, reloading } = useRssPage(
 		initialData,
 		readPage,
 		offset,
@@ -141,7 +142,7 @@ export function RssReader({
 	}
 	const { entries, total } = entriesForView(data, view);
 
-	let status = loading ? t("loading") : "";
+	let status = reloading || busy ? t("loading") : "";
 	if (refreshing) status = `${t("refreshing")} ${progress}`;
 	return (
 		<main className="mx-auto max-w-3xl space-y-6 px-4 py-8">
@@ -168,9 +169,7 @@ export function RssReader({
 					{refreshing ? t("refreshing") : t("refresh")}
 				</Button>
 			</div>
-			<output aria-live="polite" className="block">
-				{status}
-			</output>
+			<RssLoading display="inline" label={status} />
 			{error ? (
 				<div className="rounded-xl border border-destructive p-4" role="alert">
 					{t("error")}{" "}
