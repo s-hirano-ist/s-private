@@ -1,3 +1,4 @@
+import type { RssService } from "@s-hirano-ist/s-application/rss/service";
 import type { JWTPayload, JSONWebKeySet } from "jose";
 import type { ReadService } from "s-private-backend/api/read-service";
 import {
@@ -7,6 +8,7 @@ import {
 import { ApplicationError } from "@s-hirano-ist/s-application/error";
 import { tenantContext } from "@s-hirano-ist/s-infrastructure/shared/tenant-context";
 import { exportJWK, generateKeyPair, SignJWT } from "jose";
+import { randomUUID } from "node:crypto";
 import { createBackendHttpApp } from "s-private-backend/api/http-app";
 import { verifyMobileToken } from "s-private-backend/auth/mobile-auth";
 import { createMcpApp } from "s-private-backend/mcp/app";
@@ -72,7 +74,33 @@ const note = (owner: string) => ({
 	title: `${owner} title`,
 	markdown: `${owner} private body`,
 });
-function setup() {
+const feedId = "11111111-1111-4111-8111-111111111111";
+const entryId = "22222222-2222-4222-8222-222222222222";
+function rssPage(owner: string) {
+	const entry = {
+		id: entryId,
+		title: `${owner} RSS title`,
+		url: `https://example.test/${owner}/article`,
+		publishedAt: null,
+	};
+	return {
+		feeds: [
+			{
+				id: feedId,
+				title: `${owner} feed`,
+				url: `https://example.test/${owner}/feed`,
+				folder: "Tech",
+				lastFetchedAt: null,
+				error: null,
+			},
+		],
+		unread: [{ ...entry, feedId, receivedAt: base.createdAt }],
+		saved: [{ ...entry, savedAt: base.createdAt }],
+		unreadCount: 1,
+		savedCount: 1,
+	};
+}
+function setup(page?: RssService["page"]) {
 	const assertOwner = async (owner: string) => {
 		await new Promise<void>((resolve) => {
 			setImmediate(resolve);
@@ -135,7 +163,17 @@ function setup() {
 					},
 		),
 	};
+	const rss = {
+		page: vi.fn(
+			page ??
+				(async (owner: string, _offset: number, _feedId?: string) => {
+					await assertOwner(owner);
+					return rssPage(owner);
+				}),
+		),
+	};
 	const deps = {
+		rss,
 		reads: reads as unknown as ReadService,
 		accounts: {
 			findLinkedUser: vi.fn(
@@ -172,7 +210,7 @@ function setup() {
 		await connection.connect(transport);
 		return connection;
 	}
-	return { deps, reads, request, client };
+	return { deps, reads, rss, request, client };
 }
 
 test("publishes resource metadata without authentication, with the real Auth0 issuer", async () => {
@@ -263,7 +301,7 @@ test("supports RFC9068 client_id and preserves mobile audience isolation", async
 	const connection = await client(
 		await token({ client_id: "test-client", azp: undefined }),
 	);
-	expect((await connection.listTools()).tools).toHaveLength(7);
+	expect((await connection.listTools()).tools).toHaveLength(8);
 	await connection.close();
 	await expect(
 		verifyMobileToken(
@@ -318,12 +356,12 @@ test("rejects untrusted hosts and exact origins; allows approved CORS preflight"
 	).toBe(403);
 });
 
-test("official SDK can list/call all seven tools without exposing paths or credentials", async () => {
+test("official SDK can list/call all eight tools without exposing paths or credentials", async () => {
 	const { client, deps } = setup();
 	const connection = await client(await token());
 	try {
 		const list = await connection.listTools();
-		expect(list.tools).toHaveLength(7);
+		expect(list.tools).toHaveLength(8);
 		for (const tool of list.tools)
 			expect(tool.annotations?.readOnlyHint).toBe(true);
 		for (const [name, args] of [
@@ -332,6 +370,7 @@ test("official SDK can list/call all seven tools without exposing paths or crede
 			["get_content", { domain: "images", id: "alice-note" }],
 			["count_content", { domain: "books" }],
 			["list_categories", {}],
+			["list_rss", {}],
 			["get_book_by_isbn", { isbn: "9784065212345" }],
 			["get_note_by_title", { title: "alice title" }],
 		] as const) {
@@ -370,6 +409,7 @@ test("keeps concurrent users isolated for list, detail and search", async () => 
 					["list_content", { domain: "notes" }],
 					["get_content", { domain: "notes", id: `${owner}-note` }],
 					["search_content", { query: "search" }],
+					["list_rss", {}],
 				] as const) {
 					const result = await c.callTool({ name, arguments: args });
 					expect(JSON.stringify(result)).toContain(owner);
@@ -439,3 +479,231 @@ test("MCP and metadata remain absent when the backend has no MCP handler", async
 		);
 	}
 });
+
+test("RSS listing preserves results across repeated calls, forwards pagination and supports empty pages", async () => {
+	const { client, rss } = setup();
+	const connection = await client(await token());
+	try {
+		const tool = (await connection.listTools()).tools.find(
+			(item) => item.name === "list_rss",
+		);
+		expect(tool?.annotations).toMatchObject({
+			readOnlyHint: true,
+			destructiveHint: false,
+			idempotentHint: true,
+			openWorldHint: false,
+		});
+		for (let i = 0; i < 2; i++) {
+			const result = await connection.callTool({
+				name: "list_rss",
+				arguments: {},
+			});
+			expect(result.isError).not.toBe(true);
+			expect(result.structuredContent).toEqual(rssPage("alice"));
+		}
+		expect(rss.page).toHaveBeenLastCalledWith("alice", 0, undefined);
+		rss.page.mockResolvedValueOnce({
+			...rssPage("alice"),
+			unread: [],
+			saved: [],
+		});
+		const result = await connection.callTool({
+			name: "list_rss",
+			arguments: { offset: 50, feedId },
+		});
+		expect(result.structuredContent).toMatchObject({
+			unread: [],
+			saved: [],
+			unreadCount: 1,
+			savedCount: 1,
+		});
+		expect(rss.page).toHaveBeenLastCalledWith("alice", 50, feedId);
+	} finally {
+		await connection.close();
+	}
+});
+
+test("RSS listing rejects invalid arguments and hides repository failures", async () => {
+	const { client, rss, deps } = setup();
+	const connection = await client(await token());
+	try {
+		for (const args of [
+			{ offset: -1 },
+			{ offset: 1.5 },
+			{ offset: 1000001 },
+			{ feedId: "invalid" },
+			{ userId: "bob" },
+		]) {
+			expect(
+				(await connection.callTool({ name: "list_rss", arguments: args }))
+					.isError,
+			).toBe(true);
+		}
+		expect(rss.page).not.toHaveBeenCalled();
+		for (const name of [
+			"read_rss",
+			"refresh_rss",
+			"save_rss",
+			"subscribe_rss",
+		]) {
+			await expect(
+				connection.callTool({ name, arguments: {} }),
+			).rejects.toThrow("not found");
+		}
+		rss.page.mockRejectedValueOnce(new Error("private RSS database contents"));
+		const result = await connection.callTool({
+			name: "list_rss",
+			arguments: {},
+		});
+		expect(result.isError).toBe(true);
+		expect(JSON.stringify(result)).toContain("INTERNAL_ERROR");
+		expect(JSON.stringify(result)).not.toContain("private RSS");
+		expect(deps.reportError).toHaveBeenCalled();
+	} finally {
+		await connection.close();
+	}
+});
+
+function rssTestDatabaseUrl() {
+	const connectionString = process.env.RSS_TEST_DATABASE_URL!;
+	const url = new URL(connectionString);
+	if (
+		!url.pathname.startsWith("/rss_worktree_") ||
+		!["localhost", "127.0.0.1"].includes(url.hostname)
+	)
+		throw new Error("Use a dedicated RSS test database");
+	return connectionString;
+}
+
+test.skipIf(!process.env.RSS_TEST_DATABASE_URL)(
+	"MCP RSS reads leave all persisted RSS state unchanged",
+	async () => {
+		const connectionString = rssTestDatabaseUrl();
+		const { PrismaClient, PrismaPg } = await import("@s-hirano-ist/s-database");
+		const { extendDatabase } =
+			await import("@s-hirano-ist/s-infrastructure/database");
+		const { applyTenantFilter } =
+			await import("@s-hirano-ist/s-infrastructure/shared/tenant-filter");
+		const { createRssRepository } =
+			await import("@s-hirano-ist/s-infrastructure/rss/repository");
+		const { createRssService } =
+			await import("@s-hirano-ist/s-application/rss/service");
+		const db = new PrismaClient({
+			adapter: new PrismaPg({ connectionString }),
+		});
+		const repository = createRssRepository(
+			extendDatabase(
+				db,
+				(model, operation, args) =>
+					applyTenantFilter(model, operation, args, tenantContext.getStore()),
+				() => {},
+			),
+		);
+		const fetchFeed = vi.fn();
+		const reportFailure = vi.fn();
+		const service = createRssService(repository, fetchFeed, reportFailure);
+		const { client } = setup(service.page);
+		const snapshot = async () => ({
+			feeds: await db.rssFeed.findMany({ orderBy: { id: "asc" } }),
+			unread: await db.rssUnread.findMany({ orderBy: { id: "asc" } }),
+			saved: await db.rssSaved.findMany({ orderBy: { id: "asc" } }),
+			seen: await db.rssSeen.findMany({
+				orderBy: [{ feedId: "asc" }, { hash: "asc" }],
+			}),
+		});
+		const connections: Awaited<ReturnType<typeof client>>[] = [];
+		const createdFeeds: string[] = [];
+		const createdSaved: string[] = [];
+		try {
+			for (const owner of ["alice", "bob"]) {
+				const feed = await db.rssFeed.create({
+					data: {
+						id: randomUUID(),
+						userId: owner,
+						title: `${owner} feed`,
+						url: `https://example.test/${owner}/mcp-feed`,
+						folder: "Tech",
+					},
+				});
+				createdFeeds.push(feed.id);
+				const entry = {
+					userId: owner,
+					title: `${owner} article`,
+					url: `https://example.test/${owner}/mcp-article`,
+				};
+				await db.rssUnread.create({
+					data: {
+						...entry,
+						id: randomUUID(),
+						feedId: feed.id,
+						receivedAt: new Date(),
+					},
+				});
+				createdSaved.push(
+					(
+						await db.rssSaved.create({
+							data: { ...entry, id: randomUUID(), savedAt: new Date() },
+						})
+					).id,
+				);
+				await db.rssSeen.create({
+					data: {
+						feedId: feed.id,
+						hash: new Uint8Array(32).fill(1),
+					},
+				});
+			}
+			const before = await snapshot();
+			const alice = await client(await token());
+			connections.push(alice);
+			const bob = await client(await token({ sub: "auth0|bob" }));
+			connections.push(bob);
+			for (let i = 0; i < 2; i++) {
+				for (const [connection, owner, other] of [
+					[alice, "alice", "bob"],
+					[bob, "bob", "alice"],
+				] as const) {
+					const result = await connection.callTool({
+						name: "list_rss",
+						arguments: {},
+					});
+					expect(result.isError).not.toBe(true);
+					expect(result.structuredContent).toMatchObject({
+						unreadCount: 1,
+						savedCount: 1,
+					});
+					expect(JSON.stringify(result)).toContain(owner);
+					expect(JSON.stringify(result)).not.toContain(other);
+				}
+			}
+			const filtered = await alice.callTool({
+				name: "list_rss",
+				arguments: { feedId: createdFeeds[1] },
+			});
+			expect(filtered.structuredContent).toMatchObject({
+				unread: [],
+				unreadCount: 0,
+				savedCount: 1,
+			});
+			expect(JSON.stringify(filtered)).not.toContain("bob");
+			const nextPage = await alice.callTool({
+				name: "list_rss",
+				arguments: { offset: 50 },
+			});
+			expect(nextPage.structuredContent).toMatchObject({
+				unread: [],
+				saved: [],
+				unreadCount: 1,
+				savedCount: 1,
+			});
+			expect(await snapshot()).toEqual(before);
+			expect(fetchFeed).not.toHaveBeenCalled();
+			expect(reportFailure).not.toHaveBeenCalled();
+		} finally {
+			await Promise.all(connections.map((connection) => connection.close()));
+			await db.rssFeed.deleteMany({ where: { id: { in: createdFeeds } } });
+			await db.rssSaved.deleteMany({ where: { id: { in: createdSaved } } });
+			await db.$disconnect();
+		}
+	},
+);

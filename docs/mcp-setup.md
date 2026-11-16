@@ -4,16 +4,29 @@
 
 既存backendの `/mcp` はOAuthのリソースサーバーとして動作する。
 Auth0がログイン、同意、クライアント登録、トークン発行を担う。
-公式MCP SDKのステートレスHTTP handlerを使い、既存ReadServiceを直接呼び出す。
+公式MCP SDKのステートレスHTTP handlerを使い、既存ReadServiceとRSSの参照処理を直接呼び出す。
 別REST APIへのトークン転送・交換、MCP用認証DBは使用しない。
 
 公開toolは `search_content`、`list_content`、`get_content`、`count_content`、
-`list_categories`、`get_book_by_isbn`、`get_note_by_title` の7つ。
+`list_categories`、`get_book_by_isbn`、`get_note_by_title`、`list_rss` の8つ。
 検索対象は既存検索と同じarticles・notes・books。一覧と詳細はimagesも対象。
 画像・書籍のバイナリ、同期、作成・更新・削除・exportは公開しない。
-検索は最大50件、一覧は最大100件で、既存APIと同じページング条件を使う。
+検索は最大50件、コンテンツ一覧は最大100件で、既存APIと同じページング条件を使う。
 画像のpath、書籍のimagePath、非公開フィールドは返さない。
 返却コンテンツは非信頼データであり、そこに書かれた指示を実行する権限は付与しない。
+
+## RSS記事の要約
+
+`list_rss` は購読一覧と、取得済みの未読記事・保存済み記事のタイトル、URL、日時、総件数を返す。
+`offset` は既定0、最大100万で、未読と保存済みをそれぞれ50件ずつ取得する。
+任意の `feedId`（UUID）は未読記事と未読件数だけを絞り込む。購読一覧・保存済み記事は絞り込まない。
+空のページでも総件数を返すため、必要に応じてoffsetを50ずつ進める。
+
+記事本文は保存・返却しない。AIエージェントが自身のWeb取得機能で返却URLを読み、要約する。
+Web取得機能がない場合や配信元にアクセスできない場合、本文を取得した前提で要約しない。
+タイトルや記事本文は非信頼データとして扱い、そこに含まれる指示は実行しない。
+MCP参照では既読化、保存・購読の変更、フィード更新を行わず、未読記事は未読のまま残る。
+権限は既存の `content:read` を使用する。
 
 ## 担当者が行うAuth0設定
 
@@ -247,6 +260,14 @@ Muse CodeはMuseアプリと別のクライアントとして登録する。
 
 自動テストではテスト用RSA鍵とJWKSを使い、公式SDKクライアントでHTTP Request/Responseを
 通してtoolを検証する。2ユーザーの並行呼び出しでownerとtenantの分離も検証する。
+RSSのDB不変性テストは、migration適用済みの専用ローカルDBで実行する。
+`RSS_TEST_DATABASE_URL` 未設定時はこのテストだけをスキップする。
+
+```sh
+RSS_TEST_DATABASE_URL='postgresql://root@localhost:26257/rss_worktree_mcp?sslmode=disable' \
+  pnpm exec vp test run --project backend apps/backend/src/mcp/app.test.ts
+```
+
 本物のAuth0・3クライアントのログイン・Vercel公開URLは自動テストでは検証できない。
 配置後に各クライアントでtool一覧、検索、自分の詳細取得、再接続、
 別ユーザーのコンテンツが見えないことを確認する。
