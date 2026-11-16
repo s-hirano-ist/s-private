@@ -10,28 +10,22 @@ export function RssLoading({
 	label?: string;
 }) {
 	const t = useTranslations("rss");
-	if (display === "inline")
+	if (display === "inline") {
+		if (!label) return null;
 		return (
-			<output aria-live="polite" className="flex min-h-6 items-center gap-2">
-				{label ? (
-					<>
-						<span
-							aria-hidden="true"
-							className="inline-flex size-4 shrink-0 animate-spin motion-reduce:animate-none [&>svg]:size-full"
-						>
-							<LoaderCircle />
-						</span>
-						{label}
-					</>
-				) : null}
+			<output
+				aria-label={label}
+				aria-live="polite"
+				className="inline-flex items-center"
+			>
+				<span
+					aria-hidden="true"
+					className="inline-flex animate-spin motion-reduce:animate-none"
+				>
+					<LoaderCircle className="size-4" />
+				</span>
 			</output>
 		);
-	return (
-		<div className="py-8 text-center text-muted-foreground">
-			<div aria-hidden="true">
-				<LoadingIndicator />
-			</div>
-			<output className="block">{label ?? t("loading")}</output>
-		</div>
-	);
+	}
+	return <LoadingIndicator label={label ?? t("loading")} />;
 }

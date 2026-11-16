@@ -12,21 +12,25 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
 	play: async ({ canvas }) => {
-		await expect(canvas.getByRole("status")).toHaveTextContent("読み込み中…");
+		await expect(canvas.getByRole("status")).toHaveAccessibleName(
+			"読み込み中…",
+		);
 	},
 };
 
 export const Inline: Story = {
 	args: { display: "inline", label: "読み込み中…" },
 	play: async ({ canvas }) => {
-		await expect(canvas.getByRole("status")).toHaveTextContent("読み込み中…");
+		await expect(canvas.getByRole("status")).toHaveAccessibleName(
+			"読み込み中…",
+		);
 	},
 };
 
 export const Idle: Story = {
 	args: { display: "inline", label: "" },
 	play: async ({ canvas }) => {
-		await expect(canvas.getByRole("status")).toBeEmptyDOMElement();
+		await expect(canvas.queryByRole("status")).not.toBeInTheDocument();
 	},
 };
 
@@ -42,7 +46,7 @@ export const Suspended: Story = {
 		</Suspense>
 	),
 	play: async ({ canvas }) => {
-		await expect(await canvas.findByRole("status")).toHaveTextContent(
+		await expect(await canvas.findByRole("status")).toHaveAccessibleName(
 			"読み込み中…",
 		);
 	},

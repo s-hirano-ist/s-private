@@ -181,9 +181,15 @@ export const Fetching: Story = {
 	play: async ({ args, canvas }) => {
 		await waitFor(() =>
 			expect(
-				canvas.getByRole("button", { name: "フィードを取得中" }),
+				canvas.getByRole("button", { name: /フィードを取得中/u }),
 			).toBeDisabled(),
 		);
+		await expect(
+			canvas.getByRole("button", { name: /フィードを取得中/u }),
+		).toHaveTextContent("0 / 1");
+		await expect(
+			canvas.queryByText("フィードを取得中"),
+		).not.toBeInTheDocument();
 		await expect(
 			canvas.getByRole("link", { name: "RSSを軽量に読む" }),
 		).toBeVisible();
@@ -209,7 +215,9 @@ export const BackgroundReadPending: Story = {
 	play: async ({ args, canvas }) => {
 		// The initial poll finishes and starts a background page read that never resolves.
 		await waitFor(() => expect(args.services.loadRss).toHaveBeenCalledTimes(2));
-		await expect(canvas.getByRole("status")).toHaveTextContent("読み込み中…");
+		await expect(canvas.getByRole("status")).toHaveAccessibleName(
+			"読み込み中…",
+		);
 		await expect(
 			canvas.getByRole("button", { name: "すべて既読にする" }),
 		).toBeEnabled();
@@ -223,7 +231,9 @@ export const BackgroundReadPending: Story = {
 		);
 		// A foreground page change still prevents duplicate page navigation.
 		await expect(canvas.getByRole("button", { name: "次へ" })).toBeDisabled();
-		await expect(canvas.getByRole("status")).toHaveTextContent("読み込み中…");
+		await expect(canvas.getByRole("status")).toHaveAccessibleName(
+			"読み込み中…",
+		);
 	},
 };
 
@@ -246,7 +256,7 @@ export const SubscriptionStartsRefresh: Story = {
 			expect(args.services.refreshRss).toHaveBeenCalledWith([feedId], false),
 		);
 		await expect(
-			canvas.getByRole("button", { name: "フィードを取得中" }),
+			canvas.getByRole("button", { name: /フィードを取得中/u }),
 		).toBeDisabled();
 		await waitFor(() =>
 			expect(canvas.getByRole("button", { name: "購読する" })).toBeEnabled(),
@@ -297,7 +307,7 @@ export const ProgressiveRefresh: Story = {
 			),
 		);
 		await expect(
-			await canvas.findByText("フィードを取得中 6 / 7"),
+			await canvas.findByRole("button", { name: "フィードを取得中 6 / 7" }),
 		).toBeVisible();
 		await waitFor(
 			() =>
@@ -307,7 +317,7 @@ export const ProgressiveRefresh: Story = {
 			{ timeout: 3000 },
 		);
 		await expect(
-			canvas.getByRole("button", { name: "フィードを取得中" }),
+			canvas.getByRole("button", { name: /フィードを取得中/u }),
 		).toBeDisabled();
 	},
 };
@@ -408,5 +418,67 @@ export const SubscriptionRemoval: Story = {
 		await expect(
 			canvas.getByRole("heading", { name: "Inoreaderから取り込み" }),
 		).toBeVisible();
+	},
+};
+
+const cardPage: RssPage = {
+	...page,
+	unread: Array.from({ length: 4 }, (_, index) => ({
+		...page.unread[0],
+		id: `00000000-0000-4000-8000-${String(index + 2).padStart(12, "0")}`,
+		title: [
+			"RSSを軽量に読む",
+			"Designing accessible interfaces for everyday reading",
+			"長い記事タイトルでも読みやすく、カードの操作を見つけやすくする",
+			"Next.jsのデータ取得を整理する",
+		][index],
+		publishedAt: "2026-11-15T00:00:00.000Z",
+	})),
+	unreadCount: 4,
+};
+export const DesktopCards: Story = {
+	args: {
+		initialData: cardPage,
+		services: { ...services, loadRss: fn(async () => cardPage) },
+	},
+	decorators: [
+		(Story) => (
+			<div className="w-[960px]">
+				<Story />
+			</div>
+		),
+	],
+	globals: { viewport: { value: "desktop" } },
+	play: async ({ canvas }) => {
+		await expect(canvas.getAllByRole("link")).toHaveLength(4);
+		await expect(
+			canvas.queryByRole("heading", { name: "RSSリーダー" }),
+		).not.toBeInTheDocument();
+		await expect(canvas.getByText("購読で絞り込み")).toHaveClass("sr-only");
+	},
+};
+export const DarkCards: Story = {
+	...DesktopCards,
+	globals: {
+		theme: "dark",
+		backgrounds: { value: "black" },
+		viewport: { value: "desktop" },
+	},
+};
+export const EnglishMobile: Story = {
+	args: {
+		initialData: cardPage,
+		services: { ...services, loadRss: fn(async () => cardPage) },
+	},
+	globals: { locale: "en", viewport: { value: "mobile1" } },
+	play: async ({ canvas }) => {
+		await expect(
+			canvas.getByRole("combobox", { name: "Filter by subscription" }),
+		).toBeVisible();
+		await expect(
+			canvas.queryByText(
+				"Keep up with unread articles and save links for later.",
+			),
+		).not.toBeInTheDocument();
 	},
 };

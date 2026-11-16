@@ -1,4 +1,5 @@
 "use client";
+import type { ReactNode } from "react";
 import { FeedbackButton } from "@/components/common/layouts/nav/feedback-button";
 import { redirect } from "@/infrastructures/i18n/routing";
 import { Button } from "@s-hirano-ist/s-ui/button";
@@ -13,6 +14,7 @@ import {
 } from "./push-notification-button";
 
 type Props = PushNotificationButtonProps & {
+	children?: ReactNode;
 	handleReload: () => void;
 	onSignOutSubmit: () => Promise<void>;
 };
@@ -22,6 +24,7 @@ const removeLangPrefix = (pathname: string): string => {
 };
 
 export function UtilButtons({
+	children,
 	handleReload,
 	onSignOutSubmit,
 	...pushNotificationProps
@@ -48,7 +51,8 @@ export function UtilButtons({
 	const shouldShowSignOut = pathname !== "/auth";
 
 	return (
-		<div className="grid grid-cols-2 gap-2 py-2 sm:grid-cols-3">
+		<div className="grid grid-cols-2 gap-2 text-foreground sm:grid-cols-3">
+			{children}
 			<Button
 				className="flex h-16 flex-col items-center gap-1"
 				onClick={() => {
