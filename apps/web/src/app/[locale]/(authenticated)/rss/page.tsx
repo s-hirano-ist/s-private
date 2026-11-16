@@ -15,7 +15,6 @@ async function Reader() {
 				markRssRead: services.markRssRead,
 				saveRss: services.saveRss,
 				unsaveRss: services.unsaveRss,
-				refreshRss: services.refreshRss,
 				importRss: services.importRss,
 			}}
 		/>

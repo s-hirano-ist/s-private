@@ -24,9 +24,6 @@ export async function saveRss(input: RssEntryInput) {
 export async function unsaveRss(id: string) {
 	await (await getBackendClient()).unsaveRss(id);
 }
-export async function refreshRss(ids: string[], force: boolean) {
-	return (await (await getBackendClient()).refreshRss({ ids, force })).data;
-}
 export async function importRss(kind: "opml" | "starred", content: string) {
 	return (await (await getBackendClient()).importRss({ kind, content })).data;
 }
