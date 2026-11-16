@@ -8,6 +8,18 @@ pnpm install
 pnpm dev             # Docker依存サービス初期化 + 開発サーバー起動
 ```
 
+## Codex Worktree Setup
+
+Codex の新規 worktree 作成時は、Local environment として `s-private`
+（`.codex/environments/environment.toml`）を選択します。
+セットアップは `.harness/setup-worktree.sh` を実行し、`origin/main` を fetch して
+worktree を fast-forward 更新します。ローカルの `main` ブランチは更新しません。
+
+fetch に失敗した場合や履歴が分岐している場合はセットアップを停止します。
+未コミット変更が更新対象と競合する場合も停止し、自動 stash や強制 reset は行いません。
+作業ブランチの続きから開始する場合は、このセットアップによる更新が可能か確認してください。
+依存関係のインストールは上記 Quick Start に従います。
+
 ## Static Documentation And UI Gallery
 
 GitHub Pages 用の静的成果物は `.pages/` に生成します。
