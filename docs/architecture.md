@@ -736,14 +736,18 @@ CLIは `runCli` で初期化・処理・終了処理の例外を捕捉し、異�
 
 Webの更新成功後は対象ドメインの `content:<domain>` タグを `updateTag` で失効させる。画像・書籍の分割アップロードは完了API成功後に認証付きServer Actionを呼び、タグ失効と画面更新を行う。即時無効化は操作したタブに限定し、別タブ・iOS・外部APIの更新は保持期限後の再取得またはページ再読み込みで反映する。
 
-## MCPの参照adapter
+## MCPの参照・追加adapter
 
 共通backendは任意設定の `/mcp` を公開し、Auth0を外部OAuth認可サーバーとして使う。
 公式MCP SDKがステートレスHTTP transportと認可challengeを担い、
-MCP adapterは既存ReadServiceを本人のowner・tenant contextで呼び出す。
-MCP audienceはモバイルAPIから分離し、許可clientと `content:read` scopeを毎回検証する。
+MCP adapterは既存ReadService・WriteService・UploadService・RSSサービスを本人のowner・tenant contextで呼び出す。
+MCP audienceはモバイルAPIから分離し、許可clientを毎回検証する。参照は `content:read`、追加は `content:create` をtool単位で要求する。
 Web CookieをMCPへ流用せず、認可コード・トークン発行・クライアント登録を自作しない。
-DTOから内部ストレージパスを除いた参照toolのみを提供する。
+コンテンツ・RSSの参照と追加を提供し、更新・削除・既読化・フィード再取得・exportは公開しない。
+サービス依存は必要なメソッドだけに限定し、既存の所有者検証・冪等性・重複排除を再利用する。
+DTOから内部ストレージパスを除き、画像参照は最大1 MiBのbase64 byteページで返す。
+画像・書籍の追加は既存のupload lifecycleを利用し、base64チャンクをデコードして送信する。
+全toolで厳密な入力・出力schema、非破壊性と冪等性のannotationsを宣言する。
 認可メタデータは公開し、tool実行を含む `/mcp` は認証必須とする。
 配置と利用者の接続手順は[MCP設定](mcp-setup.md)を参照。
 
