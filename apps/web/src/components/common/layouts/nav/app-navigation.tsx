@@ -137,6 +137,13 @@ function useNoteDraftStorage(draftOwner?: string) {
 	return { draftStorage, flushDraft };
 }
 
+function navigationTabClassName(active: boolean) {
+	return cn(
+		"flex min-w-0 flex-col items-center justify-center gap-0.5 rounded-full text-[10px] text-muted-foreground transition-all duration-200 hover:bg-primary/10 hover:text-primary dark:text-foreground",
+		active && "bg-primary/15 font-medium text-foreground shadow-sm",
+	);
+}
+
 export function AppNavigation({ forms, search, draftOwner }: Props) {
 	const t = useTranslations("navigation");
 	const { draftStorage, flushDraft } = useNoteDraftStorage(draftOwner);
@@ -276,10 +283,13 @@ export function AppNavigation({ forms, search, draftOwner }: Props) {
 					<Link
 						aria-current={route === "rss" ? "page" : undefined}
 						aria-label={t("rss")}
-						className="flex min-w-0 flex-col items-center justify-center gap-0.5 rounded-full text-[10px] text-foreground hover:bg-primary/10"
+						className={navigationTabClassName(route === "rss")}
 						href="/rss"
 					>
-						<RssIcon aria-hidden="true" className="size-5" />
+						<RssIcon
+							aria-hidden="true"
+							className={cn("size-5", route === "rss" && "text-primary")}
+						/>
 						<span>{t("rss")}</span>
 					</Link>
 					{domains.map((item) => {
@@ -287,11 +297,7 @@ export function AppNavigation({ forms, search, draftOwner }: Props) {
 						return (
 							<Link
 								aria-current={domain === item.key ? "page" : undefined}
-								className={cn(
-									"flex min-w-0 flex-col items-center justify-center gap-0.5 rounded-full text-[10px] text-muted-foreground transition-all duration-200 hover:bg-primary/10 hover:text-primary dark:text-foreground",
-									domain === item.key &&
-										"bg-primary/15 font-medium text-foreground shadow-sm",
-								)}
+								className={navigationTabClassName(domain === item.key)}
 								href={isViewer ? item.viewerHref : item.href}
 								key={item.key}
 								onClick={() => {
