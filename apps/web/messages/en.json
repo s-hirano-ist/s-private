@@ -134,6 +134,8 @@
 		"switchView": "RSS view: {current}. Switch to {next}",
 		"unread": "Unread",
 		"saved": "Saved",
+		"manageSubscriptions": "RSS subscriptions",
+		"subscriptionsDescription": "Add or remove feeds and import your Inoreader archive.",
 		"feeds": "Subscriptions",
 		"refresh": "Refresh",
 		"refreshing": "Fetching feeds",

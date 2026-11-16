@@ -4,14 +4,14 @@ import { connection } from "next/server";
 export async function RssReaderLoader({
 	view = "unread",
 }: {
-	view?: "unread" | "saved";
+	view?: "unread" | "saved" | "feeds";
 }) {
 	await connection();
 	const initialData = await services.loadRss();
 	return (
 		<RssReader
 			initialData={initialData}
-			initialView={view}
+			view={view}
 			key={view}
 			services={{
 				loadRss: services.loadRss,

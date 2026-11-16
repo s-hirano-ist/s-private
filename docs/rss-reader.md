@@ -6,6 +6,8 @@ WebはServer Actionsと同一originのAPI proxy経由で生成clientを呼び、
 RAG、iOSのdelta sync、MobileSyncChangeには参加しない。
 
 上部ナビゲーションのトグルで未読・保存済みを切り替え、表示中の一覧の件数を表示する。
+購読の追加・解除とInoreader取り込みは、設定の「RSSの購読管理」
+（`/[locale]/settings/rss`）にまとめる。
 件数は既読化・保存解除・フィード更新後にも同期する。
 
 ## 保存とライフサイクル

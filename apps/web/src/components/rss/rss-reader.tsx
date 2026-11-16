@@ -21,16 +21,15 @@ function entriesForView(data: RssPage, view: "unread" | "saved" | "feeds") {
 
 export function RssReader({
 	initialData,
-	initialView = "unread",
+	view = "unread",
 	services,
 }: {
 	initialData: RssPage;
-	initialView?: "unread" | "saved";
 	services: RssActions;
+	view?: "unread" | "saved" | "feeds";
 }) {
 	const t = useTranslations("rss");
 	const [data, setData] = useState(initialData);
-	const [view, setView] = useState<"unread" | "saved" | "feeds">(initialView);
 	const [feedId, setFeedId] = useState("");
 	const [offset, setOffset] = useState(0);
 	const [revision, setRevision] = useState(0);
@@ -138,15 +137,14 @@ export function RssReader({
 	if (refreshing) status = `${t("refreshing")} ${progress}`;
 	return (
 		<main className="mx-auto max-w-3xl space-y-6 px-4 py-8">
-			<ViewerCountSync
-				domain="rss"
-				count={entriesForView(data, initialView).total}
-			/>
+			<ViewerCountSync domain="rss" count={entriesForView(data, view).total} />
 			<div className="flex flex-wrap items-center justify-between gap-3">
 				<div>
-					<h1 className="text-2xl font-semibold">{t("title")}</h1>
+					<h1 className="text-2xl font-semibold">
+						{t(view === "feeds" ? "feeds" : "title")}
+					</h1>
 					<p className="mt-1 text-sm text-muted-foreground">
-						{t("description")}
+						{t(view === "feeds" ? "subscriptionsDescription" : "description")}
 					</p>
 				</div>
 				<Button
@@ -162,17 +160,6 @@ export function RssReader({
 					{refreshing ? t("refreshing") : t("refresh")}
 				</Button>
 			</div>
-			<Button
-				onClick={() => {
-					setView(view === "feeds" ? initialView : "feeds");
-					setOffset(0);
-					setFeedId("");
-				}}
-				type="button"
-				variant="outline"
-			>
-				{view === "feeds" ? t(initialView) : t("feeds")}
-			</Button>
 			<output aria-live="polite" className="block">
 				{status}
 			</output>
