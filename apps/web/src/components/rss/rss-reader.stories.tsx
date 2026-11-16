@@ -123,7 +123,13 @@ export const Saved: Story = {
 	},
 };
 export const Subscriptions: Story = {
-	args: { view: "feeds" },
+	args: {
+		view: "feeds",
+		services: {
+			...services,
+			refreshRss: fn(() => new Promise<{ data: [] }>(() => {})),
+		},
+	},
 	play: async ({ canvas }) => {
 		await userEvent.type(
 			canvas.getByLabelText("フィードURL"),
@@ -136,6 +142,10 @@ export const Subscriptions: Story = {
 			folder: "",
 		});
 		await expect(canvas.getByText("Inoreaderから取り込み")).toBeVisible();
+		await waitFor(() =>
+			expect(canvas.getByRole("button", { name: "購読する" })).toBeEnabled(),
+		);
+		await expect(canvas.getByLabelText("取り込みファイル")).toBeEnabled();
 	},
 };
 export const FetchFailure: Story = {
@@ -168,7 +178,7 @@ export const Fetching: Story = {
 			),
 		},
 	},
-	play: async ({ canvas }) => {
+	play: async ({ args, canvas }) => {
 		await waitFor(() =>
 			expect(
 				canvas.getByRole("button", { name: "フィードを取得中" }),
@@ -177,6 +187,72 @@ export const Fetching: Story = {
 		await expect(
 			canvas.getByRole("link", { name: "RSSを軽量に読む" }),
 		).toBeVisible();
+		await userEvent.click(
+			canvas.getByRole("button", { name: "あとで読むに保存" }),
+		);
+		await expect(args.services.saveRss).toHaveBeenCalled();
+		await userEvent.click(canvas.getByRole("button", { name: "既読にする" }));
+		await expect(args.services.markRssRead).toHaveBeenCalledWith({
+			ids: [entryId],
+		});
+	},
+};
+
+export const BackgroundReadPending: Story = {
+	args: {
+		initialData: { ...page, unreadCount: 51 },
+		services: {
+			...services,
+			loadRss: fn(() => new Promise<RssPage>(() => {})),
+		},
+	},
+	play: async ({ args, canvas }) => {
+		// The initial poll finishes and starts a background page read that never resolves.
+		await waitFor(() => expect(args.services.loadRss).toHaveBeenCalledTimes(2));
+		await expect(
+			canvas.getByRole("button", { name: "すべて既読にする" }),
+		).toBeEnabled();
+		await userEvent.click(
+			canvas.getByRole("button", { name: "あとで読むに保存" }),
+		);
+		await expect(args.services.saveRss).toHaveBeenCalled();
+		await userEvent.click(canvas.getByRole("button", { name: "次へ" }));
+		await waitFor(() =>
+			expect(args.services.loadRss).toHaveBeenCalledWith(50, undefined),
+		);
+		// A foreground page change still prevents duplicate page navigation.
+		await expect(canvas.getByRole("button", { name: "次へ" })).toBeDisabled();
+	},
+};
+
+export const SubscriptionStartsRefresh: Story = {
+	args: {
+		view: "feeds",
+		initialData: empty,
+		services: {
+			...services,
+			refreshRss: fn(() => new Promise<{ data: [] }>(() => {})),
+		},
+	},
+	play: async ({ args, canvas }) => {
+		await userEvent.type(
+			canvas.getByLabelText("フィードURL"),
+			"https://example.com/feed",
+		);
+		await userEvent.click(canvas.getByRole("button", { name: "購読する" }));
+		await waitFor(() =>
+			expect(args.services.refreshRss).toHaveBeenCalledWith([feedId], false),
+		);
+		await expect(
+			canvas.getByRole("button", { name: "フィードを取得中" }),
+		).toBeDisabled();
+		await waitFor(() =>
+			expect(canvas.getByRole("button", { name: "購読する" })).toBeEnabled(),
+		);
+		await expect(canvas.getByLabelText("取り込みファイル")).toBeEnabled();
+		await expect(
+			canvas.getByRole("button", { name: "購読解除" }),
+		).toBeEnabled();
 	},
 };
 
@@ -280,7 +356,13 @@ export const NarrowFeedFilter: Story = {
 };
 
 export const SubscriptionImport: Story = {
-	args: { view: "feeds" },
+	args: {
+		view: "feeds",
+		services: {
+			...services,
+			refreshRss: fn(() => new Promise<{ data: [] }>(() => {})),
+		},
+	},
 	play: async ({ args, canvas }) => {
 		const content =
 			'<opml><body><outline xmlUrl="https://example.com/feed" title="Engineering"/></body></opml>';
@@ -294,6 +376,9 @@ export const SubscriptionImport: Story = {
 		await expect(
 			await canvas.findByText("追加 1件・重複 0件・不正 0件"),
 		).toBeVisible();
+		await waitFor(() =>
+			expect(canvas.getByLabelText("取り込みファイル")).toBeEnabled(),
+		);
 	},
 };
 export const SubscriptionRemoval: Story = {
@@ -303,6 +388,7 @@ export const SubscriptionRemoval: Story = {
 			...services,
 			unsubscribeRss: fn(async () => undefined),
 			loadRss: fn(async () => page),
+			refreshRss: fn(() => new Promise<{ data: [] }>(() => {})),
 		},
 	},
 	beforeEach: () => {
