@@ -185,4 +185,74 @@ describe.skipIf(!connectionString)("RSS CockroachDB integration", () => {
 		await asOwner(() => rss.complete(owner, third, correction));
 		expect((await rss.page(owner, 0)).unreadCount).toBe(0);
 	});
+	test("manual repair fixes CNET-style Western mojibake while preserving normal titles and other owners", async () => {
+		const title =
+			"「iPhone Duo」耐久テスト、45万回超の開閉でヒンジに異変　完全に開かず";
+		const url = "https://japan.cnet.com/article/35254934/";
+		const entry = { identity: url, url, title, publishedAt: null };
+		const damaged = new TextDecoder("windows-1252").decode(Buffer.from(title));
+		expect(damaged).not.toContain("\uFFFD");
+		const first = await ownedLease();
+		await asOwner(() =>
+			rss.complete(owner, first, {
+				...result,
+				entries: [
+					{ ...entry, title: damaged },
+					{
+						...entry,
+						url: `${url}?custom`,
+						identity: "custom",
+						title: "自分のタイトル",
+					},
+				],
+			}),
+		);
+		await asOwner(() => rss.save(owner, { ...entry, title: damaged }));
+		await tenantContext.run({ userId: "rss-repair-other" }, () =>
+			rss.save("rss-repair-other", { ...entry, title: damaged }),
+		);
+		try {
+			const before = await rss.page(owner, 0);
+			const second = await ownedLease();
+			await asOwner(() =>
+				rss.complete(owner, second, {
+					...result,
+					repairMetadata: true,
+					entries: [
+						entry,
+						{ ...entry, url: `${url}?custom`, identity: "custom" },
+					],
+				}),
+			);
+			const after = await rss.page(owner, 0);
+			expect(after.unread.find((row) => row.url === url)).toMatchObject({
+				title,
+				id: before.unread.find((row) => row.url === url)?.id,
+			});
+			expect(after.saved.find((row) => row.url === url)?.title).toBe(title);
+			expect(
+				after.unread.find((row) => row.url.endsWith("?custom"))?.title,
+			).toBe("自分のタイトル");
+			expect((await rss.page("rss-repair-other", 0)).saved[0].title).toBe(
+				damaged,
+			);
+			const repaired = after.unread.find((row) => row.url === url)!;
+			await asOwner(() => rss.read(owner, { ids: [repaired.id] }));
+			const third = await ownedLease();
+			await asOwner(() =>
+				rss.complete(owner, third, {
+					...result,
+					repairMetadata: true,
+					entries: [entry],
+				}),
+			);
+			expect(
+				(await rss.page(owner, 0)).unread.some((row) => row.url === url),
+			).toBe(false);
+		} finally {
+			await client.rssSaved.deleteMany({
+				where: { userId: "rss-repair-other" },
+			});
+		}
+	});
 });
