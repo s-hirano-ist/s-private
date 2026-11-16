@@ -6,22 +6,31 @@ import type {
 	RssSaved,
 } from "@s-hirano-ist/s-api-client/models";
 import { refreshRss } from "@/application-services/rss/client";
+import { ViewerCountSync } from "@/components/common/layouts/nav/viewer-count-context";
 import { refreshFeeds } from "@/components/rss/refresh-feeds";
 import { Button } from "@s-hirano-ist/s-ui/button";
 import { Input } from "@s-hirano-ist/s-ui/input";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState, useTransition } from "react";
 type RssActions = typeof actions & { refreshRss?: typeof refreshRss };
+function entriesForView(data: RssPage, view: "unread" | "saved" | "feeds") {
+	return view === "saved"
+		? { entries: data.saved, total: data.savedCount }
+		: { entries: data.unread, total: data.unreadCount };
+}
+
 export function RssReader({
 	initialData,
+	initialView = "unread",
 	services,
 }: {
 	initialData: RssPage;
+	initialView?: "unread" | "saved";
 	services: RssActions;
 }) {
 	const t = useTranslations("rss");
 	const [data, setData] = useState(initialData);
-	const [view, setView] = useState<"unread" | "saved" | "feeds">("unread");
+	const [view, setView] = useState<"unread" | "saved" | "feeds">(initialView);
 	const [feedId, setFeedId] = useState("");
 	const [offset, setOffset] = useState(0);
 	const [revision, setRevision] = useState(0);
@@ -123,17 +132,16 @@ export function RssReader({
 		if ("feedId" in entry)
 			void perform(() => services.markRssRead({ ids: [entry.id] }));
 	}
-	const entries = view === "saved" ? data.saved : data.unread;
-	const total = view === "saved" ? data.savedCount : data.unreadCount;
-	const counts = {
-		feeds: data.feeds.length,
-		saved: data.savedCount,
-		unread: data.unreadCount,
-	};
+	const { entries, total } = entriesForView(data, view);
+
 	let status = loading ? t("loading") : "";
 	if (refreshing) status = `${t("refreshing")} ${progress}`;
 	return (
 		<main className="mx-auto max-w-3xl space-y-6 px-4 py-8">
+			<ViewerCountSync
+				domain="rss"
+				count={entriesForView(data, initialView).total}
+			/>
 			<div className="flex flex-wrap items-center justify-between gap-3">
 				<div>
 					<h1 className="text-2xl font-semibold">{t("title")}</h1>
@@ -154,23 +162,17 @@ export function RssReader({
 					{refreshing ? t("refreshing") : t("refresh")}
 				</Button>
 			</div>
-			<nav aria-label={t("views")} className="flex flex-wrap gap-2">
-				{(["unread", "saved", "feeds"] as const).map((tab) => (
-					<Button
-						aria-pressed={view === tab}
-						key={tab}
-						onClick={() => {
-							setView(tab);
-							setOffset(0);
-							setFeedId("");
-						}}
-						type="button"
-						variant={view === tab ? "default" : "outline"}
-					>
-						{t(tab)} {counts[tab]}
-					</Button>
-				))}
-			</nav>
+			<Button
+				onClick={() => {
+					setView(view === "feeds" ? initialView : "feeds");
+					setOffset(0);
+					setFeedId("");
+				}}
+				type="button"
+				variant="outline"
+			>
+				{view === "feeds" ? t(initialView) : t("feeds")}
+			</Button>
 			<output aria-live="polite" className="block">
 				{status}
 			</output>

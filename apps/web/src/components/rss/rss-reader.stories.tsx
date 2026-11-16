@@ -1,5 +1,6 @@
 import type { RssPage } from "@s-hirano-ist/s-api-client/models";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { ViewerCountProvider } from "@/components/common/layouts/nav/viewer-count-context";
 import { RssReader } from "@/components/rss/rss-reader";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 const feedId = "00000000-0000-4000-8000-000000000001";
@@ -41,6 +42,13 @@ const services = {
 };
 const meta = {
 	component: RssReader,
+	decorators: [
+		(Story) => (
+			<ViewerCountProvider>
+				<Story />
+			</ViewerCountProvider>
+		),
+	],
 	args: { initialData: page, services },
 	parameters: { layout: "fullscreen" },
 } satisfies Meta<typeof RssReader>;
@@ -83,6 +91,7 @@ export const Empty: Story = {
 };
 export const Saved: Story = {
 	args: {
+		initialView: "saved",
 		services: {
 			...services,
 			loadRss: fn(() =>
@@ -103,9 +112,6 @@ export const Saved: Story = {
 		},
 	},
 	play: async ({ canvas }) => {
-		await userEvent.click(
-			canvas.getByRole("button", { name: /あとで読む 1/u }),
-		);
 		await expect(
 			await canvas.findByRole("link", { name: "保存した記事" }),
 		).toBeVisible();

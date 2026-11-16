@@ -494,3 +494,36 @@ export const RssMobile: Story = {
 	...Rss,
 	globals: { viewport: { value: "mobile1" } },
 };
+
+export const RssUnreadCount: Story = {
+	parameters: { nextjs: { navigation: { pathname: "/ja/rss" } } },
+	render: (args) => (
+		<>
+			<ViewerCountSync count={42} domain="rss" />
+			<AppNavigation {...args} />
+		</>
+	),
+	play: async ({ canvas }) => {
+		await expect(
+			await canvas.findByRole("link", {
+				name: "RSSの表示: 未読。保存済みに切り替え（42件）",
+			}),
+		).toHaveAttribute("href", "/ja/rss/saved");
+	},
+};
+export const RssSavedCount: Story = {
+	parameters: { nextjs: { navigation: { pathname: "/ja/rss/saved" } } },
+	render: (args) => (
+		<>
+			<ViewerCountSync count={7} domain="rss" />
+			<AppNavigation {...args} />
+		</>
+	),
+	play: async ({ canvas }) => {
+		await expect(
+			await canvas.findByRole("link", {
+				name: "RSSの表示: 保存済み。未読に切り替え（7件）",
+			}),
+		).toHaveAttribute("href", "/ja/rss");
+	},
+};
