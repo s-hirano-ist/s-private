@@ -209,6 +209,7 @@ export const BackgroundReadPending: Story = {
 	play: async ({ args, canvas }) => {
 		// The initial poll finishes and starts a background page read that never resolves.
 		await waitFor(() => expect(args.services.loadRss).toHaveBeenCalledTimes(2));
+		await expect(canvas.getByRole("status")).toHaveTextContent("読み込み中…");
 		await expect(
 			canvas.getByRole("button", { name: "すべて既読にする" }),
 		).toBeEnabled();
@@ -222,6 +223,7 @@ export const BackgroundReadPending: Story = {
 		);
 		// A foreground page change still prevents duplicate page navigation.
 		await expect(canvas.getByRole("button", { name: "次へ" })).toBeDisabled();
+		await expect(canvas.getByRole("status")).toHaveTextContent("読み込み中…");
 	},
 };
 

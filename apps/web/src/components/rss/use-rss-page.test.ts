@@ -24,6 +24,7 @@ test("a late background response cannot overwrite a newer filter", async () => {
 		{ initialProps: { feedId: "" } },
 	);
 	expect(result.current.loading).toBe(false);
+	expect(result.current.reloading).toBe(true);
 	rerender({ feedId: "new-feed" });
 	await waitFor(() => expect(result.current.data).toEqual(filtered));
 	await act(async () => {
@@ -32,6 +33,7 @@ test("a late background response cannot overwrite a newer filter", async () => {
 	});
 	expect(result.current.data).toEqual(filtered);
 	expect(result.current.loading).toBe(false);
+	expect(result.current.reloading).toBe(false);
 	expect(setError).not.toHaveBeenCalled();
 });
 
@@ -43,11 +45,40 @@ test("a background failure keeps the displayed page and controls available", asy
 		useRssPage(initial, readPage, 0, "", 1, setError),
 	);
 	expect(result.current.loading).toBe(false);
+	expect(result.current.reloading).toBe(true);
 	await act(async () => {
 		background.reject(new Error("Unavailable"));
 		await background.promise.catch(() => {});
 	});
 	expect(result.current.data).toEqual(initial);
 	expect(result.current.loading).toBe(false);
+	expect(result.current.reloading).toBe(false);
 	expect(setError).toHaveBeenCalledWith(true);
+});
+
+test("a stale response cannot clear the indicator for a newer page request", async () => {
+	const background = Promise.withResolvers<RssPage>();
+	const next = Promise.withResolvers<RssPage>();
+	const readPage = vi
+		.fn<() => Promise<RssPage>>()
+		.mockReturnValueOnce(background.promise)
+		.mockReturnValueOnce(next.promise);
+	const setError = vi.fn();
+	const { result, rerender } = renderHook(
+		({ offset }) => useRssPage(initial, readPage, offset, "", 0, setError),
+		{ initialProps: { offset: 0 } },
+	);
+	rerender({ offset: 50 });
+	await act(async () => {
+		background.resolve(initial);
+		await background.promise;
+	});
+	expect(result.current.reloading).toBe(true);
+	expect(result.current.loading).toBe(true);
+	await act(async () => {
+		next.resolve(initial);
+		await next.promise;
+	});
+	expect(result.current.reloading).toBe(false);
+	expect(result.current.loading).toBe(false);
 });

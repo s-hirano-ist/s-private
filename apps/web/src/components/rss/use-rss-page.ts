@@ -12,6 +12,18 @@ export function useRssPage(
 ) {
 	const [data, setData] = useState(initialData);
 	const [loading, setLoading] = useState(false);
+	const [settled, setSettled] = useState<{
+		feedId: string;
+		offset: number;
+		readPage: typeof loadRss;
+		revision: number;
+	} | null>(null);
+	const reloading =
+		settled === null ||
+		settled.feedId !== feedId ||
+		settled.offset !== offset ||
+		settled.readPage !== readPage ||
+		settled.revision !== revision;
 	const displayed = useRef({ offset: 0, feedId: "" });
 	useEffect(() => {
 		let cancelled = false;
@@ -31,14 +43,14 @@ export function useRssPage(
 				if (cancelled) return;
 				setError(true);
 				setLoading(false);
+			} finally {
+				if (!cancelled) setSettled({ feedId, offset, readPage, revision });
 			}
 		}
 		void reload();
 		return () => {
 			cancelled = true;
 		};
-		// revision deliberately invalidates the page after a feed or mutation completes.
-		// oxlint-disable-next-line react/exhaustive-effect-dependencies
 	}, [readPage, offset, feedId, revision, setError]);
-	return { data, loading };
+	return { data, loading, reloading };
 }
