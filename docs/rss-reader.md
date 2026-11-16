@@ -1,9 +1,12 @@
 # RSSリーダー
 
-既存Webの `/[locale]/rss` で、RSS 1.0（RDF）／RSS 2.0／Atomの購読、未読、あとで読むを管理する。
+既存Webの `/[locale]/rss`（未読）と `/[locale]/rss/saved`（保存済み）で、RSS 1.0（RDF）／RSS 2.0／Atomの購読、未読、あとで読むを管理する。
 WebはServer Actionsと同一originのAPI proxy経由で生成clientを呼び、認証・所有者確認・取得・永続化は
 共通backendの `/api/v1/rss` が担当する。既存Articlesの公開ライフサイクル、
 RAG、iOSのdelta sync、MobileSyncChangeには参加しない。
+
+上部ナビゲーションのトグルで未読・保存済みを切り替え、表示中の一覧の件数を表示する。
+件数は既読化・保存解除・フィード更新後にも同期する。
 
 ## 保存とライフサイクル
 

@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
-export type ViewerDomain = "articles" | "books" | "images" | "notes";
+export type ViewerDomain = "articles" | "books" | "images" | "notes" | "rss";
 
 type ViewerCount = { count: number; domain: ViewerDomain };
 type ViewerCountContextValue = {

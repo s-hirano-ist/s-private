@@ -144,6 +144,65 @@ function navigationTabClassName(active: boolean) {
 	);
 }
 
+function RssStatus({ saved }: { saved: boolean }) {
+	const viewer = useViewerCount();
+	const count = viewer?.domain === "rss" ? viewer.count : null;
+	const t = useTranslations("rss");
+	const nav = useTranslations("navigation");
+	const current = t(saved ? "saved" : "unread");
+	const next = t(saved ? "unread" : "saved");
+	return (
+		<nav aria-label={t("views")} className="mr-auto min-w-0">
+			<Link
+				aria-label={`${t("switchView", { current, next })}${count === null ? "" : nav("contentCount", { count })}`}
+				className="inline-flex h-8 items-center gap-1.5 rounded-full bg-primary/10 px-3 text-xs font-medium whitespace-nowrap text-foreground transition-colors duration-200 hover:bg-primary/20"
+				href={saved ? "/rss" : "/rss/saved"}
+			>
+				{current}
+				{count !== null && nav("contentCount", { count })}
+				<ArrowLeftRightIcon aria-hidden="true" className="size-3.5" />
+			</Link>
+		</nav>
+	);
+}
+
+function ContentStatus({
+	domain,
+	isViewer,
+	isContent,
+	count,
+	onSwitch,
+}: {
+	count: number | null;
+	domain: (typeof domains)[number];
+	isContent: boolean;
+	isViewer: boolean;
+	onSwitch: () => void;
+}) {
+	const t = useTranslations("navigation");
+	return (
+		<nav aria-label={t("status")} className="mr-auto min-w-0">
+			{isContent ? (
+				<BackButton />
+			) : (
+				<Link
+					aria-label={`${t("switchStatus", {
+						current: t(isViewer ? "exported" : "unexported"),
+						next: t(isViewer ? "unexported" : "exported"),
+					})}${count === null ? "" : t("contentCount", { count })}`}
+					className="inline-flex h-8 items-center gap-1.5 rounded-full bg-primary/10 px-3 text-xs font-medium whitespace-nowrap text-foreground transition-colors duration-200 hover:bg-primary/20"
+					href={isViewer ? domain.href : domain.viewerHref}
+					onClick={onSwitch}
+				>
+					{t(isViewer ? "exported" : "unexported")}
+					{count !== null && t("contentCount", { count })}
+					<ArrowLeftRightIcon aria-hidden="true" className="size-3.5" />
+				</Link>
+			)}
+		</nav>
+	);
+}
+
 export function AppNavigation({ forms, search, draftOwner }: Props) {
 	const t = useTranslations("navigation");
 	const { draftStorage, flushDraft } = useNoteDraftStorage(draftOwner);
@@ -204,57 +263,53 @@ export function AppNavigation({ forms, search, draftOwner }: Props) {
 		})();
 	};
 
+	let headerControls: ReactNode;
+	if (route === "rss") {
+		headerControls = <RssStatus saved={pathname.split("/")[3] === "saved"} />;
+	} else if (activeDomain) {
+		headerControls = (
+			<>
+				<ContentStatus
+					domain={activeDomain}
+					isViewer={isViewer}
+					isContent={isContent}
+					count={count}
+					onSwitch={() => {
+						flushDraft();
+						setCreateOpen(false);
+					}}
+				/>
+				<Button
+					aria-label={t("create")}
+					className="size-9 shrink-0 rounded-full bg-linear-to-br from-primary to-primary-grad text-primary-foreground shadow-[0_4px_20px_rgb(var(--sui-primary)/0.4)] ring-2 ring-background transition-all duration-200 hover:scale-105 hover:text-primary-foreground hover:shadow-[0_6px_28px_rgb(var(--sui-primary)/0.5)] active:scale-95"
+					disabled={createPending}
+					onClick={() => {
+						if (domain === "notes") {
+							const stored = draftStorage.current?.read();
+							setDrafts((current) => restoreNoteDraft(current, stored));
+						}
+						setCreateDomain(domain ?? null);
+						setCreateOpen(true);
+					}}
+					size="icon"
+					type="button"
+					variant="default"
+				>
+					<PlusIcon />
+				</Button>
+			</>
+		);
+	} else {
+		headerControls = (
+			<h1 className="mr-auto text-base font-semibold text-foreground">
+				{t(title)}
+			</h1>
+		);
+	}
 	return (
 		<>
 			<header className="sticky top-3 z-40 mx-auto flex min-h-14 w-[calc(100%-1.5rem)] max-w-3xl flex-nowrap items-center gap-1 rounded-full border border-nav-border/10 bg-nav-surface/70 px-2 py-1 text-foreground shadow-lg backdrop-blur-xl sm:gap-2 sm:px-3">
-				{activeDomain ? (
-					<>
-						<nav aria-label={t("status")} className="mr-auto min-w-0">
-							{isContent ? (
-								<BackButton />
-							) : (
-								<Link
-									aria-label={`${t("switchStatus", {
-										current: t(isViewer ? "exported" : "unexported"),
-										next: t(isViewer ? "unexported" : "exported"),
-									})}${count === null ? "" : t("contentCount", { count })}`}
-									className="inline-flex h-8 items-center gap-1.5 rounded-full bg-primary/10 px-3 text-xs font-medium whitespace-nowrap text-foreground transition-colors duration-200 hover:bg-primary/20"
-									href={isViewer ? activeDomain.href : activeDomain.viewerHref}
-									onClick={() => {
-										flushDraft();
-										setCreateOpen(false);
-									}}
-								>
-									{t(isViewer ? "exported" : "unexported")}
-									{count !== null && t("contentCount", { count })}
-									<ArrowLeftRightIcon aria-hidden="true" className="size-3.5" />
-								</Link>
-							)}
-						</nav>
-						<Button
-							aria-label={t("create")}
-							className="size-9 shrink-0 rounded-full bg-linear-to-br from-primary to-primary-grad text-primary-foreground shadow-[0_4px_20px_rgb(var(--sui-primary)/0.4)] ring-2 ring-background transition-all duration-200 hover:scale-105 hover:text-primary-foreground hover:shadow-[0_6px_28px_rgb(var(--sui-primary)/0.5)] active:scale-95"
-							disabled={createPending}
-							onClick={() => {
-								if (domain === "notes") {
-									const stored = draftStorage.current?.read();
-									setDrafts((current) => restoreNoteDraft(current, stored));
-								}
-								setCreateDomain(domain ?? null);
-								setCreateOpen(true);
-							}}
-							size="icon"
-							type="button"
-							variant="default"
-						>
-							<PlusIcon />
-						</Button>
-					</>
-				) : (
-					<h1 className="mr-auto text-base font-semibold text-foreground">
-						{t(title)}
-					</h1>
-				)}
+				{headerControls}
 				<Button
 					aria-label={t("search")}
 					className="shrink-0 rounded-full text-foreground transition-colors duration-200 hover:bg-primary/10"
