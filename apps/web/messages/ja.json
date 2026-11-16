@@ -134,6 +134,8 @@
 		"switchView": "RSSの表示: {current}。{next}に切り替え",
 		"unread": "未読",
 		"saved": "保存済み",
+		"manageSubscriptions": "RSSの購読管理",
+		"subscriptionsDescription": "フィードの追加・解除と、Inoreaderからの取り込みを管理します。",
 		"feeds": "購読管理",
 		"refresh": "更新",
 		"refreshing": "フィードを取得中",

@@ -57,6 +57,9 @@ type Story = StoryObj<typeof meta>;
 export const Unread: Story = {
 	play: async ({ canvas }) => {
 		await expect(
+			canvas.queryByRole("button", { name: "購読管理" }),
+		).not.toBeInTheDocument();
+		await expect(
 			await canvas.findByRole("link", { name: "RSSを軽量に読む" }),
 		).toHaveAttribute("target", "_blank");
 		await userEvent.click(
@@ -91,7 +94,7 @@ export const Empty: Story = {
 };
 export const Saved: Story = {
 	args: {
-		initialView: "saved",
+		view: "saved",
 		services: {
 			...services,
 			loadRss: fn(() =>
@@ -120,8 +123,8 @@ export const Saved: Story = {
 	},
 };
 export const Subscriptions: Story = {
+	args: { view: "feeds" },
 	play: async ({ canvas }) => {
-		await userEvent.click(canvas.getByRole("button", { name: /購読管理/u }));
 		await userEvent.type(
 			canvas.getByLabelText("フィードURL"),
 			"https://example.com/new-feed",
@@ -273,5 +276,49 @@ export const NarrowFeedFilter: Story = {
 		await expect(canvasElement.scrollWidth).toBeLessThanOrEqual(
 			canvasElement.clientWidth,
 		);
+	},
+};
+
+export const SubscriptionImport: Story = {
+	args: { view: "feeds" },
+	play: async ({ args, canvas }) => {
+		const content =
+			'<opml><body><outline xmlUrl="https://example.com/feed" title="Engineering"/></body></opml>';
+		await userEvent.upload(
+			canvas.getByLabelText("取り込みファイル"),
+			new File([content], "subscriptions.xml", { type: "application/xml" }),
+		);
+		await waitFor(() =>
+			expect(args.services.importRss).toHaveBeenCalledWith("opml", content),
+		);
+		await expect(
+			await canvas.findByText("追加 1件・重複 0件・不正 0件"),
+		).toBeVisible();
+	},
+};
+export const SubscriptionRemoval: Story = {
+	args: {
+		view: "feeds",
+		services: {
+			...services,
+			unsubscribeRss: fn(async () => undefined),
+			loadRss: fn(async () => page),
+		},
+	},
+	beforeEach: () => {
+		const original = window.confirm;
+		window.confirm = fn(() => true);
+		return () => {
+			window.confirm = original;
+		};
+	},
+	play: async ({ args, canvas }) => {
+		await userEvent.click(canvas.getByRole("button", { name: "購読解除" }));
+		await waitFor(() =>
+			expect(args.services.unsubscribeRss).toHaveBeenCalledWith(feedId),
+		);
+		await expect(
+			canvas.getByRole("heading", { name: "Inoreaderから取り込み" }),
+		).toBeVisible();
 	},
 };

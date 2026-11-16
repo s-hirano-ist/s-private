@@ -31,6 +31,9 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
+		await expect(
+			canvas.getByRole("link", { name: "RSSの購読管理" }),
+		).toHaveAttribute("href", "/ja/settings/rss");
 		await expect(canvas.getByTestId("log-out-button")).toBeVisible();
 		await expect(
 			canvas.getByRole("button", { name: /再読み込み/u }),
