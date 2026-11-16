@@ -236,10 +236,10 @@ test("manual repair corrects damaged existing titles without resurrecting read e
 		{ hash: createHash("sha256").update("one").digest() },
 	]);
 	db.rssUnread.findMany.mockResolvedValue([
-		{ id: "unread", url: result.entries[0].url },
+		{ id: "unread", url: result.entries[0].url, title: "\uFFFD" },
 	]);
 	db.rssSaved.findMany.mockResolvedValue([
-		{ id: "saved", url: result.entries[0].url },
+		{ id: "saved", url: result.entries[0].url, title: "\uFFFD" },
 	]);
 	await rss.complete("owner", lease, { ...result, repairMetadata: true });
 	expect(db.rssUnread.findMany).toHaveBeenCalledWith({
@@ -247,21 +247,20 @@ test("manual repair corrects damaged existing titles without resurrecting read e
 			userId: "owner",
 			feedId: "feed",
 			url: { in: [result.entries[0].url] },
-			title: { contains: "\uFFFD" },
 		},
-		select: { id: true, url: true },
+		select: { id: true, url: true, title: true },
 	});
 	expect(db.rssUnread.updateMany).toHaveBeenCalledWith({
 		where: {
 			id: "unread",
 			userId: "owner",
 			feedId: "feed",
-			title: { contains: "\uFFFD" },
+			title: "\uFFFD",
 		},
 		data: { title: "One" },
 	});
 	expect(db.rssSaved.updateMany).toHaveBeenCalledWith({
-		where: { id: "saved", userId: "owner", title: { contains: "\uFFFD" } },
+		where: { id: "saved", userId: "owner", title: "\uFFFD" },
 		data: { title: "One" },
 	});
 	expect(db.rssUnread.createMany).not.toHaveBeenCalled();

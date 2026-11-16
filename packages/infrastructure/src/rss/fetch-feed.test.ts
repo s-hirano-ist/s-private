@@ -215,6 +215,32 @@ test("decodes a Shift_JIS HTTP response before extracting metadata", async () =>
 		entries: [],
 	});
 });
+test("uses the final UTF-8 response for a CNET RDF feed after a Latin-1 redirect", async () => {
+	const url = "https://japan.cnet.com/article/35254934/";
+	const title =
+		"「iPhone Duo」耐久テスト、45万回超の開閉でヒンジに異変　完全に開かず";
+	respond(
+		302,
+		{
+			location: "http://feeds.japan.cnet.com/rss/cnet/all.rdf",
+			"content-type": "text/html; charset=iso-8859-1",
+		},
+		"",
+	);
+	respond(
+		200,
+		{ "content-type": "application/xml; charset=UTF-8" },
+		`<?xml version="1.0" encoding="utf-8"?><rdf:RDF xmlns="http://purl.org/rss/1.0/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><channel><title>CNET Japan</title></channel><item rdf:about="${url}"><title>${title}</title><link>${url}</link></item></rdf:RDF>`,
+	);
+	expect(
+		await fetchFeed({
+			...lease,
+			url: "http://feed.japan.cnet.com/rss/index.rdf",
+		}),
+	).toMatchObject({
+		entries: [{ identity: url, url, title }],
+	});
+});
 test.each([
 	[Buffer.from([0xff]), "application/xml", "invalid_text"],
 	[

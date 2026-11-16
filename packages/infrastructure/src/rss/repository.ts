@@ -2,6 +2,7 @@ import type { RssRepository } from "@s-hirano-ist/s-application/rss/ports";
 import type { EntryInput, FeedInput } from "@s-hirano-ist/s-core/rss/types";
 import type { DatabaseClient } from "@s-hirano-ist/s-infrastructure/database";
 import { withTransactionRetry } from "@s-hirano-ist/s-database";
+import { needsTitleRepair } from "@s-hirano-ist/s-infrastructure/rss/title-repair";
 import { createHash, randomUUID } from "node:crypto";
 const hash = (identity: string) =>
 	createHash("sha256").update(identity).digest();
@@ -196,33 +197,37 @@ export function createRssRepository(db: DatabaseClient): RssRepository {
 						const where = {
 							userId,
 							url: { in: [...titles.keys()] },
-							title: { contains: "\uFFFD" },
 						};
 						const [unread, saved] = await Promise.all([
 							tx.rssUnread.findMany({
 								where: { ...where, feedId: lease.id },
-								select: { id: true, url: true },
+								select: { id: true, url: true, title: true },
 							}),
-							tx.rssSaved.findMany({ where, select: { id: true, url: true } }),
+							tx.rssSaved.findMany({
+								where,
+								select: { id: true, url: true, title: true },
+							}),
 						]);
 						for (const row of unread) {
 							const title = titles.get(row.url);
-							if (title === undefined) continue;
+							if (title === undefined || !needsTitleRepair(row.title, title))
+								continue;
 							await tx.rssUnread.updateMany({
 								where: {
 									id: row.id,
 									userId,
 									feedId: lease.id,
-									title: { contains: "\uFFFD" },
+									title: row.title,
 								},
 								data: { title },
 							});
 						}
 						for (const row of saved) {
 							const title = titles.get(row.url);
-							if (title === undefined) continue;
+							if (title === undefined || !needsTitleRepair(row.title, title))
+								continue;
 							await tx.rssSaved.updateMany({
-								where: { id: row.id, userId, title: { contains: "\uFFFD" } },
+								where: { id: row.id, userId, title: row.title },
 								data: { title },
 							});
 						}

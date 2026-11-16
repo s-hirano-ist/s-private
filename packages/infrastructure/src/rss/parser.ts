@@ -1,4 +1,5 @@
 import type { ParsedEntry } from "@s-hirano-ist/s-core/rss/types";
+import { EntityDecoder } from "@nodable/entities";
 import { XMLParser } from "fast-xml-parser";
 import { SyntaxValidator } from "fast-xml-validator";
 export function parseXml(xml: string): unknown {
@@ -20,6 +21,10 @@ export function parseXml(xml: string): unknown {
 		attributeNamePrefix: "@",
 		parseTagValue: false,
 		processEntities: true,
+		entityDecoder: new EntityDecoder({
+			numericAllowed: true,
+			limit: { maxExpandedLength: 100000, applyLimitsTo: "all" },
+		}),
 	}).parse(xml) as unknown;
 }
 export function record(value: unknown): Record<string, unknown> {
