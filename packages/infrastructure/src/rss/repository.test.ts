@@ -229,3 +229,40 @@ test("stale leases, 304, empty feeds and already-seen items cannot create unread
 		}),
 	});
 });
+
+test("manual repair corrects damaged existing titles without resurrecting read entries", async () => {
+	const { db, rss } = fixture();
+	db.rssSeen.findMany.mockResolvedValue([
+		{ hash: createHash("sha256").update("one").digest() },
+	]);
+	db.rssUnread.findMany.mockResolvedValue([
+		{ id: "unread", url: result.entries[0].url },
+	]);
+	db.rssSaved.findMany.mockResolvedValue([
+		{ id: "saved", url: result.entries[0].url },
+	]);
+	await rss.complete("owner", lease, { ...result, repairMetadata: true });
+	expect(db.rssUnread.findMany).toHaveBeenCalledWith({
+		where: {
+			userId: "owner",
+			feedId: "feed",
+			url: { in: [result.entries[0].url] },
+			title: { contains: "\uFFFD" },
+		},
+		select: { id: true, url: true },
+	});
+	expect(db.rssUnread.updateMany).toHaveBeenCalledWith({
+		where: {
+			id: "unread",
+			userId: "owner",
+			feedId: "feed",
+			title: { contains: "\uFFFD" },
+		},
+		data: { title: "One" },
+	});
+	expect(db.rssSaved.updateMany).toHaveBeenCalledWith({
+		where: { id: "saved", userId: "owner", title: { contains: "\uFFFD" } },
+		data: { title: "One" },
+	});
+	expect(db.rssUnread.createMany).not.toHaveBeenCalled();
+});

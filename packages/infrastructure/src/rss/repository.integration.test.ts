@@ -155,4 +155,34 @@ describe.skipIf(!connectionString)("RSS CockroachDB integration", () => {
 		await asOwner(() => rss.unsave(owner, page.saved[0].id));
 		expect((await rss.page(owner, 0)).savedCount).toBe(0);
 	});
+	test("manual refresh repairs existing unread and saved titles without restoring read articles", async () => {
+		await asOwner(() => rss.subscribe(owner, source));
+		const first = await ownedLease();
+		await asOwner(() =>
+			rss.complete(owner, first, {
+				...result,
+				entries: [{ ...result.entries[0], title: "\uFFFD\uFFFD" }],
+			}),
+		);
+		const before = await rss.page(owner, 0);
+		await asOwner(() => rss.save(owner, before.unread[0]));
+		const correction = {
+			...result,
+			repairMetadata: true,
+			entries: [{ ...result.entries[0], title: "日本語" }],
+		};
+		const second = await ownedLease();
+		await asOwner(() => rss.complete(owner, second, correction));
+		const after = await rss.page(owner, 0);
+		expect(after.unread).toHaveLength(1);
+		expect(after.unread[0]).toMatchObject({
+			id: before.unread[0].id,
+			title: "日本語",
+		});
+		expect(after.saved[0].title).toBe("日本語");
+		await asOwner(() => rss.read(owner, { ids: [after.unread[0].id] }));
+		const third = await ownedLease();
+		await asOwner(() => rss.complete(owner, third, correction));
+		expect((await rss.page(owner, 0)).unreadCount).toBe(0);
+	});
 });

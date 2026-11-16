@@ -33,7 +33,20 @@ RSS画面を開くと、最終試行から1時間以上経過した購読を5件
 外部スケジューラー・常駐workerは使用しない。
 アプリ未使用中にフィードから消えた記事は取得できない。
 
-ETag／Last-Modifiedによる条件付き取得を行い、304では未読・hashを変更しない。
+通常取得はETag／Last-Modifiedによる条件付き取得を行い、304では未読・hashを変更しない。
+手動更新ではvalidatorを送らず本文を再取得し、フィードに残っている記事について、
+置換文字（U+FFFD）を含む既存の未読・保存タイトルを正常なタイトルで補正する。
+既読行は復活させず、正常なタイトル・保存記事のその他の情報も変更しない。
+元のフィードから消えた記事、URLやID自体が壊れたデータ、置換文字を含まない文字化けは
+自動補正できない。購読解除や既読履歴のリセットで復旧する方式は使わない。
+
+本文はXML解析前に文字コードを変換する。BOM、HTTP Content-Typeのcharset、XML宣言、
+UTF-8既定の順に判定し、UTF-16のバイト順も確認する。Node.jsのTextDecoderを使い、
+Shift_JIS／Windows-31J・EUC-JP等に対応する。不明な文字コードと不正なバイト列は
+置換して保存せず、`stage=decode` と `unsupported_charset`／`invalid_text` で報告する。
+[XML MIMEの優先順位](https://www.rfc-editor.org/rfc/rfc7303#section-3.2)に従い、
+配信元の誤ったcharset宣言を推測で上書きしない。UTF-32は未対応。
+
 レスポンスは2 MiB、取得は15秒、redirectは5回までに制限する。
 HTTP(S)の公開IP・標準Webポートだけを許可し、DNS解決結果を実接続へ固定する。
 redirect先も同様に検証する。XMLのDOCTYPE・ENTITYを拒否する。
@@ -50,7 +63,7 @@ RSS取得失敗は `source=rss_refresh` として、backendのVercel runtime log
 既存のbackend設定を使い、失敗報告後に最大2秒のflushを待つ。
 
 - `feedId` と `hostname`：購読IDと失敗時の接続先ホスト。redirect先で失敗した場合はそのホスト
-- `stage`：`url`、`dns`、`http`、`body`、`parse`、またはDB処理の `claim`、`complete`、`release`
+- `stage`：`url`、`dns`、`http`、`body`、`decode`、`parse`、またはDB処理の `claim`、`complete`、`release`
 - `reason`：HTTPエラー、timeout、SSRF拒否、非対応の圧縮、サイズ超過、XML不正、非対応フィード形式等
 - `httpStatus`、許可リスト内の `networkCode`、Prisma形式の `storageCode`（取得できた場合）
 - `durationMs`、`redirects`、`bytes`：失敗までの時間、redirect回数、受信本文バイト数

@@ -19,7 +19,7 @@ const lease: FeedLease = {
 };
 const xml =
 	"<rss><channel><title>News</title><item><link>/one</link></item></channel></rss>";
-function respond(statusCode = 200, headers = {}, body = xml) {
+function respond(statusCode = 200, headers = {}, body: string | Buffer = xml) {
 	mocks.request.mockImplementationOnce((_url, options, callback) => {
 		// Exercise the socket lookup, including Node's all-addresses variant.
 		options.lookup(
@@ -200,3 +200,34 @@ test("distinguishes unsupported feed formats from malformed XML", async () => {
 		diagnostic: { stage: "parse", reason: "unsupported_feed" },
 	});
 });
+
+test("decodes a Shift_JIS HTTP response before extracting metadata", async () => {
+	const bytes = Buffer.concat([
+		Buffer.from(
+			'<?xml version="1.0" encoding="Shift_JIS"?><rss><channel><title>',
+		),
+		Buffer.from("93fa967b8cea", "hex"),
+		Buffer.from("</title></channel></rss>"),
+	]);
+	respond(200, { "content-type": "application/rss+xml" }, bytes);
+	expect(await fetchFeed(lease)).toMatchObject({
+		title: "日本語",
+		entries: [],
+	});
+});
+test.each([
+	[Buffer.from([0xff]), "application/xml", "invalid_text"],
+	[
+		Buffer.from("<rss/>"),
+		"application/xml; charset=not-supported",
+		"unsupported_charset",
+	],
+])(
+	"reports decoding errors without storing damaged text",
+	async (bytes, contentType, reason) => {
+		respond(200, { "content-type": contentType }, bytes);
+		await expect(fetchFeed(lease)).rejects.toMatchObject({
+			diagnostic: { stage: "decode", reason },
+		});
+	},
+);

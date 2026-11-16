@@ -186,6 +186,47 @@ export function createRssRepository(db: DatabaseClient): RssRepository {
 						},
 					});
 					if (!locked.count || result.notModified) return;
+					if (result.repairMetadata) {
+						// Repair existing damaged titles only; never recreate read rows or overwrite custom titles.
+						const titles = new Map(
+							result.entries
+								.filter((entry) => !entry.title.includes("\uFFFD"))
+								.map((entry) => [entry.url, entry.title]),
+						);
+						const where = {
+							userId,
+							url: { in: [...titles.keys()] },
+							title: { contains: "\uFFFD" },
+						};
+						const [unread, saved] = await Promise.all([
+							tx.rssUnread.findMany({
+								where: { ...where, feedId: lease.id },
+								select: { id: true, url: true },
+							}),
+							tx.rssSaved.findMany({ where, select: { id: true, url: true } }),
+						]);
+						for (const row of unread) {
+							const title = titles.get(row.url);
+							if (title === undefined) continue;
+							await tx.rssUnread.updateMany({
+								where: {
+									id: row.id,
+									userId,
+									feedId: lease.id,
+									title: { contains: "\uFFFD" },
+								},
+								data: { title },
+							});
+						}
+						for (const row of saved) {
+							const title = titles.get(row.url);
+							if (title === undefined) continue;
+							await tx.rssSaved.updateMany({
+								where: { id: row.id, userId, title: { contains: "\uFFFD" } },
+								data: { title },
+							});
+						}
+					}
 					const unique = new Map(
 						result.entries.map((entry) => [
 							hash(entry.identity).toString("hex"),
