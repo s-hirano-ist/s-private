@@ -1,5 +1,9 @@
 import type { RssRepository } from "@s-hirano-ist/s-application/rss/ports";
-import type { EntryInput, FeedInput } from "@s-hirano-ist/s-core/rss/types";
+import type {
+	EntryInput,
+	FeedInput,
+	ParsedEntry,
+} from "@s-hirano-ist/s-core/rss/types";
 import type { DatabaseClient } from "@s-hirano-ist/s-infrastructure/database";
 import { withTransactionRetry } from "@s-hirano-ist/s-database";
 import { needsTitleRepair } from "@s-hirano-ist/s-infrastructure/rss/title-repair";
@@ -31,6 +35,11 @@ export function createRssRepository(db: DatabaseClient): RssRepository {
 					db.rssSaved.count({ where: { userId } }),
 				],
 			);
+			const stars = await db.rssSaved.findMany({
+				where: { userId, url: { in: unread.map((entry) => entry.url) } },
+				select: { id: true, url: true },
+			});
+			const savedIds = new Map(stars.map((entry) => [entry.url, entry.id]));
 			return {
 				feeds: feeds.map(
 					({ id, url, title, folder, lastFetchedAt, error }) => ({
@@ -43,22 +52,35 @@ export function createRssRepository(db: DatabaseClient): RssRepository {
 					}),
 				),
 				unread: unread.map(
-					({ id, feedId: source, url, title, publishedAt, receivedAt }) => ({
+					({
 						id,
 						feedId: source,
+						url,
+						title,
+						imageUrl,
+						publishedAt,
+						receivedAt,
+					}) => ({
+						id,
+						feedId: source,
+						savedId: savedIds.get(url) ?? null,
+						imageUrl: imageUrl ?? null,
 						url,
 						title,
 						publishedAt: publishedAt?.toISOString() ?? null,
 						receivedAt: receivedAt.toISOString(),
 					}),
 				),
-				saved: saved.map(({ id, url, title, publishedAt, savedAt }) => ({
-					id,
-					url,
-					title,
-					publishedAt: publishedAt?.toISOString() ?? null,
-					savedAt: savedAt.toISOString(),
-				})),
+				saved: saved.map(
+					({ id, url, title, imageUrl, publishedAt, savedAt }) => ({
+						imageUrl: imageUrl ?? null,
+						id,
+						url,
+						title,
+						publishedAt: publishedAt?.toISOString() ?? null,
+						savedAt: savedAt.toISOString(),
+					}),
+				),
 				unreadCount,
 				savedCount,
 			};
@@ -98,6 +120,7 @@ export function createRssRepository(db: DatabaseClient): RssRepository {
 						{
 							url: input.url,
 							title: input.title,
+							imageUrl: input.imageUrl ?? null,
 							publishedAt: input.publishedAt
 								? new Date(input.publishedAt)
 								: null,
@@ -188,6 +211,8 @@ export function createRssRepository(db: DatabaseClient): RssRepository {
 					});
 					if (!locked.count || result.notModified) return;
 					if (result.repairMetadata) {
+						await fillMissingImages(tx, userId, lease.id, result.entries);
+
 						// Repair existing damaged titles only; never recreate read rows or overwrite custom titles.
 						const titles = new Map(
 							result.entries
@@ -261,6 +286,7 @@ export function createRssRepository(db: DatabaseClient): RssRepository {
 						data: [...unique.values()].map((entry) => ({
 							url: entry.url,
 							title: entry.title,
+							imageUrl: entry.imageUrl ?? null,
 							id: randomUUID(),
 							userId,
 							feedId: lease.id,
@@ -287,4 +313,48 @@ export function createRssRepository(db: DatabaseClient): RssRepository {
 			);
 		},
 	};
+}
+
+async function fillMissingImages(
+	tx: Pick<DatabaseClient, "rssUnread" | "rssSaved">,
+	userId: string,
+	feedId: string,
+	entries: ParsedEntry[],
+) {
+	const images = new Map(
+		entries
+			.filter((entry) => entry.imageUrl)
+			.map((entry) => [entry.url, entry.imageUrl]),
+	);
+	const imageWhere = {
+		userId,
+		url: { in: [...images.keys()] },
+		imageUrl: null,
+	};
+	const [unreadImages, savedImages] = await Promise.all([
+		tx.rssUnread.findMany({
+			where: { ...imageWhere, feedId: feedId },
+			select: { id: true, url: true },
+		}),
+		tx.rssSaved.findMany({
+			where: imageWhere,
+			select: { id: true, url: true },
+		}),
+	]);
+	for (const row of unreadImages) {
+		const imageUrl = images.get(row.url);
+		if (!imageUrl) continue;
+		await tx.rssUnread.updateMany({
+			where: { id: row.id, userId, feedId: feedId, imageUrl: null },
+			data: { imageUrl },
+		});
+	}
+	for (const row of savedImages) {
+		const imageUrl = images.get(row.url);
+		if (!imageUrl) continue;
+		await tx.rssSaved.updateMany({
+			where: { id: row.id, userId, imageUrl: null },
+			data: { imageUrl },
+		});
+	}
 }

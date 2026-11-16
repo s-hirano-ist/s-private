@@ -379,6 +379,10 @@ export const rssFeedInputSchema = z
 	.openapi("RssFeedInput");
 export const rssEntryInputSchema = z
 	.object({
+		imageUrl: rssWebUrlSchema
+			.refine((value) => new URL(value).protocol === "https:")
+			.nullable()
+			.optional(),
 		url: rssWebUrlSchema,
 		title: z.string().min(1).max(512),
 		publishedAt: z.iso.datetime().nullable(),
@@ -393,6 +397,7 @@ export const rssFeedSchema = rssFeedInputSchema
 	.openapi("RssFeed");
 export const rssUnreadSchema = rssEntryInputSchema
 	.extend({
+		savedId: z.uuid().nullable().optional(),
 		id: z.uuid(),
 		feedId: z.uuid(),
 		receivedAt: z.iso.datetime(),

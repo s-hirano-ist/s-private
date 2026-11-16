@@ -12,8 +12,9 @@ import { RssLoading } from "@/components/rss/rss-loading";
 import { useRssPage } from "@/components/rss/use-rss-page";
 import { Button } from "@s-hirano-ist/s-ui/button";
 import { Input } from "@s-hirano-ist/s-ui/input";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, Star } from "lucide-react";
 import { useTranslations } from "next-intl";
+import NextImage from "next/image";
 import { useEffect, useRef, useState } from "react";
 type RssActions = Omit<typeof actions, "loadRss"> & {
 	loadRss?: typeof loadRss;
@@ -23,6 +24,10 @@ function entriesForView(data: RssPage, view: "unread" | "saved" | "feeds") {
 	return view === "saved"
 		? { entries: data.saved, total: data.savedCount }
 		: { entries: data.unread, total: data.unreadCount };
+}
+
+function savedIdFor(entry: RssUnread | RssSaved): string | null {
+	return "feedId" in entry ? (entry.savedId ?? null) : entry.id;
 }
 
 function RssRefreshButton({
@@ -59,6 +64,81 @@ function RssRefreshButton({
 			</span>
 			<span aria-live="polite">{refreshing ? progress : t("refresh")}</span>
 		</Button>
+	);
+}
+
+function RssEntryCard({
+	entry,
+	source,
+	savedId,
+	busy,
+	onOpen,
+	onToggle,
+}: {
+	busy: boolean;
+	entry: RssUnread | RssSaved;
+	onOpen: () => void;
+	onToggle: () => void;
+	savedId: string | null;
+	source: string;
+}) {
+	const t = useTranslations("rss");
+	const [failedImage, setFailedImage] = useState<string | null>(null);
+	return (
+		<li className="min-w-0 rounded-xl border border-muted bg-primary-foreground p-3 transition-colors hover:border-primary/30 sm:p-4">
+			<div className="mb-1 flex min-w-0 items-center gap-2">
+				<p
+					className="min-w-0 flex-1 truncate text-xs text-muted-foreground"
+					title={source}
+				>
+					{source}
+					{entry.publishedAt ? ` · ${entry.publishedAt.slice(0, 10)}` : ""}
+				</p>
+				<Button
+					type="button"
+					variant="ghost"
+					size="icon"
+					className="size-9 shrink-0 text-primary"
+					aria-label={t(savedId ? "unsave" : "save")}
+					aria-pressed={Boolean(savedId)}
+					title={t(savedId ? "unsave" : "save")}
+					disabled={busy}
+					onClick={onToggle}
+				>
+					<Star
+						aria-hidden="true"
+						className="size-4"
+						fill={savedId ? "currentColor" : "none"}
+					/>
+				</Button>
+			</div>
+			<a
+				className="flex min-w-0 items-start gap-3 rounded-sm text-foreground underline-offset-4 hover:underline"
+				href={entry.url}
+				target="_blank"
+				rel="noopener noreferrer"
+				onClick={onOpen}
+				onAuxClick={(event) => {
+					if (event.button === 1) onOpen();
+				}}
+			>
+				<h2 className="min-w-0 flex-1 text-sm leading-relaxed font-semibold break-words sm:text-base">
+					{entry.title}
+				</h2>
+				{entry.imageUrl && failedImage !== entry.imageUrl ? (
+					<NextImage
+						src={entry.imageUrl}
+						width={80}
+						height={80}
+						sizes="80px"
+						alt=""
+						referrerPolicy="no-referrer"
+						className="size-18 shrink-0 rounded-lg bg-muted object-cover sm:size-20"
+						onError={() => setFailedImage(entry.imageUrl ?? null)}
+					/>
+				) : null}
+			</a>
+		</li>
 	);
 }
 
@@ -178,6 +258,22 @@ export function RssReader({
 		if ("feedId" in entry)
 			void perform(() => services.markRssRead({ ids: [entry.id] }));
 	}
+	function toggleSaved(entry: RssUnread | RssSaved) {
+		const id = savedIdFor(entry);
+		if (id) {
+			void perform(() => services.unsaveRss(id));
+			return;
+		}
+		void perform(() =>
+			services.saveRss({
+				url: entry.url,
+				title: entry.title,
+				publishedAt: entry.publishedAt,
+				...(entry.imageUrl ? { imageUrl: entry.imageUrl } : {}),
+			}),
+		);
+	}
+
 	const { entries, total } = entriesForView(data, view);
 
 	const status = !refreshing && (reloading || busy) ? t("loading") : "";
@@ -394,74 +490,20 @@ export function RssReader({
 					{entries.length > 0 ? (
 						<ul className="grid grid-cols-1 items-stretch gap-2 sm:grid-cols-2 sm:gap-4">
 							{entries.map((entry) => (
-								<li
-									className="flex min-w-0 flex-col gap-3 rounded-xl border border-muted border-l-3 border-l-primary/40 bg-primary-foreground p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md"
+								<RssEntryCard
 									key={entry.id}
-								>
-									<a
-										className="block break-words font-bold text-foreground underline-offset-4 hover:underline"
-										href={entry.url}
-										target="_blank"
-										rel="noopener noreferrer"
-										onClick={() => openEntry(entry)}
-										onAuxClick={(event) => {
-											if (event.button === 1) openEntry(entry);
-										}}
-									>
-										{entry.title}
-									</a>
-									<p className="break-all text-sm text-muted-foreground">
-										{new URL(entry.url).hostname}
-										{entry.publishedAt
-											? ` · ${entry.publishedAt.slice(0, 10)}`
-											: ""}
-									</p>
-									<div className="mt-auto flex flex-wrap gap-2 pt-1">
-										{"feedId" in entry ? (
-											<>
-												<Button
-													disabled={busy}
-													onClick={() => {
-														void perform(() =>
-															services.saveRss({
-																url: entry.url,
-																title: entry.title,
-																publishedAt: entry.publishedAt,
-															}),
-														);
-													}}
-													type="button"
-													variant="outline"
-												>
-													{t("save")}
-												</Button>
-												<Button
-													disabled={busy}
-													onClick={() => {
-														void perform(() =>
-															services.markRssRead({ ids: [entry.id] }),
-														);
-													}}
-													type="button"
-													variant="ghost"
-												>
-													{t("read")}
-												</Button>
-											</>
-										) : (
-											<Button
-												disabled={busy}
-												onClick={() => {
-													void perform(() => services.unsaveRss(entry.id));
-												}}
-												type="button"
-												variant="outline"
-											>
-												{t("unsave")}
-											</Button>
-										)}
-									</div>
-								</li>
+									entry={entry}
+									busy={busy}
+									source={
+										("feedId" in entry
+											? data.feeds.find((feed) => feed.id === entry.feedId)
+													?.title
+											: null) ?? new URL(entry.url).hostname
+									}
+									savedId={savedIdFor(entry)}
+									onOpen={() => openEntry(entry)}
+									onToggle={() => toggleSaved(entry)}
+								/>
 							))}
 						</ul>
 					) : (

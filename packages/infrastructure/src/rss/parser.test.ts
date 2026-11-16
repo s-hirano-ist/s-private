@@ -279,3 +279,52 @@ test("collects sibling items with locally declared and mixed RSS namespace prefi
 		"https://example.com/three",
 	]);
 });
+
+describe("article thumbnails", () => {
+	test.each([
+		['<media:thumbnail url="/thumb.jpg"/>', "https://example.com/thumb.jpg"],
+		[
+			'<media:content medium="image" type="image/jpeg" url="https://cdn.example.com/photo.jpg"/>',
+			"https://cdn.example.com/photo.jpg",
+		],
+		[
+			'<media:group><media:thumbnail url="/group.jpg"/></media:group>',
+			"https://example.com/group.jpg",
+		],
+		[
+			'<enclosure type="image/png" url="/enclosure.png"/>',
+			"https://example.com/enclosure.png",
+		],
+		[
+			'<description><![CDATA[<p><img src="/photo.jpg?a=1&amp;b=2"></p>]]></description>',
+			"https://example.com/photo.jpg?a=1&b=2",
+		],
+		[
+			'<content:encoded><![CDATA[<img src="/content.jpg">]]></content:encoded>',
+			"https://example.com/content.jpg",
+		],
+	])("extracts an HTTPS thumbnail from %s", (content, expected) => {
+		const parsed = parseFeed(
+			`<rss xmlns:media="http://search.yahoo.com/mrss/"><channel><item><link>https://example.com/article</link>${content}</item></channel></rss>`,
+			"https://example.com/feed",
+		);
+		expect(parsed.entries[0]).toMatchObject({ imageUrl: expected });
+		expect(parsed.entries[0]).not.toHaveProperty("description");
+	});
+	test("reads Atom image enclosures and keeps a valid article when images are unsafe", () => {
+		const feed = parseFeed(
+			'<feed><entry><link href="/one"/><link rel="enclosure" type="image/jpeg" href="/one.jpg"/></entry><entry><link href="/two"/><media:thumbnail url="javascript:alert(1)"/><content><![CDATA[<img src="data:image/png;base64,nope"><img src="http://example.com/insecure.jpg"><img src="https://user:password@example.com/private.jpg"><img src="https://example.com/picture.svg"><img src="https://example.com:8443/image.jpg"><img src="https://example.com/safe.jpg">]]></content></entry></feed>',
+			"https://example.com/feed",
+		);
+		expect(feed.entries).toHaveLength(2);
+		expect(feed.entries[0].imageUrl).toBe("https://example.com/one.jpg");
+		expect(feed.entries[1].imageUrl).toBe("https://example.com/safe.jpg");
+	});
+	test("does not treat a video enclosure or a lazy-load data-src attribute as an image", () => {
+		const feed = parseFeed(
+			'<rss><channel><item><link>/one</link><media:content type="video/mp4" url="/video.mp4"/><description><![CDATA[<img data-src="/not-the-src.jpg" src="/real.jpg">]]></description></item></channel></rss>',
+			"https://example.com/feed",
+		);
+		expect(feed.entries[0].imageUrl).toBe("https://example.com/real.jpg");
+	});
+});

@@ -17,24 +17,24 @@ test.describe("RSS reader", () => {
 		!enabled,
 		"Requires the local RSS backend and dedicated migrated DB",
 	);
-	test("opens an unread article, retains saved links, and imports Inoreader exports idempotently", async ({
+	test("renders article thumbnails, toggles stars, marks all read, and imports saved links", async ({
 		page,
 	}) => {
 		const db = localDatabase();
 		const feedId = randomUUID();
 		const entryId = randomUUID();
-		const feedUrl = `https://example.com/e2e-feed-${feedId}`;
 		const articleUrl = `https://example.com/e2e-article-${entryId}`;
+		const imageUrl =
+			"https://www.inoreader.com/blog/wp-content/uploads/2021/02/fresh-new-look-1024x512.png";
 		await page.request.get("/api/sign-in", { maxRedirects: 0 });
 		const owner = await db.user.findUniqueOrThrow({
 			where: { email: process.env.LOCAL_AUTH_EMAIL },
 		});
-		const publishedAt = null;
 		await db.rssFeed.create({
 			data: {
 				id: feedId,
 				userId: owner.id,
-				url: feedUrl,
+				url: `https://example.com/e2e-feed-${feedId}`,
 				title: "E2E RSS feed",
 				folder: "",
 				lastFetchedAt: new Date(),
@@ -47,7 +47,8 @@ test.describe("RSS reader", () => {
 				feedId,
 				title: "E2E unread article",
 				url: articleUrl,
-				publishedAt,
+				imageUrl,
+				publishedAt: null,
 				receivedAt: new Date(),
 			},
 		});
@@ -59,29 +60,58 @@ test.describe("RSS reader", () => {
 		});
 		try {
 			await page.goto("/ja/rss");
+			const reader = page.getByRole("main", { name: "RSSリーダー" });
 			await expect(
-				page.getByRole("heading", { name: "RSSリーダー" }),
+				reader.getByRole("link", { name: "E2E unread article" }),
 			).toBeVisible();
 			await expect(
-				page.getByRole("link", { name: "E2E unread article" }),
-			).toBeVisible();
-			await page
+				reader.getByRole("button", { name: "既読にする", exact: true }),
+			).toHaveCount(0);
+			const thumbnail = reader.locator("img");
+			await expect(thumbnail).toBeVisible();
+			await expect
+				.poll(
+					() =>
+						thumbnail.evaluate(
+							(image: HTMLImageElement) =>
+								image.complete && image.naturalWidth > 0,
+						),
+					{ timeout: 30_000 },
+				)
+				.toBe(true);
+			await reader
 				.getByRole("button", { name: "あとで読むに保存", exact: true })
 				.click();
 			await expect(
-				page.getByRole("button", { name: "あとで読む 1", exact: true }),
-			).toBeVisible();
-			await page
-				.getByRole("link", { name: "E2E unread article" })
-				.dispatchEvent("click", { button: 0 });
-			await expect(page.getByText("未読記事はありません。")).toBeVisible();
-			await page
-				.getByRole("button", { name: "あとで読む 1", exact: true })
+				reader.getByRole("button", { name: "保存を解除" }),
+			).toHaveAttribute("aria-pressed", "true");
+			expect(
+				(
+					await db.rssSaved.findFirstOrThrow({
+						where: { userId: owner.id, url: articleUrl },
+					})
+				).imageUrl,
+			).toBe(imageUrl);
+			await reader.getByRole("button", { name: "保存を解除" }).click();
+			await expect(
+				reader.getByRole("button", { name: "あとで読むに保存", exact: true }),
+			).toHaveAttribute("aria-pressed", "false");
+			await reader
+				.getByRole("button", { name: "あとで読むに保存", exact: true })
 				.click();
+			await expect(
+				reader.getByRole("button", { name: "保存を解除" }),
+			).toBeVisible();
+			await reader.getByRole("button", { name: "すべて既読にする" }).click();
+			await expect(reader.getByText("未読記事はありません。")).toBeVisible();
+			await page.locator('header a[href="/ja/rss/saved"]').click();
 			await expect(
 				page.getByRole("link", { name: "E2E unread article" }),
 			).toBeVisible();
-			await page.getByRole("button", { name: /購読管理/u }).click();
+			await expect(
+				page.getByRole("button", { name: "保存を解除" }),
+			).toHaveAttribute("aria-pressed", "true");
+			await page.goto("/ja/settings/rss");
 			const exportFile = {
 				name: "starred.json",
 				mimeType: "application/json",
@@ -106,16 +136,14 @@ test.describe("RSS reader", () => {
 			await expect(
 				page.getByText("追加 0件・重複 1件・不正 0件"),
 			).toBeVisible();
-			await page
-				.getByRole("button", { name: "あとで読む 2", exact: true })
-				.click();
+			await page.goto("/ja/rss/saved");
 			await expect(
 				page.getByRole("link", { name: "Imported Inoreader link" }),
 			).toBeVisible();
 			expect(await db.rssUnread.count({ where: { userId: owner.id } })).toBe(0);
 			expect(await db.rssSaved.count({ where: { userId: owner.id } })).toBe(2);
 			await page.screenshot({
-				path: "/tmp/rss-reader-e2e.png",
+				path: "/private/tmp/rss-compact-e2e.png",
 				fullPage: true,
 			});
 		} finally {

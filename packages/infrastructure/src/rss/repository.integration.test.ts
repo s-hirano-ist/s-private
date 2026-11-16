@@ -266,4 +266,76 @@ describe.skipIf(!connectionString)("RSS CockroachDB integration", () => {
 			}
 		},
 	);
+	test("thumbnail ingestion, saving, star lookup across saved pages, and manual backfill", async () => {
+		const userId = "rss-thumbnail-owner";
+		const run = <T>(work: () => Promise<T>) =>
+			tenantContext.run({ userId }, work);
+		const imageUrl = "https://cdn.example.com/article.jpg";
+		try {
+			await run(() =>
+				rss.subscribe(userId, {
+					...source,
+					url: "https://example.com/images-feed",
+				}),
+			);
+			const feed = (await rss.page(userId, 0)).feeds[0];
+			const lease = await run(() => rss.claim(userId, feed.id, false));
+			expect(lease).not.toBeNull();
+			await run(() =>
+				rss.complete(userId, lease!, {
+					...result,
+					entries: [{ ...result.entries[0], imageUrl }],
+				}),
+			);
+			const unread = (await rss.page(userId, 0)).unread[0];
+			expect(unread.imageUrl).toBe(imageUrl);
+			expect(unread.savedId).toBeNull();
+			await run(() => rss.save(userId, unread));
+			const saved = (await rss.page(userId, 0)).saved[0];
+			expect(saved.imageUrl).toBe(imageUrl);
+			// Hide the saved target beyond the first page. Its unread star must still be filled.
+			await client.rssSaved.createMany({
+				data: Array.from({ length: 51 }, (_, index) => ({
+					id: crypto.randomUUID(),
+					userId,
+					url: `https://example.com/later-${index}`,
+					title: "Later",
+					savedAt: new Date(Date.now() + 1000),
+				})),
+			});
+			const page = await rss.page(userId, 0);
+			expect(page.saved.some((entry) => entry.id === saved.id)).toBe(false);
+			expect(page.unread[0].savedId).toBe(saved.id);
+			await run(() => rss.unsave(userId, saved.id));
+			expect((await rss.page(userId, 0)).unread[0].savedId).toBeNull();
+			await run(() => rss.save(userId, { ...unread, imageUrl: null }));
+			await client.rssUnread.updateMany({
+				where: { userId },
+				data: { imageUrl: null },
+			});
+			await client.rssFeed.update({
+				where: { id: feed.id },
+				data: { lastFetchedAt: null },
+			});
+			const repairLease = await run(() => rss.claim(userId, feed.id, true));
+			await run(() =>
+				rss.complete(userId, repairLease!, {
+					...result,
+					repairMetadata: true,
+					entries: [{ ...result.entries[0], imageUrl }],
+				}),
+			);
+			expect((await rss.page(userId, 0)).unread[0].imageUrl).toBe(imageUrl);
+			const repaired = await client.rssSaved.findFirstOrThrow({
+				where: { userId, url: unread.url },
+			});
+			expect(repaired.imageUrl).toBe(imageUrl);
+			await run(() => rss.read(userId, { before: new Date().toISOString() }));
+			expect((await rss.page(userId, 0)).unreadCount).toBe(0);
+			expect((await rss.page(userId, 0)).savedCount).toBe(52);
+		} finally {
+			await client.rssFeed.deleteMany({ where: { userId } });
+			await client.rssSaved.deleteMany({ where: { userId } });
+		}
+	});
 });
