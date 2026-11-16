@@ -38,6 +38,32 @@ hash登録・未読作成・HTTP validator更新を同じトランザクショ�
 CockroachDBのserialization競合は既存のretry helperで再実行する。
 失敗時は未読・hash・validatorを保持し、最終試行時刻と簡潔な失敗状態だけを更新する。
 
+## 取得失敗の診断
+
+RSS取得失敗は `source=rss_refresh` として、backendのVercel runtime logとSentryへ
+同じ構造で記録する。DBにログ用テーブルや履歴は追加しない。Sentryへの送信は
+既存のbackend設定を使い、失敗報告後に最大2秒のflushを待つ。
+
+- `feedId` と `hostname`：購読IDと失敗時の接続先ホスト。redirect先で失敗した場合はそのホスト
+- `stage`：`url`、`dns`、`http`、`body`、`parse`、またはDB処理の `claim`、`complete`、`release`
+- `reason`：HTTPエラー、timeout、SSRF拒否、非対応の圧縮、サイズ超過、XML不正、非対応フィード形式等
+- `httpStatus`、許可リスト内の `networkCode`、Prisma形式の `storageCode`（取得できた場合）
+- `durationMs`、`redirects`、`bytes`：失敗までの時間、redirect回数、受信本文バイト数
+
+URLのpath・query・fragment、認証情報、記事本文、response header、元の例外やDB queryは
+記録しない。取得時の情報がないDB claim失敗ではホスト名も記録しない。
+報告先が停止してもleaseの解放を試み、他の購読の取得は継続する。DB自体のclaim・
+解放失敗は、診断後に従来どおりHTTP層へ伝播する。
+
+調査には既存のSentry／Vercel MCPを使う。追加のMCPサーバーや権限は不要。
+Sentryのissue検索には `source:rss_refresh environment:production` を指定し、
+必要に応じて `rss.stage:dns` や `rss.reason:http_status` で絞る。
+issueのevent詳細に上記の診断情報が入る。Vercelではbackend projectのproductionを
+対象に、`RSS refresh failed` でruntime logを検索する。保存期間内の直近の時間範囲を使う。
+
+このログは改修の本番反映後の失敗から収集する。過去の `FETCH_FAILED` の原因は復元できない。
+反映後にRSS画面の手動更新で再取得し（最短1分間隔）、記録された情報を調べる。
+
 ## Inoreaderからの移行
 
 Preferences → Account → Export and backupで全アカウントのアーカイブを要求し、

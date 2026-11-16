@@ -1,8 +1,10 @@
+import type { RssFetchFailure } from "@s-hirano-ist/s-application/rss/failure";
 import type {
 	FeedLease,
 	FeedResult,
 } from "@s-hirano-ist/s-application/rss/ports";
 import type { LookupAddress } from "node:dns";
+import { RssFetchError } from "@s-hirano-ist/s-application/rss/failure";
 import { parseFeed, httpUrl } from "@s-hirano-ist/s-infrastructure/rss/parser";
 import ipaddr from "ipaddr.js";
 import { lookup } from "node:dns/promises";
@@ -33,53 +35,77 @@ async function resolveAddresses(
 
 /** Pin DNS resolution for the actual socket; revalidate every redirect. */
 export async function fetchFeed(lease: FeedLease): Promise<FeedResult> {
+	const started = performance.now();
+	const diagnostic: RssFetchFailure = {
+		stage: "url",
+		reason: "invalid_url",
+		durationMs: 0,
+		redirects: 0,
+		bytes: 0,
+	};
 	const signal = AbortSignal.timeout(15000);
+	try {
+		return await fetchValidatedFeed(lease, signal, diagnostic);
+	} catch (error) {
+		if (diagnostic.stage === "parse" && error instanceof Error) {
+			const reasons = {
+				"Invalid XML": "invalid_xml",
+				"Expected RSS 2.0 or Atom": "unsupported_feed",
+				"Too many entries": "entry_limit",
+			} as const;
+			if (Object.hasOwn(reasons, error.message))
+				diagnostic.reason = reasons[error.message as keyof typeof reasons];
+		}
+		if (signal.aborted) diagnostic.reason = "timeout";
+		diagnostic.durationMs = Math.round(performance.now() - started);
+		diagnostic.networkCode = safeNetworkCode(error);
+		throw new RssFetchError(diagnostic);
+	}
+}
+
+async function fetchValidatedFeed(
+	lease: FeedLease,
+	signal: AbortSignal,
+	diagnostic: RssFetchFailure,
+): Promise<FeedResult> {
 	let currentUrl = new URL(httpUrl(lease.url));
 	for (let redirect = 0; redirect <= 5; redirect++) {
 		const url = currentUrl;
-		if (url.port && !["80", "443"].includes(url.port))
+		diagnostic.stage = "url";
+		diagnostic.reason = "invalid_url";
+		diagnostic.hostname = url.hostname;
+		diagnostic.redirects = redirect;
+		diagnostic.httpStatus = undefined;
+		if (url.port && !["80", "443"].includes(url.port)) {
+			diagnostic.reason = "blocked_port";
 			throw new Error("Non-web port");
+		}
 		const hostname = url.hostname.replaceAll(/^\[|\]$/gu, "");
+		diagnostic.stage = "dns";
+		diagnostic.reason = "dns_error";
 		const addresses = await resolveAddresses(hostname, signal);
 		if (
 			addresses.length === 0 ||
 			addresses.some(({ address }) => !isPublicAddress(address))
-		)
+		) {
+			diagnostic.reason = "blocked_destination";
 			throw new Error("Non-public destination");
+		}
 		signal.throwIfAborted();
 		const address = addresses[0];
-		const response = await new Promise<import("node:http").IncomingMessage>(
-			(resolve, reject) => {
-				const req = (url.protocol === "https:" ? httpsRequest : httpRequest)(
-					url,
-					{
-						signal,
-						headers: {
-							"user-agent": "SPrivateRSS/1.0",
-							accept:
-								"application/rss+xml, application/atom+xml, application/xml, text/xml",
-							"accept-encoding": "identity",
-							...(lease.etag ? { "if-none-match": lease.etag } : {}),
-							...(lease.lastModified
-								? { "if-modified-since": lease.lastModified }
-								: {}),
-						},
-						lookup: (_host, options, callback) => {
-							if (options.all) callback(null, [address]);
-							else callback(null, address.address, address.family);
-						},
-					},
-					resolve,
-				);
-				req.on("error", reject);
-				req.end();
-			},
-		);
+		diagnostic.stage = "http";
+		diagnostic.reason = "network_error";
+		const response = await openResponse(url, lease, address, signal);
 		const status = response.statusCode ?? 500;
+		diagnostic.httpStatus = status;
 		if ([301, 302, 303, 307, 308].includes(status)) {
 			response.destroy();
-			if (!response.headers.location)
+			if (!response.headers.location) {
+				diagnostic.reason = "missing_redirect";
 				throw new Error("Missing redirect location");
+			}
+			diagnostic.stage = "url";
+			diagnostic.reason = "invalid_url";
 			currentUrl = new URL(httpUrl(response.headers.location, url.href));
 			continue;
 		}
@@ -99,30 +125,105 @@ export async function fetchFeed(lease: FeedLease): Promise<FeedResult> {
 				response.headers["content-encoding"] !== "identity")
 		) {
 			response.destroy();
+			diagnostic.reason =
+				status === 200 ? "unsupported_encoding" : "http_status";
 			throw new Error("Feed request failed");
 		}
-		const chunks: Buffer[] = [];
-		let size = 0;
-		for await (const chunk of response) {
-			const bytes = Buffer.from(chunk as Uint8Array);
-			size += bytes.length;
-			if (size > MAX_BYTES) {
-				response.destroy();
-				throw new Error("Feed too large");
-			}
-			chunks.push(bytes);
-		}
-		const parsed = parseFeed(Buffer.concat(chunks).toString("utf8"), url.href);
-		const header = (name: string, max: number) =>
-			typeof response.headers[name] === "string"
-				? response.headers[name].slice(0, max)
-				: null;
-		return {
-			...parsed,
-			notModified: false,
-			etag: header("etag", 1024),
-			lastModified: header("last-modified", 128),
-		};
+		return readResponse(response, url, diagnostic);
 	}
+	diagnostic.stage = "http";
+	diagnostic.reason = "redirect_limit";
+	diagnostic.redirects = 6;
 	throw new Error("Too many redirects");
+}
+
+async function readResponse(
+	response: import("node:http").IncomingMessage,
+	url: URL,
+	diagnostic: RssFetchFailure,
+): Promise<FeedResult> {
+	diagnostic.stage = "body";
+	diagnostic.reason = "body_error";
+	const chunks: Buffer[] = [];
+	let size = 0;
+	for await (const chunk of response) {
+		const bytes = Buffer.from(chunk as Uint8Array);
+		size += bytes.length;
+		diagnostic.bytes = size;
+		if (size > MAX_BYTES) {
+			response.destroy();
+			diagnostic.reason = "body_too_large";
+			throw new Error("Feed too large");
+		}
+		chunks.push(bytes);
+	}
+	diagnostic.stage = "parse";
+	diagnostic.reason = "parse_error";
+	const parsed = parseFeed(Buffer.concat(chunks).toString("utf8"), url.href);
+	const header = (name: string, max: number) =>
+		typeof response.headers[name] === "string"
+			? response.headers[name].slice(0, max)
+			: null;
+	return {
+		...parsed,
+		notModified: false,
+		etag: header("etag", 1024),
+		lastModified: header("last-modified", 128),
+	};
+}
+
+function openResponse(
+	url: URL,
+	lease: FeedLease,
+	address: LookupAddress,
+	signal: AbortSignal,
+) {
+	return new Promise<import("node:http").IncomingMessage>((resolve, reject) => {
+		const req = (url.protocol === "https:" ? httpsRequest : httpRequest)(
+			url,
+			{
+				signal,
+				headers: {
+					"user-agent": "SPrivateRSS/1.0",
+					accept:
+						"application/rss+xml, application/atom+xml, application/xml, text/xml",
+					"accept-encoding": "identity",
+					...(lease.etag ? { "if-none-match": lease.etag } : {}),
+					...(lease.lastModified
+						? { "if-modified-since": lease.lastModified }
+						: {}),
+				},
+				lookup: (_host, options, callback) => {
+					if (options.all) callback(null, [address]);
+					else callback(null, address.address, address.family);
+				},
+			},
+			resolve,
+		);
+		req.on("error", reject);
+		req.end();
+	});
+}
+
+function safeNetworkCode(error: unknown): string | undefined {
+	if (typeof error !== "object" || error === null || !("code" in error))
+		return undefined;
+	const allowed = [
+		"ENOTFOUND",
+		"EAI_AGAIN",
+		"ECONNRESET",
+		"ECONNREFUSED",
+		"ETIMEDOUT",
+		"ENETUNREACH",
+		"EHOSTUNREACH",
+		"EPIPE",
+		"CERT_HAS_EXPIRED",
+		"DEPTH_ZERO_SELF_SIGNED_CERT",
+		"UNABLE_TO_VERIFY_LEAF_SIGNATURE",
+		"ERR_TLS_CERT_ALTNAME_INVALID",
+		"ERR_TLS_CERT_SIGNATURE_ALGORITHM_UNSUPPORTED",
+	];
+	return typeof error.code === "string" && allowed.includes(error.code)
+		? error.code
+		: undefined;
 }

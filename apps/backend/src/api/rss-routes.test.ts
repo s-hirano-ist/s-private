@@ -37,7 +37,7 @@ function fixture() {
 	}).basePath("/api/v1");
 	registerApiMiddleware(app, auth);
 	app.onError((error) => apiErrorResponse(error, auth.reportError));
-	registerRssRoutes(app, createRssService(repository, vi.fn()));
+	registerRssRoutes(app, createRssService(repository, vi.fn(), vi.fn()));
 	return { app, repository };
 }
 test("unauthenticated RSS calls are rejected before repository access", async () => {

@@ -89,6 +89,7 @@ export function createBackendRuntime(env: BackendEnv) {
 		system: new SystemEventHandler(logger),
 	})();
 	const services = createApiServices({
+		flushReports: () => Sentry.flush(2000),
 		database,
 		chunks,
 		storage: { images, books },

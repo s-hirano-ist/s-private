@@ -45,6 +45,7 @@ function appFixture() {
 		() => {},
 	);
 	const services = createApiServices({
+		flushReports: async () => true,
 		database,
 		chunks: createMobileChunkStore(minio, bucket),
 		storage: {
