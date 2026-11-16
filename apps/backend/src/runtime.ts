@@ -130,7 +130,9 @@ export function createBackendRuntime(env: BackendEnv) {
 	const mcp = mcpConfig
 		? createMcpApp(mcpConfig, {
 				reads: services.reads,
-				rss: { page: services.mutations.rss.page },
+				rss: services.mutations.rss,
+				writes: services.mutations.writes,
+				uploads: services.mutations.uploads,
 				accounts: services.mobile.accounts,
 				telemetry,
 				reportError,

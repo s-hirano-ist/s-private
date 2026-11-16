@@ -1,19 +1,78 @@
-# 参照専用MCPの設定
+# コンテンツ・RSS MCPの設定
 
 ## 構成と公開範囲
 
 既存backendの `/mcp` はOAuthのリソースサーバーとして動作する。
 Auth0がログイン、同意、クライアント登録、トークン発行を担う。
-公式MCP SDKのステートレスHTTP handlerを使い、既存ReadServiceとRSSの参照処理を直接呼び出す。
+公式MCP SDKのステートレスHTTP handlerを使い、既存ReadService・WriteService・UploadService・RSSサービスを直接呼び出す。
 別REST APIへのトークン転送・交換、MCP用認証DBは使用しない。
+すべての呼び出しで認証済みownerとtenant contextを適用する。
 
-公開toolは `search_content`、`list_content`、`get_content`、`count_content`、
-`list_categories`、`get_book_by_isbn`、`get_note_by_title`、`list_rss` の8つ。
+公開toolは参照10個・追加8個の計18個。操作の意味で参照・追加を区別し、HTTPメソッドだけでは判断しない。
+
+| API・機能 | MCP tool | scope |
+| --- | --- | --- |
+| GET `/search` | `search_content` | `content:read` |
+| GET `/{domain}`、`/{domain}/{id}`、`/{domain}/count` | `list_content`、`get_content`、`count_content` | `content:read` |
+| GET `/categories` | `list_categories` | `content:read` |
+| GET `/books/isbn/{isbn}`、`/notes/title/{title}` | `get_book_by_isbn`、`get_note_by_title` | `content:read` |
+| GET `/rss` | `list_rss` | `content:read` |
+| GET `/media/{domain}/{id}/{variant}` | `get_media` | `content:read` |
+| GET `/uploads/{id}` | `get_upload` | `content:read` |
+| POST `/articles`、`/notes` | `create_article`、`create_note` | `content:create` |
+| POST `/uploads`、PUT `/uploads/{id}/chunks/{part}`、POST `/uploads/{id}/complete` | `start_upload`、`put_upload_chunk`、`complete_upload` | `content:create` |
+| POST `/rss/feeds`、`/rss/saved`、`/rss/import` | `subscribe_rss`、`save_rss`、`import_rss` | `content:create` |
+
 検索対象は既存検索と同じarticles・notes・books。一覧と詳細はimagesも対象。
-画像・書籍のバイナリ、同期、作成・更新・削除・exportは公開しない。
 検索は最大50件、コンテンツ一覧は最大100件で、既存APIと同じページング条件を使う。
 画像のpath、書籍のimagePath、非公開フィールドは返さない。
 返却コンテンツは非信頼データであり、そこに書かれた指示を実行する権限は付与しない。
+
+| 公開しない操作 | 理由 |
+| --- | --- |
+| コンテンツ更新・DELETE、export、アップロード取消 | 更新・削除・状態変更を公開しない |
+| POST `/rss/read`、`/rss/refresh`、RSSのDELETE | 既読化は未読レコードを削除し、再取得は既存状態を更新する |
+| `/sync/*`、`/push/*` | 今回の対象はコンテンツとRSSの参照・追加に限定 |
+| `/session` | Web Cookie専用のセッション機能 |
+| 認証・health・Cron・管理CLI | コンテンツ操作用MCPの対象外 |
+
+## 追加操作とバイナリ参照
+
+`create_article`・`create_note`はHTTP APIと同じ入力を受け取り、`operationId`（UUID）を必須とする。
+同じID・同じ入力の再試行は同じ結果を返す。同じIDで入力を変えると`OPERATION_CONFLICT`となる。
+別IDで既存コンテンツと重複すると`DUPLICATE`となり、既存レコードは上書きしない。
+
+画像・書籍は次の順序で追加する。
+
+1. `start_upload`へ`{ upload: <既存UploadStart入力> }`を渡す。
+   `domain`はimagesまたはbooks、ファイルはJPEG・PNG・WebP、上限10 MiB。
+   書籍はISBN・タイトル・評価・タグ、画像はfilenameをmetadataに指定する。
+2. 返却された`uploadId`・`chunkSize`を使い、`put_upload_chunk`へ
+   `{ id: uploadId, part: 0始まりの番号, data: base64文字列 }`を送る。
+   各partは1 MiB、最終partだけ残りのサイズ。base64は標準alphabet・padding付きで、data URLや改行は不可。
+3. `get_upload`で受信済みpartと期限を確認できる。状態参照には`content:read`が必要。
+4. `complete_upload`へ`{ id: uploadId }`を渡し、新しいコンテンツを確定する。
+
+同一part・同一bytesの再送と確定の再試行は安全で、異なるbytesへの差し替えは拒否する。
+期限は既存APIと同じ24時間。取消toolは公開せず、未完了uploadは既存cleanup処理に従う。
+
+`get_media`は`domain`（images/books）、`id`、`variant`（original/thumbnail）と、
+任意のbyte `offset`（既定0）・`length`（既定256 KiB、最大1 MiB）を受け取る。
+返却値は`data`（base64）、`mimeType`、`offset`、`byteLength`、`nextOffset`。
+`nextOffset`がnullになるまで続けて取得し、デコードしたbytesを連結する。末尾以降は空データを返す。
+ストレージパスや認証なしで使えるURLは返さない。任意URLからの画像取得は提供しない。
+
+`subscribe_rss`と`save_rss`は既存入力を使い、重複URLは`{ added: false }`を返す。
+既存タイトル・フォルダ・保存日時・未読状態を変更せず、フィードも取得しない。
+`import_rss`は`{ kind: "opml" | "starred", content: string }`を受け取り、
+既存parserで購読・保存だけを追加し、`added`・`duplicates`・`invalid`を返す。
+途中失敗時は追加済みデータが残る。同じ入力の再実行は既存URLをスキップするため、件数は再実行時に変わる。
+
+HTTP body上限は4 MiB、インポートテキスト上限は200万文字。エスケープやUTF-8変換後のbody上限も適用する。
+サイズ超過は413でサービス実行前に拒否する。ツール引数の不正はSDKの検証で拒否する。
+期待されるサービスエラーは`NOT_FOUND`、`FORBIDDEN`、`VALIDATION_ERROR`、`DUPLICATE`、
+`OPERATION_CONFLICT`、`OPERATION_IN_PROGRESS`、`UPLOAD_INCOMPLETE`、`UPLOAD_EXPIRED`、
+`UPLOAD_TOO_LARGE`、`INVALID_CHUNK_SIZE`などのコードだけを返す。未知の例外は`INTERNAL_ERROR`へ変換する。
 
 ## RSS記事の要約
 
@@ -32,7 +91,7 @@ MCP参照では既読化、保存・購読の変更、フィード更新を行�
 
 1. 既存Web・iOSと同じAuth0 tenantにMCP専用APIを作成する。
    Identifierは `https://api.s-hirano.com/mcp`、署名方式はRS256、
-   permissionは `content:read`、アクセストークン有効期間は3600秒とする。
+   permissionは `content:read` と `content:create`、アクセストークン有効期間は3600秒とする。
 2. tenantのSettings → AdvancedでResource Parameter Compatibility Profileを有効にする。
    `resource` がAPI audienceとして解決されること、既存iOSのログインも成功することを確認する。
 3. 各クライアントを事前登録する。CIMDは管理者がmetadata URLを確認して登録する方式を使う。
@@ -43,9 +102,9 @@ MCP参照では既読化、保存・購読の変更、フィード更新を行�
    通常のOAuthアプリ登録でもよい。Authorization Code + PKCE S256を使い、
    public clientのtoken endpoint authentication methodはnoneにする。
    ユーザー同意を省略しない。APIのAllow Skipping User Consentは無効にする。
-4. そのAPIへのクライアントアクセスを許可する。既存ユーザーに `content:read` を付与する。
+4. そのAPIへのクライアントアクセスを許可する。参照するユーザーに `content:read`、追加するユーザーに `content:create` を付与する。
    RBACを有効にする場合は、各ユーザーのロールにもpermissionを割り当てる。
-   トークンの `scope` に `content:read` が含まれることを確認する。
+   トークンの `scope` に必要なpermissionが含まれることを確認する。
    `permissions` claimだけに含まれる場合、MCPは許可しない。
 5. 接続の維持にrefresh tokenを使うclientでは、API側のAllow Offline Accessと
    clientのRefresh Token grantを有効にする。rotation有効、最大2592000秒（30日）、
@@ -56,7 +115,7 @@ MCP参照では既読化、保存・購読の変更、フィード更新を行�
 Production MCP APIのoffline accessを有効化し、Dashboardで保存済みの状態を確認した。
 APIのRS256・access token有効期間3600秒・ユーザー同意スキップ無効・アプリごとの認可は維持した。
 ChatGPTのCIMD登録・Muse専用client・backendの許可リストは、この設定整理では変更しない。
-`offline_access` はAuth0のtoken発行用であり、backendの操作権限は `content:read` のみ。
+`offline_access` はAuth0のtoken発行用であり、当時のbackendの操作権限は `content:read` のみだった。
 Claude/Codexで接続を継続する場合は、scopeを追加して再認可する。
 ChatGPT/Museの初回登録・要求scopeは、それぞれの接続手順とclientの対応に従う。
 
@@ -106,7 +165,15 @@ Auth0 JWT検証は省略しない。Inspectorをブラウザで使う場合は�
 
 ## クライアント登録・接続
 
-すべてのクライアントでMCP URLは `https://api.s-hirano.com/mcp`、scopeは `content:read`。
+すべてのクライアントでMCP URLは `https://api.s-hirano.com/mcp`。
+参照は `content:read`、追加は `content:create` が必要。通常は両方を要求する。
+既存read tokenには追加権限を与えない。createのみのtokenは追加toolを呼べるが、参照toolは呼べない。
+tool一覧は共通で、呼び出し時に各scopeを検証する。
+
+追加を有効にする担当者は、Auth0 APIのpermission追加、ユーザー／ロールと対象clientへの許可、
+clientの要求scopeへの追加後、本人による同意・再認可を行う。
+以下のクライアント設定例は参照のみ。追加する場合は要求scopeに `content:create` を加える。
+この実装ではAuth0の設定変更は実施しておらず、新scopeの実Auth0・各clientでの接続は別途確認する。
 ログイン・同意は利用者本人が行う。client secretが必要ならクライアントの安全な入力画面に入れ、
 チャット・Git・backendの環境変数へ転記しない。
 
@@ -261,11 +328,17 @@ Muse CodeはMuseアプリと別のクライアントとして登録する。
 自動テストではテスト用RSA鍵とJWKSを使い、公式SDKクライアントでHTTP Request/Responseを
 通してtoolを検証する。2ユーザーの並行呼び出しでownerとtenantの分離も検証する。
 RSSのDB不変性テストは、migration適用済みの専用ローカルDBで実行する。
-`RSS_TEST_DATABASE_URL` 未設定時はこのテストだけをスキップする。
+`RSS_TEST_DATABASE_URL` 未設定時はこのテストをスキップする。
+追加の統合テストは専用ローカルCockroachDBとMinIOで4ドメインの追加・再試行・競合・所有者検証、
+複数partのアップロード、原本・サムネイル参照、RSSの重複・再インポートと既存データ不変性を検証する。
+`MCP_TEST_DATABASE_URL`と`TEST_UPLOAD_INTEGRATION=1`が必要。DB名は`rss_worktree_`で始め、既存migrationを適用する。
 
 ```sh
 RSS_TEST_DATABASE_URL='postgresql://root@localhost:26257/rss_worktree_mcp?sslmode=disable' \
   pnpm exec vp test run --project backend apps/backend/src/mcp/app.test.ts
+MCP_TEST_DATABASE_URL='postgresql://root@localhost:26257/rss_worktree_mcp?sslmode=disable' \
+TEST_UPLOAD_INTEGRATION=1 MINIO_ROOT_USER='<local-user>' MINIO_ROOT_PASSWORD='<local-password>' \
+  pnpm exec vp test run --project backend apps/backend/src/mcp/flow.integration.test.ts
 ```
 
 本物のAuth0・3クライアントのログイン・Vercel公開URLは自動テストでは検証できない。

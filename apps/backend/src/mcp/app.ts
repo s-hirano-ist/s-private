@@ -5,13 +5,20 @@ import type { McpToolDeps } from "s-private-backend/mcp/tools";
 import { createMcpHonoApp } from "@modelcontextprotocol/hono";
 import {
 	buildOAuthProtectedResourceMetadata,
+	bearerAuthChallengeResponse,
+	OAuthError,
+	OAuthErrorCode,
 	createMcpHandler,
 	getOAuthProtectedResourceMetadataUrl,
 	requireBearerAuth,
 } from "@modelcontextprotocol/server";
 import { observe } from "@s-hirano-ist/s-infrastructure/observability/operational-telemetry";
 import { cors } from "hono/cors";
-import { createMcpTokenVerifier, MCP_SCOPE } from "s-private-backend/mcp/auth";
+import {
+	createMcpTokenVerifier,
+	MCP_SCOPE,
+	MCP_CREATE_SCOPE,
+} from "s-private-backend/mcp/auth";
 import { createContentMcpServer } from "s-private-backend/mcp/tools";
 
 export function createMcpApp(
@@ -23,7 +30,7 @@ export function createMcpApp(
 		allowedHosts: [config.resource.hostname],
 		// Exact scheme/port validation below is stricter than the SDK's hostname check.
 		allowedOrigins: config.origins.map((origin) => new URL(origin).hostname),
-		maxRequestBodySize: 64 * 1024,
+		maxRequestBodySize: 4 * 1024 * 1024,
 	});
 	app.use("*", async (c, next) => {
 		c.header("cache-control", "private, no-store");
@@ -51,7 +58,7 @@ export function createMcpApp(
 	);
 	const metadata = buildOAuthProtectedResourceMetadata({
 		resourceServerUrl: config.resource,
-		scopesSupported: [MCP_SCOPE],
+		scopesSupported: [MCP_SCOPE, MCP_CREATE_SCOPE],
 		resourceName: "s-private content",
 		// Only the resource document is served here. Clients discover AS metadata directly from Auth0.
 		oauthMetadata: {
@@ -73,7 +80,7 @@ export function createMcpApp(
 	}
 	const gate = requireBearerAuth({
 		verifier: createMcpTokenVerifier(config, deps.accounts),
-		requiredScopes: [MCP_SCOPE],
+		requiredScopes: [],
 		expectedResource: config.resource,
 		resourceMetadataUrl: getOAuthProtectedResourceMetadataUrl(config.resource),
 	});
@@ -88,6 +95,24 @@ export function createMcpApp(
 					deps.reportError(new Error("MCP authentication unavailable")),
 				);
 			return auth;
+		}
+		if (
+			!auth.scopes.some(
+				(scope) => scope === MCP_SCOPE || scope === MCP_CREATE_SCOPE,
+			)
+		) {
+			return bearerAuthChallengeResponse(
+				new OAuthError(
+					OAuthErrorCode.InsufficientScope,
+					"Content scope required",
+				),
+				{
+					requiredScopes: [MCP_SCOPE],
+					resourceMetadataUrl: getOAuthProtectedResourceMetadataUrl(
+						config.resource,
+					),
+				},
+			);
 		}
 		return handler.fetch(c.req.raw, {
 			authInfo: auth,

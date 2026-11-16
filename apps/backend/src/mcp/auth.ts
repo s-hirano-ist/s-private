@@ -6,6 +6,7 @@ import { errors } from "jose";
 import { verifyAccessToken } from "s-private-backend/auth/access-token";
 
 export const MCP_SCOPE = "content:read";
+export const MCP_CREATE_SCOPE = "content:create";
 
 export function createMcpTokenVerifier(
 	config: McpConfig,

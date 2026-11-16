@@ -107,7 +107,66 @@ function setup(page?: RssService["page"]) {
 		});
 		expect(tenantContext.getStore()?.userId).toBe(owner);
 	};
+	const created = async (
+		owner: string,
+		input: { operationId: string },
+		type: "articles" | "notes",
+	) => {
+		await assertOwner(owner);
+		return {
+			accepted: true as const,
+			operationId: input.operationId,
+			resource: { id: `${owner}-created`, type },
+		};
+	};
+	const writes = {
+		article: vi.fn((owner, input) => created(owner, input, "articles")),
+		note: vi.fn((owner, input) => created(owner, input, "notes")),
+	};
+	const uploadSession = {
+		uploadId: "alice-upload",
+		operationId: feedId,
+		chunkSize: 1048576 as const,
+		receivedParts: [],
+		expiresAt: "2099-01-01T00:00:00.000Z",
+	};
+	const uploads = {
+		start: vi.fn(async (owner, input) => {
+			await assertOwner(owner);
+			return {
+				...uploadSession,
+				uploadId: `${owner}-upload`,
+				operationId: input.operationId,
+			};
+		}),
+		get: vi.fn(async (owner, id) => {
+			await assertOwner(owner);
+			if (id !== `${owner}-upload`) throw new ApplicationError("NOT_FOUND");
+			return uploadSession;
+		}),
+		put: vi.fn(async (owner, id, part, _bytes) => {
+			await assertOwner(owner);
+			if (id !== `${owner}-upload`) throw new ApplicationError("NOT_FOUND");
+			return { accepted: true as const, part };
+		}),
+		complete: vi.fn(async (owner, id) => {
+			await assertOwner(owner);
+			if (id !== `${owner}-upload`) throw new ApplicationError("NOT_FOUND");
+			return {
+				accepted: true as const,
+				operationId: feedId,
+				resource: { id: `${owner}-created`, type: "images" as const },
+			};
+		}),
+	};
 	const reads = {
+		media: vi.fn(async (owner, _domain, id, _variant) => {
+			await assertOwner(owner);
+			if (id !== `${owner}-image`) throw new ApplicationError("NOT_FOUND");
+			return new Response(Buffer.from("abcdef"), {
+				headers: { "content-type": "image/png" },
+			});
+		}),
 		page: vi.fn(async (_domain, owner, query) => {
 			await assertOwner(owner);
 			return { data: [note(owner)], totalCount: 1, ...query };
@@ -164,6 +223,24 @@ function setup(page?: RssService["page"]) {
 		),
 	};
 	const rss = {
+		subscribe: vi.fn(async (owner, _input) => {
+			await assertOwner(owner);
+			return true;
+		}),
+		save: vi.fn(async (owner, _input) => {
+			await assertOwner(owner);
+			return true;
+		}),
+		import: vi.fn(
+			async (owner: string, input: Parameters<RssService["import"]>[1]) => {
+				await assertOwner(owner);
+				return {
+					added: input.feeds.length + input.saved.length,
+					duplicates: 0,
+					invalid: input.invalid,
+				};
+			},
+		),
 		page: vi.fn(
 			page ??
 				(async (owner: string, _offset: number, _feedId?: string) => {
@@ -174,6 +251,8 @@ function setup(page?: RssService["page"]) {
 	};
 	const deps = {
 		rss,
+		writes,
+		uploads,
 		reads: reads as unknown as ReadService,
 		accounts: {
 			findLinkedUser: vi.fn(
@@ -210,7 +289,7 @@ function setup(page?: RssService["page"]) {
 		await connection.connect(transport);
 		return connection;
 	}
-	return { deps, reads, rss, request, client };
+	return { deps, reads, rss, writes, uploads, request, client };
 }
 
 test("publishes resource metadata without authentication, with the real Auth0 issuer", async () => {
@@ -224,7 +303,7 @@ test("publishes resource metadata without authentication, with the real Auth0 is
 		expect(await response.json()).toMatchObject({
 			resource: config.resource.href,
 			authorization_servers: [config.issuer],
-			scopes_supported: ["content:read"],
+			scopes_supported: ["content:read", "content:create"],
 		});
 	}
 	expect(
@@ -301,7 +380,7 @@ test("supports RFC9068 client_id and preserves mobile audience isolation", async
 	const connection = await client(
 		await token({ client_id: "test-client", azp: undefined }),
 	);
-	expect((await connection.listTools()).tools).toHaveLength(8);
+	expect((await connection.listTools()).tools).toHaveLength(18);
 	await connection.close();
 	await expect(
 		verifyMobileToken(
@@ -356,14 +435,27 @@ test("rejects untrusted hosts and exact origins; allows approved CORS preflight"
 	).toBe(403);
 });
 
-test("official SDK can list/call all eight tools without exposing paths or credentials", async () => {
+test("official SDK can list all tools and call existing read tools without exposing paths or credentials", async () => {
 	const { client, deps } = setup();
 	const connection = await client(await token());
 	try {
 		const list = await connection.listTools();
-		expect(list.tools).toHaveLength(8);
-		for (const tool of list.tools)
-			expect(tool.annotations?.readOnlyHint).toBe(true);
+		expect(list.tools).toHaveLength(18);
+		for (const tool of list.tools) {
+			expect(tool.annotations?.readOnlyHint).toBe(
+				![
+					"create_article",
+					"create_note",
+					"start_upload",
+					"put_upload_chunk",
+					"complete_upload",
+					"subscribe_rss",
+					"save_rss",
+					"import_rss",
+				].includes(tool.name),
+			);
+			expect(tool.annotations?.destructiveHint).toBe(false);
+		}
 		for (const [name, args] of [
 			["search_content", { query: "private search" }],
 			["list_content", { domain: "notes" }],
@@ -543,8 +635,8 @@ test("RSS listing rejects invalid arguments and hides repository failures", asyn
 		for (const name of [
 			"read_rss",
 			"refresh_rss",
-			"save_rss",
-			"subscribe_rss",
+			"unsave_rss",
+			"unsubscribe_rss",
 		]) {
 			await expect(
 				connection.callTool({ name, arguments: {} }),
@@ -603,11 +695,13 @@ test.skipIf(!process.env.RSS_TEST_DATABASE_URL)(
 		const reportFailure = vi.fn();
 		const service = createRssService(repository, fetchFeed, reportFailure);
 		const { client } = setup(service.page);
+		const where = { userId: { in: ["alice", "bob"] } };
 		const snapshot = async () => ({
-			feeds: await db.rssFeed.findMany({ orderBy: { id: "asc" } }),
-			unread: await db.rssUnread.findMany({ orderBy: { id: "asc" } }),
-			saved: await db.rssSaved.findMany({ orderBy: { id: "asc" } }),
+			feeds: await db.rssFeed.findMany({ where, orderBy: { id: "asc" } }),
+			unread: await db.rssUnread.findMany({ where, orderBy: { id: "asc" } }),
+			saved: await db.rssSaved.findMany({ where, orderBy: { id: "asc" } }),
 			seen: await db.rssSeen.findMany({
+				where: { feed: where },
 				orderBy: [{ feedId: "asc" }, { hash: "asc" }],
 			}),
 		});
@@ -707,3 +801,323 @@ test.skipIf(!process.env.RSS_TEST_DATABASE_URL)(
 		}
 	},
 );
+
+const mutationCalls = [
+	[
+		"create_article",
+		{
+			operationId: feedId,
+			title: "Article",
+			url: "https://example.com/article",
+			category: "Tech",
+		},
+	],
+	["create_note", { operationId: feedId, title: "Note", markdown: "# Body" }],
+	[
+		"start_upload",
+		{
+			upload: {
+				operationId: feedId,
+				domain: "images",
+				contentType: "image/png",
+				fileSize: 3,
+				metadata: { filename: "image.png" },
+			},
+		},
+	],
+	["put_upload_chunk", { id: "alice-upload", part: 0, data: "YWJj" }],
+	["complete_upload", { id: "alice-upload" }],
+	[
+		"subscribe_rss",
+		{ title: "Feed", url: "https://example.com/feed", folder: "Tech" },
+	],
+	[
+		"save_rss",
+		{ title: "Saved", url: "https://example.com/saved", publishedAt: null },
+	],
+	[
+		"import_rss",
+		{
+			kind: "opml",
+			content:
+				'<opml><body><outline title="Feed" xmlUrl="https://example.com/import"/></body></opml>',
+		},
+	],
+] as const;
+
+test("read-only tokens cannot execute any additions; create-only tokens cannot read", async () => {
+	const { client, writes, uploads, rss, reads } = setup();
+	const readOnly = await client(await token());
+	const createOnly = await client(await token({ scope: "content:create" }));
+	try {
+		for (const [name, args] of mutationCalls) {
+			await expect(
+				readOnly.callTool({ name, arguments: args }),
+			).rejects.toThrow(/Insufficient scope/u);
+			const result = await createOnly.callTool({ name, arguments: args });
+			expect(result.isError).not.toBe(true);
+			expect(result.structuredContent).toBeDefined();
+		}
+		await expect(
+			createOnly.callTool({
+				name: "list_content",
+				arguments: { domain: "notes" },
+			}),
+		).rejects.toThrow(/Insufficient scope/u);
+		expect(reads.page).not.toHaveBeenCalled();
+		for (const mock of [
+			writes.article,
+			writes.note,
+			uploads.start,
+			uploads.put,
+			uploads.complete,
+			rss.subscribe,
+			rss.save,
+			rss.import,
+		])
+			expect(mock).toHaveBeenCalledTimes(1);
+		expect(uploads.put).toHaveBeenCalledWith(
+			"alice",
+			"alice-upload",
+			0,
+			Buffer.from("abc"),
+		);
+		expect(rss.import).toHaveBeenCalledWith("alice", {
+			feeds: [{ title: "Feed", url: "https://example.com/import", folder: "" }],
+			saved: [],
+			invalid: 0,
+		});
+	} finally {
+		await Promise.all([readOnly.close(), createOnly.close()]);
+	}
+});
+
+test("media byte pages and upload state require ownership and preserve data", async () => {
+	const { client, reads, uploads } = setup();
+	const connection = await client(await token());
+	try {
+		for (const domain of ["images", "books"]) {
+			const page = await connection.callTool({
+				name: "get_media",
+				arguments: {
+					domain,
+					id: "alice-image",
+					variant: "original",
+					length: 3,
+				},
+			});
+			expect(page.structuredContent).toEqual({
+				data: "YWJj",
+				mimeType: "image/png",
+				byteLength: 3,
+				offset: 0,
+				nextOffset: 3,
+			});
+			const last = await connection.callTool({
+				name: "get_media",
+				arguments: {
+					domain,
+					id: "alice-image",
+					variant: "original",
+					offset: 3,
+					length: 3,
+				},
+			});
+			expect(last.structuredContent).toMatchObject({
+				data: "ZGVm",
+				byteLength: 3,
+				nextOffset: null,
+			});
+		}
+		expect(
+			(
+				await connection.callTool({
+					name: "get_upload",
+					arguments: { id: "alice-upload" },
+				})
+			).isError,
+		).not.toBe(true);
+		for (const [name, args] of [
+			[
+				"get_media",
+				{ domain: "images", id: "bob-image", variant: "thumbnail" },
+			],
+			["get_upload", { id: "bob-upload" }],
+		] as const) {
+			const result = await connection.callTool({ name, arguments: args });
+			expect(result.isError).toBe(true);
+			expect(result.content).toEqual([{ type: "text", text: "NOT_FOUND" }]);
+		}
+		expect(reads.media).toHaveBeenCalledWith(
+			"alice",
+			"images",
+			"bob-image",
+			"thumbnail",
+		);
+		expect(uploads.get).toHaveBeenCalledWith("alice", "bob-upload");
+	} finally {
+		await connection.close();
+	}
+});
+
+test("rejects malformed additions before service calls and preserves safe failure codes", async () => {
+	const { client, writes, uploads, rss, deps } = setup();
+	const connection = await client(
+		await token({ scope: "content:read content:create" }),
+	);
+	try {
+		for (const data of [
+			"a",
+			"YQ",
+			"YQ=",
+			"YR==",
+			"data:image/png;base64,YQ==",
+			"!!!!",
+			"YQ==\n",
+			Buffer.alloc(1024 * 1024 + 1).toString("base64"),
+		]) {
+			expect(
+				(
+					await connection.callTool({
+						name: "put_upload_chunk",
+						arguments: { id: "alice-upload", part: 0, data },
+					})
+				).isError,
+			).toBe(true);
+		}
+		for (const [name, args] of [
+			[
+				"create_note",
+				{ operationId: "invalid", title: "Note", markdown: "body" },
+			],
+			["create_article", { ...mutationCalls[0][1], owner: "bob" }],
+			[
+				"start_upload",
+				{
+					upload: {
+						...mutationCalls[2][1].upload,
+						fileSize: 10 * 1024 * 1024 + 1,
+					},
+				},
+			],
+			["put_upload_chunk", { id: "alice-upload", part: -1, data: "YQ==" }],
+			["subscribe_rss", { title: "Feed", url: "file:///private", folder: "" }],
+			["save_rss", { ...mutationCalls[6][1], userId: "bob" }],
+			["import_rss", { kind: "opml", content: "invalid" }],
+			[
+				"get_media",
+				{
+					domain: "images",
+					id: "alice-image",
+					variant: "original",
+					length: 1024 * 1024 + 1,
+				},
+			],
+		] as const)
+			expect(
+				(await connection.callTool({ name, arguments: args })).isError,
+			).toBe(true);
+		for (const mock of [
+			writes.article,
+			writes.note,
+			uploads.start,
+			uploads.put,
+			rss.subscribe,
+			rss.save,
+			rss.import,
+		])
+			expect(mock).not.toHaveBeenCalled();
+		for (const code of [
+			"DUPLICATE",
+			"OPERATION_CONFLICT",
+			"OPERATION_IN_PROGRESS",
+			"UPLOAD_INCOMPLETE",
+			"UPLOAD_EXPIRED",
+			"INVALID_CHUNK_SIZE",
+		] as const) {
+			uploads.complete.mockRejectedValueOnce(new ApplicationError(code));
+			const result = await connection.callTool({
+				name: "complete_upload",
+				arguments: { id: "alice-upload" },
+			});
+			expect(result).toMatchObject({
+				isError: true,
+				content: [{ type: "text", text: code }],
+			});
+		}
+		writes.note.mockRejectedValueOnce(
+			new Error("private input and storage details"),
+		);
+		const failure = await connection.callTool({
+			name: "create_note",
+			arguments: mutationCalls[1][1],
+		});
+		expect(failure).toMatchObject({
+			isError: true,
+			content: [{ type: "text", text: "INTERNAL_ERROR" }],
+		});
+		expect(JSON.stringify(deps.reportError.mock.calls)).not.toContain(
+			"private input",
+		);
+		for (const name of [
+			"delete_content",
+			"update_content",
+			"cancel_upload",
+			"mark_rss_read",
+			"refresh_rss",
+			"unsave_rss",
+			"unsubscribe_rss",
+			"export_content",
+			"get_sync_head",
+			"get_push_status",
+		]) {
+			await expect(
+				connection.callTool({ name, arguments: {} }),
+			).rejects.toThrow("not found");
+		}
+	} finally {
+		await connection.close();
+	}
+});
+
+test("accepts a full base64 chunk and rejects oversized HTTP bodies without adding data", async () => {
+	const { request, client, uploads, writes } = setup();
+	const accessToken = await token({ scope: "content:create" });
+	const connection = await client(accessToken);
+	try {
+		const result = await connection.callTool({
+			name: "put_upload_chunk",
+			arguments: {
+				id: "alice-upload",
+				part: 0,
+				data: Buffer.alloc(1024 * 1024).toString("base64"),
+			},
+		});
+		expect(result.isError).not.toBe(true);
+		expect(uploads.put).toHaveBeenCalledTimes(1);
+		const response = await request("/mcp", accessToken, {
+			method: "POST",
+			headers: {
+				"content-type": "application/json",
+				accept: "application/json, text/event-stream",
+			},
+			body: JSON.stringify({
+				jsonrpc: "2.0",
+				id: 1,
+				method: "tools/call",
+				params: {
+					name: "create_note",
+					arguments: {
+						operationId: feedId,
+						title: "Note",
+						markdown: "x".repeat(4 * 1024 * 1024),
+					},
+				},
+			}),
+		});
+		expect(response.status).toBe(413);
+		expect(writes.note).not.toHaveBeenCalled();
+	} finally {
+		await connection.close();
+	}
+});
