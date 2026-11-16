@@ -317,10 +317,10 @@ export function RssReader({
 				<section className="space-y-4" aria-label={t(view)}>
 					{view === "unread" ? (
 						<div className="flex flex-wrap items-end justify-between gap-3">
-							<label>
+							<label className="grid w-full min-w-0 gap-2 sm:flex sm:w-auto sm:flex-1 sm:items-center">
 								{t("filter")}
 								<select
-									className="ml-2 rounded-md border bg-background p-2"
+									className="w-full min-w-0 rounded-md border bg-background p-2 sm:w-auto sm:flex-1"
 									value={feedId}
 									onChange={(event) => {
 										setFeedId(event.target.value);
