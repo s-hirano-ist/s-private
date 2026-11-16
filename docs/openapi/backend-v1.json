@@ -140,6 +140,10 @@
 					{
 						"type": "object",
 						"properties": {
+							"savedId": {
+								"type": ["string", "null"],
+								"format": "uuid"
+							},
 							"id": {
 								"type": "string",
 								"format": "uuid"
@@ -160,6 +164,11 @@
 			"RssEntryInput": {
 				"type": "object",
 				"properties": {
+					"imageUrl": {
+						"type": ["string", "null"],
+						"maxLength": 2048,
+						"format": "uri"
+					},
 					"url": {
 						"type": "string",
 						"maxLength": 2048,

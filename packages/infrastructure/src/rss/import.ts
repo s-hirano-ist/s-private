@@ -7,6 +7,7 @@ import {
 	httpUrl,
 	isoDate,
 	parseXml,
+	imageMetadata,
 } from "@s-hirano-ist/s-infrastructure/rss/parser";
 export function parseRssImport(
 	kind: "opml" | "starred",
@@ -63,6 +64,7 @@ export function parseRssImport(
 						url,
 						title: (text(item.title) || url).slice(0, 512),
 						publishedAt: isoDate(item.published),
+						...imageMetadata(item, url),
 					});
 				} catch {
 					result.invalid++;

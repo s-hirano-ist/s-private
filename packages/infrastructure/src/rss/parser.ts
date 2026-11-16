@@ -88,6 +88,7 @@ export function parseFeed(
 				identity,
 				url,
 				title: (text(item.title) || url).slice(0, 512),
+				...imageMetadata(item, url),
 				publishedAt: isoDate(item.published ?? item.pubDate ?? item.updated),
 			});
 		} catch {
@@ -156,12 +157,73 @@ function rss1Channel(
 		title: xmlValue(record(channel), rdf, RSS1_NAMESPACE, "title"),
 		item: array(xmlValue(rdf, {}, RSS1_NAMESPACE, "item")).map((value) => {
 			const item = record(value);
-			return {
+			return Object.assign({}, item, {
 				title: xmlValue(item, rdf, RSS1_NAMESPACE, "title"),
 				link: xmlValue(item, rdf, RSS1_NAMESPACE, "link"),
 				guid: xmlValue(item, rdf, RDF_NAMESPACE, "about", true),
 				pubDate: xmlValue(item, rdf, DC_NAMESPACE, "date"),
-			};
+			});
 		}),
 	};
+}
+
+/** Extract a thumbnail URL without retaining or rendering publisher HTML. */
+export function imageMetadata(
+	item: Record<string, unknown>,
+	base: string,
+): { imageUrl?: string } {
+	const media = [
+		item["media:thumbnail"],
+		item["media:content"],
+		record(item["media:group"])["media:thumbnail"],
+		record(item["media:group"])["media:content"],
+	]
+		.flatMap((value) => array(value))
+		.map((value) => record(value));
+	const enclosures = [...array(item.enclosure), ...array(item.link)]
+		.map((value) => record(value))
+		.filter(
+			(value) =>
+				text(value["@type"]).startsWith("image/") &&
+				(!value["@rel"] || value["@rel"] === "enclosure"),
+		);
+	const html = [
+		item["content:encoded"],
+		item.description,
+		item.content,
+		item.summary,
+	]
+		.map((value) => text(value) || text(record(value).content))
+		.join(" ");
+	const candidates = [
+		...media
+			.filter(
+				(value) =>
+					(!value["@medium"] || value["@medium"] === "image") &&
+					(!value["@type"] || text(value["@type"]).startsWith("image/")),
+			)
+			.map((value) => text(value["@url"])),
+		...enclosures.map((value) => text(value["@url"] ?? value["@href"])),
+		...Array.from(
+			html.matchAll(/<img\b[^>]*?\ssrc\s*=\s*["']([^"']+)["']/giu),
+			(match) => match[1].replaceAll("&amp;", "&"),
+		),
+	];
+	for (const candidate of candidates) {
+		try {
+			if (!candidate) continue;
+			const imageUrl = httpUrl(candidate, base);
+			const url = new URL(imageUrl);
+			if (
+				url.protocol !== "https:" ||
+				url.port ||
+				/\.svg$/iu.test(url.pathname)
+			)
+				continue;
+			return { imageUrl };
+		} catch {
+			/* Invalid images must not discard otherwise usable articles. */
+		}
+	}
+	return {};
 }

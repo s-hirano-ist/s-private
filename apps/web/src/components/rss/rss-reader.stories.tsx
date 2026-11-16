@@ -70,8 +70,15 @@ export const Unread: Story = {
 			title: "RSSを軽量に読む",
 			publishedAt: null,
 		});
-		await userEvent.click(canvas.getByRole("button", { name: "既読にする" }));
-		await expect(services.markRssRead).toHaveBeenCalledWith({ ids: [entryId] });
+		await expect(
+			canvas.queryByRole("button", { name: "既読にする" }),
+		).not.toBeInTheDocument();
+		await userEvent.click(
+			canvas.getByRole("button", { name: "すべて既読にする" }),
+		);
+		await expect(services.markRssRead).toHaveBeenCalledWith({
+			before: expect.any(String),
+		});
 	},
 };
 const empty = {
@@ -197,9 +204,11 @@ export const Fetching: Story = {
 			canvas.getByRole("button", { name: "あとで読むに保存" }),
 		);
 		await expect(args.services.saveRss).toHaveBeenCalled();
-		await userEvent.click(canvas.getByRole("button", { name: "既読にする" }));
+		await userEvent.click(
+			canvas.getByRole("button", { name: "すべて既読にする" }),
+		);
 		await expect(args.services.markRssRead).toHaveBeenCalledWith({
-			ids: [entryId],
+			before: expect.any(String),
 		});
 	},
 };
@@ -480,5 +489,78 @@ export const EnglishMobile: Story = {
 				"Keep up with unread articles and save links for later.",
 			),
 		).not.toBeInTheDocument();
+	},
+};
+
+const illustratedPage: RssPage = {
+	...cardPage,
+	unread: cardPage.unread.map((entry, index) =>
+		Object.assign({}, entry, {
+			imageUrl: index === 1 ? null : "/storybook/rss-thumbnail.svg",
+		}),
+	),
+};
+export const ArticleThumbnails: Story = {
+	args: {
+		initialData: illustratedPage,
+		services: { ...services, loadRss: fn(async () => illustratedPage) },
+	},
+	globals: { viewport: { value: "mobile1" } },
+	play: async ({ canvas, args }) => {
+		const stars = canvas.getAllByRole("button", { name: "あとで読むに保存" });
+		await expect(stars).toHaveLength(4);
+		await expect(stars[0]).toHaveAttribute("aria-pressed", "false");
+		await userEvent.click(stars[0]);
+		await expect(args.services.saveRss).toHaveBeenCalledWith(
+			expect.objectContaining({ imageUrl: "/storybook/rss-thumbnail.svg" }),
+		);
+		await expect(
+			canvas.queryByRole("button", { name: "既読にする" }),
+		).not.toBeInTheDocument();
+	},
+};
+export const SavedStarInUnread: Story = {
+	args: {
+		initialData: { ...page, unread: [{ ...page.unread[0], savedId: entryId }] },
+		services: {
+			...services,
+			loadRss: fn(async () => ({
+				...page,
+				unread: [{ ...page.unread[0], savedId: entryId }],
+			})),
+		},
+	},
+	play: async ({ canvas, args }) => {
+		const star = canvas.getByRole("button", { name: "保存を解除" });
+		await expect(star).toHaveAttribute("aria-pressed", "true");
+		await userEvent.click(star);
+		await expect(args.services.unsaveRss).toHaveBeenCalledWith(entryId);
+	},
+};
+export const FailedThumbnail: Story = {
+	args: {
+		initialData: {
+			...page,
+			unread: [
+				{ ...page.unread[0], imageUrl: "/storybook/missing-thumbnail.png" },
+			],
+		},
+		services: {
+			...services,
+			loadRss: fn(async () => ({
+				...page,
+				unread: [
+					{ ...page.unread[0], imageUrl: "/storybook/missing-thumbnail.png" },
+				],
+			})),
+		},
+	},
+	play: async ({ canvas, canvasElement }) => {
+		await expect(
+			canvas.getByRole("link", { name: "RSSを軽量に読む" }),
+		).toBeVisible();
+		await waitFor(() =>
+			expect(canvasElement.querySelector("img")).not.toBeInTheDocument(),
+		);
 	},
 };

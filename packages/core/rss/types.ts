@@ -6,6 +6,7 @@ export type Feed = FeedInput & {
 	lastFetchedAt: string | null;
 };
 export type EntryInput = {
+	imageUrl?: string | null;
 	publishedAt: string | null;
 	title: string;
 	url: string;
@@ -14,6 +15,7 @@ export type UnreadEntry = EntryInput & {
 	feedId: string;
 	id: string;
 	receivedAt: string;
+	savedId?: string | null;
 };
 export type SavedEntry = EntryInput & { id: string; savedAt: string };
 export type ParsedEntry = EntryInput & { identity: string };

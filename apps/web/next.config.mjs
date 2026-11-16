@@ -46,16 +46,13 @@ const nextConfig = {
 	pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
 	...(isVercelBuild ? {} : { output: "standalone" }),
 	images: {
-		remotePatterns: [
-			{
-				protocol: "https",
-				hostname: "books.google.com",
-			},
-			{
-				protocol: "https",
-				hostname: "s-hirano.com",
-			},
-		],
+		// RSS subscriptions may reference images on any public HTTPS publisher/CDN.
+		// Keep local-IP and SVG optimization disabled; the browser only loads /_next/image.
+		remotePatterns: [{ protocol: "https", hostname: "**", port: "" }],
+		dangerouslyAllowLocalIP: false,
+		dangerouslyAllowSVG: false,
+		maximumResponseBody: 5_000_000,
+		maximumRedirects: 3,
 	},
 	async headers() {
 		const reportToHeader = process.env.SENTRY_REPORT_URL
