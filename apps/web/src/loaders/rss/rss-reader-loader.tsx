@@ -14,7 +14,6 @@ export async function RssReaderLoader({
 			view={view}
 			key={view}
 			services={{
-				loadRss: services.loadRss,
 				subscribeRss: services.subscribeRss,
 				unsubscribeRss: services.unsubscribeRss,
 				markRssRead: services.markRssRead,

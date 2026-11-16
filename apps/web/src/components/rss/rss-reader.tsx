@@ -5,14 +5,18 @@ import type {
 	RssUnread,
 	RssSaved,
 } from "@s-hirano-ist/s-api-client/models";
-import { refreshRss } from "@/application-services/rss/client";
+import { loadRss, refreshRss } from "@/application-services/rss/client";
 import { ViewerCountSync } from "@/components/common/layouts/nav/viewer-count-context";
 import { refreshFeeds } from "@/components/rss/refresh-feeds";
+import { useRssPage } from "@/components/rss/use-rss-page";
 import { Button } from "@s-hirano-ist/s-ui/button";
 import { Input } from "@s-hirano-ist/s-ui/input";
 import { useTranslations } from "next-intl";
-import { useEffect, useRef, useState, useTransition } from "react";
-type RssActions = typeof actions & { refreshRss?: typeof refreshRss };
+import { useEffect, useRef, useState } from "react";
+type RssActions = Omit<typeof actions, "loadRss"> & {
+	loadRss?: typeof loadRss;
+	refreshRss?: typeof refreshRss;
+};
 function entriesForView(data: RssPage, view: "unread" | "saved" | "feeds") {
 	return view === "saved"
 		? { entries: data.saved, total: data.savedCount }
@@ -29,7 +33,6 @@ export function RssReader({
 	view?: "unread" | "saved" | "feeds";
 }) {
 	const t = useTranslations("rss");
-	const [data, setData] = useState(initialData);
 	const [feedId, setFeedId] = useState("");
 	const [offset, setOffset] = useState(0);
 	const [revision, setRevision] = useState(0);
@@ -37,7 +40,15 @@ export function RssReader({
 	const [refreshing, setRefreshing] = useState(false);
 	const [progress, setProgress] = useState("");
 	const [error, setError] = useState(false);
-	const [loading, startLoading] = useTransition();
+	const readPage = services.loadRss ?? loadRss;
+	const { data, loading } = useRssPage(
+		initialData,
+		readPage,
+		offset,
+		feedId,
+		revision,
+		setError,
+	);
 	const [importResult, setImportResult] = useState<{
 		added: number;
 		duplicates: number;
@@ -45,6 +56,7 @@ export function RssReader({
 	} | null>(null);
 	const started = useRef(false);
 	const refreshLock = useRef(false);
+	const queuedRefresh = useRef<{ force: boolean; ids: string[] } | null>(null);
 	const mounted = useRef(true);
 	const reloadTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 	useEffect(() => {
@@ -62,22 +74,15 @@ export function RssReader({
 			if (mounted.current) setRevision((value) => value + 1);
 		}, 1000);
 	}
-	useEffect(() => {
-		let cancelled = false;
-		startLoading(async () => {
-			try {
-				const page = await services.loadRss(offset, feedId || undefined);
-				if (!cancelled) setData(page);
-			} catch {
-				if (!cancelled) setError(true);
-			}
-		});
-		return () => {
-			cancelled = true;
-		};
-	}, [services, offset, feedId, revision]);
 	async function refresh(ids: string[], force: boolean) {
-		if (refreshLock.current) return;
+		if (refreshLock.current) {
+			const queued = queuedRefresh.current;
+			queuedRefresh.current = {
+				ids: [...new Set([...(queued?.ids ?? []), ...ids])],
+				force: force || (queued?.force ?? false),
+			};
+			return;
+		}
 		refreshLock.current = true;
 		setRefreshing(true);
 		setProgress(`0 / ${ids.length}`);
@@ -102,6 +107,9 @@ export function RssReader({
 				setRevision((value) => value + 1);
 				setRefreshing(false);
 				setProgress("");
+				const queued = queuedRefresh.current;
+				queuedRefresh.current = null;
+				if (queued) void refresh(queued.ids, queued.force);
 			}
 		}
 	}
@@ -197,8 +205,8 @@ export function RssReader({
 									folder: field("folder"),
 								});
 								form.reset();
-								const page = await services.loadRss();
-								await refresh(
+								const page = await readPage();
+								void refresh(
 									page.feeds.map((feed) => feed.id),
 									false,
 								);
@@ -218,7 +226,7 @@ export function RssReader({
 							{t("folder")}
 							<Input name="folder" maxLength={512} />
 						</label>
-						<Button disabled={busy || refreshing} type="submit">
+						<Button disabled={busy} type="submit">
 							{t("subscribe")}
 						</Button>
 					</form>
@@ -229,7 +237,7 @@ export function RssReader({
 							{t("importFile")}
 							<Input
 								accept=".zip,.xml,.opml,.json"
-								disabled={busy || refreshing}
+								disabled={busy}
 								type="file"
 								onChange={(event) => {
 									const file = event.target.files?.[0];
@@ -250,8 +258,8 @@ export function RssReader({
 											summary.invalid += result.invalid;
 											setImportResult({ ...summary });
 										}
-										const page = await services.loadRss();
-										await refresh(
+										const page = await readPage();
+										void refresh(
 											page.feeds.map((feed) => feed.id),
 											false,
 										);
@@ -279,7 +287,7 @@ export function RssReader({
 										) : null}
 									</div>
 									<Button
-										disabled={busy || refreshing}
+										disabled={busy}
 										onClick={() => {
 											if (window.confirm(t("confirmUnsubscribe")))
 												void perform(() => services.unsubscribeRss(feed.id));
