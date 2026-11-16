@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.7.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v4.6.0...s-private-v4.7.0) (2026-11-16)
+
+
+### Features
+
+* **mcp:** add readonly RSS listing for agent summaries ([a116984](https://github.com/s-hirano-ist/s-private/commit/a11698428ca46089c943a2eeca117e6e07092c75))
+* **rss:** move subscription management into settings ([7f007a8](https://github.com/s-hirano-ist/s-private/commit/7f007a82154c8913cd390b00669ef23bb193fcf4))
+* **rss:** switch unread and saved views from the header ([2bd1ac5](https://github.com/s-hirano-ist/s-private/commit/2bd1ac5f2dbb850699197e970330ff4896ba981e))
+
+
+### Bug Fixes
+
+* **rss:** collect safe feed refresh diagnostics ([53ec936](https://github.com/s-hirano-ist/s-private/commit/53ec936adcacad9e5f5fd2445b0d725cb07ac01d))
+* **rss:** constrain feed filters on mobile screens ([c133b39](https://github.com/s-hirano-ist/s-private/commit/c133b39f9afd3fba695c1d077da4184938dc7031))
+* **rss:** decode feed charsets and repair damaged titles ([de900a0](https://github.com/s-hirano-ist/s-private/commit/de900a0625ba5323bc9e00a73e440cac6dbcd78c))
+* **rss:** decode numeric references and repair persisted titles ([5478238](https://github.com/s-hirano-ist/s-private/commit/5478238a48da38f67345c2dd685c05131b813a61))
+* **rss:** highlight the active bottom navigation tab ([8f3c773](https://github.com/s-hirano-ist/s-private/commit/8f3c773c2e07496bb3a264a3262ae862ed638443))
+* **rss:** keep feed refreshes from blocking reader operations ([560b35d](https://github.com/s-hirano-ist/s-private/commit/560b35df4541e923221de9c9b794ee17ed1e37c6))
+* **rss:** repair persisted titles with reversible encoding damage ([98c7b1f](https://github.com/s-hirano-ist/s-private/commit/98c7b1ff6cf97ab436a1bd95b70e139469af49bb))
+* **rss:** support RSS 1.0 RDF feeds ([8c30bd9](https://github.com/s-hirano-ist/s-private/commit/8c30bd9233feb233951b82f6313a0856cf2a326e))
+
+
+### Maintenance
+
+* **rss:** refresh individual feeds with bounded concurrency ([3aa729f](https://github.com/s-hirano-ist/s-private/commit/3aa729f70352f32092b9293d9d7ae2989eec0bb3))
+
 ## [4.6.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v4.5.0...s-private-v4.6.0) (2026-11-15)
 
 
