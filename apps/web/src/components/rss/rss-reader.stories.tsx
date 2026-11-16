@@ -224,3 +224,48 @@ export const ProgressiveRefresh: Story = {
 		).toBeDisabled();
 	},
 };
+
+const longFeedTitle =
+	"とても長い購読名とフォルダー名を持つフィードのモバイル表示を確認するための記事一覧";
+const narrowPage = {
+	...page,
+	feeds: [
+		{
+			...page.feeds[0],
+			title: longFeedTitle,
+			folder: "Technology / Engineering / Web Development",
+		},
+	],
+};
+export const NarrowFeedFilter: Story = {
+	globals: { viewport: { value: "mobile1" } },
+	args: {
+		initialData: narrowPage,
+		services: { ...services, loadRss: fn(async () => narrowPage) },
+	},
+	decorators: [
+		(Story) => (
+			<div className="w-80 max-w-full">
+				<Story />
+			</div>
+		),
+	],
+	play: async ({ args, canvas, canvasElement }) => {
+		const filter = canvas.getByRole("combobox", { name: "購読で絞り込み" });
+		const main = canvas.getByRole("main");
+		await expect(filter).toBeVisible();
+		await expect(main.scrollWidth).toBeLessThanOrEqual(main.clientWidth);
+		await userEvent.selectOptions(filter, feedId);
+		await waitFor(() => expect(filter).toHaveValue(feedId));
+		await waitFor(() =>
+			expect(args.services.loadRss).toHaveBeenCalledWith(0, feedId),
+		);
+		await expect(main.scrollWidth).toBeLessThanOrEqual(main.clientWidth);
+		await expect(filter.getBoundingClientRect().right).toBeLessThanOrEqual(
+			main.getBoundingClientRect().right,
+		);
+		await expect(canvasElement.scrollWidth).toBeLessThanOrEqual(
+			canvasElement.clientWidth,
+		);
+	},
+};
