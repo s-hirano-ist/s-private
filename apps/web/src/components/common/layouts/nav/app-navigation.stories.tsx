@@ -406,6 +406,12 @@ export const Rss: Story = {
 			"aria-current",
 			"page",
 		);
+		await expect(canvas.getByRole("link", { name: "RSS" })).toHaveClass(
+			"bg-primary/15",
+		);
+		await expect(
+			canvas.getByRole("link", { name: "記事" }),
+		).not.toHaveAttribute("aria-current");
 		await expect(
 			canvas.queryByRole("button", { name: "新規作成" }),
 		).not.toBeInTheDocument();
@@ -482,4 +488,9 @@ export const RestoreStoredNote: Story = {
 			"リロード後に復元する本文",
 		);
 	},
+};
+
+export const RssMobile: Story = {
+	...Rss,
+	globals: { viewport: { value: "mobile1" } },
 };
