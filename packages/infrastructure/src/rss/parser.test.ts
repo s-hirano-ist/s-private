@@ -137,3 +137,87 @@ test("comments and CDATA do not hide a following unsafe XML declaration", () => 
 		).toThrow("Invalid XML");
 	}
 });
+
+test("reads RSS 1.0 sibling items with RDF identity and Dublin Core dates", () => {
+	const parsed = parseFeed(
+		`<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://purl.org/rss/1.0/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+ <channel rdf:about="https://example.com/feed"><title>Security &amp; News</title><items><rdf:Seq><rdf:li rdf:resource="stable-id"/></rdf:Seq></items></channel>
+ <item rdf:about="stable-id"><title>Notice</title><link>/notice#fragment</link><dc:date>2026-11-16T12:00:00+09:00</dc:date><description>discard this body</description></item>
+ <item><link>https://example.com/other</link><dc:date>invalid</dc:date></item>
+ <item><link>javascript:alert(1)</link></item>
+ </rdf:RDF>`,
+		"https://example.com/feed",
+	);
+	expect(parsed).toEqual({
+		title: "Security & News",
+		entries: [
+			{
+				identity: "stable-id",
+				title: "Notice",
+				url: "https://example.com/notice",
+				publishedAt: "2026-11-16T03:00:00.000Z",
+			},
+			{
+				identity: "https://example.com/other",
+				title: "https://example.com/other",
+				url: "https://example.com/other",
+				publishedAt: null,
+			},
+		],
+	});
+});
+test("resolves namespace aliases, prefixed RSS elements and item-local declarations", () => {
+	const xml = `<graph:RDF xmlns:graph="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:news="http://purl.org/rss/1.0/">
+ <news:channel><news:title>News</news:title></news:channel>
+ <news:item graph:about="stable-id" xmlns:dates="http://purl.org/dc/elements/1.1/" xmlns:headline="http://purl.org/rss/1.0/"><headline:title>Aliased</headline:title><news:link>/one</news:link><dates:date>2026-11-16T00:00:00Z</dates:date></news:item>
+ </graph:RDF>`;
+	expect(parseFeed(xml, "https://example.com/feed")).toEqual({
+		title: "News",
+		entries: [
+			{
+				identity: "stable-id",
+				title: "Aliased",
+				url: "https://example.com/one",
+				publishedAt: "2026-11-16T00:00:00.000Z",
+			},
+		],
+	});
+});
+test.each([
+	'<rdf:RDF xmlns:rdf="https://wrong.example/rdf" xmlns="http://purl.org/rss/1.0/"><channel><title>Wrong</title></channel></rdf:RDF>',
+	'<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="https://wrong.example/rss"><channel/></rdf:RDF>',
+	'<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>',
+])(
+	"rejects RDF without an RSS channel or with mismatched namespaces",
+	(xml) => {
+		expect(() => parseFeed(xml, "https://example.com")).toThrow("Expected RSS");
+	},
+);
+test("does not accept an unqualified about attribute as an RDF identity", () => {
+	const xml = `<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><channel xmlns="http://purl.org/rss/1.0/"/><item xmlns="http://purl.org/rss/1.0/" about="wrong"><link>https://example.com/one</link></item></RDF>`;
+	// A channel's local default namespace does not change the graph's sibling namespace.
+	expect(parseFeed(xml, "https://example.com").entries).toEqual([
+		{
+			identity: "https://example.com/one",
+			title: "https://example.com/one",
+			url: "https://example.com/one",
+			publishedAt: null,
+		},
+	]);
+});
+
+test("collects sibling items with locally declared and mixed RSS namespace prefixes", () => {
+	const xml = `<r:RDF xmlns:r="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rss="http://purl.org/rss/1.0/">
+ <rss:channel><rss:title>Mixed</rss:title></rss:channel>
+ <item xmlns="http://purl.org/rss/1.0/"><link>https://example.com/one</link></item>
+ <item xmlns="http://purl.org/rss/1.0/"><link>https://example.com/two</link></item>
+ <rss:item><rss:link>https://example.com/three</rss:link></rss:item>
+ </r:RDF>`;
+	expect(
+		parseFeed(xml, "https://example.com").entries.map((item) => item.url),
+	).toEqual([
+		"https://example.com/one",
+		"https://example.com/two",
+		"https://example.com/three",
+	]);
+});

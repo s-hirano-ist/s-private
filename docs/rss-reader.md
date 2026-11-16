@@ -1,6 +1,6 @@
 # RSSリーダー
 
-既存Webの `/[locale]/rss` で、RSS 2.0／Atomの購読、未読、あとで読むを管理する。
+既存Webの `/[locale]/rss` で、RSS 1.0（RDF）／RSS 2.0／Atomの購読、未読、あとで読むを管理する。
 Webは生成clientを呼ぶServer Actionsだけを持ち、認証・所有者確認・取得・永続化は
 共通backendの `/api/v1/rss` が担当する。既存Articlesの公開ライフサイクル、
 RAG、iOSのdelta sync、MobileSyncChangeには参加しない。
@@ -22,6 +22,11 @@ cascade削除する。再購読は初回取得として、現在のフィード�
 配信元がIDを変更した記事は再登場し得る。
 
 ## 取得
+
+RSS 1.0はRSS名前空間のchannelと、その兄弟itemを読み込む。記事IDにはRDF名前空間の
+`about`属性、公開日時にはDublin Coreの`date`を使う。名前空間はURIで判定するため、
+接頭辞の変更やRSS要素への接頭辞付与にも対応する。IDがない記事は従来どおりURLを使う。
+RDFの本文・拡張要素・sequenceは保存せず、新着判定には使わない。
 
 RSS画面を開くと、最終試行から1時間以上経過した購読を5件ずつ取得する。
 手動更新も用意するが、連続取得は1分間隔までに制限する。

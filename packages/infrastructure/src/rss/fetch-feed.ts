@@ -50,7 +50,7 @@ export async function fetchFeed(lease: FeedLease): Promise<FeedResult> {
 		if (diagnostic.stage === "parse" && error instanceof Error) {
 			const reasons = {
 				"Invalid XML": "invalid_xml",
-				"Expected RSS 2.0 or Atom": "unsupported_feed",
+				"Expected RSS 1.0, RSS 2.0 or Atom": "unsupported_feed",
 				"Too many entries": "entry_limit",
 			} as const;
 			if (Object.hasOwn(reasons, error.message))
@@ -186,7 +186,7 @@ function openResponse(
 				headers: {
 					"user-agent": "SPrivateRSS/1.0",
 					accept:
-						"application/rss+xml, application/atom+xml, application/xml, text/xml",
+						"application/rss+xml, application/rdf+xml, application/atom+xml, application/xml, text/xml",
 					"accept-encoding": "identity",
 					...(lease.etag ? { "if-none-match": lease.etag } : {}),
 					...(lease.lastModified
