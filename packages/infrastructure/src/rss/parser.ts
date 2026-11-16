@@ -58,9 +58,11 @@ export function parseFeed(
 	base: string,
 ): { entries: ParsedEntry[]; title: string } {
 	const root = record(parseXml(xml));
-	const channel = record(record(root.rss).channel);
+	const rdf = rss1Channel(root);
+	const channel = rdf ?? record(record(root.rss).channel);
 	const atom = record(root.feed);
-	if (!root.rss && !root.feed) throw new Error("Expected RSS 2.0 or Atom");
+	if (!root.rss && !root.feed && !rdf)
+		throw new Error("Expected RSS 1.0, RSS 2.0 or Atom");
 	const entries: ParsedEntry[] = [];
 	for (const value of array(root.feed ? atom.entry : channel.item)) {
 		const item = record(value);
@@ -89,4 +91,72 @@ export function parseFeed(
 	}
 	if (entries.length > 10000) throw new Error("Too many entries");
 	return { title: text(atom.title ?? channel.title).slice(0, 512), entries };
+}
+
+const RDF_NAMESPACE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+const RSS1_NAMESPACE = "http://purl.org/rss/1.0/";
+const DC_NAMESPACE = "http://purl.org/dc/elements/1.1/";
+
+function xmlNameMatches(
+	name: string,
+	scope: Record<string, unknown>,
+	namespace: string,
+	localName: string,
+	attribute = false,
+): boolean {
+	if (name.startsWith("@") !== attribute) return false;
+	const qualified = attribute ? name.slice(1) : name;
+	const parts = qualified.split(":");
+	const local = parts.at(-1);
+	const prefix = parts.length > 1 ? parts[0] : "";
+	if (local !== localName) return false;
+	if (prefix) return scope[`@xmlns:${prefix}`] === namespace;
+	const declared = attribute ? "" : scope["@xmlns"];
+	return declared === namespace;
+}
+function xmlValue(
+	element: Record<string, unknown>,
+	inherited: Record<string, unknown>,
+	namespace: string,
+	localName: string,
+	attribute = false,
+): unknown {
+	const scope = { ...inherited, ...element };
+	const matches = Object.entries(element).flatMap(([name, value]) =>
+		array(value).filter((child) =>
+			xmlNameMatches(
+				name,
+				{ ...scope, ...record(child) },
+				namespace,
+				localName,
+				attribute,
+			),
+		),
+	);
+	if (matches.length > 1) return matches;
+	return matches[0];
+}
+/** Normalize RSS 1.0's sibling items into the same metadata shape as RSS 2.0. */
+function rss1Channel(
+	root: Record<string, unknown>,
+): Record<string, unknown> | undefined {
+	const graph = Object.entries(root).find(([name, value]) =>
+		xmlNameMatches(name, record(value), RDF_NAMESPACE, "RDF"),
+	)?.[1];
+	if (!graph) return undefined;
+	const rdf = record(graph);
+	const channel = xmlValue(rdf, {}, RSS1_NAMESPACE, "channel");
+	if (channel === undefined) return undefined;
+	return {
+		title: xmlValue(record(channel), rdf, RSS1_NAMESPACE, "title"),
+		item: array(xmlValue(rdf, {}, RSS1_NAMESPACE, "item")).map((value) => {
+			const item = record(value);
+			return {
+				title: xmlValue(item, rdf, RSS1_NAMESPACE, "title"),
+				link: xmlValue(item, rdf, RSS1_NAMESPACE, "link"),
+				guid: xmlValue(item, rdf, RDF_NAMESPACE, "about", true),
+				pubDate: xmlValue(item, rdf, DC_NAMESPACE, "date"),
+			};
+		}),
+	};
 }

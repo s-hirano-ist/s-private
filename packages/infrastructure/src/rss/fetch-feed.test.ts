@@ -62,6 +62,7 @@ test("pins public DNS for the socket, sends validators and parses relative artic
 		"if-none-match": '"one"',
 		"if-modified-since": "yesterday",
 		"accept-encoding": "identity",
+		accept: expect.stringContaining("application/rdf+xml"),
 	});
 });
 test("304 preserves validators and needs no XML body", async () => {
