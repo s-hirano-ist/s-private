@@ -191,7 +191,7 @@ export function RssReader({
 				className={
 					view === "feeds"
 						? "mx-auto flex max-w-3xl flex-wrap items-center justify-end gap-2"
-						: "flex flex-wrap items-center gap-2"
+						: "grid grid-cols-[auto_1fr] items-center gap-2 sm:flex"
 				}
 			>
 				<RssRefreshButton
@@ -206,8 +206,8 @@ export function RssReader({
 					}}
 				/>
 				{view === "unread" ? (
-					<div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-						<label className="block min-w-0 flex-1 basis-40">
+					<div className="contents">
+						<label className="order-first col-span-2 block min-w-0 sm:order-none sm:flex-1">
 							<span className="sr-only">{t("filter")}</span>
 							<select
 								className="h-9 w-full min-w-0 rounded-md border bg-background px-3 text-sm"
@@ -227,6 +227,7 @@ export function RssReader({
 							</select>
 						</label>
 						<Button
+							className="justify-self-end"
 							disabled={busy || loading || !data.unreadCount}
 							onClick={() => {
 								const before = new Date().toISOString();
