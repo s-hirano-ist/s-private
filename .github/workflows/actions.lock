@@ -87,6 +87,7 @@ workflows:
     '.github/workflows/renovate.yaml':
         - 'actions/create-github-app-token@v3.3.0'
         - 'renovatebot/github-action@v46.3.14'
+    '.github/workflows/rss-refresh.yaml': []
     '.github/workflows/update-reports.yaml':
         - 'actions/checkout@v7.0.1'
         - 'actions/create-github-app-token@v3.3.0'
