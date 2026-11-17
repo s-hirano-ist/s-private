@@ -7,10 +7,16 @@ export async function loadRss(
 	feedId?: string,
 	view: "unread" | "saved" | "feeds" = "unread",
 	signal?: AbortSignal,
+	snapshotRevision?: number,
 ) {
 	return (
 		await getBrowserBackendClient().getRssPage(
-			{ offset, feedId, view },
+			{
+				offset,
+				feedId,
+				view,
+				...(snapshotRevision === undefined ? {} : { snapshotRevision }),
+			},
 			{ signal },
 		)
 	).data;

@@ -158,6 +158,7 @@
 		"importResult": "追加 {added}件・重複 {duplicates}件・不正 {invalid}件",
 		"filter": "購読で絞り込み",
 		"allFeeds": "すべての購読",
+		"showNew": "新着{count}件を表示",
 		"readAll": "すべて既読にする",
 		"emptyUnread": "未読記事はありません。",
 		"emptySaved": "あとで読む記事はありません。",

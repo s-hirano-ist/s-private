@@ -21,8 +21,11 @@ export type SavedEntry = EntryInput & { id: string; savedAt: string };
 export type ParsedEntry = EntryInput & { identity: string };
 export type RssPage = {
 	feeds: Feed[];
+	newerCount: number;
+	offset: number;
 	saved: SavedEntry[];
 	savedCount: number;
+	snapshotRevision: number;
 	unread: UnreadEntry[];
 	unreadCount: number;
 };

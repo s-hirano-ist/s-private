@@ -16,6 +16,10 @@ function fixture() {
 		findFirstOrThrow: vi.fn(),
 	});
 	const db = {
+		rssState: {
+			findUnique: vi.fn().mockResolvedValue({ revision: 0 }),
+			upsert: vi.fn().mockResolvedValue({ revision: 1 }),
+		},
 		rssFeed: model(),
 		rssUnread: model(),
 		rssSaved: model(),
@@ -57,6 +61,7 @@ test("page scopes every query and serializes dates while keeping saved links ind
 		{ ...lease, lastFetchedAt: date },
 		lease,
 	]);
+	db.rssUnread.count.mockResolvedValue(100);
 	db.rssUnread.findMany.mockResolvedValue([
 		{ ...result.entries[0], id: "one", feedId: "feed", receivedAt: date },
 		{
@@ -86,7 +91,7 @@ test("page scopes every query and serializes dates while keeping saved links ind
 	]);
 	expect(db.rssUnread.findMany).toHaveBeenCalledWith(
 		expect.objectContaining({
-			where: { userId: "owner", feedId: "feed" },
+			where: { userId: "owner", feedId: "feed", revision: { lte: 0 } },
 			skip: 50,
 			take: 50,
 		}),
@@ -101,13 +106,13 @@ test("read deletes only the selected ids or the bounded feed snapshot", async ()
 	expect(db.rssUnread.deleteMany).toHaveBeenLastCalledWith({
 		where: { userId: "owner", feedId: undefined, id: { in: ["one"] } },
 	});
-	const before = "2026-11-15T00:00:00Z";
-	await rss.read("owner", { feedId: "feed", before });
+	const snapshotRevision = 7;
+	await rss.read("owner", { feedId: "feed", snapshotRevision });
 	expect(db.rssUnread.deleteMany).toHaveBeenLastCalledWith({
 		where: {
 			userId: "owner",
 			feedId: "feed",
-			receivedAt: { lte: new Date(before) },
+			revision: { lte: snapshotRevision },
 		},
 	});
 });

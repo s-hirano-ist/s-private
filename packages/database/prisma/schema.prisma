@@ -359,7 +359,13 @@ model RssFeed {
   @@unique([userId, url])
   @@map("rss_feeds")
 }
+model RssState {
+  userId String @id @map("user_id") @db.String(128)
+  revision Int @default(0)
+  @@map("rss_states")
+}
 model RssUnread {
+  revision Int @default(0)
   id String @id @db.Uuid
   userId String @map("user_id") @db.String(128)
   feedId String @map("feed_id") @db.Uuid

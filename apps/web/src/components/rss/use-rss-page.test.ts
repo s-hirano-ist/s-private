@@ -4,6 +4,9 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import { expect, test, vi } from "vite-plus/test";
 
 const initial: RssPage = {
+	snapshotRevision: 0,
+	newerCount: 0,
+	offset: 0,
 	feeds: [],
 	unread: [],
 	saved: [],
@@ -76,7 +79,7 @@ test("a stale response cannot clear the indicator for a newer page request", asy
 	expect(result.current.reloading).toBe(true);
 	expect(result.current.loading).toBe(true);
 	await act(async () => {
-		next.resolve(initial);
+		next.resolve({ ...initial, offset: 50 });
 		await next.promise;
 	});
 	expect(result.current.reloading).toBe(false);
@@ -134,4 +137,21 @@ test("page changes abort a background read and returning to the SSR page ignores
 	});
 	expect(result.current.data.unreadCount).toBe(1);
 	expect(result.current.reloading).toBe(false);
+});
+
+test("a superseded page failure cannot set the current filter error", async () => {
+	const stale = Promise.withResolvers<RssPage>();
+	const readPage = vi
+		.fn()
+		.mockReturnValueOnce(stale.promise)
+		.mockResolvedValue({ ...initial, unreadCount: 7 });
+	const setError = vi.fn();
+	const { result, rerender } = renderHook(
+		({ feedId }) => useRssPage(initial, readPage, 0, feedId, 1, setError),
+		{ initialProps: { feedId: "" } },
+	);
+	rerender({ feedId: "new-feed" });
+	await waitFor(() => expect(result.current.data.unreadCount).toBe(7));
+	await act(async () => stale.reject(new Error("Stale failure")));
+	expect(setError).not.toHaveBeenCalledWith(true);
 });

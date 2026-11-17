@@ -6,6 +6,9 @@ import { expect, fn, userEvent, waitFor } from "storybook/test";
 const feedId = "00000000-0000-4000-8000-000000000001";
 const entryId = "00000000-0000-4000-8000-000000000002";
 const page: RssPage = {
+	snapshotRevision: 0,
+	newerCount: 0,
+	offset: 0,
 	feeds: [
 		{
 			id: feedId,
@@ -77,11 +80,14 @@ export const Unread: Story = {
 			canvas.getByRole("button", { name: "すべて既読にする" }),
 		);
 		await expect(services.markRssRead).toHaveBeenCalledWith({
-			before: expect.any(String),
+			snapshotRevision: 0,
 		});
 	},
 };
 const empty = {
+	snapshotRevision: 0,
+	newerCount: 0,
+	offset: 0,
 	feeds: [],
 	unread: [],
 	saved: [],
@@ -221,7 +227,7 @@ export const Fetching: Story = {
 			canvas.getByRole("button", { name: "すべて既読にする" }),
 		);
 		await expect(args.services.markRssRead).toHaveBeenCalledWith({
-			before: expect.any(String),
+			snapshotRevision: 0,
 		});
 	},
 };
@@ -257,6 +263,7 @@ export const BackgroundReadPending: Story = {
 				undefined,
 				"unread",
 				expect.any(AbortSignal),
+				0,
 			),
 		);
 		// A foreground page change still prevents duplicate page navigation.
@@ -356,6 +363,9 @@ const longFeedTitle =
 	"とても長い購読名とフォルダー名を持つフィードのモバイル表示を確認するための記事一覧";
 const narrowPage = {
 	...page,
+	snapshotRevision: 0,
+	newerCount: 0,
+	offset: 0,
 	feeds: [
 		{
 			...page.feeds[0],
@@ -390,6 +400,7 @@ export const NarrowFeedFilter: Story = {
 				feedId,
 				"unread",
 				expect.any(AbortSignal),
+				0,
 			),
 		);
 		await expect(main.scrollWidth).toBeLessThanOrEqual(main.clientWidth);
@@ -613,5 +624,85 @@ export const FreshSubscriptions: Story = {
 		await expect(args.services.loadRss).not.toHaveBeenCalled();
 		await expect(args.services.refreshRss).not.toHaveBeenCalled();
 		await expect(canvas.getByRole("button", { name: "更新" })).toBeEnabled();
+	},
+};
+
+export const NewArrivalsWhileReadingPageTwo: Story = {
+	args: {
+		initialData: { ...page, unreadCount: 61 },
+		services: {
+			...services,
+			loadRss: fn(
+				async (
+					offset = 0,
+					_feed?: string,
+					_view?: string,
+					_signal?: AbortSignal,
+					snapshot?: number,
+				) => ({
+					...page,
+					offset,
+					snapshotRevision: snapshot ?? 1,
+					unreadCount: 61,
+					newerCount: snapshot === 0 ? 3 : 0,
+					unread: [
+						{
+							...page.unread[0],
+							title:
+								snapshot === undefined
+									? "更新後の新着記事"
+									: "読んでいる2ページ目の記事",
+						},
+					],
+				}),
+			),
+		},
+	},
+	play: async ({ canvas }) => {
+		await userEvent.click(canvas.getByRole("button", { name: "次へ" }));
+		await expect(
+			await canvas.findByRole("link", { name: "読んでいる2ページ目の記事" }),
+		).toBeVisible();
+		await expect(canvas.getByText("51–61 / 61")).toBeVisible();
+		await userEvent.click(
+			canvas.getByRole("button", { name: "新着3件を表示" }),
+		);
+		await expect(
+			await canvas.findByRole("link", { name: "更新後の新着記事" }),
+		).toBeVisible();
+		await expect(canvas.getByText("1–50 / 61")).toBeVisible();
+	},
+};
+export const ReadSnapshotEmptyWithNewArrivals: Story = {
+	args: {
+		initialData: { ...page, unread: [], unreadCount: 0, newerCount: 3 },
+		services: {
+			...services,
+			loadRss: fn(async () => ({ ...page, snapshotRevision: 1 })),
+		},
+	},
+	play: async ({ canvas }) => {
+		await expect(canvas.getByText("未読記事はありません。")).toBeVisible();
+		await expect(
+			canvas.getByRole("button", { name: "すべて既読にする" }),
+		).toBeDisabled();
+		await userEvent.click(
+			canvas.getByRole("button", { name: "新着3件を表示" }),
+		);
+		await expect(
+			await canvas.findByRole("link", { name: "RSSを軽量に読む" }),
+		).toBeVisible();
+	},
+};
+
+export const NewArrivalsOnMobile: Story = {
+	args: { initialData: { ...page, newerCount: 12 } },
+	globals: { viewport: { value: "mobile1" } },
+	play: async ({ canvas }) => {
+		await expect(
+			canvas.getByRole("button", { name: "新着12件を表示" }),
+		).toBeVisible();
+		const main = canvas.getByRole("main");
+		await expect(main.scrollWidth).toBeLessThanOrEqual(main.clientWidth);
 	},
 };

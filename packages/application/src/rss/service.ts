@@ -74,15 +74,23 @@ export function createRssService(
 		}
 	}
 	return {
-		page: (owner: string, offset: number, feedId?: string, view?: RssView) =>
-			measure("page", () => repository.page(owner, offset, feedId, view)),
+		page: (
+			owner: string,
+			offset: number,
+			feedId?: string,
+			view?: RssView,
+			snapshotRevision?: number,
+		) =>
+			measure("page", () =>
+				repository.page(owner, offset, feedId, view, snapshotRevision),
+			),
 		subscribe: (owner: string, input: FeedInput) =>
 			repository.subscribe(owner, input),
 		unsubscribe: (owner: string, id: string) =>
 			repository.unsubscribe(owner, id),
 		read: (
 			owner: string,
-			input: { before?: string; feedId?: string; ids?: string[] },
+			input: { feedId?: string; ids?: string[]; snapshotRevision?: number },
 		) => repository.read(owner, input),
 		save: (owner: string, input: EntryInput) => repository.save(owner, input),
 		unsave: (owner: string, id: string) => repository.unsave(owner, id),
