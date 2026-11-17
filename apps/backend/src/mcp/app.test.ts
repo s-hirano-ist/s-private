@@ -84,6 +84,9 @@ function rssPage(owner: string) {
 		publishedAt: null,
 	};
 	return {
+		snapshotRevision: 0,
+		newerCount: 0,
+		offset: 0,
 		feeds: [
 			{
 				id: feedId,
@@ -593,7 +596,13 @@ test("RSS listing preserves results across repeated calls, forwards pagination a
 			expect(result.isError).not.toBe(true);
 			expect(result.structuredContent).toEqual(rssPage("alice"));
 		}
-		expect(rss.page).toHaveBeenLastCalledWith("alice", 0, undefined, "all");
+		expect(rss.page).toHaveBeenLastCalledWith(
+			"alice",
+			0,
+			undefined,
+			"all",
+			undefined,
+		);
 		rss.page.mockResolvedValueOnce({
 			...rssPage("alice"),
 			unread: [],
@@ -609,7 +618,13 @@ test("RSS listing preserves results across repeated calls, forwards pagination a
 			unreadCount: 1,
 			savedCount: 1,
 		});
-		expect(rss.page).toHaveBeenLastCalledWith("alice", 50, feedId, "all");
+		expect(rss.page).toHaveBeenLastCalledWith(
+			"alice",
+			50,
+			feedId,
+			"all",
+			undefined,
+		);
 	} finally {
 		await connection.close();
 	}

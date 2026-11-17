@@ -10,9 +10,18 @@ export async function loadRss(
 	offset = 0,
 	feedId?: string,
 	view: "unread" | "saved" | "feeds" = "unread",
+	snapshotRevision?: number,
 ) {
-	return (await (await getBackendClient()).getRssPage({ offset, feedId, view }))
-		.data;
+	return (
+		await (
+			await getBackendClient()
+		).getRssPage({
+			offset,
+			feedId,
+			view,
+			...(snapshotRevision === undefined ? {} : { snapshotRevision }),
+		})
+	).data;
 }
 export async function subscribeRss(input: RssFeedInput) {
 	await (await getBackendClient()).subscribeRss(input);

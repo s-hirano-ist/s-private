@@ -9,6 +9,9 @@ function fixture() {
 	const repository = {
 		due: vi.fn(),
 		page: vi.fn().mockResolvedValue({
+			snapshotRevision: 0,
+			newerCount: 0,
+			offset: 0,
 			feeds: [],
 			unread: [],
 			saved: [],
@@ -55,9 +58,15 @@ test("RSS pages use the authenticated owner and never cache private metadata", a
 	);
 	expect(response.status).toBe(200);
 	expect(response.headers.get("cache-control")).toBe("private, no-store");
-	expect(repository.page).toHaveBeenCalledWith("owner", 50, undefined, "all");
+	expect(repository.page).toHaveBeenCalledWith(
+		"owner",
+		50,
+		undefined,
+		"all",
+		undefined,
+	);
 });
-test("mark-all requires an explicit time boundary and refresh batches are bounded", async () => {
+test("mark-all requires an explicit snapshot boundary and refresh batches are bounded", async () => {
 	const { app, repository } = fixture();
 	const init = {
 		method: "POST",
@@ -150,4 +159,59 @@ test("authenticated RSS mutations forward the owner and parsed input", async () 
 		duplicates: 0,
 		invalid: 0,
 	});
+});
+
+test("snapshot query and mark-all boundary are forwarded only for the authenticated owner", async () => {
+	const { app, repository } = fixture();
+	const headers = {
+		authorization: "Bearer valid",
+		"content-type": "application/json",
+	};
+	expect(
+		(
+			await app.request(
+				"https://web.example/api/v1/rss?view=unread&snapshotRevision=7",
+				{ headers },
+			)
+		).status,
+	).toBe(200);
+	expect(repository.page).toHaveBeenLastCalledWith(
+		"owner",
+		0,
+		undefined,
+		"unread",
+		7,
+	);
+	expect(
+		(
+			await app.request("https://web.example/api/v1/rss/read", {
+				method: "POST",
+				headers,
+				body: JSON.stringify({ snapshotRevision: 0 }),
+			})
+		).status,
+	).toBe(204);
+	expect(repository.read).toHaveBeenLastCalledWith("owner", {
+		snapshotRevision: 0,
+	});
+	for (const snapshotRevision of [-1, 1.5, 2147483648, "invalid"]) {
+		expect(
+			(
+				await app.request(
+					`https://web.example/api/v1/rss?snapshotRevision=${snapshotRevision}`,
+					{ headers },
+				)
+			).status,
+		).toBe(422);
+		expect(
+			(
+				await app.request("https://web.example/api/v1/rss/read", {
+					method: "POST",
+					headers,
+					body: JSON.stringify({ snapshotRevision }),
+				})
+			).status,
+		).toBe(422);
+	}
+	expect(repository.read).toHaveBeenCalledTimes(1);
 });

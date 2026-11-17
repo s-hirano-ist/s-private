@@ -33,10 +33,11 @@ export type RssRepository = {
 		offset: number,
 		feedId?: string,
 		view?: RssView,
+		snapshotRevision?: number,
 	): Promise<RssPage>;
 	read(
 		owner: string,
-		input: { before?: string; feedId?: string; ids?: string[] },
+		input: { feedId?: string; ids?: string[]; snapshotRevision?: number },
 	): Promise<void>;
 	save(owner: string, input: EntryInput): Promise<boolean>;
 	subscribe(owner: string, input: FeedInput): Promise<boolean>;

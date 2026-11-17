@@ -10,7 +10,13 @@ export function registerRssRoutes(app: ApiApp, rss: RssService) {
 		return jsonResponse(
 			c,
 			schemas.rssPageSchema,
-			await rss.page(c.get("owner"), query.offset, query.feedId, query.view),
+			await rss.page(
+				c.get("owner"),
+				query.offset,
+				query.feedId,
+				query.view,
+				query.snapshotRevision,
+			),
 			200,
 		);
 	});

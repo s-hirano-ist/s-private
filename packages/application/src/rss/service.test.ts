@@ -77,7 +77,15 @@ test("owner-scoped operations forward filters and mutations", async () => {
 	const repo = repository();
 	const service = createRssService(repo, vi.fn(), vi.fn());
 	await service.page("owner", 50, "feed");
-	expect(repo.page).toHaveBeenCalledWith("owner", 50, "feed", undefined);
+	expect(repo.page).toHaveBeenCalledWith(
+		"owner",
+		50,
+		"feed",
+		undefined,
+		undefined,
+	);
+	await service.page("owner", 0, "feed", "unread", 7);
+	expect(repo.page).toHaveBeenLastCalledWith("owner", 0, "feed", "unread", 7);
 	await service.subscribe("owner", lease);
 	expect(repo.subscribe).toHaveBeenCalledWith("owner", lease);
 	await service.unsubscribe("owner", "feed");

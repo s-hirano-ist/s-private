@@ -158,6 +158,7 @@
 		"importResult": "Added {added} · Duplicates {duplicates} · Invalid {invalid}",
 		"filter": "Filter by subscription",
 		"allFeeds": "All subscriptions",
+		"showNew": "Show {count} new articles",
 		"readAll": "Mark all as read",
 		"emptyUnread": "You have no unread articles.",
 		"emptySaved": "No articles saved for later.",

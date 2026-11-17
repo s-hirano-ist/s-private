@@ -15,7 +15,13 @@ import { Input } from "@s-hirano-ist/s-ui/input";
 import { RefreshCw, Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 import NextImage from "next/image";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import {
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+	useSyncExternalStore,
+} from "react";
 // No external changes: React switches from the server snapshot after hydration.
 const subscribeToHydration = () => () => {
 	// Hydration has no external subscription to dispose.
@@ -77,11 +83,13 @@ function RssEntryCard({
 	source,
 	savedId,
 	busy,
+	loading,
 	onOpen,
 	onToggle,
 }: {
 	busy: boolean;
 	entry: RssUnread | RssSaved;
+	loading: boolean;
 	onOpen: () => void;
 	onToggle: () => void;
 	savedId: string | null;
@@ -122,9 +130,14 @@ function RssEntryCard({
 				href={entry.url}
 				target="_blank"
 				rel="noopener noreferrer"
-				onClick={onOpen}
+				aria-disabled={loading}
+				onClick={(event) => {
+					if (loading) event.preventDefault();
+					else onOpen();
+				}}
 				onAuxClick={(event) => {
-					if (event.button === 1) onOpen();
+					if (loading) event.preventDefault();
+					else if (event.button === 1) onOpen();
 				}}
 			>
 				<h2 className="min-w-0 flex-1 text-sm leading-relaxed font-semibold break-words sm:text-base">
@@ -145,6 +158,118 @@ function RssEntryCard({
 			</a>
 		</li>
 	);
+}
+
+function useRssMutations(
+	isMounted: () => boolean,
+	invalidate: () => void,
+	setError: (value: boolean) => void,
+	setBusy: (value: boolean) => void,
+	setRevision: (value: (previous: number) => number) => void,
+) {
+	const mutationQueue = useRef(Promise.resolve());
+	const pendingMutations = useRef(new Set<string>());
+	return function perform(work: () => Promise<unknown>, key = "form") {
+		if (pendingMutations.current.has(key)) return;
+		if (pendingMutations.current.size === 0) setError(false);
+		pendingMutations.current.add(key);
+		invalidate();
+		setBusy(true);
+		const execute = async () => {
+			if (!isMounted()) return;
+			try {
+				await work();
+			} catch {
+				if (isMounted()) setError(true);
+			} finally {
+				pendingMutations.current.delete(key);
+				if (isMounted()) {
+					setRevision((value) => value + 1);
+					setBusy(pendingMutations.current.size > 0);
+				}
+			}
+		};
+		mutationQueue.current = mutationQueue.current.then(execute);
+	};
+}
+
+function RssUnreadControls({
+	data,
+	feedId,
+	busy,
+	loading,
+	onReadAll,
+	onSelect,
+}: {
+	busy: boolean;
+	data: RssPage;
+	feedId: string;
+	loading: boolean;
+	onReadAll: () => void;
+	onSelect: (value: string) => void;
+}) {
+	const t = useTranslations("rss");
+	return (
+		<div className="contents">
+			<label className="order-first col-span-2 block min-w-0 sm:order-none sm:flex-1">
+				<span className="sr-only">{t("filter")}</span>
+				<select
+					className="h-9 w-full min-w-0 rounded-md border bg-background px-3 text-sm"
+					value={feedId}
+					onChange={(event) => {
+						onSelect(event.target.value);
+					}}
+				>
+					<option value="">{t("allFeeds")}</option>
+					{data.feeds.map((feed) => (
+						<option key={feed.id} value={feed.id}>
+							{feed.folder ? `${feed.folder} / ` : ""}
+							{feed.title}
+						</option>
+					))}
+				</select>
+			</label>
+			<Button
+				className="justify-self-end"
+				disabled={busy || loading || !data.unreadCount}
+				onClick={onReadAll}
+				type="button"
+				variant="outline"
+			>
+				{t("readAll")}
+			</Button>
+		</div>
+	);
+}
+
+function RssNewArrivals({
+	count,
+	busy,
+	loading,
+	onShow,
+}: {
+	busy: boolean;
+	count: number;
+	loading: boolean;
+	onShow: () => void;
+}) {
+	const t = useTranslations("rss");
+	if (count === 0) return null;
+	return (
+		<Button
+			className="col-span-2 justify-self-start sm:col-auto"
+			type="button"
+			variant="outline"
+			disabled={busy || loading}
+			onClick={onShow}
+		>
+			{t("showNew", { count })}
+		</Button>
+	);
+}
+
+function pageStatus(refreshing: boolean, reloading: boolean, busy: boolean) {
+	return !refreshing && (reloading || busy);
 }
 
 export function RssReader({
@@ -169,15 +294,30 @@ export function RssReader({
 	const [refreshing, setRefreshing] = useState(false);
 	const [progress, setProgress] = useState("");
 	const [error, setError] = useState(false);
+	const [pageError, setPageError] = useState(false);
+	const [refreshError, setRefreshError] = useState(false);
 	const readPage = services.loadRss ?? loadRss;
-	const { data, loading, reloading } = useRssPage(
+	const [snapshotRevision, setSnapshotRevision] = useState<number | undefined>(
+		initialData.snapshotRevision,
+	);
+	const onLoaded = useCallback(
+		(page: RssPage) => {
+			setOffset(page.offset);
+			if (view === "unread") setSnapshotRevision(page.snapshotRevision);
+		},
+		[view],
+	);
+	const { data, loading, reloading, invalidate } = useRssPage(
 		initialData,
 		readPage,
 		offset,
 		feedId,
 		revision,
-		setError,
+		setPageError,
 		view,
+		view === "unread" ? snapshotRevision : undefined,
+		busy,
+		onLoaded,
 	);
 	const [importResult, setImportResult] = useState<{
 		added: number;
@@ -197,6 +337,7 @@ export function RssReader({
 			reloadTimer.current = null;
 		};
 	}, []);
+	const isMounted = () => mounted.current;
 	function scheduleReload() {
 		if (reloadTimer.current) return;
 		reloadTimer.current = setTimeout(() => {
@@ -205,7 +346,7 @@ export function RssReader({
 		}, 1000);
 	}
 	async function refresh(ids: string[], force: boolean) {
-		if (ids.length === 0) return;
+		if (!isMounted() || ids.length === 0) return;
 		if (refreshLock.current) {
 			const queued = queuedRefresh.current;
 			queuedRefresh.current = {
@@ -218,7 +359,7 @@ export function RssReader({
 		const changedFeeds = new Set<number>();
 		setRefreshing(true);
 		setProgress(`0 / ${ids.length}`);
-		setError(false);
+		setRefreshError(false);
 		try {
 			await refreshFeeds(
 				ids,
@@ -226,7 +367,7 @@ export function RssReader({
 				services.refreshRss ?? refreshRss,
 				(completed, failed, changed) => {
 					if (!mounted.current) return;
-					if (failed) setError(true);
+					if (failed) setRefreshError(true);
 					setProgress(`${completed} / ${ids.length}`);
 					if (changed || view === "feeds") {
 						changedFeeds.add(completed);
@@ -264,29 +405,28 @@ export function RssReader({
 		// Startup fetch runs once; filtering and pagination never trigger another feed poll.
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
-	async function perform(work: () => Promise<unknown>) {
-		setBusy(true);
-		setError(false);
-		try {
-			await work();
-			setRevision((value) => value + 1);
-		} catch {
-			setError(true);
-		} finally {
-			setBusy(false);
-		}
-	}
+	const perform = useRssMutations(
+		() => mounted.current,
+		invalidate,
+		setError,
+		setBusy,
+		setRevision,
+	);
+
 	function openEntry(entry: RssUnread | RssSaved) {
 		if ("feedId" in entry)
-			void perform(() => services.markRssRead({ ids: [entry.id] }));
+			perform(
+				() => services.markRssRead({ ids: [entry.id] }),
+				`read:${entry.id}`,
+			);
 	}
 	function toggleSaved(entry: RssUnread | RssSaved) {
 		const id = savedIdFor(entry);
 		if (id) {
-			void perform(() => services.unsaveRss(id));
+			perform(() => services.unsaveRss(id));
 			return;
 		}
-		void perform(() =>
+		perform(() =>
 			services.saveRss({
 				url: entry.url,
 				title: entry.title,
@@ -299,7 +439,17 @@ export function RssReader({
 	const { entries, total } = entriesForView(data, view);
 	const sources = new Map(data.feeds.map((feed) => [feed.id, feed.title]));
 
-	const status = !refreshing && (reloading || busy) ? t("loading") : "";
+	function retry() {
+		setError(false);
+		setPageError(false);
+		setRevision((value) => value + 1);
+		if (refreshError)
+			void refresh(
+				data.feeds.map((feed) => feed.id),
+				true,
+			);
+	}
+	const status = pageStatus(refreshing, reloading, busy) ? t("loading") : "";
 	return (
 		<main
 			className="space-y-4 bg-background px-3 pt-6 text-foreground sm:px-0"
@@ -325,58 +475,44 @@ export function RssReader({
 					}}
 				/>
 				{view === "unread" ? (
-					<div className="contents">
-						<label className="order-first col-span-2 block min-w-0 sm:order-none sm:flex-1">
-							<span className="sr-only">{t("filter")}</span>
-							<select
-								className="h-9 w-full min-w-0 rounded-md border bg-background px-3 text-sm"
-								value={feedId}
-								onChange={(event) => {
-									setFeedId(event.target.value);
-									setOffset(0);
-								}}
-							>
-								<option value="">{t("allFeeds")}</option>
-								{data.feeds.map((feed) => (
-									<option key={feed.id} value={feed.id}>
-										{feed.folder ? `${feed.folder} / ` : ""}
-										{feed.title}
-									</option>
-								))}
-							</select>
-						</label>
-						<Button
-							className="justify-self-end"
-							disabled={busy || loading || !data.unreadCount}
-							onClick={() => {
-								const before = new Date().toISOString();
-								void perform(() =>
-									services.markRssRead({
-										before,
-										...(feedId ? { feedId } : {}),
-									}),
-								);
-							}}
-							type="button"
-							variant="outline"
-						>
-							{t("readAll")}
-						</Button>
-					</div>
+					<RssUnreadControls
+						data={data}
+						feedId={feedId}
+						busy={busy}
+						loading={loading}
+						onSelect={(value) => {
+							setFeedId(value);
+							setOffset(0);
+						}}
+
+						onReadAll={() => {
+							const boundary = data.snapshotRevision;
+							perform(() =>
+								services.markRssRead({
+									snapshotRevision: boundary,
+									...(feedId ? { feedId } : {}),
+								}),
+							);
+						}}
+					/>
 				) : null}
 				<RssLoading display="inline" label={status} />
+				{view === "unread" ? (
+					<RssNewArrivals
+						count={data.newerCount}
+						busy={busy}
+						loading={loading}
+						onShow={() => {
+							setOffset(0);
+							setSnapshotRevision(undefined);
+						}}
+					/>
+				) : null}
 			</div>
-			{error ? (
+			{[error, pageError, refreshError].some(Boolean) ? (
 				<div className="rounded-xl border border-destructive p-4" role="alert">
 					{t("error")}{" "}
-					<Button
-						onClick={() => {
-							setError(false);
-							setRevision((value) => value + 1);
-						}}
-						type="button"
-						variant="outline"
-					>
+					<Button onClick={retry} type="button" variant="outline">
 						{t("retry")}
 					</Button>
 				</div>
@@ -396,7 +532,7 @@ export function RssReader({
 								const value = fields.get(name);
 								return typeof value === "string" ? value : "";
 							};
-							void perform(async () => {
+							perform(async () => {
 								await services.subscribeRss({
 									url: field("url"),
 									title: field("title") || field("url"),
@@ -441,7 +577,7 @@ export function RssReader({
 									const file = event.target.files?.[0];
 									if (!file) return;
 									setImportResult(null);
-									void perform(async () => {
+									perform(async () => {
 										const { readImportFile, importBatches } =
 											await import("@/components/rss/import-file");
 										const batches = importBatches(await readImportFile(file));
@@ -488,7 +624,7 @@ export function RssReader({
 										disabled={busy}
 										onClick={() => {
 											if (window.confirm(t("confirmUnsubscribe")))
-												void perform(() => services.unsubscribeRss(feed.id));
+												perform(() => services.unsubscribeRss(feed.id));
 										}}
 										type="button"
 										variant="outline"
@@ -516,7 +652,8 @@ export function RssReader({
 								<RssEntryCard
 									key={entry.id}
 									entry={entry}
-									busy={busy}
+									busy={busy || loading}
+									loading={loading}
 									source={
 										("feedId" in entry ? sources.get(entry.feedId) : null) ??
 										new URL(entry.url).hostname
@@ -534,7 +671,7 @@ export function RssReader({
 					)}
 					<div className="flex items-center justify-between gap-3">
 						<Button
-							disabled={loading || offset === 0}
+							disabled={(loading && reloading) || offset === 0}
 							onClick={() => setOffset(Math.max(0, offset - 50))}
 							type="button"
 							variant="outline"
@@ -542,11 +679,11 @@ export function RssReader({
 							{t("previous")}
 						</Button>
 						<span className="text-sm text-muted-foreground">
-							{total ? Math.min(offset + 1, total) : 0}–
-							{Math.min(offset + 50, total)} / {total}
+							{total ? Math.min(data.offset + 1, total) : 0}–
+							{Math.min(data.offset + 50, total)} / {total}
 						</span>
 						<Button
-							disabled={loading || offset + 50 >= total}
+							disabled={(loading && reloading) || offset + 50 >= total}
 							onClick={() => setOffset(offset + 50)}
 							type="button"
 							variant="outline"
