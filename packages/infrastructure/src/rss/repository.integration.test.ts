@@ -387,12 +387,183 @@ describe.skipIf(!connectionString)("RSS CockroachDB integration", () => {
 				where: { userId, url: unread.url },
 			});
 			expect(repaired.imageUrl).toBe(imageUrl);
-			await run(() => rss.read(userId, { before: new Date().toISOString() }));
+			await run(async () =>
+				rss.read(userId, {
+					snapshotRevision: (await rss.page(userId, 0)).snapshotRevision,
+				}),
+			);
 			expect((await rss.page(userId, 0)).unreadCount).toBe(0);
 			expect((await rss.page(userId, 0)).savedCount).toBe(52);
 		} finally {
 			await client.rssFeed.deleteMany({ where: { userId } });
 			await client.rssSaved.deleteMany({ where: { userId } });
+		}
+	});
+});
+
+describe.skipIf(!connectionString)("RSS snapshot boundaries", () => {
+	const userId = "rss-snapshot-owner";
+	const run = <T>(work: () => Promise<T>) =>
+		tenantContext.run({ userId }, work);
+	async function ingest(feedId: string, prefix: string, count: number) {
+		await client.rssFeed.update({
+			where: { id: feedId },
+			data: { lastFetchedAt: null },
+		});
+		const lease = await run(() => rss.claim(userId, feedId, true));
+		expect(lease).not.toBeNull();
+		await run(() =>
+			rss.complete(userId, lease!, {
+				...result,
+				entries: Array.from({ length: count }, (_, i) => ({
+					identity: `${prefix}-${i}`,
+					url: `https://example.com/${prefix}/${i}`,
+					title: `${prefix}-${i}`,
+					publishedAt: null,
+				})),
+			}),
+		);
+	}
+	async function reset() {
+		if (
+			!connectionString ||
+			!["localhost", "127.0.0.1"].includes(
+				new URL(connectionString).hostname,
+			) ||
+			!new URL(connectionString).pathname.startsWith("/rss_worktree_")
+		)
+			throw new Error("Use a dedicated local RSS test database");
+		await client.rssFeed.deleteMany({ where: { userId } });
+		await client.rssState.deleteMany({ where: { userId } });
+		await client.rssSaved.deleteMany({ where: { userId } });
+	}
+	test("page two is stable across new arrivals; mark-all removes only the observed generation", async () => {
+		await reset();
+		try {
+			await run(() => rss.subscribe(userId, source));
+			const feedId = (await rss.page(userId, 0)).feeds[0].id;
+			await ingest(feedId, "original", 61);
+			const snapshot = await rss.page(userId, 50, undefined, "unread");
+			await ingest(feedId, "new", 5);
+			const unchanged = await rss.page(
+				userId,
+				50,
+				undefined,
+				"unread",
+				snapshot.snapshotRevision,
+			);
+			expect(unchanged.unread.map((entry) => entry.id)).toEqual(
+				snapshot.unread.map((entry) => entry.id),
+			);
+			expect(unchanged).toMatchObject({
+				unreadCount: 61,
+				newerCount: 5,
+				offset: 50,
+			});
+			await run(() =>
+				rss.read(userId, { snapshotRevision: snapshot.snapshotRevision }),
+			);
+			const empty = await rss.page(
+				userId,
+				50,
+				undefined,
+				"unread",
+				snapshot.snapshotRevision,
+			);
+			expect(empty).toMatchObject({
+				unread: [],
+				unreadCount: 0,
+				newerCount: 5,
+				offset: 0,
+			});
+			const latest = await rss.page(userId, 0, undefined, "unread");
+			expect(latest.unread).toHaveLength(5);
+			expect(
+				latest.unread.every((entry) => entry.title.startsWith("new-")),
+			).toBe(true);
+			expect(latest.snapshotRevision).toBeGreaterThan(
+				snapshot.snapshotRevision,
+			);
+			// Re-observing already seen GUIDs must not resurrect the 61 read articles.
+			await ingest(feedId, "original", 61);
+			expect((await rss.page(userId, 0)).unreadCount).toBe(5);
+		} finally {
+			await reset();
+		}
+	});
+	test("concurrent ingestion and filtered mark-all preserve new and other-feed articles", async () => {
+		await reset();
+		try {
+			await run(() => rss.subscribe(userId, source));
+			await run(() =>
+				rss.subscribe(userId, {
+					...source,
+					url: "https://example.com/other-feed",
+				}),
+			);
+			const [first, second] = (await rss.page(userId, 0)).feeds;
+			await ingest(first.id, "first", 2);
+			await ingest(second.id, "second", 3);
+			const snapshot = await rss.page(userId, 0, first.id, "unread");
+			await Promise.all([
+				ingest(first.id, "arriving", 4),
+				run(() =>
+					rss.read(userId, {
+						feedId: first.id,
+						snapshotRevision: snapshot.snapshotRevision,
+					}),
+				),
+			]);
+			expect(
+				await rss.page(
+					userId,
+					0,
+					first.id,
+					"unread",
+					snapshot.snapshotRevision,
+				),
+			).toMatchObject({ unreadCount: 0, newerCount: 4 });
+			expect((await rss.page(userId, 0, second.id, "unread")).unreadCount).toBe(
+				3,
+			);
+			expect((await rss.page("another-owner", 0)).unreadCount).toBe(0);
+			const latest = await rss.page(userId, 0);
+			expect(latest.unreadCount).toBe(7);
+		} finally {
+			await reset();
+		}
+	});
+	test("independent concurrent feeds receive unique generations and future boundaries are clamped", async () => {
+		await reset();
+		try {
+			await run(() => rss.subscribe(userId, source));
+			await run(() =>
+				rss.subscribe(userId, {
+					...source,
+					url: "https://example.com/parallel",
+				}),
+			);
+			const [first, second] = (await rss.page(userId, 0)).feeds;
+			await Promise.all([
+				ingest(first.id, "parallel-first", 1),
+				ingest(second.id, "parallel-second", 1),
+			]);
+			const rows = await client.rssUnread.findMany({
+				where: { userId },
+				orderBy: { revision: "asc" },
+			});
+			expect(rows.map((row) => row.revision)).toEqual([1, 2]);
+			expect(await rss.page(userId, 0, undefined, "unread", 999)).toMatchObject(
+				{ snapshotRevision: 2, unreadCount: 2, newerCount: 0 },
+			);
+			expect(await rss.page(userId, 0, undefined, "unread", 1)).toMatchObject({
+				snapshotRevision: 1,
+				unreadCount: 1,
+				newerCount: 1,
+			});
+		} finally {
+			await reset();
+			await client.$disconnect();
 		}
 	});
 });

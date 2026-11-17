@@ -12,6 +12,11 @@ export function extendDatabase(
 ) {
 	const tenantExtension = Prisma.defineExtension({
 		query: {
+			rssState: {
+				$allOperations({ args, query, operation, model }) {
+					return query(filter(model, operation, args) as typeof args);
+				},
+			},
 			rssFeed: {
 				$allOperations({ args, query, operation, model }) {
 					return query(filter(model, operation, args) as typeof args);

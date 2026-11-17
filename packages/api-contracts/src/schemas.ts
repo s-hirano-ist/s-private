@@ -406,8 +406,12 @@ export const rssUnreadSchema = rssEntryInputSchema
 export const rssSavedSchema = rssEntryInputSchema
 	.extend({ id: z.uuid(), savedAt: z.iso.datetime() })
 	.openapi("RssSaved");
+const rssRevisionSchema = z.number().int().min(0).max(2147483647);
 export const rssPageSchema = z
 	.object({
+		snapshotRevision: rssRevisionSchema,
+		newerCount: z.number().int().nonnegative(),
+		offset: z.number().int().nonnegative(),
 		feeds: z.array(rssFeedSchema),
 		unread: z.array(rssUnreadSchema),
 		saved: z.array(rssSavedSchema),
@@ -416,6 +420,7 @@ export const rssPageSchema = z
 	})
 	.openapi("RssPage");
 export const rssListQuerySchema = z.object({
+	snapshotRevision: z.coerce.number().int().min(0).max(2147483647).optional(),
 	view: z.enum(["all", "unread", "saved", "feeds"]).default("all"),
 	offset: z.coerce.number().int().min(0).max(1000000).default(0),
 	feedId: z.uuid().optional(),
@@ -427,9 +432,11 @@ export const rssReadInputSchema = z
 	.object({
 		ids: z.array(z.uuid()).min(1).max(100).optional(),
 		feedId: z.uuid().optional(),
-		before: z.iso.datetime().optional(),
+		snapshotRevision: rssRevisionSchema.optional(),
 	})
-	.refine((value) => value.ids !== undefined || value.before !== undefined)
+	.refine(
+		(value) => value.ids !== undefined || value.snapshotRevision !== undefined,
+	)
 	.openapi("RssReadInput");
 export const rssRefreshInputSchema = z
 	.object({

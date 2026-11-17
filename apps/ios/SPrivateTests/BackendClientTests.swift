@@ -117,7 +117,7 @@ struct BackendClientTests {
     }
     @Test("RSS uses the generated contracts for list, save, read, subscriptions and import")
     func rssContracts() async throws {
-        let page = Data(#"{"feeds":[{"id":"feed","url":"https://example.com/rss","title":"News","folder":"Tech","lastFetchedAt":null,"error":null}],"unread":[{"id":"entry","feedId":"feed","url":"https://example.com/entry","title":"Article","publishedAt":null,"receivedAt":"2026-11-17T00:00:00.000Z","imageUrl":"https://example.com/image.jpg","savedId":"saved"}],"saved":[],"unreadCount":51,"savedCount":0}"#.utf8)
+        let page = Data(#"{"snapshotRevision":7,"newerCount":2,"offset":50,"feeds":[{"id":"feed","url":"https://example.com/rss","title":"News","folder":"Tech","lastFetchedAt":null,"error":null}],"unread":[{"id":"entry","feedId":"feed","url":"https://example.com/entry","title":"Article","publishedAt":null,"receivedAt":"2026-11-17T00:00:00.000Z","imageUrl":"https://example.com/image.jpg","savedId":"saved"}],"saved":[],"unreadCount":51,"savedCount":0}"#.utf8)
         let added = Data(#"{"added":true}"#.utf8)
         let stub = APIStub([(200, page), (200, added), (204, Data()), (204, Data()), (200, added), (204, Data()), (200, Data(#"{"added":1,"duplicates":2,"invalid":3}"#.utf8)), (200, Data(#"{"data":[{"id":"feed","status":"skipped","changed":false}]}"#.utf8))])
         let api = client(stub)

@@ -253,3 +253,132 @@ test.describe("RSS reader", () => {
 		}
 	});
 });
+
+test.describe("RSS concurrent interactions", () => {
+	test.skip(
+		!enabled,
+		"Requires the local RSS backend and dedicated migrated DB",
+	);
+	test("page two stays stable and mark-all during refresh leaves new arrivals unread", async ({
+		page,
+	}) => {
+		const db = localDatabase();
+		await page.request.get("/api/sign-in", { maxRedirects: 0 });
+		const owner = await db.user.findUniqueOrThrow({
+			where: { email: process.env.LOCAL_AUTH_EMAIL },
+		});
+		const feedId = randomUUID();
+		const now = new Date();
+		const arrived = Promise.withResolvers<void>();
+		const finishRefresh = Promise.withResolvers<void>();
+		let savedUrl: string | undefined;
+		await db.rssFeed.create({
+			data: {
+				id: feedId,
+				userId: owner.id,
+				url: `https://example.com/concurrent-${feedId}`,
+				title: "Concurrent feed",
+				folder: "",
+				lastFetchedAt: now,
+			},
+		});
+		const seed = async (prefix: string, count: number) =>
+			db.$transaction(async (tx) => {
+				const state = await tx.rssState.upsert({
+					where: { userId: owner.id },
+					create: { userId: owner.id, revision: 1 },
+					update: { revision: { increment: 1 } },
+				});
+				await tx.rssUnread.createMany({
+					data: Array.from({ length: count }, (_, i) => ({
+						id: randomUUID(),
+						userId: owner.id,
+						feedId,
+						url: `https://example.com/${feedId}/${prefix}/${i}`,
+						title: `Concurrent ${prefix} ${i}`,
+						receivedAt: new Date(Date.now() - i * 1000),
+						revision: state.revision,
+					})),
+				});
+			});
+		await seed("original", 61);
+		await page.route("**/api/v1/rss/refresh", async (route) => {
+			await seed("new", 2);
+			arrived.resolve();
+			await finishRefresh.promise;
+			await route.fulfill({
+				json: { data: [{ id: feedId, status: "updated", changed: true }] },
+			});
+		});
+		try {
+			await page.goto("/ja/rss");
+			await page
+				.getByRole("combobox", { name: "購読で絞り込み" })
+				.selectOption(feedId);
+			await page.getByRole("button", { name: "次へ" }).click();
+			await expect(
+				page.getByRole("link", { name: "Concurrent original 50", exact: true }),
+			).toBeVisible();
+			const before = await page
+				.getByRole("region", { name: "未読" })
+				.getByRole("link")
+				.allTextContents();
+			await page.getByRole("button", { name: "更新", exact: true }).click();
+			await arrived.promise;
+			await expect(
+				page.getByRole("button", { name: /フィードを取得中/u }),
+			).toBeDisabled();
+			expect(
+				await page
+					.getByRole("region", { name: "未読" })
+					.getByRole("link")
+					.allTextContents(),
+			).toEqual(before);
+			const card = page.getByRole("listitem").filter({
+				has: page.getByRole("link", {
+					name: "Concurrent original 50",
+					exact: true,
+				}),
+			});
+			await card.getByRole("button", { name: "あとで読むに保存" }).click();
+			await expect(
+				card.getByRole("button", { name: "保存を解除" }),
+			).toBeEnabled();
+			savedUrl = `https://example.com/${feedId}/original/50`;
+			await page.getByRole("button", { name: "すべて既読にする" }).click();
+			await expect(page.getByText("未読記事はありません。")).toBeVisible();
+			finishRefresh.resolve();
+			await expect(
+				page.getByRole("button", { name: "新着2件を表示" }),
+			).toBeEnabled();
+			expect(
+				await db.rssUnread.count({ where: { userId: owner.id, feedId } }),
+			).toBe(2);
+			expect(
+				await db.rssSaved.count({ where: { userId: owner.id, url: savedUrl } }),
+			).toBe(1);
+			await expect(page.getByText("0–0 / 0")).toBeVisible();
+			await page.screenshot({
+				path: test.info().outputPath("rss-read-with-new-arrivals.png"),
+				fullPage: true,
+			});
+			await page.getByRole("button", { name: "新着2件を表示" }).click();
+			await expect(
+				page.getByRole("link", { name: "Concurrent new 0", exact: true }),
+			).toBeVisible();
+			await expect(page.getByText("1–2 / 2")).toBeVisible();
+			await expect(page.getByRole("button", { name: "前へ" })).toBeDisabled();
+		} finally {
+			finishRefresh.resolve();
+			await page.unroute("**/api/v1/rss/refresh");
+			await db.rssFeed.deleteMany({ where: { id: feedId } });
+			await db.rssSaved.deleteMany({
+				where: {
+					userId: owner.id,
+					url: { startsWith: `https://example.com/${feedId}/` },
+				},
+			});
+			await db.$disconnect();
+		}
+	});
+});

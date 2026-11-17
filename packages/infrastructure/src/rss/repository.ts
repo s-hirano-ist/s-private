@@ -12,91 +12,116 @@ const hash = (identity: string) =>
 	createHash("sha256").update(identity).digest();
 export function createRssRepository(db: DatabaseClient): RssRepository {
 	return {
-		async page(userId, offset, feedId, view = "all") {
-			const includeUnread = view === "all" || view === "unread";
-			const includeSaved = view === "all" || view === "saved";
-			const [feeds, unread, saved, unreadCount, savedCount] = await Promise.all(
-				[
-					db.rssFeed.findMany({
-						where: { userId },
-						orderBy: [{ folder: "asc" }, { title: "asc" }, { id: "asc" }],
-					}),
-					includeUnread
-						? db.rssUnread.findMany({
-								where: { userId, feedId },
-								orderBy: [{ receivedAt: "desc" }, { id: "desc" }],
-								skip: offset,
-								take: 50,
-							})
-						: Promise.resolve([]),
-					includeSaved
-						? db.rssSaved.findMany({
-								where: { userId },
-								orderBy: [{ savedAt: "desc" }, { id: "desc" }],
-								skip: offset,
-								take: 50,
-							})
-						: Promise.resolve([]),
-					includeUnread
-						? db.rssUnread.count({ where: { userId, feedId } })
-						: Promise.resolve(0),
-					includeSaved
-						? db.rssSaved.count({ where: { userId } })
-						: Promise.resolve(0),
-				],
+		async page(userId, offset, feedId, requestedView, snapshotRevision) {
+			const view = requestedView ?? "all";
+			return withTransactionRetry(() =>
+				db.$transaction(async (tx) => {
+					const current =
+						(await tx.rssState.findUnique({ where: { userId } }))?.revision ??
+						0;
+					// A future client boundary must never include later, unobserved arrivals.
+					const revision = Math.min(snapshotRevision ?? current, current);
+					const includeUnread = view === "all" || view === "unread";
+					const includeSaved = view === "all" || view === "saved";
+					const unreadWhere = { userId, feedId, revision: { lte: revision } };
+					const [unreadCount, savedCount, newerCount] = await Promise.all([
+						includeUnread ? tx.rssUnread.count({ where: unreadWhere }) : 0,
+						includeSaved ? tx.rssSaved.count({ where: { userId } }) : 0,
+						includeUnread
+							? tx.rssUnread.count({
+									where: { userId, feedId, revision: { gt: revision } },
+								})
+							: 0,
+					]);
+					let total = unreadCount;
+					if (view === "saved") total = savedCount;
+					if (view === "all") total = Math.max(unreadCount, savedCount);
+					const effectiveOffset = Math.min(
+						offset,
+						Math.max(0, Math.floor((total - 1) / 50) * 50),
+					);
+					const [feeds, unread, saved] = await Promise.all([
+						tx.rssFeed.findMany({
+							where: { userId },
+							orderBy: [{ folder: "asc" }, { title: "asc" }, { id: "asc" }],
+						}),
+						includeUnread
+							? tx.rssUnread.findMany({
+									where: unreadWhere,
+									orderBy: [{ receivedAt: "desc" }, { id: "desc" }],
+									skip: effectiveOffset,
+									take: 50,
+								})
+							: [],
+						includeSaved
+							? tx.rssSaved.findMany({
+									where: { userId },
+									orderBy: [{ savedAt: "desc" }, { id: "desc" }],
+									skip: effectiveOffset,
+									take: 50,
+								})
+							: [],
+					]);
+					const stars =
+						unread.length > 0
+							? await tx.rssSaved.findMany({
+									where: {
+										userId,
+										url: { in: unread.map((entry) => entry.url) },
+									},
+									select: { id: true, url: true },
+								})
+							: [];
+					const savedIds = new Map(stars.map((entry) => [entry.url, entry.id]));
+					return {
+						snapshotRevision: revision,
+						newerCount,
+						offset: effectiveOffset,
+						feeds: feeds.map(
+							({ id, url, title, folder, lastFetchedAt, error }) => ({
+								id,
+								url,
+								title,
+								folder,
+								lastFetchedAt: lastFetchedAt?.toISOString() ?? null,
+								error,
+							}),
+						),
+						unread: unread.map(
+							({
+								id,
+								feedId: source,
+								url,
+								title,
+								imageUrl,
+								publishedAt,
+								receivedAt,
+							}) => ({
+								id,
+								feedId: source,
+								savedId: savedIds.get(url) ?? null,
+								imageUrl: imageUrl ?? null,
+								url,
+								title,
+								publishedAt: publishedAt?.toISOString() ?? null,
+								receivedAt: receivedAt.toISOString(),
+							}),
+						),
+						saved: saved.map(
+							({ id, url, title, imageUrl, publishedAt, savedAt }) => ({
+								imageUrl: imageUrl ?? null,
+								id,
+								url,
+								title,
+								publishedAt: publishedAt?.toISOString() ?? null,
+								savedAt: savedAt.toISOString(),
+							}),
+						),
+						unreadCount,
+						savedCount,
+					};
+				}),
 			);
-			const stars =
-				unread.length > 0
-					? await db.rssSaved.findMany({
-							where: { userId, url: { in: unread.map((entry) => entry.url) } },
-							select: { id: true, url: true },
-						})
-					: [];
-			const savedIds = new Map(stars.map((entry) => [entry.url, entry.id]));
-			return {
-				feeds: feeds.map(
-					({ id, url, title, folder, lastFetchedAt, error }) => ({
-						id,
-						url,
-						title,
-						folder,
-						lastFetchedAt: lastFetchedAt?.toISOString() ?? null,
-						error,
-					}),
-				),
-				unread: unread.map(
-					({
-						id,
-						feedId: source,
-						url,
-						title,
-						imageUrl,
-						publishedAt,
-						receivedAt,
-					}) => ({
-						id,
-						feedId: source,
-						savedId: savedIds.get(url) ?? null,
-						imageUrl: imageUrl ?? null,
-						url,
-						title,
-						publishedAt: publishedAt?.toISOString() ?? null,
-						receivedAt: receivedAt.toISOString(),
-					}),
-				),
-				saved: saved.map(
-					({ id, url, title, imageUrl, publishedAt, savedAt }) => ({
-						imageUrl: imageUrl ?? null,
-						id,
-						url,
-						title,
-						publishedAt: publishedAt?.toISOString() ?? null,
-						savedAt: savedAt.toISOString(),
-					}),
-				),
-				unreadCount,
-				savedCount,
-			};
 		},
 		due(now, limit) {
 			return db.rssFeed.findMany({
@@ -140,9 +165,9 @@ export function createRssRepository(db: DatabaseClient): RssRepository {
 						userId,
 						...(input.ids ? { id: { in: input.ids } } : {}),
 						feedId: input.feedId,
-						...(input.before
-							? { receivedAt: { lte: new Date(input.before) } }
-							: {}),
+						...(input.snapshotRevision === undefined
+							? {}
+							: { revision: { lte: input.snapshotRevision } }),
 					},
 				}),
 			);
@@ -324,6 +349,11 @@ export function createRssRepository(db: DatabaseClient): RssRepository {
 							hash: Buffer.from(key, "hex"),
 						})),
 					});
+					const state = await tx.rssState.upsert({
+						where: { userId },
+						create: { userId, revision: 1 },
+						update: { revision: { increment: 1 } },
+					});
 					await tx.rssUnread.createMany({
 						data: [...unique.values()].map((entry) => ({
 							url: entry.url,
@@ -336,6 +366,7 @@ export function createRssRepository(db: DatabaseClient): RssRepository {
 								? new Date(entry.publishedAt)
 								: null,
 							receivedAt: now,
+							revision: state.revision,
 						})),
 					});
 					return true;
