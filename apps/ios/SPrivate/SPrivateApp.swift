@@ -67,7 +67,7 @@ struct SPrivateApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            rootContent
                 .tint(AppColors.primary)
                 .environmentObject(authentication)
                 .environmentObject(sharedInbox)
@@ -113,6 +113,19 @@ struct SPrivateApp: App {
                     }
                 }
         }
+    }
+
+    @ViewBuilder
+    private var rootContent: some View {
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("-ui-testing-media-layout") {
+            MediaLoadingFixtureView()
+        } else {
+            ContentView()
+        }
+        #else
+        ContentView()
+        #endif
     }
 
     private func configureRss() {
