@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.8.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v4.7.0...s-private-v4.8.0) (2026-11-17)
+
+
+### Features
+
+* **mcp:** expose content and RSS read/create tools ([eae6cf6](https://github.com/s-hirano-ist/s-private/commit/eae6cf6d184dfb28b96588b7fae18feb7b9042ef))
+* **rss:** add compact stars and article thumbnails ([67961c7](https://github.com/s-hirano-ist/s-private/commit/67961c7c2526825b9c79d1004e21e59694146b18))
+
+
+### Bug Fixes
+
+* **rss:** show loading feedback without blocking reader operations ([bd5bc43](https://github.com/s-hirano-ist/s-private/commit/bd5bc43013ef9e30b0967bc754bdfdd9775aad1c))
+* **web:** align RSS controls on mobile ([9ee45a4](https://github.com/s-hirano-ist/s-private/commit/9ee45a4f81c0ce6afd3bcfd8bf85c645516bbc75))
+* **web:** polish RSS and settings layouts ([15df3f6](https://github.com/s-hirano-ist/s-private/commit/15df3f651896be9bf21d65b27eb2325119a8e974))
+
+
+### Maintenance
+
+* **codex:** update worktrees from remote main during setup ([1be939f](https://github.com/s-hirano-ist/s-private/commit/1be939f8df7852c847f05624ee0fffa1e6bbd230))
+* **codex:** worktree作成時に最新mainを取り込む ([96b3611](https://github.com/s-hirano-ist/s-private/commit/96b36113d0e2f0c0d7de2328eb77d7a42f4a4e3c))
+* **deps:** update all dependencies ([d73f11a](https://github.com/s-hirano-ist/s-private/commit/d73f11a27eb77745fea28c71dc21b63544f0c321))
+* **deps:** update all dependencies ([bfe8ebe](https://github.com/s-hirano-ist/s-private/commit/bfe8ebe2a5c27ff78c32fbc69bb84fb2f8d88c77))
+
 ## [4.7.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v4.6.0...s-private-v4.7.0) (2026-11-16)
 
 
