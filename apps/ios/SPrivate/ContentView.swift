@@ -13,6 +13,8 @@ struct ContentView: View {
                         DomainListView(domain: domain)
                             .tabItem { Label(domain.title, systemImage: domain.symbol) }
                     }
+                    RssReaderView()
+                        .tabItem { Label("RSS", systemImage: "dot.radiowaves.left.and.right") }
                 }
             } else {
                 NavigationStack {
@@ -54,6 +56,7 @@ struct ContentView: View {
 }
 
 struct SettingsView: View {
+    @Environment(RssReaderModel.self) private var rss
     @EnvironmentObject private var authentication: AuthenticationModel
     @EnvironmentObject private var sharedInbox: SharedInboxModel
     @EnvironmentObject private var sync: SyncCoordinator
@@ -76,6 +79,10 @@ struct SettingsView: View {
                 }
                 .foregroundStyle(AppColors.destructive)
                 .disabled(authentication.isLoggingOut || sync.isSynchronizing)
+            }
+            Section("RSS") {
+                NavigationLink(String(localized: "RSSの購読管理")) { RssSubscriptionsView() }
+                    .accessibilityIdentifier("rss-subscriptions-link")
             }
             Section(String(localized: "同期")) {
                 NavigationLink {
@@ -138,7 +145,7 @@ struct SettingsView: View {
             String(localized: "キャッシュを削除しますか？"),
             isPresented: $confirmingCacheClear
         ) {
-            Button(String(localized: "キャッシュを削除"), role: .destructive) { sync.clearCache() }
+            Button(String(localized: "キャッシュを削除"), role: .destructive) { sync.clearCache(); rss.clearCache() }
             Button(String(localized: "キャンセル"), role: .cancel) {}
         } message: {
             Text(String(localized: "保存待ちの項目は削除されません。"))

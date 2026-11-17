@@ -115,4 +115,41 @@ struct BackendClientTests {
         #expect(deleted.domain == "notes")
         #expect(deleted.record == nil)
     }
+    @Test("RSS uses the generated contracts for list, save, read, subscriptions and import")
+    func rssContracts() async throws {
+        let page = Data(#"{"snapshotRevision":7,"newerCount":2,"offset":50,"feeds":[{"id":"feed","url":"https://example.com/rss","title":"News","folder":"Tech","lastFetchedAt":null,"error":null}],"unread":[{"id":"entry","feedId":"feed","url":"https://example.com/entry","title":"Article","publishedAt":null,"receivedAt":"2026-11-17T00:00:00.000Z","imageUrl":"https://example.com/image.jpg","savedId":"saved"}],"saved":[],"unreadCount":51,"savedCount":0}"#.utf8)
+        let added = Data(#"{"added":true}"#.utf8)
+        let stub = APIStub([(200, page), (200, added), (204, Data()), (204, Data()), (200, added), (204, Data()), (200, Data(#"{"added":1,"duplicates":2,"invalid":3}"#.utf8)), (200, Data(#"{"data":[{"id":"feed","status":"skipped","changed":false}]}"#.utf8))])
+        let api = client(stub)
+        let result = try await api.rssPage(.unread, offset: 50)
+        #expect(result.count == 51)
+        #expect(result.feeds.first?.folder == "Tech")
+        let entry = try #require(result.entries.first)
+        #expect(entry.savedID == "saved")
+        try await api.rssSave(entry)
+        try await api.rssRead(ids: [entry.id])
+        try await api.rssUnsave(id: "saved")
+        try await api.rssSubscribe(url: "https://example.com/rss", title: "News", folder: "Tech")
+        try await api.rssUnsubscribe(id: "feed")
+        let imported = try await api.rssImport(.init(kind: .opml, content: "<opml/>"))
+        #expect(imported.duplicates == 2)
+        _ = try await api.rssRefresh(id: "feed", force: true)
+        let requests = await stub.requests
+        #expect(requests[0].path?.contains("view=unread") == true)
+        #expect(requests[0].path?.contains("offset=50") == true)
+        #expect(requests.dropFirst().map(\.path) == ["/rss/saved", "/rss/read", "/rss/saved/saved", "/rss/feeds", "/rss/feeds/feed", "/rss/import", "/rss/refresh"])
+        let saved = try JSONDecoder().decode(Components.Schemas.RssEntryInput.self, from: requests[1].body)
+        #expect(saved.imageUrl == "https://example.com/image.jpg")
+        let read = try JSONDecoder().decode(Components.Schemas.RssReadInput.self, from: requests[2].body)
+        #expect(read.ids == ["entry"])
+    }
+
+    @Test("An RSS mutation with an ambiguous failure is sent only once")
+    func rssAmbiguousResponse() async throws {
+        let stub = APIStub([(503, Data(#"{"error":{"code":"API_UNAVAILABLE"}}"#.utf8))])
+        do { try await client(stub).rssRead(ids: ["entry"]); Issue.record("Expected a failure") }
+        catch MobileClientError.http(503, "API_UNAVAILABLE") { }
+        #expect(await stub.requests.count == 1)
+    }
+
 }
