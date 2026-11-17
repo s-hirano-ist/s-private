@@ -9,48 +9,85 @@ export function useRssPage(
 	feedId: string,
 	revision: number,
 	setError: (error: boolean) => void,
+	view: "unread" | "saved" | "feeds" = "unread",
 ) {
 	const [data, setData] = useState(initialData);
-	const [loading, setLoading] = useState(false);
-	const [settled, setSettled] = useState<{
+	const [displayed, setDisplayed] = useState({ offset: 0, feedId: "", view });
+	const [settled, setSettled] = useState({
+		offset: 0,
+		feedId: "",
+		view,
+		readPage,
+		revision: 0,
+	});
+	const active = useRef<{
+		controller: AbortController;
 		feedId: string;
 		offset: number;
 		readPage: typeof loadRss;
-		revision: number;
+		view: string;
 	} | null>(null);
+	const pageChanged =
+		displayed.offset !== offset ||
+		displayed.feedId !== feedId ||
+		displayed.view !== view;
 	const reloading =
-		settled === null ||
-		settled.feedId !== feedId ||
 		settled.offset !== offset ||
+		settled.feedId !== feedId ||
+		settled.view !== view ||
 		settled.readPage !== readPage ||
 		settled.revision !== revision;
-	const displayed = useRef({ offset: 0, feedId: "" });
 	useEffect(() => {
-		let cancelled = false;
-		// Only changing the page/filter disables page controls; background reads keep them usable.
-		setLoading(
-			displayed.current.offset !== offset ||
-				displayed.current.feedId !== feedId,
-		);
+		const pending = active.current;
+		if (pending) {
+			if (
+				pending.offset === offset &&
+				pending.feedId === feedId &&
+				pending.view === view &&
+				pending.readPage === readPage
+			)
+				return;
+			pending.controller.abort();
+			active.current = null;
+		}
+		if (!reloading && settled.revision === revision) return;
+		const request = {
+			offset,
+			feedId,
+			view,
+			readPage,
+			controller: new AbortController(),
+		};
+		active.current = request;
 		async function reload() {
 			try {
-				const page = await readPage(offset, feedId || undefined);
-				if (cancelled) return;
-				displayed.current = { offset, feedId };
+				const page = await readPage(
+					offset,
+					feedId || undefined,
+					view,
+					request.controller.signal,
+				);
+				if (active.current !== request) return;
 				setData(page);
-				setLoading(false);
+				setDisplayed({ offset, feedId, view });
 			} catch {
-				if (cancelled) return;
+				if (active.current !== request) return;
 				setError(true);
-				setLoading(false);
 			} finally {
-				if (!cancelled) setSettled({ feedId, offset, readPage, revision });
+				if (active.current === request) {
+					active.current = null;
+					setSettled({ offset, feedId, view, readPage, revision });
+				}
 			}
 		}
 		void reload();
-		return () => {
-			cancelled = true;
-		};
-	}, [readPage, offset, feedId, revision, setError]);
-	return { data, loading, reloading };
+	}, [readPage, offset, feedId, view, revision, setError, reloading, settled]);
+	useEffect(
+		() => () => {
+			active.current?.controller.abort();
+			active.current = null;
+		},
+		[],
+	);
+	return { data, loading: pageChanged && reloading, reloading };
 }

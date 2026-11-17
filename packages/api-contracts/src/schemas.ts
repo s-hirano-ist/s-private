@@ -416,6 +416,7 @@ export const rssPageSchema = z
 	})
 	.openapi("RssPage");
 export const rssListQuerySchema = z.object({
+	view: z.enum(["all", "unread", "saved", "feeds"]).default("all"),
 	offset: z.coerce.number().int().min(0).max(1000000).default(0),
 	feedId: z.uuid().optional(),
 });
@@ -441,6 +442,7 @@ export const rssRefreshResultSchema = z
 		data: z.array(
 			z.object({
 				id: z.uuid(),
+				changed: z.boolean().optional(),
 				status: z.enum(["updated", "skipped", "failed"]),
 			}),
 		),

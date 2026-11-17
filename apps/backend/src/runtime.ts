@@ -7,6 +7,7 @@ import { SystemEventHandler } from "@s-hirano-ist/s-infrastructure/events/system
 import { createMobileChunkStore } from "@s-hirano-ist/s-infrastructure/mobile/s3-chunk-store";
 import { createBackendNotificationService } from "@s-hirano-ist/s-infrastructure/notifications/pushover-service";
 import { ServerLogger } from "@s-hirano-ist/s-infrastructure/observability/server-logger";
+import { createRssRepository } from "@s-hirano-ist/s-infrastructure/rss/repository";
 import { createVectorSearch } from "@s-hirano-ist/s-infrastructure/search/vector-search";
 import { createBooksStorageService } from "@s-hirano-ist/s-infrastructure/shared/books-storage-service";
 import { createImagesStorageService } from "@s-hirano-ist/s-infrastructure/shared/images-storage-service";
@@ -31,6 +32,7 @@ import {
 	backendTelemetry,
 	initializeObservability,
 } from "s-private-backend/observability";
+import { createRssRefreshCron } from "s-private-backend/rss/refresh-cron";
 import { createLocalSampleSeeder } from "s-private-backend/shared/local-fixtures";
 
 export function createBackendRuntime(env: BackendEnv) {
@@ -90,6 +92,8 @@ export function createBackendRuntime(env: BackendEnv) {
 	})();
 	const services = createApiServices({
 		flushReports: () => Sentry.flush(2000),
+		rssTiming: (stage, duration) =>
+			telemetry.duration(`rss.${stage}.duration`, duration, { domain: "rss" }),
 		database,
 		chunks,
 		storage: { images, books },
@@ -162,6 +166,32 @@ export function createBackendRuntime(env: BackendEnv) {
 				}),
 			})(request),
 		cleanupMedia: createMediaCleanupCron(env, services.cleanupMedia),
+		refreshRss: createRssRefreshCron(env, {
+			due: (now, limit) =>
+				tenantContext.run({ userId: "rss-cron", system: true }, () =>
+					createRssRepository(database).due(now, limit),
+				),
+			refresh: (userId, id) =>
+				tenantContext.run({ userId }, () =>
+					services.mutations.rss.refresh(userId, [id], false),
+				),
+			report: reportCritical("rss_cron"),
+			completed: (summary, duration) => {
+				telemetry.duration("rss.cron.duration", duration, {
+					job: "rss-refresh",
+				});
+				for (const status of [
+					"updated",
+					"failed",
+					"skipped",
+					"deferred",
+				] as const)
+					telemetry.count("rss.cron.feeds", summary[status], {
+						job: "rss-refresh",
+						status,
+					});
+			},
+		}),
 		cron: (request) =>
 			env.BACKEND_CRON_ENABLED
 				? cron(request)

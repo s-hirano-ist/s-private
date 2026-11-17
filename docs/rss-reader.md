@@ -56,10 +56,21 @@ RSS 1.0はRSS名前空間のchannelと、その兄弟itemを読み込む。記�
 接頭辞の変更やRSS要素への接頭辞付与にも対応する。IDがない記事は従来どおりURLを使う。
 RDFの本文・拡張要素・sequenceは保存せず、新着判定には使わない。
 
-RSS画面を開くと、最終試行から1時間以上経過した購読を個別リクエストで最大5件まで並列取得する。
+GitHub Actionsの `rss-refresh` が毎時17分にproduction backendの
+`GET /api/cron/rss-refresh` を呼ぶ。最終試行から1時間以上経過しleaseが空いている購読を、
+未取得・古い順に最大100件選び、最大5件まで並列取得する。所有者はDBから解決し、
+個別取得は所有者のtenant context内で既存serviceを呼ぶ。ブラウザの認証cookieは使用しない。
+1回240秒の処理予算のうち、残り30秒では次の購読を開始せず、未処理分を次回へ回す。
+Actionsの遅延・実行漏れや、前回取得完了から1時間未満の場合のskipがあるため、毎時の完了は保証しない。
+
+RSS画面を開く際も、初期データの最終試行から1時間以上経過した購読だけを、
+個別リクエストで最大5件まで並列取得する。対象がなければ更新通信は行わない。
 1件終わるたびに次の購読を開始し、遅い購読が他の取得を止めない。Server Actionsの
 直列実行を避けるため、取得は既存の認証付き同一origin API proxyを使う。
-進捗は完了件数で更新し、記事一覧の再取得は最大1秒に1回にまとめ、全件終了時にも再取得する。
+進捗は完了件数で更新する。取得結果の `changed` が真のときだけ、記事一覧の再取得を
+最大1秒に1回へまとめ、変更のある取得の全件終了時にも再取得する。
+304や新着・購読名変更のない通常取得では、記事一覧を再取得しない。
+購読設定では取得日時・失敗状態も表示するため、取得完了後に購読情報を再取得する。
 ブラウザからの記事一覧の再取得も同じAPI proxyのGETを使い、Server Actionや画面遷移の
 待ち行列を占有しない。背景の再取得中は表示済みの記事・ページ操作を維持し、ページ移動・
 絞り込みを変更した場合だけページ操作を待機させる。古いリクエストの結果は反映しない。
@@ -67,8 +78,47 @@ RSS画面を開くと、最終試行から1時間以上経過した購読を個�
 取得中でも購読追加・解除・取り込みを行え、追加分の取得は現在の取得後に続けて実行する。
 HTTPエラーを含む個別の失敗後も残りの購読を継続する。同時更新のlease・取得間隔はbackendが管理する。
 手動更新も用意するが、連続取得は1分間隔までに制限する。
-外部スケジューラー・常駐workerは使用しない。
-アプリ未使用中にフィードから消えた記事は取得できない。
+常駐workerは使用しない。取得間隔内にフィードから消えた記事は取得できない。
+
+### 一覧APIと再取得
+
+`GET /api/v1/rss` の `view` は `all`（既定）、`unread`、`saved`、`feeds`。
+未指定のMCP呼び出しは従来どおり両一覧を取得する。Webは表示中のviewを指定し、
+対象外の記事一覧は空配列、件数は0として返す。購読情報は全viewで返す。
+未読の星状態は表示ページと独立して保存リンクを照合する。
+未読のフィード絞り込みには `(user_id, feed_id, received_at, id)` の索引を使う。
+
+SSRの初期データはhydration時に再取得しない。ファイル入力はhydration後に有効化し、
+イベント処理の準備前に選んだファイルの取り込みが失われることを防ぐ。
+準備状態には `useSyncExternalStore` のserver/client snapshotを使い、effect内の同期setStateを避ける。同一ページの背景再取得は同時に1件までとし、
+取得中に増えた更新通知を最後の1回へまとめる。ページ・絞り込み変更は古い要求をabortし、
+応答の識別でも古い結果の反映を防ぐ。
+
+### 定期取得の設定と監視
+
+backendは既存の `CRON_SECRET` と `BACKEND_CRON_ENABLED` で保護する。
+PreviewのCron無効化は既存env policyを使う。Actionsは初期状態で無効とし、次を設定する。
+
+- Repository variable `RSS_BACKEND_URL`: production backendのHTTPS origin。
+- Repository secret `RSS_CRON_SECRET`: backendの `CRON_SECRET` と同じ値。値をログへ出さない。
+- Repository variable `RSS_CRON_ENABLED`: 使用量確認後に `true` に設定する。
+
+Actionsはcheckout・DB接続をせず、HTTP呼び出しだけを行う。workflowの重複実行を抑止し、
+backendのleaseでも手動更新や重複配送との競合を防ぐ。新しい有料サービスは追加しない。
+停止時は `RSS_CRON_ENABLED` を `false` に戻す。既存の別Cronは停止しない。
+
+既存監視へ `rss.page.duration`、`rss.claim.duration`、`rss.fetch.duration`、
+`rss.complete.duration` と、`rss.cron.duration`・`rss.cron.feeds` を記録する。
+時間計測には記事URL・タイトル・ユーザー情報を含めない。Cron応答には
+`processed`・`updated`・`failed`・`skipped`・`deferred` の件数を返す。
+個別失敗は既存の診断へ送り、他の購読の取得を継続する。
+
+100購読・30日では定期呼び出しは720回、最大72,000購読取得相当となる。
+全応答が304でも、購読ごとのclaimとcommitのDB処理は必要である。
+Functionの上限予算は720 × 240秒 = 48時間／月だが、これは課金額ではなく壁時計時間の上限目安。
+RUはSQL回数と同一ではないため、productionの代表操作と定期取得の実測RU、
+Function CPU・メモリー時間を月間へ換算し、既存使用量と合算してから有効にする。
+無料枠超過が見込まれる場合は有効にせず、課金や取得頻度の自動変更は行わない。
 
 通常取得はETag／Last-Modifiedによる条件付き取得を行い、304では未読・hashを変更しない。
 手動更新ではvalidatorを送らず本文を再取得し、フィードに残っている記事について、
@@ -174,3 +224,28 @@ cat /tmp/rss-capacity.json
 取り込み操作のRU増分を測定する。月間利用回数へ換算し、余裕を含めて無料枠内で
 あることを確認する。無料枠を超える見込みなら定期取得頻度を変更したり課金を
 有効にしたりせず、実測値を基に無料構成の再設計を行う。
+
+### 一覧性能の再計測
+
+専用ローカルDBでmigrationを適用後、以下を実行する。既存開発DB・クラウドDBは指定しない。
+100購読・未読1万件・保存1万件を投入し、ウォームアップ後20回の中央値・p95・SQL回数・
+JSONバイト数と、フィード絞り込みのEXPLAINを出力する。検証データは終了時に削除する。
+
+```sh
+RSS_PERFORMANCE_DATABASE_URL='postgresql://root@localhost:26257/rss_worktree_perf?sslmode=disable' \
+RSS_PERFORMANCE_REPORT=/tmp/rss-performance.json \
+  pnpm exec vp test run --project infrastructure packages/infrastructure/src/rss/performance.integration.test.ts
+```
+
+2026-11-17のローカル比較（接続プール3、変更前後とも新規専用DB）の参考値:
+
+| 操作 | 変更前中央値 | 変更後中央値 | 変更前p95 | 変更後p95 |
+| --- | --- | --- | --- | --- |
+| 初回一覧 | 4.70 ms | 3.28 ms | 5.24 ms | 3.81 ms |
+| 次ページ | 4.40 ms | 2.98 ms | 5.12 ms | 3.43 ms |
+| フィード絞り込み | 4.27 ms | 1.80 ms | 5.56 ms | 1.96 ms |
+
+未読ページのSQLは6→4回、JSONは約40.7→30.4 KB。
+絞り込みの実行計画は旧feed索引のindex join・sortから、新しい複合索引の逆順scan・limitへ変化した。
+これはrepository単体の測定で、本番の認証・ネットワーク・cold start・画像取得を含まない。
+本番での画面表示時間・取得完了時間・RUの改善率は未計測である。

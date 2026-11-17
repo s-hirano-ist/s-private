@@ -51,6 +51,10 @@ export type ApiServicesConfig = {
 	flushReports: () => Promise<unknown>;
 	push: PushConfig;
 	reporter: Pick<ErrorReporter, "captureException">;
+	rssTiming?: (
+		stage: "page" | "claim" | "fetch" | "complete",
+		durationMs: number,
+	) => void;
 	searchVectors: ReturnType<typeof createVectorSearch>;
 	storage: { books: IStorageService; images: IStorageService };
 };
@@ -160,6 +164,7 @@ export function createApiServices(config: ApiServicesConfig) {
 				createRssRepository(config.database),
 				fetchFeed,
 				createRssFailureReporter(config.reporter, config.flushReports),
+				config.rssTiming,
 			),
 			writes,
 			uploads: createUploadService(mobile, writes, config.reporter),

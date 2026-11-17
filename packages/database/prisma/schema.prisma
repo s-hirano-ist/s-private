@@ -370,6 +370,7 @@ model RssUnread {
   publishedAt DateTime? @map("published_at")
   receivedAt DateTime @map("received_at")
   @@index([userId, receivedAt, id])
+  @@index([userId, feedId, receivedAt, id])
   @@index([feedId])
   @@map("rss_unread")
 }

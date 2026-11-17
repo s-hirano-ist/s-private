@@ -26,3 +26,5 @@ export type RssPage = {
 	unread: UnreadEntry[];
 	unreadCount: number;
 };
+
+export type RssView = "all" | "unread" | "saved" | "feeds";

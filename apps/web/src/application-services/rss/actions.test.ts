@@ -26,6 +26,7 @@ test("loads the requested page and unwraps backend envelopes", async () => {
 	expect(client.getRssPage).toHaveBeenLastCalledWith({
 		offset: 50,
 		feedId: "feed",
+		view: "unread",
 	});
 	client.importRss.mockResolvedValue({ data: { added: 2 } });
 	expect(await actions.importRss("opml", "<opml/>")).toEqual({ added: 2 });

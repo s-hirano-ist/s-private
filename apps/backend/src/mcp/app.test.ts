@@ -593,7 +593,7 @@ test("RSS listing preserves results across repeated calls, forwards pagination a
 			expect(result.isError).not.toBe(true);
 			expect(result.structuredContent).toEqual(rssPage("alice"));
 		}
-		expect(rss.page).toHaveBeenLastCalledWith("alice", 0, undefined);
+		expect(rss.page).toHaveBeenLastCalledWith("alice", 0, undefined, "all");
 		rss.page.mockResolvedValueOnce({
 			...rssPage("alice"),
 			unread: [],
@@ -609,7 +609,7 @@ test("RSS listing preserves results across repeated calls, forwards pagination a
 			unreadCount: 1,
 			savedCount: 1,
 		});
-		expect(rss.page).toHaveBeenLastCalledWith("alice", 50, feedId);
+		expect(rss.page).toHaveBeenLastCalledWith("alice", 50, feedId, "all");
 	} finally {
 		await connection.close();
 	}

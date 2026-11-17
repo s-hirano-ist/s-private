@@ -20,7 +20,7 @@ test("a late background response cannot overwrite a newer filter", async () => {
 		.mockResolvedValue(filtered);
 	const setError = vi.fn();
 	const { result, rerender } = renderHook(
-		({ feedId }) => useRssPage(initial, readPage, 0, feedId, 0, setError),
+		({ feedId }) => useRssPage(initial, readPage, 0, feedId, 1, setError),
 		{ initialProps: { feedId: "" } },
 	);
 	expect(result.current.loading).toBe(false);
@@ -65,7 +65,7 @@ test("a stale response cannot clear the indicator for a newer page request", asy
 		.mockReturnValueOnce(next.promise);
 	const setError = vi.fn();
 	const { result, rerender } = renderHook(
-		({ offset }) => useRssPage(initial, readPage, offset, "", 0, setError),
+		({ offset }) => useRssPage(initial, readPage, offset, "", 1, setError),
 		{ initialProps: { offset: 0 } },
 	);
 	rerender({ offset: 50 });
@@ -81,4 +81,57 @@ test("a stale response cannot clear the indicator for a newer page request", asy
 	});
 	expect(result.current.reloading).toBe(false);
 	expect(result.current.loading).toBe(false);
+});
+
+test("SSR data is reused without a hydration GET", () => {
+	const readPage = vi.fn();
+	const { result } = renderHook(() =>
+		useRssPage(initial, readPage, 0, "", 0, vi.fn()),
+	);
+	expect(result.current.data).toBe(initial);
+	expect(result.current.reloading).toBe(false);
+	expect(readPage).not.toHaveBeenCalled();
+});
+test("coalesces revisions during a slow background read into one follow-up", async () => {
+	const background = Promise.withResolvers<RssPage>();
+	const readPage = vi
+		.fn()
+		.mockReturnValueOnce(background.promise)
+		.mockResolvedValue({ ...initial, unreadCount: 4 });
+	const setError = vi.fn();
+	const { result, rerender } = renderHook(
+		({ revision }) => useRssPage(initial, readPage, 0, "", revision, setError),
+		{ initialProps: { revision: 1 } },
+	);
+	rerender({ revision: 2 });
+	rerender({ revision: 3 });
+	expect(readPage).toHaveBeenCalledTimes(1);
+	await act(async () => {
+		background.resolve(initial);
+		await background.promise;
+	});
+	await waitFor(() => expect(result.current.data.unreadCount).toBe(4));
+	expect(readPage).toHaveBeenCalledTimes(2);
+	expect(result.current.reloading).toBe(false);
+});
+test("page changes abort a background read and returning to the SSR page ignores its late response", async () => {
+	const background = Promise.withResolvers<RssPage>();
+	const readPage = vi.fn(
+		(_offset, _feed, _view, _signal) => background.promise,
+	);
+	const setError = vi.fn();
+	const { result, rerender } = renderHook(
+		({ offset }) => useRssPage(initial, readPage, offset, "", 0, setError),
+		{ initialProps: { offset: 0 } },
+	);
+	rerender({ offset: 50 });
+	const signal = readPage.mock.calls[0][3] as AbortSignal;
+	rerender({ offset: 0 });
+	expect(signal.aborted).toBe(true);
+	await act(async () => {
+		background.resolve({ ...initial, unreadCount: 999 });
+		await background.promise;
+	});
+	expect(result.current.data.unreadCount).toBe(1);
+	expect(result.current.reloading).toBe(false);
 });

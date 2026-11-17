@@ -265,3 +265,67 @@ test("manual repair corrects damaged existing titles without resurrecting read e
 	});
 	expect(db.rssUnread.createMany).not.toHaveBeenCalled();
 });
+
+test("view-specific reads omit hidden lists and empty unread pages omit star lookup", async () => {
+	const { db, rss } = fixture();
+	await rss.page("owner", 0, undefined, "saved");
+	expect(db.rssUnread.findMany).not.toHaveBeenCalled();
+	expect(db.rssSaved.findMany).toHaveBeenCalledTimes(1);
+	db.rssSaved.findMany.mockClear();
+	await rss.page("owner", 0, undefined, "unread");
+	expect(db.rssSaved.findMany).not.toHaveBeenCalled();
+	db.rssUnread.findMany.mockClear();
+	db.rssUnread.count.mockClear();
+	db.rssSaved.count.mockClear();
+	await rss.page("owner", 0, undefined, "feeds");
+	expect(db.rssUnread.findMany).not.toHaveBeenCalled();
+	expect(db.rssSaved.findMany).not.toHaveBeenCalled();
+	expect(db.rssUnread.count).not.toHaveBeenCalled();
+	expect(db.rssSaved.count).not.toHaveBeenCalled();
+});
+test("scheduled selection excludes fresh or leased feeds and orders the oldest attempts first", async () => {
+	const { db, rss } = fixture();
+	const now = new Date("2026-11-17T01:00:00Z");
+	await rss.due(now, 100);
+	expect(db.rssFeed.findMany).toHaveBeenCalledWith({
+		where: {
+			AND: [
+				{
+					OR: [
+						{ lastFetchedAt: null },
+						{ lastFetchedAt: { lt: new Date("2026-11-17T00:00:00Z") } },
+					],
+				},
+				{ OR: [{ leaseExpiresAt: null }, { leaseExpiresAt: { lt: now } }] },
+			],
+		},
+		orderBy: [
+			{ lastFetchedAt: { sort: "asc", nulls: "first" } },
+			{ id: "asc" },
+		],
+		take: 100,
+		select: { id: true, userId: true },
+	});
+});
+test("completion reports whether article or visible metadata changed", async () => {
+	const { db, rss } = fixture();
+	expect(
+		await rss.complete("owner", lease, { ...result, notModified: true }),
+	).toBe(false);
+	expect(
+		await rss.complete(
+			"owner",
+			{ ...lease, error: "FETCH_FAILED" },
+			{ ...result, notModified: true },
+		),
+	).toBe(true);
+	db.rssSeen.findMany.mockResolvedValue([
+		{ hash: createHash("sha256").update("one").digest() },
+	]);
+	expect(
+		await rss.complete("owner", lease, { ...result, title: lease.title }),
+	).toBe(false);
+	expect(
+		await rss.complete("owner", lease, { ...result, title: "Renamed" }),
+	).toBe(true);
+});
