@@ -12,33 +12,46 @@ const hash = (identity: string) =>
 	createHash("sha256").update(identity).digest();
 export function createRssRepository(db: DatabaseClient): RssRepository {
 	return {
-		async page(userId, offset, feedId) {
+		async page(userId, offset, feedId, view = "all") {
+			const includeUnread = view === "all" || view === "unread";
+			const includeSaved = view === "all" || view === "saved";
 			const [feeds, unread, saved, unreadCount, savedCount] = await Promise.all(
 				[
 					db.rssFeed.findMany({
 						where: { userId },
 						orderBy: [{ folder: "asc" }, { title: "asc" }, { id: "asc" }],
 					}),
-					db.rssUnread.findMany({
-						where: { userId, feedId },
-						orderBy: [{ receivedAt: "desc" }, { id: "desc" }],
-						skip: offset,
-						take: 50,
-					}),
-					db.rssSaved.findMany({
-						where: { userId },
-						orderBy: [{ savedAt: "desc" }, { id: "desc" }],
-						skip: offset,
-						take: 50,
-					}),
-					db.rssUnread.count({ where: { userId, feedId } }),
-					db.rssSaved.count({ where: { userId } }),
+					includeUnread
+						? db.rssUnread.findMany({
+								where: { userId, feedId },
+								orderBy: [{ receivedAt: "desc" }, { id: "desc" }],
+								skip: offset,
+								take: 50,
+							})
+						: Promise.resolve([]),
+					includeSaved
+						? db.rssSaved.findMany({
+								where: { userId },
+								orderBy: [{ savedAt: "desc" }, { id: "desc" }],
+								skip: offset,
+								take: 50,
+							})
+						: Promise.resolve([]),
+					includeUnread
+						? db.rssUnread.count({ where: { userId, feedId } })
+						: Promise.resolve(0),
+					includeSaved
+						? db.rssSaved.count({ where: { userId } })
+						: Promise.resolve(0),
 				],
 			);
-			const stars = await db.rssSaved.findMany({
-				where: { userId, url: { in: unread.map((entry) => entry.url) } },
-				select: { id: true, url: true },
-			});
+			const stars =
+				unread.length > 0
+					? await db.rssSaved.findMany({
+							where: { userId, url: { in: unread.map((entry) => entry.url) } },
+							select: { id: true, url: true },
+						})
+					: [];
 			const savedIds = new Map(stars.map((entry) => [entry.url, entry.id]));
 			return {
 				feeds: feeds.map(
@@ -84,6 +97,27 @@ export function createRssRepository(db: DatabaseClient): RssRepository {
 				unreadCount,
 				savedCount,
 			};
+		},
+		due(now, limit) {
+			return db.rssFeed.findMany({
+				where: {
+					AND: [
+						{
+							OR: [
+								{ lastFetchedAt: null },
+								{ lastFetchedAt: { lt: new Date(now.getTime() - 3600000) } },
+							],
+						},
+						{ OR: [{ leaseExpiresAt: null }, { leaseExpiresAt: { lt: now } }] },
+					],
+				},
+				orderBy: [
+					{ lastFetchedAt: { sort: "asc", nulls: "first" } },
+					{ id: "asc" },
+				],
+				take: limit,
+				select: { id: true, userId: true },
+			});
 		},
 		async subscribe(userId: string, input: FeedInput) {
 			const { count } = await withTransactionRetry(() =>
@@ -185,7 +219,7 @@ export function createRssRepository(db: DatabaseClient): RssRepository {
 			);
 		},
 		async complete(userId, lease, result) {
-			await withTransactionRetry(() =>
+			return withTransactionRetry(() =>
 				db.$transaction(async (tx) => {
 					const now = new Date();
 					const locked = await tx.rssFeed.updateMany({
@@ -209,7 +243,13 @@ export function createRssRepository(db: DatabaseClient): RssRepository {
 									}),
 						},
 					});
-					if (!locked.count || result.notModified) return;
+					if (!locked.count) return false;
+					const metadataChanged =
+						Boolean(lease.error) ||
+						(!result.notModified &&
+							Boolean(result.title) &&
+							result.title !== lease.title);
+					if (result.notModified) return metadataChanged;
 					if (result.repairMetadata) {
 						await fillMissingImages(tx, userId, lease.id, result.entries);
 
@@ -263,7 +303,8 @@ export function createRssRepository(db: DatabaseClient): RssRepository {
 							entry,
 						]),
 					);
-					if (unique.size === 0) return;
+					if (unique.size === 0)
+						return metadataChanged || Boolean(result.repairMetadata);
 					const known = await tx.rssSeen.findMany({
 						where: {
 							feedId: lease.id,
@@ -275,7 +316,8 @@ export function createRssRepository(db: DatabaseClient): RssRepository {
 					});
 					for (const row of known)
 						unique.delete(Buffer.from(row.hash).toString("hex"));
-					if (unique.size === 0) return;
+					if (unique.size === 0)
+						return metadataChanged || Boolean(result.repairMetadata);
 					await tx.rssSeen.createMany({
 						data: [...unique.keys()].map((key) => ({
 							feedId: lease.id,
@@ -296,6 +338,7 @@ export function createRssRepository(db: DatabaseClient): RssRepository {
 							receivedAt: now,
 						})),
 					});
+					return true;
 				}),
 			);
 		},

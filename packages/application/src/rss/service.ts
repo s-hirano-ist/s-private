@@ -7,13 +7,36 @@ import type {
 	RssImport,
 	RssRepository,
 } from "@s-hirano-ist/s-application/rss/ports";
-import type { EntryInput, FeedInput } from "@s-hirano-ist/s-core/rss/types";
+import type {
+	EntryInput,
+	FeedInput,
+	RssView,
+} from "@s-hirano-ist/s-core/rss/types";
 import { RssFetchError } from "@s-hirano-ist/s-application/rss/failure";
 export function createRssService(
 	repository: RssRepository,
 	fetchFeed: RssFeedReader,
 	reportFailure: RssFailureReporter,
+	observe?: (
+		stage: "page" | "claim" | "fetch" | "complete",
+		durationMs: number,
+	) => void,
 ) {
+	async function measure<T>(
+		stage: "page" | "claim" | "fetch" | "complete",
+		work: () => Promise<T>,
+	): Promise<T> {
+		const started = performance.now();
+		try {
+			return await work();
+		} finally {
+			try {
+				observe?.(stage, performance.now() - started);
+			} catch {
+				/* Keep diagnostics independent of reader operations. */
+			}
+		}
+	}
 	async function report(
 		error: unknown,
 		feedId: string,
@@ -51,8 +74,8 @@ export function createRssService(
 		}
 	}
 	return {
-		page: (owner: string, offset: number, feedId?: string) =>
-			repository.page(owner, offset, feedId),
+		page: (owner: string, offset: number, feedId?: string, view?: RssView) =>
+			measure("page", () => repository.page(owner, offset, feedId, view)),
 		subscribe: (owner: string, input: FeedInput) =>
 			repository.subscribe(owner, input),
 		unsubscribe: (owner: string, id: string) =>
@@ -69,7 +92,9 @@ export function createRssService(
 					const started = performance.now();
 					let lease;
 					try {
-						lease = await repository.claim(owner, id, force);
+						lease = await measure("claim", () =>
+							repository.claim(owner, id, force),
+						);
 					} catch (error) {
 						await report(error, id, "claim", started);
 						throw error;
@@ -77,15 +102,26 @@ export function createRssService(
 					if (!lease) return { id, status: "skipped" as const };
 					let stage: "fetch" | "complete" = "fetch";
 					try {
-						const result = await fetchFeed(
-							force ? { ...lease, etag: null, lastModified: null } : lease,
+						const claimed = lease;
+						const result = await measure("fetch", () =>
+							fetchFeed(
+								force
+									? { ...claimed, etag: null, lastModified: null }
+									: claimed,
+							),
 						);
 						stage = "complete";
-						await repository.complete(owner, lease, {
-							...result,
-							repairMetadata: force,
-						});
-						return { id, status: "updated" as const };
+						const changed = await measure("complete", () =>
+							repository.complete(owner, claimed, {
+								...result,
+								repairMetadata: force,
+							}),
+						);
+						return {
+							id,
+							status: "updated" as const,
+							...(typeof changed === "boolean" ? { changed } : {}),
+						};
 					} catch (error) {
 						await report(error, id, stage, started, lease);
 						try {

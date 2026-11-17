@@ -13,6 +13,7 @@ export function createBackendHttpApp(deps: {
 	isTrustedOrigin(origin: string): boolean;
 	mcp?: (request: Request) => Response | Promise<Response>;
 	publicOrigin?: string;
+	refreshRss?: (request: Request) => Promise<Response>;
 	reportError(error: unknown): unknown;
 	signIn(request: Request): Promise<Response>;
 	telemetryMiddleware?: MiddlewareHandler;
@@ -56,6 +57,11 @@ export function createBackendHttpApp(deps: {
 	app.get("/api/cron/media-cleanup", (c) =>
 		deps.cleanupMedia
 			? deps.cleanupMedia(c.req.raw)
+			: new Response(null, { status: 404 }),
+	);
+	app.get("/api/cron/rss-refresh", (c) =>
+		deps.refreshRss
+			? deps.refreshRss(c.req.raw)
 			: new Response(null, { status: 404 }),
 	);
 	app.all("/api/v1/*", (c) => deps.api(c.req.raw));

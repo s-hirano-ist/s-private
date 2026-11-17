@@ -4,6 +4,7 @@ import type {
 	FeedInput,
 	ParsedEntry,
 	RssPage,
+	RssView,
 } from "@s-hirano-ist/s-core/rss/types";
 export type FeedLease = Feed & {
 	etag: string | null;
@@ -20,9 +21,19 @@ export type FeedResult = {
 };
 export type RssRepository = {
 	claim(owner: string, id: string, force: boolean): Promise<FeedLease | null>;
-	complete(owner: string, lease: FeedLease, result: FeedResult): Promise<void>;
+	complete(
+		owner: string,
+		lease: FeedLease,
+		result: FeedResult,
+	): Promise<boolean>;
+	due(now: Date, limit: number): Promise<{ id: string; userId: string }[]>;
 	fail(owner: string, lease: FeedLease): Promise<void>;
-	page(owner: string, offset: number, feedId?: string): Promise<RssPage>;
+	page(
+		owner: string,
+		offset: number,
+		feedId?: string,
+		view?: RssView,
+	): Promise<RssPage>;
 	read(
 		owner: string,
 		input: { before?: string; feedId?: string; ids?: string[] },

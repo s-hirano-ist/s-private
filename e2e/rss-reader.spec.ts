@@ -17,6 +17,99 @@ test.describe("RSS reader", () => {
 		!enabled,
 		"Requires the local RSS backend and dedicated migrated DB",
 	);
+	test("reuses SSR data for fresh feeds and loads only the active page and filter", async ({
+		page,
+	}) => {
+		const db = localDatabase();
+		await page.request.get("/api/sign-in", { maxRedirects: 0 });
+		const owner = await db.user.findUniqueOrThrow({
+			where: { email: process.env.LOCAL_AUTH_EMAIL },
+		});
+		const feedIds = [randomUUID(), randomUUID()];
+		const now = new Date();
+		const savedId = randomUUID();
+		await db.rssFeed.createMany({
+			data: feedIds.map((id, i) => ({
+				id,
+				userId: owner.id,
+				url: `https://example.com/perf-${id}`,
+				title: `Performance feed ${i}`,
+				folder: "",
+				lastFetchedAt: now,
+			})),
+		});
+		await db.rssUnread.createMany({
+			data: Array.from({ length: 61 }, (_, i) => ({
+				id: randomUUID(),
+				userId: owner.id,
+				feedId: feedIds[i === 60 ? 1 : 0],
+				url: `https://example.com/perf-${feedIds[0]}/${i}`,
+				title: `Performance article ${i}`,
+				receivedAt: new Date(now.getTime() - i * 1000),
+			})),
+		});
+		await db.rssSaved.create({
+			data: {
+				id: savedId,
+				userId: owner.id,
+				url: `https://example.com/perf-saved-${savedId}`,
+				title: "Performance saved article",
+				savedAt: now,
+			},
+		});
+		const reads: string[] = [];
+		const refreshes: string[] = [];
+		page.on("request", (request) => {
+			const url = new URL(request.url());
+			if (url.pathname === "/api/v1/rss" && request.method() === "GET")
+				reads.push(request.url());
+			if (url.pathname === "/api/v1/rss/refresh") refreshes.push(request.url());
+		});
+		try {
+			const started = performance.now();
+			await page.goto("/ja/rss");
+			await expect(
+				page.getByRole("link", { name: "Performance article 0", exact: true }),
+			).toBeVisible();
+			const firstVisibleMs = performance.now() - started;
+			// The resulting page change verifies the controls are hydrated.
+			await expect(page.getByRole("button", { name: "次へ" })).toBeEnabled();
+			await page.getByRole("button", { name: "次へ" }).click();
+			await expect(
+				page.getByRole("link", { name: "Performance article 50", exact: true }),
+			).toBeVisible();
+			expect(reads).toHaveLength(1);
+			expect(new URL(reads[0]).searchParams.get("view")).toBe("unread");
+			expect(new URL(reads[0]).searchParams.get("offset")).toBe("50");
+			await page
+				.getByRole("combobox", { name: "購読で絞り込み" })
+				.selectOption(feedIds[1]);
+			await expect(
+				page.getByRole("link", { name: "Performance article 60", exact: true }),
+			).toBeVisible();
+			expect(reads).toHaveLength(2);
+			expect(new URL(reads[1]).searchParams.get("feedId")).toBe(feedIds[1]);
+			expect(new URL(reads[1]).searchParams.get("offset")).toBe("0");
+			expect(refreshes).toHaveLength(0);
+			await page.locator('header a[href="/ja/rss/saved"]').click();
+			await expect(
+				page.getByRole("link", { name: "Performance saved article" }),
+			).toBeVisible();
+			await test.info().attach("rss-navigation", {
+				body: JSON.stringify({ firstVisibleMs, reads, refreshes }),
+				contentType: "application/json",
+			});
+			await page.screenshot({
+				path: "/tmp/rss-performance-e2e.png",
+				fullPage: true,
+			});
+		} finally {
+			await db.rssFeed.deleteMany({ where: { id: { in: feedIds } } });
+			await db.rssSaved.deleteMany({ where: { id: savedId } });
+			await db.$disconnect();
+		}
+	});
+
 	test("renders article thumbnails, toggles stars, marks all read, and imports saved links", async ({
 		page,
 	}) => {
@@ -127,11 +220,13 @@ test.describe("RSS reader", () => {
 					}),
 				),
 			};
+			await expect(page.getByLabel("取り込みファイル")).toBeEnabled();
 			await page.getByLabel("取り込みファイル").setInputFiles(exportFile);
 			await expect(
 				page.getByText("追加 1件・重複 0件・不正 0件"),
 			).toBeVisible();
 			await page.getByLabel("取り込みファイル").setInputFiles([]);
+			await expect(page.getByLabel("取り込みファイル")).toBeEnabled();
 			await page.getByLabel("取り込みファイル").setInputFiles(exportFile);
 			await expect(
 				page.getByText("追加 0件・重複 1件・不正 0件"),

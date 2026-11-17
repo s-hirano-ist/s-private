@@ -18,6 +18,7 @@ const lease: FeedLease = {
 };
 function repository() {
 	return {
+		due: vi.fn(),
 		page: vi.fn(),
 		subscribe: vi.fn(),
 		unsubscribe: vi.fn(),
@@ -76,7 +77,7 @@ test("owner-scoped operations forward filters and mutations", async () => {
 	const repo = repository();
 	const service = createRssService(repo, vi.fn(), vi.fn());
 	await service.page("owner", 50, "feed");
-	expect(repo.page).toHaveBeenCalledWith("owner", 50, "feed");
+	expect(repo.page).toHaveBeenCalledWith("owner", 50, "feed", undefined);
 	await service.subscribe("owner", lease);
 	expect(repo.subscribe).toHaveBeenCalledWith("owner", lease);
 	await service.unsubscribe("owner", "feed");
@@ -215,4 +216,38 @@ test("manual refresh bypasses old validators and requests metadata repair", asyn
 		...result,
 		repairMetadata: true,
 	});
+});
+
+test("records stage durations without exposing content or changing outcomes when metrics fail", async () => {
+	const repo = repository();
+	repo.claim.mockResolvedValue(lease);
+	repo.complete.mockResolvedValue(false);
+	repo.page.mockResolvedValue({
+		feeds: [],
+		unread: [],
+		saved: [],
+		unreadCount: 0,
+		savedCount: 0,
+	});
+	const observe = vi.fn((_stage: string, _duration: number) => {
+		throw new Error("metrics unavailable");
+	});
+	const fetch = vi.fn().mockResolvedValue({
+		notModified: true,
+		entries: [],
+		etag: null,
+		lastModified: null,
+		title: "",
+	});
+	const service = createRssService(repo, fetch, vi.fn(), observe);
+	expect(await service.refresh("owner", [lease.id])).toEqual([
+		{ id: lease.id, status: "updated", changed: false },
+	]);
+	await service.page("owner", 0, undefined, "unread");
+	expect(observe.mock.calls.map((call) => call[0])).toEqual([
+		"claim",
+		"fetch",
+		"complete",
+		"page",
+	]);
 });

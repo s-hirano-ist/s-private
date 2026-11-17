@@ -7,7 +7,7 @@ export async function RssReaderLoader({
 	view?: "unread" | "saved" | "feeds";
 }) {
 	await connection();
-	const initialData = await services.loadRss();
+	const initialData = await services.loadRss(0, undefined, view);
 	return (
 		<RssReader
 			initialData={initialData}

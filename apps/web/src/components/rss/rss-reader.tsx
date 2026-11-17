@@ -15,7 +15,12 @@ import { Input } from "@s-hirano-ist/s-ui/input";
 import { RefreshCw, Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 import NextImage from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+// No external changes: React switches from the server snapshot after hydration.
+const subscribeToHydration = () => () => {
+	// Hydration has no external subscription to dispose.
+};
+
 type RssActions = Omit<typeof actions, "loadRss"> & {
 	loadRss?: typeof loadRss;
 	refreshRss?: typeof refreshRss;
@@ -156,6 +161,11 @@ export function RssReader({
 	const [offset, setOffset] = useState(0);
 	const [revision, setRevision] = useState(0);
 	const [busy, setBusy] = useState(false);
+	const interactive = useSyncExternalStore(
+		subscribeToHydration,
+		() => true,
+		() => false,
+	);
 	const [refreshing, setRefreshing] = useState(false);
 	const [progress, setProgress] = useState("");
 	const [error, setError] = useState(false);
@@ -167,6 +177,7 @@ export function RssReader({
 		feedId,
 		revision,
 		setError,
+		view,
 	);
 	const [importResult, setImportResult] = useState<{
 		added: number;
@@ -194,6 +205,7 @@ export function RssReader({
 		}, 1000);
 	}
 	async function refresh(ids: string[], force: boolean) {
+		if (ids.length === 0) return;
 		if (refreshLock.current) {
 			const queued = queuedRefresh.current;
 			queuedRefresh.current = {
@@ -203,6 +215,7 @@ export function RssReader({
 			return;
 		}
 		refreshLock.current = true;
+		const changedFeeds = new Set<number>();
 		setRefreshing(true);
 		setProgress(`0 / ${ids.length}`);
 		setError(false);
@@ -211,11 +224,14 @@ export function RssReader({
 				ids,
 				force,
 				services.refreshRss ?? refreshRss,
-				(completed, failed) => {
+				(completed, failed, changed) => {
 					if (!mounted.current) return;
 					if (failed) setError(true);
 					setProgress(`${completed} / ${ids.length}`);
-					scheduleReload();
+					if (changed || view === "feeds") {
+						changedFeeds.add(completed);
+						scheduleReload();
+					}
 				},
 			);
 		} finally {
@@ -223,7 +239,7 @@ export function RssReader({
 			if (reloadTimer.current) clearTimeout(reloadTimer.current);
 			reloadTimer.current = null;
 			if (mounted.current) {
-				setRevision((value) => value + 1);
+				if (changedFeeds.size > 0) setRevision((value) => value + 1);
 				setRefreshing(false);
 				setProgress("");
 				const queued = queuedRefresh.current;
@@ -236,7 +252,13 @@ export function RssReader({
 		if (started.current) return;
 		started.current = true;
 		void refresh(
-			initialData.feeds.map((feed) => feed.id),
+			initialData.feeds
+				.filter(
+					(feed) =>
+						!feed.lastFetchedAt ||
+						Date.parse(feed.lastFetchedAt) < Date.now() - 3600000,
+				)
+				.map((feed) => feed.id),
 			false,
 		);
 		// Startup fetch runs once; filtering and pagination never trigger another feed poll.
@@ -275,6 +297,7 @@ export function RssReader({
 	}
 
 	const { entries, total } = entriesForView(data, view);
+	const sources = new Map(data.feeds.map((feed) => [feed.id, feed.title]));
 
 	const status = !refreshing && (reloading || busy) ? t("loading") : "";
 	return (
@@ -380,7 +403,7 @@ export function RssReader({
 									folder: field("folder"),
 								});
 								form.reset();
-								const page = await readPage();
+								const page = await readPage(0, undefined, view);
 								void refresh(
 									page.feeds.map((feed) => feed.id),
 									false,
@@ -412,7 +435,7 @@ export function RssReader({
 							{t("importFile")}
 							<Input
 								accept=".zip,.xml,.opml,.json"
-								disabled={busy}
+								disabled={busy || !interactive}
 								type="file"
 								onChange={(event) => {
 									const file = event.target.files?.[0];
@@ -433,7 +456,7 @@ export function RssReader({
 											summary.invalid += result.invalid;
 											setImportResult({ ...summary });
 										}
-										const page = await readPage();
+										const page = await readPage(0, undefined, view);
 										void refresh(
 											page.feeds.map((feed) => feed.id),
 											false,
@@ -495,10 +518,8 @@ export function RssReader({
 									entry={entry}
 									busy={busy}
 									source={
-										("feedId" in entry
-											? data.feeds.find((feed) => feed.id === entry.feedId)
-													?.title
-											: null) ?? new URL(entry.url).hostname
+										("feedId" in entry ? sources.get(entry.feedId) : null) ??
+										new URL(entry.url).hostname
 									}
 									savedId={savedIdFor(entry)}
 									onOpen={() => openEntry(entry)}

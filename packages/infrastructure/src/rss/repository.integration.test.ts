@@ -70,6 +70,63 @@ describe.skipIf(!connectionString)("RSS CockroachDB integration", () => {
 		await client.rssSaved.deleteMany({ where: { userId: owner } });
 		await client.$disconnect();
 	});
+	test("scheduled selection returns owners for due feeds, excluding fresh attempts and active leases", async () => {
+		const now = new Date();
+		const ids = Array.from({ length: 4 }, () => crypto.randomUUID());
+		const userId = "rss-cron-owner";
+		await client.rssFeed.createMany({
+			data: [
+				{
+					id: ids[0],
+					userId,
+					url: `https://example.com/cron/${ids[0]}`,
+					title: "Due",
+					folder: "",
+				},
+				{
+					id: ids[1],
+					userId: "rss-cron-other",
+					url: `https://example.com/cron/${ids[1]}`,
+					title: "Other due",
+					folder: "",
+				},
+				{
+					id: ids[2],
+					userId,
+					url: `https://example.com/cron/${ids[2]}`,
+					title: "Fresh",
+					folder: "",
+					lastFetchedAt: now,
+				},
+				{
+					id: ids[3],
+					userId,
+					url: `https://example.com/cron/${ids[3]}`,
+					title: "Leased",
+					folder: "",
+					leaseExpiresAt: new Date(now.getTime() + 60000),
+				},
+			],
+		});
+		try {
+			const due = await tenantContext.run(
+				{ userId: "rss-cron", system: true },
+				() => rss.due(now, 100),
+			);
+			expect(due).toEqual(
+				expect.arrayContaining([
+					{ id: ids[0], userId },
+					{ id: ids[1], userId: "rss-cron-other" },
+				]),
+			);
+			expect(due.map((feed) => feed.id)).not.toContain(ids[2]);
+			expect(due.map((feed) => feed.id)).not.toContain(ids[3]);
+			expect(await rss.due(now, 1)).toHaveLength(1);
+		} finally {
+			await client.rssFeed.deleteMany({ where: { id: { in: ids } } });
+		}
+	});
+
 	test("duplicate subscriptions, concurrent leases, and owner isolation", async () => {
 		expect(await asOwner(() => rss.subscribe(owner, source))).toBe(true);
 		expect(await asOwner(() => rss.subscribe(owner, source))).toBe(false);

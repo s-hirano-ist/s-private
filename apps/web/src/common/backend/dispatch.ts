@@ -14,6 +14,7 @@ export async function dispatchBackendRequest(
 	const domain =
 		candidate &&
 		[
+			"rss",
 			"articles",
 			"books",
 			"images",

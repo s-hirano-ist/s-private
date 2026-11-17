@@ -102,6 +102,19 @@ export const Empty: Story = {
 export const Saved: Story = {
 	args: {
 		view: "saved",
+		initialData: {
+			...page,
+			saved: [
+				{
+					id: entryId,
+					url: "https://example.com/saved",
+					title: "保存した記事",
+					publishedAt: null,
+					savedAt: "2026-11-15T00:00:00.000Z",
+				},
+			],
+			savedCount: 1,
+		},
 		services: {
 			...services,
 			loadRss: fn(() =>
@@ -219,11 +232,14 @@ export const BackgroundReadPending: Story = {
 		services: {
 			...services,
 			loadRss: fn(() => new Promise<RssPage>(() => {})),
+			refreshRss: fn(async () => ({
+				data: [{ id: feedId, status: "updated" as const, changed: true }],
+			})),
 		},
 	},
 	play: async ({ args, canvas }) => {
 		// The initial poll finishes and starts a background page read that never resolves.
-		await waitFor(() => expect(args.services.loadRss).toHaveBeenCalledTimes(2));
+		await waitFor(() => expect(args.services.loadRss).toHaveBeenCalledTimes(1));
 		await expect(canvas.getByRole("status")).toHaveAccessibleName(
 			"読み込み中…",
 		);
@@ -236,7 +252,12 @@ export const BackgroundReadPending: Story = {
 		await expect(args.services.saveRss).toHaveBeenCalled();
 		await userEvent.click(canvas.getByRole("button", { name: "次へ" }));
 		await waitFor(() =>
-			expect(args.services.loadRss).toHaveBeenCalledWith(50, undefined),
+			expect(args.services.loadRss).toHaveBeenCalledWith(
+				50,
+				undefined,
+				"unread",
+				expect.any(AbortSignal),
+			),
 		);
 		// A foreground page change still prevents duplicate page navigation.
 		await expect(canvas.getByRole("button", { name: "次へ" })).toBeDisabled();
@@ -364,7 +385,12 @@ export const NarrowFeedFilter: Story = {
 		await userEvent.selectOptions(filter, feedId);
 		await waitFor(() => expect(filter).toHaveValue(feedId));
 		await waitFor(() =>
-			expect(args.services.loadRss).toHaveBeenCalledWith(0, feedId),
+			expect(args.services.loadRss).toHaveBeenCalledWith(
+				0,
+				feedId,
+				"unread",
+				expect.any(AbortSignal),
+			),
 		);
 		await expect(main.scrollWidth).toBeLessThanOrEqual(main.clientWidth);
 		await expect(filter.getBoundingClientRect().right).toBeLessThanOrEqual(
@@ -562,5 +588,30 @@ export const FailedThumbnail: Story = {
 		await waitFor(() =>
 			expect(canvasElement.querySelector("img")).not.toBeInTheDocument(),
 		);
+	},
+};
+
+export const FreshSubscriptions: Story = {
+	args: {
+		initialData: {
+			...page,
+			feeds: page.feeds.map((feed) => ({
+				...feed,
+				lastFetchedAt: new Date().toISOString(),
+			})),
+		},
+		services: {
+			...services,
+			loadRss: fn(async () => page),
+			refreshRss: fn(async () => ({ data: [] })),
+		},
+	},
+	play: async ({ args, canvas }) => {
+		await expect(
+			canvas.getByRole("link", { name: "RSSを軽量に読む" }),
+		).toBeVisible();
+		await expect(args.services.loadRss).not.toHaveBeenCalled();
+		await expect(args.services.refreshRss).not.toHaveBeenCalled();
+		await expect(canvas.getByRole("button", { name: "更新" })).toBeEnabled();
 	},
 };

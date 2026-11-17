@@ -645,6 +645,11 @@ DBと通知の原子性を保証するOutboxは導入していない。外部処
 
 `/api/cron/media-cleanup` は既存の `CRON_SECRET` と `BACKEND_CRON_ENABLED` で保護し、毎日UTC 01:00に期限到来分を最大100件処理する。失敗時は24時間後以降に再試行する。予約の処理leaseは10分で、プロセス停止後も期限切れから復旧できる。1回の処理予算は240秒、Functionの上限は300秒とし、原本・サムネイル各60秒の通信予算を残して次の項目を開始する。
 
+RSSの `/api/cron/rss-refresh` はGitHub Actionsから毎時呼び出す内部入口とする。
+`CRON_SECRET`・`BACKEND_CRON_ENABLED` で保護し、期限到来購読をsystem contextで選択後、
+所有者ごとのtenant contextで既存RSS serviceを実行する。定期取得と画面からの取得は
+同じlease・重複排除を使う。詳細と有効化条件は [RSSリーダー](rss-reader.md) を参照する。
+
 保存パスは所有者間で共有され得るため、後処理時の参照確認はsystem tenant contextで全所有者を対象にする。共有参照があればファイルを保持して予約を消去し、最後の参照を削除するときに改めて予約する。HTTPの作成、同期CLIのメディア保存・DB反映、ファイル後処理は `media_object_locks` のドメイン・パス別leaseを共用する。処理開始時と各書き込み・DB確定前に有効性を確認し、競合時はOPERATION_IN_PROGRESSとする。leaseは10分、ストレージの書き込み・削除はSDK再試行を含め60秒で打ち切る。正常終了時にlock行を消去する。ストレージ通信をDBトランザクションへ含めない。
 
 先にmigrationを適用してから新しいbackend・CLIを利用する。未適用のPreview DBでは新しい予約処理を検証できないため、migration済みローカルDB・MinIOで確認する。運用時はSentryのエラーと予約の `attempts`・`nextAttemptAt` を確認する。原因解消後は通常のCronで再処理し、急ぐ場合だけ予約の `nextAttemptAt` を現在以前へ変更して認証付きCronを実行する。

@@ -7,6 +7,7 @@ import { registerRssRoutes } from "s-private-backend/api/rss-routes";
 import { expect, test, vi } from "vitest";
 function fixture() {
 	const repository = {
+		due: vi.fn(),
 		page: vi.fn().mockResolvedValue({
 			feeds: [],
 			unread: [],
@@ -54,7 +55,7 @@ test("RSS pages use the authenticated owner and never cache private metadata", a
 	);
 	expect(response.status).toBe(200);
 	expect(response.headers.get("cache-control")).toBe("private, no-store");
-	expect(repository.page).toHaveBeenCalledWith("owner", 50, undefined);
+	expect(repository.page).toHaveBeenCalledWith("owner", 50, undefined, "all");
 });
 test("mark-all requires an explicit time boundary and refresh batches are bounded", async () => {
 	const { app, repository } = fixture();

@@ -26,6 +26,7 @@ export function observe(action: () => unknown): void {
 }
 
 const jobs = new Set([
+	"rss-refresh",
 	"cleanup-minio-images",
 	"enrich-books",
 	"find-duplicate-json-articles",

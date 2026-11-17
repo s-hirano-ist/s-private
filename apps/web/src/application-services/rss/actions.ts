@@ -6,8 +6,13 @@ import type {
 	RssReadInput,
 } from "@s-hirano-ist/s-api-client/models";
 import { getBackendClient } from "@/common/backend/server-client";
-export async function loadRss(offset = 0, feedId?: string) {
-	return (await (await getBackendClient()).getRssPage({ offset, feedId })).data;
+export async function loadRss(
+	offset = 0,
+	feedId?: string,
+	view: "unread" | "saved" | "feeds" = "unread",
+) {
+	return (await (await getBackendClient()).getRssPage({ offset, feedId, view }))
+		.data;
 }
 export async function subscribeRss(input: RssFeedInput) {
 	await (await getBackendClient()).subscribeRss(input);

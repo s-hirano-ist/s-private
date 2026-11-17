@@ -19,6 +19,7 @@ test("reads pages through the authenticated API independently of Server Actions"
 	expect((url as URL).pathname).toBe("/api/v1/rss");
 	expect((url as URL).searchParams.get("offset")).toBe("50");
 	expect((url as URL).searchParams.get("feedId")).toBe("feed-id");
+	expect((url as URL).searchParams.get("view")).toBe("unread");
 	expect(options?.method).toBe("GET");
 	expect(options?.credentials).toBe("same-origin");
 });
