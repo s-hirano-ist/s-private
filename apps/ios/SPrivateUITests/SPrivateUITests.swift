@@ -107,7 +107,7 @@ final class SPrivateUITests: XCTestCase {
 
         let tabBar = app.tabBars.firstMatch
         XCTAssertTrue(tabBar.waitForExistence(timeout: 5))
-        XCTAssertEqual(tabBar.buttons.count, 4)
+        XCTAssertEqual(tabBar.buttons.count, 5)
         let domains = [
             (id: "articles", japanese: "記事", english: "Articles"),
             (id: "notes", japanese: "ノート", english: "Notes"),

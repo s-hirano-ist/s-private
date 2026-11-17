@@ -25,6 +25,9 @@ settings:
 packages:
   SPrivateAPI:
     path: Packages/SPrivateAPI
+  ZIPFoundation:
+    url: https://github.com/weichsel/ZIPFoundation.git
+    exactVersion: 0.9.20
   Auth0:
     url: https://github.com/auth0/Auth0.swift.git
     from: 3.1.0
@@ -38,6 +41,7 @@ targets:
       - path: Shared
     dependencies:
       - package: Auth0
+      - package: ZIPFoundation
       - package: SPrivateAPI
       - target: SPrivateShareExtension
         embed: true

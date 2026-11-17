@@ -123,7 +123,7 @@ protocol MobileSyncClient {
 }
 
 @MainActor
-final class MobileClient: MobileSyncClient {
+final class MobileClient: MobileSyncClient, RssClient {
     static let imageLimit = 10 * 1_048_576
     let authentication: AuthenticationModel
     let baseURL: URL?
@@ -239,7 +239,7 @@ final class MobileClient: MobileSyncClient {
         }
     }
 
-    private func perform<T>(_ operation: @MainActor (Client) async throws -> T) async throws -> T {
+    func perform<T>(_ operation: @MainActor (Client) async throws -> T) async throws -> T {
         do {
             let client: Client
             if let injectedClient { client = injectedClient }

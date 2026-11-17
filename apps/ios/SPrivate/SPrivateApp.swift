@@ -7,6 +7,7 @@ struct SPrivateApp: App {
     @StateObject private var authentication: AuthenticationModel
     @StateObject private var sharedInbox = SharedInboxModel()
     @StateObject private var sync: SyncCoordinator
+    @State private var rss: RssReaderModel
     private let modelContainer: ModelContainer
     private let useListFixtures: Bool
 
@@ -18,16 +19,29 @@ struct SPrivateApp: App {
         #endif
         let authentication = AuthenticationModel()
         let container = try! ModelContainer(
-            for: CachedMobileRecord.self, CachedMobileCategory.self, PendingMobileOperation.self, MobileSyncState.self,
+            for: CachedMobileRecord.self, CachedMobileCategory.self, PendingMobileOperation.self, MobileSyncState.self, CachedRssSnapshot.self,
             configurations: ModelConfiguration(isStoredInMemoryOnly: useListFixtures)
         )
         let coordinator = SyncCoordinator(container: container, authentication: authentication)
         _authentication = StateObject(wrappedValue: authentication)
         _sync = StateObject(wrappedValue: coordinator)
         modelContainer = container
+        let client = MobileClient(authentication: authentication)
+        #if DEBUG
+        let rssClient: any RssClient = useListFixtures ? RssFixtureClient() : client
+        #else
+        let rssClient: any RssClient = client
+        #endif
+        let rss = RssReaderModel(cache: RssCacheStore(container: container), client: rssClient,
+                                 authenticated: { authentication.status == .authenticated }, monitorNetwork: !useListFixtures)
+        rss.configure(owner: authentication.ownerKey, endpoint: client.baseURL?.absoluteString ?? "", signedIn: authentication.status == .authenticated)
+        _rss = State(initialValue: rss)
         self.useListFixtures = useListFixtures
         #if DEBUG
         if useListFixtures {
+            if ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-fixtures") {
+                rss.useFixtures(offline: ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-offline"))
+            }
             try! coordinator.cache(domain: .articles, records: [
                 Self.fixtureRecord(id: "article-short", title: "Short article"),
                 Self.fixtureRecord(id: "article-long", title: "A long article title that wraps neatly across two lines"),
@@ -58,6 +72,7 @@ struct SPrivateApp: App {
                 .environmentObject(authentication)
                 .environmentObject(sharedInbox)
                 .environmentObject(sync)
+                .environment(rss)
                 .modelContainer(modelContainer)
                 .task {
                     guard !useListFixtures else { return }
@@ -76,12 +91,14 @@ struct SPrivateApp: App {
                     }
                 }
                 .onChange(of: authentication.status) { _, status in
+                    configureRss()
                     if status == .signedOut || status == .unavailable {
                         try? SharedCategoryStore().clear()
                     }
                     if status == .authenticated && !useListFixtures { Task { await sync.synchronize(force: true) } }
                 }
                 .onChange(of: authentication.ownerKey) { _, _ in
+                    configureRss()
                     try? SharedCategoryStore().clear()
                     if authentication.status == .authenticated && !useListFixtures {
                         Task { await sync.synchronize(force: true) }
@@ -96,6 +113,12 @@ struct SPrivateApp: App {
                     }
                 }
         }
+    }
+
+    private func configureRss() {
+        rss.configure(owner: authentication.ownerKey,
+                      endpoint: Bundle.main.object(forInfoDictionaryKey: "MobileAPIBaseURL") as? String ?? "",
+                      signedIn: authentication.status == .authenticated)
     }
 
     #if DEBUG

@@ -1,13 +1,13 @@
 {
-  "originHash" : "f848bd4958bd4144885bc1939dc4fd6e9fafed935afb531a0012fbbd55e5e39a",
+  "originHash" : "331904c2e11f9987d6f1a85658f398db496f4ec5f8d7103ad7b45cca135c5b4e",
   "pins" : [
     {
       "identity" : "auth0.swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/auth0/Auth0.swift.git",
       "state" : {
-        "revision" : "850e1a289b5d18be200c631777418a7e7ccc6ec8",
-        "version" : "3.1.0"
+        "revision" : "aee409f35a4ed5a26f52de15d3cffcadab01d6d4",
+        "version" : "3.3.1"
       }
     },
     {
@@ -116,6 +116,15 @@
       "state" : {
         "revision" : "a27b21e0c81c5bf42049b897a62aaf387e80f279",
         "version" : "6.2.2"
+      }
+    },
+    {
+      "identity" : "zipfoundation",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/weichsel/ZIPFoundation.git",
+      "state" : {
+        "revision" : "22787ffb59de99e5dc1fbfe80b19c97a904ad48d",
+        "version" : "0.9.20"
       }
     }
   ],

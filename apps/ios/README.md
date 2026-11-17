@@ -190,10 +190,10 @@ does not create a second record.
 - An **Auth0が未設定です** message is expected when `Local.xcconfig` does not
   contain all three Auth0 values.
 
-The native online screens now cover articles, notes, books, images, and search.
+The native screens cover articles, notes, books, images, RSS, and search.
 Sign in and configure `MOBILE_API_BASE_URL` before using them. Lists support
 status filtering and pagination; new records use the generated shared-backend API.
-The bottom tab bar contains articles, notes, images, and books in that order.
+The bottom tab bar contains articles, notes, images, books, and RSS in that order.
 The domain name appears in the tab bar, so list screens have no duplicate title
 in the top navigation bar.
 Each list opens cross-domain search from its top toolbar. Settings is available
@@ -258,3 +258,42 @@ host, then runs XcodeGen. Generated Swift sources stay in the current worktree
 and are ignored by Git. Xcode links only the generated client and runtime, so the
 generator tool itself is never built for iOS and no plugin trust bypass is needed.
 Run `mise run ios:generate` before testing the Swift Package on a fresh checkout.
+
+## RSS reader
+
+The fifth tab lists unread and saved RSS links. Opening an unread link in the
+system's default browser marks that captured article ID as read when online.
+Stars save or remove links independently of the unread list. Filter unread
+articles by subscription, use 50-item pages, or confirm **すべて既読** to mark
+all articles in the selected filter as read. Articles arriving afterward are
+excluded from that operation; a new-articles button makes them visible.
+
+**設定 > RSSの購読管理** provides subscription creation/removal and Inoreader
+ZIP, OPML/XML, and `starred.json` import. Removing a subscription keeps saved
+links. ZIP imports extract metadata on the device, discard article bodies,
+and send starred links in batches of at most 100. File/expanded-data limits
+match the Web importer (50 MiB / 32 MiB); each API payload also respects the
+shared two-million-character limit. Completed import counts remain visible
+if a later batch fails. Mutations are never automatically resent after an
+ambiguous response.
+
+RSS uses the generated `/api/v1/rss` client and a separate SwiftData cache,
+without entering content delta sync or its pending-operation queue. All unread
+and saved metadata pages are downloaded while the app is active. A completed
+cache is replaced only after every page succeeds; failures retain the previous
+complete version. Cache identities include both owner and API endpoint.
+Offline browsing shows cached titles, links, dates, and subscription information;
+article bodies and thumbnail bytes are not downloaded for offline use. Updates,
+saving, and read mutations require connectivity. Opening a cached link offline
+does not queue a read operation. **キャッシュを削除** clears RSS metadata too.
+
+Automatic checks are throttled to five minutes while the reader is active.
+Feed polling targets subscriptions last attempted at least an hour ago, with
+at most five simultaneous requests. Pull-to-refresh requests a manual update;
+the backend retains its one-minute per-feed limit. Background execution while
+the app is terminated is not guaranteed.
+
+`RssTests` covers cache generations, pagination, isolation, read boundaries,
+mutation failures, concurrent polling, and file imports. `RssUITests` uses an
+in-memory RSS server and never calls the configured API. SwiftUI previews cover
+unread articles, subscription management, and offline browsing.
