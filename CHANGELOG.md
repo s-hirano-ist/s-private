@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.9.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v4.8.0...s-private-v4.9.0) (2026-11-18)
+
+
+### Features
+
+* **ios:** add RSS reader with offline metadata cache ([8a9153c](https://github.com/s-hirano-ist/s-private/commit/8a9153c0bd0185872a47143dde37b509378f80cc))
+
+
+### Bug Fixes
+
+* **ios:** stabilize loading layouts with skeletons ([8e6b94c](https://github.com/s-hirano-ist/s-private/commit/8e6b94c39476d6b781821beab651e73e07c28e05))
+* **rss:** preserve reading snapshots during concurrent updates ([7e6dc73](https://github.com/s-hirano-ist/s-private/commit/7e6dc73ae9aaa7f508487518f908c03643e9b73d))
+* **web:** default to RSS reader ([cfe9008](https://github.com/s-hirano-ist/s-private/commit/cfe9008cea95efa88247a4a6c89b5bad766dde36))
+
+
+### Documentation
+
+* **ios:** control media loading phases explicitly ([79c9218](https://github.com/s-hirano-ist/s-private/commit/79c9218b3150092ccb218b45d0cd270ca29835c1))
+
+
+### Maintenance
+
+* **deps:** update all dependencies ([a30ef98](https://github.com/s-hirano-ist/s-private/commit/a30ef9848a28c63b7bf04523e3b00acc9257d9ff))
+* **rss:** reduce reader queries and add hourly background refresh ([5e408e8](https://github.com/s-hirano-ist/s-private/commit/5e408e8b6d573fbae7a7b9b7c1b2a72322eb5d45))
+* **rss:** register refresh workflow in actions lockfile ([1d6068e](https://github.com/s-hirano-ist/s-private/commit/1d6068ef54315180314ee0357e72a48739ceb8e5))
+
 ## [4.8.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v4.7.0...s-private-v4.8.0) (2026-11-17)
 
 
