@@ -80,9 +80,11 @@ struct RssPage: Sendable {
     var feeds: [RssFeed]
     var entries: [RssEntry]
     var count: Int
+    var offset: Int = 0
+    var snapshotRevision: Int = 0
 }
 
-enum RssList: String, CaseIterable, Identifiable {
+enum RssList: String, CaseIterable, Identifiable, Sendable {
     case unread, saved
     var id: String { rawValue }
     var title: String { self == .unread ? String(localized: "未読") : String(localized: "保存済み") }
@@ -105,32 +107,45 @@ final class CachedRssSnapshot {
     }
 }
 
-@MainActor
-final class RssCacheStore {
-    private let context: ModelContext
-    init(container: ModelContainer) { context = ModelContext(container) }
+// Shared cancellation fence also guards work already queued on the cache actor.
+final class RssSession: @unchecked Sendable {
+    private let lock = NSLock()
+    private var valid = true
+    func invalidate() { lock.withLock { valid = false } }
+    var isValid: Bool { lock.withLock { valid } }
+}
+
+actor RssCacheStore {
+    private let container: ModelContainer
+    private var storedContext: ModelContext?
+    init(container: ModelContainer) { self.container = container }
+    private var context: ModelContext {
+        if let storedContext { return storedContext }
+        let context = ModelContext(container)
+        context.autosaveEnabled = false
+        storedContext = context
+        return context
+    }
     func load(scope: String) throws -> RssSnapshot? {
-        let row = try context.fetch(FetchDescriptor<CachedRssSnapshot>(predicate: #Predicate { $0.scope == scope }))
-            .first
+        let row = try context.fetch(FetchDescriptor<CachedRssSnapshot>(predicate: #Predicate { $0.scope == scope })).first
         return try row.map { try JSONDecoder().decode(RssSnapshot.self, from: $0.data) }
     }
-    // A single SwiftData save publishes a fully downloaded generation atomically.
-    func save(_ snapshot: RssSnapshot, scope: String) throws {
+    // Encoding and the atomic generation commit stay off the main actor.
+    func save(_ snapshot: RssSnapshot, scope: String, session: RssSession? = nil) throws {
+        guard session?.isValid != false else { return }
         let data = try JSONEncoder().encode(snapshot)
-        if let row = try context.fetch(FetchDescriptor<CachedRssSnapshot>(predicate: #Predicate { $0.scope == scope }))
-            .first
-        {
+        guard session?.isValid != false else { return }
+        if let row = try context.fetch(FetchDescriptor<CachedRssSnapshot>(predicate: #Predicate { $0.scope == scope })).first {
             row.data = data
         } else {
             context.insert(CachedRssSnapshot(scope: scope, data: data))
         }
-        do { try context.save() } catch {
-            context.rollback()
-            throw error
-        }
+        do { try context.save() } catch { context.rollback(); throw error }
     }
     func clear() throws {
-        try context.delete(model: CachedRssSnapshot.self)
-        try context.save()
+        do {
+            try context.delete(model: CachedRssSnapshot.self)
+            try context.save()
+        } catch { context.rollback(); throw error }
     }
 }

@@ -406,6 +406,12 @@ export const rssUnreadSchema = rssEntryInputSchema
 export const rssSavedSchema = rssEntryInputSchema
 	.extend({ id: z.uuid(), savedAt: z.iso.datetime() })
 	.openapi("RssSaved");
+export const rssSaveResultSchema = z
+	.object({
+		added: z.boolean(),
+		saved: rssSavedSchema,
+	})
+	.openapi("RssSaveResult");
 const rssRevisionSchema = z.number().int().min(0).max(2147483647);
 export const rssPageSchema = z
 	.object({

@@ -197,7 +197,10 @@ describe.skipIf(!connectionString)("RSS CockroachDB integration", () => {
 			}),
 		);
 		const page = await rss.page(owner, 0);
-		expect(await asOwner(() => rss.save(owner, page.unread[0]))).toBe(false);
+		expect(await asOwner(() => rss.save(owner, page.unread[0]))).toMatchObject({
+			added: false,
+			saved: { id: page.saved[0].id },
+		});
 		await tenantContext.run({ userId: "other" }, () =>
 			rss.unsubscribe("other", lease.id),
 		);
@@ -529,6 +532,63 @@ describe.skipIf(!connectionString)("RSS snapshot boundaries", () => {
 			expect((await rss.page("another-owner", 0)).unreadCount).toBe(0);
 			const latest = await rss.page(userId, 0);
 			expect(latest.unreadCount).toBe(7);
+		} finally {
+			await reset();
+		}
+	});
+	test("five parallel feed commits, page reads and duplicate saves settle without data loss", async () => {
+		await reset();
+		try {
+			for (let index = 0; index < 5; index++) {
+				await run(() =>
+					rss.subscribe(userId, {
+						...source,
+						url: `https://example.com/load/${index}`,
+					}),
+				);
+			}
+			const feeds = (await rss.page(userId, 0)).feeds;
+			const leases = await Promise.all(
+				feeds.map((feed) => run(() => rss.claim(userId, feed.id, true))),
+			);
+			const boundary = (await rss.page(userId, 0)).snapshotRevision;
+			await Promise.all([
+				...leases.map((lease, index) =>
+					run(() =>
+						rss.complete(userId, lease!, {
+							...result,
+							entries: [
+								{
+									...result.entries[0],
+									identity: `load-${index}`,
+									url: `https://example.com/load/article/${index}`,
+								},
+							],
+						}),
+					),
+				),
+				...Array.from({ length: 5 }, () =>
+					rss.page(userId, 0, undefined, "unread", boundary),
+				),
+			]);
+			const latest = await rss.page(userId, 0);
+			expect(latest.unreadCount).toBe(5);
+			expect(
+				new Set(
+					(await client.rssUnread.findMany({ where: { userId } })).map(
+						(row) => row.revision,
+					),
+				).size,
+			).toBe(5);
+			const saves = await Promise.all(
+				Array.from({ length: 5 }, () =>
+					run(() => rss.save(userId, latest.unread[0])),
+				),
+			);
+			expect(saves.filter((value) => value.added)).toHaveLength(1);
+			expect(new Set(saves.map((value) => value.saved.id)).size).toBe(1);
+			await run(() => rss.read(userId, { snapshotRevision: boundary }));
+			expect((await rss.page(userId, 0)).unreadCount).toBe(5);
 		} finally {
 			await reset();
 		}

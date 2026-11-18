@@ -5,7 +5,8 @@ struct RssSubscriptionsView: View {
     @Environment(RssReaderModel.self) private var rss
     @State private var sheet: RssSheet?
     @State private var importing = false
-    @State private var removing: RssFeed?
+    @State private var importIdentity: UUID?
+    @State private var removing: (feed: RssFeed, identityID: UUID)?
     @State private var fileError: String?
 
     var body: some View {
@@ -13,9 +14,9 @@ struct RssSubscriptionsView: View {
             Section {
                 RssStatusView()
                 Button(String(localized: "購読を追加"), systemImage: "plus") { sheet = .subscribe }
-                    .disabled(!rss.canMutate).accessibilityIdentifier("rss-add-subscription")
-                Button(String(localized: "Inoreaderから取り込み"), systemImage: "square.and.arrow.down") { importing = true }
-                    .disabled(!rss.canMutate).accessibilityIdentifier("rss-import")
+                    .disabled(!rss.canMutate || rss.pendingKeys.contains(where: { $0.hasPrefix("subscribe:") })).accessibilityIdentifier("rss-add-subscription")
+                Button(String(localized: "Inoreaderから取り込み"), systemImage: "square.and.arrow.down") { importIdentity = rss.identityID; importing = true }
+                    .disabled(!rss.canMutate || rss.pendingKeys.contains("import")).accessibilityIdentifier("rss-import")
                 Text(String(localized: "Inoreader ZIP、OPML、starred.jsonに対応します"))
                     .font(.caption).foregroundStyle(AppColors.mutedForeground)
                 if let summary = rss.importSummary {
@@ -31,6 +32,7 @@ struct RssSubscriptionsView: View {
                 }
             }
             ForEach(rss.snapshot.feeds) { feed in
+                let identity = rss.identityID
                 Section {
                     VStack(alignment: .leading, spacing: 8) {
                         Text(feed.label).font(.headline)
@@ -46,8 +48,8 @@ struct RssSubscriptionsView: View {
                                 .caption
                             ).foregroundStyle(AppColors.destructive)
                         }
-                        Button(String(localized: "購読解除"), role: .destructive) { removing = feed }
-                            .disabled(!rss.canMutate).accessibilityIdentifier("rss-unsubscribe-\(feed.id)")
+                        Button(String(localized: "購読解除"), role: .destructive) { removing = (feed, identity) }
+                            .disabled(!rss.canMutate || rss.pendingKeys.contains("unsubscribe:\(feed.id)")).accessibilityIdentifier("rss-unsubscribe-\(feed.id)")
                     }
                     .listRowBackground(AppColors.background)
                 }
@@ -66,18 +68,22 @@ struct RssSubscriptionsView: View {
             Button(String(localized: "更新"), systemImage: "arrow.clockwise") {
                 Task { await rss.synchronize(manual: true) }
             }
-            .disabled(!rss.isOnline || rss.isLoading || rss.isMutating)
+            .disabled(!rss.isOnline || rss.isLoading)
         }
         .task { await rss.synchronize() }
+        .onChange(of: rss.identityID) { _, _ in removing = nil; sheet = nil; importing = false; importIdentity = nil; fileError = nil }
         .sheet(item: $sheet) { _ in RssSubscribeView() }
         .fileImporter(
             isPresented: $importing,
             allowedContentTypes: [.zip, .xml, .json, UTType(filenameExtension: "opml") ?? .data]
         ) { result in
+            guard importIdentity == rss.identityID else { return }
             switch result {
             case .success(let url):
+                guard rss.canMutate else { fileError = RssError.offline.localizedDescription; return }
                 fileError = nil
-                Task { await rss.importFile(url) }
+                let sessionID = rss.sessionID
+                Task { await rss.importFile(url, sessionID: sessionID) }
             case .failure(let error):
                 if (error as NSError).code != NSUserCancelledError { fileError = MobileOperationError.message(error) }
             }
@@ -88,9 +94,13 @@ struct RssSubscriptionsView: View {
             titleVisibility: .visible
         ) {
             Button(String(localized: "購読解除"), role: .destructive) {
-                if let feed = removing { Task { await rss.unsubscribe(feed) } }
+                if let captured = removing, captured.identityID == rss.identityID {
+                    let sessionID = rss.sessionID
+                    Task { await rss.unsubscribe(captured.feed, sessionID: sessionID) }
+                }
                 removing = nil
             }
+            .disabled(!rss.canMutate)
             Button(String(localized: "キャンセル"), role: .cancel) { removing = nil }
         }
     }
@@ -107,6 +117,8 @@ private struct RssSubscribeView: View {
     @State private var url = ""
     @State private var title = ""
     @State private var folder = ""
+    @State private var identity: UUID?
+    @State private var submitting = false
 
     private var valid: Bool {
         guard let parsed = URL(string: url), ["http", "https"].contains(parsed.scheme?.lowercased() ?? ""),
@@ -125,21 +137,28 @@ private struct RssSubscribeView: View {
                 TextField(String(localized: "フォルダー（任意）"), text: $folder)
                 if let error = rss.errorMessage { Text(error).foregroundStyle(AppColors.destructive) }
             }
+            .disabled(submitting)
             .scrollContentBackground(.hidden)
             .background(AppColors.background)
             .foregroundStyle(AppColors.foreground)
             .navigationTitle(String(localized: "購読を追加"))
+            .onAppear { identity = rss.identityID }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(String(localized: "キャンセル")) { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button(String(localized: "追加")) {
+                        guard identity == rss.identityID, !submitting else { return }
+                        submitting = true
+                        let sessionID = rss.sessionID
                         Task {
-                            if await rss.subscribe(url: url, title: title, folder: folder) { dismiss() }
+                            let succeeded = await rss.subscribe(url: url, title: title, folder: folder, sessionID: sessionID)
+                            submitting = false
+                            if succeeded { dismiss() }
                         }
                     }
-                    .disabled(!valid || !rss.canMutate).accessibilityIdentifier("rss-subscribe-submit")
+                    .disabled(submitting || !valid || !rss.canMutate || identity != rss.identityID || rss.pendingKeys.contains("subscribe:\(url)")).accessibilityIdentifier("rss-subscribe-submit")
                 }
             }
         }

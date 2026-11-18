@@ -59,7 +59,7 @@ test("a claimed feed failure releases its lease without preventing another feed 
 test("import reports invalid and duplicate metadata without creating unread entries", async () => {
 	const repo = repository();
 	repo.subscribe.mockResolvedValueOnce(true).mockResolvedValueOnce(false);
-	repo.save.mockResolvedValue(false);
+	repo.save.mockResolvedValue({ added: false });
 	const service = createRssService(repo, vi.fn(), vi.fn());
 	expect(
 		await service.import("owner", {
@@ -101,7 +101,7 @@ test("owner-scoped operations forward filters and mutations", async () => {
 	expect(repo.save).toHaveBeenCalledWith("owner", entry);
 	await service.unsave("owner", "one");
 	expect(repo.unsave).toHaveBeenCalledWith("owner", "one");
-	repo.save.mockResolvedValue(true);
+	repo.save.mockResolvedValue({ added: true });
 	expect(
 		await service.import("owner", { feeds: [], saved: [entry], invalid: 0 }),
 	).toEqual({ added: 1, duplicates: 0, invalid: 0 });

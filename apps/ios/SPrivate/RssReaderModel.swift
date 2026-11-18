@@ -16,21 +16,61 @@ final class RssReaderModel {
     private(set) var importSummary: String?
     private(set) var isOnline = true
     private(set) var scope = ""
+    private(set) var sessionID = UUID()
+    private(set) var identityID = UUID()
     private(set) var dataRevision = 0
+    private(set) var pendingKeys: Set<String> = []
+    private(set) var isClearingCache = false
     @ObservationIgnored private let cache: RssCacheStore
     @ObservationIgnored private let client: any RssClient
     @ObservationIgnored private let authenticated: () -> Bool
     @ObservationIgnored private var loadingTask: Task<Void, Never>?
+    @ObservationIgnored private var metadataTask: Task<Void, Never>?
+    @ObservationIgnored private var restorationTask: Task<Void, Never>?
+    @ObservationIgnored private var clearTask: Task<Void, Never>?
+    @ObservationIgnored private var mutationTask: Task<Void, Never>?
+    @ObservationIgnored private var importParsingTask: Task<[RssImportBatch], Error>?
     @ObservationIgnored private var monitor: NWPathMonitor?
-    @ObservationIgnored private var epoch = UUID()
+    @ObservationIgnored private var session = RssSession()
+    @ObservationIgnored private var readVersion = UUID()
+    @ObservationIgnored private var metadataFence: RssSession?
     @ObservationIgnored private var lastAttempt: Date?
     @ObservationIgnored private var fixtureMode = false
-    @ObservationIgnored private var queuedReads: [RssEntry] = []
+    @ObservationIgnored private var needsReload = false
+    @ObservationIgnored private var needsPolling = false
+    @ObservationIgnored private var cacheDirty = false
+    @ObservationIgnored private var pendingReads: Set<String> = []
+    @ObservationIgnored private var unreadIDs: Set<String> = []
+    @ObservationIgnored private var mutations: [Mutation] = []
+    @ObservationIgnored private var allMutations: [UUID: Mutation] = [:]
+    @ObservationIgnored private var hasActiveWrite = false
 
-    init(
-        cache: RssCacheStore, client: any RssClient, authenticated: @escaping () -> Bool = { true },
-        monitorNetwork: Bool = true
-    ) {
+    private enum Superseded: Error { case read }
+    private typealias Work = @MainActor (RssSession) async throws -> Void
+    @MainActor
+    private final class Mutation {
+        let id = UUID()
+        let key: String
+        let reads: Set<String>
+        let bulk: Bool
+        let steps: [Work]
+        var next = 0
+        var succeeded = true
+        var continuation: CheckedContinuation<Bool, Never>?
+        init(key: String, reads: Set<String>, bulk: Bool, steps: [Work], continuation: CheckedContinuation<Bool, Never>) {
+            self.key = key
+            self.reads = reads
+            self.bulk = bulk
+            self.steps = steps
+            self.continuation = continuation
+        }
+        func finish(_ success: Bool) {
+            continuation?.resume(returning: success)
+            continuation = nil
+        }
+    }
+
+    init(cache: RssCacheStore, client: any RssClient, authenticated: @escaping () -> Bool = { true }, monitorNetwork: Bool = true) {
         self.cache = cache
         self.client = client
         self.authenticated = authenticated
@@ -44,333 +84,485 @@ final class RssReaderModel {
             monitor.start(queue: DispatchQueue(label: "ist.s-hirano.rss.connectivity"))
         }
     }
+    deinit { monitor?.cancel() }
 
     func configure(owner: String, endpoint: String, signedIn: Bool) {
         let next = signedIn ? "\(owner.utf8.count):\(owner):\(endpoint)" : ""
         guard next != scope else { return }
-        invalidate()
+        identityID = UUID()
+        invalidateSession()
         scope = next
         snapshot = RssSnapshot()
         isComplete = false
-        lastAttempt = nil
         errorMessage = nil
         importSummary = nil
+        changed()
         guard !next.isEmpty else { return }
-        do {
-            if let saved = try cache.load(scope: next) {
-                snapshot = saved
-                isComplete = true
-            }
-        } catch { errorMessage = message(error) }
-        dataRevision += 1
+        restoreCurrentCache()
     }
 
-    deinit { monitor?.cancel() }
+    private func restoreCurrentCache() {
+        let next = scope
+        let current = session
+        let clearing = clearTask
+        restorationTask = Task { [weak self] in
+            guard let self else { return }
+            await clearing?.value
+            do {
+                let saved = try await cache.load(scope: next)
+                try check(current)
+                if let saved { snapshot = saved; isComplete = true; changed() }
+            } catch { report(error, session: current) }
+        }
+    }
+
+    func restoreCache() async { await restorationTask?.value }
 
     func setOnline(_ online: Bool) {
-        if online && !isOnline { lastAttempt = nil }
+        guard online != isOnline else { return }
         isOnline = online
-        if !online { invalidate() }
+        lastAttempt = nil
+        if !online {
+            invalidateSession()
+            if !isComplete && !scope.isEmpty { restoreCurrentCache() }
+        }
     }
 
+    // Concurrent foreground, timer and manual requests join one refresh pass.
     func synchronize(manual: Bool = false) async {
-        guard !fixtureMode, !scope.isEmpty, authenticated(), isOnline, !isMutating else { return }
-        let requestedScope = scope
-        if let loadingTask {
-            await loadingTask.value
-            guard manual, scope == requestedScope else { return }
-        }
-        guard !scope.isEmpty, authenticated(), isOnline, !isMutating else { return }
+        await restoreCache()
+        guard !fixtureMode, canMutate else { return }
+        if let loadingTask { await loadingTask.value; return }
         guard manual || lastAttempt == nil || Date().timeIntervalSince(lastAttempt!) >= 300 else { return }
-        lastAttempt = Date()
-        let token = UUID()
-        epoch = token
+        lastAttempt = .now
+        needsPolling = false
+        let current = session
         isLoading = true
-        errorMessage = nil
         completedFeeds = 0
         totalFeeds = 0
-        let task = Task<Void, Never> { [weak self] in
+        if manual { errorMessage = nil }
+        let task = Task { [weak self] in
             guard let self else { return }
-            await self.synchronize(token: token, manual: manual)
+            await reload(current)
+            do {
+                try check(current)
+                let due = snapshot.feeds.filter {
+                    manual || $0.lastFetchedAt == nil || Date().timeIntervalSince($0.lastFetchedAt!) >= 3600
+                }
+                totalFeeds = due.count
+                if !due.isEmpty {
+                    let changed = try await refreshFeeds(due, session: current, force: manual)
+                    try check(current)
+                    if changed { await reload(current) }
+                    else {
+                        let feeds = try await client.rssFeeds()
+                        try check(current)
+                        // A subscription mutation invalidates metadata, including feed lists.
+                        if !hasPendingWrites { snapshot.feeds = feeds; self.changed(); cacheDirty = true }
+                    }
+                }
+                try await persist(current)
+            } catch { report(error, session: current) }
         }
-        // Keep work alive when navigating to another tab; only explicit invalidation cancels it.
         loadingTask = task
-        await loadingTask?.value
-        if epoch == token {
-            loadingTask = nil
-            isLoading = false
-        }
+        await task.value
+        guard session === current else { return }
+        loadingTask = nil
+        isLoading = false
+        schedulePolling()
     }
 
-    private func synchronize(token: UUID, manual: Bool) async {
-        do {
-            try await loadAll(token: token)
-            let due = snapshot.feeds.filter {
-                manual || $0.lastFetchedAt == nil || Date().timeIntervalSince($0.lastFetchedAt!) >= 3600
-            }
-            totalFeeds = due.count
-            if !due.isEmpty {
-                let changed = try await refreshFeeds(due, token: token, force: manual)
-                try check(token)
-                if changed {
-                    try await loadAll(token: token)
-                } else {
-                    // Refresh timestamps and failures are useful even when article metadata did not change.
-                    let feeds = try await client.rssPage(.unread, offset: 0).feeds
-                    try check(token)
-                    snapshot.feeds = feeds
-                    try persist()
-                }
-            }
-        } catch is CancellationError {} catch {
-            guard epoch == token else { return }
-            if (error as? URLError)?.code == .notConnectedToInternet { isOnline = false }
-            errorMessage = message(error)
-        }
-    }
-
-    private func refreshFeeds(_ feeds: [RssFeed], token: UUID, force: Bool) async throws -> Bool {
+    private func refreshFeeds(_ feeds: [RssFeed], session current: RssSession, force: Bool) async throws -> Bool {
         let client = client
-        return try await withThrowingTaskGroup(of: (Bool, Bool).self) { group in
+        return try await withThrowingTaskGroup(of: (String, Bool, Bool).self) { group in
             var iterator = feeds.makeIterator()
-            for _ in 0..<min(5, feeds.count) {
-                if let feed = iterator.next() {
-                    group.addTask { try await Self.refreshOne(client: client, feed: feed, force: force) }
+            @MainActor func addNext() {
+                while let feed = iterator.next() {
+                    guard snapshot.feeds.contains(where: { $0.id == feed.id }) else { continue }
+                    group.addTask {
+                        do {
+                            let result = try await client.rssRefresh(id: feed.id, force: force)
+                            return (feed.id, result.data.contains { $0.changed == true }, result.data.contains { $0.status == .failed })
+                        } catch is CancellationError { throw CancellationError() }
+                        catch { try Task.checkCancellation(); return (feed.id, false, true) }
+                    }
+                    return
                 }
             }
+            for _ in 0..<min(5, feeds.count) { addNext() }
             var changed = false
-            var lastReload = Date.distantPast
             while let result = try await group.next() {
-                try check(token)
+                try check(current)
                 completedFeeds += 1
-                changed = changed || result.0
-                if result.1 { errorMessage = String(localized: "一部のフィードを更新できませんでした") }
-                if result.0 && Date().timeIntervalSince(lastReload) >= 1 {
-                    do { try await loadAll(token: token) } catch is CancellationError {
-                        throw CancellationError()
-                    } catch { errorMessage = message(error) }
-                    lastReload = Date()
+                changed = changed || result.1
+                if result.2 && snapshot.feeds.contains(where: { $0.id == result.0 }) {
+                    errorMessage = String(localized: "一部のフィードを更新できませんでした")
                 }
-                if let feed = iterator.next() {
-                    group.addTask { try await Self.refreshOne(client: client, feed: feed, force: force) }
-                }
+                addNext()
             }
             return changed
         }
     }
 
-    private static func refreshOne(client: any RssClient, feed: RssFeed, force: Bool) async throws -> (Bool, Bool) {
-        do {
-            let result = try await client.rssRefresh(id: feed.id, force: force)
-            return (result.data.contains { $0.changed == true }, result.data.contains { $0.status == .failed })
-        } catch is CancellationError { throw CancellationError() } catch {
-            try Task.checkCancellation()
-            return (false, true)
-        }
-    }
+    private var hasPendingWrites: Bool { hasActiveWrite || !mutations.isEmpty }
 
-    private func loadAll(token: UUID) async throws {
-        for attempt in 0..<2 {
-            do {
-                let unread = try await download(.unread, token: token)
-                let saved = try await download(.saved, token: token)
-                try check(token)
-                var complete = RssSnapshot(
-                    feeds: unread.feeds, unread: unread.entries, saved: saved.entries, fetchedAt: .now)
-                let stars = Dictionary(saved.entries.map { ($0.url, $0.id) }, uniquingKeysWith: { first, _ in first })
-                for index in complete.unread.indices {
-                    complete.unread[index].savedID = stars[complete.unread[index].url]
-                }
-                try cache.save(complete, scope: scope)
-                snapshot = complete
-                isComplete = true
-                dataRevision += 1
-                return
-            } catch RssError.changingPages {
-                if attempt == 1 { throw RssError.changingPages }
+    // One metadata downloader; mutations fence its results and defer the replacement pass.
+    private func reload(_ current: RssSession) async {
+        guard session === current, current.isValid else { return }
+        needsReload = true
+        if let metadataTask { await metadataTask.value; return }
+        guard !hasPendingWrites else { return }
+        let task = Task { [weak self] in
+            guard let self else { return }
+            defer { if session === current { metadataTask = nil } }
+            while needsReload && !hasPendingWrites && session === current && current.isValid {
+                needsReload = false
+                let version = readVersion
+                do { try await loadAll(current, version: version) }
+                catch is Superseded { needsReload = true }
+                catch { report(error, session: current) }
             }
         }
+        metadataTask = task
+        await task.value
     }
 
-    private func download(_ list: RssList, token: UUID) async throws -> RssPage {
-        let first = try await client.rssPage(list, offset: 0)
-        try check(token)
-        guard first.count >= 0, first.count <= 1_000_050 else { throw RssError.changingPages }
+    private func loadAll(_ current: RssSession, version: UUID) async throws {
+        let fence = RssSession()
+        metadataFence = fence
+        for attempt in 0..<2 {
+            do {
+                let firstUnread = try await client.rssPage(.unread, offset: 0, snapshotRevision: nil)
+                try checkRead(current, version)
+                try validateFirstPage(firstUnread)
+                if !isComplete {
+                    snapshot.feeds = firstUnread.feeds
+                    snapshot.unread = firstUnread.entries
+                    changed()
+                }
+                let firstSaved = try await client.rssPage(.saved, offset: 0, snapshotRevision: nil)
+                try checkRead(current, version)
+                try validateFirstPage(firstSaved)
+                if !isComplete { snapshot.saved = firstSaved.entries; changed() }
+                let unread = try await download(.unread, first: firstUnread, session: current, version: version)
+                let saved = try await download(.saved, first: firstSaved, session: current, version: version)
+                try checkRead(current, version)
+                let complete = RssSnapshot(feeds: unread.feeds, unread: unread.entries, saved: saved.entries, fetchedAt: .now)
+                try await cache.save(complete, scope: scope, session: fence)
+                try checkRead(current, version)
+                snapshot = complete
+                isComplete = true
+                cacheDirty = false
+                changed()
+                return
+            } catch RssError.changingPages { if attempt == 1 { throw RssError.changingPages } }
+        }
+    }
+
+    private func validateFirstPage(_ page: RssPage) throws {
+        guard page.count >= 0, page.count <= 1_000_050, page.offset == 0,
+            page.entries.count <= min(50, page.count), Set(page.entries.map(\.id)).count == page.entries.count else { throw RssError.changingPages }
+    }
+
+    private func download(_ list: RssList, first: RssPage, session current: RssSession, version: UUID) async throws -> RssPage {
         var entries = first.entries
         var ids = Set(entries.map(\.id))
-        if !isComplete {
-            snapshot.feeds = first.feeds
-            if list == .unread { snapshot.unread = first.entries } else { snapshot.saved = first.entries }
-        }
         var offset = 50
+        var lastPublication = ContinuousClock.now
         while entries.count < first.count {
-            let page = try await client.rssPage(list, offset: offset)
-            try check(token)
-            guard page.count == first.count, !page.entries.isEmpty else { throw RssError.changingPages }
+            let page = try await client.rssPage(list, offset: offset, snapshotRevision: list == .unread ? first.snapshotRevision : nil)
+            try checkRead(current, version)
+            guard page.offset == offset, page.count == first.count, !page.entries.isEmpty, page.entries.count <= 50,
+                list != .unread || page.snapshotRevision == first.snapshotRevision else { throw RssError.changingPages }
             for entry in page.entries {
                 guard ids.insert(entry.id).inserted else { throw RssError.changingPages }
                 entries.append(entry)
             }
             offset += 50
+            if !isComplete && (entries.count == 100 || lastPublication.duration(to: .now) >= .milliseconds(250)) {
+                if list == .unread { snapshot.unread = entries } else { snapshot.saved = entries }
+                changed()
+                lastPublication = .now
+            }
         }
-        let verification = try await client.rssPage(list, offset: 0)
-        try check(token)
-        guard ids.count == first.count, entries.count == first.count, verification.count == first.count,
-            verification.entries == first.entries
-        else { throw RssError.changingPages }
-        return RssPage(feeds: verification.feeds, entries: entries, count: entries.count)
+        let verification = try await client.rssPage(list, offset: 0, snapshotRevision: list == .unread ? first.snapshotRevision : nil)
+        try checkRead(current, version)
+        guard entries.count == first.count, verification.offset == 0, verification.count == first.count,
+            verification.entries == first.entries else { throw RssError.changingPages }
+        return .init(feeds: verification.feeds, entries: entries, count: entries.count, snapshotRevision: first.snapshotRevision)
     }
 
-    func markRead(_ entries: [RssEntry]) async {
-        guard !scope.isEmpty, isOnline, authenticated() else { return }
-        if isMutating {
-            let existing = Set(queuedReads.map(\.id))
-            queuedReads += entries.filter { !existing.contains($0.id) }
-            return
-        }
-        let ids = entries.filter { $0.feedID != nil }.map(\.id)
+    func markRead(_ entries: [RssEntry], sessionID expected: UUID? = nil) async {
+        guard expected == nil || expected == sessionID, canMutate else { return }
+        let ids = Set(entries.filter { $0.feedID != nil && (!isComplete || unreadIDs.contains($0.id)) }.map(\.id))
         guard !ids.isEmpty else { return }
-        await mutate { token in
-            // Capture IDs before sending; new arrivals can never enter this operation.
-            for offset in stride(from: 0, to: ids.count, by: 100) {
-                let batch = Array(ids[offset..<min(offset + 100, ids.count)])
-                try self.check(token)
+        _ = await enqueue(key: "read-\(UUID())", reads: ids, steps: [])
+    }
+
+    private func readSteps(_ ids: [String]) -> [Work] {
+        stride(from: 0, to: ids.count, by: 100).map { offset in
+            let batch = Array(ids[offset..<min(offset + 100, ids.count)])
+            return { current in
                 try await self.client.rssRead(ids: batch)
-                try self.check(token)
+                try self.check(current)
                 let removed = Set(batch)
                 self.snapshot.unread.removeAll { removed.contains($0.id) }
-                try self.persist()
+                self.cacheDirty = true
+                self.changed()
             }
         }
     }
 
-    func toggleSaved(_ entry: RssEntry) async {
-        await mutate { token in
-            if let savedID = entry.savedID {
+    func toggleSaved(_ entry: RssEntry, sessionID expected: UUID? = nil) async {
+        guard expected == nil || expected == sessionID else { return }
+        let shouldSave = entry.savedID == nil
+        _ = await enqueue(key: "save:\(entry.url)", steps: [{ current in
+            let savedID = self.snapshot.saved.first { $0.url == entry.url }?.id
+                ?? self.snapshot.unread.first { $0.url == entry.url }?.savedID ?? entry.savedID
+            if shouldSave {
+                if let savedID {
+                    for index in self.snapshot.unread.indices where self.snapshot.unread[index].url == entry.url {
+                        self.snapshot.unread[index].savedID = savedID
+                    }
+                    self.cacheDirty = true
+                    self.changed()
+                    return
+                }
+                let saved = try await self.client.rssSave(entry)
+                try self.check(current)
+                self.snapshot.saved.removeAll { $0.url == saved.url }
+                let insertion = self.snapshot.saved.firstIndex {
+                    $0.receivedAt < saved.receivedAt || ($0.receivedAt == saved.receivedAt && $0.id < saved.id)
+                } ?? self.snapshot.saved.count
+                self.snapshot.saved.insert(saved, at: insertion)
+                for index in self.snapshot.unread.indices where self.snapshot.unread[index].url == saved.url {
+                    self.snapshot.unread[index].savedID = saved.id
+                }
+            } else if let savedID {
                 try await self.client.rssUnsave(id: savedID)
-                try self.check(token)
+                try self.check(current)
                 self.snapshot.saved.removeAll { $0.id == savedID }
                 for index in self.snapshot.unread.indices where self.snapshot.unread[index].url == entry.url {
                     self.snapshot.unread[index].savedID = nil
                 }
-                try self.persist()
-            } else {
-                try await self.client.rssSave(entry)
             }
-        }
+            self.cacheDirty = true
+            self.changed()
+        }])
     }
 
-    func subscribe(url: String, title: String, folder: String) async -> Bool {
-        let success = await mutate { _ in
+    func subscribe(url: String, title: String, folder: String, sessionID expected: UUID? = nil) async -> Bool {
+        guard expected == nil || expected == sessionID else { return false }
+        return await enqueue(key: "subscribe:\(url)", steps: [{ current in
             try await self.client.rssSubscribe(url: url, title: title.isEmpty ? url : title, folder: folder)
-        }
-        if success {
-            lastAttempt = nil
-            Task { await synchronize() }
-        }
-        return success
+            try self.check(current)
+            self.needsReload = true
+            self.needsPolling = true
+            self.lastAttempt = nil
+        }])
     }
 
-    func unsubscribe(_ feed: RssFeed) async {
-        await mutate { token in
+    func unsubscribe(_ feed: RssFeed, sessionID expected: UUID? = nil) async {
+        guard expected == nil || expected == sessionID else { return }
+        _ = await enqueue(key: "unsubscribe:\(feed.id)", steps: [{ current in
             try await self.client.rssUnsubscribe(id: feed.id)
-            try self.check(token)
+            try self.check(current)
             self.snapshot.feeds.removeAll { $0.id == feed.id }
             self.snapshot.unread.removeAll { $0.feedID == feed.id }
-            try self.persist()
-        }
+            self.cacheDirty = true
+            self.changed()
+        }])
     }
 
-    func importFile(_ url: URL) async {
-        guard canMutate else { return }
+    func importFile(_ url: URL, sessionID expected: UUID? = nil) async {
+        let current = session
+        await restoreCache()
+        guard session === current, expected == nil || expected == sessionID else { return }
+        guard canMutate, !pendingKeys.contains("import") else { return }
+        pendingKeys.insert("import")
         importSummary = nil
-        let success = await mutate { token in
-            let batches = try await Task.detached { try RssImport.read(url) }.value
-            try self.check(token)
-            var added = 0
-            var duplicates = 0
-            var invalid = 0
-            for batch in batches {
-                try self.check(token)
-                let result = try await self.client.rssImport(batch)
-                try self.check(token)
-                added += result.added
-                duplicates += result.duplicates
-                invalid += result.invalid
-                self.importSummary = String(
-                    format: String(localized: "追加 %lld件・重複 %lld件・無効 %lld件"), added, duplicates, invalid)
-            }
-        }
-        if success {
-            lastAttempt = nil
-            Task { await synchronize() }
-        }
-    }
-
-    var canMutate: Bool { !scope.isEmpty && authenticated() && isOnline && !isMutating }
-
-    @discardableResult
-    private func mutate(_ work: (UUID) async throws -> Void) async -> Bool {
-        guard canMutate else { return false }
-        invalidate()
-        let token = epoch
-        isMutating = true
-        errorMessage = nil
-        defer {
-            if epoch == token {
-                isMutating = false
-                let queued = queuedReads
-                queuedReads = []
-                if !queued.isEmpty {
-                    let currentScope = scope
-                    Task {
-                        guard scope == currentScope else { return }
-                        await markRead(queued)
-                    }
+        let parsing = Task.detached { try RssImport.read(url) }
+        importParsingTask = parsing
+        do {
+            let batches = try await parsing.value
+            try check(current)
+            importParsingTask = nil
+            var added = 0, duplicates = 0, invalid = 0
+            let steps: [Work] = batches.map { batch in
+                { current in
+                    let result = try await self.client.rssImport(batch)
+                    try self.check(current)
+                    added += result.added; duplicates += result.duplicates; invalid += result.invalid
+                    self.importSummary = String(format: String(localized: "追加 %lld件・重複 %lld件・無効 %lld件"), added, duplicates, invalid)
+                    self.needsReload = true
+                    self.needsPolling = true
+                    self.lastAttempt = nil
                 }
             }
+            // The parsing phase already reserved the import key.
+            pendingKeys.remove("import")
+            if !steps.isEmpty { _ = await enqueue(key: "import", bulk: true, steps: steps) }
+        } catch { report(error, session: current) }
+        if session === current { pendingKeys.remove("import"); importParsingTask = nil }
+    }
+
+    var canMutate: Bool { !scope.isEmpty && authenticated() && isOnline && !isClearingCache }
+    func canSave(_ entry: RssEntry) -> Bool { canMutate && !pendingKeys.contains("save:\(entry.url)") }
+
+    private func enqueue(key: String, reads: Set<String> = [], bulk: Bool = false, steps: [Work]) async -> Bool {
+        let current = session
+        await restoreCache()
+        guard session === current, canMutate, !pendingKeys.contains(key) else { return false }
+        let acceptedReads = reads.subtracting(pendingReads)
+        guard reads.isEmpty || !acceptedReads.isEmpty else { return false }
+        let work = reads.isEmpty ? steps : readSteps(acceptedReads.sorted())
+        return await withCheckedContinuation { continuation in
+            let mutation = Mutation(key: key, reads: acceptedReads, bulk: bulk || work.count > 1, steps: work, continuation: continuation)
+            mutations.append(mutation)
+            allMutations[mutation.id] = mutation
+            pendingKeys.insert(key)
+            pendingReads.formUnion(acceptedReads)
+            readVersion = UUID()
+            metadataFence?.invalidate()
+            if !isComplete { needsPolling = true; lastAttempt = nil }
+            if metadataTask != nil || !isComplete { needsReload = true }
+            isMutating = true
+            errorMessage = nil
+            if mutationTask == nil { mutationTask = Task { await self.drain(current) } }
         }
-        var succeeded = false
-        do {
-            try await work(token)
-            try check(token)
-            succeeded = true
-        } catch is CancellationError { return false } catch { if epoch == token { errorMessage = message(error) } }
-        // A lost mutation response is never retried. Reconcile by reading the server.
-        guard epoch == token, isOnline, authenticated() else { return succeeded }
-        do { try await loadAll(token: token) } catch { if epoch == token { errorMessage = message(error) } }
-        return succeeded
+    }
+
+    private func drain(_ current: RssSession) async {
+        let owner = identityID
+        var finished: [Mutation] = []
+        while session === current && current.isValid {
+            while !mutations.isEmpty {
+                let index = mutations.firstIndex { !$0.bulk } ?? 0
+                let mutation = mutations.remove(at: index)
+                hasActiveWrite = true
+                do {
+                    try check(current)
+                    try await mutation.steps[mutation.next](current)
+                    try check(current)
+                    mutation.next += 1
+                } catch {
+                    mutation.succeeded = false
+                    if session === current { needsReload = true; report(error, session: current) }
+                }
+                guard session === current else {
+                    reconcileInvalidatedWrite(owner: owner)
+                    return
+                }
+                hasActiveWrite = false
+                if mutation.succeeded && mutation.next < mutation.steps.count { mutations.append(mutation) }
+                else {
+                    // A completed star action need not wait for an unrelated bulk import.
+                    if mutation.key.hasPrefix("save:") { pendingKeys.remove(mutation.key) }
+                    finished.append(mutation)
+                }
+            }
+            do { try await persist(current) } catch { report(error, session: current) }
+            guard session === current else { return }
+            if !mutations.isEmpty { continue }
+            if needsReload { await reload(current) }
+            guard session === current else { return }
+            if mutations.isEmpty { break }
+        }
+        guard session === current else { return }
+        mutationTask = nil
+        isMutating = false
+        for mutation in finished {
+            pendingKeys.remove(mutation.key)
+            pendingReads.subtract(mutation.reads)
+            allMutations.removeValue(forKey: mutation.id)
+            mutation.finish(mutation.succeeded)
+        }
+        schedulePolling()
+    }
+
+    // A request may commit after connectivity cancellation. Re-read only within the same owner/cache lifetime.
+    private func reconcileInvalidatedWrite(owner: UUID) {
+        guard identityID == owner else { return }
+        needsReload = true
+        guard canMutate else { return }
+        let current = session
+        Task { await reload(current) }
+    }
+
+    private func schedulePolling() {
+        guard needsPolling, loadingTask == nil, mutationTask == nil, canMutate else { return }
+        let current = session
+        Task {
+            guard session === current, current.isValid else { return }
+            await synchronize()
+        }
     }
 
     func clearCache() {
-        invalidate()
-        do {
-            try cache.clear()
-            snapshot = RssSnapshot()
-            isComplete = false
-            lastAttempt = nil
-            dataRevision += 1
-        } catch { errorMessage = message(error) }
+        identityID = UUID()
+        invalidateSession()
+        snapshot = RssSnapshot()
+        isComplete = false
+        isClearingCache = true
+        changed()
+        let task = Task { [weak self] in
+            guard let self else { return }
+            do { try await cache.clear(); await RssThumbnailLoader.shared.clear() } catch { errorMessage = message(error) }
+            isClearingCache = false
+        }
+        clearTask = task
+        restorationTask = task
     }
 
+    private func persist(_ current: RssSession) async throws {
+        try check(current)
+        guard isComplete && cacheDirty else { return }
+        let revision = dataRevision
+        let value = snapshot
+        let requestedScope = scope
+        try await cache.save(value, scope: requestedScope, session: current)
+        try check(current)
+        if dataRevision == revision { cacheDirty = false }
+    }
+    private func changed() {
+        unreadIDs = Set(snapshot.unread.map(\.id))
+        dataRevision += 1
+    }
     private func message(_ error: Error) -> String? {
         if let error = error as? RssError { return error.localizedDescription }
         return MobileOperationError.message(error)
     }
-
-    private func persist() throws {
-        if isComplete { try cache.save(snapshot, scope: scope) }
-        dataRevision += 1
+    private func report(_ error: Error, session current: RssSession) {
+        guard session === current, current.isValid, !(error is CancellationError), !(error is Superseded) else { return }
+        if let message = message(error) { errorMessage = message }
     }
-    private func check(_ token: UUID) throws {
+    private func check(_ current: RssSession) throws {
         try Task.checkCancellation()
-        guard epoch == token, !scope.isEmpty, authenticated() else { throw CancellationError() }
+        guard session === current, current.isValid, !scope.isEmpty, authenticated() else { throw CancellationError() }
     }
-    private func invalidate() {
-        epoch = UUID()
-        queuedReads = []
-        loadingTask?.cancel()
-        loadingTask = nil
+    private func checkRead(_ current: RssSession, _ version: UUID) throws {
+        try check(current)
+        guard readVersion == version else { throw Superseded.read }
+    }
+    private func invalidateSession() {
+        session.invalidate()
+        metadataFence?.invalidate()
+        metadataFence = nil
+        session = RssSession()
+        sessionID = UUID()
+        readVersion = UUID()
+        loadingTask?.cancel(); loadingTask = nil
+        metadataTask?.cancel(); metadataTask = nil
+        restorationTask?.cancel(); restorationTask = nil
+        mutationTask?.cancel(); mutationTask = nil
+        importParsingTask?.cancel(); importParsingTask = nil
+        for mutation in allMutations.values { mutation.finish(false) }
+        allMutations = [:]; mutations = []; pendingKeys = []; pendingReads = []
+        hasActiveWrite = false
+        needsReload = false
+        needsPolling = false
+        cacheDirty = false
+        lastAttempt = nil
         isLoading = false
         isMutating = false
         completedFeeds = 0
@@ -378,11 +570,13 @@ final class RssReaderModel {
     }
 
     #if DEBUG
-        func useFixtures(offline: Bool = false) {
-            fixtureMode = true
-            isOnline = !offline
-            snapshot = RssFixtureClient.snapshot
-            isComplete = true
-        }
+    func useFixtures(offline: Bool = false, live: Bool = false) {
+        invalidateSession()
+        fixtureMode = !live
+        isOnline = !offline
+        snapshot = RssFixtureClient.snapshot
+        isComplete = true
+        changed()
+    }
     #endif
 }

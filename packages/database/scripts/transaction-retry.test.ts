@@ -76,3 +76,72 @@ test("does not retry validation errors or loop through a cyclic cause", async ()
 	);
 	expect(work).toHaveBeenCalledOnce();
 });
+
+test("recovered retries report a bounded outcome without reporting the intermediate error", async () => {
+	const onComplete = vi.fn();
+	const work = vi
+		.fn()
+		.mockRejectedValueOnce({ code: "P2034" })
+		.mockResolvedValue("ok");
+	expect(await withTransactionRetry(work, { baseDelayMs: 0, onComplete })).toBe(
+		"ok",
+	);
+	expect(onComplete).toHaveBeenCalledExactlyOnceWith({
+		retries: 1,
+		durationMs: expect.any(Number),
+		outcome: "recovered",
+	});
+});
+
+test("retry exhaustion reports failure once and preserves the final error", async () => {
+	const error = { code: "40001" };
+	const onComplete = vi.fn();
+	await expect(
+		withTransactionRetry(vi.fn().mockRejectedValue(error), {
+			maxRetries: 2,
+			baseDelayMs: 0,
+			onComplete,
+		}),
+	).rejects.toBe(error);
+	expect(onComplete).toHaveBeenCalledExactlyOnceWith({
+		retries: 2,
+		durationMs: expect.any(Number),
+		outcome: "failed",
+	});
+});
+
+test("retry telemetry failure cannot replay an already committed operation", async () => {
+	const work = vi
+		.fn()
+		.mockRejectedValueOnce({ code: "40001" })
+		.mockResolvedValue("committed");
+	expect(
+		await withTransactionRetry(work, {
+			baseDelayMs: 0,
+			onComplete: () => {
+				throw new Error("telemetry unavailable");
+			},
+		}),
+	).toBe("committed");
+	expect(work).toHaveBeenCalledTimes(2);
+});
+
+test("jitter retains a delay between half and all of the exponential bound", async () => {
+	vi.useFakeTimers();
+	const random = vi.spyOn(Math, "random").mockReturnValue(0);
+	try {
+		const work = vi
+			.fn()
+			.mockRejectedValueOnce({ code: "40001" })
+			.mockResolvedValue("ok");
+		const result = withTransactionRetry(work, { baseDelayMs: 100 });
+		await vi.advanceTimersByTimeAsync(49);
+		expect(work).toHaveBeenCalledTimes(1);
+		await vi.advanceTimersByTimeAsync(1);
+		expect(await result).toBe("ok");
+		expect(work).toHaveBeenCalledTimes(2);
+	} finally {
+		random.mockRestore();
+		vi.useRealTimers();
+	}
+});

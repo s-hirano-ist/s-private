@@ -310,7 +310,9 @@ export function createContentMcpServer(
 		"Add a saved RSS article without marking it as read. A duplicate URL returns added=false and preserves the existing article.",
 		schemas.rssEntryInputSchema.strict(),
 		schemas.rssAddedSchema,
-		async (input, owner) => ({ added: await deps.rss.save(owner, input) }),
+		async (input, owner) => ({
+			added: (await deps.rss.save(owner, input)).added,
+		}),
 		MCP_CREATE_SCOPE,
 	);
 	register(

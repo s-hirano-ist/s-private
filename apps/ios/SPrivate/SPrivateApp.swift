@@ -40,7 +40,7 @@ struct SPrivateApp: App {
         #if DEBUG
         if useListFixtures {
             if ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-fixtures") {
-                rss.useFixtures(offline: ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-offline"))
+                rss.useFixtures(offline: ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-offline"), live: ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-delayed"))
             }
             try! coordinator.cache(domain: .articles, records: [
                 Self.fixtureRecord(id: "article-short", title: "Short article"),
@@ -73,6 +73,13 @@ struct SPrivateApp: App {
                 .environmentObject(sharedInbox)
                 .environmentObject(sync)
                 .environment(rss)
+                .transformEnvironment(\.openURL) { action in
+                    #if DEBUG
+                    if useListFixtures && ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-fixtures") {
+                        action = OpenURLAction { _ in .handled }
+                    }
+                    #endif
+                }
                 .modelContainer(modelContainer)
                 .task {
                     guard !useListFixtures else { return }

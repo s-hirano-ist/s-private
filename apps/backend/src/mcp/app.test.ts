@@ -232,7 +232,14 @@ function setup(page?: RssService["page"]) {
 		}),
 		save: vi.fn(async (owner, _input) => {
 			await assertOwner(owner);
-			return true;
+			return {
+				added: true,
+				saved: {
+					..._input,
+					id: "00000000-0000-4000-8000-000000000001",
+					savedAt: "2026-11-18T00:00:00Z",
+				},
+			};
 		}),
 		import: vi.fn(
 			async (owner: string, input: Parameters<RssService["import"]>[1]) => {

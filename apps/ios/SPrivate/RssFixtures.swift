@@ -24,10 +24,21 @@
                 ], fetchedAt: .now)
         }
         var data = snapshot
-        func rssPage(_ list: RssList, offset: Int) async throws -> RssPage {
-            let entries = list == .unread ? data.unread : data.saved
-            return .init(feeds: data.feeds, entries: Array(entries.dropFirst(offset).prefix(50)), count: entries.count)
+        private let delayed = ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-delayed")
+        init() {
+            if delayed {
+                data.unread += [
+                    .init(id: "fixture-second", feedID: "fixture-feed", url: "https://example.com/second", title: "Second unread article"),
+                    .init(id: "fixture-third", feedID: "fixture-feed", url: "https://example.com/third", title: "Third unread article"),
+                ]
+            }
         }
+        func rssPage(_ list: RssList, offset: Int, snapshotRevision: Int?) async throws -> RssPage {
+            if delayed { try await Task.sleep(for: .milliseconds(150)) }
+            let entries = list == .unread ? data.unread : data.saved
+            return .init(feeds: data.feeds, entries: Array(entries.dropFirst(offset).prefix(50)), count: entries.count, offset: offset)
+        }
+        func rssFeeds() async throws -> [RssFeed] { data.feeds }
         func rssSubscribe(url: String, title: String, folder: String) async throws {
             data.feeds.append(.init(id: UUID().uuidString, url: url, title: title, folder: folder, lastFetchedAt: .now))
         }
@@ -35,8 +46,13 @@
             data.feeds.removeAll { $0.id == id }
             data.unread.removeAll { $0.feedID == id }
         }
-        func rssRead(ids: [String]) async throws { data.unread.removeAll { ids.contains($0.id) } }
-        func rssSave(_ entry: RssEntry) async throws {
+        func rssRead(ids: [String]) async throws {
+            if delayed { try await Task.sleep(for: .milliseconds(300)) }
+            data.unread.removeAll { ids.contains($0.id) }
+        }
+        func rssSave(_ entry: RssEntry) async throws -> RssEntry {
+            if delayed { try await Task.sleep(for: .milliseconds(300)) }
+            if let existing = data.saved.first(where: { $0.url == entry.url }) { return existing }
             let id = UUID().uuidString
             data.saved.insert(
                 .init(
@@ -45,13 +61,15 @@
             for index in data.unread.indices where data.unread[index].url == entry.url {
                 data.unread[index].savedID = id
             }
+            return data.saved[0]
         }
         func rssUnsave(id: String) async throws {
             data.saved.removeAll { $0.id == id }
             for index in data.unread.indices where data.unread[index].savedID == id { data.unread[index].savedID = nil }
         }
         func rssRefresh(id: String, force: Bool) async throws -> Components.Schemas.RssRefreshResult {
-            .init(data: [.init(id: id, changed: false, status: .skipped)])
+            if delayed { try await Task.sleep(for: .seconds(2)) }
+            return .init(data: [.init(id: id, changed: false, status: .skipped)])
         }
         func rssImport(_ batch: RssImportBatch) async throws -> Components.Schemas.RssImportResult {
             .init(added: 0, duplicates: 0, invalid: 0)

@@ -25,6 +25,22 @@ struct LoadingLayoutTests {
     }
 
     @MainActor
+    @Test("RSS thumbnails decode at display resolution and keep the existing 72 point frame")
+    func rssThumbnailDownsampling() async throws {
+        let original = UIGraphicsImageRenderer(size: CGSize(width: 3000, height: 2000)).image { context in
+            UIColor.red.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: 3000, height: 2000))
+        }
+        let data = try #require(original.jpegData(compressionQuality: 0.8))
+        let image = await Task.detached { RssThumbnailLoader.decode(data, pixelSize: 216) }.value
+        let decoded = try #require(image?.cgImage)
+        #expect(max(decoded.width, decoded.height) <= 216)
+        #expect(RssThumbnailLoader.decode(Data("invalid".utf8), pixelSize: 216) == nil)
+        let frame = measure(RssThumbnailView(url: URL(string: "https://example.com/image.jpg")!))
+        #expect(frame.width == 72 && frame.height == 72)
+    }
+
+    @MainActor
     private func measure(_ view: some View) -> CGSize {
         UIHostingController(rootView: view).sizeThatFits(in: CGSize(width: 360, height: 2000))
     }

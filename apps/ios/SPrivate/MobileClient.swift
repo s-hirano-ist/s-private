@@ -239,18 +239,29 @@ final class MobileClient: MobileSyncClient, RssClient {
         }
     }
 
-    func perform<T>(_ operation: @MainActor (Client) async throws -> T) async throws -> T {
+    func perform<T>(whileValid isValid: @MainActor () -> Bool = { true }, _ operation: @MainActor (Client) async throws -> T) async throws -> T {
         do {
+            try Task.checkCancellation()
+            guard isValid() else { throw CancellationError() }
             let client: Client
             if let injectedClient { client = injectedClient }
             else {
                 guard let baseURL, ["https", "http"].contains(baseURL.scheme?.lowercased() ?? ""), baseURL.host != nil else {
                     throw MobileClientError.configurationMissing
                 }
-                client = BackendAPI.authenticatedClient(serverURL: baseURL, accessToken: try await authentication.accessToken())
+                let token = try await authentication.accessToken()
+                try Task.checkCancellation()
+                guard isValid() else { throw CancellationError() }
+                client = BackendAPI.authenticatedClient(serverURL: baseURL, accessToken: token)
             }
-            return try await operation(client)
+            try Task.checkCancellation()
+            guard isValid() else { throw CancellationError() }
+            let result = try await operation(client)
+            try Task.checkCancellation()
+            guard isValid() else { throw CancellationError() }
+            return result
         } catch {
+            guard isValid(), !Task.isCancelled else { throw CancellationError() }
             if let failure = BackendHTTPError.from(error) {
                 if failure.status == 401 { authentication.requireLogin() }
                 throw MobileClientError.http(failure.status, failure.code?.rawValue)
