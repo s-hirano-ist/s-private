@@ -10,15 +10,15 @@ final class RssUITests: XCTestCase {
         ]
         if offline { app.launchArguments.append("-ui-testing-rss-offline") }
         app.launch()
-        app.tabBars.buttons["RSS"].tap()
         return app
     }
 
     @MainActor
-    func testRssIsTheFifthTabAndSavedArticlesCanBeRemoved() throws {
+    func testRssIsTheFirstAndInitiallySelectedTabAndSavedArticlesCanBeRemoved() throws {
         let app = launch()
         XCTAssertEqual(app.tabBars.buttons.count, 5)
-        XCTAssertEqual(app.tabBars.buttons.element(boundBy: 4).label, "RSS")
+        XCTAssertEqual(app.tabBars.buttons.element(boundBy: 0).label, "RSS")
+        XCTAssertTrue(app.tabBars.buttons.element(boundBy: 0).isSelected)
         XCTAssertTrue(app.buttons["rss-entry-fixture-unread"].waitForExistence(timeout: 5))
         app.buttons["rss-save-fixture-unread"].tap()
         XCTAssertTrue(app.buttons["rss-save-fixture-unread"].waitForExistence(timeout: 5))

@@ -9,12 +9,12 @@ struct ContentView: View {
         Group {
             if authentication.status == .authenticated {
                 TabView {
+                    RssReaderView()
+                        .tabItem { Label("RSS", systemImage: "dot.radiowaves.left.and.right") }
                     ForEach([MobileDomain.articles, .notes, .images, .books]) { domain in
                         DomainListView(domain: domain)
                             .tabItem { Label(domain.title, systemImage: domain.symbol) }
                     }
-                    RssReaderView()
-                        .tabItem { Label("RSS", systemImage: "dot.radiowaves.left.and.right") }
                 }
             } else {
                 NavigationStack {

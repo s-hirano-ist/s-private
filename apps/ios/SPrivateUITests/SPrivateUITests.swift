@@ -11,7 +11,7 @@ final class SPrivateUITests: XCTestCase {
         app.launchArguments += ["-ui-testing-authenticated", "-ui-testing-list-fixtures", "-ui-testing-deletion-fixtures", "-AppleLanguages", "(ja)"]
         app.launch()
         for (index, domain) in ["articles", "notes", "images", "books"].enumerated() {
-            app.tabBars.buttons.element(boundBy: index).tap()
+            app.tabBars.buttons.element(boundBy: index + 1).tap()
             app.buttons["status-filter"].tap()
             app.buttons["公開済み"].tap()
             let identifier = index < 2 ? "domain-record-exported-\(domain)" : "media-cell-exported-\(domain)"
@@ -55,6 +55,7 @@ final class SPrivateUITests: XCTestCase {
         let app = XCUIApplication()
         app.launchArguments += ["-ui-testing-authenticated", "-ui-testing-list-fixtures", "-AppleLanguages", "(ja)"]
         app.launch()
+        app.tabBars.buttons.element(boundBy: 1).tap()
         app.buttons["create-button"].tap()
 
         let title = app.textFields["create-title-field"]
@@ -115,7 +116,7 @@ final class SPrivateUITests: XCTestCase {
             (id: "books", japanese: "書籍", english: "Books"),
         ]
         for (index, domain) in domains.enumerated() {
-            let tab = tabBar.buttons.element(boundBy: index)
+            let tab = tabBar.buttons.element(boundBy: index + 1)
             XCTAssertTrue(tab.label.contains(domain.japanese) || tab.label.contains(domain.english))
             tab.tap()
             let identifier = index < 2 ? "domain-list-\(domain.id)" : "domain-grid-\(domain.id)"
@@ -154,12 +155,13 @@ final class SPrivateUITests: XCTestCase {
 
         let tabs = app.tabBars.firstMatch.buttons
         XCTAssertTrue(tabs.element(boundBy: 0).waitForExistence(timeout: 5))
-        XCTAssertTrue(app.descendants(matching: .any)["domain-list-articles"].exists)
         tabs.element(boundBy: 1).tap()
-        XCTAssertTrue(app.descendants(matching: .any)["domain-list-notes"].exists)
+        XCTAssertTrue(app.descendants(matching: .any)["domain-list-articles"].exists)
         tabs.element(boundBy: 2).tap()
-        XCTAssertTrue(app.descendants(matching: .any)["domain-grid-images"].exists)
+        XCTAssertTrue(app.descendants(matching: .any)["domain-list-notes"].exists)
         tabs.element(boundBy: 3).tap()
+        XCTAssertTrue(app.descendants(matching: .any)["domain-grid-images"].exists)
+        tabs.element(boundBy: 4).tap()
         XCTAssertTrue(app.descendants(matching: .any)["domain-grid-books"].exists)
     }
 
@@ -172,7 +174,7 @@ final class SPrivateUITests: XCTestCase {
         let tabs = app.tabBars.firstMatch.buttons
         XCTAssertTrue(tabs.element(boundBy: 0).waitForExistence(timeout: 5))
         for index in 0..<4 {
-            tabs.element(boundBy: index).tap()
+            tabs.element(boundBy: index + 1).tap()
             let filter = app.buttons["status-filter"]
             XCTAssertTrue(filter.waitForExistence(timeout: 5))
             XCTAssertTrue(filter.label.contains("未公開") || filter.label.contains("Unexported"))
@@ -196,7 +198,7 @@ final class SPrivateUITests: XCTestCase {
 
         let tabs = app.tabBars.firstMatch.buttons
         for (index, domain) in ["article", "note"].enumerated() {
-            tabs.element(boundBy: index).tap()
+            tabs.element(boundBy: index + 1).tap()
             let shortRow = app.descendants(matching: .any)["domain-record-\(domain)-short"]
             let longRow = app.descendants(matching: .any)["domain-record-\(domain)-long"]
             XCTAssertTrue(shortRow.waitForExistence(timeout: 5))
@@ -220,7 +222,7 @@ final class SPrivateUITests: XCTestCase {
 
         let tabs = app.tabBars.firstMatch.buttons
         for (index, domain) in ["articles", "notes"].enumerated() {
-            tabs.element(boundBy: index).tap()
+            tabs.element(boundBy: index + 1).tap()
             app.buttons["status-filter"].tap()
             let exported = app.buttons["公開済み"].exists ? app.buttons["公開済み"] : app.buttons["Exported"]
             exported.tap()
@@ -242,7 +244,7 @@ final class SPrivateUITests: XCTestCase {
         app.launchArguments += ["-ui-testing-authenticated", "-ui-testing-list-fixtures"]
         app.launch()
 
-        app.tabBars.buttons.element(boundBy: 1).tap()
+        app.tabBars.buttons.element(boundBy: 2).tap()
         app.buttons["create-button"].tap()
         let title = app.textFields["create-title-field"]
         XCTAssertTrue(title.waitForExistence(timeout: 5))
@@ -260,7 +262,7 @@ final class SPrivateUITests: XCTestCase {
         app.launchArguments += ["-ui-testing-authenticated", "-ui-testing-list-fixtures"]
         app.launch()
 
-        app.tabBars.firstMatch.buttons.element(boundBy: 3).tap()
+        app.tabBars.firstMatch.buttons.element(boundBy: 4).tap()
         let short = app.descendants(matching: .any)["media-cell-book-short"]
         let long = app.descendants(matching: .any)["media-cell-book-long"]
         XCTAssertTrue(short.waitForExistence(timeout: 5))
