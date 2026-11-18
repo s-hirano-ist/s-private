@@ -53,6 +53,12 @@ struct RssReaderView: View {
                         .accessibilityIdentifier("rss-count")
                 }
                 .listRowBackground(AppColors.background)
+                if entries.isEmpty && rss.isLoading {
+                    ForEach(0..<6) { _ in
+                        LoadingContent { SkeletonText() }
+                            .listRowBackground(AppColors.background)
+                    }
+                }
                 ForEach(visible) { entry in
                     RssEntryRow(entry: entry, source: source(entry), canSave: rss.canMutate) {
                         guard let url = entry.link else { return }
@@ -179,12 +185,7 @@ private struct RssEntryRow: View {
             Button(action: onOpen) {
                 HStack(alignment: .top, spacing: 12) {
                     if let value = entry.imageURL, let url = URL(string: value), url.scheme == "https" {
-                        AsyncImage(url: url) { phase in
-                            if case .success(let image) = phase {
-                                image.resizable().scaledToFill().frame(width: 72, height: 72).clipped()
-                                    .accessibilityHidden(true)
-                            }
-                        }
+                        RemoteImageView(url: url, label: entry.title, thumbnail: true)
                     }
                     VStack(alignment: .leading, spacing: 6) {
                         Text(entry.title).font(.body).multilineTextAlignment(.leading)
@@ -223,22 +224,28 @@ struct RssStatusView: View {
                 Label(String(localized: "オフラインです。保存した記事情報を表示しています"), systemImage: "wifi.slash")
                     .font(.caption).accessibilityIdentifier("rss-offline")
             }
-            if rss.isLoading || rss.isMutating {
-                HStack {
-                    ProgressView()
+            ZStack(alignment: .leading) {
+                // Reserve the same status line before, during and after refresh.
+                Text(" ").font(.caption).accessibilityHidden(true)
+                if rss.isMutating {
+                    ProgressView().controlSize(.small)
+                        .accessibilityIdentifier("rss-loading")
+                } else if rss.isLoading {
                     Text(rss.totalFeeds > 0 ? "\(rss.completedFeeds) / \(rss.totalFeeds)" : String(localized: "読み込み中"))
+                        .font(.caption).foregroundStyle(AppColors.mutedForeground)
+                        .accessibilityIdentifier("rss-loading")
                 }
-                .accessibilityIdentifier("rss-loading")
             }
             if let error = rss.errorMessage {
                 Text(error).font(.caption).foregroundStyle(AppColors.destructive).accessibilityIdentifier("rss-error")
                 Button(String(localized: "再試行")) { Task { await rss.synchronize(manual: true) } }
                     .disabled(!rss.isOnline || rss.isLoading || rss.isMutating)
             }
-            if let fetchedAt = rss.snapshot.fetchedAt {
-                Text(String(localized: "最終取得") + " " + fetchedAt.formatted(date: .abbreviated, time: .shortened))
-                    .font(.caption).foregroundStyle(AppColors.mutedForeground)
-            }
+            Text(rss.snapshot.fetchedAt.map {
+                String(localized: "最終取得") + " " + $0.formatted(date: .abbreviated, time: .shortened)
+            } ?? " ")
+                .font(.caption).foregroundStyle(AppColors.mutedForeground)
+                .accessibilityHidden(rss.snapshot.fetchedAt == nil)
         }
         .accessibilityElement(children: .contain)
     }

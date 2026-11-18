@@ -23,6 +23,16 @@ struct DomainListView: View {
                 if isGrid {
                     ScrollView {
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 3), count: domain == .images ? 3 : 2), spacing: domain == .images ? 3 : 16) {
+                            if isInitialLoading {
+                                ForEach(0..<6) { _ in
+                                    LoadingContent {
+                                        VStack(alignment: .leading, spacing: 6) {
+                                            SkeletonBlock(cornerRadius: 0).aspectRatio(1, contentMode: .fit)
+                                            if domain == .books { SkeletonText().padding(.vertical, 2) }
+                                        }
+                                    }
+                                }
+                            }
                             ForEach(records) { record in
                                 NavigationLink(value: record.id) {
                                     MediaGridCell(domain: domain, record: record)
@@ -90,6 +100,17 @@ struct DomainListView: View {
 
     private var listContent: some View {
         List {
+            if isInitialLoading {
+                ForEach(0..<8) { _ in
+                    LoadingContent {
+                        HStack(spacing: 16) {
+                            SkeletonBlock().frame(width: 28, height: 28)
+                            SkeletonText()
+                        }
+                    }
+                    .listRowBackground(AppColors.background)
+                }
+            }
             if let errorMessage {
                 Text(errorMessage).foregroundStyle(AppColors.destructive)
                     .accessibilityIdentifier("domain-error")
@@ -154,10 +175,7 @@ struct DomainListView: View {
 
     @ViewBuilder
     private var emptyOrLoadingOverlay: some View {
-        if isInitialLoading {
-            ProgressView(String(localized: "読み込み中"))
-                .accessibilityIdentifier("initial-loading")
-        } else if records.isEmpty && errorMessage == nil && !isPullRefreshing {
+        if records.isEmpty && errorMessage == nil && !isPullRefreshing && !isInitialLoading {
             ContentUnavailableView(String(localized: "項目がありません"), systemImage: domain.symbol)
                 .accessibilityIdentifier("domain-empty-\(domain.rawValue)")
                 .allowsHitTesting(false)
@@ -218,22 +236,30 @@ struct MediaThumbnailView: View {
     @EnvironmentObject private var authentication: AuthenticationModel
     @EnvironmentObject private var sync: SyncCoordinator
     @State private var image: UIImage?
+    @State private var loading = true
 
     var body: some View {
         Group {
             if let image {
                 Image(uiImage: image).resizable().scaledToFill()
+            } else if hasImage && loading {
+                SkeletonBlock(cornerRadius: 0)
             } else {
-                Image(systemName: domain.symbol).resizable().scaledToFit().padding(12)
-                    .foregroundStyle(AppColors.mutedForeground)
+                ImagePlaceholder()
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(AppColors.muted)
         .clipped()
         .accessibilityHidden(true)
-        .task(id: sync.dataRevision) {
-            guard hasImage else { return }
+        .onChange(of: id) { _, _ in image = nil; loading = true }
+        .task(id: "\(id):\(hasImage):\(sync.dataRevision)") {
+            guard hasImage else { image = nil; loading = false; return }
+            let requestKey = "\(id):\(hasImage):\(sync.dataRevision)"
+            loading = true
+            defer {
+                if requestKey == "\(id):\(hasImage):\(sync.dataRevision)" { loading = false }
+            }
             let owner = authentication.ownerKey
             if let cached = await ThumbnailStore.shared.image(owner: owner, domain: domain, id: id, pixelSize: pixelSize) {
                 guard !Task.isCancelled else { return }
@@ -245,7 +271,8 @@ struct MediaThumbnailView: View {
                 guard !Task.isCancelled else { return }
                 image = await ThumbnailStore.shared.saveAndDecode(data, owner: owner, domain: domain, id: id, pixelSize: pixelSize)
             } catch {
-                // Keep the placeholder when a thumbnail cannot be fetched.
+                // Cancellation is not a failed image; a later task can try again.
+                guard !Task.isCancelled else { return }
             }
         }
     }
@@ -283,11 +310,11 @@ struct RecordDetailView: View {
                     AuthenticatedImageView(domain: .images, id: id)
                         .frame(maxWidth: .infinity)
                 } else if sync.isSynchronizing {
-                    ProgressView().frame(maxWidth: .infinity).padding()
+                    DetailSkeleton(domain: domain)
                 }
             } else {
                 VStack(alignment: .leading, spacing: 16) {
-                    if record == nil && errorMessage == nil { ProgressView() }
+                    if record == nil && errorMessage == nil { DetailSkeleton(domain: domain) }
                     if let errorMessage { Text(errorMessage).foregroundStyle(AppColors.destructive) }
                     if let record {
                         Text(record.displayTitle).font(.title2.bold())
@@ -304,7 +331,9 @@ struct RecordDetailView: View {
                         case .images:
                             EmptyView()
                         case .books:
-                            AuthenticatedImageView(domain: .books, id: id)
+                            if record.imagePath != nil {
+                                AuthenticatedImageView(domain: .books, id: id)
+                            }
                             if let isbn = record.isbn { LabeledContent("ISBN", value: isbn) }
                             if let rating = record.rating { LabeledContent(String(localized: "評価"), value: String(rating)) }
                             if let tags = record.tags { Text(tags.joined(separator: ", ")) }
@@ -366,6 +395,7 @@ struct RecordDetailView: View {
 struct AuthenticatedImageView: View {
     let domain: MobileDomain
     let id: String
+    var loadMedia: (@MainActor () async throws -> Data)?
     @EnvironmentObject private var authentication: AuthenticationModel
     @EnvironmentObject private var sync: SyncCoordinator
     @State private var image: UIImage?
@@ -375,30 +405,36 @@ struct AuthenticatedImageView: View {
     @State private var loading = true
 
     var body: some View {
-        Group {
+        MediaFrame(aspectRatio: domain == .books ? 2.0 / 3.0 : 4.0 / 3.0) {
             if let image {
-                Image(uiImage: image).resizable().scaledToFit()
-                    .accessibilityLabel(String(localized: "画像"))
-                    .onTapGesture { enlarged = true }
-                    .sheet(isPresented: $enlarged) {
-                        NavigationStack {
-                            ScrollView([.horizontal, .vertical]) {
-                                Image(uiImage: image).resizable().scaledToFit()
-                            }
-                            .toolbar { Button(String(localized: "閉じる")) { enlarged = false } }
+                Button { enlarged = true } label: {
+                    Image(uiImage: image).resizable().scaledToFit()
+                        .accessibilityLabel(String(localized: "画像"))
+                }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("media-open")
+                .sheet(isPresented: $enlarged) {
+                    NavigationStack {
+                        ScrollView([.horizontal, .vertical]) {
+                            Image(uiImage: image).resizable().scaledToFit()
                         }
+                        .toolbar { Button(String(localized: "閉じる")) { enlarged = false } }
                     }
+                }
             } else if let errorMessage {
                 VStack(spacing: 12) {
                     Text(errorMessage).foregroundStyle(AppColors.destructive)
                     Button(String(localized: "再試行")) { retryID += 1 }
                 }
             } else if loading {
-                ProgressView()
+                LoadingContent { SkeletonBlock() }
+                    .accessibilityIdentifier("media-loading")
             } else {
                 Button(String(localized: "再試行")) { retryID += 1 }
             }
         }
+        .accessibilityIdentifier("media-frame")
+        .onChange(of: id) { _, _ in image = nil; errorMessage = nil; loading = true }
         .task(id: "\(id):\(sync.dataRevision):\(retryID)") {
             let requestKey = "\(id):\(sync.dataRevision):\(retryID)"
             errorMessage = nil
@@ -411,12 +447,18 @@ struct AuthenticatedImageView: View {
                 return
             }
             do {
-                let data = try await MobileClient(authentication: authentication).media(domain, id: id, variant: "original")
+                let data: Data
+                if let loadMedia {
+                    data = try await loadMedia()
+                } else {
+                    data = try await MobileClient(authentication: authentication).media(domain, id: id, variant: "original")
+                }
                 guard !Task.isCancelled else { return }
                 try? sync.cacheMedia(data, domain: domain, id: id, variant: "original")
                 image = UIImage(data: data)
                 if image == nil { errorMessage = MobileClientError.invalidResponse.localizedDescription }
             } catch {
+                guard !Task.isCancelled else { return }
                 if let data = sync.cachedMedia(domain: domain, id: id, variant: "original"), let cached = UIImage(data: data) {
                     image = cached
                 } else {

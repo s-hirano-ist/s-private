@@ -24,6 +24,12 @@ struct RssSubscriptionsView: View {
                 if let fileError { Text(fileError).foregroundStyle(AppColors.destructive) }
             }
             .listRowBackground(AppColors.background)
+            if rss.snapshot.feeds.isEmpty && rss.isLoading {
+                ForEach(0..<6) { _ in
+                    LoadingContent { SkeletonText() }
+                        .listRowBackground(AppColors.background)
+                }
+            }
             ForEach(rss.snapshot.feeds) { feed in
                 Section {
                     VStack(alignment: .leading, spacing: 8) {
