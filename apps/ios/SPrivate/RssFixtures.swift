@@ -25,6 +25,7 @@
         }
         var data = snapshot
         private let delayed = ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-delayed")
+        private let slowPages = ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-slow-pages")
         init() {
             if delayed {
                 data.unread += [
@@ -32,13 +33,18 @@
                     .init(id: "fixture-third", feedID: "fixture-feed", url: "https://example.com/third", title: "Third unread article"),
                 ]
             }
+            if slowPages {
+                data.unread += (0..<118).map {
+                    .init(id: "fixture-extra-\($0)", feedID: "fixture-feed", url: "https://example.com/extra/\($0)", title: "Extra article \($0)")
+                }
+            }
         }
         func rssPage(_ list: RssList, offset: Int, snapshotRevision: Int?) async throws -> RssPage {
-            if delayed { try await Task.sleep(for: .milliseconds(150)) }
+            if slowPages && offset > 0 { try await Task.sleep(for: .seconds(5)) }
+            else if delayed { try await Task.sleep(for: .milliseconds(150)) }
             let entries = list == .unread ? data.unread : data.saved
             return .init(feeds: data.feeds, entries: Array(entries.dropFirst(offset).prefix(50)), count: entries.count, offset: offset)
         }
-        func rssFeeds() async throws -> [RssFeed] { data.feeds }
         func rssSubscribe(url: String, title: String, folder: String) async throws {
             data.feeds.append(.init(id: UUID().uuidString, url: url, title: title, folder: folder, lastFetchedAt: .now))
         }
@@ -66,10 +72,6 @@
         func rssUnsave(id: String) async throws {
             data.saved.removeAll { $0.id == id }
             for index in data.unread.indices where data.unread[index].savedID == id { data.unread[index].savedID = nil }
-        }
-        func rssRefresh(id: String, force: Bool) async throws -> Components.Schemas.RssRefreshResult {
-            if delayed { try await Task.sleep(for: .seconds(2)) }
-            return .init(data: [.init(id: id, changed: false, status: .skipped)])
         }
         func rssImport(_ batch: RssImportBatch) async throws -> Components.Schemas.RssImportResult {
             .init(added: 0, duplicates: 0, invalid: 0)

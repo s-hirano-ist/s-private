@@ -270,7 +270,8 @@ test.describe("RSS concurrent interactions", () => {
 		const feedId = randomUUID();
 		const now = new Date();
 		const arrived = Promise.withResolvers<void>();
-		const finishRefresh = Promise.withResolvers<void>();
+		const finishRead = Promise.withResolvers<void>();
+		let holdNextRead = false;
 		let savedUrl: string | undefined;
 		await db.rssFeed.create({
 			data: {
@@ -302,13 +303,13 @@ test.describe("RSS concurrent interactions", () => {
 				});
 			});
 		await seed("original", 61);
-		await page.route("**/api/v1/rss/refresh", async (route) => {
-			await seed("new", 2);
-			arrived.resolve();
-			await finishRefresh.promise;
-			await route.fulfill({
-				json: { data: [{ id: feedId, status: "updated", changed: true }] },
-			});
+		await page.route("**/api/v1/rss?*", async (route) => {
+			if (holdNextRead) {
+				holdNextRead = false;
+				arrived.resolve();
+				await finishRead.promise;
+			}
+			await route.continue();
 		});
 		try {
 			await page.goto("/ja/rss");
@@ -323,10 +324,13 @@ test.describe("RSS concurrent interactions", () => {
 				.getByRole("region", { name: "未読" })
 				.getByRole("link")
 				.allTextContents();
+			// A server job has already committed new articles. The reader only reads the DB.
+			await seed("new", 2);
+			holdNextRead = true;
 			await page.getByRole("button", { name: "更新", exact: true }).click();
 			await arrived.promise;
 			await expect(
-				page.getByRole("button", { name: /フィードを取得中/u }),
+				page.getByRole("button", { name: /記事情報を更新中/u }),
 			).toBeDisabled();
 			expect(
 				await page
@@ -347,7 +351,7 @@ test.describe("RSS concurrent interactions", () => {
 			savedUrl = `https://example.com/${feedId}/original/50`;
 			await page.getByRole("button", { name: "すべて既読にする" }).click();
 			await expect(page.getByText("未読記事はありません。")).toBeVisible();
-			finishRefresh.resolve();
+			finishRead.resolve();
 			await expect(
 				page.getByRole("button", { name: "新着2件を表示" }),
 			).toBeEnabled();
@@ -369,8 +373,8 @@ test.describe("RSS concurrent interactions", () => {
 			await expect(page.getByText("1–2 / 2")).toBeVisible();
 			await expect(page.getByRole("button", { name: "前へ" })).toBeDisabled();
 		} finally {
-			finishRefresh.resolve();
-			await page.unroute("**/api/v1/rss/refresh");
+			finishRead.resolve();
+			await page.unroute("**/api/v1/rss?*");
 			await db.rssFeed.deleteMany({ where: { id: feedId } });
 			await db.rssSaved.deleteMany({
 				where: {

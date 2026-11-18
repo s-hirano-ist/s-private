@@ -40,7 +40,6 @@ const services = {
 	markRssRead: fn(() => Promise.resolve(undefined)),
 	saveRss: fn(() => Promise.resolve(undefined)),
 	unsaveRss: fn(() => Promise.resolve(undefined)),
-	refreshRss: fn(() => Promise.resolve({ data: [] })),
 	importRss: fn(() => Promise.resolve({ added: 1, duplicates: 0, invalid: 0 })),
 };
 const meta = {
@@ -153,7 +152,6 @@ export const Subscriptions: Story = {
 		view: "feeds",
 		services: {
 			...services,
-			refreshRss: fn(() => new Promise<{ data: [] }>(() => {})),
 		},
 	},
 	play: async ({ canvas }) => {
@@ -178,73 +176,30 @@ export const FetchFailure: Story = {
 	args: {
 		services: {
 			...services,
-			refreshRss: fn(() =>
-				Promise.resolve({
-					data: [{ id: feedId, status: "failed" as const }],
-				}),
-			),
+			loadRss: fn(async () => {
+				throw new Error("Offline");
+			}),
 		},
 	},
 	play: async ({ canvas }) => {
+		await userEvent.click(canvas.getByRole("button", { name: "更新" }));
 		await expect(await canvas.findByRole("alert")).toBeVisible();
 		await expect(
 			canvas.getByRole("link", { name: "RSSを軽量に読む" }),
 		).toBeVisible();
 	},
 };
-export const Fetching: Story = {
-	args: {
-		services: {
-			...services,
-			refreshRss: fn(
-				() =>
-					new Promise<Awaited<ReturnType<typeof services.refreshRss>>>(
-						() => {},
-					),
-			),
-		},
-	},
-	play: async ({ args, canvas }) => {
-		await waitFor(() =>
-			expect(
-				canvas.getByRole("button", { name: /フィードを取得中/u }),
-			).toBeDisabled(),
-		);
-		await expect(
-			canvas.getByRole("button", { name: /フィードを取得中/u }),
-		).toHaveTextContent("0 / 1");
-		await expect(
-			canvas.queryByText("フィードを取得中"),
-		).not.toBeInTheDocument();
-		await expect(
-			canvas.getByRole("link", { name: "RSSを軽量に読む" }),
-		).toBeVisible();
-		await userEvent.click(
-			canvas.getByRole("button", { name: "あとで読むに保存" }),
-		);
-		await expect(args.services.saveRss).toHaveBeenCalled();
-		await userEvent.click(
-			canvas.getByRole("button", { name: "すべて既読にする" }),
-		);
-		await expect(args.services.markRssRead).toHaveBeenCalledWith({
-			snapshotRevision: 0,
-		});
-	},
-};
-
 export const BackgroundReadPending: Story = {
 	args: {
 		initialData: { ...page, unreadCount: 51 },
 		services: {
 			...services,
 			loadRss: fn(() => new Promise<RssPage>(() => {})),
-			refreshRss: fn(async () => ({
-				data: [{ id: feedId, status: "updated" as const, changed: true }],
-			})),
 		},
 	},
 	play: async ({ args, canvas }) => {
-		// The initial poll finishes and starts a background page read that never resolves.
+		// Refresh reads only the DB; existing cards stay interactive while it is pending.
+		await userEvent.click(canvas.getByRole("button", { name: "更新" }));
 		await waitFor(() => expect(args.services.loadRss).toHaveBeenCalledTimes(1));
 		await expect(canvas.getByRole("status")).toHaveAccessibleName(
 			"読み込み中…",
@@ -274,13 +229,12 @@ export const BackgroundReadPending: Story = {
 	},
 };
 
-export const SubscriptionStartsRefresh: Story = {
+export const SubscriptionWaitsForServerPolling: Story = {
 	args: {
 		view: "feeds",
 		initialData: empty,
 		services: {
 			...services,
-			refreshRss: fn(() => new Promise<{ data: [] }>(() => {})),
 		},
 	},
 	play: async ({ args, canvas }) => {
@@ -289,12 +243,7 @@ export const SubscriptionStartsRefresh: Story = {
 			"https://example.com/feed",
 		);
 		await userEvent.click(canvas.getByRole("button", { name: "購読する" }));
-		await waitFor(() =>
-			expect(args.services.refreshRss).toHaveBeenCalledWith([feedId], false),
-		);
-		await expect(
-			canvas.getByRole("button", { name: /フィードを取得中/u }),
-		).toBeDisabled();
+		await waitFor(() => expect(args.services.loadRss).toHaveBeenCalled());
 		await waitFor(() =>
 			expect(canvas.getByRole("button", { name: "購読する" })).toBeEnabled(),
 		);
@@ -302,60 +251,6 @@ export const SubscriptionStartsRefresh: Story = {
 		await expect(
 			canvas.getByRole("button", { name: "購読解除" }),
 		).toBeEnabled();
-	},
-};
-
-// The first feed stays pending while every other feed finishes, including those beyond slot five.
-const parallelFeeds = Array.from({ length: 7 }, (_, index) => ({
-	...page.feeds[0],
-	id: `00000000-0000-4000-8000-${String(index + 1).padStart(12, "0")}`,
-	title: `購読 ${index + 1}`,
-}));
-const parallelPage = { ...page, feeds: parallelFeeds };
-const parallelRefresh = fn(async ([id]: string[]) => {
-	if (id === feedId) return new Promise<{ data: [] }>(() => {});
-	return { data: [{ id, status: "updated" as const }] };
-});
-export const ProgressiveRefresh: Story = {
-	args: {
-		initialData: parallelPage,
-		services: {
-			...services,
-			refreshRss: parallelRefresh,
-			loadRss: fn(async () => ({
-				...parallelPage,
-				unread: [
-					{
-						...page.unread[0],
-						title:
-							parallelRefresh.mock.calls.length === 7
-								? "速い購読の新着記事"
-								: "RSSを軽量に読む",
-					},
-				],
-			})),
-		},
-	},
-	play: async ({ canvas }) => {
-		await waitFor(() =>
-			expect(parallelRefresh).toHaveBeenCalledWith(
-				[parallelFeeds[6].id],
-				false,
-			),
-		);
-		await expect(
-			await canvas.findByRole("button", { name: "フィードを取得中 6 / 7" }),
-		).toBeVisible();
-		await waitFor(
-			() =>
-				expect(
-					canvas.getByRole("link", { name: "速い購読の新着記事" }),
-				).toBeVisible(),
-			{ timeout: 3000 },
-		);
-		await expect(
-			canvas.getByRole("button", { name: /フィードを取得中/u }),
-		).toBeDisabled();
 	},
 };
 
@@ -418,7 +313,6 @@ export const SubscriptionImport: Story = {
 		view: "feeds",
 		services: {
 			...services,
-			refreshRss: fn(() => new Promise<{ data: [] }>(() => {})),
 		},
 	},
 	play: async ({ args, canvas }) => {
@@ -446,7 +340,6 @@ export const SubscriptionRemoval: Story = {
 			...services,
 			unsubscribeRss: fn(async () => undefined),
 			loadRss: fn(async () => page),
-			refreshRss: fn(() => new Promise<{ data: [] }>(() => {})),
 		},
 	},
 	beforeEach: () => {
@@ -614,7 +507,6 @@ export const FreshSubscriptions: Story = {
 		services: {
 			...services,
 			loadRss: fn(async () => page),
-			refreshRss: fn(async () => ({ data: [] })),
 		},
 	},
 	play: async ({ args, canvas }) => {
@@ -622,7 +514,6 @@ export const FreshSubscriptions: Story = {
 			canvas.getByRole("link", { name: "RSSを軽量に読む" }),
 		).toBeVisible();
 		await expect(args.services.loadRss).not.toHaveBeenCalled();
-		await expect(args.services.refreshRss).not.toHaveBeenCalled();
 		await expect(canvas.getByRole("button", { name: "更新" })).toBeEnabled();
 	},
 };

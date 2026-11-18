@@ -5,9 +5,8 @@ import type {
 	RssUnread,
 	RssSaved,
 } from "@s-hirano-ist/s-api-client/models";
-import { loadRss, refreshRss } from "@/application-services/rss/client";
+import { loadRss } from "@/application-services/rss/client";
 import { ViewerCountSync } from "@/components/common/layouts/nav/viewer-count-context";
-import { refreshFeeds } from "@/components/rss/refresh-feeds";
 import { RssLoading } from "@/components/rss/rss-loading";
 import { useRssPage } from "@/components/rss/use-rss-page";
 import { Button } from "@s-hirano-ist/s-ui/button";
@@ -29,7 +28,6 @@ const subscribeToHydration = () => () => {
 
 type RssActions = Omit<typeof actions, "loadRss"> & {
 	loadRss?: typeof loadRss;
-	refreshRss?: typeof refreshRss;
 };
 function entriesForView(data: RssPage, view: "unread" | "saved" | "feeds") {
 	return view === "saved"
@@ -44,18 +42,16 @@ function savedIdFor(entry: RssUnread | RssSaved): string | null {
 function RssRefreshButton({
 	refreshing,
 	busy,
-	progress,
 	onRefresh,
 }: {
 	busy: boolean;
 	onRefresh: () => void;
-	progress: string;
 	refreshing: boolean;
 }) {
 	const t = useTranslations("rss");
 	return (
 		<Button
-			aria-label={refreshing ? `${t("refreshing")} ${progress}` : t("refresh")}
+			aria-label={refreshing ? t("refreshing") : t("refresh")}
 			aria-busy={refreshing}
 			variant="outline"
 			className="gap-2"
@@ -63,17 +59,10 @@ function RssRefreshButton({
 			onClick={onRefresh}
 			type="button"
 		>
-			<span
-				aria-hidden="true"
-				className={
-					refreshing
-						? "inline-flex animate-spin motion-reduce:animate-none"
-						: "inline-flex"
-				}
-			>
-				<RefreshCw className="size-4" />
+			<RefreshCw aria-hidden="true" className="size-4" />
+			<span aria-live="polite">
+				{refreshing ? t("refreshing") : t("refresh")}
 			</span>
-			<span aria-live="polite">{refreshing ? progress : t("refresh")}</span>
 		</Button>
 	);
 }
@@ -268,8 +257,44 @@ function RssNewArrivals({
 	);
 }
 
-function pageStatus(refreshing: boolean, reloading: boolean, busy: boolean) {
-	return !refreshing && (reloading || busy);
+function RssPagination({
+	offset,
+	displayedOffset,
+	total,
+	disabled,
+	onChange,
+}: {
+	disabled: boolean;
+	displayedOffset: number;
+	offset: number;
+	onChange: (offset: number) => void;
+	total: number;
+}) {
+	const t = useTranslations("rss");
+	return (
+		<div className="flex items-center justify-between gap-3">
+			<Button
+				disabled={disabled || offset === 0}
+				onClick={() => onChange(Math.max(0, offset - 50))}
+				type="button"
+				variant="outline"
+			>
+				{t("previous")}
+			</Button>
+			<span className="text-sm text-muted-foreground">
+				{total ? Math.min(displayedOffset + 1, total) : 0}–
+				{Math.min(displayedOffset + 50, total)} / {total}
+			</span>
+			<Button
+				disabled={disabled || offset + 50 >= total}
+				onClick={() => onChange(offset + 50)}
+				type="button"
+				variant="outline"
+			>
+				{t("next")}
+			</Button>
+		</div>
+	);
 }
 
 export function RssReader({
@@ -291,11 +316,8 @@ export function RssReader({
 		() => true,
 		() => false,
 	);
-	const [refreshing, setRefreshing] = useState(false);
-	const [progress, setProgress] = useState("");
 	const [error, setError] = useState(false);
 	const [pageError, setPageError] = useState(false);
-	const [refreshError, setRefreshError] = useState(false);
 	const readPage = services.loadRss ?? loadRss;
 	const [snapshotRevision, setSnapshotRevision] = useState<number | undefined>(
 		initialData.snapshotRevision,
@@ -324,86 +346,23 @@ export function RssReader({
 		duplicates: number;
 		invalid: number;
 	} | null>(null);
-	const started = useRef(false);
-	const refreshLock = useRef(false);
-	const queuedRefresh = useRef<{ force: boolean; ids: string[] } | null>(null);
 	const mounted = useRef(true);
-	const reloadTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 	useEffect(() => {
 		mounted.current = true;
+		// Only DB reads run in the reader. Feed polling belongs to the server Cron.
+		const reload = () => {
+			if (document.visibilityState === "visible")
+				setRevision((value) => value + 1);
+		};
+		const timer = setInterval(reload, 60_000);
+		document.addEventListener("visibilitychange", reload);
+		window.addEventListener("focus", reload);
 		return () => {
 			mounted.current = false;
-			if (reloadTimer.current) clearTimeout(reloadTimer.current);
-			reloadTimer.current = null;
+			clearInterval(timer);
+			document.removeEventListener("visibilitychange", reload);
+			window.removeEventListener("focus", reload);
 		};
-	}, []);
-	const isMounted = () => mounted.current;
-	function scheduleReload() {
-		if (reloadTimer.current) return;
-		reloadTimer.current = setTimeout(() => {
-			reloadTimer.current = null;
-			if (mounted.current) setRevision((value) => value + 1);
-		}, 1000);
-	}
-	async function refresh(ids: string[], force: boolean) {
-		if (!isMounted() || ids.length === 0) return;
-		if (refreshLock.current) {
-			const queued = queuedRefresh.current;
-			queuedRefresh.current = {
-				ids: [...new Set([...(queued?.ids ?? []), ...ids])],
-				force: force || (queued?.force ?? false),
-			};
-			return;
-		}
-		refreshLock.current = true;
-		const changedFeeds = new Set<number>();
-		setRefreshing(true);
-		setProgress(`0 / ${ids.length}`);
-		setRefreshError(false);
-		try {
-			await refreshFeeds(
-				ids,
-				force,
-				services.refreshRss ?? refreshRss,
-				(completed, failed, changed) => {
-					if (!mounted.current) return;
-					if (failed) setRefreshError(true);
-					setProgress(`${completed} / ${ids.length}`);
-					if (changed || view === "feeds") {
-						changedFeeds.add(completed);
-						scheduleReload();
-					}
-				},
-			);
-		} finally {
-			refreshLock.current = false;
-			if (reloadTimer.current) clearTimeout(reloadTimer.current);
-			reloadTimer.current = null;
-			if (mounted.current) {
-				if (changedFeeds.size > 0) setRevision((value) => value + 1);
-				setRefreshing(false);
-				setProgress("");
-				const queued = queuedRefresh.current;
-				queuedRefresh.current = null;
-				if (queued) void refresh(queued.ids, queued.force);
-			}
-		}
-	}
-	useEffect(() => {
-		if (started.current) return;
-		started.current = true;
-		void refresh(
-			initialData.feeds
-				.filter(
-					(feed) =>
-						!feed.lastFetchedAt ||
-						Date.parse(feed.lastFetchedAt) < Date.now() - 3600000,
-				)
-				.map((feed) => feed.id),
-			false,
-		);
-		// Startup fetch runs once; filtering and pagination never trigger another feed poll.
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 	const perform = useRssMutations(
 		() => mounted.current,
@@ -443,13 +402,11 @@ export function RssReader({
 		setError(false);
 		setPageError(false);
 		setRevision((value) => value + 1);
-		if (refreshError)
-			void refresh(
-				data.feeds.map((feed) => feed.id),
-				true,
-			);
 	}
-	const status = pageStatus(refreshing, reloading, busy) ? t("loading") : "";
+	const controlsBusy = busy || !interactive;
+	const controlsLoading = loading || !interactive;
+	const paginationPending = !interactive || (loading && reloading);
+	const status = reloading || busy ? t("loading") : "";
 	return (
 		<main
 			className="space-y-4 bg-background px-3 pt-6 text-foreground sm:px-0"
@@ -464,22 +421,16 @@ export function RssReader({
 				}
 			>
 				<RssRefreshButton
-					refreshing={refreshing}
-					busy={busy}
-					progress={progress}
-					onRefresh={() => {
-						void refresh(
-							data.feeds.map((feed) => feed.id),
-							true,
-						);
-					}}
+					refreshing={reloading}
+					busy={controlsBusy}
+					onRefresh={retry}
 				/>
 				{view === "unread" ? (
 					<RssUnreadControls
 						data={data}
 						feedId={feedId}
-						busy={busy}
-						loading={loading}
+						busy={controlsBusy}
+						loading={controlsLoading}
 						onSelect={(value) => {
 							setFeedId(value);
 							setOffset(0);
@@ -500,8 +451,8 @@ export function RssReader({
 				{view === "unread" ? (
 					<RssNewArrivals
 						count={data.newerCount}
-						busy={busy}
-						loading={loading}
+						busy={controlsBusy}
+						loading={controlsLoading}
 						onShow={() => {
 							setOffset(0);
 							setSnapshotRevision(undefined);
@@ -509,7 +460,7 @@ export function RssReader({
 					/>
 				) : null}
 			</div>
-			{[error, pageError, refreshError].some(Boolean) ? (
+			{[error, pageError].some(Boolean) ? (
 				<div className="rounded-xl border border-destructive p-4" role="alert">
 					{t("error")}{" "}
 					<Button onClick={retry} type="button" variant="outline">
@@ -539,11 +490,6 @@ export function RssReader({
 									folder: field("folder"),
 								});
 								form.reset();
-								const page = await readPage(0, undefined, view);
-								void refresh(
-									page.feeds.map((feed) => feed.id),
-									false,
-								);
 							});
 						}}
 					>
@@ -571,7 +517,7 @@ export function RssReader({
 							{t("importFile")}
 							<Input
 								accept=".zip,.xml,.opml,.json"
-								disabled={busy || !interactive}
+								disabled={controlsBusy}
 								type="file"
 								onChange={(event) => {
 									const file = event.target.files?.[0];
@@ -592,11 +538,6 @@ export function RssReader({
 											summary.invalid += result.invalid;
 											setImportResult({ ...summary });
 										}
-										const page = await readPage(0, undefined, view);
-										void refresh(
-											page.feeds.map((feed) => feed.id),
-											false,
-										);
 									});
 								}}
 							/>
@@ -652,8 +593,8 @@ export function RssReader({
 								<RssEntryCard
 									key={entry.id}
 									entry={entry}
-									busy={busy || loading}
-									loading={loading}
+									busy={controlsBusy || loading}
+									loading={controlsLoading}
 									source={
 										("feedId" in entry ? sources.get(entry.feedId) : null) ??
 										new URL(entry.url).hostname
@@ -669,28 +610,13 @@ export function RssReader({
 							{t(view === "unread" ? "emptyUnread" : "emptySaved")}
 						</p>
 					)}
-					<div className="flex items-center justify-between gap-3">
-						<Button
-							disabled={(loading && reloading) || offset === 0}
-							onClick={() => setOffset(Math.max(0, offset - 50))}
-							type="button"
-							variant="outline"
-						>
-							{t("previous")}
-						</Button>
-						<span className="text-sm text-muted-foreground">
-							{total ? Math.min(data.offset + 1, total) : 0}–
-							{Math.min(data.offset + 50, total)} / {total}
-						</span>
-						<Button
-							disabled={(loading && reloading) || offset + 50 >= total}
-							onClick={() => setOffset(offset + 50)}
-							type="button"
-							variant="outline"
-						>
-							{t("next")}
-						</Button>
-					</div>
+					<RssPagination
+						offset={offset}
+						displayedOffset={data.offset}
+						total={total}
+						disabled={paginationPending}
+						onChange={setOffset}
+					/>
 				</section>
 			)}
 		</main>

@@ -138,7 +138,7 @@
 		"subscriptionsDescription": "Add or remove feeds and import your Inoreader archive.",
 		"feeds": "Subscriptions",
 		"refresh": "Refresh",
-		"refreshing": "Fetching feeds",
+		"refreshing": "Updating articles",
 		"loading": "Loading…",
 		"error": "Some operations failed. Please try again.",
 		"retry": "Reload",

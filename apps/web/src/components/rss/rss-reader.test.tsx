@@ -46,7 +46,6 @@ function setup(
 ) {
 	const services = {
 		loadRss: vi.fn(async (offset = 0) => ({ ...page, offset })),
-		refreshRss: vi.fn(async () => ({ data: [] })),
 		markRssRead: vi.fn(async () => {}),
 		saveRss: vi.fn(async () => {}),
 		unsaveRss: vi.fn(async () => {}),
@@ -71,14 +70,6 @@ const click = (name: string | RegExp) =>
 	fireEvent.click(screen.getByRole("button", { name }));
 
 test("refreshing on page two keeps its snapshot and cards until the user shows new arrivals", async () => {
-	const refreshing =
-		Promise.withResolvers<
-			Awaited<
-				ReturnType<
-					NonNullable<Parameters<typeof RssReader>[0]["services"]["refreshRss"]>
-				>
-			>
-		>();
 	const loadRss = vi
 		.fn()
 		.mockResolvedValueOnce({
@@ -100,16 +91,10 @@ test("refreshing on page two keeps its snapshot and cards until the user shows n
 		});
 	const { services } = setup({
 		loadRss,
-		refreshRss: vi.fn(() => refreshing.promise),
 	});
 	click("次へ");
 	await screen.findByRole("link", { name: "page-two" });
 	click("更新");
-	await act(async () =>
-		refreshing.resolve({
-			data: [{ id: "feed", status: "updated" as const, changed: true }],
-		}),
-	);
 	await screen.findByRole("button", { name: "新着2件を表示" });
 	expect(screen.getByRole("link", { name: "page-two" })).toBeVisible();
 	expect(screen.getByText("51–61 / 61")).toBeVisible();
@@ -135,16 +120,7 @@ test("refreshing on page two keeps its snapshot and cards until the user shows n
 });
 
 test("mark-all during refresh uses the displayed snapshot and preserves the pending new-arrival notification", async () => {
-	const refreshing =
-		Promise.withResolvers<
-			Awaited<
-				ReturnType<
-					NonNullable<Parameters<typeof RssReader>[0]["services"]["refreshRss"]>
-				>
-			>
-		>();
 	const { services } = setup({
-		refreshRss: vi.fn(() => refreshing.promise),
 		loadRss: vi.fn(async () => ({
 			...initial,
 			unread: [],
@@ -158,11 +134,6 @@ test("mark-all during refresh uses the displayed snapshot and preserves the pend
 		expect(services.markRssRead).toHaveBeenCalledWith({ snapshotRevision: 3 }),
 	);
 	await screen.findByText("未読記事はありません。");
-	await act(async () =>
-		refreshing.resolve({
-			data: [{ id: "feed", status: "updated" as const, changed: true }],
-		}),
-	);
 	expect(
 		await screen.findByRole("button", { name: "新着2件を表示" }),
 	).toBeEnabled();
@@ -202,9 +173,6 @@ test("a pre-mutation response cannot resurrect read articles even if it ignores 
 		.mockResolvedValue({ ...initial, unread: [], unreadCount: 0 });
 	setup({
 		loadRss,
-		refreshRss: vi.fn(async () => ({
-			data: [{ id: "feed", status: "updated" as const, changed: true }],
-		})),
 		markRssRead: vi.fn(() => read.promise),
 	});
 	click("更新");
@@ -331,9 +299,6 @@ test("an old background response cannot undo a successful star toggle", async ()
 		.mockResolvedValue(saved);
 	setup({
 		loadRss,
-		refreshRss: vi.fn(async () => ({
-			data: [{ id: "feed", status: "updated" as const, changed: true }],
-		})),
 	});
 	click("更新");
 	await waitFor(() => expect(loadRss).toHaveBeenCalledTimes(1));
@@ -348,21 +313,74 @@ test("an old background response cannot undo a successful star toggle", async ()
 	);
 });
 
-test("refresh errors survive successful mutations and retry refreshes without replaying the mutation", async () => {
-	const refreshRss = vi
+test("DB read failures preserve cards and retry does not replay mutations", async () => {
+	const loadRss = vi
 		.fn()
 		.mockRejectedValueOnce(new Error("Offline"))
-		.mockResolvedValue({ data: [] });
-	const { services } = setup({ refreshRss });
+		.mockResolvedValue(initial);
+	const { services } = setup({ loadRss });
 	click("更新");
 	await screen.findByRole("alert");
-	fireEvent.click(
-		screen.getAllByRole("button", { name: "あとで読むに保存" })[0],
-	);
-	await waitFor(() => expect(services.loadRss).toHaveBeenCalledTimes(1));
-	expect(screen.getByRole("alert")).toBeVisible();
+	expect(screen.getByRole("link", { name: "one" })).toBeVisible();
 	click("再読み込み");
-	await waitFor(() => expect(refreshRss).toHaveBeenCalledTimes(2));
-	expect(services.saveRss).toHaveBeenCalledTimes(1);
+	await waitFor(() => expect(loadRss).toHaveBeenCalledTimes(2));
+	expect(services.saveRss).not.toHaveBeenCalled();
 	expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+});
+
+test("stale subscriptions do not trigger feed requests or duplicate SSR reads", () => {
+	const { services } = setup({}, "unread", {
+		...initial,
+		feeds: initial.feeds.map((feed) =>
+			Object.assign({}, feed, { lastFetchedAt: null }),
+		),
+	});
+	expect(services.loadRss).not.toHaveBeenCalled();
+	expect(screen.getByRole("button", { name: "更新" })).toBeEnabled();
+});
+
+test("returning to the window reloads DB metadata without moving the read boundary", async () => {
+	const { services } = setup();
+	fireEvent.focus(window);
+	await waitFor(() =>
+		expect(services.loadRss).toHaveBeenCalledWith(
+			0,
+			undefined,
+			"unread",
+			expect.any(AbortSignal),
+			3,
+		),
+	);
+});
+
+test("periodic DB reads pause while hidden and resume without changing the displayed generation", async () => {
+	vi.useFakeTimers();
+	const visibility = vi
+		.spyOn(document, "visibilityState", "get")
+		.mockReturnValue("hidden");
+	const { services, unmount } = setup();
+	try {
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(60_000);
+		});
+		expect(services.loadRss).not.toHaveBeenCalled();
+		visibility.mockReturnValue("visible");
+		await act(async () => {
+			fireEvent(document, new Event("visibilitychange"));
+		});
+		expect(services.loadRss).toHaveBeenCalledTimes(1);
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(60_000);
+		});
+		expect(services.loadRss).toHaveBeenCalledTimes(2);
+		unmount();
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(60_000);
+		});
+		expect(services.loadRss).toHaveBeenCalledTimes(2);
+	} finally {
+		unmount();
+		visibility.mockRestore();
+		vi.useRealTimers();
+	}
 });
