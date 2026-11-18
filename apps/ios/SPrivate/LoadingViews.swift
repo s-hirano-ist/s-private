@@ -59,7 +59,7 @@ struct DetailSkeleton: View {
                     SkeletonBlock().frame(width: 64, height: 17)
                 }
                 if domain == .books || domain == .images {
-                    MediaFrame(aspectRatio: domain == .books ? 2.0 / 3.0 : 4.0 / 3.0) {
+                    MediaFrame(aspectRatio: domain == .books ? 1 : 4.0 / 3.0) {
                         SkeletonBlock()
                     }
                 }

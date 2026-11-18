@@ -10,6 +10,7 @@ final class LoadingLayoutUITests: XCTestCase {
         XCTAssertTrue(frame.waitForExistence(timeout: 5))
         XCTAssertTrue(app.descendants(matching: .any)["media-loading"].exists)
         let loadingFrame = frame.frame
+        XCTAssertEqual(loadingFrame.width / loadingFrame.height, 1, accuracy: 0.01)
         let isbn = app.descendants(matching: .any)["fixture-isbn"].firstMatch
         app.swipeUp()
         completeRequest(app)
