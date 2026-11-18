@@ -193,7 +193,8 @@ does not create a second record.
 The native screens cover articles, notes, books, images, RSS, and search.
 Sign in and configure `MOBILE_API_BASE_URL` before using them. Lists support
 status filtering and pagination; new records use the generated shared-backend API.
-The bottom tab bar contains articles, notes, images, books, and RSS in that order.
+The bottom tab bar contains RSS, articles, notes, images, and books in that order,
+matching the Web app. RSS is initially selected after launch or sign-in.
 The domain name appears in the tab bar, so list screens have no duplicate title
 in the top navigation bar.
 Each list opens cross-domain search from its top toolbar. Settings is available
@@ -261,7 +262,7 @@ Run `mise run ios:generate` before testing the Swift Package on a fresh checkout
 
 ## RSS reader
 
-The fifth tab lists unread and saved RSS links. Opening an unread link in the
+The first tab lists unread and saved RSS links. Opening an unread link in the
 system's default browser marks that captured article ID as read when online.
 Stars save or remove links independently of the unread list. Filter unread
 articles by subscription, use 50-item pages, or confirm **すべて既読** to mark
