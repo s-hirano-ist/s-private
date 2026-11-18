@@ -11,6 +11,14 @@ final class RssUITests: XCTestCase {
         if delayed { app.launchArguments.append("-ui-testing-rss-delayed") }
         if offline { app.launchArguments.append("-ui-testing-rss-offline") }
         app.launch()
+        if delayed {
+            // The seeded cache has one article; the server's two additions are
+            // intentionally hidden until the reader accepts the new arrivals.
+            let showNew = app.buttons["rss-show-new"]
+            XCTAssertTrue(showNew.waitForExistence(timeout: 10))
+            showNew.tap()
+            XCTAssertTrue(app.buttons["rss-entry-fixture-third"].waitForExistence(timeout: 5))
+        }
         return app
     }
 
