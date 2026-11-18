@@ -18,7 +18,7 @@
 	"dependencies": {
 		"@s-hirano-ist/s-api-client": "catalog:",
 		"@s-hirano-ist/s-ui": "workspace:*",
-		"@sentry/nextjs": "11.13.0",
+		"@sentry/nextjs": "11.14.0",
 		"@t3-oss/env-nextjs": "0.13.11",
 		"@tailwindcss/typography": "catalog:",
 		"@vercel/analytics": "2.0.1",

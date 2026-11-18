@@ -38,9 +38,9 @@ jobs:
           persist-credentials: false
 
       - name: Install XcodeGen
-        uses: jdx/mise-action@v5.2.9
+        uses: jdx/mise-action@v5.2.10
         with:
-          version: 2026.11.9
+          version: 2026.11.10
           install_args: aqua:yonaskolb/XcodeGen
 
       - name: Generate Xcode project
