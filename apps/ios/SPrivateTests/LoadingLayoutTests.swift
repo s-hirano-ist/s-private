@@ -6,7 +6,7 @@ struct LoadingLayoutTests {
     @MainActor
     @Test("Media phases reserve identical space for portrait and landscape content")
     func mediaPhasesKeepGeometry() {
-        for ratio: CGFloat in [2.0 / 3.0, 4.0 / 3.0] {
+        for ratio: CGFloat in [1, 4.0 / 3.0] {
             for size in [CGSize(width: 300, height: 900), CGSize(width: 900, height: 300)] {
                 let image = UIGraphicsImageRenderer(size: size).image { _ in }
                 let loading = measure(MediaFrame(aspectRatio: ratio) { LoadingContent { SkeletonBlock() } })

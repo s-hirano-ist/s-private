@@ -405,7 +405,7 @@ struct AuthenticatedImageView: View {
     @State private var loading = true
 
     var body: some View {
-        MediaFrame(aspectRatio: domain == .books ? 2.0 / 3.0 : 4.0 / 3.0) {
+        MediaFrame(aspectRatio: domain == .books ? 1 : 4.0 / 3.0) {
             if let image {
                 Button { enlarged = true } label: {
                     Image(uiImage: image).resizable().scaledToFit()
