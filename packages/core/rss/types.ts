@@ -18,6 +18,7 @@ export type UnreadEntry = EntryInput & {
 	savedId?: string | null;
 };
 export type SavedEntry = EntryInput & { id: string; savedAt: string };
+export type SaveResult = { added: boolean; saved: SavedEntry };
 export type ParsedEntry = EntryInput & { identity: string };
 export type RssPage = {
 	feeds: Feed[];

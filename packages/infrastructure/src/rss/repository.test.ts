@@ -126,7 +126,15 @@ test("subscriptions and saved metadata deduplicate, and removals retain owner pr
 	expect(db.rssFeed.deleteMany).toHaveBeenCalledWith({
 		where: { userId: "owner", id: lease.id },
 	});
-	expect(await rss.save("owner", result.entries[0])).toBe(true);
+	db.rssSaved.findFirstOrThrow.mockResolvedValue({
+		...result.entries[0],
+		id: "saved",
+		savedAt: new Date(0),
+	});
+	expect(await rss.save("owner", result.entries[0])).toMatchObject({
+		added: true,
+		saved: { id: "saved", savedAt: new Date(0).toISOString() },
+	});
 	await rss.save("owner", {
 		...result.entries[0],
 		publishedAt: "2026-01-01T00:00:00Z",
@@ -333,4 +341,39 @@ test("completion reports whether article or visible metadata changed", async () 
 	expect(
 		await rss.complete("owner", lease, { ...result, title: "Renamed" }),
 	).toBe(true);
+});
+
+test("saving an already saved URL returns the original row without overwriting its metadata", async () => {
+	const { db, rss } = fixture();
+	db.rssSaved.createMany.mockResolvedValue({ count: 0 });
+	const existing = {
+		id: "original",
+		url: result.entries[0].url,
+		title: "Original title",
+		imageUrl: null,
+		publishedAt: null,
+		savedAt: new Date(0),
+	};
+	db.rssSaved.findFirstOrThrow.mockResolvedValue(existing);
+	expect(await rss.save("owner", result.entries[0])).toEqual({
+		added: false,
+		saved: { ...existing, savedAt: new Date(0).toISOString() },
+	});
+	expect(db.rssSaved.findFirstOrThrow).toHaveBeenCalledWith({
+		where: { userId: "owner", url: result.entries[0].url },
+	});
+});
+
+test("a recovered page transaction records retry telemetry and returns the successful result", async () => {
+	const { db } = fixture();
+	db.$transaction.mockRejectedValueOnce({ code: "P2034" });
+	const observed = vi.fn();
+	const rss = createRssRepository(db as unknown as DatabaseClient, observed);
+	expect(await rss.page("owner", 0)).toMatchObject({ unreadCount: 0 });
+	expect(db.$transaction).toHaveBeenCalledTimes(2);
+	expect(observed).toHaveBeenCalledExactlyOnceWith({
+		retries: 1,
+		durationMs: expect.any(Number),
+		outcome: "recovered",
+	});
 });

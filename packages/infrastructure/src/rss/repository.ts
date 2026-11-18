@@ -5,16 +5,24 @@ import type {
 	ParsedEntry,
 } from "@s-hirano-ist/s-core/rss/types";
 import type { DatabaseClient } from "@s-hirano-ist/s-infrastructure/database";
-import { withTransactionRetry } from "@s-hirano-ist/s-database";
+import {
+	withTransactionRetry,
+	type TransactionRetryResult,
+} from "@s-hirano-ist/s-database";
 import { needsTitleRepair } from "@s-hirano-ist/s-infrastructure/rss/title-repair";
 import { createHash, randomUUID } from "node:crypto";
 const hash = (identity: string) =>
 	createHash("sha256").update(identity).digest();
-export function createRssRepository(db: DatabaseClient): RssRepository {
+export function createRssRepository(
+	db: DatabaseClient,
+	onRetryComplete?: (result: TransactionRetryResult) => void,
+): RssRepository {
+	const retry = <T>(work: () => Promise<T>) =>
+		withTransactionRetry(work, { onComplete: onRetryComplete });
 	return {
 		async page(userId, offset, feedId, requestedView, snapshotRevision) {
 			const view = requestedView ?? "all";
-			return withTransactionRetry(() =>
+			return retry(() =>
 				db.$transaction(async (tx) => {
 					const current =
 						(await tx.rssState.findUnique({ where: { userId } }))?.revision ??
@@ -145,7 +153,7 @@ export function createRssRepository(db: DatabaseClient): RssRepository {
 			});
 		},
 		async subscribe(userId: string, input: FeedInput) {
-			const { count } = await withTransactionRetry(() =>
+			const { count } = await retry(() =>
 				db.rssFeed.createMany({
 					data: [{ ...input, userId, id: randomUUID() }],
 					skipDuplicates: true,
@@ -154,12 +162,10 @@ export function createRssRepository(db: DatabaseClient): RssRepository {
 			return count > 0;
 		},
 		async unsubscribe(userId, id) {
-			await withTransactionRetry(() =>
-				db.rssFeed.deleteMany({ where: { userId, id } }),
-			);
+			await retry(() => db.rssFeed.deleteMany({ where: { userId, id } }));
 		},
 		async read(userId, input) {
-			await withTransactionRetry(() =>
+			await retry(() =>
 				db.rssUnread.deleteMany({
 					where: {
 						userId,
@@ -173,35 +179,48 @@ export function createRssRepository(db: DatabaseClient): RssRepository {
 			);
 		},
 		async save(userId: string, input: EntryInput) {
-			const { count } = await withTransactionRetry(() =>
-				db.rssSaved.createMany({
-					data: [
-						{
-							url: input.url,
-							title: input.title,
-							imageUrl: input.imageUrl ?? null,
-							publishedAt: input.publishedAt
-								? new Date(input.publishedAt)
-								: null,
-							userId,
-							id: randomUUID(),
-							savedAt: new Date(),
+			return retry(() =>
+				db.$transaction(async (tx) => {
+					const { count } = await tx.rssSaved.createMany({
+						data: [
+							{
+								url: input.url,
+								title: input.title,
+								imageUrl: input.imageUrl ?? null,
+								publishedAt: input.publishedAt
+									? new Date(input.publishedAt)
+									: null,
+								userId,
+								id: randomUUID(),
+								savedAt: new Date(),
+							},
+						],
+						skipDuplicates: true,
+					});
+					const row = await tx.rssSaved.findFirstOrThrow({
+						where: { userId, url: input.url },
+					});
+					return {
+						added: count > 0,
+						saved: {
+							id: row.id,
+							url: row.url,
+							title: row.title,
+							imageUrl: row.imageUrl,
+							publishedAt: row.publishedAt?.toISOString() ?? null,
+							savedAt: row.savedAt.toISOString(),
 						},
-					],
-					skipDuplicates: true,
+					};
 				}),
 			);
-			return count > 0;
 		},
 		async unsave(userId, id) {
-			await withTransactionRetry(() =>
-				db.rssSaved.deleteMany({ where: { userId, id } }),
-			);
+			await retry(() => db.rssSaved.deleteMany({ where: { userId, id } }));
 		},
 		async claim(userId, id, force) {
 			const now = new Date();
 			const token = randomUUID();
-			return withTransactionRetry(() =>
+			return retry(() =>
 				db.$transaction(async (tx) => {
 					const result = await tx.rssFeed.updateMany({
 						where: {
@@ -244,7 +263,7 @@ export function createRssRepository(db: DatabaseClient): RssRepository {
 			);
 		},
 		async complete(userId, lease, result) {
-			return withTransactionRetry(() =>
+			return retry(() =>
 				db.$transaction(async (tx) => {
 					const now = new Date();
 					const locked = await tx.rssFeed.updateMany({
@@ -374,7 +393,7 @@ export function createRssRepository(db: DatabaseClient): RssRepository {
 			);
 		},
 		async fail(userId, lease) {
-			await withTransactionRetry(() =>
+			await retry(() =>
 				db.rssFeed.updateMany({
 					where: { id: lease.id, userId, leaseToken: lease.token },
 					data: {

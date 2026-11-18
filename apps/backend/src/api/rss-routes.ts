@@ -39,8 +39,8 @@ export function registerRssRoutes(app: ApiApp, rss: RssService) {
 	app.openapi(routes.rssSaveRoute, async (c) =>
 		jsonResponse(
 			c,
-			schemas.rssAddedSchema,
-			{ added: await rss.save(c.get("owner"), c.req.valid("json")) },
+			schemas.rssSaveResultSchema,
+			await rss.save(c.get("owner"), c.req.valid("json")),
 			200,
 		),
 	);

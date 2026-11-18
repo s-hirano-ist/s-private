@@ -122,11 +122,17 @@ function isRetryableTransactionError(error: unknown): boolean {
 	return false;
 }
 
+export type TransactionRetryResult = {
+	durationMs: number;
+	outcome: "recovered" | "failed";
+	retries: number;
+};
+
 /**
  * Runs a database operation, retrying it on CockroachDB serialization
  * conflicts (`40001` / Prisma `P2034`) or transaction acquisition timeouts
  * (`P2028` with an explicit failure to start), including wrapped causes,
- * with exponential backoff.
+ * with bounded exponential backoff and jitter.
  *
  * @remarks
  * Wrap multi-statement transactions (`prisma.$transaction([...])`) and any
@@ -136,6 +142,7 @@ function isRetryableTransactionError(error: unknown): boolean {
  * @param fn - The operation to execute (and possibly re-execute).
  * @param options.maxRetries - Maximum retry attempts after the first try (default 5).
  * @param options.baseDelayMs - Base backoff delay in milliseconds (default 50).
+ * @param options.onComplete - Optional observer of recovery or failure after retrying.
  *
  * @example
  * ```typescript
@@ -149,18 +156,39 @@ function isRetryableTransactionError(error: unknown): boolean {
  */
 export async function withTransactionRetry<T>(
 	fn: () => Promise<T>,
-	options: { baseDelayMs?: number; maxRetries?: number } = {},
+	options: {
+		baseDelayMs?: number;
+		maxRetries?: number;
+		onComplete?: (result: TransactionRetryResult) => void;
+	} = {},
 ): Promise<T> {
 	const { maxRetries = 5, baseDelayMs = 50 } = options;
 	let attempt = 0;
+	const started = performance.now();
+	const report = (outcome: TransactionRetryResult["outcome"]) => {
+		if (attempt === 0) return;
+		try {
+			options.onComplete?.({
+				retries: attempt,
+				durationMs: performance.now() - started,
+				outcome,
+			});
+		} catch {
+			/* Observability must never change transaction results. */
+		}
+	};
 	for (;;) {
 		try {
-			return await fn();
+			const result = await fn();
+			report("recovered");
+			return result;
 		} catch (error) {
 			if (attempt >= maxRetries || !isRetryableTransactionError(error)) {
+				report("failed");
 				throw error;
 			}
-			const delay = baseDelayMs * 2 ** attempt;
+			// Equal jitter avoids synchronized retries while retaining a bounded delay.
+			const delay = baseDelayMs * 2 ** attempt * (0.5 + Math.random() * 0.5);
 			await setTimeout(delay);
 			attempt += 1;
 		}

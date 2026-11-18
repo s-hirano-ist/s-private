@@ -51,6 +51,7 @@ export type ApiServicesConfig = {
 	flushReports: () => Promise<unknown>;
 	push: PushConfig;
 	reporter: Pick<ErrorReporter, "captureException">;
+	rssRetryComplete?: Parameters<typeof createRssRepository>[1];
 	rssTiming?: (
 		stage: "page" | "claim" | "fetch" | "complete",
 		durationMs: number,
@@ -161,7 +162,7 @@ export function createApiServices(config: ApiServicesConfig) {
 		),
 		mutations: {
 			rss: createRssService(
-				createRssRepository(config.database),
+				createRssRepository(config.database, config.rssRetryComplete),
 				fetchFeed,
 				createRssFailureReporter(config.reporter, config.flushReports),
 				config.rssTiming,

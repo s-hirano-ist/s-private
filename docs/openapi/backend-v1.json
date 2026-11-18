@@ -399,6 +399,18 @@
 					}
 				}
 			},
+			"RssSaveResult": {
+				"type": "object",
+				"properties": {
+					"added": {
+						"type": "boolean"
+					},
+					"saved": {
+						"$ref": "#/components/schemas/RssSaved"
+					}
+				},
+				"required": ["added", "saved"]
+			},
 			"RssRefreshResult": {
 				"type": "object",
 				"properties": {
@@ -2062,7 +2074,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/RssAdded"
+									"$ref": "#/components/schemas/RssSaveResult"
 								}
 							}
 						}

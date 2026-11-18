@@ -46,13 +46,8 @@ export function createBackendRuntime(env: BackendEnv) {
 			connectionTimeoutMillis: 10000,
 		}),
 		errorFormat: env.NODE_ENV === "production" ? "minimal" : "pretty",
-		log: [{ emit: "event", level: "error" }],
 	});
-	client.$on("error", (event) =>
-		Sentry.captureException(new Error(event.message), {
-			tags: { source: "prisma" },
-		}),
-	);
+	// Report exhausted operations at HTTP/RSS boundaries, never intermediate Prisma attempts.
 	const database = extendDatabase(
 		client,
 		(model, operation, args) =>
@@ -90,7 +85,18 @@ export function createBackendRuntime(env: BackendEnv) {
 		logging: new LoggingEventHandler(logger),
 		system: new SystemEventHandler(logger),
 	})();
+	const rssRetryComplete: Parameters<typeof createRssRepository>[1] = ({
+		retries,
+		durationMs,
+		outcome,
+	}) => {
+		telemetry.count("rss.transaction.retries", retries, { status: outcome });
+		telemetry.duration("rss.transaction.retry.duration", durationMs, {
+			status: outcome,
+		});
+	};
 	const services = createApiServices({
+		rssRetryComplete,
 		flushReports: () => Sentry.flush(2000),
 		rssTiming: (stage, duration) =>
 			telemetry.duration(`rss.${stage}.duration`, duration, { domain: "rss" }),
@@ -169,7 +175,7 @@ export function createBackendRuntime(env: BackendEnv) {
 		refreshRss: createRssRefreshCron(env, {
 			due: (now, limit) =>
 				tenantContext.run({ userId: "rss-cron", system: true }, () =>
-					createRssRepository(database).due(now, limit),
+					createRssRepository(database, rssRetryComplete).due(now, limit),
 				),
 			refresh: (userId, id) =>
 				tenantContext.run({ userId }, () =>

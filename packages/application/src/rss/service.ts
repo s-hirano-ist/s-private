@@ -151,7 +151,7 @@ export function createRssService(
 				else duplicates++;
 			}
 			for (const entry of data.saved) {
-				if (await repository.save(owner, entry)) added++;
+				if ((await repository.save(owner, entry)).added) added++;
 				else duplicates++;
 			}
 			return { added, duplicates, invalid: data.invalid };

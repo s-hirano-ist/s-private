@@ -21,7 +21,16 @@ function fixture() {
 		subscribe: vi.fn().mockResolvedValue(true),
 		unsubscribe: vi.fn(),
 		read: vi.fn(),
-		save: vi.fn().mockResolvedValue(true),
+		save: vi.fn().mockResolvedValue({
+			added: true,
+			saved: {
+				id: "00000000-0000-4000-8000-000000000001",
+				url: "https://example.com/one",
+				title: "One",
+				publishedAt: null,
+				savedAt: "2026-11-18T00:00:00Z",
+			},
+		}),
 		unsave: vi.fn(),
 		claim: vi.fn().mockResolvedValue(null),
 		complete: vi.fn(),
@@ -42,7 +51,7 @@ function fixture() {
 	registerApiMiddleware(app, auth);
 	app.onError((error) => apiErrorResponse(error, auth.reportError));
 	registerRssRoutes(app, createRssService(repository, vi.fn(), vi.fn()));
-	return { app, repository };
+	return { app, repository, auth };
 }
 test("unauthenticated RSS calls are rejected before repository access", async () => {
 	const { app, repository } = fixture();
@@ -214,4 +223,18 @@ test("snapshot query and mark-all boundary are forwarded only for the authentica
 		).toBe(422);
 	}
 	expect(repository.read).toHaveBeenCalledTimes(1);
+});
+
+test("final database failures reach the HTTP reporter once and never expose database details", async () => {
+	const { app, repository, auth } = fixture();
+	const error = Object.assign(new Error("private database detail"), {
+		code: "P2034",
+	});
+	repository.page.mockRejectedValue(error);
+	const response = await app.request("https://web.example/api/v1/rss", {
+		headers: { authorization: "Bearer valid" },
+	});
+	expect(response.status).toBe(500);
+	expect(await response.json()).toEqual({ error: { code: "INTERNAL_ERROR" } });
+	expect(auth.reportError).toHaveBeenCalledExactlyOnceWith(error);
 });

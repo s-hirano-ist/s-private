@@ -2,12 +2,13 @@ import XCTest
 
 final class RssUITests: XCTestCase {
     @MainActor
-    private func launch(offline: Bool = false, language: String = "ja") -> XCUIApplication {
+    private func launch(offline: Bool = false, language: String = "ja", delayed: Bool = false) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = [
             "-ui-testing-authenticated", "-ui-testing-list-fixtures", "-ui-testing-rss-fixtures", "-AppleLanguages",
             "(\(language))",
         ]
+        if delayed { app.launchArguments.append("-ui-testing-rss-delayed") }
         if offline { app.launchArguments.append("-ui-testing-rss-offline") }
         app.launch()
         app.tabBars.buttons["RSS"].tap()
@@ -71,6 +72,40 @@ final class RssUITests: XCTestCase {
         XCTAssertTrue(app.segmentedControls["rss-view-picker"].buttons["Unread"].exists)
         XCTAssertTrue(app.segmentedControls["rss-view-picker"].buttons["Saved"].exists)
         attach(app, name: "rss-english")
+    }
+
+    @MainActor
+    func testSavingDifferentArticlesDuringRefreshSurvivesTabNavigation() {
+        let app = launch(delayed: true)
+        let refresh = app.buttons["rss-refresh"]
+        expectation(for: NSPredicate(format: "enabled == true"), evaluatedWith: refresh)
+        waitForExpectations(timeout: 10)
+        refresh.tap()
+        XCTAssertTrue(app.descendants(matching: .any)["rss-loading"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["rss-save-fixture-unread"].isEnabled)
+        app.buttons["rss-save-fixture-unread"].tap()
+        app.buttons["rss-save-fixture-second"].tap()
+        app.tabBars.buttons.element(boundBy: 3).tap()
+        app.tabBars.buttons["RSS"].tap()
+        app.segmentedControls["rss-view-picker"].buttons["保存済み"].tap()
+        XCTAssertTrue(app.staticTexts["Second unread article"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["rss-entry-fixture-saved"].exists)
+        attach(app, name: "rss-concurrent-saves")
+    }
+
+    @MainActor
+    func testOpeningDifferentArticlesWhileASaveIsPendingKeepsBothReads() {
+        let app = launch(delayed: true)
+        XCTAssertTrue(app.buttons["rss-entry-fixture-third"].waitForExistence(timeout: 10))
+        app.buttons["rss-save-fixture-third"].tap()
+        app.buttons["rss-entry-fixture-unread"].tap()
+        app.buttons["rss-entry-fixture-second"].tap()
+        XCTAssertTrue(app.buttons["rss-entry-fixture-unread"].waitForNonExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["rss-entry-fixture-second"].waitForNonExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["rss-entry-fixture-third"].exists)
+        app.segmentedControls["rss-view-picker"].buttons["保存済み"].tap()
+        XCTAssertTrue(app.staticTexts["Third unread article"].waitForExistence(timeout: 10))
+        attach(app, name: "rss-concurrent-reads")
     }
 
     @MainActor

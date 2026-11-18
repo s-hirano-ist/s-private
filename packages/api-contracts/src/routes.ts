@@ -584,7 +584,7 @@ export const rssSaveRoute = createRoute({
 	responses: {
 		200: {
 			description: "Link saved or already present",
-			content: jsonContent(rss.rssAddedSchema),
+			content: jsonContent(rss.rssSaveResultSchema),
 		},
 		...createErrors,
 	},

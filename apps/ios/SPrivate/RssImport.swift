@@ -42,12 +42,14 @@ enum RssImport {
         var entries = 0
         var result: [RssImportBatch] = []
         for entry in archive {
+            try Task.checkCancellation()
             entries += 1
             guard entries <= 10_000 else { throw RssError.fileTooLarge }
             guard entry.type == .file, let kind = try? kind(for: entry.path, standalone: false) else { continue }
             guard entry.uncompressedSize <= UInt64(maxExpandedBytes - expanded) else { throw RssError.fileTooLarge }
             var data = Data()
             _ = try archive.extract(entry) { chunk in
+                try Task.checkCancellation()
                 expanded += chunk.count
                 guard expanded <= maxExpandedBytes else { throw RssError.fileTooLarge }
                 data.append(chunk)
@@ -89,6 +91,7 @@ enum RssImport {
             String(decoding: try JSONSerialization.data(withJSONObject: ["items": entries]), as: UTF8.self)
         }
         for item in metadata {
+            try Task.checkCancellation()
             let candidate = try encoded(pending + [item])
             if candidate.utf16.count > maxContentCharacters || pending.count == 100 {
                 guard !pending.isEmpty else { throw RssError.fileTooLarge }

@@ -119,14 +119,18 @@ struct BackendClientTests {
     func rssContracts() async throws {
         let page = Data(#"{"snapshotRevision":7,"newerCount":2,"offset":50,"feeds":[{"id":"feed","url":"https://example.com/rss","title":"News","folder":"Tech","lastFetchedAt":null,"error":null}],"unread":[{"id":"entry","feedId":"feed","url":"https://example.com/entry","title":"Article","publishedAt":null,"receivedAt":"2026-11-17T00:00:00.000Z","imageUrl":"https://example.com/image.jpg","savedId":"saved"}],"saved":[],"unreadCount":51,"savedCount":0}"#.utf8)
         let added = Data(#"{"added":true}"#.utf8)
-        let stub = APIStub([(200, page), (200, added), (204, Data()), (204, Data()), (200, added), (204, Data()), (200, Data(#"{"added":1,"duplicates":2,"invalid":3}"#.utf8)), (200, Data(#"{"data":[{"id":"feed","status":"skipped","changed":false}]}"#.utf8))])
+        let saveResult = Data(#"{"added":true,"saved":{"id":"saved","url":"https://example.com/entry","title":"Article","publishedAt":null,"savedAt":"2026-11-18T00:00:00Z"}}"#.utf8)
+        let stub = APIStub([(200, page), (200, saveResult), (204, Data()), (204, Data()), (200, added), (204, Data()), (200, Data(#"{"added":1,"duplicates":2,"invalid":3}"#.utf8)), (200, Data(#"{"data":[{"id":"feed","status":"skipped","changed":false}]}"#.utf8))])
         let api = client(stub)
-        let result = try await api.rssPage(.unread, offset: 50)
+        let result = try await api.rssPage(.unread, offset: 50, snapshotRevision: 7)
         #expect(result.count == 51)
         #expect(result.feeds.first?.folder == "Tech")
         let entry = try #require(result.entries.first)
         #expect(entry.savedID == "saved")
-        try await api.rssSave(entry)
+        let stored = try await api.rssSave(entry)
+        #expect(stored.savedID == "saved")
+        #expect(result.snapshotRevision == 7)
+        #expect(result.offset == 50)
         try await api.rssRead(ids: [entry.id])
         try await api.rssUnsave(id: "saved")
         try await api.rssSubscribe(url: "https://example.com/rss", title: "News", folder: "Tech")
@@ -137,6 +141,7 @@ struct BackendClientTests {
         let requests = await stub.requests
         #expect(requests[0].path?.contains("view=unread") == true)
         #expect(requests[0].path?.contains("offset=50") == true)
+        #expect(requests[0].path?.contains("snapshotRevision=7") == true)
         #expect(requests.dropFirst().map(\.path) == ["/rss/saved", "/rss/read", "/rss/saved/saved", "/rss/feeds", "/rss/feeds/feed", "/rss/import", "/rss/refresh"])
         let saved = try JSONDecoder().decode(Components.Schemas.RssEntryInput.self, from: requests[1].body)
         #expect(saved.imageUrl == "https://example.com/image.jpg")
@@ -150,6 +155,36 @@ struct BackendClientTests {
         do { try await client(stub).rssRead(ids: ["entry"]); Issue.record("Expected a failure") }
         catch MobileClientError.http(503, "API_UNAVAILABLE") { }
         #expect(await stub.requests.count == 1)
+    }
+
+    @Test("An expired RSS request cannot sign out the current session after an old 401")
+    func staleRequestAuthenticationFailure() async throws {
+        let stub = APIStub([(401, Data(#"{"error":{"code":"UNAUTHORIZED"}}"#.utf8))])
+        let api = client(stub)
+        let previous = api.authentication.status
+        var valid = true
+        do {
+            _ = try await api.perform(whileValid: { valid }) { client in
+                valid = false
+                return try await client.getRssPage(.init()).ok.body.json
+            }
+            Issue.record("Expected cancellation")
+        } catch is CancellationError {}
+        #expect(api.authentication.status == previous)
+        #expect(await stub.requests.count == 1)
+    }
+
+    @Test("An expired request is rejected before any HTTP mutation is sent")
+    func expiredRequestBeforeSend() async throws {
+        let stub = APIStub([])
+        let api = client(stub)
+        do {
+            try await api.perform(whileValid: { false }) { client in
+                _ = try await client.markRssRead(.init(body: .json(.init(ids: ["entry"])))).noContent
+            }
+            Issue.record("Expected cancellation")
+        } catch is CancellationError {}
+        #expect(await stub.requests.isEmpty)
     }
 
 }

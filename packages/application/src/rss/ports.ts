@@ -5,6 +5,7 @@ import type {
 	ParsedEntry,
 	RssPage,
 	RssView,
+	SaveResult,
 } from "@s-hirano-ist/s-core/rss/types";
 export type FeedLease = Feed & {
 	etag: string | null;
@@ -39,7 +40,7 @@ export type RssRepository = {
 		owner: string,
 		input: { feedId?: string; ids?: string[]; snapshotRevision?: number },
 	): Promise<void>;
-	save(owner: string, input: EntryInput): Promise<boolean>;
+	save(owner: string, input: EntryInput): Promise<SaveResult>;
 	subscribe(owner: string, input: FeedInput): Promise<boolean>;
 	unsave(owner: string, id: string): Promise<void>;
 	unsubscribe(owner: string, id: string): Promise<void>;

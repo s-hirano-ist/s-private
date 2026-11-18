@@ -205,8 +205,9 @@ The native screens support a full local SwiftData copy and registration queue,
 resumable uploads, durable create deduplication, and Share Extension registration.
 Background execution while the app is terminated is not guaranteed.
 
-Repository instructions require Storybook MCP before UI work, but that MCP
-server was not exposed to this implementation session. No React UI was changed.
+Use the repository Storybook CLI workflows before UI work. Native SwiftUI views
+are covered by `#Preview` and XCTest; Storybook contains the Web components and
+has no stories for the native RSS views.
 
 ## Mobile API server configuration
 
@@ -278,7 +279,9 @@ if a later batch fails. Mutations are never automatically resent after an
 ambiguous response.
 
 RSS uses the generated `/api/v1/rss` client and a separate SwiftData cache,
-without entering content delta sync or its pending-operation queue. All unread
+without entering content delta sync or its pending-operation queue. Cached metadata is restored on a dedicated actor before network refreshes. On the
+first download, leading pages appear immediately and subsequent pages become
+available progressively while the remaining metadata downloads. All unread
 and saved metadata pages are downloaded while the app is active. A completed
 cache is replaced only after every page succeeds; failures retain the previous
 complete version. Cache identities include both owner and API endpoint.
@@ -287,13 +290,67 @@ article bodies and thumbnail bytes are not downloaded for offline use. Updates,
 saving, and read mutations require connectivity. Opening a cached link offline
 does not queue a read operation. **キャッシュを削除** clears RSS metadata too.
 
+Mutations run in a reader-owned serial queue that survives tab/browser navigation.
+Different articles remain operable while another article is being saved or marked
+read. Repeated reads and save intents are deduplicated. Bulk reads/imports yield
+between API batches so interactive article operations can proceed. Successful
+read/save/remove mutations update metadata locally without downloading every page.
+The save API returns the authoritative saved ID and timestamp, including duplicates.
+Deploy the updated backend before installing this iOS version; no database migration
+is required for this change.
+An ambiguous response is reconciled by reading metadata without resending the write.
+A late response after a connectivity interruption requests reconciliation only
+within the same owner/cache lifetime; it cannot refill a deleted cache or cross
+sign-out/sign-in boundaries.
+
+Unread downloads pin the existing backend `snapshotRevision`, validate returned
+offsets and detect deletion-related page shifts. One initial and, when feeds changed,
+one final full download replace per-feed reloads. Concurrent refresh gestures join
+one pass. JSON encoding/decoding and SwiftData commits run off the main actor;
+cache generations are fenced against cancelled writes. Filtering/source lookups
+update with data/filter changes, independently of polling progress. RSS thumbnails
+use four cancellable loaders, a 5 MiB response limit, display-sized ImageIO decoding
+and a 20 MiB memory cache; they are not persisted to disk.
+
 Automatic checks are throttled to five minutes while the reader is active.
 Feed polling targets subscriptions last attempted at least an hour ago, with
 at most five simultaneous requests. Pull-to-refresh requests a manual update;
 the backend retains its one-minute per-feed limit. Background execution while
 the app is terminated is not guaranteed.
 
-`RssTests` covers cache generations, pagination, isolation, read boundaries,
-mutation failures, concurrent polling, and file imports. `RssUITests` uses an
+`RssTests` covers cache generations, pagination/revisions, isolation, read boundaries,
+mutation failures, concurrent polling/reads/saves, reconnects, cache deletion,
+partial bulk operations, large datasets, and file imports. `RssUITests` uses an
 in-memory RSS server and never calls the configured API. SwiftUI previews cover
 unread articles, subscription management, and offline browsing.
+
+
+### RSS performance verification (2026-11-18)
+
+A local Release model harness compared the previous and updated source with
+100 subscriptions, 10,000 unread and 10,000 saved entries, and 2 ms of simulated
+latency per metadata request. These are local model measurements, not production
+network or device results. Both measurements used `swift test --skip-build`
+after compiling the harnesses, with peak resident memory from `/usr/bin/time -l`.
+
+| Operation | Previous | Updated |
+| --- | --- | --- |
+| Initial full metadata download | 1.204 s / 402 GETs | 1.222 s / 402 GETs |
+| Mark one article read | 1.223 s | 0.034 s |
+| Save one article | 1.207 s | 0.027 s |
+| Metadata GETs for those two mutations | 805 | 0 |
+| Maximum sampled main-actor wait | 57.9 ms | 1.9 ms |
+| Peak resident memory including test startup | 119.8 MiB | 83.3 MiB |
+
+The full offline copy still requires all pages. The improvement removes the full
+copy from normal article operations and moves cache processing off the UI actor.
+Re-run `RssTests.largeDataset` under the same build configuration to compare
+`RSS_BENCH` timings, request counts, and sampled main-actor waits.
+
+The implementation session compiled the iOS app and test targets, exercised RSS
+models in a temporary macOS harness, and ran CockroachDB integration tests against
+a dedicated local database. Simulator execution was blocked because the installed
+CoreSimulator version (1171.7) was older than Xcode's required version (1174.21).
+The two delayed-fixture UI tests and thumbnail runtime/layout test must be run with
+`mise run ios:test` after repairing that Xcode installation. Physical-device and
+post-deployment Sentry verification remain outstanding.
