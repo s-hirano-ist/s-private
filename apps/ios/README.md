@@ -71,7 +71,11 @@ mise run ios:run
 without code changes, use `mise run ios:test:run`; after changes, use
 `mise run ios:test:build` first. All products and `.xctestrun` specifications stay
 inside this worktree's `.derivedData`. Each run saves an `.xcresult` bundle under
-`apps/ios/.test-results/`.
+`apps/ios/.test-results/`. Before XCTest starts, the runner waits for the selected
+Simulator to finish booting and starts the Debug fixture app once with its
+in-memory store and network disabled. Preparation and testing use the same device
+ID. Set `IOS_SIMULATOR_UDID` to use a separate available iOS 27 Simulator when
+running tests alongside another worktree.
 
 CI builds those products once, preserves executable permissions and symlinks in
 a tar archive, and distributes them to four independent iPhone 17 / iOS 27 jobs:

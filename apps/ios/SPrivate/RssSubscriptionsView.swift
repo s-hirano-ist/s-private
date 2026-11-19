@@ -20,6 +20,7 @@ struct RssSubscriptionsView: View {
                         Label(String(localized: "Inoreaderから取り込み"), systemImage: "square.and.arrow.down")
                     }
                 }
+                    .accessibilityValue(rss.pendingKeys.contains("import") ? String(localized: "処理中") : "")
                     .disabled(!rss.canMutate || rss.pendingKeys.contains("import")).accessibilityIdentifier("rss-import")
                 Text(String(localized: "Inoreader ZIP、OPML、starred.jsonに対応します"))
                     .font(.caption).foregroundStyle(AppColors.mutedForeground)
@@ -55,6 +56,7 @@ struct RssSubscriptionsView: View {
                         Button(role: .destructive) { removing = (feed, identity) } label: {
                             BusyLabel(isBusy: rss.pendingKeys.contains("unsubscribe:\(feed.id)")) { Text(String(localized: "購読解除")) }
                         }
+                            .accessibilityValue(rss.pendingKeys.contains("unsubscribe:\(feed.id)") ? String(localized: "処理中") : "")
                             .disabled(!rss.canMutate || rss.pendingKeys.contains("unsubscribe:\(feed.id)")).accessibilityIdentifier("rss-unsubscribe-\(feed.id)")
                     }
                     .listRowBackground(AppColors.background)
@@ -75,6 +77,7 @@ struct RssSubscriptionsView: View {
                 BusyLabel(isBusy: rss.isLoading) { Label(String(localized: "更新"), systemImage: "arrow.clockwise") }
             }
             .labelStyle(.iconOnly)
+            .accessibilityLabel(rss.isLoading ? String(localized: "更新") + ", " + String(localized: "処理中") : String(localized: "更新"))
             .disabled(!rss.isOnline || rss.isLoading)
         }
         .task { await rss.synchronize() }
@@ -167,6 +170,7 @@ private struct RssSubscribeView: View {
                     } label: {
                         BusyLabel(isBusy: submitting) { Text(String(localized: "追加")) }
                     }
+                    .accessibilityLabel(submitting ? String(localized: "追加") + ", " + String(localized: "処理中") : String(localized: "追加"))
                     .disabled(submitting || !valid || !rss.canMutate || identity != rss.identityID || rss.pendingKeys.contains("subscribe:\(url)")).accessibilityIdentifier("rss-subscribe-submit")
                 }
             }

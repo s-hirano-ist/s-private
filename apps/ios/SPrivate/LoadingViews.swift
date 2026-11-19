@@ -1,6 +1,8 @@
 import SwiftUI
 
 /// The normal label owns layout in every phase, including inherited toolbar label styles.
+/// Controls must expose their own busy state; toolbar buttons need it in their label,
+/// because their accessibility value is not exposed by the native bar button.
 struct BusyLabel<LabelContent: View>: View {
     let isBusy: Bool
     var status = String(localized: "処理中")

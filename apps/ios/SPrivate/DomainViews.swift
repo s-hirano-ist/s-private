@@ -372,6 +372,7 @@ struct RecordDetailView: View {
                                 .accessibilityLabel(String(localized: "その他"))
                         }
                     }
+                    .accessibilityLabel(deleting ? String(localized: "その他") + ", " + String(localized: "削除中") : String(localized: "その他"))
                     .disabled(deleting)
                     .accessibilityIdentifier("record-delete-menu")
                 } else {
@@ -381,6 +382,7 @@ struct RecordDetailView: View {
                         }
                     }
                     .labelStyle(.iconOnly)
+                    .accessibilityLabel(deleting ? String(localized: "削除") + ", " + String(localized: "削除中") : String(localized: "削除"))
                     .disabled(deleting)
                     .accessibilityIdentifier("record-delete-button")
                 }
