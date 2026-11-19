@@ -202,6 +202,14 @@ from the Search toolbar and still shows shared inbox
 items from the feasibility test.
 Markdown is rendered with native SwiftUI views and no WebView.
 
+Image and book-cover previews share `ImagePreviewView`. Its UIKit scroll view
+starts at the available viewport width while preserving the image aspect ratio.
+Tall images scroll vertically; short images are centered vertically. Pinch zoom
+ranges from the initial width to four times that size, with panning while zoomed.
+Reopening the sheet or resizing its viewport resets zoom and scroll position;
+ordinary SwiftUI updates retain the current interaction state. Native previews
+and `ImagePreviewTests` / `LoadingLayoutUITests` cover the shared viewer.
+
 The native screens support a full local SwiftData copy and registration queue,
 resumable uploads, durable create deduplication, and Share Extension registration.
 Background execution while the app is terminated is not guaranteed.
@@ -220,7 +228,7 @@ Auth0 `sub` must already be linked to a Better Auth `Account` with
 `providerId=auth0`; the API resolves that account's user ID and isolates data
 by that user. The API never creates or merges users.
 
-The HTTP contract is [backend-v1.json](../docs/openapi/backend-v1.json).
+The HTTP contract is [backend-v1.json](../../docs/openapi/backend-v1.json).
 Images and covers use `/uploads` sessions with 1 MiB chunks and a 10 MiB total
 limit. Upload sessions expire after 24 hours. Reusing an operation ID with
 different input is rejected with `OPERATION_CONFLICT`.
@@ -339,7 +347,6 @@ explicitly releases them. This avoids racing a short artificial delay. The nativ
 refresh test drags inside `rss-reader` and confirms a later page is pending before
 checking that the spinner ended. SwiftUI previews cover
 unread articles, subscription management, and offline browsing.
-
 
 ### RSS performance verification (2026-11-18)
 

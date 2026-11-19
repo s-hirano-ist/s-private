@@ -55,6 +55,47 @@ final class LoadingLayoutUITests: XCTestCase {
     }
 
     @MainActor
+    func testPreviewFitsWidthAndSupportsZoomForAllImageShapes() {
+        for arguments in [[], ["-media-landscape"], ["-media-square"]] {
+            let app = launch(arguments)
+            completeRequest(app)
+            let open = app.buttons["media-open"]
+            XCTAssertTrue(open.waitForExistence(timeout: 8))
+            open.tap()
+            let scroll = app.scrollViews["media-preview-scroll"]
+            let image = app.images["media-preview-image"]
+            XCTAssertTrue(image.waitForExistence(timeout: 5))
+            XCTAssertEqual(image.frame.width, scroll.frame.width, accuracy: 1)
+            XCTAssertEqual(image.value as? String, "100%")
+            if arguments.isEmpty {
+                let top = image.frame.minY
+                scroll.swipeUp()
+                XCTAssertLessThan(image.frame.minY, top)
+                scroll.swipeDown()
+            }
+            scroll.pinch(withScale: 2, velocity: 1)
+            XCTAssertNotEqual(image.value as? String, "100%")
+            let before = image.frame
+            scroll.swipeLeft()
+            XCTAssertNotEqual(image.frame.minX, before.minX)
+            attach(app, name: "image-preview-zoomed-\(arguments.first ?? "portrait")")
+            scroll.pinch(withScale: 0.2, velocity: -1)
+            let reset = NSPredicate(format: "value == %@", "100%")
+            expectation(for: reset, evaluatedWith: image)
+            waitForExpectations(timeout: 5)
+            XCTAssertEqual(image.frame.width, scroll.frame.width, accuracy: 1)
+            scroll.pinch(withScale: 2, velocity: 1)
+            app.buttons["閉じる"].tap()
+            open.tap()
+            XCTAssertTrue(image.waitForExistence(timeout: 5))
+            XCTAssertEqual(image.value as? String, "100%")
+            XCTAssertEqual(image.frame.width, scroll.frame.width, accuracy: 1)
+            app.buttons["閉じる"].tap()
+            app.terminate()
+        }
+    }
+
+    @MainActor
     private func completeRequest(_ app: XCUIApplication) {
         let button = app.buttons["fixture-complete"]
         XCTAssertTrue(button.waitForExistence(timeout: 5))

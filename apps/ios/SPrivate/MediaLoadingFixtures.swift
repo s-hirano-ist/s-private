@@ -8,6 +8,7 @@ struct MediaLoadingFixtureView: View {
     @State private var presentation = 0
     @State private var request = MediaFixtureRequest()
     private var landscape: Bool { ProcessInfo.processInfo.arguments.contains("-media-landscape") }
+    private var square: Bool { ProcessInfo.processInfo.arguments.contains("-media-square") }
     private var failsFirst: Bool { ProcessInfo.processInfo.arguments.contains("-media-fails-first") }
 
     var body: some View {
@@ -20,7 +21,7 @@ struct MediaLoadingFixtureView: View {
                         let attempt = attempts
                         try await request.waitForCompletion()
                         if failsFirst && attempt == 1 { throw URLError(.notConnectedToInternet) }
-                        let size = landscape ? CGSize(width: 900, height: 300) : CGSize(width: 300, height: 600)
+                        let size = square ? CGSize(width: 600, height: 600) : landscape ? CGSize(width: 900, height: 300) : CGSize(width: 300, height: 600)
                         return UIGraphicsImageRenderer(size: size).jpegData(withCompressionQuality: 0.8) { context in
                             UIColor.systemIndigo.setFill()
                             context.fill(CGRect(origin: .zero, size: size))
