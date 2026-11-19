@@ -67,7 +67,7 @@ mise run ios:run
 ```
 
 `ios:test` generates the project once, builds the app and both test targets with
-`build-for-testing`, then runs them with `test-without-building`. To rerun tests
+`build-for-testing` for the Apple silicon Simulator architecture (`arm64`), then runs them with `test-without-building`. To rerun tests
 without code changes, use `mise run ios:test:run`; after changes, use
 `mise run ios:test:build` first. All products and `.xctestrun` specifications stay
 inside this worktree's `.derivedData`. Each run saves an `.xcresult` bundle under

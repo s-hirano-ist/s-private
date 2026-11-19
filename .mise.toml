@@ -30,7 +30,7 @@ description = "Build iOS app and test targets once for Simulator testing"
 depends = ["ios:generate"]
 run = [
 	"rm -f apps/ios/.derivedData/Build/Products/*.xctestrun",
-	"xcodebuild -project apps/ios/SPrivate.xcodeproj -scheme SPrivate -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath apps/ios/.derivedData CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual ONLY_ACTIVE_ARCH=YES build-for-testing",
+	"xcodebuild -project apps/ios/SPrivate.xcodeproj -scheme SPrivate -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath apps/ios/.derivedData CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual ARCHS=arm64 ONLY_ACTIVE_ARCH=YES build-for-testing",
 ]
 
 [tasks."ios:test:run"]
