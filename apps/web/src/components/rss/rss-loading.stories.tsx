@@ -18,22 +18,6 @@ export const Default: Story = {
 	},
 };
 
-export const Inline: Story = {
-	args: { display: "inline", label: "読み込み中…" },
-	play: async ({ canvas }) => {
-		await expect(canvas.getByRole("status")).toHaveAccessibleName(
-			"読み込み中…",
-		);
-	},
-};
-
-export const Idle: Story = {
-	args: { display: "inline", label: "" },
-	play: async ({ canvas }) => {
-		await expect(canvas.queryByRole("status")).not.toBeInTheDocument();
-	},
-};
-
 const pending = new Promise<never>(() => {});
 function PendingReader() {
 	use(pending);

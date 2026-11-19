@@ -400,7 +400,7 @@ test.describe("RSS concurrent interactions", () => {
 			await page.getByRole("button", { name: "更新", exact: true }).click();
 			await arrived.promise;
 			await expect(
-				page.getByRole("button", { name: /記事情報を更新中/u }),
+				page.getByRole("button", { name: "更新", exact: true }),
 			).toBeDisabled();
 			expect(
 				await page

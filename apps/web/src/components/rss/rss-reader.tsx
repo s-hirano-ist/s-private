@@ -7,7 +7,6 @@ import type {
 } from "@s-hirano-ist/s-api-client/models";
 import { loadRss } from "@/application-services/rss/client";
 import { ViewerCountSync } from "@/components/common/layouts/nav/viewer-count-context";
-import { RssLoading } from "@/components/rss/rss-loading";
 import { useRssPage } from "@/components/rss/use-rss-page";
 import { Button } from "@s-hirano-ist/s-ui/button";
 import { useInfiniteScroll } from "@s-hirano-ist/s-ui/hooks/use-infinite-scroll";
@@ -50,21 +49,34 @@ function RssRefreshButton({
 	refreshing: boolean;
 }) {
 	const t = useTranslations("rss");
+	const status = refreshing ? t("loading") : "";
 	return (
-		<Button
-			aria-label={refreshing ? t("refreshing") : t("refresh")}
-			aria-busy={refreshing}
-			variant="outline"
-			className="gap-2"
-			disabled={refreshing || busy}
-			onClick={onRefresh}
-			type="button"
-		>
-			<RefreshCw aria-hidden="true" className="size-4" />
-			<span aria-live="polite">
-				{refreshing ? t("refreshing") : t("refresh")}
-			</span>
-		</Button>
+		<>
+			<Button
+				aria-label={t("refresh")}
+				aria-busy={refreshing}
+				variant="outline"
+				className="gap-2"
+				disabled={refreshing || busy}
+				onClick={onRefresh}
+				type="button"
+			>
+				<span
+					aria-hidden="true"
+					className={`inline-flex size-4 shrink-0 ${refreshing ? "animate-spin motion-reduce:animate-none" : ""}`}
+				>
+					<RefreshCw className="size-4" />
+				</span>
+				<span>{t("refresh")}</span>
+			</Button>
+			<output
+				aria-label={status || undefined}
+				aria-live="polite"
+				className="sr-only"
+			>
+				{status}
+			</output>
+		</>
 	);
 }
 
@@ -285,7 +297,18 @@ function RssLoadMore({
 			<p className="text-sm text-muted-foreground">
 				{t("loadedCount", { count, total })}
 			</p>
-			<RssLoading display="inline" label={loading ? t("loading") : ""} />
+			{loading ? (
+				<output
+					aria-label={t("loading")}
+					aria-live="polite"
+					className="inline-flex items-center"
+				>
+					<RefreshCw
+						aria-hidden="true"
+						className="size-4 animate-spin motion-reduce:animate-none"
+					/>
+				</output>
+			) : null}
 			{error ? (
 				<p role="alert" className="text-sm text-destructive">
 					{t("error")}
@@ -432,8 +455,7 @@ export function RssReader({
 		isFetchingNextPage: reloading || busy,
 		fetchNextPage,
 	});
-	const refreshing = reloading && !loadingMore;
-	const status = [refreshing, busy].some(Boolean) ? t("loading") : "";
+	const refreshing = (reloading && !loadingMore) || busy;
 	return (
 		<main
 			className="space-y-4 bg-background px-3 pt-6 text-foreground sm:px-0"
@@ -475,7 +497,6 @@ export function RssReader({
 						}}
 					/>
 				) : null}
-				<RssLoading display="inline" label={status} />
 				{view === "unread" ? (
 					<RssNewArrivals
 						count={data.newerCount}
