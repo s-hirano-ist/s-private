@@ -12,8 +12,6 @@ final class SPrivateUITests: XCTestCase {
         app.launch()
         for (index, domain) in ["articles", "notes", "images", "books"].enumerated() {
             app.tabBars.buttons.element(boundBy: index + 1).tap()
-            app.buttons["status-filter"].tap()
-            app.buttons["公開済み"].tap()
             let identifier = index < 2 ? "domain-record-exported-\(domain)" : "media-cell-exported-\(domain)"
             let row = app.descendants(matching: .any)[identifier]
             XCTAssertTrue(row.waitForExistence(timeout: 5))
@@ -166,28 +164,39 @@ final class SPrivateUITests: XCTestCase {
     }
 
     @MainActor
-    func testFourDomainTabsOfferOnlyUnexportedAndExportedFilters() throws {
+    func testFourDomainTabsDefaultToExportedAndToggleWithOneTap() throws {
         let app = XCUIApplication()
-        app.launchArguments.append("-ui-testing-authenticated")
+        app.launchArguments += ["-ui-testing-authenticated", "-ui-testing-list-fixtures", "-ui-testing-deletion-fixtures", "-AppleLanguages", "(ja)"]
         app.launch()
 
         let tabs = app.tabBars.firstMatch.buttons
         XCTAssertTrue(tabs.element(boundBy: 0).waitForExistence(timeout: 5))
-        for index in 0..<4 {
+        for (index, domain) in ["articles", "notes", "images", "books"].enumerated() {
             tabs.element(boundBy: index + 1).tap()
             let filter = app.buttons["status-filter"]
             XCTAssertTrue(filter.waitForExistence(timeout: 5))
-            XCTAssertTrue(filter.label.contains("未公開") || filter.label.contains("Unexported"))
+            XCTAssertTrue(filter.label.contains("公開済み"))
+            let prefix = index < 2 ? "domain-record" : "media-cell"
+            let exported = app.descendants(matching: .any)["\(prefix)-exported-\(domain)"]
+            let unexported = app.descendants(matching: .any)["\(prefix)-unexported-\(domain)"]
+            XCTAssertTrue(exported.waitForExistence(timeout: 5))
+            XCTAssertFalse(unexported.exists)
             filter.tap()
-            XCTAssertEqual(app.buttons.matching(identifier: "公開済み").count + app.buttons.matching(identifier: "Exported").count, 1)
-            XCTAssertFalse(app.buttons["すべて"].exists)
-            XCTAssertFalse(app.buttons["All"].exists)
-            XCTAssertFalse(app.buttons["更新済み"].exists)
-            XCTAssertFalse(app.buttons["Updated"].exists)
-            let exported = app.buttons["公開済み"].exists ? app.buttons["公開済み"] : app.buttons["Exported"]
-            exported.tap()
-            XCTAssertTrue(filter.label.contains("公開済み") || filter.label.contains("Exported"))
+            XCTAssertTrue(filter.label.contains("未公開"))
+            XCTAssertTrue(unexported.waitForExistence(timeout: 5))
+            XCTAssertFalse(exported.exists)
+            tabs.element(boundBy: 0).tap()
+            tabs.element(boundBy: index + 1).tap()
+            XCTAssertTrue(filter.label.contains("未公開"))
+            filter.tap()
+            XCTAssertTrue(filter.label.contains("公開済み"))
+            XCTAssertTrue(exported.waitForExistence(timeout: 5))
+            filter.tap()
         }
+        app.terminate()
+        app.launch()
+        tabs.element(boundBy: 1).tap()
+        XCTAssertTrue(app.buttons["status-filter"].label.contains("公開済み"))
     }
 
     @MainActor
@@ -199,6 +208,7 @@ final class SPrivateUITests: XCTestCase {
         let tabs = app.tabBars.firstMatch.buttons
         for (index, domain) in ["article", "note"].enumerated() {
             tabs.element(boundBy: index + 1).tap()
+            app.buttons["status-filter"].tap()
             let shortRow = app.descendants(matching: .any)["domain-record-\(domain)-short"]
             let longRow = app.descendants(matching: .any)["domain-record-\(domain)-long"]
             XCTAssertTrue(shortRow.waitForExistence(timeout: 5))
@@ -223,9 +233,6 @@ final class SPrivateUITests: XCTestCase {
         let tabs = app.tabBars.firstMatch.buttons
         for (index, domain) in ["articles", "notes"].enumerated() {
             tabs.element(boundBy: index + 1).tap()
-            app.buttons["status-filter"].tap()
-            let exported = app.buttons["公開済み"].exists ? app.buttons["公開済み"] : app.buttons["Exported"]
-            exported.tap()
             let list = app.descendants(matching: .any)["domain-list-\(domain)"]
             let empty = app.staticTexts["domain-empty-\(domain)"]
             XCTAssertTrue(empty.waitForExistence(timeout: 5))
@@ -263,6 +270,7 @@ final class SPrivateUITests: XCTestCase {
         app.launch()
 
         app.tabBars.firstMatch.buttons.element(boundBy: 4).tap()
+        app.buttons["status-filter"].tap()
         let short = app.descendants(matching: .any)["media-cell-book-short"]
         let long = app.descendants(matching: .any)["media-cell-book-long"]
         XCTAssertTrue(short.waitForExistence(timeout: 5))

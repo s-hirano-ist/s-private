@@ -63,6 +63,7 @@ struct SPrivateApp: App {
                 for domain in MobileDomain.allCases {
                     try! coordinator.cache(domain: domain, records: [
                         Self.fixtureRecord(id: "exported-\(domain.rawValue)", title: "Exported \(domain.rawValue)", status: .exported),
+                        Self.fixtureRecord(id: "unexported-\(domain.rawValue)", title: "Unexported \(domain.rawValue)"),
                     ])
                 }
             }

@@ -155,12 +155,12 @@ test("production prefetch and list navigation preserve Next.js control flow", as
 			.click();
 		await expect(page.getByLabel("Loading")).toHaveCount(0);
 		await expect(page.locator("main")).not.toContainText("500");
-		await page.getByRole("link", { name: /公開済みに切り替え/u }).click();
-		await expect(page).toHaveURL(/\/viewer$/u);
+		await page.getByRole("link", { name: /未公開に切り替え/u }).click();
+		await expect(page).toHaveURL(/\/unexported$/u);
 		await expect(page.getByLabel("Loading")).toHaveCount(0);
 		await expect(page.locator("main")).not.toContainText("500");
-		await page.getByRole("link", { name: /未公開に切り替え/u }).click();
-		await expect(page).not.toHaveURL(/\/viewer$/u);
+		await page.getByRole("link", { name: /公開済みに切り替え/u }).click();
+		await expect(page).not.toHaveURL(/\/unexported$/u);
 	}
 	expect(failures).toEqual([]);
 });
