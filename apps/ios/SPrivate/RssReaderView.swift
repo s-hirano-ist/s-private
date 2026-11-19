@@ -6,7 +6,7 @@ struct RssReaderView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var list = RssList.unread
     @State private var feedID = ""
-    @State private var page = 0
+    @State private var visibleLimit = 50
     @State private var acceptedIDs: Set<String> = []
     @State private var initialized = false
     @State private var readAll: (entries: [RssEntry], identityID: UUID)?
@@ -30,154 +30,162 @@ struct RssReaderView: View {
 
     private var entries: [RssEntry] { presentation.entries }
     private var newCount: Int { presentation.newCount }
-    private var pageCount: Int { max(1, (entries.count + 49) / 50) }
-    private var effectivePage: Int { min(page, pageCount - 1) }
-    private var visible: [RssEntry] { Array(entries.dropFirst(effectivePage * 50).prefix(50)) }
+    private var visible: [RssEntry] { Array(entries.prefix(visibleLimit)) }
 
     var body: some View {
         NavigationStack {
-            List {
-                Section {
-                    Picker(String(localized: "RSSの表示"), selection: $list) {
-                        ForEach(RssList.allCases) { Text($0.title).tag($0) }
-                    }
-                    .pickerStyle(.segmented)
-                    .accessibilityIdentifier("rss-view-picker")
-                    if list == .unread {
-                        Picker(String(localized: "購読で絞り込み"), selection: $feedID) {
-                            Text(String(localized: "すべての購読")).tag("")
-                            ForEach(rss.snapshot.feeds) { Text($0.label).tag($0.id) }
+            ScrollViewReader { proxy in
+                List {
+                    Section {
+                        Picker(String(localized: "RSSの表示"), selection: $list) {
+                            ForEach(RssList.allCases) { Text($0.title).tag($0) }
                         }
-                        .accessibilityIdentifier("rss-feed-filter")
-                    }
-                    RssStatusView()
-                    if list == .unread && newCount > 0 {
-                        Button(String(format: String(localized: "新着 %lld件を表示"), newCount)) {
-                            initialized = false
-                            acceptanceVersion += 1
-                            page = 0
-                        }
-                        .disabled(!presentationIsCurrent)
-                        .accessibilityIdentifier("rss-show-new")
-                    }
-                    Text(String(format: String(localized: "%lld件"), entries.count))
-                        .font(.caption).foregroundStyle(AppColors.mutedForeground)
-                        .accessibilityIdentifier("rss-count")
-                }
-                .listRowBackground(AppColors.background)
-                if entries.isEmpty && rss.isLoading {
-                    ForEach(0..<6) { _ in
-                        LoadingContent { SkeletonText() }
-                            .listRowBackground(AppColors.background)
-                    }
-                }
-                ForEach(visible) { entry in
-                    let identity = presentationIdentity
-                    RssEntryRow(entry: entry, source: source(entry), canSave: presentationIsCurrent && rss.canSave(entry)) {
-                        guard presentationIsCurrent, rss.identityID == identity, let url = entry.link else { return }
-                        let sessionID = rss.sessionID
-                        let shouldMarkRead = rss.isOnline && entry.feedID != nil
-                        openURL(url) { accepted in
-                            if accepted && shouldMarkRead && rss.sessionID == sessionID {
-                                Task { await rss.markRead([entry], sessionID: sessionID) }
+                        .pickerStyle(.segmented)
+                        .accessibilityIdentifier("rss-view-picker")
+                        if list == .unread {
+                            Picker(String(localized: "購読で絞り込み"), selection: $feedID) {
+                                Text(String(localized: "すべての購読")).tag("")
+                                ForEach(rss.snapshot.feeds) { Text($0.label).tag($0.id) }
                             }
+                            .accessibilityIdentifier("rss-feed-filter")
                         }
-                    } onSave: {
-                        guard presentationIsCurrent, rss.identityID == identity else { return }
-                        let sessionID = rss.sessionID
-                        Task { await rss.toggleSaved(entry, sessionID: sessionID) }
+                        RssStatusView()
+                        if list == .unread && newCount > 0 {
+                            Button(String(format: String(localized: "新着 %lld件を表示"), newCount)) {
+                                initialized = false
+                                acceptanceVersion += 1
+                                visibleLimit = 50
+                                proxy.scrollTo("rss-top", anchor: .top)
+                            }
+                            .disabled(!presentationIsCurrent)
+                            .accessibilityIdentifier("rss-show-new")
+                        }
+                        Text(String(format: String(localized: "%lld件"), entries.count))
+                            .font(.caption).foregroundStyle(AppColors.mutedForeground)
+                            .accessibilityIdentifier("rss-count")
                     }
                     .listRowBackground(AppColors.background)
-                }
-                if entries.isEmpty && !rss.isLoading {
-                    ContentUnavailableView(
-                        list == .unread ? String(localized: "未読記事はありません") : String(localized: "保存した記事はありません"),
-                        systemImage: list == .unread ? "checkmark.circle" : "star"
-                    )
-                    .listRowBackground(AppColors.background)
-                    .accessibilityIdentifier("rss-empty")
-                }
-                if pageCount > 1 { pagination }
-            }
-            .listStyle(.plain)
-            .scrollContentBackground(.hidden)
-            .background(AppColors.background)
-            .foregroundStyle(AppColors.foreground)
-            .accessibilityIdentifier("rss-reader")
-            .navigationTitle("")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    if list == .unread {
-                        Button(String(localized: "すべて既読"), systemImage: "checkmark.circle") { readAll = (entries, presentationIdentity) }
-                            .disabled(!presentationIsCurrent || !rss.canMutate || !rss.isComplete || entries.isEmpty)
-                            .accessibilityIdentifier("rss-read-all")
+                    .id("rss-top")
+                    if entries.isEmpty && rss.isLoading {
+                        ForEach(0..<6) { _ in
+                            LoadingContent { SkeletonText() }
+                                .listRowBackground(AppColors.background)
+                        }
+                    }
+                    ForEach(visible) { entry in
+                        let identity = presentationIdentity
+                        RssEntryRow(entry: entry, source: source(entry), canSave: presentationIsCurrent && rss.canSave(entry)) {
+                            guard presentationIsCurrent, rss.identityID == identity, let url = entry.link else { return }
+                            let sessionID = rss.sessionID
+                            let shouldMarkRead = rss.isOnline && entry.feedID != nil
+                            openURL(url) { accepted in
+                                if accepted && shouldMarkRead && rss.sessionID == sessionID {
+                                    Task { await rss.markRead([entry], sessionID: sessionID) }
+                                }
+                            }
+                        } onSave: {
+                            guard presentationIsCurrent, rss.identityID == identity else { return }
+                            let sessionID = rss.sessionID
+                            Task { await rss.toggleSaved(entry, sessionID: sessionID) }
+                        }
+                        .listRowBackground(AppColors.background)
+                    }
+                    if entries.isEmpty && !rss.isLoading {
+                        ContentUnavailableView(
+                            list == .unread ? String(localized: "未読記事はありません") : String(localized: "保存した記事はありません"),
+                            systemImage: list == .unread ? "checkmark.circle" : "star"
+                        )
+                        .listRowBackground(AppColors.background)
+                        .accessibilityIdentifier("rss-empty")
+                    }
+                    if visible.count < entries.count {
+                        let limit = visibleLimit
+                        Color.clear.frame(height: 1)
+                            .listRowBackground(AppColors.background)
+                            .accessibilityHidden(true)
+                            .id(limit)
+                            .task(id: displayedKey) {
+                                guard !Task.isCancelled, presentationIsCurrent, visibleLimit == limit else { return }
+                                visibleLimit += 50
+                            }
                     }
                 }
-                ToolbarItemGroup(placement: .topBarTrailing) {
-                    Button(String(localized: "更新"), systemImage: "arrow.clockwise") {
-                        Task { await rss.synchronize(manual: true) }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .background(AppColors.background)
+                .foregroundStyle(AppColors.foreground)
+                .accessibilityIdentifier("rss-reader")
+                .navigationTitle("")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        if list == .unread {
+                            Button(String(localized: "すべて既読"), systemImage: "checkmark.circle") { readAll = (entries, presentationIdentity) }
+                                .disabled(!presentationIsCurrent || !rss.canMutate || !rss.isComplete || entries.isEmpty)
+                                .accessibilityIdentifier("rss-read-all")
+                        }
                     }
-                    .disabled(!rss.isOnline || rss.isLoading)
-                    .accessibilityIdentifier("rss-refresh")
-                    NavigationLink {
-                        SettingsView()
-                    } label: {
-                        Label(String(localized: "設定"), systemImage: "gearshape")
+                    ToolbarItemGroup(placement: .topBarTrailing) {
+                        Button(String(localized: "更新"), systemImage: "arrow.clockwise") {
+                            Task { await rss.synchronize(manual: true) }
+                        }
+                        .disabled(!rss.isOnline || rss.isLoading)
+                        .accessibilityIdentifier("rss-refresh")
+                        NavigationLink {
+                            SettingsView()
+                        } label: {
+                            Label(String(localized: "設定"), systemImage: "gearshape")
+                        }
+                        .accessibilityIdentifier("settings-link")
                     }
-                    .accessibilityIdentifier("settings-link")
                 }
-            }
-            .confirmationDialog(
-                String(localized: "表示中の購読の記事をすべて既読にしますか？"),
-                isPresented: Binding(get: { readAll != nil }, set: { if !$0 { readAll = nil } }),
-                titleVisibility: .visible
-            ) {
-                Button(String(localized: "すべて既読"), role: .destructive) {
-                    let captured = readAll
+                .confirmationDialog(
+                    String(localized: "表示中の購読の記事をすべて既読にしますか？"),
+                    isPresented: Binding(get: { readAll != nil }, set: { if !$0 { readAll = nil } }),
+                    titleVisibility: .visible
+                ) {
+                    Button(String(localized: "すべて既読"), role: .destructive) {
+                        let captured = readAll
+                        readAll = nil
+                        if let captured, captured.identityID == rss.identityID {
+                            let sessionID = rss.sessionID
+                            Task { await rss.markRead(captured.entries, sessionID: sessionID) }
+                        }
+                    }
+                    .disabled(!rss.canMutate)
+                    Button(String(localized: "キャンセル"), role: .cancel) { readAll = nil }
+                }
+                .refreshable { await rss.refresh(list) }
+                .task(id: rss.scope) { await rss.synchronize() }
+                .task(id: presentationKey) { await rebuild(presentationKey) }
+                .onChange(of: rss.identityID) { _, _ in
                     readAll = nil
-                    if let captured, captured.identityID == rss.identityID {
-                        let sessionID = rss.sessionID
-                        Task { await rss.markRead(captured.entries, sessionID: sessionID) }
+                    initialized = false
+                    acceptedIDs = []
+                    presentation = RssPresentation()
+                    visibleLimit = 50
+                    proxy.scrollTo("rss-top", anchor: .top)
+                }
+                .onChange(of: list) { _, _ in
+                    visibleLimit = 50
+                    proxy.scrollTo("rss-top", anchor: .top)
+                }
+                .onChange(of: feedID) { _, _ in
+                    visibleLimit = 50
+                    proxy.scrollTo("rss-top", anchor: .top)
+                }
+                .onChange(of: rss.isOnline) { _, online in if online { Task { await rss.synchronize() } } }
+                .task(id: scenePhase) {
+                    guard scenePhase == .active else { return }
+                    while !Task.isCancelled {
+                        do { try await Task.sleep(for: .seconds(300)) } catch { return }
+                        guard !Task.isCancelled else { return }
+                        await rss.synchronize()
                     }
                 }
-                .disabled(!rss.canMutate)
-                Button(String(localized: "キャンセル"), role: .cancel) { readAll = nil }
+                .onChange(of: scenePhase) { _, phase in if phase == .active { Task { await rss.synchronize() } } }
             }
-            .refreshable { await rss.refresh(list) }
-            .task(id: rss.scope) { await rss.synchronize() }
-            .task(id: presentationKey) { await rebuild(presentationKey) }
-            .onChange(of: rss.identityID) { _, _ in
-                readAll = nil
-                initialized = false
-                acceptedIDs = []
-                presentation = RssPresentation()
-                page = 0
-            }
-            .onChange(of: list) { _, _ in page = 0 }
-            .onChange(of: feedID) { _, _ in page = 0 }
-            .onChange(of: rss.isOnline) { _, online in if online { Task { await rss.synchronize() } } }
-            .task(id: scenePhase) {
-                guard scenePhase == .active else { return }
-                while !Task.isCancelled {
-                    do { try await Task.sleep(for: .seconds(300)) } catch { return }
-                    guard !Task.isCancelled else { return }
-                    await rss.synchronize()
-                }
-            }
-            .onChange(of: scenePhase) { _, phase in if phase == .active { Task { await rss.synchronize() } } }
         }
-    }
-    private var pagination: some View {
-        HStack {
-            Button(String(localized: "前へ")) { page = max(0, effectivePage - 1) }.disabled(effectivePage == 0)
-            Spacer()
-            Text("\(effectivePage * 50 + 1)–\(min((effectivePage + 1) * 50, entries.count)) / \(entries.count)")
-                .font(.caption).monospacedDigit()
-            Spacer()
-            Button(String(localized: "次へ")) { page = effectivePage + 1 }.disabled(effectivePage + 1 >= pageCount)
-        }
-        .listRowBackground(AppColors.background)
     }
     private func source(_ entry: RssEntry) -> String {
         entry.feedID.flatMap { presentation.sources[$0] } ?? entry.link?.host() ?? ""
@@ -200,7 +208,6 @@ struct RssReaderView: View {
         presentation = value
         acceptedIDs = ids
         if complete { initialized = true }
-        page = min(page, pageCount - 1)
         if !feedID.isEmpty && !snapshot.feeds.contains(where: { $0.id == feedID }) { feedID = "" }
     }
 }

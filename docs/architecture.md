@@ -126,8 +126,8 @@ import { ArticlesStackLoader } from "@/loaders/articles";
 ### 自動依存関係管理（Renovate）
 - **対象**: npm（pnpm catalog・overrides・型定義を含む）/ mise / nvm / Docker Compose / GitHub Actions / Swift Package Manager / XcodeGen。Dependabotとの二重管理は行わない。
 - **Swift packages**: `swift` managerで `apps/ios/Packages/**/Package.swift`、`xcodegen` managerで `apps/ios/project.yml` のリモートpackageを更新する。ローカルpackageの `path` は対象外。
-- **更新PR**: major・minor・patch・digestを単一の `all dependencies` PRへ集約し、すべて手動レビューでマージする。
-- **スケジュール**: 通常更新は月曜11時前（Asia/Tokyo）。脆弱性修正も同じPRに集約する。修正版のある未解決アラートを検出した日は、週次の更新窓を待たず集約PR全体を更新する。
+- **更新PR**: GitHub Actions / npm（nvmのNode.js・miseのpnpmを含む）/ Swift（Swift Package Manager・XcodeGen）/ tooling（pnpm以外のmise・Docker Compose）の4グループに分割する。各グループ内のmajor・minor・patch・digestは1つのPRに集約し、すべて手動レビューでマージする。同時PR数・ブランチ数・1時間あたりのPR作成数はそれぞれ4件。
+- **スケジュール**: 通常更新は月曜11時前（Asia/Tokyo）。脆弱性修正は該当グループのPRに集約する。修正版のある未解決アラートを検出した日は、週次の更新窓を待たず全グループのPRを更新する。
 - **Node.js**: `.nvmrc` は26系の完全バージョン、`engines.node` とVercelの両projectは `26.x`。RenovateはNode.jsと `@types/node` を26系に制限する。次のmajor移行では制約・型定義・Vercel設定も同じPRで変更する。
 - **TypeScript**: API生成・TypeDoc・StrykerがJavaScript Compiler APIを利用するため、Renovateの更新は6系までに制限する。7系への移行はこれらのツールの対応と合わせて行う。
 - **CockroachDB**: ローカルイメージは26.2系に制限する。26.3.4では既存のモバイル同期row triggerを持つテーブルへの書き込みが `could not decorrelate subquery with mutation` で失敗することを確認済み。次の系列への移行時は、migration・trigger適用後のCRUDとE2Eを検証する。

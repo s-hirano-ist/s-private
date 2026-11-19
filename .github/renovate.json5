@@ -9,7 +9,7 @@
 		":enableVulnerabilityAlertsWithLabel(security)",
 	],
 	reviewers: ["s-hirano-ist"],
-	// Keep every dependency source in one reviewable PR, including Actions and Docker.
+	// Group dependency updates by ecosystem in the packageRules below.
 	enabledManagers: [
 		"npm",
 		"mise",
@@ -31,8 +31,9 @@
 	dependencyDashboard: {
 		enabled: true,
 	},
-	branchConcurrentLimit: 1,
-	prConcurrentLimit: 1,
+	branchConcurrentLimit: 4,
+	prConcurrentLimit: 4,
+	prHourlyLimit: 4,
 	separateMajorMinor: false,
 	separateMinorPatch: false,
 	separateMultipleMajor: false,
@@ -44,10 +45,9 @@
 		enabled: false,
 	},
 	vulnerabilityAlerts: {
-		// Share the regular update branch, but do not wait for the weekly window.
-		groupName: "all dependencies",
-		groupSlug: "all-dependencies",
-		branchTopic: "all-dependencies",
+		// Preserve the ecosystem groupSlug when security fixes override grouping.
+		groupName: "{{{manager}}} dependencies",
+		branchTopic: "{{{groupSlug}}}",
 		schedule: ["at any time"],
 		labels: ["dependencies", "security"],
 	},
@@ -96,11 +96,36 @@
 		{
 			// Override preset groups and update-type splitting for every manager.
 			matchPackageNames: ["*"],
-			groupName: "all dependencies",
-			groupSlug: "all-dependencies",
 			separateMajorMinor: false,
 			separateMinorPatch: false,
 			separateMultipleMajor: false,
+		},
+		{
+			matchManagers: ["github-actions"],
+			groupName: "GitHub Actions dependencies",
+			groupSlug: "github-actions-dependencies",
+		},
+		{
+			// Keep Node.js runtime versions with npm engines and type definitions.
+			matchManagers: ["npm", "nvm"],
+			groupName: "npm dependencies",
+			groupSlug: "npm-dependencies",
+		},
+		{
+			matchManagers: ["swift", "xcodegen"],
+			groupName: "Swift dependencies",
+			groupSlug: "swift-dependencies",
+		},
+		{
+			matchManagers: ["mise", "docker-compose"],
+			groupName: "tooling dependencies",
+			groupSlug: "tooling-dependencies",
+		},
+		{
+			// Update mise's pnpm pin together with package.json's packageManager.
+			matchPackageNames: ["pnpm"],
+			groupName: "npm dependencies",
+			groupSlug: "npm-dependencies",
 		},
 	],
 }

@@ -201,14 +201,12 @@ export const FetchFailure: Story = {
 
 export const BackgroundReadPending: Story = {
 	args: {
-		initialData: { ...page, unreadCount: 51 },
 		services: {
 			...services,
 			loadRss: fn(() => new Promise<RssPage>(() => {})),
 		},
 	},
 	play: async ({ args, canvas }) => {
-		// Refresh reads only the DB; existing cards stay interactive while it is pending.
 		await userEvent.click(canvas.getByRole("button", { name: "更新" }));
 		await waitFor(() => expect(args.services.loadRss).toHaveBeenCalledTimes(1));
 		await expect(canvas.getByRole("status")).toHaveAccessibleName(
@@ -221,21 +219,99 @@ export const BackgroundReadPending: Story = {
 			canvas.getByRole("button", { name: "あとで読むに保存" }),
 		);
 		await expect(args.services.saveRss).toHaveBeenCalled();
-		await userEvent.click(canvas.getByRole("button", { name: "次へ" }));
-		await waitFor(() =>
-			expect(args.services.loadRss).toHaveBeenCalledWith(
-				50,
-				undefined,
-				"unread",
-				expect.any(AbortSignal),
-				0,
-			),
+	},
+};
+
+const infinitePage = (offset = 0, count = 120): RssPage => ({
+	...page,
+	offset,
+	unreadCount: count,
+	unread: Array.from({ length: Math.min(50, count - offset) }, (_, index) => ({
+		...page.unread[0],
+		id: `article-${offset + index}`,
+		url: `https://example.com/article/${offset + index}`,
+		title: `記事 ${offset + index + 1}`,
+	})),
+});
+export const InfiniteScroll: Story = {
+	args: {
+		initialData: infinitePage(),
+		services: {
+			...services,
+			loadRss: fn(async (offset = 0) => infinitePage(offset)),
+		},
+	},
+	play: async ({ canvas }) => {
+		await userEvent.click(
+			canvas.getByRole("button", { name: "さらに読み込む" }),
 		);
-		// A foreground page change still prevents duplicate page navigation.
-		await expect(canvas.getByRole("button", { name: "次へ" })).toBeDisabled();
-		await expect(canvas.getByRole("status")).toHaveAccessibleName(
-			"読み込み中…",
+		await expect(
+			await canvas.findByRole("link", { name: "記事 51" }),
+		).toBeInTheDocument();
+		await expect(
+			canvas.getByRole("link", { name: "記事 1" }),
+		).toBeInTheDocument();
+		const more = canvas.getByRole("button", { name: "さらに読み込む" });
+		await userEvent.click(more);
+		await expect(await canvas.findByText("120 / 120件を表示")).toBeVisible();
+		await expect(
+			canvas.queryByRole("button", { name: "さらに読み込む" }),
+		).not.toBeInTheDocument();
+	},
+};
+export const AdditionalReadPending: Story = {
+	args: {
+		initialData: infinitePage(),
+		services: {
+			...services,
+			loadRss: fn(() => new Promise<RssPage>(() => {})),
+		},
+	},
+	play: async ({ canvas }) => {
+		await userEvent.click(
+			canvas.getByRole("button", { name: "さらに読み込む" }),
 		);
+		await expect(
+			canvas.getByRole("button", { name: "さらに読み込む" }),
+		).toBeDisabled();
+		await expect(
+			canvas.getByRole("status", { name: "読み込み中…" }),
+		).toHaveAccessibleName("読み込み中…");
+		await expect(canvas.getByRole("link", { name: "記事 1" })).toHaveAttribute(
+			"aria-disabled",
+			"false",
+		);
+	},
+};
+let failAdditionalRead = true;
+const retryRead = fn(async (offset = 0) => {
+	if (offset === 50 && failAdditionalRead) {
+		failAdditionalRead = false;
+		throw new Error("Offline");
+	}
+	return infinitePage(offset);
+});
+export const AdditionalReadFailure: Story = {
+	args: {
+		initialData: infinitePage(),
+		services: {
+			...services,
+			loadRss: retryRead,
+		},
+	},
+	beforeEach: () => {
+		failAdditionalRead = true;
+	},
+	play: async ({ canvas }) => {
+		await userEvent.click(
+			canvas.getByRole("button", { name: "さらに読み込む" }),
+		);
+		await expect(await canvas.findByRole("alert")).toBeVisible();
+		await userEvent.click(canvas.getByRole("button", { name: "再読み込み" }));
+		await expect(
+			await canvas.findByRole("link", { name: "記事 51" }),
+		).toBeInTheDocument();
+		await expect(canvas.queryByRole("alert")).not.toBeInTheDocument();
 	},
 };
 
@@ -528,9 +604,9 @@ export const FreshSubscriptions: Story = {
 	},
 };
 
-export const NewArrivalsWhileReadingPageTwo: Story = {
+export const NewArrivalsWhileReadingLoadedArticles: Story = {
 	args: {
-		initialData: { ...page, unreadCount: 61 },
+		initialData: infinitePage(0, 61),
 		services: {
 			...services,
 			loadRss: fn(
@@ -541,39 +617,37 @@ export const NewArrivalsWhileReadingPageTwo: Story = {
 					_signal?: AbortSignal,
 					snapshot?: number,
 				) => ({
-					...page,
-					offset,
+					...infinitePage(offset, 61),
 					snapshotRevision: snapshot ?? 1,
-					unreadCount: 61,
 					newerCount: snapshot === 0 ? 3 : 0,
-					unread: [
-						{
-							...page.unread[0],
-							title:
-								snapshot === undefined
-									? "更新後の新着記事"
-									: "読んでいる2ページ目の記事",
-						},
-					],
+					...(snapshot === undefined
+						? {
+								unread: [{ ...page.unread[0], title: "更新後の新着記事" }],
+								unreadCount: 1,
+							}
+						: {}),
 				}),
 			),
 		},
 	},
 	play: async ({ canvas }) => {
-		await userEvent.click(canvas.getByRole("button", { name: "次へ" }));
+		await userEvent.click(
+			canvas.getByRole("button", { name: "さらに読み込む" }),
+		);
 		await expect(
-			await canvas.findByRole("link", { name: "読んでいる2ページ目の記事" }),
-		).toBeVisible();
-		await expect(canvas.getByText("51–61 / 61")).toBeVisible();
+			await canvas.findByRole("link", { name: "記事 51" }),
+		).toBeInTheDocument();
+		await expect(canvas.getByText("61 / 61件を表示")).toBeVisible();
 		await userEvent.click(
 			canvas.getByRole("button", { name: "新着3件を表示" }),
 		);
 		await expect(
 			await canvas.findByRole("link", { name: "更新後の新着記事" }),
 		).toBeVisible();
-		await expect(canvas.getByText("1–50 / 61")).toBeVisible();
+		await expect(canvas.getByText("1 / 1件を表示")).toBeVisible();
 	},
 };
+
 export const ReadSnapshotEmptyWithNewArrivals: Story = {
 	args: {
 		initialData: { ...page, unread: [], unreadCount: 0, newerCount: 3 },
