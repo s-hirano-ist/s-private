@@ -5,11 +5,14 @@ root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 group="${IOS_TEST_GROUP:-all}"
 if [[ "${1:-}" == "--print-selection" ]]; then group="${2:-all}"; fi
 
-# Keep the expensive navigation cases separate. New UI cases stay in the ui group.
+# Balance navigation and list-layout cases against the remaining UI cases.
+# New UI cases stay in the ui group.
 navigation=(
   SPrivateUITests/SPrivateUITests/testFourDomainTabsOfferHeaderActionsInWebOrder
   SPrivateUITests/SPrivateUITests/testFourDomainTabsOfferOnlyUnexportedAndExportedFilters
   SPrivateUITests/SPrivateUITests/testDomainTabsFollowSystemLanguage
+  SPrivateUITests/SPrivateUITests/testArticleAndNoteEmptyStatesDoNotCreateBlankRows
+  SPrivateUITests/SPrivateUITests/testArticleAndNoteRowsShowLongTitlesAndOpenDetails
 )
 selection=()
 case "$group" in

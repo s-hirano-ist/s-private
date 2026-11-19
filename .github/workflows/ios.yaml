@@ -68,7 +68,8 @@ jobs:
   tests:
     needs: build
     runs-on: xcode-27
-    timeout-minutes: 15
+    # Cold Simulator startup and XCTest animation waits vary between runners.
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:

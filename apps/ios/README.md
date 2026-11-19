@@ -75,9 +75,12 @@ inside this worktree's `.derivedData`. Each run saves an `.xcresult` bundle unde
 
 CI builds those products once, preserves executable permissions and symlinks in
 a tar archive, and distributes them to four independent iPhone 17 / iOS 27 jobs:
-unit tests, RSS UI tests, expensive navigation UI cases, and the remaining UI
-cases. Navigation and list-layout tests use in-memory fixtures, so they do not
-start live synchronization while XCTest waits for the app to become idle.
+unit tests, RSS UI tests, navigation/list-layout UI cases, and the remaining UI
+cases. The two text-list layout cases share the navigation group to balance
+the observed XCTest animation waits across jobs. Each test job allows 20 minutes
+including cold Simulator startup. Navigation and list-layout tests use in-memory
+fixtures, so they do not start live synchronization while XCTest waits for the
+app to become idle.
 `IOS_TEST_GROUP=unit|rss|navigation|ui mise run ios:test:run` selects the
 same groups locally. The default runs all tests. Each job uses one Simulator;
 there is no extra Xcode test-worker cloning. API-package tests still run on the
