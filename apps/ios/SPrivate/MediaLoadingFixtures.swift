@@ -48,7 +48,7 @@ struct MediaLoadingFixtureView: View {
 /// Keeps each phase observable until the UI test explicitly releases the response.
 @MainActor
 @Observable
-private final class MediaFixtureRequest {
+final class MediaFixtureRequest {
     private(set) var isPending = false
     @ObservationIgnored private var continuation: CheckedContinuation<Void, Error>?
 

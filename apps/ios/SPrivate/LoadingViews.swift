@@ -1,5 +1,28 @@
 import SwiftUI
 
+/// The normal label owns layout in every phase, including inherited toolbar label styles.
+struct BusyLabel<LabelContent: View>: View {
+    let isBusy: Bool
+    var status = String(localized: "処理中")
+    @ViewBuilder var label: LabelContent
+
+    var body: some View {
+        label
+            .opacity(isBusy ? 0 : 1)
+            .frame(minWidth: 20, minHeight: 20)
+            .overlay {
+                if isBusy {
+                    ProgressView().controlSize(.small).accessibilityHidden(true)
+                }
+            }
+            .accessibilityRepresentation {
+                label
+                    .accessibilityElement(children: .combine)
+                    .accessibilityValue(isBusy ? status : "")
+            }
+    }
+}
+
 /// Static placeholders share the app's semantic colors in both appearances.
 struct SkeletonBlock: View {
     var cornerRadius: CGFloat = 6
@@ -133,4 +156,22 @@ struct ImagePlaceholder: View {
 
 #Preview("Loading — Image") {
     DetailSkeleton(domain: .images).background(AppColors.background)
+}
+
+#Preview("Actions — Idle and working") {
+    VStack(alignment: .leading, spacing: 24) {
+        ForEach([false, true], id: \.self) { busy in
+            HStack(spacing: 24) {
+                Button {} label: {
+                    BusyLabel(isBusy: busy) { Label(String(localized: "削除"), systemImage: "trash") }
+                }.labelStyle(.iconOnly).disabled(busy)
+                Button {} label: {
+                    BusyLabel(isBusy: busy) { Text(String(localized: "保存")) }
+                }.disabled(busy)
+                Button {} label: {
+                    BusyLabel(isBusy: busy) { Text(String(localized: "今すぐ同期")) }
+                }.disabled(busy)
+            }
+        }
+    }.padding()
 }

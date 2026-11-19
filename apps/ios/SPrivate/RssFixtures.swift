@@ -28,6 +28,12 @@
         var data = snapshot
         private let delayed: Bool
         let controlledPages: Bool
+        let controlledMutations = ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-controlled-mutations")
+        let mutationRequest = MediaFixtureRequest()
+
+        private func waitForMutation() async throws {
+            if controlledMutations { try await mutationRequest.waitForCompletion() }
+        }
         private(set) var holdsRemainingPages = false
         private(set) var isPagePending = false
         @ObservationIgnored private var pendingPages: [UUID: CheckedContinuation<Void, Error>] = [:]
@@ -86,17 +92,21 @@
         }
 
         func rssSubscribe(url: String, title: String, folder: String) async throws {
+            try await waitForMutation()
             data.feeds.append(.init(id: UUID().uuidString, url: url, title: title, folder: folder, lastFetchedAt: .now))
         }
         func rssUnsubscribe(id: String) async throws {
+            try await waitForMutation()
             data.feeds.removeAll { $0.id == id }
             data.unread.removeAll { $0.feedID == id }
         }
         func rssRead(ids: [String]) async throws {
+            try await waitForMutation()
             if delayed { try await Task.sleep(for: .milliseconds(300)) }
             data.unread.removeAll { ids.contains($0.id) }
         }
         func rssSave(_ entry: RssEntry) async throws -> RssEntry {
+            try await waitForMutation()
             if delayed { try await Task.sleep(for: .milliseconds(300)) }
             if let existing = data.saved.first(where: { $0.url == entry.url }) { return existing }
             let id = UUID().uuidString
@@ -110,6 +120,7 @@
             return data.saved[0]
         }
         func rssUnsave(id: String) async throws {
+            try await waitForMutation()
             data.saved.removeAll { $0.id == id }
             for index in data.unread.indices where data.unread[index].savedID == id { data.unread[index].savedID = nil }
         }
@@ -129,12 +140,19 @@
 
         var body: some View {
             HStack {
-                Button("Hold RSS pages") { client.holdRemainingPages() }
-                    .disabled(client.holdsRemainingPages)
-                    .accessibilityIdentifier("fixture-rss-hold-pages")
-                Button("Release RSS pages") { client.releaseRemainingPages() }
-                    .disabled(!client.isPagePending)
-                    .accessibilityIdentifier("fixture-rss-release-pages")
+                if client.controlledMutations {
+                    Button("Complete RSS mutation") { client.mutationRequest.complete() }
+                        .disabled(!client.mutationRequest.isPending)
+                        .accessibilityIdentifier("fixture-rss-complete-mutation")
+                }
+                if client.controlledPages {
+                    Button("Hold RSS pages") { client.holdRemainingPages() }
+                        .disabled(client.holdsRemainingPages)
+                        .accessibilityIdentifier("fixture-rss-hold-pages")
+                    Button("Release RSS pages") { client.releaseRemainingPages() }
+                        .disabled(!client.isPagePending)
+                        .accessibilityIdentifier("fixture-rss-release-pages")
+                }
             }
             .font(.caption)
             .padding(8)

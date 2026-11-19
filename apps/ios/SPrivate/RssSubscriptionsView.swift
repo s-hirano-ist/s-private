@@ -15,7 +15,11 @@ struct RssSubscriptionsView: View {
                 RssStatusView()
                 Button(String(localized: "購読を追加"), systemImage: "plus") { sheet = .subscribe }
                     .disabled(!rss.canMutate || rss.pendingKeys.contains(where: { $0.hasPrefix("subscribe:") })).accessibilityIdentifier("rss-add-subscription")
-                Button(String(localized: "Inoreaderから取り込み"), systemImage: "square.and.arrow.down") { importIdentity = rss.identityID; importing = true }
+                Button { importIdentity = rss.identityID; importing = true } label: {
+                    BusyLabel(isBusy: rss.pendingKeys.contains("import")) {
+                        Label(String(localized: "Inoreaderから取り込み"), systemImage: "square.and.arrow.down")
+                    }
+                }
                     .disabled(!rss.canMutate || rss.pendingKeys.contains("import")).accessibilityIdentifier("rss-import")
                 Text(String(localized: "Inoreader ZIP、OPML、starred.jsonに対応します"))
                     .font(.caption).foregroundStyle(AppColors.mutedForeground)
@@ -48,7 +52,9 @@ struct RssSubscriptionsView: View {
                                 .caption
                             ).foregroundStyle(AppColors.destructive)
                         }
-                        Button(String(localized: "購読解除"), role: .destructive) { removing = (feed, identity) }
+                        Button(role: .destructive) { removing = (feed, identity) } label: {
+                            BusyLabel(isBusy: rss.pendingKeys.contains("unsubscribe:\(feed.id)")) { Text(String(localized: "購読解除")) }
+                        }
                             .disabled(!rss.canMutate || rss.pendingKeys.contains("unsubscribe:\(feed.id)")).accessibilityIdentifier("rss-unsubscribe-\(feed.id)")
                     }
                     .listRowBackground(AppColors.background)
@@ -65,9 +71,10 @@ struct RssSubscriptionsView: View {
         .navigationTitle(String(localized: "RSSの購読管理"))
         .accessibilityIdentifier("rss-subscriptions")
         .toolbar {
-            Button(String(localized: "更新"), systemImage: "arrow.clockwise") {
-                Task { await rss.synchronize(manual: true) }
+            Button { Task { await rss.synchronize(manual: true) } } label: {
+                BusyLabel(isBusy: rss.isLoading) { Label(String(localized: "更新"), systemImage: "arrow.clockwise") }
             }
+            .labelStyle(.iconOnly)
             .disabled(!rss.isOnline || rss.isLoading)
         }
         .task { await rss.synchronize() }
@@ -148,7 +155,7 @@ private struct RssSubscribeView: View {
                     Button(String(localized: "キャンセル")) { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(String(localized: "追加")) {
+                    Button {
                         guard identity == rss.identityID, !submitting else { return }
                         submitting = true
                         let sessionID = rss.sessionID
@@ -157,6 +164,8 @@ private struct RssSubscribeView: View {
                             submitting = false
                             if succeeded { dismiss() }
                         }
+                    } label: {
+                        BusyLabel(isBusy: submitting) { Text(String(localized: "追加")) }
                     }
                     .disabled(submitting || !valid || !rss.canMutate || identity != rss.identityID || rss.pendingKeys.contains("subscribe:\(url)")).accessibilityIdentifier("rss-subscribe-submit")
                 }

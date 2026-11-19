@@ -130,12 +130,14 @@ struct SPrivateApp: App {
     @ViewBuilder
     private var rootContent: some View {
         #if DEBUG
-        if ProcessInfo.processInfo.arguments.contains("-ui-testing-media-layout") {
+        if ProcessInfo.processInfo.arguments.contains("-ui-testing-action-layout") {
+            ActionLoadingFixtureView()
+        } else if ProcessInfo.processInfo.arguments.contains("-ui-testing-media-layout") {
             MediaLoadingFixtureView()
         } else {
             ContentView()
                 .safeAreaInset(edge: .top) {
-                    if let rssFixtureClient, rssFixtureClient.controlledPages {
+                    if let rssFixtureClient, rssFixtureClient.controlledPages || rssFixtureClient.controlledMutations {
                         RssFixtureControls(client: rssFixtureClient)
                     }
                 }
