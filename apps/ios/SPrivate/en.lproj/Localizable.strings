@@ -120,3 +120,6 @@
 "前へ" = "Previous";
 "次へ" = "Next";
 "更新" = "Refresh";
+
+"記事情報を同期中" = "Syncing articles";
+"最終同期" = "Last synced";

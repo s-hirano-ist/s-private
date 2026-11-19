@@ -272,17 +272,17 @@ struct RssTests {
         #expect(rss.snapshot.saved.isEmpty)
     }
 
-    @Test("Feeds use at most five concurrent requests and continue after an individual failure")
-    func rollingRefresh() async throws {
+    @Test("Automatic and manual metadata refreshes never poll external feeds, even for stale subscriptions")
+    func databaseOnlyRefresh() async throws {
         let client = RssTestClient()
-        client.feeds = (0..<12).map { .init(id: "feed-\($0)", url: "https://example.com/\($0)", title: "Feed \($0)") }
-        client.failedFeedID = "feed-0"
+        client.feeds = (0..<12).map { .init(id: "feed-\($0)", url: "https://example.com/\($0)", title: "Feed") }
         let rss = model(client, container: try container())
+        await rss.synchronize()
         await rss.synchronize(manual: true)
-        #expect(client.refreshes == 12)
-        #expect(client.maxConcurrentRefreshes == 5)
-        #expect(rss.completedFeeds == 12)
-        #expect(rss.errorMessage != nil)
+        #expect(client.refreshes == 0)
+        #expect(client.requests.count == 8)
+        #expect(rss.isComplete)
+        #expect(rss.errorMessage == nil)
     }
 
     @Test("Opening an article during a pending mutation queues the read instead of dropping it")
@@ -431,7 +431,7 @@ extension RssTests {
         #expect(rss.snapshot.unread[0].savedID == "existing")
     }
 
-    @Test("Concurrent refresh gestures coalesce and changed feeds trigger only one final metadata pass")
+    @Test("Concurrent refresh gestures coalesce into one DB metadata pass")
     func coalescedRefresh() async throws {
         let client = RssTestClient()
         client.unread = [entry(0)]
@@ -450,8 +450,8 @@ extension RssTests {
         release?.resume()
         await first.value
         for task in joined { await task.value }
-        #expect(client.refreshes == 12)
-        #expect(client.requests.count == 8)
+        #expect(client.refreshes == 0)
+        #expect(client.requests.count == 4)
         #expect(!rss.isLoading)
     }
 
@@ -480,24 +480,107 @@ extension RssTests {
         #expect(restored.snapshot.unread.map(\.id) == ["unread-1"])
     }
 
-    @Test("A read during feed polling leaves polling alive and duplicate read intents are removed")
-    func readDuringPolling() async throws {
+    @Test("A read during DB synchronization survives the download and duplicate read intents are removed")
+    func readDuringSynchronization() async throws {
         let client = RssTestClient()
         client.unread = [entry(0), entry(1)]
         let rss = model(client, container: try container())
         await rss.synchronize()
         var release: CheckedContinuation<Void, Never>?
-        client.beforeRefresh = { await withCheckedContinuation { release = $0 } }
+        client.beforePage = {
+            client.beforePage = nil
+            await withCheckedContinuation { release = $0 }
+        }
         let refresh = Task { await rss.synchronize(manual: true) }
         try await waitFor { release != nil }
-        await rss.markRead([entry(0), entry(0)])
+        let read = Task { await rss.markRead([self.entry(0), self.entry(0)]) }
+        try await waitFor { client.reads.count == 1 }
         #expect(rss.isLoading)
-        #expect(client.reads == [["unread-0"]])
-        client.beforeRefresh = nil
         release?.resume()
         await refresh.value
-        #expect(rss.completedFeeds == 1)
+        await read.value
+        #expect(client.reads == [["unread-0"]])
         #expect(rss.snapshot.unread.map(\.id) == ["unread-1"])
+    }
+
+    @Test("Pull-to-refresh finishes after the first DB page while the full offline copy continues")
+    func foregroundRefreshBoundary() async throws {
+        for list in RssList.allCases {
+            let client = RssTestClient()
+            client.unread = (0..<121).map { entry($0) }
+            client.saved = (0..<121).map { entry($0, saved: true) }
+            let rss = model(client, container: try container())
+            var release: CheckedContinuation<Void, Never>?
+            client.beforePage = {
+                guard client.requests.last?.1 == 50 else { return }
+                client.beforePage = nil
+                await withCheckedContinuation { release = $0 }
+            }
+            await rss.refresh(list)
+            try await waitFor { release != nil }
+            #expect(rss.isLoading)
+            #expect(!rss.isComplete)
+            #expect(!rss.snapshot.unread.isEmpty)
+            release?.resume()
+            await rss.synchronize()
+            #expect(rss.isComplete)
+            #expect(!rss.isLoading)
+            #expect(rss.snapshot.unread.count == 121)
+            #expect(rss.snapshot.saved.count == 121)
+            #expect(client.refreshes == 0)
+        }
+    }
+
+    @Test("A failed first page releases refresh waiters and keeps the complete cached generation")
+    func failedForegroundRefresh() async throws {
+        let client = RssTestClient()
+        client.unread = [entry(0)]
+        let rss = model(client, container: try container())
+        await rss.synchronize()
+        let old = rss.snapshot
+        client.failOffset = 0
+        await rss.refresh(.unread)
+        #expect(!rss.isLoading)
+        #expect(rss.snapshot == old)
+        #expect(rss.errorMessage != nil)
+    }
+
+    @Test("Cancelling the refresh gesture releases its waiter while the DB copy keeps running")
+    func cancelledForegroundRefresh() async throws {
+        let client = RssTestClient()
+        let rss = model(client, container: try container())
+        var release: CheckedContinuation<Void, Never>?
+        client.beforePage = {
+            client.beforePage = nil
+            await withCheckedContinuation { release = $0 }
+        }
+        let refresh = Task { await rss.refresh(.unread) }
+        try await waitFor { release != nil }
+        refresh.cancel()
+        await refresh.value
+        #expect(rss.isLoading)
+        release?.resume()
+        await rss.synchronize()
+        #expect(rss.isComplete)
+    }
+
+    @Test("Logout releases pending refresh waiters and fences the old first-page response")
+    func invalidatedForegroundRefresh() async throws {
+        let client = RssTestClient()
+        client.unread = [entry(0)]
+        let rss = model(client, container: try container())
+        var release: CheckedContinuation<Void, Never>?
+        client.beforePage = {
+            client.beforePage = nil
+            await withCheckedContinuation { release = $0 }
+        }
+        let refresh = Task { await rss.refresh(.saved) }
+        try await waitFor { release != nil }
+        rss.configure(owner: "owner", endpoint: "https://example.com/api/v1", signedIn: false)
+        await refresh.value
+        release?.resume()
+        #expect(!rss.isLoading)
+        #expect(rss.snapshot.unread.isEmpty)
     }
 
     @Test("Saving another article stays available while the same article's duplicate saves are suppressed")

@@ -1,7 +1,7 @@
 import Foundation
 
 // Rebuilt only for data/filter/acceptance changes, independently of polling progress.
-struct RssPresentation {
+struct RssPresentation: Sendable {
     var entries: [RssEntry] = []
     var newCount = 0
     var sources: [String: String] = [:]

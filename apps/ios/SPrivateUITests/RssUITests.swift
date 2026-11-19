@@ -2,20 +2,21 @@ import XCTest
 
 final class RssUITests: XCTestCase {
     @MainActor
-    private func launch(offline: Bool = false, language: String = "ja", delayed: Bool = false) -> XCUIApplication {
+    private func launch(offline: Bool = false, language: String = "ja", delayed: Bool = false, slowPages: Bool = false) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = [
             "-ui-testing-authenticated", "-ui-testing-list-fixtures", "-ui-testing-rss-fixtures", "-AppleLanguages",
             "(\(language))",
         ]
         if delayed { app.launchArguments.append("-ui-testing-rss-delayed") }
+        if slowPages { app.launchArguments.append("-ui-testing-rss-slow-pages") }
         if offline { app.launchArguments.append("-ui-testing-rss-offline") }
         app.launch()
         if delayed {
             // The seeded cache has one article; the server's two additions are
             // intentionally hidden until the reader accepts the new arrivals.
             let showNew = app.buttons["rss-show-new"]
-            XCTAssertTrue(showNew.waitForExistence(timeout: 10))
+            XCTAssertTrue(showNew.waitForExistence(timeout: slowPages ? 20 : 10))
             showNew.tap()
             XCTAssertTrue(app.buttons["rss-entry-fixture-third"].waitForExistence(timeout: 5))
         }
@@ -114,6 +115,24 @@ final class RssUITests: XCTestCase {
         app.segmentedControls["rss-view-picker"].buttons["保存済み"].tap()
         XCTAssertTrue(app.staticTexts["Third unread article"].waitForExistence(timeout: 10))
         attach(app, name: "rss-concurrent-reads")
+    }
+
+    @MainActor
+    func testPullToRefreshStopsSpinningWhileRemainingDatabasePagesSync() {
+        let app = launch(delayed: true, slowPages: true)
+        let refresh = app.buttons["rss-refresh"]
+        expectation(for: NSPredicate(format: "enabled == true"), evaluatedWith: refresh)
+        waitForExpectations(timeout: 20)
+        app.swipeDown()
+        XCTAssertTrue(app.descendants(matching: .any)["rss-loading"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.activityIndicators.firstMatch.waitForNonExistence(timeout: 3))
+        XCTAssertFalse(refresh.isEnabled) // The complete offline copy is still downloading.
+        XCTAssertTrue(app.buttons["rss-entry-fixture-unread"].exists)
+        XCTAssertTrue(app.buttons["rss-save-fixture-unread"].isEnabled)
+        app.tabBars.buttons.element(boundBy: 3).tap()
+        app.tabBars.buttons["RSS"].tap()
+        XCTAssertTrue(app.buttons["rss-entry-fixture-unread"].waitForExistence(timeout: 5))
+        attach(app, name: "rss-db-refresh-background-copy")
     }
 
     @MainActor

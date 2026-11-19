@@ -4,13 +4,11 @@ import SPrivateAPI
 @MainActor
 protocol RssClient: Sendable {
     func rssPage(_ list: RssList, offset: Int, snapshotRevision: Int?) async throws -> RssPage
-    func rssFeeds() async throws -> [RssFeed]
     func rssSubscribe(url: String, title: String, folder: String) async throws
     func rssUnsubscribe(id: String) async throws
     func rssRead(ids: [String]) async throws
     func rssSave(_ entry: RssEntry) async throws -> RssEntry
     func rssUnsave(id: String) async throws
-    func rssRefresh(id: String, force: Bool) async throws -> Components.Schemas.RssRefreshResult
     func rssImport(_ batch: RssImportBatch) async throws -> Components.Schemas.RssImportResult
 }
 
@@ -30,9 +28,6 @@ extension MobileClient {
                 count: list == .unread ? page.unreadCount : page.savedCount,
                 offset: page.offset, snapshotRevision: page.snapshotRevision)
         }
-    }
-    func rssFeeds() async throws -> [RssFeed] {
-        try await performRss { try await $0.getRssPage(.init(query: .init(view: .feeds))).ok.body.json.feeds.map(RssFeed.init) }
     }
     func rssSubscribe(url: String, title: String, folder: String) async throws {
         try await performRss {
@@ -54,9 +49,6 @@ extension MobileClient {
     }
     func rssUnsave(id: String) async throws {
         try await performRss { _ = try await $0.unsaveRss(.init(path: .init(id: id))).noContent }
-    }
-    func rssRefresh(id: String, force: Bool) async throws -> Components.Schemas.RssRefreshResult {
-        try await performRss { try await $0.refreshRss(.init(body: .json(.init(ids: [id], force: force)))).ok.body.json }
     }
     func rssImport(_ batch: RssImportBatch) async throws -> Components.Schemas.RssImportResult {
         try await performRss {

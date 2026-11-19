@@ -84,7 +84,7 @@ struct RssPage: Sendable {
     var snapshotRevision: Int = 0
 }
 
-enum RssList: String, CaseIterable, Identifiable, Sendable {
+enum RssList: String, CaseIterable, Identifiable, Hashable, Sendable {
     case unread, saved
     var id: String { rawValue }
     var title: String { self == .unread ? String(localized: "未読") : String(localized: "保存済み") }

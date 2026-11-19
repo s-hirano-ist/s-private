@@ -138,7 +138,7 @@
 		"subscriptionsDescription": "フィードの追加・解除と、Inoreaderからの取り込みを管理します。",
 		"feeds": "購読管理",
 		"refresh": "更新",
-		"refreshing": "フィードを取得中",
+		"refreshing": "記事情報を更新中",
 		"loading": "読み込み中…",
 		"error": "一部の処理に失敗しました。再試行してください。",
 		"retry": "再読み込み",

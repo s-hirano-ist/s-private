@@ -11,6 +11,15 @@
 			"schedule": "0 0 * * *"
 		}
 	],
+	"schedules": {
+		"rss-refresh": {
+			"schedule": "17 * * * *",
+			"timezone": "UTC",
+			"jitter": 15,
+			"path": "/api/cron/rss-refresh",
+			"requestMethod": "GET"
+		}
+	},
 	"functions": {
 		"src/index.ts": {
 			"maxDuration": 300,

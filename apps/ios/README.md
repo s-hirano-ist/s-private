@@ -305,22 +305,32 @@ within the same owner/cache lifetime; it cannot refill a deleted cache or cross
 sign-out/sign-in boundaries.
 
 Unread downloads pin the existing backend `snapshotRevision`, validate returned
-offsets and detect deletion-related page shifts. One initial and, when feeds changed,
-one final full download replace per-feed reloads. Concurrent refresh gestures join
+offsets and detect deletion-related page shifts. Each synchronization performs one DB metadata download, independently of external feed polling. Concurrent refresh gestures join
 one pass. JSON encoding/decoding and SwiftData commits run off the main actor;
 cache generations are fenced against cancelled writes. Filtering/source lookups
 update with data/filter changes, independently of polling progress. RSS thumbnails
 use four cancellable loaders, a 5 MiB response limit, display-sized ImageIO decoding
 and a 20 MiB memory cache; they are not persisted to disk.
 
-Automatic checks are throttled to five minutes while the reader is active.
-Feed polling targets subscriptions last attempted at least an hour ago, with
-at most five simultaneous requests. Pull-to-refresh requests a manual update;
-the backend retains its one-minute per-feed limit. Background execution while
-the app is terminated is not guaranteed.
+Automatic DB checks are throttled to five minutes while the reader is active.
+Pull-to-refresh and the toolbar refresh read database metadata only; neither polls
+external RSS hosts. The shared Vercel Schedule fetches feeds and commits new articles
+independently of Web and iOS screens. Subscription creation and OPML imports wait
+for the next server pass to download their first articles. Production requires
+the backend `rss-refresh` Schedule, `BACKEND_CRON_ENABLED=true` and `CRON_SECRET`
+to be configured as described in [the RSS operations guide](../../docs/rss-reader.md#定期取得の設定と監視).
+
+Pull-to-refresh ends after the selected unread/saved list's first DB page returns.
+The remaining offline copy continues in a reader-owned task, with a static sync
+status instead of an indefinitely spinning refresh control. Failures, cancellation
+and session invalidation release waiting refresh controls. The existing complete
+cache remains until every page succeeds. Full-list filtering and initial acceptance
+IDs are built off the main actor; obsolete projections cannot overwrite newer
+filters or owner identities. Background execution while the app is terminated is
+not guaranteed for the device cache.
 
 `RssTests` covers cache generations, pagination/revisions, isolation, read boundaries,
-mutation failures, concurrent polling/reads/saves, reconnects, cache deletion,
+mutation failures, concurrent DB refreshes/reads/saves, reconnects, cache deletion,
 partial bulk operations, large datasets, and file imports. `RssUITests` uses an
 in-memory RSS server and never calls the configured API. SwiftUI previews cover
 unread articles, subscription management, and offline browsing.
@@ -355,3 +365,20 @@ CoreSimulator version (1171.7) was older than Xcode's required version (1174.21)
 The two delayed-fixture UI tests and thumbnail runtime/layout test must be run with
 `mise run ios:test` after repairing that Xcode installation. Physical-device and
 post-deployment Sentry verification remain outstanding.
+
+### RSS database refresh verification (2026-11-18)
+
+The DB-only reader change passed the app build and generic iOS Simulator
+`build-for-testing` for scheme `SPrivate`, including both test targets.
+A temporary macOS harness ran 40 RSS model tests using the current worktree's
+model/cache/import sources. It excluded the unrelated content-schema migration
+test and replaced only thumbnail-cache clearing with a stub; it does not verify
+SwiftUI rendering or UIKit refresh-control behavior. Web verification uses a
+separate migrated local DB and covers pagination, thumbnails, saves, imports,
+and newly committed articles arriving while the reader keeps its displayed revision.
+
+`mise run ios:test` remains blocked by the CoreSimulator version mismatch
+(1171.7 installed versus 1174.21 required). The new slow-page pull-to-refresh UI
+test compiles, but Simulator execution, physical-device frame responsiveness,
+and post-deployment Schedule operation remain unverified. Configure and verify the
+production RSS Schedule before deploying readers that depend on its feed updates.

@@ -12,6 +12,21 @@ struct RssReaderView: View {
     @State private var readAll: (entries: [RssEntry], identityID: UUID)?
     @State private var presentationIdentity = UUID()
     @State private var presentation = RssPresentation()
+    @State private var acceptanceVersion = 0
+    @State private var displayedKey: PresentationKey?
+
+    private struct PresentationKey: Hashable {
+        let identity: UUID
+        let revision: Int
+        let list: RssList
+        let feedID: String
+        let acceptance: Int
+    }
+    private var presentationKey: PresentationKey {
+        .init(identity: rss.identityID, revision: rss.dataRevision, list: list, feedID: feedID, acceptance: acceptanceVersion)
+    }
+
+    private var presentationIsCurrent: Bool { displayedKey == presentationKey }
 
     private var entries: [RssEntry] { presentation.entries }
     private var newCount: Int { presentation.newCount }
@@ -37,8 +52,13 @@ struct RssReaderView: View {
                     }
                     RssStatusView()
                     if list == .unread && newCount > 0 {
-                        Button(String(format: String(localized: "新着 %lld件を表示"), newCount)) { acceptNew() }
-                            .accessibilityIdentifier("rss-show-new")
+                        Button(String(format: String(localized: "新着 %lld件を表示"), newCount)) {
+                            initialized = false
+                            acceptanceVersion += 1
+                            page = 0
+                        }
+                        .disabled(!presentationIsCurrent)
+                        .accessibilityIdentifier("rss-show-new")
                     }
                     Text(String(format: String(localized: "%lld件"), entries.count))
                         .font(.caption).foregroundStyle(AppColors.mutedForeground)
@@ -53,8 +73,8 @@ struct RssReaderView: View {
                 }
                 ForEach(visible) { entry in
                     let identity = presentationIdentity
-                    RssEntryRow(entry: entry, source: source(entry), canSave: rss.canSave(entry)) {
-                        guard rss.identityID == identity, let url = entry.link else { return }
+                    RssEntryRow(entry: entry, source: source(entry), canSave: presentationIsCurrent && rss.canSave(entry)) {
+                        guard presentationIsCurrent, rss.identityID == identity, let url = entry.link else { return }
                         let sessionID = rss.sessionID
                         let shouldMarkRead = rss.isOnline && entry.feedID != nil
                         openURL(url) { accepted in
@@ -63,7 +83,7 @@ struct RssReaderView: View {
                             }
                         }
                     } onSave: {
-                        guard rss.identityID == identity else { return }
+                        guard presentationIsCurrent, rss.identityID == identity else { return }
                         let sessionID = rss.sessionID
                         Task { await rss.toggleSaved(entry, sessionID: sessionID) }
                     }
@@ -90,7 +110,7 @@ struct RssReaderView: View {
                 ToolbarItem(placement: .topBarLeading) {
                     if list == .unread {
                         Button(String(localized: "すべて既読"), systemImage: "checkmark.circle") { readAll = (entries, presentationIdentity) }
-                            .disabled(!rss.canMutate || !rss.isComplete || entries.isEmpty)
+                            .disabled(!presentationIsCurrent || !rss.canMutate || !rss.isComplete || entries.isEmpty)
                             .accessibilityIdentifier("rss-read-all")
                     }
                 }
@@ -124,27 +144,18 @@ struct RssReaderView: View {
                 .disabled(!rss.canMutate)
                 Button(String(localized: "キャンセル"), role: .cancel) { readAll = nil }
             }
-            .refreshable { await rss.synchronize(manual: true) }
-            .task(id: rss.scope) {
-                readAll = nil
-                initialized = false
-                acceptNew()
-                await rss.synchronize()
-                captureInitial()
-            }
+            .refreshable { await rss.refresh(list) }
+            .task(id: rss.scope) { await rss.synchronize() }
+            .task(id: presentationKey) { await rebuild(presentationKey) }
             .onChange(of: rss.identityID) { _, _ in
                 readAll = nil
                 initialized = false
-                acceptNew()
+                acceptedIDs = []
+                presentation = RssPresentation()
+                page = 0
             }
-            .onChange(of: rss.dataRevision) { _, _ in
-                captureInitial()
-                if !feedID.isEmpty && !rss.snapshot.feeds.contains(where: { $0.id == feedID }) { feedID = "" }
-                rebuild()
-                page = min(page, pageCount - 1)
-            }
-            .onChange(of: list) { _, _ in page = 0; rebuild() }
-            .onChange(of: feedID) { _, _ in page = 0; rebuild() }
+            .onChange(of: list) { _, _ in page = 0 }
+            .onChange(of: feedID) { _, _ in page = 0 }
             .onChange(of: rss.isOnline) { _, online in if online { Task { await rss.synchronize() } } }
             .task(id: scenePhase) {
                 guard scenePhase == .active else { return }
@@ -171,17 +182,27 @@ struct RssReaderView: View {
     private func source(_ entry: RssEntry) -> String {
         entry.feedID.flatMap { presentation.sources[$0] } ?? entry.link?.host() ?? ""
     }
-    private func acceptNew(resetPage: Bool = true) {
-        acceptedIDs = Set(rss.snapshot.unread.map(\.id))
-        if resetPage { page = 0 }
-        if rss.isComplete { initialized = true }
-        rebuild()
+    private func rebuild(_ key: PresentationKey) async {
+        let snapshot = rss.snapshot
+        let accepted = acceptedIDs
+        let wasInitialized = initialized && presentationIdentity == key.identity
+        let complete = rss.isComplete
+        // Capture value inputs on the UI actor, then build the full-list projection off it.
+        let work = Task.detached(priority: .userInitiated) {
+            let ids = wasInitialized ? accepted : Set(snapshot.unread.map(\.id))
+            let value = RssPresentation(snapshot: snapshot, list: key.list, feedID: key.feedID, acceptedIDs: ids, initialized: true)
+            return (value, ids)
+        }
+        let (value, ids) = await withTaskCancellationHandler { await work.value } onCancel: { work.cancel() }
+        guard !Task.isCancelled, presentationKey == key else { return }
+        presentationIdentity = key.identity
+        displayedKey = key
+        presentation = value
+        acceptedIDs = ids
+        if complete { initialized = true }
+        page = min(page, pageCount - 1)
+        if !feedID.isEmpty && !snapshot.feeds.contains(where: { $0.id == feedID }) { feedID = "" }
     }
-    private func rebuild() {
-        presentationIdentity = rss.identityID
-        presentation = .init(snapshot: rss.snapshot, list: list, feedID: feedID, acceptedIDs: acceptedIDs, initialized: initialized)
-    }
-    private func captureInitial() { if !initialized { acceptNew(resetPage: false) } }
 }
 
 private struct RssEntryRow: View {
@@ -242,7 +263,7 @@ struct RssStatusView: View {
                     ProgressView().controlSize(.small)
                         .accessibilityIdentifier("rss-loading")
                 } else if rss.isLoading {
-                    Text(rss.totalFeeds > 0 ? "\(rss.completedFeeds) / \(rss.totalFeeds)" : String(localized: "読み込み中"))
+                    Text(String(localized: "記事情報を同期中"))
                         .font(.caption).foregroundStyle(AppColors.mutedForeground)
                         .accessibilityIdentifier("rss-loading")
                 }
@@ -253,7 +274,7 @@ struct RssStatusView: View {
                     .disabled(!rss.isOnline || rss.isLoading)
             }
             Text(rss.snapshot.fetchedAt.map {
-                String(localized: "最終取得") + " " + $0.formatted(date: .abbreviated, time: .shortened)
+                String(localized: "最終同期") + " " + $0.formatted(date: .abbreviated, time: .shortened)
             } ?? " ")
                 .font(.caption).foregroundStyle(AppColors.mutedForeground)
                 .accessibilityHidden(rss.snapshot.fetchedAt == nil)

@@ -10,8 +10,6 @@ final class RssReaderModel {
     private(set) var isLoading = false
     private(set) var isMutating = false
     private(set) var isComplete = false
-    private(set) var completedFeeds = 0
-    private(set) var totalFeeds = 0
     private(set) var errorMessage: String?
     private(set) var importSummary: String?
     private(set) var isOnline = true
@@ -37,13 +35,15 @@ final class RssReaderModel {
     @ObservationIgnored private var lastAttempt: Date?
     @ObservationIgnored private var fixtureMode = false
     @ObservationIgnored private var needsReload = false
-    @ObservationIgnored private var needsPolling = false
     @ObservationIgnored private var cacheDirty = false
     @ObservationIgnored private var pendingReads: Set<String> = []
     @ObservationIgnored private var unreadIDs: Set<String> = []
     @ObservationIgnored private var mutations: [Mutation] = []
     @ObservationIgnored private var allMutations: [UUID: Mutation] = [:]
     @ObservationIgnored private var hasActiveWrite = false
+
+    @ObservationIgnored private var firstPages: Set<RssList> = []
+    @ObservationIgnored private var refreshWaiters: [UUID: (RssList, CheckedContinuation<Void, Never>)] = [:]
 
     private enum Superseded: Error { case read }
     private typealias Work = @MainActor (RssSession) async throws -> Void
@@ -128,80 +128,61 @@ final class RssReaderModel {
         }
     }
 
-    // Concurrent foreground, timer and manual requests join one refresh pass.
+    // Readers only download DB metadata. The server Cron polls external feeds.
     func synchronize(manual: Bool = false) async {
         await restoreCache()
-        guard !fixtureMode, canMutate else { return }
-        if let loadingTask { await loadingTask.value; return }
-        guard manual || lastAttempt == nil || Date().timeIntervalSince(lastAttempt!) >= 300 else { return }
+        await startSynchronization(manual: manual)?.value
+    }
+
+    // Pull-to-refresh waits for the first DB page of the selected list, not the offline copy.
+    func refresh(_ list: RssList) async {
+        await restoreCache()
+        guard startSynchronization(manual: true) != nil, !firstPages.contains(list) else { return }
+        let id = UUID()
+        await withTaskCancellationHandler {
+            await withCheckedContinuation { continuation in
+                guard !Task.isCancelled else { continuation.resume(); return }
+                refreshWaiters[id] = (list, continuation)
+            }
+        } onCancel: {
+            Task { @MainActor [weak self] in self?.refreshWaiters.removeValue(forKey: id)?.1.resume() }
+        }
+    }
+
+    private func startSynchronization(manual: Bool) -> Task<Void, Never>? {
+        guard !fixtureMode, canMutate else { return nil }
+        if let loadingTask { return loadingTask }
+        guard manual || lastAttempt == nil || Date().timeIntervalSince(lastAttempt!) >= 300 else { return nil }
         lastAttempt = .now
-        needsPolling = false
         let current = session
         isLoading = true
-        completedFeeds = 0
-        totalFeeds = 0
+        firstPages = []
         if manual { errorMessage = nil }
         let task = Task { [weak self] in
             guard let self else { return }
             await reload(current)
-            do {
-                try check(current)
-                let due = snapshot.feeds.filter {
-                    manual || $0.lastFetchedAt == nil || Date().timeIntervalSince($0.lastFetchedAt!) >= 3600
-                }
-                totalFeeds = due.count
-                if !due.isEmpty {
-                    let changed = try await refreshFeeds(due, session: current, force: manual)
-                    try check(current)
-                    if changed { await reload(current) }
-                    else {
-                        let feeds = try await client.rssFeeds()
-                        try check(current)
-                        // A subscription mutation invalidates metadata, including feed lists.
-                        if !hasPendingWrites { snapshot.feeds = feeds; self.changed(); cacheDirty = true }
-                    }
-                }
-                try await persist(current)
-            } catch { report(error, session: current) }
+            guard session === current else { return }
+            loadingTask = nil
+            isLoading = false
+            finishRefreshWaiters()
         }
         loadingTask = task
-        await task.value
-        guard session === current else { return }
-        loadingTask = nil
-        isLoading = false
-        schedulePolling()
+        return task
     }
 
-    private func refreshFeeds(_ feeds: [RssFeed], session current: RssSession, force: Bool) async throws -> Bool {
-        let client = client
-        return try await withThrowingTaskGroup(of: (String, Bool, Bool).self) { group in
-            var iterator = feeds.makeIterator()
-            @MainActor func addNext() {
-                while let feed = iterator.next() {
-                    guard snapshot.feeds.contains(where: { $0.id == feed.id }) else { continue }
-                    group.addTask {
-                        do {
-                            let result = try await client.rssRefresh(id: feed.id, force: force)
-                            return (feed.id, result.data.contains { $0.changed == true }, result.data.contains { $0.status == .failed })
-                        } catch is CancellationError { throw CancellationError() }
-                        catch { try Task.checkCancellation(); return (feed.id, false, true) }
-                    }
-                    return
-                }
-            }
-            for _ in 0..<min(5, feeds.count) { addNext() }
-            var changed = false
-            while let result = try await group.next() {
-                try check(current)
-                completedFeeds += 1
-                changed = changed || result.1
-                if result.2 && snapshot.feeds.contains(where: { $0.id == result.0 }) {
-                    errorMessage = String(localized: "一部のフィードを更新できませんでした")
-                }
-                addNext()
-            }
-            return changed
+    private func receivedFirstPage(_ list: RssList) {
+        firstPages.insert(list)
+        let completed = refreshWaiters.filter { $0.value.0 == list }
+        for (id, waiter) in completed {
+            refreshWaiters.removeValue(forKey: id)
+            waiter.1.resume()
         }
+    }
+
+    private func finishRefreshWaiters() {
+        let waiters = refreshWaiters.values.map { $0.1 }
+        refreshWaiters.removeAll()
+        for waiter in waiters { waiter.resume() }
     }
 
     private var hasPendingWrites: Bool { hasActiveWrite || !mutations.isEmpty }
@@ -235,6 +216,7 @@ final class RssReaderModel {
                 let firstUnread = try await client.rssPage(.unread, offset: 0, snapshotRevision: nil)
                 try checkRead(current, version)
                 try validateFirstPage(firstUnread)
+                receivedFirstPage(.unread)
                 if !isComplete {
                     snapshot.feeds = firstUnread.feeds
                     snapshot.unread = firstUnread.entries
@@ -243,6 +225,7 @@ final class RssReaderModel {
                 let firstSaved = try await client.rssPage(.saved, offset: 0, snapshotRevision: nil)
                 try checkRead(current, version)
                 try validateFirstPage(firstSaved)
+                receivedFirstPage(.saved)
                 if !isComplete { snapshot.saved = firstSaved.entries; changed() }
                 let unread = try await download(.unread, first: firstUnread, session: current, version: version)
                 let saved = try await download(.saved, first: firstSaved, session: current, version: version)
@@ -357,7 +340,6 @@ final class RssReaderModel {
             try await self.client.rssSubscribe(url: url, title: title.isEmpty ? url : title, folder: folder)
             try self.check(current)
             self.needsReload = true
-            self.needsPolling = true
             self.lastAttempt = nil
         }])
     }
@@ -395,7 +377,6 @@ final class RssReaderModel {
                     added += result.added; duplicates += result.duplicates; invalid += result.invalid
                     self.importSummary = String(format: String(localized: "追加 %lld件・重複 %lld件・無効 %lld件"), added, duplicates, invalid)
                     self.needsReload = true
-                    self.needsPolling = true
                     self.lastAttempt = nil
                 }
             }
@@ -424,7 +405,6 @@ final class RssReaderModel {
             pendingReads.formUnion(acceptedReads)
             readVersion = UUID()
             metadataFence?.invalidate()
-            if !isComplete { needsPolling = true; lastAttempt = nil }
             if metadataTask != nil || !isComplete { needsReload = true }
             isMutating = true
             errorMessage = nil
@@ -477,7 +457,6 @@ final class RssReaderModel {
             allMutations.removeValue(forKey: mutation.id)
             mutation.finish(mutation.succeeded)
         }
-        schedulePolling()
     }
 
     // A request may commit after connectivity cancellation. Re-read only within the same owner/cache lifetime.
@@ -487,15 +466,6 @@ final class RssReaderModel {
         guard canMutate else { return }
         let current = session
         Task { await reload(current) }
-    }
-
-    private func schedulePolling() {
-        guard needsPolling, loadingTask == nil, mutationTask == nil, canMutate else { return }
-        let current = session
-        Task {
-            guard session === current, current.isValid else { return }
-            await synchronize()
-        }
     }
 
     func clearCache() {
@@ -560,13 +530,12 @@ final class RssReaderModel {
         allMutations = [:]; mutations = []; pendingKeys = []; pendingReads = []
         hasActiveWrite = false
         needsReload = false
-        needsPolling = false
         cacheDirty = false
         lastAttempt = nil
         isLoading = false
+        firstPages = []
+        finishRefreshWaiters()
         isMutating = false
-        completedFeeds = 0
-        totalFeeds = 0
     }
 
     #if DEBUG

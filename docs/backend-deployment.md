@@ -90,6 +90,11 @@ Productionに `BACKEND_CRON_ENABLED=true` と `CRON_SECRET` を設定する。�
 Previewは `BACKEND_CRON_ENABLED=false` を維持し、誤って有効化した場合は起動を拒否する。
 未認証の入口が401を返すことを先に確認し、実通知の検証は担当者が行う。
 
+RSSは同じbackendの `schedules.rss-refresh`（Vercel Schedules）から毎時取得する。
+日次通知・media-cleanupの既存 `crons` とは別に管理し、RSSの停止はSchedules画面で
+`rss-refresh` だけをDisableにする。Previewのscheduleは無効を維持する。
+有効化前の使用量確認とdeploy後のDB反映確認は [RSSの運用手順](rss-reader.md#定期取得の設定と監視) を参照する。
+
 切替前に既存Cookie、Auth0 callback、所有者の分離、全CRUD、検索、同期cursor、
 旧operationの再送と未完了uploadの再開、5MiB超の分割upload、認証付きmediaを確認する。
 実Auth0・外部サービス・Vercel上の制限はローカル検証だけでは確認済みとしない。

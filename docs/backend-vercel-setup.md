@@ -162,6 +162,19 @@ iOSのNative ApplicationとAPI audienceは既存値を維持し、backendホス�
 
 backendのscheduleはProduction用に登録済み。ProductionのCron有効化には `CRON_SECRET` が必要で、Previewは常に無効とする。旧Webとbackendを同時に稼働させない。詳細は [Cronの手動切替](backend-deployment.md#cronと切替時の確認) と [Vercel Cron](https://vercel.com/docs/cron-jobs) を参照。
 
+### RSSのVercel Schedules
+
+RSSの定期取得は `apps/backend/vercel.json` の `schedules.rss-refresh` で管理する。
+毎時17分（UTC）を基準に、最大15分のjitterで `GET /api/cron/rss-refresh` を呼ぶ。
+既存の `CRON_SECRET` によるBearer認証を使い、GitHub ActionsへのsecretやURLの登録は不要。
+Productionへのdeploy時に新規scheduleが有効になるため、先に使用量と環境変数を確認する。
+Previewのscheduleは初期状態の無効を維持し、backendも `BACKEND_CRON_ENABLED=false` とする。
+
+deploy後はbackend projectの **Schedules → rss-refresh → Run Schedule** でDB反映を確認する。
+RSSだけを止める場合はそのscheduleを **Disable** にする。
+共通の `BACKEND_CRON_ENABLED=false` は他の日次Cronも止めるため、RSSだけの停止には使用しない。
+Hobbyの制限・監視・切替条件は [RSSの運用手順](rss-reader.md#定期取得の設定と監視) を参照する。
+
 ## 6. 問題があった場合
 
 書き込みを止めて、どのdeployment・DB・bucketへ書いたかと、PENDING/FAILED operation・未完了uploadを確認する。
