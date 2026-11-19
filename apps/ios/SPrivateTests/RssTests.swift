@@ -402,6 +402,47 @@ extension RssTests {
         }
     }
 
+    @Test("Controlled UI fixture serves the first page and holds later pages until release")
+    func controlledFixturePages() async throws {
+        let client = RssFixtureClient(delayed: false, controlledPages: true)
+        client.holdRemainingPages()
+        let first = try await client.rssPage(.unread, offset: 0, snapshotRevision: nil)
+        #expect(first.entries.count == 50)
+        #expect(!client.isPagePending)
+        let remaining = Task { try await client.rssPage(.unread, offset: 50, snapshotRevision: nil) }
+        defer { client.releaseRemainingPages() }
+        try await waitFor { client.isPagePending }
+        #expect(client.holdsRemainingPages)
+        client.releaseRemainingPages()
+        let page = try await remaining.value
+        #expect(page.offset == 50)
+        #expect(page.entries.count == 50)
+        #expect(!client.isPagePending)
+        #expect(!client.holdsRemainingPages)
+    }
+
+    @Test("Cancelling a held fixture page leaves the next request independently releasable")
+    func cancelledFixturePage() async throws {
+        let client = RssFixtureClient(delayed: false, controlledPages: true)
+        client.holdRemainingPages()
+        let cancelled = Task { try await client.rssPage(.unread, offset: 50, snapshotRevision: nil) }
+        defer { client.releaseRemainingPages() }
+        try await waitFor { client.isPagePending }
+        cancelled.cancel()
+        do {
+            _ = try await cancelled.value
+            Issue.record("Cancelled fixture request returned a page")
+        } catch is CancellationError { }
+        #expect(!client.isPagePending)
+        #expect(client.holdsRemainingPages)
+        let next = Task { try await client.rssPage(.unread, offset: 50, snapshotRevision: nil) }
+        try await waitFor { client.isPagePending }
+        client.releaseRemainingPages()
+        let page = try await next.value
+        #expect(page.offset == 50)
+        #expect(!client.isPagePending)
+    }
+
     @Test("Successful single-entry mutations perform zero metadata GETs")
     func mutationsDoNotRedownload() async throws {
         let client = RssTestClient()

@@ -1,9 +1,11 @@
 #if DEBUG
     import Foundation
+    import Observation
     import SPrivateAPI
 
     // In-memory server for previews and UI tests; never contacts the configured API.
     @MainActor
+    @Observable
     final class RssFixtureClient: RssClient {
         static var snapshot: RssSnapshot {
             .init(
@@ -24,27 +26,65 @@
                 ], fetchedAt: .now)
         }
         var data = snapshot
-        private let delayed = ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-delayed")
-        private let slowPages = ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-slow-pages")
-        init() {
+        private let delayed: Bool
+        let controlledPages: Bool
+        private(set) var holdsRemainingPages = false
+        private(set) var isPagePending = false
+        @ObservationIgnored private var pendingPages: [UUID: CheckedContinuation<Void, Error>] = [:]
+
+        init(
+            delayed: Bool = ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-delayed"),
+            controlledPages: Bool = ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-controlled-pages")
+        ) {
+            self.delayed = delayed
+            self.controlledPages = controlledPages
             if delayed {
                 data.unread += [
                     .init(id: "fixture-second", feedID: "fixture-feed", url: "https://example.com/second", title: "Second unread article"),
                     .init(id: "fixture-third", feedID: "fixture-feed", url: "https://example.com/third", title: "Third unread article"),
                 ]
             }
-            if slowPages {
+            if controlledPages {
                 data.unread += (0..<118).map {
                     .init(id: "fixture-extra-\($0)", feedID: "fixture-feed", url: "https://example.com/extra/\($0)", title: "Extra article \($0)")
                 }
             }
         }
         func rssPage(_ list: RssList, offset: Int, snapshotRevision: Int?) async throws -> RssPage {
-            if slowPages && offset > 0 { try await Task.sleep(for: .seconds(5)) }
+            if holdsRemainingPages && offset > 0 { try await waitForPageRelease() }
             else if delayed { try await Task.sleep(for: .milliseconds(150)) }
             let entries = list == .unread ? data.unread : data.saved
             return .init(feeds: data.feeds, entries: Array(entries.dropFirst(offset).prefix(50)), count: entries.count, offset: offset)
         }
+        // UI tests arm this after initial sync, then release it after asserting the
+        // real reader's intermediate state. No timeout can hide that state.
+        func holdRemainingPages() { holdsRemainingPages = true }
+
+        func releaseRemainingPages() {
+            holdsRemainingPages = false
+            let waiters = Array(pendingPages.values)
+            pendingPages = [:]
+            isPagePending = false
+            for waiter in waiters { waiter.resume() }
+        }
+
+        private func waitForPageRelease() async throws {
+            let id = UUID()
+            try await withTaskCancellationHandler {
+                try Task.checkCancellation()
+                try await withCheckedThrowingContinuation { continuation in
+                    pendingPages[id] = continuation
+                    isPagePending = true
+                }
+            } onCancel: {
+                Task { @MainActor in
+                    let waiter = self.pendingPages.removeValue(forKey: id)
+                    self.isPagePending = !self.pendingPages.isEmpty
+                    waiter?.resume(throwing: CancellationError())
+                }
+            }
+        }
+
         func rssSubscribe(url: String, title: String, folder: String) async throws {
             data.feeds.append(.init(id: UUID().uuidString, url: url, title: title, folder: folder, lastFetchedAt: .now))
         }
@@ -82,6 +122,24 @@
 #if DEBUG
     import SwiftData
     import SwiftUI
+
+    // Only installed by the controlled UI-test fixture, never by the production reader.
+    struct RssFixtureControls: View {
+        let client: RssFixtureClient
+
+        var body: some View {
+            HStack {
+                Button("Hold RSS pages") { client.holdRemainingPages() }
+                    .disabled(client.holdsRemainingPages)
+                    .accessibilityIdentifier("fixture-rss-hold-pages")
+                Button("Release RSS pages") { client.releaseRemainingPages() }
+                    .disabled(!client.isPagePending)
+                    .accessibilityIdentifier("fixture-rss-release-pages")
+            }
+            .font(.caption)
+            .padding(8)
+        }
+    }
 
     @MainActor
     private func rssPreview(offline: Bool = false) -> RssReaderModel {
