@@ -101,10 +101,12 @@ final class RssUITests: XCTestCase {
         app.tabBars.buttons.element(boundBy: 3).tap()
         app.tabBars.buttons["RSS"].tap()
         app.segmentedControls["rss-view-picker"].buttons["保存済み"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["rss-loading"].exists)
+        // Both inputs were accepted during sync. Let the pending metadata
+        // reconciliation finish before checking the serialized writes' result.
+        releaseRemainingPages(app)
         XCTAssertTrue(app.staticTexts["Second unread article"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons["rss-entry-fixture-saved"].exists)
-        XCTAssertTrue(app.descendants(matching: .any)["rss-loading"].exists)
-        releaseRemainingPages(app)
         attach(app, name: "rss-concurrent-saves")
     }
 

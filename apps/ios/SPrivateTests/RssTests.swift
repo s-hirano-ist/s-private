@@ -443,6 +443,38 @@ extension RssTests {
         #expect(!client.isPagePending)
     }
 
+    @Test("Save inputs queued during a held metadata page survive reconciliation")
+    func queuedSavesDuringHeldPage() async throws {
+        let client = RssTestClient()
+        client.unread = (0..<51).map { entry($0) }
+        let rss = model(client, container: try container())
+        await rss.synchronize()
+        var release: CheckedContinuation<Void, Never>?
+        client.beforePage = {
+            guard client.requests.last?.1 == 50 else { return }
+            client.beforePage = nil
+            await withCheckedContinuation { release = $0 }
+        }
+        defer { release?.resume() }
+        let refresh = Task { await rss.synchronize(manual: true) }
+        try await waitFor { release != nil }
+        let first = Task { await rss.toggleSaved(self.entry(0)) }
+        try await waitFor { rss.snapshot.saved.contains { $0.url == self.entry(0).url } }
+        let second = Task { await rss.toggleSaved(self.entry(1)) }
+        try await waitFor { !rss.canSave(self.entry(1)) }
+        #expect(rss.isLoading)
+        #expect(rss.canSave(entry(2)))
+        release?.resume()
+        release = nil
+        await refresh.value
+        await first.value
+        await second.value
+        #expect(client.saveCalls == 2)
+        #expect(Set(rss.snapshot.saved.map(\.url)) == Set([entry(0).url, entry(1).url]))
+        #expect(rss.snapshot.unread.first { $0.id == entry(0).id }?.savedID != nil)
+        #expect(rss.snapshot.unread.first { $0.id == entry(1).id }?.savedID != nil)
+    }
+
     @Test("Successful single-entry mutations perform zero metadata GETs")
     func mutationsDoNotRedownload() async throws {
         let client = RssTestClient()
