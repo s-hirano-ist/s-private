@@ -62,9 +62,12 @@ struct DomainListView: View {
                     Button {
                         status = status == .exported ? .unexported : .exported
                     } label: {
-                        Label(status.localizedTitle, systemImage: "arrow.left.arrow.right")
+                        HStack(spacing: 6) {
+                            Text(status.localizedTitle)
+                            Image(systemName: "arrow.left.arrow.right")
+                                .accessibilityHidden(true)
+                        }
                     }
-                    .labelStyle(.titleAndIcon)
                     .accessibilityHint(status == .exported ? String(localized: "未公開に切り替え") : String(localized: "公開済みに切り替え"))
                     .accessibilityIdentifier("status-filter")
                 }

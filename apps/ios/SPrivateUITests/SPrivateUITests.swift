@@ -176,6 +176,7 @@ final class SPrivateUITests: XCTestCase {
             let filter = app.buttons["status-filter"]
             XCTAssertTrue(filter.waitForExistence(timeout: 5))
             XCTAssertTrue(filter.label.contains("公開済み"))
+            XCTAssertTrue(filter.staticTexts["公開済み"].exists)
             let prefix = index < 2 ? "domain-record" : "media-cell"
             let exported = app.descendants(matching: .any)["\(prefix)-exported-\(domain)"]
             let unexported = app.descendants(matching: .any)["\(prefix)-unexported-\(domain)"]
@@ -183,6 +184,7 @@ final class SPrivateUITests: XCTestCase {
             XCTAssertFalse(unexported.exists)
             filter.tap()
             XCTAssertTrue(filter.label.contains("未公開"))
+            XCTAssertTrue(filter.staticTexts["未公開"].exists)
             XCTAssertTrue(unexported.waitForExistence(timeout: 5))
             XCTAssertFalse(exported.exists)
             tabs.element(boundBy: 0).tap()
@@ -197,6 +199,10 @@ final class SPrivateUITests: XCTestCase {
         app.launch()
         tabs.element(boundBy: 1).tap()
         XCTAssertTrue(app.buttons["status-filter"].label.contains("公開済み"))
+        let screenshot = XCTAttachment(screenshot: app.screenshot())
+        screenshot.name = "default-exported-status"
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
     }
 
     @MainActor
