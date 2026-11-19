@@ -74,7 +74,7 @@ struct RssReaderView: View {
                     }
                     ForEach(visible) { entry in
                         let identity = presentationIdentity
-                        RssEntryRow(entry: entry, source: source(entry), canSave: presentationIsCurrent && rss.canSave(entry)) {
+                        RssEntryRow(entry: entry, source: source(entry), canSave: presentationIsCurrent && rss.canSave(entry), saving: rss.pendingKeys.contains("save:\(entry.url)")) {
                             guard presentationIsCurrent, rss.identityID == identity, let url = entry.link else { return }
                             let sessionID = rss.sessionID
                             let shouldMarkRead = rss.isOnline && entry.feedID != nil
@@ -120,15 +120,21 @@ struct RssReaderView: View {
                 .toolbar {
                     ToolbarItem(placement: .topBarLeading) {
                         if list == .unread {
-                            Button(String(localized: "すべて既読"), systemImage: "checkmark.circle") { readAll = (entries, presentationIdentity) }
-                                .disabled(!presentationIsCurrent || !rss.canMutate || !rss.isComplete || entries.isEmpty)
+                            Button { readAll = (entries, presentationIdentity) } label: {
+                                BusyLabel(isBusy: rss.pendingKeys.contains(where: { $0.hasPrefix("read-") })) {
+                                    Label(String(localized: "すべて既読"), systemImage: "checkmark.circle")
+                                }
+                            }
+                                .labelStyle(.iconOnly)
+                                .disabled(!presentationIsCurrent || !rss.canMutate || !rss.isComplete || entries.isEmpty || rss.pendingKeys.contains(where: { $0.hasPrefix("read-") }))
                                 .accessibilityIdentifier("rss-read-all")
                         }
                     }
                     ToolbarItemGroup(placement: .topBarTrailing) {
-                        Button(String(localized: "更新"), systemImage: "arrow.clockwise") {
-                            Task { await rss.synchronize(manual: true) }
+                        Button { Task { await rss.synchronize(manual: true) } } label: {
+                            BusyLabel(isBusy: rss.isLoading) { Label(String(localized: "更新"), systemImage: "arrow.clockwise") }
                         }
+                        .labelStyle(.iconOnly)
                         .disabled(!rss.isOnline || rss.isLoading)
                         .accessibilityIdentifier("rss-refresh")
                         NavigationLink {
@@ -216,6 +222,7 @@ private struct RssEntryRow: View {
     let entry: RssEntry
     let source: String
     let canSave: Bool
+    let saving: Bool
     let onOpen: () -> Void
     let onSave: () -> Void
 
@@ -241,11 +248,14 @@ private struct RssEntryRow: View {
             .disabled(entry.link == nil)
             .accessibilityIdentifier("rss-entry-\(entry.id)")
             Button(action: onSave) {
-                Label(
-                    entry.savedID == nil ? String(localized: "あとで読むに保存") : String(localized: "保存を解除"),
-                    systemImage: entry.savedID == nil ? "star" : "star.fill"
-                )
-                .labelStyle(.iconOnly).frame(minWidth: 44, minHeight: 44)
+                BusyLabel(isBusy: saving) {
+                    Label(
+                        entry.savedID == nil ? String(localized: "あとで読むに保存") : String(localized: "保存を解除"),
+                        systemImage: entry.savedID == nil ? "star" : "star.fill"
+                    )
+                    .labelStyle(.iconOnly)
+                }
+                .frame(minWidth: 44, minHeight: 44)
             }
             .buttonStyle(.borderless)
             .disabled(!canSave)
@@ -264,10 +274,12 @@ struct RssStatusView: View {
                     .font(.caption).accessibilityIdentifier("rss-offline")
             }
             ZStack(alignment: .leading) {
-                // Reserve the same status line before, during and after refresh.
-                Text(" ").font(.caption).accessibilityHidden(true)
+                // Reserve the actual localized, wrapping text, even when no status is shown.
+                Text(String(localized: "記事情報を同期中"))
+                    .font(.caption).hidden().accessibilityHidden(true)
                 if rss.isMutating || rss.pendingKeys.contains("import") {
                     ProgressView().controlSize(.small)
+                        .accessibilityLabel(String(localized: "処理中"))
                         .accessibilityIdentifier("rss-loading")
                 } else if rss.isLoading {
                     Text(String(localized: "記事情報を同期中"))
@@ -275,6 +287,7 @@ struct RssStatusView: View {
                         .accessibilityIdentifier("rss-loading")
                 }
             }
+            .frame(minHeight: 20, alignment: .leading)
             if let error = rss.errorMessage {
                 Text(error).font(.caption).foregroundStyle(AppColors.destructive).accessibilityIdentifier("rss-error")
                 Button(String(localized: "再試行")) { Task { await rss.synchronize(manual: true) } }

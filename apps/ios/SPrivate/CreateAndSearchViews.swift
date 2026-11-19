@@ -74,7 +74,7 @@ struct CreateView: View {
                     Button {
                         save()
                     } label: {
-                        if saving { ProgressView() } else { Text(String(localized: "保存")) }
+                        BusyLabel(isBusy: saving) { Text(String(localized: "保存")) }
                     }
                     .disabled(!canSave || saving || selectingPhoto)
                     .accessibilityIdentifier("save-button")
@@ -114,16 +114,17 @@ struct CreateView: View {
     private var imagePicker: some View {
         Section(String(localized: "画像")) {
             PhotosPicker(selection: $photoSelection, matching: .images) {
-                Label(String(localized: "写真から選択"), systemImage: "photo.on.rectangle")
+                BusyLabel(isBusy: selectingPhoto, status: String(localized: "写真を読み込み中")) {
+                    Label(String(localized: "写真から選択"), systemImage: "photo.on.rectangle")
+                }
             }
             .foregroundStyle(AppColors.primary)
             .disabled(saving || selectingPhoto)
             Button(String(localized: "ファイルから選択"), systemImage: "folder") { importingFile = true }
                 .foregroundStyle(AppColors.primary)
                 .disabled(saving || selectingPhoto)
-            if selectingPhoto { ProgressView(String(localized: "写真を読み込み中")) }
             if let imageData, let image = UIImage(data: imageData) {
-                Image(uiImage: image).resizable().scaledToFit().frame(maxHeight: 220)
+                MediaFrame { Image(uiImage: image).resizable().scaledToFit() }
                 Text(ByteCountFormatter.string(fromByteCount: Int64(imageData.count), countStyle: .file))
             }
         }

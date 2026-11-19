@@ -28,7 +28,11 @@ struct DomainListView: View {
                                     LoadingContent {
                                         VStack(alignment: .leading, spacing: 6) {
                                             SkeletonBlock(cornerRadius: 0).aspectRatio(1, contentMode: .fit)
-                                            if domain == .books { SkeletonText().padding(.vertical, 2) }
+                                            if domain == .books {
+                                                Text(" ").font(.caption).lineLimit(2, reservesSpace: true)
+                                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                                    .overlay { SkeletonBlock() }
+                                            }
                                         }
                                     }
                                 }
@@ -297,6 +301,7 @@ extension MobileContentStatus: CaseIterable {
 struct RecordDetailView: View {
     let domain: MobileDomain
     let id: String
+    var deleteRecord: (@MainActor () async throws -> Void)?
     var onDeleted: () -> Void = {}
     @EnvironmentObject private var authentication: AuthenticationModel
     @EnvironmentObject private var sync: SyncCoordinator
@@ -357,18 +362,27 @@ struct RecordDetailView: View {
         .foregroundStyle(AppColors.foreground)
         .navigationTitle(domain == .images ? "" : domain.title)
         .toolbar {
-            if deleting {
-                ProgressView(String(localized: "削除中"))
-            } else if record != nil {
+            if record != nil {
                 if domain == .images {
                     Menu {
                         Button(String(localized: "削除"), systemImage: "trash", role: .destructive) { showingDelete = true }
                     } label: {
-                        Image(systemName: "ellipsis.circle")
-                            .accessibilityLabel(String(localized: "その他"))
+                        BusyLabel(isBusy: deleting, status: String(localized: "削除中")) {
+                            Image(systemName: "ellipsis.circle")
+                                .accessibilityLabel(String(localized: "その他"))
+                        }
                     }
+                    .disabled(deleting)
+                    .accessibilityIdentifier("record-delete-menu")
                 } else {
-                    Button(String(localized: "削除"), systemImage: "trash", role: .destructive) { showingDelete = true }
+                    Button(role: .destructive) { showingDelete = true } label: {
+                        BusyLabel(isBusy: deleting, status: String(localized: "削除中")) {
+                            Label(String(localized: "削除"), systemImage: "trash")
+                        }
+                    }
+                    .labelStyle(.iconOnly)
+                    .disabled(deleting)
+                    .accessibilityIdentifier("record-delete-button")
                 }
             }
         }
@@ -391,7 +405,8 @@ struct RecordDetailView: View {
         deleting = true
         defer { deleting = false }
         do {
-            try await MobileClient(authentication: authentication).delete(domain, id: id)
+            if let deleteRecord { try await deleteRecord() }
+            else { try await MobileClient(authentication: authentication).delete(domain, id: id) }
             sync.removeCached(domain: domain, id: id)
             onDeleted()
             dismiss()

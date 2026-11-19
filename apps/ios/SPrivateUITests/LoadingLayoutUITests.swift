@@ -96,6 +96,84 @@ final class LoadingLayoutUITests: XCTestCase {
     }
 
     @MainActor
+    func testDeleteToolbarKeepsGeometryThroughFailureAndRetry() {
+        for image in [false, true] {
+            let app = XCUIApplication()
+            app.launchArguments = ["-ui-testing-authenticated", "-ui-testing-list-fixtures", "-ui-testing-deletion-fixtures", "-ui-testing-action-layout", "-AppleLanguages", "(ja)"]
+            if image { app.launchArguments.append("-action-image") }
+            app.launch()
+            let action = app.buttons[image ? "record-delete-menu" : "record-delete-button"]
+            XCTAssertTrue(action.waitForExistence(timeout: 5))
+            let original = action.frame
+            let originalLabel = action.label
+            for failure in [true, false] {
+                action.tap()
+                if image { app.buttons["削除"].tap() }
+                let confirmation = app.sheets.buttons["削除"].firstMatch
+                XCTAssertTrue(confirmation.waitForExistence(timeout: 3))
+                confirmation.tap()
+                let release = app.buttons[failure ? "fixture-fail" : "fixture-complete"]
+                XCTAssertTrue(release.waitForExistence(timeout: 3))
+                let pending = NSPredicate(format: "enabled == true")
+                expectation(for: pending, evaluatedWith: release)
+                waitForExpectations(timeout: 3)
+                XCTAssertFalse(action.isEnabled)
+                XCTAssertEqual(action.label, originalLabel)
+                XCTAssertEqual(action.value as? String, "削除中")
+                XCTAssertEqual(action.frame.minX, original.minX, accuracy: 1)
+                XCTAssertEqual(action.frame.minY, original.minY, accuracy: 1)
+                XCTAssertEqual(action.frame.width, original.width, accuracy: 1)
+                XCTAssertEqual(action.frame.height, original.height, accuracy: 1)
+                attach(app, name: "delete-pending-\(image)-\(failure)")
+                release.tap()
+                if failure {
+                    expectation(for: pending, evaluatedWith: action)
+                    waitForExpectations(timeout: 3)
+                    XCTAssertTrue(app.staticTexts["fixture-calls"].label == "1")
+                } else {
+                    XCTAssertTrue(app.staticTexts["fixture-deleted"].waitForExistence(timeout: 5))
+                    XCTAssertEqual(app.staticTexts["fixture-calls"].label, "2")
+                }
+            }
+            app.terminate()
+        }
+    }
+
+    @MainActor
+    func testRSSSaveKeepsRowAndStatusGeometry() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing-authenticated", "-ui-testing-list-fixtures", "-ui-testing-rss-fixtures", "-ui-testing-rss-delayed", "-ui-testing-rss-controlled-mutations", "-AppleLanguages", "(ja)"]
+        app.launch()
+        let save = app.buttons["rss-save-fixture-unread"]
+        XCTAssertTrue(save.waitForExistence(timeout: 10))
+        let enabled = NSPredicate(format: "enabled == true")
+        expectation(for: enabled, evaluatedWith: save)
+        waitForExpectations(timeout: 5)
+        let row = app.buttons["rss-entry-fixture-unread"]
+        let before = save.frame
+        let rowBefore = row.frame
+        let count = app.staticTexts["rss-count"]
+        let countBefore = count.frame
+        save.tap()
+        let complete = app.buttons["fixture-rss-complete-mutation"]
+        expectation(for: enabled, evaluatedWith: complete)
+        waitForExpectations(timeout: 5)
+        XCTAssertFalse(save.isEnabled)
+        XCTAssertEqual(save.frame.minX, before.minX, accuracy: 1)
+        XCTAssertEqual(save.frame.minY, before.minY, accuracy: 1)
+        XCTAssertEqual(save.frame.width, before.width, accuracy: 1)
+        XCTAssertEqual(save.frame.height, before.height, accuracy: 1)
+        XCTAssertEqual(row.frame.minY, rowBefore.minY, accuracy: 1)
+        XCTAssertEqual(row.frame.height, rowBefore.height, accuracy: 1)
+        XCTAssertEqual(count.frame.minY, countBefore.minY, accuracy: 1)
+        attach(app, name: "rss-save-pending")
+        complete.tap()
+        expectation(for: enabled, evaluatedWith: save)
+        waitForExpectations(timeout: 5)
+        XCTAssertEqual(save.frame.minY, before.minY, accuracy: 1)
+    }
+
+    @MainActor
     private func completeRequest(_ app: XCUIApplication) {
         let button = app.buttons["fixture-complete"]
         XCTAssertTrue(button.waitForExistence(timeout: 5))

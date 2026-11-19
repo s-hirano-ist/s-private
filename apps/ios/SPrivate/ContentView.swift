@@ -36,14 +36,15 @@ struct ContentView: View {
         case .unavailable:
             ContentUnavailableView(String(localized: "Auth0が未設定です"), systemImage: "exclamationmark.triangle")
                 .accessibilityIdentifier("auth0-unconfigured-message")
-        case .signedOut:
-            Button(String(localized: "Auth0でログイン")) {
+        case .signedOut, .working:
+            Button {
                 Task { await authentication.logIn() }
+            } label: {
+                BusyLabel(isBusy: authentication.status == .working) { Text(String(localized: "Auth0でログイン")) }
             }
+            .disabled(authentication.status == .working)
             .foregroundStyle(AppColors.primary)
             .accessibilityIdentifier("auth0-login-button")
-        case .working:
-            ProgressView(String(localized: "処理中"))
         case .authenticated:
             EmptyView()
         case let .error(message):
@@ -74,8 +75,7 @@ struct SettingsView: View {
                     if sync.pendingCount == 0 { Task { await authentication.logOut() } }
                     else { confirmingLogout = true }
                 } label: {
-                    if authentication.isLoggingOut { ProgressView() }
-                    else { Text(String(localized: "ログアウト")) }
+                    BusyLabel(isBusy: authentication.isLoggingOut) { Text(String(localized: "ログアウト")) }
                 }
                 .foregroundStyle(AppColors.destructive)
                 .disabled(authentication.isLoggingOut || sync.isSynchronizing)
@@ -94,8 +94,7 @@ struct SettingsView: View {
                 Button {
                     Task { await sync.synchronize(force: true) }
                 } label: {
-                    if sync.isSynchronizing { ProgressView() }
-                    else { Text(String(localized: "今すぐ同期")) }
+                    BusyLabel(isBusy: sync.isSynchronizing) { Text(String(localized: "今すぐ同期")) }
                 }
                     .foregroundStyle(AppColors.primary)
                     .disabled(sync.isSynchronizing)
@@ -195,7 +194,9 @@ struct SyncManagementView: View {
         .navigationTitle(String(localized: "同期管理"))
         .accessibilityIdentifier("sync-management-view")
         .toolbar {
-            Button(String(localized: "今すぐ同期")) { Task { await sync.synchronize(force: true) } }
+            Button { Task { await sync.synchronize(force: true) } } label: {
+                BusyLabel(isBusy: sync.isSynchronizing) { Text(String(localized: "今すぐ同期")) }
+            }
                 .disabled(sync.isSynchronizing)
         }
     }

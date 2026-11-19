@@ -41,6 +41,35 @@ struct LoadingLayoutTests {
     }
 
     @MainActor
+    @Test("Action labels preserve their intrinsic size through work, in both languages and large type")
+    func busyLabelsKeepGeometry() {
+        for locale in ["ja", "en"] {
+            for typeSize in [DynamicTypeSize.large, .accessibility3] {
+                for iconOnly in [false, true] {
+                    let idle = measure(actionLabel(busy: false, iconOnly: iconOnly, locale: locale, typeSize: typeSize))
+                    let busy = measure(actionLabel(busy: true, iconOnly: iconOnly, locale: locale, typeSize: typeSize))
+                    #expect(abs(idle.width - busy.width) < 1)
+                    #expect(abs(idle.height - busy.height) < 1)
+                    #expect(idle.width >= 20 && idle.height >= 20)
+                }
+            }
+        }
+    }
+
+    private func actionLabel(busy: Bool, iconOnly: Bool, locale: String, typeSize: DynamicTypeSize) -> some View {
+        Group {
+            if iconOnly {
+                BusyLabel(isBusy: busy) { Label("削除", systemImage: "trash") }.labelStyle(.iconOnly)
+            } else {
+                BusyLabel(isBusy: busy) { Text("今すぐ同期") }
+            }
+        }
+        .environment(\.locale, Locale(identifier: locale))
+        .environment(\.dynamicTypeSize, typeSize)
+        .fixedSize()
+    }
+
+    @MainActor
     private func measure(_ view: some View) -> CGSize {
         UIHostingController(rootView: view).sizeThatFits(in: CGSize(width: 360, height: 2000))
     }
