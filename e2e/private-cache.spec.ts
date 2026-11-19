@@ -17,7 +17,7 @@ async function navigate(page: Page, path: string) {
 	await expect(page).toHaveURL(`http://localhost:4327/ja/${path}`);
 	await expect(page.getByLabel("Loading")).toHaveCount(0);
 }
-async function count(
+async function countExportedRequests(
 	request: APIRequestContext,
 	domain: string,
 	user = "alice",
@@ -26,7 +26,11 @@ async function count(
 		await request.get(`${backend}/__calls`)
 	).json();
 	return Object.entries(calls)
-		.filter(([key]) => key.startsWith(`${user}:GET:/api/v1/${domain}?`))
+		.filter(
+			([key]) =>
+				key.startsWith(`${user}:GET:/api/v1/${domain}?`) &&
+				new URLSearchParams(key.split("?")[1]).get("status") === "EXPORTED",
+		)
 		.reduce((total, [, value]) => total + value, 0);
 }
 async function seed(
@@ -59,8 +63,19 @@ for (const domain of domains) {
 		page,
 		request,
 	}) => {
+		await seed(request, domain, "EXPORTED");
 		await page.goto(`/ja/${domain}`);
 		await ready(page);
+		// The streamed list can appear before navigation has hydrated. Prove a
+		// client interaction works before measuring in-memory cache reuse.
+		await expect(async () => {
+			await page.getByRole("button", { name: "新規作成", exact: true }).click();
+			await expect(
+				page.getByRole("dialog", { name: "新規作成" }),
+			).toBeVisible();
+		}).toPass({ timeout: 15_000 });
+		await page.keyboard.press("Escape");
+		await expect(page.getByRole("dialog")).not.toBeVisible();
 		if (domain === "images") {
 			await expect(
 				page.getByRole("button", { name: "削除", exact: true }),
@@ -70,14 +85,16 @@ for (const domain of domains) {
 				page.getByText(`${domain} alice 0`, { exact: true }),
 			).toBeVisible();
 		}
-		expect(await count(request, domain)).toBeGreaterThan(0);
+		expect(await countExportedRequests(request, domain)).toBeGreaterThan(0);
 		await navigate(page, domain === "notes" ? "articles" : "notes");
-		const before = await count(request, domain);
+		const before = await countExportedRequests(request, domain);
 		await navigate(page, domain);
-		expect(await count(request, domain)).toBe(before);
+		expect(await countExportedRequests(request, domain)).toBe(before);
 		await page.reload();
 		await ready(page);
-		expect(await count(request, domain)).toBeGreaterThan(before);
+		expect(await countExportedRequests(request, domain)).toBeGreaterThan(
+			before,
+		);
 	});
 }
 
@@ -85,21 +102,24 @@ test("private results expire after sixty seconds", async ({
 	page,
 	request,
 }) => {
+	await seed(request, "articles", "EXPORTED");
 	await page.goto("/ja/articles");
 	await ready(page);
 	await navigate(page, "notes");
-	const before = await count(request, "articles");
+	const before = await countExportedRequests(request, "articles");
 	await page.clock.install();
 	await page.clock.fastForward(61_000);
 	await navigate(page, "articles");
-	await expect.poll(() => count(request, "articles")).toBeGreaterThan(before);
+	await expect
+		.poll(() => countExportedRequests(request, "articles"))
+		.toBeGreaterThan(before);
 });
 
 test("successful note creation and deletion purge previously visited lists and details", async ({
 	page,
 	request,
 }) => {
-	await page.goto("/ja/notes");
+	await page.goto("/ja/notes/unexported");
 	await ready(page);
 	await page.getByRole("link", { name: /notes alice 0/u }).click();
 	await expect(page).toHaveURL(/\/note\/notes%20alice%200$/u);
@@ -108,8 +128,8 @@ test("successful note creation and deletion purge previously visited lists and d
 			.getByText("Markdown alice 0", { exact: true })
 			.filter({ visible: true }),
 	).toBeVisible();
-	await navigate(page, "notes/viewer");
 	await navigate(page, "notes");
+	await navigate(page, "notes/unexported");
 	await page.getByRole("button", { name: "新規作成", exact: true }).click();
 	await page.getByLabel("タイトル", { exact: true }).fill("Created cache note");
 	await page.locator('textarea[name="markdown"]').fill("Created markdown");
@@ -118,8 +138,8 @@ test("successful note creation and deletion purge previously visited lists and d
 		page.getByRole("link", { name: /Created cache note/u }),
 	).toBeVisible();
 
-	await navigate(page, "articles");
-	await navigate(page, "notes");
+	await navigate(page, "articles/unexported");
+	await navigate(page, "notes/unexported");
 	await expect(
 		page.getByRole("link", { name: /Created cache note/u }),
 	).toBeVisible();
@@ -138,8 +158,8 @@ test("successful note creation and deletion purge previously visited lists and d
 			return calls["alice:GET:/api/v1/notes/title/notes%20alice%200"] ?? 0;
 		})
 		.toBeGreaterThan(1);
-	await navigate(page, "notes/viewer");
 	await navigate(page, "notes");
+	await navigate(page, "notes/unexported");
 	await page.getByRole("button", { name: "削除", exact: true }).first().click();
 	await page
 		.getByRole("dialog")
@@ -148,8 +168,8 @@ test("successful note creation and deletion purge previously visited lists and d
 	await expect(
 		page.getByRole("link", { name: /Created cache note/u }),
 	).toHaveCount(0);
-	await navigate(page, "articles");
-	await navigate(page, "notes");
+	await navigate(page, "articles/unexported");
+	await navigate(page, "notes/unexported");
 	await expect(
 		page.getByRole("link", { name: /Created cache note/u }),
 	).toHaveCount(0);
@@ -168,10 +188,10 @@ for (const domain of ["images", "books"] as const) {
 	test(`${domain}: completing a chunked upload purges the previously visited list`, async ({
 		page,
 	}) => {
-		await page.goto(`/ja/${domain}`);
+		await page.goto(`/ja/${domain}/unexported`);
 		await ready(page);
-		await navigate(page, "notes");
-		await navigate(page, domain);
+		await navigate(page, "notes/unexported");
+		await navigate(page, `${domain}/unexported`);
 		await page.getByRole("button", { name: "新規作成", exact: true }).click();
 		if (domain === "books") {
 			await page.getByLabel("ISBN", { exact: true }).fill("9780306406158");
@@ -200,8 +220,8 @@ for (const domain of ["images", "books"] as const) {
 					: page.getByRole("button", { name: "削除", exact: true }).count(),
 			)
 			.toBe(domain === "books" ? 1 : 2);
-		await navigate(page, "notes");
-		await navigate(page, domain);
+		await navigate(page, "notes/unexported");
+		await navigate(page, `${domain}/unexported`);
 		if (domain === "books")
 			await expect(
 				page.getByText("Uploaded cache book", { exact: true }),
@@ -213,25 +233,46 @@ for (const domain of ["images", "books"] as const) {
 	});
 }
 
-test("exported pages and counts stay separate from unexported results", async ({
-	page,
-	request,
-}) => {
-	await seed(request, "notes", "EXPORTED", 2);
-	await page.goto("/ja/notes/viewer");
-	await ready(page);
-	await expect(page.getByRole("link", { name: /notes alice/u })).toHaveCount(2);
-	await navigate(page, "notes");
-	await expect(page.getByRole("link", { name: /notes alice/u })).toHaveCount(0);
-	await navigate(page, "notes/viewer");
-	await expect(page.getByRole("link", { name: /notes alice/u })).toHaveCount(2);
-});
+for (const domain of domains) {
+	test(`${domain}: defaults to exported and toggles both ways without mixing results`, async ({
+		page,
+		request,
+	}) => {
+		await seed(request, domain, "EXPORTED", 2);
+		await page.goto(`/ja/${domain}`);
+		await ready(page);
+		const status = page.getByRole("navigation", { name: "公開状態" });
+		const remove = page.getByRole("button", { name: "削除", exact: true });
+		await expect(status).toContainText("公開済み");
+		await expect(status).toContainText("2件");
+		await expect(remove).toHaveCount(2);
+		await page.getByRole("link", { name: /未公開に切り替え/u }).click();
+		await expect(page).toHaveURL(
+			`http://localhost:4327/ja/${domain}/unexported`,
+		);
+		await ready(page);
+		await expect(remove).toHaveCount(0);
+		await expect(status).not.toContainText("2件");
+		await page.reload();
+		await ready(page);
+		await expect(status).toContainText("未公開");
+		await expect(remove).toHaveCount(0);
+		await page.getByRole("link", { name: /公開済みに切り替え/u }).click();
+		await expect(page).toHaveURL(`http://localhost:4327/ja/${domain}`);
+		await expect(remove).toHaveCount(2);
+		await page.goBack();
+		await expect(page).toHaveURL(
+			`http://localhost:4327/ja/${domain}/unexported`,
+		);
+		await expect(remove).toHaveCount(0);
+	});
+}
 
 test("different browser sessions cannot reuse each other's private output", async ({
 	browser,
 	page,
 }) => {
-	await page.goto("/ja/notes");
+	await page.goto("/ja/notes/unexported");
 	await ready(page);
 	await expect(
 		page.getByRole("link", { name: /notes alice 0/u }),
@@ -239,7 +280,7 @@ test("different browser sessions cannot reuse each other's private output", asyn
 	const context = await browser.newContext();
 	await login(context, "bob");
 	const other = await context.newPage();
-	await other.goto("http://localhost:4327/ja/notes");
+	await other.goto("http://localhost:4327/ja/notes/unexported");
 	await ready(other);
 	await expect(other.getByRole("link", { name: /notes bob 0/u })).toBeVisible();
 	await expect(other.getByText("notes alice 0", { exact: true })).toHaveCount(
@@ -252,7 +293,7 @@ test("clearing the session and reloading rejects previously cached authenticated
 	page,
 	context,
 }) => {
-	await page.goto("/ja/notes");
+	await page.goto("/ja/notes/unexported");
 	await ready(page);
 	await context.clearCookies();
 	await page.reload();
@@ -260,33 +301,40 @@ test("clearing the session and reloading rejects previously cached authenticated
 	await expect(page.getByText("notes alice 0", { exact: true })).toHaveCount(0);
 });
 
-test("pagination keeps each offset separate", async ({ page, request }) => {
-	await seed(request, "notes", "UNEXPORTED", 30);
-	await page.goto("/ja/notes");
-	await ready(page);
-	await expect(
-		page.getByRole("link", { name: /notes alice 0\b/u }),
-	).toBeVisible();
-	await page
-		.getByRole("link", { name: /notes alice 23\b/u })
-		.scrollIntoViewIfNeeded();
-	await expect(
-		page.getByRole("link", { name: /notes alice 29\b/u }),
-	).toBeAttached();
-	const calls: Record<string, number> = await (
-		await request.get(`${backend}/__calls`)
-	).json();
-	expect(
-		Object.keys(calls).some(
-			(key) => key.includes("/notes?") && key.includes("offset=24"),
-		),
-	).toBe(true);
-	expect(
-		Object.keys(calls).some(
-			(key) => key.includes("/notes?") && key.includes("offset=0"),
-		),
-	).toBe(true);
-});
+for (const status of ["EXPORTED", "UNEXPORTED"] as const) {
+	test(`${status}: pagination keeps each offset separate`, async ({
+		page,
+		request,
+	}) => {
+		await seed(request, "notes", status, 30);
+		await page.goto(
+			status === "EXPORTED" ? "/ja/notes" : "/ja/notes/unexported",
+		);
+		await ready(page);
+		await expect(
+			page.getByRole("link", { name: /notes alice 0\b/u }),
+		).toBeVisible();
+		await page
+			.getByRole("link", { name: /notes alice 23\b/u })
+			.scrollIntoViewIfNeeded();
+		await expect(
+			page.getByRole("link", { name: /notes alice 29\b/u }),
+		).toBeAttached();
+		const calls: Record<string, number> = await (
+			await request.get(`${backend}/__calls`)
+		).json();
+		expect(
+			Object.keys(calls).some(
+				(key) => key.includes("/notes?") && key.includes("offset=24"),
+			),
+		).toBe(true);
+		expect(
+			Object.keys(calls).some(
+				(key) => key.includes("/notes?") && key.includes("offset=0"),
+			),
+		).toBe(true);
+	});
+}
 
 test("the static shell and dumper form render while backend data is blocked", async ({
 	page,
@@ -294,7 +342,7 @@ test("the static shell and dumper form render while backend data is blocked", as
 }) => {
 	await request.post(`${backend}/__hold`);
 	try {
-		await page.goto("/ja/articles", { waitUntil: "commit" });
+		await page.goto("/ja/articles/unexported", { waitUntil: "commit" });
 		await expect(page.locator("main")).toBeVisible();
 		await expect(page.locator("footer")).toBeVisible();
 		await expect(page.getByLabel("Loading").first()).toBeVisible();
@@ -317,7 +365,7 @@ for (const domain of domains) {
 		request,
 	}) => {
 		await seed(request, domain, "EXPORTED");
-		await page.goto(`/ja/${domain}/viewer`);
+		await page.goto(`/ja/${domain}`);
 		await ready(page);
 		const remove = page.getByRole("button", { name: "削除", exact: true });
 		await expect(remove).toHaveCount(1);
@@ -336,11 +384,8 @@ for (const domain of domains) {
 		await expect(
 			page.getByRole("navigation", { name: "公開状態" }),
 		).toContainText("0件");
-		await navigate(
-			page,
-			domain === "notes" ? "articles/viewer" : "notes/viewer",
-		);
-		await navigate(page, `${domain}/viewer`);
+		await navigate(page, domain === "notes" ? "articles" : "notes");
+		await navigate(page, domain);
 		await expect(remove).toHaveCount(0);
 		await expect(
 			page.getByRole("navigation", { name: "公開状態" }),

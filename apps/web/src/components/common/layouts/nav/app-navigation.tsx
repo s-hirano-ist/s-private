@@ -42,25 +42,25 @@ const domains = [
 	{
 		key: "articles",
 		href: "/articles",
-		viewerHref: "/articles/viewer",
+		unexportedHref: "/articles/unexported",
 		icon: FileTextIcon,
 	},
 	{
 		key: "notes",
 		href: "/notes",
-		viewerHref: "/notes/viewer",
+		unexportedHref: "/notes/unexported",
 		icon: StickyNoteIcon,
 	},
 	{
 		key: "images",
 		href: "/images",
-		viewerHref: "/images/viewer",
+		unexportedHref: "/images/unexported",
 		icon: ImageIcon,
 	},
 	{
 		key: "books",
 		href: "/books",
-		viewerHref: "/books/viewer",
+		unexportedHref: "/books/unexported",
 		icon: BookOpenIcon,
 	},
 ] as const;
@@ -82,22 +82,18 @@ function getNavigationState(pathname: string) {
 		domains.find((item) => item.key === route)?.key ??
 		bookDetailDomain ??
 		noteDetailDomain;
-	const isViewer =
-		segments.includes("viewer") ||
-		bookDetailDomain !== undefined ||
-		noteDetailDomain !== undefined;
-
 	const isContent = route === "book" || route === "note";
+	const isExported = isContent || segments[2] !== "unexported";
 	const title = route === "rss" ? "rss" : "settings";
-	return { route, domain, isViewer, isContent, title };
+	return { route, domain, isExported, isContent, title };
 }
 
 function displayedViewerCount(
-	isViewer: boolean,
+	isExported: boolean,
 	domain: Domain | undefined,
 	viewer: ReturnType<typeof useViewerCount>,
 ) {
-	return isViewer && viewer !== null && viewer.domain === domain
+	return isExported && viewer !== null && viewer.domain === domain
 		? viewer.count
 		: null;
 }
@@ -168,7 +164,7 @@ function RssStatus({ saved }: { saved: boolean }) {
 
 function ContentStatus({
 	domain,
-	isViewer,
+	isExported,
 	isContent,
 	count,
 	onSwitch,
@@ -176,7 +172,7 @@ function ContentStatus({
 	count: number | null;
 	domain: (typeof domains)[number];
 	isContent: boolean;
-	isViewer: boolean;
+	isExported: boolean;
 	onSwitch: () => void;
 }) {
 	const t = useTranslations("navigation");
@@ -187,14 +183,14 @@ function ContentStatus({
 			) : (
 				<Link
 					aria-label={`${t("switchStatus", {
-						current: t(isViewer ? "exported" : "unexported"),
-						next: t(isViewer ? "unexported" : "exported"),
+						current: t(isExported ? "exported" : "unexported"),
+						next: t(isExported ? "unexported" : "exported"),
 					})}${count === null ? "" : t("contentCount", { count })}`}
 					className="inline-flex h-8 items-center gap-1.5 rounded-full bg-primary/10 px-3 text-xs font-medium whitespace-nowrap text-foreground transition-colors duration-200 hover:bg-primary/20"
-					href={isViewer ? domain.href : domain.viewerHref}
+					href={isExported ? domain.unexportedHref : domain.href}
 					onClick={onSwitch}
 				>
-					{t(isViewer ? "exported" : "unexported")}
+					{t(isExported ? "exported" : "unexported")}
 					{count !== null && t("contentCount", { count })}
 					<ArrowLeftRightIcon aria-hidden="true" className="size-3.5" />
 				</Link>
@@ -214,11 +210,11 @@ export function AppNavigation({ forms, search, draftOwner }: Props) {
 	const [createPending, setCreatePending] = useState(false);
 	const createPendingRef = useRef(false);
 	const [searchOpen, setSearchOpen] = useState(false);
-	const { route, domain, isViewer, isContent, title } =
+	const { route, domain, isExported, isContent, title } =
 		getNavigationState(pathname);
 	const activeDomain = domains.find((item) => item.key === domain);
 	const viewerCount = useViewerCount();
-	const count = displayedViewerCount(isViewer, domain, viewerCount);
+	const count = displayedViewerCount(isExported, domain, viewerCount);
 
 	const submitCreate = (
 		formData: FormData,
@@ -271,7 +267,7 @@ export function AppNavigation({ forms, search, draftOwner }: Props) {
 			<>
 				<ContentStatus
 					domain={activeDomain}
-					isViewer={isViewer}
+					isExported={isExported}
 					isContent={isContent}
 					count={count}
 					onSwitch={() => {
@@ -360,7 +356,7 @@ export function AppNavigation({ forms, search, draftOwner }: Props) {
 							<Link
 								aria-current={domain === item.key ? "page" : undefined}
 								className={navigationTabClassName(domain === item.key)}
-								href={isViewer ? item.viewerHref : item.href}
+								href={isExported ? item.href : item.unexportedHref}
 								key={item.key}
 								onClick={() => {
 									flushDraft();

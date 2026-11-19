@@ -18,40 +18,52 @@ test.describe("content navigation", () => {
 	for (const domain of domains) {
 		test(`${domain.name} opens its create form`, async ({ page }) => {
 			await page.goto(`/ja/${domain.name}`);
-			await expect(page.getByRole("link", { name: "公開済み" })).toBeVisible();
+			await expect(
+				page.getByRole("link", { name: /公開状態: 公開済み/u }),
+			).toBeVisible();
 			await openCreateDialog(page);
 			await expect(page.getByLabel(domain.formLabel)).toBeVisible();
 		});
 
-		test(`${domain.name} viewer renders seeded content`, async ({ page }) => {
-			await page.goto(`/ja/${domain.name}/viewer`);
+		test(`${domain.name} default exported list renders seeded content`, async ({
+			page,
+		}) => {
+			await page.goto(`/ja/${domain.name}`);
 			await expect(page.getByText(domain.fixture).first()).toBeVisible();
-			await expect(page.getByRole("link", { name: "未公開" })).toBeVisible();
+			await expect(
+				page.getByRole("link", { name: /公開状態: 公開済み/u }),
+			).toBeVisible();
 		});
 	}
 
 	test("images opens its create form", async ({ page }) => {
 		await page.goto("/ja/images");
-		await expect(page.getByRole("link", { name: "公開済み" })).toBeVisible();
+		await expect(
+			page.getByRole("link", { name: /公開状態: 公開済み/u }),
+		).toBeVisible();
 		await openCreateDialog(page);
 		await expect(page.getByLabel("画像")).toBeVisible();
 	});
 
-	test("images viewer renders the seeded image", async ({ page }) => {
-		await page.goto("/ja/images/viewer");
+	test("images default exported list renders the seeded image", async ({
+		page,
+	}) => {
+		await page.goto("/ja/images");
 		await expect(
 			page.getByRole("img", { name: /seeded-image\.png/u }),
 		).toBeVisible();
-		await expect(page.getByRole("link", { name: "未公開" })).toBeVisible();
+		await expect(
+			page.getByRole("link", { name: /公開状態: 公開済み/u }),
+		).toBeVisible();
 	});
 
 	test("keeps export status while changing content type", async ({ page }) => {
-		await page.goto("/ja/articles/viewer");
+		await page.goto("/ja/articles");
 		await page
 			.getByRole("navigation", { name: "コンテンツの種類" })
 			.getByRole("link", { name: "書籍" })
 			.click();
-		await expect(page).toHaveURL(/\/ja\/books\/viewer$/u);
+		await expect(page).toHaveURL(/\/ja\/books$/u);
 		// Navigation can expose the server-rendered button before hydration finishes.
 		// Opening is idempotent, so retry the interaction until its result is visible.
 		await expect(async () => {

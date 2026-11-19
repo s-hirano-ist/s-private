@@ -75,8 +75,8 @@ test.describe("Instant Navigation", () => {
 		await expect(page.getByLabel("Loading")).toHaveCount(0);
 
 		await instant(page, async () => {
-			await page.getByRole("link", { name: "公開済み" }).click();
-			await expect(page).toHaveURL(/\/ja\/notes\/viewer$/u);
+			await page.getByRole("link", { name: /未公開に切り替え/u }).click();
+			await expect(page).toHaveURL(/\/ja\/notes\/unexported$/u);
 			await expectShell(page);
 		});
 	});
