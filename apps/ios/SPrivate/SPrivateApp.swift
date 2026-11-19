@@ -10,6 +10,9 @@ struct SPrivateApp: App {
     @State private var rss: RssReaderModel
     private let modelContainer: ModelContainer
     private let useListFixtures: Bool
+    #if DEBUG
+    private let rssFixtureClient: RssFixtureClient?
+    #endif
 
     init() {
         #if DEBUG
@@ -28,7 +31,9 @@ struct SPrivateApp: App {
         modelContainer = container
         let client = MobileClient(authentication: authentication)
         #if DEBUG
-        let rssClient: any RssClient = useListFixtures ? RssFixtureClient() : client
+        let fixture = useListFixtures ? RssFixtureClient() : nil
+        rssFixtureClient = fixture
+        let rssClient: any RssClient = fixture ?? client
         #else
         let rssClient: any RssClient = client
         #endif
@@ -129,6 +134,11 @@ struct SPrivateApp: App {
             MediaLoadingFixtureView()
         } else {
             ContentView()
+                .safeAreaInset(edge: .top) {
+                    if let rssFixtureClient, rssFixtureClient.controlledPages {
+                        RssFixtureControls(client: rssFixtureClient)
+                    }
+                }
         }
         #else
         ContentView()

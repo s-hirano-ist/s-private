@@ -1,22 +1,24 @@
 import XCTest
 
 final class RssUITests: XCTestCase {
+    override func setUpWithError() throws { continueAfterFailure = false }
+
     @MainActor
-    private func launch(offline: Bool = false, language: String = "ja", delayed: Bool = false, slowPages: Bool = false) -> XCUIApplication {
+    private func launch(offline: Bool = false, language: String = "ja", delayed: Bool = false, controlledPages: Bool = false) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = [
             "-ui-testing-authenticated", "-ui-testing-list-fixtures", "-ui-testing-rss-fixtures", "-AppleLanguages",
             "(\(language))",
         ]
         if delayed { app.launchArguments.append("-ui-testing-rss-delayed") }
-        if slowPages { app.launchArguments.append("-ui-testing-rss-slow-pages") }
+        if controlledPages { app.launchArguments.append("-ui-testing-rss-controlled-pages") }
         if offline { app.launchArguments.append("-ui-testing-rss-offline") }
         app.launch()
         if delayed {
             // The seeded cache has one article; the server's two additions are
             // intentionally hidden until the reader accepts the new arrivals.
             let showNew = app.buttons["rss-show-new"]
-            XCTAssertTrue(showNew.waitForExistence(timeout: slowPages ? 20 : 10))
+            XCTAssertTrue(showNew.waitForExistence(timeout: 10))
             showNew.tap()
             XCTAssertTrue(app.buttons["rss-entry-fixture-third"].waitForExistence(timeout: 5))
         }
@@ -85,18 +87,24 @@ final class RssUITests: XCTestCase {
 
     @MainActor
     func testSavingDifferentArticlesDuringRefreshSurvivesTabNavigation() {
-        let app = launch(delayed: true)
+        let app = launch(delayed: true, controlledPages: true)
+        holdRemainingPages(app)
         let refresh = app.buttons["rss-refresh"]
         expectation(for: NSPredicate(format: "enabled == true"), evaluatedWith: refresh)
         waitForExpectations(timeout: 10)
         refresh.tap()
-        XCTAssertTrue(app.descendants(matching: .any)["rss-loading"].waitForExistence(timeout: 5))
+        waitForHeldPage(app)
+        XCTAssertTrue(app.descendants(matching: .any)["rss-loading"].exists)
         XCTAssertTrue(app.buttons["rss-save-fixture-unread"].isEnabled)
         app.buttons["rss-save-fixture-unread"].tap()
         app.buttons["rss-save-fixture-second"].tap()
         app.tabBars.buttons.element(boundBy: 3).tap()
         app.tabBars.buttons["RSS"].tap()
         app.segmentedControls["rss-view-picker"].buttons["保存済み"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["rss-loading"].exists)
+        // Both inputs were accepted during sync. Let the pending metadata
+        // reconciliation finish before checking the serialized writes' result.
+        releaseRemainingPages(app)
         XCTAssertTrue(app.staticTexts["Second unread article"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons["rss-entry-fixture-saved"].exists)
         attach(app, name: "rss-concurrent-saves")
@@ -119,12 +127,19 @@ final class RssUITests: XCTestCase {
 
     @MainActor
     func testPullToRefreshStopsSpinningWhileRemainingDatabasePagesSync() {
-        let app = launch(delayed: true, slowPages: true)
+        let app = launch(delayed: true, controlledPages: true)
         let refresh = app.buttons["rss-refresh"]
         expectation(for: NSPredicate(format: "enabled == true"), evaluatedWith: refresh)
         waitForExpectations(timeout: 20)
-        app.swipeDown()
-        XCTAssertTrue(app.descendants(matching: .any)["rss-loading"].waitForExistence(timeout: 5))
+        holdRemainingPages(app)
+        let reader = app.descendants(matching: .any)["rss-reader"].firstMatch
+        XCTAssertTrue(reader.waitForExistence(timeout: 5))
+        // Drag inside the list from its top; an application-wide swipe can hit
+        // the navigation bar or a row action without starting native refresh.
+        reader.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.15))
+            .press(forDuration: 0.1, thenDragTo: reader.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.9)))
+        waitForHeldPage(app)
+        XCTAssertTrue(app.descendants(matching: .any)["rss-loading"].exists)
         XCTAssertTrue(app.activityIndicators.firstMatch.waitForNonExistence(timeout: 3))
         XCTAssertFalse(refresh.isEnabled) // The complete offline copy is still downloading.
         XCTAssertTrue(app.buttons["rss-entry-fixture-unread"].exists)
@@ -132,7 +147,33 @@ final class RssUITests: XCTestCase {
         app.tabBars.buttons.element(boundBy: 3).tap()
         app.tabBars.buttons["RSS"].tap()
         XCTAssertTrue(app.buttons["rss-entry-fixture-unread"].waitForExistence(timeout: 5))
+        releaseRemainingPages(app)
         attach(app, name: "rss-db-refresh-background-copy")
+    }
+
+    @MainActor
+    private func holdRemainingPages(_ app: XCUIApplication) {
+        let refresh = app.buttons["rss-refresh"]
+        expectation(for: NSPredicate(format: "enabled == true"), evaluatedWith: refresh)
+        waitForExpectations(timeout: 10)
+        let hold = app.buttons["fixture-rss-hold-pages"]
+        XCTAssertTrue(hold.waitForExistence(timeout: 5))
+        hold.tap()
+        XCTAssertFalse(hold.isEnabled)
+    }
+
+    @MainActor
+    private func waitForHeldPage(_ app: XCUIApplication) {
+        let release = app.buttons["fixture-rss-release-pages"]
+        expectation(for: NSPredicate(format: "enabled == true"), evaluatedWith: release)
+        waitForExpectations(timeout: 10)
+    }
+
+    @MainActor
+    private func releaseRemainingPages(_ app: XCUIApplication) {
+        app.buttons["fixture-rss-release-pages"].tap()
+        expectation(for: NSPredicate(format: "enabled == true"), evaluatedWith: app.buttons["rss-refresh"])
+        waitForExpectations(timeout: 10)
     }
 
     @MainActor

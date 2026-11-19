@@ -332,7 +332,12 @@ not guaranteed for the device cache.
 `RssTests` covers cache generations, pagination/revisions, isolation, read boundaries,
 mutation failures, concurrent DB refreshes/reads/saves, reconnects, cache deletion,
 partial bulk operations, large datasets, and file imports. `RssUITests` uses an
-in-memory RSS server and never calls the configured API. SwiftUI previews cover
+in-memory RSS server and never calls the configured API. The refresh UI tests use
+`-ui-testing-rss-controlled-pages`: the test arms a Debug-only page gate after
+initial sync, checks the actual reader while subsequent pages are held, then
+explicitly releases them. This avoids racing a short artificial delay. The native
+refresh test drags inside `rss-reader` and confirms a later page is pending before
+checking that the spinner ended. SwiftUI previews cover
 unread articles, subscription management, and offline browsing.
 
 
