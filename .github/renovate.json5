@@ -10,7 +10,15 @@
 	],
 	reviewers: ["s-hirano-ist"],
 	// Keep every dependency source in one reviewable PR, including Actions and Docker.
-	enabledManagers: ["npm", "mise", "nvm", "docker-compose", "github-actions"],
+	enabledManagers: [
+		"npm",
+		"mise",
+		"nvm",
+		"docker-compose",
+		"github-actions",
+		"swift",
+		"xcodegen",
+	],
 	// Skip lifecycle scripts only during Renovate's lockfile regeneration.
 	// CI and deployment installs still build the explicitly allowed dependencies.
 	ignoreScripts: true,
