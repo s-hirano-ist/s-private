@@ -60,7 +60,7 @@ jobs:
           #   issues              : Dependency Dashboard issue の維持
           #   workflows           : GitHub Actions の依存更新を含むコミットの push
           #     App 側にも "Workflows: Read and write" の付与とインストール先の承認が必要。
-          #     無いと workflow 更新が拒否され、単一集約ブランチ全体の PR を作成できない。
+          #     無いと workflow 更新が拒否され、GitHub Actions グループの PR を作成できない。
           #   statuses            : minimumReleaseAge の内部チェックを renovate/stability-days という
           #     commit status として branch に書き込む。無いと POST /statuses が 403
           #     "Resource not accessible by integration" → Renovate が integration-unauthorized を
@@ -77,7 +77,7 @@ jobs:
           permission-vulnerability-alerts: read
 
       # Grouped branches inherit schedule from one upgrade, which may be non-security.
-      # Open alerts with a fix make the whole shared branch eligible on today's run.
+      # Open alerts with a fix make all ecosystem groups eligible on today's run.
       - name: Check for security fixes
         id: security-fixes
         env:
@@ -108,6 +108,6 @@ jobs:
           LOG_LEVEL: ${{ inputs.logLevel || 'info' }}
           # dryRun=true のとき 'full'、それ以外は空＝通常実行。
           RENOVATE_DRY_RUN: ${{ inputs.dryRun && 'full' || '' }}
-          # 手動実行または修正版のある脆弱性検出時は、集約PR全体を更新する。
+          # 手動実行または修正版のある脆弱性検出時は、全グループのPRを更新する。
           # 通常のDashboard操作ではcheckboxによるschedule解除だけを使う。
           RENOVATE_FORCE: ${{ (github.event_name == 'workflow_dispatch' || steps.security-fixes.outputs.has-fixes == 'true') && '{"schedule":[]}' || '' }}
