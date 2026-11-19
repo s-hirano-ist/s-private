@@ -318,7 +318,9 @@ struct RecordDetailView: View {
                     if let errorMessage { Text(errorMessage).foregroundStyle(AppColors.destructive) }
                     if let record {
                         Text(record.displayTitle).font(.title2.bold())
-                        Text(record.status.localizedTitle).foregroundStyle(AppColors.mutedForeground)
+                        if domain != .books {
+                            Text(record.status.localizedTitle).foregroundStyle(AppColors.mutedForeground)
+                        }
                         switch domain {
                         case .articles:
                             if let categoryName = record.categoryName { Text(categoryName) }
