@@ -4,12 +4,13 @@ final class RssUITests: XCTestCase {
     override func setUpWithError() throws { continueAfterFailure = false }
 
     @MainActor
-    private func launch(offline: Bool = false, language: String = "ja", delayed: Bool = false, controlledPages: Bool = false) -> XCUIApplication {
+    private func launch(offline: Bool = false, language: String = "ja", delayed: Bool = false, controlledPages: Bool = false, large: Bool = false) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = [
             "-ui-testing-authenticated", "-ui-testing-list-fixtures", "-ui-testing-rss-fixtures", "-AppleLanguages",
             "(\(language))",
         ]
+        if large { app.launchArguments.append("-ui-testing-rss-large") }
         if delayed { app.launchArguments.append("-ui-testing-rss-delayed") }
         if controlledPages { app.launchArguments.append("-ui-testing-rss-controlled-pages") }
         if offline { app.launchArguments.append("-ui-testing-rss-offline") }
@@ -78,6 +79,36 @@ final class RssUITests: XCTestCase {
     }
 
     @MainActor
+    func testUnreadInfiniteScrollWorksOfflineThroughTheLastBatch() {
+        let app = launch(offline: true, large: true)
+        assertScrollsThroughAllBatches(app, lastID: "fixture-large-unread-119")
+        attach(app, name: "rss-unread-infinite-offline")
+    }
+
+    @MainActor
+    func testSavedInfiniteScrollWorksOfflineThroughTheLastBatch() {
+        let app = launch(offline: true, large: true)
+        app.segmentedControls["rss-view-picker"].buttons["保存済み"].tap()
+        assertScrollsThroughAllBatches(app, lastID: "fixture-large-saved-119")
+        attach(app, name: "rss-saved-infinite-offline")
+    }
+
+    @MainActor
+    private func assertScrollsThroughAllBatches(_ app: XCUIApplication, lastID: String) {
+        XCTAssertFalse(app.buttons["前へ"].exists)
+        XCTAssertFalse(app.buttons["次へ"].exists)
+        let reader = app.descendants(matching: .any)["rss-reader"].firstMatch
+        let last = app.buttons["rss-entry-\(lastID)"]
+        for _ in 0..<45 {
+            if last.exists && last.isHittable { break }
+            reader.swipeUp(velocity: .fast)
+        }
+        XCTAssertTrue(last.exists && last.isHittable)
+        reader.swipeUp()
+        XCTAssertTrue(last.exists)
+    }
+
+    @MainActor
     func testRssEnglishLabels() throws {
         let app = launch(offline: true, language: "en")
         XCTAssertTrue(app.segmentedControls["rss-view-picker"].buttons["Unread"].exists)
@@ -131,13 +162,17 @@ final class RssUITests: XCTestCase {
         let refresh = app.buttons["rss-refresh"]
         expectation(for: NSPredicate(format: "enabled == true"), evaluatedWith: refresh)
         waitForExpectations(timeout: 20)
-        holdRemainingPages(app)
-        let reader = app.descendants(matching: .any)["rss-reader"].firstMatch
+        let reader = app.collectionViews["rss-reader"]
         XCTAssertTrue(reader.waitForExistence(timeout: 5))
-        // Drag inside the list from its top; an application-wide swipe can hit
-        // the navigation bar or a row action without starting native refresh.
-        reader.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.15))
-            .press(forDuration: 0.1, thenDragTo: reader.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.9)))
+        // Accepting new arrivals can restore an interior scroll position. Return
+        // to the top before arming the page gate, then pull from an article row.
+        // The top 15% contains Pickers, which can consume the old drag gesture.
+        reader.swipeDown(velocity: .fast)
+        holdRemainingPages(app)
+        let article = app.buttons["rss-entry-fixture-unread"]
+        XCTAssertTrue(article.isHittable)
+        article.coordinate(withNormalizedOffset: CGVector(dx: 0.1, dy: 0.5))
+            .press(forDuration: 0.1, thenDragTo: reader.coordinate(withNormalizedOffset: CGVector(dx: 0.1, dy: 0.95)))
         waitForHeldPage(app)
         XCTAssertTrue(app.descendants(matching: .any)["rss-loading"].exists)
         XCTAssertTrue(app.activityIndicators.firstMatch.waitForNonExistence(timeout: 3))
