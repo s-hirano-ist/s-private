@@ -56,12 +56,13 @@ RSS 1.0はRSS名前空間のchannelと、その兄弟itemを読み込む。記�
 接頭辞の変更やRSS要素への接頭辞付与にも対応する。IDがない記事は従来どおりURLを使う。
 RDFの本文・拡張要素・sequenceは保存せず、新着判定には使わない。
 
-GitHub Actionsの `rss-refresh` が毎時17分にproduction backendの
-`GET /api/cron/rss-refresh` を呼ぶ。最終試行から1時間以上経過しleaseが空いている購読を、
+Vercel Schedulesの `rss-refresh` が毎時17分（UTC）を基準にproduction backendの
+`GET /api/cron/rss-refresh` を呼ぶ。Hobbyの実行開始には最大15分のjitterがある。
+最終試行から1時間以上経過しleaseが空いている購読を、
 未取得・古い順に最大100件選び、最大5件まで並列取得する。所有者はDBから解決し、
 個別取得は所有者のtenant context内で既存serviceを呼ぶ。ブラウザの認証cookieは使用しない。
 1回240秒の処理予算のうち、残り30秒では次の購読を開始せず、未処理分を次回へ回す。
-Actionsの遅延・実行漏れや、前回取得完了から1時間未満の場合のskipがあるため、毎時の完了は保証しない。
+Schedulesの遅延・実行漏れや、前回取得完了から1時間未満の場合のskipがあるため、毎時の完了は保証しない。
 
 Web・iOSから配信元の取得は開始しない。起動・画面復帰・更新ボタン・pull-to-refreshは
 `GET /api/v1/rss` によるDB読取だけを行う。配信元の取得とDBへの反映は上記の
@@ -92,17 +93,31 @@ SSRの初期データはhydration時に再取得しない。ファイル入力�
 ### 定期取得の設定と監視
 
 backendは既存の `CRON_SECRET` と `BACKEND_CRON_ENABLED` で保護する。
-PreviewのCron無効化は既存env policyを使う。Actionsは初期状態で無効とし、次を設定する。Web・iOSのDB読取専用版を本番へ切り替える前に、
-定期取得を有効化し、実際にDBへ新着が反映されることを確認する。未設定のままでは
-既存DBの閲覧はできるが、購読追加後の初回取得や新着の取り込みは進まない。
+スケジュールは `apps/backend/vercel.json` の `schedules.rss-refresh` に定義し、
+GitHub Actionsの設定は不要とする。既存の日次Cronは `crons` のまま維持する。
 
-- Repository variable `RSS_BACKEND_URL`: production backendのHTTPS origin。
-- Repository secret `RSS_CRON_SECRET`: backendの `CRON_SECRET` と同じ値。値をログへ出さない。
-- Repository variable `RSS_CRON_ENABLED`: 使用量確認後に `true` に設定する。
+1. backend projectのProduction環境に `CRON_SECRET`（16文字以上）と
+   `BACKEND_CRON_ENABLED=true` を設定する。SchedulesがBearer認証を付けるため、
+   secretをGitHubへ複製する必要はない。
+2. 使用量を確認してからbackendをProductionへdeployする。新規static scheduleは
+   Productionでは有効、Previewでは無効で作成される。Previewではscheduleを有効化せず、
+   `BACKEND_CRON_ENABLED=false` も維持する。
+3. Vercel Dashboardのbackend projectで **Schedules → rss-refresh → Run Schedule** を実行し、
+   実行履歴・FunctionログとDBへの新着反映を確認する。未認証のAPI呼び出しは401になることも確認する。
+4. Web・iOSのDB読取専用版を本番へ切り替える前に定期取得の動作を確認する。
+   未設定のままでは既存DBの閲覧はできるが、購読追加後の初回取得や新着の取り込みは進まない。
 
-Actionsはcheckout・DB接続をせず、HTTP呼び出しだけを行う。workflowの重複実行を抑止し、
-backendのleaseでも手動更新や重複配送との競合を防ぐ。新しい有料サービスは追加しない。
-停止時は `RSS_CRON_ENABLED` を `false` に戻す。既存の別Cronは停止しない。
+停止時は **Schedules → rss-refresh → Disable** を使う。無効状態は以降のdeployでも維持される。
+`BACKEND_CRON_ENABLED` は他のCronにも共通なので、RSSだけの停止には変更しない。
+同じ `rss-refresh` を別のschedulerにも登録しない。重複配送や実行の重なりはbackendのleaseで保護する。
+以前のGitHub設定 `RSS_BACKEND_URL`・`RSS_CRON_SECRET`・`RSS_CRON_ENABLED` がある場合は削除できる。
+
+SchedulesはBeta。Hobbyでは最短15分間隔、jitterは15分固定で、手動実行を含む
+team全体の実行上限は1請求期間5,000回となる。毎時実行は30日で720回だが、
+他projectやPreviewで有効にしたscheduleの使用量も合算する。
+仕様は [設定](https://vercel.com/docs/schedules/configuration)、
+[環境と有効状態](https://vercel.com/docs/schedules/concepts)、
+[Hobbyの制限](https://vercel.com/docs/schedules/limits) を参照する。
 
 既存監視へ `rss.page.duration`、`rss.claim.duration`、`rss.fetch.duration`、
 `rss.complete.duration` と、`rss.cron.duration`・`rss.cron.feeds` を記録する。

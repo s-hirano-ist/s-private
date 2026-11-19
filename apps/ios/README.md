@@ -314,11 +314,11 @@ and a 20 MiB memory cache; they are not persisted to disk.
 
 Automatic DB checks are throttled to five minutes while the reader is active.
 Pull-to-refresh and the toolbar refresh read database metadata only; neither polls
-external RSS hosts. The shared server Cron fetches feeds and commits new articles
+external RSS hosts. The shared Vercel Schedule fetches feeds and commits new articles
 independently of Web and iOS screens. Subscription creation and OPML imports wait
 for the next server pass to download their first articles. Production requires
-`RSS_CRON_ENABLED`, `RSS_BACKEND_URL` and `RSS_CRON_SECRET` to be configured as
-described in [the RSS operations guide](../../docs/rss-reader.md#定期取得の設定と監視).
+the backend `rss-refresh` Schedule, `BACKEND_CRON_ENABLED=true` and `CRON_SECRET`
+to be configured as described in [the RSS operations guide](../../docs/rss-reader.md#定期取得の設定と監視).
 
 Pull-to-refresh ends after the selected unread/saved list's first DB page returns.
 The remaining offline copy continues in a reader-owned task, with a static sync
@@ -380,5 +380,5 @@ and newly committed articles arriving while the reader keeps its displayed revis
 `mise run ios:test` remains blocked by the CoreSimulator version mismatch
 (1171.7 installed versus 1174.21 required). The new slow-page pull-to-refresh UI
 test compiles, but Simulator execution, physical-device frame responsiveness,
-and post-deployment Cron operation remain unverified. Configure and verify the
-production Cron before deploying readers that depend on its feed updates.
+and post-deployment Schedule operation remain unverified. Configure and verify the
+production RSS Schedule before deploying readers that depend on its feed updates.

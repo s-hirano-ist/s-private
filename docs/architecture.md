@@ -645,7 +645,9 @@ DBと通知の原子性を保証するOutboxは導入していない。外部処
 
 `/api/cron/media-cleanup` は既存の `CRON_SECRET` と `BACKEND_CRON_ENABLED` で保護し、毎日UTC 01:00に期限到来分を最大100件処理する。失敗時は24時間後以降に再試行する。予約の処理leaseは10分で、プロセス停止後も期限切れから復旧できる。1回の処理予算は240秒、Functionの上限は300秒とし、原本・サムネイル各60秒の通信予算を残して次の項目を開始する。
 
-RSSの `/api/cron/rss-refresh` はGitHub Actionsから毎時呼び出す内部入口とする。
+RSSの `GET /api/cron/rss-refresh` はVercel Schedulesの `rss-refresh` から毎時呼び出す内部入口とする。
+`apps/backend/vercel.json` にstatic scheduleを定義し、Productionで稼働させる。
+Hobbyのjitterは15分とし、PreviewではscheduleとbackendのCronを無効のまま維持する。
 `CRON_SECRET`・`BACKEND_CRON_ENABLED` で保護し、期限到来購読をsystem contextで選択後、
 所有者ごとのtenant contextで既存RSS serviceを実行する。定期取得と画面からの取得は
 同じlease・重複排除を使う。詳細と有効化条件は [RSSリーダー](rss-reader.md) を参照する。
