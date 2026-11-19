@@ -7,7 +7,6 @@ import type {
 } from "@s-hirano-ist/s-api-client/models";
 import { loadRss } from "@/application-services/rss/client";
 import { ViewerCountSync } from "@/components/common/layouts/nav/viewer-count-context";
-import { RssLoading } from "@/components/rss/rss-loading";
 import { useRssPage } from "@/components/rss/use-rss-page";
 import { Button } from "@s-hirano-ist/s-ui/button";
 import { Input } from "@s-hirano-ist/s-ui/input";
@@ -49,21 +48,34 @@ function RssRefreshButton({
 	refreshing: boolean;
 }) {
 	const t = useTranslations("rss");
+	const status = refreshing ? t("loading") : "";
 	return (
-		<Button
-			aria-label={refreshing ? t("refreshing") : t("refresh")}
-			aria-busy={refreshing}
-			variant="outline"
-			className="gap-2"
-			disabled={refreshing || busy}
-			onClick={onRefresh}
-			type="button"
-		>
-			<RefreshCw aria-hidden="true" className="size-4" />
-			<span aria-live="polite">
-				{refreshing ? t("refreshing") : t("refresh")}
-			</span>
-		</Button>
+		<>
+			<Button
+				aria-label={t("refresh")}
+				aria-busy={refreshing}
+				variant="outline"
+				className="gap-2"
+				disabled={refreshing || busy}
+				onClick={onRefresh}
+				type="button"
+			>
+				<span
+					aria-hidden="true"
+					className={`inline-flex size-4 shrink-0 ${refreshing ? "animate-spin motion-reduce:animate-none" : ""}`}
+				>
+					<RefreshCw className="size-4" />
+				</span>
+				<span>{t("refresh")}</span>
+			</Button>
+			<output
+				aria-label={status || undefined}
+				aria-live="polite"
+				className="sr-only"
+			>
+				{status}
+			</output>
+		</>
 	);
 }
 
@@ -406,7 +418,6 @@ export function RssReader({
 	const controlsBusy = busy || !interactive;
 	const controlsLoading = loading || !interactive;
 	const paginationPending = !interactive || (loading && reloading);
-	const status = reloading || busy ? t("loading") : "";
 	return (
 		<main
 			className="space-y-4 bg-background px-3 pt-6 text-foreground sm:px-0"
@@ -421,7 +432,7 @@ export function RssReader({
 				}
 			>
 				<RssRefreshButton
-					refreshing={reloading}
+					refreshing={reloading || busy}
 					busy={controlsBusy}
 					onRefresh={retry}
 				/>
@@ -447,7 +458,6 @@ export function RssReader({
 						}}
 					/>
 				) : null}
-				<RssLoading display="inline" label={status} />
 				{view === "unread" ? (
 					<RssNewArrivals
 						count={data.newerCount}
