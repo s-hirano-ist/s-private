@@ -266,17 +266,21 @@ struct RssStatusView: View {
                 Label(String(localized: "オフラインです。保存した記事情報を表示しています"), systemImage: "wifi.slash")
                     .font(.caption).accessibilityIdentifier("rss-offline")
             }
-            Text(String(localized: "記事情報を同期中"))
-                .font(.caption).foregroundStyle(AppColors.mutedForeground)
-                .frame(minHeight: 20, alignment: .leading)
-                .opacity(rss.isLoading && !rss.isMutating && !rss.pendingKeys.contains("import") ? 1 : 0)
-                .overlay(alignment: .leading) {
-                    if rss.isMutating || rss.pendingKeys.contains("import") {
-                        ProgressView().controlSize(.small).accessibilityLabel(String(localized: "処理中"))
-                    }
+            ZStack(alignment: .leading) {
+                // Reserve the actual localized, wrapping text, even when no status is shown.
+                Text(String(localized: "記事情報を同期中"))
+                    .font(.caption).hidden().accessibilityHidden(true)
+                if rss.isMutating || rss.pendingKeys.contains("import") {
+                    ProgressView().controlSize(.small)
+                        .accessibilityLabel(String(localized: "処理中"))
+                        .accessibilityIdentifier("rss-loading")
+                } else if rss.isLoading {
+                    Text(String(localized: "記事情報を同期中"))
+                        .font(.caption).foregroundStyle(AppColors.mutedForeground)
+                        .accessibilityIdentifier("rss-loading")
                 }
-                .accessibilityHidden(!rss.isLoading && !rss.isMutating && !rss.pendingKeys.contains("import"))
-                .accessibilityIdentifier(rss.isLoading || rss.isMutating || rss.pendingKeys.contains("import") ? "rss-loading" : "rss-status-idle")
+            }
+            .frame(minHeight: 20, alignment: .leading)
             if let error = rss.errorMessage {
                 Text(error).font(.caption).foregroundStyle(AppColors.destructive).accessibilityIdentifier("rss-error")
                 Button(String(localized: "再試行")) { Task { await rss.synchronize(manual: true) } }
