@@ -9,9 +9,9 @@ DEVELOPER_DIR = "/Applications/Xcode.app/Contents/Developer"
 [tools]
 pnpm = "12.21.0"
 "npm:agent-browser" = "0.43.0"
-rumdl = "v0.3.4"
+rumdl = "v0.3.5"
 gitleaks = "8.30.1"
-"aqua:yonaskolb/XcodeGen" = { version = "2.47.0", os = ["macos"] }
+"aqua:yonaskolb/XcodeGen" = { version = "2.48.0", os = ["macos"] }
 
 [tasks."ios:generate"]
 description = "Generate the iOS Xcode project"
@@ -25,10 +25,22 @@ description = "Build the iOS app for an iOS 27 Simulator"
 depends = ["ios:generate"]
 run = "xcodebuild -project apps/ios/SPrivate.xcodeproj -scheme SPrivate -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath apps/ios/.derivedData CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual build"
 
-[tasks."ios:test"]
-description = "Run the iOS unit and UI tests"
+[tasks."ios:test:build"]
+description = "Build iOS app and test targets once for Simulator testing"
 depends = ["ios:generate"]
-run = "xcodebuild -project apps/ios/SPrivate.xcodeproj -scheme SPrivate -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest' -derivedDataPath apps/ios/.derivedData CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual test"
+run = [
+	"rm -f apps/ios/.derivedData/Build/Products/*.xctestrun",
+	"xcodebuild -project apps/ios/SPrivate.xcodeproj -scheme SPrivate -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath apps/ios/.derivedData CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual ARCHS=arm64 ONLY_ACTIVE_ARCH=YES build-for-testing",
+]
+
+[tasks."ios:test:run"]
+description = "Run previously built iOS tests without regenerating or rebuilding"
+run = "bash apps/ios/scripts/test-without-building.sh"
+
+[tasks."ios:test"]
+description = "Build once and run all iOS unit and UI tests"
+depends = ["ios:test:build"]
+run = "bash apps/ios/scripts/test-without-building.sh"
 
 [tasks."ios:device-build"]
 description = "Build the iOS app and Share Extension with local Personal Team signing"
