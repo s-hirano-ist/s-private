@@ -103,7 +103,7 @@ final class SPrivateUITests: XCTestCase {
     @MainActor
     func testFourDomainTabsOfferHeaderActionsInWebOrder() throws {
         let app = XCUIApplication()
-        app.launchArguments.append("-ui-testing-authenticated")
+        app.launchArguments += ["-ui-testing-authenticated", "-ui-testing-list-fixtures"]
         app.launch()
 
         let tabBar = app.tabBars.firstMatch
@@ -150,7 +150,7 @@ final class SPrivateUITests: XCTestCase {
     @MainActor
     func testMediaTabsUseGridsAndTextTabsUseLists() throws {
         let app = XCUIApplication()
-        app.launchArguments.append("-ui-testing-authenticated")
+        app.launchArguments += ["-ui-testing-authenticated", "-ui-testing-list-fixtures"]
         app.launch()
 
         let tabs = app.tabBars.firstMatch.buttons
@@ -168,7 +168,7 @@ final class SPrivateUITests: XCTestCase {
     @MainActor
     func testFourDomainTabsOfferOnlyUnexportedAndExportedFilters() throws {
         let app = XCUIApplication()
-        app.launchArguments.append("-ui-testing-authenticated")
+        app.launchArguments += ["-ui-testing-authenticated", "-ui-testing-list-fixtures"]
         app.launch()
 
         let tabs = app.tabBars.firstMatch.buttons

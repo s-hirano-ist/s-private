@@ -66,6 +66,29 @@ mise run ios:test
 mise run ios:run
 ```
 
+`ios:test` generates the project once, builds the app and both test targets with
+`build-for-testing`, then runs them with `test-without-building`. To rerun tests
+without code changes, use `mise run ios:test:run`; after changes, use
+`mise run ios:test:build` first. All products and `.xctestrun` specifications stay
+inside this worktree's `.derivedData`. Each run saves an `.xcresult` bundle under
+`apps/ios/.test-results/`.
+
+CI builds those products once, preserves executable permissions and symlinks in
+a tar archive, and distributes them to four independent iPhone 17 / iOS 27 jobs:
+unit tests, RSS UI tests, expensive navigation UI cases, and the remaining UI
+cases. Navigation and list-layout tests use in-memory fixtures, so they do not
+start live synchronization while XCTest waits for the app to become idle.
+`IOS_TEST_GROUP=unit|rss|navigation|ui mise run ios:test:run` selects the
+same groups locally. The default runs all tests. Each job uses one Simulator;
+there is no extra Xcode test-worker cloning. API-package tests still run on the
+build job. The existing `build-and-test` check requires all jobs to pass.
+
+`node --test scripts/ios-test-groups.test.mjs` checks that every UI test belongs
+to exactly one CI group. Newly added UI cases enter the remaining UI group
+unless assigned explicitly. CI retains test result bundles, including failure
+screenshots, for seven days. This enables timing comparisons and failure diagnosis
+without repeating the entire suite.
+
 `ios:run` locates an available iPhone 17 in an iOS 27 runtime, boots it, opens
 Xcode 27 Device Hub, builds the application with ad hoc Simulator signing, installs it,
 and launches it. Simulator UUIDs are never stored in the repository.
@@ -336,7 +359,7 @@ in-memory RSS server and never calls the configured API. The refresh UI tests us
 `-ui-testing-rss-controlled-pages`: the test arms a Debug-only page gate after
 initial sync, checks the actual reader while subsequent pages are held, then
 explicitly releases them. This avoids racing a short artificial delay. The native
-refresh test drags inside `rss-reader` and confirms a later page is pending before
+refresh test returns to the top and drags from an article row inside `rss-reader` and confirms a later page is pending before
 checking that the spinner ended. SwiftUI previews cover
 unread articles, subscription management, and offline browsing.
 

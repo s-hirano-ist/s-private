@@ -162,13 +162,17 @@ final class RssUITests: XCTestCase {
         let refresh = app.buttons["rss-refresh"]
         expectation(for: NSPredicate(format: "enabled == true"), evaluatedWith: refresh)
         waitForExpectations(timeout: 20)
-        holdRemainingPages(app)
-        let reader = app.descendants(matching: .any)["rss-reader"].firstMatch
+        let reader = app.collectionViews["rss-reader"]
         XCTAssertTrue(reader.waitForExistence(timeout: 5))
-        // Drag inside the list from its top; an application-wide swipe can hit
-        // the navigation bar or a row action without starting native refresh.
-        reader.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.15))
-            .press(forDuration: 0.1, thenDragTo: reader.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.9)))
+        // Accepting new arrivals can restore an interior scroll position. Return
+        // to the top before arming the page gate, then pull from an article row.
+        // The top 15% contains Pickers, which can consume the old drag gesture.
+        reader.swipeDown(velocity: .fast)
+        holdRemainingPages(app)
+        let article = app.buttons["rss-entry-fixture-unread"]
+        XCTAssertTrue(article.isHittable)
+        article.coordinate(withNormalizedOffset: CGVector(dx: 0.1, dy: 0.5))
+            .press(forDuration: 0.1, thenDragTo: reader.coordinate(withNormalizedOffset: CGVector(dx: 0.1, dy: 0.95)))
         waitForHeldPage(app)
         XCTAssertTrue(app.descendants(matching: .any)["rss-loading"].exists)
         XCTAssertTrue(app.activityIndicators.firstMatch.waitForNonExistence(timeout: 3))
