@@ -285,6 +285,12 @@ final class SPrivateUITests: XCTestCase {
             field.tap()
         }
         XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5), file: file, line: line)
+        // Japanese UI launches can initially show the kana keyboard. Switch to
+        // Latin input before typing these ASCII fixture values.
+        let latinKeyboard = app.keyboards.buttons["ABC"]
+        if latinKeyboard.exists { latinKeyboard.tap() }
         field.typeText(text)
+        let entered = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", text), object: field)
+        XCTAssertEqual(XCTWaiter.wait(for: [entered], timeout: 5), .completed, file: file, line: line)
     }
 }
