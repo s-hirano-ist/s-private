@@ -416,12 +416,7 @@ struct AuthenticatedImageView: View {
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("media-open")
                 .sheet(isPresented: $enlarged) {
-                    NavigationStack {
-                        ScrollView([.horizontal, .vertical]) {
-                            Image(uiImage: image).resizable().scaledToFit()
-                        }
-                        .toolbar { Button(String(localized: "閉じる")) { enlarged = false } }
-                    }
+                    ImagePreviewView(image: image)
                 }
             } else if let errorMessage {
                 VStack(spacing: 12) {
