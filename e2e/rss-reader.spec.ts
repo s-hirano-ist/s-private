@@ -17,7 +17,7 @@ test.describe("RSS reader", () => {
 		!enabled,
 		"Requires the local RSS backend and dedicated migrated DB",
 	);
-	test("reuses SSR data for fresh feeds and loads only the active page and filter", async ({
+	test("reuses SSR data and automatically appends articles before resetting the filter", async ({
 		page,
 	}) => {
 		const db = localDatabase();
@@ -72,12 +72,17 @@ test.describe("RSS reader", () => {
 				page.getByRole("link", { name: "Performance article 0", exact: true }),
 			).toBeVisible();
 			const firstVisibleMs = performance.now() - started;
-			// The resulting page change verifies the controls are hydrated.
-			await expect(page.getByRole("button", { name: "次へ" })).toBeEnabled();
-			await page.getByRole("button", { name: "次へ" }).click();
+			// Scrolling to the loaded tail requests the next batch without a button click.
+			await page
+				.getByRole("link", { name: "Performance article 49", exact: true })
+				.scrollIntoViewIfNeeded();
 			await expect(
 				page.getByRole("link", { name: "Performance article 50", exact: true }),
 			).toBeVisible();
+			await expect(
+				page.getByRole("link", { name: "Performance article 0", exact: true }),
+			).toHaveCount(1);
+			await expect(page.getByRole("button", { name: "次へ" })).toHaveCount(0);
 			expect(reads).toHaveLength(1);
 			expect(new URL(reads[0]).searchParams.get("view")).toBe("unread");
 			expect(new URL(reads[0]).searchParams.get("offset")).toBe("50");
@@ -106,6 +111,69 @@ test.describe("RSS reader", () => {
 		} finally {
 			await db.rssFeed.deleteMany({ where: { id: { in: feedIds } } });
 			await db.rssSaved.deleteMany({ where: { id: savedId } });
+			await db.$disconnect();
+		}
+	});
+
+	test("saved entries append across three batches and stop at the end", async ({
+		page,
+	}) => {
+		const db = localDatabase();
+		await page.request.get("/api/sign-in", { maxRedirects: 0 });
+		const owner = await db.user.findUniqueOrThrow({
+			where: { email: process.env.LOCAL_AUTH_EMAIL },
+		});
+		const prefix = `https://example.com/infinite-saved-${randomUUID()}/`;
+		const now = Date.now();
+		await db.rssSaved.createMany({
+			data: Array.from({ length: 120 }, (_, index) => ({
+				id: randomUUID(),
+				userId: owner.id,
+				url: `${prefix}${index}`,
+				title: `Infinite saved ${index}`,
+				savedAt: new Date(now - index * 1000),
+			})),
+		});
+		const reads: string[] = [];
+		page.on("request", (request) => {
+			const url = new URL(request.url());
+			if (url.pathname === "/api/v1/rss" && request.method() === "GET")
+				reads.push(request.url());
+		});
+		try {
+			await page.goto("/ja/rss/saved");
+			await expect(
+				page.getByRole("link", { name: "Infinite saved 0", exact: true }),
+			).toBeVisible();
+			await page
+				.getByRole("link", { name: "Infinite saved 49", exact: true })
+				.scrollIntoViewIfNeeded();
+			await expect(
+				page.getByRole("link", { name: "Infinite saved 50", exact: true }),
+			).toHaveCount(1);
+			await page
+				.getByRole("link", { name: "Infinite saved 99", exact: true })
+				.scrollIntoViewIfNeeded();
+			await expect(
+				page.getByRole("link", { name: "Infinite saved 119", exact: true }),
+			).toHaveCount(1);
+			await expect(page.getByText("120 / 120件を表示")).toBeVisible();
+			await expect(
+				page.getByRole("button", { name: "さらに読み込む" }),
+			).toHaveCount(0);
+			expect(
+				reads.map((url) => new URL(url).searchParams.get("offset")),
+			).toEqual(["50", "100"]);
+			await page
+				.getByRole("link", { name: "Infinite saved 0", exact: true })
+				.scrollIntoViewIfNeeded();
+			await expect(
+				page.getByRole("region", { name: "保存済み" }).getByRole("link"),
+			).toHaveCount(120);
+		} finally {
+			await db.rssSaved.deleteMany({
+				where: { userId: owner.id, url: { startsWith: prefix } },
+			});
 			await db.$disconnect();
 		}
 	});
@@ -316,7 +384,9 @@ test.describe("RSS concurrent interactions", () => {
 			await page
 				.getByRole("combobox", { name: "購読で絞り込み" })
 				.selectOption(feedId);
-			await page.getByRole("button", { name: "次へ" }).click();
+			await page
+				.getByRole("button", { name: "さらに読み込む" })
+				.scrollIntoViewIfNeeded();
 			await expect(
 				page.getByRole("link", { name: "Concurrent original 50", exact: true }),
 			).toBeVisible();
@@ -330,7 +400,7 @@ test.describe("RSS concurrent interactions", () => {
 			await page.getByRole("button", { name: "更新", exact: true }).click();
 			await arrived.promise;
 			await expect(
-				page.getByRole("button", { name: /記事情報を更新中/u }),
+				page.getByRole("button", { name: "更新", exact: true }),
 			).toBeDisabled();
 			expect(
 				await page
@@ -361,7 +431,7 @@ test.describe("RSS concurrent interactions", () => {
 			expect(
 				await db.rssSaved.count({ where: { userId: owner.id, url: savedUrl } }),
 			).toBe(1);
-			await expect(page.getByText("0–0 / 0")).toBeVisible();
+			await expect(page.getByText("0 / 0件を表示")).toBeVisible();
 			await page.screenshot({
 				path: test.info().outputPath("rss-read-with-new-arrivals.png"),
 				fullPage: true,
@@ -370,8 +440,8 @@ test.describe("RSS concurrent interactions", () => {
 			await expect(
 				page.getByRole("link", { name: "Concurrent new 0", exact: true }),
 			).toBeVisible();
-			await expect(page.getByText("1–2 / 2")).toBeVisible();
-			await expect(page.getByRole("button", { name: "前へ" })).toBeDisabled();
+			await expect(page.getByText("2 / 2件を表示")).toBeVisible();
+			await expect(page.getByRole("button", { name: "前へ" })).toHaveCount(0);
 		} finally {
 			finishRead.resolve();
 			await page.unroute("**/api/v1/rss?*");

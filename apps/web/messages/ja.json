@@ -165,7 +165,7 @@
 		"save": "あとで読むに保存",
 		"unsave": "保存を解除",
 		"read": "既読にする",
-		"previous": "前へ",
-		"next": "次へ"
+		"loadMore": "さらに読み込む",
+		"loadedCount": "{count} / {total}件を表示"
 	}
 }

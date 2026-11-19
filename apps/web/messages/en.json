@@ -165,7 +165,7 @@
 		"save": "Save for later",
 		"unsave": "Remove saved link",
 		"read": "Mark as read",
-		"previous": "Previous",
-		"next": "Next"
+		"loadMore": "Load more",
+		"loadedCount": "Showing {count} of {total}"
 	}
 }

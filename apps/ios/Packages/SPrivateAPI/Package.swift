@@ -7,9 +7,9 @@ let package = Package(
     products: [.library(name: "SPrivateAPI", targets: ["SPrivateAPI"])],
     dependencies: [
         .package(url: "https://github.com/apple/swift-http-types.git", exact: "1.8.0"),
-        .package(url: "https://github.com/apple/swift-openapi-generator.git", exact: "1.9.0"),
-        .package(url: "https://github.com/apple/swift-openapi-runtime.git", exact: "1.11.0"),
-        .package(url: "https://github.com/apple/swift-openapi-urlsession.git", exact: "1.3.2"),
+        .package(url: "https://github.com/apple/swift-openapi-generator.git", exact: "1.14.4"),
+        .package(url: "https://github.com/apple/swift-openapi-runtime.git", exact: "1.13.4"),
+        .package(url: "https://github.com/apple/swift-openapi-urlsession.git", exact: "1.4.0"),
     ],
     targets: [
         .target(

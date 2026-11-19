@@ -9,6 +9,7 @@ on:
       - "packages/api-contracts/**"
       - "docs/openapi/backend-v1.json"
       - "scripts/generate-api.mjs"
+      - "scripts/ios-test-groups.test.mjs"
       - "orval.config.ts"
   push:
     branches: [main]
@@ -19,6 +20,7 @@ on:
       - "packages/api-contracts/**"
       - "docs/openapi/backend-v1.json"
       - "scripts/generate-api.mjs"
+      - "scripts/ios-test-groups.test.mjs"
       - "orval.config.ts"
 
 permissions: {}
@@ -28,9 +30,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-and-test:
+  build:
     runs-on: xcode-27
-    timeout-minutes: 60
+    timeout-minutes: 20
     steps:
       - name: Checkout files
         uses: actions/checkout@v7.0.1
@@ -43,14 +45,77 @@ jobs:
           version: 2026.11.9
           install_args: aqua:yonaskolb/XcodeGen
 
-      - name: Generate Xcode project
-        run: mise run ios:generate
+      - name: Verify complete test distribution
+        run: node --test scripts/ios-test-groups.test.mjs
+
+      - name: Generate and build app and test targets once
+        run: mise run ios:test:build
 
       - name: Test generated API package
         run: swift test --package-path apps/ios/Packages/SPrivateAPI
 
-      - name: Build app
-        run: mise run ios:build
+      - name: Package test products
+        run: tar -czf "$RUNNER_TEMP/ios-tests.tar.gz" -C apps/ios/.derivedData/Build Products
 
-      - name: Run tests
-        run: mise run ios:test
+      - name: Share compiled test products
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: ios-test-products
+          path: ${{ runner.temp }}/ios-tests.tar.gz
+          retention-days: 1
+          compression-level: 0
+
+  tests:
+    needs: build
+    runs-on: xcode-27
+    # Cold Simulator startup and XCTest animation waits vary between runners.
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [unit, rss, navigation, ui]
+    steps:
+      - name: Checkout files
+        uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Download compiled test products
+        uses: actions/download-artifact@v8.0.2
+        with:
+          name: ios-test-products
+          path: ${{ runner.temp }}/ios-test-products
+
+      - name: Restore executable permissions and symlinks
+        run: |
+          mkdir -p apps/ios/.derivedData/Build
+          tar -xzf "$RUNNER_TEMP/ios-test-products/ios-tests.tar.gz" -C apps/ios/.derivedData/Build
+
+      - name: Run test group without rebuilding
+        run: bash apps/ios/scripts/test-without-building.sh
+        env:
+          IOS_TEST_GROUP: ${{ matrix.group }}
+          DEVELOPER_DIR: /Applications/Xcode.app/Contents/Developer
+
+      - name: Save test results and failure screenshots
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: ios-results-${{ matrix.group }}
+          path: apps/ios/.test-results/
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 7
+
+  # Preserve the existing required check while all groups run independently.
+  build-and-test:
+    if: ${{ always() }}
+    needs: [build, tests]
+    runs-on: ubuntu-26.04
+    timeout-minutes: 1
+    steps:
+      - name: Require every iOS test group to pass
+        run: test "$BUILD_RESULT" = success && test "$TEST_RESULT" = success
+        env:
+          BUILD_RESULT: ${{ needs.build.result }}
+          TEST_RESULT: ${{ needs.tests.result }}
