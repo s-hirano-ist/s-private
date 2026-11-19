@@ -252,7 +252,7 @@ import { Link, redirect, useRouter } from "@/infrastructures/i18n/routing";
 
 localeの妥当性検証と翻訳メッセージの読み込みは`infrastructures/i18n/request.ts`に集約し、next-intlから明示されたlocale、middlewareのrequest locale、`next/root-params`の順で解決する。不正localeはdefault localeへ暗黙変換せず`notFound()`とする。ProxyはServer Component用navigationをmiddleware bundleへ混入させないよう`routing-config.ts`だけを参照する。locale配下の404は`apps/web/src/app/[locale]/not-found.tsx`、どのlocaleルートにも一致しないURLは完全なHTML文書を返す`apps/web/src/app/global-not-found.tsx`が担当する。global 404は既定localeの静的な404を即時表示し、`NEXT_LOCALE` cookie、`Accept-Language`、`ja`の順で決定する表示を局所`Suspense`からストリームする。
 
-認証済みWeb画面の共通ナビゲーションは`apps/web/src/app/[locale]/(authenticated)/layout.tsx`に置く。下タブはコンテンツ種別、上バーは公開状態と作成・検索・設定を担当する。公開状態は既存の`/{domain}`（未公開）と`/{domain}/viewer`（公開済み）で表し、種別を切り替えるときもURL上の状態を維持する。作成フォームは共通レイアウトからダイアログへ渡し、各ページは一覧データの描画を担当する。検索はドロワー、設定は`/settings`画面で表示する。
+認証済みWeb画面の共通ナビゲーションは`apps/web/src/app/[locale]/(authenticated)/layout.tsx`に置く。下タブはコンテンツ種別、上バーは公開状態と作成・検索・設定を担当する。公開状態は`/{domain}`（公開済み・初期表示）と`/{domain}/unexported`（未公開）で表し、種別を切り替えるときもURL上の状態を維持する。作成フォームは共通レイアウトからダイアログへ渡し、各ページは一覧データの描画を担当する。検索はドロワー、設定は`/settings`画面で表示する。
 
 routeファイルのprops型は手書きせず、次のNext.js生成型を唯一の定義元とする。
 
@@ -686,6 +686,8 @@ RSS専用のObservationモデルが取得・操作・進捗を管理し、SwiftD
 RSSのオフライン操作はメタデータの閲覧のみとし、既存の送信待ちキューには登録しない。
 
 記事・ノート・画像・書籍の閲覧はSwiftDataの所有者別ローカルコピーを正本とする。初回同期は`/api/v1/sync/head`で所有者の変更版を記録し、`/sync/snapshot`をIDのkeysetで全ドメインとカテゴリについてページ取得する。以後は`/sync/changes`で版以降の追加・更新・削除のみ取得し、端末へ適用したページのカーソルだけを保存する。変更履歴は各コンテンツとカテゴリのDB行トリガーが同一トランザクションで記録するため、Webと取り込みスクリプトの更新を含む。カテゴリ名はローカルカテゴリから表示時に解決する。一覧はSwiftDataから30件ずつ取得し、詳細はIDで1件取得する。縮小画像は同期後に少量ずつディスクへ保存し、原本は必要時に取得する。削除はオンラインでのみ行う。終了中のバックグラウンド同期は保証しない。旧mobile APIの `/manifest` は撤去済み。
+
+iOSの4ドメイン一覧は公開済みを初期表示とし、上バーのボタンで未公開と1タップで相互に切り替える。選択は各タブの表示状態として保持し、永続化せず再起動時は公開済みに戻す。切り替え時は一覧とページングをリセットする。
 
 iOSの同期要求は`SyncCoordinator`で単一のタスクにまとめる。手動の強制更新は進行中の同期が終わった後にも実行し、呼び出し元は完了を待てる。端末への登録が確定した後の通信は画面の表示期間に依存させない。タスクの取消はユーザー向けエラーや送信失敗として保存しない。一覧はローカルデータを表示しながら更新し、初回取得中・空・失敗の表示を重ねない。
 

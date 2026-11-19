@@ -6,7 +6,7 @@ struct DomainListView: View {
     @EnvironmentObject private var sync: SyncCoordinator
     @State private var records: [MobileRecord] = []
     @State private var hasMore = false
-    @State private var status: MobileContentStatus = .unexported
+    @State private var status: MobileContentStatus = .exported
     @State private var errorMessage: String?
     @State private var showingCreate = false
     @State private var showingSearch = false
@@ -59,11 +59,16 @@ struct DomainListView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Menu {
-                        ForEach([MobileContentStatus.unexported, .exported], id: \.self) { value in
-                            Button(value.localizedTitle) { status = value }
+                    Button {
+                        status = status == .exported ? .unexported : .exported
+                    } label: {
+                        HStack(spacing: 6) {
+                            Text(status.localizedTitle)
+                            Image(systemName: "arrow.left.arrow.right")
+                                .accessibilityHidden(true)
                         }
-                    } label: { Label(status.localizedTitle, systemImage: "line.3.horizontal.decrease") }
+                    }
+                    .accessibilityHint(status == .exported ? String(localized: "未公開に切り替え") : String(localized: "公開済みに切り替え"))
                     .accessibilityIdentifier("status-filter")
                 }
                 ToolbarItemGroup(placement: .topBarTrailing) {

@@ -50,7 +50,9 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const UnexportedArticles: Story = {
-	parameters: { nextjs: { navigation: { pathname: "/ja/articles" } } },
+	parameters: {
+		nextjs: { navigation: { pathname: "/ja/articles/unexported" } },
+	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await expect(
@@ -60,7 +62,11 @@ export const UnexportedArticles: Story = {
 			canvas.getByRole("link", {
 				name: "公開状態: 未公開。公開済みに切り替え",
 			}),
-		).toHaveAttribute("href", "/ja/articles/viewer");
+		).toHaveAttribute("href", "/ja/articles");
+		await expect(canvas.getByRole("link", { name: "ノート" })).toHaveAttribute(
+			"href",
+			"/ja/notes/unexported",
+		);
 		await expect(
 			canvas.queryByRole("heading", { name: "記事" }),
 		).not.toBeInTheDocument();
@@ -313,7 +319,7 @@ export const CreateImagesRetriesOnlyFailedFile: Story = {
 };
 
 export const ExportedBooks: Story = {
-	parameters: { nextjs: { navigation: { pathname: "/ja/books/viewer" } } },
+	parameters: { nextjs: { navigation: { pathname: "/ja/books" } } },
 	render: (args) => (
 		<>
 			<AppNavigation {...args} />
@@ -327,14 +333,14 @@ export const ExportedBooks: Story = {
 				canvas.getByRole("link", {
 					name: "公開状態: 公開済み。未公開に切り替え（42件）",
 				}),
-			).toHaveAttribute("href", "/ja/books"),
+			).toHaveAttribute("href", "/ja/books/unexported"),
 		);
 		const tabs = within(
 			canvas.getByRole("navigation", { name: "コンテンツの種類" }),
 		);
 		await expect(tabs.getByRole("link", { name: "記事" })).toHaveAttribute(
 			"href",
-			"/ja/articles/viewer",
+			"/ja/articles",
 		);
 	},
 };
@@ -347,6 +353,10 @@ export const Settings: Story = {
 			canvas.queryByRole("heading", { name: "設定" }),
 		).not.toBeInTheDocument();
 		await expect(canvas.getByRole("button", { name: "検索" })).toBeVisible();
+		await expect(canvas.getByRole("link", { name: "記事" })).toHaveAttribute(
+			"href",
+			"/ja/articles",
+		);
 		await expect(
 			canvas.queryByRole("button", { name: "新規作成" }),
 		).not.toBeInTheDocument();
@@ -359,7 +369,7 @@ export const DarkUnexportedArticles: Story = {
 		theme: "dark",
 	},
 	parameters: {
-		nextjs: { navigation: { pathname: "/ja/articles" } },
+		nextjs: { navigation: { pathname: "/ja/articles/unexported" } },
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
@@ -370,7 +380,7 @@ export const DarkUnexportedArticles: Story = {
 			canvas.getByRole("link", {
 				name: "公開状態: 未公開。公開済みに切り替え",
 			}),
-		).toHaveAttribute("href", "/ja/articles/viewer");
+		).toHaveAttribute("href", "/ja/articles");
 	},
 };
 
@@ -391,7 +401,7 @@ export const CompactMobileArticles: Story = {
 		await expect(header.getBoundingClientRect().height).toBeLessThanOrEqual(56);
 		await expect(
 			canvas.getByRole("link", {
-				name: "公開状態: 未公開。公開済みに切り替え",
+				name: "公開状態: 公開済み。未公開に切り替え",
 			}),
 		).toBeVisible();
 		await expect(
@@ -415,6 +425,10 @@ export const Rss: Story = {
 		await expect(
 			canvas.getByRole("link", { name: "記事" }),
 		).not.toHaveAttribute("aria-current");
+		await expect(canvas.getByRole("link", { name: "記事" })).toHaveAttribute(
+			"href",
+			"/ja/articles",
+		);
 		await expect(
 			canvas.queryByRole("button", { name: "新規作成" }),
 		).not.toBeInTheDocument();
@@ -528,5 +542,40 @@ export const RssSavedCount: Story = {
 				name: "RSSの表示: 保存済み。未読に切り替え（7件）",
 			}),
 		).toHaveAttribute("href", "/ja/rss");
+	},
+};
+
+export const ExportedArticlesEnglish: Story = {
+	globals: { locale: "en" },
+	parameters: { nextjs: { navigation: { pathname: "/en/articles" } } },
+	play: async ({ canvas }) => {
+		await expect(
+			canvas.getByRole("link", {
+				name: "Export status: Exported. Switch to Unexported",
+			}),
+		).toHaveAttribute("href", "/en/articles/unexported");
+		await expect(canvas.getByRole("link", { name: "Notes" })).toHaveAttribute(
+			"href",
+			"/en/notes",
+		);
+	},
+};
+
+export const DarkExportedBooks: Story = {
+	...ExportedBooks,
+	globals: { theme: "dark", backgrounds: { value: "black" } },
+};
+
+export const NoteDetail: Story = {
+	parameters: { nextjs: { navigation: { pathname: "/ja/note/unexported" } } },
+	play: async ({ canvas }) => {
+		await expect(canvas.getByRole("button", { name: "Back" })).toBeVisible();
+		await expect(canvas.getByRole("link", { name: "ノート" })).toHaveAttribute(
+			"href",
+			"/ja/notes",
+		);
+		await expect(
+			canvas.queryByRole("link", { name: /切り替え/u }),
+		).not.toBeInTheDocument();
 	},
 };

@@ -9,7 +9,7 @@ if [[ "${1:-}" == "--print-selection" ]]; then group="${2:-all}"; fi
 # New UI cases stay in the ui group.
 navigation=(
   SPrivateUITests/SPrivateUITests/testFourDomainTabsOfferHeaderActionsInWebOrder
-  SPrivateUITests/SPrivateUITests/testFourDomainTabsOfferOnlyUnexportedAndExportedFilters
+  SPrivateUITests/SPrivateUITests/testFourDomainTabsDefaultToExportedAndToggleWithOneTap
   SPrivateUITests/SPrivateUITests/testDomainTabsFollowSystemLanguage
   SPrivateUITests/SPrivateUITests/testArticleAndNoteEmptyStatesDoNotCreateBlankRows
   SPrivateUITests/SPrivateUITests/testArticleAndNoteRowsShowLongTitlesAndOpenDetails
