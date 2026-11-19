@@ -2,7 +2,7 @@ import type { RssPage } from "@s-hirano-ist/s-api-client/models";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { ViewerCountProvider } from "@/components/common/layouts/nav/viewer-count-context";
 import { RssReader } from "@/components/rss/rss-reader";
-import { expect, fn, userEvent, waitFor } from "storybook/test";
+import { expect, fn, mocked, userEvent, waitFor } from "storybook/test";
 const feedId = "00000000-0000-4000-8000-000000000001";
 const entryId = "00000000-0000-4000-8000-000000000002";
 const page: RssPage = {
@@ -181,14 +181,24 @@ export const FetchFailure: Story = {
 			}),
 		},
 	},
-	play: async ({ canvas }) => {
+	play: async ({ canvas, args }) => {
 		await userEvent.click(canvas.getByRole("button", { name: "更新" }));
 		await expect(await canvas.findByRole("alert")).toBeVisible();
 		await expect(
 			canvas.getByRole("link", { name: "RSSを軽量に読む" }),
 		).toBeVisible();
+		const refresh = canvas.getByRole("button", { name: "更新" });
+		await expect(refresh).toBeEnabled();
+		await expect(refresh).toHaveAttribute("aria-busy", "false");
+		await expect(refresh.querySelector(".animate-spin")).toBeNull();
+		await userEvent.click(canvas.getByRole("button", { name: "再読み込み" }));
+		await waitFor(() => expect(args.services.loadRss).toHaveBeenCalledTimes(2));
+		await expect(await canvas.findByRole("alert")).toBeVisible();
+		await expect(refresh).toBeEnabled();
+		await expect(refresh).toHaveAttribute("aria-busy", "false");
 	},
 };
+
 export const BackgroundReadPending: Story = {
 	args: {
 		initialData: { ...page, unreadCount: 51 },
@@ -595,5 +605,119 @@ export const NewArrivalsOnMobile: Story = {
 		).toBeVisible();
 		const main = canvas.getByRole("main");
 		await expect(main.scrollWidth).toBeLessThanOrEqual(main.clientWidth);
+	},
+};
+
+const refreshWithoutLayoutShift: Story["play"] = async ({
+	args,
+	canvas,
+	canvasElement,
+	globals,
+}) => {
+	if (!args.services.loadRss) throw new Error("A mock reader is required");
+	await canvasElement.ownerDocument.fonts.ready;
+	const pending = Promise.withResolvers<RssPage>();
+	mocked(args.services.loadRss).mockReturnValueOnce(pending.promise);
+	const refreshLabel = globals.locale === "en" ? "Refresh" : "更新";
+	const loadingLabel = globals.locale === "en" ? "Loading…" : "読み込み中…";
+	const refresh = canvas.getByRole("button", { name: refreshLabel });
+	const elements = canvasElement.querySelectorAll("button, select, section");
+	const positions = () =>
+		Array.from(elements, (element) => {
+			const { x, y, width, height } = element.getBoundingClientRect();
+			return { x, y, width, height };
+		});
+	const before = positions();
+	await userEvent.click(refresh);
+	await expect(refresh).toHaveAttribute("aria-busy", "true");
+	await expect(refresh).toBeDisabled();
+	await expect(refresh).toHaveTextContent(refreshLabel);
+	await expect(canvas.getByRole("status")).toHaveAccessibleName(loadingLabel);
+	await expect(canvas.getByRole("status")).toHaveClass("sr-only");
+	const spinner = refresh.querySelector(".animate-spin");
+	await expect(spinner).not.toBeNull();
+	await expect(spinner).toHaveClass("motion-reduce:animate-none");
+	await expect(canvasElement.querySelectorAll(".animate-spin")).toHaveLength(1);
+	await expect(positions()).toEqual(before);
+	pending.resolve(args.initialData);
+	await waitFor(() => expect(refresh).toHaveAttribute("aria-busy", "false"));
+	await expect(refresh).toBeEnabled();
+	await expect(refresh.querySelector(".animate-spin")).toBeNull();
+	await expect(positions()).toEqual(before);
+};
+
+export const RefreshWithoutLayoutShift: Story = {
+	args: {
+		initialData: { ...page, newerCount: 3 },
+		services: { ...services, loadRss: fn(async () => page) },
+	},
+	decorators: DesktopCards.decorators,
+	globals: { locale: "ja", viewport: { value: "desktop" } },
+	play: refreshWithoutLayoutShift,
+};
+
+export const RefreshWithoutLayoutShiftOnMobile: Story = {
+	...RefreshWithoutLayoutShift,
+	decorators: [],
+	globals: { locale: "en", viewport: { value: "mobile1" } },
+};
+
+export const SavedRefreshWithoutLayoutShift: Story = {
+	...RefreshWithoutLayoutShift,
+	args: {
+		...Saved.args,
+		services: { ...services, loadRss: fn(async () => page) },
+	},
+};
+
+export const SavedRefreshWithoutLayoutShiftOnMobile: Story = {
+	...SavedRefreshWithoutLayoutShift,
+	decorators: [],
+	globals: { locale: "en", viewport: { value: "mobile1" } },
+};
+
+export const SubscriptionsRefreshWithoutLayoutShift: Story = {
+	...RefreshWithoutLayoutShift,
+	args: {
+		view: "feeds",
+		services: { ...services, loadRss: fn(async () => page) },
+	},
+};
+
+export const SubscriptionsRefreshWithoutLayoutShiftOnMobile: Story = {
+	...SubscriptionsRefreshWithoutLayoutShift,
+	decorators: [],
+	globals: { locale: "en", viewport: { value: "mobile1" } },
+};
+
+export const SavePending: Story = {
+	args: {
+		services: {
+			...services,
+			saveRss: fn(async () => undefined),
+			loadRss: fn(async () => page),
+		},
+	},
+	play: async ({ args, canvas }) => {
+		if (!args.services.loadRss) throw new Error("A mock reader is required");
+		const save = Promise.withResolvers<undefined>();
+		const read = Promise.withResolvers<RssPage>();
+		mocked(args.services.saveRss).mockReturnValueOnce(save.promise);
+		mocked(args.services.loadRss).mockReturnValueOnce(read.promise);
+		const refresh = canvas.getByRole("button", { name: "更新" });
+		await userEvent.click(
+			canvas.getByRole("button", { name: "あとで読むに保存" }),
+		);
+		await expect(args.services.saveRss).toHaveBeenCalledTimes(1);
+		await expect(refresh).toHaveAttribute("aria-busy", "true");
+		await expect(refresh).toBeDisabled();
+		await expect(refresh.querySelector(".animate-spin")).not.toBeNull();
+		save.resolve(undefined);
+		await waitFor(() => expect(args.services.loadRss).toHaveBeenCalledTimes(1));
+		await expect(refresh).toHaveAttribute("aria-busy", "true");
+		read.resolve(args.initialData);
+		await waitFor(() => expect(refresh).toHaveAttribute("aria-busy", "false"));
+		await expect(refresh).toBeEnabled();
+		await expect(refresh.querySelector(".animate-spin")).toBeNull();
 	},
 };
